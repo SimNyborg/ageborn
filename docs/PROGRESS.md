@@ -2,6 +2,37 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-01: MVP pass, sounds, effects and loading speed (cloud session, not yet published)
+
+- The game opens much faster: a splash shows at once and Home shows after about 4 s on a phone over 4G (was 9 s; 10 s on slow 4G, was 32 s). Battle art loads behind Home and per match, so no other age downloads at start (about 9 MB saved). Mid-battle hitches from first-time effects are much smaller (texture upload time in a heavy battle 700 → 200 ms a minute).
+- 31 new sounds: real UI sounds instead of stand-ins (unlocks, region opening, stars that climb, cards, sheets), the War Council, a cue per stance, rising Last Base Standing horns and the crumble beat, a "Heavy incoming" warning, the Anti-heavy armour crack, thunder in the Thunderstorm skin, the VS slam, the Sundial claim, and their own sounds for the energy forts. Album and Customize taps now answer.
+- New effects: stance cues on the troops, a mark on slowed or snared units, the Brace plant, a research glint at the base, a pennant over levies, a bigger fort-finished pop.
+- Checks: typecheck, lint, 4,567 unit tests, build and size (943 KB initial). Details and what is still open in `docs/decisions.md` ("MVP pass: sounds, effects and load performance").
+
+## 2026-10-01: MVP pass, bug hunt and first-30-minutes fixes (cloud session, not yet published)
+
+**What works**
+
+- Match 1 can no longer stall: the stance hint points at Charge, and whenever the army is off Charge for 10 s a hand on Charge says "Tap Charge to attack their base!". The Arrow Storm hand drags to a legal spot in your half, and the line says powers cost gold. No adaptive hints in match 1, at most 2 per match after that.
+- Match 2: the Council hint follows your taps (Council, Economy, Granary, tap again) and only one hint shows at a time. Pip's Rookie handicap is stronger (a random-tapping new player won 43% before, 100% now; about 5 minutes).
+- Following the main button after a win now leads Home while an unlock waits, and the capsule summary always offers Home. Capsule 1's new cards fill the empty troop slots; capsule 2 brings Friar and the Onager (both play in a Short War). The Starter Capsule show is simpler. The welcome crate holds a Bonker skin.
+- The Field power slot works in battle (it said "Coming soon"), and War Path first clears pay their powers. The Daily no longer hands out forts or Field powers before they are taught.
+- Reloading during a Ladder battle (after 1:00) counts as a Retreat, with a toast.
+- Fixed on phone and desktop: blank Bronze/Industrial/Cosmic badges, the Age Capsule picker, the pause card (lane stays visible, enemy cards in enemy colours), the emote picker, the replay viewer (Esc and Back), AI names, Army's Available cards, the Capsules tab, Settings, Quick Battle's name, the Daily plate (names the General), the same Ladder opponent in every length, and several copy fixes. The first screen shows the game's name.
+- Details and the measurements: `docs/decisions.md` ("MVP pass: bug hunt and first-30-minutes fixes").
+
+**Still open**
+
+- Balance track: early capsules give a lot of Amber; the first Ladder match vs Kettle (tier I) is still often lost by weak play.
+- Performance track: renderer memory in long sessions needs a real-phone check.
+- A reload right after losing match 2 opens capsule 2 instead of offering "Try again"; the War Path's teaching order (L2 "Hold the Line"); a guided second upgrade; the editable auto name.
+
+**What the owner should try** (once published)
+
+1. Start a fresh game (Settings, Reset) and play the training match. When "Charge attacks. Hold guards your base." shows, tap Hold and wait 10 seconds: a hand should point at Charge.
+2. Play match 2 and follow the Council hint.
+3. After a Ladder win, open the capsule and press the gold button: it should take you Home when something new has opened.
+
 ## 2026-10-01: Online-first Home and four battle lengths (cloud session, not yet published)
 
 **What works**

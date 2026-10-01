@@ -10,7 +10,7 @@
  * Layering (B2): `tutorial` may import contracts, core and i18n only, so content arrives as a
  * `CompiledContent` argument and card ids here are plain data.
  */
-import type { AgeId, CardId, CompiledContent, Loadout, Side, SimEvent, TrainingEvent } from '@/contracts';
+import type { AgeId, CardId, CompiledContent, Loadout, Side, SimEvent, StanceMode, TrainingEvent } from '@/contracts';
 
 /** 20 ticks per second (B3). */
 export const TICKS_PER_SEC = 20;
@@ -30,6 +30,10 @@ export type PromptTarget =
   | 'evolve'
   | 'power'
   | 'stance'
+  /** The Charge button of the stance control (MVP fix 2026-10-01: never the middle Hold button). */
+  | 'stanceCharge'
+  /** The War Council button right of the gold; while its sheet is open, the Economy income pick. */
+  | 'council'
   | 'lastStand'
   /** The minimap strip under the clock (A17.5). */
   | 'minimap';
@@ -52,7 +56,12 @@ export type BeatTrigger =
    * An enemy Heavy-group unit is alive on the lane within `viewLu` of the player's front (the follow
    * camera frames the front, A17.4), so the prompt shows while the Heavy is on screen.
    */
-  | { k: 'foeHeavy'; viewLu: number };
+  | { k: 'foeHeavy'; viewLu: number }
+  /**
+   * The player's stance has not been Charge for this long (MVP fix 2026-10-01: match 1 has no clock,
+   * so an army parked on Hold or Fall back would stall the training match forever).
+   */
+  | { k: 'offCharge'; ticks: number };
 
 /** What ends a shown beat. */
 export type BeatDone =
@@ -63,7 +72,9 @@ export type BeatDone =
   /** A unit of the card in this tray slot spawned on the lane (queued is not enough). */
   | { k: 'spawned'; slot: number }
   /** Shown for a fixed time. */
-  | { k: 'shownFor'; ticks: number };
+  | { k: 'shownFor'; ticks: number }
+  /** The player's stance is this one. */
+  | { k: 'stance'; stance: StanceMode };
 
 export interface Beat {
   id: string;
@@ -86,6 +97,11 @@ export interface Beat {
    * waits for the player (audit: "Evolve!" must never hide behind a stuck turret step).
    */
   jumpQueue?: boolean;
+  /**
+   * Once done, the beat waits for its trigger again (a guard such as the match 1 stall prompt). Put
+   * re-arming beats last in a sequential script, so they never hold up a later beat.
+   */
+  rearm?: boolean;
 }
 
 /** Old Grogg's scripted sends (A7.4, A8): train commands through the normal command API (B10). */
@@ -195,6 +211,9 @@ export const MATCH1_POWER_TICK = sec(64);
 /** Gold the match 1 script grants with the Arrow Storm beat: its price, so the beat is free (A2.9.10). */
 export const MATCH1_POWER_GOLD = 100;
 
+/** Match 1 prompts Charge after this long off Charge (the stall guard). */
+export const MATCH1_STALL_TICKS = sec(10);
+
 /** "Kills earn gold" stays this long: long enough to read and to watch the coins land. */
 export const KILLS_EARN_GOLD_TICKS = sec(5);
 
@@ -241,11 +260,16 @@ export const MATCH1: MatchScript = {
     { id: 'm1.ascension', textKey: null, target: null, trigger: { k: 'ageUp', age: 'medieval' }, done: { k: 'shownFor', ticks: 1 } },
     { id: 'm1.arrowStorm', textKey: 'tutorial.m1.arrowStorm', target: 'power', hand: 'powerDrag', trigger: { k: 'powerReady' }, done: { k: 'event', e: 'powerTelegraph' }, timeoutTicks: sec(20), onlyInAge: 1 },
     // Owner feedback 2026-09-28: the stance is there from match 1, with this one hint in Gunpowder
-    // (~1:33, a calm stretch after Arrow Storm). It points at the flag for 6 s and never waits for a
-    // tap, so a player who ignores it is not held up (the retimed run never taps it).
-    { id: 'm1.stance', textKey: 'tutorial.m1.stance', target: 'stance', trigger: { k: 'ageUp', age: 'gunpowder' }, done: { k: 'shownFor', ticks: sec(6) } },
+    // (~1:33, a calm stretch after Arrow Storm). It points at Charge for 6 s and never waits for a
+    // tap, so a player who ignores it is not held up (the retimed run never taps it). MVP fix
+    // 2026-10-01: it pointed at the whole control, so the hand sat on Hold and players who tapped
+    // where it pointed parked their army for good.
+    { id: 'm1.stance', textKey: 'tutorial.m1.stance', target: 'stanceCharge', trigger: { k: 'ageUp', age: 'gunpowder' }, done: { k: 'shownFor', ticks: sec(6) } },
     { id: 'm1.modern', textKey: null, target: null, trigger: { k: 'ageUp', age: 'modern' }, done: { k: 'shownFor', ticks: 1 } },
     { id: 'm1.future', textKey: 'tutorial.m1.future', target: null, trigger: { k: 'ageUp', age: 'future' }, done: { k: 'shownFor', ticks: sec(3) } },
+    // The stall guard (MVP fix 2026-10-01): match 1 has no clock, so whenever the army has not been on
+    // Charge for 10 s the hand points at Charge until the player taps it. It re-arms after each Charge.
+    { id: 'm1.charge', textKey: 'tutorial.m1.charge', target: 'stanceCharge', trigger: { k: 'offCharge', ticks: MATCH1_STALL_TICKS }, done: { k: 'stance', stance: 'charge' }, jumpQueue: true, rearm: true },
   ],
 };
 
@@ -278,10 +302,10 @@ export const MATCH2: MatchScript = {
   beats: [
     // A17.6: the long lane scrolls. The first real battle shows how to look around once the armies are out.
     { id: 'm2.scroll', textKey: 'tutorial.m2.scroll', target: 'minimap', trigger: { k: 'atTick', tick: sec(20) }, done: { k: 'shownFor', ticks: sec(5) } },
-    // "Stone teaches Treasury" (A8), now the War Council's Economy track (A18.5.4): a tap on the gold opens
-    // the Council on Economy and Granary starts on a second tap, so the beat ends when research starts
-    // (it completes 10 s later) and allows time for the three taps.
-    { id: 'm2.treasury', textKey: 'tutorial.m2.treasury', target: 'gold', trigger: { k: 'treasuryAffordable', afterTick: sec(15) }, done: { k: 'event', e: 'researchStarted' }, timeoutTicks: sec(20) },
+    // "Stone teaches Treasury" (A8), now the War Council's Economy track (A18.5.4). The ring follows the
+    // player (MVP fix 2026-10-01: it stayed on the gold): the Council button, then the Economy track,
+    // then the first income pick, then "tap again". The beat ends when research starts.
+    { id: 'm2.treasury', textKey: 'tutorial.m2.treasury', target: 'council', trigger: { k: 'treasuryAffordable', afterTick: sec(15) }, done: { k: 'event', e: 'researchStarted' }, timeoutTicks: sec(30) },
     // "Medieval teaches the second mount" (A8).
     { id: 'm2.secondMount', textKey: 'tutorial.m2.secondMount', target: 'mountBuy', trigger: { k: 'mountAffordable', minAgeIndex: 1 }, done: { k: 'event', e: 'mountBought' }, timeoutTicks: sec(12) },
     // The manual Last Stand button arrives in match 2 (was match 5), shown when it is first armed.
@@ -311,6 +335,11 @@ export const STAGES = {
    * stop"); the detectors keep running for the Result tip.
    */
   hintsUntilMatch: 5,
+  /**
+   * MVP fix 2026-10-01 (FTUE audit #6): match 1 is fully scripted, so adaptive hints start in match 2;
+   * inside a scripted match they were noise (and the Hold hint parked armies in a match with no clock).
+   */
+  hintsFromMatch: 2,
 } as const;
 
 /** The scripted beats for match `n`, if any. */
@@ -366,6 +395,8 @@ export const ADAPTIVE = {
   outdatedTicks: sec(15),
   /** Own losses inside the window for the Hold hint, while outnumbered. */
   holdDeaths: 4,
+  /** At most this many adaptive hints in one match (FTUE audit 2026-10-01: too many new things at once). */
+  maxPerMatch: 2,
 } as const;
 
 export const ADAPTIVE_HINTS: readonly AdaptiveHintDef[] = [

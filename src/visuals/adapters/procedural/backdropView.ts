@@ -799,6 +799,11 @@ export class ProceduralBackdropView implements BackdropView {
     return { seam: this.seam, target: this.seamTarget, left: this.left, right: this.right, wiping: this.wipeState !== null, skins: { ...this.skins }, weather: this.weather.count };
   }
 
+  /** Lightning strikes since the last call (Thunderstorm skin), for the battle view's thunder. */
+  drainStrikes(): { side: Side; x: number }[] {
+    return this.weather.drainStrikes();
+  }
+
   /** Reduce motion and Lite (duck-typed like the base views): quieter weather, no lightning. */
   setMotion(o: { reduce: boolean; lite: boolean }): void {
     this.weather.setMotion(o);

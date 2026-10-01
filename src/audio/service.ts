@@ -77,15 +77,19 @@ interface VoiceHandle {
 
 /** Sheets to load for a music cue: the age now playing and the next one (DESIGN B7 lazy loading). */
 const SHEETS_FOR_CUE: Readonly<Record<MusicCueId, readonly string[]>> = {
-  'music.stone': ['stone', 'medieval', 'match'],
+  // The eight ages in match order (A17.8): each cue fetches its age and the next one.
+  'music.stone': ['stone', 'bronze', 'match'],
+  'music.bronze': ['bronze', 'medieval', 'match'],
   'music.medieval': ['medieval', 'gunpowder', 'match'],
-  'music.gunpowder': ['gunpowder', 'modern', 'match'],
+  'music.gunpowder': ['gunpowder', 'industrial', 'match'],
+  'music.industrial': ['industrial', 'modern', 'match'],
   'music.modern': ['modern', 'future', 'match'],
-  'music.future': ['future', 'match'],
+  'music.future': ['future', 'cosmic', 'match'],
+  'music.cosmic': ['cosmic', 'match'],
   'music.capsule': ['capsule'],
 };
-/** Sheets loaded right after unlock, in order. */
-const BOOT_SHEETS: readonly string[] = ['ui', 'battle', 'stone', 'medieval', 'match'];
+/** Sheets loaded right after unlock, in order (every match opens in Stone and moves to Bronze). */
+const BOOT_SHEETS: readonly string[] = ['ui', 'battle', 'stone', 'bronze', 'match'];
 
 export interface ServiceStats {
   started: number;
@@ -178,6 +182,11 @@ export class WebAudioService implements AudioService {
 
   // ------------------------------------------------------------------------------------------------
   // Pre-rendering
+
+  /** True while the recorded sheets are in use (the ZzFX renders are only their fallback). */
+  get usesFiles(): boolean {
+    return this.files !== null && !this.files.failed;
+  }
 
   /** Renders sound groups now (default: the boot groups, B7). Returns what it did and how long it took. */
   prerender(groups: readonly SoundGroup[] = BOOT_GROUPS): RenderStats {
@@ -567,7 +576,10 @@ export interface CreateAudioOptions extends WebAudioServiceOptions {
  */
 export function createWebAudioService(o: CreateAudioOptions = {}): { service: WebAudioService; boot: RenderStats | null } {
   const service = new WebAudioService(o);
-  const boot = o.prerender === false ? null : service.prerender();
+  // With the recorded sheets the boot render is wasted work (perf audit 2026-10-01: 0.6 s of main
+  // thread on a mid-range phone, the longest boot task). A sound played before its sheet decodes
+  // renders its ZzFX fallback on first use; if the files fail, `renderLazily` renders the rest.
+  const boot = o.prerender === false || (o.prerender === undefined && service.usesFiles) ? null : service.prerender();
   if (o.lazy !== false) service.renderLazily(o.idle);
   return { service, boot };
 }

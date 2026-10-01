@@ -150,7 +150,7 @@ export function battleRequest(save: SaveDoc, content: Content, speed: 1 | 1.5 | 
       return { mode: 'ladder', format: ladderFormat(save, content) };
     case 'quick': {
       const d = lastDifficulty(save, content);
-      return { mode: 'skirmish', options: { generalId: quickGeneralFor(content, d), tier: content.generals.difficulty.tiers[d], format: 'short', standardLevels: false }, speed };
+      return { mode: 'skirmish', options: { generalId: quickGeneralFor(content, d), tier: content.generals.difficulty.tiers[d], format: 'short', standardLevels: false }, speed, quick: true };
     }
     case 'daily':
       return { mode: 'daily', difficulty: dailyDifficulty(save, content) };

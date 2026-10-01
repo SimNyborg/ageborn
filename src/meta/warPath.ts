@@ -20,6 +20,7 @@ import type { CardId, MatchStats, RewardStep, SaveDoc, WarPathDifficulty, WarPat
 import type { Content, Difficulty, StarGoal, WarPathLevel, WarPathRegion, WarPathUnlock } from '@/content';
 import { grantCapsuleAt } from './capsules/grant';
 import { grantWarPathFort } from './forts';
+import { grantWarPathPower } from './powers';
 
 /** A node's state on the map. */
 export type WarPathNodeState = 'beaten' | 'current' | 'locked';
@@ -222,6 +223,11 @@ export function applyWarPath(
     const f = grantWarPathFort(save, t, level.region, level.index);
     save = f.save;
     steps.push(...f.steps);
+    // A2.9.8: the level's War Path power (60 Amber if owned); Stone L5 opens the Field slot (A2.9.1).
+    // MVP 2026-10-01 (docs/requests/powers-warpath-grants.md), with the Field slot live in battle.
+    const pw = grantWarPathPower(save, t, level.region, level.index);
+    save = pw.save;
+    steps.push(...pw.steps);
   }
   return { save, steps };
 }

@@ -44,6 +44,10 @@ export interface CapsuleHostProps {
    * summary's primary then continues that path instead of returning to the Result (ui-plan 2.5).
    */
   doneLabel?: string;
+  /** Opened from the Result: the secondary way on ("Home", or the Result's path while Home waits). */
+  altLabel?: string;
+  /** Runs before the show closes; the host then closes it like Done. */
+  onAlt?: () => void;
 }
 
 /** The show's settings from the save; `lite` is the Lite graphics preset (A10 step 4: half the particles, static starfield and sheen). */
@@ -98,6 +102,15 @@ export function CapsuleHost(p: CapsuleHostProps) {
     upgradesTaught: taught,
     onDone: done,
     ...(p.doneLabel ? { doneLabel: p.doneLabel } : {}),
+    ...(p.altLabel && p.onAlt
+      ? {
+          altLabel: p.altLabel,
+          onAlt: () => {
+            p.onAlt?.();
+            done();
+          },
+        }
+      : {}),
     ...(p.onEquip ? { onEquip: p.onEquip } : {}),
     ...(p.onEquipSkin ? { onEquipSkin: p.onEquipSkin } : {}),
     ...(p.onUpgrade ? { onUpgrade: p.onUpgrade } : {}),

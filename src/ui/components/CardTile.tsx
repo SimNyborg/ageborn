@@ -13,7 +13,7 @@
  * - Hover (desktop, 350 ms) or long-press (touch, 450 ms) opens the tip with class and counters.
  */
 import { rarityNameKey } from '@/content/keys';
-import type { AgeId, CardId, Foil, FortKind, PowerSlot, Rarity, SkinId } from '@/contracts';
+import type { AgeId, CardId, Foil, FortKind, PowerSlot, Rarity, Side, SkinId } from '@/contracts';
 import type { CardClass, UnitClass } from '@/core/cardClass';
 import type { ComponentChildren } from 'preact';
 import { CardTip, CardTipBody, ClassIcon, CLASS_NAME_KEY, useCardTip } from './ClassIcon';
@@ -91,11 +91,13 @@ export function CardArt(p: {
   class?: string;
   /** A Fort card: its kind's illustration until F3's fort portraits ship (`FORT_PORTRAITS`). */
   fortKind?: FortKind;
+  /** 1 paints the portrait in the opponent's team colours (scouted enemy cards). */
+  side?: Side;
 }) {
   // Silhouettes (unowned cards) use a plate-free portrait darkened by CSS; without a provider the
   // role glyph stands in (docs/requests/wp4-portrait-plate-contract.md).
   const fortArt = p.fortKind !== undefined && !FORT_PORTRAITS;
-  const url = usePortrait(fortArt ? '' : p.card, { skin: p.skin ?? null, foil: 'none', size: Math.round(p.size * 2), plate: !p.silhouette });
+  const url = usePortrait(fortArt ? '' : p.card, { skin: p.skin ?? null, foil: 'none', size: Math.round(p.size * 2), plate: !p.silhouette, ...(p.side ? { side: p.side } : {}) });
   const age = AGE_COLOR[p.age];
   return (
     <span
@@ -141,6 +143,8 @@ export function CardTile(p: {
   equipped?: boolean;
   /** The name under the art; default on from sm up (xs never). */
   showName?: boolean;
+  /** An opponent's card (bug hunt 2026-10-01 #12): its portrait in the opponent's team colours and a red frame mark. */
+  enemy?: boolean;
 }) {
   const { t, locale } = useKit();
   const c = p.card;
@@ -159,6 +163,7 @@ export function CardTile(p: {
     p.onClick ? 'is-button' : '',
     p.equipped ? 'is-equipped' : '',
     c.isNew && c.owned ? 'is-new' : '',
+    p.enemy ? 'is-enemy' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -179,7 +184,7 @@ export function CardTile(p: {
   const body = (
     <>
       <span class="ui-card__frame" style={{ '--frame': frame }}>
-        <CardArt card={c.id} age={c.age} glyph={c.glyph} size={ART_PX[size]} foil={c.foil} skin={c.skin} silhouette={!c.owned} {...(c.fort ? { fortKind: c.fort.kind } : {})} />
+        <CardArt card={c.id} age={c.age} glyph={c.glyph} size={ART_PX[size]} foil={c.foil} skin={c.skin} silhouette={!c.owned} {...(c.fort ? { fortKind: c.fort.kind } : {})} {...(p.enemy ? { side: 1 as const } : {})} />
         <i class="ui-card__shade" aria-hidden="true" />
         {c.owned && size !== 'xs' && !p.hideLevel && c.kind !== 'power' && c.kind !== 'fort' ? <span class="ui-card__level">{levelText}</span> : null}
         {c.fort && size !== 'xs' ? (

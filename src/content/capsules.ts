@@ -134,11 +134,14 @@ export const capsules: CapsuleTables = {
   // A6.5 onboarding script
   script: [
     // The Anti-heavy Rares are in the starter kit (owner feedback 2026-09-29, A3), so the scripted
-    // capsules bring the early Support Rares instead: Stone and Bronze, then Medieval and Gunpowder.
+    // capsules bring the early Support Rares instead: Stone and Bronze, then Medieval. MVP fix
+    // 2026-10-01 (FTUE audit #7): capsule 2 gave the Gunpowder Field Surgeon, which no Short War (the only
+    // length at Arena 1) can use; it now brings the Bronze Onager turret, so capsules 1-3 all play in a
+    // Short War. The Field Surgeon (A3: every age's Support Rare arrives) moves to capsule 4.
     { capsule: 1, tier: 'bronze', cards: ['drum_shaman', 'standard_bearer'], randomUnownedEpic: false, fullWalkout: false },
-    { capsule: 2, tier: 'silver', cards: ['friar', 'field_surgeon'], randomUnownedEpic: false, fullWalkout: false },
+    { capsule: 2, tier: 'silver', cards: ['friar', 'onager'], randomUnownedEpic: false, fullWalkout: false },
     { capsule: 3, tier: 'bronze', cards: ['log_roller'], randomUnownedEpic: false, fullWalkout: false },
-    { capsule: 4, tier: 'silver', cards: [], randomUnownedEpic: true, fullWalkout: false },
+    { capsule: 4, tier: 'silver', cards: ['field_surgeon'], randomUnownedEpic: true, fullWalkout: false },
     { capsule: 5, tier: 'gold', cards: ['mammoth_matriarch'], randomUnownedEpic: false, fullWalkout: true },
   ],
   wardrobe: { noDuplicateUntilAllOwned: true },

@@ -179,6 +179,28 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
             </div>
           </Panel>
 
+          <Panel title={t('ui.settings.about')} icon={<RobotIcon size={24} />} testid="set-about" labelledBy="set-about-t">
+            <ul class="set-about">
+              <li data-testid="about-ai">{t('ui.ai.allAi')}</li>
+              <li>{t('ui.ai.adapts')}</li>
+              <li>{t('ui.settings.noMoney')}</li>
+              <li>{t('ui.settings.offline')}</li>
+              <li data-testid="about-kept">{t('ui.info.kept')}</li>
+            </ul>
+            <div class="set-buttons">
+              {/* Settings has no primary action (bug hunt 2026-10-01 #27): For parents is a secondary like its neighbours. */}
+              <Button kind="secondary" size="sm" icon={<ProfileIcon size={20} />} testid="parents" onClick={() => setDialog('parents')}>
+                {t('ui.settings.parents')}
+              </Button>
+              <Button kind="secondary" size="sm" icon={<InfoIcon size={20} />} testid="odds-overview" onClick={() => setDialog('odds')}>
+                {t('ui.settings.odds')}
+              </Button>
+              <Button kind="secondary" size="sm" testid="credits" onClick={() => setDialog('credits')}>
+                {t('ui.settings.credits')}
+              </Button>
+            </div>
+          </Panel>
+
           <Panel title={t('ui.settings.gameplay')} icon={<ScrollIcon size={24} />} testid="set-gameplay" labelledBy="set-gameplay-t">
             <div class="set-row">
               <span>{t('ui.settings.defaultSpeed')}</span>
@@ -268,27 +290,6 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
             <div class="set-buttons">
               <Button kind="secondary" size="sm" testid="export-log" onClick={() => services.exportEventLog()}>
                 {t('ui.settings.exportLog')}
-              </Button>
-            </div>
-          </Panel>
-
-          <Panel title={t('ui.settings.about')} icon={<RobotIcon size={24} />} testid="set-about" labelledBy="set-about-t">
-            <ul class="set-about">
-              <li data-testid="about-ai">{t('ui.ai.allAi')}</li>
-              <li>{t('ui.ai.adapts')}</li>
-              <li>{t('ui.settings.noMoney')}</li>
-              <li>{t('ui.settings.offline')}</li>
-              <li data-testid="about-kept">{t('ui.info.kept')}</li>
-            </ul>
-            <div class="set-buttons">
-              <Button kind="progress" size="sm" icon={<ProfileIcon size={20} />} testid="parents" onClick={() => setDialog('parents')}>
-                {t('ui.settings.parents')}
-              </Button>
-              <Button kind="secondary" size="sm" icon={<InfoIcon size={20} />} testid="odds-overview" onClick={() => setDialog('odds')}>
-                {t('ui.settings.odds')}
-              </Button>
-              <Button kind="secondary" size="sm" testid="credits" onClick={() => setDialog('credits')}>
-                {t('ui.settings.credits')}
               </Button>
             </div>
           </Panel>

@@ -63,8 +63,11 @@ function useCurrentAge(): AgeId {
 
 /** Shows a toast for an action's result (known reasons have their own line). */
 function useAct() {
-  const { toasts, t } = useUi();
+  const { toasts, t, sound } = useUi();
   return (r: ActionResult, okText?: string) => {
+    // Every equip, remove and craft is heard (audit 2026-10-01: these taps were silent): a stamp when
+    // it took, the deny knock when it did not.
+    sound?.(r.ok ? 'ui_stamp' : 'ui_deny');
     if (r.ok) {
       if (okText) toasts.show(okText, { tone: 'good' });
       return;
@@ -91,7 +94,7 @@ export function ItemTile(p: {
   /** Shown in the preview right now without being equipped (a locked item tried on): a gold ring. */
   trying?: boolean;
 }) {
-  const { save, content, t, services } = useUi();
+  const { save, content, t, services, sound } = useUi();
   const act = useAct();
   const key = itemKey(p.item);
   const have = owns(save.value, content, key);
@@ -116,6 +119,8 @@ export function ItemTile(p: {
         onClick={() => {
           p.onPreview?.();
           if (have) p.onPick();
+          // a try-on of an item you do not own yet still answers the tap
+          else if (p.onPreview) sound?.('ui_toggle');
         }}
       >
         <span class="cos-tile__art">{p.art ?? <CosmeticImage item={key} animate={!save.value.settings.reduceMotion} />}</span>
@@ -178,7 +183,7 @@ const ANCHOR_COUNT = 3;
  * buttons that choose where the next decoration goes.
  */
 export function BaseMock(p: { age: AgeId; look?: Partial<CosmeticLoadout>; anchor?: number; onAnchor?: (i: number) => void }) {
-  const { save, content, t } = useUi();
+  const { save, content, t, sound } = useUi();
   const eq = { ...equippedOf(save.value, content), ...p.look };
   const skin = eq.baseSkins[p.age] ?? null;
   const reduce = save.value.settings.reduceMotion;
@@ -212,7 +217,10 @@ export function BaseMock(p: { age: AgeId; look?: Partial<CosmeticLoadout>; ancho
             aria-pressed={p.anchor === i}
             aria-label={`${t(`cosmetic.ui.anchor.${i}`)}: ${k ? t(cosmeticNameKey('decoration', k.slice(11))) : t('cosmetic.ui.emptySpot')}`}
             data-testid={`anchor-${i}`}
-            onClick={() => p.onAnchor?.(i)}
+            onClick={() => {
+              sound?.('ui_toggle');
+              p.onAnchor?.(i);
+            }}
           >
             {inner}
           </button>

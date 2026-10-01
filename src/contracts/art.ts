@@ -103,6 +103,8 @@ export interface BackdropView {
   wipe(side: Side, age: AgeId, ms: number): void;
   update(dtMs: number): void;
   destroy(): void;
+  /** Weather lightning since the last call (lane x in lu), so the view can play its thunder. Optional. */
+  drainStrikes?(): readonly { side: Side; x: number }[];
 }
 
 export interface EffectView {

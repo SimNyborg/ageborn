@@ -125,6 +125,12 @@ export function createUiServices(d: UiServicesDeps): UiServices {
       }
       return o;
     },
+    previewDaily(difficulty) {
+      const s = d.save.value;
+      if (s.tutorial.step < 4) return null;
+      // The day's General and match seed are the same for everyone on that date (A9.1); cheap to draw.
+      return withLook(meta.pickOpponent(s, 'daily', content, clock, { daily: { difficulty } }));
+    },
     dailyModifier() {
       return meta.dailyModifier(content, clock);
     },

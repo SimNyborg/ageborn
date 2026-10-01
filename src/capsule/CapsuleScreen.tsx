@@ -349,8 +349,10 @@ function ShowScreen(p: ShowScreenProps) {
       onKeyUp={onKeyUp}
     >
       <div class={css.top}>
-        {/* The Starter Capsule's summary keeps to its cards (review: the guarantees box competed with them). */}
-        {pity.length > 0 && !(inSummary && p.scripted) ? <PityPanel lines={pity} t={t} onShowOdds={showOdds} /> : <span />}
+        {/* A Starter Capsule keeps to its cards (review: the guarantees box competed with them; FTUE audit
+            2026-10-01 #8: during the show too, where only the Odds button stays, A15.3). Its contents are
+            scripted; the guarantees show on every later capsule and in the Capsules tab. */}
+        {pity.length > 0 && !(inSummary && p.scripted) ? <PityPanel lines={p.scripted ? [] : pity} t={t} onShowOdds={showOdds} oddsOnly={p.scripted} /> : <span />}
         {opened && !inSummary && (amber > 0 || (dust > 0 && p.plan.mode === 'wardrobe')) ? <Counter value={amber > 0 ? amber : dust} dust={amber === 0} run={opened} delayMs={pourDelay} label={t(amber > 0 ? 'capsule.amber' : 'capsule.dust')} /> : null}
       </div>
       {p.kindLabel && !inSummary ? (
@@ -368,7 +370,7 @@ function ShowScreen(p: ShowScreenProps) {
           data-testid="capsule-tap"
           {...(state.kind === 'summitStrike' ? { role: 'status', 'aria-label': t('capsule.aria.summitStrike') } : {})}
         >
-          {t('capsule.tap')}
+          {t(p.scripted ? 'capsule.tapStarter' : 'capsule.tap')}
         </div>
       ) : null}
       {firstBanner ? (
@@ -427,6 +429,7 @@ function ShowScreen(p: ShowScreenProps) {
             ...(p.equippedNote ? { equippedNote: p.equippedNote } : {}),
             ...(p.upgradesTaught !== undefined ? { upgradesTaught: p.upgradesTaught } : {}),
             ...(p.doneLabel ? { doneLabel: p.doneLabel } : {}),
+            ...(p.altLabel && p.onAlt ? { altLabel: p.altLabel, onAlt: p.onAlt } : {}),
           }}
         />
       ) : null}
@@ -448,7 +451,7 @@ const PITY_COLORS: Record<string, number> = {
 };
 
 /** Pity counters, visible on every capsule screen (A6.5). */
-function PityPanel(p: { lines: PityLine[]; t: (k: string, o?: Record<string, string | number>) => string; onShowOdds: (() => void) | undefined }) {
+function PityPanel(p: { lines: PityLine[]; t: (k: string, o?: Record<string, string | number>) => string; onShowOdds: (() => void) | undefined; oddsOnly?: boolean }) {
   const prev = useRef<Map<string, number>>(new Map());
   const changed = new Set<string>();
   for (const l of p.lines) {
@@ -461,7 +464,7 @@ function PityPanel(p: { lines: PityLine[]; t: (k: string, o?: Record<string, str
   return (
     <div class={css.pity} data-testid="capsule-pity" onPointerDown={(e) => e.stopPropagation()} onPointerUp={(e) => e.stopPropagation()}>
       <div class={css.pityTitle}>
-        <span data-tag="">{p.t('capsule.pity.title')}</span>
+        {p.oddsOnly ? null : <span data-tag="">{p.t('capsule.pity.title')}</span>}
         {p.onShowOdds ? (
           <button class={css.odds} type="button" onClick={() => p.onShowOdds?.()}>
             {p.t('capsule.pity.odds')}

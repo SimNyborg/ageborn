@@ -72,6 +72,7 @@ export class AdaptiveHints {
     this.track(i);
     if (quiet || i.state.phase === 'ended') return null;
     if (i.state.tick - this.lastHintTick < ADAPTIVE.gapTicks) return null;
+    if (this.thisMatch.size >= ADAPTIVE.maxPerMatch) return null;
     for (const def of ADAPTIVE_HINTS) {
       if (this.disabled.has(def.id) || this.thisMatch.has(def.id) || (this.counts[def.id] ?? 0) >= ADAPTIVE.maxPerHint) continue;
       if (!this.matches(def.id, i)) continue;

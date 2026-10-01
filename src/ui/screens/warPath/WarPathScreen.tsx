@@ -28,7 +28,7 @@ import { formatInt } from '../../components/format';
 import { haptic } from '../../components/haptics';
 import { AmberIcon, BackIcon, CapsuleIcon, CardsIcon, StarIcon, SwordsIcon } from '../../components/icons';
 import { tierCrests } from '../../components/capsuleLook';
-import { useKit } from '../../components/kit';
+import { starPitchBp, useKit } from '../../components/kit';
 import { blockingOverlays } from '../../components/overlay';
 import type { MatchRequest, RouteOf } from '../../router';
 import { useUi } from '../context';
@@ -134,7 +134,7 @@ export function WarPathScreen(_p: { route: RouteOf<'warPath'> }) {
       for (let k = cer.from + 1; k <= cer.to; k++) {
         const d = (k - cer.from - 1) * T_STAR;
         at(tm + d + 140, () => {
-          kit.sound?.('star_stamp');
+          kit.sound?.('star_stamp', { pitchBp: starPitchBp(k) });
           haptic('tick');
         });
       }

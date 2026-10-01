@@ -35,11 +35,18 @@ export function fortFxRecipes(k: FxKit): FxRecipe[] {
     },
     {
       id: 'fx.fort_build_pop',
-      durationMs: 620,
-      sprites: [k.bloom(3.4, 380, 0xfff1d8, 0.55), { ...k.ring(3.6, 460, 0xfff6e6, 0.32), sizeWith: 'radius' }],
+      // The moment a fort is done (audit 2026-10-01: the old 5 stars read faint): a bright bloom, two
+      // rings, a fan of stars and glints thrown up, dust at the footing.
+      durationMs: 820,
+      sprites: [
+        k.bloom(4.6, 460, 0xfff1d8, 0.75),
+        { ...k.ring(4.4, 520, 0xfff6e6, 0.3), sizeWith: 'radius' },
+        { ...k.ring(3.2, 460, 0xffe6bc, 0.3), delay: 90, sizeWith: 'radius', blendAdd: true },
+      ],
       particles: [
-        { sprite: 'fx.p.star', count: 5, life: [380, 560], speed: [50, 110], angle: [-160, -20], spread: 16, gravity: 60, drag: 1.4, scale: [0.9, 0.3], alpha: [1, 0], tint: 0xfff4dc, blendAdd: true },
-        puffs(6, 1.1),
+        { sprite: 'fx.p.star', count: 10, life: [460, 720], speed: [80, 180], angle: [-165, -15], spread: 18, gravity: 140, drag: 1.2, scale: [1.2, 0.4], alpha: [1, 0], spin: [-240, 240], tint: 0xfff4dc, blendAdd: true },
+        { sprite: 'fx.p.glint', count: 4, life: [380, 600], speed: [30, 70], angle: [-120, -60], spread: 22, scale: [1.1, 0.3], alpha: [1, 0], tint: 0xffffff, blendAdd: true },
+        puffs(9, 1.3),
       ],
     },
     {

@@ -84,7 +84,8 @@ describe('match 1 retiming run (A8)', () => {
 
   it('shows every beat once, in order, with no drop-offs', () => {
     const shown = run.log.filter((e) => e.kind === 'beatShown').map((e) => e.id);
-    expect(shown).toEqual(MATCH1.beats.map((b) => b.id));
+    // The stall guard (`rearm`) never shows: the run stays on Charge.
+    expect(shown).toEqual(MATCH1.beats.filter((b) => !b.rearm).map((b) => b.id));
     expect(run.log.filter((e) => e.kind === 'beatTimeout' || e.kind === 'beatSkipped')).toEqual([]);
   });
 

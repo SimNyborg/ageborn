@@ -1724,3 +1724,4 @@ def alert_base(v, rng):
 # module, which registers into REGISTRY with the helpers above.
 import sounds_powers  # noqa: E402,F401
 import sounds_forts  # noqa: E402,F401
+import sounds_mvp  # noqa: E402,F401

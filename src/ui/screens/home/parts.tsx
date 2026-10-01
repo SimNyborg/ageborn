@@ -6,7 +6,7 @@ import { arenaNameKey, capsuleKindNameKey, questNameKey } from '@/content/keys';
 import type { QuestReward } from '@/content/types';
 import type { OpponentSpec } from '@/contracts';
 import type { ComponentChildren } from 'preact';
-import { useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { Avatar, GeneralPortrait } from '../../components/Avatar';
 import { Button, IconButton } from '../../components/Button';
 import { AiBadge, Badge, CurrencyChip } from '../../components/Chips';
@@ -409,8 +409,15 @@ export function CapsuleTray(p: { sheet?: boolean } = {}) {
  * Capsules tab, where the Sundial card shows "n of 34 ready" and when the next one is ready.
  */
 export function SundialChip() {
-  const { save, content, t, router, now } = useUi();
+  const { save, content, t, router, now, sound } = useUi();
   const ready = chargesView(save.value, content, now()).charges > 0;
+  // The glyph lighting up while Home is open answers with a soft chime (audit 2026-10-01); never on
+  // the first draw, so opening Home is not a nudge.
+  const was = useRef(ready);
+  useEffect(() => {
+    if (ready && !was.current) sound?.('glyph_light');
+    was.current = ready;
+  }, [ready]);
   return (
     <button
       type="button"

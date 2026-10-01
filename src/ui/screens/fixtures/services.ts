@@ -63,6 +63,11 @@ export function createPreviewServices(o: {
       const opp = fixtureOpponent(content, o.opponent ?? (save.value.lossStreak >= 3 ? 'warmUp' : 'general'));
       return format ? { ...opp, format } : opp;
     },
+    previewDaily(difficulty) {
+      log('previewDaily', difficulty);
+      if (save.value.matchesPlayed < 2) return null;
+      return { ...fixtureOpponent(content, 'general'), format: content.dailyModifiers.challenge.format };
+    },
     dailyModifier() {
       return content.dailyModifiers.order[0] ?? null;
     },

@@ -5,8 +5,9 @@
  *   the v7 migration sets it for every save that has played).
  * - The match rule: both sides always play the same slot set. The sim knows no unlock, so a locked
  *   Field slot is sent empty (`field: null`) for the player and for every bot. The Daily Challenge
- *   always plays both slots (a player whose Field slot is locked gets each age's Field starter for
- *   that match only). Until the HUD dock ships (P2, `FIELD_SLOT_IN_BATTLE`), every battle is Home only.
+ *   plays both slots once the Field slot is open, filling an empty one with the age's starter (MVP
+ *   2026-10-01: before, it gave a locked player a Field power that was never taught). The HUD dock
+ *   shipped (`FIELD_SLOT_IN_BATTLE` is on since the MVP pass).
  * - Bots only use powers a player at that point could own by either source (A2.9.8): starters; Trophy
  *   Road powers (the alternates and the War Path fallback items) whose node is ≤ the player's best
  *   trophies + 100; War Path powers whose granting level the player has first-cleared. War Path level
@@ -28,7 +29,10 @@ export function fieldSlotUnlocked(s: SaveDoc | null): boolean {
 /** Whether battles of this mode play the Field slot for this save (the match rule, A2.9.1). */
 export function fieldSlotLive(s: SaveDoc | null, mode: string, inBattle: boolean = FIELD_SLOT_IN_BATTLE): boolean {
   if (!inBattle) return false;
-  return mode === 'daily' || fieldSlotUnlocked(s);
+  // As the Fort slot (bug hunt 2026-10-01 #16): the Daily plays the Field slot once it is open, filling
+  // an empty one with the age's starter; before that no Field button shows before it is taught.
+  void mode;
+  return fieldSlotUnlocked(s);
 }
 
 /** The War Path level id of a region's level (`wp.stone.l05`). */

@@ -349,10 +349,17 @@
 }
 
 .hud-name-text {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--hud-dim);
+}
+/* Condensed to fit (fit.ts sets --fit and --fit-m) instead of an ellipsis. */
+.hud-name-fit {
+  display: inline-block;
+  margin: 0 var(--fit-m, 0px);
+  transform: scaleX(var(--fit, 1));
 }
 
 .hud-name-foe {

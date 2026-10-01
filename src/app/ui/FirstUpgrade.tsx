@@ -18,6 +18,7 @@ import { upgradeBlocker, upgradeCost } from '@/meta';
 import { asContent } from '@/content';
 import { isMetaRules } from '../uiServices';
 import { useApp } from './context';
+import { UI_SOUND_FALLBACK } from './MetaHost';
 import { Button } from '@/ui/components/Button';
 import { formatInt } from '@/ui/components/format';
 import { haptic } from '@/ui/components/haptics';
@@ -70,7 +71,7 @@ export function FirstUpgrade() {
       locale: 'en',
       portrait: ui.art.portrait.bind(ui.art),
       reduceMotion: reduce,
-      sound: (id: string) => ui.services.audio.play(id),
+      sound: (id: string, o?: { pitchBp?: number }) => ui.services.audio.play(UI_SOUND_FALLBACK[id] ?? id, o),
     }),
     [ui, reduce],
   );

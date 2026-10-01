@@ -68,6 +68,8 @@ async function start(root: HTMLElement): Promise<void> {
   });
   validateContentInDev();
   const { services, art, flags } = booted;
+  let artLoaded = false;
+  void booted.artReady.then(() => (artLoaded = true));
   const pixi = booted.pixi!;
   const views = new Map<Sim, BattleView>();
   // The view reads the settings when a battle starts, so Settings changes apply to the next battle.
@@ -148,6 +150,7 @@ async function start(root: HTMLElement): Promise<void> {
       return art.portrait(req);
     },
     t: (key, params) => services.i18n.t(key, params),
+    artReady: () => (artLoaded ? null : booted.artReady),
     download: (file) => {
       const url = URL.createObjectURL(new Blob([file.text], { type: file.mime }));
       const a = document.createElement('a');
@@ -197,7 +200,38 @@ async function start(root: HTMLElement): Promise<void> {
       },
     };
   }
+  await stylesReady();
   render(<AppRoot ui={ui} />, uiHost);
+  hideSplash();
+}
+
+/**
+ * Resolves once the built stylesheets have applied (`vite.config.ts` loads them without blocking the
+ * splash). In the dev server there are none to wait for. Gives up after 15 s rather than never drawing.
+ */
+function stylesReady(): Promise<void> {
+  const links = Array.from(document.querySelectorAll<HTMLLinkElement>('link[data-style]'));
+  if (links.length === 0) return Promise.resolve();
+  return new Promise((resolve) => {
+    const t0 = performance.now();
+    const check = (): void => {
+      if (links.every((l) => l.rel === 'stylesheet' && l.sheet !== null) || performance.now() - t0 > 15_000) resolve();
+      else setTimeout(check, 16);
+    };
+    check();
+  });
+}
+
+/** Fades out the static splash of index.html once the first screen has painted (two frames later). */
+function hideSplash(): void {
+  const el = document.getElementById('splash');
+  if (!el) return;
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => {
+      el.classList.add('is-out');
+      setTimeout(() => el.remove(), 400);
+    }),
+  );
 }
 
 const root = document.getElementById('app');
@@ -206,7 +240,13 @@ if (!root) throw new Error('#app element missing');
 /** `?dev=1` shows the dev page list, unless the game is asked for (`&autopilot=1` or `&game=1`). */
 const devGame = bootFlags(window.location.search).autopilot || new URLSearchParams(window.location.search).get('game') === '1';
 if (isDevMode() && !devGame) {
-  render(<DevRouter />, root);
+  void stylesReady().then(() => {
+    render(<DevRouter />, root);
+    hideSplash();
+  });
 } else {
-  void start(root);
+  void start(root).catch((e: unknown) => {
+    hideSplash();
+    throw e;
+  });
 }

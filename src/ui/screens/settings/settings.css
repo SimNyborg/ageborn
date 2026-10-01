@@ -23,6 +23,23 @@
   gap: 14px;
   align-items: start;
 }
+/* About comes last on the grid (it sits third in the markup so the phone columns balance). */
+.set-grid > [data-testid='set-about'] {
+  order: 5;
+}
+/* Bug hunt 2026-10-01 #26: on phones the grid's rows left a large empty right column (the panels differ
+   in height); two balanced columns let each panel follow the one above it. */
+@container ui-root (max-height: 480px) {
+  .set-grid {
+    display: block;
+    columns: 2;
+    column-gap: 14px;
+  }
+  .set-grid > * {
+    break-inside: avoid;
+    margin-bottom: 14px;
+  }
+}
 .set-grid .ui-panel__body {
   display: flex;
   flex-direction: column;

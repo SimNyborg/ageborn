@@ -44,6 +44,12 @@ export interface BakerOptions {
   /** Pixels per lu in the atlas (world scale x min(devicePixelRatio, 2)). */
   pxPerLu: number;
   pageSize?: number;
+  /**
+   * Page size for parts baked one at a time while a battle runs (after `seal()`), default 512. A new
+   * part on a 2048 page re-uploaded the whole 16 MB page (perf audit 2026-10-01: about 30 uploads a
+   * minute, 20-50 ms each on a phone); on a 512 page the upload is 1 MB.
+   */
+  runtimePageSize?: number;
   /** Returns a canvas, or null when there is no DOM. */
   canvasFactory?: (w: number, h: number) => HTMLCanvasElement | OffscreenCanvas | null;
 }
@@ -56,6 +62,10 @@ interface Page {
   y: number;
   shelfH: number;
   dirty: boolean;
+  /** Width and height in px. */
+  size: number;
+  /** A small page for one-at-a-time bakes (see `BakerOptions.runtimePageSize`). */
+  runtime: boolean;
 }
 
 const PAD = 2;
@@ -83,11 +93,16 @@ export class PartBaker {
   private readonly cache = new Map<string, BakedPart>();
   private readonly pages: Page[] = [];
   private readonly pageSize: number;
+  private readonly runtimePageSize: number;
+  /** Bulk bakes (boot, an age's preload) fill the big pages; after `seal()` single bakes use small ones. */
+  private sealed = false;
+  private bulkDepth = 0;
   private readonly makeCanvas: (w: number, h: number) => HTMLCanvasElement | OffscreenCanvas | null;
   readonly enabled: boolean;
 
   constructor(readonly o: BakerOptions) {
     this.pageSize = o.pageSize ?? 2048;
+    this.runtimePageSize = Math.min(this.pageSize, o.runtimePageSize ?? 512);
     this.makeCanvas = o.canvasFactory ?? defaultCanvas;
     this.enabled = this.makeCanvas(1, 1) !== null;
   }
@@ -119,6 +134,24 @@ export class PartBaker {
     this.cache.set(key, baked);
     this.stats.parts++;
     return baked;
+  }
+
+  /**
+   * Ends the boot bake: from now on a part baked on its own (an effect seen for the first time) goes
+   * to a small page, so its upload stays small. `bulk()` bakes still fill the big pages.
+   */
+  seal(): void {
+    this.sealed = true;
+  }
+
+  /** Runs a bulk bake (an age's preload): its parts go to the big pages and upload once at the end. */
+  async bulk<T>(run: () => Promise<T> | T): Promise<T> {
+    this.bulkDepth++;
+    try {
+      return await run();
+    } finally {
+      this.bulkDepth--;
+    }
   }
 
   /** Uploads pages that changed since the last flush. */
@@ -178,16 +211,30 @@ export class PartBaker {
   }
 
   private alloc(w: number, h: number): { page: Page; x: number; y: number } | null {
-    const size = this.pageSize;
-    if (w > size || h > size) return null;
-    let page = this.pages[this.pages.length - 1];
+    if (w > this.pageSize || h > this.pageSize) return null;
+    const runtime = this.sealed && this.bulkDepth === 0;
+    // a runtime part too big for a small page gets a page of its own size class
+    let want = this.pageSize;
+    if (runtime) {
+      want = this.runtimePageSize;
+      while (want < this.pageSize && (w > want || h > want)) want *= 2;
+    }
+    let page: Page | undefined;
+    for (let i = this.pages.length - 1; i >= 0; i--) {
+      const p = this.pages[i]!;
+      if (p.runtime === runtime && p.size === want) {
+        page = p;
+        break;
+      }
+    }
+    const size = want;
     if (page && page.x + w > size) {
       page.x = 0;
       page.y += page.shelfH;
       page.shelfH = 0;
     }
     if (!page || page.y + h > size) {
-      const fresh = this.newPage();
+      const fresh = this.newPage(size, runtime);
       if (!fresh) return null;
       page = fresh;
     }
@@ -198,8 +245,8 @@ export class PartBaker {
     return { page, x, y };
   }
 
-  private newPage(): Page | null {
-    const canvas = this.makeCanvas(this.pageSize, this.pageSize);
+  private newPage(size: number, runtime: boolean): Page | null {
+    const canvas = this.makeCanvas(size, size);
     if (!canvas) return null;
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D | null;
     if (!ctx) return null;
@@ -207,7 +254,7 @@ export class PartBaker {
     // sizes read in lu.
     const source = new CanvasSource({ resource: canvas, resolution: 1 });
     source.resolution = this.o.pxPerLu;
-    const page: Page = { canvas, ctx, source, x: 0, y: 0, shelfH: 0, dirty: false };
+    const page: Page = { canvas, ctx, source, x: 0, y: 0, shelfH: 0, dirty: false, size, runtime };
     this.pages.push(page);
     this.stats.pages++;
     return page;

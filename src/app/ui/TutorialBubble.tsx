@@ -21,6 +21,7 @@ const TESTID: Partial<Record<PromptTarget, string>> = {
   evolve: 'hud-evolve',
   power: 'hud-power',
   stance: 'hud-stance',
+  stanceCharge: 'hud-stance-charge',
   lastStand: 'hud-laststand',
   minimap: 'hud-minimap-strip',
 };
@@ -49,9 +50,29 @@ export interface BubblePos {
   arrow: number;
 }
 
+/**
+ * The Council beat's target as the player goes (MVP fix 2026-10-01: the ring stayed on the gold while
+ * the sheet was open): the selected Economy pick (tap again), else its first ready pick, else Back
+ * (another line is open), else the Economy track (the overview), else the Council button.
+ */
+const COUNCIL_STEPS = [
+  '[data-testid="hud-council-line-economy"] .hud-pick.is-selected',
+  '[data-testid="hud-council-line-economy"] .hud-pick.is-ready',
+  '[data-testid="hud-council-sheet"] [data-testid="hud-council-back"]',
+  '[data-testid="hud-track-economy"]',
+  '[data-testid="hud-council"]',
+];
+
 function targetRect(root: HTMLElement, target: PromptTarget | null, view: BattleView | undefined, mountsOwned: number): Rect | null {
   if (!target) return null;
   const box = root.getBoundingClientRect();
+  if (target === 'council') {
+    for (const q of COUNCIL_STEPS) {
+      const r = root.querySelector<HTMLElement>(q)?.getBoundingClientRect();
+      if (r && r.width > 0) return { x: r.left - box.left, y: r.top - box.top, w: r.width, h: r.height };
+    }
+    return null;
+  }
   const id = TESTID[target];
   if (id) {
     const el = root.querySelector<HTMLElement>(`[data-testid="${id}"]`);
@@ -181,16 +202,32 @@ export function TutorialBubble(p: {
     return () => view.cameraHold('tutorial', false);
   }, [onBase, view, prompt?.id]);
 
+  // The power drag beat brings a legal drop point into view and holds the camera there while it shows,
+  // so the hand never demonstrates a drop into the enemy half (MVP fix 2026-10-01).
+  const dragBeat = prompt?.hand === 'powerDrag';
+  useEffect(() => {
+    if (!dragBeat || !view) return undefined;
+    view.powerAimScreen('home', true);
+    view.cameraHold('tutorial', true);
+    return () => view.cameraHold('tutorial', false);
+  }, [dragBeat, view, prompt?.id]);
+
   // Follow the target (HUD layout and the camera move); cheap, and only while a prompt shows.
+  const [aim, setAim] = useState<{ x: number; y: number } | null>(null);
   useEffect(() => {
     if (!prompt || !root) {
       setRect(null);
+      setAim(null);
       return undefined;
     }
     let raf = 0;
     const tick = (): void => {
       const r = targetRect(root, prompt.target, view, mountsOwned);
       setRect((old) => (old && r && Math.abs(old.x - r.x) < 0.5 && Math.abs(old.y - r.y) < 0.5 && old.w === r.w && old.h === r.h ? old : r));
+      if (prompt.hand === 'powerDrag') {
+        const a = view ? view.powerAimScreen('home') : null;
+        setAim((old) => (old && a && Math.abs(old.x - a.x) < 2 && Math.abs(old.y - a.y) < 2 ? old : a));
+      }
       raf = requestAnimationFrame(tick);
     };
     tick();
@@ -260,8 +297,8 @@ export function TutorialBubble(p: {
           style={{
             left: `${Math.round(rect.x + rect.w / 2 - TIP.x)}px`,
             top: `${Math.round(rect.y + rect.h / 2 - TIP.y)}px`,
-            ['--ab-dx' as string]: `${-Math.round(rect.x + rect.w / 2 - W * 0.62)}px`,
-            ['--ab-dy' as string]: `${-Math.round(rect.y + rect.h / 2 - H * 0.55)}px`,
+            ['--ab-dx' as string]: `${Math.round((aim ? Math.max(24, Math.min(W - 24, aim.x)) : W * 0.4) - (rect.x + rect.w / 2))}px`,
+            ['--ab-dy' as string]: `${Math.round((aim ? aim.y : H * 0.55) - (rect.y + rect.h / 2))}px`,
           }}
         >
           <Hand />

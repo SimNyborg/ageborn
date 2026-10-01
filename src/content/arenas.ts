@@ -107,7 +107,10 @@ export const arenas: ArenaTables = {
     mmr: { start: 1000, k: 32, tierRatingBase: 800, tierRatingStep: 100, tierOffset: 870, tierDivisor: 100 },
     maxTier: 10,
     // Owner feedback 2026-09-28: the Rookie AI handicap covers the two onboarding matches only (was 20).
-    newPlayer: { matches: 2, mistakeBonusBp: 1000 },
+    // MVP fix 2026-10-01 (bug hunt S1 #5, FTUE #4): new players lost match 2 vs Pip half the time. Measured
+    // (scratch lab, 30-40 seeds, starter plan L1 vs Pip tier 0, Short War): random spam won 43% at 1,000,
+    // 87-90% at 3,000-4,000 and 100% at 5,000 (median 5:02; power spam and "a few, then evolve" 100%).
+    newPlayer: { matches: 2, mistakeBonusBp: 5000 },
     levelRollBp: { minus: 2500, zero: 5000, plus: 2500 },
     standardLevel: 7,
   },

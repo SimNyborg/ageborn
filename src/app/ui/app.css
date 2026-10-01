@@ -1009,7 +1009,7 @@
 }
 
 .ab-age__panel {
-  width: min(520px, 92vw);
+  width: min(660px, 94vw);
   padding-top: 18px;
 }
 
@@ -1041,7 +1041,9 @@
 
 .ab-age__list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  /* MVP fix 2026-10-01: long age names ("Industrial Age: Great War") pushed buttons over their
+     neighbours on phones; each cell is wide enough for the longest name on one line. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
   gap: 10px;
   width: 100%;
 }
@@ -1051,13 +1053,44 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
+  min-width: 0;
   padding: 10px 14px;
   min-height: 60px;
   animation: ab-rise 260ms var(--ui-ease-back, ease-out) both;
 }
 
 .ab-age__name {
-  font-size: 18px;
+  font-size: 16px;
+}
+
+/* Phone landscape: no capsule art, three columns, everything fits above the fold. */
+@media (max-height: 480px) {
+  .ab-age__panel {
+    width: min(800px, 96vw);
+    max-height: calc(100dvh - 16px);
+    padding: 10px 14px 14px;
+    gap: 8px;
+  }
+  .ab-age__capsule {
+    display: none;
+  }
+  .ab-age__title {
+    font-size: 22px !important;
+  }
+  .ab-age__lead {
+    font-size: 13px;
+  }
+  .ab-age__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .ab-age__btn {
+    min-height: 52px;
+    padding: 6px 4px;
+  }
+  .ab-age__name {
+    font-size: 14px;
+  }
 }
 
 .ab-age__hint {

@@ -370,6 +370,13 @@ export function Minimap(p: { c: HudCtx }) {
     if (!view?.minimap) return undefined;
     let raf = 0;
     let last = -Infinity;
+    // Size and team colours are read on resize (and about once a second), not every frame: a layout
+    // or style read after the HUD's style writes forced a synchronous layout each frame (perf audit).
+    let size: { w: number; h: number } | null = null;
+    let colors: { me: string; foe: string } | null = null;
+    let readAt = -Infinity;
+    const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(() => (size = null)) : null;
+    if (canvas.current) ro?.observe(canvas.current);
     const frame = (now: number): void => {
       raf = requestAnimationFrame(frame);
       if (now - last < MINIMAP_FRAME_MS) return;
@@ -378,9 +385,16 @@ export function Minimap(p: { c: HudCtx }) {
       snap.current = m;
       const el = canvas.current;
       if (!m || !el) return;
-      const w = el.clientWidth;
-      const h = el.clientHeight;
-      if (w <= 0 || h <= 0) return;
+      if (!size || !colors || !ro || now - readAt > 1000) {
+        size = { w: el.clientWidth, h: el.clientHeight };
+        colors = { me: cssVar(el, '--hud-me', '#3b82f6'), foe: cssVar(el, '--hud-foe', '#f97316') };
+        readAt = now;
+      }
+      const { w, h } = size;
+      if (w <= 0 || h <= 0) {
+        size = null;
+        return;
+      }
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       const bw = Math.round(w * dpr);
       const bh = Math.round(h * dpr);
@@ -391,7 +405,7 @@ export function Minimap(p: { c: HudCtx }) {
       const g = el.getContext('2d');
       if (g) {
         g.setTransform(dpr, 0, 0, dpr, 0, 0);
-        drawMinimap(g, m, w, h, { me: cssVar(el, '--hud-me', '#3b82f6'), foe: cssVar(el, '--hud-foe', '#f97316') }, now, h >= 20, flag.current, forts.current);
+        drawMinimap(g, m, w, h, colors, now, h >= 20, flag.current, forts.current);
       }
       const next = stripUi(m);
       if (!sameUi(uiRef.current, next)) {
@@ -400,7 +414,10 @@ export function Minimap(p: { c: HudCtx }) {
       }
     };
     raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro?.disconnect();
+    };
   }, [view]);
 
   if (!view?.minimap) return null;

@@ -80,6 +80,12 @@ export interface TierParams {
   waveCommit: boolean;
   baseTurrets: number;
   /**
+   * Reads a held enemy line (MVP balance pass 2026-10-01, the `flag_ball` row of A18.12): while the
+   * enemy Holds, its ground army standing in its own half counts in the push gate's D, so the bot masses
+   * to beat the ball (or meets its charge at home) instead of feeding it units one wave at a time.
+   */
+  readsHeldLine: boolean;
+  /**
    * War Council use (A18.5.8): the first research start, the least time between two starts, and how
    * the pick is made (0-I at random, II-IV by `aiHint`, V and up by counter scoring on the visible army).
    */
@@ -221,6 +227,7 @@ export function tierParams(tier: number): TierParams {
     econPlan: t >= CRAFT_FROM * 100,
     waveCommit: t >= CRAFT_FROM * 100,
     baseTurrets: t >= 800 ? 2 : t >= CRAFT_FROM * 100 ? 1 : 0,
+    readsHeldLine: t >= CRAFT_FROM * 100,
     // A18.5.8 tier columns: first research after 1:30 (0-I), 1:00 (II-IV), 0:45 (V-VI), 0:30 (VII-X)
     researchFromTicks: msToTicks(t < 200 ? 90000 : t < 500 ? 60000 : t < 700 ? 45000 : 30000),
     researchGapTicks: msToTicks(t < 200 ? 90000 : t < 500 ? 65000 : t < 700 ? 50000 : 45000),

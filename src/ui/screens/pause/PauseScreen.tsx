@@ -40,7 +40,7 @@ export function PauseScreen(p: { route: RouteOf<'pause'> }) {
         </header>
         <div class="pause__body" data-scroll="">
           <div class="pause__scouted" data-testid="pause-scouted">
-            <h2 class="pause__sub">
+            <h2 class="pause__sub pause__sub--enemy">
               <EyeIcon size={22} /> {t('ui.pause.scouted', { n: tiles.length })}
             </h2>
             {tiles.length === 0 ? (
@@ -48,7 +48,7 @@ export function PauseScreen(p: { route: RouteOf<'pause'> }) {
             ) : (
               <div class="pause__cards">
                 {tiles.map((c) => (
-                  <CardTile key={c.id} card={c} size="md" hideLevel />
+                  <CardTile key={c.id} card={c} size="xs" hideLevel enemy />
                 ))}
               </div>
             )}

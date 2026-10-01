@@ -237,6 +237,12 @@ const HOLD_RATIO_BP = 7000;
 const HOLD_MIN_TURRETS = 2;
 const HOLD_MONO_BP = 20000;
 const HOLD_MONO_ARMY = 450;
+/** A held enemy line worth this much (whole gold) is a ball (`readsHeldLine`) ... */
+const BALL_MIN_VALUE = 300;
+/** ... remembered this long once it releases ... */
+const BALL_MEMORY_TICKS = 30 * TICKS_PER_SECOND;
+/** ... and met at home unless the bot's army is this much bigger (bp). */
+const BALL_OUTMATCH_BP = 13000;
 /** Holding on a failed push gate needs a Hold weight of at least 20 (m_hold 0.7). */
 const HOLD_ON_GATE_BP = 7000;
 /** Attack clock: after 60 s without passing mid-lane, train scores +10% per 5 s (capped at ×3). */
@@ -374,6 +380,17 @@ export function heavyDominant(foes: readonly { value: number; def?: { group: Rol
   return all >= HEAVY_ANSWER_MIN_VALUE && heavy * 2 >= all;
 }
 
+/**
+ * The value of a held enemy line: trained enemy ground units (no summons, levies or air) standing in
+ * the enemy's half from mid-lane up to `to` (bot frame, milli-lu). The gate zone beyond `to` is already
+ * in the push gate's D.
+ */
+export function heldLineValue(v: View, mid: number, to: number): number {
+  let sum = 0;
+  for (const u of v.foes) if (!u.air && !u.summoned && !u.levy && u.p >= mid && u.p < to) sum += u.value;
+  return sum;
+}
+
 /** When income research is worth buying on a quiet lane (see TREASURY_BEFORE_TICKS). */
 function incomeTiming(clock: MatchClock): { before: number; paybackBy: number } {
   const od = clock.overdrive;
@@ -408,6 +425,8 @@ export class Brain {
   private baitCooldownUntil = 0;
   /** The age a camp was last placed in (A16.14.7: once per age stay), or null. */
   private campAge: number | null = null;
+  /** When a held enemy line worth {@link BALL_MIN_VALUE} or more was last seen (`readsHeldLine`). */
+  private ballSeenTick = -1000000;
   /** Own camp ids already seen (`trackCamps`). */
   private readonly seenCamps = new Set<number>();
   private readonly opening: OpeningPlan;
@@ -445,7 +464,13 @@ export class Brain {
     const gateUnits = v.now >= OPENING_TICKS ? foeValueIn(v, LANE_MLU - GATE_ZONE, LANE_MLU) : 0;
     // A16.14.7: enemy walls and towers near their gate add 2 × their price, camps and traps 1 × (forts
     // are never in `v.foes`, so `gateUnits` never counts them twice).
-    const defence = gateUnits + TURRET_DEFENCE * foeTurrets + fortDefence(v.foeForts, v.foeTraps);
+    // A held enemy line (VI+, `readsHeldLine`): while the enemy Holds, its ground army in its own half
+    // short of the gate zone also stands between the wave and the gate (the `flag_ball` row, A18.12).
+    // It only holds the charge back: the bank is sized on the fixed defence (an army that can march at any
+    // moment is met by training up at home, not by banking), and the pop cap goes only at parity with it.
+    const heldLine = t.readsHeldLine && obs.foe.stance === 'hold' ? heldLineValue(v, e.midLane, LANE_MLU - GATE_ZONE) : 0;
+    const fixedDefence = gateUnits + TURRET_DEFENCE * foeTurrets + fortDefence(v.foeForts, v.foeTraps);
+    const defence = fixedDefence + heldLine;
     // Attack clock (A7.2): after 60 s without a ground unit past mid-lane, train scores rise 10% per 5 s,
     // and the push gate relaxes by 0.1 per 5 s down to parity, so two banking bots cannot stall a match.
     const quiet = v.now - mem.pastMidTick;
@@ -462,7 +487,7 @@ export class Brain {
     const foeHomeReady = foeHomeArea && (foeHome?.ppm ?? 0) >= PPM;
     if (t.readsRings && foeHomeReady && !hot) gateBp = mulBp(gateBp, RING_GATE_BP);
     // An army at the pop cap cannot grow by banking, so it goes.
-    const popFull = v.popCommitted + POP_FULL_MARGIN >= e.popCap;
+    const popFull = v.popCommitted + POP_FULL_MARGIN >= e.popCap && v.myArmy >= heldLine;
     // A18.6 (Normal and up): an army 1.5× the enemy's that can soak its turrets goes, whatever the gate.
     const thin = t.punishThin && v.myArmy >= THIN_MIN_ARMY && v.myArmy * BP >= THIN_RATIO_BP * v.foeArmy && v.myArmy >= TURRET_DEFENCE * foeTurrets;
     let pushOk = siege || popFull || thin || v.myArmy * BP >= gateBp * defence;
@@ -492,7 +517,13 @@ export class Brain {
     // (below its cap), a preference for range ≥ 250, a Hold at the line where the tier allows it, and no
     // training until its gold can lift the army over the gate in one wave, which it then spends at once.
     const gateFailed = !pushOk && !foeOnMyHalf && !allIn;
-    const waveGold = mulBp(t.waveCommit ? mulBp(gateBp, WAVE_MARGIN_BP) : gateBp, defence) - v.myArmy;
+    const waveGold = mulBp(t.waveCommit ? mulBp(gateBp, WAVE_MARGIN_BP) : gateBp, fixedDefence) - v.myArmy;
+    // Facing a held line it cannot beat yet: hold inside the turret cover and train up to meet its charge.
+    const facingBall = heldLine > 0 && gateFailed;
+    if (heldLine >= BALL_MIN_VALUE) this.ballSeenTick = v.now;
+    // The ball released (its army comes into the bot's half within 30 s of holding its line): unless
+    // clearly stronger, meet it inside the turret cover instead of charging out into the open field.
+    const ballCharging = foeOnMyHalf && v.now - this.ballSeenTick <= BALL_MEMORY_TICKS && v.myArmy * BP < BALL_OUTMATCH_BP * v.foeArmy;
     const capGold = Math.max(0, e.popCap - POP_FULL_MARGIN - v.popCommitted) * GOLD_PER_POP;
     const banking = gateFailed && v.gold < Math.min(waveGold, capGold) * MILLI;
     let wave = gateFailed && !banking;
@@ -519,7 +550,7 @@ export class Brain {
     // works with the gold already saved): while the enemy's Home area power is ready, a wave the gate
     // would send waits until 500 is banked (measured: tier VII vs V Standard Bell 41% → 31%, same wins).
     let baitHold = false;
-    if (baitOn && !this.bait && v.now >= this.baitCooldownUntil && foeHomeLoaded && (pushOk || wave) && v.gold < BAIT_BANK && !foeOnMyHalf && !urgent && !hot && !allIn) {
+    if (baitOn && !this.bait && v.now >= this.baitCooldownUntil && foeHomeLoaded && (pushOk || wave) && !facingBall && v.gold < BAIT_BANK && !foeOnMyHalf && !urgent && !hot && !allIn) {
       wave = false;
       baitHold = true;
     }
@@ -722,10 +753,10 @@ export class Brain {
       // then only dragged mirrors to the Final Bell (tier VIII mirror, Standard: 75% → 86%).
       const falling =
         t.fallback && !hot && !allIn && v.myArmy > 0 && v.foeArmy >= FALLBACK_MIN_FOE && v.myArmy * BP < FALLBACK_RATIO_BP * v.foeArmy && v.foeFront !== null && v.foeFront < e.turretCover + FALLBACK_REACH;
-      const wantHold = !siege && !allIn && (weak || (gateFailed && W.hold >= HOLD_ON_GATE_BP));
+      const wantHold = !siege && !allIn && (weak || ballCharging || (gateFailed && W.hold >= HOLD_ON_GATE_BP));
       const want = baiting ? 'charge' : falling ? 'fallback' : wantHold ? 'hold' : 'charge';
       if (want !== v.stance) {
-        const spot = want === 'hold' && t.movesFlag ? this.flagSpot(v, weak) : null;
+        const spot = want === 'hold' && t.movesFlag ? this.flagSpot(v, weak || facingBall || ballCharging) : null;
         add(spot !== null && spot * MILLI !== v.holdP ? { kind: 'stance', stance: want, holdP: spot } : { kind: 'stance', stance: want }, SCORE.stance);
       } else if (want !== 'charge' && v.now - this.stanceTick >= OVERCOMMIT_AFTER_TICKS) {
         opts.overCommit = { kind: 'stance', stance: 'charge' };
@@ -733,7 +764,7 @@ export class Brain {
     }
     // Hold flag moves while Holding (no stance cooldown, at most once per 1 s).
     if (stanceTier && t.movesFlag && v.stance === 'hold' && v.flagReady && !siege) {
-      const spot = this.flagSpot(v, weak);
+      const spot = this.flagSpot(v, weak || facingBall || ballCharging);
       if (Math.abs(spot * MILLI - v.holdP) >= FLAG_MIN_MOVE) add({ kind: 'flag', holdP: spot }, SCORE.flag);
     }
 

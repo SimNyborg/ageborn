@@ -264,6 +264,10 @@
     0 0 0 2px var(--ui-bg),
     0 2px 4px rgba(0, 0, 0, 0.5);
 }
+/* An opponent's card (the Pause Scouted list): a red team band under the frame. */
+.ui-card.is-enemy .ui-card__frame {
+  box-shadow: 0 0 0 2px #e2483a, 0 3px 0 #7d1d16;
+}
 .ui-card.is-equipped::after {
   content: '';
   display: block;

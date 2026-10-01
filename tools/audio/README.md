@@ -11,7 +11,7 @@ The output is:
 |---|---|---|
 | Sound effects | `public/audio/sfx/<group>.<hash>.ogg` | one mono Ogg Opus sprite sheet per sound group (40 kbps), starting with a sync burst |
 | Music | `public/audio/music/<cue>.<hash>.ogg` | Ogg Opus, stereo 48 kbps (battle, menu, capsule), 56 kbps (stingers); layer stems mono 40 kbps |
-| AAC copies | `public/audio/*/<name>.<hash>.m4a` | AAC-LC: music 96 kbps stereo, sheets 64 kbps mono, stems 48 kbps mono (for browsers without Ogg Opus) |
+| AAC copies | `public/audio/*/<name>.<hash>.m4a` | AAC-LC: music 56 kbps stereo, sheets 48 kbps mono, stems 40 kbps mono (for browsers without Ogg Opus; B16 music budget) |
 | Runtime manifest | `src/audio/assets.gen.ts` | generated: sheets (with `alt` and `sync`), per-id variant offsets, music files (with `alt`) and loop windows |
 
 The game (`src/audio/files.ts`, `service.ts`, `musicEngine.ts`) plays these files through Web Audio

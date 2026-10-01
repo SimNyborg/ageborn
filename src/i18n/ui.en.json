@@ -156,6 +156,7 @@
       "picked": "You picked this difficulty: no Rookie AI."
     },
     "home": {
+      "gameName": "Ageborn",
       "title": "Home",
       "suggested": "Next: {name}",
       "openProfile": "Open your profile",
@@ -336,6 +337,7 @@
       "level": "Level {n} · {name}",
       "vs": "VS",
       "tier": "Tier {tier}",
+      "tierRookie": "Rookie",
       "aiLevel": "Lv {n}",
       "planLevel": "Plan Lv {n}",
       "planLevelNone": "Plan Lv -",
@@ -346,6 +348,7 @@
         "ladder": "Ladder",
         "conquest": "Conquest",
         "skirmish": "Skirmish",
+        "quick": "Quick Battle",
         "daily": "Daily Challenge",
         "warPath": "War Path"
       },
@@ -359,7 +362,7 @@
       "retreatLocked": "Retreat unlocks at {time}",
       "retreatTitle": "Retreat?",
       "retreatBody": "Retreating counts as a loss and claims no Sundial Capsule.",
-      "quitSkirmish": "Quit Skirmish",
+      "quitSkirmish": "Quit battle",
       "quitBody": "Leave this Skirmish? It gives no rewards.",
       "scouted": "Scouted ({n})",
       "scoutedNone": "Their cards appear here once they play them."
@@ -541,7 +544,8 @@
     "collection": {
       "cards": "Cards",
       "skins": "Skins",
-      "foils": "{n} foils"
+      "foils": "{n} foils",
+      "foilsOne": "1 foil"
     },
     "road": {
       "best": "Best {n}",
@@ -595,7 +599,7 @@
       "legendaries": "Legendaries",
       "conquestStars": "Conquest stars",
       "fastestWin": "Fastest win",
-      "futureReached": "Cosmic Age reached",
+      "futureReached": "Wars that reached the Cosmic Age",
       "favourite": "Favourite card",
       "byTier": "Results by AI tier",
       "wl": "{w}W {l}L",

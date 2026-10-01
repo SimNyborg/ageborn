@@ -32,7 +32,11 @@ export function fortSlotUnlocked(s: SaveDoc | null): boolean {
 /** Whether battles of this mode play the Fort slot for this save (the match rule, A16.14.6). */
 export function fortSlotLive(s: SaveDoc | null, mode: string, inBattle: boolean = FORT_SLOT_IN_BATTLE): boolean {
   if (!inBattle) return false;
-  return mode === 'daily' || fortSlotUnlocked(s);
+  // Bug hunt 2026-10-01 #16: the Daily used to play the slot for everyone, so a player without forts
+  // got a wall and "Drag a wall onto a glowing pad" before forts were taught (ui-plan 2.6). Now the
+  // Daily plays it once the slot is open (and still fills an empty one with the age's wall).
+  void mode;
+  return fortSlotUnlocked(s);
 }
 
 /** The War Path level id of a region's level (`wp.bronze.l04`). */

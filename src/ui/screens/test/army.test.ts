@@ -290,23 +290,22 @@ describe('the Field power slot on the Army screen (A2.9.1, A2.9.13)', () => {
   it('stays locked until battles play it, even for a save that earned it, and says why', () => {
     const earned = { ...mid, flags: { ...mid.flags, 'power.field': true } };
     const fresh = { ...mid, flags: { ...mid.flags, 'power.field': false } };
-    // P1: no battle sends a Field power, so the Army never shows one as equipped
-    expect(fieldSlotOpen(earned)).toBe(false);
-    expect(fieldSlotLockKeys(earned)).toEqual({ line: 'ui.power.fieldSoon', short: 'ui.power.fieldSoonShort' });
-    expect(fieldSlotLockKeys(fresh)).toEqual({ line: 'ui.power.lockedField', short: 'ui.power.lockedFieldShort' });
-    // P2 turns battles on: the flag opens it
-    expect(fieldSlotOpen(earned, true)).toBe(true);
-    expect(fieldSlotOpen(fresh, true)).toBe(false);
+    // With battles off, no battle sends a Field power, so the Army never shows one as equipped
+    expect(fieldSlotOpen(earned, false)).toBe(false);
+    expect(fieldSlotLockKeys(earned, false)).toEqual({ line: 'ui.power.fieldSoon', short: 'ui.power.fieldSoonShort' });
+    expect(fieldSlotLockKeys(fresh, false)).toEqual({ line: 'ui.power.lockedField', short: 'ui.power.lockedFieldShort' });
+    // MVP 2026-10-01: battles play it, so the flag opens it (never "Coming soon")
+    expect(fieldSlotOpen(earned)).toBe(true);
+    expect(fieldSlotOpen(fresh)).toBe(false);
+    expect(fieldSlotLockKeys(earned)).toEqual({ line: 'ui.power.lockedField', short: 'ui.power.lockedFieldShort' });
   });
 
-  it('a Field power kept in the locked slot is not listed "In army"', () => {
+  it('an earned Field slot is open on the Army and never says "Coming soon"', () => {
     const save = { ...mid, flags: { ...mid.flags, 'power.field': true } };
     const m = mount({ save, routes: [{ id: 'home' }, { id: 'warPlan', age: 'stone' }] });
     const field = m.save.value.warPlans[m.save.value.activePlan]?.loadouts.stone?.powers.field ?? null;
     expect(field).not.toBeNull();
-    // the grid card of the kept Field power is not marked equipped, and the slot says why it is shut
-    expect(m.q(`[data-testid="cand-${field}"]`)?.getAttribute('class') ?? '').not.toContain('is-equipped');
-    expect(text(m.q('[data-testid="slot-power-field"]')!)).toContain('Coming soon');
+    expect(text(m.q('[data-testid="slot-power-field"]')!)).not.toContain('Coming soon');
   });
 });
 

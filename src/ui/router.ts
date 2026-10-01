@@ -27,7 +27,8 @@ import type { AgeId, CardId, FormatId, MatchResultInput, OpponentSpec, RewardSte
 export type MatchRequest =
   | { mode: 'ladder'; format: FormatId }
   | { mode: 'conquest'; general: string }
-  | { mode: 'skirmish'; options: SkirmishOptions; speed: 1 | 1.5 | 2 }
+  /** `quick`: started as Quick Battle (it plays as a Skirmish; the VS chip names it, bug hunt 2026-10-01). */
+  | { mode: 'skirmish'; options: SkirmishOptions; speed: 1 | 1.5 | 2; quick?: boolean }
   | { mode: 'daily'; difficulty?: DailyDifficulty }
   | { mode: 'tutorial'; match: 1 | 2 }
   /** A War Path level (A18.7) on the chosen difficulty. */

@@ -7,7 +7,7 @@
  * The dev page and tests use `createPreviewServices` (fixtures), which fakes the effects locally.
  */
 import type { AgeId, CardId, FormatId, OpponentSpec, PlanIssue, ReplayDoc, SaveDoc, Settings, SkinId, WarPathDifficulty } from '@/contracts';
-import type { MatchRequest } from '../router';
+import type { DailyDifficulty, MatchRequest } from '../router';
 
 export type WarPlan = SaveDoc['warPlans'][number];
 
@@ -36,11 +36,16 @@ export type CosmeticEquipPatch =
 export interface UiServices {
   // ---- queries -------------------------------------------------------------------------------
   /**
-   * The next ladder opponent for the Home preview (A9 #2) in `format` (the ladder's opponent seed
-   * depends on the format), or null before the ladder opens. It is the opponent `prepareMatch` gives
-   * a `{ mode: 'ladder', format }` request on the same save.
+   * The next ladder opponent for the Home preview (A9 #2) in `format` (the same General in every
+   * length since 2026-10-01; the format shapes the plan), or null before the ladder opens. It is the
+   * opponent `prepareMatch` gives a `{ mode: 'ladder', format }` request on the same save.
    */
   previewOpponent(format?: FormatId): OpponentSpec | null;
+  /**
+   * Today's Daily Challenge opponent at a difficulty, for the Home plate (bug hunt 2026-10-01 #22: the
+   * plate must show exactly who you fight). Optional; null when unknown.
+   */
+  previewDaily?(difficulty: DailyDifficulty): OpponentSpec | null;
   /** Today's Daily Challenge modifier id (A9.1), seeded by the local date. */
   dailyModifier(): string | null;
   /** War Plan validation and advisor warnings (A3; `meta.validatePlan`). */

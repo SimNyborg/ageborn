@@ -50,7 +50,7 @@ function useSourceLine() {
  * (Army's Locked row opens on Missing).
  */
 export function CardDex(p: { age?: AgeId | undefined; own?: DexOwn | undefined } = {}) {
-  const { save, content, t, router } = useUi();
+  const { save, content, t, router, sound } = useUi();
   const s = save.value;
   const [f, setF] = useState<DexFilter>(() => ({ ...DEX_FILTER, own: p.own ?? 'all' }));
   const [sheet, setSheet] = useState(false);
@@ -180,7 +180,10 @@ export function CardDex(p: { age?: AgeId | undefined; own?: DexOwn | undefined }
                 data-testid={`dex-chip-${a.age}`}
                 aria-label={`${t(ageNameKey(a.age))}: ${t('ui.dex.ageCount', { n: a.owned, max: a.total })}`}
                 aria-current={inView === a.age ? 'true' : undefined}
-                onClick={() => jump(a.age)}
+                onClick={() => {
+                  sound?.('ui_tab');
+                  jump(a.age);
+                }}
               >
                 <span class="dex-chip__face">
                   <span class="dex-chip__glyph" aria-hidden="true">
@@ -249,7 +252,10 @@ export function CardDex(p: { age?: AgeId | undefined; own?: DexOwn | undefined }
                       showCopies={e.owned}
                       testid={`card-${e.id}`}
                       label={e.owned ? undefined : `${t('ui.dex.number', { n: e.no })}: ${tile.name}. ${t('ui.dex.missing')}. ${source(e.id)}`}
-                      onClick={() => router.go({ id: 'cardDetail', card: e.id })}
+                      onClick={() => {
+                        sound?.('card_lift');
+                        router.go({ id: 'cardDetail', card: e.id });
+                      }}
                     />
                     {e.owned ? null : (
                       <>
@@ -283,11 +289,17 @@ export function CardDex(p: { age?: AgeId | undefined; own?: DexOwn | undefined }
             />
             <h4 class="dex-filter__label">{t('ui.dex.class')}</h4>
             <div class="dex-filter__classes" role="group" aria-label={t('ui.dex.class')}>
-              <button type="button" class={`dex-fchip${f.cls === 'all' ? ' is-on' : ''}`} aria-pressed={f.cls === 'all'} onClick={() => setF({ ...f, cls: 'all' })} data-testid="dex-class-all">
+              <button type="button" class={`dex-fchip${f.cls === 'all' ? ' is-on' : ''}`} aria-pressed={f.cls === 'all'} onClick={() => {
+                sound?.('ui_toggle');
+                setF({ ...f, cls: 'all' });
+              }} data-testid="dex-class-all">
                 <span>{t('ui.dex.anyClass')}</span>
               </button>
               {CLASSES.map((c) => (
-                <button key={c} type="button" class={`dex-fchip${f.cls === c ? ' is-on' : ''}`} aria-pressed={f.cls === c} onClick={() => setF({ ...f, cls: f.cls === c ? 'all' : c })} data-testid={`dex-class-${c}`}>
+                <button key={c} type="button" class={`dex-fchip${f.cls === c ? ' is-on' : ''}`} aria-pressed={f.cls === c} onClick={() => {
+                  sound?.('ui_toggle');
+                  setF({ ...f, cls: f.cls === c ? 'all' : c });
+                }} data-testid={`dex-class-${c}`}>
                   <ClassIcon id={c} size={20} />
                   <span>{t(CLASS_NAME_KEY[c])}</span>
                 </button>

@@ -153,7 +153,7 @@ describe('bots and the match rule (A16.14.6)', () => {
     expect(fortSlotLive(open, 'ladder', false)).toBe(false);
   });
 
-  it('with the slot on (F2): a locked slot is empty for both sides; the Daily always plays it', () => {
+  it('with the slot on (F2): a locked slot is empty for both sides; the Daily plays it once open', () => {
     const locked = fresh();
     const open = unlockFortSlot(fresh(), C).save;
     const off = applyFortMatchRule(cfgWith('palisade', 'war_camp'), locked, 'ladder', true);
@@ -162,7 +162,10 @@ describe('bots and the match rule (A16.14.6)', () => {
     expect(on.sides[0].loadouts.stone?.fort).toBe('palisade');
     expect(on.sides[1].loadouts.stone?.fort).toBe('war_camp');
     expect(on.sides[1].loadouts.bronze?.fort).toBe('cyclopean_wall');
-    const daily = applyFortMatchRule(cfgWith(null, null), locked, 'daily', true);
+    // Bug hunt 2026-10-01 #16: never a fort before the slot is open, not even in the Daily.
+    const dailyLocked = applyFortMatchRule(cfgWith(null, null), locked, 'daily', true);
+    for (const s of dailyLocked.sides) expect(s.loadouts.stone?.fort).toBeNull();
+    const daily = applyFortMatchRule(cfgWith(null, null), open, 'daily', true);
     expect(daily.sides[0].loadouts.stone?.fort).toBe('palisade');
   });
 });

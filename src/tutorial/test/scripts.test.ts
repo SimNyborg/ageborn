@@ -99,7 +99,9 @@ describe('staged unlocks (A3, A2.11)', () => {
     expect(scriptForMatch(3)).toBeNull();
     expect(scriptForMatch(4)).toBeNull();
     expect(scriptForMatch(5)).toBeNull();
-    expect(MATCH1.beats.filter((b) => b.target === 'stance').map((b) => b.id)).toEqual(['m1.stance']);
+    expect(MATCH1.beats.filter((b) => b.target === 'stance' || b.target === 'stanceCharge').map((b) => b.id)).toEqual(['m1.stance', 'm1.charge']);
+    // MVP fix 2026-10-01: no match 1 beat points at the whole stance control (its middle button is Hold).
+    expect(MATCH1.beats.some((b) => b.target === 'stance')).toBe(false);
     expect(MATCH2.beats.filter((b) => b.target === 'lastStand').map((b) => b.id)).toEqual(['m2.lastStand']);
   });
 });

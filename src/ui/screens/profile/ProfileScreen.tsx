@@ -13,7 +13,7 @@ import { Avatar } from '../../components/Avatar';
 import { Button, IconButton } from '../../components/Button';
 import { CardTile } from '../../components/CardTile';
 import { AiBadge, Pill } from '../../components/Chips';
-import { formatClock, formatInt, tierNumeral } from '../../components/format';
+import { formatClock, formatInt, tierNumeral, withoutAiPrefix } from '../../components/format';
 import { CardsIcon, CastleIcon, CrownIcon, PencilIcon, ReplayIcon, RobotIcon, StarIcon, SwordsIcon, TrophyIcon } from '../../components/icons';
 import { Empty, Panel, ScreenFrame } from '../../components/Layout';
 import { ProgressBar } from '../../components/Meters';
@@ -267,7 +267,7 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
               {v.byTier.map((r) => (
                 <div key={r.tier} class="prof-tier">
                   <span class="prof-tier__name">
-                    <AiBadge size="sm" /> {t('ui.vs.tier', { tier: tierNumeral(r.tier) })}
+                    <AiBadge size="sm" /> {r.tier <= 0 ? t('ui.vs.tierRookie') : t('ui.vs.tier', { tier: tierNumeral(r.tier) })}
                   </span>
                   <ProgressBar
                     value={r.wins}
@@ -292,7 +292,7 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
                 <span class="prof-match__result">{t(RESULT_KEYS[r.result])}</span>
                 <span class="prof-match__main">
                   <span class="prof-match__opp">
-                    {t(r.opponent)} {r.isAI ? <AiBadge size="sm" /> : null}
+                    {r.isAI ? withoutAiPrefix(t(r.opponent)) : t(r.opponent)} {r.isAI ? <AiBadge size="sm" /> : null}
                   </span>
                   <span class="prof-match__meta">
                     {t(formatNameKey(r.format))} · {formatClock(r.durationMs)}

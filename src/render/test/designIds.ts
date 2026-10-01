@@ -31,6 +31,9 @@ export const A14_EFFECT_IDS = new Set([
   'fx.plasma_pop', 'fx.drone_cloud', 'fx.jammed_rubble', 'fx.tele_rally', 'fx.tele_sap', 'fx.tele_charge', 'fx.tele_flak',
   // Match effects
   'fx.evolve_pillar', 'fx.last_stand_wave', 'fx.overdrive_frame', 'fx.siege_vignette',
+  // MVP pass (audit 2026-10-01): stance cues, slow and snare marks, Brace, research done, levy pennant
+  'fx.stance_charge', 'fx.stance_hold', 'fx.stance_fallback', 'fx.status_slow', 'fx.status_snare', 'fx.brace_plant',
+  'fx.research_done', 'fx.levy_marker',
 ]);
 
 const AGES = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
@@ -56,8 +59,17 @@ const FORT_SOUND_IDS = [
   'fort_place', 'fort_build', 'fort_complete', 'fort_hit_wood', 'fort_hit_stone', 'fort_hit_metal', 'fort_hit_energy', 'fort_crumble', 'fort_collapse', 'fort_decay', 'trap_arm', 'trap_snap', 'trap_blast', 'camp_horn', 'levy_spawn', 'fort_denied',
 ];
 
+/** MVP pass sounds (audio audit 2026-10-01; DESIGN A13 "MVP pass" row). */
+const MVP_SOUND_IDS = [
+  'ui_sheet', 'ui_pop', 'ui_whoosh', 'ui_stamp', 'card_lift', 'card_place', 'star_stamp', 'path_draw', 'node_drop', 'region_open', 'ui_unlock', 'reward_fly',
+  'council_open', 'council_pick', 'vs_slam', 'sundial_claim', 'glyph_light',
+  'stance_charge', 'stance_hold', 'stance_fallback', 'research_done', 'alert_heavy', 'hit_armor_crack', 'brace_clank', 'thunder', 'escalate_horn', 'crumble_pulse',
+  'fort_build_energy', 'camp_warp', 'levy_warp', 'trap_blast_energy',
+];
+
 export const A13_SOUND_IDS = new Set([
   ...A17_SOUND_IDS,
+  ...MVP_SOUND_IDS,
   ...FORT_SOUND_IDS,
   ...REWORK_POWER_SOUND_IDS,
   'ui_click', 'ui_hover', 'ui_deny', 'ui_toggle', 'ui_tab', 'ui_confirm', 'meter_pip',

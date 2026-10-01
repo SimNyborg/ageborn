@@ -10,7 +10,7 @@ import type { AgeId, Side } from '@/contracts/ids';
 import { PartBaker } from '../bake';
 import { FX_RECIPE_BY_ID, PROJECTILE_BY_ID } from '../effects/recipes';
 import { BASE_PUPPETS, puppetById, TURRET_PUPPETS, UNIT_PUPPETS } from '../library';
-import { getPart } from '../parts/registry';
+import { allParts, getPart } from '../parts/registry';
 import { renderPortrait } from '../portraits';
 import { teamColor, teamStripes, TRIM_COLORS } from '../palette';
 import { FX_ZONES } from '../effects/sprites';
@@ -33,6 +33,12 @@ export interface ProceduralOptions {
   quality: 'high' | 'lite';
   /** Current team preset for effects and projectiles (createEffect has no preset argument). */
   teamPreset: () => import('@/contracts/ids').TeamPreset;
+  /**
+   * Whether `preload` bakes a puppet ahead of time (default all). The provider passes "drawn by this
+   * tier": a puppet that only stands in while its sprite sheet loads bakes on first use instead
+   * (perf audit 2026-10-01: about 350 ms of boot CPU on a phone went to puppets the sheets replace).
+   */
+  bakePuppet?: (puppetId: string) => boolean;
 }
 
 /** Budget slice for idle-time baking (ms). */
@@ -89,7 +95,7 @@ export class ProceduralAdapter implements VisualAdapter {
       ...TURRET_PUPPETS.filter((p) => p.age && set.has(p.age)),
       ...(Object.values(BASE_PUPPETS) as BasePuppet[]).filter((p) => p.age && set.has(p.age)),
       ...SKIN_PUPPETS.filter((p) => p.age && set.has(p.age)),
-    ];
+    ].filter((p) => this.o.bakePuppet?.(p.id) ?? true);
     const out: { part: PartDef; puppet: PuppetDef; tone: number }[] = [];
     for (const puppet of puppets) {
       for (const s of puppet.slots) {
@@ -103,6 +109,12 @@ export class ProceduralAdapter implements VisualAdapter {
   async preload(ages: AgeId[]): Promise<void> {
     const todo = ages.filter((a) => !this.bakedAges.has(a));
     if (todo.length === 0) return;
+    await this.baker.bulk(() => this.preloadNow(todo));
+    // After the boot ages, single parts (an effect seen for the first time) bake to small pages.
+    if (BOOT_AGES.every((a) => this.bakedAges.has(a))) this.baker.seal();
+  }
+
+  private async preloadNow(todo: AgeId[]): Promise<void> {
     const t0 = now();
     const before = this.baker.stats.parts;
     let cpu = 0;
@@ -116,13 +128,15 @@ export class ProceduralAdapter implements VisualAdapter {
       this.bakeSprites();
       cpu += now() - s0;
     }
-    const list = this.bakeListFor(lazy);
+    const list: { part: PartDef; palette: PuppetDef['palette']; tone: number }[] = this.bakeListFor(lazy).map((e) => ({ part: e.part, palette: e.puppet.palette, tone: e.tone }));
+    // Every effect particle, once (in idle slices), so no effect bakes its first frame mid-battle.
+    if (boot.length) for (const part of allParts()) if (part.id.startsWith('fx.p.')) list.push({ part, palette: FX_ZONES, tone: 0 });
     let i = 0;
     while (i < list.length) {
       const sliceStart = now();
       while (i < list.length && now() - sliceStart < SLICE_MS) {
         const e = list[i++];
-        if (e) this.baker.get(e.part, e.puppet.palette, e.tone);
+        if (e) this.baker.get(e.part, e.palette, e.tone);
       }
       cpu += now() - sliceStart;
       if (i < list.length) await idle();

@@ -268,6 +268,8 @@ export class BattleView {
   private readonly screenFx: EffectView[] = [];
   private readonly listeners = new Set<ViewEventListener>();
   private readonly ages: AgeId[];
+  /** Ages this view asked the art provider to load (`preloadAhead`). */
+  private readonly preloadedAges = new Set<AgeId>();
   /** Created on the first base flash (a filter needs a GPU context). */
   private baseFlashFilter: ColorMatrixFilter | null | undefined;
   private readonly onPresetChange: ((p: GraphicsPreset) => void) | undefined;
@@ -350,6 +352,25 @@ export class BattleView {
     for (const u of st.units) this.ensureUnit(u);
     this.syncTurrets(0);
     this.evolveReady = canEvolve(st, this.config, this.mySide);
+    this.preloadAhead();
+  }
+
+  /**
+   * Art per match (B16, perf audit 2026-10-01): each side's current age and the next one load while
+   * the battle runs, instead of every age at boot. An age a match never reaches is never downloaded.
+   */
+  private preloadAhead(): void {
+    const want: AgeId[] = [];
+    for (const side of [0, 1] as const) {
+      const i = this.sim.state.sides[side].ageIndex;
+      for (const a of [this.ages[i], this.ages[i + 1]]) {
+        if (a && !this.preloadedAges.has(a)) {
+          this.preloadedAges.add(a);
+          want.push(a);
+        }
+      }
+    }
+    if (want.length > 0) void Promise.resolve(this.art.preload(want)).catch(() => undefined);
   }
 
   // ------------------------------------------------------------------------------------------
@@ -733,6 +754,20 @@ export class BattleView {
       if (z) this.revealAim(z.x);
       return p;
     }
+    const p = this.aimStartP(def);
+    this.noteDragStart();
+    this.powerDrag = { clientX: Number.NaN, clientY: Number.NaN, p, valid: true, raw: false };
+    this.camera.hold('powerDrag', true);
+    this.revealAim(pToX(p, this.mySide));
+    return p;
+  }
+
+  /**
+   * Where aiming a power that takes aim starts, as own-side p (lu): over the eligible enemies nearest
+   * your gate inside the reach band, else ahead of your front, else mid-band; always inside the band.
+   */
+  private aimStartP(def: PowerDef): number {
+    const legacy = this.config.content.economy.powerZoneClamp;
     const rules = this.reachRules();
     const units = this.previewUnits();
     const front = previewFront(units, rules);
@@ -745,12 +780,23 @@ export class BattleView {
       else foe = foe === null ? u.p : Math.min(foe, u.p);
     }
     const at = foe !== null ? foe + width * 0.35 : mine !== null ? mine + width * 0.5 : (band[0] + band[1]) / 2;
-    const p = clampPowerP(at, band);
-    this.noteDragStart();
-    this.powerDrag = { clientX: Number.NaN, clientY: Number.NaN, p, valid: true, raw: false };
-    this.camera.hold('powerDrag', true);
-    this.revealAim(pToX(p, this.mySide));
-    return p;
+    return clampPowerP(at, band);
+  }
+
+  /**
+   * A legal drop point for a slot's power in view-local CSS px (the middle of the lane band over the
+   * spot tap-to-aim would start at), or null for a power that takes no aim. The tutorial's drag hand
+   * aims here (MVP fix 2026-10-01: it aimed at a fixed screen point, which often lay in the enemy half).
+   * With `reveal`, an off-screen point is brought into view first, as tap-to-aim does.
+   */
+  powerAimScreen(slot: PowerSlot = 'home', reveal = false): Pt | null {
+    const def = this.myPower(slot);
+    if (!def || !powerTakesAim(def)) return null;
+    const x = pToX(this.aimStartP(def), this.mySide);
+    if (reveal) this.revealAim(x);
+    const L = this.camera.layout;
+    const pt = this.camera.worldToScreen(x, 0);
+    return { x: pt.x, y: L.bandY + L.bandH * 0.5 };
   }
 
   /**
@@ -974,6 +1020,7 @@ export class BattleView {
     const evs = this.emotesMuted() ? events.filter((e) => !(e.e === 'emote' && e.side !== this.mySide)) : events;
     for (const ev of evs) this.watchEvent(ev);
     if (evs.length > 0) {
+      this.mapper.tick = this.sim.state.tick;
       const actions = this.mapper.map(evs, (id) => this.lookup(id));
       for (const a of actions) this.exec(a);
     }
@@ -1029,6 +1076,15 @@ export class BattleView {
     // The backdrop's layers scroll at their parallax factors (A17.7); it is told the visible range.
     (this.backdrop as BackdropView & { setView?(left: number, width: number, above: number): void }).setView?.(this.viewL, this.viewR - this.viewL, t.y / t.scale);
     this.backdrop.update(gameDt);
+    // Thunderstorm skin: thunder follows each lightning strike, later and softer the farther it is
+    // from the view (audit 2026-10-01: the lightning was silent). Presentation only.
+    const strikes = this.backdrop.drainStrikes?.();
+    if (strikes && strikes.length > 0 && !this.ended) {
+      for (const st of strikes) {
+        const near = st.x >= this.viewL && st.x <= this.viewR;
+        this.exec({ a: 'sound', id: 'thunder', delayMs: (near ? 220 : 650) + Math.floor(this.rng.next() * 500), volumeDb: near ? -2 : -9, gap: { key: 'thunder', gapMs: 1500 } });
+      }
+    }
     this.cull();
 
     this.updateGhostTargets();
@@ -1058,6 +1114,10 @@ export class BattleView {
   /** Tracks the events that feed the camera moments, the badges and the minimap flashes. */
   private watchEvent(ev: SimEvent): void {
     switch (ev.e) {
+      case 'ascendStart':
+      case 'ageUp':
+        this.preloadAhead();
+        return;
       case 'baseDamaged': {
         if (ev.sourceId === null) return; // Siege decay is not an attack
         this.baseHitAt[ev.side] = this.nowMs;
@@ -1565,6 +1625,8 @@ export class BattleView {
           ...(a.gap ? { gap: a.gap } : {}),
           ...(a.climb ? { climb: a.climb } : {}),
           ...(a.priority !== undefined ? { priority: a.priority } : {}),
+          ...(a.pitchBp !== undefined ? { pitchBp: a.pitchBp } : {}),
+          ...(a.volumeDb !== undefined ? { volumeDb: a.volumeDb } : {}),
         });
         return;
       case 'trauma':
@@ -2281,7 +2343,9 @@ export class BattleView {
       points: this.mountPoints(this.mySide),
       mountsOwned: s.mountsOwned,
       occupied: [0, 1, 2, 3].map((m) => (s.turrets[m] ?? null) !== null),
-      nextCost: s.mountsOwned < 4 ? (this.config.content.economy.mountCosts[s.mountsOwned] ?? null) : null,
+      // The training match teaches the first mount only; the "New slot" offer waits for match 2, which
+      // teaches it (FTUE audit 2026-10-01 #6: it showed from the first second of match 1).
+      nextCost: s.mountsOwned < 4 && this.config.format !== 'tutorial' ? (this.config.content.economy.mountCosts[s.mountsOwned] ?? null) : null,
       color: teamColor(this.settings.teamPreset, this.mySide),
     });
   }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { TutorialDirector, type DirectorLogEntry } from '../director';
-import { KILLS_EARN_GOLD_TICKS, MATCH1, MATCH1_PEBBLER_TICK, MATCH1_SPEAR_TICK, MATCH1_TURRET_GRANT_TICK, MATCH2, sec } from '../scripts';
+import { KILLS_EARN_GOLD_TICKS, MATCH1, MATCH1_PEBBLER_TICK, MATCH1_STALL_TICKS, MATCH1_SPEAR_TICK, MATCH1_TURRET_GRANT_TICK, MATCH2, sec } from '../scripts';
 import { Harness, config, type Ev } from './helpers';
 
 function match1(): { h: Harness; d: TutorialDirector; log: DirectorLogEntry[] } {
@@ -107,12 +107,13 @@ describe('TutorialDirector: match 1 beats in A8 order', () => {
     d.update(h.input([{ e: 'powerTelegraph', side: 0, slot: 'home', power: 'arrow_storm', castId: 1, x: 700_000, zone: 450, cost: 100, targetId: -1, telegraphMs: 1000 }]));
     expect(d.prompt).toBeNull();
 
-    // Gunpowder brings the one stance hint (owner feedback 2026-09-28); it points at the flag for 6 s.
+    // Gunpowder brings the one stance hint (owner feedback 2026-09-28); it points at Charge for 6 s
+    // (MVP fix 2026-10-01: never at Hold).
     h.advance(100);
     d.update(h.input([{ e: 'ageUp', side: 0, age: 'gunpowder' }]));
     h.advance();
     d.update(h.input());
-    expect(d.prompt).toMatchObject({ id: 'm1.stance', textKey: 'tutorial.m1.stance', target: 'stance' });
+    expect(d.prompt).toMatchObject({ id: 'm1.stance', textKey: 'tutorial.m1.stance', target: 'stanceCharge' });
     h.advance(sec(6));
     d.update(h.input());
     expect(d.prompt).toBeNull();
@@ -132,7 +133,7 @@ describe('TutorialDirector: match 1 beats in A8 order', () => {
     expect(d.finished).toBe(true);
 
     const shown = log.filter((e) => e.kind === 'beatShown').map((e) => e.id);
-    expect(shown).toEqual(MATCH1.beats.map((b) => b.id));
+    expect(shown).toEqual(MATCH1.beats.filter((b) => !b.rearm).map((b) => b.id));
     // Each beat appears at most once (C5 #2).
     expect(new Set(shown).size).toBe(shown.length);
     expect(log.filter((e) => e.kind === 'beatTimeout' || e.kind === 'beatSkipped')).toEqual([]);
@@ -216,6 +217,43 @@ describe('TutorialDirector: Evolve jumps the queue', () => {
   });
 });
 
+describe('TutorialDirector: the match 1 stall guard (MVP fix 2026-10-01)', () => {
+  it('points at Charge after 10 s off Charge, ends on Charge, and re-arms', () => {
+    const h = new Harness(config({ format: 'tutorial' }));
+    const guard = MATCH1.beats.find((b) => b.id === 'm1.charge')!;
+    const log: DirectorLogEntry[] = [];
+    const d = new TutorialDirector({ id: 'match1', sequential: true, beats: [guard] }, { adaptive: false, onLog: (e) => log.push(e) });
+    d.update(h.input());
+    expect(d.prompt).toBeNull();
+    h.state.sides[0].stance = 'hold';
+    h.advance();
+    d.update(h.input());
+    h.advance(MATCH1_STALL_TICKS - 1);
+    d.update(h.input());
+    expect(d.prompt).toBeNull();
+    h.advance(1);
+    d.update(h.input());
+    expect(d.prompt).toMatchObject({ id: 'm1.charge', textKey: 'tutorial.m1.charge', target: 'stanceCharge' });
+    // It never times out: the match has no clock.
+    h.advance(sec(120));
+    d.update(h.input());
+    expect(d.prompt?.id).toBe('m1.charge');
+    h.state.sides[0].stance = 'charge';
+    h.advance();
+    d.update(h.input());
+    expect(d.prompt).toBeNull();
+    expect(d.finished).toBe(true);
+    // Fall back for another 10 s: the guard shows again.
+    h.state.sides[0].stance = 'fallback';
+    h.advance();
+    d.update(h.input());
+    h.advance(MATCH1_STALL_TICKS);
+    d.update(h.input());
+    expect(d.prompt?.id).toBe('m1.charge');
+    expect(log.filter((e) => e.id === 'm1.charge' && e.kind === 'beatShown')).toHaveLength(2);
+  });
+});
+
 describe('TutorialDirector: other scripts and hints', () => {
   it('match 2 teaches Treasury once gold allows it after 0:15', () => {
     const h = new Harness();
@@ -226,11 +264,28 @@ describe('TutorialDirector: other scripts and hints', () => {
     expect(d.prompt).toBeNull();
     h.state.tick = sec(15);
     d.update(h.input());
-    expect(d.prompt).toMatchObject({ id: 'm2.treasury', target: 'gold' });
+    expect(d.prompt).toMatchObject({ id: 'm2.treasury', target: 'council' });
     h.advance();
     // A18.5.4: the beat ends when the Economy research starts, not when it completes 10 s later.
     d.update(h.input([{ e: 'researchStarted', side: 0, pick: 'economy.granary', cost: 150, endTick: h.state.tick + 200 }]));
     expect(d.prompt).toBeNull();
+  });
+
+  it('match 2 shows one prompt at a time: the scroll hint waits for the Council beat (MVP fix 2026-10-01)', () => {
+    const h = new Harness();
+    const d = new TutorialDirector(MATCH2, { adaptive: false });
+    h.gold(250);
+    h.state.tick = sec(15);
+    d.update(h.input());
+    expect(d.prompt?.id).toBe('m2.treasury');
+    h.state.tick = sec(21);
+    d.update(h.input());
+    expect(d.prompt?.id).toBe('m2.treasury');
+    h.advance();
+    d.update(h.input([{ e: 'researchStarted', side: 0, pick: 'economy.granary', cost: 150, endTick: h.state.tick + 200 }]));
+    h.advance();
+    d.update(h.input());
+    expect(d.prompt?.id).toBe('m2.scroll');
   });
 
   it('match 2 points at Last Stand when it arms (owner feedback 2026-09-28: was match 5)', () => {

@@ -45,7 +45,8 @@ for (const m of html.matchAll(/<(?:script|link)\b[^>]*?(?:src|href)="([^"]+)"[^>
   if (/^[a-z]+:\/\//i.test(url) || url.startsWith('data:')) continue;
   const isScript = tag.startsWith('<script');
   const isPreload = /rel="modulepreload"/.test(tag);
-  const isStyle = /rel="stylesheet"/.test(tag);
+  // stylesheets load as `rel="preload" as="style"` and switch on load (vite.config.ts nonBlockingStyles)
+  const isStyle = /rel="stylesheet"/.test(tag) || (/rel="preload"/.test(tag) && /as="style"/.test(tag));
   if (isScript || isPreload || isStyle) refs.add(url);
 }
 

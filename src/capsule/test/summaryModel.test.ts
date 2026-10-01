@@ -128,6 +128,8 @@ describe('summary buttons (ui-plan 4.6, UA-18)', () => {
 
   it('opened from the Result, the primary continues the Result path and never offers more capsules', () => {
     expect(summaryButtons({ pending: 3, openNext: true, openAll: true, upgrade: true, fromResult: true })).toEqual({ primary: 'done', secondary: ['upgrade'] });
+    // Bug hunt 2026-10-01: from the Result, the other way on (Home) is a secondary.
+    expect(summaryButtons({ pending: 0, openNext: false, openAll: false, upgrade: true, fromResult: true, alt: true })).toEqual({ primary: 'done', secondary: ['upgrade', 'alt'] });
   });
 
   it('copies never read over-full: a full bar says Upgrade ready', () => {

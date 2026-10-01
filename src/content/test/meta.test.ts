@@ -143,9 +143,9 @@ describe('Time Capsules (A6.4)', () => {
     expect(capsules.script.map((s) => [s.tier, s.cards])).toEqual([
       // The Anti-heavy Rares are in the starter kit (owner feedback 2026-09-29): the Support Rares come instead.
       ['bronze', ['drum_shaman', 'standard_bearer']],
-      ['silver', ['friar', 'field_surgeon']],
+      ['silver', ['friar', 'onager']],
       ['bronze', ['log_roller']],
-      ['silver', []],
+      ['silver', ['field_surgeon']],
       ['gold', ['mammoth_matriarch']],
     ]);
     expect(capsules.script[3]?.randomUnownedEpic).toBe(true);
@@ -219,7 +219,7 @@ describe('Arenas and ladder (A6.3, A6.8)', () => {
       lossProtection: { streak: 3, tierDrop: 1 },
       skirmishWinAmber: 5,
       mmr: { start: 1000, k: 32, tierRatingBase: 800, tierRatingStep: 100, tierOffset: 870, tierDivisor: 100 },
-      newPlayer: { matches: 2, mistakeBonusBp: 1000 },
+      newPlayer: { matches: 2, mistakeBonusBp: 5000 },
       levelRollBp: { minus: 2500, zero: 5000, plus: 2500 },
       standardLevel: 7,
     });

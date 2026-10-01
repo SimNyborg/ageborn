@@ -126,7 +126,7 @@ export function ArenaTitle() {
   const { save, content, t } = useUi();
   const arena = arenaOf(save.value, content);
   return (
-    <div class="hub-arena" data-testid="home-arena">
+    <div class="hub-arena" data-testid="home-arena" data-unlock-avoid="">
       <span class="hub-arena__num" data-tag="">
         {t('ui.home.arenaN', { n: arena.index })}
       </span>
@@ -305,7 +305,7 @@ export const UNLOCK_TARGET: Readonly<Record<HomeUnlock, string>> = {
  * points at it. Taps elsewhere go through to Home; it folds away by itself after a few seconds.
  * `also` is a second feature that opened at the same moment (the War Path with the Ladder): it gets
  * its own ring and the line names both. The line never covers the elements marked
- * `data-unlock-avoid` (the trophy bar): it lifts above them.
+ * `data-unlock-avoid` (the trophy bar and the arena ribbon): it lifts above them.
  */
 export function UnlockPointer(p: { feature: HomeUnlock; also?: HomeUnlock | null; onOpen(): void; onDone(): void }) {
   const { t } = useUi();
@@ -355,10 +355,19 @@ export function UnlockPointer(p: { feature: HomeUnlock; also?: HomeUnlock | null
     if (!line || !root || !box) return;
     const lr = line.getBoundingClientRect();
     let up = 0;
-    for (const el of root.querySelectorAll<HTMLElement>('[data-unlock-avoid]')) {
-      const r = el.getBoundingClientRect();
-      const hit = lr.left < r.right && lr.right > r.left && lr.top - up < r.bottom && lr.bottom - up > r.top;
-      if (hit) up = Math.max(up, lr.bottom - r.top + 8);
+    // Lifted past one marked element, the line may land on the next one up (the arena ribbon above the
+    // trophy bar, bug hunt 2026-10-01 #19), so the check repeats until the line is clear.
+    const avoid = [...root.querySelectorAll<HTMLElement>('[data-unlock-avoid]')].map((el) => el.getBoundingClientRect());
+    for (let pass = 0; pass < avoid.length + 1; pass += 1) {
+      let moved = false;
+      for (const r of avoid) {
+        const hit = lr.left < r.right && lr.right > r.left && lr.top - up < r.bottom && lr.bottom - up > r.top;
+        if (hit) {
+          up = Math.max(up, lr.bottom - r.top + 8);
+          moved = true;
+        }
+      }
+      if (!moved) break;
     }
     if (up > 0) setLift((x) => x + up);
   }, [rect?.top, rect?.left, host?.width, host?.height]);

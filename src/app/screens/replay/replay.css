@@ -124,7 +124,8 @@
 .ab-replay-bar {
   position: absolute;
   left: 50%;
-  bottom: calc(19% + 10px);
+  /* Bug hunt 2026-10-01 #11: docked over the read-only tray, off the lane, so the fight stays in view. */
+  bottom: max(8px, env(safe-area-inset-bottom));
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -354,7 +355,7 @@
 @media (max-height: 480px) {
   .ab-replay-ai {
     padding: 0 6px;
-    font-size: 10px;
+    font-size: 12px;
     border-width: 1.5px;
   }
   .ab-replay-top {
@@ -370,11 +371,11 @@
     gap: 5px;
   }
   .ab-replay-live {
-    font-size: 10px;
+    font-size: 12px;
     padding: 2px 7px;
   }
   .ab-replay-bar {
-    bottom: calc(26% + 6px);
+    bottom: max(4px, env(safe-area-inset-bottom));
     padding: 4px;
     gap: 4px;
   }

@@ -12,7 +12,7 @@
 import './emoteWheel.css';
 import { emoteLabelKey } from '@/content/keys';
 import type { BaseEmoteId, EmoteId } from '@/contracts';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { CosmeticImage } from '../components/cosmeticArt';
 import type { EmoteWheel, HudCtx } from './context';
 import { EmoteGlyph, SmileIcon } from './icons';
@@ -64,6 +64,31 @@ export function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
   const [quoteCooling, startQuoteCooling] = useCooldown(Math.max(c.config.content.economy.emoteCooldownMs, wheel.quoteCooldownMs));
   const [muted, setMuted] = useState(() => c.view?.emotesMuted?.() ?? false);
   const off = c.readOnly || c.m.phase === 'ended';
+  const root = useRef<HTMLDivElement>(null);
+  // Bug hunt 2026-10-01 #13: the picker closes on Esc (without also pausing), on any tap outside it
+  // (the lane, the minimap, Pause) and when the battle pauses.
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      e.stopPropagation();
+      setOpen(false);
+    };
+    const onDown = (e: PointerEvent): void => {
+      if (root.current && e.target instanceof Node && root.current.contains(e.target)) return;
+      setOpen(false);
+    };
+    window.addEventListener('keydown', onKey, { capture: true });
+    window.addEventListener('pointerdown', onDown, { capture: true });
+    return () => {
+      window.removeEventListener('keydown', onKey, { capture: true });
+      window.removeEventListener('pointerdown', onDown, { capture: true });
+    };
+  }, [open]);
+  useEffect(() => {
+    if (c.m.paused) setOpen(false);
+  }, [c.m.paused]);
   const send = (e: EmoteId) => {
     setOpen(false);
     startCooling();
@@ -77,7 +102,7 @@ export function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
     c.audio?.play('ui_click');
   };
   return (
-    <div class="hud-emote">
+    <div class="hud-emote" ref={root}>
       <button
         class={`hud-round hud-round--small hud-emote-btn${cooling ? ' is-cooling' : ''}${c.denied('emote') ? ' is-denied' : ''}`}
         data-testid="hud-emote"

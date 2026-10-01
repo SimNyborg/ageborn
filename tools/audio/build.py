@@ -7,7 +7,7 @@
 2. Music: every cue, stinger and layer stem becomes one Ogg Opus file
    (`public/audio/music/<cue>.<hash>.ogg`): stereo for cues and stingers, mono for layer stems.
 3. Every file is also written as AAC-LC (`.m4a`) for browsers that cannot decode Ogg Opus (older
-   Safari and iOS): music 96 kbps stereo, effect sheets 64 kbps mono, stems 48 kbps mono.
+   Safari and iOS): music 56 kbps stereo, effect sheets 48 kbps mono, stems 40 kbps mono.
 4. `src/audio/assets.gen.ts` lists the files, the sprite offsets, the sync times and the loop points.
 
 File names carry a content hash, so a browser never plays a stale cached file after an update;
@@ -40,7 +40,9 @@ MUSIC_KBPS = 48  # 96 s battle loops
 MENU_KBPS = 48
 STINGER_KBPS = 56
 STEM_KBPS = 40
-AAC_KBPS = {"music": 96, "sfx": 64, "stem": 48}
+# AAC copies (browsers without Ogg Opus, e.g. iOS): 56 kbps keeps a 96.6 s age track at about 676 KB,
+# inside the B16 "music <= 700 KB per age" budget (perf audit 2026-10-01: 96 kbps was 1.2 MB, twice the Ogg).
+AAC_KBPS = {"music": 56, "sfx": 48, "stem": 40}
 # The sync burst at the start of every effect sheet (a 3 ms 1 kHz Hann-windowed tone) and the
 # silence before the first sound; the first sound starts well after any codec smear of the burst.
 SYNC_AT_S = 0.02

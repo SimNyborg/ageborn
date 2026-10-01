@@ -92,7 +92,16 @@ export class VisualsArtProvider implements ArtProvider {
     this.preset = o.teamPreset ?? 'default';
     const dpr = this.quality === 'lite' ? 1 : Math.min(2, Math.max(1, o.dpr ?? (typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1)));
     const world = o.worldPxPerLu ?? (typeof window !== 'undefined' ? screenWorldPxPerLu(window.innerWidth, window.innerHeight) : 1.25);
-    this.procedural = new ProceduralAdapter({ pxPerLu: world * dpr, quality: this.quality, teamPreset: () => this.preset });
+    // Puppets bake ahead only where this tier draws them (a skin, `?art=procedural`); a puppet that just
+    // stands in while its sprite sheet streams in bakes on first use (perf audit 2026-10-01).
+    let drawn: Set<string> | null = null;
+    const bakePuppet = (id: string): boolean => {
+      if (this.force === 'procedural') return true;
+      if (this.force !== null) return false;
+      drawn ??= new Set(Object.values(this.manifest).filter((d) => d.kind === 'procedural').map((d) => d.source));
+      return drawn.has(id);
+    };
+    this.procedural = new ProceduralAdapter({ pxPerLu: world * dpr, quality: this.quality, teamPreset: () => this.preset, bakePuppet });
     const rawDpr = o.dpr ?? (typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
     this.atlas = new AtlasAdapter({ entries: () => Object.values(this.manifest), decor: this.procedural.baker, quality: this.quality, hd: this.quality !== 'lite' && wantsHdSheets(world, o.hdDpr ?? rawDpr) });
     this.adapters = { placeholder: this.placeholder, procedural: this.procedural, atlas: this.atlas, spine: new SpineAdapter() };

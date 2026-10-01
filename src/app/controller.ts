@@ -15,6 +15,7 @@ import type { MetaRules } from '@/meta';
 import { AgePicker } from './agePick';
 import { createBattle, type BattleHandle } from './battle';
 import { finishMatch } from './flow';
+import { clearOpenMatch, markOpenMatch } from './abandon';
 import { difficultyTier, quickBattle, tutorialMatch1, tutorialMatch2, type MatchSetup, type SetupLabels } from './matchSetup';
 import { ONBOARDING_STEPS, afterOnboardingMatch, completeStep, homeStep, onboardingStep, type OnboardingStep } from './onboarding';
 import type { Services } from './services';
@@ -294,6 +295,7 @@ export class AppController {
 
   /** Leaves a running battle without a result (Quit on the pause screen). */
   quit(): void {
+    clearOpenMatch();
     this.showTitle();
   }
 
@@ -394,9 +396,21 @@ export class AppController {
       autopilot: this.o.autopilot ?? false,
       // Quick Battle is a dev route: no adaptive hints.
       // A8: in-battle adaptive hints only in the onboarding matches; the detectors keep running.
-      hints: setup.matchNumber <= STAGES.hintsUntilMatch && (setup.mode !== 'skirmish' || save !== null),
+      hints: setup.matchNumber >= STAGES.hintsFromMatch && setup.matchNumber <= STAGES.hintsUntilMatch && (setup.mode !== 'skirmish' || save !== null),
     });
+    // A Ladder battle left by a reload counts as a Retreat (bug hunt 2026-10-01 #9, `abandon.ts`): once
+    // Retreat is open it is recorded; its end, whatever the outcome, clears the record.
+    const retreatAfter = setup.config.content.formats[setup.config.format]?.retreatAfterMs ?? null;
+    if (setup.mode === 'ladder' && retreatAfter !== null && save) {
+      let marked = false;
+      battle.session.onTick((_events, s) => {
+        if (marked || s.state.tick * 50 < retreatAfter || s.state.phase === 'ended') return;
+        marked = true;
+        markOpenMatch({ mode: 'ladder', mySide: 0, opponent: setup.opponent, durationMs: s.state.tick * 50 });
+      });
+    }
     battle.session.onEnd((input, replay) => {
+      clearOpenMatch();
       void this.onMatchEnd(battle, input, replay);
     });
     return battle;

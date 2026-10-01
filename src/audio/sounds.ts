@@ -340,7 +340,7 @@ function powerJam(id: string, group: SoundGroup, freq: number): Record<string, S
 // ---------------------------------------------------------------------------------------------------
 // The manifest
 
-export const sounds: Readonly<Record<SoundId, SoundDef>> = {
+const BASE_SOUNDS = {
   // UI ------------------------------------------------------------------------------------------------
   ui_click: fx('ui', variants(3, (v) => ({ vol: 0.5, freq: 1100 * (1 + 0.05 * v), attack: 0.002, sustain: 0.008, release: 0.035, shape: 'tri', jump: 280, jumpTime: 0.012 }))),
   ui_hover: fx('ui', variants(3, (v) => ({ vol: 0.16, freq: 2300 * (1 + 0.04 * v), attack: 0.002, release: 0.025 }))),
@@ -1056,7 +1056,61 @@ export const sounds: Readonly<Record<SoundId, SoundDef>> = {
     thump(0, 110 * (1 + 0.03 * v), 0.45, 0.1),
     at(0, { vol: 0.3, freq: 150 * (1 + 0.04 * v), attack: 0.004, sustain: 0.08, release: 0.08, shape: 'square', curve: 0.7, slide: -0.3, lowpass: 2400 }),
   ])),
+} satisfies Record<SoundId, SoundDef>;
+
+/** A ZzFX fallback that borrows another sound's variants in its own group and mix settings. */
+function like(base: SoundDef, group: SoundGroup, extra: Extra = {}): SoundDef {
+  const { gainDb: _g, maxVoices: _m, gapMs: _gap, pitchVarBp: _p, volVarDb: _v, ...src } = base;
+  return { ...src, bus: busOf(group), group, ...extra } as SoundDef;
+}
+
+/**
+ * The MVP pass sounds (audio audit 2026-10-01; designs in `tools/audio/sfx/sounds_mvp.py`). The recorded
+ * sheets carry them; the ZzFX fallback borrows the nearest older sound until a sheet decodes.
+ */
+const B = BASE_SOUNDS;
+const MVP_SOUNDS: Record<SoundId, SoundDef> = {
+  // UI (ui-plan 5.4, the War Path map): these replace the app's UI_SOUND_FALLBACK stand-ins. The UI group
+  // pre-renders when there are no files, so the fallbacks borrow the shortest UI sound (B16 boot budget: the
+  // recorded `ui` sheet is what plays; it decodes right after unlock).
+  ui_sheet: like(B.ui_hover, 'ui'),
+  ui_pop: like(B.ui_hover, 'ui'),
+  ui_whoosh: like(B.ui_hover, 'ui'),
+  ui_stamp: like(B.ui_hover, 'ui', { maxVoices: 2 }),
+  card_lift: like(B.ui_hover, 'ui'),
+  card_place: like(B.ui_hover, 'ui'),
+  // the caller raises the pitch per star (MR-41)
+  star_stamp: like(B.ui_hover, 'ui', CALLER_PITCHED),
+  path_draw: like(B.ui_hover, 'ui', { maxVoices: 1, gapMs: 200 }),
+  node_drop: like(B.ui_hover, 'ui'),
+  region_open: like(B.ui_hover, 'ui', { ...MUSICAL, maxVoices: 1, gapMs: 1000 }),
+  ui_unlock: like(B.ui_hover, 'ui', { ...MUSICAL, maxVoices: 1, gapMs: 400 }),
+  reward_fly: like(B.ui_hover, 'ui'),
+  council_open: like(B.ui_hover, 'ui', { maxVoices: 1, gapMs: 150 }),
+  council_pick: like(B.ui_hover, 'ui', { maxVoices: 1, gapMs: 150 }),
+  vs_slam: like(B.ui_hover, 'ui', { maxVoices: 1, gapMs: 500 }),
+  sundial_claim: like(B.ui_hover, 'ui', { ...MUSICAL, maxVoices: 1, gapMs: 300 }),
+  glyph_light: like(B.ui_hover, 'ui', { ...MUSICAL, maxVoices: 1, gapMs: 300 }),
+  // Battle cues: the `match` sheet loads right after unlock, with the battle sheet
+  stance_charge: like(B.overdrive_horn, 'match', { maxVoices: 1, gapMs: 300 }),
+  stance_hold: like(B.shield_up, 'match', { maxVoices: 1, gapMs: 300 }),
+  stance_fallback: like(B.ui_deny, 'match', { maxVoices: 1, gapMs: 300 }),
+  research_done: like(B.turret_upgrade, 'match', { ...MUSICAL, maxVoices: 2 }),
+  alert_heavy: like(B.spawn_heavy, 'match', { maxVoices: 1, gapMs: 4000 }),
+  hit_armor_crack: like(B.hit_heavy, 'match', { maxVoices: 2, gapMs: 80 }),
+  brace_clank: like(B.shield_up, 'match', { maxVoices: 2, gapMs: 150 }),
+  thunder: like(B.explosion_l, 'match', { maxVoices: 2, gapMs: 600 }),
+  // Last Base Standing: the game raises the horn's pitch per step, so the steps climb
+  escalate_horn: like(B.siege_bell, 'match', { ...CALLER_PITCHED, maxVoices: 1, gapMs: 1000 }),
+  crumble_pulse: like(B.base_crumble, 'match', { maxVoices: 2, gapMs: 600 }),
+  // Energy forts (Future, Cosmic)
+  fort_build_energy: like(B.fort_build, 'future', { maxVoices: 2, gapMs: 200 }),
+  camp_warp: like(B.camp_horn, 'future', { ...MUSICAL, maxVoices: 1, gapMs: 3000 }),
+  levy_warp: like(B.levy_spawn, 'future'),
+  trap_blast_energy: like(B.trap_blast, 'future', { maxVoices: 2 }),
 };
+
+export const sounds: Readonly<Record<SoundId, SoundDef>> = { ...BASE_SOUNDS, ...MVP_SOUNDS };
 
 /** Every sound id in the manifest, in declaration order. */
 export const SOUND_IDS: readonly SoundId[] = Object.keys(sounds);

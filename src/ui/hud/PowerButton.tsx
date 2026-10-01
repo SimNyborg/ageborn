@@ -411,8 +411,8 @@ function PowerSlotButton(p: {
         if (i.k === 'deny') hapticTier('deny');
         if (isReady && i.k === 'command') {
           rememberHint();
-          // `power_cast` (MR-70b) once WP6 adds it; `ui_confirm` meanwhile.
-          cc.audio?.play('ui_confirm');
+          // MR-70b: the power's own cast cue (its impact sound comes from the battle view).
+          cc.audio?.play('power_cast');
           hapticTier('thump');
         }
         p.onActive(null);

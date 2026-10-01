@@ -138,6 +138,39 @@ export function AgeGlyph(p: P & { age: AgeId }) {
           <path d="M11.2 3.3c3.2-1.6 7.8.4 9.4 3.9.3.7-.4 1.4-1.1 1.1L12 5.2c-.7-.3-1.4-1.5-.8-1.9z" fill="#b9b0a2" stroke={OUT} stroke-width="1.5" />
         </Svg>
       );
+    // MVP fix 2026-10-01: Bronze, Industrial and Cosmic had no glyph, so every Short War showed blank discs.
+    case 'bronze':
+      return (
+        <Svg {...p}>
+          <path d="M5.6 8.6c.4-3.9 3.6-6.4 6.4-6.4s6 2.5 6.4 6.4z" fill="#c8402e" stroke={OUT} stroke-width="1.4" stroke-linejoin="round" />
+          <path d="M5 11.2C5 8.1 8 6.2 12 6.2s7 1.9 7 5V20h-4v-5.6h-1.8V21h-2.4v-6.6H9V20H5z" fill="#cf8f3c" stroke={OUT} stroke-width="1.5" stroke-linejoin="round" />
+          <path d="M7.6 12.2h8.8" stroke={OUT} stroke-width="1.6" stroke-linecap="round" />
+          <path d="M8 9.4c1.2-1.2 2.6-1.6 4-1.6" fill="none" stroke="#f3c77a" stroke-width="1.3" stroke-linecap="round" />
+        </Svg>
+      );
+    case 'industrial':
+      return (
+        <Svg {...p}>
+          <g fill="#8a9099" stroke={OUT} stroke-width="1.3" stroke-linejoin="round">
+            {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => (
+              <rect key={a} x="10.4" y="2.4" width="3.2" height="4.2" rx="0.6" transform={`rotate(${a} 12 12)`} />
+            ))}
+            <circle cx="12" cy="12" r="6.6" />
+          </g>
+          <circle cx="12" cy="12" r="2.4" fill="#3a3f45" stroke={OUT} stroke-width="1.2" />
+          <path d="M8.6 9.2c.9-1 2-1.5 3.2-1.6" fill="none" stroke="#d6dbe2" stroke-width="1.3" stroke-linecap="round" />
+        </Svg>
+      );
+    case 'cosmic':
+      return (
+        <Svg {...p}>
+          <circle cx="11" cy="12.6" r="5.8" fill="#7b52d4" stroke={OUT} stroke-width="1.5" />
+          <path d="M8 10.4c.8-1.2 2-1.9 3.4-2" fill="none" stroke="#c9b3ff" stroke-width="1.4" stroke-linecap="round" />
+          <ellipse cx="11" cy="12.6" rx="9.6" ry="2.7" fill="none" stroke={OUT} stroke-width="3.2" transform="rotate(-18 11 12.6)" />
+          <ellipse cx="11" cy="12.6" rx="9.6" ry="2.7" fill="none" stroke="#ffd36a" stroke-width="1.6" transform="rotate(-18 11 12.6)" />
+          <path d="M19.6 2.2l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8z" fill="#fff" stroke={OUT} stroke-width="0.8" stroke-linejoin="round" />
+        </Svg>
+      );
     case 'medieval':
       return (
         <Svg {...p}>

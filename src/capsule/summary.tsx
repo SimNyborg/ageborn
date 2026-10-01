@@ -38,12 +38,18 @@ export interface SummaryActions {
    * "Next battle"). `onDone` then continues that path, and it is the primary (ui-plan 2.5).
    */
   doneLabel?: string;
+  /**
+   * Opened from the Result: the other way on, as a secondary (bug hunt 2026-10-01: Home was missing).
+   * Normally "Home" beside "Next battle"; while a Home unlock waits the app swaps them (FTUE audit #3).
+   */
+  altLabel?: string;
+  onAlt?: () => void;
 }
 
-export type SummaryButton = 'upgrade' | 'openNext' | 'openAll' | 'done';
+export type SummaryButton = 'upgrade' | 'openNext' | 'openAll' | 'done' | 'alt';
 
 /** The summary's buttons: exactly one primary (ui-plan 4.6, U1), the rest secondary. */
-export function summaryButtons(o: { pending: number; openNext: boolean; openAll: boolean; upgrade: boolean; fromResult: boolean }): {
+export function summaryButtons(o: { pending: number; openNext: boolean; openAll: boolean; upgrade: boolean; fromResult: boolean; alt?: boolean }): {
   primary: SummaryButton;
   secondary: SummaryButton[];
 } {
@@ -52,6 +58,7 @@ export function summaryButtons(o: { pending: number; openNext: boolean; openAll:
   const secondary: SummaryButton[] = [];
   if (o.upgrade) secondary.push('upgrade');
   if (o.pending > 1 && o.openAll && !o.fromResult) secondary.push('openAll');
+  if (o.fromResult && o.alt) secondary.push('alt');
   if (primary !== 'done') secondary.push('done');
   return { primary, secondary };
 }
@@ -196,6 +203,7 @@ export function SummaryPanel(p: { model: SummaryModel; art: ArtProvider; i18n: I
               openAll: !!actions.onOpenAll,
               upgrade: !!(model.bestUpgrade && actions.onUpgrade),
               fromResult: !!actions.doneLabel,
+              alt: !!(actions.altLabel && actions.onAlt),
             });
             const one = (k: SummaryButton, primary: boolean) => {
               const cls = primary ? css.btn : css.btnGhost;
@@ -217,6 +225,12 @@ export function SummaryPanel(p: { model: SummaryModel; art: ArtProvider; i18n: I
                   return (
                     <button key={k} class={cls} type="button" onClick={() => actions.onOpenAll?.()} data-testid="capsule-open-all" {...extra}>
                       {t('capsule.summary.openAll', { n: pending })}
+                    </button>
+                  );
+                case 'alt':
+                  return (
+                    <button key={k} class={cls} type="button" onClick={() => actions.onAlt?.()} data-testid="capsule-alt" {...extra}>
+                      {actions.altLabel}
                     </button>
                   );
                 case 'done':

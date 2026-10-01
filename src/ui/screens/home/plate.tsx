@@ -21,7 +21,7 @@ import { formatNameKey, modifierNameKey } from '@/content/keys';
 import type { Difficulty } from '@/content/types';
 import type { FormatId, OpponentSpec } from '@/contracts';
 import type { ComponentChildren } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { GeneralPortrait } from '../../components/Avatar';
 import { Button, IconButton } from '../../components/Button';
 import { AiBadge } from '../../components/Chips';
@@ -140,7 +140,7 @@ export function LengthPicker(p: { value: FormatId; options: readonly LengthOptio
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
   const open = p.options.map((o, i) => (o.open ? i : -1)).filter((i) => i >= 0);
   const current = p.options.findIndex((o) => o.format === p.value);
-  function pick(o: LengthOption) {
+  function pick(o: LengthOption, el?: Element | null) {
     if (o.open) {
       p.onChange(o.format);
       return;
@@ -150,6 +150,8 @@ export function LengthPicker(p: { value: FormatId; options: readonly LengthOptio
       toasts.show(t('ui.hub.lengthLocked', { name: formatName(content, t, o.format), n: at.arena, trophies: formatInt(at.trophies, locale) }), {
         tone: 'info',
         icon: <LockIcon size={20} />,
+        // Over the tapped length, not over the currency chips at the top (bug hunt 2026-10-01 #29).
+        ...(el ? { anchor: el } : {}),
       });
   }
   function onKey(e: KeyboardEvent, i: number) {
@@ -181,7 +183,7 @@ export function LengthPicker(p: { value: FormatId; options: readonly LengthOptio
             tabIndex={i === (current >= 0 ? current : (open[0] ?? 0)) ? 0 : -1}
             class={`ui-seg__opt hub-len__opt${on ? ' is-on' : ''}${o.open ? '' : ' is-locked'}${last ? ' is-last' : ''}`}
             data-format={o.format}
-            onClick={() => pick(o)}
+            onClick={(e) => pick(o, e.currentTarget)}
             onKeyDown={(e) => onKey(e, i)}
           >
             {last ? (
@@ -391,6 +393,9 @@ function DailyPlate(p: { aside?: boolean | undefined }) {
   const ch = content.dailyModifiers.challenge;
   const modifier = services.dailyModifier();
   const done = s.daily.bank <= 0;
+  // Bug hunt 2026-10-01 #22: the plate names today's AI General, as the VS screen does.
+  const foe = useMemo(() => services.previewDaily?.(d) ?? null, [s, d]);
+  const foeName = foe ? opponentName(foe, content, t) : null;
   return (
     <PlateFrame
       state="daily"
@@ -398,17 +403,21 @@ function DailyPlate(p: { aside?: boolean | undefined }) {
       aside={p.aside}
       ai
       portrait={
-        <span class="hub-plate__glyph is-daily">
-          <CalendarIcon size={30} />
-        </span>
+        foe ? (
+          <Portrait generalId={foe.generalId} label={foeName ?? ''} />
+        ) : (
+          <span class="hub-plate__glyph is-daily">
+            <CalendarIcon size={30} />
+          </span>
+        )
       }
       over={
         <>
-          {t('ui.ai.general')}
+          {foeName ? t('ui.hub.opponent') : t('ui.ai.general')}
           <TierPill tier={ch.difficulties[d]} testid="home-opponent-tier" />
         </>
       }
-      name={t('ui.mode.daily.title')}
+      name={foeName ?? t('ui.mode.daily.title')}
       choice={
         <Segmented
           label={t('ui.mode.daily.difficulty')}

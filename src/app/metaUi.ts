@@ -64,6 +64,8 @@ export interface MetaUiOptions {
   openWardrobe?: (id: string) => void;
   /** Session counters for the stopping cards (A15.6); tests pass their own. */
   cues?: StoppingCues;
+  /** A promise while the boot art is still loading, else null: a match start waits for it (VS stays up). */
+  artReady?: () => Promise<void> | null;
 }
 
 /** Pause overlay contents from the battle on screen (A9 #6). */
@@ -132,7 +134,24 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
   };
 
   let pending: MatchRequest | null = null;
+  // Home shows before the battle art has loaded (perf audit 2026-10-01): a match asked for meanwhile
+  // starts once it has, unless the player has left the screen that asked (VS or Home) by then.
+  let waitingForArt = false;
   const begin = (req: MatchRequest, opponent: OpponentSpec): void => {
+    const gate = o.artReady?.() ?? null;
+    if (!gate) {
+      beginNow(req, opponent);
+      return;
+    }
+    if (waitingForArt) return;
+    waitingForArt = true;
+    const from = router.current.peek();
+    void gate.then(() => {
+      waitingForArt = false;
+      if (router.current.peek() === from) beginNow(req, opponent);
+    });
+  };
+  const beginNow = (req: MatchRequest, opponent: OpponentSpec): void => {
     if (req.mode === 'tutorial') {
       // Match 2 from Home's Battle button (owner feedback 2026-09-28): the app builds it and keeps
       // its onboarding battle, result and capsule 2 screens, so the meta stack goes back to Home.

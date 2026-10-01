@@ -1,6 +1,7 @@
 {
   "capsule": {
     "tap": "Tap on the beat!",
+    "tapStarter": "Tap to crack it!",
     "strike": {
       "perfect": "Perfect!",
       "good": "Good!",

@@ -92,15 +92,22 @@ describe('capsule flow (app)', () => {
     }
   });
 
-  it('the Spear Hunter is in the plan from the start; the first scripted capsule changes no loadout (A3, A8)', () => {
+  it('the Spear Hunter is in the plan from the start; the first scripted capsule only fills empty slots (A3, A8)', () => {
     const before = M.grantCapsule(M.newSave(content, clock, 7), 'win', content, clock);
     const cap = before.capsules.pending[0]!;
     expect(cap.scriptIndex).toBe(1);
     const planOf = (s: typeof before) => s.warPlans[s.activePlan]!;
     expect(planOf(before).loadouts.stone.units).toContain('spear_hunter');
     const o = openCapsules(M, before, [cap.id], content, 'capsule1');
-    expect(planOf(o!.save)).toEqual(planOf(before));
-    // Its NEW Support Rares are in the collection, for "Equip now" on the summary.
+    // FTUE audit 2026-10-01 #7: the NEW cards take empty slots of their age; no card is replaced.
+    const stoneBefore = planOf(before).loadouts.stone.units;
+    const stoneAfter = planOf(o!.save).loadouts.stone.units;
+    stoneBefore.forEach((id, i) => {
+      if (id !== null) expect(stoneAfter[i]).toBe(id);
+    });
+    expect(stoneAfter).toContain('drum_shaman');
+    expect(planOf(o!.save).loadouts.bronze.units).toContain('standard_bearer');
+    // Its NEW Support Rares are in the collection.
     expect(o!.save.collection['drum_shaman']?.level).toBe(1);
     expect(o!.record.kind === 'capsules' && o!.record.onboarding).toBe('capsule1');
   });

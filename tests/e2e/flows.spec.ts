@@ -142,7 +142,8 @@ test.describe('B13 flows', () => {
     // A6.3, A15.13: the Sundial card "n of 34 ready" with a clock time, never a countdown (Capsules
     // tab), the War Chest bar and at most 3 quests (Progress tab; ui-plan 2.2).
     await page.getByTestId('tab-capsules').click();
-    await expect(page.getByTestId('sundial-status')).toContainText(/\d+ of \d+ ready|None ready yet/);
+    // While free capsules remain the card only says so (FTUE audit 2026-10-01 #12).
+    await expect(page.getByTestId('sundial')).toContainText(/\d+ of \d+ ready|None ready yet|don't use the Sundial/);
     await page.getByTestId('tab-progress').click();
     await expect(page.getByTestId('war-chest')).toContainText('War Chest');
     await expect(page.getByTestId('quest-3')).toHaveCount(0);

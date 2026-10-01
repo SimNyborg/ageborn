@@ -7,12 +7,13 @@
       "buildTurret": "Build a Rock Tosser",
       "spearHunter": "Spear Hunters beat Heavies",
       "evolve": "Evolve!",
-      "arrowStorm": "Drag the arrows onto them",
-      "stance": "Hold guards your base. Charge attacks!",
+      "arrowStorm": "Drag arrows onto them. Powers cost gold.",
+      "stance": "Charge attacks. Hold guards your base.",
+      "charge": "Tap Charge to attack their base!",
       "future": "From clubs to lasers!"
     },
     "m2": {
-      "treasury": "Tap your gold, then Granary twice",
+      "treasury": "Open the Council: research more gold",
       "secondMount": "Buy a second turret mount",
       "scroll": "Drag the field or tap the map",
       "lastStand": "Low base? Tap Last Stand."
@@ -67,6 +68,7 @@
     "next": "Continue",
     "tapToSkip": "Tap to skip",
     "saveUnreadable": "Save could not be read. Import a backup?",
+    "abandoned": "Your last Ladder battle was left early, so it counts as a Retreat.",
     "agePick": {
       "title": "Pick an age",
       "lead": "Every card in this Age Capsule comes from the age you pick.",

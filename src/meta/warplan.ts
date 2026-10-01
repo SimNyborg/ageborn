@@ -179,6 +179,30 @@ export function equipNow(s: SaveDoc, card: CardId, t: Content): SaveDoc {
   return { ...s, warPlans };
 }
 
+/**
+ * A newly found card goes into an **empty** troop or turret slot of its age in the active plan, if
+ * there is one; nothing is ever replaced (FTUE audit 2026-10-01 #7: capsule 1's two new cards stayed
+ * on the bench, so match 2 ran with 4 of 6 troops and two empty sockets).
+ */
+export function fillEmptySlot(s: SaveDoc, card: CardId, t: Content): SaveDoc {
+  const plan = activePlan(s);
+  const unit = t.units[card];
+  const turret = t.turrets[card];
+  const age = unit?.age ?? turret?.age;
+  if (!plan || !age || (unit?.hidden ?? false) || !isOwned(s, card)) return s;
+  const l = plan.loadouts[age];
+  if (!l) return s;
+  const ids = unit ? l.units : l.turrets;
+  const empty = ids.indexOf(null);
+  if (empty < 0 || ids.includes(card)) return s;
+  const filled = [...ids];
+  filled[empty] = card;
+  const next: Loadout = unit ? { ...l, units: filled } : { ...l, turrets: filled };
+  const idx = s.warPlans[s.activePlan] ? s.activePlan : 0;
+  const warPlans = s.warPlans.map((p, i) => (i === idx ? { ...p, loadouts: { ...p.loadouts, [age]: next } } : p));
+  return { ...s, warPlans };
+}
+
 /** Stores a preset (index 0-2; a new index adds the next preset). Reasons: badIndex. */
 export function setWarPlan(s: SaveDoc, index: number, plan: WarPlan): Result<SaveDoc> {
   if (!Number.isInteger(index) || index < 0 || index >= PLAN_PRESETS || index > s.warPlans.length) return { ok: false, reason: 'badIndex' };

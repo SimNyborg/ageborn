@@ -175,6 +175,22 @@ describe('first clear rewards (A18.7.8)', () => {
     expect(currentLevelId(a.save, C)).toBe('wp.bronze.l01');
   });
 
+  it('Stone L5 grants its War Path power and opens the Field slot; an owned power pays 60 Amber (A2.9.8)', () => {
+    const s0 = withStars(fresh(), W.regions[0]!.levels.slice(0, 4));
+    const s = { ...s0, flags: { ...s0.flags, 'power.field': false } };
+    const a = applyWarPath(s, C, { level: 'wp.stone.l05', difficulty: 'normal' }, 'win', stats(), 1);
+    const power = Object.values(C.powers).find((p) => p.source === 'warPath' && p.age === 'stone' && p.warPathLevel === 5)!.id;
+    expect(a.save.powersOwned).toContain(power);
+    expect(a.save.flags['power.field']).toBe(true);
+    expect(a.steps).toContainEqual({ kind: 'card', card: power, copies: 0 });
+    const owned = { ...s, powersOwned: [...s.powersOwned, power] };
+    const b = applyWarPath(owned, C, { level: 'wp.stone.l05', difficulty: 'normal' }, 'win', stats(), 1);
+    expect(b.steps).toContainEqual({ kind: 'amber', amount: 60 });
+    // A replay of a cleared level grants nothing.
+    const c = applyWarPath(a.save, C, { level: 'wp.stone.l05', difficulty: 'normal' }, 'win', stats(), 2);
+    expect(c.steps.some((x) => x.kind === 'card')).toBe(false);
+  });
+
   it('a level that is not open pays nothing', () => {
     const s = fresh();
     const a = applyWarPath(s, C, { level: 'wp.stone.l05', difficulty: 'normal' }, 'win', stats(), 1);

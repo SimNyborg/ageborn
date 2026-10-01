@@ -159,7 +159,7 @@ export type ViewAction =
   /** An effect on every visible unit of a side; `roles` limits it to units of those roles (a research shimmer). */
   | { a: 'fxUnits'; effectId: EffectId; side: Side; priority: number; opts?: Record<string, number>; roles?: readonly string[]; /** Only the side's `max` frontmost units (a capped buff, A2.9.6). */ max?: number }
   | { a: 'fxFly'; effectId: EffectId; from: Anchor; to: 'gold' | 'xp'; count: number; priority: number }
-  | { a: 'sound'; id: SoundId; delayMs?: number; gap?: Gap; climb?: string; priority?: number }
+  | { a: 'sound'; id: SoundId; delayMs?: number; gap?: Gap; climb?: string; priority?: number; /** 10000 = as recorded (a caller-pitched sound). */ pitchBp?: number; volumeDb?: number }
   | { a: 'trauma'; amount: number; dir?: Pt; gap?: Gap }
   | { a: 'screenFlash'; ms: number; color: number; alpha: number }
   | { a: 'baseFlash'; side: Side; ms: number }

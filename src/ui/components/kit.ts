@@ -30,7 +30,8 @@ export interface UiKit {
   locale: string;
   portrait: PortraitFn | null;
   reduceMotion: boolean;
-  sound?: (id: string) => void;
+  /** `pitchBp` (10000 = as recorded) raises a caller-pitched sound, e.g. each star a step higher (MR-41). */
+  sound?: (id: string, o?: { pitchBp?: number }) => void;
 }
 
 export const defaultKit: UiKit = {
@@ -106,4 +107,10 @@ export function usePortrait(card: CardId | null, o: { skin?: SkinId | null; foil
     };
   }, [portrait, key]);
   return url;
+}
+
+/** MR-41: each stamped star sounds a step higher (star 1 as recorded, then +2 and +4 semitones). */
+export function starPitchBp(star: number): number {
+  const semis = [0, 0, 2, 4, 7][Math.max(0, Math.min(4, star))] ?? 0;
+  return Math.round(10000 * 2 ** (semis / 12));
 }

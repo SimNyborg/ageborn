@@ -15,24 +15,11 @@ import { useApp } from './context';
 import './meta.css';
 
 /**
- * UI sound ids the plan adds (ui-plan 5.4) that WP6 has not made yet, played as their nearest
- * existing sound meanwhile (docs/requests/wp6-ui-sounds.md).
+ * UI sound ids the screens use that the audio manifest does not have yet, played as their nearest
+ * existing sound meanwhile. Empty since the MVP pass rendered the
+ * ui-plan 5.4 and War Path ids (`tools/audio/sfx/sounds_mvp.py`); kept as the place for a future one.
  */
-export const UI_SOUND_FALLBACK: Readonly<Record<string, string>> = {
-  ui_sheet: 'ui_toggle',
-  ui_pop: 'ui_toggle',
-  ui_whoosh: 'ui_tab',
-  ui_stamp: 'ui_confirm',
-  card_lift: 'ui_toggle',
-  card_place: 'ui_confirm',
-  // The War Path map (ui-plan 5.4; docs/requests/wp6-warpath-sounds.md)
-  star_stamp: 'ui_confirm',
-  path_draw: 'ui_tab',
-  node_drop: 'ui_toggle',
-  region_open: 'level_up',
-  ui_unlock: 'level_up',
-  reward_fly: 'ui_tab',
-};
+export const UI_SOUND_FALLBACK: Readonly<Record<string, string>> = {};
 
 export interface MetaHostProps {
   meta: MetaUi;
@@ -54,7 +41,7 @@ export function MetaHost(p: MetaHostProps) {
       portrait: ui.art.portrait.bind(ui.art),
       toasts: p.meta.toasts,
       // UI sounds (ui-plan 5.4): press, deny, tab, toggle, sheet.
-      sound: (id: string) => ui.services.audio.play(UI_SOUND_FALLBACK[id] ?? id),
+      sound: (id: string, o?: { pitchBp?: number }) => ui.services.audio.play(UI_SOUND_FALLBACK[id] ?? id, o),
     }),
     [p.meta, ui],
   );

@@ -323,7 +323,8 @@ export function Hud(props: HudProps) {
           if (p.readOnly) return;
           flash(i.target);
           if (i.reason) say(i.target, i.reason);
-          p.audio?.play('ui_deny');
+          // a fort that cannot go here gets its own dull stone knock (A16.14.8)
+          p.audio?.play(i.target === 'fort' ? 'fort_denied' : 'ui_deny');
           haptic('deny');
           return;
         case 'command':
@@ -591,7 +592,8 @@ export function Hud(props: HudProps) {
     const i = researchIntent(pick, side);
     act(i);
     if (i.k !== 'command') return;
-    audio?.play('turret_upgrade');
+    // the pick stamp (A13 planned Council sounds); the completion stinger comes from the battle view
+    audio?.play('council_pick');
     setSpend({ id: ++flySeq.current, amount: pick.price });
     const rootEl = root.current;
     const a = rootEl ? center(from.querySelector<HTMLElement>('.hud-pick-badge') ?? from, rootEl) : null;

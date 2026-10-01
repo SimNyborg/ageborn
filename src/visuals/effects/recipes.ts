@@ -14,6 +14,7 @@
  */
 
 import { fortFxRecipes } from './fortRecipes';
+import { mvpFxRecipes } from './mvpRecipes';
 import { powerFxRecipes } from './powerRecipes';
 
 export type Range = readonly [number, number];
@@ -731,6 +732,8 @@ export const FX_RECIPES: readonly FxRecipe[] = [
   ...powerFxRecipes({ flash, ring, smoke, sparks, dust, chunks, bloom, scorch }),
   // A16.14.8 forts
   ...fortFxRecipes({ flash, ring, smoke, sparks, dust, chunks, bloom, scorch }),
+  // MVP pass: stance cues, slow and snare marks, Brace, research done, levy pennant
+  ...mvpFxRecipes({ flash, ring, smoke, sparks, dust, chunks, bloom, scorch }),
 ];
 
 export const FX_RECIPE_BY_ID: ReadonlyMap<string, FxRecipe> = new Map(FX_RECIPES.map((r) => [r.id, r]));

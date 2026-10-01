@@ -23,6 +23,8 @@ import { minutesText } from '../model/homeMode';
 
 /** A9 #4: the VS screen shows for 2 s. */
 export const VS_MS = 2000;
+/** When the slam sound starts (the CSS `vs-slam` runs 260-780 ms and peaks near 450 ms). */
+const VS_SLAM_SOUND_MS = 300;
 
 /** "No clock · Siege rises every 2½ min from 14:30 · Crumble from 22:00" (A2.10.1), from the format's steps. */
 function lastBaseRow(steps: readonly { atMs: number; crumbleBpPerSec: number }[], t: (k: string, p?: Record<string, string | number>) => string): string {
@@ -42,7 +44,7 @@ const MODE_KEYS = {
 } as const;
 
 export function VsScreen(p: { route: RouteOf<'vs'> }) {
-  const { save, content, t, locale, services } = useUi();
+  const { save, content, t, locale, services, sound } = useUi();
   const { opponent: o, request } = p.route;
   const s = save.value;
   const started = useRef(false);
@@ -56,7 +58,14 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
 
   useEffect(() => {
     const id = setTimeout(() => beginRef.current(), VS_MS);
-    return () => clearTimeout(id);
+    // The plates slide in on a whoosh and meet on a slam (audit 2026-10-01: the VS was silent). The
+    // slam sound has its own 150 ms run-in, timed so its impact lands with the CSS `vs-slam` peak.
+    sound?.('ui_whoosh');
+    const slam = setTimeout(() => sound?.('vs_slam'), VS_SLAM_SOUND_MS);
+    return () => {
+      clearTimeout(id);
+      clearTimeout(slam);
+    };
   }, []);
 
   const general = generalOf(content, o.generalId);
@@ -147,7 +156,7 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
       </div>
       <footer class="vs__strip">
         <div class="vs__chips">
-          {request.mode === 'tutorial' ? null : <Pill tone="blue">{t(MODE_KEYS[request.mode])}</Pill>}
+          {request.mode === 'tutorial' ? null : <Pill tone="blue">{t(request.mode === 'skirmish' && request.quick ? 'ui.vs.mode.quick' : MODE_KEYS[request.mode])}</Pill>}
           {request.mode === 'warPath' && content.warPath.levels[request.level] ? (
             <Pill tone="gold" testid="vs-level">
               {t('ui.vs.level', { n: content.warPath.levels[request.level]!.index, name: t(levelNameKey(request.level)) })}

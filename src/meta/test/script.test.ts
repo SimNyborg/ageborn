@@ -51,7 +51,7 @@ describe('onboarding script (A6.5)', () => {
     const [c1, c2, c3, c4, c5, c6] = reveals;
     expect(c1?.capsule.contents.stacks.some((x) => x.card === 'drum_shaman' && x.isNew)).toBe(true);
     expect(c2?.capsule.tier).toBe('silver');
-    expect(c2?.capsule.contents.stacks.filter((x) => x.isNew).map((x) => x.card).sort()).toEqual(['field_surgeon', 'friar']);
+    expect(c2?.capsule.contents.stacks.filter((x) => x.isNew).map((x) => x.card).sort()).toEqual(['friar', 'onager']);
     // Capsule 3 is the first Supply Capsule, granted right after capsule 2 (A15.4); the script
     // overrides its tier: still the scripted Bronze.
     expect(c3?.capsule).toMatchObject({ kind: 'daily', tier: 'bronze', startTier: 'bronze', scriptIndex: 3 });
@@ -61,6 +61,8 @@ describe('onboarding script (A6.5)', () => {
     const epics = c4?.capsule.contents.stacks.filter((x) => x.rarity === 'epic') ?? [];
     expect(epics).toHaveLength(1);
     expect(epics[0]?.isNew).toBe(true);
+    // ... and the Gunpowder Support Rare (A3), moved here from capsule 2 (FTUE audit 2026-10-01 #7).
+    expect(c4?.capsule.contents.stacks.some((x) => x.card === 'field_surgeon' && x.isNew)).toBe(true);
     for (const r of [c1, c2, c3]) expect(r?.capsule.contents.stacks.some((x) => x.rarity === 'epic' || x.rarity === 'legendary')).toBe(false);
     // Capsule 5: Aeon with the Mammoth Matriarch and its first-ever walkout.
     expect(c5?.capsule.tier).toBe('gold');

@@ -19,6 +19,8 @@ interface Delayed {
   atMs: number;
   id: SoundId;
   pan: number;
+  pitchBp?: number;
+  volumeDb?: number;
   priority: number;
   gap: Gap | undefined;
 }
@@ -100,14 +102,22 @@ export class FeelDirector {
   }
 
   /** Plays (or schedules, in game time) a sound. `pan` in -1..1. */
-  sound(id: SoundId, o: { delayMs?: number; gap?: Gap; climb?: string; pan?: number; priority?: number } = {}): void {
+  sound(id: SoundId, o: { delayMs?: number; gap?: Gap; climb?: string; pan?: number; priority?: number; pitchBp?: number; volumeDb?: number } = {}): void {
     if (o.delayMs && o.delayMs > 0) {
       // The throttle applies when the sound actually plays.
-      this.delayed.push({ atMs: this.gameMs + o.delayMs, id, pan: o.pan ?? 0, priority: o.priority ?? 0, gap: o.gap });
+      this.delayed.push({
+        atMs: this.gameMs + o.delayMs,
+        id,
+        pan: o.pan ?? 0,
+        priority: o.priority ?? 0,
+        gap: o.gap,
+        ...(o.pitchBp !== undefined ? { pitchBp: o.pitchBp } : {}),
+        ...(o.volumeDb !== undefined ? { volumeDb: o.volumeDb } : {}),
+      });
       return;
     }
     if (this.gated(o.gap)) return;
-    let pitchBp: number | undefined;
+    let pitchBp: number | undefined = o.pitchBp;
     if (o.climb) {
       const t = this.feel.tuning;
       const prev = this.climbs.get(o.climb);
@@ -115,8 +125,9 @@ export class FeelDirector {
       this.climbs.set(o.climb, { at: this.nowMs, n });
       pitchBp = 10000 + Math.min(t.coinPitchMaxBp, n * t.coinPitchStepBp);
     }
-    const opts: { pitchBp?: number; pan?: number; priority?: number } = {};
+    const opts: { pitchBp?: number; pan?: number; priority?: number; volumeDb?: number } = {};
     if (pitchBp !== undefined) opts.pitchBp = pitchBp;
+    if (o.volumeDb !== undefined && o.volumeDb !== 0) opts.volumeDb = o.volumeDb;
     if (o.pan !== undefined && o.pan !== 0) opts.pan = Math.max(-1, Math.min(1, o.pan));
     if (o.priority !== undefined) opts.priority = o.priority;
     this.audio.play(id, Object.keys(opts).length > 0 ? opts : undefined);
@@ -162,7 +173,14 @@ export class FeelDirector {
       const due = this.delayed.filter((d) => d.atMs <= this.gameMs);
       if (due.length > 0) {
         this.delayed = this.delayed.filter((d) => d.atMs > this.gameMs);
-        for (const d of due) this.sound(d.id, { pan: d.pan, priority: d.priority, ...(d.gap ? { gap: d.gap } : {}) });
+        for (const d of due)
+          this.sound(d.id, {
+            pan: d.pan,
+            priority: d.priority,
+            ...(d.gap ? { gap: d.gap } : {}),
+            ...(d.pitchBp !== undefined ? { pitchBp: d.pitchBp } : {}),
+            ...(d.volumeDb !== undefined ? { volumeDb: d.volumeDb } : {}),
+          });
       }
     }
     const it = this.feel.tuning.intensity;

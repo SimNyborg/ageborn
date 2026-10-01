@@ -32,6 +32,8 @@ import { CoinIcon } from './icons';
 import { usePortrait } from './usePortrait';
 import { PickBadge } from './councilIcons';
 import { secondsLeft } from './council';
+import { useFitLabel } from './fit';
+import { withoutAiPrefix } from '../components/format';
 
 export const EMOTES: readonly EmoteId[] = ['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg'];
 export const SCOUTED_COLLAPSE_MS = 3000;
@@ -462,6 +464,11 @@ export function TopBar(p: {
   const xp = xpProgress(m, c.config);
   const meEl = useRef<HTMLDivElement>(null);
   const foeEl = useRef<HTMLDivElement>(null);
+  // The foe's name fits its box on phones (condensed, never cut; bug hunt 2026-10-01 #14).
+  const foeIsBot = c.config.sides[c.side === 0 ? 1 : 0].isBot;
+  const foeNameBox = useRef<HTMLSpanElement>(null);
+  const foeNameEl = useRef<HTMLSpanElement>(null);
+  useFitLabel(foeNameEl, () => foeNameBox.current?.clientWidth ?? 0, [m.foe.label, c.compact]);
   useKick(meEl, p.hits[mySide], HIT_FRAMES, 280);
   useKick(foeEl, p.hits[foeSide], HIT_FRAMES, 280);
   const next = clock.nextPhase && clock.nextPhase.kind !== 'finalBell' ? clock.nextPhase : null;
@@ -516,13 +523,17 @@ export function TopBar(p: {
           <div class="hud-name hud-name-foe">
             {/* The foe is always an AI in a live battle (A7.1); in a replay shown from the AI's side
                 the "foe" is the human player, who gets no chip. */}
-            {c.config.sides[c.side === 0 ? 1 : 0].isBot ? (
+            {foeIsBot ? (
               <span class="hud-ai-chip" data-testid="hud-ai-chip" data-tag>
                 <RobotIcon size={13} />
                 {t('hud.ai')}
               </span>
             ) : null}
-            <span class="hud-name-text">{m.foe.label}</span>
+            <span class="hud-name-text" ref={foeNameBox}>
+              <span class="hud-name-fit" ref={foeNameEl}>
+                {foeIsBot ? withoutAiPrefix(m.foe.label) : m.foe.label}
+              </span>
+            </span>
           </div>
           <HpBar bp={m.foe.baseHpBp} team="foe" label={t('hud.baseHp')} />
           <XpBar bp={m.foe.xpBp} team="foe" ready={false} label={t('hud.xp')} />

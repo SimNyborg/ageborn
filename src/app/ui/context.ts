@@ -28,6 +28,11 @@ export interface AppUi {
   storage?: KeyValueStore | null;
   /** Starts a file download (save file, event log); absent in tests. */
   download?: (file: { name: string; mime: string; text: string }) => void;
+  /**
+   * While the boot art (Stone, Bronze) is still loading, a promise for it; null once loaded. A battle
+   * started from the meta screens waits for it (perf audit 2026-10-01: Home no longer waits for battle art).
+   */
+  artReady?: () => Promise<void> | null;
 }
 
 export const AppUiContext = createContext<AppUi | null>(null);

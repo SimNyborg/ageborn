@@ -266,7 +266,9 @@ function ladderOpponent(s: SaveDoc, t: Content, o: OpponentOptions): OpponentSpe
   const warmUp = s.lossStreak >= rules.lossProtection.streak;
   const base = ladderTier(s.mmr, arena, rules);
   const tier = warmUp ? Math.max(0, base - rules.lossProtection.tierDrop) : base;
-  const seed = seedOf(s, `ladder:${format}`);
+  // One draw for every length (bug hunt 2026-10-01 #23): switching Short, Medium or Long on the plate
+  // changes the war, not who you fight. The format only shapes the opponent's plan.
+  const seed = seedOf(s, 'ladder');
   const rng = seedSfc32(seed);
   const extra = { warmUp };
   const kettle = generalDef(t, FIRST_LADDER_GENERAL);

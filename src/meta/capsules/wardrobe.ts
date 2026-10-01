@@ -68,11 +68,31 @@ export function rollSkinOfRarity(t: Content, rng: Sfc32State, rarity: SkinRarity
   return null;
 }
 
-/** Grants a Wardrobe Crate, rolled now (A6.4, A6.5). */
+/**
+ * A skin of `rarity` or below for an owned card of the first age (the welcome crate, FTUE audit
+ * 2026-10-01 #9: it held a skin for a Gunpowder card the new player had never seen), so "Try it on"
+ * shows on a card the player has just fought with; null when there is none.
+ */
+function rollOwnedCardSkin(s: SaveDoc, t: Content, rng: Sfc32State, rarity: SkinRarity, owned: ReadonlySet<SkinId>): { skin: SkinId; rarity: SkinRarity } | null {
+  const firstAge = t.order.ages[0];
+  for (let r = SKIN_RARITY_INDEX[rarity]; r >= 0; r -= 1) {
+    const rr = SKIN_RARITIES[r] as SkinRarity;
+    const fit = crateSkins(t, rr).filter((id) => {
+      const target = t.skins[id]?.target;
+      return !owned.has(id) && target !== undefined && t.units[target]?.age === firstAge && (s.collection[target]?.level ?? 0) >= 1;
+    });
+    if (fit.length === 0) continue;
+    const skin = fit[randInt(rng, fit.length)];
+    if (skin !== undefined) return { skin, rarity: rr };
+  }
+  return null;
+}
+
+/** Grants a Wardrobe Crate, rolled now (A6.4, A6.5). The welcome crate holds a skin for an owned card. */
 export function grantCrateAt(s: SaveDoc, source: PendingCrate['source'], t: Content, now: number): { save: SaveDoc; crate: PendingCrate } {
   const rng = cloneSfc32(s.rng.capsule);
   const rarity = rollSkinRarity(t, rng, wardrobeDraw(s));
-  const got = rollSkinOfRarity(t, rng, rarity, skinsForRoll(s));
+  const got = (source === 'welcome' ? rollOwnedCardSkin(s, t, rng, rarity, skinsForRoll(s)) : null) ?? rollSkinOfRarity(t, rng, rarity, skinsForRoll(s));
   if (!got) throw new Error('meta: the content has no crate skins');
   // A18.9.4: every crate also holds one collection item, rolled from the cosmetic stream
   const cos = rollCrateCosmetic(s, t);

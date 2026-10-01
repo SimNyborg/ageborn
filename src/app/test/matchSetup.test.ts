@@ -82,10 +82,10 @@ describe('matchSetupFor (B11)', () => {
   });
 
   it('gives the A6.8 mistake bonus in the onboarding matches only, never to a picked difficulty (a missing save is a first launch)', () => {
-    expect(botProfileFor(opponent, content, fakeSaveDoc({ matchesPlayed: 1 })).mistakeBonusBp).toBe(1000);
+    expect(botProfileFor(opponent, content, fakeSaveDoc({ matchesPlayed: 1 })).mistakeBonusBp).toBe(5000);
     expect(botProfileFor(opponent, content, fakeSaveDoc({ matchesPlayed: 2 })).mistakeBonusBp).toBe(0);
     expect(botProfileFor(opponent, content, fakeSaveDoc({ matchesPlayed: 19 })).mistakeBonusBp).toBe(0);
-    expect(botProfileFor(opponent, content, null).mistakeBonusBp).toBe(1000);
+    expect(botProfileFor(opponent, content, null).mistakeBonusBp).toBe(5000);
     expect(botProfileFor(opponent, content, null, 'skirmish').mistakeBonusBp).toBe(0);
     expect(botProfileFor(opponent, content, null).weights).toEqual(content.generals.list.kettle.weights);
   });
@@ -150,7 +150,7 @@ describe('helpers', () => {
     const rookie = 'app.disclosure.rookie';
     const m2 = tutorialMatch2(fakeSaveDoc({ matchesPlayed: 1 }), content, 'Pip', 5);
     expect(m2.opponent.disclosures).toContain(rookie);
-    expect(m2.brain).toMatchObject({ kind: 'general', profile: { mistakeBonusBp: 1000 } });
+    expect(m2.brain).toMatchObject({ kind: 'general', profile: { mistakeBonusBp: 5000 } });
     // Quick Battle: the player picked the difficulty, so no handicap and nothing to disclose.
     const q = quickBattle(null, content, { generalId: 'kettle', displayName: 'Captain Kettle', format: 'short', seed: 3 });
     expect(q.opponent.disclosures).not.toContain(rookie);

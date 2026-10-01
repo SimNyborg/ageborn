@@ -165,8 +165,8 @@ describe('ladder opponents', () => {
   });
 
   it('new players: +10 points of bot mistake rate in the two onboarding matches only (owner feedback 2026-09-28)', () => {
-    expect(newPlayerMistakeBonusBp(fresh(), C)).toBe(1000);
-    expect(newPlayerMistakeBonusBp({ ...fresh(), matchesPlayed: 1 }, C)).toBe(1000);
+    expect(newPlayerMistakeBonusBp(fresh(), C)).toBe(5000);
+    expect(newPlayerMistakeBonusBp({ ...fresh(), matchesPlayed: 1 }, C)).toBe(5000);
     expect(newPlayerMistakeBonusBp({ ...fresh(), matchesPlayed: 2 }, C)).toBe(0);
     // A picked difficulty never gets the handicap.
     expect(newPlayerMistakesApply(fresh(), 'skirmish', C)).toBe(false);

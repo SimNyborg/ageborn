@@ -61,7 +61,20 @@ export const FORT_SOUNDS = {
   campHorn: 'camp_horn',
   levySpawn: 'levy_spawn',
   denied: 'fort_denied',
+  // Energy forts and the Future and Cosmic camps (audit 2026-10-01): no mallets, horns or tent flaps
+  buildEnergy: 'fort_build_energy',
+  trapBlastEnergy: 'trap_blast_energy',
+  campWarp: 'camp_warp',
+  levyWarp: 'levy_warp',
 } as const satisfies Record<string, SoundId>;
+
+/** Camps that muster by warp or clone vat rather than a horn and a tent (Future, Cosmic). */
+export const WARP_CAMPS: ReadonlySet<string> = new Set(['clone_bay', 'warp_barracks']);
+
+/** The scaffold's building sound: mallets on timber, stone and metal; a charging projector for energy. */
+export function fortBuildSound(card: CardId): SoundId {
+  return fortMaterial(card) === 'energy' ? FORT_SOUNDS.buildEnergy : FORT_SOUNDS.build;
+}
 
 export function fortHitSound(card: CardId): SoundId {
   return `fort_hit_${fortMaterial(card)}`;

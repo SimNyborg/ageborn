@@ -1348,3 +1348,52 @@
   bottom: -4px;
   line-height: 0;
 }
+
+/* Bug hunt 2026-10-01 #15: on phones the pinned Locked row (45 px) covered the Available cards' level
+   row (the pool is 151 px tall, its content 187 px). While Locked is collapsed it moves to a column at
+   the pool's right, beside the Available cards, so nothing overlaps and both stay in view. */
+@container ui-root (max-height: 480px) {
+  .army-pool:has(> .army-sec--locked.is-peek) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 236px;
+    align-items: start;
+    column-gap: var(--ui-s3);
+  }
+  .army-pool:has(> .army-sec--locked.is-peek) > .army-sec--free {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .army-pool:has(> .army-sec--locked.is-peek) .army-sec-head--locked {
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
+    top: 0;
+    bottom: auto;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    margin: 0;
+    padding: 6px 0 6px var(--ui-s3);
+    border-top: 0;
+    border-left: 1px solid rgba(107, 120, 144, 0.32);
+    box-shadow: none;
+    background: transparent;
+  }
+  .army-pool:has(> .army-sec--locked.is-peek) .army-peek {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+  .army-pool:has(> .army-sec--locked.is-peek) .army-peek__titles {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+  .army-pool:has(> .army-sec--locked.is-peek) .army-peek__cards {
+    flex: 1 1 0;
+  }
+  .army-pool:has(> .army-sec--locked.is-peek) .army-sec-head--locked .army-album {
+    margin: 0;
+    align-self: flex-start;
+  }
+}

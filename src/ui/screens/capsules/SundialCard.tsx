@@ -165,12 +165,18 @@ export function SundialCard(p: { save: SaveDoc; content: Content; t: Translate; 
         <h2 id="sundial-title" class="sundial-card__title">
           {t('ui.capsules.sundialTitle')}
         </h2>
-        <b class="sundial-card__status" data-testid="sundial-status">
-          {status}
-        </b>
-        <span class="sundial-card__when" data-testid="sundial-next">
-          {when}
-        </span>
+        {/* FTUE audit 2026-10-01 #12: while free capsules are left, "12 of 34 ready" beside capsules the
+            Sundial does not open read like a bug; the card then says only that the next ones are free. */}
+        {v.free > 0 ? null : (
+          <>
+            <b class="sundial-card__status" data-testid="sundial-status">
+              {status}
+            </b>
+            <span class="sundial-card__when" data-testid="sundial-next">
+              {when}
+            </span>
+          </>
+        )}
         <small class="sundial-card__rule">{v.free > 0 ? t('ui.home.freeCapsules', { n: formatInt(v.free, locale) }) : t('ui.capsules.chargesNote')}</small>
       </div>
     </section>

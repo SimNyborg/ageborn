@@ -10,12 +10,14 @@ import type { EconomyRules, PowerEconomyRules, PowerReach, PowerSlot } from '@/c
 import { BP, LANE_MLU, MILLI, PPM } from './fixed';
 
 /**
- * Whether battles send each side's Field power (A2.9.13). P1 keeps it off (one power button, the Home
- * slot) so `main` stays playable until the HUD dock ships in P2; P2 turns it on and the match rule then
- * follows the Field slot flag (and the Daily always plays both slots). Here in `core` so the meta match
- * rule and the Army screen read one switch (the UI may not import meta).
+ * Whether battles send each side's Field power (A2.9.13). P1 kept it off (one power button, the Home
+ * slot) until the HUD dock shipped in P2. MVP fix 2026-10-01: the dock, the Army slot, the AI and the
+ * balance tools (which always played both slots) are built, and an earned slot showing "Coming soon"
+ * broke U15, so it is on: the match rule follows the Field slot flag (and the Daily always plays both
+ * slots). Here in `core` so the meta match rule and the Army screen read one switch (the UI may not
+ * import meta).
  */
-export const FIELD_SLOT_IN_BATTLE = false;
+export const FIELD_SLOT_IN_BATTLE = true;
 
 /** The slots in index order: per-slot arrays hold Home at 0 and Field at 1 (A2.9.1). */
 export const POWER_SLOTS: readonly PowerSlot[] = ['home', 'field'];

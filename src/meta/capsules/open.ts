@@ -28,6 +28,7 @@ import { duplicateDustOf, firstOfTierFlag, grantOpened } from '../cosmetics';
 import { unlockTitles } from '../titles';
 import { betterFoil } from './foil';
 import { advancePity } from './pity';
+import { fillEmptySlot } from '../warplan';
 
 /** Number of strikes on the capsule (A10 step 3). */
 export const STRIKES = 4;
@@ -132,6 +133,8 @@ export function openCapsuleWith(s: SaveDoc, id: string, t: Content): { save: Sav
   let { save } = unlockTitles(opened, t);
   // A18.9.4: the capsule's collection item (a duplicate pays its Dust)
   save = grantOpened(save, t, cap.contents.cosmetic).save;
+  // New cards fill an empty slot of their age in the active plan (never replacing one; FTUE audit #7).
+  for (const st of stacks) if (st.isNew) save = fillEmptySlot(save, st.card, t);
   if (unlockSupply) {
     // The first Supply Capsule, granted right after capsule 2 (A15.4). It never uses an allowance.
     const bank = save.capsules.dailyBank;

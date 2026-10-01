@@ -304,7 +304,14 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
       </div>
 
       <header class="wp-top hub-top">
-        {armyOpen ? <HubProfile /> : <span />}
+        {/* Before the profile chip arrives, the game's name brands the first screen (FTUE audit 2026-10-01). */}
+        {armyOpen ? (
+          <HubProfile />
+        ) : (
+          <span class="hub-wordmark" data-testid="home-wordmark">
+            {t('ui.home.gameName')}
+          </span>
+        )}
         <span />
         <HubTopRight quiet={quiet} />
       </header>

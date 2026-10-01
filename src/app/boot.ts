@@ -4,7 +4,7 @@
  * 1. load the save
  * 2. apply settings
  * 3. init the platform adapter
- * 4. init Pixi and pre-bake Stone/Bronze (the other ages bake in idle time)
+ * 4. init Pixi and start the Stone/Bronze art (Home does not wait for it; a battle start does)
  * 5. audio unlock on the first gesture
  * 6. route to the tutorial or Home
  *
@@ -15,10 +15,11 @@ import type { KeyValueStore } from './eventLog';
 import { bootRoute } from './onboarding';
 import type { PixiHost } from './pixiHost';
 import { buildServices, choiceFromUrl, type Services } from './services';
+import { settleAbandoned } from './abandon';
 
 /** Baked at boot (A17.13): Stone, and Bronze, the second age of every format. */
 export const BOOT_AGES: readonly AgeId[] = ['stone', 'bronze'];
-/** Every other age, preloaded when the browser is idle (A17.8: eight ages). */
+/** Every other age (A17.8: eight ages). They load per match, as a side nears them (B16), never all at boot. */
 export const LATER_AGES: readonly AgeId[] = ['medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
 
 export type BootStep = 'save' | 'settings' | 'platform' | 'pixi' | 'art' | 'audio' | 'route';
@@ -32,8 +33,10 @@ export interface BootOptions {
   initPixi?: () => Promise<PixiHost>;
   /** Where the first gesture is listened for (document). */
   gestureTarget?: EventTarget | null;
-  /** Runs a task when the browser is idle (later ages bake then, B5). */
+  /** Runs a task when the browser is idle (unused since art loads per match; kept for callers). */
   idle?: (task: () => void) => void;
+  /** Wait for the boot art before returning, whatever the route (tests, dev pages). */
+  awaitArt?: boolean;
   devicePixelRatio?: number;
   isMobile?: boolean;
   services?: Services;
@@ -52,6 +55,8 @@ export interface Booted {
   save: SaveDoc | null;
   pixi: PixiHost | null;
   art: ArtProvider;
+  /** Resolves once the boot ages' art (Stone, Bronze) has loaded; a battle start waits for it. */
+  artReady: Promise<void>;
   route: 'tutorial' | 'home';
   flags: BootFlags;
   /** The boot steps in the order they ran. */
@@ -105,6 +110,8 @@ export async function boot(o: BootOptions): Promise<Booted> {
     // Charges, the Supply and Daily banks, quest arrivals and the Daily day move on while away (A6.3).
     const ticked = services.meta.tickTimers(save, services.clock);
     if (ticked !== save) void services.saveStore.save((save = ticked));
+    // A Ladder battle left by a reload counts as the Retreat it could have been (bug hunt 2026-10-01 #9).
+    save = await settleAbandoned(services, save);
   }
   steps.push('save');
 
@@ -127,8 +134,14 @@ export async function boot(o: BootOptions): Promise<Booted> {
     teamPreset: settings?.teamPreset ?? 'default',
     search: o.search,
   });
-  await art.preload([...BOOT_AGES]);
-  (o.idle ?? ((task) => setTimeout(task, 0)))(() => void art.preload([...LATER_AGES]));
+  // Home does not wait for the battle art (perf audit 2026-10-01, B16 "Play button <= 5 s"): the
+  // Stone and Bronze sheets stream in behind Home and only a battle start waits for them
+  // (`artReady`). The other ages load per match, as each side nears them (render `preloadAhead`).
+  // The capsule title, the dev autopilot and `?quick=` put a battlefield on screen at once: they wait.
+  const route = bootRoute(save);
+  const artReady = art.preload([...BOOT_AGES]).catch((e: unknown) => o.warn?.(`[boot] art preload failed: ${String(e)}`));
+  const q = new URLSearchParams(o.search);
+  if (o.awaitArt === true || route === 'tutorial' || bootFlags(o.search).autopilot || q.has('quick')) await artReady;
   steps.push('art');
 
   // 5. Audio unlocks on the first gesture.
@@ -136,11 +149,10 @@ export async function boot(o: BootOptions): Promise<Booted> {
   steps.push('audio');
 
   // 6. Route to the tutorial or Home.
-  const route = bootRoute(save);
   steps.push('route');
   services.platform.loadingFinished();
   services.eventLog.record('boot', route, { services: Object.values(services.choice).join(',') });
-  return { services, save, pixi, art, route, flags: bootFlags(o.search), steps };
+  return { services, save, pixi, art, artReady, route, flags: bootFlags(o.search), steps };
 }
 
 /** DESIGN B4 / docs/requests/wp1-dev-boot-validation.md: validate content in dev builds only. */

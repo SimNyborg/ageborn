@@ -69,6 +69,13 @@ const A13: Record<string, string[]> = {
   forts: [
     'fort_place', 'fort_build', 'fort_complete', 'fort_hit_wood', 'fort_hit_stone', 'fort_hit_metal', 'fort_hit_energy', 'fort_crumble', 'fort_collapse', 'fort_decay', 'trap_arm', 'trap_snap', 'trap_blast', 'camp_horn', 'levy_spawn', 'fort_denied',
   ],
+  /** MVP pass (audio audit 2026-10-01): the ui-plan 5.4 UI ids, Council, stances, escalation, warnings, energy forts. */
+  mvp: [
+    'ui_sheet', 'ui_pop', 'ui_whoosh', 'ui_stamp', 'card_lift', 'card_place', 'star_stamp', 'path_draw', 'node_drop', 'region_open', 'ui_unlock', 'reward_fly',
+    'council_open', 'council_pick', 'vs_slam', 'sundial_claim', 'glyph_light',
+    'stance_charge', 'stance_hold', 'stance_fallback', 'research_done', 'alert_heavy', 'hit_armor_crack', 'brace_clank', 'thunder', 'escalate_horn', 'crumble_pulse',
+    'fort_build_energy', 'camp_warp', 'levy_warp', 'trap_blast_energy',
+  ],
 };
 const A13_IDS = Object.values(A13).flat();
 
@@ -82,8 +89,8 @@ function peak(a: Float32Array): number {
 
 describe('sound manifest (A13)', () => {
   it('has exactly the A13 sound ids', () => {
-    // 182 + the 16 fort sounds (A16.14.8)
-    expect(A13_IDS).toHaveLength(198);
+    // 182 + the 16 fort sounds (A16.14.8) + the 31 of the MVP pass
+    expect(A13_IDS).toHaveLength(229);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 

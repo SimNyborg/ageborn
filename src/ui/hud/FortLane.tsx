@@ -31,42 +31,73 @@ function cls(...parts: (string | false | null | undefined)[]): string {
 /** How long a placement's dust and contracting ghost stay. */
 const BURST_MS = 760;
 
-/** Places every `[data-p]` child on the ground line each frame (and `[data-p2]` bands between two points). */
+/**
+ * Places every `[data-p]` child on the ground line each frame (and `[data-p2]` bands between two points).
+ * Perf (audit 2026-10-01: 1.4 ms a frame): the node list is re-read only when the children change, the
+ * width only on resize, and a style is written only when its value changed, so a still camera costs no
+ * style or layout work.
+ */
 function useGroundLayout(host: { current: HTMLElement | null }, c: HudCtx): void {
   const live = useRef(c);
   live.current = c;
   useEffect(() => {
     if (typeof requestAnimationFrame !== 'function') return undefined;
     let raf = 0;
+    let nodes: HTMLElement[] | null = null;
+    let width = -1;
+    const written = new WeakMap<HTMLElement, string>();
+    const el0 = host.current;
+    const mo = typeof MutationObserver === 'function' && el0 ? new MutationObserver(() => (nodes = null)) : null;
+    mo?.observe(el0!, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-p', 'data-p2'] });
+    const ro = typeof ResizeObserver === 'function' && el0 ? new ResizeObserver(() => (width = -1)) : null;
+    ro?.observe(el0!);
     const step = (): void => {
       raf = requestAnimationFrame(step);
       const el = host.current;
       const view = live.current.view;
       if (!el || !view?.laneScreen) return;
-      const w = el.clientWidth;
-      for (const node of Array.from(el.querySelectorAll<HTMLElement>('[data-p]'))) {
-        const p = Number(node.dataset['p']);
-        const a = view.laneScreen(p);
+      if (!mo || el !== el0) nodes = null;
+      nodes ??= Array.from(el.querySelectorAll<HTMLElement>('[data-p]'));
+      if (width < 0 || !ro) width = el.clientWidth;
+      const w = width;
+      for (const node of nodes) {
+        const a = view.laneScreen(Number(node.dataset['p']));
         if (!a) continue;
-        node.style.setProperty('--s', a.scale.toFixed(4));
+        const scale = a.scale.toFixed(4);
         if (node.dataset['p2'] !== undefined) {
           const b = view.laneScreen(Number(node.dataset['p2']));
           if (!b) continue;
           const left = Math.min(a.x, b.x);
-          const width = Math.abs(b.x - a.x);
-          node.style.transform = `translate3d(${left.toFixed(1)}px, ${a.y.toFixed(1)}px, 0)`;
-          node.style.width = `${width.toFixed(1)}px`;
-          // A band that runs to the left of its start (the right-hand side's reach) flips its arrow.
-          node.classList.toggle('is-rtl', b.x < a.x);
+          const tr = `translate3d(${left.toFixed(1)}px, ${a.y.toFixed(1)}px, 0)`;
+          const wd = `${Math.abs(b.x - a.x).toFixed(1)}px`;
+          const rtl = b.x < a.x;
+          // A band that runs to the left of its start (the right-hand side's reach) flips its arrow
+          // (always applied: a re-render may rewrite the class attribute).
+          if (node.classList.contains('is-rtl') !== rtl) node.classList.toggle('is-rtl', rtl);
+          const key = `${scale}|${tr}|${wd}`;
+          if (written.get(node) === key) continue;
+          written.set(node, key);
+          node.style.setProperty('--s', scale);
+          node.style.transform = tr;
+          node.style.width = wd;
           continue;
         }
         const off = a.x < -80 || a.x > w + 80;
+        const tr = `translate3d(${a.x.toFixed(1)}px, ${a.y.toFixed(1)}px, 0)`;
+        const key = `${scale}|${tr}|${off ? 1 : 0}`;
+        if (written.get(node) === key) continue;
+        written.set(node, key);
+        node.style.setProperty('--s', scale);
         node.style.visibility = off ? 'hidden' : '';
-        node.style.transform = `translate3d(${a.x.toFixed(1)}px, ${a.y.toFixed(1)}px, 0)`;
+        node.style.transform = tr;
       }
     };
     raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      mo?.disconnect();
+      ro?.disconnect();
+    };
   }, []);
 }
 

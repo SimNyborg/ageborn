@@ -68,3 +68,12 @@ export function formatCountdown(ms: number, t: Translate): string {
 export function formatSeconds(ms: number, locale = 'en'): string {
   return formatDec(ms / 1000, ms % 1000 === 0 ? 0 : ms % 100 === 0 ? 1 : 2, locale);
 }
+
+/**
+ * A procedural AI Commander's name without its "AI · " prefix (A7.4), for surfaces that already show
+ * the AI chip beside the name (the HUD nameplate, the Result line, the Profile history): the chip is
+ * the label there, and the prefix only doubled it and cut the name (bug hunt 2026-10-01 #14).
+ */
+export function withoutAiPrefix(name: string): string {
+  return name.replace(/^AI\s*·\s*/u, '');
+}

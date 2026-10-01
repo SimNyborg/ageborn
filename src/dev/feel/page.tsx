@@ -215,6 +215,39 @@ function trigger(api: StageApi, kind: string): void {
     case 'denied':
       api.inject([{ tick, e: 'commandRejected', side: 0, t: 'train', reason: 'gold' }]);
       return;
+    // MVP pass cues (audit 2026-10-01)
+    case 'stance: Charge':
+    case 'stance: Hold':
+    case 'stance: Fall back':
+    case 'AI stance: Charge': {
+      const stance = kind.endsWith('Hold') ? 'hold' : kind.endsWith('back') ? 'fallback' : 'charge';
+      api.inject([{ tick, e: 'stanceChanged', side: kind.startsWith('AI') ? 1 : 0, stance, holdP: 600 }]);
+      return;
+    }
+    case 'research done':
+      api.inject([{ tick, e: 'researchDone', side: 0, pick: api.source.sim.config.content.research.picks.find((p) => p.track !== 'troops')?.id ?? '' }]);
+      return;
+    case 'slow (status)':
+      if (foe) api.inject([{ tick, e: 'statusApplied', id: foe.id, kind: 'slow', ms: 2500, frozen: false }]);
+      return;
+    case 'escalation step 3':
+      api.inject([{ tick, e: 'escalated', step: 3 }]);
+      return;
+    case 'crumble beat':
+      api.inject([{ tick, e: 'crumbled', side: 1, amount: 500 }]);
+      return;
+    case 'fort placed + built': {
+      const x = (mine?.x ?? 300_000) + 60_000;
+      api.inject([{ tick, e: 'fortPlaced', side: 0, id: 9901, card: 'palisade', pad: 0, x, cost: 0 }]);
+      later(1500, [{ tick, e: 'fortBuilt', id: 9901 }]);
+      return;
+    }
+    case 'trap blast (energy)': {
+      const x = foe?.x ?? 700_000;
+      api.inject([{ tick, e: 'fortPlaced', side: 0, id: 9902, card: 'void_mine', pad: 0, x, cost: 0 }]);
+      later(400, [{ tick, e: 'trapTriggered', id: 9902, charge: 0, x }]);
+      return;
+    }
     case 'base destroyed (ends)':
       api.inject([{ tick, e: 'matchEnded', result: { winner: 0, reason: 'baseDestroyed', tick, baseHpBp: [8000, 0] } }]);
       return;
@@ -238,6 +271,16 @@ const TRIGGERS = [
   'Siege',
   'AI emote',
   'denied',
+  'stance: Charge',
+  'stance: Hold',
+  'stance: Fall back',
+  'AI stance: Charge',
+  'research done',
+  'slow (status)',
+  'escalation step 3',
+  'crumble beat',
+  'fort placed + built',
+  'trap blast (energy)',
   'base destroyed (ends)',
 ];
 

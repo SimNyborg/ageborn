@@ -19,7 +19,7 @@ import { Button } from '../../components/Button';
 import { ActionBar, type ActionBarProps } from '../../components/Layout';
 import { CardTile } from '../../components/CardTile';
 import { AiBadge } from '../../components/Chips';
-import { formatClock, formatInt, formatSigned } from '../../components/format';
+import { formatClock, formatInt, formatSigned, withoutAiPrefix } from '../../components/format';
 import {
   AmberIcon,
   CapsuleIcon,
@@ -41,7 +41,7 @@ import {
   TrophyIcon,
 } from '../../components/icons';
 import { pendingCrests, pendingNameKey, visibleTier } from '../../components/capsuleLook';
-import { useKit } from '../../components/kit';
+import { starPitchBp, useKit } from '../../components/kit';
 import { ClayMeter, ProgressBar } from '../../components/Meters';
 import type { ResultCard, RouteOf } from '../../router';
 import { useUi } from '../context';
@@ -85,7 +85,7 @@ function LevelBadge(p: { level: string; rewards: readonly RewardStep[]; stats: M
 export function LevelBadgeView(p: {
   content: Content;
   t: (k: string, p?: Record<string, string | number>) => string;
-  sound?: ((id: string) => void) | undefined;
+  sound?: ((id: string, o?: { pitchBp?: number }) => void) | undefined;
   best: number;
   level: string;
   rewards: readonly RewardStep[];
@@ -98,7 +98,7 @@ export function LevelBadgeView(p: {
   const first = fresh.length ? Math.min(...fresh) : best + 1;
   useEffect(() => {
     if (!fresh.length) return;
-    const ids = fresh.map((_, i) => setTimeout(() => p.sound?.('star_stamp'), 700 + i * 200));
+    const ids = fresh.map((star, i) => setTimeout(() => p.sound?.('star_stamp', { pitchBp: starPitchBp(star) }), 700 + i * 200));
     return () => ids.forEach(clearTimeout);
   }, []);
   if (!level) return null;
@@ -211,6 +211,23 @@ function TrophyReward(p: { delta: number; total: number; animate: boolean; unran
   );
 }
 
+/**
+ * The capsule a match claims (the Sundial's, A6.3) gets its own chime as its row lands (audit
+ * 2026-10-01: it was a silent row). Renders nothing.
+ */
+function CapsuleClaimSound(p: { animate: boolean }): null {
+  const kit = useKit();
+  useEffect(() => {
+    if (!p.animate) return undefined;
+    const id = setTimeout(() => kit.sound?.('sundial_claim'), CAPSULE_CLAIM_SOUND_MS);
+    return () => clearTimeout(id);
+  }, []);
+  return null;
+}
+
+/** When the claim chime plays after the reward list mounts (after the trophy count-up starts). */
+const CAPSULE_CLAIM_SOUND_MS = 450;
+
 function Reward(p: { r: RewardStep; animate: boolean; unranked?: boolean | undefined }) {
   const { t, locale, content, save } = useUi();
   const r = p.r;
@@ -240,12 +257,15 @@ function Reward(p: { r: RewardStep; animate: boolean; unranked?: boolean | undef
     case 'capsule': {
       const cap = save.value.capsules.pending.find((c) => c.id === r.capsuleId);
       return (
-        <RewardRow
-          testid="reward-capsule"
-          icon={cap ? <CapsuleIcon tier={visibleTier(content.capsules, cap)} crests={pendingCrests(content.capsules, cap)} size={44} /> : <CapsuleIcon tier="bronze" size={44} />}
-          label={cap ? t(pendingNameKey(content.capsules, cap)) : t('ui.result.capsule')}
-          value={<CheckIcon size={26} />}
-        />
+        <>
+          <CapsuleClaimSound animate={p.animate} />
+          <RewardRow
+            testid="reward-capsule"
+            icon={cap ? <CapsuleIcon tier={visibleTier(content.capsules, cap)} crests={pendingCrests(content.capsules, cap)} size={44} /> : <CapsuleIcon tier="bronze" size={44} />}
+            label={cap ? t(pendingNameKey(content.capsules, cap)) : t('ui.result.capsule')}
+            value={<CheckIcon size={26} />}
+          />
+        </>
       );
     }
     case 'crate':
@@ -791,7 +811,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
       badge={pathLevel ? <LevelBadge level={pathLevel} rewards={info.rewards} stats={stats} won={kind === 'win'} difficulty={info.input.warPath?.difficulty ?? 'normal'} /> : null}
       vs={
         <>
-          {t('ui.result.vs', { name: opponentName(opp, content, t) })} <AiBadge size="sm" />
+          {t('ui.result.vs', { name: withoutAiPrefix(opponentName(opp, content, t)) })} <AiBadge size="sm" />
           {lastReason ? (
             <span class="result__reason" data-testid="result-reason">
               {lastReason}

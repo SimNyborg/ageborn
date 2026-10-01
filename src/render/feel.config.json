@@ -288,6 +288,9 @@
     "phase.siege": { "trauma": 0.15, "sound": "siege_bell" },
     "emote": { "sound": "emote_pop" },
     "stance": { "sound": "ui_toggle" },
+    "stance.charge": { "sound": "stance_charge", "fxTarget": "sideUnits", "particles": [{ "effectId": "fx.stance_charge", "count": 1, "priority": 1 }] },
+    "stance.hold": { "sound": "stance_hold", "fxTarget": "sideUnits", "particles": [{ "effectId": "fx.stance_hold", "count": 1, "priority": 1 }] },
+    "stance.fallback": { "sound": "stance_fallback", "fxTarget": "sideUnits", "particles": [{ "effectId": "fx.stance_fallback", "count": 1, "priority": 1 }] },
     "deny": { "sound": "ui_deny" }
   }
 }

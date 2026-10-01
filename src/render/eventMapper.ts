@@ -13,7 +13,7 @@ import { feelRule, type FeelRuleExt, type RenderFeelConfig } from './feelConfig'
 import { BASE_DEPTH_LU, LANE_LU, MILLI_LU, gateX } from './layout';
 import { BACKDROP_WIPE_MS } from './seam';
 import type { Anchor, ViewAction } from './types';
-import { FORT_SOUNDS, fortHitSound, fortMaterial } from './fortFeel';
+import { FORT_SOUNDS, fortBuildSound, fortHitSound, fortMaterial, WARP_CAMPS } from './fortFeel';
 
 /** What the mapper needs to know about a live unit. */
 export interface UnitInfo {
@@ -48,6 +48,20 @@ export const SPARK_BY_DMG: Record<DmgType, EffectId> = {
 
 /** A modifier at or above ×1.5 is "effective", at or below ×0.75 "resisted" (A11 Counter feedback). */
 export const EFFECTIVE_BP = 15000;
+/** The Anti-heavy counter (×3.0 vs Heavy, A16): from ×2.5 an armour crack plays on top of the hit. */
+export const ANTI_HEAVY_CRACK_BP = 25000;
+/** A slow mark is renewed when the old one has at most this many ticks left (a field pulses every 10). */
+const SLOW_MARK_RENEW_TICKS = 10;
+/** The Brace plant replays at most every 1.2 s per unit. */
+const BRACE_GAP_TICKS = 24;
+/** Semitones per Last Base Standing escalation step (Siege I-III, Crumble I-II...): the horn climbs. */
+const ESCALATION_SEMITONES: readonly number[] = [0, 0, 2, 4, 7, 9, 12, 14];
+
+/** Playback rate (bp) for the escalation horn at `step`. */
+export function escalationPitchBp(step: number): number {
+  const semis = ESCALATION_SEMITONES[Math.max(0, Math.min(step, ESCALATION_SEMITONES.length - 1))] ?? 0;
+  return Math.round(10000 * Math.pow(2, semis / 12));
+}
 export const RESISTED_BP = 7500;
 
 export function sparkFor(dmg: DmgType, modBp: number): EffectId {
@@ -216,6 +230,12 @@ export class EventMapper {
   private readonly traps = new Map<number, { card: string; side: Side }>();
   /** Forts that crumbled away (decay): their removal is quiet (A16.14.8). */
   private readonly decayed = new Set<number>();
+  /** The sim tick of the events being mapped (the view sets it before `map`); slow marks are timed by it. */
+  tick = 0;
+  /** Per unit, the tick its slow or snare mark runs out (a field re-applies every pulse: one mark at a time). */
+  private readonly slowMarks = new Map<number, number>();
+  /** Per unit, the last Brace plant (ms of game time in ticks), so a Heavy's every hit does not replay it. */
+  private readonly braced = new Map<number, number>();
 
   constructor(o: MapperOptions) {
     this.content = o.content;
@@ -346,12 +366,19 @@ export class EventMapper {
           out.push({ a: 'unitClip', id: ev.id, clip: 'spawn' });
           out.push({ a: 'fortClip', id: ev.from, clip: 'spawn' });
           out.push({ a: 'fx', effectId: 'fx.levy_spawn', at: { k: 'unit', id: ev.from, part: 'feet' }, count: 1, priority: 1, opts: { side: ev.side } });
-          out.push({ a: 'sound', id: FORT_SOUNDS.levySpawn, gap: { key: FORT_SOUNDS.levySpawn, gapMs: 250 } });
-          out.push({ a: 'sound', id: FORT_SOUNDS.campHorn, delayMs: 60, gap: { key: FORT_SOUNDS.campHorn, gapMs: 3000 } });
+          // A levy wears a small team pennant, so it never reads as a trained Infantry (audit 2026-10-01)
+          out.push({ a: 'fx', effectId: 'fx.levy_marker', at: { k: 'unit', id: ev.id, part: 'head' }, count: 1, priority: 1, follow: true, opts: { side: ev.side, durationMs: UNIT_LOOP_MS } });
+          const warp = WARP_CAMPS.has(unit(ev.from)?.card ?? '');
+          const step = warp ? FORT_SOUNDS.levyWarp : FORT_SOUNDS.levySpawn;
+          const call = warp ? FORT_SOUNDS.campWarp : FORT_SOUNDS.campHorn;
+          out.push({ a: 'sound', id: step, gap: { key: step, gapMs: 250 } });
+          out.push({ a: 'sound', id: call, delayMs: 60, gap: { key: FORT_SOUNDS.campHorn, gapMs: 3000 } });
           return;
         }
         out.push({ a: 'unitClip', id: ev.id, clip: 'spawn' });
         this.rule('unit.spawn', { at: { k: 'unit', id: ev.id, part: 'feet' }, subs: { spawnSound: spawnSoundFor(def) } }, out);
+        // "Heavy incoming" (audit 2026-10-01): the enemy fields a Heavy; at most once every 8 s
+        if (ev.side !== this.mySide && def?.role === 'heavy' && !ev.summoned) out.push({ a: 'sound', id: 'alert_heavy', delayMs: 120, gap: { key: 'alert_heavy', gapMs: 8000 } });
         // A per-card effect that loops on the unit while it lives (A17.12: the Sapper's lit fuse).
         const alive = `unit.alive.${ev.card}`;
         if (this.has(alive)) this.rule(alive, { at: { k: 'unit', id: ev.id, part: 'head' }, follow: true, opts: { side: ev.side, durationMs: UNIT_LOOP_MS } }, out);
@@ -437,6 +464,19 @@ export class EventMapper {
           spreadLu: 6,
         }, out);
         if (victim) out.push({ a: 'unitClip', id: ev.targetId, clip: 'hit' });
+        // Anti-heavy (×3 vs Heavy): an armour plate cracks open on top of the counter hit
+        if (vDef?.role === 'heavy' && ev.modBp >= ANTI_HEAVY_CRACK_BP) out.push({ a: 'sound', id: 'hit_armor_crack', gap: { key: 'hit_armor_crack', gapMs: 90 } });
+        // Brace: a Heavy runs into a braced unit, which plants its feet (no knockback, A16 Heavy counter)
+        const aDef = src ? C.units[src.card] : undefined;
+        if (victim && aDef?.role === 'heavy' && vDef?.abilities.some((ab) => ab.kind === 'brace')) {
+          const last = this.braced.get(ev.targetId);
+          if (last === undefined || this.tick - last >= BRACE_GAP_TICKS) {
+            if (this.braced.size > 256) this.braced.clear();
+            this.braced.set(ev.targetId, this.tick);
+            out.push({ a: 'fx', effectId: 'fx.brace_plant', at: { k: 'unit', id: ev.targetId, part: 'feet' }, count: 1, priority: 2, opts: { side: victim.side } });
+            out.push({ a: 'sound', id: 'brace_clank', gap: { key: 'brace_clank', gapMs: 150 } });
+          }
+        }
         this.areaRing(ev, x, out);
         const power = ev.sourceKind === 'power' || ev.sourceKind === 'lastStand';
         const ownTurretKill = turret !== null && turret.side === this.mySide && diedNow.has(ev.targetId);
@@ -465,6 +505,27 @@ export class EventMapper {
           this.rule('status.shield', { at: { k: 'unit', id: ev.id, part: 'hit' }, opts: { durationMs: Math.min(ev.ms, tun.shieldPopMs) }, follow: true }, out);
         } else if (ev.kind === 'mark') {
           this.rule('status.mark', { at, opts: { durationMs: ev.ms }, follow: true }, out);
+        } else if (ev.kind === 'slow' || ev.kind === 'snare') {
+          // A slow or snare shows on the unit for as long as it lasts, also after the trap's snap or once
+          // the unit has left the zone (audit 2026-10-01). A field re-applies it every pulse: one mark at
+          // a time, renewed only when the old one is about to run out.
+          const end = this.tick + Math.ceil(ev.ms / 50);
+          const prev = this.slowMarks.get(ev.id);
+          if (prev !== undefined && prev >= end - SLOW_MARK_RENEW_TICKS) return;
+          if (this.slowMarks.size > 512) this.slowMarks.clear();
+          this.slowMarks.set(ev.id, end);
+          const u = unit(ev.id);
+          const def = u ? C.units[u.card] : undefined;
+          const radius = def ? C.economy.sizes[def.size] : 32;
+          out.push({
+            a: 'fx',
+            effectId: ev.kind === 'snare' ? 'fx.status_snare' : 'fx.status_slow',
+            at: { k: 'unit', id: ev.id, part: 'feet' },
+            count: 1,
+            priority: 1,
+            follow: true,
+            opts: { durationMs: ev.ms, radius },
+          });
         }
         return;
       }
@@ -587,7 +648,12 @@ export class EventMapper {
           const cls = this.content.research.classOfRole;
           const roles = (Object.keys(cls) as (keyof typeof cls)[]).filter((r) => cls[r] === pick.group);
           out.push({ a: 'fxUnits', effectId: 'fx.decree_glow', side: ev.side, priority: 2, roles });
+        } else {
+          // Defences, Economy and Command show at the base (audit 2026-10-01: they finished with no visual)
+          out.push({ a: 'fx', effectId: 'fx.research_done', at: { k: 'base', side: ev.side, part: 'top' }, count: 1, priority: 2, opts: { side: ev.side } });
         }
+        // A finished research is heard: your own clearly, the enemy's (public, A18.5.1) quietly
+        out.push({ a: 'sound', id: 'research_done', ...(ev.side === this.mySide ? {} : { volumeDb: -10 }), gap: { key: `research_done:${ev.side}`, gapMs: 600 } });
         return;
       }
       // The War Council HUD (A18.5.7) reads research from the observation; no view action yet.
@@ -699,7 +765,7 @@ export class EventMapper {
         out.push({ a: 'fx', effectId: 'fx.fort_scaffold_dust', at: { k: 'world', x, y: 0 }, count: 1, priority: 2, opts: { side: ev.side, radius: trap ? 26 : 30 } });
         if (!trap) {
           out.push({ a: 'unitFreeze', id: ev.id, ms: 40 });
-          out.push({ a: 'sound', id: FORT_SOUNDS.build, delayMs: 320 });
+          out.push({ a: 'sound', id: fortBuildSound(ev.card), delayMs: 320 });
         }
         return;
       }
@@ -722,13 +788,18 @@ export class EventMapper {
         const tr = t ? C.forts[t.card]?.trap : undefined;
         const x = ev.x / MILLI_LU;
         out.push({ a: 'trapClip', id: ev.id, clip: 'trigger' });
+        const energy = t !== undefined && fortMaterial(t.card) === 'energy';
         if (tr && tr.radius > 0) {
-          out.push({ a: 'fx', effectId: 'fx.blast', at: { k: 'world', x, y: -6 }, count: 1, priority: 3, opts: { radius: tr.radius } });
-          out.push({ a: 'sound', id: FORT_SOUNDS.trapBlast });
+          // Void Mine and Grav Mire implode in light, not powder (audit 2026-10-01)
+          if (energy) {
+            out.push({ a: 'fx', effectId: 'fx.emp_ring', at: { k: 'world', x, y: -6 }, count: 1, priority: 3, opts: { radius: tr.radius } });
+            out.push({ a: 'fx', effectId: 'fx.fort_debris_energy', at: { k: 'world', x, y: -6 }, count: 1, priority: 2, opts: { radius: Math.min(40, tr.radius) } });
+          } else out.push({ a: 'fx', effectId: 'fx.blast', at: { k: 'world', x, y: -6 }, count: 1, priority: 3, opts: { radius: tr.radius } });
+          out.push({ a: 'sound', id: energy ? FORT_SOUNDS.trapBlastEnergy : FORT_SOUNDS.trapBlast });
           out.push({ a: 'trauma', amount: 0.14, gap: { key: 'trap', gapMs: 300 } });
         } else {
-          out.push({ a: 'fx', effectId: 'fx.trap_snap', at: { k: 'world', x, y: -2 }, count: 1, priority: 3 });
-          out.push({ a: 'sound', id: FORT_SOUNDS.trapSnap });
+          out.push({ a: 'fx', effectId: energy ? 'fx.gravity_swirl' : 'fx.trap_snap', at: { k: 'world', x, y: -2 }, count: 1, priority: 3, ...(energy ? { opts: { radius: 26, durationMs: 900 } } : {}) });
+          out.push({ a: 'sound', id: energy ? FORT_SOUNDS.trapBlastEnergy : FORT_SOUNDS.trapSnap });
         }
         return;
       }
@@ -743,9 +814,19 @@ export class EventMapper {
         if (unit(ev.id)) this.rule(key, { at: { k: 'unit', id: ev.id, part: 'head' }, opts: { side: ev.side, durationMs: ms }, follow: true }, out);
         return;
       }
-      case 'stanceChanged':
-        if (ev.side === this.mySide) this.rule('stance', { at: { k: 'base', side: ev.side, part: 'top' } }, out);
+      case 'stanceChanged': {
+        // Each stance has its own troop cue: a war drum and brass for Charge, locked shields for Hold, a
+        // bugle for Fall back, and the side's front units show it (audit 2026-10-01). The enemy's change
+        // is public: seen on their troops and heard quietly.
+        const key = this.has(`stance.${ev.stance}`) ? `stance.${ev.stance}` : 'stance';
+        if (ev.side === this.mySide) {
+          this.rule(key, { at: { k: 'base', side: ev.side, part: 'top' }, side: ev.side, maxUnits: 8, opts: { side: ev.side, dir: dirOf(ev.side) } }, out);
+        } else {
+          out.push({ a: 'fxUnits', effectId: `fx.stance_${ev.stance}`, side: ev.side, priority: 1, max: 6, opts: { side: ev.side, dir: dirOf(ev.side) } });
+          out.push({ a: 'sound', id: `stance_${ev.stance}`, volumeDb: -9, gap: { key: 'stance.enemy', gapMs: 1500 } });
+        }
         return;
+      }
       case 'lastStandArmed':
         out.push({ a: 'baseGlow', side: ev.side, on: true });
         this.rule('lastStand.armed', { at: { k: 'base', side: ev.side, part: 'top' } }, out);
@@ -772,13 +853,20 @@ export class EventMapper {
         // Last Base Standing (A2.10.1, MR-125): each step hits like the Siege horn and lifts the music's
         // intensity layer; the HUD shows the step banner. Step 1 (Siege I) lands on the same tick as
         // `phaseChanged` siege, which already plays the horn, so it is not played twice.
-        if (ev.step > 1) this.rule('phase.siege', { at: { k: 'world', x: LANE_LU / 2, y: -80 } }, out);
+        // Each later step sounds the war horn a step higher, so the escalation climbs (audit 2026-10-01).
+        if (ev.step > 1) {
+          out.push({ a: 'trauma', amount: Math.min(0.3, 0.12 + 0.03 * ev.step) });
+          out.push({ a: 'sound', id: 'escalate_horn', pitchBp: escalationPitchBp(ev.step), priority: 3 });
+          out.push({ a: 'duck', db: -6, ms: 1400 });
+        }
         out.push({ a: 'musicLayer', layer: 'intensity', v: Math.min(1, 0.4 + ev.step * 0.12) });
         return;
       case 'crumbled':
         // MR-126: stones fall from the crumbling base's top on every rope beat (the damage itself arrives as
         // a sourceless `baseDamaged`, which already drops the decay debris at its front).
         this.rule('base.decay', { at: { k: 'base', side: ev.side, part: 'top' }, spreadLu: 40 }, out);
+        // its beat: a low stone groan from the crumbling side (louder when it is yours)
+        out.push({ a: 'sound', id: 'crumble_pulse', ...(ev.side === this.mySide ? {} : { volumeDb: -4 }), gap: { key: `crumble_pulse:${ev.side}`, gapMs: 2400 } });
         return;
       case 'emote':
         out.push({ a: 'view', ev: { t: 'emote', side: ev.side, emote: ev.emote } });

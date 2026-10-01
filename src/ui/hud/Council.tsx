@@ -120,7 +120,8 @@ export function CouncilButton(p: { c: HudCtx; v: CouncilView; open: boolean; onT
         disabled={c.readOnly}
         style={{ '--prog': cur ? cur.progressBp / 10000 : 0 }}
         onClick={() => {
-          c.audio?.play('ui_click');
+          // A13 planned Council sounds (audit 2026-10-01): a parchment unrolls on open
+          c.audio?.play(p.open ? 'ui_click' : 'council_open');
           p.onToggle();
         }}
       >

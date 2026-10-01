@@ -10,8 +10,10 @@ import { CapsuleHost } from '../capsules/CapsuleHost';
 import { CapsuleShows } from '../capsules/capsuleFlow';
 import { createMetaUi, type MetaUi } from '../metaUi';
 import { attachActivity } from '../stopping';
+import { takeAbandonNotice } from '../abandon';
 import { ReplayScreen } from '../screens/replay/ReplayScreen';
 import { resultActionKey, resultPathAfterCapsule } from '@/ui/screens/result/ResultScreen';
+import { firstUpgradePending, pendingUnlock } from '@/ui/screens/model/warPath';
 import { isMetaRules } from '../uiServices';
 import { AgeDialog } from './AgeDialog';
 import { BattleScreen } from './BattleScreen';
@@ -50,8 +52,19 @@ function Screen(p: { ui: AppUi; meta: MetaUi | null; shows: CapsuleShows | null 
     const onboardingStep = show.kind === 'capsules' ? show.onboarding : null;
     // Opened from the Result: the summary's primary continues the Result's path (ui-plan 2.5).
     const top = p.meta?.router.current.peek();
+    const path = !onboarding && top?.id === 'result' ? resultPathAfterCapsule(top.info) : null;
+    // FTUE audit 2026-10-01 #3: while a Home unlock or the first upgrade waits, the primary is Home and
+    // the Result's path ("Next battle") the secondary, so a player who follows the primary sees Home.
+    // Otherwise Home is the secondary (bug hunt #8: it was missing).
+    const homeFirst = path !== null && path !== 'home' && (pendingUnlock(save, asContent(content)) !== null || firstUpgradePending(save));
+    const pathLabel = path ? ui.t(resultActionKey(path)) : undefined;
+    const homeLabel = ui.t('app.home');
     // Onboarding capsules continue to the map: "Continue", as after every War Path win (4.6).
-    const doneLabel = onboarding ? ui.t('ui.result.continue') : top?.id === 'result' ? ui.t(resultActionKey(resultPathAfterCapsule(top.info))) : undefined;
+    const doneLabel = onboarding ? ui.t('ui.result.continue') : path ? (homeFirst ? homeLabel : pathLabel) : undefined;
+    const altLabel = path && path !== 'home' ? (homeFirst ? pathLabel : homeLabel) : undefined;
+    // Which way Done goes: Home (homeFirst), or the Result's path; the alt button takes the other.
+    const choice = { home: homeFirst };
+    const goHome = () => p.meta?.router.reset({ id: 'home' });
     return (
       <ShowGuard
         key={show}
@@ -71,6 +84,14 @@ function Screen(p: { ui: AppUi; meta: MetaUi | null; shows: CapsuleShows | null 
           t={ui.t}
           allowMore={!onboarding}
           {...(doneLabel ? { doneLabel } : {})}
+          {...(altLabel
+            ? {
+                altLabel,
+                onAlt: () => {
+                  choice.home = !homeFirst;
+                },
+              }
+            : {})}
           onEquip={(card) => {
             const s = ui.controller.save.peek();
             if (s) commit(m.equipNow(s, card, content));
@@ -91,6 +112,8 @@ function Screen(p: { ui: AppUi; meta: MetaUi | null; shows: CapsuleShows | null 
               }
             : {})}
           onDone={(rec) => {
+            // Leaving for Home before the Result re-renders, so its own "after the capsule" path never runs.
+            if (path !== null && choice.home) goHome();
             if (rec.kind === 'capsules' && rec.onboarding) ui.controller.finishCapsuleStep();
             else ui.services.audio.music.setCue('music.menu', { fadeMs: 600 });
             // A18.9.4: the collection items the capsules or crate held (the show reveals cards and skins)
@@ -146,6 +169,7 @@ export function AppRoot(p: { ui: AppUi }) {
           services: p.ui.services,
           meta: m,
           download: p.ui.download,
+          ...(p.ui.artReady ? { artReady: p.ui.artReady } : {}),
           ...(shows
             ? {
                 openCapsules: (ids: string[]) => void shows.open(ids),
@@ -157,6 +181,8 @@ export function AppRoot(p: { ui: AppUi }) {
   }, [p.ui, shows]);
   useEffect(() => {
     if (!meta) return undefined;
+    // Bug hunt 2026-10-01 #9: a Ladder battle left by a reload was applied as a Retreat at boot; say so.
+    if (takeAbandonNotice()) meta.toasts.show(p.ui.t('app.abandoned'), { ms: 6000 });
     // A15.6 session counters: input, visibility and active battle time (memory only).
     const detach = attachActivity(meta.cues, {
       battleRunning: () => {

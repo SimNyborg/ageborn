@@ -142,9 +142,13 @@ export function ResultScreen(p: { result: ResultState }) {
   }, [rewards]);
   const clayMax = isMetaRules(ui.services.meta) ? asContent(ui.services.content).capsules.clayMeterPips : null;
   // Only steps with a chip are staged, so hidden steps never hold up "Tap to skip".
+  // Bug hunt 2026-10-01 #25: the onboarding Results show one new thing; a title earned there is kept
+  // (Profile shows it) but not announced on top of the Starter Capsule and the crate.
+  const quietTitles = setup.mode === 'tutorial';
   const shown = useMemo(
     () =>
       rewards
+        .filter((r) => !(quietTitles && r.kind === 'title'))
         .map((r) => ({ r, chip: rewardChip(ui.t, r, { starter: r.kind === 'capsule' && starterIds.has(r.capsuleId), clayMax }) }))
         .filter((x): x is { r: RewardStep; chip: NonNullable<ReturnType<typeof rewardChip>> } => x.chip !== null),
     [rewards, starterIds],
@@ -210,7 +214,7 @@ export function ResultScreen(p: { result: ResultState }) {
   const best = pathLevel ? (c.save.value?.warPath?.stars[pathLevel] ?? 0) : 0;
   const reduce = ui.controller.save.value?.settings.reduceMotion ?? false;
   const kit: UiKit = useMemo(
-    () => ({ t: ui.t, locale: 'en', portrait: ui.art.portrait.bind(ui.art), reduceMotion: reduce, sound: (id: string) => ui.services.audio.play(UI_SOUND_FALLBACK[id] ?? id) }),
+    () => ({ t: ui.t, locale: 'en', portrait: ui.art.portrait.bind(ui.art), reduceMotion: reduce, sound: (id: string, o?: { pitchBp?: number }) => ui.services.audio.play(UI_SOUND_FALLBACK[id] ?? id, o) }),
     [ui, reduce],
   );
   const recap = [

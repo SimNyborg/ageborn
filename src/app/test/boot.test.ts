@@ -24,12 +24,14 @@ describe('boot (DESIGN B11)', () => {
     expect(b.save).toBeNull();
     expect((s.platform as NonePlatform).initialized).toBe(true);
     expect((s.platform as NonePlatform).loaded).toBe(true);
-    // Stone and Bronze bake at boot (A17.13); the rest waits for idle time (B5).
+    // Stone and Bronze start loading at boot (A17.13); the other ages load per match (B16), never in idle time.
     const art = b.art as unknown as { preloaded: Set<string> };
+    await b.artReady;
     expect([...art.preloaded]).toEqual(['stone', 'bronze']);
     idle.forEach((t) => t());
     await Promise.resolve();
-    expect([...art.preloaded]).toEqual(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
+    expect(idle).toHaveLength(0);
+    expect([...art.preloaded]).toEqual(['stone', 'bronze']);
     expect(s.eventLog.entries().at(-1)).toMatchObject({ kind: 'boot', id: 'home' });
   });
 
@@ -50,6 +52,22 @@ describe('boot (DESIGN B11)', () => {
     const b = await boot({ search: '', services: s, idle: () => undefined });
     expect(b.save).not.toBeNull();
     expect(store.immediateSaves).toBe(1);
+  });
+
+  it('returns before the battle art has loaded when Home is the start screen (perf audit 2026-10-01)', async () => {
+    const s = await services();
+    let release: () => void = () => undefined;
+    const art = { preload: () => new Promise<void>((r) => (release = r)) };
+    const s2 = { ...s, createArt: () => art as unknown as ReturnType<Services['createArt']> };
+    const b = await boot({ search: '', services: s2 });
+    expect(b.route).toBe('home');
+    let done = false;
+    void b.artReady.then(() => (done = true));
+    await Promise.resolve();
+    expect(done).toBe(false);
+    release();
+    await b.artReady;
+    expect(done).toBe(true);
   });
 
   it('reads the autopilot flag only in dev mode', () => {

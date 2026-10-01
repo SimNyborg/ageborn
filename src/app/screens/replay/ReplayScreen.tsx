@@ -8,9 +8,10 @@
  * controls in one compact pill; and an end card that says whether the re-simulated match ended
  * exactly like the recording (outcome and final hash, B3).
  */
-import { useEffect, useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { ReplayDoc } from '@/contracts';
 import { Hud } from '@/ui/hud';
+import { pushBackHandler, runBackHandler } from '@/ui/history';
 import { displayName } from '../../names';
 import { REPLAY_SPEEDS, ReplayPlayer } from '../../replayPlayer';
 import { useApp } from '../../ui/context';
@@ -87,6 +88,26 @@ export function ReplayScreen(p: { replay: ReplayDoc; onBack: () => void }) {
     if (player.status.peek() === 'ready') player.play();
     return () => player.dispose();
   }, [player]);
+  // Bug hunt 2026-10-01 #11: Esc and the browser or Android Back leave the viewer, like the × (ui-plan
+  // 2.2). The back handler serves the history trap; Esc is caught first (capture phase), so the meta
+  // screens' own Escape rule, which ignores the replay route, never runs as well.
+  const onBackRef = useRef(p.onBack);
+  onBackRef.current = p.onBack;
+  useEffect(() => {
+    const off = pushBackHandler(() => onBackRef.current());
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key !== 'Escape' || e.defaultPrevented) return;
+      e.preventDefault();
+      e.stopPropagation();
+      // The topmost back handler: an open sheet first, else this viewer.
+      if (!runBackHandler()) onBackRef.current();
+    };
+    window.addEventListener('keydown', onKey, { capture: true });
+    return () => {
+      off();
+      window.removeEventListener('keydown', onKey, { capture: true });
+    };
+  }, []);
   // Like a video player: the controls step aside while the replay plays, and come back on any
   // pointer move, tap or key.
   const [awake, setAwake] = useState(true);

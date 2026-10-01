@@ -69,6 +69,8 @@ export class BackdropWeatherLayer {
   private readonly themes: [BackdropTheme | null, BackdropTheme | null] = [null, null];
   private drops: Drop[] = [];
   private flashes: Flash[] = [];
+  /** Lightning strikes since the last `drainStrikes` (the battle view plays their thunder). */
+  private strikes: { side: Side; x: number }[] = [];
   private acc: [number, number] = [0, 0];
   private nextBolt: [number, number] = [4000, 4000];
   private reduce = false;
@@ -299,6 +301,14 @@ export class BackdropWeatherLayer {
     this.root.addChildAt(veil, 0);
     this.root.addChildAt(bolt, 1);
     this.flashes.push({ side, t: 0, veil, bolt });
+    if (this.strikes.length < 8) this.strikes.push({ side, x: bolt.position.x });
+  }
+
+  /** The lightning strikes since the last call (lane x in lu), oldest first. Presentation only. */
+  drainStrikes(): { side: Side; x: number }[] {
+    const out = this.strikes;
+    this.strikes = [];
+    return out;
   }
 
   private endFlash(f: Flash): void {

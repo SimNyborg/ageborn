@@ -74,6 +74,8 @@ export class TutorialDirector {
   private readonly lastTrained = new Map<string, number>();
   /** Last tick each card of the player's side walked on (spawned, not summoned). */
   private readonly lastSpawned = new Map<string, number>();
+  /** First tick of the current stretch off Charge (Hold or Fall back), −1 while on Charge. */
+  private offChargeSince = -1;
 
   constructor(
     script: MatchScript | null,
@@ -91,9 +93,9 @@ export class TutorialDirector {
     return this.promptValue;
   }
 
-  /** True when every scripted beat is over. */
+  /** True when every scripted beat is over (re-arming guard beats never finish, so they are left out). */
   get finished(): boolean {
-    return this.runs.every((r) => r.status === 'over');
+    return this.runs.every((r) => r.status === 'over' || r.beat.rearm === true);
   }
 
   /** Every log entry so far. */
@@ -135,6 +137,8 @@ export class TutorialDirector {
       }
     }
     for (const q of i.state.sides[this.side].queue) this.lastTrained.set(q.card, tick);
+    const stance = i.state.sides[this.side].stance;
+    this.offChargeSince = stance === 'charge' ? -1 : this.offChargeSince < 0 ? tick : this.offChargeSince;
     const age = i.state.sides[this.side].ageIndex;
     for (const r of this.runs) {
       if (r.status !== 'pending' || r.triggeredAt >= 0) continue;
@@ -155,6 +159,10 @@ export class TutorialDirector {
       const r = this.runs[k]!;
       if (r.status === 'over') continue;
       if (this.sequential && k > 0 && this.runs[k - 1]!.status !== 'over') break;
+      // One prompt at a time in a free-order script too (match 2, MVP fix 2026-10-01: "Drag the field"
+      // took over the screen while the Council beat waited for its taps): a beat whose turn comes while
+      // another prompt shows waits until that one is over.
+      if (!this.sequential && r.status === 'pending' && !r.beat.jumpQueue && this.runs.some((o) => o !== r && o.status === 'shown' && o.beat.textKey !== null)) continue;
       if (!r.beat.jumpQueue) this.step(r, i);
       // `step` may have changed the status (TS keeps the narrowing from above).
       const status = r.status as BeatStatus;
@@ -204,8 +212,15 @@ export class TutorialDirector {
   }
 
   private finish(r: BeatRun, kind: DirectorLogKind, tick: number): void {
-    r.status = 'over';
     this.record(kind, r.beat.id, tick);
+    if (r.beat.rearm && kind === 'beatDone') {
+      // A guard beat waits for its trigger again (the match 1 stall prompt).
+      r.status = 'pending';
+      r.triggeredAt = -1;
+      r.shownAt = -1;
+      return;
+    }
+    r.status = 'over';
   }
 
   private triggered(b: Beat, i: TickInput): boolean {
@@ -248,6 +263,8 @@ export class TutorialDirector {
         return me.lastStand === 'armed';
       case 'foeHeavy':
         return foeHeavyInView(i, t.viewLu);
+      case 'offCharge':
+        return this.offChargeSince >= 0 && i.state.tick - this.offChargeSince >= t.ticks;
       default:
         return false;
     }
@@ -268,6 +285,8 @@ export class TutorialDirector {
       }
       case 'shownFor':
         return i.state.tick - r.shownAt >= d.ticks;
+      case 'stance':
+        return i.state.sides[this.side].stance === d.stance;
       default:
         return false;
     }

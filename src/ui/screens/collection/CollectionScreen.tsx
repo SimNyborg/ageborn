@@ -142,7 +142,7 @@ export function CollectionScreen(p: { route: RouteOf<'collection'> }) {
       onBack={() => router.back()}
       subtitle={
         <span class="col-sub">
-          <Pill tone="violet">{t('ui.collection.foils', { n: foils })}</Pill>
+          <Pill tone="violet">{foils === 1 ? t('ui.collection.foilsOne') : t('ui.collection.foils', { n: foils })}</Pill>
         </span>
       }
       right={<CurrencyChip kind="dust" value={s.currencies.dust} compact testid="chip-dust" />}
