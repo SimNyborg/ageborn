@@ -1473,3 +1473,7 @@ The review found CI red, a Crumble gate that only passed on lucky seeds, and a H
 - **Spec and build agree on the AI.** DESIGN A2.10.1 now says what is built: research through Siege with no Bell, forts keep today's Siege switch (so no fort-turtle row), no per-step push value or pre-Crumble hold (bots already Charge in Siege), all-in when crumbling alone.
 - **One rule for the ladder win row.** `formatKind`, `rewardFormat`, `ladderWinFor` and `isUnranked` live in `src/content/ladder.ts`; meta re-exports them and the UI's `ladderWin` calls the same function (the UI may not import meta).
 - **The online VS mock** got equal, aligned plates (a spacer row where the opponent has Block and Report), team-coloured frames with an avatar halo, a clash glow and a light sweep.
+
+## Lead decision 2026-10-01: Last Base Standing timing row (B3)
+
+The headless sim of the longest no-clock war takes about 1.2-1.4 s best-of-3 against a 1.3 s budget; a Full War at its Bell already sits at 0.81-1.02 s against its own 850 ms budget on this shared machine, so the row is at the machine's edge rather than a player-facing problem (it is the cost of simulating a whole match headless, used by balance tools, replay checks and a future online relay). Accepted for now; it moves into the MVP performance pass, which profiles late Siege before re-baselining any target.

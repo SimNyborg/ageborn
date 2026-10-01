@@ -289,3 +289,9 @@ Published to main after typecheck, lint, 4,121 unit tests, build, 166 e2e tests 
 - Realistic Stone Age art (units, turrets, base, backdrop).
 
 Next: heavy counter class, free capsule every 5 h (Field Cache), stationary Fort class, realistic restyle of the other 7 ages.
+
+## Known issues for the MVP pass (2026-10-01)
+
+- Audio: an intermittent page error when two music fades are scheduled on the same gain at the same moment (`src/audio/musicEngine.ts`, `equalPowerRamp`). Seen once in e2e (ux spec); passes on rerun.
+- Performance: the longest Last Base Standing war simulates in about 1.2-1.4 s headless against a 1.3 s budget (see decisions, "Last Base Standing timing row").
+- Balance: Final Bell share in Standard is too high; bots use forts too little; some cards, powers and forts sit outside their win-delta band.
