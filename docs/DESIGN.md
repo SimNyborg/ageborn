@@ -616,12 +616,15 @@ Every phase keeps `main` playable. Between P1 and P2 every match plays the Home 
 | Short War | 3 | 5:00 | 6:30 | 8:30 | 7:00 | 1:00 | Ladder (all arenas), Quick Battle, Skirmish |
 | Standard War | 5 | 8:00 | 10:00 | 12:30 | 10:30 | 1:00 | Ladder from Arena 2, Daily Challenge, Skirmish |
 | Full War | 7 | 12:00 | 14:30 | 17:30 | 15:00 | 1:00 | Ladder from Arena 3, Skirmish; never on the War Path |
+| Last Base Standing (`last`; A2.10.1) | 7 | 12:00 | Siege I 14:30, rising every 2:30; Crumble from 22:00 | **none** | ~19:30 (emulated); a base always falls by 26:35 | 1:00 | Ladder from Arena 3 (unranked: no trophies), Skirmish, Friend Duel (M2); never on the War Path or in online queues |
+
+**Player names (owner request 2026-10-01: "a short, a medium and a long battle, and one with no time limit").** Players see **Short War, Medium War, Long War** and **Last Base Standing** (DA v1.1: Kort, Mellem, Lang, Til sidste base). The ids `short`, `standard` and `full` and their clocks are unchanged, and this document keeps saying Standard and Full War for them. The rename also frees "Standard" for "Standard levels" (L8), which matters online. The plate's length picker quotes each length's upper bound ("up to 8½ min"), which is always true, not its median.
 
 Shorter windows (War Path levels, custom) use the clocks in A18.3.4. **Which window:** Quick Battle and Skirmish let the player pick a start era (default Stone); ladder Arenas 1-2 start at Stone and from Arena 3 the window is the seeded Era of the Week; the Daily Challenge has its own seeded window of Standard length; War Path levels have fixed windows (A18.7.2). A match that starts in a later age starts its base at that age's P and HP.
 
 **Built today (until A18 phase 1):** Short War Stone to Gunpowder (4 ages; 3:45 / 4:45 / 6:15), Standard War Stone to Modern (6 ages; 5:00 / 6:45 / 8:30; also Conquest), Full War Stone to Cosmic (8 ages; 6:45 / 8:45 / 10:45), per A17.8.
 
-From Arena 2 the player picks any unlocked format before each ladder match. Trophies and Amber per win depend on the format from Arena 3 (A15.8).
+From Arena 2 the player picks any unlocked length before each ladder match on the Home plate's length picker (Short, Medium, Long, No clock; locked lengths show their arena). Trophies and Amber per win depend on the format from Arena 3 (A15.8). Last Base Standing moves no trophies (A2.10.1).
 
 | Phase | Effect |
 |---|---|
@@ -641,6 +644,60 @@ From Arena 2 the player picks any unlocked format before each ladder match. Trop
 | Endless fighting at the gate | Siege decay and ×2 base damage |
 | Special every cooldown for free gold | Power kills pay 30% gold and no XP, telegraph, 50% carry cap on evolve, slow Overcharge. With the power rework (A2.9): every cast costs gold and each slot reloads, a cast affects at most 1-6 units, Home powers land only in your own half, the evolve carry is capped at 75% |
 | Waiting for the enemy to mass an army, then wiping it (owner, 2026-09-29) | The power rework (A2.9): the target cap makes a big army worth no more than a small one, and only the enemies nearest the caster's gate are eligible (the screen), Home reach cannot touch an army staging in its own half, Front reach needs your army nearby, and the price and reload make an idle ready power lost value |
+| Stalling a war that has no Final Bell (Last Base Standing) | Rising Siege steps and the Crumble rope (A2.10.1); a guaranteed end by 26:35 |
+
+#### A2.10.1 Last Base Standing: the war with no clock (owner request 2026-10-01; spec in the session scratchpad `online-home/SPEC.md`)
+
+The war has no Final Bell, no countdown and no win on HP: it ends only when a base falls (or both on the same tick: a draw), or by Retreat (a loss). Pressure rises in steps instead, so it always ends. All values are content data in `FormatDef.escalation`.
+
+| Step | At | Effect (symmetric) |
+|---|---|---|
+| Regulation | 0:00 | Normal rules |
+| Overdrive | 12:00 | As in every format |
+| Siege I | 14:30 | Today's Siege (turret damage ×0.5, base damage ×2, forced march, siege crowd, the forts' Siege switch), **with no base decay** |
+| Siege II | 17:00 | Base damage ×3, turret damage ×0.35 |
+| Siege III | 19:30 | Base damage ×4, turret damage ×0.25 |
+| Crumble | 22:00 | Siege III, plus the **rope**: each second the side whose own half holds the fight loses 0.5% of its base's max HP |
+| Crumble II | 24:30 | The rope takes 1% per second |
+
+- **The rope.**
+  - Every decay step, each side's front is the own-frame progress of its most advanced live ground unit. Forts, levies, summons and air units do not count; a side with none has front 0.
+  - The side whose front is more than 40 lu behind the other's crumbles. Within 40 lu, or with both sides empty, both crumble.
+  - The damage goes through `damageBase`, so Last Stand arms and fires as usual.
+  - From Crumble on, evolving keeps the base HP percentage but does not heal.
+- **Guaranteed end.**
+  - Even from two full bases at 22:00, the rope removes at least 75 percentage points of combined HP by 24:30, then at least 1 point per second.
+  - So a base falls by **26:35** (`FormatDef.endByMs` 1,595,000, derived from the steps by a content test).
+  - The online relay's cap for this format is `endByMs` + 2 min (A18.10).
+- **Window.** 7 ages: `last` (Stone to Future); Skirmish also offers `last.bronze`.
+- **Rewards.** Unranked: no trophies won or lost. Win 35 Amber (70 without a Sundial capsule); loss or draw 15. Otherwise it is a Ladder match: a Sundial claim, or a Clay pip; a counting win; hidden MMR; loss protection (A6.3, A15.8).
+- **HUD (A9.2).**
+  - The clock counts up.
+  - The timeline becomes a 6-pip escalation meter (Overdrive, Siege I-III, Crumble I-II) with the step's name under the clock. A tap shows the schedule as a drop-down that never pauses.
+  - Each step plays a 1.2 s banner and a drum hit.
+  - The crumbling side gets a "Crumbling" chip, a cracked HP bar and falling-stone dust. A rope marker sits at mid-lane on the minimap.
+  - VS: "No clock · Siege rises every 2½ min from 14:30 · Crumble from 22:00".
+- **AI (A7).**
+  - Research and forts stay allowed in Siege I-III when the format has no Bell; forts stop in Crumble.
+  - Push value uses the current step's base damage.
+  - From 60 s before Crumble a bot with the stronger army keeps its front past mid-lane; a bot crumbling alone goes all-in.
+- **Why this shape.** Measured on an emulation (tier VII Echo mirrors, baseline plans at L7, 7 ages; indicative until the gates re-measure the real rule):
+  - Only removing the Bell (today's decay continues) ended like a Full War, with **20% draws** from both bases decaying to 0 on one tick.
+  - Siege with no decay left 1 of 40 Full-window and **16 of 40** Standard-window wars running at 60:00.
+  - The chosen steps: median 19:35, p90 25:20, longest 26:14, 0 draws, 30% ending in Crumble, first-mover 41/39 (n = 80). A turret turtle won 0 of 40; cheap spam 0 of 40.
+- **Gates (L5).**
+
+  | Metric | Target |
+  |---|---|
+  | Tier VII mirror length | Median 17:00-23:00; p90 ≤ 26:00; none past `endByMs`; ≤ 35% ending in Crumble |
+  | Draws | ≤ 2% |
+  | First-mover | 47-53% |
+  | Turtle proxies and `rope_runner` vs tier VII | Each ≤ 45% |
+  | `cheap_spam` | ≤ 20% |
+  | `idle` | Loses 100% |
+  | Goldens 01-14 | Bit-identical (the timed formats are untouched) |
+
+  Levers: step times ±30 s, the rope's rate, the dead band, and a front taken as the army-value centroid instead of the lead unit.
 
 ### A2.11 Comeback tools (visible and counterable)
 
@@ -1152,6 +1209,7 @@ Ladder results:
 - **Loss protection.** After 3 ladder losses in a row, the next opponent is one tier lower (minimum tier 0) and the VS screen says "Warm-up match". The same Result shows the tilt card (A15.6).
 - **Other modes.** Daily Challenge: A9.1 and A15.7. War Path (A18.7; replaces Conquest, A6.10): first-clear Amber, card unlocks and boss capsules. Quick Battle (a Short War Skirmish at a picked difficulty) and Skirmish: 5 Amber per win, no trophies. In every mode but the tutorial a finished match also claims a ready Sundial Capsule; only Ladder matches add Clay pips.
 - **Ladder window (A18.3.4).** Arenas 1-2 play windows that start at Stone. From Arena 3 the window is the **Era of the Week**, seeded weekly in `meta` from the date and shown on Mode select a week ahead.
+- **Last Base Standing (A2.10.1; 2026-10-01).** A Ladder length from Arena 3 that moves no trophies (win, loss or draw). It pays Amber like a Full War win (35, or 70 without a Sundial capsule; 15 on a loss or draw). Like any Ladder match it claims a ready Sundial capsule or adds a Clay pip, counts its wins (A15.5), moves the hidden MMR and counts for loss protection. Data: `ladderFormats` gains `last` from Arena 3; `arenas.ladder.byFormat.last` = 0 trophies, 35 / 70 Amber, and a loss of 0 trophies.
 - **Clock.** Daily timers reset at local 04:00, capped by the banks. The Sundial runs on epoch ms, independent of time zone and 04:00. Every bank holds at least 7 days and nothing earned expires (A15.4). Clock tampering is accepted because no money is involved: a clock moved backwards restarts the current period and never removes a ready capsule; moved forwards, it fills at most to the cap.
 
 | # | Arena | Trophies | Ladder formats | Drop pool | Bot tiers | Bot level | Gate rewards |
@@ -1566,12 +1624,33 @@ Battle ─> Result (rewards staged, tap to skip) ─> Capsule opening (if earned
 
 The flow above is built (2026-09-28). **Owner decision 2026-09-30:** Home is the **Battle hub**, the 1v1 screen: the game's main point is the 2-player online battle (A18.10), which is the Ladder against labelled AI opponents until online play ships, so it is the first thing a player sees. The War Path (A18.7) is the offline side road for cards and currency: a sub-screen of Home reached from its Campaign card, no longer Home itself (it was from 2026-09-28 to 2026-09-30). Five tabs: Army, Capsules, **Battle** (Home, centre), Progress, Customize. Features open with wins in any mode, not with War Path levels (ui-plan 2.6). The whole UI is built on a shared design system and motion catalogue (`docs/ui-plan.md`, 2.3 and 4.1 for Home and the map).
 
+**Online-first Battle hub (owner request 2026-10-01; spec `online-home/SPEC.md` in the session scratchpad).** Home is laid out as the lobby of a 2-player online game, taking Clash Royale's principles and never its names, art, positions or wording:
+
+```
+Home: [mode switcher ▾] [BATTLE]   the plate over Battle shows exactly what Battle will do
+BATTLE (Ladder, Quick, Daily, Skirmish: vs labelled AI) ─> VS ─> Battle ─> Result ─> Next battle | Home
+BATTLE (Online Battle, M4) ─> Searching (Home state; Battle becomes Cancel) ─> Found ─> VS (Player chip) ─> Battle
+                                 └─ 25 s: [Play an AI General] offered while the search goes on (a choice, never a swap)
+Create room (Friend Duel, M2) ─> Room (code, Share, length, Ready) ─> VS ─> Battle ─> Result ─> Rematch | Home
+```
+
+- **The Modes tile becomes the mode switcher.**
+  - It shows the selected mode ("Ladder · vs AI").
+  - Its panel *selects* a mode and never starts one; the choice is remembered in the UI flag `ui-homeMode.<id>`.
+  - Battle plays what the switcher shows: 1 tap for the remembered mode, 2 more to change it.
+- **The match plate is the lobby card.**
+  - It shows the opponent: a labelled AI General, or online a neutral silhouette until a player is found.
+  - Below that sits the one choice the mode needs: the length for Ladder, Online and Friend Duel; the difficulty for Quick Battle and Daily.
+  - One line gives the ages, the "up to" minutes and the reward.
+- **Not shown before it works.** No online control appears before its milestone works (U8, U15). The online states exist behind `?dev=1` for screenshots only.
+- **Search honesty.** An AI match never shows a search. No player counts are shown anywhere.
+
 | # | Screen | Contents |
 |---|---|---|
 | 1 | Boot | Logo ≤ 1 s, progress bar; Stone assets first, the rest streams in during the tutorial or the menu |
-| 2 | Home (the Battle hub, owner decision 2026-09-30) | The arena diorama in the centre (your base and the AI's across the lane, the arena's landmark; art through the ArtProvider) with the arena's name and the trophy bar to the next Trophy Road reward under it; the match plate over the big **Battle** button (the only primary, bottom-right): the next opponent's portrait with the AI badge and tier, and the ladder format picker from Arena 2; Battle starts a Ladder match in one tap (the onboarding matches while they are due); Modes beside it (Quick Battle, Daily, Skirmish, Conquest). Left: the Campaign card (the War Path: region art, next level, stars, "Solo battles vs AI, earn cards") and four capsule slots (one tap opens). Top: profile chip with trophies, the Sundial glyph (no number: in colour while a capsule is ready, A6.3, A15.13), Amber and Dust chips, gear. Quests, the War Chest and the Trophy Road screen live in Progress; charges, Supply and Clay in Capsules. No timers and no backlog counts on Home; nothing online is shown until it exists (A15.13) |
-| 3 | Mode select | Quick Battle (built; first card: a Short War Skirmish at a picked difficulty, Easy II to Legendary X, vs the first ladder General whose tier range holds it; 5 Amber per win); Ladder (format picker from Arena 2; it shows each format's reward, A15.8; the Era of the Week from Arena 3, A18.3.4); Conquest (from Arena 3; leaves with A18.7.10); Skirmish (from match 2: choose General or Echo, the difficulty picker, format, start era (A18.3.4), speed, "Standard levels" toggle; 5 Amber per win); Daily Challenge (difficulty picker Recruit / Veteran / Warlord, A9.1) |
-| 4 | VS | Your card vs the AI General card: AI badge, tier, levels ("Plan Lv 3.4 vs Lv 3"), format, personality line, modifiers, boss disclosures |
+| 2 | Home (the Battle hub, owner decision 2026-09-30) | The arena diorama in the centre (your base and the AI's across the lane, the arena's landmark; art through the ArtProvider) with the arena's name and the trophy bar to the next Trophy Road reward under it; the match plate over the big **Battle** button (the only primary, bottom-right): the next opponent's portrait with the AI badge and tier, and the ladder format picker from Arena 2; Battle starts a Ladder match in one tap (the onboarding matches while they are due); Modes beside it (Quick Battle, Daily, Skirmish, Conquest). **From 2026-10-01** the Modes tile is the **mode switcher** ("Ladder · vs AI"), and Battle plays the selected mode. The plate shows exactly what Battle will do, in one state per situation: Training; Ladder at Arena 1 (no picker) and from Arena 2 (the **length picker** Short, Medium, Long, No clock, with locked lengths naming their arena); Last Base Standing; Quick Battle (difficulty); Daily (Recruit / Veteran / Warlord); Skirmish (summary and Change). Later states: Online idle (a neutral silhouette, "A player · found when you press Battle"); Searching (elapsed time counting up, the AI choice after 25 s); Found; Friend Duel (Enter a code; Battle reads "Create room"); No connection, Online full and Update needed (each with "Play vs AI"). On phones the fourth length segment is the Last Base Standing glyph alone (each segment ≥ 48 px); if a locale clips, the picker becomes one chip that opens a 4-row popover. The diorama's far base is the AI's; online it is a "?" silhouette, fogged while searching, and it resolves into the found opponent's base. Left: the Campaign card (the War Path: region art, next level, stars, "Solo battles vs AI, earn cards") and four capsule slots (one tap opens). Top: profile chip with trophies, the Sundial glyph (no number: in colour while a capsule is ready, A6.3, A15.13), Amber and Dust chips, gear. Quests, the War Chest and the Trophy Road screen live in Progress; charges, Supply and Clay in Capsules. No timers and no backlog counts on Home; nothing online is shown until it exists (A15.13) |
+| 3 | Mode select | Quick Battle (built; first card: a Short War Skirmish at a picked difficulty, Easy II to Legendary X, vs the first ladder General whose tier range holds it; 5 Amber per win); Ladder (format picker from Arena 2; it shows each format's reward, A15.8; the Era of the Week from Arena 3, A18.3.4); Conquest (from Arena 3; leaves with A18.7.10); Skirmish (from match 2: choose General or Echo, the difficulty picker, format, start era (A18.3.4), speed, "Standard levels" toggle; 5 Amber per win); Daily Challenge (difficulty picker Recruit / Veteran / Warlord, A9.1). **From 2026-10-01 the Modes panel is the mode switcher's chooser.** It has one card per row: icon, name, one line, the reward line, and a check on the selected card. A tap selects the mode and closes the panel; Battle then plays it. The Ladder returns as a card (the default). Skirmish keeps "Set up", and its setup's Play starts the match and selects Skirmish. Online cards join when they work: Friend Duel (M2), Online Battle (M4), Ranked (M5), under a "vs players" header with the AI modes under "vs AI". The War Path is not a mode (its Home card). Events arrive as cards without timers |
+| 4 | VS | Your card vs the AI General card: AI badge, tier, levels ("Plan Lv 3.4 vs Lv 3"), format, personality line, modifiers, boss disclosures. Last Base Standing adds "No clock · Siege rises every 2½ min from 14:30 · Crumble from 22:00". **Online (M2+):** both nameplates show avatar, name, banner, arena and trophies, plus a **Player** chip on a human or the **AI** chip on a bot (a bot never gets a person's name, avatar or chip). Also shown: the length, "All cards at level 8", 1-3 connection bars, and block and report on the opponent's plate. VS lasts 3 s and cannot be skipped |
 | 5 | Battle HUD | See A9.2 |
 | 6 | Pause | Resume, Scouted list, Settings, Retreat (after 1:00), Quit Skirmish |
 | 7 | Result | Victory/Defeat/Draw banner; recap (units trained and killed, base damage, time per age, MVP card). At most 3 staged steps (A15.13): (1) the result with trophies, (2) the main reward (a capsule, an Age Capsule or a Clay pip), (3) one progress bar, whichever of the next Trophy Road node, the War Chest or a Conquest star is closest to done. A found feat adds its own step (A15.10). Everything else (Amber, Codex points, quest and Supply progress, one result or loss tip, A15.12, A16.6) sits in one summary row that expands on tap. Tap to skip works. Then at most one card (tilt, break or wrap, A15.6) and the night line after 22:00. Daily: Copy result (A15.7). Buttons: Next battle, Watch replay, Home |
@@ -1587,6 +1666,8 @@ The flow above is built (2026-09-28). **Owner decision 2026-09-30:** Home is the
 | 17 | Conquest | The 9 Generals drawn as a vertical ladder ordered by tier, each with its AI badge, stars, rewards and milestones (A6.10); the player's portrait sits just above the highest General beaten in Conquest (A15.9). Replaced by the War Path (A18.7.10) |
 | 18 | War Path (A18.7; a sub-screen of Home since 2026-09-30) | A scrolling saga map with parallax (far skyline, ground, near silhouettes), one themed region per age with 10 levels (2 side nodes each later): hills, water (a lake, a shore with boats, a river), two landmark set pieces per region, props, lanterns along the road, clouds and birds, all animated and still under reduce motion. Node kinds: battle (disc), elite (Hard shield with crossed swords), treasure (a chest on the node; a named card), story (a scroll; the level teaches something) and boss (the General's portrait in its lair). Beaten nodes show stars and crowns; the current node has a marker, rings and the banner-bearer; a new node bursts free of its padlock and drops in (MR-41). Back top-left; the next level under a big Play button; the Level preview has the difficulty picker; boss nodes show their disclosures; "New region" marks on inserted ages |
 | 19 | Customize (built) | Tabs Troops, Bases, Banner & title, Emotes: skin tiles (equip, craft with Dust, crate only) and the profile look fields; nothing can be bought. A18.9.4 adds Quotes, Flags (base and national) and base decorations |
+| 20 | Friend room (M2; a panel over Home) | "Play a friend": the 6-character room code (no look-alike characters), Copy and Share, the length picker (the host may change it while waiting, which clears the guest's Ready; the guest sees it read-only, all four lengths), "Waiting for your friend…" with elapsed time, Ready (gold, once both are present) and Leave room. Enter a code: six boxes, paste, Join. No friend search before M6. Friend Duels pay nothing (no Amber, Sundial claim, quest or War Chest progress) and move no trophies; their Result offers Rematch (both press) and Home |
+| 21 | Online search (M4; a Home state, not a screen) | Battle becomes Cancel (slate, same place, instant, nothing lost; Esc and back too). The plate shows a compass, "Searching for a player" and elapsed time counting up (never a countdown), with one tip line. The far base fogs over. The tab bar dims and does not respond. After 25 s the plate offers "Play an AI General" while the search continues. AI fill is labelled AI, pays Ladder-vs-AI rewards and never moves a rating. On Found, the plate flashes the opponent with the Player chip for 0.6 s, the fog clears into their base, and VS follows. In battle online: no pause or speed (a Menu with sound, mute opponent emotes, Surrender after 1:00); disconnect grace is 60 s, then a forfeit, shown without seconds |
 
 **Unopened capsules on every screen (2026-09-29, A6.4, A10).** A capsule that climbs (Sundial, Supply, Clay meter) is shown by its start tier and its kind name until it is opened: in the Home tray, on the Capsules shelf and stage, on the Result (screen 7), in aria labels and in the odds panel. It never shows its rolled tier, tier name or Legendary crests, and shelves never sort by the rolled tier (they sort by the tier shown, then by when the capsule was earned). Fixed-tier capsules (Trophy Road, gates, War Path, Conquest, Codex, Age) show their tier, name and crests. The one-time "Two new capsule tiers" notice is a closable card in the Capsules tab, not a Home widget (A15.13).
 
@@ -1615,7 +1696,7 @@ Full rules: A15.7 (Daily Challenge 2.0).
 
 - **Top bar (12% of height; 10% on phones, A17.7):**
   - Left: your base HP bar, age icon and XP bar, with the Evolve button attached to the XP bar.
-  - Centre: match clock with a phase marker (Overdrive/Siege ticks on the timeline) and the emote button. Under it, the **minimap strip** (A17.5) replaces the front-line strip, with the base button at its left end and the front button at its right end.
+  - Centre: match clock with a phase marker (Overdrive/Siege ticks on the timeline) and the emote button. In a format with no Final Bell (Last Base Standing, A2.10.1) the clock counts up and the timeline becomes a 6-pip escalation meter (Overdrive, Siege I-III, Crumble I-II) with the step's name under the clock; a tap shows the schedule as a drop-down that never pauses. Under it, the **minimap strip** (A17.5) replaces the front-line strip, with the base button at its left end and the front button at its right end.
   - Right: the opponent's base HP, age icon, XP bar, power charge ring (power rework: two 22 px reload rings inside the enemy block, "?" until each power is first cast, A2.9.10) and a horn icon while their Last Stand is armed; from A18.5 their research icon and ring; a "Scouted (n)" chip (finished enemy research picks join it); pause and speed.
   - Tapping the Scouted chip opens a drop-down list that collapses after 3 s. It is the only element that may briefly cover the lane band, and only on request.
 - **Bottom tray (24% of height), left to right:**
@@ -2313,6 +2394,9 @@ Today Short War pays about 55% more trophies per minute than Full War, which pus
 | Short War | +26 | 20 (40) | −20 |
 | Standard War | +31 | 27 (54) | −20 |
 | Full War | +36 | 35 (70) | −20 |
+| Last Base Standing (A2.10.1) | 0 (unranked) | 35 (70) | 0 |
+
+Last Base Standing is unranked because its length varies, so trophies per minute could not be equal. Retreat counts as a loss, so a long war must never be the price of keeping your trophies. And it would split the ranked online queue. It pays the Full War's Amber per win and nothing per minute, so it pays less per minute than the Full War.
 
 These are the A17 values (built; re-derived from the A17.2 medians at a 60% win rate: 1.60 / 1.63 / 1.60 trophies per minute). The Amber in brackets doubles the win Amber as before. A18's longer formats (A18.3.4) re-derive the table from the A18.12 medians with the same ±5% rule.
 
@@ -5082,6 +5166,9 @@ A format is a **window of consecutive ages**. `FormatId` becomes an open string 
 | Short War | 3 | ~1:10, ~2:50 | 5:00 | 6:30 | 8:30 | **7:00** | 5:30-8:30 | "about 7 min" |
 | Standard War | 5 | ~1:10, 2:50, 4:35, 6:25 | 8:00 | 10:00 | 12:30 | **10:30** | 8:30-12:30 | "about 10 min" |
 | Full War | 7 | ~1:10, 2:50, 4:35, 6:25, 8:20, 10:20 | 12:00 | 14:30 | 17:30 | **15:00** | 12:00-17:00 | "about 15 min" |
+| Last Base Standing (`last`, kind `untimed`; A2.10.1) | 7 | as Full War | 12:00 | 14:30 (Siege I; II 17:00, III 19:30, Crumble 22:00, Crumble II 24:30) | **none** (a base falls by 26:35) | ~19:30 (emulated) | ~11:00-25:30 | "no clock" |
+
+**Plate labels (2026-10-01).** The Home length picker names these Short, Medium, Long and No clock, and the line under it quotes the upper bound: "3 ages · up to 8½ min", "5 ages · up to 12½ min", "7 ages · up to 17½ min", "7 ages · no clock · no trophies". The "about N min" labels above stay in info panels. The upper bound is what the plate promises because the Standard mirror reaches the Bell in about 59% of tier VII matches today (A16.14.9 review), so "about 10 min" would mislead.
 
 Shorter windows (War Path, Daily, custom) use these clocks:
 
@@ -5535,6 +5622,12 @@ Besides troop skins (A5.8), players collect:
 - **Ultra-realistic art (decided 2026-09-28).** The target is an ultra-realistic look: realistic proportions and anatomy, physically based materials, realistic lighting and weighty, natural motion. It replaces the stylized chunky cartoon direction of A11 for every unit, turret, base and backdrop, Stone first (A18.8.3). Readability at in-game size still rules: a clear silhouette, team colour on large parts, an outline or rim light, and the A11 colour rule. Free CC0 materials and models (Poly Haven, ambientCG, Quaternius) may be used once the owner allows those hosts. Art stays behind the ArtProvider and the manifest, so the restyle cannot change balance.
 - **Cartoon style (owner decision 2026-09-30).** The owner prefers the earlier cartoon look to the realistic restyle, which is parked; the cartoon style stays and its quality rises (better animation, more detail per figure, distinct attack styles). Where this section and A11 disagree, the cartoon direction wins.
 - **UI rebuild (owner decision 2026-09-30 supersedes 2026-09-28).** Home is the Battle hub: the 1v1 battle is the main point of the game (online later, the Ladder vs labelled AI now), so the big Battle button, the arena and the trophies are the centre of Home. The War Path is the offline side road, one tap away on the Campaign card, and its map is richly illustrated (themed regions with layered, animated backdrops, varied node types, decorations, parallax, a clear current node and an unlock burst). Five tabs: Army, Capsules, Battle (Home), Progress, Customize; Conquest leaves with A18.7.10. The match plate over Battle is where the online opponent will show once online play exists, so that mode needs no redesign. A shared design system and a motion catalogue apply across every screen and the HUD (`docs/ui-plan.md`). Every screen is reviewed with phone and desktop screenshots before release.
+- **Online-first Battle hub and four lengths (owner request 2026-10-01).** "Set Home up so its layout is made for online battles; take inspiration from Clash Royale; the goal is 2 users playing each other; a short, a medium and a long battle, and one with no time limit that ends only when a base is destroyed."
+  - The liked frame and the War Path card stay.
+  - The Modes tile becomes the mode switcher whose choice Battle plays.
+  - The plate becomes the lobby card: an honest opponent slot and the length picker.
+  - The online flows (search with an AI choice, VS with Player and AI chips, the Friend room by code) are designed in A9 #20-21 and appear only when they work.
+  - The lengths are Short, Medium and Long (the Short, Standard and Full War) and Last Base Standing (A2.10.1).
 
 ---
 
@@ -5550,9 +5643,28 @@ Single player leads there directly: the sim is integer, seeded and hashed; repla
 |---|---|---|---|---|
 | Short War | 7:00 | ~53 | ~245 | Ranked |
 | Standard War | 10:30 | ~79 | ~165 | Friend Duel, casual |
-| Full War | 15:00 | ~113 | ~115 | Friend Duel only |
+| Full War | 15:00 | ~113 | ~115 | Friend Duel only (2026-10-01: also the casual queue's Long length) |
+| Last Base Standing (A2.10.1) | ~19:30 (emulated); at most 26:35 | ~148 (at most ~201) | ~88 (~65 at the worst case) | Friend Duel only |
 
-A client-clocked relay that lets the room hibernate roughly doubles these; M0 measures whether it is worth the code. A daily guard closes ranked near 90% of the budget.
+A client-clocked relay that lets the room hibernate roughly doubles these; M0 measures whether it is worth the code. A daily guard closes ranked near 90% of the budget; it counts Last Base Standing rooms at their worst case.
+
+**Lengths online and the Home flow (2026-10-01).**
+- **Both players always play the same length.**
+  - The casual Online Battle (M4) has one queue per length: Short, Medium, Long.
+  - Ranked (M5) has one length: Short once its A16.5 Bell rows pass, else Standard (A16.21).
+  - In a Friend Duel (M2) the host picks any of the four lengths, and the guest sees it before Ready.
+- **Relay.** The `MatchSpec` already carries the format key. The relay's hard cap becomes `(finalBellMs ?? endByMs) + 2 min` (`server/shared/match.ts maxTicksFor`), which is 28:35 for Last Base Standing, so a real game never meets it. A client whose content hash differs gets "A new version is ready. Reload to play online."
+- **On Home** (A9 #2, #20, #21):
+  - the mode switcher gains the online cards when they work;
+  - the plate shows a neutral silhouette until a player is found;
+  - the search shows elapsed time and offers a labelled AI General after 25 s, as a choice;
+  - VS shows a Player chip or the AI chip.
+- **Rewards.**
+  - Friend Duels pay nothing (red line 9; no collusion farming).
+  - The casual Online Battle pays the Ladder-vs-AI Amber, Sundial claim and Clay, with no trophies.
+  - Ranked pays trophies and the Glicko-2 rating.
+  - AI fill pays as the Ladder vs AI of its length and never moves a rating.
+  - Recommendation for M5: one trophy count, and a cap on AI-Ladder trophies set then, so the top arenas mean beating people.
 
 | # | Milestone | Size | Exit test | Owner action | When |
 |---|---|---|---|---|---|
@@ -5600,6 +5712,7 @@ All sim-visible contract changes land in **one** WP0 bump and one `SIM_VERSION` 
 | Tools | Proxies and gates (A18.12), time-in-age rows, `tools/warPath.ts`, the 850 ms budget, fewer Full War runs | 1-5 | WP12 |
 | CI | M1: golden replays on 3 browser engines | 3 | WP12 |
 | Contracts, sim (forts, A16.14.8) | `FortDef` and `CompiledContent.forts`; hidden twin `UnitDef`s for walls, towers and camps (same id, `fort: { kind }`) so every `content.units[card]` lookup resolves; levies as hidden `UnitDef`s (`levy: true`, cost 0, `aiValue`); `Tag` + `structure`; `Role` and `RoleGroup` + `fort`; `EconomyRules.fort`; `Loadout.fort?`; `Command.fort { side, pad }` and its reject codes; fort state on `UnitState` (with `silencedUntilTick`); `SimState.traps` and `Observation.traps`; `SideState.fortReadyTick`; `CapCandidate.capRank`; events `fortPlaced`, `fortBuilt`, `fortDecayed`, `trapArmed`, `trapTriggered`, `trapExpired`, `towerSilenced`; `Observation.me.fort` and `foe.fort` (the public ring); `HudModel.fort`; `MatchStats` fort counts; art `createFort` and `FortView`; the `replaySchema.ts` and `save/schema.ts` mirrors with a round-trip test; `core/fortPads.ts`; one WP0 bump and `SIM_VERSION` 5.0.0 (the next major at build time) with a deliberate golden re-record and `13-forts.json` | 6 (F1) | WP0, WP2, WP12 |
+| Contracts, sim, content (Last Base Standing, A2.10.1; one WP0 bump, `SIM_VERSION` 6.0.0) | `FormatKind` + `'untimed'`; `FormatDef.escalation?: { atMs, baseDamageBp, turretDamageBp, crumbleBpPerSec }[]` (the first entry is Siege I and equals `siegeMs`; `finalBellMs` null) and `FormatDef.endByMs?`; `EconomyRules.siege.ropeDeadBandLu` (40); `Observation.escalation { step, crumbling }`; `SimEvent` `escalated { step }` and `crumbled { side, amount }`; `HudModel.escalation?`. The sim derives the step from the tick (no new hashed state, so goldens 01-14 keep their hashes); base and turret damage read the step; no symmetric decay in an escalation format; the rope; no evolve heal in Crumble. Content: the `last` and `last.bronze` windows, `endByMs` derived by a test, `FORMAT_MODES.last`, arenas `ladderFormats` and `byFormat.last`. Golden `15-last-base.json` on the fixture plus a `last` format. Meta: `formatKind`/`rewardFormat` for `untimed`. No save change (`ui-homeMode.<id>` and `ui-ladderFormat.last` are UI flags) | L1 (2026-10-01) | WP0, WP1, WP2, WP7, WP12 |
 | Content, save (forts) | 32 forts, 24 twins and 8 levies per A16.14.4 as data, the compiler's structure mod, twins and schema checks; the next save version at build time (v11 today, after the Sundial's v10): `Loadout.fort` in every preset, `fortsOwned`, `flags['fort.slot']`, the unlock set and grants by rule, with fixtures | 6 (F1, F4) | WP1, WP8, WP7 |
 
 ---
@@ -5653,6 +5766,8 @@ Each phase keeps `main` playable and reruns `balance`, `exploits` and `strength`
 | **Art track** | Realistic restyle of the existing ages, Stone first, with measured hours per age | XL | art, visuals (WP4) | Parallel from now |
 | **9+** | New ages, re-costed from the art track: wave 1 Nile and Rome, wave 2 Norse and Renaissance, wave 3 Shogun (D4: yes) | 2 × L-XL per wave | all content areas, art, audio (WP6) | Stone restyled and measured |
 | **Online** | M1 with phase 3; M2 Friend Duel after phase 5; M3-M8 after | M, L | server, tools | Owner's Cloudflare steps for M2 |
+| **H1** (online-first Home, 2026-10-01) | The mode switcher (tile and chooser panel, `ui-homeMode` flag), the plate states for Training, Ladder, Quick, Daily and Skirmish, the length picker (three segments until L4), the Short/Medium/Long renames, dev-only mock states for the online plate, search and Room, the budget spec and screenshots at the four viewports; ui-plan 2.3 and 4.1 and ui-principles-short rules 2-3 reworded to "Battle plays the mode on the switcher" | M | UI (WP9), strings (WP1), e2e (WP12) | none |
+| **L1-L5** (Last Base Standing, A2.10.1) | L1 contracts, content, sim, golden 15, `SIM_VERSION` 6.0.0 · L2 AI · L3 HUD meter, banners, Crumble art and sound, VS and Result lines · L4 meta rewards, arenas, the fourth segment and its caption · L5 `sim-cli lbs` gates (A2.10.1) with the levers first. Owner check after L4 | M, S, M, S, S | WP0, WP1, WP2, WP3, WP4, WP5, WP6, WP7, WP9, WP12 | L1 parallel to H1 |
 | **Powers P0-P5** (power rework, owner request 2026-09-29) | P0 prototype gate (the combined rules measured with pre-registered go/no-go, no shipped code); P1 rules, contracts, the 16 built powers retagged and 8 new starters, the save migration, one-button compatibility adapters, AI v1, proxies, `SIM_VERSION` 4.0.0; P2 HUD dock, Army slots, teaching, then the Field slot on; P3 starter art and sound; owner check; P4 the 24 War Path powers and their sources; P5 tuning with Full War pacing (A2.9.13) | S, L, M, M, L, M | WP0-WP12 per A2.9.13 | P0 now; P1 after P0 passes and the UI rebuild's in-flight HUD and War Plan edits are committed (adapters requested in `docs/requests/powers-p1-compat.md`); P2 after the UI rebuild's HUD and Army land; P4 after War Path v1 (phase 5) |
 
 ---
