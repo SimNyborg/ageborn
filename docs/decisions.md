@@ -1392,3 +1392,7 @@ The absolute turtle gate (Bell ≤ 15%) cannot pass: the turtle proxy without an
 ## Owner direction 2026-10-01: online = strangers and friends
 
 Battle must offer both online matchmaking against strangers and friend battles via a code (or similar). The online milestone plan: friend battles first (a room code; peer-to-peer lockstep if a free, account-less signalling path works, otherwise the Cloudflare relay in server/), then public matchmaking for strangers on the Cloudflare Durable Objects relay, which needs the owner's free Cloudflare account. Until then, Battle plays AI opponents, always labelled AI.
+
+## Owner decision 2026-10-01: MVP first, online after
+
+Build the game up to a sensible offline MVP first; online (friend codes and public matchmaking) comes after the MVP. Home keeps the online-ready layout, with the friend entry shown as coming later.
