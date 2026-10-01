@@ -42,12 +42,20 @@ export const FORT_GATE_ZONE = 500 * MILLI;
 export const FORT_D_STRONG = 2;
 export const FORT_D_WEAK = 1;
 /**
- * Walls, towers and traps go up while the wave is at most this far short of mid-lane (bot frame), before
- * it stands on or near the Home pads (then no pad is safe). 500 lu (was 300, fixer 2026-10-01): the bot
- * plans its wall about a wave earlier, so a safe pad still exists when it decides (bots almost never
- * placed forts in the one-age windows: 0.03-0.37 walls per match).
+ * Walls, towers and traps go up once the wave has crossed mid-lane into the bot's half (this far short of
+ * mid-lane, bot frame: 0), while a safe pad still exists. 0 lu (MVP balance pass 2026-10-01; was 500,
+ * fixer 2026-10-01, and 300 before): read from 500 lu out, the bot built for waves that stopped at their
+ * own flag or died in mid-lane, and about half its walls decayed unhit (tier VII, Standard War: 1.03
+ * walls per match, 0.65 decayed, fort AI value 44.8%). With 0: 0.34 per match, 0.16 decayed, 51.3%
+ * (Short 52.6%; n = 400 per row). The saving goal still starts 900 lu out, so the gold is there.
  */
-export const FORT_APPROACH = 500 * MILLI;
+export const FORT_APPROACH = 0;
+/**
+ * A camp only joins a push that is already winning: the bot's army is worth at least this much of the
+ * enemy's (bp). A camp costs 150 gold and 6 pop for about six 30% levies, so it pays only on top of an
+ * advantage (MVP balance pass 2026-10-01: camp value 43.5% → 48-53%).
+ */
+export const CAMP_AHEAD_BP = 12000;
 /**
  * The ledger plan (A16.14.7 "inside the bot's gold ledger"): once a wave is this close to crossing
  * mid-lane and the slot is ready within 8 s, the bot saves the fort's price plus its gold float (trains
@@ -226,6 +234,9 @@ function trainedOut(v: View): number {
 /** Is a camp due (A16.14.7)? After the opening, Charging with 2+ trained units out, once per age stay (Kettle: whenever none stands). */
 function campDue(v: View, i: FortPlanInput): boolean {
   const repeat = i.persona.fortPrefer[0] === 'camp';
+  if (fx('campPop') && v.popCommitted + 18 > i.book.econ.popCap) return false;
+  if (v.myArmy * BP < CAMP_AHEAD_BP * v.foeArmy) return false;
+  if (fx('campFront') && (v.myFront === null || v.myFront < i.book.econ.midLane)) return false;
   return i.afterOpening && v.stance === 'charge' && (repeat || i.campAge !== v.ageIndex) && trainedOut(v) >= CAMP_MIN_TRAINED;
 }
 
@@ -298,7 +309,7 @@ export function planFort(v: View, i: FortPlanInput): FortPlan {
   // or near the Home pads, which are then unsafe (a scaffold there only feeds it), so waiting for the
   // whole wave to cross found a safe pad in under a third of the decisions that met the value rule.
   const mid = i.book.econ.midLane;
-  const w = waveAt(v, mid, mid + (fx('close') ? 200 * MILLI : fx('close0') ? 0 : fx('close3') ? 300 * MILLI : FORT_APPROACH));
+  const w = waveAt(v, mid, mid + (fx('close') ? 200 * MILLI : fx('close3') ? 300 * MILLI : FORT_APPROACH));
   if (!isWave(v, i.persona, w)) return NONE;
   const pad = forwardSafePad(v, i.book, 'home');
   if (pad === null) return NONE;

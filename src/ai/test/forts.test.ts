@@ -194,8 +194,9 @@ describe('the fort planner (A16.14.7)', () => {
     // The Pitch Cauldron (130 lu) puts the cover limit below pad 160, so the sim marks every Home pad unsafe.
     const turrets: Observation['me']['turrets'] = [{ card: 'pitch_cauldron', age: 'medieval' }, null, null, null];
     const unsafe = fortSlot(wall, { safe: [false, false, false] });
-    // Stone Infantry walks 87 lu/s: 6 s (scaffold + 1 s) is 522 lu, so the wave is read as it crosses mid-lane.
-    const crossing = softWave().map((u) => ({ ...u, p: u.p + 250 * MILLI }));
+    // Stone Infantry walks 87 lu/s: 6 s (scaffold + 1 s) is 522 lu, so the wave is read just past mid-lane.
+    // (MVP balance pass: walls go up once the wave is in the bot's half, so the wave stands just inside it.)
+    const crossing = softWave().map((u) => ({ ...u, p: u.p + 80 * MILLI }));
     const far = view(withFort(observation({ gold, units: crossing, turrets }), unsafe));
     expect(planFort(far, input()).action).toEqual({ kind: 'fort', pad: 0, card: wall, cost: 125 * MILLI });
     // An enemy that would reach pad 160 before the scaffold completes keeps it unsafe.
@@ -419,7 +420,7 @@ describe('bots place forts in real matches, under the player rules (A16.14.7)', 
     for (const kind of ['wall', 'tower', 'trap'] as const) {
       // A wave worth a fort does not come every match: the first of a few fixed seeds with one.
       let m = fortMatch(1, 'short', [null, kind], [7, 7]);
-      for (let seed = 2; seed <= 12 && m.placed.length === 0; seed += 1) m = fortMatch(seed, 'short', [null, kind], [7, 7]);
+      for (let seed = 2; seed <= 30 && m.placed.length === 0; seed += 1) m = fortMatch(seed, 'short', [null, kind], [7, 7]);
       expect(m.placed.length, kind).toBeGreaterThan(0);
       for (const p of m.placed) {
         expect(p.side).toBe(1);
@@ -460,7 +461,9 @@ describe('bots place forts in real matches, under the player rules (A16.14.7)', 
         for (const e of ev) if (e.e === 'fortPlaced' && e.side === 0) placed += 1;
       },
     });
-    expect(placed).toBeGreaterThanOrEqual(5);
+    // One fort up at a time (`maxAlive` 1): a wall that is never broken stands about 2:45 before it has
+    // decayed, so a Short War holds at least 3 placements (MVP balance pass: the seed's flow changed).
+    expect(placed).toBeGreaterThanOrEqual(3);
     // Only the recharge, caps or a wave walking onto the pad during the reaction delay may reject it.
     for (const x of r.rejected.filter((q) => q.t === 'fort')) expect(['fortPadEnemy', 'noGold', 'popFull', 'fortMax', 'fortSiege']).toContain(x.reason);
   });
