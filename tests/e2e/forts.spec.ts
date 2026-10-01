@@ -92,7 +92,8 @@ test.describe('Battle HUD: the Fort button', () => {
     await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
     await page.mouse.down();
     await page.mouse.move(b.x + b.width / 2 - 40, b.y - 60, { steps: 5 });
-    const blocked = page.locator('[data-testid^="hud-fpad-"][data-look="blocked"]').last();
+    // The pad element is a zero-size anchor; its visible ring is what the finger aims at.
+    const blocked = page.locator('[data-testid^="hud-fpad-"][data-look="blocked"] .hud-fpad-ring').last();
     await expect(blocked).toBeVisible();
     const p = (await blocked.boundingBox())!;
     await page.mouse.move(p.x + p.width / 2, p.y + p.height / 2 - 20, { steps: 8 });
