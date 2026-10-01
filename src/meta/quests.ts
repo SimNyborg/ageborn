@@ -130,7 +130,8 @@ export function matchProgress(def: QuestDef, f: QuestMatchFacts): number {
     case 'evolves':
       return st.evolves;
     case 'fastFinalAge': {
-      const before = def.beforeMsByFormat?.[f.format];
+      // A2.10.1: Last Base Standing plays the Full War's 7 ages, so it counts against the Full War's time.
+      const before = def.beforeMsByFormat?.[f.format] ?? (f.format === 'last' ? def.beforeMsByFormat?.['full'] : undefined);
       return before !== undefined && st.reachedFinalAgeAtMs !== null && st.reachedFinalAgeAtMs < before ? 1 : 0;
     }
     case 'turretKills':

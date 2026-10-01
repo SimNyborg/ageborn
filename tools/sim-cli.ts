@@ -35,7 +35,7 @@ import { runStrength, strengthDefaults, strengthSections } from './strength';
 import { bool, int, list, parseArgs, str, type Args } from './lib/args';
 import { HeadlessMatch } from './lib/driver';
 import { PATCH_ENV, patchedGameContent } from './lib/patch';
-import { BALANCED_GENERAL, seatLabel, type SeatSpec } from './lib/jobs';
+import { BALANCED_GENERAL, matchTickCap, seatLabel, type SeatSpec } from './lib/jobs';
 import { MatchTally } from './lib/metrics';
 import { loadBots } from './lib/modules';
 import { baselinePlan, sideConfig } from './lib/plans';
@@ -157,7 +157,7 @@ async function matchCommand(a: Args): Promise<number> {
   ]);
   const tally = new MatchTally(content);
   const started = performance.now();
-  const outcome = match.run({ onEvents: (ev) => tally.push(ev) });
+  const outcome = match.run({ maxTicks: matchTickCap(content, format), onEvents: (ev) => tally.push(ev) });
   const m = tally.summary({ seed, format, outcome, ticks: sim.state.tick, hash: sim.hash() });
   console.log(`${seatLabel(seats[0])} vs ${seatLabel(seats[1])}, ${format}, seed ${seed}, bots from ${bots.source}${bots.reason ? ` (${bots.reason})` : ''}`);
   console.log(`result: ${m.winner === null ? 'draw' : `side ${m.winner} wins`} by ${m.reason} at ${fmtClock(m.ticks / 20)}; base HP ${m.baseHpBp.map((b) => `${b / 100}%`).join(' / ')}; hash ${m.hash}`);

@@ -2,7 +2,7 @@
  * Trophies, arenas and the Trophy Road (DESIGN A6.3).
  *
  * - Ladder results: win +30, loss −20 (no loss below 400 trophies, never below the current arena
- *   gate), draw 0. The best count only rises.
+ *   gate), draw 0. The best count only rises. Last Base Standing (A2.10.1) is unranked: 0 either way.
  * - The arena follows the trophies and never goes down (a loss can never drop below its gate). An
  *   arena sets the ladder formats, the drop pool, the bot tiers and the bot level.
  * - The Trophy Road: 60 nodes, claimable once each up to the best trophies. "Gate N" nodes pay that
@@ -28,14 +28,24 @@ export type LadderResult = 'win' | 'loss' | 'draw';
  */
 export function ladderWinFor(s: Pick<SaveDoc, 'trophies'>, t: Content, format?: FormatId): LadderWin {
   const l = t.arenas.ladder;
-  if (!format || s.trophies.current < l.winByFormat.fromTrophies) return l.win;
+  if (!format) return l.win;
   // A window pays the row of its family (A18.3.4: `short.bronze` pays Short War's).
-  return l.winByFormat.formats[rewardFormat(t, format)] ?? l.win;
+  const row = l.winByFormat.formats[rewardFormat(t, format)];
+  // A2.10.1: an unranked length (Last Base Standing) pays its own row at every trophy count.
+  if (row?.unranked) return row;
+  if (s.trophies.current < l.winByFormat.fromTrophies) return l.win;
+  return row ?? l.win;
 }
 
-/** The trophy change of a ladder result (A6.3, A15.8 for wins by format). */
+/** True when a format moves no trophies (A2.10.1: Last Base Standing is unranked). */
+export function isUnranked(t: Content, format?: FormatId): boolean {
+  return format !== undefined && t.arenas.ladder.winByFormat.formats[rewardFormat(t, format)]?.unranked === true;
+}
+
+/** The trophy change of a ladder result (A6.3, A15.8 for wins by format; 0 in an unranked length, A2.10.1). */
 export function trophyDelta(s: SaveDoc, t: Content, result: LadderResult, format?: FormatId): number {
   const l = t.arenas.ladder;
+  if (isUnranked(t, format)) return 0;
   if (result === 'win') return ladderWinFor(s, t, format).trophies;
   if (result === 'draw') return l.draw.trophies;
   const cur = s.trophies.current;

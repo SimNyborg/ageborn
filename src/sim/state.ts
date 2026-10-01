@@ -32,7 +32,7 @@ import type {
 import { BP, LANE_MLU, MILLI, TICK_MS, assert, seedSfc32 } from '@/core';
 import { matchMods, type MatchMods } from './modifiers';
 import { emptySideFx, unlockPositions, type SideFx, type UnitFx } from './researchRules';
-import { rulesFor, type AreaKind, type AttackRules, type EconRules, type FormatRules, type SimRules, type StatusRules } from './rules';
+import { rulesFor, type AreaKind, type AttackRules, type EconRules, type EscalationRt, type FormatRules, type SimRules, type StatusRules } from './rules';
 import { createSpatial, type SpatialIndex } from './spatial';
 
 /** No target (ids start at 1). */
@@ -277,6 +277,11 @@ export interface Ctx {
   siegeTick: number | null;
   finalBellTick: number | null;
   retreatTick: number | null;
+  /**
+   * Last Base Standing's Siege steps (A2.10.1), shifted with Siege by a Siege-moving modifier; null in a
+   * format with a Final Bell (and with the training `noClock`). Derived from the format, never hashed.
+   */
+  escalation: readonly EscalationRt[] | null;
   /** A18.7.3 `survive` victory: the tick and the side that wins by holding out (null = none). */
   surviveTick: number | null;
   surviveSide: Side;
@@ -413,6 +418,10 @@ export function createCtx(cfg: MatchConfig): Ctx {
     siegeTick,
     finalBellTick: noClock ? null : fmt.finalBellTick,
     retreatTick: noClock ? null : fmt.retreatTick,
+    escalation:
+      noClock || !fmt.escalation || siegeTick === null || fmt.siegeTick === null
+        ? null
+        : fmt.escalation.map((x) => ({ ...x, tick: Math.max(1, x.tick - ((fmt.siegeTick as number) - siegeTick)) })),
     surviveTick: victory?.kind === 'survive' && victory.atMs > 0 ? Math.max(1, Math.trunc(victory.atMs / TICK_MS)) : null,
     surviveSide: victory?.kind === 'survive' && victory.side === 1 ? 1 : 0,
     targetSide: victory?.kind === 'target' ? (victory.side === 1 ? 1 : 0) : null,

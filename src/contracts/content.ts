@@ -451,6 +451,29 @@ export interface FormatDef {
   retreatAfterMs: number | null;
   /** XP to leave each position of the window (A18.3.2: 700, 1,250, 1,350, ...; tutorial 610 / 580 / 390 / 900). */
   xpToNextOverride?: number[];
+  /**
+   * Last Base Standing (A2.10.1): the Siege steps of a war with no Final Bell, in time order. The first
+   * entry is Siege I and starts at `siegeMs`; `finalBellMs` is then null. In a format with steps the
+   * symmetric Siege decay is off, and base and turret damage in Siege read the current step's values.
+   * A step with `crumbleBpPerSec` > 0 runs the Crumble rope. Absent in every timed format.
+   */
+  escalation?: EscalationStep[];
+  /**
+   * The latest end of a format with escalation (A2.10.1): by this time a base has fallen, whatever the
+   * players do (derived from the steps by a content test; the online relay caps a room at this + 2 min).
+   */
+  endByMs?: number;
+}
+
+/** One Siege step of Last Base Standing (A2.10.1). Multipliers in bp (10,000 = ×1). */
+export interface EscalationStep {
+  atMs: number;
+  /** Base damage from attacks in this step (Siege I 20,000 = ×2, as `economy.siege.baseDamageBp`). */
+  baseDamageBp: number;
+  /** Turret and field tower damage in this step (Siege I 5,000 = ×0.5). */
+  turretDamageBp: number;
+  /** The Crumble rope: bp of base max HP per second on the side whose half holds the fight (0 = none). */
+  crumbleBpPerSec: number;
 }
 
 /**
@@ -500,7 +523,18 @@ export interface EconomyRules {
    * once that ally is within this distance of the enemy gate, so an army at the gate hits the base with
    * every unit instead of queuing in single file (0 = off).
    */
-  siege: { turretDamageBp: number; baseDamageBp: number; decayBpPerSec: number; moveSpeedBp: number; gateCrowdLu: number };
+  siege: {
+    turretDamageBp: number;
+    baseDamageBp: number;
+    decayBpPerSec: number;
+    moveSpeedBp: number;
+    gateCrowdLu: number;
+    /**
+     * The Crumble rope's dead band (A2.10.1: 40 lu): when the two fronts are within this distance both
+     * sides crumble; otherwise only the side behind. Absent in content that predates Last Base Standing.
+     */
+    ropeDeadBandLu?: number;
+  };
   /**
    * The falling gate (A16.4 stall fix, A17 step 1): in Overdrive and Siege, a unit killed by an enemy
    * unit, turret or ability within `lu` of its own gate costs its base `hpBp` of the unit's max HP (as

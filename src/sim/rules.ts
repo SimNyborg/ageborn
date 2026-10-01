@@ -117,6 +117,9 @@ export const DEFAULT_MARCH_BP = 12500;
 export const DEFAULT_SIEGE_MOVE_BP = 12000;
 export const DEFAULT_FRONT_WIDTH = 3;
 export const DEFAULT_GATE_CROWD_LU = 60;
+
+/** The Crumble rope's dead band when the content has none (A2.10.1: 40 lu). */
+export const DEFAULT_ROPE_DEAD_BAND_LU = 40;
 /** DESIGN A18.2 / A18.4.2 values for content that predates them. */
 export const DEFAULT_TURRET_HARD_CAP_LU = 560;
 export const DEFAULT_HOLD_MAX_LU = 800;
@@ -414,6 +417,19 @@ export interface FormatRules {
   siegeTick: number | null;
   finalBellTick: number | null;
   retreatTick: number | null;
+  /**
+   * Last Base Standing (A2.10.1): the Siege steps with their start ticks, in order (the first is Siege I
+   * at `siegeTick`); null in every format with a Final Bell.
+   */
+  escalation: readonly EscalationRt[] | null;
+}
+
+/** One Siege step of Last Base Standing in ticks (A2.10.1); multipliers in bp, the rope in bp per second. */
+export interface EscalationRt {
+  tick: number;
+  baseDamageBp: number;
+  turretDamageBp: number;
+  crumbleBpPerSec: number;
 }
 
 /** Economy and rule constants in runtime units (DESIGN A2.3-A2.11). */
@@ -456,7 +472,7 @@ export interface EconRules {
   stampedeFallbackP: number;
   overdrive: { baseGoldBp: number; xpBp: number; powerBp: number };
   /** Siege (A2.10); `moveSpeedBp` is the forced march (A17.3), `gateCrowd` the siege crowd in mlu (A16.4 step 2). */
-  siege: { turretDamageBp: number; baseDamageBp: number; decayBpPerStep: number; decayStepTicks: number; moveSpeedBp: number; gateCrowd: number };
+  siege: { turretDamageBp: number; baseDamageBp: number; decayBpPerStep: number; decayStepTicks: number; moveSpeedBp: number; gateCrowd: number; ropeDeadBand: number };
   lastStand: { thresholdBp: number; autoBp: number; radius: number; damagePerP: number; knockback: number; chargeTicks: number };
   spawnP: number;
   holdLine: number;
@@ -1044,6 +1060,8 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
       decayStepTicks,
       moveSpeedBp: posOr(e.siege.moveSpeedBp, DEFAULT_SIEGE_MOVE_BP),
       gateCrowd: mlu(nonNegOr(e.siege.gateCrowdLu, DEFAULT_GATE_CROWD_LU)),
+      // A2.10.1: absent in content that predates Last Base Standing (only read in a format with steps)
+      ropeDeadBand: mlu(nonNegOr(e.siege.ropeDeadBandLu, DEFAULT_ROPE_DEAD_BAND_LU)),
     },
     lastStand: {
       thresholdBp: e.lastStand.thresholdBp,
@@ -1115,6 +1133,10 @@ function formatRules(content: CompiledContent, id: FormatId): FormatRules {
     siegeTick: toTick(f.siegeMs),
     finalBellTick: toTick(f.finalBellMs),
     retreatTick: toTick(f.retreatAfterMs),
+    escalation:
+      f.escalation && f.escalation.length > 0
+        ? f.escalation.map((x) => ({ tick: msToTicks(x.atMs), baseDamageBp: x.baseDamageBp, turretDamageBp: x.turretDamageBp, crumbleBpPerSec: x.crumbleBpPerSec }))
+        : null,
   };
 }
 

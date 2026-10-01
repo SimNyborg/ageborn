@@ -70,12 +70,16 @@ export type FormatId = string;
 
 /**
  * The family of a format, for rewards, labels and ladder tables (A18.3.4): the tutorial, the three
- * named lengths (3, 5 and 7 ages) and `window` for the shorter War Path and custom windows (1, 2 and 4).
+ * named lengths (3, 5 and 7 ages), `untimed` for Last Base Standing (A2.10.1: no Final Bell, rising
+ * Siege steps and the Crumble rope) and `window` for the shorter War Path and custom windows (1, 2 and 4).
  */
-export type FormatKind = 'tutorial' | 'short' | 'standard' | 'full' | 'window';
+export type FormatKind = 'tutorial' | 'short' | 'standard' | 'full' | 'untimed' | 'window';
 
-/** The named formats the ladder, Skirmish and Quick Battle offer (A2.10, A18.3.4). */
-export type NamedFormatId = 'tutorial' | 'short' | 'standard' | 'full';
+/**
+ * The named formats the ladder, Skirmish and Quick Battle offer (A2.10, A18.3.4). `last` is Last Base
+ * Standing (A2.10.1, kind `untimed`); players see Short, Medium and Long War for the three timed ones.
+ */
+export type NamedFormatId = 'tutorial' | 'short' | 'standard' | 'full' | 'last';
 
 /**
  * Time Capsule tiers, lowest to highest (DESIGN A6.4): the ladder, index 0-6. Gold, Platinum and Aeon

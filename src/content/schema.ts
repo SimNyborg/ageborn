@@ -39,10 +39,10 @@ const sound = v.pipe(v.string(), v.minLength(1));
 const AGE = v.picklist(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
 const RARITY = v.picklist(['common', 'rare', 'epic', 'legendary']);
 const SKIN_RARITY = v.picklist(['rare', 'epic', 'legendary']);
-const FORMAT = v.picklist(['tutorial', 'short', 'standard', 'full']);
+const FORMAT = v.picklist(['tutorial', 'short', 'standard', 'full', 'last']);
 /** Any content format key (A18.3.4: named formats and windows such as `short.bronze`, `w2.medieval`). */
 const FORMAT_KEY = v.pipe(v.string(), v.regex(/^[a-z][a-z0-9]*(\.[a-z]+)?$/, 'format keys look like "short" or "w2.bronze"'));
-const FORMAT_KIND = v.picklist(['tutorial', 'short', 'standard', 'full', 'window']);
+const FORMAT_KIND = v.picklist(['tutorial', 'short', 'standard', 'full', 'untimed', 'window']);
 const TIER = v.picklist(['clay', 'bronze', 'silver', 'jade', 'gold', 'platinum', 'aeon']);
 const FOIL = v.picklist(['none', 'bronze', 'silver', 'holo']);
 const TAG = v.picklist(['light', 'armored', 'bio', 'mech', 'ground', 'air', 'legendary', 'support', 'ranged', 'melee', 'structure']);
@@ -280,6 +280,9 @@ const FormatSchema = v.strictObject({
   finalBellMs: v.nullable(pos),
   retreatAfterMs: v.nullable(pos),
   xpToNextOverride: v.optional(v.array(pos)),
+  // A2.10.1 Last Base Standing: the Siege steps and the latest end
+  escalation: v.optional(v.array(v.strictObject({ atMs: pos, baseDamageBp: bp, turretDamageBp: bp, crumbleBpPerSec: bp }))),
+  endByMs: v.optional(pos),
 });
 
 const EconomySchema = v.strictObject({
@@ -296,7 +299,7 @@ const EconomySchema = v.strictObject({
     startBp: bp, emptyReloadMs: pos, homeLineP: pos, frontReachLu: nonNeg, frontFloorP: nonNeg, frontRank: pos,
     strikePickLu: pos, strikeEpicBp: bp, legendaryControlBp: bp, lockMs: nonNeg,
   }),
-  siege: v.strictObject({ turretDamageBp: bp, baseDamageBp: bp, decayBpPerSec: bp, moveSpeedBp: pos, gateCrowdLu: nonNeg }),
+  siege: v.strictObject({ turretDamageBp: bp, baseDamageBp: bp, decayBpPerSec: bp, moveSpeedBp: pos, gateCrowdLu: nonNeg, ropeDeadBandLu: v.optional(nonNeg) }),
   fort: v.optional(
     v.strictObject({
       pads: v.array(pos), homePads: pos, padClearLu: nonNeg, fieldBehindLu: nonNeg, fieldFrontRank: pos,
@@ -474,7 +477,7 @@ const ArenasSchema = v.strictObject({
     win: v.strictObject({ trophies: int, amber: nonNeg, amberWithoutCharge: nonNeg }),
     winByFormat: v.strictObject({
       fromTrophies: nonNeg,
-      formats: v.partial(byKeys(['tutorial', 'short', 'standard', 'full'], v.strictObject({ trophies: int, amber: nonNeg, amberWithoutCharge: nonNeg }))),
+      formats: v.partial(byKeys(['tutorial', 'short', 'standard', 'full', 'last'], v.strictObject({ trophies: int, amber: nonNeg, amberWithoutCharge: nonNeg, unranked: v.optional(v.literal(true)) }))),
     }),
     loss: v.strictObject({ trophies: int, amber: nonNeg, noLossBelowTrophies: nonNeg }),
     draw: v.strictObject({ trophies: int, amber: nonNeg }),
@@ -1108,6 +1111,58 @@ function checkResearch(issues: Issues, c: Content): void {
   issues.check(r.picks.length === 0 || r.unlockAt['1']?.[0] === 0, 'research.unlockAt', 'rank I opens from the start');
 }
 
+/**
+ * Last Base Standing (A2.10.1): an `untimed` format is 7 ages with Siege steps and no Final Bell; the
+ * first step starts at `siegeMs`, steps are in time order, multipliers never weaken a step, a Crumble
+ * step exists, and `endByMs` is the bound {@link escalationEndMs} derives from the steps.
+ */
+function checkEscalation(issues: Issues, key: string, f: Content['formats'][string]): void {
+  const p = `formats.${key}`;
+  const steps = f.escalation;
+  if (f.kind === 'untimed') {
+    issues.check(f.ages.length === 7, p, 'Last Base Standing is 7 ages (A2.10.1)');
+    issues.check(steps !== undefined && steps.length > 0, p, 'an untimed format has Siege steps (A2.10.1)');
+  }
+  if (!steps) {
+    issues.check(f.endByMs === undefined, p, 'endByMs belongs to a format with Siege steps');
+    return;
+  }
+  issues.check(f.kind === 'untimed', p, 'Siege steps belong to an untimed format (A2.10.1)');
+  issues.check(f.finalBellMs === null, p, 'a format with Siege steps has no Final Bell (A2.10.1)');
+  issues.check(steps.length > 0 && f.siegeMs === steps[0]?.atMs, p, 'the first Siege step starts at siegeMs');
+  steps.forEach((x, i) => {
+    const prev = steps[i - 1];
+    if (!prev) return;
+    issues.check(x.atMs > prev.atMs, p, 'Siege steps are in time order');
+    issues.check(x.baseDamageBp >= prev.baseDamageBp && x.turretDamageBp <= prev.turretDamageBp && x.crumbleBpPerSec >= prev.crumbleBpPerSec, p, 'a later Siege step is never milder');
+  });
+  const end = escalationEndMs(steps);
+  issues.check(end !== null, p, 'a Crumble step guarantees an end (A2.10.1)');
+  issues.check(f.endByMs === end, p, `endByMs is derived from the steps (${end ?? 'none'})`);
+}
+
+/**
+ * The latest end of a war with these Siege steps (A2.10.1), in ms, or null when no step crumbles. The
+ * rope takes at least one side every second, so the two bases' combined HP falls by at least the step's
+ * rate (bp per second) from two full bases; a base has fallen by the time the combined HP reaches 0.
+ */
+export function escalationEndMs(steps: readonly { atMs: number; crumbleBpPerSec: number }[]): number | null {
+  const first = steps.findIndex((x) => x.crumbleBpPerSec > 0);
+  if (first < 0) return null;
+  let combined = 2 * 10000;
+  let ms = (steps[first] as { atMs: number }).atMs;
+  for (let i = first; i < steps.length; i += 1) {
+    const rate = (steps[i] as { crumbleBpPerSec: number }).crumbleBpPerSec;
+    const until = steps[i + 1]?.atMs ?? Number.POSITIVE_INFINITY;
+    const secs = Math.ceil(combined / rate);
+    if (ms + secs * 1000 <= until) return ms + secs * 1000;
+    const span = Math.trunc((until - ms) / 1000);
+    combined -= span * rate;
+    ms = until;
+  }
+  return null;
+}
+
 function checkAgesAndFormats(issues: Issues, c: Content): void {
   AGE_ORDER.forEach((age, i) => {
     const a = c.ages[age];
@@ -1131,6 +1186,7 @@ function checkAgesAndFormats(issues: Issues, c: Content): void {
     if (f.kind === 'full') issues.check(f.ages.length === 7, `formats.${key}`, 'Full War is 7 ages (A18.3.4)');
     const t = [f.overdriveMs, f.siegeMs, f.finalBellMs].filter((x): x is number => x !== null);
     issues.check(t.every((x, i) => i === 0 || x > (t[i - 1] as number)), `formats.${key}`, 'phases are in order');
+    checkEscalation(issues, key, f);
   }
   for (const named of ['tutorial', 'short', 'standard', 'full']) issues.check(c.formats[named] !== undefined, `formats.${named}`, 'the named formats exist');
   checkResearch(issues, c);

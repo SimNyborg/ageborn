@@ -1396,3 +1396,41 @@ Battle must offer both online matchmaking against strangers and friend battles v
 ## Owner decision 2026-10-01: MVP first, online after
 
 Build the game up to a sensible offline MVP first; online (friend codes and public matchmaking) comes after the MVP. Home keeps the online-ready layout, with the friend entry shown as coming later.
+
+## Online-first Battle hub and four battle lengths (lead design, 2026-10-01)
+
+Owner request (Danish, verbatim in the task): set Home up so its layout is made for online battles, take inspiration from Clash Royale, the goal is 2 users playing each other, and offer a short, a medium and a long battle plus one with no time limit that ends only when a base is destroyed. Research and the full spec are in the session scratchpad (`online-home/RESEARCH.md`, `online-home/SPEC.md`). DESIGN A2.10, A2.10.1 (new), A6.3, A9 (#2-#4, #20-#21, A9.2), A15.8, A18.3.4, A18.9.5, A18.10, A18.11 and A18.13 were updated in place.
+
+**Home**
+- **Principles only.** From Clash Royale we take one Battle verb with the mode chosen beside it, the arena before numbers, the next reward in sight, one deck for all modes, and escalation instead of a buzzer. We take none of its names, art, positions or wording.
+- **The liked frame stays:** diorama, trophy bar, War Path card, four capsule slots, plate over Battle, five tabs.
+- **The Modes tile becomes the mode switcher.** It shows the selected mode ("Ladder · vs AI"). The panel *selects* a mode (UI flag `ui-homeMode.<id>`, so no save change) and never starts one. Battle plays what the switcher shows. The Ladder returns as a card and stays the default, so the Ladder is still 1 tap. ui-principles-short rule 2 ("Home's Play starts the next War Path level", out of date since 2026-09-30) is to be reworded in step H1.
+- **The plate is the lobby card.** It shows exactly what Battle will do, in one state per situation (SPEC 1.4): the labelled AI General; online, a neutral silhouette until a player is found (never a face or name in advance); and the one choice the mode needs (the length, or a difficulty).
+- **Online is designed now and shown only when it works.** The flows are: search with elapsed time counting up; after 25 s, a labelled AI General offered as a choice while the search continues; VS with a Player or AI chip; the Friend room by 6-character code; Rematch. The 2026-09-30 rule stands: no "coming soon" control. The states exist only behind `?dev=1` so the owner can see screenshots. An AI match never shows a search, and no player counts are shown anywhere.
+- **Friend Duel pays nothing** (no Amber, Sundial claim, quest or War Chest progress), which rules out collusion farming and keeps red line 9. Casual online pays like the Ladder vs AI with no trophies; ranked pays trophies and the rating. Trophy sharing with the AI Ladder is decided at M5 (recommendation: one count, with a cap on AI-Ladder trophies).
+
+**Lengths**
+- **Short, Medium and Long are the built Short, Standard and Full War, renamed for players.** The ids and clocks are unchanged. The plate quotes the upper bound ("up to 8½ / 12½ / 17½ min"), never a median that the Bell share makes untrue. "Standard" is left free for "Standard levels".
+- **Last Base Standing** (`last`, kind `untimed`, 7 ages; DA v1.1 "Til sidste base") has no Final Bell, no countdown and no win on HP. The steps are Overdrive 12:00, Siege I 14:30 (today's Siege without base decay), Siege II 17:00 (base ×3, turrets ×0.35), Siege III 19:30 (×4, ×0.25), Crumble 22:00 and Crumble II 24:30.
+  - **The rope (Crumble):** the side whose own half holds the fight loses 0.5%, then 1%, of its base max HP per second; within a 40 lu dead band both sides crumble.
+  - There is no evolve heal in Crumble.
+  - A base therefore falls by 26:35 (`endByMs`, derived by a content test).
+  - It is unranked: Full War Amber, no trophies either way.
+  - Offered from Arena 3, in Skirmish, and in Friend Duel; never in online queues (capacity) or on the War Path.
+- **Measured on a scratch emulation** (tier VII Echo mirrors, baseline plans at L7, 7-age window; indicative):
+  - Removing only the Bell gave a median 16:56, a maximum of 17:50 and **20% draws** (both bases decayed to 0 on one tick).
+  - Siege without decay gave a median 22:07 and p90 37:05, with 1 of 40 still running at 60:00. In the 5-age window **16 of 40** were still running at 60:00.
+  - The chosen steps (n = 80) gave a median 19:35, p90 25:20, longest 26:14, 0 draws, 30% ending in Crumble and a first-mover split of 41/39. With 3:30 steps the turret turtle won 0 of 40 and cheap spam 0 of 40.
+- **Sim:** one contract bump, `SIM_VERSION` 6.0.0.
+  - The step is a pure function of the tick, so there is no new hashed state and goldens 01-14 must stay bit-identical.
+  - New golden `15-last-base`.
+  - AI: research and forts stay allowed in Siege I-III when there is no Bell; push value uses the step's base damage; the bot is aware of Crumble.
+  - Gates and levers are in DESIGN A2.10.1.
+- **Owner point to raise plainly:** this is "no clock", not "no limit". A war with no pressure was measured to run past an hour, and the free server cannot hold such rooms. The recommendation, taken, is the guaranteed escalation. The owner may still ask for a later Crumble.
+
+**Online carry-over**
+- Both players always play the same length: one casual queue per length, one ranked length (Short once its Bell rows pass, else Standard), and the host's pick in a Friend Duel.
+- The relay cap becomes `(finalBellMs ?? endByMs) + 2 min`.
+- Capacity: Last Base Standing at about 148 GB-s per war (at most about 201), about 88 a day (about 65 at the worst case), so Friend Duel only.
+
+**Build order:** H1 (Home, now, M) in parallel with L1 (contracts and sim, M), then L2 AI (S), L3 HUD, art and sound (M), L4 meta and the fourth segment (S), L5 gates (S), and the owner check. Then M2 Friend Duel (owner's Cloudflare steps), M4 search, M5 ranked, M6 Friends button.

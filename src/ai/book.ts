@@ -5,7 +5,7 @@
  *
  * Money is in milli-gold and distances in milli-lu, the units of `Observation` (DESIGN B3).
  */
-import type { AgeId, CardId, CompiledContent, FortKind, PowerDef, RoleGroup, TurretDef, UnitDef } from '@/contracts';
+import type { AgeId, CardId, CompiledContent, FortKind, Observation, PowerDef, RoleGroup, TurretDef, UnitDef } from '@/contracts';
 import { BP, MILLI, fieldPulses, fortEconomyOf, fortPadRules, msToTicks, powerEconomyOf, powerReachRules, type FortPadRules, type PowerReachRules } from '@/core';
 
 export interface UnitCard {
@@ -444,6 +444,17 @@ export function matchClock(book: CardBook, ages: readonly AgeId[] | undefined): 
   }
   byKey.set(key, out);
   return out;
+}
+
+/**
+ * The clocks a bot plays by (A18.3.4, A2.10.1): the window's clocks, or in Last Base Standing (the
+ * public schedule in the observation) Siege I as the Siege and no Final Bell. Last Base Standing shares
+ * its 7 ages with the Full War, so the window alone would wrongly report the Full War's Bell.
+ */
+export function observedClock(book: CardBook, obs: Pick<Observation, 'ages' | 'escalation'>): MatchClock {
+  const c = matchClock(book, obs.ages);
+  const first = obs.escalation?.steps[0];
+  return first ? { overdrive: c.overdrive, siege: first.tick, finalBell: null } : c;
 }
 
 /** Counter value M[a][b] in bp; 5,000 (even) when the matrix has no entry. */

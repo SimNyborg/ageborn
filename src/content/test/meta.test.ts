@@ -369,16 +369,17 @@ describe('Quests and Codex (A6.7)', () => {
 
 describe('Formats (A2.10 "Used in")', () => {
   it('lists the modes of each format, consistent with the arenas, Daily Challenge and Conquest', () => {
-    expect(FORMAT_ORDER).toEqual(['tutorial', 'short', 'standard', 'full']);
+    expect(FORMAT_ORDER).toEqual(['tutorial', 'short', 'standard', 'full', 'last']);
     expect(FORMAT_MODES).toEqual({
       tutorial: ['tutorial'],
       short: ['ladder', 'skirmish'],
       standard: ['ladder', 'daily', 'conquest', 'skirmish'],
       full: ['ladder', 'skirmish'],
+      last: ['ladder', 'skirmish'],
     });
-    // Short War on the ladder in all arenas, Standard from Arena 2, Full from Arena 3.
+    // Short War on the ladder in all arenas, Standard from Arena 2, Full and Last Base Standing from Arena 3.
     const firstArena = (f: string) => arenas.list.find((a) => a.ladderFormats.some((x) => x === f))?.index;
-    expect([firstArena('short'), firstArena('standard'), firstArena('full')]).toEqual([1, 2, 3]);
+    expect([firstArena('short'), firstArena('standard'), firstArena('full'), firstArena('last')]).toEqual([1, 2, 3, 3]);
     for (const a of arenas.list) {
       for (const f of a.ladderFormats) expect(FORMAT_MODES[f], `${a.id} ${f}`).toContain('ladder');
       // Once a format is on the ladder it stays there.
@@ -438,6 +439,8 @@ describe('Hidden feats (A15.10)', () => {
         short: { trophies: 26, amber: 20, amberWithoutCharge: 40 },
         standard: { trophies: 31, amber: 27, amberWithoutCharge: 54 },
         full: { trophies: 36, amber: 35, amberWithoutCharge: 70 },
+        // A2.10.1: Last Base Standing is unranked and pays the Full War's Amber
+        last: { trophies: 0, amber: 35, amberWithoutCharge: 70, unranked: true },
       },
     });
   });

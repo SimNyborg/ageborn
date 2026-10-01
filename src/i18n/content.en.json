@@ -206,7 +206,8 @@
     "tutorial": { "name": "Training", "desc": "Stone Age to Future Age, no clock." },
     "short": { "name": "Short War", "desc": "3 ages, about 7 min." },
     "standard": { "name": "Standard War", "desc": "5 ages, about 10 min." },
-    "full": { "name": "Full War", "desc": "7 ages, about 15 min." }
+    "full": { "name": "Full War", "desc": "7 ages, about 15 min." },
+    "last": { "name": "Last Base Standing", "desc": "7 ages, no clock: the Siege rises until a base falls." }
   },
   "rarity": {
     "common": { "name": "Common" },

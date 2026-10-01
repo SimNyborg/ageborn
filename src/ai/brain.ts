@@ -45,7 +45,7 @@ import {
   type Sfc32State,
 } from '@/core';
 import type { BotAction } from './actions';
-import { matchClock, type CardBook, type MatchClock } from './book';
+import { observedClock, type CardBook, type MatchClock } from './book';
 import {
   COUNTER_RADIUS,
   counterTargets,
@@ -451,7 +451,7 @@ export class Brain {
     const quiet = v.now - mem.pastMidTick;
     const clockSteps = quiet >= CLOCK_START ? Math.trunc((quiet - CLOCK_START) / CLOCK_STEP) : 0;
     const clockBp = Math.min(CLOCK_MAX_BP, BP + CLOCK_STEP_BP * clockSteps);
-    const clock = matchClock(book, obs.ages);
+    const clock = observedClock(book, obs);
     const baseGateBp = Math.max(BP, P.pushGateBp - CLOCK_STEP_BP * clockSteps);
     let gateBp = hot ? BP : Math.max(TIMED_GATE_MIN_BP, mulBp(baseGateBp, this.researchTimingBp(v, mem)));
     // A2.9.9 ring reading (V+): a scouted enemy Home bombard or sweep that is ready asks 20% more army
@@ -481,7 +481,12 @@ export class Brain {
     // A16.14.3/A16.14.7: summons (levies always march; drops, riders, the Vanguard) never count as the
     // enemy on the bot's half.
     const foeOnMyHalf = v.foes.some((u) => u.p < e.midLane && !u.summoned && !u.levy);
-    const allIn = P.allInBeforeEvolve && !siege && (v.evolveReady || (obs.me.xpBp >= ALL_IN_XP_BP && obs.me.xpBp < BP));
+    // A2.10.1 Last Base Standing: a bot whose base crumbles while the enemy's does not (the fight is in its
+    // own half) goes all-in, the same branch Kettle uses before an evolve: Charge, no saving, every coin
+    // into its strongest affordable wave.
+    const esc = obs.escalation;
+    const crumblingAlone = esc !== undefined && esc.crumbling[obs.side] && !esc.crumbling[obs.side === 0 ? 1 : 0];
+    const allIn = crumblingAlone || (P.allInBeforeEvolve && !siege && (v.evolveReady || (obs.me.xpBp >= ALL_IN_XP_BP && obs.me.xpBp < BP)));
     // Push gate (A7.2 anti-turtle): the bot charges past mid-lane only with myArmy ≥ gate × D. When the
     // gate fails it banks instead of feeding units into the turrets one by one: a Treasury saving goal
     // (below its cap), a preference for range ≥ 250, a Hold at the line where the tier allows it, and no
@@ -876,7 +881,8 @@ export class Brain {
    */
   private researchDue(v: View, clock: MatchClock): boolean {
     const t = this.cfg.tier;
-    if (v.research.current !== null || v.phase === 'siege') return false;
+    // A2.10.1: with no Final Bell (Last Base Standing) the war goes on through Siege, so research does too.
+    if (v.research.current !== null || (v.phase === 'siege' && clock.finalBell !== null)) return false;
     if (clock.finalBell !== null && clock.finalBell - v.now < RESEARCH_HORIZON_TICKS) return false;
     return v.now >= t.researchFromTicks && v.now - this.researchTick >= t.researchGapTicks;
   }

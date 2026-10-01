@@ -265,6 +265,11 @@ export interface LadderWin {
   trophies: number;
   amber: number;
   amberWithoutCharge: number;
+  /**
+   * An unranked length (A2.10.1 Last Base Standing): its row applies at every trophy count, and no
+   * result moves trophies (`trophies` is then 0). Everything else is a Ladder match.
+   */
+  unranked?: true;
 }
 
 export interface LadderRules {

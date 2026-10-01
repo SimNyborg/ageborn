@@ -76,6 +76,49 @@ function windowFormats(ageOrder: readonly AgeId[]): Record<FormatId, FormatDef> 
   return out;
 }
 
+/**
+ * Last Base Standing (DESIGN A2.10.1, owner request 2026-10-01): a 7-age war with no Final Bell. After
+ * Overdrive (12:00) the Siege rises every 2:30 from 14:30 and the Crumble rope starts at 22:00, so a
+ * base always falls (by `endByMs`, derived from the steps by a content test). Siege I is today's Siege
+ * without the base decay; Siege II and III raise base damage and cut turret damage; Crumble keeps Siege
+ * III's values and adds the rope (bp of base max HP per second), which doubles at Crumble II.
+ */
+export const UNTIMED = {
+  overdriveMs: 720000,
+  steps: [
+    { atMs: 870000, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 0 },
+    { atMs: 1020000, baseDamageBp: 30000, turretDamageBp: 3500, crumbleBpPerSec: 0 },
+    { atMs: 1170000, baseDamageBp: 40000, turretDamageBp: 2500, crumbleBpPerSec: 0 },
+    { atMs: 1320000, baseDamageBp: 40000, turretDamageBp: 2500, crumbleBpPerSec: 50 },
+    { atMs: 1470000, baseDamageBp: 40000, turretDamageBp: 2500, crumbleBpPerSec: 100 },
+  ],
+  /** 22:00 + 150 s at ≥ 0.5 points/s + 125 s at ≥ 1 point/s of combined base HP (A2.10.1): 26:35. */
+  endByMs: 1595000,
+} as const;
+
+/** The Last Base Standing windows (A2.10.1): `last` from Stone and, for Skirmish, `last.bronze`. */
+function untimedFormats(ageOrder: readonly AgeId[]): Record<FormatId, FormatDef> {
+  const out: Record<FormatId, FormatDef> = {};
+  for (const start of ['stone', 'bronze'] as const) {
+    const i = ageOrder.indexOf(start);
+    if (i < 0 || i + 7 > ageOrder.length) continue;
+    const id = start === 'stone' ? 'last' : `last.${start}`;
+    out[id] = {
+      id,
+      kind: 'untimed',
+      ages: ageOrder.slice(i, i + 7),
+      overdriveMs: UNTIMED.overdriveMs,
+      siegeMs: UNTIMED.steps[0].atMs,
+      finalBellMs: null,
+      retreatAfterMs: RETREAT_MS,
+      xpToNextOverride: WINDOW_XP.slice(0, 6),
+      escalation: UNTIMED.steps.map((x) => ({ ...x })),
+      endByMs: UNTIMED.endByMs,
+    };
+  }
+  return out;
+}
+
 /** Ages in `AgeDef.index` order. */
 const AGE_LIST: readonly AgeId[] = (Object.values(ageScale) as RawAgeScale[]).sort((a, b) => a.index - b.index).map((a) => a.id);
 
@@ -98,6 +141,7 @@ export const formats: Record<FormatId, FormatDef> = {
     xpToNextOverride: [610, 580, 390, 900],
   },
   ...windowFormats(AGE_LIST),
+  ...untimedFormats(AGE_LIST),
 };
 
 /**
@@ -260,7 +304,8 @@ export const economy: EconomyRules = {
     levyAiValueBp: 1600,
   },
   // A17.3 Siege forced march: unit movement ×1.2; A16.4 step 2 siege crowd: 60 lu before the enemy gate
-  siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, gateCrowdLu: 60 },
+  // A2.10.1 Last Base Standing: the Crumble rope's dead band (fronts within 40 lu: both sides crumble)
+  siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, gateCrowdLu: 60, ropeDeadBandLu: 40 },
   // A16.4 stall fix (A17 step 1): in Overdrive and Siege a unit killed within 120 lu of its own gate costs
   // its base its max HP, so spawn-camping a beaten side ends the match (docs/decisions.md)
   gateFall: { lu: 120, hpBp: 10000 },

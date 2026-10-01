@@ -46,8 +46,9 @@ function earned(u: TitleUnlock, s: SaveDoc, t: Content, m: TitleMatchFacts | nul
     case 'winAfterLastStand':
       return !!m && m.win && m.usedLastStand;
     case 'finalAgeBefore':
-      // A window counts as its family (A18.3.4: a Full War from Bronze is a Full War).
-      return !!m && formatKind(t, m.format) === u.format && m.reachedFinalAgeAtMs !== null && m.reachedFinalAgeAtMs < u.ms;
+      // A window counts as its family (A18.3.4: a Full War from Bronze is a Full War); Last Base Standing
+      // plays the Full War's 7 ages and counts as one (A2.10.1).
+      return !!m && sameFamily(formatKind(t, m.format), u.format) && m.reachedFinalAgeAtMs !== null && m.reachedFinalAgeAtMs < u.ms;
     case 'wins':
       return s.stats.wins >= u.count;
     case 'beatGeneral':
@@ -72,4 +73,9 @@ export function addCosmetics(s: SaveDoc, ids: readonly string[]): SaveDoc {
   const fresh = ids.filter((id) => !s.cosmetics.owned.includes(id));
   if (fresh.length === 0) return s;
   return { ...s, cosmetics: { ...s.cosmetics, owned: [...s.cosmetics.owned, ...fresh] } };
+}
+
+/** A title's format family, with Last Base Standing counting as the Full War (A2.10.1: the same 7 ages). */
+function sameFamily(kind: string, wanted: string): boolean {
+  return kind === wanted || (kind === 'untimed' && wanted === 'full');
 }

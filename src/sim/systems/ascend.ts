@@ -1,12 +1,14 @@
 /**
  * B3 step 4, Ascension timers (DESIGN A2.4 Evolve). At the end of the 2.5 s Ascension (`ageUp`):
- * age +1, XP −= threshold, base HP keeps its percentage then heals 5% of the new max (A2.2), each power
+ * age +1, XP −= threshold, base HP keeps its percentage then heals 5% of the new max (A2.2; not in a
+ * Last Base Standing Crumble step, A2.10.1), each power
  * slot's progress becomes min(progress, 75%) (A2.9.3; the fraction passes to the new age's power in that
  * slot), queued items convert to the new loadout's card of the same role group
  * (keeping progress; nothing charged or refunded), and 2 Vanguard Common Infantry spawn free at p = 20.
  */
 import type { Side } from '@/contracts';
 import { BP } from '@/core';
+import { crumbleActive } from '../escalation';
 import { emit } from '../events';
 import { xOf } from '../geometry';
 import { ageOf, baseMaxHpFor, cardLevel, loadoutOf, thresholdOf, type Ctx } from '../state';
@@ -30,7 +32,8 @@ function ageUp(ctx: Ctx, side: Side): void {
   const oldMax = s.baseMaxHp;
   const newMax = baseMaxHpFor(ctx.rules, ctx.cfg, side, age);
   let hp = oldMax > 0 ? Math.trunc((s.baseHp * newMax) / oldMax) : newMax;
-  hp += Math.trunc((newMax * ctx.econ.evolveHealBp) / BP);
+  // A2.10.1: from Crumble on, evolving keeps the percentage but does not heal (the guaranteed end holds).
+  if (!crumbleActive(ctx)) hp += Math.trunc((newMax * ctx.econ.evolveHealBp) / BP);
   s.baseMaxHp = newMax;
   s.baseHp = hp > newMax ? newMax : hp;
   for (let i = 0; i < 2; i += 1) {

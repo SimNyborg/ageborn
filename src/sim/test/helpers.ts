@@ -30,6 +30,41 @@ import { compileForSim } from '../shim';
 
 export const fixture: CompiledContent = compileForSim(fixtureRaw);
 
+const MIN = 60000;
+
+/**
+ * Last Base Standing on the frozen fixture (A2.10.1; SIM_VERSION 6.0.0): the fixture's five ages with
+ * the live step values on a compressed clock (Overdrive 3:00, Siege I-III at 4:00, 5:00, 6:00, Crumble
+ * at 7:00, Crumble II at 8:00). Its own content hash, so goldens 01-14 keep the frozen fixture's.
+ */
+export const LAST_STEPS = [
+  { atMs: 4 * MIN, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 0 },
+  { atMs: 5 * MIN, baseDamageBp: 30000, turretDamageBp: 3500, crumbleBpPerSec: 0 },
+  { atMs: 6 * MIN, baseDamageBp: 40000, turretDamageBp: 2500, crumbleBpPerSec: 0 },
+  { atMs: 7 * MIN, baseDamageBp: 40000, turretDamageBp: 2500, crumbleBpPerSec: 50 },
+  { atMs: 8 * MIN, baseDamageBp: 40000, turretDamageBp: 2500, crumbleBpPerSec: 100 },
+] as const;
+
+/** 7:00 + 60 s at 0.5 points/s (3,000 of 20,000 bp) + 170 s at 1 point/s: 10:50. */
+export const LAST_END_BY_MS = 650000;
+
+export const fixtureLast: CompiledContent = compileForSim({
+  ...fixtureRaw,
+  formats: {
+    ...fixtureRaw.formats,
+    last: {
+      ...(fixtureRaw.formats['full'] as NonNullable<(typeof fixtureRaw.formats)['full']>),
+      id: 'last',
+      kind: 'untimed',
+      overdriveMs: 3 * MIN,
+      siegeMs: 4 * MIN,
+      finalBellMs: null,
+      escalation: LAST_STEPS.map((x) => ({ ...x })),
+      endByMs: LAST_END_BY_MS,
+    },
+  },
+});
+
 /** Lane length in whole lu (A17.2: 2,000). Tests place side-1 units at `L - p`. */
 export const L = LANE_MLU / MILLI;
 

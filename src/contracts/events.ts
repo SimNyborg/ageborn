@@ -106,6 +106,12 @@ type EventBody =
   /** Last Stand lifecycle (DESIGN A2.11). */
   | { e: 'lastStandArmed' | 'lastStandCharge' | 'lastStandFire'; side: Side }
   | { e: 'phaseChanged'; phase: 'regulation' | 'overdrive' | 'siege' }
+  /**
+   * Last Base Standing (A2.10.1): a Siege step began (`step` 1 = Siege I, the same tick as the Siege
+   * `phaseChanged`; 4 = Crumble). `crumbled`: the Crumble rope took `amount` (centi-HP) from a base.
+   */
+  | { e: 'escalated'; step: number }
+  | { e: 'crumbled'; side: Side; amount: number }
   | { e: 'emote'; side: Side; emote: EmoteId }
   /** `slot` is set for rejected `power` commands (A2.9.7 deny reasons). */
   | { e: 'commandRejected'; side: Side; t: Command['t']; reason: string; slot?: PowerSlot }

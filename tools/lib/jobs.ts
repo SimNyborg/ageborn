@@ -57,6 +57,17 @@ function controller(bots: BotFactory, content: CompiledContent, job: MatchJob, s
   return bots.create(content, { generalId: s.generalId, tier: s.tier, side, seed: job.seed, format: job.format });
 }
 
+/**
+ * The default tick cap of a headless match (A18.3.4: Full War's Final Bell is 17:30, 21,000 ticks, so
+ * 20:00 leaves room for any timed window). A format with no Final Bell (Last Base Standing, A2.10.1) is
+ * capped 2 min after its guaranteed end, as the online relay is, so a match that outlives `endByMs` shows
+ * up as unfinished instead of being cut short.
+ */
+export function matchTickCap(content: CompiledContent, format: FormatId): number {
+  const endBy = content.formats[format]?.endByMs;
+  return endBy !== undefined ? Math.trunc((endBy + 120_000) / 50) : 24_000;
+}
+
 /** Plays one job to the end (or `maxTicks`). */
 export function playJob(job: MatchJob, bots: BotFactory, content: CompiledContent = gameContent): JobResult {
   const started = performance.now();
@@ -78,8 +89,7 @@ export function playJob(job: MatchJob, bots: BotFactory, content: CompiledConten
   const tally = new MatchTally(content);
   const cover = content.economy.turretRangeCap * 1000;
   const outcome = match.run({
-    // A18.3.4: Full War's Final Bell is 17:30 (21,000 ticks); 20:00 leaves room for any window.
-    maxTicks: job.maxTicks ?? 24_000,
+    maxTicks: job.maxTicks ?? matchTickCap(content, job.format),
     onEvents: (ev) => {
       tally.push(ev);
       if (sim.state.tick % 20 === 0) tally.sampleContact(sim.state.units, LANE_MLU, cover);

@@ -28,7 +28,7 @@ export const arenas: ArenaTables = {
       groundVisualId: 'ground.frostfang', nameKey: 'arena.frostfang.name',
     },
     {
-      index: 3, id: 'kingsmoat', trophies: 400, ladderFormats: ['short', 'standard', 'full'],
+      index: 3, id: 'kingsmoat', trophies: 400, ladderFormats: ['short', 'standard', 'full', 'last'],
       dropAges: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'], randomLegendaries: true,
       botTiers: [2, 4], botLevel: 3, botMaxRarity: 'epic', wardenChanceBp: 0,
       gateRewards: [
@@ -41,28 +41,28 @@ export const arenas: ArenaTables = {
       groundVisualId: 'ground.kingsmoat', nameKey: 'arena.kingsmoat.name',
     },
     {
-      index: 4, id: 'powder_bay', trophies: 800, ladderFormats: ['short', 'standard', 'full'],
+      index: 4, id: 'powder_bay', trophies: 800, ladderFormats: ['short', 'standard', 'full', 'last'],
       dropAges: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'], randomLegendaries: true,
       botTiers: [3, 5], botLevel: 4, botMaxRarity: 'epic', wardenChanceBp: 0,
       gateRewards: [{ kind: 'banner', banner: 'harbor' }, { kind: 'capsule', tier: 'jade' }],
       groundVisualId: 'ground.powder_bay', nameKey: 'arena.powder_bay.name',
     },
     {
-      index: 5, id: 'iron_front', trophies: 1300, ladderFormats: ['short', 'standard', 'full'],
+      index: 5, id: 'iron_front', trophies: 1300, ladderFormats: ['short', 'standard', 'full', 'last'],
       dropAges: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'], randomLegendaries: true,
       botTiers: [4, 6], botLevel: 5, botMaxRarity: 'epic', wardenChanceBp: 0,
       gateRewards: [{ kind: 'banner', banner: 'barbed' }, { kind: 'capsule', tier: 'jade' }],
       groundVisualId: 'ground.iron_front', nameKey: 'arena.iron_front.name',
     },
     {
-      index: 6, id: 'neon_harbor', trophies: 1900, ladderFormats: ['short', 'standard', 'full'],
+      index: 6, id: 'neon_harbor', trophies: 1900, ladderFormats: ['short', 'standard', 'full', 'last'],
       dropAges: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'], randomLegendaries: true,
       botTiers: [5, 7], botLevel: 6, botMaxRarity: 'epic', wardenChanceBp: 0,
       gateRewards: [{ kind: 'banner', banner: 'neon' }, { kind: 'capsule', tier: 'jade' }],
       groundVisualId: 'ground.neon_harbor', nameKey: 'arena.neon_harbor.name',
     },
     {
-      index: 7, id: 'orbital_ring', trophies: 2600, ladderFormats: ['short', 'standard', 'full'],
+      index: 7, id: 'orbital_ring', trophies: 2600, ladderFormats: ['short', 'standard', 'full', 'last'],
       dropAges: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'], randomLegendaries: true,
       botTiers: [6, 8], botLevel: 7, botMaxRarity: 'epic', wardenChanceBp: 0,
       // A6.4 ladder 2026-09-29: Gate 7 gives a Gold Capsule (the old Aeon's contents)
@@ -70,7 +70,7 @@ export const arenas: ArenaTables = {
       groundVisualId: 'ground.orbital_ring', nameKey: 'arena.orbital_ring.name',
     },
     {
-      index: 8, id: 'chrono_rift', trophies: 3400, ladderFormats: ['short', 'standard', 'full'],
+      index: 8, id: 'chrono_rift', trophies: 3400, ladderFormats: ['short', 'standard', 'full', 'last'],
       dropAges: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'], randomLegendaries: true,
       // A7.4: The Warden appears in 1 of 5 Arena 8 ladder matches
       botTiers: [8, 10], botLevel: 8, botMaxRarity: 'epic', wardenChanceBp: 2000,
@@ -95,6 +95,8 @@ export const arenas: ArenaTables = {
         short: { trophies: 26, amber: 20, amberWithoutCharge: 40 },
         standard: { trophies: 31, amber: 27, amberWithoutCharge: 54 },
         full: { trophies: 36, amber: 35, amberWithoutCharge: 70 },
+        // A2.10.1 Last Base Standing: unranked (no trophies won or lost at any count), the Full War's Amber
+        last: { trophies: 0, amber: 35, amberWithoutCharge: 70, unranked: true },
       },
     },
     loss: { trophies: -20, amber: 15, noLossBelowTrophies: 400 },

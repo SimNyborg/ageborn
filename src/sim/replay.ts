@@ -16,9 +16,12 @@ import { SimImpl } from './createSim';
  * (A16.14): the `fort` command, walls, towers and camps as hidden twin units, levies, traps, the
  * structure mod, fort targeting, contact, decay and bounty; levies rank last in power caps. 5.1.0: the
  * contact cap is a hard limit on a fort's short-range attackers (reach units no longer bypass it), and
- * the safe-pad test reads a moving enemy's current speed (review 2026-10-01).
+ * the safe-pad test reads a moving enemy's current speed (review 2026-10-01). 6.0.0: Last Base Standing
+ * (A2.10.1): formats with Siege steps (`FormatDef.escalation`, no Final Bell, no symmetric decay; base and
+ * turret damage read the step), the Crumble rope and no evolve heal in Crumble. The step is a pure
+ * function of the tick, so goldens 01-14 keep their hashes (re-recorded only for this version string).
  */
-export const SIM_VERSION = '5.1.0';
+export const SIM_VERSION = '6.0.0';
 
 /** Thrown when a replay was recorded on different content (B3: "from an older version"). */
 export class ReplayContentMismatchError extends Error {

@@ -84,12 +84,26 @@ export interface ObservedTrap {
   charges: number;
 }
 
+/** The Last Base Standing schedule and state as both players see it (A2.10.1). */
+export interface ObservedEscalation {
+  step: number;
+  steps: { tick: number; baseDamageBp: number; turretDamageBp: number; crumbleBpPerSec: number }[];
+  /** By Side: true while the rope takes that side's base (only in a Crumble step). */
+  crumbling: [boolean, boolean];
+}
+
 export interface Observation {
   tick: number;
   side: Side;
   phase: SimState['phase'];
   /** The match's age window (A18.3.4); `ageIndex` values are positions in it. Public to both sides. */
   ages: AgeId[];
+  /**
+   * Last Base Standing (A2.10.1), public to both sides: the step reached (0 before Siege I, 1 = Siege I,
+   * ...), the schedule in ticks, and which sides the Crumble rope takes now (indexed by Side). Absent in
+   * a format with a Final Bell.
+   */
+  escalation?: ObservedEscalation;
   me: {
     gold: number;
     xpBp: number;

@@ -11,6 +11,7 @@
 import type { DamageMod, Side, StatusKind } from '@/contracts';
 import { BP } from '@/core';
 import { emit } from './events';
+import { escalationNow } from './escalation';
 import { HEAVY_HIT_BP, type StatusRules, type UnitRules } from './rules';
 import { pOf } from './geometry';
 import { NO_TARGET, baseHpBp, other, type Ctx, type Impact, type UnitRt } from './state';
@@ -178,8 +179,8 @@ export function unitDamage(ctx: Ctx, imp: Impact, target: UnitRt, primary: boole
   // 6. mark
   const mark = isMarked(target);
   if (mark > 0) v = Math.trunc((v * (BP + mark)) / BP);
-  // 7. phase: turret damage ×0.5 in Siege
-  if (imp.turret && ctx.s.phase === 'siege') v = Math.trunc((v * ctx.econ.siege.turretDamageBp) / BP);
+  // 7. phase: turret damage ×0.5 in Siege (Last Base Standing: the current Siege step's value, A2.10.1)
+  if (imp.turret && ctx.s.phase === 'siege') v = Math.trunc((v * siegeTurretBp(ctx)) / BP);
   // 8. Legendary target of a power or Last Stand; an Epic hit by a strike (A2.9.6; not stacked)
   if (imp.power && tr.legendary) v = Math.trunc((v * ctx.econ.legendaryPowerDamageBp) / BP);
   else if (imp.strike && tr.def.rarity === 'epic') v = Math.trunc((v * ctx.econ.power.strikeEpicBp) / BP);
@@ -281,7 +282,7 @@ export function damageBase(ctx: Ctx, baseSide: Side, imp: Impact | null, raw: nu
   let v = raw;
   if (imp) {
     if (imp.dmgBuffBp !== 0) v = Math.trunc((v * (BP + imp.dmgBuffBp)) / BP);
-    if (ctx.s.phase === 'siege') v = Math.trunc((v * ctx.econ.siege.baseDamageBp) / BP);
+    if (ctx.s.phase === 'siege') v = Math.trunc((v * siegeBaseBp(ctx)) / BP);
     if (v < 100) v = 100;
     // A18.7.3 "Take the tower": every hit aimed at this base also hits its marked turret.
     if (b.markHp > 0) b.markHp = v < b.markHp ? b.markHp - v : 0;
@@ -301,6 +302,18 @@ export function damageBase(ctx: Ctx, baseSide: Side, imp: Impact | null, raw: nu
     const xp = Math.trunc((dealt * ctx.econ.baseDamageXpPerPct * 100 * 1000) / b.baseMaxHp);
     addXp(ctx, other(baseSide), xp, 'base');
   }
+}
+
+/** Turret and field tower damage in Siege (A2.10): ×0.5, or the Siege step in force (A2.10.1). */
+export function siegeTurretBp(ctx: Ctx): number {
+  const step = ctx.escalation ? escalationNow(ctx) : null;
+  return step ? step.turretDamageBp : ctx.econ.siege.turretDamageBp;
+}
+
+/** Base damage from attacks in Siege (A2.10): ×2, or the Siege step in force (A2.10.1). */
+export function siegeBaseBp(ctx: Ctx): number {
+  const step = ctx.escalation ? escalationNow(ctx) : null;
+  return step ? step.baseDamageBp : ctx.econ.siege.baseDamageBp;
 }
 
 /** Current base HP in bp, for Last Stand and Final Bell. */

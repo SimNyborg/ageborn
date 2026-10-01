@@ -6,8 +6,9 @@
  * the Scouted list, and its own gold, queue and tray. Never the opponent's gold, queue or War Plan.
  * Units: positions `p` in milli-lu from the observer's gate; gold in milli-gold (B3 units).
  */
-import type { ObservedFort, ObservedFortPad, ObservedTrap, Observation, PowerSlot, ResearchView, Side } from '@/contracts';
+import type { ObservedEscalation, ObservedFort, ObservedFortPad, ObservedTrap, Observation, PowerSlot, ResearchView, Side } from '@/contracts';
 import { MILLI, effectiveReloadMs, padKind, slotIndex, towerRangeOnPad } from '@/core';
+import { escalationStep, ropeTargets } from './escalation';
 import { pOf, xOf } from './geometry';
 import { ranksOpen, researchProgressBp } from './research';
 import { baseHpBp, loadoutOf, other, slotFort, slotPower, xpBp, type Ctx, type SideRt } from './state';
@@ -98,6 +99,16 @@ function foeFort(ctx: Ctx, side: Side): Observation['foe']['fort'] {
   return { card: s.played.includes(card) ? card : null, readyTicks: left > 0 ? left : 0 };
 }
 
+/** Last Base Standing (A2.10.1): the public schedule, the step reached and who crumbles now. */
+function observeEscalation(ctx: Ctx): ObservedEscalation {
+  const tick = ctx.s.tick;
+  return {
+    step: escalationStep(ctx, tick),
+    steps: (ctx.escalation ?? []).map((x) => ({ tick: x.tick, baseDamageBp: x.baseDamageBp, turretDamageBp: x.turretDamageBp, crumbleBpPerSec: x.crumbleBpPerSec })),
+    crumbling: ctx.s.phase === 'ended' ? [false, false] : ropeTargets(ctx, tick),
+  };
+}
+
 export function observe(ctx: Ctx, side: Side): Observation {
   const s = ctx.s;
   const me = s.sides[side];
@@ -110,6 +121,7 @@ export function observe(ctx: Ctx, side: Side): Observation {
     side,
     phase: s.phase,
     ages: [...ctx.fmt.ages],
+    ...(ctx.escalation ? { escalation: observeEscalation(ctx) } : {}),
     me: {
       gold: me.gold,
       xpBp: xpBp(ctx, side),

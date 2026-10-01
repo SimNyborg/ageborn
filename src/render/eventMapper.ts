@@ -768,6 +768,10 @@ export class EventMapper {
         if (ev.phase === 'overdrive') out.push({ a: 'musicLayer', layer: 'overdrive', v: 1 });
         if (ev.phase === 'siege') out.push({ a: 'musicLayer', layer: 'siege', v: 1 });
         return;
+      case 'escalated':
+      case 'crumbled':
+        // Last Base Standing (A2.10.1): the step banner, drum and Crumble dust arrive with L3 (MR-125, MR-126).
+        return;
       case 'emote':
         out.push({ a: 'view', ev: { t: 'emote', side: ev.side, emote: ev.emote } });
         this.rule('emote', { at: { k: 'base', side: ev.side, part: 'top' } }, out);

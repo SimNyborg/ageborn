@@ -24,8 +24,9 @@ describe('contentHash (B4, B3 replays)', () => {
     // battle number on purpose, update this value and note it in docs/balance-log.md.
     // A16.14 (SIM_VERSION 5.0.0): forts, their twins and levies, `economy.fort`, the structure mods and
     // Engineers' scaffold effect joined the hashed slice. Fort tuning (review fixes 2026-10-01): 1 fort up,
-    // camps every 10 s with 1 levy at 30%, traps 100 gold with fewer splash charges.
-    expect(content.hash).toBe('affe2f93');
+    // camps every 10 s with 1 levy at 30%, traps 100 gold with fewer splash charges. SIM_VERSION 6.0.0
+    // (A2.10.1): the `last` and `last.bronze` formats with Siege steps and `economy.siege.ropeDeadBandLu`.
+    expect(content.hash).toBe('1d97b5d6');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {
@@ -120,7 +121,7 @@ describe('compiled bundle (B4)', () => {
       'orbital_lance', 'drone_swarm', 'point_defense', 'stasis_field', 'nanite_surge', 'emp_blackout',
       'starfall', 'comet_run', 'singularity', 'solar_flare', 'warp_strike', 'ion_cannon',
     ]);
-    expect(content.order.formats).toEqual(['tutorial', 'short', 'standard', 'full']);
+    expect(content.order.formats).toEqual(['tutorial', 'short', 'standard', 'full', 'last']);
   });
 
   it('adds palette, visual and music ids to the ages (A14.1, A14.3)', () => {

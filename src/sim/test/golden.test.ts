@@ -1,15 +1,17 @@
 /**
- * Golden replays (DESIGN B13): 14 recorded matches on the frozen fixture content with known final
+ * Golden replays (DESIGN B13): 15 recorded matches on the frozen fixture content with known final
  * hashes. Any change to the simulation's behaviour changes a hash and fails this test on purpose.
+ * 15-last-base plays Last Base Standing (A2.10.1) on the fixture plus a `last` format (`fixtureLast`,
+ * its own content hash); SIM_VERSION 6.0.0 re-recorded 01-14 with identical hashes.
  *
  * Re-record after an intended rule change (and bump SIM_VERSION in replay.ts):
  *   UPDATE_GOLDEN=1 npx vitest run src/sim/test/golden.test.ts
  */
 import { describe, expect, it } from 'vitest';
-import type { AgeId, Command, MatchConfig, Observation, ReplayDoc, Side, SideConfig, SimEvent } from '@/contracts';
+import type { AgeId, Command, CompiledContent, MatchConfig, Observation, ReplayDoc, Side, SideConfig, SimEvent } from '@/contracts';
 import { simCtx } from '../debug';
 import { buildReplay, verifyReplay } from '../replay';
-import { STRATEGIES, fixture, matchConfig, runMatch, scriptedPlayer, sideConfig, type Strategy } from './helpers';
+import { STRATEGIES, fixture, fixtureLast, matchConfig, runMatch, scriptedPlayer, sideConfig, type Strategy } from './helpers';
 
 /** The recorded files, loaded by Vite (src has no Node types; see `writeGolden` for recording). */
 const FILES = import.meta.glob<ReplayDoc>('./golden/*.json', { eager: true, import: 'default' });
@@ -25,6 +27,8 @@ interface Scenario {
   forts?: boolean;
   /** Fort directors (SIM_VERSION 5.1.0): eager placement on unsafe pads, saving, and Suppress casts. */
   director?: [DirectorOpts, DirectorOpts];
+  /** The content it plays on (default: the frozen fixture). */
+  content?: CompiledContent;
 }
 
 interface DirectorOpts {
@@ -231,12 +235,27 @@ const SCENARIOS: Scenario[] = [
     players: [S.heavy, S.heavy],
     director: [{ eager: true, caster: true }, { eager: true }],
   },
+  {
+    // SIM_VERSION 6.0.0 (A2.10.1 Last Base Standing): a Hold-at-home turtle against a Charge rush with no
+    // Final Bell: every Siege step, base and turret damage by step, the Crumble rope on the side whose half
+    // holds the fight (the turtle alone), Crumble II, and the war ends when a base falls.
+    name: '15-last-base',
+    content: fixtureLast,
+    cfg: () =>
+      matchConfig({
+        seed: 1502,
+        format: 'last',
+        content: fixtureLast,
+        sides: [sideConfig(fixtureLast), sideConfig(fixtureLast, { isBot: true, label: 'AI Golden' })],
+      }),
+    players: [S.turtle, S.rush],
+  },
 ];
 
 /** The players of a scenario (scripted, fort placers or fort directors). */
 function playersOf(sc: Scenario, seed: number): [(obs: Observation) => Command[], (obs: Observation) => Command[]] {
   if (sc.director) return [directorPlayer(0, seed, sc.players[0], sc.director[0]), directorPlayer(1, seed + 1, sc.players[1], sc.director[1])];
-  const make = sc.forts ? fortPlayer : (s: Side, sd: number, st: Strategy) => scriptedPlayer(fixture, s, sd, st);
+  const make = sc.forts ? fortPlayer : (s: Side, sd: number, st: Strategy) => scriptedPlayer(sc.content ?? fixture, s, sd, st);
   return [make(0, seed, sc.players[0]), make(1, seed + 1, sc.players[1])];
 }
 
@@ -271,8 +290,8 @@ async function writeGolden(): Promise<void> {
 if (env.UPDATE_GOLDEN === '1') await writeGolden();
 
 describe('golden replays (B13)', () => {
-  it('has all 14 recorded files', () => {
-    expect(SCENARIOS).toHaveLength(14);
+  it('has all 15 recorded files', () => {
+    expect(SCENARIOS).toHaveLength(15);
     for (const sc of SCENARIOS) expect(golden(sc.name), sc.name).toBeDefined();
   });
 
@@ -326,12 +345,26 @@ describe('golden replays (B13)', () => {
     expect(have).toEqual({ creditedDecay: true, uncreditedDecay: true, towerSilenced: true, heavyBreaksFort: true, scaffoldDestroyed: true, contactCapped: true, siegeSwitch: true });
   });
 
+  it('15-last-base covers Last Base Standing (A2.10.1): every step, the rope on one side, an end with no Bell', () => {
+    const sc = SCENARIOS.find((x) => x.name === '15-last-base');
+    if (!sc) throw new Error('no Last Base Standing scenario');
+    const cfg = sc.cfg();
+    const { sim, events } = runMatch(cfg, playersOf(sc, cfg.seed), { maxTicks: 30000, keepEvents: true });
+    expect(events.filter((e) => e.e === 'escalated').map((e) => (e as { step: number }).step)).toEqual([1, 2, 3, 4, 5]);
+    const crumbled = events.filter((e): e is SimEvent & { e: 'crumbled' } => e.e === 'crumbled');
+    expect(crumbled.length).toBeGreaterThan(0);
+    expect(crumbled.some((e) => e.side === 0)).toBe(true);
+    expect(sim.state.outcome?.reason).toBe('baseDestroyed');
+    expect(events.some((e) => e.e === 'phaseChanged' && e.phase === 'siege')).toBe(true);
+  });
+
   for (const sc of SCENARIOS) {
     it(`${sc.name} re-simulates to its recorded final hash`, () => {
       const doc = golden(sc.name);
       if (!doc) throw new Error(`missing golden ${sc.name}`);
-      expect(doc.contentHash).toBe(fixture.hash);
-      const check = verifyReplay(doc, fixture);
+      const content = sc.content ?? fixture;
+      expect(doc.contentHash).toBe(content.hash);
+      const check = verifyReplay(doc, content);
       expect(check.firstMismatch).toBe(-1);
       expect(check.finalHash).toBe(doc.finalHash);
       expect(check.ok).toBe(true);
