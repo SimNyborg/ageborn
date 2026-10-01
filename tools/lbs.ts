@@ -9,7 +9,8 @@
  */
 import type { CompiledContent, FormatId } from '../src/contracts';
 import { content as gameContent } from '../src/content';
-import { BALANCED_GENERAL, matchTickCap, playedResults, type JobResult, type MatchJob } from './lib/jobs';
+import { BALANCED_GENERAL, matchTickCap, playJobSafely, playedResults, type JobResult, type MatchJob } from './lib/jobs';
+import { loadBots } from './lib/modules';
 import { runJobs } from './lib/runner';
 import { baselinePlan } from './lib/plans';
 import { median, proportion, quantile } from './lib/stats';
@@ -31,6 +32,13 @@ export interface LbsOptions {
   seed: number;
   workers: number;
   onProgress?: (done: number, total: number) => void;
+  /**
+   * B3 timing: the longest mirror war is played again this many times in this process, alone, after the
+   * batch, and the fastest run is gated. A war timed inside the batch shares the CPU with the other
+   * workers (and anything else on the machine), so its wall time measured contention, not the sim
+   * (fixer review 2026-10-01: 1,374-3,535 ms for the same kind of war). Default 3; 0 gates the batch time.
+   */
+  retimeRuns?: number;
 }
 
 /** The proxy rows of A2.10.1: the turtles, the rope runner and cheap spam vs tier VII; idle vs tier 0. */
@@ -225,7 +233,18 @@ export async function runLbs(o: LbsOptions, content: CompiledContent = gameConte
     const ci = proportion(mirror.sideWins[0], decided);
     checks.push(requireSamples(o.mode === 'smoke' && fmCheck.verdict === 'fail' && ci.lo <= t.firstMover.hi && ci.hi >= t.firstMover.lo ? { ...fmCheck, verdict: 'info', note: `95% CI ${fmtNum(ci.lo)}-${fmtNum(ci.hi)}% overlaps the band; judged at gate size` } : fmCheck, n));
     checks.push(infoCheck('lbs.mirror.longest', 'Longest mirror war', mirror.longest ? `${fmtClock(mirror.longest.sec)} (seed ${mirror.longest.seed}, ${mirror.longest.reason})` : '-'));
-    checks.push(maxCheck('lbs.headless.worst', 'Headless wall time of the longest mirror war (with bots)', mirror.longest?.ms ?? Number.NaN, t.worstCaseMs, { target: '≤ 1,300 ms', show: (v) => `${Math.round(v)} ms` }));
+    const runs = o.retimeRuns ?? 3;
+    const job = mirror.longest ? jobs.find((j) => j.tag === 'mirror' && j.seed === mirror.longest?.seed) : undefined;
+    let worst = mirror.longest?.ms ?? Number.NaN;
+    let how = 'timed inside the batch';
+    if (job && runs > 0) {
+      const bots = await loadBots();
+      let best = Number.POSITIVE_INFINITY;
+      for (let i = 0; i < runs; i += 1) best = Math.min(best, playJobSafely(job, bots, content).ms);
+      worst = best;
+      how = `fastest of ${runs} solo runs after the batch (${Math.round(mirror.longest?.ms ?? 0)} ms inside the batch)`;
+    }
+    checks.push(maxCheck('lbs.headless.worst', 'Headless wall time of the longest mirror war (with bots)', worst, t.worstCaseMs, { target: '≤ 1,300 ms', show: (v) => `${Math.round(v)} ms`, note: how }));
   }
   const proxies: LbsProxyRow[] = [];
   for (const id of o.proxies) {

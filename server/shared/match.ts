@@ -31,7 +31,7 @@ export function toTimed(w: WireCmd): TimedCommand {
 
 /**
  * Hard cap on a match's length in ticks: the Final Bell plus two minutes of slack (50 ms ticks); in
- * Last Base Standing (no Bell, A2.10.1) its guaranteed end `endByMs` (26:35) plus two minutes, so a real
+ * Last Base Standing (no Bell, A2.10.1) its guaranteed end `endByMs` (25:44) plus two minutes, so a real
  * war never meets it. The relay ends a room past this tick, and the re-simulation never runs further.
  */
 export function maxTicksFor(format: MatchSpec['format']): number {

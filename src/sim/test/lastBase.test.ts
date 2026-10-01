@@ -226,16 +226,16 @@ describe('Last Base Standing: the observation (A2.10.1)', () => {
 describe('Last Base Standing on the live content (A2.10.1)', () => {
   const live = compileForSim(raw);
 
-  it('is a 7-age untimed war with no Final Bell, and two idle sides end by its endByMs (26:35)', () => {
+  it('is a 7-age untimed war with no Final Bell, and two idle sides end by its endByMs (25:44)', () => {
     const f = live.formats['last'];
     expect(f?.kind).toBe('untimed');
     expect(f?.ages).toHaveLength(7);
     expect(f?.finalBellMs).toBeNull();
-    expect(f?.endByMs).toBe(1595000);
+    expect(f?.endByMs).toBe(1544000);
     const sim = createSim(matchConfig({ format: 'last', content: live, sides: [sideConfig(live), sideConfig(live, { isBot: true, label: 'AI Test' })] }));
-    stepN(sim, T(1595000) + 200);
+    stepN(sim, T(1544000) + 200);
     const o = sim.state.outcome;
     expect(o?.reason).toBe('bothDestroyed');
-    expect(o?.tick ?? Infinity).toBeLessThanOrEqual(T(1595000));
+    expect(o?.tick ?? Infinity).toBeLessThanOrEqual(T(1544000));
   });
 });

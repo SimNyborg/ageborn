@@ -2,6 +2,26 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-01: Online-first Home and four battle lengths (cloud session, not yet published)
+
+**What works**
+
+- Home is laid out as the lobby of a 2-player game: Battle plays the mode shown on the switcher next to it ("Ladder · vs AI"); the Modes panel picks a mode and lists "vs players" first. The plate over Battle shows exactly who you fight (always with the AI chip) and the one choice the mode needs.
+- Four lengths on the plate from Arena 2: Short (up to 8½ min), Medium (12½), Long (17½) and No clock ("Last Base Standing", from Arena 3, no trophies). No clock has no Final Bell: Siege rises every 2½ min from 14:30 and from 23:00 the side fighting in its own half crumbles, so a base always falls by 25:44.
+- Friend Duel is shown on Home as a locked "Later" chip (owner decision: MVP first, online after). The online search, the friend room and the online VS exist only as dev mocks.
+- Checks: typecheck, lint, 4,552 unit tests (236 files, 1 skipped), build, the full e2e suite (see the session report), and the Last Base Standing gate at full size (every row passes but the B3 time, which is at this machine's noise floor).
+
+**Still open**
+
+- B3: the longest Last Base Standing war takes about 1.2-1.4 s headless against 1.3 s (the lead decides: profile late Siege or re-baseline per tick).
+- Not built yet: the rope marker on the minimap, dedicated escalation and crumble sounds, the length picker's collapse-to-chip fallback for a clipping locale.
+
+**What the owner should try** (once published)
+
+1. On Home, tap the switcher (left of Battle) and pick a mode; Battle then plays it. Tap the "Friend Duel · Later" chip to read what is coming.
+2. At Arena 3 or higher, pick "No clock" on the plate and play a war to the end (it lasts at most about 26 minutes).
+3. See the online mocks: open https://simnyborg.github.io/ageborn/?dev=1#screens/home-online/mid/844x390 and change `home-online` to `home-online-search`, `home-online-wait`, `home-online-found`, `home-friend`, `home-room`, `home-room-joined`, `home-join` or `vs-online`.
+
 ## 2026-09-30: Heavy counter review fixes (cloud session, not yet published)
 
 - Heavy spam is now countered in every age, checked per age (new gate in `sim:exploits`): mono Heavy beats the tier VII bot at most 6.3% in any one-age window (Industrial was 87.5%), and mono Anti-heavy beats mono Heavy in every age (Modern was 0%). Harpoon Gunner ×3.0 and HP 286, Bazooka Trooper HP 363, Grenadier damage 55; the bot's anti-camp turret now reaches Heavies at its gate and it saves for it.

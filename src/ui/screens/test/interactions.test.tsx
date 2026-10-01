@@ -273,7 +273,7 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     expect(m.q('[data-testid="caption-last"]')).toBeNull();
     flush(() => vi.advanceTimersByTime(4100));
     expect(m.q('[data-testid="caption-amber"]')).toBeNull();
-    expect(text(m.q('[data-testid="caption-last"]')!)).toContain('at most about 26½ min');
+    expect(text(m.q('[data-testid="caption-last"]')!)).toContain('at most about 25½ min');
   });
 
   it('Home shows one honest friend entry: a locked chip that opens the panel on Friend Duel (owner decision 2026-10-01)', () => {

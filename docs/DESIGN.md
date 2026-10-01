@@ -616,7 +616,7 @@ Every phase keeps `main` playable. Between P1 and P2 every match plays the Home 
 | Short War | 3 | 5:00 | 6:30 | 8:30 | 7:00 | 1:00 | Ladder (all arenas), Quick Battle, Skirmish |
 | Standard War | 5 | 8:00 | 10:00 | 12:30 | 10:30 | 1:00 | Ladder from Arena 2, Daily Challenge, Skirmish |
 | Full War | 7 | 12:00 | 14:30 | 17:30 | 15:00 | 1:00 | Ladder from Arena 3, Skirmish; never on the War Path |
-| Last Base Standing (`last`; A2.10.1) | 7 | 12:00 | Siege I 14:30, rising every 2:30; Crumble from 22:00 | **none** | ~19:30 (emulated); a base always falls by 26:35 | 1:00 | Ladder from Arena 3 (unranked: no trophies), Skirmish, Friend Duel (M2); never on the War Path or in online queues |
+| Last Base Standing (`last`; A2.10.1) | 7 | 12:00 | Siege I 14:30, rising every 2:30; Crumble from 23:00 | **none** | ~19:50 (tier VII mirror median); a base always falls by 25:44 | 1:00 | Ladder from Arena 3 (unranked: no trophies), Skirmish, Friend Duel (M2); never on the War Path or in online queues |
 
 **Player names (owner request 2026-10-01: "a short, a medium and a long battle, and one with no time limit").** Players see **Short War, Medium War, Long War** and **Last Base Standing** (DA v1.1: Kort, Mellem, Lang, Til sidste base). The ids `short`, `standard` and `full` and their clocks are unchanged, and this document keeps saying Standard and Full War for them. The rename also frees "Standard" for "Standard levels" (L8), which matters online. The plate's length picker quotes each length's upper bound ("up to 8½ min"), which is always true, not its median.
 
@@ -644,7 +644,7 @@ From Arena 2 the player picks any unlocked length before each ladder match on th
 | Endless fighting at the gate | Siege decay and ×2 base damage |
 | Special every cooldown for free gold | Power kills pay 30% gold and no XP, telegraph, 50% carry cap on evolve, slow Overcharge. With the power rework (A2.9): every cast costs gold and each slot reloads, a cast affects at most 1-6 units, Home powers land only in your own half, the evolve carry is capped at 75% |
 | Waiting for the enemy to mass an army, then wiping it (owner, 2026-09-29) | The power rework (A2.9): the target cap makes a big army worth no more than a small one, and only the enemies nearest the caster's gate are eligible (the screen), Home reach cannot touch an army staging in its own half, Front reach needs your army nearby, and the price and reload make an idle ready power lost value |
-| Stalling a war that has no Final Bell (Last Base Standing) | Rising Siege steps and the Crumble rope (A2.10.1); a guaranteed end by 26:35 |
+| Stalling a war that has no Final Bell (Last Base Standing) | Rising Siege steps and the Crumble rope (A2.10.1); a guaranteed end by 25:44 |
 
 #### A2.10.1 Last Base Standing: the war with no clock (owner request 2026-10-01; spec in the session scratchpad `online-home/SPEC.md`)
 
@@ -655,10 +655,12 @@ The war has no Final Bell, no countdown and no win on HP: it ends only when a ba
 | Regulation | 0:00 | Normal rules |
 | Overdrive | 12:00 | As in every format |
 | Siege I | 14:30 | Today's Siege (turret damage ×0.5, base damage ×2, forced march, siege crowd, the forts' Siege switch), **with no base decay** |
-| Siege II | 17:00 | Base damage ×3, turret damage ×0.35 |
-| Siege III | 19:30 | Base damage ×4, turret damage ×0.25 |
-| Crumble | 22:00 | Siege III, plus the **rope**: each second the side whose own half holds the fight loses 0.5% of its base's max HP |
-| Crumble II | 24:30 | The rope takes 1% per second |
+| Siege II | 17:00 | Base damage ×3.5, turret damage ×0.3 |
+| Siege III | 19:30 | Base damage ×5, turret damage ×0.2 |
+| Crumble | 23:00 | Siege III, plus the **rope**: each second the side whose own half holds the fight loses 1% of its base's max HP |
+| Crumble II | 24:30 | The rope takes 1.5% per second |
+
+Tuned at gate size on 2026-10-01 (fixer review; first values ×3/×4 and ×0.35/×0.25, Crumble 22:00 at 0.5%/s, Crumble II 1%/s, end by 26:35).
 
 - **The rope.**
   - Every decay step, each side's front is the own-frame progress of its most advanced live ground unit. Forts, levies, summons and air units do not count; a side with none has front 0.
@@ -666,8 +668,8 @@ The war has no Final Bell, no countdown and no win on HP: it ends only when a ba
   - The damage goes through `damageBase`, so Last Stand arms and fires as usual.
   - From Crumble on, evolving keeps the base HP percentage but does not heal.
 - **Guaranteed end.**
-  - Even from two full bases at 22:00, the rope removes at least 75 percentage points of combined HP by 24:30, then at least 1 point per second.
-  - So a base falls by **26:35** (`FormatDef.endByMs` 1,595,000, derived from the steps by a content test).
+  - Even from two full bases at 23:00, the rope removes at least 90 percentage points of combined HP by 24:30, then at least 1.5 points per second.
+  - So a base falls by **25:44** (`FormatDef.endByMs` 1,544,000, derived from the steps by a content test).
   - The online relay's cap for this format is `endByMs` + 2 min (A18.10).
 - **Window.** 7 ages: `last` (Stone to Future); Skirmish also offers `last.bronze`.
 - **Rewards.** Unranked: no trophies won or lost. Win 35 Amber (70 without a Sundial capsule); loss or draw 15; **a Retreat pays 0 Amber** (it costs no trophies, so loss Amber for a Retreat at 1:00 would be a free farm at every trophy count). Otherwise it is a Ladder match: a Sundial claim, or a Clay pip (never on a Retreat); a counting win; hidden MMR; loss protection (A6.3, A15.8).
@@ -677,7 +679,7 @@ The war has no Final Bell, no countdown and no win on HP: it ends only when a ba
   - The timeline becomes a 6-pip escalation meter (Overdrive, Siege I-III, Crumble I-II) with the step's name under the clock. A tap shows the schedule as a drop-down that never pauses.
   - Each step plays a 1.2 s banner and a drum hit.
   - The crumbling side gets a "Crumbling" chip, a cracked HP bar and falling-stone dust. A rope marker sits at mid-lane on the minimap.
-  - VS: "No clock · Siege rises every 2½ min from 14:30 · Crumble from 22:00".
+  - VS: "No clock · Siege rises every 2½ min from 14:30 · Crumble from 23:00" (built from the steps).
 - **AI (A7).** As built (fixer review, 2026-10-01; the earlier draft asked for more):
   - Research stays allowed in Siege I-III when the format has no Bell, and the bot reads no Bell from the shared 7-age window.
   - Forts follow today's Siege switch: no new fort from Siege I on, in every format (the sim refuses the command), so there is no fort-turtle row in `sim-cli lbs`.
@@ -688,6 +690,9 @@ The war has no Final Bell, no countdown and no win on HP: it ends only when a ba
   - Only removing the Bell (today's decay continues) ended like a Full War, with **20% draws** from both bases decaying to 0 on one tick.
   - Siege with no decay left 1 of 40 Full-window and **16 of 40** Standard-window wars running at 60:00.
   - The chosen steps: median 19:35, p90 25:20, longest 26:14, 0 draws, 30% ending in Crumble, first-mover 41/39 (n = 80). A turret turtle won 0 of 40; cheap spam 0 of 40.
+  - **The real rule at gate size** (`sim-cli lbs --mode full`, 400 tier VII mirrors, seeds 9001+): the first values ended **41.3%** of mirrors in Crumble (43.8% on 80 smoke seeds 31001+). Levers, each n = 400: Crumble 30 s later 39.8%; Siege II-III 30 s earlier 42.0%; Siege II-III ×3.5/×5 with turrets ×0.3/×0.2 36.8%; that plus Crumble 22:30 34.8% (37.0% on seeds 31001+); ×4/×6 38.3%; Crumble 23:00 at 1%/s and 1.5%/s alone 37.3% (35.8%). The tier VII mirror stalls mid-lane (the Full War's Bell problem, A2.14), so no single lever moves it far.
+  - **Chosen** (the last two together): median 19:53, p90 24:44, longest 25:36, 0 draws, **32.5%** in Crumble (35.0% on seeds 31001+), first-mover 49.3%; every turtle proxy, `rope_runner`, `cheap_spam` and `few_then_evolve` won 0 of 80, and `idle` lost 80 of 80. Wars end across every step: 56 / 56 / 76 / 82 / 75 / 55 in Regulation and Overdrive, Siege I, II, III, Crumble, Crumble II.
+  - **B3 time.** The longest war (about 30,700 ticks) takes 1.17-1.37 s headless with bots on the shared 4-core cloud machine (best of 3 solo runs; 1.3-1.9 s across single runs), against 1,300 ms; the Full War at its Bell (21,000 ticks) takes 0.81-1.02 s there against its 850 ms. Late Siege costs about 10% more per tick than a Full War. Open for the lead: profile late Siege, or re-baseline the target per tick.
 - **Gates (L5).**
 
   | Metric | Target |
@@ -1653,7 +1658,7 @@ Create room (Friend Duel, M2) ─> Room (code, Share, length, Ready) ─> VS ─
 | 1 | Boot | Logo ≤ 1 s, progress bar; Stone assets first, the rest streams in during the tutorial or the menu |
 | 2 | Home (the Battle hub, owner decision 2026-09-30) | The arena diorama in the centre (your base and the AI's across the lane, the arena's landmark; art through the ArtProvider) with the arena's name and the trophy bar to the next Trophy Road reward under it; the match plate over the big **Battle** button (the only primary, bottom-right): the next opponent's portrait with the AI badge and tier, and the ladder format picker from Arena 2; Battle starts a Ladder match in one tap (the onboarding matches while they are due); Modes beside it (Quick Battle, Daily, Skirmish, Conquest). **From 2026-10-01** the Modes tile is the **mode switcher** ("Ladder · vs AI"), and Battle plays the selected mode. The plate shows exactly what Battle will do, in one state per situation: Training; Ladder at Arena 1 (no picker) and from Arena 2 (the **length picker** Short, Medium, Long, No clock, with locked lengths naming their arena); Last Base Standing; Quick Battle (difficulty); Daily (Recruit / Veteran / Warlord); Skirmish (summary and Change). Later states: Online idle (a neutral silhouette, "A player · found when you press Battle"); Searching (elapsed time counting up, the AI choice after 25 s); Found; Friend Duel (Enter a code; Battle reads "Create room"); No connection, Online full and Update needed (each with "Play vs AI"). On phones the fourth length segment stacks the Last Base Standing glyph over "No clock" in 11 px type (each segment ≥ 48 px); if a locale clips, the picker becomes one chip that opens a 4-row popover. The diorama's far base is the AI's; online it is a "?" silhouette, fogged while searching, and it resolves into the found opponent's base. Left: the Campaign card (the War Path: region art, next level, stars, "Solo battles vs AI, earn cards") and four capsule slots (one tap opens). Top: profile chip with trophies, the Sundial glyph (no number: in colour while a capsule is ready, A6.3, A15.13), Amber and Dust chips, gear. Quests, the War Chest and the Trophy Road screen live in Progress; charges, Supply and Clay in Capsules. No timers and no backlog counts on Home; nothing online is playable until it exists (A15.13). **The one exception (owner decision 2026-10-01, "the friend entry shown as coming later"):** a quiet, locked "Friend Duel · Later" chip left of the switcher (desktop: "Arrives with online play"); a tap opens the Modes panel on the Friend Duel card's note, and it never starts or selects anything. The Modes panel lists "vs players" first |
 | 3 | Mode select | Quick Battle (built; first card: a Short War Skirmish at a picked difficulty, Easy II to Legendary X, vs the first ladder General whose tier range holds it; 5 Amber per win); Ladder (format picker from Arena 2; it shows each format's reward, A15.8; the Era of the Week from Arena 3, A18.3.4); Conquest (from Arena 3; leaves with A18.7.10); Skirmish (from match 2: choose General or Echo, the difficulty picker, format, start era (A18.3.4), speed, "Standard levels" toggle; 5 Amber per win); Daily Challenge (difficulty picker Recruit / Veteran / Warlord, A9.1). **From 2026-10-01 the Modes panel is the mode switcher's chooser.** It has one card per row: icon, name, one line, the reward line, and a check on the selected card. A tap selects the mode and closes the panel; Battle then plays it. The Ladder returns as a card (the default). Skirmish keeps "Set up", and its setup's Play starts the match and selects Skirmish. Online cards join when they work: Friend Duel (M2), Online Battle (M4), Ranked (M5), under a "vs players" header with the AI modes under "vs AI". The War Path is not a mode (its Home card). Events arrive as cards without timers |
-| 4 | VS | Your card vs the AI General card: AI badge, tier, levels ("Plan Lv 3.4 vs Lv 3"), format, personality line, modifiers, boss disclosures. Last Base Standing adds "No clock · Siege rises every 2½ min from 14:30 · Crumble from 22:00". **Online (M2+):** both nameplates show avatar, name, banner, arena and trophies, plus a **Player** chip on a human or the **AI** chip on a bot (a bot never gets a person's name, avatar or chip). Also shown: the length, "All cards at level 8", 1-3 connection bars, and block and report on the opponent's plate. VS lasts 3 s and cannot be skipped |
+| 4 | VS | Your card vs the AI General card: AI badge, tier, levels ("Plan Lv 3.4 vs Lv 3"), format, personality line, modifiers, boss disclosures. Last Base Standing adds "No clock · Siege rises every 2½ min from 14:30 · Crumble from 23:00". **Online (M2+):** both nameplates show avatar, name, banner, arena and trophies, plus a **Player** chip on a human or the **AI** chip on a bot (a bot never gets a person's name, avatar or chip). Also shown: the length, "All cards at level 8", 1-3 connection bars, and block and report on the opponent's plate. VS lasts 3 s and cannot be skipped |
 | 5 | Battle HUD | See A9.2 |
 | 6 | Pause | Resume, Scouted list, Settings, Retreat (after 1:00), Quit Skirmish |
 | 7 | Result | Victory/Defeat/Draw banner; recap (units trained and killed, base damage, time per age, MVP card). At most 3 staged steps (A15.13): (1) the result with trophies, (2) the main reward (a capsule, an Age Capsule or a Clay pip), (3) one progress bar, whichever of the next Trophy Road node, the War Chest or a Conquest star is closest to done. A found feat adds its own step (A15.10). Everything else (Amber, Codex points, quest and Supply progress, one result or loss tip, A15.12, A16.6) sits in one summary row that expands on tap. Tap to skip works. Then at most one card (tilt, break or wrap, A15.6) and the night line after 22:00. Daily: Copy result (A15.7). Buttons: Next battle, Watch replay, Home |
@@ -5169,7 +5174,7 @@ A format is a **window of consecutive ages**. `FormatId` becomes an open string 
 | Short War | 3 | ~1:10, ~2:50 | 5:00 | 6:30 | 8:30 | **7:00** | 5:30-8:30 | "about 7 min" |
 | Standard War | 5 | ~1:10, 2:50, 4:35, 6:25 | 8:00 | 10:00 | 12:30 | **10:30** | 8:30-12:30 | "about 10 min" |
 | Full War | 7 | ~1:10, 2:50, 4:35, 6:25, 8:20, 10:20 | 12:00 | 14:30 | 17:30 | **15:00** | 12:00-17:00 | "about 15 min" |
-| Last Base Standing (`last`, kind `untimed`; A2.10.1) | 7 | as Full War | 12:00 | 14:30 (Siege I; II 17:00, III 19:30, Crumble 22:00, Crumble II 24:30) | **none** (a base falls by 26:35) | ~19:30 (emulated) | ~11:00-25:30 | "no clock" |
+| Last Base Standing (`last`, kind `untimed`; A2.10.1) | 7 | as Full War | 12:00 | 14:30 (Siege I; II 17:00, III 19:30, Crumble 23:00, Crumble II 24:30) | **none** (a base falls by 25:44) | ~19:50 (measured) | ~11:00-25:30 | "no clock" |
 
 **Plate labels (2026-10-01).** The Home length picker names these Short, Medium, Long and No clock, and the line under it quotes the upper bound: "3 ages · up to 8½ min", "5 ages · up to 12½ min", "7 ages · up to 17½ min", "7 ages · no clock" ("no trophies" is in the info panel, so the line never wraps on a phone). The "about N min" labels above stay in info panels. The upper bound is what the plate promises because the Standard mirror reaches the Bell in about 59% of tier VII matches today (A16.14.9 review), so "about 10 min" would mislead.
 
@@ -5647,7 +5652,7 @@ Single player leads there directly: the sim is integer, seeded and hashed; repla
 | Short War | 7:00 | ~53 | ~245 | Ranked |
 | Standard War | 10:30 | ~79 | ~165 | Friend Duel, casual |
 | Full War | 15:00 | ~113 | ~115 | Friend Duel only (2026-10-01: also the casual queue's Long length) |
-| Last Base Standing (A2.10.1) | ~19:30 (emulated); at most 26:35 | ~148 (at most ~201) | ~88 (~65 at the worst case) | Friend Duel only |
+| Last Base Standing (A2.10.1) | ~19:50 (measured); at most 25:44 | ~150 (at most ~195) | ~87 (~67 at the worst case) | Friend Duel only |
 
 A client-clocked relay that lets the room hibernate roughly doubles these; M0 measures whether it is worth the code. A daily guard closes ranked near 90% of the budget; it counts Last Base Standing rooms at their worst case.
 
@@ -5656,7 +5661,7 @@ A client-clocked relay that lets the room hibernate roughly doubles these; M0 me
   - The casual Online Battle (M4) has one queue per length: Short, Medium, Long.
   - Ranked (M5) has one length: Short once its A16.5 Bell rows pass, else Standard (A16.21).
   - In a Friend Duel (M2) the host picks any of the four lengths, and the guest sees it before Ready.
-- **Relay.** The `MatchSpec` already carries the format key. The relay's hard cap becomes `(finalBellMs ?? endByMs) + 2 min` (`server/shared/match.ts maxTicksFor`), which is 28:35 for Last Base Standing, so a real game never meets it. A client whose content hash differs gets "A new version is ready. Reload to play online."
+- **Relay.** The `MatchSpec` already carries the format key. The relay's hard cap becomes `(finalBellMs ?? endByMs) + 2 min` (`server/shared/match.ts maxTicksFor`), which is 27:44 for Last Base Standing, so a real game never meets it. A client whose content hash differs gets "A new version is ready. Reload to play online."
 - **On Home** (A9 #2, #20, #21):
   - the mode switcher gains the online cards when they work;
   - the plate shows a neutral silhouette until a player is found;

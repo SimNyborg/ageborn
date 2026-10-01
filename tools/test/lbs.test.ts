@@ -15,19 +15,19 @@ describe('sim-cli lbs (A2.10.1)', () => {
   const ticks = stepTicks(content, 'last');
 
   it('reads the schedule in ticks and caps matches at endByMs + 2:00', () => {
-    expect(ticks).toEqual([17400, 20400, 23400, 26400, 29400]);
+    expect(ticks).toEqual([17400, 20400, 23400, 27600, 29400]);
     expect(stepTicks(content, 'full')).toEqual([]);
-    expect(matchTickCap(content, 'last')).toBe(31900 + 2400);
+    expect(matchTickCap(content, 'last')).toBe(30880 + 2400);
     expect(matchTickCap(content, 'full')).toBe(24000);
   });
 
   it('names the step a war ended in', () => {
-    expect([0, 17399, 17400, 20400, 26399, 26400, 31000].map((t) => endStep(ticks, t))).toEqual([0, 0, 1, 2, 3, 4, 5]);
+    expect([0, 17399, 17400, 20400, 27599, 27600, 30000].map((t) => endStep(ticks, t))).toEqual([0, 0, 1, 2, 3, 4, 5]);
   });
 
   it('summarises lengths: quantiles, wars past endByMs, draws, Crumble share, side wins', () => {
-    const rs = [result(12000, 0), result(24000, 1), result(27000, null), result(30000, 0), result(34300, null, { reason: 'timeout' })];
-    const l = lengthStats(rs, ticks, 31900, 4);
+    const rs = [result(12000, 0), result(24000, 1), result(28000, null), result(30000, 0), result(33280, null, { reason: 'timeout' })];
+    const l = lengthStats(rs, ticks, 30880, 4);
     expect(l.matches).toBe(5);
     expect(l.unfinished).toBe(1);
     expect(l.pastEndBy).toBe(1);
@@ -35,7 +35,7 @@ describe('sim-cli lbs (A2.10.1)', () => {
     expect(l.endedIn).toEqual([1, 0, 0, 1, 1, 2]);
     expect(l.crumblePct).toBe(40);
     expect(l.sideWins).toEqual([2, 1]);
-    expect(l.maxSec).toBe(34300 / 20);
+    expect(l.maxSec).toBe(33280 / 20);
     expect(l.longest?.reason).toBe('timeout');
   });
 
@@ -51,11 +51,13 @@ describe('sim-cli lbs (A2.10.1)', () => {
   });
 
   it('plays a real tier VII mirror war to a fallen base before endByMs', async () => {
-    const r = await runLbs({ ...lbsDefaults('smoke'), mirrorMatches: 1, proxyMatches: 0, proxies: [], workers: 0 });
+    const r = await runLbs({ ...lbsDefaults('smoke'), mirrorMatches: 1, proxyMatches: 0, proxies: [], workers: 0, retimeRuns: 1 });
     const m = r.data.mirror;
     expect(m?.matches).toBe(1);
     expect(m?.unfinished).toBe(0);
     expect(m?.pastEndBy).toBe(0);
     expect(r.checks.find((c) => c.id === 'lbs.crashes')?.verdict).toBe('pass');
+    // B3 timing is re-measured alone after the batch, not inside it.
+    expect(r.checks.find((c) => c.id === 'lbs.headless.worst')?.note).toContain('solo run');
   }, 60_000);
 });

@@ -107,6 +107,19 @@
   flex: none;
   margin: -4px -6px -4px 0;
 }
+/* The Ladder plate keeps one height whichever length is picked (no jump when No clock is picked):
+   the timed line and the No clock line (with its 48 px info button, 9 px of it in the gaps) are both
+   30 px tall. */
+.hub-plate[data-state='ladder'] .hub-plate__desc,
+.hub-plate[data-state='ladder-last'] .hub-plate__line {
+  min-height: 30px;
+}
+.hub-plate[data-state='ladder'] .hub-plate__desc {
+  align-content: center;
+}
+.hub-plate[data-state='ladder-last'] .hub-plate__info.ui-iconbtn {
+  margin: -9px -6px -9px 0;
+}
 .hub-plate__desc.has-win {
   display: flex;
   align-items: center;
@@ -466,7 +479,7 @@
     gap: 4px;
     padding: 6px 10px 8px;
   }
-  .hub-friend__icon svg {
+  .hub-friend__icon > svg {
     width: 28px;
     height: 28px;
   }

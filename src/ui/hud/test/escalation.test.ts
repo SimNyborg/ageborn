@@ -28,8 +28,8 @@ describe('the escalation meter', () => {
     const v = escalationView(m, config, 0)!;
     expect(v.pips.filter((p) => p.reached).map((p) => p.key)).toEqual(['overdrive', 's1', 's2']);
     expect(v.stepKey).toBe('hud.esc.step.s2');
-    expect(v.pips[2]).toMatchObject({ base: 3, turretCut: 65 });
-    expect(v.pips[4]).toMatchObject({ tone: 'crumble', crumblePct: 0.5 });
+    expect(v.pips[2]).toMatchObject({ base: 3.5, turretCut: 70 });
+    expect(v.pips[4]).toMatchObject({ tone: 'crumble', crumblePct: 1 });
   });
 
   it('flags the crumbling side relative to the HUD (the replay viewer may show side 1)', () => {

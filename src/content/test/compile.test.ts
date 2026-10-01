@@ -26,7 +26,9 @@ describe('contentHash (B4, B3 replays)', () => {
     // Engineers' scaffold effect joined the hashed slice. Fort tuning (review fixes 2026-10-01): 1 fort up,
     // camps every 10 s with 1 levy at 30%, traps 100 gold with fewer splash charges. SIM_VERSION 6.0.0
     // (A2.10.1): the `last` and `last.bronze` formats with Siege steps and `economy.siege.ropeDeadBandLu`.
-    expect(content.hash).toBe('1d97b5d6');
+    // Last Base Standing tuned at gate size (fixer review 2026-10-01): Siege II-III ×3.5/×5, turrets 30%/20%,
+    // Crumble from 23:00 at 1%/s, Crumble II 1.5%/s, endByMs 25:44.
+    expect(content.hash).toBe('9d1ccf1e');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {

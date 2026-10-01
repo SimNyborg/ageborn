@@ -78,22 +78,28 @@ function windowFormats(ageOrder: readonly AgeId[]): Record<FormatId, FormatDef> 
 
 /**
  * Last Base Standing (DESIGN A2.10.1, owner request 2026-10-01): a 7-age war with no Final Bell. After
- * Overdrive (12:00) the Siege rises every 2:30 from 14:30 and the Crumble rope starts at 22:00, so a
+ * Overdrive (12:00) the Siege rises every 2:30 from 14:30 and the Crumble rope starts at 23:00, so a
  * base always falls (by `endByMs`, derived from the steps by a content test). Siege I is today's Siege
  * without the base decay; Siege II and III raise base damage and cut turret damage; Crumble keeps Siege
- * III's values and adds the rope (bp of base max HP per second), which doubles at Crumble II.
+ * III's values and adds the rope (bp of base max HP per second), which rises by half at Crumble II.
+ *
+ * Tuned at gate size (fixer review 2026-10-01, `sim-cli lbs --mode full`, tier VII mirrors, n = 400 per
+ * seed set): the first values (×3/×4, Crumble 22:00 at 0.5%/s) ended 41% of mirrors in Crumble against
+ * the ≤ 35% gate; later or earlier steps alone, or stronger steps alone, moved it 1-5 points. A stronger
+ * Siege II-III plus a later, faster rope gives 32.5% and 35.0% on two seed sets and an earlier guarantee
+ * (25:44 instead of 26:35).
  */
 export const UNTIMED = {
   overdriveMs: 720000,
   steps: [
     { atMs: 870000, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 0 },
-    { atMs: 1020000, baseDamageBp: 30000, turretDamageBp: 3500, crumbleBpPerSec: 0 },
-    { atMs: 1170000, baseDamageBp: 40000, turretDamageBp: 2500, crumbleBpPerSec: 0 },
-    { atMs: 1320000, baseDamageBp: 40000, turretDamageBp: 2500, crumbleBpPerSec: 50 },
-    { atMs: 1470000, baseDamageBp: 40000, turretDamageBp: 2500, crumbleBpPerSec: 100 },
+    { atMs: 1020000, baseDamageBp: 35000, turretDamageBp: 3000, crumbleBpPerSec: 0 },
+    { atMs: 1170000, baseDamageBp: 50000, turretDamageBp: 2000, crumbleBpPerSec: 0 },
+    { atMs: 1380000, baseDamageBp: 50000, turretDamageBp: 2000, crumbleBpPerSec: 100 },
+    { atMs: 1470000, baseDamageBp: 50000, turretDamageBp: 2000, crumbleBpPerSec: 150 },
   ],
-  /** 22:00 + 150 s at ≥ 0.5 points/s + 125 s at ≥ 1 point/s of combined base HP (A2.10.1): 26:35. */
-  endByMs: 1595000,
+  /** 23:00 + 90 s at ≥ 1 point/s + 74 s at ≥ 1.5 points/s of combined base HP (A2.10.1): 25:44. */
+  endByMs: 1544000,
 } as const;
 
 /** The Last Base Standing windows (A2.10.1): `last` from Stone and, for Skirmish, `last.bronze`. */

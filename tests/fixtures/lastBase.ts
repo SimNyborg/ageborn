@@ -1,7 +1,9 @@
 /**
  * Last Base Standing on the frozen fixture (A2.10.1; SIM_VERSION 6.0.0): the fixture's five ages with the
- * live step values on a compressed clock (Overdrive 3:00, Siege I-III at 4:00, 5:00, 6:00, Crumble at
- * 7:00, Crumble II at 8:00). It has its own content hash, so goldens 01-14 keep the frozen fixture's.
+ * first step values (×2/×3/×4, rope 0.5%/s then 1%/s) on a compressed clock (Overdrive 3:00, Siege I-III
+ * at 4:00, 5:00, 6:00, Crumble at 7:00, Crumble II at 8:00). Frozen like the fixture: golden 15 was
+ * recorded on it, and live tuning of the steps (`src/content/raw/economy.ts UNTIMED`) never touches it.
+ * It has its own content hash, so goldens 01-14 keep the frozen fixture's.
  *
  * Shared by the sim's unit tests and golden 15 (`src/sim/test/helpers.ts`) and the cross-engine
  * determinism spec (`tests/e2e/determinism/entry.ts`), which picks the content by the replay's hash.

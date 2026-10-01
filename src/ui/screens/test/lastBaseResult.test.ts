@@ -18,7 +18,7 @@ function input(o: Partial<MatchResultInput['outcome']>, format = 'last'): MatchR
 
 describe('lastBaseReason (A2.10.1)', () => {
   it('names the fall, the crumble, a draw and a Retreat with the time', () => {
-    // 15:00 is before Crumble (22:00): the base fell.
+    // 15:00 is before Crumble (23:00): the base fell.
     expect(lastBaseReason(input({ winner: 0, reason: 'baseDestroyed', tick: 18000 }), content, t)).toBe('Their base fell at 15:00');
     expect(lastBaseReason(input({ winner: 1, reason: 'baseDestroyed', tick: 18000 }), content, t)).toBe('Your base fell at 15:00');
     // 23:41 is in Crumble: the walls crumbled.

@@ -32,13 +32,13 @@ describe('Last Base Standing formats (A2.10.1)', () => {
     expect(Object.values(content.formats).filter((f) => f.escalation).map((f) => f.id).sort()).toEqual(['last', 'last.bronze']);
   });
 
-  it('rises every 2:30 from Siege I at 14:30 and crumbles from 22:00 (the spec table)', () => {
+  it('rises every 2:30 from Siege I at 14:30 and crumbles from 23:00 (the tuned table)', () => {
     expect(content.formats['last']?.escalation).toEqual([
       { atMs: 14.5 * M, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 0 },
-      { atMs: 17 * M, baseDamageBp: 30000, turretDamageBp: 3500, crumbleBpPerSec: 0 },
-      { atMs: 19.5 * M, baseDamageBp: 40000, turretDamageBp: 2500, crumbleBpPerSec: 0 },
-      { atMs: 22 * M, baseDamageBp: 40000, turretDamageBp: 2500, crumbleBpPerSec: 50 },
-      { atMs: 24.5 * M, baseDamageBp: 40000, turretDamageBp: 2500, crumbleBpPerSec: 100 },
+      { atMs: 17 * M, baseDamageBp: 35000, turretDamageBp: 3000, crumbleBpPerSec: 0 },
+      { atMs: 19.5 * M, baseDamageBp: 50000, turretDamageBp: 2000, crumbleBpPerSec: 0 },
+      { atMs: 23 * M, baseDamageBp: 50000, turretDamageBp: 2000, crumbleBpPerSec: 100 },
+      { atMs: 24.5 * M, baseDamageBp: 50000, turretDamageBp: 2000, crumbleBpPerSec: 150 },
     ]);
     // Siege I is today's Siege values (without the decay, which the sim turns off for steps).
     const first = content.formats['last']?.escalation?.[0];
@@ -47,12 +47,12 @@ describe('Last Base Standing formats (A2.10.1)', () => {
     expect(content.economy.siege.ropeDeadBandLu).toBe(40);
   });
 
-  it('derives endByMs from the steps: a base falls by 26:35', () => {
-    expect(escalationEndMs(UNTIMED.steps)).toBe(1595000);
-    expect(UNTIMED.endByMs).toBe(1595000);
+  it('derives endByMs from the steps: a base falls by 25:44', () => {
+    expect(escalationEndMs(UNTIMED.steps)).toBe(1544000);
+    expect(UNTIMED.endByMs).toBe(1544000);
     for (const id of ['last', 'last.bronze']) expect(formats[id]?.endByMs, id).toBe(escalationEndMs(formats[id]?.escalation ?? []));
-    // The bound by hand: 150 s at ≥ 50 bp/s of combined HP, then 12,500 bp at ≥ 100 bp/s (125 s).
-    expect(22 * M + 150000 + 125000).toBe(1595000);
+    // The bound by hand: 90 s at ≥ 100 bp/s of combined HP (9,000), then 11,000 bp at ≥ 150 bp/s (74 s).
+    expect(23 * M + 90000 + Math.ceil(11000 / 150) * 1000).toBe(1544000);
     expect(escalationEndMs([{ atMs: 1000, crumbleBpPerSec: 0 }])).toBeNull();
     expect(escalationEndMs([{ atMs: 0, crumbleBpPerSec: 100 }])).toBe(200000);
   });

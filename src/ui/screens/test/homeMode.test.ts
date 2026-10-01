@@ -60,7 +60,7 @@ describe('the mode switcher (1.3)', () => {
     expect(minutesText(content.formats['short']!.finalBellMs!)).toBe('8½');
     expect(minutesText(content.formats['standard']!.finalBellMs!)).toBe('12½');
     expect(minutesText(content.formats['full']!.finalBellMs!)).toBe('17½');
-    expect(minutesText(content.formats['last']!.endByMs!)).toBe('26½');
+    expect(minutesText(content.formats['last']!.endByMs!)).toBe('25½');
   });
 
   it('Last Base Standing pays no trophies at any count (the plate never promises any)', () => {
