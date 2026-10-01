@@ -68,9 +68,6 @@ export const FORT_GOAL_APPROACH = 900 * MILLI;
 export const FORT_GOAL_READY_TICKS = 160;
 /** Scores (bp of score): a defensive fort outranks a stance change, below a power cast and Last Stand; a camp is a spare-gold move. */
 export const FORT_SCORE = 16000;
-// SCRATCH-EXPERIMENT (remove): variant switch
-const FX: string = ((globalThis as unknown as { process?: { env?: Record<string, string | undefined> } }).process?.env?.['AGEBORN_FORTV']) ?? '';
-const fx = (k: string): boolean => FX.split(',').includes(k);
 export const CAMP_SCORE = 12000;
 
 /** The kinds a bot at this tier with this personality places (A16.14.7). */
@@ -219,8 +216,6 @@ function waveAt(v: View, mid: number, limit: number): { threat: number; breakers
 /** A wave worth a wall, tower or trap (A16.14.7), before the breaker rule. */
 function isWave(v: View, P: Personality, w: { threat: number; own: number }): boolean {
   if (P.fortEager) return w.threat >= Math.trunc(FORT_THREAT_MIN / 2) || v.foeArmy >= FORT_EAGER_ARMY;
-  if (fx('charge') && v.obs.foe.stance !== 'charge') return false;
-  if (fx('big') && w.threat * BP < FORT_THREAT_RATIO_BP * v.myArmy) return false;
   return w.threat >= FORT_THREAT_MIN && w.threat * BP >= FORT_THREAT_RATIO_BP * w.own;
 }
 
@@ -234,9 +229,7 @@ function trainedOut(v: View): number {
 /** Is a camp due (A16.14.7)? After the opening, Charging with 2+ trained units out, once per age stay (Kettle: whenever none stands). */
 function campDue(v: View, i: FortPlanInput): boolean {
   const repeat = i.persona.fortPrefer[0] === 'camp';
-  if (fx('campPop') && v.popCommitted + 18 > i.book.econ.popCap) return false;
   if (v.myArmy * BP < CAMP_AHEAD_BP * v.foeArmy) return false;
-  if (fx('campFront') && (v.myFront === null || v.myFront < i.book.econ.midLane)) return false;
   return i.afterOpening && v.stance === 'charge' && (repeat || i.campAge !== v.ageIndex) && trainedOut(v) >= CAMP_MIN_TRAINED;
 }
 
@@ -252,14 +245,12 @@ export function fortGoal(v: View, i: FortPlanInput): { amount: number; why: 'def
   if (!slot || !r || i.force || v.phase === 'siege' || v.phase === 'ended' || v.ageUncertain) return null;
   const kind = slot.def.kind;
   if (!fortKindsFor(i.tier, i.persona).includes(kind)) return null;
-  if (fx('nogoal') && kind !== 'camp') return null;
-  if (fx('nocampgoal') && kind === 'camp') return null;
   if (slot.readyIn > FORT_GOAL_READY_TICKS || slot.alive >= r.maxAlive || (kind === 'tower' && slot.towers >= r.maxTowers) || (kind === 'camp' && slot.campAlive)) return null;
   if (v.popCommitted + slot.def.pop > i.book.econ.popCap || (i.tier.fortNoBank && i.banking)) return null;
   const amount = slot.cost + i.tier.goldFloat * MILLI;
   if (kind === 'camp') return campDue(v, i) && forwardSafePad(v, i.book, 'any') !== null ? { amount, why: 'camp' } : null;
   const mid = i.book.econ.midLane;
-  const w = waveAt(v, mid, mid + (fx('goal5') ? 500 * MILLI : fx('goal7') ? 700 * MILLI : FORT_GOAL_APPROACH));
+  const w = waveAt(v, mid, mid + FORT_GOAL_APPROACH);
   if (!isWave(v, i.persona, w) || w.breakers * BP >= FORT_BREAKER_SHARE_BP * Math.max(1, w.threat)) return null;
   if (forwardSafePad(v, i.book, 'home') === null) return null;
   return { amount, why: 'defend' };
@@ -309,7 +300,7 @@ export function planFort(v: View, i: FortPlanInput): FortPlan {
   // or near the Home pads, which are then unsafe (a scaffold there only feeds it), so waiting for the
   // whole wave to cross found a safe pad in under a third of the decisions that met the value rule.
   const mid = i.book.econ.midLane;
-  const w = waveAt(v, mid, mid + (fx('close') ? 200 * MILLI : fx('close3') ? 300 * MILLI : FORT_APPROACH));
+  const w = waveAt(v, mid, mid + FORT_APPROACH);
   if (!isWave(v, i.persona, w)) return NONE;
   const pad = forwardSafePad(v, i.book, 'home');
   if (pad === null) return NONE;

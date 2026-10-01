@@ -945,7 +945,7 @@
       "role": {
         "wall": "Stops a wave inside your turret cover, so your turrets get time to shoot.",
         "tower": "A tower that stands still in front of your base and shoots ground and air.",
-        "camp": "Sends a very weak levy every 8 s (2 at a time) that costs you nothing. Levies always march.",
+        "camp": "Sends a very weak levy every 10 s (1 at a time) that costs you nothing. Levies always march.",
         "trap": "A visible patch that fires when an enemy walks on it. It cannot be hit and never blocks."
       },
       "answer": {

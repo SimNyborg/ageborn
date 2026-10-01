@@ -413,6 +413,13 @@ export default function ScreensPage() {
     <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', background: '#050410', overflow: 'auto' }}>
       <div style={bar} data-testid="screens-toolbar">
         <b>WP9 screens</b>
+        {/* Owner report 2026-10-01: a shared screens link was taken for the game (the mock Battle never starts a match). */}
+        <span style={{ color: '#ffb347', fontWeight: 700 }} data-testid="screens-mock-note">
+          Preview with fake data: no real battles here.
+        </span>
+        <a href="./" style={{ color: '#7fd1ff', fontWeight: 700 }} data-testid="screens-play-link">
+          Play the real game
+        </a>
         <select value={variant} onChange={(e) => setVariant((e.currentTarget as HTMLSelectElement).value)} data-testid="variant">
           {VARIANTS.map((x) => (
             <option key={x.id} value={x.id}>
