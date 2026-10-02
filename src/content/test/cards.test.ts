@@ -39,7 +39,7 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['phalangite', 'Phalangite', 'R', 'antiArmor', 100, 255, 30, 12, 65, 70, 'M', 'G', 'light bio melee'],
     ['standard_bearer', 'Standard Bearer', 'R', 'support', 110, 151, 9, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['scorpion', 'Scorpion', 'E', 'artillery', 200, 330, 64, 30, 290, 45, 'L', 'G', 'light mech ranged'],
-    ['bronze_colossus', 'Bronze Colossus', 'L', 'siegeHeavy', 350, 2050, 64, 20, 20, 40, 'H', 'G', 'armored mech melee legendary'],
+    ['bronze_colossus', 'Bronze Colossus', 'L', 'siegeHeavy', 350, 1700, 64, 20, 20, 40, 'H', 'G', 'armored mech melee legendary'],
   ],
   // A5.3 Medieval Age (P 1.35)
   medieval: [
@@ -49,7 +49,7 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['pikeman', 'Pikeman', 'R', 'antiArmor', 100, 297, 35, 12, 70, 70, 'M', 'G', 'light bio melee'],
     ['friar', 'Friar', 'R', 'support', 110, 175, 11, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['battering_ram', 'Battering Ram', 'E', 'siege', 200, 900, 10, 20, 12, 45, 'L', 'G', 'armored mech melee'],
-    ['ursa_paladin', 'Ursa Paladin', 'L', 'siegeHeavy', 350, 2300, 70, 14, 20, 55, 'H', 'G', 'armored bio melee legendary'],
+    ['ursa_paladin', 'Ursa Paladin', 'L', 'siegeHeavy', 350, 2150, 70, 20, 20, 55, 'H', 'G', 'armored bio melee legendary'],
   ],
   // A5.4 Gunpowder Age (P 1.82)
   gunpowder: [
@@ -59,7 +59,7 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['grenadier', 'Grenadier', 'R', 'antiArmor', 100, 253, 55, 18, 150, 68, 'M', 'G', 'light bio ranged'],
     ['field_surgeon', 'Field Surgeon', 'R', 'support', 110, 237, 15, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['bronze_cannon', 'Bronze Cannon', 'E', 'artillery', 200, 500, 110, 35, 280, 45, 'L', 'G', 'light mech ranged'],
-    ['balloon_admiral', 'Balloon Admiral', 'L', 'airBomber', 350, 1500, 110, 16, 40, 45, 'H', 'G', 'air legendary'],
+    ['balloon_admiral', 'Balloon Admiral', 'L', 'airBomber', 350, 1200, 85, 16, 40, 45, 'H', 'G', 'air legendary'],
   ],
   // A17.10 Industrial Age (P 2.12)
   industrial: [
@@ -69,7 +69,7 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['harpoon_gunner', 'Harpoon Gunner', 'R', 'antiArmor', 100, 286, 55, 12, 210, 65, 'M', 'GA', 'light bio ranged'],
     ['flare_spotter', 'Flare Spotter', 'R', 'support', 110, 276, 17, 12, 200, 65, 'S', 'GA', 'light bio support ranged'],
     ['sapper', 'Sapper', 'E', 'siege', 200, 560, 12, 20, 12, 85, 'M', 'G', 'light bio melee'],
-    ['land_dreadnought', 'Land Dreadnought', 'L', 'siegeHeavy', 350, 3600, 130, 22, 160, 35, 'H', 'G', 'armored mech ranged legendary'],
+    ['land_dreadnought', 'Land Dreadnought', 'L', 'siegeHeavy', 350, 1800, 85, 22, 160, 35, 'H', 'G', 'armored mech ranged legendary'],
   ],
   // A5.5 Modern Age (P 2.46)
   modern: [
@@ -79,7 +79,7 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['bazooka_trooper', 'Bazooka Trooper', 'R', 'antiArmor', 100, 363, 64, 12, 200, 65, 'M', 'GA', 'light bio ranged'],
     ['radio_operator', 'Radio Operator', 'R', 'support', 110, 320, 20, 12, 200, 65, 'S', 'GA', 'light bio support ranged'],
     ['gyrocopter', 'Gyrocopter', 'E', 'airGunship', 200, 740, 20, 3, 150, 80, 'M', 'GA', 'air mech'],
-    ['behemoth_tank', 'Behemoth Tank', 'L', 'siegeHeavy', 350, 4100, 170, 25, 240, 35, 'H', 'G', 'armored mech legendary'],
+    ['behemoth_tank', 'Behemoth Tank', 'L', 'siegeHeavy', 350, 2500, 130, 35, 240, 35, 'H', 'G', 'armored mech legendary'],
   ],
   // A5.6 Future Age (P 3.32)
   future: [
@@ -89,7 +89,7 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['rail_gunner', 'Rail Gunner', 'R', 'antiArmor', 100, 440, 86, 12, 240, 65, 'M', 'GA', 'light bio ranged'],
     ['repair_drone', 'Repair Drone', 'R', 'support', 110, 430, 0, 0, 160, 70, 'S', '-', 'air mech support'],
     ['emp_saboteur', 'EMP Saboteur', 'E', 'antiMech', 200, 700, 50, 10, 12, 85, 'M', 'G', 'light bio melee'],
-    ['chrono_titan', 'Chrono Titan', 'L', 'siegeHeavy', 350, 5600, 230, 16, 60, 35, 'H', 'G', 'armored mech melee legendary'],
+    ['chrono_titan', 'Chrono Titan', 'L', 'siegeHeavy', 350, 4500, 190, 16, 60, 35, 'H', 'G', 'armored mech melee legendary'],
   ],
   // A17.11 Cosmic Age (P 4.48)
   cosmic: [
@@ -99,7 +99,7 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['graviton_halberdier', 'Graviton Halberdier', 'R', 'antiArmor', 100, 985, 116, 12, 70, 70, 'M', 'G', 'light bio melee'],
     ['starwarden', 'Starwarden', 'R', 'support', 110, 582, 36, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['warp_stalker', 'Warp Stalker', 'E', 'skirmisher', 200, 1600, 140, 8, 12, 100, 'M', 'G', 'light bio melee'],
-    ['mothership', 'Mothership', 'L', 'airGunship', 350, 3700, 80, 6, 180, 40, 'H', 'GA', 'air mech legendary'],
+    ['mothership', 'Mothership', 'L', 'airGunship', 350, 2100, 40, 6, 180, 40, 'H', 'GA', 'air mech legendary'],
   ],
 };
 
@@ -162,54 +162,54 @@ const TURRETS: Record<AgeId, TurretRow[]> = {
 type PowerRow = [string, string, AgeId, PowerSlot, PowerFamily, PowerSource, number, number, number, number];
 
 const POWERS: PowerRow[] = [
-  ['rockslide', 'Rockslide', 'stone', 'home', 'sweep', 'starter', 100, 40000, 1000, 5],
-  ['meteor_shower', 'Meteor Shower', 'stone', 'home', 'bombard', 'road', 100, 40000, 1000, 4],
+  ['rockslide', 'Rockslide', 'stone', 'home', 'sweep', 'starter', 125, 40000, 1000, 4],
+  ['meteor_shower', 'Meteor Shower', 'stone', 'home', 'bombard', 'road', 125, 40000, 1000, 3],
   ['sticky_tar', 'Sticky Tar', 'stone', 'home', 'snare', 'warPath', 75, 30000, 1000, 6],
-  ['stampede', 'Stampede', 'stone', 'field', 'charge', 'starter', 100, 40000, 1000, 6],
+  ['stampede', 'Stampede', 'stone', 'field', 'charge', 'starter', 100, 40000, 1000, 5],
   ['hunt_cry', 'Hunt Cry', 'stone', 'field', 'rally', 'warPath', 125, 45000, 500, 8],
-  ['hunters_spear', 'Hunter’s Spear', 'stone', 'field', 'strike', 'warPath', 75, 30000, 1500, 1],
-  ['tidal_wave', 'Tidal Wave', 'bronze', 'home', 'sweep', 'starter', 100, 40000, 1000, 5],
-  ['zeus_bolts', 'Zeus’s Bolts', 'bronze', 'home', 'bombard', 'warPath', 100, 40000, 1000, 4],
+  ['hunters_spear', 'Hunter’s Spear', 'stone', 'field', 'strike', 'warPath', 50, 15000, 1500, 1],
+  ['tidal_wave', 'Tidal Wave', 'bronze', 'home', 'sweep', 'starter', 125, 40000, 1000, 4],
+  ['zeus_bolts', 'Zeus’s Bolts', 'bronze', 'home', 'bombard', 'warPath', 125, 40000, 1000, 3],
   ['medusa_gaze', 'Medusa’s Gaze', 'bronze', 'home', 'stun', 'warPath', 75, 35000, 1000, 5],
-  ['chariot_rush', 'Chariot Rush', 'bronze', 'field', 'charge', 'starter', 100, 40000, 1000, 6],
-  ['aegis', 'Aegis', 'bronze', 'field', 'ward', 'road', 125, 45000, 500, 8],
-  ['apollo_arrow', 'Apollo’s Arrow', 'bronze', 'field', 'strike', 'warPath', 75, 30000, 1500, 1],
-  ['arrow_storm', 'Arrow Storm', 'medieval', 'home', 'bombard', 'starter', 100, 40000, 1000, 4],
+  ['chariot_rush', 'Chariot Rush', 'bronze', 'field', 'charge', 'starter', 100, 40000, 1000, 5],
+  ['aegis', 'Aegis', 'bronze', 'field', 'ward', 'road', 75, 30000, 500, 8],
+  ['apollo_arrow', 'Apollo’s Arrow', 'bronze', 'field', 'strike', 'warPath', 50, 15000, 1500, 1],
+  ['arrow_storm', 'Arrow Storm', 'medieval', 'home', 'bombard', 'starter', 125, 40000, 1000, 3],
   ['caltrops', 'Caltrops', 'medieval', 'home', 'snare', 'warPath', 75, 30000, 1000, 6],
-  ['boiling_oil', 'Boiling Oil', 'medieval', 'home', 'sweep', 'warPath', 100, 40000, 1000, 3],
-  ['knights_charge', 'Knights’ Charge', 'medieval', 'field', 'charge', 'starter', 100, 40000, 1000, 6],
-  ['royal_decree', 'Royal Decree', 'medieval', 'field', 'rally', 'road', 125, 45000, 500, 8],
+  ['boiling_oil', 'Boiling Oil', 'medieval', 'home', 'sweep', 'warPath', 125, 40000, 1000, 2],
+  ['knights_charge', 'Knights’ Charge', 'medieval', 'field', 'charge', 'starter', 100, 40000, 1000, 5],
+  ['royal_decree', 'Royal Decree', 'medieval', 'field', 'rally', 'road', 75, 30000, 500, 8],
   ['undermine', 'Undermine', 'medieval', 'field', 'suppress', 'warPath', 125, 60000, 1500, 0],
-  ['volley_fire', 'Volley Fire', 'gunpowder', 'home', 'sweep', 'starter', 100, 40000, 1000, 5],
+  ['volley_fire', 'Volley Fire', 'gunpowder', 'home', 'sweep', 'starter', 125, 40000, 1000, 4],
   ['broadside', 'Broadside', 'gunpowder', 'home', 'bombard', 'road', 100, 40000, 1000, 4],
   ['boarding_nets', 'Boarding Nets', 'gunpowder', 'home', 'pull', 'warPath', 75, 30000, 1000, 6],
   ['smoke_screen', 'Smoke Screen', 'gunpowder', 'field', 'cloud', 'starter', 100, 40000, 1000, 8],
-  ['horse_artillery', 'Horse Artillery', 'gunpowder', 'field', 'frontBarrage', 'warPath', 100, 35000, 1000, 5],
+  ['horse_artillery', 'Horse Artillery', 'gunpowder', 'field', 'frontBarrage', 'warPath', 100, 35000, 1000, 4],
   ['sharpshooter', 'Sharpshooter', 'gunpowder', 'field', 'strike', 'warPath', 75, 30000, 1500, 1],
-  ['gun_line', 'Gun Line', 'industrial', 'home', 'sweep', 'starter', 100, 40000, 1000, 5],
-  ['zeppelin_raid', 'Zeppelin Raid', 'industrial', 'home', 'bombard', 'road', 100, 40000, 1000, 4],
+  ['gun_line', 'Gun Line', 'industrial', 'home', 'sweep', 'starter', 125, 40000, 1000, 4],
+  ['zeppelin_raid', 'Zeppelin Raid', 'industrial', 'home', 'bombard', 'road', 125, 40000, 1000, 3],
   ['barbed_wire', 'Barbed Wire', 'industrial', 'home', 'snare', 'warPath', 75, 30000, 1000, 6],
-  ['iron_horse', 'Iron Horse', 'industrial', 'field', 'charge', 'starter', 100, 40000, 1000, 6],
-  ['railway_gun', 'Railway Gun', 'industrial', 'field', 'strike', 'warPath', 75, 30000, 2000, 1],
-  ['field_hospital', 'Field Hospital', 'industrial', 'field', 'mend', 'warPath', 125, 45000, 500, 8],
-  ['strafing_run', 'Strafing Run', 'modern', 'home', 'sweep', 'starter', 100, 40000, 1000, 5],
-  ['carpet_bomber', 'Carpet Bomber', 'modern', 'home', 'bombard', 'road', 100, 40000, 1000, 4],
+  ['iron_horse', 'Iron Horse', 'industrial', 'field', 'charge', 'starter', 100, 40000, 1000, 5],
+  ['railway_gun', 'Railway Gun', 'industrial', 'field', 'strike', 'warPath', 50, 15000, 2000, 1],
+  ['field_hospital', 'Field Hospital', 'industrial', 'field', 'mend', 'warPath', 75, 30000, 500, 8],
+  ['strafing_run', 'Strafing Run', 'modern', 'home', 'sweep', 'starter', 100, 40000, 1000, 4],
+  ['carpet_bomber', 'Carpet Bomber', 'modern', 'home', 'bombard', 'road', 125, 40000, 1000, 3],
   ['aa_screen', 'AA Screen', 'modern', 'home', 'flak', 'warPath', 75, 25000, 500, 3],
   ['paratroopers', 'Paratroopers', 'modern', 'field', 'drop', 'starter', 150, 60000, 1000, 0],
-  ['tank_rush', 'Tank Rush', 'modern', 'field', 'charge', 'warPath', 100, 40000, 1000, 6],
-  ['sniper_team', 'Sniper Team', 'modern', 'field', 'strike', 'warPath', 75, 25000, 1500, 1],
-  ['orbital_lance', 'Orbital Lance', 'future', 'home', 'sweep', 'starter', 100, 40000, 1000, 5],
+  ['tank_rush', 'Tank Rush', 'modern', 'field', 'charge', 'warPath', 100, 40000, 1000, 5],
+  ['sniper_team', 'Sniper Team', 'modern', 'field', 'strike', 'warPath', 50, 15000, 1000, 1],
+  ['orbital_lance', 'Orbital Lance', 'future', 'home', 'sweep', 'starter', 125, 40000, 1000, 4],
   ['point_defense', 'Point Defense Grid', 'future', 'home', 'bombard', 'warPath', 100, 40000, 1000, 4],
   ['stasis_field', 'Stasis Field', 'future', 'home', 'stun', 'warPath', 75, 35000, 1000, 6],
-  ['drone_swarm', 'Drone Swarm', 'future', 'field', 'frontBarrage', 'starter', 100, 35000, 1000, 5],
+  ['drone_swarm', 'Drone Swarm', 'future', 'field', 'frontBarrage', 'starter', 100, 35000, 1000, 4],
   ['nanite_surge', 'Nanite Surge', 'future', 'field', 'mend', 'road', 150, 50000, 500, 8],
   ['emp_blackout', 'EMP Blackout', 'future', 'field', 'suppress', 'warPath', 125, 60000, 1500, 0],
-  ['starfall', 'Starfall', 'cosmic', 'home', 'bombard', 'starter', 100, 40000, 1000, 4],
-  ['singularity', 'Singularity', 'cosmic', 'home', 'pull', 'warPath', 75, 30000, 1000, 6],
-  ['solar_flare', 'Solar Flare', 'cosmic', 'home', 'sweep', 'warPath', 100, 40000, 1000, 4],
-  ['comet_run', 'Comet Run', 'cosmic', 'field', 'charge', 'starter', 100, 40000, 1000, 6],
+  ['starfall', 'Starfall', 'cosmic', 'home', 'bombard', 'starter', 125, 40000, 1000, 3],
+  ['singularity', 'Singularity', 'cosmic', 'home', 'pull', 'warPath', 100, 30000, 1000, 6],
+  ['solar_flare', 'Solar Flare', 'cosmic', 'home', 'sweep', 'warPath', 125, 40000, 1000, 3],
+  ['comet_run', 'Comet Run', 'cosmic', 'field', 'charge', 'starter', 100, 40000, 1000, 5],
   ['warp_strike', 'Warp Strike', 'cosmic', 'field', 'drop', 'road', 150, 60000, 1000, 0],
-  ['ion_cannon', 'Ion Cannon', 'cosmic', 'field', 'strike', 'warPath', 75, 25000, 1500, 1],
+  ['ion_cannon', 'Ion Cannon', 'cosmic', 'field', 'strike', 'warPath', 50, 15000, 1500, 1],
 ];
 
 /** A2.7 train times and pop per role group (derived by the compiler). */
@@ -282,21 +282,21 @@ describe('A5 unit tables', () => {
     expect(ab('pikeman')).toContainEqual({ kind: 'brace' });
     expect(ab('friar')).toContainEqual({ kind: 'heal', hpPerSec: 40, radius: 160, targets: 2, pulseMs: 500 });
     expect(content.units.battering_ram?.attacks[0]?.vsBaseDamage).toBe(160);
-    expect(ab('ursa_paladin')).toContainEqual({ kind: 'periodicShieldAura', everyMs: 15000, radius: 200, maxTargets: 8, shield: 60, durationMs: 6000 });
+    expect(ab('ursa_paladin')).toContainEqual({ kind: 'periodicShieldAura', everyMs: 15000, radius: 200, maxTargets: 8, shield: 35, durationMs: 6000 });
     expect(content.units.ursa_paladin?.attacks[0]?.cleave).toEqual({ count: 2, reach: 40 });
     expect(ab('corsair')).toContainEqual({ kind: 'firstHitBonus', multBp: 10000, knockback: -20, idleResetMs: 2000 });
     expect(content.units.grenadier?.attacks[0]).toMatchObject({ splashRadius: 35, priority: 'armored' });
     expect(ab('field_surgeon')).toContainEqual({ kind: 'heal', hpPerSec: 55, radius: 160, targets: 2, pulseMs: 500 });
     expect(content.units.bronze_cannon?.attacks[0]).toMatchObject({ splashRadius: 50, minRange: 80 });
-    expect(ab('balloon_admiral')).toContainEqual({ kind: 'onDeathExplode', damage: 250, radius: 70 });
+    expect(ab('balloon_admiral')).toContainEqual({ kind: 'onDeathExplode', damage: 200, radius: 70 });
     expect(content.units.rifleman?.attacks[0]?.onHit).toEqual([{ kind: 'slow', magnitudeBp: 1500, durationMs: 1000 }]);
     expect(ab('radio_operator')).toContainEqual({ kind: 'callStrike', everyMs: 8000, searchRange: 400, delayMs: 1000, damage: 120, radius: 50, sideLockoutMs: 3000 });
-    expect(content.units.behemoth_tank?.attacks[1]).toMatchObject({ damage: 20, intervalMs: 400, range: 150, hitsGround: true, hitsAir: true, priority: 'air' });
+    expect(content.units.behemoth_tank?.attacks[1]).toMatchObject({ damage: 14, intervalMs: 400, range: 150, hitsGround: true, hitsAir: true, priority: 'air' });
     expect(ab('photon_knight')).toContainEqual({ kind: 'innateShield', amount: 90, regenPerSec: 30, delayMs: 3000 });
     expect(content.units.rail_gunner?.attacks[0]?.pierce).toEqual({ count: 2, length: 150 });
     expect(ab('repair_drone')).toContainEqual({ kind: 'heal', hpPerSec: 100, radius: 160, targets: 2, pulseMs: 500 });
     expect(ab('emp_saboteur')).toContainEqual({ kind: 'emp', everyMs: 8000, triggerRadius: 120, radius: 120, stunMs: 1500 });
-    expect(ab('chrono_titan')).toContainEqual({ kind: 'timeStop', everyMs: 15000, radius: 200, freezeMs: 1500, legendaryFreezeMs: 750 });
+    expect(ab('chrono_titan')).toContainEqual({ kind: 'timeStop', everyMs: 20000, radius: 200, freezeMs: 1500, legendaryFreezeMs: 750 });
     expect(content.units.chrono_titan?.attacks[0]?.cleave).toEqual({ count: 3, reach: 60 });
     // A17.9-A17.11
     expect(ab('hoplite')).toContainEqual({ kind: 'firstHitBonus', multBp: 10000, knockback: 15, idleResetMs: 2000 });
@@ -306,14 +306,14 @@ describe('A5 unit tables', () => {
     expect(ab('standard_bearer')).toContainEqual({ kind: 'aura', radius: 160, status: { kind: 'damageBuff', magnitudeBp: 1500, durationMs: 0 } });
     expect(content.units.scorpion?.attacks[0]).toMatchObject({ minRange: 60, pierce: { count: 3, length: 150 } });
     expect(content.units.bronze_colossus?.attacks[0]).toMatchObject({ splashRadius: 45, onHit: [{ kind: 'slow', magnitudeBp: 2000, durationMs: 1500 }] });
-    expect(ab('bronze_colossus')).toContainEqual({ kind: 'onDeathExplode', damage: 160, radius: 70 });
+    expect(ab('bronze_colossus')).toContainEqual({ kind: 'onDeathExplode', damage: 100, radius: 70 });
     expect(ab('riveter')).toContainEqual({ kind: 'firstHitBonus', multBp: 15000, knockback: 0, idleResetMs: 2000 });
     expect(ab('steam_golem')).toContainEqual({ kind: 'firstHitBonus', multBp: 20000, knockback: 30, idleResetMs: 2000 });
     expect(ab('harpoon_gunner')).toContainEqual({ kind: 'firstHitBonus', multBp: 10000, knockback: -25, idleResetMs: 2000 });
     expect(content.units.flare_spotter?.attacks[0]).toMatchObject({ priority: 'armored', onHit: [{ kind: 'mark', magnitudeBp: 2000, durationMs: 3000 }] });
     expect(content.units.sapper?.attacks[0]?.vsBaseDamage).toBe(240);
     expect(ab('sapper')).toEqual([{ kind: 'siegeOnly' }, { kind: 'onDeathExplode', damage: 180, radius: 60 }]);
-    expect(ab('land_dreadnought').find((a) => a.kind === 'riders')).toMatchObject({ count: 2, onDeathSpawn: 'carbineer', attack: { damage: 10, intervalMs: 500, range: 160 } });
+    expect(ab('land_dreadnought').find((a) => a.kind === 'riders')).toMatchObject({ count: 2, onDeathSpawn: 'carbineer', attack: { damage: 6, intervalMs: 500, range: 160 } });
     expect(ab('star_legionnaire')).toContainEqual({ kind: 'resist', minSourceRange: 100, bp: 2000 });
     expect(content.units.ion_ranger?.attacks[0]?.chain).toEqual({ count: 2, hop: 50 });
     expect(ab('graviton_halberdier')).toContainEqual({ kind: 'brace' });
@@ -322,7 +322,7 @@ describe('A5 unit tables', () => {
     expect(ab('starwarden')).toContainEqual({ kind: 'periodicShieldAura', everyMs: 8000, radius: 180, maxTargets: 4, shield: 200, durationMs: 5000 });
     expect(ab('warp_stalker')).toContainEqual({ kind: 'pounce', searchRange: 200, cooldownMs: 10000, leapMs: 400, firstBiteBp: 20000 });
     expect(ab('mothership')).toEqual([
-      { kind: 'callStrike', everyMs: 6000, searchRange: 400, delayMs: 1000, damage: 300, radius: 50, sideLockoutMs: 3000 },
+      { kind: 'callStrike', everyMs: 10000, searchRange: 400, delayMs: 1000, damage: 150, radius: 50, sideLockoutMs: 3000 },
       { kind: 'onDeathExplode', damage: 350, radius: 80 },
     ]);
   });
@@ -622,8 +622,9 @@ describe('A5.7 Age Powers', () => {
       kind: 'buffAll',
       maxTargets: 8,
       statuses: [
-        { kind: 'damageBuff', magnitudeBp: 3000, durationMs: 8000 },
-        { kind: 'speedBuff', magnitudeBp: 2000, durationMs: 8000 },
+        { kind: 'damageBuff', magnitudeBp: 3500, durationMs: 15000 },
+        { kind: 'speedBuff', magnitudeBp: 2000, durationMs: 15000 },
+        { kind: 'attackSpeedBuff', magnitudeBp: 2500, durationMs: 15000 },
       ],
     });
     expect(content.powers.nanite_surge?.effect).toEqual({
@@ -638,8 +639,8 @@ describe('A5.7 Age Powers', () => {
       kind: 'buffAll',
       maxTargets: 8,
       statuses: [
-        { kind: 'shield', magnitudeBp: 0, durationMs: 6000, amount: 80 },
-        { kind: 'damageBuff', magnitudeBp: 1500, durationMs: 6000 },
+        { kind: 'shield', magnitudeBp: 0, durationMs: 8000, amount: 120 },
+        { kind: 'damageBuff', magnitudeBp: 2500, durationMs: 8000 },
       ],
     });
   });

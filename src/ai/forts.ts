@@ -52,10 +52,11 @@ export const FORT_D_WEAK = 1;
 export const FORT_APPROACH = 0;
 /**
  * A camp only joins a push that is already winning: the bot's army is worth at least this much of the
- * enemy's (bp). A camp costs 150 gold and 6 pop for about six 30% levies, so it pays only on top of an
- * advantage (MVP balance pass 2026-10-01: camp value 43.5% → 48-53%).
+ * enemy's (bp). A camp costs 150 gold and 6 pop for about six 35% levies, so it pays only on top of a clear
+ * advantage (MVP balance pass 2026-10-01: camp value 43.5% → 48-53% at 1.2×; on the final content 1.2× read
+ * 43.8% in Standard War and 1.5× 46.6-48.1%, n = 400).
  */
-export const CAMP_AHEAD_BP = 12000;
+export const CAMP_AHEAD_BP = 15000;
 /**
  * The ledger plan (A16.14.7 "inside the bot's gold ledger"): once a wave is this close to crossing
  * mid-lane and the slot is ready within 8 s, the bot saves the fort's price plus its gold float (trains

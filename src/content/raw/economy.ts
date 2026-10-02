@@ -7,18 +7,21 @@ import type { AgeId, FormatId, FormatKind } from '@/contracts/ids';
 import type { RawAgeScale, RawBattleRules, RawDamageMods } from './types';
 
 /**
- * DESIGN A17.8 power scale (P, base max HP = 10,000 × P; Bronze and Industrial are half steps of
- * ×1.16, the rest ×1.35) and XP to evolve out of each age (small steps cost less XP, big steps more).
+ * DESIGN A17.8 power scale (P; Bronze and Industrial are half steps of ×1.16, the rest ×1.35) and XP to
+ * evolve out of each age (small steps cost less XP, big steps more). Base max HP = 8,000 × P (MVP balance
+ * pass 2026-10-01; was 10,000 × P): a full 60-pop army needed 126 s to raze an undefended base against a
+ * 40-60 s target, and the tier V mirror reached the Final Bell in 39 / 43 / 21% of Short / Standard /
+ * Full Wars. With the power trim and the falling gate at 300 lu: 16 / 13.5 / 3% (n = 200 per format).
  */
 export const ageScale: Record<AgeId, RawAgeScale> = {
-  stone: { id: 'stone', index: 0, pBp: 10000, baseHp: 10000, xpToNext: 550 },
-  bronze: { id: 'bronze', index: 1, pBp: 11600, baseHp: 11600, xpToNext: 500 },
-  medieval: { id: 'medieval', index: 2, pBp: 13500, baseHp: 13500, xpToNext: 900 },
-  gunpowder: { id: 'gunpowder', index: 3, pBp: 18200, baseHp: 18200, xpToNext: 700 },
-  industrial: { id: 'industrial', index: 4, pBp: 21200, baseHp: 21200, xpToNext: 800 },
-  modern: { id: 'modern', index: 5, pBp: 24600, baseHp: 24600, xpToNext: 1200 },
-  future: { id: 'future', index: 6, pBp: 33200, baseHp: 33200, xpToNext: 1300 },
-  cosmic: { id: 'cosmic', index: 7, pBp: 44800, baseHp: 44800, xpToNext: null },
+  stone: { id: 'stone', index: 0, pBp: 10000, baseHp: 8000, xpToNext: 550 },
+  bronze: { id: 'bronze', index: 1, pBp: 11600, baseHp: 9280, xpToNext: 500 },
+  medieval: { id: 'medieval', index: 2, pBp: 13500, baseHp: 10800, xpToNext: 900 },
+  gunpowder: { id: 'gunpowder', index: 3, pBp: 18200, baseHp: 14560, xpToNext: 700 },
+  industrial: { id: 'industrial', index: 4, pBp: 21200, baseHp: 16960, xpToNext: 800 },
+  modern: { id: 'modern', index: 5, pBp: 24600, baseHp: 19680, xpToNext: 1200 },
+  future: { id: 'future', index: 6, pBp: 33200, baseHp: 26560, xpToNext: 1300 },
+  cosmic: { id: 'cosmic', index: 7, pBp: 44800, baseHp: 35840, xpToNext: null },
 };
 
 /**
@@ -304,17 +307,20 @@ export const economy: EconomyRules = {
     towerHpBp: 5000,
     campHpBp: 6000,
     towerDamageBp: 15000,
-    // levies 30% of the age's Infantry Common (was 40%: the levies supplied 15-28 points of a camp's edge)
-    levyHpBp: 3000,
-    levyDamageBp: 3000,
+    // levies 35% of the age's Infantry Common (was 40%: the levies supplied 15-28 points of a camp's edge;
+    // then 30%, which left camps 6-7 points under the wall in Bronze and Gunpowder; MVP balance pass 2026-10-01)
+    levyHpBp: 3500,
+    levyDamageBp: 3500,
     levyAiValueBp: 1600,
   },
   // A17.3 Siege forced march: unit movement ×1.2; A16.4 step 2 siege crowd: 60 lu before the enemy gate
   // A2.10.1 Last Base Standing: the Crumble rope's dead band (fronts within 40 lu: both sides crumble)
   siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, gateCrowdLu: 60, ropeDeadBandLu: 40 },
-  // A16.4 stall fix (A17 step 1): in Overdrive and Siege a unit killed within 120 lu of its own gate costs
-  // its base its max HP, so spawn-camping a beaten side ends the match (docs/decisions.md)
-  gateFall: { lu: 120, hpBp: 10000 },
+  // A16.4 stall fix (A17 step 1): in Overdrive and Siege a unit killed within 300 lu of its own gate costs
+  // its base its max HP, so spawn-camping a beaten side ends the match (docs/decisions.md). 300 lu (MVP
+  // balance pass 2026-10-01; was 120): a side pushed back to its gate in the late game now bleeds, the
+  // strongest single Bell lever measured (tier V Short 25 → 9%, with base HP ×0.6 and the power trim)
+  gateFall: { lu: 300, hpBp: 10000 },
   // A17.2 unit walking speed: table speed ×1.25, applied once at compile time
   marchSpeedBp: 12500,
   // A2.7 / A16.4 L4: a three-wide front

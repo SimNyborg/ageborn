@@ -26,7 +26,7 @@ import { GeneralPortrait } from '../../components/Avatar';
 import { Button, IconButton } from '../../components/Button';
 import { AiBadge } from '../../components/Chips';
 import { Segmented } from '../../components/Controls';
-import { formatInt, tierNumeral } from '../../components/format';
+import { formatInt, tierNumeral, withoutAiPrefix } from '../../components/format';
 import { CalendarIcon, ChevronIcon, InfoIcon, LastBaseIcon, LockIcon, TrophyIcon } from '../../components/icons';
 import { rovingNextIndex } from '../../components/keys';
 import { Modal } from '../../components/Modal';
@@ -101,7 +101,8 @@ export function PlateFrame(p: {
               {p.over}
             </span>
             <span class="hub-plate__name" data-clip-check="">
-              {p.name}
+              {/* The AI chip under the portrait is the label here, so a procedural name drops its "AI · " prefix (bug hunt #14). */}
+              {p.ai && typeof p.name === 'string' ? withoutAiPrefix(p.name) : p.name}
             </span>
           </span>
         </div>

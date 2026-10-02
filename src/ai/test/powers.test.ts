@@ -92,25 +92,26 @@ describe('powerOption (A2.9.9)', () => {
   });
 
   it('the screen: only the first maxTargets enemies nearest the gate are eligible, wherever the zone is', () => {
-    // Five Bonkers at full HP in front, a nearly dead Tuskback behind them: Meteor Shower (cap 4) cannot
-    // reach past the screen, so the Tuskback is worth nothing to it.
+    // Five Bonkers at full HP in front, a nearly dead Tuskback behind them: Meteor Shower (cap 3 since the
+    // MVP power trim) cannot reach past the screen, so the Tuskback is worth nothing to it.
     const screen = [300, 310, 320, 330, 340].map((p) => unit(0, 'bonker', p, { hp: 90000 }));
     const heavy = unit(0, 'tuskback', 800, { hp: 100 });
     const withScreen = option('meteor_shower', [...screen, heavy]);
     expect(withScreen.p).toBeLessThanOrEqual(600 * MILLI);
-    expect(withScreen.count).toBe(4);
+    expect(withScreen.count).toBe(content.powers.meteor_shower?.maxTargets);
+    expect(withScreen.count).toBe(3);
     // Without the screen the Tuskback is the prize.
     const alone = option('meteor_shower', [heavy]);
     expect(alone.value).toBe(150 * 1300);
   });
 
   it('charges run from the own front and count at most their cap', () => {
-    // Own front (side 1 units) at 500; the run is [500, 1,000]; 7 enemies in it, cap 6.
+    // Own front (side 1 units) at 500; the run is [500, 1,000]; 7 enemies in it, cap 5 (6 before the MVP power trim).
     const foes = [520, 560, 600, 640, 680, 720, 760].map((p) => unit(0, 'bonker', p, { hp: 100 }));
     const o = option('stampede', [unit(1, 'bonker', 500), ...foes, unit(0, 'bonker', 1200, { hp: 100 })]);
     expect(o.p).toBeNull();
-    expect(o.count).toBe(6);
-    expect(o.value).toBe(6 * 65 * MILLI);
+    expect(o.count).toBe(5);
+    expect(o.value).toBe(5 * 65 * MILLI);
   });
 
   it('strikes pick the most valuable target; Epics take half; worse tiers pick among their best k', () => {

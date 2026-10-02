@@ -27,8 +27,9 @@ describe('contentHash (B4, B3 replays)', () => {
     // camps every 10 s with 1 levy at 30%, traps 100 gold with fewer splash charges. SIM_VERSION 6.0.0
     // (A2.10.1): the `last` and `last.bronze` formats with Siege steps and `economy.siege.ropeDeadBandLu`.
     // Last Base Standing tuned at gate size (fixer review 2026-10-01): Siege II-III ×3.5/×5, turrets 30%/20%,
-    // Crumble from 23:00 at 1%/s, Crumble II 1.5%/s, endByMs 25:44.
-    expect(content.hash).toBe('9d1ccf1e');
+    // Crumble from 23:00 at 1%/s, Crumble II 1.5%/s, endByMs 25:44. MVP balance pass (2026-10-01): the power
+    // trim, base HP 8,000 × P, the falling gate at 300 lu, seven Legendaries and fourteen War Path / Road powers.
+    expect(content.hash).toBe('d20e8eb9');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {
@@ -128,7 +129,7 @@ describe('compiled bundle (B4)', () => {
 
   it('adds palette, visual and music ids to the ages (A14.1, A14.3)', () => {
     expect(content.ages.gunpowder).toEqual({
-      id: 'gunpowder', index: 3, pBp: 18200, baseHp: 18200, xpToNext: 700,
+      id: 'gunpowder', index: 3, pBp: 18200, baseHp: 14560, xpToNext: 700,
       paletteId: 'palette.gunpowder', baseVisualId: 'base.gunpowder', backdropVisualId: 'backdrop.gunpowder',
       musicCue: 'music.gunpowder',
     });
@@ -208,7 +209,7 @@ describe('integer view (B3 units)', () => {
 
   it('converts base HP and XP thresholds (A17.8)', () => {
     expect(content.int.baseHp).toEqual({
-      stone: 1000000, bronze: 1160000, medieval: 1350000, gunpowder: 1820000, industrial: 2120000, modern: 2460000, future: 3320000, cosmic: 4480000,
+      stone: 800000, bronze: 928000, medieval: 1080000, gunpowder: 1456000, industrial: 1696000, modern: 1968000, future: 2656000, cosmic: 3584000,
     });
     expect(content.int.xpToNext).toEqual({
       stone: 550000, bronze: 500000, medieval: 900000, gunpowder: 700000, industrial: 800000, modern: 1200000, future: 1300000, cosmic: null,

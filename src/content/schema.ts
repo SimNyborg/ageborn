@@ -1167,7 +1167,10 @@ function checkAgesAndFormats(issues: Issues, c: Content): void {
   AGE_ORDER.forEach((age, i) => {
     const a = c.ages[age];
     issues.check(a.index === i, `ages.${age}`, 'index follows age order');
-    issues.check(a.baseHp === a.pBp, `ages.${age}`, 'base max HP = 10,000 × P (A2.2)');
+    // Base max HP is the same multiple of P in every age (A2.2): 8,000 × P since the MVP balance pass,
+    // 10,000 × P in the frozen fixture.
+    const ref = c.ages[AGE_ORDER[0] as AgeId];
+    issues.check(a.baseHp * ref.pBp === ref.baseHp * a.pBp && a.baseHp <= a.pBp, `ages.${age}`, 'base max HP = k × P in every age, k ≤ 10,000 (A2.2)');
     issues.check((a.xpToNext === null) === (i === AGE_ORDER.length - 1), `ages.${age}`, 'only the last age has no threshold');
   });
   for (const [key, f] of Object.entries(c.formats)) {
@@ -1250,8 +1253,11 @@ function checkPower(issues: Issues, p: string, pw: PowerDef): void {
     issues.check(pw.rarity === (lvl === 5 ? 'rare' : 'epic'), p, 'War Path L5 powers are Rare, L7 and L9 Epic (A5.7)');
     issues.check(pw.road !== undefined && pw.road >= 550, p, 'War Path powers have a Trophy Road fallback node ≥ 550 (A2.9.8)');
   }
-  issues.check(pw.cost >= 75 && pw.cost <= 150, p, 'a power costs 75-150 gold (A2.9.2)');
-  issues.check(pw.reloadMs >= 25000 && pw.reloadMs <= 60000, p, 'a power reloads in 25-60 s (A2.9.3)');
+  // A strike hits one unit for a pinned 55-65% of the Heavy (A2.9.6), so its levers are price and reload
+  // (MVP balance pass 2026-10-01: strikes at 75 gold and 25-30 s lost 5-20 points to their slot's starter).
+  const strike = pw.effect.kind === 'strike';
+  issues.check(pw.cost >= (strike ? 50 : 75) && pw.cost <= 150, p, 'a power costs 75-150 gold, a strike 50-150 (A2.9.2)');
+  issues.check(pw.reloadMs >= (strike ? 15000 : 25000) && pw.reloadMs <= 60000, p, 'a power reloads in 25-60 s, a strike in 15-60 s (A2.9.3)');
   issues.check(pw.telegraphMs >= 500 && pw.telegraphMs <= 2000, p, 'a telegraph lasts 0.5-2.0 s (A2.9.6)');
 }
 

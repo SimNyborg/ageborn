@@ -468,7 +468,16 @@ export function TopBar(p: {
   const foeIsBot = c.config.sides[c.side === 0 ? 1 : 0].isBot;
   const foeNameBox = useRef<HTMLSpanElement>(null);
   const foeNameEl = useRef<HTMLSpanElement>(null);
-  useFitLabel(foeNameEl, () => foeNameBox.current?.clientWidth ?? 0, [m.foe.label, c.compact]);
+  // When even the condensed name does not fit (a long procedural name beside the AI chip and the
+  // research rings on a phone), the nameplate shows the given name only: whole words, never cut.
+  // The full name stays on the VS screen, Pause and Result.
+  const foeFull = foeIsBot ? withoutAiPrefix(m.foe.label) : m.foe.label;
+  const [foeShortFor, setFoeShortFor] = useState<string | null>(null);
+  const foeShort = foeShortFor === `${foeFull}|${c.compact}`;
+  const foeShown = foeShort ? (foeFull.split(' ')[0] ?? foeFull) : foeFull;
+  useFitLabel(foeNameEl, () => foeNameBox.current?.clientWidth ?? 0, [foeShown, c.compact], (fits) => {
+    if (!fits && !foeShort && foeFull.includes(' ')) setFoeShortFor(`${foeFull}|${c.compact}`);
+  });
   useKick(meEl, p.hits[mySide], HIT_FRAMES, 280);
   useKick(foeEl, p.hits[foeSide], HIT_FRAMES, 280);
   const next = clock.nextPhase && clock.nextPhase.kind !== 'finalBell' ? clock.nextPhase : null;
@@ -531,7 +540,7 @@ export function TopBar(p: {
             ) : null}
             <span class="hud-name-text" ref={foeNameBox}>
               <span class="hud-name-fit" ref={foeNameEl}>
-                {foeIsBot ? withoutAiPrefix(m.foe.label) : m.foe.label}
+                {foeShown}
               </span>
             </span>
           </div>

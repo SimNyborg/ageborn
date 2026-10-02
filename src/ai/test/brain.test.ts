@@ -14,7 +14,12 @@ import { AGES, content, observation, unit } from './helpers';
 /** Lane length in lu (A17.2). */
 const L = LANE_MLU / MLU;
 
-const book = cardBook(content);
+/**
+ * The ROI tests below were written for Meteor Shower at 100 gold and cap 4 (before the MVP power trim:
+ * 125 gold, cap 3); the book and the observations keep those numbers so the arithmetic in the comments holds.
+ */
+const ROI_POWER = { cost: 100, maxTargets: 4 };
+const book = cardBook({ ...content, powers: { ...content.powers, meteor_shower: { ...content.powers.meteor_shower!, ...ROI_POWER } } });
 const MILLI = 1000;
 
 interface BrainOptions {
@@ -129,7 +134,7 @@ describe('evolve (A7.2)', () => {
   it('casts a power whose ROI clears the bar before evolving (the new slot keeps at most 75%)', () => {
     // Four weakened Bonkers: Meteor Shower kills them (4 × 65 = 260 gold for 100 → ROI 26,000).
     const units = [500, 510, 520, 530].map((p) => unit(0, 'bonker', p, { hp: 5000 }));
-    const o = (tick: number) => ready(tick, { powerPpm: 1000000, gold: 1000 * MILLI, units, power: 'meteor_shower' });
+    const o = (tick: number) => ready(tick, { powerPpm: 1000000, gold: 1000 * MILLI, units, power: 'meteor_shower', powerCost: ROI_POWER.cost });
     const { brain } = brainFor();
     const t = decide(brain, o(40), { history: [o(10)] });
     expect(t.action?.kind).toBe('power');
@@ -143,7 +148,7 @@ describe('power (A2.9.9)', () => {
   const gold = 1000 * MILLI;
   /** Bonkers on the bot's half; `hp` in centi (a 100 HP Bonker dies to 140, a 400 HP one takes chip damage). */
   const crowd = (n: number, hp = 10000, at = 500) => Array.from({ length: n }, (_, i) => unit(0, 'bonker', at + i * 10, { hp }));
-  const obs = (units: ReturnType<typeof unit>[], o: Parameters<typeof observation>[0] = {}) => observation({ powerPpm: 1000000, power, gold, units, ...o });
+  const obs = (units: ReturnType<typeof unit>[], o: Parameters<typeof observation>[0] = {}) => observation({ powerPpm: 1000000, power, powerCost: ROI_POWER.cost, gold, units, ...o });
   const castsAt = (tier: number, o: Observation, extra: Partial<TierParams> = {}, general?: string) =>
     kinds(decide(brainFor({ tier, tierOverride: extra, ...(general ? { general } : {}) }).brain, o)).includes('power');
 
@@ -406,6 +411,23 @@ describe('push gate, banking and stance (A7.2)', () => {
     const defending = decide(b2, observation({ tick: 400, foe: foeTurret, units: [unit(0, 'bonker', 500)] }));
     expect(defending.pushOk).toBe(false);
     expect(defending.banking).toBe(false);
+  });
+
+  it('counts a held enemy line in D, ×1.5 once it has been held for 20 s (a set ball, the flag_ball row)', () => {
+    // Two Tuskbacks (150 each) holding in their own half, short of their gate zone (A18.12 flag_ball).
+    const held = (tick: number, stance: 'hold' | 'charge' = 'hold') =>
+      observation({ tick, foe: { stance, holdP: 800 }, units: [unit(0, 'tuskback', 1200), unit(0, 'tuskback', 1250)] });
+    const { brain } = brainFor({ tier: 7 });
+    expect(decide(brain, held(1000)).defence).toBe(300);
+    expect(decide(brain, held(1300)).defence).toBe(300);
+    expect(decide(brain, held(1400)).defence).toBe(450);
+    // A charge in between starts the count again (a bot's pause between waves is not a ball).
+    decide(brain, held(1420, 'charge'));
+    expect(decide(brain, held(1440)).defence).toBe(300);
+    // Below tier VI the held line is not read at all.
+    const { brain: low } = brainFor({ tier: 5 });
+    decide(low, held(1000));
+    expect(decide(low, held(1400)).defence).toBe(0);
   });
 
   it('holds without turrets against a one-type army of 450+ gold when weaker (A17.13), not against a mix', () => {

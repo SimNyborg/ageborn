@@ -68,11 +68,11 @@ describe('A17 content runs on the sim', () => {
     };
     const full = walk('full', 6);
     expect(full.s.sides[0].ageIndex).toBe(6);
-    // Base max HP follows the Future age (A2.2: 33,200)
-    expect(full.s.sides[0].baseMaxHp).toBe(3320000);
+    // Base max HP follows the Future age (A2.2: 8,000 × P = 26,560 since the MVP balance pass; 33,200 before)
+    expect(full.s.sides[0].baseMaxHp).toBe(2656000);
     const late = walk('full.bronze', 6);
-    // Base max HP follows the Cosmic age (A17.8: 44,800)
-    expect(late.s.sides[0].baseMaxHp).toBe(4480000);
+    // Base max HP follows the Cosmic age (A17.8 P 4.48: 35,840 since the MVP balance pass; 44,800 before)
+    expect(late.s.sides[0].baseMaxHp).toBe(3584000);
   });
 });
 
@@ -102,7 +102,7 @@ describe('A17.15 first-time combinations of existing kinds', () => {
     expect(stuns.every((s) => s.ms === 500)).toBe(true);
   });
 
-  it('Bronze Colossus: its melee splash slows every enemy hit 20% for 1.5 s; on death it bursts for 160 r70 on ground enemies', () => {
+  it('Bronze Colossus: its melee splash slows every enemy hit 20% for 1.5 s; on death it bursts for 100 r70 on ground enemies', () => {
     const sim = lane({ age: 'bronze' });
     const ids = foes(sim, 'hoplite', [150, 160, 170]);
     const c = devSpawn(sim, 0, 'bronze_colossus', { p: 100 });
@@ -123,8 +123,8 @@ describe('A17.15 first-time combinations of existing kinds', () => {
     const burst = ofKind(stepN(sim2, 1), 'hit').filter((h) => h.sourceId === col.id && h.sourceKind === 'ability');
     expect(burst.map((h) => h.targetId).sort()).toEqual([...near].sort());
     expect(burst.some((h) => h.targetId === air)).toBe(false);
-    // 160 blast, no area falloff (death explosions are exempt from the area rule)
-    expect(burst.every((h) => h.damage === 16000)).toBe(true);
+    // 100 blast (160 before the MVP balance pass), no area falloff (death explosions are exempt from the area rule)
+    expect(burst.every((h) => h.damage === 10000)).toBe(true);
   });
 
   it('Harpoon Gunner: Reel In pulls the target 25 lu toward the ranged gunner on the first hit only', () => {
@@ -172,7 +172,7 @@ describe('A17.15 first-time combinations of existing kinds', () => {
     expect(call).toBeDefined();
     const strike = ofKind(ev, 'hit').filter((h) => h.sourceId === m.id && h.sourceKind === 'ability');
     expect(strike[0]?.targetId).toBe(inReach);
-    expect(strike[0]?.damage).toBe(30000);
+    expect(strike[0]?.damage).toBe(15000); // 150 since the MVP balance pass (300 before)
     expect((strike[0]?.tick ?? 0) - (call?.tick ?? 0)).toBe(20);
 
     // Beyond 400 lu of the Mothership's x: no call-in

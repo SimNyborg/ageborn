@@ -27,7 +27,7 @@ describe('power damage per unit (A2.9)', () => {
     expect(per('stampede')).toBe(150);
     expect(per('meteor_shower')).toBe(140);
     expect(per('arrow_storm')).toBeCloseTo(195.6, 1);
-    expect(per('broadside')).toBe(240);
+    expect(per('broadside')).toBe(270); // 135 per ball since the MVP balance pass (was 120)
     expect(per('carpet_bomber')).toBe(360);
     expect(per('orbital_lance')).toBe(450);
   });

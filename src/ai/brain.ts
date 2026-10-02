@@ -243,6 +243,12 @@ const BALL_MIN_VALUE = 300;
 const BALL_MEMORY_TICKS = 30 * TICKS_PER_SECOND;
 /** ... and met at home unless the bot's army is this much bigger (bp). */
 const BALL_OUTMATCH_BP = 13000;
+/**
+ * A line the enemy has held this long is a set ball (a flag ball, not a pause between waves): it has
+ * massed in place and fights on its own ground, so it counts this much over its card value (bp).
+ */
+const BALL_SET_TICKS = 20 * TICKS_PER_SECOND;
+const BALL_SET_BP = 15000;
 /** Holding on a failed push gate needs a Hold weight of at least 20 (m_hold 0.7). */
 const HOLD_ON_GATE_BP = 7000;
 /** Attack clock: after 60 s without passing mid-lane, train scores +10% per 5 s (capped at ×3). */
@@ -391,6 +397,23 @@ export function heldLineValue(v: View, mid: number, to: number): number {
   return sum;
 }
 
+/**
+ * The base HP (bp) the falling gate could take at once (A17.3): the max HP of the own trained ground units
+ * standing within `gateFall` of the own gate, as a share of the base's max HP.
+ */
+export function gateFallRiskBp(v: View, book: CardBook): number {
+  const e = book.econ;
+  const baseHp = v.age ? (book.content.ages[v.age]?.baseHp ?? 0) * 100 : 0;
+  if (e.gateFall <= 0 || e.gateFallHpBp <= 0 || baseHp <= 0) return 0;
+  let hp = 0;
+  for (const u of v.mine) if (!u.air && !u.summoned && u.p <= e.gateFall) hp += u.maxHp;
+  // It is base damage, so Siege's multiplier applies (the Last Base Standing step's when there is one).
+  const esc = v.obs.escalation;
+  const step = esc && esc.step > 0 ? esc.steps[esc.step - 1] : undefined;
+  const siegeBp = v.phase !== 'siege' ? BP : step ? step.baseDamageBp : book.content.economy.siege.baseDamageBp;
+  return Math.trunc((Math.trunc((Math.trunc((hp * e.gateFallHpBp) / BP) * siegeBp) / BP) * BP) / baseHp);
+}
+
 /** When income research is worth buying on a quiet lane (see TREASURY_BEFORE_TICKS). */
 function incomeTiming(clock: MatchClock): { before: number; paybackBy: number } {
   const od = clock.overdrive;
@@ -427,6 +450,8 @@ export class Brain {
   private campAge: number | null = null;
   /** When a held enemy line worth {@link BALL_MIN_VALUE} or more was last seen (`readsHeldLine`). */
   private ballSeenTick = -1000000;
+  /** When the enemy's current Hold began (null while it is not Holding). */
+  private foeHoldSince: number | null = null;
   /** Own camp ids already seen (`trackCamps`). */
   private readonly seenCamps = new Set<number>();
   private readonly opening: OpeningPlan;
@@ -468,7 +493,11 @@ export class Brain {
     // short of the gate zone also stands between the wave and the gate (the `flag_ball` row, A18.12).
     // It only holds the charge back: the bank is sized on the fixed defence (an army that can march at any
     // moment is met by training up at home, not by banking), and the pop cap goes only at parity with it.
-    const heldLine = t.readsHeldLine && obs.foe.stance === 'hold' ? heldLineValue(v, e.midLane, LANE_MLU - GATE_ZONE) : 0;
+    if (obs.foe.stance !== 'hold') this.foeHoldSince = null;
+    else if (this.foeHoldSince === null) this.foeHoldSince = v.now;
+    const heldRaw = t.readsHeldLine && obs.foe.stance === 'hold' ? heldLineValue(v, e.midLane, LANE_MLU - GATE_ZONE) : 0;
+    const setBall = this.foeHoldSince !== null && v.now - this.foeHoldSince >= BALL_SET_TICKS;
+    const heldLine = setBall ? mulBp(heldRaw, BALL_SET_BP) : heldRaw;
     const fixedDefence = gateUnits + TURRET_DEFENCE * foeTurrets + fortDefence(v.foeForts, v.foeTraps);
     const defence = fixedDefence + heldLine;
     // Attack clock (A7.2): after 60 s without a ground unit past mid-lane, train scores rise 10% per 5 s,
@@ -520,7 +549,7 @@ export class Brain {
     const waveGold = mulBp(t.waveCommit ? mulBp(gateBp, WAVE_MARGIN_BP) : gateBp, fixedDefence) - v.myArmy;
     // Facing a held line it cannot beat yet: hold inside the turret cover and train up to meet its charge.
     const facingBall = heldLine > 0 && gateFailed;
-    if (heldLine >= BALL_MIN_VALUE) this.ballSeenTick = v.now;
+    if (heldRaw >= BALL_MIN_VALUE) this.ballSeenTick = v.now;
     // The ball released (its army comes into the bot's half within 30 s of holding its line): unless
     // clearly stronger, meet it inside the turret cover instead of charging out into the open field.
     const ballCharging = foeOnMyHalf && v.now - this.ballSeenTick <= BALL_MEMORY_TICKS && v.myArmy * BP < BALL_OUTMATCH_BP * v.foeArmy;
@@ -775,7 +804,9 @@ export class Brain {
 
     // Last Stand. It fires on its own at 10%; if the base may reach that before the command runs, the
     // command would find it already charging, so the bot leaves it to the automatic trigger.
-    const lsMargin = 2 * mem.worstBaseLoss(t.snapshotDelayTicks + 2) + LAST_STAND_MARGIN_BP;
+    // In Overdrive and Siege the falling gate can take a chunk at once: every own unit that dies near the gate
+    // costs the base its max HP, so those units count in the margin too (MVP balance pass: 300 lu).
+    const lsMargin = 2 * mem.worstBaseLoss(t.snapshotDelayTicks + 2) + LAST_STAND_MARGIN_BP + (hot ? gateFallRiskBp(v, book) : 0);
     if (v.lastStandArmed && !this.opening.autoLastStand && v.baseHpBp - lsMargin > e.lastStandAutoBp) {
       const near = v.foes.filter((u) => u.p <= e.lastStandRadius).length;
       if (near >= LAST_STAND_FOES) add({ kind: 'lastStand' }, SCORE.lastStand);

@@ -79,7 +79,8 @@ describe('cards (A6.6 upgrades, A5.1 level scaling)', () => {
     expect(power.needed).toBeNull();
     // The power tile (A2.9.10): its slot, reach glyph and reload, and the gold cost as its price.
     expect(power.power).toEqual({ slot: 'home', reach: 'house', reloadS: 40 });
-    expect(power.cost).toBe(100);
+    expect(power.cost).toBe(content.powers.meteor_shower?.cost);
+    expect(power.cost).toBe(125); // the MVP power trim (2026-10-01): Home bombards and sweeps cost 125
   });
 
   it('upgrade state needs copies and Amber', () => {

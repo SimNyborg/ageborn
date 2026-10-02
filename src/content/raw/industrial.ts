@@ -112,14 +112,14 @@ export const industrial: RawAgeTables = {
       nameKey: 'card.sapper.name', descKey: 'card.sapper.desc', strongVs: [], weakVs: [],
     },
     {
-      // Main gun 130 splash r40 / 2.2 s at range 160 (G). Two sponson gunners (riders) each shoot 10 / 0.5 s
+      // Main gun 85 splash r40 / 2.2 s at range 160 (G). Two sponson gunners (riders) each shoot 6 / 0.5 s
       // at range 160 (G+A); on death the crew bails out as 2 Carbineers (summoned)
       id: 'land_dreadnought', kind: 'unit', age: 'industrial', rarity: 'legendary', role: 'siegeHeavy', group: 'legendary',
-      cost: 350, trainMs: 7000, pop: 14, hp: 3600, speed: 35, size: 'huge',
+      cost: 350, trainMs: 7000, pop: 14, hp: 1800, speed: 35, size: 'huge',
       tags: ['armored', 'mech', 'ranged', 'legendary', 'ground'],
       attacks: [
         {
-          damage: 130, intervalMs: 2200, windupPct: 50, range: 160, hitsGround: true, hitsAir: false,
+          damage: 85, intervalMs: 2200, windupPct: 50, range: 160, hitsGround: true, hitsAir: false,
           projectile: { speed: 1200, visualId: 'proj.shell' },
           dmgType: 'blast', sfx: 'shot_cannon', splashRadius: 40,
         },
@@ -129,7 +129,7 @@ export const industrial: RawAgeTables = {
           kind: 'riders',
           count: 2,
           attack: {
-            damage: 10, intervalMs: 500, windupPct: 50, range: 160, hitsGround: true, hitsAir: true,
+            damage: 6, intervalMs: 500, windupPct: 50, range: 160, hitsGround: true, hitsAir: true,
             projectile: { speed: 1500, visualId: 'proj.bullet' },
             dmgType: 'bullet', sfx: 'shot_gatling',
           },
@@ -197,7 +197,7 @@ export const industrialPowers: readonly PowerDef[] = [
   {
     // Starter. A gun line sweeps a 400 lu zone over 1.5 s: 280 once, ground only. Per unit 280: 85% / 24%
     id: 'gun_line', kind: 'power', age: 'industrial', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    source: 'starter', cost: 125, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: { kind: 'sweep', zone: 400, durationMs: 1500, damage: 280, width: 40, hitsAir: false },
     visualId: 'power.gun_line', sfx: 'pw_gunline', nameKey: 'card.gun_line.name', descKey: 'card.gun_line.desc',
   },
@@ -205,7 +205,7 @@ export const industrialPowers: readonly PowerDef[] = [
     // Road 350. 10 bombs along a 480 lu line over 2.0 s (no jitter); each 150, splash r45; ground only
     // (centre ≤ 760). Per unit ~281: 85% / 24%
     id: 'zeppelin_raid', kind: 'power', age: 'industrial', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare',
-    source: 'road', road: 350, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
+    source: 'road', road: 350, cost: 125, reloadMs: 40000, telegraphMs: 1000, maxTargets: 3,
     effect: {
       kind: 'barrage', count: 10, durationMs: 2000, zone: 480, damage: 150, radius: 45,
       jitter: 0, hitsAir: false, pattern: 'line',
@@ -227,7 +227,7 @@ export const industrialPowers: readonly PowerDef[] = [
     // Starter. 3 runaway armoured engines, 0.5 s apart, run 600 lu at 450 lu/s from your front; 130 and
     // 50 lu knockback; max 2 hits; ground only. Per unit ≤ 260: 79% / 22% (Riveter / Steam Golem)
     id: 'iron_horse', kind: 'power', age: 'industrial', slot: 'field', reach: 'front', family: 'charge', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
+    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
     effect: {
       kind: 'stampede', runners: 3, spacingMs: 500, distance: 600, speed: 450,
       damage: 130, knockback: 50, maxHitsPerEnemy: 2,
@@ -236,17 +236,22 @@ export const industrialPowers: readonly PowerDef[] = [
   },
   {
     // War Path Industrial L7 (Road 1,350). One shell, 710, ground only, 2.0 s telegraph: 60% of H; the
-    // Sapper takes 355
+    // Sapper takes 355. 50 gold, reloads in 15 s (MVP balance pass; was 75 and 30 s)
     id: 'railway_gun', kind: 'power', age: 'industrial', slot: 'field', reach: 'anywhere', family: 'strike', rarity: 'epic',
-    source: 'warPath', warPathLevel: 7, road: 1350, cost: 75, reloadMs: 30000, telegraphMs: 2000, maxTargets: 1,
+    source: 'warPath', warPathLevel: 7, road: 1350, cost: 50, reloadMs: 15000, telegraphMs: 2000, maxTargets: 1,
     effect: { kind: 'strike', shots: 1, intervalMs: 0, damage: 710, hitsAir: false },
     visualId: 'power.railway_gun', sfx: 'pw_railgun', nameKey: 'card.railway_gun.name', descKey: 'card.railway_gun.desc',
   },
   {
-    // War Path Industrial L9 (Road 1,400). Your 8 frontmost units regenerate 35% of max HP over 4 s
+    // War Path Industrial L9 (Road 1,400). Your 8 frontmost units get a 110 shield for 6 s and regenerate 35% of
+    // max HP over 4 s; 75 gold, reloads in 30 s (MVP balance pass 2026-10-01: a pure heal at 125 gold and 45 s
+    // lost 9-15 points to Iron Horse whatever its numbers; shields + heals 68% of the Riveter, the A2.9.6 cap 70%)
     id: 'field_hospital', kind: 'power', age: 'industrial', slot: 'field', reach: 'army', family: 'mend', rarity: 'epic',
-    source: 'warPath', warPathLevel: 9, road: 1400, cost: 125, reloadMs: 45000, telegraphMs: 500, maxTargets: 8, aiValueBp: 7000,
-    effect: { kind: 'buffAll', maxTargets: 8, statuses: [{ kind: 'regen', magnitudeBp: 3500, durationMs: 4000 }] },
+    source: 'warPath', warPathLevel: 9, road: 1400, cost: 75, reloadMs: 30000, telegraphMs: 500, maxTargets: 8, aiValueBp: 7000,
+    effect: {
+      kind: 'buffAll', maxTargets: 8,
+      statuses: [{ kind: 'shield', magnitudeBp: 0, durationMs: 6000, amount: 110 }, { kind: 'regen', magnitudeBp: 3500, durationMs: 4000 }],
+    },
     visualId: 'power.field_hospital', sfx: 'pw_hospital', nameKey: 'card.field_hospital.name', descKey: 'card.field_hospital.desc',
   },
 ];

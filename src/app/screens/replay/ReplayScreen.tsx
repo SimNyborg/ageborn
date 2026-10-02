@@ -17,6 +17,7 @@ import { REPLAY_SPEEDS, ReplayPlayer } from '../../replayPlayer';
 import { useApp } from '../../ui/context';
 import './replay.css';
 import { Button } from '@/ui/components/Button';
+import { withoutAiPrefix } from '@/ui/components/format';
 
 const TICKS_PER_SECOND = 20;
 /** The controls fade out after this long without a pointer move or tap while the replay plays. */
@@ -185,7 +186,8 @@ export function ReplayScreen(p: { replay: ReplayDoc; onBack: () => void }) {
           <span class="ab-replay-names">
             <b class="ab-replay-me">{name(0)}</b>
             <span class="ab-replay-vs">{ui.t('app.vs')}</span>
-            <b class="ab-replay-foe">{name(1)}</b>
+            {/* The AI chip beside the name is the label, so the "AI · " prefix is dropped here (bug hunt #14). */}
+            <b class="ab-replay-foe">{p.replay.sides[1].isBot ? withoutAiPrefix(name(1)) : name(1)}</b>
             {p.replay.sides[1].isBot ? <span class="ab-chip ab-chip--ai ab-replay-ai">{ui.t('app.aiChip')}</span> : null}
           </span>
         </div>

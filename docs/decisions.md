@@ -1516,3 +1516,68 @@ From the audio/effects and performance audits. Gameplay timing unchanged (render
 ## Owner request 2026-10-01: many more collectibles
 
 After the MVP pass, keep expanding the collection (troops, powers, turrets, forts, skins) so there is something to collect for a long time. Plan: roughly double the roster, about 20 troops, 6 turrets, 8 powers and 6 forts per age plus at least 3 troop skins per age, built age by age (Stone first) with cartoon art, sound, AI support and per-card balance, then an economy re-tune so time-to-max stays on target.
+
+## MVP pass: balance (balance lead, 2026-10-01)
+
+From the balance audit (`scratchpad/mvp/audit-balance.md`): most even matches ended at the Final Bell, powers did too much of the killing, `flag_ball` broke its gate, six Legendaries and ten late powers sat far outside ±5, and bots used forts badly. Data first (content numbers), AI policy where a bot misused something. Work log, before/after tables and every lever tried: `scratchpad/mvp/balance.md`; raw runs in `scratchpad/mvp/lead/` (`final/` holds the gate runs on the shipped content). Content `9d1ccf1e` → `d20e8eb9`; `SIM_VERSION` and the goldens are untouched (the goldens play the frozen fixture).
+
+**What changed (content)**
+- **The power trim** (audit path A): every Home bombard and sweep costs 25 gold more (125) and hits one enemy fewer; every Field charge and front barrage hits one enemy fewer. Exceptions found by the gates: Strafing Run keeps 100 gold (at 125 the Modern lane row, mono Anti-heavy vs mono Heavy in `w1.modern`, fell from 100% to 0%), and Broadside and Point Defense Grid stay at 100 gold and cap 4 with 135 a hit (both lost 8-10 points to their starter).
+- **Base HP 8,000 × P** (was 10,000 × P). The schema rule is now "the same multiple of P in every age"; the frozen fixture keeps 10,000. Base time to kill 126 s → 63-103 s (target 40-60 s, still open: ×0.6 cut the Bell further but shortened the Full War median to 13:43 and match 1 more).
+- **The falling gate at 300 lu** (`economy.gateFall.lu`, was 120): in Overdrive and Siege a unit killed within 300 lu of its own gate costs its base its max HP. The strongest single Bell lever measured (tier V Short 25 → 9%, Standard 19 → 12.5% on top of the trim and base HP ×0.6); it needs no new rule, HUD or AI clock, unlike the rope.
+- **Legendaries** (per card vs baseline, tier V, n = 400): Bronze Colossus 1,700 HP, Molten Heart 100 (+14.2 → +1.2); Ursa Paladin 2,150 HP, a 2.0 s swing, a 35 shield (+8.8 → +1.6); Balloon Admiral 1,200 HP, bombs 85, crash 200 (+5.2 → +0.1); Land Dreadnought 1,800 HP, gun 85, riders 6 (+8.5 → +0.8); Behemoth Tank 2,500 HP, gun 130 every 3.5 s, MG 14 (+19.0 → +1.6); Chrono Titan 4,500 HP, 190 a swing, Time Stop every 20 s (+12.3 → +4.0); Mothership 2,100 HP, beam 40, Drone Strike 150 every 10 s (+26.0 → +1.9 at n = 800). HP cuts alone barely moved Ursa, the Behemoth and the Dreadnought (a useless 800 HP Behemoth reads −5, so the slot itself is worth about −4); attack speed and damage did.
+- **Powers**: the five War Path strikes (Hunter's Spear, Apollo's Arrow, Railway Gun, Sniper Team, Ion Cannon) cost 50 and reload in 15 s, and Sniper Team hits for 895 (65% of the Tankette) after a 1.0 s telegraph (Ion Cannon −20.5 → −2.6, Sniper Team −8.5 → −3.7); their damage is pinned at 55-65% of the Heavy (A2.9.6), so price and reload are the levers, and the schema allows strikes 50-150 gold and 15-60 s. Field Hospital 75 gold, 30 s, a 110 shield for 6 s on top of its 35% heal (a pure heal lost 9-15 points to Iron Horse whatever its numbers, −3.0 now); Royal Decree 75 gold, 30 s, +35% damage, +25% attack speed and +20% speed for 15 s (−9.3 → 0.0); Aegis 75 gold, 30 s, a 120 shield and +25% damage for 8 s; Medusa's Gaze 350 lu; Stasis Field 300 lu and 3 s; Horse Artillery 115 a shell (cap 4 from the trim; −7.0 → −1.4); Singularity 100 gold, pull 40%, 27 a pulse, snare 50% (it beat Starfall by 7; at cap 4 or 45 s it failed its control budget or stayed +6). Every static family budget passes.
+- **Camps**: levies 35% of the age's Infantry Common (was 30%: camps sat 6-7 points under the wall in Bronze and Gunpowder; mean camp delta −2.2 → +0.3).
+- **Match 1** ends 14 s sooner (Grogg falls at 2:10, was 2:24; the Future evolve at 2:06): `MATCH1_TIMING` is retimed as its test prescribes, and the A8 order holds.
+- **Strings**: the eight camp cards and the camp tip said "every 8 s, two at most" (data: every 10 s, one at a time since the fort review fixes); the power and Legendary descriptions follow the new caps, timers and buffs.
+
+**What changed (AI)**
+- **A set ball** (`brain.ts`): a held enemy line that has held for 20 s counts ×1.5 in the push gate's D. `flag_ball` 45 / 47% → **29.3 / 13.0%** (Short / Standard, n = 200, gate ≤ 45%); mirrors unchanged (a bot never holds 20 s between waves). Rejected: ×1.3-×1.5 on every held line (the mirror's Short Bell +6 points), reading the enemy's guard research (a Short War flag ball owns none), the 700 flag cap and smaller guard auras (the audit: 59-63%).
+- **Fort placement** (`forts.ts`, measured earlier in the pass): walls, towers and traps go up once the wave is in the bot's half (`FORT_APPROACH` 0, was 500 lu: half the walls decayed unhit), and a camp only joins a push already worth 1.5× the enemy army (`CAMP_AHEAD_BP`; 1.2× read 43.8% in Standard War on the final content).
+- **Last Stand margin** (`brain.ts`): in Overdrive and Siege the margin adds the falling-gate risk (own units within 300 lu of the gate, at the Siege multiplier), so a manual Last Stand never meets an automatic one (`lastStandNotArmed` once in 100 tier VII-III Full Wars).
+
+**Measured on the shipped content** (`lead/final`, `lead/final2`; bots carry their Fort card; n = 400 per format unless noted)
+
+| Row (Short / Standard / Full) | Before | After |
+|---|---|---|
+| Final Bell, tier V mirror | 38.7 / 42.7 / 21.3% | **14.8 / 14.0 / 1.8%** (target ≤ 20%) |
+| Final Bell, tier VII mirror (release row; target 10 / 8 / 5%) | 48.0 / 57.3 / 32.3% | **23.8 / 8.8 / 3.8%** |
+| Draws, tier VII mirror | 15.3 / 32.3 / 20.0% | 9.0 / 2.8 / 1.5% |
+| Medians, tier VII mirror (targets 7:00 / 10:30 / 15:00) | 8:27 / 12:30 / 16:28 | 7:49 / 10:52 / 15:14 |
+| Medians, tier V mirror | 8:09 / 12:09 / 16:07 | 7:27 / 10:26 / 14:53 |
+| Balanced-mirror tool (tier V, starters, no forts, n = 200): Bell; 80% bands | 46 / 42 / 16.5%; 97.5 / 78 / 46% | 15.0 / 17.5 / 3.5%; 95.5 / 68 / 55% |
+| Power share of enemy value killed (target 5-12%) | 19.9 / 22.4 / 21.1% | 17.9 / 19.7 / 17.4% |
+| One cast's share of a big army (p50, target ≤ 40%) | 46.7 / 46.9 / 45.0% | 36.7 / 40.0 / 33.3% |
+| Base time to kill (target 40-60 s) | 126 s | 63-103 s |
+| `flag_ball` vs tier VII (≤ 45%, n = 200) | 45.0 / 47.0% | 29.3 / 13.0% |
+| `fallback_turtle` vs tier VII (n = 200) | 7.0 / 51.0% (35 / 90% at the Bell) | 0 / 0% (6 / 10% at the Bell) |
+| `no_power` vs Balanced (20-40%) | 32.0 / 27.0% | 39.5 / 38.0% |
+| Last Base Standing, tier VII mirror (n = 80) | median 19:53, 32.5-35% in Crumble | median 16:13, p90 19:33, longest 23:54, 0 past 25:44, 3.8% in Crumble, 0 draws |
+| Per card (n = 400; reruns at n = 800 where shipped numbers changed) | 7 Legendaries +5.2 to +26, 10 powers −5 to −20.5 | every unit and power within ±5 except the Mammoth's empty-slot row (−5.0) |
+| Fort AI value, camps (Standard) | 40.0% | 46.6% (walls, towers, traps 50.3-53.3% in Standard, 47.4-49.8% in Short) |
+
+
+**Still open (for the lead and the owner)**
+ - **Tier VII Short War Bell 23.8%** (target 10%). Its Siege lasts 2:00. The audit's rope (`FormatDef.escalation` in the timed formats: the side pushed back into its own half loses base HP) measured 0-14% but needs HUD, AI-clock and Result work and the owner's yes. Next data levers: the Short War's Siege 30 s earlier, the falling gate at 400 lu (tier V 9 / 9.5%).
+ - **Power share of kills 17-20%** (target 5-12%) while damaging casts return 0.97-1.04 per gold (target 1.2-2): the two A2.9.12 rows pull opposite ways and want a design look, not another trim.
+ - **Base time to kill 63-103 s** (target 40-60 s); **age stays 1:56-2:23** after the first (A18.3.1: 1:30-2:05; the audit's XP ×0.85 lever); Standard and Full 80% bands 68 / 55% at tier V (the tier VII mirror's spread is narrower).
+ - **`no_research` wins 41% in Short War** (gate ≤ 30%; 26.5% before): shorter Short Wars pay research back later than they last. Standard 23.5% passes. `few_then_evolve` vs Normal 11.5% in Short (≤ 10%; 11% before).
+ - **Turtles win 0-5%** against a 35-45% band: the audit's proposal stands, make the band a ceiling (A2.14, A18.12).
+ - **Last Base Standing median 16:13** against 17:00-23:00: every war still ends (longest 23:54, 0 past 25:44), now mostly in Siege I-II instead of Crumble; re-baseline the band or move Siege II-III later.
+ - **Mammoth Matriarch**: never trained in the standard per-card test (350 gold in a 62-79 s Stone stay), so its −5.0 is the missing Drum Shaman; in a Stone-only war it reads **+46** (n = 400). Needs a design call (a cheaper Stone Legendary, or Legendaries out of one-age windows), and the per-card tool should test first-age cards where they are played.
+ - **Turret per-card rows measure nothing** (0.0 ± 2): the bot never builds the second mount. A WP12 tool change (force the second mount in the test plan).
+ - **Cosmic forts** vs the wall: camp +7.2, trap +6.5, tower −5.1; **camp AI value** 46.6% in Standard (floor 50%).
+ - Two levers need the renderer before they can ship: the siege crowd (`gateCrowdLu` 600: tier V 17 / 17.5% on top of the trim and base ×0.6; it piles a whole army on one spot where `render/depth.ts` spreads only the last 90 lu) and front width 4 (no fourth front row).
+ - First-mover at tier VII reads 55% in the lab mirrors (Short and Standard, n = 400, ±5); the gate row (tier V tool) passes at 53.0 / 51.8%.
+
+
+## MVP pass: release check (release checker, 2026-10-01)
+
+Re-ran the new-player (match 1 with the Hold trap, capsule 1, match 2, capsule 2, first upgrade, first Ladder match) and returning-player (Arena 2 save: Home, Modes, Army, Capsules, a Ladder battle with emote picker, Pause and a reload after 1:00, a full Ladder win, replay, Daily plate) playthroughs on 844x390 and 1280x720 after all three MVP tracks. Fixes:
+
+- **Arrow Storm beat pays its new price.** The balance pass raised Arrow Storm to 125 gold; the match 1 script still granted 100 (`MATCH1_POWER_GOLD`), so the "free" first cast cost the player 25. Now 125, and a test pins it to the content price. Match 1 retiming test still passes.
+- **"AI · " beside an AI chip** is also dropped on the Home opponent plate (`PlateFrame`, whenever it shows the chip) and in the replay badge; procedural Commanders read "AI · Tessric Boneshield" next to the chip there.
+- **HUD foe name on phones**: the condense-to-fit ran once, before the research rings took their space, and a 125 px name had 53 px (below the 62% floor), so it was cut mid-word. `useFitLabel` now refits when its box changes size, and when even the condensed name does not fit, the nameplate shows the given name only (whole words, never cut). The full name stays on the VS screen, Pause and Result.
+- **DESIGN A6.3 "Void matches"** now names the exception added by bug hunt #9 (a Ladder battle left after 1:00 counts as a Retreat).
+
+Measured: match 2 headless on the shipped content (starter plan L1 vs Pip tier 0, Rookie 5,000, 40 seeds): random spam 100% (median 3:33), power spam 100%, "a few, then evolve" 93% (was 100% before the balance pass). In the browser a slow scripted tapper (13-16 units in 7 minutes) lost match 2 twice; an active random tapper (37 units) won in 6:08. Not changed: replay "Back" and Esc go Home, not back to the Result (existing behaviour); the "Drag the flag" bubble can sit half off the left edge when the flag is at the screen edge.

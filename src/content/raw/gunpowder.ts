@@ -109,22 +109,22 @@ export const gunpowder: RawAgeTables = {
       nameKey: 'card.bronze_cannon.name', descKey: 'card.bronze_cannon.desc', strongVs: [], weakVs: [],
     },
     {
-      // Bomber: 110 splash r50 / 1.6 s on ground enemies within ±40 lu below; bombs the base at the
-      // enemy gate (110 per bomb); on death crashes for 250 splash r70 on ground enemies
+      // Bomber: 85 splash r50 / 1.6 s on ground enemies within ±40 lu below; bombs the base at the
+      // enemy gate (110 per bomb); on death crashes for 200 splash r70 on ground enemies
       id: 'balloon_admiral', kind: 'unit', age: 'gunpowder', rarity: 'legendary', role: 'airBomber', group: 'legendary',
-      cost: 350, trainMs: 7000, pop: 14, hp: 1500, speed: 45, size: 'huge',
+      cost: 350, trainMs: 7000, pop: 14, hp: 1200, speed: 45, size: 'huge',
       tags: ['air', 'legendary'],
       attacks: [
         {
           // range = the ±40 lu drop window
-          damage: 110, vsBaseDamage: 110, intervalMs: 1600, windupPct: 50, range: 40, hitsGround: true, hitsAir: false,
+          damage: 85, vsBaseDamage: 110, intervalMs: 1600, windupPct: 50, range: 40, hitsGround: true, hitsAir: false,
           projectile: { speed: 450, visualId: 'proj.bomb' },
           dmgType: 'blast', sfx: 'bomb_whistle', splashRadius: 50,
         },
       ],
       abilities: [
         { kind: 'bomber', dropWindow: 40 },
-        { kind: 'onDeathExplode', damage: 250, radius: 70 },
+        { kind: 'onDeathExplode', damage: 200, radius: 70 },
       ],
       visualId: 'unit.balloon_admiral', sfx: { spawn: 'spawn_legendary', die: 'die_bio' },
       nameKey: 'card.balloon_admiral.name', descKey: 'card.balloon_admiral.desc', strongVs: [], weakVs: [],

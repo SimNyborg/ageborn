@@ -173,6 +173,12 @@ export interface CardBook {
     fort: FortPadRules | null;
     /** The fort slot recharge, ticks (A16.14.2). */
     fortRechargeTicks: number;
+    /**
+     * The falling gate (A17.3, `economy.gateFall`): in Overdrive and Siege an own unit killed this close to
+     * the own gate (milli-lu; 0 when off) costs the base this share of its max HP (bp).
+     */
+    gateFall: number;
+    gateFallHpBp: number;
   };
 }
 
@@ -404,6 +410,8 @@ export function cardBook(content: CompiledContent): CardBook {
       emoteCooldownTicks: msToTicks(e.emoteCooldownMs),
       fort: fortPadRules(e, MILLI),
       fortRechargeTicks: fortEcon ? msToTicks(fortEcon.rechargeMs) : 0,
+      gateFall: (e.gateFall?.lu ?? 0) * MILLI,
+      gateFallHpBp: e.gateFall?.hpBp ?? 0,
     },
   };
   books.set(content, book);

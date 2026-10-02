@@ -434,7 +434,7 @@ export function createCtx(cfg: MatchConfig): Ctx {
   };
 }
 
-/** Base max HP (centi) of a side in an age: 10,000 × P, plus its `sideMods.baseHpBp` (A2.2, A18.11). */
+/** Base max HP (centi) of a side in an age: the age's `baseHp` (8,000 × P since the MVP balance pass), plus its `sideMods.baseHpBp` (A2.2, A18.11). */
 export function baseMaxHpFor(rules: SimRules, cfg: MatchConfig, side: Side, age: AgeId): number {
   const base = rules.baseHp[age] * 100;
   const bp = cfg.sides[side].sideMods?.baseHpBp ?? 0;

@@ -142,9 +142,9 @@ const TUSKBACK = 1 as const;
 /**
  * Retimed from the scripted run (A8 targets in brackets). With the Tutorial thresholds (610 / 580 /
  * 390 / 900 XP since the A18.3.2 XP sources; 680 / 690 / 520 / 700 before) and Grogg's base at 90% (content, `docs/requests/wp1-tutorial-pacing.md`) the match
- * follows the A8 draft: Medieval at ~0:57, Gunpowder ~1:27, Modern ~1:46, Future ~2:19 and Grogg
- * falls at ~2:25 (A17's longer lane with faster walking and the three-wide front end it about 35 s
- * before A8's 3:00). Grogg sends three dummies before his Tuskback,
+ * follows the A8 draft: Medieval at ~0:57, Gunpowder ~1:24, Modern ~1:43, Future ~2:06 and Grogg
+ * falls at ~2:10 (A17's longer lane with faster walking and the three-wide front end it about 35 s
+ * before A8's 3:00, and base HP 8,000 × P, MVP balance pass 2026-10-01, another 14 s). Grogg sends three dummies before his Tuskback,
  * so the four Stone lessons (Bonker, first kill, Pebbler, Rock Tosser) come before the first evolve.
  */
 function groggSends(): GroggSend[] {
@@ -208,8 +208,11 @@ export const MATCH1_GROGG_LEVELS: Readonly<Record<CardId, number>> = { tuskback:
  * on evolve) would only finish just before Gunpowder, so the script fills it.
  */
 export const MATCH1_POWER_TICK = sec(64);
-/** Gold the match 1 script grants with the Arrow Storm beat: its price, so the beat is free (A2.9.10). */
-export const MATCH1_POWER_GOLD = 100;
+/**
+ * Gold the match 1 script grants with the Arrow Storm beat: its price, so the beat is free (A2.9.10).
+ * MVP balance pass: Arrow Storm costs 125 (was 100); a test pins this to the content price.
+ */
+export const MATCH1_POWER_GOLD = 125;
 
 /** Match 1 prompts Charge after this long off Charge (the stall guard). */
 export const MATCH1_STALL_TICKS = sec(10);
@@ -283,10 +286,10 @@ export const MATCH1_TIMING = {
   evolveReady: 1048, // 0:52.4 [0:50]
   medieval: 1131, // 0:56.6 [0:55]
   arrowStormReady: 1280, // 1:04.0 [1:20]
-  gunpowder: 1731, // 1:26.6 [1:30]; the Spear Hunter's 100 gold (review 2026-09-30) speeds the middle ages
-  modern: 2121, // 1:46.1 [2:00]
-  future: 2781, // 2:19.1 [2:35]; the Spear Hunter beat (owner feedback 2026-09-29, review 2026-09-30)
-  groggFalls: 2902, // 2:25.1 [3:00]; the 2,000 lu lane and three-wide front (SIM 2.0.0) end it sooner; A18 XP (SIM 3.0.0); the Spear Hunter beat; his level-10 Tuskbacks keep it 6 s after Future
+  gunpowder: 1671, // 1:23.6 [1:30]; the Spear Hunter's 100 gold (review 2026-09-30) speeds the middle ages; base HP 8,000 × P (MVP balance pass) pays base-damage XP sooner
+  modern: 2061, // 1:43.1 [2:00]
+  future: 2511, // 2:05.6 [2:35]; the Spear Hunter beat (owner feedback 2026-09-29, review 2026-09-30); MVP balance pass: 2:19.1 before base HP 8,000 × P
+  groggFalls: 2600, // 2:10.0 [3:00]; 2:24.3 before the MVP balance pass (base HP 8,000 × P); the 2,000 lu lane and three-wide front (SIM 2.0.0) end it sooner; A18 XP (SIM 3.0.0); the Spear Hunter beat; his level-10 Tuskbacks keep it 4-6 s after Future
 } as const;
 
 /** How far a replayed beat may drift from `MATCH1_TIMING` before the retiming test fails. */

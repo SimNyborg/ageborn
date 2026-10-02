@@ -12,6 +12,11 @@
  * Damage, heals and shields scale with the caster's loadout multiplier (A2.9.6).
  *
  * "Per unit" comments are the A2.9.6 coverage estimate against the age's L1 Infantry and Heavy Common.
+ *
+ * MVP balance pass (2026-10-01, the power trim): every Home bombard and sweep costs 25 gold more and hits
+ * one enemy fewer, and every Field charge and front barrage hits one enemy fewer. Powers took 16-22% of the
+ * enemy value killed (target 5-12%) and one cast touched 43-48% of a big army (target ≤ 40%), so a
+ * defender wiped each wave and even mirrors stalled into the Final Bell.
  */
 import type { PowerDef } from '@/contracts/content';
 
@@ -19,9 +24,9 @@ export const powers: readonly PowerDef[] = [
   // ---- Stone (P 1.00; I 160, H 560; Epic Sabertooth 380) ----
   {
     // Starter. A rockslide sweeps a 450 lu zone over 1.5 s: 150 once per ground enemy touched (±20 lu),
-    // cap 5. Per unit 150: 94% / 27% (fix pass 2026-09-30: 130 killed nothing in 43% of casts)
+    // cap 4 (5 before the MVP trim). Per unit 150: 94% / 27% (fix pass 2026-09-30: 130 killed nothing in 43% of casts)
     id: 'rockslide', kind: 'power', age: 'stone', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    source: 'starter', cost: 125, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: { kind: 'sweep', zone: 450, durationMs: 1500, damage: 150, width: 40, hitsAir: false },
     visualId: 'power.rockslide', sfx: 'pw_rockslide', nameKey: 'card.rockslide.name', descKey: 'card.rockslide.desc',
   },
@@ -29,7 +34,7 @@ export const powers: readonly PowerDef[] = [
     // Road 100. 14 meteors over 3.0 s across a 400 lu zone (even, ±20 lu jitter); each 50, splash r40;
     // ground only. Per unit ~140: 88% / 25%
     id: 'meteor_shower', kind: 'power', age: 'stone', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare',
-    source: 'road', road: 100, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
+    source: 'road', road: 100, cost: 125, reloadMs: 40000, telegraphMs: 1000, maxTargets: 3,
     effect: {
       kind: 'barrage', count: 14, durationMs: 3000, zone: 400, damage: 50, radius: 40,
       jitter: 20, hitsAir: false, pattern: 'even',
@@ -52,7 +57,7 @@ export const powers: readonly PowerDef[] = [
     // `battle.stampedeFallbackP`); 50 and 40 lu knockback per hit; max 3 hits per enemy; ground only.
     // Per unit ≤ 150: 94% / 27%
     id: 'stampede', kind: 'power', age: 'stone', slot: 'field', reach: 'front', family: 'charge', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
+    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
     effect: {
       kind: 'stampede', runners: 5, spacingMs: 400, distance: 500, speed: 400,
       damage: 50, knockback: 40, maxHitsPerEnemy: 3,
@@ -74,19 +79,20 @@ export const powers: readonly PowerDef[] = [
   },
   {
     // War Path Stone L9 (Road 650). One spear, 340, ground and air: 61% of H; kills a Pebbler, Drum
-    // Shaman or Spear Hunter; the Sabertooth takes 170 (Epics take 50% from strikes)
+    // Shaman or Spear Hunter; the Sabertooth takes 170 (Epics take 50% from strikes). 50 gold, reloads in
+    // 15 s (MVP balance pass; was 75 and 30 s)
     id: 'hunters_spear', kind: 'power', age: 'stone', slot: 'field', reach: 'anywhere', family: 'strike', rarity: 'epic',
-    source: 'warPath', warPathLevel: 9, road: 650, cost: 75, reloadMs: 30000, telegraphMs: 1500, maxTargets: 1,
+    source: 'warPath', warPathLevel: 9, road: 650, cost: 50, reloadMs: 15000, telegraphMs: 1500, maxTargets: 1,
     effect: { kind: 'strike', shots: 1, intervalMs: 0, damage: 340, hitsAir: true },
     visualId: 'power.hunters_spear', sfx: 'pw_spear', nameKey: 'card.hunters_spear.name', descKey: 'card.hunters_spear.desc',
   },
 
   // ---- Medieval (P 1.35; I 216, H 756; Epic Battering Ram 900) ----
   {
-    // Starter. 40 arrows over 2.5 s across 450 lu (even, ±20 lu); each 55, splash r20; hits air; cap 4.
+    // Starter. 40 arrows over 2.5 s across 450 lu (even, ±20 lu); each 55, splash r20; hits air; cap 3 (MVP trim).
     // Per unit ~196: 91% / 26%
     id: 'arrow_storm', kind: 'power', age: 'medieval', slot: 'home', reach: 'home', family: 'bombard', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
+    source: 'starter', cost: 125, reloadMs: 40000, telegraphMs: 1000, maxTargets: 3,
     effect: {
       kind: 'barrage', count: 40, durationMs: 2500, zone: 450, damage: 55, radius: 20,
       jitter: 20, hitsAir: true, pattern: 'even',
@@ -106,9 +112,9 @@ export const powers: readonly PowerDef[] = [
   },
   {
     // War Path Medieval L9 (Road 1,050). Boiling oil sweeps a 250 lu zone over 1.0 s: 200 once, ground
-    // only, cap 3. Per unit 200: 93% / 26%
+    // only, cap 2 (MVP trim). Per unit 200: 93% / 26%
     id: 'boiling_oil', kind: 'power', age: 'medieval', slot: 'home', reach: 'home', family: 'sweep', rarity: 'epic',
-    source: 'warPath', warPathLevel: 9, road: 1050, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 3,
+    source: 'warPath', warPathLevel: 9, road: 1050, cost: 125, reloadMs: 40000, telegraphMs: 1000, maxTargets: 2,
     effect: { kind: 'sweep', zone: 250, durationMs: 1000, damage: 200, width: 40, hitsAir: false },
     visualId: 'power.boiling_oil', sfx: 'pw_oil', nameKey: 'card.boiling_oil.name', descKey: 'card.boiling_oil.desc',
   },
@@ -116,7 +122,7 @@ export const powers: readonly PowerDef[] = [
     // Starter. 3 knights, 0.5 s apart, charge 450 lu at 400 lu/s from your front; 90 and 40 lu
     // knockback; max 2 hits; ground only. Per unit ≤ 180: 83% / 24%
     id: 'knights_charge', kind: 'power', age: 'medieval', slot: 'field', reach: 'front', family: 'charge', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
+    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
     effect: {
       kind: 'stampede', runners: 3, spacingMs: 500, distance: 450, speed: 400,
       damage: 90, knockback: 40, maxHitsPerEnemy: 2,
@@ -124,14 +130,17 @@ export const powers: readonly PowerDef[] = [
     visualId: 'power.knights_charge', sfx: 'pw_knights', nameKey: 'card.knights_charge.name', descKey: 'card.knights_charge.desc',
   },
   {
-    // Road 250. Your 8 frontmost units: +30% damage and +20% move speed for 8 s
+    // Road 250. Your 8 frontmost units: +35% damage, +25% attack speed and +20% move speed for 15 s; 75 gold,
+    // reloads in 30 s (MVP balance pass; was +30% damage and +20% speed for 8 s at 125 gold and 45 s: −10
+    // points next to Knights' Charge)
     id: 'royal_decree', kind: 'power', age: 'medieval', slot: 'field', reach: 'army', family: 'rally', rarity: 'rare',
-    source: 'road', road: 250, cost: 125, reloadMs: 45000, telegraphMs: 500, maxTargets: 8, aiValueBp: 7000,
+    source: 'road', road: 250, cost: 75, reloadMs: 30000, telegraphMs: 500, maxTargets: 8, aiValueBp: 7000,
     effect: {
       kind: 'buffAll', maxTargets: 8,
       statuses: [
-        { kind: 'damageBuff', magnitudeBp: 3000, durationMs: 8000 },
-        { kind: 'speedBuff', magnitudeBp: 2000, durationMs: 8000 },
+        { kind: 'damageBuff', magnitudeBp: 3500, durationMs: 15000 },
+        { kind: 'speedBuff', magnitudeBp: 2000, durationMs: 15000 },
+        { kind: 'attackSpeedBuff', magnitudeBp: 2500, durationMs: 15000 },
       ],
     },
     visualId: 'power.royal_decree', sfx: 'pw_decree', nameKey: 'card.royal_decree.name', descKey: 'card.royal_decree.desc',
@@ -149,17 +158,18 @@ export const powers: readonly PowerDef[] = [
   {
     // Starter. A volley sweeps a 400 lu zone over 1.0 s: 240 once, ground and air. Per unit 240: 82% / 24%
     id: 'volley_fire', kind: 'power', age: 'gunpowder', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    source: 'starter', cost: 125, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: { kind: 'sweep', zone: 400, durationMs: 1000, damage: 240, width: 40, hitsAir: true },
     visualId: 'power.volley_fire', sfx: 'pw_volley', nameKey: 'card.volley_fire.name', descKey: 'card.volley_fire.desc',
   },
   {
-    // Road 300. 10 cannonballs over 3.0 s across 450 lu (even, ±20 lu); each 120, splash r45; ground only.
-    // Per unit ~240: 82% / 24%
+    // Road 300. 10 cannonballs over 3.0 s across 450 lu (even, ±20 lu); each 135, splash r45; ground only.
+    // Per unit ~270: 92% / 27%. MVP balance pass: kept at 100 gold and cap 4 (out of the power trim) with
+    // 135 per ball (was 120): it lost 10 points to Volley Fire
     id: 'broadside', kind: 'power', age: 'gunpowder', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare',
     source: 'road', road: 300, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: {
-      kind: 'barrage', count: 10, durationMs: 3000, zone: 450, damage: 120, radius: 45,
+      kind: 'barrage', count: 10, durationMs: 3000, zone: 450, damage: 135, radius: 45,
       jitter: 20, hitsAir: false, pattern: 'even',
     },
     visualId: 'power.broadside', sfx: 'pw_broadside', nameKey: 'card.broadside.name', descKey: 'card.broadside.desc',
@@ -186,11 +196,11 @@ export const powers: readonly PowerDef[] = [
   },
   {
     // War Path Gunpowder L7 (Road 1,150). Front barrage: 6 shells over 1.5 s across 300 lu (even, ±20 lu);
-    // each 120, splash r50; ground only. Per unit 240: 82% / 24%
+    // each 115 (MVP balance pass; was 120, cap 4 after the trim), splash r50; ground only. Per unit 230: 79% / 23%
     id: 'horse_artillery', kind: 'power', age: 'gunpowder', slot: 'field', reach: 'front', family: 'frontBarrage', rarity: 'epic',
-    source: 'warPath', warPathLevel: 7, road: 1150, cost: 100, reloadMs: 35000, telegraphMs: 1000, maxTargets: 5,
+    source: 'warPath', warPathLevel: 7, road: 1150, cost: 100, reloadMs: 35000, telegraphMs: 1000, maxTargets: 4,
     effect: {
-      kind: 'barrage', count: 6, durationMs: 1500, zone: 300, damage: 120, radius: 50,
+      kind: 'barrage', count: 6, durationMs: 1500, zone: 300, damage: 115, radius: 50,
       jitter: 20, hitsAir: false, pattern: 'even',
     },
     visualId: 'power.horse_artillery', sfx: 'pw_horse_art', nameKey: 'card.horse_artillery.name', descKey: 'card.horse_artillery.desc',
@@ -206,9 +216,11 @@ export const powers: readonly PowerDef[] = [
 
   // ---- Modern (P 2.46; I 394, H 1,378; Epic Gyrocopter 740, air) ----
   {
-    // Starter. A strafing run sweeps a 450 lu zone over 1.5 s: 360 once, ground only, cap 5. Per unit 360: 91% / 26%
+    // Starter. A strafing run sweeps a 450 lu zone over 1.5 s: 360 once, ground only, cap 4 (MVP trim). Per unit 360: 91% / 26%.
+    // The one Home starter that keeps 100 gold in the power trim: at 125 the Modern lane row (mono Anti-heavy vs
+    // mono Heavy in `w1.modern`) fell from 100% to 0% (the Anti-heavy side could no longer afford its sweep)
     id: 'strafing_run', kind: 'power', age: 'modern', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: { kind: 'sweep', zone: 450, durationMs: 1500, damage: 360, width: 40, hitsAir: false },
     visualId: 'power.strafing_run', sfx: 'pw_strafe', nameKey: 'card.strafing_run.name', descKey: 'card.strafing_run.desc',
   },
@@ -216,7 +228,7 @@ export const powers: readonly PowerDef[] = [
     // Road 400. 12 bombs along a 500 lu line over 1.5 s (no jitter); each 150, splash r50; ground only
     // (centre ≤ 750). Per unit ~360: 91% / 26%
     id: 'carpet_bomber', kind: 'power', age: 'modern', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare',
-    source: 'road', road: 400, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
+    source: 'road', road: 400, cost: 125, reloadMs: 40000, telegraphMs: 1000, maxTargets: 3,
     effect: {
       kind: 'barrage', count: 12, durationMs: 1500, zone: 500, damage: 150, radius: 50,
       jitter: 0, hitsAir: false, pattern: 'line',
@@ -246,7 +258,7 @@ export const powers: readonly PowerDef[] = [
     // War Path Modern L7 (Road 1,550). 2 tanks, 0.6 s apart, roll 600 lu at 350 lu/s from your front;
     // 170 and 50 lu knockback; max 2 hits; ground only. Per unit ≤ 340: 86% / 25%
     id: 'tank_rush', kind: 'power', age: 'modern', slot: 'field', reach: 'front', family: 'charge', rarity: 'epic',
-    source: 'warPath', warPathLevel: 7, road: 1550, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
+    source: 'warPath', warPathLevel: 7, road: 1550, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
     effect: {
       kind: 'stampede', runners: 2, spacingMs: 600, distance: 600, speed: 350,
       damage: 170, knockback: 50, maxHitsPerEnemy: 2,
@@ -254,11 +266,12 @@ export const powers: readonly PowerDef[] = [
     visualId: 'power.tank_rush', sfx: 'pw_tanks', nameKey: 'card.tank_rush.name', descKey: 'card.tank_rush.desc',
   },
   {
-    // War Path Modern L9 (Road 1,600). One shot, 830, ground and air: 60% of H; the Gyrocopter takes 415.
-    // Reloads in 25 s
+    // War Path Modern L9 (Road 1,600). One shot, 895, ground and air: 65% of H; the Gyrocopter takes 447.
+    // 50 gold, reloads in 15 s, a 1.0 s telegraph (MVP balance pass; was 830, 75 gold, 25 s and 1.5 s: −8.5
+    // points next to Paratroopers)
     id: 'sniper_team', kind: 'power', age: 'modern', slot: 'field', reach: 'anywhere', family: 'strike', rarity: 'epic',
-    source: 'warPath', warPathLevel: 9, road: 1600, cost: 75, reloadMs: 25000, telegraphMs: 1500, maxTargets: 1,
-    effect: { kind: 'strike', shots: 1, intervalMs: 0, damage: 830, hitsAir: true },
+    source: 'warPath', warPathLevel: 9, road: 1600, cost: 50, reloadMs: 15000, telegraphMs: 1000, maxTargets: 1,
+    effect: { kind: 'strike', shots: 1, intervalMs: 0, damage: 895, hitsAir: true },
     visualId: 'power.sniper_team', sfx: 'pw_sniper', nameKey: 'card.sniper_team.name', descKey: 'card.sniper_team.desc',
   },
 
@@ -266,29 +279,31 @@ export const powers: readonly PowerDef[] = [
   {
     // Starter. A beam sweeps a 500 lu zone over 2.0 s: 450 once, ground and air. Per unit 450: 80% / 24%
     id: 'orbital_lance', kind: 'power', age: 'future', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    source: 'starter', cost: 125, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: { kind: 'sweep', zone: 500, durationMs: 2000, damage: 450, width: 40, hitsAir: true },
     visualId: 'power.orbital_lance', sfx: 'pw_lance', nameKey: 'card.orbital_lance.name', descKey: 'card.orbital_lance.desc',
   },
   {
-    // War Path Future L5 (Road 1,650). 20 micro-missiles over 2.0 s across 400 lu (even, ±20 lu); each 125,
-    // splash r40; ground and air; cap 4. Per unit ~500: 89% / 27%
+    // War Path Future L5 (Road 1,650). 20 micro-missiles over 2.0 s across 400 lu (even, ±20 lu); each 135,
+    // splash r40; ground and air; cap 4. Per unit ~540: 96% / 29%. MVP balance pass: kept at 100 gold and
+    // cap 4 (out of the power trim) with 135 per missile (was 125): it lost 8 points to Orbital Lance
     id: 'point_defense', kind: 'power', age: 'future', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare',
     source: 'warPath', warPathLevel: 5, road: 1650, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: {
-      kind: 'barrage', count: 20, durationMs: 2000, zone: 400, damage: 125, radius: 40,
+      kind: 'barrage', count: 20, durationMs: 2000, zone: 400, damage: 135, radius: 40,
       jitter: 20, hitsAir: true, pattern: 'even',
     },
     visualId: 'power.point_defense', sfx: 'pw_pdg', nameKey: 'card.point_defense.name', descKey: 'card.point_defense.desc',
   },
   {
-    // War Path Future L9 (Road 1,750). A 250 lu stasis dome, one pulse, ground and air: stun 2.0 s
-    // (frozen look), cap 6. 12 disabled unit-seconds at the cap (16 per 100 gold)
+    // War Path Future L9 (Road 1,750). A 300 lu stasis dome, one pulse, ground and air: stun 3.0 s
+    // (frozen look), cap 6. 18 disabled unit-seconds at the cap (24 per 100 gold). MVP balance pass: was
+    // 250 lu and 2.0 s (−7 points next to Orbital Lance)
     id: 'stasis_field', kind: 'power', age: 'future', slot: 'home', reach: 'home', family: 'stun', rarity: 'epic',
     source: 'warPath', warPathLevel: 9, road: 1750, cost: 75, reloadMs: 35000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 5000,
     effect: {
-      kind: 'field', zone: 250, durationMs: 0, hitsAir: true,
-      statuses: [{ kind: 'stun', magnitudeBp: 10000, durationMs: 2000, frozen: true }],
+      kind: 'field', zone: 300, durationMs: 0, hitsAir: true,
+      statuses: [{ kind: 'stun', magnitudeBp: 10000, durationMs: 3000, frozen: true }],
     },
     visualId: 'power.stasis_field', sfx: 'pw_stasis', nameKey: 'card.stasis_field.name', descKey: 'card.stasis_field.desc',
   },
@@ -296,7 +311,7 @@ export const powers: readonly PowerDef[] = [
     // Starter. Front barrage: 10 drones over 2.0 s across 300 lu (even, ±20 lu); each 150, splash r35;
     // ground and air. Per unit ~350: 63% / 19%
     id: 'drone_swarm', kind: 'power', age: 'future', slot: 'field', reach: 'front', family: 'frontBarrage', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 35000, telegraphMs: 1000, maxTargets: 5,
+    source: 'starter', cost: 100, reloadMs: 35000, telegraphMs: 1000, maxTargets: 4,
     effect: {
       kind: 'barrage', count: 10, durationMs: 2000, zone: 300, damage: 150, radius: 35,
       jitter: 20, hitsAir: true, pattern: 'even',

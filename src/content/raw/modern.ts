@@ -111,19 +111,19 @@ export const modern: RawAgeTables = {
       nameKey: 'card.gyrocopter.name', descKey: 'card.gyrocopter.desc', strongVs: [], weakVs: [],
     },
     {
-      // Main gun 170 splash r40 / 2.5 s at range 240 (G) plus MG 20 / 0.4 s at range 150 (G+A, priority air).
+      // Main gun 130 splash r40 / 3.5 s at range 240 (G) plus MG 14 / 0.4 s at range 150 (G+A, priority air).
       // Two independent attacks; only the main gun (index 0) stops movement
       id: 'behemoth_tank', kind: 'unit', age: 'modern', rarity: 'legendary', role: 'siegeHeavy', group: 'legendary',
-      cost: 350, trainMs: 7000, pop: 14, hp: 4100, speed: 35, size: 'huge',
+      cost: 350, trainMs: 7000, pop: 14, hp: 2500, speed: 35, size: 'huge',
       tags: ['armored', 'mech', 'legendary', 'ground'],
       attacks: [
         {
-          damage: 170, intervalMs: 2500, windupPct: 50, range: 240, hitsGround: true, hitsAir: false,
+          damage: 130, intervalMs: 3500, windupPct: 50, range: 240, hitsGround: true, hitsAir: false,
           projectile: { speed: 1200, visualId: 'proj.shell' },
           dmgType: 'blast', sfx: 'shot_cannon', splashRadius: 40,
         },
         {
-          damage: 20, intervalMs: 400, windupPct: 50, range: 150, hitsGround: true, hitsAir: true,
+          damage: 14, intervalMs: 400, windupPct: 50, range: 150, hitsGround: true, hitsAir: true,
           projectile: { speed: 1500, visualId: 'proj.bullet' },
           dmgType: 'bullet', sfx: 'shot_mg', priority: 'air',
         },

@@ -422,7 +422,7 @@ export interface PowerDef {
   descKey: string;
 }
 
-/** An age (DESIGN A2.2, A2.4). Base max HP = 10,000 × P. `xpToNext` is null in the last age. */
+/** An age (DESIGN A2.2, A2.4). Base max HP = k × P, the same k in every age (8,000 since the MVP balance pass). `xpToNext` is null in the last age. */
 export interface AgeDef {
   id: AgeId;
   index: number;

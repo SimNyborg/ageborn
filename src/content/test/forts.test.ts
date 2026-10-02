@@ -37,16 +37,16 @@ const ROSTER: Record<AgeId, [string, string, string, string, string]> = {
   cosmic: ['void_rampart', 'ion_spire', 'warp_barracks', 'star_recruit', 'void_mine'],
 };
 
-/** A16.14.4 L1 numbers: wall HP, tower HP / damage / interval / range, camp HP, levy HP / damage (levies 30%, fixer 2026-10-01). */
+/** A16.14.4 L1 numbers: wall HP, tower HP / damage / interval / range, camp HP, levy HP / damage (levies 35%, MVP balance pass 2026-10-01; 30% after the fixer). */
 const TABLE: Record<AgeId, [number, number, number, number, number, number, number, number]> = {
-  stone: [560, 280, 27, 1400, 200, 336, 48, 6],
-  bronze: [630, 315, 30, 1400, 210, 378, 55, 6],
-  medieval: [756, 378, 36, 1400, 230, 453, 64, 8],
-  gunpowder: [1019, 509, 70, 2000, 240, 611, 87, 10],
-  industrial: [1187, 593, 49, 1200, 250, 712, 99, 12],
-  modern: [1378, 689, 48, 1000, 260, 826, 118, 14],
-  future: [1860, 930, 64, 1000, 260, 1116, 141, 19],
-  cosmic: [2509, 1254, 81, 1000, 270, 1505, 210, 27],
+  stone: [560, 280, 27, 1400, 200, 336, 56, 7],
+  bronze: [630, 315, 30, 1400, 210, 378, 65, 8],
+  medieval: [756, 378, 36, 1400, 230, 453, 75, 9],
+  gunpowder: [1019, 509, 70, 2000, 240, 611, 101, 12],
+  industrial: [1187, 593, 49, 1200, 250, 712, 115, 14],
+  modern: [1378, 689, 48, 1000, 260, 826, 137, 17],
+  future: [1860, 930, 64, 1000, 260, 1116, 164, 23],
+  cosmic: [2509, 1254, 81, 1000, 270, 1505, 245, 31],
 };
 
 describe('the Fort roster (A16.14.4)', () => {

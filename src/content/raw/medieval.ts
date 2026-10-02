@@ -107,19 +107,19 @@ export const medieval: RawAgeTables = {
       nameKey: 'card.battering_ram.name', descKey: 'card.battering_ram.desc', strongVs: [], weakVs: [],
     },
     {
-      // 70 / 1.4 s, cleave: 2 targets total, the second within 40 lu behind the primary.
-      // Roar every 15 s while it has a target: the nearest 8 allies within 200 lu get a 60 HP shield for 6 s
+      // 70 / 2.0 s, cleave: 2 targets total, the second within 40 lu behind the primary.
+      // Roar every 15 s while it has a target: the nearest 8 allies within 200 lu get a 35 HP shield for 6 s
       id: 'ursa_paladin', kind: 'unit', age: 'medieval', rarity: 'legendary', role: 'siegeHeavy', group: 'legendary',
-      cost: 350, trainMs: 7000, pop: 14, hp: 2300, speed: 55, size: 'huge',
+      cost: 350, trainMs: 7000, pop: 14, hp: 2150, speed: 55, size: 'huge',
       tags: ['armored', 'bio', 'melee', 'legendary', 'ground'],
       attacks: [
         {
-          damage: 70, intervalMs: 1400, windupPct: 40, range: 20, hitsGround: true, hitsAir: false,
+          damage: 70, intervalMs: 2000, windupPct: 40, range: 20, hitsGround: true, hitsAir: false,
           dmgType: 'slash', sfx: 'swing_whoosh', cleave: { count: 2, reach: 40 },
         },
       ],
       abilities: [
-        { kind: 'periodicShieldAura', everyMs: 15000, radius: 200, maxTargets: 8, shield: 60, durationMs: 6000 },
+        { kind: 'periodicShieldAura', everyMs: 15000, radius: 200, maxTargets: 8, shield: 35, durationMs: 6000 },
       ],
       visualId: 'unit.ursa_paladin', sfx: { spawn: 'spawn_legendary', die: 'die_bio' },
       nameKey: 'card.ursa_paladin.name', descKey: 'card.ursa_paladin.desc', strongVs: [], weakVs: [],

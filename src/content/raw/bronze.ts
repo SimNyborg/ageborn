@@ -112,9 +112,9 @@ export const bronze: RawAgeTables = {
     },
     {
       // Stomp: 64 splash r45 / 2.0 s; every enemy hit is slowed 20% for 1.5 s.
-      // Molten Heart: on death bursts for 160 splash r70 on ground enemies
+      // Molten Heart: on death bursts for 100 splash r70 on ground enemies
       id: 'bronze_colossus', kind: 'unit', age: 'bronze', rarity: 'legendary', role: 'siegeHeavy', group: 'legendary',
-      cost: 350, trainMs: 7000, pop: 14, hp: 2050, speed: 40, size: 'huge',
+      cost: 350, trainMs: 7000, pop: 14, hp: 1700, speed: 40, size: 'huge',
       tags: ['armored', 'mech', 'melee', 'legendary', 'ground'],
       attacks: [
         {
@@ -123,7 +123,7 @@ export const bronze: RawAgeTables = {
           onHit: [{ kind: 'slow', magnitudeBp: 2000, durationMs: 1500 }],
         },
       ],
-      abilities: [{ kind: 'onDeathExplode', damage: 160, radius: 70 }],
+      abilities: [{ kind: 'onDeathExplode', damage: 100, radius: 70 }],
       visualId: 'unit.bronze_colossus', sfx: { spawn: 'spawn_legendary', die: 'die_mech' },
       nameKey: 'card.bronze_colossus.name', descKey: 'card.bronze_colossus.desc', strongVs: [], weakVs: [],
     },
@@ -183,10 +183,10 @@ export const bronze: RawAgeTables = {
 /** A5.7 Bronze Age Powers (values at P 1.16 and L1 loadouts; I 186, H 630; Epic Scorpion 330). */
 export const bronzePowers: readonly PowerDef[] = [
   {
-    // Starter. A wave sweeps a 450 lu zone over 2.0 s: 170 once per ground enemy touched (±20 lu), cap 5.
+    // Starter. A wave sweeps a 450 lu zone over 2.0 s: 170 once per ground enemy touched (±20 lu), cap 4 (MVP trim).
     // Per unit 170: 91% / 27% (Hoplite / War Chariot)
     id: 'tidal_wave', kind: 'power', age: 'bronze', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
+    source: 'starter', cost: 125, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
     effect: { kind: 'sweep', zone: 450, durationMs: 2000, damage: 170, width: 40, hitsAir: false },
     visualId: 'power.tidal_wave', sfx: 'pw_wave', nameKey: 'card.tidal_wave.name', descKey: 'card.tidal_wave.desc',
   },
@@ -194,7 +194,7 @@ export const bronzePowers: readonly PowerDef[] = [
     // War Path Bronze L5 (Road 700). 6 bolts over 1.5 s across 400 lu (even, ±20 lu); each 120, splash
     // r45; ground only. Per unit ~162: 87% / 26%
     id: 'zeus_bolts', kind: 'power', age: 'bronze', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare',
-    source: 'warPath', warPathLevel: 5, road: 700, cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 4,
+    source: 'warPath', warPathLevel: 5, road: 700, cost: 125, reloadMs: 40000, telegraphMs: 1000, maxTargets: 3,
     effect: {
       kind: 'barrage', count: 6, durationMs: 1500, zone: 400, damage: 120, radius: 45,
       jitter: 20, hitsAir: false, pattern: 'even',
@@ -202,12 +202,12 @@ export const bronzePowers: readonly PowerDef[] = [
     visualId: 'power.zeus_bolts', sfx: 'pw_bolts', nameKey: 'card.zeus_bolts.name', descKey: 'card.zeus_bolts.desc',
   },
   {
-    // War Path Bronze L9 (Road 850). A 300 lu gaze, one pulse, ground only: stun 2.0 s (frozen look)
-    // and mark (+20% damage taken) for 4 s. 10 disabled unit-seconds (13.3 per 100 gold)
+    // War Path Bronze L9 (Road 850). A 350 lu gaze (MVP balance pass; was 300), one pulse, ground only: stun
+    // 2.0 s (frozen look) and mark (+20% damage taken) for 4 s. 10 disabled unit-seconds (13.3 per 100 gold)
     id: 'medusa_gaze', kind: 'power', age: 'bronze', slot: 'home', reach: 'home', family: 'stun', rarity: 'epic',
     source: 'warPath', warPathLevel: 9, road: 850, cost: 75, reloadMs: 35000, telegraphMs: 1000, maxTargets: 5, aiValueBp: 5000,
     effect: {
-      kind: 'field', zone: 300, durationMs: 0, hitsAir: false,
+      kind: 'field', zone: 350, durationMs: 0, hitsAir: false,
       statuses: [
         { kind: 'stun', magnitudeBp: 10000, durationMs: 2000, frozen: true },
         { kind: 'mark', magnitudeBp: 2000, durationMs: 4000 },
@@ -219,7 +219,7 @@ export const bronzePowers: readonly PowerDef[] = [
     // Starter. 3 chariots, 0.5 s apart, run 500 lu at 450 lu/s from your front; 80 and 40 lu knockback;
     // max 2 hits; ground only. Per unit ≤ 160: 86% / 25%
     id: 'chariot_rush', kind: 'power', age: 'bronze', slot: 'field', reach: 'front', family: 'charge', rarity: 'common',
-    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 6,
+    source: 'starter', cost: 100, reloadMs: 40000, telegraphMs: 1000, maxTargets: 5,
     effect: {
       kind: 'stampede', runners: 3, spacingMs: 500, distance: 500, speed: 450,
       damage: 80, knockback: 40, maxHitsPerEnemy: 2,
@@ -227,22 +227,24 @@ export const bronzePowers: readonly PowerDef[] = [
     visualId: 'power.chariot_rush', sfx: 'pw_chariots', nameKey: 'card.chariot_rush.name', descKey: 'card.chariot_rush.desc',
   },
   {
-    // Road 200. Your 8 frontmost units: an 80 shield and +15% damage for 6 s
+    // Road 200. Your 8 frontmost units: a 120 shield and +25% damage for 8 s; 75 gold, reloads in 30 s (MVP
+    // balance pass; was 80, +15%, 6 s at 125 gold and 45 s: −7 points next to Chariot Rush)
     id: 'aegis', kind: 'power', age: 'bronze', slot: 'field', reach: 'army', family: 'ward', rarity: 'rare',
-    source: 'road', road: 200, cost: 125, reloadMs: 45000, telegraphMs: 500, maxTargets: 8, aiValueBp: 7000,
+    source: 'road', road: 200, cost: 75, reloadMs: 30000, telegraphMs: 500, maxTargets: 8, aiValueBp: 7000,
     effect: {
       kind: 'buffAll', maxTargets: 8,
       statuses: [
-        { kind: 'shield', magnitudeBp: 0, durationMs: 6000, amount: 80 },
-        { kind: 'damageBuff', magnitudeBp: 1500, durationMs: 6000 },
+        { kind: 'shield', magnitudeBp: 0, durationMs: 8000, amount: 120 },
+        { kind: 'damageBuff', magnitudeBp: 2500, durationMs: 8000 },
       ],
     },
     visualId: 'power.aegis', sfx: 'pw_aegis', nameKey: 'card.aegis.name', descKey: 'card.aegis.desc',
   },
   {
-    // War Path Bronze L7 (Road 750). One golden arrow, 380, ground and air: 60% of H; the Scorpion takes 190
+    // War Path Bronze L7 (Road 750). One golden arrow, 380, ground and air: 60% of H; the Scorpion takes 190.
+    // 50 gold, reloads in 15 s (MVP balance pass; was 75 and 30 s)
     id: 'apollo_arrow', kind: 'power', age: 'bronze', slot: 'field', reach: 'anywhere', family: 'strike', rarity: 'epic',
-    source: 'warPath', warPathLevel: 7, road: 750, cost: 75, reloadMs: 30000, telegraphMs: 1500, maxTargets: 1,
+    source: 'warPath', warPathLevel: 7, road: 750, cost: 50, reloadMs: 15000, telegraphMs: 1500, maxTargets: 1,
     effect: { kind: 'strike', shots: 1, intervalMs: 0, damage: 380, hitsAir: true },
     visualId: 'power.apollo_arrow', sfx: 'pw_apollo', nameKey: 'card.apollo_arrow.name', descKey: 'card.apollo_arrow.desc',
   },

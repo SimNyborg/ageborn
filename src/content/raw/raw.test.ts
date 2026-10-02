@@ -97,12 +97,12 @@ const UNIT_ROWS: UnitRow[] = [
       expect(u.attacks[0]?.vsBaseDamage).toBe(160);
       expect(u.abilities).toContainEqual({ kind: 'siegeOnly' });
     } },
-  { id: 'ursa_paladin', age: 'medieval', rarity: 'legendary', role: 'siegeHeavy', cost: 350, hp: 2300, damage: 70, intervalMs: 1400,
+  { id: 'ursa_paladin', age: 'medieval', rarity: 'legendary', role: 'siegeHeavy', cost: 350, hp: 2150, damage: 70, intervalMs: 2000,
     range: 20, speed: 55, size: 'huge', hits: 'G', tags: ['armored', 'bio', 'melee', 'legendary'], fx: 'melee', sfx: 'swing_whoosh', dmgType: 'slash',
     extra: (u) => {
       expect(u.attacks[0]?.cleave).toEqual({ count: 2, reach: 40 });
       expect(u.abilities).toContainEqual(
-        { kind: 'periodicShieldAura', everyMs: 15000, radius: 200, maxTargets: 8, shield: 60, durationMs: 6000 });
+        { kind: 'periodicShieldAura', everyMs: 15000, radius: 200, maxTargets: 8, shield: 35, durationMs: 6000 });
     } },
   // A5.4 Gunpowder
   { id: 'corsair', age: 'gunpowder', rarity: 'common', role: 'infantry', cost: 50, hp: 291, damage: 36, intervalMs: 1000,
@@ -117,12 +117,12 @@ const UNIT_ROWS: UnitRow[] = [
   { id: 'bronze_cannon', age: 'gunpowder', rarity: 'epic', role: 'artillery', cost: 200, hp: 500, damage: 110, intervalMs: 3500,
     range: 280, speed: 45, size: 'large', hits: 'G', tags: ['light', 'mech', 'ranged'], fx: 'proj.cannonball', sfx: 'shot_cannon', dmgType: 'blast',
     extra: (u) => expect(u.attacks[0]).toMatchObject({ minRange: 80, splashRadius: 50, projectile: { arc: true } }) },
-  { id: 'balloon_admiral', age: 'gunpowder', rarity: 'legendary', role: 'airBomber', cost: 350, hp: 1500, damage: 110, intervalMs: 1600,
+  { id: 'balloon_admiral', age: 'gunpowder', rarity: 'legendary', role: 'airBomber', cost: 350, hp: 1200, damage: 85, intervalMs: 1600,
     range: 40, speed: 45, size: 'huge', hits: 'G', tags: ['air', 'legendary'], fx: 'proj.bomb', sfx: 'bomb_whistle', dmgType: 'blast',
     extra: (u) => {
       expect(u.attacks[0]).toMatchObject({ splashRadius: 50, vsBaseDamage: 110 });
       expect(u.abilities).toContainEqual({ kind: 'bomber', dropWindow: 40 });
-      expect(u.abilities).toContainEqual({ kind: 'onDeathExplode', damage: 250, radius: 70 });
+      expect(u.abilities).toContainEqual({ kind: 'onDeathExplode', damage: 200, radius: 70 });
     } },
   // A5.5 Modern
   { id: 'rifleman', age: 'modern', rarity: 'common', role: 'ranged', cost: 75, hp: 234, damage: 32, intervalMs: 1000,
@@ -136,12 +136,12 @@ const UNIT_ROWS: UnitRow[] = [
       { kind: 'callStrike', everyMs: 8000, searchRange: 400, delayMs: 1000, damage: 120, radius: 50, sideLockoutMs: 3000 }) },
   { id: 'gyrocopter', age: 'modern', rarity: 'epic', role: 'airGunship', cost: 200, hp: 740, damage: 20, intervalMs: 300,
     range: 150, speed: 80, size: 'medium', hits: 'G+A', tags: ['air', 'mech'], fx: 'proj.bullet', sfx: 'shot_mg', dmgType: 'bullet' },
-  { id: 'behemoth_tank', age: 'modern', rarity: 'legendary', role: 'siegeHeavy', cost: 350, hp: 4100, damage: 170, intervalMs: 2500,
+  { id: 'behemoth_tank', age: 'modern', rarity: 'legendary', role: 'siegeHeavy', cost: 350, hp: 2500, damage: 130, intervalMs: 3500,
     range: 240, speed: 35, size: 'huge', hits: 'G', tags: ['armored', 'mech', 'legendary'], fx: 'proj.shell', sfx: 'shot_cannon', dmgType: 'blast',
     extra: (u) => {
       expect(u.attacks).toHaveLength(2);
       expect(u.attacks[0]?.splashRadius).toBe(40);
-      expect(u.attacks[1]).toMatchObject({ damage: 20, intervalMs: 400, range: 150, hitsGround: true, hitsAir: true,
+      expect(u.attacks[1]).toMatchObject({ damage: 14, intervalMs: 400, range: 150, hitsGround: true, hitsAir: true,
         priority: 'air', dmgType: 'bullet', sfx: 'shot_mg', projectile: { visualId: 'proj.bullet' } });
     } },
   // A5.6 Future
@@ -160,11 +160,11 @@ const UNIT_ROWS: UnitRow[] = [
   { id: 'emp_saboteur', age: 'future', rarity: 'epic', role: 'antiMech', cost: 200, hp: 700, damage: 50, intervalMs: 1000,
     range: 12, speed: 85, size: 'medium', hits: 'G', tags: ['light', 'bio', 'melee'], fx: 'melee', sfx: 'swing_whoosh', dmgType: 'laser',
     extra: (u) => expect(u.abilities).toContainEqual({ kind: 'emp', everyMs: 8000, triggerRadius: 120, radius: 120, stunMs: 1500 }) },
-  { id: 'chrono_titan', age: 'future', rarity: 'legendary', role: 'siegeHeavy', cost: 350, hp: 5600, damage: 230, intervalMs: 1600,
+  { id: 'chrono_titan', age: 'future', rarity: 'legendary', role: 'siegeHeavy', cost: 350, hp: 4500, damage: 190, intervalMs: 1600,
     range: 60, speed: 35, size: 'huge', hits: 'G', tags: ['armored', 'mech', 'melee', 'legendary'], fx: 'melee', sfx: 'swing_whoosh', dmgType: 'blunt',
     extra: (u) => {
       expect(u.attacks[0]?.cleave).toEqual({ count: 3, reach: 60 });
-      expect(u.abilities).toContainEqual({ kind: 'timeStop', everyMs: 15000, radius: 200, freezeMs: 1500, legendaryFreezeMs: 750 });
+      expect(u.abilities).toContainEqual({ kind: 'timeStop', everyMs: 20000, radius: 200, freezeMs: 1500, legendaryFreezeMs: 750 });
     } },
 ];
 
@@ -210,10 +210,10 @@ const POWER_ROWS: Pick<PowerDef, 'id' | 'age' | 'slot' | 'reach' | 'family' | 'r
   { id: 'stampede', age: 'stone', slot: 'field', reach: 'front', family: 'charge', rarity: 'common', source: 'starter', cost: 100, reloadMs: 40000,
     telegraphMs: 1000, sfx: 'pw_stampede',
     effect: { kind: 'stampede', runners: 5, spacingMs: 400, distance: 500, speed: 400, damage: 50, knockback: 40, maxHitsPerEnemy: 3 } },
-  { id: 'meteor_shower', age: 'stone', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare', source: 'road', cost: 100, reloadMs: 40000,
+  { id: 'meteor_shower', age: 'stone', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare', source: 'road', cost: 125, reloadMs: 40000,
     telegraphMs: 1000, sfx: 'pw_meteor',
     effect: { kind: 'barrage', count: 14, durationMs: 3000, zone: 400, damage: 50, radius: 40, jitter: 20, hitsAir: false, pattern: 'even' } },
-  { id: 'arrow_storm', age: 'medieval', slot: 'home', reach: 'home', family: 'bombard', rarity: 'common', source: 'starter', cost: 100, reloadMs: 40000,
+  { id: 'arrow_storm', age: 'medieval', slot: 'home', reach: 'home', family: 'bombard', rarity: 'common', source: 'starter', cost: 125, reloadMs: 40000,
     telegraphMs: 1000, sfx: 'pw_arrows',
     effect: { kind: 'barrage', count: 40, durationMs: 2500, zone: 450, damage: 55, radius: 20, jitter: 20, hitsAir: true, pattern: 'even' } },
   { id: 'smoke_screen', age: 'gunpowder', slot: 'field', reach: 'front', family: 'cloud', rarity: 'common', source: 'starter', cost: 100, reloadMs: 40000,
@@ -222,10 +222,10 @@ const POWER_ROWS: Pick<PowerDef, 'id' | 'age' | 'slot' | 'reach' | 'family' | 'r
   { id: 'paratroopers', age: 'modern', slot: 'field', reach: 'anywhere', family: 'drop', rarity: 'common', source: 'starter', cost: 150, reloadMs: 60000,
     telegraphMs: 1000, sfx: 'pw_paratroop',
     effect: { kind: 'paradrop', card: 'rifleman', count: 3, beyondFront: 150, fallbackP: 1000 } },
-  { id: 'carpet_bomber', age: 'modern', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare', source: 'road', cost: 100, reloadMs: 40000,
+  { id: 'carpet_bomber', age: 'modern', slot: 'home', reach: 'home', family: 'bombard', rarity: 'rare', source: 'road', cost: 125, reloadMs: 40000,
     telegraphMs: 1000, sfx: 'pw_bomber',
     effect: { kind: 'barrage', count: 12, durationMs: 1500, zone: 500, damage: 150, radius: 50, jitter: 0, hitsAir: false, pattern: 'line' } },
-  { id: 'orbital_lance', age: 'future', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common', source: 'starter', cost: 100, reloadMs: 40000,
+  { id: 'orbital_lance', age: 'future', slot: 'home', reach: 'home', family: 'sweep', rarity: 'common', source: 'starter', cost: 125, reloadMs: 40000,
     telegraphMs: 1000, sfx: 'pw_lance',
     effect: { kind: 'sweep', zone: 500, durationMs: 2000, damage: 450, width: 40, hitsAir: true } },
   { id: 'caltrops', age: 'medieval', slot: 'home', reach: 'home', family: 'snare', rarity: 'rare', source: 'warPath', cost: 75, reloadMs: 30000,
@@ -265,12 +265,19 @@ function expectedGroup(rarity: Rarity, role: Role): RoleGroup {
 
 /** Power numbers the live content has since retuned (fix pass 2026-09-30); the frozen fixture keeps these. */
 const FIXTURE_POWER_EFFECT: Record<string, Record<string, number>> = { arrow_storm: { damage: 50 } };
+/** Home bombards and sweeps cost 125 since the MVP power trim (2026-10-01); the frozen fixture keeps 100. */
+const FIXTURE_POWER: Record<string, Partial<PowerDef>> = {
+  meteor_shower: { cost: 100 },
+  arrow_storm: { cost: 100 },
+  carpet_bomber: { cost: 100 },
+  orbital_lance: { cost: 100 },
+};
 
 /**
  * Anti-heavy numbers the live content has since retuned (owner feedback 2026-09-29: HP +10%, armored
  * and mech ×3.0 / ×2.5, a first `legendary` mod, Brace for the class); the frozen fixture keeps these.
  */
-const FIXTURE_UNIT: Record<string, Pick<UnitRow, 'hp' | 'extra'> & Partial<Pick<UnitRow, 'damage'>>> = {
+const FIXTURE_UNIT: Record<string, Pick<UnitRow, 'hp' | 'extra'> & Partial<Pick<UnitRow, 'damage' | 'intervalMs'>>> = {
   spear_hunter: {
     hp: 200,
     extra: (u) => expect(u.attacks[0]?.mods).toEqual([{ vs: 'armored', bp: 20000 }, { vs: 'mech', bp: 20000 }, { vs: 'light', bp: 7500 }]),
@@ -284,6 +291,19 @@ const FIXTURE_UNIT: Record<string, Pick<UnitRow, 'hp' | 'extra'> & Partial<Pick<
   rail_gunner: {
     hp: 400,
     extra: (u) => expect(u.attacks[0]?.mods).toEqual([{ vs: 'armored', bp: 20000 }, { vs: 'mech', bp: 20000 }, { vs: 'light', bp: 5000 }]),
+  },
+  // The Legendaries before the MVP balance pass (2026-10-01).
+  ursa_paladin: {
+    hp: 2300,
+    intervalMs: 1400,
+    extra: (u) => expect(u.abilities).toContainEqual({ kind: 'periodicShieldAura', everyMs: 15000, radius: 200, maxTargets: 8, shield: 60, durationMs: 6000 }),
+  },
+  balloon_admiral: { hp: 1500, damage: 110, extra: (u) => expect(u.abilities).toContainEqual({ kind: 'onDeathExplode', damage: 250, radius: 70 }) },
+  behemoth_tank: { hp: 4100, damage: 170, intervalMs: 2500, extra: (u) => expect(u.attacks[1]).toMatchObject({ damage: 20, intervalMs: 400 }) },
+  chrono_titan: {
+    hp: 5600,
+    damage: 230,
+    extra: (u) => expect(u.abilities).toContainEqual({ kind: 'timeStop', everyMs: 15000, radius: 200, freezeMs: 1500, legendaryFreezeMs: 750 }),
   },
 };
 
@@ -332,13 +352,17 @@ describe.each([
     it.each(POWER_ROWS.map((r) => [r.id, r] as const))('%s matches its A5.7 row', (_id, r) => {
       const p = c.powers.find((x) => x.id === r.id);
       // The frozen fixture keeps the numbers the golden replays were recorded with.
-      const want = _name === 'tests/fixtures/content' && FIXTURE_POWER_EFFECT[r.id] ? { ...r, effect: { ...r.effect, ...FIXTURE_POWER_EFFECT[r.id] } as PowerDef['effect'] } : r;
+      const fx = _name === 'tests/fixtures/content';
+      const want = fx && FIXTURE_POWER_EFFECT[r.id] ? { ...r, ...FIXTURE_POWER[r.id], effect: { ...r.effect, ...FIXTURE_POWER_EFFECT[r.id] } as PowerDef['effect'] } : fx ? { ...r, ...FIXTURE_POWER[r.id] } : r;
       expect(p).toMatchObject({ ...want, kind: 'power', visualId: `power.${r.id}`, nameKey: `card.${r.id}.name`, descKey: `card.${r.id}.desc` });
       expect(p?.effect).toEqual(want.effect);
     });
     it('royal_decree and nanite_surge buff the 8 frontmost own units', () => {
-      expect(c.powers.find((p) => p.id === 'royal_decree')?.effect).toEqual({ kind: 'buffAll', maxTargets: 8, statuses: [
-        { kind: 'damageBuff', magnitudeBp: 3000, durationMs: 8000 }, { kind: 'speedBuff', magnitudeBp: 2000, durationMs: 8000 }] });
+      // MVP balance pass (2026-10-01): +35% damage, +20% speed and +25% attack speed for 15 s; the fixture keeps the old buff.
+      expect(c.powers.find((p) => p.id === 'royal_decree')?.effect).toEqual(c === raw
+        ? { kind: 'buffAll', maxTargets: 8, statuses: [{ kind: 'damageBuff', magnitudeBp: 3500, durationMs: 15000 }, { kind: 'speedBuff', magnitudeBp: 2000, durationMs: 15000 },
+          { kind: 'attackSpeedBuff', magnitudeBp: 2500, durationMs: 15000 }] }
+        : { kind: 'buffAll', maxTargets: 8, statuses: [{ kind: 'damageBuff', magnitudeBp: 3000, durationMs: 8000 }, { kind: 'speedBuff', magnitudeBp: 2000, durationMs: 8000 }] });
       expect(c.powers.find((p) => p.id === 'nanite_surge')?.effect).toEqual({ kind: 'buffAll', maxTargets: 8, statuses: [
         { kind: 'regen', magnitudeBp: 4000, durationMs: 4000 }, { kind: 'shield', magnitudeBp: 0, durationMs: 6000, amount: 150 }] });
     });
@@ -438,15 +462,15 @@ describe.each([
   });
 
   describe('A2 economy and battle numbers', () => {
-    it('ages: P, base HP = 10,000 × P, XP thresholds (A17.8; the fixture A2.2, A2.4)', () => {
+    it('ages: P, base HP = 8,000 × P (MVP balance pass; the fixture 10,000 × P), XP thresholds (A17.8; the fixture A2.2, A2.4)', () => {
       const row = (a: AgeId) => {
         const x = c.ageScale[a];
         return x ? [x.index, x.pBp, x.baseHp, x.xpToNext] : null;
       };
       if (c === raw) {
         expect(AGES8.map(row)).toEqual([
-          [0, 10000, 10000, 550], [1, 11600, 11600, 500], [2, 13500, 13500, 900], [3, 18200, 18200, 700],
-          [4, 21200, 21200, 800], [5, 24600, 24600, 1200], [6, 33200, 33200, 1300], [7, 44800, 44800, null],
+          [0, 10000, 8000, 550], [1, 11600, 9280, 500], [2, 13500, 10800, 900], [3, 18200, 14560, 700],
+          [4, 21200, 16960, 800], [5, 24600, 19680, 1200], [6, 33200, 26560, 1300], [7, 44800, 35840, null],
         ]);
       } else {
         expect(AGES.map(row)).toEqual([

@@ -62,6 +62,10 @@ describe('match 1 script (A8)', () => {
     expect(MATCH1_TURRET_GRANT_TICK).toBeLessThan(MATCH1_POWER_TICK);
   });
 
+  it("grants exactly Arrow Storm's price with its beat, so the first cast is free", () => {
+    expect(MATCH1_POWER_GOLD).toBe(content.powers['arrow_storm']!.cost);
+  });
+
   it("pays Grogg's every send one tick ahead, so his schedule never depends on his economy", () => {
     const grants = script.filter((e) => e.side === 1);
     expect(grants).toHaveLength(GROGG_SCRIPT.sends.length);

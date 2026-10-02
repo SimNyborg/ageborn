@@ -2,6 +2,39 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## MVP pass 2026-10-01: release check (cloud session, not yet published)
+
+All three MVP tracks (bug hunt and first 30 minutes, sounds/effects/loading, balance) are in the tree and checked together.
+
+**Checks (whole tree, after the last fix):** typecheck clean, lint clean, 4,569 unit tests pass (237 files, 1 skipped), production build OK (initial download 944 KB gzip; the size tool still warns that all art and audio together exceed the 16 MB total budget), full e2e suite 285 of 285 pass (Chromium).
+
+**Playthroughs re-run on phone (844x390) and desktop (1280x720):**
+
+- New player: match 1 works; tapping Hold and waiting brings the "Tap Charge to attack their base!" hand after about 10 s, and Charge clears it. The Arrow Storm drag lands. Match 1 took 2:27-4:11 of game time with the scripted players. Capsule 1 fills the empty slots; match 2's Council hint follows the taps (Council, Economy, Granary, tap again); capsule 2 gives Friar and Onager; Home after match 2 shows the Ladder and War Path unlock.
+- Match 2 after the balance pass: headless, a random tapper still wins 100% vs Pip (median 3:33), power spam 100%, "a few, then evolve" 93%. In the browser an active tapper won in 6:08; a very slow scripted tapper (13-16 units in 7 minutes) lost twice.
+- Returning player (Arena 2 save): Home, Modes, Army, Capsules, the Daily plate (names the General), a Ladder battle with emote picker (Esc closes it, no pause), the compact Pause card, a reload after 1:00 (toast "counts as a Retreat"; no trophies lost below 400, as the rules say), a full Ladder win (Arena 3 reached), the replay viewer (Esc leaves). No console errors.
+
+**Fixed in this check:**
+
+- The balance pass made Arrow Storm cost 125, but match 1 still granted 100 with its beat, so the "free" first cast cost the player 25 gold. It now grants 125, and a test ties it to the price.
+- "AI · " no longer doubles the AI chip on the Home opponent plate and in the replay badge.
+- On phones a long AI name in the battle top bar was cut mid-word ("Tessric Bone"). It now refits when space changes, and shows the first name only ("Tessric") when the full name cannot fit.
+- DESIGN "Void matches" now mentions the new reload-counts-as-Retreat rule.
+
+**What is left for MVP**
+
+- Balance: tier VII Short War still ends at the Final Bell 23.8% of the time (target 10%; the "rope" idea needs the owner's yes); powers still do 17-20% of the killing (target 5-12%); "no research" wins 41% in Short War (limit 30%); the early-capsule Amber flood; the first Ladder match vs Kettle is still often lost by weak play.
+- First 30 minutes: a reload right after losing match 2 skips "Try again"; the War Path teaching order and L2 title; a guided second upgrade; the editable auto name; the trophy count still running when the main button appears.
+- Performance: renderer memory in long sessions needs a real-phone check; the boot sound fallback is at the edge of its 300 ms budget.
+- Art: the 32 forts are still in the old realistic style.
+- Minor: "Watch replay" returns to Home, not to the Result; the "Drag the flag" bubble can sit half off the left edge.
+
+**What the owner should try** (once published)
+
+1. Settings, Reset, then play the training match. When the Charge/Hold tip shows, tap Hold and wait 10 seconds: a hand should point at Charge.
+2. Play match 2 and follow the Council hint; you should win if you keep training troops.
+3. On your phone, in a Ladder battle, check that the enemy's name at the top right is readable.
+
 ## 2026-10-01: MVP pass, sounds, effects and loading speed (cloud session, not yet published)
 
 - The game opens much faster: a splash shows at once and Home shows after about 4 s on a phone over 4G (was 9 s; 10 s on slow 4G, was 32 s). Battle art loads behind Home and per match, so no other age downloads at start (about 9 MB saved). Mid-battle hitches from first-time effects are much smaller (texture upload time in a heavy battle 700 → 200 ms a minute).

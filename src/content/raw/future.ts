@@ -105,18 +105,18 @@ export const future: RawAgeTables = {
       nameKey: 'card.emp_saboteur.name', descKey: 'card.emp_saboteur.desc', strongVs: [], weakVs: [],
     },
     {
-      // 230 / 1.6 s, cleave: 3 targets total within 60 lu. Time Stop when an enemy first comes within 200 lu
-      // and every 15 s after: enemies within 200 lu (air included) are frozen 1.5 s (Legendaries 0.75 s)
+      // 190 / 1.6 s, cleave: 3 targets total within 60 lu. Time Stop when an enemy first comes within 200 lu
+      // and every 20 s after: enemies within 200 lu (air included) are frozen 1.5 s (Legendaries 0.75 s)
       id: 'chrono_titan', kind: 'unit', age: 'future', rarity: 'legendary', role: 'siegeHeavy', group: 'legendary',
-      cost: 350, trainMs: 7000, pop: 14, hp: 5600, speed: 35, size: 'huge',
+      cost: 350, trainMs: 7000, pop: 14, hp: 4500, speed: 35, size: 'huge',
       tags: ['armored', 'mech', 'melee', 'legendary', 'ground'],
       attacks: [
         {
-          damage: 230, intervalMs: 1600, windupPct: 40, range: 60, hitsGround: true, hitsAir: false,
+          damage: 190, intervalMs: 1600, windupPct: 40, range: 60, hitsGround: true, hitsAir: false,
           dmgType: 'blunt', sfx: 'swing_whoosh', cleave: { count: 3, reach: 60 },
         },
       ],
-      abilities: [{ kind: 'timeStop', everyMs: 15000, radius: 200, freezeMs: 1500, legendaryFreezeMs: 750 }],
+      abilities: [{ kind: 'timeStop', everyMs: 20000, radius: 200, freezeMs: 1500, legendaryFreezeMs: 750 }],
       visualId: 'unit.chrono_titan', sfx: { spawn: 'spawn_legendary', die: 'die_mech' },
       nameKey: 'card.chrono_titan.name', descKey: 'card.chrono_titan.desc', strongVs: [], weakVs: [],
     },

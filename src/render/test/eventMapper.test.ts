@@ -485,7 +485,7 @@ describe('event mapper: effect presets and sizes on the real content', () => {
     // The 0.5 s telegraph draws a ring of light into the same units, then the buff glows on them.
     expect(pick(runReal(cast('royal_decree', 0, 0)), 'fxUnits')).toEqual([
       { a: 'fxUnits', effectId: 'fx.tele_rally', side: 0, priority: 3, opts: { side: 0, dir: 1, zone: 0, durationMs: 500 }, max: 8 },
-      { a: 'fxUnits', effectId: 'fx.decree_glow', side: 0, priority: 3, opts: { side: 0, durationMs: 8000 }, max: 8 },
+      { a: 'fxUnits', effectId: 'fx.decree_glow', side: 0, priority: 3, opts: { side: 0, durationMs: 15000 }, max: 8 },
     ]);
     expect(pick(runReal(cast('nanite_surge', 1, 0)), 'fxUnits').filter((f) => f.effectId !== 'fx.tele_rally')).toMatchObject([{ effectId: 'fx.nanite_swarm', side: 1, opts: { durationMs: 6000 } }]);
   });
