@@ -10,10 +10,19 @@ strikes. In the near hand an oversized shock baton with mint coils and a white t
 is a forward-leaning sprint; the attack is a coiled lunge-jab with a mint smear and an
 electric spark burst on the held impact while the back ring flashes; the shock kicks back
 through him (his hair spikes out of the hood). Death: D3 dizzy sit with spiral goggles.
+
+Animation standard (ANIM_SPEC 2026-10-02):
+  walk      walk v3 sprint at ground speed (G1, 106.25 lu/s, 540 ms): leaning in hard, the baton
+            trailing back low in the pumping fist, planted feet, scarf and hood tip streaming
+  attack_b  OVERHEAD BATON SLAM: springs up on his toes with the baton high over his head and tipped
+            back (the held extreme), then slams it down in front onto the target (sparks, dust)
+  attack_c  SPINNING BACKHAND: crouches deep and twists away with the baton cocked back low behind
+            his hip (the held extreme), then whips round in a flat backhand, arm and baton level at the target
 """
 import math
 
 from ageborn_art import face as FC
+from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_future as KF
 from ageborn_art import kit_medieval as K
 from ageborn_art import moves as M
@@ -22,6 +31,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "emp_saboteur"
+GAIT_NAME = "biped"
 NAME = "EMP Saboteur"
 HEIGHT_LU = 70
 CANVAS = (340, 262)
@@ -35,9 +45,14 @@ TIP = (HR[0], HR[1] - 1.0, HR[2] + 4.0 + BATON)
 RING = (-19.0, 6.0, 47.0)
 
 
+RIG = None
+
+
 def build(rig):
-    F.skeleton(rig, head=(2, 0, 37))
-    F.legs(rig, thigh_r=4.3, knee_pad=False, team_thigh=True)
+    global RIG
+    RIG = rig
+    KF.skeleton_v3(rig, head=(2, 0, 37))
+    KF.legs_v3(rig, thigh_r=4.3, knee_pad=False, team_thigh=True)
     rig.joint("baton", "hand_r", HR)
 
     # EMP generator ring on the back (behind everything): a white ring in the side plane
@@ -131,7 +146,6 @@ def build(rig):
         g.lathe([(0, -0.6), (2.9, -0.5), (2.9, 0.5), (0, 0.6)], (hx, hy - 0.4, z), (hx, hy - 0.4, z + 1), segs=14)
     rig.part("baton", g, glow=F.MINT, outline=1.0, outline_hex=F.SUIT)
     rig.track("batonTip", "baton", TIP)
-    rig.track("_foot", "shin_r", (3.2, -6.0, 0.5))
     # crackle round the baton head (idle flicker and strike), and the impact burst
     rig.joint("crackle", "baton", TIP, hidden=True)
     g = Geo()
@@ -175,19 +189,25 @@ def _idle(f):
         pose.update(F.arm("l", a, fo))
     if f in (2, 3):
         pose["crackle"] = {"show": True, "r": 40 * f}
-    return pose
+    return KI.ground_feet(RIG, pose, LEGS)
 
 
-def _walk(f):
-    # sneak: low, long strides, a tip-toe up frame, the baton held low and ready
+# -- walk v3: G1 sprint at ground speed (card 85 x 1.25 = 106.25 lu/s), 8 x 67.5 ms ---------------
+SPEED = 106.25
+LEGS = KF.legs_ik()
+GAIT = KF.jog_gait(LEGS, SPEED, cycle_ms=540)
+# walk carry: the near arm swept back with the baton trailing level behind him (a ninja sprint), the
+# far arm pumping
+CARRY = merge(grip(-125, -105, 196, -40, 10), {"torso": {"r": -4.0}})
+
+
+def _walk(f, report=None):
     def extra(ctx):
-        p, lag = ctx["p"], ctx["lag_p"]
-        return {"arm_r": {"r": -8 * math.cos(lag)}, "hand_r": {"r": 5 * math.cos(lag)},
-                "arm_l": {"r": 24 * math.cos(lag)}, "fore_l": {"r": 16 * max(0.0, math.cos(lag))},
-                "head": {"r": 6.0}}
-    base = merge(grip(-70, -15, 38, -40, 10), {"hips": {"z": -3.0}})
-    return M.walk_v2(f, base, HEIGHT_LU, thigh=40.0, knee=70.0, lift_lu=6.5, bob_pct=0.05, lean=-16.0,
-                     arms=(), twist=7.0, extra=extra)
+        lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
+        return {"head": {"r": 10.0 - 2.0 * lag}, "arm_r": {"r": 4 * lag}, "hand_r": {"r": -8 * lag}, "scarf": {"r": 0.0},
+                "hood_tip": {"r": 0.0}}
+    return M.walk_v3(RIG, f, CARRY, GAIT, legs=LEGS, lean=-18.0, twist=8.0, nod=3.0,
+                     arms={"l": KF.ArmChain("l")}, arm=40.0, extra=extra, report=report)
 
 
 # -- attack: crouch-sneak zap jab (small melee timing) -------------------------------------------
@@ -223,7 +243,7 @@ def _attack_pose(f):
     }, M.body_about((0, 0, 24), x=BX[f], z=BZ[f], q=BQ[f]))
     if f in (4, 5):
         pose.setdefault("baton", {})["sz"] = 1.2
-    return merge(pose, KF.glyph(EYES[f]))
+    return KI.ground_feet(RIG, merge(pose, KF.glyph(EYES[f])), LEGS)
 
 
 def _attack_clip():
@@ -243,14 +263,133 @@ def _attack_clip():
                   impact=M.SMALL_MELEE_IMPACT, overlays=ov)
 
 
+# -- attack B: overhead baton slam (A's timing; impact on frame 6) -------------------------------
+# frames: 0 = A read, 1 spring, 2 raise, 3 HOLD (up on his toes, the baton high over his head and
+# tipped back), 4-5 smears over the top, 6 IMPACT (slammed down in front), 7 bounce, 8 recoil, 9-10 = A
+B_SA = [10, 80, 110, 70, 0, -30, -26, -40]
+B_SF = [60, 120, 140, 60, -10, -38, -34, -20]
+B_WW = [120, 140, 160, 70, -10, -30, -26, -6]     # baton direction, world degrees
+B_FA = [-30, -10, 10, -40, -70, -80, -76, -60]
+B_FF = [0, 20, 30, -10, -40, -50, -46, -30]
+B_TR = [-6, 2, 8, -6, -18, -26, -22, -14]
+B_BX = [-1.0, -2.0, -2.5, 2.0, 6.0, 9.0, 9.0, 6.0]
+B_BZ = [0.0, 2.0, 3.0, 2.0, -1.0, -5.0, -4.0, -2.5]
+B_BQ = [0.04, 0.08, 0.10, 0.06, 0.0, -0.16, 0.04, -0.04]
+B_THR = [10, 4, 0, 20, 30, 40, 36, 24]
+B_SHR = [-20, -10, -8, -20, -26, -34, -30, -24]
+B_THL = [-6, 0, 4, -14, -24, -32, -30, -16]
+B_SHL = [-18, -12, -10, -10, -8, -20, -16, -14]
+B_EYES = ["g_angry", "g_angry", "g_angry", "g_squint", "g_squint", "g_angry", "g_spiral", "g_hurt"]
+
+
+def _b_pose(i):
+    if i in (0, 9, 10):
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(grip(B_SA[k], B_SF[k], B_WW[k] - B_TR[k], B_FA[k], B_FF[k]), {
+        "torso": {"r": B_TR[k]}, "head": {"r": 8 - 0.3 * B_TR[k]},
+        "thigh_r": {"r": B_THR[k]}, "shin_r": {"r": B_SHR[k]},
+        "thigh_l": {"r": B_THL[k]}, "shin_l": {"r": B_SHL[k]},
+        "sparks": {"show": k == 5},
+        "crackle": {"show": k in (2, 5), "r": 50 * k, "s": 1.3 if k == 2 else 1.0},
+        "ring_flash": {"show": k in (2, 5, 6), "s": [1, 1, 0.85, 1, 1, 1.0, 1.25, 1][k]},
+        "tuft": {"show": k in (6, 7), "s": 1.15 if k == 6 else 0.9},
+        "hood_tip": {"r": -20.0 if k == 6 else 0.0},
+    }, M.body_about((0, 0, 24), x=B_BX[k], z=B_BZ[k], q=B_BQ[k]))
+    if k in (3, 4):
+        pose.setdefault("baton", {})["sz"] = 1.2
+    pose = merge(pose, KF.glyph(B_EYES[k]))
+    return KI.ground_feet(RIG, pose, LEGS, toes={"r": -16, "l": -20} if k in (1, 2) else None)
+
+
+def _attack_b():
+    slam = {"kind": "arc", "joint": "baton", "inner": (HR[0], HR[1] - 1.0, HR[2] + 12.0), "outer": TIP,
+            "color": F.MINT, "white": 0.35, "taper": 0.2, "lines": 3, "t0": 0.0, "t1": 0.95}
+    ov = {
+        4: [dict(slam, **{"from": 3})],
+        5: [dict(slam, **{"from": 3, "t0": 0.35, "t1": 1.0})],
+        6: [dict(slam, **{"from": 5, "t0": 0.2, "t1": 1.0, "lines": 2}),
+            {"kind": "burst", "joint": "baton", "point": TIP, "r0_lu": 6.0, "r1_lu": 13.0, "n": 7,
+             "a0": 10.0, "arc": 160.0, "color": F.MINT_CORE},
+            {"kind": "dust", "joint": "baton", "point": TIP, "ground_snap": True, "size_lu": 7.0, "puffs": 4,
+             "seed": 91, "spread": 1.2, "color": "#DDE3E8"}],
+        7: [{"kind": "rings", "joint": "head", "point": (4.0, 0.0, 52.0), "radii_lu": (12.0, 17.0),
+             "a0": 30.0, "a1": 150.0, "color": F.MINT_CORE}],
+    }
+    reuse = {0: ("attack", 0), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(11)], M.SMALL_MELEE_MS, impact=M.SMALL_MELEE_IMPACT,
+                  smear=4, overlays=ov, reuse=reuse)
+
+
+# -- attack C: spinning backhand ----------------------------------------------------------------
+# frames: 0 = A read, 1 twist, 2 cock, 3 HOLD (crouched deep and twisted away, the baton cocked back
+# low behind his hip), 4-5 smears (the backhand whip, rising), 6 IMPACT (arm and baton level at the target),
+# 7 follow, 8 recoil, 9-10 = A settle
+C_HAND = [(-4.0, 26.0), (-7.0, 23.0), (-9.0, 21.5), None, None, None, None, None]
+C_SA = [0, 0, 0, -30, -10, -6, -4, -35]
+C_SF = [0, 0, 0, -20, -8, -4, -2, -15]
+C_WW = [170, 186, 194, 120, 50, 0, -8, 20]
+C_FA = [-100, -120, -130, -80, -40, -20, -24, -40]
+C_FF = [-80, -100, -110, -60, -20, 0, -4, -20]
+C_TR = [-10, -8, -6, -14, -22, -26, -24, -16]
+C_TZ = [8, 14, 18, 8, -10, -22, -20, -10]
+C_BX = [-1.0, -2.0, -3.0, 2.0, 6.0, 9.0, 9.0, 6.0]
+C_BZ = [-2.5, -4.5, -6.0, -4.0, -3.0, -3.5, -3.0, -2.0]
+C_BQ = [-0.04, -0.07, -0.09, 0.06, 0.04, -0.12, 0.03, -0.04]
+C_THR = [14, 20, 24, 30, 36, 42, 40, 26]
+C_SHR = [-28, -34, -38, -30, -28, -30, -28, -24]
+C_THL = [-6, -12, -16, -24, -30, -36, -34, -18]
+C_SHL = [-20, -24, -28, -14, -8, -6, -6, -14]
+C_EYES = ["g_angry", "g_angry", "g_angry", "g_squint", "g_squint", "g_angry", "g_angry", "eyes"]
+
+
+def _c_pose(i):
+    if i in (0, 9, 10):
+        return _attack_pose(i)
+    k = i - 1
+    if C_HAND[k] is not None:
+        a, fo = F.ik2(F.SH, C_HAND[k])
+    else:
+        a, fo = C_SA[k], C_SF[k]
+    pose = merge(grip(a, fo, C_WW[k] - C_TR[k], C_FA[k], C_FF[k]), {
+        "torso": {"r": C_TR[k], "rz": C_TZ[k]}, "head": {"r": 8 - 0.3 * C_TR[k], "rz": -0.5 * C_TZ[k]},
+        "thigh_r": {"r": C_THR[k]}, "shin_r": {"r": C_SHR[k]},
+        "thigh_l": {"r": C_THL[k]}, "shin_l": {"r": C_SHL[k]},
+        "sparks": {"show": k == 5},
+        "crackle": {"show": k in (2, 6), "r": 60 * k},
+        "ring_flash": {"show": k in (5, 6), "s": 1.1 if k == 5 else 1.0},
+    }, M.body_about((0, 0, 24), x=C_BX[k], z=C_BZ[k], q=C_BQ[k]))
+    if k in (3, 4):
+        pose.setdefault("baton", {})["sz"] = 1.2
+    pose = merge(pose, KF.glyph(C_EYES[k]))
+    return KI.ground_feet(RIG, pose, LEGS)
+
+
+def _attack_c():
+    whip = {"kind": "arc", "joint": "baton", "inner": (HR[0], HR[1] - 1.0, HR[2] + 12.0), "outer": TIP,
+            "color": F.MINT, "white": 0.35, "taper": 0.2, "lines": 3, "t0": 0.0, "t1": 0.95}
+    ov = {
+        4: [dict(whip, **{"from": 3})],
+        5: [dict(whip, **{"from": 3, "t0": 0.35, "t1": 1.0})],
+        6: [dict(whip, **{"from": 5, "t0": 0.2, "t1": 1.0, "lines": 2}),
+            {"kind": "burst", "joint": "baton", "point": TIP, "r0_lu": 6.0, "r1_lu": 13.0, "n": 7,
+             "a0": -80.0, "arc": 160.0, "color": F.MINT_CORE},
+            {"kind": "dust", "ground": (16.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 92, "spread": 0.9,
+             "color": "#DDE3E8"}],
+    }
+    reuse = {0: ("attack", 0), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(11)], M.SMALL_MELEE_MS, impact=M.SMALL_MELEE_IMPACT,
+                  smear=4, overlays=ov, reuse=reuse)
+
+
 def _hit(k):
     def recoil(a):
         up = max(a, 0)
         return {"arm_r": {"r": 16 * a}, "hand_r": {"r": 12 * a}, "arm_l": {"r": 26 * a},
                 "head": {"r": 14 * a}, "torso": {"r": 12 * a},
                 "thigh_r": {"r": -10 * up}, "shin_r": {"r": 10 * up}, "hood_tip": {"r": -12 * a}}
-    return M.hit_light(k, STANCE, recoil, face_hurt=KF.glyph("g_hurt"),
-                       face_back=KF.glyph("g_angry") if k == 2 else None)
+    return KI.ground_feet(RIG, M.hit_light(k, STANCE, recoil, face_hurt=KF.glyph("g_hurt"),
+                                           face_back=KF.glyph("g_angry") if k == 2 else None), LEGS)
 
 
 def _die(k):
@@ -272,10 +411,12 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

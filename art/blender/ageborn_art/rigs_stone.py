@@ -54,8 +54,14 @@ class CaveBody:
                  shoulder_z=36.0, neck_z=38.0, hip_y=6.0, shoulder_y=12.5, elbow=(1.5, 28.5),
                  wrist=(4.0, 22.0), leg_r=(4.7, 4.1, 3.7), arm_r=(4.5, 3.9, 3.8), fist_r=4.5,
                  torso=((0, 29), (11.5, 9.8, 11.5)), torso_taper=(1.08, 0.92), foot_len=6.6,
-                 foot_fill=None, foot_finish="hair", build_torso=True):
+                 foot_fill=None, foot_finish="hair", build_torso=True, thigh_z=None,
+                 foot_joint=False, far_shade=1.0):
+        """walk v3 (ANIM_SPEC 2.0 rule 5): `thigh_z` puts the thigh pivots higher than the hips
+        joint (longer legs), `foot_joint` adds `foot_r/l` joints at the ankle carrying the feet
+        (planted feet, toe-off), `far_shade` darkens the far leg (0.8 = 20% darker)."""
+        from .colors import scale as _scale
         self.rig = rig
+        tz = hip_z if thigh_z is None else thigh_z
         self.skin = skin
         self.d = dict(hip_z=hip_z, knee_z=knee_z, ankle_z=ankle_z, waist_z=waist_z,
                       shoulder_z=shoulder_z, neck_z=neck_z, hip_y=hip_y, shoulder_y=shoulder_y)
@@ -64,8 +70,10 @@ class CaveBody:
         rig.joint("torso", "hips", (0, 0, waist_z))
         rig.joint("head", "torso", (1, 0, neck_z))
         for side, y in (("r", -hip_y), ("l", hip_y)):
-            rig.joint(f"thigh_{side}", "hips", (0, y, hip_z))
+            rig.joint(f"thigh_{side}", "hips", (0, y, tz))
             rig.joint(f"shin_{side}", f"thigh_{side}", (0.5, y, knee_z))
+            if foot_joint:
+                rig.joint(f"foot_{side}", f"shin_{side}", (1.0, y, ankle_z))
         self.fist = {}
         self.chains = {}
         for side, y in (("r", -shoulder_y), ("l", shoulder_y)):
@@ -79,18 +87,23 @@ class CaveBody:
             self.chains[side] = (sh, el, wr)
 
         # legs
+        self.foot_part = {}
         for side, y in (("r", -hip_y), ("l", hip_y)):
-            g = Geo().capsule((0, y, hip_z), (0.5, y, knee_z), leg_r[0], leg_r[1])
-            rig.part(f"thigh_{side}", g, skin)
+            sk = skin if side == "r" else _scale(skin, far_shade)
+            g = Geo().capsule((0, y, tz), (0.5, y, knee_z), leg_r[0], leg_r[1])
+            rig.part(f"thigh_{side}", g, sk)
             g = Geo().capsule((0.5, y, knee_z), (1.0, y, ankle_z), leg_r[1], leg_r[2])
-            rig.part(f"shin_{side}", g, skin)
+            rig.part(f"shin_{side}", g, sk)
+            fj = f"foot_{side}" if foot_joint else f"shin_{side}"
             if foot:
+                ft = foot if side == "r" else _scale(foot, far_shade)
                 g = Geo().blob((foot_len * 0.48, y, 2.9), (foot_len, 4.6, 3.1), p=2.6, taper=(1.0, 0.85))
-                g.blob((0.8, y, ankle_z + 1.8), (4.4, 4.3, 2.4), p=2.4)
-                rig.part(f"shin_{side}", g, foot, finish=foot_finish)
+                rig.part(fj, g, ft, finish=foot_finish)
+                g = Geo().blob((0.8, y, ankle_z + 1.8), (4.4, 4.3, 2.4), p=2.4)
+                rig.part(f"shin_{side}", g, ft, finish=foot_finish)
             else:
                 g = Geo().blob((foot_len * 0.45, y, 2.6), (foot_len, 4.2, 2.7), p=2.4, taper=(1.0, 0.8))
-                rig.part(f"shin_{side}", g, foot_fill or skin)
+                rig.part(fj, g, foot_fill or sk)
         if build_torso:
             (tx, tz), radii = torso
             g = Geo().blob((tx, 0, tz), radii, p=2.2, taper=torso_taper)

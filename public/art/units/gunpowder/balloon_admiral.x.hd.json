@@ -1,0 +1,450 @@
+{
+ "frames": {
+  "balloon_admiral_attack_b_01": {
+   "frame": {
+    "x": 194,
+    "y": 2,
+    "w": 198,
+    "h": 395
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 133,
+    "w": 198,
+    "h": 395
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 616
+   },
+   "anchor": {
+    "x": 0.58333,
+    "y": 0.86364
+   }
+  },
+  "balloon_admiral_attack_b_01_team": {
+   "frame": {
+    "x": 187,
+    "y": 420,
+    "w": 191,
+    "h": 348
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 139,
+    "w": 191,
+    "h": 348
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 616
+   },
+   "anchor": {
+    "x": 0.58333,
+    "y": 0.86364
+   }
+  },
+  "balloon_admiral_attack_b_02": {
+   "frame": {
+    "x": 396,
+    "y": 2,
+    "w": 200,
+    "h": 391
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 166,
+    "y": 136,
+    "w": 200,
+    "h": 391
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 616
+   },
+   "anchor": {
+    "x": 0.58333,
+    "y": 0.86364
+   }
+  },
+  "balloon_admiral_attack_b_02_team": {
+   "frame": {
+    "x": 382,
+    "y": 420,
+    "w": 193,
+    "h": 346
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 173,
+    "y": 142,
+    "w": 193,
+    "h": 346
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 616
+   },
+   "anchor": {
+    "x": 0.58333,
+    "y": 0.86364
+   }
+  },
+  "balloon_admiral_attack_b_03": {
+   "frame": {
+    "x": 600,
+    "y": 2,
+    "w": 202,
+    "h": 389
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 140,
+    "w": 202,
+    "h": 389
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 616
+   },
+   "anchor": {
+    "x": 0.58333,
+    "y": 0.86364
+   }
+  },
+  "balloon_admiral_attack_b_03_team": {
+   "frame": {
+    "x": 579,
+    "y": 420,
+    "w": 195,
+    "h": 343
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 147,
+    "w": 195,
+    "h": 343
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 616
+   },
+   "anchor": {
+    "x": 0.58333,
+    "y": 0.86364
+   }
+  },
+  "balloon_admiral_attack_b_04": {
+   "frame": {
+    "x": 806,
+    "y": 2,
+    "w": 204,
+    "h": 387
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 143,
+    "w": 204,
+    "h": 387
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 616
+   },
+   "anchor": {
+    "x": 0.58333,
+    "y": 0.86364
+   }
+  },
+  "balloon_admiral_attack_b_04_team": {
+   "frame": {
+    "x": 983,
+    "y": 420,
+    "w": 196,
+    "h": 340
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 152,
+    "w": 196,
+    "h": 340
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 616
+   },
+   "anchor": {
+    "x": 0.58333,
+    "y": 0.86364
+   }
+  },
+  "balloon_admiral_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 188,
+    "h": 414
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 110,
+    "w": 188,
+    "h": 414
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 616
+   },
+   "anchor": {
+    "x": 0.58333,
+    "y": 0.86364
+   }
+  },
+  "balloon_admiral_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 420,
+    "w": 181,
+    "h": 371
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 114,
+    "w": 181,
+    "h": 371
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 616
+   },
+   "anchor": {
+    "x": 0.58333,
+    "y": 0.86364
+   }
+  },
+  "balloon_admiral_attack_b_06": {
+   "frame": {
+    "x": 1014,
+    "y": 2,
+    "w": 208,
+    "h": 378
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 162,
+    "y": 136,
+    "w": 208,
+    "h": 378
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 616
+   },
+   "anchor": {
+    "x": 0.58333,
+    "y": 0.86364
+   }
+  },
+  "balloon_admiral_attack_b_06_team": {
+   "frame": {
+    "x": 778,
+    "y": 420,
+    "w": 201,
+    "h": 341
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 137,
+    "w": 201,
+    "h": 341
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 616
+   },
+   "anchor": {
+    "x": 0.58333,
+    "y": 0.86364
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "balloon_admiral_attack_00",
+   "balloon_admiral_attack_b_01",
+   "balloon_admiral_attack_b_02",
+   "balloon_admiral_attack_b_03",
+   "balloon_admiral_attack_b_04",
+   "balloon_admiral_attack_b_05",
+   "balloon_admiral_attack_b_06",
+   "balloon_admiral_attack_07",
+   "balloon_admiral_attack_08",
+   "balloon_admiral_attack_09"
+  ],
+  "attack_b_team": [
+   "balloon_admiral_attack_00_team",
+   "balloon_admiral_attack_b_01_team",
+   "balloon_admiral_attack_b_02_team",
+   "balloon_admiral_attack_b_03_team",
+   "balloon_admiral_attack_b_04_team",
+   "balloon_admiral_attack_b_05_team",
+   "balloon_admiral_attack_b_06_team",
+   "balloon_admiral_attack_07_team",
+   "balloon_admiral_attack_08_team",
+   "balloon_admiral_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "balloon_admiral.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1280,
+   "h": 796
+  },
+  "scale": "2.5",
+  "ageborn": {
+   "visualId": "unit.balloon_admiral",
+   "name": "Balloon Admiral",
+   "heightLu": 200,
+   "widthLu": 89.3,
+   "pxPerLu": 2.05,
+   "feetPx": [
+    266,
+    532
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     200
+    ],
+    "hitCenter": [
+     0,
+     110
+    ],
+    "muzzle": [
+     0,
+     -8
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "fly",
+   "extrasOf": "balloon_admiral",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      40,
+      50,
+      60,
+      140,
+      43,
+      80,
+      90,
+      110,
+      110,
+      109
+     ],
+     "durationMs": 832,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4002,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        2.5,
+        -4.9
+       ],
+       [
+        18.1,
+        1.5
+       ],
+       [
+        18.0,
+        0.9
+       ],
+       [
+        17.4,
+        -0.7
+       ],
+       [
+        17.3,
+        -1.4
+       ],
+       [
+        18.5,
+        3.8
+       ],
+       [
+        16.8,
+        5.9
+       ],
+       [
+        1.2,
+        -1.1
+       ],
+       [
+        2.2,
+        -3.4
+       ],
+       [
+        2.0,
+        -4.9
+       ]
+      ]
+     },
+     "muzzle": [
+      18.5,
+      3.8
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

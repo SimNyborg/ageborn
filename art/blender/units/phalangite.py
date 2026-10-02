@@ -10,7 +10,12 @@ a bronze joint sleeve, a team pennon and a bronze butt spike. He stands braced, 
 
 Animation (cartoon kit v2; a viewer expects a pike to be thrust straight and hard):
   idle    resets his grip (the front hand slides and re-grips), weight shift, blink
-  walk    lockstep march: short stiff steps, the sarissa level and bobbing a frame late
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1): the sarissa carried at the port,
+          sloped up and forward in both hands, bobbing a frame late; planted feet
+  attack_b  OVERHEAD DRIVE: both hands raise the sarissa over his head (an overhand grip), then
+          drive it down and forward
+  attack_c  BRACE AND SHOVE: drops into a deep crouch with the butt low and the point angled up,
+          then shoves up and forward as he rises
   attack  FEINT AND DRIVE: a short feint jab, a pull back into a deep coil (the held extreme:
           sarissa drawn far back, weight on the back leg), then the full braced drive
           (two streak frames), impact with the arms locked out, the pennon whipping
@@ -27,9 +32,10 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "phalangite"
+GAIT_NAME = "biped"
 NAME = "Phalangite"
 HEIGHT_LU = 72
-CANVAS = (404, 256)
+CANVAS = (452, 266)
 FEET = (112, 228)
 ANCHORS = {"head": (2, 70), "hitCenter": (0, 33)}
 NO_RETIME = True
@@ -43,14 +49,10 @@ HELM_C = (1.5, 0, 55.0)
 
 
 def build(rig):
-    B.skeleton(rig)
-    B.sandal_legs(rig, thigh_r=4.9)
-    for s_ in ("r", "l"):                                                  # sandal laces
-        y = B.LEG_Y * B.SIDE_Y[s_]
-        g = Geo()
-        for z in (4.4, 7.0):
-            g.blob((1.0, y, z), (3.9, 3.9, 0.7), p=3.0)
-        rig.part(f"shin_{s_}", g, B.LEATHER_DK, outline=0.4)
+    global RIG
+    RIG = rig
+    B.skeleton_v3(rig)           # walk v3: longer legs, planted feet (ANIM_SPEC 2.0 rule 5)
+    B.sandal_legs_v3(rig, thigh_r=4.7)
 
     # team chiton, linen cuirass, team pteruges
     g = Geo().blob((0, 0, 27.0), (10.6, 9.8, 12.0), p=2.3, taper=(1.1, 0.92))
@@ -69,7 +71,8 @@ def build(rig):
     g.capsule((4.0, -10.6, 34.0), (4.0, -10.6, 22.0), 0.8)
     rig.part("torso", g, B.LEATHER_DK, outline=0.4)
     rig.secondary("hem", "hips", (0.5, 0, 17.0), (0.5, 0, 9.0), max_deg=8, gain=0.7)
-    B.pteruges(rig, "hem", 17.6, B.LINEN, n=8, radius=(11.4, 10.6), length=8.0)
+    rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 0.6)        # hem >= 9 lu above the soles
+    B.pteruges(rig, "hem", 17.6, B.LINEN, n=8, radius=(11.4, 10.6), length=7.0)
     g = Geo().blob((0.6, 0, 16.0), (11.0, 10.2, 3.6), p=2.6)
     rig.part("hem", g, team=True)
 
@@ -119,7 +122,6 @@ def build(rig):
     g = Geo().slab([(px0 + x, hz - 0.8 + z) for x, z in pts], PY, 1.2)
     rig.part("pennon", g, team=True, outline=0.8)
     rig.track("sarissaTip", "hand_r", (hx + TIP, PY, hz))
-    rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -166,14 +168,26 @@ def _idle(f):
     return M.idle_v2(f, NO_ARMS, frames=6, extra=extra, face_blink=F.expr("blink"), blink=4)
 
 
-def _walk(f):
-    # lockstep march: short stiff steps, both hands on the level sarissa, a late bob
+# -- walk v3: G1 bounce jog at ground speed (card 70 x 1.25 = 87.5 lu/s), 8 x 77 ms --------------
+RIG = None
+SPEED = 87.5
+LEGS = B.walk_legs_v3()
+GAIT = B.jog_gait(SPEED, LEGS)
+
+
+def _walk(f, report=None):
+    # carry: the sarissa at the port, sloped up and forward (the guard holds it level), both hands
+    # on it, bobbing a frame late; the pennon trails
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        w = 18 + 2.5 * lag
-        return _pennon(merge(sarissa(-84 + 3 * lag, -32, w), {"helm": {"z": 0.3 * lag}}), w)
-    return M.walk_v2(f, {}, HEIGHT_LU, thigh=30.0, knee=40.0, lift_lu=6.5, bob_pct=0.05, lean=-4.0,
-                     arm=0.0, fore=0.0, arms=(), twist=3.0, extra=extra)
+        w = 40 + 3.0 * lag
+        return _pennon(merge(sarissa(-70 + 3 * lag, -12, w), {"helm": {"z": 0.3 * lag}}), w)
+    return M.walk_v3(RIG, f, {}, GAIT, legs=LEGS, lean=-10.0, twist=5.0, nod=3.0, extra=extra,
+                     report=report)
+
+
+def _feet(pose, fr, fl, lr=0.0, ll=0.0, ar=0.0, al=0.0):
+    return B.plant(RIG, pose, LEGS, r=(fr, lr, ar), l=(fl, ll, al))
 
 
 # 11 unique frames, moves.SMALL_MELEE_MS
@@ -186,10 +200,10 @@ A_H = [0, -2, 3, 6, -3, -4, -5, -5, -2, -1, 0]
 A_Q = [-0.02, 0.02, -0.04, -0.1, 0.06, 0.03, -0.14, -0.1, -0.04, 0.0, 0.0]
 A_X = [-0.5, 3.0, -2.0, -6.0, 4.0, 8.0, 12.0, 13.0, 7.0, 3.0, 1.0]
 A_Z = [-1.2, -1.2, -2.0, -3.4, -1.0, -1.6, -4.0, -3.6, -2.4, -1.6, -1.2]
-A_THR = [14, 20, 8, 2, 22, 30, 38, 38, 28, 18, 14]
-A_SHR = [-8, -10, -6, -6, -14, -18, -22, -20, -14, -10, -8]
-A_THL = [-14, -18, -22, -28, -26, -30, -36, -36, -28, -18, -14]
-A_SHL = [-4, -4, -12, -18, -2, 0, 0, 0, -4, -4, -4]
+# planted feet: braced wide, the far foot holds, the near foot steps in with the drive
+A_FR = [7.0, 10.0, 6.0, 4.0, 12.0, 16.0, 20.0, 20.0, 14.0, 9.0, 7.0]
+A_FL = [-8.0, -6.0, -9.0, -12.0, -9.0, -7.0, -5.0, -5.0, -7.0, -8.0, -8.0]
+A_LR = [0, 1.5, 0, 0, 2.5, 1.5, 0, 0, 0, 0, 0]
 
 
 def _attack_pose(f):
@@ -197,9 +211,8 @@ def _attack_pose(f):
     pose = merge(sarissa(S_A[f], S_F[f], w), {
         "hips": {"z": A_Z[f]},
         "torso": {"r": A_T[f]}, "head": {"r": A_H[f]},
-        "thigh_r": {"r": A_THR[f]}, "shin_r": {"r": A_SHR[f]},
-        "thigh_l": {"r": A_THL[f]}, "shin_l": {"r": A_SHL[f]},
     }, M.body_about((0, 0, 22), x=A_X[f], q=A_Q[f]))
+    pose = _feet(pose, A_FR[f], A_FL[f], lr=A_LR[f])
     if f in (4, 5):
         pose["hand_r"]["sx"] = 1.08
     if f in (2, 3):
@@ -211,17 +224,17 @@ def _attack_pose(f):
 
 HEAD_PT = (HR[0] + TIP - 8.0, PY, HR[2])
 TIP_PT = (HR[0] + TIP, PY, HR[2])
+STREAK = {"kind": "streak", "joint": "hand_r", "point": HEAD_PT, "color": B.SAND_LT, "white": 0.3,
+          "width_lu": 5.5}
 
 
 def _attack_clip():
-    streak = {"kind": "streak", "joint": "hand_r", "point": HEAD_PT, "color": B.SAND_LT, "white": 0.3,
-              "width_lu": 5.5}
     ov = {
         1: [{"kind": "burst", "joint": "hand_r", "point": TIP_PT, "r0_lu": 3.0, "r1_lu": 6.5, "n": 3,
              "a0": -40.0, "arc": 80.0}],
-        4: [dict(streak, **{"from": 3, "t1": 0.95})],
-        5: [dict(streak, **{"from": 3, "t0": 0.35, "t1": 0.98}),
-            dict(streak, **{"from": 3, "t0": 0.1, "t1": 0.55, "width_lu": 3.5})],
+        4: [dict(STREAK, **{"from": 3, "t1": 0.95})],
+        5: [dict(STREAK, **{"from": 3, "t0": 0.35, "t1": 0.98}),
+            dict(STREAK, **{"from": 3, "t0": 0.1, "t1": 0.55, "width_lu": 3.5})],
         6: [{"kind": "burst", "joint": "hand_r", "point": TIP_PT, "r0_lu": 6.0, "r1_lu": 13.0, "n": 5,
              "a0": -70.0, "arc": 140.0},
             {"kind": "dust", "ground": (-12.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 4, "spread": 0.9},
@@ -229,6 +242,110 @@ def _attack_clip():
     }
     return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
                   impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
+
+
+def _variant(k, tab):
+    """One new frame of a variant from its table (torso-space arm, world sarissa angle)."""
+    t = tab["T"][k]
+    w = tab["W"][k] - t
+    pose = merge(sarissa(tab["A"][k], tab["F"][k], w, grip=tab.get("G", [24.0] * 6)[k]), {
+        "torso": {"r": t}, "head": {"r": tab["H"][k]},
+    }, M.body_about((0, 0, 22), x=tab["X"][k], z=tab["Z"][k], q=tab["Q"][k]))
+    pose = _feet(pose, tab["FR"][k], tab["FL"][k], lr=tab["LR"][k], ar=tab.get("AR", [0] * 6)[k],
+                 al=tab.get("AL", [0] * 6)[k])
+    return _pennon(pose, w)
+
+
+# -- attack B: overhead two-handed downward drive (ANIM_SPEC appendix B) -------------------------
+# 0 = A read, 1 = A feint, 2 the sarissa swung up, 3 HOLD (both hands over his head, an overhand
+# grip, the point dipped toward the target, up on the toes), 4 smear, 5 lead, 6 IMPACT (driven down
+# and forward, a long lunge), 7 overshoot, 8-10 = A recoil and settle
+B_TAB = {
+    #     lift  HOLD  smear lead  IMP   over
+    "A": [30, 64, 40, 12, -6, -8],
+    "F": [70, 104, 50, 10, -14, -16],
+    "W": [-2, -8, -11, -14, -16, -17],
+    "T": [6, 10, -4, -12, -18, -19],
+    "H": [-4, -8, 0, 4, 6, 6],
+    "X": [-2.0, -4.0, 2.0, 6.0, 10.0, 10.5],
+    "Z": [1.0, 2.5, 0.0, -1.5, -3.0, -2.8],
+    "Q": [0.04, 0.10, 0.06, 0.0, -0.14, -0.10],
+    "FR": [6.0, 4.0, 10.0, 14.0, 18.0, 18.0],
+    "FL": [-8.0, -10.0, -9.0, -7.0, -5.0, -5.0],
+    "LR": [0.0, 0.0, 2.5, 1.0, 0.0, 0.0],
+    "AR": [0, -14, 0, 0, 0, 0],
+    "AL": [0, -18, 0, 0, 0, 0],
+}
+
+
+def _b_pose(i):
+    if i in (0, 1) or i >= 8:
+        return _attack_pose(i)
+    pose = _variant(i - 2, B_TAB)
+    if i in (4, 5):
+        pose["hand_r"]["sx"] = 1.08
+    return merge(pose, F.expr("grit") if i in (2, 3) else F.expr("yell"),
+                 {"brow": {"z": -1.0 if i in (2, 3) else -1.2}})
+
+
+def _attack_b():
+    ov = {
+        4: [dict(STREAK, **{"from": 3, "t1": 0.95})],
+        5: [dict(STREAK, **{"from": 3, "t0": 0.35, "t1": 0.98})],
+        6: [{"kind": "burst", "joint": "hand_r", "point": TIP_PT, "r0_lu": 6.0, "r1_lu": 13.0, "n": 5,
+             "a0": -110.0, "arc": 140.0},
+            {"kind": "dust", "ground": (24.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 13, "spread": 0.8},
+            {"kind": "dust", "ground": (-6.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 14, "spread": 0.7}],
+    }
+    # the overshoot holds the impact pose (atlas budget: the sarissa makes every frame wide)
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 7: ("attack", 8), 8: ("attack", 9), 9: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i if i < 7 else i + 1) for i in range(10)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 8, 9], overlays=ov, reuse=reuse)
+
+
+# -- attack C: brace and shove from a deep crouch ------------------------------------------------
+# 0 = A read, 1 = A feint, 2 dropping, 3 HOLD (a deep crouch, the butt low behind, the point angled
+# up), 4 smear, 5 lead, 6 IMPACT (shoved up and forward as he rises), 7 overshoot, 8-10 = A's
+C_TAB = {
+    #      drop  HOLD  smear lead  IMP   over
+    "A": [-120, -132, -90, -66, -50, -48],
+    "F": [-80, -100, -40, -20, -8, -6],
+    "W": [18, 30, 28, 24, 20, 18],
+    "T": [-14, -22, -12, -6, -4, -4],
+    "H": [8, 12, 4, 0, -2, -2],
+    "X": [-1.0, -2.0, 3.0, 7.0, 10.0, 10.5],
+    "Z": [-5.0, -9.0, -5.0, -2.0, -1.0, -1.2],
+    "Q": [-0.10, -0.14, 0.06, 0.08, -0.12, -0.08],
+    "FR": [9.0, 11.0, 13.0, 16.0, 18.0, 18.0],
+    "FL": [-9.0, -12.0, -10.0, -8.0, -6.0, -6.0],
+    "LR": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    "AL": [-20, -50, -30, -10, 0, 0],
+}
+
+
+def _c_pose(i):
+    if i in (0, 1) or i >= 8:
+        return _attack_pose(i)
+    pose = _variant(i - 2, C_TAB)
+    if i in (4, 5):
+        pose["hand_r"]["sx"] = 1.08
+    return merge(pose, F.expr("grit") if i in (2, 3) else F.expr("yell"),
+                 {"brow": {"z": -1.0 if i in (2, 3) else -1.2}})
+
+
+def _attack_c():
+    ov = {
+        4: [dict(STREAK, **{"from": 3, "t1": 0.95})],
+        5: [dict(STREAK, **{"from": 3, "t0": 0.35, "t1": 0.98})],
+        6: [{"kind": "burst", "joint": "hand_r", "point": TIP_PT, "r0_lu": 6.0, "r1_lu": 13.0, "n": 5,
+             "a0": -40.0, "arc": 140.0},
+            {"kind": "dust", "ground": (-10.0, 0.0), "size_lu": 6.0, "puffs": 4, "seed": 23, "spread": 1.0},
+            {"kind": "dust", "ground": (18.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 24, "spread": 0.7}],
+    }
+    # the overshoot holds the impact pose (atlas budget: the sarissa makes every frame wide)
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 7: ("attack", 8), 8: ("attack", 9), 9: ("attack", 10)}
+    return M.clip("attack_c", [_c_pose(i if i < 7 else i + 1) for i in range(10)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 8, 9], overlays=ov, reuse=reuse)
 
 
 def _hit(k):
@@ -270,10 +387,12 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

@@ -11,7 +11,10 @@ wide in the camera plane (the aura reads from far away). The near hand throws da
 Animation (cartoon kit v2; a viewer expects a standard bearer to rally with the banner and
 chip in with a thrown dart):
   idle    the banner ripples, he plants the pole with a little bounce, blink
-  walk    march, the standard bobbing and the banner trailing
+  walk    walk v3 brisk walk at ground speed (ANIM_SPEC G2): the standard held high and tipped
+          forward, bobbing a frame late with the banner trailing, the dart arm pumping, planted feet
+  attack_b  PLANT AND THROW: he stamps the standard upright beside him and hurls a dart overhand
+          from behind his head (A and B twirl the dart while the sim wind-up lasts: holdLoop)
   attack  RALLY SWING AND DART FLICK: he rocks back with the standard tilted far back and the
           dart hand cocked low behind the hip (the held extreme), then sweeps the standard
           forward (banner smear) while flicking the dart underhand (it leaves at the per-frame
@@ -23,12 +26,14 @@ chip in with a thrown dart):
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as G
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "standard_bearer"
+GAIT_NAME = "biped"
 NAME = "Standard Bearer"
 HEIGHT_LU = 70
 CANVAS = (420, 322)
@@ -44,8 +49,10 @@ DART_F, DART_B = 26.0, 7.0
 
 
 def build(rig):
-    B.skeleton(rig)
-    B.sandal_legs(rig)
+    global RIG
+    RIG = rig
+    B.skeleton_v3(rig)           # walk v3: longer legs, planted feet (ANIM_SPEC 2.0 rule 5)
+    B.sandal_legs_v3(rig)
 
     # the standard in the far hand (built first: it sits behind the body)
     hx, hy, hz = HL
@@ -106,6 +113,7 @@ def build(rig):
     g = Geo().blob((0.2, 0, 27.5), (10.4, 9.6, 11.6), p=2.4, taper=(1.1, 0.92))
     rig.part("torso", g, B.LINEN)
     rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=9, gain=0.8)
+    rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 1.4)        # hem >= 9 lu above the soles
     g = Geo().blob((0.6, 0, 14.8), (11.4, 10.4, 5.4), p=2.4, taper=(1.14, 0.92))
     rig.part("hem", g, B.LINEN)
     g = Geo().blob((0.6, 0, 10.2), (11.6, 10.6, 1.1), p=3.0)
@@ -118,6 +126,7 @@ def build(rig):
     # frame drum at the near hip, face to the camera: plum shell, sandstone skin, polished rim,
     # a leather strap across the chest
     rig.joint("drum", "hips", (5.0, -14.0, 14.0))
+    rig.rest_offset["drum"] = (0, 0, B.V3_LIFT + 1.5)       # rides on the hip, clear of the knee
     g = Geo().lathe([(0, -2.6), (8.0, -2.6), (8.5, 0), (8.0, 2.6), (0, 2.6)], (5.0, -13.0, 13.5), (5.0, -14.0, 13.5),
                     segs=28)
     rig.part("drum", g, B.PLUM)
@@ -169,7 +178,6 @@ def build(rig):
                     (hx + DART_F, hy - 1.0, hz), segs=10, squash=(1.0, 0.5))
     rig.part("dart", g, B.BRONZE, finish=B.POLISH, outline=0.5)
     rig.track("muzzle", "hand_r", (hx + DART_F * 0.6, hy - 1.0, hz))
-    rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -197,15 +205,42 @@ def _idle(f):
     return M.idle_v2(f, NO_STD, frames=6, extra=extra, face_blink=F.expr("blink"), blink=4)
 
 
-def _walk(f):
+# -- walk v3: G2 brisk walk at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 70 ms --------------
+RIG = None
+SPEED = 81.25
+LEGS = B.walk_legs_v3()
+GAIT = G.Gait(8, 560, SPEED, G.biped_feet(LEGS["l"], LEGS["r"], x_mid=1.4), 0.40,
+              lift=6.0, kick=2.0, reach=0.0, toe_off=20.0, early_lift=1.4, drag=0.3, lift_peak=0.38)
+for _k, (_leg, _ph, _x, _gz) in list(GAIT.feet.items()):
+    GAIT.feet[_k] = (_leg, _ph - 0.03, _x, _gz)
+
+
+class _Dart:
+    @staticmethod
+    def pose(a, b):
+        return throw(a, b, 20)
+
+
+def _walk(f, report=None):
+    # carry: the standard raised high and tipped forward (the idle plants it upright), bobbing a frame
+    # late so the banner trails; the dart arm pumps
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return {"hand_l": {"r": 2.5 * lag}, "arm_l": {"r": -2 * lag}, "hand_r": {"r": 3 * lag}}
-    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=34.0, knee=52.0, lift_lu=7.0, bob_pct=0.06,
-                     lean=-6.0, arm=24.0, fore=16.0, arms=("r",), extra=extra)
+        return merge(standard(-18 + 3 * lag, 58 - 3 * lag, 74 - 4 * lag), {"cloak": {"r": 5 * lag}})
+    return M.walk_v3(RIG, f, NO_STD, GAIT, legs=LEGS, bob=M.BRISK_BOB, sq=M.BRISK_SQ, lean=-7.0,
+                     twist=5.0, nod=3.0, arms={"r": _Dart}, arm=32.0, elbow=(40.0, 75.0), extra=extra,
+                     report=report)
 
 
-# 11 unique frames, moves.SMALL_MELEE_MS. Angles in WORLD degrees (the torso lean is subtracted).
+def _feet(pose, fr, fl, lr=0.0, ll=0.0, ar=0.0, al=0.0):
+    return B.plant(RIG, pose, LEGS, r=(fr, lr, ar), l=(fl, ll, al))
+
+
+# 12 steps: read, dip, wind, HOLD, twirl (holdLoop with the hold while the sim wind-up lasts), smear,
+# lead | IMPACT, over, reach, draw, settle. Pre-impact 290 of 680 ms (impactAt 0.4265, as shipped).
+ATK_MS = [30, 40, 40, 102, 30, 30, 18, 120, 60, 50, 70, 90]
+ATK_IMPACT = 7
+# 11 base poses (the shipped A). Angles in WORLD degrees (the torso lean is subtracted).
 #          read  dip  wind  HOLD smear lead  IMP  over reach draw settle
 D_A = [-82, -110, -145, -160, -90, -45, -10, 6, -40, -70, -82]
 D_F = [-22, -100, -150, -168, -60, -10, 22, 36, -20, -16, -22]
@@ -218,20 +253,18 @@ A_H = [0, 2, -6, -10, -2, 4, 8, 8, 4, 0, 0]
 A_Q = [-0.02, -0.1, 0.04, 0.08, 0.05, 0.0, -0.13, -0.08, -0.03, 0.01, 0.0]
 A_X = [-0.5, -1.5, -3.0, -4.0, 0.5, 3.5, 6.0, 6.5, 4.0, 1.5, 0.5]
 A_Z = [0.0, -2.4, 0.4, 1.2, 0.4, -0.4, -2.0, -1.4, -0.6, 0.0, 0.0]
-A_THR = [0, 6, 14, 22, 14, 18, 24, 22, 12, 4, 0]
-A_SHR = [0, -6, -4, -4, -12, -16, -20, -16, -8, -2, 0]
-A_THL = [0, -6, -12, -14, -8, -14, -20, -20, -12, -4, 0]
-A_SHL = [0, -10, -8, -10, -6, -6, -6, -4, -4, 0, 0]
+A_FR = [2.0, 2.0, 1.0, 0.0, 4.0, 7.0, 9.0, 9.0, 7.0, 4.0, 2.0]
+A_FL = [-2.0, -3.0, -6.0, -8.0, -6.0, -4.0, -2.5, -2.5, -2.5, -2.0, -2.0]
+A_LR = [0, 0, 0, 0, 2.5, 1.5, 0, 0, 0, 0, 0]
 
 
-def _attack_pose(f):
+def _base(f):
     t = A_T[f]
     pose = merge(throw(D_A[f] - t, D_F[f] - t, D_W[f] - t), standard(S_A[f] - t, S_F[f] - t, S_W[f] - t), {
         "torso": {"r": t}, "head": {"r": A_H[f]},
-        "thigh_r": {"r": A_THR[f]}, "shin_r": {"r": A_SHR[f]},
-        "thigh_l": {"r": A_THL[f]}, "shin_l": {"r": A_SHL[f]},
         "dart": {"hide": f in (6, 7, 8)},
     }, M.body_about((0, 0, 22), x=A_X[f], z=A_Z[f], q=A_Q[f]))
+    pose = _feet(pose, A_FR[f], A_FL[f], lr=A_LR[f])
     if f in (4, 5):
         pose["dart"]["sx"] = 1.2
     if f in (1, 2):
@@ -243,26 +276,98 @@ def _attack_pose(f):
     return pose
 
 
+def _twirl(pose):
+    """The hold-loop partner of a hold: the dart twirls in the fingers, the banner sways."""
+    return merge(pose, {"hand_r": {"r": 24}, "fore_r": {"r": 5}, "hand_l": {"r": -4}, "head": {"r": 2},
+                        "torso": {"r": 2}, "pupils": {"x": 0.4}})
+
+
+def _attack_pose(u):
+    if u <= 3:
+        return _base(u)
+    if u == 4:
+        return _twirl(_base(3))
+    return _base(u - 1)
+
+
 EAGLE = (HL[0], HL[1] + 0.6, HL[2] + POLE_UP + 6.0)
 BANNER_LOW = (HL[0], HL[1] + 0.6, HL[2] + POLE_UP - 30.0)
+BANNER = {"kind": "arc", "joint": "standard", "inner": BANNER_LOW, "outer": EAGLE, "color": B.SAND_LT,
+          "white": 0.35, "taper": 0.25, "lines": 3, "line_gap_lu": 3.0}
+HAND = {"kind": "arc", "joint": "hand_r", "inner": (HR[0], HR[1], HR[2] + 1.0),
+        "outer": (HR[0] + 3.5, HR[1], HR[2] - 1.0), "color": B.SKIN, "white": 0.4, "taper": 0.1, "lines": 2}
+SHOUT = {"kind": "rings", "joint": "head", "point": (18.0, 0.0, 43.0), "radii_lu": (6.0, 10.5),
+         "a0": -40.0, "a1": 40.0}
 
 
 def _attack_clip():
-    banner = {"kind": "arc", "joint": "standard", "inner": BANNER_LOW, "outer": EAGLE, "color": B.SAND_LT,
-              "white": 0.35, "taper": 0.25, "lines": 3, "line_gap_lu": 3.0}
-    hand = {"kind": "arc", "joint": "hand_r", "inner": (HR[0], HR[1], HR[2] + 1.0),
-            "outer": (HR[0] + 3.5, HR[1], HR[2] - 1.0), "color": B.SKIN, "white": 0.4, "taper": 0.1, "lines": 2}
-    shout = {"kind": "rings", "joint": "head", "point": (18.0, 0.0, 43.0), "radii_lu": (6.0, 10.5),
-             "a0": -40.0, "a1": 40.0}
     ov = {
-        4: [dict(banner, **{"from": 3, "t1": 0.95}), dict(hand, **{"from": 3, "t1": 0.95})],
-        5: [dict(banner, **{"from": 3, "t0": 0.35, "t1": 0.95})],
-        6: [dict(hand, **{"from": 5, "t1": 0.95}), shout,
+        5: [dict(BANNER, **{"from": 3, "t1": 0.95}), dict(HAND, **{"from": 3, "t1": 0.95})],
+        6: [dict(BANNER, **{"from": 3, "t0": 0.35, "t1": 0.95})],
+        7: [dict(HAND, **{"from": 6, "t1": 0.95}), SHOUT,
             {"kind": "dust", "ground": (10.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 4, "spread": 0.8}],
-        7: [dict(shout, radii_lu=(8.0, 13.0))],
+        8: [dict(SHOUT, radii_lu=(8.0, 13.0))],
     }
-    return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
-                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
+    return M.clip("attack", [_attack_pose(u) for u in range(12)], ATK_MS, impact=ATK_IMPACT, smear=5,
+                  overlays=ov, extra={"holdStep": 3, "holdLoop": [3, 4]})
+
+
+# -- attack B: the standard planted upright, an overhand dart throw (ANIM_SPEC appendix B) ---------
+# 0 = A read, 1 the standard stamped down, 2 the dart drawn up, 3 HOLD (the standard planted
+# upright beside him, the dart cocked high behind his head, the far shoulder pointing), 4 twirl,
+# 5 overhand whip, 6 lead, 7 IMPACT (released forward from shoulder height), 8-11 = A's
+#      stamp draw  HOLD  whip  lead  IMP
+B_DA = [-60, 60, 110, 70, 20, -6]             # dart arm, world deg
+B_DF = [-20, 120, 160, 60, 10, -10]
+B_DW = [20, 30, 24, 14, 8, 2]
+B_SA = [-50, -56, -60, -60, -56, -54]         # the planted standard (world deg)
+B_SF = [-40, -60, -70, -70, -62, -58]
+B_SW = [90, 90, 92, 92, 90, 88]
+B_T = [-6, 6, 12, -4, -12, -16]
+B_H = [4, -4, -8, 2, 6, 8]
+B_X = [0.0, -1.5, -3.0, 1.5, 4.0, 5.5]
+B_Z = [-2.5, 0.5, 1.0, -0.5, -1.5, -2.0]
+B_Q = [-0.10, 0.05, 0.08, 0.04, 0.0, -0.12]
+B_FR = [2.0, 1.0, 0.0, 4.0, 7.0, 8.0]
+B_FL = [-3.0, -5.0, -7.0, -5.0, -3.0, -2.5]
+B_LR = [0.0, 0.0, 0.0, 2.5, 1.0, 0.0]
+
+
+def _b_base(k):
+    t = B_T[k]
+    pose = merge(throw(B_DA[k] - t, B_DF[k] - t, B_DW[k] - t), standard(B_SA[k] - t, B_SF[k] - t, B_SW[k] - t), {
+        "torso": {"r": t}, "head": {"r": B_H[k]},
+        "dart": {"hide": k == 5},
+    }, M.body_about((0, 0, 22), x=B_X[k], z=B_Z[k], q=B_Q[k]))
+    pose = _feet(pose, B_FR[k], B_FL[k], lr=B_LR[k])
+    if k == 3:
+        pose["dart"]["sx"] = 1.2
+    if k in (0, 1, 2):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+    else:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+    return pose
+
+
+def _b_pose(u):
+    if u == 0 or u >= 8:
+        return _attack_pose(u)
+    if u == 4:
+        return _twirl(_b_base(2))
+    return _b_base(u - 1 if u < 4 else u - 2)
+
+
+def _attack_b():
+    ov = {
+        1: [{"kind": "dust", "ground": (-2.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 31, "spread": 0.7}],
+        5: [dict(HAND, **{"from": 3, "t1": 0.95})],
+        7: [dict(HAND, **{"from": 6, "t1": 0.95}), SHOUT,
+            {"kind": "dust", "ground": (9.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 32, "spread": 0.7}],
+        8: [dict(SHOUT, radii_lu=(8.0, 13.0))],
+    }
+    reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10), 11: ("attack", 11)}
+    return M.clip("attack_b", [_b_pose(u) for u in range(12)], ATK_MS, impact=ATK_IMPACT, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 3, "holdLoop": [3, 4]})
 
 
 def _hit(k):
@@ -302,9 +407,10 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

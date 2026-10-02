@@ -11,11 +11,16 @@ emitter nozzle with a mint core. Flyers are authored with the origin at their lo
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`): the one big lens eye acts
 (wide on the charge, ^ happy while healing, > < when hit, X on death).
   idle    a hover: bob and a gentle roll, the jets pulse, the antenna bobbles, a blink
-  walk    forward flight: nose down, the jets swept back
+  walk    walk v3 flight (ANIM_SPEC G8): nose down 7 degrees, the jets swept back and pulsing on a
+          2-frame beat (0.85-1.3x), the arm and wrench trailing a beat late; the hover bob itself is
+          code motion (R8). The odometer runs at the ground speed (70 x 1.25 = 87.5 lu/s)
   attack  WRENCH SPIN AND BEAM: tilts in, reaches the arm out and spins its little wrench (a ring
           smear), charges the emitter (a growing ball, the eye wide, the held extreme), then the
           mint flare (the game draws the heal beam from the per-frame `beam` anchor) with a
           happy eye, retracts and wobbles
+  attack_b  DIVE-AND-SPRAY: rises with its nose up, the arm cocked back under the belly and the jets
+          flaring forward (the held extreme, a charge ball), then pitches nose down and sweeps the
+          nozzle forward through a mint flare
   hit     flyer: a tilt and a 4 lu drop, a wobble back up
   die     D8 spiral down: sparks, nose-down wobble, the jets sputter out, a crash bounce, X eye
 """
@@ -28,6 +33,7 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "repair_drone"
+GAIT_NAME = "fly"
 NAME = "Repair Drone"
 HEIGHT_LU = 54
 YAW_DEG = -18.0
@@ -161,7 +167,7 @@ def jets(f, k=1.0, sweep=0.0):
 def _idle(f):
     c = math.cos(2 * math.pi * f / 6)
     lag = math.cos(2 * math.pi * (f - 1) / 6)
-    pose = merge(REST, jets(f), {
+    pose = merge(REST, jets(f, 1.05), {
         "body": {"z": 2.4 * c},
         "orb": {"r": 3.0 * lag, "rx": 2.0 * math.sin(2 * math.pi * f / 6)},
         "arm": {"r": -6.0 * lag}, "fore": {"r": -5.0 * lag}, "wrench": {"r": 10.0 * lag},
@@ -171,15 +177,22 @@ def _idle(f):
     return pose
 
 
+SPEED = 87.5            # ground speed 70 x 1.25: the odometer stride 2 x 21.9 lu per 500 ms
+PULSE = [1.3, 0.85, 1.22, 0.9, 1.3, 0.85, 1.22, 0.9]
+
+
 def _walk(f):
     p = 2 * math.pi * f / 8
-    odo, _, _ = F.walker_cycle(f, 8, 17.5, 0.0)
-    return merge(REST, jets(f, 1.25, 22.0), {
+    odo, _, _ = F.walker_cycle(f, 8, SPEED * 0.25, 0.0)
+    k = PULSE[f]
+    return merge(REST, {
+        "jet_r": {"sz": 1.15 * k, "r": 24.0}, "jet_l": {"sz": 1.15 * PULSE[(f + 1) % 8], "r": 24.0},
         "odo": {"x": odo},
-        "body": {"z": 1.8 * math.sin(p)},
-        "orb": {"r": -12.0 + 2.0 * math.cos(p), "rx": 3.0 * math.sin(p)},
-        "arm": {"r": 10 + 4 * math.sin(p - 0.8)}, "fore": {"r": 6 + 4 * math.sin(p - 1.2)},
-        "wrench": {"r": 8 * math.sin(p - 1.6)},
+        "body": {"z": 1.2 * math.sin(p)},
+        "orb": {"r": -7.0 + 1.5 * math.cos(p), "rx": 3.0 * math.sin(p)},
+        "arm": {"r": 16 + 6 * math.sin(p - 0.8)}, "fore": {"r": 10 + 6 * math.sin(p - 1.2)},
+        "tool": {"r": 14 + 4 * math.sin(p - 1.6)},
+        "wrench": {"r": 12 * math.sin(p - 1.6)},
     })
 
 
@@ -225,6 +238,51 @@ def _attack_clip():
     return M.clip("attack", [_attack_pose(f) for f in range(9)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
 
 
+# -- attack B: dive-and-spray (A's 832 ms, the beam at 291 ms) -----------------------------------
+# steps: rise 50, cock 60, charge 60, HOLD 121 (nose up, the arm cocked back under the belly, the jets
+# flaring forward, a charge ball) | FLARE 140 (nose down, the nozzle swept forward), hold 100,
+# retract 90, A wobble 110, A settle 101
+#        rise cock  chg  HOLD FLARE hold retract
+B_ORB = [6, 10, 13, 15, -16, -12, -6]
+B_ARM = [20, 0, -20, -30, 50, 46, 36]
+B_FORE = [50, 64, 76, 80, 12, 16, 30]
+B_TOOL = [24, 30, 36, 40, -6, 0, 14]
+B_BZ = [1.5, 3.5, 5.0, 5.5, -2.5, -1.5, -0.5]
+B_BX = [-0.5, -1.5, -2.5, -3.0, 3.5, 2.5, 1.0]
+B_BQ = [0.0, 0.03, 0.05, 0.07, -0.10, 0.03, 0.0]
+B_JET = [1.1, 1.2, 1.3, 1.4, 1.35, 1.2, 1.05]
+B_SWEEP = [0, -8, -14, -18, 20, 14, 6]
+B_WR = [20, 60, 120, 180, 360, 360, 360]
+B_EYES = ["eyes", "g_wide", "g_wide", "g_wide", "g_happy", "g_happy", "eyes"]
+
+
+def _b_pose(i):
+    if i in (7, 8):
+        return _attack_pose(i)
+    k = i
+    j = jets(k, B_JET[k], B_SWEEP[k])
+    pose = merge(j, {
+        "body": dict(squash(B_BQ[k]), z=B_BZ[k], x=B_BX[k]),
+        "orb": {"r": B_ORB[k]},
+        "arm": {"r": B_ARM[k]}, "fore": {"r": B_FORE[k]}, "tool": {"r": B_TOOL[k]},
+        "wrench": {"r": B_WR[k]},
+        "charge": {"show": k in (2, 3), "s": 0.7 if k == 2 else 1.3},
+        "flare": {"show": k in (4, 5), "s": 1.3 if k == 4 else 0.9},
+    })
+    return merge(pose, KF.glyph(B_EYES[k]))
+
+
+def _attack_b():
+    ov = {
+        3: [{"kind": "rings", "joint": "tool", "point": BEAM, "radii_lu": (5.5, 8.5), "a0": -150.0, "a1": 150.0,
+             "color": F.MINT_CORE}],
+        4: [{"kind": "burst", "joint": "tool", "point": BEAM, "r0_lu": 7.0, "r1_lu": 13.0, "n": 8,
+             "a0": 0.0, "arc": 360.0, "color": F.MINT_CORE}],
+    }
+    return M.clip("attack_b", [_b_pose(i) for i in range(9)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  reuse={7: ("attack", 7), 8: ("attack", 8)}, extra={"holdStep": 3})
+
+
 def _hit(k):
     # flyer: a tilt and a drop of 4 lu, then a wobble back up
     a = M.HIT_AMT[k]
@@ -265,8 +323,9 @@ def clips():
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl, attack_ms=832, attack_impact_at=0.3498)
+    return M.check_variants(M.check_contract(cl, attack_ms=832, attack_impact_at=0.3498))

@@ -3,14 +3,21 @@
 Look (A11, Gunpowder palette): a stocky pirate in a black tricorne (cream braid, a cream badge,
 a team cockade) over a team bandana whose knot tails fly behind, a black beard and moustache, an
 eyepatch on the far eye (the strap crosses his brow) and a brass earring. A team coat with long
-tails and a cream anchor on its flank, open over a cream shirt with green stripes, a bottle-green sash with flying
+tails and a cream anchor on its flank, open over a cream shirt with green stripes, a team sash with flying
 tails, a leather belt with a big brass buckle, baggy dark breeches and tall black cuffed boots.
 He swings an oversized curved cutlass with a brass basket hilt in the near hand and carries an
 iron grapnel with a rope coil in the far hand, so the Boarding Hook trait reads at a glance.
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
   idle    flips a brass coin off his hook hand and catches it, taps the cutlass, blink
-  walk    swagger: hip sway, shoulder roll, the hook arm swinging wide, the blade bobbing late
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1) with a swagger (hip sway, shoulder
+          roll): the cutlass rests back on his near shoulder, the hook arm pumping, planted feet,
+          the coat tails, sash and bandana knot late
+  attack_b  RISING DIAGONAL SLASH: drops into a deep crouch with the cutlass hanging low behind
+          his back knee (the held extreme, a low silhouette), then springs up onto his toes and
+          rips the blade up and forward through the target (a rising crescent), tip high
+  attack_c  SPIN CUT: winds his shoulders away with the blade level behind him (the held
+          extreme), then whips round a full turn (a ring smear) and cuts flat through the target
   attack  HOOK YANK AND LUNGING SLASH: he flicks the grapnel out at the target (a streak), yanks
           it back to his hip and rears back with the cutlass cocked high behind his head (the
           held extreme), then throws a deep fencing lunge (front knee bent, back leg straight)
@@ -23,6 +30,7 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as GT  # noqa: F401
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
 from ageborn_art import moves as M
@@ -31,10 +39,11 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "corsair"
+GAIT_NAME = "biped"
 NAME = "Corsair"
 HEIGHT_LU = 68
-CANVAS = (284, 240)
-FEET = (116, 212)
+CANVAS = (360, 310)
+FEET = (156, 262)
 ANCHORS = {"head": (2, 66), "hitCenter": (0, 32)}
 NO_RETIME = True
 
@@ -61,20 +70,17 @@ def _hat(rig, joint):
     rig.part(joint, g, FEATHER, outline=0.5)
 
 
+RIG = None
+
+
 def build(rig):
-    B.skeleton(rig)
-    # legs: baggy breeches, tall black boots with flared cuffs and a brass buckle
-    for s in ("r", "l"):
-        y = B.LEG_Y * B.SIDE_Y[s]
-        g = Geo().capsule((0, y, 15), (0.8, y, 8.5), 5.8, 5.2)
-        rig.part(f"thigh_{s}", g, BREECH)
-        g = Geo().capsule((0.8, y, 8.5), (1.0, y, 4.0), 4.3, 4.0)
-        g.blob((3.6, y, 2.7), (7.2, 4.8, 2.9), p=2.8, taper=(1.02, 0.82))
-        rig.part(f"shin_{s}", g, BOOT, finish="gloss")
-        g = Geo().blob((1.2, y, 9.8), (6.0, 5.8, 2.4), p=2.4, taper=(1.0, 1.15))
-        rig.part(f"shin_{s}", g, BOOT, finish="gloss")
-        g = Geo().blob((5.0, y - 4.4, 4.8), (1.8, 1.0, 1.6), p=2.4)
-        rig.part(f"shin_{s}", g, B.BRASS, finish="metal", outline=0.5)
+    global RIG
+    RIG = rig
+    K.skeleton_v3(rig)
+    # legs (walk v3): baggy breeches, tall black boots with flared cuffs, short feet
+    G.legs_v3(rig, BREECH, BOOT, thigh_r=5.6, tall_boot=True)
+    g = Geo().blob((1.6, -B.LEG_Y - 4.4, 6.6), (1.8, 1.0, 1.6), p=2.4)
+    rig.part("shin_r", g, B.BRASS, finish="metal", outline=0.5)
 
     # torso: cream shirt with green stripes, team waistcoat open at the front, sash, belt
     shirt = Geo().blob((0, 0, 28.5), (11.4, 10.2, 11.8), p=2.3, taper=(1.1, 0.95))
@@ -88,18 +94,20 @@ def build(rig):
     vest.clip((8.2, 0, 0), (1, -0.35, 0))  # open front: the shirt shows
     rig.part("torso", vest, team=True)
     g = Geo().blob((0.4, 0, 19.6), (12.2, 11.3, 3.2), p=3.0)
-    rig.part("torso", g, B.GREEN)
+    rig.part("torso", g, team=True)          # the sash (team, so he keeps 18% team in the jog)
     g = Geo().blob((0.5, 0, 23.2), (12.0, 11.1, 1.7), p=3.2)
     rig.part("torso", g, B.LEATHER)
     g = Geo().blob((11.9, -3.2, 23.2), (1.7, 3.0, 2.6), p=2.4)
     rig.part("torso", g, B.BRASS, finish="metal", outline=0.6)
     rig.secondary("sash", "hips", (-7.0, -8.0, 19.0), (-12.0, -9.5, 8.0), max_deg=18, gain=1.3)
+    rig.rest_offset["sash"] = (0, 0, K.V3_LIFT + 3.0)
     g = Geo().capsule((-7.0, -8.6, 19.0), (-11.8, -9.8, 9.5), 2.6, 2.0)
     g.capsule((-6.0, -9.4, 19.0), (-7.8, -10.6, 10.5), 2.2, 1.6)
     g.blob((-6.5, -8.8, 19.4), (3.0, 2.2, 3.0), p=2.2)
-    rig.part("sash", g, B.GREEN)
+    rig.part("sash", g, team=True)
     # long coat tails behind the legs (team, a cream hem), swinging late
-    rig.secondary("tails", "hips", (-5.0, 0, 18.0), (-8.5, 0, 5.0), max_deg=12, gain=1.0)
+    rig.secondary("tails", "hips", (-5.0, 0, 18.0), (-8.5, 0, 5.0), max_deg=16, gain=1.2)
+    rig.rest_offset["tails"] = (0, 0, K.V3_LIFT + 4.5)
     tl = Geo().blob((-6.0, 0, 11.0), (5.4, 10.8, 8.6), p=2.6, taper=(0.7, 1.0), rot=(0, 10, 0))
     tf = F.Face(rig, "tails", [tl])
     rig.part("tails", tl, team=True)
@@ -205,7 +213,6 @@ def build(rig):
     rig.part("coin", g, "#E2C25A", finish="metal", outline=0.6)
 
     rig.track("bladeTip", "hand_r", (hx + 8.2, hy, hz + 4 + BL - 1.5))
-    rig.track("_foot", "shin_r", (3.4, -6.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -239,14 +246,23 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
-    # swagger: hip sway and shoulder roll, the hook arm swinging wide, the blade bobbing late
+# -- walk v3: G1 bounce jog at ground speed (card 72 x 1.25 = 90 lu/s), 8 x 82 ms -----------------
+SPEED = 90.0
+LEGS = K.legs_ik()
+GAIT = K.jog_gait(LEGS, SPEED, cycle_ms=656, stance=0.36)
+# walk carry: the cutlass resting back on his near shoulder (not the guard), hat cocked
+CARRY = merge(blade_arm(-78, 50, 165), {"torso": {"r": -3}, "hat": {"r": 9}})
+
+
+def _walk(f, report=None):
+    # swagger: hip sway and shoulder roll, the blade bobbing late on the shoulder
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return {"hand_r": {"r": 6 * lag}, "arm_r": {"r": -6 * math.cos(ctx["lag_p"])},
-                "torso": {"rx": 5 * math.sin(ctx["p"])}, "head": {"r": -2 * lag}}
-    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=34.0, knee=58.0, lift_lu=6.8, bob_pct=0.065,
-                     lean=-4.0, arm=34.0, fore=24.0, twist=9.0, sway=6.0, arms=("l",), extra=extra)
+        return {"hand_r": {"r": 6 * lag}, "arm_r": {"r": 3 * lag},
+                "torso": {"rx": 5 * math.sin(ctx["p"])}, "head": {"r": -2 * lag},
+                "tails": {"r": 5 * lag}, "sash": {"r": 6 * lag}, "knot": {"r": 6 * lag}}
+    return M.walk_v3(RIG, f, CARRY, GAIT, legs=LEGS, lean=-8.0, twist=8.0, nod=3.0, sway=5.0,
+                     arms={"l": K.ArmChain("l")}, arm=40.0, extra=extra, report=report)
 
 
 # attack: 11 unique frames, moves.SMALL_MELEE_MS (impact 6 at 290 of 680 ms). Arm and blade
@@ -311,6 +327,125 @@ def _attack_clip():
                   impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov, sequence=list(range(10)) + [0])
 
 
+# -- attack B: rising diagonal slash (ANIM_SPEC appendix B) -------------------------------------
+# unique frames: 0 = A read, 1 dip, 2 coil, 3 HOLD (deep crouch, the blade hanging low behind his
+# back knee), 4 smear (rising), 5 lead, 6 IMPACT (up on his toes, the blade high in front), 7
+# overshoot, 8 recoil, 9 = A settle; the last step is A's read frame (as A)
+#        dip   coil  HOLD  smear lead  IMP   over  recoil
+BA_ = [-70, -110, -135, -60, 10, 55, 75, 30]       # cutlass upper arm, world deg
+BF_ = [-60, -120, -150, -40, 30, 70, 90, 40]
+BW_ = [-80, -140, -165, -60, 30, 62, 95, 70]
+BT = [-4, -12, -20, -10, 2, 8, 6, 0]               # torso lean (- forward)
+BYAW = [6, 18, 30, 10, -10, -18, -16, -8]
+BX = [-0.5, -2.0, -3.0, 1.0, 5.0, 8.0, 8.5, 5.0]
+BZ = [-2.5, -5.5, -8.0, -4.0, 1.0, 2.0, 1.5, -0.5]
+BQ = [-0.05, -0.1, -0.12, 0.06, 0.08, -0.08, 0.04, -0.03]
+BFEET = [((4.0, 0, 0), (-5.0, 0, 0)), ((7.0, 0, 0), (-8.0, 0, -6)), ((9.0, 0, 0), (-11.0, 0, -12)),
+         ((11.0, 0, 0), (-9.0, 0, -10)), ((13.0, 0, 0), (-6.0, 0, -16)), ((14.0, 0, -12), (-4.0, 0, -22)),
+         ((14.0, 0, -8), (-4.0, 0, -18)), ((12.0, 0, 0), (-5.0, 0, -6))]
+BHOOK = [(-70, -30), (-40, 0), (-20, 10), (-50, -20), (-90, -60), (-110, -80), (-100, -70), (-75, -40)]
+
+
+def _b_pose(i):
+    if i == 0 or i == 9:
+        return _attack_pose(i)
+    k = i - 1
+    t = BT[k]
+    ha, hf = BHOOK[k]
+    pose = merge(blade_arm(BA_[k] - t, BF_[k] - t, BW_[k] - t), hook_arm(ha - t, hf - t, 80 - t), {
+        "torso": {"r": t, "rz": BYAW[k]},
+        "head": {"r": -0.5 * t - (6 if k == 2 else 0), "rz": -0.5 * BYAW[k]},
+    }, M.body_about((0, 0, 22), x=BX[k], z=BZ[k], q=BQ[k]))
+    r, l = BFEET[k]
+    pose = G.plant(RIG, pose, LEGS, r=r, l=l, max_drop=6.0)
+    if k in (3, 4):
+        pose["hand_r"]["sz"] = 1.18
+    if k in (0, 1, 2):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+    elif k in (3, 4, 5, 6):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.1}})
+    else:
+        pose = merge(pose, F.expr("grit"))
+    return pose
+
+
+RISE = dict(SLASH, t0=0.0, t1=1.0, lines=3, samples=18)
+
+
+def _attack_b():
+    ov = {
+        4: [dict(RISE, **{"from": 3})],
+        5: [dict(RISE, **{"from": 3, "t0": 0.4})],
+        6: [dict(RISE, **{"from": 5, "lines": 2}),
+            {"kind": "burst", "joint": "hand_r", "point": BLADE_TIP, "r0_lu": 6.0, "r1_lu": 12.0,
+             "n": 5, "a0": -20.0, "arc": 140.0},
+            {"kind": "dust", "ground": (16.0, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 23, "spread": 0.9}],
+    }
+    reuse = {0: ("attack", 0), 9: ("attack", 9)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(10)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov, sequence=list(range(10)) + [0],
+                  reuse=reuse)
+
+
+# -- attack C: spin cut ------------------------------------------------------------------------------
+# unique frames: 0 = A read, 1 turn away, 2 wind, 3 HOLD (shoulders wound away, the blade level
+# behind him at the hip), 4 spin (his back to us, ring smear), 5 coming round, 6 IMPACT (flat cut
+# through the target, blade level in front), 7 overshoot, 8 recoil, 9 = A settle
+#        turn  wind  HOLD  spin  round IMP   over  recoil
+CA_ = [-120, 160, 150, -20, -10, 0, 10, -20]
+CF_ = [-120, 170, 168, -10, 0, 5, 20, 10]
+CW_ = [-110, 175, 180, 10, 0, -2, 20, 40]
+CYAW = [15, 30, 38, -175, -265, -350, -368, -362]   # the shoulders spin a full turn from the wind
+CT = [-4, -6, -8, -10, -10, -12, -10, -6]
+CX = [-0.5, -1.5, -2.0, 2.0, 5.0, 8.0, 8.5, 5.0]
+CZ = [-2.5, -5.0, -7.0, -4.0, -3.0, -3.0, -2.5, -1.0]
+CQ = [-0.04, -0.06, -0.08, 0.04, 0.06, -0.1, 0.04, -0.03]
+CFEET = [((3.0, 0, 0), (-4.0, 0, 0)), ((5.0, 0, 0), (-6.0, 0, -6)), ((6.0, 0, 0), (-7.0, 0, -10)),
+         ((8.0, 0, 0), (-5.0, 0, -12)), ((11.0, 0, 0), (-4.0, 0, -14)), ((13.0, 0, 0), (-4.0, 0, -12)),
+         ((13.0, 0, 0), (-4.0, 0, -10)), ((10.0, 0, 0), (-4.0, 0, -4))]
+
+
+def _c_pose(i):
+    if i == 0 or i == 9:
+        return _attack_pose(i)
+    k = i - 1
+    t = CT[k]
+    yaw = CYAW[k]
+    pose = merge(blade_arm(CA_[k] - t, CF_[k] - t, CW_[k] - t), hook_arm(-60 - t, -20 - t, 80 - t), {
+        "torso": {"r": t, "rz": yaw},
+        "head": {"r": -0.5 * t, "rz": -0.4 * yaw if abs(yaw) < 90 else (-0.4 * (yaw + 360) if yaw < -270 else 0)},
+    }, M.body_about((0, 0, 22), x=CX[k], z=CZ[k], q=CQ[k]))
+    r, l = CFEET[k]
+    pose = G.plant(RIG, pose, LEGS, r=r, l=l, max_drop=5.0)
+    if k in (3, 4):
+        pose["hand_r"]["sz"] = 1.0 if k == 3 else 1.12
+    if k in (0, 1, 2):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+    elif k in (4, 5, 6):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.1}})
+    else:
+        pose = merge(pose, F.expr("grit"))
+    return pose
+
+
+RING = dict(SLASH, t0=0.0, t1=1.0, lines=2, samples=24, band=0.4, taper=0.0)
+
+
+def _attack_c():
+    ov = {
+        4: [dict(RING, **{"from": 3, "t0": 0.55, "t1": 0.95})],
+        5: [dict(RING, **{"from": 4})],
+        6: [dict(SLASH, **{"from": 5, "t0": 0.0, "t1": 1.0, "lines": 2}),
+            {"kind": "burst", "joint": "hand_r", "point": BLADE_TIP, "r0_lu": 6.0, "r1_lu": 12.0,
+             "n": 5, "a0": -70.0, "arc": 140.0},
+            {"kind": "dust", "ground": (14.0, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 24, "spread": 0.9}],
+    }
+    reuse = {0: ("attack", 0), 9: ("attack", 9)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(10)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov, sequence=list(range(10)) + [0],
+                  reuse=reuse)
+
+
 def _hit(k):
     def recoil(a):
         return {"head": {"r": 16 * a}, "torso": {"r": 12 * a},
@@ -355,10 +490,12 @@ def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(4)], [153, 154, 153, 153, 154, 153], loop=True,
                sequence=[0, 1, 2, 3, 2, 1]),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 4, 5, 6, 9)], M.DIE_MS,
                sequence=[0, 1, 2, 2, 3, 4, 5, 5, 6, 6], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

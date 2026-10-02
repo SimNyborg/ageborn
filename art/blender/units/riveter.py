@@ -10,10 +10,16 @@ bolt heads) up on his shoulder.
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    taps the wrench on his shoulder on the beat, weight shift, blink
-  walk    stomp: bow-legged, a heavy down frame, the wrench bobbing a frame late
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1, 90 lu/s): the wrench up on his
+          shoulder bobbing a frame late, the far fist pumping, planted feet, hammer and rag late
   attack  RISING GOLF SWING: he hitches the wrench off his shoulder, coils low with the wrench cocked back at hip height (the held extreme), then rips it
           under and UP through the target (two crescent smears) onto his toes with a CLANG (spark,
           impact lines, yell); the wrench overshoots over his head and settles back on the shoulder
+  attack_b  OVERHEAD WRENCH SLAM: up on his toes with the wrench straight up over his head and
+          tipped back (the held extreme), then slams it down in front onto the target (ground dust)
+  attack_c  WRENCH JAB WITH A TWIST: crouched and twisted away with the wrench drawn back level at
+          his chest, jaw forward (the held extreme), then a straight lunging jab and a ratchet
+          twist of the wrist (a turning ring at the jaw)
   hit     light: the head snaps back, the cap lifts, eyes squeezed, then an overshoot forward
   die     D1 fling and spin: the cap pops off and the wrench flies out of his hand; he lands on
           his back with X eyes and his tongue out
@@ -28,6 +34,7 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "riveter"
+GAIT_NAME = "biped"
 NAME = "Riveter"
 HEIGHT_LU = 68
 CANVAS = (296, 272)
@@ -54,10 +61,15 @@ def _wrench(rig, joint, fist):
     return jaw
 
 
+RIG = None
+
+
 def build(rig):
-    I.skeleton(rig)
-    I.legs(rig, team=True, cuff=I.IRON)
-    I.overalls(rig)
+    global RIG
+    RIG = rig
+    KI.skeleton_v3(rig)
+    KI.legs_v3(rig, team=True, cuff=I.IRON)
+    I.overalls(rig, hem_z=13.0)
     # cog emblem on the bib, a tool belt with a rivet pouch, a hammer and a rag on secondaries
     bib = Geo().blob((6.4, 0, 30.0), (4.9, 7.9, 6.5), p=3.2)
     bface = F.Face(rig, "torso", [bib])
@@ -73,13 +85,13 @@ def build(rig):
     for dx in (2.8, 4.6):
         g.sphere((dx, -13.4, 17.0), 0.9, cuts=2)
     rig.part("hips", g, I.IRON_LT, finish="metal", outline=0)
-    rig.secondary("hammer", "hips", (-4.0, -11.4, 17.0), (-4.5, -11.8, 5.0), max_deg=26, gain=1.4)
-    g = Geo().capsule((-4.0, -12.2, 16.0), (-4.4, -12.2, 5.4), 1.1)
+    rig.secondary("hammer", "hips", (-4.0, -11.4, 17.0), (-4.5, -11.8, 12.0), max_deg=26, gain=1.4)
+    g = Geo().capsule((-4.0, -12.2, 16.6), (-4.4, -12.2, 12.4), 1.1)
     rig.part("hammer", g, I.WOOD_LT, outline=0.5)
-    g = Geo().blob((-4.4, -12.4, 5.0), (3.6, 1.6, 1.6), p=3.0)
+    g = Geo().blob((-4.4, -12.4, 12.0), (3.6, 1.6, 1.6), p=3.0)
     rig.part("hammer", g, I.IRON_DK, finish="metal", outline=0.6)
-    rig.secondary("rag", "hips", (-10.6, -3.0, 18.0), (-12.5, -3.4, 8.0), max_deg=24, gain=1.5)
-    g = Geo().blob((-11.2, -3.4, 13.2), (1.4, 3.0, 5.0), p=2.4, rot=(0, -10, 0))
+    rig.secondary("rag", "hips", (-10.6, -3.0, 18.0), (-12.5, -3.4, 11.0), max_deg=24, gain=1.5)
+    g = Geo().blob((-11.2, -3.4, 14.6), (1.4, 3.0, 3.6), p=2.4, rot=(0, -10, 0))
     rig.part("rag", g, RAG, outline=0.5)
 
     cap = Geo()
@@ -112,7 +124,6 @@ def build(rig):
     _wrench(rig, "wrench", FIST)
     KI.loose(rig, "wrench_loose", FIST, lambda j: _wrench(rig, j, FIST))
     rig.track("wrenchHead", "wrench", JAW_C)
-    rig.track("_foot", "shin_r", (3.4, -6.0, 0.5))
     I.fuse_spark(rig, "wrench", (FIST[0] + 5.0, FIST[1] - 3.0, FIST[2] + LENGTH + JAW * 0.9), size=1.9,
                  name="clang", hidden=True)
 
@@ -141,12 +152,21 @@ def _idle(f):
     return M.idle_v2(f, base, frames=6, extra=extra, face_blink=F.expr("blink"), blink=4)
 
 
-def _walk(f):
+# -- walk v3: G1 bounce jog at ground speed (card 72 x 1.25 = 90 lu/s), 8 x 75 ms ----------------
+SPEED = 90.0
+LEGS = KI.legs_ik()
+GAIT = KI.jog_gait(LEGS, SPEED, cycle_ms=600)
+# walk carry: the wrench up on the shoulder (it bobs a frame late), the far fist pumps
+CARRY = merge(grip(-62.0, 22.0, 136.0, lean=-7.0), {"torso": {"r": -3.0}})
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return {"hand_r": {"r": -6 * lag}, "arm_r": {"r": 3 * lag}, "brow": {"z": 0.3 * lag}}
-    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=32.0, knee=60.0, lift_lu=7.0, bob_pct=0.07,
-                     lean=-7.0, arm=30.0, arms=("l",), bow=6.0, heavy_down=1.3, extra=extra)
+        return {"hand_r": {"r": -8 * lag}, "arm_r": {"r": 4 * lag}, "fore_r": {"r": -3 * lag},
+                "brow": {"z": 0.3 * lag}, "hammer": {"r": 6 * lag}, "rag": {"r": 6 * lag}}
+    return M.walk_v3(RIG, f, CARRY, GAIT, legs=LEGS, lean=-7.0, twist=7.0, nod=3.0,
+                     arms={"l": KI.ArmChain("l")}, arm=36.0, extra=extra, report=report)
 
 
 # 11 unique frames, moves.SMALL_MELEE_MS (impact on 6 at 290 of 680 ms). World angles.
@@ -189,7 +209,7 @@ def _attack_pose(f):
         pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
     elif f == 8:
         pose = merge(pose, F.expr("grit"))
-    return pose
+    return KI.ground_feet(RIG, pose, LEGS, toes={"r": -14, "l": -18} if f in (6, 7) else None)
 
 
 SWING = {"kind": "arc", "joint": "wrench", "inner": (FIST[0], FIST[1], FIST[2] + LENGTH * 0.55),
@@ -212,6 +232,135 @@ def _attack_clip():
     }
     return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
                   impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
+
+
+# -- attack B: overhead wrench slam (ANIM_SPEC appendix B) ---------------------------------------
+# unique frames: 0 = A read, 1 = A hitch, 2 rise, 3 HOLD (up on his toes, the wrench straight up over
+# his head and tipped back), 4 smear (over the top), 5 smear, 6 IMPACT (slammed down in front, deep
+# squash), 7 bounce, 8 recoil, 9 = A settle, 10 = A settle. World angles.
+#        rise HOLD smear smear IMP  bounce recoil
+B_A = [40, 96, 70, 20, -18, -24, -40]
+B_F = [96, 122, 50, 0, -30, -36, -10]
+B_W = [128, 148, 70, 0, -24, -30, 14]
+B_LA = [30, 88, 64, 14, -34, -40, -70]
+B_LF = [90, 118, 44, -6, -50, -56, -30]
+B_T = [4, 10, -6, -14, -22, -20, -10]
+B_X = [-1.0, -2.0, 1.5, 4.5, 7.0, 7.0, 4.0]
+B_Z = [1.0, 2.6, 2.0, 0.0, -4.4, -2.6, -1.4]
+B_Q = [0.04, 0.10, 0.08, 0.02, -0.16, 0.04, -0.05]
+B_THR = [-2, -6, 12, 20, 30, 26, 14]
+B_SHR = [-6, -12, -14, -18, -34, -26, -10]
+B_THL = [6, 10, -8, -16, -26, -24, -12]
+B_SHL = [-8, -12, -8, -8, -22, -16, -6]
+
+
+def _b_pose(i):
+    if i in (0, 1, 9, 10):
+        return _attack_pose(i)
+    k = i - 2
+    t = B_T[k]
+    pose = merge(grip(B_A[k], B_F[k], B_W[k], B_LA[k], B_LF[k], lean=t), {
+        "torso": {"r": t, "rz": -6 if k < 2 else 4},
+        "head": {"r": -0.5 * t},
+        "thigh_r": {"r": B_THR[k]}, "shin_r": {"r": B_SHR[k]},
+        "thigh_l": {"r": B_THL[k]}, "shin_l": {"r": B_SHL[k]},
+        "clang": {"show": k == 4},
+    }, M.body_about((0, 0, 22), x=B_X[k], z=B_Z[k], q=B_Q[k]))
+    if k == 1:   # up on his toes
+        pose = merge(pose, {"foot_r": {"r": -18}, "foot_l": {"r": -20}})
+    if k in (2, 3):
+        pose["wrench"] = {"sz": 1.18}
+    if k in (0, 1):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+    elif k in (2, 3, 4, 5):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+    else:
+        pose = merge(pose, F.expr("grit"))
+    return KI.ground_feet(RIG, pose, LEGS, toes={"r": -18, "l": -20} if k == 1 else None)
+
+
+SLAM = dict(SWING, t0=0.0, t1=0.95, lines=3)
+
+
+def _attack_b():
+    ov = {
+        4: [dict(SLAM, **{"from": 3})],
+        5: [dict(SLAM, **{"from": 3, "t0": 0.35, "t1": 1.0})],
+        6: [dict(SLAM, **{"from": 5, "t0": 0.2, "t1": 1.0, "lines": 2}),
+            {"kind": "burst", "joint": "wrench", "point": JAW_C, "r0_lu": 8.0, "r1_lu": 15.0, "n": 6,
+             "a0": 10.0, "arc": 160.0},
+            {"kind": "dust", "joint": "wrench", "point": JAW_C, "ground_snap": True, "size_lu": 8.0,
+             "puffs": 5, "seed": 35, "spread": 1.4},
+            {"kind": "dust", "ground": (-10.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 36, "spread": 0.7,
+             "dir": -1.0}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov, reuse=reuse)
+
+
+# -- attack C: wrench jab with a twist ----------------------------------------------------------
+# steps: A read 30, tuck 40, draw 70, HOLD 105 (crouched and twisted away, the wrench drawn back
+# level at his chest with the jaw forward), smear 25, lead 20 | IMPACT (straight lunging jab) 120,
+# twist 60 (the wrist cranks the jaw round), recoil 50, A settle 70, A settle 90
+C_MS = [30, 40, 70, 105, 25, 20, 120, 60, 50, 70, 90]
+#        tuck draw HOLD smear lead IMP  twist recoil
+C_A = [-74, -130, -168, -92, -40, -10, -6, -34]
+C_F = [6, -10, -22, -6, -2, -4, 4, 24]
+C_W = [44, 14, 14, 0, 0, -2, 26, 70]
+C_LA = [-60, -40, -30, -60, -100, -120, -116, -96]
+C_LF = [-20, 10, 20, -10, -70, -100, -96, -70]
+C_T = [-6, -2, 4, -8, -14, -18, -16, -10]
+C_TZ = [8, 22, 32, 12, -4, -16, -18, -8]
+C_X = [0.5, -1.5, -3.0, 2.0, 6.0, 10.0, 10.5, 7.0]
+C_Z = [-1.0, -2.6, -4.0, -3.4, -3.0, -3.6, -3.0, -1.6]
+C_Q = [-0.04, -0.08, -0.10, 0.06, 0.04, -0.12, 0.03, -0.04]
+C_THR = [6, 14, 22, 26, 30, 36, 34, 22]
+C_SHR = [-8, -24, -36, -30, -26, -28, -24, -14]
+C_THL = [-6, -14, -22, -26, -32, -38, -34, -20]
+C_SHL = [-6, -14, -20, -12, -6, -4, -4, -4]
+
+
+def _c_pose(i):
+    if i in (0, 9, 10):
+        return _attack_pose(i)
+    k = i - 1
+    t = C_T[k]
+    pose = merge(grip(C_A[k], C_F[k], C_W[k], C_LA[k], C_LF[k], lean=t), {
+        "torso": {"r": t, "rz": C_TZ[k]},
+        "head": {"r": -0.3 * t, "rz": -0.5 * C_TZ[k]},
+        "thigh_r": {"r": C_THR[k]}, "shin_r": {"r": C_SHR[k]},
+        "thigh_l": {"r": C_THL[k]}, "shin_l": {"r": C_SHL[k]},
+        "clang": {"show": k == 5},
+    }, M.body_about((0, 0, 22), x=C_X[k], z=C_Z[k], q=C_Q[k]))
+    if k in (3, 4):
+        pose["wrench"] = {"sz": 1.15}
+    if k in (1, 2):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+    elif k in (3, 4, 5, 6):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+    else:
+        pose = merge(pose, F.expr("grit"))
+    return KI.ground_feet(RIG, pose, LEGS)
+
+
+JAB = {"kind": "streak", "joint": "wrench", "point": JAW_C, "color": I.IRON_LT, "width_lu": 8.0, "white": 0.35}
+
+
+def _attack_c():
+    ov = {
+        4: [dict(JAB, **{"from": 3, "t0": 0.0, "t1": 1.0})],
+        5: [dict(JAB, **{"from": 3, "t0": 0.2, "t1": 1.0, "width_lu": 7.0})],
+        6: [dict(JAB, **{"from": 4, "t0": 0.4, "t1": 1.0, "width_lu": 6.0}),
+            {"kind": "burst", "joint": "wrench", "point": JAW_C, "r0_lu": 6.0, "r1_lu": 13.0, "n": 6,
+             "a0": -70.0, "arc": 140.0},
+            {"kind": "dust", "ground": (18.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 37, "spread": 0.8}],
+        7: [{"kind": "rings", "joint": "wrench", "point": JAW_C, "radii_lu": (6.0, 9.0), "a0": -60.0, "a1": 200.0,
+             "color": "#FFF4D6"}],
+    }
+    reuse = {0: ("attack", 0), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(11)], C_MS, impact=6, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 3})
 
 
 def _hit(k):
@@ -261,10 +410,12 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

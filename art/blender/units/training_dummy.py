@@ -7,7 +7,8 @@ target) and a team scarf whose tail streams behind (follow-through). It swings a
 practice club with a floppy, over-eager bonk. On death it bursts (the shared poof).
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
-  idle    a rubbery wobble; walk  hop-waddle
+  idle    a rubbery wobble; walk  walk v3 hop-waddle (ANIM_SPEC G1, waddle: side sway)
+  attack_b  spin-wobble slap: winds up, spins round on the spot and slaps with the club flat
   attack  SPRING-BACK BONK: the whole dummy bends far back like a spring, whips forward with
           the club (bold smear), bonks (impact lines, straw puff), then wobbles back and forth
   hit     light;  die  D3 dizzy spin and sit
@@ -15,12 +16,14 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
 import math
 
 from ageborn_art import face as F  # noqa: F401
+from ageborn_art import gait as G
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import CaveBody
 
 SLUG = "training_dummy"
+GAIT_NAME = "biped"
 NAME = "Training Dummy"
 HEIGHT_LU = 60
 CANVAS = (232, 208)
@@ -38,18 +41,24 @@ STITCH = "#5A4636"
 PAINT_W = "#EDE3C8"
 
 
+THIGH_Z, KNEE_Z, ANKLE_Z = 16.0, 9.2, 3.0   # walk v3: longer straw legs (ANIM_SPEC 2.0 rule 5)
+LIFT = 1.5
+
+
 def build(rig):
-    global ARM_R, ARM_L, SMEAR2
-    body = CaveBody(rig, SACK, None, hip_z=13.0, knee_z=7.0, ankle_z=3.0, waist_z=14.0,
+    global ARM_R, ARM_L, SMEAR2, RIG
+    RIG = rig
+    body = CaveBody(rig, SACK, None, hip_z=13.0, knee_z=KNEE_Z, ankle_z=ANKLE_Z, waist_z=14.0,
                     shoulder_z=31.0, neck_z=33.0, hip_y=5.4, shoulder_y=11.2,
-                    elbow=(1.2, 24.5), wrist=(3.0, 18.5), leg_r=(4.2, 3.8, 3.8),
+                    elbow=(1.2, 24.5), wrist=(3.0, 18.5), leg_r=(3.8, 3.4, 3.4),
                     arm_r=(3.4, 3.0, 3.0), fist_r=3.5, torso=((0, 24.0), (10.4, 9.4, 10.6)),
-                    torso_taper=(1.12, 0.9), foot_len=5.4, foot_fill=SACK_DK,
-                    build_torso=False)
+                    torso_taper=(1.12, 0.9), foot_len=4.2, foot_fill=SACK_DK,
+                    build_torso=False, thigh_z=THIGH_Z, foot_joint=True, far_shade=0.8)
+    rig.rest_offset["torso"] = (0, 0, LIFT)
     fr = body.fist["r"]
     # twine ties at the knees and wrists, straw tufts poking out of the cuffs
     for side, y in (("r", -5.4), ("l", 5.4)):
-        g = Geo().capsule((0.6, y, 8.4), (0.7, y, 5.8), 4.4, 4.4)
+        g = Geo().capsule((0.6, y, 10.2), (0.7, y, 7.4), 4.0, 4.0)
         rig.part(f"shin_{side}", g, team=True, outline=0.6)
     for side, y in (("r", -11.7), ("l", 11.7)):
         g = Geo().capsule((2.2, y, 20.8), (2.6, y, 18.4), 3.5, 3.5)
@@ -123,7 +132,8 @@ def build(rig):
     rig.track("clubHead", "club", tip)
     SMEAR2 = {"kind": "arc", "joint": "club", "inner": (fr[0], fr[1] - 0.5, fr[2] + 14.0),
               "outer": (fr[0], fr[1] - 0.5, fr[2] + 26.0), "color": SACK, "taper": 0.15, "lines": 3}
-    rig.track("_foot", "shin_r", (2.4, -5.4, 0.5))
+    rig.track("_foot", "foot_r", (2.0, -5.4, 0.0))
+    rig.track("_foot_l", "foot_l", (2.0, 5.4, 0.0))
     ARM_R = body.arm("r", "club", tip)
     ARM_L = body.arm("l")
 
@@ -153,11 +163,30 @@ def _idle(f):
     return M.idle_v2(f, stance(), bob=2.0, chest=0.045, extra=extra)
 
 
-def _walk(f):
+# -- walk v3: G1 hop-waddle at ground speed (card 50 x 1.25 = 62.5 lu/s), 8 x 85 ms ----------------
+RIG = None
+SPEED = 62.5
+LEGS = {s: G.Leg(f"thigh_{s}", f"shin_{s}", (1.0, y, ANKLE_Z), foot=f"foot_{s}",
+                 toe=(4.5, y, 0.4), heel=(-1.3, y, 0.4)) for s, y in (("r", -5.4), ("l", 5.4))}
+GAIT = G.Gait(8, 720, SPEED, G.biped_feet(LEGS["l"], LEGS["r"], x_mid=1.2), 0.36,
+              lift=6.0, kick=2.0, reach=0.0, toe_off=18.0, early_lift=1.6, drag=0.3, lift_peak=0.38)
+for _k, (_leg, _ph, _x, _gz) in list(GAIT.feet.items()):
+    GAIT.feet[_k] = (_leg, _ph - 0.03, _x, _gz)
+
+
+class _OffArm:
+    @staticmethod
+    def pose(a, b):
+        return off_arm(a, b)
+
+
+def _walk(f, report=None):
     def extra(ctx):
-        return {"torso": {"rx": 7 * math.sin(ctx["p"])}, "club": {"r": 8 * math.cos(ctx["lag_p"])}}
-    return M.walk_v2(f, stance(), HEIGHT_LU, thigh=28.0, knee=46.0, lift_lu=6.0, bob_pct=0.08,
-                     lean=-4.0, arm=30.0, arms=("l",), extra=extra)
+        lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
+        return {"torso": {"rx": 7 * math.sin(ctx["p"])}, "club": {"r": -8 * lag},
+                "straw": {"r": 8 * lag}}
+    return M.walk_v3(RIG, f, stance(), GAIT, legs=LEGS, lean=-6.0, twist=4.0, nod=4.0, sway=5.0,
+                     arms={"l": _OffArm}, arm=35.0, elbow=(20.0, 50.0), extra=extra, report=report)
 
 
 # 11 unique frames, moves.SMALL_MELEE_MS: bend back like a spring, whip, bonk, wobble
@@ -197,6 +226,50 @@ def _attack_clip():
                   impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
 
 
+# -- attack B: spin-wobble slap (ANIM_SPEC appendix B; the tutorial dummy gets no C) ---------------
+# unique: 0 = A read, 1 = A dip, 2 twist (winds the torso back), 3 HOLD (wound up, the club flat
+# behind), 4 spin (back to the viewer), 5 spin (three quarters), 6 IMPACT (the flat slap in front),
+# 7-10 = A wobble and settle
+B_SEQ = list(range(11))
+#        twist  HOLD  spin  spin   SLAP
+B_RZ = [-40, -75, 110, 250, 365]
+B_A = [10, 20, -10, -10, 0]
+B_B = [30, 40, 0, 0, 10]
+B_C = [170, 185, 10, 10, 10]
+B_T = [6, 12, 0, -6, -16]
+B_Q = [-0.04, 0.08, 0.04, 0.0, -0.18]
+B_X = [-1.0, -2.0, 1.0, 3.0, 5.0]
+
+
+def _b_pose(i):
+    if i in (0, 1) or i >= 7:
+        return _attack_pose(i)
+    k = i - 2
+    pose = merge(club_arm(B_A[k], B_B[k], B_C[k]), off_arm([-20, 10, -60, -90, -110][k], [0, 30, -20, -40, -60][k]), {
+        "torso": {"r": B_T[k], "rz": B_RZ[k]}, "head": {"r": [4, 10, 0, -6, -18][k]},
+        "straw": {"r": [-6, -14, 10, 14, 20][k]},
+        "thigh_r": {"r": [-4, -8, 6, 14, 20][k]}, "thigh_l": {"r": [4, 8, -6, -12, -14][k]},
+    }, M.body_about((0, 0, 18), x=B_X[k], q=B_Q[k]))
+    if k >= 2:
+        pose.update({"mouth": {"hide": True}, "oh": {"show": True}})
+    return pose
+
+
+def _attack_b():
+    tip = SMEAR2["outer"]
+    spin = dict(SMEAR2, t0=0.0, t1=0.95, samples=18, band=0.42)
+    ov = {4: [dict(spin, **{"from": 3})], 5: [dict(spin, **{"from": 4})],
+          6: [dict(spin, t0=0.3, **{"from": 5}),
+              {"kind": "burst", "joint": "club", "point": tip, "r0_lu": 8.0, "r1_lu": 14.0, "n": 5, "a0": -60.0,
+               "arc": 120.0},
+              {"kind": "dust", "joint": "straw", "point": (0.0, 0.0, 60.0), "size_lu": 5.0, "puffs": 3,
+               "seed": 42, "color": "#E4D29E"}]}
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 7: ("attack", 7), 8: ("attack", 8), 9: ("attack", 9),
+             10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, overlays=ov, reuse=reuse)
+
+
 def _hit(k):
     def recoil(a):
         return {"head": {"r": 18 * a}, "torso": {"r": 14 * a}, "thigh_r": {"r": 22 * max(a, 0)},
@@ -223,9 +296,10 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES)], [M.IDLE_MS] * M.IDLE_FRAMES, loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

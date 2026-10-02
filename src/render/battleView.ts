@@ -45,6 +45,7 @@ import { ColorMatrixFilter, Graphics, type Container } from 'pixi.js';
 import { CAMERA, Camera, type CameraHold } from './camera';
 import { depthRows, depthZ, easeToward } from './depth';
 import { EventMapper, crumbleStage, decodeTurretSource, type UnitInfo } from './eventMapper';
+import { newGait, stepGait, tickVelocity, walkDurationForSpeed, type GaitState } from './gait';
 import { FeelDirector } from './feel/director';
 import { FloatingNumbers, type LabelFactory } from './feel/numbers';
 import { ParticlePool, type ParticleHandle } from './feel/particlePool';
@@ -122,7 +123,12 @@ interface UnitEntry {
   shieldBp: number;
   stunned: boolean;
   frozen: boolean;
-  moving: boolean;
+  /** Walk/idle from the measured sim velocity, with hysteresis (ANIM_SPEC R1). */
+  gait: GaitState;
+  /** Ground speed of the card (card speed x march speed), lu/s: scales the walk thresholds. */
+  refSpeed: number;
+  /** The walk length last requested from a view without `setGait` (ms), 0 when none. */
+  walkMs: number;
   dying: boolean;
   dieLeftMs: number;
   jitterLeftMs: number;
@@ -1450,7 +1456,7 @@ export class BattleView {
       if (b.dressing) withMotion(b.dressing, this.viewMotion());
     }
     for (const e of this.turrets?.values() ?? []) withMotion(e.view, this.viewMotion());
-    for (const e of this.units?.values() ?? []) if (e.fort) withMotion(e.fort.fort, this.viewMotion());
+    for (const e of this.units?.values() ?? []) withMotion(e.fort ? e.fort.fort : e.view, this.viewMotion());
   }
 
   private viewMotion(): ViewMotion {
@@ -1526,6 +1532,11 @@ export class BattleView {
         const e = this.units.get(a.id);
         if (!e || e.dying) return;
         if (a.clip === 'hit' && e.oneShotLeftMs > 0) return; // never cut an attack or spawn short
+        if (a.clip === 'attack' && (a.attackIndex ?? 0) >= 1) {
+          // R3: a second attacker never restarts the body clip; the view plays `attack_alt` or an accent
+          (e.view as GaitView).playAlt?.(a.impactAtMs !== undefined ? { impactAtMs: a.impactAtMs } : {});
+          return;
+        }
         if (a.clip === 'attack') {
           e.view.play('attack', a.impactAtMs !== undefined ? { impactAtMs: a.impactAtMs } : undefined);
           e.oneShotLeftMs = (a.impactAtMs ?? 0) + ONE_SHOT_MS.attackRecover;
@@ -1854,7 +1865,9 @@ export class BattleView {
       shieldBp: 0,
       stunned: false,
       frozen: false,
-      moving: false,
+      gait: newGait(),
+      refSpeed: ((def?.speed ?? 70) * (this.config.content.economy.marchSpeedBp ?? 10000)) / 10000,
+      walkMs: 0,
       dying: false,
       dieLeftMs: 0,
       jitterLeftMs: 0,
@@ -1878,6 +1891,10 @@ export class BattleView {
     if (fort) {
       e.fort = fort;
       e.fortStart = this.sim.state.tick;
+    } else {
+      // R7: one seed per unit (idle phase, jitter, hover phase); the id offsets its attack variants (R4)
+      (view as GaitView).setIdentity?.({ id, seed: (id ^ this.config.seed) >>> 0 });
+      withMotion(view, this.viewMotion());
     }
     const rows = depthRows([...this.units.values(), e].filter((v) => !v.dying && !v.fort).map((v) => ({ id: v.id, side: v.side, x: v.x, air: v.air })));
     e.y = fort ? FORT_ROW_LU : (rows.get(id) ?? 0);
@@ -1921,7 +1938,9 @@ export class BattleView {
       const e = this.ensureUnit(u);
       if (e.dying) continue;
       e.x = (u.prevX + (u.x - u.prevX) * Math.min(1, Math.max(0, alpha))) / MILLI_LU;
-      e.moving = u.x !== u.prevX && u.mode !== 'attack';
+      // R1: the walk follows the measured velocity (toward the enemy; negative walks back), smoothed
+      stepGait(e.gait, u.mode === 'attack' ? 0 : tickVelocity(u.x, u.prevX, facingOf(u.side), MILLI_LU), e.refSpeed, gameDt);
+      if (!e.fort) (e.view as GaitView).setGait?.({ speedLuPerS: e.gait.v });
       e.stunned = false;
       e.frozen = false;
       for (const s of u.statuses) {
@@ -1979,6 +1998,9 @@ export class BattleView {
       if (e.jitterLeftMs > 0) e.jitterLeftMs -= gameDt;
       this.writePose(e);
       e.view.update(gameDt);
+      // R8: a Legendary's footfalls shake the camera a little (inside the A12 caps)
+      const steps = (e.view as GaitView).drainFootfalls?.() ?? 0;
+      if (steps > 0 && e.def?.group === 'legendary' && !e.dying) this.director.addTrauma(0.02 * steps, undefined, { key: `step${e.id}`, gapMs: 120 });
       if (e.aura) {
         this.placeAura(e);
         e.aura.root.zIndex = e.view.root.zIndex - 1;
@@ -1994,9 +2016,12 @@ export class BattleView {
   private updateLoopClip(e: UnitEntry, gameDt: number): void {
     if (e.oneShotLeftMs > 0) {
       e.oneShotLeftMs -= gameDt;
-      if (e.oneShotLeftMs > 0) return;
+      // a unit the sim walks on (its target died, it spawned) gets its walk at once: the view lets
+      // an attack's follow-through give way after the impact hold (ANIM_SPEC review M1)
+      if (e.oneShotLeftMs > 0 && !e.gait.walking) return;
+      e.oneShotLeftMs = 0;
     }
-    const want: LoopClip | null = e.stunned ? null : e.moving ? 'walk' : 'idle';
+    const want: LoopClip | null = e.stunned ? null : e.gait.walking ? 'walk' : 'idle';
     if (want === null) {
       if (e.loopClip !== null) {
         e.view.play('stun', { loop: true });
@@ -2004,10 +2029,16 @@ export class BattleView {
       }
       return;
     }
+    const gaitView = typeof (e.view as GaitView).setGait === 'function';
+    const walkMs = walkDurationForSpeed(e.gait.v || e.refSpeed);
     if (want !== e.loopClip) {
-      const speed = e.def?.speed ?? 70;
-      e.view.play(want, want === 'walk' ? { loop: true, durationMs: Math.round((500 * 80) / Math.max(20, speed)) } : { loop: true });
+      e.view.play(want, want === 'walk' ? { loop: true, durationMs: walkMs } : { loop: true });
       e.loopClip = want;
+      e.walkMs = want === 'walk' ? walkMs : 0;
+    } else if (want === 'walk' && !gaitView && Math.abs(walkMs - e.walkMs) > e.walkMs * 0.12) {
+      // views without `setGait` (procedural) re-size their walk when the speed changes (no restart)
+      e.view.play('walk', { loop: true, durationMs: walkMs });
+      e.walkMs = walkMs;
     }
   }
 
@@ -2092,7 +2123,7 @@ export class BattleView {
   // ------------------------------------------------------------------------------------------
 
   private fireProjectile(a: Extract<ViewAction, { a: 'projectile' }>): void {
-    const from = this.projectileOrigin(a.from, a.side);
+    const from = this.projectileOrigin(a.from, a.side, a.attackIndex ?? 0);
     let toY = -30;
     if (a.targetId > 0) {
       const t = this.units.get(a.targetId);
@@ -2116,12 +2147,13 @@ export class BattleView {
     this.projectiles.set(a.pid, { key, view });
   }
 
-  private projectileOrigin(from: number, side: Side | null): Pt {
+  private projectileOrigin(from: number, side: Side | null, attackIndex = 0): Pt {
     if (from > 0) {
       const e = this.units.get(from);
       if (e) {
-        const an = e.view.anchors;
-        return { x: e.x + an.muzzle.x * facingOf(e.side), y: e.y + an.muzzle.y };
+        // R4: the playing variant's impact-frame muzzle (or the rider / MG anchor); the static anchor otherwise
+        const m = (e.view as GaitView).muzzleNow?.(attackIndex) ?? e.view.anchors.muzzle;
+        return { x: e.x + m.x * facingOf(e.side), y: e.y + m.y };
       }
     }
     const turret = decodeTurretSource(from);
@@ -2354,6 +2386,18 @@ export class BattleView {
   get lastGameDt(): number {
     return this.frameGameDt;
   }
+}
+
+/**
+ * Optional unit view hooks (WP4 atlas views, ANIM_SPEC R1-R8; duck-typed, so the art contract stays
+ * unchanged and views without them keep working).
+ */
+interface GaitView {
+  setGait?(o: { speedLuPerS: number }): void;
+  setIdentity?(o: { id: number; seed: number }): void;
+  playAlt?(o: { impactAtMs?: number }): void;
+  muzzleNow?(attackIndex?: number): Pt | null;
+  drainFootfalls?(): number;
 }
 
 /** Optional motion hooks of the world views (WP4 atlas views; the art contract stays unchanged). */

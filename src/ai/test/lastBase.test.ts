@@ -71,3 +71,37 @@ describe('Last Base Standing bots (A2.10.1)', () => {
     expect(best(meAlone)).toBeGreaterThan(best(both));
   });
 });
+
+describe('the Siege rope of a timed war (A2.10.2)', () => {
+  const SHORT: ObservedEscalation['steps'] = (content.formats['short']?.escalation ?? []).map((x) => ({
+    tick: x.atMs / 50,
+    baseDamageBp: x.baseDamageBp,
+    turretDamageBp: x.turretDamageBp,
+    crumbleBpPerSec: x.crumbleBpPerSec,
+  }));
+  const bell = (content.formats['short']?.finalBellMs ?? 0) / 50;
+  const rope = (step: number, crumbling: [boolean, boolean] = [false, false]): ObservedEscalation => ({ step, steps: SHORT, crumbling, finalBellTick: bell });
+
+  it('keeps the Final Bell in the bot clock (the window has the same Bell)', () => {
+    const o = observation({});
+    expect(observedClock(book, { ...o, ages: content.formats['short']!.ages, escalation: rope(0) })).toEqual({ ...matchClock(book, content.formats['short']!.ages), siege: SHORT[0]!.tick, finalBell: bell });
+  });
+
+  it('a bot crumbling alone in a timed war does not go all-in (the Bell still decides)', () => {
+    const base = (e: ObservedEscalation): Observation => ({ ...observation({ tick: SHORT[0]!.tick + 200, phase: 'siege', gold: 900 * MILLI }), escalation: e });
+    const best = (t: DecisionTrace): number => Math.max(...t.candidates.filter((c) => c.action.kind === 'train').map((c) => c.score));
+    const both = decide(brainFor({ tierOverride: RESEARCH_ON }), base(rope(1, [true, true])));
+    const meAlone = decide(brainFor({ tierOverride: RESEARCH_ON }), base(rope(1, [false, true])));
+    expect(best(meAlone)).toBe(best(both));
+  });
+
+  it('stages its Hold flag forward in the last 30 s before a rope that runs from Siege', () => {
+    const brain = brainFor();
+    const o = observation({ tick: SHORT[0]!.tick - 300, phase: 'overdrive' });
+    const v = buildView({ ...o, escalation: rope(0) }, o.tick + 6, book, new Ledger(book));
+    const cover = brain.flagSpot(v, true);
+    const staged = brain.flagSpot(v, true, true);
+    expect(staged).toBeGreaterThan(cover);
+    expect(staged * MILLI).toBeLessThanOrEqual(book.econ.midLane);
+  });
+});

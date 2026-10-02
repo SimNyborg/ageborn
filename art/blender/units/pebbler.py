@@ -8,7 +8,9 @@ sling cord with a leather cup holding a fat grey rock. In idle he tosses a spare
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    tosses a pebble up and catches it, weight shift, blink
-  walk    jog: forward lean, arms pumping, the sling swinging a frame late
+  walk    walk v3 bounce jog (ANIM_SPEC G1): the loaded sling low at the hip, the far arm pumping
+  attack_b  low whirl at the hip, underhand flick (A and B loop the whirl while the sim wind-up
+          lasts: holdLoop)
   attack  SLING WINDMILL: dips, whirls the sling over his head (a held ring-smear frame of a
           full turn, then half a turn more coming down behind him), steps in and releases
           side-arm at hip height (the rock leaves the cup on the impact frame; the
@@ -19,12 +21,14 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as G
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import CaveBody
 
 SLUG = "pebbler"
+GAIT_NAME = "biped"
 NAME = "Pebbler"
 HEIGHT_LU = 64
 CANVAS = (240, 216)
@@ -51,12 +55,20 @@ TOOTH = "#F4EEDC"
 SLING_LEN = 13.5
 
 
+THIGH_Z, KNEE_Z, ANKLE_Z = 19.5, 11.5, 4.0   # walk v3: longer legs (ANIM_SPEC 2.0 rule 5)
+LIFT = 2.0                                   # the upper body sits 2 lu higher
+
+
 def build(rig):
-    body = CaveBody(rig, SKIN, FUR, hip_z=16.0, knee_z=9.0, ankle_z=4.0, waist_z=17.0,
+    global RIG
+    RIG = rig
+    body = CaveBody(rig, SKIN, FUR, hip_z=16.0, knee_z=KNEE_Z, ankle_z=ANKLE_Z, waist_z=17.0,
                     shoulder_z=35.0, neck_z=37.0, hip_y=5.2, shoulder_y=10.8,
-                    elbow=(1.5, 28.0), wrist=(3.5, 21.5), leg_r=(4.2, 3.6, 3.3),
+                    elbow=(1.5, 28.0), wrist=(3.5, 21.5), leg_r=(3.7, 3.2, 3.0),
                     arm_r=(3.9, 3.4, 3.3), fist_r=4.1, torso=((0, 28.5), (9.6, 8.6, 9.8)),
-                    torso_taper=(1.02, 0.96), foot_len=6.4)
+                    torso_taper=(1.02, 0.96), foot_len=4.3, thigh_z=THIGH_Z, foot_joint=True,
+                    far_shade=0.8)
+    rig.rest_offset["torso"] = (0, 0, LIFT)
     fr, fl = body.fist["r"], body.fist["l"]
 
     # team one-shoulder pelt tunic with a bone hand-print; the skirt swings on its own joint
@@ -77,6 +89,7 @@ def build(rig):
         g.lathe([(2.0, 0), (0, 3.2)], (x, y, 32.0), (x - 0.5, y - 0.4, 35.0), segs=8)
     rig.part("torso", g, FUR, finish="hair")
     rig.secondary("skirt", "hips", (0.5, 0, 22.0), (-1.0, 0, 13.5), max_deg=10, gain=1.0)
+    rig.rest_offset["skirt"] = (0, 0, LIFT + 1.5)
     g = Geo().blob((0.6, 0, 21.2), (11.2, 10.0, 4.4), p=2.6, taper=(1.08, 0.98))
     for x, y in ((8.0, -5.5), (2.5, -9.5), (-4.5, -9.0), (9.5, 2.5), (-9.5, -2.5)):
         g.lathe([(3.0, 0), (0, -3.4)], (x, y, 18.2), segs=10)
@@ -85,7 +98,7 @@ def build(rig):
     rig.part("torso", g, LEATHER)
     # bulging pebble pouch on the near hip with a drawstring, two pebbles peeking out
     g = Geo().blob((-5.8, -9.2, 19.6), (5.0, 3.9, 5.6), p=2.2, taper=(1.12, 0.78))
-    rig.part("hips", g, LEATHER)
+    rig.part("hips", g, team=True)   # team-dyed pouch (the 18% rule in the walk)
     g = Geo().lathe([(3.2, 0), (3.5, 0.4), (3.5, 1.6), (3.1, 2.0)], (-5.8, -9.2, 23.2), segs=14)
     rig.part("hips", g, LEATHER_DK, outline=0.6)
     g = Geo().sphere((-5.0, -10.2, 25.8), 2.3, cuts=3).sphere((-7.8, -9.0, 25.4), 2.0, cuts=3)
@@ -155,7 +168,7 @@ def build(rig):
 
     # team leg wraps below the knee (they show in the walk)
     for side, y in (("r", -5.2), ("l", 5.2)):
-        g = Geo().capsule((0.7, y, 8.2), (0.95, y, 5.4), 4.0, 3.8)
+        g = Geo().capsule((0.6, y, 11.2), (0.95, y, 5.6), 3.7, 3.5)
         rig.part(f"shin_{side}", g, team=True, outline=0.7)
     # team wrist wraps, a fur pad on the far shoulder
     g = Geo().capsule((2.6, -11.3, 23.8), (3.2, -11.3, 21.0), 4.0, 4.0)
@@ -188,7 +201,8 @@ def build(rig):
     rig.joint("reload", "fore_r", fr, hidden=True)
     g = Geo().blob((fr[0] + 1.8, fr[1] - 2.2, fr[2] - 1.0), (3.0, 2.8, 2.8), p=2.1)
     rig.part("reload", g, ROCK, outline=0.8)
-    rig.track("_foot", "shin_r", (2.9, -5.2, 0.5))
+    rig.track("_foot", "foot_r", (2.2, -5.2, 0.0))
+    rig.track("_foot_l", "foot_l", (2.2, 5.2, 0.0))
     global ARM_R, ARM_L, TIP, FR
     TIP, FR = tip, fr
     ARM_R = body.arm("r", "sling", tip)
@@ -223,11 +237,36 @@ def _idle(f):
     return M.idle_v2(f, stance(), extra=extra, face_blink=F.expr("blink"), blink=7)
 
 
-def _walk(f):
+# -- walk v3: G1 bounce jog at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 70 ms --------------
+RIG = None
+SPEED = 81.25
+LEGS = {s: G.Leg(f"thigh_{s}", f"shin_{s}", (1.0, y, ANKLE_Z), foot=f"foot_{s}",
+                 toe=(4.9, y, 0.4), heel=(-1.4, y, 0.4)) for s, y in (("r", -5.2), ("l", 5.2))}
+GAIT = G.Gait(8, 616, SPEED, G.biped_feet(LEGS["l"], LEGS["r"], x_mid=1.6), 0.38,
+              lift=6.5, kick=3.0, reach=0.0, toe_off=24.0, early_lift=1.6, drag=0.3, lift_peak=0.38)
+for _k, (_leg, _ph, _x, _gz) in list(GAIT.feet.items()):
+    GAIT.feet[_k] = (_leg, _ph - 0.03, _x, _gz)
+
+
+class _Arm:
+    def __init__(self, side):
+        self.side = side
+
+    def pose(self, a, b):
+        return (ARM_R if self.side == "r" else ARM_L).pose(a, b)
+
+
+def _walk(f, report=None):
+    # carry: the loaded sling swings low in the near hand, the pebble in the far fist; both arms pump
     def extra(ctx):
-        return {"sling": {"r": 18 * math.cos(ctx["lag_p"])}, "pebble": {"z": 0.6 * ctx["bob_lag"]}}
-    return M.walk_v2(f, stance(), HEIGHT_LU, thigh=36.0, knee=70.0, lift_lu=7.0, bob_pct=0.06,
-                     lean=-11.0, arm=34.0, fore=24.0, extra=extra)
+        return {"sling": {"r": 14 * math.cos(ctx["lag_p"])}, "pebble": {"z": 0.6 * ctx["bob_lag"]},
+                "arm_r": {"r": 4 * math.cos(ctx["lag_p"])},
+                "knot": {"r": 6 * ctx["bob_lag"] / max(ctx["amp"], 1e-3)}}
+    # carry: the near fist up at the chest so the loaded sling hangs at the hip, clear of the legs
+    carry = merge({k: v for k, v in stance().items() if k not in ("arm_r", "fore_r", "sling")}, sling_arm(-48, 30, -90))
+    return M.walk_v3(RIG, f, carry, GAIT, legs=LEGS, lean=-11.0, twist=7.0, nod=3.0,
+                     arms={"l": _Arm("l")}, arm=35.0, elbow=(30.0, 65.0),
+                     extra=extra, report=report)
 
 
 # 11 unique frames, moves.SMALL_MELEE_MS; sling angle c keeps turning (no wrap) so the
@@ -283,7 +322,71 @@ def _attack_clip():
         6: [{"kind": "dust", "ground": (13.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 4, "spread": 0.8}],
     }
     return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
-                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
+                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov,
+                  extra={"holdStep": 3, "holdLoop": [3, 4]})
+
+
+# -- attack B: low whirl at the hip, underhand flick (ANIM_SPEC appendix B) ------------------------
+# 0 = A read, 1 = A dip, 2 whirl starts low, 3 HOLD (deep crouch, the arm swung back and down, the
+# sling whirling in a ring BEHIND the hip; loops with 4 while the sim wind-up lasts), 4 whirl
+# continued, 5 the underhand swing comes through, 6 IMPACT (standing tall and leaning back, the arm
+# flung up and forward, the near knee kicked up like a pitcher, the rock leaves), 7 the empty cup
+# flaps, 8-10 = A reload and settle. Review N1 (2026-10-02): the hold and the impact must not share
+# A's silhouette (A: overhead ring, lunge, side-arm release at the hip).
+#      whirl HOLD  whirl2 swing  IMP  flap
+B_AA = [-120, -168, -160, -75, -52, 30]
+B_BB = [-110, -172, -165, -40, -26, 45]
+B_CC = [140, 300, 480, 590, 706, 790]      # the sling keeps turning (the ring smear follows it)
+B_RZ = [0, 0, 0, 0, 0, 0]                  # the whirl stays in the side plane so the ring reads
+B_T = [0, -10, -8, 2, 8, 10]
+B_H = [-4, -8, -6, 0, 12, 6]
+B_X = [-1.5, -3.5, -3.0, 0.5, 2.0, 2.5]
+B_Z = [-2.0, -4.2, -3.6, -1.5, 1.6, 0.4]
+B_Q = [-0.06, -0.12, -0.10, 0.02, 0.06, 0.02]
+B_THR = [-4, -12, -10, 20, 62, 40]
+B_SHR = [10, 26, 22, -24, -70, -40]
+B_THL = [8, 18, 16, -6, -8, -6]
+B_SHL = [-14, -30, -26, -10, -2, -2]
+B_OA = [-40, -20, -30, -60, -150, -120]
+B_OF = [20, 40, 30, 0, 10, 10]
+
+
+def _b_pose(i):
+    if i in (0, 1) or i >= 8:
+        return _attack_pose(i)
+    k = i - 2
+    pose = merge(sling_arm(B_AA[k], B_BB[k], B_CC[k]), off_arm(B_OA[k], B_OF[k]), {
+        "arm_r": {"rz": B_RZ[k]},
+        "torso": {"r": B_T[k]}, "head": {"r": B_H[k]},
+        "thigh_r": {"r": B_THR[k]}, "shin_r": {"r": B_SHR[k]},
+        "thigh_l": {"r": B_THL[k]}, "shin_l": {"r": B_SHL[k]},
+        "rock": {"hide": i in (6, 7)},
+        "pebble": {"hide": False},
+    }, M.body_about((0, 0, 20), x=B_X[k], z=B_Z[k], q=B_Q[k]))
+    if i == 6:
+        pose["sling"]["sz"] = 1.18
+    if i in (2, 3, 4):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.8, "r": -6}})
+    elif i in (5, 6):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.0}})
+    return pose
+
+
+def _attack_b():
+    cup_in = (FR[0], FR[1], FR[2] - 2.0)
+    cup_out = (TIP[0], TIP[1], TIP[2] - 3.5)
+    ring = {"kind": "arc", "joint": "sling", "inner": cup_in, "outer": cup_out, "color": ROCK,
+            "taper": 0.35, "white": 0.6, "lines": 2, "line_gap_lu": 2.4, "band": 0.38}
+    ov = {
+        3: [dict(ring, t0=0.05, t1=0.9, samples=24)],
+        4: [dict(ring, t0=0.05, t1=0.9, samples=24)],
+        5: [dict(ring, t0=0.0, t1=0.85, samples=12, lines=3)],
+        6: [{"kind": "dust", "ground": (10.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 14, "spread": 0.8}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, overlays=ov, reuse=reuse,
+                  extra={"holdStep": 3, "holdLoop": [3, 4]})
 
 
 def _hit(k):
@@ -319,9 +422,10 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES)], [M.IDLE_MS] * M.IDLE_FRAMES, loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

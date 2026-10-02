@@ -9,7 +9,11 @@ ready, the far hand pointing at the enemy.
 
 Animation (cartoon kit v2; a viewer expects a javelin man to skip, lean back and whip it):
   idle    weighs the javelin in his hand (a bounce on the beat), weight shift, blink
-  walk    jog: forward lean, the far arm pumping, the javelin bobbing a frame late
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1): the javelin trailed low in the
+          near hand, point forward, both arms pumping, planted feet
+  attack_b  QUICK FLICK: the javelin swung up and held straight up over his head like a dart,
+          then snapped down and flicked from shoulder height (a low arc); A and B pump the javelin while the sim wind-up lasts
+          (holdLoop)
   attack  HOP-STEP THROW: a skip on the back foot, lands in a long lean back with the far
           arm pointing at the target (the held extreme), a full-body whip over the top
           (smear), release (the projectile leaves at the per-frame `muzzle` on the impact
@@ -27,6 +31,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "javelineer"
+GAIT_NAME = "biped"
 NAME = "Javelineer"
 HEIGHT_LU = 68
 CANVAS = (290, 250)
@@ -54,14 +59,10 @@ def _javelin(rig, joint, base):
 
 
 def build(rig):
-    B.skeleton(rig)
-    B.sandal_legs(rig, greaves=False)
-    for s in ("r", "l"):                                                             # calf laces
-        y = B.LEG_Y * B.SIDE_Y[s]
-        g = Geo()
-        for z in (4.6, 7.4, 10.0):
-            g.blob((0.9, y, z), (3.8, 3.8, 0.7), p=3.0)
-        rig.part(f"shin_{s}", g, B.LEATHER_DK, outline=0.4)
+    global RIG
+    RIG = rig
+    B.skeleton_v3(rig)           # walk v3: longer legs, planted feet (ANIM_SPEC 2.0 rule 5)
+    B.sandal_legs_v3(rig, greaves=False, wraps="team")
 
     # javelin case on the back (behind the body), shafts over the far shoulder
     rig.joint("case", "torso", (-9.0, 4.0, 30.0))
@@ -89,6 +90,7 @@ def build(rig):
     g = Geo().blob((0.2, 0, 28.0), (10.2, 9.4, 11.4), p=2.4, taper=(1.1, 0.92))
     rig.part("torso", g, team=True)
     rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=12, gain=1.0)
+    rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 1.4)        # hem >= 9 lu above the soles
     g = Geo().blob((0.6, 0, 14.6), (11.6, 10.6, 5.6), p=2.4, taper=(1.16, 0.92))
     rig.part("hem", g, team=True)
     g = Geo().blob((0.6, 0, 10.0), (11.8, 10.8, 1.2), p=3.0)
@@ -142,7 +144,6 @@ def build(rig):
     rig.joint("jav_loose", "root", (0, 0, 0), hidden=True)
     _javelin(rig, "jav_loose", (-JAV_F * 0.35, 0.0, 0.0))
     rig.track("muzzle", "hand_r", (hx + JAV_F * 0.6, hy - 1.0, hz))
-    rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -171,20 +172,47 @@ def _idle(f):
     return M.idle_v2(f, NO_THROW, frames=6, extra=extra, face_blink=F.expr("blink"), blink=4)
 
 
-def _walk(f):
+# -- walk v3: G1 bounce jog at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 77 ms --------------
+RIG = None
+SPEED = 81.25
+LEGS = B.walk_legs_v3()
+GAIT = B.jog_gait(SPEED, LEGS)
+
+
+class _Aim:
+    @staticmethod
+    def pose(a, b):
+        return aim(a, b)
+
+
+def _walk(f, report=None):
+    # carry: the javelin trailed low in the near hand, point forward and up, swinging with the arm
+    # (a sloped carry crosses his face); the far arm pumps
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return {"hand_r": {"r": 4 * lag}, "arm_r": {"r": 2 * lag}}
-    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=38.0, knee=74.0, lift_lu=8.0, bob_pct=0.07,
-                     lean=-12.0, arm=36.0, fore=26.0, arms=("l",), extra=extra)
+        c = -math.cos(ctx["lag_p"])
+        a = -84 + 22 * c
+        return merge(throw(a, a + 58, 26 - 6 * c - 3 * lag),
+                     {"ties": {"r": 6 * lag}, "cloak": {"r": 4 * lag}})
+    return M.walk_v3(RIG, f, NO_THROW, GAIT, legs=LEGS, lean=-11.0, twist=7.0, nod=3.0,
+                     arms={"l": _Aim}, arm=35.0, elbow=(50.0, 85.0), extra=extra, report=report)
 
 
-# 11 unique frames, moves.SMALL_MELEE_MS
+def _feet(pose, fr, fl, lr=0.0, ll=0.0, ar=0.0, al=0.0):
+    return B.plant(RIG, pose, LEGS, r=(fr, lr, ar), l=(fl, ll, al))
+
+
+# 12 steps: read, skip, land, HOLD, pump (holdLoop with the hold while the sim wind-up lasts),
+# whip, lead | IMPACT, follow, reach, draw, settle. Pre-impact 290 of 680 ms (impactAt 0.4265, as
+# shipped); the hold is 35% of the pre-impact time.
+ATK_MS = [30, 40, 40, 102, 30, 30, 18, 120, 60, 50, 70, 90]
+ATK_IMPACT = 7
+# 11 base poses (the shipped A); unique frame 4 is the pump between hold and whip
 #         read  skip  land  HOLD  whip  lead  IMP  follow reach draw  settle
 # throwing arm in WORLD degrees (upper arm, forearm, javelin); the torso lean is subtracted
-T_A = [188, 186, 174, 172, 110, 40, -15, -55, 120, 115, 188]
-T_F = [93, 182, 178, 178, 60, 10, -25, -70, 170, 150, 93]
-T_W = [48, 12, 10, 12, 15, 0, -10, -40, 150, 95, 48]
+T_A = [188, 186, 180, 186, 110, 40, -15, -55, 120, 115, 188]
+T_F = [93, 182, 184, 192, 60, 10, -25, -70, 170, 150, 93]
+T_W = [48, 12, 10, 6, 15, 0, -10, -40, 150, 95, 48]
 O_A = [-50, 0, 18, 30, -40, -70, -95, -100, -60, -55, -50]
 O_F = [-20, 10, 24, 36, -55, -80, -110, -100, -40, -30, -20]
 A_T = [-2, 6, 16, 26, 0, -12, -24, -28, -8, -4, -2]
@@ -192,20 +220,21 @@ A_H = [0, -4, -8, -10, -2, 6, 10, 12, 4, 0, 0]
 A_Q = [-0.02, 0.06, -0.12, 0.08, 0.06, 0.0, -0.14, -0.08, -0.02, 0.02, 0.0]
 A_X = [-0.5, -3.0, -4.0, -5.5, 0.5, 4.0, 7.5, 8.5, 6.0, 3.0, 0.5]
 A_Z = [0.0, 4.0, -2.8, -1.4, 0.6, -0.4, -2.2, -1.4, -0.6, 0.0, 0.0]
-A_THR = [0, 38, 30, 42, 16, 20, 24, 20, 10, 4, 0]
-A_SHR = [0, -58, -8, -6, -18, -20, -26, -18, -8, -2, 0]
-A_THL = [0, -10, -16, -18, -4, -18, -38, -46, -20, -6, 0]
-A_SHL = [0, -34, -28, -32, -10, -24, -46, -50, -20, -6, 0]
+# planted feet: the skip lifts both, he lands with the far foot back, steps the near foot in to throw
+A_FR = [2.0, 0.0, -1.0, 2.0, 6.0, 9.0, 11.0, 11.0, 9.0, 5.0, 2.5]
+A_FL = [-2.0, -6.0, -9.0, -10.0, -8.0, -6.0, -3.0, -3.0, -3.0, -2.5, -2.0]
+A_LR = [0.0, 5.0, 0.0, 0.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+A_LL = [0.0, 4.0, 0.0, 0.0, 0.0, 0.0, 1.5, 6.0, 1.5, 0.0, 0.0]
+A_AL = [0, -20, 0, 0, -10, -20, -30, -40, -10, 0, 0]
 
 
-def _attack_pose(f):
+def _base(f):
     t = A_T[f]
     pose = merge(throw(T_A[f] - t, T_F[f] - t, T_W[f] - t), aim(O_A[f] - t, O_F[f] - t), {
         "torso": {"r": A_T[f]}, "head": {"r": A_H[f]},
-        "thigh_r": {"r": A_THR[f]}, "shin_r": {"r": A_SHR[f]},
-        "thigh_l": {"r": A_THL[f]}, "shin_l": {"r": A_SHL[f]},
         "jav": {"hide": f in (6, 7, 8)},
     }, M.body_about((0, 0, 22), x=A_X[f], z=A_Z[f], q=A_Q[f]))
+    pose = _feet(pose, A_FR[f], A_FL[f], lr=A_LR[f], ll=A_LL[f], al=A_AL[f])
     if f in (4, 5):
         pose["jav"]["sx"] = 1.22
     if f == 9:
@@ -219,25 +248,98 @@ def _attack_pose(f):
     return pose
 
 
+def _pump(pose):
+    """The hold-loop partner of a hold: the javelin pumps back, the body dips, the eyes squint."""
+    return merge(pose, {"arm_r": {"r": 6}, "fore_r": {"r": 8}, "hand_r": {"r": -6}, "head": {"r": 2},
+                        "torso": {"r": 2}, "brow": {"z": -0.4}, "pupils": {"x": 0.4}})
+
+
+def _attack_pose(u):
+    if u <= 3:
+        return _base(u)
+    if u == 4:
+        return _pump(_base(3))
+    return _base(u - 1)
+
+
 JAV_TIP = (HR[0] + JAV_F, HR[1] - 1.0, HR[2])
 JAV_MID = (HR[0] + JAV_F - 16.0, HR[1] - 1.0, HR[2])
+ARC = {"kind": "arc", "joint": "jav", "inner": JAV_MID, "outer": JAV_TIP, "color": B.SAND_LT,
+       "white": 0.35, "taper": 0.2, "lines": 3}
+HAND = {"kind": "arc", "joint": "hand_r", "inner": (HR[0], HR[1], HR[2] + 2.0),
+        "outer": (HR[0] + 4.0, HR[1], HR[2]), "color": B.SKIN, "white": 0.4, "taper": 0.1, "lines": 2}
 
 
 def _attack_clip():
-    arc = {"kind": "arc", "joint": "jav", "inner": JAV_MID, "outer": JAV_TIP, "color": B.SAND_LT,
-           "white": 0.35, "taper": 0.2, "lines": 3}
-    hand = {"kind": "arc", "joint": "hand_r", "inner": (HR[0], HR[1], HR[2] + 2.0),
-            "outer": (HR[0] + 4.0, HR[1], HR[2]), "color": B.SKIN, "white": 0.4, "taper": 0.1, "lines": 2}
     ov = {
         1: [{"kind": "dust", "ground": (-5.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 2, "spread": 0.7}],
         2: [{"kind": "dust", "ground": (-6.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 5, "spread": 0.8}],
-        4: [dict(arc, **{"from": 3, "t1": 0.95})],
-        5: [dict(arc, **{"from": 3, "t0": 0.3, "t1": 0.95})],
-        6: [dict(hand, **{"from": 5, "t1": 0.95}),
+        5: [dict(ARC, **{"from": 3, "t1": 0.95})],
+        6: [dict(ARC, **{"from": 3, "t0": 0.3, "t1": 0.95})],
+        7: [dict(HAND, **{"from": 6, "t1": 0.95}),
             {"kind": "dust", "ground": (12.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 8, "spread": 0.8}],
     }
-    return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
-                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
+    return M.clip("attack", [_attack_pose(u) for u in range(12)], ATK_MS, impact=ATK_IMPACT, smear=5,
+                  overlays=ov, extra={"holdStep": 3, "holdLoop": [3, 4]})
+
+
+# -- attack B: standing quick flick, a low arc (ANIM_SPEC appendix B) ----------------------------
+# 0 = A read, 1 dip, 2 the javelin swung up, 3 HOLD (standing tall, the javelin held straight up
+# over his head like a dart, the far hand pointing), 4 pump, 5 snap-down whip, 6 lead, 7 IMPACT
+# (a short flick from shoulder height, leaning in), 8-11 = A follow, reach, draw, settle
+#      dip  draw  HOLD  whip  lead  IMP
+B_TA = [150, 90, 100, 60, 20, -5]            # throwing arm, world deg
+B_TF = [80, 80, 96, 30, 0, -12]
+B_TW = [40, 70, 92, 30, 8, -4]
+B_OA = [-40, -10, 10, -30, -70, -90]
+B_OF = [-10, 10, 30, -30, -80, -100]
+B_T = [-4, 2, 6, -6, -14, -18]
+B_H = [2, -2, -4, 2, 8, 10]
+B_X = [-1.0, -1.5, -2.0, 1.5, 4.0, 5.5]
+B_Z = [-2.5, 0.5, 1.5, -0.5, -1.5, -2.0]
+B_Q = [-0.08, 0.04, 0.08, 0.04, 0.0, -0.12]
+B_FR = [3.0, 3.0, 3.0, 6.0, 8.0, 9.0]
+B_FL = [-3.0, -4.0, -5.0, -4.0, -3.0, -2.5]
+B_LR = [0.0, 0.0, 0.0, 2.5, 1.0, 0.0]
+B_AR = [0, 0, -14, 0, 0, 0]                  # up on the toes of the near foot on the hold
+
+
+def _b_base(k):
+    t = B_T[k]
+    pose = merge(throw(B_TA[k] - t, B_TF[k] - t, B_TW[k] - t), aim(B_OA[k] - t, B_OF[k] - t), {
+        "torso": {"r": t}, "head": {"r": B_H[k]},
+        "jav": {"hide": k == 5},
+    }, M.body_about((0, 0, 22), x=B_X[k], z=B_Z[k], q=B_Q[k]))
+    pose = _feet(pose, B_FR[k], B_FL[k], lr=B_LR[k], ar=B_AR[k])
+    if k == 3:
+        pose["jav"]["sx"] = 1.22
+    if k in (0, 1, 2):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+    else:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+    return pose
+
+
+def _b_pose(u):
+    if u == 0:
+        return _attack_pose(0)
+    if u >= 8:
+        return _attack_pose(u)
+    if u == 4:
+        return _pump(_b_base(2))
+    return _b_base(u - 1 if u < 4 else u - 2)
+
+
+def _attack_b():
+    ov = {
+        5: [dict(ARC, **{"from": 3, "t1": 0.95})],
+        6: [dict(ARC, **{"from": 3, "t0": 0.3, "t1": 0.95})],
+        7: [dict(HAND, **{"from": 6, "t1": 0.95}),
+            {"kind": "dust", "ground": (10.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 18, "spread": 0.8}],
+    }
+    reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10), 11: ("attack", 11)}
+    return M.clip("attack_b", [_b_pose(u) for u in range(12)], ATK_MS, impact=ATK_IMPACT, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 3, "holdLoop": [3, 4]})
 
 
 def _hit(k):
@@ -280,10 +382,11 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

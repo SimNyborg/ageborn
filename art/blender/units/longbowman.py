@@ -7,7 +7,10 @@ as he is, held diagonally in the near hand. He carries a spare arrow in the draw
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
   idle    lifts the spare arrow and squints down the shaft (checks it is straight), blink
-  walk    jog: forward lean, the bow and the hood tail bouncing a frame late
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1): the bow carried low in the bow
+          hand, the draw hand pumping with the spare arrow, planted feet, the hood tail late
+  attack_b  KNEEL AND LOOSE: drops to one knee and draws to the cheek on a flat aim (the held
+          extreme reads low and level), looses and rises
   attack  HIGH-ARC VOLLEY: nocks the spare arrow, raises the bow and leans back into a full
           draw aimed up at the sky (the long held extreme), the string snaps (a twang ring),
           the bow arm kicks and the string vibrates for two frames, then he pulls the next
@@ -25,6 +28,7 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "longbowman"
+GAIT_NAME = "biped"
 NAME = "Longbowman"
 HEIGHT_LU = 68
 CANVAS = (256, 244)
@@ -60,9 +64,14 @@ def _bow_x(z):
     return -BOW_BEND * (z / BOW_HALF) ** 2
 
 
+RIG = None
+
+
 def build(rig):
-    B.skeleton(rig)
-    B.legs(rig, HOSE, BOOT, cuff=DARK_LEATHER)
+    global RIG
+    RIG = rig
+    K.skeleton_v3(rig)
+    K.legs_v3(rig, HOSE, BOOT, cuff=DARK_LEATHER)
 
     # quiver on the back (drawn first so the body covers its lower end)
     g = Geo().capsule((-9.5, 5.0, 22.0), (-13.5, 5.0, 44.0), 3.8, 4.2)
@@ -85,7 +94,8 @@ def build(rig):
     # torso: team tunic, leather jerkin, belt
     g = Geo().blob((0, 0, 27.0), (10.2, 9.4, 11.6), p=2.3, taper=(1.12, 0.92))
     rig.part("torso", g, team=True)
-    rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=8, gain=0.7)
+    rig.secondary("hem", "hips", (0.5, 0, 17.5), (0.5, 0, 9.0), max_deg=12, gain=1.0)
+    rig.rest_offset["hem"] = (0, 0, K.V3_LIFT + 0.6)
     g = Geo().blob((0.6, 0, 14.8), (11.4, 10.4, 4.8), p=2.7, taper=(1.12, 1.0))
     rig.part("hem", g, team=True)
     g = Geo().blob((0.4, 0, 28.5), (10.8, 9.9, 8.4), p=2.8, taper=(1.02, 0.94))
@@ -183,7 +193,6 @@ def build(rig):
     rig.part("arrow_hand", g, PARCH, outline=0.6)
     # the arrow spawns where its head rests at full draw
     rig.track("muzzle", "hand_r", (ax0 + ARROW + 3, hy - AY, hz + AZ))
-    rig.track("_foot", "shin_r", (3.3, -6.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -245,14 +254,24 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
-    # jog: forward lean, the bow and the hood tail a frame late
+# -- walk v3: G1 bounce jog at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 77 ms -------------
+SPEED = 81.25
+LEGS = K.legs_ik()
+GAIT = K.jog_gait(LEGS, SPEED)
+# walk carry: the bow low in the bow hand, tipped forward (not the guard), the spare arrow in
+# the pumping draw hand
+CARRY = merge(bow(-76, -40, 128), spare(r=-20), {"torso": {"r": -2}})
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return {"hand_r": {"r": 5 * lag}, "arm_r": {"r": -6 * math.cos(ctx["lag_p"])},
-                "tail": {"r": 3 * lag}}
-    return M.walk_v2(f, merge(STANCE, spare()), HEIGHT_LU, thigh=36.0, knee=66.0, lift_lu=7.0,
-                     bob_pct=0.065, lean=-10.0, arm=26.0, arms=("l",), extra=extra)
+        c = -math.cos(ctx["lag_p"])
+        return merge(bow(-76 + 10 * c, -40 + 8 * c, 128 + 5 * lag), {"tail": {"r": 6 * lag},
+                     "feather": {"r": 5 * lag}, "hem": {"r": 4 * lag}})
+    return M.walk_v3(RIG, f, CARRY, GAIT, legs=LEGS, lean=-9.0, twist=6.0, nod=3.0,
+                     arms={"l": K.ArmChain("l")}, arm=34.0, elbow=(50.0, 85.0), extra=extra,
+                     report=report)
 
 
 # attack: 799 ms, the release (impact) at 433 ms (impactAt 0.5419, as shipped); 9 unique frames
@@ -262,7 +281,8 @@ ATTACK_IMPACT = 4
 AIM = 28.0   # the volley is aimed this far above level
 
 
-def _attack_pose(f):
+def _attack_pose(f, aim=AIM, kneel=None):
+    AIM = aim
     lean = [3, 6, 11, 16, 12, 8, 4, 0, -2][f]
     body = merge({
         "torso": {"r": lean, "rz": [10, DRAW_TWIST - 6, DRAW_TWIST, DRAW_TWIST, DRAW_TWIST, 26, 20, 12, 4][f]},
@@ -298,7 +318,18 @@ def _attack_pose(f):
         pose = merge(bow(-30, -6, 62), B.arm("l", 120, 175), body, strings(0))
     else:          # pulls the next arrow and brings it down to the ready
         pose = merge(bow(-42, -10, 50), B.arm("l", -40, 60), spare(r=40), body, strings(0))
+    if kneel:
+        pose = merge(pose, _kneel(kneel))
     return pose
+
+
+def _kneel(t):
+    """Down on the far knee, the near foot planted forward (t 0..1)."""
+    return merge({
+        "thigh_r": {"r": 88 * t}, "shin_r": {"r": -92 * t}, "foot_r": {"r": 4 * t},
+        "thigh_l": {"r": -4 * t}, "shin_l": {"r": -96 * t}, "foot_l": {"r": -30 * t},
+        "torso": {"r": -10 * t},
+    }, M.body_about((0, 0, 22), z=-10.5 * t))
 
 
 def _attack_clip():
@@ -313,6 +344,36 @@ def _attack_clip():
     }
     return M.clip("attack", [_attack_pose(f) for f in range(9)], ATTACK_MS, impact=ATTACK_IMPACT,
                   overlays=ov)
+
+
+
+# -- attack B: kneel and loose, a flat shot drawn to the cheek ------------------------------------
+# frames: 0 = A nock, 1 drops to the knee and raises, 2 half draw, 3 FULL DRAW kneeling (the held
+# extreme, aimed nearly flat), 4 RELEASE, 5-6 the string vibrates, 7 rises, 8 = A reload
+AIM_B = 9.0
+B_KNEEL = [0.0, 0.85, 1.0, 1.0, 1.0, 1.0, 1.0, 0.45, 0.0]
+
+
+def _b_pose(f):
+    if f in (0, 8):
+        return _attack_pose(f)
+    return _attack_pose(f, aim=AIM_B, kneel=B_KNEEL[f])
+
+
+def _attack_b():
+    ov = {
+        4: [{"kind": "rings", "joint": "hand_r", "point": (HL[0] + 2.0, HL[1], HL[2] + 16.0),
+             "radii_lu": (6.0, 10.5), "a0": -50.0, "a1": 70.0, "color": "#FFF4D6"},
+            {"kind": "burst", "joint": "hand_r", "point": (HL[0] + 6.0, HL[1], HL[2] + 4.0),
+             "r0_lu": 5.0, "r1_lu": 10.0, "n": 4, "a0": -40.0, "arc": 80.0},
+            {"kind": "dust", "ground": (-6.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 31, "spread": 0.7}],
+        5: [{"kind": "rings", "joint": "hand_r", "point": (HL[0] + 2.0, HL[1], HL[2] + 16.0),
+             "radii_lu": (9.0,), "a0": -40.0, "a1": 60.0, "color": "#FFF4D6"}],
+        1: [{"kind": "dust", "ground": (-8.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 32, "spread": 0.7}],
+    }
+    reuse = {0: ("attack", 0), 8: ("attack", 8)}
+    return M.clip("attack_b", [_b_pose(f) for f in range(9)], ATTACK_MS, impact=ATTACK_IMPACT,
+                  overlays=ov, reuse=reuse)
 
 
 def _hit(k):
@@ -347,10 +408,11 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl, attack_ms=799, attack_impact_at=0.5419)
+    return M.check_variants(M.check_contract(cl, attack_ms=799, attack_impact_at=0.5419))

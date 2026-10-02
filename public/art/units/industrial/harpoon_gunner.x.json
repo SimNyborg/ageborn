@@ -1,0 +1,554 @@
+{
+ "frames": {
+  "harpoon_gunner_attack_b_01": {
+   "frame": {
+    "x": 222,
+    "y": 2,
+    "w": 92,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 85,
+    "w": 92,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_b_01_team": {
+   "frame": {
+    "x": 66,
+    "y": 190,
+    "w": 63,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 100,
+    "w": 63,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_b_02": {
+   "frame": {
+    "x": 82,
+    "y": 100,
+    "w": 95,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 96,
+    "w": 95,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_b_02_team": {
+   "frame": {
+    "x": 262,
+    "y": 190,
+    "w": 65,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 110,
+    "w": 65,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_b_03": {
+   "frame": {
+    "x": 181,
+    "y": 100,
+    "w": 94,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 96,
+    "w": 94,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_b_03_team": {
+   "frame": {
+    "x": 331,
+    "y": 190,
+    "w": 65,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 110,
+    "w": 65,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_b_04": {
+   "frame": {
+    "x": 96,
+    "y": 2,
+    "w": 122,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 88,
+    "w": 122,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_b_04_team": {
+   "frame": {
+    "x": 409,
+    "y": 100,
+    "w": 60,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 104,
+    "w": 60,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_b_05": {
+   "frame": {
+    "x": 279,
+    "y": 100,
+    "w": 126,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 100,
+    "w": 126,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_b_05_team": {
+   "frame": {
+    "x": 400,
+    "y": 190,
+    "w": 62,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 110,
+    "w": 62,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_b_06": {
+   "frame": {
+    "x": 318,
+    "y": 2,
+    "w": 123,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 92,
+    "w": 123,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_b_06_team": {
+   "frame": {
+    "x": 133,
+    "y": 190,
+    "w": 61,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 107,
+    "w": 61,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 100,
+    "w": 76,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 93,
+    "w": 76,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_b_07_team": {
+   "frame": {
+    "x": 198,
+    "y": 190,
+    "w": 60,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 108,
+    "w": 60,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_b_08": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 90,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 82,
+    "w": 90,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  },
+  "harpoon_gunner_attack_b_08_team": {
+   "frame": {
+    "x": 2,
+    "y": 190,
+    "w": 60,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 97,
+    "w": 60,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 192
+   },
+   "anchor": {
+    "x": 0.50515,
+    "y": 0.86979
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "harpoon_gunner_attack_00",
+   "harpoon_gunner_attack_b_01",
+   "harpoon_gunner_attack_b_02",
+   "harpoon_gunner_attack_b_03",
+   "harpoon_gunner_attack_b_04",
+   "harpoon_gunner_attack_b_05",
+   "harpoon_gunner_attack_b_06",
+   "harpoon_gunner_attack_b_07",
+   "harpoon_gunner_attack_b_08",
+   "harpoon_gunner_attack_09",
+   "harpoon_gunner_attack_10"
+  ],
+  "attack_b_team": [
+   "harpoon_gunner_attack_00_team",
+   "harpoon_gunner_attack_b_01_team",
+   "harpoon_gunner_attack_b_02_team",
+   "harpoon_gunner_attack_b_03_team",
+   "harpoon_gunner_attack_b_04_team",
+   "harpoon_gunner_attack_b_05_team",
+   "harpoon_gunner_attack_b_06_team",
+   "harpoon_gunner_attack_b_07_team",
+   "harpoon_gunner_attack_b_08_team",
+   "harpoon_gunner_attack_09_team",
+   "harpoon_gunner_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "harpoon_gunner.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 512,
+   "h": 264
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.harpoon_gunner",
+   "name": "Harpoon Gunner",
+   "heightLu": 70,
+   "widthLu": 67.1,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    147.0,
+    167.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     68
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     40,
+     44
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "harpoon_gunner",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      50,
+      70,
+      111,
+      60,
+      70,
+      90,
+      70,
+      70,
+      70,
+      80,
+      83
+     ],
+     "durationMs": 824,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3532,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        25.0,
+        29.2
+       ],
+       [
+        25.9,
+        26.4
+       ],
+       [
+        28.5,
+        19.0
+       ],
+       [
+        28.5,
+        20.2
+       ],
+       [
+        25.2,
+        22.2
+       ],
+       [
+        4.2,
+        31.8
+       ],
+       [
+        16.4,
+        25.5
+       ],
+       [
+        16.6,
+        25.5
+       ],
+       [
+        21.9,
+        30.1
+       ],
+       [
+        21.3,
+        35.6
+       ],
+       [
+        22.6,
+        35.8
+       ]
+      ]
+     },
+     "muzzle": [
+      25.2,
+      22.2
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

@@ -22,6 +22,17 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   hit     vehicle: a suspension bounce, the commander ducks with his eyes squeezed, the pennant whips
   die     D7 wreck and bail: struck, the tankette hops, lands tilted on a snapped track with the
           turret knocked askew and black smoke; the commander leaps out of the hatch and runs
+
+Animation standard (ANIM_SPEC 2026-10-02, G6 tracked; the track pilot):
+  walk      the track scrolls exactly 2 grouser spacings per 460 ms cycle at the ground speed
+            (50 x 1.25 = 62.5 lu/s), the hull heaves on its suspension (one bump per footfall, 1.5
+            degrees of pitch), the commander bobs a beat late, the antenna pennant whips, the exhaust
+            puffs and the rear of the track kicks up a fresh dust puff every step
+  attack    A as above; the squat is split into the hold and a wobble frame (holdLoop: the sim
+            wind-up is 2.6x the authored one)
+  attack_b  TURRET TRAVERSE AND QUICK SHOT: the commander ducks, the turret swings round toward the
+            camera with the barrel cocked up (the held extreme, holdLoop), a quick snap shot, and the
+            hull rocks from side to side on its tracks instead of hopping back
 """
 import math
 
@@ -33,6 +44,7 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "tankette"
+GAIT_NAME = "tracked"
 NAME = "Tankette"
 HEIGHT_LU = 96
 YAW_DEG = -10.0
@@ -46,7 +58,10 @@ TX0, TX1 = -30.0, 30.0       # track end centres
 TY = -15.0                   # near track depth
 TW = 9.0
 PITCH = 12.5                 # grouser pitch: walk moves 3.125 lu/step = PITCH / 4
-STEP_LU = 50.0 * 0.0625      # sim speed 50 lu/s, 62.5 ms per walk step
+STEP_LU = PITCH / 4          # one grouser phase copy per walk step (2 spacings per 8-step cycle)
+# the scaled track moves STEP_LU x SCALE = 3.59 lu per step; at the ground speed 50 x 1.25 = 62.5 lu/s
+# a step lasts 57.5 ms (cycle 460 ms)
+WALK_MS = [57, 58, 57, 58, 57, 58, 57, 58]
 WHEELS = (-30.0, -15.0, 0.0, 15.0, 30.0)
 TURRET = (-4.0, 0.0, 40.0)
 BARREL_Z = 48.0
@@ -244,18 +259,30 @@ def _idle(f):
 def _walk(f):
     p = 2 * math.pi * f / 8
     bump = -abs(math.sin(p))
-    return merge(_tracks(f), c_arm(REST_ARM - 10), {
+    lag = -abs(math.sin(p - 0.8))
+    return merge(_tracks(f), c_arm(REST_ARM - 10 + 12 * lag), {
         "odo": {"x": 2.0 * STEP_LU * SCALE * math.cos(p)},   # ground speed of the scaled track
-        "hull": dict(squash(0.025 * math.cos(2 * p)), z=1.6 * bump + 0.8, r=1.0 * math.sin(p)),
-        "cmdr": {"r": -3.0 * math.sin(p - 0.8), "z": 0.7 * math.cos(2 * p - 0.8)},
-        "c_head": {"r": 2.0 * math.sin(p - 1.2)},
-        "exhaust": {"show": f % 4 == 1, "s": 0.9, "x": -2.0},
+        "hull": dict(squash(0.03 * math.cos(2 * p)), z=2.6 * bump + 1.3, r=1.5 * math.sin(p)),
+        "turret": {"r": -0.8 * math.sin(p - 0.6)},
+        "cmdr": {"r": -4.0 * math.sin(p - 0.8), "z": 1.4 * lag + 0.7},
+        "c_head": {"r": 3.0 * math.sin(p - 1.2)},
+        "exhaust": {"show": f % 4 in (1, 2), "s": [1, 0.8, 1.15, 1][f % 4], "x": [0, -1.0, -5.0, 0][f % 4],
+                    "z": [0, 0, 2.5, 0][f % 4]},
     })
 
 
-# 10 unique frames in 790 ms; fire on frame 3 at 291 ms (impactAt 0.3684, as shipped)
-ATTACK_MS = [40, 60, 191, 60, 80, 70, 70, 70, 75, 74]
-ATTACK_IMPACT = 3
+def _walk_clip():
+    # dust kicked up behind the rear of the track, a fresh little cloud every other step
+    ov = {f: [{"kind": "dust", "ground": (-40.0 - 4.0 * (f % 4), 0.0), "size_lu": 4.5 + 1.2 * (f % 4), "puffs": 3,
+               "seed": 60 + f, "spread": 1.0, "dir": -1.0}] for f in range(8)}
+    return M.clip("walk", [_walk(f) for f in range(8)], WALK_MS, loop=True, overlays=ov)
+
+
+# 11 unique frames in 790 ms; fire on frame 4 at 291 ms (impactAt 0.3684, as shipped). The shipped
+# 191 ms squat is split into the hold (130) and a wobble partner (61) for the holdLoop.
+ATTACK_MS = [40, 60, 130, 61, 60, 80, 70, 70, 70, 75, 74]
+ATTACK_IMPACT = 4
+U_OF = [0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9]     # unique frame -> row of the pose tables below
 #       duck squat HOLD  BOOM  hop   land  bounce wave  roll  settle
 BX = [0.0, 0.5, 1.0, -2.5, -8.0, -10.0, -9.0, -6.0, -3.0, -1.0]
 BZ = [0.0, -0.5, -1.0, 2.5, 7.0, 0.0, 2.2, 0.0, 0.0, 0.0]
@@ -268,11 +295,13 @@ LID = [-30.0, -80.0, -95.0, -95.0, -90.0, -70.0, 20.0, 10.0, 4.0, 0.0]
 ARM = [160.0, 170.0, 170.0, 170.0, 170.0, 170.0, 20.0, -25.0, 15.0, 90.0]
 
 
-def _attack_pose(f):
+def _attack_pose(i):
+    wob = i == 3
+    f = U_OF[i]
     pose = merge(_tracks(0, False), c_arm(ARM[f]), {
-        "body": dict(squash(BQ[f]), x=BX[f], z=BZ[f]),
-        "hull": {"r": HR[f]},
-        "turret": {"r": TUR[f]},
+        "body": dict(squash(BQ[f] + (0.02 if wob else 0.0)), x=BX[f], z=BZ[f] + (0.4 if wob else 0.0)),
+        "hull": {"r": HR[f] + (0.6 if wob else 0.0)},
+        "turret": {"r": TUR[f] + (0.5 if wob else 0.0)},
         "barrel": {"x": BAR[f], "r": [2, 3, 3, 4, 5, 2, 1, 0, 0, 0][f],
                    "sz": [1, 1, 1, 1.15, 1.05, 1, 1, 1, 1, 1][f]},
         "cmdr": {"z": CZ[f], "r": [0, -4, -6, 8, 6, 4, -4, 3, 0, 0][f]},
@@ -297,16 +326,71 @@ def _attack_pose(f):
 
 def _attack_clip():
     ov = {
-        3: [{"kind": "burst", "joint": "barrel", "point": (MUZZLE[0] + 4.0, -1.0, BARREL_Z), "r0_lu": 10.0,
+        4: [{"kind": "burst", "joint": "barrel", "point": (MUZZLE[0] + 4.0, -1.0, BARREL_Z), "r0_lu": 10.0,
              "r1_lu": 17.0, "n": 6, "a0": -70.0, "arc": 140.0}],
-        5: [{"kind": "dust", "ground": (-28.0, 0.0), "size_lu": 8.0, "puffs": 4, "seed": 61, "spread": 1.1,
+        6: [{"kind": "dust", "ground": (-28.0, 0.0), "size_lu": 8.0, "puffs": 4, "seed": 61, "spread": 1.1,
              "dir": -1.0},
             {"kind": "dust", "ground": (26.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 62, "spread": 1.0,
              "dir": 1.0}],
-        6: [{"kind": "burst", "joint": "c_arm", "point": (CMDR[0] + 1.8, -7.2, CMDR[2] + 15.0), "r0_lu": 4.0,
+        7: [{"kind": "burst", "joint": "c_arm", "point": (CMDR[0] + 1.8, -7.2, CMDR[2] + 15.0), "r0_lu": 4.0,
              "r1_lu": 7.0, "n": 4, "a0": 30.0, "arc": 120.0}],
     }
-    return M.clip("attack", [_attack_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
+    return M.clip("attack", [_attack_pose(f) for f in range(11)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  extra={"holdStep": 2, "holdLoop": [2, 3]})
+
+
+# -- attack B: turret traverse and quick shot (ANIM_SPEC appendix B) --------------------------------
+# unique frames: 0 = A duck, 1 traverse (the turret swings toward the camera), 2 HOLD (swung round,
+# the barrel cocked up, the lid half shut), 3 wobble (holdLoop), 4 FIRE (a quick snap shot), 5 rock
+# (the hull rolls away on its springs), 6 rock back, 7 the turret swings home, 8 settle,
+# 9-10 = A settle. Turret yaw `rz` (negative = toward the camera), hull roll `rx`.
+#        trav  HOLD  wob   FIRE  rock  back  home  settle
+B_TRZ = [-14.0, -30.0, -30.0, -30.0, -28.0, -24.0, -10.0, -2.0]
+B_BAR = [4.0, 9.0, 9.6, 9.0, 12.0, 8.0, 4.0, 1.0]
+B_REC = [0.0, 0.0, 0.0, -5.0, -3.0, -1.0, 0.0, 0.0]
+B_RX = [0.0, -1.0, -1.0, 4.0, 7.0, -4.0, 2.0, -0.5]
+B_HR = [0.0, -0.8, -0.6, 2.0, 1.0, -0.8, 0.4, 0.0]
+B_Q = [0.0, -0.02, -0.02, 0.04, -0.05, 0.03, -0.01, 0.0]
+B_CZ = [-10.0, -13.0, -13.0, -13.0, -11.0, -6.0, 0.0, 1.0]
+B_LID = [-70.0, -85.0, -85.0, -85.0, -70.0, -40.0, 10.0, 4.0]
+B_ARM = [170.0, 170.0, 170.0, 170.0, 170.0, 120.0, -20.0, 40.0]
+
+
+def _b_pose(i):
+    if i in (0, 9, 10):
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(_tracks(0, False), c_arm(B_ARM[k]), {
+        "body": dict(squash(B_Q[k]), rx=B_RX[k]),
+        "hull": {"r": B_HR[k]},
+        "turret": {"rz": B_TRZ[k], "r": 0.5 if k == 2 else 0.0},
+        "barrel": {"x": B_REC[k], "r": B_BAR[k], "sz": 1.12 if k == 3 else 1.0},
+        "cmdr": {"z": B_CZ[k], "r": [0, -4, -4, 6, 4, -2, 2, 0][k]},
+        "lid": {"r": B_LID[k]},
+        "flash": {"show": k == 3, "s": 0.85 if k == 3 else 1.0},
+        "smoke": {"show": k in (4, 5), "s": [1, 1, 1, 1, 0.7, 0.95, 1, 1][k], "x": [0, 0, 0, 0, -8, -4, 0, 0][k],
+                  "z": [0, 0, 0, 0, -4, 4, 0, 0][k]},
+        "exhaust": {"show": k in (4, 5)},
+    })
+    if k in (1, 2, 3):
+        pose = merge(pose, F.expr("squeeze", "grit"))
+    elif k in (6, 7):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": 1.0}})
+    return pose
+
+
+def _attack_b():
+    ov = {
+        4: [{"kind": "burst", "joint": "barrel", "point": (MUZZLE[0] + 4.0, -1.0, BARREL_Z), "r0_lu": 8.0,
+             "r1_lu": 14.0, "n": 5, "a0": -60.0, "arc": 130.0}],
+        5: [{"kind": "dust", "ground": (-24.0, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 63, "spread": 0.9,
+             "dir": -1.0}],
+        6: [{"kind": "dust", "ground": (24.0, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 64, "spread": 0.9,
+             "dir": 1.0}],
+    }
+    reuse = {0: ("attack", 0), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(11)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 2, "holdLoop": [2, 3]})
 
 
 def _hit(k):
@@ -367,9 +451,10 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        _walk_clip(),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl, attack_ms=790, attack_impact_at=0.3684)
+    return M.check_variants(M.check_contract(cl, attack_ms=790, attack_impact_at=0.3684))

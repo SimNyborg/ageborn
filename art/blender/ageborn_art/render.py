@@ -161,7 +161,15 @@ def render_clips(rig, clips, frame_dir, feet_px, smear_spec=None, team=True, log
     for clip in clips:
         poses = clip_poses(rig, clip)
         frames, tr = [], {name: [] for name in rig.trackers}
+        reuse = getattr(clip, "reuse", None) or {}
         for i in range(clip.frames):
+            if i in reuse:
+                # ANIM_SPEC P3: this variant frame is an A frame (same pixels, no render)
+                src, k = reuse[i]
+                frames.append(out[src][k])
+                for name in rig.trackers:
+                    tr[name].append(tracks[src][name][k] if src in tracks else [0.0, 0.0])
+                continue
             smear = smear_for(rig, clip, poses, i, smear_spec)
             rig.apply(poses[i])
             _update()

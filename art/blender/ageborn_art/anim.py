@@ -97,7 +97,8 @@ def squash(amount):
 class Clip:
     """`frames` unique poses, played in `sequence` order for `durations` ms per step.
 
-    impact: unique frame index of the contact frame (impactAt is computed from time).
+    impact: unique frame index of the contact frame (impactAt is computed from time; the meta
+            also writes impactStep, the step in `sequence` where that frame first plays).
     smear:  unique frame index that gets a swept smear ribbon (see render.py).
     extra:  additional metadata, e.g. the death clip's FX hand-off.
     """
@@ -126,7 +127,11 @@ class Clip:
         if self.impact is not None:
             # impactAt: normalised time at which the contact frame starts (DESIGN B5).
             step = self.sequence.index(self.impact)
+            # impactFrame indexes the unique frames (per-frame anchors use it); impactStep indexes
+            # durationsMs and the animation list. They differ when `sequence` repeats a frame before
+            # the impact (review B2: Bonker C's taps); the runtime times the impact by the step.
             m["impactFrame"] = self.impact
+            m["impactStep"] = step
             m["impactAt"] = round(sum(self.durations[:step]) / self.total_ms(), 4)
         if self.smear is not None:
             m["smearFrame"] = self.smear

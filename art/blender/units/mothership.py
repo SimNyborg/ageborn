@@ -17,13 +17,17 @@ shot, > < when hit, spirals and X in the crash); the drone bay door carries viol
 
 Clips: idle hovers (a +-3.6 lu bob, the running lights chase: every third light is bright and the
 ring turns, the tractor ring pulses, the pilot blinks), walk is the flight loop (nose-down pitch,
-lights chasing faster), attack BEAM AND DRONE DROP: the nose dips and the drone bay swings open, the
+lights chasing faster; walk v3 flight, ANIM_SPEC G8: 6 degrees nose down, the tractor ring pulses
+0.85-1.25x on a 2-frame beat, the pennant trails, the odometer runs at the ground speed 50 lu/s; the hover
+bob itself is code motion R8), attack BEAM AND DRONE DROP: the nose dips and the drone bay swings open, the
 belly emitter charges over three frames with rings (the held extreme, the hull squashed), fires (a
 violet flare and a short beam stub with impact lines; the game draws fx.beam_void from the per-frame
 `muzzle` anchor), the hull kicks back and a drone drops out of the bay and flies off forward; hit
 is the flyer tilt and 4 lu drop with a wobble back up; die is a crash: a 28 degree roll and a
 nose-down pitch, the spire snaps off, the running lights go dark quarter by quarter, a mint and white
-break-up flash, smoke, and it falls low (the sim does the crash splash).
+break-up flash, smoke, and it falls low (the sim does the crash splash). attack_b FORWARD-TILT BEAM PULSE:
+no drone, the bay stays shut; the whole saucer tips its nose far down toward the target while the emitter
+swells (the held extreme), fires one fat pulse and the recoil throws the nose up into a wobble.
 """
 import math
 
@@ -37,6 +41,7 @@ from ageborn_art.anim import Clip, merge, pick, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "mothership"
+GAIT_NAME = "fly"
 NAME = "Mothership"
 HEIGHT_LU = 172
 YAW_DEG = -10.0
@@ -265,14 +270,17 @@ def _idle(f):
 WALK_MS = 100
 
 
+PULSE = [1.25, 0.85, 1.18, 0.9, 1.25, 0.85, 1.18, 0.9]
+
+
 def _walk(f):
     p = 2 * math.pi * f / WALK_N
-    a = 40.0 * (WALK_N * WALK_MS / 1000.0) / 4.0     # odo: sim speed 40 lu/s
+    a = 50.0 * (WALK_N * WALK_MS / 1000.0) / 4.0     # odo: ground speed 40 x 1.25 = 50 lu/s
     return merge(_lights(180.0 * f / WALK_N), {
         "odo": {"x": a * math.cos(p)},
-        "body": {"z": 2.6 * math.sin(p)},
-        "hull": {"r": -3.5 + 0.8 * math.sin(p - 0.8)},
-        "tractor": {"r": 3.0 * math.sin(p - 1.6)},
+        "body": {"z": 1.0 * math.sin(p)},
+        "hull": {"r": -6.0 + 0.8 * math.sin(p - 0.8)},
+        "tractor": dict(squash(0.06 * (PULSE[f] - 1.0)), r=5.0 + 3.0 * math.sin(p - 1.6), s=PULSE[f]),
     })
 
 
@@ -318,6 +326,47 @@ def _attack_clip():
              "n": 7, "a0": -110.0, "arc": 150.0, "color": K.VIOLET_CORE}],
     }
     return M.clip("attack", [_attack_pose(f) for f in range(9)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
+
+
+# -- attack B: forward-tilt beam pulse (A's steps: 841 ms, the beam at 408 ms), no drone ----------------
+# 0 = A dip, 1 tilt, 2 charge, 3 HOLD (the nose tipped far down at the target, the emitter swollen, the
+# bay shut), 4 FIRE (one fat pulse), 5 recoil (nose thrown up), 6 wobble, 7 recover, 8 = A settle
+B_Z = [-1.0, -2.0, -3.0, -3.5, 0.5, 3.0, 1.0, 0.0, 0.0]
+B_X = [0.5, 1.5, 2.5, 3.0, 0.0, -4.0, -2.0, -0.5, 0.0]
+B_R = [-3.0, -8.0, -12.0, -15.0, -10.0, 5.0, -2.0, 0.5, -0.5]
+B_Q = [0.0, -0.02, -0.04, -0.06, 0.06, -0.03, 0.02, 0.0, 0.0]
+B_CHG = [0.0, 0.5, 0.95, 1.6, 0, 0, 0, 0, 0]
+B_GLOW = [0.0, 0.3, 0.8, 1.4, 0, 0, 0, 0, 0]
+B_EYES = ["g_angry", "g_angry", "g_squint", "g_angry", "g_wide", "g_hurt", "eyes", "g_happy", "eyes"]
+
+
+def _b_pose(f):
+    if f in (0, 8):
+        return _attack_pose(f)
+    pose = merge(_lights(10.0 * f), {
+        "body": {"z": B_Z[f], "x": B_X[f]},
+        "hull": dict(squash(B_Q[f]), r=B_R[f]),
+        "tractor": {"r": [0, 6, 10, 12, 4, -8, 3, 0, 0][f], "s": 1.0 + 0.15 * B_GLOW[f]},
+        "charge": {"show": B_CHG[f] > 0, "s": max(B_CHG[f], 0.01)},
+        "charge_glow": {"show": B_GLOW[f] > 0, "s": max(B_GLOW[f], 0.01)},
+        "flash": {"show": f == 4, "s": 1.25},
+        "bay_door": {"rx": 5},
+    })
+    return merge(pose, KF.glyph(B_EYES[f]))
+
+
+def _attack_b():
+    ex, ey, ez = EMIT
+    ov = {
+        2: [{"kind": "rings", "joint": "hull", "point": (ex + 3.0, ey, ez - 3.0), "radii_lu": (8.5,), "a0": -180.0,
+             "a1": 180.0, "color": K.VIOLET_CORE}],
+        3: [{"kind": "rings", "joint": "hull", "point": (ex + 3.0, ey, ez - 3.0), "radii_lu": (10.0, 15.0, 20.0),
+             "a0": -180.0, "a1": 180.0, "color": K.VIOLET_CORE}],
+        4: [{"kind": "burst", "joint": "hull", "point": (ex + 6.0, ey, ez - 5.0), "r0_lu": 12.0, "r1_lu": 22.0,
+             "n": 8, "a0": -130.0, "arc": 160.0, "color": K.VIOLET_CORE}],
+    }
+    return M.clip("attack_b", [_b_pose(f) for f in range(9)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  reuse={0: ("attack", 0), 8: ("attack", 8)}, extra={"holdStep": 3})
 
 
 def _hit(k):
@@ -368,10 +417,11 @@ def _die_extra():
 
 
 def clips():
-    return [
+    return M.check_variants([
         M.clip("idle", [_idle(f) for f in range(IDLE_N)], [150] * IDLE_N, loop=True),
         M.clip("walk", [_walk(f) for f in range(WALK_N)], [WALK_MS] * WALK_N, loop=True),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(f) for f in range(8)], DIE_MS, sequence=DIE_SEQ, extra=_die_extra()),
-    ]
+    ])

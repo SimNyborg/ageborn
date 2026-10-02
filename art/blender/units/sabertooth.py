@@ -9,7 +9,9 @@ paws with toe notches, cheek ruffs, whiskers, a team collar with a bone tag.
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    tail flicks, then it lifts a paw and licks it (tongue out), blink
-  walk    bounding gallop with a flexing spine
+  walk    walk v3 (ANIM_SPEC G4): a rotary bounding gallop with a flight phase, planted paws
+  attack_b  crouch and pounce bite
+  attack_c  a single fast paw swipe
   attack  REAR-UP CLAW RAKE: a butt-wiggle crouch, rears up roaring, rakes down with one paw
           then the other (three-line claw smears), and bites on the second swipe (impact),
           then shakes its head
@@ -18,12 +20,14 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as G
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import Quad, bound
 
 SLUG = "sabertooth"
+GAIT_NAME = "quad"
 NAME = "Sabertooth"
 HEIGHT_LU = 60
 YAW_DEG = -10.0
@@ -67,13 +71,18 @@ def _leg(rig, name, p0, p1, front):
 
 
 def build(rig):
-    global CLAWS
+    global CLAWS, RIG, LEGS
+    RIG = rig
     q = Quad(rig, trunk=(0, 29), front_x=13.0, back_x=-14.0, leg_y=6.0, shoulder_z=30.0,
              hip_z=28.0, knee_z=14.0, hock_z=13.0, knee_dx=0.5, hock_dx=-3.0, far_dx=-3.0)
     rig.rest_scale["body"] = 1.08
+    LEGS = {}
     for name in ("fl", "bl", "fr", "br"):
         p0, p1, _ = q.legs[name]
         _leg(rig, name, p0, p1, name[0] == "f")
+        LEGS[name] = G.Leg(f"leg_{name}", f"leg_{name}2", (p1[0] + 1.5, p1[1], 0.6),
+                           bend=1.0 if name[0] == "f" else -1.0)
+        rig.track(f"_foot_{name}", f"leg_{name}2", (p1[0] + 1.5, p1[1], 0.4))
 
     # body: deep chest, sloping back, lean haunch; cream belly and chest
     g = Geo().blob((9, 0, 33), (13, 10.5, 12.5), p=2.2)
@@ -182,7 +191,6 @@ def build(rig):
     rig.part("tail", g, FUR)
     g = Geo().blob((-29.0, 0, 38.8), (2.6, 2.4, 2.4), p=2.2)
     rig.part("tail", g, STRIPE, finish="hair")
-    rig.track("_foot", "leg_fr2", (15.5, -6.0, 0.5))
     fx_, fz_ = q.legs["fr"][1][0] + 3.0 + 6.5, 2.9
     CLAWS = {"fr": [(fx_, -7.0, fz_ + 2.2), (fx_ + 0.8, -7.0, fz_), (fx_, -7.0, fz_ - 2.2)]}
     fl = q.legs["fl"][1][0] + 3.0 + 6.5
@@ -213,9 +221,34 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
-    return merge(bound(f, fr=32.0, br=29.0, knee=66.0, hock=52.0, spine=8.0, bob=3.0),
-                 {"body": squash(0.05 * [0, 1, 1, 0, -1, -1, 0, 0][f])})
+# -- walk v3: G4 rotary bounding gallop, card 100 x 1.25 = 125 lu/s, 8 x 70 ms ----------------------
+# the hind pair pushes off, a stretched flight, the fore pair lands and gathers (a short second
+# flight); each paw is planted 28% of the cycle; the spine flexes about 9 degrees
+RIG = None
+LEGS = None
+SPEED = 125.0
+GAIT = None
+GALLOP = {"bl": 0.0, "br": 0.125, "fl": 0.5, "fr": 0.625}   # touchdowns on frames
+
+
+def _gait():
+    global GAIT
+    if GAIT is None:
+        GAIT = G.Gait(8, 560, SPEED, G.quad_feet(LEGS, GALLOP, scale=1.08,
+                                                 x_off={"fr": 1.0, "fl": 1.0, "br": -1.0, "bl": -1.0}),
+                      0.28, lift=7.0, kick=3.0, reach=3.0, toe_off=0.0, heel_strike=0.0)
+    return GAIT
+
+
+def _walk(f, report=None):
+    g = _gait()
+
+    def extra(ctx):
+        p = ctx["p"]
+        return {"neck": {"r": -6.0 * math.cos(p - 0.6)}, "head": {"r": 4.0 * math.cos(p - 1.0)},
+                "tail": {"r": 14 * math.cos(p - 1.4)}}
+    return G.quad_walk(RIG, f, g, {}, base_z=-5.8, bob=4.2, beats=1, low_at=0.3, pitch=8.0,
+                       pitch_phase=1.2, roll=1.5, extra=extra, report=report)
 
 
 # 11 unique frames, moves.SMALL_MELEE_MS
@@ -264,6 +297,93 @@ def _attack_clip():
                   impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
 
 
+def _cat(x, z, q, r, n, h, j, fr, fl, br, bl, tail=0.0, rz=0.0):
+    pose = merge(M.body_about((0, 0, 30), x=x, z=z, q=q), {
+        "trunk": {"r": r, "rz": rz},
+        "neck": {"r": n}, "head": {"r": h}, "jaw": {"r": j},
+        "leg_fr": {"r": fr[0]}, "leg_fr2": {"r": fr[1]},
+        "leg_fl": {"r": fl[0]}, "leg_fl2": {"r": fl[1]},
+        "leg_br": {"r": br[0]}, "leg_br2": {"r": br[1]},
+        "leg_bl": {"r": bl[0]}, "leg_bl2": {"r": bl[1]},
+        "tail": {"r": tail},
+    })
+    return pose
+
+
+# -- attack B: crouch and pounce bite (ANIM_SPEC appendix B) ---------------------------------------
+# unique: 0 = A read, 1 = A butt wiggle, 2 HOLD (flattened low, hind legs coiled, eyes on the target),
+# 3 leap (stretched in the air, forelegs reaching, jaws wide), 4 IMPACT (lands biting, squash),
+# 5-8 = A head shake, recoil, settle
+B_SEQ = [0, 1, 2, 2, 3, 3, 4, 5, 6, 7, 8]
+
+
+def _b_pose(i):
+    if i in (0, 1):
+        return _attack_pose(i)
+    if i >= 5:
+        return _attack_pose(i + 2)
+    if i == 2:
+        return _cat(-5.0, -7.0, -0.10, -4, -6, -2, 0, (-24, 30), (-20, 26), (30, 50), (28, 46), tail=24)
+    if i == 3:
+        return _cat(8.0, 10.0, 0.10, -6, 6, 8, -40, (70, -20), (60, -14), (-40, 16), (-36, 12), tail=-10)
+    return _cat(13.0, -3.0, -0.16, -10, -18, -16, 0, (20, -6), (14, -4), (-24, 10), (-20, 8), tail=6)
+
+
+def _attack_b():
+    ov = {
+        2: [{"kind": "dust", "ground": (-14.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 25, "dir": -1.0}],
+        3: [{"kind": "streak", "joint": "head", "point": FANG_TIP, "color": CREAM, "width_lu": 9.0,
+             "white": 0.4, "from": 2},
+            {"kind": "dust", "ground": (-16.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 26, "dir": -1.0}],
+        4: [{"kind": "burst", "joint": "head", "point": FANG_TIP, "r0_lu": 6.0, "r1_lu": 12.0, "n": 5,
+             "a0": -50.0, "arc": 140.0},
+            {"kind": "dust", "ground": (26.0, 0.0), "size_lu": 8.0, "puffs": 4, "seed": 27, "spread": 1.0}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 5: ("attack", 7), 6: ("attack", 8), 7: ("attack", 9),
+             8: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(9)], M.SMALL_MELEE_MS, impact=4,
+                  sequence=B_SEQ, overlays=ov, reuse=reuse)
+
+
+# -- attack C: a single fast paw swipe --------------------------------------------------------------
+# unique: 0 = A read, 1 wind (the near paw lifts, the head ducks), 2 HOLD (a low stalking crouch:
+# chest near the ground, haunches loaded, the near paw cocked tight at the chest, snarling), 3 smear
+# (the paw lashes out level), 4 IMPACT (paw down and across, claw marks), 5 follow-through,
+# 6-7 = A settle. Review N1 (2026-10-02): A's hold rears up, so C's hold stays low.
+C_SEQ = [0, 1, 1, 2, 3, 3, 4, 5, 5, 6, 7]
+
+
+def _c_pose(i):
+    if i == 0:
+        return _attack_pose(0)
+    if i >= 6:
+        return _attack_pose(i + 3)
+    tab = [
+        (-2.0, -2.5, -0.06, -4, -8, -6, -10, (30, -60), (-6, 4), (14, 22), (12, 20), 14, 4),
+        (-4.0, -4.5, -0.10, -8, -16, -10, -30, (58, -112), (-10, 8), (20, 34), (18, 30), 26, 8),
+        (3.0, -2.0, 0.04, -2, -8, -10, -36, (62, -18), (-4, 2), (-8, 8), (-6, 6), -4, -4),
+        (6.0, -2.0, -0.12, -6, -14, -12, -24, (-10, -6), (-6, 0), (-14, 8), (-12, 6), -10, -8),
+        (5.0, -1.0, -0.03, -3, -8, -6, -8, (-4, -2), (-2, 0), (-8, 4), (-6, 4), 0, -4),
+    ][i - 1]
+    x, z, q, r, n, h, j, fr, fl, br, bl, tail, rz = tab
+    return _cat(x, z, q, r, n, h, j, fr, fl, br, bl, tail=tail, rz=rz)
+
+
+def _attack_c():
+    ov = {
+        3: [{"kind": "claw", "joint": "leg_fr2", "points": CLAWS["fr"], "color": "#FFFFFF", "width_lu": 2.8,
+             "white": 0.0, "from": 2}],
+        4: [{"kind": "claw", "joint": "leg_fr2", "points": CLAWS["fr"], "color": "#FFFFFF", "width_lu": 2.4,
+             "white": 0.0, "t0": 0.4},
+            {"kind": "burst", "joint": "leg_fr2", "point": CLAWS["fr"][1], "r0_lu": 5.0, "r1_lu": 10.0, "n": 4,
+             "a0": -40.0, "arc": 120.0},
+            {"kind": "dust", "ground": (22.0, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 28, "spread": 0.8}],
+    }
+    reuse = {0: ("attack", 0), 6: ("attack", 9), 7: ("attack", 10)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(8)], M.SMALL_MELEE_MS, impact=4,
+                  sequence=C_SEQ, overlays=ov, reuse=reuse)
+
+
 def _hit(k):
     def recoil(a, shake):
         return {"body": dict(squash(-0.1 * max(a, 0)), x=-4.0 * max(a, 0) + 1.0 * min(a, 0)),
@@ -298,9 +418,11 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES)], [M.IDLE_MS] * M.IDLE_FRAMES, loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], [72] * 8, loop=True),
+        M.walk_clip("walk", RIG, _walk, _gait(), "quad"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

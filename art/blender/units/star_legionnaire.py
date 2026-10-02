@@ -13,11 +13,17 @@ three star glyphs. The near hand holds a broad violet energy gladius with a whit
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    guard behind the deflector, the disc flickers, weight shift, a blink
-  walk    march: a high, stiff-kneed step, the gladius held up in guard, the cape swinging
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1, 93.75 lu/s): the gladius sloped back over
+          the near shoulder, the deflector swinging with the far arm, planted feet, the cape swinging
   attack  DEFLECTOR JABS AND LUNGE: two quick jabs past the rim of the disc (tak-tak), then the
           gladius is cocked back at the shoulder behind the shoulder-forward disc (the held
           extreme), and a deep lunge drives it straight through (streak smear, impact lines,
           dust at the front foot); he pulls back behind the disc
+  attack_b  SHIELD BASH AND RISING SLASH: crouched low behind the deflector, punched forward at the
+          target, the gladius cocked down and back behind the hip (the held extreme), then the bash
+          lands and the blade rips up in a rising diagonal slash past the rim (crescent smear)
+  attack_c  OVERHEAD CHOP: up on his toes with the gladius straight up over the helmet and the disc
+          tucked (the held extreme), then a full over-the-top chop down in front into a deep lunge
   hit     armoured: a dip behind the flaring disc, the helmet clanks down, eyes > <
   die     D2 plank topple onto the back; the gladius powers down, the disc collapses, X eyes
 """
@@ -26,6 +32,7 @@ import math
 from ageborn_art import face as FC
 from ageborn_art import kit_cosmic as KC
 from ageborn_art import kit_future as KF
+from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_medieval as KM
 from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
@@ -33,6 +40,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "star_legionnaire"
+GAIT_NAME = "biped"
 NAME = "Star Legionnaire"
 HEIGHT_LU = 68
 CANVAS = (300, 256)
@@ -49,9 +57,14 @@ TIP = (HR[0], HR[1] - 1.0, B0 + BLADE_LEN + 1.0)
 MID = (HR[0], HR[1] - 1.0, B0 + BLADE_LEN * 0.45)
 
 
+RIG = None
+
+
 def build(rig):
-    K.skeleton(rig)
-    K.legs(rig, team_shin=True)
+    global RIG
+    RIG = rig
+    KC.skeleton_v3(rig)
+    KC.legs_v3(rig, team_shin=True, knee=None)
     rig.joint("blade", "hand_r", HR)
     rig.joint("disc", "fore_l", (HL[0], HL[1], HL[2] + 4.0))
 
@@ -105,10 +118,10 @@ def build(rig):
     g = Geo().blob((0.6, 0, 16.6), (10.6, 10.4, 4.2), p=2.8, taper=(1.12, 1.0))
     g.clip((0, 0, 12.8), (0, 0, -1))
     rig.part("hips", g, K.VIOLET_DK, finish="gloss")
-    # star-white pteruges strips over the hips
+    # star-white pteruges strips over the hips (ending 11 lu above the soles, ANIM_SPEC G1)
     g = Geo()
     for y in (-7.5, -2.5, 2.5):
-        g.blob((7.6, y, 13.0), (2.2, 2.0, 3.6), p=2.8)
+        g.blob((7.6, y, 14.6), (2.2, 2.0, 3.2), p=2.8)
     rig.part("hips", g, K.STAR, finish="gloss", outline=0.6, outline_hex=K.STAR_TRIM)
     # belt pouches and a star-white gorget
     g = Geo().blob((4.0, -9.4, 20.4), (2.6, 1.8, 2.6), p=3.2).blob((-4.0, -9.2, 20.6), (2.4, 1.8, 2.6), p=3.2)
@@ -171,7 +184,6 @@ def build(rig):
                    p=2.2, taper=(0.9, 0.45))
     rig.part("blade", g, glow=K.VIOLET_CORE, outline=0)
     rig.track("bladeTip", "blade", TIP)
-    rig.track("_foot", "shin_r", (3.2, -6.0, 0.5))
 
 
 # -- poses -----------------------------------------------------------------------------------
@@ -200,13 +212,20 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
+# -- walk v3: G1 bounce jog at ground speed (card 75 x 1.25 = 93.75 lu/s), 8 x 77 ms -------------
+SPEED = 93.75
+LEGS = KC.legs_ik()
+GAIT = KC.jog_gait(LEGS, SPEED, cycle_ms=616)
+# walk carry: the gladius sloped back over the near shoulder, the deflector arm pumping
+CARRY = merge(guard(-40, 75, 128), {"torso": {"r": -3}})
+
+
+def _walk(f, report=None):
     def extra(ctx):
-        lag = ctx["lag_p"]
-        return {"arm_r": {"r": -7 * math.cos(lag)}, "hand_r": {"r": 4 * math.cos(lag)},
-                "arm_l": {"r": 5 * math.cos(lag)}}
-    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=34.0, knee=46.0, lift_lu=7.5, bob_pct=0.055, lean=-4.0,
-                     arms=(), twist=5.0, extra=extra)
+        lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
+        return {"arm_r": {"r": 3 * lag}, "hand_r": {"r": -7 * lag}, "plume": {"r": 0.0}, "cape": {"r": 0.0}}
+    return M.walk_v3(RIG, f, CARRY, GAIT, legs=LEGS, lean=-8.0, twist=6.0, nod=3.0,
+                     arms={"l": KC.ArmChain("l")}, arm=26.0, extra=extra, report=report)
 
 
 # -- attack: deflector jabs and lunge (680 ms, impact at 290 ms) ------------------------------------
@@ -248,7 +267,7 @@ def _attack_pose(f):
         pose.setdefault("blade", {})["sz"] = 1.12
     if f in (0, 2):
         pose["disc_hi"] = {"show": True}
-    return merge(pose, KF.glyph(EYES[f]))
+    return KI.ground_feet(RIG, merge(pose, KF.glyph(EYES[f])), LEGS)
 
 
 def _attack_clip():
@@ -267,6 +286,114 @@ def _attack_clip():
     }
     return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
                   impact=M.SMALL_MELEE_IMPACT, overlays=ov)
+
+
+# -- variants: A's 680 ms, impact at 290 ms, in 10 steps (pre-impact 40+60+115+45+30 = 290) --------
+V_MS = [40, 60, 115, 45, 30, 120, 60, 50, 70, 90]
+V_IMPACT = 5
+
+
+def _v_pose(k, hand, ww, ta, tf, tr, bx, bz, bq, thr, shr, thl, shl, eyes, toes=None):
+    """A variant frame: blade hand at `hand` (torso x, z) with the blade at `ww` WORLD degrees, the
+    disc arm (upper, fore), torso lean, body offset and squash, FK legs (then grounded)."""
+    pose = merge(reach(hand, ww - tr, ta, tf), {
+        "torso": {"r": tr}, "head": {"r": -0.4 * tr},
+        "thigh_r": {"r": thr}, "shin_r": {"r": shr},
+        "thigh_l": {"r": thl}, "shin_l": {"r": shl},
+    }, M.body_about((0, 0, 26), x=bx, z=bz, q=bq))
+    return KI.ground_feet(RIG, merge(pose, KF.glyph(eyes)), LEGS, toes=toes)
+
+
+# attack B: shield bash and rising slash. 0 sink, 1 coil, 2 HOLD (crouched low behind the deflector
+# punched out at the target, the gladius cocked down and back behind the hip), 3 smear (the blade
+# sweeps up from below), 4 lead, 5 IMPACT (the bash lands, the blade rips up past the rim at 60 deg,
+# up on the toes), 6 overshoot, 7 recoil, 8-9 = A settle
+#        hand          ww    disc(a, f)  tr   bx    bz    bq     thr  shr  thl  shl
+B_T = [((2.0, 25.0), -110, -34, 0, -6, 0.5, -1.5, -0.04, 12, -16, -10, -12, "g_angry"),
+       ((-5.0, 22.0), -145, -12, 8, -12, 1.5, -4.0, -0.08, 22, -30, -18, -22, "g_angry"),
+       ((-9.0, 20.0), -165, 2, 6, -16, 2.5, -6.0, -0.10, 28, -38, -22, -28, "g_angry"),
+       ((5.0, 25.0), -40, 8, 4, -10, 6.0, -3.0, 0.04, 26, -26, -22, -18, "g_squint"),
+       ((11.0, 33.0), 18, 4, 2, -4, 8.5, -1.0, 0.06, 26, -20, -22, -12, "g_squint"),
+       ((11.0, 44.0), 62, -42, -12, 6, 10.0, 1.0, -0.10, 30, -18, -26, -10, "g_angry"),
+       ((8.0, 47.0), 78, -48, -16, 8, 9.5, 1.4, -0.04, 28, -16, -24, -8, "g_angry"),
+       ((6.0, 33.0), 42, -56, -8, 2, 6.0, 0.0, 0.02, 16, -10, -14, -6, "eyes")]
+
+
+def _b_pose(i):
+    if i in (8, 9):
+        return _attack_pose(i + 1)
+    k = i
+    hand, ww, ta, tf, tr, bx, bz, bq, thr, shr, thl, shl, eyes = B_T[k]
+    pose = _v_pose(k, hand, ww, ta, tf, tr, bx, bz, bq, thr, shr, thl, shl, eyes,
+                   toes={"r": -14} if k in (5, 6) else None)
+    if k in (2, 5):
+        pose["disc_hi"] = {"show": True, "s": 1.04}
+    if k == 5:
+        pose["flare"] = {"show": True}
+    if k in (3, 4):
+        pose.setdefault("blade", {})["sz"] = 1.12
+    return pose
+
+
+def _attack_b():
+    rise = {"kind": "arc", "joint": "blade", "inner": MID, "outer": TIP, "color": K.VIOLET_GLOW, "white": 0.4,
+            "taper": 0.25, "lines": 3}
+    ov = {
+        2: [{"kind": "dust", "ground": (-9.0, 0.0), "size_lu": 4.0, "puffs": 3, "seed": 21, "spread": 0.7,
+             "color": "#DCD6E8"}],
+        3: [dict(rise, **{"from": 2, "t0": 0.0, "t1": 1.0})],
+        4: [dict(rise, **{"from": 2, "t0": 0.35, "t1": 1.0})],
+        5: [dict(rise, **{"from": 3, "t0": 0.3, "t1": 1.0, "lines": 2}),
+            {"kind": "burst", "joint": "blade", "point": TIP, "r0_lu": 5.0, "r1_lu": 11.0, "n": 5,
+             "a0": -10.0, "arc": 140.0, "color": K.VIOLET_CORE},
+            {"kind": "dust", "ground": (18.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 22, "spread": 0.9,
+             "color": "#DCD6E8"}],
+    }
+    reuse = {8: ("attack", 9), 9: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(10)], V_MS, impact=V_IMPACT, smear=3, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 2})
+
+
+# attack C: overhead chop. 0 lift, 1 raise, 2 HOLD (up on his toes, the gladius straight up and back
+# over the helmet, the disc low in front), 3-4 smears over the top, 5 IMPACT (blade down in front at
+# -35 deg, deep lunge, dust), 6 overshoot, 7 recoil, 8-9 = A settle
+C_T = [((5.0, 40.0), 100, -48, 0, 4, -0.5, 0.5, 0.03, -2, -4, 4, -6, "g_angry"),
+       ((-2.0, 49.0), 118, -52, 4, 8, -1.5, 2.0, 0.06, -4, -6, 6, -8, "g_angry"),
+       ((-5.0, 52.0), 128, -56, 8, 10, -2.0, 2.6, 0.08, -6, -8, 8, -10, "g_angry"),
+       ((9.0, 48.0), 58, -60, 0, -4, 3.0, 1.0, 0.02, 14, -14, -10, -8, "g_squint"),
+       ((14.0, 37.0), 4, -64, -6, -14, 6.0, -1.5, -0.04, 24, -22, -18, -14, "g_squint"),
+       ((13.0, 25.0), -36, -66, -10, -22, 9.0, -4.5, -0.15, 34, -30, -26, -22, "g_angry"),
+       ((12.5, 23.0), -46, -64, -8, -20, 9.0, -3.5, -0.06, 32, -26, -24, -18, "g_angry"),
+       ((9.0, 28.0), -12, -60, -4, -10, 6.0, -1.5, 0.02, 18, -12, -14, -8, "eyes")]
+
+
+def _c_pose(i):
+    if i in (8, 9):
+        return _attack_pose(i + 1)
+    k = i
+    hand, ww, ta, tf, tr, bx, bz, bq, thr, shr, thl, shl, eyes = C_T[k]
+    pose = _v_pose(k, hand, ww, ta, tf, tr, bx, bz, bq, thr, shr, thl, shl, eyes,
+                   toes={"r": -16, "l": -20} if k in (1, 2) else None)
+    if k in (3, 4):
+        pose.setdefault("blade", {})["sz"] = 1.15
+    return pose
+
+
+def _attack_c():
+    chop = {"kind": "arc", "joint": "blade", "inner": MID, "outer": TIP, "color": K.VIOLET_GLOW, "white": 0.4,
+            "taper": 0.2, "lines": 3}
+    ov = {
+        3: [dict(chop, **{"from": 2, "t0": 0.0, "t1": 1.0})],
+        4: [dict(chop, **{"from": 2, "t0": 0.35, "t1": 1.0})],
+        5: [dict(chop, **{"from": 4, "t0": 0.2, "t1": 1.0, "lines": 2}),
+            {"kind": "burst", "joint": "blade", "point": TIP, "r0_lu": 6.0, "r1_lu": 12.0, "n": 6,
+             "a0": 10.0, "arc": 160.0, "color": K.VIOLET_CORE},
+            {"kind": "dust", "joint": "blade", "point": TIP, "ground_snap": True, "size_lu": 6.5, "puffs": 4,
+             "seed": 23, "spread": 1.1, "color": "#DCD6E8"}],
+    }
+    reuse = {8: ("attack", 9), 9: ("attack", 10)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(10)], V_MS, impact=V_IMPACT, smear=3, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 2})
 
 
 def _hit(k):
@@ -303,10 +430,12 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

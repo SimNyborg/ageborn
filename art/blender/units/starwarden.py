@@ -13,11 +13,16 @@ halo ring (it bobs and turns on its own).
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    hums with the eyes closed, the head bobbing, the halo turning, the lantern swinging
-  walk    waddle: short steps, a side sway, the robe hem and the lantern swinging
+  walk    walk v3 brisk waddle at ground speed (ANIM_SPEC G2, 81.25 lu/s): the shortened robe hem
+          kicks with the knees so the boots show, a side sway, the staff carried upright and bobbing
+          a frame late, the free arm pumping, the lantern swinging
   attack  STAFF SLAM BEACON: lifts the staff, rises on his toes and holds it high overhead while
           the beacon swells and the halo spins (the held extreme), slams the butt into the ground
           (dust and a ground ring), the beacon surges and the bolt leaves it with a star flash
           (`muzzle`), the beacon recoils, the halo spins down
+  attack_b  STAFF POINT CAST: cocks the staff back level behind his shoulder, leaning back on the rear
+          leg while the beacon swells behind him (the held extreme), then whips it over and thrusts it
+          forward and up at the target in a lunge; the bolt leaves the beacon with a star flash
   hit     light: the head snaps back, the beacon jolts, eyes > <
   die     D3 dizzy sit: spins, sits down hard with the legs out, spiral eyes, the staff in his lap
 """
@@ -26,6 +31,7 @@ import math
 from ageborn_art import face as FC
 from ageborn_art import kit_cosmic as KC
 from ageborn_art import kit_future as KF
+from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_medieval as KM
 from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
@@ -33,6 +39,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "starwarden"
+GAIT_NAME = "biped"
 NAME = "Starwarden"
 HEIGHT_LU = 70
 CANVAS = (300, 300)
@@ -47,39 +54,38 @@ BEACON = (HR[0], HR[1] - 1.0, HR[2] + STAFF_UP + 8.0)
 FOOT = (HR[0], HR[1], HR[2] - STAFF_DN)
 
 
+RIG = None
+
+
 def build(rig):
-    K.skeleton(rig, head=(1, 0, 39))
-    # legs: only the boots show under the robe
-    for s in ("r", "l"):
-        y = K.LEG_Y * K.SIDE_Y[s]
-        g = Geo().capsule((0.5, y, K.KNEE_Z), (1.0, y, 4.6), 3.2, 3.4)
-        rig.part(f"shin_{s}", g, K.VOID)
-        g = Geo().blob((2.8, y, 2.8), (6.4, 4.4, 3.0), p=3.0, taper=(1.05, 0.85))
-        rig.part(f"shin_{s}", g, K.VIOLET_DK, finish="gloss")
-        g = Geo().blob((6.6, y, 2.2), (2.4, 4.0, 2.0), p=2.6)
-        rig.part(f"shin_{s}", g, K.STAR, finish="gloss", outline_hex=K.STAR_TRIM)
+    global RIG
+    RIG = rig
+    KC.skeleton_v3(rig, head=(1, 0, 39))
+    # legs (walk v3): void undersuit, violet boots with star toe caps under the shortened robe
+    KC.legs_v3(rig, boot=K.VIOLET_DK, knee=None, thigh_r=4.4, team_shin=True)
     rig.joint("staff", "hand_r", HR)
     K.arm_parts(rig, "l", sleeve=K.VIOLET, bracer=None, glove=K.STAR)
 
     # robe: a flared team skirt on the hips with a hem that swings, a violet front panel
-    rig.secondary("hem", "hips", (0, 0, 14.0), (2.0, 0, 1.0), max_deg=12, gain=1.0)
-    g = Geo().blob((0.5, 0, 9.0), (12.4, 11.2, 9.6), p=2.6, taper=(1.25, 0.9))
-    g.clip((0, 0, 1.6), (0, 0, -1))
+    # (shortened for walk v3: the hem 10 lu above the soles, ANIM_SPEC G2; it kicks with the knees)
+    rig.secondary("hem", "hips", (0, 0, 16.0), (2.0, 0, 9.0), max_deg=16, gain=1.1)
+    g = Geo().blob((0.5, 0, 14.6), (12.4, 11.2, 6.2), p=2.6, taper=(1.25, 0.9))
+    g.clip((0, 0, 10.2), (0, 0, -1))
     rig.part("hem", g, team=True)
-    g = Geo().blob((0.5, 0, 3.0), (15.6, 14.0, 1.6), p=2.8)
+    g = Geo().blob((0.5, 0, 11.0), (14.6, 13.2, 1.5), p=2.8)
     rig.part("hem", g, K.STAR, finish="gloss", outline_hex=K.STAR_TRIM)
     g = Geo().blob((0, 0, 20.0), (11.0, 10.6, 7.4), p=2.6, taper=(1.12, 0.95))
     rig.part("hips", g, team=True)
-    g = Geo().blob((10.6, -1.0, 12.0), (1.8, 4.2, 10.4), p=3.0, taper=(1.3, 0.8))
+    g = Geo().blob((10.6, -1.0, 15.6), (1.8, 4.2, 5.8), p=3.0, taper=(1.3, 0.8))
     rig.part("hem", g, K.VIOLET, finish="matte", outline=0.8)
-    KC.specks(rig, "hem", [(12.6, 14.0, 0.9), (12.9, 9.0, 1.1), (13.4, 5.0, 0.8)], -3.4)
-    # the lantern at the belt (a pendulum)
-    rig.secondary("lantern", "hips", (6.0, -11.0, 18.0), (6.0, -11.0, 8.0), max_deg=22, gain=1.4)
-    g = Geo().capsule((6.0, -11.0, 18.0), (6.0, -11.0, 13.6), 0.6)
+    KC.specks(rig, "hem", [(12.4, 18.0, 0.9), (12.8, 14.6, 1.1), (13.2, 11.8, 0.8)], -3.4)
+    # the lantern at the belt (a pendulum; it ends 11 lu above the soles so it never bridges the feet)
+    rig.secondary("lantern", "hips", (6.0, -11.0, 20.0), (6.0, -11.0, 11.0), max_deg=22, gain=1.4)
+    g = Geo().capsule((6.0, -11.0, 20.0), (6.0, -11.0, 16.6), 0.6)
     rig.part("lantern", g, K.STAR_TRIM, finish="metal", outline=0.5)
-    g = Geo().blob((6.0, -11.0, 10.8), (2.6, 2.6, 3.4), p=2.4)
+    g = Geo().blob((6.0, -11.0, 14.0), (2.4, 2.4, 3.0), p=2.4)
     rig.part("lantern", g, glow=K.MINT, outline=0.8, outline_hex="#1C8A6A")
-    g = Geo().blob((6.0, -11.0, 13.8), (2.8, 2.8, 0.9), p=2.6).blob((6.0, -11.0, 7.6), (2.6, 2.6, 0.8), p=2.6)
+    g = Geo().blob((6.0, -11.0, 16.8), (2.6, 2.6, 0.9), p=2.6).blob((6.0, -11.0, 11.4), (2.4, 2.4, 0.8), p=2.6)
     rig.part("lantern", g, K.STAR, finish="gloss", outline=0.6, outline_hex=K.STAR_TRIM)
 
     # torso: team robe top with the pale star, star-white sash, violet mantle with a clasp
@@ -164,7 +170,6 @@ def build(rig):
     g = Geo().sphere((bx, by - 1.0, bz), 5.4, cuts=4)
     rig.part("surge", g, glow=K.MINT_CORE, outline=1.2, outline_hex=K.MINT)
     rig.track("muzzle", "beacon", (bx + 5.0, by, bz))
-    rig.track("_foot", "shin_r", (2.8, -6.0, 0.5))
     K.star_burst(rig, "beacon", (bx + 4.0, by, bz), size=1.2, name="flash")
 
 
@@ -192,13 +197,26 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
+# -- walk v3: G2 brisk waddle at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 70 ms ------------
+SPEED = 81.25
+LEGS = KC.legs_ik()
+GAIT = KC.jog_gait(LEGS, SPEED, cycle_ms=560, stance=0.44, lift=6.0, kick=2.0, toe_off=20.0, early_lift=1.4)
+WADDLE_BOB = [-3.2, -3.8, 0.0, 1.4]
+# walk carry: the staff upright in front of the shoulder, the beacon riding high
+CARRY = merge(staff_at((9.0, 30.0), 84.0), {"torso": {"r": -1}})
+
+
+def _walk(f, report=None):
     def extra(ctx):
-        return {"arm_r": {"r": -4 * math.cos(ctx["lag_p"])}, "hand_r": {"r": 3 * math.cos(ctx["lag_p"])},
-                "arm_l": {"r": 8 * math.cos(ctx["lag_p"])},
-                "beacon": {"z": -1.0 * ctx["bob_lag"] / max(ctx["amp"], 1e-3)}, "halo": {"rz": 45 * f}}
-    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=26.0, knee=40.0, lift_lu=5.5, bob_pct=0.05, lean=-3.0,
-                     arms=(), twist=4.0, sway=5.0, extra=extra)
+        lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
+        c = math.cos(ctx["lag_p"])
+        return merge(staff_at((9.0 + 1.2 * c, 30.0 + 0.8 * lag), 86.0 - 4.0 * c + 3.0 * lag), {
+            "beacon": {"z": -1.2 * lag}, "halo": {"rz": 45 * f},
+            "hem": {"r": 0.0}, "lantern": {"r": 0.0},
+            "body": {"rx": 3 * math.sin(ctx["p"])}, "head": {"rx": -3 * math.sin(ctx["p"])}})
+    return M.walk_v3(RIG, f, CARRY, GAIT, legs=LEGS, bob=WADDLE_BOB, sq=M.BRISK_SQ, lean=-4.0, twist=5.0,
+                     nod=3.0, sway=5.0, arms={"l": KC.ArmChain("l")}, arm=28.0, elbow=(30.0, 60.0),
+                     extra=extra, report=report)
 
 
 # -- attack: staff slam beacon (832 ms, impact at 416 ms = 0.5, as shipped) ------------------------
@@ -238,7 +256,7 @@ def _attack_pose(f):
     }, M.body_about((0, 0, 24), x=BX[f], z=BZ[f], q=BQ[f]))
     if HAND[f] is None:
         pose = merge(pose, {"torso": {"r": 0}})
-    return merge(pose, KF.glyph(EYES[f]))
+    return KI.ground_feet(RIG, merge(pose, KF.glyph(EYES[f])), LEGS)
 
 
 def _attack_clip():
@@ -255,6 +273,55 @@ def _attack_clip():
              "r1_lu": 14.0, "n": 6, "a0": -70.0, "arc": 140.0, "color": K.MINT_CORE}],
     }
     return M.clip("attack", [_attack_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
+
+
+# -- attack B: staff point cast (A's steps: 832 ms, the bolt at 416 ms) -----------------------------
+# 0 read, 1 draw back, 2 HOLD (the staff cocked back level behind the shoulder, the beacon swelling
+# behind him, leaning back on the rear leg, the free hand aiming), 3 over-the-top smear, 4 thrust, 5 FIRE (arm out,
+# the staff 32 deg up at the target, star flash), 6 recoil, 7-9 = A spin and settle
+#        hand          staff  tr   bx    bz    bq     thr  shr  thl  shl  beacon free arm (a, f)  eyes
+B_T = [((5.0, 32.0), 70.0, 2, -0.5, 0.0, -0.03, 2, -4, -2, -6, 1.05, -60, -20, "eyes"),
+       ((-2.0, 33.0), 132.0, 8, -2.0, -0.6, -0.05, -6, -8, 10, -16, 1.2, -30, 0, "g_wide"),
+       ((-6.0, 31.0), 166.0, 12, -3.5, -1.4, -0.07, -10, -10, 16, -22, 1.4, -10, 10, "g_angry"),
+       ((5.0, 38.0), 80.0, -2, 2.5, -1.0, 0.05, 16, -14, -12, -12, 1.3, -40, -10, "g_angry"),
+       ((12.0, 36.0), 33.0, -10, 6.0, -2.0, 0.04, 28, -22, -22, -16, 1.45, -60, -20, "g_angry"),
+       ((14.0, 36.0), 32.0, -12, 7.0, -2.2, -0.12, 30, -24, -24, -16, 0.85, -70, -30, "g_squint"),
+       ((11.0, 34.0), 44.0, -6, 5.0, -1.0, 0.02, 22, -16, -18, -10, 0.9, -74, -34, "g_happy")]
+
+
+def _b_pose(i):
+    if i >= 7:
+        return _attack_pose(i)
+    hand, staff, tr, bx, bz, bq, thr, shr, thl, shl, bs, la, lf, eyes = B_T[i]
+    rz, hs = [(20, 1.0), (80, 1.1), (160, 1.25), (220, 1.2), (260, 1.3), (300, 1.3), (330, 1.1)][i]
+    pose = merge(staff_at(hand, staff - tr), K.arm("l", la, lf), {
+        "torso": {"r": tr}, "head": {"r": -0.5 * tr},
+        "thigh_r": {"r": thr}, "shin_r": {"r": shr},
+        "thigh_l": {"r": thl}, "shin_l": {"r": shl},
+        "beacon": {"s": bs}, "halo": {"rz": rz, "s": hs},
+        "surge": {"show": i == 4},
+        "flash": {"show": i == 5},
+    }, M.body_about((0, 0, 24), x=bx, z=bz, q=bq))
+    return KI.ground_feet(RIG, merge(pose, KF.glyph(eyes)), LEGS)
+
+
+def _attack_b():
+    ov = {
+        2: [{"kind": "rings", "joint": "beacon", "point": BEACON, "radii_lu": (8.0, 11.5), "a0": -180.0,
+             "a1": 180.0, "color": K.MINT_CORE},
+            {"kind": "dust", "ground": (-9.0, 0.0), "size_lu": 4.0, "puffs": 3, "seed": 41, "spread": 0.7,
+             "color": "#DCD6E8", "dir": -1.0}],
+        3: [{"kind": "arc", "joint": "staff", "inner": (HR[0], HR[1], HR[2] + STAFF_UP - 6.0), "outer": BEACON,
+             "color": K.MINT, "white": 0.35, "taper": 0.3, "lines": 2, "from": 2, "t0": 0.0, "t1": 1.0}],
+        4: [{"kind": "arc", "joint": "staff", "inner": (HR[0], HR[1], HR[2] + STAFF_UP - 6.0), "outer": BEACON,
+             "color": K.MINT, "white": 0.35, "taper": 0.3, "lines": 2, "from": 3, "t0": 0.3, "t1": 1.0}],
+        5: [{"kind": "burst", "joint": "beacon", "point": (BEACON[0] + 4.0, BEACON[1], BEACON[2]), "r0_lu": 8.0,
+             "r1_lu": 14.0, "n": 6, "a0": -70.0, "arc": 140.0, "color": K.MINT_CORE},
+            {"kind": "dust", "ground": (14.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 42, "spread": 0.9,
+             "color": "#DCD6E8"}],
+    }
+    return M.clip("attack_b", [_b_pose(i) for i in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  reuse={7: ("attack", 7), 8: ("attack", 8), 9: ("attack", 9)}, extra={"holdStep": 2})
 
 
 def _hit(k):
@@ -284,10 +351,11 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl, attack_ms=832, attack_impact_at=0.5)
+    return M.check_variants(M.check_contract(cl, attack_ms=832, attack_impact_at=0.5))

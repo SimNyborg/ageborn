@@ -2,18 +2,18 @@
  "frames": {
   "pulse_trooper_idle_00": {
    "frame": {
-    "x": 1116,
-    "y": 128,
+    "x": 2,
+    "y": 235,
     "w": 107,
-    "h": 99
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 83,
-    "y": 78,
+    "y": 75,
     "w": 107,
-    "h": 99
+    "h": 101
    },
    "sourceSize": {
     "w": 257,
@@ -26,18 +26,18 @@
   },
   "pulse_trooper_idle_00_team": {
    "frame": {
-    "x": 1035,
-    "y": 338,
+    "x": 824,
+    "y": 440,
     "w": 55,
-    "h": 62
+    "h": 61
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 84,
-    "y": 86,
+    "y": 84,
     "w": 55,
-    "h": 62
+    "h": 61
    },
    "sourceSize": {
     "w": 257,
@@ -50,18 +50,18 @@
   },
   "pulse_trooper_idle_01": {
    "frame": {
-    "x": 219,
+    "x": 225,
     "y": 128,
     "w": 106,
-    "h": 101
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 84,
-    "y": 75,
+    "y": 73,
     "w": 106,
-    "h": 101
+    "h": 103
    },
    "sourceSize": {
     "w": 257,
@@ -74,17 +74,17 @@
   },
   "pulse_trooper_idle_01_team": {
    "frame": {
-    "x": 859,
-    "y": 338,
-    "w": 55,
+    "x": 653,
+    "y": 440,
+    "w": 54,
     "h": 63
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
-    "y": 85,
-    "w": 55,
+    "x": 85,
+    "y": 83,
+    "w": 54,
     "h": 63
    },
    "sourceSize": {
@@ -98,18 +98,18 @@
   },
   "pulse_trooper_idle_02": {
    "frame": {
-    "x": 861,
+    "x": 337,
     "y": 2,
     "w": 103,
-    "h": 104
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 85,
-    "y": 71,
+    "y": 69,
     "w": 103,
-    "h": 104
+    "h": 106
    },
    "sourceSize": {
     "w": 257,
@@ -122,17 +122,17 @@
   },
   "pulse_trooper_idle_02_team": {
    "frame": {
-    "x": 686,
-    "y": 338,
-    "w": 52,
+    "x": 421,
+    "y": 440,
+    "w": 51,
     "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 86,
-    "y": 82,
-    "w": 52,
+    "x": 87,
+    "y": 80,
+    "w": 51,
     "h": 65
    },
    "sourceSize": {
@@ -146,18 +146,18 @@
   },
   "pulse_trooper_idle_03": {
    "frame": {
-    "x": 438,
+    "x": 100,
     "y": 2,
     "w": 102,
-    "h": 106
+    "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 85,
-    "y": 69,
+    "y": 67,
     "w": 102,
-    "h": 106
+    "h": 108
    },
    "sourceSize": {
     "w": 257,
@@ -170,18 +170,18 @@
   },
   "pulse_trooper_idle_03_team": {
    "frame": {
-    "x": 515,
-    "y": 338,
+    "x": 117,
+    "y": 440,
     "w": 52,
-    "h": 66
+    "h": 67
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 86,
-    "y": 80,
+    "y": 77,
     "w": 52,
-    "h": 66
+    "h": 67
    },
    "sourceSize": {
     "w": 257,
@@ -194,18 +194,18 @@
   },
   "pulse_trooper_idle_04": {
    "frame": {
-    "x": 2,
-    "y": 128,
+    "x": 444,
+    "y": 2,
     "w": 103,
-    "h": 103
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 84,
-    "y": 72,
+    "y": 69,
     "w": 103,
-    "h": 103
+    "h": 106
    },
    "sourceSize": {
     "w": 257,
@@ -218,18 +218,18 @@
   },
   "pulse_trooper_idle_04_team": {
    "frame": {
-    "x": 742,
-    "y": 338,
+    "x": 308,
+    "y": 440,
     "w": 52,
-    "h": 65
+    "h": 66
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 86,
-    "y": 81,
+    "y": 78,
     "w": 52,
-    "h": 65
+    "h": 66
    },
    "sourceSize": {
     "w": 257,
@@ -242,18 +242,18 @@
   },
   "pulse_trooper_idle_05": {
    "frame": {
-    "x": 662,
+    "x": 649,
     "y": 128,
     "w": 106,
-    "h": 100
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 83,
-    "y": 76,
+    "y": 74,
     "w": 106,
-    "h": 100
+    "h": 102
    },
    "sourceSize": {
     "w": 257,
@@ -266,18 +266,18 @@
   },
   "pulse_trooper_idle_05_team": {
    "frame": {
-    "x": 918,
-    "y": 338,
+    "x": 476,
+    "y": 440,
     "w": 55,
-    "h": 63
+    "h": 64
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 83,
-    "y": 84,
+    "y": 81,
     "w": 55,
-    "h": 63
+    "h": 64
    },
    "sourceSize": {
     "w": 257,
@@ -290,18 +290,18 @@
   },
   "pulse_trooper_walk_00": {
    "frame": {
-    "x": 544,
-    "y": 2,
-    "w": 103,
-    "h": 105
+    "x": 336,
+    "y": 235,
+    "w": 94,
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 86,
-    "y": 75,
-    "w": 103,
-    "h": 105
+    "y": 76,
+    "w": 94,
+    "h": 100
    },
    "sourceSize": {
     "w": 257,
@@ -314,18 +314,18 @@
   },
   "pulse_trooper_walk_00_team": {
    "frame": {
-    "x": 217,
-    "y": 338,
-    "w": 50,
-    "h": 68
+    "x": 411,
+    "y": 521,
+    "w": 47,
+    "h": 59
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 90,
-    "y": 85,
-    "w": 50,
-    "h": 68
+    "y": 86,
+    "w": 47,
+    "h": 59
    },
    "sourceSize": {
     "w": 257,
@@ -338,18 +338,18 @@
   },
   "pulse_trooper_walk_01": {
    "frame": {
-    "x": 218,
-    "y": 235,
-    "w": 109,
-    "h": 98
+    "x": 319,
+    "y": 340,
+    "w": 92,
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 86,
-    "y": 82,
-    "w": 109,
-    "h": 98
+    "x": 87,
+    "y": 81,
+    "w": 92,
+    "h": 95
    },
    "sourceSize": {
     "w": 257,
@@ -362,18 +362,18 @@
   },
   "pulse_trooper_walk_01_team": {
    "frame": {
-    "x": 571,
-    "y": 338,
-    "w": 54,
-    "h": 65
+    "x": 513,
+    "y": 521,
+    "w": 44,
+    "h": 59
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 90,
-    "y": 91,
-    "w": 54,
-    "h": 65
+    "x": 91,
+    "y": 89,
+    "w": 44,
+    "h": 59
    },
    "sourceSize": {
     "w": 257,
@@ -386,18 +386,18 @@
   },
   "pulse_trooper_walk_02": {
    "frame": {
-    "x": 772,
-    "y": 128,
-    "w": 105,
-    "h": 100
+    "x": 677,
+    "y": 235,
+    "w": 93,
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 87,
-    "y": 75,
-    "w": 105,
-    "h": 100
+    "y": 76,
+    "w": 93,
+    "h": 99
    },
    "sourceSize": {
     "w": 257,
@@ -410,18 +410,18 @@
   },
   "pulse_trooper_walk_02_team": {
    "frame": {
-    "x": 161,
-    "y": 338,
-    "w": 52,
-    "h": 68
+    "x": 561,
+    "y": 521,
+    "w": 44,
+    "h": 59
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 91,
-    "y": 83,
-    "w": 52,
-    "h": 68
+    "x": 92,
+    "y": 82,
+    "w": 44,
+    "h": 59
    },
    "sourceSize": {
     "w": 257,
@@ -434,18 +434,18 @@
   },
   "pulse_trooper_walk_03": {
    "frame": {
-    "x": 202,
-    "y": 2,
-    "w": 101,
-    "h": 107
+    "x": 335,
+    "y": 128,
+    "w": 94,
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 87,
-    "y": 68,
-    "w": 101,
-    "h": 107
+    "y": 69,
+    "w": 94,
+    "h": 103
    },
    "sourceSize": {
     "w": 257,
@@ -458,18 +458,18 @@
   },
   "pulse_trooper_walk_03_team": {
    "frame": {
-    "x": 54,
-    "y": 338,
-    "w": 50,
-    "h": 69
+    "x": 815,
+    "y": 521,
+    "w": 46,
+    "h": 58
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 91,
     "y": 78,
-    "w": 50,
-    "h": 69
+    "w": 46,
+    "h": 58
    },
    "sourceSize": {
     "w": 257,
@@ -482,18 +482,18 @@
   },
   "pulse_trooper_walk_04": {
    "frame": {
-    "x": 651,
-    "y": 2,
-    "w": 103,
-    "h": 105
+    "x": 774,
+    "y": 235,
+    "w": 95,
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 86,
-    "y": 75,
-    "w": 103,
-    "h": 105
+    "x": 85,
+    "y": 76,
+    "w": 95,
+    "h": 98
    },
    "sourceSize": {
     "w": 257,
@@ -506,18 +506,18 @@
   },
   "pulse_trooper_walk_04_team": {
    "frame": {
-    "x": 271,
-    "y": 338,
-    "w": 50,
-    "h": 68
+    "x": 764,
+    "y": 521,
+    "w": 47,
+    "h": 58
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 90,
-    "y": 85,
-    "w": 50,
-    "h": 68
+    "y": 87,
+    "w": 47,
+    "h": 58
    },
    "sourceSize": {
     "w": 257,
@@ -530,18 +530,18 @@
   },
   "pulse_trooper_walk_05": {
    "frame": {
-    "x": 329,
-    "y": 128,
-    "w": 106,
-    "h": 101
+    "x": 415,
+    "y": 340,
+    "w": 88,
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 85,
-    "y": 82,
-    "w": 106,
-    "h": 101
+    "x": 87,
+    "y": 81,
+    "w": 88,
+    "h": 91
    },
    "sourceSize": {
     "w": 257,
@@ -554,18 +554,18 @@
   },
   "pulse_trooper_walk_05_team": {
    "frame": {
-    "x": 461,
-    "y": 338,
-    "w": 50,
-    "h": 67
+    "x": 657,
+    "y": 521,
+    "w": 43,
+    "h": 59
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 89,
-    "y": 90,
-    "w": 50,
-    "h": 67
+    "x": 91,
+    "y": 89,
+    "w": 43,
+    "h": 59
    },
    "sourceSize": {
     "w": 257,
@@ -578,18 +578,18 @@
   },
   "pulse_trooper_walk_06": {
    "frame": {
-    "x": 758,
-    "y": 2,
-    "w": 99,
-    "h": 105
+    "x": 113,
+    "y": 340,
+    "w": 89,
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 87,
-    "y": 74,
-    "w": 99,
-    "h": 105
+    "x": 86,
+    "y": 75,
+    "w": 89,
+    "h": 96
    },
    "sourceSize": {
     "w": 257,
@@ -602,18 +602,18 @@
   },
   "pulse_trooper_walk_06_team": {
    "frame": {
-    "x": 108,
-    "y": 338,
-    "w": 49,
-    "h": 69
+    "x": 609,
+    "y": 521,
+    "w": 44,
+    "h": 59
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 90,
-    "y": 84,
-    "w": 49,
-    "h": 69
+    "x": 91,
+    "y": 83,
+    "w": 44,
+    "h": 59
    },
    "sourceSize": {
     "w": 257,
@@ -626,18 +626,18 @@
   },
   "pulse_trooper_walk_07": {
    "frame": {
-    "x": 101,
-    "y": 2,
-    "w": 97,
-    "h": 110
+    "x": 433,
+    "y": 128,
+    "w": 90,
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 87,
-    "y": 67,
-    "w": 97,
-    "h": 110
+    "y": 68,
+    "w": 90,
+    "h": 103
    },
    "sourceSize": {
     "w": 257,
@@ -650,18 +650,18 @@
   },
   "pulse_trooper_walk_07_team": {
    "frame": {
-    "x": 2,
-    "y": 338,
-    "w": 48,
-    "h": 71
+    "x": 462,
+    "y": 521,
+    "w": 47,
+    "h": 59
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 90,
     "y": 78,
-    "w": 48,
-    "h": 71
+    "w": 47,
+    "h": 59
    },
    "sourceSize": {
     "w": 257,
@@ -674,18 +674,18 @@
   },
   "pulse_trooper_attack_00": {
    "frame": {
-    "x": 109,
-    "y": 128,
+    "x": 768,
+    "y": 2,
     "w": 106,
-    "h": 102
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 84,
-    "y": 74,
+    "y": 72,
     "w": 106,
-    "h": 102
+    "h": 104
    },
    "sourceSize": {
     "w": 257,
@@ -698,8 +698,8 @@
   },
   "pulse_trooper_attack_00_team": {
    "frame": {
-    "x": 292,
-    "y": 413,
+    "x": 352,
+    "y": 521,
     "w": 55,
     "h": 59
    },
@@ -707,7 +707,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 85,
-    "y": 83,
+    "y": 81,
     "w": 55,
     "h": 59
    },
@@ -722,18 +722,18 @@
   },
   "pulse_trooper_attack_01": {
    "frame": {
-    "x": 549,
+    "x": 2,
     "y": 128,
-    "w": 109,
-    "h": 100
+    "w": 108,
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
-    "y": 75,
-    "w": 109,
-    "h": 100
+    "x": 85,
+    "y": 73,
+    "w": 108,
+    "h": 103
    },
    "sourceSize": {
     "w": 257,
@@ -746,18 +746,18 @@
   },
   "pulse_trooper_attack_01_team": {
    "frame": {
-    "x": 472,
-    "y": 413,
+    "x": 704,
+    "y": 521,
     "w": 56,
-    "h": 57
+    "h": 58
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 86,
-    "y": 85,
+    "y": 83,
     "w": 56,
-    "h": 57
+    "h": 58
    },
    "sourceSize": {
     "w": 257,
@@ -770,18 +770,18 @@
   },
   "pulse_trooper_attack_02": {
    "frame": {
-    "x": 881,
+    "x": 527,
     "y": 128,
     "w": 118,
-    "h": 99
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 84,
-    "y": 76,
+    "y": 74,
     "w": 118,
-    "h": 99
+    "h": 102
    },
    "sourceSize": {
     "w": 257,
@@ -794,8 +794,8 @@
   },
   "pulse_trooper_attack_02_team": {
    "frame": {
-    "x": 724,
-    "y": 413,
+    "x": 253,
+    "y": 586,
     "w": 57,
     "h": 56
    },
@@ -803,7 +803,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 86,
-    "y": 87,
+    "y": 85,
     "w": 57,
     "h": 56
    },
@@ -818,18 +818,18 @@
   },
   "pulse_trooper_attack_03": {
    "frame": {
-    "x": 442,
+    "x": 434,
     "y": 235,
-    "w": 127,
-    "h": 96
+    "w": 128,
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 85,
-    "y": 79,
-    "w": 127,
-    "h": 96
+    "y": 77,
+    "w": 128,
+    "h": 99
    },
    "sourceSize": {
     "w": 257,
@@ -842,18 +842,18 @@
   },
   "pulse_trooper_attack_03_team": {
    "frame": {
-    "x": 410,
-    "y": 413,
+    "x": 314,
+    "y": 586,
     "w": 58,
-    "h": 57
+    "h": 55
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 88,
-    "y": 87,
+    "y": 88,
     "w": 58,
-    "h": 57
+    "h": 55
    },
    "sourceSize": {
     "w": 257,
@@ -866,18 +866,18 @@
   },
   "pulse_trooper_attack_04": {
    "frame": {
-    "x": 307,
+    "x": 206,
     "y": 2,
     "w": 127,
-    "h": 106
+    "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 85,
-    "y": 71,
+    "y": 69,
     "w": 127,
-    "h": 106
+    "h": 107
    },
    "sourceSize": {
     "w": 257,
@@ -890,8 +890,8 @@
   },
   "pulse_trooper_attack_04_team": {
    "frame": {
-    "x": 1207,
-    "y": 338,
+    "x": 2,
+    "y": 521,
     "w": 55,
     "h": 61
    },
@@ -899,7 +899,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 85,
-    "y": 81,
+    "y": 79,
     "w": 55,
     "h": 61
    },
@@ -914,18 +914,18 @@
   },
   "pulse_trooper_attack_05": {
    "frame": {
-    "x": 1041,
-    "y": 235,
+    "x": 628,
+    "y": 340,
     "w": 110,
-    "h": 86
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 64,
-    "y": 86,
+    "y": 84,
     "w": 110,
-    "h": 86
+    "h": 88
    },
    "sourceSize": {
     "w": 257,
@@ -938,18 +938,18 @@
   },
   "pulse_trooper_attack_05_team": {
    "frame": {
-    "x": 847,
-    "y": 413,
+    "x": 438,
+    "y": 586,
     "w": 50,
-    "h": 55
+    "h": 54
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 73,
-    "y": 86,
+    "y": 84,
     "w": 50,
-    "h": 55
+    "h": 54
    },
    "sourceSize": {
     "w": 257,
@@ -962,18 +962,18 @@
   },
   "pulse_trooper_attack_06": {
    "frame": {
-    "x": 112,
-    "y": 235,
+    "x": 759,
+    "y": 128,
     "w": 102,
-    "h": 99
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 77,
-    "y": 77,
+    "y": 74,
     "w": 102,
-    "h": 99
+    "h": 102
    },
    "sourceSize": {
     "w": 257,
@@ -986,8 +986,8 @@
   },
   "pulse_trooper_attack_06_team": {
    "frame": {
-    "x": 60,
-    "y": 413,
+    "x": 176,
+    "y": 521,
     "w": 50,
     "h": 61
    },
@@ -995,7 +995,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 80,
-    "y": 80,
+    "y": 77,
     "w": 50,
     "h": 61
    },
@@ -1010,18 +1010,18 @@
   },
   "pulse_trooper_attack_07": {
    "frame": {
-    "x": 2,
+    "x": 113,
     "y": 235,
     "w": 106,
-    "h": 99
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 82,
-    "y": 76,
+    "y": 75,
     "w": 106,
-    "h": 99
+    "h": 101
    },
    "sourceSize": {
     "w": 257,
@@ -1034,18 +1034,18 @@
   },
   "pulse_trooper_attack_07_team": {
    "frame": {
-    "x": 351,
-    "y": 413,
+    "x": 2,
+    "y": 586,
     "w": 55,
-    "h": 58
+    "h": 57
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 82,
-    "y": 84,
+    "y": 83,
     "w": 55,
-    "h": 58
+    "h": 57
    },
    "sourceSize": {
     "w": 257,
@@ -1058,18 +1058,18 @@
   },
   "pulse_trooper_attack_08": {
    "frame": {
-    "x": 968,
+    "x": 660,
     "y": 2,
-    "w": 105,
-    "h": 103
+    "w": 104,
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 84,
-    "y": 73,
-    "w": 105,
-    "h": 103
+    "y": 71,
+    "w": 104,
+    "h": 105
    },
    "sourceSize": {
     "w": 257,
@@ -1082,8 +1082,8 @@
   },
   "pulse_trooper_attack_08_team": {
    "frame": {
-    "x": 1094,
-    "y": 338,
+    "x": 767,
+    "y": 440,
     "w": 53,
     "h": 62
    },
@@ -1091,7 +1091,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 85,
-    "y": 83,
+    "y": 81,
     "w": 53,
     "h": 62
    },
@@ -1106,18 +1106,18 @@
   },
   "pulse_trooper_hit_00": {
    "frame": {
-    "x": 798,
-    "y": 235,
+    "x": 507,
+    "y": 340,
     "w": 117,
-    "h": 88
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 68,
-    "y": 88,
+    "y": 86,
     "w": 117,
-    "h": 88
+    "h": 89
    },
    "sourceSize": {
     "w": 257,
@@ -1130,8 +1130,8 @@
   },
   "pulse_trooper_hit_00_team": {
    "frame": {
-    "x": 785,
-    "y": 413,
+    "x": 376,
+    "y": 586,
     "w": 58,
     "h": 55
    },
@@ -1139,7 +1139,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 73,
-    "y": 89,
+    "y": 87,
     "w": 58,
     "h": 55
    },
@@ -1154,18 +1154,18 @@
   },
   "pulse_trooper_hit_01": {
    "frame": {
-    "x": 688,
-    "y": 235,
-    "w": 106,
-    "h": 93
+    "x": 2,
+    "y": 340,
+    "w": 107,
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 64,
-    "y": 82,
-    "w": 106,
-    "h": 93
+    "x": 63,
+    "y": 79,
+    "w": 107,
+    "h": 96
    },
    "sourceSize": {
     "w": 257,
@@ -1178,18 +1178,18 @@
   },
   "pulse_trooper_hit_01_team": {
    "frame": {
-    "x": 1151,
-    "y": 338,
+    "x": 711,
+    "y": 440,
     "w": 52,
-    "h": 62
+    "h": 63
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 71,
-    "y": 77,
+    "y": 74,
     "w": 52,
-    "h": 62
+    "h": 63
    },
    "sourceSize": {
     "w": 257,
@@ -1202,18 +1202,18 @@
   },
   "pulse_trooper_hit_02": {
    "frame": {
-    "x": 331,
+    "x": 566,
     "y": 235,
     "w": 107,
-    "h": 97
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 75,
-    "y": 79,
+    "y": 76,
     "w": 107,
-    "h": 97
+    "h": 99
    },
    "sourceSize": {
     "w": 257,
@@ -1226,18 +1226,18 @@
   },
   "pulse_trooper_hit_02_team": {
    "frame": {
-    "x": 236,
-    "y": 413,
-    "w": 52,
-    "h": 60
+    "x": 119,
+    "y": 521,
+    "w": 53,
+    "h": 61
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 81,
-    "y": 80,
-    "w": 52,
-    "h": 60
+    "x": 80,
+    "y": 77,
+    "w": 53,
+    "h": 61
    },
    "sourceSize": {
     "w": 257,
@@ -1250,18 +1250,18 @@
   },
   "pulse_trooper_hit_03": {
    "frame": {
-    "x": 439,
+    "x": 114,
     "y": 128,
-    "w": 106,
-    "h": 101
+    "w": 107,
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
-    "y": 75,
-    "w": 106,
-    "h": 101
+    "x": 83,
+    "y": 73,
+    "w": 107,
+    "h": 103
    },
    "sourceSize": {
     "w": 257,
@@ -1274,8 +1274,8 @@
   },
   "pulse_trooper_hit_03_team": {
    "frame": {
-    "x": 629,
-    "y": 338,
+    "x": 364,
+    "y": 440,
     "w": 53,
     "h": 65
    },
@@ -1283,7 +1283,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 86,
-    "y": 86,
+    "y": 83,
     "w": 53,
     "h": 65
    },
@@ -1298,18 +1298,18 @@
   },
   "pulse_trooper_hit_04": {
    "frame": {
-    "x": 1077,
+    "x": 551,
     "y": 2,
     "w": 105,
-    "h": 103
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 83,
-    "y": 73,
+    "y": 71,
     "w": 105,
-    "h": 103
+    "h": 105
    },
    "sourceSize": {
     "w": 257,
@@ -1322,18 +1322,18 @@
   },
   "pulse_trooper_hit_04_team": {
    "frame": {
-    "x": 977,
-    "y": 338,
-    "w": 54,
-    "h": 63
+    "x": 535,
+    "y": 440,
+    "w": 53,
+    "h": 64
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 84,
-    "y": 83,
-    "w": 54,
-    "h": 63
+    "x": 85,
+    "y": 80,
+    "w": 53,
+    "h": 64
    },
    "sourceSize": {
     "w": 257,
@@ -1346,16 +1346,16 @@
   },
   "pulse_trooper_die_00": {
    "frame": {
-    "x": 919,
-    "y": 235,
+    "x": 742,
+    "y": 340,
     "w": 118,
     "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 76,
-    "y": 83,
+    "x": 75,
+    "y": 81,
     "w": 118,
     "h": 86
    },
@@ -1370,17 +1370,17 @@
   },
   "pulse_trooper_die_00_team": {
    "frame": {
-    "x": 901,
-    "y": 413,
-    "w": 62,
+    "x": 492,
+    "y": 586,
+    "w": 61,
     "h": 53
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 76,
-    "y": 88,
-    "w": 62,
+    "x": 77,
+    "y": 86,
+    "w": 61,
     "h": 53
    },
    "sourceSize": {
@@ -1394,17 +1394,17 @@
   },
   "pulse_trooper_die_01": {
    "frame": {
-    "x": 573,
-    "y": 235,
-    "w": 111,
+    "x": 206,
+    "y": 340,
+    "w": 109,
     "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 41,
-    "y": 55,
-    "w": 111,
+    "x": 39,
+    "y": 54,
+    "w": 109,
     "h": 95
    },
    "sourceSize": {
@@ -1418,17 +1418,17 @@
   },
   "pulse_trooper_die_01_team": {
    "frame": {
-    "x": 1115,
-    "y": 413,
-    "w": 67,
+    "x": 706,
+    "y": 586,
+    "w": 65,
     "h": 46
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 45,
-    "y": 99,
-    "w": 67,
+    "x": 43,
+    "y": 98,
+    "w": 65,
     "h": 46
    },
    "sourceSize": {
@@ -1444,15 +1444,15 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 95,
+    "w": 94,
     "h": 122
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 46,
-    "y": 67,
-    "w": 95,
+    "x": 47,
+    "y": 69,
+    "w": 94,
     "h": 122
    },
    "sourceSize": {
@@ -1466,8 +1466,8 @@
   },
   "pulse_trooper_die_02_team": {
    "frame": {
-    "x": 798,
-    "y": 338,
+    "x": 592,
+    "y": 440,
     "w": 57,
     "h": 63
    },
@@ -1475,7 +1475,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 80,
-    "y": 106,
+    "y": 108,
     "w": 57,
     "h": 63
    },
@@ -1490,18 +1490,18 @@
   },
   "pulse_trooper_die_03": {
    "frame": {
-    "x": 1003,
-    "y": 128,
+    "x": 223,
+    "y": 235,
     "w": 109,
-    "h": 99
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 65,
-    "y": 59,
+    "x": 66,
+    "y": 58,
     "w": 109,
-    "h": 99
+    "h": 100
    },
    "sourceSize": {
     "w": 257,
@@ -1514,16 +1514,16 @@
   },
   "pulse_trooper_die_03_team": {
    "frame": {
-    "x": 2,
-    "y": 413,
+    "x": 61,
+    "y": 521,
     "w": 54,
     "h": 61
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 79,
-    "y": 69,
+    "x": 80,
+    "y": 67,
     "w": 54,
     "h": 61
    },
@@ -1538,18 +1538,18 @@
   },
   "pulse_trooper_die_04": {
    "frame": {
-    "x": 1155,
-    "y": 235,
+    "x": 2,
+    "y": 440,
     "w": 111,
-    "h": 76
+    "h": 77
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 47,
-    "y": 108,
+    "x": 45,
+    "y": 107,
     "w": 111,
-    "h": 76
+    "h": 77
    },
    "sourceSize": {
     "w": 257,
@@ -1562,16 +1562,16 @@
   },
   "pulse_trooper_die_04_team": {
    "frame": {
-    "x": 656,
-    "y": 413,
+    "x": 185,
+    "y": 586,
     "w": 64,
     "h": 56
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 51,
-    "y": 124,
+    "x": 49,
+    "y": 123,
     "w": 64,
     "h": 56
    },
@@ -1586,18 +1586,18 @@
   },
   "pulse_trooper_die_05": {
    "frame": {
-    "x": 325,
-    "y": 338,
-    "w": 132,
-    "h": 67
+    "x": 173,
+    "y": 440,
+    "w": 131,
+    "h": 66
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 36,
+    "x": 34,
     "y": 109,
-    "w": 132,
-    "h": 67
+    "w": 131,
+    "h": 66
    },
    "sourceSize": {
     "w": 257,
@@ -1610,18 +1610,18 @@
   },
   "pulse_trooper_die_05_team": {
    "frame": {
-    "x": 1186,
-    "y": 413,
+    "x": 775,
+    "y": 586,
     "w": 80,
-    "h": 43
+    "h": 42
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 36,
+    "x": 33,
     "y": 131,
     "w": 80,
-    "h": 43
+    "h": 42
    },
    "sourceSize": {
     "w": 257,
@@ -1634,15 +1634,15 @@
   },
   "pulse_trooper_die_06": {
    "frame": {
-    "x": 114,
-    "y": 413,
+    "x": 230,
+    "y": 521,
     "w": 118,
     "h": 60
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 42,
+    "x": 40,
     "y": 122,
     "w": 118,
     "h": 60
@@ -1658,18 +1658,18 @@
   },
   "pulse_trooper_die_06_team": {
    "frame": {
-    "x": 967,
-    "y": 413,
+    "x": 557,
+    "y": 586,
     "w": 70,
-    "h": 50
+    "h": 49
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 44,
+    "x": 42,
     "y": 131,
     "w": 70,
-    "h": 50
+    "h": 49
    },
    "sourceSize": {
     "w": 257,
@@ -1682,15 +1682,15 @@
   },
   "pulse_trooper_die_07": {
    "frame": {
-    "x": 532,
-    "y": 413,
+    "x": 61,
+    "y": 586,
     "w": 120,
     "h": 56
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 40,
+    "x": 38,
     "y": 125,
     "w": 120,
     "h": 56
@@ -1706,17 +1706,17 @@
   },
   "pulse_trooper_die_07_team": {
    "frame": {
-    "x": 1041,
-    "y": 413,
-    "w": 70,
+    "x": 631,
+    "y": 586,
+    "w": 71,
     "h": 48
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 45,
+    "x": 42,
     "y": 130,
-    "w": 70,
+    "w": 71,
     "h": 48
    },
    "sourceSize": {
@@ -1833,8 +1833,8 @@
   "image": "pulse_trooper.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1280,
-   "h": 476
+   "w": 896,
+   "h": 648
   },
   "scale": "1.5",
   "ageborn": {
@@ -1863,6 +1863,7 @@
    },
    "facing": "right",
    "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
    "clips": {
     "idle": {
      "frames": 6,
@@ -1888,27 +1889,27 @@
       "muzzle": [
        [
         63.4,
-        11.6
+        13.5
        ],
        [
         62.8,
-        10.5
+        12.4
        ],
        [
         61.1,
-        9.0
+        11.0
        ],
        [
         59.8,
-        8.6
+        10.5
        ],
        [
         60.5,
-        9.7
+        11.7
        ],
        [
         62.3,
-        11.3
+        13.2
        ]
       ]
      }
@@ -1927,54 +1928,76 @@
       7
      ],
      "durationsMs": [
-      62,
-      63,
-      62,
-      63,
-      62,
-      63,
-      62,
-      63
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77
      ],
-     "durationMs": 500,
+     "durationMs": 616,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 81.2,
+     "cycleMs": 616,
      "anchorsLu": {
       "muzzle": [
        [
-        61.0,
-        -2.3
+        53.7,
+        35.9
        ],
        [
-        66.4,
-        -1.8
+        52.6,
+        38.2
        ],
        [
-        64.0,
-        2.5
+        53.7,
+        43.5
        ],
        [
-        60.3,
-        2.8
+        54.5,
+        45.3
        ],
        [
-        61.0,
-        -2.3
+        53.7,
+        35.9
        ],
        [
-        62.4,
-        -4.5
+        49.0,
+        36.1
        ],
        [
-        58.5,
-        -1.0
+        48.6,
+        40.5
        ],
        [
-        56.6,
-        0.4
+        50.8,
+        43.2
        ]
       ]
      },
-     "strideLu": 35.2,
-     "naturalSpeedLuPerS": 70.4
+     "naturalSpeedLuPerS": 81.2,
+     "strideLu": 50.0,
+     "plantedDriftLu": 0.05,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        10.1,
+        -1.9
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        12.2,
+        1.4
+       ]
+      }
+     ]
     },
     "attack": {
      "frames": 9,
@@ -2003,47 +2026,53 @@
      ],
      "durationMs": 748,
      "impactFrame": 4,
+     "impactStep": 4,
      "impactAt": 0.5,
      "anchorsLu": {
       "muzzle": [
        [
         63.2,
-        18.8
+        20.3
        ],
        [
         66.1,
-        24.0
+        25.3
        ],
        [
         67.4,
-        22.2
+        23.3
        ],
        [
         70.4,
-        19.5
+        20.5
        ],
        [
         61.9,
-        26.1
+        28.1
        ],
        [
         47.5,
-        56.4
+        58.2
        ],
        [
         53.4,
-        43.5
+        45.5
        ],
        [
         62.3,
-        23.8
+        25.0
        ],
        [
         61.9,
-        13.1
+        14.7
        ]
       ]
-     }
+     },
+     "holdStep": 3,
+     "muzzle": [
+      61.9,
+      28.1
+     ]
     },
     "hit": {
      "frames": 5,
@@ -2067,23 +2096,23 @@
       "muzzle": [
        [
         58.5,
-        30.0
+        31.8
        ],
        [
         45.7,
-        46.0
+        48.0
        ],
        [
         56.8,
-        25.9
+        27.8
        ],
        [
         62.3,
-        2.9
+        4.8
        ],
        [
         61.5,
-        11.5
+        13.4
        ]
       ]
      }
@@ -2141,36 +2170,36 @@
      "anchorsLu": {
       "muzzle": [
        [
-        65.5,
-        39.0
+        65.2,
+        40.7
        ],
        [
-        -40.4,
-        88.1
+        -42.5,
+        88.9
        ],
        [
-        -44.8,
-        -11.8
+        -44.5,
+        -13.9
        ],
        [
-        49.7,
+        51.0,
+        27.4
+       ],
+       [
+        34.6,
+        38.4
+       ],
+       [
+        41.0,
+        38.3
+       ],
+       [
+        36.4,
         25.9
        ],
        [
-        36.1,
-        37.9
-       ],
-       [
-        43.1,
-        38.0
-       ],
-       [
-        38.2,
-        25.8
-       ],
-       [
-        38.5,
-        19.9
+        36.8,
+        20.0
        ]
       ]
      }

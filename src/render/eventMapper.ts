@@ -387,7 +387,8 @@ export class EventMapper {
       }
       case 'attackStarted': {
         const windupMs = ev.windupTicks * 50;
-        out.push({ a: 'unitClip', id: ev.id, clip: 'attack', impactAtMs: windupMs });
+        // a second attacker (riders, sponsons, an MG) carries its index: the view never restarts the body for it (R3)
+        out.push({ a: 'unitClip', id: ev.id, clip: 'attack', impactAtMs: windupMs, ...(ev.attackIndex > 0 ? { attackIndex: ev.attackIndex } : {}) });
         const u = unit(ev.id);
         const atk = attackOf(u ? C.units[u.card] : undefined, ev.attackIndex);
         if (atk && !atk.projectile) {
@@ -404,6 +405,7 @@ export class EventMapper {
         const side = turret ? turret.side : (src?.side ?? null);
         let arc = false;
         let sound: SoundId | undefined;
+        let attackIndex = 0;
         if (turret) {
           const tDef = C.turrets[this.turretOn(turret.side, turret.mount) ?? ''];
           const p = tDef?.attack.projectile;
@@ -414,6 +416,7 @@ export class EventMapper {
           const p = atk?.projectile;
           arc = p !== undefined && 'arc' in p && p.arc === true;
           sound = atk?.sfx;
+          if (def && atk) attackIndex = def.attacks.indexOf(atk) >= 0 ? def.attacks.indexOf(atk) : 1;
         }
         out.push({
           a: 'projectile',
@@ -425,6 +428,7 @@ export class EventMapper {
           travelMs: ev.travelTicks * 50,
           visualId: ev.visualId,
           arc,
+          ...(attackIndex > 0 ? { attackIndex } : {}),
         });
         if (sound) this.rule('projectile.fire', { at: { k: 'unit', id: ev.from, part: 'hit' }, subs: { attackSound: sound } }, out);
         return;

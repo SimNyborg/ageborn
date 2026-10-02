@@ -13,6 +13,7 @@ import { pathToFileURL } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { content } from '../../src/content';
 import { ROOT, SRC } from './helpers/source';
+import { PAUSED_WAVE_SOUNDS, PAUSED_WAVE_VISUALS } from '../fixtures/pausedWave';
 
 type Manifest = Record<string, unknown>;
 
@@ -196,7 +197,8 @@ describe('visual and effect ids (B5 manifest)', () => {
     ctx.skip(!visuals.manifest, visuals.reason);
     const refs = visualRefs();
     expect(refs.length).toBeGreaterThan(80);
-    expect(refs.filter((r) => !(r.id in (visuals.manifest as Manifest))).map((r) => `${r.where} = ${r.id}`)).toEqual([]);
+    // the paused content wave has no art yet (tests/fixtures/pausedWave.ts)
+    expect(refs.filter((r) => !(r.id in (visuals.manifest as Manifest)) && !PAUSED_WAVE_VISUALS.has(r.id)).map((r) => `${r.where} = ${r.id}`)).toEqual([]);
   });
 
   it('every effect id in the feel config resolves', (ctx) => {
@@ -210,7 +212,7 @@ describe('visual and effect ids (B5 manifest)', () => {
     ctx.skip(!visuals.manifest, visuals.reason);
     const ids = designVisualIds();
     expect(ids.length).toBeGreaterThan(150);
-    expect(ids.filter((id) => !(id in (visuals.manifest as Manifest)))).toEqual([]);
+    expect(ids.filter((id) => !(id in (visuals.manifest as Manifest)) && !PAUSED_WAVE_VISUALS.has(id))).toEqual([]);
   });
 });
 
@@ -224,12 +226,13 @@ describe('sound ids (A13, B7 manifest)', () => {
 
   it('every content sound id is an A13 id', () => {
     const a13 = new Set(designSoundIds());
-    expect(soundRefs().filter((r) => !a13.has(r.id)).map((r) => `${r.where} = ${r.id}`)).toEqual([]);
+    // the paused content wave's sounds are not made or listed yet (tests/fixtures/pausedWave.ts)
+    expect(soundRefs().filter((r) => !a13.has(r.id) && !PAUSED_WAVE_SOUNDS.has(r.id)).map((r) => `${r.where} = ${r.id}`)).toEqual([]);
   });
 
   it('every content sound id resolves in the sound manifest', (ctx) => {
     ctx.skip(!sounds.manifest, sounds.reason);
-    expect(soundRefs().filter((r) => !(r.id in (sounds.manifest as Manifest))).map((r) => `${r.where} = ${r.id}`)).toEqual([]);
+    expect(soundRefs().filter((r) => !(r.id in (sounds.manifest as Manifest)) && !PAUSED_WAVE_SOUNDS.has(r.id)).map((r) => `${r.where} = ${r.id}`)).toEqual([]);
   });
 
   it('every sound id in the feel config resolves', (ctx) => {

@@ -19,6 +19,16 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
           anchor on the fire frame and is gone from the tube until the reload.
   hit     light: the head snaps back, the helmet lifts, eyes squeezed, overshoot forward
   die     D1 fling and spin: the helmet pops off and the tube flies; X eyes and tongue
+
+Animation standard (ANIM_SPEC 2026-10-02):
+  walk      walk v3 bounce jog at ground speed (G1, 65 x 1.25 = 81.25 lu/s), a heavy-footed stomp: the
+            tube sloped up on his shoulder rocking a frame late, the spare rocket nodding in the pack,
+            planted feet
+  attack    A as above; the aim is split into the hold and a sight-wobble frame (holdLoop: the sim
+            wind-up is 2.1x the authored one)
+  attack_b  KNEELING BRACED FIRE: he drops to one knee, the tube level on his shoulder, squints down
+            the sight (the held extreme, holdLoop), fires (front and back blast), the kick rocks him
+            back onto his heel, he slaps the spare rocket home on one knee and rises
 """
 import math
 
@@ -32,6 +42,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "bazooka_trooper"
+GAIT_NAME = "biped"
 NAME = "Bazooka Trooper"
 HEIGHT_LU = 70
 CANVAS = (380, 262)
@@ -92,9 +103,14 @@ def _rocket(rig, joint, base, axis=(1, 0, 0), L=9.0):
     rig.part(joint, g, R.SIGNAL, outline=0.5)
 
 
+RIG = None
+
+
 def build(rig):
-    R.skeleton(rig)
-    R.legs(rig, thigh_r=5.0)
+    global RIG
+    RIG = rig
+    KM.skeleton_v3(rig)
+    KM.legs_v3(rig, trousers=R.OLIVE, thigh_r=4.9)
     # backpack with the spare rocket (fins down in the pack, warhead up)
     g = Geo().blob((-12.4, 1.0, 29.0), (5.4, 9.0, 9.0), p=3.2)
     rig.part("torso", g, R.OLIVE)
@@ -104,7 +120,7 @@ def build(rig):
     g = Geo().capsule((SPARE[0], SPARE[1], SPARE[2] - 8.0), (SPARE[0], SPARE[1], SPARE[2]), 2.4)
     rig.part("spare", g, R.GUNMETAL, finish="metal", outline=0.5)
     _rocket(rig, "spare", SPARE, axis=(0, 0, 1), L=8.0)
-    R.tunic(rig)
+    R.tunic(rig, hem_z=13.0)
     KM.pouches(rig, "torso", [(9.2, -6.8, 19.2), (-4.0, -10.6, 19.0)], size=(2.4, 1.8, 3.4))
     g = Geo().capsule((2.0, -10.6, 37.0), (-8.0, -9.4, 22.0), 1.5)   # pack strap
     rig.part("torso", g, R.KHAKI, outline=0.6)
@@ -149,7 +165,6 @@ def build(rig):
     rig.joint("rocket", "tube", (T1, TY, TZ))
     _rocket(rig, "rocket", (T1 - 1.0, TY, TZ))
     rig.track("muzzle", "tube", MUZZLE)
-    rig.track("_foot", "shin_r", (3.4, -6.0, 0.5))
     R.muzzle_flash(rig, "tube", (T1 + 2, TY, TZ), size=2.0)
     R.muzzle_flash(rig, "tube", (T0 - 2, TY, TZ), size=1.7, name="blast", back=True)
     KI.loose(rig, "tube_loose", PIVOT, lambda j: (_tube(rig, j), _rocket(rig, j, (T1 - 1.0, TY, TZ))))
@@ -195,21 +210,30 @@ def _idle(f):
     pose = M.idle_v2(f, {"torso": {"r": -2.0}}, frames=6, extra=extra, face_blink=F.expr("blink"), blink=5)
     if f in (2, 3):
         pose = merge(pose, F.expr("squeeze"))
-    return pose
+    return KM.ground_feet(RIG, pose, LEGS)
 
 
-def _walk(f):
+# -- walk v3: G1 bounce jog at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 77 ms --------------
+SPEED = 81.25
+LEGS = KM.legs_ik()
+GAIT = KM.jog_gait(LEGS, SPEED, cycle_ms=616)
+WALK_DEG = 22.0          # the tube sloped up on his shoulder (the idle guard holds it level)
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return merge(aim(REST_DEG - 3.0 * lag, dz=0.6 * lag), {"hat": {"r": -1.2 * lag},
-                                                                 "spare": {"r": 4.0 * lag}})
-    return M.walk_v2(f, {"torso": {"r": -2.0}}, HEIGHT_LU, thigh=30.0, knee=58.0, lift_lu=6.5, bob_pct=0.07,
-                     lean=-5.0, arms=(), bow=7.0, heavy_down=1.35, twist=5.0, extra=extra)
+        return merge(aim(WALK_DEG - 4.0 * lag, dz=0.8 * lag), {"hat": {"r": -1.4 * lag},
+                                                                "spare": {"r": 6.0 * lag}})
+    return M.walk_v3(RIG, f, {"torso": {"r": -2.0}}, GAIT, legs=LEGS, lean=-8.0, twist=5.0, nod=3.0,
+                     extra=extra, report=report)
 
 
-# 10 unique frames in 790 ms; fire on frame 3 at 291 ms (impactAt 0.3684, as shipped)
-ATTACK_MS = [40, 60, 191, 60, 80, 70, 70, 70, 75, 74]
-ATTACK_IMPACT = 3
+# 11 unique frames in 790 ms; fire on frame 4 at 291 ms (impactAt 0.3684, as shipped). The shipped
+# 191 ms hold is split into the hold (130) and a sight-wobble partner (61) for the holdLoop.
+ATTACK_MS = [40, 60, 130, 61, 60, 80, 70, 70, 70, 75, 74]
+ATTACK_IMPACT = 4
+U_OF = [0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9]     # unique frame -> row of the pose tables below
 #       heft brace HOLD FIRE knock teeter wobble wobble reload settle
 DEG = [12.0, 3.0, 0.0, 0.0, 14.0, 9.0, 3.0, 6.0, 8.0, 7.0]        # tube angle, WORLD
 LEAN = [-2, -6, -8, -8, 10, 8, -4, 2, -2, -2]
@@ -223,9 +247,12 @@ TH_L = [-4, -18, -22, -22, -18, -12, -20, -14, -8, -4]
 SH_L = [0, -8, -12, -12, -6, -2, -10, -4, -2, 0]
 
 
-def _attack_pose(f):
+def _attack_pose(i):
+    wob = i == 3
+    f = U_OF[i]
     t = LEAN[f]
-    pose = merge(aim(DEG[f] - t, dx=[0, 0.5, 0.8, 0.8, -2.5, -1.5, -0.5, 0, 0, 0][f], far=f not in (8,)), {
+    pose = merge(aim(DEG[f] - t + (1.6 if wob else 0.0), dx=[0, 0.5, 0.8, 0.8, -2.5, -1.5, -0.5, 0, 0, 0][f],
+                     dz=0.6 if wob else 0.0, far=f not in (8,)), {
         "torso": {"r": t},
         "head": {"r": [-2, -5, -8, -8, 6, 8, -2, 2, 0, 0][f] - 0.3 * t,
                  "x": [0, 0.8, 1.4, 1.4, 0, 0, 0, 0, 0, 0][f]},
@@ -256,23 +283,92 @@ def _attack_pose(f):
         pose = merge(pose, F.expr("o"), {"brow": {"z": 2.0}, "pupils": {"s": 0.8}})
     elif f in (6, 7):
         pose = merge(pose, F.expr("grit"))
-    return pose
+    if wob:
+        pose = merge(pose, {"brow": {"z": -0.4}, "head": {"z": -0.3}})
+    return KM.ground_feet(RIG, pose, LEGS)
 
 
 def _attack_clip():
     ov = {
-        3: [{"kind": "burst", "joint": "tube", "point": (T1 + 4.0, TY, TZ), "r0_lu": 9.0, "r1_lu": 15.0, "n": 5,
+        4: [{"kind": "burst", "joint": "tube", "point": (T1 + 4.0, TY, TZ), "r0_lu": 9.0, "r1_lu": 15.0, "n": 5,
              "a0": -60.0, "arc": 120.0},
             {"kind": "dust", "ground": (-24.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 51, "spread": 1.2,
              "dir": -1.0}],
-        4: [{"kind": "dust", "ground": (6.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 52, "spread": 0.8,
+        5: [{"kind": "dust", "ground": (6.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 52, "spread": 0.8,
              "dir": 1.0},
             {"kind": "dust", "ground": (-14.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 53, "spread": 0.8,
              "dir": -1.0}],
-        5: [{"kind": "rings", "joint": "head", "point": (4.0, 0, 64.0), "radii_lu": (5.0, 8.0), "a0": 30.0,
+        6: [{"kind": "rings", "joint": "head", "point": (4.0, 0, 64.0), "radii_lu": (5.0, 8.0), "a0": 30.0,
              "a1": 150.0}],
     }
-    return M.clip("attack", [_attack_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
+    return M.clip("attack", [_attack_pose(f) for f in range(11)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  extra={"holdStep": 2, "holdLoop": [2, 3]})
+
+
+# -- attack B: kneeling braced fire (ANIM_SPEC appendix B) ------------------------------------------
+# unique frames: 0 = A heft, 1 drop, 2 HOLD (on one knee, the tube level on his shoulder, squinting),
+# 3 wobble (holdLoop), 4 FIRE (front and back blast), 5 kick (rocked back onto his heel, smoke behind),
+# 6 reload (the spare from the pack), 7 rising (the warhead back in the tube), 8 rising,
+# 9 = A reload settle, 10 = A settle
+#        drop HOLD wob  FIRE kick reload seat rise
+KB_DROP = [8.0, 14.0, 14.0, 14.0, 12.0, 14.0, 13.0, 6.0]
+KB_DEG = [6.0, 2.0, 3.4, 2.0, 16.0, 8.0, 6.0, 8.0]
+KB_LEAN = [-4, -6, -6, -6, 8, -2, -2, -2]
+KB_BX = [0.5, 1.0, 1.0, 1.0, -6.0, -3.0, -2.0, -1.0]
+KB_BR = [0, 0, 0, 0, 7, 2, 1, 0]
+KB_BQ = [-0.04, -0.07, -0.07, 0.03, 0.06, -0.02, 0.0, 0.0]
+KB_FRONT = [8.0, 12.5, 12.5, 12.5, 14.0, 12.5, 12.5, 7.0]
+
+
+def _b_pose(i):
+    if i in (0, 9, 10):
+        return _attack_pose(i)
+    k = i - 1
+    t = KB_LEAN[k]
+    pose = merge(aim(KB_DEG[k] - t, dx=[0.4, 0.8, 0.8, 0.8, -2.5, -0.5, 0, 0][k],
+                     dz=0.5 if k == 2 else 0.0, far=k != 5), {
+        "torso": {"r": t},
+        "head": {"r": [-4, -8, -8, -8, 6, -2, 0, 0][k] - 0.3 * t, "x": 1.4 if k in (1, 2, 3) else 0.0},
+        "hat": {"r": [0, 2, 2, 2, 10, 2, 0, 0][k], "z": [0, 0, 0, 0, 1.5, 0, 0, 0][k]},
+        "flash": {"show": k == 3},
+        "blast": {"show": k == 3},
+        "rocket": {"hide": 3 <= k <= 5},
+        "smoke": {"show": k in (3, 4, 5), "s": [1, 1, 1, 0.75, 1.0, 1.1, 1, 1][k],
+                  "x": [0, 0, 0, 3, -4, -12, 0, 0][k], "z": [0, 0, 0, -12, -10, -6, 0, 0][k]},
+        "smoke2": {"show": k in (4, 5, 6), "s": [1, 1, 1, 1, 0.8, 1.05, 1.1, 1][k],
+                   "x": [0, 0, 0, 0, -2, -10, -18, 0][k], "z": [0, 0, 0, 0, -12, -8, -2, 0][k]},
+        "puff": {"show": k == 4, "s": 0.9, "z": -10.0},
+    }, M.body_about((0, 0, 14), x=KB_BX[k], r=KB_BR[k], q=KB_BQ[k]))
+    if k == 5:   # the far hand pulls the spare rocket from the pack
+        a, fo = R.ik2(R.SH, (-6.0, 41.0))
+        pose = merge(pose, R.arm("l", a, fo))
+        pose["spare"] = {"hide": True}
+        pose["reload"] = {"show": True}
+        pose["hand_l"] = {"r": 150.0}
+    pose = KM.kneel(RIG, pose, LEGS, drop=KB_DROP[k], front=KB_FRONT[k])
+    if k in (1, 2):
+        pose = merge(pose, F.expr("squeeze", "grit"), {"brow": {"z": -1.0 - (0.4 if k == 2 else 0.0)}})
+    elif k == 3:
+        pose = merge(pose, F.expr("squeeze", "yell"))
+    elif k == 4:
+        pose = merge(pose, F.expr("o"), {"brow": {"z": 2.0}})
+    elif k in (5, 6):
+        pose = merge(pose, F.expr("grit"))
+    return pose
+
+
+def _attack_b():
+    ov = {
+        4: [{"kind": "burst", "joint": "tube", "point": (T1 + 4.0, TY, TZ), "r0_lu": 9.0, "r1_lu": 15.0, "n": 5,
+             "a0": -60.0, "arc": 120.0},
+            {"kind": "dust", "ground": (-26.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 54, "spread": 1.2,
+             "dir": -1.0}],
+        5: [{"kind": "dust", "ground": (-12.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 55, "spread": 0.9,
+             "dir": -1.0}],
+    }
+    reuse = {0: ("attack", 0), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(11)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 2, "holdLoop": [2, 3]})
 
 
 def _hit(k):
@@ -325,10 +421,11 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl, attack_ms=790, attack_impact_at=0.3684)
+    return M.check_variants(M.check_contract(cl, attack_ms=790, attack_impact_at=0.3684))

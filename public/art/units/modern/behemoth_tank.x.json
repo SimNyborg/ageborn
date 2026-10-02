@@ -1,0 +1,541 @@
+{
+ "frames": {
+  "behemoth_tank_attack_b_01": {
+   "frame": {
+    "x": 528,
+    "y": 2,
+    "w": 246,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 120,
+    "w": 246,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 471,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.49682,
+    "y": 0.90179
+   }
+  },
+  "behemoth_tank_attack_b_01_team": {
+   "frame": {
+    "x": 437,
+    "y": 215,
+    "w": 169,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 119,
+    "w": 169,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 471,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.49682,
+    "y": 0.90179
+   }
+  },
+  "behemoth_tank_attack_b_02": {
+   "frame": {
+    "x": 1033,
+    "y": 2,
+    "w": 230,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 129,
+    "y": 121,
+    "w": 230,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 471,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.49682,
+    "y": 0.90179
+   }
+  },
+  "behemoth_tank_attack_b_02_team": {
+   "frame": {
+    "x": 780,
+    "y": 215,
+    "w": 172,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 139,
+    "y": 122,
+    "w": 172,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 471,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.49682,
+    "y": 0.90179
+   }
+  },
+  "behemoth_tank_attack_b_03": {
+   "frame": {
+    "x": 1267,
+    "y": 2,
+    "w": 229,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 129,
+    "y": 121,
+    "w": 229,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 471,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.49682,
+    "y": 0.90179
+   }
+  },
+  "behemoth_tank_attack_b_03_team": {
+   "frame": {
+    "x": 1308,
+    "y": 215,
+    "w": 172,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 139,
+    "y": 126,
+    "w": 172,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 471,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.49682,
+    "y": 0.90179
+   }
+  },
+  "behemoth_tank_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 247,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 113,
+    "w": 247,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 471,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.49682,
+    "y": 0.90179
+   }
+  },
+  "behemoth_tank_attack_b_04_team": {
+   "frame": {
+    "x": 268,
+    "y": 215,
+    "w": 165,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 139,
+    "y": 111,
+    "w": 165,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 471,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.49682,
+    "y": 0.90179
+   }
+  },
+  "behemoth_tank_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 215,
+    "w": 262,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 124,
+    "w": 262,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 471,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.49682,
+    "y": 0.90179
+   }
+  },
+  "behemoth_tank_attack_b_05_team": {
+   "frame": {
+    "x": 956,
+    "y": 215,
+    "w": 175,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 121,
+    "w": 175,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 471,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.49682,
+    "y": 0.90179
+   }
+  },
+  "behemoth_tank_attack_b_06": {
+   "frame": {
+    "x": 253,
+    "y": 2,
+    "w": 271,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 115,
+    "w": 271,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 471,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.49682,
+    "y": 0.90179
+   }
+  },
+  "behemoth_tank_attack_b_06_team": {
+   "frame": {
+    "x": 610,
+    "y": 215,
+    "w": 166,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 117,
+    "w": 166,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 471,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.49682,
+    "y": 0.90179
+   }
+  },
+  "behemoth_tank_attack_b_07": {
+   "frame": {
+    "x": 778,
+    "y": 2,
+    "w": 251,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 121,
+    "w": 251,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 471,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.49682,
+    "y": 0.90179
+   }
+  },
+  "behemoth_tank_attack_b_07_team": {
+   "frame": {
+    "x": 1135,
+    "y": 215,
+    "w": 169,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 139,
+    "y": 123,
+    "w": 169,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 471,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.49682,
+    "y": 0.90179
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "behemoth_tank_attack_00",
+   "behemoth_tank_attack_b_01",
+   "behemoth_tank_attack_b_02",
+   "behemoth_tank_attack_b_03",
+   "behemoth_tank_attack_b_04",
+   "behemoth_tank_attack_b_05",
+   "behemoth_tank_attack_b_06",
+   "behemoth_tank_attack_b_07",
+   "behemoth_tank_attack_08",
+   "behemoth_tank_attack_09"
+  ],
+  "attack_b_team": [
+   "behemoth_tank_attack_00_team",
+   "behemoth_tank_attack_b_01_team",
+   "behemoth_tank_attack_b_02_team",
+   "behemoth_tank_attack_b_03_team",
+   "behemoth_tank_attack_b_04_team",
+   "behemoth_tank_attack_b_05_team",
+   "behemoth_tank_attack_b_06_team",
+   "behemoth_tank_attack_b_07_team",
+   "behemoth_tank_attack_08_team",
+   "behemoth_tank_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "behemoth_tank.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1536,
+   "h": 416
+  },
+  "scale": "1.25",
+  "ageborn": {
+   "visualId": "unit.behemoth_tank",
+   "name": "Behemoth Tank",
+   "heightLu": 172,
+   "widthLu": 242.0,
+   "pxPerLu": 1.025,
+   "feetPx": [
+    234.0,
+    303.0
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     147
+    ],
+    "hitCenter": [
+     0,
+     58
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "tracked",
+   "secondaryAttack": {
+    "id": "mg",
+    "anchor": "mgMuzzle",
+    "projectile": "proj.bullet"
+   },
+   "extrasOf": "behemoth_tank",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      70,
+      80,
+      130,
+      70,
+      80,
+      110,
+      90,
+      100,
+      100,
+      103
+     ],
+     "durationMs": 933,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3751,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        144.2,
+        94.9
+       ],
+       [
+        132.7,
+        84.3
+       ],
+       [
+        114.4,
+        80.9
+       ],
+       [
+        113.7,
+        83.9
+       ],
+       [
+        93.0,
+        92.0
+       ],
+       [
+        101.2,
+        86.7
+       ],
+       [
+        119.5,
+        89.2
+       ],
+       [
+        137.5,
+        88.1
+       ],
+       [
+        144.7,
+        88.1
+       ],
+       [
+        144.6,
+        89.6
+       ]
+      ],
+      "mgMuzzle": [
+       [
+        -4.3,
+        135.5
+       ],
+       [
+        -5.4,
+        134.2
+       ],
+       [
+        -7.4,
+        131.0
+       ],
+       [
+        -8.1,
+        131.4
+       ],
+       [
+        -17.2,
+        140.1
+       ],
+       [
+        -22.0,
+        130.2
+       ],
+       [
+        -6.6,
+        137.4
+       ],
+       [
+        -6.3,
+        134.6
+       ],
+       [
+        -4.5,
+        133.7
+       ],
+       [
+        -3.5,
+        135.3
+       ]
+      ]
+     },
+     "muzzle": [
+      93.0,
+      92.0
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

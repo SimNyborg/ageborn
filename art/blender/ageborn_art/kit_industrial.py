@@ -114,3 +114,127 @@ def gauge(rig, joint, at, r=3.2, name="gauge", normal=(1.0, -1.0), face_col=CREA
 def aim_arm(s, a_world, f_world, lean, w_world=None, w_rest=90.0):
     """I.arm with WORLD angles: arm and weapon angles are torso-space, so subtract the lean."""
     return I.arm(s, a_world - lean, f_world - lean, None if w_world is None else w_world - lean, w_rest=w_rest)
+
+
+# -- walk v3 body (ANIM_SPEC 2.0 rule 5, G1): longer legs and planted feet ----------------------
+# The Industrial bipeds keep the rigs_industrial (= rigs_modern) joint names and arm layout, which
+# match the Medieval biped, so the skeleton, the IK legs, the jog gait and the arm chain are
+# kit_medieval's: thighs pivot at 19.5 lu, knees at 11.5, a `foot_r/l` joint at the ankle carries a
+# short boot (8.8 lu) that rolls on the toe-off, and the upper body is lifted 2 lu (`rest_offset`).
+V3_THIGH_Z, V3_KNEE_Z, V3_ANKLE_Z, V3_LIFT = K.V3_THIGH_Z, K.V3_KNEE_Z, K.V3_ANKLE_Z, K.V3_LIFT
+legs_ik = K.legs_ik
+jog_gait = K.jog_gait
+ArmChain = K.ArmChain
+
+
+def skeleton_v3(rig, head=(1, 0, 38), arm_y=None):
+    """`rigs_industrial.skeleton` with walk-v3 legs (thighs at 19.5 lu, foot joints, no parts)."""
+    K.skeleton_v3(rig, head=head, arm_y=arm_y or I.ARM_Y)
+
+
+def legs_v3(rig, trousers=I.DENIM, boot=I.BOOT, team=False, thigh_r=4.6, cuff=None, gaiter=None, far=0.8,
+            spur=None):
+    """`rigs_industrial.legs` for skeleton_v3: work trousers (team for overalls), optional gaiters
+    and turned-up cuffs, chunky hobnail boots on the foot joints (8.8 lu long, a thick coal sole).
+    The far leg is `far` darker (team trousers stay team; their boots darken), so the near and far
+    feet read apart (ANIM_SPEC G1). Adds the `_foot` / `_foot_l` sole trackers."""
+    from . import colors as CO
+    for s in ("r", "l"):
+        y = I.LEG_Y * I.SIDE_Y[s]
+        k = 1.0 if s == "r" else far
+        sh = (lambda c: c) if k == 1.0 else (lambda c: CO.scale(c, k))
+        g = Geo().capsule((0, y, V3_THIGH_Z), (0.5, y, V3_KNEE_Z), thigh_r, thigh_r - 0.4)
+        if team:
+            rig.part(f"thigh_{s}", g, team=True)
+        else:
+            rig.part(f"thigh_{s}", g, sh(trousers))
+        # the shins taper to a slim ankle, so the two legs stay apart down to the boots at 62 px
+        g = Geo().capsule((0.5, y, V3_KNEE_Z), (1.0, y, V3_ANKLE_Z + 0.6), thigh_r - 0.7, 3.3)
+        if gaiter:
+            rig.part(f"shin_{s}", g, sh(gaiter))
+        elif team:
+            rig.part(f"shin_{s}", g, team=True)
+        else:
+            rig.part(f"shin_{s}", g, sh(trousers))
+        if cuff:
+            g = Geo().blob((0.9, y, 7.8), (4.0, 4.2, 1.2), p=2.6)
+            rig.part(f"shin_{s}", g, sh(cuff), outline=0.5)
+        g = Geo().blob((1.0, y, 5.4), (3.7, 4.0, 2.2), p=2.6)                 # boot shaft
+        rig.part(f"shin_{s}", g, sh(boot), finish="gloss")
+        g = Geo().blob((2.8, y, 2.4), (4.4, 4.6, 2.4), p=2.9, taper=(1.02, 0.84))   # 8.8 lu boot
+        rig.part(f"foot_{s}", g, sh(boot), finish="gloss")
+        g = Geo().blob((3.0, y, 0.6), (4.4, 4.7, 0.8), p=3.0)                 # thick sole
+        rig.part(f"foot_{s}", g, sh(I.COAL), outline=0.4)
+        if spur:
+            g = Geo().capsule((-1.2, y, 3.0), (-3.8, y, 2.8), 0.7)
+            g.star((-4.4, y, 2.8), 2.0, 0.8, 1.0, points=5, rot=(90, 0, 0))
+            rig.part(f"foot_{s}", g, sh(spur), finish="metal", outline=0.4)
+    rig.track("_foot", "foot_r", (2.6, -I.LEG_Y, 0.0))
+    rig.track("_foot_l", "foot_l", (2.6, I.LEG_Y, 0.0))
+
+
+def ground_feet(rig, pose, legs, keep_lift=2.5, toes=None, max_drop=4.0, report=None):
+    """Puts the feet of an FK attack or hit pose (thigh/shin angle tables authored for the old short
+    legs) back on the ground by IK: a foot whose ankle is within `keep_lift` lu of its planted height
+    is planted where it is (x kept, flat, or toe-down by `toes[side]` degrees: up on the toes);
+    a higher foot (a kick, a hop) keeps its FK pose. A foot the legs cannot reach lowers the body
+    by at most `max_drop` (a wide stance is a low stance), then drags toward the hip
+    (rigs_bronze.plant, with the targets taken from the pose itself)."""
+    import bpy
+
+    from . import gait as GT
+    from .anim import merge as _merge
+    toes = toes or {}
+    rig.apply(pose)
+    bpy.context.view_layer.update()
+    tg = {}
+    for s, leg in legs.items():
+        ml = rig.char_matrix(rig.joints[leg.lower])
+        e = ml @ (leg.end - rig.rest[leg.lower])
+        if e.z - V3_ANKLE_Z > keep_lift:
+            continue
+        ang = toes.get(s, 0.0)
+        lift = 5.6 * math.sin(math.radians(-ang)) if ang < 0 else 0.0
+        tg[s] = (leg, e.x, V3_ANKLE_Z + lift, ang)
+    if not tg:
+        return pose
+    keep = {s for s in legs if s not in tg}
+    clean = {j: {k: v for k, v in ch.items()
+                 if not (k == "r" and j.startswith(("thigh_", "shin_", "foot_")) and j[-1] not in keep)}
+             for j, ch in pose.items()}
+    dropped, out, rep = 0.0, pose, []
+    for _ in range(10):
+        rep = []
+        out = GT.solve(rig, clean, tg, report=rep)
+        if not rep or max(d for _, d in rep) <= 0.05:
+            break
+        short = max(d for _, d in rep)
+        if dropped < max_drop:
+            d = min(short + 0.3, max_drop - dropped)
+            dropped += d
+            clean = _merge(clean, {"body": {"z": -d}})
+            continue
+        for name, d in rep:
+            leg, x, z, a = tg[name]
+            hx = rig.char_pos(rig.joints[leg.upper]).x
+            tg[name] = (leg, x + (d + 0.3) * (1 if hx > x else -1), z, a)
+    if report is not None:
+        report.extend(rep)
+    return out
+
+
+def kneel(rig, pose, legs, drop=14.0, front=12.0, back=-9.0, back_toe=-62.0):
+    """A one-knee kneel (a kneeling shot) by IK, blended by `drop` (0 standing .. 14 the far knee
+    on the ground): the body drops, the near foot is planted ahead at x `front`, the far leg folds
+    back with its knee near the ground and the boot toe-down behind it (`back`, `back_toe`)."""
+    from . import gait as GT
+    from .anim import merge as _merge
+    t = max(0.0, min(1.0, drop / 14.0))
+    clean = {j: {k: v for k, v in ch.items() if not (k == "r" and j.startswith(("thigh_", "shin_", "foot_")))}
+             for j, ch in pose.items()}
+    clean = _merge(clean, {"body": {"z": -drop}})
+    bx = back * t + 2.0 * (1 - t)
+    lift = 3.6 * t
+    tg = {"r": (legs["r"], front * t + 2.0 * (1 - t), V3_ANKLE_Z, 0.0),
+          "l": (legs["l"], bx, V3_ANKLE_Z + lift, back_toe * t)}
+    return GT.solve(rig, clean, tg)

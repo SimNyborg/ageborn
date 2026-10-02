@@ -10,7 +10,12 @@ back. A crewman in a leather cap (face kit, beard) and a team tunic works it.
 
 Animation (cartoon kit v2; a viewer expects a crew to crank, aim and let fly with a kick):
   idle    the aimer nudges the elevation and peers along the stock, blink
-  walk    he leans in and pushes it along; the wheels roll at the ground speed
+  walk    walk v3 (ANIM_SPEC G6 + G1 crew): he leans into the trail and pushes it along with planted
+          feet at the ground speed; the 6-spoke wheels turn exactly 2 spoke spacings per cycle
+          (15 degrees a frame, no strobe), the carriage rocks and the pennant whips
+  attack_b  SNAP SHOT: one fast crank, a quick upright aim with a hand on the trigger and the far
+          hand pointing, then the release rocks the whole carriage back on its trail
+          (A and B: the aimer jiggles the aim while the sim wind-up lasts: holdLoop)
   attack  CRANK, LOCK AND WHIP: three crank frames (the handle spins, the string winds back,
           the arms bend), the aimer squints along the stock (the held extreme), release: the
           torsion arms whip forward (smear, whip lines), the bolt leaves at the per-frame
@@ -23,6 +28,7 @@ Animation (cartoon kit v2; a viewer expects a crew to crank, aim and let fly wit
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as GT
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art import rigs_gunpowder as G
@@ -30,6 +36,7 @@ from ageborn_art.anim import Clip, merge, pick, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "scorpion"
+GAIT_NAME = "wheeled"
 NAME = "Scorpion"
 HEIGHT_LU = 76
 YAW_DEG = -10.0
@@ -48,7 +55,7 @@ BOLT_LEN = 40.0
 WINCH = (-28.0, 0.0, TRUN[2] + 1.0)
 CRANK_R = 5.0
 CREW_X = -50.0
-CREW_Y = 12.0
+CREW_Y = -15.0               # on the near side, so his legs show as he pushes
 MS = 1.25                     # the machine is modelled small and scaled up about the ground
 IDLE_ELEV, FIRE_ELEV = 4.0, 8.0
 
@@ -63,14 +70,22 @@ def _cheek(y):
 
 
 def _marker(rig, joint, y):
-    """One team-painted spoke and a bronze rim stud, so the roll reads (6 spokes alias)."""
-    g = Geo().capsule((3.2, y - 0.8, WHEEL_R), (WHEEL_R - 4.0, y - 0.8, WHEEL_R), 1.5, 1.2)
+    """Three team-painted spokes (every other one) and bronze rim studs, so the roll reads at 1x: the
+    pattern repeats every 120 degrees, the walk turns the wheel exactly that far per cycle."""
+    g, st = Geo(), Geo()
+    for k in range(3):
+        a = math.radians(120 * k)
+        c, s_ = math.cos(a), math.sin(a)
+        g.capsule((3.2 * c, y - 0.8, WHEEL_R + 3.2 * s_), ((WHEEL_R - 4.0) * c, y - 0.8, WHEEL_R + (WHEEL_R - 4.0) * s_),
+                  1.6, 1.3)
+        st.sphere(((WHEEL_R - 1.0) * c, y - 1.8, WHEEL_R + (WHEEL_R - 1.0) * s_), 1.8, cuts=3)
     rig.part(joint, g, team=True, outline=0.5)
-    g = Geo().sphere((WHEEL_R - 1.0, y - 1.8, WHEEL_R), 1.8, cuts=3)
-    rig.part(joint, g, B.BRONZE_HI, finish=B.POLISH, outline=0.5)
+    rig.part(joint, st, B.BRONZE_HI, finish=B.POLISH, outline=0.5)
 
 
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("unit", "root", (0, 0, 0))
     rig.joint("machine", "unit", (0, 0, 0), scale=MS)
     rig.joint("cart", "machine", AXLE)
@@ -208,7 +223,9 @@ def build(rig):
     g = Geo().lathe([(0, 0), (1.3, 0.6), (2.0, 2.4), (0, 6.0)], (14.0, G.ARM_Y["r"] - 1.5, G.HAND_Z),
                     (20.0, G.ARM_Y["r"] - 1.5, G.HAND_Z), segs=8, squash=(1.0, 0.5))
     rig.part("spare", g, B.BRONZE, finish=B.POLISH, outline=0.4)
+    # crew feet: the walk's natural speed comes from his planted soles (pipeline.walk_metrics)
     rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
+    rig.track("_foot_l", "shin_l", (3.1, 6.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -257,27 +274,42 @@ def _idle(f):
     return pose
 
 
-WALK_MS = 100
+# -- walk v3: pushed at ground speed (card 45 x 1.25 = 56.25 lu/s), 8 x 86 ms ----------------------
+# the wheels (r 15 x MS 1.25 = 18.75 lu, 6 spokes) turn 15 degrees a frame: 2 spoke spacings (39 lu of
+# rim) per 688 ms cycle = 57 lu/s in character space = the ground speed (yaw 10 degrees)
+RIG = None
+SPEED = 56.25
+WALK_N, WALK_CYCLE = 8, 688
+SPIN_PER_FRAME = 15.0
+CREW_LEGS = {s: GT.Leg(f"thigh_{s}", f"shin_{s}", (3.1, y, 0.5)) for s, y in (("r", -6.0), ("l", 6.0))}
+GAIT = GT.Gait(WALK_N, WALK_CYCLE, SPEED, GT.biped_feet(CREW_LEGS["l"], CREW_LEGS["r"], x_mid=CREW_X - 1.0),
+               0.56, lift=4.5, kick=2.0, reach=0.0, toe_off=0.0, heel_strike=0.0)
+# the crewman's planted foot sits at the unit origin's ground (his ankle end point is the sole)
+for _k, (_leg, _ph, _x, _gz) in list(GAIT.feet.items()):
+    GAIT.feet[_k] = (_leg, _ph, _x, 0.5)
 
 
-def _walk(f):
-    # the crewman leans hard into the trail and pushes: his torso pumps with each step, his arms
-    # bend and straighten on the handles, and the machine rolls (6 spokes: 8 x 15 = 120 degrees
-    # per cycle = 39 lu of ground at MS 1.25, matched by the 34 lu stride)
-    pose, p, bl = B.walk_legs(f, lean=-24.0, stride=34.0)
+def _walk(f, report=None):
+    # he leans hard into the trail and pushes: the torso pumps with each step, the arms bend and
+    # straighten on the handles, the machine rolls and rocks over the ground
+    p = 2 * math.pi * f / WALK_N
     push = math.cos(2 * p)              # +1 on the contact frames (arms bent), -1 when passing
-    spin = 15.0 * f
-    return merge(_crew(2.0 + 1.6 * push), pose,
-                 gun(IDLE_ELEV, hop=0.5 * abs(math.sin(2 * p)), tilt=0.6 * math.sin(2 * p), spin=spin),
-                 crank_hands(-70.0 + 10.0 * push, crew_dx=2.0 + 1.6 * push), {
-        "torso": {"r": -4.0 - 4.0 * push}, "head": {"r": 6.0 + 2.0 * push},
-        "hips": {"x": 0.8 * push},
+    bob = [-2.2, -2.8, -0.4, 1.0][f % 4]
+    pose = merge(_crew(1.0 + 1.0 * push), gun(IDLE_ELEV + 1.2 * math.sin(2 * p), hop=2.2 * abs(math.sin(2 * p)),
+                                           tilt=2.0 * math.sin(2 * p), spin=SPIN_PER_FRAME * f),
+                 crank_hands(-70.0 + 10.0 * push, crew_dx=1.0 + 1.0 * push), {
+        "body": squash([-0.03, -0.06, 0.0, 0.03][f % 4]),
+        "hips": {"z": bob, "x": 0.8 * push},
+        "torso": {"r": -28.0 - 4.0 * push, "rz": 5 * math.sin(p)}, "head": {"r": 8.0 + 3.0 * push},
     })
+    return GT.solve(RIG, pose, GAIT.targets(f, roll=False), report=report)
 
 
 # 10 unique frames in the shipped 883 ms, impact (release) at 367 ms (impactAt 0.4156)
-ATTACK_MS = [60, 60, 60, 187, 80, 70, 80, 100, 100, 86]
-ATTACK_IMPACT = 4
+# 11 steps: crank, crank, crank, AIM, jiggle (holdLoop with the aim while the sim wind-up lasts:
+# warp 4.1x) | RELEASE, hop, land, grab, load, settle. Pre-impact 367 of 883 ms, as shipped.
+ATTACK_MS = [60, 60, 60, 150, 37, 80, 70, 80, 100, 100, 86]
+ATTACK_IMPACT = 5
 #          crank crank crank AIM  REL  hop  land grab load settle
 E_EL = [IDLE_ELEV + 1, IDLE_ELEV + 1.5, IDLE_ELEV + 2, FIRE_ELEV, FIRE_ELEV + 1.5, FIRE_ELEV,
         FIRE_ELEV - 1, IDLE_ELEV + 2, IDLE_ELEV + 1, IDLE_ELEV]
@@ -303,6 +335,20 @@ def load_hands(tx, tz, crew_dx):
     ar, fr = G.ik2((0.0, G.SHOULDER_Z), tgt)
     al, fl = G.ik2((0.0, G.SHOULDER_Z), (tgt[0] + 4.0, tgt[1] + 1.0))
     return merge(G.arm("r", ar, fr), G.arm("l", al, fl))
+
+
+def _attack_u(u):
+    """Unique attack frame u: the 10 shipped poses with a jiggle (the hold-loop partner) after the aim."""
+    if u <= 3:
+        return _attack(u)
+    if u == 4:
+        return _jiggle(_attack(3))
+    return _attack(u - 1)
+
+
+def _jiggle(pose):
+    return merge(pose, {"frame": {"r": 0.8}, "head": {"r": 3}, "torso": {"r": -2}, "brow": {"z": 0.4},
+                        "pupils": {"x": -0.3}, "hips": {"z": -0.5}, "mouth": {"z": -0.3}})
 
 
 def _attack(f):
@@ -339,17 +385,95 @@ def _attack_clip():
     bow = {"kind": "arc", "joint": "bow_n", "inner": (HOUSING_X - 6.0, -14.0, TRUN[2] - 3.0), "outer": tipn,
            "color": B.SAND_LT, "white": 0.3, "taper": 0.2, "lines": 2}
     ov = {
-        4: [dict(bow, **{"from": 3, "t1": 1.0}),
+        5: [dict(bow, **{"from": 3, "t1": 1.0}),
             {"kind": "streak", "joint": "frame", "point": (STRING_REST + BOLT_LEN + 8.0, -0.5, SZ + 0.9),
              "from": 3, "color": B.SAND_LT, "width_lu": 4.0, "white": 0.3},
             {"kind": "burst", "joint": "bow_n", "point": tipn, "r0_lu": 4.0, "r1_lu": 9.0, "n": 4,
              "a0": -30.0, "arc": 120.0},
             {"kind": "burst", "joint": "frame", "point": (HOUSING_X + 6.0, 0, TRUN[2] + 3.0), "r0_lu": 8.0,
              "r1_lu": 15.0, "n": 5, "a0": -60.0, "arc": 120.0}],
-        6: [{"kind": "dust", "ground": (0.0, 0.0), "size_lu": 9.0, "puffs": 5, "seed": 3, "spread": 1.2},
+        7: [{"kind": "dust", "ground": (0.0, 0.0), "size_lu": 9.0, "puffs": 5, "seed": 3, "spread": 1.2},
             {"kind": "dust", "ground": (-56.0 * s_ / 1.25, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 7}],
     }
-    return M.clip("attack", [_attack(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
+    return M.clip("attack", [_attack_u(u) for u in range(11)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  extra={"holdStep": 3, "holdLoop": [3, 4]})
+
+
+# -- attack B: quick snap shot (ANIM_SPEC appendix B) ----------------------------------------------
+# 0 = A crank, 1 one fast full crank (the claw slams back), 2 he straightens up, 3 HOLD (standing
+# tall beside the stock, a hand on the trigger lever, the far arm pointing at the target, the bow
+# low and level), 4 jiggle, 5 RELEASE (he yanks the trigger, the arms whip, the whole carriage rocks
+# back onto its trail, nose up), 6 rock, 7 land, 8-10 = A grab, load and settle
+B_EL = [IDLE_ELEV + 2, IDLE_ELEV - 3, IDLE_ELEV - 6, IDLE_ELEV - 5.5, IDLE_ELEV + 6, IDLE_ELEV + 3, IDLE_ELEV]
+B_TILT = [0, 0, 0, 0, 6.0, 3.0, -1.0]
+B_REC = [0, 0, 0, 0, 3.0, 4.5, 3.0]
+B_CLAW = [-28.0, -28.0, -28.0, -28.0, 1.5, 0.0, 0.0]
+B_CRANK = [330.0, 380.0, 380.0, 380.0, 380.0, 380.0, 380.0]
+B_BOW = [-11, -11, -11, -11, 7, -3, 2]
+B_DX = [1, 3, 4, 4, 2, 1, 0]
+B_T = [-14, 4, 8, 6, 16, 10, 0]
+B_H = [2, -4, -6, -6, 10, 6, 0]
+B_Q = [-0.05, 0.04, 0.05, 0.0, -0.08, 0.04, -0.06]
+
+
+def _b_frame(k):
+    elev = B_EL[k]
+    if k == 0:
+        hands = crank_hands(B_CRANK[k], elev, B_DX[k])
+    else:
+        # upright: the near hand on the trigger lever at the stock, the far arm pointing ahead
+        wx = TRUN[0] * MS - CREW_X - B_DX[k]
+        a, f_ = G.ik2((0.0, G.SHOULDER_Z), (wx - 26.0, G.SHOULDER_Z + 4.0))
+        hands = merge(G.arm("r", a, f_), G.arm("l", [10, 40, 60, 70, -20, -40, -60][k], [20, 50, 80, 88, -10, -40, -70][k]),
+                      {"crank": {"r": -B_CRANK[k]}})
+    pose = merge(_crew(B_DX[k]), gun(elev, B_REC[k], 0.0, B_TILT[k], [0, 0, 0, 0, -8, -16, -20][k]), hands, {
+        "unit": dict(squash(B_Q[k])),
+        "claw": {"x": B_CLAW[k]},
+        "bolt": {"hide": k >= 4},
+        "bow_n": {"r": B_BOW[k]}, "bow_f": {"r": -B_BOW[k]},
+        "torso": {"r": B_T[k]}, "head": {"r": B_H[k]},
+        "thigh_r": {"r": [14, 4, 0, 2, -10, -4, 0][k]}, "thigh_l": {"r": [-14, -4, 0, -2, 10, 4, 0][k]},
+        "dust": {"show": k in (5, 6), "s": 0.8 if k == 5 else 1.1, "x": -30.0},
+    })
+    if k == 1:
+        pose = merge(pose, F.expr("grit"))
+    elif k in (2, 3):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}, "pupils": {"x": 0.5}})
+    elif k == 4:
+        pose = merge(pose, F.expr("squeeze", "yell"))
+    else:
+        pose = merge(pose, F.expr("o"))
+    return pose
+
+
+def _b_pose(u):
+    if u == 0:
+        return _attack_u(0)
+    if u >= 8:
+        return _attack_u(u)
+    if u == 4:
+        return _jiggle(_b_frame(3))
+    return _b_frame(u if u < 4 else u - 1)
+
+
+def _attack_b():
+    tipn = (TIPS["n"][0], TIPS["n"][1], TIPS["n"][2])
+    bow = {"kind": "arc", "joint": "bow_n", "inner": (HOUSING_X - 6.0, -14.0, TRUN[2] - 3.0), "outer": tipn,
+           "color": B.SAND_LT, "white": 0.3, "taper": 0.2, "lines": 2}
+    ov = {
+        1: [{"kind": "arc", "joint": "crank", "inner": (WINCH[0], -9.0, WINCH[2]),
+             "outer": (WINCH[0] + CRANK_R, -9.0, WINCH[2]), "from": 0, "color": B.SAND_LT, "white": 0.3,
+             "taper": 0.3, "band": 0.4, "lines": 1}],
+        5: [dict(bow, **{"from": 3, "t1": 1.0}),
+            {"kind": "streak", "joint": "frame", "point": (STRING_REST + BOLT_LEN + 8.0, -0.5, SZ + 0.9),
+             "from": 3, "color": B.SAND_LT, "width_lu": 4.0, "white": 0.3},
+            {"kind": "burst", "joint": "frame", "point": (HOUSING_X + 6.0, 0, TRUN[2] + 3.0), "r0_lu": 8.0,
+             "r1_lu": 15.0, "n": 5, "a0": -60.0, "arc": 120.0}],
+        6: [{"kind": "dust", "ground": (-50.0, 0.0), "size_lu": 8.0, "puffs": 4, "seed": 51, "spread": 1.0}],
+    }
+    reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(u) for u in range(11)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 3, "holdLoop": [3, 4]})
 
 
 def _hit(k):
@@ -416,11 +540,12 @@ def _die_extra():
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        Clip("walk", 8, _walk, loop=True, durations=WALK_MS),
+        M.walk_clip("walk", RIG, _walk, GAIT, "wheeled"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         Clip("die", 8, _die, sequence=DIE_SEQ, durations=DIE_MS, extra=_die_extra()),
     ]
     M.check_contract([c for c in cl if c.name not in ("die",)], attack_ms=883, attack_impact_at=0.4156)
-    assert cl[-1].total_ms() == 970 and cl[1].total_ms() == 800
-    return cl
+    assert cl[-1].total_ms() == 970
+    return M.check_variants(cl)

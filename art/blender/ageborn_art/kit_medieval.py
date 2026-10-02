@@ -150,3 +150,96 @@ def d3_sit(k, amount=None):
         "head": {"r": -10 * t, "rx": 14 * t},
         "arm_r": {"r": 40 * t}, "arm_l": {"r": -36 * t},
     }
+
+
+# -- walk v3 body (ANIM_SPEC 2.0 rule 5, G1/G2): longer legs, planted feet --------------------
+# The Medieval bipeds keep `rigs_medieval.skeleton`'s joint names and arm layout; the thigh
+# pivots sit higher (19.5 lu instead of 15), the knee at 11.5, a `foot_r/l` joint at the ankle
+# carries a short boot (8.8 lu) that rolls on the toe-off, and the upper body is lifted 2 lu
+# (`rest_offset`) so the longer legs show without rebuilding every torso part.
+V3_THIGH_Z, V3_KNEE_Z, V3_ANKLE_Z, V3_LIFT = 19.5, 11.5, 4.0, 2.0
+V3_TOE, V3_HEEL = 6.4, -1.4
+
+
+def skeleton_v3(rig, head=(1, 0, 38), arm_y=None, lift=V3_LIFT):
+    """`rigs_medieval.skeleton` with longer legs and foot joints (no parts)."""
+    from . import rigs_medieval as B
+    arm_y = arm_y or B.ARM_Y
+    rig.joint("body", "root", (0, 0, 0))
+    rig.joint("hips", "body", (0, 0, B.HIP_Z))
+    rig.joint("torso", "hips", (0, 0, B.HIP_Z + 1))
+    rig.rest_offset["torso"] = (0, 0, lift)
+    rig.joint("head", "torso", head)
+    for s in ("r", "l"):
+        y = B.LEG_Y * B.SIDE_Y[s]
+        rig.joint(f"thigh_{s}", "hips", (0, y, V3_THIGH_Z))
+        rig.joint(f"shin_{s}", f"thigh_{s}", (0.5, y, V3_KNEE_Z))
+        rig.joint(f"foot_{s}", f"shin_{s}", (1.0, y, V3_ANKLE_Z))
+        y = arm_y[s]
+        rig.joint(f"arm_{s}", "torso", (0, y, B.SHOULDER_Z))
+        rig.joint(f"fore_{s}", f"arm_{s}", (0, y, B.ELBOW_Z))
+        rig.joint(f"hand_{s}", f"fore_{s}", (0, y, B.HAND_Z))
+
+
+def legs_v3(rig, hose, boot, cuff=None, thigh_r=4.7, far=0.8, boot_finish="matte", hose_far=None,
+            skin_shin=None):
+    """Stocky legs in hose with short chunky boots on the foot joints; the far leg is `far`
+    darker (near and far feet read apart, ANIM_SPEC G1). Adds the `_foot` / `_foot_l` sole
+    trackers the pipeline measures the walk with. `skin_shin` (a colour) draws bare shins
+    instead of hose below the knee (sandals)."""
+    from . import colors as C
+    from . import rigs_medieval as B
+    for s in ("r", "l"):
+        y = B.LEG_Y * B.SIDE_Y[s]
+        k = 1.0 if s == "r" else far
+        h = hose if s == "r" else (hose_far or C.scale(hose, k))
+        bt = C.scale(boot, k)
+        g = Geo().capsule((0, y, V3_THIGH_Z), (0.5, y, V3_KNEE_Z), thigh_r, thigh_r - 0.6)
+        rig.part(f"thigh_{s}", g, h)
+        g = Geo().capsule((0.5, y, V3_KNEE_Z), (1.0, y, V3_ANKLE_Z + 0.4), thigh_r - 0.6, 3.7)
+        rig.part(f"shin_{s}", g, h if skin_shin is None else C.scale(skin_shin, k))
+        g = Geo().blob((0.9, y, 6.0), (4.3, 4.3, 2.6), p=2.6)              # boot shaft
+        rig.part(f"shin_{s}", g, bt, finish=boot_finish)
+        g = Geo().blob((2.6, y, 2.5), (4.4, 4.5, 2.6), p=2.8, taper=(1.02, 0.86))   # 8.8 lu foot
+        rig.part(f"foot_{s}", g, bt, finish=boot_finish)
+        if cuff:
+            g = Geo().blob((0.9, y, 8.5), (4.8, 4.7, 1.4), p=2.8)
+            rig.part(f"shin_{s}", g, C.scale(cuff, k))
+    rig.track("_foot", "foot_r", (2.6, -B.LEG_Y, 0.0))
+    rig.track("_foot_l", "foot_l", (2.6, B.LEG_Y, 0.0))
+
+
+def legs_ik():
+    """The gait kit's legs for a `skeleton_v3` biped (toe and heel roll pivots)."""
+    from . import gait as G
+    from . import rigs_medieval as B
+    out = {}
+    for s in ("r", "l"):
+        y = B.LEG_Y * B.SIDE_Y[s]
+        out[s] = G.Leg(f"thigh_{s}", f"shin_{s}", (1.0, y, V3_ANKLE_Z), foot=f"foot_{s}",
+                       toe=(V3_TOE, y, 0.3), heel=(V3_HEEL, y, 0.3))
+    return out
+
+
+def jog_gait(legs, speed, cycle_ms=616, stance=0.38, lift=6.5, x_mid=1.6, **kw):
+    """G1 bounce jog (or, with stance 0.4-0.5 and BRISK bob, a G2 brisk walk) at ground speed;
+    the right foot touches down a little before frame 0, so frame 3 is in the flight."""
+    from . import gait as G
+    opts = dict(kick=3.0, reach=0.0, toe_off=24.0, early_lift=1.6, drag=0.3, lift_peak=0.38)
+    opts.update(kw)
+    g = G.Gait(8, cycle_ms, speed, G.biped_feet(legs["l"], legs["r"], x_mid=x_mid, shift=0.5), stance,
+               lift=lift, **opts)
+    for k, (leg, ph, x, gz) in list(g.feet.items()):
+        g.feet[k] = (leg, ph - 0.03, x, gz)
+    return g
+
+
+class ArmChain:
+    """An arm for `moves.walk_v3(arms=...)`: pose(a, f) = upper arm and forearm directions."""
+
+    def __init__(self, side):
+        self.side = side
+
+    def pose(self, a, f):
+        from . import rigs_medieval as B
+        return B.arm(self.side, a, f)

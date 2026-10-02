@@ -1,0 +1,687 @@
+{
+ "frames": {
+  "tuskback_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 174,
+    "w": 149,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 119,
+    "y": 71,
+    "w": 149,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_b_02_team": {
+   "frame": {
+    "x": 263,
+    "y": 336,
+    "w": 82,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 126,
+    "y": 73,
+    "w": 82,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_b_03": {
+   "frame": {
+    "x": 155,
+    "y": 174,
+    "w": 150,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 76,
+    "w": 150,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_b_03_team": {
+   "frame": {
+    "x": 630,
+    "y": 336,
+    "w": 77,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 128,
+    "y": 82,
+    "w": 77,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_b_04": {
+   "frame": {
+    "x": 414,
+    "y": 2,
+    "w": 146,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 125,
+    "y": 59,
+    "w": 146,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_b_04_team": {
+   "frame": {
+    "x": 624,
+    "y": 174,
+    "w": 83,
+    "h": 130
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 63,
+    "w": 83,
+    "h": 130
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_b_05": {
+   "frame": {
+    "x": 450,
+    "y": 174,
+    "w": 170,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 76,
+    "w": 170,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_b_05_team": {
+   "frame": {
+    "x": 453,
+    "y": 336,
+    "w": 89,
+    "h": 115
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 78,
+    "w": 89,
+    "h": 115
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_c_01": {
+   "frame": {
+    "x": 564,
+    "y": 2,
+    "w": 148,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 119,
+    "y": 65,
+    "w": 148,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_c_01_team": {
+   "frame": {
+    "x": 170,
+    "y": 336,
+    "w": 89,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 71,
+    "w": 89,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_c_02": {
+   "frame": {
+    "x": 271,
+    "y": 2,
+    "w": 139,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 64,
+    "w": 139,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_c_02_team": {
+   "frame": {
+    "x": 349,
+    "y": 336,
+    "w": 100,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 72,
+    "w": 100,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_c_03": {
+   "frame": {
+    "x": 120,
+    "y": 2,
+    "w": 147,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 128,
+    "y": 62,
+    "w": 147,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_c_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 336,
+    "w": 83,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 129,
+    "y": 67,
+    "w": 83,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_c_04": {
+   "frame": {
+    "x": 309,
+    "y": 174,
+    "w": 137,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 128,
+    "y": 76,
+    "w": 137,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_c_04_team": {
+   "frame": {
+    "x": 546,
+    "y": 336,
+    "w": 80,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 80,
+    "w": 80,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_c_05": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 114,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 63,
+    "w": 114,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  },
+  "tuskback_attack_c_05_team": {
+   "frame": {
+    "x": 89,
+    "y": 336,
+    "w": 77,
+    "h": 125
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 144,
+    "y": 69,
+    "w": 77,
+    "h": 125
+   },
+   "sourceSize": {
+    "w": 328,
+    "h": 239
+   },
+   "anchor": {
+    "x": 0.54268,
+    "y": 0.89958
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "tuskback_attack_00",
+   "tuskback_attack_01",
+   "tuskback_attack_b_02",
+   "tuskback_attack_b_03",
+   "tuskback_attack_b_04",
+   "tuskback_attack_b_04",
+   "tuskback_attack_b_05",
+   "tuskback_attack_07",
+   "tuskback_attack_08",
+   "tuskback_attack_08",
+   "tuskback_attack_09",
+   "tuskback_attack_09"
+  ],
+  "attack_b_team": [
+   "tuskback_attack_00_team",
+   "tuskback_attack_01_team",
+   "tuskback_attack_b_02_team",
+   "tuskback_attack_b_03_team",
+   "tuskback_attack_b_04_team",
+   "tuskback_attack_b_04_team",
+   "tuskback_attack_b_05_team",
+   "tuskback_attack_07_team",
+   "tuskback_attack_08_team",
+   "tuskback_attack_08_team",
+   "tuskback_attack_09_team",
+   "tuskback_attack_09_team"
+  ],
+  "attack_c": [
+   "tuskback_attack_00",
+   "tuskback_attack_c_01",
+   "tuskback_attack_c_01",
+   "tuskback_attack_c_02",
+   "tuskback_attack_c_03",
+   "tuskback_attack_c_03",
+   "tuskback_attack_c_04",
+   "tuskback_attack_c_05",
+   "tuskback_attack_08",
+   "tuskback_attack_08",
+   "tuskback_attack_09",
+   "tuskback_attack_09"
+  ],
+  "attack_c_team": [
+   "tuskback_attack_00_team",
+   "tuskback_attack_c_01_team",
+   "tuskback_attack_c_01_team",
+   "tuskback_attack_c_02_team",
+   "tuskback_attack_c_03_team",
+   "tuskback_attack_c_03_team",
+   "tuskback_attack_c_04_team",
+   "tuskback_attack_c_05_team",
+   "tuskback_attack_08_team",
+   "tuskback_attack_08_team",
+   "tuskback_attack_09_team",
+   "tuskback_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "tuskback.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 768,
+   "h": 464
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.tuskback",
+   "name": "Tuskback",
+   "heightLu": 104,
+   "widthLu": 119.1,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    178.0,
+    215.0
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     100
+    ],
+    "hitCenter": [
+     0,
+     42
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "quad",
+   "extrasOf": "tuskback",
+   "clips": {
+    "attack_b": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      4,
+      5,
+      6,
+      7,
+      7,
+      8,
+      8
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 5,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "anchorsLu": {
+      "tuskTip": [
+       [
+        67.8,
+        44.8
+       ],
+       [
+        64.4,
+        49.8
+       ],
+       [
+        64.3,
+        26.3
+       ],
+       [
+        59.1,
+        16.0
+       ],
+       [
+        67.6,
+        38.0
+       ],
+       [
+        92.0,
+        36.5
+       ],
+       [
+        82.0,
+        55.5
+       ],
+       [
+        70.0,
+        61.4
+       ],
+       [
+        67.6,
+        55.4
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 4,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "anchorsLu": {
+      "tuskTip": [
+       [
+        67.8,
+        44.8
+       ],
+       [
+        61.3,
+        72.9
+       ],
+       [
+        38.6,
+        98.4
+       ],
+       [
+        69.5,
+        45.9
+       ],
+       [
+        42.5,
+        20.8
+       ],
+       [
+        33.4,
+        45.2
+       ],
+       [
+        70.0,
+        61.4
+       ],
+       [
+        67.6,
+        55.4
+       ]
+      ]
+     },
+     "holdStep": 3
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

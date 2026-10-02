@@ -9,7 +9,11 @@ bomb with a brass fuse cap in the near hand and a smouldering match cord in the 
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
   idle    blows on the match cord (it glows brighter, a wisp of smoke), weight shift, blink
-  walk    waddle: side sway and short steps, the bomb carried in front, the match swinging
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1) with a waddle (side sway): the bomb
+          tucked against his belly, the match arm pumping, planted feet, the coat tails late
+  attack_b  UNDERHAND BOWL: lights the fuse as in A, then crouches low with the bomb swung back
+          behind his hip (the held extreme, a low silhouette against A's high pitcher wind-up),
+          the fuse fizzing while the aim holds, and bowls it underhand on a low arc, one leg up
   attack  LIGHT THE FUSE AND BIG LOB: brings the bomb up and touches the match to the fuse (a
           spark burst), grins at the fizzing fuse, then rears back with the bomb cocked behind
           his head and the front knee up (the held extreme), whips it over (a smear) and lobs
@@ -21,6 +25,7 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as GT  # noqa: F401
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
 from ageborn_art import moves as M
@@ -29,6 +34,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "grenadier"
+GAIT_NAME = "biped"
 NAME = "Grenadier"
 HEIGHT_LU = 76
 CANVAS = (276, 262)
@@ -64,9 +70,14 @@ def _cap(rig, joint):
     rig.part(joint, g, B.CREAM, finish="hair", outline=0.6)
 
 
+RIG = None
+
+
 def build(rig):
-    B.skeleton(rig)
-    B.legs(rig, B.CREAM, SHOE, stocking=B.BLACK, thigh_r=5.0)
+    global RIG
+    RIG = rig
+    K.skeleton_v3(rig)
+    G.legs_v3(rig, B.CREAM, SHOE, stocking=B.BLACK, thigh_r=5.0)
 
     # torso: broad team coat, cream crossbelt, brass buttons, leather belt
     g = Geo().blob((0, 0, 28.0), (12.0, 11.0, 12.2), p=2.4, taper=(1.1, 0.96))
@@ -88,13 +99,14 @@ def build(rig):
     g = Geo().blob((1.2, 0, 37.6), (7.2, 7.6, 2.4), p=2.4)
     rig.part("torso", g, B.BLACK)
     # the bomb bag on the near hip: leather satchel, a flap with a brass badge
-    g = Geo().blob((1.0, -12.4, 14.4), (6.0, 3.4, 5.6), p=3.0, taper=(1.0, 0.9))
+    g = Geo().blob((1.0, -12.4, 19.4), (5.6, 3.4, 4.8), p=3.0, taper=(1.0, 0.9))
     rig.part("hips", g, B.LEATHER)
-    g = Geo().blob((1.2, -14.2, 17.4), (6.2, 1.8, 3.0), p=3.0)
+    g = Geo().blob((1.2, -14.2, 22.0), (5.8, 1.8, 2.8), p=3.0)
     rig.part("hips", g, "#5E4A3C")
-    g = Geo().blob((1.6, -15.8, 16.4), (1.8, 0.9, 1.8), p=2.4)
+    g = Geo().blob((1.6, -15.8, 21.0), (1.8, 0.9, 1.8), p=2.4)
     rig.part("hips", g, B.BRASS, finish="metal", outline=0.5)
-    rig.secondary("tails", "hips", (-4.0, 0, 18.0), (-7.5, 0, 6.0), max_deg=12, gain=0.9)
+    rig.secondary("tails", "hips", (-4.0, 0, 18.0), (-7.5, 0, 6.0), max_deg=16, gain=1.1)
+    rig.rest_offset["tails"] = (0, 0, K.V3_LIFT + 4.5)
     g = Geo().blob((-6.0, 0, 11.5), (5.2, 10.2, 7.8), p=2.6, taper=(0.7, 1.0), rot=(0, 10, 0))
     rig.part("tails", g, team=True)
     g = Geo().blob((-7.2, 0, 5.2), (3.8, 10.8, 2.2), p=2.6, rot=(0, 10, 0))
@@ -160,7 +172,6 @@ def build(rig):
     rig.joint("wisp", "match", (lx + 3.6, ly - 1.4, lz + 13.0), hidden=True)
     g = Geo().sphere((lx + 4.6, ly - 2.0, lz + 14.0), 1.8, cuts=3).sphere((lx + 3.2, ly - 2.0, lz + 17.0), 1.5, cuts=3)
     rig.part("wisp", g, B.SMOKE, finish="dust", outline=0.5)
-    rig.track("_foot", "shin_r", (3.4, -6.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -195,20 +206,32 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
-    # waddle: side sway, short steps, the bomb carried in front, the match swinging
+# -- walk v3: G1 bounce jog at ground speed (card 68 x 1.25 = 85 lu/s), 8 x 82 ms ----------------
+SPEED = 85.0
+LEGS = K.legs_ik()
+GAIT = K.jog_gait(LEGS, SPEED, cycle_ms=656, stance=0.36)
+# walk carry: the bomb tucked against his belly like a ball (not the chest-high guard)
+CARRY = merge(bomb_arm(-96, -22, 96), {"torso": {"r": -2}})
+
+
+def _walk(f, report=None):
+    # waddle: side sway, the bomb bobbing late at his hip, the match arm pumping
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return {"fore_r": {"r": 4 * lag}, "hand_l": {"r": -8 * math.cos(ctx["lag_p"])},
+        return {"fore_r": {"r": 4 * lag}, "arm_r": {"r": 3 * lag}, "tails": {"r": 5 * lag},
                 "spark": {"s": [1.0, 0.7, 1.15, 0.85][ctx["f"] % 4], "r": 25 * ctx["f"]}}
-    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=28.0, knee=50.0, lift_lu=6.0, bob_pct=0.055,
-                     lean=-3.0, arm=24.0, twist=4.0, sway=9.0, arms=("l",), extra=extra)
+    return M.walk_v3(RIG, f, CARRY, GAIT, legs=LEGS, lean=-7.0, twist=5.0, nod=3.0, sway=8.0,
+                     arms={"l": K.ArmChain("l")}, arm=34.0, extra=extra, report=report)
 
 
 # attack: 749 ms, the release (impact) at 375 ms (impactAt 0.5007, as shipped); 11 unique frames
 #            light spark grin HOLD whip | RELEASE follow ears ears bag new
 ATTACK_MS = [40, 55, 60, 150, 70, 90, 70, 80, 60, 44, 30]
 ATTACK_IMPACT = 5
+# the shipped clip with a fuse-fizz partner frame after the hold (ANIM_SPEC R5 hold loop, 2.4x);
+# the pre-impact steps are re-split, durationMs (749) and impactAt (0.5007) stay
+ATTACK_MS2 = [40, 45, 50, 140, 30, 70, 90, 70, 80, 60, 44, 30]
+ATTACK_IMPACT2 = 6
 # bomb arm (upper, fore, fist-up direction), WORLD degrees (the torso lean is subtracted)
 BA = [(-20, 45, 80), (0, 75, 80), (20, 95, 100), (118, 150, 205), (100, 70, 120),
       (48, 52, 60), (-35, -50, 0), None, None, (-95, -120, -60), (-30, 40, 80)]
@@ -262,17 +285,83 @@ def _attack_pose(f):
 BOMB_TOP = (BOMB_C[0], BOMB_C[1], BOMB_C[2] + BOMB_R)
 
 
+def _fizz(pose):
+    """The hold's partner frame: the fuse flares, the bomb bobs and the body settles a little."""
+    return merge(pose, {"spark": {"s": 1.45, "r": 40}, "hand_r": {"r": 5}, "body": {"z": -0.6},
+                        "head": {"r": 2}})
+
+
+SPARK_FIZZ = {"kind": "burst", "joint": "bomb", "point": (BOMB_C[0] + 7.0, BOMB_C[1], BOMB_C[2] + 13.0),
+              "r0_lu": 3.0, "r1_lu": 6.5, "n": 6, "color": "#FFE7B0"}
+
+
 def _attack_clip():
     ov = {
         1: [{"kind": "burst", "joint": "bomb", "point": (BOMB_C[0] + 7.0, BOMB_C[1], BOMB_C[2] + 13.0),
              "r0_lu": 4.0, "r1_lu": 8.5, "n": 7, "color": "#FFE7B0"}],
-        4: [{"kind": "arc", "joint": "hand_r", "inner": (HR[0], HR[1], HR[2] + 2.0), "outer": BOMB_TOP,
+        4: [SPARK_FIZZ],
+        5: [{"kind": "arc", "joint": "hand_r", "inner": (HR[0], HR[1], HR[2] + 2.0), "outer": BOMB_TOP,
              "color": "#6A6E78", "taper": 0.3, "white": 0.45, "t0": 0.0, "t1": 1.0, "lines": 3,
              "samples": 16, "from": 3}],
-        5: [{"kind": "dust", "ground": (12.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 41, "spread": 0.8}],
+        6: [{"kind": "dust", "ground": (12.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 41, "spread": 0.8}],
     }
-    return M.clip("attack", [_attack_pose(f) for f in range(11)], ATTACK_MS, impact=ATTACK_IMPACT,
-                  overlays=ov)
+    poses = [_attack_pose(f) for f in range(4)] + [_fizz(_attack_pose(3))] + [_attack_pose(f) for f in range(4, 11)]
+    return M.clip("attack", poses, ATTACK_MS2, impact=ATTACK_IMPACT2, overlays=ov,
+                  extra={"holdStep": 3, "holdLoop": [3, 4]})
+
+
+# -- attack B: underhand bowl (ANIM_SPEC appendix B) ---------------------------------------------
+# unique frames: 0-2 = A (light the fuse, spark, grin), 3 HOLD (crouched low, the bomb swung back
+# behind his hip, the match arm pointing at the target), 4 fuse fizz, 5 swing (a low smear), 6
+# RELEASE (arm swung through forward and up, the back leg kicking up), 7 follow-through, 8-11 = A
+# (duck, ears, bag, new bomb). Same steps as A.
+#        HOLD             fizz              swing           RELEASE         follow
+BB = [(-150, -165, -100), (-148, -162, -98), (-95, -80, -10), (-20, 5, 60), (25, 45, 80)]
+BM = [(-20, -10, 60), (-20, -10, 60), (-60, -40, 60), (-100, -80, 70), (-110, -95, 70)]
+BTR = [-22, -22, -14, -6, 0]
+BYW = [20, 20, 6, -10, -12]
+BBX = [-2.0, -2.0, 2.0, 6.0, 6.5]
+BBZ = [-7.0, -7.4, -5.0, -1.0, 0.0]
+BBQ = [-0.1, -0.11, 0.04, -0.06, 0.03]
+BFT = [((8.0, 0, 0), (-9.0, 0, -8)), ((8.0, 0, 0), (-9.0, 0, -8)), ((10.0, 0, 0), (-8.0, 0, -14)),
+       ((12.0, 0, 0), (-8.0, 6.0, -40)), ((12.0, 0, 0), (-6.0, 9.0, -50))]
+
+
+def _b_pose(k):
+    t = BTR[k]
+    a, fo, w = BB[k]
+    ma, mf, mw = BM[k]
+    pose = merge(bomb_arm(a - t, fo - t, w - t), match_arm(ma - t, mf - t, mw - t), {
+        "torso": {"r": t, "rz": BYW[k]},
+        "head": {"r": -0.6 * t - 4, "rz": -0.5 * BYW[k]},
+        "bomb": {"hide": k >= 3},
+        "spark": {"s": [1.5, 1.9, 1.3, 1, 1][k], "r": 30 * k + 20},
+    }, M.body_about((0, 0, 22), x=BBX[k], z=BBZ[k], q=BBQ[k]))
+    r, l = BFT[k]
+    pose = G.plant(RIG, pose, LEGS, r=r, l=l, max_drop=5.0)
+    if k in (0, 1):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+    else:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.0}})
+    return pose
+
+
+def _attack_b():
+    ov = {
+        1: [{"kind": "burst", "joint": "bomb", "point": (BOMB_C[0] + 7.0, BOMB_C[1], BOMB_C[2] + 13.0),
+             "r0_lu": 4.0, "r1_lu": 8.5, "n": 7, "color": "#FFE7B0"}],
+        4: [SPARK_FIZZ],
+        5: [{"kind": "arc", "joint": "hand_r", "inner": (HR[0], HR[1], HR[2] + 2.0), "outer": BOMB_TOP,
+             "color": "#6A6E78", "taper": 0.3, "white": 0.45, "t0": 0.0, "t1": 1.0, "lines": 3,
+             "samples": 16, "from": 3}],
+        6: [{"kind": "dust", "ground": (14.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 42, "spread": 0.8}],
+    }
+    poses = [_attack_pose(f) for f in range(3)] + [_b_pose(k) for k in range(5)] + \
+        [_attack_pose(f) for f in range(7, 11)]
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 2: ("attack", 2), 8: ("attack", 8), 9: ("attack", 9),
+             10: ("attack", 10), 11: ("attack", 11)}
+    return M.clip("attack_b", poses, ATTACK_MS2, impact=ATTACK_IMPACT2, overlays=ov, reuse=reuse,
+                  extra={"holdStep": 3, "holdLoop": [3, 4]})
 
 
 def _hit(k):
@@ -316,10 +405,11 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 7, 9)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 7, 7, 8], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl, attack_ms=749, attack_impact_at=0.5007)
+    return M.check_variants(M.check_contract(cl, attack_ms=749, attack_impact_at=0.5007))

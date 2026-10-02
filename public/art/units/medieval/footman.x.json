@@ -1,0 +1,988 @@
+{
+ "frames": {
+  "footman_attack_b_02": {
+   "frame": {
+    "x": 310,
+    "y": 2,
+    "w": 56,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 42,
+    "w": 56,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_b_02_team": {
+   "frame": {
+    "x": 537,
+    "y": 163,
+    "w": 52,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 68,
+    "w": 52,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_b_03": {
+   "frame": {
+    "x": 370,
+    "y": 2,
+    "w": 82,
+    "h": 118
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 46,
+    "y": 60,
+    "w": 82,
+    "h": 118
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_b_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 163,
+    "w": 51,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 60,
+    "w": 51,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_b_04": {
+   "frame": {
+    "x": 177,
+    "y": 2,
+    "w": 129,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 45,
+    "y": 22,
+    "w": 129,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_b_04_team": {
+   "frame": {
+    "x": 1015,
+    "y": 2,
+    "w": 46,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 61,
+    "w": 46,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 171,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 45,
+    "y": 20,
+    "w": 171,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_b_05_team": {
+   "frame": {
+    "x": 428,
+    "y": 163,
+    "w": 49,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 67,
+    "w": 49,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_b_06": {
+   "frame": {
+    "x": 777,
+    "y": 2,
+    "w": 125,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 89,
+    "w": 125,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_b_06_team": {
+   "frame": {
+    "x": 1131,
+    "y": 163,
+    "w": 59,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 84,
+    "w": 59,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_b_07": {
+   "frame": {
+    "x": 456,
+    "y": 2,
+    "w": 78,
+    "h": 117
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 78,
+    "w": 78,
+    "h": 117
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_b_07_team": {
+   "frame": {
+    "x": 481,
+    "y": 163,
+    "w": 52,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 73,
+    "w": 52,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_b_08": {
+   "frame": {
+    "x": 57,
+    "y": 163,
+    "w": 107,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 81,
+    "w": 107,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_b_08_team": {
+   "frame": {
+    "x": 1009,
+    "y": 163,
+    "w": 51,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 77,
+    "w": 51,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_01": {
+   "frame": {
+    "x": 1181,
+    "y": 2,
+    "w": 96,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 81,
+    "w": 96,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_01_team": {
+   "frame": {
+    "x": 696,
+    "y": 163,
+    "w": 54,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 76,
+    "w": 54,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_02": {
+   "frame": {
+    "x": 168,
+    "y": 163,
+    "w": 103,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 83,
+    "w": 103,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_02_team": {
+   "frame": {
+    "x": 940,
+    "y": 163,
+    "w": 65,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 78,
+    "w": 65,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_03": {
+   "frame": {
+    "x": 332,
+    "y": 163,
+    "w": 92,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 89,
+    "w": 92,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_03_team": {
+   "frame": {
+    "x": 1064,
+    "y": 163,
+    "w": 63,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 84,
+    "w": 63,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_04": {
+   "frame": {
+    "x": 661,
+    "y": 2,
+    "w": 112,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 80,
+    "w": 112,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_04_team": {
+   "frame": {
+    "x": 275,
+    "y": 163,
+    "w": 53,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 75,
+    "w": 53,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_05": {
+   "frame": {
+    "x": 538,
+    "y": 2,
+    "w": 119,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 78,
+    "w": 119,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_05_team": {
+   "frame": {
+    "x": 593,
+    "y": 163,
+    "w": 50,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 74,
+    "w": 50,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_06": {
+   "frame": {
+    "x": 754,
+    "y": 163,
+    "w": 133,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 90,
+    "w": 133,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_06_team": {
+   "frame": {
+    "x": 1194,
+    "y": 163,
+    "w": 52,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 85,
+    "w": 52,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_07": {
+   "frame": {
+    "x": 906,
+    "y": 2,
+    "w": 105,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 78,
+    "w": 105,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_07_team": {
+   "frame": {
+    "x": 647,
+    "y": 163,
+    "w": 45,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 73,
+    "w": 45,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_08": {
+   "frame": {
+    "x": 1065,
+    "y": 2,
+    "w": 112,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 80,
+    "w": 112,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  },
+  "footman_attack_c_08_team": {
+   "frame": {
+    "x": 891,
+    "y": 163,
+    "w": 45,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 75,
+    "w": 45,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 195
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.86667
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "footman_attack_00",
+   "footman_attack_01",
+   "footman_attack_b_02",
+   "footman_attack_b_03",
+   "footman_attack_b_04",
+   "footman_attack_b_05",
+   "footman_attack_b_06",
+   "footman_attack_b_07",
+   "footman_attack_b_08",
+   "footman_attack_09",
+   "footman_attack_10"
+  ],
+  "attack_b_team": [
+   "footman_attack_00_team",
+   "footman_attack_01_team",
+   "footman_attack_b_02_team",
+   "footman_attack_b_03_team",
+   "footman_attack_b_04_team",
+   "footman_attack_b_05_team",
+   "footman_attack_b_06_team",
+   "footman_attack_b_07_team",
+   "footman_attack_b_08_team",
+   "footman_attack_09_team",
+   "footman_attack_10_team"
+  ],
+  "attack_c": [
+   "footman_attack_00",
+   "footman_attack_c_01",
+   "footman_attack_c_02",
+   "footman_attack_c_03",
+   "footman_attack_c_04",
+   "footman_attack_c_05",
+   "footman_attack_c_06",
+   "footman_attack_c_07",
+   "footman_attack_c_08",
+   "footman_attack_09",
+   "footman_attack_10"
+  ],
+  "attack_c_team": [
+   "footman_attack_00_team",
+   "footman_attack_c_01_team",
+   "footman_attack_c_02_team",
+   "footman_attack_c_03_team",
+   "footman_attack_c_04_team",
+   "footman_attack_c_05_team",
+   "footman_attack_c_06_team",
+   "footman_attack_c_07_team",
+   "footman_attack_c_08_team",
+   "footman_attack_09_team",
+   "footman_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "footman.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1280,
+   "h": 264
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.footman",
+   "name": "Footman",
+   "heightLu": 68,
+   "widthLu": 51.6,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    110.0,
+    169.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     66
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "footman",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "swordTip": [
+       [
+        43.7,
+        81.6
+       ],
+       [
+        28.3,
+        74.3
+       ],
+       [
+        -22.3,
+        98.9
+       ],
+       [
+        -48.2,
+        84.4
+       ],
+       [
+        48.2,
+        100.5
+       ],
+       [
+        81.8,
+        38.7
+       ],
+       [
+        67.3,
+        -3.6
+       ],
+       [
+        49.3,
+        -17.0
+       ],
+       [
+        69.9,
+        8.4
+       ],
+       [
+        57.8,
+        67.7
+       ],
+       [
+        36.6,
+        81.6
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      40,
+      70,
+      105,
+      25,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "anchorsLu": {
+      "swordTip": [
+       [
+        43.7,
+        81.6
+       ],
+       [
+        52.3,
+        61.0
+       ],
+       [
+        62.2,
+        46.2
+       ],
+       [
+        50.7,
+        29.8
+       ],
+       [
+        73.2,
+        19.2
+       ],
+       [
+        80.4,
+        6.7
+       ],
+       [
+        83.6,
+        4.6
+       ],
+       [
+        74.7,
+        4.3
+       ],
+       [
+        76.7,
+        35.3
+       ],
+       [
+        57.8,
+        67.7
+       ],
+       [
+        36.6,
+        81.6
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

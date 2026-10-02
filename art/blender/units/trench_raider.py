@@ -17,6 +17,18 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
           lunges and whacks it down through the target at chest height (smear, CLANG lines, yell)
   hit     light: the head snaps back, the helmet lifts, eyes squeezed, overshoot forward
   die     D1 fling and spin: the helmet pops off and the spade flies; X eyes and tongue
+
+Animation standard (ANIM_SPEC 2026-10-02):
+  walk      walk v3 bounce jog at ground speed (G1, 75 x 1.25 = 93.75 lu/s), hunched and low (a
+            raider's sneak-jog): the spade sloped back on his near shoulder, the far arm pumping,
+            the scarf and grenades lagging, planted feet
+  attack    A as above (scoop, flick and overhead whack), feet planted on the longer legs
+  attack_b  FLAT-SIDE BACKHAND SWAT: he winds the spade round behind him at hip height, twisted
+            away (the held extreme), then swats it round flat at chest height, one-handed, the
+            far arm flung back (a horizontal hit, against A's overhead one)
+  attack_c  SPADE-EDGE STAB: he drops into a low crouch with the spade drawn back at his hip, the
+            blade edge pointing at the enemy (the held extreme), then lunges and drives the edge
+            straight in (a thrust from a low body level)
 """
 import math
 
@@ -29,6 +41,7 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "trench_raider"
+GAIT_NAME = "biped"
 NAME = "Trench Raider"
 HEIGHT_LU = 68
 CANVAS = (300, 272)
@@ -81,22 +94,22 @@ def _spade(rig, joint):
     rig.part(joint, g, KM.MUD, highlight=False, outline=0)
 
 
+RIG = None
+
+
 def build(rig):
-    R.skeleton(rig)
-    R.legs(rig, trousers="#767B5A")
-    # muddy boot toes
-    for s in ("r", "l"):
-        y = R.LEG_Y * R.SIDE_Y[s]
-        g = Geo().blob((5.8, y - 0.6 * R.SIDE_Y[s], 2.4), (3.4, 4.4, 2.0), p=2.6)
-        rig.part(f"shin_{s}", g, KM.MUD, outline=0.4)
-    R.tunic(rig)
+    global RIG
+    RIG = rig
+    KM.skeleton_v3(rig)
+    KM.legs_v3(rig, mud=True)       # muddy boot toes
+    R.tunic(rig, hem_z=13.0)
     # webbing: grenades at the front of the belt, pouches, a canteen at the back hip
     KM.grenade(rig, "torso", (9.6, -8.4, 17.4), r=2.4)
     KM.grenade(rig, "torso", (4.6, -11.0, 17.0), r=2.3)
     KM.canteen(rig, "torso", (-8.4, -9.8, 16.4), r=3.2)
     # a team scarf round the neck with a fluttering tail
     g = Geo().lathe([(8.0, 0), (8.7, 1.8), (8.2, 3.6)], (1.0, 0, 35.6), (1.0, 0, 39.4), segs=18)
-    g.blob((7.6, -4.4, 36.8), (2.6, 2.6, 2.4), p=2.4)
+    g.blob((7.6, -4.6, 36.6), (3.4, 3.2, 3.0), p=2.4)
     rig.part("torso", g, team=True, outline=0.6)
     rig.secondary("scarf", "torso", (-4.0, -6.0, 38.0), (-14.0, -6.5, 33.0), max_deg=28, gain=1.6)
     g = Geo().blob((-9.0, -6.5, 35.6), (5.6, 1.2, 2.2), p=2.4, taper=(1.0, 0.7), rot=(0, 18, 0))
@@ -119,7 +132,7 @@ def build(rig):
     KI.loose(rig, "hat_loose", HELM_C, lambda j: KM.brodie(rig, j, c=HELM_C))
 
     for s in ("r", "l"):
-        R.arm_parts(rig, s, rolled=True, fist=4.6)
+        R.arm_parts(rig, s, fist=4.6)
         y = R.ARM_Y[s]
         g = Geo().blob((2.6, y - 1.5 * (1 if s == "r" else -1), R.HAND_Z + 0.6), (1.7, 1.6, 2.3), p=2.2)
         rig.part(f"hand_{s}", g, R.SKIN)                     # thumb
@@ -134,7 +147,6 @@ def build(rig):
     _spade(rig, "spade")
     KI.loose(rig, "spade_loose", FIST, lambda j: _spade(rig, j))
     rig.track("spadeTip", "spade", TIP)
-    rig.track("_foot", "shin_r", (3.4, -6.0, 0.5))
 
 
 # -- poses (WORLD angles; KM.two_hand subtracts the torso lean) ------------------------------------
@@ -160,18 +172,30 @@ def _idle(f):
                      {"head": {"rz": peek}, "hat": {"r": -0.6 * lift},
                       "brow": {"z": 0.5 * max(0.0, -lift)}, "pupils": {"x": 0.03 * peek}})
     base = {k: v for k, v in STANCE.items() if not k.startswith(("arm_", "fore_", "hand_"))}
-    return M.idle_v2(f, base, frames=6, extra=extra, face_blink=F.expr("blink"), blink=3)
+    pose = M.idle_v2(f, base, frames=6, extra=extra, face_blink=F.expr("blink"), blink=3)
+    return KM.ground_feet(RIG, pose, LEGS)
 
 
-def _walk(f):
+# -- walk v3: G1 bounce jog at ground speed (card 75 x 1.25 = 93.75 lu/s), 8 x 73 ms --------------
+SPEED = 93.75
+LEGS = KM.legs_ik()
+GAIT = KM.jog_gait(LEGS, SPEED, cycle_ms=584)
+CARRY_HAND = (7.5, 32.0)     # near fist in front of the shoulder (torso space)
+CARRY_W = 142.0              # the spade sloped back over the shoulder, blade up behind (WORLD)
+WALK_LEAN = -12.0
+
+
+def _carry(lag=0.0, lean=WALK_LEAN):
+    a, fo = R.ik2(R.SH, (CARRY_HAND[0], CARRY_HAND[1] + 0.8 * lag))
+    return R.arm("r", a, fo, w=CARRY_W - 6.0 * lag - lean, w_rest=90.0)
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        p = ctx["p"]
-        return merge(grip(-58.0 + 3 * math.cos(p), 4.0 + 4 * lag, 30.0 - 6 * lag, lean=-13.0),
-                     {"hat": {"r": -1.2 * lag}, "hips": {"z": -2.2}})
-    base = {"torso": {"r": -13.0}}
-    return M.walk_v2(f, base, HEIGHT_LU, thigh=40.0, knee=66.0, lift_lu=6.5, bob_pct=0.05, lean=-13.0,
-                     arms=(), twist=6.0, extra=extra)
+        return merge(_carry(lag), {"hat": {"r": -1.2 * lag}, "hips": {"z": -1.5}, "scarf": {"r": 6 * lag}})
+    return M.walk_v3(RIG, f, {"torso": {"r": -2.0}}, GAIT, legs=LEGS, lean=WALK_LEAN + 2.0, twist=7.0, nod=3.0,
+                     arms={"l": KI.ArmChain("l")}, arm=36.0, extra=extra, report=report)
 
 
 # 11 unique frames, moves.SMALL_MELEE_MS (impact on 6 at 290 of 680 ms). World angles.
@@ -213,7 +237,7 @@ def _attack_pose(f):
         pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
     elif f == 8:
         pose = merge(pose, F.expr("grit"))
-    return pose
+    return KM.ground_feet(RIG, pose, LEGS)
 
 
 SWING = {"kind": "arc", "joint": "spade", "inner": (FIST[0], FIST[1], FIST[2] + HANDLE * 0.6),
@@ -242,6 +266,152 @@ def _attack_clip():
     }
     return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
                   impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
+
+
+# -- attack B: flat-side backhand swat (ANIM_SPEC appendix B) -------------------------------------
+# One-handed (the near hand): the spade swings round from low behind his hip up to chest height in
+# front, the flat of the blade leading. unique frames: 0 = A read, 1 tuck (the far hand lets go,
+# the spade drops to his hip), 2 draw, 3 HOLD (twisted back, the spade pointing down and back
+# behind his legs), 4 smear, 5 smear, 6 IMPACT (the spade level at chest height, lunging, the far
+# arm flung back), 7 over (the swing carries on up), 8 recoil (both hands back on it), 9-10 = A
+# settle. Arm angles are WORLD degrees; w is the spade.
+#        tuck draw HOLD smear smear IMP  over recoil
+B_A = [-72, -112, -124, -40, -20, -8, 10, -24]
+B_F = [-44, -112, -128, -20, -8, -4, 18, 6]
+B_W = [-32, -128, -142, -10, 0, 2, 26, 36]
+B_T = [-6, 2, 8, -4, -12, -18, -16, -8]
+B_TZ = [0, 10, 18, 6, -8, -14, -12, -4]
+B_X = [0.5, -1.0, -2.5, 1.0, 4.5, 8.0, 8.0, 5.0]
+B_Z = [-1.0, -2.6, -3.4, -2.6, -1.6, -1.2, -0.6, -0.6]
+B_Q = [-0.03, -0.07, -0.10, 0.04, 0.07, -0.10, 0.04, -0.03]
+B_THR = [6, 14, 18, 20, 24, 30, 28, 18]
+B_SHR = [-6, -16, -22, -18, -14, -10, -10, -8]
+B_THL = [-6, -14, -20, -22, -26, -30, -28, -18]
+B_SHL = [-4, -12, -18, -14, -8, -4, -4, -4]
+B_LA = [-70, -60, -50, -70, -110, -150, -150, None]     # the far arm (WORLD); None = back on the spade
+B_LF = [-40, -20, -10, -40, -120, -170, -165, None]
+
+
+def _b_pose(i):
+    if i in (0, 9, 10):
+        return _attack_pose(i)
+    k = i - 1
+    t = B_T[k]
+    far = B_LA[k] is None
+    pose = merge(grip(B_A[k], B_F[k], B_W[k], lean=t, far=far), {
+        "torso": {"r": t, "rz": B_TZ[k]},
+        "head": {"r": -0.4 * t, "rz": -0.5 * B_TZ[k]},
+        "thigh_r": {"r": B_THR[k]}, "shin_r": {"r": B_SHR[k]},
+        "thigh_l": {"r": B_THL[k]}, "shin_l": {"r": B_SHL[k]},
+    }, M.body_about((0, 0, 22), x=B_X[k], z=B_Z[k], q=B_Q[k]))
+    if not far:
+        pose = merge(pose, R.arm("l", B_LA[k] - t, B_LF[k] - t))
+    if k in (3, 4):
+        pose["spade"] = {"sz": 1.16}
+    if k in (1, 2):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+    elif k in (3, 4, 5, 6):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+    else:
+        pose = merge(pose, F.expr("grit"))
+    return KM.ground_feet(RIG, pose, LEGS)
+
+
+SWAT = dict(SWING, band=0.5)
+
+
+def _attack_b():
+    ov = {
+        4: [dict(SWAT, **{"from": 3, "t0": 0.72, "t1": 1.0})],
+        5: [dict(SWAT, **{"from": 4, "t0": 0.0, "t1": 1.0, "lines": 2})],
+        6: [dict(SWAT, **{"from": 5, "t0": 0.0, "t1": 1.0, "lines": 2}),
+            {"kind": "burst", "joint": "spade", "point": BLADE_C, "r0_lu": 10.0, "r1_lu": 17.0, "n": 6,
+             "a0": -60.0, "arc": 140.0},
+            {"kind": "dust", "ground": (18.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 47, "spread": 0.8},
+            {"kind": "dust", "ground": (-12.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 48, "spread": 0.7,
+             "dir": -1.0}],
+    }
+    reuse = {0: ("attack", 0), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov, reuse=reuse)
+
+
+# -- attack C: spade-edge stab ------------------------------------------------------------------------
+# steps: A read 30, drop 40, draw 70, HOLD 105 (a low crouch, both hands at his hip, the blade edge
+# pointing forward and up at the enemy), lunge smear 25, lead 20 | IMPACT (the lunge: the spade
+# driven straight in, level) 120, twist 60 (the blade wrenched), recoil 50, A settle 70, A settle 90.
+# The near fist (the D-grip end) is placed by IK at (hx, hz) in torso space; the far hand grips the
+# handle `d` lu further along.
+C_MS = [30, 40, 70, 105, 25, 20, 120, 60, 50, 70, 90]
+#         drop  draw  HOLD  smear lead  IMP   twist recoil
+C_HX = [-1.0, -4.5, -6.0, 0.5, 3.0, 4.5, 4.0, 1.0]
+C_HZ = [24.0, 22.5, 22.0, 24.0, 25.5, 26.0, 26.0, 26.0]
+C_W = [30.0, 18.0, 12.0, 6.0, 2.0, -2.0, 6.0, 30.0]
+C_T = [-6, -8, -6, -12, -16, -20, -18, -10]
+C_TZ = [2, 4, 4, 0, -6, -12, -10, -4]
+C_X = [0.5, -1.0, -2.5, 2.5, 6.5, 11.0, 11.0, 7.0]
+C_Z = [-2.0, -4.5, -6.0, -5.0, -4.0, -4.6, -4.0, -2.0]
+C_Q = [-0.04, -0.08, -0.10, 0.06, 0.04, -0.12, 0.03, -0.04]
+C_THR = [8, 16, 22, 26, 32, 38, 36, 22]
+C_SHR = [-10, -24, -34, -28, -24, -26, -24, -14]
+C_THL = [-8, -16, -22, -26, -32, -38, -34, -20]
+C_SHL = [-6, -14, -20, -14, -8, -4, -4, -4]
+C_D = 9.0
+
+
+def stab(hx, hz, w, lean, d=C_D):
+    a, fo = R.ik2(R.SH, (hx, hz))
+    tw = w - lean
+    pose = R.arm("r", a, fo, w=tw, w_rest=90.0)
+    fx = hx + d * math.cos(math.radians(tw))
+    fz = hz + d * math.sin(math.radians(tw))
+    la, lf = R.ik2(R.SH, (fx, fz))
+    return merge(pose, R.arm("l", la, lf))
+
+
+def _c_pose(i):
+    if i in (0, 9, 10):
+        return _attack_pose(i)
+    k = i - 1
+    t = C_T[k]
+    pose = merge(stab(C_HX[k], C_HZ[k], C_W[k], t), {
+        "torso": {"r": t, "rz": C_TZ[k]},
+        "head": {"r": -0.5 * t, "rz": -0.5 * C_TZ[k]},
+        "thigh_r": {"r": C_THR[k]}, "shin_r": {"r": C_SHR[k]},
+        "thigh_l": {"r": C_THL[k]}, "shin_l": {"r": C_SHL[k]},
+    }, M.body_about((0, 0, 22), x=C_X[k], z=C_Z[k], q=C_Q[k]))
+    if k == 6:
+        pose["spade"] = {"rz": 50.0}     # the blade wrenched round in the wound
+    if k in (3, 4):
+        pose["spade"] = {"sz": 1.14}
+    if k in (1, 2):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+    elif k in (3, 4, 5, 6):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+    else:
+        pose = merge(pose, F.expr("grit"))
+    return KM.ground_feet(RIG, pose, LEGS)
+
+
+JAB = {"kind": "streak", "joint": "spade", "point": TIP, "color": R.STEEL, "width_lu": 9.0, "white": 0.35}
+
+
+def _attack_c():
+    ov = {
+        4: [dict(JAB, **{"from": 3, "t0": 0.0, "t1": 1.0})],
+        5: [dict(JAB, **{"from": 3, "t0": 0.2, "t1": 1.0, "width_lu": 8.0})],
+        6: [dict(JAB, **{"from": 4, "t0": 0.4, "t1": 1.0, "width_lu": 7.0}),
+            {"kind": "burst", "joint": "spade", "point": TIP, "r0_lu": 7.0, "r1_lu": 14.0, "n": 6,
+             "a0": -70.0, "arc": 140.0},
+            {"kind": "dust", "ground": (20.0, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 49, "spread": 0.8},
+            {"kind": "dust", "ground": (-14.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 50, "spread": 0.7,
+             "dir": -1.0}],
+        7: [{"kind": "rings", "joint": "spade", "point": BLADE_C, "radii_lu": (6.0, 9.5), "a0": -60.0,
+             "a1": 200.0, "color": "#FFF4D6"}],
+    }
+    reuse = {0: ("attack", 0), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(11)], C_MS, impact=6, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 3})
 
 
 def _hit(k):
@@ -291,10 +461,12 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

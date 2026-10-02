@@ -1,0 +1,919 @@
+{
+ "frames": {
+  "pulse_trooper_attack_b_00": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 211,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 168,
+    "y": 150,
+    "w": 211,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_b_00_team": {
+   "frame": {
+    "x": 620,
+    "y": 583,
+    "w": 104,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 170,
+    "w": 104,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_b_01": {
+   "frame": {
+    "x": 430,
+    "y": 207,
+    "w": 211,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 160,
+    "y": 163,
+    "w": 211,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_b_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 756,
+    "w": 106,
+    "h": 118
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 160,
+    "y": 182,
+    "w": 106,
+    "h": 118
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_b_02": {
+   "frame": {
+    "x": 734,
+    "y": 402,
+    "w": 230,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 156,
+    "y": 176,
+    "w": 230,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_b_02_team": {
+   "frame": {
+    "x": 325,
+    "y": 756,
+    "w": 106,
+    "h": 116
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 156,
+    "y": 190,
+    "w": 106,
+    "h": 116
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_b_03": {
+   "frame": {
+    "x": 669,
+    "y": 2,
+    "w": 226,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 160,
+    "w": 226,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_b_03_team": {
+   "frame": {
+    "x": 513,
+    "y": 583,
+    "w": 103,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 179,
+    "w": 103,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_b_04": {
+   "frame": {
+    "x": 217,
+    "y": 2,
+    "w": 242,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 162,
+    "y": 154,
+    "w": 242,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_b_04_team": {
+   "frame": {
+    "x": 410,
+    "y": 583,
+    "w": 99,
+    "h": 131
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 162,
+    "y": 171,
+    "w": 99,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 583,
+    "w": 193,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 181,
+    "w": 193,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_b_05_team": {
+   "frame": {
+    "x": 873,
+    "y": 756,
+    "w": 98,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 180,
+    "w": 98,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_b_06": {
+   "frame": {
+    "x": 463,
+    "y": 2,
+    "w": 202,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 152,
+    "y": 157,
+    "w": 202,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_b_06_team": {
+   "frame": {
+    "x": 728,
+    "y": 583,
+    "w": 97,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 163,
+    "w": 97,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_c_01": {
+   "frame": {
+    "x": 216,
+    "y": 207,
+    "w": 210,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 161,
+    "w": 210,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_c_01_team": {
+   "frame": {
+    "x": 545,
+    "y": 756,
+    "w": 104,
+    "h": 116
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 181,
+    "w": 104,
+    "h": 116
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_c_02": {
+   "frame": {
+    "x": 645,
+    "y": 207,
+    "w": 228,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 173,
+    "y": 174,
+    "w": 228,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_c_02_team": {
+   "frame": {
+    "x": 761,
+    "y": 756,
+    "w": 108,
+    "h": 115
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 198,
+    "w": 108,
+    "h": 115
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_c_03": {
+   "frame": {
+    "x": 281,
+    "y": 402,
+    "w": 238,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 176,
+    "w": 238,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_c_03_team": {
+   "frame": {
+    "x": 829,
+    "y": 583,
+    "w": 109,
+    "h": 118
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 195,
+    "w": 109,
+    "h": 118
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_c_04": {
+   "frame": {
+    "x": 2,
+    "y": 402,
+    "w": 275,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 161,
+    "y": 175,
+    "w": 275,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_c_04_team": {
+   "frame": {
+    "x": 213,
+    "y": 756,
+    "w": 108,
+    "h": 117
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 195,
+    "w": 108,
+    "h": 117
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_c_05": {
+   "frame": {
+    "x": 199,
+    "y": 583,
+    "w": 207,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 148,
+    "y": 188,
+    "w": 207,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_c_05_team": {
+   "frame": {
+    "x": 112,
+    "y": 756,
+    "w": 97,
+    "h": 118
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 192,
+    "w": 97,
+    "h": 118
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_c_06": {
+   "frame": {
+    "x": 523,
+    "y": 402,
+    "w": 207,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 176,
+    "w": 207,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_c_06_team": {
+   "frame": {
+    "x": 435,
+    "y": 756,
+    "w": 106,
+    "h": 116
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 190,
+    "w": 106,
+    "h": 116
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_c_07": {
+   "frame": {
+    "x": 2,
+    "y": 207,
+    "w": 210,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 160,
+    "w": 210,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  },
+  "pulse_trooper_attack_c_07_team": {
+   "frame": {
+    "x": 653,
+    "y": 756,
+    "w": 104,
+    "h": 116
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 176,
+    "w": 104,
+    "h": 116
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 390
+   },
+   "anchor": {
+    "x": 0.42802,
+    "y": 0.85641
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "pulse_trooper_attack_b_00",
+   "pulse_trooper_attack_b_01",
+   "pulse_trooper_attack_b_02",
+   "pulse_trooper_attack_b_03",
+   "pulse_trooper_attack_b_04",
+   "pulse_trooper_attack_b_05",
+   "pulse_trooper_attack_b_06",
+   "pulse_trooper_attack_07",
+   "pulse_trooper_attack_08"
+  ],
+  "attack_b_team": [
+   "pulse_trooper_attack_b_00_team",
+   "pulse_trooper_attack_b_01_team",
+   "pulse_trooper_attack_b_02_team",
+   "pulse_trooper_attack_b_03_team",
+   "pulse_trooper_attack_b_04_team",
+   "pulse_trooper_attack_b_05_team",
+   "pulse_trooper_attack_b_06_team",
+   "pulse_trooper_attack_07_team",
+   "pulse_trooper_attack_08_team"
+  ],
+  "attack_c": [
+   "pulse_trooper_attack_00",
+   "pulse_trooper_attack_c_01",
+   "pulse_trooper_attack_c_02",
+   "pulse_trooper_attack_c_03",
+   "pulse_trooper_attack_c_04",
+   "pulse_trooper_attack_c_05",
+   "pulse_trooper_attack_c_06",
+   "pulse_trooper_attack_c_07",
+   "pulse_trooper_attack_08"
+  ],
+  "attack_c_team": [
+   "pulse_trooper_attack_00_team",
+   "pulse_trooper_attack_c_01_team",
+   "pulse_trooper_attack_c_02_team",
+   "pulse_trooper_attack_c_03_team",
+   "pulse_trooper_attack_c_04_team",
+   "pulse_trooper_attack_c_05_team",
+   "pulse_trooper_attack_c_06_team",
+   "pulse_trooper_attack_c_07_team",
+   "pulse_trooper_attack_08_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "pulse_trooper.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1024,
+   "h": 876
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.pulse_trooper",
+   "name": "Pulse Trooper",
+   "heightLu": 70,
+   "widthLu": 80.5,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    220,
+    334
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     68
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     54,
+     30
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "pulse_trooper",
+   "clips": {
+    "attack_b": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      50,
+      70,
+      194,
+      60,
+      90,
+      70,
+      70,
+      60,
+      84
+     ],
+     "durationMs": 748,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 2,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        62.7,
+        10.8
+       ],
+       [
+        59.9,
+        20.3
+       ],
+       [
+        58.4,
+        21.9
+       ],
+       [
+        58.7,
+        17.0
+       ],
+       [
+        54.1,
+        20.6
+       ],
+       [
+        28.5,
+        56.1
+       ],
+       [
+        51.4,
+        41.5
+       ],
+       [
+        62.3,
+        25.0
+       ],
+       [
+        61.9,
+        14.7
+       ]
+      ]
+     },
+     "muzzle": [
+      54.1,
+      20.6
+     ]
+    },
+    "attack_c": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      50,
+      60,
+      80,
+      184,
+      90,
+      70,
+      70,
+      60,
+      84
+     ],
+     "durationMs": 748,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        63.2,
+        20.3
+       ],
+       [
+        63.5,
+        10.6
+       ],
+       [
+        66.2,
+        4.4
+       ],
+       [
+        67.5,
+        3.1
+       ],
+       [
+        66.1,
+        5.6
+       ],
+       [
+        51.7,
+        37.5
+       ],
+       [
+        60.3,
+        21.2
+       ],
+       [
+        62.4,
+        16.9
+       ],
+       [
+        61.9,
+        14.7
+       ]
+      ]
+     },
+     "muzzle": [
+      66.1,
+      5.6
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

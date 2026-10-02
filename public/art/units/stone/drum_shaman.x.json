@@ -1,0 +1,402 @@
+{
+ "frames": {
+  "drum_shaman_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 60,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 67,
+    "w": 60,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.53425,
+    "y": 0.86869
+   }
+  },
+  "drum_shaman_attack_b_02_team": {
+   "frame": {
+    "x": 196,
+    "y": 119,
+    "w": 55,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 107,
+    "w": 55,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.53425,
+    "y": 0.86869
+   }
+  },
+  "drum_shaman_attack_b_03": {
+   "frame": {
+    "x": 66,
+    "y": 2,
+    "w": 54,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 62,
+    "w": 54,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.53425,
+    "y": 0.86869
+   }
+  },
+  "drum_shaman_attack_b_03_team": {
+   "frame": {
+    "x": 95,
+    "y": 119,
+    "w": 42,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 69,
+    "w": 42,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.53425,
+    "y": 0.86869
+   }
+  },
+  "drum_shaman_attack_b_04": {
+   "frame": {
+    "x": 124,
+    "y": 2,
+    "w": 58,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 68,
+    "w": 58,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.53425,
+    "y": 0.86869
+   }
+  },
+  "drum_shaman_attack_b_04_team": {
+   "frame": {
+    "x": 141,
+    "y": 119,
+    "w": 51,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 104,
+    "w": 51,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.53425,
+    "y": 0.86869
+   }
+  },
+  "drum_shaman_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 119,
+    "w": 89,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 90,
+    "w": 89,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.53425,
+    "y": 0.86869
+   }
+  },
+  "drum_shaman_attack_b_05_team": {
+   "frame": {
+    "x": 61,
+    "y": 219,
+    "w": 65,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 131,
+    "w": 65,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.53425,
+    "y": 0.86869
+   }
+  },
+  "drum_shaman_attack_b_06": {
+   "frame": {
+    "x": 186,
+    "y": 2,
+    "w": 63,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 74,
+    "w": 63,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.53425,
+    "y": 0.86869
+   }
+  },
+  "drum_shaman_attack_b_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 219,
+    "w": 55,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 124,
+    "w": 55,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.53425,
+    "y": 0.86869
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "drum_shaman_attack_00",
+   "drum_shaman_attack_01",
+   "drum_shaman_attack_b_02",
+   "drum_shaman_attack_b_03",
+   "drum_shaman_attack_b_04",
+   "drum_shaman_attack_b_04",
+   "drum_shaman_attack_b_05",
+   "drum_shaman_attack_b_06",
+   "drum_shaman_attack_08",
+   "drum_shaman_attack_09",
+   "drum_shaman_attack_10"
+  ],
+  "attack_b_team": [
+   "drum_shaman_attack_00_team",
+   "drum_shaman_attack_01_team",
+   "drum_shaman_attack_b_02_team",
+   "drum_shaman_attack_b_03_team",
+   "drum_shaman_attack_b_04_team",
+   "drum_shaman_attack_b_04_team",
+   "drum_shaman_attack_b_05_team",
+   "drum_shaman_attack_b_06_team",
+   "drum_shaman_attack_08_team",
+   "drum_shaman_attack_09_team",
+   "drum_shaman_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "drum_shaman.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 256,
+   "h": 276
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.drum_shaman",
+   "name": "Drum Shaman",
+   "heightLu": 66,
+   "widthLu": 44.7,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    117.0,
+    172.0
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     64
+    ],
+    "hitCenter": [
+     0,
+     30
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "drum_shaman",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 5,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        15.7,
+        21.4
+       ],
+       [
+        17.1,
+        17.7
+       ],
+       [
+        13.3,
+        41.5
+       ],
+       [
+        -12.6,
+        78.3
+       ],
+       [
+        9.0,
+        44.2
+       ],
+       [
+        27.9,
+        6.1
+       ],
+       [
+        22.7,
+        14.6
+       ],
+       [
+        16.7,
+        18.9
+       ],
+       [
+        15.9,
+        20.8
+       ],
+       [
+        15.7,
+        21.4
+       ]
+      ]
+     },
+     "muzzle": [
+      27.9,
+      6.1
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

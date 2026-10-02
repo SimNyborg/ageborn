@@ -18,6 +18,10 @@ unchanged.
   hand_at()      the near hand's torso-space position for arm angles (a, f)
   crew_head()    a small round crew head (tankers, pilots) with big eyes, brow, mouth and the
                  face kit, on its own joint
+  skeleton_v3()  the Modern biped with walk-v3 legs (ANIM_SPEC 2.0 rule 5, G1): thighs at 19.5 lu,
+                 knees at 11.5, `foot_r/l` joints, the upper body lifted 2 lu (kit_industrial's)
+  legs_v3()      olive trousers, khaki puttees and chunky ankle boots on the foot joints, the far
+                 leg 20% darker, the `_foot` / `_foot_l` sole trackers
 """
 import math
 
@@ -247,3 +251,45 @@ def run_pose(name, phase, arm=40.0):
     """Channels for a running crew_runner: legs scissor by `phase` (-1..1), the arm waves."""
     return {f"{name}_leg_r": {"r": 34.0 * phase}, f"{name}_leg_l": {"r": -34.0 * phase},
             f"{name}_arm": {"r": arm}}
+
+
+# -- walk v3 body (ANIM_SPEC 2.0 rule 5, G1): longer legs and planted feet ----------------------
+# The Modern bipeds share the rigs_modern (= rigs_industrial) joint names and arm layout, so the
+# skeleton, the IK legs, the jog gait and the arm chain are kit_industrial's (kit_medieval's).
+V3_THIGH_Z, V3_KNEE_Z, V3_ANKLE_Z, V3_LIFT = KI.V3_THIGH_Z, KI.V3_KNEE_Z, KI.V3_ANKLE_Z, KI.V3_LIFT
+skeleton_v3 = KI.skeleton_v3
+legs_ik = KI.legs_ik
+jog_gait = KI.jog_gait
+ground_feet = KI.ground_feet
+kneel = KI.kneel
+
+
+def legs_v3(rig, trousers="#767B5A", boot=M.BOOT, puttee=M.KHAKI, thigh_r=4.7, far=0.8, mud=False):
+    """`rigs_modern.legs` for skeleton_v3: baggy olive trousers, khaki puttees with slanted wraps on
+    slim shins (the two legs stay apart at 62 px), chunky 8.8 lu ankle boots with a thick sole on
+    the foot joints. The far leg is `far` darker, so the near and far feet read apart (ANIM_SPEC
+    G1). `mud` cakes the boot toes. Adds the `_foot` / `_foot_l` sole trackers."""
+    from . import colors as CO
+    for s in ("r", "l"):
+        y = M.LEG_Y * M.SIDE_Y[s]
+        k = 1.0 if s == "r" else far
+        sh = (lambda c: c) if k == 1.0 else (lambda c, k=k: CO.scale(c, k))
+        g = Geo().capsule((0, y, V3_THIGH_Z + 0.5), (0.5, y, V3_KNEE_Z), thigh_r, thigh_r - 0.4)
+        rig.part(f"thigh_{s}", g, sh(trousers))
+        g = Geo().capsule((0.5, y, V3_KNEE_Z), (1.0, y, V3_ANKLE_Z + 0.8), thigh_r - 0.9, 3.3)
+        rig.part(f"shin_{s}", g, sh(puttee))
+        g = Geo()
+        for z in (6.8, 9.0):   # puttee wraps, slanted
+            g.blob((0.8, y, z), (3.9, 3.9, 0.7), p=2.4, rot=(0, 12, 0))
+        rig.part(f"shin_{s}", g, sh(M.KHAKI_LT), outline=0.5)
+        g = Geo().blob((1.0, y, 5.2), (3.8, 4.0, 2.1), p=2.6)                  # boot shaft
+        rig.part(f"shin_{s}", g, sh(boot), finish="gloss")
+        g = Geo().blob((2.8, y, 2.4), (4.4, 4.6, 2.4), p=2.9, taper=(1.02, 0.84))   # 8.8 lu boot
+        rig.part(f"foot_{s}", g, sh(boot), finish="gloss")
+        g = Geo().blob((3.0, y, 0.6), (4.4, 4.7, 0.8), p=3.0)                  # thick sole
+        rig.part(f"foot_{s}", g, sh("#2B2A2E"), outline=0.4)
+        if mud:
+            g = Geo().blob((5.0, y - 0.6 * M.SIDE_Y[s], 2.4), (2.6, 4.4, 1.9), p=2.6)
+            rig.part(f"foot_{s}", g, sh(MUD), outline=0.4)
+    rig.track("_foot", "foot_r", (2.6, -M.LEG_Y, 0.0))
+    rig.track("_foot_l", "foot_l", (2.6, M.LEG_Y, 0.0))

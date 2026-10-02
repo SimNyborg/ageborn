@@ -10,7 +10,15 @@ horsehair crest that streams back, and a big moustache. He carries an oversized 
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
   idle    the horse snorts and paws, the tail swishes, the rider rests the sabre on his shoulder
-  walk    trot: diagonal pairs, knees and hocks folding, the rider posting a frame late
+  walk    walk v3 trot at ground speed (ANIM_SPEC G5): diagonal pairs with planted hooves, knees
+          and hocks folding, the rider posting a frame late with the sabre on his shoulder, the
+          crest, coat tails, forelock and tail trailing
+  attack_b  BACKHAND SWEEP AT THE GALLOP: the horse gathers into a gallop stride while the rider
+          drops the sabre low behind his knee (the held extreme: blade pointing down and back),
+          then sweeps it forward and up across the front at the full stretch of the stride
+  attack_c  SABRE POINT THRUST: the rider raises the sword hand to head height with the blade level
+          over the horse's head, the point aimed at the target (the held extreme), then the horse lunges and he leans right
+          out along its neck and drives the point straight into the target
   attack  GALLOP SABRE CUT: the horse gathers onto its haunches while the rider rises in the
           stirrups with the sabre cocked high behind his head (the held extreme), then the horse
           leaps forward with the forelegs thrown out and the rider leans out and cuts the sabre
@@ -23,6 +31,7 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as GT
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
 from ageborn_art import moves as M
@@ -31,6 +40,7 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "cuirassier"
+GAIT_NAME = "rider"
 NAME = "Cuirassier"
 HEIGHT_LU = 120
 YAW_DEG = -10.0
@@ -55,12 +65,25 @@ SX, SY, SZ = 9.5, -14.0, 65.5
 SABRE = 46.0
 
 
+RIG = None
+LEGS = {}
+
+
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("horse", "body", (0, 0, 40))
     for name, x, y, z, front in (("leg_fl", 17, 6.5, 36, True), ("leg_bl", -17, 6.5, 38, False),
                                  ("leg_fr", 17, -6.5, 36, True), ("leg_br", -17, -6.5, 38, False)):
         G.horse_leg(rig, name, "horse", x, y, z, front, COAT, POINTS, HOOF, feather=POINTS)
+        # walk v3: the IK end is the bottom of the hoof; a tracker on every sole (planted hooves)
+        x2 = x + (1.5 if front else -4.5)
+        fx = x2 + (1.0 if front else 3.0)
+        end = (fx + 1.2, y, 0.3)
+        key = name[4:]
+        LEGS[key] = GT.Leg(name, f"{name}2", end, bend=1.0 if front else -1.0)
+        rig.track(f"_foot_{key}", f"{name}2", end)
 
     # barrel, the team shabraque (cream braided edge, brass studs, a cream anchor), saddle
     g = Geo().blob((0, 0, 41), (25, 11.5, 12), p=2.3)
@@ -232,7 +255,6 @@ def build(rig):
     g.clip((SX - 1.0, SY, SZ), (-1, 0, 0))
     rig.part("sabre", g, B.BRASS, finish="metal", outline=0.7)
     rig.track("sabreTip", "sabre", (SX + 7.0, SY, SZ + SABRE))
-    rig.track("_foot", "leg_fr2", (19.8, -6.5, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -279,25 +301,38 @@ def _idle(f):
     return sabre_at(pose, IDLE_SABRE + 1.5 * lag)
 
 
-def _walk(f):
-    p = 2 * math.pi * f / 8
-    s_, c = math.sin(p), math.cos(p)
-    bob = -2.0 * math.cos(2 * p)
-    bob_lag = -1.6 * math.cos(2 * (p - 2 * math.pi / 8))
-    up = lambda v: max(0.0, v)
-    pose = merge(STANCE, {
-        "horse": {"z": bob - 0.4, "r": 1.5 * s_},
-        "leg_fr": {"r": 22 * s_ + 10 * up(c)}, "leg_fr2": {"r": -62 * up(c)},
-        "leg_bl": {"r": 16 * s_}, "leg_bl2": {"r": 40 * up(-c)},
-        "leg_fl": {"r": -22 * s_ + 10 * up(-c)}, "leg_fl2": {"r": -62 * up(-c)},
-        "leg_br": {"r": -16 * s_}, "leg_br2": {"r": 40 * up(c)},
-        "neck": {"r": -8 * math.cos(2 * p)}, "hhead": {"r": 4 * math.cos(2 * p)},
-        "rider": {"z": bob_lag + 0.6},
-        "ktorso": {"r": -2.5 * math.cos(2 * (p - 2 * math.pi / 8))},
-        "karm_r": {"r": 3.0 * math.cos(2 * (p - 2 * math.pi / 8))},
-        "tail": {"r": 6 * math.sin(2 * p)},
-    })
-    return sabre_at(pose, IDLE_SABRE + 4.0 * math.cos(2 * (p - 2 * math.pi / 8)))
+# -- walk v3: G5 trot at ground speed (card 60 x 1.25 = 75 lu/s), 8 x 92.5 ms (as the Destrier) --
+SPEED = 75.0
+GAIT = None
+
+
+def _gait():
+    global GAIT
+    if GAIT is None:
+        GAIT = GT.Gait(8, 740, SPEED, GT.quad_feet(LEGS, GT.TROT, x_off={"fr": -1.0, "fl": -1.0, "br": -1.0,
+                                                                          "bl": -1.0}),
+                       0.48, lift=10.0, kick=4.0, reach=4.0, toe_off=0.0, heel_strike=0.0)
+    return GAIT
+
+
+def _walk(f, report=None):
+    g = _gait()
+    lagp = 2 * math.pi * (f - 1) / g.frames
+
+    def extra(ctx):
+        p = ctx["p"]
+        post = -math.cos(2 * (lagp - ctx["low"] / 2))     # the rider posts a frame late
+        return merge(STANCE, {
+            "neck": {"r": -7 * math.cos(2 * p - 0.5)}, "hhead": {"r": 5 * math.cos(2 * p - 1.1)},
+            "rider": {"z": 1.6 * post},
+            "ktorso": {"r": -3.0 * post}, "khead": {"r": 2.0 * post},
+            "karm_r": {"r": 3.0 * post}, "ktails": {"r": 6 * post}, "crest": {"r": 5 * post},
+            "tail": {"r": 8 * math.sin(2 * p - 1.3)}, "forelock": {"r": 6 * math.cos(2 * p - 1.2)},
+        })
+    out = GT.quad_walk(RIG, f, g, {}, trunk="horse", base_z=-5.6, bob=2.0, beats=2, pitch=2.0, roll=1.5,
+                       extra=extra, report=report)
+    post = -math.cos(2 * (lagp - math.pi * g.stance / 2))
+    return sabre_at(out, IDLE_SABRE + 5.0 * post)
 
 
 # attack: 10 unique poses in the 12 heavy steps (moves.HEAVY_MELEE_MS), impact on pose 6
@@ -368,6 +403,95 @@ def _attack_clip():
                   impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov)
 
 
+# -- attacks B and C (ANIM_SPEC appendix B): unique frames 0, 8, 9 are A's (shift, follow, settle);
+# 1-7 are new (gather, coil, HOLD, smear, smear, IMPACT, follow-through), played on A's steps.
+VAR = {
+    # backhand sweep at the gallop: the sabre drops low behind his knee, then sweeps forward and up
+    "b": dict(
+        X=[-2.0, -4.0, -5.0, 3.0, 8.0, 11.0, 10.0], Z=[-1.0, -2.0, -2.5, 2.0, 3.0, 0.0, -0.5],
+        R=[3, 6, 7, 4, 0, -4, -3], Q=[-0.03, -0.05, -0.06, 0.04, 0.03, -0.07, 0.02],
+        SXX=[1.0, 0.98, 0.97, 1.05, 1.04, 1.0, 1.0],
+        FR=[(10, -24), (20, -40), (24, -50), (40, -60), (36, -30), (18, 0), (14, -2)],
+        FL=[(6, -14), (14, -30), (18, -40), (30, -70), (30, -40), (12, 0), (10, 0)],
+        BR=[(4, 2), (12, 6), (18, 8), (-24, 0), (-28, 6), (-12, 0), (0, 0)],
+        BL=[(2, 2), (8, 4), (14, 6), (-28, 0), (-24, 10), (-10, 0), (2, 0)],
+        NECK=[0, 4, 8, -6, -10, 4, 6], HH=[2, -2, -4, 4, 6, -6, -6],
+        KT=[0, 4, 8, -4, -12, -18, -14], KRZ=[6, 14, 20, 6, -8, -14, -10], RZ=[0.5, 1.0, 1.5, 1.5, 1.0, -1.0, -0.5],
+        ARM=[10, -20, -40, 20, 70, 95, 100], FORE=[30, 0, -10, 30, 40, 10, 20],
+        SAB=[40, -100, -140, -40, 10, 25, 45], TAIL=[2, 6, 10, -10, -14, -8, 4]),
+    # point thrust: the arm drawn back with the blade level at his hip, then a long lunge
+    "c": dict(
+        X=[-1.0, -3.0, -5.0, 2.0, 8.0, 13.0, 12.0], Z=[-0.5, -1.5, -2.5, 0.0, 1.0, -0.5, -0.5],
+        R=[2, 4, 6, 2, -2, -5, -4], Q=[-0.02, -0.04, -0.06, 0.04, 0.03, -0.08, 0.02],
+        SXX=[1.0, 1.0, 0.97, 1.04, 1.04, 1.02, 1.0],
+        FR=[(4, -10), (8, -20), (12, -30), (30, -50), (34, -30), (20, 0), (16, 0)],
+        FL=[(2, -6), (6, -14), (10, -24), (24, -60), (28, -40), (14, 0), (12, 0)],
+        BR=[(4, 2), (10, 4), (18, 8), (-20, 0), (-26, 4), (-14, 0), (-4, 0)],
+        BL=[(2, 0), (8, 2), (14, 6), (-24, 0), (-20, 8), (-12, 0), (-2, 0)],
+        NECK=[0, 4, 8, -8, -12, -14, -8], HH=[0, -2, -4, 6, 8, 8, 4],
+        KT=[2, 6, 10, -8, -20, -28, -22], KRZ=[0, 0, 0, 0, 0, 0, 0], RZ=[0.3, 0.8, 1.2, 1.0, 0.5, -1.0, -0.5],
+        ARM=[60, 86, 102, 100, 90, 78, 72], FORE=[40, 46, 52, 25, 10, 8, 20],
+        SAB=[40, 28, 15, -2, -8, -6, 10], TAIL=[0, 4, 8, -8, -12, -10, -2]),
+}
+
+
+def _var_pose(v, i):
+    if i in (0, 8, 9):
+        return _attack_pose(i)
+    T = VAR[v]
+    k = i - 1
+    pose = merge(STANCE, M.body_about(HX, x=T["X"][k], z=T["Z"][k], q=T["Q"][k]), {
+        "body": {"sx": T["SXX"][k]},
+        "horse": {"r": T["R"][k]},
+        "leg_fr": {"r": T["FR"][k][0]}, "leg_fr2": {"r": T["FR"][k][1]},
+        "leg_fl": {"r": T["FL"][k][0]}, "leg_fl2": {"r": T["FL"][k][1]},
+        "leg_br": {"r": T["BR"][k][0]}, "leg_br2": {"r": T["BR"][k][1]},
+        "leg_bl": {"r": T["BL"][k][0]}, "leg_bl2": {"r": T["BL"][k][1]},
+        "neck": {"r": T["NECK"][k]}, "hhead": {"r": T["HH"][k]},
+        "rider": {"z": T["RZ"][k]},
+        "ktorso": {"r": T["KT"][k], "rz": T["KRZ"][k]}, "khead": {"r": -0.5 * T["KT"][k], "rz": -0.5 * T["KRZ"][k]},
+        "karm_r": {"r": T["ARM"][k] - KR0}, "kfore_r": {"r": T["FORE"][k] - KF0},
+        "tail": {"r": T["TAIL"][k]},
+    })
+    if k in (1, 2):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.7}})
+    elif k in (3, 4, 5, 6):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -0.8}})
+    pose = sabre_at(pose, T["SAB"][k])
+    if k in (3, 4):
+        pose["sabre"]["sz"] = 1.12
+    return pose
+
+
+THRUST = {"kind": "streak", "joint": "sabre", "point": TIP, "color": BLADE, "width_lu": 9.0, "white": 0.35}
+
+
+def _attack_v(v):
+    if v == "b":
+        ov = {
+            4: [dict(CUT, **{"from": 3, "t0": 0.0, "t1": 1.0}),
+                {"kind": "dust", "ground": (-24.0, 0.0), "size_lu": 9.0, "puffs": 4, "seed": 64,
+                 "spread": 1.2, "dir": -1.0}],
+            5: [dict(CUT, **{"from": 3, "t0": 0.3, "t1": 1.0})],
+            6: [dict(CUT, **{"from": 5, "t1": 1.0, "lines": 2}),
+                {"kind": "burst", "joint": "sabre", "point": TIP, "r0_lu": 8.0, "r1_lu": 15.0, "n": 6,
+                 "a0": -40.0, "arc": 160.0},
+                {"kind": "dust", "ground": (32.0, 0.0), "size_lu": 10.0, "puffs": 5, "seed": 65, "spread": 1.2}],
+        }
+    else:
+        ov = {
+            4: [dict(THRUST, **{"from": 3, "t0": 0.0, "t1": 1.0})],
+            5: [dict(THRUST, **{"from": 3, "t0": 0.3, "t1": 1.0, "width_lu": 8.0})],
+            6: [dict(THRUST, **{"from": 4, "t0": 0.4, "t1": 1.0, "width_lu": 6.0}),
+                {"kind": "burst", "joint": "sabre", "point": TIP, "r0_lu": 7.0, "r1_lu": 14.0, "n": 6,
+                 "a0": -70.0, "arc": 140.0},
+                {"kind": "dust", "ground": (34.0, 0.0), "size_lu": 10.0, "puffs": 5, "seed": 66, "spread": 1.2}],
+        }
+    reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9)}
+    return M.clip(f"attack_{v}", [_var_pose(v, i) for i in range(10)], M.HEAVY_MELEE_MS,
+                  impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov, reuse=reuse)
+
+
 def _hit(k):
     def recoil(a, shake):
         return {"body": dict(squash(-0.06 * max(a, 0)), x=-4.0 * max(a, 0) + 1.0 * min(a, 0)),
@@ -423,10 +547,12 @@ def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES_HEAVY)],
                [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], [100] * 8, loop=True),
+        M.walk_clip("walk", RIG, _walk, _gait(), "rider"),
         _attack_clip(),
+        _attack_v("b"),
+        _attack_v("c"),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
-    return M.check_contract(cl, heavy=True)
+    return M.check_variants(M.check_contract(cl, heavy=True))

@@ -383,7 +383,8 @@ export function maxedSave(content: Content): SaveDoc {
     createdAt: FIXTURE_NOW - 190 * DAY,
     profile: { name: 'Marshal-9001', avatar: { seed: 9001, parts: { hat: 4 } }, banner: 'rift', frame: 'aeon', title: 'ageborn' },
     currencies: { amber: 48920, dust: 12400 },
-    trophies: { current: 4210, best: 4380, roadClaimed: content.trophyRoad.nodes.map((n) => n.trophies) },
+    // best covers the whole road, also after a content wave lengthens it
+    trophies: { current: 4210, best: Math.max(4380, ...content.trophyRoad.nodes.map((n) => n.trophies)), roadClaimed: content.trophyRoad.nodes.map((n) => n.trophies) },
     arenaIndex: content.arenas.list.length - 1,
     collection,
     powersOwned: [...content.order.powers],

@@ -42,8 +42,12 @@ describe('EconomyRecorder (A6.9 measures)', () => {
     expect(m.perDay.quests).toBe(3);
     expect(m.maxDay).toEqual({ common: 19, rare: 14, epic: 9, legendary: 24 });
     expect(m.copiesDoneDay).toBe(24);
-    // 88 cards × 4,970 Amber = 437,360 (A17.13): reached on the 28th day (index 27) at 16,000 a day.
-    expect(m.amberDoneDay).toBe(27);
+    // Every collectable card × 4,970 Amber (88 cards = 437,360, A17.13) at 16,000 a day: 88 cards finish on
+    // day index 27; a content wave's extra cards push it past the 30 recorded days (null).
+    const perCard = content.rarities.upgradeAmber.reduce((a, b) => a + b, 0);
+    expect(perCard).toBe(4970);
+    const amberDay = Math.ceil((cards.length * perCard) / 16_000) - 1;
+    expect(m.amberDoneDay).toBe(amberDay < 30 ? amberDay : null);
     expect(m.allLegendariesDay).toBe(5);
     expect(m.planL7Day).toBe(12);
     expect(m.collectionMaxedDay).toBeNull();

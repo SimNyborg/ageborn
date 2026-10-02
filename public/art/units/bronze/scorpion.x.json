@@ -1,0 +1,502 @@
+{
+ "frames": {
+  "scorpion_attack_b_01": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 137,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 89,
+    "w": 137,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 462,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.65368,
+    "y": 0.88546
+   }
+  },
+  "scorpion_attack_b_01_team": {
+   "frame": {
+    "x": 1618,
+    "y": 2,
+    "w": 128,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 96,
+    "w": 128,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 462,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.65368,
+    "y": 0.88546
+   }
+  },
+  "scorpion_attack_b_02": {
+   "frame": {
+    "x": 143,
+    "y": 2,
+    "w": 137,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 89,
+    "w": 137,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 462,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.65368,
+    "y": 0.88546
+   }
+  },
+  "scorpion_attack_b_02_team": {
+   "frame": {
+    "x": 869,
+    "y": 2,
+    "w": 129,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 92,
+    "w": 129,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 462,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.65368,
+    "y": 0.88546
+   }
+  },
+  "scorpion_attack_b_03": {
+   "frame": {
+    "x": 427,
+    "y": 2,
+    "w": 142,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 93,
+    "w": 142,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 462,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.65368,
+    "y": 0.88546
+   }
+  },
+  "scorpion_attack_b_03_team": {
+   "frame": {
+    "x": 1481,
+    "y": 2,
+    "w": 133,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 97,
+    "w": 133,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 462,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.65368,
+    "y": 0.88546
+   }
+  },
+  "scorpion_attack_b_04": {
+   "frame": {
+    "x": 573,
+    "y": 2,
+    "w": 140,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 93,
+    "w": 140,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 462,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.65368,
+    "y": 0.88546
+   }
+  },
+  "scorpion_attack_b_04_team": {
+   "frame": {
+    "x": 1002,
+    "y": 2,
+    "w": 132,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 95,
+    "w": 132,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 462,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.65368,
+    "y": 0.88546
+   }
+  },
+  "scorpion_attack_b_05": {
+   "frame": {
+    "x": 1138,
+    "y": 2,
+    "w": 206,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 104,
+    "w": 206,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 462,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.65368,
+    "y": 0.88546
+   }
+  },
+  "scorpion_attack_b_05_team": {
+   "frame": {
+    "x": 1891,
+    "y": 2,
+    "w": 146,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 110,
+    "w": 146,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 462,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.65368,
+    "y": 0.88546
+   }
+  },
+  "scorpion_attack_b_06": {
+   "frame": {
+    "x": 284,
+    "y": 2,
+    "w": 139,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 213,
+    "y": 91,
+    "w": 139,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 462,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.65368,
+    "y": 0.88546
+   }
+  },
+  "scorpion_attack_b_06_team": {
+   "frame": {
+    "x": 1348,
+    "y": 2,
+    "w": 129,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 214,
+    "y": 97,
+    "w": 129,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 462,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.65368,
+    "y": 0.88546
+   }
+  },
+  "scorpion_attack_b_07": {
+   "frame": {
+    "x": 717,
+    "y": 2,
+    "w": 148,
+    "h": 114
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 213,
+    "y": 98,
+    "w": 148,
+    "h": 114
+   },
+   "sourceSize": {
+    "w": 462,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.65368,
+    "y": 0.88546
+   }
+  },
+  "scorpion_attack_b_07_team": {
+   "frame": {
+    "x": 1750,
+    "y": 2,
+    "w": 137,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 215,
+    "y": 102,
+    "w": 137,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 462,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.65368,
+    "y": 0.88546
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "scorpion_attack_00",
+   "scorpion_attack_b_01",
+   "scorpion_attack_b_02",
+   "scorpion_attack_b_03",
+   "scorpion_attack_b_04",
+   "scorpion_attack_b_05",
+   "scorpion_attack_b_06",
+   "scorpion_attack_b_07",
+   "scorpion_attack_08",
+   "scorpion_attack_09",
+   "scorpion_attack_10"
+  ],
+  "attack_b_team": [
+   "scorpion_attack_00_team",
+   "scorpion_attack_b_01_team",
+   "scorpion_attack_b_02_team",
+   "scorpion_attack_b_03_team",
+   "scorpion_attack_b_04_team",
+   "scorpion_attack_b_05_team",
+   "scorpion_attack_b_06_team",
+   "scorpion_attack_b_07_team",
+   "scorpion_attack_08_team",
+   "scorpion_attack_09_team",
+   "scorpion_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "scorpion.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 2048,
+   "h": 128
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.scorpion",
+   "name": "Scorpion",
+   "heightLu": 76,
+   "widthLu": 132.5,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    302.0,
+    201.0
+   ],
+   "anchorsLu": {
+    "head": [
+     -20,
+     74
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "wheeled",
+   "extrasOf": "scorpion",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      60,
+      60,
+      60,
+      150,
+      37,
+      80,
+      70,
+      80,
+      100,
+      100,
+      86
+     ],
+     "durationMs": 883,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4156,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        71.2,
+        43.6
+       ],
+       [
+        67.4,
+        42.6
+       ],
+       [
+        67.1,
+        39.5
+       ],
+       [
+        70.2,
+        37.9
+       ],
+       [
+        70.1,
+        38.8
+       ],
+       [
+        64.4,
+        52.7
+       ],
+       [
+        59.2,
+        53.5
+       ],
+       [
+        69.9,
+        40.0
+       ],
+       [
+        65.8,
+        47.2
+       ],
+       [
+        68.1,
+        45.2
+       ],
+       [
+        69.5,
+        44.0
+       ]
+      ]
+     },
+     "muzzle": [
+      64.4,
+      52.7
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

@@ -1,0 +1,510 @@
+{
+ "frames": {
+  "javelineer_attack_b_01": {
+   "frame": {
+    "x": 757,
+    "y": 2,
+    "w": 133,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 193,
+    "w": 133,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.53226,
+    "y": 0.83886
+   }
+  },
+  "javelineer_attack_b_01_team": {
+   "frame": {
+    "x": 655,
+    "y": 275,
+    "w": 109,
+    "h": 131
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 219,
+    "w": 109,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.53226,
+    "y": 0.83886
+   }
+  },
+  "javelineer_attack_b_02": {
+   "frame": {
+    "x": 435,
+    "y": 2,
+    "w": 118,
+    "h": 244
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 126,
+    "w": 118,
+    "h": 244
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.53226,
+    "y": 0.83886
+   }
+  },
+  "javelineer_attack_b_02_team": {
+   "frame": {
+    "x": 338,
+    "y": 275,
+    "w": 96,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 200,
+    "w": 96,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.53226,
+    "y": 0.83886
+   }
+  },
+  "javelineer_attack_b_03": {
+   "frame": {
+    "x": 193,
+    "y": 2,
+    "w": 116,
+    "h": 263
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 109,
+    "w": 116,
+    "h": 263
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.53226,
+    "y": 0.83886
+   }
+  },
+  "javelineer_attack_b_03_team": {
+   "frame": {
+    "x": 233,
+    "y": 275,
+    "w": 101,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 194,
+    "w": 101,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.53226,
+    "y": 0.83886
+   }
+  },
+  "javelineer_attack_b_04": {
+   "frame": {
+    "x": 313,
+    "y": 2,
+    "w": 118,
+    "h": 260
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 112,
+    "w": 118,
+    "h": 260
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.53226,
+    "y": 0.83886
+   }
+  },
+  "javelineer_attack_b_04_team": {
+   "frame": {
+    "x": 124,
+    "y": 275,
+    "w": 105,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 192,
+    "w": 105,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.53226,
+    "y": 0.83886
+   }
+  },
+  "javelineer_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 187,
+    "h": 269
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 95,
+    "w": 187,
+    "h": 269
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.53226,
+    "y": 0.83886
+   }
+  },
+  "javelineer_attack_b_05_team": {
+   "frame": {
+    "x": 438,
+    "y": 275,
+    "w": 102,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 216,
+    "y": 202,
+    "w": 102,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.53226,
+    "y": 0.83886
+   }
+  },
+  "javelineer_attack_b_06": {
+   "frame": {
+    "x": 557,
+    "y": 2,
+    "w": 196,
+    "h": 241
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 127,
+    "w": 196,
+    "h": 241
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.53226,
+    "y": 0.83886
+   }
+  },
+  "javelineer_attack_b_06_team": {
+   "frame": {
+    "x": 544,
+    "y": 275,
+    "w": 107,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 209,
+    "w": 107,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.53226,
+    "y": 0.83886
+   }
+  },
+  "javelineer_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 275,
+    "w": 118,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 237,
+    "y": 202,
+    "w": 118,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.53226,
+    "y": 0.83886
+   }
+  },
+  "javelineer_attack_b_07_team": {
+   "frame": {
+    "x": 768,
+    "y": 275,
+    "w": 117,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 234,
+    "y": 226,
+    "w": 117,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.53226,
+    "y": 0.83886
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "javelineer_attack_00",
+   "javelineer_attack_b_01",
+   "javelineer_attack_b_02",
+   "javelineer_attack_b_03",
+   "javelineer_attack_b_04",
+   "javelineer_attack_b_05",
+   "javelineer_attack_b_06",
+   "javelineer_attack_b_07",
+   "javelineer_attack_08",
+   "javelineer_attack_09",
+   "javelineer_attack_10",
+   "javelineer_attack_11"
+  ],
+  "attack_b_team": [
+   "javelineer_attack_00_team",
+   "javelineer_attack_b_01_team",
+   "javelineer_attack_b_02_team",
+   "javelineer_attack_b_03_team",
+   "javelineer_attack_b_04_team",
+   "javelineer_attack_b_05_team",
+   "javelineer_attack_b_06_team",
+   "javelineer_attack_b_07_team",
+   "javelineer_attack_08_team",
+   "javelineer_attack_09_team",
+   "javelineer_attack_10_team",
+   "javelineer_attack_11_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "javelineer.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 896,
+   "h": 448
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.javelineer",
+   "name": "Javelineer",
+   "heightLu": 68,
+   "widthLu": 41.5,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    264,
+    354
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     64
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "javelineer",
+   "clips": {
+    "attack_b": {
+     "frames": 12,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "durationsMs": [
+      30,
+      40,
+      40,
+      102,
+      30,
+      30,
+      18,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 7,
+     "impactStep": 7,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        7.2,
+        55.2
+       ],
+       [
+        13.3,
+        52.8
+       ],
+       [
+        5.3,
+        72.7
+       ],
+       [
+        -8.8,
+        77.8
+       ],
+       [
+        -16.4,
+        76.7
+       ],
+       [
+        32.5,
+        55.0
+       ],
+       [
+        46.4,
+        34.2
+       ],
+       [
+        54.5,
+        18.8
+       ],
+       [
+        44.5,
+        -1.5
+       ],
+       [
+        -27.5,
+        51.8
+       ],
+       [
+        -9.4,
+        69.0
+       ],
+       [
+        8.1,
+        56.4
+       ]
+      ]
+     },
+     "muzzle": [
+      54.5,
+      18.8
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

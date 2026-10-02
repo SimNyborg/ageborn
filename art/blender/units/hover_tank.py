@@ -12,11 +12,17 @@ mint thrust cone. An antenna at the back of the turret flies a team pennant.
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    bobs and tilts on its pads (the cones pulse); the pilot pops up for a look, a blink
-  walk    glides nose-down, cones flickering (an `odo` joint gives the natural speed, 55 lu/s)
+  walk    walk v3 hover (ANIM_SPEC G8): glides 6 degrees nose-down, the thrust cones pulse between 0.8x
+          and 1.3x on a 2-frame beat (the rear pair harder), the turret, barrel and pilot lag a beat,
+          the pennant whips; the hover bob itself is code motion (R8). The `odo` joint runs at the
+          ground speed (55 x 1.25 = 68.75 lu/s)
   attack  NOSE-DIP PLASMA SHOT: the hull dips its nose and the front pads flare, the coils light up
           one by one and a plasma ball swells at the muzzle (the held extreme, the pilot squints),
           FIRE: a big mint flash, the barrel slams back, the hull rears and slides back on its
           pads with a smoke puff, then drifts forward and settles; the pilot cheers
+  attack_b  SIDE-SLIP STRAFE SHOT: the hull slips sideways toward the camera and banks, the turret
+          swings in toward the camera with the near pads flaring (the held extreme, the coils charging
+          and pulsing in a hold loop), a quick flash, and the kick rocks the hull back the other way
   hit     vehicle: the hull bounces on its pads, the pilot ducks into the hatch, sparks
   die     D7 wreck and bail: the pads cut out, the hull drops and tilts nose-up, the pilot ejects
           on a mint jet (X eyes), smoke
@@ -33,6 +39,7 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "hover_tank"
+GAIT_NAME = "hover"
 NAME = "Hover Tank"
 HEIGHT_LU = 112
 YAW_DEG = -10.0
@@ -236,16 +243,24 @@ def _idle(f):
     return pose
 
 
+GROUND_SPEED = SPEED * 1.25      # the sim moves it at card speed x 1.25 (A17.2)
+PULSE = [1.3, 0.82, 1.22, 0.88, 1.3, 0.82, 1.22, 0.88]
+
+
 def _walk(f):
     p = 2 * math.pi * f / 8
-    a = SPEED * 0.5 / 4.0          # odo amplitude: stride = 4a per 0.5 s cycle = sim speed (odo is unscaled)
-    return merge(_cones(1.15, [1.0 + 0.2 * math.sin(p + k) for k in (0, 1.6, 3.1, 4.7)]), {
-        "odo": {"x": a * math.cos(p)},
-        "hull": dict(z=1.2 * math.sin(2 * p) + 0.6, r=-2.2 + 0.6 * math.sin(p)),
-        "turret": {"r": 0.8 * math.sin(p - 0.8)},
-        "barrel": {"r": 1.0 * math.sin(p - 1.2)},
-        "pilot": {"z": -0.6 * math.sin(2 * p - 1.0), "r": 3.0 * math.sin(p - 1.5)},
-    })
+    a = GROUND_SPEED * 0.5 / 4.0   # odo amplitude: stride = 4a per 0.5 s cycle = ground speed (odo is unscaled)
+    k, k2 = PULSE[f], PULSE[(f + 1) % 8]
+    pose = {"odo": {"x": a * math.cos(p)},
+            "hull": dict(z=0.8 * math.sin(2 * p), r=-6.0 + 0.8 * math.sin(p)),
+            "turret": {"r": 1.2 * math.sin(p - 0.8)},
+            "barrel": {"r": 1.6 * math.sin(p - 1.2)},
+            "pilot": {"z": -0.8 * math.sin(2 * p - 1.0), "r": 4.0 * math.sin(p - 1.5)}}
+    for i in range(4):
+        x = sorted(PADS, key=lambda q: -q[1])[i][0]
+        v = 1.3 * (k if i % 2 == 0 else k2) if x < 0 else 1.0 * (k2 if i % 2 == 0 else k)
+        pose[f"cone{i}"] = {"sz": v, "s": 0.9 + 0.1 * min(1.2, v), "r": 14.0 if x < 0 else 8.0}
+    return pose
 
 
 # -- attack: nose-dip plasma shot (790 ms, impact at 291 ms = 0.3684, as shipped) ------------------
@@ -290,7 +305,57 @@ def _attack_clip():
         4: [{"kind": "dust", "ground": (-10.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 2, "spread": 1.2,
              "color": "#DCD6E8", "dir": -1.0}],
     }
-    return M.clip("attack", [_attack_pose(f) for f in range(8)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
+    # the sim wind-up is 2.58x the authored 291 ms: the coils pulse between the dip and the held
+    # extreme while it waits (holdLoop, ANIM_SPEC 2.2 rule 8)
+    return M.clip("attack", [_attack_pose(f) for f in range(8)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  extra={"holdStep": 2, "holdLoop": [1, 2]})
+
+
+# -- attack B: side-slip strafe shot (A's steps: 790 ms, the shot at 291 ms) ------------------------
+# 0 = A aim, 1 slip (the hull slides toward the camera and banks, the turret swings in), 2 HOLD (full
+# slip and bank, the near pads flaring, the coils lit, a charge ball), 3 FIRE (a quick flash), 4 rock (the
+# kick rocks the hull back the other way), 5 drift, 6-7 = A return and settle
+#      slip-y bank  yaw  turret pitch cone  near  chg  lit
+B_T = [(-4.0, 5.0, -6.0, -14.0, -1.5, 1.25, 1.5, 0.5, 2),
+       (-7.0, 8.0, -10.0, -24.0, -2.0, 1.35, 1.8, 1.2, 3),
+       (-6.0, -4.0, -8.0, -22.0, 3.0, 1.7, 1.0, 0.0, 0),
+       (-3.0, -7.0, -4.0, -12.0, 2.0, 1.4, 1.1, 0.0, 0),
+       (-1.0, -2.0, -1.0, -4.0, 0.5, 1.15, 1.0, 0.0, 0)]
+
+
+def _b_pose(i):
+    if i in (0, 6, 7):
+        return _attack_pose(i)
+    y, bank, yaw, tz, pitch, cone, near, chg, lit = B_T[i - 1]
+    pose = merge(_cones(cone), _lit(lit), {
+        "body": {"y": y, "x": [0, 0.5, 0.5, -3.0, -4.0, -2.0][i - 1] if i <= 5 else 0.0, "z": -1.0 if i == 2 else 0.0},
+        "hull": dict(squash(-0.03 if i == 3 else 0.0), r=pitch, rx=bank, rz=yaw),
+        "turret": {"rz": tz, "r": 1.0},
+        "barrel": {"x": -6.0 if i == 3 else (-3.0 if i == 4 else 0.0), "r": 2.0,
+                   "sz": 1.1 if i == 3 else 1.0},
+        "charge": {"show": chg > 0, "s": max(chg, 0.01)},
+        "flash": {"show": i == 3},
+        "smoke": {"show": i in (4, 5), "s": 0.9 if i == 4 else 1.15, "x": -4.0, "z": 2.0 if i == 5 else 0.0},
+        "pilot": {"z": [-1.0, -1.5, -2.0, -0.5, 0.5][i - 1], "rz": 0.6 * tz},
+    })
+    # the near pads (front of the slip) flare
+    for c in ("cone2", "cone3"):
+        pose[c]["sz"] = pose[c]["sz"] * near
+    return merge(pose, KF.glyph(["g_angry", "g_squint", "g_wide", "g_hurt", "eyes"][i - 1]))
+
+
+def _attack_b():
+    ov = {
+        2: [{"kind": "rings", "joint": "barrel", "point": (MUZZLE[0] + 2.0, MUZZLE[1], MUZZLE[2]),
+             "radii_lu": (6.0, 9.5), "a0": -80.0, "a1": 80.0, "color": K.MINT_CORE},
+            {"kind": "dust", "ground": (-6.0, 0.0), "size_lu": 6.0, "puffs": 4, "seed": 61, "spread": 1.2,
+             "color": "#DCD6E8"}],
+        3: [{"kind": "burst", "joint": "barrel", "point": (MUZZLE[0] + 6.0, MUZZLE[1], MUZZLE[2]), "r0_lu": 9.0,
+             "r1_lu": 15.0, "n": 6, "a0": -65.0, "arc": 130.0, "color": K.MINT_CORE}],
+    }
+    return M.clip("attack_b", [_b_pose(i) for i in range(8)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  reuse={0: ("attack", 0), 6: ("attack", 6), 7: ("attack", 7)},
+                  extra={"holdStep": 2, "holdLoop": [1, 2]})
 
 
 def _hit(k):
@@ -339,8 +404,9 @@ def clips():
         M.clip("idle", [_idle(f) for f in range(6)], [M.IDLE_MS_HEAVY] * 6, loop=True),
         M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
-    return M.check_contract(cl, heavy=True, attack_ms=790, attack_impact_at=0.3684)
+    return M.check_variants(M.check_contract(cl, heavy=True, attack_ms=790, attack_impact_at=0.3684))

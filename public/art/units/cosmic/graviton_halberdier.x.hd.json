@@ -1,0 +1,1020 @@
+{
+ "frames": {
+  "graviton_halberdier_attack_b_00": {
+   "frame": {
+    "x": 2,
+    "y": 482,
+    "w": 251,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 234,
+    "w": 251,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_b_00_team": {
+   "frame": {
+    "x": 1008,
+    "y": 1079,
+    "w": 174,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 241,
+    "w": 174,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_b_01": {
+   "frame": {
+    "x": 215,
+    "y": 1079,
+    "w": 280,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 259,
+    "w": 280,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_b_01_team": {
+   "frame": {
+    "x": 455,
+    "y": 1261,
+    "w": 194,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 154,
+    "y": 253,
+    "w": 194,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_b_02": {
+   "frame": {
+    "x": 298,
+    "y": 267,
+    "w": 269,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 265,
+    "w": 269,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_b_02_team": {
+   "frame": {
+    "x": 424,
+    "y": 888,
+    "w": 185,
+    "h": 185
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 261,
+    "w": 185,
+    "h": 185
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_b_03": {
+   "frame": {
+    "x": 301,
+    "y": 2,
+    "w": 374,
+    "h": 248
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 190,
+    "w": 374,
+    "h": 248
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_b_03_team": {
+   "frame": {
+    "x": 1109,
+    "y": 888,
+    "w": 143,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 269,
+    "y": 235,
+    "w": 143,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 295,
+    "h": 261
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 177,
+    "w": 295,
+    "h": 261
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_b_04_team": {
+   "frame": {
+    "x": 613,
+    "y": 888,
+    "w": 202,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 271,
+    "y": 231,
+    "w": 202,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_b_05": {
+   "frame": {
+    "x": 571,
+    "y": 267,
+    "w": 308,
+    "h": 210
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 283,
+    "y": 277,
+    "w": 308,
+    "h": 210
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 688,
+    "w": 214,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 283,
+    "y": 260,
+    "w": 214,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_b_06": {
+   "frame": {
+    "x": 679,
+    "y": 2,
+    "w": 248,
+    "h": 242
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 291,
+    "y": 262,
+    "w": 248,
+    "h": 242
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_b_06_team": {
+   "frame": {
+    "x": 931,
+    "y": 2,
+    "w": 187,
+    "h": 219
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 289,
+    "y": 245,
+    "w": 187,
+    "h": 219
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_b_07": {
+   "frame": {
+    "x": 257,
+    "y": 482,
+    "w": 258,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 284,
+    "y": 242,
+    "w": 258,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_b_07_team": {
+   "frame": {
+    "x": 1062,
+    "y": 688,
+    "w": 198,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 277,
+    "y": 232,
+    "w": 198,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_00": {
+   "frame": {
+    "x": 782,
+    "y": 688,
+    "w": 276,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 251,
+    "y": 246,
+    "w": 276,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_00_team": {
+   "frame": {
+    "x": 794,
+    "y": 1079,
+    "w": 210,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 237,
+    "w": 210,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_01": {
+   "frame": {
+    "x": 819,
+    "y": 888,
+    "w": 286,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 231,
+    "y": 254,
+    "w": 286,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 1261,
+    "w": 211,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 249,
+    "w": 211,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_02": {
+   "frame": {
+    "x": 499,
+    "y": 1079,
+    "w": 291,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 259,
+    "w": 291,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_02_team": {
+   "frame": {
+    "x": 653,
+    "y": 1261,
+    "w": 214,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 256,
+    "w": 214,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_03": {
+   "frame": {
+    "x": 519,
+    "y": 482,
+    "w": 271,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 268,
+    "y": 240,
+    "w": 271,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_03_team": {
+   "frame": {
+    "x": 218,
+    "y": 888,
+    "w": 202,
+    "h": 185
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 268,
+    "y": 230,
+    "w": 202,
+    "h": 185
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_04": {
+   "frame": {
+    "x": 883,
+    "y": 267,
+    "w": 280,
+    "h": 210
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 276,
+    "y": 240,
+    "w": 280,
+    "h": 210
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 888,
+    "w": 212,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 276,
+    "y": 230,
+    "w": 212,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_05": {
+   "frame": {
+    "x": 220,
+    "y": 688,
+    "w": 339,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 291,
+    "y": 273,
+    "w": 339,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_05_team": {
+   "frame": {
+    "x": 217,
+    "y": 1261,
+    "w": 234,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 295,
+    "y": 263,
+    "w": 234,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_06": {
+   "frame": {
+    "x": 2,
+    "y": 267,
+    "w": 292,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 299,
+    "y": 255,
+    "w": 292,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_06_team": {
+   "frame": {
+    "x": 563,
+    "y": 688,
+    "w": 215,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 302,
+    "y": 244,
+    "w": 215,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_07": {
+   "frame": {
+    "x": 794,
+    "y": 482,
+    "w": 269,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 288,
+    "y": 242,
+    "w": 269,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  },
+  "graviton_halberdier_attack_c_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 1079,
+    "w": 209,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 281,
+    "y": 232,
+    "w": 209,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.45322,
+    "y": 0.83333
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "graviton_halberdier_attack_b_00",
+   "graviton_halberdier_attack_b_01",
+   "graviton_halberdier_attack_b_02",
+   "graviton_halberdier_attack_b_03",
+   "graviton_halberdier_attack_b_04",
+   "graviton_halberdier_attack_b_05",
+   "graviton_halberdier_attack_b_06",
+   "graviton_halberdier_attack_b_07",
+   "graviton_halberdier_attack_09",
+   "graviton_halberdier_attack_10"
+  ],
+  "attack_b_team": [
+   "graviton_halberdier_attack_b_00_team",
+   "graviton_halberdier_attack_b_01_team",
+   "graviton_halberdier_attack_b_02_team",
+   "graviton_halberdier_attack_b_03_team",
+   "graviton_halberdier_attack_b_04_team",
+   "graviton_halberdier_attack_b_05_team",
+   "graviton_halberdier_attack_b_06_team",
+   "graviton_halberdier_attack_b_07_team",
+   "graviton_halberdier_attack_09_team",
+   "graviton_halberdier_attack_10_team"
+  ],
+  "attack_c": [
+   "graviton_halberdier_attack_c_00",
+   "graviton_halberdier_attack_c_01",
+   "graviton_halberdier_attack_c_02",
+   "graviton_halberdier_attack_c_03",
+   "graviton_halberdier_attack_c_04",
+   "graviton_halberdier_attack_c_05",
+   "graviton_halberdier_attack_c_06",
+   "graviton_halberdier_attack_c_07",
+   "graviton_halberdier_attack_09",
+   "graviton_halberdier_attack_10"
+  ],
+  "attack_c_team": [
+   "graviton_halberdier_attack_c_00_team",
+   "graviton_halberdier_attack_c_01_team",
+   "graviton_halberdier_attack_c_02_team",
+   "graviton_halberdier_attack_c_03_team",
+   "graviton_halberdier_attack_c_04_team",
+   "graviton_halberdier_attack_c_05_team",
+   "graviton_halberdier_attack_c_06_team",
+   "graviton_halberdier_attack_c_07_team",
+   "graviton_halberdier_attack_09_team",
+   "graviton_halberdier_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "graviton_halberdier.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1280,
+   "h": 1432
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.graviton_halberdier",
+   "name": "Graviton Halberdier",
+   "heightLu": 72,
+   "widthLu": 104.5,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    310,
+    420
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     70
+    ],
+    "hitCenter": [
+     0,
+     33
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "graviton_halberdier",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      40,
+      60,
+      115,
+      45,
+      30,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4265,
+     "smearFrame": 3,
+     "holdStep": 2,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        -74.1,
+        58.2
+       ],
+       [
+        -88.4,
+        11.4
+       ],
+       [
+        -84.7,
+        -12.6
+       ],
+       [
+        48.9,
+        87.7
+       ],
+       [
+        87.9,
+        32.6
+       ],
+       [
+        100.8,
+        -7.1
+       ],
+       [
+        88.4,
+        -14.3
+       ],
+       [
+        89.9,
+        15.5
+       ],
+       [
+        87.6,
+        33.8
+       ],
+       [
+        79.0,
+        50.8
+       ]
+      ]
+     }
+    },
+    "attack_c": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      40,
+      60,
+      115,
+      45,
+      30,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4265,
+     "holdStep": 2,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        83.6,
+        32.3
+       ],
+       [
+        78.2,
+        30.6
+       ],
+       [
+        74.5,
+        28.9
+       ],
+       [
+        87.4,
+        21.5
+       ],
+       [
+        94.2,
+        13.3
+       ],
+       [
+        114.9,
+        1.6
+       ],
+       [
+        108.4,
+        4.2
+       ],
+       [
+        96.0,
+        21.9
+       ],
+       [
+        87.6,
+        33.8
+       ],
+       [
+        79.0,
+        50.8
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

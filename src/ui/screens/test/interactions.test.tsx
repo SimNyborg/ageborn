@@ -696,11 +696,11 @@ describe('Result (rewards staged, each skippable)', () => {
     expect(text(m.q('[data-testid="result-reason"]')!)).toBe('Their walls crumbled at 23:41');
     m.click('[data-testid="result-skip"]');
     expect(text(m.q('[data-testid="reward-unranked"]')!)).toContain('Unranked');
-    // A timed war has neither.
+    // A timed war is ranked; with its Siege rope (A2.10.2) it has a reason line too (won at 5:31, before Siege).
     m.unmount();
     m = mount({ routes: route() });
     m.click('[data-testid="result-skip"]');
-    expect(m.q('[data-testid="result-reason"]')).toBeNull();
+    expect(text(m.q('[data-testid="result-reason"]')!)).toBe('Their base fell at 5:31');
     expect(m.q('[data-testid="reward-unranked"]')).toBeNull();
   });
 
@@ -846,7 +846,7 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6; owner request 2026-09-30)', 
     const troops = stone().units.filter((u) => !!u).length;
     expect(text(m.q('[data-testid="band-unit"]')!)).toBe(`Troops ${troops}/6`);
     expect(text(free.querySelector('.army-sec-title') as FakeElement)).toMatch(/^Available · \d+$/);
-    expect(text(m.q('[data-testid="army-owned-count"]')!)).toMatch(/All 17 Stone cards found!|You own \d+ of 17 Stone cards/);
+    expect(text(m.q('[data-testid="army-owned-count"]')!)).toMatch(new RegExp(`All ${albumOfAge('stone')} Stone cards found!|You own \\d+ of ${albumOfAge('stone')} Stone cards`));
     m.click('[data-testid="slot-unit-4"] .ui-card');
     m.click('[data-testid="remove-unit-4"]');
     expect(sectionOf('drum_shaman')).toBe('free');
@@ -865,7 +865,7 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6; owner request 2026-09-30)', 
     expect(sectionOf('mammoth_matriarch')).toBe('locked');
     expect(m.q('[data-testid="cand-mammoth_matriarch"]')!.getAttribute('class')).toContain('is-locked');
     expect(text(m.q('[data-testid="src-mammoth_matriarch"]')!)).toBe('Time Capsules');
-    expect(text(m.q('[data-testid="army-owned-count"]')!)).toMatch(/You own \d+ of 17 Stone cards/);
+    expect(text(m.q('[data-testid="army-owned-count"]')!)).toMatch(new RegExp(`You own \\d+ of ${albumOfAge('stone')} Stone cards`));
     // A locked card says so and offers Info; it cannot be used.
     m.click('[data-testid="cand-mammoth_matriarch"]');
     expect(m.q('[data-testid="card-use"]')).toBeNull();
@@ -1013,16 +1013,21 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6; owner request 2026-09-30)', 
   });
 });
 
+/** Album cards in all and per age (troops, turrets, powers; a content wave adds to them). */
+const ALBUM_TOTAL = content.order.units.length + content.order.turrets.length + content.order.powers.length;
+const albumOfAge = (age: string): number =>
+  [...Object.values(content.units).filter((u) => content.order.units.includes(u.id)), ...Object.values(content.turrets), ...Object.values(content.powers)].filter((c) => c.age === age).length;
+
 describe('Collection and card detail', () => {
   it('the Card Album lists every card by age, numbered, and filters by Have / Missing, rarity and class', () => {
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'collection' }] });
     const cards = () => m!.qa('[data-testid="dex"] .dex-tile').length;
-    expect(cards()).toBe(136);
+    expect(cards()).toBe(ALBUM_TOTAL);
     expect(m.qa('[data-testid="dex"] .dex-age')).toHaveLength(content.order.ages.length);
     expect(text(m.q('[data-testid="dex-bonker"] .dex-tile__no')!)).toBe('No. 001');
     const missing = m.qa('[data-testid="dex"] .dex-tile.is-missing').length;
     expect(missing).toBeGreaterThan(0);
-    expect(text(m.q('[data-testid="dex-total"]')!)).toContain(`${136 - missing}/136 found`);
+    expect(text(m.q('[data-testid="dex-total"]')!)).toContain(`${ALBUM_TOTAL - missing}/${ALBUM_TOTAL} found`);
     // Missing only: every tile left is a "?" silhouette with its source.
     flush(() => (m!.qa('[data-testid="dex-own"] [role="radio"]')[2] as FakeElement).click());
     expect(cards()).toBe(missing);
@@ -1031,7 +1036,8 @@ describe('Collection and card detail', () => {
     flush(() => (m!.qa('[data-testid="dex-own"] [role="radio"]')[0] as FakeElement).click());
     m.click('[data-testid="dex-filters"]');
     flush(() => (m!.qa('[data-testid="dex-rarity"] [role="radio"]')[4] as FakeElement).click());
-    expect(cards()).toBe(8);
+    // one Legendary troop per age, plus any a content wave adds
+    expect(cards()).toBe(content.order.units.filter((id) => content.units[id]!.rarity === 'legendary').length);
     m.click('[data-testid="dex-filter-clear"]');
     m.click('[data-testid="dex-class-turret"]');
     expect(cards()).toBe(content.order.turrets.length);
@@ -1039,7 +1045,7 @@ describe('Collection and card detail', () => {
 
   it('the Progress tab has a Card Album row with the found count (review 2)', () => {
     m = mount({ state: 'mid', routes: [{ id: 'progress' }] });
-    expect(text(m.q('[data-testid="progress-album"]')!)).toMatch(/Card Album\s*\d+\/136/);
+    expect(text(m.q('[data-testid="progress-album"]')!)).toMatch(new RegExp(`Card Album\\s*\\d+/${ALBUM_TOTAL}`));
     m.click('[data-testid="progress-album"]');
     expect(m.router.current.value).toEqual({ id: 'collection', tab: 'cards' });
   });
@@ -1055,7 +1061,7 @@ describe('Collection and card detail', () => {
     m = mount({ state: 'new', routes: [{ id: 'home' }, { id: 'collection' }] });
     for (const age of content.order.ages) {
       expect(m.q(`[data-testid="dex-age-${age}"]`), age).not.toBeNull();
-      expect(text(m.q(`[data-testid="dex-count-${age}"]`)!)).toMatch(/\d+\/17/);
+      expect(text(m.q(`[data-testid="dex-count-${age}"]`)!)).toMatch(new RegExp(`\\d+/${albumOfAge(age)}$`));
     expect(m.q(`[data-testid="dex-chip-${age}"]`), age).not.toBeNull();
     }
     expect(m.q('[data-testid="dex-mammoth_matriarch"]')!.getAttribute('class')).toContain('is-missing');

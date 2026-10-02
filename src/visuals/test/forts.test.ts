@@ -14,6 +14,7 @@ import { AtlasFortView, fortCrumbleStage } from '../fortViews/atlasFortView';
 import { FORT_SHEETS, FORT_VISUALS, fortSheetSource, fortSource, LEVY_SCALE, LEVY_VISUALS } from '../forts';
 import { MANIFEST } from '../manifest';
 import { createArtProvider } from '../provider';
+import { PAUSED_WAVE_IDS } from '../../../tests/fixtures/pausedWave';
 
 interface FortJson {
   animations: Record<string, string[]>;
@@ -24,7 +25,9 @@ const FILES = new Set(Object.keys(import.meta.glob('/public/art/forts/*/*.png', 
 
 describe('fort visuals match the content (A16.14.4)', () => {
   it('lists every fort card with its age and kind', () => {
+    // the paused content wave's forts have no art yet (tests/fixtures/pausedWave.ts)
     const want = Object.values(content.forts)
+      .filter((f) => !PAUSED_WAVE_IDS.has(f.id))
       .map((f) => `${f.id}:${f.age}:${f.fortKind}`)
       .sort();
     expect(FORT_VISUALS.map((f) => `${f.id}:${f.age}:${f.kind}`).sort()).toEqual(want);

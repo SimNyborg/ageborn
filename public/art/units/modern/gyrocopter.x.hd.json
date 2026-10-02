@@ -1,0 +1,366 @@
+{
+ "frames": {
+  "gyrocopter_attack_b_00": {
+   "frame": {
+    "x": 249,
+    "y": 2,
+    "w": 246,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 231,
+    "w": 246,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter_attack_b_00_team": {
+   "frame": {
+    "x": 375,
+    "y": 213,
+    "w": 181,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 289,
+    "w": 181,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter_attack_b_01": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 243,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 226,
+    "w": 243,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter_attack_b_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 213,
+    "w": 180,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 288,
+    "w": 180,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter_attack_b_02": {
+   "frame": {
+    "x": 499,
+    "y": 2,
+    "w": 270,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 228,
+    "w": 270,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter_attack_b_02_team": {
+   "frame": {
+    "x": 560,
+    "y": 213,
+    "w": 190,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 292,
+    "w": 190,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter_attack_b_03": {
+   "frame": {
+    "x": 1018,
+    "y": 2,
+    "w": 220,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 239,
+    "w": 220,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter_attack_b_03_team": {
+   "frame": {
+    "x": 754,
+    "y": 213,
+    "w": 184,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 290,
+    "w": 184,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter_attack_b_04": {
+   "frame": {
+    "x": 773,
+    "y": 2,
+    "w": 241,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 236,
+    "w": 241,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter_attack_b_04_team": {
+   "frame": {
+    "x": 186,
+    "y": 213,
+    "w": 185,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 284,
+    "w": 185,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "gyrocopter_attack_b_00",
+   "gyrocopter_attack_b_01",
+   "gyrocopter_attack_b_02",
+   "gyrocopter_attack_b_03",
+   "gyrocopter_attack_b_04",
+   "gyrocopter_attack_05"
+  ],
+  "attack_b_team": [
+   "gyrocopter_attack_b_00_team",
+   "gyrocopter_attack_b_01_team",
+   "gyrocopter_attack_b_02_team",
+   "gyrocopter_attack_b_03_team",
+   "gyrocopter_attack_b_04_team",
+   "gyrocopter_attack_05_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "gyrocopter.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1280,
+   "h": 316
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.gyrocopter",
+   "name": "Gyrocopter",
+   "heightLu": 66,
+   "widthLu": 90.2,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    328,
+    414
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     62
+    ],
+    "hitCenter": [
+     0,
+     26
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "fly",
+   "extrasOf": "gyrocopter",
+   "clips": {
+    "attack_b": {
+     "frames": 6,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      36,
+      24,
+      50,
+      40,
+      50,
+      50
+     ],
+     "durationMs": 250,
+     "impactFrame": 2,
+     "impactStep": 2,
+     "impactAt": 0.24,
+     "holdStep": 0,
+     "holdLoop": [
+      0,
+      1
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        30.7,
+        8.1
+       ],
+       [
+        30.5,
+        8.5
+       ],
+       [
+        30.1,
+        10.5
+       ],
+       [
+        29.8,
+        11.8
+       ],
+       [
+        31.1,
+        7.7
+       ],
+       [
+        30.7,
+        5.7
+       ]
+      ]
+     },
+     "muzzle": [
+      30.1,
+      10.5
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

@@ -1,0 +1,386 @@
+{
+ "frames": {
+  "hover_tank_attack_b_01": {
+   "frame": {
+    "x": 322,
+    "y": 2,
+    "w": 337,
+    "h": 312
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 270,
+    "y": 264,
+    "w": 337,
+    "h": 312
+   },
+   "sourceSize": {
+    "w": 856,
+    "h": 606
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 0.89109
+   }
+  },
+  "hover_tank_attack_b_01_team": {
+   "frame": {
+    "x": 653,
+    "y": 633,
+    "w": 234,
+    "h": 239
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 284,
+    "y": 269,
+    "w": 234,
+    "h": 239
+   },
+   "sourceSize": {
+    "w": 856,
+    "h": 606
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 0.89109
+   }
+  },
+  "hover_tank_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 316,
+    "h": 329
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 271,
+    "y": 266,
+    "w": 316,
+    "h": 329
+   },
+   "sourceSize": {
+    "w": 856,
+    "h": 606
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 0.89109
+   }
+  },
+  "hover_tank_attack_b_02_team": {
+   "frame": {
+    "x": 423,
+    "y": 633,
+    "w": 226,
+    "h": 267
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 290,
+    "y": 260,
+    "w": 226,
+    "h": 267
+   },
+   "sourceSize": {
+    "w": 856,
+    "h": 606
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 0.89109
+   }
+  },
+  "hover_tank_attack_b_03": {
+   "frame": {
+    "x": 411,
+    "y": 335,
+    "w": 347,
+    "h": 293
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 267,
+    "y": 270,
+    "w": 347,
+    "h": 293
+   },
+   "sourceSize": {
+    "w": 856,
+    "h": 606
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 0.89109
+   }
+  },
+  "hover_tank_attack_b_03_team": {
+   "frame": {
+    "x": 238,
+    "y": 923,
+    "w": 227,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 292,
+    "y": 282,
+    "w": 227,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 856,
+    "h": 606
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 0.89109
+   }
+  },
+  "hover_tank_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 335,
+    "w": 405,
+    "h": 294
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 264,
+    "y": 263,
+    "w": 405,
+    "h": 294
+   },
+   "sourceSize": {
+    "w": 856,
+    "h": 606
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 0.89109
+   }
+  },
+  "hover_tank_attack_b_04_team": {
+   "frame": {
+    "x": 469,
+    "y": 923,
+    "w": 223,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 290,
+    "y": 277,
+    "w": 223,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 856,
+    "h": 606
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 0.89109
+   }
+  },
+  "hover_tank_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 633,
+    "w": 417,
+    "h": 286
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 262,
+    "y": 263,
+    "w": 417,
+    "h": 286
+   },
+   "sourceSize": {
+    "w": 856,
+    "h": 606
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 0.89109
+   }
+  },
+  "hover_tank_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 923,
+    "w": 232,
+    "h": 223
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 279,
+    "y": 274,
+    "w": 232,
+    "h": 223
+   },
+   "sourceSize": {
+    "w": 856,
+    "h": 606
+   },
+   "anchor": {
+    "x": 0.5,
+    "y": 0.89109
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "hover_tank_attack_00",
+   "hover_tank_attack_b_01",
+   "hover_tank_attack_b_02",
+   "hover_tank_attack_b_03",
+   "hover_tank_attack_b_04",
+   "hover_tank_attack_b_05",
+   "hover_tank_attack_06",
+   "hover_tank_attack_07"
+  ],
+  "attack_b_team": [
+   "hover_tank_attack_00_team",
+   "hover_tank_attack_b_01_team",
+   "hover_tank_attack_b_02_team",
+   "hover_tank_attack_b_03_team",
+   "hover_tank_attack_b_04_team",
+   "hover_tank_attack_b_05_team",
+   "hover_tank_attack_06_team",
+   "hover_tank_attack_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "hover_tank.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 896,
+   "h": 1148
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.hover_tank",
+   "name": "Hover Tank",
+   "heightLu": 112,
+   "widthLu": 136.6,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    428,
+    540
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     100
+    ],
+    "hitCenter": [
+     0,
+     36
+    ],
+    "muzzle": [
+     59,
+     66
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "hover",
+   "extrasOf": "hover_tank",
+   "clips": {
+    "attack_b": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      50,
+      80,
+      161,
+      90,
+      100,
+      90,
+      100,
+      119
+     ],
+     "durationMs": 790,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.3684,
+     "holdStep": 2,
+     "holdLoop": [
+      1,
+      2
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        76.0,
+        51.8
+       ],
+       [
+        64.9,
+        39.6
+       ],
+       [
+        51.9,
+        29.6
+       ],
+       [
+        51.2,
+        46.2
+       ],
+       [
+        61.4,
+        51.5
+       ],
+       [
+        70.1,
+        51.6
+       ],
+       [
+        74.0,
+        48.0
+       ],
+       [
+        76.1,
+        48.8
+       ]
+      ]
+     },
+     "muzzle": [
+      51.2,
+      46.2
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

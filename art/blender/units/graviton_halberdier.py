@@ -12,13 +12,19 @@ edge, a back spike and, between two forked prongs, a floating violet gravity orb
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    braced, the gravity orb bobs and pulses in its prongs, weight shift, a blink
-  walk    march: a high stiff-kneed step, the halberd sloped on the shoulder side, the tabard
-          and cape swinging
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1, 87.5 lu/s): the halberd sloped back over
+          the shoulder, planted feet, the shortened tabard and the cape swinging
   attack  HEAVE AND DIAGONAL CHOP: braces low with the head of the halberd down, heaves it up in
           a big arc in front of him (smear), holds it high behind the helm while the gravity orb
           flares with rings (the held extreme), then chops down diagonally in front (violet
           crescent smear); the crescent bites (impact lines, dust at the front foot) and the orb
           bursts
+  attack_b  FLAT SWEEP: crouches low with the halberd swung back level behind his hips, the body turned
+          away (the held extreme), then sweeps it round flat at waist height into a lunge (violet
+          crescent smear), the crescent level at the target
+  attack_c  ORB THRUST: draws the halberd back level at the hip, leaning back on the rear leg while the
+          gravity orb charges (the held extreme), then drives it straight forward in a long lunge; the
+          orb bursts in a ring pulse at the tip
   hit     armoured: a dip behind the shaft, the helm clanks down, eyes > <
   die     D2 plank topple onto the back, the halberd falls away, the orb fizzles, X eyes
 """
@@ -27,6 +33,7 @@ import math
 from ageborn_art import face as FC
 from ageborn_art import kit_cosmic as KC
 from ageborn_art import kit_future as KF
+from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_medieval as KM
 from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
@@ -34,6 +41,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "graviton_halberdier"
+GAIT_NAME = "biped"
 NAME = "Graviton Halberdier"
 HEIGHT_LU = 72
 CANVAS = (400, 300)
@@ -52,9 +60,14 @@ EDGE = (HEAD_X + 13.0, G0[1], G0[2] - 15.0)    # the crescent's belly (it bites 
 EDGE_IN = (HEAD_X + 3.0, G0[1], G0[2] - 6.0)
 
 
+RIG = None
+
+
 def build(rig):
-    K.skeleton(rig, head=(1, 0, 39))
-    K.legs(rig, boot=K.VIOLET, knee=K.STAR)
+    global RIG
+    RIG = rig
+    KC.skeleton_v3(rig, head=(1, 0, 39))
+    KC.legs_v3(rig, boot=K.VIOLET, knee=K.STAR)
     rig.joint("pole", "torso", G0)
     K.arm_parts(rig, "l", bracer=K.STAR)
 
@@ -64,10 +77,11 @@ def build(rig):
     rig.part("cape", g, team=True)
     g = Geo().blob((-12.2, 0.5, 16.6), (2.2, 12.0, 1.4), p=3.0)
     rig.part("cape", g, K.STAR, outline=0.6, outline_hex=K.STAR_TRIM)
-    rig.secondary("tabard", "hips", (7.0, 0, 20.0), (8.5, 0, 4.0), max_deg=14, gain=1.0)
-    g = Geo().blob((8.4, -0.5, 12.0), (2.6, 8.0, 9.6), p=3.2, taper=(1.16, 0.9))
+    # the tabard ends 9 lu above the soles so the feet read apart (ANIM_SPEC G1)
+    rig.secondary("tabard", "hips", (7.0, 0, 20.0), (8.5, 0, 9.5), max_deg=16, gain=1.0)
+    g = Geo().blob((8.4, -0.5, 15.4), (2.6, 8.0, 6.0), p=3.2, taper=(1.16, 0.9))
     rig.part("tabard", g, team=True)
-    g = Geo().blob((9.6, -0.5, 4.2), (1.6, 8.0, 1.5), p=3.0)
+    g = Geo().blob((9.4, -0.5, 10.4), (1.6, 8.0, 1.5), p=3.0)
     rig.part("tabard", g, K.STAR, outline=0.6, outline_hex=K.STAR_TRIM)
     K.torso(rig, pack=False, bulk=1.08, collar=K.STAR)
     g = Geo().blob((0.6, 0, 16.8), (11.0, 10.8, 4.4), p=2.8, taper=(1.12, 1.0))
@@ -160,7 +174,6 @@ def build(rig):
     g = Geo().slab(pts, gy - 1.6, 1.4)
     rig.part("streamer", g, team=True, outline=0.8)
     rig.track("bladeTip", "pole", TIP)
-    rig.track("_foot", "shin_r", (3.2, -6.0, 0.5))
     K.sparks(rig, "pole", (ox, oy - 1, oz), color=K.VIOLET_GLOW, size=1.6, name="sparks")
 
 
@@ -183,12 +196,20 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
+# -- walk v3: G1 bounce jog at ground speed (card 70 x 1.25 = 87.5 lu/s), 8 x 77 ms --------------
+SPEED = 87.5
+LEGS = KC.legs_ik()
+GAIT = KC.jog_gait(LEGS, SPEED, cycle_ms=616)
+CARRY = (9.0, 31.0, 148.0)     # the halberd sloped back over the shoulder, the head behind
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return merge(hold(4.0, 26.0 + 0.8 * lag, 40.0 + 3.0 * lag), {"orb": {"z": -1.0 * lag}})
-    return M.walk_v2(f, {"torso": {"r": -2}}, HEIGHT_LU, thigh=34.0, knee=46.0, lift_lu=7.5, bob_pct=0.05,
-                     lean=-4.0, arms=(), twist=5.0, extra=extra)
+        return merge(hold(CARRY[0], CARRY[1] + 1.0 * lag, CARRY[2] - 3.0 * lag),
+                     {"orb": {"z": -1.0 * lag}, "tabard": {"r": 0.0}, "cape": {"r": 0.0}, "streamer": {"r": 0.0}})
+    return M.walk_v3(RIG, f, {"torso": {"r": -3}}, GAIT, legs=LEGS, lean=-8.0, twist=5.0, nod=3.0,
+                     extra=extra, report=report)
 
 
 # -- attack: twirl and diagonal chop (680 ms, impact at 290 ms) ------------------------------------
@@ -221,7 +242,7 @@ def _attack_pose(f, deg=None):
         "orb_hot": {"show": f == 3},
         "sparks": {"show": f == 6},
     }, M.body_about((0, 0, 26), x=BX[f], z=BZ[f], q=BQ[f]))
-    return merge(pose, KF.glyph(EYES[f]))
+    return KI.ground_feet(RIG, merge(pose, KF.glyph(EYES[f])), LEGS)
 
 
 def _attack_clip():
@@ -241,6 +262,104 @@ def _attack_clip():
     }
     return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
                   impact=M.SMALL_MELEE_IMPACT, overlays=ov)
+
+
+# -- variants: A's 680 ms, impact at 290 ms, in 10 steps (pre-impact 40+60+115+45+30 = 290) --------
+V_MS = [40, 60, 115, 45, 30, 120, 60, 50, 70, 90]
+V_IMPACT = 5
+
+
+def _v_pose(gx, gz, deg, tr, tz, bx, bz, bq, thr, shr, thl, shl, orb, eyes):
+    pose = merge(hold(gx, gz, deg - tr), {
+        "torso": {"r": tr, "rz": tz}, "head": {"r": -0.4 * tr, "rz": -0.5 * tz},
+        "thigh_r": {"r": thr}, "shin_r": {"r": shr},
+        "thigh_l": {"r": thl}, "shin_l": {"r": shl},
+        "orb": {"s": orb},
+    }, M.body_about((0, 0, 26), x=bx, z=bz, q=bq))
+    return KI.ground_feet(RIG, merge(pose, KF.glyph(eyes)), LEGS)
+
+
+# attack B: flat sweep. 0 sink, 1 swing back, 2 HOLD (crouched low, the halberd level behind the hips,
+# turned away), 3 smear, 4 lead, 5 IMPACT (the crescent level at the target, lunge), 6 over, 7 recoil,
+# 8-9 = A settle.   grip x, z, WORLD deg, torso r, torso rz, bx, bz, bq, thr, shr, thl, shl, orb, eyes
+B_T = [(2.0, 24.0, 150.0, 2, 10, -0.5, -2.0, -0.04, 10, -14, -8, -12, 1.0, "g_angry"),
+       (-3.0, 22.0, 178.0, 6, 24, -1.5, -4.5, -0.07, 20, -28, -16, -20, 1.05, "g_angry"),
+       (-5.0, 21.0, 192.0, 8, 32, -2.0, -6.0, -0.09, 26, -36, -20, -26, 1.15, "g_angry"),
+       (6.0, 23.0, 60.0, -6, 6, 3.0, -4.0, 0.04, 28, -28, -22, -20, 1.1, "g_squint"),
+       (10.0, 24.0, 16.0, -12, -6, 6.0, -3.0, 0.04, 30, -26, -24, -18, 1.1, "g_squint"),
+       (12.0, 24.0, -4.0, -18, -16, 8.5, -3.5, -0.14, 34, -28, -26, -20, 1.3, "g_angry"),
+       (12.5, 24.0, -10.0, -18, -22, 9.0, -3.0, -0.06, 32, -26, -24, -18, 1.2, "g_angry"),
+       (9.0, 24.5, 4.0, -10, -10, 6.0, -1.5, 0.0, 20, -14, -14, -10, 1.05, "eyes")]
+
+
+def _b_pose(i):
+    if i in (8, 9):
+        return _attack_pose(i + 1)
+    pose = _v_pose(*B_T[i])
+    if i == 2:
+        pose["orb_hot"] = {"show": True, "s": 0.9}
+    if i == 5:
+        pose["sparks"] = {"show": True}
+    return pose
+
+
+def _attack_b():
+    sweep = {"kind": "arc", "joint": "pole", "inner": EDGE_IN, "outer": EDGE, "color": K.VIOLET_GLOW,
+             "white": 0.35, "taper": 0.3, "lines": 3}
+    ov = {
+        2: [{"kind": "dust", "ground": (-10.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 31, "spread": 0.7,
+             "color": "#DCD6E8", "dir": -1.0}],
+        3: [dict(sweep, **{"from": 2, "t0": 0.0, "t1": 1.0})],
+        4: [dict(sweep, **{"from": 2, "t0": 0.4, "t1": 1.0})],
+        5: [dict(sweep, **{"from": 3, "t0": 0.3, "t1": 1.0, "lines": 2}),
+            {"kind": "burst", "joint": "pole", "point": TIP, "r0_lu": 5.0, "r1_lu": 11.0, "n": 5,
+             "a0": -70.0, "arc": 140.0, "color": K.VIOLET_CORE},
+            {"kind": "dust", "ground": (16.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 32, "spread": 0.9,
+             "color": "#DCD6E8"}],
+    }
+    return M.clip("attack_b", [_b_pose(i) for i in range(10)], V_MS, impact=V_IMPACT, smear=3, overlays=ov,
+                  reuse={8: ("attack", 9), 9: ("attack", 10)}, extra={"holdStep": 2})
+
+
+# attack C: orb thrust. 0 draw, 1 coil, 2 HOLD (the halberd drawn back level at the hip, leaning back
+# on the rear leg, the orb charging), 3 smear, 4 lead, 5 IMPACT (a long lunge, the halberd level, the
+# orb bursts), 6 over, 7 recoil, 8-9 = A settle
+C_T = [(0.0, 26.0, 8.0, 2, 8, -1.0, -1.0, -0.03, 6, -10, -6, -10, 1.1, "g_angry"),
+       (-6.0, 27.0, 6.0, 8, 16, -3.0, -3.0, -0.06, 0, -12, 4, -22, 1.25, "g_angry"),
+       (-9.0, 28.0, 4.0, 12, 22, -4.5, -4.0, -0.08, -4, -14, 10, -26, 1.4, "g_squint"),
+       (5.0, 27.0, 2.0, -6, 4, 4.0, -3.0, 0.06, 24, -20, -20, -16, 1.3, "g_squint"),
+       (11.0, 27.0, 1.0, -14, -4, 8.0, -3.5, 0.06, 32, -26, -26, -18, 1.3, "g_angry"),
+       (14.0, 27.0, 0.0, -20, -8, 11.5, -4.0, -0.14, 38, -30, -32, -14, 1.5, "g_angry"),
+       (14.5, 27.0, -1.0, -20, -8, 12.0, -3.5, -0.05, 38, -28, -30, -12, 1.3, "g_angry"),
+       (10.0, 26.0, 6.0, -10, -4, 7.0, -1.5, 0.0, 22, -14, -16, -8, 1.05, "eyes")]
+
+
+def _c_pose(i):
+    if i in (8, 9):
+        return _attack_pose(i + 1)
+    pose = _v_pose(*C_T[i])
+    if i in (1, 2):
+        pose["orb_hot"] = {"show": True, "s": 0.8 if i == 1 else 1.0}
+    if i == 5:
+        pose["sparks"] = {"show": True}
+    return pose
+
+
+def _attack_c():
+    streak = {"kind": "streak", "joint": "pole", "point": TIP, "color": K.VIOLET_GLOW, "width_lu": 7.0, "white": 0.35}
+    ov = {
+        2: [{"kind": "rings", "joint": "pole", "point": ORB, "radii_lu": (7.5, 11.0), "a0": -180.0, "a1": 180.0,
+             "color": K.VIOLET_CORE}],
+        3: [dict(streak, **{"from": 2, "t0": 0.0, "t1": 1.0})],
+        4: [dict(streak, **{"from": 2, "t0": 0.3, "t1": 1.0, "width_lu": 6.0})],
+        5: [dict(streak, **{"from": 4, "t0": 0.4, "t1": 1.0, "width_lu": 5.0}),
+            {"kind": "rings", "joint": "pole", "point": TIP, "radii_lu": (6.0, 10.0, 14.0), "a0": -180.0,
+             "a1": 180.0, "color": K.VIOLET_CORE},
+            {"kind": "dust", "ground": (18.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 33, "spread": 0.9,
+             "color": "#DCD6E8"}],
+    }
+    return M.clip("attack_c", [_c_pose(i) for i in range(10)], V_MS, impact=V_IMPACT, overlays=ov,
+                  reuse={8: ("attack", 9), 9: ("attack", 10)}, extra={"holdStep": 2})
 
 
 def _hit(k):
@@ -273,10 +392,12 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

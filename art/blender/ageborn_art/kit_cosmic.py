@@ -81,3 +81,48 @@ FLYER_HIT = [dict(z=-2.0, r=5.0, x=-2.0), dict(z=-4.0, r=8.0, x=-3.5), dict(z=-2
 def hit_flyer(k, center, scale=1.0):
     h = FLYER_HIT[k]
     return M.body_about(center, x=h["x"] * scale, z=h["z"] * scale, r=h["r"])
+
+
+# -- walk v3 body (ANIM_SPEC 2.0 rule 5, G1/G2): longer legs and planted feet ----------------------
+# The Cosmic bipeds use the Future skeleton (= rigs_future joint names and arm layout), so the
+# skeleton, the IK legs, the jog gait and the arm chain are kit_future's (kit_medieval's); only the
+# legs' look is Cosmic: void undersuit legs on slim shins, short glossy violet boots with a star-white
+# toe cap on the foot joints, star-white knee guards or team greaves.
+V3_THIGH_Z, V3_KNEE_Z, V3_ANKLE_Z, V3_LIFT = KF.V3_THIGH_Z, KF.V3_KNEE_Z, KF.V3_ANKLE_Z, KF.V3_LIFT
+skeleton_v3 = KF.skeleton_v3
+legs_ik = KF.legs_ik
+jog_gait = KF.jog_gait
+ArmChain = KF.ArmChain
+
+
+def legs_v3(rig, suit=K.VOID, boot=K.VIOLET, thigh_r=4.6, far=0.8, knee=K.STAR, team_shin=False,
+            team_thigh=False, toe=K.STAR):
+    """`rigs_cosmic.legs` for skeleton_v3: void undersuit legs on slim shins (the two legs stay apart
+    at 62 px), short glossy violet boots (8.8 lu) with a star-white toe cap and a dark sole on the foot
+    joints, star-white knee guards or team greaves (`team_shin`). The far leg is `far` darker, so the
+    near and far feet read apart (ANIM_SPEC G1). Adds the `_foot` / `_foot_l` sole trackers."""
+    from . import colors as CO
+    for s in ("r", "l"):
+        y = K.LEG_Y * K.SIDE_Y[s]
+        k = 1.0 if s == "r" else far
+        sh = (lambda c: c) if k == 1.0 else (lambda c, k=k: CO.scale(c, k))
+        g = Geo().capsule((0, y, V3_THIGH_Z + 0.5), (0.5, y, V3_KNEE_Z), thigh_r, thigh_r - 0.5)
+        rig.part(f"thigh_{s}", g, sh(suit), team=team_thigh and s == "r")
+        g = Geo().capsule((0.5, y, V3_KNEE_Z), (1.0, y, V3_ANKLE_Z + 0.8), thigh_r - 0.9, 3.3)
+        rig.part(f"shin_{s}", g, sh(suit))
+        g = Geo().blob((1.1, y, 6.2), (4.0, 4.3, 2.7), p=2.7, taper=(0.92, 1.05))          # boot cuff
+        rig.part(f"shin_{s}", g, sh(boot), finish="gloss")
+        g = Geo().blob((2.8, y, 2.4), (4.4, 4.7, 2.5), p=2.9, taper=(1.02, 0.84))          # 8.8 lu boot
+        rig.part(f"foot_{s}", g, sh(boot), finish="gloss")
+        g = Geo().blob((5.6, y, 2.0), (1.9, 4.5, 1.9), p=2.6)                              # toe cap
+        rig.part(f"foot_{s}", g, sh(toe), finish="gloss", outline_hex=K.STAR_TRIM)
+        g = Geo().blob((3.0, y, 0.6), (4.4, 4.8, 0.8), p=3.0)                              # dark sole
+        rig.part(f"foot_{s}", g, sh(K.VOID_DK), outline=0.4)
+        if team_shin:
+            g = Geo().blob((1.9, y, 8.8), (3.4, 4.2, 2.8), p=2.6)
+            rig.part(f"shin_{s}", g, team=True, outline=0.6)
+        if knee:
+            g = Geo().blob((2.0, y, V3_KNEE_Z + 0.3), (2.9, 3.7, 2.7), p=2.6)
+            rig.part(f"shin_{s}", g, sh(knee), finish="gloss", outline_hex=K.STAR_TRIM)
+    rig.track("_foot", "foot_r", (2.6, -K.LEG_Y, 0.0))
+    rig.track("_foot_l", "foot_l", (2.6, K.LEG_Y, 0.0))

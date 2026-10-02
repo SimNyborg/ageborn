@@ -2,18 +2,18 @@
  "frames": {
   "friar_idle_00": {
    "frame": {
-    "x": 2,
-    "y": 540,
+    "x": 145,
+    "y": 375,
     "w": 101,
-    "h": 162
+    "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 173,
-    "y": 202,
+    "y": 197,
     "w": 101,
-    "h": 162
+    "h": 167
    },
    "sourceSize": {
     "w": 438,
@@ -26,18 +26,18 @@
   },
   "friar_idle_00_team": {
    "frame": {
-    "x": 206,
-    "y": 1104,
+    "x": 374,
+    "y": 820,
     "w": 90,
-    "h": 114
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 180,
-    "y": 243,
+    "y": 238,
     "w": 90,
-    "h": 114
+    "h": 102
    },
    "sourceSize": {
     "w": 438,
@@ -50,18 +50,18 @@
   },
   "friar_idle_01": {
    "frame": {
-    "x": 422,
-    "y": 368,
-    "w": 101,
-    "h": 165
+    "x": 930,
+    "y": 195,
+    "w": 102,
+    "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 175,
-    "y": 199,
-    "w": 101,
-    "h": 165
+    "y": 194,
+    "w": 102,
+    "h": 170
    },
    "sourceSize": {
     "w": 438,
@@ -74,18 +74,18 @@
   },
   "friar_idle_01_team": {
    "frame": {
-    "x": 763,
-    "y": 982,
+    "x": 95,
+    "y": 820,
     "w": 89,
-    "h": 115
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 181,
-    "y": 240,
+    "y": 236,
     "w": 89,
-    "h": 115
+    "h": 103
    },
    "sourceSize": {
     "w": 438,
@@ -98,18 +98,18 @@
   },
   "friar_idle_02": {
    "frame": {
-    "x": 368,
-    "y": 191,
+    "x": 2,
+    "y": 195,
     "w": 100,
-    "h": 171
+    "h": 176
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 178,
-    "y": 191,
+    "y": 186,
     "w": 100,
-    "h": 171
+    "h": 176
    },
    "sourceSize": {
     "w": 438,
@@ -122,18 +122,18 @@
   },
   "friar_idle_02_team": {
    "frame": {
-    "x": 713,
-    "y": 857,
+    "x": 264,
+    "y": 707,
     "w": 86,
-    "h": 119
+    "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 182,
-    "y": 234,
+    "y": 230,
     "w": 86,
-    "h": 119
+    "h": 108
    },
    "sourceSize": {
     "w": 438,
@@ -149,15 +149,15 @@
     "x": 515,
     "y": 2,
     "w": 96,
-    "h": 176
+    "h": 181
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 179,
-    "y": 185,
+    "y": 180,
     "w": 96,
-    "h": 176
+    "h": 181
    },
    "sourceSize": {
     "w": 438,
@@ -170,18 +170,18 @@
   },
   "friar_idle_03_team": {
    "frame": {
-    "x": 169,
-    "y": 857,
+    "x": 354,
+    "y": 707,
     "w": 84,
-    "h": 121
+    "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 182,
-    "y": 232,
+    "y": 227,
     "w": 84,
-    "h": 121
+    "h": 108
    },
    "sourceSize": {
     "w": 438,
@@ -194,18 +194,18 @@
   },
   "friar_idle_04": {
    "frame": {
-    "x": 2,
-    "y": 191,
+    "x": 847,
+    "y": 2,
     "w": 98,
-    "h": 173
+    "h": 178
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 177,
-    "y": 189,
+    "y": 184,
     "w": 98,
-    "h": 173
+    "h": 178
    },
    "sourceSize": {
     "w": 438,
@@ -218,18 +218,18 @@
   },
   "friar_idle_04_team": {
    "frame": {
-    "x": 92,
-    "y": 982,
+    "x": 969,
+    "y": 707,
     "w": 85,
-    "h": 118
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 181,
-    "y": 235,
+    "y": 230,
     "w": 85,
-    "h": 118
+    "h": 105
    },
    "sourceSize": {
     "w": 438,
@@ -242,18 +242,18 @@
   },
   "friar_idle_05": {
    "frame": {
-    "x": 110,
-    "y": 368,
+    "x": 621,
+    "y": 195,
     "w": 99,
-    "h": 168
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 174,
-    "y": 196,
+    "y": 192,
     "w": 99,
-    "h": 168
+    "h": 172
    },
    "sourceSize": {
     "w": 438,
@@ -266,18 +266,18 @@
   },
   "friar_idle_05_team": {
    "frame": {
-    "x": 300,
-    "y": 1104,
+    "x": 2,
+    "y": 820,
     "w": 89,
-    "h": 114
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 179,
-    "y": 241,
+    "y": 236,
     "w": 89,
-    "h": 114
+    "h": 104
    },
    "sourceSize": {
     "w": 438,
@@ -290,17 +290,17 @@
   },
   "friar_walk_00": {
    "frame": {
-    "x": 631,
-    "y": 368,
-    "w": 99,
+    "x": 454,
+    "y": 375,
+    "w": 97,
     "h": 165
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 176,
-    "y": 196,
-    "w": 99,
+    "x": 179,
+    "y": 198,
+    "w": 97,
     "h": 165
    },
    "sourceSize": {
@@ -314,18 +314,18 @@
   },
   "friar_walk_00_team": {
    "frame": {
-    "x": 622,
-    "y": 857,
-    "w": 87,
-    "h": 119
+    "x": 876,
+    "y": 820,
+    "w": 88,
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 179,
-    "y": 240,
-    "w": 87,
-    "h": 119
+    "x": 180,
+    "y": 242,
+    "w": 88,
+    "h": 101
    },
    "sourceSize": {
     "w": 438,
@@ -338,18 +338,18 @@
   },
   "friar_walk_01": {
    "frame": {
-    "x": 617,
-    "y": 540,
-    "w": 103,
-    "h": 157
+    "x": 351,
+    "y": 375,
+    "w": 99,
+    "h": 165
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 168,
-    "y": 209,
-    "w": 103,
-    "h": 157
+    "x": 172,
+    "y": 206,
+    "w": 99,
+    "h": 165
    },
    "sourceSize": {
     "w": 438,
@@ -362,18 +362,18 @@
   },
   "friar_walk_01_team": {
    "frame": {
-    "x": 111,
-    "y": 1104,
-    "w": 91,
-    "h": 114
+    "x": 1168,
+    "y": 820,
+    "w": 88,
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 180,
+    "x": 178,
     "y": 247,
-    "w": 91,
-    "h": 114
+    "w": 88,
+    "h": 99
    },
    "sourceSize": {
     "w": 438,
@@ -386,18 +386,18 @@
   },
   "friar_walk_02": {
    "frame": {
-    "x": 213,
-    "y": 368,
+    "x": 827,
+    "y": 195,
     "w": 99,
-    "h": 166
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 169,
-    "y": 195,
+    "x": 171,
+    "y": 192,
     "w": 99,
-    "h": 166
+    "h": 171
    },
    "sourceSize": {
     "w": 438,
@@ -410,18 +410,18 @@
   },
   "friar_walk_02_team": {
    "frame": {
-    "x": 803,
-    "y": 857,
-    "w": 89,
-    "h": 118
+    "x": 606,
+    "y": 707,
+    "w": 87,
+    "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 182,
-    "y": 235,
-    "w": 89,
-    "h": 118
+    "x": 180,
+    "y": 232,
+    "w": 87,
+    "h": 107
    },
    "sourceSize": {
     "w": 438,
@@ -434,17 +434,17 @@
   },
   "friar_walk_03": {
    "frame": {
-    "x": 615,
-    "y": 2,
-    "w": 96,
+    "x": 206,
+    "y": 195,
+    "w": 101,
     "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 173,
-    "y": 184,
-    "w": 96,
+    "y": 185,
+    "w": 101,
     "h": 175
    },
    "sourceSize": {
@@ -458,18 +458,18 @@
   },
   "friar_walk_03_team": {
    "frame": {
-    "x": 718,
-    "y": 706,
+    "x": 1144,
+    "y": 547,
     "w": 86,
-    "h": 123
+    "h": 109
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 183,
+    "x": 182,
     "y": 227,
     "w": 86,
-    "h": 123
+    "h": 109
    },
    "sourceSize": {
     "w": 438,
@@ -482,18 +482,18 @@
   },
   "friar_walk_04": {
    "frame": {
-    "x": 472,
-    "y": 191,
-    "w": 99,
-    "h": 171
+    "x": 831,
+    "y": 375,
+    "w": 114,
+    "h": 162
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 176,
-    "y": 196,
-    "w": 99,
-    "h": 171
+    "y": 198,
+    "w": 114,
+    "h": 162
    },
    "sourceSize": {
     "w": 438,
@@ -506,18 +506,18 @@
   },
   "friar_walk_04_team": {
    "frame": {
-    "x": 580,
-    "y": 982,
-    "w": 88,
-    "h": 116
+    "x": 442,
+    "y": 707,
+    "w": 79,
+    "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 182,
-    "y": 240,
-    "w": 88,
-    "h": 116
+    "x": 183,
+    "y": 242,
+    "w": 79,
+    "h": 108
    },
    "sourceSize": {
     "w": 438,
@@ -530,18 +530,18 @@
   },
   "friar_walk_05": {
    "frame": {
-    "x": 877,
-    "y": 368,
-    "w": 103,
-    "h": 162
+    "x": 131,
+    "y": 547,
+    "w": 116,
+    "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 182,
-    "y": 206,
-    "w": 103,
-    "h": 162
+    "x": 173,
+    "y": 203,
+    "w": 116,
+    "h": 152
    },
    "sourceSize": {
     "w": 438,
@@ -554,18 +554,18 @@
   },
   "friar_walk_05_team": {
    "frame": {
-    "x": 591,
-    "y": 1104,
-    "w": 92,
-    "h": 111
+    "x": 2,
+    "y": 928,
+    "w": 83,
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 179,
+    "x": 184,
     "y": 250,
-    "w": 92,
-    "h": 111
+    "w": 83,
+    "h": 99
    },
    "sourceSize": {
     "w": 438,
@@ -578,18 +578,18 @@
   },
   "friar_walk_06": {
    "frame": {
-    "x": 107,
-    "y": 540,
-    "w": 99,
-    "h": 162
+    "x": 250,
+    "y": 375,
+    "w": 97,
+    "h": 166
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 187,
-    "y": 192,
-    "w": 99,
-    "h": 162
+    "x": 189,
+    "y": 188,
+    "w": 97,
+    "h": 166
    },
    "sourceSize": {
     "w": 438,
@@ -602,18 +602,18 @@
   },
   "friar_walk_06_team": {
    "frame": {
-    "x": 526,
-    "y": 857,
+    "x": 685,
+    "y": 820,
     "w": 92,
-    "h": 119
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 179,
-    "y": 240,
+    "x": 180,
+    "y": 236,
     "w": 92,
-    "h": 119
+    "h": 101
    },
    "sourceSize": {
     "w": 438,
@@ -626,18 +626,18 @@
   },
   "friar_walk_07": {
    "frame": {
-    "x": 575,
-    "y": 191,
-    "w": 96,
-    "h": 171
+    "x": 724,
+    "y": 195,
+    "w": 99,
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 185,
     "y": 182,
-    "w": 96,
-    "h": 171
+    "w": 99,
+    "h": 172
    },
    "sourceSize": {
     "w": 438,
@@ -650,18 +650,18 @@
   },
   "friar_walk_07_team": {
    "frame": {
-    "x": 294,
-    "y": 982,
-    "w": 89,
-    "h": 117
+    "x": 781,
+    "y": 820,
+    "w": 91,
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 179,
-    "y": 231,
-    "w": 89,
-    "h": 117
+    "x": 180,
+    "y": 229,
+    "w": 91,
+    "h": 101
    },
    "sourceSize": {
     "w": 438,
@@ -674,18 +674,18 @@
   },
   "friar_attack_00": {
    "frame": {
-    "x": 527,
-    "y": 368,
+    "x": 1141,
+    "y": 195,
     "w": 100,
-    "h": 165
+    "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 175,
-    "y": 196,
+    "y": 191,
     "w": 100,
-    "h": 165
+    "h": 170
    },
    "sourceSize": {
     "w": 438,
@@ -698,18 +698,18 @@
   },
   "friar_attack_00_team": {
    "frame": {
-    "x": 387,
-    "y": 982,
+    "x": 188,
+    "y": 820,
     "w": 89,
-    "h": 117
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 181,
-    "y": 238,
+    "y": 234,
     "w": 89,
-    "h": 117
+    "h": 103
    },
    "sourceSize": {
     "w": 438,
@@ -722,18 +722,18 @@
   },
   "friar_attack_01": {
    "frame": {
-    "x": 724,
-    "y": 540,
+    "x": 949,
+    "y": 375,
     "w": 108,
-    "h": 153
+    "h": 158
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 161,
-    "y": 206,
+    "y": 202,
     "w": 108,
-    "h": 153
+    "h": 158
    },
    "sourceSize": {
     "w": 438,
@@ -746,18 +746,18 @@
   },
   "friar_attack_01_team": {
    "frame": {
-    "x": 491,
-    "y": 1104,
+    "x": 284,
+    "y": 928,
     "w": 96,
-    "h": 111
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 176,
-    "y": 245,
+    "y": 241,
     "w": 96,
-    "h": 111
+    "h": 94
    },
    "sourceSize": {
     "w": 438,
@@ -770,18 +770,18 @@
   },
   "friar_attack_02": {
    "frame": {
-    "x": 734,
-    "y": 368,
+    "x": 2,
+    "y": 375,
     "w": 139,
-    "h": 164
+    "h": 168
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 122,
-    "y": 197,
+    "y": 193,
     "w": 139,
-    "h": 164
+    "h": 168
    },
    "sourceSize": {
     "w": 438,
@@ -794,18 +794,18 @@
   },
   "friar_attack_02_team": {
    "frame": {
-    "x": 2,
-    "y": 1104,
+    "x": 468,
+    "y": 820,
     "w": 105,
-    "h": 114
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 160,
-    "y": 240,
+    "y": 236,
     "w": 105,
-    "h": 114
+    "h": 101
    },
    "sourceSize": {
     "w": 438,
@@ -818,18 +818,18 @@
   },
   "friar_attack_03": {
    "frame": {
-    "x": 210,
-    "y": 540,
-    "w": 151,
-    "h": 159
+    "x": 555,
+    "y": 375,
+    "w": 152,
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 107,
-    "y": 198,
-    "w": 151,
-    "h": 159
+    "y": 194,
+    "w": 152,
+    "h": 163
    },
    "sourceSize": {
     "w": 438,
@@ -842,18 +842,18 @@
   },
   "friar_attack_03_team": {
    "frame": {
-    "x": 181,
-    "y": 982,
-    "w": 109,
-    "h": 117
+    "x": 577,
+    "y": 820,
+    "w": 104,
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 150,
-    "y": 240,
-    "w": 109,
-    "h": 117
+    "y": 235,
+    "w": 104,
+    "h": 101
    },
    "sourceSize": {
     "w": 438,
@@ -866,18 +866,18 @@
   },
   "friar_attack_04": {
    "frame": {
-    "x": 209,
-    "y": 191,
-    "w": 155,
-    "h": 171
+    "x": 1054,
+    "y": 2,
+    "w": 154,
+    "h": 176
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 110,
-    "y": 194,
-    "w": 155,
-    "h": 171
+    "x": 111,
+    "y": 189,
+    "w": 154,
+    "h": 176
    },
    "sourceSize": {
     "w": 438,
@@ -890,18 +890,18 @@
   },
   "friar_attack_04_team": {
    "frame": {
-    "x": 895,
-    "y": 706,
-    "w": 81,
-    "h": 123
+    "x": 2,
+    "y": 707,
+    "w": 82,
+    "h": 109
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 180,
-    "y": 239,
-    "w": 81,
-    "h": 123
+    "y": 234,
+    "w": 82,
+    "h": 109
    },
    "sourceSize": {
     "w": 438,
@@ -917,15 +917,15 @@
     "x": 344,
     "y": 2,
     "w": 167,
-    "h": 176
+    "h": 181
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 114,
-    "y": 188,
+    "y": 183,
     "w": 167,
-    "h": 176
+    "h": 181
    },
    "sourceSize": {
     "w": 438,
@@ -938,18 +938,18 @@
   },
   "friar_attack_05_team": {
    "frame": {
-    "x": 344,
-    "y": 857,
-    "w": 87,
-    "h": 120
+    "x": 697,
+    "y": 707,
+    "w": 86,
+    "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 184,
-    "y": 235,
-    "w": 87,
-    "h": 120
+    "x": 185,
+    "y": 230,
+    "w": 86,
+    "h": 107
    },
    "sourceSize": {
     "w": 438,
@@ -965,15 +965,15 @@
     "x": 2,
     "y": 2,
     "w": 118,
-    "h": 185
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 203,
-    "y": 174,
+    "y": 169,
     "w": 118,
-    "h": 185
+    "h": 189
    },
    "sourceSize": {
     "w": 438,
@@ -986,18 +986,18 @@
   },
   "friar_attack_06_team": {
    "frame": {
-    "x": 633,
-    "y": 706,
-    "w": 81,
-    "h": 128
+    "x": 1060,
+    "y": 547,
+    "w": 80,
+    "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 196,
-    "y": 224,
-    "w": 81,
-    "h": 128
+    "x": 197,
+    "y": 219,
+    "w": 80,
+    "h": 111
    },
    "sourceSize": {
     "w": 438,
@@ -1010,18 +1010,18 @@
   },
   "friar_attack_07": {
    "frame": {
-    "x": 846,
+    "x": 746,
     "y": 2,
-    "w": 96,
-    "h": 174
+    "w": 97,
+    "h": 179
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 201,
-    "y": 184,
-    "w": 96,
-    "h": 174
+    "x": 200,
+    "y": 179,
+    "w": 97,
+    "h": 179
    },
    "sourceSize": {
     "w": 438,
@@ -1034,18 +1034,18 @@
   },
   "friar_attack_07_team": {
    "frame": {
-    "x": 257,
-    "y": 857,
-    "w": 83,
-    "h": 121
+    "x": 88,
+    "y": 707,
+    "w": 81,
+    "h": 109
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 199,
-    "y": 230,
-    "w": 83,
-    "h": 121
+    "x": 200,
+    "y": 225,
+    "w": 81,
+    "h": 109
    },
    "sourceSize": {
     "w": 438,
@@ -1058,18 +1058,18 @@
   },
   "friar_attack_08": {
    "frame": {
-    "x": 2,
-    "y": 706,
+    "x": 251,
+    "y": 547,
     "w": 135,
-    "h": 147
+    "h": 151
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 181,
-    "y": 211,
+    "y": 207,
     "w": 135,
-    "h": 147
+    "h": 151
    },
    "sourceSize": {
     "w": 438,
@@ -1082,18 +1082,18 @@
   },
   "friar_attack_08_team": {
    "frame": {
-    "x": 785,
-    "y": 1104,
-    "w": 98,
-    "h": 108
+    "x": 89,
+    "y": 928,
+    "w": 93,
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 190,
-    "y": 247,
-    "w": 98,
-    "h": 108
+    "y": 243,
+    "w": 93,
+    "h": 97
    },
    "sourceSize": {
     "w": 438,
@@ -1106,18 +1106,18 @@
   },
   "friar_attack_09": {
    "frame": {
-    "x": 675,
-    "y": 191,
+    "x": 106,
+    "y": 195,
     "w": 96,
-    "h": 171
+    "h": 176
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 180,
-    "y": 193,
+    "y": 188,
     "w": 96,
-    "h": 171
+    "h": 176
    },
    "sourceSize": {
     "w": 438,
@@ -1130,18 +1130,18 @@
   },
   "friar_attack_09_team": {
    "frame": {
-    "x": 435,
-    "y": 857,
+    "x": 173,
+    "y": 707,
     "w": 87,
-    "h": 120
+    "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 188,
-    "y": 238,
+    "y": 233,
     "w": 87,
-    "h": 120
+    "h": 108
    },
    "sourceSize": {
     "w": 438,
@@ -1154,18 +1154,18 @@
   },
   "friar_attack_10": {
    "frame": {
-    "x": 877,
-    "y": 191,
+    "x": 412,
+    "y": 195,
     "w": 97,
-    "h": 170
+    "h": 174
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 177,
-    "y": 193,
+    "y": 189,
     "w": 97,
-    "h": 170
+    "h": 174
    },
    "sourceSize": {
     "w": 438,
@@ -1178,18 +1178,18 @@
   },
   "friar_attack_10_team": {
    "frame": {
-    "x": 896,
-    "y": 857,
+    "x": 787,
+    "y": 707,
     "w": 87,
-    "h": 118
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 181,
-    "y": 238,
+    "y": 233,
     "w": 87,
-    "h": 118
+    "h": 105
    },
    "sourceSize": {
     "w": 438,
@@ -1202,18 +1202,18 @@
   },
   "friar_hit_00": {
    "frame": {
-    "x": 365,
-    "y": 540,
+    "x": 711,
+    "y": 375,
     "w": 116,
-    "h": 158
+    "h": 162
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 146,
-    "y": 204,
+    "y": 200,
     "w": 116,
-    "h": 158
+    "h": 162
    },
    "sourceSize": {
     "w": 438,
@@ -1226,18 +1226,18 @@
   },
   "friar_hit_00_team": {
    "frame": {
-    "x": 393,
-    "y": 1104,
-    "w": 94,
-    "h": 112
+    "x": 1069,
+    "y": 820,
+    "w": 95,
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 169,
-    "y": 246,
-    "w": 94,
-    "h": 112
+    "y": 242,
+    "w": 95,
+    "h": 99
    },
    "sourceSize": {
     "w": 438,
@@ -1253,15 +1253,15 @@
     "x": 124,
     "y": 2,
     "w": 106,
-    "h": 180
+    "h": 184
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 147,
-    "y": 182,
+    "y": 177,
     "w": 106,
-    "h": 180
+    "h": 184
    },
    "sourceSize": {
     "w": 438,
@@ -1274,18 +1274,18 @@
   },
   "friar_hit_01_team": {
    "frame": {
-    "x": 808,
-    "y": 706,
-    "w": 83,
-    "h": 123
+    "x": 525,
+    "y": 707,
+    "w": 77,
+    "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 169,
-    "y": 232,
-    "w": 83,
-    "h": 123
+    "x": 170,
+    "y": 227,
+    "w": 77,
+    "h": 108
    },
    "sourceSize": {
     "w": 438,
@@ -1298,18 +1298,18 @@
   },
   "friar_hit_02": {
    "frame": {
-    "x": 104,
-    "y": 191,
+    "x": 949,
+    "y": 2,
     "w": 101,
-    "h": 172
+    "h": 177
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 161,
-    "y": 190,
+    "y": 185,
     "w": 101,
-    "h": 172
+    "h": 177
    },
    "sourceSize": {
     "w": 438,
@@ -1322,18 +1322,18 @@
   },
   "friar_hit_02_team": {
    "frame": {
-    "x": 2,
-    "y": 982,
-    "w": 86,
-    "h": 118
+    "x": 1058,
+    "y": 707,
+    "w": 85,
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 173,
-    "y": 236,
-    "w": 86,
-    "h": 118
+    "x": 174,
+    "y": 231,
+    "w": 85,
+    "h": 105
    },
    "sourceSize": {
     "w": 438,
@@ -1346,18 +1346,18 @@
   },
   "friar_hit_03": {
    "frame": {
-    "x": 316,
-    "y": 368,
-    "w": 102,
-    "h": 165
+    "x": 1036,
+    "y": 195,
+    "w": 101,
+    "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 176,
-    "y": 198,
-    "w": 102,
-    "h": 165
+    "x": 177,
+    "y": 193,
+    "w": 101,
+    "h": 170
    },
    "sourceSize": {
     "w": 438,
@@ -1370,18 +1370,18 @@
   },
   "friar_hit_03_team": {
    "frame": {
-    "x": 856,
-    "y": 982,
+    "x": 281,
+    "y": 820,
     "w": 89,
-    "h": 115
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 179,
-    "y": 240,
+    "y": 236,
     "w": 89,
-    "h": 115
+    "h": 103
    },
    "sourceSize": {
     "w": 438,
@@ -1394,18 +1394,18 @@
   },
   "friar_hit_04": {
    "frame": {
-    "x": 775,
-    "y": 191,
-    "w": 98,
-    "h": 170
+    "x": 311,
+    "y": 195,
+    "w": 97,
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 174,
-    "y": 193,
-    "w": 98,
-    "h": 170
+    "x": 175,
+    "y": 188,
+    "w": 97,
+    "h": 175
    },
    "sourceSize": {
     "w": 438,
@@ -1418,18 +1418,18 @@
   },
   "friar_hit_04_team": {
    "frame": {
-    "x": 672,
-    "y": 982,
+    "x": 878,
+    "y": 707,
     "w": 87,
-    "h": 116
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 182,
-    "y": 238,
+    "y": 233,
     "w": 87,
-    "h": 116
+    "h": 105
    },
    "sourceSize": {
     "w": 438,
@@ -1442,18 +1442,18 @@
   },
   "friar_die_00": {
    "frame": {
-    "x": 836,
-    "y": 540,
+    "x": 2,
+    "y": 547,
     "w": 125,
-    "h": 152
+    "h": 156
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 159,
-    "y": 203,
+    "y": 199,
     "w": 125,
-    "h": 152
+    "h": 156
    },
    "sourceSize": {
     "w": 438,
@@ -1466,18 +1466,18 @@
   },
   "friar_die_00_team": {
    "frame": {
-    "x": 687,
-    "y": 1104,
-    "w": 94,
-    "h": 109
+    "x": 968,
+    "y": 820,
+    "w": 97,
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 175,
-    "y": 242,
-    "w": 94,
-    "h": 109
+    "y": 237,
+    "w": 97,
+    "h": 100
    },
    "sourceSize": {
     "w": 438,
@@ -1493,15 +1493,15 @@
     "x": 234,
     "y": 2,
     "w": 106,
-    "h": 180
+    "h": 184
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 167,
-    "y": 177,
+    "y": 172,
     "w": 106,
-    "h": 180
+    "h": 184
    },
    "sourceSize": {
     "w": 438,
@@ -1514,18 +1514,18 @@
   },
   "friar_die_01_team": {
    "frame": {
-    "x": 438,
-    "y": 706,
+    "x": 954,
+    "y": 547,
     "w": 102,
-    "h": 135
+    "h": 117
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 165,
-    "y": 222,
+    "y": 216,
     "w": 102,
-    "h": 135
+    "h": 117
    },
    "sourceSize": {
     "w": 438,
@@ -1538,18 +1538,18 @@
   },
   "friar_die_02": {
    "frame": {
-    "x": 715,
+    "x": 615,
     "y": 2,
     "w": 127,
-    "h": 174
+    "h": 179
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 141,
-    "y": 183,
+    "x": 142,
+    "y": 178,
     "w": 127,
-    "h": 174
+    "h": 179
    },
    "sourceSize": {
     "w": 438,
@@ -1562,18 +1562,18 @@
   },
   "friar_die_02_team": {
    "frame": {
-    "x": 544,
-    "y": 706,
-    "w": 85,
-    "h": 128
+    "x": 697,
+    "y": 547,
+    "w": 79,
+    "h": 120
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 163,
-    "y": 220,
-    "w": 85,
-    "h": 128
+    "x": 164,
+    "y": 215,
+    "w": 79,
+    "h": 120
    },
    "sourceSize": {
     "w": 438,
@@ -1586,18 +1586,18 @@
   },
   "friar_die_03": {
    "frame": {
-    "x": 2,
-    "y": 368,
+    "x": 513,
+    "y": 195,
     "w": 104,
-    "h": 168
+    "h": 173
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 159,
-    "y": 197,
+    "x": 160,
+    "y": 192,
     "w": 104,
-    "h": 168
+    "h": 173
    },
    "sourceSize": {
     "w": 438,
@@ -1610,18 +1610,18 @@
   },
   "friar_die_03_team": {
    "frame": {
-    "x": 480,
-    "y": 982,
-    "w": 96,
-    "h": 116
+    "x": 1147,
+    "y": 707,
+    "w": 94,
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 160,
-    "y": 242,
-    "w": 96,
-    "h": 116
+    "x": 163,
+    "y": 237,
+    "w": 94,
+    "h": 104
    },
    "sourceSize": {
     "w": 438,
@@ -1634,18 +1634,18 @@
   },
   "friar_die_04": {
    "frame": {
-    "x": 2,
-    "y": 857,
-    "w": 163,
-    "h": 121
+    "x": 780,
+    "y": 547,
+    "w": 170,
+    "h": 119
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 114,
-    "y": 238,
-    "w": 163,
-    "h": 121
+    "y": 234,
+    "w": 170,
+    "h": 119
    },
    "sourceSize": {
     "w": 438,
@@ -1658,18 +1658,18 @@
   },
   "friar_die_04_team": {
    "frame": {
-    "x": 207,
-    "y": 1222,
-    "w": 109,
-    "h": 83
+    "x": 587,
+    "y": 928,
+    "w": 108,
+    "h": 79
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 154,
-    "y": 274,
-    "w": 109,
-    "h": 83
+    "y": 270,
+    "w": 108,
+    "h": 79
    },
    "sourceSize": {
     "w": 438,
@@ -1682,18 +1682,18 @@
   },
   "friar_die_05": {
    "frame": {
-    "x": 485,
-    "y": 540,
-    "w": 128,
-    "h": 157
+    "x": 1061,
+    "y": 375,
+    "w": 129,
+    "h": 156
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 135,
-    "y": 222,
-    "w": 128,
-    "h": 157
+    "y": 217,
+    "w": 129,
+    "h": 156
    },
    "sourceSize": {
     "w": 438,
@@ -1706,18 +1706,18 @@
   },
   "friar_die_05_team": {
    "frame": {
-    "x": 887,
-    "y": 1104,
-    "w": 89,
-    "h": 102
+    "x": 186,
+    "y": 928,
+    "w": 94,
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 160,
-    "y": 268,
-    "w": 89,
-    "h": 102
+    "y": 263,
+    "w": 94,
+    "h": 96
    },
    "sourceSize": {
     "w": 438,
@@ -1730,18 +1730,18 @@
   },
   "friar_die_06": {
    "frame": {
-    "x": 141,
-    "y": 706,
-    "w": 148,
-    "h": 138
+    "x": 390,
+    "y": 547,
+    "w": 154,
+    "h": 136
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 123,
-    "y": 231,
-    "w": 148,
-    "h": 138
+    "y": 226,
+    "w": 154,
+    "h": 136
    },
    "sourceSize": {
     "w": 438,
@@ -1754,18 +1754,18 @@
   },
   "friar_die_06_team": {
    "frame": {
-    "x": 2,
-    "y": 1222,
-    "w": 101,
-    "h": 92
+    "x": 384,
+    "y": 928,
+    "w": 102,
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 158,
-    "y": 273,
-    "w": 101,
-    "h": 92
+    "y": 268,
+    "w": 102,
+    "h": 89
    },
    "sourceSize": {
     "w": 438,
@@ -1778,18 +1778,18 @@
   },
   "friar_die_07": {
    "frame": {
-    "x": 293,
-    "y": 706,
-    "w": 141,
-    "h": 135
+    "x": 548,
+    "y": 547,
+    "w": 145,
+    "h": 133
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 126,
-    "y": 232,
-    "w": 141,
-    "h": 135
+    "x": 127,
+    "y": 228,
+    "w": 145,
+    "h": 133
    },
    "sourceSize": {
     "w": 438,
@@ -1802,18 +1802,18 @@
   },
   "friar_die_07_team": {
    "frame": {
-    "x": 107,
-    "y": 1222,
-    "w": 96,
-    "h": 91
+    "x": 490,
+    "y": 928,
+    "w": 93,
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 158,
-    "y": 272,
-    "w": 96,
-    "h": 91
+    "y": 268,
+    "w": 93,
+    "h": 86
    },
    "sourceSize": {
     "w": 438,
@@ -1933,8 +1933,8 @@
   "image": "friar.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1024,
-   "h": 1316
+   "w": 1280,
+   "h": 1032
   },
   "scale": "3",
   "ageborn": {
@@ -1963,6 +1963,7 @@
    },
    "facing": "right",
    "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
    "clips": {
     "idle": {
      "frames": 6,
@@ -1988,27 +1989,27 @@
       "muzzle": [
        [
         3.7,
-        1.2
+        3.1
        ],
        [
         5.7,
-        1.7
+        3.6
        ],
        [
         3.5,
-        2.4
+        4.4
        ],
        [
         -0.6,
-        3.4
+        5.4
        ],
        [
         -2.7,
-        3.3
+        5.3
        ],
        [
         -0.7,
-        2.0
+        3.9
        ]
       ]
      }
@@ -2027,54 +2028,76 @@
       7
      ],
      "durationsMs": [
-      62,
-      63,
-      62,
-      63,
-      62,
-      63,
-      62,
-      63
+      70,
+      70,
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
      ],
-     "durationMs": 500,
+     "durationMs": 560,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 81.2,
+     "cycleMs": 560,
      "anchorsLu": {
       "muzzle": [
        [
-        6.4,
-        2.4
+        4.7,
+        0.7
        ],
        [
-        7.6,
-        0.4
+        -1.2,
+        -3.3
        ],
        [
-        4.5,
+        2.8,
         2.9
        ],
        [
-        0.2,
-        4.4
+        13.9,
+        10.1
        ],
        [
-        -3.8,
-        1.5
+        20.5,
+        11.7
        ],
        [
-        -5.6,
-        0.4
+        20.1,
+        9.9
        ],
        [
-        -3.0,
-        3.6
+        17.2,
+        12.4
        ],
        [
-        1.9,
-        5.3
+        12.0,
+        10.5
        ]
       ]
      },
-     "strideLu": 25.8,
-     "naturalSpeedLuPerS": 51.6
+     "naturalSpeedLuPerS": 80.0,
+     "strideLu": 44.8,
+     "plantedDriftLu": 0.1,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        10.6,
+        -1.7
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        12.7,
+        1.6
+       ]
+      }
+     ]
     },
     "attack": {
      "frames": 11,
@@ -2107,56 +2130,66 @@
      ],
      "durationMs": 680,
      "impactFrame": 6,
+     "impactStep": 6,
      "impactAt": 0.4265,
      "smearFrame": 4,
+     "holdStep": 3,
+     "holdLoop": [
+      2,
+      3
+     ],
      "anchorsLu": {
       "muzzle": [
        [
         1.5,
-        2.6
+        4.4
        ],
        [
         -11.3,
-        2.3
+        4.0
        ],
        [
         -33.7,
-        14.5
+        16.4
        ],
        [
         -40.0,
-        26.3
+        28.1
        ],
        [
         -22.7,
-        5.2
+        7.1
        ],
        [
         -3.0,
-        3.6
+        5.6
        ],
        [
         31.1,
-        47.7
+        49.9
        ],
        [
         11.6,
-        57.2
+        59.3
        ],
        [
         30.7,
-        12.8
+        14.4
        ],
        [
         7.8,
-        3.4
+        5.3
        ],
        [
         2.1,
-        2.3
+        4.2
        ]
       ]
-     }
+     },
+     "muzzle": [
+      31.1,
+      49.9
+     ]
     },
     "hit": {
      "frames": 5,
@@ -2180,23 +2213,23 @@
       "muzzle": [
        [
         5.1,
-        4.4
+        6.1
        ],
        [
         4.4,
-        8.4
+        10.5
        ],
        [
         3.3,
-        4.2
+        6.1
        ],
        [
         -1.0,
-        1.5
+        3.4
        ],
        [
         1.6,
-        2.3
+        4.2
        ]
       ]
      }
@@ -2254,36 +2287,36 @@
      "anchorsLu": {
       "muzzle": [
        [
-        17.7,
-        11.4
+        17.4,
+        13.1
        ],
        [
         13.4,
-        55.6
+        57.7
        ],
        [
-        -25.6,
-        58.7
+        -25.3,
+        60.7
        ],
        [
-        10.1,
-        28.4
+        10.4,
+        30.2
        ],
        [
-        14.7,
-        21.1
+        14.5,
+        22.7
        ],
        [
-        9.9,
-        29.1
+        10.0,
+        31.1
        ],
        [
-        13.2,
-        15.4
+        13.1,
+        17.2
        ],
        [
         11.3,
-        9.9
+        11.7
        ]
       ]
      }

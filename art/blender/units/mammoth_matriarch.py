@@ -11,13 +11,17 @@ follow through. The attack is a tusk gore (owner direction 2026-09-30).
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, heavy timing):
   idle    the ears flap, the trunk sways, the riders fidget, a blink
-  walk    heavy four-beat walk, the trunk swinging a beat late
+  walk    walk v3 four-beat walk at ground speed (ANIM_SPEC G4): 12 frames, three feet down,
+          the trunk swinging and the riders swaying a beat late
   attack  TUSK GORE: she paws once and stomps (anticipation), drops her head low with the
           tusks near the ground and the trunk tucked (held, angry brow), lunges and hooks the
           tusks up and forward into the target (ivory smear, impact lines, the trunk flung up,
-          bellowing), overshoots and settles. The front kid winds his rock up behind his head
-          on the hold and throws it on the impact (throw smear; the rock leaves `muzzle` and is
-          back in his hand for the settle); the back kid ducks, then cheers
+          bellowing), overshoots and settles. The riders hold on and cheer (ANIM_SPEC 2.2:
+          the second attacker never acts in A, B or C)
+  attack_b  trunk curl and a front-foot stomp with a dust crescent
+  attack_c  sideways tusk sweep
+  attack_alt  the riders' own sim attack (12 every 1.4 s): the front kid winds up and throws
+          his rock while the body stands (extras sheet; the rock leaves `muzzle` on its impact)
   hit     beast: the head shakes, the riders grab on
   die     D4 heavy: the riders leap clear, the howdah tips away, she topples onto her side
           with the legs in the air, X eye and tongue out (no rug flatten)
@@ -27,12 +31,14 @@ bone totems on the howdah posts, toenails.
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as G
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import Quad, walk4
 
 SLUG = "mammoth_matriarch"
+GAIT_NAME = "quad"
 NAME = "Mammoth Matriarch"
 HEIGHT_LU = 196
 YAW_DEG = -10.0
@@ -117,14 +123,21 @@ def _kid(rig, name, parent, x, z, throw=False):
         g = Geo().blob((x + 8.0, -10.5, z + 9.0), (3.6, 3.2, 3.2), p=2.1)
         rig.part("rock", g, ROCK)
         rig.track("muzzle", f"{name}_arm", (x + 8.0, -10.5, z + 9.0))
+        rig.track("riderMuzzle", f"{name}_arm", (x + 8.0, -10.5, z + 9.0))
 
 
 def build(rig):
+    global RIG, LEGS
+    RIG = rig
     q = Quad(rig, trunk=(0, 76), front_x=28.0, back_x=-28.0, leg_y=13.0, shoulder_z=76.0,
              hip_z=72.0, knee_z=36.0, hock_z=36.0, knee_dx=1.0, hock_dx=-1.0, far_dx=-5.0)
+    LEGS = {}
     for name in ("fl", "bl", "fr", "br"):
         p0, p1, _ = q.legs[name]
         _leg(rig, name, p0, p1, name[0] == "f")
+        LEGS[name] = G.Leg(f"leg_{name}", f"leg_{name}2", (p1[0] + 0.8, p1[1], 0.6),
+                           bend=1.0 if name[0] == "f" else -1.0)
+        rig.track(f"_foot_{name}", f"leg_{name}2", (p1[0] + 0.8, p1[1], 0.4))
 
     # body: barrel, shoulder hump, sloping haunch
     g = Geo().blob((0, 0, 84), (40, 25, 29), p=2.3)
@@ -264,7 +277,6 @@ def build(rig):
     g = Geo().capsule((-42, 0, 96), (-48, 0, 78), 3.0, 2.2)
     g.lathe([(3.6, 0), (4.2, -4), (0, -12)], (-48.5, 0, 80), segs=10)
     rig.part("tail", g, SHAG, finish="hair")
-    rig.track("_foot", "leg_fr2", (30.0, -13.0, 0.5))
 
 
 
@@ -294,14 +306,39 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
-    p = 2 * math.pi * f / 8
-    lag = math.cos(4 * p - 1.2)
-    return merge(walk4(f, fr=12.0, br=11.0, knee=40.0, hock=26.0, bob=2.8, nod=3.5, roll=1.4), {
-        "trunk1": {"r": 6 * math.sin(2 * p)}, "trunk2": {"r": 9 * math.sin(2 * p - 0.6)},
-        "trunk3": {"r": 14 * math.sin(2 * p - 1.2)},
-        "ear": {"rz": 10 * math.sin(4 * p - 1.0)},
-    }, _riders(lag))
+# -- walk v3: G4 four-beat walk (always three feet down), card 40 x 1.25 = 50 lu/s ---------------
+# 12 x 120 ms = 1440 ms; each foot is planted 75% of the cycle (hind left, fore left, hind right,
+# fore right, a quarter cycle apart); the trunk swings and the riders sway a beat late
+RIG = None
+LEGS = None
+SPEED = 50.0
+GAIT = None
+
+
+def _gait():
+    global GAIT
+    if GAIT is None:
+        GAIT = G.Gait(12, 1440, SPEED, G.quad_feet(LEGS, G.WALK4, x_off={"fr": -1.0, "fl": -1.0,
+                                                                          "br": -2.0, "bl": -2.0}),
+                      0.75, lift=10.0, kick=3.0, reach=3.0, toe_off=0.0, heel_strike=0.0, lift_peak=0.5)
+    return GAIT
+
+
+def _walk(f, report=None):
+    g = _gait()
+
+    def extra(ctx):
+        p = ctx["p"]
+        lag = math.cos(2 * p - 1.0)
+        return merge({
+            "neck": {"r": -3.0 * math.cos(2 * p - 0.6)}, "head": {"r": 2.5 * math.cos(2 * p - 1.2)},
+            "trunk1": {"r": 7 * math.sin(p)}, "trunk2": {"r": 10 * math.sin(p - 0.6)},
+            "trunk3": {"r": 15 * math.sin(p - 1.2)},
+            "ear": {"rz": 12 * math.sin(2 * p - 1.0)},
+            "kid_b": {"r": 4 * math.sin(p - 0.8)}, "kid_f": {"r": 4 * math.sin(p - 0.8)},
+        }, _riders(1.6 * lag))
+    return G.quad_walk(RIG, f, g, {}, base_z=-8.6, bob=4.8, beats=2, low_at=0.125, pitch=0.8,
+                       roll=1.6, extra=extra, report=report)
 
 
 # attack: 10 unique poses in the 12 heavy steps. A GORE (owner direction 2026-09-30): a
@@ -326,9 +363,9 @@ LBL = [(3, 0), (4, 0), (6, -4), (8, -6), (-6, 0), (-12, 0), (-14, 0), (-10, 0), 
 RIDE = [0, -0.5, 1.5, 2.0, -1.0, 1.0, 3.5, 2.0, 0.5, 0]
 # front kid: arm angle (0 = rest, forward-down) and lean (+ back); the rock is up and back on
 # the hold, leaves on the impact and is back in his hand for the settle
-THROW = [20, 70, 150, 200, 205, 170, 10, -30, -10, 10]
-KLEAN = [0, 6, 16, 26, 26, 14, -24, -28, -8, 0]
-KRISE = [0, 0, 1.0, 2.0, 2.0, 3.0, 4.0, 2.5, 1.0, 0]
+THROW = [20, 10, 0, -10, -10, 30, 150, 160, 90, 20]
+KLEAN = [0, 2, 6, 8, 4, -4, -8, -6, -2, 0]
+KRISE = [0, 0, 0.5, 1.0, 0.5, 1.5, 3.0, 2.0, 1.0, 0]
 # back kid: grips the rim, ducks on the lunge and cheers (fist up) on the impact
 KB_ARM = [0, 10, 0, -10, 0, 60, 150, 160, 80, 0]
 KB_LEAN = [0, 2, 6, 8, 0, -8, -10, -6, -2, 0]
@@ -348,7 +385,6 @@ def _attack_pose(f):
     }, _riders(RIDE[f], THROW[f]), {
         "kid_f": {"r": KLEAN[f], "z": KRISE[f]}, "kid_b": {"r": KB_LEAN[f]}, "kid_b_arm": {"r": KB_ARM[f]},
     })
-    pose["rock"] = {"hide": f in (6, 7, 8)}
     if f in (2, 3, 4):
         pose = merge(pose, {"brow": {"z": -1.8}})
     elif f in (5, 6, 7):
@@ -369,20 +405,153 @@ def _attack_clip():
     ov = {
         2: [{"kind": "dust", "ground": (30.0, 0.0), "size_lu": 9.0, "puffs": 4, "seed": 31, "spread": 1.0}],
         4: [dict(gore, t0=0.0, t1=0.9)],
-        5: [dict(gore, t0=0.0, t1=0.9),
-            {"kind": "arc", "joint": "kid_f_arm", "inner": hand_in, "outer": hand_out, "color": "#FFF4D6",
-             "taper": 0.2, "white": 0.0, "lines": 1, "line_gap_lu": 1.6, "outline_lu": 1.0, "from": 3}],
+        5: [dict(gore, t0=0.0, t1=0.9)],
         6: [{"kind": "burst", "joint": "head", "point": TUSK_TIP, "r0_lu": 12.0, "r1_lu": 24.0,
              "n": 6, "a0": -30.0, "arc": 170.0},
-            {"kind": "arc", "joint": "kid_f_arm", "inner": hand_in, "outer": hand_out, "color": "#FFF4D6",
-             "taper": 0.2, "white": 0.0, "lines": 2, "line_gap_lu": 1.6, "outline_lu": 1.0},
             {"kind": "dust", "ground": (-30.0, 0.0), "size_lu": 12.0, "puffs": 5, "seed": 32, "spread": 1.4,
              "dir": -1.0}],
         7: [{"kind": "dust", "ground": (-34.0, 0.0), "size_lu": 9.0, "puffs": 4, "seed": 33, "spread": 1.6,
              "dir": -1.0}],
     }
     return M.clip("attack", [_attack_pose(f) for f in range(10)], M.HEAVY_MELEE_MS,
-                  impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov)
+                  impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov, extra={"noMuzzle": True})
+
+
+def _variant(f, x, z, q, r, n, h, t, legs, ride=0.0, cheer=0.0, mouth=False, neck_rz=0.0, head_rz=0.0,
+             brow=0.0):
+    """A pose of the B and C variants; the riders hang on (cheer 0..1 raises the front kid's
+    fist with the rock in it; they never throw in A, B or C)."""
+    lfr, lfl, lbr, lbl = legs
+    pose = merge(M.body_about((0, 0, 90), x=x, z=z, q=q), {
+        "trunk": {"r": r},
+        "neck": {"r": n, "rz": neck_rz}, "head": {"r": h, "rz": head_rz},
+        "trunk1": {"r": t[0]}, "trunk2": {"r": t[1]}, "trunk3": {"r": t[2]},
+        "mouth": {"show": mouth},
+        "leg_fr": {"r": lfr[0]}, "leg_fr2": {"r": lfr[1]},
+        "leg_fl": {"r": lfl[0]}, "leg_fl2": {"r": lfl[1]},
+        "leg_br": {"r": lbr[0]}, "leg_br2": {"r": lbr[1]},
+        "leg_bl": {"r": lbl[0]}, "leg_bl2": {"r": lbl[1]},
+    }, _riders(ride, 20 + 140 * cheer), {
+        "kid_f": {"r": -6 * cheer, "z": 2.0 * cheer}, "kid_b_arm": {"r": 150 * cheer},
+        "kid_b": {"r": 6 * min(0.0, ride) / 2.0},
+    })
+    if brow:
+        pose = merge(pose, {"brow": {"z": brow}})
+    return pose
+
+
+# -- attack B: trunk curl and a front-foot stomp with a dust crescent -----------------------------
+# unique: 0 = A shift, 1 curl (trunk up, near fore foot lifts), 2 HOLD (rears a little, the foot
+# high, the trunk curled over the head, trumpeting), 3 smear (the foot slams down), 4 IMPACT
+# (stomp: squash, dust crescent, impact lines), 5 = A follow, 6 = A settle
+B_SEQ = [0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6, 6]
+
+
+def _b_pose(i):
+    if i == 0:
+        return _attack_pose(0)
+    if i >= 5:
+        return _attack_pose(i + 3)
+    brace = (-4, 0)
+    if i == 1:
+        return _variant(1, -3.0, 1.0, 0.02, 3, 8, 8, (30, 40, 50),
+                        ((28, -48), (-2, 0), (6, -4), (5, -3)), ride=1.0, brow=-1.0)
+    if i == 2:
+        return _variant(2, -5.0, 2.5, 0.05, 7, 14, 14, (62, 72, 84),
+                        ((46, -84), (-6, 2), (8, -6), (7, -5)), ride=2.0, mouth=True, brow=-1.8)
+    if i == 3:
+        return _variant(3, 2.0, 0.0, 0.03, -2, 0, -4, (10, 0, -10),
+                        ((12, -22), (-2, 0), (-6, 0), (-5, 0)), ride=-1.0, mouth=True, brow=-1.4)
+    return _variant(4, 5.0, -3.0, -0.08, -5, -8, -10, (-10, -14, -20),
+                    ((-6, 0), brace, (-12, 0), (-10, 0)), ride=3.0, cheer=1.0, mouth=True, brow=-1.2)
+
+
+def _attack_b():
+    ov = {
+        2: [{"kind": "rings", "joint": "head", "point": (66.0, 0.0, 88.0), "radii_lu": (10.0, 17.0),
+             "a0": -40.0, "a1": 40.0}],
+        3: [{"kind": "streak", "joint": "leg_fr2", "point": (29.0, -13.0, 2.0), "color": FUR,
+             "width_lu": 12.0, "white": 0.4, "from": 2}],
+        4: [{"kind": "dust", "ground": (34.0, 0.0), "size_lu": 15.0, "puffs": 6, "seed": 41, "spread": 1.8},
+            {"kind": "dust", "ground": (6.0, 0.0), "size_lu": 10.0, "puffs": 4, "seed": 42, "spread": 1.4,
+             "dir": -1.0},
+            {"kind": "burst", "joint": "leg_fr2", "point": (29.0, -13.0, 4.0), "r0_lu": 14.0, "r1_lu": 26.0,
+             "n": 6, "a0": 20.0, "arc": 140.0}],
+    }
+    reuse = {0: ("attack", 0), 5: ("attack", 8), 6: ("attack", 9)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(7)], M.HEAVY_MELEE_MS, impact=4,
+                  sequence=B_SEQ, overlays=ov, reuse=reuse, extra={"noMuzzle": True})
+
+
+# -- attack C: sideways tusk sweep (the head cocks away, then sweeps the tusks across) -----------
+C_SEQ = [0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6, 6]
+
+
+def _c_pose(i):
+    if i == 0:
+        return _attack_pose(0)
+    if i >= 5:
+        return _attack_pose(i + 3)
+    if i == 1:
+        return _variant(1, -3.0, -0.5, -0.02, -2, -6, -6, (-6, -8, -10),
+                        ((-4, 0), (-2, 0), (5, -3), (4, -2)), ride=0.5, neck_rz=18, head_rz=10, brow=-1.0)
+    if i == 2:
+        return _variant(2, -6.0, -2.0, -0.05, -4, -14, -12, (-10, -12, -16),
+                        ((-6, 2), (-4, 2), (8, -6), (7, -5)), ride=1.5, neck_rz=30, head_rz=16, brow=-1.8)
+    if i == 3:
+        return _variant(3, 3.0, 1.0, 0.03, 2, 0, 4, (10, 12, 16),
+                        ((-8, 0), (-4, 0), (-8, 0), (-6, 0)), ride=-1.0, neck_rz=0, head_rz=0, brow=-1.4,
+                        mouth=True)
+    return _variant(4, 8.0, 2.0, -0.06, 5, 10, 12, (30, 26, 34),
+                    ((-10, 0), (-6, 0), (-14, 0), (-12, 0)), ride=3.0, cheer=1.0, mouth=True,
+                    neck_rz=-30, head_rz=-16, brow=-1.2)
+
+
+def _attack_c():
+    sweep = {"kind": "arc", "joint": "head", "inner": TUSK_MID, "outer": TUSK_TIP, "color": IVORY,
+             "taper": 0.15, "white": 0.2, "lines": 3, "line_gap_lu": 3.2, "outline_lu": 1.6, "samples": 18}
+    ov = {
+        3: [dict(sweep, t0=0.0, t1=0.9, **{"from": 2})],
+        4: [dict(sweep, t0=0.35, t1=0.95, lines=2, **{"from": 3}),
+            {"kind": "burst", "joint": "head", "point": TUSK_TIP, "r0_lu": 12.0, "r1_lu": 24.0,
+             "n": 6, "a0": -30.0, "arc": 170.0},
+            {"kind": "dust", "ground": (36.0, 0.0), "size_lu": 11.0, "puffs": 5, "seed": 43, "spread": 1.4}],
+    }
+    reuse = {0: ("attack", 0), 5: ("attack", 8), 6: ("attack", 9)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(7)], M.HEAVY_MELEE_MS, impact=4,
+                  sequence=C_SEQ, overlays=ov, reuse=reuse, extra={"noMuzzle": True})
+
+
+# -- attack_alt: the riders' own attack (ANIM_SPEC R3), played while the mammoth stands ---------
+# the body holds idle pose 0; the front kid winds up, holds the rock behind his head and throws
+# it (the rock leaves `muzzle` on the impact frame and is back in his hand on the last frame)
+ALT_MS = [100, 160, 260, 160, 180, 240]       # 1100 ms, impact at 520 ms (warped to the rider wind-up)
+ALT_SEQ = [0, 1, 2, 3, 4, 0]
+ALT_THROW = [None, 120, 200, 10, -30]
+ALT_LEAN = [0, 14, 26, -24, -28]
+ALT_RISE = [0, 1.0, 2.0, 4.0, 2.5]
+
+
+def _alt_pose(i):
+    pose = _idle(0)
+    if i == 0:
+        return pose
+    pose["kid_f_arm"] = {"r": ALT_THROW[i]}
+    pose["kid_f"] = {"r": ALT_LEAN[i], "z": ALT_RISE[i]}
+    pose["kid_b_arm"] = {"r": [0, 10, 20, 90, 140][i]}
+    pose["rock"] = {"hide": i in (3, 4)}
+    return pose
+
+
+def _attack_alt():
+    x, z = KID_F
+    hand_in = (x + 3.5, -8.0, z + 10.0)
+    hand_out = (x + 8.0, -10.5, z + 9.0)
+    throw = {"kind": "arc", "joint": "kid_f_arm", "inner": hand_in, "outer": hand_out, "color": "#FFF4D6",
+             "taper": 0.2, "white": 0.0, "lines": 2, "line_gap_lu": 1.6, "outline_lu": 1.0}
+    ov = {3: [dict(throw, **{"from": 2})]}
+    return M.clip("attack_alt", [_alt_pose(i) for i in range(5)], ALT_MS, impact=3, sequence=ALT_SEQ,
+                  overlays=ov, reuse={0: ("idle", 0)})
 
 
 def _hit(k):
@@ -425,12 +594,16 @@ DIE_KEEP = [0, 1, 2, 4, 5, 7, 8, 9]
 def clips():
     keep = DIE_KEEP
     cl = [
-        M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES_HEAVY)],
-               [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], [170] * 8, loop=True),
+        # 4 unique idle poses played 0-1-2-3-2-1 in the same 900 ms (pays for the 12-frame walk)
+        M.clip("idle", [_idle(f) for f in range(4)], [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True,
+               sequence=[0, 1, 2, 3, 2, 1]),
+        M.walk_clip("walk", RIG, _walk, _gait(), "quad"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
+        _attack_alt(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(keep[i]) for i in range(len(keep))], M.DIE_MS_HEAVY,
                sequence=M.DIE_SEQ_HEAVY, extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
-    return M.check_contract(cl, heavy=True)
+    return M.check_variants(M.check_contract(cl, heavy=True))

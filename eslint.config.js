@@ -136,6 +136,8 @@ export default tseslint.config(
       'test-results/**', 'placeholder/**', 'assets-src/**', '.claude/**',
       // The online server (server/) is its own package with its own tooling and checks.
       'server/**',
+      // The local Blender Python venv (art/blender/README.md); gitignored, never repo code.
+      '.venv-blender/**',
     ],
   },
   js.configs.recommended,

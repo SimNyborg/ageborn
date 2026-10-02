@@ -2,7 +2,7 @@
  "frames": {
   "chrono_titan_idle_00": {
    "frame": {
-    "x": 723,
+    "x": 869,
     "y": 2,
     "w": 141,
     "h": 205
@@ -26,8 +26,8 @@
   },
   "chrono_titan_idle_00_team": {
    "frame": {
-    "x": 784,
-    "y": 922,
+    "x": 228,
+    "y": 1302,
     "w": 109,
     "h": 165
    },
@@ -50,8 +50,8 @@
   },
   "chrono_titan_idle_01": {
    "frame": {
-    "x": 1304,
-    "y": 2,
+    "x": 2,
+    "y": 305,
     "w": 142,
     "h": 204
    },
@@ -74,8 +74,8 @@
   },
   "chrono_titan_idle_01_team": {
    "frame": {
-    "x": 1236,
-    "y": 922,
+    "x": 459,
+    "y": 1302,
     "w": 109,
     "h": 164
    },
@@ -98,8 +98,8 @@
   },
   "chrono_titan_idle_02": {
    "frame": {
-    "x": 632,
-    "y": 306,
+    "x": 742,
+    "y": 305,
     "w": 141,
     "h": 203
    },
@@ -122,8 +122,8 @@
   },
   "chrono_titan_idle_02_team": {
    "frame": {
-    "x": 115,
-    "y": 1094,
+    "x": 1024,
+    "y": 1302,
     "w": 108,
     "h": 164
    },
@@ -146,8 +146,8 @@
   },
   "chrono_titan_idle_03": {
    "frame": {
-    "x": 1099,
-    "y": 306,
+    "x": 314,
+    "y": 513,
     "w": 139,
     "h": 202
    },
@@ -170,8 +170,8 @@
   },
   "chrono_titan_idle_03_team": {
    "frame": {
-    "x": 681,
-    "y": 1094,
+    "x": 559,
+    "y": 1472,
     "w": 107,
     "h": 163
    },
@@ -194,8 +194,8 @@
   },
   "chrono_titan_idle_04": {
    "frame": {
-    "x": 1242,
-    "y": 306,
+    "x": 457,
+    "y": 513,
     "w": 138,
     "h": 202
    },
@@ -218,8 +218,8 @@
   },
   "chrono_titan_idle_04_team": {
    "frame": {
-    "x": 569,
-    "y": 1094,
+    "x": 447,
+    "y": 1472,
     "w": 108,
     "h": 163
    },
@@ -242,8 +242,8 @@
   },
   "chrono_titan_idle_05": {
    "frame": {
-    "x": 147,
-    "y": 306,
+    "x": 293,
+    "y": 305,
     "w": 139,
     "h": 204
    },
@@ -266,8 +266,8 @@
   },
   "chrono_titan_idle_05_team": {
    "frame": {
-    "x": 1349,
-    "y": 922,
+    "x": 572,
+    "y": 1302,
     "w": 109,
     "h": 164
    },
@@ -290,18 +290,18 @@
   },
   "chrono_titan_walk_00": {
    "frame": {
-    "x": 211,
-    "y": 514,
-    "w": 144,
-    "h": 201
+    "x": 857,
+    "y": 719,
+    "w": 146,
+    "h": 199
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 142,
+    "x": 143,
     "y": 188,
-    "w": 144,
-    "h": 201
+    "w": 146,
+    "h": 199
    },
    "sourceSize": {
     "w": 428,
@@ -314,18 +314,18 @@
   },
   "chrono_titan_walk_00_team": {
    "frame": {
-    "x": 454,
-    "y": 922,
-    "w": 107,
-    "h": 166
+    "x": 670,
+    "y": 1472,
+    "w": 106,
+    "h": 163
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 138,
+    "x": 139,
     "y": 184,
-    "w": 107,
-    "h": 166
+    "w": 106,
+    "h": 163
    },
    "sourceSize": {
     "w": 428,
@@ -338,18 +338,18 @@
   },
   "chrono_titan_walk_01": {
    "frame": {
-    "x": 1144,
-    "y": 2,
-    "w": 156,
-    "h": 204
+    "x": 278,
+    "y": 923,
+    "w": 152,
+    "h": 197
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 141,
-    "y": 185,
-    "w": 156,
-    "h": 204
+    "y": 191,
+    "w": 152,
+    "h": 197
    },
    "sourceSize": {
     "w": 428,
@@ -362,17 +362,17 @@
   },
   "chrono_titan_walk_01_team": {
    "frame": {
-    "x": 1121,
-    "y": 922,
-    "w": 111,
+    "x": 685,
+    "y": 1302,
+    "w": 109,
     "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 137,
-    "y": 181,
-    "w": 111,
+    "y": 188,
+    "w": 109,
     "h": 164
    },
    "sourceSize": {
@@ -386,18 +386,18 @@
   },
   "chrono_titan_walk_02": {
    "frame": {
-    "x": 419,
-    "y": 2,
-    "w": 153,
-    "h": 207
+    "x": 188,
+    "y": 719,
+    "w": 154,
+    "h": 200
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 142,
-    "y": 181,
-    "w": 153,
-    "h": 207
+    "y": 188,
+    "w": 154,
+    "h": 200
    },
    "sourceSize": {
     "w": 428,
@@ -410,18 +410,18 @@
   },
   "chrono_titan_walk_02_team": {
    "frame": {
-    "x": 112,
-    "y": 922,
-    "w": 110,
-    "h": 167
+    "x": 798,
+    "y": 1302,
+    "w": 109,
+    "h": 164
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 138,
-    "y": 177,
-    "w": 110,
-    "h": 167
+    "y": 184,
+    "w": 109,
+    "h": 164
    },
    "sourceSize": {
     "w": 428,
@@ -434,18 +434,18 @@
   },
   "chrono_titan_walk_03": {
    "frame": {
-    "x": 868,
+    "x": 1014,
     "y": 2,
-    "w": 140,
-    "h": 205
+    "w": 154,
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 141,
+    "x": 143,
     "y": 183,
-    "w": 140,
-    "h": 205
+    "w": 154,
+    "h": 204
    },
    "sourceSize": {
     "w": 428,
@@ -458,18 +458,18 @@
   },
   "chrono_titan_walk_03_team": {
    "frame": {
-    "x": 226,
-    "y": 922,
-    "w": 109,
-    "h": 167
+    "x": 443,
+    "y": 1125,
+    "w": 112,
+    "h": 170
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 137,
+    "x": 139,
     "y": 179,
-    "w": 109,
-    "h": 167
+    "w": 112,
+    "h": 170
    },
    "sourceSize": {
     "w": 428,
@@ -482,18 +482,18 @@
   },
   "chrono_titan_walk_04": {
    "frame": {
-    "x": 144,
-    "y": 719,
-    "w": 137,
-    "h": 199
+    "x": 419,
+    "y": 2,
+    "w": 150,
+    "h": 206
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 143,
-    "y": 188,
-    "w": 137,
-    "h": 199
+    "y": 181,
+    "w": 150,
+    "h": 206
    },
    "sourceSize": {
     "w": 428,
@@ -506,18 +506,18 @@
   },
   "chrono_titan_walk_04_team": {
    "frame": {
-    "x": 2,
-    "y": 922,
-    "w": 106,
-    "h": 168
+    "x": 330,
+    "y": 1125,
+    "w": 109,
+    "h": 171
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 139,
-    "y": 184,
-    "w": 106,
-    "h": 168
+    "y": 178,
+    "w": 109,
+    "h": 171
    },
    "sourceSize": {
     "w": 428,
@@ -530,18 +530,18 @@
   },
   "chrono_titan_walk_05": {
    "frame": {
-    "x": 600,
-    "y": 719,
-    "w": 143,
-    "h": 194
+    "x": 720,
+    "y": 2,
+    "w": 145,
+    "h": 205
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 146,
-    "y": 185,
-    "w": 143,
-    "h": 194
+    "x": 142,
+    "y": 181,
+    "w": 145,
+    "h": 205
    },
    "sourceSize": {
     "w": 428,
@@ -554,18 +554,18 @@
   },
   "chrono_titan_walk_05_team": {
    "frame": {
-    "x": 792,
-    "y": 1094,
-    "w": 103,
-    "h": 163
+    "x": 2,
+    "y": 1125,
+    "w": 108,
+    "h": 173
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 142,
-    "y": 181,
-    "w": 103,
-    "h": 163
+    "x": 138,
+    "y": 177,
+    "w": 108,
+    "h": 173
    },
    "sourceSize": {
     "w": 428,
@@ -578,17 +578,17 @@
   },
   "chrono_titan_walk_06": {
    "frame": {
-    "x": 2,
+    "x": 1007,
     "y": 719,
-    "w": 138,
+    "w": 140,
     "h": 199
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 148,
-    "y": 180,
-    "w": 138,
+    "x": 145,
+    "y": 186,
+    "w": 140,
     "h": 199
    },
    "sourceSize": {
@@ -602,18 +602,18 @@
   },
   "chrono_titan_walk_06_team": {
    "frame": {
-    "x": 897,
-    "y": 922,
-    "w": 102,
-    "h": 165
+    "x": 114,
+    "y": 1125,
+    "w": 106,
+    "h": 173
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 144,
-    "y": 176,
-    "w": 102,
-    "h": 165
+    "x": 141,
+    "y": 182,
+    "w": 106,
+    "h": 173
    },
    "sourceSize": {
     "w": 428,
@@ -626,18 +626,18 @@
   },
   "chrono_titan_walk_07": {
    "frame": {
-    "x": 462,
-    "y": 719,
+    "x": 2,
+    "y": 923,
     "w": 134,
-    "h": 196
+    "h": 198
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 145,
-    "y": 182,
+    "x": 147,
+    "y": 189,
     "w": 134,
-    "h": 196
+    "h": 198
    },
    "sourceSize": {
     "w": 428,
@@ -650,18 +650,210 @@
   },
   "chrono_titan_walk_07_team": {
    "frame": {
-    "x": 676,
-    "y": 922,
+    "x": 1088,
+    "y": 923,
     "w": 104,
-    "h": 166
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 141,
-    "y": 178,
+    "x": 143,
+    "y": 185,
     "w": 104,
-    "h": 166
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan_walk_08": {
+   "frame": {
+    "x": 746,
+    "y": 923,
+    "w": 132,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 148,
+    "y": 187,
+    "w": 132,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan_walk_08_team": {
+   "frame": {
+    "x": 224,
+    "y": 1125,
+    "w": 102,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 144,
+    "y": 183,
+    "w": 102,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan_walk_09": {
+   "frame": {
+    "x": 434,
+    "y": 923,
+    "w": 131,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 149,
+    "y": 183,
+    "w": 131,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan_walk_09_team": {
+   "frame": {
+    "x": 1124,
+    "y": 1125,
+    "w": 101,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 179,
+    "w": 101,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan_walk_10": {
+   "frame": {
+    "x": 140,
+    "y": 923,
+    "w": 134,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 147,
+    "y": 181,
+    "w": 134,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan_walk_10_team": {
+   "frame": {
+    "x": 111,
+    "y": 1472,
+    "w": 102,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 177,
+    "w": 102,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan_walk_11": {
+   "frame": {
+    "x": 170,
+    "y": 513,
+    "w": 140,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 144,
+    "y": 181,
+    "w": 140,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 428,
+    "h": 407
+   },
+   "anchor": {
+    "x": 0.47196,
+    "y": 0.91892
+   }
+  },
+  "chrono_titan_walk_11_team": {
+   "frame": {
+    "x": 2,
+    "y": 1472,
+    "w": 105,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 178,
+    "w": 105,
+    "h": 164
    },
    "sourceSize": {
     "w": 428,
@@ -674,8 +866,8 @@
   },
   "chrono_titan_attack_00": {
    "frame": {
-    "x": 777,
-    "y": 306,
+    "x": 887,
+    "y": 305,
     "w": 138,
     "h": 203
    },
@@ -698,8 +890,8 @@
   },
   "chrono_titan_attack_00_team": {
    "frame": {
-    "x": 455,
-    "y": 1094,
+    "x": 333,
+    "y": 1472,
     "w": 110,
     "h": 163
    },
@@ -722,8 +914,8 @@
   },
   "chrono_titan_attack_01": {
    "frame": {
-    "x": 1230,
-    "y": 514,
+    "x": 687,
+    "y": 719,
     "w": 166,
     "h": 199
    },
@@ -746,8 +938,8 @@
   },
   "chrono_titan_attack_01_team": {
    "frame": {
-    "x": 1392,
-    "y": 1094,
+    "x": 2,
+    "y": 1640,
     "w": 115,
     "h": 160
    },
@@ -770,8 +962,8 @@
   },
   "chrono_titan_attack_02": {
    "frame": {
-    "x": 497,
-    "y": 514,
+    "x": 946,
+    "y": 513,
     "w": 202,
     "h": 200
    },
@@ -794,8 +986,8 @@
   },
   "chrono_titan_attack_02_team": {
    "frame": {
-    "x": 1147,
-    "y": 1094,
+    "x": 1028,
+    "y": 1472,
     "w": 119,
     "h": 160
    },
@@ -818,10 +1010,10 @@
   },
   "chrono_titan_attack_03": {
    "frame": {
-    "x": 2,
-    "y": 514,
+    "x": 737,
+    "y": 513,
     "w": 205,
-    "h": 201
+    "h": 200
    },
    "rotated": false,
    "trimmed": true,
@@ -829,7 +1021,7 @@
     "x": 38,
     "y": 188,
     "w": 205,
-    "h": 201
+    "h": 200
    },
    "sourceSize": {
     "w": 428,
@@ -842,8 +1034,8 @@
   },
   "chrono_titan_attack_03_team": {
    "frame": {
-    "x": 1021,
-    "y": 1094,
+    "x": 902,
+    "y": 1472,
     "w": 122,
     "h": 160
    },
@@ -869,7 +1061,7 @@
     "x": 187,
     "y": 2,
     "w": 228,
-    "h": 299
+    "h": 298
    },
    "rotated": false,
    "trimmed": true,
@@ -877,7 +1069,7 @@
     "x": 31,
     "y": 90,
     "w": 228,
-    "h": 299
+    "h": 298
    },
    "sourceSize": {
     "w": 428,
@@ -890,8 +1082,8 @@
   },
   "chrono_titan_attack_04_team": {
    "frame": {
-    "x": 1003,
-    "y": 922,
+    "x": 341,
+    "y": 1302,
     "w": 114,
     "h": 164
    },
@@ -917,7 +1109,7 @@
     "x": 2,
     "y": 2,
     "w": 181,
-    "h": 300
+    "h": 299
    },
    "rotated": false,
    "trimmed": true,
@@ -925,7 +1117,7 @@
     "x": 149,
     "y": 89,
     "w": 181,
-    "h": 300
+    "h": 299
    },
    "sourceSize": {
     "w": 428,
@@ -938,8 +1130,8 @@
   },
   "chrono_titan_attack_05_team": {
    "frame": {
-    "x": 339,
-    "y": 922,
+    "x": 2,
+    "y": 1302,
     "w": 111,
     "h": 166
    },
@@ -962,8 +1154,8 @@
   },
   "chrono_titan_attack_06": {
    "frame": {
-    "x": 1020,
-    "y": 514,
+    "x": 477,
+    "y": 719,
     "w": 206,
     "h": 199
    },
@@ -986,8 +1178,8 @@
   },
   "chrono_titan_attack_06_team": {
    "frame": {
-    "x": 1169,
-    "y": 719,
+    "x": 775,
+    "y": 1125,
     "w": 115,
     "h": 168
    },
@@ -1010,8 +1202,8 @@
   },
   "chrono_titan_attack_07": {
    "frame": {
-    "x": 703,
-    "y": 514,
+    "x": 2,
+    "y": 719,
     "w": 182,
     "h": 200
    },
@@ -1034,8 +1226,8 @@
   },
   "chrono_titan_attack_07_team": {
    "frame": {
-    "x": 1288,
-    "y": 719,
+    "x": 894,
+    "y": 1125,
     "w": 114,
     "h": 168
    },
@@ -1058,10 +1250,10 @@
   },
   "chrono_titan_attack_08": {
    "frame": {
-    "x": 464,
-    "y": 306,
+    "x": 2,
+    "y": 513,
     "w": 164,
-    "h": 203
+    "h": 202
    },
    "rotated": false,
    "trimmed": true,
@@ -1069,7 +1261,7 @@
     "x": 158,
     "y": 186,
     "w": 164,
-    "h": 203
+    "h": 202
    },
    "sourceSize": {
     "w": 428,
@@ -1082,8 +1274,8 @@
   },
   "chrono_titan_attack_08_team": {
    "frame": {
-    "x": 1406,
-    "y": 719,
+    "x": 1012,
+    "y": 1125,
     "w": 108,
     "h": 168
    },
@@ -1106,8 +1298,8 @@
   },
   "chrono_titan_attack_09": {
    "frame": {
-    "x": 290,
-    "y": 306,
+    "x": 568,
+    "y": 305,
     "w": 170,
     "h": 203
    },
@@ -1130,8 +1322,8 @@
   },
   "chrono_titan_attack_09_team": {
    "frame": {
-    "x": 227,
-    "y": 1094,
+    "x": 1136,
+    "y": 1302,
     "w": 108,
     "h": 164
    },
@@ -1154,8 +1346,8 @@
   },
   "chrono_titan_hit_00": {
    "frame": {
-    "x": 889,
-    "y": 514,
+    "x": 346,
+    "y": 719,
     "w": 127,
     "h": 200
    },
@@ -1178,8 +1370,8 @@
   },
   "chrono_titan_hit_00_team": {
    "frame": {
-    "x": 1270,
-    "y": 1094,
+    "x": 1151,
+    "y": 1472,
     "w": 118,
     "h": 160
    },
@@ -1202,10 +1394,10 @@
   },
   "chrono_titan_hit_01": {
    "frame": {
-    "x": 1012,
-    "y": 2,
+    "x": 436,
+    "y": 305,
     "w": 128,
-    "h": 205
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
@@ -1213,7 +1405,7 @@
     "x": 119,
     "y": 181,
     "w": 128,
-    "h": 205
+    "h": 204
    },
    "sourceSize": {
     "w": 428,
@@ -1226,8 +1418,8 @@
   },
   "chrono_titan_hit_01_team": {
    "frame": {
-    "x": 126,
-    "y": 1262,
+    "x": 245,
+    "y": 1640,
     "w": 123,
     "h": 158
    },
@@ -1250,8 +1442,8 @@
   },
   "chrono_titan_hit_02": {
    "frame": {
-    "x": 359,
-    "y": 514,
+    "x": 599,
+    "y": 513,
     "w": 134,
     "h": 201
    },
@@ -1274,8 +1466,8 @@
   },
   "chrono_titan_hit_02_team": {
    "frame": {
-    "x": 339,
-    "y": 1094,
+    "x": 217,
+    "y": 1472,
     "w": 112,
     "h": 163
    },
@@ -1298,7 +1490,7 @@
   },
   "chrono_titan_hit_03": {
    "frame": {
-    "x": 576,
+    "x": 573,
     "y": 2,
     "w": 143,
     "h": 206
@@ -1322,8 +1514,8 @@
   },
   "chrono_titan_hit_03_team": {
    "frame": {
-    "x": 565,
-    "y": 922,
+    "x": 117,
+    "y": 1302,
     "w": 107,
     "h": 166
    },
@@ -1346,8 +1538,8 @@
   },
   "chrono_titan_hit_04": {
    "frame": {
-    "x": 2,
-    "y": 306,
+    "x": 148,
+    "y": 305,
     "w": 141,
     "h": 204
    },
@@ -1370,8 +1562,8 @@
   },
   "chrono_titan_hit_04_team": {
    "frame": {
-    "x": 2,
-    "y": 1094,
+    "x": 911,
+    "y": 1302,
     "w": 109,
     "h": 164
    },
@@ -1394,8 +1586,8 @@
   },
   "chrono_titan_die_00": {
    "frame": {
-    "x": 919,
-    "y": 306,
+    "x": 1029,
+    "y": 305,
     "w": 176,
     "h": 202
    },
@@ -1418,8 +1610,8 @@
   },
   "chrono_titan_die_00_team": {
    "frame": {
-    "x": 899,
-    "y": 1094,
+    "x": 780,
+    "y": 1472,
     "w": 118,
     "h": 162
    },
@@ -1442,10 +1634,10 @@
   },
   "chrono_titan_die_01": {
    "frame": {
-    "x": 285,
-    "y": 719,
+    "x": 569,
+    "y": 923,
     "w": 173,
-    "h": 196
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
@@ -1453,7 +1645,7 @@
     "x": 129,
     "y": 193,
     "w": 173,
-    "h": 196
+    "h": 195
    },
    "sourceSize": {
     "w": 428,
@@ -1466,8 +1658,8 @@
   },
   "chrono_titan_die_01_team": {
    "frame": {
-    "x": 2,
-    "y": 1262,
+    "x": 121,
+    "y": 1640,
     "w": 120,
     "h": 159
    },
@@ -1490,8 +1682,8 @@
   },
   "chrono_titan_die_02": {
    "frame": {
-    "x": 747,
-    "y": 719,
+    "x": 882,
+    "y": 923,
     "w": 202,
     "h": 184
    },
@@ -1514,8 +1706,8 @@
   },
   "chrono_titan_die_02_team": {
    "frame": {
-    "x": 253,
-    "y": 1262,
+    "x": 372,
+    "y": 1640,
     "w": 126,
     "h": 157
    },
@@ -1538,8 +1730,8 @@
   },
   "chrono_titan_die_03": {
    "frame": {
-    "x": 953,
-    "y": 719,
+    "x": 559,
+    "y": 1125,
     "w": 212,
     "h": 168
    },
@@ -1562,8 +1754,8 @@
   },
   "chrono_titan_die_03_team": {
    "frame": {
-    "x": 383,
-    "y": 1262,
+    "x": 502,
+    "y": 1640,
     "w": 140,
     "h": 153
    },
@@ -1586,10 +1778,10 @@
   },
   "chrono_titan_die_04": {
    "frame": {
-    "x": 527,
-    "y": 1262,
+    "x": 646,
+    "y": 1640,
     "w": 239,
-    "h": 151
+    "h": 150
    },
    "rotated": false,
    "trimmed": true,
@@ -1597,7 +1789,7 @@
     "x": 121,
     "y": 239,
     "w": 239,
-    "h": 151
+    "h": 150
    },
    "sourceSize": {
     "w": 428,
@@ -1610,8 +1802,8 @@
   },
   "chrono_titan_die_04_team": {
    "frame": {
-    "x": 770,
-    "y": 1262,
+    "x": 889,
+    "y": 1640,
     "w": 168,
     "h": 147
    },
@@ -1634,8 +1826,8 @@
   },
   "chrono_titan_die_05": {
    "frame": {
-    "x": 445,
-    "y": 1425,
+    "x": 632,
+    "y": 1804,
     "w": 253,
     "h": 127
    },
@@ -1658,8 +1850,8 @@
   },
   "chrono_titan_die_05_team": {
    "frame": {
-    "x": 1128,
-    "y": 1262,
+    "x": 2,
+    "y": 1804,
     "w": 183,
     "h": 134
    },
@@ -1682,8 +1874,8 @@
   },
   "chrono_titan_die_06": {
    "frame": {
-    "x": 2,
-    "y": 1425,
+    "x": 189,
+    "y": 1804,
     "w": 250,
     "h": 133
    },
@@ -1706,8 +1898,8 @@
   },
   "chrono_titan_die_06_team": {
    "frame": {
-    "x": 942,
-    "y": 1262,
+    "x": 1061,
+    "y": 1640,
     "w": 182,
     "h": 139
    },
@@ -1730,8 +1922,8 @@
   },
   "chrono_titan_die_07": {
    "frame": {
-    "x": 702,
-    "y": 1425,
+    "x": 889,
+    "y": 1804,
     "w": 255,
     "h": 126
    },
@@ -1754,8 +1946,8 @@
   },
   "chrono_titan_die_07_team": {
    "frame": {
-    "x": 256,
-    "y": 1425,
+    "x": 443,
+    "y": 1804,
     "w": 185,
     "h": 132
    },
@@ -1802,7 +1994,11 @@
    "chrono_titan_walk_04",
    "chrono_titan_walk_05",
    "chrono_titan_walk_06",
-   "chrono_titan_walk_07"
+   "chrono_titan_walk_07",
+   "chrono_titan_walk_08",
+   "chrono_titan_walk_09",
+   "chrono_titan_walk_10",
+   "chrono_titan_walk_11"
   ],
   "walk_team": [
    "chrono_titan_walk_00_team",
@@ -1812,7 +2008,11 @@
    "chrono_titan_walk_04_team",
    "chrono_titan_walk_05_team",
    "chrono_titan_walk_06_team",
-   "chrono_titan_walk_07_team"
+   "chrono_titan_walk_07_team",
+   "chrono_titan_walk_08_team",
+   "chrono_titan_walk_09_team",
+   "chrono_titan_walk_10_team",
+   "chrono_titan_walk_11_team"
   ],
   "attack": [
    "chrono_titan_attack_00",
@@ -1891,8 +2091,8 @@
   "image": "chrono_titan.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1536,
-   "h": 1560
+   "w": 1280,
+   "h": 1940
   },
   "scale": "1.25",
   "ageborn": {
@@ -1917,6 +2117,7 @@
    },
    "facing": "right",
    "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "heavy",
    "clips": {
     "idle": {
      "frames": 6,
@@ -1968,7 +2169,7 @@
      }
     },
     "walk": {
-     "frames": 8,
+     "frames": 12,
      "loop": true,
      "sequence": [
       0,
@@ -1978,57 +2179,103 @@
       4,
       5,
       6,
-      7
+      7,
+      8,
+      9,
+      10,
+      11
      ],
      "durationsMs": [
-      175,
-      175,
-      175,
-      175,
-      175,
-      175,
-      175,
-      175
+      130,
+      130,
+      130,
+      130,
+      130,
+      130,
+      130,
+      130,
+      130,
+      130,
+      130,
+      130
      ],
-     "durationMs": 1400,
+     "durationMs": 1560,
+     "gait": "heavy",
+     "gaitSpeedLuPerS": 43.8,
+     "cycleMs": 1560,
      "anchorsLu": {
       "bladeTip": [
        [
-        72.1,
-        138.4
+        76.2,
+        120.7
        ],
        [
-        84.0,
-        127.9
+        79.6,
+        115.4
        ],
        [
-        80.8,
-        143.2
+        83.1,
+        122.8
        ],
        [
-        66.6,
-        158.4
+        83.7,
+        135.1
+       ],
+       [
+        78.8,
+        150.0
+       ],
+       [
+        73.1,
+        159.8
+       ],
+       [
+        70.6,
+        158.2
+       ],
+       [
+        67.0,
+        156.6
+       ],
+       [
+        65.4,
+        153.4
        ],
        [
         66.1,
-        152.2
+        148.7
        ],
        [
-        75.2,
-        138.8
+        66.8,
+        144.2
        ],
        [
-        72.1,
-        143.8
-       ],
-       [
-        65.5,
-        150.0
+        70.4,
+        135.6
        ]
       ]
      },
-     "strideLu": 47.2,
-     "naturalSpeedLuPerS": 33.7
+     "naturalSpeedLuPerS": 43.8,
+     "strideLu": 68.4,
+     "plantedDriftLu": 0.0,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        18.2,
+        -5.3
+       ]
+      },
+      {
+       "step": 6,
+       "foot": "l",
+       "atLu": [
+        24.5,
+        2.8
+       ]
+      }
+     ]
     },
     "attack": {
      "frames": 10,
@@ -2063,6 +2310,7 @@
      ],
      "durationMs": 1230,
      "impactFrame": 6,
+     "impactStep": 6,
      "impactAt": 0.4634,
      "anchorsLu": {
       "bladeTip": [
@@ -2107,7 +2355,8 @@
         103.9
        ]
       ]
-     }
+     },
+     "holdStep": 3
     },
     "hit": {
      "frames": 5,

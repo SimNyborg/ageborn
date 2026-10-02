@@ -10,7 +10,9 @@ head, on the impact frame).
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    nods to his own rhythm with his eyes closed, the stick tapping
-  walk    waddle: short steps with a side-to-side roll
+  walk    walk v3 (ANIM_SPEC G2): a hunched trot with a side-to-side roll, the stick tapping the
+          drum on every footfall
+  attack_b  lifts the drum overhead and slams it down with both hands
   attack  DOUBLE BEAT LAUNCH: a small beat that makes the stone on the drum hop, then both
           hands go high and come down in a big beat that bounces the stone off the skin (the
           projectile leaves the drum `muzzle` on impact; beat rings flare); his off hand puts
@@ -22,12 +24,14 @@ rattles, face kit eyes and mouths.
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as G
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import CaveBody
 
 SLUG = "drum_shaman"
+GAIT_NAME = "biped"
 NAME = "Drum Shaman"
 HEIGHT_LU = 66
 CANVAS = (256, 236)
@@ -57,13 +61,20 @@ DRUM_R = 9.2
 STICK = 14.0
 
 
+THIGH_Z, KNEE_Z, ANKLE_Z = 18.0, 10.6, 3.6   # walk v3: longer legs (ANIM_SPEC 2.0 rule 5)
+LIFT = 2.0
+
+
 def build(rig):
-    global ARM_R, ARM_L, STICK_TIP
-    body = CaveBody(rig, SKIN, FUR, hip_z=14.5, knee_z=8.0, ankle_z=3.6, waist_z=15.5,
+    global ARM_R, ARM_L, STICK_TIP, RIG
+    RIG = rig
+    body = CaveBody(rig, SKIN, FUR, hip_z=14.5, knee_z=KNEE_Z, ankle_z=ANKLE_Z, waist_z=15.5,
                     shoulder_z=34.0, neck_z=35.5, hip_y=5.8, shoulder_y=11.6,
-                    elbow=(1.5, 27.0), wrist=(3.8, 20.5), leg_r=(4.3, 3.8, 3.4),
+                    elbow=(1.5, 27.0), wrist=(3.8, 20.5), leg_r=(3.9, 3.4, 3.1),
                     arm_r=(3.9, 3.4, 3.3), fist_r=3.8, torso=((0, 26.5), (10.4, 9.6, 10.4)),
-                    torso_taper=(1.1, 0.94), foot_len=6.0)
+                    torso_taper=(1.1, 0.94), foot_len=4.2, thigh_z=THIGH_Z, foot_joint=True,
+                    far_shade=0.8)
+    rig.rest_offset["torso"] = (0, 0, LIFT)
     fr = body.fist["r"]
 
     # team hide cloak over the back and shoulders; the hem swings
@@ -206,7 +217,8 @@ def build(rig):
     # belt rattles (two gourds on cords at the hip)
     g = Geo().blob((-3.0, -9.8, 17.0), (2.4, 2.0, 3.0), p=2.2).blob((1.2, -10.4, 16.0), (2.0, 1.8, 2.6), p=2.2)
     rig.part("hips", g, RATTLE, outline=0.6)
-    rig.track("_foot", "shin_r", (2.9, -5.8, 0.5))
+    rig.track("_foot", "foot_r", (2.0, -5.8, 0.0))
+    rig.track("_foot_l", "foot_l", (2.0, 5.8, 0.0))
     ARM_R = body.arm("r", "stick", tip)
     ARM_L = body.arm("l")
 
@@ -241,12 +253,28 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
+# -- walk v3: G2 hunched trot at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 65 ms -------------
+RIG = None
+SPEED = 81.25
+LEGS = {s: G.Leg(f"thigh_{s}", f"shin_{s}", (1.0, y, ANKLE_Z), foot=f"foot_{s}",
+                 toe=(4.7, y, 0.4), heel=(-1.4, y, 0.4)) for s, y in (("r", -5.8), ("l", 5.8))}
+GAIT = G.Gait(8, 520, SPEED, G.biped_feet(LEGS["l"], LEGS["r"], x_mid=1.4), 0.36,
+              lift=6.0, kick=2.0, reach=0.0, toe_off=20.0, early_lift=1.4, drag=0.3, lift_peak=0.38)
+for _k, (_leg, _ph, _x, _gz) in list(GAIT.feet.items()):
+    GAIT.feet[_k] = (_leg, _ph - 0.03, _x, _gz)
+
+
+def _walk(f, report=None):
+    # the stick taps the drum on each footfall (DOWN frames 1 and 5), the drum and beads bob late
+    tap = [0.4, 1.0, -0.3, -0.6][f % 4]
+
     def extra(ctx):
-        return {"body": {"rx": 5 * math.sin(ctx["p"])}, "torso": {"rx": -3 * math.sin(ctx["p"])},
-                "stick": {"r": 8 * math.cos(ctx["lag_p"])}, "drum": {"r": 3 * math.cos(ctx["lag_p"])}}
-    return M.walk_v2(f, stance(), HEIGHT_LU, thigh=24.0, knee=56.0, lift_lu=6.0, bob_pct=0.05,
-                     lean=-5.0, arm=0.0, fore=0.0, arms=(), extra=extra)
+        lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
+        return {"body": {"rx": 4 * math.sin(ctx["p"])}, "torso": {"rx": -3 * math.sin(ctx["p"])},
+                "arm_r": {"r": -7 * tap}, "stick": {"r": -10 * tap},
+                "drum": {"r": 2.5 * lag}, "beads": {"r": 6 * lag}, "beard": {"r": 5 * lag}}
+    return M.walk_v3(RIG, f, stance(), GAIT, legs=LEGS, bob=M.BRISK_BOB, sq=M.BRISK_SQ, lean=-6.0,
+                     twist=5.0, nod=3.0, extra=extra, report=report)
 
 
 # 11 unique frames, moves.SMALL_MELEE_MS
@@ -298,7 +326,73 @@ def _attack_clip():
              "a0": 40.0, "arc": 100.0}],
     }
     return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
-                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
+                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov,
+                  extra={"holdStep": 3, "holdLoop": [3, 4]})
+
+
+# -- attack B: the drum overhead, one big two-handed slam (ANIM_SPEC appendix B) -----------------
+# unique: 0 = A read, 1 = A small beat, 2 lift (the drum up at the chest), 3 HOLD (the drum high
+# over his head, leaning back), 4 the drum coming down (loops with 3 while the wind-up lasts),
+# 5 IMPACT (the drum back at the belly, both hands slam the skin, rings), 6 rebound, 7-9 = A
+B_SEQ = [0, 1, 2, 3, 4, 4, 5, 6, 7, 8, 9]
+#          lift  HOLD  down   IMP  rebound
+# Review N1 (2026-10-02): A's hold is a standing figure with the stick up; B must not read the
+# same at 62 px. B's hold arches far back on one leg (the near knee pulled up high, the big drum
+# held over and behind the head) and the impact drops him to a deep kneel, the drum slammed down
+# in front of his knee: a different body level on both key poses.
+B_DX = [3.0, -4.0, 2.0, 6.0, 4.0]
+B_DZ = [16.0, 46.0, 18.0, 5.0, 6.0]
+B_DR = [20, 20, 30, -6, -8]
+B_SA = [30, 100, 60, -50, -40]
+B_SB = [80, 100, 100, -30, 0]
+B_SC = [90, 110, 110, -40, 10]
+B_OA = [30, 98, 50, -46, -40]
+B_OB = [80, 98, 90, -26, -10]
+B_T = [-2, 20, 0, -26, -20]
+B_H = [2, -14, 4, 18, 12]
+B_Z = [0.8, 3.6, 0.5, -8.0, -6.0]
+B_Q = [0.03, 0.10, 0.04, -0.14, 0.05]
+B_THR = [2, 72, 10, 80, 70]
+B_SHR = [0, -84, -10, -95, -85]
+B_THL = [-2, -4, -4, -30, -26]
+B_SHL = [0, -6, 0, -70, -60]
+
+
+def _b_pose(i):
+    if i in (0, 1):
+        return _attack_pose(i)
+    if i >= 7:
+        return _attack_pose(i + 1)
+    k = i - 2
+    pose = merge(stick_arm(B_SA[k], B_SB[k], B_SC[k]), off_arm(B_OA[k], B_OB[k]), {
+        "torso": {"r": B_T[k]}, "head": {"r": B_H[k]},
+        "drum": {"x": B_DX[k], "z": B_DZ[k], "r": B_DR[k],
+                 "sz": 0.82 if k == 3 else 1.0, "sx": 1.1 if k == 3 else 1.0},
+        "thigh_r": {"r": B_THR[k]}, "shin_r": {"r": B_SHR[k]},
+        "thigh_l": {"r": B_THL[k]}, "shin_l": {"r": B_SHL[k]},
+        "ring": {"show": k == 3},
+        "stone": {"hide": k >= 3},
+    }, M.body_about((0, 0, 20), z=B_Z[k], q=B_Q[k]))
+    if k in (0, 1, 2):
+        pose = merge(pose, F.expr("o"), {"brow": {"z": 1.0}})
+    else:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.0}})
+    return pose
+
+
+def _attack_b():
+    ov = {
+        3: [{"kind": "rings", "joint": "drum", "point": DRUM_TOP, "radii_lu": (6.0, 10.0), "a0": 40.0, "a1": 140.0}],
+        4: [{"kind": "streak", "joint": "drum", "point": DRUM_TOP, "color": HIDE, "width_lu": 9.0, "from": 3}],
+        5: [{"kind": "rings", "joint": "drum", "point": DRUM_TOP, "radii_lu": (10.0, 17.0, 24.0), "a0": -40.0,
+             "a1": 120.0},
+            {"kind": "burst", "joint": "drum", "point": DRUM_TOP, "r0_lu": 7.0, "r1_lu": 13.0, "n": 4,
+             "a0": 30.0, "arc": 120.0},
+            {"kind": "dust", "ground": (4.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 24, "spread": 1.2}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 7: ("attack", 8), 8: ("attack", 9), 9: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(10)], M.SMALL_MELEE_MS, impact=5,
+                  sequence=B_SEQ, overlays=ov, reuse=reuse, extra={"holdStep": 3, "holdLoop": [3, 4]})
 
 
 def _hit(k):
@@ -334,9 +428,10 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES)], [M.IDLE_MS] * M.IDLE_FRAMES, loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

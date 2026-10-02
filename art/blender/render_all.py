@@ -23,6 +23,8 @@ UNITS = ["bonker", "destrier_knight", "pulse_trooper"]
 AGE_OF = {
     "stone": ["bonker", "drum_shaman", "mammoth_matriarch", "pebbler", "sabertooth", "spear_hunter",
               "training_dummy", "tuskback"],
+    "bronze": ["bronze_colossus", "hoplite", "javelineer", "phalangite", "scorpion", "standard_bearer",
+               "war_chariot"],
     "medieval": ["battering_ram", "destrier_knight", "footman", "friar", "longbowman", "pikeman",
                  "ursa_paladin"],
     "gunpowder": ["balloon_admiral", "bronze_cannon", "corsair", "cuirassier", "field_surgeon",
@@ -31,6 +33,8 @@ AGE_OF = {
                "tankette", "trench_raider"],
     "future": ["chrono_titan", "emp_saboteur", "photon_knight", "pulse_trooper", "rail_gunner",
                "repair_drone", "walker_mech"],
+    "cosmic": ["graviton_halberdier", "hover_tank", "ion_ranger", "mothership", "star_legionnaire",
+               "starwarden", "warp_stalker"],
 }
 ALL_UNITS = [u for us in AGE_OF.values() for u in us]
 
@@ -42,6 +46,14 @@ def install(slug, out):
     os.makedirs(dst, exist_ok=True)
     for f in (f"{slug}.json", f"{slug}.png", f"{slug}.hd.json", f"{slug}.hd.png"):
         shutil.copyfile(os.path.join(out, f), os.path.join(dst, f))
+    # the extras sheet (attack variants, attack_alt; ANIM_SPEC P4): installed when rendered,
+    # removed when the unit no longer has one
+    for f in (f"{slug}.x.json", f"{slug}.x.png", f"{slug}.x.hd.json", f"{slug}.x.hd.png"):
+        src, d = os.path.join(out, f), os.path.join(dst, f)
+        if os.path.exists(src):
+            shutil.copyfile(src, d)
+        elif os.path.exists(d):
+            os.remove(d)
     print(f"  installed {age}/{slug}", flush=True)
 
 

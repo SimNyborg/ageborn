@@ -23,6 +23,17 @@ independent attacks, so `rider0Muzzle` and `rider1Muzzle` are exported per frame
 a fire flash, a 7 degree nose-down tilt onto a snapped track, the casemate knocked askew, black
 smoke from both sponsons, and both gunners climbing up out of their hatches from frame 2 (the game
 spawns the 2 Carbineers; `crewOutAtMs` marks the climb-out).
+
+Animation standard (ANIM_SPEC 2026-10-02, G6 tracked):
+  walk        the belts scroll exactly 2 grouser spacings per 640 ms cycle at the ground speed
+              (35 x 1.25 = 43.75 lu/s), the hull heaves (about 3 lu) and pitches 1.5 degrees, the crew
+              bobs a beat late, the exhaust puffs and the rear kicks up dust
+  attack      A (broadside rock) as above; the aim is split into a hold and a wobble frame (holdLoop:
+              the sim's wind-up is 3.1x the authored one)
+  attack_b    MAIN GUN ANGLED UP: the hull rears nose-up on its springs, the barrel elevates (the held
+              extreme), the shot makes it hop, then both funnels belch black smoke
+  attack_alt  the sponson gunners' own attack (6 / 0.5 s, ANIM_SPEC R3): the body idles, both gunners
+              squint down their rotary guns and fire; the bullets leave the near gun (`mgMuzzle`)
 """
 import math
 
@@ -36,6 +47,7 @@ from ageborn_art.anim import Clip, merge, pick, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "land_dreadnought"
+GAIT_NAME = "tracked"
 NAME = "Land Dreadnought"
 HEIGHT_LU = 180
 YAW_DEG = -10.0
@@ -48,8 +60,8 @@ EXTRA_META = {"riders": [
     {"id": "rider1", "anchor": "rider1Muzzle", "projectile": "proj.bullet"},
 ]}
 
-WALK_MS = 100
-STEP_LU = 35.0 * WALK_MS / 1000.0     # 3.5 lu per 100 ms step at sim speed 35
+WALK_MS = 80
+STEP_LU = 43.75 * WALK_MS / 1000.0    # 3.5 lu per 80 ms step at the ground speed 35 x 1.25
 PITCH = STEP_LU * I.TREAD_PHASES      # 14 lu grousers: one phase copy per step
 # the rhomboid, clockwise on screen from the top rear (x forward, z up)
 RHOMB = [(-68.0, 92.0), (58.0, 92.0), (104.0, 48.0), (72.0, 2.0), (-58.0, 2.0), (-92.0, 42.0)]
@@ -295,6 +307,7 @@ def build(rig):
     g = Geo().blob((sx + 12.6, R0_MUZZLE[1] - 2.0, sz + 15.0), (3.0, 2.4, 2.8), p=2.4)
     rig.part("mg0", g, I.SKIN, outline=0.5)
     rig.track("rider0Muzzle", "mg0", R0_MUZZLE)
+    rig.track("mgMuzzle", "mg0", R0_MUZZLE)       # R3: second-attack accents and attack_alt bullets
     I.muzzle_flash(rig, "mg0", R0_MUZZLE, size=0.9, name="flash0")
 
     rig.joint("smoke", "root", (MUZZLE[0] + 16, -20, BARREL_Z + 30), hidden=True)
@@ -382,17 +395,26 @@ def _walk(f):
     p = 2 * math.pi * f / 8
     return merge(_tracks(f), _riders(p), {
         "odo": {"x": 2.0 * STEP_LU * math.cos(p)},
-        "hull": dict(squash(0.012 * math.cos(2 * p)), z=1.2 * math.cos(2 * p) + 0.2, r=0.9 * math.sin(p)),
-        "g0": {"z": 1.6 * math.cos(2 * p - 1.2)}, "g1": {"z": 1.6 * math.cos(2 * p - 1.6)},
+        "hull": dict(squash(0.012 * math.cos(2 * p)), z=2.2 * math.cos(2 * p) + 0.2, r=1.8 * math.sin(p)),
+        "g0": {"z": 2.0 * math.cos(2 * p - 1.2)}, "g1": {"z": 2.0 * math.cos(2 * p - 1.6)},
         "tail": {"r": -2.0 * math.sin(p)},
         "exhaust": {"show": f % 4 in (1, 2), "x": [0, -4, -9, 0][f % 4], "s": [1, 0.9, 1.25, 1][f % 4],
                     "z": [0, 0, 4, 0][f % 4]},
     })
 
 
-# attack: 10 unique frames in 933 ms; the shell leaves on frame 3 at 350 ms (impactAt 0.3751, as shipped)
-ATTACK_MS = [80, 90, 180, 60, 90, 90, 80, 80, 90, 93]
-ATTACK_IMPACT = 3
+def _walk_clip():
+    # dust kicked up behind the rear of the belt, a fresh little cloud every other frame
+    ov = {f: [{"kind": "dust", "ground": (-96.0 - 4.0 * (f % 4), 0.0), "size_lu": 8.0 + (f % 4), "puffs": 3,
+               "seed": 80 + f, "spread": 1.0, "dir": -1.0}] for f in (0, 2, 4, 6)}
+    return M.clip("walk", [_walk(f) for f in range(8)], [WALK_MS] * 8, loop=True, overlays=ov)
+
+
+# attack: 11 unique frames in 933 ms; the shell leaves on frame 4 at 350 ms (impactAt 0.3751, as
+# shipped). The shipped 180 ms aim is split into the hold (125) and a wobble partner (55) for the holdLoop.
+ATTACK_MS = [80, 90, 125, 55, 60, 90, 90, 80, 80, 90, 93]
+ATTACK_IMPACT = 4
+U_OF = [0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9]     # unique frame -> row of the pose tables below
 #       dip  lift HOLD FIRE rock  fwd  back smoke cheer settle
 A_X = [0.5, 1.0, 1.5, -4.0, -8.0, -4.5, -2.0, -1.0, -0.5, 0.0]
 A_R = [-0.8, -0.2, 0.6, 2.8, 4.2, -1.8, 1.4, -0.6, 0.3, 0.0]
@@ -403,10 +425,12 @@ A_REC = [0, 0, 0, 3.0, 7.0, 8.0, 7.0, 6.0, 5.0, 4.5]
 
 
 def _attack(f):
-    pose = merge(_tracks(0, False), _riders(f * 0.8), {
+    wob = f == 3
+    f = U_OF[f]
+    pose = merge(_tracks(0, False), _riders(f * 0.8 + (0.5 if wob else 0.0)), {
         "body": dict(squash(A_Q[f]), x=A_X[f]),
         "hull": {"r": A_R[f]},
-        "barrel": {"x": A_BX[f], "r": A_BR[f]},
+        "barrel": {"x": A_BX[f], "r": A_BR[f] + (1.2 if wob else 0.0)},
         "g0": {"r": [0, 0, -4, 12, 10, 4, 0, 0, -6, 0][f], "z": [0, 0, -2, -3, -2, 0, 0, 2, 6, 1][f]},
         "g1": {"r": [0, 0, -4, 14, 11, 4, 0, 0, -6, 0][f], "z": [0, 0, -2, -3, -2, 0, 0, 2, 6, 1][f]},
         "g0_eyes": {"sz": 0.35 if f in (2, 3, 4) else 1.0},
@@ -418,6 +442,8 @@ def _attack(f):
         "exhaust": {"show": f in (4, 5, 6), "s": [1, 1, 1, 1, 1.2, 1.5, 1.7, 1, 1, 1][f],
                     "z": [0, 0, 0, 0, 0, 5, 10, 0, 0, 0][f]},
     })
+    if wob:
+        pose["hull"]["z"] = pose["hull"].get("z", 0.0) + 0.5
     rec = A_REC[f]
     for name, r in _T["road"] + _T["wheels"]:
         pose.setdefault(name, {})["r"] = pose.get(name, {}).get("r", 0.0) + math.degrees(rec / r)
@@ -426,15 +452,101 @@ def _attack(f):
 
 def _attack_clip():
     ov = {
-        3: [{"kind": "burst", "joint": "barrel", "point": MUZZLE, "r0_lu": 22.0, "r1_lu": 36.0, "n": 8,
+        4: [{"kind": "burst", "joint": "barrel", "point": MUZZLE, "r0_lu": 22.0, "r1_lu": 36.0, "n": 8,
              "a0": -80.0, "arc": 160.0},
             {"kind": "dust", "ground": (-60.0, 0.0), "size_lu": 12.0, "puffs": 4, "seed": 71, "spread": 1.2,
              "dir": -1.0}],
-        4: [{"kind": "dust", "ground": (-70.0, 0.0), "size_lu": 14.0, "puffs": 5, "seed": 72, "spread": 1.5,
+        5: [{"kind": "dust", "ground": (-70.0, 0.0), "size_lu": 14.0, "puffs": 5, "seed": 72, "spread": 1.5,
              "dir": -1.0},
             {"kind": "dust", "ground": (70.0, 0.0), "size_lu": 10.0, "puffs": 4, "seed": 73, "spread": 1.2}],
     }
-    return M.clip("attack", [_attack(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
+    return M.clip("attack", [_attack(f) for f in range(11)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  extra={"holdStep": 2, "holdLoop": [2, 3]})
+
+
+# -- attack B: main gun angled up, the funnels belch (ANIM_SPEC appendix B) ------------------------
+# unique frames: 0 = A dip, 1 elevate, 2 HOLD (the hull reared nose-up on its springs, the barrel
+# elevated), 3 wobble (holdLoop), 4 FIRE, 5 hop, 6 slam down, 7 belch (both funnels), 8 settle,
+# 9-10 = A settle. The hull pitches about its rear springs.
+#         elev HOLD wob  FIRE hop  slam belch settle
+UB_HR = [2.5, 5.0, 5.4, 6.5, 4.0, -2.0, 1.0, 0.4]
+UB_BR = [8.0, 15.0, 16.2, 16.5, 13.0, 9.0, 5.0, 2.0]
+UB_BX = [0.0, 0.0, 0.0, -12.0, -9.0, -5.0, -2.5, -0.5]
+UB_X = [0.5, 1.0, 1.0, -5.0, -7.0, -3.0, -1.0, 0.0]
+UB_Z = [0.0, 0.0, 0.4, 1.0, 4.0, -1.0, 0.5, 0.0]
+UB_Q = [-0.01, -0.03, -0.03, 0.05, 0.03, -0.08, 0.02, 0.0]
+UB_REC = [0, 0, 0, 3.0, 8.0, 9.0, 8.0, 7.0]
+
+
+def _b_pose(i):
+    if i in (0, 9, 10):
+        return _attack(i)
+    k = i - 1
+    pose = merge(_tracks(0, False), _riders(i * 0.8), {
+        "body": dict(squash(UB_Q[k]), x=UB_X[k], z=UB_Z[k]),
+        "hull": {"r": UB_HR[k]},
+        "barrel": {"x": UB_BX[k], "r": UB_BR[k]},
+        "g0": {"r": [0, -4, -4, 14, 12, 4, -6, 0][k], "z": [0, -2, -2, -3, -1, -2, 6, 1][k]},
+        "g1": {"r": [0, -4, -4, 15, 12, 4, -6, 0][k], "z": [0, -2, -2, -3, -1, -2, 6, 1][k]},
+        "g0_eyes": {"sz": 0.35 if k in (1, 2, 3) else 1.0},
+        "g1_eyes": {"sz": 0.35 if k in (1, 2, 3) else 1.0},
+        "g0_arms": {"show": k == 6}, "g1_arms": {"show": k == 6},
+        "flash": {"show": k == 3},
+        "smoke": {"show": k in (4, 5, 6), "s": [1, 1, 1, 1, 0.8, 1.05, 1.2, 1][k],
+                  "x": [0, 0, 0, 0, -12, -2, 6, 0][k], "z": [0, 0, 0, 0, 6, 18, 26, 0][k]},
+        "exhaust": {"show": k in (5, 6, 7), "s": [1, 1, 1, 1, 1, 1.8, 2.3, 2.0][k],
+                    "z": [0, 0, 0, 0, 0, 4, 10, 16][k], "x": [0, 0, 0, 0, 0, -3, -7, -10][k]},
+        "wsmoke1": {"show": k in (6, 7), "s": [1, 1, 1, 1, 1, 1, 1.0, 1.2][k], "z": [0, 0, 0, 0, 0, 0, 2, 8][k]},
+    })
+    rec = UB_REC[k]
+    for name, r in _T["road"] + _T["wheels"]:
+        pose.setdefault(name, {})["r"] = pose.get(name, {}).get("r", 0.0) + math.degrees(rec / r)
+    return pose
+
+
+def _attack_b():
+    ov = {
+        4: [{"kind": "burst", "joint": "barrel", "point": MUZZLE, "r0_lu": 22.0, "r1_lu": 36.0, "n": 8,
+             "a0": -60.0, "arc": 160.0},
+            {"kind": "dust", "ground": (-64.0, 0.0), "size_lu": 12.0, "puffs": 4, "seed": 74, "spread": 1.2,
+             "dir": -1.0}],
+        6: [{"kind": "dust", "ground": (-70.0, 0.0), "size_lu": 14.0, "puffs": 5, "seed": 75, "spread": 1.5,
+             "dir": -1.0},
+            {"kind": "dust", "ground": (76.0, 0.0), "size_lu": 12.0, "puffs": 5, "seed": 76, "spread": 1.4}],
+    }
+    reuse = {0: ("attack", 0), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(11)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 2, "holdLoop": [2, 3]})
+
+
+# -- attack_alt: the sponson gunners fire (6 / 0.5 s, ANIM_SPEC R3), played while the landship stands --
+# 6 frames in 450 ms, the shots on frame 3 at 240 ms: lean in, aim, HOLD (squinting), FIRE (both rotary
+# guns flash), recoil (the barrels spin, the gunners rock back), settle. The body holds idle pose 0.
+ALT_MS = [60, 70, 110, 60, 70, 80]
+ALT_IMPACT = 3
+
+
+def _alt_pose(f):
+    base = _idle(0)
+    mg = [2.0, 5.0, 5.0, 3.0, -4.0, 0.0][f]
+    pose = merge(base, {
+        "g0": {"r": [-4, -8, -9, 6, 8, 2][f], "x": [1.0, 2.0, 2.0, -1.0, -1.5, 0.0][f]},
+        "g1": {"r": [-4, -8, -9, 7, 9, 2][f], "x": [1.0, 2.0, 2.0, -1.0, -1.5, 0.0][f]},
+        "mg0": {"r": mg}, "mg1": {"r": mg + 1.0},
+        "g0_eyes": {"sz": 0.35 if f in (1, 2, 3) else 1.0},
+        "g1_eyes": {"sz": 0.35 if f in (1, 2, 3) else 1.0},
+        "flash0": {"show": f == 3}, "flash1": {"show": f == 3},
+    })
+    return pose
+
+
+def _attack_alt():
+    ov = {3: [{"kind": "burst", "joint": "mg0", "point": R0_MUZZLE, "r0_lu": 6.0, "r1_lu": 11.0, "n": 5,
+               "a0": -50.0, "arc": 100.0},
+              {"kind": "burst", "joint": "mg1", "point": R1_MUZZLE, "r0_lu": 6.0, "r1_lu": 11.0, "n": 5,
+               "a0": -50.0, "arc": 100.0}]}
+    return M.clip("attack_alt", [_alt_pose(f) for f in range(6)], ALT_MS, impact=ALT_IMPACT, overlays=ov,
+                  extra={"noMuzzle": True})
 
 
 def _hit(k):
@@ -506,13 +618,15 @@ def _die_extra():
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [150] * 6, loop=True),
-        Clip("walk", 8, _walk, loop=True, durations=WALK_MS),
+        _walk_clip(),
         _attack_clip(),
+        _attack_b(),
+        _attack_alt(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         Clip("die", 8, _die, sequence=DIE_SEQ, durations=DIE_MS, extra=_die_extra()),
     ]
     by = {c.name: c for c in cl}
-    assert [by[n].total_ms() for n in ("idle", "walk", "hit", "die")] == [900, 800, 310, 1100]
+    assert [by[n].total_ms() for n in ("idle", "walk", "hit", "die")] == [900, 640, 310, 1100]
     m = by["attack"].meta()
     assert m["durationMs"] == 933 and m["impactAt"] == 0.3751, m
-    return cl
+    return M.check_variants(cl)

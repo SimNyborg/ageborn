@@ -3,12 +3,17 @@
 Look (A11, Gunpowder palette): a round-faced army doctor in a black bicorne worn fore and aft
 (a brass edge, a team cockade), little brass spectacles that glint and grey mutton-chop
 whiskers, a team coat with cream cuffs under a long cream apron, a cream strap across his
-chest to a big leather doctor's bag with a cream cross on his near hip (so 'healer' reads at
+chest to a big team doctor's bag with a cream cross on his near hip (so 'healer' reads at
 56 px) and a bone saw hanging at the back of his belt. He carries a stubby flintlock pistol.
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
   idle    pushes his spectacles up his nose with a finger (a glint), breathing, blink
-  walk    jog: forward lean, the bag bouncing on his hip, the coat tails flapping
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1): the pistol held up by his shoulder,
+          barrel to the sky (not the hanging guard), the free arm pumping, planted feet, the bag
+          bouncing on his hip, the apron and coat tails flapping late
+  attack_b  ARM-EXTENDED AIMED SHOT: turns side-on like a duellist, the free fist on his hip, the
+          pistol arm straight out at eye level (the held extreme, against A's hip-level draw),
+          cocks, fires, the kick flips the arm up, then blows the smoke as in A
   attack  HIP QUICK-DRAW: he spins the pistol round his finger twice (a hollow ring smear),
           snaps it level at the hip and squints (the held aim), cocks it, fires from the hip
           without aiming (one flash; the ball leaves the per-frame `muzzle` anchor), the kick
@@ -20,6 +25,7 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as GT  # noqa: F401
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
 from ageborn_art import moves as M
@@ -28,6 +34,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "field_surgeon"
+GAIT_NAME = "biped"
 NAME = "Field Surgeon"
 HEIGHT_LU = 72
 CANVAS = (272, 244)
@@ -47,16 +54,21 @@ PMUZ = (HR[0] + 1.2, HR[1] - 0.6, HR[2] - 18.0)   # pistol muzzle (pistol modell
 HAT_C = (0.5, 0.0, 57.5)
 
 
+RIG = None
+
+
 def build(rig):
-    B.skeleton(rig)
-    B.legs(rig, BREECH, SHOE, stocking=B.CREAM)
+    global RIG
+    RIG = rig
+    K.skeleton_v3(rig)
+    G.legs_v3(rig, BREECH, SHOE, stocking=B.CREAM)
 
     # torso: team coat, long cream apron (bib and skirt), brass buttons, neck cloth
     g = Geo().blob((0, 0, 28.0), (11.8, 10.8, 12.0), p=2.4, taper=(1.1, 0.95))
     g.blob((0, 0, 18.0), (11.4, 10.4, 5.0), p=2.6)
     rig.part("torso", g, team=True)
-    g = Geo().blob((0.0, 0, 14.5), (12.0, 11.1, 8.4), p=2.6, taper=(1.14, 1.0))
-    g.clip((0, 0, 7.4), (0, 0, -1))
+    g = Geo().blob((0.0, 0, 17.0), (12.0, 11.1, 7.4), p=2.6, taper=(1.14, 1.0))
+    g.clip((0, 0, 12.0), (0, 0, -1))
     rig.part("hips", g, team=True)
     g = Geo().blob((5.6, -0.8, 26.0), (7.2, 7.4, 10.6), p=3.0, taper=(1.1, 0.8))
     g.clip((8.6, 0, 0), (-1, 0, 0))
@@ -67,11 +79,13 @@ def build(rig):
     rig.part("torso", g, B.BRASS, finish="metal", outline=0.5)
     g = Geo().blob((1.2, 0, 37.4), (6.8, 7.2, 2.4), p=2.4)
     rig.part("torso", g, B.CREAM)                # neck cloth
-    rig.secondary("apron", "hips", (6.0, 0, 17.0), (7.5, 0, 6.0), max_deg=12, gain=1.0)
+    rig.secondary("apron", "hips", (6.0, 0, 17.0), (7.5, 0, 6.0), max_deg=16, gain=1.2)
+    rig.rest_offset["apron"] = (0, 0, K.V3_LIFT + 4.0)
     g = Geo().blob((7.8, -0.5, 11.0), (4.0, 9.2, 8.0), p=2.8, taper=(1.0, 1.1))
     g.clip((4.8, 0, 0), (-1, 0, 0))
     rig.part("apron", g, B.CREAM)
-    rig.secondary("tails", "hips", (-4.0, 0, 18.0), (-7.5, 0, 6.0), max_deg=14, gain=1.1)
+    rig.secondary("tails", "hips", (-4.0, 0, 18.0), (-7.5, 0, 6.0), max_deg=16, gain=1.2)
+    rig.rest_offset["tails"] = (0, 0, K.V3_LIFT + 4.5)
     tl = Geo().blob((-5.6, 0, 11.5), (5.4, 10.4, 7.8), p=2.6, taper=(0.75, 1.0), rot=(0, 10, 0))
     tf = F.Face(rig, "tails", [tl])
     rig.part("tails", tl, team=True)
@@ -88,10 +102,11 @@ def build(rig):
     # the doctor's bag on a cream strap at the near hip (a cream cross), bouncing late
     g = Geo().capsule((-4.0, -11.0, 38.0), (9.0, -11.5, 30.0), 1.2).capsule((9.0, -11.5, 30.0), (4.0, -13.0, 20.0), 1.2)
     rig.part("torso", g, B.CREAM, outline=0.5)
-    rig.secondary("bag", "hips", (3.0, -13.5, 19.0), (3.0, -14.0, 8.0), max_deg=14, gain=1.2)
+    rig.secondary("bag", "hips", (3.0, -13.5, 19.0), (3.0, -14.0, 8.0), max_deg=16, gain=1.3)
+    rig.rest_offset["bag"] = (0, 0, K.V3_LIFT + 6.0)
     bag = Geo().blob((3.4, -14.2, 12.4), (7.8, 4.4, 6.0), p=3.0, taper=(1.05, 0.86))
     bf = F.Face(rig, "bag", [bag])
-    rig.part("bag", bag, BAG, finish="gloss")
+    rig.part("bag", bag, team=True)          # a team doctor's bag (keeps 18% team in the jog)
     g = Geo().capsule((-1.2, -15.0, 18.0), (1.4, -15.0, 20.4), 0.9).capsule((1.4, -15.0, 20.4), (5.8, -15.0, 20.4), 0.9)
     g.capsule((5.8, -15.0, 20.4), (8.2, -15.0, 18.0), 0.9)
     g.blob((3.4, -18.4, 16.6), (2.0, 0.8, 1.4), p=2.4)
@@ -171,7 +186,7 @@ def build(rig):
     for dx, dz, r in ((0, -4, 3.6), (2.6, -8, 3.0), (-2.4, -7, 2.6), (0.5, -11.5, 2.4)):
         g.sphere((mx + dx, my - 2, mz + dz), r, cuts=4)
     rig.part("smoke", g, B.SMOKE, finish="dust", outline=0.8)
-    rig.track("_foot", "shin_r", (3.4, -6.0, 0.5))
+
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -201,13 +216,21 @@ def _idle(f):
     return M.idle_v2(f, base, frames=6, extra=extra, face_blink=F.expr("blink"), blink=5)
 
 
-def _walk(f):
-    # jog: forward lean, the free arm pumping, the pistol hand swinging low
+# -- walk v3: G1 bounce jog at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 82 ms -------------
+SPEED = 81.25
+LEGS = K.legs_ik()
+GAIT = K.jog_gait(LEGS, SPEED, cycle_ms=656, stance=0.36)
+# walk carry: the pistol held up by his shoulder, barrel to the sky
+CARRY = merge(pistol(-76, 44, 96), {"torso": {"r": -2}})
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return {"hand_r": {"r": 6 * lag}, "specs": {"z": 0.3 * lag}}
-    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=32.0, knee=64.0, lift_lu=6.8, bob_pct=0.065,
-                     lean=-9.0, arm=30.0, fore=30.0, arms=("r", "l"), extra=extra)
+        return {"hand_r": {"r": 5 * lag}, "arm_r": {"r": 3 * lag}, "specs": {"z": 0.3 * lag},
+                "bag": {"r": 8 * lag}, "apron": {"r": 5 * lag}, "tails": {"r": 6 * lag}}
+    return M.walk_v3(RIG, f, CARRY, GAIT, legs=LEGS, lean=-9.0, twist=6.0, nod=3.0,
+                     arms={"l": K.ArmChain("l")}, extra=extra, report=report)
 
 
 # attack: 832 ms, the shot (impact) at 333 ms (impactAt 0.4002, as shipped); 11 unique frames
@@ -273,6 +296,57 @@ def _attack_clip():
                   overlays=ov)
 
 
+# -- attack B: arm-extended aimed shot (ANIM_SPEC appendix B) ------------------------------------
+# unique frames: 0 = A's first twirl, 1 turns side-on, 2 raises the arm, 3 AIM (held: the arm
+# straight out at eye level, the free fist on his hip), 4 cock, 5 FIRE, 6 kick (the arm flips up),
+# 7 lowers toward his lips, 8-10 = A (blow, blow, holster). Same steps as A.
+#        side-on        raise          AIM            cock           FIRE           kick           lower
+PB = [(-50, -20, -10), (-10, 2, 6), (12, 12, 10), (12, 12, 10), (14, 14, 14), (36, 66, 74), (8, 92, 96)]
+TB = [-2, -1, 2, 2, 2, 8, 2]
+HB = [0, -3, -6, -6, -5, 6, 0]
+YB = [4, 8, 10, 10, 10, 8, 2]
+XB = [0.0, 0.5, 0.5, 0.5, 0.0, -3.5, -1.0]
+QB = [0.0, 0.02, -0.03, -0.04, 0.04, -0.08, 0.02]
+FTB = [((4.0, 0, 0), (-4.0, 0, 0)), ((6.0, 0, 0), (-6.0, 0, 0)), ((7.0, 0, 0), (-7.0, 0, 0)),
+       ((7.0, 0, 0), (-7.0, 0, 0)), ((7.0, 0, 0), (-7.0, 0, 0)), ((5.0, 0, 0), (-10.0, 0, -8)),
+       ((4.0, 0, 0), (-6.0, 0, 0))]
+HIP = (6.0, 22.0)   # the free fist on the hip (torso space)
+
+
+def _b_pose(k):
+    t = TB[k]
+    a, fo, w = PB[k]
+    fa, ff = B.ik2(SH, HIP, elbow_down=False)
+    pose = merge(pistol(a - t, fo - t, w - t), free(fa, ff), {
+        "torso": {"r": t, "rz": YB[k]},
+        "head": {"r": HB[k] - 0.4 * t, "rz": -0.7 * YB[k]},
+        "hammer": {"r": 38 if k == 3 else 0},
+        "flash": {"show": k == 4},
+        "smoke": {"show": k in (5, 6), "s": [1, 1, 1, 1, 1, 0.8, 1.1][k]},
+    }, M.body_about((0, 0, 22), x=XB[k], q=QB[k]))
+    r, l = FTB[k]
+    pose = G.plant(RIG, pose, LEGS, r=r, l=l)
+    if k in (2, 3):
+        pose = merge(pose, F.expr("squeeze", "grit"), {"brow": {"z": -0.8}})
+    elif k == 4:
+        pose = merge(pose, F.expr("squeeze", "yell"))
+    elif k == 5:
+        pose = merge(pose, F.expr("o"), {"brow": {"z": 1.2}})
+    return pose
+
+
+def _attack_b():
+    ov = {
+        4: [{"kind": "burst", "joint": "hand_r", "point": (PMUZ[0], PMUZ[1], PMUZ[2] - 6.0), "r0_lu": 7.0,
+             "r1_lu": 12.0, "n": 5, "a0": -60.0, "arc": 120.0, "color": "#FFF4D6"}],
+    }
+    poses = [_attack_pose(0)] + [_b_pose(k) for k in range(7)] + [_attack_pose(f) for f in (8, 9, 10)]
+    ov = {k + 1: v for k, v in ov.items()}
+    reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_b", poses, ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov, reuse=reuse,
+                  extra={"holdStep": 3})
+
+
 def _hit(k):
     def recoil(a):
         return {"head": {"r": 16 * a}, "torso": {"r": 12 * a},
@@ -306,10 +380,11 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 7, 9)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 7, 7, 8], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl, attack_ms=832, attack_impact_at=0.4002)
+    return M.check_variants(M.check_contract(cl, attack_ms=832, attack_impact_at=0.4002))

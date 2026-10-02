@@ -2,7 +2,7 @@
  "frames": {
   "balloon_admiral_idle_00": {
    "frame": {
-    "x": 1805,
+    "x": 1408,
     "y": 2,
     "w": 197,
     "h": 396
@@ -26,8 +26,8 @@
   },
   "balloon_admiral_idle_00_team": {
    "frame": {
-    "x": 1745,
-    "y": 1260,
+    "x": 1373,
+    "y": 1258,
     "w": 190,
     "h": 350
    },
@@ -74,8 +74,8 @@
   },
   "balloon_admiral_idle_01_team": {
    "frame": {
-    "x": 1554,
-    "y": 1260,
+    "x": 1182,
+    "y": 1258,
     "w": 187,
     "h": 351
    },
@@ -98,8 +98,8 @@
   },
   "balloon_admiral_idle_02": {
    "frame": {
-    "x": 2,
-    "y": 465,
+    "x": 1609,
+    "y": 2,
     "w": 197,
     "h": 396
    },
@@ -122,8 +122,8 @@
   },
   "balloon_admiral_idle_02_team": {
    "frame": {
-    "x": 2,
-    "y": 1640,
+    "x": 1765,
+    "y": 1258,
     "w": 189,
     "h": 349
    },
@@ -146,7 +146,7 @@
   },
   "balloon_admiral_idle_03": {
    "frame": {
-    "x": 1820,
+    "x": 1612,
     "y": 465,
     "w": 201,
     "h": 391
@@ -170,8 +170,8 @@
   },
   "balloon_admiral_idle_03_team": {
    "frame": {
-    "x": 602,
-    "y": 1993,
+    "x": 404,
+    "y": 1985,
     "w": 193,
     "h": 343
    },
@@ -194,8 +194,8 @@
   },
   "balloon_admiral_idle_04": {
    "frame": {
-    "x": 624,
-    "y": 865,
+    "x": 415,
+    "y": 864,
     "w": 202,
     "h": 389
    },
@@ -218,8 +218,8 @@
   },
   "balloon_admiral_idle_04_team": {
    "frame": {
-    "x": 1763,
-    "y": 1640,
+    "x": 1766,
+    "y": 1633,
     "w": 196,
     "h": 344
    },
@@ -242,8 +242,8 @@
   },
   "balloon_admiral_idle_05": {
    "frame": {
-    "x": 2,
-    "y": 865,
+    "x": 1817,
+    "y": 465,
     "w": 201,
     "h": 391
    },
@@ -266,8 +266,8 @@
   },
   "balloon_admiral_idle_05_team": {
    "frame": {
-    "x": 585,
-    "y": 1640,
+    "x": 391,
+    "y": 1633,
     "w": 193,
     "h": 346
    },
@@ -290,18 +290,18 @@
   },
   "balloon_admiral_walk_00": {
    "frame": {
-    "x": 207,
-    "y": 865,
-    "w": 201,
-    "h": 390
+    "x": 828,
+    "y": 864,
+    "w": 200,
+    "h": 388
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 175,
-    "y": 138,
-    "w": 201,
-    "h": 390
+    "x": 166,
+    "y": 137,
+    "w": 200,
+    "h": 388
    },
    "sourceSize": {
     "w": 456,
@@ -314,18 +314,18 @@
   },
   "balloon_admiral_walk_00_team": {
    "frame": {
-    "x": 1174,
-    "y": 1640,
+    "x": 1567,
+    "y": 1258,
     "w": 194,
-    "h": 345
+    "h": 349
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 183,
-    "y": 146,
+    "x": 174,
+    "y": 139,
     "w": 194,
-    "h": 345
+    "h": 349
    },
    "sourceSize": {
     "w": 456,
@@ -338,18 +338,18 @@
   },
   "balloon_admiral_walk_01": {
    "frame": {
-    "x": 402,
+    "x": 1411,
     "y": 465,
-    "w": 199,
-    "h": 394
+    "w": 197,
+    "h": 392
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 177,
-    "y": 130,
-    "w": 199,
-    "h": 394
+    "x": 167,
+    "y": 132,
+    "w": 197,
+    "h": 392
    },
    "sourceSize": {
     "w": 456,
@@ -362,18 +362,18 @@
   },
   "balloon_admiral_walk_01_team": {
    "frame": {
-    "x": 195,
-    "y": 1640,
-    "w": 191,
-    "h": 348
+    "x": 1179,
+    "y": 1633,
+    "w": 192,
+    "h": 345
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 185,
-    "y": 138,
-    "w": 191,
-    "h": 348
+    "x": 174,
+    "y": 140,
+    "w": 192,
+    "h": 345
    },
    "sourceSize": {
     "w": 456,
@@ -386,18 +386,18 @@
   },
   "balloon_admiral_walk_02": {
    "frame": {
-    "x": 1606,
+    "x": 1810,
     "y": 2,
     "w": 195,
-    "h": 397
+    "h": 395
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 181,
-    "y": 125,
+    "x": 169,
+    "y": 128,
     "w": 195,
-    "h": 397
+    "h": 395
    },
    "sourceSize": {
     "w": 456,
@@ -410,18 +410,18 @@
   },
   "balloon_admiral_walk_02_team": {
    "frame": {
-    "x": 779,
-    "y": 1260,
-    "w": 188,
-    "h": 357
+    "x": 197,
+    "y": 1633,
+    "w": 190,
+    "h": 348
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 189,
-    "y": 126,
-    "w": 188,
-    "h": 357
+    "x": 176,
+    "y": 136,
+    "w": 190,
+    "h": 348
    },
    "sourceSize": {
     "w": 456,
@@ -434,18 +434,18 @@
   },
   "balloon_admiral_walk_03": {
    "frame": {
-    "x": 1208,
-    "y": 2,
+    "x": 2,
+    "y": 465,
     "w": 194,
-    "h": 398
+    "h": 395
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 184,
-    "y": 125,
+    "x": 171,
+    "y": 128,
     "w": 194,
-    "h": 398
+    "h": 395
    },
    "sourceSize": {
     "w": 456,
@@ -458,18 +458,18 @@
   },
   "balloon_admiral_walk_03_team": {
    "frame": {
-    "x": 588,
-    "y": 1260,
-    "w": 187,
-    "h": 362
+    "x": 599,
+    "y": 1258,
+    "w": 189,
+    "h": 359
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 192,
-    "y": 121,
-    "w": 187,
-    "h": 362
+    "x": 179,
+    "y": 125,
+    "w": 189,
+    "h": 359
    },
    "sourceSize": {
     "w": 456,
@@ -482,18 +482,18 @@
   },
   "balloon_admiral_walk_04": {
    "frame": {
-    "x": 203,
+    "x": 1009,
     "y": 465,
-    "w": 195,
-    "h": 396
+    "w": 194,
+    "h": 393
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 184,
-    "y": 130,
-    "w": 195,
-    "h": 396
+    "x": 173,
+    "y": 131,
+    "w": 194,
+    "h": 393
    },
    "sourceSize": {
     "w": 456,
@@ -506,18 +506,18 @@
   },
   "balloon_admiral_walk_04_team": {
    "frame": {
-    "x": 971,
-    "y": 1260,
-    "w": 189,
-    "h": 356
+    "x": 405,
+    "y": 1258,
+    "w": 190,
+    "h": 359
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 192,
-    "y": 132,
-    "w": 189,
-    "h": 356
+    "x": 180,
+    "y": 126,
+    "w": 190,
+    "h": 359
    },
    "sourceSize": {
     "w": 456,
@@ -530,18 +530,18 @@
   },
   "balloon_admiral_walk_05": {
    "frame": {
-    "x": 1618,
-    "y": 465,
-    "w": 198,
-    "h": 392
+    "x": 2,
+    "y": 864,
+    "w": 197,
+    "h": 390
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 182,
-    "y": 138,
-    "w": 198,
-    "h": 392
+    "x": 172,
+    "y": 136,
+    "w": 197,
+    "h": 390
    },
    "sourceSize": {
     "w": 456,
@@ -554,16 +554,16 @@
   },
   "balloon_admiral_walk_05_team": {
    "frame": {
-    "x": 1372,
-    "y": 1640,
+    "x": 1375,
+    "y": 1633,
     "w": 192,
     "h": 345
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 189,
-    "y": 147,
+    "x": 180,
+    "y": 143,
     "w": 192,
     "h": 345
    },
@@ -578,18 +578,18 @@
   },
   "balloon_admiral_walk_06": {
    "frame": {
-    "x": 830,
-    "y": 865,
-    "w": 201,
-    "h": 389
+    "x": 1236,
+    "y": 864,
+    "w": 199,
+    "h": 387
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 178,
-    "y": 143,
-    "w": 201,
-    "h": 389
+    "x": 170,
+    "y": 140,
+    "w": 199,
+    "h": 387
    },
    "sourceSize": {
     "w": 456,
@@ -602,18 +602,18 @@
   },
   "balloon_admiral_walk_06_team": {
    "frame": {
-    "x": 404,
-    "y": 1993,
+    "x": 999,
+    "y": 1985,
     "w": 194,
-    "h": 343
+    "h": 341
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 186,
-    "y": 152,
+    "x": 178,
+    "y": 149,
     "w": 194,
-    "h": 343
+    "h": 341
    },
    "sourceSize": {
     "w": 456,
@@ -626,18 +626,18 @@
   },
   "balloon_admiral_walk_07": {
    "frame": {
-    "x": 1242,
-    "y": 865,
-    "w": 202,
-    "h": 388
+    "x": 1032,
+    "y": 864,
+    "w": 200,
+    "h": 387
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 176,
-    "y": 143,
-    "w": 202,
-    "h": 388
+    "x": 168,
+    "y": 140,
+    "w": 200,
+    "h": 387
    },
    "sourceSize": {
     "w": 456,
@@ -650,18 +650,18 @@
   },
   "balloon_admiral_walk_07_team": {
    "frame": {
-    "x": 799,
-    "y": 1993,
+    "x": 980,
+    "y": 1633,
     "w": 195,
-    "h": 342
+    "h": 345
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 183,
-    "y": 151,
+    "x": 175,
+    "y": 144,
     "w": 195,
-    "h": 342
+    "h": 345
    },
    "sourceSize": {
     "w": 456,
@@ -674,7 +674,7 @@
   },
   "balloon_admiral_attack_00": {
    "frame": {
-    "x": 605,
+    "x": 200,
     "y": 465,
     "w": 198,
     "h": 394
@@ -698,8 +698,8 @@
   },
   "balloon_admiral_attack_00_team": {
    "frame": {
-    "x": 979,
-    "y": 1640,
+    "x": 785,
+    "y": 1633,
     "w": 191,
     "h": 346
    },
@@ -722,7 +722,7 @@
   },
   "balloon_admiral_attack_01": {
    "frame": {
-    "x": 1212,
+    "x": 807,
     "y": 465,
     "w": 198,
     "h": 393
@@ -746,8 +746,8 @@
   },
   "balloon_admiral_attack_01_team": {
    "frame": {
-    "x": 390,
-    "y": 1640,
+    "x": 2,
+    "y": 1633,
     "w": 191,
     "h": 348
    },
@@ -794,8 +794,8 @@
   },
   "balloon_admiral_attack_02_team": {
    "frame": {
-    "x": 782,
-    "y": 1640,
+    "x": 588,
+    "y": 1633,
     "w": 193,
     "h": 346
    },
@@ -842,8 +842,8 @@
   },
   "balloon_admiral_attack_03_team": {
    "frame": {
-    "x": 998,
-    "y": 1993,
+    "x": 601,
+    "y": 1985,
     "w": 195,
     "h": 342
    },
@@ -890,8 +890,8 @@
   },
   "balloon_admiral_attack_04_team": {
    "frame": {
-    "x": 1596,
-    "y": 1993,
+    "x": 1397,
+    "y": 1985,
     "w": 198,
     "h": 336
    },
@@ -938,8 +938,8 @@
   },
   "balloon_admiral_attack_05_team": {
    "frame": {
-    "x": 2,
-    "y": 1260,
+    "x": 1861,
+    "y": 864,
     "w": 179,
     "h": 376
    },
@@ -962,8 +962,8 @@
   },
   "balloon_admiral_attack_06": {
    "frame": {
-    "x": 412,
-    "y": 865,
+    "x": 203,
+    "y": 864,
     "w": 208,
     "h": 389
    },
@@ -987,7 +987,7 @@
   "balloon_admiral_attack_06_team": {
    "frame": {
     "x": 199,
-    "y": 1993,
+    "y": 1985,
     "w": 201,
     "h": 343
    },
@@ -1034,8 +1034,8 @@
   },
   "balloon_admiral_attack_07_team": {
    "frame": {
-    "x": 397,
-    "y": 1260,
+    "x": 214,
+    "y": 1258,
     "w": 187,
     "h": 366
    },
@@ -1058,7 +1058,7 @@
   },
   "balloon_admiral_attack_08": {
    "frame": {
-    "x": 1414,
+    "x": 1207,
     "y": 465,
     "w": 200,
     "h": 392
@@ -1083,7 +1083,7 @@
   "balloon_admiral_attack_08_team": {
    "frame": {
     "x": 2,
-    "y": 1993,
+    "y": 1985,
     "w": 193,
     "h": 344
    },
@@ -1106,7 +1106,7 @@
   },
   "balloon_admiral_attack_09": {
    "frame": {
-    "x": 807,
+    "x": 402,
     "y": 465,
     "w": 198,
     "h": 394
@@ -1130,8 +1130,8 @@
   },
   "balloon_admiral_attack_09_team": {
    "frame": {
-    "x": 1568,
-    "y": 1640,
+    "x": 1571,
+    "y": 1633,
     "w": 191,
     "h": 345
    },
@@ -1154,8 +1154,8 @@
   },
   "balloon_admiral_hit_00": {
    "frame": {
-    "x": 1448,
-    "y": 865,
+    "x": 1439,
+    "y": 864,
     "w": 206,
     "h": 385
    },
@@ -1178,8 +1178,8 @@
   },
   "balloon_admiral_hit_00_team": {
    "frame": {
-    "x": 1396,
-    "y": 1993,
+    "x": 1197,
+    "y": 1985,
     "w": 196,
     "h": 340
    },
@@ -1202,8 +1202,8 @@
   },
   "balloon_admiral_hit_01": {
    "frame": {
-    "x": 1658,
-    "y": 865,
+    "x": 1649,
+    "y": 864,
     "w": 208,
     "h": 382
    },
@@ -1226,8 +1226,8 @@
   },
   "balloon_admiral_hit_01_team": {
    "frame": {
-    "x": 1798,
-    "y": 1993,
+    "x": 1599,
+    "y": 1985,
     "w": 198,
     "h": 336
    },
@@ -1250,8 +1250,8 @@
   },
   "balloon_admiral_hit_02": {
    "frame": {
-    "x": 1035,
-    "y": 865,
+    "x": 621,
+    "y": 864,
     "w": 203,
     "h": 388
    },
@@ -1274,8 +1274,8 @@
   },
   "balloon_admiral_hit_02_team": {
    "frame": {
-    "x": 1197,
-    "y": 1993,
+    "x": 800,
+    "y": 1985,
     "w": 195,
     "h": 341
    },
@@ -1298,7 +1298,7 @@
   },
   "balloon_admiral_hit_03": {
    "frame": {
-    "x": 1406,
+    "x": 1208,
     "y": 2,
     "w": 196,
     "h": 397
@@ -1322,8 +1322,8 @@
   },
   "balloon_admiral_hit_03_team": {
    "frame": {
-    "x": 1360,
-    "y": 1260,
+    "x": 988,
+    "y": 1258,
     "w": 190,
     "h": 354
    },
@@ -1346,7 +1346,7 @@
   },
   "balloon_admiral_hit_04": {
    "frame": {
-    "x": 1009,
+    "x": 604,
     "y": 465,
     "w": 199,
     "h": 393
@@ -1370,8 +1370,8 @@
   },
   "balloon_admiral_hit_04_team": {
    "frame": {
-    "x": 1164,
-    "y": 1260,
+    "x": 792,
+    "y": 1258,
     "w": 192,
     "h": 354
    },
@@ -1394,8 +1394,8 @@
   },
   "balloon_admiral_die_00": {
    "frame": {
-    "x": 185,
-    "y": 1260,
+    "x": 2,
+    "y": 1258,
     "w": 208,
     "h": 371
    },
@@ -1418,8 +1418,8 @@
   },
   "balloon_admiral_die_00_team": {
    "frame": {
-    "x": 227,
-    "y": 2341,
+    "x": 2,
+    "y": 2333,
     "w": 198,
     "h": 318
    },
@@ -1442,8 +1442,8 @@
   },
   "balloon_admiral_die_01": {
    "frame": {
-    "x": 2,
-    "y": 2341,
+    "x": 1801,
+    "y": 1985,
     "w": 221,
     "h": 332
    },
@@ -1466,8 +1466,8 @@
   },
   "balloon_admiral_die_01_team": {
    "frame": {
-    "x": 656,
-    "y": 2341,
+    "x": 431,
+    "y": 2333,
     "w": 214,
     "h": 273
    },
@@ -1490,8 +1490,8 @@
   },
   "balloon_admiral_die_02": {
    "frame": {
-    "x": 429,
-    "y": 2341,
+    "x": 204,
+    "y": 2333,
     "w": 223,
     "h": 273
    },
@@ -1514,8 +1514,8 @@
   },
   "balloon_admiral_die_02_team": {
    "frame": {
-    "x": 1341,
-    "y": 2341,
+    "x": 1116,
+    "y": 2333,
     "w": 223,
     "h": 223
    },
@@ -1538,8 +1538,8 @@
   },
   "balloon_admiral_die_03": {
    "frame": {
-    "x": 874,
-    "y": 2341,
+    "x": 649,
+    "y": 2333,
     "w": 244,
     "h": 235
    },
@@ -1562,8 +1562,8 @@
   },
   "balloon_admiral_die_03_team": {
    "frame": {
-    "x": 228,
-    "y": 2677,
+    "x": 2,
+    "y": 2655,
     "w": 235,
     "h": 176
    },
@@ -1586,8 +1586,8 @@
   },
   "balloon_admiral_die_04": {
    "frame": {
-    "x": 1568,
-    "y": 2341,
+    "x": 1343,
+    "y": 2333,
     "w": 240,
     "h": 196
    },
@@ -1610,8 +1610,8 @@
   },
   "balloon_admiral_die_04_team": {
    "frame": {
-    "x": 675,
-    "y": 2677,
+    "x": 449,
+    "y": 2655,
     "w": 225,
     "h": 161
    },
@@ -1634,8 +1634,8 @@
   },
   "balloon_admiral_die_05": {
    "frame": {
-    "x": 1122,
-    "y": 2341,
+    "x": 897,
+    "y": 2333,
     "w": 215,
     "h": 226
    },
@@ -1658,8 +1658,8 @@
   },
   "balloon_admiral_die_05_team": {
    "frame": {
-    "x": 467,
-    "y": 2677,
+    "x": 241,
+    "y": 2655,
     "w": 204,
     "h": 173
    },
@@ -1682,8 +1682,8 @@
   },
   "balloon_admiral_die_06": {
    "frame": {
-    "x": 1812,
-    "y": 2341,
+    "x": 1587,
+    "y": 2333,
     "w": 230,
     "h": 193
    },
@@ -1706,8 +1706,8 @@
   },
   "balloon_admiral_die_06_team": {
    "frame": {
-    "x": 904,
-    "y": 2677,
+    "x": 678,
+    "y": 2655,
     "w": 215,
     "h": 156
    },
@@ -1730,8 +1730,8 @@
   },
   "balloon_admiral_die_07": {
    "frame": {
-    "x": 2,
-    "y": 2677,
+    "x": 1821,
+    "y": 2333,
     "w": 222,
     "h": 178
    },
@@ -1754,8 +1754,8 @@
   },
   "balloon_admiral_die_07_team": {
    "frame": {
-    "x": 1123,
-    "y": 2677,
+    "x": 897,
+    "y": 2655,
     "w": 207,
     "h": 142
    },
@@ -1888,7 +1888,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 2048,
-   "h": 2860
+   "h": 2836
   },
   "scale": "2.5",
   "ageborn": {
@@ -1917,6 +1917,7 @@
    },
    "facing": "right",
    "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "fly",
    "clips": {
     "idle": {
      "frames": 6,
@@ -1994,39 +1995,40 @@
      "anchorsLu": {
       "muzzle": [
        [
-        1.1,
-        -5.0
+        -9.7,
+        -3.9
        ],
        [
-        1.7,
+        -9.3,
         -3.4
        ],
        [
-        2.3,
-        -2.6
+        -8.8,
+        -3.1
        ],
        [
-        2.5,
-        -3.3
+        -8.6,
+        -3.4
        ],
        [
-        2.3,
-        -5.0
+        -8.8,
+        -3.9
        ],
        [
-        1.7,
-        -6.6
+        -9.3,
+        -4.5
        ],
        [
-        1.1,
-        -7.3
+        -9.7,
+        -4.7
        ],
        [
-        0.9,
-        -6.6
+        -9.9,
+        -4.5
        ]
       ]
-     }
+     },
+     "gait": "fly"
     },
     "attack": {
      "frames": 10,
@@ -2057,7 +2059,13 @@
      ],
      "durationMs": 832,
      "impactFrame": 5,
+     "impactStep": 5,
      "impactAt": 0.4002,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
      "anchorsLu": {
       "muzzle": [
        [
@@ -2101,7 +2109,11 @@
         -4.9
        ]
       ]
-     }
+     },
+     "muzzle": [
+      0.7,
+      -3.0
+     ]
     },
     "hit": {
      "frames": 5,

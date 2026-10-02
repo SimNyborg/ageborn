@@ -498,7 +498,9 @@ export interface FormatDef {
    * Last Base Standing (A2.10.1): the Siege steps of a war with no Final Bell, in time order. The first
    * entry is Siege I and starts at `siegeMs`; `finalBellMs` is then null. In a format with steps the
    * symmetric Siege decay is off, and base and turret damage in Siege read the current step's values.
-   * A step with `crumbleBpPerSec` > 0 runs the Crumble rope. Absent in every timed format.
+   * A step with `crumbleBpPerSec` > 0 runs the Crumble rope. Short, Medium and Long War carry steps too
+   * (the Siege rope, A2.10.2): the first is at `siegeMs` and their Final Bell stays. Absent in every
+   * other timed window.
    */
   escalation?: EscalationStep[];
   /**

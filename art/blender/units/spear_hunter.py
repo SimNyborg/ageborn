@@ -9,7 +9,9 @@ points on his back; two cream feathers hang from the spear binding.
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    peers out under his hand, weight shift, blink
-  walk    sneak: low, long strides, a tip-toe up frame
+  walk    walk v3 jog (ANIM_SPEC G1): the spear sloped back on the shoulder, the far arm pumping
+  attack_b  low level two-handed thrust from a crouch
+  attack_c  feint jab, pull back, full lunge
   attack  LEAPING FISH-STAB: coils, raises the spear overhead point-down, hops in and stabs
           down and forward (streak smear, dust, impact lines); the spear quivers, then he
           pulls it out
@@ -18,12 +20,14 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as G
 from ageborn_art import moves as M
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import CaveBody
 
 SLUG = "spear_hunter"
+GAIT_NAME = "biped"
 NAME = "Spear Hunter"
 HEIGHT_LU = 72
 CANVAS = (330, 224)
@@ -49,13 +53,20 @@ SPEAR_FWD = 50.0   # tip distance ahead of the near fist (rest: the spear points
 SPEAR_BACK = 28.0
 
 
+THIGH_Z, KNEE_Z, ANKLE_Z = 20.0, 11.8, 4.2   # walk v3: longer legs (ANIM_SPEC 2.0 rule 5)
+LIFT = 1.5
+
+
 def build(rig):
-    global ARM_R, ARM_L, TIPSPEC
-    body = CaveBody(rig, SKIN, FUR, hip_z=18.5, knee_z=10.0, ankle_z=4.2, waist_z=19.5,
+    global ARM_R, ARM_L, TIPSPEC, RIG
+    RIG = rig
+    body = CaveBody(rig, SKIN, FUR, hip_z=18.5, knee_z=KNEE_Z, ankle_z=ANKLE_Z, waist_z=19.5,
                     shoulder_z=39.0, neck_z=41.0, hip_y=5.4, shoulder_y=11.2,
-                    elbow=(1.5, 31.0), wrist=(3.8, 24.0), leg_r=(4.2, 3.6, 3.2),
+                    elbow=(1.5, 31.0), wrist=(3.8, 24.0), leg_r=(3.8, 3.3, 3.0),
                     arm_r=(3.9, 3.4, 3.3), fist_r=3.9, torso=((0, 31.5), (9.4, 8.6, 11.2)),
-                    torso_taper=(0.92, 1.06), foot_len=6.2)
+                    torso_taper=(0.92, 1.06), foot_len=4.3, thigh_z=THIGH_Z, foot_joint=True,
+                    far_shade=0.8)
+    rig.rest_offset["torso"] = (0, 0, LIFT)
     fr = body.fist["r"]
 
     # team sash across the chest and a team loincloth that swings
@@ -64,6 +75,7 @@ def build(rig):
     g.blob((0.4, 0, 25.6), (10.3, 9.7, 4.6), p=2.8)
     rig.part("torso", g, team=True)
     rig.secondary("cloth", "hips", (0.8, 0, 23.0), (0.0, 0, 12.0), max_deg=12, gain=0.9)
+    rig.rest_offset["cloth"] = (0, 0, LIFT + 1.0)
     g = Geo().blob((0.8, 0, 21.2), (10.4, 9.6, 3.4), p=2.6)
     g.blob((6.2, -3.5, 15.8), (5.2, 2.6, 7.4), p=2.4, taper=(0.7, 1.0))
     g.blob((-6.0, -2.0, 15.8), (5.2, 2.8, 7.4), p=2.4, taper=(0.7, 1.0))
@@ -181,7 +193,8 @@ def build(rig):
         g.lathe([(0, 0), (1.8, 1.0), (2.1, 3.2), (0, 6.4)], (-12.8 + dx, 3.0, 42.6 + dz),
                 (-14.0 + dx, 3.0, 49.0 + dz), segs=8, squash=(1.0, 0.5))
     rig.part("torso", g, FLINT, finish="gloss", outline=0.6)
-    rig.track("_foot", "shin_r", (2.9, -5.4, 0.5))
+    rig.track("_foot", "foot_r", (2.2, -5.4, 0.0))
+    rig.track("_foot_l", "foot_l", (2.2, 5.4, 0.0))
     ARM_R = body.arm("r", "spear", tip)
     ARM_L = body.arm("l")
 
@@ -217,12 +230,34 @@ def _idle(f):
     return M.idle_v2(f, base, frames=6, extra=extra, face_blink=F.expr("blink"), blink=5)
 
 
-def _walk(f):
+# -- walk v3: G1 jog at ground speed (card 70 x 1.25 = 87.5 lu/s), 8 x 70 ms ------------------------
+RIG = None
+SPEED = 87.5
+LEGS = {s: G.Leg(f"thigh_{s}", f"shin_{s}", (1.0, y, ANKLE_Z), foot=f"foot_{s}",
+                 toe=(4.9, y, 0.4), heel=(-1.4, y, 0.4)) for s, y in (("r", -5.4), ("l", 5.4))}
+GAIT = G.Gait(8, 616, SPEED, G.biped_feet(LEGS["l"], LEGS["r"], x_mid=1.6), 0.38,
+              lift=7.0, kick=3.5, reach=0.0, toe_off=24.0, early_lift=1.6, drag=0.3, lift_peak=0.38)
+for _k, (_leg, _ph, _x, _gz) in list(GAIT.feet.items()):
+    GAIT.feet[_k] = (_leg, _ph - 0.03, _x, _gz)
+
+
+class _OffArm:
+    @staticmethod
+    def pose(a, b):
+        return off_arm(a, b)
+
+
+# walk carry: the spear sloped back over the near shoulder (the point up behind him)
+def carry():
+    return merge(spear_arm(-62, 66, 154, -11), off_arm(-80, -20), {"torso": {"r": -4}})
+
+
+def _walk(f, report=None):
     def extra(ctx):
-        return {"hips": {"z": -2.2}, "spear": {"r": 4 * math.cos(ctx["lag_p"])},
-                "arm_l": {"r": -8 * math.cos(ctx["p"])}}
-    return M.walk_v2(f, stance(), HEIGHT_LU, thigh=40.0, knee=70.0, lift_lu=6.0, bob_pct=0.045,
-                     lean=-12.0, arm=10.0, fore=6.0, arms=("r",), extra=extra)
+        lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
+        return {"spear": {"r": -5 * lag}, "arm_r": {"r": 3 * lag}, "feathers": {"r": 8 * lag}}
+    return M.walk_v3(RIG, f, carry(), GAIT, legs=LEGS, lean=-11.0, twist=7.0, nod=3.0,
+                     arms={"l": _OffArm}, arm=35.0, elbow=(40.0, 80.0), extra=extra, report=report)
 
 
 # 11 unique frames, moves.SMALL_MELEE_MS
@@ -278,6 +313,99 @@ def _attack_clip():
                   impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
 
 
+# -- attack B: low level two-handed thrust from a crouch ------------------------------------------
+# unique: 0 = A read, 1 coil, 2 HOLD (deep crouch, the spear drawn back level at the hip), 3 lunge
+# (streak), 4 IMPACT (full level thrust, squash), 5 overshoot, 6 = A pull, 7 = A settle
+B_SEQ = [0, 1, 1, 2, 3, 3, 4, 5, 5, 6, 7]
+#        coil  HOLD  lunge  IMP  over
+B_A = [-100, -122, -60, -22, -28]
+B_B = [-40, -32, -10, -6, -10]
+B_C = [4, 2, 0, -2, 0]
+B_T = [6, -4, -14, -22, -18]
+B_OA = [-60, -72, -24, -12, -16]
+B_OB = [-10, -22, 0, 0, -2]
+B_X = [-1.5, -3.0, 6.0, 12.0, 11.0]
+B_Z = [-2.5, -5.0, -3.0, -3.5, -2.6]
+B_Q = [-0.08, -0.10, 0.05, -0.14, -0.04]
+B_THR = [20, 30, 30, 36, 30]
+B_SHR = [-30, -50, -10, -14, -12]
+B_THL = [-10, -16, -30, -34, -30]
+B_SHL = [-20, -36, -10, -4, -6]
+
+
+def _b_pose(i):
+    if i == 0:
+        return _attack_pose(0)
+    if i >= 6:
+        return _attack_pose(i + 3)
+    k = i - 1
+    pose = merge(spear_arm(B_A[k], B_B[k], B_C[k], B_T[k]), off_arm(B_OA[k], B_OB[k]), {
+        "torso": {"r": B_T[k]}, "head": {"r": [2, 4, 6, 10, 8][k]},
+        "thigh_r": {"r": B_THR[k]}, "shin_r": {"r": B_SHR[k]},
+        "thigh_l": {"r": B_THL[k]}, "shin_l": {"r": B_SHL[k]},
+    }, M.body_about((0, 0, 22), x=B_X[k], z=B_Z[k], q=B_Q[k]))
+    if k == 2:
+        pose["spear"]["sx"] = 1.1
+    if k in (0, 1):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.8}})
+    else:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.0}})
+    return pose
+
+
+def _attack_b():
+    tip = TIPSPEC["outer"]
+    ov = {
+        2: [{"kind": "dust", "ground": (-6.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 22, "dir": -1.0}],
+        3: [{"kind": "streak", "joint": "spear", "point": tip, "color": FLINT_HI, "width_lu": 7.0, "from": 2}],
+        4: [{"kind": "streak", "joint": "spear", "point": tip, "color": FLINT_HI, "width_lu": 6.0, "t0": 0.4},
+            {"kind": "burst", "joint": "spear", "point": tip, "r0_lu": 7.0, "r1_lu": 13.0, "n": 5, "a0": -60.0,
+             "arc": 120.0},
+            {"kind": "dust", "ground": (14.0, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 23, "spread": 0.8}],
+    }
+    reuse = {0: ("attack", 0), 6: ("attack", 9), 7: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(8)], M.SMALL_MELEE_MS, impact=4,
+                  sequence=B_SEQ, overlays=ov, reuse=reuse)
+
+
+# -- attack C: feint jab, pull back, full lunge ---------------------------------------------------
+# steps: feint 45, pull back 45, HOLD 110, lunge 45 + 45 | B's impact and overshoot, A's pull, settle
+C_MS = [45, 45, 110, 45, 45, 120, 60, 50, 70, 90]
+C_SEQ = [0, 1, 2, 3, 3, 4, 5, 5, 6, 7]
+
+
+def _c_pose(i):
+    if i >= 4:
+        return _b_pose([4, 5, 6, 7][i - 4] if i < 6 else i)
+    tab = [  # spear arm a, b, c, torso, off a, b, x, z, q, thigh r, shin r, thigh l, shin l
+        (-50, -6, 6, -10, -12, 4, 3.0, -0.5, -0.04, 12, -6, -8, -4),     # feint jab
+        (-110, -50, 10, 8, -50, -10, -1.5, 0.5, 0.03, 4, -4, 6, -2),    # pull back
+        (-130, 30, 6, 14, -30, 20, -3.0, 1.5, 0.08, 14, -30, -6, -10),  # HOLD: cocked high, the front knee up
+        (-40, -4, 0, -16, -60, -30, 8.0, 0.0, 0.05, 34, -24, -24, -6),  # lunge
+    ][i]
+    a, b, c, t, oa, ob, x, z, q, thr, shr, thl, shl = tab
+    pose = merge(spear_arm(a, b, c, t), off_arm(oa, ob), {
+        "torso": {"r": t}, "head": {"r": [4, -4, -10, 8][i]},
+        "thigh_r": {"r": thr}, "shin_r": {"r": shr}, "thigh_l": {"r": thl}, "shin_l": {"r": shl},
+    }, M.body_about((0, 0, 22), x=x, z=z, q=q))
+    if i == 3:
+        pose["spear"]["sx"] = 1.1
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.0}})
+    else:
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.8}})
+    return pose
+
+
+def _attack_c():
+    tip = TIPSPEC["outer"]
+    ov = {0: [{"kind": "burst", "joint": "spear", "point": tip, "r0_lu": 4.0, "r1_lu": 7.0, "n": 2, "a0": -30.0,
+               "arc": 60.0}],
+          3: [{"kind": "streak", "joint": "spear", "point": tip, "color": FLINT_HI, "width_lu": 8.0, "from": 2}]}
+    reuse = {4: ("attack_b", 4), 5: ("attack_b", 5), 6: ("attack", 9), 7: ("attack", 10)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(8)], C_MS, impact=4, sequence=C_SEQ,
+                  overlays=ov, reuse=reuse, extra={"holdStep": 2})
+
+
 def _hit(k):
     def recoil(a):
         return {"head": {"r": 16 * a}, "torso": {"r": 12 * a},
@@ -309,9 +437,11 @@ def clips():
     cl = [
         # 6 unique idle poses in the same 920 ms (atlas budget)
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

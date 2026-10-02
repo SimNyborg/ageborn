@@ -131,3 +131,54 @@ def hit_mech(k, center, scale=1.0):
     """Body channels (about `center`, char space) for mech hit step k of 5."""
     h = MECH_HIT[k]
     return M.body_about(center, x=h["x"] * scale, r=h["r"])
+
+
+# -- walk v3 body (ANIM_SPEC 2.0 rule 5, G1): longer legs and planted feet ----------------------
+# The Future bipeds share the rigs_medieval (= rigs_modern) joint names and arm layout, so the
+# skeleton, the IK legs, the jog gait and the arm chain are kit_medieval's; only the legs' look is
+# Future: charcoal undersuit legs, short glossy white armoured boots on the foot joints.
+from . import kit_medieval as _KM  # noqa: E402
+
+V3_THIGH_Z, V3_KNEE_Z, V3_ANKLE_Z, V3_LIFT = _KM.V3_THIGH_Z, _KM.V3_KNEE_Z, _KM.V3_ANKLE_Z, _KM.V3_LIFT
+legs_ik = _KM.legs_ik
+jog_gait = _KM.jog_gait
+ArmChain = _KM.ArmChain
+
+
+def skeleton_v3(rig, head=(1, 0, 38), arm_y=None, lift=V3_LIFT):
+    """`rigs_future.skeleton` with walk-v3 legs (thighs at 19.5 lu, knees 11.5, `foot_r/l` joints at
+    the ankle) and the upper body lifted `lift` lu (`rest_offset`)."""
+    _KM.skeleton_v3(rig, head=head, arm_y=arm_y or F.ARM_Y, lift=lift)
+
+
+def legs_v3(rig, suit=F.SUIT, armor=F.ARMOR, thigh_r=4.6, far=0.8, knee_pad=True, team_thigh=False,
+            team_greave=False, boot=None):
+    """`rigs_future.legs` for skeleton_v3: charcoal undersuit legs on slim shins (the two legs stay
+    apart at 62 px), white knee pads, short glossy white armoured boots (8.8 lu) with a dark sole on
+    the foot joints. The far leg is `far` darker, so the near and far feet read apart (ANIM_SPEC G1).
+    `team_thigh` makes the near thigh team-coloured, `team_greave` adds team shin guards. Adds the
+    `_foot` / `_foot_l` sole trackers."""
+    from . import colors as CO
+    boot = boot or armor
+    for s in ("r", "l"):
+        y = F.LEG_Y * F.SIDE_Y[s]
+        k = 1.0 if s == "r" else far
+        sh = (lambda c: c) if k == 1.0 else (lambda c, k=k: CO.scale(c, k))
+        g = Geo().capsule((0, y, V3_THIGH_Z + 0.5), (0.5, y, V3_KNEE_Z), thigh_r, thigh_r - 0.5)
+        rig.part(f"thigh_{s}", g, sh(suit), team=team_thigh and s == "r")
+        g = Geo().capsule((0.5, y, V3_KNEE_Z), (1.0, y, V3_ANKLE_Z + 0.8), thigh_r - 0.9, 3.3)
+        rig.part(f"shin_{s}", g, sh(suit))
+        g = Geo().blob((1.1, y, 6.0), (4.0, 4.3, 2.6), p=2.7, taper=(0.92, 1.05))          # boot cuff
+        rig.part(f"shin_{s}", g, sh(boot), finish="gloss", outline_hex=F.TRIM)
+        g = Geo().blob((2.8, y, 2.4), (4.4, 4.7, 2.5), p=2.9, taper=(1.02, 0.84))          # 8.8 lu boot
+        rig.part(f"foot_{s}", g, sh(boot), finish="gloss", outline_hex=F.TRIM)
+        g = Geo().blob((3.0, y, 0.6), (4.4, 4.8, 0.8), p=3.0)                              # dark sole
+        rig.part(f"foot_{s}", g, sh(F.GUNMETAL), outline=0.4)
+        if knee_pad:
+            g = Geo().blob((2.0, y, V3_KNEE_Z + 0.3), (2.9, 3.7, 2.7), p=2.6)
+            rig.part(f"shin_{s}", g, sh(armor), finish="gloss", outline_hex=F.TRIM)
+        if team_greave:
+            g = Geo().blob((1.9, y, 8.6), (3.4, 4.2, 2.6), p=2.6)
+            rig.part(f"shin_{s}", g, team=True, outline=0.6)
+    rig.track("_foot", "foot_r", (2.6, -F.LEG_Y, 0.0))
+    rig.track("_foot_l", "foot_l", (2.6, F.LEG_Y, 0.0))

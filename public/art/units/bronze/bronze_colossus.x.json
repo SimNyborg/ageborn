@@ -1,0 +1,843 @@
+{
+ "frames": {
+  "bronze_colossus_attack_b_02": {
+   "frame": {
+    "x": 800,
+    "y": 2,
+    "w": 142,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 193,
+    "w": 142,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_b_02_team": {
+   "frame": {
+    "x": 717,
+    "y": 503,
+    "w": 137,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 188,
+    "w": 137,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_b_03": {
+   "frame": {
+    "x": 294,
+    "y": 292,
+    "w": 137,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 161,
+    "y": 204,
+    "w": 137,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_b_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 700,
+    "w": 138,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 157,
+    "y": 200,
+    "w": 138,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_b_04": {
+   "frame": {
+    "x": 148,
+    "y": 292,
+    "w": 142,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 192,
+    "w": 142,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_b_04_team": {
+   "frame": {
+    "x": 578,
+    "y": 503,
+    "w": 135,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 188,
+    "w": 135,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 292,
+    "w": 142,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 202,
+    "w": 142,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_b_05_team": {
+   "frame": {
+    "x": 858,
+    "y": 503,
+    "w": 136,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 198,
+    "w": 136,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 503,
+    "w": 161,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 230,
+    "w": 161,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_b_06_team": {
+   "frame": {
+    "x": 578,
+    "y": 700,
+    "w": 149,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 225,
+    "w": 149,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_b_07": {
+   "frame": {
+    "x": 435,
+    "y": 292,
+    "w": 155,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 224,
+    "w": 155,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_b_07_team": {
+   "frame": {
+    "x": 285,
+    "y": 700,
+    "w": 148,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 220,
+    "w": 148,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_c_02": {
+   "frame": {
+    "x": 616,
+    "y": 2,
+    "w": 180,
+    "h": 230
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 179,
+    "w": 180,
+    "h": 230
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_c_02_team": {
+   "frame": {
+    "x": 299,
+    "y": 503,
+    "w": 136,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 161,
+    "y": 175,
+    "w": 136,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_c_03": {
+   "frame": {
+    "x": 423,
+    "y": 2,
+    "w": 189,
+    "h": 241
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 168,
+    "w": 189,
+    "h": 241
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_c_03_team": {
+   "frame": {
+    "x": 167,
+    "y": 503,
+    "w": 128,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 163,
+    "w": 128,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_c_04": {
+   "frame": {
+    "x": 199,
+    "y": 2,
+    "w": 220,
+    "h": 269
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 134,
+    "w": 220,
+    "h": 269
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_c_04_team": {
+   "frame": {
+    "x": 439,
+    "y": 503,
+    "w": 135,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 179,
+    "w": 135,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_c_05": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 193,
+    "h": 286
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 125,
+    "w": 193,
+    "h": 286
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_c_05_team": {
+   "frame": {
+    "x": 144,
+    "y": 700,
+    "w": 137,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 198,
+    "w": 137,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_c_06": {
+   "frame": {
+    "x": 739,
+    "y": 292,
+    "w": 141,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 230,
+    "w": 141,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_c_06_team": {
+   "frame": {
+    "x": 731,
+    "y": 700,
+    "w": 138,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 225,
+    "w": 138,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_c_07": {
+   "frame": {
+    "x": 594,
+    "y": 292,
+    "w": 141,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 223,
+    "w": 141,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  },
+  "bronze_colossus_attack_c_07_team": {
+   "frame": {
+    "x": 437,
+    "y": 700,
+    "w": 137,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 219,
+    "w": 137,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 456,
+    "h": 426
+   },
+   "anchor": {
+    "x": 0.48246,
+    "y": 0.92254
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "bronze_colossus_attack_00",
+   "bronze_colossus_attack_01",
+   "bronze_colossus_attack_b_02",
+   "bronze_colossus_attack_b_03",
+   "bronze_colossus_attack_b_04",
+   "bronze_colossus_attack_b_05",
+   "bronze_colossus_attack_b_06",
+   "bronze_colossus_attack_b_07",
+   "bronze_colossus_attack_08",
+   "bronze_colossus_attack_08",
+   "bronze_colossus_attack_09",
+   "bronze_colossus_attack_09"
+  ],
+  "attack_b_team": [
+   "bronze_colossus_attack_00_team",
+   "bronze_colossus_attack_01_team",
+   "bronze_colossus_attack_b_02_team",
+   "bronze_colossus_attack_b_03_team",
+   "bronze_colossus_attack_b_04_team",
+   "bronze_colossus_attack_b_05_team",
+   "bronze_colossus_attack_b_06_team",
+   "bronze_colossus_attack_b_07_team",
+   "bronze_colossus_attack_08_team",
+   "bronze_colossus_attack_08_team",
+   "bronze_colossus_attack_09_team",
+   "bronze_colossus_attack_09_team"
+  ],
+  "attack_c": [
+   "bronze_colossus_attack_00",
+   "bronze_colossus_attack_01",
+   "bronze_colossus_attack_c_02",
+   "bronze_colossus_attack_c_03",
+   "bronze_colossus_attack_c_04",
+   "bronze_colossus_attack_c_05",
+   "bronze_colossus_attack_c_06",
+   "bronze_colossus_attack_c_07",
+   "bronze_colossus_attack_08",
+   "bronze_colossus_attack_08",
+   "bronze_colossus_attack_09",
+   "bronze_colossus_attack_09"
+  ],
+  "attack_c_team": [
+   "bronze_colossus_attack_00_team",
+   "bronze_colossus_attack_01_team",
+   "bronze_colossus_attack_c_02_team",
+   "bronze_colossus_attack_c_03_team",
+   "bronze_colossus_attack_c_04_team",
+   "bronze_colossus_attack_c_05_team",
+   "bronze_colossus_attack_c_06_team",
+   "bronze_colossus_attack_c_07_team",
+   "bronze_colossus_attack_08_team",
+   "bronze_colossus_attack_08_team",
+   "bronze_colossus_attack_09_team",
+   "bronze_colossus_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "bronze_colossus.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1024,
+   "h": 864
+  },
+  "scale": "1.25",
+  "ageborn": {
+   "visualId": "unit.bronze_colossus",
+   "name": "Bronze Colossus",
+   "heightLu": 200,
+   "widthLu": 133.7,
+   "pxPerLu": 1.025,
+   "feetPx": [
+    220.0,
+    393.0
+   ],
+   "anchorsLu": {
+    "head": [
+     6,
+     196
+    ],
+    "hitCenter": [
+     0,
+     104
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "heavy",
+   "extrasOf": "bronze_colossus",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "anchorsLu": {
+      "swordTip": [
+       [
+        -42.4,
+        189.8
+       ],
+       [
+        -36.5,
+        181.7
+       ],
+       [
+        -35.7,
+        156.0
+       ],
+       [
+        -24.0,
+        145.4
+       ],
+       [
+        -20.8,
+        165.8
+       ],
+       [
+        -21.7,
+        166.1
+       ],
+       [
+        -26.5,
+        146.2
+       ],
+       [
+        -22.1,
+        152.3
+       ],
+       [
+        -18.2,
+        177.2
+       ],
+       [
+        -36.2,
+        187.1
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "anchorsLu": {
+      "swordTip": [
+       [
+        -42.4,
+        189.8
+       ],
+       [
+        -36.5,
+        181.7
+       ],
+       [
+        -90.6,
+        198.1
+       ],
+       [
+        -109.8,
+        147.5
+       ],
+       [
+        -56.4,
+        248.5
+       ],
+       [
+        70.8,
+        120.4
+       ],
+       [
+        50.2,
+        -16.2
+       ],
+       [
+        43.9,
+        -13.2
+       ],
+       [
+        -18.2,
+        177.2
+       ],
+       [
+        -36.2,
+        187.1
+       ]
+      ]
+     },
+     "holdStep": 3
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

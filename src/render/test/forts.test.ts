@@ -14,6 +14,7 @@ import { defaultFeelConfig } from '../feelConfig';
 import { FORT_MATERIAL, FORT_SOUNDS, fortHitSound } from '../fortFeel';
 import { fortCrumble, fortPoseOf, FortUnitView, scaffoldMsFor } from '../fortViews';
 import type { ViewAction } from '../types';
+import { PAUSED_WAVE_IDS } from '../../../tests/fixtures/pausedWave';
 
 const T = 100;
 function ev(e: Record<string, unknown>): SimEvent {
@@ -35,9 +36,11 @@ const sound = (out: ViewAction[]): string[] => out.filter((a): a is Extract<View
 
 describe('fort feel data', () => {
   it('names a material for every fort card, and every fort sound exists', () => {
-    expect(Object.keys(FORT_MATERIAL).sort()).toEqual(Object.keys(content.forts).sort());
+    // the paused content wave's forts have no feel data yet (tests/fixtures/pausedWave.ts)
+    const forts = Object.keys(content.forts).filter((id) => !PAUSED_WAVE_IDS.has(id));
+    expect(Object.keys(FORT_MATERIAL).sort()).toEqual(forts.sort());
     for (const id of Object.values(FORT_SOUNDS)) expect(sounds[id], id).toBeDefined();
-    for (const card of Object.keys(content.forts)) expect(sounds[fortHitSound(card)], card).toBeDefined();
+    for (const card of forts) expect(sounds[fortHitSound(card)], card).toBeDefined();
   });
 });
 

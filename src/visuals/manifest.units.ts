@@ -29,7 +29,10 @@ export interface UnitSheetSummary {
   heightLu: number;
   pxPerLu: number;
   anchorsLu: { head: readonly [number, number]; hitCenter: readonly [number, number]; muzzle: readonly [number, number] };
+  /** Includes the attack variants `attack_b`, `attack_c` and `attack_alt` when the sheet (or its extras sheet) has them. */
   clips: Readonly<Record<string, { durationMs: number; loop: boolean; impactAt?: number }>>;
+  /** Body type of the walk (ANIM_SPEC 2.1), written by sheets made to the animation standard. */
+  gait?: string;
 }
 
 export function unitSheetDef(s: UnitSheetSummary): VisualDef {

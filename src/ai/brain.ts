@@ -24,7 +24,7 @@
  * dwell) is itself derived from earlier inputs. Rules the DESIGN leaves open are logged in
  * docs/decisions.md under WP3.
  */
-import type { CardId, ResearchClass, ResearchPickDef, RoleGroup } from '@/contracts';
+import type { CardId, Observation, ResearchClass, ResearchPickDef, RoleGroup } from '@/contracts';
 import {
   BP,
   LANE_MLU,
@@ -178,6 +178,13 @@ const FALLBACK_REACH = 200 * MILLI;
 const FLAG_COVER_MARGIN = 80 * MILLI;
 /** ... and, gathering a wave, this far short of mid-lane and of the nearest enemy ground unit. */
 const FLAG_STAGE_GAP = 200 * MILLI;
+/**
+ * A2.10.2 the Siege rope: this long before a rope that runs from Siege, a Holding bot stages forward
+ * (short of mid-lane and of the enemy) instead of inside its turret cover, so Siege's charge meets the
+ * enemy near mid-lane and not at its own gate, where the rope would take its base. Against `flag_ball`
+ * (Short War, n = 200) the turret-cover hold lost 52% under the rope (29% without it).
+ */
+const ROPE_STAGE_TICKS = 30 * TICKS_PER_SECOND;
 /** A flag move smaller than this is not worth a command. */
 const FLAG_MIN_MOVE = 60 * MILLI;
 /** The over-commit mistake (Hold → Charge) only after holding this long. */
@@ -421,6 +428,12 @@ function incomeTiming(clock: MatchClock): { before: number; paybackBy: number } 
   return { before: Math.trunc((od * 3) / 5), paybackBy: od + PAYBACK_AFTER_OVERDRIVE };
 }
 
+/** A2.10.2: a Siege rope that runs from Siege starts within {@link ROPE_STAGE_TICKS} (Overdrive only). */
+function ropeSoon(obs: Observation, now: number): boolean {
+  const first = obs.escalation?.steps[0];
+  return obs.phase === 'overdrive' && first !== undefined && first.crumbleBpPerSec > 0 && first.tick - now <= ROPE_STAGE_TICKS;
+}
+
 export class Brain {
   goal: SavingGoal | null = null;
   spending = true;
@@ -539,7 +552,10 @@ export class Brain {
     // own half) goes all-in, the same branch Kettle uses before an evolve: Charge, no saving, every coin
     // into its strongest affordable wave.
     const esc = obs.escalation;
-    const crumblingAlone = esc !== undefined && esc.crumbling[obs.side] && !esc.crumbling[obs.side === 0 ? 1 : 0];
+    // Not in a timed war's Siege rope (A2.10.2): there the Final Bell still ends the war, and feeding every
+    // coin into a stronger line only lost faster (flag_ball, Short War, n = 200: 47% with the all-in, 41.5%
+    // without it).
+    const crumblingAlone = esc !== undefined && esc.finalBellTick === null && esc.crumbling[obs.side] && !esc.crumbling[obs.side === 0 ? 1 : 0];
     const allIn = crumblingAlone || (P.allInBeforeEvolve && !siege && (v.evolveReady || (obs.me.xpBp >= ALL_IN_XP_BP && obs.me.xpBp < BP)));
     // Push gate (A7.2 anti-turtle): the bot charges past mid-lane only with myArmy ≥ gate × D. When the
     // gate fails it banks instead of feeding units into the turrets one by one: a Treasury saving goal
@@ -785,7 +801,7 @@ export class Brain {
       const wantHold = !siege && !allIn && (weak || ballCharging || (gateFailed && W.hold >= HOLD_ON_GATE_BP));
       const want = baiting ? 'charge' : falling ? 'fallback' : wantHold ? 'hold' : 'charge';
       if (want !== v.stance) {
-        const spot = want === 'hold' && t.movesFlag ? this.flagSpot(v, weak || facingBall || ballCharging) : null;
+        const spot = want === 'hold' && t.movesFlag ? this.flagSpot(v, weak || facingBall || ballCharging, ropeSoon(obs, v.now)) : null;
         add(spot !== null && spot * MILLI !== v.holdP ? { kind: 'stance', stance: want, holdP: spot } : { kind: 'stance', stance: want }, SCORE.stance);
       } else if (want !== 'charge' && v.now - this.stanceTick >= OVERCOMMIT_AFTER_TICKS) {
         opts.overCommit = { kind: 'stance', stance: 'charge' };
@@ -793,7 +809,7 @@ export class Brain {
     }
     // Hold flag moves while Holding (no stance cooldown, at most once per 1 s).
     if (stanceTier && t.movesFlag && v.stance === 'hold' && v.flagReady && !siege) {
-      const spot = this.flagSpot(v, weak || facingBall || ballCharging);
+      const spot = this.flagSpot(v, weak || facingBall || ballCharging, ropeSoon(obs, v.now));
       if (Math.abs(spot * MILLI - v.holdP) >= FLAG_MIN_MOVE) add({ kind: 'flag', holdP: spot }, SCORE.flag);
     }
 
@@ -973,11 +989,15 @@ export class Brain {
    * without turrets); gathering a wave with the lane clear, where its army value is highest, short of
    * mid-lane and of the nearest enemy ground unit. War Horns' damage needs the flag at p ≤ 480.
    */
-  flagSpot(v: View, defending: boolean): number {
+  flagSpot(v: View, defending: boolean, rope = false): number {
     const { book } = this.cfg;
     const e = book.econ;
     let p: number;
-    if (defending || (v.foeFront !== null && v.foeFront < e.midLane)) {
+    if (rope && (v.foeFront === null || v.foeFront >= e.midLane)) {
+      // A2.10.2: the Siege rope is near and the enemy is not in our half: stage forward (ROPE_STAGE_TICKS).
+      p = e.midLane - FLAG_STAGE_GAP;
+      if (v.foeFront !== null) p = Math.min(p, v.foeFront - FLAG_STAGE_GAP);
+    } else if (defending || (v.foeFront !== null && v.foeFront < e.midLane)) {
       p = v.turretsBuilt > 0 ? e.turretCover - FLAG_COVER_MARGIN : e.flagMin;
     } else {
       // Where its army value is highest: the value-weighted centre of its ground units, so the units

@@ -1,0 +1,461 @@
+{
+ "frames": {
+  "sapper_attack_b_03": {
+   "frame": {
+    "x": 157,
+    "y": 2,
+    "w": 89,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 115,
+    "w": 89,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.50973,
+    "y": 0.88235
+   }
+  },
+  "sapper_attack_b_03_team": {
+   "frame": {
+    "x": 104,
+    "y": 206,
+    "w": 57,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 137,
+    "w": 57,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.50973,
+    "y": 0.88235
+   }
+  },
+  "sapper_attack_b_04": {
+   "frame": {
+    "x": 96,
+    "y": 115,
+    "w": 86,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 117,
+    "w": 86,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.50973,
+    "y": 0.88235
+   }
+  },
+  "sapper_attack_b_04_team": {
+   "frame": {
+    "x": 165,
+    "y": 206,
+    "w": 55,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 137,
+    "w": 55,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.50973,
+    "y": 0.88235
+   }
+  },
+  "sapper_attack_b_05": {
+   "frame": {
+    "x": 80,
+    "y": 2,
+    "w": 73,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 107,
+    "w": 73,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.50973,
+    "y": 0.88235
+   }
+  },
+  "sapper_attack_b_05_team": {
+   "frame": {
+    "x": 186,
+    "y": 115,
+    "w": 44,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 129,
+    "w": 44,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.50973,
+    "y": 0.88235
+   }
+  },
+  "sapper_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 74,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 98,
+    "w": 74,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.50973,
+    "y": 0.88235
+   }
+  },
+  "sapper_attack_b_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 206,
+    "w": 44,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 132,
+    "w": 44,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.50973,
+    "y": 0.88235
+   }
+  },
+  "sapper_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 115,
+    "w": 90,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 116,
+    "w": 90,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.50973,
+    "y": 0.88235
+   }
+  },
+  "sapper_attack_b_07_team": {
+   "frame": {
+    "x": 50,
+    "y": 206,
+    "w": 50,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 135,
+    "w": 50,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.50973,
+    "y": 0.88235
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "sapper_attack_00",
+   "sapper_attack_01",
+   "sapper_attack_02",
+   "sapper_attack_b_03",
+   "sapper_attack_b_04",
+   "sapper_attack_b_05",
+   "sapper_attack_b_06",
+   "sapper_attack_b_07",
+   "sapper_attack_08",
+   "sapper_attack_09",
+   "sapper_attack_10",
+   "sapper_attack_11"
+  ],
+  "attack_b_team": [
+   "sapper_attack_00_team",
+   "sapper_attack_01_team",
+   "sapper_attack_02_team",
+   "sapper_attack_b_03_team",
+   "sapper_attack_b_04_team",
+   "sapper_attack_b_05_team",
+   "sapper_attack_b_06_team",
+   "sapper_attack_b_07_team",
+   "sapper_attack_08_team",
+   "sapper_attack_09_team",
+   "sapper_attack_10_team",
+   "sapper_attack_11_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "sapper.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 256,
+   "h": 268
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.sapper",
+   "name": "Sapper",
+   "heightLu": 70,
+   "widthLu": 48.8,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    131.0,
+    195.0
+   ],
+   "anchorsLu": {
+    "head": [
+     6,
+     64
+    ],
+    "hitCenter": [
+     0,
+     30
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "sapper",
+   "clips": {
+    "attack_b": {
+     "frames": 12,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      102,
+      25,
+      20,
+      18,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 7,
+     "impactStep": 7,
+     "impactAt": 0.4265,
+     "smearFrame": 5,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "chargeTip": [
+       [
+        20.4,
+        28.5
+       ],
+       [
+        19.3,
+        31.5
+       ],
+       [
+        20.8,
+        31.8
+       ],
+       [
+        -24.3,
+        15.7
+       ],
+       [
+        -22.7,
+        13.1
+       ],
+       [
+        10.5,
+        -1.8
+       ],
+       [
+        31.1,
+        20.3
+       ],
+       [
+        36.4,
+        12.2
+       ],
+       [
+        10.8,
+        42.4
+       ],
+       [
+        10.2,
+        42.7
+       ],
+       [
+        27.6,
+        16.4
+       ],
+       [
+        16.9,
+        24.9
+       ]
+      ],
+      "fuse": [
+       [
+        -8.5,
+        62.4
+       ],
+       [
+        -11.8,
+        62.3
+       ],
+       [
+        -10.5,
+        60.9
+       ],
+       [
+        -2.1,
+        55.2
+       ],
+       [
+        -2.1,
+        55.2
+       ],
+       [
+        -3.0,
+        62.2
+       ],
+       [
+        -4.7,
+        63.7
+       ],
+       [
+        3.7,
+        54.3
+       ],
+       [
+        8.4,
+        52.6
+       ],
+       [
+        7.8,
+        52.9
+       ],
+       [
+        -3.4,
+        62.1
+       ],
+       [
+        -8.5,
+        62.4
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

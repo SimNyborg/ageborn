@@ -1,0 +1,550 @@
+{
+ "frames": {
+  "tankette_attack_b_01": {
+   "frame": {
+    "x": 634,
+    "y": 2,
+    "w": 274,
+    "h": 305
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 237,
+    "y": 215,
+    "w": 274,
+    "h": 305
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_attack_b_01_team": {
+   "frame": {
+    "x": 243,
+    "y": 626,
+    "w": 227,
+    "h": 250
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 248,
+    "y": 219,
+    "w": 227,
+    "h": 250
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_attack_b_02": {
+   "frame": {
+    "x": 1198,
+    "y": 2,
+    "w": 272,
+    "h": 302
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 235,
+    "y": 217,
+    "w": 272,
+    "h": 302
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_attack_b_02_team": {
+   "frame": {
+    "x": 474,
+    "y": 626,
+    "w": 231,
+    "h": 248
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 246,
+    "y": 222,
+    "w": 231,
+    "h": 248
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_attack_b_03": {
+   "frame": {
+    "x": 2,
+    "y": 320,
+    "w": 272,
+    "h": 302
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 235,
+    "y": 217,
+    "w": 272,
+    "h": 302
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_attack_b_03_team": {
+   "frame": {
+    "x": 1172,
+    "y": 626,
+    "w": 231,
+    "h": 242
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 246,
+    "y": 228,
+    "w": 231,
+    "h": 242
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 289,
+    "h": 314
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 239,
+    "y": 208,
+    "w": 289,
+    "h": 314
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_attack_b_04_team": {
+   "frame": {
+    "x": 896,
+    "y": 320,
+    "w": 220,
+    "h": 259
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 250,
+    "y": 210,
+    "w": 220,
+    "h": 259
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_attack_b_05": {
+   "frame": {
+    "x": 562,
+    "y": 320,
+    "w": 330,
+    "h": 294
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 232,
+    "w": 330,
+    "h": 294
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 626,
+    "w": 237,
+    "h": 250
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 241,
+    "y": 229,
+    "w": 237,
+    "h": 250
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_attack_b_06": {
+   "frame": {
+    "x": 295,
+    "y": 2,
+    "w": 335,
+    "h": 313
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 204,
+    "w": 335,
+    "h": 313
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_attack_b_06_team": {
+   "frame": {
+    "x": 1120,
+    "y": 320,
+    "w": 221,
+    "h": 254
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 252,
+    "y": 210,
+    "w": 221,
+    "h": 254
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_attack_b_07": {
+   "frame": {
+    "x": 278,
+    "y": 320,
+    "w": 280,
+    "h": 301
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 234,
+    "y": 220,
+    "w": 280,
+    "h": 301
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_attack_b_07_team": {
+   "frame": {
+    "x": 709,
+    "y": 626,
+    "w": 228,
+    "h": 243
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 247,
+    "y": 228,
+    "w": 228,
+    "h": 243
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_attack_b_08": {
+   "frame": {
+    "x": 912,
+    "y": 2,
+    "w": 282,
+    "h": 303
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 237,
+    "y": 217,
+    "w": 282,
+    "h": 303
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "tankette_attack_b_08_team": {
+   "frame": {
+    "x": 941,
+    "y": 626,
+    "w": 227,
+    "h": 243
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 248,
+    "y": 225,
+    "w": 227,
+    "h": 243
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "tankette_attack_00",
+   "tankette_attack_b_01",
+   "tankette_attack_b_02",
+   "tankette_attack_b_03",
+   "tankette_attack_b_04",
+   "tankette_attack_b_05",
+   "tankette_attack_b_06",
+   "tankette_attack_b_07",
+   "tankette_attack_b_08",
+   "tankette_attack_09",
+   "tankette_attack_10"
+  ],
+  "attack_b_team": [
+   "tankette_attack_00_team",
+   "tankette_attack_b_01_team",
+   "tankette_attack_b_02_team",
+   "tankette_attack_b_03_team",
+   "tankette_attack_b_04_team",
+   "tankette_attack_b_05_team",
+   "tankette_attack_b_06_team",
+   "tankette_attack_b_07_team",
+   "tankette_attack_b_08_team",
+   "tankette_attack_09_team",
+   "tankette_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "tankette.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1536,
+   "h": 880
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.tankette",
+   "name": "Tankette",
+   "heightLu": 96,
+   "widthLu": 107.7,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    374,
+    490
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     86
+    ],
+    "hitCenter": [
+     0,
+     34
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "tracked",
+   "extrasOf": "tankette",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      60,
+      130,
+      61,
+      60,
+      80,
+      70,
+      70,
+      70,
+      75,
+      74
+     ],
+     "durationMs": 790,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3684,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        53.9,
+        52.5
+       ],
+       [
+        49.5,
+        49.2
+       ],
+       [
+        41.6,
+        47.7
+       ],
+       [
+        41.3,
+        48.8
+       ],
+       [
+        32.2,
+        51.0
+       ],
+       [
+        38.1,
+        43.6
+       ],
+       [
+        43.3,
+        53.7
+       ],
+       [
+        51.0,
+        49.0
+       ],
+       [
+        53.8,
+        50.4
+       ],
+       [
+        50.4,
+        51.3
+       ],
+       [
+        53.2,
+        50.2
+       ]
+      ]
+     },
+     "muzzle": [
+      32.2,
+      51.0
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

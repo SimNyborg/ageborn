@@ -26,6 +26,71 @@ from . import render, retime, scene, sheet
 from .rig import Rig
 
 
+# attack variants and second attackers go into the lazily loaded extras sheet (ANIM_SPEC P4)
+EXTRA_CLIPS = ("attack_b", "attack_c", "attack_alt")
+
+
+def walk_metrics(tracks, clip, planted_tol=1.0):
+    """ANIM_SPEC P2: the walk's natural speed from the planted frames. For each `_foot*` tracker
+    (screen lu from the feet), the stance frames are those within `planted_tol` lu of the
+    tracker's lowest point; the natural speed is the mean backward speed of the feet between
+    consecutive stance frames, and the drift is how far a planted foot moves against the ground
+    at that speed in one frame. Returns None when no foot is planted for two frames in a row
+    (flyers, vehicles without foot trackers)."""
+    feet = {k: v for k, v in tracks.items() if k.startswith("_foot")}
+    seq, dur = clip.sequence, clip.durations
+    n = len(seq)
+    samples, stance = [], {}
+    for name, pts in feet.items():
+        ys = [pts[i][1] for i in seq]
+        low = min(ys)
+        st = [y <= low + planted_tol for y in ys]
+        stance[name] = st
+        for j in range(n):
+            k = (j + 1) % n
+            if st[j] and st[k] and (k > j or clip.loop):
+                dx = pts[seq[k]][0] - pts[seq[j]][0]
+                samples.append((name, j, k, -dx / (dur[j] / 1000.0), dx, dur[j]))
+    if not samples:
+        return None
+    nat = sum(s[3] for s in samples) / len(samples)
+    drift = max(abs(dx + nat * d / 1000.0) for _, _, _, _, dx, d in samples)
+    contacts = []
+    for name, st in stance.items():
+        foot = name[len("_foot"):].lstrip("_") or "r"
+        for j in range(n):
+            if st[j] and not st[(j - 1) % n]:
+                contacts.append({"step": j, "foot": foot, "atLu": list(feet[name][seq[j]])})
+    contacts.sort(key=lambda c: (c["step"], c["foot"]))
+    return {"naturalSpeedLuPerS": round(nat, 1),
+            "strideLu": round(nat * clip.total_ms() / 1000.0, 1),
+            "plantedDriftLu": round(drift, 2), "contacts": contacts}
+
+
+def attack_meta(clip, m, tracks):
+    """ANIM_SPEC P2: the held anticipation step, the optional hold loop and the impact-frame
+    muzzle of an attack clip (A, B, C or the second attacker's attack_alt)."""
+    if clip.impact is None:
+        return
+    imp_step = clip.sequence.index(clip.impact)
+    hold = clip.extra.get("holdStep")
+    if hold is None and imp_step > 0:
+        pre = clip.durations[:imp_step]
+        hold = max(range(imp_step), key=lambda j: (pre[j], j))
+    if hold is not None:
+        m["holdStep"] = hold
+    loop = clip.extra.get("holdLoop")
+    if loop is not None:
+        m["holdLoop"] = list(loop)
+    if m.pop("noMuzzle", False):    # a melee attack whose unit carries a rider muzzle tracker
+        return
+    tr = tracks or {}
+    for key in ("muzzle", "beam"):
+        if key in tr:
+            m["muzzle"] = list(tr[key][clip.impact])
+            break
+
+
 def finish_frame(base_path, team_path, smear_path, spec):
     """Raw renders -> final (base, team) arrays: outer outline, smear underneath."""
     base = sheet.load(base_path)
@@ -170,7 +235,12 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True, v3=False):
             if pub:
                 m["anchorsLu"] = pub
             foot = tracks[c.name].get("_foot")
-            if foot and c.name == "walk":
+            wm = walk_metrics(tracks[c.name], c) if c.name == "walk" and getattr(c, "gait", None) else None
+            if wm:
+                m.update(wm)
+                if wm["plantedDriftLu"] > 1.0:
+                    log(f"  WARNING: walk planted drift {wm['plantedDriftLu']} lu per frame (limit 1)")
+            elif foot and c.name == "walk":
                 # a foot travels its x range backward while planted, twice per cycle: moving
                 # at strideLu per cycle keeps it from sliding; the game scales playback by
                 # unit speed / naturalSpeedLuPerS (DESIGN A12 checklist item 2)
@@ -178,6 +248,7 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True, v3=False):
                 stride = round(2 * (max(xs) - min(xs)), 1)
                 m["strideLu"] = stride
                 m["naturalSpeedLuPerS"] = round(stride / (c.total_ms() / 1000.0), 1)
+        attack_meta(c, m, tracks.get(c.name))
         for fx in m.get("fx", []):
             fx["scale"] = round((width_lu / C.FX_REF_WIDTH_LU) ** fx.pop("scalePow", 1.0), 3)
         clip_meta[c.name] = m
@@ -192,19 +263,42 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True, v3=False):
         "facing": "right",
         "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
     }
+    if getattr(mod, "GAIT_NAME", None):
+        extra["gait"] = mod.GAIT_NAME
+        if "walk" in clip_meta:
+            clip_meta["walk"]["gait"] = mod.GAIT_NAME
     extra.update(getattr(mod, "EXTRA_META", {}))
     t2 = time.time()
     check = sheet.checks(frames, {c: [f[:2] for f in fr] for c, fr in raw.items()},
                          C.TEAM_COVERAGE_MIN_PCT if team else None)
     check["clippedFrames"] = clipped
     if v3:
-        size = sheet.build_atlas(mod.SLUG, frames, clip_meta, extra, out_dir, C.RENDER_SCALE,
-                                 f"{file_slug}.hd", variants=False)
+        # core sheet (idle, walk, attack A, hit, die) and the extras sheet (variants, attack_alt):
+        # a variant frame that reuses an A frame points at the core frame's name (no pixels)
+        reuse = {c.name: {i: f"{mod.SLUG}_{src}_{k:02d}" for i, (src, k) in getattr(c, "reuse", {}).items()}
+                 for c in clips if getattr(c, "reuse", None)}
+        core = {k: v for k, v in frames.items() if k not in EXTRA_CLIPS}
+        xtra = {k: v for k, v in frames.items() if k in EXTRA_CLIPS}
+        core_meta = {k: v for k, v in clip_meta.items() if k not in EXTRA_CLIPS}
+        x_meta = {k: v for k, v in clip_meta.items() if k in EXTRA_CLIPS}
         half = _half_frames(frames, os.path.join(raw_dir, "final1x"))
         extra1 = dict(extra, pxPerLu=round(C.PX_PER_LU / 2, 4),
                       feetPx=[feet[0] / 2, feet[1] / 2])
-        sheet.build_atlas(mod.SLUG, half, clip_meta, extra1, out_dir, C.RENDER_SCALE / 2,
-                          file_slug, variants=False)
+        size = sheet.build_atlas(mod.SLUG, core, core_meta, extra, out_dir, C.RENDER_SCALE,
+                                 f"{file_slug}.hd", variants=False)
+        sheet.build_atlas(mod.SLUG, {k: v for k, v in half.items() if k not in EXTRA_CLIPS}, core_meta,
+                          extra1, out_dir, C.RENDER_SCALE / 2, file_slug, variants=False)
+        for stale in (f"{file_slug}.x.json", f"{file_slug}.x.png", f"{file_slug}.x.hd.json",
+                      f"{file_slug}.x.hd.png"):
+            if os.path.exists(os.path.join(out_dir, stale)):
+                os.remove(os.path.join(out_dir, stale))
+        if xtra:
+            xex = dict(extra, extrasOf=mod.SLUG)
+            sheet.build_atlas(mod.SLUG, xtra, x_meta, xex, out_dir, C.RENDER_SCALE,
+                              f"{file_slug}.x.hd", variants=False, reuse=reuse)
+            sheet.build_atlas(mod.SLUG, {k: v for k, v in half.items() if k in EXTRA_CLIPS}, x_meta,
+                              dict(extra1, extrasOf=mod.SLUG), out_dir, C.RENDER_SCALE / 2,
+                              f"{file_slug}.x", variants=False, reuse=reuse)
     else:
         size = sheet.build_atlas(mod.SLUG, frames, clip_meta, extra, out_dir, C.RENDER_SCALE,
                                  file_slug)
@@ -234,7 +328,10 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True, v3=False):
                     "outline": round(t_outline, 1), "pack_and_previews": round(t_pack, 1),
                     "total": round(time.time() - t0, 1)},
         "kb": ({"png8": kb(f"{file_slug}.png"), "png8_hd": kb(f"{file_slug}.hd.png"),
-                "json": kb(f"{file_slug}.json")} if v3 else
+                "json": kb(f"{file_slug}.json"),
+                **({"x_png8": kb(f"{file_slug}.x.png"), "x_png8_hd": kb(f"{file_slug}.x.hd.png"),
+                    "x_json": kb(f"{file_slug}.x.json")}
+                   if os.path.exists(os.path.join(out_dir, f"{file_slug}.x.png")) else {})} if v3 else
                {"png8": kb(f"{file_slug}.png"), "png32": kb(f"{file_slug}.rgba.png"),
                 "webp_lossless": kb(f"{file_slug}.webp"),
                 "webp_q90": kb(f"{file_slug}.q90.webp"), "json": kb(f"{file_slug}.json")}),

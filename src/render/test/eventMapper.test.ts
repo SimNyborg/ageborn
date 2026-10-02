@@ -409,6 +409,11 @@ describe('event mapper: coverage', () => {
     expect(pick(out, 'sound')).toEqual([{ a: 'sound', id: 'swing_whoosh', delayMs: 320, priority: 1 }]);
   });
 
+  it('a second attacker carries its attackIndex, so the view never restarts the body for it (ANIM_SPEC R3)', () => {
+    const out = run([ev('attackStarted', { id: 1, targetId: 2, windupTicks: 8, attackIndex: 1 })]);
+    expect(pick(out, 'unitClip')).toEqual([{ a: 'unitClip', id: 1, clip: 'attack', impactAtMs: 400, attackIndex: 1 }]);
+  });
+
   it('emits HUD events for emotes, denied commands (own side only) and the match end', () => {
     const out = run([ev('emote', { side: 1, emote: 'gg' }), ev('commandRejected', { side: 0, t: 'evolve', reason: 'xp' }), ev('commandRejected', { side: 1, t: 'train', reason: 'gold' })]);
     expect(pick(out, 'view').map((v) => v.ev.t)).toEqual(['emote', 'denied']);

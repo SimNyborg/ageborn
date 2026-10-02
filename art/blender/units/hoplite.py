@@ -11,7 +11,12 @@ and a bronze butt spike is held in the far hand.
 Animation (cartoon kit v2, `ageborn_art/moves.py`; a viewer expects a shield-and-spear man to
 shove with the shield and stab over it):
   idle    taps the spear butt on the ground on the beat, weight shift, blink
-  walk    march: stiff knees, a high step, the shield bobbing a frame late
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1): the spear sloped back over the far
+          shoulder, the shield swinging on the near forearm, planted feet
+  attack_b  UNDERARM LOW THRUST: crouches behind the shield with the spear drawn back at the hip,
+          then lunges and drives it low under the rim
+  attack_c  OVERHEAD DOWNWARD DRIVE: steps in on his toes with the shield raised high and the
+          spear point tilted steeply down from above the shoulder, then drives it down
   attack  SHIELD BASH, THEN OVER-THE-RIM STAB: ducks behind the shield, shoves it forward
           (dust, bash lines), rocks back with the spear cocked overhand by the ear (the held
           extreme), then drives the spear forward over the rim (streak smear, yell); impact on
@@ -23,12 +28,14 @@ shove with the shield and stab over it):
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as G
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "hoplite"
+GAIT_NAME = "biped"
 NAME = "Hoplite"
 HEIGHT_LU = 68
 CANVAS = (300, 250)
@@ -44,22 +51,18 @@ TIP = (HL[0], HL[1] - 0.4, HL[2] + FWD)
 
 
 def build(rig):
-    B.skeleton(rig)
-    B.sandal_legs(rig)
-    # sandal laces up the calf (dark leather, reads as stripes at 3x)
-    for s in ("r", "l"):
-        y = B.LEG_Y * B.SIDE_Y[s]
-        g = Geo()
-        for z in (4.4, 7.0):
-            g.blob((1.0, y, z), (3.9, 3.9, 0.7), p=3.0)
-        rig.part(f"shin_{s}", g, B.LEATHER_DK, outline=0.4)
+    global RIG
+    RIG = rig
+    B.skeleton_v3(rig)           # walk v3: longer legs, planted feet (ANIM_SPEC 2.0 rule 5)
+    B.sandal_legs_v3(rig)
 
     # torso: plum tunic under a linen cuirass with a team band, verdigris trim; team pteruges
     g = Geo().blob((0, 0, 20.0), (10.6, 9.8, 6.0), p=2.4)
     rig.part("torso", g, B.PLUM)
     B.cuirass(rig, B.LINEN, trim=B.VERD, z=28.5)
     rig.secondary("hem", "hips", (0.5, 0, 17.0), (0.5, 0, 9.0), max_deg=10, gain=0.9)
-    B.pteruges(rig, "hem", 17.2, None, team=True, n=8, radius=(11.2, 10.4), length=8.6)
+    rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 0.6)        # hem >= 9 lu above the soles (the knees show)
+    B.pteruges(rig, "hem", 17.2, None, team=True, n=8, radius=(11.2, 10.4), length=7.4)
     g = Geo().blob((0.5, 0, 20.2), (11.4, 10.6, 1.6), p=3.2)          # leather belt
     rig.part("torso", g, B.LEATHER_DK, outline=0.6)
     for s, y in (("r", -12.0), ("l", 11.5)):                          # linen shoulder guards
@@ -99,7 +102,6 @@ def build(rig):
     # the aspis on the near hand: a big round team shield with a riveted rim
     sx, sy, sz = HR[0] + 1.0, HR[1] - 6.0, HR[2] + 3.0
     B.aspis(rig, "hand_r", (sx, sy, sz), r=13.4, depth=2.6, rim=B.BRONZE, rim_w=1.3, rivets=12)
-    rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -128,14 +130,32 @@ def _idle(f):
     return M.idle_v2(f, SPEAR_HAND_LESS, frames=6, extra=extra, face_blink=F.expr("blink"), blink=4)
 
 
-def _walk(f):
-    # march: stiff knee, high step; the shield bobs a frame late
+# -- walk v3: G1 bounce jog at ground speed (card 70 x 1.25 = 87.5 lu/s), 8 x 77 ms --------------
+RIG = None
+SPEED = 87.5
+LEGS = B.walk_legs_v3()
+GAIT = B.jog_gait(SPEED, LEGS)
+# walk carry: the spear trailed low in the far hand, point forward (the crest hides a shouldered
+# spear), pumping with the far arm; the shield high on the near forearm, swinging a frame late
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return {"arm_r": {"r": 3 * lag}, "hand_r": {"r": -2 * lag},
-                "spear": {"r": -3 * lag}, "helm": {"z": 0.35 * lag}}
-    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=38.0, knee=46.0, lift_lu=7.5, bob_pct=0.06,
-                     lean=-5.0, arm=10.0, fore=6.0, arms=("l",), extra=extra)
+        c = -math.cos(ctx["lag_p"])                  # +1 = the near (shield) arm forward
+        a = -46 + 10 * c
+        sa = -80 - 20 * c                            # the far (spear) arm swings against it
+        return merge(shield(a, a + 74 + 6 * c, 92),
+                     spear(sa, sa + 62 - 6 * c, 34 + 5 * c - 3 * lag),
+                     {"helm": {"z": 0.35 * lag}})
+    base = {k: v for k, v in STANCE.items() if k not in ("arm_r", "fore_r", "hand_r", "arm_l", "fore_l", "hand_l")}
+    return M.walk_v3(RIG, f, base, GAIT, legs=LEGS, lean=-10.0, twist=6.0, nod=3.0, extra=extra,
+                     report=report)
+
+
+def _feet(pose, fr, fl, lr=0.0, ll=0.0, ar=0.0, al=0.0):
+    """Planted feet by IK (near foot x, far foot x, lifts, foot angles)."""
+    return B.plant(RIG, pose, LEGS, r=(fr, lr, ar), l=(fl, ll, al))
 
 
 # 11 unique frames, moves.SMALL_MELEE_MS
@@ -151,18 +171,17 @@ A_H = [0, 4, 6, -6, -2, 6, 10, 10, 4, 1, 0]
 A_Q = [-0.02, -0.12, -0.06, 0.1, 0.06, 0.02, -0.16, -0.12, -0.04, 0.02, 0.0]
 A_X = [-0.5, -1.5, 4.0, -2.0, 3.0, 6.0, 9.0, 9.5, 6.0, 2.0, 0.5]
 A_Z = [0.0, -2.6, -1.0, 1.4, 0.6, -0.6, -2.4, -2.0, -1.2, -0.3, 0.0]
-A_THR = [2, 8, 24, -4, 12, 22, 30, 30, 20, 8, 2]
-A_SHR = [0, -10, -22, 0, -10, -18, -24, -22, -14, -4, 0]
-A_THL = [-2, -8, -18, 10, -6, -16, -24, -24, -16, -6, -2]
-A_SHL = [0, -12, -6, -6, -4, -4, -4, -4, -4, -2, 0]
+# planted feet (ankle x): the near foot steps in with the bash and the stab, the far foot holds
+A_FR = [2.0, 2.0, 8.0, 5.0, 9.0, 12.0, 15.0, 15.0, 11.0, 5.0, 2.5]
+A_FL = [-2.0, -2.5, -1.5, -3.0, -1.0, 1.0, 3.5, 3.5, 1.0, -1.0, -2.0]
+A_LR = [0, 0, 1.0, 2.5, 3.0, 1.0, 0, 0, 0, 0, 0]
 
 
 def _attack_pose(f):
     pose = merge(spear(S_A[f], S_F[f], S_WW[f] - A_T[f]), shield(H_A[f], H_F[f], 92), {
         "torso": {"r": A_T[f]}, "head": {"r": A_H[f]},
-        "thigh_r": {"r": A_THR[f]}, "shin_r": {"r": A_SHR[f]},
-        "thigh_l": {"r": A_THL[f]}, "shin_l": {"r": A_SHL[f]},
     }, M.body_about((0, 0, 22), x=A_X[f], z=A_Z[f], q=A_Q[f]))
+    pose = _feet(pose, A_FR[f], A_FL[f], lr=A_LR[f], al=-10.0 if f == 3 else 0.0)
     if f in (4, 5):
         pose.setdefault("spear", {})["sz"] = 1.18
     if f == 6:
@@ -178,24 +197,135 @@ def _attack_pose(f):
 
 SHIELD_FACE = (HR[0] + 1.0, HR[1] - 8.6, HR[2] + 3.0)
 SPEAR_HEAD = (TIP[0], TIP[1], TIP[2] - 3.0)
+STREAK = {"kind": "streak", "joint": "spear", "point": SPEAR_HEAD, "color": B.SAND_LT,
+          "width_lu": 6.0, "white": 0.3}
 
 
 def _attack_clip():
-    streak = {"kind": "streak", "joint": "spear", "point": SPEAR_HEAD, "color": B.SAND_LT,
-              "width_lu": 6.0, "white": 0.3}
     ov = {
         2: [{"kind": "burst", "joint": "hand_r", "point": (SHIELD_FACE[0] + 12.0, SHIELD_FACE[1], SHIELD_FACE[2]),
              "r0_lu": 4.0, "r1_lu": 10.0, "n": 4, "a0": -50.0, "arc": 100.0},
             {"kind": "dust", "ground": (9.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 3, "spread": 0.9}],
-        4: [dict(streak, **{"from": 3, "t1": 0.95})],
-        5: [dict(streak, **{"from": 3, "t0": 0.25, "t1": 0.95})],
-        6: [dict(streak, **{"from": 4, "t0": 0.2, "t1": 0.9, "width_lu": 5.0}),
+        4: [dict(STREAK, **{"from": 3, "t1": 0.95})],
+        5: [dict(STREAK, **{"from": 3, "t0": 0.25, "t1": 0.95})],
+        6: [dict(STREAK, **{"from": 4, "t0": 0.2, "t1": 0.9, "width_lu": 5.0}),
             {"kind": "burst", "joint": "spear", "point": TIP, "r0_lu": 6.0, "r1_lu": 12.0, "n": 5,
              "a0": -70.0, "arc": 140.0},
             {"kind": "dust", "ground": (-8.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 6, "spread": 0.8}],
     }
     return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
                   impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
+
+
+# -- attack B: underarm low thrust from behind the shield (ANIM_SPEC appendix B) -------------------
+# unique frames: 0 = A read, 1 = A dip, 2 crouch (spear pulled back at the hip), 3 HOLD (deep crouch
+# behind the shield, the spear drawn far back underarm, level), 4 smear, 5 lead, 6 IMPACT (a long
+# low lunge, the spear driven out under the shield rim), 7 overshoot, 8-10 = A recoil and settle
+B_SEQ = list(range(11))
+#      crouch HOLD smear lead  IMP  over
+B_SA = [-140, -150, -95, -60, -40, -36]       # spear (far) arm: upper arm, forearm (world deg)
+B_SF = [-150, -165, -40, -12, -6, -4]
+B_SW = [10, 6, 4, 2, 0, -2]                   # spear direction (world deg): level, low
+B_HA = [-40, -34, -30, -20, -8, -8]           # shield arm (torso deg)
+B_HF = [-6, 0, 4, 12, 24, 22]
+B_T = [-10, -18, -16, -20, -26, -26]
+B_H = [6, 10, 8, 10, 14, 14]
+B_X = [-1.0, -3.0, 2.0, 6.0, 9.0, 9.5]
+B_Z = [-3.0, -6.0, -5.0, -5.5, -6.5, -6.2]
+B_Q = [-0.06, -0.12, 0.04, 0.0, -0.14, -0.10]
+B_FR = [5.0, 7.0, 9.0, 13.0, 17.0, 17.0]
+B_FL = [-5.0, -7.0, -6.0, -5.0, -4.0, -4.0]
+B_LR = [0.0, 0.0, 2.5, 1.5, 0.0, 0.0]
+
+
+def _b_pose(i):
+    if i in (0, 1):
+        return _attack_pose(i)
+    if i >= 8:
+        return _attack_pose(i)
+    k = i - 2
+    t = B_T[k]
+    pose = merge(spear(B_SA[k] - t, B_SF[k] - t, B_SW[k] - t), shield(B_HA[k], B_HF[k], 92), {
+        "torso": {"r": t}, "head": {"r": B_H[k]},
+    }, M.body_about((0, 0, 22), x=B_X[k], z=B_Z[k], q=B_Q[k]))
+    pose = _feet(pose, B_FR[k], B_FL[k], lr=B_LR[k])
+    if i in (4, 5):
+        pose.setdefault("spear", {})["sz"] = 1.18
+    if i in (2, 3):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+    else:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+    return pose
+
+
+def _attack_b():
+    ov = {
+        4: [dict(STREAK, **{"from": 3, "t1": 0.95})],
+        5: [dict(STREAK, **{"from": 3, "t0": 0.3, "t1": 0.95})],
+        6: [dict(STREAK, **{"from": 4, "t0": 0.2, "t1": 0.9, "width_lu": 5.0}),
+            {"kind": "burst", "joint": "spear", "point": TIP, "r0_lu": 6.0, "r1_lu": 12.0, "n": 5,
+             "a0": -50.0, "arc": 120.0},
+            {"kind": "dust", "ground": (16.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 11, "spread": 0.9},
+            {"kind": "dust", "ground": (-6.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 12, "spread": 0.7}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, overlays=ov, reuse=reuse)
+
+
+# -- attack C: overhead downward drive, the shield raised high ----------------------------------
+# 0 = A read, 1 = A dip, 2 the spear lifted over the shoulder, 3 HOLD (up on his toes, the shield
+# raised high in front, the spear point tilted steeply down from above the shoulder, cocked back),
+# 4 smear, 5 lead, 6 IMPACT (a step in, the spear driven steeply down), 7 overshoot, 8-10 = A's
+#      lift  HOLD smear lead  IMP  over
+C_SA = [40, 30, 50, 40, 10, 4]                # spear arm upper, forearm (world deg)
+C_SF = [60, 50, 60, 20, -10, -16]
+C_SW = [-40, -58, -54, -50, -52, -55]         # spear pointing steeply down (world deg)
+C_HA = [20, 70, 40, -4, -12, -14]             # shield raised over the head like a roof (torso deg)
+C_HF = [70, 110, 80, 54, 40, 36]
+C_T = [4, 10, -2, -10, -18, -20]
+C_H = [-6, -10, -2, 6, 10, 10]
+C_X = [-1.0, -2.5, 2.0, 5.0, 8.0, 8.5]
+C_Z = [2.0, 7.5, 4.0, 0.0, -3.0, -2.6]
+C_Q = [0.05, 0.10, 0.06, 0.0, -0.15, -0.10]
+C_FR = [3.0, 4.0, 7.0, 10.0, 13.0, 13.0]
+C_FL = [-3.0, -5.0, -4.0, -3.0, -3.0, -3.0]
+C_LR = [1.0, 7.0, 5.0, 2.0, 0.0, 0.0]
+C_LL = [0.0, 6.0, 3.0, 0.0, 0.0, 0.0]
+C_AR = [-10, -30, -10, 0, 0, 0]               # a hop on the hold: both feet off the ground
+C_AL = [-10, -36, -12, 0, 0, 0]
+
+
+def _c_pose(i):
+    if i in (0, 1) or i >= 8:
+        return _attack_pose(i)
+    k = i - 2
+    t = C_T[k]
+    pose = merge(spear(C_SA[k] - t, C_SF[k] - t, C_SW[k] - t), shield(C_HA[k], C_HF[k], 92), {
+        "torso": {"r": t}, "head": {"r": C_H[k]},
+    }, M.body_about((0, 0, 22), x=C_X[k], z=C_Z[k], q=C_Q[k]))
+    pose = _feet(pose, C_FR[k], C_FL[k], lr=C_LR[k], ll=C_LL[k], ar=C_AR[k], al=C_AL[k])
+    if i in (4, 5):
+        pose.setdefault("spear", {})["sz"] = 1.16
+    if i in (2, 3):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+    else:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+    return pose
+
+
+def _attack_c():
+    ov = {
+        4: [dict(STREAK, **{"from": 3, "t1": 0.95})],
+        5: [dict(STREAK, **{"from": 3, "t0": 0.3, "t1": 0.95})],
+        6: [{"kind": "burst", "joint": "spear", "point": TIP, "r0_lu": 6.0, "r1_lu": 12.0, "n": 5,
+             "a0": -150.0, "arc": 140.0},
+            {"kind": "dust", "ground": (30.0, 0.0), "size_lu": 6.5, "puffs": 4, "seed": 21, "spread": 1.0},
+            {"kind": "dust", "ground": (-4.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 22, "spread": 0.7}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, overlays=ov, reuse=reuse)
 
 
 def _hit(k):
@@ -240,10 +370,12 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

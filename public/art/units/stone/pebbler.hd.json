@@ -2,18 +2,18 @@
  "frames": {
   "pebbler_idle_00": {
    "frame": {
-    "x": 872,
-    "y": 211,
+    "x": 972,
+    "y": 215,
     "w": 104,
-    "h": 185
+    "h": 188
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 159,
-    "y": 147,
+    "y": 143,
     "w": 104,
-    "h": 185
+    "h": 188
    },
    "sourceSize": {
     "w": 410,
@@ -26,18 +26,18 @@
   },
   "pebbler_idle_00_team": {
    "frame": {
-    "x": 422,
-    "y": 749,
+    "x": 308,
+    "y": 761,
     "w": 105,
-    "h": 148
+    "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 147,
-    "y": 170,
+    "y": 165,
     "w": 105,
-    "h": 148
+    "h": 152
    },
    "sourceSize": {
     "w": 410,
@@ -50,18 +50,18 @@
   },
   "pebbler_idle_01": {
    "frame": {
-    "x": 980,
-    "y": 211,
+    "x": 541,
+    "y": 215,
     "w": 104,
-    "h": 184
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 160,
-    "y": 147,
+    "y": 142,
     "w": 104,
-    "h": 184
+    "h": 189
    },
    "sourceSize": {
     "w": 410,
@@ -74,18 +74,18 @@
   },
   "pebbler_idle_01_team": {
    "frame": {
-    "x": 103,
-    "y": 749,
-    "w": 104,
-    "h": 150
+    "x": 1380,
+    "y": 596,
+    "w": 105,
+    "h": 154
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 148,
-    "y": 168,
-    "w": 104,
-    "h": 150
+    "x": 147,
+    "y": 163,
+    "w": 105,
+    "h": 154
    },
    "sourceSize": {
     "w": 410,
@@ -98,18 +98,18 @@
   },
   "pebbler_idle_02": {
    "frame": {
-    "x": 431,
-    "y": 211,
+    "x": 218,
+    "y": 215,
     "w": 102,
-    "h": 188
+    "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 161,
-    "y": 142,
+    "y": 138,
     "w": 102,
-    "h": 188
+    "h": 192
    },
    "sourceSize": {
     "w": 410,
@@ -122,18 +122,18 @@
   },
   "pebbler_idle_02_team": {
    "frame": {
-    "x": 699,
-    "y": 587,
+    "x": 1161,
+    "y": 596,
     "w": 104,
-    "h": 154
+    "h": 156
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 148,
-    "y": 163,
+    "y": 159,
     "w": 104,
-    "h": 154
+    "h": 156
    },
    "sourceSize": {
     "w": 410,
@@ -146,18 +146,18 @@
   },
   "pebbler_idle_03": {
    "frame": {
-    "x": 791,
+    "x": 684,
     "y": 2,
     "w": 102,
-    "h": 192
+    "h": 197
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 161,
-    "y": 137,
+    "y": 132,
     "w": 102,
-    "h": 192
+    "h": 197
    },
    "sourceSize": {
     "w": 410,
@@ -170,18 +170,18 @@
   },
   "pebbler_idle_03_team": {
    "frame": {
-    "x": 327,
-    "y": 587,
+    "x": 144,
+    "y": 596,
     "w": 103,
-    "h": 157
+    "h": 161
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 149,
-    "y": 158,
+    "y": 153,
     "w": 103,
-    "h": 157
+    "h": 161
    },
    "sourceSize": {
     "w": 410,
@@ -194,18 +194,18 @@
   },
   "pebbler_idle_04": {
    "frame": {
-    "x": 581,
+    "x": 474,
     "y": 2,
     "w": 101,
-    "h": 194
+    "h": 199
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 161,
-    "y": 134,
+    "y": 129,
     "w": 101,
-    "h": 194
+    "h": 199
    },
    "sourceSize": {
     "w": 410,
@@ -218,18 +218,18 @@
   },
   "pebbler_idle_04_team": {
    "frame": {
-    "x": 2,
-    "y": 587,
+    "x": 1318,
+    "y": 412,
     "w": 102,
-    "h": 158
+    "h": 162
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 149,
-    "y": 156,
+    "y": 151,
     "w": 102,
-    "h": 158
+    "h": 162
    },
    "sourceSize": {
     "w": 410,
@@ -242,18 +242,18 @@
   },
   "pebbler_idle_05": {
    "frame": {
-    "x": 686,
+    "x": 579,
     "y": 2,
     "w": 101,
-    "h": 194
+    "h": 199
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 161,
-    "y": 135,
+    "y": 130,
     "w": 101,
-    "h": 194
+    "h": 199
    },
    "sourceSize": {
     "w": 410,
@@ -266,18 +266,18 @@
   },
   "pebbler_idle_05_team": {
    "frame": {
-    "x": 108,
-    "y": 587,
-    "w": 102,
-    "h": 158
+    "x": 251,
+    "y": 596,
+    "w": 103,
+    "h": 161
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 148,
-    "y": 157,
-    "w": 102,
-    "h": 158
+    "y": 153,
+    "w": 103,
+    "h": 161
    },
    "sourceSize": {
     "w": 410,
@@ -290,18 +290,18 @@
   },
   "pebbler_idle_06": {
    "frame": {
-    "x": 1031,
+    "x": 1143,
     "y": 2,
     "w": 102,
-    "h": 191
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 160,
-    "y": 139,
+    "y": 135,
     "w": 102,
-    "h": 191
+    "h": 195
    },
    "sourceSize": {
     "w": 410,
@@ -314,8 +314,56 @@
   },
   "pebbler_idle_06_team": {
    "frame": {
-    "x": 807,
-    "y": 587,
+    "x": 840,
+    "y": 596,
+    "w": 103,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 147,
+    "y": 157,
+    "w": 103,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 362
+   },
+   "anchor": {
+    "x": 0.50244,
+    "y": 0.8674
+   }
+  },
+  "pebbler_idle_07": {
+   "frame": {
+    "x": 324,
+    "y": 215,
+    "w": 106,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 140,
+    "w": 106,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 362
+   },
+   "anchor": {
+    "x": 0.50244,
+    "y": 0.8674
+   }
+  },
+  "pebbler_idle_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 761,
     "w": 104,
     "h": 154
    },
@@ -336,68 +384,20 @@
     "y": 0.8674
    }
   },
-  "pebbler_idle_07": {
-   "frame": {
-    "x": 537,
-    "y": 211,
-    "w": 106,
-    "h": 187
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 159,
-    "y": 144,
-    "w": 106,
-    "h": 187
-   },
-   "sourceSize": {
-    "w": 410,
-    "h": 362
-   },
-   "anchor": {
-    "x": 0.50244,
-    "y": 0.8674
-   }
-  },
-  "pebbler_idle_07_team": {
-   "frame": {
-    "x": 1230,
-    "y": 587,
-    "w": 106,
-    "h": 151
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 146,
-    "y": 167,
-    "w": 106,
-    "h": 151
-   },
-   "sourceSize": {
-    "w": 410,
-    "h": 362
-   },
-   "anchor": {
-    "x": 0.50244,
-    "y": 0.8674
-   }
-  },
   "pebbler_walk_00": {
    "frame": {
-    "x": 1308,
-    "y": 211,
-    "w": 106,
-    "h": 180
+    "x": 1189,
+    "y": 215,
+    "w": 107,
+    "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 164,
-    "y": 146,
-    "w": 106,
-    "h": 180
+    "x": 160,
+    "y": 148,
+    "w": 107,
+    "h": 182
    },
    "sourceSize": {
     "w": 410,
@@ -410,18 +410,18 @@
   },
   "pebbler_walk_00_team": {
    "frame": {
-    "x": 1314,
-    "y": 749,
-    "w": 102,
-    "h": 142
+    "x": 1207,
+    "y": 761,
+    "w": 101,
+    "h": 144
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 158,
-    "y": 170,
-    "w": 102,
-    "h": 142
+    "y": 172,
+    "w": 101,
+    "h": 144
    },
    "sourceSize": {
     "w": 410,
@@ -434,18 +434,18 @@
   },
   "pebbler_walk_01": {
    "frame": {
-    "x": 255,
-    "y": 405,
-    "w": 108,
-    "h": 174
+    "x": 264,
+    "y": 412,
+    "w": 102,
+    "h": 176
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 163,
-    "y": 157,
-    "w": 108,
-    "h": 174
+    "x": 165,
+    "y": 154,
+    "w": 102,
+    "h": 176
    },
    "sourceSize": {
     "w": 410,
@@ -458,18 +458,18 @@
   },
   "pebbler_walk_01_team": {
    "frame": {
-    "x": 267,
-    "y": 904,
-    "w": 103,
-    "h": 139
+    "x": 169,
+    "y": 919,
+    "w": 96,
+    "h": 140
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 158,
-    "y": 179,
-    "w": 103,
-    "h": 139
+    "x": 162,
+    "y": 176,
+    "w": 96,
+    "h": 140
    },
    "sourceSize": {
     "w": 410,
@@ -482,18 +482,18 @@
   },
   "pebbler_walk_02": {
    "frame": {
-    "x": 322,
-    "y": 211,
-    "w": 105,
-    "h": 188
+    "x": 434,
+    "y": 215,
+    "w": 103,
+    "h": 190
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 165,
-    "y": 141,
-    "w": 105,
-    "h": 188
+    "x": 166,
+    "y": 139,
+    "w": 103,
+    "h": 190
    },
    "sourceSize": {
     "w": 410,
@@ -506,18 +506,18 @@
   },
   "pebbler_walk_02_team": {
    "frame": {
-    "x": 323,
-    "y": 749,
-    "w": 95,
-    "h": 149
+    "x": 210,
+    "y": 761,
+    "w": 94,
+    "h": 153
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 165,
-    "y": 166,
-    "w": 95,
-    "h": 149
+    "y": 162,
+    "w": 94,
+    "h": 153
    },
    "sourceSize": {
     "w": 410,
@@ -530,18 +530,18 @@
   },
   "pebbler_walk_03": {
    "frame": {
-    "x": 477,
-    "y": 2,
-    "w": 100,
-    "h": 195
+    "x": 110,
+    "y": 215,
+    "w": 104,
+    "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 166,
-    "y": 132,
-    "w": 100,
-    "h": 195
+    "x": 164,
+    "y": 130,
+    "w": 104,
+    "h": 192
    },
    "sourceSize": {
     "w": 410,
@@ -554,17 +554,17 @@
   },
   "pebbler_walk_03_team": {
    "frame": {
-    "x": 1129,
-    "y": 587,
-    "w": 97,
+    "x": 417,
+    "y": 761,
+    "w": 100,
     "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 162,
-    "y": 157,
-    "w": 97,
+    "x": 159,
+    "y": 154,
+    "w": 100,
     "h": 152
    },
    "sourceSize": {
@@ -578,18 +578,18 @@
   },
   "pebbler_walk_04": {
    "frame": {
-    "x": 647,
-    "y": 211,
-    "w": 110,
-    "h": 186
+    "x": 149,
+    "y": 412,
+    "w": 111,
+    "h": 178
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 164,
-    "y": 146,
-    "w": 110,
-    "h": 186
+    "x": 156,
+    "y": 148,
+    "w": 111,
+    "h": 178
    },
    "sourceSize": {
     "w": 410,
@@ -602,18 +602,18 @@
   },
   "pebbler_walk_04_team": {
    "frame": {
-    "x": 966,
-    "y": 749,
-    "w": 102,
-    "h": 143
+    "x": 1411,
+    "y": 761,
+    "w": 101,
+    "h": 142
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 158,
-    "y": 170,
-    "w": 102,
-    "h": 143
+    "y": 172,
+    "w": 101,
+    "h": 142
    },
    "sourceSize": {
     "w": 410,
@@ -626,18 +626,18 @@
   },
   "pebbler_walk_05": {
    "frame": {
-    "x": 367,
-    "y": 405,
-    "w": 122,
-    "h": 173
+    "x": 880,
+    "y": 412,
+    "w": 107,
+    "h": 169
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 163,
-    "y": 157,
-    "w": 122,
-    "h": 173
+    "x": 159,
+    "y": 154,
+    "w": 107,
+    "h": 169
    },
    "sourceSize": {
     "w": 410,
@@ -650,18 +650,18 @@
   },
   "pebbler_walk_05_team": {
    "frame": {
-    "x": 502,
-    "y": 904,
-    "w": 105,
-    "h": 131
+    "x": 397,
+    "y": 919,
+    "w": 96,
+    "h": 138
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 157,
-    "y": 180,
-    "w": 105,
-    "h": 131
+    "x": 161,
+    "y": 178,
+    "w": 96,
+    "h": 138
    },
    "sourceSize": {
     "w": 410,
@@ -674,18 +674,18 @@
   },
   "pebbler_walk_06": {
    "frame": {
-    "x": 1192,
-    "y": 211,
-    "w": 112,
-    "h": 181
+    "x": 1411,
+    "y": 215,
+    "w": 102,
+    "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 165,
-    "y": 142,
-    "w": 112,
-    "h": 181
+    "x": 166,
+    "y": 140,
+    "w": 102,
+    "h": 182
    },
    "sourceSize": {
     "w": 410,
@@ -698,18 +698,18 @@
   },
   "pebbler_walk_06_team": {
    "frame": {
-    "x": 167,
-    "y": 904,
-    "w": 96,
-    "h": 140
+    "x": 1312,
+    "y": 761,
+    "w": 95,
+    "h": 143
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 164,
-    "y": 168,
-    "w": 96,
-    "h": 140
+    "y": 165,
+    "w": 95,
+    "h": 143
    },
    "sourceSize": {
     "w": 410,
@@ -722,17 +722,17 @@
   },
   "pebbler_walk_07": {
    "frame": {
-    "x": 110,
-    "y": 211,
-    "w": 102,
+    "x": 649,
+    "y": 215,
+    "w": 104,
     "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 166,
-    "y": 132,
-    "w": 102,
+    "x": 164,
+    "y": 131,
+    "w": 104,
     "h": 189
    },
    "sourceSize": {
@@ -746,18 +746,18 @@
   },
   "pebbler_walk_07_team": {
    "frame": {
-    "x": 757,
-    "y": 749,
-    "w": 97,
-    "h": 144
+    "x": 521,
+    "y": 761,
+    "w": 100,
+    "h": 152
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 162,
-    "y": 159,
-    "w": 97,
-    "h": 144
+    "x": 159,
+    "y": 154,
+    "w": 100,
+    "h": 152
    },
    "sourceSize": {
     "w": 410,
@@ -770,18 +770,18 @@
   },
   "pebbler_attack_00": {
    "frame": {
-    "x": 761,
-    "y": 211,
-    "w": 107,
-    "h": 185
+    "x": 863,
+    "y": 215,
+    "w": 105,
+    "h": 188
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 156,
-    "y": 144,
-    "w": 107,
-    "h": 185
+    "x": 158,
+    "y": 140,
+    "w": 105,
+    "h": 188
    },
    "sourceSize": {
     "w": 410,
@@ -794,18 +794,18 @@
   },
   "pebbler_attack_00_team": {
    "frame": {
-    "x": 211,
-    "y": 749,
-    "w": 108,
-    "h": 149
+    "x": 1269,
+    "y": 596,
+    "w": 107,
+    "h": 154
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 144,
-    "y": 166,
-    "w": 108,
-    "h": 149
+    "y": 160,
+    "w": 107,
+    "h": 154
    },
    "sourceSize": {
     "w": 410,
@@ -818,18 +818,18 @@
   },
   "pebbler_attack_01": {
    "frame": {
-    "x": 644,
-    "y": 405,
+    "x": 521,
+    "y": 412,
     "w": 119,
-    "h": 169
+    "h": 173
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 140,
-    "y": 161,
+    "y": 157,
     "w": 119,
-    "h": 169
+    "h": 173
    },
    "sourceSize": {
     "w": 410,
@@ -842,18 +842,18 @@
   },
   "pebbler_attack_01_team": {
    "frame": {
-    "x": 1072,
-    "y": 749,
+    "x": 1084,
+    "y": 761,
     "w": 119,
-    "h": 142
+    "h": 144
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 129,
-    "y": 175,
+    "y": 172,
     "w": 119,
-    "h": 142
+    "h": 144
    },
    "sourceSize": {
     "w": 410,
@@ -866,18 +866,18 @@
   },
   "pebbler_attack_02": {
    "frame": {
-    "x": 263,
+    "x": 259,
     "y": 2,
-    "w": 98,
-    "h": 200
+    "w": 99,
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 138,
-    "y": 132,
-    "w": 98,
-    "h": 200
+    "x": 137,
+    "y": 127,
+    "w": 99,
+    "h": 204
    },
    "sourceSize": {
     "w": 410,
@@ -890,18 +890,18 @@
   },
   "pebbler_attack_02_team": {
    "frame": {
-    "x": 1109,
-    "y": 405,
+    "x": 1098,
+    "y": 412,
     "w": 104,
-    "h": 163
+    "h": 167
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 136,
-    "y": 154,
+    "y": 149,
     "w": 104,
-    "h": 163
+    "h": 167
    },
    "sourceSize": {
     "w": 410,
@@ -916,16 +916,16 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 124,
-    "h": 205
+    "w": 120,
+    "h": 209
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 109,
-    "y": 126,
-    "w": 124,
-    "h": 205
+    "y": 121,
+    "w": 120,
+    "h": 209
    },
    "sourceSize": {
     "w": 410,
@@ -938,18 +938,18 @@
   },
   "pebbler_attack_03_team": {
    "frame": {
-    "x": 767,
-    "y": 405,
+    "x": 644,
+    "y": 412,
     "w": 109,
-    "h": 168
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 127,
-    "y": 148,
+    "y": 142,
     "w": 109,
-    "h": 168
+    "h": 172
    },
    "sourceSize": {
     "w": 410,
@@ -962,18 +962,18 @@
   },
   "pebbler_attack_04": {
    "frame": {
-    "x": 365,
+    "x": 362,
     "y": 2,
     "w": 108,
-    "h": 199
+    "h": 203
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 161,
-    "y": 133,
+    "y": 127,
     "w": 108,
-    "h": 199
+    "h": 203
    },
    "sourceSize": {
     "w": 410,
@@ -986,18 +986,18 @@
   },
   "pebbler_attack_04_team": {
    "frame": {
-    "x": 214,
-    "y": 587,
+    "x": 508,
+    "y": 596,
     "w": 109,
-    "h": 157
+    "h": 159
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 150,
-    "y": 160,
+    "y": 155,
     "w": 109,
-    "h": 157
+    "h": 159
    },
    "sourceSize": {
     "w": 410,
@@ -1010,18 +1010,18 @@
   },
   "pebbler_attack_05": {
    "frame": {
-    "x": 1418,
-    "y": 211,
+    "x": 1080,
+    "y": 215,
     "w": 105,
-    "h": 179
+    "h": 184
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 175,
-    "y": 149,
+    "y": 144,
     "w": 105,
-    "h": 179
+    "h": 184
    },
    "sourceSize": {
     "w": 410,
@@ -1034,18 +1034,18 @@
   },
   "pebbler_attack_05_team": {
    "frame": {
-    "x": 858,
-    "y": 749,
+    "x": 976,
+    "y": 761,
     "w": 104,
-    "h": 143
+    "h": 145
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 168,
-    "y": 172,
+    "y": 168,
     "w": 104,
-    "h": 143
+    "h": 145
    },
    "sourceSize": {
     "w": 410,
@@ -1058,18 +1058,18 @@
   },
   "pebbler_attack_06": {
    "frame": {
-    "x": 434,
-    "y": 587,
-    "w": 151,
-    "h": 156
+    "x": 358,
+    "y": 596,
+    "w": 146,
+    "h": 160
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 180,
-    "y": 171,
-    "w": 151,
-    "h": 156
+    "x": 185,
+    "y": 167,
+    "w": 146,
+    "h": 160
    },
    "sourceSize": {
     "w": 410,
@@ -1082,18 +1082,18 @@
   },
   "pebbler_attack_06_team": {
    "frame": {
-    "x": 611,
-    "y": 904,
-    "w": 114,
-    "h": 125
+    "x": 681,
+    "y": 919,
+    "w": 118,
+    "h": 127
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 184,
-    "y": 190,
-    "w": 114,
-    "h": 125
+    "x": 180,
+    "y": 186,
+    "w": 118,
+    "h": 127
    },
    "sourceSize": {
     "w": 410,
@@ -1106,18 +1106,18 @@
   },
   "pebbler_attack_07": {
    "frame": {
-    "x": 1286,
+    "x": 924,
     "y": 2,
-    "w": 110,
-    "h": 190
+    "w": 107,
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 184,
-    "y": 142,
-    "w": 110,
-    "h": 190
+    "x": 187,
+    "y": 137,
+    "w": 107,
+    "h": 195
    },
    "sourceSize": {
     "w": 410,
@@ -1130,18 +1130,18 @@
   },
   "pebbler_attack_07_team": {
    "frame": {
-    "x": 2,
-    "y": 749,
-    "w": 97,
-    "h": 151
+    "x": 110,
+    "y": 761,
+    "w": 96,
+    "h": 154
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 183,
-    "y": 168,
-    "w": 97,
-    "h": 151
+    "y": 163,
+    "w": 96,
+    "h": 154
    },
    "sourceSize": {
     "w": 410,
@@ -1154,18 +1154,18 @@
   },
   "pebbler_attack_08": {
    "frame": {
-    "x": 2,
-    "y": 405,
+    "x": 1300,
+    "y": 215,
     "w": 107,
-    "h": 178
+    "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 170,
-    "y": 152,
+    "y": 148,
     "w": 107,
-    "h": 178
+    "h": 182
    },
    "sourceSize": {
     "w": 410,
@@ -1178,18 +1178,18 @@
   },
   "pebbler_attack_08_team": {
    "frame": {
-    "x": 1340,
-    "y": 587,
+    "x": 731,
+    "y": 596,
     "w": 105,
-    "h": 151
+    "h": 158
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 161,
-    "y": 170,
+    "y": 165,
     "w": 105,
-    "h": 151
+    "h": 158
    },
    "sourceSize": {
     "w": 410,
@@ -1202,18 +1202,18 @@
   },
   "pebbler_attack_09": {
    "frame": {
-    "x": 2,
-    "y": 211,
+    "x": 1035,
+    "y": 2,
     "w": 104,
-    "h": 190
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 164,
-    "y": 141,
+    "y": 136,
     "w": 104,
-    "h": 190
+    "h": 195
    },
    "sourceSize": {
     "w": 410,
@@ -1226,18 +1226,18 @@
   },
   "pebbler_attack_09_team": {
    "frame": {
-    "x": 915,
-    "y": 587,
+    "x": 947,
+    "y": 596,
     "w": 101,
-    "h": 154
+    "h": 157
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 156,
-    "y": 164,
+    "y": 159,
     "w": 101,
-    "h": 154
+    "h": 157
    },
    "sourceSize": {
     "w": 410,
@@ -1250,18 +1250,18 @@
   },
   "pebbler_attack_10": {
    "frame": {
-    "x": 1400,
+    "x": 1249,
     "y": 2,
     "w": 105,
-    "h": 190
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 159,
-    "y": 140,
+    "y": 136,
     "w": 105,
-    "h": 190
+    "h": 194
    },
    "sourceSize": {
     "w": 410,
@@ -1274,18 +1274,18 @@
   },
   "pebbler_attack_10_team": {
    "frame": {
-    "x": 1020,
-    "y": 587,
+    "x": 1052,
+    "y": 596,
     "w": 105,
-    "h": 152
+    "h": 156
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 148,
-    "y": 164,
+    "y": 159,
     "w": 105,
-    "h": 152
+    "h": 156
    },
    "sourceSize": {
     "w": 410,
@@ -1298,18 +1298,18 @@
   },
   "pebbler_hit_00": {
    "frame": {
-    "x": 493,
-    "y": 405,
+    "x": 370,
+    "y": 412,
     "w": 147,
-    "h": 170
+    "h": 173
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 119,
-    "y": 160,
+    "y": 156,
     "w": 147,
-    "h": 170
+    "h": 173
    },
    "sourceSize": {
     "w": 410,
@@ -1322,18 +1322,18 @@
   },
   "pebbler_hit_00_team": {
    "frame": {
-    "x": 639,
-    "y": 749,
+    "x": 858,
+    "y": 761,
     "w": 114,
-    "h": 144
+    "h": 147
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 126,
-    "y": 172,
+    "y": 168,
     "w": 114,
-    "h": 144
+    "h": 147
    },
    "sourceSize": {
     "w": 410,
@@ -1346,18 +1346,18 @@
   },
   "pebbler_hit_01": {
    "frame": {
-    "x": 1137,
+    "x": 1358,
     "y": 2,
     "w": 145,
-    "h": 190
+    "h": 193
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 116,
-    "y": 139,
+    "y": 135,
     "w": 145,
-    "h": 190
+    "h": 193
    },
    "sourceSize": {
     "w": 410,
@@ -1370,18 +1370,18 @@
   },
   "pebbler_hit_01_team": {
    "frame": {
-    "x": 1000,
-    "y": 405,
-    "w": 105,
-    "h": 165
+    "x": 991,
+    "y": 412,
+    "w": 103,
+    "h": 169
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 129,
-    "y": 149,
-    "w": 105,
-    "h": 165
+    "x": 130,
+    "y": 144,
+    "w": 103,
+    "h": 169
    },
    "sourceSize": {
     "w": 410,
@@ -1394,18 +1394,18 @@
   },
   "pebbler_hit_02": {
    "frame": {
-    "x": 897,
+    "x": 790,
     "y": 2,
     "w": 130,
-    "h": 191
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 137,
-    "y": 139,
+    "y": 134,
     "w": 130,
-    "h": 191
+    "h": 195
    },
    "sourceSize": {
     "w": 410,
@@ -1418,18 +1418,18 @@
   },
   "pebbler_hit_02_team": {
    "frame": {
-    "x": 1217,
-    "y": 405,
+    "x": 1206,
+    "y": 412,
     "w": 108,
-    "h": 160
+    "h": 162
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 136,
-    "y": 156,
+    "y": 152,
     "w": 108,
-    "h": 160
+    "h": 162
    },
    "sourceSize": {
     "w": 410,
@@ -1442,56 +1442,8 @@
   },
   "pebbler_hit_03": {
    "frame": {
-    "x": 1088,
-    "y": 211,
-    "w": 100,
-    "h": 184
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 162,
-    "y": 146,
-    "w": 100,
-    "h": 184
-   },
-   "sourceSize": {
-    "w": 410,
-    "h": 362
-   },
-   "anchor": {
-    "x": 0.50244,
-    "y": 0.8674
-   }
-  },
-  "pebbler_hit_03_team": {
-   "frame": {
-    "x": 531,
-    "y": 749,
-    "w": 104,
-    "h": 148
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 150,
-    "y": 169,
-    "w": 104,
-    "h": 148
-   },
-   "sourceSize": {
-    "w": 410,
-    "h": 362
-   },
-   "anchor": {
-    "x": 0.50244,
-    "y": 0.8674
-   }
-  },
-  "pebbler_hit_04": {
-   "frame": {
-    "x": 216,
-    "y": 211,
+    "x": 757,
+    "y": 215,
     "w": 102,
     "h": 189
    },
@@ -1512,20 +1464,68 @@
     "y": 0.8674
    }
   },
+  "pebbler_hit_03_team": {
+   "frame": {
+    "x": 625,
+    "y": 761,
+    "w": 103,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 151,
+    "y": 165,
+    "w": 103,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 362
+   },
+   "anchor": {
+    "x": 0.50244,
+    "y": 0.8674
+   }
+  },
+  "pebbler_hit_04": {
+   "frame": {
+    "x": 2,
+    "y": 215,
+    "w": 104,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 137,
+    "w": 104,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 362
+   },
+   "anchor": {
+    "x": 0.50244,
+    "y": 0.8674
+   }
+  },
   "pebbler_hit_04_team": {
    "frame": {
-    "x": 589,
-    "y": 587,
+    "x": 621,
+    "y": 596,
     "w": 106,
-    "h": 154
+    "h": 158
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 145,
-    "y": 162,
+    "y": 157,
     "w": 106,
-    "h": 154
+    "h": 158
    },
    "sourceSize": {
     "w": 410,
@@ -1538,18 +1538,18 @@
   },
   "pebbler_die_00": {
    "frame": {
-    "x": 1329,
-    "y": 405,
-    "w": 135,
-    "h": 158
+    "x": 2,
+    "y": 596,
+    "w": 138,
+    "h": 161
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 137,
-    "y": 156,
-    "w": 135,
-    "h": 158
+    "x": 134,
+    "y": 152,
+    "w": 138,
+    "h": 161
    },
    "sourceSize": {
     "w": 410,
@@ -1562,18 +1562,18 @@
   },
   "pebbler_die_00_team": {
    "frame": {
-    "x": 374,
-    "y": 904,
+    "x": 269,
+    "y": 919,
     "w": 124,
-    "h": 136
+    "h": 138
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 124,
-    "y": 166,
+    "x": 123,
+    "y": 162,
     "w": 124,
-    "h": 136
+    "h": 138
    },
    "sourceSize": {
     "w": 410,
@@ -1586,18 +1586,18 @@
   },
   "pebbler_die_01": {
    "frame": {
-    "x": 784,
-    "y": 1049,
-    "w": 213,
-    "h": 101
+    "x": 2,
+    "y": 1064,
+    "w": 211,
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 71,
-    "y": 175,
-    "w": 213,
-    "h": 101
+    "x": 66,
+    "y": 173,
+    "w": 211,
+    "h": 105
    },
    "sourceSize": {
     "w": 410,
@@ -1610,18 +1610,18 @@
   },
   "pebbler_die_01_team": {
    "frame": {
-    "x": 1313,
-    "y": 1049,
-    "w": 159,
-    "h": 87
+    "x": 1005,
+    "y": 1064,
+    "w": 167,
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
-    "y": 188,
-    "w": 159,
-    "h": 87
+    "x": 93,
+    "y": 180,
+    "w": 167,
+    "h": 96
    },
    "sourceSize": {
     "w": 410,
@@ -1634,18 +1634,18 @@
   },
   "pebbler_die_02": {
    "frame": {
-    "x": 130,
+    "x": 126,
     "y": 2,
     "w": 129,
-    "h": 204
+    "h": 207
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 129,
-    "y": 126,
+    "x": 130,
+    "y": 128,
     "w": 129,
-    "h": 204
+    "h": 207
    },
    "sourceSize": {
     "w": 410,
@@ -1658,18 +1658,18 @@
   },
   "pebbler_die_02_team": {
    "frame": {
-    "x": 880,
-    "y": 405,
-    "w": 116,
-    "h": 166
+    "x": 757,
+    "y": 412,
+    "w": 119,
+    "h": 169
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 147,
-    "y": 144,
-    "w": 116,
-    "h": 166
+    "x": 145,
+    "y": 145,
+    "w": 119,
+    "h": 169
    },
    "sourceSize": {
     "w": 410,
@@ -1682,18 +1682,18 @@
   },
   "pebbler_die_03": {
    "frame": {
-    "x": 113,
-    "y": 405,
-    "w": 138,
-    "h": 175
+    "x": 2,
+    "y": 412,
+    "w": 143,
+    "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 123,
-    "y": 121,
-    "w": 138,
-    "h": 175
+    "x": 121,
+    "y": 117,
+    "w": 143,
+    "h": 180
    },
    "sourceSize": {
     "w": 410,
@@ -1706,18 +1706,18 @@
   },
   "pebbler_die_03_team": {
    "frame": {
-    "x": 1195,
-    "y": 749,
-    "w": 115,
-    "h": 142
+    "x": 732,
+    "y": 761,
+    "w": 122,
+    "h": 147
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 135,
-    "y": 139,
-    "w": 115,
-    "h": 142
+    "x": 131,
+    "y": 135,
+    "w": 122,
+    "h": 147
    },
    "sourceSize": {
     "w": 410,
@@ -1731,16 +1731,16 @@
   "pebbler_die_04": {
    "frame": {
     "x": 2,
-    "y": 904,
-    "w": 161,
+    "y": 919,
+    "w": 163,
     "h": 141
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 83,
-    "y": 202,
-    "w": 161,
+    "x": 80,
+    "y": 201,
+    "w": 163,
     "h": 141
    },
    "sourceSize": {
@@ -1754,18 +1754,18 @@
   },
   "pebbler_die_04_team": {
    "frame": {
-    "x": 504,
-    "y": 1049,
-    "w": 126,
-    "h": 104
+    "x": 803,
+    "y": 919,
+    "w": 119,
+    "h": 115
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
-    "y": 229,
-    "w": 126,
-    "h": 104
+    "x": 109,
+    "y": 227,
+    "w": 119,
+    "h": 115
    },
    "sourceSize": {
     "w": 410,
@@ -1778,17 +1778,17 @@
   },
   "pebbler_die_05": {
    "frame": {
-    "x": 2,
-    "y": 1049,
-    "w": 208,
+    "x": 1072,
+    "y": 919,
+    "w": 211,
     "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 53,
-    "y": 218,
-    "w": 208,
+    "x": 48,
+    "y": 217,
+    "w": 211,
     "h": 107
    },
    "sourceSize": {
@@ -1802,17 +1802,17 @@
   },
   "pebbler_die_05_team": {
    "frame": {
-    "x": 1143,
-    "y": 1049,
-    "w": 166,
+    "x": 1176,
+    "y": 1064,
+    "w": 169,
     "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 79,
-    "y": 241,
-    "w": 166,
+    "x": 74,
+    "y": 240,
+    "w": 169,
     "h": 95
    },
    "sourceSize": {
@@ -1826,18 +1826,18 @@
   },
   "pebbler_die_06": {
    "frame": {
-    "x": 729,
-    "y": 904,
-    "w": 176,
-    "h": 124
+    "x": 497,
+    "y": 919,
+    "w": 180,
+    "h": 137
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 68,
+    "x": 64,
     "y": 211,
-    "w": 176,
-    "h": 124
+    "w": 180,
+    "h": 137
    },
    "sourceSize": {
     "w": 410,
@@ -1850,18 +1850,18 @@
   },
   "pebbler_die_06_team": {
    "frame": {
-    "x": 909,
-    "y": 904,
-    "w": 139,
-    "h": 115
+    "x": 926,
+    "y": 919,
+    "w": 142,
+    "h": 113
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
+    "x": 88,
     "y": 234,
-    "w": 139,
-    "h": 115
+    "w": 142,
+    "h": 113
    },
    "sourceSize": {
     "w": 410,
@@ -1874,18 +1874,18 @@
   },
   "pebbler_die_07": {
    "frame": {
-    "x": 1227,
-    "y": 904,
-    "w": 186,
-    "h": 109
+    "x": 217,
+    "y": 1064,
+    "w": 190,
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 62,
+    "x": 57,
     "y": 224,
-    "w": 186,
-    "h": 109
+    "w": 190,
+    "h": 105
    },
    "sourceSize": {
     "w": 410,
@@ -1898,18 +1898,18 @@
   },
   "pebbler_die_07_team": {
    "frame": {
-    "x": 634,
-    "y": 1049,
-    "w": 146,
-    "h": 103
+    "x": 544,
+    "y": 1064,
+    "w": 149,
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 89,
-    "y": 235,
-    "w": 146,
-    "h": 103
+    "x": 84,
+    "y": 234,
+    "w": 149,
+    "h": 104
    },
    "sourceSize": {
     "w": 410,
@@ -1922,18 +1922,18 @@
   },
   "pebbler_die_08": {
    "frame": {
-    "x": 1052,
-    "y": 904,
-    "w": 171,
-    "h": 113
+    "x": 1287,
+    "y": 919,
+    "w": 175,
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 71,
-    "y": 225,
-    "w": 171,
-    "h": 113
+    "x": 67,
+    "y": 224,
+    "w": 175,
+    "h": 106
    },
    "sourceSize": {
     "w": 410,
@@ -1946,18 +1946,18 @@
   },
   "pebbler_die_08_team": {
    "frame": {
-    "x": 1001,
-    "y": 1049,
-    "w": 138,
-    "h": 96
+    "x": 697,
+    "y": 1064,
+    "w": 140,
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
+    "x": 89,
     "y": 235,
-    "w": 138,
-    "h": 96
+    "w": 140,
+    "h": 103
    },
    "sourceSize": {
     "w": 410,
@@ -1970,18 +1970,18 @@
   },
   "pebbler_die_09": {
    "frame": {
-    "x": 214,
-    "y": 1049,
-    "w": 155,
-    "h": 105
+    "x": 841,
+    "y": 1064,
+    "w": 160,
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 81,
-    "y": 227,
-    "w": 155,
-    "h": 105
+    "x": 76,
+    "y": 226,
+    "w": 160,
+    "h": 102
    },
    "sourceSize": {
     "w": 410,
@@ -1994,17 +1994,17 @@
   },
   "pebbler_die_09_team": {
    "frame": {
-    "x": 373,
-    "y": 1049,
-    "w": 127,
+    "x": 411,
+    "y": 1064,
+    "w": 129,
     "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 97,
+    "x": 94,
     "y": 237,
-    "w": 127,
+    "w": 129,
     "h": 105
    },
    "sourceSize": {
@@ -2130,7 +2130,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 1536,
-   "h": 1160
+   "h": 1172
   },
   "scale": "3",
   "ageborn": {
@@ -2155,6 +2155,7 @@
    },
    "facing": "right",
    "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
    "clips": {
     "idle": {
      "frames": 8,
@@ -2184,35 +2185,35 @@
       "muzzle": [
        [
         14.0,
-        11.6
+        13.5
        ],
        [
         15.1,
-        11.9
+        13.8
        ],
        [
         14.1,
-        12.2
+        14.1
        ],
        [
         11.6,
-        12.5
+        14.5
        ],
        [
         9.1,
-        13.0
+        15.0
        ],
        [
         8.1,
-        13.0
+        15.0
        ],
        [
         9.0,
-        12.3
+        14.3
        ],
        [
         11.5,
-        11.7
+        13.5
        ]
       ]
      }
@@ -2231,54 +2232,76 @@
       7
      ],
      "durationsMs": [
-      62,
-      63,
-      62,
-      63,
-      62,
-      63,
-      62,
-      63
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77
      ],
-     "durationMs": 500,
+     "durationMs": 616,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 81.2,
+     "cycleMs": 616,
      "anchorsLu": {
       "muzzle": [
        [
-        5.6,
-        5.6
+        11.5,
+        12.0
        ],
        [
-        -0.3,
-        5.3
+        15.2,
+        9.7
        ],
        [
-        2.9,
-        8.9
+        15.8,
+        15.0
        ],
        [
-        8.8,
-        13.9
+        11.7,
+        18.8
        ],
        [
-        19.2,
-        17.0
+        7.3,
+        12.2
        ],
        [
-        23.7,
-        18.6
+        6.2,
+        9.3
        ],
        [
-        20.9,
-        17.3
+        6.6,
+        14.5
        ],
        [
-        13.1,
-        11.2
+        7.8,
+        18.9
        ]
       ]
      },
-     "strideLu": 38.4,
-     "naturalSpeedLuPerS": 76.8
+     "naturalSpeedLuPerS": 81.8,
+     "strideLu": 50.4,
+     "plantedDriftLu": 0.0,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        9.9,
+        -1.7
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        11.7,
+        1.2
+       ]
+      }
+     ]
     },
     "attack": {
      "frames": 11,
@@ -2311,56 +2334,66 @@
      ],
      "durationMs": 680,
      "impactFrame": 6,
+     "impactStep": 6,
      "impactAt": 0.4265,
      "smearFrame": 4,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
      "anchorsLu": {
       "muzzle": [
        [
         13.2,
-        11.4
+        13.2
        ],
        [
-        2.2,
-        7.0
+        2.3,
+        8.7
        ],
        [
         -12.2,
-        56.7
+        58.7
        ],
        [
         -14.0,
-        59.7
+        61.8
        ],
        [
         -3.4,
-        11.8
+        13.8
        ],
        [
         19.2,
-        4.3
+        6.2
        ],
        [
         41.8,
-        11.9
+        13.5
        ],
        [
         28.0,
-        42.7
+        44.7
        ],
        [
         -6.7,
-        5.4
+        7.3
        ],
        [
         8.5,
-        10.8
+        12.8
        ],
        [
-        10.8,
-        12.3
+        10.9,
+        14.2
        ]
       ]
-     }
+     },
+     "muzzle": [
+      41.8,
+      13.5
+     ]
     },
     "hit": {
      "frames": 5,
@@ -2384,23 +2417,23 @@
       "muzzle": [
        [
         15.8,
-        16.3
+        18.0
        ],
        [
         15.0,
-        26.3
+        28.3
        ],
        [
         16.8,
-        17.6
+        19.6
        ],
        [
         12.0,
-        10.0
+        11.9
        ],
        [
-        14.2,
-        12.3
+        14.3,
+        14.2
        ]
       ]
      }
@@ -2458,43 +2491,43 @@
      "anchorsLu": {
       "muzzle": [
        [
-        18.8,
-        32.8
+        18.5,
+        34.4
        ],
        [
-        -43.1,
-        46.6
+        -45.8,
+        46.9
        ],
        [
-        2.0,
-        1.3
+        2.3,
+        -0.8
        ],
        [
-        14.9,
-        55.0
+        16.2,
+        56.4
        ],
        [
-        -14.3,
-        37.0
+        -15.8,
+        37.5
        ],
        [
-        -39.8,
-        31.8
+        -41.9,
+        32.1
        ],
        [
-        -20.8,
-        33.7
+        -22.6,
+        33.8
        ],
        [
-        -13.9,
-        25.3
+        -15.7,
+        25.2
        ],
        [
-        -13.9,
+        -15.7,
         24.5
        ],
        [
-        -14.1,
+        -15.7,
         24.4
        ]
       ]

@@ -11,12 +11,19 @@ smaller claw. Bird-like legs (knees bend back) with piston shins and wide clawed
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    the hull breathes on its pistons, the antenna twitches, a visor blink
-  walk    clank: a hard foot plant with the hull jolting down, a vent puff every step
+  walk    walk v3 clank at ground speed (ANIM_SPEC G7, 62.5 lu/s, 10 frames in 1000 ms): legs by IK
+          with planted feet, a hard contact (the hull jolts, the foot pad squashes, the visor
+          squints, a vent puff), a deep down, a slow passing with the foot lifted 12 lu, the hull
+          pitching and yawing with no squash, antenna, pennant and hose a beat late
   attack  TWIN-FIST HAMMER: shifts its weight, dips, then rears up tall with both arms swung
           overhead behind the hull (the held extreme), hammers both fists down in a white arc
           (two smear frames) and SLAMS them into the ground in front with the piston ram at full
           reach: the legs buckle on their pistons, impact lines, a ground dust ring and the vents
           flare; then it rocks back and pulls the arms in
+  attack_b  STRAIGHT PISTON PUNCH: twists back with the ram cocked at its shoulder and the claw
+          aimed forward (the held extreme), then a straight punch, the piston firing out level
+  attack_c  LOW BACKHAND SWEEP: drops into a deep crouch, nose down, with the ram swung back low
+          behind its legs (the held extreme), then sweeps it forward low and flat (a dust spray)
   hit     mech: a hard jolt with no squash, a hull panel pops out and back, sparks on the front
   die     D6 fall-apart: sputters, the antenna pops off, the ram arm drops off at the elbow, the
           knees buckle and the hull slams down nose first with a smoke puff, X eyes
@@ -24,6 +31,7 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
 import math
 
 from ageborn_art import face as FC
+from ageborn_art import gait as GK
 from ageborn_art import kit_future as KF
 from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_medieval as K
@@ -33,6 +41,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "walker_mech"
+GAIT_NAME = "walker"
 NAME = "Walker Mech"
 HEIGHT_LU = 120
 YAW_DEG = -20.0
@@ -83,7 +92,12 @@ def _ram_parts(rig, j_fore, j_ram):
     rig.part(j_ram, g, F.TRIM, finish="metal", outline=0)
 
 
+RIG = None
+
+
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("hips", "body", (0, 0, HIP_Z))
     rig.joint("hull", "hips", HULL)
@@ -120,6 +134,7 @@ def build(rig):
         g = Geo().sphere((0, y, a), 3.6, cuts=4)
         rig.part(f"foot_{s}", g, F.GUNMETAL, finish="metal")
     rig.track("_foot", "foot_r", (4.0, LEG_Y["r"], ANK_REST - 7.0))
+    rig.track("_foot_l", "foot_l", (4.0, LEG_Y["l"], ANK_REST - 7.0))
 
     # far arm (behind the hull): a smaller claw
     rig.joint("arm_l", "hull", SH_L)
@@ -265,25 +280,38 @@ def _idle(f):
     return pose
 
 
-WALK_MS = [125] * 8   # a 1 s heavy clank
-STRIDE = 25.0         # natural speed 2 x 25 / 1 s = 50 lu/s (sim speed 50)
+# -- walk (ANIM_SPEC G7): ground speed 50 x 1.25 = 62.5 lu/s, 10 frames in 1000 ms ---------------
+SPEED = 62.5
+WALK_N = 10
+LEGS_G = {s: GK.Leg(f"thigh_{s}", f"shin_{s}", (0.0, LEG_Y[s], ANK_REST), foot=f"foot_{s}", bend=-1.0,
+                    toe=(15.0, LEG_Y[s], ANK_REST - 7.0), heel=(-10.0, LEG_Y[s], ANK_REST - 7.0))
+          for s in ("r", "l")}
+GAIT = GK.Gait(WALK_N, 1000, SPEED, GK.biped_feet(LEGS_G["l"], LEGS_G["r"], x_mid=0.0, ground=ANKLE_H), 0.55,
+               yaw_deg=YAW_DEG, lift=12.0, kick=2.0, reach=1.5, toe_off=8.0, heel_strike=4.0, lift_peak=0.45,
+               early_lift=2.5)
+# hips per frame of each half cycle: CONTACT (hard, with the jolt), DOWN (deep), PASSING, UP, pre-contact
+W_BOB = [-2.0, -5.0, -2.0, 0.8, 0.4]
+W_LAG = [0.4, -2.0, -5.0, -2.0, 0.8]
 
 
-def _walk(f):
-    xr, lr, _ = F.walker_cycle(f, 8, STRIDE, 15.0)
-    xl, ll, _ = F.walker_cycle(f, 8, STRIDE, 15.0, phase=0.5)
-    bob = [-3.6, -1.0, 1.4, 0.2, -3.6, -1.0, 1.4, 0.2][f]
-    lag = [0.2, -3.6, -1.0, 1.4, 0.2, -3.6, -1.0, 1.4][f]
-    jolt = [1.0, 0.3, 0, 0, 1.0, 0.3, 0, 0][f]
-    p = 2 * math.pi * f / 8
-    pose = merge(legs((xr, lr), (xl, ll), (0.0, CROUCH + bob)), REST_ARMS, {
-        "hull": dict(r=-3.0 + 1.5 * math.cos(2 * p) - 1.4 * jolt, rz=3.0 * math.sin(p), z=-0.3 * lag),
-        "arm_r": {"r": -8 * math.cos(p) + 1.0 * lag}, "fore_r": {"r": 4 * math.cos(p)},
-        "arm_l": {"r": 8 * math.cos(p)},
-        "antenna": {"r": 2.0 * lag},
-        "steam_back": {"show": f in (1, 5), "s": 0.6},
+def _walk(f, report=None):
+    h = f % 5
+    bob, lag = W_BOB[h], W_LAG[h]
+    p = 2 * math.pi * f / WALK_N
+    pose = merge(REST_ARMS, {
+        "hips": {"z": CROUCH + bob},
+        "hull": dict(r=-3.5 + 1.6 * math.cos(2 * p) - (1.6 if h == 0 else 0.0), rz=4.0 * math.sin(p),
+                     z=-0.35 * lag),
+        "arm_r": {"r": -10 * math.cos(p - 0.8) + 1.0 * lag}, "fore_r": {"r": 5 * math.cos(p - 0.8)},
+        "ram": {"z": 1.2 * max(0.0, -lag)},
+        "arm_l": {"r": 9 * math.cos(p - 0.8)}, "fore_l": {"r": -5 * math.cos(p - 0.8)},
+        "antenna": {"r": 2.5 * lag},
+        "steam_back": {"show": h in (0, 1), "s": [0.55, 0.8, 1, 1, 1][h], "z": [0, 2.5, 0, 0, 0][h]},
+        "foot_r": {"sz": 0.86 if f == 0 else 1.0}, "foot_l": {"sz": 0.86 if f == 5 else 1.0},
     })
-    return pose
+    if h == 0:
+        pose = merge(pose, {"eyes": {"sz": 0.7}})      # the visor eyes squint on the contact
+    return GK.solve(RIG, pose, GAIT.targets(f), report=report)
 
 
 # -- attack: twin-fist hammer (heavy timing: impact on pose 6 at 570 of 1230 ms) ----------------
@@ -335,6 +363,105 @@ def _attack_clip():
                   sequence=ATTACK_SEQ, overlays=ov)
 
 
+# -- attack B: straight piston punch (heavy timing, A's sequence; impact on frame 6) --------------
+# frames: 0 = A shift, 1 turn, 2 cock, 3 HOLD (twisted back, the ram cocked at its shoulder, the claw
+# aimed forward), 4-5 smears (the punch), 6 IMPACT (the piston fired out level), 7 shock, 8 follow,
+# 9 = A recover
+#        turn  cock  HOLD  coil  smear smear IMP  shock follow
+B_RA = [-125, 195, 178, 215, -12, -6, -8, -30]
+B_RF = [-60, 172, 180, 360, -6, -2, -4, -22]
+B_RAM = [0, -2, -4, 8, 18, 24, 22, 8]
+B_HR = [2, 6, 9, -4, -10, -12, -10, -4]
+B_RZ = [2, 4, 6, 2, -6, -8, -6, -2]
+B_DX = [-1.5, -3.5, -5.0, 1.0, 5.0, 7.0, 6.5, 3.0]
+B_BOB = [-1.5, -3.0, -4.0, -2.0, -5.0, -7.0, -6.0, -2.5]
+B_LA = [-60, -40, -28, -60, -92, -100, -98, -88]
+B_LF = [-30, -12, -4, -40, -66, -72, -70, -56]
+B_SPREAD = [0.5, 1.5, 2.5, 3.0, 4.0, 5.0, 5.0, 2.5]
+B_EYES = ["g_angry", "g_angry", "g_angry", "g_squint", "g_squint", "g_squint", "g_angry", "eyes"]
+
+
+def _b_pose(i):
+    if i in (0, 9):
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(_stand(B_BOB[k], B_DX[k], B_SPREAD[k]), arms(B_RA[k], B_RF[k], B_LA[k], B_LF[k], B_RAM[k]), {
+        "hull": {"r": B_HR[k], "rz": B_RZ[k]},
+        "antenna": {"r": [2, 4, 6, -6, -10, -12, 8, 2][k]},
+        "sparks": {"show": k == 5},
+        "flare": {"show": k in (5, 6)},
+        "steam": {"show": k in (2, 6, 7), "s": [1, 1, 0.7, 1, 1, 1, 1.1, 1.3][k], "z": [0, 0, 0, 0, 0, 0, 2, 4][k]},
+        "steam_back": {"show": k in (6, 7), "s": 1.1 if k == 7 else 1.0, "z": 3.0 if k == 7 else 0.0},
+    })
+    if k in (3, 4):
+        pose["ram"]["sz"] = 1.15
+    return merge(pose, KF.glyph(B_EYES[k]))
+
+
+# -- attack C: low backhand sweep ---------------------------------------------------------------
+# frames: 0 = A shift, 1 dip, 2 crouch, 3 HOLD (a deep crouch, nose down, the ram swung back low behind
+# its legs), 4-5 smears (the low sweep), 6 IMPACT (the ram swept forward low and flat), 7 shock,
+# 8 follow, 9 = A recover
+C_RA = [-110, -130, -150, -156, -120, -72, -62, -80]
+C_RF = [-100, -130, -158, -165, -90, -32, -22, -40]
+C_RAM = [0, 0, 0, 0, 8, 14, 12, 4]
+C_HR = [-2, -6, -10, -12, -14, -16, -14, -6]
+C_RZ = [-4, -8, -12, -14, 0, 12, 10, 4]
+C_DX = [-1.0, -2.0, -3.0, -3.5, 1.0, 5.0, 5.0, 2.5]
+C_BOB = [-3.0, -6.0, -9.0, -10.0, -9.0, -8.0, -7.0, -3.0]
+C_LA = [-60, -40, -20, -10, -50, -80, -78, -75]
+C_LF = [-30, -10, 0, 10, -30, -50, -48, -40]
+C_SPREAD = [1.0, 2.0, 3.5, 4.0, 4.0, 5.0, 5.0, 2.0]
+C_EYES = ["g_angry", "g_angry", "g_angry", "g_angry", "g_squint", "g_squint", "g_angry", "eyes"]
+
+
+def _c_pose(i):
+    if i in (0, 9):
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(_stand(C_BOB[k], C_DX[k], C_SPREAD[k]), arms(C_RA[k], C_RF[k], C_LA[k], C_LF[k], C_RAM[k]), {
+        "hull": {"r": C_HR[k], "rz": C_RZ[k]},
+        "antenna": {"r": [2, 4, 8, 10, -6, -10, 6, 2][k]},
+        "sparks": {"show": k == 5},
+        "flare": {"show": k in (5, 6)},
+        "steam": {"show": k in (6, 7), "s": 1.1, "z": 2.0 if k == 7 else 0.0},
+        "steam_back": {"show": k in (2, 6), "s": 0.9},
+    })
+    if k in (3, 4):
+        pose["ram"]["sz"] = 1.12
+    return merge(pose, KF.glyph(C_EYES[k]))
+
+
+def _variant(name, pose_fn, dust, streak=False):
+    swing = {"kind": "arc", "joint": "ram", "inner": (FIST[0], FIST[1], FIST[2] + 8.0), "outer": FIST_BOT,
+             "color": F.ARMOR, "white": 0.15, "taper": 0.2, "lines": 3, "t0": 0.0, "t1": 0.95}
+    if streak:
+        swing = {"kind": "streak", "joint": "ram", "point": FIST, "color": F.ARMOR, "width_lu": 14.0,
+                 "white": 0.2, "t0": 0.0, "t1": 0.95}
+    ov = {
+        4: [dict(swing, **{"from": 3})],
+        5: [dict(swing, **{"from": 4})],
+        6: [dict(swing, **{"from": 5, "t0": 0.3, "lines": 2}),
+            {"kind": "burst", "joint": "ram", "point": FIST_BOT, "r0_lu": 10.0, "r1_lu": 20.0, "n": 7,
+             "a0": -70.0, "arc": 140.0}] + dust,
+        7: [{"kind": "rings", "joint": "ram", "point": FIST_BOT, "radii_lu": (12.0, 18.0), "a0": -60.0, "a1": 60.0}],
+    }
+    return M.clip(name, [pose_fn(i) for i in range(10)], M.HEAVY_MELEE_MS, impact=6, sequence=ATTACK_SEQ,
+                  overlays=ov, reuse={0: ("attack", 0), 9: ("attack", 9)})
+
+
+def _attack_b():
+    return _variant("attack_b", _b_pose, [
+        {"kind": "dust", "ground": (-14.0, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 101, "spread": 1.0,
+         "dir": -1.0}], streak=True)
+
+
+def _attack_c():
+    return _variant("attack_c", _c_pose, [
+        {"kind": "dust", "ground": (40.0, 0.0), "size_lu": 8.0, "puffs": 4, "seed": 102, "spread": 1.4, "dir": 1.0},
+        {"kind": "dust", "ground": (16.0, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 103, "spread": 1.0}])
+
+
 def _hit(k):
     a = M.HIT_AMT[k]
     pose = merge(_stand(-2.0 * max(a, 0)), REST_ARMS, KF.hit_mech(k, (0, 0, 60)), {
@@ -384,10 +511,12 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [M.IDLE_MS_HEAVY] * 6, loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "walker"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
-    return M.check_contract(cl, heavy=True)
+    return M.check_variants(M.check_contract(cl, heavy=True))

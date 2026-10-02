@@ -2,18 +2,18 @@
  "frames": {
   "gyrocopter_idle_00": {
    "frame": {
-    "x": 2,
-    "y": 451,
+    "x": 523,
+    "y": 570,
     "w": 118,
-    "h": 89
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 98,
-    "y": 126,
+    "y": 121,
     "w": 118,
-    "h": 89
+    "h": 94
    },
    "sourceSize": {
     "w": 291,
@@ -26,8 +26,8 @@
   },
   "gyrocopter_idle_00_team": {
    "frame": {
-    "x": 397,
-    "y": 606,
+    "x": 200,
+    "y": 884,
     "w": 95,
     "h": 47
    },
@@ -50,18 +50,18 @@
   },
   "gyrocopter_idle_01": {
    "frame": {
-    "x": 311,
-    "y": 349,
-    "w": 112,
-    "h": 96
+    "x": 222,
+    "y": 570,
+    "w": 117,
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 98,
-    "y": 117,
-    "w": 112,
-    "h": 96
+    "y": 115,
+    "w": 117,
+    "h": 98
    },
    "sourceSize": {
     "w": 291,
@@ -74,18 +74,18 @@
   },
   "gyrocopter_idle_01_team": {
    "frame": {
-    "x": 768,
-    "y": 544,
+    "x": 586,
+    "y": 827,
     "w": 95,
-    "h": 52
+    "h": 50
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 97,
-    "y": 140,
+    "y": 142,
     "w": 95,
-    "h": 52
+    "h": 50
    },
    "sourceSize": {
     "w": 291,
@@ -98,9 +98,9 @@
   },
   "gyrocopter_idle_02": {
    "frame": {
-    "x": 778,
-    "y": 129,
-    "w": 112,
+    "x": 435,
+    "y": 355,
+    "w": 119,
     "h": 103
    },
    "rotated": false,
@@ -108,7 +108,7 @@
    "spriteSourceSize": {
     "x": 98,
     "y": 113,
-    "w": 112,
+    "w": 119,
     "h": 103
    },
    "sourceSize": {
@@ -122,8 +122,8 @@
   },
   "gyrocopter_idle_02_team": {
    "frame": {
-    "x": 101,
-    "y": 606,
+    "x": 488,
+    "y": 827,
     "w": 94,
     "h": 51
    },
@@ -146,8 +146,8 @@
   },
   "gyrocopter_idle_03": {
    "frame": {
-    "x": 668,
-    "y": 243,
+    "x": 2,
+    "y": 570,
     "w": 112,
     "h": 100
    },
@@ -170,8 +170,8 @@
   },
   "gyrocopter_idle_03_team": {
    "frame": {
-    "x": 199,
-    "y": 606,
+    "x": 2,
+    "y": 884,
     "w": 95,
     "h": 49
    },
@@ -194,18 +194,18 @@
   },
   "gyrocopter_walk_00": {
    "frame": {
-    "x": 265,
-    "y": 129,
+    "x": 255,
+    "y": 243,
     "w": 122,
-    "h": 106
+    "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 100,
-    "y": 111,
+    "x": 99,
+    "y": 110,
     "w": 122,
-    "h": 106
+    "h": 107
    },
    "sourceSize": {
     "w": 291,
@@ -218,18 +218,18 @@
   },
   "gyrocopter_walk_00_team": {
    "frame": {
-    "x": 288,
-    "y": 544,
-    "w": 91,
-    "h": 56
+    "x": 2,
+    "y": 827,
+    "w": 93,
+    "h": 53
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 102,
-    "y": 137,
-    "w": 91,
-    "h": 56
+    "x": 100,
+    "y": 140,
+    "w": 93,
+    "h": 53
    },
    "sourceSize": {
     "w": 291,
@@ -242,18 +242,18 @@
   },
   "gyrocopter_walk_01": {
    "frame": {
-    "x": 720,
-    "y": 349,
-    "w": 115,
-    "h": 91
+    "x": 2,
+    "y": 243,
+    "w": 120,
+    "h": 108
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 99,
-    "y": 124,
-    "w": 115,
-    "h": 91
+    "y": 108,
+    "w": 120,
+    "h": 108
    },
    "sourceSize": {
     "w": 291,
@@ -266,18 +266,18 @@
   },
   "gyrocopter_walk_01_team": {
    "frame": {
-    "x": 476,
-    "y": 544,
-    "w": 91,
-    "h": 55
+    "x": 99,
+    "y": 827,
+    "w": 93,
+    "h": 53
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 102,
-    "y": 136,
-    "w": 91,
-    "h": 55
+    "x": 100,
+    "y": 139,
+    "w": 93,
+    "h": 53
    },
    "sourceSize": {
     "w": 291,
@@ -290,18 +290,18 @@
   },
   "gyrocopter_walk_02": {
    "frame": {
-    "x": 391,
-    "y": 129,
-    "w": 108,
-    "h": 105
+    "x": 311,
+    "y": 355,
+    "w": 120,
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 100,
-    "y": 110,
-    "w": 108,
-    "h": 105
+    "x": 99,
+    "y": 112,
+    "w": 120,
+    "h": 103
    },
    "sourceSize": {
     "w": 291,
@@ -314,18 +314,18 @@
   },
   "gyrocopter_walk_02_team": {
    "frame": {
-    "x": 98,
-    "y": 544,
-    "w": 91,
-    "h": 57
+    "x": 196,
+    "y": 827,
+    "w": 93,
+    "h": 53
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 102,
-    "y": 134,
-    "w": 91,
-    "h": 57
+    "x": 100,
+    "y": 138,
+    "w": 93,
+    "h": 53
    },
    "sourceSize": {
     "w": 291,
@@ -338,18 +338,18 @@
   },
   "gyrocopter_walk_03": {
    "frame": {
-    "x": 722,
-    "y": 2,
-    "w": 107,
-    "h": 113
+    "x": 514,
+    "y": 129,
+    "w": 109,
+    "h": 110
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 100,
-    "y": 103,
-    "w": 107,
-    "h": 113
+    "x": 99,
+    "y": 106,
+    "w": 109,
+    "h": 110
    },
    "sourceSize": {
     "w": 291,
@@ -362,18 +362,18 @@
   },
   "gyrocopter_walk_03_team": {
    "frame": {
-    "x": 866,
-    "y": 451,
-    "w": 90,
-    "h": 59
+    "x": 382,
+    "y": 767,
+    "w": 92,
+    "h": 55
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
-    "y": 133,
-    "w": 90,
-    "h": 59
+    "x": 101,
+    "y": 137,
+    "w": 92,
+    "h": 55
    },
    "sourceSize": {
     "w": 291,
@@ -388,16 +388,16 @@
    "frame": {
     "x": 138,
     "y": 129,
-    "w": 123,
-    "h": 109
+    "w": 122,
+    "h": 110
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 101,
-    "y": 109,
-    "w": 123,
-    "h": 109
+    "x": 100,
+    "y": 107,
+    "w": 122,
+    "h": 110
    },
    "sourceSize": {
     "w": 291,
@@ -410,18 +410,18 @@
   },
   "gyrocopter_walk_04_team": {
    "frame": {
-    "x": 773,
-    "y": 451,
-    "w": 89,
-    "h": 60
+    "x": 2,
+    "y": 767,
+    "w": 91,
+    "h": 56
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
-    "y": 134,
-    "w": 89,
-    "h": 60
+    "x": 102,
+    "y": 137,
+    "w": 91,
+    "h": 56
    },
    "sourceSize": {
     "w": 291,
@@ -434,18 +434,18 @@
   },
   "gyrocopter_walk_05": {
    "frame": {
-    "x": 546,
-    "y": 349,
-    "w": 116,
-    "h": 94
+    "x": 2,
+    "y": 355,
+    "w": 121,
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 101,
-    "y": 126,
-    "w": 116,
-    "h": 94
+    "x": 100,
+    "y": 113,
+    "w": 121,
+    "h": 105
    },
    "sourceSize": {
     "w": 291,
@@ -458,18 +458,18 @@
   },
   "gyrocopter_walk_05_team": {
    "frame": {
-    "x": 586,
-    "y": 451,
-    "w": 89,
-    "h": 61
+    "x": 97,
+    "y": 767,
+    "w": 91,
+    "h": 56
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
-    "y": 135,
-    "w": 89,
-    "h": 61
+    "x": 102,
+    "y": 138,
+    "w": 91,
+    "h": 56
    },
    "sourceSize": {
     "w": 291,
@@ -482,18 +482,18 @@
   },
   "gyrocopter_walk_06": {
    "frame": {
-    "x": 616,
+    "x": 627,
     "y": 129,
-    "w": 106,
-    "h": 104
+    "w": 108,
+    "h": 109
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 101,
-    "y": 116,
-    "w": 106,
-    "h": 104
+    "x": 100,
+    "y": 110,
+    "w": 108,
+    "h": 109
    },
    "sourceSize": {
     "w": 291,
@@ -506,18 +506,18 @@
   },
   "gyrocopter_walk_06_team": {
    "frame": {
-    "x": 679,
-    "y": 451,
-    "w": 90,
-    "h": 60
+    "x": 657,
+    "y": 674,
+    "w": 92,
+    "h": 56
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
-    "y": 137,
-    "w": 90,
-    "h": 60
+    "x": 101,
+    "y": 139,
+    "w": 92,
+    "h": 56
    },
    "sourceSize": {
     "w": 291,
@@ -530,18 +530,18 @@
   },
   "gyrocopter_walk_07": {
    "frame": {
-    "x": 833,
-    "y": 2,
-    "w": 107,
-    "h": 112
+    "x": 390,
+    "y": 129,
+    "w": 120,
+    "h": 110
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 100,
-    "y": 107,
-    "w": 107,
-    "h": 112
+    "x": 99,
+    "y": 108,
+    "w": 120,
+    "h": 110
    },
    "sourceSize": {
     "w": 291,
@@ -554,18 +554,18 @@
   },
   "gyrocopter_walk_07_team": {
    "frame": {
-    "x": 193,
-    "y": 544,
-    "w": 91,
-    "h": 57
+    "x": 478,
+    "y": 767,
+    "w": 92,
+    "h": 54
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 102,
-    "y": 138,
-    "w": 91,
-    "h": 57
+    "x": 101,
+    "y": 140,
+    "w": 92,
+    "h": 54
    },
    "sourceSize": {
     "w": 291,
@@ -578,18 +578,18 @@
   },
   "gyrocopter_attack_00": {
    "frame": {
-    "x": 413,
-    "y": 243,
+    "x": 127,
+    "y": 355,
     "w": 128,
-    "h": 100
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 100,
-    "y": 119,
+    "y": 115,
     "w": 128,
-    "h": 100
+    "h": 104
    },
    "sourceSize": {
     "w": 291,
@@ -602,8 +602,8 @@
   },
   "gyrocopter_attack_00_team": {
    "frame": {
-    "x": 2,
-    "y": 544,
+    "x": 464,
+    "y": 674,
     "w": 92,
     "h": 58
    },
@@ -626,18 +626,18 @@
   },
   "gyrocopter_attack_01": {
    "frame": {
-    "x": 2,
-    "y": 349,
-    "w": 122,
-    "h": 98
+    "x": 633,
+    "y": 243,
+    "w": 125,
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
-    "y": 126,
-    "w": 122,
-    "h": 98
+    "x": 100,
+    "y": 114,
+    "w": 125,
+    "h": 105
    },
    "sourceSize": {
     "w": 291,
@@ -650,8 +650,56 @@
   },
   "gyrocopter_attack_01_team": {
    "frame": {
-    "x": 496,
-    "y": 451,
+    "x": 560,
+    "y": 674,
+    "w": 93,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 139,
+    "w": 93,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter_attack_02": {
+   "frame": {
+    "x": 264,
+    "y": 129,
+    "w": 122,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 114,
+    "w": 122,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 269
+   },
+   "anchor": {
+    "x": 0.56357,
+    "y": 0.76952
+   }
+  },
+  "gyrocopter_attack_02_team": {
+   "frame": {
+    "x": 374,
+    "y": 674,
     "w": 86,
     "h": 63
    },
@@ -672,20 +720,20 @@
     "y": 0.76952
    }
   },
-  "gyrocopter_attack_02": {
+  "gyrocopter_attack_03": {
    "frame": {
-    "x": 126,
-    "y": 243,
+    "x": 125,
+    "y": 464,
     "w": 114,
-    "h": 101
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 115,
+    "y": 114,
     "w": 114,
-    "h": 101
+    "h": 102
    },
    "sourceSize": {
     "w": 291,
@@ -696,10 +744,10 @@
     "y": 0.76952
    }
   },
-  "gyrocopter_attack_02_team": {
+  "gyrocopter_attack_03_team": {
    "frame": {
-    "x": 571,
-    "y": 544,
+    "x": 574,
+    "y": 767,
     "w": 96,
     "h": 53
    },
@@ -720,20 +768,20 @@
     "y": 0.76952
    }
   },
-  "gyrocopter_attack_03": {
+  "gyrocopter_attack_04": {
    "frame": {
-    "x": 503,
-    "y": 129,
-    "w": 109,
-    "h": 104
+    "x": 2,
+    "y": 464,
+    "w": 119,
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 98,
-    "y": 110,
-    "w": 109,
-    "h": 104
+    "y": 112,
+    "w": 119,
+    "h": 102
    },
    "sourceSize": {
     "w": 291,
@@ -744,10 +792,10 @@
     "y": 0.76952
    }
   },
-  "gyrocopter_attack_03_team": {
+  "gyrocopter_attack_04_team": {
    "frame": {
-    "x": 867,
-    "y": 544,
+    "x": 293,
+    "y": 827,
     "w": 92,
     "h": 52
    },
@@ -768,20 +816,20 @@
     "y": 0.76952
    }
   },
-  "gyrocopter_attack_04": {
+  "gyrocopter_attack_05": {
    "frame": {
-    "x": 128,
-    "y": 349,
-    "w": 122,
-    "h": 97
+    "x": 538,
+    "y": 464,
+    "w": 120,
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 99,
-    "y": 120,
-    "w": 122,
-    "h": 97
+    "y": 117,
+    "w": 120,
+    "h": 100
    },
    "sourceSize": {
     "w": 291,
@@ -792,20 +840,20 @@
     "y": 0.76952
    }
   },
-  "gyrocopter_attack_04_team": {
+  "gyrocopter_attack_05_team": {
    "frame": {
-    "x": 671,
-    "y": 544,
+    "x": 285,
+    "y": 767,
     "w": 93,
-    "h": 53
+    "h": 55
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 100,
-    "y": 140,
+    "y": 138,
     "w": 93,
-    "h": 53
+    "h": 55
    },
    "sourceSize": {
     "w": 291,
@@ -818,18 +866,18 @@
   },
   "gyrocopter_hit_00": {
    "frame": {
-    "x": 124,
-    "y": 451,
+    "x": 2,
+    "y": 674,
     "w": 126,
-    "h": 87
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 87,
-    "y": 133,
+    "y": 131,
     "w": 126,
-    "h": 87
+    "h": 89
    },
    "sourceSize": {
     "w": 291,
@@ -842,18 +890,18 @@
   },
   "gyrocopter_hit_00_team": {
    "frame": {
-    "x": 701,
-    "y": 606,
+    "x": 398,
+    "y": 884,
     "w": 104,
-    "h": 42
+    "h": 41
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 87,
-    "y": 160,
+    "y": 161,
     "w": 104,
-    "h": 42
+    "h": 41
    },
    "sourceSize": {
     "w": 291,
@@ -866,17 +914,17 @@
   },
   "gyrocopter_hit_01": {
    "frame": {
-    "x": 545,
-    "y": 243,
-    "w": 119,
+    "x": 412,
+    "y": 464,
+    "w": 122,
     "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
+    "x": 89,
     "y": 121,
-    "w": 119,
+    "w": 122,
     "h": 100
    },
    "sourceSize": {
@@ -890,18 +938,18 @@
   },
   "gyrocopter_hit_01_team": {
    "frame": {
-    "x": 496,
-    "y": 606,
+    "x": 506,
+    "y": 884,
     "w": 102,
-    "h": 46
+    "h": 40
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 87,
-    "y": 157,
+    "y": 163,
     "w": 102,
-    "h": 46
+    "h": 40
    },
    "sourceSize": {
     "w": 291,
@@ -914,8 +962,8 @@
   },
   "gyrocopter_hit_02": {
    "frame": {
-    "x": 894,
-    "y": 129,
+    "x": 558,
+    "y": 355,
     "w": 112,
     "h": 103
    },
@@ -938,8 +986,8 @@
   },
   "gyrocopter_hit_02_team": {
    "frame": {
-    "x": 602,
-    "y": 606,
+    "x": 299,
+    "y": 884,
     "w": 95,
     "h": 46
    },
@@ -962,8 +1010,8 @@
   },
   "gyrocopter_hit_03": {
    "frame": {
-    "x": 244,
-    "y": 243,
+    "x": 243,
+    "y": 464,
     "w": 112,
     "h": 101
    },
@@ -986,8 +1034,8 @@
   },
   "gyrocopter_hit_03_team": {
    "frame": {
-    "x": 2,
-    "y": 606,
+    "x": 389,
+    "y": 827,
     "w": 95,
     "h": 51
    },
@@ -1010,18 +1058,18 @@
   },
   "gyrocopter_hit_04": {
    "frame": {
-    "x": 839,
-    "y": 349,
+    "x": 343,
+    "y": 570,
     "w": 119,
-    "h": 90
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 98,
-    "y": 125,
+    "y": 118,
     "w": 119,
-    "h": 90
+    "h": 97
    },
    "sourceSize": {
     "w": 291,
@@ -1034,8 +1082,8 @@
   },
   "gyrocopter_hit_04_team": {
    "frame": {
-    "x": 298,
-    "y": 606,
+    "x": 101,
+    "y": 884,
     "w": 95,
     "h": 49
    },
@@ -1058,18 +1106,18 @@
   },
   "gyrocopter_die_00": {
    "frame": {
-    "x": 2,
+    "x": 509,
     "y": 243,
     "w": 120,
-    "h": 102
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 99,
-    "y": 114,
+    "y": 110,
     "w": 120,
-    "h": 102
+    "h": 106
    },
    "sourceSize": {
     "w": 291,
@@ -1082,8 +1130,8 @@
   },
   "gyrocopter_die_00_team": {
    "frame": {
-    "x": 383,
-    "y": 544,
+    "x": 192,
+    "y": 767,
     "w": 89,
     "h": 56
    },
@@ -1106,18 +1154,18 @@
   },
   "gyrocopter_die_01": {
    "frame": {
-    "x": 427,
-    "y": 349,
-    "w": 115,
-    "h": 95
+    "x": 126,
+    "y": 243,
+    "w": 125,
+    "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 98,
-    "y": 123,
-    "w": 115,
-    "h": 95
+    "y": 111,
+    "w": 125,
+    "h": 107
    },
    "sourceSize": {
     "w": 291,
@@ -1130,8 +1178,8 @@
   },
   "gyrocopter_die_01_team": {
    "frame": {
-    "x": 405,
-    "y": 451,
+    "x": 283,
+    "y": 674,
     "w": 87,
     "h": 64
    },
@@ -1154,18 +1202,18 @@
   },
   "gyrocopter_die_02": {
    "frame": {
-    "x": 784,
+    "x": 381,
     "y": 243,
-    "w": 95,
-    "h": 100
+    "w": 124,
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 106,
-    "y": 126,
-    "w": 95,
-    "h": 100
+    "y": 120,
+    "w": 124,
+    "h": 106
    },
    "sourceSize": {
     "w": 291,
@@ -1178,8 +1226,8 @@
   },
   "gyrocopter_die_02_team": {
    "frame": {
-    "x": 325,
-    "y": 451,
+    "x": 203,
+    "y": 674,
     "w": 76,
     "h": 84
    },
@@ -1226,8 +1274,8 @@
   },
   "gyrocopter_die_03_team": {
    "frame": {
-    "x": 254,
-    "y": 451,
+    "x": 132,
+    "y": 674,
     "w": 67,
     "h": 85
    },
@@ -1274,8 +1322,8 @@
   },
   "gyrocopter_die_04_team": {
    "frame": {
-    "x": 254,
-    "y": 349,
+    "x": 466,
+    "y": 570,
     "w": 53,
     "h": 97
    },
@@ -1322,8 +1370,8 @@
   },
   "gyrocopter_die_05_team": {
    "frame": {
-    "x": 726,
-    "y": 129,
+    "x": 259,
+    "y": 355,
     "w": 48,
     "h": 104
    },
@@ -1370,8 +1418,8 @@
   },
   "gyrocopter_die_06_team": {
    "frame": {
-    "x": 666,
-    "y": 349,
+    "x": 645,
+    "y": 570,
     "w": 50,
     "h": 93
    },
@@ -1418,8 +1466,8 @@
   },
   "gyrocopter_die_07_team": {
    "frame": {
-    "x": 883,
-    "y": 243,
+    "x": 118,
+    "y": 570,
     "w": 48,
     "h": 100
    },
@@ -1466,8 +1514,8 @@
   },
   "gyrocopter_die_08_team": {
    "frame": {
-    "x": 935,
-    "y": 243,
+    "x": 170,
+    "y": 570,
     "w": 48,
     "h": 99
    },
@@ -1514,8 +1562,8 @@
   },
   "gyrocopter_die_09_team": {
    "frame": {
-    "x": 360,
-    "y": 243,
+    "x": 359,
+    "y": 464,
     "w": 49,
     "h": 101
    },
@@ -1575,14 +1623,16 @@
    "gyrocopter_attack_01",
    "gyrocopter_attack_02",
    "gyrocopter_attack_03",
-   "gyrocopter_attack_04"
+   "gyrocopter_attack_04",
+   "gyrocopter_attack_05"
   ],
   "attack_team": [
    "gyrocopter_attack_00_team",
    "gyrocopter_attack_01_team",
    "gyrocopter_attack_02_team",
    "gyrocopter_attack_03_team",
-   "gyrocopter_attack_04_team"
+   "gyrocopter_attack_04_team",
+   "gyrocopter_attack_05_team"
   ],
   "hit": [
    "gyrocopter_hit_00",
@@ -1629,8 +1679,8 @@
   "image": "gyrocopter.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1024,
-   "h": 660
+   "w": 768,
+   "h": 936
   },
   "scale": "1.5",
   "ageborn": {
@@ -1655,6 +1705,7 @@
    },
    "facing": "right",
    "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "fly",
    "clips": {
     "idle": {
      "frames": 4,
@@ -1720,67 +1771,80 @@
      "anchorsLu": {
       "muzzle": [
        [
-        29.8,
-        4.1
+        30.6,
+        5.5
+       ],
+       [
+        30.7,
+        6.4
+       ],
+       [
+        30.5,
+        6.3
+       ],
+       [
+        30.1,
+        5.4
+       ],
+       [
+        29.7,
+        4.0
+       ],
+       [
+        29.7,
+        3.1
        ],
        [
         29.9,
-        5.7
+        3.1
        ],
        [
-        29.6,
-        5.9
-       ],
-       [
-        29.2,
-        4.6
-       ],
-       [
-        28.8,
-        2.6
-       ],
-       [
-        28.7,
-        0.9
-       ],
-       [
-        28.9,
-        0.7
-       ],
-       [
-        29.4,
-        2.0
+        30.3,
+        4.1
        ]
       ]
      },
-     "strideLu": 39.2,
-     "naturalSpeedLuPerS": 78.4
+     "strideLu": 49.2,
+     "naturalSpeedLuPerS": 98.4,
+     "gait": "fly"
     },
     "attack": {
-     "frames": 5,
+     "frames": 6,
      "loop": false,
      "sequence": [
       0,
       1,
       2,
       3,
-      4
+      4,
+      5
      ],
      "durationsMs": [
-      60,
+      36,
+      24,
       50,
       40,
       50,
       50
      ],
      "durationMs": 250,
-     "impactFrame": 1,
+     "impactFrame": 2,
+     "impactStep": 2,
      "impactAt": 0.24,
+     "holdStep": 0,
+     "holdLoop": [
+      0,
+      1
+     ],
      "anchorsLu": {
       "muzzle": [
        [
         30.8,
         1.2
+       ],
+       [
+        31.2,
+        2.3
        ],
        [
         28.0,
@@ -1799,7 +1863,11 @@
         5.7
        ]
       ]
-     }
+     },
+     "muzzle": [
+      28.0,
+      0.2
+     ]
     },
     "hit": {
      "frames": 5,

@@ -10,7 +10,15 @@ reacts to every bang.
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
   idle    the gunner wipes his brow with his sleeve, the match glows, blink
-  walk    the gunner pushes the trail bent over, the wheels roll with the distance, the gun bobs
+  walk    walk v3 (ANIM_SPEC G6): eight-spoke wheels roll exactly with the ground (2 spoke
+          spacings, 90 degrees, per 475 ms cycle at radius 17 lu = 56.2 lu/s, card 45 x 1.25),
+          11.25 degrees per frame so they never strobe; the gunner jogs bent over behind the trail
+          with his feet planted by IK, the carriage bumps once per cycle and pitches, his cap
+          flap and coat tails trail, dust kicks off the wheels
+  attack_b  QUICK TOUCH-OFF, THE GUNNER LEAPS ASIDE: he stretches the linstock to the vent at
+          arm's length on one leg, leaning as far away as he can (the held extreme), the vent
+          fizzes, BOOM: the gun rears on its trail and he leaps back into the air with his legs
+          tucked, lands in a crouch and peeks up, then the same shove-back as A
   attack  MATCH, BOOM AND ROLL BACK: he lowers the match to the vent, the vent fizzes and he
           leans away with his free hand over his ear and his eyes squeezed shut while the
           barrel quivers (the held extreme), BOOM: a huge flash, the barrel stretches, the gun
@@ -24,6 +32,7 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as GT
 from ageborn_art import kit_gunpowder as G
 from ageborn_art import kit_medieval as K
 from ageborn_art import moves as M
@@ -32,6 +41,7 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "bronze_cannon"
+GAIT_NAME = "wheeled"
 NAME = "Bronze Cannon"
 HEIGHT_LU = 74
 YAW_DEG = -10.0
@@ -63,7 +73,13 @@ def _cheek(y):
     return Geo().slab(pts, y, 3.2)
 
 
+RIG = None
+LEGS = {}
+
+
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("unit", "root", (0, 0, 0))
     rig.joint("cart", "unit", AXLE)
     rig.joint("barrel", "cart", TRUN)
@@ -186,7 +202,13 @@ def build(rig):
     rig.joint("match", "hand_r", (hx + 3.0, hy - 0.6, hz + 30.5))
     g = Geo().sphere((hx + 3.0, hy - 1.2, hz + 30.8), 2.0, cuts=3)
     rig.part("match", g, glow=MATCH, outline=0.6, outline_hex=B.FIRE)
-    rig.track("_foot", "shin_r", (3.4, -6.0, 0.5))
+    # walk v3: the gunner's legs by IK (the sole end on the shin) and an odometer for the
+    # walk's natural speed (strideLu = 2 x its x range = the wheel rim travel per cycle)
+    for s in ("r", "l"):
+        y = B.LEG_Y * B.SIDE_Y[s]
+        LEGS[s] = GT.Leg(f"thigh_{s}", f"shin_{s}", (1.0, y, 1.2), bend=1.0)
+    rig.joint("odo", "root", (0, 0, 0), hidden=True)
+    rig.track("_foot", "odo", (0.0, 0.0, 0.0))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -229,20 +251,43 @@ def _idle(f):
     return pose
 
 
-WALK_MS = 100
+# -- walk v3 (G6): 2 spoke spacings of the 8-spoke wheel per cycle at the ground speed --------------
+SPEED = 56.25
+SPOKES = 8
+WALK_DUR = [59, 60, 59, 60, 59, 60, 59, 59]               # 475 ms
+WHEEL_STEP = 2 * (360.0 / SPOKES) / 8                    # 11.25 degrees per frame (25% of a spacing)
+ODO_AMP = 2 * 2 * math.pi * WHEEL_R / SPOKES / 4         # rim travel per cycle / 4 (26.7 lu stride)
+GAIT = None
 
 
-def _walk(f):
-    # the gunner walks bent over, pushing the trail with both hands; the wheels roll
-    spin = math.degrees(28.2 / 8 / WHEEL_R) * f
+def _gait():
+    global GAIT
+    if GAIT is None:
+        GAIT = GT.Gait(8, sum(WALK_DUR), SPEED, GT.biped_feet(LEGS["l"], LEGS["r"], x_mid=CREW_X + 2.0),
+                       0.5, lift=7.5, kick=3.0, toe_off=0.0, heel_strike=0.0)
+    return GAIT
+
+
+def _walk(f, report=None):
+    # the gunner jogs bent over behind the trail, pushing it with both hands; the wheels roll
     p = 2 * math.pi * f / 8
+    lag = math.cos(2 * (p - 2 * math.pi / 8))
+    bump = -math.cos(p)                       # one bump per cycle, lowest on frame 0
+    pose = merge(CREW, gun(IDLE_ELEV + 1.6 * math.sin(p), hop=2.6 * bump + 1.6, tilt=2.4 * math.sin(p),
+                           spin=WHEEL_STEP * f),
+                 linstock(-45, -30, 115 + 4 * lag), free(-40, -25), {
+                     "odo": {"x": ODO_AMP * math.cos(p)},
+                     "hips": {"z": -1.8 + 1.6 * math.cos(2 * p)},
+                     "torso": {"r": -20 + 2 * math.cos(2 * p), "rz": 4 * math.sin(p)},
+                     "head": {"r": 10 - 3 * lag},
+                     "arm_r": {"r": 3 * lag}, "arm_l": {"r": 3 * lag},
+                     "flap": {"r": 10 * lag}, "tails": {"r": 6 * lag},
+                     "match": {"s": [1.0, 0.8, 1.2, 0.9][f % 4]}})
+    return GT.solve(RIG, pose, _gait().targets(f), report=report)
 
-    def extra(ctx):
-        return merge(gun(IDLE_ELEV, hop=0.6 * abs(math.sin(2 * p)), tilt=0.8 * math.sin(2 * p), spin=spin),
-                     linstock(-45, -30, 115), free(-40, -25),
-                     {"match": {"s": [1.0, 0.8, 1.2, 0.9][f % 4]}})
-    return M.walk_v2(f, CREW, HEIGHT_LU, thigh=30.0, knee=58.0, lift_lu=6.5, bob_pct=0.05,
-                     lean=-18.0, arms=(), twist=4.0, extra=extra)
+
+WALK_DUST = {k: [{"kind": "dust", "ground": (-10.0 if k % 2 else -6.0, 0.0), "size_lu": 5.5 if k % 2 else 4.0,
+                  "puffs": 3, "seed": 70 + k, "spread": 1.0, "dir": -1.0}] for k in range(8)}
 
 
 # attack: 874 ms, the shot (impact) at 333 ms (impactAt 0.381, as shipped); 11 unique frames
@@ -311,8 +356,77 @@ def _attack_clip():
         3: [{"kind": "rings", "joint": "barrel", "point": (TRUN[0] - 13.0, 0.0, TRUN[2] + 11.0),
              "radii_lu": (5.0, 8.0), "a0": 20.0, "a1": 160.0, "color": "#FFE7B0"}],
     }
+    # the fizz hold loops with the crouch (the barrel quivers, the vent sputters) while the 5.3x
+    # sim wind-up lasts (ANIM_SPEC R5)
     return M.clip("attack", [_attack_pose(f) for f in range(11)], ATTACK_MS, impact=ATTACK_IMPACT,
-                  overlays=ov)
+                  overlays=ov, extra={"holdStep": 3, "holdLoop": [3, 4]})
+
+
+# -- attack B: quick touch-off, the gunner leaps aside (ANIM_SPEC appendix B) -----------------------
+# unique frames: 0 = A step, 1 reach, 2 touch, 3 HOLD (on one leg at arm's length, leaning far away),
+# 4 fizz, 5 BOOM (the gun rears, he leaps back into the air), 6 lands in a crouch, 7 peeks up,
+# 8-10 = A (ears, shove, settle). Same steps as A.
+#        reach  touch  HOLD   fizz   BOOM   land   peek
+OB_ELEV = [FIRE_ELEV, FIRE_ELEV, FIRE_ELEV, FIRE_ELEV - 1, FIRE_ELEV + 8, FIRE_ELEV + 4, FIRE_ELEV]
+OB_REC = [0, 0, 0, 0, 4.0, 9.0, 9.5]
+OB_HOP = [0, 0, 0, -0.6, 4.5, 0.5, 0]
+OB_TILT = [0, 0, 0, 0, 9.0, 2.0, -0.5]
+OB_SPIN = [0, 0, 0, 0, -18, -40, -42]
+OB_BQ = [0, -0.02, 0.0, -0.05, 0.09, 0.0, 0.0]
+OB_DX = [6, 9, 10, 10, -10, -16, -12]
+OB_DZ = [0, 0, 0, 0, 10.0, -3.0, -2.0]
+OB_LEAN = [-10, 6, 26, 28, 18, -20, -10]
+OB_HEAD = [-4, 8, 16, 18, 10, -6, 6]
+OB_LS = [(10, 30, 30), (30, 34, 4), (36, 38, -2), (36, 38, -4), (110, 140, 160), (-40, -20, 110), (-50, -10, 95)]
+OB_FREE = [(-60, -30), (-20, 10), (150, 170), (155, 175), (120, 150), (-30, 10), (-70, -40)]
+OB_THR = [16, 20, 34, 36, 70, 80, 50]
+OB_SHR = [-6, -10, -12, -14, -100, -110, -80]
+OB_THL = [-14, -10, 12, 14, 50, 40, 20]
+OB_SHL = [-4, -40, -70, -74, -90, -100, -60]
+
+
+def _b_pose(i):
+    if i == 0 or i >= 8:
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(CREW, gun(OB_ELEV[k], OB_REC[k], OB_HOP[k], OB_TILT[k], OB_SPIN[k]), {
+        "crew": {"x": OB_DX[k], "z": OB_DZ[k]},
+        "torso": {"r": OB_LEAN[k]}, "head": {"r": OB_HEAD[k]},
+        "thigh_r": {"r": OB_THR[k]}, "shin_r": {"r": OB_SHR[k]},
+        "thigh_l": {"r": OB_THL[k]}, "shin_l": {"r": OB_SHL[k]},
+        "vent": {"show": k in (1, 2, 3), "s": [1, 0.8, 1.2, 1.5, 1, 1, 1][k], "r": 25 * k},
+        "flash": {"show": k == 4},
+        "smoke": {"show": k in (5, 6), "s": [1, 1, 1, 1, 1, 0.9, 1.2][k], "z": [0, 0, 0, 0, 0, 2, 5][k]},
+        "chocks": {"z": [0, 0, 0, 0, 3.0, 1.0, 0][k], "x": [0, 0, 0, 0, -4, -7, -8][k],
+                   "r": [0, 0, 0, 0, 20, 6, 0][k]},
+        "flap": {"r": [0, 0, 6, 10, 34, 20, 6][k]},
+    }, linstock(*OB_LS[k]), free(*OB_FREE[k]))
+    pose["barrel"].update({"sx": 1.0 + OB_BQ[k], "sz": 1.0 - OB_BQ[k] * 0.9, "sy": 1.0 - OB_BQ[k] * 0.9})
+    if k in (2, 3):
+        pose = merge(pose, F.expr("squeeze", "grit"), {"brow": {"z": -1.0}})
+    elif k == 4:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": 2.0}})
+    elif k == 5:
+        pose = merge(pose, F.expr("squeeze", "o"))
+    elif k == 6:
+        pose = merge(pose, F.expr("o"), {"brow": {"z": 1.6}})
+    return pose
+
+
+def _attack_b():
+    ov = {
+        5: [{"kind": "burst", "joint": "barrel", "point": MUZ, "r0_lu": 12.0, "r1_lu": 20.0, "n": 7,
+             "a0": -80.0, "arc": 160.0, "color": "#FFF4D6"},
+            {"kind": "dust", "ground": (-16.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 73, "spread": 1.0,
+             "dir": -1.0}],
+        6: [{"kind": "dust", "ground": (CREW_X - 14.0, 0.0), "size_lu": 7.0, "puffs": 4, "seed": 74,
+             "spread": 1.1, "dir": -1.0}],
+        3: [{"kind": "rings", "joint": "barrel", "point": (TRUN[0] - 13.0, 0.0, TRUN[2] + 11.0),
+             "radii_lu": (5.0, 8.0), "a0": 20.0, "a1": 160.0, "color": "#FFE7B0"}],
+    }
+    reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(11)], ATTACK_MS, impact=ATTACK_IMPACT,
+                  overlays=ov, reuse=reuse, extra={"holdStep": 3, "holdLoop": [3, 4]})
 
 
 def _hit(k):
@@ -366,10 +480,11 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], [WALK_MS] * 8, loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], WALK_DUR, loop=True, overlays=WALK_DUST),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 7, 9)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 7, 7, 8], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl, attack_ms=874, attack_impact_at=0.381)
+    return M.check_variants(M.check_contract(cl, attack_ms=874, attack_impact_at=0.381))

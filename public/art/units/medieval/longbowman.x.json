@@ -1,0 +1,486 @@
+{
+ "frames": {
+  "longbowman_attack_b_01": {
+   "frame": {
+    "x": 160,
+    "y": 2,
+    "w": 101,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 105,
+    "w": 101,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.47945,
+    "y": 0.87317
+   }
+  },
+  "longbowman_attack_b_01_team": {
+   "frame": {
+    "x": 702,
+    "y": 2,
+    "w": 59,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 68,
+    "y": 100,
+    "w": 59,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.47945,
+    "y": 0.87317
+   }
+  },
+  "longbowman_attack_b_02": {
+   "frame": {
+    "x": 464,
+    "y": 2,
+    "w": 90,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 72,
+    "y": 108,
+    "w": 90,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.47945,
+    "y": 0.87317
+   }
+  },
+  "longbowman_attack_b_02_team": {
+   "frame": {
+    "x": 820,
+    "y": 2,
+    "w": 61,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 67,
+    "y": 104,
+    "w": 61,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.47945,
+    "y": 0.87317
+   }
+  },
+  "longbowman_attack_b_03": {
+   "frame": {
+    "x": 615,
+    "y": 2,
+    "w": 83,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 66,
+    "y": 109,
+    "w": 83,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.47945,
+    "y": 0.87317
+   }
+  },
+  "longbowman_attack_b_03_team": {
+   "frame": {
+    "x": 942,
+    "y": 2,
+    "w": 60,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 61,
+    "y": 107,
+    "w": 60,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.47945,
+    "y": 0.87317
+   }
+  },
+  "longbowman_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 78,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 96,
+    "w": 78,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.47945,
+    "y": 0.87317
+   }
+  },
+  "longbowman_attack_b_04_team": {
+   "frame": {
+    "x": 407,
+    "y": 2,
+    "w": 53,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 70,
+    "y": 98,
+    "w": 53,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.47945,
+    "y": 0.87317
+   }
+  },
+  "longbowman_attack_b_05": {
+   "frame": {
+    "x": 84,
+    "y": 2,
+    "w": 72,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 101,
+    "w": 72,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.47945,
+    "y": 0.87317
+   }
+  },
+  "longbowman_attack_b_05_team": {
+   "frame": {
+    "x": 558,
+    "y": 2,
+    "w": 53,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 71,
+    "y": 100,
+    "w": 53,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.47945,
+    "y": 0.87317
+   }
+  },
+  "longbowman_attack_b_06": {
+   "frame": {
+    "x": 265,
+    "y": 2,
+    "w": 65,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 107,
+    "w": 65,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.47945,
+    "y": 0.87317
+   }
+  },
+  "longbowman_attack_b_06_team": {
+   "frame": {
+    "x": 765,
+    "y": 2,
+    "w": 51,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 103,
+    "w": 51,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.47945,
+    "y": 0.87317
+   }
+  },
+  "longbowman_attack_b_07": {
+   "frame": {
+    "x": 334,
+    "y": 2,
+    "w": 69,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 100,
+    "w": 69,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.47945,
+    "y": 0.87317
+   }
+  },
+  "longbowman_attack_b_07_team": {
+   "frame": {
+    "x": 885,
+    "y": 2,
+    "w": 53,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 96,
+    "w": 53,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 219,
+    "h": 205
+   },
+   "anchor": {
+    "x": 0.47945,
+    "y": 0.87317
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "longbowman_attack_00",
+   "longbowman_attack_b_01",
+   "longbowman_attack_b_02",
+   "longbowman_attack_b_03",
+   "longbowman_attack_b_04",
+   "longbowman_attack_b_05",
+   "longbowman_attack_b_06",
+   "longbowman_attack_b_07",
+   "longbowman_attack_08"
+  ],
+  "attack_b_team": [
+   "longbowman_attack_00_team",
+   "longbowman_attack_b_01_team",
+   "longbowman_attack_b_02_team",
+   "longbowman_attack_b_03_team",
+   "longbowman_attack_b_04_team",
+   "longbowman_attack_b_05_team",
+   "longbowman_attack_b_06_team",
+   "longbowman_attack_b_07_team",
+   "longbowman_attack_08_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "longbowman.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1024,
+   "h": 104
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.longbowman",
+   "name": "Longbowman",
+   "heightLu": 68,
+   "widthLu": 58.1,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    105.0,
+    179.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     66
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     33,
+     34
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "longbowman",
+   "clips": {
+    "attack_b": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      55,
+      60,
+      70,
+      248,
+      60,
+      55,
+      55,
+      80,
+      116
+     ],
+     "durationMs": 799,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5419,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        27.3,
+        29.0
+       ],
+       [
+        37.1,
+        27.2
+       ],
+       [
+        36.4,
+        30.2
+       ],
+       [
+        33.9,
+        31.8
+       ],
+       [
+        35.2,
+        34.0
+       ],
+       [
+        36.5,
+        28.3
+       ],
+       [
+        38.0,
+        22.3
+       ],
+       [
+        29.9,
+        17.9
+       ],
+       [
+        24.6,
+        18.1
+       ]
+      ]
+     },
+     "holdStep": 3,
+     "muzzle": [
+      35.2,
+      34.0
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

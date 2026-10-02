@@ -32,6 +32,13 @@ def install(slug, out):
     os.makedirs(dst, exist_ok=True)
     for f in (f"{slug}.json", f"{slug}.png", f"{slug}.hd.json", f"{slug}.hd.png"):
         shutil.copyfile(os.path.join(out, f), os.path.join(dst, f))
+    # the extras sheet (attack variants, attack_alt; ANIM_SPEC P4), as render_all.install does
+    for f in (f"{slug}.x.json", f"{slug}.x.png", f"{slug}.x.hd.json", f"{slug}.x.hd.png"):
+        src, d = os.path.join(out, f), os.path.join(dst, f)
+        if os.path.exists(src):
+            shutil.copyfile(src, d)
+        elif os.path.exists(d):
+            os.remove(d)
     print(f"  installed {AGE}/{slug}", flush=True)
 
 

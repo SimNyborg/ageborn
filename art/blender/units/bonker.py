@@ -9,7 +9,10 @@ saturation (A11 rule).
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    bounces the club on the beat (it lifts and drops with a dip), weight shift, blink
-  walk    stomp: bow-legged, a heavy down frame, the club bobbing a frame behind
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1): the club on his shoulder, the far
+          arm pumping, planted feet, a trailing toe on the contact frames
+  attack_b  horizontal baseball sweep at chest height
+  attack_c  tap-tap-BONK: two quick ground taps, then a short overhead bonk
   attack  HOP-UP OVERHEAD SMASH: dips with the club lowered, rises on his toes and arches
           back with the club cocked high behind his head (the held extreme reads as a black
           silhouette), hops in with the club whipping over the top (two smear frames), smashes it
@@ -20,15 +23,18 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
 """
 import math
 
+from ageborn_art import colors as C
 from ageborn_art import face as F
+from ageborn_art import gait as G
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, pick, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "bonker"
+GAIT_NAME = "biped"
 NAME = "Bonker"
 HEIGHT_LU = 68
-CANVAS = (256, 224)
+CANVAS = (280, 224)
 FEET = (112, 198)
 ANCHORS = {"head": (2, 66), "hitCenter": (0, 32)}
 NO_RETIME = True
@@ -66,7 +72,8 @@ def _club(rig, joint, base, axis_sign=1.0):
     g = Geo()
     for z in (-2.0, 2.2, 6.4):
         g.lathe([(3.25, 0), (3.5, 0.8), (3.5, 2.6), (3.2, 3.2)], (cx, cy, cz + z), segs=14)
-    g.sphere((cx, cy, cz - 5.5), 3.6, cuts=3)
+    rig.part(joint, g, team=True, outline=0.8)    # team grip wraps (the 18% rule with the club across him)
+    g = Geo().sphere((cx, cy, cz - 5.5), 3.6, cuts=3)
     rig.part(joint, g, LEATHER, outline=0.8)
     # dark stone studs
     g = Geo()
@@ -96,32 +103,46 @@ def _club(rig, joint, base, axis_sign=1.0):
     rig.part(joint, g, WOOD_DK, outline=0, highlight=False)
 
 
+HIP_Z, KNEE_Z, ANKLE_Z = 19.5, 11.5, 4.0   # walk v3: longer legs (ANIM_SPEC 2.0 rule 5)
+LIFT = 2.0                                   # the upper body sits 2 lu higher (legs show)
+SKIN_FAR = C.scale(SKIN, 0.80)               # far leg 20% darker (near and far feet read apart)
+FUR_FAR = C.scale(FUR, 0.80)
+LEATHER_FAR = C.scale(LEATHER, 0.80)
+
+
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("hips", "body", (0, 0, 15))
     rig.joint("torso", "hips", (0, 0, 16))
+    rig.rest_offset["torso"] = (0, 0, LIFT)
     rig.joint("head", "torso", (1, 0, 38))
     for side, y in (("r", -6.0), ("l", 6.0)):
-        rig.joint(f"thigh_{side}", "hips", (0, y, 15))
-        rig.joint(f"shin_{side}", f"thigh_{side}", (0.5, y, 8.5))
+        rig.joint(f"thigh_{side}", "hips", (0, y, HIP_Z))
+        rig.joint(f"shin_{side}", f"thigh_{side}", (0.5, y, KNEE_Z))
+        rig.joint(f"foot_{side}", f"shin_{side}", (1.0, y, ANKLE_Z))
     for side, y in (("r", -12.5), ("l", 12.0)):
         rig.joint(f"arm_{side}", "torso", (0, y, 36))
         rig.joint(f"fore_{side}", f"arm_{side}", (1.5, y - 0.5 * (1 if y < 0 else -1), 28.5))
     rig.joint("club", "fore_r", FIST)
 
-    # legs: short and stocky, fur toe wraps with a leather tie
+    # legs: stocky, longer than v2 so two feet read in the jog; short fur toe wraps (8.8 lu long)
     for side, y in (("r", -6.0), ("l", 6.0)):
-        g = Geo().capsule((0, y, 15), (0.5, y, 8.5), 4.8, 4.2)
-        rig.part(f"thigh_{side}", g, SKIN)
-        g = Geo().capsule((0.5, y, 8.5), (1.0, y, 3.8), 4.2, 3.8)
-        rig.part(f"shin_{side}", g, SKIN)
-        g = Geo().blob((3.4, y, 2.9), (7.0, 4.8, 3.2), p=2.6, taper=(1.0, 0.85))
-        g.blob((0.8, y, 6.0), (4.6, 4.5, 2.6), p=2.4)
-        for dx in (6.2, 8.4):   # fur tufts at the toe
-            g.lathe([(1.6, 0), (0, 2.6)], (dx, y - 2.8, 5.0), (dx + 1.2, y - 3.2, 7.2), segs=8)
-        rig.part(f"shin_{side}", g, FUR, finish="hair")
-        g = Geo().lathe([(4.9, 0), (5.1, 0.6), (5.1, 2.0), (4.8, 2.6)], (0.8, y, 5.4), segs=16)
-        rig.part(f"shin_{side}", g, LEATHER, outline=0.7)
+        skin = SKIN if side == "r" else SKIN_FAR
+        fur = FUR if side == "r" else FUR_FAR
+        g = Geo().capsule((0, y, HIP_Z), (0.5, y, KNEE_Z), 4.2, 3.5)
+        rig.part(f"thigh_{side}", g, skin)
+        g = Geo().capsule((0.5, y, KNEE_Z), (1.0, y, ANKLE_Z + 0.4), 3.5, 3.1)
+        rig.part(f"shin_{side}", g, skin)
+        g = Geo().blob((0.9, y, 6.4), (3.9, 3.9, 2.2), p=2.4)   # fur ankle wrap
+        rig.part(f"shin_{side}", g, fur, finish="hair")
+        g = Geo().blob((2.6, y, 2.4), (4.4, 4.5, 2.7), p=2.6, taper=(1.0, 0.85))
+        for dx in (4.6, 6.2):   # fur tufts at the toe
+            g.lathe([(1.5, 0), (0, 2.4)], (dx, y - 2.8, 4.0), (dx + 1.0, y - 3.2, 6.0), segs=8)
+        rig.part(f"foot_{side}", g, fur, finish="hair")
+        g = Geo().capsule((0.6, y, 10.2), (0.95, y, 7.6), 3.9, 3.7)
+        rig.part(f"shin_{side}", g, team=True, outline=0.7)   # team shin wraps (the 18% rule)
 
     # torso: bare chest, team pelt top with a shoulder strap; a short skirt (the legs show)
     g = Geo().blob((0, 0, 29), (11.5, 9.8, 11.5), p=2.2, taper=(1.08, 0.92))
@@ -157,6 +178,7 @@ def build(rig):
         g.lathe([(2.4, 0), (0, -3.4)], (-11.0, y, 22.8), segs=8)
     rig.part("cape", g, team=True)
     rig.secondary("skirt", "hips", (0.6, 0, 22.0), (-1.0, 0, 13.0), max_deg=10, gain=0.9)
+    rig.rest_offset["skirt"] = (0, 0, LIFT + 1.5)
     g = Geo().blob((0.8, 0, 21.2), (13.8, 11.9, 4.4), p=2.6, taper=(1.08, 0.98))
     for x, y in ((9.5, -6), (3, -11.5), (-5, -10.5), (11.5, 3), (-11, -3)):  # ragged hem
         g.lathe([(3.4, 0), (0, -3.6)], (x, y, 18.4), segs=10)
@@ -224,7 +246,10 @@ def build(rig):
         g.blob((6.6, y + yd - 1.6, 21.6), (1.9, 1.8, 2.3), p=2.2)   # thumb
         rig.part(f"fore_{side}", g, SKIN)
         g = Geo().capsule((2.9, y + yd, 25.4), (3.6, y + yd, 23.4), 4.5, 4.5)
-        rig.part(f"fore_{side}", g, LEATHER, outline=0.7)
+        if side == "r":   # team wrist wrap on the club arm (it crosses the chest in the walk carry)
+            rig.part(f"fore_{side}", g, team=True, outline=0.7)
+        else:
+            rig.part(f"fore_{side}", g, LEATHER, outline=0.7)
     g = Geo().blob((0.5, -12.6, 37.6), (7.4, 6.4, 5.6), p=2.4)
     rig.part("arm_r", g, team=True)
     g = Geo()
@@ -242,7 +267,8 @@ def build(rig):
     rig.joint("club_loose", "root", (0, 0, 0), hidden=True)
     _club(rig, "club_loose", (0.0, 0.0, -CLUB_HEAD * 0.6))
     rig.track("clubHead", "club", (FIST[0], FIST[1], FIST[2] + CLUB_HEAD))
-    rig.track("_foot", "shin_r", (3.2, -6.0, 0.5))
+    rig.track("_foot", "foot_r", (2.6, -6.0, 0.0))
+    rig.track("_foot_l", "foot_l", (2.6, 6.0, 0.0))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -279,14 +305,36 @@ def _idle(f):
     return M.idle_v2(f, base, frames=6, extra=extra, face_blink=F.expr("blink"), blink=4)
 
 
-def _walk(f):
-    # stomp: bow-legged, heavy down frame, the club bobbing a frame late
+# -- walk v3: G1 bounce jog at ground speed (card 70 x 1.25 = 87.5 lu/s), 8 x 70 ms -----------------
+RIG = None
+SPEED = 87.5
+LEGS = {s: G.Leg(f"thigh_{s}", f"shin_{s}", (1.0, y, ANKLE_Z), foot=f"foot_{s}",
+                 toe=(5.6, y, 0.3), heel=(-1.2, y, 0.3)) for s, y in (("r", -6.0), ("l", 6.0))}
+GAIT = G.Gait(8, 616, SPEED, G.biped_feet(LEGS["l"], LEGS["r"], x_mid=1.6, shift=0.5), 0.38,
+              lift=6.5, kick=3.0, reach=0.0, toe_off=24.0, early_lift=1.6, drag=0.3, lift_peak=0.38)
+# phase: the right foot touched down a little before frame 0, so frame 3 is in the flight
+for _k, (_leg, _ph, _x, _gz) in list(GAIT.feet.items()):
+    GAIT.feet[_k] = (_leg, _ph - 0.03, _x, _gz)
+
+
+class _OffArm:
+    @staticmethod
+    def pose(a, b):
+        return off_arm(a, b)
+
+
+# walk carry: the club rests on his shoulder (not the guard), the far arm pumps
+CARRY = merge(club_arm(-62, 74, 160), off_arm(-80, -20), {"torso": {"r": -3}, "club": {"rx": -10}})
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return {"club": {"r": -5 * lag}, "arm_r": {"r": 3 * lag},
-                "brow": {"z": 0.3 * lag}}
-    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=30.0, knee=62.0, lift_lu=7.0, bob_pct=0.07,
-                     lean=-8.0, arm=28.0, arms=("l",), bow=6.0, heavy_down=1.3, extra=extra)
+        return {"club": {"r": -6 * lag}, "arm_r": {"r": 4 * lag}, "fore_r": {"r": -3 * lag},
+                "strap": {"hide": True},
+                "brow": {"z": 0.3 * lag}, "hair": {"r": 6 * lag}}
+    return M.walk_v3(RIG, f, CARRY, GAIT, legs=LEGS, lean=-11.0, twist=7.0, nod=3.0,
+                     arms={"l": _OffArm}, arm=35.0, elbow=(55.0, 85.0), extra=extra, report=report)
 
 
 # 11 unique frames, moves.SMALL_MELEE_MS
@@ -352,6 +400,114 @@ def _attack_clip():
                   impact=M.SMALL_MELEE_IMPACT, smear=4, extra={}, overlays=ov)
 
 
+# -- attack B: horizontal baseball sweep at chest height (ANIM_SPEC appendix B) --------------------
+# unique frames: 0 = A read, 1 = A dip, 2 wind, 3 HOLD (club level behind, body coiled, front knee
+# up), 4 smear (club swinging away), 5 IMPACT (club level in front, body unwound, squash),
+# 6 follow-through (club wraps across), 7 recoil, 8 = A settle, 9 = A settle; played on A's steps
+B_SEQ = [0, 1, 2, 3, 4, 4, 5, 6, 7, 8, 9]
+#        wind  HOLD  smear  IMP   follow recoil
+B_A = [20, 12, 10, 18, 22, -2]
+B_F = [40, 12, 8, 14, 24, 16]
+B_C = [118, 16, 12, 20, 28, 36]
+B_RZ = [0, 168, 96, -24, -72, -36]       # arm yaw: 180 back, 90 away, 0 forward
+B_TRZ = [-22, -36, 0, 24, 40, 18]       # torso twist
+B_TR = [6, 10, -6, -14, -10, -6]
+B_HD = [-2, -4, 4, 8, 6, 2]
+B_X = [-2.0, -3.5, 3.0, 7.0, 7.5, 5.0]
+B_Z = [-1.0, 0.6, -1.0, -2.0, -1.0, -0.5]
+B_Q = [-0.06, 0.06, 0.04, -0.14, 0.04, -0.04]
+B_THR = [10, 26, 20, 26, 22, 14]
+B_SHR = [-20, -44, -12, -6, -8, -4]
+B_THL = [-6, -4, -14, -24, -22, -14]
+B_SHL = [-4, -8, -8, -8, -8, -4]
+B_OA = [-40, -20, -70, -120, -130, -100]
+B_OF = [10, 30, -20, -70, -80, -50]
+
+
+def _b_pose(i):
+    if i in (0, 1):
+        return _attack_pose(i)
+    if i in (8, 9):
+        return _attack_pose(i + 1)
+    k = i - 2
+    pose = merge(club_arm(B_A[k], B_F[k], B_C[k]), off_arm(B_OA[k], B_OF[k]), {
+        "club": {"rx": -14},
+        "arm_r": {"rz": B_RZ[k]},
+        "torso": {"r": B_TR[k], "rz": B_TRZ[k]},
+        "head": {"r": B_HD[k], "rz": -0.5 * B_TRZ[k]},
+        "thigh_r": {"r": B_THR[k]}, "shin_r": {"r": B_SHR[k]},
+        "thigh_l": {"r": B_THL[k]}, "shin_l": {"r": B_SHL[k]},
+    }, M.body_about((0, 0, 20), x=B_X[k], z=B_Z[k], q=B_Q[k]))
+    if k == 2:
+        pose["club"]["sx"] = 1.2
+    if k in (0, 1):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.8}})
+    elif k in (2, 3, 4):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+    else:
+        pose = merge(pose, F.expr("grit"))
+    return pose
+
+
+def _attack_b():
+    sweep = dict(CLUB_SMEAR, t0=0.0, t1=0.9, samples=18, taper=0.12, lines=3)
+    ov = {
+        4: [dict(sweep, **{"from": 3})],
+        5: [dict(sweep, t0=0.35, t1=0.95, lines=2, **{"from": 4}),
+            {"kind": "burst", "joint": "club", "point": CLUB_TIP, "r0_lu": 12.0, "r1_lu": 18.0, "n": 5,
+             "a0": -60.0, "arc": 120.0},
+            {"kind": "dust", "ground": (8.0, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 9, "spread": 0.8}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 9), 9: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(10)], M.SMALL_MELEE_MS, impact=5,
+                  sequence=B_SEQ, overlays=ov, reuse=reuse)
+
+
+# -- attack C: tap-tap-BONK: two quick ground taps, a short overhead bonk ------------------------
+# steps: raise 40, tap 45, raise 35, tap 40, HOLD 102, smear 28 | A's impact and settle (A frames)
+C_MS = [40, 45, 35, 40, 102, 28, 120, 60, 50, 70, 90]
+C_SEQ = [0, 1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+
+def _c_pose(i):
+    if i >= 4:
+        return _attack_pose(i + 2)
+    if i == 0:     # club lifted a little in front, a hop of the shoulders
+        pose = merge(club_arm(-4, 40, 58), off_arm(-60, -10), {
+            "club": {"rx": -14}, "torso": {"r": -4}, "head": {"r": 2},
+            "thigh_r": {"r": 6}, "thigh_l": {"r": -4}}, M.body_about((0, 0, 20), x=0.5, z=0.8, q=0.03))
+        return merge(pose, F.expr("grit"))
+    if i == 1:     # tap: the club head knocks the ground in front of him
+        pose = merge(club_arm(-34, -14, -10), off_arm(-70, -20), {
+            "club": {"rx": -14}, "torso": {"r": -14}, "head": {"r": 6},
+            "thigh_r": {"r": 10}, "shin_r": {"r": -4}, "thigh_l": {"r": -6}},
+            M.body_about((0, 0, 20), x=1.5, z=-1.2, q=-0.06))
+        return merge(pose, F.expr("grit"), {"pupils": {"z": -1.0}})
+    if i == 2:     # HOLD: the club straight up overhead (short), up on his toes, grinning
+        pose = merge(club_arm(64, 120, 96), off_arm(-30, 30), {
+            "club": {"rx": -14}, "torso": {"r": 6}, "head": {"r": -8},
+            "thigh_r": {"r": 4}, "shin_r": {"r": -6}, "thigh_l": {"r": -2}, "shin_l": {"r": -6}},
+            M.body_about((0, 0, 20), x=0.5, z=2.2, q=0.10))
+        return merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+    # smear: the club whips over the top, he leans in
+    pose = merge(club_arm(40, 60, 40), off_arm(-90, -50), {
+        "club": {"rx": -14, "sx": 1.2}, "torso": {"r": -16}, "head": {"r": 8},
+        "thigh_r": {"r": 22}, "shin_r": {"r": -16}, "thigh_l": {"r": -16}, "shin_l": {"r": -6}},
+        M.body_about((0, 0, 20), x=5.0, z=2.0, q=0.06))
+    return merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+
+
+def _attack_c():
+    tap = {"kind": "dust", "joint": "club", "point": (FIST[0], FIST[1], FIST[2] + CLUB_HEAD),
+           "ground_snap": True, "size_lu": 6.0, "puffs": 3, "seed": 21, "spread": 0.7}
+    ov = {1: [tap, {"kind": "burst", "joint": "club", "point": CLUB_TIP, "r0_lu": 8.0, "r1_lu": 12.0,
+                    "n": 3, "a0": 30.0, "arc": 120.0}],
+          3: [dict(CLUB_SMEAR, t0=0.0, t1=0.9, samples=14, **{"from": 2})]}
+    reuse = {4: ("attack", 6), 5: ("attack", 7), 6: ("attack", 8), 7: ("attack", 9), 8: ("attack", 10)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(9)], C_MS, impact=4, sequence=C_SEQ,
+                  overlays=ov, reuse=reuse, extra={"holdStep": 4})
+
+
 def _hit(k):
     def recoil(a):
         return {"head": {"r": 16 * a}, "torso": {"r": 12 * a},
@@ -394,11 +550,13 @@ def clips():
     cl = [
         # 6 unique idle poses in the same 920 ms (atlas budget)
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         # 8 unique KO poses in the 10 death steps (the last ones hold; atlas budget)
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

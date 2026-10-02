@@ -12,6 +12,14 @@ raises the pistol high overhead (about 65 degrees), holds, fires with a white-ma
 around a white flare core (never red, A17.12) and a smoke puff, kicks, then he throws his far
 arm out to point at the marked target and settles. The projectile spawns at the per-frame
 `muzzle` anchor; `binoculars` is exported for the mark reticle effect.
+
+Animation standard (ANIM_SPEC 2026-10-02):
+  walk      walk v3 bounce jog at ground speed (G1, 81 lu/s): the binoculars carried at his chest,
+            the flare pistol pumping with the near arm, the map case kicking, planted feet
+  attack    A as above; the hold is split into the aim and a jiggle frame (holdLoop)
+  attack_b  POINTED FLAT SHOT: swings the pistol out level at arm's length, sights along it (the
+            held extreme, holdLoop), fires a flat flare (flash forward), the kick flips his wrist up,
+            then he points at the target with the far arm and shouts
 """
 import math
 
@@ -24,6 +32,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "flare_spotter"
+GAIT_NAME = "biped"
 NAME = "Flare Spotter"
 HEIGHT_LU = 70
 CANVAS = (272, 248)
@@ -36,10 +45,15 @@ HR = (0.6, I.ARM_Y["r"] - 1.2, I.HAND_Z - 0.2)   # near fist
 BARREL = 14.0
 
 
+RIG = None
+
+
 def build(rig):
-    I.skeleton(rig)
-    I.legs(rig, trousers=I.CREAM_DK, gaiter=I.LEATHER, thigh_r=4.8)
-    I.jacket(rig, collar=I.COAL_LT)
+    global RIG
+    RIG = rig
+    KI.skeleton_v3(rig)
+    KI.legs_v3(rig, trousers=I.CREAM_DK, gaiter=I.LEATHER, thigh_r=4.5)
+    I.jacket(rig, collar=I.COAL_LT, hem_z=13.0)
     # Norfolk jacket pleats (darker team stripes are not allowed: use thin coal lines)
     g = Geo()
     for y in (-4.0, 4.0):
@@ -68,10 +82,10 @@ def build(rig):
     rig.part("torso", g, I.CREAM_DK, outline=0.3)
     g = Geo().capsule((11.4, 0.4, 30.2), (12.6, -1.4, 27.4), 1.1)
     rig.part("torso", g, I.BRASS_LT, finish="metal", outline=0.5)
-    rig.secondary("mapcase", "hips", (-2.0, -11.0, 18.0), (-3.0, -12.0, 8.0), max_deg=22, gain=1.3)
-    g = Geo().blob((-2.6, -12.2, 12.0), (4.2, 1.6, 4.4), p=3.0)
+    rig.secondary("mapcase", "hips", (-2.0, -11.0, 18.0), (-3.0, -12.0, 10.5), max_deg=22, gain=1.3)
+    g = Geo().blob((-2.6, -12.2, 14.2), (4.2, 1.6, 3.6), p=3.0)
     rig.part("mapcase", g, I.LEATHER, outline=0.6)
-    g = Geo().blob((-2.6, -13.6, 14.0), (3.6, 0.6, 1.6), p=3.0)
+    g = Geo().blob((-2.6, -13.6, 15.8), (3.6, 0.6, 1.4), p=3.0)
     rig.part("mapcase", g, I.LEATHER_DK, outline=0.3)
 
     for s in ("r", "l"):
@@ -104,7 +118,6 @@ def build(rig):
     g = Geo().sphere((muz[0] + 4.0, muz[1] - 2.4, muz[2]), 3.0, cuts=3)
     rig.part("flash", g, glow=I.FLARE_CORE, outline=0)
     I.smoke_puff(rig, "pistol", (muz[0] + 5.0, muz[1], muz[2] + 2.0), size=0.8)
-    rig.track("_foot", "shin_r", (3.4, -6.0, 0.5))
 
 
 def near(a, f, w):
@@ -139,23 +152,32 @@ def _idle(f):
         pose = merge(pose, F.expr("blink"))
     if f in (4, 6):
         pose = merge(pose, {"pupils": {"x": 0.6, "z": 0.4}})
-    return pose
+    return KI.ground_feet(RIG, pose, LEGS)
 
 
-def _walk(f):
+# -- walk v3: G1 bounce jog at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 77 ms --------------
+SPEED = 81.25
+LEGS = KI.legs_ik()
+GAIT = KI.jog_gait(LEGS, SPEED, cycle_ms=616)
+CHEST = (-40.0, 70.0)            # far arm: the binoculars carried at his chest on the jog
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        sw = math.cos(ctx["lag_p"])
+        sw = -math.cos(ctx["lag_p"])     # +1 = the near arm forward (the far leg is forward)
         a, fo, w = IDLE_R
-        return merge(near(a + 16 * sw, fo + 10 * sw + 3 * lag, w + 8 * sw),
-                     far(LOOK[0] + 3 * lag, LOOK[1] + 3 * lag, -3.0 * lag))
-    return M.walk_v2(f, {}, HEIGHT_LU, thigh=36.0, knee=66.0, lift_lu=7.0, bob_pct=0.065, lean=-9.0,
-                     arms=(), twist=6.0, extra=extra)
+        return merge(near(a + 28 * sw, fo + 22 * sw + 3 * lag, w + 14 * sw),
+                     far(CHEST[0] + 4 * lag - 8 * sw, CHEST[1] + 4 * lag, -3.0 * lag),
+                     {"mapcase": {"r": 6 * lag}, "hat": {"r": -1.5 * lag}})
+    return M.walk_v3(RIG, f, {}, GAIT, legs=LEGS, lean=-9.0, twist=6.0, nod=3.0, extra=extra, report=report)
 
 
-# 10 unique frames in 824 ms; the flare leaves on frame 3 at 291 ms (impactAt 0.3532, as shipped)
-ATTACK_MS = [50, 70, 171, 70, 80, 90, 90, 70, 80, 53]
-ATTACK_IMPACT = 3
+# 11 unique frames in 824 ms; the flare leaves on frame 4 at 291 ms (impactAt 0.3532, as shipped). The
+# shipped 171 ms hold is split into the hold (111) and a jiggle partner (60) for the holdLoop.
+ATTACK_MS = [50, 70, 111, 60, 70, 80, 90, 90, 70, 80, 53]
+ATTACK_IMPACT = 4
+U_OF = [0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9]     # unique frame -> row of the pose tables below
 #       dip raise HOLD FIRE kick point shout bounce settle settle
 NA = [-50, 20, 58, 60, 72, -30, -62, -62, -60, -60]
 NF = [-20, 50, 68, 70, 86, -20, -30, -26, -20, -18]
@@ -170,7 +192,10 @@ HD = [4, 8, 14, 14, 16, -6, -8, -2, 0, 0]
 
 
 def _attack_pose(f):
-    pose = merge(near(NA[f], NF[f], NW[f]), far(LA[f], LF[f]), {
+    wob = f == 3
+    f = U_OF[f]
+    j = 2.5 if wob else 0.0
+    pose = merge(near(NA[f] + j, NF[f] + j, NW[f] + 1.4 * j), far(LA[f] - 1.2 * j, LF[f]), {
         "torso": {"r": TR[f]},
         "head": {"r": HD[f]},
         "hat": {"z": [0, 0, 0, 0, 1.6, 0, 0, 0, 0, 0][f], "r": [0, 0, 0, 0, 8, -3, -2, 0, 0, 0][f]},
@@ -191,20 +216,75 @@ def _attack_pose(f):
         pose = merge(pose, F.expr("squeeze", "o"))
     elif f in (5, 6):
         pose = merge(pose, F.expr("yell"), {"brow": {"z": 1.0}})
-    return pose
+    return KI.ground_feet(RIG, pose, LEGS, toes={"r": -14, "l": -14} if f == 2 else None)
 
 
 def _attack_clip():
     ov = {
-        3: [{"kind": "burst", "joint": "pistol", "point": (HR[0] + 1.0 + BARREL, HR[1], HR[2] + 2.0),
+        4: [{"kind": "burst", "joint": "pistol", "point": (HR[0] + 1.0 + BARREL, HR[1], HR[2] + 2.0),
              "r0_lu": 7.0, "r1_lu": 12.0, "n": 6, "a0": 0.0, "arc": 150.0, "color": "#FBE3F4"}],
-        5: [{"kind": "rings", "joint": "head", "point": (15.0, 0.0, 42.0), "radii_lu": (7.0, 11.0),
+        6: [{"kind": "rings", "joint": "head", "point": (15.0, 0.0, 42.0), "radii_lu": (7.0, 11.0),
              "a0": -40.0, "a1": 40.0}],
-        6: [{"kind": "rings", "joint": "head", "point": (15.0, 0.0, 42.0), "radii_lu": (9.0, 14.0, 19.0),
+        7: [{"kind": "rings", "joint": "head", "point": (15.0, 0.0, 42.0), "radii_lu": (9.0, 14.0, 19.0),
              "a0": -40.0, "a1": 40.0}],
     }
-    return M.clip("attack", [_attack_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT,
-                  overlays=ov)
+    return M.clip("attack", [_attack_pose(f) for f in range(11)], ATTACK_MS, impact=ATTACK_IMPACT,
+                  overlays=ov, extra={"holdStep": 2, "holdLoop": [2, 3]})
+
+
+# -- attack B: pointed flat shot ----------------------------------------------------------------
+# unique frames: 0 = A dip, 1 swing out, 2 HOLD (the pistol level at arm's length, sighting along it,
+# the far hand steadying the wrist), 3 jiggle (holdLoop), 4 FIRE (a flat flare, flash forward),
+# 5 kick (the wrist flips up), 6 point (the far arm at the target), 7 shout, 8 settle, 9-10 = A settle
+#        out  HOLD jig  FIRE kick point shout settle
+PB_NA = [-30, -4, -2, -4, 30, -50, -60, -60]
+PB_NF = [-20, -2, 0, -2, 46, -40, -32, -24]
+PB_NW = [-10, -2, 1, -2, 50, -20, -26, -22]
+PB_LA = [-40, -16, -18, -16, -40, 4, 8, -10]
+PB_LF = [-20, -14, -16, -14, -60, 6, 12, 10]
+PB_TR = [-4, -8, -8, -8, 6, -12, -14, -6]
+PB_HD = [-2, -6, -7, -6, 10, -6, -8, -2]
+PB_BX = [1.0, 2.0, 2.0, 1.0, -2.5, 3.0, 3.5, 2.0]
+PB_BZ = [-1.0, -1.6, -1.6, -1.6, -0.4, -1.0, -0.8, 0.0]
+PB_BQ = [-0.04, -0.06, -0.06, 0.04, -0.08, -0.03, -0.02, 0.0]
+PB_TH = [(8, -8), (16, -14), (16, -14), (16, -14), (10, -16), (16, -14), (18, -16), (10, -8)]
+
+
+def _b_pose(i):
+    if i in (0, 9, 10):
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(near(PB_NA[k], PB_NF[k], PB_NW[k]), far(PB_LA[k], PB_LF[k]), {
+        "torso": {"r": PB_TR[k]},
+        "head": {"r": PB_HD[k], "x": 1.0 if k in (1, 2) else 0.0},
+        "hat": {"z": 1.6 if k == 4 else 0.0, "r": [0, 0, 0, 0, 8, -3, -2, 0][k]},
+        "thigh_r": {"r": PB_TH[k][0]}, "thigh_l": {"r": PB_TH[k][1]},
+        "flash": {"show": k == 3},
+        "smoke": {"show": k in (4, 5), "s": [1, 1, 1, 1, 0.9, 1.3, 1, 1][k], "z": [0, 0, 0, 0, 0, 3, 0, 0][k]},
+        "mapcase": {"r": [0, 0, 0, 0, -10, 12, 4, -4][k]},
+    }, M.body_about((0, 0, 22), x=PB_BX[k], z=PB_BZ[k], q=PB_BQ[k]))
+    if k in (1, 2):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.8}})
+    elif k in (3, 4):
+        pose = merge(pose, F.expr("squeeze", "o"))
+    elif k in (5, 6):
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": 1.0}})
+    return KI.ground_feet(RIG, pose, LEGS)
+
+
+def _attack_b():
+    muz = (HR[0] + 1.0 + BARREL, HR[1], HR[2] + 2.0)
+    ov = {
+        4: [{"kind": "burst", "joint": "pistol", "point": muz, "r0_lu": 7.0, "r1_lu": 12.0, "n": 6,
+             "a0": -60.0, "arc": 120.0, "color": "#FBE3F4"}],
+        6: [{"kind": "rings", "joint": "head", "point": (15.0, 0.0, 42.0), "radii_lu": (7.0, 11.0),
+             "a0": -40.0, "a1": 40.0}],
+        7: [{"kind": "rings", "joint": "head", "point": (15.0, 0.0, 42.0), "radii_lu": (9.0, 14.0, 19.0),
+             "a0": -40.0, "a1": 40.0}],
+    }
+    reuse = {0: ("attack", 0), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(11)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 2, "holdLoop": [2, 3]})
 
 
 def _hit(k):
@@ -236,13 +316,14 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(8)], [IDLE_MS] * 8, loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
     by = {c.name: c for c in cl}
     assert by["idle"].total_ms() == 1200
-    M.check_contract([c for c in cl if c.name != "idle"], attack_ms=824, attack_impact_at=0.3532)
+    M.check_variants(M.check_contract([c for c in cl if c.name != "idle"], attack_ms=824, attack_impact_at=0.3532))
     return cl

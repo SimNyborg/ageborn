@@ -1,0 +1,988 @@
+{
+ "frames": {
+  "pikeman_attack_b_02": {
+   "frame": {
+    "x": 2004,
+    "y": 2,
+    "w": 244,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 177,
+    "w": 244,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_b_02_team": {
+   "frame": {
+    "x": 793,
+    "y": 430,
+    "w": 197,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 176,
+    "w": 197,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_b_03": {
+   "frame": {
+    "x": 272,
+    "y": 2,
+    "w": 224,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 167,
+    "w": 224,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_b_03_team": {
+   "frame": {
+    "x": 406,
+    "y": 430,
+    "w": 161,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 166,
+    "w": 161,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_b_04": {
+   "frame": {
+    "x": 798,
+    "y": 2,
+    "w": 246,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 231,
+    "y": 173,
+    "w": 246,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_b_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 430,
+    "w": 189,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 167,
+    "w": 189,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_b_05": {
+   "frame": {
+    "x": 1048,
+    "y": 2,
+    "w": 257,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 250,
+    "y": 187,
+    "w": 257,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_b_05_team": {
+   "frame": {
+    "x": 478,
+    "y": 224,
+    "w": 200,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 240,
+    "y": 178,
+    "w": 200,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_b_06": {
+   "frame": {
+    "x": 500,
+    "y": 2,
+    "w": 294,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 256,
+    "y": 213,
+    "w": 294,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_b_06_team": {
+   "frame": {
+    "x": 1915,
+    "y": 224,
+    "w": 208,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 251,
+    "y": 204,
+    "w": 208,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_b_07": {
+   "frame": {
+    "x": 1309,
+    "y": 2,
+    "w": 238,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 261,
+    "y": 190,
+    "w": 238,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_b_07_team": {
+   "frame": {
+    "x": 1551,
+    "y": 2,
+    "w": 187,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 257,
+    "y": 185,
+    "w": 187,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_b_08": {
+   "frame": {
+    "x": 1391,
+    "y": 224,
+    "w": 269,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 194,
+    "w": 269,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_b_08_team": {
+   "frame": {
+    "x": 571,
+    "y": 430,
+    "w": 218,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 235,
+    "y": 191,
+    "w": 218,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_01": {
+   "frame": {
+    "x": 2127,
+    "y": 224,
+    "w": 286,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 241,
+    "y": 197,
+    "w": 286,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_01_team": {
+   "frame": {
+    "x": 1501,
+    "y": 430,
+    "w": 211,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 189,
+    "w": 211,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_02": {
+   "frame": {
+    "x": 877,
+    "y": 224,
+    "w": 255,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 192,
+    "w": 255,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_02_team": {
+   "frame": {
+    "x": 682,
+    "y": 224,
+    "w": 191,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 188,
+    "w": 191,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_03": {
+   "frame": {
+    "x": 1742,
+    "y": 2,
+    "w": 258,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 198,
+    "w": 258,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_03_team": {
+   "frame": {
+    "x": 2252,
+    "y": 2,
+    "w": 207,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 197,
+    "w": 207,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 266,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 226,
+    "y": 183,
+    "w": 266,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_04_team": {
+   "frame": {
+    "x": 269,
+    "y": 224,
+    "w": 205,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 225,
+    "y": 177,
+    "w": 205,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_05": {
+   "frame": {
+    "x": 2,
+    "y": 224,
+    "w": 263,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 252,
+    "y": 181,
+    "w": 263,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_05_team": {
+   "frame": {
+    "x": 195,
+    "y": 430,
+    "w": 207,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 246,
+    "y": 171,
+    "w": 207,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_06": {
+   "frame": {
+    "x": 1188,
+    "y": 430,
+    "w": 309,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 255,
+    "y": 203,
+    "w": 309,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_06_team": {
+   "frame": {
+    "x": 1918,
+    "y": 430,
+    "w": 224,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 253,
+    "y": 193,
+    "w": 224,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_07": {
+   "frame": {
+    "x": 1136,
+    "y": 224,
+    "w": 251,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 262,
+    "y": 185,
+    "w": 251,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_07_team": {
+   "frame": {
+    "x": 994,
+    "y": 430,
+    "w": 190,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 258,
+    "y": 176,
+    "w": 190,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_08": {
+   "frame": {
+    "x": 1664,
+    "y": 224,
+    "w": 247,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 241,
+    "y": 191,
+    "w": 247,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  },
+  "pikeman_attack_c_08_team": {
+   "frame": {
+    "x": 1716,
+    "y": 430,
+    "w": 198,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 231,
+    "y": 184,
+    "w": 198,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 588,
+    "h": 422
+   },
+   "anchor": {
+    "x": 0.45578,
+    "y": 0.86256
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "pikeman_attack_00",
+   "pikeman_attack_01",
+   "pikeman_attack_b_02",
+   "pikeman_attack_b_03",
+   "pikeman_attack_b_04",
+   "pikeman_attack_b_05",
+   "pikeman_attack_b_06",
+   "pikeman_attack_b_07",
+   "pikeman_attack_b_08",
+   "pikeman_attack_09",
+   "pikeman_attack_10"
+  ],
+  "attack_b_team": [
+   "pikeman_attack_00_team",
+   "pikeman_attack_01_team",
+   "pikeman_attack_b_02_team",
+   "pikeman_attack_b_03_team",
+   "pikeman_attack_b_04_team",
+   "pikeman_attack_b_05_team",
+   "pikeman_attack_b_06_team",
+   "pikeman_attack_b_07_team",
+   "pikeman_attack_b_08_team",
+   "pikeman_attack_09_team",
+   "pikeman_attack_10_team"
+  ],
+  "attack_c": [
+   "pikeman_attack_00",
+   "pikeman_attack_c_01",
+   "pikeman_attack_c_02",
+   "pikeman_attack_c_03",
+   "pikeman_attack_c_04",
+   "pikeman_attack_c_05",
+   "pikeman_attack_c_06",
+   "pikeman_attack_c_07",
+   "pikeman_attack_c_08",
+   "pikeman_attack_09",
+   "pikeman_attack_10"
+  ],
+  "attack_c_team": [
+   "pikeman_attack_00_team",
+   "pikeman_attack_c_01_team",
+   "pikeman_attack_c_02_team",
+   "pikeman_attack_c_03_team",
+   "pikeman_attack_c_04_team",
+   "pikeman_attack_c_05_team",
+   "pikeman_attack_c_06_team",
+   "pikeman_attack_c_07_team",
+   "pikeman_attack_c_08_team",
+   "pikeman_attack_09_team",
+   "pikeman_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "pikeman.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 2560,
+   "h": 616
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.pikeman",
+   "name": "Pikeman",
+   "heightLu": 72,
+   "widthLu": 68.3,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    268,
+    364
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     68
+    ],
+    "hitCenter": [
+     0,
+     33
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "pikeman",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "pikeTip": [
+       [
+        51.1,
+        69.8
+       ],
+       [
+        67.1,
+        30.4
+       ],
+       [
+        72.1,
+        35.1
+       ],
+       [
+        51.1,
+        23.4
+       ],
+       [
+        80.6,
+        6.9
+       ],
+       [
+        93.1,
+        -7.5
+       ],
+       [
+        101.3,
+        -10.5
+       ],
+       [
+        90.0,
+        -8.5
+       ],
+       [
+        95.9,
+        8.3
+       ],
+       [
+        82.2,
+        42.6
+       ],
+       [
+        59.1,
+        67.0
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      35,
+      40,
+      110,
+      45,
+      30,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "anchorsLu": {
+      "pikeTip": [
+       [
+        51.1,
+        69.8
+       ],
+       [
+        95.0,
+        13.4
+       ],
+       [
+        72.9,
+        -2.7
+       ],
+       [
+        69.1,
+        -10.2
+       ],
+       [
+        86.5,
+        4.3
+       ],
+       [
+        95.6,
+        25.3
+       ],
+       [
+        107.3,
+        32.4
+       ],
+       [
+        95.5,
+        32.8
+       ],
+       [
+        85.1,
+        45.9
+       ],
+       [
+        82.2,
+        42.6
+       ],
+       [
+        59.1,
+        67.0
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

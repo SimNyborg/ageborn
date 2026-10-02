@@ -100,7 +100,7 @@ def legs(rig, trousers=DENIM, boot=BOOT, team=False, thigh_r=4.9, hip_z=HIP_Z, c
         rig.part(f"shin_{s}", g, COAL, outline=0.4)
 
 
-def overalls(rig, shirt=CREAM, strap_button=BRASS_LT, pocket=True):
+def overalls(rig, shirt=CREAM, strap_button=BRASS_LT, pocket=True, hem_z=11.0):
     """Team overalls: a bib with a pocket and shoulder braces with brass buttons over a shirt."""
     g = Geo().blob((0, 0, 28.0), (10.4, 9.4, 11.4), p=2.4, taper=(1.06, 0.94))
     rig.part("torso", g, shirt)
@@ -123,11 +123,12 @@ def overalls(rig, shirt=CREAM, strap_button=BRASS_LT, pocket=True):
     g = Geo().blob((1.2, 0, 37.2), (7.0, 7.6, 2.4), p=2.4)    # open shirt collar
     rig.part("torso", g, shirt)
     g = Geo().blob((0.5, 0, 15.8), (11.2, 10.2, 5.8), p=2.6, taper=(1.1, 1.0))
-    g.clip((0, 0, 11.0), (0, 0, -1))
+    g.clip((0, 0, hem_z), (0, 0, -1))
     rig.part("hips", g, team=True)
 
 
-def long_coat(rig, lapel=COAL_LT, buttons=BRASS_LT, belt=LEATHER, tails=True, tail_len=13.0, long=False):
+def long_coat(rig, lapel=COAL_LT, buttons=BRASS_LT, belt=LEATHER, tails=True, tail_len=13.0, long=False,
+              hem_z=11.0, skirt_z=4.5):
     """A long team coat (duster): body, lapels, a row of buttons, a belt, and coat tails on a
     follow-through joint that swing behind the legs. long=True: the skirt flares down to the
     shins (the Carbineer's duster)."""
@@ -149,15 +150,15 @@ def long_coat(rig, lapel=COAL_LT, buttons=BRASS_LT, belt=LEATHER, tails=True, ta
     if long:
         # open at the front (the legs stay readable), the back panel hangs to the shins
         g = Geo().blob((0.4, 0, 15.2), (11.6, 10.6, 5.4), p=2.6, taper=(1.12, 1.0))
-        g.clip((0, 0, 11.0), (0, 0, -1))
+        g.clip((0, 0, hem_z), (0, 0, -1))
         rig.part("hips", g, team=True)
         g = Geo().blob((-1.0, 0, 11.0), (11.6, 11.4, 9.0), p=2.6, taper=(1.2, 0.98))
-        g.clip((0, 0, 4.5), (0, 0, -1)).clip((0, 0, 16.0), (0, 0, 1)).clip((-1.0, 0, 0), (1, 0, 0))
+        g.clip((0, 0, skirt_z), (0, 0, -1)).clip((0, 0, 16.0), (0, 0, 1)).clip((-1.0, 0, 0), (1, 0, 0))
         g.clip((0, -3.0, 0), (0, -1, 0))
         rig.part("hips", g, team=True)
     else:
         g = Geo().blob((0.4, 0, 15.2), (11.6, 10.6, 5.4), p=2.6, taper=(1.12, 1.0))
-        g.clip((0, 0, 11.0), (0, 0, -1))
+        g.clip((0, 0, hem_z), (0, 0, -1))
         rig.part("hips", g, team=True)
     if tails:
         rig.secondary("coattail", "hips", (-4.0, 0, 15.0), (-9.0, 0, 15.0 - tail_len), max_deg=22, gain=1.1)
@@ -171,7 +172,7 @@ def long_coat(rig, lapel=COAL_LT, buttons=BRASS_LT, belt=LEATHER, tails=True, ta
             rig.part("coattail", g, COAL_LT, outline=0.5)
 
 
-def jacket(rig, collar=COAL_LT, buttons=BRASS_LT, belt=LEATHER, skirt=True):
+def jacket(rig, collar=COAL_LT, buttons=BRASS_LT, belt=LEATHER, skirt=True, hem_z=11.0):
     """A short team work jacket (reefer): chest, collar, two buttons, a belt, a short skirt."""
     g = Geo().blob((0, 0, 28.0), (10.6, 9.6, 11.6), p=2.4, taper=(1.08, 0.94))
     g.blob((0, 0, 18.4), (10.4, 9.6, 4.6), p=2.6)
@@ -186,7 +187,7 @@ def jacket(rig, collar=COAL_LT, buttons=BRASS_LT, belt=LEATHER, skirt=True):
     rig.part("torso", g, belt)
     if skirt:
         g = Geo().blob((0.5, 0, 15.8), (11.4, 10.4, 5.8), p=2.6, taper=(1.1, 1.0))
-        g.clip((0, 0, 11.0), (0, 0, -1))
+        g.clip((0, 0, hem_z), (0, 0, -1))
         rig.part("hips", g, team=True)
 
 

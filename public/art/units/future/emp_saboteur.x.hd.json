@@ -1,0 +1,1037 @@
+{
+ "frames": {
+  "emp_saboteur_attack_b_01": {
+   "frame": {
+    "x": 2,
+    "y": 251,
+    "w": 136,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 184,
+    "w": 136,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_b_01_team": {
+   "frame": {
+    "x": 754,
+    "y": 640,
+    "w": 114,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 199,
+    "w": 114,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_b_02": {
+   "frame": {
+    "x": 411,
+    "y": 2,
+    "w": 138,
+    "h": 213
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 168,
+    "w": 138,
+    "h": 213
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_b_02_team": {
+   "frame": {
+    "x": 220,
+    "y": 640,
+    "w": 119,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 191,
+    "w": 119,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_b_03": {
+   "frame": {
+    "x": 553,
+    "y": 2,
+    "w": 177,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 172,
+    "w": 177,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_b_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 640,
+    "w": 115,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 187,
+    "w": 115,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_b_04": {
+   "frame": {
+    "x": 219,
+    "y": 2,
+    "w": 188,
+    "h": 243
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 148,
+    "y": 140,
+    "w": 188,
+    "h": 243
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_b_04_team": {
+   "frame": {
+    "x": 451,
+    "y": 640,
+    "w": 109,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 196,
+    "w": 109,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 213,
+    "h": 245
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 139,
+    "w": 213,
+    "h": 245
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_b_05_team": {
+   "frame": {
+    "x": 343,
+    "y": 640,
+    "w": 104,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 225,
+    "y": 196,
+    "w": 104,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_b_06": {
+   "frame": {
+    "x": 312,
+    "y": 251,
+    "w": 230,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 225,
+    "y": 226,
+    "w": 230,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_b_06_team": {
+   "frame": {
+    "x": 893,
+    "y": 809,
+    "w": 109,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 247,
+    "y": 226,
+    "w": 109,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_b_07": {
+   "frame": {
+    "x": 734,
+    "y": 2,
+    "w": 189,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 182,
+    "w": 189,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_b_07_team": {
+   "frame": {
+    "x": 196,
+    "y": 809,
+    "w": 90,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 248,
+    "y": 203,
+    "w": 90,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_b_08": {
+   "frame": {
+    "x": 182,
+    "y": 454,
+    "w": 198,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 214,
+    "y": 205,
+    "w": 198,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_b_08_team": {
+   "frame": {
+    "x": 290,
+    "y": 809,
+    "w": 111,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 215,
+    "y": 205,
+    "w": 111,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_01": {
+   "frame": {
+    "x": 384,
+    "y": 454,
+    "w": 161,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 162,
+    "y": 207,
+    "w": 161,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_01_team": {
+   "frame": {
+    "x": 405,
+    "y": 809,
+    "w": 118,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 210,
+    "w": 118,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_02": {
+   "frame": {
+    "x": 758,
+    "y": 454,
+    "w": 169,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 150,
+    "y": 217,
+    "w": 169,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_02_team": {
+   "frame": {
+    "x": 527,
+    "y": 809,
+    "w": 127,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 220,
+    "w": 127,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_03": {
+   "frame": {
+    "x": 564,
+    "y": 640,
+    "w": 186,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 129,
+    "y": 224,
+    "w": 186,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_03_team": {
+   "frame": {
+    "x": 752,
+    "y": 809,
+    "w": 137,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 225,
+    "w": 137,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_04": {
+   "frame": {
+    "x": 748,
+    "y": 251,
+    "w": 183,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 149,
+    "y": 199,
+    "w": 183,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_04_team": {
+   "frame": {
+    "x": 89,
+    "y": 809,
+    "w": 103,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 201,
+    "w": 103,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_05": {
+   "frame": {
+    "x": 546,
+    "y": 251,
+    "w": 198,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 196,
+    "w": 198,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_05_team": {
+   "frame": {
+    "x": 121,
+    "y": 640,
+    "w": 95,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 238,
+    "y": 192,
+    "w": 95,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_06": {
+   "frame": {
+    "x": 549,
+    "y": 454,
+    "w": 205,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 232,
+    "y": 212,
+    "w": 205,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_06_team": {
+   "frame": {
+    "x": 658,
+    "y": 809,
+    "w": 90,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 262,
+    "y": 221,
+    "w": 90,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_07": {
+   "frame": {
+    "x": 142,
+    "y": 251,
+    "w": 166,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 239,
+    "y": 190,
+    "w": 166,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 809,
+    "w": 83,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 260,
+    "y": 200,
+    "w": 83,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_08": {
+   "frame": {
+    "x": 2,
+    "y": 454,
+    "w": 176,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 202,
+    "w": 176,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  },
+  "emp_saboteur_attack_c_08_team": {
+   "frame": {
+    "x": 872,
+    "y": 640,
+    "w": 105,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 200,
+    "w": 105,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 582,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.46048,
+    "y": 0.82805
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "emp_saboteur_attack_00",
+   "emp_saboteur_attack_b_01",
+   "emp_saboteur_attack_b_02",
+   "emp_saboteur_attack_b_03",
+   "emp_saboteur_attack_b_04",
+   "emp_saboteur_attack_b_05",
+   "emp_saboteur_attack_b_06",
+   "emp_saboteur_attack_b_07",
+   "emp_saboteur_attack_b_08",
+   "emp_saboteur_attack_09",
+   "emp_saboteur_attack_10"
+  ],
+  "attack_b_team": [
+   "emp_saboteur_attack_00_team",
+   "emp_saboteur_attack_b_01_team",
+   "emp_saboteur_attack_b_02_team",
+   "emp_saboteur_attack_b_03_team",
+   "emp_saboteur_attack_b_04_team",
+   "emp_saboteur_attack_b_05_team",
+   "emp_saboteur_attack_b_06_team",
+   "emp_saboteur_attack_b_07_team",
+   "emp_saboteur_attack_b_08_team",
+   "emp_saboteur_attack_09_team",
+   "emp_saboteur_attack_10_team"
+  ],
+  "attack_c": [
+   "emp_saboteur_attack_00",
+   "emp_saboteur_attack_c_01",
+   "emp_saboteur_attack_c_02",
+   "emp_saboteur_attack_c_03",
+   "emp_saboteur_attack_c_04",
+   "emp_saboteur_attack_c_05",
+   "emp_saboteur_attack_c_06",
+   "emp_saboteur_attack_c_07",
+   "emp_saboteur_attack_c_08",
+   "emp_saboteur_attack_09",
+   "emp_saboteur_attack_10"
+  ],
+  "attack_c_team": [
+   "emp_saboteur_attack_00_team",
+   "emp_saboteur_attack_c_01_team",
+   "emp_saboteur_attack_c_02_team",
+   "emp_saboteur_attack_c_03_team",
+   "emp_saboteur_attack_c_04_team",
+   "emp_saboteur_attack_c_05_team",
+   "emp_saboteur_attack_c_06_team",
+   "emp_saboteur_attack_c_07_team",
+   "emp_saboteur_attack_c_08_team",
+   "emp_saboteur_attack_09_team",
+   "emp_saboteur_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "emp_saboteur.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1024,
+   "h": 968
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.emp_saboteur",
+   "name": "EMP Saboteur",
+   "heightLu": 70,
+   "widthLu": 68.7,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    268,
+    366
+   ],
+   "anchorsLu": {
+    "head": [
+     6,
+     64
+    ],
+    "hitCenter": [
+     2,
+     30
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "emp_saboteur",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "batonTip": [
+       [
+        39.1,
+        33.5
+       ],
+       [
+        -5.9,
+        69.3
+       ],
+       [
+        -31.0,
+        74.6
+       ],
+       [
+        -44.4,
+        63.0
+       ],
+       [
+        21.8,
+        85.2
+       ],
+       [
+        62.8,
+        14.9
+       ],
+       [
+        57.7,
+        -7.2
+       ],
+       [
+        51.5,
+        -1.0
+       ],
+       [
+        53.6,
+        13.7
+       ],
+       [
+        46.2,
+        28.6
+       ],
+       [
+        40.8,
+        31.5
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "batonTip": [
+       [
+        39.1,
+        33.5
+       ],
+       [
+        -38.4,
+        26.9
+       ],
+       [
+        -43.1,
+        12.6
+       ],
+       [
+        -43.9,
+        6.4
+       ],
+       [
+        -2.3,
+        55.7
+       ],
+       [
+        43.6,
+        48.3
+       ],
+       [
+        53.2,
+        7.2
+       ],
+       [
+        48.8,
+        9.9
+       ],
+       [
+        48.3,
+        26.4
+       ],
+       [
+        46.2,
+        28.6
+       ],
+       [
+        40.8,
+        31.5
+       ]
+      ]
+     },
+     "holdStep": 3
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

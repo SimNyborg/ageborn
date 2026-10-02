@@ -431,11 +431,14 @@ export const ADAPTIVE_HINTS: readonly AdaptiveHintDef[] = [
  * the age's two starter powers (A2.9.8).
  */
 export function starterLoadout(content: CompiledContent, age: AgeId): Loadout {
-  const units = Object.values(content.units).filter((u) => u.age === age && u.rarity === 'common' && !u.hidden && u.starter === true);
+  // Content without the X0 `starter` flags (the fakes, older tables) treats every Common as a starter.
+  const flagged = Object.values(content.units).some((u) => u.starter !== undefined);
+  const turretsFlagged = Object.values(content.turrets).some((t) => t.starter !== undefined);
+  const units = Object.values(content.units).filter((u) => u.age === age && u.rarity === 'common' && !u.hidden && (!flagged || u.starter === true));
   const byGroup = (g: string): CardId | null => units.find((u) => u.group === g)?.id ?? null;
   const antiHeavy = Object.values(content.units).find((u) => u.age === age && u.group === 'antiArmor' && u.rarity === 'rare' && !u.hidden)?.id ?? null;
   const turrets = Object.values(content.turrets)
-    .filter((t) => t.age === age && t.rarity === 'common' && t.starter === true)
+    .filter((t) => t.age === age && t.rarity === 'common' && (!turretsFlagged || t.starter === true))
     .map((t) => t.id);
   const starter = (slot: 'home' | 'field'): CardId | null =>
     Object.values(content.powers).find((p) => p.age === age && p.slot === slot && p.source === 'starter')?.id ?? null;

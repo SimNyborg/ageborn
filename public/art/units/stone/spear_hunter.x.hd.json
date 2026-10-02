@@ -1,0 +1,671 @@
+{
+ "frames": {
+  "spear_hunter_attack_b_01": {
+   "frame": {
+    "x": 418,
+    "y": 419,
+    "w": 233,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 160,
+    "w": 233,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_b_01_team": {
+   "frame": {
+    "x": 655,
+    "y": 419,
+    "w": 173,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 151,
+    "w": 173,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 609,
+    "w": 238,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 170,
+    "w": 238,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_b_02_team": {
+   "frame": {
+    "x": 244,
+    "y": 609,
+    "w": 168,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 161,
+    "w": 168,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_b_03": {
+   "frame": {
+    "x": 758,
+    "y": 2,
+    "w": 231,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 226,
+    "y": 147,
+    "w": 231,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_b_03_team": {
+   "frame": {
+    "x": 579,
+    "y": 2,
+    "w": 175,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 138,
+    "w": 175,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_b_04": {
+   "frame": {
+    "x": 620,
+    "y": 609,
+    "w": 274,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 252,
+    "y": 174,
+    "w": 274,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_b_04_team": {
+   "frame": {
+    "x": 416,
+    "y": 609,
+    "w": 200,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 256,
+    "y": 165,
+    "w": 200,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 419,
+    "w": 227,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 253,
+    "y": 158,
+    "w": 227,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_b_05_team": {
+   "frame": {
+    "x": 233,
+    "y": 419,
+    "w": 181,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 257,
+    "y": 149,
+    "w": 181,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_c_00": {
+   "frame": {
+    "x": 765,
+    "y": 214,
+    "w": 234,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 226,
+    "y": 150,
+    "w": 234,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_c_00_team": {
+   "frame": {
+    "x": 583,
+    "y": 214,
+    "w": 178,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 236,
+    "y": 140,
+    "w": 178,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_c_01": {
+   "frame": {
+    "x": 210,
+    "y": 2,
+    "w": 211,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 137,
+    "w": 211,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_c_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 214,
+    "w": 154,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 128,
+    "w": 154,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_c_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 204,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 134,
+    "w": 204,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_c_02_team": {
+   "frame": {
+    "x": 425,
+    "y": 2,
+    "w": 150,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 125,
+    "w": 150,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_c_03": {
+   "frame": {
+    "x": 160,
+    "y": 214,
+    "w": 231,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 238,
+    "y": 141,
+    "w": 231,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_attack_c_03_team": {
+   "frame": {
+    "x": 395,
+    "y": 214,
+    "w": 184,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 248,
+    "y": 132,
+    "w": 184,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 376
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "spear_hunter_attack_00",
+   "spear_hunter_attack_b_01",
+   "spear_hunter_attack_b_01",
+   "spear_hunter_attack_b_02",
+   "spear_hunter_attack_b_03",
+   "spear_hunter_attack_b_03",
+   "spear_hunter_attack_b_04",
+   "spear_hunter_attack_b_05",
+   "spear_hunter_attack_b_05",
+   "spear_hunter_attack_09",
+   "spear_hunter_attack_10"
+  ],
+  "attack_b_team": [
+   "spear_hunter_attack_00_team",
+   "spear_hunter_attack_b_01_team",
+   "spear_hunter_attack_b_01_team",
+   "spear_hunter_attack_b_02_team",
+   "spear_hunter_attack_b_03_team",
+   "spear_hunter_attack_b_03_team",
+   "spear_hunter_attack_b_04_team",
+   "spear_hunter_attack_b_05_team",
+   "spear_hunter_attack_b_05_team",
+   "spear_hunter_attack_09_team",
+   "spear_hunter_attack_10_team"
+  ],
+  "attack_c": [
+   "spear_hunter_attack_c_00",
+   "spear_hunter_attack_c_01",
+   "spear_hunter_attack_c_02",
+   "spear_hunter_attack_c_03",
+   "spear_hunter_attack_c_03",
+   "spear_hunter_attack_b_04",
+   "spear_hunter_attack_b_05",
+   "spear_hunter_attack_b_05",
+   "spear_hunter_attack_09",
+   "spear_hunter_attack_10"
+  ],
+  "attack_c_team": [
+   "spear_hunter_attack_c_00_team",
+   "spear_hunter_attack_c_01_team",
+   "spear_hunter_attack_c_02_team",
+   "spear_hunter_attack_c_03_team",
+   "spear_hunter_attack_c_03_team",
+   "spear_hunter_attack_b_04_team",
+   "spear_hunter_attack_b_05_team",
+   "spear_hunter_attack_b_05_team",
+   "spear_hunter_attack_09_team",
+   "spear_hunter_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "spear_hunter.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1024,
+   "h": 788
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.spear_hunter",
+   "name": "Spear Hunter",
+   "heightLu": 72,
+   "widthLu": 82.5,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    266,
+    326
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     70
+    ],
+    "hitCenter": [
+     0,
+     34
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "spear_hunter",
+   "clips": {
+    "attack_b": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      3,
+      4,
+      5,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 4,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "anchorsLu": {
+      "spearTip": [
+       [
+        59.9,
+        33.6
+       ],
+       [
+        55.8,
+        21.3
+       ],
+       [
+        54.3,
+        18.3
+       ],
+       [
+        71.8,
+        19.5
+       ],
+       [
+        90.3,
+        15.0
+       ],
+       [
+        81.5,
+        19.2
+       ],
+       [
+        69.1,
+        22.1
+       ],
+       [
+        61.3,
+        34.5
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      3,
+      4,
+      5,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      45,
+      45,
+      110,
+      45,
+      45,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 4,
+     "impactStep": 5,
+     "impactAt": 0.4265,
+     "holdStep": 2,
+     "anchorsLu": {
+      "spearTip": [
+       [
+        69.6,
+        27.9
+       ],
+       [
+        47.2,
+        30.5
+       ],
+       [
+        40.6,
+        41.9
+       ],
+       [
+        76.7,
+        23.6
+       ],
+       [
+        90.3,
+        15.0
+       ],
+       [
+        81.5,
+        19.2
+       ],
+       [
+        69.1,
+        22.1
+       ],
+       [
+        61.3,
+        34.5
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

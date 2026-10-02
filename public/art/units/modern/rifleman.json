@@ -2,7 +2,7 @@
  "frames": {
   "rifleman_idle_00": {
    "frame": {
-    "x": 1056,
+    "x": 1028,
     "y": 112,
     "w": 91,
     "h": 90
@@ -11,7 +11,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 92,
-    "y": 97,
+    "y": 95,
     "w": 91,
     "h": 90
    },
@@ -26,248 +26,8 @@
   },
   "rifleman_idle_00_team": {
    "frame": {
-    "x": 745,
-    "y": 300,
-    "w": 53,
-    "h": 81
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 93,
-    "y": 92,
-    "w": 53,
-    "h": 81
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 221
-   },
-   "anchor": {
-    "x": 0.44161,
-    "y": 0.8009
-   }
-  },
-  "rifleman_idle_01": {
-   "frame": {
-    "x": 1151,
-    "y": 112,
-    "w": 90,
-    "h": 90
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 93,
-    "y": 96,
-    "w": 90,
-    "h": 90
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 221
-   },
-   "anchor": {
-    "x": 0.44161,
-    "y": 0.8009
-   }
-  },
-  "rifleman_idle_01_team": {
-   "frame": {
-    "x": 1148,
-    "y": 300,
-    "w": 54,
-    "h": 78
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 93,
-    "y": 91,
-    "w": 54,
-    "h": 78
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 221
-   },
-   "anchor": {
-    "x": 0.44161,
-    "y": 0.8009
-   }
-  },
-  "rifleman_idle_02": {
-   "frame": {
-    "x": 498,
-    "y": 112,
-    "w": 90,
-    "h": 91
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 94,
-    "y": 94,
-    "w": 90,
-    "h": 91
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 221
-   },
-   "anchor": {
-    "x": 0.44161,
-    "y": 0.8009
-   }
-  },
-  "rifleman_idle_02_team": {
-   "frame": {
-    "x": 167,
-    "y": 300,
-    "w": 56,
-    "h": 82
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 94,
-    "y": 89,
-    "w": 56,
-    "h": 82
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 221
-   },
-   "anchor": {
-    "x": 0.44161,
-    "y": 0.8009
-   }
-  },
-  "rifleman_idle_03": {
-   "frame": {
-    "x": 519,
-    "y": 2,
-    "w": 91,
-    "h": 94
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 94,
-    "y": 91,
-    "w": 91,
-    "h": 94
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 221
-   },
-   "anchor": {
-    "x": 0.44161,
-    "y": 0.8009
-   }
-  },
-  "rifleman_idle_03_team": {
-   "frame": {
-    "x": 1212,
-    "y": 207,
-    "w": 55,
-    "h": 84
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 95,
-    "y": 86,
-    "w": 55,
-    "h": 84
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 221
-   },
-   "anchor": {
-    "x": 0.44161,
-    "y": 0.8009
-   }
-  },
-  "rifleman_idle_04": {
-   "frame": {
-    "x": 714,
-    "y": 2,
-    "w": 92,
-    "h": 93
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 93,
-    "y": 92,
-    "w": 92,
-    "h": 93
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 221
-   },
-   "anchor": {
-    "x": 0.44161,
-    "y": 0.8009
-   }
-  },
-  "rifleman_idle_04_team": {
-   "frame": {
-    "x": 2,
-    "y": 300,
-    "w": 52,
-    "h": 83
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 94,
-    "y": 87,
-    "w": 52,
-    "h": 83
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 221
-   },
-   "anchor": {
-    "x": 0.44161,
-    "y": 0.8009
-   }
-  },
-  "rifleman_idle_05": {
-   "frame": {
-    "x": 402,
-    "y": 112,
-    "w": 92,
-    "h": 91
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 92,
-    "y": 95,
-    "w": 92,
-    "h": 91
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 221
-   },
-   "anchor": {
-    "x": 0.44161,
-    "y": 0.8009
-   }
-  },
-  "rifleman_idle_05_team": {
-   "frame": {
-    "x": 227,
-    "y": 300,
+    "x": 843,
+    "y": 302,
     "w": 53,
     "h": 82
    },
@@ -288,19 +48,259 @@
     "y": 0.8009
    }
   },
-  "rifleman_walk_00": {
+  "rifleman_idle_01": {
    "frame": {
-    "x": 2,
-    "y": 207,
-    "w": 96,
-    "h": 89
+    "x": 844,
+    "y": 112,
+    "w": 90,
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 95,
-    "w": 96,
+    "y": 94,
+    "w": 90,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_idle_01_team": {
+   "frame": {
+    "x": 900,
+    "y": 302,
+    "w": 53,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 89,
+    "w": 53,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_idle_02": {
+   "frame": {
+    "x": 2,
+    "y": 112,
+    "w": 90,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 92,
+    "w": 90,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_idle_02_team": {
+   "frame": {
+    "x": 401,
+    "y": 302,
+    "w": 55,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 87,
+    "w": 55,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_idle_03": {
+   "frame": {
+    "x": 426,
+    "y": 2,
+    "w": 91,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 90,
+    "w": 91,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_idle_03_team": {
+   "frame": {
+    "x": 997,
+    "y": 209,
+    "w": 55,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 85,
+    "w": 55,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_idle_04": {
+   "frame": {
+    "x": 521,
+    "y": 2,
+    "w": 92,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 90,
+    "w": 92,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_idle_04_team": {
+   "frame": {
+    "x": 1056,
+    "y": 209,
+    "w": 52,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 85,
+    "w": 52,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_idle_05": {
+   "frame": {
+    "x": 1115,
+    "y": 2,
+    "w": 92,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 92,
+    "w": 92,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_idle_05_team": {
+   "frame": {
+    "x": 578,
+    "y": 302,
+    "w": 53,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 88,
+    "w": 53,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 221
+   },
+   "anchor": {
+    "x": 0.44161,
+    "y": 0.8009
+   }
+  },
+  "rifleman_walk_00": {
+   "frame": {
+    "x": 113,
+    "y": 209,
+    "w": 90,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 97,
+    "w": 90,
     "h": 89
    },
    "sourceSize": {
@@ -314,18 +314,18 @@
   },
   "rifleman_walk_00_team": {
    "frame": {
-    "x": 971,
-    "y": 300,
-    "w": 53,
-    "h": 79
+    "x": 460,
+    "y": 302,
+    "w": 55,
+    "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
-    "y": 91,
-    "w": 53,
-    "h": 79
+    "x": 96,
+    "y": 92,
+    "w": 55,
+    "h": 83
    },
    "sourceSize": {
     "w": 274,
@@ -338,17 +338,17 @@
   },
   "rifleman_walk_01": {
    "frame": {
-    "x": 705,
-    "y": 207,
-    "w": 99,
+    "x": 906,
+    "y": 209,
+    "w": 87,
     "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 93,
-    "y": 101,
-    "w": 99,
+    "x": 95,
+    "y": 100,
+    "w": 87,
     "h": 86
    },
    "sourceSize": {
@@ -362,18 +362,18 @@
   },
   "rifleman_walk_01_team": {
    "frame": {
-    "x": 1206,
-    "y": 300,
-    "w": 54,
-    "h": 78
+    "x": 2,
+    "y": 391,
+    "w": 52,
+    "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
-    "y": 97,
-    "w": 54,
-    "h": 78
+    "x": 97,
+    "y": 95,
+    "w": 52,
+    "h": 80
    },
    "sourceSize": {
     "w": 274,
@@ -386,18 +386,18 @@
   },
   "rifleman_walk_02": {
    "frame": {
-    "x": 207,
+    "x": 419,
     "y": 112,
-    "w": 94,
-    "h": 91
+    "w": 88,
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 94,
-    "y": 94,
-    "w": 94,
-    "h": 91
+    "x": 96,
+    "y": 93,
+    "w": 88,
+    "h": 92
    },
    "sourceSize": {
     "w": 274,
@@ -410,18 +410,18 @@
   },
   "rifleman_walk_02_team": {
    "frame": {
-    "x": 915,
-    "y": 300,
-    "w": 52,
-    "h": 80
+    "x": 175,
+    "y": 302,
+    "w": 53,
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 96,
-    "y": 89,
-    "w": 52,
-    "h": 80
+    "x": 98,
+    "y": 88,
+    "w": 53,
+    "h": 84
    },
    "sourceSize": {
     "w": 274,
@@ -434,18 +434,18 @@
   },
   "rifleman_walk_03": {
    "frame": {
-    "x": 276,
+    "x": 617,
     "y": 2,
-    "w": 92,
-    "h": 97
+    "w": 90,
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 95,
     "y": 88,
-    "w": 92,
-    "h": 97
+    "w": 90,
+    "h": 94
    },
    "sourceSize": {
     "w": 274,
@@ -458,18 +458,18 @@
   },
   "rifleman_walk_03_team": {
    "frame": {
-    "x": 58,
-    "y": 300,
-    "w": 51,
-    "h": 83
+    "x": 117,
+    "y": 302,
+    "w": 54,
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 97,
     "y": 83,
-    "w": 51,
-    "h": 83
+    "w": 54,
+    "h": 84
    },
    "sourceSize": {
     "w": 274,
@@ -482,18 +482,18 @@
   },
   "rifleman_walk_04": {
    "frame": {
-    "x": 614,
-    "y": 2,
-    "w": 96,
-    "h": 93
+    "x": 530,
+    "y": 209,
+    "w": 90,
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 93,
-    "y": 95,
-    "w": 96,
-    "h": 93
+    "x": 94,
+    "y": 97,
+    "w": 90,
+    "h": 87
    },
    "sourceSize": {
     "w": 274,
@@ -506,18 +506,18 @@
   },
   "rifleman_walk_04_team": {
    "frame": {
-    "x": 858,
-    "y": 300,
-    "w": 53,
-    "h": 80
+    "x": 58,
+    "y": 302,
+    "w": 55,
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
-    "y": 91,
-    "w": 53,
-    "h": 80
+    "x": 96,
+    "y": 92,
+    "w": 55,
+    "h": 84
    },
    "sourceSize": {
     "w": 274,
@@ -530,18 +530,18 @@
   },
   "rifleman_walk_05": {
    "frame": {
-    "x": 519,
-    "y": 207,
-    "w": 96,
-    "h": 87
+    "x": 635,
+    "y": 302,
+    "w": 82,
+    "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 92,
-    "y": 101,
-    "w": 96,
-    "h": 87
+    "x": 95,
+    "y": 100,
+    "w": 82,
+    "h": 82
    },
    "sourceSize": {
     "w": 274,
@@ -554,18 +554,18 @@
   },
   "rifleman_walk_05_team": {
    "frame": {
-    "x": 190,
-    "y": 387,
-    "w": 56,
-    "h": 75
+    "x": 119,
+    "y": 391,
+    "w": 53,
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 94,
-    "y": 97,
-    "w": 56,
-    "h": 75
+    "x": 96,
+    "y": 95,
+    "w": 53,
+    "h": 78
    },
    "sourceSize": {
     "w": 274,
@@ -578,17 +578,17 @@
   },
   "rifleman_walk_06": {
    "frame": {
-    "x": 199,
-    "y": 207,
-    "w": 89,
+    "x": 261,
+    "y": 209,
+    "w": 82,
     "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 94,
-    "y": 94,
-    "w": 89,
+    "x": 95,
+    "y": 93,
+    "w": 82,
     "h": 88
    },
    "sourceSize": {
@@ -602,18 +602,18 @@
   },
   "rifleman_walk_06_team": {
    "frame": {
-    "x": 1028,
-    "y": 300,
+    "x": 957,
+    "y": 302,
     "w": 53,
-    "h": 79
+    "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
-    "y": 89,
+    "x": 97,
+    "y": 88,
     "w": 53,
-    "h": 79
+    "h": 82
    },
    "sourceSize": {
     "w": 274,
@@ -626,18 +626,18 @@
   },
   "rifleman_walk_07": {
    "frame": {
-    "x": 810,
-    "y": 2,
-    "w": 89,
-    "h": 93
+    "x": 938,
+    "y": 112,
+    "w": 86,
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 95,
-    "y": 88,
-    "w": 89,
-    "h": 93
+    "x": 94,
+    "y": 89,
+    "w": 86,
+    "h": 91
    },
    "sourceSize": {
     "w": 274,
@@ -650,18 +650,18 @@
   },
   "rifleman_walk_07_team": {
    "frame": {
-    "x": 977,
-    "y": 207,
-    "w": 52,
-    "h": 85
+    "x": 519,
+    "y": 302,
+    "w": 55,
+    "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 96,
-    "y": 83,
-    "w": 52,
-    "h": 85
+    "y": 84,
+    "w": 55,
+    "h": 83
    },
    "sourceSize": {
     "w": 274,
@@ -674,18 +674,18 @@
   },
   "rifleman_attack_00": {
    "frame": {
-    "x": 2,
-    "y": 112,
+    "x": 910,
+    "y": 2,
     "w": 100,
-    "h": 91
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 94,
+    "y": 92,
     "w": 100,
-    "h": 91
+    "h": 93
    },
    "sourceSize": {
     "w": 274,
@@ -698,18 +698,18 @@
   },
   "rifleman_attack_00_team": {
    "frame": {
-    "x": 455,
-    "y": 300,
+    "x": 289,
+    "y": 302,
     "w": 52,
-    "h": 82
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 94,
-    "y": 89,
+    "y": 87,
     "w": 52,
-    "h": 82
+    "h": 84
    },
    "sourceSize": {
     "w": 274,
@@ -722,18 +722,18 @@
   },
   "rifleman_attack_01": {
    "frame": {
-    "x": 408,
-    "y": 207,
+    "x": 2,
+    "y": 209,
     "w": 107,
-    "h": 87
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 95,
-    "y": 98,
+    "y": 97,
     "w": 107,
-    "h": 87
+    "h": 89
    },
    "sourceSize": {
     "w": 274,
@@ -746,18 +746,18 @@
   },
   "rifleman_attack_01_team": {
    "frame": {
-    "x": 1085,
-    "y": 300,
+    "x": 1128,
+    "y": 302,
     "w": 59,
-    "h": 78
+    "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 97,
-    "y": 93,
+    "y": 92,
     "w": 59,
-    "h": 78
+    "h": 80
    },
    "sourceSize": {
     "w": 274,
@@ -770,10 +770,10 @@
   },
   "rifleman_attack_02": {
    "frame": {
-    "x": 1033,
-    "y": 207,
+    "x": 793,
+    "y": 209,
     "w": 109,
-    "h": 84
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
@@ -781,7 +781,7 @@
     "x": 97,
     "y": 100,
     "w": 109,
-    "h": 84
+    "h": 86
    },
    "sourceSize": {
     "w": 274,
@@ -794,10 +794,10 @@
   },
   "rifleman_attack_02_team": {
    "frame": {
-    "x": 63,
-    "y": 387,
+    "x": 176,
+    "y": 391,
     "w": 62,
-    "h": 76
+    "h": 77
    },
    "rotated": false,
    "trimmed": true,
@@ -805,7 +805,7 @@
     "x": 99,
     "y": 95,
     "w": 62,
-    "h": 76
+    "h": 77
    },
    "sourceSize": {
     "w": 274,
@@ -818,18 +818,18 @@
   },
   "rifleman_attack_03": {
    "frame": {
-    "x": 592,
+    "x": 190,
     "y": 112,
     "w": 127,
-    "h": 90
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 98,
-    "y": 96,
+    "y": 94,
     "w": 127,
-    "h": 90
+    "h": 92
    },
    "sourceSize": {
     "w": 274,
@@ -842,18 +842,18 @@
   },
   "rifleman_attack_03_team": {
    "frame": {
-    "x": 623,
-    "y": 300,
+    "x": 721,
+    "y": 302,
     "w": 59,
-    "h": 81
+    "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 100,
-    "y": 91,
+    "y": 89,
     "w": 59,
-    "h": 81
+    "h": 82
    },
    "sourceSize": {
     "w": 274,
@@ -866,18 +866,18 @@
   },
   "rifleman_attack_04": {
    "frame": {
-    "x": 857,
-    "y": 207,
+    "x": 673,
+    "y": 209,
     "w": 116,
-    "h": 85
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 88,
-    "y": 98,
+    "y": 99,
     "w": 116,
-    "h": 85
+    "h": 86
    },
    "sourceSize": {
     "w": 274,
@@ -890,18 +890,18 @@
   },
   "rifleman_attack_04_team": {
    "frame": {
-    "x": 2,
-    "y": 387,
+    "x": 58,
+    "y": 391,
     "w": 57,
-    "h": 77
+    "h": 79
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 89,
-    "y": 93,
+    "y": 94,
     "w": 57,
-    "h": 77
+    "h": 79
    },
    "sourceSize": {
     "w": 274,
@@ -914,18 +914,18 @@
   },
   "rifleman_attack_05": {
    "frame": {
-    "x": 723,
+    "x": 511,
     "y": 112,
     "w": 122,
-    "h": 90
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 92,
-    "y": 95,
+    "y": 94,
     "w": 122,
-    "h": 90
+    "h": 91
    },
    "sourceSize": {
     "w": 274,
@@ -938,8 +938,8 @@
   },
   "rifleman_attack_05_team": {
    "frame": {
-    "x": 284,
-    "y": 300,
+    "x": 1014,
+    "y": 302,
     "w": 53,
     "h": 82
    },
@@ -947,7 +947,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 94,
-    "y": 90,
+    "y": 89,
     "w": 53,
     "h": 82
    },
@@ -962,18 +962,18 @@
   },
   "rifleman_attack_06": {
    "frame": {
-    "x": 849,
+    "x": 637,
     "y": 112,
     "w": 104,
-    "h": 90
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 92,
-    "y": 95,
+    "y": 94,
     "w": 104,
-    "h": 90
+    "h": 91
    },
    "sourceSize": {
     "w": 274,
@@ -986,8 +986,8 @@
   },
   "rifleman_attack_06_team": {
    "frame": {
-    "x": 341,
-    "y": 300,
+    "x": 1071,
+    "y": 302,
     "w": 53,
     "h": 82
    },
@@ -995,7 +995,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 94,
-    "y": 90,
+    "y": 89,
     "w": 53,
     "h": 82
    },
@@ -1010,18 +1010,18 @@
   },
   "rifleman_attack_07": {
    "frame": {
-    "x": 1090,
+    "x": 804,
     "y": 2,
     "w": 102,
-    "h": 91
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 94,
+    "y": 92,
     "w": 102,
-    "h": 91
+    "h": 93
    },
    "sourceSize": {
     "w": 274,
@@ -1034,18 +1034,18 @@
   },
   "rifleman_attack_07_team": {
    "frame": {
-    "x": 511,
-    "y": 300,
+    "x": 1179,
+    "y": 209,
     "w": 52,
-    "h": 82
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 95,
-    "y": 89,
+    "y": 87,
     "w": 52,
-    "h": 82
+    "h": 85
    },
    "sourceSize": {
     "w": 274,
@@ -1058,18 +1058,18 @@
   },
   "rifleman_attack_08": {
    "frame": {
-    "x": 106,
-    "y": 112,
+    "x": 1014,
+    "y": 2,
     "w": 97,
-    "h": 91
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 94,
+    "y": 92,
     "w": 97,
-    "h": 91
+    "h": 93
    },
    "sourceSize": {
     "w": 274,
@@ -1082,18 +1082,18 @@
   },
   "rifleman_attack_08_team": {
    "frame": {
-    "x": 398,
-    "y": 300,
+    "x": 232,
+    "y": 302,
     "w": 53,
-    "h": 82
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 94,
-    "y": 89,
+    "y": 87,
     "w": 53,
-    "h": 82
+    "h": 84
    },
    "sourceSize": {
     "w": 274,
@@ -1106,18 +1106,18 @@
   },
   "rifleman_attack_09": {
    "frame": {
-    "x": 996,
-    "y": 2,
+    "x": 96,
+    "y": 112,
     "w": 90,
-    "h": 92
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 94,
+    "y": 92,
     "w": 90,
-    "h": 92
+    "h": 93
    },
    "sourceSize": {
     "w": 274,
@@ -1130,18 +1130,18 @@
   },
   "rifleman_attack_09_team": {
    "frame": {
-    "x": 567,
-    "y": 300,
+    "x": 345,
+    "y": 302,
     "w": 52,
-    "h": 82
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 94,
-    "y": 89,
+    "y": 87,
     "w": 52,
-    "h": 82
+    "h": 84
    },
    "sourceSize": {
     "w": 274,
@@ -1154,18 +1154,18 @@
   },
   "rifleman_hit_00": {
    "frame": {
-    "x": 619,
-    "y": 207,
+    "x": 347,
+    "y": 209,
     "w": 82,
-    "h": 87
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 82,
-    "y": 99,
+    "y": 97,
     "w": 82,
-    "h": 87
+    "h": 88
    },
    "sourceSize": {
     "w": 274,
@@ -1178,18 +1178,18 @@
   },
   "rifleman_hit_00_team": {
    "frame": {
-    "x": 129,
-    "y": 387,
+    "x": 1191,
+    "y": 302,
     "w": 57,
-    "h": 76
+    "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 82,
-    "y": 94,
+    "y": 92,
     "w": 57,
-    "h": 76
+    "h": 80
    },
    "sourceSize": {
     "w": 274,
@@ -1202,18 +1202,18 @@
   },
   "rifleman_hit_01": {
    "frame": {
-    "x": 204,
+    "x": 206,
     "y": 2,
     "w": 68,
-    "h": 100
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 82,
-    "y": 85,
+    "y": 82,
     "w": 68,
-    "h": 100
+    "h": 102
    },
    "sourceSize": {
     "w": 274,
@@ -1226,18 +1226,18 @@
   },
   "rifleman_hit_01_team": {
    "frame": {
-    "x": 292,
-    "y": 207,
+    "x": 1123,
+    "y": 112,
     "w": 56,
-    "h": 88
+    "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 80,
-    "y": 80,
+    "y": 78,
     "w": 56,
-    "h": 88
+    "h": 90
    },
    "sourceSize": {
     "w": 274,
@@ -1250,18 +1250,18 @@
   },
   "rifleman_hit_02": {
    "frame": {
-    "x": 372,
+    "x": 278,
     "y": 2,
     "w": 80,
-    "h": 96
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 89,
-    "y": 90,
+    "y": 87,
     "w": 80,
-    "h": 96
+    "h": 98
    },
    "sourceSize": {
     "w": 274,
@@ -1274,18 +1274,18 @@
   },
   "rifleman_hit_02_team": {
    "frame": {
-    "x": 113,
-    "y": 300,
+    "x": 207,
+    "y": 209,
     "w": 50,
-    "h": 83
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 90,
-    "y": 85,
+    "y": 82,
     "w": 50,
-    "h": 83
+    "h": 89
    },
    "sourceSize": {
     "w": 274,
@@ -1298,18 +1298,18 @@
   },
   "rifleman_hit_03": {
    "frame": {
-    "x": 957,
+    "x": 745,
     "y": 112,
     "w": 95,
-    "h": 90
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 92,
-    "y": 96,
+    "y": 94,
     "w": 95,
-    "h": 90
+    "h": 91
    },
    "sourceSize": {
     "w": 274,
@@ -1322,18 +1322,18 @@
   },
   "rifleman_hit_03_team": {
    "frame": {
-    "x": 686,
-    "y": 300,
+    "x": 784,
+    "y": 302,
     "w": 55,
-    "h": 81
+    "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 94,
-    "y": 91,
+    "y": 89,
     "w": 55,
-    "h": 81
+    "h": 82
    },
    "sourceSize": {
     "w": 274,
@@ -1346,18 +1346,18 @@
   },
   "rifleman_hit_04": {
    "frame": {
-    "x": 903,
+    "x": 711,
     "y": 2,
     "w": 89,
-    "h": 93
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 93,
+    "y": 91,
     "w": 89,
-    "h": 93
+    "h": 94
    },
    "sourceSize": {
     "w": 274,
@@ -1370,18 +1370,18 @@
   },
   "rifleman_hit_04_team": {
    "frame": {
-    "x": 802,
-    "y": 300,
+    "x": 2,
+    "y": 302,
     "w": 52,
-    "h": 81
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 88,
+    "y": 86,
     "w": 52,
-    "h": 81
+    "h": 85
    },
    "sourceSize": {
     "w": 274,
@@ -1394,10 +1394,10 @@
   },
   "rifleman_die_00": {
    "frame": {
-    "x": 102,
-    "y": 207,
+    "x": 433,
+    "y": 209,
     "w": 93,
-    "h": 88
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
@@ -1405,7 +1405,7 @@
     "x": 82,
     "y": 97,
     "w": 93,
-    "h": 88
+    "h": 87
    },
    "sourceSize": {
     "w": 274,
@@ -1418,18 +1418,18 @@
   },
   "rifleman_die_00_team": {
    "frame": {
-    "x": 250,
-    "y": 387,
+    "x": 242,
+    "y": 391,
     "w": 55,
-    "h": 75
+    "h": 76
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 83,
-    "y": 98,
+    "y": 96,
     "w": 55,
-    "h": 75
+    "h": 76
    },
    "sourceSize": {
     "w": 274,
@@ -1442,7 +1442,7 @@
   },
   "rifleman_die_01": {
    "frame": {
-    "x": 124,
+    "x": 2,
     "y": 2,
     "w": 76,
     "h": 106
@@ -1466,18 +1466,18 @@
   },
   "rifleman_die_01_team": {
    "frame": {
-    "x": 352,
-    "y": 207,
-    "w": 52,
-    "h": 88
+    "x": 1183,
+    "y": 112,
+    "w": 53,
+    "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 80,
-    "y": 81,
-    "w": 52,
-    "h": 88
+    "x": 79,
+    "y": 78,
+    "w": 53,
+    "h": 90
    },
    "sourceSize": {
     "w": 274,
@@ -1490,18 +1490,18 @@
   },
   "rifleman_die_02": {
    "frame": {
-    "x": 456,
+    "x": 362,
     "y": 2,
-    "w": 59,
-    "h": 96
+    "w": 60,
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 81,
-    "y": 89,
-    "w": 59,
-    "h": 96
+    "y": 87,
+    "w": 60,
+    "h": 97
    },
    "sourceSize": {
     "w": 274,
@@ -1514,18 +1514,18 @@
   },
   "rifleman_die_02_team": {
    "frame": {
-    "x": 808,
-    "y": 207,
+    "x": 624,
+    "y": 209,
     "w": 45,
-    "h": 86
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 93,
-    "y": 84,
+    "y": 82,
     "w": 45,
-    "h": 86
+    "h": 87
    },
    "sourceSize": {
     "w": 274,
@@ -1538,18 +1538,18 @@
   },
   "rifleman_die_03": {
    "frame": {
-    "x": 305,
+    "x": 321,
     "y": 112,
-    "w": 93,
-    "h": 91
+    "w": 94,
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 77,
-    "y": 93,
-    "w": 93,
-    "h": 91
+    "y": 91,
+    "w": 94,
+    "h": 92
    },
    "sourceSize": {
     "w": 274,
@@ -1562,18 +1562,18 @@
   },
   "rifleman_die_03_team": {
    "frame": {
-    "x": 1146,
-    "y": 207,
-    "w": 62,
-    "h": 84
+    "x": 1112,
+    "y": 209,
+    "w": 63,
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 107,
-    "y": 88,
-    "w": 62,
-    "h": 84
+    "y": 86,
+    "w": 63,
+    "h": 85
    },
    "sourceSize": {
     "w": 274,
@@ -1586,18 +1586,18 @@
   },
   "rifleman_die_04": {
    "frame": {
-    "x": 2,
+    "x": 82,
     "y": 2,
-    "w": 118,
-    "h": 106
+    "w": 120,
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 86,
     "y": 77,
-    "w": 118,
-    "h": 106
+    "w": 120,
+    "h": 103
    },
    "sourceSize": {
     "w": 274,
@@ -1610,18 +1610,18 @@
   },
   "rifleman_die_04_team": {
    "frame": {
-    "x": 485,
-    "y": 387,
-    "w": 80,
-    "h": 68
+    "x": 477,
+    "y": 391,
+    "w": 83,
+    "h": 69
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 128,
-    "y": 109,
-    "w": 80,
-    "h": 68
+    "x": 127,
+    "y": 108,
+    "w": 83,
+    "h": 69
    },
    "sourceSize": {
     "w": 274,
@@ -1634,8 +1634,8 @@
   },
   "rifleman_die_05": {
    "frame": {
-    "x": 309,
-    "y": 387,
+    "x": 301,
+    "y": 391,
     "w": 172,
     "h": 72
    },
@@ -1658,18 +1658,18 @@
   },
   "rifleman_die_05_team": {
    "frame": {
-    "x": 1153,
-    "y": 387,
-    "w": 72,
-    "h": 54
+    "x": 1147,
+    "y": 391,
+    "w": 73,
+    "h": 55
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 137,
+    "x": 136,
     "y": 131,
-    "w": 72,
-    "h": 54
+    "w": 73,
+    "h": 55
    },
    "sourceSize": {
     "w": 274,
@@ -1682,8 +1682,8 @@
   },
   "rifleman_die_06": {
    "frame": {
-    "x": 569,
-    "y": 387,
+    "x": 564,
+    "y": 391,
     "w": 189,
     "h": 66
    },
@@ -1706,17 +1706,17 @@
   },
   "rifleman_die_06_team": {
    "frame": {
-    "x": 1064,
-    "y": 387,
-    "w": 85,
+    "x": 1060,
+    "y": 391,
+    "w": 83,
     "h": 64
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 135,
+    "x": 137,
     "y": 130,
-    "w": 85,
+    "w": 83,
     "h": 64
    },
    "sourceSize": {
@@ -1730,8 +1730,8 @@
   },
   "rifleman_die_07": {
    "frame": {
-    "x": 857,
-    "y": 387,
+    "x": 853,
+    "y": 391,
     "w": 203,
     "h": 64
    },
@@ -1754,17 +1754,17 @@
   },
   "rifleman_die_07_team": {
    "frame": {
-    "x": 762,
-    "y": 387,
-    "w": 91,
+    "x": 757,
+    "y": 391,
+    "w": 92,
     "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 138,
+    "x": 137,
     "y": 135,
-    "w": 91,
+    "w": 92,
     "h": 65
    },
    "sourceSize": {
@@ -1884,14 +1884,14 @@
   "format": "RGBA8888",
   "size": {
    "w": 1280,
-   "h": 468
+   "h": 476
   },
   "scale": "1.5",
   "ageborn": {
    "visualId": "unit.rifleman",
    "name": "Rifleman",
    "heightLu": 68,
-   "widthLu": 67.5,
+   "widthLu": 67.1,
    "pxPerLu": 1.23,
    "feetPx": [
     121.0,
@@ -1913,6 +1913,7 @@
    },
    "facing": "right",
    "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
    "clips": {
     "idle": {
      "frames": 6,
@@ -1938,27 +1939,27 @@
       "muzzle": [
        [
         41.3,
-        45.9
+        47.8
        ],
        [
         41.5,
-        46.1
+        48.0
        ],
        [
         42.7,
-        45.3
+        46.5
        ],
        [
         43.2,
-        44.5
+        45.3
        ],
        [
         42.9,
-        44.8
+        46.1
        ],
        [
         42.1,
-        45.4
+        47.3
        ]
       ]
      }
@@ -1977,54 +1978,76 @@
       7
      ],
      "durationsMs": [
-      62,
-      63,
-      62,
-      63,
-      62,
-      63,
-      62,
-      63
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77
      ],
-     "durationMs": 500,
+     "durationMs": 616,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 81.2,
+     "cycleMs": 616,
      "anchorsLu": {
       "muzzle": [
        [
-        45.9,
-        40.8
+        42.4,
+        46.1
        ],
        [
-        48.2,
-        38.2
+        41.0,
+        46.8
        ],
        [
-        45.9,
-        44.3
+        42.3,
+        52.2
        ],
        [
-        44.9,
-        47.0
+        43.2,
+        54.8
        ],
        [
-        45.9,
-        40.8
+        42.4,
+        46.1
        ],
        [
-        45.2,
-        36.7
+        37.2,
+        44.9
        ],
        [
-        41.9,
-        42.2
+        36.9,
+        49.5
        ],
        [
-        42.1,
-        45.5
+        39.3,
+        52.9
        ]
       ]
      },
-     "strideLu": 34.0,
-     "naturalSpeedLuPerS": 68.0
+     "naturalSpeedLuPerS": 81.2,
+     "strideLu": 50.0,
+     "plantedDriftLu": 0.05,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        10.1,
+        -1.9
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        12.2,
+        1.4
+       ]
+      }
+     ]
     },
     "attack": {
      "frames": 10,
@@ -2055,51 +2078,57 @@
      ],
      "durationMs": 748,
      "impactFrame": 3,
+     "impactStep": 3,
      "impactAt": 0.389,
      "anchorsLu": {
       "muzzle": [
        [
         49.2,
-        35.1
+        36.7
        ],
        [
         56.9,
-        26.1
+        26.7
        ],
        [
         60.2,
-        24.2
+        24.3
        ],
        [
         56.2,
-        25.6
+        27.2
        ],
        [
         50.1,
-        37.0
+        36.0
        ],
        [
         51.7,
-        30.2
+        31.1
        ],
        [
         51.7,
-        30.2
+        31.1
        ],
        [
         51.5,
-        29.0
+        30.4
        ],
        [
         47.1,
-        40.4
+        41.9
        ],
        [
         41.7,
-        46.8
+        48.4
        ]
       ]
-     }
+     },
+     "holdStep": 2,
+     "muzzle": [
+      56.2,
+      27.2
+     ]
     },
     "hit": {
      "frames": 5,
@@ -2123,23 +2152,23 @@
       "muzzle": [
        [
         26.4,
-        52.7
+        54.4
        ],
        [
         16.0,
-        67.4
+        69.5
        ],
        [
         31.0,
-        56.3
+        58.2
        ],
        [
         44.3,
-        42.6
+        44.4
        ],
        [
         40.9,
-        47.2
+        49.1
        ]
       ]
      }
@@ -2180,7 +2209,7 @@
         0,
         24.5
        ],
-       "scale": 0.844
+       "scale": 0.839
       },
       {
        "id": "fx.ko_stars",
@@ -2190,43 +2219,43 @@
         37.4
        ],
        "loops": 2,
-       "scale": 0.919
+       "scale": 0.916
       }
      ],
      "hideUnitAtMs": 695,
      "anchorsLu": {
       "muzzle": [
        [
-        48.7,
-        24.7
+        48.5,
+        26.3
+       ],
+       [
+        34.8,
+        37.6
+       ],
+       [
+        44.5,
+        28.0
+       ],
+       [
+        57.9,
+        7.1
+       ],
+       [
+        56.3,
+        -23.7
+       ],
+       [
+        30.1,
+        -51.4
+       ],
+       [
+        43.7,
+        -35.5
        ],
        [
         35.2,
-        35.6
-       ],
-       [
-        44.6,
-        26.1
-       ],
-       [
-        57.2,
-        5.4
-       ],
-       [
-        54.6,
-        -24.6
-       ],
-       [
-        28.4,
-        -51.3
-       ],
-       [
-        41.7,
-        -35.6
-       ],
-       [
-        33.4,
-        -44.0
+        -44.1
        ]
       ]
      }

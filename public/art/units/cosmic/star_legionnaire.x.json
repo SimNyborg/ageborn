@@ -1,0 +1,1021 @@
+{
+ "frames": {
+  "star_legionnaire_attack_b_00": {
+   "frame": {
+    "x": 194,
+    "y": 143,
+    "w": 68,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 86,
+    "w": 68,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_b_00_team": {
+   "frame": {
+    "x": 324,
+    "y": 493,
+    "w": 55,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 100,
+    "w": 55,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_b_01": {
+   "frame": {
+    "x": 116,
+    "y": 391,
+    "w": 106,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 69,
+    "y": 93,
+    "w": 106,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_b_01_team": {
+   "frame": {
+    "x": 68,
+    "y": 580,
+    "w": 60,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 105,
+    "w": 60,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_b_02": {
+   "frame": {
+    "x": 226,
+    "y": 391,
+    "w": 120,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 60,
+    "y": 97,
+    "w": 120,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_b_02_team": {
+   "frame": {
+    "x": 309,
+    "y": 580,
+    "w": 57,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 110,
+    "w": 57,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_b_03": {
+   "frame": {
+    "x": 202,
+    "y": 2,
+    "w": 126,
+    "h": 131
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 84,
+    "w": 126,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_b_03_team": {
+   "frame": {
+    "x": 383,
+    "y": 493,
+    "w": 48,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 100,
+    "w": 48,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_b_04": {
+   "frame": {
+    "x": 106,
+    "y": 2,
+    "w": 92,
+    "h": 135
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 80,
+    "w": 92,
+    "h": 135
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_b_04_team": {
+   "frame": {
+    "x": 56,
+    "y": 493,
+    "w": 45,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 97,
+    "w": 45,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_b_05": {
+   "frame": {
+    "x": 305,
+    "y": 275,
+    "w": 106,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 79,
+    "w": 106,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_b_05_team": {
+   "frame": {
+    "x": 252,
+    "y": 580,
+    "w": 53,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 103,
+    "w": 53,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_b_06": {
+   "frame": {
+    "x": 145,
+    "y": 275,
+    "w": 69,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 77,
+    "w": 69,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_b_06_team": {
+   "frame": {
+    "x": 132,
+    "y": 580,
+    "w": 55,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 99,
+    "w": 55,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_b_07": {
+   "frame": {
+    "x": 69,
+    "y": 275,
+    "w": 72,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 81,
+    "w": 72,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_b_07_team": {
+   "frame": {
+    "x": 105,
+    "y": 493,
+    "w": 52,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 97,
+    "w": 52,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_00": {
+   "frame": {
+    "x": 2,
+    "y": 275,
+    "w": 63,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 79,
+    "w": 63,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_00_team": {
+   "frame": {
+    "x": 161,
+    "y": 493,
+    "w": 51,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 97,
+    "w": 51,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_01": {
+   "frame": {
+    "x": 121,
+    "y": 143,
+    "w": 69,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 69,
+    "w": 69,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_01_team": {
+   "frame": {
+    "x": 216,
+    "y": 493,
+    "w": 50,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 97,
+    "w": 50,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_02": {
+   "frame": {
+    "x": 266,
+    "y": 143,
+    "w": 76,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 71,
+    "w": 76,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_02_team": {
+   "frame": {
+    "x": 350,
+    "y": 391,
+    "w": 52,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 95,
+    "w": 52,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 100,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 54,
+    "w": 100,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 493,
+    "w": 50,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 96,
+    "w": 50,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_04": {
+   "frame": {
+    "x": 2,
+    "y": 143,
+    "w": 115,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 63,
+    "w": 115,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 580,
+    "w": 62,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 101,
+    "w": 62,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_05": {
+   "frame": {
+    "x": 2,
+    "y": 391,
+    "w": 110,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 103,
+    "w": 110,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_05_team": {
+   "frame": {
+    "x": 370,
+    "y": 580,
+    "w": 65,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 115,
+    "w": 65,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_06": {
+   "frame": {
+    "x": 346,
+    "y": 143,
+    "w": 76,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 93,
+    "w": 76,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_06_team": {
+   "frame": {
+    "x": 191,
+    "y": 580,
+    "w": 57,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 107,
+    "w": 57,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_07": {
+   "frame": {
+    "x": 218,
+    "y": 275,
+    "w": 83,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 83,
+    "w": 83,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  },
+  "star_legionnaire_attack_c_07_team": {
+   "frame": {
+    "x": 270,
+    "y": 493,
+    "w": 50,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 99,
+    "w": 50,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.48638,
+    "y": 0.84651
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "star_legionnaire_attack_b_00",
+   "star_legionnaire_attack_b_01",
+   "star_legionnaire_attack_b_02",
+   "star_legionnaire_attack_b_03",
+   "star_legionnaire_attack_b_04",
+   "star_legionnaire_attack_b_05",
+   "star_legionnaire_attack_b_06",
+   "star_legionnaire_attack_b_07",
+   "star_legionnaire_attack_09",
+   "star_legionnaire_attack_10"
+  ],
+  "attack_b_team": [
+   "star_legionnaire_attack_b_00_team",
+   "star_legionnaire_attack_b_01_team",
+   "star_legionnaire_attack_b_02_team",
+   "star_legionnaire_attack_b_03_team",
+   "star_legionnaire_attack_b_04_team",
+   "star_legionnaire_attack_b_05_team",
+   "star_legionnaire_attack_b_06_team",
+   "star_legionnaire_attack_b_07_team",
+   "star_legionnaire_attack_09_team",
+   "star_legionnaire_attack_10_team"
+  ],
+  "attack_c": [
+   "star_legionnaire_attack_c_00",
+   "star_legionnaire_attack_c_01",
+   "star_legionnaire_attack_c_02",
+   "star_legionnaire_attack_c_03",
+   "star_legionnaire_attack_c_04",
+   "star_legionnaire_attack_c_05",
+   "star_legionnaire_attack_c_06",
+   "star_legionnaire_attack_c_07",
+   "star_legionnaire_attack_09",
+   "star_legionnaire_attack_10"
+  ],
+  "attack_c_team": [
+   "star_legionnaire_attack_c_00_team",
+   "star_legionnaire_attack_c_01_team",
+   "star_legionnaire_attack_c_02_team",
+   "star_legionnaire_attack_c_03_team",
+   "star_legionnaire_attack_c_04_team",
+   "star_legionnaire_attack_c_05_team",
+   "star_legionnaire_attack_c_06_team",
+   "star_legionnaire_attack_c_07_team",
+   "star_legionnaire_attack_09_team",
+   "star_legionnaire_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "star_legionnaire.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 448,
+   "h": 664
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.star_legionnaire",
+   "name": "Star Legionnaire",
+   "heightLu": 68,
+   "widthLu": 61.8,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    125.0,
+    182.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     68
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "star_legionnaire",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      40,
+      60,
+      115,
+      45,
+      30,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4265,
+     "smearFrame": 3,
+     "holdStep": 2,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        -13.6,
+        -15.4
+       ],
+       [
+        -41.2,
+        -3.2
+       ],
+       [
+        -49.2,
+        8.7
+       ],
+       [
+        44.0,
+        -13.9
+       ],
+       [
+        59.2,
+        40.7
+       ],
+       [
+        37.1,
+        70.3
+       ],
+       [
+        19.5,
+        81.4
+       ],
+       [
+        39.0,
+        56.0
+       ],
+       [
+        46.3,
+        43.6
+       ],
+       [
+        39.7,
+        45.3
+       ]
+      ]
+     }
+    },
+    "attack_c": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      40,
+      60,
+      115,
+      45,
+      30,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4265,
+     "smearFrame": 3,
+     "holdStep": 2,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        -6.6,
+        79.2
+       ],
+       [
+        -28.2,
+        87.4
+       ],
+       [
+        -37.2,
+        86.1
+       ],
+       [
+        36.2,
+        82.4
+       ],
+       [
+        71.7,
+        26.8
+       ],
+       [
+        60.3,
+        -11.8
+       ],
+       [
+        50.1,
+        -15.1
+       ],
+       [
+        53.9,
+        10.9
+       ],
+       [
+        46.3,
+        43.6
+       ],
+       [
+        39.7,
+        45.3
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

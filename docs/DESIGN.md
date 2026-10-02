@@ -707,6 +707,50 @@ Tuned at gate size on 2026-10-01 (fixer review; first values ×3/×4 and ×0.35/
 
   Levers: step times ±30 s, the rope's rate, the dead band, and a front taken as the army-value centroid instead of the lead unit.
 
+#### A2.10.2 The Siege rope in Short, Medium and Long War (owner decision 2026-10-02)
+
+The owner said yes to the audit's "rope" in the timed formats: the side pushed back into its own half slowly loses base HP, like Last Base Standing's Crumble. It rewards the side that presses and stops a war being won by hiding in defence until the Final Bell. All values are content data (`FormatDef.escalation`, built from `TIMED_ROPE` in `raw/economy.ts`); the sim rule is A2.10.1's, unchanged.
+
+- **Where.** Every Short, Medium and Long War window (any start era, so also the Daily Challenge and Skirmish windows of those lengths). The shorter War Path and custom windows (1, 2 and 4 ages) keep today's Siege with its symmetric decay.
+- **What changes in Siege.** No symmetric 0.5%/s decay. Instead, on each 1 s decay beat, the side whose front (its most advanced live trained ground unit) is more than 40 lu behind the other's loses the step's rate of its base's max HP; within 40 lu, or with both lanes empty, both lose it (A2.10.1 "The rope"). It goes through `damageBase`, so Last Stand arms and fires as usual. Turret ×0.5, base damage ×2, forced march and the siege crowd stay.
+- **Steps** (Siege I = Siege; the second step is "Siege II"):
+
+  | Format | Siege (rope) | Siege II | Final Bell |
+  |---|---|---|---|
+  | Short War | 6:30, 0.6%/s | 7:15, 1.1%/s, base damage ×3, turret damage ×0.35 | 8:30 |
+  | Medium War | 10:00, 0.55%/s | 11:00, 1.05%/s | 12:30 |
+  | Long War | 14:30, 0.4%/s | 15:30, 0.85%/s | 17:30 |
+
+  Short's Siege lasts only 2:00, so its rope is stronger and its second step also hits bases harder.
+- **The Final Bell stays.** Higher base HP% wins; a gap ≤ 0.5% is a draw. From the rope's first step evolving keeps the base HP percentage but does not heal (A2.10.1 rule).
+- **HUD (A9.2).** The countdown and timeline stay; a cracked-stone mark on the timeline shows where the rope tightens, and the phase tag reads "Siege", then "Siege II". The clock is a button: a tap drops the schedule down (Overdrive, Siege with its rope, Siege II, Final Bell; folds after 3 s, never pauses). The Siege banner says "The side in its own half crumbles"; Siege II has its own 1.2 s banner ("Crumbling speeds up to 1.05% a second"; Short: "Bases take ×3 damage · crumbling 1.1% a second"). The crumbling side gets the "Crumbling" chip, the cracked HP bar and falling stones (MR-126), as in Last Base Standing.
+- **Teaching.** A new adaptive hint (A8): after 4 rope beats on your base within 20 s, "Your base crumbles. Push past the middle!" pointing at the stance control (the usual limits: 30 s gap, 2 a match, 3 per profile). The search tip reads "In Siege the side fighting in its own half crumbles. Push!".
+- **VS and Result.** VS shows "Push or crumble · Siege from 6:30: the side fighting in its own half crumbles". The Result's reason line, as in Last Base Standing: "Their base fell at 5:31" before Siege, "Their walls crumbled at 7:41" / "Your walls crumbled at 7:41" in Siege, "You led at the Final Bell" / "They led at the Final Bell" / "Even at the Final Bell", "Both bases fell together", "You retreated".
+- **AI (bots know the rope).**
+  - `Observation.escalation` also carries `finalBellTick` (null in Last Base Standing), so a bot keeps the Bell's research horizon and stops research in a timed Siege while it reads the rope and who crumbles.
+  - In the last 30 s before a rope that runs from Siege, a Holding bot stages its flag forward (short of mid-lane and of the enemy) instead of inside its turret cover, so Siege's charge meets the enemy near mid-lane rather than at its own gate.
+  - The Last Base Standing all-in of a bot crumbling alone is not used in a timed war: the Bell still decides there, and feeding every coin into a stronger line lost faster (`flag_ball`, Short War: 52% with neither rule, 47% with the staging, 41.5% with both).
+  - Bots already Charge in Siege and never fall back from Overdrive on.
+- **Contracts and replays.** One additive contract field (`ObservedEscalation.finalBellTick`); the observation is not hashed and the sim rule is unchanged, so `SIM_VERSION` stays 6.0.0 and goldens 01-15 keep their hashes (they play the frozen fixture). The content hash changes, so older replays of timed formats show their result card only (A18 "Replays").
+- **Measured** (mirror lab, tier VII Echo mirrors with each age's bot Fort card, baseline plans at L7, seeds 1-400 per format; tier V seeds 1-200; exploit rows `sim-cli exploits`, n = 200 per proxy and format, mirrored seats):
+
+  | Row (Short / Medium / Long) | Before (symmetric decay) | After (rope and AI) |
+  |---|---|---|
+  | Final Bell, tier VII (target 10 / 8 / 5%) | 23.8 / 8.8 / 3.8% | **8.0 / 5.0 / 4.0%** |
+  | Draws, tier VII | 9.0 / 2.8 / 1.5% | **0 / 0 / 0%** |
+  | Medians, tier VII (targets 7:00 / 10:30 / 15:00) | 7:49 / 10:52 / 15:14 | 7:39 / 10:58 / 15:21 |
+  | First-mover, tier VII | 55.0 / 54.9 / 50.5% | 48.5 / 53.3 / 51.8% |
+  | Final Bell, tier V (draws) | 14.8 / 14.0 / 1.8% (0 / 1.8 / 0.3%) | 8.5 / 9.0 / 5.0% (0 / 0 / 0.5%) |
+  | `flag_ball` vs tier VII, Short / Medium (≤ 45%) | 29.3 / 13.0% (16.5% draws in Short) | 41.0 / 16.5% |
+  | `fallback_turtle`, Short / Medium (Bell share) | 0 / 0% (6 / 10%) | 0 / 0% (0 / 0%) |
+  | `turret_turtle`, `tech_turtle`, Short / Medium | 0.3 / 2.0%, 0.5 / 3.3% | 0 / 0%, 0 / 0% |
+
+  How it was tuned (tier VII Bell %, Short / Medium / Long):
+  - With the bots as they were: the audit's 1 → 1.5%/s everywhere 4.5 / 0 / 0 (every stall crumbles out); 0.5 → 1%/s in Medium and Long 12.5 / 3.5 (milder than the symmetric decay it replaces); Short 0.75 → 1.25%/s 10.5, 0.85 → 1.35%/s 7.8 (n = 400).
+  - `flag_ball` then won **52%** of Short Wars (gate ≤ 45%) at every rope rate: it used to stall at the bot's gate until the Bell (40% to 40%, a draw), and the rope gave those wars to it. A wider dead band (120 or 200 lu) changed nothing (46-47%); the two AI rules above brought it to 41%.
+  - With those AI rules mirrors stall less: 0.85 / 0.65 / 0.6%/s fell to 3.5 / 2.5 / 0.3%, so the rope was eased to the values above (0.7 / 0.5 / 0.45%/s: 6.5 / 8.5 / 1.5%; 0.6 / 0.45 / 0.4%/s: 8.5 / 9.5 / 3.5%; n = 200).
+  - The rope barely moves the medians: they come from the age pacing (A18.3.1), which stays open.
+
 ### A2.11 Comeback tools (visible and counterable)
 
 - XP from your own losses (50% of cost from A18 phase 1; 40% before).
@@ -773,7 +817,7 @@ Every age has an arrival (15-20 s), a middle (40-60 s) and a push (20-35 s), A18
 | Tier VII (release row) | 48.0 / 57.3 / 32.3% | **23.8 / 8.8 / 3.8%** | 9.0 / 2.8 / 1.5% | 7:49 / 10:52 / 15:14 |
 | Tier VII, no forts | 48.7 / 58.0 / 32.3% | 28.0 / 9.3 / 4.5% | 10.3 / 1.5 / 2.3% | 7:55 / 10:45 / 15:24 |
 
-The release targets below hold in Standard (8.8% against 8%, within noise) and Full; **tier VII Short War (23.8% against 10%) is the open Bell row** (its Siege lasts 2:00; the audit's rope, `FormatDef.escalation` in the timed formats, measured 0-14% and needs HUD, AI-clock and Result work and the owner's yes). The balanced-mirror tool row (tier V, starters only, no forts, n = 200): Bell 15.0 / 17.5 / 3.5% (was 46 / 42 / 16.5%), medians 7:34 / 10:33 / 14:37, power share of enemy value killed 17.9 / 19.7 / 17.4% (was 19.9-22.4%; target 5-12%, open), one cast touches 36.7 / 40.0 / 33.3% of a big army (was 45-47%), base time to kill 63-103 s (was 126 s; target 40-60 s, open).
+The release targets below hold in Standard (8.8% against 8%, within noise) and Full; tier VII Short War (23.8% against 10%) was the open Bell row until **the Siege rope (A2.10.2, owner decision 2026-10-02): tier VII Final Bell 8.0 / 5.0 / 4.0%, draws 0 / 0 / 0%, medians 7:39 / 10:58 / 15:21 (n = 400 per format)**. The balanced-mirror tool row (tier V, starters only, no forts, n = 200): Bell 15.0 / 17.5 / 3.5% (was 46 / 42 / 16.5%), medians 7:34 / 10:33 / 14:37, power share of enemy value killed 17.9 / 19.7 / 17.4% (was 19.9-22.4%; target 5-12%, open), one cast touches 36.7 / 40.0 / 33.3% of a big army (was 45-47%), base time to kill 63-103 s (was 126 s; target 40-60 s, open).
 
 All card tests use both sides at tier V with the Balanced brain and every card at L7. Exploit tests use the scripted proxy against a tier VII Balanced bot at L7, in Short and Full War, with at least 400 matches per proxy; proxies decide every 0.5 s from the delayed `Observation` (A16.5). Rules-sanity tests run scripts against scripts, with no bot. The power rework gates (A2.9.12) use these setups too, with one statement for all of them: exploit proxies vs tier VII in Short, Standard and Full War; mirrors with starters only; the P0 and P1 Bell comparisons use tier V mirrors (the setup of today's measure), and the release Bell targets are the tier VII rows below.
 
@@ -5737,6 +5781,7 @@ All sim-visible contract changes land in **one** WP0 bump and one `SIM_VERSION` 
 | CI | M1: golden replays on 3 browser engines | 3 | WP12 |
 | Contracts, sim (forts, A16.14.8) | `FortDef` and `CompiledContent.forts`; hidden twin `UnitDef`s for walls, towers and camps (same id, `fort: { kind }`) so every `content.units[card]` lookup resolves; levies as hidden `UnitDef`s (`levy: true`, cost 0, `aiValue`); `Tag` + `structure`; `Role` and `RoleGroup` + `fort`; `EconomyRules.fort`; `Loadout.fort?`; `Command.fort { side, pad }` and its reject codes; fort state on `UnitState` (with `silencedUntilTick`); `SimState.traps` and `Observation.traps`; `SideState.fortReadyTick`; `CapCandidate.capRank`; events `fortPlaced`, `fortBuilt`, `fortDecayed`, `trapArmed`, `trapTriggered`, `trapExpired`, `towerSilenced`; `Observation.me.fort` and `foe.fort` (the public ring); `HudModel.fort`; `MatchStats` fort counts; art `createFort` and `FortView`; the `replaySchema.ts` and `save/schema.ts` mirrors with a round-trip test; `core/fortPads.ts`; one WP0 bump and `SIM_VERSION` 5.0.0 (the next major at build time) with a deliberate golden re-record and `13-forts.json` | 6 (F1) | WP0, WP2, WP12 |
 | Contracts, sim, content (Last Base Standing, A2.10.1; one WP0 bump, `SIM_VERSION` 6.0.0) | `FormatKind` + `'untimed'`; `FormatDef.escalation?: { atMs, baseDamageBp, turretDamageBp, crumbleBpPerSec }[]` (the first entry is Siege I and equals `siegeMs`; `finalBellMs` null) and `FormatDef.endByMs?`; `EconomyRules.siege.ropeDeadBandLu` (40); `Observation.escalation { step, crumbling }`; `SimEvent` `escalated { step }` and `crumbled { side, amount }`; `HudModel.escalation?`. The sim derives the step from the tick (no new hashed state, so goldens 01-14 keep their hashes); base and turret damage read the step; no symmetric decay in an escalation format; the rope; no evolve heal in Crumble. Content: the `last` and `last.bronze` windows, `endByMs` derived by a test, `FORMAT_MODES.last`, arenas `ladderFormats` and `byFormat.last`. Golden `15-last-base.json` on the fixture plus a `last` format. Meta: `formatKind`/`rewardFormat` for `untimed`. No save change (`ui-homeMode.<id>` and `ui-ladderFormat.last` are UI flags) | L1 (2026-10-01) | WP0, WP1, WP2, WP7, WP12 |
+| Contracts, content, AI, UI (the Siege rope in the timed formats, A2.10.2; no `SIM_VERSION` bump) | `ObservedEscalation.finalBellTick`; `HudModel.escalation` also in timed formats; `TIMED_ROPE` steps on every `short`, `standard` and `full` window; schema: Siege steps allowed in those formats with their Final Bell after the last step and no `endByMs`; `observedClock` keeps the Bell; HUD rope clock, Siege II banner, crumbling chip; VS rope row; Result reason line in timed formats; the `crumbling` adaptive hint | 2026-10-02 | WP0, WP1, WP3, WP5, WP9, WP11 |
 | Content, save (forts) | 32 forts, 24 twins and 8 levies per A16.14.4 as data, the compiler's structure mod, twins and schema checks; the next save version at build time (v11 today, after the Sundial's v10): `Loadout.fort` in every preset, `fortsOwned`, `flags['fort.slot']`, the unlock set and grants by rule, with fixtures | 6 (F1, F4) | WP1, WP8, WP7 |
 
 ---

@@ -1,0 +1,507 @@
+{
+ "frames": {
+  "friar_attack_b_02": {
+   "frame": {
+    "x": 396,
+    "y": 2,
+    "w": 122,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 142,
+    "y": 184,
+    "w": 122,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 438,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.50685,
+    "y": 0.8607
+   }
+  },
+  "friar_attack_b_02_team": {
+   "frame": {
+    "x": 91,
+    "y": 195,
+    "w": 88,
+    "h": 114
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 223,
+    "w": 88,
+    "h": 114
+   },
+   "sourceSize": {
+    "w": 438,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.50685,
+    "y": 0.8607
+   }
+  },
+  "friar_attack_b_03": {
+   "frame": {
+    "x": 272,
+    "y": 2,
+    "w": 120,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 180,
+    "w": 120,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 438,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.50685,
+    "y": 0.8607
+   }
+  },
+  "friar_attack_b_03_team": {
+   "frame": {
+    "x": 273,
+    "y": 195,
+    "w": 92,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 161,
+    "y": 229,
+    "w": 92,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 438,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.50685,
+    "y": 0.8607
+   }
+  },
+  "friar_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 123,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 149,
+    "y": 173,
+    "w": 123,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 438,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.50685,
+    "y": 0.8607
+   }
+  },
+  "friar_attack_b_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 195,
+    "w": 85,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 214,
+    "w": 85,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 438,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.50685,
+    "y": 0.8607
+   }
+  },
+  "friar_attack_b_05": {
+   "frame": {
+    "x": 129,
+    "y": 2,
+    "w": 139,
+    "h": 185
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 150,
+    "y": 175,
+    "w": 139,
+    "h": 185
+   },
+   "sourceSize": {
+    "w": 438,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.50685,
+    "y": 0.8607
+   }
+  },
+  "friar_attack_b_05_team": {
+   "frame": {
+    "x": 183,
+    "y": 195,
+    "w": 86,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 222,
+    "w": 86,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 438,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.50685,
+    "y": 0.8607
+   }
+  },
+  "friar_attack_b_06": {
+   "frame": {
+    "x": 625,
+    "y": 2,
+    "w": 122,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 200,
+    "w": 122,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 438,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.50685,
+    "y": 0.8607
+   }
+  },
+  "friar_attack_b_06_team": {
+   "frame": {
+    "x": 557,
+    "y": 195,
+    "w": 93,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 238,
+    "w": 93,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 438,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.50685,
+    "y": 0.8607
+   }
+  },
+  "friar_attack_b_07": {
+   "frame": {
+    "x": 751,
+    "y": 2,
+    "w": 132,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 205,
+    "w": 132,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 438,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.50685,
+    "y": 0.8607
+   }
+  },
+  "friar_attack_b_07_team": {
+   "frame": {
+    "x": 459,
+    "y": 195,
+    "w": 94,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 243,
+    "w": 94,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 438,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.50685,
+    "y": 0.8607
+   }
+  },
+  "friar_attack_b_08": {
+   "frame": {
+    "x": 522,
+    "y": 2,
+    "w": 99,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 193,
+    "w": 99,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 438,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.50685,
+    "y": 0.8607
+   }
+  },
+  "friar_attack_b_08_team": {
+   "frame": {
+    "x": 369,
+    "y": 195,
+    "w": 86,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 236,
+    "w": 86,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 438,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.50685,
+    "y": 0.8607
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "friar_attack_00",
+   "friar_attack_01",
+   "friar_attack_b_02",
+   "friar_attack_b_03",
+   "friar_attack_b_04",
+   "friar_attack_b_05",
+   "friar_attack_b_06",
+   "friar_attack_b_07",
+   "friar_attack_b_08",
+   "friar_attack_09",
+   "friar_attack_10"
+  ],
+  "attack_b_team": [
+   "friar_attack_00_team",
+   "friar_attack_01_team",
+   "friar_attack_b_02_team",
+   "friar_attack_b_03_team",
+   "friar_attack_b_04_team",
+   "friar_attack_b_05_team",
+   "friar_attack_b_06_team",
+   "friar_attack_b_07_team",
+   "friar_attack_b_08_team",
+   "friar_attack_09_team",
+   "friar_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "friar.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 896,
+   "h": 320
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.friar",
+   "name": "Friar",
+   "heightLu": 64,
+   "widthLu": 35.0,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    222,
+    346
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     62
+    ],
+    "hitCenter": [
+     0,
+     30
+    ],
+    "muzzle": [
+     39,
+     27
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "friar",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "holdStep": 3,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        1.5,
+        4.4
+       ],
+       [
+        -11.3,
+        4.0
+       ],
+       [
+        -25.4,
+        55.8
+       ],
+       [
+        -27.3,
+        26.6
+       ],
+       [
+        8.0,
+        62.6
+       ],
+       [
+        18.8,
+        62.0
+       ],
+       [
+        29.6,
+        48.2
+       ],
+       [
+        37.4,
+        16.6
+       ],
+       [
+        17.4,
+        7.2
+       ],
+       [
+        7.8,
+        5.3
+       ],
+       [
+        2.1,
+        4.2
+       ]
+      ]
+     },
+     "muzzle": [
+      29.6,
+      48.2
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

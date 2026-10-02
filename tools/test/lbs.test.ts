@@ -16,7 +16,9 @@ describe('sim-cli lbs (A2.10.1)', () => {
 
   it('reads the schedule in ticks and caps matches at endByMs + 2:00', () => {
     expect(ticks).toEqual([17400, 20400, 23400, 27600, 29400]);
-    expect(stepTicks(content, 'full')).toEqual([]);
+    // A timed Long War has the two steps of its Siege rope (A2.10.2); a War Path window has none.
+    expect(stepTicks(content, 'full')).toEqual([17400, 18600]);
+    expect(stepTicks(content, 'w2.stone')).toEqual([]);
     expect(matchTickCap(content, 'last')).toBe(30880 + 2400);
     expect(matchTickCap(content, 'full')).toBe(24000);
   });

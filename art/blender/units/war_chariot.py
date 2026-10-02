@@ -12,7 +12,13 @@ bronze khopesh in the near hand.
 
 Animation (cartoon kit v2; a viewer expects a war chariot to charge and slash as it passes):
   idle    the horse paws the ground and tosses its head, the driver shifts, blink
-  walk    a gallop with a suspension phase; the wheels roll at the ground speed
+  walk    walk v3 (ANIM_SPEC G4/G6): the horse trots at the ground speed with planted hooves
+          (diagonal pairs, legs solved by IK), the car bounces a frame late, the 4-spoke wheels roll
+          exactly 2 spoke spacings per cycle (no strobe), the driver posts and the pennant whips
+  attack_b  REAR AND CHOP: the horse rears and strikes down with its forehooves while the driver
+          chops overhead
+  attack_c  FISHTAIL SWEEP: the car swings out sideways, then whips round so the scythed hubs
+          sweep the ground (ring smears, sparks) and the khopesh slashes flat
   attack  DRIVE-BY SCYTHE CHARGE: the horse gathers on its haunches and the driver cocks the
           khopesh high behind his head (the held extreme), the horse lunges, the car fishtails
           (hull tilt), the scythed hubs whirl (ring smears) and the driver slashes down and
@@ -25,6 +31,7 @@ Animation (cartoon kit v2; a viewer expects a war chariot to charge and slash as
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as GT
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art import rigs_gunpowder as G
@@ -32,6 +39,9 @@ from ageborn_art.anim import Clip, merge, pick, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "war_chariot"
+# planted hooves: the runtime frame-locks the body like a rider's mount (ANIM_SPEC R2); the wheels turn
+# exactly one frame's advance per frame, so they stay consistent with the lock
+GAIT_NAME = "rider"
 NAME = "War Chariot"
 HEIGHT_LU = 110
 YAW_DEG = -10.0
@@ -47,11 +57,14 @@ HOOF = "#4A4038"
 
 HX = 26.0                    # the horse is this far ahead of the unit origin
 AX = -32.0                   # the chariot axle
-WHEEL_R = 15.0            # 8 x 37.5 = 300 degrees per walk cycle = 78.5 lu of rim = strideLu (79)
+WHEEL_R = 15.0            # 4 spokes; 2 spoke spacings (180 deg, 47 lu of rim) per 576 ms walk cycle
 FLOOR_Z = 20.0
 DRIVER = (-30.0, 0.0, 18.0)  # pose offset of the driver's skeleton (feet on the car floor)
 HR = (0.0, G.ARM_Y["r"], G.HAND_Z)
 BLADE = 22.0
+
+
+LEGS = {}
 
 
 def _leg(rig, name, x, y, z_top, front):
@@ -72,6 +85,9 @@ def _leg(rig, name, x, y, z_top, front):
     rig.part(f"{name}2", g, MANE, finish="hair", outline=0.8)
     g = Geo().blob((fx_ + 1.5, y, 2.2), (4.6, 4.0, 2.5), p=3.0, taper=(1.08, 0.82))
     rig.part(f"{name}2", g, HOOF)
+    key = name[4:]
+    LEGS[key] = GT.Leg(name, f"{name}2", (fx_ + 1.5, y, 0.6), bend=1.0 if front else -1.0)
+    rig.track(f"_foot_{key}", f"{name}2", (fx_ + 1.5, y, 0.4))
 
 
 def _horse(rig):
@@ -160,7 +176,7 @@ def _car(rig):
     rig.joint("wheel_l", "cart", (AX, 12.0, WHEEL_R))
     rig.joint("wheel_r", "cart", (AX, -12.0, WHEEL_R))
     G.wheel(rig, "wheel_l", (AX, 12.0, WHEEL_R), WHEEL_R, 3.0, rim=B.WOOD_DK, spokes=B.WOOD, hub=B.AGED,
-            team_felloe=False, n_spokes=6)
+            team_felloe=False, n_spokes=4)
     _marker(rig, "wheel_l", 12.0)
     # draught pole from the car floor up to the yoke on the horse, and the traces
     g = Geo().capsule((AX + 14, 0, FLOOR_Z), (HX - 6, 0, 36.0), 1.6).capsule((HX - 6, 0, 36.0), (HX + 2, 0, 49.0), 1.6)
@@ -200,7 +216,7 @@ def _car(rig):
     rig.part("pennant", g, team=True, outline=0.8)
     # near wheel and the scythe blades on the hubs
     G.wheel(rig, "wheel_r", (AX, -12.0, WHEEL_R), WHEEL_R, 3.0, rim=B.WOOD_DK, spokes=B.WOOD, hub=B.AGED,
-            team_felloe=False, n_spokes=6)
+            team_felloe=False, n_spokes=4)
     _marker(rig, "wheel_r", -12.0)
     # the scythed hubs: curved polished-bronze blades on the axle ends; they spin with the wheels
     for jn, y in (("scy_r", -19.5), ("scy_l", 17.5)):
@@ -260,11 +276,13 @@ def _driver(rig):
 
 
 def build(rig):
+    global RIG
+    RIG = rig
+    LEGS.clear()
     rig.joint("unit", "root", (0, 0, 0))
     _horse(rig)
     _car(rig)
     _driver(rig)
-    rig.track("_foot", "leg_fr2", (HX + 17.8, -6.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -278,7 +296,6 @@ def reins(a=-30, f=-10):
 
 DRV = {"driver": {"x": DRIVER[0], "z": DRIVER[2]}}
 STANCE = merge(DRV, khopesh(-30, 40, 70), reins(), {"torso": {"r": -4}})
-SPIN_PER_FRAME = 37.5     # 300 degrees per cycle, seamless with 6 spokes; the team spoke shows the roll direction
 
 
 def car(dx=0.0, dz=0.0, tilt=0.0, spin=0.0):
@@ -304,29 +321,51 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
-    # a gallop, 0.8 s per stride: hind pair lands (0-1), front pair lands (2-3), push-off (4),
-    # suspension with every hoof off the ground and the legs gathered (5-6), reach (7). The
-    # car bounces a frame behind; the wheels roll at the ground speed (SPIN_PER_FRAME).
-    hind_b = [18, 4, -12, -24, -30, -10, 14, 24]      # far hind upper leg (+ = forward)
-    hind_n = [26, 12, -4, -18, -28, -14, 10, 22]      # near hind leads by a beat
-    front_b = [-26, -30, 24, 10, -8, -24, -34, -20]   # far fore
-    front_n = [-30, -34, 30, 18, 0, -18, -30, -26]    # near fore
-    hind_bend = [4, 6, 10, 18, 26, 40, 30, 10]        # hocks gather in the suspension
-    front_bend = [-60, -70, -6, -4, -20, -80, -70, -40]
-    body_z = [-1.5, -2.0, -1.0, 0.0, 1.5, 4.5, 4.0, 0.5]
-    pitch = [3.0, 1.5, -2.5, -4.0, -2.0, 1.0, 2.5, 3.0]
-    lag = pick(f - 1 if f > 0 else 7, body_z)
-    return merge(STANCE, car(dz=0.35 * lag, tilt=0.5 * lag, spin=SPIN_PER_FRAME * f), {
-        "horse": {"z": body_z[f], "r": pitch[f]},
-        "leg_bl": {"r": hind_b[f]}, "leg_bl2": {"r": hind_bend[(f + 7) % 8]},
-        "leg_br": {"r": hind_n[f]}, "leg_br2": {"r": hind_bend[f]},
-        "leg_fl": {"r": front_b[f]}, "leg_fl2": {"r": front_bend[(f + 7) % 8]},
-        "leg_fr": {"r": front_n[f]}, "leg_fr2": {"r": front_bend[f]},
-        "neck": {"r": -2.0 * pitch[f] - 3.0}, "hhead": {"r": 1.5 * pitch[f]},
-        "hips": {"z": 0.6 * lag}, "torso": {"r": -2.0 - 0.8 * lag},
-        "arm_r": {"r": 2.5 * lag}, "hand_r": {"r": 2.5 * lag}, "arm_l": {"r": -2.0 * lag},
-    })
+# -- walk v3: trot at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 72 ms -----------------------
+# the 4-spoke wheels (r 15 lu, 94 lu of rim) turn 22.5 degrees a frame: 2 spoke spacings (47 lu of
+# rim) per 576 ms cycle = 82 lu/s in character space = the ground speed (yaw 10 degrees)
+RIG = None
+SPEED = 81.25
+WALK_N, WALK_CYCLE = 8, 576
+SPIN_PER_FRAME = 22.5
+GAIT = None
+
+
+def _gait():
+    global GAIT
+    if GAIT is None:
+        GAIT = GT.Gait(WALK_N, WALK_CYCLE, SPEED, GT.quad_feet(LEGS, GT.TROT,
+                                                              x_off={"fr": 2.0, "fl": 2.0, "br": -1.0, "bl": -1.0}),
+                       0.42, lift=7.0, kick=2.0, reach=2.5, toe_off=0.0, heel_strike=0.0)
+    return GAIT
+
+
+def _walk(f, report=None):
+    g = _gait()
+    p = 2 * math.pi * f / WALK_N
+
+    def extra(ctx):
+        # the car rides a frame late on the pole, the driver posts (60-80% of the bob, a frame late)
+        lag_z = -ctx["bob"] * math.cos(2 * (2 * math.pi * (f - 1) / WALK_N - ctx["low"]))
+        nod = math.cos(2 * (p - ctx["low"]))
+        return merge(STANCE, car(dz=0.9 * lag_z, tilt=0.8 * lag_z, spin=SPIN_PER_FRAME * f), {
+            "neck": {"r": -5.0 * nod - 3.0}, "hhead": {"r": 3.0 * nod},
+            "tail": {"r": 6 * math.sin(p)},
+            "hips": {"z": 0.7 * lag_z}, "torso": {"r": -2.0 - 1.0 * lag_z},
+            "arm_r": {"r": 3.0 * lag_z}, "hand_r": {"r": 3.0 * lag_z}, "arm_l": {"r": -2.0 * lag_z},
+            "head": {"r": 1.5 * lag_z},
+        })
+    return GT.quad_walk(RIG, f, g, {}, trunk="horse", base_z=-2.6, bob=2.0, beats=2, pitch=1.6, roll=1.2,
+                        extra=extra, report=report)
+
+
+def _hooves(pose, fr=None, fl=None, br=None, bl=None):
+    """Hooves placed by IK: (x, lift) in character space per leg (None keeps the leg's FK pose)."""
+    tg = {}
+    for k, v in (("fr", fr), ("fl", fl), ("br", br), ("bl", bl)):
+        if v is not None:
+            tg[k] = (LEGS[k], v[0], LEGS[k].end.z + v[1], 0.0)
+    return GT.solve(RIG, pose, tg) if tg else pose
 
 
 # 10 unique frames in the 12 heavy steps (moves.HEAVY_MELEE_MS; impact on step 6)
@@ -409,6 +448,132 @@ def _attack_clip():
                   smear=4, sequence=ATTACK_SEQ, overlays=ov)
 
 
+# -- attack B: the horse rears and strikes with its forehooves, the driver chops overhead ----------
+# 0 = A shift, 1 = A gather, 2 rising, 3 HOLD (reared up on the hind legs, forelegs folded high, the
+# khopesh raised over the driver's head), 4 smear, 5 smear, 6 IMPACT (the forehooves slam down, the
+# chop lands, dust), 7 shock, 8-9 = A follow and recover
+HIND = (HX - 15 - 4.5 + 1.8 + 1.5, 0.0)       # hind hoof x (the rear's pivot on the ground)
+B_REAR = [18, 40, 26, 6, -3, -1]               # horse pitch (deg), about the hind hooves
+B_FX = [4, 6, 8, 10, 12, 12]                    # forehooves reach forward (lu)
+B_FL = [18, 30, 22, 8, 0, 0]                    # forehoof lift (lu)
+B_CT = [3, 7, 4, 1, -1, 0]                      # the car tips up with the pole
+B_KA = [80, 120, 80, 20, -30, -35]              # khopesh arm, world deg
+B_KF = [130, 165, 90, 10, -40, -40]
+B_KW = [140, 175, 100, 10, -50, -55]
+B_DT = [6, 10, 0, -14, -24, -22]
+B_Q = [0.02, 0.05, 0.04, 0.0, -0.10, -0.06]
+
+
+def _b_pose(i):
+    if i in (0, 1, 8, 9):
+        return _attack(i)
+    k = i - 2
+    rear = B_REAR[k]
+    off = M.about((HIND[0] - HX, 0.0, -38.0), r=rear)
+    t = B_DT[k]
+    pose = merge(DRV, car(0.0, 0.0, B_CT[k], [10, 20, 60, 120, 170, 190][k]), {
+        "unit": dict(squash(B_Q[k])),
+        "horse": {"r": rear, "x": off["x"], "z": off["z"]},
+        "neck": {"r": [10, 16, 6, -4, -10, -6][k]}, "hhead": {"r": [-8, -14, -4, 4, 8, 4][k]},
+        "torso": {"r": t}, "head": {"r": [-4, -8, 0, 6, 8, 6][k]},
+        "sparks": {"show": False},
+        "dust": {"show": k in (4, 5), "s": 1.0 if k == 4 else 1.3, "x": HX + 34.0, "z": 0.0 if k == 4 else 2.0},
+    }, khopesh(B_KA[k] - t, B_KF[k] - t, B_KW[k] - t), reins(-40 - t, -20 - t))
+    fx = LEGS["fr"].end.x + B_FX[k]
+    pose = _hooves(pose, fr=(fx, B_FL[k]), fl=(fx - 3.0, B_FL[k] * 0.85),
+                   br=(LEGS["br"].end.x + 1.0, 0.0), bl=(LEGS["bl"].end.x + 1.0, 0.0))
+    if k in (2, 3):
+        pose.setdefault("khopesh", {})["sz"] = 1.2
+    if k in (0, 1):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.9}})
+    else:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+    return pose
+
+
+def _attack_b():
+    blade = {"kind": "arc", "joint": "khopesh", "inner": BLADE_IN, "outer": BLADE_OUT, "color": B.SAND_LT,
+             "white": 0.3, "taper": 0.15, "lines": 3}
+    ov = {
+        4: [dict(blade, **{"from": 3, "t1": 0.95})],
+        5: [dict(blade, **{"from": 3, "t0": 0.3, "t1": 0.95})],
+        6: [{"kind": "burst", "joint": "khopesh", "point": BLADE_OUT, "r0_lu": 7.0, "r1_lu": 14.0, "n": 5,
+             "a0": -100.0, "arc": 140.0},
+            {"kind": "dust", "ground": (HX + 22.0, 0.0), "size_lu": 10.0, "puffs": 5, "seed": 31, "spread": 1.1},
+            {"kind": "burst", "joint": "root", "point": (HX + 22.0, 0, 2.0), "r0_lu": 10.0, "r1_lu": 18.0,
+             "n": 4, "a0": 10.0, "arc": 160.0}],
+        7: [{"kind": "dust", "ground": (HX + 26.0, 0.0), "size_lu": 12.0, "puffs": 4, "seed": 32, "spread": 1.2}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 8), 9: ("attack", 9)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(10)], M.HEAVY_MELEE_MS, impact=M.HEAVY_MELEE_IMPACT,
+                  sequence=ATTACK_SEQ, overlays=ov, reuse=reuse)
+
+
+# -- attack C: fishtail scythe sweep ---------------------------------------------------------------
+# 2 the car swings out, 3 HOLD (the car slewed sideways toward the camera, tilted on one wheel, the
+# driver braced low with the khopesh drawn back flat), 4-5 the car whips round (ring smears on the
+# scythed hubs), 6 IMPACT (the car straight, the hub scythes and the flat slash land: sparks, dust),
+# 7 shock, 8-9 = A follow and recover
+C_YAW = [20, 44, 16, -8, -12, -4]               # the car slews (cart rz)
+C_TILT = [2, 5, 2, -1, -2, -1]
+C_RX = [-10, -26, -10, 2, 4, 1]                   # up on the near wheel
+C_SPIN = [20, 40, 120, 220, 290, 320]
+C_HX = [0, 2, 4, 6, 7, 6]
+C_KA = [-40, -60, -10, -5, -20, -24]            # khopesh arm: drawn back flat, then a flat slash
+C_KF = [-60, -90, -20, 0, -10, -14]
+C_KW = [170, 180, 60, 0, -10, -14]
+C_KRZ = [40, 70, 20, -10, -30, -20]
+C_DT = [-14, -26, -4, -12, -18, -16]
+
+
+def _c_pose(i):
+    if i in (0, 1, 8, 9):
+        return _attack(i)
+    k = i - 2
+    t = C_DT[k]
+    pose = merge(DRV, car(-2.0, 0.0, C_TILT[k], C_SPIN[k]), {
+        "cart": {"rz": C_YAW[k], "rx": C_RX[k]},
+        "unit": dict(squash([-0.04, -0.06, 0.04, 0.02, -0.08, -0.04][k])),
+        "horse": {"x": C_HX[k], "z": [-1, -2.5, -1, 0, -1.5, -1][k], "r": [-2, -4, 0, 2, -2, -1][k]},
+        "neck": {"r": [4, 8, 0, -6, -10, -6][k]}, "hhead": {"r": [-2, -4, 0, 4, 6, 3][k]},
+        "torso": {"r": t, "rz": [16, 30, 0, -10, -16, -8][k]}, "head": {"r": [4, 8, 0, -2, -4, -2][k]},
+        "hips": {"z": [-1.5, -3.0, -1.0, -0.5, -2.0, -1.0][k]},
+        "arm_r": {"rz": C_KRZ[k]},
+        "sparks": {"show": k in (4, 5), "s": 1.2 if k == 4 else 0.8},
+        "dust": {"show": k in (3, 4, 5), "s": [1, 1, 1, 0.9, 1.3, 1.5][k], "z": [0, 0, 0, 0, 2, 4][k]},
+    }, khopesh(C_KA[k] - t, C_KF[k] - t, C_KW[k] - t), reins(-34 - t, -14 - t))
+    # the horse digs in: forelegs braced forward, hind legs under
+    pose = _hooves(pose, fr=(LEGS["fr"].end.x + C_HX[k] + 5.0, 0.0), fl=(LEGS["fl"].end.x + C_HX[k] + 3.0, 0.0),
+                   br=(LEGS["br"].end.x + C_HX[k] - 1.0, 0.0), bl=(LEGS["bl"].end.x + C_HX[k] - 2.0, 0.0))
+    if k in (2, 3):
+        pose.setdefault("khopesh", {})["sz"] = 1.2
+    if k in (0, 1):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.9}})
+    else:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+    return pose
+
+
+def _attack_c():
+    ring = {"kind": "arc", "joint": "scy_r", "inner": (AX, -20.0, WHEEL_R), "outer": (AX - 24.0, -20.0, WHEEL_R - 3.5),
+            "color": B.SAND_LT, "white": 0.3, "taper": 0.3, "band": 0.4, "lines": 2, "samples": 20}
+    blade = {"kind": "arc", "joint": "khopesh", "inner": BLADE_IN, "outer": BLADE_OUT, "color": B.SAND_LT,
+             "white": 0.3, "taper": 0.15, "lines": 3}
+    ov = {
+        4: [dict(ring, **{"from": 3, "t1": 1.0}), dict(blade, **{"from": 3, "t1": 0.95})],
+        5: [dict(ring, **{"from": 4, "t1": 1.0}), dict(blade, **{"from": 3, "t0": 0.3, "t1": 0.95})],
+        6: [dict(ring, **{"from": 5, "t1": 1.0}),
+            {"kind": "burst", "joint": "scy_r", "point": (AX - 22.0, -20.0, WHEEL_R - 3.0), "r0_lu": 7.0,
+             "r1_lu": 14.0, "n": 5, "a0": -60.0, "arc": 160.0},
+            {"kind": "dust", "ground": (AX - 10.0, 0.0), "size_lu": 11.0, "puffs": 5, "seed": 41, "spread": 1.3},
+            {"kind": "dust", "ground": (AX + 16.0, 0.0), "size_lu": 7.0, "puffs": 3, "seed": 42, "spread": 0.9}],
+        7: [dict(ring, **{"from": 6, "t1": 1.0, "lines": 1})],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 8), 9: ("attack", 9)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(10)], M.HEAVY_MELEE_MS, impact=M.HEAVY_MELEE_IMPACT,
+                  sequence=ATTACK_SEQ, overlays=ov, reuse=reuse)
+
+
 def _hit(k):
     # vehicle: the car bounces on its axle, the driver ducks and squeezes his eyes, the horse
     # throws its head, the pennant whips (follow-through)
@@ -485,11 +650,13 @@ def _die_extra():
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [150] * 6, loop=True),
-        Clip("walk", 8, _walk, loop=True, durations=100),
+        M.walk_clip("walk", RIG, _walk, _gait(), "rider"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         Clip("die", 8, _die, sequence=DIE_SEQ, durations=DIE_MS, extra=_die_extra()),
     ]
     M.check_contract([c for c in cl if c.name != "die"], heavy=True)
-    assert cl[-1].total_ms() == 970 and cl[1].total_ms() == 800
-    return cl
+    assert cl[-1].total_ms() == 970
+    return M.check_variants(cl)

@@ -75,7 +75,8 @@ describe('A2.14 test plans', () => {
       ].filter(([x, y]) => x !== y);
       expect(diff).toEqual([[t.card, t.replaces]]);
       if (t.kind === 'unit' && (t.rarity === 'epic' || t.rarity === 'legendary')) expect(l.units[4]).toBe(t.card);
-      if (t.kind === 'turret') expect(l.turrets[1]).toBe(t.card);
+      // A tested Common turret (a content wave's third) takes the first slot; Rare and Epic turrets the second.
+      if (t.kind === 'turret') expect(l.turrets[t.rarity === 'common' ? 0 : 1]).toBe(t.card);
       if (t.kind === 'power') expect(l.powers[content.powers[t.card]?.slot ?? 'home']).toBe(t.card);
       expect(planIssues(content, t.plan, 'full')).toEqual([]);
     }

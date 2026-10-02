@@ -129,7 +129,8 @@ export interface Gap {
 /** A primitive view action produced by the event mapper and executed by the battle view. */
 export type ViewAction =
   | { a: 'unitSpawn'; id: number; side: Side; card: CardId; x: number; summoned: boolean; level: number }
-  | { a: 'unitClip'; id: number; clip: ClipName; impactAtMs?: number }
+  /** `attackIndex` >= 1 is a second attacker (riders, sponsons, an MG): it never restarts the body clip (ANIM_SPEC R3). */
+  | { a: 'unitClip'; id: number; clip: ClipName; impactAtMs?: number; attackIndex?: number }
   | { a: 'unitDie'; id: number }
   | { a: 'unitFlash'; id: number; ms: number; color?: number }
   | { a: 'unitFreeze'; id: number; ms: number; jitterPx?: number }
@@ -148,6 +149,8 @@ export type ViewAction =
       travelMs: number;
       visualId: VisualId;
       arc: boolean;
+      /** Which of the unit's attacks fired it (absent: 0); the view starts it at that attacker's muzzle (ANIM_SPEC R4). */
+      attackIndex?: number;
     }
   /**
    * Particles at an anchor. `opts` use the art's effect option names (WP4 `effects/recipes.ts`: side,

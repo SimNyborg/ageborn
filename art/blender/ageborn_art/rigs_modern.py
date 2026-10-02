@@ -247,7 +247,7 @@ def field_cap(rig, c=(1.0, 0, 57.5), color=OLIVE, team_band=True, joint="head"):
 
 
 # -- torso gear ---------------------------------------------------------------------------
-def tunic(rig, collar=OLIVE, belt=KHAKI, buckle=STEEL, pockets=True, skirt=True):
+def tunic(rig, collar=OLIVE, belt=KHAKI, buckle=STEEL, pockets=True, skirt=True, hem_z=11.0):
     """Team tunic with an olive collar, breast pockets, a webbing belt with pouches."""
     g = Geo().blob((0, 0, 28.0), (10.8, 9.8, 11.8), p=2.4, taper=(1.08, 0.94))
     g.blob((0, 0, 18.0), (10.4, 9.6, 4.6), p=2.6)
@@ -265,7 +265,7 @@ def tunic(rig, collar=OLIVE, belt=KHAKI, buckle=STEEL, pockets=True, skirt=True)
     rig.part("torso", g, buckle, finish="metal", outline=0.5)
     if skirt:
         g = Geo().blob((0.5, 0, 15.8), (11.4, 10.4, 5.8), p=2.6, taper=(1.1, 1.0))
-        g.clip((0, 0, 11.0), (0, 0, -1))
+        g.clip((0, 0, hem_z), (0, 0, -1))
         rig.part("hips", g, team=True)
 
 

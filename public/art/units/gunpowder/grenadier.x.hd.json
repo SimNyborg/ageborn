@@ -1,0 +1,418 @@
+{
+ "frames": {
+  "grenadier_attack_b_03": {
+   "frame": {
+    "x": 161,
+    "y": 227,
+    "w": 151,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 211,
+    "w": 151,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 472,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.51271,
+    "y": 0.85973
+   }
+  },
+  "grenadier_attack_b_03_team": {
+   "frame": {
+    "x": 206,
+    "y": 423,
+    "w": 105,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 213,
+    "w": 105,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 472,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.51271,
+    "y": 0.85973
+   }
+  },
+  "grenadier_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 227,
+    "w": 155,
+    "h": 192
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 213,
+    "w": 155,
+    "h": 192
+   },
+   "sourceSize": {
+    "w": 472,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.51271,
+    "y": 0.85973
+   }
+  },
+  "grenadier_attack_b_04_team": {
+   "frame": {
+    "x": 315,
+    "y": 423,
+    "w": 111,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 215,
+    "w": 111,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 472,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.51271,
+    "y": 0.85973
+   }
+  },
+  "grenadier_attack_b_05": {
+   "frame": {
+    "x": 104,
+    "y": 2,
+    "w": 116,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 188,
+    "w": 116,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 472,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.51271,
+    "y": 0.85973
+   }
+  },
+  "grenadier_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 423,
+    "w": 97,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 196,
+    "w": 97,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 472,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.51271,
+    "y": 0.85973
+   }
+  },
+  "grenadier_attack_b_06": {
+   "frame": {
+    "x": 224,
+    "y": 2,
+    "w": 118,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 202,
+    "w": 118,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 472,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.51271,
+    "y": 0.85973
+   }
+  },
+  "grenadier_attack_b_06_team": {
+   "frame": {
+    "x": 103,
+    "y": 423,
+    "w": 99,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 215,
+    "y": 209,
+    "w": 99,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 472,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.51271,
+    "y": 0.85973
+   }
+  },
+  "grenadier_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 98,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 177,
+    "w": 98,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 472,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.51271,
+    "y": 0.85973
+   }
+  },
+  "grenadier_attack_b_07_team": {
+   "frame": {
+    "x": 316,
+    "y": 227,
+    "w": 88,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 185,
+    "w": 88,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 472,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.51271,
+    "y": 0.85973
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "grenadier_attack_00",
+   "grenadier_attack_01",
+   "grenadier_attack_02",
+   "grenadier_attack_b_03",
+   "grenadier_attack_b_04",
+   "grenadier_attack_b_05",
+   "grenadier_attack_b_06",
+   "grenadier_attack_b_07",
+   "grenadier_attack_08",
+   "grenadier_attack_09",
+   "grenadier_attack_10",
+   "grenadier_attack_11"
+  ],
+  "attack_b_team": [
+   "grenadier_attack_00_team",
+   "grenadier_attack_01_team",
+   "grenadier_attack_02_team",
+   "grenadier_attack_b_03_team",
+   "grenadier_attack_b_04_team",
+   "grenadier_attack_b_05_team",
+   "grenadier_attack_b_06_team",
+   "grenadier_attack_b_07_team",
+   "grenadier_attack_08_team",
+   "grenadier_attack_09_team",
+   "grenadier_attack_10_team",
+   "grenadier_attack_11_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "grenadier.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 448,
+   "h": 600
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.grenadier",
+   "name": "Grenadier",
+   "heightLu": 76,
+   "widthLu": 39.0,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    242,
+    380
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     74
+    ],
+    "hitCenter": [
+     0,
+     34
+    ],
+    "muzzle": [
+     18,
+     46
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "grenadier",
+   "clips": {
+    "attack_b": {
+     "frames": 12,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "durationsMs": [
+      40,
+      45,
+      50,
+      140,
+      30,
+      70,
+      90,
+      70,
+      80,
+      60,
+      44,
+      30
+     ],
+     "durationMs": 749,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.5007,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        13.5,
+        40.0
+       ],
+       [
+        11.2,
+        43.3
+       ],
+       [
+        4.3,
+        49.9
+       ],
+       [
+        -9.3,
+        11.8
+       ],
+       [
+        -8.8,
+        10.8
+       ],
+       [
+        12.3,
+        9.6
+       ],
+       [
+        22.2,
+        26.4
+       ],
+       [
+        15.0,
+        45.4
+       ],
+       [
+        13.1,
+        41.6
+       ],
+       [
+        10.6,
+        45.3
+       ],
+       [
+        -1.4,
+        11.4
+       ],
+       [
+        13.7,
+        38.4
+       ]
+      ]
+     },
+     "muzzle": [
+      22.2,
+      26.4
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

@@ -220,6 +220,9 @@ export function powerOption(v: View, slot: PowerSlot, info: PowerInfo, c: PowerC
         return best;
       }
       const inArea = v.foes.filter((u) => hittable(u, info) && u.p <= areaMax);
+      // A `lane` power has no aim and is rejected only when nobody is hittable (A2.9.7 `powerNoTarget`):
+      // like a strike, it waits for a second enemy, so one death during the observation delay cannot void it.
+      if (def.reach === 'lane' && inArea.length < STRIKE_MIN_FOES) return none;
       const elig = eligibleIds(inArea, info.cap > 0 ? info.cap : inArea.length, []);
       const cands = inArea.filter((u) => elig.has(u.id));
       // Per-target value: kill-weighted damage, or for controls the A2.9.9 weight on engaged targets.

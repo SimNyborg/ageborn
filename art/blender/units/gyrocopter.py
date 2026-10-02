@@ -19,6 +19,16 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   hit     flyer: a tilt and a 4 lu drop, the pilot's eyes squeezed, then a wobble back up
   die     D8 spiral down: smoke pours out, the rotor slows and tilts, the gyrocopter noses over and
           spins down with the pilot's spiral eyes, a crash bounce
+
+Animation standard (ANIM_SPEC 2026-10-02, G8 fly):
+  rotor     never static: one blade shape steps round 45 degrees a frame over three alternating
+            pale blur arcs (the spinning disc), in every clip
+  walk      forward flight at the ground speed (80 x 1.25 = 100 lu/s): nose down 7 degrees, the rotor
+            tilted into the wind, the scarf streaming; the game adds the hover bob (R8)
+  attack    A as above; the dip is split into the hold and a wobble frame (holdLoop: the sim
+            wind-up is 2.5x the authored one)
+  attack_b  BANKED SHOT: it rolls toward the camera (the rotor disc and the belly show, the held
+            extreme, holdLoop), fires both guns from the bank, the recoil rocks it and it rolls level
 """
 import math
 
@@ -30,6 +40,7 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "gyrocopter"
+GAIT_NAME = "fly"
 NAME = "Gyrocopter"
 HEIGHT_LU = 66
 YAW_DEG = -10.0
@@ -53,6 +64,26 @@ def _blade(g, ang, mx, mz, w=3.2, t=0.9, r0=0.0, r1=ROTOR_R):
         c = (r0 + r1) / 2
         g.blob((mx + sgn * c * math.cos(a), sgn * c * math.sin(a), mz + 2.0), ((r1 - r0) / 2, w, t), p=2.6,
                rot=(0, 0, ang))
+
+
+BLUR = 3                    # alternating rotor blur arcs
+
+
+def _blur(g, k, mx, mz):
+    """Pale speed arcs in the rotor plane, fore and aft of the mast (they read as the spinning disc
+    at 1x without covering the pilot); variant k shifts which arcs are drawn."""
+    for ci, c in enumerate((0.0, 180.0)):
+        for ri, r in enumerate((18.0, 29.0, 40.0)):
+            if (ri + ci + k) % 3 == 2:
+                continue
+            span = 52.0 + 8.0 * ri
+            off = 10.0 * (k - 1) * (1 if ci == 0 else -1)
+            pts = []
+            for j in range(7):
+                a = math.radians(c + off - span / 2 + span * j / 6)
+                pts.append((mx + r * math.cos(a), r * math.sin(a), mz + 2.0))
+            for a, b in zip(pts, pts[1:]):
+                g.capsule(a, b, 1.7 + 0.3 * ri, segs=6, rings=2)
 
 
 def build(rig):
@@ -158,6 +189,12 @@ def build(rig):
     mx, my, mz = MAST
     g = Geo().blob((mx, 0, mz + 1.0), (3.6, 3.6, 2.4), p=2.4)
     rig.part("rotor", g, R.GUNMETAL, finish="metal", outline=0.7)
+    for k in range(BLUR):
+        name = f"blur{k}"
+        rig.joint(name, "rotor", MAST, hidden=True)
+        g = Geo()
+        _blur(g, k, mx, mz)
+        rig.part(name, g, R.KHAKI_LT, highlight=False, outline=0)
     for k in range(PHASES):
         name = f"blade{k}"
         rig.joint(name, "rotor", MAST, hidden=True)
@@ -181,8 +218,11 @@ def build(rig):
 
 
 # -- poses ------------------------------------------------------------------------------------------
-def _rotor(step, slow=1):
-    return {f"blade{(step // slow) % PHASES}": {"show": True}}
+def _rotor(step, slow=1, blur=True):
+    pose = {f"blade{(step // slow) % PHASES}": {"show": True}}
+    if blur:
+        pose[f"blur{(step // slow) % BLUR}"] = {"show": True}
+    return pose
 
 
 def _idle(f):
@@ -202,24 +242,28 @@ def _idle(f):
 def _walk(f):
     p = 2 * math.pi * f / 8
     return merge(_rotor(f), {
-        "odo": {"x": 10.0 * math.cos(p)},     # stride 40 lu per 0.5 s = 80 lu/s (sim speed)
-        "body": {"z": 2.2 * math.sin(p)},
-        "pod": {"r": -10.0 + 2.0 * math.sin(p + 1.0)},
+        "odo": {"x": 12.5 * math.cos(p)},     # stride 50 lu per 0.5 s = 100 lu/s (ground speed)
+        "body": {"z": 1.2 * math.sin(p)},
+        "pod": {"r": -7.0 + 1.8 * math.sin(p + 1.0)},
         "rotor": {"r": -7.0},
         "pilot": {"r": 4.0},
-        "p_head": {"r": 2.0 * math.sin(p - 1.0)},
+        "p_head": {"r": 2.5 * math.sin(p - 1.0)},
     })
 
 
-# 5 unique frames in 250 ms; fire on frame 1 at 60 ms (impactAt 0.24, as shipped)
-ATTACK_MS = [60, 50, 40, 50, 50]
-ATTACK_IMPACT = 1
+# 6 unique frames in 250 ms; fire on frame 2 at 60 ms (impactAt 0.24, as shipped). The shipped 60 ms
+# dip is split into the hold (36) and a wobble partner (24) for the holdLoop.
+ATTACK_MS = [36, 24, 50, 40, 50, 50]
+ATTACK_IMPACT = 2
+U_OF = [0, 0, 1, 2, 3, 4]
 
 
-def _attack(f):
-    pose = merge(_rotor(f), {
-        "pod": {"r": [-11, -13, -6, -3, -5][f], "x": [1.0, 0.5, -2.5, -1.5, 0.0][f]},
-        "body": dict(squash([-0.03, 0.03, -0.05, 0.02, 0.0][f]), z=[-1.5, -2.0, 0.5, 1.5, 0.0][f]),
+def _attack(i):
+    wob = i == 1
+    f = U_OF[i]
+    pose = merge(_rotor(i), {
+        "pod": {"r": [-11, -13, -6, -3, -5][f] + (1.2 if wob else 0.0), "x": [1.0, 0.5, -2.5, -1.5, 0.0][f]},
+        "body": dict(squash([-0.03, 0.03, -0.05, 0.02, 0.0][f]), z=[-1.5, -2.0, 0.5, 1.5, 0.0][f] + (0.6 if wob else 0.0)),
         "pilot": {"r": [-5, -6, 4, 2, 0][f]},
         "flash": {"show": f == 1},
         "flash2": {"show": f == 1},
@@ -236,9 +280,51 @@ def _attack(f):
 
 
 def _attack_clip():
-    ov = {1: [{"kind": "burst", "joint": "pod", "point": (MUZZLE[0] + 3.0, -3.0, 11.0), "r0_lu": 6.0,
+    ov = {2: [{"kind": "burst", "joint": "pod", "point": (MUZZLE[0] + 3.0, -3.0, 11.0), "r0_lu": 6.0,
                "r1_lu": 10.5, "n": 5, "a0": -60.0, "arc": 120.0}]}
-    return M.clip("attack", [_attack(f) for f in range(5)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
+    return M.clip("attack", [_attack(f) for f in range(6)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  extra={"holdStep": 0, "holdLoop": [0, 1]})
+
+
+# -- attack B: banked shot (ANIM_SPEC appendix B) ---------------------------------------------------
+# unique frames: 0 HOLD (rolled toward the camera, the nose a little down, the pilot leaning into the
+# bank), 1 wobble (holdLoop), 2 FIRE (both guns), 3 recoil (it rocks), 4 rolling level, 5 = A settle.
+#       HOLD  wob   FIRE  recoil level
+B_RX = [-34.0, -36.0, -33.0, -22.0, -9.0]
+B_R = [-2.0, -2.5, 0.0, 3.0, -2.0]
+B_X = [0.5, 0.5, -2.0, -1.5, 0.0]
+B_Z = [-1.0, -0.6, 0.0, 1.5, 0.5]
+
+
+def _b_pose(i):
+    if i == 5:
+        return _attack(5)
+    k = i
+    pose = merge(_rotor(i), {
+        "body": dict(M.body_about((0, 0, 24), x=B_X[k], z=B_Z[k], rx=B_RX[k],
+                                  q=[0, 0, -0.04, 0.02, 0][k])["body"]),
+        "pod": {"r": B_R[k]},
+        "pilot": {"r": [-6, -6, 3, 2, 0][k], "rx": [8, 8, 6, 4, 0][k]},
+        "flash": {"show": k == 2},
+        "flash2": {"show": k == 2},
+        "casing0": {"show": k in (3, 4), "x": [0, 0, 0, -1, -3][k], "z": [0, 0, 0, -3, -8][k],
+                    "r": [0, 0, 0, 80, 220][k]},
+        "casing1": {"show": k in (3, 4), "x": [0, 0, 0, 1, 0][k], "z": [0, 0, 0, -2, -6][k],
+                    "r": [0, 0, 0, -60, -200][k]},
+    })
+    if k in (0, 1, 2):
+        pose = merge(pose, F.expr("squeeze", "grit"))
+    elif k == 3:
+        pose = merge(pose, F.expr("yell"))
+    return pose
+
+
+def _attack_b():
+    ov = {2: [{"kind": "burst", "joint": "pod", "point": (MUZZLE[0] + 3.0, -3.0, 11.0), "r0_lu": 6.0,
+               "r1_lu": 10.5, "n": 5, "a0": -60.0, "arc": 120.0}]}
+    reuse = {5: ("attack", 5)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(6)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 0, "holdLoop": [0, 1]})
 
 
 def _hit(k):
@@ -264,7 +350,7 @@ ROTOR_OFF = [None, None, None, None, None, (4, 8, 40), (10, 16, 90), (16, 18, 14
 
 
 def _die(k):
-    pose = merge(_rotor(k, slow=2 if k > 3 else 1), {
+    pose = merge(_rotor(k, slow=2 if k > 3 else 1, blur=k < 4), {
         "body": dict(M.body_about((0, 0, 24), x=D_X[k], z=D_Z[k], r=D_R[k], rz=D_RZ[k], rx=D_RX[k],
                                   q=D_Q[k])["body"]),
         "pilot": {"r": [10, 16, -8, 12, -10, 14, 8, 10, 10, 10][k]},
@@ -291,9 +377,10 @@ def clips():
         M.clip("idle", [_idle(f) for f in range(4)], [100, 100, 100, 100], loop=True),
         M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
     ]
     by = {c.name: c for c in cl}
     assert by["idle"].total_ms() == 400 and by["hit"].total_ms() == 310 and by["die"].total_ms() == 695
-    return M.check_contract([by["attack"]], attack_ms=250, attack_impact_at=0.24) and cl
+    return M.check_contract([by["attack"]], attack_ms=250, attack_impact_at=0.24) and M.check_variants(cl)

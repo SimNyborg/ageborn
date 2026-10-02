@@ -10,7 +10,10 @@ curly tail, the mane and the pennant follow through.
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, heavy timing):
   idle    breathing, the ears flick, a snort of steam from the snout
-  walk    prowl trot, the mane bristles bouncing a frame late
+  walk    walk v3 trot at ground speed (ANIM_SPEC G4): diagonal pairs, planted hooves, a short
+          suspension, the mane and pennant following
+  attack_b  head-down ram: a short burst and a straight butt
+  attack_c  sideways tusk hook
   attack  HOOF-SCRAPE, THEN GORE TOSS: scrapes the ground twice with a front hoof (dirt
           flicks behind), holds low and snorts, bursts forward (streak), scoops the tusks
           under and tosses them up (ivory arc smear, impact lines, dust), lands heavily
@@ -21,12 +24,14 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, heavy timing):
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as G
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import Quad, trot
 
 SLUG = "tuskback"
+GAIT_NAME = "quad"
 NAME = "Tuskback"
 HEIGHT_LU = 104
 YAW_DEG = -10.0
@@ -87,12 +92,19 @@ def _leg(rig, name, p0, p1, front):
 
 
 def build(rig):
+    global RIG, LEGS
+    RIG = rig
     q = Quad(rig, trunk=(0, 38), front_x=16.0, back_x=-16.0, leg_y=9.0, shoulder_z=40.0,
              hip_z=40.0, knee_z=18.0, hock_z=18.0, knee_dx=1.5, hock_dx=-1.5, far_dx=-3.0)
     rig.rest_scale["body"] = BODY_SCALE   # a heavy: bulkier than the Medieval destrier
+    LEGS = {}
     for name in ("fl", "bl", "fr", "br"):
         p0, p1, _ = q.legs[name]
         _leg(rig, name, p0, p1, name[0] == "f")
+        # walk v3: the IK end is the bottom of the hoof; knees (carpus) fold back, hocks forward
+        LEGS[name] = G.Leg(f"leg_{name}", f"leg_{name}2", (p1[0] + 1.5, p1[1], 0.8),
+                           bend=1.0 if name[0] == "f" else -1.0)
+        rig.track(f"_foot_{name}", f"leg_{name}2", (p1[0] + 1.5, p1[1], 0.6))
 
     # barrel, shoulder hump and haunch; a paler belly; pale scars on the flank
     trunk = Geo().blob((0, 0, 44), (25, 16.5, 18), p=2.3)
@@ -120,17 +132,17 @@ def build(rig):
     rig.part("mane", g, MANE, finish="hair")
     # team war blanket, straps with bone toggles, three stone plates (the armour)
     g = Geo().blob((-2, 0, 48), (24.5, 17.8, 17.5), p=3.0, taper=(1.02, 0.96))
-    g.clip((0, 0, 33.0), (0, 0, -1))
+    g.clip((0, 0, 37.0), (0, 0, -1))      # walk v3: the hem ends above the elbow and stifle
     g.clip((20.0, 0, 0), (1, 0, 0))
     g.clip((-24.0, 0, 0), (-1, 0, 0))
     for x in (-20.0, -12.0, -4.0, 4.0, 12.0):   # tassels along the hem
-        g.lathe([(2.4, 0), (0, -4.6)], (x, -15.5, 33.2), segs=8)
+        g.lathe([(2.4, 0), (0, -3.6)], (x, -16.0, 37.2), segs=8)
     rig.part("trunk", g, team=True)
     g = Geo()
     for x in (-14.0, 14.0):
         g.lathe([(0, -0.1), (17.6, 0), (18.4, 2.6), (0, 2.7)], (x, 0, 50), (x + 1, 0, 50), segs=24,
                 squash=(1.1, 1.08))
-    g.clip((0, 0, 33.0), (0, 0, -1))
+    g.clip((0, 0, 37.0), (0, 0, -1))
     rig.part("trunk", g, STRAP, outline=0.8)
     # team girth bands under the belly (they show when it flops onto its back)
     g = Geo()
@@ -232,7 +244,6 @@ def build(rig):
     g.capsule((-34.5, 0, 49), (-32, 0, 46.5), 1.5, 1.1)
     g.blob((-32.0, 0, 45.2), (2.8, 2.3, 3.2), p=2.2)
     rig.part("tail", g, FUR_DK, finish="hair")
-    rig.track("_foot", "leg_fr2", (18.5, -9.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -257,13 +268,32 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
-    p = 2 * math.pi * f / 8
-    return merge(trot(f, fr=18.0, br=16.0, knee=48.0, hock=38.0, bob=2.4, nod=6.0, roll=1.8), {
-        "head": {"r": 3.0 * math.cos(2 * p - 0.8)},
-        "body": squash(0.025 * math.cos(2 * p)),
-        "ears": {"r": 6 * math.cos(2 * p - 1.2)},
-    })
+# -- walk v3: G4 trot (diagonal pairs) at ground speed, card 55 x 1.25 = 68.75 lu/s -----------------
+# 8 x 90 ms = 720 ms; each hoof is planted 45% of the cycle (a short suspension between the pairs)
+RIG = None
+LEGS = None
+SPEED = 68.75
+GAIT = None
+
+
+def _gait():
+    global GAIT
+    if GAIT is None:
+        GAIT = G.Gait(8, 720, SPEED, G.quad_feet(LEGS, G.TROT, scale=BODY_SCALE,
+                                                 x_off={"fr": 2.0, "fl": 2.0, "br": -1.0, "bl": -1.0}),
+                      0.45, lift=8.0, kick=2.0, reach=2.5, toe_off=0.0, heel_strike=0.0)
+    return GAIT
+
+
+def _walk(f, report=None):
+    g = _gait()
+
+    def extra(ctx):
+        p = ctx["p"]
+        return {"neck": {"r": -6.0 * math.cos(2 * p - 0.6)}, "head": {"r": 4.0 * math.cos(2 * p - 1.2)},
+                "ears": {"r": 8 * math.cos(2 * p - 1.4)}, "jaw": {"r": -2.0 * max(0.0, math.cos(2 * p))}}
+    return G.quad_walk(RIG, f, g, {}, base_z=-3.6, bob=1.9, beats=2, pitch=2.0, roll=2.0,
+                       extra=extra, report=report)
 
 
 # attack: 10 unique poses in the 12 heavy steps (70, 90, 100, HOLD 200, 60, 50 | IMPACT 150,
@@ -321,6 +351,124 @@ def _attack_clip():
                   impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov)
 
 
+# -- attack B: head-down ram, a short burst and a straight butt (ANIM_SPEC appendix B) -------------
+# unique: 0 = A scrape, 1 = A lift, 2 head drops (weight back), 3 HOLD (coiled low, forehead and
+# tusks level at the target), 4 burst (legs stretched, streak), 5 IMPACT (straight butt, squash,
+# impact lines), 6 = A land, 7 = A follow, 8 = A settle; on A's 12 heavy steps
+B_SEQ = [0, 1, 2, 3, 4, 4, 5, 6, 7, 7, 8, 8]
+#        drop  HOLD  burst  IMP
+V_BX = [-4.0, -8.0, 4.0, 13.0]
+V_BZ = [-2.0, -4.0, 1.5, -1.0]
+V_BR = [-5, -8, 2, -2]
+V_BQ = [-0.04, -0.08, 0.06, -0.10]
+V_BN = [-18, -24, -16, -6]
+V_BH = [-12, -14, -10, -4]
+V_BJ = [-2, -4, -6, -14]
+V_BFR = [(-8, 4), (-14, 10), (34, -30), (18, 0)]
+V_BFL = [(-6, 2), (-12, 8), (28, -24), (14, 0)]
+V_BBR = [(14, 18), (22, 30), (-30, 8), (-20, 6)]
+V_BBL = [(12, 16), (20, 28), (-26, 6), (-16, 4)]
+
+
+def _b_pose(i):
+    if i in (0, 1):
+        return _attack_pose(i)
+    if i >= 6:
+        return _attack_pose(i + 1)
+    k = i - 2
+    pose = merge(M.body_about(CENTER, x=V_BX[k], z=V_BZ[k], q=V_BQ[k]), {
+        "trunk": {"r": V_BR[k]},
+        "neck": {"r": V_BN[k]}, "head": {"r": V_BH[k]}, "jaw": {"r": V_BJ[k]},
+        "leg_fr": {"r": V_BFR[k][0]}, "leg_fr2": {"r": V_BFR[k][1]},
+        "leg_fl": {"r": V_BFL[k][0]}, "leg_fl2": {"r": V_BFL[k][1]},
+        "leg_br": {"r": V_BBR[k][0]}, "leg_br2": {"r": V_BBR[k][1]},
+        "leg_bl": {"r": V_BBL[k][0]}, "leg_bl2": {"r": V_BBL[k][1]},
+        "ears": {"r": [-14, -24, -26, -8][k]},
+        "brow": {"z": [-1.0, -1.4, -1.2, -1.0][k]},
+    })
+    if k == 3:
+        pose["head"]["sx"] = 1.06
+    return pose
+
+
+def _attack_b():
+    ov = {
+        3: [{"kind": "dust", "joint": "head", "point": (59.0, -3.0, 37.0), "size_lu": 4.6, "puffs": 3,
+             "seed": 15, "color": STEAM, "spread": 0.7, "dir": 1.0},
+            {"kind": "dust", "ground": (-24.0, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 16, "dir": -1.0}],
+        4: [{"kind": "streak", "joint": "jaw", "point": TUSK_TIP, "color": IVORY, "width_lu": 10.0,
+             "white": 0.5, "from": 3},
+            {"kind": "dust", "ground": (-28.0, 0.0), "size_lu": 8.0, "puffs": 4, "seed": 17, "dir": -1.0}],
+        5: [{"kind": "burst", "joint": "head", "point": (58.0, 0.0, 44.0), "r0_lu": 10.0, "r1_lu": 18.0,
+             "n": 6, "a0": -70.0, "arc": 140.0},
+            {"kind": "dust", "ground": (24.0, 0.0), "size_lu": 9.0, "puffs": 4, "seed": 18, "spread": 1.0}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 6: ("attack", 7), 7: ("attack", 8), 8: ("attack", 9)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(9)], M.HEAVY_MELEE_MS, impact=5,
+                  sequence=B_SEQ, overlays=ov, reuse=reuse)
+
+
+# -- attack C: sideways tusk hook (the head cocks away, then whips across toward the viewer) ------
+# unique: 0 = A scrape, 1 head cocks away (wind), 2 HOLD (reared up on the hind legs, both front
+# hooves folded, the head turned away and high), 3 smear (head whipping across), 4 IMPACT (tusks hooked across and up, squash), 5 follow
+# (head past, overshoot), 6 = A follow, 7 = A settle
+C_SEQ = [0, 1, 1, 2, 3, 3, 4, 5, 6, 6, 7, 7]
+#       wind  HOLD  smear  IMP  follow
+# Review N1 (2026-10-02): A's hold is a low coil, so C rears: the forehand comes up off the
+# ground (both front legs folded), the head cocked away and high, then it drops onto its front
+# feet hooking the tusks across and down.
+V_CX = [-3.0, -6.0, 3.0, 8.0, 8.5]
+V_CZ = [1.0, 4.0, 1.0, -1.5, 0.0]
+V_CQ = [0.02, 0.06, 0.04, -0.10, 0.03]
+V_CR = [6, 16, 2, -6, -2]           # trunk pitch: + nose up (the rear)
+V_CN = [0, 8, -8, -6, 2]
+V_CH = [2, 10, -4, -8, 2]
+V_CRZ = [24, 38, 0, -36, -44]     # neck yaw: + away from the viewer, - toward
+V_CHRZ = [10, 16, 0, -18, -20]
+V_CJ = [-2, -6, -10, -18, -8]
+V_CFR = [(30, -60), (52, -96), (10, -20), (-6, 0), (-4, 0)]
+V_CFL = [(22, -50), (44, -88), (6, -10), (4, 0), (2, 0)]
+V_CBR = [(-2, 10), (-12, 18), (-12, 6), (-16, 4), (-10, 2)]
+V_CBL = [(0, 8), (-8, 14), (-10, 6), (-14, 4), (-8, 2)]
+
+
+def _c_pose(i):
+    if i == 0:
+        return _attack_pose(0)
+    if i >= 6:
+        return _attack_pose(i + 2)
+    k = i - 1
+    pose = merge(M.body_about(CENTER, x=V_CX[k], z=V_CZ[k], q=V_CQ[k]), {
+        "trunk": {"r": V_CR[k], "rz": [6, 10, 0, -8, -6][k]},
+        "neck": {"r": V_CN[k], "rz": V_CRZ[k]}, "head": {"r": V_CH[k], "rz": V_CHRZ[k]}, "jaw": {"r": V_CJ[k]},
+        "leg_fr": {"r": V_CFR[k][0]}, "leg_fr2": {"r": V_CFR[k][1]},
+        "leg_fl": {"r": V_CFL[k][0]}, "leg_fl2": {"r": V_CFL[k][1]},
+        "leg_br": {"r": V_CBR[k][0]}, "leg_br2": {"r": V_CBR[k][1]},
+        "leg_bl": {"r": V_CBL[k][0]}, "leg_bl2": {"r": V_CBL[k][1]},
+        "ears": {"r": [-10, -20, -24, -10, 6][k]},
+        "brow": {"z": [-0.8, -1.2, -1.2, -1.0, 0.0][k]},
+    })
+    return pose
+
+
+def _attack_c():
+    tusk_in = (TUSK_TIP[0] - 12.0, TUSK_TIP[1], TUSK_TIP[2] - 17.0)
+    hook = {"kind": "arc", "joint": "jaw", "inner": tusk_in, "outer": TUSK_TIP, "color": IVORY,
+            "taper": 0.15, "lines": 3, "white": 0.35, "samples": 18}
+    ov = {
+        2: [{"kind": "dust", "joint": "head", "point": (59.0, -3.0, 37.0), "size_lu": 4.0, "puffs": 3,
+             "seed": 19, "color": STEAM, "spread": 0.6, "dir": 1.0}],
+        3: [dict(hook, t0=0.0, t1=0.9, **{"from": 2})],
+        4: [dict(hook, t0=0.3, t1=0.95, lines=2, **{"from": 3}),
+            {"kind": "burst", "joint": "jaw", "point": TUSK_TIP, "r0_lu": 9.0, "r1_lu": 16.0, "n": 5,
+             "a0": -40.0, "arc": 150.0},
+            {"kind": "dust", "ground": (26.0, 0.0), "size_lu": 8.0, "puffs": 4, "seed": 20, "spread": 1.0}],
+    }
+    reuse = {0: ("attack", 0), 6: ("attack", 8), 7: ("attack", 9)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(8)], M.HEAVY_MELEE_MS, impact=4,
+                  sequence=C_SEQ, overlays=ov, reuse=reuse)
+
+
 def _hit(k):
     def recoil(a, shake):
         return {"body": dict(squash(-0.06 * max(a, 0)), x=-4.0 * max(a, 0) + 1.0 * min(a, 0)),
@@ -362,11 +510,12 @@ def clips():
                [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True,
                overlays={3: [{"kind": "dust", "joint": "head", "point": (59.0, -3.0, 37.0), "size_lu": 3.6,
                               "puffs": 3, "seed": 9, "color": STEAM, "spread": 0.6, "dir": 1.0}]}),
-        # a heavy trot: 0.92 s cycle so it plays near 1x at its 55 lu/s sim speed
-        M.clip("walk", [_walk(f) for f in range(8)], [115] * 8, loop=True),
+        M.walk_clip("walk", RIG, _walk, _gait(), "quad"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die_pose(keep[i]) for i in range(len(keep))], M.DIE_MS_HEAVY,
                sequence=M.DIE_SEQ_HEAVY, extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
-    return M.check_contract(cl, heavy=True)
+    return M.check_variants(M.check_contract(cl, heavy=True))

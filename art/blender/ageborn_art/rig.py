@@ -36,6 +36,7 @@ class Rig:
         self.hidden_by_default = set()
         self.parts = []  # dicts: obj, hull, joint, team
         self.rest_scale = {}
+        self.rest_offset = {}  # joint -> (x, y, z) lu added to its rest location in every pose
         self.secondaries = {}  # name -> {"tip": empty, "max": deg, "gain": g}
         self.trackers = {}     # name -> empty
         self._hidden = set()
@@ -146,6 +147,8 @@ class Rig:
         for name, e in self.joints.items():
             p = self.parent_of[name]
             e.location = self.rest[name] - (self.rest[p] if p else Vector())
+            if name in self.rest_offset:
+                e.location = e.location + Vector(self.rest_offset[name])
             e.rotation_euler = (0.0, 0.0, self.yaw if name == "root" else 0.0)
             rs = self.rest_scale.get(name, 1.0)
             e.scale = (rs, rs, rs)

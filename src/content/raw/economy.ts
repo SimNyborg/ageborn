@@ -59,19 +59,24 @@ export interface TimedRopeStep {
  * loses a share of its base's max HP, and the rope tightens once. The Final Bell still ends the war.
  * Shorter War Path and custom windows keep today's Siege. Short's Siege lasts only 2:00, so its rope is
  * stronger and its second step also raises base damage and cuts turret damage.
+ *
+ * Tuned 2026-10-02 with the rope-aware bots (mirror lab, tier VII Echo mirrors with bot Fort cards, seeds
+ * 1-400 per format): Final Bell 23.8 / 8.8 / 3.8% before (symmetric decay) → 8.0 / 5.0 / 4.0% (targets
+ * 10 / 8 / 5%), draws 9.0 / 2.8 / 1.5% → 0 / 0 / 0%, medians 7:39 / 10:58 / 15:21. Stronger ropes end every
+ * stall (0.85 / 0.65 / 0.6%/s: 3.5 / 2.5 / 0.3%); see DESIGN A2.10.2 for the levers.
  */
 export const TIMED_ROPE: Readonly<Record<'short' | 'standard' | 'full', readonly TimedRopeStep[]>> = {
   short: [
-    { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 85 },
-    { afterSiegeMs: 45000, baseDamageBp: 30000, turretDamageBp: 3500, crumbleBpPerSec: 135 },
+    { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 60 },
+    { afterSiegeMs: 45000, baseDamageBp: 30000, turretDamageBp: 3500, crumbleBpPerSec: 110 },
   ],
   standard: [
-    { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 65 },
-    { afterSiegeMs: 60000, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 115 },
+    { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 55 },
+    { afterSiegeMs: 60000, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 105 },
   ],
   full: [
-    { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 75 },
-    { afterSiegeMs: 60000, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 125 },
+    { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 40 },
+    { afterSiegeMs: 60000, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 85 },
   ],
 };
 

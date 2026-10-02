@@ -2,18 +2,18 @@
  "frames": {
   "spear_hunter_idle_00": {
    "frame": {
-    "x": 201,
-    "y": 438,
+    "x": 233,
+    "y": 443,
     "w": 109,
-    "h": 96
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 105,
-    "y": 76,
+    "y": 75,
     "w": 109,
-    "h": 96
+    "h": 97
    },
    "sourceSize": {
     "w": 283,
@@ -26,18 +26,18 @@
   },
   "spear_hunter_idle_00_team": {
    "frame": {
-    "x": 393,
-    "y": 539,
+    "x": 2,
+    "y": 544,
     "w": 88,
-    "h": 94
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 112,
-    "y": 72,
+    "y": 70,
     "w": 88,
-    "h": 94
+    "h": 96
    },
    "sourceSize": {
     "w": 283,
@@ -50,18 +50,18 @@
   },
   "spear_hunter_idle_01": {
    "frame": {
-    "x": 346,
-    "y": 337,
+    "x": 695,
+    "y": 235,
     "w": 108,
-    "h": 97
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 106,
-    "y": 75,
+    "y": 73,
     "w": 108,
-    "h": 97
+    "h": 99
    },
    "sourceSize": {
     "w": 283,
@@ -74,18 +74,18 @@
   },
   "spear_hunter_idle_01_team": {
    "frame": {
-    "x": 314,
-    "y": 438,
+    "x": 685,
+    "y": 340,
     "w": 86,
-    "h": 96
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 114,
-    "y": 70,
+    "y": 68,
     "w": 86,
-    "h": 96
+    "h": 98
    },
    "sourceSize": {
     "w": 283,
@@ -98,18 +98,18 @@
   },
   "spear_hunter_idle_02": {
    "frame": {
-    "x": 575,
-    "y": 127,
-    "w": 105,
-    "h": 100
+    "x": 221,
+    "y": 128,
+    "w": 106,
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 107,
-    "y": 71,
-    "w": 105,
-    "h": 100
+    "x": 106,
+    "y": 69,
+    "w": 106,
+    "h": 102
    },
    "sourceSize": {
     "w": 283,
@@ -122,18 +122,18 @@
   },
   "spear_hunter_idle_02_team": {
    "frame": {
-    "x": 295,
-    "y": 233,
+    "x": 607,
+    "y": 235,
     "w": 84,
-    "h": 99
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 114,
-    "y": 66,
+    "y": 65,
     "w": 84,
-    "h": 99
+    "h": 100
    },
    "sourceSize": {
     "w": 283,
@@ -146,18 +146,18 @@
   },
   "spear_hunter_idle_03": {
    "frame": {
-    "x": 311,
-    "y": 127,
+    "x": 112,
+    "y": 128,
     "w": 105,
-    "h": 101
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 106,
-    "y": 69,
+    "y": 67,
     "w": 105,
-    "h": 101
+    "h": 103
    },
    "sourceSize": {
     "w": 283,
@@ -170,18 +170,18 @@
   },
   "spear_hunter_idle_03_team": {
    "frame": {
-    "x": 98,
-    "y": 233,
+    "x": 514,
+    "y": 128,
     "w": 83,
-    "h": 100
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 114,
-    "y": 64,
+    "y": 62,
     "w": 83,
-    "h": 100
+    "h": 102
    },
    "sourceSize": {
     "w": 283,
@@ -194,18 +194,18 @@
   },
   "spear_hunter_idle_04": {
    "frame": {
-    "x": 201,
-    "y": 127,
+    "x": 2,
+    "y": 128,
     "w": 106,
-    "h": 101
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 105,
-    "y": 70,
+    "y": 68,
     "w": 106,
-    "h": 101
+    "h": 103
    },
    "sourceSize": {
     "w": 283,
@@ -218,18 +218,18 @@
   },
   "spear_hunter_idle_04_team": {
    "frame": {
-    "x": 383,
-    "y": 233,
+    "x": 672,
+    "y": 128,
     "w": 83,
-    "h": 99
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 114,
-    "y": 66,
+    "y": 64,
     "w": 83,
-    "h": 99
+    "h": 101
    },
    "sourceSize": {
     "w": 283,
@@ -242,18 +242,18 @@
   },
   "spear_hunter_idle_05": {
    "frame": {
-    "x": 584,
-    "y": 233,
+    "x": 2,
+    "y": 340,
     "w": 108,
-    "h": 98
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 105,
-    "y": 74,
+    "y": 73,
     "w": 108,
-    "h": 98
+    "h": 99
    },
    "sourceSize": {
     "w": 283,
@@ -266,18 +266,18 @@
   },
   "spear_hunter_idle_05_team": {
    "frame": {
-    "x": 95,
-    "y": 539,
-    "w": 87,
-    "h": 95
+    "x": 549,
+    "y": 443,
+    "w": 88,
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 112,
-    "y": 70,
-    "w": 87,
-    "h": 95
+    "x": 111,
+    "y": 68,
+    "w": 88,
+    "h": 97
    },
    "sourceSize": {
     "w": 283,
@@ -290,18 +290,18 @@
   },
   "spear_hunter_walk_00": {
    "frame": {
-    "x": 209,
-    "y": 638,
-    "w": 112,
-    "h": 93
+    "x": 447,
+    "y": 544,
+    "w": 98,
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
-    "y": 77,
-    "w": 112,
-    "h": 93
+    "x": 83,
+    "y": 76,
+    "w": 98,
+    "h": 95
    },
    "sourceSize": {
     "w": 283,
@@ -314,18 +314,18 @@
   },
   "spear_hunter_walk_00_team": {
    "frame": {
-    "x": 662,
-    "y": 539,
-    "w": 83,
-    "h": 94
+    "x": 474,
+    "y": 644,
+    "w": 54,
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 114,
-    "y": 73,
-    "w": 83,
-    "h": 94
+    "x": 99,
+    "y": 72,
+    "w": 54,
+    "h": 93
    },
    "sourceSize": {
     "w": 283,
@@ -338,18 +338,18 @@
   },
   "spear_hunter_walk_01": {
    "frame": {
-    "x": 676,
-    "y": 638,
-    "w": 117,
-    "h": 90
+    "x": 532,
+    "y": 644,
+    "w": 101,
+    "h": 92
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
-    "y": 83,
-    "w": 117,
-    "h": 90
+    "x": 83,
+    "y": 79,
+    "w": 101,
+    "h": 92
    },
    "sourceSize": {
     "w": 283,
@@ -362,18 +362,18 @@
   },
   "spear_hunter_walk_01_team": {
    "frame": {
-    "x": 585,
-    "y": 638,
-    "w": 87,
-    "h": 91
+    "x": 2,
+    "y": 742,
+    "w": 54,
+    "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 114,
-    "y": 79,
-    "w": 87,
-    "h": 91
+    "x": 100,
+    "y": 75,
+    "w": 54,
+    "h": 90
    },
    "sourceSize": {
     "w": 283,
@@ -386,18 +386,18 @@
   },
   "spear_hunter_walk_02": {
    "frame": {
-    "x": 2,
-    "y": 337,
-    "w": 112,
-    "h": 97
+    "x": 225,
+    "y": 340,
+    "w": 100,
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 106,
-    "y": 76,
-    "w": 112,
-    "h": 97
+    "x": 85,
+    "y": 72,
+    "w": 100,
+    "h": 99
    },
    "sourceSize": {
     "w": 283,
@@ -410,18 +410,18 @@
   },
   "spear_hunter_walk_02_team": {
    "frame": {
-    "x": 584,
-    "y": 438,
-    "w": 83,
-    "h": 96
+    "x": 701,
+    "y": 443,
+    "w": 55,
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 114,
-    "y": 71,
-    "w": 83,
-    "h": 96
+    "x": 100,
+    "y": 68,
+    "w": 55,
+    "h": 97
    },
    "sourceSize": {
     "w": 283,
@@ -434,18 +434,18 @@
   },
   "spear_hunter_walk_03": {
    "frame": {
-    "x": 89,
-    "y": 127,
-    "w": 108,
-    "h": 101
+    "x": 329,
+    "y": 340,
+    "w": 100,
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 108,
-    "y": 71,
-    "w": 108,
-    "h": 101
+    "x": 84,
+    "y": 68,
+    "w": 100,
+    "h": 99
    },
    "sourceSize": {
     "w": 283,
@@ -458,18 +458,18 @@
   },
   "spear_hunter_walk_03_team": {
    "frame": {
-    "x": 805,
-    "y": 233,
-    "w": 86,
-    "h": 98
+    "x": 641,
+    "y": 443,
+    "w": 56,
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 115,
-    "y": 66,
-    "w": 86,
-    "h": 98
+    "x": 98,
+    "y": 63,
+    "w": 56,
+    "h": 97
    },
    "sourceSize": {
     "w": 283,
@@ -482,18 +482,18 @@
   },
   "spear_hunter_walk_04": {
    "frame": {
-    "x": 233,
-    "y": 337,
-    "w": 109,
-    "h": 97
+    "x": 227,
+    "y": 644,
+    "w": 98,
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 109,
-    "y": 77,
-    "w": 109,
-    "h": 97
+    "x": 83,
+    "y": 76,
+    "w": 98,
+    "h": 93
    },
    "sourceSize": {
     "w": 283,
@@ -506,18 +506,18 @@
   },
   "spear_hunter_walk_04_team": {
    "frame": {
-    "x": 406,
-    "y": 638,
-    "w": 88,
-    "h": 92
+    "x": 811,
+    "y": 644,
+    "w": 56,
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 115,
-    "y": 73,
-    "w": 88,
-    "h": 92
+    "x": 99,
+    "y": 72,
+    "w": 56,
+    "h": 91
    },
    "sourceSize": {
     "w": 283,
@@ -530,18 +530,18 @@
   },
   "spear_hunter_walk_05": {
    "frame": {
-    "x": 2,
-    "y": 736,
-    "w": 110,
-    "h": 90
+    "x": 183,
+    "y": 742,
+    "w": 98,
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 109,
-    "y": 83,
-    "w": 110,
-    "h": 90
+    "x": 82,
+    "y": 80,
+    "w": 98,
+    "h": 88
    },
    "sourceSize": {
     "w": 283,
@@ -554,17 +554,17 @@
   },
   "spear_hunter_walk_05_team": {
    "frame": {
-    "x": 415,
-    "y": 736,
-    "w": 87,
+    "x": 377,
+    "y": 742,
+    "w": 57,
     "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 115,
-    "y": 79,
-    "w": 87,
+    "x": 96,
+    "y": 75,
+    "w": 57,
     "h": 87
    },
    "sourceSize": {
@@ -578,17 +578,17 @@
   },
   "spear_hunter_walk_06": {
    "frame": {
-    "x": 186,
-    "y": 539,
-    "w": 107,
+    "x": 2,
+    "y": 644,
+    "w": 96,
     "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 108,
-    "y": 76,
-    "w": 107,
+    "x": 83,
+    "y": 73,
+    "w": 96,
     "h": 94
    },
    "sourceSize": {
@@ -602,18 +602,18 @@
   },
   "spear_hunter_walk_06_team": {
    "frame": {
-    "x": 498,
-    "y": 638,
-    "w": 83,
-    "h": 92
+    "x": 412,
+    "y": 644,
+    "w": 58,
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 115,
-    "y": 72,
-    "w": 83,
-    "h": 92
+    "x": 95,
+    "y": 68,
+    "w": 58,
+    "h": 93
    },
    "sourceSize": {
     "w": 283,
@@ -626,17 +626,17 @@
   },
   "spear_hunter_walk_07": {
    "frame": {
-    "x": 696,
-    "y": 233,
-    "w": 105,
+    "x": 584,
+    "y": 340,
+    "w": 97,
     "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 107,
-    "y": 71,
-    "w": 105,
+    "x": 83,
+    "y": 68,
+    "w": 97,
     "h": 98
    },
    "sourceSize": {
@@ -650,18 +650,18 @@
   },
   "spear_hunter_walk_07_team": {
    "frame": {
-    "x": 749,
-    "y": 539,
-    "w": 81,
-    "h": 94
+    "x": 523,
+    "y": 340,
+    "w": 57,
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 115,
-    "y": 66,
-    "w": 81,
-    "h": 94
+    "x": 96,
+    "y": 63,
+    "w": 57,
+    "h": 99
    },
    "sourceSize": {
     "w": 283,
@@ -675,7 +675,7 @@
   "spear_hunter_attack_00": {
    "frame": {
     "x": 118,
-    "y": 337,
+    "y": 443,
     "w": 111,
     "h": 97
    },
@@ -683,7 +683,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 103,
-    "y": 74,
+    "y": 73,
     "w": 111,
     "h": 97
    },
@@ -698,18 +698,18 @@
   },
   "spear_hunter_attack_00_team": {
    "frame": {
-    "x": 574,
-    "y": 539,
-    "w": 84,
-    "h": 94
+    "x": 275,
+    "y": 544,
+    "w": 85,
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 113,
-    "y": 70,
-    "w": 84,
-    "h": 94
+    "y": 68,
+    "w": 85,
+    "h": 96
    },
    "sourceSize": {
     "w": 283,
@@ -722,8 +722,8 @@
   },
   "spear_hunter_attack_01": {
    "frame": {
-    "x": 292,
-    "y": 736,
+    "x": 60,
+    "y": 742,
     "w": 119,
     "h": 88
    },
@@ -731,7 +731,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 84,
-    "y": 84,
+    "y": 83,
     "w": 119,
     "h": 88
    },
@@ -746,18 +746,18 @@
   },
   "spear_hunter_attack_01_team": {
    "frame": {
-    "x": 694,
-    "y": 736,
+    "x": 285,
+    "y": 742,
     "w": 88,
-    "h": 85
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 98,
-    "y": 80,
+    "y": 78,
     "w": 88,
-    "h": 85
+    "h": 87
    },
    "sourceSize": {
     "w": 283,
@@ -770,18 +770,18 @@
   },
   "spear_hunter_attack_02": {
    "frame": {
-    "x": 625,
+    "x": 527,
     "y": 2,
     "w": 104,
-    "h": 103
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 90,
-    "y": 69,
+    "y": 67,
     "w": 104,
-    "h": 103
+    "h": 105
    },
    "sourceSize": {
     "w": 283,
@@ -794,18 +794,18 @@
   },
   "spear_hunter_attack_02_team": {
    "frame": {
-    "x": 504,
-    "y": 127,
+    "x": 601,
+    "y": 128,
     "w": 67,
-    "h": 101
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 105,
-    "y": 64,
+    "y": 63,
     "w": 67,
-    "h": 101
+    "h": 102
    },
    "sourceSize": {
     "w": 283,
@@ -818,18 +818,18 @@
   },
   "spear_hunter_attack_03": {
    "frame": {
-    "x": 103,
+    "x": 102,
     "y": 2,
     "w": 65,
-    "h": 115
+    "h": 116
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 96,
-    "y": 57,
+    "y": 55,
     "w": 65,
-    "h": 115
+    "h": 116
    },
    "sourceSize": {
     "w": 283,
@@ -842,18 +842,18 @@
   },
   "spear_hunter_attack_03_team": {
    "frame": {
-    "x": 484,
+    "x": 402,
     "y": 2,
     "w": 37,
-    "h": 105
+    "h": 107
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 109,
-    "y": 59,
+    "y": 57,
     "w": 37,
-    "h": 105
+    "h": 107
    },
    "sourceSize": {
     "w": 283,
@@ -866,18 +866,18 @@
   },
   "spear_hunter_attack_04": {
    "frame": {
-    "x": 172,
+    "x": 171,
     "y": 2,
     "w": 79,
-    "h": 113
+    "h": 114
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 110,
-    "y": 51,
+    "y": 49,
     "w": 79,
-    "h": 113
+    "h": 114
    },
    "sourceSize": {
     "w": 283,
@@ -890,18 +890,18 @@
   },
   "spear_hunter_attack_04_team": {
    "frame": {
-    "x": 733,
+    "x": 635,
     "y": 2,
     "w": 52,
-    "h": 103
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 120,
-    "y": 53,
+    "y": 51,
     "w": 52,
-    "h": 103
+    "h": 105
    },
    "sourceSize": {
     "w": 283,
@@ -914,8 +914,8 @@
   },
   "spear_hunter_attack_05": {
    "frame": {
-    "x": 791,
-    "y": 127,
+    "x": 502,
+    "y": 235,
     "w": 101,
     "h": 100
    },
@@ -923,7 +923,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 126,
-    "y": 68,
+    "y": 66,
     "w": 101,
     "h": 100
    },
@@ -938,18 +938,18 @@
   },
   "spear_hunter_attack_05_team": {
    "frame": {
-    "x": 2,
-    "y": 127,
+    "x": 759,
+    "y": 128,
     "w": 83,
-    "h": 102
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 124,
-    "y": 63,
+    "y": 62,
     "w": 83,
-    "h": 102
+    "h": 101
    },
    "sourceSize": {
     "w": 283,
@@ -962,8 +962,8 @@
   },
   "spear_hunter_attack_06": {
    "frame": {
-    "x": 84,
-    "y": 638,
+    "x": 102,
+    "y": 644,
     "w": 121,
     "h": 93
    },
@@ -971,7 +971,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 129,
-    "y": 90,
+    "y": 89,
     "w": 121,
     "h": 93
    },
@@ -986,8 +986,8 @@
   },
   "spear_hunter_attack_06_team": {
    "frame": {
-    "x": 2,
-    "y": 539,
+    "x": 549,
+    "y": 544,
     "w": 89,
     "h": 95
    },
@@ -995,7 +995,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 128,
-    "y": 86,
+    "y": 84,
     "w": 89,
     "h": 95
    },
@@ -1010,8 +1010,8 @@
   },
   "spear_hunter_attack_07": {
    "frame": {
-    "x": 684,
-    "y": 127,
+    "x": 395,
+    "y": 235,
     "w": 103,
     "h": 100
    },
@@ -1019,7 +1019,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 131,
-    "y": 81,
+    "y": 79,
     "w": 103,
     "h": 100
    },
@@ -1034,8 +1034,8 @@
   },
   "spear_hunter_attack_07_team": {
    "frame": {
-    "x": 789,
-    "y": 2,
+    "x": 426,
+    "y": 128,
     "w": 84,
     "h": 102
    },
@@ -1043,7 +1043,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 129,
-    "y": 76,
+    "y": 74,
     "w": 84,
     "h": 102
    },
@@ -1058,7 +1058,7 @@
   },
   "spear_hunter_attack_08": {
    "frame": {
-    "x": 525,
+    "x": 691,
     "y": 2,
     "w": 96,
     "h": 104
@@ -1067,7 +1067,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 131,
-    "y": 83,
+    "y": 81,
     "w": 96,
     "h": 104
    },
@@ -1082,18 +1082,18 @@
   },
   "spear_hunter_attack_08_team": {
    "frame": {
-    "x": 400,
+    "x": 443,
     "y": 2,
     "w": 80,
-    "h": 105
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 128,
-    "y": 78,
+    "y": 76,
     "w": 80,
-    "h": 105
+    "h": 106
    },
    "sourceSize": {
     "w": 283,
@@ -1106,18 +1106,18 @@
   },
   "spear_hunter_attack_09": {
    "frame": {
-    "x": 470,
-    "y": 233,
+    "x": 171,
+    "y": 235,
     "w": 110,
-    "h": 98
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 115,
-    "y": 74,
+    "y": 72,
     "w": 110,
-    "h": 98
+    "h": 100
    },
    "sourceSize": {
     "w": 283,
@@ -1130,18 +1130,18 @@
   },
   "spear_hunter_attack_09_team": {
    "frame": {
-    "x": 753,
-    "y": 337,
-    "w": 82,
-    "h": 97
+    "x": 2,
+    "y": 235,
+    "w": 81,
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 123,
-    "y": 69,
-    "w": 82,
-    "h": 97
+    "y": 67,
+    "w": 81,
+    "h": 101
    },
    "sourceSize": {
     "w": 283,
@@ -1154,18 +1154,18 @@
   },
   "spear_hunter_attack_10": {
    "frame": {
-    "x": 458,
-    "y": 337,
-    "w": 108,
-    "h": 97
+    "x": 114,
+    "y": 340,
+    "w": 107,
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 108,
-    "y": 74,
-    "w": 108,
-    "h": 97
+    "y": 72,
+    "w": 107,
+    "h": 99
    },
    "sourceSize": {
     "w": 283,
@@ -1178,15 +1178,207 @@
   },
   "spear_hunter_attack_10_team": {
    "frame": {
-    "x": 404,
-    "y": 438,
+    "x": 775,
+    "y": 340,
+    "w": 86,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 67,
+    "w": 86,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_hit_00": {
+   "frame": {
+    "x": 438,
+    "y": 742,
+    "w": 108,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 85,
+    "w": 108,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_hit_00_team": {
+   "frame": {
+    "x": 742,
+    "y": 742,
+    "w": 102,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 81,
+    "w": 102,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_hit_01": {
+   "frame": {
+    "x": 331,
+    "y": 128,
+    "w": 91,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 68,
+    "w": 91,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_hit_01_team": {
+   "frame": {
+    "x": 637,
+    "y": 644,
+    "w": 91,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 74,
+    "w": 91,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_hit_02": {
+   "frame": {
+    "x": 346,
+    "y": 443,
+    "w": 101,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 74,
+    "w": 101,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_hit_02_team": {
+   "frame": {
+    "x": 760,
+    "y": 443,
+    "w": 93,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 69,
+    "w": 93,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_hit_03": {
+   "frame": {
+    "x": 2,
+    "y": 443,
+    "w": 112,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 74,
+    "w": 112,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 188
+   },
+   "anchor": {
+    "x": 0.46996,
+    "y": 0.86702
+   }
+  },
+  "spear_hunter_hit_03_team": {
+   "frame": {
+    "x": 185,
+    "y": 544,
     "w": 86,
     "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 115,
+    "x": 113,
     "y": 69,
     "w": 86,
     "h": 96
@@ -1200,212 +1392,20 @@
     "y": 0.86702
    }
   },
-  "spear_hunter_hit_00": {
-   "frame": {
-    "x": 786,
-    "y": 736,
-    "w": 108,
-    "h": 84
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 92,
-    "y": 87,
-    "w": 108,
-    "h": 84
-   },
-   "sourceSize": {
-    "w": 283,
-    "h": 188
-   },
-   "anchor": {
-    "x": 0.46996,
-    "y": 0.86702
-   }
-  },
-  "spear_hunter_hit_00_team": {
-   "frame": {
-    "x": 93,
-    "y": 830,
-    "w": 102,
-    "h": 83
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 90,
-    "y": 82,
-    "w": 102,
-    "h": 83
-   },
-   "sourceSize": {
-    "w": 283,
-    "h": 188
-   },
-   "anchor": {
-    "x": 0.46996,
-    "y": 0.86702
-   }
-  },
-  "spear_hunter_hit_01": {
-   "frame": {
-    "x": 2,
-    "y": 233,
-    "w": 92,
-    "h": 100
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 91,
-    "y": 70,
-    "w": 92,
-    "h": 100
-   },
-   "sourceSize": {
-    "w": 283,
-    "h": 188
-   },
-   "anchor": {
-    "x": 0.46996,
-    "y": 0.86702
-   }
-  },
-  "spear_hunter_hit_01_team": {
-   "frame": {
-    "x": 196,
-    "y": 736,
-    "w": 92,
-    "h": 89
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 89,
-    "y": 75,
-    "w": 92,
-    "h": 89
-   },
-   "sourceSize": {
-    "w": 283,
-    "h": 188
-   },
-   "anchor": {
-    "x": 0.46996,
-    "y": 0.86702
-   }
-  },
-  "spear_hunter_hit_02": {
-   "frame": {
-    "x": 671,
-    "y": 438,
-    "w": 101,
-    "h": 95
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 101,
-    "y": 76,
-    "w": 101,
-    "h": 95
-   },
-   "sourceSize": {
-    "w": 283,
-    "h": 188
-   },
-   "anchor": {
-    "x": 0.46996,
-    "y": 0.86702
-   }
-  },
-  "spear_hunter_hit_02_team": {
-   "frame": {
-    "x": 297,
-    "y": 539,
-    "w": 92,
-    "h": 94
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 100,
-    "y": 71,
-    "w": 92,
-    "h": 94
-   },
-   "sourceSize": {
-    "w": 283,
-    "h": 188
-   },
-   "anchor": {
-    "x": 0.46996,
-    "y": 0.86702
-   }
-  },
-  "spear_hunter_hit_03": {
-   "frame": {
-    "x": 85,
-    "y": 438,
-    "w": 112,
-    "h": 96
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 104,
-    "y": 75,
-    "w": 112,
-    "h": 96
-   },
-   "sourceSize": {
-    "w": 283,
-    "h": 188
-   },
-   "anchor": {
-    "x": 0.46996,
-    "y": 0.86702
-   }
-  },
-  "spear_hunter_hit_03_team": {
-   "frame": {
-    "x": 485,
-    "y": 539,
-    "w": 85,
-    "h": 94
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 113,
-    "y": 71,
-    "w": 85,
-    "h": 94
-   },
-   "sourceSize": {
-    "w": 283,
-    "h": 188
-   },
-   "anchor": {
-    "x": 0.46996,
-    "y": 0.86702
-   }
-  },
   "spear_hunter_hit_04": {
    "frame": {
-    "x": 185,
-    "y": 233,
+    "x": 285,
+    "y": 235,
     "w": 106,
-    "h": 99
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 106,
-    "y": 72,
+    "y": 71,
     "w": 106,
-    "h": 99
+    "h": 100
    },
    "sourceSize": {
     "w": 283,
@@ -1418,18 +1418,18 @@
   },
   "spear_hunter_hit_04_team": {
    "frame": {
-    "x": 664,
-    "y": 337,
-    "w": 85,
-    "h": 97
+    "x": 433,
+    "y": 340,
+    "w": 86,
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 113,
-    "y": 68,
-    "w": 85,
-    "h": 97
+    "y": 66,
+    "w": 86,
+    "h": 99
    },
    "sourceSize": {
     "w": 283,
@@ -1442,8 +1442,8 @@
   },
   "spear_hunter_die_00": {
    "frame": {
-    "x": 420,
-    "y": 127,
+    "x": 87,
+    "y": 235,
     "w": 80,
     "h": 101
    },
@@ -1451,7 +1451,7 @@
    "trimmed": true,
    "spriteSourceSize": {
     "x": 97,
-    "y": 62,
+    "y": 61,
     "w": 80,
     "h": 101
    },
@@ -1466,18 +1466,18 @@
   },
   "spear_hunter_die_00_team": {
    "frame": {
-    "x": 199,
-    "y": 830,
-    "w": 73,
-    "h": 81
+    "x": 95,
+    "y": 836,
+    "w": 74,
+    "h": 82
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
-    "y": 76,
-    "w": 73,
-    "h": 81
+    "x": 103,
+    "y": 74,
+    "w": 74,
+    "h": 82
    },
    "sourceSize": {
     "w": 283,
@@ -1490,18 +1490,18 @@
   },
   "spear_hunter_die_01": {
    "frame": {
-    "x": 359,
-    "y": 830,
-    "w": 134,
-    "h": 61
+    "x": 257,
+    "y": 836,
+    "w": 133,
+    "h": 62
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 41,
-    "y": 81,
-    "w": 134,
-    "h": 61
+    "x": 39,
+    "y": 80,
+    "w": 133,
+    "h": 62
    },
    "sourceSize": {
     "w": 283,
@@ -1514,18 +1514,18 @@
   },
   "spear_hunter_die_01_team": {
    "frame": {
-    "x": 754,
-    "y": 830,
-    "w": 118,
-    "h": 42
+    "x": 655,
+    "y": 836,
+    "w": 119,
+    "h": 41
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 47,
+    "x": 45,
     "y": 100,
-    "w": 118,
-    "h": 42
+    "w": 119,
+    "h": 41
    },
    "sourceSize": {
     "w": 283,
@@ -1540,16 +1540,16 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 97,
-    "h": 121
+    "w": 96,
+    "h": 122
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 80,
-    "y": 59,
-    "w": 97,
-    "h": 121
+    "x": 81,
+    "y": 60,
+    "w": 96,
+    "h": 122
    },
    "sourceSize": {
     "w": 283,
@@ -1562,18 +1562,18 @@
   },
   "spear_hunter_die_02_team": {
    "frame": {
-    "x": 335,
+    "x": 336,
     "y": 2,
-    "w": 61,
-    "h": 109
+    "w": 62,
+    "h": 111
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 100,
+    "x": 99,
     "y": 67,
-    "w": 61,
-    "h": 109
+    "w": 62,
+    "h": 111
    },
    "sourceSize": {
     "w": 283,
@@ -1586,18 +1586,18 @@
   },
   "spear_hunter_die_03": {
    "frame": {
-    "x": 255,
+    "x": 254,
     "y": 2,
-    "w": 76,
-    "h": 111
+    "w": 78,
+    "h": 112
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 87,
-    "y": 42,
-    "w": 76,
-    "h": 111
+    "x": 86,
+    "y": 40,
+    "w": 78,
+    "h": 112
    },
    "sourceSize": {
     "w": 283,
@@ -1610,18 +1610,18 @@
   },
   "spear_hunter_die_03_team": {
    "frame": {
-    "x": 116,
-    "y": 736,
-    "w": 76,
-    "h": 90
+    "x": 732,
+    "y": 644,
+    "w": 75,
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
-    "y": 56,
-    "w": 76,
-    "h": 90
+    "x": 90,
+    "y": 55,
+    "w": 75,
+    "h": 91
    },
    "sourceSize": {
     "w": 283,
@@ -1634,18 +1634,18 @@
   },
   "spear_hunter_die_04": {
    "frame": {
-    "x": 2,
-    "y": 438,
+    "x": 364,
+    "y": 544,
     "w": 79,
-    "h": 97
+    "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 74,
+    "x": 73,
     "y": 76,
     "w": 79,
-    "h": 97
+    "h": 96
    },
    "sourceSize": {
     "w": 283,
@@ -1658,18 +1658,18 @@
   },
   "spear_hunter_die_04_team": {
    "frame": {
-    "x": 2,
-    "y": 638,
-    "w": 78,
-    "h": 94
+    "x": 642,
+    "y": 544,
+    "w": 79,
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 68,
-    "y": 83,
-    "w": 78,
-    "h": 94
+    "x": 67,
+    "y": 82,
+    "w": 79,
+    "h": 95
    },
    "sourceSize": {
     "w": 283,
@@ -1682,18 +1682,18 @@
   },
   "spear_hunter_die_05": {
    "frame": {
-    "x": 497,
-    "y": 830,
-    "w": 139,
-    "h": 57
+    "x": 394,
+    "y": 836,
+    "w": 141,
+    "h": 58
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 23,
-    "y": 111,
-    "w": 139,
-    "h": 57
+    "x": 21,
+    "y": 110,
+    "w": 141,
+    "h": 58
    },
    "sourceSize": {
     "w": 283,
@@ -1706,17 +1706,17 @@
   },
   "spear_hunter_die_05_team": {
    "frame": {
-    "x": 640,
-    "y": 830,
-    "w": 110,
+    "x": 539,
+    "y": 836,
+    "w": 112,
     "h": 57
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 45,
+    "x": 43,
     "y": 110,
-    "w": 110,
+    "w": 112,
     "h": 57
    },
    "sourceSize": {
@@ -1730,18 +1730,18 @@
   },
   "spear_hunter_die_06": {
    "frame": {
-    "x": 776,
-    "y": 438,
-    "w": 95,
-    "h": 95
+    "x": 725,
+    "y": 544,
+    "w": 97,
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 58,
+    "x": 56,
     "y": 80,
-    "w": 95,
-    "h": 95
+    "w": 97,
+    "h": 94
    },
    "sourceSize": {
     "w": 283,
@@ -1754,17 +1754,17 @@
   },
   "spear_hunter_die_06_team": {
    "frame": {
-    "x": 506,
-    "y": 736,
-    "w": 88,
+    "x": 550,
+    "y": 742,
+    "w": 89,
     "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 60,
+    "x": 59,
     "y": 87,
-    "w": 88,
+    "w": 89,
     "h": 86
    },
    "sourceSize": {
@@ -1778,17 +1778,17 @@
   },
   "spear_hunter_die_07": {
    "frame": {
-    "x": 570,
-    "y": 337,
-    "w": 90,
+    "x": 451,
+    "y": 443,
+    "w": 94,
     "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 65,
+    "x": 61,
     "y": 76,
-    "w": 90,
+    "w": 94,
     "h": 97
    },
    "sourceSize": {
@@ -1802,17 +1802,17 @@
   },
   "spear_hunter_die_07_team": {
    "frame": {
-    "x": 598,
-    "y": 736,
-    "w": 92,
+    "x": 643,
+    "y": 742,
+    "w": 95,
     "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 57,
+    "x": 55,
     "y": 85,
-    "w": 92,
+    "w": 95,
     "h": 85
    },
    "sourceSize": {
@@ -1826,17 +1826,17 @@
   },
   "spear_hunter_die_08": {
    "frame": {
-    "x": 494,
-    "y": 438,
-    "w": 86,
+    "x": 94,
+    "y": 544,
+    "w": 87,
     "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 66,
+    "x": 65,
     "y": 77,
-    "w": 86,
+    "w": 87,
     "h": 96
    },
    "sourceSize": {
@@ -1851,16 +1851,16 @@
   "spear_hunter_die_08_team": {
    "frame": {
     "x": 2,
-    "y": 830,
-    "w": 87,
+    "y": 836,
+    "w": 89,
     "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 60,
+    "x": 58,
     "y": 86,
-    "w": 87,
+    "w": 89,
     "h": 84
    },
    "sourceSize": {
@@ -1874,17 +1874,17 @@
   },
   "spear_hunter_die_09": {
    "frame": {
-    "x": 325,
-    "y": 638,
-    "w": 77,
+    "x": 329,
+    "y": 644,
+    "w": 79,
     "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 72,
+    "x": 70,
     "y": 79,
-    "w": 77,
+    "w": 79,
     "h": 93
    },
    "sourceSize": {
@@ -1898,18 +1898,18 @@
   },
   "spear_hunter_die_09_team": {
    "frame": {
-    "x": 276,
-    "y": 830,
-    "w": 79,
-    "h": 80
+    "x": 173,
+    "y": 836,
+    "w": 80,
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 65,
-    "y": 90,
-    "w": 79,
-    "h": 80
+    "x": 64,
+    "y": 89,
+    "w": 80,
+    "h": 81
    },
    "sourceSize": {
     "w": 283,
@@ -2030,14 +2030,14 @@
   "format": "RGBA8888",
   "size": {
    "w": 896,
-   "h": 916
+   "h": 924
   },
   "scale": "1.5",
   "ageborn": {
    "visualId": "unit.spear_hunter",
    "name": "Spear Hunter",
    "heightLu": 72,
-   "widthLu": 82.1,
+   "widthLu": 82.5,
    "pxPerLu": 1.23,
    "feetPx": [
     133.0,
@@ -2055,6 +2055,7 @@
    },
    "facing": "right",
    "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
    "clips": {
     "idle": {
      "frames": 6,
@@ -2080,27 +2081,27 @@
       "spearTip": [
        [
         60.3,
-        34.1
+        35.5
        ],
        [
         60.2,
-        33.7
+        35.2
        ],
        [
         58.9,
-        34.6
+        36.0
        ],
        [
         57.6,
-        35.8
+        37.3
        ],
        [
         57.7,
-        36.3
+        37.7
        ],
        [
         59.0,
-        35.4
+        36.8
        ]
       ]
      }
@@ -2119,54 +2120,76 @@
       7
      ],
      "durationsMs": [
-      62,
-      63,
-      62,
-      63,
-      62,
-      63,
-      62,
-      63
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77
      ],
-     "durationMs": 500,
+     "durationMs": 616,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 87.5,
+     "cycleMs": 616,
      "anchorsLu": {
       "spearTip": [
        [
-        61.4,
-        16.2
+        -35.2,
+        55.8
        ],
        [
-        65.3,
-        11.8
+        -35.0,
+        50.0
        ],
        [
-        63.3,
-        15.8
+        -33.8,
+        55.9
        ],
        [
-        61.8,
-        24.0
+        -34.2,
+        61.2
        ],
        [
-        63.0,
-        29.7
+        -35.2,
+        55.8
        ],
        [
-        64.1,
-        27.1
+        -36.2,
+        51.7
        ],
        [
-        60.6,
-        25.7
+        -35.4,
+        58.2
        ],
        [
-        58.3,
-        21.5
+        -35.4,
+        62.9
        ]
       ]
      },
-     "strideLu": 47.0,
-     "naturalSpeedLuPerS": 94.0
+     "naturalSpeedLuPerS": 87.3,
+     "strideLu": 53.8,
+     "plantedDriftLu": 0.08,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        10.4,
+        -1.7
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        12.3,
+        1.3
+       ]
+      }
+     ]
     },
     "attack": {
      "frames": 11,
@@ -2199,56 +2222,58 @@
      ],
      "durationMs": 680,
      "impactFrame": 6,
+     "impactStep": 6,
      "impactAt": 0.4265,
      "smearFrame": 4,
      "anchorsLu": {
       "spearTip": [
        [
         59.9,
-        32.2
+        33.6
        ],
        [
         50.9,
-        22.8
+        24.0
        ],
        [
         43.6,
-        42.5
+        44.0
        ],
        [
         17.4,
-        10.5
+        12.1
        ],
        [
         40.0,
-        14.8
+        16.4
        ],
        [
         70.9,
-        1.6
+        3.1
        ],
        [
         80.6,
-        -10.4
+        -9.2
        ],
        [
         76.7,
-        -5.7
+        -4.4
        ],
        [
         71.3,
-        -13.8
+        -12.5
        ],
        [
         69.1,
-        20.7
+        22.1
        ],
        [
         61.3,
-        33.1
+        34.5
        ]
       ]
-     }
+     },
+     "holdStep": 3
     },
     "hit": {
      "frames": 5,
@@ -2272,23 +2297,23 @@
       "spearTip": [
        [
         48.7,
-        51.8
+        53.1
        ],
        [
         35.1,
-        70.1
+        71.6
        ],
        [
         50.4,
-        51.0
+        52.4
        ],
        [
         61.7,
-        26.4
+        27.8
        ],
        [
         58.4,
-        36.4
+        37.8
        ]
       ]
      }
@@ -2329,7 +2354,7 @@
         0,
         25.9
        ],
-       "scale": 1.026
+       "scale": 1.031
       },
       {
        "id": "fx.ko_stars",
@@ -2339,50 +2364,50 @@
         39.6
        ],
        "loops": 2,
-       "scale": 1.013
+       "scale": 1.016
       }
      ],
      "hideUnitAtMs": 695,
      "anchorsLu": {
       "spearTip": [
        [
-        24.0,
-        76.4
+        23.8,
+        77.6
        ],
        [
-        -69.0,
-        28.9
+        -70.6,
+        29.5
        ],
        [
-        30.2,
-        -4.2
+        30.5,
+        -5.7
        ],
        [
-        11.9,
-        93.1
+        12.9,
+        94.2
        ],
        [
-        -40.7,
-        64.9
+        -41.8,
+        65.2
        ],
        [
-        -83.4,
-        31.5
+        -85.0,
+        31.8
        ],
        [
-        -56.0,
-        61.6
+        -57.3,
+        61.7
        ],
        [
-        -49.7,
-        65.1
+        -51.1,
+        65.2
        ],
        [
-        -47.2,
+        -48.5,
         64.7
        ],
        [
-        -44.1,
+        -45.2,
         62.9
        ]
       ]

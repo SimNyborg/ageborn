@@ -1,0 +1,1020 @@
+{
+ "frames": {
+  "warp_stalker_attack_b_00": {
+   "frame": {
+    "x": 2,
+    "y": 102,
+    "w": 72,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 114,
+    "w": 72,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_b_00_team": {
+   "frame": {
+    "x": 212,
+    "y": 355,
+    "w": 72,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 119,
+    "w": 72,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_b_01": {
+   "frame": {
+    "x": 330,
+    "y": 102,
+    "w": 85,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 117,
+    "w": 85,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_b_01_team": {
+   "frame": {
+    "x": 288,
+    "y": 355,
+    "w": 66,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 125,
+    "w": 66,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_b_02": {
+   "frame": {
+    "x": 227,
+    "y": 191,
+    "w": 87,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 120,
+    "w": 87,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_b_02_team": {
+   "frame": {
+    "x": 146,
+    "y": 355,
+    "w": 62,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 126,
+    "w": 62,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_b_03": {
+   "frame": {
+    "x": 132,
+    "y": 102,
+    "w": 97,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 115,
+    "w": 97,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_b_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 355,
+    "w": 70,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 119,
+    "w": 70,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_b_04": {
+   "frame": {
+    "x": 233,
+    "y": 102,
+    "w": 93,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 116,
+    "w": 93,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_b_04_team": {
+   "frame": {
+    "x": 217,
+    "y": 429,
+    "w": 75,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 122,
+    "w": 75,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 191,
+    "w": 113,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 125,
+    "w": 113,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 499,
+    "w": 84,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 133,
+    "w": 84,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_b_06": {
+   "frame": {
+    "x": 119,
+    "y": 191,
+    "w": 104,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 122,
+    "w": 104,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_b_06_team": {
+   "frame": {
+    "x": 296,
+    "y": 429,
+    "w": 73,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 129,
+    "w": 73,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_b_07": {
+   "frame": {
+    "x": 178,
+    "y": 2,
+    "w": 87,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 112,
+    "w": 87,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_b_07_team": {
+   "frame": {
+    "x": 76,
+    "y": 355,
+    "w": 66,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 119,
+    "w": 66,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_00": {
+   "frame": {
+    "x": 269,
+    "y": 2,
+    "w": 80,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 115,
+    "w": 80,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_00_team": {
+   "frame": {
+    "x": 358,
+    "y": 355,
+    "w": 75,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 121,
+    "w": 75,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_01": {
+   "frame": {
+    "x": 318,
+    "y": 191,
+    "w": 76,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 120,
+    "w": 76,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_01_team": {
+   "frame": {
+    "x": 142,
+    "y": 429,
+    "w": 71,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 128,
+    "w": 71,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_02": {
+   "frame": {
+    "x": 287,
+    "y": 274,
+    "w": 89,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 124,
+    "w": 89,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_02_team": {
+   "frame": {
+    "x": 380,
+    "y": 274,
+    "w": 63,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 127,
+    "w": 63,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_03": {
+   "frame": {
+    "x": 95,
+    "y": 2,
+    "w": 79,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 106,
+    "w": 79,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_03_team": {
+   "frame": {
+    "x": 78,
+    "y": 102,
+    "w": 50,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 110,
+    "w": 50,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 89,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 106,
+    "w": 89,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_04_team": {
+   "frame": {
+    "x": 77,
+    "y": 429,
+    "w": 61,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 111,
+    "w": 61,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_05": {
+   "frame": {
+    "x": 2,
+    "y": 274,
+    "w": 120,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 126,
+    "w": 120,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_05_team": {
+   "frame": {
+    "x": 90,
+    "y": 499,
+    "w": 91,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 130,
+    "w": 91,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_06": {
+   "frame": {
+    "x": 126,
+    "y": 274,
+    "w": 91,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 122,
+    "w": 91,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 429,
+    "w": 71,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 126,
+    "w": 71,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_07": {
+   "frame": {
+    "x": 353,
+    "y": 2,
+    "w": 77,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 114,
+    "w": 77,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  },
+  "warp_stalker_attack_c_07_team": {
+   "frame": {
+    "x": 221,
+    "y": 274,
+    "w": 62,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 118,
+    "w": 62,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.4854,
+    "y": 0.83333
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "warp_stalker_attack_b_00",
+   "warp_stalker_attack_b_01",
+   "warp_stalker_attack_b_02",
+   "warp_stalker_attack_b_03",
+   "warp_stalker_attack_b_04",
+   "warp_stalker_attack_b_05",
+   "warp_stalker_attack_b_06",
+   "warp_stalker_attack_b_07",
+   "warp_stalker_attack_09",
+   "warp_stalker_attack_10"
+  ],
+  "attack_b_team": [
+   "warp_stalker_attack_b_00_team",
+   "warp_stalker_attack_b_01_team",
+   "warp_stalker_attack_b_02_team",
+   "warp_stalker_attack_b_03_team",
+   "warp_stalker_attack_b_04_team",
+   "warp_stalker_attack_b_05_team",
+   "warp_stalker_attack_b_06_team",
+   "warp_stalker_attack_b_07_team",
+   "warp_stalker_attack_09_team",
+   "warp_stalker_attack_10_team"
+  ],
+  "attack_c": [
+   "warp_stalker_attack_c_00",
+   "warp_stalker_attack_c_01",
+   "warp_stalker_attack_c_02",
+   "warp_stalker_attack_c_03",
+   "warp_stalker_attack_c_04",
+   "warp_stalker_attack_c_05",
+   "warp_stalker_attack_c_06",
+   "warp_stalker_attack_c_07",
+   "warp_stalker_attack_09",
+   "warp_stalker_attack_10"
+  ],
+  "attack_c_team": [
+   "warp_stalker_attack_c_00_team",
+   "warp_stalker_attack_c_01_team",
+   "warp_stalker_attack_c_02_team",
+   "warp_stalker_attack_c_03_team",
+   "warp_stalker_attack_c_04_team",
+   "warp_stalker_attack_c_05_team",
+   "warp_stalker_attack_c_06_team",
+   "warp_stalker_attack_c_07_team",
+   "warp_stalker_attack_09_team",
+   "warp_stalker_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "warp_stalker.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 448,
+   "h": 556
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.warp_stalker",
+   "name": "Warp Stalker",
+   "heightLu": 70,
+   "widthLu": 76.8,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    133.0,
+    190.0
+   ],
+   "anchorsLu": {
+    "head": [
+     6,
+     66
+    ],
+    "hitCenter": [
+     2,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "warp_stalker",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      40,
+      60,
+      115,
+      45,
+      30,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4265,
+     "smearFrame": 3,
+     "holdStep": 2,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        -17.7,
+        31.9
+       ],
+       [
+        -27.2,
+        19.4
+       ],
+       [
+        -27.9,
+        13.6
+       ],
+       [
+        25.7,
+        41.5
+       ],
+       [
+        43.6,
+        17.7
+       ],
+       [
+        48.8,
+        1.8
+       ],
+       [
+        44.0,
+        -0.3
+       ],
+       [
+        41.0,
+        20.5
+       ],
+       [
+        43.9,
+        16.7
+       ],
+       [
+        39.3,
+        18.3
+       ]
+      ]
+     }
+    },
+    "attack_c": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      40,
+      60,
+      115,
+      45,
+      30,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4265,
+     "holdStep": 2,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        -12.8,
+        -4.3
+       ],
+       [
+        -28.1,
+        1.7
+       ],
+       [
+        -37.0,
+        6.9
+       ],
+       [
+        1.3,
+        35.3
+       ],
+       [
+        -29.7,
+        19.6
+       ],
+       [
+        47.3,
+        4.3
+       ],
+       [
+        46.3,
+        3.2
+       ],
+       [
+        38.5,
+        21.6
+       ],
+       [
+        43.9,
+        16.7
+       ],
+       [
+        39.3,
+        18.3
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

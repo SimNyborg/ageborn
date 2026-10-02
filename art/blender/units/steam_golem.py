@@ -14,7 +14,19 @@ smaller clamp. A team pennant on a pole rises from the far shoulder plate (the h
 heavy 1 s stomp; the attack ("piston punch with a steam burst") cocks the ram back, holds, fires
 the piston out (the rod visibly extends about 26 lu) with a smear and slams the fist home (held impact, sparks, a burst of steam from the
 elbow valve), then retracts. Heavy melee timing (retime.HEAVY_MELEE).
+
+Animation standard (ANIM_SPEC 2026-10-02, G7 walker):
+  walk      a heavy clanking walk at ground speed (68.75 lu/s, 10 frames in 900 ms), legs by IK with
+            planted feet: a hard contact jolt (the knee vents steam, the foot pad squashes), a deep
+            down, a slow passing with the foot lifted 11 lu, the hull pitching and yawing with no
+            squash, the chimney puffing and the ram swinging a beat late
+  attack_b  RISING UPPERCUT PISTON: crouches over with the ram cocked low behind him (the held
+            extreme), then swings it up and fires the piston skyward through the target as the hull
+            rears back
+  attack_c  SHOULDER RAM WITH A STEAM BLAST: turns away and leans back with the fist tucked to his
+            chest (the held extreme), then lunges shoulder first, every valve blasting steam
 """
+from ageborn_art import gait as GK
 import math
 
 from ageborn_art import kit_industrial as KI
@@ -24,6 +36,7 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "steam_golem"
+GAIT_NAME = "walker"
 NAME = "Steam Golem"
 HEIGHT_LU = 110
 YAW_DEG = -24.0          # turned toward the camera so the furnace face on the boiler front reads
@@ -48,7 +61,12 @@ FIST = (SH_R[0], SH_R[1], SH_R[2] - UP_L - FORE_L - 10.0)
 CHIMNEY = (-16.0, 6.0, 80.0)
 
 
+RIG = None
+
+
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("hips", "body", (0, 0, HIP_Z))
     rig.joint("hull", "hips", BOILER)
@@ -79,6 +97,7 @@ def build(rig):
         I.rivets(g, [(dx, y - 8.2 * sy, a - 2.4) for dx in (-4.0, 2.0, 8.0)], r=0.9)
         rig.part(f"foot_{s}", g, I.BRASS_LT, finish="metal", outline=0)
     rig.track("_foot", "foot_r", (3.6, LEG_Y["r"], ANK_REST - 5.0))
+    rig.track("_foot_l", "foot_l", (3.6, LEG_Y["l"], ANK_REST - 5.0))
 
     # the boiler belly: iron barrel, copper bands, team armour band, firebox with a glowing grate
     hx, hy, hz = BOILER
@@ -250,7 +269,7 @@ def arms(ra, rf, la=-100.0, lf=-60.0, ram=0.0):
 
 
 REST_ARMS = arms(-104, -86, -86, -60)     # the ram hangs at the side (the face stays clear)
-CROUCH = 6.0
+CROUCH = 3.0     # knees a little bent so the planted feet reach the ground (walk v3 review)
 
 
 def _stand(bob=0.0, dx=0.0):
@@ -274,36 +293,44 @@ def _idle(f):
     })
 
 
-WALK_MS = [125] * 8
-STRIDE = 27.5          # 2 x 27.5 lu per 1 s cycle = 55 lu/s (sim speed 55)
+# -- walk (ANIM_SPEC G7): ground speed 55 x 1.25 = 68.75 lu/s, 10 frames in 900 ms ----------------
+SPEED = 68.75
+WALK_N = 10
+LEGS_G = {s: GK.Leg(f"thigh_{s}", f"shin_{s}", (0.0, LEG_Y[s], ANK_REST), foot=f"foot_{s}",
+                    toe=(14.0, LEG_Y[s], ANK_REST - 5.4), heel=(-7.0, LEG_Y[s], ANK_REST - 5.4))
+          for s in ("r", "l")}
+GAIT = GK.Gait(WALK_N, 900, SPEED, GK.biped_feet(LEGS_G["l"], LEGS_G["r"], x_mid=0.5, ground=ANKLE_H), 0.54,
+               yaw_deg=YAW_DEG, lift=11.0, kick=1.5, reach=1.0, toe_off=10.0, heel_strike=5.0, lift_peak=0.45)
+# hips per frame of each half cycle: CONTACT (hard, with the jolt), DOWN (deep), PASSING, UP, pre-contact
+W_BOB = [-1.6, -4.2, -1.4, 0.6, 0.2]
+W_LAG = [0.2, -1.6, -4.2, -1.4, 0.6]
 
 
-def _walk(f):
-    # clank: a hard contact (the hull jolts down, the knee vents steam), the hull pitching and
-    # yawing with each step, the ram swinging a beat late
-    xr, lr, _ = I.walker_cycle(f, 8, STRIDE, 11.0)
-    xl, ll, _ = I.walker_cycle(f, 8, STRIDE, 11.0, phase=0.5)
-    bob = [-3.6, -1.6, 1.2, 0.6, -3.6, -1.6, 1.2, 0.6][f]
-    lag = [0.6, -3.6, -1.6, 1.2, 0.6, -3.6, -1.6, 1.2][f]
-    p = 2 * math.pi * f / 8
-    return merge(legs((xr, lr), (xl, ll), (0.0, CROUCH + bob)), REST_ARMS, {
-        "hull": dict(r=-3.0 + 1.8 * math.cos(2 * p), rz=4.0 * math.sin(p), z=-0.35 * lag),
-        "head": {"r": 1.4 * lag, "z": -0.3 * lag},
-        "arm_r": {"r": -12 * math.cos(p - 0.8)}, "fore_r": {"r": 6 * math.cos(p - 0.8)},
-        "arm_l": {"r": 10 * math.cos(p - 0.8)},
-        "ram": {"z": 1.2 * max(0.0, -lag)},
-        "puff": {"show": f in (0, 1, 4, 5), "x": [0, -3, 0, 0, 0, -3, 0, 0][f],
-                 "s": [0.8, 1.1, 1, 1, 0.8, 1.1, 1, 1][f]},
-        "puff2": {"show": f in (1, 5), "x": -5.0},
-        "ksteam_r": {"show": f == 0, "s": 0.8}, "ksteam_l": {"show": f == 4, "s": 0.8},
+def _walk(f, report=None):
+    # clank: a hard contact (the hull jolts down, the knee vents steam, the foot pad squashes), the
+    # hull pitching and yawing with each step (no squash on the hull), the ram swinging a beat late
+    h = f % 5
+    bob, lag = W_BOB[h], W_LAG[h]
+    p = 2 * math.pi * f / WALK_N
+    pose = merge(REST_ARMS, {
+        "hips": {"z": bob},
+        "hull": dict(r=-3.5 + 1.8 * math.cos(2 * p), rz=4.5 * math.sin(p), z=-0.4 * lag),
+        "head": {"r": 1.6 * lag, "z": -0.3 * lag},
+        "arm_r": {"r": -14 * math.cos(p - 0.8)}, "fore_r": {"r": 8 * math.cos(p - 0.8)},
+        "arm_l": {"r": 12 * math.cos(p - 0.8)}, "fore_l": {"r": -6 * math.cos(p - 0.8)},
+        "ram": {"z": 1.4 * max(0.0, -lag)},
+        "puff": {"show": h in (0, 1), "x": [0, -3, 0, 0, 0][h], "s": [0.8, 1.15, 1, 1, 1][h]},
+        "puff2": {"show": h == 1, "x": -5.0},
+        "ksteam_r": {"show": f == 0, "s": 0.85}, "ksteam_l": {"show": f == 5, "s": 0.85},
+        "foot_r": {"sz": 0.88 if f == 0 else 1.0}, "foot_l": {"sz": 0.88 if f == 5 else 1.0},
         "gauge_needle": {"r": -8.0 + 3.0 * math.sin(2 * p)},
+        "eyes": {"sz": 0.75 if h == 0 else 1.0},     # the eye slits squint on the contact
     })
+    return GK.solve(RIG, pose, GAIT.targets(f), report=report)
 
 
 def _walk_clip():
-    ov = {0: [{"kind": "dust", "ground": (17.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 41, "spread": 0.9}],
-          4: [{"kind": "dust", "ground": (17.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 42, "spread": 0.9}]}
-    return M.clip("walk", [_walk(f) for f in range(8)], WALK_MS, loop=True, overlays=ov)
+    return M.walk_clip("walk", RIG, _walk, GAIT, "walker")
 
 
 # attack: 10 unique frames in the 12 heavy steps (moves.HEAVY_MELEE_MS; impact on step 6 at 570 ms)
@@ -362,6 +389,120 @@ def _attack_clip():
     }
     return M.clip("attack", [_attack_pose(f) for f in range(10)], M.HEAVY_MELEE_MS,
                   impact=M.HEAVY_MELEE_IMPACT, smear=4, sequence=ATTACK_SEQ, overlays=ov)
+
+
+# -- attack B: rising uppercut piston ----------------------------------------------------------
+# unique frames: 0 = A shift, 1 dip, 2 coil low, 3 HOLD (crouched over, the ram cocked low behind
+# him), 4-5 smear (swinging up), 6 IMPACT (the piston fired skyward, the hull rearing back), 7 shock,
+# 8 follow, 9 = A recover. World angles in hull space.
+#        dip  coil HOLD smear smear IMP  shock follow
+UB_RA = [-112, -116, -118, -96, -30, 34, 30, -30]
+UB_RF = [-110, -100, -96, -40, 20, 66, 62, -20]
+UB_RAM = [-2, -5, -7, 6, 18, 28, 24, 8]
+UB_HR = [-5, -11, -15, -6, 6, 12, 10, 4]
+UB_RZ = [4, 8, 12, 4, -4, -8, -6, -2]
+UB_HX = [-1, -2, -3, 1, 4, 5, 4.5, 2]
+UB_HZ = [-3.5, -7.0, -9.0, -5.0, -1.0, 1.5, 0.5, -1.0]
+UB_LA = [-80, -70, -64, -96, -120, -136, -130, -110]
+UB_LF = [-40, -30, -26, -60, -90, -100, -96, -76]
+UB_NEEDLE = [-30, -60, -95, -80, -60, -20, -10, -8]
+
+
+def _b_pose(i):
+    if i in (0, 9):
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(_stand(UB_HZ[k], UB_HX[k]), arms(UB_RA[k], UB_RF[k], UB_LA[k], UB_LF[k], UB_RAM[k]), {
+        "hull": {"r": UB_HR[k], "rz": UB_RZ[k]},
+        "head": {"r": [2, 4, 6, -2, -4, -8, -6, -3][k]},
+        "sparks": {"show": k == 5},
+        "steam": {"show": k in (2, 5, 6, 7), "s": [1, 1, 0.55, 1, 1, 0.95, 1.15, 1.0][k],
+                  "z": [0, 0, 0, 0, 0, 0, 2, 5][k]},
+        "puff": {"show": k in (1, 2, 6, 7), "s": [1, 1.1, 1.25, 1, 1, 1, 1.4, 1.6][k], "z": [0, 0, 2, 0, 0, 0, 3, 6][k]},
+        "puff2": {"show": k in (2, 7), "s": 1.2},
+        "fire": {"s": [1.05, 1.12, 1.25, 1.15, 1.1, 1.0, 0.95, 1.0][k]},
+        "eyes": {"s": [1, 1.1, 1.3, 1.2, 1.2, 1.25, 1.1, 1][k]},
+        "gauge_needle": {"r": UB_NEEDLE[k]},
+        "ksteam_r": {"show": k == 5, "s": 1.0}, "ksteam_l": {"show": k == 5, "s": 1.0},
+    })
+    if k in (3, 4):
+        pose["ram"]["sz"] = 1.12
+    if k == 5:
+        pose["ram"]["sz"] = 0.9
+    return pose
+
+
+def _attack_b():
+    up = {"kind": "arc", "joint": "ram", "inner": (FIST[0], FIST[1], FIST[2] + 4.0), "outer": FIST_TIP,
+          "color": I.IRON_LT, "white": 0.35, "taper": 0.2, "lines": 3}
+    ov = {
+        4: [dict(up, **{"from": 3, "t0": 0.0, "t1": 0.95})],
+        5: [dict(up, **{"from": 3, "t0": 0.35, "t1": 1.0})],
+        6: [dict(up, **{"from": 5, "t0": 0.2, "t1": 1.0, "lines": 2}),
+            {"kind": "burst", "joint": "ram", "point": FIST_TIP, "r0_lu": 12.0, "r1_lu": 21.0, "n": 7,
+             "a0": 20.0, "arc": 150.0},
+            {"kind": "dust", "ground": (14.0, 0.0), "size_lu": 9.0, "puffs": 4, "seed": 46, "spread": 1.0},
+            {"kind": "dust", "ground": (-16.0, 0.0), "size_lu": 7.0, "puffs": 3, "seed": 47, "spread": 0.8,
+             "dir": -1.0}],
+    }
+    reuse = {0: ("attack", 0), 9: ("attack", 9)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(10)], M.HEAVY_MELEE_MS, impact=M.HEAVY_MELEE_IMPACT,
+                  smear=4, sequence=ATTACK_SEQ, overlays=ov, reuse=reuse)
+
+
+# -- attack C: shoulder ram with a steam blast --------------------------------------------------
+# unique frames: 0 = A shift, 1 turn, 2 lean back, 3 HOLD (turned away, leaning back, the fist tucked to
+# his chest, every valve shut), 4-5 smear (the lunge), 6 IMPACT (shoulder first, steam blasting from
+# every valve), 7 shock, 8 follow, 9 = A recover
+#        turn lean HOLD smear smear IMP  shock follow
+SR_RA = [-90, -98, -100, -96, -100, -104, -104, -100]
+SR_RF = [-10, 6, 10, 0, -30, -50, -52, -66]
+SR_HR = [5, 10, 13, 2, -14, -22, -18, -8]
+SR_RZ = [10, 20, 26, 10, -8, -16, -14, -6]
+SR_HX = [-1.5, -4.0, -6.0, 2.0, 9.0, 14.0, 12.5, 6.0]
+SR_HZ = [-1.5, -2.5, -3.0, -2.0, -3.0, -4.5, -3.5, -1.5]
+SR_LA = [-110, -126, -134, -110, -84, -70, -74, -86]
+SR_LF = [-70, -90, -100, -70, -44, -30, -34, -50]
+SR_NEEDLE = [-30, -70, -100, -100, -90, 10, -10, -8]
+
+
+def _c_pose(i):
+    if i in (0, 9):
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(_stand(SR_HZ[k], SR_HX[k]), arms(SR_RA[k], SR_RF[k], SR_LA[k], SR_LF[k], 0.0), {
+        "hull": {"r": SR_HR[k], "rz": SR_RZ[k]},
+        "head": {"r": [2, 4, 5, -1, -4, -7, -5, -2][k]},
+        "sparks": {"show": k == 5},
+        # the steam blast stays modest: big clouds would push the team colour under 18% of the frame
+        "steam": {"show": k in (5, 6), "s": [1, 1, 1, 1, 1, 0.9, 0.8, 0.8][k], "z": [0, 0, 0, 0, 0, 0, 3, 6][k]},
+        "puff": {"show": k in (5, 6, 7), "s": [1, 1, 1, 1, 1, 1.0, 1.05, 1.1][k], "z": [0, 0, 0, 0, 0, 0, 4, 8][k]},
+        "puff2": {"show": k == 7, "s": 0.9},
+        "ksteam_r": {"show": k == 5, "s": 1.0}, "ksteam_l": {"show": k == 5, "s": 1.0},
+        "fire": {"s": [1.05, 1.15, 1.3, 1.2, 1.1, 1.0, 0.95, 1.0][k]},
+        "eyes": {"s": [1, 1.15, 1.3, 1.25, 1.2, 1.3, 1.1, 1][k]},
+        "gauge_needle": {"r": SR_NEEDLE[k]},
+    })
+    return pose
+
+
+def _attack_c():
+    lunge = {"kind": "streak", "joint": "arm_r", "point": (SH_R[0] + 8.0, SH_R[1] - 4.0, SH_R[2]),
+             "color": I.IRON_LT, "width_lu": 18.0, "white": 0.35}
+    ov = {
+        4: [dict(lunge, **{"from": 3, "t0": 0.0, "t1": 1.0})],
+        5: [dict(lunge, **{"from": 3, "t0": 0.3, "t1": 1.0, "width_lu": 16.0})],
+        6: [{"kind": "burst", "joint": "arm_r", "point": (SH_R[0] + 10.0, SH_R[1] - 6.0, SH_R[2]), "r0_lu": 14.0,
+             "r1_lu": 24.0, "n": 8, "a0": -80.0, "arc": 160.0},
+            {"kind": "rings", "joint": "arm_r", "point": (SH_R[0] + 10.0, SH_R[1] - 6.0, SH_R[2]),
+             "radii_lu": (12.0, 18.0), "a0": -60.0, "a1": 60.0, "color": "#FFF4D6"},
+            {"kind": "dust", "ground": (24.0, 0.0), "size_lu": 9.0, "puffs": 4, "seed": 48, "spread": 1.0},
+            {"kind": "dust", "ground": (-20.0, 0.0), "size_lu": 8.0, "puffs": 4, "seed": 49, "spread": 1.0,
+             "dir": -1.0}],
+    }
+    reuse = {0: ("attack", 0), 9: ("attack", 9)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(10)], M.HEAVY_MELEE_MS, impact=M.HEAVY_MELEE_IMPACT,
+                  smear=4, sequence=ATTACK_SEQ, overlays=ov, reuse=reuse)
 
 
 def _hit(k):
@@ -423,8 +564,10 @@ def clips():
         M.clip("idle", [_idle(f) for f in range(6)], [150] * 6, loop=True),
         _walk_clip(),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
-    return M.check_contract(cl, heavy=True)
+    return M.check_variants(M.check_contract(cl, heavy=True))

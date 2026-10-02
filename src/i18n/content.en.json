@@ -16,7 +16,7 @@
     "boulder_hurler": { "name": "Boulder Hurler", "desc": "Ranged anti-heavy: heaves boulders that deal triple damage to armored and mech targets and go for them first, but half to light units. Brace: immune to knockback and charge bonuses." },
     "herbalist": { "name": "Herbalist", "desc": "Support. Heals the 2 most hurt allies nearby for 30 HP per second in all. Stays behind the front line." },
     "pelt_rager": { "name": "Pelt Rager", "desc": "Frenzy: below half health it deals 30% more damage and attacks 20% faster. Blunt: deals less damage to armored targets." },
-    "beast_caller": { "name": "Beast Caller", "desc": "Summoner: sends a free Cave Pup every 8 s, two at a time. Pups use no population, pay no bounty and always march. Stays behind the front line." },
+    "beast_caller": { "name": "Beast Caller", "desc": "Summoner: calls a Cave Pup every 8 s at no gold cost, two at a time. Pups use no population, pay no bounty and always march. Stays behind the front line." },
     "cave_bear": { "name": "Cave Bear", "desc": "Armored brawler with a huge paw swat. Roar: every 14 s, stuns nearby enemies for 1 s (Legendaries half as long)." },
     "rockfall_shaman": { "name": "Rockfall Shaman", "desc": "Caster: every 9 s a boulder falls on the nearest enemy ground unit within 380, crushing a small area. Stays behind the front line." },
     "elk_chieftain": { "name": "Elk Chieftain", "desc": "Legendary war leader on a giant elk. Its antler sweep hits 2 enemies, the first hit of each fight deals double damage and knocks back, and its war horn gives nearby allies +15% damage." },

@@ -10,12 +10,17 @@ carries a short lever-action carbine (brass receiver, wooden stock, big lever lo
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    tips his hat with the far hand (the brim dips), weight shift, blink
-  walk    jog: forward lean, the carbine bobbing at port arms, coat tails swinging
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1, 81 lu/s): forward lean, the carbine
+          at port arms bobbing a frame late, the coat tails and kerchief swinging, planted feet
   attack  SNAP SHOT AND LEVER FLOURISH: snaps the carbine to his shoulder, squints down the sights
           (the held extreme), fires (one flash, a smoke puff), kicks, then flips the carbine up
           to the vertical with a crescent smear and throws the lever (a brass casing arcs away),
           snaps it home and brings the carbine down to port arms. The bullet leaves `muzzle` on
-          the fire frame.
+          the fire frame. While the sim wind-up lasts he holds the aim and the barrel wobbles
+          (holdLoop: hold and wobble frames)
+  attack_b  KNEELING AIMED SHOT: drops to one knee, the carbine to the shoulder, aims (the held
+          extreme, holdLoop), fires, rides the kick, works the lever without the flip (a casing
+          flies) and rises
   hit     light: the head snaps back, the hat lifts, eyes squeezed
   die     D1 fling and spin: the hat pops off and lands behind him, X eyes and tongue
 """
@@ -29,6 +34,7 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "carbineer"
+GAIT_NAME = "biped"
 NAME = "Carbineer"
 HEIGHT_LU = 68
 CANVAS = (296, 236)
@@ -43,15 +49,16 @@ HAT_C = (1.0, 0.0, 57.8)
 KERCHIEF = "#D8CDB6"
 
 
+RIG = None
+
+
 def build(rig):
-    I.skeleton(rig)
-    I.legs(rig, trousers=I.DENIM, gaiter=I.LEATHER_DK)
-    for s in ("r", "l"):     # brass spurs at the heels
-        y = I.LEG_Y * I.SIDE_Y[s]
-        g = Geo().capsule((-2.4, y - 1.0 * I.SIDE_Y[s] * -1, 3.4), (-5.6, y, 3.0), 0.7)
-        g.star((-6.4, y, 3.0), 2.2, 0.9, 1.0, points=5, rot=(90, 0, 0))
-        rig.part(f"shin_{s}", g, I.BRASS_LT, finish="metal", outline=0.4)
-    I.long_coat(rig, tail_len=21.0, long=True)
+    global RIG
+    RIG = rig
+    KI.skeleton_v3(rig)
+    KI.legs_v3(rig, trousers=I.DENIM, gaiter=I.LEATHER_DK, spur=I.BRASS_LT)   # brass spurs at the heels
+    # the duster's back panel ends at the knee and the tails above the boots (hems >= 9 lu up)
+    I.long_coat(rig, tail_len=6.0, long=True, hem_z=13.0, skirt_z=10.0)
     skirt = Geo().blob((0.4, 0, 12.0), (11.9, 10.9, 5.0), p=2.6)
     sface = F.Face(rig, "hips", [skirt])
     g = KI.cog(sface, Geo(), (5.0, 11.6), s=0.85)
@@ -88,7 +95,6 @@ def build(rig):
     g = Geo().blob((G0[0] + FORE, G0[1] + 2.4, G0[2] - 0.2), (3.6, 3.0, 3.4), p=2.4)
     rig.part("gun", g, I.SKIN)
     rig.track("muzzle", "gun", muzzle)
-    rig.track("_foot", "shin_r", (3.4, -6.0, 0.5))
     I.muzzle_flash(rig, "gun", muzzle, size=1.8)
     rig.joint("smoke", "gun", muzzle, hidden=True)
     g = Geo()
@@ -131,19 +137,26 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
+# -- walk v3: G1 bounce jog at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 77 ms --------------
+SPEED = 81.25
+LEGS = KI.legs_ik()
+GAIT = KI.jog_gait(LEGS, SPEED, cycle_ms=616)
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return merge(hold(PORT[0], PORT[1] + 0.9 * lag, PORT[2] - 3.5 * lag),
-                     {"hat": {"r": -1.5 * lag}})
-    base = {"torso": {"r": -2.0}}
-    return M.walk_v2(f, base, HEIGHT_LU, thigh=36.0, knee=66.0, lift_lu=7.0, bob_pct=0.07, lean=-10.0,
-                     arms=(), twist=7.0, extra=extra)
+        return merge(hold(PORT[0], PORT[1] + 0.9 * lag, PORT[2] - 4.0 * lag),
+                     {"hat": {"r": -2.0 * lag}, "kerchief": {"r": 6 * lag}, "coattail": {"r": 6 * lag}})
+    return M.walk_v3(RIG, f, {"torso": {"r": -2.0}}, GAIT, legs=LEGS, lean=-10.0, twist=7.0, nod=3.0,
+                     extra=extra, report=report)
 
 
-# 10 unique frames in 765 ms; impact (fire) on frame 3 at 291 ms (impactAt 0.3804, as shipped)
-ATTACK_MS = [40, 60, 191, 60, 70, 60, 50, 70, 80, 84]
-ATTACK_IMPACT = 3
+# 11 unique frames in 765 ms; impact (fire) on frame 4 at 291 ms (impactAt 0.3804, as shipped). The
+# shipped 191 ms hold is split into the hold (130) and a wobble partner (61) for the holdLoop.
+ATTACK_MS = [40, 60, 130, 61, 60, 70, 60, 50, 70, 80, 84]
+ATTACK_IMPACT = 4
+U_OF = [0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 9]     # unique frame -> row of the pose tables below
 #       raise snap HOLD FIRE kick flip snap down settle settle
 GX = [5.0, 5.0, 5.0, 5.0, 2.5, 3.0, 3.0, 4.0, 4.5, 4.0]
 GZ = [30.0, 33.0, 33.0, 33.0, 35.0, 37.0, 38.0, 32.0, 28.0, 27.0]
@@ -158,8 +171,10 @@ CAS = [None, None, None, None, None, (-3, 4, 60), (-9, 13, 200), (-15, 10, 330),
        None]
 
 
-def _attack_pose(f):
-    pose = merge(hold(GX[f], GZ[f], DEG[f]), {
+def _attack_pose(f, kneel=None):
+    wob = f == 3
+    f = U_OF[f]
+    pose = merge(hold(GX[f], GZ[f] + (0.7 if wob else 0.0), DEG[f] + (1.8 if wob else 0.0)), {
         "torso": {"r": TR[f]},
         "head": {"r": HR[f], "x": 1.2 if f in (1, 2, 3) else 0.0},
         "hat": {"r": [0, 0, 0, 0, 6, -4, -2, 0, 0, 0][f]},
@@ -175,10 +190,10 @@ def _attack_pose(f):
         x, z, r = CAS[f]
         pose["casing"] = {"show": True, "x": x, "z": z, "r": r}
     if f in (1, 2, 3):
-        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0 - (0.4 if wob else 0.0)}})
     if f in (5, 6):
         pose = merge(pose, F.expr("grit"))
-    return pose
+    return KI.ground_feet(RIG, pose, LEGS)
 
 
 def _attack_clip():
@@ -186,12 +201,69 @@ def _attack_clip():
     flip = {"kind": "arc", "joint": "gun", "inner": (G0[0] + 16.0, G0[1], G0[2] + 2.4), "outer": muz,
             "color": I.IRON_LT, "white": 0.4, "taper": 0.2, "lines": 2}
     ov = {
-        5: [dict(flip, **{"from": 4, "t0": 0.0, "t1": 0.9})],
-        3: [{"kind": "burst", "joint": "gun", "point": muz, "r0_lu": 8.0, "r1_lu": 13.0, "n": 5,
+        6: [dict(flip, **{"from": 5, "t0": 0.0, "t1": 0.9})],
+        4: [{"kind": "burst", "joint": "gun", "point": muz, "r0_lu": 8.0, "r1_lu": 13.0, "n": 5,
              "a0": -60.0, "arc": 120.0}],
     }
-    return M.clip("attack", [_attack_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT,
-                  overlays=ov)
+    return M.clip("attack", [_attack_pose(f) for f in range(11)], ATTACK_MS, impact=ATTACK_IMPACT,
+                  overlays=ov, extra={"holdStep": 2, "holdLoop": [2, 3]})
+
+
+# -- attack B: kneeling aimed shot (ANIM_SPEC appendix B) ----------------------------------------
+# unique frames: 0 = A raise, 1 drop, 2 HOLD (kneeling, the carbine at his shoulder, squinting),
+# 3 wobble (holdLoop), 4 FIRE, 5 kick, 6 lever down (a casing flies), 7 lever home, 8 rising,
+# 9 = A settle, 10 = A settle
+#        drop HOLD wob  FIRE kick lever home rise
+KB_DROP = [7.0, 14.0, 14.0, 14.0, 13.5, 14.0, 14.0, 7.0]
+KB_GX = [5.0, 6.0, 6.0, 6.0, 3.5, 5.0, 5.0, 4.5]
+KB_GZ = [31.0, 34.0, 34.6, 34.0, 35.5, 33.5, 33.5, 30.0]
+KB_DEG = [10.0, 2.0, 3.6, 2.0, 20.0, 6.0, 4.0, 36.0]
+KB_LEVER = [0, 0, 0, 0, 0, 64, 4, 0]
+KB_TR = [-6, -8, -8, -8, 4, -4, -6, -2]
+KB_HR = [-6, -10, -11, -10, 6, -2, -4, 0]
+KB_BX = [0.5, 1.0, 1.0, 0.0, -3.0, -1.0, -0.5, 0.0]
+KB_BQ = [-0.04, -0.06, -0.06, 0.04, -0.10, 0.02, 0.0, 0.0]
+KB_CAS = [None, None, None, None, None, (-3, 3, 60), (-10, 9, 200), (-16, 0, 330)]
+KB_FRONT = [8.0, 12.5, 12.5, 12.5, 12.0, 12.5, 12.5, 7.0]
+
+
+def _b_pose(i):
+    if i in (0, 9, 10):
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(hold(KB_GX[k], KB_GZ[k], KB_DEG[k]), {
+        "torso": {"r": KB_TR[k]},
+        "head": {"r": KB_HR[k], "x": 1.2 if k in (1, 2, 3) else 0.0},
+        "hat": {"r": [0, 0, 0, 0, 7, -3, -1, 0][k]},
+        "lever": {"r": KB_LEVER[k]},
+        "flash": {"show": k == 3, "s": 0.8 if k == 3 else 1.0},
+        "smoke": {"show": k == 4, "s": 0.9},
+    }, M.body_about((0, 0, 22), x=KB_BX[k], q=KB_BQ[k]))
+    if KB_CAS[k] is not None:
+        x, z, r = KB_CAS[k]
+        pose["casing"] = {"show": True, "x": x, "z": z - KB_DROP[k], "r": r}
+    pose = KI.kneel(RIG, pose, LEGS, drop=KB_DROP[k], front=KB_FRONT[k])
+    if k in (1, 2, 3):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0 - (0.4 if k == 2 else 0.0)}})
+    elif k in (5, 6):
+        pose = merge(pose, F.expr("grit"))
+    return pose
+
+
+def _attack_b():
+    muz = MUZ[0] if MUZ else (G0[0] + LENGTH + 1.0, G0[1], G0[2] + 2.6)
+    ov = {
+        4: [{"kind": "burst", "joint": "gun", "point": muz, "r0_lu": 8.0, "r1_lu": 13.0, "n": 5,
+             "a0": -60.0, "arc": 120.0},
+            {"kind": "dust", "ground": (-12.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 21, "spread": 0.7,
+             "dir": -1.0}],
+        6: [{"kind": "arc", "joint": "lever", "inner": (G0[0] + 1.0, G0[1], G0[2] - 2.0),
+             "outer": (G0[0] + 3.0, G0[1], G0[2] - 7.0), "color": I.IRON_LT, "white": 0.4, "taper": 0.3,
+             "lines": 1, "from": 5, "t0": 0.0, "t1": 1.0}],
+    }
+    reuse = {0: ("attack", 0), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(11)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 2, "holdLoop": [2, 3]})
 
 
 def _hit(k):
@@ -234,10 +306,11 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl, attack_ms=765, attack_impact_at=0.3804)
+    return M.check_variants(M.check_contract(cl, attack_ms=765, attack_impact_at=0.3804))

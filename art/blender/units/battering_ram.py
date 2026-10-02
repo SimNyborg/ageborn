@@ -9,8 +9,12 @@ the wheels and a crewman in a kettle hat peeks out from under the back of the ro
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
   idle    the chains sway, the peeking crewman looks about and blinks
-  walk    the wheels roll exactly with the ground (135 degrees per 0.8 s cycle at radius
-          15.3 lu is 45 lu/s, the sim speed), the crew's legs march, the hull bounces
+  walk    walk v3 (ANIM_SPEC G6): six-spoke wheels roll exactly with the ground (2 spoke spacings,
+          120 degrees, per 570 ms cycle at radius 15.3 lu = 56.2 lu/s, card 45 x 1.25), 15 degrees
+          per frame so they never strobe; the crew's legs jog, the hull bumps once per cycle and
+          pitches, the pennant whips, dust kicks off the back wheels
+  attack_b  DOUBLE PUMP: a short pump swing first, then the crew rear the whole shed back on its
+          back wheels with the log hauled right back (the held extreme), and the full slam
   attack  CREW HEAVE-HO: the crew brace and haul the log back on its chains (the held
           extreme: log right back, hull leaning, the crewman gritting his teeth), then the log
           swings through (smear) and SLAMS (impact lines, dust, the hull lurches and the
@@ -28,6 +32,7 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "battering_ram"
+GAIT_NAME = "wheeled"
 NAME = "Battering Ram"
 HEIGHT_LU = 92
 YAW_DEG = -10.0
@@ -57,9 +62,14 @@ PIVOT = (-2.0, 0.0, 68.0)   # the log's chains hang from here
 CHAIN_L = 68.0 - 37.0       # chain length (pivot to log axis)
 LOG_Z = 37.0
 HEAD_X = 44.0               # the ram head's centre, in front of the shed
-WALK_MS = 100
-WHEEL_STEP = 135.0 / 8      # degrees per walk frame (8 spokes: 3 spokes per cycle)
-CREW_X = (-5.0, 4.0)         # the two pushers' hips, between the wheels
+SPOKES = 6
+WALK_CYCLE_MS = 570
+WALK_DUR = [71, 71, 72, 71, 71, 71, 72, 71]          # 570 ms
+WHEEL_STEP = 2 * (360.0 / SPOKES) / 8   # 15 degrees per frame: 2 spoke spacings per cycle (25%)
+# the walk's natural speed comes from the odometer tracker (strideLu = 2 x its x range): the rim
+# travels 2 x 2 pi r / SPOKES = 32.04 lu per cycle
+ODO_AMP = 2 * 2 * math.pi * R_WHEEL / SPOKES / 4
+CREW_X = (-5.0, 4.0, -54.0)  # the two pushers' hips between the wheels, and a third pushing from behind
 
 
 def _wheel(rig, name, x, y):
@@ -73,16 +83,16 @@ def _wheel(rig, name, x, y):
                   2.4, segs=10, rings=2)
     rig.part(name, g, DARK_WOOD)
     g = Geo()
-    for k in range(8):
-        a = math.radians(45 * k)
+    for k in range(SPOKES):
+        a = math.radians(360.0 / SPOKES * k)
         g.capsule((x, y, R_WHEEL), (x + (R_WHEEL - 2.5) * math.cos(a), y, R_WHEEL + (R_WHEEL - 2.5) * math.sin(a)),
-                  1.5, 1.2, segs=8, rings=2)
+                  1.9, 1.5, segs=8, rings=2)
     rig.part(name, g, WOOD, outline=0.8)
     g = Geo().blob((x, y - 1.0, R_WHEEL), (4.4, 3.2, 4.4), p=2.4)
     rig.part(name, g, IRON, finish="metal")
     g = Geo()
-    for k in range(8):   # iron studs on the tyre, so the roll reads
-        a = math.radians(45 * k + 22.5)
+    for k in range(SPOKES):   # iron studs on the tyre, so the roll reads
+        a = math.radians(360.0 / SPOKES * (k + 0.5))
         g.sphere((x + (R_WHEEL - 1.2) * math.cos(a), y - 2.2, R_WHEEL + (R_WHEEL - 1.2) * math.sin(a)), 1.2, cuts=2)
     rig.part(name, g, IRON, finish="metal", outline=0)
 
@@ -199,6 +209,24 @@ def build(rig):
             g = Geo().blob((cx + 3.8, y, 2.4), (5.2, 3.4, 2.6), p=2.8, taper=(1.02, 0.85))
             g.blob((cx + 1.6, y, 5.0), (3.6, 3.4, 2.3), p=2.6)
             rig.part(n + "2", g, BOOT)
+    # the rear pusher's body: leaning into the back beam, kettle hat, team tunic (walk v3: his legs
+    # jog behind the shed, so the crew's steps read in the silhouette)
+    rig.joint("c2_body", "chassis", (-54.0, -4.0, 23.0))
+    g = Geo().capsule((-54.0, -4.0, 25.0), (-48.5, -4.0, 34.0), 5.6, 5.2)
+    rig.part("c2_body", g, team=True)
+    g = Geo().capsule((-48.5, -6.5, 33.0), (-41.5, -6.5, 27.0), 2.4, 2.2).blob((-41.0, -6.5, 26.5), (2.6, 2.4, 2.6), p=2.3)
+    rig.part("c2_body", g, SKIN)
+    g = Geo().blob((-46.0, -4.0, 40.5), (5.0, 4.8, 4.9), p=2.3)
+    g.blob((-41.4, -4.4, 39.6), (1.7, 1.6, 1.6), p=2.0)
+    rig.part("c2_body", g, SKIN)
+    g = Geo().blob((-42.6, -8.6, 41.6), (1.2, 0.6, 1.5), p=2.0)
+    rig.part("c2_body", g, EYE, outline=0.4)
+    g = Geo().blob((-41.9, -9.0, 41.4), (0.6, 0.4, 0.8), p=2.0)
+    rig.part("c2_body", g, PUPIL, outline=0)
+    g = Geo().blob((-46.2, -4.0, 43.6), (5.4, 5.2, 3.8), p=2.4)
+    g.clip((0, 0, 43.0), (0, 0, -1))
+    g.lathe([(0, -0.5), (7.6, -0.5), (8.0, 0.0), (7.6, 0.5), (0, 0.5)], (-46.2, -4.0, 43.3), segs=20)
+    rig.part("c2_body", g, STEEL, finish="metal")
     # a crewman in a kettle hat pops his head up out of a hatch in the roof
     g = Geo().lathe([(6.2, 0), (7.4, 0.6), (7.4, 2.2), (6.2, 2.8)], (-14.0, 0.0, 70.5), segs=20)
     rig.part("hull", g, DARK_WOOD, outline=0.8)
@@ -239,22 +267,30 @@ def _wheels(deg):
     return {w: {"r": -deg} for w in WHEELS}
 
 
-def _crew(lean=0.0, step=None, brace=0.0):
+def _crew(lean=0.0, step=None, brace=0.0, stride=24.0):
     """The pushers' legs: `step` (walk phase, radians) marches them; `brace` (0..1) plants
     them back in a pushing lunge; `lean` tilts them with the hull."""
     pose = {}
-    for i in range(2):
+    for i in range(3):
         for side, ph in (("l", 0.0), ("r", math.pi)):
             n = f"c{i}_{side}"
             if step is not None:
                 p = step + ph + i * math.pi * 0.5
                 lift = max(0.0, math.sin(p))
-                pose[n] = {"r": 24 * math.cos(p) + 10 * lift, "z": 1.8 * lift}
-                pose[n + "2"] = {"r": -40 * lift}
+                if i == 2:     # the rear pusher leans in, legs driving back behind him
+                    pose[n] = {"r": -16 + 30 * math.cos(p) + 14 * lift, "z": 1.8 * lift}
+                    pose[n + "2"] = {"r": -55 * lift}
+                    continue
+                pose[n] = {"r": stride * math.cos(p) + 18 * lift, "z": 2.6 * lift}
+                pose[n + "2"] = {"r": -60 * lift}
             else:
                 back = -32 if side == "r" else 12
-                pose[n] = {"r": brace * back - lean}
+                pose[n] = {"r": brace * back - lean - (10 if i == 2 else 0)}
                 pose[n + "2"] = {"r": brace * (10 if side == "r" else -18)}
+    if step is not None:
+        pose["c2_body"] = {"z": 1.2 * abs(math.sin(step)), "r": -2 * math.cos(2 * step)}
+    else:
+        pose["c2_body"] = {"r": -6 * brace, "x": -1.5 * brace}
     return pose
 
 
@@ -272,13 +308,20 @@ def _idle(f):
 
 def _walk(f):
     p = 2 * math.pi * f / 8
-    bump = -abs(math.sin(p))      # two bumps per cycle, like cobbles
-    return merge(_wheels(WHEEL_STEP * f), _crew(step=p), {
-        "odo": {"x": 9.0 * math.cos(p)},
-        "hull": dict(squash(0.02 * math.cos(2 * p)), z=1.2 * bump + 0.6, r=0.8 * math.sin(p)),
-        "peek": {"z": 1.0 * math.sin(2 * p - 1.0)},
-    }, swing(6.0 * math.sin(p - 1.0)), {
-    })
+    bump = -math.cos(p)            # one bump per cycle (G6): lowest on frame 0
+    return merge(_wheels(WHEEL_STEP * f), _crew(step=p, stride=42.0), {
+        "odo": {"x": ODO_AMP * math.cos(p)},
+        "hull": dict(squash(-0.03 * math.cos(p)), z=1.9 * bump + 0.4, r=2.2 * math.sin(p)),
+        "peek": {"z": 1.2 * math.sin(p - 1.2), "r": 3 * math.sin(p - 1.0)},
+        "pennant": {"r": 8 * math.sin(p - 1.4)},
+    }, swing(7.0 * math.sin(p - 1.0)))
+
+
+WALK_DUST = {k: [{"kind": "dust", "ground": (AXLES[0] - (13.0 if k % 2 else 8.0), 0.0),
+                  "size_lu": 6.0 if k % 2 else 4.5, "puffs": 3, "seed": 80 + k, "spread": 1.0,
+                  "dir": -1.0}] + ([{"kind": "dust", "ground": (AXLES[1] - 10.0, 0.0), "size_lu": 4.0,
+                                     "puffs": 2, "seed": 90 + k, "spread": 0.8, "dir": -1.0}] if k % 2 == 0 else [])
+             for k in range(8)}
 
 
 # attack: 10 unique poses in the 12 heavy steps (moves.HEAVY_MELEE_MS), impact on pose 6
@@ -329,6 +372,60 @@ def _attack_clip():
                   impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov)
 
 
+
+# -- attack B: double pump, the shed rears ----------------------------------------------------
+# unique frames: 0 = A shift, 1 pump back, 2 pump forward (a short knock), 3 HOLD (the crew rear
+# the shed back on its back wheels, the log hauled right back, the crewman cheering), 4-5 swing,
+# 6 SLAM (the front drops, squash), 7-9 = A rock, back, settle; played on A's steps
+#       pump-back pump HOLD  swing swing SLAM
+OB_RAM = [-26, 16, -56, -20, 18, 44]
+OB_TILT = [-2, 3, -6, 2, 4, 3]
+OB_R = [2.0, -1.5, 7.0, 3.0, 0.5, -2.0]      # whole shed pitch about the back wheels
+OB_Z = [0.0, -0.6, 1.2, 0.6, 0.0, -1.6]
+OB_X = [-1.0, 1.5, -3.5, 0.5, 3.5, 5.5]
+OB_Q = [-0.02, -0.04, 0.03, 0.03, 0.03, -0.12]
+OB_BR = [0.7, 0.6, 1.0, 1.0, 0.9, 0.8]
+OB_WHL = [-4, 3, -12, -4, 6, 12]
+OB_PEEK = [(0.0, 0), (1.0, -6), (3.0, 10), (1.0, 0), (1.5, -6), (2.5, -10)]
+
+
+def _b_pose(i):
+    if i == 0 or i >= 7:
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(M.body_about((AXLES[0], 0, 0), x=OB_X[k], z=OB_Z[k], r=OB_R[k], q=OB_Q[k]),
+                 _wheels(OB_WHL[k]), _crew(brace=OB_BR[k]),
+                 swing(OB_RAM[k], OB_TILT[k], 1.08 if k in (3, 4) else 1.0), {
+                     "peek": {"z": OB_PEEK[k][0], "r": OB_PEEK[k][1]},
+                     "pennant": {"r": -6 * OB_R[k]}})
+    if k == 2:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": 0.6}})
+    elif k in (0, 1):
+        pose = merge(pose, F.expr("grit"))
+    elif k == 5:
+        pose = merge(pose, F.expr("yell"))
+    return pose
+
+
+def _attack_b():
+    ov = {
+        2: [{"kind": "burst", "joint": "ram", "point": RAM_TIP, "r0_lu": 5.0, "r1_lu": 9.0, "n": 4,
+             "a0": -40.0, "arc": 100.0}],
+        3: [{"kind": "dust", "ground": (AXLES[1] + 4.0, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 74,
+             "spread": 0.9}],
+        4: [dict(SWING, **{"from": 3})],
+        5: [dict(SWING, **{"from": 4})],
+        6: [dict(SWING, **{"from": 5, "lines": 2}),
+            {"kind": "burst", "joint": "ram", "point": RAM_TIP, "r0_lu": 9.0, "r1_lu": 18.0, "n": 7,
+             "a0": -80.0, "arc": 160.0},
+            {"kind": "dust", "ground": (30.0, 0.0), "size_lu": 10.0, "puffs": 5, "seed": 75, "spread": 1.4},
+            {"kind": "dust", "ground": (AXLES[1], 0.0), "size_lu": 7.0, "puffs": 3, "seed": 76, "spread": 1.0}],
+    }
+    reuse = {0: ("attack", 0), 7: ("attack", 7), 8: ("attack", 8), 9: ("attack", 9)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(10)], M.HEAVY_MELEE_MS,
+                  impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov, reuse=reuse)
+
+
 def _hit(k):
     a = M.HIT_AMT[k]
     pose = merge(_wheels(-8 * a), _crew(brace=0.3), {
@@ -367,6 +464,11 @@ def _die(k):
         "wheel_fn": {"x": wx, "z": wz, "r": wr},
         "peek": {"x": px, "z": pz, "r": pr},
         "c0_r": {"r": -30}, "c1_l": {"r": 30},
+        # the rear pusher is knocked onto his back
+        "c2_body": {"r": [6, 20, 45, 70, 82, 84, 84, 84][k], "x": [0, -2, -5, -8, -10, -10, -10, -10][k],
+                    "z": [0, 2, 1, -4, -10, -11, -11, -11][k]},
+        "c2_l": {"r": [10, 30, 50, 70, 80, 80, 80, 80][k], "z": [0, 2, 1, -2, -6, -7, -7, -7][k]},
+        "c2_r": {"r": [6, 24, 44, 64, 76, 76, 76, 76][k], "z": [0, 2, 1, -2, -6, -7, -7, -7][k]},
     })
     if k == 0:
         pose = merge(pose, F.expr("squeeze", "o"))
@@ -381,10 +483,11 @@ def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES_HEAVY)],
                [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], [WALK_MS] * 8, loop=True),
+        M.clip("walk", [_walk(f) for f in range(8)], WALK_DUR, loop=True, overlays=WALK_DUST),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
-    return M.check_contract(cl, heavy=True)
+    return M.check_variants(M.check_contract(cl, heavy=True))

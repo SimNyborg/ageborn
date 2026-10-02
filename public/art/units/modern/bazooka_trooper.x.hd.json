@@ -1,0 +1,554 @@
+{
+ "frames": {
+  "bazooka_trooper_attack_b_01": {
+   "frame": {
+    "x": 2,
+    "y": 184,
+    "w": 192,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 266,
+    "y": 215,
+    "w": 192,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  },
+  "bazooka_trooper_attack_b_01_team": {
+   "frame": {
+    "x": 336,
+    "y": 516,
+    "w": 164,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 276,
+    "y": 236,
+    "w": 164,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  },
+  "bazooka_trooper_attack_b_02": {
+   "frame": {
+    "x": 153,
+    "y": 356,
+    "w": 197,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 268,
+    "y": 235,
+    "w": 197,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  },
+  "bazooka_trooper_attack_b_02_team": {
+   "frame": {
+    "x": 504,
+    "y": 516,
+    "w": 170,
+    "h": 133
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 277,
+    "y": 254,
+    "w": 170,
+    "h": 133
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  },
+  "bazooka_trooper_attack_b_03": {
+   "frame": {
+    "x": 354,
+    "y": 356,
+    "w": 197,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 268,
+    "y": 235,
+    "w": 197,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  },
+  "bazooka_trooper_attack_b_03_team": {
+   "frame": {
+    "x": 678,
+    "y": 516,
+    "w": 170,
+    "h": 133
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 277,
+    "y": 254,
+    "w": 170,
+    "h": 133
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  },
+  "bazooka_trooper_attack_b_04": {
+   "frame": {
+    "x": 198,
+    "y": 184,
+    "w": 292,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 222,
+    "w": 292,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  },
+  "bazooka_trooper_attack_b_04_team": {
+   "frame": {
+    "x": 555,
+    "y": 356,
+    "w": 155,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 284,
+    "y": 243,
+    "w": 155,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  },
+  "bazooka_trooper_attack_b_05": {
+   "frame": {
+    "x": 192,
+    "y": 2,
+    "w": 324,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 153,
+    "y": 208,
+    "w": 324,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  },
+  "bazooka_trooper_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 356,
+    "w": 147,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 247,
+    "y": 226,
+    "w": 147,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  },
+  "bazooka_trooper_attack_b_06": {
+   "frame": {
+    "x": 494,
+    "y": 184,
+    "w": 304,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 226,
+    "w": 304,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  },
+  "bazooka_trooper_attack_b_06_team": {
+   "frame": {
+    "x": 165,
+    "y": 516,
+    "w": 167,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 248,
+    "w": 167,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  },
+  "bazooka_trooper_attack_b_07": {
+   "frame": {
+    "x": 520,
+    "y": 2,
+    "w": 346,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 212,
+    "w": 346,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  },
+  "bazooka_trooper_attack_b_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 516,
+    "w": 159,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 268,
+    "y": 243,
+    "w": 159,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  },
+  "bazooka_trooper_attack_b_08": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 186,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 262,
+    "y": 205,
+    "w": 186,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  },
+  "bazooka_trooper_attack_b_08_team": {
+   "frame": {
+    "x": 714,
+    "y": 356,
+    "w": 159,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 272,
+    "y": 227,
+    "w": 159,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 442
+   },
+   "anchor": {
+    "x": 0.54769,
+    "y": 0.82805
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "bazooka_trooper_attack_00",
+   "bazooka_trooper_attack_b_01",
+   "bazooka_trooper_attack_b_02",
+   "bazooka_trooper_attack_b_03",
+   "bazooka_trooper_attack_b_04",
+   "bazooka_trooper_attack_b_05",
+   "bazooka_trooper_attack_b_06",
+   "bazooka_trooper_attack_b_07",
+   "bazooka_trooper_attack_b_08",
+   "bazooka_trooper_attack_09",
+   "bazooka_trooper_attack_10"
+  ],
+  "attack_b_team": [
+   "bazooka_trooper_attack_00_team",
+   "bazooka_trooper_attack_b_01_team",
+   "bazooka_trooper_attack_b_02_team",
+   "bazooka_trooper_attack_b_03_team",
+   "bazooka_trooper_attack_b_04_team",
+   "bazooka_trooper_attack_b_05_team",
+   "bazooka_trooper_attack_b_06_team",
+   "bazooka_trooper_attack_b_07_team",
+   "bazooka_trooper_attack_b_08_team",
+   "bazooka_trooper_attack_09_team",
+   "bazooka_trooper_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "bazooka_trooper.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 896,
+   "h": 660
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.bazooka_trooper",
+   "name": "Bazooka Trooper",
+   "heightLu": 70,
+   "widthLu": 71.1,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    356,
+    366
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     68
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     40,
+     44
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "bazooka_trooper",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      60,
+      130,
+      61,
+      60,
+      80,
+      70,
+      70,
+      70,
+      75,
+      74
+     ],
+     "durationMs": 790,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3684,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        27.4,
+        39.5
+       ],
+       [
+        31.1,
+        26.5
+       ],
+       [
+        33.8,
+        17.6
+       ],
+       [
+        33.8,
+        18.7
+       ],
+       [
+        31.0,
+        20.7
+       ],
+       [
+        9.7,
+        34.2
+       ],
+       [
+        24.3,
+        23.9
+       ],
+       [
+        25.9,
+        23.8
+       ],
+       [
+        27.3,
+        31.0
+       ],
+       [
+        25.3,
+        36.4
+       ],
+       [
+        27.4,
+        35.8
+       ]
+      ]
+     },
+     "muzzle": [
+      31.0,
+      20.7
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

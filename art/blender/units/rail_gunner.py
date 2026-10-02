@@ -10,18 +10,23 @@ apart, a magenta channel between them, three team coil rings round the breech.
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    the cannon at the hip, the capacitor pack vents a puff of steam, a blink
-  walk    stomp: heavy, a little bow-legged, the cannon bobbing at the hip
+  walk    walk v3 jog at ground speed (ANIM_SPEC G1, 81.25 lu/s): heavy and a little bow-legged,
+          the cannon carried up on the near shoulder, bobbing a frame late, planted feet
   attack  KNEEL AND RAIL SNAP: drops to one knee and levels the cannon on his thigh, the rails
           spread open, magenta arcs crackle between them and grow (the held extreme, angry eyes),
           one long snap flash with a shock ring, the recoil shoves him back sliding on his knee
           (dust), the rails clack shut and vent steam, he stands. The rail beam starts at the
           per-frame `muzzle` anchor of the fire frame.
+  attack_b  STANDING SHOULDER SHOT: plants his feet wide and snaps the cannon up to his shoulder,
+          level at eye height, the rails spread and crackle (the held extreme), one snap; the
+          recoil shoves him back a hop with the muzzle kicked high, then the rails clack shut
   hit     light: the head snaps back, the cannon kicks up, eyes > <
   die     D1 fling and spin, X eyes, the cannon flung wide
 """
 import math
 
 from ageborn_art import face as FC
+from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_future as KF
 from ageborn_art import kit_medieval as K
 from ageborn_art import moves as M
@@ -30,6 +35,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "rail_gunner"
+GAIT_NAME = "biped"
 NAME = "Rail Gunner"
 HEIGHT_LU = 74
 CANVAS = (340, 240)
@@ -43,9 +49,14 @@ RAIL0, RAIL1 = 20.0, 58.0   # rails from/to (x from the grip)
 MUZZLE = (G0[0] + RAIL1 + 1.0, G0[1], G0[2] + 3.0)
 
 
+RIG = None
+
+
 def build(rig):
-    F.skeleton(rig, head=(1, 0, 39))
-    F.legs(rig, thigh_r=4.9)
+    global RIG
+    RIG = rig
+    KF.skeleton_v3(rig, head=(1, 0, 39))
+    KF.legs_v3(rig, thigh_r=4.8)
     rig.joint("gun", "torso", G0)
     gx, gy, gz = G0
 
@@ -139,7 +150,6 @@ def build(rig):
     g = Geo().blob((gx + 6.4, gy + 0.4, gz + 10.4), (0.6, 1.2, 1.2), p=2.4)
     rig.part("gun", g, glow=F.CYAN, outline=0)
     rig.track("muzzle", "gun", MUZZLE)
-    rig.track("_foot", "shin_r", (3.0, -6.0, 0.5))
 
     # charge arcs between the rails (two sizes), the fire flash with a shock ring, vent steam
     mx, my, mz = MUZZLE
@@ -187,12 +197,21 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
+# -- walk v3: G1 jog at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 77 ms --------------------
+SPEED = 81.25
+LEGS = KF.legs_ik()
+GAIT = KF.jog_gait(LEGS, SPEED, cycle_ms=640, stance=0.40, lift=6.0)
+# walk carry: the cannon up on the near shoulder, muzzle tipped up, the far hand on the shroud
+SHOULDERED = (-3.0, 26.5, 42.0)
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return merge(hold(PORT[0], PORT[1] + 0.9 * lag, PORT[2] - 2.5 * lag), {"cable": {"r": 0.0}})
-    return M.walk_v2(f, {}, HEIGHT_LU, thigh=30.0, knee=58.0, lift_lu=6.5, bob_pct=0.055, lean=-6.0,
-                     arms=(), twist=4.0, bow=6.0, heavy_down=1.35, extra=extra)
+        return merge(F.hold2("gun", G0, 11.0, SHOULDERED[0], SHOULDERED[1] + 1.2 * lag, SHOULDERED[2] - 3.5 * lag),
+                     {"cable": {"r": 0.0}, "head": {"r": 3.0 - 1.5 * lag}})
+    return M.walk_v3(RIG, f, {"torso": {"r": -2.0}}, GAIT, legs=LEGS, lean=-8.0, twist=5.0, nod=3.0,
+                     sway=3.0, extra=extra, report=report)
 
 
 # -- attack: kneel and rail snap (832 ms, impact at 416 ms = 0.5, as shipped) ------------------
@@ -220,7 +239,7 @@ def _kneel(t):
 
 def _attack_pose(f):
     k = KNEEL[f]
-    pose = merge(hold(GX[f], GZ[f] - 2.0 * k, DEG[f] - TR[f] * k), _kneel(k), {
+    pose = merge(hold(GX[f], GZ[f] - 2.0 * k, DEG[f] - TR[f] * k), {
         "torso": {"r": TR[f] * k - 2.0 * (1 - k)}, "head": {"r": HR[f] * k},
         "rail_top": {"z": 2.4 * SPREAD[f], "r": 2.2 * SPREAD[f]},
         "rail_bot": {"z": -2.4 * SPREAD[f], "r": -2.2 * SPREAD[f]},
@@ -232,7 +251,10 @@ def _attack_pose(f):
     }, M.body_about((0, 0, 20), x=BX[f], q=BQ[f]))
     if f in (2, 3):
         pose["body"]["x"] += 0.35 if f == 3 else -0.25
-    return merge(pose, KF.glyph(EYES[f]))
+    pose = merge(pose, KF.glyph(EYES[f]))
+    if k <= 0:
+        return KI.ground_feet(RIG, pose, LEGS)
+    return KI.kneel(RIG, pose, LEGS, drop=14.0 * k, front=13.0)
 
 
 def _attack_clip():
@@ -247,6 +269,68 @@ def _attack_clip():
              "color": "#DDE3E8"}],
     }
     return M.clip("attack", [_attack_pose(f) for f in range(9)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
+
+
+# -- attack B: standing shoulder shot (A's 832 ms, impact at 416 ms) ----------------------------
+# steps: brace 60, shoulder 60, spread 80, HOLD 216 (feet wide, the cannon level at eye height, the
+# rails spread and crackling) | FIRE 90, shove 80 (a hop back, the muzzle kicked high), shut 80,
+# lower 80, A settle 86
+B_MS = [60, 60, 80, 216, 90, 80, 80, 80, 86]
+#      brace shoul spread HOLD FIRE shove shut lower
+B_GX = [5.0, 7.0, 7.5, 7.5, 7.5, 3.0, 5.0, 6.0]
+B_GZ = [28.0, 33.5, 34.0, 34.0, 34.0, 38.0, 33.0, 27.0]
+B_DEG = [6.0, 0.0, 0.0, 0.0, 0.0, 26.0, 10.0, 0.0]
+B_SPREAD = [0, 0.4, 1.0, 1.5, 1.6, 1.0, 0.0, 0.0]
+B_BX = [0.0, 0.5, 0.8, 1.0, 0.0, -6.0, -4.0, -1.5]
+B_BZ = [-1.0, -2.0, -2.5, -3.0, -2.5, 1.5, -1.0, -0.5]
+B_BQ = [-0.03, 0.0, -0.03, -0.06, 0.05, 0.04, -0.06, 0.0]
+B_TR = [-2, -4, -5, -6, -4, 10, 2, 0]
+B_HR = [-2, -6, -8, -9, -6, 10, 2, 0]
+B_THR = [8, 16, 20, 22, 22, 6, 12, 6]
+B_SHR = [-4, -10, -12, -14, -12, -24, -10, -4]
+B_THL = [-8, -16, -20, -22, -24, -30, -16, -8]
+B_SHL = [-4, -8, -10, -12, -10, -30, -8, -4]
+B_EYES = ["eyes", "g_angry", "g_angry", "g_angry", "g_squint", "g_hurt", "eyes", "eyes"]
+
+
+def _b_pose(i):
+    if i == 8:
+        return _attack_pose(8)
+    k = i
+    sp = B_SPREAD[k]
+    pose = merge(hold(B_GX[k], B_GZ[k], B_DEG[k]), {
+        "torso": {"r": B_TR[k]}, "head": {"r": B_HR[k], "x": 1.0 if k in (2, 3, 4) else 0.0},
+        "thigh_r": {"r": B_THR[k]}, "shin_r": {"r": B_SHR[k]},
+        "thigh_l": {"r": B_THL[k]}, "shin_l": {"r": B_SHL[k]},
+        "rail_top": {"z": 2.4 * sp, "r": 2.2 * sp},
+        "rail_bot": {"z": -2.4 * sp, "r": -2.2 * sp},
+        "arc_a": {"show": k == 2},
+        "arc_b": {"show": k == 3},
+        "flash": {"show": k == 4},
+        "vent": {"show": k in (5, 6), "s": [1, 1, 1, 1, 1, 0.8, 1.2, 1][k], "z": [0, 0, 0, 0, 0, 0, 3, 0][k]},
+        "pack_steam": {"show": k in (5, 6), "s": 0.9 if k == 5 else 1.2, "z": 0.0 if k == 5 else 2.5},
+    }, M.body_about((0, 0, 22), x=B_BX[k], z=B_BZ[k], q=B_BQ[k]))
+    if k == 3:
+        pose["body"]["x"] += 0.35
+    pose = merge(pose, KF.glyph(B_EYES[k]))
+    if k == 5:          # the hop back: both feet just off the ground
+        return pose
+    return KI.ground_feet(RIG, pose, LEGS)
+
+
+def _attack_b():
+    ov = {
+        4: [{"kind": "burst", "joint": "gun", "point": MUZZLE, "r0_lu": 10.0, "r1_lu": 16.0, "n": 6,
+             "a0": -70.0, "arc": 140.0, "color": F.MAGENTA_CORE}],
+        3: [{"kind": "rings", "joint": "gun", "point": (MUZZLE[0] - 1.0, MUZZLE[1], MUZZLE[2]), "radii_lu": (7.0, 11.0),
+             "a0": -70.0, "a1": 70.0, "color": F.MAGENTA_CORE}],
+        5: [{"kind": "dust", "ground": (-8.0, 0.0), "size_lu": 6.0, "puffs": 4, "seed": 71, "spread": 1.2,
+             "color": "#DDE3E8", "dir": 1.0}],
+        6: [{"kind": "dust", "ground": (-14.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 72, "spread": 0.9,
+             "color": "#DDE3E8"}],
+    }
+    return M.clip("attack_b", [_b_pose(i) for i in range(9)], B_MS, impact=4, overlays=ov,
+                  reuse={8: ("attack", 8)}, extra={"holdStep": 3})
 
 
 def _hit(k):
@@ -275,10 +359,11 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl, attack_ms=832, attack_impact_at=0.5)
+    return M.check_variants(M.check_contract(cl, attack_ms=832, attack_impact_at=0.5))

@@ -29,7 +29,9 @@ describe('contentHash (B4, B3 replays)', () => {
     // Last Base Standing tuned at gate size (fixer review 2026-10-01): Siege II-III ×3.5/×5, turrets 30%/20%,
     // Crumble from 23:00 at 1%/s, Crumble II 1.5%/s, endByMs 25:44. MVP balance pass (2026-10-01): the power
     // trim, base HP 8,000 × P, the falling gate at 300 lu, seven Legendaries and fourteen War Path / Road powers.
-    expect(content.hash).toBe('d20e8eb9');
+    // The Siege rope in Short, Medium and Long War (A2.10.2, owner decision 2026-10-02); this value also
+    // includes the paused content expansion's partial Stone and Bronze data in the tree.
+    expect(content.hash).toBe('95a7cf2a');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {

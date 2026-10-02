@@ -1,0 +1,510 @@
+{
+ "frames": {
+  "standard_bearer_attack_b_01": {
+   "frame": {
+    "x": 670,
+    "y": 2,
+    "w": 142,
+    "h": 310
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 344,
+    "y": 181,
+    "w": 142,
+    "h": 310
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 542
+   },
+   "anchor": {
+    "x": 0.53203,
+    "y": 0.87823
+   }
+  },
+  "standard_bearer_attack_b_01_team": {
+   "frame": {
+    "x": 511,
+    "y": 362,
+    "w": 134,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 337,
+    "y": 261,
+    "w": 134,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 542
+   },
+   "anchor": {
+    "x": 0.53203,
+    "y": 0.87823
+   }
+  },
+  "standard_bearer_attack_b_02": {
+   "frame": {
+    "x": 253,
+    "y": 2,
+    "w": 121,
+    "h": 349
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 334,
+    "y": 143,
+    "w": 121,
+    "h": 349
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 542
+   },
+   "anchor": {
+    "x": 0.53203,
+    "y": 0.87823
+   }
+  },
+  "standard_bearer_attack_b_02_team": {
+   "frame": {
+    "x": 185,
+    "y": 362,
+    "w": 107,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 336,
+    "y": 228,
+    "w": 107,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 542
+   },
+   "anchor": {
+    "x": 0.53203,
+    "y": 0.87823
+   }
+  },
+  "standard_bearer_attack_b_03": {
+   "frame": {
+    "x": 130,
+    "y": 2,
+    "w": 119,
+    "h": 354
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 314,
+    "y": 138,
+    "w": 119,
+    "h": 354
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 542
+   },
+   "anchor": {
+    "x": 0.53203,
+    "y": 0.87823
+   }
+  },
+  "standard_bearer_attack_b_03_team": {
+   "frame": {
+    "x": 96,
+    "y": 362,
+    "w": 85,
+    "h": 223
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 330,
+    "y": 227,
+    "w": 85,
+    "h": 223
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 542
+   },
+   "anchor": {
+    "x": 0.53203,
+    "y": 0.87823
+   }
+  },
+  "standard_bearer_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 124,
+    "h": 356
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 317,
+    "y": 136,
+    "w": 124,
+    "h": 356
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 542
+   },
+   "anchor": {
+    "x": 0.53203,
+    "y": 0.87823
+   }
+  },
+  "standard_bearer_attack_b_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 362,
+    "w": 90,
+    "h": 226
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 327,
+    "y": 225,
+    "w": 90,
+    "h": 226
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 542
+   },
+   "anchor": {
+    "x": 0.53203,
+    "y": 0.87823
+   }
+  },
+  "standard_bearer_attack_b_05": {
+   "frame": {
+    "x": 378,
+    "y": 2,
+    "w": 135,
+    "h": 334
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 343,
+    "y": 152,
+    "w": 135,
+    "h": 334
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 542
+   },
+   "anchor": {
+    "x": 0.53203,
+    "y": 0.87823
+   }
+  },
+  "standard_bearer_attack_b_05_team": {
+   "frame": {
+    "x": 296,
+    "y": 362,
+    "w": 93,
+    "h": 215
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 344,
+    "y": 234,
+    "w": 93,
+    "h": 215
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 542
+   },
+   "anchor": {
+    "x": 0.53203,
+    "y": 0.87823
+   }
+  },
+  "standard_bearer_attack_b_06": {
+   "frame": {
+    "x": 517,
+    "y": 2,
+    "w": 149,
+    "h": 328
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 353,
+    "y": 162,
+    "w": 149,
+    "h": 328
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 542
+   },
+   "anchor": {
+    "x": 0.53203,
+    "y": 0.87823
+   }
+  },
+  "standard_bearer_attack_b_06_team": {
+   "frame": {
+    "x": 393,
+    "y": 362,
+    "w": 114,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 346,
+    "y": 245,
+    "w": 114,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 542
+   },
+   "anchor": {
+    "x": 0.53203,
+    "y": 0.87823
+   }
+  },
+  "standard_bearer_attack_b_07": {
+   "frame": {
+    "x": 816,
+    "y": 2,
+    "w": 160,
+    "h": 295
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 354,
+    "y": 197,
+    "w": 160,
+    "h": 295
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 542
+   },
+   "anchor": {
+    "x": 0.53203,
+    "y": 0.87823
+   }
+  },
+  "standard_bearer_attack_b_07_team": {
+   "frame": {
+    "x": 649,
+    "y": 362,
+    "w": 128,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 353,
+    "y": 273,
+    "w": 128,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 542
+   },
+   "anchor": {
+    "x": 0.53203,
+    "y": 0.87823
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "standard_bearer_attack_00",
+   "standard_bearer_attack_b_01",
+   "standard_bearer_attack_b_02",
+   "standard_bearer_attack_b_03",
+   "standard_bearer_attack_b_04",
+   "standard_bearer_attack_b_05",
+   "standard_bearer_attack_b_06",
+   "standard_bearer_attack_b_07",
+   "standard_bearer_attack_08",
+   "standard_bearer_attack_09",
+   "standard_bearer_attack_10",
+   "standard_bearer_attack_11"
+  ],
+  "attack_b_team": [
+   "standard_bearer_attack_00_team",
+   "standard_bearer_attack_b_01_team",
+   "standard_bearer_attack_b_02_team",
+   "standard_bearer_attack_b_03_team",
+   "standard_bearer_attack_b_04_team",
+   "standard_bearer_attack_b_05_team",
+   "standard_bearer_attack_b_06_team",
+   "standard_bearer_attack_b_07_team",
+   "standard_bearer_attack_08_team",
+   "standard_bearer_attack_09_team",
+   "standard_bearer_attack_10_team",
+   "standard_bearer_attack_11_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "standard_bearer.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1024,
+   "h": 592
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.standard_bearer",
+   "name": "Standard Bearer",
+   "heightLu": 70,
+   "widthLu": 61.8,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    382,
+    476
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     68
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "standard_bearer",
+   "clips": {
+    "attack_b": {
+     "frames": 12,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "durationsMs": [
+      30,
+      40,
+      40,
+      102,
+      30,
+      30,
+      18,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 7,
+     "impactStep": 7,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        20.3,
+        25.2
+       ],
+       [
+        26.8,
+        23.6
+       ],
+       [
+        7.5,
+        54.7
+       ],
+       [
+        -4.4,
+        51.9
+       ],
+       [
+        -10.3,
+        57.7
+       ],
+       [
+        20.8,
+        48.9
+       ],
+       [
+        35.1,
+        34.6
+       ],
+       [
+        42.0,
+        21.7
+       ],
+       [
+        39.3,
+        34.7
+       ],
+       [
+        25.1,
+        34.3
+       ],
+       [
+        24.4,
+        26.2
+       ],
+       [
+        20.9,
+        25.8
+       ]
+      ]
+     },
+     "muzzle": [
+      42.0,
+      21.7
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

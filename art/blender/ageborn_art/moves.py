@@ -65,9 +65,11 @@ def die_meta(height_lu, heavy=False):
 
 
 def clip(name, poses, durations, loop=False, impact=None, smear=None, sequence=None, extra=None,
-         overlays=None):
+         overlays=None, reuse=None):
     """A Clip from a list of poses (dicts) or a pose function with len(durations) frames.
-    `overlays` = {unique frame: [smear2 spec, ...]}: 2D smears and accents (smear2.py)."""
+    `overlays` = {unique frame: [smear2 spec, ...]}: 2D smears and accents (smear2.py).
+    `reuse` = {unique frame: (clip name, frame)}: the frame is that clip's frame (an attack
+    variant pointing at A's read or settle frames, ANIM_SPEC P3); it is not rendered again."""
     if callable(poses):
         n = (max(sequence) + 1) if sequence else len(durations)
         fn = poses
@@ -79,7 +81,26 @@ def clip(name, poses, durations, loop=False, impact=None, smear=None, sequence=N
              durations=durations, extra=extra)
     if overlays:
         c.overlays2 = {k: list(v) for k, v in overlays.items()}
+    if reuse:
+        c.reuse = dict(reuse)
     return c
+
+
+def check_variants(clips):
+    """ANIM_SPEC 2.2 timing: every attack variant has the attack's durationMs and impactAt
+    and the same sum of steps before the impact frame."""
+    by = {c.name: c for c in clips}
+    a = by.get("attack")
+    for name in ("attack_b", "attack_c"):
+        v = by.get(name)
+        if v is None or a is None:
+            continue
+        ma, mv = a.meta(), v.meta()
+        pre = lambda c: sum(c.durations[:c.sequence.index(c.impact)])
+        assert mv["durationMs"] == ma["durationMs"], (name, mv["durationMs"], ma["durationMs"])
+        assert mv["impactAt"] == ma["impactAt"], (name, mv["impactAt"], ma["impactAt"])
+        assert pre(v) == pre(a), (name, pre(v), pre(a))
+    return clips
 
 
 def check_contract(clips, heavy=False, attack_ms=None, attack_impact_at=None):
@@ -302,3 +323,65 @@ def die_d4(k, center_z, back_z, height, heavy=False, roll=1.0):
 
 
 HEAVY_DIE_KEEP = [0, 1, 3, 4, 5, 7, 8, 9]   # D-path steps kept as the 8 unique heavy poses
+
+
+# -- walk v3 (ANIM_SPEC 2.1, P1): planted feet at ground speed ------------------------------------
+# the four key poses of each half cycle: CONTACT, DOWN (lowest, squash), PASSING, UP (highest)
+JOG_BOB = [-3.3, -3.9, -0.5, 2.4]          # hips z (lu) per key pose, bounce jog with flight
+JOG_TBOB = [-0.8, -2.6, 0.0, 1.0]          # extra torso drop: the upper body bobs more than the legs bend
+JOG_SQ = [-0.02, -0.08, 0.0, 0.05]          # torso squash per key pose (0.92 on DOWN, 1.05 on UP)
+BRISK_BOB = [-1.6, -3.4, 0.4, 1.6]
+BRISK_SQ = [-0.02, -0.07, 0.0, 0.04]
+
+
+def walk_v3(rig, f, stance, g, *, legs, bob=JOG_BOB, sq=JOG_SQ, tbob=JOG_TBOB, lean=-10.0, twist=7.0,
+            nod=3.0, squash_joint="torso", hip="hips", sway=0.0, arms=None, arm=35.0,
+            elbow=(60.0, 90.0), extra=None, report=None):
+    """Biped walk v3 (G1 bounce jog, G2 brisk walk): frame f of `g.frames` (8: R contact, R DOWN,
+    R passing, flight-UP, then the same with L). The hips bob and the torso squashes by key
+    pose, the torso leans and twists, the head counter-nods one frame late, `arms` (a dict
+    side -> Chain) pump +-`arm` degrees against the legs with the elbows bent `elbow` (deg,
+    back and front of the swing), and the legs are solved by IK so the planted foot moves
+    backward at exactly the ground speed (`gait.Gait`). `extra(ctx)` adds the unit's carry
+    pose and secondary motion (ctx: f, n, p, lag_p, key, bob, bob_lag, amp)."""
+    from . import gait as G
+    n = g.frames
+    q = n // 2
+    key = int(round((f % q) * 4 / q)) % 4      # 0 contact, 1 DOWN, 2 passing, 3 UP
+    key_lag = int(round(((f - 1) % q) * 4 / q)) % 4
+    p = 2 * math.pi * f / n
+    lag_p = 2 * math.pi * (f - 1) / n
+    amp = (max(bob) - min(bob)) / 2
+    b = bob[key]
+    b_lag = bob[key_lag]
+    pose = {
+        hip: {"z": b, "r": sway * math.sin(p)},
+        squash_joint: squash(sq[key]),
+        "torso": {"r": lean + 1.5 * math.cos(2 * p), "rz": twist * math.sin(p),
+                  "z": tbob[key] if tbob else 0.0},
+        "head": {"r": -lean * 0.5 - nod * (b_lag / max(amp, 1e-3))},
+    }
+    if squash_joint != "torso":
+        pose["torso"] = dict(pose["torso"])
+    if arms:
+        # the right arm swings forward while the left leg does (frames 0-3 the right foot is
+        # planted and moves back, so the right arm moves forward)
+        for side, chain in arms.items():
+            s = -1.0 if side == "r" else 1.0
+            c = math.cos(lag_p) * s          # +1 = arm forward
+            a = -90.0 + arm * c
+            bend = elbow[0] + (elbow[1] - elbow[0]) * (0.5 + 0.5 * c)
+            pose = merge(pose, chain.pose(a, a + bend))
+    ctx = dict(f=f, n=n, p=p, lag_p=lag_p, key=key, bob=b, bob_lag=b_lag, amp=amp)
+    out = merge(stance, pose, extra(ctx) if extra else {})
+    return G.solve(rig, out, g.targets(f), report=report)
+
+
+def walk_clip(name, rig, poses_fn, g, gait_name, extra=None):
+    """The walk Clip for a Gait: durations from the cycle, gait meta for the pipeline."""
+    from . import gait as G
+    ex = dict(G.walk_meta(gait_name, g))
+    ex.update(extra or {})
+    c = clip(name, [poses_fn(f) for f in range(g.frames)], g.durations(), loop=True, extra=ex)
+    c.gait = g
+    return c

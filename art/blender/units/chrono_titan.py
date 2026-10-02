@@ -14,17 +14,24 @@ hit, spirals and X when it dies); mint light seams run down the thighs.
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    the clock ticks, the halo turns, the hull breathes, a blink
-  walk    a slow heavy clank (1.4 s), the torso jolts on each plant, a vent puff per step
+  walk    walk v3 heavy clank at ground speed (ANIM_SPEC G3, 43.75 lu/s, 12 frames in 1560 ms): legs
+          by IK with planted boots lifted 13 lu, a hard contact (the torso jolts, a shoulder drops,
+          the visor squints, a vent puff), a deep down, a slow passing, arms swinging a beat late
   attack  CLOCK-HAND SWEEP: dips, winds the blade back to nine o'clock behind it (the held
           extreme), then sweeps it 180 degrees over the top like a clock hand, with a double magenta
           smear, the clock hands and halo spinning, and cleaves level through the
           front with a lunge (impact lines, dust, a time ring off the dial)
+  attack_b  OVERHEAD CHOP FROM 12 TO 6: rises tall with the blade straight up over its helm (the
+          held extreme, the clock hands at twelve), then chops it straight down in front
+  attack_c  THRUST: sinks into a wide crouch, the blade drawn back level at its hip and the free arm
+          out behind (the held extreme), then drives a long straight thrust through the front
   hit     mech: a hard jolt, sparks on the chest, a vent puff
   die     D6 fall-apart: the clock hands spin wild, the halo drops off behind, the knees buckle
           onto the ground and it topples forward with a smoke puff, spiral then X eyes
 """
 import math
 
+from ageborn_art import gait as GT
 from ageborn_art import kit_future as KF
 from ageborn_art import moves as M
 from ageborn_art import rigs_future as F
@@ -32,6 +39,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "chrono_titan"
+GAIT_NAME = "heavy"
 NAME = "Chrono Titan"
 HEIGHT_LU = 192
 YAW_DEG = -16.0
@@ -59,7 +67,12 @@ HALO = (-30.0, 12.0, 140.0)
 DIAL = (29.0, -9.0, 112.0)
 
 
+RIG = None
+
+
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("hips", "body", (0, 0, HIP_Z))
     rig.joint("torso", "hips", (0, 0, HIP_Z + 12.0))
@@ -96,30 +109,34 @@ def build(rig):
     # far arm (behind the body)
     _arm(rig, "l")
 
-    # legs: charcoal thighs with white plates, knee discs, white shin armour, heavy boots
+    # legs: charcoal thighs with white plates, knee discs, white shin armour, heavy boots; the far leg
+    # is 20% darker and the boots are 26 lu long so the two feet read apart (ANIM_SPEC G3)
+    from ageborn_art import colors as CO
     for s in ("r", "l"):
         y = LEG_Y[s]
         kz = HIP_Z - THIGH
+        dk = (lambda c: c) if s == "r" else (lambda c: CO.scale(c, 0.8))
         g = Geo().capsule((0, y, HIP_Z), (0, y, kz), 8.0, 6.6)
-        rig.part(f"thigh_{s}", g, F.SUIT)
+        rig.part(f"thigh_{s}", g, dk(F.SUIT))
         g = Geo().blob((2.0, y - (1.5 if s == "r" else -1.5), HIP_Z - 12.0), (9.6, 8.8, 13.0), p=2.8,
                        taper=(0.8, 1.05))
         rig.part(f"thigh_{s}", g, team=True)
         g = Geo().lathe([(0, -5.0), (8.0, -4.8), (8.6, 0), (8.0, 4.8), (0, 5.0)], (0, y, kz), (0, y + 1, kz), segs=20)
-        rig.part(f"shin_{s}", g, F.GUNMETAL, finish="metal")
+        rig.part(f"shin_{s}", g, dk(F.GUNMETAL), finish="metal")
         g = Geo().blob((4.6, y, kz + 1.0), (4.0, 7.0, 6.4), p=2.8)
         rig.part(f"shin_{s}", g, team=True, outline=0.8)
         g = Geo().capsule((0, y, kz), (0, y, ANK_REST + 4), 6.4, 5.6)
-        rig.part(f"shin_{s}", g, F.SUIT)
+        rig.part(f"shin_{s}", g, dk(F.SUIT))
         g = Geo().blob((2.4, y, kz - 17.0), (8.4, 9.0, 15.0), p=2.8, taper=(0.85, 1.1))
-        rig.part(f"shin_{s}", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
+        rig.part(f"shin_{s}", g, dk(F.ARMOR), finish="gloss", outline_hex=F.TRIM)
         a = ANK_REST
-        g = Geo().blob((5.0, y, a - 6.0), (17.0, 10.4, 6.4), p=3.2, taper=(1.0, 0.8))
-        g.blob((-6.0, y, a - 3.0), (9.0, 9.6, 7.4), p=3.0)
-        rig.part(f"foot_{s}", g, F.ARMOR, finish="gloss", outline_hex=F.TRIM)
-        g = Geo().blob((5.0, y, a - 10.6), (17.6, 11.0, 2.0), p=3.4)
-        rig.part(f"foot_{s}", g, F.SUIT)
-    rig.track("_foot", "foot_r", (5.0, LEG_Y["r"], ANK_REST - 12.0))
+        g = Geo().blob((4.0, y, a - 6.0), (13.0, 10.4, 6.4), p=3.2, taper=(1.0, 0.8))
+        g.blob((-4.0, y, a - 3.0), (7.6, 9.6, 7.4), p=3.0)
+        rig.part(f"foot_{s}", g, dk(F.ARMOR), finish="gloss", outline_hex=F.TRIM)
+        g = Geo().blob((4.0, y, a - 10.6), (13.6, 11.0, 2.0), p=3.4)
+        rig.part(f"foot_{s}", g, dk(F.SUIT))
+    rig.track("_foot", "foot_r", (4.0, LEG_Y["r"], ANK_REST - 12.0))
+    rig.track("_foot_l", "foot_l", (4.0, LEG_Y["l"], ANK_REST - 12.0))
 
     # pelvis and waist
     g = Geo().blob((0, 0, HIP_Z + 4.0), (20.0, 21.0, 11.0), p=2.8)
@@ -285,26 +302,41 @@ def _idle(f):
     return pose
 
 
-WALK_MS = [175] * 8      # 1.4 s heavy stride
-STRIDE = 24.5            # natural speed 2 x 24.5 / 1.4 s = 35 lu/s (sim speed 35)
+# -- walk (ANIM_SPEC G3): ground speed 35 x 1.25 = 43.75 lu/s, 12 frames in 1560 ms (130 ms each: a
+# longer cycle gives the Legendary a long enough step that its boots read apart) --------------
+SPEED = 43.75
+WALK_N, WALK_CYCLE = 12, 1560
+LEGS_G = {s: GT.Leg(f"thigh_{s}", f"shin_{s}", (0.0, LEG_Y[s], ANK_REST), foot=f"foot_{s}",
+                    toe=(16.0, LEG_Y[s], ANK_REST - 11.0), heel=(-10.0, LEG_Y[s], ANK_REST - 11.0))
+          for s in ("r", "l")}
+GAIT = GT.Gait(WALK_N, WALK_CYCLE, SPEED, {"r": (LEGS_G["r"], -0.03, 0.0, ANKLE_H),
+                                          "l": (LEGS_G["l"], 0.47, -2.0, ANKLE_H)},
+               0.60, yaw_deg=YAW_DEG, lift=13.0, kick=3.0, reach=4.0, toe_off=14.0, heel_strike=8.0,
+               lift_peak=0.45, early_lift=3.0)
+# key poses per half cycle (6 frames): CONTACT (hard, a jolt), DOWN (deep), rise, PASSING, PASSING, UP
+W_BOB = [-4.0, -7.5, -4.5, -1.0, 1.0, 1.5]
+W_JOLT = [-1.6, -0.6, 0.0, 0.0, 0.0, 0.0]   # torso pitch jolt on the plant (deg, no squash: a machine)
+W_SH = [3.0, 3.5, 1.5, 0.0, -1.0, -2.0]     # shoulder roll (deg), the weight side drops on contact
 
 
-def _walk(f):
-    xr, lr, _ = F.walker_cycle(f, 8, STRIDE, 18.0)
-    xl, ll, _ = F.walker_cycle(f, 8, STRIDE, 18.0, phase=0.5)
-    bob = [-5.0, -2.0, 2.2, 0.4, -5.0, -2.0, 2.2, 0.4][f]
-    lag = [0.4, -5.0, -2.0, 2.2, 0.4, -5.0, -2.0, 2.2][f]
-    jolt = [1.0, 0.3, 0, 0, 1.0, 0.3, 0, 0][f]
-    p = 2 * math.pi * f / 8
-    return merge(legs((STANCE_X["r"] + xr, lr), (STANCE_X["l"] + xl, ll), (0.0, LIFT + bob)), REST,
-                 clock(f), {
-        "torso": dict(r=-4.0 + 1.5 * math.cos(2 * p) - 1.2 * jolt, rz=5.0 * math.sin(p), rx=2.0 * math.sin(p)),
-        "head": {"r": 1.0 - 0.4 * lag},
-        "arm_r": {"r": -5 * math.cos(p) + 0.8 * lag}, "hand_r": {"r": 1.2 * lag},
-        "arm_l": {"r": 10 * math.cos(p)}, "fore_l": {"r": 6 * max(0.0, math.cos(p))},
-        "halo": {"r": 5.0 * f},
-        "vent": {"show": f in (1, 5), "s": 0.55, "z": 2.0},
+def _walk(f, report=None):
+    k = f % 6
+    side = 1 if f < 6 else -1                 # the near foot lands on frame 0, the far on 6
+    p = 2 * math.pi * f / WALK_N
+    lag_k = (f - 1) % 6
+    swing = math.cos(2 * math.pi * (f - 1) / WALK_N)    # arms swing against the legs, a frame late
+    pose = merge(REST, clock(f), {
+        "hips": {"x": 0.0, "z": LIFT + W_BOB[k]},
+        "torso": dict(r=-5.0 + 1.5 * math.cos(2 * p) + W_JOLT[k], rz=6.0 * math.sin(p), rx=W_SH[k] * side),
+        "head": {"r": 2.0 - 0.6 * W_BOB[lag_k]},
+        "arm_r": {"r": -12 * swing}, "fore_r": {"r": -6 * max(0.0, swing)}, "hand_r": {"r": 3 * swing},
+        "arm_l": {"r": 14 * swing}, "fore_l": {"r": 6 * max(0.0, -swing)},
+        "halo": {"r": 3.3 * f},
+        "vent": {"show": k in (0, 1), "s": [0.55, 0.8, 1, 1, 1, 1][k], "z": [0.0, 3.0, 0, 0, 0, 0][k]},
     })
+    if k == 0:
+        pose = merge(pose, KF.glyph("g_squint"))
+    return GT.solve(RIG, pose, GAIT.targets(f), report=report)
 
 
 # -- attack: clock-hand sweep (heavy timing: impact on pose 6 at 570 of 1230 ms) -------------------
@@ -361,6 +393,97 @@ def _attack_clip():
                   sequence=ATTACK_SEQ, overlays=ov)
 
 
+# -- attack B: overhead chop from 12 to 6 (heavy timing, A's sequence; impact on frame 6) ----------
+# frames: 0 = A shift, 1 lift, 2 rise, 3 HOLD (tall, the blade straight up over its helm), 4-5 smears
+# (straight down the front), 6 IMPACT (the blade down in front, a deep lunge), 7 shock, 8 follow, 9 = A
+B_RA = [20, 70, 96, 60, 20, -14, -12, -40]
+B_RF = [60, 100, 100, 60, 10, -24, -22, -30]
+B_RW = [100, 100, 94, 50, 4, -22, -18, -4]
+B_LA = [-60, -30, -10, -40, -70, -85, -84, -78]
+B_LF = [-30, 0, 20, -10, -50, -70, -68, -50]
+B_TR = [3.0, 7.0, 10.0, -2.0, -10.0, -16.0, -15.0, -8.0]
+B_BOB = [-3.0, 2.0, 4.0, 1.0, -2.0, -9.0, -8.0, -4.0]
+B_DX = [-1.0, -2.5, -3.0, 0.0, 3.0, 7.0, 7.0, 4.0]
+B_SPREAD = [2.0, 3.0, 3.0, 4.0, 5.0, 7.0, 7.0, 4.0]
+B_EYES = ["g_angry", "g_angry", "g_angry", "g_squint", "g_squint", "g_angry", "g_angry", "eyes"]
+
+
+def _b_pose(i):
+    if i in (0, 9):
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(stand(B_BOB[k], B_DX[k], B_SPREAD[k]), arms(B_RA[k], B_RF[k], B_RW[k], B_LA[k], B_LF[k]),
+                 clock(i, fast=[0, 0, 0, 90, 180, 180, 180, 180][k]), {
+        "torso": {"r": B_TR[k]}, "head": {"r": -0.4 * B_TR[k]},
+        "sparks": {"show": k == 5},
+        "vent": {"show": k in (6, 7), "s": 1.3 if k == 7 else 1.0, "z": 5.0 if k == 7 else 0.0},
+        "halo": {"r": [4, 10, 16, 60, 110, 150, 160, 166][k]},
+    })
+    if k in (3, 4):
+        pose["blade"] = dict(pose.get("blade", {}), sz=1.12)
+    return merge(pose, KF.glyph(B_EYES[k]))
+
+
+# -- attack C: thrust --------------------------------------------------------------------------
+# frames: 0 = A shift, 1 sink, 2 draw, 3 HOLD (a wide crouch, the blade drawn back level at its hip,
+# the free arm out behind), 4-5 smears (the drive), 6 IMPACT (a long straight thrust), 7 shock,
+# 8 follow, 9 = A recover
+C_RA = [-120, -145, -160, -150, -70, -4, -2, -40]
+C_RF = [-40, -10, 0, -5, -10, -6, -4, -25]
+C_RW = [20, 6, 2, 0, 8, 14, 14, 22]
+C_LA = [-100, -120, -130, -100, -60, -40, -42, -60]
+C_LF = [-80, -100, -110, -80, -40, -20, -22, -40]
+C_TR = [0.0, 4.0, 6.0, -6.0, -12.0, -16.0, -15.0, -8.0]
+C_TZ = [6.0, 14.0, 20.0, 8.0, -4.0, -8.0, -7.0, -3.0]
+C_BOB = [-3.0, -6.0, -8.0, -7.0, -6.0, -10.0, -9.0, -4.0]
+C_DX = [-2.0, -4.0, -6.0, 0.0, 6.0, 12.0, 11.0, 5.0]
+C_SPREAD = [2.0, 4.0, 5.0, 6.0, 7.0, 9.0, 9.0, 4.0]
+C_EYES = ["g_angry", "g_angry", "g_angry", "g_squint", "g_squint", "g_angry", "g_angry", "eyes"]
+
+
+def _c_pose(i):
+    if i in (0, 9):
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(stand(C_BOB[k], C_DX[k], C_SPREAD[k]), arms(C_RA[k], C_RF[k], C_RW[k], C_LA[k], C_LF[k]),
+                 clock(i, fast=[0, 0, 0, 60, 150, 270, 300, 330][k]), {
+        "torso": {"r": C_TR[k], "rz": C_TZ[k]}, "head": {"r": -0.4 * C_TR[k], "rz": -0.6 * C_TZ[k]},
+        "sparks": {"show": k == 5},
+        "vent": {"show": k in (6, 7), "s": 1.3 if k == 7 else 1.0, "z": 5.0 if k == 7 else 0.0},
+        "halo": {"r": [4, 10, 16, 50, 100, 140, 150, 160][k]},
+    })
+    if k in (3, 4):
+        pose["blade"] = dict(pose.get("blade", {}), sz=1.12)
+    return merge(pose, KF.glyph(C_EYES[k]))
+
+
+def _variant(name, pose_fn, smear):
+    hit = [{"kind": "burst", "joint": "blade", "point": TIP, "r0_lu": 10.0, "r1_lu": 22.0, "n": 7,
+            "a0": -80.0, "arc": 160.0, "color": F.MAGENTA_CORE},
+           {"kind": "dust", "ground": (26.0, 0.0), "size_lu": 10.0, "puffs": 4, "seed": 111, "spread": 1.2,
+            "color": "#DDE3E8"},
+           {"kind": "dust", "ground": (-22.0, 0.0), "size_lu": 8.0, "puffs": 3, "seed": 112, "spread": 1.0,
+            "color": "#DDE3E8", "dir": -1.0}]
+    ov = {4: [dict(smear, **{"from": 3})], 5: [dict(smear, **{"from": 4})], 6: hit,
+          7: [{"kind": "rings", "joint": "torso", "point": DIAL, "radii_lu": (22.0, 32.0), "a0": -60.0, "a1": 60.0,
+               "color": F.MAGENTA_CORE}]}
+    return M.clip(name, [pose_fn(i) for i in range(10)], M.HEAVY_MELEE_MS, impact=6, sequence=ATTACK_SEQ,
+                  overlays=ov, reuse={0: ("attack", 0), 9: ("attack", 9)})
+
+
+def _attack_b():
+    x, y, z = HAND["r"]
+    chop = {"kind": "arc", "joint": "blade", "inner": (x + 4.0, y - 2.0, z + GUARD + BLADE * 0.45), "outer": TIP,
+            "color": F.MAGENTA, "white": 0.55, "taper": 0.2, "lines": 3, "t0": 0.0, "t1": 0.95}
+    return _variant("attack_b", _b_pose, chop)
+
+
+def _attack_c():
+    thrust = {"kind": "streak", "joint": "blade", "point": TIP, "color": F.MAGENTA, "width_lu": 14.0,
+              "white": 0.5, "t0": 0.0, "t1": 1.0}
+    return _variant("attack_c", _c_pose, thrust)
+
+
 def _hit(k):
     a = M.HIT_AMT[k]
     pose = merge(stand(-2.0 * max(a, 0)), REST, clock(0, fast=-20 * a), KF.hit_mech(k, (0, 0, 100), scale=1.4), {
@@ -404,10 +527,12 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [M.IDLE_MS_HEAVY] * 6, loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "heavy"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
-    return M.check_contract(cl, heavy=True)
+    return M.check_variants(M.check_contract(cl, heavy=True))

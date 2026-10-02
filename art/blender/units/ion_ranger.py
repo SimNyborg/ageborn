@@ -11,12 +11,18 @@ void and star-white stock and shroud, four mint coil rings along the barrel, a f
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`):
   idle    rifle at low ready; lifts it to peer along the barrel at the emitter, a blink
-  walk    jog: forward lean, the rifle bobbing, the hood tip, antenna and cable swinging
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1, 81.25 lu/s, 656 ms): the rifle carried at port
+          across the chest and bobbing a frame late, planted feet, the hood tip, antenna and cable
+          swinging
   attack  SHOULDER SHOT WITH TRAVELLING RINGS: snaps the rifle to the shoulder, the coils light up
           one after another from the stock to the muzzle (a ring of light runs forward) while a
           charge ball swells between the forks (the held extreme), one flash, and the kick knocks
           him into a little back-hop; he lands, the coils vent, back to low ready. The bolt
           leaves `muzzle` on the fire frame.
+  attack_b  HIP-FIRE: drops into a wide low crouch with the rifle braced at the hip, the coils
+          whining (the held extreme), snaps one bolt off from the hip; the kick throws the muzzle up
+  attack_c  KNEELING SHOT: drops onto one knee, tucks the rifle in tight and squints down the barrel
+          with the lens (the held extreme), fires low and level; the kick rocks him back on his heel
   hit     light: the head snaps back, the hood tip whips, eye > <
   die     D1 fling and spin, X eye, the rifle flung wide
 """
@@ -25,6 +31,7 @@ import math
 from ageborn_art import face as FC
 from ageborn_art import kit_cosmic as KC
 from ageborn_art import kit_future as KF
+from ageborn_art import kit_industrial as KI
 from ageborn_art import kit_medieval as KM
 from ageborn_art import moves as M
 from ageborn_art import rigs_cosmic as K
@@ -32,9 +39,10 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "ion_ranger"
+GAIT_NAME = "biped"
 NAME = "Ion Ranger"
 HEIGHT_LU = 70
-CANVAS = (330, 236)
+CANVAS = (330, 254)
 FEET = (104, 212)
 ANCHORS = {"head": (2, 68), "hitCenter": (0, 32), "muzzle": (60, 28)}
 NO_RETIME = True
@@ -47,9 +55,14 @@ COILS = (18.0, 25.0, 32.0, 39.0)
 LENS = (10.4, -2.2, 50.4)
 
 
+RIG = None
+
+
 def build(rig):
-    K.skeleton(rig, head=(1, 0, 39))
-    K.legs(rig, team_shin=True)
+    global RIG
+    RIG = rig
+    KC.skeleton_v3(rig, head=(1, 0, 39))
+    KC.legs_v3(rig, team_shin=True, knee=None)
     gx, gy, gz = G0
     rig.joint("gun", "torso", G0)
 
@@ -151,7 +164,6 @@ def build(rig):
     g = Geo().blob((gx + 0.6, y1 - 1.6, gz + 1.8), (3.6, 3.2, 3.4), p=2.6)
     rig.part("gun", g, K.STAR, finish="gloss", outline_hex=K.STAR_TRIM)
     rig.track("muzzle", "gun", MUZZLE)
-    rig.track("_foot", "shin_r", (2.8, -6.0, 0.5))
 
     mx, my, mz = MUZZLE
     K.orb(rig, "gun", (mx - 2.0, my - 1, mz), 3.0, name="charge", hidden=True)
@@ -194,12 +206,26 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
+# -- walk v3: G1 bounce jog at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 77 ms -------------
+SPEED = 81.25
+LEGS = KC.legs_ik()
+GAIT = KC.jog_gait(LEGS, SPEED, cycle_ms=656, stance=0.36)
+# walk carry: the long rifle at port, slanted up across the chest, the far hand on the receiver
+PORT = (0.0, 23.0, 40.0)
+PORT_FORE = 11.0
+
+
+def carry(gx, gz, deg):
+    return K.hold2("gun", G0, PORT_FORE, gx, gz, deg)
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return hold(LOW[0], LOW[1] + 1.0 * lag, LOW[2] - 4.0 * lag)
-    return M.walk_v2(f, {"torso": {"r": -2.0}}, HEIGHT_LU, thigh=36.0, knee=64.0, lift_lu=7.0, bob_pct=0.07,
-                     lean=-10.0, arms=(), twist=6.0, extra=extra)
+        return merge(carry(PORT[0], PORT[1] + 1.0 * lag, PORT[2] - 4.0 * lag),
+                     {"antenna": {"r": 0.0}, "hood_tip": {"r": 0.0}, "head": {"r": 4.0 - 2.0 * lag}})
+    return M.walk_v3(RIG, f, {"torso": {"r": -3.0}}, GAIT, legs=LEGS, lean=-10.0, twist=6.0, nod=3.0,
+                     extra=extra, report=report)
 
 
 # -- attack: shoulder shot with travelling rings (748 ms, impact at 374 ms = 0.5, as shipped) ------
@@ -235,7 +261,7 @@ def _attack_pose(f):
     }, M.body_about((0, 0, 22), x=BX[f], z=BZ[f], q=BQ[f]))
     if f == 3:
         pose["body"]["x"] += 0.35          # a charge tremble
-    return merge(pose, KF.glyph(EYES[f]))
+    return KI.ground_feet(RIG, merge(pose, KF.glyph(EYES[f])), LEGS)
 
 
 def _attack_clip():
@@ -254,6 +280,106 @@ def _attack_clip():
              "color": "#DCD6E8"}],
     }
     return M.clip("attack", [_attack_pose(f) for f in range(9)], ATTACK_MS, impact=ATTACK_IMPACT, overlays=ov)
+
+
+# -- attack B: hip-fire (A's 748 ms, impact at 374 ms) ------------------------------------------
+# steps: drop 50, brace 70, HOLD 194 (a wide low crouch, the rifle braced at the hip, coils whining),
+# snap 60 | FIRE 90, kick 70 (the muzzle thrown up), rise 70, A vent 60, A settle 84
+B_MS = [50, 70, 194, 60, 90, 70, 70, 60, 84]
+#      drop  brace HOLD  snap  FIRE  kick  rise
+B_GX = [5.0, 2.5, 1.5, 3.0, 3.0, 0.0, 3.5]
+B_GZ = [26.0, 21.0, 19.5, 20.0, 20.0, 23.5, 26.5]
+B_DEG = [-6.0, 4.0, 8.0, 3.0, 3.0, 34.0, 12.0]
+B_BX = [0.0, -0.5, -1.0, 0.5, -1.0, -4.5, -2.0]
+B_BZ = [-2.0, -6.0, -8.0, -7.5, -7.0, -5.0, -2.5]
+B_BQ = [-0.03, -0.06, -0.09, 0.0, 0.05, -0.08, 0.02]
+B_TR = [-4, 4, 7, 4, 6, 14, 5]
+B_HR = [-4, -6, -8, -6, -4, 10, 2]
+B_THR = [10, 24, 30, 30, 30, 24, 12]
+B_SHR = [-6, -18, -24, -24, -22, -16, -8]
+B_THL = [-10, -22, -28, -28, -30, -24, -12]
+B_SHL = [-4, -16, -22, -22, -20, -12, -6]
+B_LIT = [1, 2, 4, 4, 0, 0, 0]
+B_EYES = ["g_angry", "g_angry", "g_angry", "g_squint", "g_squint", "g_hurt", "eyes"]
+
+
+def _b_pose(i):
+    if i in (7, 8):
+        return _attack_pose(i)
+    k = i
+    pose = merge(hold(B_GX[k], B_GZ[k], B_DEG[k]), _lit(B_LIT[k]), {
+        "torso": {"r": B_TR[k]}, "head": {"r": B_HR[k]},
+        "thigh_r": {"r": B_THR[k]}, "shin_r": {"r": B_SHR[k]},
+        "thigh_l": {"r": B_THL[k]}, "shin_l": {"r": B_SHL[k]},
+        "charge": {"show": k in (2, 3), "s": 0.8 if k == 2 else 1.1},
+        "flash": {"show": k == 4},
+        "vent": {"show": k == 6, "s": 1.1, "z": 2.0},
+    }, M.body_about((0, 0, 22), x=B_BX[k], z=B_BZ[k], q=B_BQ[k]))
+    if k == 2:
+        pose["body"]["x"] += 0.3      # a charge tremble
+    return KI.ground_feet(RIG, merge(pose, KF.glyph(B_EYES[k])), LEGS)
+
+
+def _attack_b():
+    gx, gy, gz = G0
+    ov = {
+        2: [{"kind": "rings", "joint": "gun", "point": (gx + L + 4.0, gy, gz + 3.5), "radii_lu": (6.0, 9.0),
+             "a0": -80.0, "a1": 80.0, "color": K.MINT_CORE}],
+        4: [{"kind": "burst", "joint": "gun", "point": MUZZLE, "r0_lu": 8.0, "r1_lu": 14.0, "n": 5,
+             "a0": -60.0, "arc": 120.0, "color": K.MINT_CORE},
+            {"kind": "dust", "ground": (-12.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 71, "spread": 0.8,
+             "color": "#DCD6E8"}],
+    }
+    reuse = {7: ("attack", 7), 8: ("attack", 8)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(9)], B_MS, impact=4, overlays=ov, reuse=reuse,
+                  extra={"holdStep": 2})
+
+
+# -- attack C: kneeling shot (A's timing) ---------------------------------------------------------
+# steps: A raise 50, kneel 60, tuck 80, HOLD 184 (on one knee, the rifle tucked in tight, squinting
+# down the barrel) | FIRE 90, rock back 70, rock 70, rise 60, A settle 84
+C_MS = [50, 60, 80, 184, 90, 70, 70, 60, 84]
+#      kneel tuck  HOLD  FIRE  rock  rock2 rise
+C_GX = [6.5, 8.0, 8.5, 8.5, 5.0, 6.0, 6.5]
+C_GZ = [30.0, 31.5, 31.5, 31.5, 34.0, 32.0, 29.0]
+C_DEG = [-2.0, 0.0, 0.0, 0.0, 16.0, 6.0, 0.0]
+C_DROP = [8.0, 14.0, 14.0, 14.0, 14.0, 12.0, 6.0]
+C_TR = [-6, -9, -10, -8, 4, -2, -3]
+C_HR = [-6, -10, -12, -8, 6, 0, -2]
+C_BX = [0.0, 0.5, 0.8, 0.0, -3.0, -1.5, -0.5]
+C_LIT = [1, 3, 4, 0, 0, 0, 0]
+C_EYES = ["g_angry", "g_squint", "g_squint", "g_squint", "g_hurt", "g_angry", "eyes"]
+
+
+def _c_pose(i):
+    if i in (0, 8):
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(hold(C_GX[k], C_GZ[k], C_DEG[k]), _lit(C_LIT[k]), {
+        "torso": {"r": C_TR[k]}, "head": {"r": C_HR[k], "x": 1.0 if k in (1, 2, 3) else 0.0},
+        "charge": {"show": k in (1, 2), "s": 0.6 if k == 1 else 1.2},
+        "flash": {"show": k == 3},
+        "vent": {"show": k in (4, 5), "s": 1.0 if k == 4 else 1.2, "z": 0.0 if k == 4 else 3.0},
+    }, M.body_about((0, 0, 22), x=C_BX[k]))
+    if k == 2:
+        pose["body"]["x"] += 0.3
+    pose = merge(pose, KF.glyph(C_EYES[k]))
+    return KI.kneel(RIG, pose, LEGS, drop=C_DROP[k], front=13.0)
+
+
+def _attack_c():
+    gx, gy, gz = G0
+    ov = {
+        3: [{"kind": "rings", "joint": "gun", "point": (gx + L + 4.0, gy, gz + 3.5), "radii_lu": (6.5, 10.0),
+             "a0": -80.0, "a1": 80.0, "color": K.MINT_CORE}],
+        4: [{"kind": "burst", "joint": "gun", "point": MUZZLE, "r0_lu": 8.0, "r1_lu": 14.0, "n": 5,
+             "a0": -60.0, "arc": 120.0, "color": K.MINT_CORE},
+            {"kind": "dust", "ground": (-14.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 72, "spread": 0.9,
+             "color": "#DCD6E8"}],
+    }
+    reuse = {0: ("attack", 0), 8: ("attack", 8)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(9)], C_MS, impact=4, overlays=ov, reuse=reuse,
+                  extra={"holdStep": 3})
 
 
 def _hit(k):
@@ -282,10 +408,12 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl, attack_ms=748, attack_impact_at=0.5)
+    return M.check_variants(M.check_contract(cl, attack_ms=748, attack_impact_at=0.5))

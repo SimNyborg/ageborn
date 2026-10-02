@@ -278,18 +278,26 @@ def pack(images):
 
 
 def build_atlas(slug, clip_frames, clip_meta, extra_meta, out_dir, scale, file_slug=None,
-                variants=True):
+                variants=True, reuse=None):
     """clip_frames: {clip: [(base_path, team_path|None)] per unique frame}.
-    Writes <file_slug>.png/.json (+ .rgba.png and WebP variants for size comparison)."""
+    Writes <file_slug>.png/.json (+ .rgba.png and WebP variants for size comparison).
+    reuse: {clip: {unique frame: frame name in another sheet}}: the animation lists name that
+    frame (e.g. an A frame of the core sheet) and this sheet stores no pixels for it."""
     file_slug = file_slug or slug
+    reuse = reuse or {}
     names, images, trims, source = [], [], [], None
     animations = {}
-    has_team = any(tp for frames in clip_frames.values() for _, tp in frames)
+    has_team = any(tp for frames in clip_frames.values() for _, tp in frames) or bool(reuse)
     for clip, frames in clip_frames.items():
         uniq = {}
         for i, (bp, tp) in enumerate(frames):
             for path, suffix in ((bp, ""), (tp, "_team")):
                 if suffix and not has_team:
+                    continue
+                if i in reuse.get(clip, {}):
+                    uniq[(i, suffix)] = reuse[clip][i] + suffix
+                    if path is not None:
+                        source = Image.open(path).size
                     continue
                 name = f"{slug}_{clip}_{i:02d}{suffix}"
                 if path is None:  # no team surface visible: an empty 1x1 frame keeps indices aligned
@@ -308,6 +316,10 @@ def build_atlas(slug, clip_frames, clip_meta, extra_meta, out_dir, scale, file_s
         animations[clip] = [uniq[(i, "")] for i in seq]
         if has_team:
             animations[f"{clip}_team"] = [uniq[(i, "_team")] for i in seq]
+    if not images:   # every frame reused: a 1x1 placeholder keeps the PNG valid
+        names.append(f"{slug}_{file_slug}_empty")
+        images.append(Image.new("RGBA", (1, 1), (0, 0, 0, 0)))
+        trims.append((0, 0, 1, 1))
     sheet, pos = pack(images)
     feet = extra_meta["feetPx"]
     frames = {}

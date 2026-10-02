@@ -2,18 +2,18 @@
  "frames": {
   "hoplite_idle_00": {
    "frame": {
-    "x": 792,
-    "y": 709,
+    "x": 2,
+    "y": 711,
     "w": 140,
-    "h": 203
+    "h": 207
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 217,
-    "y": 169,
+    "y": 164,
     "w": 140,
-    "h": 203
+    "h": 207
    },
    "sourceSize": {
     "w": 514,
@@ -26,18 +26,18 @@
   },
   "hoplite_idle_00_team": {
    "frame": {
-    "x": 1055,
-    "y": 1127,
+    "x": 2,
+    "y": 1323,
     "w": 110,
-    "h": 192
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 207,
-    "y": 159,
+    "y": 155,
     "w": 110,
-    "h": 192
+    "h": 189
    },
    "sourceSize": {
     "w": 514,
@@ -50,18 +50,18 @@
   },
   "hoplite_idle_01": {
    "frame": {
-    "x": 654,
-    "y": 709,
+    "x": 1257,
+    "y": 493,
     "w": 134,
-    "h": 204
+    "h": 209
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 167,
+    "y": 162,
     "w": 134,
-    "h": 204
+    "h": 209
    },
    "sourceSize": {
     "w": 514,
@@ -74,18 +74,18 @@
   },
   "hoplite_idle_01_team": {
    "frame": {
-    "x": 833,
-    "y": 1127,
+    "x": 1082,
+    "y": 1125,
     "w": 109,
-    "h": 193
+    "h": 190
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 211,
-    "y": 157,
+    "y": 152,
     "w": 109,
-    "h": 193
+    "h": 190
    },
    "sourceSize": {
     "w": 514,
@@ -98,18 +98,18 @@
   },
   "hoplite_idle_02": {
    "frame": {
-    "x": 2,
-    "y": 493,
+    "x": 960,
+    "y": 269,
     "w": 131,
-    "h": 212
+    "h": 216
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 223,
-    "y": 158,
+    "y": 153,
     "w": 131,
-    "h": 212
+    "h": 216
    },
    "sourceSize": {
     "w": 514,
@@ -122,18 +122,18 @@
   },
   "hoplite_idle_02_team": {
    "frame": {
-    "x": 369,
-    "y": 921,
+    "x": 952,
+    "y": 922,
     "w": 107,
-    "h": 201
+    "h": 197
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 214,
-    "y": 148,
+    "y": 143,
     "w": 107,
-    "h": 201
+    "h": 197
    },
    "sourceSize": {
     "w": 514,
@@ -146,18 +146,18 @@
   },
   "hoplite_idle_03": {
    "frame": {
-    "x": 1105,
+    "x": 461,
     "y": 269,
     "w": 139,
-    "h": 213
+    "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 222,
-    "y": 156,
+    "y": 151,
     "w": 139,
-    "h": 213
+    "h": 217
    },
    "sourceSize": {
     "w": 514,
@@ -170,18 +170,18 @@
   },
   "hoplite_idle_03_team": {
    "frame": {
-    "x": 936,
-    "y": 709,
-    "w": 107,
-    "h": 203
+    "x": 565,
+    "y": 922,
+    "w": 105,
+    "h": 198
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 212,
-    "y": 145,
-    "w": 107,
-    "h": 203
+    "x": 213,
+    "y": 141,
+    "w": 105,
+    "h": 198
    },
    "sourceSize": {
     "w": 514,
@@ -194,18 +194,18 @@
   },
   "hoplite_idle_04": {
    "frame": {
-    "x": 441,
+    "x": 318,
     "y": 269,
     "w": 139,
-    "h": 215
+    "h": 219
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 219,
-    "y": 155,
+    "y": 150,
     "w": 139,
-    "h": 215
+    "h": 219
    },
    "sourceSize": {
     "w": 514,
@@ -218,18 +218,18 @@
   },
   "hoplite_idle_04_team": {
    "frame": {
-    "x": 115,
-    "y": 921,
+    "x": 454,
+    "y": 922,
     "w": 107,
-    "h": 202
+    "h": 198
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 209,
-    "y": 145,
+    "y": 141,
     "w": 107,
-    "h": 202
+    "h": 198
    },
    "sourceSize": {
     "w": 514,
@@ -242,18 +242,18 @@
   },
   "hoplite_idle_05": {
    "frame": {
-    "x": 2,
-    "y": 709,
+    "x": 464,
+    "y": 493,
     "w": 141,
-    "h": 208
+    "h": 212
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 216,
-    "y": 163,
+    "y": 159,
     "w": 141,
-    "h": 208
+    "h": 212
    },
    "sourceSize": {
     "w": 514,
@@ -266,18 +266,18 @@
   },
   "hoplite_idle_05_team": {
    "frame": {
-    "x": 967,
-    "y": 921,
+    "x": 304,
+    "y": 1125,
     "w": 110,
-    "h": 199
+    "h": 193
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 206,
-    "y": 153,
+    "y": 149,
     "w": 110,
-    "h": 199
+    "h": 193
    },
    "sourceSize": {
     "w": 514,
@@ -290,17 +290,17 @@
   },
   "hoplite_walk_00": {
    "frame": {
-    "x": 280,
-    "y": 709,
-    "w": 128,
+    "x": 259,
+    "y": 711,
+    "w": 189,
     "h": 206
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 226,
-    "y": 161,
-    "w": 128,
+    "x": 215,
+    "y": 164,
+    "w": 189,
     "h": 206
    },
    "sourceSize": {
@@ -314,18 +314,18 @@
   },
   "hoplite_walk_00_team": {
    "frame": {
-    "x": 701,
-    "y": 921,
-    "w": 106,
-    "h": 200
+    "x": 833,
+    "y": 922,
+    "w": 115,
+    "h": 197
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 218,
-    "y": 151,
-    "w": 106,
-    "h": 200
+    "x": 219,
+    "y": 154,
+    "w": 115,
+    "h": 197
    },
    "sourceSize": {
     "w": 514,
@@ -338,18 +338,18 @@
   },
   "hoplite_walk_01": {
    "frame": {
-    "x": 1268,
-    "y": 709,
-    "w": 121,
-    "h": 202
+    "x": 1182,
+    "y": 922,
+    "w": 177,
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 225,
-    "y": 171,
-    "w": 121,
-    "h": 202
+    "x": 227,
+    "y": 175,
+    "w": 177,
+    "h": 195
    },
    "sourceSize": {
     "w": 514,
@@ -362,18 +362,18 @@
   },
   "hoplite_walk_01_team": {
    "frame": {
-    "x": 2,
-    "y": 1328,
+    "x": 285,
+    "y": 1323,
     "w": 112,
-    "h": 188
+    "h": 185
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 214,
-    "y": 168,
+    "x": 218,
+    "y": 165,
     "w": 112,
-    "h": 188
+    "h": 185
    },
    "sourceSize": {
     "w": 514,
@@ -386,18 +386,18 @@
   },
   "hoplite_walk_02": {
    "frame": {
-    "x": 1006,
-    "y": 493,
-    "w": 122,
-    "h": 210
+    "x": 452,
+    "y": 711,
+    "w": 174,
+    "h": 206
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 227,
-    "y": 159,
-    "w": 122,
-    "h": 210
+    "x": 228,
+    "y": 163,
+    "w": 174,
+    "h": 206
    },
    "sourceSize": {
     "w": 514,
@@ -410,18 +410,18 @@
   },
   "hoplite_walk_02_team": {
    "frame": {
-    "x": 115,
-    "y": 1127,
-    "w": 107,
-    "h": 196
+    "x": 760,
+    "y": 1125,
+    "w": 113,
+    "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 217,
+    "x": 219,
     "y": 153,
-    "w": 107,
-    "h": 196
+    "w": 113,
+    "h": 192
    },
    "sourceSize": {
     "w": 514,
@@ -435,17 +435,17 @@
   "hoplite_walk_03": {
    "frame": {
     "x": 2,
-    "y": 269,
-    "w": 139,
-    "h": 220
+    "y": 493,
+    "w": 171,
+    "h": 214
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 227,
+    "x": 223,
     "y": 149,
-    "w": 139,
-    "h": 220
+    "w": 171,
+    "h": 214
    },
    "sourceSize": {
     "w": 514,
@@ -458,18 +458,18 @@
   },
   "hoplite_walk_03_team": {
    "frame": {
-    "x": 544,
-    "y": 709,
-    "w": 106,
-    "h": 206
+    "x": 1063,
+    "y": 922,
+    "w": 115,
+    "h": 196
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 219,
     "y": 139,
-    "w": 106,
-    "h": 206
+    "w": 115,
+    "h": 196
    },
    "sourceSize": {
     "w": 514,
@@ -482,18 +482,18 @@
   },
   "hoplite_walk_04": {
    "frame": {
-    "x": 941,
-    "y": 269,
-    "w": 160,
-    "h": 214
+    "x": 894,
+    "y": 711,
+    "w": 174,
+    "h": 202
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 221,
-    "y": 161,
-    "w": 160,
-    "h": 214
+    "x": 210,
+    "y": 164,
+    "w": 174,
+    "h": 202
    },
    "sourceSize": {
     "w": 514,
@@ -506,18 +506,18 @@
   },
   "hoplite_walk_04_team": {
    "frame": {
-    "x": 2,
-    "y": 1127,
-    "w": 109,
-    "h": 197
+    "x": 1363,
+    "y": 922,
+    "w": 115,
+    "h": 195
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 218,
-    "y": 151,
-    "w": 109,
-    "h": 197
+    "x": 219,
+    "y": 154,
+    "w": 115,
+    "h": 195
    },
    "sourceSize": {
     "w": 514,
@@ -530,18 +530,18 @@
   },
   "hoplite_walk_05": {
    "frame": {
-    "x": 1316,
-    "y": 921,
-    "w": 163,
-    "h": 197
+    "x": 116,
+    "y": 1323,
+    "w": 165,
+    "h": 186
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 225,
-    "y": 178,
-    "w": 163,
-    "h": 197
+    "x": 212,
+    "y": 176,
+    "w": 165,
+    "h": 186
    },
    "sourceSize": {
     "w": 514,
@@ -554,18 +554,18 @@
   },
   "hoplite_walk_05_team": {
    "frame": {
-    "x": 245,
-    "y": 1328,
-    "w": 112,
-    "h": 184
+    "x": 520,
+    "y": 1323,
+    "w": 109,
+    "h": 182
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 215,
-    "y": 168,
-    "w": 112,
-    "h": 184
+    "x": 220,
+    "y": 166,
+    "w": 109,
+    "h": 182
    },
    "sourceSize": {
     "w": 514,
@@ -578,18 +578,18 @@
   },
   "hoplite_walk_06": {
    "frame": {
-    "x": 811,
-    "y": 921,
-    "w": 152,
-    "h": 199
+    "x": 674,
+    "y": 922,
+    "w": 155,
+    "h": 197
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 227,
-    "y": 165,
-    "w": 152,
-    "h": 199
+    "x": 228,
+    "y": 164,
+    "w": 155,
+    "h": 197
    },
    "sourceSize": {
     "w": 514,
@@ -602,18 +602,18 @@
   },
   "hoplite_walk_06_team": {
    "frame": {
-    "x": 946,
-    "y": 1127,
-    "w": 105,
-    "h": 193
+    "x": 1313,
+    "y": 1125,
+    "w": 111,
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 219,
     "y": 154,
-    "w": 105,
-    "h": 193
+    "w": 111,
+    "h": 189
    },
    "sourceSize": {
     "w": 514,
@@ -626,18 +626,18 @@
   },
   "hoplite_walk_07": {
    "frame": {
-    "x": 1389,
-    "y": 269,
-    "w": 141,
-    "h": 212
+    "x": 1085,
+    "y": 493,
+    "w": 168,
+    "h": 210
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 227,
     "y": 149,
-    "w": 141,
-    "h": 212
+    "w": 168,
+    "h": 210
    },
    "sourceSize": {
     "w": 514,
@@ -650,18 +650,18 @@
   },
   "hoplite_walk_07_team": {
    "frame": {
-    "x": 480,
-    "y": 921,
-    "w": 104,
-    "h": 201
+    "x": 1195,
+    "y": 1125,
+    "w": 114,
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 220,
-    "y": 139,
-    "w": 104,
-    "h": 201
+    "x": 219,
+    "y": 140,
+    "w": 114,
+    "h": 189
    },
    "sourceSize": {
     "w": 514,
@@ -674,18 +674,18 @@
   },
   "hoplite_attack_00": {
    "frame": {
-    "x": 1253,
+    "x": 927,
     "y": 493,
     "w": 154,
-    "h": 208
+    "h": 211
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 218,
-    "y": 161,
+    "y": 159,
     "w": 154,
-    "h": 208
+    "h": 211
    },
    "sourceSize": {
     "w": 514,
@@ -698,18 +698,18 @@
   },
   "hoplite_attack_00_team": {
    "frame": {
-    "x": 1202,
-    "y": 921,
+    "x": 418,
+    "y": 1125,
     "w": 110,
-    "h": 198
+    "h": 193
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 208,
-    "y": 151,
+    "y": 149,
     "w": 110,
-    "h": 198
+    "h": 193
    },
    "sourceSize": {
     "w": 514,
@@ -722,18 +722,18 @@
   },
   "hoplite_attack_01": {
    "frame": {
-    "x": 1288,
-    "y": 1127,
+    "x": 877,
+    "y": 1125,
     "w": 201,
-    "h": 188
+    "h": 191
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 218,
-    "y": 183,
+    "y": 179,
     "w": 201,
-    "h": 188
+    "h": 191
    },
    "sourceSize": {
     "w": 514,
@@ -746,18 +746,18 @@
   },
   "hoplite_attack_01_team": {
    "frame": {
-    "x": 772,
-    "y": 1328,
-    "w": 120,
-    "h": 177
+    "x": 145,
+    "y": 1516,
+    "w": 121,
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 208,
-    "y": 174,
-    "w": 120,
-    "h": 177
+    "y": 169,
+    "w": 121,
+    "h": 175
    },
    "sourceSize": {
     "w": 514,
@@ -770,17 +770,17 @@
   },
   "hoplite_attack_02": {
    "frame": {
-    "x": 653,
-    "y": 1127,
-    "w": 176,
+    "x": 123,
+    "y": 1125,
+    "w": 177,
     "h": 193
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 235,
-    "y": 176,
-    "w": 176,
+    "x": 234,
+    "y": 175,
+    "w": 177,
     "h": 193
    },
    "sourceSize": {
@@ -794,18 +794,18 @@
   },
   "hoplite_attack_02_team": {
    "frame": {
-    "x": 118,
-    "y": 1328,
+    "x": 633,
+    "y": 1323,
     "w": 123,
-    "h": 187
+    "h": 179
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 227,
-    "y": 166,
+    "y": 165,
     "w": 123,
-    "h": 187
+    "h": 179
    },
    "sourceSize": {
     "w": 514,
@@ -818,18 +818,18 @@
   },
   "hoplite_attack_03": {
    "frame": {
-    "x": 770,
+    "x": 1014,
     "y": 2,
     "w": 138,
-    "h": 231
+    "h": 228
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 172,
-    "y": 141,
+    "y": 136,
     "w": 138,
-    "h": 231
+    "h": 228
    },
    "sourceSize": {
     "w": 514,
@@ -842,18 +842,18 @@
   },
   "hoplite_attack_03_team": {
    "frame": {
-    "x": 145,
-    "y": 269,
+    "x": 341,
+    "y": 493,
     "w": 119,
-    "h": 218
+    "h": 214
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 181,
-    "y": 131,
+    "y": 125,
     "w": 119,
-    "h": 218
+    "h": 214
    },
    "sourceSize": {
     "w": 514,
@@ -866,18 +866,18 @@
   },
   "hoplite_attack_04": {
    "frame": {
-    "x": 1150,
+    "x": 1281,
     "y": 2,
     "w": 189,
-    "h": 224
+    "h": 222
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 214,
-    "y": 147,
+    "y": 142,
     "w": 189,
-    "h": 224
+    "h": 222
    },
    "sourceSize": {
     "w": 514,
@@ -890,18 +890,18 @@
   },
   "hoplite_attack_04_team": {
    "frame": {
-    "x": 559,
-    "y": 493,
+    "x": 146,
+    "y": 711,
     "w": 109,
-    "h": 211
+    "h": 207
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 216,
-    "y": 137,
+    "y": 132,
     "w": 109,
-    "h": 211
+    "h": 207
    },
    "sourceSize": {
     "w": 514,
@@ -914,18 +914,18 @@
   },
   "hoplite_attack_05": {
    "frame": {
-    "x": 727,
+    "x": 745,
     "y": 269,
-    "w": 210,
-    "h": 214
+    "w": 211,
+    "h": 216
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 242,
-    "y": 158,
-    "w": 210,
-    "h": 214
+    "y": 153,
+    "w": 211,
+    "h": 216
    },
    "sourceSize": {
     "w": 514,
@@ -938,18 +938,18 @@
   },
   "hoplite_attack_05_team": {
    "frame": {
-    "x": 1393,
-    "y": 709,
-    "w": 111,
-    "h": 202
+    "x": 2,
+    "y": 922,
+    "w": 112,
+    "h": 199
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 233,
-    "y": 148,
-    "w": 111,
-    "h": 202
+    "y": 143,
+    "w": 112,
+    "h": 199
    },
    "sourceSize": {
     "w": 514,
@@ -962,18 +962,18 @@
   },
   "hoplite_attack_06": {
    "frame": {
-    "x": 1118,
-    "y": 1328,
+    "x": 760,
+    "y": 1323,
     "w": 286,
-    "h": 175
+    "h": 178
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 192,
+    "y": 193,
     "w": 286,
-    "h": 175
+    "h": 178
    },
    "sourceSize": {
     "w": 514,
@@ -986,10 +986,10 @@
   },
   "hoplite_attack_06_team": {
    "frame": {
-    "x": 149,
-    "y": 1520,
+    "x": 407,
+    "y": 1516,
     "w": 142,
-    "h": 172
+    "h": 168
    },
    "rotated": false,
    "trimmed": true,
@@ -997,7 +997,7 @@
     "x": 238,
     "y": 183,
     "w": 142,
-    "h": 172
+    "h": 168
    },
    "sourceSize": {
     "w": 514,
@@ -1010,18 +1010,18 @@
   },
   "hoplite_attack_07": {
    "frame": {
-    "x": 896,
-    "y": 1328,
-    "w": 218,
-    "h": 176
+    "x": 1050,
+    "y": 1323,
+    "w": 217,
+    "h": 178
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 250,
-    "y": 192,
-    "w": 218,
-    "h": 176
+    "y": 193,
+    "w": 217,
+    "h": 178
    },
    "sourceSize": {
     "w": 514,
@@ -1034,10 +1034,10 @@
   },
   "hoplite_attack_07_team": {
    "frame": {
-    "x": 2,
-    "y": 1520,
+    "x": 553,
+    "y": 1516,
     "w": 143,
-    "h": 173
+    "h": 164
    },
    "rotated": false,
    "trimmed": true,
@@ -1045,7 +1045,7 @@
     "x": 240,
     "y": 183,
     "w": 143,
-    "h": 173
+    "h": 164
    },
    "sourceSize": {
     "w": 514,
@@ -1058,18 +1058,18 @@
   },
   "hoplite_attack_08": {
    "frame": {
-    "x": 226,
-    "y": 1127,
+    "x": 1315,
+    "y": 711,
     "w": 200,
-    "h": 195
+    "h": 199
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 241,
-    "y": 175,
+    "y": 172,
     "w": 200,
-    "h": 195
+    "h": 199
    },
    "sourceSize": {
     "w": 514,
@@ -1082,18 +1082,18 @@
   },
   "hoplite_attack_08_team": {
    "frame": {
-    "x": 1169,
-    "y": 1127,
+    "x": 401,
+    "y": 1323,
     "w": 115,
-    "h": 190
+    "h": 183
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 234,
-    "y": 165,
+    "y": 162,
     "w": 115,
-    "h": 190
+    "h": 183
    },
    "sourceSize": {
     "w": 514,
@@ -1106,18 +1106,18 @@
   },
   "hoplite_attack_09": {
    "frame": {
-    "x": 842,
+    "x": 177,
     "y": 493,
     "w": 160,
-    "h": 210
+    "h": 214
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 231,
-    "y": 161,
+    "y": 156,
     "w": 160,
-    "h": 210
+    "h": 214
    },
    "sourceSize": {
     "w": 514,
@@ -1130,18 +1130,18 @@
   },
   "hoplite_attack_09_team": {
    "frame": {
-    "x": 1158,
-    "y": 709,
+    "x": 231,
+    "y": 922,
     "w": 106,
-    "h": 203
+    "h": 199
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 151,
+    "y": 146,
     "w": 106,
-    "h": 203
+    "h": 199
    },
    "sourceSize": {
     "w": 514,
@@ -1154,18 +1154,18 @@
   },
   "hoplite_attack_10": {
    "frame": {
-    "x": 137,
-    "y": 493,
+    "x": 1095,
+    "y": 269,
     "w": 140,
-    "h": 211
+    "h": 215
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 221,
-    "y": 159,
+    "y": 155,
     "w": 140,
-    "h": 211
+    "h": 215
    },
    "sourceSize": {
     "w": 514,
@@ -1178,18 +1178,18 @@
   },
   "hoplite_attack_10_team": {
    "frame": {
-    "x": 588,
-    "y": 921,
+    "x": 341,
+    "y": 922,
     "w": 109,
-    "h": 200
+    "h": 198
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 211,
-    "y": 149,
+    "y": 145,
     "w": 109,
-    "h": 200
+    "h": 198
    },
    "sourceSize": {
     "w": 514,
@@ -1202,18 +1202,18 @@
   },
   "hoplite_hit_00": {
    "frame": {
-    "x": 226,
-    "y": 921,
-    "w": 139,
-    "h": 201
+    "x": 750,
+    "y": 711,
+    "w": 140,
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 191,
-    "y": 174,
-    "w": 139,
-    "h": 201
+    "y": 170,
+    "w": 140,
+    "h": 204
    },
    "sourceSize": {
     "w": 514,
@@ -1226,18 +1226,18 @@
   },
   "hoplite_hit_00_team": {
    "frame": {
-    "x": 492,
-    "y": 1328,
+    "x": 2,
+    "y": 1516,
     "w": 139,
-    "h": 179
+    "h": 175
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 180,
-    "y": 177,
+    "y": 173,
     "w": 139,
-    "h": 179
+    "h": 175
    },
    "sourceSize": {
     "w": 514,
@@ -1250,18 +1250,18 @@
   },
   "hoplite_hit_01": {
    "frame": {
-    "x": 281,
-    "y": 493,
+    "x": 1239,
+    "y": 269,
     "w": 135,
-    "h": 211
+    "h": 215
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 192,
-    "y": 165,
+    "y": 160,
     "w": 135,
-    "h": 211
+    "h": 215
    },
    "sourceSize": {
     "w": 514,
@@ -1274,18 +1274,18 @@
   },
   "hoplite_hit_01_team": {
    "frame": {
-    "x": 635,
-    "y": 1328,
+    "x": 270,
+    "y": 1516,
     "w": 133,
-    "h": 177
+    "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 182,
-    "y": 179,
+    "y": 175,
     "w": 133,
-    "h": 177
+    "h": 172
    },
    "sourceSize": {
     "w": 514,
@@ -1298,18 +1298,18 @@
   },
   "hoplite_hit_02": {
    "frame": {
-    "x": 1343,
+    "x": 1156,
     "y": 2,
     "w": 121,
-    "h": 223
+    "h": 227
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 206,
-    "y": 150,
+    "y": 145,
     "w": 121,
-    "h": 223
+    "h": 227
    },
    "sourceSize": {
     "w": 514,
@@ -1322,18 +1322,18 @@
   },
   "hoplite_hit_02_team": {
    "frame": {
-    "x": 1081,
-    "y": 921,
+    "x": 2,
+    "y": 1125,
     "w": 117,
-    "h": 198
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 196,
-    "y": 152,
+    "y": 148,
     "w": 117,
-    "h": 198
+    "h": 194
    },
    "sourceSize": {
     "w": 514,
@@ -1346,18 +1346,18 @@
   },
   "hoplite_hit_03": {
    "frame": {
-    "x": 584,
+    "x": 2,
     "y": 269,
     "w": 139,
-    "h": 215
+    "h": 220
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 224,
-    "y": 155,
+    "y": 150,
     "w": 139,
-    "h": 215
+    "h": 220
    },
    "sourceSize": {
     "w": 514,
@@ -1370,18 +1370,18 @@
   },
   "hoplite_hit_03_team": {
    "frame": {
-    "x": 1047,
-    "y": 709,
+    "x": 1204,
+    "y": 711,
     "w": 107,
-    "h": 203
+    "h": 200
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 214,
-    "y": 145,
+    "y": 140,
     "w": 107,
-    "h": 203
+    "h": 200
    },
    "sourceSize": {
     "w": 514,
@@ -1394,18 +1394,18 @@
   },
   "hoplite_hit_04": {
    "frame": {
-    "x": 1248,
+    "x": 604,
     "y": 269,
     "w": 137,
-    "h": 213
+    "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 218,
-    "y": 158,
+    "y": 153,
     "w": 137,
-    "h": 213
+    "h": 217
    },
    "sourceSize": {
     "w": 514,
@@ -1418,18 +1418,18 @@
   },
   "hoplite_hit_04_team": {
    "frame": {
-    "x": 2,
-    "y": 921,
+    "x": 118,
+    "y": 922,
     "w": 109,
-    "h": 202
+    "h": 199
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 208,
-    "y": 148,
+    "y": 143,
     "w": 109,
-    "h": 202
+    "h": 199
    },
    "sourceSize": {
     "w": 514,
@@ -1442,18 +1442,18 @@
   },
   "hoplite_die_00": {
    "frame": {
-    "x": 412,
-    "y": 709,
-    "w": 128,
-    "h": 206
+    "x": 1395,
+    "y": 493,
+    "w": 127,
+    "h": 209
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 202,
-    "y": 156,
-    "w": 128,
-    "h": 206
+    "y": 152,
+    "w": 127,
+    "h": 209
    },
    "sourceSize": {
     "w": 514,
@@ -1466,18 +1466,18 @@
   },
   "hoplite_die_00_team": {
    "frame": {
-    "x": 361,
-    "y": 1328,
+    "x": 1271,
+    "y": 1323,
     "w": 127,
-    "h": 180
+    "h": 176
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 191,
-    "y": 167,
+    "y": 163,
     "w": 127,
-    "h": 180
+    "h": 176
    },
    "sourceSize": {
     "w": 514,
@@ -1490,18 +1490,18 @@
   },
   "hoplite_die_01": {
    "frame": {
-    "x": 476,
+    "x": 340,
     "y": 2,
     "w": 107,
-    "h": 242
+    "h": 246
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 222,
-    "y": 132,
+    "y": 127,
     "w": 107,
-    "h": 242
+    "h": 246
    },
    "sourceSize": {
     "w": 514,
@@ -1514,18 +1514,18 @@
   },
   "hoplite_die_01_team": {
    "frame": {
-    "x": 1132,
-    "y": 493,
-    "w": 117,
-    "h": 209
+    "x": 630,
+    "y": 711,
+    "w": 116,
+    "h": 205
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 214,
-    "y": 144,
-    "w": 117,
-    "h": 209
+    "x": 215,
+    "y": 140,
+    "w": 116,
+    "h": 205
    },
    "sourceSize": {
     "w": 514,
@@ -1538,18 +1538,18 @@
   },
   "hoplite_die_02": {
    "frame": {
-    "x": 268,
+    "x": 145,
     "y": 269,
     "w": 169,
-    "h": 215
+    "h": 219
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 136,
-    "y": 152,
+    "x": 134,
+    "y": 147,
     "w": 169,
-    "h": 215
+    "h": 219
    },
    "sourceSize": {
     "w": 514,
@@ -1562,18 +1562,18 @@
   },
   "hoplite_die_02_team": {
    "frame": {
-    "x": 147,
-    "y": 709,
-    "w": 129,
-    "h": 206
+    "x": 1072,
+    "y": 711,
+    "w": 128,
+    "h": 201
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 175,
-    "y": 142,
-    "w": 129,
-    "h": 206
+    "x": 174,
+    "y": 138,
+    "w": 128,
+    "h": 201
    },
    "sourceSize": {
     "w": 514,
@@ -1586,18 +1586,18 @@
   },
   "hoplite_die_03": {
    "frame": {
-    "x": 587,
+    "x": 592,
     "y": 2,
-    "w": 179,
-    "h": 236
+    "w": 176,
+    "h": 232
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 144,
+    "x": 140,
     "y": 125,
-    "w": 179,
-    "h": 236
+    "w": 176,
+    "h": 232
    },
    "sourceSize": {
     "w": 514,
@@ -1610,18 +1610,18 @@
   },
   "hoplite_die_03_team": {
    "frame": {
-    "x": 338,
+    "x": 451,
     "y": 2,
-    "w": 134,
-    "h": 243
+    "w": 137,
+    "h": 238
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 182,
+    "x": 179,
     "y": 116,
-    "w": 134,
-    "h": 243
+    "w": 137,
+    "h": 238
    },
    "sourceSize": {
     "w": 514,
@@ -1636,15 +1636,15 @@
    "frame": {
     "x": 2,
     "y": 2,
-    "w": 187,
+    "w": 190,
     "h": 263
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 117,
+    "x": 113,
     "y": 108,
-    "w": 187,
+    "w": 190,
     "h": 263
    },
    "sourceSize": {
@@ -1658,18 +1658,18 @@
   },
   "hoplite_die_04_team": {
    "frame": {
-    "x": 420,
+    "x": 609,
     "y": 493,
-    "w": 135,
-    "h": 211
+    "w": 139,
+    "h": 212
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 178,
+    "x": 174,
     "y": 167,
-    "w": 135,
-    "h": 211
+    "w": 139,
+    "h": 212
    },
    "sourceSize": {
     "w": 514,
@@ -1682,18 +1682,18 @@
   },
   "hoplite_die_05": {
    "frame": {
-    "x": 912,
+    "x": 772,
     "y": 2,
-    "w": 234,
-    "h": 229
+    "w": 238,
+    "h": 228
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 88,
+    "x": 83,
     "y": 126,
-    "w": 234,
-    "h": 229
+    "w": 238,
+    "h": 228
    },
    "sourceSize": {
     "w": 514,
@@ -1706,17 +1706,17 @@
   },
   "hoplite_die_05_team": {
    "frame": {
-    "x": 193,
+    "x": 196,
     "y": 2,
-    "w": 141,
+    "w": 140,
     "h": 248
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 156,
+    "x": 150,
     "y": 116,
-    "w": 141,
+    "w": 140,
     "h": 248
    },
    "sourceSize": {
@@ -1730,18 +1730,18 @@
   },
   "hoplite_die_06": {
    "frame": {
-    "x": 430,
-    "y": 1127,
-    "w": 219,
-    "h": 193
+    "x": 532,
+    "y": 1125,
+    "w": 224,
+    "h": 192
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 113,
+    "x": 108,
     "y": 175,
-    "w": 219,
-    "h": 193
+    "w": 224,
+    "h": 192
    },
    "sourceSize": {
     "w": 514,
@@ -1754,18 +1754,18 @@
   },
   "hoplite_die_06_team": {
    "frame": {
-    "x": 672,
+    "x": 752,
     "y": 493,
-    "w": 166,
-    "h": 210
+    "w": 171,
+    "h": 211
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 176,
+    "x": 171,
     "y": 165,
-    "w": 166,
-    "h": 210
+    "w": 171,
+    "h": 211
    },
    "sourceSize": {
     "w": 514,
@@ -1778,17 +1778,17 @@
   },
   "hoplite_die_07": {
    "frame": {
-    "x": 295,
-    "y": 1520,
-    "w": 242,
+    "x": 700,
+    "y": 1516,
+    "w": 246,
     "h": 153
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 128,
+    "x": 124,
     "y": 213,
-    "w": 242,
+    "w": 246,
     "h": 153
    },
    "sourceSize": {
@@ -1802,17 +1802,17 @@
   },
   "hoplite_die_07_team": {
    "frame": {
-    "x": 541,
-    "y": 1520,
-    "w": 199,
+    "x": 950,
+    "y": 1516,
+    "w": 204,
     "h": 110
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 181,
+    "x": 176,
     "y": 271,
-    "w": 199,
+    "w": 204,
     "h": 110
    },
    "sourceSize": {
@@ -1959,6 +1959,7 @@
    },
    "facing": "right",
    "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
    "clips": {
     "idle": {
      "frames": 6,
@@ -1984,27 +1985,27 @@
       "spearTip": [
        [
         35.2,
-        69.6
+        71.4
        ],
        [
         34.3,
-        71.9
+        73.8
        ],
        [
         33.9,
-        74.9
+        76.9
        ],
        [
         36.9,
-        71.1
+        73.1
        ],
        [
         35.6,
-        72.7
+        74.7
        ],
        [
         35.4,
-        70.6
+        72.5
        ]
       ]
      }
@@ -2023,54 +2024,76 @@
       7
      ],
      "durationsMs": [
-      62,
-      63,
-      62,
-      63,
-      62,
-      63,
-      62,
-      63
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77
      ],
-     "durationMs": 500,
+     "durationMs": 616,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 87.5,
+     "cycleMs": 616,
      "anchorsLu": {
       "spearTip": [
        [
-        33.6,
-        72.9
+        54.1,
+        35.6
        ],
        [
-        30.0,
-        70.9
+        54.4,
+        36.8
        ],
        [
-        31.7,
-        75.7
+        53.4,
+        42.0
        ],
        [
-        38.9,
-        73.3
+        50.1,
+        44.8
        ],
        [
-        44.9,
-        61.9
+        46.3,
+        37.1
        ],
        [
-        47.9,
-        55.3
+        43.4,
+        37.0
        ],
        [
-        44.1,
-        63.0
+        45.9,
+        40.8
        ],
        [
-        39.6,
-        71.6
+        50.5,
+        42.7
        ]
       ]
      },
-     "strideLu": 35.4,
-     "naturalSpeedLuPerS": 70.8
+     "naturalSpeedLuPerS": 86.7,
+     "strideLu": 53.4,
+     "plantedDriftLu": 0.12,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        10.6,
+        -1.8
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        12.7,
+        1.5
+       ]
+      }
+     ]
     },
     "attack": {
      "frames": 11,
@@ -2103,37 +2126,38 @@
      ],
      "durationMs": 680,
      "impactFrame": 6,
+     "impactStep": 6,
      "impactAt": 0.4265,
      "smearFrame": 4,
      "anchorsLu": {
       "spearTip": [
        [
         41.4,
-        69.4
+        70.4
        ],
        [
         60.2,
-        39.4
+        41.0
        ],
        [
         56.9,
-        53.4
+        53.9
        ],
        [
         14.8,
-        68.2
+        70.3
        ],
        [
         53.9,
-        59.9
+        62.0
        ],
        [
         73.9,
-        36.4
+        38.4
        ],
        [
         85.2,
-        19.2
+        18.9
        ],
        [
         79.9,
@@ -2141,18 +2165,19 @@
        ],
        [
         69.3,
-        40.2
+        41.4
        ],
        [
         48.9,
-        64.9
+        66.8
        ],
        [
         36.9,
-        71.6
+        73.1
        ]
       ]
-     }
+     },
+     "holdStep": 3
     },
     "hit": {
      "frames": 5,
@@ -2176,23 +2201,23 @@
       "spearTip": [
        [
         18.4,
-        69.8
+        71.5
        ],
        [
         12.2,
-        73.6
+        75.4
        ],
        [
         22.0,
-        79.3
+        81.3
        ],
        [
         37.7,
-        70.5
+        72.4
        ],
        [
         34.5,
-        72.1
+        74.0
        ]
       ]
      }
@@ -2250,36 +2275,36 @@
      "anchorsLu": {
       "spearTip": [
        [
-        -9.8,
-        77.1
+        -10.0,
+        78.8
        ],
        [
-        11.7,
-        86.6
+        11.9,
+        88.6
        ],
        [
-        -47.8,
-        43.1
+        -48.3,
+        45.1
        ],
        [
-        -44.7,
-        4.8
+        -46.2,
+        6.2
        ],
        [
-        -55.5,
-        28.3
+        -57.1,
+        28.4
        ],
        [
-        -67.2,
-        6.3
+        -69.3,
+        6.6
        ],
        [
-        -57.4,
-        47.8
+        -59.2,
+        47.9
        ],
        [
-        -50.8,
-        53.9
+        -52.6,
+        54.0
        ]
       ]
      }

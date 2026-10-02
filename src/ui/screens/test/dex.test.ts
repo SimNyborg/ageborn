@@ -56,7 +56,13 @@ describe('Army per age: In battle, Available, Locked', () => {
 describe('the Card Album (a long scroll like a Pokedex)', () => {
   it('numbers every card once, in age order: troops, turrets, powers', () => {
     const order = dexOrder(content);
-    expect(order.map((x) => x.no)).toEqual(order.map((_, i) => i + 1));
+    // The original cards are 1..N in age order; a content wave's cards are appended with the next free
+    // numbers (src/content/album.ts) and shown under their own age, so numbers rise within each age.
+    const nos = order.map((x) => x.no);
+    expect(new Set(nos).size).toBe(order.length);
+    for (let i = 1; i < order.length; i++) if (order[i]!.age === order[i - 1]!.age) expect(nos[i]).toBeGreaterThan(nos[i - 1]!);
+    const firstAppended = nos.findIndex((n, i) => n !== i + 1);
+    if (firstAppended >= 0) expect(Math.min(...nos.filter((n, i) => n !== i + 1))).toBeGreaterThan(nos.filter((n, i) => n === i + 1).length);
     expect(new Set(order.map((x) => x.id)).size).toBe(order.length);
     expect(order.length).toBe(content.order.units.length + content.order.turrets.length + content.order.powers.length);
     const ageIndex = (a: string) => content.order.ages.indexOf(a as never);

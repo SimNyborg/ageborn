@@ -1,0 +1,554 @@
+{
+ "frames": {
+  "carbineer_attack_b_01": {
+   "frame": {
+    "x": 368,
+    "y": 2,
+    "w": 163,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 184,
+    "w": 163,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "carbineer_attack_b_01_team": {
+   "frame": {
+    "x": 375,
+    "y": 185,
+    "w": 104,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 192,
+    "w": 104,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "carbineer_attack_b_02": {
+   "frame": {
+    "x": 1074,
+    "y": 2,
+    "w": 170,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 205,
+    "w": 170,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "carbineer_attack_b_02_team": {
+   "frame": {
+    "x": 805,
+    "y": 185,
+    "w": 112,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 215,
+    "w": 112,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "carbineer_attack_b_03": {
+   "frame": {
+    "x": 200,
+    "y": 185,
+    "w": 171,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 205,
+    "w": 171,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "carbineer_attack_b_03_team": {
+   "frame": {
+    "x": 687,
+    "y": 185,
+    "w": 114,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 216,
+    "w": 114,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "carbineer_attack_b_04": {
+   "frame": {
+    "x": 153,
+    "y": 2,
+    "w": 211,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 194,
+    "w": 211,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "carbineer_attack_b_04_team": {
+   "frame": {
+    "x": 864,
+    "y": 2,
+    "w": 103,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 208,
+    "w": 103,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "carbineer_attack_b_05": {
+   "frame": {
+    "x": 483,
+    "y": 185,
+    "w": 200,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 144,
+    "y": 204,
+    "w": 200,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "carbineer_attack_b_05_team": {
+   "frame": {
+    "x": 921,
+    "y": 185,
+    "w": 98,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 166,
+    "y": 215,
+    "w": 98,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "carbineer_attack_b_06": {
+   "frame": {
+    "x": 535,
+    "y": 2,
+    "w": 161,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 192,
+    "w": 161,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "carbineer_attack_b_06_team": {
+   "frame": {
+    "x": 971,
+    "y": 2,
+    "w": 99,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 204,
+    "w": 99,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "carbineer_attack_b_07": {
+   "frame": {
+    "x": 700,
+    "y": 2,
+    "w": 160,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 195,
+    "w": 160,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "carbineer_attack_b_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 185,
+    "w": 99,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 205,
+    "w": 99,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "carbineer_attack_b_08": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 147,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 168,
+    "y": 178,
+    "w": 147,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "carbineer_attack_b_08_team": {
+   "frame": {
+    "x": 105,
+    "y": 185,
+    "w": 91,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 192,
+    "w": 91,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "carbineer_attack_00",
+   "carbineer_attack_b_01",
+   "carbineer_attack_b_02",
+   "carbineer_attack_b_03",
+   "carbineer_attack_b_04",
+   "carbineer_attack_b_05",
+   "carbineer_attack_b_06",
+   "carbineer_attack_b_07",
+   "carbineer_attack_b_08",
+   "carbineer_attack_09",
+   "carbineer_attack_10"
+  ],
+  "attack_b_team": [
+   "carbineer_attack_00_team",
+   "carbineer_attack_b_01_team",
+   "carbineer_attack_b_02_team",
+   "carbineer_attack_b_03_team",
+   "carbineer_attack_b_04_team",
+   "carbineer_attack_b_05_team",
+   "carbineer_attack_b_06_team",
+   "carbineer_attack_b_07_team",
+   "carbineer_attack_b_08_team",
+   "carbineer_attack_09_team",
+   "carbineer_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "carbineer.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1280,
+   "h": 348
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.carbineer",
+   "name": "Carbineer",
+   "heightLu": 68,
+   "widthLu": 46.7,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    224,
+    340
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     67
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     54,
+     36
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "carbineer",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      60,
+      130,
+      61,
+      60,
+      70,
+      60,
+      50,
+      70,
+      80,
+      84
+     ],
+     "durationMs": 765,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3804,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        39.0,
+        36.9
+       ],
+       [
+        44.0,
+        22.5
+       ],
+       [
+        47.6,
+        11.4
+       ],
+       [
+        47.7,
+        12.9
+       ],
+       [
+        42.6,
+        13.1
+       ],
+       [
+        33.6,
+        31.4
+       ],
+       [
+        40.1,
+        18.4
+       ],
+       [
+        42.1,
+        15.1
+       ],
+       [
+        32.7,
+        41.2
+       ],
+       [
+        25.3,
+        52.9
+       ],
+       [
+        24.4,
+        52.7
+       ]
+      ]
+     },
+     "muzzle": [
+      42.6,
+      13.1
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

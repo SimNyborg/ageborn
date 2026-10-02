@@ -51,6 +51,33 @@ Units opt in with `NO_RETIME = True` and author their final clips with `ageborn_
 | `kit_modern.py` | Modern helpers (its own module; `rigs_modern.py` is re-exported by the Industrial rigs, so its API stays unchanged): `chevron` (the cream rank-chevron emblem decal), `brodie` and `round_helmet` (netting, rivets, an optional team helmet cover), `grenade`, `canteen`, `pouches`, `mud` (flat weathering patches), `two_hand` (a two-handed prop from world angles with the far hand by IK), `crew_head` (a small crew head with the face kit), `crew_runner` and `run_pose` (a standalone crewman with legs for vehicle bail-outs) |
 | `kit_cosmic.py` | Cosmic helpers (its own module; `rigs_cosmic.py` keeps its API): `visor` (a dark visor cut from a shell over a helmet or hood, carrying the `kit_future.visor_face` glyph eyes in light violet or mint), `starmark` (the pale Cosmic star emblem decal), `specks` (four-point star specks for starry linings), `seam` (emissive panel seams), `hit_flyer` (a tilt and a 4 lu drop, a wobble back up) |
 
+## Animation standard (ANIM_SPEC 2026-10-02; Stone pilot done)
+
+Units re-rendered to the standard walk at the sim's ground speed (card speed x 1.25) with planted
+feet, and get 2-3 attack variants. Tools:
+
+| Module / file | What |
+|---|---|
+| `gait.py` | `Leg` (two-bone IK chain, optional `foot` joint and toe/heel roll pivots), `solve()` (IK from the posed rig, so trunk pitch, hip bob and body rest scale are included), `Gait` (per-foot stance/swing trajectories: a planted foot moves back at exactly the speed; toe-off roll, `drag` toe trail, heel kick, lift), `biped_feet`, `quad_feet`, `TROT`, `WALK4`, `quad_walk()` |
+| `moves.walk_v3` / `walk_clip` | G1 bounce jog (8 frames, flight on UP) and G2 brisk walk: hip bob and torso squash by key pose (`JOG_BOB`, `BRISK_BOB`), lean, twist, head counter-nod, arm pump with bent elbows, a carry pose hook (`extra`), legs by IK; `walk_clip` writes the cycle and `gait` meta |
+| `rig.rest_offset` | a constant offset on a joint (the upper body sits higher so longer legs show without moving every part) |
+| `rigs_stone.CaveBody(thigh_z=, foot_joint=, far_shade=)` | longer legs, `foot_r/l` joints for planted feet, the far leg 20% darker |
+| `rigs_bronze.skeleton_v3`, `sandal_legs_v3`, `walk_legs_v3`, `jog_gait`, `plant` | the Bronze biped with walk-v3 legs (foot joints, sole trackers, darker far leg, lifted upper body), its G1 jog, and IK-planted feet for attack poses (`plant(rig, pose, legs, r=(x, lift, angle), l=...)`: a wide stance lowers the body by at most 4 lu, then the back foot drags) |
+| `moves.clip(..., reuse={frame: (clip, frame)})` | a variant frame that is an A frame: not rendered again, the atlas names the core frame (no pixels) |
+| `moves.check_variants` | B and C have A's `durationMs`, `impactAt` and pre-impact sum |
+| pipeline | `naturalSpeedLuPerS` from the planted frames of every `_foot*` tracker (`walk_metrics`), `plantedDriftLu`, `contacts`, `gait`; `holdStep` (longest pre-impact step unless given), `holdLoop`, the impact-frame `muzzle` per attack clip (`noMuzzle` for melee units with a rider tracker); `attack_b`, `attack_c`, `attack_alt` go to the extras sheet `<slug>.x.json` / `.x.hd.json` |
+| `check_walk.py` | phone-scale walk gate per gait (step, natural speed vs ground speed, drift, bob, feet apart and contact gap, vehicle motion energy) |
+| `lane_gif.py` | phone-scale lane GIF and time-lapse strip at ground speed with the R2 frame lock (and `--before` an old sheet played the old way) |
+| `check_timing.mjs` | the walk is exempt (its length follows from the gait); variants must match A; every sheet's impact step (`impactStep`, else `impactFrame` through `sequence`) must start at `impactAt`, and `holdStep` / `holdLoop` must be steps before it |
+
+Walk recipe (see `units/bonker.py`, `units/tuskback.py`): define `LEGS` and a `Gait` at the
+ground speed (cycle 520-660 ms for small bipeds, stance about 0.38 so the UP frame is airborne,
+`drag=0.3` so the back toe still reads on the contact frame), a carry pose (club on the shoulder,
+spear sloped back, sling low), then `M.walk_v3(...)` or `G.quad_walk(...)`, and check the IK
+report (`gait.solve(report=[])`): a planted foot must never fall short. Lower the hips at the
+contact frames (or the trunk with `base_z`) until it does not. Variants reuse A's read and settle
+frames; second attackers (riders) get `attack_alt` with the body in idle pose 0.
+
 A level horizontal swing (Footman's cleave, the Ursa Paladin's hammer) keeps the arm level (`a = 0`)
 and turns it about the vertical axis with the arm joint's `rz` (180 back, 90 away, 0 forward);
 tilt the swing plane a little (arm `a` +20 on the wind-up) or the smear reads as a thin line, and aim
@@ -68,8 +95,171 @@ Review rules from the Stone pilot (apply to every age):
 - A D4 side topple must not keep a frame between rx -70 and -100 (edge-on, renders as a flat pill);
   choose the kept steps (Mammoth `DIE_KEEP`).
 - D3 sits must change the silhouette: hips about -12 lu, thighs 80-85 forward, torso back 28, arms wide.
-- Small riders get `rig.rest_scale[joint] = 1.2`; a rider with a sim attack throws on the impact
-  beat, one without never throws a fake projectile.
+- Small riders get `rig.rest_scale[joint] = 1.2`; a rider with a sim attack throws in its own
+  `attack_alt` (ANIM_SPEC R3), never on the body's impact beat; one without never throws.
+
+Index words (pilot review B2): a **step** indexes `durationsMs`, `sequence` and the atlas animation
+list; a **frame** indexes the unique poses (`frames`, per-frame `anchorsLu`). `Clip(impact=...)` takes a
+frame; the meta writes it as `impactFrame` and also writes `impactStep` (where that frame plays). A
+variant that repeats frames before the impact (`sequence=[0, 1, 0, 1, ...]`) has a later impact step
+than its frame index. `holdStep` and `holdLoop` are steps; `muzzle` comes from the impact frame. The
+runtime times the impact from `impactAt`, so a wrong index can only show the wrong pose; the timing
+check catches it.
+
+### Recipe: bring another age to the standard (after the Stone pilot review, 2026-10-02)
+
+Do one age at a time; keep raw frames for that age only (`--out` under the scratchpad, delete
+`_frames/` once installed). At most 2 Blender processes with 2 threads each (`config.THREADS = 2`).
+
+1. **Read** ANIM_SPEC (section 2 for the unit's gait, appendix B for its A/B/C) and the age's unit
+   files. Units that already opt into the cartoon kit (`NO_RETIME = True`) only need the steps below.
+2. **Rig** (only for legged units): longer legs and planted feet, as Stone does: `CaveBody(thigh_z=,
+   foot_joint=True, far_shade=True)` or the age's own body builder with `foot_r/l` joints, a 20% darker
+   far leg and `rig.track("_foot_r"/"_foot_l", ...)` trackers on the soles (`pipeline.walk_metrics`
+   needs them). Hems at least 9 lu above the soles, feet at most 9 lu long. Keep `heightLu` within 2 lu.
+3. **Walk**: `LEGS` + `G.Gait(frames, cycle_ms, ground_speed, feet, stance, ...)` at ground speed =
+   card speed x 1.25 (cycle 520-660 ms small bipeds, 480-640 robed, 850-1300 heavies; trot 560-800,
+   bound 480-640, 4-beat 1200-1600 with 12 frames). A **carry pose** that differs from the idle guard
+   (weapon on the shoulder, spear sloped back). Then `M.walk_clip("walk", RIG, _walk, GAIT, "<gait>")`
+   or `G.quad_walk(...)`. Read the IK report: a planted foot must never fall short. Wheels, treads,
+   hover and fly follow ANIM_SPEC G6-G8 (no planted feet: the runtime does not frame-lock them).
+4. **Attacks**: keep A. Add B (every attacker) and C (every melee unit) with `moves.clip(...,
+   reuse={...})` so read and settle frames are A's. Same `durationMs`, `impactAt` and pre-impact sum as
+   A (`M.check_variants`). The held extreme is the longest pre-impact step (written as `holdStep`); a
+   ranged or artillery attack whose sim wind-up is more than 2x the authored pre-impact time gets a
+   two-step `holdLoop` right after the hold.
+5. **Make the variants read differently at 62 px** (pilot review N1). Before rendering, preview the A,
+   B and C hold and impact frames side by side and look at the black silhouette row:
+   `preview.py <slug> attack:<hold> attack:<imp> attack_b:<hold> attack_b:<imp> ... --v3`. Each pair
+   of holds must differ by a body level (standing, crouched, kneeling, reared), a weapon angle of 60
+   degrees or more, or a hit direction. What failed in Stone and how it was fixed:
+   - Pebbler B (hip whirl in front of the belly) hid inside the body: the arm now swings straight
+     back so the ring sticks out behind the hip, and the release is upright with a knee kick.
+   - Drum Shaman B (drum at head height, arm up) read like A: the drum now goes high over the head
+     (a tall column, no stick sticking out) and the impact drops to a kneel.
+   - Tuskback C read like A's low coil: C rears (forehand up, front legs folded) and hooks down.
+   - Sabertooth C reared like A: C stalks low with the paw cocked at the chest.
+   A held weapon must clear the head and body in the silhouette; a ring smear must not sit on the body.
+6. **Projectiles**: the impact-frame `muzzle` of every variant is where the hand or cup really is.
+   Keep it within 8 lu of A's when the release is the same kind of throw; a deliberately different
+   release (Pebbler B's upright underhand) may move it up to 25 lu. The runtime starts the projectile
+   from the playing variant's muzzle, so it always leaves the hand.
+7. **Second attackers** (riders, sponsons, an MG): `attack_alt` with the body in idle pose 0 and only
+   the second attacker acting, on its own `durationMs` / `impactAt`; never let it act in A, B or C.
+7b. **Hold loops without a twitch** (Bronze): when a ranged attack needs a `holdLoop`, insert a
+   partner frame right after the hold (javelin pump, dart twirl, aim jiggle) and re-split the
+   pre-impact steps (e.g. `[30, 40, 40, 102, 30, 30, 18 | ...]`), keeping `durationMs`, `impactAt` and
+   the hold >= 35% of the pre-impact time; looping the hold with the smear frame flashes the smear.
+   Wheels: pick the spoke count so 2 spoke spacings per cycle match the ground speed (War Chariot: 4
+   spokes, 576 ms), or paint every other spoke to halve the repeat (Scorpion: 3 team spokes, 120 deg).
+8. **No spawn, stun or victory clips are needed**: the runtime pops the unit in code (it never holds
+   the idle frames as a spawn), and a walk <-> idle or walk <-> attack switch cross-dissolves for
+   110 ms, so the carry pose may differ from the guard. Do not add a spawn clip to "fix" a glide.
+9. **Render and install**: `render_all.py --out <scratch> --units a,b --no-fx --no-mockup --v3
+   --no-previews --install` (two processes in parallel, two units each), then
+   `node art/blender/gen_unit_manifest.mjs`, `gen_portraits.py` if idle frames changed (it needs the
+   raw frames, so run it before deleting `_frames/`), and `node art/blender/check_timing.mjs`.
+10. **Check** each unit: `check_walk.py` for its gait, the colour rule and team coverage in the render
+    log (`failingFrames` empty), the extras sheet within the budget (ANIM_SPEC 5), the A/B/C hold and
+    impact strip (`extremes.py`), and a real match: an AI vs autoplayer sandbox battle
+    (`?dev=1&stage=1&source=real&opponent=ai&autoplay=1#sandbox`, NOT dev spawns, which skip the
+    `unitSpawned` event) at 844 x 390 and 1280 x 720, where moving units must show `walk` on at least
+    95% of frames (e2e `tests/e2e/unitMotion.spec.ts` checks 75% on the shipped ages).
+
+**Medieval pass (2026-10-02).** `kit_medieval.skeleton_v3` / `legs_v3` / `legs_ik` / `jog_gait` /
+`ArmChain` give the `rigs_medieval` bipeds the walk v3 body without touching that module's API (the
+Bronze rigs import it): thighs at 19.5 lu, knees 11.5, `foot_r/l` joints at the ankle with 8.8 lu
+boots, the far leg 20% darker, `_foot` / `_foot_l` sole trackers and the upper body lifted 2 lu
+(`rest_offset`; lift the hem or skirt secondary by the same amount). Rider and beast legs use
+`G.Leg(upper, lower, hoof_bottom, bend=+1 front / -1 hind)` plus a `_foot_<leg>` tracker per sole
+and `G.quad_walk(..., trunk="horse"|"bear")`; read the IK report and lower `base_z` until no planted
+hoof falls short. Wheels (Battering Ram, G6): pick the spoke count so 2 spoke spacings per cycle
+match the ground speed, keep the old `_foot` odometer tracker (no `_foot_*` trackers, no `walk_clip`)
+so the natural speed comes from its x range, and set `GAIT_NAME = "wheeled"`. `check_walk.py`'s
+vehicle energy is silhouette-only, so a turning wheel does not count; crew legs that step outside
+the wheels (the Ram's rear pusher) and rear-wheel dust do.
+
+**Industrial pass (2026-10-02).** The Industrial bipeds use the Medieval walk-v3 body unchanged
+(`kit_industrial.skeleton_v3` / `legs_ik` / `jog_gait` / `ArmChain` re-export `kit_medieval`'s, the
+two biped layouts match) plus `kit_industrial.legs_v3` (work trousers or team overalls, gaiters, cuffs,
+8.8 lu hobnail boots on the foot joints, slim shins so the two legs stay apart at 62 px, the far leg
+20% darker, sole trackers). `rigs_industrial.overalls` / `jacket` / `long_coat` take `hem_z` (and
+`skirt_z`) so the hems clear the longer legs; keep hanging props (hammers, rags, map cases, coat tails)
+at least 9 lu above the soles or they bridge the feet in the sole band. Two pose helpers keep the
+shipped attack tables: `kit_industrial.ground_feet(rig, pose, LEGS)` re-plants the feet of an FK pose
+authored for the old short legs (feet within 2.5 lu of the ground are planted where they are, higher
+ones keep their kick) and `kneel(rig, pose, LEGS, drop=14)` puts a unit on one knee by IK (Carbineer
+and Harpoon Gunner B). The Steam Golem (G7) walks with `gait.Gait` on its own walker legs (10 frames,
+900 ms, the hips 3 lu lower than the old idle so planted feet reach); the Land Dreadnought (G6
+tracked) keeps its grouser phase copies and only changes the step time so 2 grouser spacings per
+640 ms cycle match 43.75 lu/s, writes `mgMuzzle` for the sponson gunners and an `attack_alt` with
+`noMuzzle` (its bullets then leave the current frame's `mgMuzzle`, not the main gun). Industrial is
+not in `render_all.AGE_OF`; render with `units/render_industrial.py --out <dir> --units a,b` (it
+installs the extras sheets too).
+
+**Gunpowder pass (2026-10-02).** The Gunpowder bipeds (Corsair, Fusilier, Grenadier, Field Surgeon)
+use `kit_medieval.skeleton_v3` / `legs_ik` / `jog_gait` / `ArmChain` (the `rigs_gunpowder` biped has
+the same joint layout; its API is unchanged because the Scorpion, War Chariot and Land Dreadnought
+import it) plus `kit_gunpowder.legs_v3` (breeches with a knee band, stockings or gaiters with brass
+buttons, or tall cuffed boots; 8 lu buckled shoes on the foot joints, the far leg 20% darker, sole
+trackers) and `kit_gunpowder.plant` (IK-planted feet for new attack poses, `rigs_bronze.plant`). Coat
+tails, aprons, sashes and the doctor's bag are secondaries lifted with `rest_offset` so their hems end
+at least 9 lu above the soles (lower, they bridge the feet in the sole band); the jog is 656 ms at
+card speed x 1.25 with stance 0.36 (a 600-616 ms cycle gave a contact gap under 5 px with these coat
+tails), the default hip bob, and a carry pose per unit (musket sloped back on the shoulder with the
+far hand let go: the far fist on the fore-stock is its own `gunhand` joint; cutlass resting back on the
+shoulder; bomb tucked at the belly; pistol held up barrel to the sky). Where a longer, more profile
+jog dropped team coverage under 18% the sash (Corsair) or the bag (Surgeon) became team-coloured. The
+Cuirassier trots like the Destrier (`G.horse_leg` legs with `_foot_<leg>` trackers, `quad_walk`,
+740 ms). The Bronze Cannon (G6) keeps its 8-spoke wheels and rolls 2 spoke spacings per 475 ms cycle
+(56.2 lu/s), with an `odo` joint carrying the `_foot` odometer tracker (no `walk_clip`, so the natural
+speed comes from its x range) and the gunner's legs planted by `gait.solve` on a `Gait` at the same
+cycle. The Balloon Admiral (G8 `fly`) leans 6 degrees nose down, breathes the envelope a beat late,
+trails the sandbags and flickers a new burner flame (`flame` joint, `FLICKER`); the hover bob itself
+stays in code (R8). Hold loops reuse an existing partner step where it is not a smear (Fusilier pan
+fizz, Cannon crouch, Balloon bomb sinking); the Grenadier's whip frame is a smear, so its A gained a
+fuse-fizz partner frame and re-split pre-impact steps. A dev server started with `watch: null` keeps
+the public-file list it saw at start: restart it after installing new `.x.json` extras, or the game
+falls back to attack A for those units.
+
+**Modern pass (2026-10-02).** The Modern bipeds use `kit_modern.skeleton_v3` (= `kit_industrial`'s) and
+`kit_modern.legs_v3` (olive trousers, khaki puttees on slim shins, 8.8 lu boots on the foot joints, the far leg
+20% darker, sole trackers, `mud=True` for caked toes); `rigs_modern.tunic(hem_z=13.0)` lifts the hem (the default
+stays 11 for every older caller). The tanks (G6 tracked) keep one grouser phase copy per walk step and change only
+the step time so 2 grouser spacings per cycle match the ground speed of the scaled track (Tankette 57.5 ms,
+Behemoth 92 ms); `GAIT_NAME = "tracked"`, the `odo` tracker gives the natural speed. The Gyrocopter
+(`GAIT_NAME = "fly"`) shows one blade phase over three alternating pale blur arcs (`blur0-2`, thick capsules, no
+part outline). Turret traverse variants turn the turret joint with `rz` (negative = toward the camera); the
+foreshortened barrel moves the impact muzzle, which the runtime follows.
+
+**Future pass (2026-10-02).** The Future bipeds (Photon Knight, Pulse Trooper, Rail Gunner, EMP
+Saboteur) use `kit_future.skeleton_v3` (= `kit_medieval`'s with the Future arm layout; `rigs_future.py`
+keeps its API for the Cosmic rigs and the Bronze Colossus) and `kit_future.legs_v3` (charcoal suit legs,
+white knee pads, 8.8 lu glossy white boots with a dark sole on the foot joints, far leg 20% darker,
+optional `team_thigh` / `team_greave`, sole trackers); `kit_future.legs_ik`, `jog_gait` and `ArmChain`
+re-export `kit_medieval`'s. Kept A tables are re-planted with `kit_industrial.ground_feet`, kneels use
+`kit_industrial.kneel`. The Walker Mech (G7) walks with `gait.Gait` on its reverse-knee legs
+(`Leg(bend=-1)`, 10 frames / 1000 ms); the Chrono Titan (G3) on its humanoid walker legs with 12 frames
+in 1560 ms (130 ms each), because at 43.75 lu/s a 1300 ms cycle keeps its boots overlapping; the boots
+are 26 lu long. The Repair Drone (G8 `fly`) keeps its odometer at the ground speed and pulses its jets
+on a 2-frame beat. A full-turn or over-the-top `arc` smear between a straight-back and a straight-forward
+pose sweeps over the top: a punch uses a `streak` (Walker Mech B). A held weapon that ends behind the
+head or hull vanishes in the silhouette (EMP C cocked over the far shoulder, Walker B with the fist
+tucked behind the hull): cock it low behind the hip or straight back past the hull instead.
+
+**Cosmic pass (2026-10-02).** The Cosmic bipeds (Star Legionnaire, Ion Ranger, Graviton Halberdier,
+Starwarden, Warp Stalker) use `kit_cosmic.skeleton_v3` (= `kit_future`'s) and `kit_cosmic.legs_v3` (void
+undersuit legs on slim shins, 8.8 lu glossy violet boots with a star-white toe cap and a dark sole on the
+foot joints, star-white knee guards or team greaves, the far leg 20% darker, sole trackers);
+`kit_cosmic.legs_ik`, `jog_gait` and `ArmChain` re-export `kit_future`'s, and `rigs_cosmic.py` keeps its
+API. Hems were lifted to 9-11 lu above the soles (Legionnaire pteruges, Halberdier tabard, Starwarden robe
+and lantern). The Warp Stalker sprints at 125 lu/s: a 512 ms cycle with stance 0.32, the feet centred
+3.5 lu ahead of the hips (`x_mid`) and the hips 7-8 lu low (a hunched sprint); a stance of 0.34 or more,
+or a centred foot, leaves the back foot short in the IK report. The Starwarden is a G2 brisk waddle like
+the Friar (560 ms, stance 0.44, the shortened robe kicking with the knees); with less robe its team share
+fell to 17.9% on one frame, so its greaves are team-coloured. The Hover Tank (`GAIT_NAME = "hover"`) and
+the Mothership (`"fly"`) keep their `odo` odometer at the ground speed, lean 6 degrees nose down and
+pulse their thrust cones / tractor ring on a 2-frame beat; the bob stays in code (R8).
 
 `world/common.turret_module(..., idle_frames=6, overlays=...)` gives a turret a 6-frame idle
 loop in the same 1020 ms and 2D accents. `node art/blender/check_timing.mjs [ref]` fails if any

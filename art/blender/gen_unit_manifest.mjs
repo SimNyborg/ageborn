@@ -10,6 +10,11 @@
  *
  * The static muzzle anchor is the attack clip's per-frame `muzzle` at the impact frame (where the
  * projectile leaves), falling back to the sheet-wide `anchorsLu.muzzle`, then to chest height.
+ *
+ * Animation standard (ANIM_SPEC 2026-10-02, P4/P5): attack variants `attack_b` and `attack_c` and the
+ * second attacker's `attack_alt` may live in the core sheet or in an extras sheet next to it
+ * (`<slug>.x.json`, `<slug>.x.hd.json`, loaded lazily by the game). Their clips are listed with the
+ * core clips (the core sheet wins on a name clash), and `meta.ageborn.gait` is copied when present.
  */
 import { readdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
@@ -23,11 +28,27 @@ const AGES = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern'
 const r1 = (v) => Math.round(v * 10) / 10;
 const pt = (v) => [r1(v[0]), r1(v[1])];
 
-function summarize(json, age, slug) {
+const GAITS = ['biped', 'heavy', 'quad', 'rider', 'wheeled', 'tracked', 'walker', 'hover', 'fly'];
+/** Clips an extras sheet may add (the game loads `<slug>.x.json` only for these). */
+const EXTRA_CLIPS = ['attack_b', 'attack_c', 'attack_alt'];
+
+/** True for the sheet JSON files that are not a unit's core 1x sheet (HD copies, extras sheets). */
+export function isCoreSheet(file) {
+  return file.endsWith('.json') && !file.endsWith('.hd.json') && !file.endsWith('.x.json');
+}
+
+function summarize(json, age, slug, extras = null) {
   const m = json.meta?.ageborn;
   if (!m) throw new Error(`${age}/${slug}.json has no meta.ageborn`);
+  const all = { ...m.clips };
+  if (extras) {
+    const xm = extras.meta?.ageborn;
+    if (!xm) throw new Error(`${age}/${slug}.x.json has no meta.ageborn`);
+    // only the variant clips count from an extras sheet (anything else there is ignored)
+    for (const [name, c] of Object.entries(xm.clips ?? {})) if (EXTRA_CLIPS.includes(name) && !all[name]) all[name] = c;
+  }
   const clips = {};
-  for (const [name, c] of Object.entries(m.clips)) {
+  for (const [name, c] of Object.entries(all)) {
     const out = { durationMs: c.durationMs ?? (c.durationsMs ?? []).reduce((a, b) => a + b, 0), loop: Boolean(c.loop) };
     if (c.impactAt !== undefined) out.impactAt = Math.round(c.impactAt * 10000) / 10000;
     clips[name] = out;
@@ -38,7 +59,7 @@ function summarize(json, age, slug) {
   const at = (k) => (Array.isArray(per[k]) && Array.isArray(per[k][imp]) ? per[k][imp] : null);
   // melee units have no muzzle: keep the procedural convention (chest height, just in front)
   const muzzle = at('muzzle') ?? at('beam') ?? m.anchorsLu?.muzzle ?? [10, m.heightLu * 0.55];
-  return {
+  const row = {
     age,
     slug,
     visualId: m.visualId ?? `unit.${slug}`,
@@ -47,6 +68,11 @@ function summarize(json, age, slug) {
     anchorsLu: { head: pt(m.anchorsLu?.head ?? [0, m.heightLu]), hitCenter: pt(m.anchorsLu?.hitCenter ?? [0, m.heightLu * 0.5]), muzzle: pt(muzzle) },
     clips,
   };
+  if (m.gait !== undefined) {
+    if (!GAITS.includes(m.gait)) throw new Error(`${age}/${slug}.json: unknown gait "${m.gait}" (${GAITS.join(', ')})`);
+    row.gait = m.gait;
+  }
+  return row;
 }
 
 function collect() {
@@ -55,10 +81,17 @@ function collect() {
     const dir = path.join(UNITS, age);
     if (!existsSync(dir)) continue;
     // `<slug>.hd.json` is the same sheet at twice the density (picked at runtime on dense screens)
-    for (const f of readdirSync(dir).filter((x) => x.endsWith('.json') && !x.endsWith('.hd.json')).sort()) {
+    // `<slug>.x.json` is the lazily loaded extras sheet (attack variants, P4)
+    for (const f of readdirSync(dir).filter(isCoreSheet).sort()) {
       const slug = f.replace(/\.json$/, '');
       if (!existsSync(path.join(dir, `${slug}.png`))) throw new Error(`${age}/${slug}.json has no PNG`);
-      rows.push(summarize(JSON.parse(readFileSync(path.join(dir, f), 'utf8')), age, slug));
+      const xFile = path.join(dir, `${slug}.x.json`);
+      let extras = null;
+      if (existsSync(xFile)) {
+        if (!existsSync(path.join(dir, `${slug}.x.png`))) throw new Error(`${age}/${slug}.x.json has no PNG`);
+        extras = JSON.parse(readFileSync(xFile, 'utf8'));
+      }
+      rows.push(summarize(JSON.parse(readFileSync(path.join(dir, f), 'utf8')), age, slug, extras));
     }
   }
   return rows;
@@ -77,8 +110,11 @@ function render(rows) {
   ].join('\n');
 }
 
-const text = render(collect());
-if (process.argv.includes('--check')) {
+const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+const text = isMain ? render(collect()) : '';
+if (!isMain) {
+  // imported (tests): nothing to write
+} else if (process.argv.includes('--check')) {
   const cur = existsSync(OUT) ? readFileSync(OUT, 'utf8') : '';
   if (cur !== text) {
     console.error('src/visuals/unitSheets.gen.ts is stale: run node art/blender/gen_unit_manifest.mjs');

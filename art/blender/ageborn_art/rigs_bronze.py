@@ -337,3 +337,125 @@ def hit_armoured(k, stance, recoil, face_hurt=None, helm="helm"):
     if k <= 1 and face_hurt:
         out = merge(out, face_hurt)
     return out
+
+
+# -- walk v3 (ANIM_SPEC 2.0 rule 5, G1/G2): longer legs and planted feet ---------------------------
+# The thigh pivots sit higher than the hips joint (the legs grow from 11 to 15.5 lu), `foot_r/l`
+# joints carry the sandals (planted feet, toe-off roll), and the upper body sits LIFT higher
+# (rig.rest_offset) so the legs show without moving every part. heightLu grows by LIFT (<= 2 lu).
+V3_THIGH_Z, V3_KNEE_Z, V3_ANKLE_Z = 19.5, 11.5, 4.0
+V3_LIFT = 2.0
+V3_FAR = 0.8          # the far leg is 20% darker (near and far feet read apart)
+
+
+def skeleton_v3(rig, head=(1, 0, 38), arm_y=None, lift=V3_LIFT):
+    """The Bronze biped skeleton with walk-v3 legs (thigh, shin, foot per side)."""
+    from .rigs_medieval import ELBOW_Z as _EZ
+    arm_y = arm_y or ARM_Y
+    rig.joint("body", "root", (0, 0, 0))
+    rig.joint("hips", "body", (0, 0, HIP_Z))
+    rig.joint("torso", "hips", (0, 0, HIP_Z + 1))
+    rig.rest_offset["torso"] = (0, 0, lift)
+    rig.joint("head", "torso", head)
+    for s in ("r", "l"):
+        y = LEG_Y * SIDE_Y[s]
+        rig.joint(f"thigh_{s}", "hips", (0, y, V3_THIGH_Z))
+        rig.joint(f"shin_{s}", f"thigh_{s}", (0.5, y, V3_KNEE_Z))
+        rig.joint(f"foot_{s}", f"shin_{s}", (1.0, y, V3_ANKLE_Z))
+        y = arm_y[s]
+        rig.joint(f"arm_{s}", "torso", (0, y, SHOULDER_Z))
+        rig.joint(f"fore_{s}", f"arm_{s}", (0, y, _EZ))
+        rig.joint(f"hand_{s}", f"fore_{s}", (0, y, HAND_Z))
+    rig.track("_foot", "foot_r", (2.6, -LEG_Y, 0.0))
+    rig.track("_foot_l", "foot_l", (2.6, LEG_Y, 0.0))
+
+
+def sandal_legs_v3(rig, skin=SKIN, sandal=LEATHER, greave=BRONZE, greaves=True, thigh_r=4.4,
+                   laces=LEATHER_DK, far=V3_FAR, wraps=None):
+    """Bare legs for skeleton_v3: thighs, shins, short sandalled feet (8.8 lu long) on the foot
+    joints with laces up the calf, optional polished greaves; the far leg `far` darker.
+    `wraps` (a colour or "team") adds a wrap below the knee (team wraps help the 18% rule)."""
+    from .colors import scale as _sc
+    for s in ("r", "l"):
+        y = LEG_Y * SIDE_Y[s]
+        sg = 1 if s == "r" else -1
+        k = 1.0 if s == "r" else far
+        sk, sa, gr, la = (_sc(c, k) if k != 1.0 else c for c in (skin, sandal, greave, laces))
+        g = Geo().capsule((0, y, V3_THIGH_Z), (0.5, y, V3_KNEE_Z), thigh_r, thigh_r - 0.7)
+        rig.part(f"thigh_{s}", g, sk)
+        g = Geo().capsule((0.5, y, V3_KNEE_Z), (1.0, y, V3_ANKLE_Z + 0.4), thigh_r - 0.7, 3.2)
+        rig.part(f"shin_{s}", g, sk)
+        g = Geo().blob((2.2, y, 2.6), (3.8, 3.7, 2.1), p=2.5, taper=(1.0, 0.85))      # foot (skin)
+        rig.part(f"foot_{s}", g, sk)
+        g = Geo().blob((2.6, y, 0.9), (4.4, 4.3, 1.0), p=3.2)                          # sole
+        g.capsule((2.4, y - 3.6 * sg, 3.6), (3.4, y - 3.9 * sg, 1.4), 0.7)            # instep strap
+        rig.part(f"foot_{s}", g, sa, outline=0.6)
+        if laces:
+            g = Geo()
+            for z in (5.4, 7.6):
+                g.blob((1.0, y, z), (3.6, 3.6, 0.7), p=3.0)
+            rig.part(f"shin_{s}", g, la, outline=0.4)
+        if wraps:
+            g = Geo().capsule((0.6, y, 10.6), (0.85, y, 8.4), 3.9, 3.7)
+            if wraps == "team":
+                rig.part(f"shin_{s}", g, team=True, outline=0.6)
+            else:
+                rig.part(f"shin_{s}", g, _sc(wraps, k) if k != 1.0 else wraps, outline=0.6)
+        if greaves:
+            g = Geo().blob((1.4, y - 0.6 * sg, 8.0), (4.0, 4.0, 3.9), p=2.4, taper=(0.86, 1.08))
+            rig.part(f"shin_{s}", g, gr, finish=POLISH if greave == BRONZE else "metal")
+            g = Geo().blob((1.2, y - 0.6 * sg, 11.4), (4.1, 4.1, 0.8), p=3.0)
+            rig.part(f"shin_{s}", g, _sc(VERD_DK, k) if k != 1.0 else VERD_DK, outline=0.5)
+
+
+def walk_legs_v3():
+    """gait.Leg per side for skeleton_v3 (the end point is the ankle; toe and heel pivots)."""
+    from . import gait as GT
+    return {s: GT.Leg(f"thigh_{s}", f"shin_{s}", (1.0, LEG_Y * SIDE_Y[s], V3_ANKLE_Z), foot=f"foot_{s}",
+                      toe=(6.0, LEG_Y * SIDE_Y[s], 0.3), heel=(-1.4, LEG_Y * SIDE_Y[s], 0.3))
+            for s in ("r", "l")}
+
+
+def jog_gait(speed, legs, cycle_ms=616, stance=0.38, lift=6.5, kick=3.0, x_mid=1.6, drag=0.3,
+             early_lift=1.6, toe_off=24.0, shift=-0.03):
+    """The G1 bounce jog of the Stone pilot (8 frames, flight on UP), for skeleton_v3 legs."""
+    from . import gait as GT
+    g = GT.Gait(8, cycle_ms, speed, GT.biped_feet(legs["l"], legs["r"], x_mid=x_mid), stance,
+                lift=lift, kick=kick, reach=0.0, toe_off=toe_off, early_lift=early_lift, drag=drag,
+                lift_peak=0.38)
+    for k, (leg, ph, x, gz) in list(g.feet.items()):
+        g.feet[k] = (leg, ph + shift, x, gz)
+    return g
+
+
+def plant(rig, pose, legs, r=(2.0, 0.0, 0.0), l=(-2.0, 0.0, 0.0), report=None, drop=True, max_drop=4.0):
+    """Feet placed by IK in an attack or hit pose: r/l = (x, lift, foot angle) of each ankle in
+    character space (x forward of the unit origin, lift above the planted height, angle 0 flat,
+    negative toe down). Keeps planted feet on the ground whatever the body does. With `drop`, a
+    foot the legs cannot reach lowers the body (a wider stance is a lower stance) instead of
+    hanging short, by at most `max_drop`; beyond that the foot drags toward the hip."""
+    from . import gait as GT
+    from .anim import merge as _merge
+    tg = {"r": (legs["r"], r[0], V3_ANKLE_Z + r[1], r[2]), "l": (legs["l"], l[0], V3_ANKLE_Z + l[1], l[2])}
+    clean = {j: {k: v for k, v in ch.items() if not (j.startswith(("thigh_", "shin_", "foot_")) and k == "r")}
+             for j, ch in pose.items()}
+    dropped = 0.0
+    for _ in range(10):
+        rep = []
+        out = GT.solve(rig, clean, tg, report=rep)
+        if not rep or max(d for _, d in rep) <= 0.05:
+            break
+        short = max(d for _, d in rep)
+        if drop and dropped < max_drop:
+            d = min(short + 0.3, max_drop - dropped)
+            dropped += d
+            clean = _merge(clean, {"body": {"z": -d}})
+            continue
+        # still out of reach: the foot drags toward the hip (a lunge pulls the back foot along)
+        for name, d in rep:
+            leg, x, z, a = tg[name]
+            hx = rig.char_pos(rig.joints[leg.upper]).x
+            tg[name] = (leg, x + (d + 0.3) * (1 if hx > x else -1), z, a)
+    if report is not None:
+        report.extend(rep)
+    return out

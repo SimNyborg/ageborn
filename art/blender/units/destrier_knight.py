@@ -9,7 +9,13 @@ Gold is an accent only. Tail, plume, pennant and forelock follow through.
 
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
   idle    the horse tosses its head and swishes its tail, the knight sits tall, blink
-  walk    trot: diagonal pairs, knees and hocks folding, the knight posting a frame late
+  walk    walk v3 trot at ground speed (ANIM_SPEC G5): diagonal pairs with planted hooves, knees
+          and hocks folding, a 4 lu mount bob, the knight posting a frame late, the lance tip,
+          plume, pennant and tail trailing
+  attack_b  REAR AND THRUST DOWN: the horse rears with its forelegs folded while the knight raises
+          the lance high (the held extreme), then the forehand drops and the lance drives down
+  attack_c  LANCE SWEEP: the knight twists and swings the lance right back over the rump (the held
+          extreme: the lance points backward), then flicks it round level across the front
   attack  COUCHED LANCE CHARGE: the horse gathers onto its haunches while the lance comes
           down from upright to couched under the arm (the held extreme: coiled, lance level),
           then bursts forward with the forelegs thrown out (a streak smear and speed lines),
@@ -22,12 +28,14 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as G
 from ageborn_art import kit_medieval as K
 from ageborn_art import moves as M
 from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "destrier_knight"
+GAIT_NAME = "rider"
 NAME = "Destrier Knight"
 HEIGHT_LU = 118
 YAW_DEG = -10.0
@@ -82,7 +90,13 @@ def _leg(rig, name, parent, x, y, z_top, front):
     rig.part(f"{name}2", g, DARK, outline=0, highlight=False)
 
 
+RIG = None
+LEGS = {}
+
+
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("horse", "body", (0, 0, 40))
     # legs: far side first so they sit behind
@@ -90,6 +104,14 @@ def build(rig):
     _leg(rig, "leg_bl", "horse", -17, 6.5, 38, False)
     _leg(rig, "leg_fr", "horse", 17, -6.5, 36, True)
     _leg(rig, "leg_br", "horse", -17, -6.5, 38, False)
+    # walk v3: the IK end is the bottom of the hoof; trackers on every sole (planted hooves)
+    for name, x, y in (("fl", 17, 6.5), ("bl", -17, 6.5), ("fr", 17, -6.5), ("br", -17, -6.5)):
+        front = name[0] == "f"
+        x2 = x + (1.5 if front else -4.5)
+        fx = x2 + (1.0 if front else 3.0)
+        end = (fx + 1.2, y, 0.3)
+        LEGS[name] = G.Leg(f"leg_{name}", f"leg_{name}2", end, bend=1.0 if front else -1.0)
+        rig.track(f"_foot_{name}", f"leg_{name}2", end)
 
     # barrel under a team caparison with a parchment hem and gold studs
     g = Geo().blob((0, 0, 41), (25, 11.5, 12), p=2.3)
@@ -222,7 +244,6 @@ def build(rig):
     g = Geo().lathe([(0, 1.5), (2.6, 2.0), (6.8, 8.5), (5.8, 10), (0, 10.2)], o, p1, segs=16)
     g.lathe([(1.8, LANCE_TIP - 13), (2.8, LANCE_TIP - 12), (1.6, LANCE_TIP - 6), (0, LANCE_TIP)], o, p1, segs=10)
     rig.part("lance_loose", g, STEEL, finish="metal")
-    rig.track("_foot", "leg_fr2", (19.8, -6.5, 0.5))
     # swallowtail pennant (14 x 8 lu after the 1.2x rider scale) trailing behind the tip; it is
     # counter-rotated to stream back level and follows through from the lance's movement
     pz = LZ + LANCE_TIP - 14.0
@@ -309,26 +330,38 @@ def _idle(f):
     return _finish(pose, IDLE_LANCE + 1.5 * lag)
 
 
-def _walk(f):
-    # trot: diagonal pairs move together (front-right with back-left), 0.8 s per cycle; the
-    # knees and hocks fold on the swing, the knight posts a frame late
-    p = 2 * math.pi * f / 8
-    s_, c = math.sin(p), math.cos(p)
-    bob = -2.0 * math.cos(2 * p)
-    bob_lag = -1.6 * math.cos(2 * (p - 2 * math.pi / 8))
-    up = lambda v: max(0.0, v)
-    pose = merge(STANCE, {
-        "horse": {"z": bob - 0.4, "r": 1.5 * s_},
-        "leg_fr": {"r": 22 * s_ + 10 * up(c)}, "leg_fr2": {"r": -62 * up(c)},
-        "leg_bl": {"r": 16 * s_}, "leg_bl2": {"r": 40 * up(-c)},
-        "leg_fl": {"r": -22 * s_ + 10 * up(-c)}, "leg_fl2": {"r": -62 * up(-c)},
-        "leg_br": {"r": -16 * s_}, "leg_br2": {"r": 40 * up(c)},
-        "neck": {"r": -8 * math.cos(2 * p)}, "hhead": {"r": 4 * math.cos(2 * p)},
-        "rider": {"z": bob_lag + 0.6},
-        "ktorso": {"r": -2.5 * math.cos(2 * (p - 2 * math.pi / 8))},
-        "tail": {"r": 6 * math.sin(2 * p)},
-    })
-    return _finish(pose, IDLE_LANCE + 2.5 * math.cos(2 * (p - 2 * math.pi / 8)))
+# -- walk v3: G5 trot at ground speed (card 60 x 1.25 = 75 lu/s), 8 x 92.5 ms ------------------
+SPEED = 75.0
+GAIT = None
+
+
+def _gait():
+    global GAIT
+    if GAIT is None:
+        GAIT = G.Gait(8, 740, SPEED, G.quad_feet(LEGS, G.TROT, x_off={"fr": -1.0, "fl": -1.0, "br": -1.0,
+                                                                        "bl": -1.0}),
+                      0.48, lift=10.0, kick=4.0, reach=4.0, toe_off=0.0, heel_strike=0.0)
+    return GAIT
+
+
+def _walk(f, report=None):
+    g = _gait()
+    lagp = 2 * math.pi * (f - 1) / g.frames
+
+    def extra(ctx):
+        p = ctx["p"]
+        post = -math.cos(2 * (lagp - ctx["low"] / 2))     # the knight posts a frame late
+        return merge(STANCE, {
+            "neck": {"r": -9 - 7 * math.cos(2 * p - 0.5)}, "hhead": {"r": 7 + 5 * math.cos(2 * p - 1.1)},
+            "rider": {"z": 1.5 * post},
+            "ktorso": {"r": -3.0 * post}, "khead": {"r": 2.0 * post},
+            "karm_r": {"r": 10 + 4 * post}, "kfore_r": {"r": 40 - 3 * post},
+            "tail": {"r": 8 * math.sin(2 * p - 1.3)}, "forelock": {"r": 6 * math.cos(2 * p - 1.2)},
+        })
+    out = G.quad_walk(RIG, f, g, {}, trunk="horse", base_z=-5.6, bob=2.0, beats=2, pitch=2.0, roll=1.5,
+                      extra=extra, report=report)
+    post = -math.cos(2 * (lagp - math.pi * g.stance / 2))
+    return _finish(out, IDLE_LANCE + 4.0 * post)
 
 
 # attack: 10 unique poses in the 12 heavy steps (moves.HEAVY_MELEE_MS), impact on pose 6
@@ -399,6 +432,126 @@ def _attack_clip():
                   impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov)
 
 
+
+# -- attack B: rear and thrust down (ANIM_SPEC appendix B) --------------------------------------
+# unique frames: 0 = A shift, 1 gather, 2 rearing, 3 HOLD (reared, forelegs folded, the lance raised
+# high), 4-5 the forehand drops (smear), 6 IMPACT (forelegs stamp, the lance driven down), 7 jolt,
+# 8-9 = A follow, settle; played on A's steps
+#       gather rear  HOLD  drop  drop  IMP   jolt
+OB_R = [4, 14, 22, 10, 2, -3, -2]           # horse pitch about the hind hooves
+OB_X = [-1.0, -2.0, -3.0, 2.0, 5.0, 7.0, 6.0]
+OB_Z = [-1.0, 0.0, 0.5, 0.0, 0.0, -1.0, -0.5]
+OB_Q = [-0.04, 0.02, 0.04, 0.02, 0.0, -0.08, 0.02]
+OB_LF = [(8, -20), (40, -70), (58, -100), (40, -60), (30, -20), (10, 0), (4, 0)]
+OB_LB = [(8, 4), (12, 8), (16, 10), (8, 6), (0, 0), (-6, 0), (-2, 0)]
+OB_NECK = [4, 12, 16, 6, -6, -10, -4]
+OB_HH = [-2, -8, -12, -4, 4, 6, 2]
+OB_KT = [0, 4, 8, -6, -14, -18, -12]
+OB_KARM = [10, 50, 70, 40, 10, -10, -6]
+OB_LANCE = [50, 62, 70, 30, -10, -28, -24]
+OB_TAIL = [4, 10, 14, 0, -8, -10, -4]
+
+
+def _b_pose(i):
+    if i in (0, 8, 9):
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(STANCE, M.body_about(HOOF_B, x=OB_X[k], z=OB_Z[k], r=OB_R[k], q=OB_Q[k]), {
+        "leg_fr": {"r": OB_LF[k][0]}, "leg_fr2": {"r": OB_LF[k][1]},
+        "leg_fl": {"r": OB_LF[k][0] - 8}, "leg_fl2": {"r": OB_LF[k][1] + 10},
+        "leg_br": {"r": OB_LB[k][0]}, "leg_br2": {"r": OB_LB[k][1]},
+        "leg_bl": {"r": OB_LB[k][0] - 4}, "leg_bl2": {"r": OB_LB[k][1]},
+        "neck": {"r": OB_NECK[k]}, "hhead": {"r": OB_HH[k]},
+        "ktorso": {"r": OB_KT[k]}, "khead": {"r": -0.5 * OB_KT[k]},
+        "karm_l": {"r": OB_KARM[k]}, "karm_r": {"r": 8 + 0.3 * OB_KARM[k]},
+        "tail": {"r": OB_TAIL[k]},
+    })
+    if k in (1, 2):
+        pose = merge(pose, F.expr("o", mouth=None))
+    elif k in (3, 4, 5):
+        pose = merge(pose, F.expr("yell", mouth=None))
+    pose = _finish(pose, OB_LANCE[k])
+    if k in (3, 4):
+        pose["lance"]["sz"] = 1.1
+    return pose
+
+
+def _attack_b():
+    ov = {
+        4: [dict(CHARGE, **{"from": 3, "t0": 0.0, "t1": 1.0})],
+        5: [dict(CHARGE, **{"from": 3, "t0": 0.3, "t1": 1.0, "width_lu": 8.0})],
+        6: [{"kind": "burst", "joint": "lance", "point": TIP, "r0_lu": 8.0, "r1_lu": 16.0, "n": 6,
+             "a0": -130.0, "arc": 160.0},
+            {"kind": "dust", "ground": (26.0, 0.0), "size_lu": 10.0, "puffs": 5, "seed": 55, "spread": 1.3},
+            {"kind": "dust", "ground": (60.0, 0.0), "size_lu": 7.0, "puffs": 3, "seed": 56, "spread": 1.0}],
+        3: [{"kind": "dust", "ground": (-20.0, 0.0), "size_lu": 7.0, "puffs": 3, "seed": 57, "spread": 0.9,
+             "dir": -1.0}],
+    }
+    reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(10)], M.HEAVY_MELEE_MS,
+                  impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov, reuse=reuse)
+
+
+# -- attack C: lance sweep ---------------------------------------------------------------------
+# unique frames: 0 = A shift, 1 twist, 2 swing back, 3 HOLD (the knight twisted, the lance right back
+# over the rump), 4-5 sweep round (arc smear), 6 IMPACT (level across the front), 7 overswing,
+# 8-9 = A follow, settle
+#        twist back HOLD sweep sweep IMP  over
+OC_LANCE = [70, 120, 160, 110, 40, -2, -14]
+OC_KRZ = [0, -4, -8, -4, 4, 8, 8]
+OC_KT = [0, 4, 8, 0, -10, -14, -12]
+OC_KARM = [10, 30, 52, 30, 0, -16, -20]
+OC_X = [-1.0, -2.0, -3.5, 0.0, 3.5, 5.0, 4.5]
+OC_R = [2, 3, 4, 0, -3, -4, -2]
+OC_Q = [-0.02, -0.04, -0.06, 0.02, 0.03, -0.07, 0.02]
+OC_NECK = [2, 4, 8, -4, -10, -12, -6]
+OC_LF = [(4, -8), (6, -12), (12, -26), (20, -10), (24, 0), (14, 0), (10, 0)]
+OC_LB = [(2, 0), (6, 4), (12, 8), (0, 0), (-8, 0), (-10, 0), (-4, 0)]
+
+
+def _c_pose(i):
+    if i in (0, 8, 9):
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(STANCE, M.body_about(HX, x=OC_X[k], r=OC_R[k], q=OC_Q[k]), {
+        "leg_fr": {"r": OC_LF[k][0]}, "leg_fr2": {"r": OC_LF[k][1]},
+        "leg_fl": {"r": OC_LF[k][0] - 6}, "leg_fl2": {"r": OC_LF[k][1]},
+        "leg_br": {"r": OC_LB[k][0]}, "leg_br2": {"r": OC_LB[k][1]},
+        "leg_bl": {"r": OC_LB[k][0] - 4}, "leg_bl2": {"r": OC_LB[k][1]},
+        "neck": {"r": OC_NECK[k]}, "hhead": {"r": -0.5 * OC_NECK[k]},
+        "ktorso": {"r": OC_KT[k], "rz": OC_KRZ[k]}, "khead": {"r": -0.5 * OC_KT[k], "rz": -0.5 * OC_KRZ[k]},
+        "karm_l": {"r": OC_KARM[k]},
+        "tail": {"r": [2, 4, 8, -6, -12, -10, -4][k]},
+    })
+    if k in (1, 2):
+        pose = merge(pose, F.expr("grit", mouth=None))
+    elif k in (3, 4, 5):
+        pose = merge(pose, F.expr("yell", mouth=None))
+    pose = _finish(pose, OC_LANCE[k])
+    if k in (3, 4):
+        pose["lance"]["sz"] = 1.08
+    return pose
+
+
+SWEEP = {"kind": "arc", "joint": "lance", "inner": (LX, LY, LZ + LANCE_TIP * 0.45), "outer": TIP,
+         "color": "#C9D2DC", "taper": 0.15, "white": 0.35, "t0": 0.0, "t1": 0.95, "lines": 3,
+         "samples": 18}
+
+
+def _attack_c():
+    ov = {
+        4: [dict(SWEEP, **{"from": 3})],
+        5: [dict(SWEEP, **{"from": 4})],
+        6: [dict(SWEEP, t0=0.3, t1=1.0, lines=2, **{"from": 5}),
+            {"kind": "burst", "joint": "lance", "point": TIP, "r0_lu": 7.0, "r1_lu": 14.0, "n": 6,
+             "a0": -60.0, "arc": 140.0},
+            {"kind": "dust", "ground": (30.0, 0.0), "size_lu": 8.0, "puffs": 4, "seed": 58, "spread": 1.1}],
+    }
+    reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(10)], M.HEAVY_MELEE_MS,
+                  impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov, reuse=reuse)
+
+
 def _hit(k):
     def recoil(a, shake):
         return {"body": dict(squash(-0.06 * max(a, 0)), x=-4.0 * max(a, 0) + 1.0 * min(a, 0)),
@@ -460,11 +613,12 @@ def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES_HEAVY)],
                [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True),
-        # a heavy horse: 0.8 s cycle, so it plays near 1x at its 60 lu/s sim speed
-        M.clip("walk", [_walk(f) for f in range(8)], [100] * 8, loop=True),
+        M.walk_clip("walk", RIG, _walk, _gait(), "rider"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
-    return M.check_contract(cl, heavy=True)
+    return M.check_variants(M.check_contract(cl, heavy=True))

@@ -13,7 +13,13 @@ anchor) is the gondola's lowest point; the battle view lifts air units to flight
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
   idle    hovers; the envelope breathes a beat behind the gondola, the pennant flutters, the
           sandbags sway, the admiral scans with the telescope and blinks
-  walk    flight: leans into the wind, bobs, the gondola swings a beat behind
+  walk    walk v3 flight (ANIM_SPEC G8): nose down 6 degrees into the wind, the burner flame
+          flickering on a 2-3 frame beat, the envelope breathing +-2% a beat behind, the gondola,
+          sandbags and pennant trailing; the hover bob itself is added in code (R8)
+  attack_b  HEAVE OVER THE RAIL: the admiral tucks his telescope, grabs a bomb off the rack and
+          holds it out over the front rail at arm's length with its fuse sparking (the held
+          extreme: the bomb out in front of the gondola, against A's bomb hanging in the hatch), then heaves it down over the front
+          rail; the lightened balloon lurches up and he leans out to watch it fall
   attack  SPOT, SALUTE AND BOMB-BAY DROP: the admiral spots the target through the telescope,
           snaps a salute with it, the bay doors swing open and the bomb hangs in the hatch with
           its fuse sparking (the held extreme), then it drops (the bomb leaves `muzzle` on the
@@ -34,6 +40,7 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "balloon_admiral"
+GAIT_NAME = "fly"
 NAME = "Balloon Admiral"
 HEIGHT_LU = 200
 YAW_DEG = -10.0
@@ -221,13 +228,38 @@ def build(rig):
             g.capsule(P(dx, y * 1.04, 35.4), P(dx, y * 1.04, 32.4), 0.6)
         rig.part("torso" if y > 0 else "arm_r", g, B.BRASS, finish="metal", outline=0)   # fringe
     hx, hy, hz = P(0.4, -13.6, 21.0)
+    rig.joint("tele", "hand_r", (hx, hy, hz))     # the telescope (tucked away in attack B)
     g = Geo().lathe([(0, -3.0), (2.4, -3.0), (2.4, 6.0), (2.0, 6.2), (2.0, 12.0), (1.6, 12.2),
                      (1.6, 17.0), (2.1, 17.4), (2.1, 19.0), (0, 19.0)], (hx, hy, hz), segs=14)
-    rig.part("hand_r", g, B.BRASS, finish="metal", outline_hex=B.WOOD)
+    rig.part("tele", g, B.BRASS, finish="metal", outline_hex=B.WOOD)
     g = Geo().lathe([(0, -0.8), (2.6, -0.8), (2.6, 3.0), (0, 3.0)], (hx, hy, hz - 1.0), segs=14)
-    rig.part("hand_r", g, B.BLACK, outline=0.6)
+    rig.part("tele", g, B.BLACK, outline=0.6)
     g = Geo().blob((hx - 0.6, hy - 2.2, hz + 18.4), (0.9, 0.6, 1.4), p=2.2)
-    rig.part("hand_r", g, glow="#FFFFFF", outline=0)                   # lens glint
+    rig.part("tele", g, glow="#FFFFFF", outline=0)                   # lens glint
+    # attack B: a bomb carried on the near fist (heaved over the rail)
+    b2 = (hx + 1.6, hy - 2.0, hz + 6.4)
+    rig.joint("bomb2", "hand_r", b2, hidden=True)
+    g = Geo().sphere(b2, 5.6, cuts=5)
+    rig.part("bomb2", g, BOMB, finish="gloss", outline_hex="#50535A")
+    g = Geo().blob((b2[0] - 2.0, b2[1] - 4.4, b2[2] + 2.0), (1.4, 0.6, 1.2), p=2.2)
+    rig.part("bomb2", g, "#F4F4F0", highlight=False, outline=0)
+    g = Geo().capsule((b2[0] + 3.0, b2[1], b2[2] + 4.0), (b2[0] + 4.4, b2[1], b2[2] + 6.6), 0.7)
+    rig.part("bomb2", g, B.TAN, outline=0)
+    rig.joint("fuse2", "bomb2", (b2[0] + 4.6, b2[1] - 1.0, b2[2] + 7.0))
+    g = Geo().star((b2[0] + 4.6, b2[1] - 2.0, b2[2] + 7.0), 3.4, 1.3, 1.0, points=6)
+    rig.part("fuse2", g, glow=B.FIRE, outline=0)
+    # the burner: a brass pot on the far rigging just under the envelope's neck, its flame
+    # flickers (scaled 0.8-1.3) in the idle and the walk (ANIM_SPEC G8 thrust pulse)
+    bu = (-17.0, -9.0, 50.0)
+    g = Geo().lathe([(0, 0), (3.4, 0), (4.0, 2.2), (3.0, 3.4), (0, 3.4)], bu, (bu[0], bu[1], bu[2] + 1.0), segs=14)
+    rig.part("unit", g, B.BRASS, finish="metal", outline=0.7)
+    rig.joint("flame", "unit", (bu[0], bu[1], bu[2] + 3.4))
+    g = Geo().lathe([(0, 0), (3.6, 0.8), (3.4, 4.6), (1.8, 9.0), (0, 12.0)], (bu[0], bu[1] - 1.0, bu[2] + 3.4),
+                    (bu[0], bu[1] - 1.0, bu[2] + 4.4), segs=12)
+    rig.part("flame", g, glow=B.FIRE, outline=0.5, outline_hex="#F2A23A")
+    g = Geo().lathe([(0, 0), (1.4, 0.6), (1.2, 2.6), (0, 4.6)], (bu[0], bu[1] - 2.2, bu[2] + 3.6),
+                    (bu[0], bu[1] - 2.2, bu[2] + 4.6), segs=10)
+    rig.part("flame", g, glow="#FFFFFF", outline=0)
 
     # the bomb that drops through the hatch in the attack
     rig.joint("bomb", "gondola", HATCH, hidden=True)
@@ -255,6 +287,14 @@ STANCE = merge(scope(-20, 40, 5), {"torso": {"r": -2}})
 UC = (0.0, 0.0, 110.0)      # the balloon's centre (tilts and spins pivot here)
 
 
+FLICKER = [1.0, 1.28, 0.82, 1.18, 0.9, 1.3, 0.8, 1.12]
+
+
+def _flame(f, k=1.0):
+    s = FLICKER[f % len(FLICKER)] * k
+    return {"flame": {"sz": s, "sx": 0.85 + 0.15 * s, "sy": 0.85 + 0.15 * s}}
+
+
 def _idle(f):
     n = M.IDLE_FRAMES_HEAVY
     c = math.cos(2 * math.pi * f / n)
@@ -267,7 +307,7 @@ def _idle(f):
         "torso": {"r": 1.2 * lag},
         "head": {"r": -2.0 * lag + 3 * scan},
         "pennant": {"r": [0, 6, 10, 4, -4, -2][f]},
-    })
+    }, _flame(f, 0.9))
     if f == 5:
         pose = merge(pose, F.expr("blink"))
     return pose
@@ -277,17 +317,23 @@ WALK_MS = 100
 
 
 def _walk(f):
+    # nose down 6 degrees about the balloon's centre, a small sheet bob (the hover sine is code),
+    # the envelope breathing a beat behind, the gondola and sandbags trailing, the flame flickering
     p = 2 * math.pi * f / 8
     pl = p - 2 * math.pi / 8
+    pl2 = p - 4 * math.pi / 8
+    ab = M.about(UC, r=-6.0)
     return merge(STANCE, {
-        "unit": {"z": 2.4 * math.sin(p), "r": -3.0},
-        "envelope": dict(squash(0.025 * math.sin(pl)), r=1.8 * math.cos(p)),
-        "gondola": {"r": 3.2 * math.sin(pl)},
-        "torso": {"r": -3.0 + 1.5 * math.sin(pl)},
-        "head": {"r": 1.5 * math.cos(pl)},
+        "unit": {"x": ab["x"], "y": ab["y"], "z": ab["z"] + 0.8 * math.sin(p), "r": -6.0},
+        "envelope": dict(squash(0.02 * math.sin(pl)), r=1.6 * math.cos(pl)),
+        "gondola": {"r": 2.4 + 2.6 * math.sin(pl)},
+        "torso": {"r": -4.0 + 1.5 * math.sin(pl)},
+        "head": {"r": 3.0 + 1.5 * math.cos(pl)},
         "arm_r": {"r": 3.0 * math.sin(pl)},
-        "pennant": {"r": 5 * math.sin(2 * p)},
-    })
+        "bag0": {"r": 10 + 6 * math.sin(pl2)}, "bag1": {"r": 10 + 6 * math.sin(pl2)},
+        "bag2": {"r": 10 + 6 * math.sin(pl2)},
+        "pennant": {"r": 8 * math.sin(2 * p - 1.0)},
+    }, _flame(f, 1.1))
 
 
 # attack: 832 ms, the drop (impact) at 333 ms (impactAt 0.4002, as shipped); 10 unique frames
@@ -337,8 +383,67 @@ def _attack_clip():
         6: [{"kind": "burst", "joint": "envelope", "point": (0.0, 0.0, ENV_C + 66.0), "r0_lu": 8.0,
              "r1_lu": 15.0, "n": 5, "a0": 40.0, "arc": 100.0, "color": "#FFF4D6"}],
     }
+    # the bomb bobs in the hatch with its fuse sparking (hold and sink frames) while the 2.4x sim
+    # wind-up lasts (ANIM_SPEC R5)
     return M.clip("attack", [_attack_pose(f) for f in range(10)], ATTACK_MS, impact=ATTACK_IMPACT,
-                  overlays=ov)
+                  overlays=ov, extra={"holdStep": 3, "holdLoop": [3, 4]})
+
+
+# -- attack B: the admiral heaves the bomb over the rail (ANIM_SPEC appendix B) -------------------
+# unique frames: 0 = A spot, 1 grabs a bomb off the rack (telescope tucked), 2 lifts it, 3 HOLD (the
+# bomb held out over the front rail, fuse sparking), 4 fizz, 5 RELEASE (heaved down over the front
+# rail: the projectile starts there), 6 leans out to watch, the balloon lurching up, 7-9 = A.
+#       grab            lift           HOLD           fizz           RELEASE         watch
+SC_B = [(-80, -95, -90), (-40, 20, 90), (14, -4, 90), (16, -2, 94), (10, -30, -20), (-20, -50, -40)]
+UZ_B = [-0.5, -0.8, -1.2, -1.6, 2.5, 6.0]
+EQ_B = [0, -0.01, -0.02, -0.03, 0.06, -0.06]
+GR_B = [3, 2, -2, -3, 6, -6]
+TR_B = [18, 2, -16, -17, -22, -26]
+HR_B = [10, 0, -6, -7, 14, 20]
+RELEASE = (16.0, 0.0, 7.0)    # the bomb joint's offset at the release (in front of the rail)
+
+
+def _b_pose(i):
+    if i == 0 or i >= 7:
+        return _attack_pose(i)
+    k = i - 1
+    a, fo, w = SC_B[k]
+    pose = merge({"torso": {"r": -2}}, scope(a, fo, w), {
+        "unit": {"z": UZ_B[k]},
+        "envelope": dict(squash(EQ_B[k]), z=[0, 0, 0, 0, 1.5, -1.0][k]),
+        "gondola": {"r": GR_B[k], "z": [0, 0, 0, 0, -1.5, 0.8][k]},
+        "torso": {"r": TR_B[k]}, "head": {"r": HR_B[k]},
+        "tele": {"hide": True},
+        "bomb2": {"show": k < 4},
+        "fuse2": {"s": [1.0, 1.1, 1.3, 1.6, 1, 1][k], "r": 35 * k},
+        "bomb": {"x": RELEASE[0], "z": RELEASE[2]},
+        "bag0": {"r": [0, 0, 0, 0, 14, -10][k]}, "bag1": {"r": [0, 0, 0, 0, 14, -10][k]},
+    })
+    if k == 0:
+        pose = merge(pose, F.expr("grit"))
+    elif k in (1, 2, 3):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.8}})
+    elif k == 4:
+        pose = merge(pose, F.expr("yell"))
+    else:
+        pose = merge(pose, F.expr("o"), {"brow": {"z": 1.4}})
+    return pose
+
+
+def _attack_b():
+    hand = (2.4, -13.6, 29.0)                     # the near fist (rest, character space)
+    top = (4.0, -15.6, 41.0)                      # the top of the carried bomb
+    ov = {
+        4: [{"kind": "burst", "joint": "hand_r", "point": (8.6, -16.6, 42.4), "r0_lu": 3.0, "r1_lu": 6.5,
+             "n": 6, "color": "#FFE7B0"}],
+        5: [{"kind": "arc", "joint": "hand_r", "inner": hand, "outer": top, "color": "#6A6E78",
+             "taper": 0.3, "white": 0.45, "t0": 0.0, "t1": 1.0, "lines": 3, "samples": 16, "from": 4}],
+        6: [{"kind": "burst", "joint": "envelope", "point": (0.0, 0.0, ENV_C + 66.0), "r0_lu": 8.0,
+             "r1_lu": 15.0, "n": 5, "a0": 40.0, "arc": 100.0, "color": "#FFF4D6"}],
+    }
+    reuse = {0: ("attack", 0), 7: ("attack", 7), 8: ("attack", 8), 9: ("attack", 9)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(10)], ATTACK_MS, impact=ATTACK_IMPACT,
+                  overlays=ov, reuse=reuse, extra={"holdStep": 3, "holdLoop": [3, 4]})
 
 
 def _hit(k):
@@ -399,8 +504,9 @@ def clips():
                [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True),
         M.clip("walk", [_walk(f) for f in range(8)], [WALK_MS] * 8, loop=True),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
-    return M.check_contract(cl, heavy=True, attack_ms=832, attack_impact_at=0.4002)
+    return M.check_variants(M.check_contract(cl, heavy=True, attack_ms=832, attack_impact_at=0.4002))

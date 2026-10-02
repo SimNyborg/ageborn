@@ -12,7 +12,15 @@ holds a tall team war banner in the far hand. Plume, cape, banner and tail follo
 Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.py`):
   idle    the bear sniffs the air (the head lifts, the nose twitches) and blinks; the
           paladin raises his hammer fist
-  walk    heavy 4-beat: diagonal pairs, the shoulder hump rolling, the head nodding
+  walk    walk v3 heavy bear trot at ground speed (ANIM_SPEC G5): diagonal pairs with planted
+          paws, the hump rolling, the head nodding, the paladin posting a frame late, the banner,
+          plume, cape and tail trailing; footfall dust from the contacts
+  attack_b  BITE AND OVERHEAD SMASH: the bear crouches with its head drawn back and jaws wide
+          while the paladin raises the hammer high overhead (the held extreme), then the bear
+          lunges and bites as the hammer smashes down in front
+  attack_c  DOUBLE-PAW SLAM AND HAMMER SPIN: the bear rears high with both forepaws up and the
+          hammer hangs low behind (the held extreme), then both paws slam down as the hammer
+          spins round underhand and up
   attack  BEAR SWIPE AND HAMMER SPIN: the bear rears with a forepaw raised high, claws out,
           roaring, while the paladin winds the hammer straight back (the held extreme); the
           paw rakes down (claw smear) as the hammer sweeps round in a wide flat circle toward
@@ -25,6 +33,7 @@ Animation (art director plan 2026-09-30, `ageborn_art/moves.py`, `kit_medieval.p
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as G
 from ageborn_art import kit_medieval as K
 from ageborn_art import moves as M
 from ageborn_art import rigs_medieval as B
@@ -32,6 +41,7 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "ursa_paladin"
+GAIT_NAME = "rider"
 NAME = "Ursa Paladin"
 HEIGHT_LU = 190
 YAW_DEG = -10.0
@@ -101,7 +111,13 @@ def _bear_leg(rig, name, x, y, front):
     rig.part(f"{name}2", g, CLAW, outline=0.8)
 
 
+RIG = None
+LEGS = {}
+
+
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("bear", "body", (0, 0, 72))
     # far legs first
@@ -109,6 +125,14 @@ def build(rig):
     _bear_leg(rig, "leg_bl", -34, 15, False)
     _bear_leg(rig, "leg_fr", 34, -15, True)
     _bear_leg(rig, "leg_br", -34, -15, False)
+    # walk v3: the IK end is the bottom of the paw; trackers on every sole (planted paws)
+    for name, x, y in (("fl", 34, 15), ("bl", -34, 15), ("fr", 34, -15), ("br", -34, -15)):
+        front = name[0] == "f"
+        x2 = x + (3 if front else -7)
+        fx = x2 + (1 if front else 5)
+        end = (fx + 4.0, y, 0.5)
+        LEGS[name] = G.Leg(f"leg_{name}", f"leg_{name}2", end, bend=1.0 if front else -1.0)
+        rig.track(f"_foot_{name}", f"leg_{name}2", end)
 
     # barrel with a shoulder hump, stub tail
     g = Geo().blob((-2, 0, 74), (52, 29, 31), p=2.3, taper=(0.92, 1.0))
@@ -190,7 +214,6 @@ def build(rig):
     rig.joint("btongue", "jaw", (88, 0, 77), hidden=True)
     g = Geo().blob((93, -1.0, 74.0), (5.0, 4.0, 2.2), p=2.2, rot=(0, 30, 0))
     rig.part("btongue", g, TONGUE, outline=0.6)
-    rig.track("_foot", "leg_fr2", (38, -15, 0.5))
 
     # -- the paladin (built in rider units around P, scaled 1.5 by the rider joint) --------
     rig.joint("rider", "bear", P, scale=RS)
@@ -336,28 +359,40 @@ def _idle(f):
     return _banner_hang(pose)
 
 
-def _walk(f):
-    # a heavy bear walk: diagonal pairs, 0.88 s per cycle, the hump rolling and the head nodding
-    p = 2 * math.pi * f / 8
-    s = math.sin(p)
-    c = math.cos(p)
-    bob = -2.4 * math.cos(2 * p)
-    lagp = 2 * (p - 2 * math.pi / 8)
-    up = lambda v: max(0.0, v)
-    return _banner_hang(merge(STANCE, {
-        "bear": {"z": bob - 0.6, "r": 1.4 * s, "rx": 1.6 * s},
-        # swing kept short so the paws plant at the sim speed (55 lu/s, playback ~1x)
-        "leg_fr": {"r": 9 * s + 4 * up(c)}, "leg_fr2": {"r": -36 * up(c)},
-        "leg_bl": {"r": 8 * s}, "leg_bl2": {"r": 26 * up(-c)},
-        "leg_fl": {"r": -9 * s + 4 * up(-c)}, "leg_fl2": {"r": -36 * up(-c)},
-        "leg_br": {"r": -8 * s}, "leg_br2": {"r": 26 * up(c)},
-        "neck": {"r": -6 * math.cos(2 * p)}, "bhead": {"r": 4 * math.cos(2 * p)},
-        "rider": {"z": -1.5 * math.cos(lagp)},
-        "torso": {"r": -1.5 * math.cos(lagp)},
-        "hand_r": {"r": 3 * math.cos(lagp)},
-        "arm_l": {"r": 2 * math.cos(lagp)},
-        "tail": {"r": 5 * math.sin(2 * p)},
-    }))
+# -- walk v3: G5 heavy bear trot at ground speed (card 55 x 1.25 = 68.75 lu/s), 10 x 90 ms -----------
+SPEED = 68.75
+GAIT = None
+
+
+def _gait():
+    global GAIT
+    if GAIT is None:
+        GAIT = G.Gait(10, 900, SPEED, G.quad_feet(LEGS, G.TROT, x_off={"fr": 2.0, "fl": 2.0, "br": -2.0,
+                                                                         "bl": -2.0}),
+                      0.5, lift=12.0, kick=4.0, reach=5.0, toe_off=0.0, heel_strike=0.0)
+    return GAIT
+
+
+def _walk(f, report=None):
+    g = _gait()
+    n = g.frames
+    lagp = 2 * math.pi * (f - 1) / n
+
+    def extra(ctx):
+        p = ctx["p"]
+        post = -math.cos(2 * (lagp - ctx["low"] / 2))     # the paladin posts a frame late
+        return merge(STANCE, {
+            "bear": {"rx": 2.0 * math.sin(p)},
+            "neck": {"r": -7 * math.cos(2 * p - 0.5)}, "bhead": {"r": 5 * math.cos(2 * p - 1.1)},
+            "jaw": {"r": -3 * max(0.0, math.cos(2 * p))},
+            "rider": {"z": 1.8 * post}, "torso": {"r": -3 + 3.0 * post}, "head": {"r": -2.0 * post},
+            "arm_r": {"r": 4 * post}, "hand_r": {"r": -6 * post},
+            "arm_l": {"r": 3 * post},
+            "tail": {"r": 8 * math.sin(2 * p - 1.3)},
+        })
+    out = G.quad_walk(RIG, f, g, {}, trunk="bear", base_z=-6.8, bob=2.4, beats=2, pitch=1.6, roll=0.0,
+                      extra=extra, report=report)
+    return _banner_hang(out)
 
 
 # attack: 10 unique poses in the 12 heavy steps (moves.HEAVY_MELEE_MS), impact on pose 6. The
@@ -426,6 +461,128 @@ def _attack_clip():
                   impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov)
 
 
+
+# -- attack B: bite and overhead smash (ANIM_SPEC appendix B) ----------------------------------
+# unique frames: 0 = A shift, 1 crouch, 2 coil, 3 HOLD (the bear low with its head drawn back and
+# jaws wide, the hammer high overhead), 4-5 lunge (smear), 6 IMPACT (the bite and the hammer smash
+# land together), 7 jolt, 8-9 = A follow, settle; played on A's steps
+#        crouch coil HOLD lunge lead IMP  jolt
+OB_BR = [-2, -5, -7, 2, 1, -4, -3]
+OB_BX = [-1.5, -3.0, -4.5, 3.0, 7.0, 10.0, 9.0]
+OB_BZ = [-2.0, -4.0, -5.0, -1.0, 0.0, -2.0, -1.5]
+OB_BQ = [-0.04, -0.06, -0.08, 0.04, 0.03, -0.08, 0.02]
+OB_PAW = [(-4, 8), (-8, 16), (-10, 20), (18, 0), (26, -10), (22, -4), (14, 0)]
+OB_HIND = [-4, -8, -10, 6, 10, 4, 2]
+OB_NECK = [6, 12, 18, -6, -12, -16, -12]
+OB_BH = [-4, -8, -14, 4, 6, 8, 4]
+OB_JAW = [-10, -22, -34, -30, -20, -6, -10]
+OB_HA = [60, 84, 96, 84, 40, 2, -6]
+OB_HF = [100, 104, 100, 96, 24, -28, -36]
+OB_HW = [118, 108, 98, 70, 10, -40, -50]
+OB_TR = [2, 6, 10, -4, -10, -16, -12]
+
+
+def _b_pose(i):
+    if i in (0, 8, 9):
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(hammer(OB_HA[k], OB_HF[k], OB_HW[k]), banner(-50, 20, 94), {
+        "leg_fr": {"r": OB_PAW[k][0]}, "leg_fr2": {"r": OB_PAW[k][1]},
+        "leg_fl": {"r": OB_PAW[k][0] - 4}, "leg_fl2": {"r": OB_PAW[k][1]},
+        "leg_br": {"r": OB_HIND[k]}, "leg_bl": {"r": OB_HIND[k] - 2},
+        "neck": {"r": OB_NECK[k]}, "bhead": {"r": OB_BH[k]}, "jaw": {"r": OB_JAW[k]},
+        "torso": {"r": OB_TR[k]}, "head": {"r": -0.4 * OB_TR[k]},
+        "tail": {"r": [2, 6, 10, -6, -10, -8, -2][k]},
+    }, M.body_about(HIND, x=OB_BX[k], z=OB_BZ[k], r=OB_BR[k], q=OB_BQ[k]))
+    if k in (3, 4):
+        pose["hand_r"]["sz"] = 1.15
+    if k in (1, 2):
+        pose = merge(pose, F.expr("squeeze", mouth=None) if k == 1 else {})
+    if k in (2, 3, 4):
+        pose = merge(pose, {"btongue": {"show": True}})
+    return _banner_hang(pose)
+
+
+SMASH = dict(SWEEP, t0=0.0, t1=0.95, lines=3)
+
+
+def _attack_b():
+    ov = {
+        4: [dict(SMASH, **{"from": 3})],
+        5: [dict(SMASH, **{"from": 4})],
+        6: [dict(SMASH, t0=0.4, t1=1.0, lines=2, **{"from": 5}),
+            {"kind": "burst", "joint": "hand_r", "point": HEAD_C, "r0_lu": 12.0, "r1_lu": 22.0, "n": 7,
+             "a0": -120.0, "arc": 160.0},
+            {"kind": "burst", "joint": "jaw", "point": (94.0, 0.0, 78.0), "r0_lu": 8.0, "r1_lu": 14.0,
+             "n": 4, "a0": -30.0, "arc": 90.0},
+            {"kind": "dust", "ground": (70.0, 0.0), "size_lu": 14.0, "puffs": 5, "seed": 63, "spread": 1.4}],
+    }
+    reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(10)], M.HEAVY_MELEE_MS,
+                  impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov, reuse=reuse)
+
+
+# -- attack C: double-paw slam and hammer spin --------------------------------------------------
+# unique frames: 0 = A shift, 1 rise, 2 rear, 3 HOLD (reared high, both forepaws up, the hammer
+# hanging low behind), 4-5 drop (ring smear: the hammer spins round underhand), 6 IMPACT (both paws
+# slam, the hammer up and forward), 7 jolt, 8-9 = A follow, settle
+#        rise  rear HOLD drop  drop  IMP  jolt
+OC_BR = [8, 20, 30, 14, 4, -5, -3]
+OC_BX = [-1.5, -3.0, -4.0, 2.0, 5.0, 8.0, 7.0]
+OC_BZ = [0.0, 0.5, 1.0, 0.5, 0.0, -3.0, -2.0]
+OC_BQ = [0.02, 0.04, 0.05, 0.03, 0.0, -0.10, 0.02]
+OC_PAW = [(40, -50), (70, -80), (92, -96), (60, -50), (36, -10), (18, 12), (10, 6)]
+OC_NECK = [6, 12, 18, 4, -8, -18, -12]
+OC_BH = [-2, -6, -10, 0, 4, 10, 6]
+OC_JAW = [-8, -20, -30, -26, -20, -30, -14]
+OC_HA = [-70, -100, -112, -70, -20, 24, 18]
+OC_HF = [-90, -132, -150, -40, 20, 60, 50]
+OC_HW = [-100, -140, -156, -70, 10, 56, 66]
+OC_HYAW = [-10, -30, -40, -70, -30, 0, 10]
+OC_TR = [4, 8, 12, 2, -6, -12, -8]
+
+
+def _c_pose(i):
+    if i in (0, 8, 9):
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(hammer(OC_HA[k], OC_HF[k], OC_HW[k], yaw=OC_HYAW[k]), banner(-50, 20, 94), {
+        "leg_fr": {"r": OC_PAW[k][0]}, "leg_fr2": {"r": OC_PAW[k][1]},
+        "leg_fl": {"r": OC_PAW[k][0] - 10}, "leg_fl2": {"r": OC_PAW[k][1] + 8},
+        "leg_br": {"r": [4, 10, 14, 6, -2, -8, -4][k]}, "leg_bl": {"r": [4, 8, 12, 4, -2, -6, -4][k]},
+        "neck": {"r": OC_NECK[k]}, "bhead": {"r": OC_BH[k]}, "jaw": {"r": OC_JAW[k]},
+        "torso": {"r": OC_TR[k]}, "head": {"r": -0.4 * OC_TR[k]},
+        "tail": {"r": [4, 10, 14, 0, -8, -12, -4][k]},
+    }, M.body_about(HIND, x=OC_BX[k], z=OC_BZ[k], r=OC_BR[k], q=OC_BQ[k]))
+    if k in (3, 4):
+        pose["hand_r"]["sz"] = 1.15
+    if k in (2, 3, 4, 5):
+        pose = merge(pose, {"btongue": {"show": True}})
+    return _banner_hang(pose)
+
+
+SPIN = dict(SWEEP, t0=0.0, t1=0.95, lines=3, band=0.4)
+
+
+def _attack_c():
+    paws = [(34 + 3 + 1 + 20.0, -15 + dy, 3.0) for dy in (-6.0, 0.0, 6.0)]
+    ov = {
+        4: [dict(SPIN, **{"from": 3})],
+        5: [dict(SPIN, **{"from": 4}),
+            {"kind": "claw", "joint": "leg_fr2", "points": paws, "color": "#F2EAD8", "width_lu": 4.5,
+             "white": 0.3, "from": 4}],
+        6: [{"kind": "burst", "joint": "hand_r", "point": HEAD_C, "r0_lu": 10.0, "r1_lu": 18.0, "n": 6,
+             "a0": -40.0, "arc": 140.0},
+            {"kind": "dust", "ground": (60.0, 0.0), "size_lu": 15.0, "puffs": 6, "seed": 64, "spread": 1.5},
+            {"kind": "dust", "ground": (30.0, 0.0), "size_lu": 11.0, "puffs": 4, "seed": 65, "spread": 1.2,
+             "dir": -1.0}],
+        7: [{"kind": "dust", "ground": (66.0, 0.0), "size_lu": 11.0, "puffs": 4, "seed": 66, "spread": 1.6}],
+    }
+    reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(10)], M.HEAVY_MELEE_MS,
+                  impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov, reuse=reuse)
+
+
 def _hit(k):
     def recoil(a, shake):
         return {"body": dict(squash(-0.05 * max(a, 0)), x=-4.0 * max(a, 0) + 1.0 * min(a, 0)),
@@ -477,10 +634,12 @@ def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES_HEAVY)],
                [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], [110] * 8, loop=True),
+        M.walk_clip("walk", RIG, _walk, _gait(), "rider"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
-    return M.check_contract(cl, heavy=True)
+    return M.check_variants(M.check_contract(cl, heavy=True))

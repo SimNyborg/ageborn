@@ -1,0 +1,486 @@
+{
+ "frames": {
+  "mothership_attack_b_01": {
+   "frame": {
+    "x": 613,
+    "y": 2,
+    "w": 151,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 88,
+    "w": 151,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 314,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership_attack_b_01_team": {
+   "frame": {
+    "x": 599,
+    "y": 209,
+    "w": 145,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 90,
+    "w": 145,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 314,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership_attack_b_02": {
+   "frame": {
+    "x": 155,
+    "y": 209,
+    "w": 150,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 92,
+    "w": 150,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 314,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership_attack_b_02_team": {
+   "frame": {
+    "x": 448,
+    "y": 209,
+    "w": 147,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 92,
+    "w": 147,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 314,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership_attack_b_03": {
+   "frame": {
+    "x": 308,
+    "y": 2,
+    "w": 149,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 96,
+    "w": 149,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 314,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership_attack_b_03_team": {
+   "frame": {
+    "x": 148,
+    "y": 385,
+    "w": 148,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 99,
+    "w": 148,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 314,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 154,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 77,
+    "w": 154,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 314,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership_attack_b_04_team": {
+   "frame": {
+    "x": 309,
+    "y": 209,
+    "w": 135,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 74,
+    "w": 135,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 314,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 209,
+    "w": 149,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 84,
+    "w": 149,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 314,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership_attack_b_05_team": {
+   "frame": {
+    "x": 447,
+    "y": 385,
+    "w": 148,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 90,
+    "w": 148,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 314,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership_attack_b_06": {
+   "frame": {
+    "x": 160,
+    "y": 2,
+    "w": 144,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 79,
+    "w": 144,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 314,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership_attack_b_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 385,
+    "w": 142,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 85,
+    "w": 142,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 314,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership_attack_b_07": {
+   "frame": {
+    "x": 461,
+    "y": 2,
+    "w": 148,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 83,
+    "w": 148,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 314,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  },
+  "mothership_attack_b_07_team": {
+   "frame": {
+    "x": 300,
+    "y": 385,
+    "w": 143,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 91,
+    "w": 143,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 314,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.55096,
+    "y": 0.75893
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "mothership_attack_00",
+   "mothership_attack_b_01",
+   "mothership_attack_b_02",
+   "mothership_attack_b_03",
+   "mothership_attack_b_04",
+   "mothership_attack_b_05",
+   "mothership_attack_b_06",
+   "mothership_attack_b_07",
+   "mothership_attack_08"
+  ],
+  "attack_b_team": [
+   "mothership_attack_00_team",
+   "mothership_attack_b_01_team",
+   "mothership_attack_b_02_team",
+   "mothership_attack_b_03_team",
+   "mothership_attack_b_04_team",
+   "mothership_attack_b_05_team",
+   "mothership_attack_b_06_team",
+   "mothership_attack_b_07_team",
+   "mothership_attack_08_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "mothership.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 768,
+   "h": 536
+  },
+  "scale": "1.25",
+  "ageborn": {
+   "visualId": "unit.mothership",
+   "name": "Mothership",
+   "heightLu": 172,
+   "widthLu": 137.6,
+   "pxPerLu": 1.025,
+   "feetPx": [
+    173.0,
+    255.0
+   ],
+   "anchorsLu": {
+    "head": [
+     -8,
+     170
+    ],
+    "hitCenter": [
+     0,
+     70
+    ],
+    "muzzle": [
+     44,
+     22
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "fly",
+   "extrasOf": "mothership",
+   "clips": {
+    "attack_b": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      60,
+      80,
+      100,
+      168,
+      100,
+      90,
+      80,
+      80,
+      83
+     ],
+     "durationMs": 841,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.4851,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        43.2,
+        21.9
+       ],
+       [
+        42.6,
+        17.5
+       ],
+       [
+        42.6,
+        14.0
+       ],
+       [
+        42.4,
+        11.6
+       ],
+       [
+        36.9,
+        17.9
+       ],
+       [
+        42.0,
+        32.3
+       ],
+       [
+        39.9,
+        24.2
+       ],
+       [
+        43.0,
+        25.3
+       ],
+       [
+        43.1,
+        24.5
+       ]
+      ]
+     },
+     "muzzle": [
+      36.9,
+      17.9
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}
