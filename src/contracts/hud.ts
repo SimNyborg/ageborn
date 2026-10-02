@@ -152,8 +152,9 @@ export interface HudModel {
   phase: SimState['phase'];
   phaseMarks: { overdriveMs: number | null; siegeMs: number | null; finalBellMs: number | null };
   /**
-   * Last Base Standing (A2.10.1, A9.2): the escalation meter (`step` reached of `steps`, schedule in ms)
-   * and which sides crumble, by Side. Absent in a format with a Final Bell. Filled by the HUD model (L3).
+   * Siege steps (A9.2): in Last Base Standing (A2.10.1; `phaseMarks.finalBellMs` null) the escalation
+   * meter, in a Short, Medium or Long War the Siege rope (A2.10.2): the step reached of `steps`, the
+   * schedule in ms and which sides crumble, by Side. Absent in a format without Siege steps.
    */
   escalation?: { step: number; steps: number; atMs: number[]; crumbling: [boolean, boolean] };
   me: {

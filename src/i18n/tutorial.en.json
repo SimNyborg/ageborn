@@ -19,6 +19,7 @@
       "lastStand": "Low base? Tap Last Stand."
     },
     "hint": {
+      "crumbling": "Your base crumbles while the fight is in your half. Charge past the middle!",
       "turretShredsMelee": "Their turret shreds melee. Try Pebblers.",
       "heaviesStopInfantry": "Heavies! Send {card}.",
       "powerReady": "Your power is ready.",

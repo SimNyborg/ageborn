@@ -148,7 +148,8 @@
       "overdrive": "Overdrive!",
       "overdriveSub": "Gold ×2",
       "siege": "Siege!",
-      "siegeSub": "Bases crumble"
+      "siegeSub": "Bases crumble",
+      "siegeRopeSub": "The side in its own half crumbles"
     },
     "blocked": "Blocked at their gate: Evolve or use power.",
     "ageReached": "{age}!",
@@ -293,7 +294,23 @@
       "crumbling": "Crumbling",
       "bannerS": "Bases take ×{base} damage",
       "bannerC": "The side in its own half crumbles",
-      "bannerC2": "Crumbling doubles"
+      "bannerC2": "Crumbling speeds up"
+    },
+    "rope": {
+      "step": {
+        "overdrive": "Overdrive",
+        "r1": "Siege",
+        "r2": "Siege II",
+        "bell": "Final Bell"
+      },
+      "title": "Siege: push or crumble",
+      "clockLabel": "Match clock, {time} left. Tap for the Siege schedule",
+      "siegeWhat": "bases take ×{base} damage, turrets deal −{turret}%; the side in its own half loses {pct}% base health a second",
+      "tightenWhat": "the side in its own half loses {pct}% base health a second",
+      "tightenBaseWhat": "bases take ×{base} damage; the side in its own half loses {pct}% base health a second",
+      "bellWhat": "the higher base health wins",
+      "bannerR2": "Crumbling speeds up to {pct}% a second",
+      "bannerR2Base": "Bases take ×{base} damage · crumbling {pct}% a second"
     }
   }
 }

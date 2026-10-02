@@ -44,6 +44,44 @@ export const WINDOW_CLOCKS: Readonly<Record<number, { kind: FormatKind; overdriv
 /** Retreat unlocks after 1:00 in every window (A2.10). */
 const RETREAT_MS = 60000;
 
+/** One step of the Siege rope in a timed format, timed from Siege (A2.10.2). */
+export interface TimedRopeStep {
+  afterSiegeMs: number;
+  baseDamageBp: number;
+  turretDamageBp: number;
+  crumbleBpPerSec: number;
+}
+
+/**
+ * The Siege rope of the timed formats (DESIGN A2.10.2, owner decision 2026-10-02): in Short, Medium and
+ * Long War (every start era) Siege has no symmetric base decay; instead, every second the side whose own
+ * half holds the fight (its front more than the dead band behind the other's, the Last Base Standing rope)
+ * loses a share of its base's max HP, and the rope tightens once. The Final Bell still ends the war.
+ * Shorter War Path and custom windows keep today's Siege. Short's Siege lasts only 2:00, so its rope is
+ * stronger and its second step also raises base damage and cuts turret damage.
+ */
+export const TIMED_ROPE: Readonly<Record<'short' | 'standard' | 'full', readonly TimedRopeStep[]>> = {
+  short: [
+    { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 80 },
+    { afterSiegeMs: 45000, baseDamageBp: 30000, turretDamageBp: 3500, crumbleBpPerSec: 130 },
+  ],
+  standard: [
+    { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 65 },
+    { afterSiegeMs: 60000, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 115 },
+  ],
+  full: [
+    { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 50 },
+    { afterSiegeMs: 60000, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 100 },
+  ],
+};
+
+/** A timed format's Siege steps from its rope (A2.10.2); none for a window without one. */
+function timedEscalation(kind: FormatKind, siegeMs: number): FormatDef['escalation'] {
+  const rope = kind === 'short' || kind === 'standard' || kind === 'full' ? TIMED_ROPE[kind] : null;
+  if (!rope) return undefined;
+  return rope.map((x) => ({ atMs: siegeMs + x.afterSiegeMs, baseDamageBp: x.baseDamageBp, turretDamageBp: x.turretDamageBp, crumbleBpPerSec: x.crumbleBpPerSec }));
+}
+
 /**
  * The id of the window of `length` ages starting at `start` (DESIGN A18.3.4): the named formats from
  * Stone (`short`, `standard`, `full`), `short.bronze` style ids for later starts, `w<length>.<start>`
@@ -64,6 +102,7 @@ function windowFormats(ageOrder: readonly AgeId[]): Record<FormatId, FormatDef> 
     for (let i = 0; i + length <= ageOrder.length; i += 1) {
       const ages = ageOrder.slice(i, i + length);
       const id = windowFormatId(length, ages[0] as AgeId);
+      const escalation = timedEscalation(c.kind, c.siegeMs);
       out[id] = {
         id,
         kind: c.kind,
@@ -73,6 +112,7 @@ function windowFormats(ageOrder: readonly AgeId[]): Record<FormatId, FormatDef> 
         finalBellMs: c.finalBellMs,
         retreatAfterMs: RETREAT_MS,
         xpToNextOverride: WINDOW_XP.slice(0, length - 1),
+        ...(escalation ? { escalation } : {}),
       };
     }
   }

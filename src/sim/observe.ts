@@ -99,13 +99,14 @@ function foeFort(ctx: Ctx, side: Side): Observation['foe']['fort'] {
   return { card: s.played.includes(card) ? card : null, readyTicks: left > 0 ? left : 0 };
 }
 
-/** Last Base Standing (A2.10.1): the public schedule, the step reached and who crumbles now. */
+/** Siege steps (A2.10.1, A2.10.2): the public schedule, the step reached, who crumbles now and the Bell. */
 function observeEscalation(ctx: Ctx): ObservedEscalation {
   const tick = ctx.s.tick;
   return {
     step: escalationStep(ctx, tick),
     steps: (ctx.escalation ?? []).map((x) => ({ tick: x.tick, baseDamageBp: x.baseDamageBp, turretDamageBp: x.turretDamageBp, crumbleBpPerSec: x.crumbleBpPerSec })),
     crumbling: ctx.s.phase === 'ended' ? [false, false] : ropeTargets(ctx, tick),
+    finalBellTick: ctx.finalBellTick,
   };
 }
 

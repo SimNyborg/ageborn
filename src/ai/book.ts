@@ -472,14 +472,15 @@ export function matchClock(book: CardBook, ages: readonly AgeId[] | undefined): 
 }
 
 /**
- * The clocks a bot plays by (A18.3.4, A2.10.1): the window's clocks, or in Last Base Standing (the
- * public schedule in the observation) Siege I as the Siege and no Final Bell. Last Base Standing shares
- * its 7 ages with the Full War, so the window alone would wrongly report the Full War's Bell.
+ * The clocks a bot plays by (A18.3.4, A2.10.1, A2.10.2): the window's clocks; with Siege steps in the
+ * observation, Siege I as the Siege and the observed Final Bell (null in Last Base Standing, which
+ * shares its 7 ages with the Full War, so the window alone would wrongly report the Full War's Bell).
  */
 export function observedClock(book: CardBook, obs: Pick<Observation, 'ages' | 'escalation'>): MatchClock {
   const c = matchClock(book, obs.ages);
-  const first = obs.escalation?.steps[0];
-  return first ? { overdrive: c.overdrive, siege: first.tick, finalBell: null } : c;
+  const e = obs.escalation;
+  const first = e?.steps[0];
+  return e && first ? { overdrive: c.overdrive, siege: first.tick, finalBell: e.finalBellTick ?? null } : c;
 }
 
 /** Counter value M[a][b] in bp; 5,000 (even) when the matrix has no entry. */

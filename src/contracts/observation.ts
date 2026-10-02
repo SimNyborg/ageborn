@@ -84,12 +84,14 @@ export interface ObservedTrap {
   charges: number;
 }
 
-/** The Last Base Standing schedule and state as both players see it (A2.10.1). */
+/** The Siege steps (Last Base Standing, A2.10.1; the timed Siege rope, A2.10.2) as both players see them. */
 export interface ObservedEscalation {
   step: number;
   steps: { tick: number; baseDamageBp: number; turretDamageBp: number; crumbleBpPerSec: number }[];
   /** By Side: true while the rope takes that side's base (only in a Crumble step). */
   crumbling: [boolean, boolean];
+  /** The Final Bell's tick in a timed format with the Siege rope (A2.10.2); null in Last Base Standing. */
+  finalBellTick: number | null;
 }
 
 export interface Observation {
@@ -99,9 +101,10 @@ export interface Observation {
   /** The match's age window (A18.3.4); `ageIndex` values are positions in it. Public to both sides. */
   ages: AgeId[];
   /**
-   * Last Base Standing (A2.10.1), public to both sides: the step reached (0 before Siege I, 1 = Siege I,
-   * ...), the schedule in ticks, and which sides the Crumble rope takes now (indexed by Side). Absent in
-   * a format with a Final Bell.
+   * Siege steps (Last Base Standing, A2.10.1, and the Siege rope of Short, Medium and Long War,
+   * A2.10.2), public to both sides: the step reached (0 before Siege I, 1 = Siege I, ...), the schedule
+   * in ticks, which sides the rope takes now (indexed by Side) and the Final Bell (null with none).
+   * Absent in a format without Siege steps.
    */
   escalation?: ObservedEscalation;
   me: {

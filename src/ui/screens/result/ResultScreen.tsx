@@ -646,16 +646,19 @@ function StopCard(p: { card: ResultCard; onNext: () => void; onDismiss: () => vo
 }
 
 /**
- * The reason line of a war with no clock (Last Base Standing, A2.10.1; spec 2.4): how and when it
- * ended, and whether the walls crumbled (the base fell in a Crumble step). Null for a timed format.
+ * The reason line of a war with Siege steps: Last Base Standing (A2.10.1; spec 2.4) and the Siege rope
+ * of Short, Medium and Long War (A2.10.2). How and when it ended, whether the walls crumbled (the base
+ * fell in a Crumble step) and, in a timed war, who led at the Final Bell. Null for a format without steps.
  */
 export function lastBaseReason(input: Pick<MatchResultInput, 'outcome' | 'mySide' | 'opponent'>, content: Content, t: (k: string, v?: Record<string, string | number>) => string): string | null {
   const f = content.formats[input.opponent.format];
-  if (f?.kind !== 'untimed') return null;
+  const rope = f?.kind !== 'untimed' && (f?.escalation?.length ?? 0) > 0 && f?.finalBellMs !== null;
+  if (!f || (f.kind !== 'untimed' && !rope)) return null;
   const ms = input.outcome.tick * TICK_MS;
   const time = formatClock(ms);
   const o = input.outcome;
   if (o.reason === 'retreat') return t(o.winner === input.mySide ? 'ui.result.lastReason.theyRetreated' : 'ui.result.lastReason.retreated', { time });
+  if (o.reason === 'finalBell') return t(o.winner === null ? 'ui.result.bellReason.even' : o.winner === input.mySide ? 'ui.result.bellReason.won' : 'ui.result.bellReason.lost');
   if (o.reason === 'bothDestroyed' || o.winner === null) return t('ui.result.lastReason.both', { time });
   const crumble = (f.escalation ?? []).find((x) => x.crumbleBpPerSec > 0);
   const crumbled = !!crumble && ms >= crumble.atMs;

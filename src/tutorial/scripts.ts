@@ -365,7 +365,7 @@ export function stagedTraining(n: number): { manualLastStand: [boolean, boolean]
 // Adaptive hints (A8): at most once per 30 s, only on failure patterns, at most 3 times each
 // ---------------------------------------------------------------------------------------------
 
-export type AdaptiveHintId = 'turretShredsMelee' | 'heaviesStopInfantry' | 'powerReady' | 'evolveFirst' | 'buyMount' | 'hold' | 'modernise' | 'trickle';
+export type AdaptiveHintId = 'crumbling' | 'turretShredsMelee' | 'heaviesStopInfantry' | 'powerReady' | 'evolveFirst' | 'buyMount' | 'hold' | 'modernise' | 'trickle';
 
 export interface AdaptiveHintDef {
   id: AdaptiveHintId;
@@ -400,9 +400,14 @@ export const ADAPTIVE = {
   holdDeaths: 4,
   /** At most this many adaptive hints in one match (FTUE audit 2026-10-01: too many new things at once). */
   maxPerMatch: 2,
+  /** Rope beats on our base inside the window before the crumbling hint (A2.10.1, A2.10.2). */
+  crumbleBeats: 4,
 } as const;
 
 export const ADAPTIVE_HINTS: readonly AdaptiveHintDef[] = [
+  // The Siege rope (A2.10.2; Last Base Standing's Crumble, A2.10.1): our base crumbles because the fight
+  // is in our half. First in the list: it costs base health every second.
+  { id: 'crumbling', textKey: 'tutorial.hint.crumbling', target: 'stance' },
   { id: 'turretShredsMelee', textKey: 'tutorial.hint.turretShredsMelee', target: 'card1' },
   // A9.2 counter hint (owner feedback 2026-09-29): "Heavies! Send {card}." while the enemy fields
   // Heavies and the tray holds an Anti-heavy card; it points at that card (target set when it fires).

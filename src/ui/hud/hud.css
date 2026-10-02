@@ -4327,3 +4327,45 @@
 .hud-moment-escalate .hud-moment-title {
   color: #ffb4a8;
 }
+
+/* ------------------------------------------------- The Siege rope of a timed war (A2.10.2, A9.2) */
+
+/* The countdown clock becomes one button (≥ 44 px) that drops the schedule down; its timeline gets a
+   cracked-stone mark where the rope tightens, and in Siege II the frame turns to cracked stone. */
+.hud-clock.hud-rope {
+  min-width: 72px;
+  min-height: 44px;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: transform var(--ui-dur-release) var(--ui-ease-back);
+}
+.hud-clock.hud-rope:active {
+  transform: scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
+}
+.hud-clock.hud-rope .hud-timeline {
+  display: block;
+}
+.hud-mark-rope {
+  background: linear-gradient(180deg, #d9b48a 0 45%, #2a1c12 45% 58%, #d9b48a 58%);
+}
+.hud-clock.hud-rope .hud-phase-tag {
+  animation: hud-pip-on var(--ui-dur-small) var(--ui-ease-back) both;
+}
+.hud-clock.hud-rope.phase-siege.is-tight {
+  box-shadow:
+    var(--hud-shadow),
+    0 0 0 1.5px #e0402f,
+    0 0 0 3px #7a5634,
+    0 0 16px rgba(255, 70, 60, 0.55);
+}
+.hud-clock.hud-rope.phase-siege.is-tight .hud-phase-tag {
+  background: linear-gradient(115deg, #e0402f 0 70%, #7a5634 70%);
+}
+.hud-esc-row.is-bell b {
+  color: #e9edf5;
+}
+.hud[data-reduce-motion='true'] .hud-clock.hud-rope .hud-phase-tag {
+  animation: none !important;
+}

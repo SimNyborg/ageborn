@@ -519,7 +519,8 @@ const TrophyRoadSchema = v.strictObject({
 });
 
 const LoadoutSchema = v.strictObject({
-  units: v.pipe(v.array(v.nullable(id)), v.length(5)),
+  // Five troop slots, or six (A18.9; the paused content expansion gives some Generals a sixth Stone troop).
+  units: v.pipe(v.array(v.nullable(id)), v.minLength(5), v.maxLength(6)),
   turrets: v.pipe(v.array(v.nullable(id)), v.length(2)),
   powers: v.strictObject({ home: v.nullable(id), field: v.nullable(id) }),
 });
@@ -1192,6 +1193,9 @@ function checkResearch(issues: Issues, c: Content): void {
  * Last Base Standing (A2.10.1): an `untimed` format is 7 ages with Siege steps and no Final Bell; the
  * first step starts at `siegeMs`, steps are in time order, multipliers never weaken a step, a Crumble
  * step exists, and `endByMs` is the bound {@link escalationEndMs} derives from the steps.
+ * The Siege rope of the timed formats (A2.10.2): Short, Medium and Long War may carry Siege steps too,
+ * with the same order rules, a rope from the first step, their Final Bell after the last step, and no
+ * `endByMs` (the Bell ends them). Other windows keep today's Siege.
  */
 function checkEscalation(issues: Issues, key: string, f: Content['formats'][string]): void {
   const p = `formats.${key}`;
@@ -1204,8 +1208,8 @@ function checkEscalation(issues: Issues, key: string, f: Content['formats'][stri
     issues.check(f.endByMs === undefined, p, 'endByMs belongs to a format with Siege steps');
     return;
   }
-  issues.check(f.kind === 'untimed', p, 'Siege steps belong to an untimed format (A2.10.1)');
-  issues.check(f.finalBellMs === null, p, 'a format with Siege steps has no Final Bell (A2.10.1)');
+  const timed = f.kind === 'short' || f.kind === 'standard' || f.kind === 'full';
+  issues.check(f.kind === 'untimed' || timed, p, 'Siege steps belong to Last Base Standing or a Short, Medium or Long War (A2.10.1, A2.10.2)');
   issues.check(steps.length > 0 && f.siegeMs === steps[0]?.atMs, p, 'the first Siege step starts at siegeMs');
   steps.forEach((x, i) => {
     const prev = steps[i - 1];
@@ -1213,6 +1217,13 @@ function checkEscalation(issues: Issues, key: string, f: Content['formats'][stri
     issues.check(x.atMs > prev.atMs, p, 'Siege steps are in time order');
     issues.check(x.baseDamageBp >= prev.baseDamageBp && x.turretDamageBp <= prev.turretDamageBp && x.crumbleBpPerSec >= prev.crumbleBpPerSec, p, 'a later Siege step is never milder');
   });
+  if (timed) {
+    issues.check(f.finalBellMs !== null && steps.every((x) => x.atMs < (f.finalBellMs as number)), p, 'a timed format keeps its Final Bell after its last Siege step (A2.10.2)');
+    issues.check((steps[0]?.crumbleBpPerSec ?? 0) > 0, p, 'a timed Siege rope runs from Siege (A2.10.2)');
+    issues.check(f.endByMs === undefined, p, 'endByMs belongs to Last Base Standing (the Final Bell ends a timed war)');
+    return;
+  }
+  issues.check(f.finalBellMs === null, p, 'a format with Siege steps has no Final Bell (A2.10.1)');
   const end = escalationEndMs(steps);
   issues.check(end !== null, p, 'a Crumble step guarantees an end (A2.10.1)');
   issues.check(f.endByMs === end, p, `endByMs is derived from the steps (${end ?? 'none'})`);

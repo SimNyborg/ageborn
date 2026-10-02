@@ -44,6 +44,7 @@ import {
   REASON_MS,
   phaseBanner,
   escalationView,
+  ropeView,
   buyMountIntent,
   denyTargetFor,
   hudPulse,
@@ -511,8 +512,10 @@ export function Hud(props: HudProps) {
     if (m.phase === lastPhase.current) return;
     lastPhase.current = m.phase;
     // Last Base Standing's Siege has no decay: its steps get their own banner below, not "Bases crumble".
-    if (m.escalation && m.phase === 'siege') return;
-    const b = phaseBanner(m.phase);
+    // A timed war's Siege rope (A2.10.2) keeps the Siege banner, which says who crumbles now.
+    const timed = m.phaseMarks.finalBellMs !== null;
+    if (m.escalation && !timed && m.phase === 'siege') return;
+    const b = phaseBanner(m.phase, !!m.escalation && timed);
     if (b) showMoment({ kind: 'phase', title: t(b.title), sub: t(b.sub) });
   }, [m.phase, t, showMoment]);
 
@@ -526,6 +529,17 @@ export function Hud(props: HudProps) {
       return;
     }
     lastStep.current = e.step;
+    // A2.10.2: in a timed war the first rope step is the Siege (its banner is above); later ones say the
+    // crumbling speeds up ("Siege II · Crumbling speeds up to 1.5% a second").
+    const rope = ropeView(m, config, side);
+    if (rope) {
+      const row = rope.rows.find((x) => x.key === `r${e.step}`);
+      if (e.step > 1 && row) {
+        const sub = row.base > 2 ? t('hud.rope.bannerR2Base', { pct: row.crumblePct, base: row.base }) : t('hud.rope.bannerR2', { pct: row.crumblePct });
+        showMoment({ kind: 'escalate', title: t('hud.rope.step.r2'), sub });
+      }
+      return;
+    }
     const v = escalationView(m, config, side);
     const pip = v?.pips.filter((x) => x.tone !== 'overdrive')[e.step - 1];
     if (!v || !pip) return;

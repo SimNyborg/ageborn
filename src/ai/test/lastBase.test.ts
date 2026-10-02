@@ -27,7 +27,7 @@ const STEPS: ObservedEscalation['steps'] = (content.formats['last']?.escalation 
 }));
 
 function esc(step: number, crumbling: [boolean, boolean] = [false, false]): ObservedEscalation {
-  return { step, steps: STEPS, crumbling };
+  return { step, steps: STEPS, crumbling, finalBellTick: null };
 }
 
 function brainFor(o: { tier?: number; tierOverride?: Partial<TierParams> } = {}): Brain {

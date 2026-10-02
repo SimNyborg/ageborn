@@ -773,7 +773,8 @@ export interface ClockView {
   countdown: boolean;
   /** 0..1 along the timeline, null without a Final Bell. */
   progress: number | null;
-  marks: { at: number; kind: 'overdrive' | 'siege' }[];
+  /** `rope` marks a later step of the Siege rope (A2.10.2), where crumbling speeds up. */
+  marks: { at: number; kind: 'overdrive' | 'siege' | 'rope' }[];
   /** Seconds until the next phase, or null. */
   nextPhase: { kind: 'overdrive' | 'siege' | 'finalBell'; inMs: number } | null;
 }
@@ -784,6 +785,7 @@ export function clockView(m: HudModel): ClockView {
   const marks: ClockView['marks'] = [];
   if (overdriveMs !== null) marks.push({ at: overdriveMs / finalBellMs, kind: 'overdrive' });
   if (siegeMs !== null) marks.push({ at: siegeMs / finalBellMs, kind: 'siege' });
+  for (const at of m.escalation?.atMs.slice(1) ?? []) if (at < finalBellMs) marks.push({ at: at / finalBellMs, kind: 'rope' });
   const upcoming = (
     [
       ['overdrive', overdriveMs],
@@ -826,11 +828,11 @@ export interface EscalationView {
 
 /**
  * The escalation meter of a war with no Final Bell (Last Base Standing): 6 pips (Overdrive, Siege I-III,
- * Crumble I-II) from the format's public steps; null in a timed format.
+ * Crumble I-II) from the format's public steps; null in a timed format (its rope is {@link ropeView}).
  */
 export function escalationView(m: HudModel, config: Readonly<MatchConfig>, side: Side): EscalationView | null {
   const e = m.escalation;
-  if (!e) return null;
+  if (!e || m.phaseMarks.finalBellMs !== null) return null;
   const steps = config.content.formats[config.format]?.escalation ?? [];
   const pips: EscalationPip[] = [];
   const od = m.phaseMarks.overdriveMs;
@@ -857,6 +859,63 @@ export function escalationView(m: HudModel, config: Readonly<MatchConfig>, side:
     text: formatClock(Math.floor(m.clockMs / 1000) * 1000),
     pips,
     stepKey: `hud.esc.step.${current ? current.key : 'regulation'}`,
+    crumbling: { me: e.crumbling[side], foe: e.crumbling[foe] },
+  };
+}
+
+/** One row of the Siege rope schedule of a timed war (A2.10.2): Overdrive, the rope steps, the Final Bell. */
+export interface RopeRow {
+  /** `overdrive`, `r1` (Siege), `r2`... (the rope tightens), `bell`. */
+  key: string;
+  atMs: number;
+  reached: boolean;
+  /** Base damage × and turret damage −% in the step (rope rows only). */
+  base: number;
+  turretCut: number;
+  /** % of base health a second the side in its own half loses (rope rows only). */
+  crumblePct: number;
+}
+
+export interface RopeView {
+  /** The step in force: 0 before Siege, 1 = Siege, 2 = the rope tightened... */
+  step: number;
+  /** The phase tag's key while Siege runs (`hud.rope.step.r1` "Siege", `r2` "Siege II"); null before Siege. */
+  stepKey: string | null;
+  rows: RopeRow[];
+  /** Crumbling now, for this HUD's side and the opponent's. */
+  crumbling: { me: boolean; foe: boolean };
+}
+
+/**
+ * The Siege rope of a Short, Medium or Long War (A2.10.2): the countdown and timeline stay; this adds who
+ * crumbles now, the phase tag of a tightened rope and the schedule a tap on the clock drops down. Null
+ * without Siege steps and in Last Base Standing (see {@link escalationView}).
+ */
+export function ropeView(m: HudModel, config: Readonly<MatchConfig>, side: Side): RopeView | null {
+  const e = m.escalation;
+  const bell = m.phaseMarks.finalBellMs;
+  if (!e || bell === null) return null;
+  const steps = config.content.formats[config.format]?.escalation ?? [];
+  const rows: RopeRow[] = [];
+  const od = m.phaseMarks.overdriveMs;
+  if (od !== null) rows.push({ key: 'overdrive', atMs: od, reached: m.clockMs >= od, base: 1, turretCut: 0, crumblePct: 0 });
+  e.atMs.forEach((at, i) => {
+    const d = steps[i];
+    rows.push({
+      key: `r${i + 1}`,
+      atMs: at,
+      reached: e.step > i,
+      base: (d?.baseDamageBp ?? 10000) / 10000,
+      turretCut: Math.round(100 - (d?.turretDamageBp ?? 10000) / 100),
+      crumblePct: (d?.crumbleBpPerSec ?? 0) / 100,
+    });
+  });
+  rows.push({ key: 'bell', atMs: bell, reached: m.clockMs >= bell, base: 1, turretCut: 0, crumblePct: 0 });
+  const foe: Side = side === 0 ? 1 : 0;
+  return {
+    step: e.step,
+    stepKey: e.step > 0 ? `hud.rope.step.r${Math.min(e.step, 2)}` : null,
+    rows,
     crumbling: { me: e.crumbling[side], foe: e.crumbling[foe] },
   };
 }
@@ -994,8 +1053,9 @@ export class BlockedWatch {
 }
 
 /** The phase banner for a phase that just started (audit #24), as i18n keys. */
-export function phaseBanner(phase: HudModel['phase']): { title: string; sub: string } | null {
+export function phaseBanner(phase: HudModel['phase'], rope = false): { title: string; sub: string } | null {
   if (phase === 'overdrive') return { title: 'hud.banner.overdrive', sub: 'hud.banner.overdriveSub' };
-  if (phase === 'siege') return { title: 'hud.banner.siege', sub: 'hud.banner.siegeSub' };
+  // A2.10.2: with the Siege rope only the side fighting in its own half crumbles.
+  if (phase === 'siege') return { title: 'hud.banner.siege', sub: rope ? 'hud.banner.siegeRopeSub' : 'hud.banner.siegeSub' };
   return null;
 }

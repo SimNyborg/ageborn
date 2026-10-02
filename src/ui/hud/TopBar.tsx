@@ -27,7 +27,7 @@ import type { HudCtx } from './context';
 import { EmoteBubble, EmoteButton } from './EmoteWheel';
 import { AgeGlyph, EyeIcon, HornIcon, PauseIcon, PlayIcon, RobotIcon } from './icons';
 import { Minimap } from './Minimap';
-import { ageIds, clockView, escalationView, formatClock, frontStrip, powerFraction, xpProgress, type EscalationView, type FrontLine } from './model';
+import { ageIds, clockView, escalationView, formatClock, frontStrip, powerFraction, ropeView, xpProgress, type ClockView, type EscalationView, type FrontLine, type RopeView } from './model';
 import { CoinIcon } from './icons';
 import { usePortrait } from './usePortrait';
 import { PickBadge } from './councilIcons';
@@ -410,6 +410,70 @@ function EscalationClock(p: { c: HudCtx; v: EscalationView }) {
   );
 }
 
+/**
+ * The timed clock of a Short, Medium or Long War with the Siege rope (A2.10.2, A9.2): the countdown and
+ * timeline as always, plus a mark where the rope tightens; in Siege the tag names the step ("Siege",
+ * "Siege II"). A tap drops the schedule down (Overdrive, Siege with its rope, the tightening, the Final
+ * Bell); like Scouted it folds after 3 s and never pauses.
+ */
+function RopeClock(p: { c: HudCtx; clock: ClockView; rope: RopeView; next: ClockView['nextPhase'] }) {
+  const { t, m } = p.c;
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!open) return;
+    const id = setTimeout(() => setOpen(false), SCOUTED_COLLAPSE_MS);
+    return () => clearTimeout(id);
+  }, [open]);
+  const what = (x: RopeView['rows'][number]) => {
+    if (x.key === 'overdrive') return t('hud.esc.overdriveWhat');
+    if (x.key === 'bell') return t('hud.rope.bellWhat');
+    if (x.key === 'r1') return t('hud.rope.siegeWhat', { base: x.base, turret: x.turretCut, pct: x.crumblePct });
+    return x.base > 2 ? t('hud.rope.tightenBaseWhat', { base: x.base, pct: x.crumblePct }) : t('hud.rope.tightenWhat', { pct: x.crumblePct });
+  };
+  const tag = m.phase === 'siege' && p.rope.stepKey ? p.rope.stepKey : m.phase === 'regulation' || m.phase === 'ended' ? null : `hud.phase.${m.phase}`;
+  return (
+    <div class="hud-esc-wrap">
+      <button
+        type="button"
+        class={`hud-clock hud-rope phase-${m.phase}${p.rope.step > 1 ? ' is-tight' : ''}`}
+        data-testid="hud-clock"
+        aria-label={t('hud.rope.clockLabel', { time: p.clock.text })}
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <span class="hud-clock-text">{p.clock.text}</span>
+        <span class="hud-timeline">
+          <i class="hud-timeline-fill" style={{ width: `${(p.clock.progress ?? 0) * 100}%` }} />
+          {p.clock.marks.map((mk, i) => (
+            <i key={`${mk.kind}${i}`} class={`hud-mark hud-mark-${mk.kind}`} style={{ left: `${mk.at * 100}%` }} />
+          ))}
+        </span>
+        {tag ? (
+          <span class="hud-phase-tag" data-tag data-testid="hud-rope-step" key={tag}>
+            {t(tag)}
+          </span>
+        ) : p.next ? (
+          <span class={`hud-next-phase is-${p.next.kind}`} data-testid="hud-next-phase">
+            {t(`hud.nextPhase.${p.next.kind}`, { time: formatClock(p.next.inMs) })}
+          </span>
+        ) : null}
+      </button>
+      {open ? (
+        <div class="hud-esc-drop" role="note" data-testid="hud-rope-schedule">
+          <b class="hud-esc-title">{t('hud.rope.title')}</b>
+          {p.rope.rows.map((x) => (
+            <div key={x.key} class={`hud-esc-row is-${x.key === 'overdrive' ? 'overdrive' : x.key === 'bell' ? 'bell' : 'crumble'}${x.reached ? ' is-on' : ''}`}>
+              <span class="hud-esc-at">{formatClock(x.atMs)}</span>
+              <b>{t(`hud.rope.step.${x.key === 'overdrive' ? 'overdrive' : x.key === 'bell' ? 'bell' : x.key === 'r1' ? 'r1' : 'r2'}`)}</b>
+              <span>{what(x)}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 /** The "Crumbling" chip on a side whose base the Crumble rope takes now (A2.10.1; MR-126 in the HUD). */
 function Crumbling(p: { t: HudCtx['t'] }) {
   return (
@@ -454,6 +518,9 @@ export function TopBar(p: {
   const foeAge = ages[m.foe.ageIndex] ?? 'stone';
   const clock = clockView(m);
   const esc = escalationView(m, c.config, c.side);
+  const rope = ropeView(m, c.config, c.side);
+  // Who the rope takes now: Last Base Standing's Crumble steps or a timed war's Siege rope (A2.10.2).
+  const crumbling = esc?.crumbling ?? rope?.crumbling ?? null;
   const mySide = c.side;
   const foeSide = mySide === 0 ? 1 : 0;
   const bubble = (side: 0 | 1) => p.bubbles.filter((b) => b.side === side).slice(-1)[0];
@@ -484,8 +551,8 @@ export function TopBar(p: {
 
   return (
     <div class="hud-top" ref={p.topRef}>
-      <div ref={meEl} class={`hud-panel hud-side hud-me${esc?.crumbling.me ? ' is-crumbling' : ''}`} data-testid="hud-me">
-        {esc?.crumbling.me ? <Crumbling t={t} /> : null}
+      <div ref={meEl} class={`hud-panel hud-side hud-me${crumbling?.me ? ' is-crumbling' : ''}`} data-testid="hud-me">
+        {crumbling?.me ? <Crumbling t={t} /> : null}
         <Medallion age={myAge} team="me" label={t(`age.${myAge}.name`)} />
         <div class="hud-bars">
           <HpBar bp={m.me.baseHpBp} team="me" label={t('hud.baseHp')} />
@@ -501,7 +568,8 @@ export function TopBar(p: {
 
       <div class="hud-center">
         {esc ? <EscalationClock c={c} v={esc} /> : null}
-        {clock.progress !== null ? (
+        {rope && clock.progress !== null ? <RopeClock c={c} clock={clock} rope={rope} next={next} /> : null}
+        {!rope && clock.progress !== null ? (
           <div class={`hud-clock phase-${m.phase}`} data-testid="hud-clock" aria-label={t('hud.clockLabel')}>
             <div class="hud-clock-text">{clock.text}</div>
             <div class="hud-timeline">
@@ -526,8 +594,8 @@ export function TopBar(p: {
       </div>
       {c.view?.minimap ? <Minimap c={c} /> : null}
 
-      <div ref={foeEl} class={`hud-panel hud-side hud-foe${esc?.crumbling.foe ? ' is-crumbling' : ''}`} data-testid="hud-foe">
-        {esc?.crumbling.foe ? <Crumbling t={t} /> : null}
+      <div ref={foeEl} class={`hud-panel hud-side hud-foe${crumbling?.foe ? ' is-crumbling' : ''}`} data-testid="hud-foe">
+        {crumbling?.foe ? <Crumbling t={t} /> : null}
         <div class="hud-bars">
           <div class="hud-name hud-name-foe">
             {/* The foe is always an AI in a live battle (A7.1); in a replay shown from the AI's side

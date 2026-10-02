@@ -27,7 +27,18 @@ describe('lastBaseReason (A2.10.1)', () => {
     expect(lastBaseReason(input({ winner: 1, reason: 'retreat', tick: 2400 }), content, t)).toBe('You retreated at 2:00');
   });
 
-  it('is null in a timed war', () => {
-    expect(lastBaseReason(input({ winner: 0, reason: 'baseDestroyed', tick: 6000 }, 'full'), content, t)).toBeNull();
+  it('is null in a war without Siege steps (a War Path window)', () => {
+    expect(lastBaseReason(input({ winner: 0, reason: 'baseDestroyed', tick: 6000 }, 'w2.stone'), content, t)).toBeNull();
+  });
+});
+
+describe('the reason line of a timed war with the Siege rope (A2.10.2)', () => {
+  it('names a fall before Siege, a crumble in Siege and who led at the Final Bell', () => {
+    // Short War: Siege (and the rope) from 6:30, the Final Bell at 8:30.
+    expect(lastBaseReason(input({ winner: 0, reason: 'baseDestroyed', tick: 6000 }, 'short'), content, t)).toBe('Their base fell at 5:00');
+    expect(lastBaseReason(input({ winner: 1, reason: 'baseDestroyed', tick: 8400 }, 'short'), content, t)).toBe('Your walls crumbled at 7:00');
+    expect(lastBaseReason(input({ winner: 0, reason: 'finalBell', tick: 10200 }, 'short'), content, t)).toBe('You led at the Final Bell');
+    expect(lastBaseReason(input({ winner: 1, reason: 'finalBell', tick: 10200 }, 'standard'), content, t)).toBe('They led at the Final Bell');
+    expect(lastBaseReason(input({ winner: null, reason: 'finalBell', tick: 10200 }, 'full'), content, t)).toBe('Even at the Final Bell');
   });
 });

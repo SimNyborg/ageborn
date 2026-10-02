@@ -29,7 +29,8 @@ describe('Last Base Standing formats (A2.10.1)', () => {
     expect(last?.xpToNextOverride).toEqual(content.formats['full']?.xpToNextOverride);
     // Only the two 7-age windows exist.
     expect(Object.values(content.formats).filter((f) => f.kind === 'untimed').map((f) => f.id).sort()).toEqual(['last', 'last.bronze']);
-    expect(Object.values(content.formats).filter((f) => f.escalation).map((f) => f.id).sort()).toEqual(['last', 'last.bronze']);
+    // Siege steps: Last Base Standing and the Siege rope of every Short, Medium and Long War (A2.10.2).
+    expect(Object.values(content.formats).filter((f) => f.escalation && f.finalBellMs === null).map((f) => f.id).sort()).toEqual(['last', 'last.bronze']);
   });
 
   it('rises every 2:30 from Siege I at 14:30 and crumbles from 23:00 (the tuned table)', () => {

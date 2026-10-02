@@ -239,8 +239,32 @@ export function hudSamples(config: Readonly<MatchConfig>, side: Side = 0): HudSa
     s('fallback', 'Fall back stance', { me: { stance: 'fallback' } }),
     s('fast', 'Speed 2x and paused', { speed: 2, paused: true }),
     s('ended', 'Match over: the tray is disabled', { phase: 'ended', clockMs: 402_000, foe: { baseHpBp: 0 } }),
+    // The Siege rope of a timed war (A2.10.2): the countdown stays, a rope mark on the timeline, the
+    // crumbling side's chip and cracked bar, "Siege II" once the rope tightens.
+    ...(fmt?.escalation && fmt.finalBellMs !== null
+      ? (() => {
+          const at = fmt.escalation.map((x) => x.atMs);
+          const esc = (step: number, crumbling: [boolean, boolean]) => ({ step, steps: at.length, atMs: at, crumbling });
+          return [
+            s('ropeSiege', 'Siege with the rope: the opponent fights in its own half, its base crumbles', {
+              clockMs: (at[0] ?? 0) + 12_000,
+              phase: 'siege',
+              me: { ageIndex: lastAge, baseHpBp: 6400 },
+              foe: { ageIndex: lastAge, baseHpBp: 4300 },
+              escalation: esc(1, side === 0 ? [false, true] : [true, false]),
+            }),
+            s('ropeTight', 'Siege II: the rope tightened, your base crumbles (pushed back into your half)', {
+              clockMs: (at[1] ?? 0) + 15_000,
+              phase: 'siege',
+              me: { ageIndex: lastAge, baseHpBp: 2900 },
+              foe: { ageIndex: lastAge, baseHpBp: 3600 },
+              escalation: esc(2, side === 0 ? [true, false] : [false, true]),
+            }),
+          ];
+        })()
+      : []),
     // Last Base Standing (A2.10.1): the clock counts up over the 6-pip escalation meter.
-    ...(fmt?.escalation
+    ...(fmt?.escalation && fmt.finalBellMs === null
       ? (() => {
           const at = fmt.escalation.map((x) => x.atMs);
           const esc = (step: number, crumbling: [boolean, boolean]) => ({ step, steps: at.length, atMs: at, crumbling });

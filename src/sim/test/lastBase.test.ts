@@ -239,3 +239,51 @@ describe('Last Base Standing on the live content (A2.10.1)', () => {
     expect(o?.tick ?? Infinity).toBeLessThanOrEqual(T(1544000));
   });
 });
+
+describe('the Siege rope of the timed formats on the live content (A2.10.2)', () => {
+  const live = compileForSim(raw);
+  const timedSim = (format: string): Sim =>
+    createSim(matchConfig({ format, content: live, sides: [sideConfig(live), sideConfig(live, { isBot: true, label: 'AI Test' })] }));
+
+  it('gives Short, Medium and Long War (every start era) Siege steps from Siege and keeps their Final Bell', () => {
+    for (const id of ['short', 'standard', 'full', 'short.bronze', 'standard.medieval']) {
+      const f = live.formats[id];
+      expect(f?.escalation?.[0]?.atMs).toBe(f?.siegeMs);
+      expect(f?.escalation?.[0]?.crumbleBpPerSec ?? 0).toBeGreaterThan(0);
+      expect(f?.finalBellMs).not.toBeNull();
+      expect(f?.endByMs).toBeUndefined();
+    }
+    // Shorter War Path and custom windows keep today's Siege (symmetric decay, no steps).
+    expect(live.formats['w2.stone']?.escalation).toBeUndefined();
+  });
+
+  it('shows the rope and the Final Bell to both players, and runs the rope (no symmetric decay) from Siege', () => {
+    const sim = timedSim('short');
+    const f = live.formats['short']!;
+    const siege = T(f.siegeMs as number);
+    expect(sim.observe(0).escalation?.finalBellTick).toBe(T(f.finalBellMs as number));
+    const before = stepN(sim, siege);
+    expect(ofKind(before, 'escalated').map((e) => e.step)).toEqual([1]);
+    expect(sim.state.sides[0].baseHp).toBe(sim.state.sides[0].baseMaxHp);
+    // Both lanes are empty, so both sides crumble on the decay beat, at the first step's rate.
+    const beat = stepN(sim, 20);
+    const crumbled = ofKind(beat, 'crumbled');
+    expect(crumbled.map((e) => e.side)).toEqual([0, 1]);
+    expect(crumbled[0]?.amount).toBe(Math.trunc((sim.state.sides[0].baseMaxHp * (f.escalation![0]!.crumbleBpPerSec as number)) / BP));
+    expect(sim.observe(1).escalation?.crumbling).toEqual([true, true]);
+  });
+
+  it('a Final Bell still ends a timed war when both bases survive the rope', () => {
+    const sim = timedSim('full');
+    const f = live.formats['full']!;
+    stepN(sim, T(f.siegeMs as number) - 1);
+    // Two idle sides would crumble out before the Bell; keep both bases standing by refilling them.
+    for (let t = T(f.siegeMs as number); t < T(f.finalBellMs as number) + 5; t += 200) {
+      devSetBaseBp(sim, 0, BP);
+      devSetBaseBp(sim, 1, BP);
+      stepN(sim, 200);
+      if (sim.state.outcome) break;
+    }
+    expect(sim.state.outcome?.reason).toBe('finalBell');
+  });
+});

@@ -352,7 +352,9 @@
         "daily": "Daily Challenge",
         "warPath": "War Path"
       },
-      "lastRow": "No clock · Siege rises every {every} min from {from} · Crumble from {crumble}"
+      "lastRow": "No clock · Siege rises every {every} min from {from} · Crumble from {crumble}",
+      "ropeTitle": "Push or crumble",
+      "ropeRow": "Siege from {from}: the side fighting in its own half crumbles"
     },
     "pause": {
       "title": "Paused",
@@ -381,6 +383,11 @@
         "both": "Both bases fell together at {time}",
         "retreated": "You retreated at {time}",
         "theyRetreated": "They retreated at {time}"
+      },
+      "bellReason": {
+        "won": "You led at the Final Bell",
+        "lost": "They led at the Final Bell",
+        "even": "Even at the Final Bell"
       },
       "recap": "Battle recap",
       "rewards": "Rewards",
@@ -1014,7 +1021,7 @@
       "searching": "Searching for a player",
       "tip1": "Tip: evolve when your army holds the middle.",
       "tip2": "Tip: anti-heavy troops beat Heavies.",
-      "tip3": "Tip: Siege halves turret damage. Push!",
+      "tip3": "Tip: in Siege the side fighting in its own half crumbles. Push!",
       "noPlayerYet": "No player yet.",
       "playAi": "Play an AI General",
       "found": "Player found",

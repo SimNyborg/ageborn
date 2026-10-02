@@ -34,6 +34,12 @@ function lastBaseRow(steps: readonly { atMs: number; crumbleBpPerSec: number }[]
   return t('ui.vs.lastRow', { every, from: clock(steps[0]?.atMs ?? 0), crumble: clock(crumble?.atMs ?? 0) });
 }
 
+/** "Siege from 6:30: the side fighting in its own half crumbles" (the timed Siege rope, A2.10.2). */
+function ropeRow(steps: readonly { atMs: number }[], t: (k: string, p?: Record<string, string | number>) => string): string {
+  const ms = steps[0]?.atMs ?? 0;
+  return t('ui.vs.ropeRow', { from: `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, '0')}` });
+}
+
 /** Mode chips; the Tutorial format already reads "Training", so it has none. */
 const MODE_KEYS = {
   ladder: 'ui.vs.mode.ladder',
@@ -176,9 +182,13 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
               {t('ui.vs.warmUp')}
             </Pill>
           ) : null}
-          {content.formats[o.format]?.escalation ? (
+          {content.formats[o.format]?.escalation && content.formats[o.format]?.finalBellMs === null ? (
             <span class="vs__mod" data-testid="vs-last">
               <b>{t('ui.lastBase.title')}</b> {lastBaseRow(content.formats[o.format]!.escalation!, t)}
+            </span>
+          ) : content.formats[o.format]?.escalation ? (
+            <span class="vs__mod" data-testid="vs-rope">
+              <b>{t('ui.vs.ropeTitle')}</b> {ropeRow(content.formats[o.format]!.escalation!, t)}
             </span>
           ) : null}
           {o.modifiers.map((m) => (

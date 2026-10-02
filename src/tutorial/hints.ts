@@ -41,6 +41,8 @@ export class AdaptiveHints {
   private deaths: Death[] = [];
   private lastHintTick = -Infinity;
   private lastBaseHitTick = -Infinity;
+  /** Ticks of the rope beats (`crumbled`) on our base inside the window. */
+  private crumbles: number[] = [];
   private powerFullSince: number | null = null;
   private evolveReadySince: number | null = null;
   private outdatedSince: number | null = null;
@@ -99,9 +101,12 @@ export class AdaptiveHints {
         this.deaths.push({ tick, card: e.card, killerKind: e.killerKind, killerCard: e.killerCard });
       } else if (e.e === 'baseDamaged' && e.side === i.side) {
         this.lastBaseHitTick = tick;
+      } else if (e.e === 'crumbled' && e.side === i.side) {
+        this.crumbles.push(tick);
       }
     }
     this.deaths = this.deaths.filter((d) => tick - d.tick <= ADAPTIVE.windowTicks);
+    this.crumbles = this.crumbles.filter((t) => tick - t <= ADAPTIVE.windowTicks);
     const me = i.state.sides[i.side];
     this.powerFullSince = me.powerPpm[0] >= PPM_FULL ? (this.powerFullSince ?? tick) : null;
     this.evolveReadySince = evolveReady(i) ? (this.evolveReadySince ?? tick) : null;
@@ -111,6 +116,7 @@ export class AdaptiveHints {
   private resetPattern(id: AdaptiveHintId): void {
     const tick = this.lastHintTick;
     if (id === 'turretShredsMelee' || id === 'hold') this.deaths = [];
+    if (id === 'crumbling') this.crumbles = [];
     if (id === 'powerReady') this.powerFullSince = tick;
     if (id === 'evolveFirst') this.evolveReadySince = tick;
     if (id === 'modernise') this.outdatedSince = tick;
@@ -121,6 +127,8 @@ export class AdaptiveHints {
     const tick = i.state.tick;
     const units = i.config.content.units;
     switch (id) {
+      case 'crumbling':
+        return this.crumbles.length >= ADAPTIVE.crumbleBeats;
       case 'turretShredsMelee': {
         const hasRanged = loadoutUnits(i).some((c) => units[c]?.tags.includes('ranged'));
         const n = this.deaths.filter((d) => d.killerKind === 'turret' && units[d.card]?.tags.includes('melee')).length;
