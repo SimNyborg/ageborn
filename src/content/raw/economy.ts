@@ -62,16 +62,16 @@ export interface TimedRopeStep {
  */
 export const TIMED_ROPE: Readonly<Record<'short' | 'standard' | 'full', readonly TimedRopeStep[]>> = {
   short: [
-    { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 80 },
-    { afterSiegeMs: 45000, baseDamageBp: 30000, turretDamageBp: 3500, crumbleBpPerSec: 130 },
+    { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 85 },
+    { afterSiegeMs: 45000, baseDamageBp: 30000, turretDamageBp: 3500, crumbleBpPerSec: 135 },
   ],
   standard: [
     { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 65 },
     { afterSiegeMs: 60000, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 115 },
   ],
   full: [
-    { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 50 },
-    { afterSiegeMs: 60000, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 100 },
+    { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 75 },
+    { afterSiegeMs: 60000, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 125 },
   ],
 };
 

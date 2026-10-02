@@ -630,7 +630,7 @@ From Arena 2 the player picks any unlocked length before each ladder match on th
 |---|---|
 | Regulation | Normal rules |
 | Overdrive | Base passive gold (6/s) and passive XP ×2 (Treasury and Economy research income unchanged), Age Power charge ×1.25 (the power rework drops this bonus: reloads run at their normal rate, A2.9.3), faster music layer, gold frame pulse; the falling gate is on (A17.3) |
-| Siege | Overdrive effects continue; turret damage −50%, all damage to bases ×2, each base loses 0.5% of its max HP per second (applied every 20 ticks), forced march (unit movement ×1.2), the siege crowd at the gate (A17.3), siege bell, red vignette |
+| Siege | Overdrive effects continue; turret damage −50%, all damage to bases ×2, forced march (unit movement ×1.2), the siege crowd at the gate (A17.3), siege bell, red vignette. **Short, Medium and Long War (every start era): the Siege rope (A2.10.2)**: each second the side fighting in its own half loses a share of its base's max HP, and the rope tightens once. Shorter War Path and custom windows: each base loses 0.5% of its max HP per second (applied every 20 ticks) |
 | Final Bell | Higher base HP% wins; a gap ≤ 0.5% (50 bp) is a draw |
 
 **Wins:** destroy the enemy base. Both bases destroyed on the same tick is a draw. Retreat counts as a loss. War Path levels may set another victory rule (`MatchConfig.victory`: hold out until a time, or destroy a marked turret; a marked fort needs a pre-placed fort and is a later proposal, A16.14.5; A18.7.3).
@@ -641,7 +641,7 @@ From Arena 2 the player picks any unlocked length before each ladder match on th
 | Staying in the Stone Age to farm | Flat prices, bounty follows cost not age, underdog bonus is only 50% and off while Evolve is available, XP cap |
 | Going AFK | Passive gold is small; the clock ends the match |
 | Stuck in an age | Passive XP, XP from base damage and from losses |
-| Endless fighting at the gate | Siege decay and ×2 base damage |
+| Endless fighting at the gate | ×2 base damage in Siege, the Siege rope in Short, Medium and Long War (A2.10.2; Siege decay in the shorter windows) |
 | Special every cooldown for free gold | Power kills pay 30% gold and no XP, telegraph, 50% carry cap on evolve, slow Overcharge. With the power rework (A2.9): every cast costs gold and each slot reloads, a cast affects at most 1-6 units, Home powers land only in your own half, the evolve carry is capped at 75% |
 | Waiting for the enemy to mass an army, then wiping it (owner, 2026-09-29) | The power rework (A2.9): the target cap makes a big army worth no more than a small one, and only the enemies nearest the caster's gate are eligible (the screen), Home reach cannot touch an army staging in its own half, Front reach needs your army nearby, and the price and reload make an idle ready power lost value |
 | Stalling a war that has no Final Bell (Last Base Standing) | Rising Siege steps and the Crumble rope (A2.10.1); a guaranteed end by 25:44 |

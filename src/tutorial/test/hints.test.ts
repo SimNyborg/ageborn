@@ -21,6 +21,23 @@ describe('Adaptive hints (DESIGN A8)', () => {
     expect(run(new AdaptiveHints(), h, sec(120))).toEqual([]);
   });
 
+  it('"Your base crumbles...": 4 rope beats on our base within 20 s (A2.10.2); the enemy\'s do not count', () => {
+    const h = new Harness();
+    const hints = new AdaptiveHints();
+    const beat = (side: 0 | 1) => ({ e: 'crumbled' as const, side, amount: 100 });
+    for (let i = 0; i < 6; i += 1) {
+      h.advance(sec(1));
+      expect(hints.update(h.input([beat(1)]))).toBeNull();
+    }
+    for (let i = 0; i < 3; i += 1) {
+      h.advance(sec(1));
+      expect(hints.update(h.input([beat(0)]))).toBeNull();
+    }
+    h.advance(sec(1));
+    expect(hints.update(h.input([beat(0)]))).toMatchObject({ id: 'crumbling', textKey: 'tutorial.hint.crumbling', target: 'stance' });
+    expect(ADAPTIVE.crumbleBeats).toBe(4);
+  });
+
   it('"Their turret shreds melee": 3 melee units killed by turrets within 20 s', () => {
     const h = new Harness();
     const hints = new AdaptiveHints();
