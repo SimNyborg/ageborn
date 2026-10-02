@@ -117,6 +117,23 @@ export function unitMass(group: RoleGroup | null, heightLu: number): UnitMass {
   return 'light';
 }
 
+/**
+ * Owner feedback 2026-10-02 ("they float"): code motion layered on the walk sheet, so every unit
+ * steps. Two bounces per walk cycle (one per foot), lowest at contact, plus a small side-to-side
+ * sway; heavier units bounce less and barely sway. `phase` is the walk clip's progress, 0..1.
+ * Returns the y offset (lu, + is down) and the rotation (radians).
+ */
+export const WALK_STEP: Readonly<Record<UnitMass, { bobLu: number; swayRad: number }>> = {
+  light: { bobLu: 4, swayRad: 0.06 },
+  medium: { bobLu: 3, swayRad: 0.035 },
+  heavy: { bobLu: 2, swayRad: 0.012 },
+};
+export function walkStep(mass: UnitMass, phase: number): { y: number; rot: number } {
+  const w = WALK_STEP[mass];
+  const a = (((phase % 1) + 1) % 1) * Math.PI * 2;
+  return { y: -Math.abs(Math.sin(a)) * w.bobLu, rot: Math.sin(a) * w.swayRad };
+}
+
 /** MR-100 spawn arrival: y offset (lu, + is down) and alpha at `t` ms. */
 export function spawnArrival(mass: UnitMass, t: number): { y: number; alpha: number } {
   const w = UNIT_WEIGHT[mass];
@@ -719,6 +736,13 @@ class AtlasUnitView implements UnitView {
         this.flinchT += animDt;
         if (this.flinchT >= UNIT_WEIGHT[this.mass()].flinchMs) this.flinchT = -1;
       }
+      let rot = 0;
+      if (this.base && this.base.name === 'walk' && !this.action && !this.dead && this.base.durationMs > 0) {
+        const st = walkStep(this.mass(), this.base.t / this.base.durationMs);
+        oy += st.y;
+        rot = st.rot;
+      }
+      this.body.rotation = rot;
       if (this.requested === 'victory' && !this.action) {
         this.hop += animDt;
         oy -= Math.abs(Math.sin((this.hop / 700) * Math.PI)) * 8;

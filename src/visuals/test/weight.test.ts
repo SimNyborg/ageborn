@@ -3,7 +3,7 @@
  * the spawn arrival and the hit reaction are offsets and timing by mass, never a scale squash.
  */
 import { describe, expect, it } from 'vitest';
-import { flinchOffset, spawnArrival, unitMass, UNIT_WEIGHT, type UnitMass } from '../adapters/atlas';
+import { flinchOffset, spawnArrival, unitMass, UNIT_WEIGHT, walkStep, WALK_STEP, type UnitMass } from '../adapters/atlas';
 
 const MASSES: UnitMass[] = ['light', 'medium', 'heavy'];
 
@@ -55,5 +55,20 @@ describe('unit weight (5.8)', () => {
       expect(UNIT_WEIGHT[m].flinchMs).toBeGreaterThanOrEqual(120);
       expect(UNIT_WEIGHT[m].flinchMs).toBeLessThanOrEqual(200);
     }
+  });
+});
+
+describe('walkStep (owner feedback 2026-10-02: units step, not float)', () => {
+  it('bounces twice per cycle, grounded at contact, lighter units more', () => {
+    for (const m of ['light', 'medium', 'heavy'] as const) {
+      expect(walkStep(m, 0).y).toBeCloseTo(0);
+      expect(walkStep(m, 0.5).y).toBeCloseTo(0);
+      expect(walkStep(m, 0.25).y).toBeCloseTo(-WALK_STEP[m].bobLu);
+      expect(walkStep(m, 0.75).y).toBeCloseTo(-WALK_STEP[m].bobLu);
+      expect(walkStep(m, 1.25).y).toBeCloseTo(walkStep(m, 0.25).y);
+      expect(Math.abs(walkStep(m, 0.25).rot)).toBeCloseTo(WALK_STEP[m].swayRad);
+    }
+    expect(WALK_STEP.light.bobLu).toBeGreaterThan(WALK_STEP.heavy.bobLu);
+    expect(WALK_STEP.light.swayRad).toBeGreaterThan(WALK_STEP.heavy.swayRad);
   });
 });
