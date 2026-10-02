@@ -160,9 +160,17 @@ describe(`${OPENINGS} capsule openings through Meta (A6.4, A6.5, C4 #5)`, () => 
 describe('drop pools by arena (A17.13)', () => {
   it('Arena 1 drops the Short War ages, Arena 2 the Standard War ages, Arena 3 and up all 8', async () => {
     const { poolOf } = await import('../tables');
-    const size = (i: number) => poolOf(C, C.arenas.list[i]!.dropAges).cards.length;
-    // 11 cards per age (7 units, 4 turrets)
-    expect([size(0), size(1), size(2), size(7)]).toEqual([44, 66, 88, 88]);
+    // The 88 original cards: 11 per age (7 units, 4 turrets) wherever their age drops.
+    const original = (i: number) => poolOf(C, C.arenas.list[i]!.dropAges, i).cards.filter((id) => !(id in C.cardArena)).length;
+    expect([original(0), original(1), original(2), original(7)]).toEqual([44, 66, 88, 88]);
+    // X0: content-wave cards join from the arena their rarity unlocks (Commons 2, Rares 3, Epics 4, Legendaries 5).
+    const wave = (i: number) => poolOf(C, C.arenas.list[i]!.dropAges, i).cards.filter((id) => id in C.cardArena);
+    expect(wave(0)).toEqual([]);
+    for (let i = 1; i < C.arenas.list.length; i += 1) {
+      for (const id of wave(i)) expect(C.cardArena[id]! <= i + 1, `${id} in arena ${i + 1}`).toBe(true);
+      const want = Object.entries(C.cardArena).filter(([id, a]) => a <= i + 1 && C.arenas.list[i]!.dropAges.includes((C.units[id] ?? C.turrets[id])!.age)).length;
+      expect(wave(i)).toHaveLength(want);
+    }
     const ages = new Set(poolOf(C, C.arenas.list[0]!.dropAges).cards.map((id) => (C.units[id] ?? C.turrets[id])!.age));
     expect([...ages].sort()).toEqual(['bronze', 'gunpowder', 'medieval', 'stone']);
   });

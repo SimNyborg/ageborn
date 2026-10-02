@@ -78,28 +78,31 @@ export interface Pool {
 
 const poolCache = new WeakMap<Content, Map<string, Pool>>();
 
-function buildPool(t: Content, ages: readonly AgeId[]): Pool {
+function buildPool(t: Content, ages: readonly AgeId[], arenaIndex: number | null): Pool {
   const inAges = (age: AgeId): boolean => ages.includes(age);
   const cards = [
-    ...t.order.units.filter((id) => inAges(t.units[id]?.age ?? 'stone') && isCollectable(t, id)),
-    ...t.order.turrets.filter((id) => inAges(t.turrets[id]?.age ?? 'stone')),
+    ...t.order.units.filter((id) => inAges(t.units[id]?.age ?? 'stone') && isCollectable(t, id) && inArenaPool(t, id, arenaIndex)),
+    ...t.order.turrets.filter((id) => inAges(t.turrets[id]?.age ?? 'stone') && inArenaPool(t, id, arenaIndex)),
   ];
   const byRarity: Record<Rarity, CardId[]> = { common: [], rare: [], epic: [], legendary: [] };
   for (const id of cards) byRarity[cardRarity(t, id)].push(id);
   return { cards, byRarity };
 }
 
-/** The drop pool of a set of ages (an arena's drop ages, or one age for an Age Capsule), cached. */
-export function poolOf(t: Content, ages: readonly AgeId[]): Pool {
+/**
+ * The drop pool of a set of ages (an arena's drop ages, or one age for an Age Capsule), cached. With
+ * `arenaIndex` (0-based, the player's arena) content-wave cards join only from their `cardArena` (X0).
+ */
+export function poolOf(t: Content, ages: readonly AgeId[], arenaIndex: number | null = null): Pool {
   let byKey = poolCache.get(t);
   if (!byKey) {
     byKey = new Map();
     poolCache.set(t, byKey);
   }
-  const key = ages.join(',');
+  const key = `${ages.join(',')}@${arenaIndex ?? '*'}`;
   let pool = byKey.get(key);
   if (!pool) {
-    pool = buildPool(t, ages);
+    pool = buildPool(t, ages, arenaIndex);
     byKey.set(key, pool);
   }
   return pool;
@@ -118,14 +121,30 @@ export function ageCards(t: Content, age: AgeId): { units: CardId[]; turrets: Ca
  * starter loadout since owner feedback 2026-09-29 (A3, build phase H3). Null for an age without one.
  */
 export function antiHeavyCard(t: Content, age: AgeId): CardId | null {
-  return ageCards(t, age).units.find((id) => t.units[id]?.group === 'antiArmor' && t.units[id]?.rarity === 'rare') ?? null;
+  const units = ageCards(t, age).units;
+  const aa = (id: CardId): boolean => t.units[id]?.group === 'antiArmor' && t.units[id]?.rarity === 'rare';
+  return units.find((id) => aa(id) && t.units[id]?.starter === true) ?? units.find(aa) ?? null;
 }
 
-/** A card of the starter kit (A3): every collectable Common unit and turret and each age's Anti-heavy Rare. */
+/**
+ * A card of the starter kit (A3, X0): the cards flagged `starter` in content (each age's three original
+ * Common units, its two original Common turrets and its Anti-heavy Rare). Commons from a content wave are
+ * capsule cards with discovery, NEW flags and copies like any other card.
+ */
 export function isStarterCard(t: Content, id: CardId): boolean {
   const def = t.units[id] ?? t.turrets[id];
   if (!def || !isCollectable(t, id)) return false;
-  return def.rarity === 'common' || antiHeavyCard(t, def.age) === id;
+  return def.starter === true;
+}
+
+/**
+ * Can a card drop for this arena (X0, CONTENT_PLAN 6)? A content-wave card joins the drop pools from the
+ * arena its rarity unlocks (`content.cardArena`); every other card wherever its age drops.
+ */
+export function inArenaPool(t: Content, id: CardId, arenaIndex: number | null): boolean {
+  if (arenaIndex === null) return true;
+  const from = t.cardArena?.[id];
+  return from === undefined || arenaIndex + 1 >= from;
 }
 
 /** The age's starter power of a slot (A2.9.8: found by `source: 'starter'` and `slot`). */

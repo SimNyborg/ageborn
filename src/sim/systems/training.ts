@@ -45,7 +45,8 @@ export function trainingSystem(ctx: Ctx): void {
         continue;
       }
       s.queue.splice(i, 1);
-      spawnUnit(ctx, side, item.card, xOf(ctx.econ.spawnP, side), cardLevel(ctx, side, item.card), false);
+      // A squad card spawns all its members at p 20 on the same tick (X0 M1; spawn overlap is legal, A2.7).
+      for (let m = 0; m < r.squad; m += 1) spawnUnit(ctx, side, item.card, xOf(ctx.econ.spawnP, side), cardLevel(ctx, side, item.card), false);
       markPlayed(s, item.card);
       changed = true;
     }

@@ -32,7 +32,7 @@ import { starPitchBp, useKit } from '../../components/kit';
 import { blockingOverlays } from '../../components/overlay';
 import type { MatchRequest, RouteOf } from '../../router';
 import { useUi } from '../context';
-import { levelNameKey, mapNodes, mapRegions, playLevelId, playTarget, progressOf, regionNameKey, type MapNode } from '../model/warPath';
+import { levelNameKey, mapNodes, mapRegions, playLevelId, playTarget, progressOf, regionNameKey, sideMapNodes, type MapNode } from '../model/warPath';
 import { askFullscreen } from '../shared/fullscreen';
 import { useMatchStarter } from '../shared/MatchStarter';
 import { LevelSheet } from './LevelSheet';
@@ -97,6 +97,7 @@ export function WarPathScreen(_p: { route: RouteOf<'warPath'> }) {
 
   const nodes = useMemo(() => mapNodes(s, content), [wp, content]);
   const regions = useMemo(() => mapRegions(s, content), [wp, content]);
+  const sides = useMemo(() => sideMapNodes(s, content), [wp, content]);
   const order = content.warPath.order;
   const playId = playLevelId(s, content);
   const playIndex = order.indexOf(playId);
@@ -265,6 +266,7 @@ export function WarPathScreen(_p: { route: RouteOf<'warPath'> }) {
     >
       <WarPathMap
         nodes={nodes}
+        sides={sides}
         regions={regions}
         current={playIndex}
         insets={insets}

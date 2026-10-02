@@ -32,7 +32,7 @@ import { starterLoadout, activePlan } from './warplan';
 import { dailyDrawAt, defaultDailyDifficulty } from './daily';
 import { ladderTier } from './mmr';
 import { COMMANDER_ID_PREFIX, FIRST_LADDER_GENERAL, GENERAL_SHARE_BP, META_FLAGS, TUTORIAL_MATCH2 } from './rules';
-import { ageCards, arenaOf, RARITY_INDEX } from './tables';
+import { ageCards, arenaOf, inArenaPool, RARITY_INDEX } from './tables';
 import type { LocalTime } from './time';
 import { levelDef, levelTier, nextLevelId, warPathOf } from './warPath';
 
@@ -101,9 +101,9 @@ function clampLevel(t: Content, level: number): number {
   return Math.max(1, Math.min(t.economy.maxLevel, level));
 }
 
-function fill(ids: (CardId | null)[], pool: readonly CardId[]): (CardId | null)[] {
+function fill(ids: (CardId | null)[], pool: readonly CardId[], upTo: number = ids.length): (CardId | null)[] {
   const out = [...ids];
-  for (let i = 0; i < out.length; i += 1) {
+  for (let i = 0; i < out.length && i < upTo; i += 1) {
     if (out[i] !== null) continue;
     const next = pool.find((c) => !out.includes(c));
     if (next) out[i] = next;
@@ -115,17 +115,27 @@ function fill(ids: (CardId | null)[], pool: readonly CardId[]): (CardId | null)[
  * A plan limited to the arena's rarity allowance (A6.8): cards above `maxRarity` are replaced by
  * allowed cards of the same age, and the age's Legendary joins where the player brings one.
  */
-export function allowedPlan(t: Content, plan: Plan | null, ages: readonly AgeId[], maxRarity: Rarity, legendaries: Partial<Record<AgeId, CardId>>): Plan {
+export function allowedPlan(
+  t: Content,
+  plan: Plan | null,
+  ages: readonly AgeId[],
+  maxRarity: Rarity,
+  legendaries: Partial<Record<AgeId, CardId>>,
+  arenaIndex: number | null = null,
+): Plan {
   const cap = RARITY_INDEX[maxRarity];
+  // X0: a content-wave card only from the arena that drops it (a player there could own it, `cardArena`).
   const allowed = (id: CardId): boolean => {
     const d = t.units[id] ?? t.turrets[id];
-    return !!d && d.rarity !== 'legendary' && RARITY_INDEX[d.rarity] <= cap && !(t.units[id]?.hidden ?? false);
+    return !!d && d.rarity !== 'legendary' && RARITY_INDEX[d.rarity] <= cap && !(t.units[id]?.hidden ?? false) && inArenaPool(t, id, arenaIndex);
   };
   const out: Plan = {};
   for (const age of ages) {
     const src = plan?.[age] ?? starterLoadout(t, age);
     const { units, turrets } = ageCards(t, age);
-    let u = fill(src.units.map((id) => (id !== null && allowed(id) ? id : null)), units.filter(allowed));
+    // The sixth troop slot (X0: a General's content-wave signature card) stays empty when its card is not
+    // allowed yet, so early bots field the same five cards as before.
+    let u = fill(src.units.map((id) => (id !== null && allowed(id) ? id : null)), units.filter(allowed), 5);
     const legendary = legendaries[age] ? units.find((id) => t.units[id]?.rarity === 'legendary') : undefined;
     if (legendary && !u.includes(legendary)) {
       const epic = u.findIndex((id) => id !== null && t.units[id]?.rarity === 'epic');
@@ -206,7 +216,7 @@ function ladderGeneral(s: SaveDoc, t: Content, g: GeneralDef, tier: number, aren
     legendaryLevels = Object.fromEntries(Object.keys(t.units).filter((id) => t.units[id]?.rarity === 'legendary').map((id) => [id, g.legendaryLevel ?? level]));
   } else {
     const legendaries = playerLegendaries(s, t, ages);
-    loadouts = allowedPlan(t, g.warPlan, ages, arena.botMaxRarity, legendaries);
+    loadouts = allowedPlan(t, g.warPlan, ages, arena.botMaxRarity, legendaries, arena.index - 1);
     legendaryLevels = mirroredLegendaryLevels(s, legendaries);
   }
   return spec({
@@ -231,7 +241,7 @@ function commander(s: SaveDoc, t: Content, rng: Sfc32State, tier: number, arena:
   const delta = [-1, 0, 1][pickWeighted(rng, [roll.minus, roll.zero, roll.plus])] ?? 0;
   const level = clampLevel(t, arena.botLevel + delta);
   const legendaries = playerLegendaries(s, t, ages);
-  const loadouts = allowedPlan(t, generalDef(t, personality)?.warPlan ?? null, ages, arena.botMaxRarity, legendaries);
+  const loadouts = allowedPlan(t, generalDef(t, personality)?.warPlan ?? null, ages, arena.botMaxRarity, legendaries, arena.index - 1);
   const units = ages.flatMap((age) => loadouts[age]?.units ?? []).filter((id): id is CardId => id !== null);
   const favorite = units.length > 0 ? pick(rng, units) : null;
   return spec({
@@ -290,7 +300,7 @@ function dailyOpponent(s: SaveDoc, t: Content, lt: LocalTime, difficulty: DailyD
   if (!g) throw new Error('meta: the content has no Daily Generals');
   const ages = formatAges(t, ch.format);
   const std = ch.standardLevel;
-  const loadouts = allowedPlan(t, g.warPlan, ages, 'epic', playerLegendaries(s, t, ages));
+  const loadouts = allowedPlan(t, g.warPlan, ages, 'epic', playerLegendaries(s, t, ages), s.arenaIndex);
   return spec({
     generalId: g.id,
     displayName: g.nameKey,

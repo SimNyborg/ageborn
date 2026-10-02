@@ -12,7 +12,7 @@
  * Visual, effect and sound ids are checked against the manifests in `tests/integrity` (WP12, B4).
  */
 import * as v from 'valibot';
-import type { AttackDef, PowerDef, PowerEffect, PowerFamily, UnitDef } from '@/contracts/content';
+import type { AttackDef, FortKind, PowerDef, PowerEffect, PowerFamily, UnitDef } from '@/contracts/content';
 import type { AgeId, CardId, Rarity, RoleGroup } from '@/contracts/ids';
 import type { Loadout } from '@/contracts/sim';
 import { BP, LANE_MLU, MILLI } from '@/core/fixed';
@@ -20,7 +20,7 @@ import { skinnedVisualId } from '@/core/ids';
 import { AGE_ORDER } from './ages';
 import type { RawContent } from './raw/types';
 import { roadAmber } from './trophyRoad';
-import type { Content } from './types';
+import type { AgeRosterShape, Content } from './types';
 
 // ---------------------------------------------------------------------------------------------
 // Primitives
@@ -130,7 +130,10 @@ export const AbilitySchema = v.variant('kind', [
     kind: v.literal('callStrike'), everyMs: pos, searchRange: pos, delayMs: pos, damage: pos, radius: pos, sideLockoutMs: nonNeg,
   }),
   v.strictObject({ kind: v.literal('emp'), everyMs: pos, triggerRadius: pos, radius: pos, stunMs: pos }),
-  v.strictObject({ kind: v.literal('timeStop'), everyMs: pos, radius: pos, freezeMs: pos, legendaryFreezeMs: pos }),
+  v.strictObject({ kind: v.literal('timeStop'), everyMs: pos, radius: pos, freezeMs: pos, legendaryFreezeMs: pos, frozen: v.optional(v.boolean()) }),
+  // X0 M2 Frenzy and M3 Summoner
+  v.strictObject({ kind: v.literal('frenzy'), belowHpBp: bp, damageBp: bp, attackSpeedBp: bp }),
+  v.strictObject({ kind: v.literal('summon'), card: id, firstMs: pos, everyMs: pos, maxAlive: pos }),
   v.strictObject({ kind: v.literal('innateShield'), amount: pos, regenPerSec: nonNeg, delayMs: nonNeg }),
   v.strictObject({ kind: v.literal('resist'), minSourceRange: nonNeg, bp }),
   v.strictObject({ kind: v.literal('brace') }),
@@ -166,6 +169,10 @@ export const UnitSchema = v.strictObject({
   fort: v.optional(v.strictObject({ kind: v.picklist(['wall', 'tower', 'camp']) })),
   levy: v.optional(v.boolean()),
   aiValue: v.optional(nonNeg),
+  // X0: M3 summons, M1 squads and the starter flag
+  summon: v.optional(v.boolean()),
+  squad: v.optional(v.strictObject({ count: v.picklist([2, 3]) })),
+  starter: v.optional(v.boolean()),
 });
 
 /** A Fort card (A16.14.8). */
@@ -178,6 +185,8 @@ export const FortSchema = v.strictObject({
   source: v.picklist(['starter', 'unlock', 'warPath']),
   road: v.optional(pos),
   warPathLevel: v.optional(pos),
+  warPathSide: v.optional(v.picklist([1, 2])),
+  warPathStars: v.optional(pos),
   cost: pos,
   pop: pos,
   hp: nonNeg,
@@ -211,6 +220,7 @@ export const TurretSchema = v.strictObject({
   visualId: visual,
   nameKey: key,
   descKey: key,
+  starter: v.optional(v.boolean()),
 });
 
 const PowerEffectSchema = v.variant('kind', [
@@ -239,14 +249,16 @@ export const PowerSchema = v.strictObject({
   kind: v.literal('power'),
   age: AGE,
   slot: v.picklist(['home', 'field']),
-  reach: v.picklist(['home', 'front', 'anywhere', 'army']),
+  reach: v.picklist(['home', 'front', 'anywhere', 'army', 'lane']),
   family: v.picklist([
     'bombard', 'sweep', 'snare', 'pull', 'stun', 'flak', 'charge', 'frontBarrage', 'strike', 'suppress', 'rally', 'ward', 'mend', 'cloud', 'drop',
+    'volley', 'signal',
   ]),
   rarity: v.picklist(['common', 'rare', 'epic']),
   source: v.picklist(['starter', 'road', 'warPath']),
   road: v.optional(pos),
   warPathLevel: v.optional(pos),
+  warPathSide: v.optional(v.picklist([1, 2])),
   cost: pos,
   reloadMs: pos,
   telegraphMs: pos,
@@ -785,14 +797,14 @@ const StarGoalSchema = v.variant('kind', [
   v.strictObject({ kind: v.literal('powerHits'), n: pos }),
 ]);
 const WarPathSchema = v.strictObject({
-  regions: v.array(v.strictObject({ age: AGE, baseTier: nonNeg, levels: v.array(v.string()) })),
+  regions: v.array(v.strictObject({ age: AGE, baseTier: nonNeg, levels: v.array(v.string()), sides: v.optional(v.array(v.string())) })),
   levels: v.record(
     v.pipe(v.string(), v.regex(/^wp\.[a-z]+\.(l\d\d|s\d)$/)),
     v.strictObject({
       id: v.string(),
       region: AGE,
       index: pos,
-      role: v.picklist(['intro', 'practice', 'mix', 'feature', 'lieutenant', 'relief', 'ramp', 'puzzle', 'spike', 'boss']),
+      role: v.picklist(['intro', 'practice', 'mix', 'feature', 'lieutenant', 'relief', 'ramp', 'puzzle', 'spike', 'boss', 'side']),
       format: FORMAT_KEY,
       general: id,
       tierOffset: int,
@@ -803,6 +815,7 @@ const WarPathSchema = v.strictObject({
       reward: v.strictObject({ amber: nonNeg, capsule: v.nullable(TIER), card: v.nullable(id) }),
       boss: v.nullable(v.strictObject({ baseHpBp: bp, extraTurret: id })),
       onboarding: v.nullable(v.picklist([1, 2])),
+      side: v.optional(v.strictObject({ n: v.picklist([1, 2]), after: pos })),
     }),
   ),
   order: v.array(v.string()),
@@ -841,6 +854,15 @@ export const ContentSchema = v.strictObject({
   cosmetics: CosmeticsSchema,
   feats: FeatsSchema,
   warPath: WarPathSchema,
+  rosterShape: perAge(
+    v.strictObject({
+      units: v.strictObject({ common: pos, rare: pos, epic: pos, legendary: pos }),
+      turrets: v.strictObject({ common: pos, rare: pos, epic: pos }),
+      powers: v.strictObject({ home: pos, field: pos }),
+      forts: v.strictObject({ wall: pos, tower: pos, camp: pos, trap: pos }),
+    }),
+  ),
+  cardArena: v.record(id, pos),
   counters: v.record(id, v.record(id, v.pipe(v.number(), v.minValue(0), v.maxValue(1)))),
   ticks: TicksSchema,
   int: IntegerTablesSchema,
@@ -926,12 +948,21 @@ function checkForts(issues: Issues, c: Content): void {
     issues.check(x.age in c.ages, p, `unknown age "${x.age}"`);
     issues.check(x.visualId === `fort.${x.id}`, p, 'visualId must be fort.<slug> (A16.14.8)');
     issues.check(x.nameKey === `card.${x.id}.name` && x.descKey === `card.${x.id}.desc`, p, 'string keys must be card.<slug>.name/desc');
-    issues.check(x.cost === costOf[x.fortKind] || (x.fortKind === 'wall' && x.cover !== undefined && x.cost === 175), p, 'fort costs by kind: Wall 125 (Bunker 175), Trap 100, Camp 150, Tower 150 (A16.14.1)');
+    // X0 fort variants: granted by a side node or a star milestone, with a Road set tile (4,100-5,000).
+    const variant = x.warPathSide !== undefined || x.warPathStars !== undefined;
+    issues.check(
+      x.cost === costOf[x.fortKind] || (x.fortKind === 'wall' && (x.cover !== undefined || variant) && x.cost === 175) || (x.fortKind === 'wall' && variant && x.cost === 100),
+      p,
+      'fort costs by kind: Wall 125 (Bunker, cover or heavy wall 175, cheap wall 100), Trap 100, Camp 150, Tower 150 (A16.14.1, X0)',
+    );
     issues.check(x.pop === (x.fortKind === 'trap' ? 3 : 6), p, 'fort pop: 6, a Trap 3 (A16.14.1)');
     issues.check(x.size === (x.fortKind === 'tower' ? 'medium' : x.fortKind === 'trap' ? null : 'large'), p, 'towers medium, walls and camps large, traps no body');
     issues.check(x.pads === (x.fortKind === 'camp' ? 'any' : 'home'), p, 'only camps may use Field pads (A16.14.1)');
     issues.check(x.rarity === (x.fortKind === 'wall' ? 'common' : x.fortKind === 'tower' ? 'epic' : 'rare'), p, 'Walls Common, Camps and Traps Rare, Towers Epic');
-    if (x.fortKind === 'wall') issues.check(x.source === 'starter' && x.warPathLevel === undefined, p, 'walls are starter cards (A16.14.6)');
+    if (variant) {
+      issues.check(x.source === 'warPath' && x.warPathLevel === undefined && (x.warPathSide === 2 || (x.warPathStars ?? 0) > 0), p, 'a fort variant comes from side node s2 or a star milestone (X0)');
+      issues.check(x.road !== undefined && x.road >= 4100 && x.road <= 5000, p, 'a fort variant has a Road set tile 4,100-5,000 (X0)');
+    } else if (x.fortKind === 'wall') issues.check(x.source === 'starter' && x.warPathLevel === undefined, p, 'walls are starter cards (A16.14.6)');
     else if (x.age === 'stone') issues.check(x.source === 'unlock', p, 'the Stone Camp, Trap and Tower come with the unlock (A16.14.6)');
     else {
       const lvl = x.fortKind === 'camp' ? 4 : x.fortKind === 'trap' ? 6 : 8;
@@ -959,7 +990,9 @@ function checkForts(issues: Issues, c: Content): void {
     }
     if (x.fortKind === 'tower') {
       const a = x.attack;
-      issues.check(a !== undefined && a.hitsGround && (a.windupPct ?? 0) === 0 && !a.splashRadius && !a.chain && !a.pierce && !a.cleave, p, 'a tower has one single-target attack with 0% windup (A16.14.3)');
+      // X0 tower variants may lob a small splash (≤ 30) or chain to 2 (the plan's lob and chain towers).
+      const area = variant ? (a?.splashRadius ?? 0) <= 30 && (a?.chain?.count ?? 0) <= 2 : !a?.splashRadius && !a?.chain;
+      issues.check(a !== undefined && a.hitsGround && (a.windupPct ?? 0) === 0 && area && !a.pierce && !a.cleave, p, 'a tower has one single-target attack with 0% windup (variants: a small splash or a chain) (A16.14.3, X0)');
       if (a) {
         for (let i = 0; i < f.homePads; i += 1) {
           const pad = f.pads[i] as number;
@@ -974,8 +1007,11 @@ function checkForts(issues: Issues, c: Content): void {
     } else issues.check(x.camp === undefined, p, 'only camps spawn');
   }
   for (const age of AGE_ORDER) {
-    const kinds = list.filter((x) => x.age === age).map((x) => x.fortKind).sort();
-    if (list.length > 0) issues.check(kinds.join() === 'camp,tower,trap,wall', `forts.${age}`, 'one Wall, Tower, Camp and Trap per age (A16.14.4)');
+    const kinds = list.filter((x) => x.age === age).map((x) => x.fortKind);
+    const want = c.rosterShape[age].forts;
+    const n = (k: FortKind): number => kinds.filter((x) => x === k).length;
+    if (list.length > 0) issues.check(n('wall') === want.wall && n('tower') === want.tower && n('camp') === want.camp && n('trap') === want.trap, `forts.${age}`, 'forts per kind follow the roster shape (A16.14.4, X0)');
+    if (list.length > 0) issues.check(list.filter((x) => x.age === age && x.fortKind === 'wall' && x.source === 'starter').length === 1, `forts.${age}`, 'one starter wall per age (A16.14.6)');
     // A16.14.1 cover invariant: a large fort on the last Home pad stops a small attacker inside the long-range Common turret's reach.
     const long = longCommonRange(c, age);
     if (long > 0) issues.check(lastHome + halfLarge + halfSmall <= long, `forts.${age}`, `the blocked front (${lastHome + halfLarge + halfSmall}) stands inside the long-range Common turret (${long}) (A16.14.1)`);
@@ -1003,7 +1039,13 @@ function checkCards(issues: Issues, c: Content): void {
     } else {
       issues.check(u.role !== 'fort' && u.group !== 'fort', p, 'only fort twins use the fort role and group');
       issues.check(u.speed > 0 && u.trainMs > 0, p, 'units move and train (A2.7)');
-      issues.check(u.levy === true ? u.cost === 0 && u.hidden === true && (u.aiValue ?? 0) > 0 : u.cost > 0, p, 'cards cost gold; a levy costs 0 and carries an AI value (A16.14.3)');
+      const free = u.levy === true || u.summon === true;
+      issues.check(free ? u.cost === 0 && u.hidden === true && (u.aiValue ?? 0) > 0 : u.cost > 0, p, 'cards cost gold; a levy or summon costs 0 and carries an AI value (A16.14.3, X0 M3)');
+      issues.check(!(u.levy === true && u.summon === true), p, 'a card is a levy or a summon, not both');
+      // X0 M1: a squad's group pop splits evenly over its members.
+      if (u.squad) issues.check(u.pop % u.squad.count === 0 && u.cost % u.squad.count === 0, p, 'a squad card\'s pop and cost divide evenly by its count (X0 M1)');
+      if (u.squad) issues.check(u.group === 'infantry' || u.group === 'ranged', p, 'squads are Infantry or Ranged cards (X0 M1)');
+      if (u.starter) issues.check(!u.hidden && (u.rarity === 'common' || (u.rarity === 'rare' && u.group === 'antiArmor')), p, 'starters are Commons and the Anti-heavy Rare (X0)');
     }
     issues.check(u.nameKey === `card.${u.id}.name` && u.descKey === `card.${u.id}.desc`, p, 'string keys must be card.<slug>.name/desc');
     issues.check(new Set(u.tags).size === u.tags.length, p, 'duplicate tag');
@@ -1014,11 +1056,21 @@ function checkCards(issues: Issues, c: Content): void {
         checkAttack(issues, `${p}.riders`, ab.attack, c);
         issues.check(c.units[ab.onDeathSpawn] !== undefined, p, `riders spawn unknown unit "${ab.onDeathSpawn}"`);
       }
+      if (ab.kind === 'summon') {
+        const sm = c.units[ab.card];
+        issues.check(sm !== undefined && sm.summon === true && sm.age === u.age, p, `"${ab.card}" is not a summon card of this age (X0 M3)`);
+        issues.check(ab.maxAlive >= 1 && ab.maxAlive <= 3, p, 'a summoner keeps 1-3 summons alive (X0 M3)');
+      }
+      if (ab.kind === 'frenzy') {
+        // X0 M2 inside the A18.2 caps: at most +35% damage and +25% attack speed.
+        issues.check(ab.damageBp <= 3500 && ab.attackSpeedBp <= 2500 && ab.belowHpBp > 0 && ab.belowHpBp < BP, p, 'frenzy: below a line under 100%, at most +35% damage and +25% attack speed (X0 M2)');
+      }
     }
     for (const x of [...u.strongVs, ...u.weakVs]) issues.check(c.units[x] !== undefined, p, `strongVs/weakVs names unknown unit "${x}"`);
   }
   for (const t of Object.values(c.turrets)) {
     const p = `turrets.${t.id}`;
+    if (t.starter) issues.check(t.rarity === 'common', p, 'starter turrets are Commons (X0)');
     issues.check(t.age in c.ages, p, `unknown age "${t.age}"`);
     issues.check(t.attack.range <= c.economy.turretRangeCap, p, 'turret range is capped (A2.8)');
     issues.check(t.visualId === `turret.${t.id}`, p, 'visualId must be turret.<slug> (A14.1)');
@@ -1049,38 +1101,63 @@ function checkCards(issues: Issues, c: Content): void {
   }
 }
 
-/** A5.1 collection shape and the per-age slots (A5.2-A5.7). */
+/**
+ * A5.1 collection shape and the per-age slots (A5.2-A5.7), read from the X0 roster shape (`rosterShape`):
+ * per age the units by rarity, turrets by rarity and powers by slot; the totals are their sums. Every age
+ * keeps its four starters (an Infantry, Ranged and Heavy Common and the Anti-heavy Rare) and two starter
+ * Common turrets; Epic and Legendary units sit in their own role groups.
+ */
 function checkCollection(issues: Issues, c: Content): void {
   const units = c.order.units.map((x) => c.units[x] as UnitDef);
   const turrets = c.order.turrets.map((x) => c.turrets[x]);
-  // A17.13: 8 ages of 7 units, 4 turrets and 2 powers each.
-  issues.check(units.length === 56, 'order.units', `56 collectable units (A17.13), found ${units.length}`);
-  issues.check(turrets.length === 32, 'order.turrets', `32 turrets (A17.13), found ${turrets.length}`);
-  issues.check(c.order.powers.length === 48, 'order.powers', `48 Age Powers (A5.7), found ${c.order.powers.length}`);
-  issues.check(c.order.skins.length === 12, 'order.skins', `12 skins (A5.8), found ${c.order.skins.length}`);
+  const shape = c.rosterShape;
+  const total = (f: (a: AgeId) => number): number => AGE_ORDER.reduce((n, a) => n + f(a), 0);
+  const want: Record<Rarity, number> = { common: 0, rare: 0, epic: 0, legendary: 0 };
+  for (const age of AGE_ORDER) {
+    const s = shape[age];
+    for (const r of ['common', 'rare', 'epic', 'legendary'] as const) want[r] += s.units[r] + (r === 'legendary' ? 0 : s.turrets[r]);
+  }
+  const wantUnits = total((a) => shape[a].units.common + shape[a].units.rare + shape[a].units.epic + shape[a].units.legendary);
+  const wantTurrets = total((a) => shape[a].turrets.common + shape[a].turrets.rare + shape[a].turrets.epic);
+  const wantPowers = total((a) => shape[a].powers.home + shape[a].powers.field);
+  issues.check(units.length === wantUnits, 'order.units', `${wantUnits} collectable units (rosterShape), found ${units.length}`);
+  issues.check(turrets.length === wantTurrets, 'order.turrets', `${wantTurrets} turrets (rosterShape), found ${turrets.length}`);
+  issues.check(c.order.powers.length === wantPowers, 'order.powers', `${wantPowers} Age Powers (rosterShape), found ${c.order.powers.length}`);
   const count = (r: Rarity): number => [...units, ...turrets].filter((x) => x?.rarity === r).length;
-  const want: Record<Rarity, number> = { common: 40, rare: 24, epic: 16, legendary: 8 };
   for (const r of ['common', 'rare', 'epic', 'legendary'] as const) {
-    issues.check(count(r) === want[r], 'collection', `${want[r]} ${r} cards (A17.13), found ${count(r)}`);
+    issues.check(count(r) === want[r], 'collection', `${want[r]} ${r} cards (rosterShape), found ${count(r)}`);
   }
   for (const age of AGE_ORDER) {
+    const s = shape[age];
+    const p = `ages.${age}`;
     const us = units.filter((u) => u.age === age);
-    const groups = (g: RoleGroup): number => us.filter((u) => u.group === g).length;
-    issues.check(us.length === 7, `ages.${age}`, '7 units per age (A5)');
-    issues.check(us.filter((u) => u.rarity === 'common').length === 3, `ages.${age}`, '3 Common units per age (A3)');
-    issues.check(groups('infantry') === 1 && groups('ranged') === 1 && groups('heavy') === 1, `ages.${age}`, 'one Infantry, Ranged and Heavy Common');
-    issues.check(groups('antiArmor') === 1 && groups('support') === 1, `ages.${age}`, 'an Anti-heavy (Anti-armor) Rare and a Support Rare (A3)');
-    issues.check(groups('epic') === 1 && groups('legendary') === 1, `ages.${age}`, 'one Epic and one Legendary unit');
+    const of = (r: Rarity): UnitDef[] => us.filter((u) => u.rarity === r);
+    for (const r of ['common', 'rare', 'epic', 'legendary'] as const) issues.check(of(r).length === s.units[r], p, `${s.units[r]} ${r} units (rosterShape)`);
+    issues.check(of('common').every((u) => ['infantry', 'ranged', 'heavy'].includes(u.group)), p, 'Commons are Infantry, Ranged or Heavy (A3)');
+    issues.check(of('rare').every((u) => ['infantry', 'ranged', 'heavy', 'antiArmor', 'support'].includes(u.group)), p, 'Rares sit in a class group (A3)');
+    issues.check(of('epic').every((u) => u.group === 'epic') && of('legendary').every((u) => u.group === 'legendary'), p, 'Epic and Legendary units use their own groups');
+    const starters = us.filter((u) => u.starter === true);
+    const st = (g: RoleGroup, r: Rarity): number => starters.filter((u) => u.group === g && u.rarity === r).length;
+    issues.check(starters.length === 4 && st('infantry', 'common') === 1 && st('ranged', 'common') === 1 && st('heavy', 'common') === 1 && st('antiArmor', 'rare') === 1, p, 'four starters: an Infantry, Ranged and Heavy Common and the Anti-heavy Rare (A3, X0)');
+    issues.check(us.some((u) => u.group === 'support' && u.rarity === 'rare'), p, 'a Support Rare (A3)');
     const ts = turrets.filter((t) => t?.age === age);
-    issues.check(ts.length === 4, `ages.${age}`, '4 turrets per age (A5)');
-    issues.check(ts.filter((t) => t?.rarity === 'common').length === 2, `ages.${age}`, '2 Common turrets per age (A3)');
-    checkAgePowers(issues, `ages.${age}`, Object.values(c.powers).filter((p) => p.age === age));
+    const tr = (r: 'common' | 'rare' | 'epic'): number => ts.filter((t) => t?.rarity === r).length;
+    issues.check(tr('common') === s.turrets.common && tr('rare') === s.turrets.rare && tr('epic') === s.turrets.epic, p, `${s.turrets.common} / ${s.turrets.rare} / ${s.turrets.epic} turrets by rarity (rosterShape)`);
+    issues.check(ts.filter((t) => t?.starter === true).length === 2, p, 'two starter Common turrets (A3, X0)');
+    checkAgePowers(issues, p, Object.values(c.powers).filter((x) => x.age === age), s.powers);
+  }
+  // X0: a content-wave card drops from the arena that unlocks its rarity (`cardArena`).
+  for (const [card, arena] of Object.entries(c.cardArena)) {
+    const def = c.units[card] ?? c.turrets[card];
+    issues.check(def !== undefined && !(c.units[card]?.hidden ?? false), `cardArena.${card}`, 'names a collectable unit or turret');
+    issues.check(def?.starter !== true, `cardArena.${card}`, 'starter cards are owned from the start');
+    issues.check(arena >= 1 && arena <= c.arenas.list.length, `cardArena.${card}`, 'names an arena');
   }
   const skins = Object.values(c.skins);
   for (const r of ['rare', 'epic', 'legendary'] as const) {
-    issues.check(skins.filter((s) => s.rarity === r).length === 4, 'skins', `4 ${r} skins (A5.8)`);
+    issues.check(skins.filter((s) => s.rarity === r).length >= 4, 'skins', `at least 4 ${r} skins (A5.8)`);
   }
-  issues.check(skins.filter((s) => s.inCratePool).length === 11, 'skins', 'the crate pool holds 11 skins (A5.8)');
+  issues.check(skins.filter((s) => s.inCratePool).length >= 11, 'skins', 'the crate pool holds at least the 11 v1 skins (A5.8)');
 }
 
 /** War Council (A18.5): pairs of exclusive picks, a rank I for every line, prices and times for every rank used. */
@@ -1207,7 +1284,7 @@ function loadoutCards(l: { units: (CardId | null)[]; turrets: (CardId | null)[];
 
 /** Families per slot (A5.7 role template). */
 const HOME_FAMILIES: readonly PowerFamily[] = ['bombard', 'sweep', 'snare', 'pull', 'stun', 'flak'];
-const FIELD_FAMILIES: readonly PowerFamily[] = ['charge', 'frontBarrage', 'strike', 'suppress', 'rally', 'ward', 'mend', 'cloud', 'drop'];
+const FIELD_FAMILIES: readonly PowerFamily[] = ['charge', 'frontBarrage', 'strike', 'suppress', 'rally', 'ward', 'mend', 'cloud', 'drop', 'volley', 'signal'];
 /** Kinds whose effect damages or controls enemy units: `maxTargets` required (A2.9.5). */
 const CAPPED_KINDS: readonly PowerEffect['kind'][] = ['barrage', 'sweep', 'stampede', 'field', 'buffAll', 'strike'];
 
@@ -1226,8 +1303,8 @@ function checkPower(issues: Issues, p: string, pw: PowerDef): void {
   issues.check(pw.nameKey === `card.${pw.id}.name` && pw.descKey === `card.${pw.id}.desc`, p, 'string keys must be card.<slug>.name/desc');
   issues.check((pw.slot === 'home' ? HOME_FAMILIES : FIELD_FAMILIES).includes(pw.family), p, `family "${pw.family}" does not fit the ${pw.slot} slot (A5.7)`);
   if (pw.slot === 'home') issues.check(pw.reach === 'home', p, 'every Home power has reach home (A2.9.1)');
-  else issues.check(pw.reach !== 'home', p, 'a Field power reaches front, anywhere or army (A2.9.1)');
-  if (isAreaDamage(pw)) issues.check(pw.reach === 'home' || pw.reach === 'front', p, 'area damage is never "anywhere" (A2.9.4)');
+  else issues.check(pw.reach !== 'home', p, 'a Field power reaches front, anywhere, army or the whole lane (A2.9.1)');
+  if (isAreaDamage(pw)) issues.check(pw.reach === 'home' || pw.reach === 'front' || pw.reach === 'lane', p, 'area damage is never "anywhere" (A2.9.4)');
   if (pw.reach === 'anywhere') issues.check(fx.kind === 'strike' || fx.kind === 'paradrop', p, '"anywhere" is only for strikes and drops (A2.9.4)');
   if (pw.reach === 'army') issues.check(fx.kind === 'buffAll', p, 'army reach is for buffs (A2.9.4)');
   if (fx.kind === 'buffAll') issues.check(pw.reach === 'army', p, 'buffs reach your army (A2.9.4)');
@@ -1237,7 +1314,7 @@ function checkPower(issues: Issues, p: string, pw: PowerDef): void {
     issues.check(cap >= 1, p, `${fx.kind} needs maxTargets (A2.9.5)`);
     if (fx.kind === 'buffAll') issues.check(fx.maxTargets === cap && cap <= 8, p, 'a buff affects at most 8 own units; effect and card caps agree (A2.9.5)');
     else if (fx.kind === 'strike') issues.check(cap === 1, p, 'a strike has maxTargets 1 (A2.9.7)');
-    else issues.check(cap <= 6, p, 'a cast affects at most 6 enemy units (A2.9.5)');
+    else issues.check(cap <= (pw.reach === 'lane' ? 8 : 6), p, 'a cast affects at most 6 enemy units (8 for a whole-lane power) (A2.9.5, A2.9.4)');
   }
   if (fx.kind === 'cloud') issues.check((pw.maxTargets ?? 0) >= 1 && (pw.maxTargets ?? 0) <= 8, p, 'the cloud\'s ally bonus reaches at most 8 own units (A2.9.5)');
   if (fx.kind === 'stampede') issues.check(pw.reach === 'front', p, 'charges run from your front (A2.9.4)');
@@ -1249,39 +1326,68 @@ function checkPower(issues: Issues, p: string, pw: PowerDef): void {
   if (pw.source === 'road') issues.check(pw.rarity === 'rare' && pw.road !== undefined && pw.road <= 500 && pw.warPathLevel === undefined, p, 'Road powers are Rare, on nodes 100-500 (A2.9.8)');
   if (pw.source === 'warPath') {
     const lvl = pw.warPathLevel ?? 0;
-    issues.check([5, 7, 9].includes(lvl), p, 'War Path powers come from levels 5, 7 and 9 (A2.9.8)');
-    issues.check(pw.rarity === (lvl === 5 ? 'rare' : 'epic'), p, 'War Path L5 powers are Rare, L7 and L9 Epic (A5.7)');
+    if (pw.warPathSide !== undefined) {
+      // X0: the region's side node s1 grants its new Home control (Epic).
+      issues.check(pw.warPathLevel === undefined && pw.warPathSide === 1 && pw.slot === 'home' && pw.rarity === 'epic', p, 'the side node s1 power is an Epic Home power without a level (X0)');
+    } else {
+      issues.check([3, 5, 7, 9].includes(lvl), p, 'War Path powers come from levels 3, 5, 7 and 9 (A2.9.8, H7)');
+      issues.check(pw.rarity === (lvl === 3 || lvl === 5 ? 'rare' : 'epic'), p, 'War Path L3 and L5 powers are Rare, L7 and L9 Epic (A5.7)');
+      issues.check((lvl === 3) === (pw.reach === 'lane'), p, 'the L3 power is the region\'s whole-lane power (H7)');
+    }
     issues.check(pw.road !== undefined && pw.road >= 550, p, 'War Path powers have a Trophy Road fallback node ≥ 550 (A2.9.8)');
+  } else issues.check(pw.warPathSide === undefined, p, 'only War Path powers name a side node');
+  if (pw.reach === 'lane') {
+    // A2.9.4 lane budget: a one-pulse field over the whole lane, cap ≤ 8, cost ≤ 75, light statuses only.
+    issues.check(pw.slot === 'field' && (pw.family === 'volley' || pw.family === 'signal'), p, 'lane powers are Field volleys or signals (H7)');
+    issues.check(fx.kind === 'field' && fx.durationMs <= 500 && (fx.pullBp ?? 0) === 0, p, 'a lane power is one pulse with no pull (A2.9.4)');
+    issues.check((pw.maxTargets ?? 0) >= 1 && (pw.maxTargets ?? 0) <= 8 && pw.cost <= 75, p, 'lane budget: cap ≤ 8, cost ≤ 75 (A2.9.4)');
+    if (fx.kind === 'field') {
+      for (const st of fx.statuses ?? []) {
+        issues.check((st.kind === 'snare' && st.magnitudeBp <= 3000 && st.durationMs <= 3000) || (st.kind === 'mark' && st.durationMs <= 6000), p, 'lane statuses: at most a 30% snare for 3 s or a mark for 6 s (A2.9.4)');
+      }
+    }
   }
+  if (pw.family === 'volley' || pw.family === 'signal') issues.check(pw.reach === 'lane', p, 'volleys and signals reach the whole lane (H7)');
   // A strike hits one unit for a pinned 55-65% of the Heavy (A2.9.6), so its levers are price and reload
   // (MVP balance pass 2026-10-01: strikes at 75 gold and 25-30 s lost 5-20 points to their slot's starter).
   const strike = pw.effect.kind === 'strike';
-  issues.check(pw.cost >= (strike ? 50 : 75) && pw.cost <= 150, p, 'a power costs 75-150 gold, a strike 50-150 (A2.9.2)');
+  // Whole-lane powers (H7): 50-75 gold, 25 s.
+  const cheap = strike || pw.reach === 'lane';
+  issues.check(pw.cost >= (cheap ? 50 : 75) && pw.cost <= 150, p, 'a power costs 75-150 gold, a strike or whole-lane power 50-150 (A2.9.2, H7)');
   issues.check(pw.reloadMs >= (strike ? 15000 : 25000) && pw.reloadMs <= 60000, p, 'a power reloads in 25-60 s, a strike in 15-60 s (A2.9.3)');
   issues.check(pw.telegraphMs >= 500 && pw.telegraphMs <= 2000, p, 'a telegraph lasts 0.5-2.0 s (A2.9.6)');
 }
 
-/** A5.7 role template per age: 6 powers, 3 Home and 3 Field, one starter per slot, 1 Road, 3 War Path. */
-function checkAgePowers(issues: Issues, p: string, ps: readonly PowerDef[]): void {
+/**
+ * A5.7 role template per age, from the roster shape: 6 powers (3 Home and 3 Field) before the age's
+ * content wave, 8 (4 and 4) after it. One starter per slot, 1 Road power, the rest War Path (levels 5, 7
+ * and 9; after the wave also the L3 lane power and the side node s1 Home control). Home: a bombard, a
+ * sweep and one control (two after the wave); Field: an assault, a precision or siege tool, a support
+ * and (after the wave) one whole-lane power (H7).
+ */
+function checkAgePowers(issues: Issues, p: string, ps: readonly PowerDef[], shape: AgeRosterShape['powers']): void {
   const home = ps.filter((x) => x.slot === 'home');
   const field = ps.filter((x) => x.slot === 'field');
-  issues.check(ps.length === 6 && home.length === 3 && field.length === 3, p, '6 Age Powers per age: 3 Home and 3 Field (A5.7)');
+  const wave = shape.home === 4 && shape.field === 4;
+  issues.check(home.length === shape.home && field.length === shape.field, p, `${shape.home} Home and ${shape.field} Field Age Powers (rosterShape, A5.7)`);
   issues.check(home.filter((x) => x.source === 'starter').length === 1, p, 'one Home starter (A2.9.8)');
   issues.check(field.filter((x) => x.source === 'starter').length === 1, p, 'one Field starter (A2.9.8)');
   issues.check(ps.filter((x) => x.source === 'road').length === 1, p, 'one Trophy Road power (A2.9.8)');
-  issues.check(ps.filter((x) => x.source === 'warPath').length === 3, p, 'three War Path powers (A2.9.8)');
-  const levels = ps.filter((x) => x.source === 'warPath').map((x) => x.warPathLevel).sort();
-  issues.check(levels.join() === '5,7,9', p, 'War Path powers at levels 5, 7 and 9 (A2.9.8)');
+  const wp = ps.filter((x) => x.source === 'warPath');
+  issues.check(wp.length === ps.length - 3, p, 'every other power comes from the War Path (A2.9.8)');
+  const levels = wp.map((x) => (x.warPathSide !== undefined ? `s${x.warPathSide}` : String(x.warPathLevel))).sort();
+  issues.check(levels.join() === (wave ? '3,5,7,9,s1' : '5,7,9'), p, wave ? 'War Path powers at levels 3, 5, 7 and 9 and side node s1 (A2.9.8, X0)' : 'War Path powers at levels 5, 7 and 9 (A2.9.8)');
   const has = (list: readonly PowerDef[], fams: readonly PowerFamily[]): number => list.filter((x) => fams.includes(x.family)).length;
-  // Home: a bombard and a sweep (one of each family), and a control (Flak in an air age).
+  // Home: a bombard and a sweep (one of each family), and a control (Flak in an air age); two after the wave.
   issues.check(has(home, ['bombard']) >= 1 && has(home, ['sweep']) >= 1, p, 'Home: a bombard and a sweep (A5.7)');
-  issues.check(has(home, ['snare', 'pull', 'stun', 'flak']) === 1, p, 'Home: one control (Flak in an air age) (A5.7)');
+  issues.check(has(home, ['snare', 'pull', 'stun', 'flak']) === (wave ? 2 : 1), p, wave ? 'Home: two controls (X0)' : 'Home: one control (Flak in an air age) (A5.7)');
   const starterHome = home.find((x) => x.source === 'starter');
   issues.check(starterHome !== undefined && isAreaDamage(starterHome), p, 'the Home starter is an area damage power (A5.7)');
-  // Field: an assault, a precision or siege tool, and a support.
+  // Field: an assault, a precision or siege tool, a support, and (after the wave) a whole-lane power.
   issues.check(has(field, ['charge', 'frontBarrage']) === 1, p, 'Field: one assault (charge or front barrage) (A5.7)');
   issues.check(has(field, ['strike', 'suppress']) === 1, p, 'Field: one precision or siege tool (strike or Suppress) (A5.7)');
   issues.check(has(field, ['rally', 'ward', 'mend', 'cloud', 'drop']) === 1, p, 'Field: one support (buff, cloud or drop) (A5.7)');
+  issues.check(has(field, ['volley', 'signal']) === (wave ? 1 : 0), p, wave ? 'Field: one whole-lane power (H7)' : 'no whole-lane power before the age\'s wave');
 }
 
 function checkGenerals(issues: Issues, c: Content): void {
@@ -1400,8 +1506,7 @@ function checkMeta(issues: Issues, c: Content): void {
       issues.check(card !== undefined, p, `unknown card "${x}"`);
       // A6.5 reveals scripted cards as NEW, so none may be in the starter kit (every Common and each
       // age's Anti-heavy Rare, A3).
-      issues.check(card === undefined || card.rarity !== 'common', p, `"${x}" is a starter Common, so it cannot be NEW`);
-      issues.check(card === undefined || c.units[x]?.group !== 'antiArmor', p, `"${x}" is a starter Anti-heavy card, so it cannot be NEW`);
+      issues.check(card === undefined || card.starter !== true, p, `"${x}" is a starter card, so it cannot be NEW`);
     }
   });
   // A3: each age's Support Rare arrives by script or by an Age Unlock Capsule at an arena gate (the
@@ -1431,11 +1536,11 @@ function checkMeta(issues: Issues, c: Content): void {
   issues.check(lr.minus + lr.zero + lr.plus === BP, 'arenas.ladder.levelRollBp', 'level roll odds sum to 100%');
   // Trophy Road (A6.3)
   const nodes = c.trophyRoad.nodes;
-  issues.check(nodes.length === 60, 'trophyRoad', `60 nodes (A6.3), found ${nodes.length}`);
+  issues.check(nodes.length === 60 || nodes.length === 70, 'trophyRoad', `60 nodes (A6.3; 70 with the X0 extension to 5,000), found ${nodes.length}`);
   nodes.forEach((n, i) => {
     const p = `trophyRoad.${n.trophies}`;
     issues.check(n.index === i, p, 'index follows road order');
-    issues.check(n.trophies === (i < 40 ? 50 * (i + 1) : 2000 + 100 * (i - 39)), p, 'every 50 to 2,000, then every 100 to 4,000');
+    issues.check(n.trophies === (i < 40 ? 50 * (i + 1) : 2000 + 100 * (i - 39)), p, 'every 50 to 2,000, then every 100 to 4,000 (5,000 with X0)');
     issues.check(n.rewards.length > 0, p, 'a node gives something');
     for (const r of n.rewards) {
       if (r.kind === 'amber') issues.check(r.amount === roadAmber(c.trophyRoad, n.trophies), p, 'Amber = 100 + 20 × trophies / 100');

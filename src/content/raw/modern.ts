@@ -13,7 +13,7 @@ export const modern: RawAgeTables = {
     {
       // Blunt
       id: 'trench_raider', kind: 'unit', age: 'modern', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 394, speed: 75, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 394, speed: 75, size: 'small', starter: true,
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -28,7 +28,7 @@ export const modern: RawAgeTables = {
     {
       // Bullet. Suppressing Fire: hits slow the target's move speed 15% for 1.0 s
       id: 'rifleman', kind: 'unit', age: 'modern', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 234, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 234, speed: 65, size: 'small', starter: true,
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
@@ -45,7 +45,7 @@ export const modern: RawAgeTables = {
     {
       // Shell
       id: 'tankette', kind: 'unit', age: 'modern', rarity: 'common', role: 'heavy', group: 'heavy',
-      cost: 150, trainMs: 4000, pop: 6, hp: 1378, speed: 50, size: 'large',
+      cost: 150, trainMs: 4000, pop: 6, hp: 1378, speed: 50, size: 'large', starter: true,
       tags: ['armored', 'mech', 'ranged', 'ground'],
       attacks: [
         {
@@ -61,7 +61,7 @@ export const modern: RawAgeTables = {
     {
       // Rocket; ranged AA mods; priority armored
       id: 'bazooka_trooper', kind: 'unit', age: 'modern', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 363, speed: 65, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 363, speed: 65, size: 'medium', starter: true,
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
@@ -136,7 +136,7 @@ export const modern: RawAgeTables = {
   turrets: [
     {
       // Single target
-      id: 'mg_nest', kind: 'turret', age: 'modern', rarity: 'common', cost: 150,
+      id: 'mg_nest', kind: 'turret', age: 'modern', rarity: 'common', starter: true, cost: 150,
       attack: {
         damage: 15, intervalMs: 300, windupPct: 0, range: 340, hitsGround: true, hitsAir: true,
         projectile: { speed: 1500, visualId: 'proj.bullet' },
@@ -146,7 +146,7 @@ export const modern: RawAgeTables = {
     },
     {
       // 60 splash r40 / 1.5 s; air ×2.0; priority air
-      id: 'flak_gun', kind: 'turret', age: 'modern', rarity: 'common', cost: 175,
+      id: 'flak_gun', kind: 'turret', age: 'modern', rarity: 'common', starter: true, cost: 175,
       attack: {
         damage: 60, intervalMs: 1500, windupPct: 0, range: 420, hitsGround: true, hitsAir: true,
         projectile: { speed: 1200, visualId: 'proj.flak' },

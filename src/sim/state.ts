@@ -101,6 +101,8 @@ export interface UnitRt extends UnitState {
   auraCoverBp: number;
   /** A fort removed by decay (A16.14.2): `died` pays nobody unless an enemy hit it in the last 3 s. */
   decayed: boolean;
+  /** A summoner's summons sent and not yet seen dead (X0 M3), pruned when it next summons. */
+  summons: number[];
 }
 
 export interface QueueItemRt extends QueueItem {

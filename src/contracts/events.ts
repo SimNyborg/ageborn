@@ -14,7 +14,7 @@ export type KillerKind = 'unit' | 'turret' | 'power' | 'lastStand' | 'ability' |
 
 type EventBody =
   /** `from`: the camp that sent a levy (A16.14.3). */
-  | { e: 'unitSpawned'; id: number; side: Side; card: CardId; x: number; summoned: boolean; level: number; from?: number }
+  | { e: 'unitSpawned'; id: number; side: Side; card: CardId; x: number; summoned: boolean; level: number; from?: number; summoner?: number }
   /** The view time-scales the attack clip so `impactAt` lands after `windupTicks` (DESIGN B5). */
   | { e: 'attackStarted'; id: number; targetId: number; windupTicks: number; attackIndex: number }
   | { e: 'projectileFired'; pid: number; from: number; targetId: number; toX: number; travelTicks: number; visualId: VisualId }

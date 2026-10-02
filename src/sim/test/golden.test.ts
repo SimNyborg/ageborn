@@ -11,7 +11,7 @@ import { describe, expect, it } from 'vitest';
 import type { AgeId, Command, CompiledContent, MatchConfig, Observation, ReplayDoc, Side, SideConfig, SimEvent } from '@/contracts';
 import { simCtx } from '../debug';
 import { buildReplay, verifyReplay } from '../replay';
-import { STRATEGIES, fixture, fixtureLast, matchConfig, runMatch, scriptedPlayer, sideConfig, type Strategy } from './helpers';
+import { STRATEGIES, baselineLoadout, fixture, fixtureLast, fixtureX0, matchConfig, runMatch, scriptedPlayer, sideConfig, type Strategy } from './helpers';
 
 /** The recorded files, loaded by Vite (src has no Node types; see `writeGolden` for recording). */
 const FILES = import.meta.glob<ReplayDoc>('./golden/*.json', { eager: true, import: 'default' });
@@ -250,6 +250,31 @@ const SCENARIOS: Scenario[] = [
       }),
     players: [S.turtle, S.rush],
   },
+  {
+    // SIM_VERSION 7.0.0 (X0): a Stone-only war on the X0 fixture: squads (Hunting Wolves), a frenzy unit
+    // (Pelt Rager), a summoner (Beast Caller and its Cave Pups), the Cave Bear's dizzy roar and the whole-
+    // lane Pebble Hail cast by both sides.
+    name: '16-squad-summon-lane',
+    content: fixtureX0,
+    cfg: () => {
+      const lo = baselineLoadout(fixtureX0, 'stone');
+      const stone = (units: (string | null)[]) => ({ ...lo, units, powers: { home: lo.powers.home, field: 'pebble_hail' } });
+      return matchConfig({
+        seed: 1601,
+        format: 'short',
+        content: fixtureX0,
+        sides: [
+          sideConfig(fixtureX0, { loadouts: { stone: stone(['hunting_wolves', 'pebbler', 'cave_bear', 'spear_hunter', 'beast_caller', null]) } }),
+          sideConfig(fixtureX0, { isBot: true, label: 'AI Golden', loadouts: { stone: stone(['hunting_wolves', 'pebbler', 'tuskback', 'pelt_rager', 'beast_caller', null]) } }),
+        ],
+      });
+    },
+    // Stone only (no evolve): side 0 trains the Cave Bear and the Beast Caller, side 1 the wolves and the Pelt Rager.
+    players: [
+      { ...S.balanced, weights: [0, 0, 1, 0, 1], noEvolve: true },
+      { ...S.rush, weights: [2, 0, 0, 2, 0], noEvolve: true },
+    ],
+  },
 ];
 
 /** The players of a scenario (scripted, fort placers or fort directors). */
@@ -290,8 +315,8 @@ async function writeGolden(): Promise<void> {
 if (env.UPDATE_GOLDEN === '1') await writeGolden();
 
 describe('golden replays (B13)', () => {
-  it('has all 15 recorded files', () => {
-    expect(SCENARIOS).toHaveLength(15);
+  it('has all 16 recorded files', () => {
+    expect(SCENARIOS).toHaveLength(16);
     for (const sc of SCENARIOS) expect(golden(sc.name), sc.name).toBeDefined();
   });
 
@@ -356,6 +381,22 @@ describe('golden replays (B13)', () => {
     expect(crumbled.some((e) => e.side === 0)).toBe(true);
     expect(sim.state.outcome?.reason).toBe('baseDestroyed');
     expect(events.some((e) => e.e === 'phaseChanged' && e.phase === 'siege')).toBe(true);
+  });
+
+  it('16-squad-summon-lane covers the X0 kinds: squad spawns, summons, a dizzy roar and lane casts on both sides', () => {
+    const sc = SCENARIOS.find((x) => x.name === '16-squad-summon-lane');
+    if (!sc) throw new Error('no X0 scenario');
+    const cfg = sc.cfg();
+    const { events } = runMatch(cfg, playersOf(sc, cfg.seed), { maxTicks: 30000, keepEvents: true });
+    const spawns = events.filter((e): e is SimEvent & { e: 'unitSpawned' } => e.e === 'unitSpawned');
+    const wolves = spawns.filter((e) => e.card === 'hunting_wolves');
+    expect(wolves.length).toBeGreaterThanOrEqual(2);
+    expect(wolves.some((w, i) => wolves.some((x, j) => j !== i && x.tick === w.tick))).toBe(true);
+    expect(spawns.some((e) => e.card === 'cave_pup' && e.summoner !== undefined && e.side === 0)).toBe(true);
+    expect(spawns.some((e) => e.card === 'pelt_rager')).toBe(true);
+    expect(events.some((e) => e.e === 'abilityUsed' && e.ability === 'timeStop')).toBe(true);
+    const lane = events.filter((e): e is SimEvent & { e: 'powerTelegraph' } => e.e === 'powerTelegraph' && e.power === 'pebble_hail');
+    expect(new Set(lane.map((e) => e.side)).size).toBe(2);
   });
 
   for (const sc of SCENARIOS) {

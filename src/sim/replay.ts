@@ -20,8 +20,12 @@ import { SimImpl } from './createSim';
  * (A2.10.1): formats with Siege steps (`FormatDef.escalation`, no Final Bell, no symmetric decay; base and
  * turret damage read the step), the Crumble rope and no evolve heal in Crumble. The step is a pure
  * function of the tick, so goldens 01-14 keep their hashes (re-recorded only for this version string).
+ * 7.0.0 (X0, content expansion 2026-10-02): squads (one card spawns 2-3 members, pop and bounty split),
+ * frenzy (a self bonus below an HP line), summoners (the levy rules on a moving unit; their summon ids
+ * are hashed), the Time Stop visual flag from content, and the `lane` reach (H7: no aim, the screen over
+ * the whole lane). Fields only hash when used, so goldens 01-15 keep their hashes; 16 plays the new kinds.
  */
-export const SIM_VERSION = '6.0.0';
+export const SIM_VERSION = '7.0.0';
 
 /** Thrown when a replay was recorded on different content (B3: "from an older version"). */
 export class ReplayContentMismatchError extends Error {

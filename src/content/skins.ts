@@ -36,4 +36,9 @@ export const skinList: readonly SkinDef[] = [
   skin('synthwave', 'photon_knight', 'epic'),
   skin('kaiju_walker', 'walker_mech', 'legendary'),
   skin('crystal_spire', 'base.future', 'legendary', false),
+  // X0 content waves (CONTENT_PLAN 5, 6): every wave skin joins the Wardrobe Crate pool and the capsule skin
+  // rolls, craftable with Dust. W1 Stone (2026-10-02):
+  skin('snowball_pebbler', 'pebbler', 'rare'),
+  skin('fossil_sabertooth', 'sabertooth', 'epic'),
+  skin('aurora_elk', 'elk_chieftain', 'legendary'),
 ];

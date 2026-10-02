@@ -155,6 +155,8 @@ export function reachBand(reach: PowerReach, zone: number, front: number | null,
     case 'anywhere':
       return [r.zoneMin, r.zoneMax];
     case 'army':
+    case 'lane':
+      // No aim: `army` acts on own units, `lane` on the screen over the whole lane (A2.9.4).
       return null;
   }
 }

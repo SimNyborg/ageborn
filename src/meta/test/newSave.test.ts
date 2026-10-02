@@ -10,9 +10,10 @@ import { C, M, TestClock, T0, fresh } from './helpers';
 describe('newSave', () => {
   it('owns every Common and each age\'s Anti-heavy Rare at L1 and each default power; nothing else', () => {
     const s = fresh();
-    const commons = [...C.order.units, ...C.order.turrets].filter((id) => (C.units[id] ?? C.turrets[id])?.rarity === 'common');
+    // X0: the starter Commons (content-wave Commons are capsule cards).
+    const commons = [...C.order.units, ...C.order.turrets].filter((id) => (C.units[id] ?? C.turrets[id])?.rarity === 'common' && (C.units[id] ?? C.turrets[id])?.starter === true);
     // Owner feedback 2026-09-29: the Anti-heavy Rare of every age is in the starter kit (A3).
-    const antiHeavy = C.order.units.filter((id) => C.units[id]?.group === 'antiArmor' && C.units[id]?.rarity === 'rare');
+    const antiHeavy = C.order.units.filter((id) => C.units[id]?.group === 'antiArmor' && C.units[id]?.rarity === 'rare' && C.units[id]?.starter === true);
     expect(antiHeavy).toEqual(['spear_hunter', 'phalangite', 'pikeman', 'grenadier', 'harpoon_gunner', 'bazooka_trooper', 'rail_gunner', 'graviton_halberdier']);
     expect(Object.keys(s.collection).sort()).toEqual([...commons, ...antiHeavy].sort());
     expect(commons).toHaveLength(40);

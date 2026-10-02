@@ -166,8 +166,9 @@ describe('Rarities, upgrades and Dust (A6.6, A6.7, A5.8)', () => {
     expect(total('legendary')).toBe(11);
     const amber = rarities.upgradeAmber.reduce((a, b) => a + b, 0);
     expect(amber).toBe(4970);
-    // A6.9 / A17.13: maxing all 88 cards costs 437,360 Amber.
-    expect(amber * (content.order.units.length + content.order.turrets.length)).toBe(437360);
+    // A6.9 / A17.13: maxing the 88 original cards costs 437,360 Amber; each X0 wave card adds 4,970.
+    expect(amber * 88).toBe(437360);
+    expect(amber * (content.order.units.length + content.order.turrets.length)).toBe(4970 * (content.order.units.length + content.order.turrets.length));
   });
 
   it('has the Dust, Codex and foil rates', () => {
@@ -227,12 +228,13 @@ describe('Arenas and ladder (A6.3, A6.8)', () => {
 });
 
 describe('Trophy Road (A6.3)', () => {
-  it('has 60 nodes, every 50 to 2,000 then every 100 to 4,000', () => {
-    expect(trophyRoad.nodes).toHaveLength(60);
+  it('has 70 nodes, every 50 to 2,000 then every 100 to 5,000 (60 to 4,000 before the X0 extension)', () => {
+    expect(trophyRoad.nodes).toHaveLength(70);
     expect(trophyRoad.nodes[0]?.trophies).toBe(50);
     expect(trophyRoad.nodes[39]?.trophies).toBe(2000);
     expect(trophyRoad.nodes[40]?.trophies).toBe(2100);
     expect(trophyRoad.nodes[59]?.trophies).toBe(4000);
+    expect(trophyRoad.nodes[69]?.trophies).toBe(5000);
   });
 
   it('pays Amber by the formula, which matches every Amber cell of the table', () => {
@@ -359,11 +361,15 @@ describe('Quests and Codex (A6.7)', () => {
       pointsPerLevel: 15, amberPerLevel: 100,
       capsule: { firstLevel: 5, every: 10, tier: 'silver' }, wardrobe: { firstLevel: 10, every: 10 },
     });
-    // Every card to L10: 9 upgrades each (A17.13 "about 130 levels in total").
-    const points = [...content.order.units, ...content.order.turrets]
-      .map((id) => content.units[id]?.rarity ?? content.turrets[id]?.rarity ?? 'common')
-      .reduce((s, r) => s + 9 * rarities.cards[r].codexPoints, 0);
-    expect(Math.floor(points / quests.codex.pointsPerLevel)).toBe(129);
+    // Every card to L10: 9 upgrades each (A17.13 "about 130 levels in total" for the 88 original cards;
+    // the X0 waves add more, about 300 with all eight, CONTENT_PLAN 8).
+    const pointsOf = (ids: readonly string[]): number =>
+      ids.map((id) => content.units[id]?.rarity ?? content.turrets[id]?.rarity ?? 'common').reduce((s, r) => s + 9 * rarities.cards[r].codexPoints, 0);
+    const all = [...content.order.units, ...content.order.turrets];
+    const original = all.filter((id) => !(id in content.cardArena));
+    expect(original).toHaveLength(88);
+    expect(Math.floor(pointsOf(original) / quests.codex.pointsPerLevel)).toBe(129);
+    expect(Math.floor(pointsOf(all) / quests.codex.pointsPerLevel)).toBeGreaterThanOrEqual(129);
   });
 });
 
@@ -461,7 +467,7 @@ describe('Cosmetics and skins (A5.8)', () => {
     expect(cosmetics.defaults).toEqual({ banner: 'tar_pit', frame: 'none', title: 'recruit' });
   });
 
-  it('has the 12 skins with targets and rarities', () => {
+  it('has the 12 v1 skins and the X0 wave skins with targets and rarities', () => {
     expect(content.order.skins.map((s) => [s, content.skins[s]?.target, content.skins[s]?.rarity])).toEqual([
       ['pumpkin_head', 'bonker', 'rare'],
       ['woolly_tuskback', 'tuskback', 'epic'],
@@ -475,6 +481,10 @@ describe('Cosmetics and skins (A5.8)', () => {
       ['synthwave', 'photon_knight', 'epic'],
       ['kaiju_walker', 'walker_mech', 'legendary'],
       ['crystal_spire', 'base.future', 'legendary'],
+      // X0 Stone wave
+      ['snowball_pebbler', 'pebbler', 'rare'],
+      ['fossil_sabertooth', 'sabertooth', 'epic'],
+      ['aurora_elk', 'elk_chieftain', 'legendary'],
     ]);
     expect(content.skins.pumpkin_head?.visualId).toBe('unit.bonker@pumpkin_head');
     expect(content.skins.crystal_spire).toMatchObject({ visualId: 'base.future@crystal_spire', inCratePool: false, craftable: false });

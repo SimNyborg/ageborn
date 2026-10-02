@@ -13,7 +13,7 @@ export const gunpowder: RawAgeTables = {
     {
       // Blunt. Boarding Hook: first hit of each engagement pulls the target 20 lu toward the Corsair
       id: 'corsair', kind: 'unit', age: 'gunpowder', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 291, speed: 72, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 291, speed: 72, size: 'small', starter: true,
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -29,7 +29,7 @@ export const gunpowder: RawAgeTables = {
     {
       // Musket
       id: 'fusilier', kind: 'unit', age: 'gunpowder', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 173, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 173, speed: 65, size: 'small', starter: true,
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
@@ -45,7 +45,7 @@ export const gunpowder: RawAgeTables = {
     {
       // Charge: first hit ×2 and 30 lu knockback
       id: 'cuirassier', kind: 'unit', age: 'gunpowder', rarity: 'common', role: 'heavy', group: 'heavy',
-      cost: 150, trainMs: 4000, pop: 6, hp: 1019, speed: 60, size: 'large',
+      cost: 150, trainMs: 4000, pop: 6, hp: 1019, speed: 60, size: 'large', starter: true,
       tags: ['armored', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -60,7 +60,7 @@ export const gunpowder: RawAgeTables = {
     {
       // 50 splash r35 / 1.8 s. Lob over allies; armored ×1.5, mech ×1.5, light ×0.5; priority armored
       id: 'grenadier', kind: 'unit', age: 'gunpowder', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 253, speed: 68, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 253, speed: 68, size: 'medium', starter: true,
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
@@ -133,7 +133,7 @@ export const gunpowder: RawAgeTables = {
   turrets: [
     {
       // Single target
-      id: 'swivel_gun', kind: 'turret', age: 'gunpowder', rarity: 'common', cost: 150,
+      id: 'swivel_gun', kind: 'turret', age: 'gunpowder', rarity: 'common', starter: true, cost: 150,
       attack: {
         damage: 22, intervalMs: 600, windupPct: 0, range: 340, hitsGround: true, hitsAir: true,
         projectile: { speed: 1500, visualId: 'proj.musket' },
@@ -143,7 +143,7 @@ export const gunpowder: RawAgeTables = {
     },
     {
       // Hits the frontmost enemy in range and enemies within 90 lu behind it; max 4 targets
-      id: 'grapeshot_gun', kind: 'turret', age: 'gunpowder', rarity: 'common', cost: 175,
+      id: 'grapeshot_gun', kind: 'turret', age: 'gunpowder', rarity: 'common', starter: true, cost: 175,
       attack: {
         damage: 50, intervalMs: 2000, windupPct: 0, range: 220, hitsGround: true, hitsAir: true,
         projectile: { speed: 1500, visualId: 'proj.grapeshot' },

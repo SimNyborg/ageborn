@@ -48,6 +48,8 @@ export function powerZoneWidth(def: PowerDef): number {
 
 /** Whether the player places this power (area powers and strikes); the rest act without an aim. */
 export function powerTakesAim(def: PowerDef): boolean {
+  // A2.9.4 `lane` (H7): no aim; the screen picks the enemies nearest your gate over the whole lane.
+  if (def.reach === 'lane') return false;
   const k = def.effect.kind;
   return k === 'barrage' || k === 'sweep' || k === 'field' || k === 'cloud' || k === 'strike';
 }

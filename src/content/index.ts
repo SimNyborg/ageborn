@@ -9,6 +9,7 @@
 import type { CompiledContent } from '@/contracts/content';
 import { arenas } from './arenas';
 import { capsules } from './capsules';
+import { cardArena } from './cardArena';
 import { compileContent } from './compile';
 import { cosmetics } from './cosmetics';
 import { parseCounterFile } from './counters/matrix';
@@ -19,6 +20,7 @@ import { generals } from './generals';
 import { names } from './names';
 import { quests } from './quests';
 import { rarities } from './rarities';
+import { rosterShape } from './rosterShape';
 import { raw } from './raw';
 import { skinList } from './skins';
 import { trophyRoad } from './trophyRoad';
@@ -46,6 +48,8 @@ export const metaTables: MetaTables = {
   cosmetics,
   feats,
   warPath,
+  rosterShape,
+  cardArena,
 };
 
 /** The counter-matrix file as loaded (DESIGN B4). */

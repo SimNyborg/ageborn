@@ -205,7 +205,8 @@ export class FoeGoldEstimator {
       if (u.side === me) {
         if (free) this.mySummons.add(u.id);
       } else if (!free) {
-        this.spend(card.cost);
+        // A squad member is its share of the card's price (X0 M1).
+        this.spend(card.memberCost);
       }
     }
   }
@@ -218,7 +219,7 @@ export class FoeGoldEstimator {
     for (const id of obs.foe.research?.owned ?? []) {
       for (const fx of researchPick(this.book.content, id)?.effects ?? []) if (fx.kind === 'bounty') rate += fx.addBp;
     }
-    let gold = Math.trunc((card.cost * (obs.tick <= this.powerKillUntil ? e.powerKillGoldBp : rate)) / BP);
+    let gold = Math.trunc((card.memberCost * (obs.tick <= this.powerKillUntil ? e.powerKillGoldBp : rate)) / BP);
     // The foe's Evolve is available from a full XP bar (in its final age no card can out-age it).
     const foeAge = obs.ages?.[obs.foe.ageIndex];
     const foeAgeIndex = foeAge ? this.book.ageOrder.indexOf(foeAge) : obs.foe.ageIndex;

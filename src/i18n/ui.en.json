@@ -776,7 +776,9 @@
         "ward": "Ward",
         "mend": "Mend",
         "cloud": "Cloud",
-        "drop": "Drop"
+        "drop": "Drop",
+        "volley": "Volley",
+        "signal": "Signal"
       },
       "reach": {
         "home": "Your half",
@@ -784,7 +786,8 @@
         "fromFront": "From your front",
         "anywhere": "Anywhere",
         "army": "Your army",
-        "drop": "Drop"
+        "drop": "Drop",
+        "lane": "Whole lane"
       },
       "reachWhy": {
         "home": "Lands only on enemies in your half of the lane.",
@@ -792,7 +795,8 @@
         "fromFront": "Starts from your front line.",
         "anywhere": "Pick any enemy on the lane.",
         "army": "Boosts your own troops.",
-        "drop": "Lands behind the enemy front."
+        "drop": "Lands behind the enemy front.",
+        "lane": "No aim: hits the enemies nearest your gate, anywhere on the lane."
       },
       "hits": "Hits up to {n}",
       "hitsOwn": "Your {n} frontmost units",
@@ -820,7 +824,9 @@
         "ward": "Helps: your front line in a fight",
         "mend": "Helps: a worn front line",
         "cloud": "Counters: ranged units and turrets",
-        "drop": "Counters: an exposed backline"
+        "drop": "Counters: an exposed backline",
+        "volley": "Chips: the enemy front, wherever it is",
+        "signal": "Softens: the enemy front, wherever it is"
       },
       "where": "Where it lands",
       "laneYou": "You",

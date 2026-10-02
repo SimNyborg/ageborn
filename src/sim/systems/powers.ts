@@ -205,6 +205,14 @@ export function castPower(ctx: Ctx, side: Side, slot: unknown, aimP: unknown): s
     case 'sweep':
     case 'field':
     case 'cloud': {
+      if (pr.reach === 'lane') {
+        // A2.9.4 `lane` (H7): no aim; the whole lane is the reach area and the centre is L / 2. The screen
+        // (cap order from the caster's gate) decides who is touched; nothing eligible is rejected.
+        areaMax = r.lane;
+        centreP = Math.trunc(r.lane / 2);
+        if (pr.harmful && areaCandidates(ctx, probeCast(side, pr, areaMin, areaMax), pr).length === 0) return 'powerNoTarget';
+        break;
+      }
       const b = band ?? [r.zoneMin, r.zoneMax];
       areaMax = reachAreaMax(pr.reach, pr.zone, b, r);
       if (aimP !== undefined) {
@@ -213,7 +221,7 @@ export function castPower(ctx: Ctx, side: Side, slot: unknown, aimP: unknown): s
         const probe = probeCast(side, pr, areaMin, areaMax);
         const cands = areaCandidates(ctx, probe, pr);
         const elig = fx.kind === 'cloud' ? null : eligibleIds(cands.map((x) => x.cand), pr.maxTargets > 0 ? pr.maxTargets : cands.length, []);
-        const scored = cands.filter((x) => !elig || elig.has(x.u.id)).map((x) => ({ p: x.cand.p, value: unitRules(ctx, x.u).cost }));
+        const scored = cands.filter((x) => !elig || elig.has(x.u.id)).map((x) => ({ p: x.cand.p, value: unitRules(ctx, x.u).value }));
         const aim = autoAim(b, pr.zone, scored, r.scanStep);
         if (aim.score <= 0 && pr.harmful) return 'powerNoTarget';
         // Nothing to aim at (a cloud): just in front of your army, as far as the band allows.
@@ -351,7 +359,7 @@ function strikeCandidates(ctx: Ctx, side: Side, pr: PowerRules): StrikeCandidate
     out.push({
       id: e.id,
       p: pOf(e.x, side),
-      cost: ur.cost,
+      cost: ur.value,
       hp: e.hp + e.shield + e.innateShield,
       epic: ur.def.rarity === 'epic',
       legendary: ur.legendary,

@@ -52,6 +52,8 @@ export function botMayUsePower(t: Content, s: SaveDoc | null, id: CardId, warPat
   if (p.road !== undefined && p.road <= best + BOT_ROAD_LOOKAHEAD) return true;
   if (p.source === 'warPath') {
     if (warPathRegions.includes(p.age)) return true;
+    // X0: a side node's power once the player has cleared it and owns it.
+    if (s && p.warPathSide !== undefined) return (s.warPath.stars[`wp.${p.age}.s${p.warPathSide}`] ?? 0) > 0 && s.powersOwned.includes(id);
     const lvl = p.warPathLevel;
     // The first clear grants it (`grantWarPathPower`); until that grant is wired into the War Path result
     // (docs/requests/powers-warpath-grants.md) a cleared level alone does not put the power in the
@@ -64,11 +66,15 @@ export function botMayUsePower(t: Content, s: SaveDoc | null, id: CardId, warPat
 /** The War Path level of the Field slot unlock (A2.9.1): the first clear of Stone L5. */
 export const FIELD_UNLOCK_LEVEL = 'wp.stone.l05';
 
-/** The power a region's War Path level grants on its first clear (A2.9.8), or null. */
-export function warPathPowerOf(t: Content, region: AgeId, level: number): CardId | null {
+/**
+ * The power a region's War Path level grants on its first clear (A2.9.8), or null. `side`: the region's
+ * side node instead of a level (X0: s1 grants the new Home control).
+ */
+export function warPathPowerOf(t: Content, region: AgeId, level: number, side?: 1 | 2): CardId | null {
   for (const id of Object.keys(t.powers).sort()) {
     const p = t.powers[id];
-    if (p && p.source === 'warPath' && p.age === region && p.warPathLevel === level) return id;
+    if (!p || p.source !== 'warPath' || p.age !== region) continue;
+    if (side !== undefined ? p.warPathSide === side : p.warPathLevel === level && p.warPathSide === undefined) return id;
   }
   return null;
 }
@@ -79,10 +85,10 @@ export function warPathPowerOf(t: Content, region: AgeId, level: number): CardId
  * opens the Field power slot (A2.9.1, the same flag 150 trophies set). The War Path result calls this
  * next to its card grant; a power reads as a `card` step with no copies (a new card).
  */
-export function grantWarPathPower(s: SaveDoc, t: Content, region: AgeId, level: number): { save: SaveDoc; steps: RewardStep[] } {
+export function grantWarPathPower(s: SaveDoc, t: Content, region: AgeId, level: number, side?: 1 | 2): { save: SaveDoc; steps: RewardStep[] } {
   const steps: RewardStep[] = [];
   let save = s;
-  const id = warPathPowerOf(t, region, level);
+  const id = warPathPowerOf(t, region, level, side);
   if (id) {
     if (save.powersOwned.includes(id)) {
       save = { ...save, currencies: { ...save.currencies, amber: save.currencies.amber + POWER_OWNED_AMBER } };
@@ -92,7 +98,7 @@ export function grantWarPathPower(s: SaveDoc, t: Content, region: AgeId, level: 
       steps.push({ kind: 'card', card: id, copies: 0 });
     }
   }
-  if (levelId(region, level) === FIELD_UNLOCK_LEVEL && save.flags[META_FLAGS.powerField] !== true) save = { ...save, flags: { ...save.flags, [META_FLAGS.powerField]: true } };
+  if (side === undefined && levelId(region, level) === FIELD_UNLOCK_LEVEL && save.flags[META_FLAGS.powerField] !== true) save = { ...save, flags: { ...save.flags, [META_FLAGS.powerField]: true } };
   return { save, steps };
 }
 

@@ -24,6 +24,7 @@ import type {
 import { LANE_MLU, MILLI, nextIncomePick, randInt, researchCommand, researchCost, seedSfc32, startablePicks, type Sfc32State } from '@/core';
 import { raw as fixtureRaw } from '../../../tests/fixtures/content';
 import { rawLast } from '../../../tests/fixtures/lastBase';
+import { rawX0 } from '../../../tests/fixtures/x0';
 import { createSim } from '../createSim';
 import { applyStatus } from '../damage';
 import { simCtx } from '../debug';
@@ -37,6 +38,9 @@ export const fixture: CompiledContent = compileForSim(fixtureRaw);
  */
 export { LAST_END_BY_MS, LAST_STEPS } from '../../../tests/fixtures/lastBase';
 export const fixtureLast: CompiledContent = compileForSim(rawLast);
+
+/** The X0 content kinds on the frozen fixture (SIM_VERSION 7.0.0; `tests/fixtures/x0.ts`, golden 16). */
+export const fixtureX0: CompiledContent = compileForSim(rawX0);
 
 /** Lane length in whole lu (A17.2: 2,000). Tests place side-1 units at `L - p`. */
 export const L = LANE_MLU / MILLI;

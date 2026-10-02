@@ -32,7 +32,11 @@ sys.path.insert(0, BLENDER)
 sys.dont_write_bytecode = True
 
 AGE = "bronze"
-UNITS = ["hoplite", "javelineer", "war_chariot", "phalangite", "standard_bearer", "scorpion", "bronze_colossus"]
+UNITS = ["hoplite", "javelineer", "war_chariot", "phalangite", "standard_bearer", "scorpion", "bronze_colossus",
+         # the content-expansion wave (CONTENT_PLAN 5.2)
+         "shield_bearer", "thracian_raider", "rhodian_slingers", "discus_thrower", "war_elephant",
+         "cretan_archer", "belly_bowman", "aulos_piper", "tragic_chorus", "wooden_horse", "amazon_rider",
+         "minotaur", "hydra"]
 
 
 def run_units(out, only, install, previews):

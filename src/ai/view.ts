@@ -173,7 +173,8 @@ function seen(book: CardBook, u: Observation['units'][number]): SeenUnit {
     id: u.id,
     card: u.card,
     def,
-    value: def?.value ?? 0,
+    // One lane unit's share of its card (a squad member is half or a third, X0 M1).
+    value: def?.memberValue ?? 0,
     p: u.p,
     hp: u.hp,
     hpTotal: u.hp + u.shield,

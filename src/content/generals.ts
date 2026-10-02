@@ -19,13 +19,17 @@ type Plan = Record<AgeId, Loadout>;
  * A General's age loadout (A2.9.1 two power slots): the named power goes into its own slot and the
  * age's starter of the other slot fills the rest (DESIGN A2.9.9: Generals play both slots).
  */
-function lo(units: [U, U, U, U, U], turrets: [U, U], power: CardId): Loadout {
+/**
+ * A General's loadout: five troops (a sixth, X0, for a content-wave signature card), two turrets and one
+ * named power (a second one, X0, for the other slot); the age's starter fills any slot left.
+ */
+function lo(units: [U, U, U, U, U] | [U, U, U, U, U, U], turrets: [U, U], power: CardId, power2?: CardId): Loadout {
   const def = raw.powers.find((p) => p.id === power);
+  const def2 = power2 ? raw.powers.find((p) => p.id === power2) : undefined;
   const starter = (slot: 'home' | 'field'): CardId | null =>
     raw.powers.find((p) => p.age === def?.age && p.slot === slot && p.source === 'starter')?.id ?? null;
-  const home = def?.slot === 'home' ? power : starter('home');
-  const field = def?.slot === 'field' ? power : starter('field');
-  return { units, turrets, powers: { home, field } };
+  const pick = (slot: 'home' | 'field'): CardId | null => (def?.slot === slot ? power : def2?.slot === slot ? (power2 ?? null) : starter(slot));
+  return { units, turrets, powers: { home: pick('home'), field: pick('field') } };
 }
 
 /** The Balanced brain's weights (all 50), used where a General has no weights of its own. */
@@ -93,7 +97,7 @@ const PIP: Plan = {
 };
 
 const KETTLE: Plan = {
-  stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth'], ['angry_beehive', 'rock_tosser'], 'stampede'),
+  stone: lo(['hunting_wolves', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth', 'torch_runner'], ['angry_beehive', 'rock_tosser'], 'stampede'),
   bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer'], ['sun_mirror', 'archer_tower'], 'aegis'),
   medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'battering_ram'], ['pitch_cauldron', 'crossbow_nest'], 'royal_decree'),
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'field_surgeon'], ['grapeshot_gun', 'swivel_gun'], 'smoke_screen'),
@@ -104,7 +108,7 @@ const KETTLE: Plan = {
 };
 
 const MOSS: Plan = {
-  stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman'], ['log_roller', 'grumpy_toad'], 'stampede'),
+  stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'herbalist', 'hide_shield'], ['log_roller', 'grumpy_toad'], 'stampede'),
   bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer'], ['onager', 'gorgon_bust'], 'tidal_wave'),
   medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar'], ['trebuchet', 'pitch_cauldron'], 'arrow_storm'),
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'field_surgeon'], ['grapeshot_gun', 'chainshot_cannon'], 'smoke_screen'),
@@ -115,7 +119,7 @@ const MOSS: Plan = {
 };
 
 const LEDGER: Plan = {
-  stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman'], ['rock_tosser', 'angry_beehive'], 'stampede'),
+  stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman', 'beast_caller'], ['rock_tosser', 'angry_beehive'], 'stampede'),
   bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer'], ['archer_tower', 'onager'], 'aegis'),
   medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar'], ['crossbow_nest', 'honk_ballista'], 'royal_decree'),
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'bronze_cannon'], ['swivel_gun', 'congreve_rack'], 'broadside'),
@@ -126,7 +130,7 @@ const LEDGER: Plan = {
 };
 
 const BOOMSWORTH: Plan = {
-  stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman'], ['rock_tosser', 'log_roller'], 'meteor_shower'),
+  stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman', 'atlatl_thrower'], ['rock_tosser', 'sapling_sling'], 'meteor_shower'),
   bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'scorpion'], ['onager', 'archer_tower'], 'tidal_wave'),
   medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar'], ['trebuchet', 'crossbow_nest'], 'arrow_storm'),
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'bronze_cannon'], ['congreve_rack', 'swivel_gun'], 'broadside'),
@@ -137,7 +141,7 @@ const BOOMSWORTH: Plan = {
 };
 
 const TWINS: Plan = {
-  stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth'], ['rock_tosser', 'grumpy_toad'], 'stampede'),
+  stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth', 'boulder_hurler'], ['rock_tosser', 'grumpy_toad'], 'stampede'),
   bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'scorpion'], ['archer_tower', 'gorgon_bust'], 'tidal_wave'),
   medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar'], ['crossbow_nest', 'honk_ballista'], 'arrow_storm'),
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'field_surgeon'], ['swivel_gun', 'chainshot_cannon'], 'smoke_screen'),
@@ -148,7 +152,7 @@ const TWINS: Plan = {
 };
 
 const ROOK: Plan = {
-  stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman'], ['angry_beehive', 'grumpy_toad'], 'stampede'),
+  stone: lo(['bonker', 'pebbler', 'woolly_rhino', 'spear_hunter', 'drum_shaman', 'bolas_thrower'], ['quill_porcupine', 'grumpy_toad'], 'stampede'),
   bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'scorpion'], ['sun_mirror', 'onager'], 'tidal_wave'),
   medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'battering_ram'], ['crossbow_nest', 'trebuchet'], 'arrow_storm'),
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'bronze_cannon'], ['swivel_gun', 'congreve_rack'], 'smoke_screen'),
@@ -159,7 +163,7 @@ const ROOK: Plan = {
 };
 
 const TEMPEST: Plan = {
-  stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman'], ['rock_tosser', 'angry_beehive'], 'meteor_shower'),
+  stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman', 'rockfall_shaman'], ['rock_tosser', 'angry_beehive'], 'tangle_vines', 'pebble_hail'),
   bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer'], ['archer_tower', 'gorgon_bust'], 'tidal_wave'),
   medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar'], ['crossbow_nest', 'honk_ballista'], 'arrow_storm'),
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'field_surgeon'], ['swivel_gun', 'chainshot_cannon'], 'broadside'),

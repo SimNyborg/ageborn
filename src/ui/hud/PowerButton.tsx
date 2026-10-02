@@ -46,7 +46,8 @@ import { usePortrait } from './usePortrait';
  * For a power that picks its own spot, what a drop or field tap does (a drag or tap there casts it
  * wherever the pointer is, so the token says where it will act instead). Null for aimed powers.
  */
-export function autoAimKey(kind: string | undefined): string | null {
+export function autoAimKey(kind: string | undefined, reach?: string): string | null {
+  if (reach === 'lane') return 'hud.powerAim.auto.lane';
   switch (kind) {
     case 'stampede':
       return 'hud.powerAim.auto.stampede';
@@ -542,7 +543,7 @@ function PowerSlotButton(p: {
   const aiming = st.s === 'aiming' || (st.s === 'pressed' && st.wasAiming);
   const overHud = dragging && st.aim.over === 'hud';
   const outOfReach = (dragging || aiming) && 'aim' in st && st.aim.inReach === false && st.aim.p !== null;
-  const autoKey = (dragging || aiming) && 'aimable' in st && !st.aimable ? autoAimKey(def.effect.kind) : null;
+  const autoKey = (dragging || aiming) && 'aimable' in st && !st.aimable ? autoAimKey(def.effect.kind, def.reach) : null;
   const root = aiming || dragging ? hudRoot() : null;
   const cost = v.p.cost;
   const icon = (size: number) => (url ? <img src={url} alt="" draggable={false} /> : <BoltIcon size={size} />);

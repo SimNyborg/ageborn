@@ -373,7 +373,7 @@ export function densestP(
     let score = 0;
     for (const e of ctx.s.units) {
       if (e.side === side || !alive(e) || e.fort || (e.air ? !hitsAir : !hitsGround)) continue;
-      if (centreDist(x, e.x) <= window) score += unitRules(ctx, e).cost;
+      if (centreDist(x, e.x) <= window) score += unitRules(ctx, e).value;
     }
     if (score > bestScore) {
       bestScore = score;

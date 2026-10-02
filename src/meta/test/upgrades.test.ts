@@ -81,7 +81,8 @@ describe('Codex Level (A6.7)', () => {
     expect(codexLevelFor(14, C)).toBe(1);
     expect(codexLevelFor(15, C)).toBe(2);
     let total = 0;
-    for (const id of [...C.order.units, ...C.order.turrets]) total += 9 * C.rarities.cards[(C.units[id] ?? C.turrets[id])!.rarity].codexPoints;
+    // The 88 original cards (X0 content-wave cards come on top: about 300 levels with all eight waves).
+    for (const id of [...C.order.units, ...C.order.turrets].filter((x) => !(x in C.cardArena))) total += 9 * C.rarities.cards[(C.units[id] ?? C.turrets[id])!.rarity].codexPoints;
     expect(total).toBe(1944);
     expect(codexLevelFor(total, C) - 1).toBe(129);
   });

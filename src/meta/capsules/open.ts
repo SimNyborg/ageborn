@@ -57,7 +57,7 @@ export function openCapsuleWith(s: SaveDoc, id: string, t: Content): { save: Sav
   const cap = s.capsules.pending.find((p) => p.id === id);
   if (!cap) throw new Error(`meta: no pending capsule "${id}"`);
   const maxLevel = t.economy.maxLevel;
-  const pool = poolOf(t, arenaOf(s, t).dropAges);
+  const pool = poolOf(t, arenaOf(s, t).dropAges, s.arenaIndex);
   // As in the roll: a card already inside an unopened capsule is on its way, so it needs no
   // protection. Otherwise opening a pile newest-first would count misses past the A6.5 limit while
   // the new cards wait in the older capsules.

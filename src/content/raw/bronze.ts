@@ -16,7 +16,7 @@ export const bronze: RawAgeTables = {
     {
       // Blunt. Shield Bash: the first hit of each engagement knocks the target back 15 lu (no damage bonus)
       id: 'hoplite', kind: 'unit', age: 'bronze', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 186, speed: 70, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 186, speed: 70, size: 'small', starter: true,
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -31,7 +31,7 @@ export const bronze: RawAgeTables = {
     {
       // Javelin: pierces 2 targets total within 50 lu (the second takes 50%, A2.6)
       id: 'javelineer', kind: 'unit', age: 'bronze', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 110, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 110, speed: 65, size: 'small', starter: true,
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
@@ -47,7 +47,7 @@ export const bronze: RawAgeTables = {
     {
       // Scythe Charge: first hit ×2 and 30 lu knockback. The fastest Common Heavy (65), with less HP
       id: 'war_chariot', kind: 'unit', age: 'bronze', rarity: 'common', role: 'heavy', group: 'heavy',
-      cost: 150, trainMs: 4000, pop: 6, hp: 630, speed: 65, size: 'large',
+      cost: 150, trainMs: 4000, pop: 6, hp: 630, speed: 65, size: 'large', starter: true,
       tags: ['armored', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -62,7 +62,7 @@ export const bronze: RawAgeTables = {
     {
       // Reach 65; melee AA mods; priority armored
       id: 'phalangite', kind: 'unit', age: 'bronze', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 255, speed: 70, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 255, speed: 70, size: 'medium', starter: true,
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -131,7 +131,7 @@ export const bronze: RawAgeTables = {
   turrets: [
     {
       // Single target
-      id: 'archer_tower', kind: 'turret', age: 'bronze', rarity: 'common', cost: 150,
+      id: 'archer_tower', kind: 'turret', age: 'bronze', rarity: 'common', starter: true, cost: 150,
       attack: {
         damage: 35, intervalMs: 1500, windupPct: 0, range: 370, hitsGround: true, hitsAir: true,
         projectile: { speed: 650, visualId: 'proj.arrow' },
@@ -141,7 +141,7 @@ export const bronze: RawAgeTables = {
     },
     {
       // Focused sunlight: instant beam, high chip DPS, short range (the Bronze answer to the Beehive)
-      id: 'sun_mirror', kind: 'turret', age: 'bronze', rarity: 'common', cost: 175,
+      id: 'sun_mirror', kind: 'turret', age: 'bronze', rarity: 'common', starter: true, cost: 175,
       attack: {
         damage: 9, intervalMs: 300, windupPct: 0, range: 230, hitsGround: true, hitsAir: true,
         projectile: { instant: true, effectId: 'fx.sun_beam' },

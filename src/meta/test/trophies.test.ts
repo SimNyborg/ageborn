@@ -94,13 +94,13 @@ describe('Trophy Road (A6.3)', () => {
   });
 
   it('every Amber node pays 100 + 20 × trophies / 100', () => {
-    let s = at(scripted(), 4000);
+    let s = at(scripted(), 5000);
     for (const node of C.trophyRoad.nodes) {
       const before = s.currencies.amber;
       s = claim(s, node.trophies);
       const amber = node.rewards.find((r) => r.kind === 'amber');
       if (amber) expect(s.currencies.amber - before).toBe(100 + (20 * node.trophies) / 100);
     }
-    expect(s.trophies.roadClaimed).toHaveLength(60);
+    expect(s.trophies.roadClaimed).toHaveLength(C.trophyRoad.nodes.length);
   });
 });

@@ -110,7 +110,24 @@ export type AbilityDef =
   | { kind: 'periodicShieldAura'; everyMs: number; radius: number; maxTargets: number; shield: number; durationMs: number }
   | { kind: 'callStrike'; everyMs: number; searchRange: number; delayMs: number; damage: number; radius: number; sideLockoutMs: number }
   | { kind: 'emp'; everyMs: number; triggerRadius: number; radius: number; stunMs: number }
-  | { kind: 'timeStop'; everyMs: number; radius: number; freezeMs: number; legendaryFreezeMs: number }
+  /**
+   * Every `everyMs` while an enemy is within `radius`, stuns every enemy there (air included) for
+   * `freezeMs` (Legendaries `legendaryFreezeMs`). `frozen` (default true) is the stun's visual flag only:
+   * true draws the Time Stop clock, false a roar or daze (dizzy stars, X0 M5).
+   */
+  | { kind: 'timeStop'; everyMs: number; radius: number; freezeMs: number; legendaryFreezeMs: number; frozen?: boolean }
+  /**
+   * Frenzy (X0 M2): while HP ≤ `belowHpBp` of max HP, the unit has a self damage and attack speed bonus
+   * (inside the A18.2 caps). Healing above the line removes it. No state beyond HP.
+   */
+  | { kind: 'frenzy'; belowHpBp: number; damageBp: number; attackSpeedBp: number }
+  /**
+   * Summoner (X0 M3): the camp levy rules on a moving unit. A hidden `summon` card appears at the
+   * summoner's position, first `firstMs` after spawn, then every `everyMs` while fewer than `maxAlive`
+   * of its summons live. Summons use no pop, pay no bounty, always march and rank last in power caps.
+   * Summoning pauses while stunned and stops at death; live summons stay.
+   */
+  | { kind: 'summon'; card: CardId; firstMs: number; everyMs: number; maxAlive: number }
   | { kind: 'innateShield'; amount: number; regenPerSec: number; delayMs: number }
   /** Shield Wall: less damage from attacks with range ≥ `minSourceRange` (DESIGN A5.3 Footman). */
   | { kind: 'resist'; minSourceRange: number; bp: number }
@@ -164,6 +181,21 @@ export interface UnitDef {
   levy?: boolean;
   /** The value AI threat estimates use when `cost` is 0 (a levy: 16% of the Infantry cost). */
   aiValue?: number;
+  /**
+   * A summoner's hidden summon card (X0 M3): cost 0, hidden, with an `aiValue`. The sim treats it like a
+   * levy (no pop, no bounty, always marches, ranks last in every power cap).
+   */
+  summon?: boolean;
+  /**
+   * Squad (X0 M1): one train command spawns `count` members on the same tick. Stats are per member; the
+   * card's cost and pop are the group's, split evenly (each member pop ÷ count, bounty on cost ÷ count).
+   */
+  squad?: { count: 2 | 3 };
+  /**
+   * A starter card (X0): part of every player's starter kit for its age (the three original Commons and
+   * the Anti-heavy Rare). Later Commons are capsule cards with discovery and copies.
+   */
+  starter?: boolean;
 }
 
 /** The four fort kinds (DESIGN A16.14.1). */
@@ -192,6 +224,10 @@ export interface FortDef {
   road?: number;
   /** The War Path level (4, 6 or 8, in the fort's own region) whose first clear grants it. */
   warPathLevel?: number;
+  /** X0: the region's side node (`wp.<age>.s1` or `s2`) whose first clear grants it. */
+  warPathSide?: 1 | 2;
+  /** X0: the region's War Path star milestone (stars earned in the region) that grants it. */
+  warPathStars?: number;
   /** Whole gold, flat across ages (Wall 125, Bunker 175, Trap 75, Camp and Tower 150). */
   cost: number;
   /** Pop used while alive, scaffolds included (6; a Trap 3). */
@@ -300,6 +336,8 @@ export interface TurretDef {
   visualId: VisualId;
   nameKey: string;
   descKey: string;
+  /** A starter turret (X0): the two original Common turrets of each age. */
+  starter?: boolean;
 }
 
 /**
@@ -357,7 +395,7 @@ export type PowerSlot = 'home' | 'field';
  * Where a power may act (DESIGN A2.9.4): `home` your half, `front` near your army, `anywhere` the whole
  * lane (strikes and drops only), `army` your own units (no aim).
  */
-export type PowerReach = 'home' | 'front' | 'anywhere' | 'army';
+export type PowerReach = 'home' | 'front' | 'anywhere' | 'army' | 'lane';
 
 /** Power families (DESIGN A5.7 role template); each has its own budget (A2.9.6). */
 export type PowerFamily =
@@ -375,7 +413,10 @@ export type PowerFamily =
   | 'ward'
   | 'mend'
   | 'cloud'
-  | 'drop';
+  | 'drop'
+  /** Whole-lane powers (A2.9.4 `lane`, A5.7 H7): a volley (damage) or a signal (damage and a light status). */
+  | 'volley'
+  | 'signal';
 
 /** Power rarity marks the source and the specialisation, never raw power (A3 sidegrades). */
 export type PowerRarity = 'common' | 'rare' | 'epic';
@@ -401,6 +442,8 @@ export interface PowerDef {
   road?: number;
   /** War Path level (in the power's own region, `age`) whose first clear grants it (A2.9.8). */
   warPathLevel?: number;
+  /** X0: the region's side node (`wp.<age>.s1` or `s2`) whose first clear grants it (instead of a level). */
+  warPathSide?: 1 | 2;
   /** Whole gold per cast, flat across ages (A2.9.2). */
   cost: number;
   /** Reload after a cast, ms (A2.9.3). */

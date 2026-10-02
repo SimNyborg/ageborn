@@ -88,7 +88,7 @@ export function defaultCapsuleAge(s: SaveDoc, t: Content): AgeId {
   let best: AgeId = arena.dropAges[0] ?? 'stone';
   let bestN = -1;
   for (const age of arena.dropAges) {
-    const n = poolOf(t, [age]).cards.filter((c) => !owned.has(c)).length;
+    const n = poolOf(t, [age], s.arenaIndex).cards.filter((c) => !owned.has(c)).length;
     if (n > bestN) {
       best = age;
       bestN = n;
@@ -132,7 +132,8 @@ function spec(tier: CapsuleTierDef, randomLegendaries: boolean): RollSpec {
 function ageUnlockStacks(t: Content, age: AgeId, owned: ReadonlySet<CardId>): CapsuleStack[] {
   const { units } = ageCards(t, age);
   const rare = units.find((id) => t.units[id]?.group === 'support' && t.units[id]?.rarity === 'rare');
-  const commons = units.filter((id) => t.units[id]?.rarity === 'common');
+  // The age's starter Commons (X0: wave Commons are capsule cards, not part of the unlock).
+  const commons = units.filter((id) => t.units[id]?.rarity === 'common' && t.units[id]?.starter === true);
   const au = t.capsules.ageUnlock;
   const stack = (card: CardId, copies: number): CapsuleStack => ({
     card,
@@ -177,7 +178,7 @@ export function grantCapsuleAt(
     const stacks = rollScripted(script, {
       t,
       rng,
-      pool: poolOf(t, arena.dropAges),
+      pool: poolOf(t, arena.dropAges, s.arenaIndex),
       owned,
       save: s,
       fillerAge: arena.dropAges[0],
@@ -191,7 +192,7 @@ export function grantCapsuleAt(
     tier = ac.copiesTier;
     const stacks = rollStacks(
       { stacks: ac.stacks, guaranteed: ac.guaranteed, copies: copiesTier.copies, randomLegendaries: arena.randomLegendaries },
-      { t, rng, pool: poolOf(t, [age]), owned, pity: pityDraw(s, t), reserved, need },
+      { t, rng, pool: poolOf(t, [age], s.arenaIndex), owned, pity: pityDraw(s, t), reserved, need },
     );
     contents = { stacks, amber: copiesTier.amber, dust: 0, skin: null };
   } else {
@@ -209,7 +210,7 @@ export function grantCapsuleAt(
     const stacks = rollStacks(spec(def, arena.randomLegendaries), {
       t,
       rng,
-      pool: poolOf(t, arena.dropAges),
+      pool: poolOf(t, arena.dropAges, s.arenaIndex),
       owned,
       pity: pityDraw(s, t),
       reserved,

@@ -51,6 +51,11 @@ interface RegionRow {
   bossCapsule: CapsuleTier;
   /** The boss's extra fixed turret (A18.7.6), a turret of the region's age. */
   bossTurret: CardId;
+  /**
+   * X0 side nodes (CONTENT_PLAN 6), once the region's content wave has shipped: the Generals of s1 (opens
+   * after L5; its first clear grants the region's new Home power) and s2 (opens after L8; a fort variant).
+   */
+  sides?: { s1: GeneralId; s2: GeneralId };
 }
 
 const REGIONS: readonly RegionRow[] = [
@@ -65,6 +70,8 @@ const REGIONS: readonly RegionRow[] = [
     epic: 'sabertooth',
     bossCapsule: 'bronze',
     bossTurret: 'rock_tosser',
+    // W1 Stone (2026-10-02): Kettle rushes with the new raiders and wolves, Moss turtles behind hide shields
+    sides: { s1: 'kettle', s2: 'moss' },
   },
   {
     age: 'bronze',
@@ -200,8 +207,13 @@ function goalFor(role: WarPathRole, window: number): StarGoal {
       return { kind: 'powerHits', n: 3 };
     case 'puzzle':
       return { kind: 'noEconomy' };
+    case 'side':
+      return { kind: 'baseAbove', bp: 6000 };
   }
 }
+
+/** X0 side nodes: s1 opens after L5, s2 after L8 (CONTENT_PLAN 6). */
+const SIDE_AFTER: Record<1 | 2, number> = { 1: 5, 2: 8 };
 
 function levelId(age: AgeId, index: number): string {
   return `wp.${age}.l${String(index).padStart(2, '0')}`;
@@ -245,7 +257,34 @@ function buildLevels(): { regions: WarPathRegion[]; levels: Record<string, WarPa
       ids.push(id);
       order.push(id);
     });
-    regions.push({ age: r.age, baseTier: r.baseTier, levels: ids });
+    // X0 side nodes: optional levels off the main path, a 2-age window like their neighbours (Stone alone in region 1).
+    const sides: string[] = [];
+    if (r.sides) {
+      for (const n of [1, 2] as const) {
+        const id = `wp.${r.age}.s${n}`;
+        const length = Math.min(2, ri + 1);
+        const start = AGES[ri - length + 1] as AgeId;
+        levels[id] = {
+          id,
+          region: r.age,
+          index: 10 + n,
+          role: 'side',
+          format: windowFormatId(length, start),
+          general: n === 1 ? r.sides.s1 : r.sides.s2,
+          tierOffset: n === 1 ? 0 : 1,
+          botLevel: r.botLevel,
+          modifiers: [],
+          goal2: goalFor('side', length),
+          teaches: null,
+          reward: { amber: n === 1 ? AMBER : AMBER_HARD, capsule: null, card: null },
+          boss: null,
+          onboarding: null,
+          side: { n, after: SIDE_AFTER[n] },
+        };
+        sides.push(id);
+      }
+    }
+    regions.push({ age: r.age, baseTier: r.baseTier, levels: ids, ...(sides.length > 0 ? { sides } : {}) });
   });
   return { regions, levels, order };
 }

@@ -19,7 +19,7 @@
 import type { CardId, MatchStats, RewardStep, SaveDoc, WarPathDifficulty, WarPathMatch } from '@/contracts';
 import type { Content, Difficulty, StarGoal, WarPathLevel, WarPathRegion, WarPathUnlock } from '@/content';
 import { grantCapsuleAt } from './capsules/grant';
-import { grantWarPathFort } from './forts';
+import { grantStarForts, grantWarPathFort, grantWarPathSideFort } from './forts';
 import { grantWarPathPower } from './powers';
 
 /** A node's state on the map. */
@@ -69,10 +69,43 @@ export function nextLevelId(s: SaveDoc, t: Content): string {
   return currentLevelId(s, t) ?? t.warPath.order[t.warPath.order.length - 1]!;
 }
 
-/** True when the level may be played: beaten before, or the current level. */
+/**
+ * True when the level may be played: beaten before, or the current level. An X0 side node is open once
+ * its region's level `after` is beaten (it never becomes the current level and never blocks the path).
+ */
 export function levelOpen(s: SaveDoc, t: Content, id: string): boolean {
-  if (!levelDef(t, id)) return false;
+  const def = levelDef(t, id);
+  if (!def) return false;
+  if (def.side) return isBeaten(s, id) || isBeaten(s, `wp.${def.region}.l${String(def.side.after).padStart(2, '0')}`);
   return isBeaten(s, id) || currentLevelId(s, t) === id;
+}
+
+/** X0: a side node's state on the map: beaten, open (playable) or locked. */
+export type SideNodeState = 'beaten' | 'open' | 'locked';
+
+export interface WarPathSideNode {
+  level: WarPathLevel;
+  state: SideNodeState;
+  stars: number;
+  crown: number;
+  /** Map position (in `order`) of the main level it hangs off. */
+  parent: number;
+}
+
+/** X0: every side node of the map with its state, in region order. */
+export function warPathSideNodes(s: SaveDoc, t: Content): WarPathSideNode[] {
+  const p = warPathOf(s);
+  const out: WarPathSideNode[] = [];
+  for (const r of t.warPath.regions) {
+    for (const id of r.sides ?? []) {
+      const level = t.warPath.levels[id];
+      if (!level?.side) continue;
+      const stars = p.stars[id] ?? 0;
+      const parentId = `wp.${level.region}.l${String(level.side.after).padStart(2, '0')}`;
+      out.push({ level, state: stars > 0 ? 'beaten' : levelOpen(s, t, id) ? 'open' : 'locked', stars, crown: p.crowns[id] ?? 0, parent: t.warPath.order.indexOf(parentId) });
+    }
+  }
+  return out;
 }
 
 /** Every node of the map with its state. */
@@ -219,15 +252,23 @@ export function applyWarPath(
       steps.push({ kind: 'capsule', capsuleId: g.capsule.id });
     }
     // A16.14.6: a region's L4, L6 and L8 grant its Camp, Trap and Tower (once the Fort slot is open; the
-    // first clear of Bronze L4 opens it and grants the walls and the Stone set).
-    const f = grantWarPathFort(save, t, level.region, level.index);
+    // first clear of Bronze L4 opens it and grants the walls and the Stone set). X0: side node s2 grants
+    // the region's fort variant.
+    const f = level.side ? grantWarPathSideFort(save, t, level.region, level.side.n) : grantWarPathFort(save, t, level.region, level.index);
     save = f.save;
     steps.push(...f.steps);
     // A2.9.8: the level's War Path power (60 Amber if owned); Stone L5 opens the Field slot (A2.9.1).
-    // MVP 2026-10-01 (docs/requests/powers-warpath-grants.md), with the Field slot live in battle.
-    const pw = grantWarPathPower(save, t, level.region, level.index);
+    // MVP 2026-10-01 (docs/requests/powers-warpath-grants.md), with the Field slot live in battle. X0: side
+    // node s1 grants the region's new Home power.
+    const pw = grantWarPathPower(save, t, level.region, level.index, level.side?.n);
     save = pw.save;
     steps.push(...pw.steps);
+  }
+  // X0: the region's star milestone (every new star counts; it pays once).
+  if (got > had) {
+    const st = grantStarForts(save, t, level.region);
+    save = st.save;
+    steps.push(...st.steps);
   }
   return { save, steps };
 }

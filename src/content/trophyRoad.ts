@@ -20,6 +20,12 @@ const forts = (camp: CardId, trap: CardId, tower: CardId): RoadReward[] => [
   { kind: 'fort', card: tower },
 ];
 const wardrobe: RoadReward = { kind: 'wardrobe' };
+/**
+ * X0: a region's set tile on the road extension (4,100-5,000): the fallback of its side node s1 Home power
+ * and its two fort variants (side node s2 and the star milestone). Whichever source comes first grants
+ * each item, the other pays 60 Amber.
+ */
+const regionSet = (home: CardId, fortA: CardId, fortB: CardId): RoadReward[] => [power(home), { kind: 'fort', card: fortA }, { kind: 'fort', card: fortB }];
 
 /** DESIGN A6.3 road tables, one row per line: [trophies, rewards]. */
 const ROWS: readonly [number, RoadReward[]][] = [
@@ -72,7 +78,8 @@ const ROWS: readonly [number, RoadReward[]][] = [
   [2000, [wardrobe]],
   // Base 2,000, +100 steps. A16.14.6: one fort set per region (its Camp, Trap and Tower) on plain nodes
   // from 2,200 to 3,200, the fallback of War Path L4, L6 and L8 (whichever comes first grants, the other pays 60 Amber)
-  [2100, [amber(520)]],
+  // X0: the whole-lane powers (H7) are the fallback second items of the free plain nodes after 1,950, in region order
+  [2100, [amber(520), power('pebble_hail')]],
   [2200, [capsule('jade'), ...forts('muster_tents', 'hidden_stakes', 'pyrgos_tower')]],
   [2300, [dust(400), ...forts('levy_camp', 'wolf_pits', 'longbow_tower')]],
   [2400, [amber(580)]],
@@ -93,6 +100,18 @@ const ROWS: readonly [number, RoadReward[]][] = [
   [3800, [amber(860)]],
   [3900, [dust(400)]],
   [4000, [capsule('aeon')]],
+  // X0 (content expansion 2026-10-02): the road extends to 5,000, every 100, one region set tile per age in
+  // region order (CONTENT_PLAN 6). Regions whose wave has not shipped yet hold their Amber or Dust node.
+  [4100, [amber(920), ...regionSet('tangle_vines', 'thorn_hedge', 'bone_watchtower')]],
+  [4200, [dust(400)]],
+  [4300, [amber(960)]],
+  [4400, [capsule('jade')]],
+  [4500, [amber(1000)]],
+  [4600, [dust(400)]],
+  [4700, [amber(1040)]],
+  [4800, [capsule('jade')]],
+  [4900, [amber(1080)]],
+  [5000, [capsule('aeon')]],
 ];
 
 export const trophyRoad: TrophyRoad = {

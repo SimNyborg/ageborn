@@ -56,14 +56,15 @@ function processDeath(ctx: Ctx, u: UnitRt): void {
   const side = ctx.s.sides[u.side];
   u.mode = 'dying';
   u.hp = 0;
-  if (!u.summoned) side.pop -= r.pop;
+  if (!u.summoned) side.pop -= Math.trunc(r.pop / r.squad);
   const kind = u.lastHitKind;
   const killerSide = u.lastHitSide;
   let gold = 0;
   let xp = 0;
   let loss = 0;
   if (!u.summoned) {
-    const cost = unitCost(ctx, u.card);
+    // A squad member pays its share of the card cost (X0 M1).
+    const cost = Math.trunc(unitCost(ctx, u.card) / r.squad);
     loss = Math.trunc((cost * ctx.econ.ownLossXpBp) / BP);
     if (kind !== null && killerSide !== u.side) {
       const byPower = kind === 'power' || kind === 'lastStand';

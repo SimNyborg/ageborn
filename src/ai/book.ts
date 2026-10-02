@@ -21,6 +21,14 @@ export interface UnitCard {
   value: number;
   /** Cost in milli-gold. */
   cost: number;
+  /** X0 M1: members one train command spawns (1 for every card but a squad). */
+  squad: number;
+  /** One lane unit's share of the card value (value ÷ squad), whole gold: what a seen unit is worth. */
+  memberValue: number;
+  /** One lane unit's share of the cost (cost ÷ squad), milli-gold: what the foe paid per unit and its bounty. */
+  memberCost: number;
+  /** X0 M3: the summon a summoner sends and how many live at once, or null. */
+  summons: { card: CardId; maxAlive: number } | null;
   pop: number;
   /** Range of the first attack in milli-lu (0 for units without attacks). */
   range: number;
@@ -298,6 +306,11 @@ export function cardBook(content: CompiledContent): CardBook {
     const u = content.units[id];
     if (!u) continue;
     const riders = u.abilities.find((a) => a.kind === 'riders');
+    const summon = u.abilities.find((a) => a.kind === 'summon');
+    // A levy or a summon (X0 M3) costs 0 but counts at its AI value in threat estimates.
+    const free = u.levy === true || u.summon === true;
+    const squad = u.squad?.count ?? 1;
+    const value = free ? (u.aiValue ?? 0) : u.cost;
     units[id] = {
       id,
       age: u.age,
@@ -306,8 +319,12 @@ export function cardBook(content: CompiledContent): CardBook {
       legendary: u.group === 'legendary' || u.rarity === 'legendary',
       epic: u.rarity === 'epic',
       // A16.14.3: a levy costs 0 but counts at its AI value (8) in threat estimates.
-      value: u.levy ? (u.aiValue ?? 0) : u.cost,
-      cost: (u.levy ? (u.aiValue ?? 0) : u.cost) * MILLI,
+      value,
+      cost: value * MILLI,
+      squad,
+      memberValue: Math.trunc(value / squad),
+      memberCost: Math.trunc((value * MILLI) / squad),
+      summons: summon?.kind === 'summon' ? { card: summon.card, maxAlive: summon.maxAlive } : null,
       pop: e.popByGroup[u.group] ?? 0,
       range: firstRange(u),
       speed: Math.max(0, Math.trunc((u.speed * e.marchSpeedBp) / BP)),
@@ -315,7 +332,7 @@ export function cardBook(content: CompiledContent): CardBook {
       air: u.tags.includes('air'),
       hidden: u.hidden === true,
       riders: riders?.kind === 'riders' ? { card: riders.onDeathSpawn, count: riders.count } : null,
-      levy: u.levy === true,
+      levy: free,
       fort: u.fort?.kind ?? null,
       breaker: !u.fort && isBreaker(u),
       vsStructureBp: structureRow(u, rangedMinLu, false),

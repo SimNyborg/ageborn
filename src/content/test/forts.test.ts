@@ -50,15 +50,18 @@ const TABLE: Record<AgeId, [number, number, number, number, number, number, numb
 };
 
 describe('the Fort roster (A16.14.4)', () => {
-  it('validates, with 32 forts (8 Common, 16 Rare, 8 Epic), 24 hidden twins and 8 levies', () => {
+  it('validates, with 32 forts (8 Common, 16 Rare, 8 Epic) plus the X0 variants, their hidden twins and levies', () => {
     expect(validateContent(content)).toEqual([]);
-    expect(forts).toHaveLength(32);
-    expect(forts.filter((x) => x.rarity === 'common')).toHaveLength(8);
-    expect(forts.filter((x) => x.rarity === 'rare')).toHaveLength(16);
-    expect(forts.filter((x) => x.rarity === 'epic')).toHaveLength(8);
-    expect(Object.values(content.units).filter((u) => u.fort)).toHaveLength(24);
-    expect(Object.values(content.units).filter((u) => u.levy)).toHaveLength(8);
-    expect(content.order.forts).toHaveLength(32);
+    // The X0 roster shape: walls Common, camps and traps Rare, towers Epic.
+    const shape = Object.values(content.rosterShape);
+    const n = (k: 'wall' | 'tower' | 'camp' | 'trap'): number => shape.reduce((a, s) => a + s.forts[k], 0);
+    expect(forts).toHaveLength(n('wall') + n('tower') + n('camp') + n('trap'));
+    expect(forts.filter((x) => x.rarity === 'common')).toHaveLength(n('wall'));
+    expect(forts.filter((x) => x.rarity === 'rare')).toHaveLength(n('camp') + n('trap'));
+    expect(forts.filter((x) => x.rarity === 'epic')).toHaveLength(n('tower'));
+    expect(Object.values(content.units).filter((u) => u.fort)).toHaveLength(n('wall') + n('tower') + n('camp'));
+    expect(Object.values(content.units).filter((u) => u.levy)).toHaveLength(n('camp'));
+    expect(content.order.forts).toHaveLength(forts.length);
     // Never collectable: no fort, twin or levy in the collection order, pools or counters.
     for (const id of [...content.order.forts, ...content.order.fortUnits]) {
       expect(content.order.units.includes(id), id).toBe(false);
@@ -102,6 +105,18 @@ describe('the Fort roster (A16.14.4)', () => {
       const items = n?.rewards.filter((r) => r.kind === 'fort').map((r) => (r.kind === 'fort' ? r.card : '')) ?? [];
       expect(items.sort()).toEqual([of(age, 'camp').id, of(age, 'trap').id, of(age, 'tower').id].sort());
     }
+  });
+});
+
+describe('X0 fort variants (CONTENT_PLAN 4, 5.1)', () => {
+  it('Stone: Thorn Hedge is a cheap wall from side node s2, Bone Watchtower a lob tower from the 20-star milestone', () => {
+    expect(content.forts.thorn_hedge).toMatchObject({ fortKind: 'wall', rarity: 'common', cost: 100, hp: 420, source: 'warPath', warPathSide: 2, road: 4100 });
+    expect(content.forts.bone_watchtower).toMatchObject({ fortKind: 'tower', rarity: 'epic', cost: 150, hp: 280, source: 'warPath', warPathStars: 20, road: 4100 });
+    expect(content.forts.bone_watchtower?.attack).toMatchObject({ damage: 21, intervalMs: 1800, range: 200, splashRadius: 30, hitsGround: true, hitsAir: false });
+    const p = content.forts.bone_watchtower?.attack?.projectile;
+    expect(p && 'speed' in p ? p.arc : false).toBe(true);
+    const tile = content.trophyRoad.nodes.find((x) => x.trophies === 4100);
+    expect(tile?.rewards.filter((r) => r.kind === 'fort').map((r) => (r.kind === 'fort' ? r.card : '')).sort()).toEqual(['bone_watchtower', 'thorn_hedge']);
   });
 });
 

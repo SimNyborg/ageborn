@@ -14,7 +14,7 @@ export const future: RawAgeTables = {
     {
       // 470 HP (+90 shield). Blunt; innate shield 90, regenerates 30/s after 3 s without damage
       id: 'photon_knight', kind: 'unit', age: 'future', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 470, speed: 75, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 470, speed: 75, size: 'small', starter: true,
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -29,7 +29,7 @@ export const future: RawAgeTables = {
     {
       // Plasma bolt
       id: 'pulse_trooper', kind: 'unit', age: 'future', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 315, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 315, speed: 65, size: 'small', starter: true,
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
@@ -45,7 +45,7 @@ export const future: RawAgeTables = {
     {
       // Reach
       id: 'walker_mech', kind: 'unit', age: 'future', rarity: 'common', role: 'heavy', group: 'heavy',
-      cost: 150, trainMs: 4000, pop: 6, hp: 1860, speed: 50, size: 'large',
+      cost: 150, trainMs: 4000, pop: 6, hp: 1860, speed: 50, size: 'large', starter: true,
       tags: ['armored', 'mech', 'melee', 'ground'],
       attacks: [
         {
@@ -60,7 +60,7 @@ export const future: RawAgeTables = {
     {
       // Instant rail; pierces 2 targets total within 150 lu; ranged AA mods; priority armored
       id: 'rail_gunner', kind: 'unit', age: 'future', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 440, speed: 65, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 440, speed: 65, size: 'medium', starter: true,
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
@@ -124,7 +124,7 @@ export const future: RawAgeTables = {
   turrets: [
     {
       // Instant beam
-      id: 'pulse_laser', kind: 'turret', age: 'future', rarity: 'common', cost: 150,
+      id: 'pulse_laser', kind: 'turret', age: 'future', rarity: 'common', starter: true, cost: 150,
       attack: {
         damage: 20, intervalMs: 300, windupPct: 0, range: 360, hitsGround: true, hitsAir: true,
         projectile: { instant: true, effectId: 'fx.beam_laser' },
@@ -134,7 +134,7 @@ export const future: RawAgeTables = {
     },
     {
       // Chains to 3 targets total (each ≤ 100 lu from the previous)
-      id: 'arc_coil', kind: 'turret', age: 'future', rarity: 'common', cost: 175,
+      id: 'arc_coil', kind: 'turret', age: 'future', rarity: 'common', starter: true, cost: 175,
       attack: {
         damage: 60, intervalMs: 1800, windupPct: 0, range: 260, hitsGround: true, hitsAir: true,
         projectile: { instant: true, effectId: 'fx.arc_chain' },

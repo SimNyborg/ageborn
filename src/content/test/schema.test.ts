@@ -125,7 +125,8 @@ describe('semantic checks', () => {
     const c = copy();
     (c.powers.stampede as { age: string }).age = 'future';
     const m = messages(c).join('\n');
-    expect(m).toMatch(/ages\.stone: 6 Age Powers per age: 3 Home and 3 Field/);
+    // Stone holds 4 Home and 4 Field powers since its X0 wave (the roster shape).
+    expect(m).toMatch(/ages\.stone: 4 Home and 4 Field Age Powers/);
     expect(m).toMatch(/ages\.stone: one Field starter/);
   });
 
@@ -143,7 +144,7 @@ describe('semantic checks', () => {
     expect(m).toMatch(/powers\.rockslide: sweep needs maxTargets/);
     expect(m).toMatch(/powers\.stampede: family "sweep" does not fit the field slot/);
     expect(m).toMatch(/powers\.hunters_spear: a strike has maxTargets 1/);
-    expect(m).toMatch(/powers\.sticky_tar: War Path powers come from levels 5, 7 and 9/);
+    expect(m).toMatch(/powers\.sticky_tar: War Path powers come from levels 3, 5, 7 and 9/);
     expect(m).toMatch(/powers\.aegis: a power costs 75-150 gold/);
     const d = copy();
     (d.powers.sticky_tar as { effect: { zone: number } }).effect.zone = 900;
@@ -169,8 +170,14 @@ describe('semantic checks', () => {
     const c = copy();
     (c.units.pebbler as { rarity: string }).rarity = 'rare';
     const m = messages(c).join('\n');
-    expect(m).toMatch(/40 common cards \(A17\.13\), found 39/);
-    expect(m).toMatch(/24 rare cards \(A17\.13\), found 25/);
+    // The totals follow the roster shape (40 / 24 before the X0 waves).
+    const want = { common: 0, rare: 0 };
+    for (const s of Object.values(c.rosterShape)) {
+      want.common += s.units.common + s.turrets.common;
+      want.rare += s.units.rare + s.turrets.rare;
+    }
+    expect(m).toContain(`${want.common} common cards (rosterShape), found ${want.common - 1}`);
+    expect(m).toContain(`${want.rare} rare cards (rosterShape), found ${want.rare + 1}`);
   });
 
   it('catches Trophy Road mistakes (A6.3)', () => {
@@ -210,11 +217,11 @@ describe('semantic checks', () => {
     const c = copy();
     // A starter Common cannot be revealed as NEW.
     c.capsules.script[0]?.cards.push('bonker');
-    expect(messages(c)).toContain('capsules.script.0: "bonker" is a starter Common, so it cannot be NEW');
+    expect(messages(c)).toContain('capsules.script.0: "bonker" is a starter card, so it cannot be NEW');
     // An Anti-heavy card is in the starter kit (owner feedback 2026-09-29), so it cannot be NEW either.
     const g = copy();
     g.capsules.script[0]?.cards.splice(0, 1, 'spear_hunter');
-    expect(messages(g)).toContain('capsules.script.0: "spear_hunter" is a starter Anti-heavy card, so it cannot be NEW');
+    expect(messages(g)).toContain('capsules.script.0: "spear_hunter" is a starter card, so it cannot be NEW');
     // Without the script, the Drum Shaman would never arrive.
     const d = copy();
     const first = d.capsules.script[0];

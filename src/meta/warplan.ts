@@ -29,7 +29,8 @@ function slots(ids: readonly CardId[], n: number): (CardId | null)[] {
 /** The starter loadout of an age (A3 starter kit): the 3 common units, then the Anti-heavy Rare. */
 export function starterLoadout(t: Content, age: AgeId): Loadout {
   const { units, turrets } = ageCards(t, age);
-  const common = (id: CardId): boolean => (t.units[id] ?? t.turrets[id])?.rarity === 'common';
+  // The starter Commons (X0 `starter` flag), then the Anti-heavy Rare.
+  const common = (id: CardId): boolean => (t.units[id] ?? t.turrets[id])?.starter === true && (t.units[id] ?? t.turrets[id])?.rarity === 'common';
   const aa = antiHeavyCard(t, age);
   const troops = [...units.filter(common), ...(aa ? [aa] : [])];
   // The Fort slot starts empty; its unlock fills it with the age's wall (A16.14.6).

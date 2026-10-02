@@ -16,9 +16,10 @@ export type NodeState = 'beaten' | 'current' | 'locked';
  * levels), a **treasure** chest (a level whose first clear gives a named card), a **story** scroll (a
  * level that teaches something, A18.7.5) or a plain **battle** disc.
  */
-export type NodeKind = 'boss' | 'elite' | 'treasure' | 'story' | 'battle';
+export type NodeKind = 'boss' | 'elite' | 'treasure' | 'story' | 'battle' | 'side';
 
 export function nodeKind(level: WarPathLevel): NodeKind {
+  if (level.side) return 'side';
   if (level.role === 'boss') return 'boss';
   if (hardMarked(level)) return 'elite';
   if (level.reward.card) return 'treasure';
@@ -36,6 +37,8 @@ export interface MapNode {
   i: number;
   /** Nodes ahead of the current one (0 for the current and beaten ones): far nodes fade into mist. */
   ahead: number;
+  /** X0 side node: `i` is the main level it hangs off; an open side node draws as `current`. */
+  side?: boolean;
 }
 
 export interface MapRegion {
@@ -82,6 +85,49 @@ export function mapNodes(save: SaveDoc, content: Content): MapNode[] {
       ahead: Math.max(0, i - curIndex),
     };
   });
+}
+
+/**
+ * X0 side nodes (A18.7.1, CONTENT_PLAN 6), the same rules as `meta.warPathSideNodes`: each hangs off its
+ * region's level `after` (`i` is that level's map index); it opens once that level is beaten and never
+ * becomes the current level of the main path.
+ */
+export function sideMapNodes(save: SaveDoc, content: Content): MapNode[] {
+  const p = progressOf(save);
+  const out: MapNode[] = [];
+  for (const r of content.warPath.regions) {
+    for (const id of r.sides ?? []) {
+      const level = content.warPath.levels[id];
+      if (!level?.side) continue;
+      const parentId = `wp.${level.region}.l${String(level.side.after).padStart(2, '0')}`;
+      const stars = p.stars[id] ?? 0;
+      const open = (p.stars[parentId] ?? 0) > 0;
+      out.push({
+        level,
+        kind: 'side',
+        state: stars > 0 ? 'beaten' : open ? 'current' : 'locked',
+        stars,
+        crown: p.crowns[id] ?? 0,
+        i: content.warPath.order.indexOf(parentId),
+        ahead: 0,
+        side: true,
+      });
+    }
+  }
+  return out;
+}
+
+/**
+ * X0: what a side node's first clear grants beyond Amber: the region's side-node power (s1) or fort
+ * variant (s2), from the power and fort tables.
+ */
+export function sideRewardCard(content: Content, level: WarPathLevel): string | null {
+  if (!level.side) return null;
+  const n = level.side.n;
+  const pw = Object.values(content.powers).find((x) => x.age === level.region && x.warPathSide === n);
+  if (pw) return pw.id;
+  const f = Object.values(content.forts).find((x) => x.age === level.region && x.warPathSide === n);
+  return f?.id ?? null;
 }
 
 export function mapRegions(save: SaveDoc, content: Content): MapRegion[] {
@@ -231,7 +277,7 @@ export function goalMet(goal: StarGoal, stats: MatchStats): boolean {
 /** The ★★ and ★★★ goals and the difficulty control show once the level is beaten, or from L5 (2.6). */
 export function goalsShown(save: SaveDoc, content: Content, level: WarPathLevel): boolean {
   const i = content.warPath.order.indexOf(level.id);
-  return (progressOf(save).stars[level.id] ?? 0) > 0 || i + 1 >= content.warPath.goalsFromLevel || progressOf(save).legacy;
+  return (progressOf(save).stars[level.id] ?? 0) > 0 || i + 1 >= content.warPath.goalsFromLevel || progressOf(save).legacy || level.side !== undefined;
 }
 
 /** The level's display name key. */

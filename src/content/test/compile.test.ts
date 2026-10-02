@@ -104,18 +104,23 @@ describe('compiled bundle (B4)', () => {
     }
   });
 
-  it('lists 56 collectable units in DESIGN order, then hidden ones apart', () => {
-    expect(content.order.units).toHaveLength(56);
-    expect(content.order.units.slice(0, 14)).toEqual([
-      'bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman', 'sabertooth', 'mammoth_matriarch',
-      'hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer', 'scorpion', 'bronze_colossus',
-    ]);
-    expect(content.order.hiddenUnits).toEqual(['training_dummy']);
-    expect(content.order.turrets).toHaveLength(32);
+  it('lists the collectable units in DESIGN order (56 plus the X0 waves), then hidden ones apart', () => {
+    const shape = Object.values(content.rosterShape);
+    expect(content.order.units).toHaveLength(shape.reduce((n, s) => n + s.units.common + s.units.rare + s.units.epic + s.units.legendary, 0));
+    // Each age's original seven in DESIGN order, then its X0 wave cards; ages in order.
+    const byAge = (age: string) => content.order.units.filter((id) => content.units[id]?.age === age);
+    expect(byAge('stone').slice(0, 7)).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman', 'sabertooth', 'mammoth_matriarch']);
+    expect(byAge('bronze').slice(0, 7)).toEqual(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer', 'scorpion', 'bronze_colossus']);
+    const ageIdx = content.order.units.map((id) => content.order.ages.indexOf(content.units[id]?.age ?? 'stone'));
+    expect(ageIdx.every((a, i) => i === 0 || a >= (ageIdx[i - 1] ?? 0))).toBe(true);
+    // The Training Dummy, then the summoners' summons (X0 M3).
+    expect(content.order.hiddenUnits[0]).toBe('training_dummy');
+    expect(content.order.hiddenUnits.slice(1).every((id) => content.units[id]?.summon === true)).toBe(true);
+    expect(content.order.turrets).toHaveLength(Object.values(content.rosterShape).reduce((n, s) => n + s.turrets.common + s.turrets.rare + s.turrets.epic, 0));
     expect(content.order.ages).toEqual(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
     // A2.9.11: by age; starters first (Home, Field), then Home and Field by source (Road, War Path by level)
     expect(content.order.powers).toEqual([
-      'rockslide', 'stampede', 'meteor_shower', 'sticky_tar', 'hunt_cry', 'hunters_spear',
+      'rockslide', 'stampede', 'meteor_shower', 'sticky_tar', 'tangle_vines', 'pebble_hail', 'hunt_cry', 'hunters_spear',
       'tidal_wave', 'chariot_rush', 'zeus_bolts', 'medusa_gaze', 'aegis', 'apollo_arrow',
       'arrow_storm', 'knights_charge', 'caltrops', 'boiling_oil', 'royal_decree', 'undermine',
       'volley_fire', 'smoke_screen', 'broadside', 'boarding_nets', 'horse_artillery', 'sharpshooter',

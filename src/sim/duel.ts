@@ -54,9 +54,17 @@ export function runDuel(
     [a, countA],
     [b, countB],
   ];
+  // X0: a squad card fights as its whole group (count × members); a summoner's summons fight for it but
+  // only the cards' own units count towards the result (a summon is never part of a side's HP).
+  const own = new Set<number>();
   for (const side of [0, 1] as const) {
     const [card, n] = groups[side] as [CardId, number];
-    for (let i = 0; i < n; i += 1) start[side] += spawnUnit(ctx, side, card, xOf(START_P, side), 1, true).maxHp;
+    const members = n * (ctx.rules.units[card]?.squad ?? 1);
+    for (let i = 0; i < members; i += 1) {
+      const u = spawnUnit(ctx, side, card, xOf(START_P, side), 1, true);
+      own.add(u.id);
+      start[side] += u.maxHp;
+    }
   }
   const max = o.maxTicks ?? 1800;
   const left: [number, number] = [start[0], start[1]];
@@ -64,7 +72,7 @@ export function runDuel(
     stepTick(ctx, []);
     left[0] = 0;
     left[1] = 0;
-    for (const u of ctx.s.units) if (u.hp > 0) left[u.side] += u.hp;
+    for (const u of ctx.s.units) if (u.hp > 0 && own.has(u.id)) left[u.side] += u.hp;
     if (left[0] === 0 || left[1] === 0) break;
   }
   const bp = (side: 0 | 1): number => (start[side] > 0 ? Math.trunc((left[side] * BP) / start[side]) : 0);

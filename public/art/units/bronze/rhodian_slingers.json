@@ -1,0 +1,2295 @@
+{
+ "frames": {
+  "rhodian_slingers_idle_00": {
+   "frame": {
+    "x": 380,
+    "y": 234,
+    "w": 49,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 95,
+    "w": 49,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_idle_00_team": {
+   "frame": {
+    "x": 112,
+    "y": 576,
+    "w": 50,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 104,
+    "w": 50,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_idle_01": {
+   "frame": {
+    "x": 219,
+    "y": 234,
+    "w": 49,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 94,
+    "w": 49,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_idle_01_team": {
+   "frame": {
+    "x": 166,
+    "y": 576,
+    "w": 50,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 104,
+    "w": 50,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_idle_02": {
+   "frame": {
+    "x": 436,
+    "y": 132,
+    "w": 47,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 91,
+    "w": 47,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_idle_02_team": {
+   "frame": {
+    "x": 551,
+    "y": 503,
+    "w": 49,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 101,
+    "w": 49,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_idle_03": {
+   "frame": {
+    "x": 114,
+    "y": 132,
+    "w": 47,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 88,
+    "w": 47,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_idle_03_team": {
+   "frame": {
+    "x": 527,
+    "y": 424,
+    "w": 49,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 99,
+    "w": 49,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_idle_04": {
+   "frame": {
+    "x": 225,
+    "y": 132,
+    "w": 50,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 90,
+    "w": 50,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_idle_04_team": {
+   "frame": {
+    "x": 114,
+    "y": 503,
+    "w": 49,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 100,
+    "w": 49,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_idle_05": {
+   "frame": {
+    "x": 2,
+    "y": 234,
+    "w": 49,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 93,
+    "w": 49,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_idle_05_team": {
+   "frame": {
+    "x": 389,
+    "y": 503,
+    "w": 50,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 103,
+    "w": 50,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_00": {
+   "frame": {
+    "x": 486,
+    "y": 234,
+    "w": 53,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 94,
+    "w": 53,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_00_team": {
+   "frame": {
+    "x": 580,
+    "y": 424,
+    "w": 53,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 102,
+    "w": 53,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_01": {
+   "frame": {
+    "x": 184,
+    "y": 331,
+    "w": 61,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 100,
+    "w": 61,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_01_team": {
+   "frame": {
+    "x": 396,
+    "y": 576,
+    "w": 52,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 108,
+    "w": 52,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_02": {
+   "frame": {
+    "x": 160,
+    "y": 234,
+    "w": 55,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 93,
+    "w": 55,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_02_team": {
+   "frame": {
+    "x": 279,
+    "y": 503,
+    "w": 51,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 101,
+    "w": 51,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_03": {
+   "frame": {
+    "x": 2,
+    "y": 132,
+    "w": 50,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 86,
+    "w": 50,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_03_team": {
+   "frame": {
+    "x": 310,
+    "y": 424,
+    "w": 51,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 95,
+    "w": 51,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_04": {
+   "frame": {
+    "x": 378,
+    "y": 132,
+    "w": 54,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 94,
+    "w": 54,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 503,
+    "w": 53,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 102,
+    "w": 53,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_05": {
+   "frame": {
+    "x": 249,
+    "y": 331,
+    "w": 53,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 101,
+    "w": 53,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_05_team": {
+   "frame": {
+    "x": 338,
+    "y": 576,
+    "w": 54,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 108,
+    "w": 54,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_06": {
+   "frame": {
+    "x": 61,
+    "y": 331,
+    "w": 51,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 93,
+    "w": 51,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_06_team": {
+   "frame": {
+    "x": 167,
+    "y": 503,
+    "w": 52,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 101,
+    "w": 52,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_07": {
+   "frame": {
+    "x": 571,
+    "y": 132,
+    "w": 50,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 87,
+    "w": 50,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_walk_07_team": {
+   "frame": {
+    "x": 419,
+    "y": 424,
+    "w": 50,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 96,
+    "w": 50,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_00": {
+   "frame": {
+    "x": 272,
+    "y": 234,
+    "w": 49,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 93,
+    "w": 49,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_00_team": {
+   "frame": {
+    "x": 220,
+    "y": 576,
+    "w": 50,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 103,
+    "w": 50,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_01": {
+   "frame": {
+    "x": 165,
+    "y": 132,
+    "w": 56,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 90,
+    "w": 56,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_01_team": {
+   "frame": {
+    "x": 365,
+    "y": 424,
+    "w": 50,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 99,
+    "w": 50,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_02": {
+   "frame": {
+    "x": 534,
+    "y": 2,
+    "w": 52,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 87,
+    "w": 52,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_02_team": {
+   "frame": {
+    "x": 258,
+    "y": 424,
+    "w": 48,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 99,
+    "w": 48,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_03": {
+   "frame": {
+    "x": 324,
+    "y": 2,
+    "w": 71,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 85,
+    "w": 71,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_03_team": {
+   "frame": {
+    "x": 148,
+    "y": 424,
+    "w": 51,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 97,
+    "w": 51,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_04": {
+   "frame": {
+    "x": 487,
+    "y": 132,
+    "w": 80,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 92,
+    "w": 80,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_04_team": {
+   "frame": {
+    "x": 443,
+    "y": 503,
+    "w": 50,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 104,
+    "w": 50,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_05": {
+   "frame": {
+    "x": 2,
+    "y": 331,
+    "w": 55,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 96,
+    "w": 55,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_05_team": {
+   "frame": {
+    "x": 55,
+    "y": 576,
+    "w": 53,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 105,
+    "w": 53,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_06": {
+   "frame": {
+    "x": 369,
+    "y": 331,
+    "w": 68,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 103,
+    "w": 68,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_06_team": {
+   "frame": {
+    "x": 518,
+    "y": 576,
+    "w": 61,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 109,
+    "w": 61,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_07": {
+   "frame": {
+    "x": 306,
+    "y": 331,
+    "w": 59,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 127,
+    "y": 101,
+    "w": 59,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_07_team": {
+   "frame": {
+    "x": 274,
+    "y": 576,
+    "w": 60,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 107,
+    "w": 60,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_08": {
+   "frame": {
+    "x": 325,
+    "y": 234,
+    "w": 51,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 95,
+    "w": 51,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_08_team": {
+   "frame": {
+    "x": 59,
+    "y": 503,
+    "w": 51,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 103,
+    "w": 51,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_09": {
+   "frame": {
+    "x": 543,
+    "y": 234,
+    "w": 52,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 96,
+    "w": 52,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_09_team": {
+   "frame": {
+    "x": 223,
+    "y": 503,
+    "w": 52,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 119,
+    "y": 104,
+    "w": 52,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_10": {
+   "frame": {
+    "x": 108,
+    "y": 234,
+    "w": 48,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 92,
+    "w": 48,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_attack_10_team": {
+   "frame": {
+    "x": 473,
+    "y": 424,
+    "w": 50,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 101,
+    "w": 50,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_hit_00": {
+   "frame": {
+    "x": 116,
+    "y": 331,
+    "w": 64,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 98,
+    "w": 64,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_hit_00_team": {
+   "frame": {
+    "x": 452,
+    "y": 576,
+    "w": 62,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 107,
+    "w": 62,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_hit_01": {
+   "frame": {
+    "x": 399,
+    "y": 2,
+    "w": 58,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 86,
+    "w": 58,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_hit_01_team": {
+   "frame": {
+    "x": 514,
+    "y": 331,
+    "w": 56,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 94,
+    "w": 56,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_hit_02": {
+   "frame": {
+    "x": 56,
+    "y": 132,
+    "w": 54,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 89,
+    "w": 54,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_hit_02_team": {
+   "frame": {
+    "x": 203,
+    "y": 424,
+    "w": 51,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 100,
+    "w": 51,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_hit_03": {
+   "frame": {
+    "x": 433,
+    "y": 234,
+    "w": 49,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 94,
+    "w": 49,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_hit_03_team": {
+   "frame": {
+    "x": 334,
+    "y": 503,
+    "w": 51,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 102,
+    "w": 51,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_hit_04": {
+   "frame": {
+    "x": 55,
+    "y": 234,
+    "w": 49,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 92,
+    "w": 49,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_hit_04_team": {
+   "frame": {
+    "x": 497,
+    "y": 503,
+    "w": 50,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 102,
+    "w": 50,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_00": {
+   "frame": {
+    "x": 441,
+    "y": 331,
+    "w": 69,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 98,
+    "w": 69,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 648,
+    "w": 58,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 106,
+    "w": 58,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_01": {
+   "frame": {
+    "x": 2,
+    "y": 424,
+    "w": 99,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 84,
+    "w": 99,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 576,
+    "w": 49,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 89,
+    "w": 49,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_02": {
+   "frame": {
+    "x": 211,
+    "y": 2,
+    "w": 62,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 69,
+    "w": 62,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_02_team": {
+   "frame": {
+    "x": 105,
+    "y": 424,
+    "w": 39,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 67,
+    "w": 39,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_03": {
+   "frame": {
+    "x": 137,
+    "y": 2,
+    "w": 70,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 60,
+    "w": 70,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_03_team": {
+   "frame": {
+    "x": 277,
+    "y": 2,
+    "w": 43,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 55,
+    "w": 43,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_04": {
+   "frame": {
+    "x": 61,
+    "y": 2,
+    "w": 72,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 70,
+    "w": 72,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 55,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 65,
+    "w": 55,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_05": {
+   "frame": {
+    "x": 279,
+    "y": 132,
+    "w": 95,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 70,
+    "y": 87,
+    "w": 95,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_05_team": {
+   "frame": {
+    "x": 461,
+    "y": 2,
+    "w": 69,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 83,
+    "w": 69,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_06": {
+   "frame": {
+    "x": 64,
+    "y": 648,
+    "w": 80,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 128,
+    "w": 80,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_06_team": {
+   "frame": {
+    "x": 232,
+    "y": 648,
+    "w": 70,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 140,
+    "w": 70,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_07": {
+   "frame": {
+    "x": 148,
+    "y": 648,
+    "w": 80,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 130,
+    "w": 80,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  },
+  "rhodian_slingers_die_07_team": {
+   "frame": {
+    "x": 306,
+    "y": 648,
+    "w": 72,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 70,
+    "y": 145,
+    "w": 72,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.52918,
+    "y": 0.83886
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "rhodian_slingers_idle_00",
+   "rhodian_slingers_idle_01",
+   "rhodian_slingers_idle_02",
+   "rhodian_slingers_idle_03",
+   "rhodian_slingers_idle_04",
+   "rhodian_slingers_idle_05"
+  ],
+  "idle_team": [
+   "rhodian_slingers_idle_00_team",
+   "rhodian_slingers_idle_01_team",
+   "rhodian_slingers_idle_02_team",
+   "rhodian_slingers_idle_03_team",
+   "rhodian_slingers_idle_04_team",
+   "rhodian_slingers_idle_05_team"
+  ],
+  "walk": [
+   "rhodian_slingers_walk_00",
+   "rhodian_slingers_walk_01",
+   "rhodian_slingers_walk_02",
+   "rhodian_slingers_walk_03",
+   "rhodian_slingers_walk_04",
+   "rhodian_slingers_walk_05",
+   "rhodian_slingers_walk_06",
+   "rhodian_slingers_walk_07"
+  ],
+  "walk_team": [
+   "rhodian_slingers_walk_00_team",
+   "rhodian_slingers_walk_01_team",
+   "rhodian_slingers_walk_02_team",
+   "rhodian_slingers_walk_03_team",
+   "rhodian_slingers_walk_04_team",
+   "rhodian_slingers_walk_05_team",
+   "rhodian_slingers_walk_06_team",
+   "rhodian_slingers_walk_07_team"
+  ],
+  "attack": [
+   "rhodian_slingers_attack_00",
+   "rhodian_slingers_attack_01",
+   "rhodian_slingers_attack_02",
+   "rhodian_slingers_attack_03",
+   "rhodian_slingers_attack_04",
+   "rhodian_slingers_attack_05",
+   "rhodian_slingers_attack_06",
+   "rhodian_slingers_attack_07",
+   "rhodian_slingers_attack_08",
+   "rhodian_slingers_attack_09",
+   "rhodian_slingers_attack_10"
+  ],
+  "attack_team": [
+   "rhodian_slingers_attack_00_team",
+   "rhodian_slingers_attack_01_team",
+   "rhodian_slingers_attack_02_team",
+   "rhodian_slingers_attack_03_team",
+   "rhodian_slingers_attack_04_team",
+   "rhodian_slingers_attack_05_team",
+   "rhodian_slingers_attack_06_team",
+   "rhodian_slingers_attack_07_team",
+   "rhodian_slingers_attack_08_team",
+   "rhodian_slingers_attack_09_team",
+   "rhodian_slingers_attack_10_team"
+  ],
+  "hit": [
+   "rhodian_slingers_hit_00",
+   "rhodian_slingers_hit_01",
+   "rhodian_slingers_hit_02",
+   "rhodian_slingers_hit_03",
+   "rhodian_slingers_hit_04"
+  ],
+  "hit_team": [
+   "rhodian_slingers_hit_00_team",
+   "rhodian_slingers_hit_01_team",
+   "rhodian_slingers_hit_02_team",
+   "rhodian_slingers_hit_03_team",
+   "rhodian_slingers_hit_04_team"
+  ],
+  "die": [
+   "rhodian_slingers_die_00",
+   "rhodian_slingers_die_01",
+   "rhodian_slingers_die_02",
+   "rhodian_slingers_die_03",
+   "rhodian_slingers_die_04",
+   "rhodian_slingers_die_05",
+   "rhodian_slingers_die_06",
+   "rhodian_slingers_die_06",
+   "rhodian_slingers_die_07",
+   "rhodian_slingers_die_07"
+  ],
+  "die_team": [
+   "rhodian_slingers_die_00_team",
+   "rhodian_slingers_die_01_team",
+   "rhodian_slingers_die_02_team",
+   "rhodian_slingers_die_03_team",
+   "rhodian_slingers_die_04_team",
+   "rhodian_slingers_die_05_team",
+   "rhodian_slingers_die_06_team",
+   "rhodian_slingers_die_06_team",
+   "rhodian_slingers_die_07_team",
+   "rhodian_slingers_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "rhodian_slingers.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 640,
+   "h": 712
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.rhodian_slingers",
+   "name": "Rhodian Slingers",
+   "heightLu": 66,
+   "widthLu": 36.6,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    136.0,
+    177.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     64
+    ],
+    "hitCenter": [
+     0,
+     31
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        2.6,
+        5.1
+       ],
+       [
+        7.0,
+        5.3
+       ],
+       [
+        8.5,
+        6.4
+       ],
+       [
+        4.5,
+        6.8
+       ],
+       [
+        -0.8,
+        7.5
+       ],
+       [
+        -1.3,
+        6.6
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      62,
+      63,
+      62,
+      63,
+      62,
+      63,
+      62,
+      63
+     ],
+     "durationMs": 500,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        -8.9,
+        5.2
+       ],
+       [
+        -14.6,
+        6.6
+       ],
+       [
+        -11.2,
+        9.6
+       ],
+       [
+        0.3,
+        7.1
+       ],
+       [
+        15.8,
+        6.4
+       ],
+       [
+        17.9,
+        5.0
+       ],
+       [
+        9.5,
+        5.5
+       ],
+       [
+        -1.7,
+        7.1
+       ]
+      ]
+     },
+     "strideLu": 37.6,
+     "naturalSpeedLuPerS": 75.2
+    },
+    "attack": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        1.0,
+        4.6
+       ],
+       [
+        24.8,
+        25.5
+       ],
+       [
+        0.6,
+        59.1
+       ],
+       [
+        -37.2,
+        31.1
+       ],
+       [
+        -1.7,
+        4.0
+       ],
+       [
+        23.1,
+        11.0
+       ],
+       [
+        35.2,
+        19.4
+       ],
+       [
+        33.4,
+        31.3
+       ],
+       [
+        23.2,
+        9.6
+       ],
+       [
+        3.6,
+        3.9
+       ],
+       [
+        2.1,
+        4.3
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        9.3,
+        6.9
+       ],
+       [
+        9.2,
+        13.0
+       ],
+       [
+        5.2,
+        6.2
+       ],
+       [
+        -3.9,
+        4.6
+       ],
+       [
+        0.5,
+        4.4
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        23.8
+       ],
+       "scale": 0.458
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        36.3
+       ],
+       "loops": 2,
+       "scale": 0.676
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        24.1,
+        26.0
+       ],
+       [
+        -38.4,
+        48.7
+       ],
+       [
+        -7.8,
+        6.3
+       ],
+       [
+        15.9,
+        44.4
+       ],
+       [
+        -3.4,
+        31.6
+       ],
+       [
+        -26.2,
+        35.8
+       ],
+       [
+        -7.1,
+        28.2
+       ],
+       [
+        -3.8,
+        22.6
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

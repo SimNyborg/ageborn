@@ -13,7 +13,7 @@ export const medieval: RawAgeTables = {
     {
       // Blunt. Shield Wall: takes 25% less damage from attacks with range ≥ 100 (not powers)
       id: 'footman', kind: 'unit', age: 'medieval', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 216, speed: 70, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 216, speed: 70, size: 'small', starter: true,
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -29,7 +29,7 @@ export const medieval: RawAgeTables = {
     {
       // Arrow
       id: 'longbowman', kind: 'unit', age: 'medieval', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 128, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 128, speed: 65, size: 'small', starter: true,
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
@@ -45,7 +45,7 @@ export const medieval: RawAgeTables = {
     {
       // Lance charge: first hit ×2 and 30 lu knockback
       id: 'destrier_knight', kind: 'unit', age: 'medieval', rarity: 'common', role: 'heavy', group: 'heavy',
-      cost: 150, trainMs: 4000, pop: 6, hp: 756, speed: 60, size: 'large',
+      cost: 150, trainMs: 4000, pop: 6, hp: 756, speed: 60, size: 'large', starter: true,
       tags: ['armored', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -60,7 +60,7 @@ export const medieval: RawAgeTables = {
     {
       // Reach; melee AA mods; priority armored; Brace (immune to knockback and to first-hit bonuses)
       id: 'pikeman', kind: 'unit', age: 'medieval', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 297, speed: 70, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 297, speed: 70, size: 'medium', starter: true,
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -128,7 +128,7 @@ export const medieval: RawAgeTables = {
   turrets: [
     {
       // Single target
-      id: 'crossbow_nest', kind: 'turret', age: 'medieval', rarity: 'common', cost: 150,
+      id: 'crossbow_nest', kind: 'turret', age: 'medieval', rarity: 'common', starter: true, cost: 150,
       attack: {
         damage: 40, intervalMs: 1500, windupPct: 0, range: 380, hitsGround: true, hitsAir: true,
         projectile: { speed: 650, visualId: 'proj.bolt' },
@@ -138,7 +138,7 @@ export const medieval: RawAgeTables = {
     },
     {
       // Gate zone: ground enemies within 130 lu of your gate; max 4 targets
-      id: 'pitch_cauldron', kind: 'turret', age: 'medieval', rarity: 'common', cost: 175,
+      id: 'pitch_cauldron', kind: 'turret', age: 'medieval', rarity: 'common', starter: true, cost: 175,
       attack: {
         damage: 14, intervalMs: 500, windupPct: 0, range: 130, hitsGround: true, hitsAir: false,
         projectile: { instant: true, effectId: 'fx.pitch_pour' },

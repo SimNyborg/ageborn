@@ -256,7 +256,15 @@ export interface UnitRules {
     lockout: number;
   } | null;
   emp: { slot: number; every: number; trigger: number; radius: number; stunTicks: number } | null;
-  timeStop: { slot: number; every: number; radius: number; freeze: number; legendaryFreeze: number } | null;
+  timeStop: { slot: number; every: number; radius: number; freeze: number; legendaryFreeze: number; frozen: boolean } | null;
+  /** Frenzy (X0 M2): self damage and attack speed bonus while HP ≤ `belowHpBp` of max. */
+  frenzy: { belowHpBp: number; damageBp: number; attackSpeedBp: number } | null;
+  /** Summoner (X0 M3): a free summon every `everyTicks` (first after `firstTicks`) while fewer than `maxAlive` live. */
+  summon: { slot: number; card: CardId; firstTicks: number; everyTicks: number; maxAlive: number } | null;
+  /** Squad (X0 M1): members per train command (1 for every other card). */
+  squad: number;
+  /** One unit's share of the card cost (cost ÷ squad; 0 for summons): bounty, scoring and auto-aim value. */
+  value: number;
   /** Innate shield; `regenPerTick` in centi at level 1. */
   innate: { amount: number; regenPerTick: number; delayTicks: number } | null;
   resist: { minRange: number; bp: number } | null;
@@ -266,7 +274,10 @@ export interface UnitRules {
   follow: { behind: number; soloMax: number } | null;
   /** A wall, tower or camp twin (A16.14.8): its fort rules; null for every other unit. */
   fort: FortRules | null;
-  /** A camp's levy (A16.14.3): always marches, ranks last in power caps. */
+  /**
+   * A free summon: a camp's levy (A16.14.3) or a summoner's summon (X0 M3). Always marches, ranks last
+   * in power caps, no pop and no bounty.
+   */
   levy: boolean;
   /**
    * The ×2 structure mod this unit's attacks carry against forts (bp, 0 = none; A16.14.2): Heavy,
@@ -708,6 +719,10 @@ function unitRules(def: UnitDef, idx: number, content: CompiledContent, battle: 
     strike: null,
     emp: null,
     timeStop: null,
+    frenzy: null,
+    summon: null,
+    squad: def.squad?.count ?? 1,
+    value: Math.trunc(def.cost / (def.squad?.count ?? 1)),
     innate: null,
     resist: null,
     brace,
@@ -715,7 +730,7 @@ function unitRules(def: UnitDef, idx: number, content: CompiledContent, battle: 
     bomber: null,
     follow: null,
     fort: null,
-    levy: def.levy === true,
+    levy: def.levy === true || def.summon === true,
     structureBp: 0,
   };
   def.abilities.forEach((ab: AbilityDef, slot) => {
@@ -788,7 +803,14 @@ function unitRules(def: UnitDef, idx: number, content: CompiledContent, battle: 
           radius: mlu(ab.radius),
           freeze: msToTicks(ab.freezeMs),
           legendaryFreeze: msToTicks(ab.legendaryFreezeMs),
+          frozen: ab.frozen !== false,
         };
+        break;
+      case 'frenzy':
+        r.frenzy = { belowHpBp: ab.belowHpBp, damageBp: ab.damageBp, attackSpeedBp: ab.attackSpeedBp };
+        break;
+      case 'summon':
+        r.summon = { slot, card: ab.card, firstTicks: msToTicks(ab.firstMs), everyTicks: msToTicks(ab.everyMs), maxAlive: ab.maxAlive };
         break;
       case 'innateShield':
         r.innate = {

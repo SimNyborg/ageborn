@@ -86,6 +86,27 @@ export const powers: readonly PowerDef[] = [
     effect: { kind: 'strike', shots: 1, intervalMs: 0, damage: 340, hitsAir: true },
     visualId: 'power.hunters_spear', sfx: 'pw_spear', nameKey: 'card.hunters_spear.name', descKey: 'card.hunters_spear.desc',
   },
+  {
+    // X0 Stone wave, the H7 lane volley (A2.9.4 `lane`, A5.7 whole-lane powers): War Path Stone L3 (Road 2,100).
+    // No aim: one pulse touches the 8 hittable enemies nearest your gate anywhere on the lane, ground and air,
+    // for 40 (25% of I, 7% of H). 50 gold, 25 s
+    id: 'pebble_hail', kind: 'power', age: 'stone', slot: 'field', reach: 'lane', family: 'volley', rarity: 'rare',
+    source: 'warPath', warPathLevel: 3, road: 2100, cost: 50, reloadMs: 25000, telegraphMs: 1000, maxTargets: 8,
+    effect: { kind: 'field', zone: 2000, durationMs: 0, hitsAir: true, damagePerPulse: 40 },
+    visualId: 'power.pebble_hail', sfx: 'pw_hail', nameKey: 'card.pebble_hail.name', descKey: 'card.pebble_hail.desc',
+  },
+  {
+    // X0 Stone wave, the new Home control (pull, A5.7 family budget): War Path Stone side node s1 (Road 4,100).
+    // Vines burst in a 300 lu zone for 4 s (8 pulses), ground only: the first pulse pulls 40% toward the centre,
+    // each pulse 7 damage and snare 40% for 1.0 s; cap 6
+    id: 'tangle_vines', kind: 'power', age: 'stone', slot: 'home', reach: 'home', family: 'pull', rarity: 'epic',
+    source: 'warPath', warPathSide: 1, road: 4100, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 4500,
+    effect: {
+      kind: 'field', zone: 300, durationMs: 4000, hitsAir: false, damagePerPulse: 7, pullBp: 4000,
+      statuses: [{ kind: 'snare', magnitudeBp: 4000, durationMs: 1000 }],
+    },
+    visualId: 'power.tangle_vines', sfx: 'pw_vines', nameKey: 'card.tangle_vines.name', descKey: 'card.tangle_vines.desc',
+  },
 
   // ---- Medieval (P 1.35; I 216, H 756; Epic Battering Ram 900) ----
   {

@@ -14,7 +14,7 @@ import { emit } from '../events';
 import { centreDist, edgeDist, isAheadOrLevel } from '../geometry';
 import { TAG, levelBp, type StatusRules, type UnitRules } from '../rules';
 import { NO_TARGET, type Ctx, type UnitRt } from '../state';
-import { alive, unitRules } from '../units';
+import { alive, findUnit, spawnUnit, unitRules } from '../units';
 import { fireProjectile } from './projectiles';
 import { targetInRange } from './targeting';
 
@@ -31,6 +31,7 @@ export function abilitySystem(ctx: Ctx): void {
     if (r.emp) emp(ctx, u, r, r.emp);
     if (r.timeStop) timeStop(ctx, u, r, r.timeStop);
     if (r.pounce) pounce(ctx, u, r, r.pounce);
+    if (r.summon) summon(ctx, u, r.summon);
   }
 }
 
@@ -207,7 +208,7 @@ function timeStop(ctx: Ctx, u: UnitRt, r: UnitRules, ab: NonNullable<UnitRules['
     applyStatus(
       ctx,
       e,
-      { kind: 'stun', magnitudeBp: BP, ticks: legendary ? ab.legendaryFreeze : ab.freeze, amount: 0, frozen: true },
+      { kind: 'stun', magnitudeBp: BP, ticks: legendary ? ab.legendaryFreeze : ab.freeze, amount: 0, frozen: ab.frozen },
       u.id,
     );
   }
@@ -267,4 +268,25 @@ function pounce(ctx: Ctx, u: UnitRt, r: UnitRules, ab: NonNullable<UnitRules['po
     st.retargetTick = u.leapEnd + ctx.econ.retargetTicks;
   }
   emit(ctx, { e: 'abilityUsed', id: u.id, ability: 'pounce', x: landing });
+}
+
+/**
+ * Summoner (X0 M3, the camp levy rules on a moving unit): on the first tick at or after its timer with
+ * fewer than `maxAlive` of its summons alive, a summon appears at the summoner's position at the
+ * summoner's level; the timer then restarts and never banks a second summon. Stunned or leaping
+ * summoners wait (the system skips them); live summons stay when the summoner dies.
+ */
+function summon(ctx: Ctx, u: UnitRt, ab: NonNullable<UnitRules['summon']>): void {
+  if (!ready(ctx, u, ab.slot) || !ctx.rules.units[ab.card]) return;
+  if (u.summons.length > 0) {
+    u.summons = u.summons.filter((id) => {
+      const s = findUnit(ctx, id);
+      return s !== undefined && alive(s);
+    });
+  }
+  if (u.summons.length >= ab.maxAlive) return;
+  const s = spawnUnit(ctx, u.side, ab.card, u.x, u.level, true, { summoner: u.id });
+  u.summons.push(s.id);
+  u.timers[ab.slot] = ctx.tick + ab.everyTicks;
+  emit(ctx, { e: 'abilityUsed', id: u.id, ability: 'summon', x: u.x });
 }

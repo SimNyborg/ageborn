@@ -153,6 +153,67 @@ export const ALBUM: readonly CardId[] = [
   'solar_flare', // 134
   'warp_strike', // 135
   'ion_cannon', // 136
+  // X0: the 32 original forts (A16.14.4), numbered after No. 136 in age order
+  // forts: stone
+  'palisade', // 137
+  'sling_perch', // 138
+  'war_camp', // 139
+  'spike_pit', // 140
+  // forts: bronze
+  'cyclopean_wall', // 141
+  'pyrgos_tower', // 142
+  'muster_tents', // 143
+  'hidden_stakes', // 144
+  // forts: medieval
+  'shield_barricade', // 145
+  'longbow_tower', // 146
+  'levy_camp', // 147
+  'wolf_pits', // 148
+  // forts: gunpowder
+  'gabion_wall', // 149
+  'musket_redoubt', // 150
+  'militia_muster', // 151
+  'powder_keg', // 152
+  // forts: industrial
+  'trench_parapet', // 153
+  'sniper_nest', // 154
+  'recruiting_depot', // 155
+  'tripwire_charge', // 156
+  // forts: modern
+  'sandbag_bunker', // 157
+  'pillbox', // 158
+  'forward_base', // 159
+  'minefield', // 160
+  // forts: future
+  'hardlight_barrier', // 161
+  'sentry_pylon', // 162
+  'clone_bay', // 163
+  'grav_mire', // 164
+  // forts: cosmic
+  'void_rampart', // 165
+  'ion_spire', // 166
+  'warp_barracks', // 167
+  'void_mine', // 168
+  // W1 Stone wave (2026-10-02): troops, turrets, powers and forts in build order
+  'hunting_wolves', // 169
+  'hide_shield', // 170
+  'torch_runner', // 171
+  'bolas_thrower', // 172
+  'woolly_rhino', // 173
+  'atlatl_thrower', // 174
+  'boulder_hurler', // 175
+  'herbalist', // 176
+  'pelt_rager', // 177
+  'beast_caller', // 178
+  'cave_bear', // 179
+  'rockfall_shaman', // 180
+  'elk_chieftain', // 181
+  'quill_porcupine', // 182
+  'sapling_sling', // 183
+  'pebble_hail', // 184
+  'tangle_vines', // 185
+  'thorn_hedge', // 186
+  'bone_watchtower', // 187
 ];
 
 /** Album number of every card (1-based), from {@link ALBUM}. */

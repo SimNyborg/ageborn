@@ -10,6 +10,7 @@ import { describe, expect, it } from 'vitest';
 import type { AttackDef, PowerDef, TurretDef, UnitDef } from '@/contracts/content';
 import type { AgeId, DmgType, Rarity, Role, RoleGroup, Tag } from '@/contracts/ids';
 import { raw as fixture } from '../../../tests/fixtures/content';
+import { rosterShape } from '../rosterShape';
 import { raw, type RawContent } from './index';
 
 /** The five ages of the frozen fixture (and of the tutorial format). */
@@ -31,6 +32,8 @@ const GROUP: Record<RoleGroup, { cost: number; trainMs: number; pop: number }> =
 };
 
 /** A5.1 default projectile speeds (lu/s) by projectile visual. Arc projectiles fly at 450. */
+/** Long range darts, arrows and shells (H6, A5.1) fly their arcs at 300 lu/s. */
+const LONG_RANGE_ARC: ReadonlySet<string> = new Set(['proj.dart']);
 const DEFAULT_SPEED: Record<string, number> = {
   'proj.rock': 500,
   'proj.arrow': 650,
@@ -369,16 +372,21 @@ describe.each([
   });
 
   describe('collection shape (A5.1)', () => {
-    it('has 7 collectable units and 4 turrets per age, in age order, each tagged with its age', () => {
+    it('has the roster shape per age (7 units and 4 turrets before its X0 wave), in age order, each tagged with its age', () => {
       expect(c.ages.map((a) => a.age)).toEqual(c === raw ? AGES8 : AGES);
       for (const a of c.ages) {
         const visible = a.units.filter((u) => !u.hidden);
-        expect(visible).toHaveLength(7);
-        expect(a.turrets).toHaveLength(4);
+        const s = c === raw ? rosterShape[a.age] : null;
+        const nUnits = s ? s.units.common + s.units.rare + s.units.epic + s.units.legendary : 7;
+        const nTurrets = s ? s.turrets.common + s.turrets.rare + s.turrets.epic : 4;
+        expect(visible).toHaveLength(nUnits);
+        expect(a.turrets).toHaveLength(nTurrets);
         for (const card of [...a.units, ...a.turrets]) expect(card.age).toBe(a.age);
-        expect(visible.map((u) => u.group).sort()).toEqual(
+        // The original seven come first, in their A5 order; wave cards follow (X0).
+        expect(visible.slice(0, 7).map((u) => u.group).sort()).toEqual(
           ['antiArmor', 'epic', 'heavy', 'infantry', 'legendary', 'ranged', 'support']);
-        expect(a.turrets.map((t) => [t.rarity, t.cost])).toEqual([['common', 150], ['common', 175], ['rare', 250], ['epic', 250]]);
+        expect(a.turrets.slice(0, 4).map((t) => [t.rarity, t.cost])).toEqual([['common', 150], ['common', 175], ['rare', 250], ['epic', 250]]);
+        if (c === raw) expect(visible.filter((u) => u.starter).map((u) => u.group).sort()).toEqual(['antiArmor', 'heavy', 'infantry', 'ranged']);
       }
     });
 
@@ -386,22 +394,34 @@ describe.each([
       const cards = [...allUnits(c).filter((u) => !u.hidden), ...allTurrets(c)];
       const count = (r: Rarity) => cards.filter((x) => x.rarity === r).length;
       if (c === raw) {
-        expect(cards).toHaveLength(88);
-        expect([count('common'), count('rare'), count('epic'), count('legendary')]).toEqual([40, 24, 16, 8]);
+        // X0: the totals follow the roster shape (88 before the content waves).
+        const want = { common: 0, rare: 0, epic: 0, legendary: 0 };
+        for (const s of Object.values(rosterShape)) {
+          want.common += s.units.common + s.turrets.common;
+          want.rare += s.units.rare + s.turrets.rare;
+          want.epic += s.units.epic + s.turrets.epic;
+          want.legendary += s.units.legendary;
+        }
+        expect(cards).toHaveLength(want.common + want.rare + want.epic + want.legendary);
+        expect([count('common'), count('rare'), count('epic'), count('legendary')]).toEqual([want.common, want.rare, want.epic, want.legendary]);
       } else {
         expect(cards).toHaveLength(55);
         expect([count('common'), count('rare'), count('epic'), count('legendary')]).toEqual([25, 15, 10, 5]);
       }
-      expect(allUnits(c).filter((u) => u.hidden).map((u) => u.id)).toEqual(['training_dummy']);
+      // The Training Dummy, plus (X0) the summoners' hidden summons.
+      expect(allUnits(c).filter((u) => u.hidden && !u.summon).map((u) => u.id)).toEqual(['training_dummy']);
       expect(unitById(c, 'training_dummy')).toMatchObject({ age: 'stone', cost: 50, hp: 40, speed: 50, size: 'small',
         attacks: [{ damage: 4, intervalMs: 1000, range: 16, hitsGround: true, hitsAir: false }] });
     });
 
     it('has 6 Age Powers per age, 3 Home and 3 Field, one starter per slot (48 live, 30 in the fixture; A5.7)', () => {
-      expect(c.powers).toHaveLength(c === raw ? 48 : 30);
+      const shapes = Object.values(rosterShape);
+      expect(c.powers).toHaveLength(c === raw ? shapes.reduce((n, s) => n + s.powers.home + s.powers.field, 0) : 30);
       for (const age of c === raw ? AGES8 : AGES) {
         const ps = c.powers.filter((p) => p.age === age);
-        expect(ps.map((p) => p.slot).sort()).toEqual(['field', 'field', 'field', 'home', 'home', 'home']);
+        const s = c === raw ? rosterShape[age].powers : { home: 3, field: 3 };
+        expect(ps.filter((p) => p.slot === 'home')).toHaveLength(s.home);
+        expect(ps.filter((p) => p.slot === 'field')).toHaveLength(s.field);
         expect(ps.filter((p) => p.source === 'starter').map((p) => p.slot).sort()).toEqual(['field', 'home']);
       }
     });
@@ -416,7 +436,9 @@ describe.each([
     it('prices, train times and pop follow the role group (A2.3, A2.7, A5.1)', () => {
       for (const u of allUnits(c)) {
         expect(u.group, u.id).toBe(expectedGroup(u.rarity, u.role));
-        expect({ id: u.id, cost: u.cost, trainMs: u.trainMs, pop: u.pop }).toEqual({ id: u.id, ...GROUP[u.group] });
+        // A summon (X0 M3) costs 0, like a levy.
+        if (u.summon) expect(u.cost, u.id).toBe(0);
+        else expect({ id: u.id, cost: u.cost, trainMs: u.trainMs, pop: u.pop }).toEqual({ id: u.id, ...GROUP[u.group] });
       }
     });
 
@@ -445,7 +467,8 @@ describe.each([
       for (const a of attacks) {
         const p = a.projectile;
         if (!p || 'instant' in p) continue;
-        if (p.arc) expect(p.speed, p.visualId).toBe(450);
+        // Long range arcs fly at 300 (H6, A5.1); every other arc at 450.
+        if (p.arc) expect(p.speed, p.visualId).toBe(LONG_RANGE_ARC.has(p.visualId) ? 300 : 450);
         else if (DEFAULT_SPEED[p.visualId] !== undefined) expect(p.speed, p.visualId).toBe(DEFAULT_SPEED[p.visualId]);
       }
     });

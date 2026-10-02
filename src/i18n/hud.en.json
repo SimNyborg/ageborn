@@ -73,7 +73,9 @@
         "ward": "Ward",
         "mend": "Mend",
         "cloud": "Cloud",
-        "drop": "Drop"
+        "drop": "Drop",
+        "volley": "Volley",
+        "signal": "Signal"
       },
       "reach": {
         "home": "Your half",
@@ -81,7 +83,8 @@
         "fromFront": "From your front",
         "anywhere": "Anywhere",
         "army": "Your army",
-        "drop": "Drop"
+        "drop": "Drop",
+        "lane": "Whole lane"
       },
       "hits": "Hits up to {n}",
       "hitsOwn": "Your {n} frontmost units",
@@ -98,7 +101,8 @@
         "paradrop": "Lands behind the enemy front",
         "buffAll": "Boosts your 8 frontmost troops",
         "suppress": "Jams their turrets",
-        "strike": "Locks this enemy"
+        "strike": "Locks this enemy",
+        "lane": "Hits the enemies nearest your gate"
       },
       "hits": "Hits {n} of {m}",
       "cost": "−{n}",

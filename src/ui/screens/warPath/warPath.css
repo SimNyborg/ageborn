@@ -2023,3 +2023,49 @@
 .ui-root[data-reduce-motion='true'] .wp-map :is(.wp-flocks, .wp-burst__shard, .wp-burst__dust) {
   display: none;
 }
+
+/* X0 side nodes (A18.7.1, CONTENT_PLAN 6): an optional branch off the road above L5 and L8. A smaller
+   leaf-green disc with a fork glyph, on a dashed trail that lights once the branch is open. */
+.wp-sidepaths {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+.wp-sidepath {
+  fill: none;
+  stroke: #ffe39a;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 2 9;
+  filter: drop-shadow(0 2px 1px rgba(15, 18, 24, 0.45));
+}
+.wp-sidepath.is-locked {
+  stroke: rgba(240, 232, 214, 0.55);
+}
+.wp-node--side .wp-node__face {
+  --face-a: #eaffd6;
+  --face-b: #8fcf5a;
+  --face-c: #3f7a26;
+  border-radius: 42% 58% 46% 54% / 52% 44% 56% 48%;
+}
+.wp-node--side.wp-node--current .wp-node__face {
+  --face-a: #ffffff;
+  --face-b: #b8f07a;
+  --face-c: #4f9a2c;
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 3px #1b140d,
+    0 0 0 6px #d9ffb0,
+    0 0 18px 4px rgba(170, 240, 110, 0.5),
+    0 10px 12px rgba(0, 0, 0, 0.4),
+    inset 0 -4px 6px rgba(0, 0, 0, 0.25),
+    inset 0 3px 3px rgba(255, 255, 255, 0.6);
+}
+.wp-node--side.wp-node--current .wp-node__marker,
+.wp-node--side.wp-node--current .wp-node__plinth {
+  display: none;
+}
+.wp-node--side.wp-node--locked .wp-node__face {
+  filter: saturate(0.35) brightness(0.8);
+}

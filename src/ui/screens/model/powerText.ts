@@ -36,6 +36,8 @@ export const POWER_FAMILY_KEY: Readonly<Record<PowerFamily, string>> = {
   mend: 'ui.power.family.mend',
   cloud: 'ui.power.family.cloud',
   drop: 'ui.power.family.drop',
+  volley: 'ui.power.family.volley',
+  signal: 'ui.power.family.signal',
 };
 
 /** What each family is for ("Counters: a wave pushing into your half"). */
@@ -55,6 +57,8 @@ export const POWER_COUNTERS_KEY: Readonly<Record<PowerFamily, string>> = {
   mend: 'ui.power.counters.mend',
   cloud: 'ui.power.counters.cloud',
   drop: 'ui.power.counters.drop',
+  volley: 'ui.power.counters.volley',
+  signal: 'ui.power.counters.signal',
 };
 
 export const POWER_REACH_KEY: Readonly<Record<ReachLabel, string>> = {
@@ -64,6 +68,7 @@ export const POWER_REACH_KEY: Readonly<Record<ReachLabel, string>> = {
   anywhere: 'ui.power.reach.anywhere',
   army: 'ui.power.reach.army',
   drop: 'ui.power.reach.drop',
+  lane: 'ui.power.reach.lane',
 };
 
 export const POWER_REACH_WHY_KEY: Readonly<Record<ReachLabel, string>> = {
@@ -73,6 +78,7 @@ export const POWER_REACH_WHY_KEY: Readonly<Record<ReachLabel, string>> = {
   anywhere: 'ui.power.reachWhy.anywhere',
   army: 'ui.power.reachWhy.army',
   drop: 'ui.power.reachWhy.drop',
+  lane: 'ui.power.reachWhy.lane',
 };
 
 type T = (key: string, params?: Record<string, string | number>) => string;

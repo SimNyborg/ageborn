@@ -11,7 +11,9 @@
         "l07": "Moss on the Ridge",
         "l08": "Spear Wall",
         "l09": "The Tar Pit Gauntlet",
-        "l10": "Pip's Last Stand"
+        "l10": "Pip's Last Stand",
+      "s1": "Tangled Hollow",
+      "s2": "Thorny Ridge"
       },
       "bronze": {
         "l01": "Bronze Dawn",
@@ -128,7 +130,8 @@
       "ramp": "Ramp",
       "puzzle": "Puzzle",
       "spike": "Spike",
-      "boss": "Boss"
+      "boss": "Boss",
+      "side": "Side path"
     },
     "goal": {
       "win": "Win",
@@ -160,6 +163,11 @@
     "ui": {
       "levelOf": "{region} · Level {n} of {max}",
       "levelN": "Level {n}",
+      "sideN": "Side path",
+      "playSide": "Play side path",
+      "sideLocked": "Beat level {n} to open this side path",
+      "sideTip": "An optional level off the main path. Win it once to earn its reward; it never blocks your way forward.",
+      "sideLabel": "Side path: {name}. {state}",
       "play": "Play level {n}",
       "replay": "Replay level {n}",
       "playFirst": "Play",

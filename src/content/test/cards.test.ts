@@ -30,6 +30,20 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['drum_shaman', 'Drum Shaman', 'R', 'support', 110, 130, 8, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['sabertooth', 'Sabertooth', 'E', 'skirmisher', 200, 380, 34, 8, 12, 100, 'M', 'G', 'light bio melee'],
     ['mammoth_matriarch', 'Mammoth Matriarch', 'L', 'siegeHeavy', 350, 1700, 55, 20, 20, 40, 'H', 'G', 'armored bio melee legendary'],
+    // X0 Stone wave (CONTENT_PLAN 5.1; DESIGN A5.2 wave table)
+    ['hunting_wolves', 'Hunting Wolves', 'C', 'infantry', 50, 88, 11, 10, 16, 80, 'S', 'G', 'light bio melee'],
+    ['hide_shield', 'Hide Shield', 'C', 'infantry', 50, 216, 13, 10, 16, 65, 'S', 'G', 'light bio melee'],
+    ['torch_runner', 'Torch Runner', 'C', 'infantry', 50, 120, 18, 10, 16, 100, 'S', 'G', 'light bio melee'],
+    ['bolas_thrower', 'Bolas Thrower', 'C', 'ranged', 75, 90, 14, 14, 180, 65, 'S', 'G', 'light bio ranged'],
+    ['woolly_rhino', 'Woolly Rhino', 'C', 'heavy', 150, 644, 36, 15, 20, 50, 'L', 'G', 'armored bio melee'],
+    ['atlatl_thrower', 'Atlatl Thrower', 'R', 'ranged', 75, 85, 34, 26, 320, 60, 'S', 'G', 'light bio ranged'],
+    ['boulder_hurler', 'Boulder Hurler', 'R', 'antiArmor', 100, 130, 40, 18, 130, 65, 'M', 'G', 'light bio ranged'],
+    ['herbalist', 'Herbalist', 'R', 'support', 110, 130, 8, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
+    ['pelt_rager', 'Pelt Rager', 'R', 'infantry', 50, 160, 17, 10, 16, 70, 'S', 'G', 'light bio melee'],
+    ['beast_caller', 'Beast Caller', 'E', 'support', 200, 260, 12, 12, 30, 65, 'S', 'G', 'light bio support melee'],
+    ['cave_bear', 'Cave Bear', 'E', 'heavy', 200, 900, 50, 14, 16, 55, 'L', 'G', 'armored bio melee'],
+    ['rockfall_shaman', 'Rockfall Shaman', 'E', 'support', 200, 240, 12, 14, 170, 60, 'S', 'GA', 'light bio support ranged'],
+    ['elk_chieftain', 'Elk Chieftain', 'L', 'heavy', 350, 1530, 60, 18, 20, 50, 'L', 'G', 'armored bio melee legendary'],
   ],
   // A17.9 Bronze Age (P 1.16)
   bronze: [
@@ -112,6 +126,9 @@ const TURRETS: Record<AgeId, TurretRow[]> = {
     ['angry_beehive', 'Angry Beehive', 'C', 175, 5, 2, 220, 'GA'],
     ['log_roller', 'Log Roller', 'R', 250, 45, 40, 300, 'G'],
     ['grumpy_toad', 'Grumpy Toad', 'E', 250, 60, 50, 420, 'G'],
+    // X0 Stone wave
+    ['quill_porcupine', 'Quill Porcupine', 'C', 175, 9, 15, 280, 'GA'],
+    ['sapling_sling', 'Sapling Sling', 'R', 250, 82, 45, 480, 'G'],
   ],
   bronze: [
     ['archer_tower', 'Archer Tower', 'C', 150, 35, 15, 370, 'GA'],
@@ -168,6 +185,8 @@ const POWERS: PowerRow[] = [
   ['stampede', 'Stampede', 'stone', 'field', 'charge', 'starter', 100, 40000, 1000, 5],
   ['hunt_cry', 'Hunt Cry', 'stone', 'field', 'rally', 'warPath', 125, 45000, 500, 8],
   ['hunters_spear', 'Hunter’s Spear', 'stone', 'field', 'strike', 'warPath', 50, 15000, 1500, 1],
+  ['pebble_hail', 'Pebble Hail', 'stone', 'field', 'volley', 'warPath', 50, 25000, 1000, 8],
+  ['tangle_vines', 'Tangle Vines', 'stone', 'home', 'pull', 'warPath', 75, 30000, 1000, 6],
   ['tidal_wave', 'Tidal Wave', 'bronze', 'home', 'sweep', 'starter', 125, 40000, 1000, 4],
   ['zeus_bolts', 'Zeus’s Bolts', 'bronze', 'home', 'bombard', 'warPath', 125, 40000, 1000, 3],
   ['medusa_gaze', 'Medusa’s Gaze', 'bronze', 'home', 'stun', 'warPath', 75, 35000, 1000, 5],
@@ -259,9 +278,9 @@ describe('A5 unit tables', () => {
     }
   }
 
-  it('lists all 56 collectable units (A17.13)', () => {
+  it('lists every collectable unit (56 in A17.13, plus the X0 content waves)', () => {
     const rows = Object.values(UNITS).flat().map((r) => r[0]);
-    expect(rows).toHaveLength(56);
+    expect(rows).toHaveLength(content.order.units.length);
     expect([...content.order.units].sort()).toEqual([...rows].sort());
   });
 
@@ -346,9 +365,12 @@ describe('A5 turret tables', () => {
     }
   }
 
-  it('lists all 32 turrets and the listed notes', () => {
-    expect(Object.values(TURRETS).flat()).toHaveLength(32);
-    expect(Object.keys(content.turrets)).toHaveLength(32);
+  it('lists every turret (32, plus the X0 content waves) and the listed notes', () => {
+    expect(Object.values(TURRETS).flat()).toHaveLength(Object.keys(content.turrets).length);
+    expect([...content.order.turrets].sort()).toEqual(Object.values(TURRETS).flat().map((r) => r[0]).sort());
+    // X0 Stone wave
+    expect(content.turrets.quill_porcupine?.attack).toMatchObject({ volley: 3, pierce: { count: 2, length: 60 } });
+    expect(content.turrets.sapling_sling?.attack).toMatchObject({ splashRadius: 50, minRange: 150 });
     // A17.9-A17.11
     expect(content.turrets.gorgon_bust?.attack).toMatchObject({ priority: 'armored', onHit: [{ kind: 'stun', magnitudeBp: 10000, durationMs: 1500 }] });
     expect(content.turrets.onager?.attack).toMatchObject({ splashRadius: 50, minRange: 150 });
@@ -418,6 +440,23 @@ const A14_2: Record<string, FxRow[]> = {
   rock_tosser: [['rock_tosser', 'proj.boulder', 'shot_catapult', 'blunt']],
   angry_beehive: [['angry_beehive', 'proj.bee', 'bee_buzz', 'pierce']],
   log_roller: [['log_roller', 'proj.log', 'log_roll', 'blunt']],
+  // X0 Stone wave
+  hunting_wolves: [['hunting_wolves', 'melee', 'wolf_bite', 'slash']],
+  hide_shield: [['hide_shield', 'melee', 'shield_bash', 'blunt']],
+  torch_runner: [['torch_runner', 'melee', 'torch_jab', 'blunt']],
+  bolas_thrower: [['bolas_thrower', 'proj.bolas', 'shot_bolas', 'blunt']],
+  woolly_rhino: [['woolly_rhino', 'melee', 'horn_hook', 'blunt']],
+  atlatl_thrower: [['atlatl_thrower', 'proj.dart', 'shot_atlatl', 'pierce']],
+  boulder_hurler: [['boulder_hurler', 'proj.boulder', 'shot_heave', 'blunt']],
+  herbalist: [['herbalist', 'proj.herb', 'herb_puff', 'blunt']],
+  pelt_rager: [['pelt_rager', 'melee', 'swing_whoosh', 'blunt']],
+  beast_caller: [['beast_caller', 'melee', 'swing_whoosh', 'blunt']],
+  cave_bear: [['cave_bear', 'melee', 'bear_swipe', 'slash']],
+  rockfall_shaman: [['rockfall_shaman', 'proj.rock', 'shot_sling', 'blunt']],
+  elk_chieftain: [['elk_chieftain', 'melee', 'antler_sweep', 'blunt']],
+  cave_pup: [['cave_pup', 'melee', 'wolf_bite', 'slash']],
+  quill_porcupine: [['quill_porcupine', 'proj.quill', 'quill_fan', 'pierce']],
+  sapling_sling: [['sapling_sling', 'proj.boulder', 'shot_sapling', 'blast']],
   grumpy_toad: [['grumpy_toad', 'fx.tongue', 'toad_tongue', 'blunt']],
   crossbow_nest: [['crossbow_nest', 'proj.bolt', 'shot_crossbow', 'pierce']],
   pitch_cauldron: [['pitch_cauldron', 'fx.pitch_pour', 'cauldron_pour', 'blast']],
@@ -505,6 +544,7 @@ const MODS_BY_CARD: Record<string, readonly { vs: string; bp: number }[]> = {
   // Infantry melee ("blunt"), including the tutorial dummy (an Infantry melee unit, A5.6)
   bonker: MODS.blunt, footman: MODS.blunt, corsair: MODS.blunt, trench_raider: MODS.blunt, photon_knight: MODS.blunt,
   training_dummy: MODS.blunt,
+  hide_shield: MODS.blunt, pelt_rager: MODS.blunt, boulder_hurler: MODS.rangedAA,
   hoplite: MODS.blunt, riveter: MODS.blunt, star_legionnaire: MODS.blunt,
   spear_hunter: MODS.meleeAA, pikeman: MODS.meleeAA, phalangite: MODS.meleeAA, graviton_halberdier: MODS.meleeAA,
   bazooka_trooper: MODS.rangedAA, rail_gunner: MODS.rail, harpoon_gunner: MODS.harpoon,
@@ -520,6 +560,7 @@ const PRIORITY_BY_CARD: Record<string, string> = {
   phalangite: 'armored', harpoon_gunner: 'armored', flare_spotter: 'armored', graviton_halberdier: 'armored', gorgon_bust: 'armored',
   // Grumpy Toad grabs "the nearest enemy ranged or support ground unit" first
   grumpy_toad: 'backline',
+  boulder_hurler: 'armored',
 };
 
 describe('A14.2 attack mapping, A2.6 mods and A5 priorities (every card)', () => {
@@ -590,6 +631,8 @@ describe('A2.7 / A2.8 price rules', () => {
   it('pop follows cost in 25-gold steps (A2.7)', () => {
     for (const id of [...content.order.units, ...content.order.hiddenUnits]) {
       const u = content.units[id];
+      // A summon (X0 M3) costs 0 and keeps its group's pop, like a levy (it never uses pop).
+      if (u?.summon) continue;
       expect(u?.pop, id).toBe(Math.floor((u?.cost ?? 0) / 25));
     }
   });
@@ -597,7 +640,9 @@ describe('A2.7 / A2.8 price rules', () => {
   it('turrets cost 150 / 175 for the two Commons, 250 for the Rare and the Epic (A2.8)', () => {
     for (const age of content.order.ages) {
       const ts = content.order.turrets.map((id) => content.turrets[id]).filter((t) => t?.age === age);
-      expect(ts.map((t) => [t?.rarity, t?.cost]), age).toEqual([['common', 150], ['common', 175], ['rare', 250], ['epic', 250]]);
+      // The original four first; X0 wave turrets: Commons 175, Rares 250 (CONTENT_PLAN 4).
+      expect(ts.slice(0, 4).map((t) => [t?.rarity, t?.cost]), age).toEqual([['common', 150], ['common', 175], ['rare', 250], ['epic', 250]]);
+      for (const t of ts.slice(4)) expect(t?.cost, t?.id).toBe(t?.rarity === 'common' ? 175 : 250);
     }
   });
 });
@@ -613,7 +658,7 @@ describe('A5.7 Age Powers', () => {
     });
   }
 
-  it('has the 48 powers of the roster and nothing else', () => {
+  it('has the powers of the roster (48 plus the X0 waves) and nothing else', () => {
     expect(Object.keys(content.powers).sort()).toEqual(POWERS.map((r) => r[0]).sort());
   });
 
@@ -649,7 +694,8 @@ describe('A5.7 Age Powers', () => {
   const ageUnits = (age: AgeId) => {
     const us = Object.values(content.units).filter((u) => u.age === age && !u.hidden);
     const find = (group: string, rarity: string): UnitDef => {
-      const u = us.find((x) => x.group === group && x.rarity === rarity);
+      // The age's baselines are its starters (X0); the original Epic comes first.
+      const u = us.find((x) => x.group === group && x.rarity === rarity && x.starter === true) ?? us.find((x) => x.group === group && x.rarity === rarity);
       if (!u) throw new Error(`${age} ${group}`);
       return u;
     };
@@ -710,7 +756,8 @@ describe('A5.7 Age Powers', () => {
   it('controls give at least 12 disabled unit-seconds per 100 gold at the cap; their damage stays small', () => {
     for (const pw of Object.values(content.powers)) {
       const e = pw.effect;
-      if (e.kind !== 'field') continue;
+      // Whole-lane powers (H7) have their own budget (the next test).
+      if (e.kind !== 'field' || pw.reach === 'lane') continue;
       const pulses = Math.max(1, Math.trunc(e.durationMs / 500));
       const cap = pw.maxTargets ?? 0;
       let ds = 0;
@@ -726,6 +773,20 @@ describe('A5.7 Age Powers', () => {
         expect(Math.round((dmg * 100) / i.hp), pw.id).toBeGreaterThanOrEqual(30);
         expect(Math.round((dmg * 100) / i.hp), pw.id).toBeLessThanOrEqual(40);
       }
+    }
+  });
+
+  it('whole-lane powers stay inside the lane budget: per unit ≤ 30% of the Infantry and ≤ 10% of the Heavy (A2.9.4, H7)', () => {
+    const lane = Object.values(content.powers).filter((pw) => pw.reach === 'lane');
+    expect(lane.length).toBeGreaterThan(0);
+    for (const pw of lane) {
+      const e = pw.effect;
+      if (e.kind !== 'field') throw new Error(`${pw.id}: a lane power is a field`);
+      const { i, h } = ageUnits(pw.age);
+      const dmg = e.damagePerPulse ?? 0;
+      expect(dmg * 100, pw.id).toBeLessThanOrEqual(30 * i.hp);
+      expect(dmg * 100, pw.id).toBeLessThanOrEqual(10 * h.hp);
+      expect(e.zone, pw.id).toBe(content.battle.laneLength);
     }
   });
 

@@ -16,7 +16,7 @@ export const cosmic: RawAgeTables = {
     {
       // Blunt. Deflector: takes 20% less damage from attacks with range ≥ 100 (not powers), as Shield Wall
       id: 'star_legionnaire', kind: 'unit', age: 'cosmic', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 700, speed: 75, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 700, speed: 75, size: 'small', starter: true,
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -32,7 +32,7 @@ export const cosmic: RawAgeTables = {
     {
       // Ion bolt. Arc: the bolt jumps to 1 more enemy within 50 lu (chain, 2 targets total), as Ricochet
       id: 'ion_ranger', kind: 'unit', age: 'cosmic', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 426, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 426, speed: 65, size: 'small', starter: true,
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
@@ -48,7 +48,7 @@ export const cosmic: RawAgeTables = {
     {
       // Plasma cannon at range 90; hovers (still a ground unit: it blocks and is blocked)
       id: 'hover_tank', kind: 'unit', age: 'cosmic', rarity: 'common', role: 'heavy', group: 'heavy',
-      cost: 150, trainMs: 4000, pop: 6, hp: 2509, speed: 55, size: 'large',
+      cost: 150, trainMs: 4000, pop: 6, hp: 2509, speed: 55, size: 'large', starter: true,
       tags: ['armored', 'mech', 'ranged', 'ground'],
       attacks: [
         {
@@ -64,7 +64,7 @@ export const cosmic: RawAgeTables = {
     {
       // Reach 70; melee AA mods; priority armored; Brace (immune to knockback and to first-hit bonuses)
       id: 'graviton_halberdier', kind: 'unit', age: 'cosmic', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 985, speed: 70, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 985, speed: 70, size: 'medium', starter: true,
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -137,7 +137,7 @@ export const cosmic: RawAgeTables = {
   turrets: [
     {
       // Instant beam, single target
-      id: 'ion_turret', kind: 'turret', age: 'cosmic', rarity: 'common', cost: 150,
+      id: 'ion_turret', kind: 'turret', age: 'cosmic', rarity: 'common', starter: true, cost: 150,
       attack: {
         damage: 27, intervalMs: 300, windupPct: 0, range: 370, hitsGround: true, hitsAir: true,
         projectile: { instant: true, effectId: 'fx.beam_ion' },
@@ -147,7 +147,7 @@ export const cosmic: RawAgeTables = {
     },
     {
       // Hits the frontmost enemy in range and enemies within 90 lu behind it; max 4 targets (Grapeshot rule)
-      id: 'starburst_gun', kind: 'turret', age: 'cosmic', rarity: 'common', cost: 175,
+      id: 'starburst_gun', kind: 'turret', age: 'cosmic', rarity: 'common', starter: true, cost: 175,
       attack: {
         damage: 123, intervalMs: 2000, windupPct: 0, range: 240, hitsGround: true, hitsAir: true,
         projectile: { speed: 1800, visualId: 'proj.starburst' },

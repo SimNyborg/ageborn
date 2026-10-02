@@ -14,7 +14,7 @@
  */
 import type { CardId, Result, SaveDoc } from '@/contracts';
 import type { Content } from '@/content';
-import { cardDef, isCollectable } from './tables';
+import { cardDef, inArenaPool, isCollectable, isOwned } from './tables';
 import { unlockTitles } from './titles';
 
 /** Dust to craft `id` (a card or a skin), or null when it cannot be crafted. */
@@ -43,7 +43,8 @@ function craftCard(s: SaveDoc, id: CardId, t: Content, cost: number): Result<Sav
 export function craft(s: SaveDoc, id: string, t: Content): Result<SaveDoc> {
   const cost = craftCost(t, id);
   if (cost === null) return { ok: false, reason: 'notCraftable' };
-  if (cardDef(t, id) !== null) return craftCard(s, id, t, cost);
+  // X0: a content-wave card can be crafted from the arena that drops it (or once owned).
+  if (cardDef(t, id) !== null) return isOwned(s, id) || inArenaPool(t, id, s.arenaIndex) ? craftCard(s, id, t, cost) : { ok: false, reason: 'notCraftable' };
   if (s.skins.owned.includes(id)) return { ok: false, reason: 'owned' };
   if (s.currencies.dust < cost) return { ok: false, reason: 'dust' };
   return {

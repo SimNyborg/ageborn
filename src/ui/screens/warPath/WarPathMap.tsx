@@ -140,6 +140,8 @@ export interface WarPathMapHandle {
 
 interface Props {
   nodes: readonly MapNode[];
+  /** X0 side nodes: each hangs off the main node at its `i`, drawn above the road on a dashed path. */
+  sides?: readonly MapNode[];
   regions: readonly MapRegion[];
   /** The node the banner-bearer and "Back to my level" point at. */
   current: number;
@@ -375,10 +377,16 @@ export function WarPathMap(p: Props) {
             <Road layout={layout} nodes={p.nodes} regions={p.regions} show={show} />
             <RoadDeco layout={layout} nodes={p.nodes} scroll={scroll} />
             <Gates layout={layout} regions={p.regions} show={show} scroll={scroll} />
+            {p.sides && p.sides.length > 0 ? <SidePaths layout={layout} sides={p.sides} /> : null}
             {p.nodes.map((n) => {
               const pt = layout.pts[n.i]!;
               if (pt.x - scroll < -200 || pt.x - scroll > layout.w + 200) return null;
               return <Node key={n.level.id} n={n} layout={layout} show={show} onTap={p.onNode} />;
+            })}
+            {(p.sides ?? []).map((n) => {
+              const pt = sidePoint(layout, n);
+              if (!pt || pt.x - scroll < -200 || pt.x - scroll > layout.w + 200) return null;
+              return <Node key={n.level.id} n={n} layout={layout} show={show} onTap={p.onNode} at={pt} />;
             })}
             {layout.pts[show.bearer ?? p.current] ? <Bearer at={layout.pts[show.bearer ?? p.current]!} size={layout.node} /> : null}
           </div>
@@ -615,18 +623,47 @@ function Gates(p: { layout: MapLayout; regions: readonly MapRegion[]; show: MapS
 }
 
 /** A node: a disc (normal), a shield (Hard), or the boss banner with its General (4.1 table). */
-function Node(p: { n: MapNode; layout: MapLayout; show: MapShow; onTap: Props['onNode'] }) {
+/**
+ * X0: where a side node sits: above its parent node and a little ahead (the second side node of a region
+ * hangs off L8, the first off L5), so it reads as a branch off the road.
+ */
+function sidePoint(L: MapLayout, n: MapNode): { x: number; y: number } | null {
+  const pt = L.pts[n.i];
+  if (!pt) return null;
+  const up = Math.max(L.node * 1.35, 64);
+  return { x: pt.x + L.spacing * 0.42, y: Math.max(L.node * 0.75, pt.y - up) };
+}
+
+/** X0: the dashed branch path from each side node's parent to the side node. */
+function SidePaths(p: { layout: MapLayout; sides: readonly MapNode[] }) {
+  const L = p.layout;
+  return (
+    <svg class="wp-sidepaths" width={L.worldW} height={L.h} aria-hidden="true">
+      {p.sides.map((n) => {
+        const a = L.pts[n.i];
+        const b = sidePoint(L, n);
+        if (!a || !b) return null;
+        const mx = (a.x + b.x) / 2 - L.spacing * 0.08;
+        const d = `M${a.x.toFixed(1)},${(a.y - L.node * 0.3).toFixed(1)} Q${mx.toFixed(1)},${((a.y + b.y) / 2).toFixed(1)} ${b.x.toFixed(1)},${(b.y + L.node * 0.32).toFixed(1)}`;
+        return <path key={n.level.id} d={d} class={`wp-sidepath${n.state === 'locked' ? ' is-locked' : ''}`} />;
+      })}
+    </svg>
+  );
+}
+
+function Node(p: { n: MapNode; layout: MapLayout; show: MapShow; onTap: Props['onNode']; at?: { x: number; y: number } }) {
   const { t } = useKit();
   const n = p.n;
   const L = p.layout;
-  const pt = L.pts[n.i]!;
+  const pt = p.at ?? L.pts[n.i]!;
+  const side = n.kind === 'side';
   const boss = n.kind === 'boss';
   const hard = n.kind === 'elite';
   const hidden = p.show.hideOpen === n.level.id;
   const state = hidden ? 'locked' : n.state;
   const stars = p.show.stars?.[n.level.id] ?? n.stars;
   const stamp = p.show.stamp && p.show.stamp.id === n.level.id ? p.show.stamp.from : null;
-  const size = boss ? L.boss : L.node;
+  const size = boss ? L.boss : side ? Math.round(L.node * 0.82) : L.node;
   const mist = state === 'locked' && n.ahead > MIST_AHEAD && !boss;
   const name = t(levelNameKey(n.level.id));
   const stateText =
@@ -634,12 +671,12 @@ function Node(p: { n: MapNode; layout: MapLayout; show: MapShow; onTap: Props['o
   return (
     <button
       type="button"
-      class={`wp-node wp-node--${state} wp-node--k-${n.kind}${boss ? ' wp-node--boss' : ''}${hard ? ' wp-node--hard' : ''}${mist ? ' is-mist' : ''}${p.show.drop === n.level.id ? ' is-dropping' : ''}`}
+      class={`wp-node wp-node--${state} wp-node--k-${n.kind}${boss ? ' wp-node--boss' : ''}${hard ? ' wp-node--hard' : ''}${side ? ' wp-node--side' : ''}${mist ? ' is-mist' : ''}${p.show.drop === n.level.id ? ' is-dropping' : ''}`}
       data-kind={n.kind}
       style={{ left: `${pt.x - size / 2}px`, top: `${pt.y - size / 2}px`, width: `${size}px`, height: `${size}px`, '--wp-accent': REGION_THEMES[n.level.region].accent }}
       data-testid={`wp-node-${n.level.id}`}
       data-state={state}
-      aria-label={t('warPath.ui.nodeLabel', { n: n.level.index, name, state: stateText })}
+      aria-label={side ? t('warPath.ui.sideLabel', { name, state: stateText }) : t('warPath.ui.nodeLabel', { n: n.level.index, name, state: stateText })}
       aria-current={state === 'current' ? 'step' : undefined}
       onClick={(e) => {
         e.stopPropagation();
@@ -670,7 +707,7 @@ function Node(p: { n: MapNode; layout: MapLayout; show: MapShow; onTap: Props['o
             <GeneralPortrait generalId={n.level.general} size={Math.round(size * 0.74)} />
           </span>
         ) : (
-          <span class="wp-node__num">{n.level.index}</span>
+          <span class="wp-node__num">{side ? <SideGlyph /> : n.level.index}</span>
         )}
         {state === 'locked' ? (
           <span class="wp-node__lock" aria-hidden="true">
@@ -699,6 +736,18 @@ function Node(p: { n: MapNode; layout: MapLayout; show: MapShow; onTap: Props['o
         </span>
       ) : null}
     </button>
+  );
+}
+
+/** X0: the side-node glyph: a small forked path sign. */
+function SideGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+      <path d="M12 21V9" stroke="#1b140d" stroke-width="3" stroke-linecap="round" />
+      <path d="M12 9L6 4M12 9l6-5" stroke="#1b140d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M12 21V9" stroke="#fff3d6" stroke-width="1.4" stroke-linecap="round" />
+      <path d="M12 9L6 4M12 9l6-5" stroke="#fff3d6" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
   );
 }
 

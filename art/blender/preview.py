@@ -60,6 +60,11 @@ def main():
         raw = render.render_frame(rig, poses[name][idx], os.path.join(tmp, f"{name}_{idx}.png"),
                                   getattr(mod, "TEAM", True), smear)
         base, team = pipeline.finish_frame(*raw, spec)
+        if getattr(clip, "overlays2", None):        # smear v2 / accents on top, as the pipeline does
+            from ageborn_art import smear2
+            s2 = os.path.join(tmp, f"{name}_{idx}_smear2.png")
+            if smear2.paint_frame(rig, clip, poses[name], idx, s2) is not None or os.path.exists(s2):
+                base = sheet.over(sheet.load(s2), base)
         print(item, "team share %.1f%%" % sheet.team_share(sheet.load(raw[0]),
                                                           sheet.load(raw[1]) if raw[1] else None))
         tiles.append([sheet.to_image(sheet.composite(base, team, C.TEAM_COLORS[t]))

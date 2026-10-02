@@ -14,6 +14,7 @@ import type { MatchOutcome, ReplayDoc } from '../../../src/contracts';
 import { compileForSim, replayMatch, SIM_VERSION } from '../../../src/sim';
 import { raw } from '../../fixtures/content';
 import { rawLast } from '../../fixtures/lastBase';
+import { rawX0 } from '../../fixtures/x0';
 
 const FILES = import.meta.glob<ReplayDoc>('../../../src/sim/test/golden/*.json', { eager: true, import: 'default' });
 
@@ -30,7 +31,7 @@ export interface EngineResult {
 
 /** Re-simulates every golden replay in this JavaScript engine. */
 export function runGolden(): { simVersion: string; results: EngineResult[] } {
-  const contents = [compileForSim(raw), compileForSim(rawLast)];
+  const contents = [compileForSim(raw), compileForSim(rawLast), compileForSim(rawX0)];
   const byHash = new Map(contents.map((c) => [c.hash, c]));
   const results = Object.entries(FILES)
     .sort(([a], [b]) => a.localeCompare(b))

@@ -17,7 +17,7 @@ export const industrial: RawAgeTables = {
     {
       // Blunt. Big Wrench: the first hit of each engagement deals ×1.5 (no knockback)
       id: 'riveter', kind: 'unit', age: 'industrial', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 330, speed: 72, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 330, speed: 72, size: 'small', starter: true,
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -32,7 +32,7 @@ export const industrial: RawAgeTables = {
     {
       // Carbine bullet
       id: 'carbineer', kind: 'unit', age: 'industrial', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 201, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 201, speed: 65, size: 'small', starter: true,
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
@@ -48,7 +48,7 @@ export const industrial: RawAgeTables = {
     {
       // Piston Punch: first hit ×2 and 30 lu knockback. The first Common Heavy with the mech tag
       id: 'steam_golem', kind: 'unit', age: 'industrial', rarity: 'common', role: 'heavy', group: 'heavy',
-      cost: 150, trainMs: 4000, pop: 6, hp: 1187, speed: 55, size: 'large',
+      cost: 150, trainMs: 4000, pop: 6, hp: 1187, speed: 55, size: 'large', starter: true,
       tags: ['armored', 'mech', 'melee', 'ground'],
       attacks: [
         {
@@ -64,7 +64,7 @@ export const industrial: RawAgeTables = {
       // Harpoon; ranged AA mods; priority armored.
       // Reel In: the first hit of each engagement pulls the target 25 lu toward the gunner (no damage bonus)
       id: 'harpoon_gunner', kind: 'unit', age: 'industrial', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 286, speed: 65, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 286, speed: 65, size: 'medium', starter: true,
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
@@ -143,7 +143,7 @@ export const industrial: RawAgeTables = {
   turrets: [
     {
       // Single target, rapid fire
-      id: 'gatling_gun', kind: 'turret', age: 'industrial', rarity: 'common', cost: 150,
+      id: 'gatling_gun', kind: 'turret', age: 'industrial', rarity: 'common', starter: true, cost: 150,
       attack: {
         damage: 13, intervalMs: 300, windupPct: 0, range: 350, hitsGround: true, hitsAir: true,
         projectile: { speed: 1500, visualId: 'proj.bullet' },
@@ -153,7 +153,7 @@ export const industrial: RawAgeTables = {
     },
     {
       // 68 splash r40 / 2.0 s, range 300 (min 60), arc; ground only. Short-range swarm breaker
-      id: 'mortar_pit', kind: 'turret', age: 'industrial', rarity: 'common', cost: 175,
+      id: 'mortar_pit', kind: 'turret', age: 'industrial', rarity: 'common', starter: true, cost: 175,
       attack: {
         damage: 68, intervalMs: 2000, windupPct: 0, range: 300, minRange: 60, hitsGround: true, hitsAir: false,
         projectile: { speed: 450, arc: true, visualId: 'proj.lob' },

@@ -67,6 +67,33 @@ export function warPathFortOf(t: Content, region: AgeId, level: number): CardId 
   return fortIds(t).find((id) => t.forts[id]?.source === 'warPath' && t.forts[id]?.age === region && t.forts[id]?.warPathLevel === level) ?? null;
 }
 
+/** X0: the fort variant a region's side node grants on its first clear (s2), or null. */
+export function warPathSideFortOf(t: Content, region: AgeId, side: 1 | 2): CardId | null {
+  return fortIds(t).find((id) => t.forts[id]?.source === 'warPath' && t.forts[id]?.age === region && t.forts[id]?.warPathSide === side) ?? null;
+}
+
+/** X0: stars earned in a region, main levels and side nodes (the star milestone source, CONTENT_PLAN 6). */
+export function regionStars(s: SaveDoc, t: Content, region: AgeId): number {
+  const r = t.warPath.regions.find((x) => x.age === region);
+  if (!r) return 0;
+  return [...r.levels, ...(r.sides ?? [])].reduce((n, id) => n + (s.warPath.stars[id] ?? 0), 0);
+}
+
+/** The save flag that records a star-milestone fort as paid (granted or its 60 Amber), so it pays once. */
+function starFlag(id: CardId): string {
+  return `wp.stars.${id}`;
+}
+
+/** Has the save earned this fort through the War Path (a level, a side node or the star milestone)? */
+function earnedOnWarPath(s: SaveDoc, t: Content, id: CardId): boolean {
+  const f = t.forts[id];
+  if (!f || f.source !== 'warPath') return false;
+  if (f.warPathLevel !== undefined) return (s.warPath.stars[levelId(f.age, f.warPathLevel)] ?? 0) > 0;
+  if (f.warPathSide !== undefined) return (s.warPath.stars[`wp.${f.age}.s${f.warPathSide}`] ?? 0) > 0;
+  if (f.warPathStars !== undefined) return regionStars(s, t, f.age) >= f.warPathStars;
+  return false;
+}
+
 /** The forts of a Trophy Road fort-set node (A16.14.6), in table order. */
 export function roadFortsOf(t: Content, node: number): CardId[] {
   return fortIds(t).filter((id) => t.forts[id]?.road === node);
@@ -102,7 +129,7 @@ export function unlockFortSlot(s: SaveDoc, t: Content): { save: SaveDoc; steps: 
   for (const id of fortIds(t)) {
     const f = t.forts[id];
     if (!f || f.source !== 'warPath' || had.has(id)) continue;
-    const byWarPath = f.warPathLevel !== undefined && (s.warPath.stars[levelId(f.age, f.warPathLevel)] ?? 0) > 0;
+    const byWarPath = earnedOnWarPath(s, t, id);
     const byRoad = f.road !== undefined && s.trophies.roadClaimed.includes(f.road);
     if (!byWarPath && !byRoad) continue;
     add(id);
@@ -117,7 +144,10 @@ export function unlockFortSlot(s: SaveDoc, t: Content): { save: SaveDoc; steps: 
     }
     return { ...plan, loadouts };
   });
-  let save: SaveDoc = { ...s, fortsOwned: owned, warPlans, flags: { ...s.flags, [META_FLAGS.fortSlot]: true } };
+  // Star-milestone forts the unlock grants are paid (X0): the milestone never pays them again.
+  const paid: Record<string, boolean> = {};
+  for (const id of owned) if (t.forts[id]?.warPathStars !== undefined && earnedOnWarPath(s, t, id)) paid[starFlag(id)] = true;
+  let save: SaveDoc = { ...s, fortsOwned: owned, warPlans, flags: { ...s.flags, ...paid, [META_FLAGS.fortSlot]: true } };
   if (amber > 0) {
     save = { ...save, currencies: { ...save.currencies, amber: save.currencies.amber + amber } };
     steps.push({ kind: 'amber', amount: amber });
@@ -148,6 +178,33 @@ export function grantWarPathFort(s: SaveDoc, t: Content, region: AgeId, level: n
   return { save, steps };
 }
 
+/** X0: a side node's first clear grants its fort variant (as `grantWarPathFort`; before the unlock, nothing). */
+export function grantWarPathSideFort(s: SaveDoc, t: Content, region: AgeId, side: 1 | 2): { save: SaveDoc; steps: RewardStep[] } {
+  const steps: RewardStep[] = [];
+  const id = warPathSideFortOf(t, region, side);
+  if (!id || !fortSlotUnlocked(s)) return { save: s, steps };
+  return { save: grantOne(s, id, steps), steps };
+}
+
+/**
+ * X0: the region's star milestone (CONTENT_PLAN 6): every fort whose `warPathStars` the region's stars reach
+ * joins `fortsOwned` (60 Amber when the Road came first), once. Before the Fort unlock nothing is granted;
+ * the unlock grants it then.
+ */
+export function grantStarForts(s: SaveDoc, t: Content, region: AgeId): { save: SaveDoc; steps: RewardStep[] } {
+  const steps: RewardStep[] = [];
+  if (!fortSlotUnlocked(s)) return { save: s, steps };
+  let save = s;
+  for (const id of fortIds(t)) {
+    const f = t.forts[id];
+    if (!f || f.age !== region || f.warPathStars === undefined || save.flags[starFlag(id)] === true) continue;
+    if (!earnedOnWarPath(save, t, id)) continue;
+    save = grantOne(save, id, steps);
+    save = { ...save, flags: { ...save.flags, [starFlag(id)]: true } };
+  }
+  return { save, steps };
+}
+
 /** A Trophy Road fort item (A16.14.6): the card, or 60 Amber when already owned (the War Path came first). */
 export function grantRoadFort(s: SaveDoc, id: CardId): SaveDoc {
   return grantOne(s, id, []);
@@ -164,7 +221,7 @@ export function botMayUseFort(t: Content, s: SaveDoc | null, id: CardId, warPath
   if (warPathRegions.includes(f.age)) return true;
   const best = s?.trophies.best ?? 0;
   if (f.road !== undefined && f.road <= best + BOT_ROAD_LOOKAHEAD) return true;
-  return f.warPathLevel !== undefined && !!s && (s.warPath.stars[levelId(f.age, f.warPathLevel)] ?? 0) > 0;
+  return !!s && earnedOnWarPath(s, t, id);
 }
 
 /** A bot's plan limited to the forts a player at this point could own; anything else becomes the age's wall. */

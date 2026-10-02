@@ -73,15 +73,25 @@ function hornsDamageBp(ctx: Ctx, u: UnitRt): number {
   return d <= h.near ? h.holdDamageBp : 0;
 }
 
+/**
+ * Frenzy (X0 M2): while HP ≤ the card's line, its self bonus (0 otherwise). `stat` 0 damage, 1 attack speed.
+ * Pure in HP, so it needs no state (a heal above the line removes it).
+ */
+export function frenzyBp(ctx: Ctx, u: UnitRt, stat: 0 | 1): number {
+  const f = (ctx.rules.unitList[u.ci] as UnitRules).frenzy;
+  if (!f || u.hp <= 0 || u.hp * BP > u.maxHp * f.belowHpBp) return 0;
+  return stat === 0 ? f.damageBp : f.attackSpeedBp;
+}
+
 /** Damage dealt bonus of a unit's attack now, bp: research and side modifiers plus buffs, capped (A18.2). */
 export function unitDamageBonusBp(ctx: Ctx, u: UnitRt): number {
-  const fixed = (u.fx ? u.fx.damageBp : 0) + hornsDamageBp(ctx, u);
+  const fixed = (u.fx ? u.fx.damageBp : 0) + hornsDamageBp(ctx, u) + frenzyBp(ctx, u, 0);
   return capSum(fixed, damageBuffBp(u), ctx.econ.caps.damageBp);
 }
 
 /** Attack speed bonus of a unit now, bp (may be negative: Long Draw), capped (A18.2). */
 export function unitAttackSpeedBp(ctx: Ctx, u: UnitRt): number {
-  return capSum(u.fx ? u.fx.attackSpeedBp : 0, attackSpeedBuffBp(u), ctx.econ.caps.attackSpeedBp);
+  return capSum((u.fx ? u.fx.attackSpeedBp : 0) + frenzyBp(ctx, u, 1), attackSpeedBuffBp(u), ctx.econ.caps.attackSpeedBp);
 }
 
 /** Extra range of a unit's ranged attacks, mlu (Long Draw), capped (A18.2). Melee attacks never gain range. */

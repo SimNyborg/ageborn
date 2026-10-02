@@ -211,7 +211,7 @@ describe('openWardrobe (A6.4, A6.5, A10.1)', () => {
     expect(maxLeg).toBeLessThanOrEqual(24);
     // Pity lifts Epic and Legendary above the base odds (a Rare-only run ends at 5 crates).
     expect(counts.epic + counts.legendary).toBeGreaterThan(n * 0.22);
-    expect(s.skins.owned.filter((id) => C.skins[id]?.inCratePool).length).toBe(11);
+    expect(s.skins.owned.filter((id) => C.skins[id]?.inCratePool).length).toBe(Object.values(C.skins).filter((x) => x.inCratePool).length);
     expect(s.skins.owned).not.toContain('crystal_spire');
   });
 

@@ -9,7 +9,7 @@
  * Units: table units everywhere (gold, Amber, Dust, trophies, ms, lu), percentages and odds in bp
  * (10,000 = 100%). Types only; no runtime values.
  */
-import type { CompiledContent } from '@/contracts/content';
+import type { CompiledContent, FortKind } from '@/contracts/content';
 import type { Loadout } from '@/contracts/sim';
 import type {
   AgeId,
@@ -903,6 +903,10 @@ export interface Content extends CompiledContent {
   feats: FeatTables;
   /** The War Path campaign (A18.7). */
   warPath: WarPathTables;
+  /** X0: units, turrets, powers and forts per age by rarity, slot and kind (`rosterShape.ts`). */
+  rosterShape: RosterShape;
+  /** X0: the arena (1-based) from which a content-wave card drops (`cardArena.ts`); absent = its age's arena. */
+  cardArena: Readonly<Record<CardId, number>>;
   int: IntegerTables;
   order: ContentOrder;
   /** A2.1-A2.11 and A5.1 battle numbers that `EconomyRules` has no field for (from `raw/economy.ts`). */
@@ -912,15 +916,37 @@ export interface Content extends CompiledContent {
 /** The meta tables compiled next to the battle tables (the typed `unknown` slots of the contract). */
 export type MetaTables = Pick<
   Content,
-  'rarities' | 'capsules' | 'arenas' | 'trophyRoad' | 'generals' | 'names' | 'quests' | 'dailyModifiers' | 'cosmetics' | 'feats' | 'warPath'
+  | 'rarities'
+  | 'capsules'
+  | 'arenas'
+  | 'trophyRoad'
+  | 'generals'
+  | 'names'
+  | 'quests'
+  | 'dailyModifiers'
+  | 'cosmetics'
+  | 'feats'
+  | 'warPath'
+  | 'rosterShape'
+  | 'cardArena'
 >;
+
+/** X0: one age's roster shape (CONTENT_PLAN 2): counts by rarity, slot and kind. */
+export interface AgeRosterShape {
+  units: Record<Rarity, number>;
+  turrets: { common: number; rare: number; epic: number };
+  powers: { home: number; field: number };
+  forts: Record<FortKind, number>;
+}
+
+export type RosterShape = Record<AgeId, AgeRosterShape>;
 
 // ---------------------------------------------------------------------------------------------
 // War Path (DESIGN A18.7, ui-plan 6.4)
 // ---------------------------------------------------------------------------------------------
 
 /** A level's role in its region's sawtooth (A18.7.2). */
-export type WarPathRole = 'intro' | 'practice' | 'mix' | 'feature' | 'lieutenant' | 'relief' | 'ramp' | 'puzzle' | 'spike' | 'boss';
+export type WarPathRole = 'intro' | 'practice' | 'mix' | 'feature' | 'lieutenant' | 'relief' | 'ramp' | 'puzzle' | 'spike' | 'boss' | 'side';
 
 /**
  * The disclosed ★★ goal of a level (A18.7.4), read from the match stats. ★★★ is the same goal on
@@ -972,6 +998,12 @@ export interface WarPathLevel {
   boss: { baseHpBp: number; extraTurret: CardId } | null;
   /** The onboarding match this level is while onboarding runs (Stone L1 and L2, A8). */
   onboarding: 1 | 2 | null;
+  /**
+   * X0 side nodes (A18.7.1, CONTENT_PLAN 6): an optional level `wp.<age>.s1` or `s2` that opens once its
+   * region's level `after` is beaten. It is never part of the main path (`order`), so it never blocks
+   * progress; its first clear grants the region's side-node power (s1) or fort variant (s2).
+   */
+  side?: { n: 1 | 2; after: number };
 }
 
 export interface WarPathRegion {
@@ -980,6 +1012,8 @@ export interface WarPathRegion {
   baseTier: number;
   /** Level ids in order. */
   levels: string[];
+  /** X0: the region's side nodes (`wp.<age>.s1`, `s2`), once its content wave has shipped. */
+  sides?: string[];
 }
 
 export interface WarPathTables {

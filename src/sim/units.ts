@@ -2,7 +2,7 @@
  * Unit creation and lookups shared by the systems (DESIGN B3 Entities: arrays with stable increasing
  * ids, iterated in id order).
  */
-import type { CardId, Side } from '@/contracts';
+import type { CardId, Side, SimEvent } from '@/contracts';
 import { BP, assert } from '@/core';
 import { emit } from './events';
 import { clampToLane } from './geometry';
@@ -19,7 +19,15 @@ export function unitRules(ctx: Ctx, u: UnitRt): UnitRules {
  * bounty. `o.lvlBp` overrides the level multiplier (a levy uses its camp's loadout multiplier, A16.14.3);
  * `o.from` is the camp that sent it (`unitSpawned.from`).
  */
-export function spawnUnit(ctx: Ctx, side: Side, card: CardId, x: number, level: number, summoned: boolean, o: { lvlBp?: number; from?: number } = {}): UnitRt {
+export function spawnUnit(
+  ctx: Ctx,
+  side: Side,
+  card: CardId,
+  x: number,
+  level: number,
+  summoned: boolean,
+  o: { lvlBp?: number; from?: number; summoner?: number } = {},
+): UnitRt {
   const r = ctx.rules.units[card];
   assert(r !== undefined, `unknown unit card ${card}`);
   const lvl = o.lvlBp ?? levelBp(ctx.econ, level);
@@ -57,7 +65,8 @@ export function spawnUnit(ctx: Ctx, side: Side, card: CardId, x: number, level: 
     statuses: [],
     air: r.air,
     summoned,
-    timers: r.def.abilities.map(() => 0),
+    // Periodic abilities are ready at spawn; a summoner's first summon waits `firstTicks` (X0 M3).
+    timers: r.def.abilities.map((_, i) => (r.summon && r.summon.slot === i ? ctx.tick + r.summon.firstTicks : 0)),
     lastDamageTick: NEVER,
     ci: r.idx,
     dmg: r.attacks.map((a) => scaleCenti(a.damage, lvl)),
@@ -85,11 +94,16 @@ export function spawnUnit(ctx: Ctx, side: Side, card: CardId, x: number, level: 
     auraGuardBp: 0,
     auraCoverBp: 0,
     decayed: false,
+    summons: [],
   };
   ctx.s.nextId += 1;
   ctx.s.units.push(u);
-  if (!summoned) ctx.s.sides[side].pop += r.pop;
-  emit(ctx, o.from === undefined ? { e: 'unitSpawned', id: u.id, side, card, x: u.x, summoned, level: u.level } : { e: 'unitSpawned', id: u.id, side, card, x: u.x, summoned, level: u.level, from: o.from });
+  // A squad member uses its share of the card's pop (X0 M1: pop ÷ count).
+  if (!summoned) ctx.s.sides[side].pop += Math.trunc(r.pop / r.squad);
+  const ev: Omit<SimEvent & { e: 'unitSpawned' }, 'tick'> = { e: 'unitSpawned', id: u.id, side, card, x: u.x, summoned, level: u.level };
+  if (o.from !== undefined) ev.from = o.from;
+  if (o.summoner !== undefined) ev.summoner = o.summoner;
+  emit(ctx, ev);
   return u;
 }
 
@@ -150,6 +164,7 @@ export function spawnFort(ctx: Ctx, side: Side, card: CardId, pad: number, x: nu
     auraGuardBp: 0,
     auraCoverBp: 0,
     decayed: false,
+    summons: [],
     fort: {
       pad,
       kind,

@@ -191,6 +191,11 @@ function deriveUnit(u: UnitDef, economy: EconomyRules, battle: RawBattleRules): 
 }
 
 /** Power order (A2.9.11): by age; within an age starters first, then by slot (Home, Field), then source (Road, War Path by level). */
+/** War Path powers by level, a side node (X0) after the levels. */
+function wpOrder(p: PowerDef): number {
+  return p.warPathLevel ?? (p.warPathSide !== undefined ? 100 + p.warPathSide : 0);
+}
+
 function sortPowers(list: PowerDef[]): PowerDef[] {
   const age = (p: PowerDef): number => AGE_ORDER.indexOf(p.age);
   const source = (p: PowerDef): number => (p.source === 'starter' ? 0 : p.source === 'road' ? 1 : 2);
@@ -203,7 +208,7 @@ function sortPowers(list: PowerDef[]): PowerDef[] {
         (a.p.source === 'starter' ? 0 : 1) - (b.p.source === 'starter' ? 0 : 1) ||
         slot(a.p) - slot(b.p) ||
         source(a.p) - source(b.p) ||
-        (a.p.warPathLevel ?? 0) - (b.p.warPathLevel ?? 0) ||
+        wpOrder(a.p) - wpOrder(b.p) ||
         a.i - b.i,
     )
     .map((x) => x.p);

@@ -23,7 +23,7 @@ export function reachGlyph(def: Pick<PowerDef, 'reach' | 'effect'>): ReachGlyph 
  * The reach label key suffix (A2.9.4 "Player label"): home "Your half", front "Near your army",
  * fromFront "From your front" (charges and Suppress: no aim), anywhere, army "Your army", drop.
  */
-export type ReachLabel = 'home' | 'front' | 'fromFront' | 'anywhere' | 'army' | 'drop';
+export type ReachLabel = 'home' | 'front' | 'fromFront' | 'anywhere' | 'army' | 'drop' | 'lane';
 
 export function reachLabel(def: Pick<PowerDef, 'reach' | 'effect'>): ReachLabel {
   const k = def.effect.kind;

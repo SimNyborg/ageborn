@@ -55,6 +55,11 @@ export function hashState(s: SimStateRt): number {
     }
     for (const st of u.statuses) h.str(st.kind).int(st.magnitudeBp).int(st.untilTick).int(st.amount);
     for (const t of u.timers) h.int(t);
+    // X0 M3: a summoner's live summons (hashed only when it has sent any, so older states hash as before).
+    if (u.summons.length > 0) {
+      h.int(-7).int(u.summons.length);
+      for (const id of u.summons) h.int(id);
+    }
     const f = u.fort;
     if (f) {
       // A16.14: every fort field can change a later tick.

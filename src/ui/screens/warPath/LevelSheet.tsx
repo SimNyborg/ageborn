@@ -23,7 +23,7 @@ import { tierCrests } from '../../components/capsuleLook';
 import { Sheet } from '../../components/Modal';
 import { useUi } from '../context';
 import { DIFFICULTY_NAME_KEYS } from '../model/progress';
-import { goalsShown, goalText, hardMarked, levelNameKey, levelTier, progressOf, regionNameKey, type MapNode } from '../model/warPath';
+import { goalsShown, goalText, hardMarked, levelNameKey, levelTier, progressOf, regionNameKey, type MapNode, sideRewardCard } from '../model/warPath';
 
 /** Roles that mean something to a player (the others are the designer's pacing words, U9). */
 const SHOWN_ROLES: ReadonlySet<string> = new Set(['boss', 'lieutenant', 'puzzle', 'relief']);
@@ -53,8 +53,13 @@ export function LevelSheet(p: {
   const reward = level.reward;
   const card = reward.card ? (content.units[reward.card] ?? content.turrets[reward.card]) : null;
   const cleared = n.state === 'beaten';
-  const prevRegionBoss = locked && level.index === 1 && n.i > 0;
-  const lockLine = locked
+  const prevRegionBoss = locked && level.index === 1 && n.i > 0 && !level.side;
+  // X0 side nodes: open once the level they hang off is beaten; they grant a power or a fort variant.
+  const sideCard = sideRewardCard(content, level);
+  const sideDef = sideCard ? (content.powers[sideCard] ?? content.forts[sideCard]) : null;
+  const lockLine = locked && level.side
+    ? t('warPath.ui.sideLocked', { n: level.side.after })
+    : locked
     ? prevRegionBoss
       ? t('warPath.ui.lockedRegion', { region: t(regionNameKey(content.warPath.levels[content.warPath.order[n.i - 1]!]!.region)) })
       : t('warPath.ui.locked', { n: content.warPath.levels[content.warPath.order[n.i - 1] ?? '']?.index ?? 1 })
@@ -63,7 +68,7 @@ export function LevelSheet(p: {
 
   const primary = locked ? undefined : (
     <Button kind="primary" size="l" icon={<SwordsIcon size={24} />} testid="level-play" autofocus onClick={() => p.onPlay(diff)}>
-      {cleared ? t('warPath.ui.replay', { n: level.index }) : t('warPath.ui.play', { n: level.index })}
+      {level.side ? t('warPath.ui.playSide') : cleared ? t('warPath.ui.replay', { n: level.index }) : t('warPath.ui.play', { n: level.index })}
     </Button>
   );
 
@@ -114,7 +119,7 @@ export function LevelSheet(p: {
           </span>
           <span class="lv-head__text">
             <span class="lv-head__role" data-clip-check="">
-              {t('warPath.ui.levelN', { n: level.index })}
+              {level.side ? t('warPath.ui.sideN') : t('warPath.ui.levelN', { n: level.index })}
               {SHOWN_ROLES.has(level.role) ? ` · ${t(roleKey)}` : ''}
               {hardMarked(level) ? (
                 <span class="lv-tag" data-tag="">
@@ -208,11 +213,21 @@ export function LevelSheet(p: {
                   <CardsIcon size={22} />
                 </span>
               ) : null}
-              {reward.amber === 0 && !reward.capsule && !card ? <StarIcon size={20} /> : null}
+              {sideDef ? (
+                <span class={`lv-reward__item lv-reward__card lv-reward__card--${sideDef.rarity}`} data-testid="level-side-reward" title={t(sideDef.nameKey)}>
+                  <CardsIcon size={22} /> <span class="lv-reward__name">{t(sideDef.nameKey)}</span>
+                </span>
+              ) : null}
+              {reward.amber === 0 && !reward.capsule && !card && !sideDef ? <StarIcon size={20} /> : null}
             </span>
           </div>
         </div>
 
+        {level.side ? (
+          <p class="lv-tip" data-testid="level-side-tip">
+            <b>{t('warPath.ui.tip')}</b> {t('warPath.ui.sideTip')}
+          </p>
+        ) : null}
         {level.teaches ? (
           <p class="lv-tip" data-testid="level-tip">
             <b>{t('warPath.ui.tip')}</b> {t(`warPath.teach.${level.teaches}`)}
