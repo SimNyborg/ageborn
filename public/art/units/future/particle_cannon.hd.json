@@ -1,0 +1,2250 @@
+{
+ "frames": {
+  "particle_cannon_idle_00": {
+   "frame": {
+    "x": 1818,
+    "y": 2,
+    "w": 222,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 311,
+    "w": 222,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_idle_00_team": {
+   "frame": {
+    "x": 3484,
+    "y": 436,
+    "w": 193,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 306,
+    "w": 193,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_idle_01": {
+   "frame": {
+    "x": 2496,
+    "y": 2,
+    "w": 224,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 261,
+    "y": 312,
+    "w": 224,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_idle_01_team": {
+   "frame": {
+    "x": 3085,
+    "y": 436,
+    "w": 196,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 261,
+    "y": 307,
+    "w": 196,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_idle_02": {
+   "frame": {
+    "x": 1229,
+    "y": 228,
+    "w": 222,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 314,
+    "w": 222,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_idle_02_team": {
+   "frame": {
+    "x": 2884,
+    "y": 436,
+    "w": 197,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 260,
+    "y": 307,
+    "w": 197,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_idle_03": {
+   "frame": {
+    "x": 2724,
+    "y": 2,
+    "w": 222,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 312,
+    "w": 222,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_idle_03_team": {
+   "frame": {
+    "x": 2687,
+    "y": 436,
+    "w": 193,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 305,
+    "w": 193,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_idle_04": {
+   "frame": {
+    "x": 1699,
+    "y": 228,
+    "w": 224,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 261,
+    "y": 315,
+    "w": 224,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_idle_04_team": {
+   "frame": {
+    "x": 1401,
+    "y": 627,
+    "w": 196,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 261,
+    "y": 310,
+    "w": 196,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_idle_05": {
+   "frame": {
+    "x": 2044,
+    "y": 2,
+    "w": 222,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 311,
+    "w": 222,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_idle_05_team": {
+   "frame": {
+    "x": 1601,
+    "y": 627,
+    "w": 197,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 260,
+    "y": 311,
+    "w": 197,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_00": {
+   "frame": {
+    "x": 905,
+    "y": 2,
+    "w": 226,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 259,
+    "y": 308,
+    "w": 226,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_00_team": {
+   "frame": {
+    "x": 2298,
+    "y": 436,
+    "w": 188,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 267,
+    "y": 301,
+    "w": 188,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_01": {
+   "frame": {
+    "x": 3851,
+    "y": 2,
+    "w": 240,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 313,
+    "w": 240,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 627,
+    "w": 194,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 308,
+    "w": 194,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_02": {
+   "frame": {
+    "x": 1927,
+    "y": 228,
+    "w": 256,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 318,
+    "w": 256,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_02_team": {
+   "frame": {
+    "x": 1802,
+    "y": 627,
+    "w": 202,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 256,
+    "y": 313,
+    "w": 202,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_03": {
+   "frame": {
+    "x": 728,
+    "y": 228,
+    "w": 269,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 216,
+    "y": 314,
+    "w": 269,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_03_team": {
+   "frame": {
+    "x": 1195,
+    "y": 627,
+    "w": 202,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 255,
+    "y": 310,
+    "w": 202,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_04": {
+   "frame": {
+    "x": 1135,
+    "y": 2,
+    "w": 227,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 258,
+    "y": 309,
+    "w": 227,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_04_team": {
+   "frame": {
+    "x": 3285,
+    "y": 436,
+    "w": 195,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 260,
+    "y": 304,
+    "w": 195,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_05": {
+   "frame": {
+    "x": 1455,
+    "y": 228,
+    "w": 240,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 315,
+    "w": 240,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_05_team": {
+   "frame": {
+    "x": 593,
+    "y": 627,
+    "w": 194,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 310,
+    "w": 194,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_06": {
+   "frame": {
+    "x": 2187,
+    "y": 228,
+    "w": 256,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 318,
+    "w": 256,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_06_team": {
+   "frame": {
+    "x": 394,
+    "y": 627,
+    "w": 195,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 312,
+    "w": 195,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_07": {
+   "frame": {
+    "x": 454,
+    "y": 228,
+    "w": 270,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 215,
+    "y": 314,
+    "w": 270,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_walk_07_team": {
+   "frame": {
+    "x": 3681,
+    "y": 436,
+    "w": 192,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 265,
+    "y": 308,
+    "w": 192,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_00": {
+   "frame": {
+    "x": 1366,
+    "y": 2,
+    "w": 222,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 309,
+    "w": 222,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_00_team": {
+   "frame": {
+    "x": 1695,
+    "y": 436,
+    "w": 196,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 261,
+    "y": 303,
+    "w": 196,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_01": {
+   "frame": {
+    "x": 2270,
+    "y": 2,
+    "w": 222,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 264,
+    "y": 312,
+    "w": 222,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_01_team": {
+   "frame": {
+    "x": 1493,
+    "y": 436,
+    "w": 198,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 261,
+    "y": 304,
+    "w": 198,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_02": {
+   "frame": {
+    "x": 3176,
+    "y": 2,
+    "w": 221,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 266,
+    "y": 314,
+    "w": 221,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_02_team": {
+   "frame": {
+    "x": 1289,
+    "y": 436,
+    "w": 200,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 262,
+    "y": 306,
+    "w": 200,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_03": {
+   "frame": {
+    "x": 2,
+    "y": 228,
+    "w": 222,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 267,
+    "y": 315,
+    "w": 222,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_03_team": {
+   "frame": {
+    "x": 2103,
+    "y": 436,
+    "w": 191,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 272,
+    "y": 307,
+    "w": 191,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_04": {
+   "frame": {
+    "x": 228,
+    "y": 2,
+    "w": 222,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 256,
+    "y": 294,
+    "w": 222,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_04_team": {
+   "frame": {
+    "x": 236,
+    "y": 436,
+    "w": 187,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 260,
+    "y": 286,
+    "w": 187,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_05": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 222,
+    "h": 222
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 282,
+    "w": 222,
+    "h": 222
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_05_team": {
+   "frame": {
+    "x": 3816,
+    "y": 228,
+    "w": 204,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 236,
+    "y": 273,
+    "w": 204,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_06": {
+   "frame": {
+    "x": 2673,
+    "y": 228,
+    "w": 235,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 228,
+    "y": 319,
+    "w": 235,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_06_team": {
+   "frame": {
+    "x": 2008,
+    "y": 627,
+    "w": 225,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 311,
+    "w": 225,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_07": {
+   "frame": {
+    "x": 680,
+    "y": 2,
+    "w": 221,
+    "h": 210
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 249,
+    "y": 302,
+    "w": 221,
+    "h": 210
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_07_team": {
+   "frame": {
+    "x": 1082,
+    "y": 436,
+    "w": 203,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 237,
+    "y": 293,
+    "w": 203,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_08": {
+   "frame": {
+    "x": 2950,
+    "y": 2,
+    "w": 222,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 257,
+    "y": 311,
+    "w": 222,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_08_team": {
+   "frame": {
+    "x": 2490,
+    "y": 436,
+    "w": 193,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 258,
+    "y": 305,
+    "w": 193,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_09": {
+   "frame": {
+    "x": 3401,
+    "y": 2,
+    "w": 221,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 261,
+    "y": 312,
+    "w": 221,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_attack_09_team": {
+   "frame": {
+    "x": 791,
+    "y": 627,
+    "w": 186,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 268,
+    "y": 308,
+    "w": 186,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_hit_00": {
+   "frame": {
+    "x": 1001,
+    "y": 228,
+    "w": 224,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 255,
+    "y": 313,
+    "w": 224,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_hit_00_team": {
+   "frame": {
+    "x": 981,
+    "y": 627,
+    "w": 210,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 305,
+    "w": 210,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_hit_01": {
+   "frame": {
+    "x": 454,
+    "y": 2,
+    "w": 222,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 256,
+    "y": 300,
+    "w": 222,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_hit_01_team": {
+   "frame": {
+    "x": 879,
+    "y": 436,
+    "w": 199,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 247,
+    "y": 291,
+    "w": 199,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_hit_02": {
+   "frame": {
+    "x": 1592,
+    "y": 2,
+    "w": 222,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 260,
+    "y": 309,
+    "w": 222,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_hit_02_team": {
+   "frame": {
+    "x": 1895,
+    "y": 436,
+    "w": 204,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 250,
+    "y": 301,
+    "w": 204,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_hit_03": {
+   "frame": {
+    "x": 2447,
+    "y": 228,
+    "w": 222,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 318,
+    "w": 222,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_hit_03_team": {
+   "frame": {
+    "x": 2237,
+    "y": 627,
+    "w": 196,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 262,
+    "y": 314,
+    "w": 196,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_hit_04": {
+   "frame": {
+    "x": 3626,
+    "y": 2,
+    "w": 221,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 312,
+    "w": 221,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_hit_04_team": {
+   "frame": {
+    "x": 200,
+    "y": 627,
+    "w": 190,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 266,
+    "y": 307,
+    "w": 190,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_00": {
+   "frame": {
+    "x": 228,
+    "y": 228,
+    "w": 222,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 313,
+    "w": 222,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_00_team": {
+   "frame": {
+    "x": 3877,
+    "y": 436,
+    "w": 197,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 260,
+    "y": 308,
+    "w": 197,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_01": {
+   "frame": {
+    "x": 2,
+    "y": 436,
+    "w": 230,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 255,
+    "y": 330,
+    "w": 230,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_01_team": {
+   "frame": {
+    "x": 3691,
+    "y": 627,
+    "w": 216,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 330,
+    "w": 216,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_02": {
+   "frame": {
+    "x": 653,
+    "y": 436,
+    "w": 222,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 337,
+    "w": 222,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_02_team": {
+   "frame": {
+    "x": 3054,
+    "y": 627,
+    "w": 192,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 284,
+    "y": 328,
+    "w": 192,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_03": {
+   "frame": {
+    "x": 3364,
+    "y": 228,
+    "w": 222,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 328,
+    "w": 222,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_03_team": {
+   "frame": {
+    "x": 3460,
+    "y": 627,
+    "w": 227,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 257,
+    "y": 335,
+    "w": 227,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_04": {
+   "frame": {
+    "x": 3590,
+    "y": 228,
+    "w": 222,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 328,
+    "w": 222,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_04_team": {
+   "frame": {
+    "x": 2853,
+    "y": 627,
+    "w": 197,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 278,
+    "y": 333,
+    "w": 197,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_05": {
+   "frame": {
+    "x": 2912,
+    "y": 228,
+    "w": 222,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 327,
+    "w": 222,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_05_team": {
+   "frame": {
+    "x": 2645,
+    "y": 627,
+    "w": 204,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 271,
+    "y": 333,
+    "w": 204,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_06": {
+   "frame": {
+    "x": 427,
+    "y": 436,
+    "w": 222,
+    "h": 181
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 336,
+    "w": 222,
+    "h": 181
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_06_team": {
+   "frame": {
+    "x": 2437,
+    "y": 627,
+    "w": 204,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 271,
+    "y": 327,
+    "w": 204,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_07": {
+   "frame": {
+    "x": 3138,
+    "y": 228,
+    "w": 222,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 327,
+    "w": 222,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  },
+  "particle_cannon_die_07_team": {
+   "frame": {
+    "x": 3250,
+    "y": 627,
+    "w": 206,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 269,
+    "y": 334,
+    "w": 206,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 718,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52089,
+    "y": 0.88129
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "particle_cannon_idle_00",
+   "particle_cannon_idle_01",
+   "particle_cannon_idle_02",
+   "particle_cannon_idle_03",
+   "particle_cannon_idle_04",
+   "particle_cannon_idle_05"
+  ],
+  "idle_team": [
+   "particle_cannon_idle_00_team",
+   "particle_cannon_idle_01_team",
+   "particle_cannon_idle_02_team",
+   "particle_cannon_idle_03_team",
+   "particle_cannon_idle_04_team",
+   "particle_cannon_idle_05_team"
+  ],
+  "walk": [
+   "particle_cannon_walk_00",
+   "particle_cannon_walk_01",
+   "particle_cannon_walk_02",
+   "particle_cannon_walk_03",
+   "particle_cannon_walk_04",
+   "particle_cannon_walk_05",
+   "particle_cannon_walk_06",
+   "particle_cannon_walk_07"
+  ],
+  "walk_team": [
+   "particle_cannon_walk_00_team",
+   "particle_cannon_walk_01_team",
+   "particle_cannon_walk_02_team",
+   "particle_cannon_walk_03_team",
+   "particle_cannon_walk_04_team",
+   "particle_cannon_walk_05_team",
+   "particle_cannon_walk_06_team",
+   "particle_cannon_walk_07_team"
+  ],
+  "attack": [
+   "particle_cannon_attack_00",
+   "particle_cannon_attack_01",
+   "particle_cannon_attack_02",
+   "particle_cannon_attack_03",
+   "particle_cannon_attack_04",
+   "particle_cannon_attack_05",
+   "particle_cannon_attack_06",
+   "particle_cannon_attack_07",
+   "particle_cannon_attack_08",
+   "particle_cannon_attack_09"
+  ],
+  "attack_team": [
+   "particle_cannon_attack_00_team",
+   "particle_cannon_attack_01_team",
+   "particle_cannon_attack_02_team",
+   "particle_cannon_attack_03_team",
+   "particle_cannon_attack_04_team",
+   "particle_cannon_attack_05_team",
+   "particle_cannon_attack_06_team",
+   "particle_cannon_attack_07_team",
+   "particle_cannon_attack_08_team",
+   "particle_cannon_attack_09_team"
+  ],
+  "hit": [
+   "particle_cannon_hit_00",
+   "particle_cannon_hit_01",
+   "particle_cannon_hit_02",
+   "particle_cannon_hit_03",
+   "particle_cannon_hit_04"
+  ],
+  "hit_team": [
+   "particle_cannon_hit_00_team",
+   "particle_cannon_hit_01_team",
+   "particle_cannon_hit_02_team",
+   "particle_cannon_hit_03_team",
+   "particle_cannon_hit_04_team"
+  ],
+  "die": [
+   "particle_cannon_die_00",
+   "particle_cannon_die_01",
+   "particle_cannon_die_02",
+   "particle_cannon_die_03",
+   "particle_cannon_die_04",
+   "particle_cannon_die_05",
+   "particle_cannon_die_06",
+   "particle_cannon_die_06",
+   "particle_cannon_die_07",
+   "particle_cannon_die_07"
+  ],
+  "die_team": [
+   "particle_cannon_die_00_team",
+   "particle_cannon_die_01_team",
+   "particle_cannon_die_02_team",
+   "particle_cannon_die_03_team",
+   "particle_cannon_die_04_team",
+   "particle_cannon_die_05_team",
+   "particle_cannon_die_06_team",
+   "particle_cannon_die_06_team",
+   "particle_cannon_die_07_team",
+   "particle_cannon_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "particle_cannon.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 4096,
+   "h": 796
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.particle_cannon",
+   "name": "Particle Cannon",
+   "heightLu": 92,
+   "widthLu": 84.1,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    374,
+    490
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     88
+    ],
+    "hitCenter": [
+     0,
+     34
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "tracked",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        26.0,
+        54.4
+       ],
+       [
+        25.8,
+        54.4
+       ],
+       [
+        25.8,
+        54.6
+       ],
+       [
+        26.0,
+        55.0
+       ],
+       [
+        26.9,
+        52.7
+       ],
+       [
+        26.9,
+        52.4
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      53,
+      54,
+      53,
+      53,
+      54,
+      53,
+      53,
+      54
+     ],
+     "durationMs": 427,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        25.4,
+        56.6
+       ],
+       [
+        25.7,
+        53.9
+       ],
+       [
+        26.3,
+        51.9
+       ],
+       [
+        26.2,
+        52.7
+       ],
+       [
+        26.1,
+        54.9
+       ],
+       [
+        26.8,
+        53.1
+       ],
+       [
+        27.1,
+        52.3
+       ],
+       [
+        26.3,
+        54.2
+       ]
+      ]
+     },
+     "strideLu": 23.6,
+     "naturalSpeedLuPerS": 55.3,
+     "gait": "tracked"
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      40,
+      60,
+      130,
+      61,
+      80,
+      90,
+      80,
+      80,
+      90,
+      79
+     ],
+     "durationMs": 790,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3684,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        24.5,
+        56.5
+       ],
+       [
+        24.1,
+        57.1
+       ],
+       [
+        24.3,
+        56.6
+       ],
+       [
+        24.9,
+        56.6
+       ],
+       [
+        11.8,
+        64.6
+       ],
+       [
+        4.0,
+        72.9
+       ],
+       [
+        15.4,
+        55.3
+       ],
+       [
+        16.5,
+        60.3
+       ],
+       [
+        23.3,
+        54.9
+       ],
+       [
+        25.3,
+        54.0
+       ]
+      ]
+     },
+     "muzzle": [
+      11.8,
+      64.6
+     ]
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        20.7,
+        57.7
+       ],
+       [
+        15.9,
+        63.3
+       ],
+       [
+        22.2,
+        57.7
+       ],
+       [
+        27.9,
+        51.3
+       ],
+       [
+        25.9,
+        54.3
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        33.1
+       ],
+       "scale": 1.051
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        50.6
+       ],
+       "loops": 2,
+       "scale": 1.025
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        26.2,
+        53.9
+       ],
+       [
+        29.7,
+        43.3
+       ],
+       [
+        30.1,
+        32.9
+       ],
+       [
+        27.8,
+        23.5
+       ],
+       [
+        23.4,
+        15.9
+       ],
+       [
+        23.4,
+        15.9
+       ],
+       [
+        23.4,
+        15.9
+       ],
+       [
+        23.4,
+        15.9
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

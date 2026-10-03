@@ -388,15 +388,16 @@ def cryo_build(rig):
     # the pod: a round white tank with a team band, frost-white coolant ribs and a mint intake mouth
     rig.joint("pod", "head", (0, 0, 20))
     pod = Geo().blob((0, 0, 20), (10.5, 9.0, 9.0), p=2.2)
-    band = Geo().blob((-1.0, 0, 20), (10.8, 9.3, 2.6), p=3.0)
+    band = Geo().blob((-1.0, 0, 20), (10.8, 9.3, 4.2), p=3.0)
+    band.blob((-1.5, 0, 28.4), (6.4, 5.6, 1.8), p=2.4)
     bf = FC.Face(rig, "pod", [band], yaw_deg=TURRET_YAW)
     g = KF.hexmark(bf, Geo(), K.scr(bf, (-3.0, -8.6, 20.0)), s=0.5, w=1.0, dot=False)
     rig.part("pod", pod, WHITE, finish="gloss", outline_hex=TRIM)
     rig.part("pod", band, team=True, outline=0.4)
     rig.part("pod", g, KF.HEX_PALE, highlight=False, outline=0)
     g = Geo()
-    for z in (25.5, 14.5):
-        g.blob((-1.0, 0, z), (8.4, 7.4, 0.9), p=3.0)
+    for z in (26.0, 13.6):
+        g.blob((-1.0, 0, z), (8.2, 7.2, 0.8), p=3.0)
     rig.part("pod", g, FROSTC, finish="gloss", outline=0.3)
     visor = Geo().blob((7.6, -3.4, 24.0), (3.4, 4.4, 2.4), p=3.0)
     KF.visor_face(rig, "pod", [visor], (8.0, 24.2), eye_dx=(0.0,), eye_rx=1.4, eye_rz=1.8, yaw_deg=TURRET_YAW)

@@ -1,0 +1,522 @@
+{
+ "frames": {
+  "drone_carrier_attack_b_00": {
+   "frame": {
+    "x": 179,
+    "y": 2,
+    "w": 172,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 146,
+    "w": 172,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  },
+  "drone_carrier_attack_b_00_team": {
+   "frame": {
+    "x": 140,
+    "y": 389,
+    "w": 132,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 156,
+    "w": 132,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  },
+  "drone_carrier_attack_b_01": {
+   "frame": {
+    "x": 355,
+    "y": 2,
+    "w": 170,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 146,
+    "w": 170,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  },
+  "drone_carrier_attack_b_01_team": {
+   "frame": {
+    "x": 276,
+    "y": 389,
+    "w": 132,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 156,
+    "w": 132,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  },
+  "drone_carrier_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 196,
+    "w": 168,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 147,
+    "w": 168,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  },
+  "drone_carrier_attack_b_02_team": {
+   "frame": {
+    "x": 655,
+    "y": 196,
+    "w": 134,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 156,
+    "w": 134,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  },
+  "drone_carrier_attack_b_03": {
+   "frame": {
+    "x": 174,
+    "y": 196,
+    "w": 168,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 147,
+    "w": 168,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  },
+  "drone_carrier_attack_b_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 389,
+    "w": 134,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 156,
+    "w": 134,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  },
+  "drone_carrier_attack_b_04": {
+   "frame": {
+    "x": 529,
+    "y": 2,
+    "w": 184,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 147,
+    "w": 184,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  },
+  "drone_carrier_attack_b_04_team": {
+   "frame": {
+    "x": 552,
+    "y": 389,
+    "w": 135,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 156,
+    "w": 135,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  },
+  "drone_carrier_attack_b_05": {
+   "frame": {
+    "x": 346,
+    "y": 196,
+    "w": 168,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 147,
+    "w": 168,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  },
+  "drone_carrier_attack_b_05_team": {
+   "frame": {
+    "x": 691,
+    "y": 389,
+    "w": 137,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 157,
+    "w": 137,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  },
+  "drone_carrier_attack_b_06": {
+   "frame": {
+    "x": 717,
+    "y": 2,
+    "w": 170,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 147,
+    "w": 170,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  },
+  "drone_carrier_attack_b_06_team": {
+   "frame": {
+    "x": 412,
+    "y": 389,
+    "w": 136,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 157,
+    "w": 136,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  },
+  "drone_carrier_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 173,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 146,
+    "w": 173,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  },
+  "drone_carrier_attack_b_07_team": {
+   "frame": {
+    "x": 518,
+    "y": 196,
+    "w": 133,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 155,
+    "w": 133,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 442,
+    "h": 364
+   },
+   "anchor": {
+    "x": 0.54751,
+    "y": 0.87912
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "drone_carrier_attack_b_00",
+   "drone_carrier_attack_b_01",
+   "drone_carrier_attack_b_02",
+   "drone_carrier_attack_b_03",
+   "drone_carrier_attack_b_04",
+   "drone_carrier_attack_b_05",
+   "drone_carrier_attack_b_06",
+   "drone_carrier_attack_b_07"
+  ],
+  "attack_b_team": [
+   "drone_carrier_attack_b_00_team",
+   "drone_carrier_attack_b_01_team",
+   "drone_carrier_attack_b_02_team",
+   "drone_carrier_attack_b_03_team",
+   "drone_carrier_attack_b_04_team",
+   "drone_carrier_attack_b_05_team",
+   "drone_carrier_attack_b_06_team",
+   "drone_carrier_attack_b_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "drone_carrier.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 896,
+   "h": 536
+  },
+  "scale": "1.25",
+  "ageborn": {
+   "visualId": "unit.drone_carrier",
+   "name": "Drone Carrier",
+   "heightLu": 172,
+   "widthLu": 161.5,
+   "pxPerLu": 1.025,
+   "feetPx": [
+    242.0,
+    320.0
+   ],
+   "anchorsLu": {
+    "head": [
+     30,
+     120
+    ],
+    "hitCenter": [
+     0,
+     50
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "tracked",
+   "extrasOf": "drone_carrier",
+   "clips": {
+    "attack_b": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      40,
+      60,
+      100,
+      50,
+      60,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 500,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 2,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        80.2,
+        67.3
+       ],
+       [
+        78.0,
+        74.0
+       ],
+       [
+        75.7,
+        78.5
+       ],
+       [
+        75.4,
+        78.9
+       ],
+       [
+        71.0,
+        79.2
+       ],
+       [
+        71.2,
+        82.4
+       ],
+       [
+        77.1,
+        75.7
+       ],
+       [
+        80.5,
+        65.3
+       ]
+      ]
+     },
+     "muzzle": [
+      71.0,
+      79.2
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}
