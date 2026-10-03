@@ -6,6 +6,12 @@ export const A14_EFFECT_IDS = new Set([
   // Instant and attack effects
   'fx.beam_laser', 'fx.beam_rail', 'fx.arc_chain', 'fx.tongue', 'fx.pitch_pour', 'fx.heal_beam',
   'fx.sun_beam', 'fx.gorgon_gaze', 'fx.tesla_arc', 'fx.beam_void', 'fx.beam_ion', 'fx.beam_tachyon',
+  // Bronze wave (CONTENT_PLAN 5.2)
+  'fx.note_pop', 'fx.wail_ring', 'fx.sandstorm', 'fx.whirlpool',
+  // Medieval wave (CONTENT_PLAN 5.3)
+  'fx.lindworm_breath', 'fx.grapple_hook', 'fx.longbow_volley', 'fx.arrow_thud', 'fx.great_bell',
+  // Gunpowder wave (CONTENT_PLAN 5.4)
+  'fx.blunderbuss_spray', 'fx.drum_boom', 'fx.pipe_drone', 'fx.mesmer_spiral', 'fx.rocket_volley', 'fx.rocket_pop', 'fx.cannon_salute',
   // Hit and death effects
   'fx.spark_blunt', 'fx.spark_slash', 'fx.spark_pierce', 'fx.spark_bullet', 'fx.scorch_laser', 'fx.blast',
   'fx.spark_effective', 'fx.puff_resisted', 'fx.muzzle', 'fx.trail', 'fx.splash_ring', 'fx.explosion_s',
@@ -26,6 +32,8 @@ export const A14_EFFECT_IDS = new Set([
   'fx.railway_shell', 'fx.field_hospital', 'fx.strafing_run', 'fx.flak_burst', 'fx.tank_rush', 'fx.sniper_trace',
   'fx.point_defense', 'fx.stasis_dome', 'fx.drone_swarm', 'fx.emp_blackout', 'fx.singularity', 'fx.solar_flare',
   'fx.comet_run', 'fx.ion_cannon',
+  // X0 Stone wave (CONTENT_PLAN 5.1)
+  'fx.pebble_hail', 'fx.pebble_pop', 'fx.tangle_vines',
   'fx.field_zone', 'fx.target_lock', 'fx.turret_jammed', 'fx.power_cast_cue',
   'fx.tele_shadow', 'fx.tele_rumble', 'fx.tele_glint', 'fx.tele_gather', 'fx.storm_cloud', 'fx.dirt_blast',
   'fx.plasma_pop', 'fx.drone_cloud', 'fx.jammed_rubble', 'fx.tele_rally', 'fx.tele_sap', 'fx.tele_charge', 'fx.tele_flak',
@@ -67,8 +75,23 @@ const MVP_SOUND_IDS = [
   'fort_build_energy', 'camp_warp', 'levy_warp', 'trap_blast_energy',
 ];
 
+/** Bronze wave sounds (CONTENT_PLAN 5.2). */
+const BRONZE_WAVE_SOUND_IDS = [
+  'kopis_hack', 'rhomphaia_cut', 'shot_discus', 'trunk_lash', 'shot_belly_bow', 'aulos_note', 'chorus_wail', 'horse_ram',
+  'sagaris_sweep', 'labrys_chop', 'hydra_bite', 'net_cast', 'shot_polybolos', 'pw_sandstorm', 'pw_whirlpool',
+];
+
+/** Medieval wave sounds (CONTENT_PLAN 5.3). */
+const MEDIEVAL_WAVE_SOUND_IDS = [
+  'squire_jab', 'flail_smash', 'dagger_stab', 'shot_windlass', 'greatsword_sweep', 'shot_longbow', 'hammer_clang',
+  'trumpet_toot', 'whip_crack', 'shot_mangonel', 'drawbridge_slam', 'vial_toss', 'wyrm_breath', 'hound_bite',
+  'shot_springald', 'crane_hook', 'pw_longbow', 'pw_bell',
+];
+
 export const A13_SOUND_IDS = new Set([
   ...A17_SOUND_IDS,
+  ...BRONZE_WAVE_SOUND_IDS,
+  ...MEDIEVAL_WAVE_SOUND_IDS,
   ...MVP_SOUND_IDS,
   ...FORT_SOUND_IDS,
   ...REWORK_POWER_SOUND_IDS,
@@ -98,4 +121,6 @@ export const A14_PROJECTILE_IDS = new Set([
   'proj.cannonball', 'proj.grapeshot', 'proj.rocket', 'proj.chainshot', 'proj.bomb', 'proj.bullet', 'proj.shell', 'proj.flak',
   'proj.plasma', 'proj.plasma_mortar', 'proj.gravity_orb',
   'proj.javelin', 'proj.scorpion_bolt', 'proj.harpoon', 'proj.flare', 'proj.ion', 'proj.starburst', 'proj.star_shard',
+  // Bronze wave (CONTENT_PLAN 5.2)
+  'proj.discus', 'proj.net', 'proj.arrow_arc',
 ]);

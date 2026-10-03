@@ -1,0 +1,514 @@
+{
+ "frames": {
+  "crossbowman_attack_b_01": {
+   "frame": {
+    "x": 341,
+    "y": 2,
+    "w": 167,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 166,
+    "y": 211,
+    "w": 167,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 410
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.87317
+   }
+  },
+  "crossbowman_attack_b_01_team": {
+   "frame": {
+    "x": 330,
+    "y": 514,
+    "w": 103,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 220,
+    "w": 103,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 410
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.87317
+   }
+  },
+  "crossbowman_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 184,
+    "w": 166,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 215,
+    "w": 166,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 410
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.87317
+   }
+  },
+  "crossbowman_attack_b_02_team": {
+   "frame": {
+    "x": 275,
+    "y": 353,
+    "w": 109,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 223,
+    "w": 109,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 410
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.87317
+   }
+  },
+  "crossbowman_attack_b_03": {
+   "frame": {
+    "x": 172,
+    "y": 184,
+    "w": 166,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 217,
+    "w": 166,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 410
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.87317
+   }
+  },
+  "crossbowman_attack_b_03_team": {
+   "frame": {
+    "x": 388,
+    "y": 353,
+    "w": 115,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 224,
+    "w": 115,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 410
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.87317
+   }
+  },
+  "crossbowman_attack_b_04": {
+   "frame": {
+    "x": 342,
+    "y": 184,
+    "w": 168,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 219,
+    "w": 168,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 410
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.87317
+   }
+  },
+  "crossbowman_attack_b_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 514,
+    "w": 116,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 226,
+    "w": 116,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 410
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.87317
+   }
+  },
+  "crossbowman_attack_b_05": {
+   "frame": {
+    "x": 165,
+    "y": 2,
+    "w": 172,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 209,
+    "w": 172,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 410
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.87317
+   }
+  },
+  "crossbowman_attack_b_05_team": {
+   "frame": {
+    "x": 165,
+    "y": 353,
+    "w": 106,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 217,
+    "w": 106,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 410
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.87317
+   }
+  },
+  "crossbowman_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 353,
+    "w": 159,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 154,
+    "y": 221,
+    "w": 159,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 410
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.87317
+   }
+  },
+  "crossbowman_attack_b_06_team": {
+   "frame": {
+    "x": 122,
+    "y": 514,
+    "w": 99,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 227,
+    "w": 99,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 410
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.87317
+   }
+  },
+  "crossbowman_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 159,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 156,
+    "y": 202,
+    "w": 159,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 410
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.87317
+   }
+  },
+  "crossbowman_attack_b_07_team": {
+   "frame": {
+    "x": 225,
+    "y": 514,
+    "w": 101,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 211,
+    "w": 101,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 410
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.87317
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "crossbowman_attack_00",
+   "crossbowman_attack_b_01",
+   "crossbowman_attack_b_02",
+   "crossbowman_attack_b_03",
+   "crossbowman_attack_b_04",
+   "crossbowman_attack_b_05",
+   "crossbowman_attack_b_06",
+   "crossbowman_attack_b_07",
+   "crossbowman_attack_08",
+   "crossbowman_attack_09",
+   "crossbowman_attack_10",
+   "crossbowman_attack_11"
+  ],
+  "attack_b_team": [
+   "crossbowman_attack_00_team",
+   "crossbowman_attack_b_01_team",
+   "crossbowman_attack_b_02_team",
+   "crossbowman_attack_b_03_team",
+   "crossbowman_attack_b_04_team",
+   "crossbowman_attack_b_05_team",
+   "crossbowman_attack_b_06_team",
+   "crossbowman_attack_b_07_team",
+   "crossbowman_attack_08_team",
+   "crossbowman_attack_09_team",
+   "crossbowman_attack_10_team",
+   "crossbowman_attack_11_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "crossbowman.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 512,
+   "h": 660
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.crossbowman",
+   "name": "Crossbowman",
+   "heightLu": 68,
+   "widthLu": 58.1,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    226,
+    358
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     66
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     38,
+     34
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "crossbowman",
+   "clips": {
+    "attack_b": {
+     "frames": 12,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "durationsMs": [
+      50,
+      60,
+      70,
+      150,
+      70,
+      70,
+      60,
+      60,
+      50,
+      50,
+      50,
+      60
+     ],
+     "durationMs": 800,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        32.1,
+        32.6
+       ],
+       [
+        36.9,
+        19.2
+       ],
+       [
+        38.2,
+        13.3
+       ],
+       [
+        39.4,
+        11.2
+       ],
+       [
+        40.1,
+        11.8
+       ],
+       [
+        35.6,
+        13.0
+       ],
+       [
+        27.8,
+        26.6
+       ],
+       [
+        28.8,
+        31.7
+       ],
+       [
+        28.2,
+        38.1
+       ],
+       [
+        30.3,
+        36.3
+       ],
+       [
+        28.7,
+        38.0
+       ],
+       [
+        31.6,
+        33.7
+       ]
+      ]
+     },
+     "muzzle": [
+      35.6,
+      13.0
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

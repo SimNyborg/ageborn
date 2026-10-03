@@ -1,0 +1,506 @@
+{
+ "frames": {
+  "mangonel_cart_attack_b_01": {
+   "frame": {
+    "x": 567,
+    "y": 2,
+    "w": 283,
+    "h": 213
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 191,
+    "w": 283,
+    "h": 213
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 438
+   },
+   "anchor": {
+    "x": 0.60923,
+    "y": 0.86758
+   }
+  },
+  "mangonel_cart_attack_b_01_team": {
+   "frame": {
+    "x": 300,
+    "y": 824,
+    "w": 278,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 199,
+    "w": 278,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 438
+   },
+   "anchor": {
+    "x": 0.60923,
+    "y": 0.86758
+   }
+  },
+  "mangonel_cart_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 245,
+    "w": 293,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 211,
+    "y": 196,
+    "w": 293,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 438
+   },
+   "anchor": {
+    "x": 0.60923,
+    "y": 0.86758
+   }
+  },
+  "mangonel_cart_attack_b_02_team": {
+   "frame": {
+    "x": 298,
+    "y": 667,
+    "w": 288,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 205,
+    "w": 288,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 438
+   },
+   "anchor": {
+    "x": 0.60923,
+    "y": 0.86758
+   }
+  },
+  "mangonel_cart_attack_b_03": {
+   "frame": {
+    "x": 2,
+    "y": 458,
+    "w": 300,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 201,
+    "w": 300,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 438
+   },
+   "anchor": {
+    "x": 0.60923,
+    "y": 0.86758
+   }
+  },
+  "mangonel_cart_attack_b_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 824,
+    "w": 294,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 212,
+    "w": 294,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 438
+   },
+   "anchor": {
+    "x": 0.60923,
+    "y": 0.86758
+   }
+  },
+  "mangonel_cart_attack_b_04": {
+   "frame": {
+    "x": 560,
+    "y": 245,
+    "w": 298,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 199,
+    "w": 298,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 438
+   },
+   "anchor": {
+    "x": 0.60923,
+    "y": 0.86758
+   }
+  },
+  "mangonel_cart_attack_b_04_team": {
+   "frame": {
+    "x": 590,
+    "y": 667,
+    "w": 292,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 210,
+    "w": 292,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 438
+   },
+   "anchor": {
+    "x": 0.60923,
+    "y": 0.86758
+   }
+  },
+  "mangonel_cart_attack_b_05": {
+   "frame": {
+    "x": 285,
+    "y": 2,
+    "w": 278,
+    "h": 224
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 215,
+    "y": 172,
+    "w": 278,
+    "h": 224
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 438
+   },
+   "anchor": {
+    "x": 0.60923,
+    "y": 0.86758
+   }
+  },
+  "mangonel_cart_attack_b_05_team": {
+   "frame": {
+    "x": 609,
+    "y": 458,
+    "w": 270,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 185,
+    "w": 270,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 438
+   },
+   "anchor": {
+    "x": 0.60923,
+    "y": 0.86758
+   }
+  },
+  "mangonel_cart_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 279,
+    "h": 239
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 152,
+    "w": 279,
+    "h": 239
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 438
+   },
+   "anchor": {
+    "x": 0.60923,
+    "y": 0.86758
+   }
+  },
+  "mangonel_cart_attack_b_06_team": {
+   "frame": {
+    "x": 299,
+    "y": 245,
+    "w": 257,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 151,
+    "w": 257,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 438
+   },
+   "anchor": {
+    "x": 0.60923,
+    "y": 0.86758
+   }
+  },
+  "mangonel_cart_attack_b_07": {
+   "frame": {
+    "x": 306,
+    "y": 458,
+    "w": 299,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 194,
+    "w": 299,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 438
+   },
+   "anchor": {
+    "x": 0.60923,
+    "y": 0.86758
+   }
+  },
+  "mangonel_cart_attack_b_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 667,
+    "w": 292,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 205,
+    "w": 292,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 438
+   },
+   "anchor": {
+    "x": 0.60923,
+    "y": 0.86758
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "mangonel_cart_attack_00",
+   "mangonel_cart_attack_b_01",
+   "mangonel_cart_attack_b_02",
+   "mangonel_cart_attack_b_03",
+   "mangonel_cart_attack_b_04",
+   "mangonel_cart_attack_b_05",
+   "mangonel_cart_attack_b_06",
+   "mangonel_cart_attack_b_07",
+   "mangonel_cart_attack_08",
+   "mangonel_cart_attack_08",
+   "mangonel_cart_attack_09",
+   "mangonel_cart_attack_09"
+  ],
+  "attack_b_team": [
+   "mangonel_cart_attack_00_team",
+   "mangonel_cart_attack_b_01_team",
+   "mangonel_cart_attack_b_02_team",
+   "mangonel_cart_attack_b_03_team",
+   "mangonel_cart_attack_b_04_team",
+   "mangonel_cart_attack_b_05_team",
+   "mangonel_cart_attack_b_06_team",
+   "mangonel_cart_attack_b_07_team",
+   "mangonel_cart_attack_08_team",
+   "mangonel_cart_attack_08_team",
+   "mangonel_cart_attack_09_team",
+   "mangonel_cart_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "mangonel_cart.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 896,
+   "h": 976
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.mangonel_cart",
+   "name": "Mangonel",
+   "heightLu": 72,
+   "widthLu": 110.2,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    396,
+    380
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     66
+    ],
+    "hitCenter": [
+     0,
+     34
+    ],
+    "muzzle": [
+     8,
+     64
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "wheeled",
+   "extrasOf": "mangonel_cart",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        -36.9,
+        43.9
+       ],
+       [
+        -37.1,
+        43.5
+       ],
+       [
+        -37.7,
+        41.5
+       ],
+       [
+        -38.1,
+        40.1
+       ],
+       [
+        -37.6,
+        41.3
+       ],
+       [
+        -27.8,
+        60.5
+       ],
+       [
+        -4.8,
+        70.1
+       ],
+       [
+        2.4,
+        58.4
+       ],
+       [
+        -26.9,
+        56.0
+       ],
+       [
+        -36.9,
+        43.9
+       ]
+      ]
+     },
+     "muzzle": [
+      -4.8,
+      70.1
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

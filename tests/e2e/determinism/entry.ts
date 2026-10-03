@@ -5,7 +5,8 @@
  * Node and in each browser: every golden replay of `src/sim/test/golden` is re-simulated on the frozen
  * fixture content, and the per-second hashes, final hash and result must be identical everywhere. Each
  * replay runs on the fixture whose content hash it was recorded on: the frozen fixture (01-14) or the
- * fixture plus a Last Base Standing format (15, `tests/fixtures/lastBase.ts`).
+ * fixture plus a Last Base Standing format (15, `tests/fixtures/lastBase.ts`), the X0 fixture (16) or the
+ * Bronze wave fixture (17, `tests/fixtures/bronzeWave.ts`).
  *
  * Whether the replays still match their recorded hashes is `src/sim/test/golden.test.ts`'s job (WP2);
  * this spec only proves that the engines agree. Test code only: nothing in `src` imports it.
@@ -14,6 +15,7 @@ import type { MatchOutcome, ReplayDoc } from '../../../src/contracts';
 import { compileForSim, replayMatch, SIM_VERSION } from '../../../src/sim';
 import { raw } from '../../fixtures/content';
 import { rawLast } from '../../fixtures/lastBase';
+import { rawBronzeWave } from '../../fixtures/bronzeWave';
 import { rawX0 } from '../../fixtures/x0';
 
 const FILES = import.meta.glob<ReplayDoc>('../../../src/sim/test/golden/*.json', { eager: true, import: 'default' });
@@ -31,7 +33,7 @@ export interface EngineResult {
 
 /** Re-simulates every golden replay in this JavaScript engine. */
 export function runGolden(): { simVersion: string; results: EngineResult[] } {
-  const contents = [compileForSim(raw), compileForSim(rawLast), compileForSim(rawX0)];
+  const contents = [compileForSim(raw), compileForSim(rawLast), compileForSim(rawX0), compileForSim(rawBronzeWave)];
   const byHash = new Map(contents.map((c) => [c.hash, c]));
   const results = Object.entries(FILES)
     .sort(([a], [b]) => a.localeCompare(b))

@@ -21,9 +21,9 @@ export interface FortDress {
   brightness?: number;
 }
 
-export const FORT_DRESS: Readonly<Record<string, FortDress>> = {
-  palisade: { underlay: 0x3b2a1d, banner: { x: 0.548, y: 0.455, w: 0.21, h: 0.29 }, ink: 0x1b120b, contrast: 0.22, brightness: 1.14 },
-};
+// X0 Stone wave: the palisade is redrawn in the cartoon kit (art/blender/world/forts_stone.py) with its own
+// team banner and outline, so it needs no dressing any more; the mechanism stays for future sheets.
+export const FORT_DRESS: Readonly<Record<string, FortDress>> = {};
 
 /** The sheet slug of a fort source (`.../forts/stone/palisade.hd.json` → `palisade`), or null. */
 export function fortSlugOf(source: string | null): string | null {
@@ -38,9 +38,7 @@ export function shadeColor(c: number, t: number): number {
 }
 
 /** The card still's dressing (the same cloth on the portrait, in fractions of the still's square). */
-export const PORTRAIT_DRESS: Readonly<Record<string, Required<Pick<FortDress, 'underlay' | 'banner'>>>> = {
-  palisade: { underlay: 0x3b2a1d, banner: { x: 0.44, y: 0.47, w: 0.2, h: 0.31 } },
-};
+export const PORTRAIT_DRESS: Readonly<Record<string, Required<Pick<FortDress, 'underlay' | 'banner'>>>> = {};
 
 /** A team cloth (banner with two tails, shade, highlight, ink outline and claw marks) on a 2D canvas, px. */
 export function drawCloth2d(g: CanvasRenderingContext2D, cx: number, top: number, w: number, h: number, team: number): void {

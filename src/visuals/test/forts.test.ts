@@ -34,12 +34,14 @@ describe('fort visuals match the content (A16.14.4)', () => {
     for (const f of Object.values(content.forts)) expect(f.visualId).toBe(`fort.${f.id}`);
   });
 
-  it('lists every levy with its age and the Infantry Common it is drawn from', () => {
+  it('lists every levy with its age and the Common it is drawn from', () => {
     const levies = Object.values(content.units).filter((u) => u.levy);
     expect(LEVY_VISUALS.map((l) => l.id).sort()).toEqual(levies.map((u) => u.id).sort());
     for (const l of LEVY_VISUALS) {
       const inf = content.units[l.infantry];
-      expect(inf?.group, l.id).toBe('infantry');
+      // the Infantry Common, or the ranged or brute Common of a camp variant's `levyFrom` (X0, CONTENT_PLAN 5.2)
+      expect(['infantry', 'ranged', 'heavy'], l.id).toContain(inf?.group);
+      if (inf?.group !== 'infantry') expect(content.units[l.id]?.attacks[0]?.projectile !== undefined, l.id).toBe(inf?.group === 'ranged');
       expect(inf?.rarity, l.id).toBe('common');
       expect(inf?.age, l.id).toBe(l.age);
       expect(content.units[l.id]?.age).toBe(l.age);

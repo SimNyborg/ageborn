@@ -31,7 +31,7 @@
  * for 10^6 openings. Without `src/meta` (WP7) the tool writes a skipped report and exits 0.
  */
 import type { CapsuleReveal, CapsuleTier, CardId, Clock, CompiledContent, Foil, Meta, PendingCapsule, Rarity, SaveDoc, SkinRarity } from '../src/contracts';
-import { asContent, content as gameContent, type Content } from '../src/content';
+import { asContent, content as gameContent, isReleased, type Content } from '../src/content';
 import { loadMeta } from './lib/modules';
 import { chiSquare, type ChiSquare } from './lib/stats';
 import { fmtNum, markdownTable, skippedCheck, startReport, type Check, type Report } from './report';
@@ -414,9 +414,9 @@ export function dropsDefaults(mode: 'smoke' | 'full'): DropsOptions {
   return { openings: mode === 'full' ? 1_000_000 : 100_000, streams: 10, seed: 1, dailyEvery: 5 };
 }
 
-/** Collectable cards of the drop pool (every age). */
+/** Collectable cards of the drop pool (every age; cards held back by the release gate never drop). */
 function poolCards(c: Content): CardId[] {
-  return [...Object.values(c.units).filter((u) => u.hidden !== true).map((u) => u.id), ...Object.keys(c.turrets)];
+  return [...Object.values(c.units).filter((u) => u.hidden !== true).map((u) => u.id), ...Object.keys(c.turrets)].filter((id) => isReleased(c, id));
 }
 
 function prepareSave(s: SaveDoc, c: Content): SaveDoc {

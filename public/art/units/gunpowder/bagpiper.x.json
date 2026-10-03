@@ -1,0 +1,550 @@
+{
+ "frames": {
+  "bagpiper_attack_b_02": {
+   "frame": {
+    "x": 161,
+    "y": 2,
+    "w": 68,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 138,
+    "w": 68,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.85612
+   }
+  },
+  "bagpiper_attack_b_02_team": {
+   "frame": {
+    "x": 121,
+    "y": 225,
+    "w": 48,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 156,
+    "w": 48,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.85612
+   }
+  },
+  "bagpiper_attack_b_03": {
+   "frame": {
+    "x": 82,
+    "y": 2,
+    "w": 75,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 138,
+    "w": 75,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.85612
+   }
+  },
+  "bagpiper_attack_b_03_team": {
+   "frame": {
+    "x": 63,
+    "y": 225,
+    "w": 54,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 156,
+    "w": 54,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.85612
+   }
+  },
+  "bagpiper_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 76,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 138,
+    "w": 76,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.85612
+   }
+  },
+  "bagpiper_attack_b_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 225,
+    "w": 57,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 156,
+    "w": 57,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.85612
+   }
+  },
+  "bagpiper_attack_b_05": {
+   "frame": {
+    "x": 78,
+    "y": 115,
+    "w": 73,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 142,
+    "w": 73,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.85612
+   }
+  },
+  "bagpiper_attack_b_05_team": {
+   "frame": {
+    "x": 56,
+    "y": 302,
+    "w": 53,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 119,
+    "y": 159,
+    "w": 53,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.85612
+   }
+  },
+  "bagpiper_attack_b_06": {
+   "frame": {
+    "x": 155,
+    "y": 115,
+    "w": 72,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 128,
+    "y": 146,
+    "w": 72,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.85612
+   }
+  },
+  "bagpiper_attack_b_06_team": {
+   "frame": {
+    "x": 173,
+    "y": 225,
+    "w": 51,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 128,
+    "y": 165,
+    "w": 51,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.85612
+   }
+  },
+  "bagpiper_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 115,
+    "w": 72,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 126,
+    "y": 141,
+    "w": 72,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.85612
+   }
+  },
+  "bagpiper_attack_b_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 302,
+    "w": 50,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 128,
+    "y": 162,
+    "w": 50,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 283,
+    "h": 278
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.85612
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "bagpiper_attack_00",
+   "bagpiper_attack_01",
+   "bagpiper_attack_b_02",
+   "bagpiper_attack_b_03",
+   "bagpiper_attack_b_04",
+   "bagpiper_attack_b_05",
+   "bagpiper_attack_b_06",
+   "bagpiper_attack_b_07",
+   "bagpiper_attack_08",
+   "bagpiper_attack_09",
+   "bagpiper_attack_10"
+  ],
+  "attack_b_team": [
+   "bagpiper_attack_00_team",
+   "bagpiper_attack_01_team",
+   "bagpiper_attack_b_02_team",
+   "bagpiper_attack_b_03_team",
+   "bagpiper_attack_b_04_team",
+   "bagpiper_attack_b_05_team",
+   "bagpiper_attack_b_06_team",
+   "bagpiper_attack_b_07_team",
+   "bagpiper_attack_08_team",
+   "bagpiper_attack_09_team",
+   "bagpiper_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "bagpiper.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 256,
+   "h": 372
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.bagpiper",
+   "name": "Bagpiper",
+   "heightLu": 72,
+   "widthLu": 50.0,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    148.0,
+    238.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     72
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     -16,
+     74
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "bagpiper",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "drone_top": [
+       [
+        -11.6,
+        77.4
+       ],
+       [
+        -14.5,
+        77.5
+       ],
+       [
+        -24.0,
+        75.1
+       ],
+       [
+        -39.5,
+        65.8
+       ],
+       [
+        -41.5,
+        63.4
+       ],
+       [
+        -26.2,
+        70.8
+       ],
+       [
+        10.5,
+        70.0
+       ],
+       [
+        6.7,
+        73.5
+       ],
+       [
+        -7.8,
+        77.5
+       ],
+       [
+        -12.2,
+        77.3
+       ],
+       [
+        -16.5,
+        76.2
+       ]
+      ],
+      "chanter": [
+       [
+        3.4,
+        37.1
+       ],
+       [
+        1.4,
+        38.1
+       ],
+       [
+        9.5,
+        44.1
+       ],
+       [
+        0.6,
+        49.0
+       ],
+       [
+        0.1,
+        49.2
+       ],
+       [
+        15.6,
+        37.8
+       ],
+       [
+        25.3,
+        23.9
+       ],
+       [
+        22.7,
+        24.6
+       ],
+       [
+        4.4,
+        36.8
+       ],
+       [
+        3.4,
+        37.1
+       ],
+       [
+        3.4,
+        37.1
+       ]
+      ],
+      "muzzle": [
+       [
+        -11.6,
+        77.4
+       ],
+       [
+        -14.5,
+        77.5
+       ],
+       [
+        -24.0,
+        75.1
+       ],
+       [
+        -39.5,
+        65.8
+       ],
+       [
+        -41.5,
+        63.4
+       ],
+       [
+        -26.2,
+        70.8
+       ],
+       [
+        10.5,
+        70.0
+       ],
+       [
+        6.7,
+        73.5
+       ],
+       [
+        -7.8,
+        77.5
+       ],
+       [
+        -12.2,
+        77.3
+       ],
+       [
+        -16.5,
+        76.2
+       ]
+      ]
+     },
+     "muzzle": [
+      10.5,
+      70.0
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

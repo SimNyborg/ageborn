@@ -1,5 +1,5 @@
 """Hydra: Bronze Age Legendary multi-head (CONTENT_PLAN 5.2 #13). Three heads bite separate targets (three
-attacks, range 40; only the first stops it); the middle head's spit slows 20% 1.5 s. ~160 lu.
+in turn (cleave 3, reach 40, the secondaries at 50%) and the venom slows every target 20% for 1.5 s. ~160 lu.
 
 A viewer expects a many-headed serpent to weave its heads and strike with them one after
 another, lunging and biting, and to slither forward on stubby legs with its tail whipping.
@@ -11,8 +11,13 @@ brand on the shoulder, a long tail with a team fin at the tip.
 
 Animation (cartoon kit v2, heavy timing):
   idle    the three heads weave out of phase, tongues flick, one blinks
-  walk    a slithering waddle: the body sways, the stubby legs trot, the tail S-curves, the
+  walk    walk v3 at ground speed (ANIM_SPEC G4 trot, card 45 x 1.25 = 56.25 lu/s, 8 frames in 800 ms):
+          the stubby legs trot with planted, IK-solved feet, the body sways, the tail S-curves, the
           necks bob in turn
+  attack_b  TRIPLE SLAM: all three heads rear up and back together, jaws wide (held extreme, a tall
+          crown of heads), then slam down on the target at once
+  attack_c  LOW COIL STRIKE: the three necks coil low along the ground like cobras (held extreme),
+          then spring up and forward, biting from below
   attack  STRIKE IN TURN: the near head lunges and bites, then the far head, while the centre
           head coils back high (held extreme, jaws open); then the centre head shoots forward
           and bites low (impact: jaws snap, impact lines; it is the attack that stops the hydra)
@@ -23,6 +28,7 @@ Animation (cartoon kit v2, heavy timing):
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as G
 from ageborn_art import kit_bronze as K
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
@@ -30,11 +36,12 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "hydra"
+GAIT_NAME = "quad"
 NAME = "Hydra"
 HEIGHT_LU = 160
 YAW_DEG = -10.0
-CANVAS = (600, 470)
-FEET = (260, 430)
+CANVAS = (600, 500)
+FEET = (260, 440)
 ANCHORS = {"head": (40, 150), "hitCenter": (0, 50)}
 NO_RETIME = True
 
@@ -152,12 +159,25 @@ def _leg(rig, name, x, y):
     rig.part(f"{name}2", g, CLAW, outline=0.4)
 
 
+RIG = None
+LEGS = {}
+BODY_SCALE = 1.25
+
+
+def _leg_ik(name, x, y):
+    LEGS[name[4:]] = G.Leg(name, f"{name}2", (x + 5.0, y, 0.3), bend=1.0 if name[4] == "f" else -1.0)
+    RIG.track(f"_foot_{name[4:]}", f"{name}2", (x + 5.0, y, 0.3))
+
+
 def build(rig):
+    global RIG
+    RIG = rig
     rig.joint("body", "root", (0, 0, 0))
     rig.joint("trunk", "body", (0, 0, 30))
-    rig.rest_scale["body"] = 1.25
+    rig.rest_scale["body"] = BODY_SCALE
     for name, x, y in (("leg_fl", 18.0, 13.0), ("leg_bl", -20.0, 13.0)):
         _leg(rig, name, x, y)
+        _leg_ik(name, x, y)
     # tail (three segments, a team fin at the tip)
     rig.joint("tail1", "trunk", (-28.0, 0, 34.0))
     rig.joint("tail2", "tail1", (-50.0, 0, 26.0))
@@ -193,13 +213,17 @@ def build(rig):
         g.lathe([(1.6, 0), (2.0, -1.8), (0, -4.6)], (x, -22.4, 32.2), segs=8)
     rig.part("trunk", g, B.SAND_LT, outline=0.4)
     K.lambda_mark(rig, "trunk", (-2.0, -23.2, 42.0), size=2.0)
+    g = Geo().lathe([(0, 0), (20.6, 0.2), (21.0, 4.2), (0, 4.4)], (24.0, 0, 26.0), (25.2, 0, 50.0), segs=24,
+                    squash=(1.0, 1.05))                                 # a team girth band behind the necks
+    g.clip((0, 0, 24.0), (0, 0, -1))
+    rig.part("trunk", g, team=True, outline=0.6)
     # necks and heads (far first, near last so the near neck sits in front)
     _neck(rig, "c", **NECKS["c"])
     _neck(rig, "b", **NECKS["b"], face=True)
     _neck(rig, "a", **NECKS["a"])
     for name, x, y in (("leg_fr", 18.0, -13.0), ("leg_br", -20.0, -13.0)):
         _leg(rig, name, x, y)
-    rig.track("_foot", "leg_fr2", (23.0, -13.0, 0.5))
+        _leg_ik(name, x, y)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -221,23 +245,36 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
-    p = 2 * math.pi * f / 8
-    s_, c = math.sin(p), math.cos(p)
-    up = lambda v: max(0.0, v)
-    pose = {
-        "trunk": {"z": -1.6 * math.cos(2 * p), "rz": 4 * s_, "r": 1.2 * s_},
-        "leg_fr": {"r": 18 * s_}, "leg_fr2": {"r": -30 * up(c)},
-        "leg_bl": {"r": 16 * s_}, "leg_bl2": {"r": 24 * up(-c)},
-        "leg_fl": {"r": -18 * s_}, "leg_fl2": {"r": -30 * up(-c)},
-        "leg_br": {"r": -16 * s_}, "leg_br2": {"r": 24 * up(c)},
-        "tail1": {"rz": -8 * s_}, "tail2": {"rz": -12 * math.sin(p - 0.8), "r": 4 * c},
-        "tail3": {"rz": -16 * math.sin(p - 1.6), "r": 8 * math.sin(p - 1.0)},
-    }
-    for k, nm in enumerate("abc"):
-        ph = p + k * 2.1
-        pose = merge(pose, head(nm, 4 * math.sin(ph), 6 * math.sin(ph - 0.7), -5 * math.sin(ph - 1.3)))
-    return pose
+# -- walk v3: G4 trot at ground speed (card 45 x 1.25 = 56.25 lu/s), 8 x 100 ms ----------------------
+SPEED = 56.25
+GAIT = None
+
+
+def _gait():
+    global GAIT
+    if GAIT is None:
+        GAIT = G.Gait(8, 800, SPEED, G.quad_feet(LEGS, G.TROT, scale=BODY_SCALE,
+                                                 x_off={"fr": 1.0, "fl": 1.0, "br": -1.0, "bl": -1.0}),
+                      0.5, lift=7.0, kick=2.0, reach=2.0, toe_off=0.0, heel_strike=0.0)
+    return GAIT
+
+
+def _walk(f, report=None):
+    g = _gait()
+
+    def extra(ctx):
+        p = ctx["p"]
+        s_, c = math.sin(p), math.cos(p)
+        pose = {
+            "tail1": {"rz": -8 * s_}, "tail2": {"rz": -12 * math.sin(p - 0.8), "r": 4 * c},
+            "tail3": {"rz": -16 * math.sin(p - 1.6), "r": 8 * math.sin(p - 1.0)},
+        }
+        for k, nm in enumerate("abc"):
+            ph = p + k * 2.1
+            pose = merge(pose, head(nm, 4 * math.sin(ph), 6 * math.sin(ph - 0.7), -5 * math.sin(ph - 1.3)))
+        return pose
+    return G.quad_walk(RIG, f, g, {}, base_z=-2.0, bob=2.2, beats=2, pitch=1.2, roll=3.0,
+                       extra=extra, report=report)
 
 
 ATTACK_SEQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9]
@@ -294,6 +331,78 @@ def _attack_clip():
                   impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov)
 
 
+# -- attack B: triple slam (all heads rear up together, then slam down) -------------------------------
+# 0 = A shift, 1 rise, 2 rear, 3 HOLD (all three heads reared up and back, jaws wide), 4-5 the slam
+# (smear), 6 IMPACT (all three heads down on the target at once), 7 over, 8-9 = A's
+#      rise  rear  HOLD  slam  slam  IMP   over
+TB_A = [(10, 12, -8, 10), (22, 26, -16, 24), (30, 34, -22, 34), (8, 0, -4, 30), (-24, -30, 16, 24), (-36, -42, 24, 6), (-34, -40, 22, 2)]
+TB_B = [(12, 16, -10, 12), (24, 30, -18, 26), (32, 38, -24, 36), (6, -6, -2, 30), (-22, -32, 16, 24), (-34, -42, 26, 4), (-32, -40, 24, 2)]
+TB_C = [(8, 12, -8, 10), (18, 24, -14, 22), (24, 30, -20, 32), (4, -4, -2, 28), (-20, -28, 14, 22), (-30, -38, 22, 6), (-28, -36, 20, 2)]
+TB_R = [2.0, 4.0, 5.0, 1.0, -4.0, -7.0, -6.0]
+TB_X = [-1.0, -3.0, -4.0, 0.0, 5.0, 9.0, 9.0]
+TB_Q = [0.02, 0.03, 0.04, 0.02, -0.03, -0.07, -0.04]
+
+
+def _b_pose(i):
+    if i == 0 or i >= 8:
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(M.body_about((0, 0, 30), x=TB_X[k], q=TB_Q[k]), {"trunk": {"r": TB_R[k]},
+                 "tail2": {"r": [4, 8, 10, 0, -8, -12, -10][k]}, "tail3": {"r": [8, 14, 18, 0, -12, -18, -14][k]}})
+    for nm, tbl in (("a", TB_A), ("b", TB_B), ("c", TB_C)):
+        s1, s2, h, jaw = tbl[k]
+        pose = merge(pose, head(nm, s1, s2, h, jaw))
+    pose = merge(pose, {"brow": {"z": -1.0}}, F.expr("squeeze", mouth=None, pupils="pb") if i == 6 else {})
+    return pose
+
+
+# -- attack C: low coil strike (the necks coil low along the ground, then spring up) ------------------
+#      sink  coil  HOLD  rise  rise  IMP   over
+TC_A = [(-14, -10, 6, 4), (-26, -20, 14, 8), (-34, -26, 20, 20), (-20, -6, 4, 26), (-6, 8, -10, 24), (2, 12, -14, 6), (2, 10, -12, 2)]
+TC_B = [(-20, -16, 8, 4), (-36, -30, 18, 8), (-46, -40, 26, 22), (-30, -14, 8, 28), (-12, 6, -8, 26), (-4, 12, -14, 6), (-4, 10, -12, 2)]
+TC_C = [(-24, -18, 10, 4), (-40, -34, 20, 8), (-50, -44, 28, 20), (-34, -18, 10, 26), (-16, 4, -6, 24), (-8, 10, -12, 6), (-8, 8, -10, 2)]
+TC_R = [-2.0, -4.0, -5.0, -3.0, 0.0, 3.0, 2.0]
+TC_X = [1.0, 0.0, -1.0, 3.0, 6.0, 9.0, 9.0]
+TC_Z = [-1.0, -2.5, -3.5, -2.0, 0.0, 1.0, 0.5]
+
+
+def _c_pose(i):
+    if i == 0 or i >= 8:
+        return _attack_pose(i)
+    k = i - 1
+    pose = merge(M.body_about((0, 0, 30), x=TC_X[k], z=TC_Z[k]), {"trunk": {"r": TC_R[k]},
+                 "tail2": {"r": [-4, -8, -10, -4, 4, 10, 8][k]}, "tail3": {"r": [-6, -12, -16, -6, 6, 14, 10][k]}})
+    for nm, tbl in (("a", TC_A), ("b", TC_B), ("c", TC_C)):
+        s1, s2, h, jaw = tbl[k]
+        pose = merge(pose, head(nm, s1, s2, h, jaw))
+    pose = merge(pose, {"brow": {"z": -1.0}}, F.expr("squeeze", mouth=None, pupils="pb") if i == 6 else {})
+    return pose
+
+
+def _snout():
+    nb = NECKS["b"]
+    a1, a2 = math.radians(nb["ang"][0]), math.radians(nb["ang"][1])
+    x0, y0, z0 = nb["base"]
+    x2 = x0 + nb["l"][0] * math.cos(a1) + nb["l"][1] * math.cos(a2)
+    z2 = z0 + nb["l"][0] * math.sin(a1) + nb["l"][1] * math.sin(a2)
+    return (x2 + 21.0, 0.0, z2 - 1.0)
+
+
+def _variant(name, fn, a0):
+    snout = _snout()
+    arc = {"kind": "streak", "joint": "nbh", "point": snout, "color": SCALE_LT, "width_lu": 10.0, "white": 0.3}
+    ov = {
+        4: [dict(arc, **{"from": 3, "t1": 0.95})],
+        5: [dict(arc, **{"from": 4, "t1": 0.95})],
+        6: [{"kind": "burst", "joint": "nbh", "point": snout, "r0_lu": 8.0, "r1_lu": 17.0, "n": 6,
+             "a0": a0, "arc": 160.0},
+            {"kind": "dust", "ground": (60.0, 0.0), "size_lu": 10.0, "puffs": 5, "seed": 9, "spread": 1.3}],
+    }
+    reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9)}
+    return M.clip(name, [fn(i) for i in range(10)], M.HEAVY_MELEE_MS, impact=6, sequence=ATTACK_SEQ,
+                  overlays=ov, reuse=reuse)
+
+
 def _hit(k):
     def recoil(a, shake):
         pose = {"body": dict(squash(-0.05 * max(a, 0)), x=-4.0 * max(a, 0) + 1.0 * min(a, 0)),
@@ -337,10 +446,12 @@ def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES_HEAVY)],
                [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], [110] * 8, loop=True),
+        M.walk_clip("walk", RIG, _walk, _gait(), "quad"),
         _attack_clip(),
+        _variant("attack_b", _b_pose, -120.0),
+        _variant("attack_c", _c_pose, -40.0),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(DIE_KEEP[i]) for i in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
-    return M.check_contract(cl, heavy=True)
+    return M.check_variants(M.check_contract(cl, heavy=True))

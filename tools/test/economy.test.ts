@@ -1,15 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import type { CardId, Meta } from '../../src/contracts';
-import { content } from '../../src/content';
+import { content, isReleased } from '../../src/content';
 import { seedSfc32 } from '../../src/core/rng';
 import { ECONOMY_TARGETS, economyChecks, economyDefaults, EconomyRecorder, medianMeasures, questApi, runEconomy, simulateEconomy, syntheticStats, type EconomyMeasures } from '../economy';
 import { loadMeta } from '../lib/modules';
 
 const cards = [
   ...Object.values(content.units)
-    .filter((u) => !u.hidden)
+    .filter((u) => !u.hidden && isReleased(content, u.id))
     .map((u) => ({ id: u.id, rarity: u.rarity })),
-  ...Object.values(content.turrets).map((t) => ({ id: t.id, rarity: t.rarity })),
+  ...Object.values(content.turrets)
+    .filter((t) => isReleased(content, t.id))
+    .map((t) => ({ id: t.id, rarity: t.rarity })),
 ];
 const NEED = { common: 153, rare: 130, epic: 44, legendary: 11 } as const;
 

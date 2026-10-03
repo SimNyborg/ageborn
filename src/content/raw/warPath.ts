@@ -84,6 +84,8 @@ const REGIONS: readonly RegionRow[] = [
     epic: 'scorpion',
     bossCapsule: 'silver',
     bossTurret: 'archer_tower',
+    // W2 Bronze (2026-10-03): Tempest showcases Charybdis and Sandstorm, Moss turtles behind the Hoplon Line
+    sides: { s1: 'tempest', s2: 'moss' },
   },
   {
     age: 'medieval',
@@ -96,6 +98,8 @@ const REGIONS: readonly RegionRow[] = [
     epic: 'battering_ram',
     bossCapsule: 'silver',
     bossTurret: 'crossbow_nest',
+    // W3 Medieval (2026-10-03): Tempest rings the Great Bell, Ledger's hounds run at the Bear Snares
+    sides: { s1: 'tempest', s2: 'ledger' },
   },
   {
     age: 'gunpowder',
@@ -108,6 +112,8 @@ const REGIONS: readonly RegionRow[] = [
     epic: 'bronze_cannon',
     bossCapsule: 'silver',
     bossTurret: 'swivel_gun',
+    // W4 Gunpowder (2026-10-03): Tempest fires the Cannon Salute, Moss digs in behind the Cavalry Picket
+    sides: { s1: 'tempest', s2: 'moss' },
   },
   {
     age: 'industrial',

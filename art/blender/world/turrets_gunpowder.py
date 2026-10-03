@@ -17,6 +17,12 @@ a powder keg and a little pyramid of shot) instead of the shared plinth with a p
                     the rack and a trail of smoke, and a new rocket slides up
   Chainshot Cannon  idle: the chain between the twin barrels sways; fire: the barrels quiver,
                     then a double BOOM (two flashes) with the chain whipping out, a hop and smoke
+  Carronade         (W4 Gunpowder wave) a short, fat iron gun on a wooden slide; idle: it rocks on the
+                    slide, the breeching rope sways; fire: it squats, then BOOM and slams back hard
+                    along the slide (a big recoil), smoke, and is run out again
+  Sea Mortar        (W4 Gunpowder wave) a squat bronze mortar on a heavy oak bed, mouth to the sky;
+                    idle: the fuse smoulders (a spark, a wisp); fire: the bed squats, THUMP with a
+                    flash straight up, the whole bed hops and a smoke ring rises
 """
 import math
 
@@ -358,6 +364,120 @@ CHAIN_OVERLAYS = {"fire": {
     1: [_burst("gun", (25, 0, 23.7), r0=6.0, r1=12.0, n=7, a0=-70.0, arc=140.0)]}}
 
 
+# -- Carronade (W4 Gunpowder wave): a short fat iron gun on a slide carriage -----------------------
+def carronade_build(rig):
+    fort_plinth(rig, r=16, h=8)
+    rig.joint("carr", "head", (0, 0, 8))
+    g = Geo()
+    box(g, (-2, 0, 11.5), (15.0, 7.0, 2.4), p=4, cuts=2)              # the slide
+    rig.part("carr", g, WOOD)
+    g = Geo()
+    box(g, (-2, -7.4, 11.5), (12.0, 0.8, 1.8), p=4, cuts=2)
+    rig.part("carr", g, team=True, outline=0.4)
+    g = Geo()
+    for x in (-12.0, 8.0):
+        g.capsule((x, -7.6, 9.0), (x, 7.6, 9.0), 1.6)
+    rig.part("carr", g, WOOD_DK, outline=0.5)
+    rig.joint("gun", "carr", (0, 0, 20))
+    g = Geo()
+    for y in (-5.6, 5.6):
+        g.slab([(-9, 14), (5, 14), (3, 21), (-7, 21)], y, 2.4)        # the bed cheeks
+    rig.part("gun", g, WOOD_DK)
+    barrel(rig, "gun", -9, 13, 20, 6.4, 5.0, color=IRON, dark="#2A2C30")
+    g = Geo().lathe([(5.6, 0), (6.4, 1.6), (6.4, 3.0), (5.2, 3.2)], (12.5, 0, 20), (13.5, 0, 20), segs=20)
+    rig.part("gun", g, IRON, finish="metal", outline_hex="#2A2C30")
+    g = Geo().lathe([(0, -0.2), (4.6, -0.2), (4.6, 0.4), (0, 0.4)], (16.0, 0, 20), (16.6, 0, 20), segs=18)
+    rig.part("gun", g, BORE, outline=0)
+    g = Geo()
+    for x in (-4.0, 6.0):
+        g.lathe([(6.6, -0.7), (7.0, 0), (6.6, 0.7)], (x, 0, 20), (x + 1, 0, 20), segs=18)
+    rig.part("gun", g, team=True, outline=0.4)                       # team bands on the barrel
+    rig.secondary("rope", "carr", (-12.0, -7.0, 16.0), (-12.0, -7.0, 8.0), max_deg=14, gain=1.2)
+    g = Geo().capsule((-12.0, -7.6, 16.0), (-6.0, -7.6, 12.0), 0.8).capsule((-6.0, -7.6, 12.0), (2.0, -7.6, 15.0), 0.8)
+    rig.part("rope", g, ROPE, finish="hair", outline=0.4)
+    muzzle_flash(rig, "gun", (17, 0, 20), 1.7)
+    smoke_puff(rig, "gun", (24, 0, 21), 1.3)
+
+
+def carronade_idle(f):
+    t = f / 6 * 2 * math.pi
+    return {"gun": {"x": 0.6 * math.sin(t), "r": 1.2 * math.sin(t + 0.8)}, "rope": {"r": 6 * math.cos(t)}}
+
+
+def carronade_fire(f):
+    return {"gun": {"x": [1.2, -9.0, -7.0, -3.5, 0][f], "r": [-2, 6, 4, 1.5, 0][f],
+                    "sx": [1.05, 0.92, 1.02, 1.0, 1.0][f], "sz": [0.94, 1.07, 1.0, 1.0, 1.0][f]},
+            "carr": {"sz": [0.95, 1.03, 1.0, 1.0, 1.0][f]},
+            "rope": {"r": [0, -22, 14, -6, 0][f]},
+            "smoke": {"show": f in (1, 2, 3), "s": [1, 0.9, 1.25, 1.45, 1][f], "z": [0, 0, 1.5, 3, 0][f]}}
+
+
+CARRONADE_OVERLAYS = {"fire": {1: [_burst("gun", (19, 0, 20), r0=6.0, r1=12.0, n=7, a0=-60.0, arc=120.0)]}}
+
+
+# -- Sea Mortar (W4 Gunpowder wave): a squat bronze mortar on a heavy oak bed ------------------------
+MORTAR_TILT = 50.0
+
+
+def sea_mortar_build(rig):
+    fort_plinth(rig, r=17, h=8)
+    rig.joint("carr", "head", (0, 0, 8))
+    g = Geo()
+    box(g, (0, 0, 12.0), (12.0, 9.0, 4.0), p=4, cuts=2)               # the oak bed
+    rig.part("carr", g, WOOD_DK)
+    g = Geo()
+    box(g, (0, -9.4, 12.0), (9.0, 0.8, 2.8), p=4, cuts=2)
+    rig.part("carr", g, team=True, outline=0.4)
+    g = Geo()
+    for x in (-8.0, 8.0):
+        g.capsule((x, -9.8, 12.0), (x, 9.8, 12.0), 1.0)
+    rig.part("carr", g, IRON, finish="metal", outline=0.5)
+    rig.joint("gun", "carr", (0, 0, 17.0))
+    ax = (math.cos(math.radians(MORTAR_TILT)), 0, math.sin(math.radians(MORTAR_TILT)))
+    p0 = (-ax[0] * 4.0, 0, 17.0 - ax[2] * 4.0)
+    p1 = (ax[0] * 12.0, 0, 17.0 + ax[2] * 12.0)
+    g = Geo().lathe([(7.4, 0), (7.6, 4.0), (6.2, 10.0), (6.8, 14.0), (7.6, 15.4), (6.0, 16.0)], p0, p1, segs=22)
+    rig.part("gun", g, BRONZE, finish="metal", outline_hex=BRONZE_DK)
+    g = Geo()
+    for t in (0.3, 0.75):
+        c = (p0[0] + (p1[0] - p0[0]) * t, 0, p0[2] + (p1[2] - p0[2]) * t)
+        g.lathe([(7.0, -0.8), (7.5, 0), (7.0, 0.8)], (c[0] - ax[0] * 0.8, 0, c[2] - ax[2] * 0.8),
+                (c[0] + ax[0] * 0.8, 0, c[2] + ax[2] * 0.8), segs=20)
+    rig.part("gun", g, team=True, outline=0.4)
+    g = Geo().lathe([(0, -0.2), (5.4, -0.2), (5.4, 0.4), (0, 0.4)], p1, (p1[0] + ax[0] * 0.5, 0, p1[2] + ax[2] * 0.5), segs=18)
+    rig.part("gun", g, BORE, outline=0)
+    g = Geo()
+    for y in (-8.2, 8.2):
+        cyl(g, (0, y, 17.0), (0, y * 1.1, 17.0), 2.6, bevel=0.3, segs=12)
+    rig.part("gun", g, BRONZE_DK, finish="metal", outline=0.5)      # trunnions
+    # the smouldering fuse at the vent
+    rig.joint("spark", "gun", (p0[0] - 2.0, 0, p0[2] + 6.0))
+    g = Geo().star((p0[0] - 2.0, -1.0, p0[2] + 7.0), 2.0, 0.8, 0.8, points=5)
+    rig.part("spark", g, glow=FIRE, outline=0)
+    mouth = (p1[0] + ax[0] * 1.0, 0, p1[2] + ax[2] * 1.0)
+    muzzle_flash(rig, "gun", mouth, 1.6)
+    smoke_puff(rig, "gun", (mouth[0] + 3.0, 0, mouth[2] + 6.0), 1.3)
+
+
+def sea_mortar_idle(f):
+    t = f / 6 * 2 * math.pi
+    return {"spark": {"s": 0.8 + 0.3 * abs(math.sin(2 * t))}, "gun": {"r": 0.6 * math.sin(t)},
+            "carr": {"sz": 1.0 + 0.01 * math.cos(t)}}
+
+
+def sea_mortar_fire(f):
+    return {"carr": {"sz": [0.92, 1.06, 1.0, 1.0, 1.0][f], "z": [0, 3.0, 1.0, 0, 0][f]},
+            "gun": {"r": [2, -4, -2, 0, 0][f], "sx": [1.04, 0.95, 1.0, 1.0, 1.0][f]},
+            "spark": {"hide": f in (1, 2)},
+            "flash": {"r": MORTAR_TILT},
+            "smoke": {"show": f in (1, 2, 3), "s": [1, 0.9, 1.3, 1.5, 1][f], "z": [0, 0, 3, 7, 0][f]}}
+
+
+MORTAR_OVERLAYS = {"fire": {1: [{"kind": "rings", "joint": "carr", "point": (0, 0, 10), "radii_lu": (10.0, 15.0),
+                                 "a0": 160.0, "a1": 380.0, "color": "#FFF4D6"},
+                                _burst("gun", (11, 0, 30), r0=5.0, r1=11.0, n=6, a0=10.0, arc=110.0)]}}
+
+
 TURRETS = [
     turret_module("swivel_gun", "Swivel Gun", "gunpowder", 34, CANVAS, FEET, (0, 24), (23, 0, 24), swivel_build,
                   swivel_idle, swivel_fire, muzzle_joint="gun", idle_frames=6, overlays=SWIVEL_OVERLAYS),
@@ -369,4 +489,9 @@ TURRETS = [
     turret_module("chainshot_cannon", "Chainshot Cannon", "gunpowder", 36, CANVAS, FEET, (0, 18), (21, 0, 23.7),
                   chainshot_build, chainshot_idle, chainshot_fire, muzzle_joint="gun", idle_frames=6,
                   overlays=CHAIN_OVERLAYS),
+    # W4 Gunpowder wave (CONTENT_PLAN 5.4)
+    turret_module("carronade", "Carronade", "gunpowder", 32, CANVAS, FEET, (0, 18), (17, 0, 20), carronade_build,
+                  carronade_idle, carronade_fire, muzzle_joint="gun", idle_frames=6, overlays=CARRONADE_OVERLAYS),
+    turret_module("sea_mortar", "Sea Mortar", "gunpowder", 34, CANVAS, FEET, (0, 18), (12, 0, 30), sea_mortar_build,
+                  sea_mortar_idle, sea_mortar_fire, muzzle_joint="gun", idle_frames=6, overlays=MORTAR_OVERLAYS),
 ]

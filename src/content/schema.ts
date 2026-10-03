@@ -119,7 +119,7 @@ export const AttackSchema = v.strictObject({
 
 export const AbilitySchema = v.variant('kind', [
   v.strictObject({ kind: v.literal('firstHitBonus'), multBp: bp, knockback: int, idleResetMs: pos }),
-  v.strictObject({ kind: v.literal('aura'), radius: pos, status: StatusApplyS }),
+  v.strictObject({ kind: v.literal('aura'), radius: pos, status: StatusApplyS, foe: v.optional(v.boolean()) }),
   v.strictObject({ kind: v.literal('heal'), hpPerSec: pos, radius: pos, targets: pos, pulseMs: pos }),
   v.strictObject({ kind: v.literal('pounce'), searchRange: pos, cooldownMs: pos, leapMs: pos, firstBiteBp: bp }),
   v.strictObject({ kind: v.literal('riders'), count: pos, attack: AttackSchema, onDeathSpawn: id }),

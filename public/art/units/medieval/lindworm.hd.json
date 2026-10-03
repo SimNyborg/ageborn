@@ -1,0 +1,2296 @@
+{
+ "frames": {
+  "lindworm_idle_00": {
+   "frame": {
+    "x": 1182,
+    "y": 1234,
+    "w": 594,
+    "h": 342
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 324,
+    "y": 393,
+    "w": 594,
+    "h": 342
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_idle_00_team": {
+   "frame": {
+    "x": 3473,
+    "y": 2540,
+    "w": 506,
+    "h": 272
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 307,
+    "y": 428,
+    "w": 506,
+    "h": 272
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_idle_01": {
+   "frame": {
+    "x": 3151,
+    "y": 2,
+    "w": 593,
+    "h": 371
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 329,
+    "y": 362,
+    "w": 593,
+    "h": 371
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_idle_01_team": {
+   "frame": {
+    "x": 2240,
+    "y": 1915,
+    "w": 484,
+    "h": 305
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 320,
+    "y": 417,
+    "w": 484,
+    "h": 305
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_idle_02": {
+   "frame": {
+    "x": 2029,
+    "y": 2,
+    "w": 582,
+    "h": 388
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 333,
+    "y": 342,
+    "w": 582,
+    "h": 388
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_idle_02_team": {
+   "frame": {
+    "x": 1674,
+    "y": 1582,
+    "w": 475,
+    "h": 324
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 324,
+    "y": 407,
+    "w": 475,
+    "h": 324
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_idle_03": {
+   "frame": {
+    "x": 1546,
+    "y": 502,
+    "w": 573,
+    "h": 362
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 332,
+    "y": 366,
+    "w": 573,
+    "h": 362
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_idle_03_team": {
+   "frame": {
+    "x": 1753,
+    "y": 1915,
+    "w": 483,
+    "h": 309
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 323,
+    "y": 408,
+    "w": 483,
+    "h": 309
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_idle_04": {
+   "frame": {
+    "x": 1722,
+    "y": 875,
+    "w": 586,
+    "h": 349
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 331,
+    "y": 381,
+    "w": 586,
+    "h": 349
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_idle_04_team": {
+   "frame": {
+    "x": 2968,
+    "y": 2540,
+    "w": 501,
+    "h": 273
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 313,
+    "y": 422,
+    "w": 501,
+    "h": 273
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_idle_05": {
+   "frame": {
+    "x": 1780,
+    "y": 1234,
+    "w": 605,
+    "h": 339
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 318,
+    "y": 394,
+    "w": 605,
+    "h": 339
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_idle_05_team": {
+   "frame": {
+    "x": 1031,
+    "y": 2833,
+    "w": 514,
+    "h": 268
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 303,
+    "y": 431,
+    "w": 514,
+    "h": 268
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_00": {
+   "frame": {
+    "x": 2906,
+    "y": 875,
+    "w": 586,
+    "h": 348
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 328,
+    "y": 384,
+    "w": 586,
+    "h": 348
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_00_team": {
+   "frame": {
+    "x": 1381,
+    "y": 2233,
+    "w": 492,
+    "h": 300
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 318,
+    "y": 420,
+    "w": 492,
+    "h": 300
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_01": {
+   "frame": {
+    "x": 597,
+    "y": 1234,
+    "w": 581,
+    "h": 344
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 328,
+    "y": 387,
+    "w": 581,
+    "h": 344
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 2540,
+    "w": 489,
+    "h": 289
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 318,
+    "y": 424,
+    "w": 489,
+    "h": 289
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_02": {
+   "frame": {
+    "x": 2,
+    "y": 875,
+    "w": 546,
+    "h": 355
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 353,
+    "y": 386,
+    "w": 546,
+    "h": 355
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_02_team": {
+   "frame": {
+    "x": 495,
+    "y": 2540,
+    "w": 472,
+    "h": 288
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 328,
+    "y": 425,
+    "w": 472,
+    "h": 288
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_03": {
+   "frame": {
+    "x": 2,
+    "y": 502,
+    "w": 550,
+    "h": 369
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 347,
+    "y": 375,
+    "w": 550,
+    "h": 369
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_03_team": {
+   "frame": {
+    "x": 2869,
+    "y": 2233,
+    "w": 460,
+    "h": 290
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 338,
+    "y": 416,
+    "w": 460,
+    "h": 290
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_04": {
+   "frame": {
+    "x": 985,
+    "y": 502,
+    "w": 557,
+    "h": 365
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 352,
+    "y": 374,
+    "w": 557,
+    "h": 365
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_04_team": {
+   "frame": {
+    "x": 1981,
+    "y": 2540,
+    "w": 477,
+    "h": 281
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 331,
+    "y": 415,
+    "w": 477,
+    "h": 281
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_05": {
+   "frame": {
+    "x": 2312,
+    "y": 875,
+    "w": 590,
+    "h": 348
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 330,
+    "y": 392,
+    "w": 590,
+    "h": 348
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_05_team": {
+   "frame": {
+    "x": 524,
+    "y": 2833,
+    "w": 503,
+    "h": 269
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 314,
+    "y": 432,
+    "w": 503,
+    "h": 269
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_06": {
+   "frame": {
+    "x": 2,
+    "y": 1582,
+    "w": 600,
+    "h": 329
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 321,
+    "y": 402,
+    "w": 600,
+    "h": 329
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_06_team": {
+   "frame": {
+    "x": 1471,
+    "y": 2540,
+    "w": 506,
+    "h": 283
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 311,
+    "y": 439,
+    "w": 506,
+    "h": 283
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_07": {
+   "frame": {
+    "x": 2845,
+    "y": 1234,
+    "w": 587,
+    "h": 334
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 329,
+    "y": 393,
+    "w": 587,
+    "h": 334
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_walk_07_team": {
+   "frame": {
+    "x": 883,
+    "y": 2233,
+    "w": 494,
+    "h": 300
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 318,
+    "y": 429,
+    "w": 494,
+    "h": 300
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_00": {
+   "frame": {
+    "x": 552,
+    "y": 875,
+    "w": 581,
+    "h": 352
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 327,
+    "y": 379,
+    "w": 581,
+    "h": 352
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_00_team": {
+   "frame": {
+    "x": 2372,
+    "y": 2233,
+    "w": 493,
+    "h": 290
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 314,
+    "y": 417,
+    "w": 493,
+    "h": 290
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_01": {
+   "frame": {
+    "x": 2615,
+    "y": 2,
+    "w": 532,
+    "h": 376
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 334,
+    "y": 356,
+    "w": 532,
+    "h": 376
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_01_team": {
+   "frame": {
+    "x": 2389,
+    "y": 1234,
+    "w": 452,
+    "h": 336
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 324,
+    "y": 396,
+    "w": 452,
+    "h": 336
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_02": {
+   "frame": {
+    "x": 1526,
+    "y": 2,
+    "w": 499,
+    "h": 396
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 339,
+    "y": 336,
+    "w": 499,
+    "h": 396
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_02_team": {
+   "frame": {
+    "x": 556,
+    "y": 502,
+    "w": 425,
+    "h": 366
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 330,
+    "y": 385,
+    "w": 425,
+    "h": 366
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 472,
+    "h": 496
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 345,
+    "y": 237,
+    "w": 472,
+    "h": 496
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_03_team": {
+   "frame": {
+    "x": 1127,
+    "y": 2,
+    "w": 395,
+    "h": 398
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 336,
+    "y": 364,
+    "w": 395,
+    "h": 398
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_04": {
+   "frame": {
+    "x": 478,
+    "y": 2,
+    "w": 645,
+    "h": 406
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 336,
+    "y": 326,
+    "w": 645,
+    "h": 406
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_04_team": {
+   "frame": {
+    "x": 1281,
+    "y": 1915,
+    "w": 468,
+    "h": 310
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 324,
+    "y": 402,
+    "w": 468,
+    "h": 310
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_05": {
+   "frame": {
+    "x": 2633,
+    "y": 1582,
+    "w": 825,
+    "h": 314
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 314,
+    "y": 418,
+    "w": 825,
+    "h": 314
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_05_team": {
+   "frame": {
+    "x": 2058,
+    "y": 2833,
+    "w": 538,
+    "h": 250
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 301,
+    "y": 448,
+    "w": 538,
+    "h": 250
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_06": {
+   "frame": {
+    "x": 2728,
+    "y": 1915,
+    "w": 907,
+    "h": 303
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 305,
+    "y": 456,
+    "w": 907,
+    "h": 303
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 3107,
+    "w": 574,
+    "h": 228
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 293,
+    "y": 471,
+    "w": 574,
+    "h": 228
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_07": {
+   "frame": {
+    "x": 2,
+    "y": 2233,
+    "w": 877,
+    "h": 303
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 312,
+    "y": 467,
+    "w": 877,
+    "h": 303
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_07_team": {
+   "frame": {
+    "x": 580,
+    "y": 3107,
+    "w": 567,
+    "h": 225
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 300,
+    "y": 475,
+    "w": 567,
+    "h": 225
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_08": {
+   "frame": {
+    "x": 2,
+    "y": 1915,
+    "w": 789,
+    "h": 314
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 329,
+    "y": 419,
+    "w": 789,
+    "h": 314
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_08_team": {
+   "frame": {
+    "x": 2600,
+    "y": 2833,
+    "w": 529,
+    "h": 249
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 308,
+    "y": 449,
+    "w": 529,
+    "h": 249
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_09": {
+   "frame": {
+    "x": 3496,
+    "y": 875,
+    "w": 587,
+    "h": 347
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 330,
+    "y": 384,
+    "w": 587,
+    "h": 347
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_attack_09_team": {
+   "frame": {
+    "x": 971,
+    "y": 2540,
+    "w": 496,
+    "h": 284
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 317,
+    "y": 423,
+    "w": 496,
+    "h": 284
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_hit_00": {
+   "frame": {
+    "x": 2700,
+    "y": 502,
+    "w": 565,
+    "h": 355
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 316,
+    "y": 374,
+    "w": 565,
+    "h": 355
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_hit_00_team": {
+   "frame": {
+    "x": 2153,
+    "y": 1582,
+    "w": 476,
+    "h": 318
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 307,
+    "y": 414,
+    "w": 476,
+    "h": 318
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_hit_01": {
+   "frame": {
+    "x": 3269,
+    "y": 502,
+    "w": 554,
+    "h": 355
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 313,
+    "y": 373,
+    "w": 554,
+    "h": 355
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_hit_01_team": {
+   "frame": {
+    "x": 1202,
+    "y": 1582,
+    "w": 468,
+    "h": 325
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 414,
+    "w": 468,
+    "h": 325
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_hit_02": {
+   "frame": {
+    "x": 2123,
+    "y": 502,
+    "w": 573,
+    "h": 357
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 322,
+    "y": 373,
+    "w": 573,
+    "h": 357
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_hit_02_team": {
+   "frame": {
+    "x": 795,
+    "y": 1915,
+    "w": 482,
+    "h": 313
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 312,
+    "y": 409,
+    "w": 482,
+    "h": 313
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_hit_03": {
+   "frame": {
+    "x": 2,
+    "y": 1234,
+    "w": 591,
+    "h": 344
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 328,
+    "y": 388,
+    "w": 591,
+    "h": 344
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_hit_03_team": {
+   "frame": {
+    "x": 2462,
+    "y": 2540,
+    "w": 502,
+    "h": 275
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 313,
+    "y": 424,
+    "w": 502,
+    "h": 275
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_hit_04": {
+   "frame": {
+    "x": 1137,
+    "y": 875,
+    "w": 581,
+    "h": 352
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 329,
+    "y": 379,
+    "w": 581,
+    "h": 352
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_hit_04_team": {
+   "frame": {
+    "x": 1877,
+    "y": 2233,
+    "w": 491,
+    "h": 291
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 317,
+    "y": 418,
+    "w": 491,
+    "h": 291
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_00": {
+   "frame": {
+    "x": 3436,
+    "y": 1234,
+    "w": 613,
+    "h": 333
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 313,
+    "y": 395,
+    "w": 613,
+    "h": 333
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 2833,
+    "w": 518,
+    "h": 270
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 301,
+    "y": 432,
+    "w": 518,
+    "h": 270
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_01": {
+   "frame": {
+    "x": 606,
+    "y": 1582,
+    "w": 592,
+    "h": 327
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 340,
+    "y": 410,
+    "w": 592,
+    "h": 327
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_01_team": {
+   "frame": {
+    "x": 1549,
+    "y": 2833,
+    "w": 505,
+    "h": 267
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 324,
+    "y": 442,
+    "w": 505,
+    "h": 267
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_02": {
+   "frame": {
+    "x": 3333,
+    "y": 2233,
+    "w": 646,
+    "h": 289
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 330,
+    "y": 453,
+    "w": 646,
+    "h": 289
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_02_team": {
+   "frame": {
+    "x": 1151,
+    "y": 3107,
+    "w": 537,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 312,
+    "y": 491,
+    "w": 537,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_03": {
+   "frame": {
+    "x": 2373,
+    "y": 3107,
+    "w": 748,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 276,
+    "y": 545,
+    "w": 748,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_03_team": {
+   "frame": {
+    "x": 2340,
+    "y": 3339,
+    "w": 618,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 551,
+    "w": 618,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_04": {
+   "frame": {
+    "x": 3133,
+    "y": 2833,
+    "w": 650,
+    "h": 234
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 324,
+    "y": 518,
+    "w": 650,
+    "h": 234
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 3339,
+    "w": 537,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 311,
+    "y": 529,
+    "w": 537,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_05": {
+   "frame": {
+    "x": 1692,
+    "y": 3107,
+    "w": 677,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 300,
+    "y": 546,
+    "w": 677,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_05_team": {
+   "frame": {
+    "x": 1195,
+    "y": 3339,
+    "w": 572,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 290,
+    "y": 540,
+    "w": 572,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_06": {
+   "frame": {
+    "x": 3125,
+    "y": 3107,
+    "w": 665,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 307,
+    "y": 551,
+    "w": 665,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_06_team": {
+   "frame": {
+    "x": 1771,
+    "y": 3339,
+    "w": 565,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 294,
+    "y": 545,
+    "w": 565,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_07": {
+   "frame": {
+    "x": 543,
+    "y": 3339,
+    "w": 648,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 315,
+    "y": 560,
+    "w": 648,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  },
+  "lindworm_die_07_team": {
+   "frame": {
+    "x": 2962,
+    "y": 3339,
+    "w": 550,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 303,
+    "y": 555,
+    "w": 550,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 1420,
+    "h": 806
+   },
+   "anchor": {
+    "x": 0.44507,
+    "y": 0.87345
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "lindworm_idle_00",
+   "lindworm_idle_01",
+   "lindworm_idle_02",
+   "lindworm_idle_03",
+   "lindworm_idle_04",
+   "lindworm_idle_05"
+  ],
+  "idle_team": [
+   "lindworm_idle_00_team",
+   "lindworm_idle_01_team",
+   "lindworm_idle_02_team",
+   "lindworm_idle_03_team",
+   "lindworm_idle_04_team",
+   "lindworm_idle_05_team"
+  ],
+  "walk": [
+   "lindworm_walk_00",
+   "lindworm_walk_01",
+   "lindworm_walk_02",
+   "lindworm_walk_03",
+   "lindworm_walk_04",
+   "lindworm_walk_05",
+   "lindworm_walk_06",
+   "lindworm_walk_07"
+  ],
+  "walk_team": [
+   "lindworm_walk_00_team",
+   "lindworm_walk_01_team",
+   "lindworm_walk_02_team",
+   "lindworm_walk_03_team",
+   "lindworm_walk_04_team",
+   "lindworm_walk_05_team",
+   "lindworm_walk_06_team",
+   "lindworm_walk_07_team"
+  ],
+  "attack": [
+   "lindworm_attack_00",
+   "lindworm_attack_01",
+   "lindworm_attack_02",
+   "lindworm_attack_03",
+   "lindworm_attack_04",
+   "lindworm_attack_05",
+   "lindworm_attack_06",
+   "lindworm_attack_07",
+   "lindworm_attack_08",
+   "lindworm_attack_08",
+   "lindworm_attack_09",
+   "lindworm_attack_09"
+  ],
+  "attack_team": [
+   "lindworm_attack_00_team",
+   "lindworm_attack_01_team",
+   "lindworm_attack_02_team",
+   "lindworm_attack_03_team",
+   "lindworm_attack_04_team",
+   "lindworm_attack_05_team",
+   "lindworm_attack_06_team",
+   "lindworm_attack_07_team",
+   "lindworm_attack_08_team",
+   "lindworm_attack_08_team",
+   "lindworm_attack_09_team",
+   "lindworm_attack_09_team"
+  ],
+  "hit": [
+   "lindworm_hit_00",
+   "lindworm_hit_01",
+   "lindworm_hit_02",
+   "lindworm_hit_03",
+   "lindworm_hit_04"
+  ],
+  "hit_team": [
+   "lindworm_hit_00_team",
+   "lindworm_hit_01_team",
+   "lindworm_hit_02_team",
+   "lindworm_hit_03_team",
+   "lindworm_hit_04_team"
+  ],
+  "die": [
+   "lindworm_die_00",
+   "lindworm_die_01",
+   "lindworm_die_01",
+   "lindworm_die_02",
+   "lindworm_die_03",
+   "lindworm_die_04",
+   "lindworm_die_04",
+   "lindworm_die_05",
+   "lindworm_die_05",
+   "lindworm_die_06",
+   "lindworm_die_06",
+   "lindworm_die_07"
+  ],
+  "die_team": [
+   "lindworm_die_00_team",
+   "lindworm_die_01_team",
+   "lindworm_die_01_team",
+   "lindworm_die_02_team",
+   "lindworm_die_03_team",
+   "lindworm_die_04_team",
+   "lindworm_die_04_team",
+   "lindworm_die_05_team",
+   "lindworm_die_05_team",
+   "lindworm_die_06_team",
+   "lindworm_die_06_team",
+   "lindworm_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "lindworm.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 4096,
+   "h": 3532
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.lindworm",
+   "name": "Lindworm",
+   "heightLu": 130,
+   "widthLu": 241.9,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    632,
+    704
+   ],
+   "anchorsLu": {
+    "head": [
+     54,
+     125
+    ],
+    "hitCenter": [
+     0,
+     45
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "quad",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      150,
+      150,
+      150,
+      150,
+      150,
+      150
+     ],
+     "durationMs": 900,
+     "anchorsLu": {
+      "breath": [
+       [
+        183.9,
+        86.3
+       ],
+       [
+        178.0,
+        104.8
+       ],
+       [
+        174.3,
+        108.5
+       ],
+       [
+        176.5,
+        93.6
+       ],
+       [
+        180.7,
+        74.9
+       ],
+       [
+        184.3,
+        71.3
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "durationMs": 800,
+     "gait": "quad",
+     "gaitSpeedLuPerS": 62.5,
+     "cycleMs": 800,
+     "anchorsLu": {
+      "breath": [
+       [
+        181.4,
+        90.1
+       ],
+       [
+        180.1,
+        98.5
+       ],
+       [
+        176.1,
+        105.4
+       ],
+       [
+        175.0,
+        105.7
+       ],
+       [
+        179.0,
+        90.2
+       ],
+       [
+        181.7,
+        68.7
+       ],
+       [
+        181.5,
+        63.4
+       ],
+       [
+        181.1,
+        76.1
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 62.1,
+     "strideLu": 49.7,
+     "plantedDriftLu": 0.39,
+     "contacts": [
+      {
+       "step": 1,
+       "foot": "bl",
+       "atLu": [
+        -13.3,
+        6.0
+       ]
+      },
+      {
+       "step": 1,
+       "foot": "fr",
+       "atLu": [
+        33.4,
+        -4.8
+       ]
+      },
+      {
+       "step": 5,
+       "foot": "br",
+       "atLu": [
+        -18.7,
+        -2.5
+       ]
+      },
+      {
+       "step": 5,
+       "foot": "fl",
+       "atLu": [
+        37.7,
+        2.0
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "breath": [
+       [
+        179.8,
+        99.4
+       ],
+       [
+        158.9,
+        136.9
+       ],
+       [
+        143.8,
+        157.0
+       ],
+       [
+        134.1,
+        184.0
+       ],
+       [
+        169.2,
+        116.5
+       ],
+       [
+        192.2,
+        42.9
+       ],
+       [
+        191.8,
+        5.5
+       ],
+       [
+        181.8,
+        -9.2
+       ],
+       [
+        189.3,
+        37.9
+       ],
+       [
+        181.7,
+        79.6
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "breath": [
+       [
+        170.0,
+        117.3
+       ],
+       [
+        160.6,
+        140.2
+       ],
+       [
+        174.8,
+        94.5
+       ],
+       [
+        183.3,
+        87.3
+       ],
+       [
+        179.9,
+        91.5
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      7
+     ],
+     "durationsMs": [
+      60,
+      70,
+      80,
+      80,
+      60,
+      70,
+      80,
+      90,
+      90,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 990,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 740,
+       "offsetLu": [
+        0,
+        46.8
+       ],
+       "scale": 3.024
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 820,
+       "offsetLu": [
+        0,
+        71.5
+       ],
+       "loops": 2,
+       "scale": 1.739
+      }
+     ],
+     "hideUnitAtMs": 990,
+     "anchorsLu": {
+      "breath": [
+       [
+        190.0,
+        85.3
+       ],
+       [
+        186.1,
+        81.1
+       ],
+       [
+        197.5,
+        63.3
+       ],
+       [
+        225.4,
+        32.6
+       ],
+       [
+        196.0,
+        39.7
+       ],
+       [
+        208.8,
+        36.1
+       ],
+       [
+        206.1,
+        34.7
+       ],
+       [
+        200.5,
+        32.8
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

@@ -87,21 +87,19 @@ export const powers: readonly PowerDef[] = [
     visualId: 'power.hunters_spear', sfx: 'pw_spear', nameKey: 'card.hunters_spear.name', descKey: 'card.hunters_spear.desc',
   },
   {
-    // Release gate: `released: false` (hidden from players and bots) until its art ships (docs/decisions.md).
-    // X0 Stone wave, the H7 lane volley (A2.9.4 `lane`, A5.7 whole-lane powers): War Path Stone L3 (Road 2,100).
+    // X0 Stone wave (released 2026-10-03), the H7 lane volley (A2.9.4 `lane`, A5.7 whole-lane powers): War Path Stone L3 (Road 2,100).
     // No aim: one pulse touches the 8 hittable enemies nearest your gate anywhere on the lane, ground and air,
-    // for 40 (25% of I, 7% of H). 50 gold, 25 s
-    id: 'pebble_hail', released: false, kind: 'power', age: 'stone', slot: 'field', reach: 'lane', family: 'volley', rarity: 'rare',
+    // for 48: the strongest the H7 lane budget allows (30% of the Infantry, cap 8, 50 gold, 25 s; see docs/decisions.md)
+    id: 'pebble_hail', kind: 'power', age: 'stone', slot: 'field', reach: 'lane', family: 'volley', rarity: 'rare',
     source: 'warPath', warPathLevel: 3, road: 2100, cost: 50, reloadMs: 25000, telegraphMs: 1000, maxTargets: 8,
-    effect: { kind: 'field', zone: 2000, durationMs: 0, hitsAir: true, damagePerPulse: 40 },
+    effect: { kind: 'field', zone: 2000, durationMs: 0, hitsAir: true, damagePerPulse: 48 },
     visualId: 'power.pebble_hail', sfx: 'pw_hail', nameKey: 'card.pebble_hail.name', descKey: 'card.pebble_hail.desc',
   },
   {
-    // Release gate: `released: false` until its art ships (docs/decisions.md).
-    // X0 Stone wave, the new Home control (pull, A5.7 family budget): War Path Stone side node s1 (Road 4,100).
+    // X0 Stone wave (released 2026-10-03), the new Home control (pull, A5.7 family budget): War Path Stone side node s1 (Road 4,100).
     // Vines burst in a 300 lu zone for 4 s (8 pulses), ground only: the first pulse pulls 40% toward the centre,
     // each pulse 7 damage and snare 40% for 1.0 s; cap 6
-    id: 'tangle_vines', released: false, kind: 'power', age: 'stone', slot: 'home', reach: 'home', family: 'pull', rarity: 'epic',
+    id: 'tangle_vines', kind: 'power', age: 'stone', slot: 'home', reach: 'home', family: 'pull', rarity: 'epic',
     source: 'warPath', warPathSide: 1, road: 4100, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 4500,
     effect: {
       kind: 'field', zone: 300, durationMs: 4000, hitsAir: false, damagePerPulse: 7, pullBp: 4000,
@@ -176,6 +174,27 @@ export const powers: readonly PowerDef[] = [
     effect: { kind: 'suppress', durationMs: 5000 },
     visualId: 'power.undermine', sfx: 'pw_undermine', nameKey: 'card.undermine.name', descKey: 'card.undermine.desc',
   },
+  {
+    // W3 Medieval wave (released 2026-10-03), the H7 lane volley (A2.9.4 `lane`,
+    // A5.7 whole-lane powers): War Path Medieval L3 (Road 2,800). No aim: one pulse touches the 8 hittable enemies
+    // nearest your gate anywhere on the lane, ground and air, for 54 (25% of the Footman). 50 gold, 25 s
+    id: 'longbow_volley', kind: 'power', age: 'medieval', slot: 'field', reach: 'lane', family: 'volley', rarity: 'rare',
+    source: 'warPath', warPathLevel: 3, road: 2800, cost: 50, reloadMs: 25000, telegraphMs: 1000, maxTargets: 8,
+    effect: { kind: 'field', zone: 2000, durationMs: 0, hitsAir: true, damagePerPulse: 64 },
+    visualId: 'power.longbow_volley', sfx: 'pw_longbow', nameKey: 'card.longbow_volley.name', descKey: 'card.longbow_volley.desc',
+  },
+  {
+    // W3 Medieval wave (released 2026-10-03), the new Home control (stun, A5.7 family
+    // budget): War Path Medieval side node s1 (Road 4,300). A great bell tolls once over a 300 lu zone, ground only:
+    // stun 2.0 s with the dizzy look (not the clock freeze); cap 5. 10 disabled unit-seconds per cast
+    id: 'great_bell', kind: 'power', age: 'medieval', slot: 'home', reach: 'home', family: 'stun', rarity: 'epic',
+    source: 'warPath', warPathSide: 1, road: 4300, cost: 75, reloadMs: 35000, telegraphMs: 1000, maxTargets: 5, aiValueBp: 5000,
+    effect: {
+      kind: 'field', zone: 350, durationMs: 0, hitsAir: false,
+      statuses: [{ kind: 'stun', magnitudeBp: 10000, durationMs: 2000, frozen: false }],
+    },
+    visualId: 'power.great_bell', sfx: 'pw_bell', nameKey: 'card.great_bell.name', descKey: 'card.great_bell.desc',
+  },
 
   // ---- Age of Muskets, `gunpowder` (P 1.82; I 291, H 1,019; Epic Bronze Cannon 500) ----
   {
@@ -235,6 +254,28 @@ export const powers: readonly PowerDef[] = [
     source: 'warPath', warPathLevel: 9, road: 1200, cost: 75, reloadMs: 30000, telegraphMs: 1500, maxTargets: 1,
     effect: { kind: 'strike', shots: 2, intervalMs: 300, damage: 305, hitsAir: true },
     visualId: 'power.sharpshooter', sfx: 'pw_sharpshooter', nameKey: 'card.sharpshooter.name', descKey: 'card.sharpshooter.desc',
+  },
+  {
+    // W4 Gunpowder wave (released 2026-10-03), the H7 lane volley (A2.9.4 `lane`, A5.7 whole-lane
+    // powers): War Path Gunpowder L3 (Road 3,300). No aim: one pulse touches the 8 hittable enemies nearest your
+    // gate anywhere on the lane, ground and air, one rocket each, for 80 (27% of the Corsair; the lane cap is 30%). 50 gold, 25 s
+    id: 'rocket_volley', kind: 'power', age: 'gunpowder', slot: 'field', reach: 'lane', family: 'volley', rarity: 'rare',
+    source: 'warPath', warPathLevel: 3, road: 3300, cost: 50, reloadMs: 25000, telegraphMs: 1000, maxTargets: 8,
+    effect: { kind: 'field', zone: 2000, durationMs: 0, hitsAir: true, damagePerPulse: 80 },
+    visualId: 'power.rocket_volley', sfx: 'pw_rockets', nameKey: 'card.rocket_volley.name', descKey: 'card.rocket_volley.desc',
+  },
+  {
+    // W4 Gunpowder wave (released 2026-10-03), the new Home control (stun, A5.7 family budget): War
+    // Path Gunpowder side node s1 (Road 4,400). A ring of salute guns fires once over a 350 lu zone, ground only:
+    // the deafening blast deals 130 and stuns 2.0 s with the dizzy look (not the clock freeze); cap 6. 12 disabled
+    // unit-seconds per cast; the damage was raised in measurement (it replaces Volley Fire, 240 on 4)
+    id: 'cannon_salute', kind: 'power', age: 'gunpowder', slot: 'home', reach: 'home', family: 'stun', rarity: 'epic',
+    source: 'warPath', warPathSide: 1, road: 4400, cost: 75, reloadMs: 35000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 5000,
+    effect: {
+      kind: 'field', zone: 350, durationMs: 0, hitsAir: false, damagePerPulse: 130,
+      statuses: [{ kind: 'stun', magnitudeBp: 10000, durationMs: 2000, frozen: false }],
+    },
+    visualId: 'power.cannon_salute', sfx: 'pw_salute', nameKey: 'card.cannon_salute.name', descKey: 'card.cannon_salute.desc',
   },
 
   // ---- Modern (P 2.46; I 394, H 1,378; Epic Gyrocopter 740, air) ----

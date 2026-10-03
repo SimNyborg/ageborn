@@ -1725,3 +1725,7 @@ def alert_base(v, rng):
 import sounds_powers  # noqa: E402,F401
 import sounds_forts  # noqa: E402,F401
 import sounds_mvp  # noqa: E402,F401
+import sounds_bronze_wave  # noqa: E402,F401
+import sounds_stone_wave  # noqa: E402,F401
+import sounds_medieval_wave  # noqa: E402,F401
+import sounds_gunpowder_wave  # noqa: E402,F401

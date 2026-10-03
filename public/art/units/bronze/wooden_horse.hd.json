@@ -1,0 +1,2259 @@
+{
+ "frames": {
+  "wooden_horse_idle_00": {
+   "frame": {
+    "x": 2,
+    "y": 300,
+    "w": 282,
+    "h": 283
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 197,
+    "w": 282,
+    "h": 283
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_idle_00_team": {
+   "frame": {
+    "x": 1071,
+    "y": 1134,
+    "w": 228,
+    "h": 244
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 212,
+    "w": 228,
+    "h": 244
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_idle_01": {
+   "frame": {
+    "x": 288,
+    "y": 300,
+    "w": 284,
+    "h": 281
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 199,
+    "w": 284,
+    "h": 281
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_idle_01_team": {
+   "frame": {
+    "x": 1303,
+    "y": 1134,
+    "w": 229,
+    "h": 243
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 213,
+    "w": 229,
+    "h": 243
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_idle_02": {
+   "frame": {
+    "x": 2607,
+    "y": 300,
+    "w": 287,
+    "h": 278
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 202,
+    "w": 287,
+    "h": 278
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_idle_02_team": {
+   "frame": {
+    "x": 454,
+    "y": 1385,
+    "w": 233,
+    "h": 239
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 217,
+    "w": 233,
+    "h": 239
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_idle_03": {
+   "frame": {
+    "x": 293,
+    "y": 587,
+    "w": 288,
+    "h": 276
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 204,
+    "w": 288,
+    "h": 276
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_idle_03_team": {
+   "frame": {
+    "x": 916,
+    "y": 1385,
+    "w": 234,
+    "h": 238
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 218,
+    "w": 234,
+    "h": 238
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_idle_04": {
+   "frame": {
+    "x": 2,
+    "y": 587,
+    "w": 287,
+    "h": 278
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 202,
+    "w": 287,
+    "h": 278
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_idle_04_team": {
+   "frame": {
+    "x": 2720,
+    "y": 1134,
+    "w": 233,
+    "h": 240
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 216,
+    "w": 233,
+    "h": 240
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_idle_05": {
+   "frame": {
+    "x": 576,
+    "y": 300,
+    "w": 284,
+    "h": 281
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 199,
+    "w": 284,
+    "h": 281
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_idle_05_team": {
+   "frame": {
+    "x": 1536,
+    "y": 1134,
+    "w": 229,
+    "h": 243
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 213,
+    "w": 229,
+    "h": 243
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_00": {
+   "frame": {
+    "x": 2443,
+    "y": 587,
+    "w": 315,
+    "h": 271
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 209,
+    "w": 315,
+    "h": 271
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 1629,
+    "w": 237,
+    "h": 232
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 224,
+    "w": 237,
+    "h": 232
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_01": {
+   "frame": {
+    "x": 1869,
+    "y": 587,
+    "w": 302,
+    "h": 273
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 225,
+    "y": 207,
+    "w": 302,
+    "h": 273
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_01_team": {
+   "frame": {
+    "x": 2275,
+    "y": 1385,
+    "w": 228,
+    "h": 235
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 222,
+    "w": 228,
+    "h": 235
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_02": {
+   "frame": {
+    "x": 1483,
+    "y": 300,
+    "w": 288,
+    "h": 279
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 235,
+    "y": 201,
+    "w": 288,
+    "h": 279
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_02_team": {
+   "frame": {
+    "x": 2251,
+    "y": 1134,
+    "w": 222,
+    "h": 241
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 216,
+    "w": 222,
+    "h": 241
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_03": {
+   "frame": {
+    "x": 1497,
+    "y": 2,
+    "w": 298,
+    "h": 287
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 193,
+    "w": 298,
+    "h": 287
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_03_team": {
+   "frame": {
+    "x": 2552,
+    "y": 869,
+    "w": 219,
+    "h": 248
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 208,
+    "w": 219,
+    "h": 248
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_04": {
+   "frame": {
+    "x": 885,
+    "y": 2,
+    "w": 302,
+    "h": 291
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 189,
+    "w": 302,
+    "h": 291
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_04_team": {
+   "frame": {
+    "x": 1589,
+    "y": 869,
+    "w": 224,
+    "h": 253
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 203,
+    "w": 224,
+    "h": 253
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_05": {
+   "frame": {
+    "x": 1191,
+    "y": 2,
+    "w": 302,
+    "h": 290
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 191,
+    "w": 302,
+    "h": 290
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_05_team": {
+   "frame": {
+    "x": 2067,
+    "y": 869,
+    "w": 232,
+    "h": 252
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 205,
+    "w": 232,
+    "h": 252
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_06": {
+   "frame": {
+    "x": 2596,
+    "y": 2,
+    "w": 301,
+    "h": 283
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 198,
+    "w": 301,
+    "h": 283
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_06_team": {
+   "frame": {
+    "x": 223,
+    "y": 1134,
+    "w": 239,
+    "h": 246
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 211,
+    "w": 239,
+    "h": 246
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_07": {
+   "frame": {
+    "x": 585,
+    "y": 587,
+    "w": 316,
+    "h": 275
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 205,
+    "w": 316,
+    "h": 275
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_walk_07_team": {
+   "frame": {
+    "x": 1154,
+    "y": 1385,
+    "w": 240,
+    "h": 237
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 219,
+    "w": 240,
+    "h": 237
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_00": {
+   "frame": {
+    "x": 1200,
+    "y": 587,
+    "w": 286,
+    "h": 275
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 238,
+    "y": 203,
+    "w": 286,
+    "h": 275
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_00_team": {
+   "frame": {
+    "x": 1398,
+    "y": 1385,
+    "w": 230,
+    "h": 237
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 240,
+    "y": 217,
+    "w": 230,
+    "h": 237
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_01": {
+   "frame": {
+    "x": 2762,
+    "y": 587,
+    "w": 274,
+    "h": 269
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 232,
+    "y": 206,
+    "w": 274,
+    "h": 269
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_01_team": {
+   "frame": {
+    "x": 691,
+    "y": 1385,
+    "w": 221,
+    "h": 239
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 228,
+    "y": 211,
+    "w": 221,
+    "h": 239
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_02": {
+   "frame": {
+    "x": 2175,
+    "y": 587,
+    "w": 264,
+    "h": 273
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 206,
+    "w": 264,
+    "h": 273
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_02_team": {
+   "frame": {
+    "x": 830,
+    "y": 1134,
+    "w": 237,
+    "h": 245
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 206,
+    "w": 237,
+    "h": 245
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_03": {
+   "frame": {
+    "x": 2344,
+    "y": 300,
+    "w": 259,
+    "h": 279
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 211,
+    "y": 202,
+    "w": 259,
+    "h": 279
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_03_team": {
+   "frame": {
+    "x": 2775,
+    "y": 869,
+    "w": 242,
+    "h": 247
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 205,
+    "w": 242,
+    "h": 247
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_04": {
+   "frame": {
+    "x": 2061,
+    "y": 300,
+    "w": 279,
+    "h": 279
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 232,
+    "y": 196,
+    "w": 279,
+    "h": 279
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_04_team": {
+   "frame": {
+    "x": 237,
+    "y": 1385,
+    "w": 213,
+    "h": 240
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 241,
+    "y": 209,
+    "w": 213,
+    "h": 240
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_05": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 303,
+    "h": 294
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 246,
+    "y": 187,
+    "w": 303,
+    "h": 294
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_05_team": {
+   "frame": {
+    "x": 1348,
+    "y": 869,
+    "w": 237,
+    "h": 254
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 262,
+    "y": 201,
+    "w": 237,
+    "h": 254
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_06": {
+   "frame": {
+    "x": 1490,
+    "y": 587,
+    "w": 375,
+    "h": 273
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 231,
+    "y": 209,
+    "w": 375,
+    "h": 273
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_06_team": {
+   "frame": {
+    "x": 1991,
+    "y": 1385,
+    "w": 280,
+    "h": 235
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 252,
+    "y": 224,
+    "w": 280,
+    "h": 235
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_07": {
+   "frame": {
+    "x": 309,
+    "y": 2,
+    "w": 309,
+    "h": 292
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 189,
+    "w": 309,
+    "h": 292
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_07_team": {
+   "frame": {
+    "x": 2303,
+    "y": 869,
+    "w": 245,
+    "h": 251
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 262,
+    "y": 205,
+    "w": 245,
+    "h": 251
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_08": {
+   "frame": {
+    "x": 864,
+    "y": 300,
+    "w": 310,
+    "h": 280
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 201,
+    "w": 310,
+    "h": 280
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_08_team": {
+   "frame": {
+    "x": 1769,
+    "y": 1134,
+    "w": 245,
+    "h": 241
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 246,
+    "y": 216,
+    "w": 245,
+    "h": 241
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_09": {
+   "frame": {
+    "x": 1178,
+    "y": 300,
+    "w": 301,
+    "h": 279
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 201,
+    "w": 301,
+    "h": 279
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_attack_09_team": {
+   "frame": {
+    "x": 2,
+    "y": 1385,
+    "w": 231,
+    "h": 240
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 216,
+    "w": 231,
+    "h": 240
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_hit_00": {
+   "frame": {
+    "x": 1051,
+    "y": 869,
+    "w": 293,
+    "h": 256
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 228,
+    "y": 224,
+    "w": 293,
+    "h": 256
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_hit_00_team": {
+   "frame": {
+    "x": 782,
+    "y": 1629,
+    "w": 231,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 228,
+    "y": 236,
+    "w": 231,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_hit_01": {
+   "frame": {
+    "x": 622,
+    "y": 2,
+    "w": 259,
+    "h": 292
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 241,
+    "y": 188,
+    "w": 259,
+    "h": 292
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_hit_01_team": {
+   "frame": {
+    "x": 520,
+    "y": 869,
+    "w": 201,
+    "h": 257
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 241,
+    "y": 197,
+    "w": 201,
+    "h": 257
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_hit_02": {
+   "frame": {
+    "x": 2319,
+    "y": 2,
+    "w": 273,
+    "h": 284
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 196,
+    "w": 273,
+    "h": 284
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_hit_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 1134,
+    "w": 217,
+    "h": 247
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 208,
+    "w": 217,
+    "h": 247
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_hit_03": {
+   "frame": {
+    "x": 905,
+    "y": 587,
+    "w": 291,
+    "h": 275
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 242,
+    "y": 205,
+    "w": 291,
+    "h": 275
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_hit_03_team": {
+   "frame": {
+    "x": 2477,
+    "y": 1134,
+    "w": 239,
+    "h": 240
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 242,
+    "y": 216,
+    "w": 239,
+    "h": 240
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_hit_04": {
+   "frame": {
+    "x": 1775,
+    "y": 300,
+    "w": 282,
+    "h": 279
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 201,
+    "w": 282,
+    "h": 279
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_hit_04_team": {
+   "frame": {
+    "x": 2018,
+    "y": 1134,
+    "w": 229,
+    "h": 241
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 215,
+    "w": 229,
+    "h": 241
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_00": {
+   "frame": {
+    "x": 2,
+    "y": 869,
+    "w": 293,
+    "h": 261
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 234,
+    "y": 215,
+    "w": 293,
+    "h": 261
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_00_team": {
+   "frame": {
+    "x": 243,
+    "y": 1629,
+    "w": 238,
+    "h": 225
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 234,
+    "y": 228,
+    "w": 238,
+    "h": 225
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_01": {
+   "frame": {
+    "x": 2066,
+    "y": 2,
+    "w": 249,
+    "h": 285
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 228,
+    "y": 179,
+    "w": 249,
+    "h": 285
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_01_team": {
+   "frame": {
+    "x": 299,
+    "y": 869,
+    "w": 217,
+    "h": 258
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 179,
+    "w": 217,
+    "h": 258
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_02": {
+   "frame": {
+    "x": 1799,
+    "y": 2,
+    "w": 263,
+    "h": 287
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 186,
+    "w": 263,
+    "h": 287
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_02_team": {
+   "frame": {
+    "x": 1817,
+    "y": 869,
+    "w": 246,
+    "h": 252
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 190,
+    "w": 246,
+    "h": 252
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_03": {
+   "frame": {
+    "x": 725,
+    "y": 869,
+    "w": 322,
+    "h": 256
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 228,
+    "w": 322,
+    "h": 256
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_03_team": {
+   "frame": {
+    "x": 485,
+    "y": 1629,
+    "w": 293,
+    "h": 223
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 229,
+    "w": 293,
+    "h": 223
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_04": {
+   "frame": {
+    "x": 466,
+    "y": 1134,
+    "w": 360,
+    "h": 245
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 250,
+    "w": 360,
+    "h": 245
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_04_team": {
+   "frame": {
+    "x": 2076,
+    "y": 1629,
+    "w": 329,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 250,
+    "w": 329,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_05": {
+   "frame": {
+    "x": 1632,
+    "y": 1385,
+    "w": 355,
+    "h": 236
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 249,
+    "w": 355,
+    "h": 236
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_05_team": {
+   "frame": {
+    "x": 1380,
+    "y": 1629,
+    "w": 337,
+    "h": 213
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 249,
+    "w": 337,
+    "h": 213
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_06": {
+   "frame": {
+    "x": 2507,
+    "y": 1385,
+    "w": 368,
+    "h": 234
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 251,
+    "w": 368,
+    "h": 234
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_06_team": {
+   "frame": {
+    "x": 1721,
+    "y": 1629,
+    "w": 351,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 251,
+    "w": 351,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_07": {
+   "frame": {
+    "x": 1017,
+    "y": 1629,
+    "w": 359,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 267,
+    "w": 359,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  },
+  "wooden_horse_die_07_team": {
+   "frame": {
+    "x": 2409,
+    "y": 1629,
+    "w": 343,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 267,
+    "w": 343,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 684,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.5614,
+    "y": 0.8513
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "wooden_horse_idle_00",
+   "wooden_horse_idle_01",
+   "wooden_horse_idle_02",
+   "wooden_horse_idle_03",
+   "wooden_horse_idle_04",
+   "wooden_horse_idle_05"
+  ],
+  "idle_team": [
+   "wooden_horse_idle_00_team",
+   "wooden_horse_idle_01_team",
+   "wooden_horse_idle_02_team",
+   "wooden_horse_idle_03_team",
+   "wooden_horse_idle_04_team",
+   "wooden_horse_idle_05_team"
+  ],
+  "walk": [
+   "wooden_horse_walk_00",
+   "wooden_horse_walk_01",
+   "wooden_horse_walk_02",
+   "wooden_horse_walk_03",
+   "wooden_horse_walk_04",
+   "wooden_horse_walk_05",
+   "wooden_horse_walk_06",
+   "wooden_horse_walk_07"
+  ],
+  "walk_team": [
+   "wooden_horse_walk_00_team",
+   "wooden_horse_walk_01_team",
+   "wooden_horse_walk_02_team",
+   "wooden_horse_walk_03_team",
+   "wooden_horse_walk_04_team",
+   "wooden_horse_walk_05_team",
+   "wooden_horse_walk_06_team",
+   "wooden_horse_walk_07_team"
+  ],
+  "attack": [
+   "wooden_horse_attack_00",
+   "wooden_horse_attack_01",
+   "wooden_horse_attack_02",
+   "wooden_horse_attack_03",
+   "wooden_horse_attack_04",
+   "wooden_horse_attack_05",
+   "wooden_horse_attack_06",
+   "wooden_horse_attack_07",
+   "wooden_horse_attack_08",
+   "wooden_horse_attack_08",
+   "wooden_horse_attack_09",
+   "wooden_horse_attack_09"
+  ],
+  "attack_team": [
+   "wooden_horse_attack_00_team",
+   "wooden_horse_attack_01_team",
+   "wooden_horse_attack_02_team",
+   "wooden_horse_attack_03_team",
+   "wooden_horse_attack_04_team",
+   "wooden_horse_attack_05_team",
+   "wooden_horse_attack_06_team",
+   "wooden_horse_attack_07_team",
+   "wooden_horse_attack_08_team",
+   "wooden_horse_attack_08_team",
+   "wooden_horse_attack_09_team",
+   "wooden_horse_attack_09_team"
+  ],
+  "hit": [
+   "wooden_horse_hit_00",
+   "wooden_horse_hit_01",
+   "wooden_horse_hit_02",
+   "wooden_horse_hit_03",
+   "wooden_horse_hit_04"
+  ],
+  "hit_team": [
+   "wooden_horse_hit_00_team",
+   "wooden_horse_hit_01_team",
+   "wooden_horse_hit_02_team",
+   "wooden_horse_hit_03_team",
+   "wooden_horse_hit_04_team"
+  ],
+  "die": [
+   "wooden_horse_die_00",
+   "wooden_horse_die_01",
+   "wooden_horse_die_01",
+   "wooden_horse_die_02",
+   "wooden_horse_die_03",
+   "wooden_horse_die_04",
+   "wooden_horse_die_04",
+   "wooden_horse_die_05",
+   "wooden_horse_die_05",
+   "wooden_horse_die_06",
+   "wooden_horse_die_06",
+   "wooden_horse_die_07"
+  ],
+  "die_team": [
+   "wooden_horse_die_00_team",
+   "wooden_horse_die_01_team",
+   "wooden_horse_die_01_team",
+   "wooden_horse_die_02_team",
+   "wooden_horse_die_03_team",
+   "wooden_horse_die_04_team",
+   "wooden_horse_die_04_team",
+   "wooden_horse_die_05_team",
+   "wooden_horse_die_05_team",
+   "wooden_horse_die_06_team",
+   "wooden_horse_die_06_team",
+   "wooden_horse_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "wooden_horse.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 3072,
+   "h": 1864
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.wooden_horse",
+   "name": "Wooden Horse",
+   "heightLu": 104,
+   "widthLu": 108.5,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    384,
+    458
+   ],
+   "anchorsLu": {
+    "head": [
+     30,
+     100
+    ],
+    "hitCenter": [
+     0,
+     48
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "wheeled",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      150,
+      150,
+      150,
+      150,
+      150,
+      150
+     ],
+     "durationMs": 900,
+     "anchorsLu": {
+      "nose": [
+       [
+        52.0,
+        76.3
+       ],
+       [
+        52.6,
+        75.3
+       ],
+       [
+        53.7,
+        73.3
+       ],
+       [
+        54.3,
+        72.4
+       ],
+       [
+        53.7,
+        73.3
+       ],
+       [
+        52.6,
+        75.3
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      77,
+      77,
+      76,
+      77,
+      77,
+      76,
+      77,
+      77
+     ],
+     "durationMs": 614,
+     "anchorsLu": {
+      "nose": [
+       [
+        55.0,
+        68.8
+       ],
+       [
+        52.8,
+        72.8
+       ],
+       [
+        50.6,
+        78.0
+       ],
+       [
+        49.8,
+        81.4
+       ],
+       [
+        51.1,
+        81.1
+       ],
+       [
+        53.6,
+        77.0
+       ],
+       [
+        55.6,
+        71.7
+       ],
+       [
+        56.1,
+        68.3
+       ]
+      ]
+     },
+     "strideLu": 34.0,
+     "naturalSpeedLuPerS": 55.4,
+     "gait": "wheeled"
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "nose": [
+       [
+        51.5,
+        74.9
+       ],
+       [
+        43.7,
+        83.1
+       ],
+       [
+        33.1,
+        91.4
+       ],
+       [
+        27.1,
+        95.0
+       ],
+       [
+        45.8,
+        82.9
+       ],
+       [
+        61.2,
+        69.4
+       ],
+       [
+        71.1,
+        52.4
+       ],
+       [
+        62.9,
+        65.4
+       ],
+       [
+        58.0,
+        69.7
+       ],
+       [
+        53.2,
+        74.3
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "nose": [
+       [
+        49.6,
+        72.1
+       ],
+       [
+        41.4,
+        87.9
+       ],
+       [
+        48.1,
+        80.0
+       ],
+       [
+        55.0,
+        70.8
+       ],
+       [
+        52.8,
+        74.6
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      7
+     ],
+     "durationsMs": [
+      60,
+      70,
+      80,
+      80,
+      60,
+      70,
+      80,
+      90,
+      90,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 990,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 740,
+       "offsetLu": [
+        0,
+        37.4
+       ],
+       "scale": 1.356
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 820,
+       "offsetLu": [
+        0,
+        57.2
+       ],
+       "loops": 2,
+       "scale": 1.165
+      }
+     ],
+     "hideUnitAtMs": 990,
+     "anchorsLu": {
+      "nose": [
+       [
+        52.7,
+        72.4
+       ],
+       [
+        31.7,
+        97.4
+       ],
+       [
+        27.0,
+        93.4
+       ],
+       [
+        41.2,
+        70.6
+       ],
+       [
+        45.0,
+        60.3
+       ],
+       [
+        43.8,
+        59.3
+       ],
+       [
+        44.6,
+        58.8
+       ],
+       [
+        43.1,
+        54.4
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

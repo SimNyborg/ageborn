@@ -1193,12 +1193,16 @@ export class Brain {
     if (v.ageUncertain) return { scored: [] };
     const ctx = this.counterContext(v, mem);
     const push = fPush(v.myArmy, v.foeArmy);
-    const groupCount = new Map<RoleGroup, number>();
-    for (const u of v.mine) if (u.def) groupCount.set(u.def.group, (groupCount.get(u.def.group) ?? 0) + 1);
+    // f_role counts cards, not bodies: a squad member (X0 M1) is its share of one card, so a Pair does
+    // not read as two Infantry and push the bot off its own card (counted in bp, whole units after).
+    const groupBp = new Map<RoleGroup, number>();
+    for (const u of v.mine) if (u.def) groupBp.set(u.def.group, (groupBp.get(u.def.group) ?? 0) + Math.trunc(BP / (book.units[u.card]?.squad ?? 1)));
     for (const c of v.queue) {
       const d = book.units[c];
-      if (d) groupCount.set(d.group, (groupCount.get(d.group) ?? 0) + 1);
+      if (d) groupBp.set(d.group, (groupBp.get(d.group) ?? 0) + BP);
     }
+    const groupCount = new Map<RoleGroup, number>();
+    for (const [g, n] of groupBp) groupCount.set(g, Math.trunc((n + BP / 2) / BP));
     const foeAir = v.foes.some((u) => u.air);
     const scored: Scored[] = [];
     let eager: Scored | null = null;

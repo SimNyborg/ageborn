@@ -1,0 +1,504 @@
+{
+ "frames": {
+  "mesmerist_attack_b_02": {
+   "frame": {
+    "x": 238,
+    "y": 2,
+    "w": 109,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 241,
+    "y": 277,
+    "w": 109,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84532
+   }
+  },
+  "mesmerist_attack_b_02_team": {
+   "frame": {
+    "x": 899,
+    "y": 2,
+    "w": 74,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 254,
+    "y": 306,
+    "w": 74,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84532
+   }
+  },
+  "mesmerist_attack_b_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 114,
+    "h": 213
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 228,
+    "y": 275,
+    "w": 114,
+    "h": 213
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84532
+   }
+  },
+  "mesmerist_attack_b_03_team": {
+   "frame": {
+    "x": 727,
+    "y": 2,
+    "w": 82,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 303,
+    "w": 82,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84532
+   }
+  },
+  "mesmerist_attack_b_04": {
+   "frame": {
+    "x": 120,
+    "y": 2,
+    "w": 114,
+    "h": 213
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 228,
+    "y": 275,
+    "w": 114,
+    "h": 213
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84532
+   }
+  },
+  "mesmerist_attack_b_04_team": {
+   "frame": {
+    "x": 813,
+    "y": 2,
+    "w": 82,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 303,
+    "w": 82,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84532
+   }
+  },
+  "mesmerist_attack_b_05": {
+   "frame": {
+    "x": 351,
+    "y": 2,
+    "w": 102,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 250,
+    "y": 286,
+    "w": 102,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84532
+   }
+  },
+  "mesmerist_attack_b_05_team": {
+   "frame": {
+    "x": 977,
+    "y": 2,
+    "w": 83,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 257,
+    "y": 314,
+    "w": 83,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84532
+   }
+  },
+  "mesmerist_attack_b_06": {
+   "frame": {
+    "x": 580,
+    "y": 2,
+    "w": 143,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 301,
+    "w": 143,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84532
+   }
+  },
+  "mesmerist_attack_b_06_team": {
+   "frame": {
+    "x": 1160,
+    "y": 2,
+    "w": 98,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 267,
+    "y": 330,
+    "w": 98,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84532
+   }
+  },
+  "mesmerist_attack_b_07": {
+   "frame": {
+    "x": 457,
+    "y": 2,
+    "w": 119,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 266,
+    "y": 292,
+    "w": 119,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84532
+   }
+  },
+  "mesmerist_attack_b_07_team": {
+   "frame": {
+    "x": 1064,
+    "y": 2,
+    "w": 92,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 267,
+    "y": 321,
+    "w": 92,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84532
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "mesmerist_attack_00",
+   "mesmerist_attack_01",
+   "mesmerist_attack_b_02",
+   "mesmerist_attack_b_03",
+   "mesmerist_attack_b_04",
+   "mesmerist_attack_b_05",
+   "mesmerist_attack_b_06",
+   "mesmerist_attack_b_07",
+   "mesmerist_attack_08",
+   "mesmerist_attack_09",
+   "mesmerist_attack_10"
+  ],
+  "attack_b_team": [
+   "mesmerist_attack_00_team",
+   "mesmerist_attack_01_team",
+   "mesmerist_attack_b_02_team",
+   "mesmerist_attack_b_03_team",
+   "mesmerist_attack_b_04_team",
+   "mesmerist_attack_b_05_team",
+   "mesmerist_attack_b_06_team",
+   "mesmerist_attack_b_07_team",
+   "mesmerist_attack_08_team",
+   "mesmerist_attack_09_team",
+   "mesmerist_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "mesmerist.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1280,
+   "h": 220
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.mesmerist",
+   "name": "Mesmerist",
+   "heightLu": 74,
+   "widthLu": 32.5,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    296,
+    470
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     72
+    ],
+    "hitCenter": [
+     0,
+     34
+    ],
+    "muzzle": [
+     18,
+     34
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "mesmerist",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "watchC": [
+       [
+        18.4,
+        29.4
+       ],
+       [
+        17.2,
+        31.9
+       ],
+       [
+        13.6,
+        38.5
+       ],
+       [
+        10.6,
+        37.8
+       ],
+       [
+        10.7,
+        38.5
+       ],
+       [
+        11.3,
+        48.3
+       ],
+       [
+        29.5,
+        27.5
+       ],
+       [
+        27.6,
+        26.5
+       ],
+       [
+        22.4,
+        29.9
+       ],
+       [
+        18.9,
+        29.3
+       ],
+       [
+        18.4,
+        29.4
+       ]
+      ],
+      "muzzle": [
+       [
+        18.4,
+        29.4
+       ],
+       [
+        17.2,
+        31.9
+       ],
+       [
+        13.6,
+        38.5
+       ],
+       [
+        10.6,
+        37.8
+       ],
+       [
+        10.7,
+        38.5
+       ],
+       [
+        11.3,
+        48.3
+       ],
+       [
+        29.5,
+        27.5
+       ],
+       [
+        27.6,
+        26.5
+       ],
+       [
+        22.4,
+        29.9
+       ],
+       [
+        18.9,
+        29.3
+       ],
+       [
+        18.4,
+        29.4
+       ]
+      ]
+     },
+     "muzzle": [
+      29.5,
+      27.5
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

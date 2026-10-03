@@ -11,7 +11,13 @@ and holds on when it stamps).
 
 Animation (cartoon kit v2, heavy timing):
   idle    ears fan, the trunk sways and curls at the tip, the mahout pats its head, a blink
-  walk    heavy four-beat walk (rigs_stone.walk4), the trunk swinging a beat late, ears flapping
+  walk    walk v3 heavy four-beat walk at ground speed (ANIM_SPEC G4, card 60 x 1.25 = 75 lu/s, 12
+          frames in 1020 ms): three feet always down, planted feet by IK, the trunk swinging a beat
+          late, ears flapping, the mahout swaying
+  attack_b  GORE TOSS: drops its head with the tusks almost on the ground, weight back on the hind
+          legs (held extreme), then drives in and hooks the head up, tusks tossing the target
+  attack_c  SIDEWAYS HOOK: swings the head away with the trunk curled and the ears spread (held
+          extreme), then hooks it back across the front, tusks first
   attack  REAR, LASH AND STAMP: weight back, the near forefoot lifts high, the trunk curls up over
           the head and the ears spread (held extreme, trumpeting), then the trunk lashes down
           and forward (arc smear) as the forefoot slams the ground (impact: dust both ways,
@@ -23,6 +29,7 @@ Animation (cartoon kit v2, heavy timing):
 import math
 
 from ageborn_art import face as F
+from ageborn_art import gait as G
 from ageborn_art import kit_bronze as K
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
@@ -31,6 +38,7 @@ from ageborn_art.geometry import Geo
 from ageborn_art.rigs_stone import Quad, walk4
 
 SLUG = "war_elephant"
+GAIT_NAME = "quad"
 NAME = "War Elephant"
 HEIGHT_LU = 112
 YAW_DEG = -10.0
@@ -103,11 +111,17 @@ def _mahout(rig, name, parent, x, z):
 
 
 def build(rig):
+    global RIG, LEGS
+    RIG = rig
     q = Quad(rig, trunk=(0, 46), front_x=18.0, back_x=-18.0, leg_y=9.0, shoulder_z=50.0,
              hip_z=48.0, knee_z=24.0, hock_z=24.0, knee_dx=1.0, hock_dx=-1.0, far_dx=-4.0)
+    LEGS = {}
     for name in ("fl", "bl", "fr", "br"):
         p0, p1, _ = q.legs[name]
         _leg(rig, name, p0, p1, name[1] == "r")
+        LEGS[name] = G.Leg(f"leg_{name}", f"leg_{name}2", (p1[0] + 0.6, p1[1], 0.4),
+                           bend=1.0 if name[0] == "f" else -1.0)
+        rig.track(f"_foot_{name}", f"leg_{name}2", (p1[0] + 0.6, p1[1], 0.3))
 
     g = Geo().blob((0, 0, 57), (30, 17.5, 19.5), p=2.3)
     g.blob((12, 0, 63), (17, 16, 15), p=2.2)
@@ -135,8 +149,8 @@ def build(rig):
     g = Geo().lathe([(13.0, 0), (14.4, 0.3), (14.4, 8.0), (13.0, 8.3)], (-6, 0, 78.0), (-6, 0, 86.3),
                     segs=24, squash=(1.15, 0.92))
     rig.part("tower", g, B.WOOD_DK)
-    g = Geo().blob((-6, 0, 86.6), (16.8, 13.6, 1.2), p=3.0)
-    rig.part("tower", g, B.VERD, outline=0.5)
+    g = Geo().blob((-6, 0, 86.6), (16.8, 13.6, 1.6), p=3.0)
+    rig.part("tower", g, team=True, outline=0.5)
     for x in (-13.0, 1.0):
         B.aspis(rig, "tower", (x, -14.6, 82.6), r=5.4, depth=1.4, rim=B.BRONZE, rim_w=0.9)
     # mahout on the neck
@@ -202,7 +216,6 @@ def build(rig):
     g = Geo().capsule((-30, 0, 62), (-34, 0, 44), 1.8, 1.2)
     g.lathe([(2.0, 0), (2.4, -2.4), (0, -6.5)], (-34.3, 0, 45), segs=10)
     rig.part("tail", g, HIDE_DK, finish="hair")
-    rig.track("_foot", "leg_fr2", (19.0, -9.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -229,14 +242,37 @@ def _idle(f):
     return pose
 
 
-def _walk(f):
-    p = 2 * math.pi * f / 8
-    lag = math.cos(4 * p - 1.2)
-    return merge(walk4(f, fr=14.0, br=12.0, knee=36.0, hock=24.0, bob=2.0, nod=3.0, roll=1.2), {
-        "trunk1": {"r": 6 * math.sin(2 * p)}, "trunk2": {"r": 9 * math.sin(2 * p - 0.6)},
-        "trunk3": {"r": 14 * math.sin(2 * p - 1.2)},
-        "ear": {"rz": 14 * math.sin(4 * p - 1.0)},
-    }, _rider(lag))
+# -- walk v3: G4 four-beat walk at ground speed (card 60 x 1.25 = 75 lu/s), 12 x 85 ms ----------------
+# (a brisk four-beat: at 1200 ms the stride splays the legs) each foot is planted 70% of the cycle (hind left, fore left, hind right, fore right, a quarter apart)
+RIG = None
+LEGS = None
+SPEED = 75.0
+GAIT = None
+
+
+def _gait():
+    global GAIT
+    if GAIT is None:
+        GAIT = G.Gait(12, 1020, SPEED, G.quad_feet(LEGS, G.WALK4, x_off={"fr": -1.0, "fl": -1.0,
+                                                                          "br": -2.0, "bl": -2.0}),
+                      0.7, lift=8.0, kick=3.0, reach=2.5, toe_off=0.0, heel_strike=0.0, lift_peak=0.5)
+    return GAIT
+
+
+def _walk(f, report=None):
+    g = _gait()
+
+    def extra(ctx):
+        p = ctx["p"]
+        lag = math.cos(2 * p - 1.0)
+        return merge({
+            "neck": {"r": -3.0 * math.cos(2 * p - 0.6)}, "head": {"r": 2.5 * math.cos(2 * p - 1.2)},
+            "trunk1": {"r": 7 * math.sin(p)}, "trunk2": {"r": 10 * math.sin(p - 0.6)},
+            "trunk3": {"r": 15 * math.sin(p - 1.2)},
+            "ear": {"rz": 14 * math.sin(2 * p - 1.0)},
+        }, _rider(1.6 * lag))
+    return G.quad_walk(RIG, f, g, {}, base_z=-4.0, bob=6.0, beats=2, low_at=0.125, pitch=0.8,
+                       roll=1.4, extra=extra, report=report)
 
 
 ATTACK_SEQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9]
@@ -301,6 +337,109 @@ def _attack_clip():
                   impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov)
 
 
+# -- attack B: gore toss (ANIM_SPEC 2.2 tusks and horns) ---------------------------------------------
+# 0 = A shift, 1 head down, 2 lower, 3 HOLD (weight back on the hind legs, the head dropped with the
+# tusks almost on the ground, ears back), 4-5 the drive (smear), 6 IMPACT (the head hooked up, tusks
+# tossing, the forelegs braced), 7 shock, 8-9 = A follow and settle
+#      down lower HOLD drive drive IMP  shock
+GB_R = [-2.0, -4.0, -5.0, -3.0, -1.0, 2.0, 1.0]       # body pitch (+ rears)
+GB_X = [0.0, -2.0, -4.0, 0.0, 3.0, 5.0, 4.0]
+GB_Q = [0.0, -0.02, -0.04, 0.0, -0.02, 0.04, 0.0]
+GB_NK = [-8, -16, -22, -18, -8, 14, 10]
+GB_HD = [-6, -12, -16, -12, -2, 16, 12]
+GB_T1 = [-6, -10, -12, -8, 0, 20, 14]
+GB_T2 = [-4, -6, -8, -4, 6, 24, 16]
+GB_T3 = [4, 6, 8, 10, 20, 36, 24]
+GB_EAR = [-6, -14, -20, -10, 6, 30, 18]
+GB_LF = [(-2, 0), (-6, 0), (-10, 0), (-4, 0), (4, 0), (10, -4), (6, -2)]
+GB_LB = [(-2, 0), (-8, 0), (-12, 4), (-6, 2), (0, 0), (4, 0), (2, 0)]
+
+
+def _b_pose(i):
+    if i == 0 or i >= 8:
+        return _attack_pose(i)
+    k = i - 1
+    r = GB_R[k]
+    pivot = (-18.0, 0.0, 4.0) if r >= 0 else (18.0, 0.0, 4.0)
+    lf, lb = GB_LF[k], GB_LB[k]
+    pose = merge(M.body_about(pivot, x=GB_X[k], q=GB_Q[k], r=r), {
+        "neck": {"r": GB_NK[k]}, "head": {"r": GB_HD[k]},
+        "trunk1": {"r": GB_T1[k]}, "trunk2": {"r": GB_T2[k]}, "trunk3": {"r": GB_T3[k]},
+        "mouth": {"show": i in (5, 6)}, "ear": {"rz": GB_EAR[k]},
+        "leg_fr": {"r": lf[0]}, "leg_fr2": {"r": lf[1]}, "leg_fl": {"r": lf[0] * 0.8}, "leg_fl2": {"r": lf[1]},
+        "leg_br": {"r": lb[0]}, "leg_br2": {"r": lb[1]}, "leg_bl": {"r": lb[0] * 0.8}, "leg_bl2": {"r": lb[1]},
+    }, _rider(0.0, [0.2, 0.4, 0.6, 0.6, 0.4, 0.8, 0.6][k], arm=[0, 10, 20, 0, -20, -30, -20][k]))
+    pose = merge(pose, {"brow": {"z": -1.2}}, F.expr("squeeze", mouth=None) if i == 6 else {})
+    return pose
+
+
+TUSK_TIP = (57.0, -6.2, 55.0)
+
+
+def _attack_b():
+    ov = {
+        4: [{"kind": "streak", "joint": "head", "point": TUSK_TIP, "color": HIDE_LT, "width_lu": 8.0,
+             "white": 0.3, "from": 3, "t1": 0.95}],
+        5: [{"kind": "streak", "joint": "head", "point": TUSK_TIP, "color": HIDE_LT, "width_lu": 8.0,
+             "white": 0.3, "from": 4, "t0": 0.2, "t1": 0.95}],
+        6: [{"kind": "burst", "joint": "head", "point": TUSK_TIP, "r0_lu": 8.0, "r1_lu": 16.0, "n": 6,
+             "a0": -10.0, "arc": 140.0},
+            {"kind": "dust", "ground": (30.0, 0.0), "size_lu": 9.0, "puffs": 4, "seed": 21, "spread": 1.2}],
+    }
+    reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(10)], M.HEAVY_MELEE_MS, impact=6,
+                  sequence=ATTACK_SEQ, overlays=ov, reuse=reuse)
+
+
+# -- attack C: sideways hook -------------------------------------------------------------------------
+# 0 = A shift, 1 turn, 2 wind, 3 HOLD (the head swung up and away from the target, the trunk curled,
+# ears spread), 4-5 the hook back across (smear), 6 IMPACT (head and tusks hooked across the front,
+# low), 7 shock, 8-9 = A's
+#      turn wind HOLD hook hook IMP  shock
+GC_R = [1.0, 2.0, 3.0, 1.0, -1.0, -2.0, -1.0]
+GC_X = [-1.0, -2.0, -3.0, 0.0, 2.0, 4.0, 3.0]
+GC_NK = [8, 16, 22, 10, -6, -12, -8]
+GC_NZ = [12, 26, 36, 14, -10, -22, -14]       # neck turn about the vertical (away, then across)
+GC_HD = [6, 12, 16, 6, -6, -10, -6]
+GC_T1 = [20, 40, 52, 30, -6, -16, -10]
+GC_T2 = [24, 48, 62, 36, 0, -10, -6]
+GC_T3 = [30, 60, 76, 50, 14, 6, 8]
+GC_EAR = [10, 26, 40, 20, -6, -16, -10]
+
+
+def _c_pose(i):
+    if i == 0 or i >= 8:
+        return _attack_pose(i)
+    k = i - 1
+    r = GC_R[k]
+    pivot = (-18.0, 0.0, 4.0) if r >= 0 else (18.0, 0.0, 4.0)
+    pose = merge(M.body_about(pivot, x=GC_X[k], r=r), {
+        "neck": {"r": GC_NK[k], "rz": GC_NZ[k]}, "head": {"r": GC_HD[k]},
+        "trunk1": {"r": GC_T1[k]}, "trunk2": {"r": GC_T2[k]}, "trunk3": {"r": GC_T3[k]},
+        "mouth": {"show": i in (2, 3)}, "ear": {"rz": GC_EAR[k]},
+        "leg_fr": {"r": [-2, -4, -6, 2, 8, 6, 4][k]}, "leg_fl": {"r": [2, 4, 6, 0, -4, -2, 0][k]},
+    }, _rider(0.0, [0.1, 0.2, 0.3, 0.4, 0.6, 0.8, 0.6][k], arm=[0, 20, 40, 10, -20, -30, -20][k]))
+    pose = merge(pose, {"brow": {"z": -1.2}}, F.expr("squeeze", mouth=None) if i == 6 else {})
+    return pose
+
+
+def _attack_c():
+    ov = {
+        3: [{"kind": "rings", "joint": "head", "point": (50.0, -4.0, 66.0), "radii_lu": (7.0, 12.0),
+             "a0": -10.0, "a1": 80.0}],
+        4: [{"kind": "streak", "joint": "head", "point": TUSK_TIP, "color": HIDE_LT, "width_lu": 8.0,
+             "white": 0.3, "from": 3, "t1": 0.95}],
+        5: [{"kind": "streak", "joint": "head", "point": TUSK_TIP, "color": HIDE_LT, "width_lu": 8.0,
+             "white": 0.3, "from": 4, "t0": 0.2, "t1": 0.95}],
+        6: [{"kind": "burst", "joint": "head", "point": TUSK_TIP, "r0_lu": 8.0, "r1_lu": 16.0, "n": 6,
+             "a0": -50.0, "arc": 120.0},
+            {"kind": "dust", "ground": (28.0, 0.0), "size_lu": 8.0, "puffs": 4, "seed": 22, "spread": 1.2}],
+    }
+    reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(10)], M.HEAVY_MELEE_MS, impact=6,
+                  sequence=ATTACK_SEQ, overlays=ov, reuse=reuse)
+
+
 def _hit(k):
     def recoil(a, shake):
         return merge({"body": dict(squash(-0.05 * max(a, 0)), x=-3.0 * max(a, 0) + 0.8 * min(a, 0)),
@@ -340,10 +479,12 @@ def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES_HEAVY)],
                [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], [125] * 8, loop=True),
+        M.walk_clip("walk", RIG, _walk, _gait(), "quad"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(keep[i]) for i in range(len(keep))], M.DIE_MS_HEAVY,
                sequence=M.DIE_SEQ_HEAVY, extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
-    return M.check_contract(cl, heavy=True)
+    return M.check_variants(M.check_contract(cl, heavy=True))

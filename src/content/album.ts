@@ -214,6 +214,66 @@ export const ALBUM: readonly CardId[] = [
   'tangle_vines', // 185
   'thorn_hedge', // 186
   'bone_watchtower', // 187
+  // W2 Bronze wave (2026-10-03): troops, turrets, powers and forts in build order
+  'shield_bearer', // 188
+  'thracian_raider', // 189
+  'rhodian_slingers', // 190
+  'discus_thrower', // 191
+  'war_elephant', // 192
+  'cretan_archer', // 193
+  'belly_bowman', // 194
+  'aulos_piper', // 195
+  'tragic_chorus', // 196
+  'wooden_horse', // 197
+  'amazon_rider', // 198
+  'minotaur', // 199
+  'hydra', // 200
+  'net_caster', // 201
+  'polybolos', // 202
+  'sandstorm', // 203
+  'charybdis', // 204
+  'hoplon_line', // 205
+  'slinger_camp', // 206
+  // W3 Medieval wave (2026-10-03): troops, turrets, powers and forts in build order
+  'squire_pair', // 207
+  'flailman', // 208
+  'brigand', // 209
+  'crossbowman', // 210
+  'greatsword_knight', // 211
+  'yeoman_archer', // 212
+  'warhammer_sergeant', // 213
+  'herald', // 214
+  'kennel_master', // 215
+  'mangonel_cart', // 216
+  'siege_belfry', // 217
+  'alchemist', // 218
+  'lindworm', // 219
+  'springald', // 220
+  'grapple_crane', // 221
+  'longbow_volley', // 222
+  'great_bell', // 223
+  'bear_snares', // 224
+  'crossbow_keep', // 225
+  // W4 Gunpowder wave (2026-10-03): troops, turrets, powers and forts in build order
+  'highlander', // 226
+  'powder_monkey', // 227
+  'voltigeurs', // 228
+  'blunderbuss', // 229
+  'dragoon', // 230
+  'coehorn_crew', // 231
+  'wall_gunner', // 232
+  'drummer_boy', // 233
+  'bagpiper', // 234
+  'rocket_cart', // 235
+  'hussar', // 236
+  'mesmerist', // 237
+  'grand_marshal', // 238
+  'carronade', // 239
+  'sea_mortar', // 240
+  'rocket_volley', // 241
+  'cannon_salute', // 242
+  'cavalry_picket', // 243
+  'fougasse', // 244
 ];
 
 /** Album number of every card (1-based), from {@link ALBUM}. */

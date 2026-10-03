@@ -22,13 +22,29 @@ UNITS = ["bonker", "destrier_knight", "pulse_trooper"]
 
 AGE_OF = {
     "stone": ["bonker", "drum_shaman", "mammoth_matriarch", "pebbler", "sabertooth", "spear_hunter",
-              "training_dummy", "tuskback"],
+              "training_dummy", "tuskback",
+              # content expansion, Stone wave (CONTENT_PLAN 5.1)
+              "hunting_wolves", "cave_pup", "hide_shield", "torch_runner", "bolas_thrower", "woolly_rhino",
+              "atlatl_thrower", "boulder_hurler", "herbalist", "pelt_rager", "beast_caller", "cave_bear",
+              "rockfall_shaman", "elk_chieftain"],
     "bronze": ["bronze_colossus", "hoplite", "javelineer", "phalangite", "scorpion", "standard_bearer",
-               "war_chariot"],
+               "war_chariot",
+               # W2 Bronze wave (CONTENT_PLAN 5.2)
+               "shield_bearer", "thracian_raider", "rhodian_slingers", "discus_thrower", "war_elephant",
+               "cretan_archer", "belly_bowman", "aulos_piper", "tragic_chorus", "wooden_horse", "amazon_rider",
+               "minotaur", "hydra"],
     "medieval": ["battering_ram", "destrier_knight", "footman", "friar", "longbowman", "pikeman",
-                 "ursa_paladin"],
+                 "ursa_paladin",
+                 # W3 Medieval wave (CONTENT_PLAN 5.3)
+                 "squire_pair", "flailman", "brigand", "crossbowman", "greatsword_knight", "yeoman_archer",
+                 "warhammer_sergeant", "herald", "kennel_master", "war_hound", "mangonel_cart", "siege_belfry",
+                 "alchemist", "lindworm"],
     "gunpowder": ["balloon_admiral", "bronze_cannon", "corsair", "cuirassier", "field_surgeon",
-                  "fusilier", "grenadier"],
+                  "fusilier", "grenadier",
+                  # W4 Gunpowder wave (CONTENT_PLAN 5.4)
+                  "highlander", "powder_monkey", "voltigeurs", "blunderbuss", "dragoon", "coehorn_crew",
+                  "wall_gunner", "drummer_boy", "bagpiper", "rocket_cart", "hussar", "mesmerist",
+                  "grand_marshal"],
     "modern": ["bazooka_trooper", "behemoth_tank", "gyrocopter", "radio_operator", "rifleman",
                "tankette", "trench_raider"],
     "future": ["chrono_titan", "emp_saboteur", "photon_knight", "pulse_trooper", "rail_gunner",

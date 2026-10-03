@@ -298,6 +298,154 @@ def toad_fire(f):
             "head": {"sz": [0.9, 1.08, 1.03, 1.0, 1.0][f], "sx": [1.08, 0.95, 0.98, 1.0, 1.0][f], "x": [-1.5, 2, 1, 0, 0][f]}}
 
 
+# -- Quill Porcupine (content expansion, CONTENT_PLAN 5.1): a huge grumpy porcupine on a stump ---
+QUILL = "#CFC3A6"
+QUILL_TIP = "#4A3E36"
+PORC = "#6E6052"
+PORC_DK = "#54493F"
+PORC_FACE = "#B7A58A"
+
+
+def porcupine_build(rig):
+    g = Geo()
+    cyl(g, (0, 0, 0), (0, 0, 11), 15, 13, bevel=1.4, segs=16)
+    rig.part("mount", g, BARK)
+    g = Geo()
+    cyl(g, (0, 0, 10.4), (0, 0, 12), 12.5, bevel=0.5, segs=16)
+    rig.part("mount", g, WOOD)
+    pennant(rig, "mount", -13, 5, 9, h=26)
+    # head: the porcupine's round body, a pale face, small round ears, a team bandana
+    g = Geo().blob((0, 0, 22), (14, 11, 10), p=2.2, taper=(1.0, 0.9))
+    rig.part("head", g, PORC, finish="hair")
+    g = Geo().blob((12, -1, 20), (6, 6.4, 5.4), p=2.2)
+    rig.part("head", g, PORC_FACE)
+    g = Geo().blob((17.6, -1.4, 20.6), (1.6, 1.8, 1.4), p=2.2)
+    rig.part("head", g, PUPIL, outline=0.4)
+    g = Geo().blob((13.6, -6.0, 23.0), (1.8, 1.0, 1.9), p=2.0)
+    rig.part("head", g, EYE, outline=0.4)
+    g = Geo().blob((14.4, -6.6, 23.0), (0.8, 0.6, 1.2), p=2.0)
+    rig.part("head", g, PUPIL, outline=0)
+    g = Geo().capsule((11.4, -6.4, 25.8), (15.4, -5.6, 24.6), 0.9, 0.7)
+    rig.part("head", g, PORC_DK, outline=0.3)
+    g = Geo()
+    for y in (-5.5, 5.5):
+        g.blob((7.6, y, 27.4), (2.0, 1.2, 1.8), p=2.0)
+    rig.part("head", g, PORC_DK)
+    g = Geo().blob((6.6, 0, 22.4), (3.4, 11.8, 7.4), p=2.4, rot=(0, -18, 0))
+    rig.part("head", g, team=True, outline=0.5)   # a wide team bandana round the neck
+    # the quill crest on its own joint: it bristles up before the volley
+    rig.joint("quills", "head", (-2, 0, 26))
+    g = Geo()
+    k = 0
+    for row, (z0, n) in enumerate(((26.0, 7), (22.0, 6), (30.0, 5))):
+        for i in range(n):
+            a = math.radians(30 + i * (120 / max(1, n - 1)))
+            y = (row - 1) * 4.0
+            base = (-2 + 9 * math.cos(a), y, z0 + 4 * math.sin(a))
+            tip = (base[0] + 14 * math.cos(a) * 0.8 - 6, y * 1.3, base[2] + 12 * math.sin(a))
+            g.lathe([(1.1, 0), (0.6, 6.0), (0, 13.0)], base, tip, segs=6)
+            k += 1
+    rig.part("quills", g, QUILL, outline=0.4)
+    g = Geo()
+    for row, (z0, n) in enumerate(((26.0, 7), (22.0, 6), (30.0, 5))):
+        for i in range(n):
+            a = math.radians(30 + i * (120 / max(1, n - 1)))
+            y = (row - 1) * 4.0
+            base = (-2 + 9 * math.cos(a), y, z0 + 4 * math.sin(a))
+            tip = (base[0] + 14 * math.cos(a) * 0.8 - 6, y * 1.3, base[2] + 12 * math.sin(a))
+            mid = tuple(b + (t - b) * 0.8 for b, t in zip(base, tip))
+            g.lathe([(0.5, 0), (0, 3.0)], mid, tip, segs=6)
+    rig.part("quills", g, QUILL_TIP, outline=0)
+    # three loose quills that fly on the volley (the projectiles leave the muzzle)
+    rig.joint("volley", "head", (16, 0, 30), hidden=True)
+    g = Geo()
+    for dz in (-3.0, 0.0, 3.0):
+        g.lathe([(0.9, 0), (0.5, 5.0), (0, 10.0)], (12, -2, 30 + dz), (24, -2, 31 + dz * 1.4), segs=6)
+    rig.part("volley", g, QUILL, outline=0.4)
+
+
+def porcupine_idle(f):
+    t = f / 6 * 2 * math.pi
+    return {"head": {"sz": 1 + 0.02 * math.sin(t), "r": 2.0 * math.sin(t)}, "quills": {"r": 3.0 * math.sin(2 * t)}}
+
+
+def porcupine_fire(f):
+    # 0 puffs up (the quills bristle, squash), 1 the fan of quills flies (stretch), 2-4 settle
+    return {"head": {"sz": [0.9, 1.1, 1.03, 1.0, 1.0][f], "sx": [1.08, 0.94, 0.98, 1.0, 1.0][f]},
+            "quills": {"s": [1.2, 0.95, 1.0, 1.0, 1.0][f], "r": [-10, 12, 4, 0, 0][f]},
+            "volley": {"show": f == 1, "x": 4.0 if f == 1 else 0.0}}
+
+
+PORCUPINE_OVERLAYS = {"fire": {1: [{"kind": "burst", "joint": "head", "point": (18, -2, 30), "r0_lu": 6.0, "r1_lu": 12.0,
+                                    "n": 5, "a0": -40.0, "arc": 100.0, "color": QUILL}]}}
+
+
+# -- Sapling Sling (content expansion, CONTENT_PLAN 5.1): a young tree bent back on a rope ---------
+LEAF = "#7F9A5A"
+LEAF_DK = "#647D45"
+
+
+def sapling_build(rig):
+    stone_footing(rig, r=18, h=7, seed=9)
+    g = Geo()
+    g.capsule((10, -6, 4), (14, -6, 22), 1.8, 1.4)      # the trigger stake
+    rig.part("mount", g, WOOD_DK)
+    g = Geo()
+    rope(g, [(14, -6, 20), (6, -4, 30), (-6, -2, 44)], 0.9)
+    rig.part("mount", g, ROPE, outline=0.4)
+    g = Geo()
+    for dx, dy in ((-6, 6), (6, 6), (-2, -8)):
+        rock(g, (dx, dy, 6), (3.6, 3, 3), seed=int(dx * 3 + dy), jag=0.2)
+    rig.part("mount", g, STONE_DK)
+    pennant(rig, "mount", -16, 6, 6, h=26)
+    # head: the bent sapling trunk (pivot at its root) with a leather sling pouch at the top
+    rig.joint("trunk", "head", (0, 0, 6))
+    g = Geo()
+    pts = [(0, 0, 6), (-3, 0, 18), (-7, 0, 30), (-12, 0, 40), (-18, 0, 48)]
+    for a, b in zip(pts, pts[1:]):
+        g.capsule(a, b, 3.2 - 0.4 * pts.index(a), 2.8 - 0.4 * pts.index(a))
+    rig.part("trunk", g, BARK)
+    g = Geo()
+    for (x, z), r in (((-6, 34), (5, 3.4, 3.4)), ((-15, 46), (6, 4, 4.2)), ((-10, 28), (4, 3, 3))):
+        g.blob((x, -2, z), r, p=2.2)
+    rig.part("trunk", g, LEAF, finish="hair")
+    g = Geo()
+    for (x, z), r in (((-3, 40), (3.6, 3.0, 3.0)), ((-20, 50), (4, 3.2, 3.6))):
+        g.blob((x, 2, z), r, p=2.2)
+    rig.part("trunk", g, LEAF_DK, finish="hair")
+    g = Geo()
+    cyl(g, (-1.0, 0, 13.0), (-1.6, 0, 19.5), 3.5, bevel=0.3, segs=14)
+    g.blob((-9.0, -2.6, 31.0), (3.6, 1.4, 5.0), p=2.2, rot=(0, 25, 0))   # a team rag tied on a branch
+    rig.part("trunk", g, team=True, outline=0.4)
+    rig.joint("pouch", "trunk", (-18, 0, 48))
+    g = Geo().blob((-19, -1, 51), (4.4, 3.6, 2.6), p=2.2, taper=(0.8, 1.2))
+    rig.part("pouch", g, "#8C7058", outline=0.5)
+    rig.joint("stone", "pouch", (-19, -1, 53))
+    g = Geo()
+    rock(g, (-19, -1, 54), (4.0, 3.6, 3.6), seed=21, jag=0.15)
+    rig.part("stone", g, STONE)
+    g = Geo().blob((-19, -1.0, 49.2), (4.6, 3.8, 1.2), p=2.4)
+    rig.part("pouch", g, team=True, outline=0.4)
+    smoke_puff(rig, "head", (10, 0, 40), 0.8, name="dust")
+
+
+def sapling_idle(f):
+    t = f / 6 * 2 * math.pi
+    return {"trunk": {"r": 2.0 * math.sin(t)}, "stone": {"r": 6 * math.sin(2 * t)}}
+
+
+def sapling_fire(f):
+    # 0 hauled further back (strain), 1 released: the sapling whips forward (smear), 2 overshoot,
+    # 3 bounces back, 4 reloaded and bent back again
+    a = [8, -70, -95, -40, 0][f]
+    return {"trunk": {"r": a, "sz": [0.95, 1.06, 1.0, 1.0, 1.0][f]}, "stone": {"hide": f in (1, 2, 3)},
+            "dust": {"show": f in (1, 2)}}
+
+
+SAPLING_OVERLAYS = {"fire": {1: [{"kind": "arc", "joint": "trunk", "inner": (-10, 0, 38), "outer": (-19, 0, 52),
+                                  "color": LEAF, "taper": 0.2, "t0": 0.0, "t1": 0.85, "lines": 3}]}}
+
+
 TURRETS = [
     turret_module("rock_tosser", "Rock Tosser", "stone", 58, CANVAS, FEET, (0, 22), (-2.5, 0, 57), rock_tosser_build,
                   rock_tosser_idle, rock_tosser_fire, aim=(0, 0), fire_kind="swing", muzzle_joint="boulder",
@@ -308,4 +456,11 @@ TURRETS = [
                   log_roller_idle, log_roller_fire, aim=(0, 0), fire_kind="release", idle_frames=6),
     turret_module("grumpy_toad", "Grumpy Toad", "stone", 40, CANVAS, FEET, (0, 12), (15, -2, 18.5), toad_build,
                   toad_idle, toad_fire, aim=(-18, 18), fire_kind="tongue", idle_frames=6),
+    # content expansion, Stone wave (CONTENT_PLAN 5.1)
+    turret_module("quill_porcupine", "Quill Porcupine", "stone", 44, CANVAS, FEET, (0, 18), (18, -2, 30), porcupine_build,
+                  porcupine_idle, porcupine_fire, aim=(-20, 25), fire_kind="pulse", idle_frames=6,
+                  overlays=PORCUPINE_OVERLAYS),
+    turret_module("sapling_sling", "Sapling Sling", "stone", 56, CANVAS, FEET, (0, 6), (-19, -1, 54), sapling_build,
+                  sapling_idle, sapling_fire, aim=(0, 0), fire_kind="swing", muzzle_joint="stone", idle_frames=6,
+                  overlays=SAPLING_OVERLAYS),
 ]

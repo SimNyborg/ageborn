@@ -1,0 +1,462 @@
+{
+ "frames": {
+  "tragic_chorus_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 223,
+    "w": 128,
+    "h": 192
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 184,
+    "w": 128,
+    "h": 192
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.52823,
+    "y": 0.83721
+   }
+  },
+  "tragic_chorus_attack_b_02_team": {
+   "frame": {
+    "x": 344,
+    "y": 419,
+    "w": 90,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 213,
+    "y": 258,
+    "w": 90,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.52823,
+    "y": 0.83721
+   }
+  },
+  "tragic_chorus_attack_b_03": {
+   "frame": {
+    "x": 287,
+    "y": 223,
+    "w": 155,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 216,
+    "y": 213,
+    "w": 155,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.52823,
+    "y": 0.83721
+   }
+  },
+  "tragic_chorus_attack_b_03_team": {
+   "frame": {
+    "x": 251,
+    "y": 419,
+    "w": 89,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 259,
+    "w": 89,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.52823,
+    "y": 0.83721
+   }
+  },
+  "tragic_chorus_attack_b_04": {
+   "frame": {
+    "x": 134,
+    "y": 223,
+    "w": 149,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 210,
+    "w": 149,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.52823,
+    "y": 0.83721
+   }
+  },
+  "tragic_chorus_attack_b_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 419,
+    "w": 82,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 261,
+    "w": 82,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.52823,
+    "y": 0.83721
+   }
+  },
+  "tragic_chorus_attack_b_05": {
+   "frame": {
+    "x": 112,
+    "y": 2,
+    "w": 112,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 170,
+    "w": 112,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.52823,
+    "y": 0.83721
+   }
+  },
+  "tragic_chorus_attack_b_05_team": {
+   "frame": {
+    "x": 88,
+    "y": 419,
+    "w": 79,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 226,
+    "y": 254,
+    "w": 79,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.52823,
+    "y": 0.83721
+   }
+  },
+  "tragic_chorus_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 106,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 159,
+    "w": 106,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.52823,
+    "y": 0.83721
+   }
+  },
+  "tragic_chorus_attack_b_06_team": {
+   "frame": {
+    "x": 171,
+    "y": 419,
+    "w": 76,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 228,
+    "y": 252,
+    "w": 76,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.52823,
+    "y": 0.83721
+   }
+  },
+  "tragic_chorus_attack_b_07": {
+   "frame": {
+    "x": 228,
+    "y": 2,
+    "w": 152,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 178,
+    "w": 152,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.52823,
+    "y": 0.83721
+   }
+  },
+  "tragic_chorus_attack_b_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 527,
+    "w": 85,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 261,
+    "w": 85,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 496,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.52823,
+    "y": 0.83721
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "tragic_chorus_attack_00",
+   "tragic_chorus_attack_01",
+   "tragic_chorus_attack_b_02",
+   "tragic_chorus_attack_b_03",
+   "tragic_chorus_attack_b_04",
+   "tragic_chorus_attack_b_05",
+   "tragic_chorus_attack_b_06",
+   "tragic_chorus_attack_b_07",
+   "tragic_chorus_attack_08",
+   "tragic_chorus_attack_09",
+   "tragic_chorus_attack_10",
+   "tragic_chorus_attack_11"
+  ],
+  "attack_b_team": [
+   "tragic_chorus_attack_00_team",
+   "tragic_chorus_attack_01_team",
+   "tragic_chorus_attack_b_02_team",
+   "tragic_chorus_attack_b_03_team",
+   "tragic_chorus_attack_b_04_team",
+   "tragic_chorus_attack_b_05_team",
+   "tragic_chorus_attack_b_06_team",
+   "tragic_chorus_attack_b_07_team",
+   "tragic_chorus_attack_08_team",
+   "tragic_chorus_attack_09_team",
+   "tragic_chorus_attack_10_team",
+   "tragic_chorus_attack_11_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "tragic_chorus.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 448,
+   "h": 624
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.tragic_chorus",
+   "name": "Tragic Chorus",
+   "heightLu": 70,
+   "widthLu": 33.3,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    262,
+    360
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     70
+    ],
+    "hitCenter": [
+     0,
+     33
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "tragic_chorus",
+   "clips": {
+    "attack_b": {
+     "frames": 12,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "durationsMs": [
+      30,
+      40,
+      40,
+      102,
+      30,
+      30,
+      18,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 7,
+     "impactStep": 7,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        16.6,
+        39.9
+       ],
+       [
+        19.2,
+        37.9
+       ],
+       [
+        23.0,
+        32.2
+       ],
+       [
+        27.9,
+        22.7
+       ],
+       [
+        27.3,
+        23.2
+       ],
+       [
+        21.4,
+        36.6
+       ],
+       [
+        14.1,
+        46.0
+       ],
+       [
+        13.0,
+        43.6
+       ],
+       [
+        28.3,
+        34.0
+       ],
+       [
+        21.4,
+        38.2
+       ],
+       [
+        17.8,
+        39.7
+       ],
+       [
+        16.6,
+        39.9
+       ]
+      ]
+     },
+     "muzzle": [
+      13.0,
+      43.6
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

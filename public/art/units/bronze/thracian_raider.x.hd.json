@@ -1,0 +1,843 @@
+{
+ "frames": {
+  "thracian_raider_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 732,
+    "w": 214,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 298,
+    "w": 214,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_b_02_team": {
+   "frame": {
+    "x": 246,
+    "y": 1053,
+    "w": 112,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 291,
+    "y": 326,
+    "w": 112,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_b_03": {
+   "frame": {
+    "x": 498,
+    "y": 732,
+    "w": 241,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 314,
+    "w": 241,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_b_03_team": {
+   "frame": {
+    "x": 493,
+    "y": 1053,
+    "w": 117,
+    "h": 114
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 293,
+    "y": 339,
+    "w": 117,
+    "h": 114
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_b_04": {
+   "frame": {
+    "x": 237,
+    "y": 2,
+    "w": 249,
+    "h": 271
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 284,
+    "w": 249,
+    "h": 271
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_b_04_team": {
+   "frame": {
+    "x": 279,
+    "y": 909,
+    "w": 95,
+    "h": 135
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 305,
+    "y": 318,
+    "w": 95,
+    "h": 135
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 231,
+    "h": 294
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 288,
+    "y": 270,
+    "w": 231,
+    "h": 294
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 909,
+    "w": 90,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 308,
+    "y": 306,
+    "w": 90,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_b_06": {
+   "frame": {
+    "x": 490,
+    "y": 2,
+    "w": 222,
+    "h": 237
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 302,
+    "y": 235,
+    "w": 222,
+    "h": 237
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_b_06_team": {
+   "frame": {
+    "x": 182,
+    "y": 909,
+    "w": 93,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 319,
+    "y": 311,
+    "w": 93,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 300,
+    "w": 157,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 297,
+    "y": 254,
+    "w": 157,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_b_07_team": {
+   "frame": {
+    "x": 559,
+    "y": 909,
+    "w": 89,
+    "h": 129
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 328,
+    "y": 315,
+    "w": 89,
+    "h": 129
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_c_02": {
+   "frame": {
+    "x": 2,
+    "y": 522,
+    "w": 201,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 264,
+    "w": 201,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_c_02_team": {
+   "frame": {
+    "x": 378,
+    "y": 909,
+    "w": 87,
+    "h": 134
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 300,
+    "y": 301,
+    "w": 87,
+    "h": 134
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_c_03": {
+   "frame": {
+    "x": 163,
+    "y": 300,
+    "w": 183,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 257,
+    "w": 183,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_c_03_team": {
+   "frame": {
+    "x": 96,
+    "y": 909,
+    "w": 82,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 299,
+    "y": 297,
+    "w": 82,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_c_04": {
+   "frame": {
+    "x": 207,
+    "y": 522,
+    "w": 208,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 268,
+    "w": 208,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_c_04_team": {
+   "frame": {
+    "x": 469,
+    "y": 909,
+    "w": 86,
+    "h": 132
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 305,
+    "y": 305,
+    "w": 86,
+    "h": 132
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_c_05": {
+   "frame": {
+    "x": 350,
+    "y": 300,
+    "w": 300,
+    "h": 213
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 256,
+    "w": 300,
+    "h": 213
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_c_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 1053,
+    "w": 115,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 298,
+    "y": 313,
+    "w": 115,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_c_06": {
+   "frame": {
+    "x": 220,
+    "y": 732,
+    "w": 274,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 316,
+    "y": 302,
+    "w": 274,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_c_06_team": {
+   "frame": {
+    "x": 362,
+    "y": 1053,
+    "w": 127,
+    "h": 115
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 333,
+    "w": 127,
+    "h": 115
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_c_07": {
+   "frame": {
+    "x": 419,
+    "y": 522,
+    "w": 236,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 324,
+    "y": 297,
+    "w": 236,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  },
+  "thracian_raider_attack_c_07_team": {
+   "frame": {
+    "x": 121,
+    "y": 1053,
+    "w": 121,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 313,
+    "y": 329,
+    "w": 121,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 570
+   },
+   "anchor": {
+    "x": 0.53846,
+    "y": 0.79649
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "thracian_raider_attack_00",
+   "thracian_raider_attack_01",
+   "thracian_raider_attack_b_02",
+   "thracian_raider_attack_b_03",
+   "thracian_raider_attack_b_04",
+   "thracian_raider_attack_b_05",
+   "thracian_raider_attack_b_06",
+   "thracian_raider_attack_b_07",
+   "thracian_raider_attack_08",
+   "thracian_raider_attack_09",
+   "thracian_raider_attack_10"
+  ],
+  "attack_b_team": [
+   "thracian_raider_attack_00_team",
+   "thracian_raider_attack_01_team",
+   "thracian_raider_attack_b_02_team",
+   "thracian_raider_attack_b_03_team",
+   "thracian_raider_attack_b_04_team",
+   "thracian_raider_attack_b_05_team",
+   "thracian_raider_attack_b_06_team",
+   "thracian_raider_attack_b_07_team",
+   "thracian_raider_attack_08_team",
+   "thracian_raider_attack_09_team",
+   "thracian_raider_attack_10_team"
+  ],
+  "attack_c": [
+   "thracian_raider_attack_00",
+   "thracian_raider_attack_01",
+   "thracian_raider_attack_c_02",
+   "thracian_raider_attack_c_03",
+   "thracian_raider_attack_c_04",
+   "thracian_raider_attack_c_05",
+   "thracian_raider_attack_c_06",
+   "thracian_raider_attack_c_07",
+   "thracian_raider_attack_08",
+   "thracian_raider_attack_09",
+   "thracian_raider_attack_10"
+  ],
+  "attack_c_team": [
+   "thracian_raider_attack_00_team",
+   "thracian_raider_attack_01_team",
+   "thracian_raider_attack_c_02_team",
+   "thracian_raider_attack_c_03_team",
+   "thracian_raider_attack_c_04_team",
+   "thracian_raider_attack_c_05_team",
+   "thracian_raider_attack_c_06_team",
+   "thracian_raider_attack_c_07_team",
+   "thracian_raider_attack_08_team",
+   "thracian_raider_attack_09_team",
+   "thracian_raider_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "thracian_raider.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 768,
+   "h": 1184
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.thracian_raider",
+   "name": "Thracian Raider",
+   "heightLu": 68,
+   "widthLu": 67.9,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    350,
+    454
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     66
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "thracian_raider",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        40.2,
+        61.7
+       ],
+       [
+        2.8,
+        68.3
+       ],
+       [
+        -55.8,
+        2.1
+       ],
+       [
+        -64.0,
+        9.2
+       ],
+       [
+        29.0,
+        -36.9
+       ],
+       [
+        65.2,
+        38.4
+       ],
+       [
+        44.1,
+        75.7
+       ],
+       [
+        38.6,
+        77.8
+       ],
+       [
+        72.7,
+        20.6
+       ],
+       [
+        49.8,
+        56.9
+       ],
+       [
+        41.6,
+        62.0
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        40.2,
+        61.7
+       ],
+       [
+        2.8,
+        68.3
+       ],
+       [
+        -62.7,
+        49.6
+       ],
+       [
+        -58.5,
+        52.8
+       ],
+       [
+        5.6,
+        71.6
+       ],
+       [
+        74.7,
+        37.4
+       ],
+       [
+        84.0,
+        21.4
+       ],
+       [
+        81.5,
+        18.8
+       ],
+       [
+        72.7,
+        20.6
+       ],
+       [
+        49.8,
+        56.9
+       ],
+       [
+        41.6,
+        62.0
+       ]
+      ]
+     },
+     "holdStep": 3
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

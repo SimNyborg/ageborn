@@ -1,0 +1,507 @@
+{
+ "frames": {
+  "alchemist_attack_b_02": {
+   "frame": {
+    "x": 270,
+    "y": 2,
+    "w": 124,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 204,
+    "w": 124,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.85116
+   }
+  },
+  "alchemist_attack_b_02_team": {
+   "frame": {
+    "x": 188,
+    "y": 190,
+    "w": 82,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 243,
+    "w": 82,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.85116
+   }
+  },
+  "alchemist_attack_b_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 134,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 200,
+    "w": 134,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.85116
+   }
+  },
+  "alchemist_attack_b_03_team": {
+   "frame": {
+    "x": 274,
+    "y": 190,
+    "w": 91,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 245,
+    "w": 91,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.85116
+   }
+  },
+  "alchemist_attack_b_04": {
+   "frame": {
+    "x": 140,
+    "y": 2,
+    "w": 126,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 163,
+    "y": 201,
+    "w": 126,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.85116
+   }
+  },
+  "alchemist_attack_b_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 190,
+    "w": 84,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 234,
+    "w": 84,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.85116
+   }
+  },
+  "alchemist_attack_b_05": {
+   "frame": {
+    "x": 398,
+    "y": 2,
+    "w": 140,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 208,
+    "w": 140,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.85116
+   }
+  },
+  "alchemist_attack_b_05_team": {
+   "frame": {
+    "x": 90,
+    "y": 190,
+    "w": 94,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 243,
+    "w": 94,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.85116
+   }
+  },
+  "alchemist_attack_b_06": {
+   "frame": {
+    "x": 646,
+    "y": 2,
+    "w": 113,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 220,
+    "w": 113,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.85116
+   }
+  },
+  "alchemist_attack_b_06_team": {
+   "frame": {
+    "x": 565,
+    "y": 190,
+    "w": 102,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 259,
+    "w": 102,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.85116
+   }
+  },
+  "alchemist_attack_b_07": {
+   "frame": {
+    "x": 763,
+    "y": 2,
+    "w": 113,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 225,
+    "w": 113,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.85116
+   }
+  },
+  "alchemist_attack_b_07_team": {
+   "frame": {
+    "x": 461,
+    "y": 190,
+    "w": 100,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 263,
+    "w": 100,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.85116
+   }
+  },
+  "alchemist_attack_b_08": {
+   "frame": {
+    "x": 542,
+    "y": 2,
+    "w": 100,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 213,
+    "w": 100,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.85116
+   }
+  },
+  "alchemist_attack_b_08_team": {
+   "frame": {
+    "x": 369,
+    "y": 190,
+    "w": 88,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 256,
+    "w": 88,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.85116
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "alchemist_attack_00",
+   "alchemist_attack_01",
+   "alchemist_attack_b_02",
+   "alchemist_attack_b_03",
+   "alchemist_attack_b_04",
+   "alchemist_attack_b_05",
+   "alchemist_attack_b_06",
+   "alchemist_attack_b_07",
+   "alchemist_attack_b_08",
+   "alchemist_attack_09",
+   "alchemist_attack_10"
+  ],
+  "attack_b_team": [
+   "alchemist_attack_00_team",
+   "alchemist_attack_01_team",
+   "alchemist_attack_b_02_team",
+   "alchemist_attack_b_03_team",
+   "alchemist_attack_b_04_team",
+   "alchemist_attack_b_05_team",
+   "alchemist_attack_b_06_team",
+   "alchemist_attack_b_07_team",
+   "alchemist_attack_b_08_team",
+   "alchemist_attack_09_team",
+   "alchemist_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "alchemist.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 896,
+   "h": 316
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.alchemist",
+   "name": "Alchemist",
+   "heightLu": 64,
+   "widthLu": 36.2,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    232,
+    366
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     62
+    ],
+    "hitCenter": [
+     0,
+     30
+    ],
+    "muzzle": [
+     20,
+     44
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "alchemist",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "holdStep": 3,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        6.8,
+        31.4
+       ],
+       [
+        2.4,
+        19.6
+       ],
+       [
+        -15.2,
+        47.7
+       ],
+       [
+        -23.5,
+        43.5
+       ],
+       [
+        -5.9,
+        53.2
+       ],
+       [
+        12.0,
+        48.5
+       ],
+       [
+        22.7,
+        39.5
+       ],
+       [
+        26.0,
+        22.0
+       ],
+       [
+        14.6,
+        18.2
+       ],
+       [
+        9.4,
+        31.5
+       ],
+       [
+        6.6,
+        31.9
+       ]
+      ]
+     },
+     "muzzle": [
+      22.7,
+      39.5
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

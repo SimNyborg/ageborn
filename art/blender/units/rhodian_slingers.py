@@ -12,14 +12,20 @@ lead glans in it.
 
 Animation (cartoon kit v2):
   idle    swings the empty-handed sling gently like a pendulum, weight shift, blink
-  walk    jog: light and bouncy, the sling swinging a frame late, the satchel bouncing
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1, 81.25 lu/s): the sling coiled up in the
+          near fist at the chest, the pouch dangling, the far arm pumping, the satchel bouncing
+  attack_b  OVERHAND WHIP: no loop; the arm cocks high behind the head with the pouch hanging down
+          his back (held extreme), then whips over the top and lets fly at shoulder height
   attack  WINDMILL LOOP: the arm comes forward and up, over and far back (held extreme: arm
           straight back, the pouch trailing behind him, body coiled), then whips down past the
           hip (ring smear) and releases forward-up (the shot leaves the pouch on the impact
           frame); the cord flicks up empty, then he loads a new glans from the satchel
+          A and B hold their cocked pose with a small jiggle while the sim wind-up lasts (holdLoop)
   hit     light: the hat lifts off his head and drops back
   die     D1 fling and spin, the petasos sails away
 """
+import math
+
 from ageborn_art import face as F
 from ageborn_art import kit_bronze as K
 from ageborn_art import moves as M
@@ -28,6 +34,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "rhodian_slingers"
+GAIT_NAME = "biped"
 NAME = "Rhodian Slingers"
 HEIGHT_LU = 66
 CANVAS = (300, 250)
@@ -40,16 +47,19 @@ HAT_C = (1.0, 0, 57.0)
 
 
 def build(rig):
-    B.skeleton(rig)
-    B.sandal_legs(rig, greaves=False)
-    K.laces(rig)
+    global RIG
+    RIG = rig
+    B.skeleton_v3(rig)           # walk v3: longer legs, planted feet (ANIM_SPEC 2.0 rule 5)
+    B.sandal_legs_v3(rig, greaves=False)
     K.tunic(rig, team=True)
+    rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 1.0)        # hem >= 9 lu above the soles
     # satchel of lead shot on the near hip, strap over the far shoulder
     rig.secondary("satchel", "hips", (5.0, -11.0, 17.0), (5.0, -11.5, 9.0), max_deg=12, gain=1.1)
+    rig.rest_offset["satchel"] = (0, 0, B.V3_LIFT + 2.5)    # its bottom >= 9 lu above the soles
     g = Geo().blob((5.5, -11.6, 12.4), (5.2, 2.8, 4.4), p=2.6)
     rig.part("satchel", g, B.LEATHER)
-    g = Geo().blob((5.5, -13.2, 14.8), (5.4, 1.6, 2.0), p=2.6)
-    rig.part("satchel", g, B.LEATHER_DK, outline=0.5)
+    g = Geo().blob((5.5, -13.2, 14.4), (5.6, 1.8, 2.8), p=2.6)              # team flap
+    rig.part("satchel", g, team=True, outline=0.5)
     g = Geo().capsule((8.0, -8.5, 20.0), (-7.0, 7.5, 37.5), 1.2)
     rig.part("torso", g, B.LEATHER_DK, outline=0.5)
 
@@ -68,7 +78,6 @@ def build(rig):
     rig.joint("sling", "hand_r", HR)
     pouch = K.sling(rig, "sling", HR, cord=13.0)
     rig.track("muzzle", "sling", pouch)
-    rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -92,48 +101,64 @@ def _idle(f):
     return M.idle_v2(f, STANCE, frames=6, extra=extra, face_blink=F.expr("blink"), blink=4)
 
 
-def _walk(f):
+# -- walk v3: G1 bounce jog at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 77 ms ----------
+RIG = None
+SPEED = 81.25
+LEGS = B.walk_legs_v3()
+GAIT = B.jog_gait(SPEED, LEGS)
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return {"sling": {"r": 10 * lag}, "hat": {"z": 0.4 * lag}}
-    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=38.0, knee=72.0, lift_lu=8.0, bob_pct=0.08,
-                     lean=-10.0, arm=30.0, fore=22.0, extra=extra)
+        c = math.cos(ctx["lag_p"])                   # +1 = the far arm forward
+        return merge(swing(-30 + 6 * c, 70 + 6 * c, -90 + 14 * lag),
+                     other(-90 + 34 * c, -90 + 34 * c + 70 + 15 * c),
+                     {"hat": {"z": 0.4 * lag}})
+    base = {k: v for k, v in STANCE.items() if not k.startswith(("arm_", "fore_", "hand_"))}
+    return M.walk_v3(RIG, f, base, GAIT, legs=LEGS, lean=-10.0, twist=6.0, nod=3.0, extra=extra, report=report)
 
 
-# 11 unique frames, moves.SMALL_MELEE_MS. WORLD angles of the near arm, forearm and sling;
-# the numbers keep increasing through the windmill so springs and smears go the right way.
-#        read  fwd   up   HOLD smear lead  REL  flick recoil load  settle
-S_A = [-78, 0, 90, 172, 250, 285, 312, 335, 300, 260, 282]
-S_F = [-70, 12, 98, 178, 256, 292, 322, 352, 290, 300, 290]
-S_W = [-96, -30, 60, 200, 300, 345, 380, 420, 330, 260, 264]
-O_A = [-60, -40, -10, 20, -30, -60, -80, -85, -70, -55, -60]
-O_F = [-30, -20, 10, 40, -20, -60, -90, -95, -60, -40, -30]
-A_T = [-2, -4, 4, 14, 4, -10, -18, -20, -10, -12, -4]
-A_H = [0, -2, -4, -8, 0, 6, 8, 10, 4, 6, 0]
-A_Q = [-0.02, 0.02, 0.05, 0.09, 0.0, -0.04, -0.12, -0.08, -0.02, -0.04, 0.0]
-A_X = [0.0, 0.5, -1.0, -4.5, -1.0, 2.5, 6.0, 7.0, 4.5, 2.0, 0.5]
-A_Z = [0.0, 0.6, 1.2, 1.6, -0.6, -1.0, -2.0, -1.6, -0.6, -1.0, 0.0]
-A_THR = [0, 6, 10, 30, 18, 20, 24, 22, 10, 6, 2]
-A_SHR = [0, -6, -10, -12, -10, -14, -20, -18, -8, -6, 0]
-A_THL = [0, -4, -10, -16, -6, -18, -32, -34, -16, -10, -2]
-A_SHL = [0, -8, -16, -26, -10, -20, -36, -36, -16, -10, 0]
+def _feet(pose, fr, fl, lr=0.0, ll=0.0, ar=0.0, al=0.0):
+    return B.plant(RIG, pose, LEGS, r=(fr, lr, ar), l=(fl, ll, al))
+
+
+# 12 steps: read, fwd, up, HOLD, jiggle (holdLoop partner), smear, lead | RELEASE, flick, recoil, load,
+# settle. Pre-impact 290 of 680 ms (impactAt 0.4265); the hold is 35% of the pre-impact time.
+ATK_MS = [30, 40, 40, 102, 30, 30, 18, 120, 60, 50, 70, 90]
+ATK_IMPACT = 7
+# WORLD angles of the near arm, forearm and sling; the numbers keep increasing through the windmill
+# so springs and smears go the right way.
+#        read  fwd   up   HOLD jigl smear lead  REL  flick recoil load  settle
+S_A = [-78, 0, 90, 172, 168, 250, 285, 312, 335, 300, 260, 282]
+S_F = [-70, 12, 98, 178, 176, 256, 292, 322, 352, 290, 300, 290]
+S_W = [-96, -30, 60, 200, 192, 300, 345, 380, 420, 330, 260, 264]
+O_A = [-60, -40, -10, 20, 24, -30, -60, -80, -85, -70, -55, -60]
+O_F = [-30, -20, 10, 40, 44, -20, -60, -90, -95, -60, -40, -30]
+A_T = [-2, -4, 4, 14, 13, 4, -10, -18, -20, -10, -12, -4]
+A_H = [0, -2, -4, -8, -7, 0, 6, 8, 10, 4, 6, 0]
+A_Q = [-0.02, 0.02, 0.05, 0.09, 0.07, 0.0, -0.04, -0.12, -0.08, -0.02, -0.04, 0.0]
+A_X = [0.0, 0.5, -1.0, -4.5, -4.2, -1.0, 2.5, 6.0, 7.0, 4.5, 2.0, 0.5]
+A_Z = [0.0, 0.6, 1.2, 1.6, 1.2, -0.6, -1.0, -2.0, -1.6, -0.6, -1.0, 0.0]
+A_FR = [2.0, 2.5, 2.0, 1.0, 1.0, 4.0, 8.0, 12.0, 12.5, 9.0, 5.0, 2.5]
+A_FL = [-2.0, -2.5, -4.0, -6.0, -6.0, -5.0, -4.0, -3.0, -3.0, -2.5, -2.0, -2.0]
+A_LR = [0, 0, 0, 0, 0, 2.0, 1.5, 0, 0, 0, 0, 0]
 
 
 def _attack_pose(f):
     t = A_T[f]
     pose = merge(swing(S_A[f] - t, S_F[f] - t, S_W[f] - t), other(O_A[f] - t, O_F[f] - t), {
         "torso": {"r": t}, "head": {"r": A_H[f]},
-        "thigh_r": {"r": A_THR[f]}, "shin_r": {"r": A_SHR[f]},
-        "thigh_l": {"r": A_THL[f]}, "shin_l": {"r": A_SHL[f]},
-        "pouch_stone": {"hide": f in (6, 7, 8)},
+        "pouch_stone": {"hide": f in (7, 8, 9)},
     }, M.body_about((0, 0, 22), x=A_X[f], z=A_Z[f], q=A_Q[f]))
-    if f in (3, 4, 5):
+    pose = _feet(pose, A_FR[f], A_FL[f], lr=A_LR[f])
+    if f in (3, 4, 5, 6):
         pose.setdefault("sling", {})["sz"] = 1.15
-    if f in (2, 3):
+    if f in (2, 3, 4):
         pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.8}})
-    elif f in (4, 5, 6, 7):
+    elif f in (5, 6, 7, 8):
         pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.1}})
-    elif f == 9:
+    elif f == 10:
         pose = merge(pose, {"pupils": {"x": -0.4, "z": -0.6}})
     return pose
 
@@ -146,15 +171,64 @@ def _attack_clip():
     ring = {"kind": "arc", "joint": "sling", "inner": FIST, "outer": POUCH, "color": B.SAND_LT,
             "white": 0.35, "taper": 0.15, "lines": 3, "band": 0.38}
     ov = {
-        3: [dict(ring, **{"from": 2, "t0": 0.2, "t1": 0.95})],
-        4: [dict(ring, **{"from": 3, "t1": 0.95})],
-        5: [dict(ring, **{"from": 4, "t0": 0.2, "t1": 0.95})],
-        6: [{"kind": "burst", "joint": "sling", "point": POUCH, "r0_lu": 3.0, "r1_lu": 8.0, "n": 4,
+        5: [dict(ring, **{"from": 4, "t1": 0.95})],
+        6: [dict(ring, **{"from": 5, "t0": 0.2, "t1": 0.95})],
+        7: [{"kind": "burst", "joint": "sling", "point": POUCH, "r0_lu": 3.0, "r1_lu": 8.0, "n": 4,
              "a0": -10.0, "arc": 80.0},
             {"kind": "dust", "ground": (10.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 3, "spread": 0.7}],
     }
-    return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
-                  impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
+    return M.clip("attack", [_attack_pose(f) for f in range(12)], ATK_MS, impact=ATK_IMPACT, smear=5,
+                  overlays=ov, extra={"holdStep": 3, "holdLoop": [3, 4]})
+
+
+# -- attack B: overhand whip, no loop (ANIM_SPEC 2.2 throwers: overhand) ------------------------------
+# 0-1 = A read and fwd, 2 the arm swung up, 3 HOLD (the arm cocked high behind the head, the pouch
+# hanging down his back, leaning back on the rear foot), 4 jiggle, 5 smear (whipped over the top),
+# 6 lead, 7 RELEASE (arm forward at shoulder height, the cord streaming forward), 8-11 = A's
+#      up   HOLD jigl smear lead  REL
+B_A = [120, 150, 146, 90, 40, 10]
+B_F = [160, 215, 210, 80, 30, 0]
+B_W = [200, 250, 242, 120, 40, 0]
+B_OA = [-20, 10, 14, -40, -70, -90]
+B_OF = [0, 30, 34, -40, -80, -100]
+B_T = [6, 16, 15, 0, -12, -20]
+B_H = [-4, -8, -7, 2, 6, 8]
+B_X = [-1.5, -4.0, -3.8, 0.0, 4.0, 7.0]
+B_Z = [0.8, 1.4, 1.0, -0.4, -1.4, -2.2]
+B_Q = [0.04, 0.08, 0.06, 0.0, -0.06, -0.12]
+B_FR = [2.0, 1.0, 1.0, 5.0, 9.0, 13.0]
+B_FL = [-4.0, -7.0, -7.0, -6.0, -4.0, -3.0]
+B_LR = [0, 0, 0, 2.5, 1.5, 0]
+
+
+def _b_pose(i):
+    if i in (0, 1) or i >= 8:
+        return _attack_pose(i)
+    k = i - 2
+    t = B_T[k]
+    pose = merge(swing(B_A[k] - t, B_F[k] - t, B_W[k] - t), other(B_OA[k] - t, B_OF[k] - t), {
+        "torso": {"r": t}, "head": {"r": B_H[k]}, "pouch_stone": {"hide": i == 7},
+    }, M.body_about((0, 0, 22), x=B_X[k], z=B_Z[k], q=B_Q[k]))
+    pose = _feet(pose, B_FR[k], B_FL[k], lr=B_LR[k])
+    if i in (5, 6):
+        pose.setdefault("sling", {})["sz"] = 1.15
+    pose = merge(pose, F.expr("grit") if i in (2, 3, 4) else F.expr("yell"), {"brow": {"z": -1.0}})
+    return pose
+
+
+def _attack_b():
+    streak = {"kind": "streak", "joint": "sling", "point": POUCH, "color": B.SAND_LT, "width_lu": 5.0, "white": 0.3}
+    ov = {
+        5: [dict(streak, **{"from": 4, "t1": 0.95})],
+        6: [dict(streak, **{"from": 5, "t0": 0.2, "t1": 0.95})],
+        7: [{"kind": "burst", "joint": "sling", "point": POUCH, "r0_lu": 3.0, "r1_lu": 8.0, "n": 4,
+             "a0": -30.0, "arc": 80.0},
+            {"kind": "dust", "ground": (12.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 5, "spread": 0.7}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10),
+             11: ("attack", 11)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(12)], ATK_MS, impact=ATK_IMPACT, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 3, "holdLoop": [3, 4]})
 
 
 def _hit(k):
@@ -197,10 +271,11 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

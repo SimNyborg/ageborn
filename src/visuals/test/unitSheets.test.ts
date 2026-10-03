@@ -137,8 +137,8 @@ describe('per-age loading', () => {
     });
     a.world.preload = async () => {};
     await a.preload(['stone', 'medieval']);
-    // the 8 Stone core sheets are awaited; their extras sheets (`.x.json`, attacks B/C) follow unawaited
-    expect(loaded.filter((u) => !/\.x\.(hd\.)?json$/.test(u)).length).toBe(8);
+    // the 22 Stone core sheets (8 plus the Stone wave's 14) are awaited; their extras sheets (`.x.json`, attacks B/C) follow unawaited
+    expect(loaded.filter((u) => !/\.x\.(hd\.)?json$/.test(u)).length).toBe(22);
     expect(loaded.every((u) => u.startsWith('/ageborn/art/units/stone/'))).toBe(true);
     const knight = MANIFEST['unit.destrier_knight'];
     expect(knight && a.canDraw('unit', knight)).toBe(false);

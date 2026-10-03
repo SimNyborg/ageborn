@@ -1,0 +1,941 @@
+{
+ "frames": {
+  "hussar_attack_b_01": {
+   "frame": {
+    "x": 595,
+    "y": 418,
+    "w": 253,
+    "h": 304
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 351,
+    "y": 223,
+    "w": 253,
+    "h": 304
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_b_01_team": {
+   "frame": {
+    "x": 671,
+    "y": 1038,
+    "w": 124,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 373,
+    "y": 230,
+    "w": 124,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_b_02": {
+   "frame": {
+    "x": 1176,
+    "y": 418,
+    "w": 254,
+    "h": 299
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 345,
+    "y": 227,
+    "w": 254,
+    "h": 299
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_b_02_team": {
+   "frame": {
+    "x": 926,
+    "y": 1038,
+    "w": 137,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 356,
+    "y": 236,
+    "w": 137,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_b_03": {
+   "frame": {
+    "x": 538,
+    "y": 737,
+    "w": 249,
+    "h": 291
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 340,
+    "y": 233,
+    "w": 249,
+    "h": 291
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_b_03_team": {
+   "frame": {
+    "x": 1067,
+    "y": 1038,
+    "w": 152,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 336,
+    "y": 243,
+    "w": 152,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 418,
+    "w": 280,
+    "h": 315
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 354,
+    "y": 211,
+    "w": 280,
+    "h": 315
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_b_04_team": {
+   "frame": {
+    "x": 158,
+    "y": 1038,
+    "w": 119,
+    "h": 228
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 385,
+    "y": 218,
+    "w": 119,
+    "h": 228
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_b_05": {
+   "frame": {
+    "x": 852,
+    "y": 418,
+    "w": 320,
+    "h": 300
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 361,
+    "y": 224,
+    "w": 320,
+    "h": 300
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_b_05_team": {
+   "frame": {
+    "x": 406,
+    "y": 1038,
+    "w": 129,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 399,
+    "y": 224,
+    "w": 129,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_b_06": {
+   "frame": {
+    "x": 1123,
+    "y": 737,
+    "w": 363,
+    "h": 263
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 375,
+    "y": 262,
+    "w": 363,
+    "h": 263
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_b_06_team": {
+   "frame": {
+    "x": 321,
+    "y": 1270,
+    "w": 148,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 406,
+    "y": 257,
+    "w": 148,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 737,
+    "w": 291,
+    "h": 297
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 388,
+    "y": 237,
+    "w": 291,
+    "h": 297
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_b_07_team": {
+   "frame": {
+    "x": 539,
+    "y": 1038,
+    "w": 128,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 410,
+    "y": 233,
+    "w": 128,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_c_01": {
+   "frame": {
+    "x": 707,
+    "y": 2,
+    "w": 261,
+    "h": 341
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 344,
+    "y": 184,
+    "w": 261,
+    "h": 341
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_c_01_team": {
+   "frame": {
+    "x": 1386,
+    "y": 1038,
+    "w": 137,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 357,
+    "y": 243,
+    "w": 137,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_c_02": {
+   "frame": {
+    "x": 286,
+    "y": 418,
+    "w": 305,
+    "h": 305
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 281,
+    "y": 219,
+    "w": 305,
+    "h": 305
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_c_02_team": {
+   "frame": {
+    "x": 1223,
+    "y": 1038,
+    "w": 159,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 327,
+    "y": 246,
+    "w": 159,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_c_03": {
+   "frame": {
+    "x": 791,
+    "y": 737,
+    "w": 328,
+    "h": 282
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 248,
+    "y": 239,
+    "w": 328,
+    "h": 282
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_c_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 1270,
+    "w": 170,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 311,
+    "y": 253,
+    "w": 170,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_c_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 360,
+    "h": 412
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 249,
+    "y": 108,
+    "w": 360,
+    "h": 412
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_c_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 1038,
+    "w": 152,
+    "h": 228
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 352,
+    "y": 210,
+    "w": 152,
+    "h": 228
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_c_05": {
+   "frame": {
+    "x": 366,
+    "y": 2,
+    "w": 337,
+    "h": 363
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 305,
+    "y": 140,
+    "w": 337,
+    "h": 363
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_c_05_team": {
+   "frame": {
+    "x": 281,
+    "y": 1038,
+    "w": 121,
+    "h": 227
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 400,
+    "y": 204,
+    "w": 121,
+    "h": 227
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_c_06": {
+   "frame": {
+    "x": 972,
+    "y": 2,
+    "w": 324,
+    "h": 320
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 370,
+    "y": 204,
+    "w": 324,
+    "h": 320
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_c_06_team": {
+   "frame": {
+    "x": 176,
+    "y": 1270,
+    "w": 141,
+    "h": 192
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 407,
+    "y": 255,
+    "w": 141,
+    "h": 192
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_c_07": {
+   "frame": {
+    "x": 297,
+    "y": 737,
+    "w": 237,
+    "h": 293
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 390,
+    "y": 239,
+    "w": 237,
+    "h": 293
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "hussar_attack_c_07_team": {
+   "frame": {
+    "x": 799,
+    "y": 1038,
+    "w": 123,
+    "h": 215
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 410,
+    "y": 235,
+    "w": 123,
+    "h": 215
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "hussar_attack_00",
+   "hussar_attack_b_01",
+   "hussar_attack_b_02",
+   "hussar_attack_b_03",
+   "hussar_attack_b_04",
+   "hussar_attack_b_05",
+   "hussar_attack_b_06",
+   "hussar_attack_b_07",
+   "hussar_attack_08",
+   "hussar_attack_08",
+   "hussar_attack_09",
+   "hussar_attack_09"
+  ],
+  "attack_b_team": [
+   "hussar_attack_00_team",
+   "hussar_attack_b_01_team",
+   "hussar_attack_b_02_team",
+   "hussar_attack_b_03_team",
+   "hussar_attack_b_04_team",
+   "hussar_attack_b_05_team",
+   "hussar_attack_b_06_team",
+   "hussar_attack_b_07_team",
+   "hussar_attack_08_team",
+   "hussar_attack_08_team",
+   "hussar_attack_09_team",
+   "hussar_attack_09_team"
+  ],
+  "attack_c": [
+   "hussar_attack_00",
+   "hussar_attack_c_01",
+   "hussar_attack_c_02",
+   "hussar_attack_c_03",
+   "hussar_attack_c_04",
+   "hussar_attack_c_05",
+   "hussar_attack_c_06",
+   "hussar_attack_c_07",
+   "hussar_attack_08",
+   "hussar_attack_08",
+   "hussar_attack_09",
+   "hussar_attack_09"
+  ],
+  "attack_c_team": [
+   "hussar_attack_00_team",
+   "hussar_attack_c_01_team",
+   "hussar_attack_c_02_team",
+   "hussar_attack_c_03_team",
+   "hussar_attack_c_04_team",
+   "hussar_attack_c_05_team",
+   "hussar_attack_c_06_team",
+   "hussar_attack_c_07_team",
+   "hussar_attack_08_team",
+   "hussar_attack_08_team",
+   "hussar_attack_09_team",
+   "hussar_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "hussar.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1536,
+   "h": 1476
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.hussar",
+   "name": "Hussar",
+   "heightLu": 124,
+   "widthLu": 94.7,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    448,
+    510
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     116
+    ],
+    "hitCenter": [
+     0,
+     50
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "rider",
+   "extrasOf": "hussar",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "smearFrame": 4,
+     "holdStep": 3,
+     "anchorsLu": {
+      "sabreTip": [
+       [
+        5.5,
+        127.2
+       ],
+       [
+        54.3,
+        103.2
+       ],
+       [
+        49.0,
+        96.1
+       ],
+       [
+        40.6,
+        83.5
+       ],
+       [
+        71.2,
+        74.2
+       ],
+       [
+        90.2,
+        58.9
+       ],
+       [
+        101.7,
+        46.5
+       ],
+       [
+        89.7,
+        68.2
+       ],
+       [
+        75.0,
+        76.1
+       ],
+       [
+        17.6,
+        124.2
+       ]
+      ]
+     }
+    },
+    "attack_c": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "smearFrame": 4,
+     "holdStep": 3,
+     "anchorsLu": {
+      "sabreTip": [
+       [
+        5.5,
+        127.2
+       ],
+       [
+        -28.6,
+        128.6
+       ],
+       [
+        -63.5,
+        114.6
+       ],
+       [
+        -76.7,
+        102.8
+       ],
+       [
+        -25.9,
+        159.0
+       ],
+       [
+        74.8,
+        121.3
+       ],
+       [
+        78.5,
+        15.0
+       ],
+       [
+        45.8,
+        0.9
+       ],
+       [
+        75.0,
+        76.1
+       ],
+       [
+        17.6,
+        124.2
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

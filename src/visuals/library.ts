@@ -72,6 +72,9 @@ export const POWER_IDS = [
   'sticky_tar',
   'hunt_cry',
   'hunters_spear',
+  // X0 Stone wave
+  'pebble_hail',
+  'tangle_vines',
   'zeus_bolts',
   'medusa_gaze',
   'chariot_rush',
@@ -100,6 +103,15 @@ export const POWER_IDS = [
   'solar_flare',
   'comet_run',
   'ion_cannon',
+  // Bronze wave (CONTENT_PLAN 5.2)
+  'sandstorm',
+  'charybdis',
+  // Medieval wave (CONTENT_PLAN 5.3)
+  'longbow_volley',
+  'great_bell',
+  // Gunpowder wave (CONTENT_PLAN 5.4)
+  'rocket_volley',
+  'cannon_salute',
 ] as const;
 
 export const ICON_SPRITES: readonly PuppetDef[] = [

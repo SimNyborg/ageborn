@@ -487,6 +487,16 @@ describe('Cosmetics and skins (A5.8)', () => {
       ['snowball_pebbler', 'pebbler', 'rare'],
       ['fossil_sabertooth', 'sabertooth', 'epic'],
       ['aurora_elk', 'elk_chieftain', 'legendary'],
+      // W2 Bronze wave
+      ['marble_hoplite', 'hoplite', 'rare'],
+      ['sun_chariot', 'war_chariot', 'epic'],
+      ['obsidian_colossus', 'bronze_colossus', 'legendary'],
+      ['greenwood_archer', 'longbowman', 'rare'],
+      ['chess_knight', 'destrier_knight', 'epic'],
+      ['bone_wyrm', 'lindworm', 'legendary'],
+      ['parade_cuirassier', 'cuirassier', 'rare'],
+      ['fireworks_grenadier', 'grenadier', 'epic'],
+      ['pufferfish_balloon', 'balloon_admiral', 'legendary'],
     ]);
     expect(content.skins.pumpkin_head?.visualId).toBe('unit.bonker@pumpkin_head');
     expect(content.skins.crystal_spire).toMatchObject({ visualId: 'base.future@crystal_spire', inCratePool: false, craftable: false });

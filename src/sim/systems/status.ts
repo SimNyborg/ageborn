@@ -11,6 +11,7 @@
  */
 import { edgeDist, centreDist, pOf } from '../geometry';
 import { healUnit } from '../damage';
+import { emit } from '../events';
 import type { UnitRules } from '../rules';
 import type { Ctx, UnitRt } from '../state';
 import { alive, unitRules } from '../units';
@@ -55,6 +56,9 @@ export function statusSystem(ctx: Ctx): void {
     }
     u.auraAttackSpeedBp = 0;
     u.auraDamageBp = 0;
+    u.auraSpeedBp = 0;
+    u.auraSlowBp = 0;
+    u.auraMarkBp = 0;
     u.auraGuardBp = 0;
   }
   // Unit auras.
@@ -64,16 +68,23 @@ export function statusSystem(ctx: Ctx): void {
     const r = unitRules(ctx, src);
     if (!r.aura) continue;
     const aura = r.aura;
+    if (aura.foe) {
+      dreadAura(ctx, src, r, onGrid);
+      continue;
+    }
     for (let j = 0; j < units.length; j += 1) {
       const u = units[j] as UnitRt;
       // Forts ignore every aura (A16.14.2).
       if (u === src || u.side !== src.side || !alive(u) || u.fort) continue;
       const ur = ctx.rules.unitList[u.ci] as UnitRules;
       if (edgeDist(src.x, r.half, u.x, ur.half) > aura.radius) continue;
-      if (aura.status.kind === 'attackSpeedBuff' && aura.status.magnitudeBp > u.auraAttackSpeedBp) {
-        u.auraAttackSpeedBp = aura.status.magnitudeBp;
-      } else if (aura.status.kind === 'damageBuff' && aura.status.magnitudeBp > u.auraDamageBp) {
-        u.auraDamageBp = aura.status.magnitudeBp;
+      const m = aura.status.magnitudeBp;
+      if (aura.status.kind === 'attackSpeedBuff' && m > u.auraAttackSpeedBp) {
+        u.auraAttackSpeedBp = m;
+      } else if (aura.status.kind === 'damageBuff' && m > u.auraDamageBp) {
+        u.auraDamageBp = m;
+      } else if (aura.status.kind === 'speedBuff' && m > u.auraSpeedBp) {
+        u.auraSpeedBp = m;
       }
     }
   }
@@ -120,4 +131,30 @@ export function statusSystem(ctx: Ctx): void {
   }
   // Forts: the Hardlight regen and the Sandbag cover (A16.14.3).
   fortStatusSystem(ctx);
+}
+
+/**
+ * A Dread aura (Bronze wave M4, `aura.foe`): enemy ground units within the radius are slowed (or marked)
+ * while inside it; air units, forts and the dead are not. The strongest aura applies (they never stack),
+ * and a slow takes the stronger of the aura and any timed slow or snare (`unitSpeed`). On every heal-grid
+ * pulse the victims also get a short `statusApplied` event so the view shows the slow mark (events are
+ * not hashed; the per-tick fields are recomputed from positions, so they are not hashed either).
+ */
+function dreadAura(ctx: Ctx, src: UnitRt, r: UnitRules, onGrid: boolean): void {
+  const aura = r.aura;
+  if (!aura) return;
+  const units = ctx.s.units;
+  const m = aura.status.magnitudeBp;
+  const mark = aura.status.kind === 'mark';
+  if (!mark && aura.status.kind !== 'slow') return;
+  for (let j = 0; j < units.length; j += 1) {
+    const u = units[j] as UnitRt;
+    if (u.side === src.side || !alive(u) || u.fort || u.air) continue;
+    const ur = ctx.rules.unitList[u.ci] as UnitRules;
+    if (edgeDist(src.x, r.half, u.x, ur.half) > aura.radius) continue;
+    if (mark) {
+      if (m > u.auraMarkBp) u.auraMarkBp = m;
+    } else if (m > u.auraSlowBp) u.auraSlowBp = m;
+    if (onGrid) emit(ctx, { e: 'statusApplied', id: u.id, kind: aura.status.kind, ms: ctx.econ.healPulseTicks * 100, frozen: false });
+  }
 }

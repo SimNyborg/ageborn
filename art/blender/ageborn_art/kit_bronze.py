@@ -222,7 +222,7 @@ def two_hand(a, f, w, d, lean=0.0, w_rest=90.0, near="r"):
     return pose
 
 
-def rhomphaia(rig, joint, grip, handle=20.0, blade=26.0, y_off=-0.8):
+def rhomphaia(rig, joint, grip, handle=20.0, blade=26.0, y_off=-0.8, blade_color=None):
     """A Thracian rhomphaia modelled pointing up (+Z) from the fist at `grip`: a long wrapped
     handle and a long, slightly forward-curved single-edged blade. Returns the tip point."""
     gx, gy, gz = grip
@@ -246,7 +246,7 @@ def rhomphaia(rig, joint, grip, handle=20.0, blade=26.0, y_off=-0.8):
         pts_b.append((gx + bend - 0.9, z))
     tip = (gx + 7.0 + 0.6, gz + handle + 1.0 + blade + 1.6)
     g = Geo().slab(pts_f + [tip] + list(reversed(pts_b)), y, 1.1)
-    rig.part(joint, g, B.BRONZE, finish=B.POLISH, outline=0.6)
+    rig.part(joint, g, blade_color or B.BRONZE, finish=B.POLISH, outline=0.6)
     edge = Geo()
     for a, b in zip(pts_f, pts_f[1:] + [tip]):
         edge.capsule((a[0] - 0.6, y - 0.7, a[1]), (b[0] - 0.6, y - 0.7, b[1]), 0.5)
@@ -263,6 +263,22 @@ def boots(rig, color=B.LEATHER, cuff=B.SAND_LT, top=11.5):
         rig.part(f"shin_{s}", g, color)
         g = Geo().blob((0.6, y, top + 0.4), (4.9, 4.9, 1.6), p=2.6)
         rig.part(f"shin_{s}", g, cuff, outline=0.6)
+
+
+def boots_v3(rig, color=B.LEATHER, cuff=B.SAND_LT, top=12.5, far=0.8):
+    """Soft fawn-skin boots for `rigs_bronze.skeleton_v3` legs: the leg on the shin joint, an 8.8 lu
+    foot on the foot joint (planted feet, toe-off roll), a turned-down cuff; the far leg `far` darker."""
+    from .colors import scale as _sc
+    for s in ("r", "l"):
+        y = B.LEG_Y * B.SIDE_Y[s]
+        k = 1.0 if s == "r" else far
+        c, cu = (_sc(x, k) if k != 1.0 else x for x in (color, cuff))
+        g = Geo().capsule((1.0, y, B.V3_ANKLE_Z + 0.4), (0.7, y, top), 3.6, 3.9)
+        rig.part(f"shin_{s}", g, c)
+        g = Geo().blob((0.7, y, top + 0.4), (4.5, 4.5, 1.5), p=2.6)
+        rig.part(f"shin_{s}", g, cu, outline=0.6)
+        g = Geo().blob((2.5, y, 2.2), (4.4, 4.0, 2.4), p=2.6, taper=(1.0, 0.86))
+        rig.part(f"foot_{s}", g, c)
 
 
 def petasos(rig, joint, c=(1.0, 0, 57.0), color=B.SAND, band=None, brim=16.5, team_brim=False):

@@ -1,0 +1,462 @@
+{
+ "frames": {
+  "discus_thrower_attack_b_02": {
+   "frame": {
+    "x": 151,
+    "y": 2,
+    "w": 69,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 93,
+    "w": 69,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.83886
+   }
+  },
+  "discus_thrower_attack_b_02_team": {
+   "frame": {
+    "x": 179,
+    "y": 100,
+    "w": 53,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 99,
+    "w": 53,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.83886
+   }
+  },
+  "discus_thrower_attack_b_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 70,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 91,
+    "w": 70,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.83886
+   }
+  },
+  "discus_thrower_attack_b_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 100,
+    "w": 55,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 97,
+    "w": 55,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.83886
+   }
+  },
+  "discus_thrower_attack_b_04": {
+   "frame": {
+    "x": 76,
+    "y": 2,
+    "w": 71,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 93,
+    "w": 71,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.83886
+   }
+  },
+  "discus_thrower_attack_b_04_team": {
+   "frame": {
+    "x": 61,
+    "y": 100,
+    "w": 55,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 98,
+    "w": 55,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.83886
+   }
+  },
+  "discus_thrower_attack_b_05": {
+   "frame": {
+    "x": 224,
+    "y": 2,
+    "w": 68,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 97,
+    "w": 68,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.83886
+   }
+  },
+  "discus_thrower_attack_b_05_team": {
+   "frame": {
+    "x": 120,
+    "y": 100,
+    "w": 55,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 103,
+    "w": 55,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.83886
+   }
+  },
+  "discus_thrower_attack_b_06": {
+   "frame": {
+    "x": 296,
+    "y": 2,
+    "w": 62,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 103,
+    "w": 62,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.83886
+   }
+  },
+  "discus_thrower_attack_b_06_team": {
+   "frame": {
+    "x": 236,
+    "y": 100,
+    "w": 58,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 109,
+    "w": 58,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.83886
+   }
+  },
+  "discus_thrower_attack_b_07": {
+   "frame": {
+    "x": 362,
+    "y": 2,
+    "w": 74,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 109,
+    "w": 74,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.83886
+   }
+  },
+  "discus_thrower_attack_b_07_team": {
+   "frame": {
+    "x": 298,
+    "y": 100,
+    "w": 61,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 114,
+    "w": 61,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 211
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.83886
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "discus_thrower_attack_00",
+   "discus_thrower_attack_01",
+   "discus_thrower_attack_b_02",
+   "discus_thrower_attack_b_03",
+   "discus_thrower_attack_b_04",
+   "discus_thrower_attack_b_05",
+   "discus_thrower_attack_b_06",
+   "discus_thrower_attack_b_07",
+   "discus_thrower_attack_08",
+   "discus_thrower_attack_09",
+   "discus_thrower_attack_10",
+   "discus_thrower_attack_11"
+  ],
+  "attack_b_team": [
+   "discus_thrower_attack_00_team",
+   "discus_thrower_attack_01_team",
+   "discus_thrower_attack_b_02_team",
+   "discus_thrower_attack_b_03_team",
+   "discus_thrower_attack_b_04_team",
+   "discus_thrower_attack_b_05_team",
+   "discus_thrower_attack_b_06_team",
+   "discus_thrower_attack_b_07_team",
+   "discus_thrower_attack_08_team",
+   "discus_thrower_attack_09_team",
+   "discus_thrower_attack_10_team",
+   "discus_thrower_attack_11_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "discus_thrower.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 448,
+   "h": 172
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.discus_thrower",
+   "name": "Discus Thrower",
+   "heightLu": 68,
+   "widthLu": 40.7,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    137.0,
+    177.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     64
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "discus_thrower",
+   "clips": {
+    "attack_b": {
+     "frames": 12,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "durationsMs": [
+      30,
+      40,
+      40,
+      102,
+      30,
+      30,
+      18,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 7,
+     "impactStep": 7,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        12.6,
+        29.2
+       ],
+       [
+        6.9,
+        13.8
+       ],
+       [
+        -21.7,
+        28.7
+       ],
+       [
+        -24.4,
+        35.8
+       ],
+       [
+        -24.2,
+        34.2
+       ],
+       [
+        -0.8,
+        15.1
+       ],
+       [
+        24.9,
+        22.5
+       ],
+       [
+        32.2,
+        22.4
+       ],
+       [
+        29.5,
+        16.3
+       ],
+       [
+        16.5,
+        16.9
+       ],
+       [
+        14.9,
+        26.9
+       ],
+       [
+        13.0,
+        29.6
+       ]
+      ]
+     },
+     "muzzle": [
+      32.2,
+      22.4
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

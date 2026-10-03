@@ -78,7 +78,7 @@ export function skinPuppet(s: SkinSpec): PuppetDef {
   return out;
 }
 
-/** The 12 v1 skins, in DESIGN A5.8 table order. */
+/** The 12 v1 skins, in DESIGN A5.8 table order, then the content waves' skins. */
 export const SKIN_SPECS: readonly SkinSpec[] = [
   {
     skin: 'pumpkin_head',
@@ -173,6 +173,85 @@ export const SKIN_SPECS: readonly SkinSpec[] = [
     target: 'base.future',
     palette: { cloth: 0x6a5a8a, cloth2: 0xe8e0f6, metal2: 0x9a8ab8, glow: 0xf6dcf0, crystal: 0xf0e8ff },
     add: [slot('skin.crystal.facets', 'body', 1.05), slot('skin.crystal.glints', 'body', 14.5)],
+  },
+  // X0 Stone wave (released with the wave): procedural puppets like the 12 above.
+  {
+    skin: 'snowball_pebbler',
+    target: 'unit.pebbler',
+    palette: { wool: 0xeef0f2, wool2: 0xa9b8c4 },
+    replace: { 'stone.hair.topknot': 'skin.snowball.cap' },
+    aura: 'snow',
+    projectileVisualId: 'proj.snowball',
+  },
+  {
+    skin: 'fossil_sabertooth',
+    target: 'unit.sabertooth',
+    palette: { fur: 0xe2d8c0, fur2: 0x8a7c66, hair: 0xb8ab90, eye: 0xe0a23a },
+    add: [slot('skin.fossil.ribs', 'body', 20.5)],
+  },
+  {
+    skin: 'aurora_elk',
+    target: 'unit.elk_chieftain',
+    // Green and violet only (CONTENT_PLAN 5.1): a night-violet pelt, star speckles, mint and violet antlers.
+    palette: { fur: 0x4f4766, fur2: 0x383150, hair: 0x6a5a8a, snout: 0xbdb4d0, aurora: 0x3af0b4, aurora2: 0xc8a8f0, starwhite: 0xf2f0ff },
+    add: [slot('skin.aurora.speckles', 'body', 40.5), slot('skin.aurora.antlers', 'snout', 29.5)],
+  },
+  // Bronze wave (CONTENT_PLAN 5.2, released with the wave): procedural puppets like the ones above.
+  {
+    skin: 'marble_hoplite',
+    target: 'unit.hoplite',
+    // A living marble statue: white stone skin and linen, pale gold trim (kept under 40% saturation).
+    palette: { skin: 0xeceae4, sleeve: 0xeceae4, forearm: 0xeceae4, glove: 0xeceae4, hair: 0xd6d2ca, cloth: 0xf2f0ea, linen: 0xf2f0ea, linen2: 0xd8d4cc, leather: 0xc9c2b6, pants: 0xc9c2b6, boot: 0xc9c2b6, metal: 0xe2d4a8, metal2: 0xb8ab88, shin: 0xe2d4a8 },
+  },
+  {
+    skin: 'sun_chariot',
+    target: 'unit.war_chariot',
+    // White horses and a pale gold sunburst car.
+    palette: { fur: 0xf2efe8, fur2: 0xd8d2c6, hair: 0xe8e0cc, metal: 0xe2d4a8, metal2: 0xc2b28a, wood: 0xd8c9a4, wood2: 0xb8a884, leather: 0xc9b89a },
+  },
+  {
+    skin: 'obsidian_colossus',
+    target: 'unit.bronze_colossus',
+    // Black volcanic glass; its glow is lilac, never ember orange (A11).
+    palette: { metal: 0x3a3440, metal2: 0x241f2a, stone: 0x3a3440, stone2: 0x2a2530, accent: 0xc9b8f0, glow: 0xe7dcff, fire: 0xc9b8f0 },
+  },
+  // Medieval wave (CONTENT_PLAN 5.3, released with the wave): procedural puppets like the ones above.
+  {
+    skin: 'greenwood_archer',
+    target: 'unit.longbowman',
+    // A forest outlaw: moss and leaf greens, a russet hood, a pale yew bow (all under 40% saturation).
+    palette: { leather: 0x5e6b4a, sleeve: 0x5e6b4a, glove: 0x6e5a44, cloth: 0x4f5e40, pants: 0x4f5e40, shin: 0x4f5e40, boot: 0x5a4a3a, hair: 0x7a5a3e, wood: 0xc8b48c },
+  },
+  {
+    skin: 'chess_knight',
+    target: 'unit.destrier_knight',
+    // A chess-set knight: an ebony horse and ivory plate, checker-white trim.
+    palette: { fur: 0x2e2a2c, fur2: 0x1f1c1e, hair: 0xe8e2d4, hoof: 0x1f1c1e, metal: 0xeeeae0, metal2: 0xc9c3b6, leather: 0x3a3436 },
+  },
+  {
+    skin: 'bone_wyrm',
+    target: 'unit.lindworm',
+    // A skeletal dragon: bleached bone hide, grey-brown sockets, ghost-green fire stays non-orange (A11).
+    palette: { fur: 0xe2d8c0, fur2: 0xb8ab90, snout: 0xf2ecdc, hair: 0x8a7c66 },
+  },
+  // Gunpowder wave (CONTENT_PLAN 5.4, released with the wave): palette puppets like the ones above.
+  {
+    skin: 'parade_cuirassier',
+    target: 'unit.cuirassier',
+    // Parade dress: a white charger, a mirror-bright cuirass and a pale horsehair crest.
+    palette: { fur: 0xefe6cf, fur2: 0xd2c6ae, hair: 0xe8e2d4, metal: 0xe6e8ea, metal2: 0xb8bcc0 },
+  },
+  {
+    skin: 'fireworks_grenadier',
+    target: 'unit.grenadier',
+    // Firework bombs: a night-violet shell with a pink-white spark (violet is outside the colour rule's bands).
+    palette: { iron: 0x5a4a7a, spark: 0xf6dcf0 },
+  },
+  {
+    skin: 'pufferfish_balloon',
+    target: 'unit.balloon_admiral',
+    // A pufferfish envelope: pale sand belly and soft olive-grey back, with rope kept pale.
+    palette: { cloth2: 0xe8dcb8, metal2: 0x8a8a6e, rope: 0xd8ccb4 },
   },
 ];
 

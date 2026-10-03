@@ -1,0 +1,454 @@
+{
+ "frames": {
+  "boulder_hurler_attack_b_02": {
+   "frame": {
+    "x": 329,
+    "y": 2,
+    "w": 103,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 225,
+    "w": 103,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_b_02_team": {
+   "frame": {
+    "x": 314,
+    "y": 178,
+    "w": 111,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 221,
+    "w": 111,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_b_03": {
+   "frame": {
+    "x": 109,
+    "y": 178,
+    "w": 99,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 235,
+    "w": 99,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_b_03_team": {
+   "frame": {
+    "x": 129,
+    "y": 333,
+    "w": 114,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 231,
+    "w": 114,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_b_04": {
+   "frame": {
+    "x": 212,
+    "y": 178,
+    "w": 98,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 237,
+    "w": 98,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_b_04_team": {
+   "frame": {
+    "x": 247,
+    "y": 333,
+    "w": 113,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 232,
+    "w": 113,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 104,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 213,
+    "w": 104,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_b_05_team": {
+   "frame": {
+    "x": 222,
+    "y": 2,
+    "w": 103,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 211,
+    "w": 103,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 333,
+    "w": 123,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 234,
+    "w": 123,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_b_06_team": {
+   "frame": {
+    "x": 364,
+    "y": 333,
+    "w": 117,
+    "h": 130
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 210,
+    "y": 232,
+    "w": 117,
+    "h": 130
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_b_07": {
+   "frame": {
+    "x": 110,
+    "y": 2,
+    "w": 108,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 216,
+    "w": 108,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_b_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 178,
+    "w": 103,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 214,
+    "w": 103,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "boulder_hurler_attack_00",
+   "boulder_hurler_attack_01",
+   "boulder_hurler_attack_b_02",
+   "boulder_hurler_attack_b_03",
+   "boulder_hurler_attack_b_04",
+   "boulder_hurler_attack_b_05",
+   "boulder_hurler_attack_b_06",
+   "boulder_hurler_attack_b_07",
+   "boulder_hurler_attack_08",
+   "boulder_hurler_attack_09",
+   "boulder_hurler_attack_10"
+  ],
+  "attack_b_team": [
+   "boulder_hurler_attack_00_team",
+   "boulder_hurler_attack_01_team",
+   "boulder_hurler_attack_b_02_team",
+   "boulder_hurler_attack_b_03_team",
+   "boulder_hurler_attack_b_04_team",
+   "boulder_hurler_attack_b_05_team",
+   "boulder_hurler_attack_b_06_team",
+   "boulder_hurler_attack_b_07_team",
+   "boulder_hurler_attack_08_team",
+   "boulder_hurler_attack_09_team",
+   "boulder_hurler_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "boulder_hurler.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 512,
+   "h": 476
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.boulder_hurler",
+   "name": "Boulder Hurler",
+   "heightLu": 70,
+   "widthLu": 39.0,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    238,
+    360
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     66
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "boulder_hurler",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        10.2,
+        34.6
+       ],
+       [
+        7.5,
+        21.6
+       ],
+       [
+        1.7,
+        35.6
+       ],
+       [
+        -3.3,
+        32.0
+       ],
+       [
+        -4.1,
+        31.7
+       ],
+       [
+        17.1,
+        38.5
+       ],
+       [
+        29.6,
+        29.2
+       ],
+       [
+        24.3,
+        32.7
+       ],
+       [
+        12.8,
+        15.4
+       ],
+       [
+        13.1,
+        29.1
+       ],
+       [
+        10.9,
+        35.1
+       ]
+      ]
+     },
+     "muzzle": [
+      29.6,
+      29.2
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

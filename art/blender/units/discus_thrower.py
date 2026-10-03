@@ -10,15 +10,21 @@ with a sandstone rim and a lambda in the middle, held flat-on to the camera so i
 
 Animation (cartoon kit v2):
   idle    rolls the discus in his fingers, a little shoulder shrug, blink
-  walk    jog with the discus tucked against the hip, the free arm pumping
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1, 81.25 lu/s): the discus tucked against
+          the hip, the free arm pumping, planted feet
+  attack_b  STANDING SIDE-ARM FLING: no spin; he stands tall, turns his shoulders away with the disc
+          drawn back level at shoulder height (held extreme), then slings it flat and low
   attack  ONE-AND-A-HALF SPIN: crouch and coil (the Discobolus held extreme: knees bent, torso
           twisted, the discus arm far back and high), spin round on the front foot (ring smear,
           his back with the team stripe flashing past), and release flat at shoulder height
           (the disc leaves on the impact frame); the back leg kicks up in the follow-through,
           then a new disc is handed up from his belt pouch
+          A and B hold the coil with a small rock while the sim wind-up lasts (holdLoop)
   hit     light: head snaps back, ties flick
   die     D1 fling and spin, the discus rolls away on its edge
 """
+import math
+
 from ageborn_art import face as F
 from ageborn_art import kit_bronze as K
 from ageborn_art import moves as M
@@ -27,6 +33,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "discus_thrower"
+GAIT_NAME = "biped"
 NAME = "Discus Thrower"
 HEIGHT_LU = 68
 CANVAS = (300, 250)
@@ -51,10 +58,12 @@ def _disc(rig, joint, c):
 
 
 def build(rig):
-    B.skeleton(rig)
-    B.sandal_legs(rig, greaves=False)
-    K.laces(rig)
+    global RIG
+    RIG = rig
+    B.skeleton_v3(rig)           # walk v3: longer legs, planted feet (ANIM_SPEC 2.0 rule 5)
+    B.sandal_legs_v3(rig, greaves=False)
     K.tunic(rig, team=True, hem_color=B.SAND_LT, bulk=1.06)
+    rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 1.0)        # hem >= 9 lu above the soles
     # a team stripe down the back so the spin frames keep their team share
     g = Geo().blob((-9.6, 0, 28.0), (2.4, 7.6, 10.4), p=2.6)
     rig.part("torso", g, team=True, outline=0.6)
@@ -82,7 +91,6 @@ def build(rig):
     rig.track("muzzle", "disc", DISC_C)
     rig.joint("disc_loose", "root", (0, 0, 0), hidden=True)
     _disc(rig, "disc_loose", (0.0, -12.0, 6.0))
-    rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -107,64 +115,129 @@ def _idle(f):
     return M.idle_v2(f, STANCE, frames=6, extra=extra, face_blink=F.expr("blink"), blink=4)
 
 
-def _walk(f):
+# -- walk v3: G1 bounce jog at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 77 ms ----------
+RIG = None
+SPEED = 81.25
+LEGS = B.walk_legs_v3()
+GAIT = B.jog_gait(SPEED, LEGS)
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return {"disc": {"r": 4 * lag}}
-    return M.walk_v2(f, TUCK, HEIGHT_LU, thigh=38.0, knee=72.0, lift_lu=8.0, bob_pct=0.07,
-                     lean=-9.0, arm=34.0, fore=24.0, arms=("l",), extra=extra)
+        c = math.cos(ctx["lag_p"])                   # +1 = the far arm forward
+        return merge(throw(-84 + 4 * c, -44 + 4 * c, -20), other(-90 + 34 * c, -90 + 34 * c + 70 + 15 * c),
+                     {"disc": {"r": 4 * lag}})
+    base = {k: v for k, v in STANCE.items() if not k.startswith(("arm_", "fore_", "hand_"))}
+    return M.walk_v3(RIG, f, base, GAIT, legs=LEGS, lean=-9.0, twist=6.0, nod=3.0, extra=extra, report=report)
 
 
-# 11 unique frames, moves.SMALL_MELEE_MS
-#        read  dip  coil HOLD spin1 spin2 REL  follow recov hand  settle
-D_A = [-30, -70, 150, 165, 120, 20, -5, -40, -60, -40, -30]
-D_F = [30, -40, 165, 175, 140, 15, -5, -60, -30, 10, 28]
-D_W = [10, -20, 180, 190, 150, 20, 0, -40, -20, 20, 10]
-O_A = [-60, -40, -20, -10, 40, 20, -60, -100, -70, -55, -60]
-O_F = [-20, -10, 20, 40, 60, 0, -70, -110, -50, -10, -20]
-A_T = [-2, -12, 8, 14, 0, -8, -20, -24, -10, -4, -2]
-A_RZ = [0, -10, -50, -70, 150, 300, 360, 380, 360, 360, 360]
-A_H = [0, 4, -4, -6, 0, 4, 8, 10, 4, 0, 0]
-A_Q = [-0.02, -0.12, 0.02, 0.06, 0.02, 0.0, -0.14, -0.1, -0.04, 0.01, 0.0]
-A_X = [0.0, -1.0, -3.0, -4.0, -1.0, 2.0, 6.0, 7.0, 4.5, 2.0, 0.5]
-A_Z = [0.0, -3.2, -2.4, -2.0, 1.4, 1.0, -1.6, -1.4, -0.6, -0.2, 0.0]
-A_THR = [0, 18, 24, 26, 10, 14, 20, 30, 14, 4, 0]
-A_SHR = [0, -30, -34, -36, -12, -14, -18, -12, -6, -2, 0]
-A_THL = [0, -12, -18, -20, -10, -22, -40, -50, -22, -8, 0]
-A_SHL = [0, -24, -28, -30, -16, -24, -40, -46, -18, -6, 0]
+def _feet(pose, fr, fl, lr=0.0, ll=0.0, ar=0.0, al=0.0):
+    return B.plant(RIG, pose, LEGS, r=(fr, lr, ar), l=(fl, ll, al))
+
+
+# 12 steps: read, dip, coil, HOLD, rock (holdLoop partner), spin1, spin2 | RELEASE, follow, recover,
+# hand, settle. Pre-impact 290 of 680 ms (impactAt 0.4265); the hold is 35% of the pre-impact time.
+ATK_MS = [30, 40, 40, 102, 30, 30, 18, 120, 60, 50, 70, 90]
+ATK_IMPACT = 7
+#        read  dip  coil HOLD rock spin1 spin2 REL  follow recov hand  settle
+D_A = [-30, -70, 150, 165, 160, 120, 20, -5, -40, -60, -40, -30]
+D_F = [30, -40, 165, 175, 170, 140, 15, -5, -60, -30, 10, 28]
+D_W = [10, -20, 180, 190, 184, 150, 20, 0, -40, -20, 20, 10]
+O_A = [-60, -40, -20, -10, -14, 40, 20, -60, -100, -70, -55, -60]
+O_F = [-20, -10, 20, 40, 36, 60, 0, -70, -110, -50, -10, -20]
+A_T = [-2, -12, 8, 14, 12, 0, -8, -20, -24, -10, -4, -2]
+A_RZ = [0, -10, -50, -70, -66, 150, 300, 360, 380, 360, 360, 360]
+A_H = [0, 4, -4, -6, -5, 0, 4, 8, 10, 4, 0, 0]
+A_Q = [-0.02, -0.12, 0.02, 0.06, 0.04, 0.02, 0.0, -0.14, -0.1, -0.04, 0.01, 0.0]
+A_X = [0.0, -1.0, -3.0, -4.0, -3.8, -1.0, 2.0, 6.0, 7.0, 4.5, 2.0, 0.5]
+A_Z = [0.0, -3.2, -2.4, -2.0, -2.4, 1.4, 1.0, -1.6, -1.4, -0.6, -0.2, 0.0]
+A_FR = [2.0, 3.0, 4.0, 5.0, 5.0, 3.0, 4.0, 9.0, 10.0, 7.0, 4.0, 2.5]
+A_FL = [-2.0, -4.0, -7.0, -8.0, -8.0, -5.0, -4.0, -3.0, -3.0, -2.5, -2.0, -2.0]
+A_LL = [0, 0, 0, 0, 0, 3.0, 2.0, 0, 4.0, 0, 0, 0]
 
 
 def _attack_pose(f):
     t = A_T[f]
     pose = merge(throw(D_A[f] - t, D_F[f] - t, D_W[f] - t), other(O_A[f] - t, O_F[f] - t), {
         "torso": {"r": t}, "head": {"r": A_H[f]},
-        "thigh_r": {"r": A_THR[f]}, "shin_r": {"r": A_SHR[f]},
-        "thigh_l": {"r": A_THL[f]}, "shin_l": {"r": A_SHL[f]},
-        "disc": {"hide": f in (6, 7, 8)},
+        "disc": {"hide": f in (7, 8, 9)},
     }, M.body_about((0, 0, 24), x=A_X[f], z=A_Z[f], q=A_Q[f], rz=A_RZ[f]))
-    if f == 9:
+    pose = _feet(pose, A_FR[f], A_FL[f], ll=A_LL[f])
+    if f == 10:
         pose["disc"]["s"] = 0.85
-    if f in (1, 2, 3):
+    if f in (1, 2, 3, 4):
         pose = merge(pose, F.expr("grit"), {"brow": {"z": -0.8}})
-    elif f in (4, 5, 6, 7):
+    elif f in (5, 6, 7, 8):
         pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
     return pose
 
 
 def _attack_clip():
-    poses = [_attack_pose(f) for f in range(11)]
-    spin_from = merge(poses[4], M.body_about((0, 0, 24), x=A_X[4], z=A_Z[4], q=A_Q[4], rz=-40))
+    poses = [_attack_pose(f) for f in range(12)]
+    spin_from = merge(poses[5], M.body_about((0, 0, 24), x=A_X[5], z=A_Z[5], q=A_Q[5], rz=-40))
     ring = {"kind": "arc", "joint": "disc", "inner": (HR[0], HR[1], HR[2] + 1.0), "outer": DISC_C,
             "color": B.SAND_LT, "white": 0.35, "taper": 0.15, "lines": 3, "band": 0.4}
     ov = {
-        4: [dict(ring, **{"pose_from": spin_from, "t1": 0.95})],
-        5: [dict(ring, **{"from": 4, "t0": 0.2, "t1": 0.95})],
-        6: [{"kind": "burst", "joint": "hand_r", "point": (HR[0] + 6.0, HR[1], HR[2]), "r0_lu": 3.0,
+        5: [dict(ring, **{"pose_from": spin_from, "t1": 0.95})],
+        6: [dict(ring, **{"from": 5, "t0": 0.2, "t1": 0.95})],
+        7: [{"kind": "burst", "joint": "hand_r", "point": (HR[0] + 6.0, HR[1], HR[2]), "r0_lu": 3.0,
              "r1_lu": 9.0, "n": 4, "a0": -40.0, "arc": 80.0},
             {"kind": "dust", "ground": (8.0, 0.0), "size_lu": 5.5, "puffs": 3, "seed": 5, "spread": 0.9}],
         2: [{"kind": "dust", "ground": (-4.0, 0.0), "size_lu": 4.0, "puffs": 3, "seed": 2, "spread": 0.7}],
     }
-    return M.clip("attack", poses, M.SMALL_MELEE_MS, impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
+    return M.clip("attack", poses, ATK_MS, impact=ATK_IMPACT, smear=5, overlays=ov,
+                  extra={"holdStep": 3, "holdLoop": [3, 4]})
+
+
+# -- attack B: standing side-arm fling, no spin (ANIM_SPEC 2.2 throwers: side-arm) --------------------
+# 0-1 = A read and dip, 2 turn, 3 HOLD (standing tall, shoulders turned away, the disc drawn back LEVEL
+# at shoulder height, the free arm pointing at the target), 4 rock, 5 smear (slung round flat),
+# 6 lead, 7 RELEASE (flat and low in front, leaning in), 8-11 = A's
+#      turn HOLD rock smear lead  REL
+B_A = [-150, -175, -172, -90, -20, -5]
+B_F = [-160, -178, -176, -80, -10, 0]
+B_W = [-170, -180, -178, -90, -10, 0]
+B_OA = [-10, 0, 4, -30, -70, -90]
+B_OF = [-4, 0, 4, -40, -80, -100]
+B_T = [6, 8, 7, -2, -12, -18]
+B_RZ = [-8, -12, -11, 0, 10, 14]
+B_H = [-2, -4, -3, 2, 6, 8]
+B_X = [-1.0, -2.0, -1.8, 1.0, 4.0, 6.0]
+B_Z = [0.6, 1.0, 0.8, 0.0, -1.2, -2.0]
+B_Q = [0.03, 0.06, 0.04, 0.0, -0.06, -0.12]
+B_FR = [2.0, 1.0, 1.0, 5.0, 8.0, 11.0]
+B_FL = [-4.0, -6.0, -6.0, -5.0, -4.0, -3.0]
+B_LR = [0, 0, 0, 2.0, 1.0, 0]
+
+
+def _b_pose(i):
+    if i in (0, 1) or i >= 8:
+        return _attack_pose(i)
+    k = i - 2
+    t = B_T[k]
+    pose = merge(throw(B_A[k] - t, B_F[k] - t, B_W[k] - t), other(B_OA[k] - t, B_OF[k] - t), {
+        "torso": {"r": t, "rz": B_RZ[k]}, "head": {"r": B_H[k]}, "disc": {"hide": i == 7},
+    }, M.body_about((0, 0, 24), x=B_X[k], z=B_Z[k], q=B_Q[k]))
+    pose = _feet(pose, B_FR[k], B_FL[k], lr=B_LR[k])
+    pose = merge(pose, F.expr("grit") if i in (2, 3, 4) else F.expr("yell"), {"brow": {"z": -1.0}})
+    return pose
+
+
+def _attack_b():
+    ring = {"kind": "arc", "joint": "disc", "inner": (HR[0], HR[1], HR[2] + 1.0), "outer": DISC_C,
+            "color": B.SAND_LT, "white": 0.35, "taper": 0.2, "lines": 3}
+    ov = {
+        5: [dict(ring, **{"from": 4, "t1": 0.95})],
+        6: [dict(ring, **{"from": 5, "t0": 0.2, "t1": 0.95})],
+        7: [{"kind": "burst", "joint": "hand_r", "point": (HR[0] + 6.0, HR[1], HR[2]), "r0_lu": 3.0,
+             "r1_lu": 9.0, "n": 4, "a0": -20.0, "arc": 70.0},
+            {"kind": "dust", "ground": (10.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 9, "spread": 0.8}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10),
+             11: ("attack", 11)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(12)], ATK_MS, impact=ATK_IMPACT, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 3, "holdLoop": [3, 4]})
 
 
 def _hit(k):
@@ -206,10 +279,11 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

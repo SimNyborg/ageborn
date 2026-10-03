@@ -1,0 +1,2408 @@
+{
+ "frames": {
+  "elk_chieftain_idle_00": {
+   "frame": {
+    "x": 972,
+    "y": 792,
+    "w": 321,
+    "h": 366
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 246,
+    "w": 321,
+    "h": 366
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_idle_00_team": {
+   "frame": {
+    "x": 1010,
+    "y": 2006,
+    "w": 247,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 333,
+    "y": 269,
+    "w": 247,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_idle_01": {
+   "frame": {
+    "x": 1298,
+    "y": 414,
+    "w": 319,
+    "h": 370
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 241,
+    "w": 319,
+    "h": 370
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_idle_01_team": {
+   "frame": {
+    "x": 499,
+    "y": 2006,
+    "w": 244,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 334,
+    "y": 263,
+    "w": 244,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_idle_02": {
+   "frame": {
+    "x": 1827,
+    "y": 2,
+    "w": 313,
+    "h": 378
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 346,
+    "y": 230,
+    "w": 313,
+    "h": 378
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_idle_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 1788,
+    "w": 240,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 338,
+    "y": 252,
+    "w": 240,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_idle_03": {
+   "frame": {
+    "x": 871,
+    "y": 2,
+    "w": 313,
+    "h": 381
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 346,
+    "y": 225,
+    "w": 313,
+    "h": 381
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_idle_03_team": {
+   "frame": {
+    "x": 1961,
+    "y": 1526,
+    "w": 240,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 338,
+    "y": 247,
+    "w": 240,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_idle_04": {
+   "frame": {
+    "x": 1508,
+    "y": 2,
+    "w": 315,
+    "h": 378
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 346,
+    "y": 230,
+    "w": 315,
+    "h": 378
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_idle_04_team": {
+   "frame": {
+    "x": 2205,
+    "y": 1526,
+    "w": 242,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 338,
+    "y": 252,
+    "w": 242,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_idle_05": {
+   "frame": {
+    "x": 974,
+    "y": 414,
+    "w": 320,
+    "h": 370
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 343,
+    "y": 241,
+    "w": 320,
+    "h": 370
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_idle_05_team": {
+   "frame": {
+    "x": 1986,
+    "y": 1788,
+    "w": 247,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 334,
+    "y": 263,
+    "w": 247,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_00": {
+   "frame": {
+    "x": 2,
+    "y": 414,
+    "w": 325,
+    "h": 374
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 237,
+    "w": 325,
+    "h": 374
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_00_team": {
+   "frame": {
+    "x": 1237,
+    "y": 1788,
+    "w": 248,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 334,
+    "y": 256,
+    "w": 248,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_01": {
+   "frame": {
+    "x": 2561,
+    "y": 414,
+    "w": 341,
+    "h": 368
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 327,
+    "y": 244,
+    "w": 341,
+    "h": 368
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_01_team": {
+   "frame": {
+    "x": 1456,
+    "y": 1526,
+    "w": 249,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 335,
+    "y": 259,
+    "w": 249,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_02": {
+   "frame": {
+    "x": 2,
+    "y": 1164,
+    "w": 334,
+    "h": 358
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 325,
+    "y": 255,
+    "w": 334,
+    "h": 358
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_02_team": {
+   "frame": {
+    "x": 991,
+    "y": 1788,
+    "w": 242,
+    "h": 213
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 337,
+    "y": 276,
+    "w": 242,
+    "h": 213
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_03": {
+   "frame": {
+    "x": 340,
+    "y": 1164,
+    "w": 310,
+    "h": 358
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 254,
+    "w": 310,
+    "h": 358
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_03_team": {
+   "frame": {
+    "x": 2733,
+    "y": 1788,
+    "w": 241,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 333,
+    "y": 277,
+    "w": 241,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_04": {
+   "frame": {
+    "x": 651,
+    "y": 792,
+    "w": 317,
+    "h": 367
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 340,
+    "y": 243,
+    "w": 317,
+    "h": 367
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_04_team": {
+   "frame": {
+    "x": 2237,
+    "y": 1788,
+    "w": 245,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 331,
+    "y": 266,
+    "w": 245,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_05": {
+   "frame": {
+    "x": 1621,
+    "y": 414,
+    "w": 325,
+    "h": 369
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 237,
+    "w": 325,
+    "h": 369
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_05_team": {
+   "frame": {
+    "x": 1489,
+    "y": 1788,
+    "w": 248,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 334,
+    "y": 256,
+    "w": 248,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_06": {
+   "frame": {
+    "x": 1297,
+    "y": 792,
+    "w": 343,
+    "h": 365
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 326,
+    "y": 243,
+    "w": 343,
+    "h": 365
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_06_team": {
+   "frame": {
+    "x": 1709,
+    "y": 1526,
+    "w": 248,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 336,
+    "y": 259,
+    "w": 248,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_07": {
+   "frame": {
+    "x": 654,
+    "y": 1164,
+    "w": 335,
+    "h": 356
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 325,
+    "y": 252,
+    "w": 335,
+    "h": 356
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_07_team": {
+   "frame": {
+    "x": 1741,
+    "y": 1788,
+    "w": 241,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 339,
+    "y": 276,
+    "w": 241,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_08": {
+   "frame": {
+    "x": 1355,
+    "y": 1164,
+    "w": 313,
+    "h": 355
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 340,
+    "y": 252,
+    "w": 313,
+    "h": 355
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_08_team": {
+   "frame": {
+    "x": 255,
+    "y": 2006,
+    "w": 240,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 334,
+    "y": 277,
+    "w": 240,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_09": {
+   "frame": {
+    "x": 2336,
+    "y": 792,
+    "w": 317,
+    "h": 363
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 242,
+    "w": 317,
+    "h": 363
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_walk_09_team": {
+   "frame": {
+    "x": 2486,
+    "y": 1788,
+    "w": 243,
+    "h": 209
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 333,
+    "y": 265,
+    "w": 243,
+    "h": 209
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_00": {
+   "frame": {
+    "x": 315,
+    "y": 792,
+    "w": 332,
+    "h": 367
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 339,
+    "y": 239,
+    "w": 332,
+    "h": 367
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 2006,
+    "w": 249,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 331,
+    "y": 261,
+    "w": 249,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_01": {
+   "frame": {
+    "x": 1644,
+    "y": 792,
+    "w": 363,
+    "h": 363
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 339,
+    "y": 243,
+    "w": 363,
+    "h": 363
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_01_team": {
+   "frame": {
+    "x": 747,
+    "y": 2006,
+    "w": 259,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 331,
+    "y": 264,
+    "w": 259,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_02": {
+   "frame": {
+    "x": 993,
+    "y": 1164,
+    "w": 358,
+    "h": 355
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 340,
+    "y": 250,
+    "w": 358,
+    "h": 355
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_02_team": {
+   "frame": {
+    "x": 1512,
+    "y": 2006,
+    "w": 263,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 332,
+    "y": 270,
+    "w": 263,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_03": {
+   "frame": {
+    "x": 1672,
+    "y": 1164,
+    "w": 324,
+    "h": 346
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 255,
+    "w": 324,
+    "h": 346
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_03_team": {
+   "frame": {
+    "x": 2560,
+    "y": 2006,
+    "w": 248,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 335,
+    "y": 276,
+    "w": 248,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_04": {
+   "frame": {
+    "x": 2144,
+    "y": 2,
+    "w": 355,
+    "h": 376
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 356,
+    "y": 239,
+    "w": 355,
+    "h": 376
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_04_team": {
+   "frame": {
+    "x": 2695,
+    "y": 1526,
+    "w": 252,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 347,
+    "y": 260,
+    "w": 252,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_05": {
+   "frame": {
+    "x": 558,
+    "y": 2,
+    "w": 309,
+    "h": 389
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 362,
+    "y": 229,
+    "w": 309,
+    "h": 389
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_05_team": {
+   "frame": {
+    "x": 933,
+    "y": 1526,
+    "w": 238,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 354,
+    "y": 252,
+    "w": 238,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_06": {
+   "frame": {
+    "x": 319,
+    "y": 2,
+    "w": 235,
+    "h": 392
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 358,
+    "y": 224,
+    "w": 235,
+    "h": 392
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_06_team": {
+   "frame": {
+    "x": 710,
+    "y": 1526,
+    "w": 219,
+    "h": 223
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 349,
+    "y": 245,
+    "w": 219,
+    "h": 223
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_07": {
+   "frame": {
+    "x": 1950,
+    "y": 414,
+    "w": 318,
+    "h": 369
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 349,
+    "y": 232,
+    "w": 318,
+    "h": 369
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_07_team": {
+   "frame": {
+    "x": 2037,
+    "y": 2006,
+    "w": 258,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 340,
+    "y": 268,
+    "w": 258,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_08": {
+   "frame": {
+    "x": 1188,
+    "y": 2,
+    "w": 316,
+    "h": 380
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 352,
+    "y": 233,
+    "w": 316,
+    "h": 380
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_08_team": {
+   "frame": {
+    "x": 2451,
+    "y": 1526,
+    "w": 240,
+    "h": 215
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 344,
+    "y": 256,
+    "w": 240,
+    "h": 215
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_09": {
+   "frame": {
+    "x": 331,
+    "y": 414,
+    "w": 316,
+    "h": 374
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 346,
+    "y": 235,
+    "w": 316,
+    "h": 374
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_attack_09_team": {
+   "frame": {
+    "x": 496,
+    "y": 1788,
+    "w": 244,
+    "h": 213
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 337,
+    "y": 257,
+    "w": 244,
+    "h": 213
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_hit_00": {
+   "frame": {
+    "x": 2,
+    "y": 792,
+    "w": 309,
+    "h": 368
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 323,
+    "y": 238,
+    "w": 309,
+    "h": 368
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_hit_00_team": {
+   "frame": {
+    "x": 1779,
+    "y": 2006,
+    "w": 254,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 314,
+    "y": 272,
+    "w": 254,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_hit_01": {
+   "frame": {
+    "x": 2272,
+    "y": 414,
+    "w": 285,
+    "h": 369
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 317,
+    "y": 236,
+    "w": 285,
+    "h": 369
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_hit_01_team": {
+   "frame": {
+    "x": 2299,
+    "y": 2006,
+    "w": 257,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 308,
+    "y": 277,
+    "w": 257,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_hit_02": {
+   "frame": {
+    "x": 2011,
+    "y": 792,
+    "w": 321,
+    "h": 363
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 333,
+    "y": 244,
+    "w": 321,
+    "h": 363
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_hit_02_team": {
+   "frame": {
+    "x": 1261,
+    "y": 2006,
+    "w": 247,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 324,
+    "y": 268,
+    "w": 247,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_hit_03": {
+   "frame": {
+    "x": 2503,
+    "y": 2,
+    "w": 316,
+    "h": 375
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 346,
+    "y": 235,
+    "w": 316,
+    "h": 375
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_hit_03_team": {
+   "frame": {
+    "x": 744,
+    "y": 1788,
+    "w": 243,
+    "h": 213
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 338,
+    "y": 257,
+    "w": 243,
+    "h": 213
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_hit_04": {
+   "frame": {
+    "x": 651,
+    "y": 414,
+    "w": 319,
+    "h": 373
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 236,
+    "w": 319,
+    "h": 373
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_hit_04_team": {
+   "frame": {
+    "x": 246,
+    "y": 1788,
+    "w": 246,
+    "h": 213
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 333,
+    "y": 257,
+    "w": 246,
+    "h": 213
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_00": {
+   "frame": {
+    "x": 2657,
+    "y": 792,
+    "w": 305,
+    "h": 363
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 319,
+    "y": 231,
+    "w": 305,
+    "h": 363
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 2218,
+    "w": 262,
+    "h": 192
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 310,
+    "y": 271,
+    "w": 262,
+    "h": 192
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_01": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 313,
+    "h": 408
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 264,
+    "y": 193,
+    "w": 313,
+    "h": 408
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_01_team": {
+   "frame": {
+    "x": 1175,
+    "y": 1526,
+    "w": 277,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 256,
+    "y": 238,
+    "w": 277,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_02": {
+   "frame": {
+    "x": 503,
+    "y": 2218,
+    "w": 394,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 379,
+    "w": 394,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_02_team": {
+   "frame": {
+    "x": 1217,
+    "y": 2218,
+    "w": 300,
+    "h": 125
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 235,
+    "y": 389,
+    "w": 300,
+    "h": 125
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_03": {
+   "frame": {
+    "x": 294,
+    "y": 1526,
+    "w": 412,
+    "h": 243
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 239,
+    "y": 344,
+    "w": 412,
+    "h": 243
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_03_team": {
+   "frame": {
+    "x": 901,
+    "y": 2218,
+    "w": 312,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 410,
+    "w": 312,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_04": {
+   "frame": {
+    "x": 2301,
+    "y": 1164,
+    "w": 342,
+    "h": 279
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 271,
+    "y": 327,
+    "w": 342,
+    "h": 279
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_04_team": {
+   "frame": {
+    "x": 268,
+    "y": 2218,
+    "w": 231,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 302,
+    "y": 370,
+    "w": 231,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_05": {
+   "frame": {
+    "x": 2000,
+    "y": 1164,
+    "w": 297,
+    "h": 286
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 323,
+    "y": 332,
+    "w": 297,
+    "h": 286
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_05_team": {
+   "frame": {
+    "x": 1521,
+    "y": 2218,
+    "w": 182,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 359,
+    "y": 423,
+    "w": 182,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_06": {
+   "frame": {
+    "x": 2647,
+    "y": 1164,
+    "w": 294,
+    "h": 275
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 326,
+    "y": 337,
+    "w": 294,
+    "h": 275
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_06_team": {
+   "frame": {
+    "x": 1707,
+    "y": 2218,
+    "w": 181,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 360,
+    "y": 424,
+    "w": 181,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_07": {
+   "frame": {
+    "x": 2,
+    "y": 1526,
+    "w": 288,
+    "h": 258
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 328,
+    "y": 346,
+    "w": 288,
+    "h": 258
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  },
+  "elk_chieftain_die_07_team": {
+   "frame": {
+    "x": 1892,
+    "y": 2218,
+    "w": 176,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 362,
+    "y": 426,
+    "w": 176,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 874,
+    "h": 672
+   },
+   "anchor": {
+    "x": 0.51945,
+    "y": 0.875
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "elk_chieftain_idle_00",
+   "elk_chieftain_idle_01",
+   "elk_chieftain_idle_02",
+   "elk_chieftain_idle_03",
+   "elk_chieftain_idle_04",
+   "elk_chieftain_idle_05"
+  ],
+  "idle_team": [
+   "elk_chieftain_idle_00_team",
+   "elk_chieftain_idle_01_team",
+   "elk_chieftain_idle_02_team",
+   "elk_chieftain_idle_03_team",
+   "elk_chieftain_idle_04_team",
+   "elk_chieftain_idle_05_team"
+  ],
+  "walk": [
+   "elk_chieftain_walk_00",
+   "elk_chieftain_walk_01",
+   "elk_chieftain_walk_02",
+   "elk_chieftain_walk_03",
+   "elk_chieftain_walk_04",
+   "elk_chieftain_walk_05",
+   "elk_chieftain_walk_06",
+   "elk_chieftain_walk_07",
+   "elk_chieftain_walk_08",
+   "elk_chieftain_walk_09"
+  ],
+  "walk_team": [
+   "elk_chieftain_walk_00_team",
+   "elk_chieftain_walk_01_team",
+   "elk_chieftain_walk_02_team",
+   "elk_chieftain_walk_03_team",
+   "elk_chieftain_walk_04_team",
+   "elk_chieftain_walk_05_team",
+   "elk_chieftain_walk_06_team",
+   "elk_chieftain_walk_07_team",
+   "elk_chieftain_walk_08_team",
+   "elk_chieftain_walk_09_team"
+  ],
+  "attack": [
+   "elk_chieftain_attack_00",
+   "elk_chieftain_attack_01",
+   "elk_chieftain_attack_02",
+   "elk_chieftain_attack_03",
+   "elk_chieftain_attack_04",
+   "elk_chieftain_attack_05",
+   "elk_chieftain_attack_06",
+   "elk_chieftain_attack_07",
+   "elk_chieftain_attack_08",
+   "elk_chieftain_attack_08",
+   "elk_chieftain_attack_09",
+   "elk_chieftain_attack_09"
+  ],
+  "attack_team": [
+   "elk_chieftain_attack_00_team",
+   "elk_chieftain_attack_01_team",
+   "elk_chieftain_attack_02_team",
+   "elk_chieftain_attack_03_team",
+   "elk_chieftain_attack_04_team",
+   "elk_chieftain_attack_05_team",
+   "elk_chieftain_attack_06_team",
+   "elk_chieftain_attack_07_team",
+   "elk_chieftain_attack_08_team",
+   "elk_chieftain_attack_08_team",
+   "elk_chieftain_attack_09_team",
+   "elk_chieftain_attack_09_team"
+  ],
+  "hit": [
+   "elk_chieftain_hit_00",
+   "elk_chieftain_hit_01",
+   "elk_chieftain_hit_02",
+   "elk_chieftain_hit_03",
+   "elk_chieftain_hit_04"
+  ],
+  "hit_team": [
+   "elk_chieftain_hit_00_team",
+   "elk_chieftain_hit_01_team",
+   "elk_chieftain_hit_02_team",
+   "elk_chieftain_hit_03_team",
+   "elk_chieftain_hit_04_team"
+  ],
+  "die": [
+   "elk_chieftain_die_00",
+   "elk_chieftain_die_01",
+   "elk_chieftain_die_01",
+   "elk_chieftain_die_02",
+   "elk_chieftain_die_03",
+   "elk_chieftain_die_04",
+   "elk_chieftain_die_04",
+   "elk_chieftain_die_05",
+   "elk_chieftain_die_05",
+   "elk_chieftain_die_06",
+   "elk_chieftain_die_06",
+   "elk_chieftain_die_07"
+  ],
+  "die_team": [
+   "elk_chieftain_die_00_team",
+   "elk_chieftain_die_01_team",
+   "elk_chieftain_die_01_team",
+   "elk_chieftain_die_02_team",
+   "elk_chieftain_die_03_team",
+   "elk_chieftain_die_04_team",
+   "elk_chieftain_die_04_team",
+   "elk_chieftain_die_05_team",
+   "elk_chieftain_die_05_team",
+   "elk_chieftain_die_06_team",
+   "elk_chieftain_die_06_team",
+   "elk_chieftain_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "elk_chieftain.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 3072,
+   "h": 2412
+  },
+  "scale": "2.5",
+  "ageborn": {
+   "visualId": "unit.elk_chieftain",
+   "name": "Elk Chieftain",
+   "heightLu": 172,
+   "widthLu": 154.6,
+   "pxPerLu": 2.05,
+   "feetPx": [
+    454,
+    588
+   ],
+   "anchorsLu": {
+    "head": [
+     35,
+     164
+    ],
+    "hitCenter": [
+     0,
+     73
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "rider",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      150,
+      150,
+      150,
+      150,
+      150,
+      150
+     ],
+     "durationMs": 900,
+     "anchorsLu": {
+      "rackTip": [
+       [
+        71.3,
+        132.8
+       ],
+       [
+        70.8,
+        134.9
+       ],
+       [
+        70.6,
+        138.7
+       ],
+       [
+        70.9,
+        140.4
+       ],
+       [
+        71.4,
+        138.2
+       ],
+       [
+        71.6,
+        134.4
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 10,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      90,
+      90,
+      90,
+      90,
+      90,
+      90,
+      90,
+      90,
+      90,
+      90
+     ],
+     "durationMs": 900,
+     "gait": "rider",
+     "gaitSpeedLuPerS": 62.5,
+     "cycleMs": 900,
+     "anchorsLu": {
+      "rackTip": [
+       [
+        74.3,
+        132.9
+       ],
+       [
+        74.8,
+        127.4
+       ],
+       [
+        69.9,
+        126.8
+       ],
+       [
+        66.1,
+        131.4
+       ],
+       [
+        68.9,
+        135.1
+       ],
+       [
+        74.3,
+        132.9
+       ],
+       [
+        75.2,
+        128.7
+       ],
+       [
+        70.6,
+        129.0
+       ],
+       [
+        66.8,
+        133.5
+       ],
+       [
+        69.3,
+        136.4
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 63.0,
+     "strideLu": 56.7,
+     "plantedDriftLu": 0.33,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "fr",
+       "atLu": [
+        35.6,
+        -4.1
+       ]
+      },
+      {
+       "step": 1,
+       "foot": "bl",
+       "atLu": [
+        -14.4,
+        4.4
+       ]
+      },
+      {
+       "step": 5,
+       "foot": "fl",
+       "atLu": [
+        36.2,
+        1.6
+       ]
+      },
+      {
+       "step": 6,
+       "foot": "br",
+       "atLu": [
+        -15.4,
+        -1.9
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "rackTip": [
+       [
+        76.0,
+        130.9
+       ],
+       [
+        99.6,
+        116.9
+       ],
+       [
+        103.0,
+        97.0
+       ],
+       [
+        88.5,
+        81.8
+       ],
+       [
+        104.3,
+        91.2
+       ],
+       [
+        59.7,
+        113.3
+       ],
+       [
+        23.7,
+        140.5
+       ],
+       [
+        53.8,
+        124.9
+       ],
+       [
+        68.4,
+        134.4
+       ],
+       [
+        71.8,
+        136.5
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "rackTip": [
+       [
+        55.2,
+        140.4
+       ],
+       [
+        44.1,
+        137.0
+       ],
+       [
+        67.1,
+        140.8
+       ],
+       [
+        71.7,
+        132.3
+       ],
+       [
+        70.3,
+        136.8
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      7
+     ],
+     "durationsMs": [
+      60,
+      70,
+      80,
+      80,
+      60,
+      70,
+      80,
+      90,
+      90,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 990,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 740,
+       "offsetLu": [
+        0,
+        61.9
+       ],
+       "scale": 1.932
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 820,
+       "offsetLu": [
+        0,
+        94.6
+       ],
+       "loops": 2,
+       "scale": 1.39
+      }
+     ],
+     "hideUnitAtMs": 990,
+     "anchorsLu": {
+      "rackTip": [
+       [
+        50.4,
+        144.5
+       ],
+       [
+        31.9,
+        157.8
+       ],
+       [
+        53.6,
+        53.5
+       ],
+       [
+        71.6,
+        13.6
+       ],
+       [
+        55.5,
+        6.1
+       ],
+       [
+        57.4,
+        -0.9
+       ],
+       [
+        57.6,
+        1.4
+       ],
+       [
+        56.2,
+        4.8
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

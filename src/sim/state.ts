@@ -78,6 +78,10 @@ export interface UnitRt extends UnitState {
   /** Aura bonuses recomputed every tick (B3 step 6). Auras never stack: the strongest applies. */
   auraAttackSpeedBp: number;
   auraDamageBp: number;
+  /** Ally move-speed aura (Aulos Piper) and Dread aura slow and mark from enemies (Bronze wave M4), bp. */
+  auraSpeedBp: number;
+  auraSlowBp: number;
+  auraMarkBp: number;
   /** Pounce leap (A5.2); `leapEnd` 0 when not leaping. */
   leapFrom: number;
   leapTo: number;

@@ -24,8 +24,14 @@ import { SimImpl } from './createSim';
  * frenzy (a self bonus below an HP line), summoners (the levy rules on a moving unit; their summon ids
  * are hashed), the Time Stop visual flag from content, and the `lane` reach (H7: no aim, the screen over
  * the whole lane). Fields only hash when used, so goldens 01-15 keep their hashes; 16 plays the new kinds.
+ * 7.1.0 (Bronze wave, 2026-10-03): ally `speedBuff` auras (Aulos Piper) and the Dread aura (`aura.foe`,
+ * M4: a slow or mark on enemy ground units in the radius; Tragic Chorus). Both are per-tick fields
+ * recomputed from positions, so goldens 01-16 keep their hashes; 17 plays them.
+ * 7.2.0 (Gunpowder wave, 2026-10-03): a unit volley with `scatter` lands each projectile within ±scatter
+ * of the aim point, as turret volleys already did (the Rocket Cart). The RNG is drawn only when scatter is
+ * above 0 and no earlier unit has scatter, so every golden keeps its hash (re-recorded for this string).
  */
-export const SIM_VERSION = '7.0.0';
+export const SIM_VERSION = '7.2.0';
 
 /** Thrown when a replay was recorded on different content (B3: "from an older version"). */
 export class ReplayContentMismatchError extends Error {

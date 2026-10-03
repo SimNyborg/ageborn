@@ -37,7 +37,9 @@ export function isStunned(u: UnitRt): boolean {
 }
 
 export function isMarked(u: UnitRt): number {
-  return statusBp(u, 'mark');
+  // A timed mark and a Dread mark aura (Bronze wave M4) never stack: the stronger applies.
+  const m = statusBp(u, 'mark');
+  return m > u.auraMarkBp ? m : u.auraMarkBp;
 }
 
 /** Strongest damage buff: timed (Royal Decree) or aura (Smoke Screen); they never stack (A2.7). */

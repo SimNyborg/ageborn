@@ -180,20 +180,21 @@ describe('release gate: rewards and the starter set (A6.3, A18.7, A3)', () => {
 });
 
 describe('release gate: loading a save that holds a held-back card', () => {
+  // The gated wave is the Bronze wave (the Stone wave shipped 2026-10-03, tests/fixtures/pausedWave.ts).
   function tainted(): SaveDoc {
     const s = ownsAll(fresh(9), 3, 2);
     const plan = s.warPlans[0]!;
-    const stone = plan.loadouts.stone;
+    const bronze = plan.loadouts.bronze;
     const loadouts = {
       ...plan.loadouts,
-      stone: { ...stone, units: ['hunting_wolves', 'pebbler', 'woolly_rhino', 'spear_hunter', 'drum_shaman', 'elk_chieftain'], turrets: ['quill_porcupine', 'rock_tosser'], powers: { home: 'tangle_vines', field: 'pebble_hail' }, fort: 'thorn_hedge' },
+      bronze: { ...bronze, units: ['shield_bearer', 'hoplite', 'war_elephant', 'javelineer', 'aulos_piper', 'hydra'], turrets: ['net_caster', 'archer_tower'], powers: { home: 'charybdis', field: 'sandstorm' }, fort: 'hoplon_line' },
     };
     return {
       ...s,
-      collection: { ...s.collection, hunting_wolves: { level: 3, copies: 4, isNew: true, foil: 'none' }, elk_chieftain: { level: 1, copies: 0, isNew: true, foil: 'holo' }, quill_porcupine: { level: 2, copies: 1, isNew: false, foil: 'none' } },
-      powersOwned: [...s.powersOwned, 'tangle_vines', 'pebble_hail'],
-      fortsOwned: [...(s.fortsOwned ?? []), 'thorn_hedge', 'bone_watchtower'],
-      skins: { owned: [...s.skins.owned, 'aurora_elk', 'snowball_pebbler'], equipped: { ...s.skins.equipped, pebbler: 'snowball_pebbler', elk_chieftain: 'aurora_elk' } },
+      collection: { ...s.collection, shield_bearer: { level: 3, copies: 4, isNew: true, foil: 'none' }, hydra: { level: 1, copies: 0, isNew: true, foil: 'holo' }, net_caster: { level: 2, copies: 1, isNew: false, foil: 'none' } },
+      powersOwned: [...s.powersOwned, 'charybdis', 'sandstorm'],
+      fortsOwned: [...(s.fortsOwned ?? []), 'hoplon_line', 'slinger_camp'],
+      skins: { owned: [...s.skins.owned, 'marble_hoplite', 'sun_chariot'], equipped: { ...s.skins.equipped, hoplite: 'marble_hoplite', war_chariot: 'sun_chariot' } },
       warPlans: [{ ...plan, loadouts }, ...s.warPlans.slice(1)],
     };
   }
@@ -203,15 +204,15 @@ describe('release gate: loading a save that holds a held-back card', () => {
     expect(Object.keys(s.collection).filter(gated)).toEqual([]);
     expect([...s.powersOwned, ...s.fortsOwned, ...s.skins.owned].filter(gated)).toEqual([]);
     expect(Object.entries(s.skins.equipped).filter(([k, v]) => gated(k) || gated(v))).toEqual([]);
-    const stone = s.warPlans[0]!.loadouts.stone;
-    expect(planIds({ stone }).filter(gated)).toEqual([]);
-    expect(stone.units.every((x) => x !== null)).toBe(true);
-    expect(stone.turrets.every((x) => x !== null)).toBe(true);
-    expect(stone.powers).toEqual(starterPowers(C, 'stone'));
-    expect(stone.fort).toBe(C.order.forts.find((f) => C.forts[f]?.age === 'stone' && C.forts[f]?.fortKind === 'wall'));
+    const bronze = s.warPlans[0]!.loadouts.bronze;
+    expect(planIds({ bronze }).filter(gated)).toEqual([]);
+    expect(bronze.units.every((x) => x !== null)).toBe(true);
+    expect(bronze.turrets.every((x) => x !== null)).toBe(true);
+    expect(bronze.powers).toEqual(starterPowers(C, 'bronze'));
+    expect(bronze.fort).toBe(C.order.forts.find((f) => C.forts[f]?.age === 'bronze' && C.forts[f]?.fortKind === 'wall'));
     // Released cards and their levels stay as they were.
     expect(s.collection.bonker).toEqual(tainted().collection.bonker);
-    expect(stone.units.slice(1, 2)).toEqual(['pebbler']);
+    expect(bronze.units.slice(1, 2)).toEqual(['hoplite']);
   });
 
   it('runs on every load (tickTimers) and returns the same save when there is nothing to remove', () => {

@@ -364,6 +364,85 @@ export const FX_RECIPES: readonly FxRecipe[] = [
     ],
     particles: [{ sprite: 'fx.p.dust', count: 3, life: [300, 500], speed: [20, 50], angle: [-160, -20], scale: [0.5, 0.9], alpha: [0.8, 0], tint: 0xc9c2b4 }],
   },
+  // Bronze wave instants (CONTENT_PLAN 5.2): the Aulos Piper's note and the Tragic Chorus's wail
+  {
+    id: 'fx.note_pop',
+    durationMs: 640,
+    sprites: [
+      { sprite: 'fx.p.beam', life: 360, toTarget: true, keys: [{ t: 0, sy: 0.5, a: 0 }, { t: 0.25, sy: 1.2, a: 0.5 }, { t: 1, sy: 0.4, a: 0 }], tint: 0xc8f4e0 },
+      flash(0.7, 0xe8fff4, 140),
+    ],
+    particles: [{ sprite: 'fx.p.note', count: 2, life: [420, 640], speed: [30, 60], angle: [-120, -60], spread: 4, gravity: -30, scale: [0.9, 0.6], alpha: [1, 0], spin: [-60, 60], tint: 0xe8fff4 }],
+  },
+  {
+    id: 'fx.wail_ring',
+    durationMs: 600,
+    sprites: [
+      ring(1.6, 420, 0xd8c8f0, 0.5),
+      { ...ring(2.4, 520, 0xc9b8f0, 0.3), delay: 80 },
+      { sprite: 'fx.p.beam', life: 380, toTarget: true, keys: [{ t: 0, sy: 0.6, a: 0 }, { t: 0.3, sy: 1.6, a: 0.45 }, { t: 1, sy: 0.6, a: 0 }], tint: 0xc9b8f0 },
+    ],
+  },
+  // Medieval wave instants (CONTENT_PLAN 5.3): the Lindworm's marsh-fire breath and the Grapple Crane's hook
+  {
+    id: 'fx.lindworm_breath',
+    durationMs: 620,
+    sprites: [
+      { sprite: 'fx.p.beam', life: 520, toTarget: true, keys: [{ t: 0, sx: 0, sy: 1.6, a: 0.7 }, { t: 0.3, sx: 1, sy: 3.2, a: 0.75 }, { t: 0.7, sx: 1, sy: 3.6, a: 0.5 }, { t: 1, sx: 1, sy: 2.4, a: 0 }], tint: 0x8fe39a },
+      { sprite: 'fx.p.beam', life: 440, toTarget: true, keys: [{ t: 0, sx: 0, sy: 0.8, a: 1 }, { t: 0.3, sx: 1, sy: 1.4, a: 1 }, { t: 1, sx: 1, sy: 0.6, a: 0 }], tint: 0xe8ffe6 },
+    ],
+    particles: [
+      { sprite: 'fx.p.ember', rate: 40, life: [300, 520], speed: [30, 80], angle: [-150, -30], spread: 10, gravity: -60, scale: [0.9, 0.4], alpha: [1, 0], tint: 0xb8f5c0 },
+      { sprite: 'fx.p.smoke', rate: 12, life: [500, 800], speed: [10, 30], angle: [-110, -70], spread: 12, gravity: -40, scale: [0.5, 1], alpha: [0.35, 0], tint: 0xb9c2b8 },
+    ],
+  },
+  {
+    id: 'fx.grapple_hook',
+    durationMs: 420,
+    sprites: [
+      { sprite: 'fx.p.beam', life: 400, toTarget: true, keys: [{ t: 0, sx: 0, sy: 0.5, a: 1 }, { t: 0.3, sx: 1, sy: 0.5, a: 1 }, { t: 0.75, sx: 1, sy: 0.45, a: 1 }, { t: 1, sx: 0, sy: 0.45, a: 1 }], tint: 0x8a7458 },
+      flash(0.6, 0xf2efe6, 120),
+    ],
+    particles: [{ sprite: 'fx.p.dust', count: 3, life: [260, 420], speed: [20, 50], angle: [-160, -20], scale: [0.5, 0.8], alpha: [0.8, 0], tint: 0xc9c2b4 }],
+  },
+  // Gunpowder wave instants (CONTENT_PLAN 5.4): the Blunderbuss's cone of shot, the Drummer Boy's drumroll boom,
+  // the Bagpiper's droning skirl and the Mesmerist's hypnotic spiral
+  {
+    id: 'fx.blunderbuss_spray',
+    durationMs: 560,
+    sprites: [
+      { sprite: 'fx.p.beam', life: 220, toTarget: true, keys: [{ t: 0, sx: 0, sy: 2.4, a: 0.9 }, { t: 0.35, sx: 1, sy: 4.2, a: 0.7 }, { t: 1, sx: 1, sy: 5.4, a: 0 }], tint: 0xfff1d2 },
+      flash(1.1, 0xfff6e2, 110),
+    ],
+    particles: [
+      { ...sparks(9, [260, 420], 'fx.p.spark', [-20, 20]), life: [120, 220], gravity: 60 },
+      { ...smoke(4, 0.8), angle: [-40, 10] },
+    ],
+  },
+  {
+    id: 'fx.drum_boom',
+    durationMs: 520,
+    sprites: [ring(1.4, 360, 0xf8f0d8, 0.45), { ...ring(2.0, 440, 0xefe6cf, 0.4), delay: 90 }, flash(0.6, 0xfff6e2, 90)],
+    particles: [{ sprite: 'fx.p.note', count: 2, life: [380, 560], speed: [30, 60], angle: [-120, -60], spread: 4, gravity: -30, scale: [0.9, 0.6], alpha: [1, 0], spin: [-40, 40], tint: 0xf8f0d8 }],
+  },
+  {
+    id: 'fx.pipe_drone',
+    durationMs: 640,
+    sprites: [
+      { sprite: 'fx.p.beam', life: 520, toTarget: true, keys: [{ t: 0, sx: 0, sy: 0.6, a: 0 }, { t: 0.3, sx: 1, sy: 1.4, a: 0.45 }, { t: 0.65, sx: 1, sy: 0.8, a: 0.4 }, { t: 1, sx: 1, sy: 1.2, a: 0 }], tint: 0xe2ead8 },
+      ring(1.2, 420, 0xd8e2cc, 0.45),
+    ],
+    particles: [{ sprite: 'fx.p.note', count: 3, life: [420, 700], speed: [30, 60], angle: [-130, -50], spread: 6, gravity: -30, scale: [0.9, 0.5], alpha: [1, 0], spin: [-60, 60], tint: 0xe2ead8 }],
+  },
+  {
+    id: 'fx.mesmer_spiral',
+    durationMs: 700,
+    sprites: [
+      { sprite: 'fx.p.beam', life: 420, toTarget: true, keys: [{ t: 0, sx: 0, sy: 0.5, a: 0.8 }, { t: 0.4, sx: 1, sy: 0.7, a: 0.7 }, { t: 1, sx: 1, sy: 0.3, a: 0 }], tint: 0xe7dcff },
+      { sprite: 'fx.p.swirl', life: 640, keys: [{ t: 0, sx: 0.4, sy: 0.4, a: 0, r: 0 }, { t: 0.25, sx: 1.4, sy: 1.4, a: 0.9, r: 180 }, { t: 1, sx: 1.8, sy: 1.8, a: 0, r: 540 }], tint: 0xe7dcff },
+    ],
+    particles: [{ sprite: 'fx.p.xp', count: 4, life: [380, 600], speed: [20, 50], angle: [-180, 180], spread: 6, scale: [1, 0.3], alpha: [1, 0], tint: 0xe7dcff, blendAdd: true }],
+  },
   { id: 'fx.tesla_arc', durationMs: 260, chain: { segments: 8, jitter: 9, tint: 0xe6ecff, width: 2.4, refreshMs: 40 }, sprites: [flash(1, 0xe6ecff, 130)] },
   {
     id: 'fx.beam_void',
@@ -763,7 +842,22 @@ export const PROJECTILE_RECIPES: readonly ProjectileRecipe[] = [
   { id: 'proj.bee', sprite: 'proj.bee', wobble: 3, tail: { length: 8, width: 1, alpha: 0.3 } },
   { id: 'proj.log', sprite: 'proj.log', spin: 400, rolls: true },
   { id: 'proj.arrow', sprite: 'proj.arrow', tail: { length: 18, width: 1.6, alpha: 0.5 } },
+  // Stone wave (CONTENT_PLAN 5.1)
+  { id: 'proj.bolas', sprite: 'proj.bolas', spin: 900, tail: { length: 10, width: 2, alpha: 0.35 } },
+  { id: 'proj.dart', sprite: 'proj.dart', tail: { length: 16, width: 1.4, alpha: 0.45 } },
+  { id: 'proj.herb', sprite: 'proj.herb', wobble: 2, tail: { length: 10, width: 3, alpha: 0.3 } },
+  { id: 'proj.quill', sprite: 'proj.quill', tail: { length: 10, width: 1, alpha: 0.4 } },
+  { id: 'proj.snowball', sprite: 'proj.snowball', spin: 360, tail: { length: 12, width: 2.6, alpha: 0.35 } },
   { id: 'proj.bolt', sprite: 'proj.bolt', tail: { length: 18, width: 2, alpha: 0.5 } },
+  // Bronze wave (CONTENT_PLAN 5.2): the Cretan Archer's high arc reuses the arrow with a longer trail
+  { id: 'proj.discus', sprite: 'proj.discus', spin: 1080, tail: { length: 12, width: 3, alpha: 0.4 } },
+  { id: 'proj.net', sprite: 'proj.net', spin: 240, wobble: 1.5, tail: { length: 8, width: 3, alpha: 0.25 } },
+  { id: 'proj.arrow_arc', sprite: 'proj.arrow', tail: { length: 24, width: 1.6, alpha: 0.5 } },
+  // Medieval wave (CONTENT_PLAN 5.3)
+  { id: 'proj.longarrow', sprite: 'proj.longarrow', tail: { length: 26, width: 1.6, alpha: 0.5 } },
+  { id: 'proj.note', sprite: 'proj.note', wobble: 2.5, tail: { length: 8, width: 2, alpha: 0.3 } },
+  { id: 'proj.vial', sprite: 'proj.vial', spin: 720, tail: { length: 10, width: 2.4, alpha: 0.35 }, puff: { sprite: 'fx.p.smoke', every: 60, tint: 0xc8f0d8 } },
+  { id: 'proj.spear_bolt', sprite: 'proj.spear_bolt', tail: { length: 24, width: 2.6, alpha: 0.5 } },
   { id: 'proj.goose', sprite: 'proj.goose', wobble: 2, tail: { length: 12, width: 3, alpha: 0.3 } },
   { id: 'proj.musket', sprite: 'proj.musket', tail: { length: 22, width: 1.6, alpha: 0.55 } },
   { id: 'proj.lob', sprite: 'proj.lob', spin: 360, tail: { length: 10, width: 2, alpha: 0.35 }, puff: { sprite: 'fx.p.ember', every: 40 } },
@@ -771,6 +865,8 @@ export const PROJECTILE_RECIPES: readonly ProjectileRecipe[] = [
   { id: 'proj.grapeshot', sprite: 'proj.grapeshot', tail: { length: 16, width: 4, alpha: 0.4 } },
   { id: 'proj.rocket', sprite: 'proj.rocket', tail: { length: 22, width: 2.4, alpha: 0.5 }, puff: { sprite: 'fx.p.smoke', every: 35, tint: 0xdcd8d2 } },
   { id: 'proj.chainshot', sprite: 'proj.chainshot', spin: 900, tail: { length: 16, width: 5, alpha: 0.35 } },
+  // Gunpowder wave (CONTENT_PLAN 5.4): the Coehorn Crew's lobbed shell, its fuse fizzing on the high arc
+  { id: 'proj.mortar_shell', sprite: 'proj.mortar_shell', spin: 240, tail: { length: 12, width: 3, alpha: 0.35 }, puff: { sprite: 'fx.p.ember', every: 40 } },
   { id: 'proj.bomb', sprite: 'proj.bomb', tail: { length: 10, width: 2, alpha: 0.3 } },
   { id: 'proj.bullet', sprite: 'proj.bullet', tail: { length: 26, width: 1.4, alpha: 0.55 } },
   { id: 'proj.shell', sprite: 'proj.shell', tail: { length: 22, width: 2.6, alpha: 0.5 }, puff: { sprite: 'fx.p.smoke', every: 60, tint: 0xdcd8d2 } },

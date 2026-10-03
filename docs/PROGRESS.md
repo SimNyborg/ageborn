@@ -2,6 +2,24 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-03: the Medieval content wave ships (cloud session, not yet published)
+
+The third content wave is in: 13 new Medieval troops (plus the Kennel Master's War Hound), 2 turrets, 2 powers, 2 forts and 3 skins, each with a cartoon sprite sheet (2-3 attacks, walk by gait, KO death), card portrait, sounds and effects; all six Medieval forts are redrawn in the cartoon style. Numbers and measurements: `docs/decisions.md` ("X0 Medieval wave shipped").
+
+**Checks:** typecheck and lint clean, production build OK. Unit tests: the remaining failures belong to the gated Bronze wave (its table rows, levy, forts) plus two shared items: the boot sound budget (476 of 300 ms, request filed) and the turret-turtle proxy (3 of 4 mounts at 800 s; baseline plans do not use the new cards).
+
+**Still open:** Longbow Volley sits at every lane-power limit and measures about -17 (like Pebble Hail: relax the budget or accept a niche card); the Lindworm's one-age and two-age windows disagree (-3.6 / +5.8); the capsule economy needs the CONTENT_PLAN re-tune (Common/Rare/Epic now 140/146/88 days to max; a measured fix is in `docs/requests/content-economy-retune.md`, best applied once after the Bronze wave).
+
+**What the owner should try** (once published): put the Lindworm, the Greatsword Knight and the Mangonel in your Medieval War Plan, ring the Great Bell on a crowd, and watch the Siege Belfry drop its drawbridge.
+
+## 2026-10-03: the Stone content wave ships (cloud session, not yet published)
+
+The first content wave is in: 13 new Stone troops (plus the Beast Caller's Cave Pup), 2 turrets, 2 powers, 2 forts and 3 skins, each with a cartoon sprite sheet (2-3 attacks, walk by gait, KO death), card portrait, sounds and effects; all six Stone forts are redrawn in the cartoon style. Numbers and measurements: `docs/decisions.md` ("X0 Stone wave shipped").
+
+**Still open:** Bolas Thrower (+12.0 one-age, -7.8 two-age) and Torch Runner (+7.0) sit outside ±5; Pebble Hail is held to the lane-power budget and measures -30.6 / -10.1 against Stampede (a design call: relax the budget for it or accept a niche card); support-slot Epics and the second turret mount barely get used by the Balanced bot, so their deltas say little; the whole-collection capsule time grew from 194 to 222 days (the CONTENT_PLAN re-tune waits for the Bronze wave); the boot sound budget (request filed); equipped skins draw procedural puppets instead of the 3D sheets (as before).
+
+**What the owner should try** (once published): start a Stone battle, put Hunting Wolves, Woolly Rhino and the Elk Chieftain in your War Plan, and cast Tangle Vines on a crowd.
+
 ## 2026-10-02: unit animations in every age and the Siege rope, release check (cloud session, not yet published)
 
 All 56 shipped troops in all eight ages now walk with their feet on the ground and have 2-3 different attacks (A plus B, most melee units also C); the Siege rope is in Short, Medium and Long War. Details per age and for the rope in `docs/decisions.md` (2026-10-02 entries).

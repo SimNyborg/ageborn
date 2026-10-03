@@ -10,10 +10,14 @@ each hand.
 
 Animation (cartoon kit v2):
   idle    taps a foot and wiggles the fingers on the pipes, a little puff of the cheeks, blink
-  walk    a strutting march with the knees high, the robe swinging a frame late
+  walk    walk v3 brisk strut at ground speed (ANIM_SPEC G2, 81.25 lu/s): knees high, the shortened
+          chiton kicking with the knees, playing the march on the pipes
+  attack_b  CROUCH AND TRILL: ducks low with the head down and the pipes pointing at the ground (held
+          extreme), then springs up and trills the note out level at the enemy
   attack  BIG BREATH, SHARP NOTE: leans back filling his chest, the cheeks balloon (held
           extreme: puffed cheeks, the pipes raised), then he bends forward and blasts a note
           (sound rings burst from the bells on the impact frame), eyes squeezed
+          A and B hold the breath with a cheek wobble while the sim wind-up lasts (holdLoop)
   hit     light: the cheeks deflate with a squeak face, head snaps back
   die     D3 dizzy sit (supports), the pipes drop in his lap
 """
@@ -27,6 +31,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "aulos_piper"
+GAIT_NAME = "biped"
 NAME = "Aulos Piper"
 HEIGHT_LU = 68
 CANVAS = (290, 250)
@@ -58,21 +63,24 @@ def _pipe(rig, joint, y, ang, length=PIPE_L):
 
 
 def build(rig):
-    B.skeleton(rig)
-    B.sandal_legs(rig, greaves=False)
-    K.laces(rig)
-    # long team chiton to mid-shin with a sandstone key border, a verdigris belt
+    global RIG
+    RIG = rig
+    B.skeleton_v3(rig)           # walk v3: longer legs, planted feet (ANIM_SPEC 2.0 rule 5)
+    B.sandal_legs_v3(rig, greaves=False, wraps="team")
+    # team chiton, shortened to the knee for walk v3 (the hem 11 lu above the soles, ANIM_SPEC G2), with a
+    # sandstone key border and a verdigris belt; the skirt kicks with the knees (follow-through)
     g = Geo().blob((0.3, 0, 28.0), (10.2, 9.4, 11.4), p=2.4, taper=(1.1, 0.92))
     rig.part("torso", g, team=True)
-    rig.secondary("hem", "hips", (0.5, 0, 16.5), (0.5, 0, 5.0), max_deg=12, gain=1.0)
-    g = Geo().blob((0.6, 0, 11.0), (12.0, 11.0, 8.2), p=2.4, taper=(1.25, 0.94))
+    rig.secondary("hem", "hips", (0.5, 0, 16.5), (0.5, 0, 8.0), max_deg=14, gain=1.1)
+    rig.rest_offset["hem"] = (0, 0, B.V3_LIFT)
+    g = Geo().blob((0.6, 0, 14.0), (12.0, 11.0, 5.4), p=2.4, taper=(1.25, 0.94))
     rig.part("hem", g, team=True)
-    g = Geo().blob((0.6, 0, 3.6), (12.8, 11.8, 1.5), p=3.0)
+    g = Geo().blob((0.6, 0, 9.6), (12.8, 11.8, 1.4), p=3.0)
     rig.part("hem", g, B.SAND_LT, outline=0.6)
     g = Geo()
     for k in range(12):
         a = math.pi * (0.5 + 1.9 * k / 11)
-        g.blob((12.6 * math.cos(a), 11.6 * math.sin(a), 5.6), (1.2, 1.2, 1.2), p=3.0)
+        g.blob((12.6 * math.cos(a), 11.6 * math.sin(a), 11.4), (1.2, 1.2, 1.2), p=3.0)
     rig.part("hem", g, B.SAND_LT, outline=0.4)
     g = Geo().blob((0.4, 0, 20.6), (11.0, 10.1, 1.8), p=3.2)
     rig.part("torso", g, B.VERD_DK)
@@ -100,7 +108,6 @@ def build(rig):
     b1 = _pipe(rig, "pipes", -3.2, PIPE_W - 6.0)
     _pipe(rig, "pipes", 2.6, PIPE_W + 8.0)
     rig.track("muzzle", "pipes", b1)
-    rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -137,52 +144,118 @@ def _idle(f):
     return M.idle_v2(f, {"torso": {"r": -2}}, frames=6, extra=extra, face_blink=F.expr("blink"), blink=4)
 
 
-def _walk(f):
+# -- walk v3: G2 brisk strut at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 70 ms, knees high -----
+RIG = None
+SPEED = 81.25
+LEGS = B.walk_legs_v3()
+GAIT = B.jog_gait(SPEED, LEGS, cycle_ms=560, stance=0.44, lift=8.5, kick=2.0, toe_off=20.0, early_lift=1.4)
+STRUT_BOB = [-3.0, -3.6, 0.2, 1.6]
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return merge(_hands(head_r=-(-2.0) * 0.5 - 2.5 * lag), {"pipes": {"r": 2 * lag}})
-    return M.walk_v2(f, {"torso": {"r": -2}}, HEIGHT_LU, thigh=44.0, knee=70.0, lift_lu=9.0,
-                     bob_pct=0.07, lean=2.0, arm=0.0, fore=0.0, arms=(), extra=extra)
+        hr = -12.0 - 2.5 * lag                      # head down over the pipes, playing the march
+        return merge(_hands(head_r=hr, pipes_r=10.0), {"head": {"r": hr}, "pipes": {"r": 10.0 + 2 * lag},
+                                                      "hem": {"r": 5 * lag}})
+    return M.walk_v3(RIG, f, {"torso": {"r": -2}}, GAIT, legs=LEGS, bob=STRUT_BOB, sq=M.BRISK_SQ, lean=2.0,
+                     twist=5.0, nod=2.0, sway=3.0, extra=extra, report=report)
 
 
-#        read inhale puff HOLD  bend  lead  BLAST over  recov settle settle
-A_T = [-2, 8, 14, 18, 6, -6, -18, -20, -10, -4, -2]
-A_H = [0, 8, 14, 18, 8, -2, -10, -12, -4, 0, 0]
-A_P = [0, 6, 10, 14, 10, 6, 18, 20, 8, 2, 0]
-A_Q = [-0.02, 0.05, 0.08, 0.1, 0.02, -0.04, -0.14, -0.1, -0.03, 0.0, 0.0]
-A_X = [0.0, -1.0, -2.0, -2.5, -0.5, 1.5, 3.5, 4.0, 2.0, 0.5, 0.0]
-A_Z = [0.0, 1.0, 1.6, 2.0, 0.6, -0.4, -1.8, -1.4, -0.6, 0.0, 0.0]
-A_THR = [0, -6, -8, -10, 0, 10, 18, 20, 8, 2, 0]
-A_THL = [0, 6, 8, 10, 2, -8, -16, -18, -6, -2, 0]
-A_SHL = [0, -4, -6, -8, -2, -6, -10, -10, -4, 0, 0]
+def _feet(pose, fr, fl, lr=0.0, ll=0.0, ar=0.0, al=0.0):
+    return B.plant(RIG, pose, LEGS, r=(fr, lr, ar), l=(fl, ll, al))
+
+
+# 12 steps: read, inhale, puff, HOLD, wobble (holdLoop partner), bend, lead | BLAST, over, recover,
+# settle, settle. Pre-impact 290 of 680 ms (impactAt 0.4265); the hold is 35% of the pre-impact time.
+ATK_MS = [30, 40, 40, 102, 30, 30, 18, 120, 60, 50, 70, 90]
+ATK_IMPACT = 7
+#        read inhale puff HOLD wobl bend  lead  BLAST over  recov settle settle
+A_T = [-2, 8, 14, 18, 17, 6, -6, -18, -20, -10, -4, -2]
+A_H = [0, 8, 14, 18, 17, 8, -2, -10, -12, -4, 0, 0]
+A_P = [0, 6, 10, 14, 15, 10, 6, 18, 20, 8, 2, 0]
+A_Q = [-0.02, 0.05, 0.08, 0.1, 0.08, 0.02, -0.04, -0.14, -0.1, -0.03, 0.0, 0.0]
+A_X = [0.0, -1.0, -2.0, -2.5, -2.3, -0.5, 1.5, 3.5, 4.0, 2.0, 0.5, 0.0]
+A_Z = [0.0, 1.0, 1.6, 2.0, 1.6, 0.6, -0.4, -1.8, -1.4, -0.6, 0.0, 0.0]
+A_FR = [2.0, 1.0, 0.0, -1.0, -1.0, 2.0, 5.0, 9.0, 9.5, 6.0, 3.0, 2.0]
+A_FL = [-2.0, -2.0, -3.0, -4.0, -4.0, -3.0, -3.0, -2.0, -2.0, -2.0, -2.0, -2.0]
+A_LR = [0, 0, 0, 0, 0, 2.0, 1.5, 0, 0, 0, 0, 0]
 
 
 def _attack_pose(f):
     t = A_T[f]
     pose = merge(_hands(head_r=A_H[f], pipes_r=A_P[f]), {
         "torso": {"r": t}, "head": {"r": A_H[f]}, "pipes": {"r": A_P[f]},
-        "thigh_r": {"r": A_THR[f]}, "thigh_l": {"r": A_THL[f]}, "shin_l": {"r": A_SHL[f]},
-        "cheeks": {"show": 2 <= f <= 5, "s": 1.15 if f == 3 else 1.0},
+        "cheeks": {"show": 2 <= f <= 6, "s": 1.15 if f == 3 else 1.22 if f == 4 else 1.0},
     }, M.body_about((0, 0, 24), x=A_X[f], z=A_Z[f], q=A_Q[f]))
-    if f in (1, 2, 3):
+    pose = _feet(pose, A_FR[f], A_FL[f], lr=A_LR[f])
+    if f in (1, 2, 3, 4):
         pose = merge(pose, {"brow": {"z": 1.0}})
-    elif f in (6, 7):
+    elif f in (7, 8):
         pose = merge(pose, F.expr("squeeze"), {"brow": {"z": -1.0}})
     return pose
 
 
+BELL = (MOUTH[0] + (PIPE_L + 2.0) * math.cos(math.radians(PIPE_W - 6.0)), -3.2,
+        MOUTH[2] + (PIPE_L + 2.0) * math.sin(math.radians(PIPE_W - 6.0)))
+
+
 def _attack_clip():
-    a = math.radians(PIPE_W - 6.0)
-    bell = (MOUTH[0] + (PIPE_L + 2.0) * math.cos(a), -3.2, MOUTH[2] + (PIPE_L + 2.0) * math.sin(a))
     ov = {
-        6: [{"kind": "rings", "joint": "pipes", "point": bell, "radii_lu": (6.0, 11.0, 16.0),
+        7: [{"kind": "rings", "joint": "pipes", "point": BELL, "radii_lu": (6.0, 11.0, 16.0),
              "a0": -50.0, "a1": 40.0},
-            {"kind": "burst", "joint": "pipes", "point": bell, "r0_lu": 4.0, "r1_lu": 8.0, "n": 4,
+            {"kind": "burst", "joint": "pipes", "point": BELL, "r0_lu": 4.0, "r1_lu": 8.0, "n": 4,
              "a0": -60.0, "arc": 90.0}],
-        7: [{"kind": "rings", "joint": "pipes", "point": bell, "radii_lu": (12.0, 18.0), "a0": -40.0, "a1": 30.0}],
+        8: [{"kind": "rings", "joint": "pipes", "point": BELL, "radii_lu": (12.0, 18.0), "a0": -40.0, "a1": 30.0}],
     }
-    return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
-                  impact=M.SMALL_MELEE_IMPACT, overlays=ov)
+    return M.clip("attack", [_attack_pose(f) for f in range(12)], ATK_MS, impact=ATK_IMPACT, overlays=ov,
+                  extra={"holdStep": 3, "holdLoop": [3, 4]})
+
+
+# -- attack B: crouch and trill, the note sent out level ----------------------------------------------
+# 0-1 = A read and inhale, 2 duck, 3 HOLD (a low crouch, the head down, the pipes pointing at the
+# ground), 4 wobble, 5 rising, 6 lead, 7 BLAST (risen, the pipes level at the enemy, rings out
+# forward), 8-11 = A's
+#      duck HOLD wobl rise lead BLAST
+B_T = [-12, -22, -21, -8, 2, 6]
+B_H = [-16, -26, -25, -6, 18, 30]
+B_P = [-6, -14, -13, 0, 12, 22]
+B_Q = [-0.06, -0.12, -0.10, 0.02, 0.06, -0.06]
+B_X = [0.0, 0.5, 0.5, 2.0, 3.0, 4.0]
+B_Z = [-4.0, -8.0, -8.2, -3.0, 0.5, 0.0]
+B_FR = [4.0, 6.0, 6.0, 7.0, 8.0, 9.0]
+B_FL = [-5.0, -7.0, -7.0, -5.0, -4.0, -3.0]
+
+
+def _b_pose(i):
+    if i in (0, 1) or i >= 8:
+        return _attack_pose(i)
+    k = i - 2
+    pose = merge(_hands(head_r=B_H[k], pipes_r=B_P[k]), {
+        "torso": {"r": B_T[k]}, "head": {"r": B_H[k]}, "pipes": {"r": B_P[k]},
+        "cheeks": {"show": i <= 6, "s": 1.2 if i in (3, 4) else 1.0},
+    }, M.body_about((0, 0, 24), x=B_X[k], z=B_Z[k], q=B_Q[k]))
+    pose = _feet(pose, B_FR[k], B_FL[k])
+    if i == 7:
+        pose = merge(pose, F.expr("squeeze"), {"brow": {"z": -1.0}})
+    else:
+        pose = merge(pose, {"brow": {"z": 1.0}})
+    return pose
+
+
+def _attack_b():
+    ov = {
+        7: [{"kind": "rings", "joint": "pipes", "point": BELL, "radii_lu": (6.0, 11.0, 16.0),
+             "a0": -40.0, "a1": 40.0},
+            {"kind": "burst", "joint": "pipes", "point": BELL, "r0_lu": 4.0, "r1_lu": 8.0, "n": 4,
+             "a0": -40.0, "arc": 80.0},
+            {"kind": "dust", "ground": (6.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 51, "spread": 0.8}],
+        8: [{"kind": "rings", "joint": "pipes", "point": BELL, "radii_lu": (12.0, 18.0), "a0": -30.0, "a1": 30.0}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10),
+             11: ("attack", 11)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(12)], ATK_MS, impact=ATK_IMPACT, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 3, "holdLoop": [3, 4]})
 
 
 def _hit(k):
@@ -217,10 +290,11 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

@@ -430,6 +430,133 @@ HONK_OVERLAYS = {"fire": {
          "a0": -60.0, "arc": 120.0}]}}
 
 
+# -- Springald (W3 Medieval wave, CONTENT_PLAN 5.3): a torsion bolt-thrower that skewers a line -------
+def springald_build(rig):
+    castle_plinth(rig, r=16)
+    g = Geo()
+    cyl(g, (0, 0, 9), (0, 0, 20), 3.4, bevel=0.5)
+    rig.part("mount", g, WOOD_DK)
+    # head: a square timber frame with two twisted-rope torsion bundles, a long trough
+    g = Geo()
+    box(g, (-2, 0, 23), (13, 4.0, 2.4), p=5)            # the trough (stock)
+    rig.part("head", g, WOOD)
+    g = Geo()
+    box(g, (8, 0, 28), (3.0, 9.0, 7.0), p=5)            # the frame
+    rig.part("head", g, team=True)
+    g = Geo()
+    for y in (-6.0, 6.0):
+        g.capsule((8, y, 20.0), (8, y, 36.0), 2.2)      # torsion bundles (rope)
+    rig.part("head", g, ROPE, outline=0.5)
+    g = Geo()
+    for y in (-6.0, 6.0):
+        g.lathe([(2.6, -0.5), (3.0, 0), (2.6, 0.5)], (8, y, 36.4), (8, y, 36.6), segs=12)
+        g.lathe([(2.6, -0.5), (3.0, 0), (2.6, 0.5)], (8, y, 19.6), (8, y, 19.8), segs=12)
+    rig.part("head", g, IRON, finish="metal", outline=0.4)
+    rig.joint("arms", "head", (8, 0, 28))
+    g = Geo()
+    for y in (-6.0, 6.0):
+        g.capsule((8, y, 28), (0, y * 2.6, 30), 1.8, 1.2)
+    rig.part("arms", g, WOOD_DK)
+    rig.joint("string", "head", (0, 0, 28.5))
+    g = Geo()
+    for y in (-1, 1):
+        g.capsule((0, y * 15.6, 30), (-6, 0, 28.5), 0.55)
+    rig.part("string", g, ROPE, outline=0)
+    # the winch at the back
+    rig.joint("winch", "head", (-14, -4.5, 23))
+    g = Geo()
+    for k in range(3):
+        a = math.radians(60 * k)
+        g.capsule((-14 - 5 * math.cos(a), -4.5, 23 - 5 * math.sin(a)), (-14 + 5 * math.cos(a), -4.5, 23 + 5 * math.sin(a)), 0.9)
+    rig.part("winch", g, WOOD_DK, outline=0.4)
+    # the big spear-bolt (iron head, parchment fletching)
+    rig.joint("bolt", "head", (-6, 0, 28.5))
+    g = Geo().capsule((-6, 0, 28.5), (20, 0, 28.5), 1.3)
+    g.lathe([(2.8, 0), (0.1, 7)], (20, 0, 28.5), (27, 0, 28.5), segs=8)
+    rig.part("bolt", g, STEEL, finish="metal", outline=0.5)
+    g = Geo().slab([(-5.5, 28.5), (-1.0, 28.5), (-2.5, 32.0), (-6.0, 31.6)], -0.4, 0.6)
+    g.slab([(-5.5, 28.5), (-1.0, 28.5), (-2.5, 25.0), (-6.0, 25.4)], -0.4, 0.6)
+    rig.part("bolt", g, PARCH, outline=0.4)
+
+
+def springald_idle(f):
+    t = f / 6 * 2 * math.pi
+    return {"head": {"r": 2.0 * math.sin(t), "z": 0.5 * math.sin(2 * t)}, "winch": {"r": [0, 0, -20, -20, -40, -40][f]}}
+
+
+def springald_fire(f):
+    # 0 wound right back (the arms bend), 1 THWACK: the bolt is gone, the arms slam the frame, the
+    # head kicks, 2-3 the string vibrates, 4 a new bolt
+    return {"string": {"x": [-6, 8, 5, -1, 0][f]}, "arms": {"r": [-14, 10, 4, -1, 0][f]},
+            "bolt": {"x": [-4, 0, 0, 0, 0][f], "hide": f in (1, 2, 3)},
+            "winch": {"r": [-160, -170, -170, -120, -50][f]},
+            "head": {"x": [0.6, -4, -2, -1, 0][f], "r": [2, -3, -1, 0, 0][f]}}
+
+
+SPRINGALD_OVERLAYS = {"fire": {
+    1: [{"kind": "rings", "joint": "string", "point": (2, 0, 28.5), "radii_lu": (6.0, 10.0), "a0": 100.0,
+         "a1": 260.0, "color": "#FFF4D6"},
+        {"kind": "streak", "joint": "head", "point": (30, 0, 28.5), "color": "#D6DDE6", "width_lu": 4.0,
+         "white": 0.4, "from": 0}],
+    2: [{"kind": "rings", "joint": "string", "point": (2, 0, 28.5), "radii_lu": (9.0,), "a0": 120.0,
+         "a1": 240.0, "color": "#FFF4D6"}]}}
+
+
+# -- Grapple Crane (W3 Medieval wave): a swinging boom that hooks a Heavy and winches it back ---------
+def crane_build(rig):
+    castle_plinth(rig, r=16)
+    g = Geo()
+    cyl(g, (0, 0, 9), (0, 0, 36), 3.0, bevel=0.5)       # the mast
+    rig.part("mount", g, WOOD_DK)
+    g = Geo()
+    box(g, (-8, 4, 15), (4.0, 3.4, 4.6), p=5)           # the winch drum housing
+    rig.part("mount", g, WOOD)
+    rig.joint("drum", "mount", (-8, -0.2, 15))
+    g = Geo().capsule((-8, -1.0, 15), (-8, 8.0, 15), 3.4)
+    rig.part("drum", g, ROPE, outline=0.5)
+    g = Geo()
+    for k in range(2):
+        a = math.radians(90 * k)
+        g.capsule((-8 - 5 * math.cos(a), -1.6, 15 - 5 * math.sin(a)), (-8 + 5 * math.cos(a), -1.6, 15 + 5 * math.sin(a)), 0.8)
+    rig.part("drum", g, WOOD_DK, outline=0.4)
+    # head: the boom (pivots on the mast top), a team counterweight sack, the rope and the hook
+    g = Geo().capsule((-14, 0, 36), (24, 0, 44), 2.0, 1.5)
+    rig.part("head", g, WOOD)
+    g = Geo().blob((-14, 0, 33), (5.0, 4.4, 5.4), p=2.2)
+    rig.part("head", g, team=True)
+    g = Geo()
+    g.lathe([(2.4, -0.6), (2.8, 0), (2.4, 0.6)], (0, 0, 39), (0, 0.1, 39), segs=12)
+    rig.part("head", g, IRON, finish="metal", outline=0.4)
+    rig.joint("line", "head", (24, 0, 44))
+    g = Geo().capsule((24, 0, 44), (24, 0, 26), 0.6)
+    rig.part("line", g, ROPE, outline=0.3)
+    g = Geo()
+    pts = [(24, 26), (24, 22), (26.5, 19), (29, 21), (28.6, 24)]
+    for a, b in zip(pts, pts[1:]):
+        g.capsule((a[0], 0, a[1]), (b[0], 0, b[1]), 1.1)
+    rig.part("line", g, IRON, finish="metal", outline=0.5)
+    # a team pennant on the boom tip
+    ban = Geo().slab([(22, 46), (14, 47), (16, 50), (14, 53), (22, 52)], 0.0, 0.9)
+    rig.part("head", ban, team=True, outline=0.5)
+
+
+def crane_idle(f):
+    t = f / 6 * 2 * math.pi
+    return {"head": {"r": 2.5 * math.sin(t)}, "line": {"r": 6.0 * math.sin(t - 0.8)}}
+
+
+def crane_fire(f):
+    # 0 the boom swings back and up (the line trailing), 1 it swings out and the hook flies (the drag
+    # effect runs from the muzzle), 2 the drum winches in hard, 3 the boom dips with the load, 4 settle
+    return {"head": {"r": [12, -18, -8, -4, 0][f]}, "line": {"r": [30, -50, -20, -8, 0][f], "sz": [1.0, 1.5, 1.2, 1.05, 1.0][f]},
+            "drum": {"rx": [0, 0, -120, -220, -260][f]}}
+
+
+CRANE_OVERLAYS = {"fire": {
+    1: [{"kind": "arc", "joint": "line", "inner": (24, 0, 36), "outer": (27, 0, 20), "color": "#E0D5BE", "taper": 0.2,
+         "t0": 0.0, "t1": 0.9, "lines": 2, "from": 0}]}}
+
+
 TURRETS = [
     turret_module("crossbow_nest", "Crossbow Nest", "medieval", 40, CANVAS, FEET, (0, 24), (24, 0, 28.5), crossbow_build,
                   crossbow_idle, crossbow_fire, fire_kind="recoil", idle_frames=6, overlays=CROSSBOW_OVERLAYS),
@@ -440,4 +567,11 @@ TURRETS = [
                   idle_frames=6, overlays=TREBUCHET_OVERLAYS),
     turret_module("honk_ballista", "Honk Ballista", "medieval", 46, CANVAS, FEET, (0, 21), (22, 0, 36), honk_build,
                   honk_idle, honk_fire, fire_kind="recoil", idle_frames=6, overlays=HONK_OVERLAYS),
+    # W3 Medieval wave (CONTENT_PLAN 5.3)
+    turret_module("springald", "Springald", "medieval", 40, CANVAS, FEET, (0, 23), (27, 0, 28.5), springald_build,
+                  springald_idle, springald_fire, aim=(-20, 20), fire_kind="recoil", idle_frames=6,
+                  overlays=SPRINGALD_OVERLAYS),
+    turret_module("grapple_crane", "Grapple Crane", "medieval", 54, CANVAS, FEET, (0, 39), (28, 0, 20), crane_build,
+                  crane_idle, crane_fire, aim=(0, 0), fire_kind="tongue", muzzle_joint="line", idle_frames=6,
+                  overlays=CRANE_OVERLAYS),
 ]

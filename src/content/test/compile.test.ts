@@ -31,8 +31,11 @@ describe('contentHash (B4, B3 replays)', () => {
     // Crumble from 23:00 at 1%/s, Crumble II 1.5%/s, endByMs 25:44. MVP balance pass (2026-10-01): the power
     // trim, base HP 8,000 × P, the falling gate at 300 lu, seven Legendaries and fourteen War Path / Road powers.
     // The Siege rope in Short, Medium and Long War (A2.10.2, owner decision 2026-10-02); this value also
-    // includes the paused content expansion's partial Stone and Bronze data in the tree.
-    expect(content.hash).toBe('95a7cf2a');
+    // includes the paused content expansion's partial Stone and Bronze data in the tree. X0 Stone wave
+    // (2026-10-03): its measured numbers (docs/decisions.md); the gated Bronze data is included as it stands.
+    // X0 Medieval wave (2026-10-03): its measured numbers (docs/decisions.md). W4 Gunpowder wave (2026-10-03):
+    // its cards (gated until their art ships, then measured; docs/decisions.md).
+    expect(content.hash).toBe('c4d9ebd3');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {
@@ -125,9 +128,9 @@ describe('compiled bundle (B4)', () => {
     // A2.9.11: by age; starters first (Home, Field), then Home and Field by source (Road, War Path by level)
     expect(full.order.powers).toEqual([
       'rockslide', 'stampede', 'meteor_shower', 'sticky_tar', 'tangle_vines', 'pebble_hail', 'hunt_cry', 'hunters_spear',
-      'tidal_wave', 'chariot_rush', 'zeus_bolts', 'medusa_gaze', 'aegis', 'apollo_arrow',
-      'arrow_storm', 'knights_charge', 'caltrops', 'boiling_oil', 'royal_decree', 'undermine',
-      'volley_fire', 'smoke_screen', 'broadside', 'boarding_nets', 'horse_artillery', 'sharpshooter',
+      'tidal_wave', 'chariot_rush', 'zeus_bolts', 'medusa_gaze', 'charybdis', 'aegis', 'sandstorm', 'apollo_arrow',
+      'arrow_storm', 'knights_charge', 'caltrops', 'boiling_oil', 'great_bell', 'royal_decree', 'longbow_volley', 'undermine',
+      'volley_fire', 'smoke_screen', 'broadside', 'boarding_nets', 'cannon_salute', 'rocket_volley', 'horse_artillery', 'sharpshooter',
       'gun_line', 'iron_horse', 'zeppelin_raid', 'barbed_wire', 'railway_gun', 'field_hospital',
       'strafing_run', 'paratroopers', 'carpet_bomber', 'aa_screen', 'tank_rush', 'sniper_team',
       'orbital_lance', 'drone_swarm', 'point_defense', 'stasis_field', 'nanite_surge', 'emp_blackout',

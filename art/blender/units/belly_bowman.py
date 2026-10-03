@@ -11,14 +11,20 @@ at the back and a horn-pale composite prod in a bronze housing at the front.
 
 Animation (cartoon kit v2):
   idle    pats his belly pad, blows out his cheeks, blink
-  walk    waddle: wide sway, short steps, the belly-bow over his shoulder
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1, 81.25 lu/s) with a waddle sway, the
+          belly-bow over his shoulder
+  attack_b  HIP SHOT: spans it the same way, then braces the stock against his belly and fires from
+          the hip in a low wide stance, leaning back (held extreme), the kick rocking him back
   attack  SPAN, SHOULDER, LOOSE: he tips the bow down, sets the rest on his belly and leans his
           whole weight on it (big squash, cheeks puffed) until the string clicks back, lifts and
           shoulders it, squints (held extreme), and the bolt snaps out with a kick that rocks
           him back a step (the bolt leaves `muzzle` on the impact frame)
+          A and B hold the aim with a squint wobble while the sim wind-up lasts (holdLoop)
   hit     light: head snaps back, the belly wobbles
   die     D1 fling and spin, the belly-bow tumbles away
 """
+import math
+
 from ageborn_art import face as F
 from ageborn_art import kit_bronze as K
 from ageborn_art import moves as M
@@ -27,6 +33,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "belly_bowman"
+GAIT_NAME = "biped"
 NAME = "Belly Bowman"
 HEIGHT_LU = 68
 CANVAS = (310, 250)
@@ -39,9 +46,10 @@ HELM_C = (1.5, 0, 56.0)
 
 
 def build(rig):
-    B.skeleton(rig)
-    B.sandal_legs(rig)
-    K.laces(rig, zs=(4.4, 7.0))
+    global RIG
+    RIG = rig
+    B.skeleton_v3(rig)           # walk v3: longer legs, planted feet (ANIM_SPEC 2.0 rule 5)
+    B.sandal_legs_v3(rig)
 
     # a round belly: team tunic over a pot belly, a quilted belly pad
     g = Geo().blob((0.8, 0, 26.0), (11.6, 10.4, 12.4), p=2.2, taper=(1.12, 0.9))
@@ -53,15 +61,16 @@ def build(rig):
         g.capsule((12.2, -6.0, z), (12.8, 2.0, z), 0.5)
     rig.part("torso", g, B.SAND_DK, outline=0)
     rig.secondary("hem", "hips", (0.5, 0, 17.0), (0.5, 0, 9.0), max_deg=10, gain=0.9)
-    g = Geo().blob((0.8, 0, 13.6), (12.4, 11.0, 5.0), p=2.4, taper=(1.12, 0.94))
+    rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 3.0)        # hem >= 9 lu above the soles
+    g = Geo().blob((0.8, 0, 13.8), (12.4, 11.0, 4.4), p=2.4, taper=(1.12, 0.94))
     rig.part("hem", g, team=True)
-    g = Geo().blob((0.8, 0, 9.4), (12.6, 11.2, 1.1), p=3.0)
+    g = Geo().blob((0.8, 0, 10.0), (12.6, 11.2, 1.1), p=3.0)
     rig.part("hem", g, B.LINEN, outline=0.5)
     g = Geo().blob((0.5, 0, 17.4), (12.2, 10.8, 1.7), p=3.2)
     rig.part("torso", g, B.LEATHER_DK, outline=0.6)
-    for s, y in (("r", -12.5), ("l", 12.0)):                          # linen shoulder caps
-        g = Geo().blob((0.4, y, 37.0), (6.2, 5.6, 4.6), p=2.6)
-        rig.part(f"arm_{s}", g, B.LINEN)
+    for s, y in (("r", -12.5), ("l", 12.0)):                          # team shoulder caps
+        g = Geo().blob((0.4, y, 37.0), (6.4, 5.8, 4.8), p=2.6)
+        rig.part(f"arm_{s}", g, team=True)
 
     beard = Geo()
     for x, y, z, r in ((11.0, -3.6, 41.4, 3.2), (12.4, 0.0, 40.0, 3.4), (11.0, 3.6, 41.4, 3.0),
@@ -87,7 +96,6 @@ def build(rig):
     rig.track("muzzle", "bow", muzzle)
     rig.joint("bow_loose", "root", (0, 0, 0), hidden=True)
     K.gastraphetes(rig, "bow_loose", (-8.0, -4.0, 0.0), strings=("rest",), length=34.0, prod=15.5)
-    rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -112,28 +120,41 @@ def _idle(f):
     return M.idle_v2(f, merge(STANCE), frames=6, extra=extra, face_blink=F.expr("blink"), blink=5)
 
 
-def _walk(f):
+# -- walk v3: G1 bounce jog at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 80 ms, a waddle ------
+RIG = None
+SPEED = 81.25
+LEGS = B.walk_legs_v3()
+GAIT = B.jog_gait(SPEED, LEGS, cycle_ms=640)
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return merge(hold(-30 + 3 * lag, 70 + 3 * lag, 150 + 4 * lag, lean=-4, d=11.0), {"helm": {"z": 0.4 * lag}})
-    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=28.0, knee=40.0, lift_lu=6.0, bob_pct=0.05,
-                     lean=-4.0, arm=0.0, fore=0.0, arms=(), sway=9.0, extra=extra)
+        return merge(hold(-30 + 3 * lag, 70 + 3 * lag, 150 + 4 * lag, lean=-8, d=11.0), {"helm": {"z": 0.4 * lag}})
+    base = {k: v for k, v in STANCE.items() if not k.startswith(("arm_", "fore_", "hand_"))}
+    return M.walk_v3(RIG, f, base, GAIT, legs=LEGS, lean=-8.0, twist=5.0, nod=3.0, sway=6.0, extra=extra,
+                     report=report)
 
 
-# 11 unique frames, moves.SMALL_MELEE_MS
-#        read  tip  SPAN  lift HOLD  aim  LOOSE kick lower  hip  settle
+def _feet(pose, fr, fl, lr=0.0, ll=0.0, ar=0.0, al=0.0):
+    return B.plant(RIG, pose, LEGS, r=(fr, lr, ar), l=(fl, ll, al))
+
+
+# 11 unique frames: read, tip, SPAN, lift, HOLD (aim), squint wobble (holdLoop partner) | LOOSE, kick,
+# lower, hip, settle. Pre-impact 290 of 680 ms (impactAt 0.4265); the hold is 35% of the pre-impact time.
+ATK_MS = [30, 40, 60, 40, 102, 18, 120, 60, 50, 70, 90]
+ATK_IMPACT = 6
+#        read  tip  SPAN  lift HOLD  wobl  LOOSE kick lower  hip  settle
 W_A = [-62, -72, -78, -40, -22, -22, -18, -14, -40, -58, -62]
 W_F = [-12, -34, -40, 10, 68, 68, 72, 76, 30, -6, -12]
-W_W = [8, -62, -70, -12, 4, 4, 14, 22, 0, 6, 8]
+W_W = [8, -62, -70, -12, 4, 6, 14, 22, 0, 6, 8]
 A_T = [-2, -14, -28, -6, 4, 4, 10, 12, 2, -2, -2]
 A_H = [0, 6, 10, 0, -4, -4, -8, -6, 0, 0, 0]
-A_Q = [-0.02, -0.06, -0.18, 0.04, 0.02, 0.02, 0.08, 0.04, 0.0, -0.02, 0.0]
+A_Q = [-0.02, -0.06, -0.18, 0.04, 0.02, 0.0, 0.08, 0.04, 0.0, -0.02, 0.0]
 A_X = [0.0, 1.0, 2.0, 0.0, -0.5, -0.5, -3.5, -4.5, -2.5, -0.5, 0.0]
 A_Z = [0.0, -1.6, -4.0, 0.6, 0.4, 0.4, 0.8, 0.2, 0.0, 0.0, 0.0]
-A_THR = [0, 10, 20, 6, 4, 4, -6, -10, -2, 0, 0]
-A_SHR = [0, -14, -28, -6, -4, -4, -2, -2, 0, 0, 0]
-A_THL = [0, -4, -10, -4, 0, 0, 10, 14, 4, 0, 0]
-A_SHL = [0, -10, -24, -6, 0, 0, -6, -8, -2, 0, 0]
+A_FR = [3.0, 4.0, 5.0, 4.0, 5.0, 5.0, 4.0, 3.0, 3.0, 3.0, 3.0]
+A_FL = [-3.0, -4.0, -5.0, -5.0, -6.0, -6.0, -8.0, -9.0, -6.0, -4.0, -3.0]
 STRING = ["rest", "rest", "spanned", "spanned", "spanned", "spanned", "rest", "rest", "rest", "rest", "rest"]
 
 
@@ -141,11 +162,10 @@ def _attack_pose(f):
     t = A_T[f]
     pose = merge(hold(W_A[f], W_F[f], W_W[f], lean=t), {
         "torso": {"r": t}, "head": {"r": A_H[f]},
-        "thigh_r": {"r": A_THR[f]}, "shin_r": {"r": A_SHR[f]},
-        "thigh_l": {"r": A_THL[f]}, "shin_l": {"r": A_SHL[f]},
         "bow_bolt": {"show": 3 <= f <= 5},
         "cheeks": {"show": f in (2, 3)},
     }, string(STRING[f]), M.body_about((0, 0, 22), x=A_X[f], z=A_Z[f], q=A_Q[f]))
+    pose = _feet(pose, A_FR[f], A_FL[f])
     if f == 2:
         pose = merge(pose, F.expr("squeeze", "grit"), {"brow": {"z": -1.0}})
     elif f in (4, 5):
@@ -166,8 +186,55 @@ def _attack_clip():
             {"kind": "dust", "ground": (-6.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 4, "spread": 0.7,
              "dir": -1.0}],
     }
-    return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
-                  impact=M.SMALL_MELEE_IMPACT, overlays=ov)
+    return M.clip("attack", [_attack_pose(f) for f in range(11)], ATK_MS, impact=ATK_IMPACT, overlays=ov,
+                  extra={"holdStep": 4, "holdLoop": [4, 5]})
+
+
+# -- attack B: hip shot, braced on the belly in a low wide stance -------------------------------------
+# 0-2 = A read, tip and SPAN, 3 lift to the hip, 4 HOLD (a low wide stance, leaning back, the stock
+# braced against the belly pad and the bow level at the waist), 5 wobble, 6 LOOSE (the kick rocks him
+# back), 7 kick, 8-10 = A's
+#      lift HOLD wobl LOOSE kick
+B_A = [-60, -70, -70, -68, -64]
+B_F = [-10, -6, -6, -2, 2]
+B_W = [-6, 0, 2, 10, 16]
+B_T = [-4, 12, 12, 18, 20]
+B_H = [2, -2, -2, -6, -4]
+B_Q = [0.0, -0.08, -0.06, 0.06, 0.02]
+B_X = [0.0, -1.0, -1.0, -4.0, -5.0]
+B_Z = [-1.0, -4.5, -4.8, -3.6, -3.0]
+B_FR = [5.0, 9.0, 9.0, 8.0, 7.0]
+B_FL = [-6.0, -9.0, -9.0, -11.0, -11.0]
+
+
+def _b_pose(i):
+    if i <= 2 or i >= 8:
+        return _attack_pose(i)
+    k = i - 3
+    t = B_T[k]
+    pose = merge(hold(B_A[k], B_F[k], B_W[k], lean=t, d=11.0), {
+        "torso": {"r": t}, "head": {"r": B_H[k]},
+        "bow_bolt": {"show": i <= 5}, "cheeks": {"show": False},
+    }, string("spanned" if i <= 5 else "rest"), M.body_about((0, 0, 22), x=B_X[k], z=B_Z[k], q=B_Q[k]))
+    pose = _feet(pose, B_FR[k], B_FL[k])
+    if i in (4, 5):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.2}})
+    elif i in (6, 7):
+        pose = merge(pose, F.expr("o"), {"brow": {"z": 1.0}})
+    return pose
+
+
+def _attack_b():
+    ov = {
+        6: [{"kind": "burst", "joint": "bow", "point": (HR[0] + 40.0, HR[1] - 4.0, HR[2] + 3.2),
+             "r0_lu": 4.0, "r1_lu": 10.0, "n": 5, "a0": -60.0, "arc": 120.0},
+            {"kind": "dust", "ground": (-10.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 14, "spread": 0.8,
+             "dir": -1.0}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 2: ("attack", 2), 8: ("attack", 8), 9: ("attack", 9),
+             10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(11)], ATK_MS, impact=ATK_IMPACT, overlays=ov,
+                  reuse=reuse, extra={"holdStep": 4, "holdLoop": [4, 5]})
 
 
 def _hit(k):
@@ -208,10 +275,11 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

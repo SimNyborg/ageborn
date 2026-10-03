@@ -130,3 +130,32 @@ part('skin.crystal.facets', [
 part('skin.crystal.glints', [
   { d: join(star(-100, -280, 4, 1.6, 7, 45), star(-120, -190, 4, 1.4, 6, 0), star(-48, -130, 4, 1.4, 6, 45), star(-80, -90, 4, 1.2, 5, 0)), zone: 'white', line: 0, alpha: 0.9, shade: false, light: false },
 ]);
+
+// ---------------------------------------------------------------------------------------------
+// X0 Stone wave skins
+// Snowball Pebbler (unit.pebbler): a knit cap over the topknot's outline, with a bobble
+
+part('skin.snowball.cap', [
+  { d: blob([-12.4, -12, -12, -21, -5, -26.6, 4, -26.8, 10.8, -22.6, 12.4, -15.6, 6, -14.6, -1, -14.2, -7, -13.6], 0.85), zone: 'wool' },
+  { d: join(...[-8, -3, 2, 7].map((x) => limb(x, -15, 0.7, x + 1.2, -24, 0.6))), zone: 'wool2', line: 0, shade: false, light: false },
+  { d: rrect(-12.8, -16.6, 25.4, 4.4, 2.2), zone: 'wool2', line: 1.6 },
+  { d: circle(-2.4, -29.8, 4.4), zone: 'wool', line: 1.8 },
+]);
+
+// Fossil Sabertooth (unit.sabertooth): bone-pale hide with dark rib bands and amber eyes
+
+part('skin.fossil.ribs', [
+  { d: join(...[-11, -5, 1, 7].map((x) => limb(x, -11, 0.9, x + 1.6, 4, 0.7))), zone: 'fur2', line: 0, shade: false, light: false },
+  { d: limb(-15, -9.4, 1.1, 14, -9.6, 1.1), zone: 'fur2', line: 0, shade: false, light: false },
+]);
+
+// Aurora Elk (unit.elk_chieftain): a star-speckled night pelt and glowing aurora antlers
+
+part('skin.aurora.speckles', [
+  { d: join(star(-14, -14, 4, 0.6, 2.4, 0), star(-4, -20, 4, 0.5, 2, 45), star(8, -18, 4, 0.6, 2.4, 0), star(14, -6, 4, 0.5, 2, 45), star(-10, 2, 4, 0.5, 2, 0), star(2, 6, 4, 0.6, 2.2, 45)), zone: 'starwhite', line: 0, shade: false, light: false },
+  { d: join(circle(-18, -6, 0.8), circle(-2, -10, 0.7), circle(10, -10, 0.8), circle(-6, 10, 0.7), circle(16, 4, 0.7)), zone: 'starwhite', line: 0, alpha: 0.8, shade: false, light: false },
+]);
+part('skin.aurora.antlers', [
+  { d: join(limb(2, -11, 1.4, -2, -24, 1), limb(-1, -19, 0.9, -8, -24, 0.7), limb(-2, -24, 1, 2, -32, 0.6), limb(8, -12, 1.3, 10, -25, 0.9), limb(9.6, -20, 0.8, 16, -25, 0.6), limb(10, -25, 0.9, 7, -32, 0.5)), zone: 'aurora', line: 1.2 },
+  { d: join(limb(0, -14, 0.5, -1.4, -23, 0.4), limb(8.6, -14, 0.5, 9.4, -24, 0.4)), zone: 'aurora2', line: 0, shade: false, light: false },
+]);

@@ -121,8 +121,9 @@ describe('generated audio assets', () => {
       expect(MUSIC_FILES[c]!.bytes + (MUSIC_FILES[`layer.intensity.${age}`]?.bytes ?? 0), c).toBeLessThan(700 * 1024);
     }
     // Effect sheets load per group, lazily after boot; the power rework (A5.7) added 35 sounds (one
-    // variant each, two for the starters), about 330 KB; the MVP pass 31 more (about 170 KB).
-    expect(sfxBytes).toBeLessThan(2.5 * 1024 * 1024);
+    // variant each, two for the starters), about 330 KB; the MVP pass 31 more (about 170 KB). The content
+    // waves (CONTENT_PLAN W1-W3) add about 140 KB each, all in lazily loaded age sheets: 3 MiB.
+    expect(sfxBytes).toBeLessThan(3 * 1024 * 1024);
   });
 
   it('has an AAC copy of every file, a sync time for every sheet, and stingers in every age key', () => {

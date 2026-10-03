@@ -63,6 +63,40 @@ part('fx.p.tarBubble', [
   { d: circle(0, 0, 4), zone: '#332D28', line: 0.8, shade: false },
   { d: ellipse(-1.2, -1.6, 1.4, 0.9), zone: '#9A9187', line: 0, shade: false, light: false },
 ]);
+/** Tangle Vines: one thorny tendril curling up from the ground (origin at its root, ~24 lu tall, faces +x). */
+part('fx.p.vine', [
+  {
+    d: join(
+      limb(0, 0, 2.4, 1.5, -8, 2),
+      limb(1.5, -8, 2, -1.5, -15, 1.6),
+      limb(-1.5, -15, 1.6, 2.5, -21, 1.2),
+      limb(2.5, -21, 1.2, 6.5, -22.5, 0.8),
+      limb(6.5, -22.5, 0.8, 7.5, -19.5, 0.6),
+    ),
+    zone: '#4E8A3A',
+    line: 1.1,
+  },
+  { d: join(poly([2.8, -5, 6.4, -6.4, 3.2, -3.2]), poly([-2.4, -12, -6, -13.6, -2.6, -10.2]), poly([0.6, -18, 3.6, -20.6, 1.2, -16.4])), zone: '#2F5A26', line: 0.6, shade: false },
+  { d: join(blob([2.6, -9.6, 7.6, -12.6, 10.6, -11, 6.8, -8.2], 0.8), blob([-2, -16.4, -7.6, -18.6, -9.6, -16.4, -5, -14.6], 0.8)), zone: '#7FBF52', line: 0.8 },
+  { d: join(limb(0.4, -1, 0.6, 0.8, -7, 0.4), limb(0, -9, 0.5, -1, -14, 0.3)), zone: '#A8DC7E', line: 0, shade: false, light: false, alpha: 0.8 },
+]);
+/** Tangle Vines: a single leaf blowing off the tangle. */
+part('fx.p.leaf', [
+  { d: blob([-4, 0, -1.6, -2.6, 3.4, -2, 4.6, 0, 1.6, 2.2, -2.4, 1.8], 0.8), zone: '#7FBF52', line: 0.7 },
+  { d: limb(-3.6, 0, 0.35, 3.8, -0.2, 0.2), zone: '#3F6E30', line: 0, shade: false, light: false },
+]);
+/** Tangle Vines: the matted root bed on the ground, 100 lu wide (sized with the zone). */
+part('fx.p.vineMat', [
+  { d: blob([-50, 0, -40, -3.6, -20, -4.4, 0, -3.4, 22, -4.6, 42, -3.2, 50, 0, 40, 3.6, 18, 4.2, -4, 3.6, -26, 4.4, -44, 3], 0.8), zone: '#3C5A2C', line: 1.2, shade: false },
+  {
+    d: join(...[-40, -24, -8, 8, 24, 38].map((x, i) => limb(x - 7, i % 2 ? -1.6 : 1.2, 0.9, x + 7, i % 2 ? 1.4 : -1.8, 0.7))),
+    zone: '#5E8F42',
+    line: 0,
+    shade: false,
+    light: false,
+  },
+  { d: join(...[-34, -14, 4, 20, 34].map((x) => circle(x, -0.4, 1.1))), zone: '#9FD06E', line: 0, shade: false, light: false, alpha: 0.85 },
+]);
 /** Hunt Cry: three raking claw marks in bone white. */
 part('fx.p.claw', [
   {

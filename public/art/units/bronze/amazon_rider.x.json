@@ -1,0 +1,843 @@
+{
+ "frames": {
+  "amazon_rider_attack_b_02": {
+   "frame": {
+    "x": 145,
+    "y": 2,
+    "w": 156,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 113,
+    "w": 156,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_b_02_team": {
+   "frame": {
+    "x": 229,
+    "y": 442,
+    "w": 76,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 119,
+    "w": 76,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_b_03": {
+   "frame": {
+    "x": 2,
+    "y": 189,
+    "w": 142,
+    "h": 131
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 128,
+    "w": 142,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_b_03_team": {
+   "frame": {
+    "x": 136,
+    "y": 442,
+    "w": 89,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 151,
+    "y": 123,
+    "w": 89,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 139,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 162,
+    "y": 82,
+    "w": 139,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_b_04_team": {
+   "frame": {
+    "x": 271,
+    "y": 189,
+    "w": 72,
+    "h": 127
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 95,
+    "w": 72,
+    "h": 127
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_b_05": {
+   "frame": {
+    "x": 305,
+    "y": 2,
+    "w": 133,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 105,
+    "w": 133,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_b_05_team": {
+   "frame": {
+    "x": 172,
+    "y": 324,
+    "w": 67,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 103,
+    "w": 67,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_b_06": {
+   "frame": {
+    "x": 411,
+    "y": 324,
+    "w": 144,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 153,
+    "w": 144,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_b_06_team": {
+   "frame": {
+    "x": 256,
+    "y": 557,
+    "w": 108,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 148,
+    "w": 108,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_b_07": {
+   "frame": {
+    "x": 148,
+    "y": 189,
+    "w": 119,
+    "h": 129
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 140,
+    "w": 119,
+    "h": 129
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_b_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 557,
+    "w": 94,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 135,
+    "w": 94,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_c_02": {
+   "frame": {
+    "x": 347,
+    "y": 189,
+    "w": 161,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 136,
+    "w": 161,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_c_02_team": {
+   "frame": {
+    "x": 545,
+    "y": 442,
+    "w": 62,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 131,
+    "w": 62,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_c_03": {
+   "frame": {
+    "x": 243,
+    "y": 324,
+    "w": 164,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 126,
+    "y": 150,
+    "w": 164,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_c_03_team": {
+   "frame": {
+    "x": 190,
+    "y": 557,
+    "w": 62,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 145,
+    "w": 62,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_c_04": {
+   "frame": {
+    "x": 442,
+    "y": 2,
+    "w": 173,
+    "h": 131
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 128,
+    "w": 173,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_c_04_team": {
+   "frame": {
+    "x": 481,
+    "y": 442,
+    "w": 60,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 122,
+    "w": 60,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_c_05": {
+   "frame": {
+    "x": 2,
+    "y": 324,
+    "w": 166,
+    "h": 114
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 150,
+    "y": 137,
+    "w": 166,
+    "h": 114
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_c_05_team": {
+   "frame": {
+    "x": 100,
+    "y": 557,
+    "w": 86,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 132,
+    "w": 86,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_c_06": {
+   "frame": {
+    "x": 309,
+    "y": 442,
+    "w": 168,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 169,
+    "w": 168,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_c_06_team": {
+   "frame": {
+    "x": 471,
+    "y": 557,
+    "w": 111,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 165,
+    "w": 111,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_c_07": {
+   "frame": {
+    "x": 2,
+    "y": 442,
+    "w": 130,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 159,
+    "w": 130,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "amazon_rider_attack_c_07_team": {
+   "frame": {
+    "x": 368,
+    "y": 557,
+    "w": 99,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 154,
+    "w": 99,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 410,
+    "h": 299
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "amazon_rider_attack_00",
+   "amazon_rider_attack_01",
+   "amazon_rider_attack_b_02",
+   "amazon_rider_attack_b_03",
+   "amazon_rider_attack_b_04",
+   "amazon_rider_attack_b_05",
+   "amazon_rider_attack_b_06",
+   "amazon_rider_attack_b_07",
+   "amazon_rider_attack_08",
+   "amazon_rider_attack_08",
+   "amazon_rider_attack_09",
+   "amazon_rider_attack_09"
+  ],
+  "attack_b_team": [
+   "amazon_rider_attack_00_team",
+   "amazon_rider_attack_01_team",
+   "amazon_rider_attack_b_02_team",
+   "amazon_rider_attack_b_03_team",
+   "amazon_rider_attack_b_04_team",
+   "amazon_rider_attack_b_05_team",
+   "amazon_rider_attack_b_06_team",
+   "amazon_rider_attack_b_07_team",
+   "amazon_rider_attack_08_team",
+   "amazon_rider_attack_08_team",
+   "amazon_rider_attack_09_team",
+   "amazon_rider_attack_09_team"
+  ],
+  "attack_c": [
+   "amazon_rider_attack_00",
+   "amazon_rider_attack_01",
+   "amazon_rider_attack_c_02",
+   "amazon_rider_attack_c_03",
+   "amazon_rider_attack_c_04",
+   "amazon_rider_attack_c_05",
+   "amazon_rider_attack_c_06",
+   "amazon_rider_attack_c_07",
+   "amazon_rider_attack_08",
+   "amazon_rider_attack_08",
+   "amazon_rider_attack_09",
+   "amazon_rider_attack_09"
+  ],
+  "attack_c_team": [
+   "amazon_rider_attack_00_team",
+   "amazon_rider_attack_01_team",
+   "amazon_rider_attack_c_02_team",
+   "amazon_rider_attack_c_03_team",
+   "amazon_rider_attack_c_04_team",
+   "amazon_rider_attack_c_05_team",
+   "amazon_rider_attack_c_06_team",
+   "amazon_rider_attack_c_07_team",
+   "amazon_rider_attack_08_team",
+   "amazon_rider_attack_08_team",
+   "amazon_rider_attack_09_team",
+   "amazon_rider_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "amazon_rider.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 640,
+   "h": 652
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.amazon_rider",
+   "name": "Amazon Rider",
+   "heightLu": 118,
+   "widthLu": 94.7,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    224.0,
+    255.0
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     116
+    ],
+    "hitCenter": [
+     0,
+     50
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "rider",
+   "extrasOf": "amazon_rider",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "anchorsLu": {
+      "sabreTip": [
+       [
+        11.4,
+        110.6
+       ],
+       [
+        -23.2,
+        112.4
+       ],
+       [
+        -54.1,
+        108.2
+       ],
+       [
+        -47.0,
+        93.7
+       ],
+       [
+        2.7,
+        126.1
+       ],
+       [
+        57.0,
+        86.9
+       ],
+       [
+        64.1,
+        29.7
+       ],
+       [
+        54.7,
+        28.1
+       ],
+       [
+        58.5,
+        78.7
+       ],
+       [
+        21.1,
+        106.8
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "anchorsLu": {
+      "sabreTip": [
+       [
+        11.4,
+        110.6
+       ],
+       [
+        -23.2,
+        112.4
+       ],
+       [
+        -64.5,
+        60.7
+       ],
+       [
+        -70.8,
+        36.7
+       ],
+       [
+        -15.2,
+        66.6
+       ],
+       [
+        59.6,
+        83.2
+       ],
+       [
+        82.4,
+        19.6
+       ],
+       [
+        71.2,
+        20.0
+       ],
+       [
+        58.5,
+        78.7
+       ],
+       [
+        21.1,
+        106.8
+       ]
+      ]
+     },
+     "holdStep": 3
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

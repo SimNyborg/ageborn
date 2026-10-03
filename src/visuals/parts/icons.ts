@@ -170,6 +170,17 @@ medallion('power.hunters_spear', [
   { d: poly([7, -7, 14, -14, 11, -5]), zone: 'stone' },
   { d: arcBand(0, 0, 12, 13.6, 0, 360), zone: 'ember', line: 0 },
 ]);
+// X0 Stone wave: a hail of sling pebbles falling, and thorny vines snaring a footprint.
+medallion('power.pebble_hail', [
+  { d: join(limb(-12, -12, 0.7, -6, -3, 0.5), limb(-3, -14, 0.7, 3, -5, 0.5), limb(6, -13, 0.7, 12, -4, 0.5)), zone: 'sky', line: 0 },
+  { d: join(circle(-5, -1, 3.4), circle(4, -3, 3), circle(11, 0, 2.6), circle(-9, 8, 3), circle(1, 7, 3.6), circle(9, 9, 2.4)), zone: 'stone' },
+  { d: join(circle(-6, -2, 1), circle(0, 6, 1.1), circle(3, -4, 0.9)), zone: 'bone', line: 0 },
+]);
+medallion('power.tangle_vines', [
+  { d: join(limb(-11, 12, 1.8, -6, -2, 1.4), limb(-6, -2, 1.4, -10, -10, 1), limb(2, 12, 1.8, 4, -4, 1.4), limb(4, -4, 1.4, 0, -12, 1), limb(11, 12, 1.6, 9, 0, 1.2), limb(9, 0, 1.2, 13, -8, 0.9)), zone: 'verdigris' },
+  { d: join(poly([-6, 2, -12, 0, -7, -2]), poly([4, 2, 10, 0, 5, -1]), poly([2, -8, -3, -9, 1, -6])), zone: 'olive', line: 1 },
+  { d: join(ellipse(-2, 13, 12, 2.4)), zone: 'wood', line: 1.2 },
+]);
 medallion('power.zeus_bolts', [
   { d: poly([2, -14, -6, 1, 0, 1, -4, 14, 8, -3, 2, -3, 6, -14]), zone: 'gold' },
   { d: ellipse(-5, -10, 6, 3), zone: 'smoke', line: 1.2 },
@@ -194,6 +205,40 @@ medallion('power.caltrops', [
 medallion('power.boiling_oil', [
   { d: join(rrect(-10, -12, 20, 8, 3), rect(-2, -4, 4, 3)), zone: 'iron' },
   { d: blob([-8, 2, 0, -1, 8, 2, 6, 12, 0, 14, -6, 12], 0.8), zone: 'ember' },
+]);
+// Bronze wave (CONTENT_PLAN 5.2)
+medallion('power.sandstorm', [
+  { d: blob([-14, 6, -10, -4, -2, -8, 6, -6, 12, -1, 14, 6, 4, 9, -6, 9], 0.8), zone: 'dust' },
+  { d: join(limb(-12, -9, 0.9, 4, -11, 0.7), limb(-8, -2, 0.9, 10, -4, 0.7), limb(-12, 4, 0.9, 2, 3, 0.7)), zone: 'bone', line: 1 },
+  { d: join(circle(8, -10, 1.4), circle(12, 2, 1.2), circle(-4, 11, 1.2)), zone: 'dust2', line: 0 },
+]);
+medallion('power.charybdis', [
+  { d: ellipse(0, 3, 14, 8), zone: 'sea' },
+  { d: join(arcBand(0, 3, 9.6, 11.4, 200, 340), arcBand(0, 3, 5.4, 7, 20, 200), arcBand(0, 3, 9.6, 11.4, 20, 120)), zone: 'foam', line: 0 },
+  { d: ellipse(0, 3, 2.6, 1.6), zone: 'void2', line: 0 },
+]);
+// Medieval wave (CONTENT_PLAN 5.3): a sheaf of long arrows falling, and a great bell ringing out.
+medallion('power.longbow_volley', [
+  { d: join(limb(-12, -13, 0.8, -4, 9, 0.8), limb(-3, -14, 0.8, 3, 9, 0.8), limb(6, -13, 0.8, 10, 9, 0.8)), zone: 'wood' },
+  { d: join(poly([-6, 7, -3, 13, -2, 7]), poly([1, 7, 3, 13, 5, 7]), poly([8, 7, 10, 13, 12, 7])), zone: 'metal', line: 1 },
+  { d: join(poly([-12, -13, -15, -10, -11, -9]), poly([-3, -14, -6, -11, -2, -10]), poly([6, -13, 3, -10, 7, -9])), zone: 'bone', line: 0.8 },
+]);
+medallion('power.great_bell', [
+  { d: join(blob([-9, 8, -7, -4, -4, -10, 4, -10, 7, -4, 9, 8], 0.7), rrect(-11, 7, 22, 3, 1.4)), zone: 'bronze' },
+  { d: circle(0, 12, 2.4), zone: 'iron', line: 1 },
+  { d: join(arcBand(0, 0, 12.6, 14, -40, 40), arcBand(0, 0, 12.6, 14, 140, 220)), zone: 'bone', line: 0 },
+]);
+// Gunpowder wave (CONTENT_PLAN 5.4): three war rockets climbing on smoke trails, and a saluting cannon's blast.
+medallion('power.rocket_volley', [
+  { d: join(limb(-12, 12, 1.2, -6, -6, 1.2), limb(-2, 13, 1.2, 2, -8, 1.2), limb(8, 12, 1.2, 10, -5, 1.2)), zone: 'bone', line: 0 },
+  { d: join(rrect(-8.6, -14, 4, 9, 1.4), rrect(0, -16, 4, 9, 1.4), rrect(8.2, -13, 4, 9, 1.4)), zone: 'bone', line: 1 },
+  { d: join(poly([-8.4, -14.4, -5.6, -19, -4.4, -13.6]), poly([0, -16, 2, -21, 4, -16]), poly([8.6, -13, 11.4, -17.6, 12.4, -12.4])), zone: 'iron', line: 0.8 },
+]);
+medallion('power.cannon_salute', [
+  { d: join(rrect(-14, 2, 18, 7, 3), circle(-8, 11, 3.6)), zone: 'iron', line: 1.2 },
+  { d: circle(-8, 11, 1.4), zone: 'bronze', line: 0 },
+  { d: join(circle(9, 0, 5), circle(13, -5, 3.6), circle(6, -6, 3.4), circle(14, 3, 3)), zone: 'bone', line: 1 },
+  { d: join(arcBand(0, 0, 12.6, 14, -60, 0), arcBand(0, 0, 12.6, 14, 180, 230)), zone: 'bone', line: 0 },
 ]);
 medallion('power.knights_charge', [
   { d: limb(-13, 8, 1.8, 12, -6, 1), zone: 'metal' },

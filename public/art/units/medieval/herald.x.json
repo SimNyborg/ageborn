@@ -1,0 +1,458 @@
+{
+ "frames": {
+  "herald_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 92,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 60,
+    "y": 64,
+    "w": 92,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.45136,
+    "y": 0.85116
+   }
+  },
+  "herald_attack_b_02_team": {
+   "frame": {
+    "x": 161,
+    "y": 253,
+    "w": 77,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 102,
+    "w": 77,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.45136,
+    "y": 0.85116
+   }
+  },
+  "herald_attack_b_03": {
+   "frame": {
+    "x": 98,
+    "y": 2,
+    "w": 84,
+    "h": 125
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 56,
+    "y": 64,
+    "w": 84,
+    "h": 125
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.45136,
+    "y": 0.85116
+   }
+  },
+  "herald_attack_b_03_team": {
+   "frame": {
+    "x": 82,
+    "y": 253,
+    "w": 75,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 68,
+    "y": 100,
+    "w": 75,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.45136,
+    "y": 0.85116
+   }
+  },
+  "herald_attack_b_04": {
+   "frame": {
+    "x": 186,
+    "y": 2,
+    "w": 87,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 65,
+    "w": 87,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.45136,
+    "y": 0.85116
+   }
+  },
+  "herald_attack_b_04_team": {
+   "frame": {
+    "x": 242,
+    "y": 253,
+    "w": 79,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 69,
+    "y": 102,
+    "w": 79,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.45136,
+    "y": 0.85116
+   }
+  },
+  "herald_attack_b_05": {
+   "frame": {
+    "x": 277,
+    "y": 2,
+    "w": 99,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 68,
+    "w": 99,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.45136,
+    "y": 0.85116
+   }
+  },
+  "herald_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 253,
+    "w": 76,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 97,
+    "w": 76,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.45136,
+    "y": 0.85116
+   }
+  },
+  "herald_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 132,
+    "w": 104,
+    "h": 117
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 74,
+    "w": 104,
+    "h": 117
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.45136,
+    "y": 0.85116
+   }
+  },
+  "herald_attack_b_06_team": {
+   "frame": {
+    "x": 222,
+    "y": 132,
+    "w": 73,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 95,
+    "w": 73,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.45136,
+    "y": 0.85116
+   }
+  },
+  "herald_attack_b_07": {
+   "frame": {
+    "x": 110,
+    "y": 132,
+    "w": 108,
+    "h": 114
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 75,
+    "w": 108,
+    "h": 114
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.45136,
+    "y": 0.85116
+   }
+  },
+  "herald_attack_b_07_team": {
+   "frame": {
+    "x": 299,
+    "y": 132,
+    "w": 77,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 98,
+    "w": 77,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.45136,
+    "y": 0.85116
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "herald_attack_00",
+   "herald_attack_01",
+   "herald_attack_b_02",
+   "herald_attack_b_03",
+   "herald_attack_b_04",
+   "herald_attack_b_05",
+   "herald_attack_b_06",
+   "herald_attack_b_07",
+   "herald_attack_08",
+   "herald_attack_09",
+   "herald_attack_10"
+  ],
+  "attack_b_team": [
+   "herald_attack_00_team",
+   "herald_attack_01_team",
+   "herald_attack_b_02_team",
+   "herald_attack_b_03_team",
+   "herald_attack_b_04_team",
+   "herald_attack_b_05_team",
+   "herald_attack_b_06_team",
+   "herald_attack_b_07_team",
+   "herald_attack_08_team",
+   "herald_attack_09_team",
+   "herald_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "herald.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 384,
+   "h": 336
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.herald",
+   "name": "Herald",
+   "heightLu": 66,
+   "widthLu": 52.4,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    116.0,
+    183.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     64
+    ],
+    "hitCenter": [
+     0,
+     31
+    ],
+    "muzzle": [
+     40,
+     42
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "herald",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        16.4,
+        49.5
+       ],
+       [
+        31.4,
+        50.7
+       ],
+       [
+        13.6,
+        71.9
+       ],
+       [
+        6.6,
+        71.9
+       ],
+       [
+        12.4,
+        71.1
+       ],
+       [
+        28.4,
+        68.5
+       ],
+       [
+        35.8,
+        65.0
+       ],
+       [
+        35.2,
+        64.4
+       ],
+       [
+        36.5,
+        47.5
+       ],
+       [
+        21.3,
+        49.7
+       ],
+       [
+        16.4,
+        49.5
+       ]
+      ]
+     },
+     "muzzle": [
+      35.8,
+      65.0
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

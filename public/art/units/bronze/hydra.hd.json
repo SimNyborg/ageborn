@@ -1,0 +1,2612 @@
+{
+ "frames": {
+  "hydra_idle_00": {
+   "frame": {
+    "x": 571,
+    "y": 474,
+    "w": 596,
+    "h": 432
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 319,
+    "w": 596,
+    "h": 432
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_idle_00_team": {
+   "frame": {
+    "x": 2460,
+    "y": 2579,
+    "w": 506,
+    "h": 354
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 358,
+    "w": 506,
+    "h": 354
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_idle_01": {
+   "frame": {
+    "x": 2886,
+    "y": 474,
+    "w": 562,
+    "h": 430
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 232,
+    "y": 320,
+    "w": 562,
+    "h": 430
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_idle_01_team": {
+   "frame": {
+    "x": 1472,
+    "y": 2193,
+    "w": 486,
+    "h": 375
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 360,
+    "w": 486,
+    "h": 375
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_idle_02": {
+   "frame": {
+    "x": 1130,
+    "y": 1343,
+    "w": 551,
+    "h": 422
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 236,
+    "y": 325,
+    "w": 551,
+    "h": 422
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_idle_02_team": {
+   "frame": {
+    "x": 498,
+    "y": 2193,
+    "w": 478,
+    "h": 381
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 362,
+    "w": 478,
+    "h": 381
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_idle_03": {
+   "frame": {
+    "x": 556,
+    "y": 911,
+    "w": 570,
+    "h": 427
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 235,
+    "y": 318,
+    "w": 570,
+    "h": 427
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_idle_03_team": {
+   "frame": {
+    "x": 2990,
+    "y": 2193,
+    "w": 484,
+    "h": 370
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 225,
+    "y": 360,
+    "w": 484,
+    "h": 370
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_idle_04": {
+   "frame": {
+    "x": 3452,
+    "y": 474,
+    "w": 570,
+    "h": 428
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 232,
+    "y": 319,
+    "w": 570,
+    "h": 428
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_idle_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 2948,
+    "w": 501,
+    "h": 345
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 214,
+    "y": 361,
+    "w": 501,
+    "h": 345
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_idle_05": {
+   "frame": {
+    "x": 1723,
+    "y": 474,
+    "w": 591,
+    "h": 430
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 216,
+    "y": 320,
+    "w": 591,
+    "h": 430
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_idle_05_team": {
+   "frame": {
+    "x": 2437,
+    "y": 2948,
+    "w": 513,
+    "h": 338
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 359,
+    "w": 513,
+    "h": 338
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_00": {
+   "frame": {
+    "x": 2658,
+    "y": 2,
+    "w": 569,
+    "h": 436
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 231,
+    "y": 311,
+    "w": 569,
+    "h": 436
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 2193,
+    "w": 492,
+    "h": 382
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 351,
+    "w": 492,
+    "h": 382
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_01": {
+   "frame": {
+    "x": 3384,
+    "y": 911,
+    "w": 563,
+    "h": 423
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 234,
+    "y": 326,
+    "w": 563,
+    "h": 423
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_01_team": {
+   "frame": {
+    "x": 1471,
+    "y": 2579,
+    "w": 488,
+    "h": 357
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 366,
+    "w": 488,
+    "h": 357
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_02": {
+   "frame": {
+    "x": 2,
+    "y": 1770,
+    "w": 535,
+    "h": 419
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 255,
+    "y": 339,
+    "w": 535,
+    "h": 419
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_02_team": {
+   "frame": {
+    "x": 1495,
+    "y": 2948,
+    "w": 471,
+    "h": 343
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 235,
+    "y": 380,
+    "w": 471,
+    "h": 343
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_03": {
+   "frame": {
+    "x": 2844,
+    "y": 911,
+    "w": 536,
+    "h": 426
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 252,
+    "y": 334,
+    "w": 536,
+    "h": 426
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_03_team": {
+   "frame": {
+    "x": 1970,
+    "y": 2948,
+    "w": 463,
+    "h": 341
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 242,
+    "y": 376,
+    "w": 463,
+    "h": 341
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_04": {
+   "frame": {
+    "x": 1171,
+    "y": 474,
+    "w": 548,
+    "h": 431
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 249,
+    "y": 325,
+    "w": 548,
+    "h": 431
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_04_team": {
+   "frame": {
+    "x": 1011,
+    "y": 2948,
+    "w": 480,
+    "h": 344
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 232,
+    "y": 366,
+    "w": 480,
+    "h": 344
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_05": {
+   "frame": {
+    "x": 2264,
+    "y": 911,
+    "w": 576,
+    "h": 426
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 330,
+    "w": 576,
+    "h": 426
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_05_team": {
+   "frame": {
+    "x": 2970,
+    "y": 2579,
+    "w": 503,
+    "h": 348
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 214,
+    "y": 371,
+    "w": 503,
+    "h": 348
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_06": {
+   "frame": {
+    "x": 3482,
+    "y": 1343,
+    "w": 582,
+    "h": 419
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 330,
+    "w": 582,
+    "h": 419
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_06_team": {
+   "frame": {
+    "x": 1962,
+    "y": 2193,
+    "w": 503,
+    "h": 372
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 213,
+    "y": 368,
+    "w": 503,
+    "h": 372
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_07": {
+   "frame": {
+    "x": 2,
+    "y": 911,
+    "w": 550,
+    "h": 428
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 252,
+    "y": 315,
+    "w": 550,
+    "h": 428
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_walk_07_team": {
+   "frame": {
+    "x": 2447,
+    "y": 1770,
+    "w": 493,
+    "h": 392
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 354,
+    "w": 493,
+    "h": 392
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_00": {
+   "frame": {
+    "x": 2,
+    "y": 474,
+    "w": 565,
+    "h": 433
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 315,
+    "w": 565,
+    "h": 433
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 2579,
+    "w": 492,
+    "h": 365
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 355,
+    "w": 492,
+    "h": 365
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_01": {
+   "frame": {
+    "x": 3231,
+    "y": 2,
+    "w": 572,
+    "h": 433
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 316,
+    "w": 572,
+    "h": 433
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_01_team": {
+   "frame": {
+    "x": 2469,
+    "y": 2193,
+    "w": 517,
+    "h": 370
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 358,
+    "w": 517,
+    "h": 370
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_02": {
+   "frame": {
+    "x": 1055,
+    "y": 2,
+    "w": 576,
+    "h": 444
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 305,
+    "w": 576,
+    "h": 444
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_02_team": {
+   "frame": {
+    "x": 3477,
+    "y": 2579,
+    "w": 507,
+    "h": 346
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 348,
+    "w": 507,
+    "h": 346
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 507,
+    "h": 468
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 242,
+    "y": 279,
+    "w": 507,
+    "h": 468
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_03_team": {
+   "frame": {
+    "x": 2208,
+    "y": 2,
+    "w": 446,
+    "h": 439
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 333,
+    "w": 446,
+    "h": 439
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_04": {
+   "frame": {
+    "x": 513,
+    "y": 2,
+    "w": 538,
+    "h": 453
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 237,
+    "y": 296,
+    "w": 538,
+    "h": 453
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_04_team": {
+   "frame": {
+    "x": 995,
+    "y": 2579,
+    "w": 472,
+    "h": 362
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 225,
+    "y": 361,
+    "w": 472,
+    "h": 362
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_05": {
+   "frame": {
+    "x": 2858,
+    "y": 1343,
+    "w": 620,
+    "h": 419
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 332,
+    "w": 620,
+    "h": 419
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_05_team": {
+   "frame": {
+    "x": 1163,
+    "y": 3297,
+    "w": 556,
+    "h": 307
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 374,
+    "w": 556,
+    "h": 307
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_06": {
+   "frame": {
+    "x": 1170,
+    "y": 1770,
+    "w": 671,
+    "h": 404
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 348,
+    "w": 671,
+    "h": 404
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_06_team": {
+   "frame": {
+    "x": 2314,
+    "y": 3297,
+    "w": 605,
+    "h": 299
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 387,
+    "w": 605,
+    "h": 299
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_07": {
+   "frame": {
+    "x": 541,
+    "y": 1770,
+    "w": 625,
+    "h": 414
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 339,
+    "w": 625,
+    "h": 414
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_07_team": {
+   "frame": {
+    "x": 1723,
+    "y": 3297,
+    "w": 587,
+    "h": 303
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 381,
+    "w": 587,
+    "h": 303
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_08": {
+   "frame": {
+    "x": 1685,
+    "y": 1343,
+    "w": 592,
+    "h": 420
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 236,
+    "y": 330,
+    "w": 592,
+    "h": 420
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_08_team": {
+   "frame": {
+    "x": 626,
+    "y": 3297,
+    "w": 533,
+    "h": 326
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 215,
+    "y": 374,
+    "w": 533,
+    "h": 326
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_09": {
+   "frame": {
+    "x": 559,
+    "y": 1343,
+    "w": 567,
+    "h": 422
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 232,
+    "y": 326,
+    "w": 567,
+    "h": 422
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_attack_09_team": {
+   "frame": {
+    "x": 1963,
+    "y": 2579,
+    "w": 493,
+    "h": 356
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 365,
+    "w": 493,
+    "h": 356
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_hit_00": {
+   "frame": {
+    "x": 1702,
+    "y": 911,
+    "w": 558,
+    "h": 427
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 319,
+    "w": 558,
+    "h": 427
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_hit_00_team": {
+   "frame": {
+    "x": 3429,
+    "y": 1770,
+    "w": 485,
+    "h": 387
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 211,
+    "y": 357,
+    "w": 485,
+    "h": 387
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_hit_01": {
+   "frame": {
+    "x": 2,
+    "y": 1343,
+    "w": 553,
+    "h": 423
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 322,
+    "w": 553,
+    "h": 423
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_hit_01_team": {
+   "frame": {
+    "x": 2944,
+    "y": 1770,
+    "w": 481,
+    "h": 389
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 362,
+    "w": 481,
+    "h": 389
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_hit_02": {
+   "frame": {
+    "x": 2318,
+    "y": 474,
+    "w": 564,
+    "h": 430
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 317,
+    "w": 564,
+    "h": 430
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_hit_02_team": {
+   "frame": {
+    "x": 980,
+    "y": 2193,
+    "w": 488,
+    "h": 380
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 215,
+    "y": 355,
+    "w": 488,
+    "h": 380
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_hit_03": {
+   "frame": {
+    "x": 2281,
+    "y": 1343,
+    "w": 573,
+    "h": 420
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 329,
+    "w": 573,
+    "h": 420
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_hit_03_team": {
+   "frame": {
+    "x": 507,
+    "y": 2948,
+    "w": 500,
+    "h": 344
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 215,
+    "y": 370,
+    "w": 500,
+    "h": 344
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_hit_04": {
+   "frame": {
+    "x": 1130,
+    "y": 911,
+    "w": 568,
+    "h": 427
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 231,
+    "y": 321,
+    "w": 568,
+    "h": 427
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_hit_04_team": {
+   "frame": {
+    "x": 498,
+    "y": 2579,
+    "w": 493,
+    "h": 363
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 360,
+    "w": 493,
+    "h": 363
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_00": {
+   "frame": {
+    "x": 1845,
+    "y": 1770,
+    "w": 598,
+    "h": 404
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 216,
+    "y": 341,
+    "w": 598,
+    "h": 404
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_00_team": {
+   "frame": {
+    "x": 2954,
+    "y": 2948,
+    "w": 520,
+    "h": 337
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 379,
+    "w": 520,
+    "h": 337
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_01": {
+   "frame": {
+    "x": 1635,
+    "y": 2,
+    "w": 569,
+    "h": 440
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 241,
+    "y": 315,
+    "w": 569,
+    "h": 440
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_01_team": {
+   "frame": {
+    "x": 3478,
+    "y": 2193,
+    "w": 497,
+    "h": 367
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 225,
+    "y": 357,
+    "w": 497,
+    "h": 367
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_02": {
+   "frame": {
+    "x": 2,
+    "y": 3297,
+    "w": 620,
+    "h": 329
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 232,
+    "y": 432,
+    "w": 620,
+    "h": 329
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_02_team": {
+   "frame": {
+    "x": 2923,
+    "y": 3297,
+    "w": 555,
+    "h": 266
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 213,
+    "y": 456,
+    "w": 555,
+    "h": 266
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_03": {
+   "frame": {
+    "x": 2011,
+    "y": 3630,
+    "w": 739,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 565,
+    "w": 739,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_03_team": {
+   "frame": {
+    "x": 1190,
+    "y": 3863,
+    "w": 640,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 563,
+    "w": 640,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_04": {
+   "frame": {
+    "x": 2,
+    "y": 3630,
+    "w": 638,
+    "h": 229
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 543,
+    "w": 638,
+    "h": 229
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_04_team": {
+   "frame": {
+    "x": 3413,
+    "y": 3630,
+    "w": 557,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 211,
+    "y": 543,
+    "w": 557,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_05": {
+   "frame": {
+    "x": 644,
+    "y": 3630,
+    "w": 686,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 556,
+    "w": 686,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 3863,
+    "w": 594,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 553,
+    "w": 594,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_06": {
+   "frame": {
+    "x": 1334,
+    "y": 3630,
+    "w": 673,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 559,
+    "w": 673,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_06_team": {
+   "frame": {
+    "x": 600,
+    "y": 3863,
+    "w": 586,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 558,
+    "w": 586,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_07": {
+   "frame": {
+    "x": 2754,
+    "y": 3630,
+    "w": 655,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 569,
+    "w": 655,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  },
+  "hydra_die_07_team": {
+   "frame": {
+    "x": 1834,
+    "y": 3863,
+    "w": 570,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 568,
+    "w": 570,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 1026,
+    "h": 840
+   },
+   "anchor": {
+    "x": 0.50292,
+    "y": 0.85714
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "hydra_idle_00",
+   "hydra_idle_01",
+   "hydra_idle_02",
+   "hydra_idle_03",
+   "hydra_idle_04",
+   "hydra_idle_05"
+  ],
+  "idle_team": [
+   "hydra_idle_00_team",
+   "hydra_idle_01_team",
+   "hydra_idle_02_team",
+   "hydra_idle_03_team",
+   "hydra_idle_04_team",
+   "hydra_idle_05_team"
+  ],
+  "walk": [
+   "hydra_walk_00",
+   "hydra_walk_01",
+   "hydra_walk_02",
+   "hydra_walk_03",
+   "hydra_walk_04",
+   "hydra_walk_05",
+   "hydra_walk_06",
+   "hydra_walk_07"
+  ],
+  "walk_team": [
+   "hydra_walk_00_team",
+   "hydra_walk_01_team",
+   "hydra_walk_02_team",
+   "hydra_walk_03_team",
+   "hydra_walk_04_team",
+   "hydra_walk_05_team",
+   "hydra_walk_06_team",
+   "hydra_walk_07_team"
+  ],
+  "attack": [
+   "hydra_attack_00",
+   "hydra_attack_01",
+   "hydra_attack_02",
+   "hydra_attack_03",
+   "hydra_attack_04",
+   "hydra_attack_05",
+   "hydra_attack_06",
+   "hydra_attack_07",
+   "hydra_attack_08",
+   "hydra_attack_08",
+   "hydra_attack_09",
+   "hydra_attack_09"
+  ],
+  "attack_team": [
+   "hydra_attack_00_team",
+   "hydra_attack_01_team",
+   "hydra_attack_02_team",
+   "hydra_attack_03_team",
+   "hydra_attack_04_team",
+   "hydra_attack_05_team",
+   "hydra_attack_06_team",
+   "hydra_attack_07_team",
+   "hydra_attack_08_team",
+   "hydra_attack_08_team",
+   "hydra_attack_09_team",
+   "hydra_attack_09_team"
+  ],
+  "hit": [
+   "hydra_hit_00",
+   "hydra_hit_01",
+   "hydra_hit_02",
+   "hydra_hit_03",
+   "hydra_hit_04"
+  ],
+  "hit_team": [
+   "hydra_hit_00_team",
+   "hydra_hit_01_team",
+   "hydra_hit_02_team",
+   "hydra_hit_03_team",
+   "hydra_hit_04_team"
+  ],
+  "die": [
+   "hydra_die_00",
+   "hydra_die_01",
+   "hydra_die_01",
+   "hydra_die_02",
+   "hydra_die_03",
+   "hydra_die_04",
+   "hydra_die_04",
+   "hydra_die_05",
+   "hydra_die_05",
+   "hydra_die_06",
+   "hydra_die_06",
+   "hydra_die_07"
+  ],
+  "die_team": [
+   "hydra_die_00_team",
+   "hydra_die_01_team",
+   "hydra_die_01_team",
+   "hydra_die_02_team",
+   "hydra_die_03_team",
+   "hydra_die_04_team",
+   "hydra_die_04_team",
+   "hydra_die_05_team",
+   "hydra_die_05_team",
+   "hydra_die_06_team",
+   "hydra_die_06_team",
+   "hydra_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "hydra.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 4096,
+   "h": 4032
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.hydra",
+   "name": "Hydra",
+   "heightLu": 160,
+   "widthLu": 241.5,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    516,
+    720
+   ],
+   "anchorsLu": {
+    "head": [
+     40,
+     150
+    ],
+    "hitCenter": [
+     0,
+     50
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "quad",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      150,
+      150,
+      150,
+      150,
+      150,
+      150
+     ],
+     "durationMs": 900,
+     "anchorsLu": {
+      "bite_c": [
+       [
+        62.3,
+        123.4
+       ],
+       [
+        64.3,
+        123.7
+       ],
+       [
+        57.9,
+        133.2
+       ],
+       [
+        48.7,
+        141.5
+       ],
+       [
+        46.5,
+        140.4
+       ],
+       [
+        53.7,
+        131.8
+       ]
+      ],
+      "bite_b": [
+       [
+        82.9,
+        140.8
+       ],
+       [
+        89.8,
+        134.5
+       ],
+       [
+        97.7,
+        127.1
+       ],
+       [
+        99.5,
+        126.4
+       ],
+       [
+        94.2,
+        134.0
+       ],
+       [
+        85.4,
+        141.0
+       ]
+      ],
+      "bite_a": [
+       [
+        112.2,
+        69.5
+       ],
+       [
+        107.8,
+        81.9
+       ],
+       [
+        105.2,
+        86.5
+       ],
+       [
+        107.6,
+        78.5
+       ],
+       [
+        111.0,
+        65.8
+       ],
+       [
+        113.0,
+        61.3
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100
+     ],
+     "durationMs": 800,
+     "gait": "quad",
+     "gaitSpeedLuPerS": 56.2,
+     "cycleMs": 800,
+     "anchorsLu": {
+      "bite_c": [
+       [
+        60.8,
+        127.5
+       ],
+       [
+        64.1,
+        121.9
+       ],
+       [
+        60.0,
+        123.1
+       ],
+       [
+        53.0,
+        131.9
+       ],
+       [
+        50.3,
+        137.7
+       ],
+       [
+        50.9,
+        135.2
+       ],
+       [
+        51.5,
+        131.3
+       ],
+       [
+        54.5,
+        130.6
+       ]
+      ],
+      "bite_b": [
+       [
+        83.6,
+        142.8
+       ],
+       [
+        89.4,
+        132.3
+       ],
+       [
+        93.2,
+        124.2
+       ],
+       [
+        96.0,
+        124.1
+       ],
+       [
+        99.5,
+        125.5
+       ],
+       [
+        98.9,
+        127.0
+       ],
+       [
+        90.9,
+        134.3
+       ],
+       [
+        82.8,
+        143.2
+       ]
+      ],
+      "bite_a": [
+       [
+        110.5,
+        72.9
+       ],
+       [
+        109.0,
+        74.2
+       ],
+       [
+        106.1,
+        77.1
+       ],
+       [
+        105.6,
+        80.6
+       ],
+       [
+        109.3,
+        75.5
+       ],
+       [
+        112.3,
+        64.0
+       ],
+       [
+        112.3,
+        60.1
+       ],
+       [
+        111.2,
+        66.8
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 56.5,
+     "strideLu": 45.2,
+     "plantedDriftLu": 0.25,
+     "contacts": [
+      {
+       "step": 1,
+       "foot": "bl",
+       "atLu": [
+        -10.8,
+        5.9
+       ]
+      },
+      {
+       "step": 1,
+       "foot": "fr",
+       "atLu": [
+        32.3,
+        -5.4
+       ]
+      },
+      {
+       "step": 5,
+       "foot": "br",
+       "atLu": [
+        -16.9,
+        -3.6
+       ]
+      },
+      {
+       "step": 5,
+       "foot": "fl",
+       "atLu": [
+        37.5,
+        2.7
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "bite_c": [
+       [
+        52.8,
+        134.7
+       ],
+       [
+        50.7,
+        135.7
+       ],
+       [
+        85.3,
+        81.1
+       ],
+       [
+        28.8,
+        149.9
+       ],
+       [
+        42.9,
+        143.9
+       ],
+       [
+        57.8,
+        135.2
+       ],
+       [
+        73.8,
+        123.3
+       ],
+       [
+        73.7,
+        124.0
+       ],
+       [
+        62.7,
+        129.4
+       ],
+       [
+        55.9,
+        132.6
+       ]
+      ],
+      "bite_b": [
+       [
+        83.4,
+        143.0
+       ],
+       [
+        75.6,
+        147.4
+       ],
+       [
+        55.0,
+        157.0
+       ],
+       [
+        22.8,
+        170.7
+       ],
+       [
+        94.8,
+        125.5
+       ],
+       [
+        123.7,
+        68.9
+       ],
+       [
+        130.1,
+        33.1
+       ],
+       [
+        125.3,
+        31.3
+       ],
+       [
+        120.8,
+        90.1
+       ],
+       [
+        95.8,
+        129.6
+       ]
+      ],
+      "bite_a": [
+       [
+        107.7,
+        83.3
+       ],
+       [
+        103.6,
+        5.4
+       ],
+       [
+        107.6,
+        87.2
+       ],
+       [
+        89.1,
+        107.0
+       ],
+       [
+        100.1,
+        95.1
+       ],
+       [
+        113.3,
+        82.5
+       ],
+       [
+        126.3,
+        68.2
+       ],
+       [
+        123.7,
+        67.0
+       ],
+       [
+        114.3,
+        74.3
+       ],
+       [
+        110.0,
+        74.0
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "bite_c": [
+       [
+        37.3,
+        136.4
+       ],
+       [
+        29.2,
+        141.1
+       ],
+       [
+        45.1,
+        131.7
+       ],
+       [
+        60.4,
+        131.5
+       ],
+       [
+        54.9,
+        132.9
+       ]
+      ],
+      "bite_b": [
+       [
+        72.2,
+        144.0
+       ],
+       [
+        63.3,
+        150.5
+       ],
+       [
+        80.7,
+        137.1
+       ],
+       [
+        97.1,
+        131.3
+       ],
+       [
+        91.2,
+        135.0
+       ]
+      ],
+      "bite_a": [
+       [
+        101.8,
+        88.6
+       ],
+       [
+        96.7,
+        97.2
+       ],
+       [
+        105.6,
+        79.5
+       ],
+       [
+        111.7,
+        70.4
+       ],
+       [
+        109.6,
+        74.8
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      7
+     ],
+     "durationsMs": [
+      60,
+      70,
+      80,
+      80,
+      60,
+      70,
+      80,
+      90,
+      90,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 990,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 740,
+       "offsetLu": [
+        0,
+        57.6
+       ],
+       "scale": 3.019
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 820,
+       "offsetLu": [
+        0,
+        88.0
+       ],
+       "loops": 2,
+       "scale": 1.737
+      }
+     ],
+     "hideUnitAtMs": 990,
+     "anchorsLu": {
+      "bite_c": [
+       [
+        58.9,
+        126.5
+       ],
+       [
+        81.6,
+        125.5
+       ],
+       [
+        120.1,
+        68.5
+       ],
+       [
+        131.4,
+        22.0
+       ],
+       [
+        114.2,
+        24.8
+       ],
+       [
+        121.7,
+        22.9
+       ],
+       [
+        120.1,
+        22.5
+       ],
+       [
+        116.8,
+        21.8
+       ]
+      ],
+      "bite_b": [
+       [
+        97.1,
+        127.5
+       ],
+       [
+        88.4,
+        136.3
+       ],
+       [
+        131.2,
+        89.1
+       ],
+       [
+        152.5,
+        13.3
+       ],
+       [
+        132.5,
+        16.3
+       ],
+       [
+        141.2,
+        14.4
+       ],
+       [
+        139.3,
+        14.2
+       ],
+       [
+        135.5,
+        13.9
+       ]
+      ],
+      "bite_a": [
+       [
+        115.9,
+        70.2
+       ],
+       [
+        114.3,
+        50.8
+       ],
+       [
+        113.9,
+        22.2
+       ],
+       [
+        126.9,
+        11.3
+       ],
+       [
+        110.3,
+        15.0
+       ],
+       [
+        117.5,
+        12.8
+       ],
+       [
+        116.0,
+        12.5
+       ],
+       [
+        112.8,
+        12.2
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

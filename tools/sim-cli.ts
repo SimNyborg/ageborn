@@ -53,7 +53,7 @@ Commands:
   balance         balance matrix: Balanced mirror, per-card win-rate deltas, scenarios (A2.14)
                   --mode smoke|full --matches N (per card) --mirror N (per format) | --no-mirror
                   --formats short,standard (mirror formats; Full War only at gates, A18.3.4)
-                  --cards a,b --tier 5 --level 7 --seed 1 --bound 6 (CI half-width) --no-scenarios
+                  --cards a,b --card-format w1.stone (the window card tests play in) --tier 5 --level 7 --seed 1 --bound 6 (CI half-width) --no-scenarios
   exploits        scripted exploit proxies vs the tier VII Balanced bot (A2.14)
                   --mode smoke|full --matches N (per proxy and format) --proxies a,b --formats short,standard
                   --tier 7 --level 7 --seed 1 --no-a18 (skip the A18.12 duel and difficulty rows)
@@ -92,7 +92,7 @@ const COMMON_FLAGS = ['out', 'gate', 'workers'];
 
 /** The flags of each command; anything else is a typo and must not silently start a default run. */
 export const COMMAND_FLAGS: Record<string, readonly string[]> = {
-  balance: ['mode', 'matches', 'mirror', 'cards', 'formats', 'tier', 'level', 'seed', 'bound', 'scenarios', 'patch'],
+  balance: ['mode', 'matches', 'mirror', 'cards', 'card-format', 'formats', 'tier', 'level', 'seed', 'bound', 'scenarios', 'patch'],
   exploits: ['mode', 'matches', 'proxies', 'formats', 'tier', 'level', 'seed', 'a18', 'power-rows', 'lane', 'lane-matches', 'patch'],
   strength: ['mode', 'matches', 'pairs', 'tiers', 'proxies', 'formats', 'general', 'level', 'seed', 'patch'],
   forts: ['mode', 'rows', 'kinds', 'formats', 'matches', 'matches-full', 'card-matches', 'tier', 'level', 'seed', 'raw', 'patch'],
@@ -206,6 +206,7 @@ export async function main(argv: readonly string[]): Promise<number> {
         mirrorMatches: int(a, 'mirror', d.mirrorMatches),
         mirrorFormats: formatList(list(a, 'formats'), d.mirrorFormats),
         cards: cards.length > 0 ? cards : null,
+        ...(str(a, 'card-format', '') !== '' ? { cardFormat: str(a, 'card-format', '') } : {}),
         tier: int(a, 'tier', d.tier),
         level: int(a, 'level', d.level),
         seed: int(a, 'seed', d.seed),

@@ -1,0 +1,2303 @@
+{
+ "frames": {
+  "dragoon_idle_00": {
+   "frame": {
+    "x": 276,
+    "y": 2,
+    "w": 247,
+    "h": 319
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 356,
+    "y": 208,
+    "w": 247,
+    "h": 319
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_idle_00_team": {
+   "frame": {
+    "x": 1961,
+    "y": 974,
+    "w": 126,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 377,
+    "y": 248,
+    "w": 126,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_idle_01": {
+   "frame": {
+    "x": 527,
+    "y": 2,
+    "w": 248,
+    "h": 317
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 357,
+    "y": 211,
+    "w": 248,
+    "h": 317
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_idle_01_team": {
+   "frame": {
+    "x": 2357,
+    "y": 974,
+    "w": 127,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 376,
+    "y": 251,
+    "w": 127,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_idle_02": {
+   "frame": {
+    "x": 1013,
+    "y": 347,
+    "w": 250,
+    "h": 310
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 357,
+    "y": 220,
+    "w": 250,
+    "h": 310
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_idle_02_team": {
+   "frame": {
+    "x": 1060,
+    "y": 1271,
+    "w": 129,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 375,
+    "y": 259,
+    "w": 129,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_idle_03": {
+   "frame": {
+    "x": 522,
+    "y": 662,
+    "w": 255,
+    "h": 302
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 354,
+    "y": 227,
+    "w": 255,
+    "h": 302
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_idle_03_team": {
+   "frame": {
+    "x": 404,
+    "y": 1471,
+    "w": 131,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 374,
+    "y": 265,
+    "w": 131,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_idle_04": {
+   "frame": {
+    "x": 2,
+    "y": 662,
+    "w": 257,
+    "h": 308
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 351,
+    "y": 223,
+    "w": 257,
+    "h": 308
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_idle_04_team": {
+   "frame": {
+    "x": 138,
+    "y": 1471,
+    "w": 129,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 375,
+    "y": 262,
+    "w": 129,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_idle_05": {
+   "frame": {
+    "x": 779,
+    "y": 2,
+    "w": 250,
+    "h": 314
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 354,
+    "y": 214,
+    "w": 250,
+    "h": 314
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_idle_05_team": {
+   "frame": {
+    "x": 929,
+    "y": 1271,
+    "w": 127,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 376,
+    "y": 254,
+    "w": 127,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_00": {
+   "frame": {
+    "x": 1770,
+    "y": 347,
+    "w": 260,
+    "h": 309
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 346,
+    "y": 223,
+    "w": 260,
+    "h": 309
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_00_team": {
+   "frame": {
+    "x": 2091,
+    "y": 974,
+    "w": 129,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 375,
+    "y": 262,
+    "w": 129,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_01": {
+   "frame": {
+    "x": 1288,
+    "y": 662,
+    "w": 272,
+    "h": 300
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 337,
+    "y": 232,
+    "w": 272,
+    "h": 300
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_01_team": {
+   "frame": {
+    "x": 134,
+    "y": 1271,
+    "w": 129,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 375,
+    "y": 271,
+    "w": 129,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_02": {
+   "frame": {
+    "x": 2,
+    "y": 974,
+    "w": 261,
+    "h": 293
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 240,
+    "w": 261,
+    "h": 293
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_02_team": {
+   "frame": {
+    "x": 2389,
+    "y": 1271,
+    "w": 129,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 375,
+    "y": 278,
+    "w": 129,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_03": {
+   "frame": {
+    "x": 781,
+    "y": 662,
+    "w": 247,
+    "h": 302
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 354,
+    "y": 231,
+    "w": 247,
+    "h": 302
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_03_team": {
+   "frame": {
+    "x": 267,
+    "y": 1271,
+    "w": 129,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 375,
+    "y": 269,
+    "w": 129,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_04": {
+   "frame": {
+    "x": 263,
+    "y": 662,
+    "w": 255,
+    "h": 308
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 351,
+    "y": 223,
+    "w": 255,
+    "h": 308
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_04_team": {
+   "frame": {
+    "x": 2224,
+    "y": 974,
+    "w": 129,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 375,
+    "y": 262,
+    "w": 129,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_05": {
+   "frame": {
+    "x": 1564,
+    "y": 662,
+    "w": 266,
+    "h": 298
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 343,
+    "y": 230,
+    "w": 266,
+    "h": 298
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_05_team": {
+   "frame": {
+    "x": 1193,
+    "y": 1271,
+    "w": 129,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 375,
+    "y": 271,
+    "w": 129,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_06": {
+   "frame": {
+    "x": 267,
+    "y": 974,
+    "w": 256,
+    "h": 289
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 347,
+    "y": 238,
+    "w": 256,
+    "h": 289
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_06_team": {
+   "frame": {
+    "x": 271,
+    "y": 1471,
+    "w": 129,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 375,
+    "y": 278,
+    "w": 129,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_07": {
+   "frame": {
+    "x": 1834,
+    "y": 662,
+    "w": 253,
+    "h": 296
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 348,
+    "y": 229,
+    "w": 253,
+    "h": 296
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_walk_07_team": {
+   "frame": {
+    "x": 1326,
+    "y": 1271,
+    "w": 129,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 375,
+    "y": 269,
+    "w": 129,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_00": {
+   "frame": {
+    "x": 1267,
+    "y": 347,
+    "w": 250,
+    "h": 310
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 353,
+    "y": 218,
+    "w": 250,
+    "h": 310
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_00_team": {
+   "frame": {
+    "x": 400,
+    "y": 1271,
+    "w": 129,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 374,
+    "y": 256,
+    "w": 129,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_01": {
+   "frame": {
+    "x": 764,
+    "y": 347,
+    "w": 245,
+    "h": 311
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 351,
+    "y": 217,
+    "w": 245,
+    "h": 311
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_01_team": {
+   "frame": {
+    "x": 533,
+    "y": 1271,
+    "w": 128,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 371,
+    "y": 256,
+    "w": 128,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_02": {
+   "frame": {
+    "x": 1802,
+    "y": 2,
+    "w": 248,
+    "h": 312
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 349,
+    "y": 217,
+    "w": 248,
+    "h": 312
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_02_team": {
+   "frame": {
+    "x": 1459,
+    "y": 1271,
+    "w": 129,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 369,
+    "y": 257,
+    "w": 129,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_03": {
+   "frame": {
+    "x": 1548,
+    "y": 2,
+    "w": 250,
+    "h": 312
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 349,
+    "y": 217,
+    "w": 250,
+    "h": 312
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_03_team": {
+   "frame": {
+    "x": 1592,
+    "y": 1271,
+    "w": 129,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 369,
+    "y": 257,
+    "w": 129,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_04": {
+   "frame": {
+    "x": 257,
+    "y": 347,
+    "w": 250,
+    "h": 311
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 349,
+    "y": 218,
+    "w": 250,
+    "h": 311
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_04_team": {
+   "frame": {
+    "x": 1725,
+    "y": 1271,
+    "w": 129,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 369,
+    "y": 257,
+    "w": 129,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_05": {
+   "frame": {
+    "x": 511,
+    "y": 347,
+    "w": 249,
+    "h": 311
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 350,
+    "y": 218,
+    "w": 249,
+    "h": 311
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_05_team": {
+   "frame": {
+    "x": 1858,
+    "y": 1271,
+    "w": 129,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 369,
+    "y": 257,
+    "w": 129,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_06": {
+   "frame": {
+    "x": 1521,
+    "y": 347,
+    "w": 245,
+    "h": 310
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 217,
+    "w": 245,
+    "h": 310
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_06_team": {
+   "frame": {
+    "x": 665,
+    "y": 1271,
+    "w": 128,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 366,
+    "y": 256,
+    "w": 128,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_07": {
+   "frame": {
+    "x": 2034,
+    "y": 347,
+    "w": 300,
+    "h": 308
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 336,
+    "y": 218,
+    "w": 300,
+    "h": 308
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 1271,
+    "w": 128,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 365,
+    "y": 254,
+    "w": 128,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_08": {
+   "frame": {
+    "x": 2054,
+    "y": 2,
+    "w": 310,
+    "h": 311
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 349,
+    "y": 217,
+    "w": 310,
+    "h": 311
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_08_team": {
+   "frame": {
+    "x": 797,
+    "y": 1271,
+    "w": 128,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 371,
+    "y": 256,
+    "w": 128,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_09": {
+   "frame": {
+    "x": 1293,
+    "y": 2,
+    "w": 251,
+    "h": 312
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 354,
+    "y": 217,
+    "w": 251,
+    "h": 312
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_09_team": {
+   "frame": {
+    "x": 1991,
+    "y": 1271,
+    "w": 129,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 375,
+    "y": 257,
+    "w": 129,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_hit_00": {
+   "frame": {
+    "x": 2091,
+    "y": 662,
+    "w": 255,
+    "h": 294
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 343,
+    "y": 233,
+    "w": 255,
+    "h": 294
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_hit_00_team": {
+   "frame": {
+    "x": 539,
+    "y": 1471,
+    "w": 134,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 365,
+    "y": 266,
+    "w": 134,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_hit_01": {
+   "frame": {
+    "x": 527,
+    "y": 974,
+    "w": 271,
+    "h": 287
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 329,
+    "y": 240,
+    "w": 271,
+    "h": 287
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_hit_01_team": {
+   "frame": {
+    "x": 677,
+    "y": 1471,
+    "w": 136,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 362,
+    "y": 270,
+    "w": 136,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_hit_02": {
+   "frame": {
+    "x": 1032,
+    "y": 662,
+    "w": 252,
+    "h": 301
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 345,
+    "y": 227,
+    "w": 252,
+    "h": 301
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_hit_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 1471,
+    "w": 132,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 369,
+    "y": 262,
+    "w": 132,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_hit_03": {
+   "frame": {
+    "x": 1033,
+    "y": 2,
+    "w": 256,
+    "h": 313
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 352,
+    "y": 217,
+    "w": 256,
+    "h": 313
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_hit_03_team": {
+   "frame": {
+    "x": 2257,
+    "y": 1271,
+    "w": 128,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 375,
+    "y": 257,
+    "w": 128,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_hit_04": {
+   "frame": {
+    "x": 2,
+    "y": 347,
+    "w": 251,
+    "h": 311
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 354,
+    "y": 218,
+    "w": 251,
+    "h": 311
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_hit_04_team": {
+   "frame": {
+    "x": 2124,
+    "y": 1271,
+    "w": 129,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 375,
+    "y": 257,
+    "w": 129,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_00": {
+   "frame": {
+    "x": 802,
+    "y": 974,
+    "w": 256,
+    "h": 287
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 237,
+    "w": 256,
+    "h": 287
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_00_team": {
+   "frame": {
+    "x": 817,
+    "y": 1471,
+    "w": 138,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 360,
+    "y": 272,
+    "w": 138,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_01": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 270,
+    "h": 341
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 228,
+    "y": 185,
+    "w": 270,
+    "h": 341
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_01_team": {
+   "frame": {
+    "x": 1785,
+    "y": 974,
+    "w": 172,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 267,
+    "y": 238,
+    "w": 172,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_02": {
+   "frame": {
+    "x": 1062,
+    "y": 974,
+    "w": 362,
+    "h": 266
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 259,
+    "w": 362,
+    "h": 266
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 1665,
+    "w": 261,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 289,
+    "w": 261,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_03": {
+   "frame": {
+    "x": 1428,
+    "y": 974,
+    "w": 353,
+    "h": 234
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 238,
+    "y": 290,
+    "w": 353,
+    "h": 234
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_03_team": {
+   "frame": {
+    "x": 267,
+    "y": 1665,
+    "w": 210,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 283,
+    "y": 293,
+    "w": 210,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_04": {
+   "frame": {
+    "x": 959,
+    "y": 1471,
+    "w": 482,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 152,
+    "y": 382,
+    "w": 482,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_04_team": {
+   "frame": {
+    "x": 926,
+    "y": 1665,
+    "w": 322,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 392,
+    "w": 322,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_05": {
+   "frame": {
+    "x": 1445,
+    "y": 1471,
+    "w": 469,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 152,
+    "y": 394,
+    "w": 469,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_05_team": {
+   "frame": {
+    "x": 1252,
+    "y": 1665,
+    "w": 316,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 408,
+    "w": 316,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_06": {
+   "frame": {
+    "x": 1918,
+    "y": 1471,
+    "w": 459,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 155,
+    "y": 391,
+    "w": 459,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_06_team": {
+   "frame": {
+    "x": 1572,
+    "y": 1665,
+    "w": 312,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 401,
+    "w": 312,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_07": {
+   "frame": {
+    "x": 481,
+    "y": 1665,
+    "w": 441,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 403,
+    "w": 441,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_die_07_team": {
+   "frame": {
+    "x": 1888,
+    "y": 1665,
+    "w": 295,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 412,
+    "w": 295,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "dragoon_idle_00",
+   "dragoon_idle_01",
+   "dragoon_idle_02",
+   "dragoon_idle_03",
+   "dragoon_idle_04",
+   "dragoon_idle_05"
+  ],
+  "idle_team": [
+   "dragoon_idle_00_team",
+   "dragoon_idle_01_team",
+   "dragoon_idle_02_team",
+   "dragoon_idle_03_team",
+   "dragoon_idle_04_team",
+   "dragoon_idle_05_team"
+  ],
+  "walk": [
+   "dragoon_walk_00",
+   "dragoon_walk_01",
+   "dragoon_walk_02",
+   "dragoon_walk_03",
+   "dragoon_walk_04",
+   "dragoon_walk_05",
+   "dragoon_walk_06",
+   "dragoon_walk_07"
+  ],
+  "walk_team": [
+   "dragoon_walk_00_team",
+   "dragoon_walk_01_team",
+   "dragoon_walk_02_team",
+   "dragoon_walk_03_team",
+   "dragoon_walk_04_team",
+   "dragoon_walk_05_team",
+   "dragoon_walk_06_team",
+   "dragoon_walk_07_team"
+  ],
+  "attack": [
+   "dragoon_attack_00",
+   "dragoon_attack_01",
+   "dragoon_attack_02",
+   "dragoon_attack_03",
+   "dragoon_attack_04",
+   "dragoon_attack_05",
+   "dragoon_attack_06",
+   "dragoon_attack_07",
+   "dragoon_attack_08",
+   "dragoon_attack_08",
+   "dragoon_attack_09",
+   "dragoon_attack_09"
+  ],
+  "attack_team": [
+   "dragoon_attack_00_team",
+   "dragoon_attack_01_team",
+   "dragoon_attack_02_team",
+   "dragoon_attack_03_team",
+   "dragoon_attack_04_team",
+   "dragoon_attack_05_team",
+   "dragoon_attack_06_team",
+   "dragoon_attack_07_team",
+   "dragoon_attack_08_team",
+   "dragoon_attack_08_team",
+   "dragoon_attack_09_team",
+   "dragoon_attack_09_team"
+  ],
+  "hit": [
+   "dragoon_hit_00",
+   "dragoon_hit_01",
+   "dragoon_hit_02",
+   "dragoon_hit_03",
+   "dragoon_hit_04"
+  ],
+  "hit_team": [
+   "dragoon_hit_00_team",
+   "dragoon_hit_01_team",
+   "dragoon_hit_02_team",
+   "dragoon_hit_03_team",
+   "dragoon_hit_04_team"
+  ],
+  "die": [
+   "dragoon_die_00",
+   "dragoon_die_01",
+   "dragoon_die_01",
+   "dragoon_die_02",
+   "dragoon_die_03",
+   "dragoon_die_04",
+   "dragoon_die_04",
+   "dragoon_die_05",
+   "dragoon_die_05",
+   "dragoon_die_06",
+   "dragoon_die_06",
+   "dragoon_die_07"
+  ],
+  "die_team": [
+   "dragoon_die_00_team",
+   "dragoon_die_01_team",
+   "dragoon_die_01_team",
+   "dragoon_die_02_team",
+   "dragoon_die_03_team",
+   "dragoon_die_04_team",
+   "dragoon_die_04_team",
+   "dragoon_die_05_team",
+   "dragoon_die_05_team",
+   "dragoon_die_06_team",
+   "dragoon_die_06_team",
+   "dragoon_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "dragoon.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 2560,
+   "h": 1828
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.dragoon",
+   "name": "Dragoon",
+   "heightLu": 120,
+   "widthLu": 94.7,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    448,
+    510
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     116
+    ],
+    "hitCenter": [
+     0,
+     50
+    ],
+    "muzzle": [
+     52,
+     72
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "rider",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      150,
+      150,
+      150,
+      150,
+      150,
+      150
+     ],
+     "durationMs": 900,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        10.6,
+        110.1
+       ],
+       [
+        10.0,
+        109.2
+       ],
+       [
+        10.9,
+        105.1
+       ],
+       [
+        12.3,
+        101.9
+       ],
+       [
+        12.8,
+        102.7
+       ],
+       [
+        12.0,
+        106.8
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      98,
+      97,
+      97,
+      98,
+      98,
+      97,
+      97,
+      98
+     ],
+     "durationMs": 780,
+     "gait": "rider",
+     "gaitSpeedLuPerS": 68.8,
+     "cycleMs": 780,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        9.6,
+        103.9
+       ],
+       [
+        12.6,
+        99.0
+       ],
+       [
+        13.0,
+        95.9
+       ],
+       [
+        9.8,
+        100.7
+       ],
+       [
+        9.6,
+        103.9
+       ],
+       [
+        13.1,
+        100.4
+       ],
+       [
+        13.6,
+        97.8
+       ],
+       [
+        10.2,
+        102.1
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 68.7,
+     "strideLu": 53.6,
+     "plantedDriftLu": 0.14,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "bl",
+       "atLu": [
+        -4.0,
+        2.3
+       ]
+      },
+      {
+       "step": 0,
+       "foot": "fr",
+       "atLu": [
+        31.1,
+        -3.0
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "br",
+       "atLu": [
+        -6.3,
+        -1.2
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "fl",
+       "atLu": [
+        33.4,
+        0.5
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        7.6,
+        107.4
+       ],
+       [
+        27.8,
+        107.3
+       ],
+       [
+        41.1,
+        92.0
+       ],
+       [
+        43.7,
+        81.2
+       ],
+       [
+        44.2,
+        80.5
+       ],
+       [
+        44.2,
+        80.5
+       ],
+       [
+        29.5,
+        87.5
+       ],
+       [
+        19.7,
+        100.0
+       ],
+       [
+        16.9,
+        112.9
+       ],
+       [
+        11.3,
+        106.6
+       ]
+      ]
+     },
+     "muzzle": [
+      29.5,
+      87.5
+     ]
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        -4.0,
+        105.9
+       ],
+       [
+        -9.8,
+        105.3
+       ],
+       [
+        2.6,
+        106.2
+       ],
+       [
+        14.7,
+        104.8
+       ],
+       [
+        10.7,
+        106.0
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      7
+     ],
+     "durationsMs": [
+      60,
+      70,
+      80,
+      80,
+      60,
+      70,
+      80,
+      90,
+      90,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 990,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 740,
+       "offsetLu": [
+        0,
+        43.2
+       ],
+       "scale": 1.184
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 820,
+       "offsetLu": [
+        0,
+        66.0
+       ],
+       "loops": 2,
+       "scale": 1.088
+      }
+     ],
+     "hideUnitAtMs": 990,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        -2.0,
+        102.5
+       ],
+       [
+        -61.6,
+        127.6
+       ],
+       [
+        -111.7,
+        97.6
+       ],
+       [
+        -58.3,
+        29.5
+       ],
+       [
+        -91.5,
+        0.2
+       ],
+       [
+        -92.0,
+        -6.3
+       ],
+       [
+        -91.4,
+        -6.1
+       ],
+       [
+        -88.2,
+        -7.2
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

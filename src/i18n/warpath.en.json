@@ -37,7 +37,9 @@
         "l07": "Knights at Dusk",
         "l08": "Pike and Shot",
         "l09": "Moat of Thorns",
-        "l10": "Mama Moss's Keep"
+        "l10": "Mama Moss's Keep",
+        "s1": "The Bell Tower",
+        "s2": "Snare Wood"
       },
       "gunpowder": {
         "l01": "Powder Smoke",
@@ -49,7 +51,9 @@
         "l07": "Cannon Ridge",
         "l08": "Grapeshot Valley",
         "l09": "The Iron Tide",
-        "l10": "Boomsworth's Arsenal"
+        "l10": "Boomsworth's Arsenal",
+        "s1": "Salute Battery",
+        "s2": "The Picket Line"
       },
       "industrial": {
         "l01": "Smokestack Dawn",

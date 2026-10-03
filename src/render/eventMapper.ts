@@ -468,6 +468,12 @@ export class EventMapper {
           spreadLu: 6,
         }, out);
         if (victim) out.push({ a: 'unitClip', id: ev.targetId, clip: 'hit' });
+        // A power may land its own piece on each unit it touches (`power.fx.<id>.hit`: Pebble Hail's
+        // pebbles drop on the 8 units it screens anywhere on the lane, X0 `lane` reach).
+        if (cast !== undefined && this.has(`power.fx.${cast.power}.hit`)) {
+          const caster: Side = victim?.side === 0 ? 1 : 0;
+          this.rule(`power.fx.${cast.power}.hit`, { at: victim ? { k: 'unit', id: ev.targetId, part: 'feet' } : { k: 'world', x, y: 0 }, opts: { side: caster, dir: dirOf(caster) } }, out);
+        }
         // Anti-heavy (×3 vs Heavy): an armour plate cracks open on top of the counter hit
         if (vDef?.role === 'heavy' && ev.modBp >= ANTI_HEAVY_CRACK_BP) out.push({ a: 'sound', id: 'hit_armor_crack', gap: { key: 'hit_armor_crack', gapMs: 90 } });
         // Brace: a Heavy runs into a braced unit, which plants its feet (no knockback, A16 Heavy counter)

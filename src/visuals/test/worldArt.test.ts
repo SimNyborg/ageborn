@@ -28,8 +28,8 @@ function sheet(source: string): SheetFile {
 describe('world art manifest', () => {
   const entries = Object.entries(WORLD_OVERRIDES);
 
-  it('covers all 32 turrets and 8 bases, merged into the main manifest', () => {
-    expect(entries.filter(([id]) => id.startsWith('turret.'))).toHaveLength(32);
+  it('covers all 38 turrets (32 plus the Stone, Medieval and Gunpowder waves) and 8 bases, merged into the main manifest', () => {
+    expect(entries.filter(([id]) => id.startsWith('turret.'))).toHaveLength(38);
     expect(entries.filter(([id]) => id.startsWith('base.'))).toHaveLength(8);
     for (const [id, def] of entries) expect(MANIFEST[id]?.source, id).toBe(def.source);
   });
@@ -97,10 +97,10 @@ describe('WorldAtlas', () => {
     });
     const defs = Object.values(WORLD_OVERRIDES);
     await w.preload(['stone'], defs);
-    expect(loads).toHaveLength(5);
+    expect(loads).toHaveLength(7);
     expect(loads.every((u) => u.includes('stone'))).toBe(true);
     await w.preload(['stone', 'medieval'], defs);
-    expect(loads).toHaveLength(10);
+    expect(loads).toHaveLength(14);
     expect(w.get('art/bases/medieval.json')).toBe(fake);
   });
 

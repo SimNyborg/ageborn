@@ -36,7 +36,9 @@ AGES = ["stone", "bronze", "medieval", "gunpowder", "industrial", "modern", "fut
 CLASS_OF_GAIT = {"biped": "G1", "heavy": "G3", "quad": "G4", "rider": "G5", "wheeled": "G6",
                  "tracked": "G6", "walker": "G7", "hover": "G8", "fly": "G8"}
 BIG_BEASTS = {"mammoth_matriarch", "war_elephant"}
-CLASS_OVERRIDE = {"drum_shaman": "G2", "friar": "G2", "starwarden": "G2", "standard_bearer": "G2"}
+CLASS_OVERRIDE = {"drum_shaman": "G2", "friar": "G2", "starwarden": "G2", "standard_bearer": "G2",
+                  "aulos_piper": "G2", "tragic_chorus": "G2",
+                  "herbalist": "G2", "rockfall_shaman": "G2"}
 LIMITS = {
     "G1": {"step": 20.0, "bob": 5.0, "apart": 4, "gap": 5.0},
     "G2": {"step": 16.5, "bob": 4.0},
@@ -55,7 +57,7 @@ def card_speeds():
         if not f.endswith(".ts"):
             continue
         txt = open(os.path.join(RAW, f)).read()
-        for m in re.finditer(r"id: '([a-z0-9_]+)', kind: 'unit'", txt):
+        for m in re.finditer(r"id: '([a-z0-9_]+)',(?: released: (?:true|false),)? kind: 'unit'", txt):
             sp = re.search(r"speed: (\d+)", txt[m.end():m.end() + 600])
             if sp:
                 out[m.group(1)] = int(sp.group(1))

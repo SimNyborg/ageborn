@@ -1,0 +1,723 @@
+{
+ "frames": {
+  "war_hound_attack_b_01": {
+   "frame": {
+    "x": 284,
+    "y": 2,
+    "w": 159,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 122,
+    "w": 159,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_b_01_team": {
+   "frame": {
+    "x": 129,
+    "y": 323,
+    "w": 108,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 149,
+    "y": 161,
+    "w": 108,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 123,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 84,
+    "w": 123,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_b_02_team": {
+   "frame": {
+    "x": 447,
+    "y": 2,
+    "w": 104,
+    "h": 132
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 136,
+    "w": 104,
+    "h": 132
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_b_03": {
+   "frame": {
+    "x": 129,
+    "y": 2,
+    "w": 151,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 107,
+    "w": 151,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_b_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 323,
+    "w": 123,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 154,
+    "y": 156,
+    "w": 123,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_b_04": {
+   "frame": {
+    "x": 520,
+    "y": 197,
+    "w": 192,
+    "h": 116
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 129,
+    "y": 162,
+    "w": 192,
+    "h": 116
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_b_04_team": {
+   "frame": {
+    "x": 478,
+    "y": 439,
+    "w": 134,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 149,
+    "y": 176,
+    "w": 134,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_b_05": {
+   "frame": {
+    "x": 555,
+    "y": 2,
+    "w": 182,
+    "h": 131
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 148,
+    "w": 182,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 439,
+    "w": 112,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 173,
+    "w": 112,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_c_01": {
+   "frame": {
+    "x": 2,
+    "y": 197,
+    "w": 172,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 153,
+    "w": 172,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_c_01_team": {
+   "frame": {
+    "x": 369,
+    "y": 439,
+    "w": 105,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 144,
+    "y": 174,
+    "w": 105,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_c_02": {
+   "frame": {
+    "x": 241,
+    "y": 323,
+    "w": 179,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 164,
+    "w": 179,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_c_02_team": {
+   "frame": {
+    "x": 616,
+    "y": 439,
+    "w": 106,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 138,
+    "y": 178,
+    "w": 106,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_c_03": {
+   "frame": {
+    "x": 352,
+    "y": 197,
+    "w": 164,
+    "h": 117
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 138,
+    "y": 175,
+    "w": 164,
+    "h": 117
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_c_03_team": {
+   "frame": {
+    "x": 424,
+    "y": 323,
+    "w": 126,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 142,
+    "y": 178,
+    "w": 126,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_c_04": {
+   "frame": {
+    "x": 554,
+    "y": 323,
+    "w": 196,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 183,
+    "w": 196,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_c_04_team": {
+   "frame": {
+    "x": 233,
+    "y": 439,
+    "w": 132,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 183,
+    "w": 132,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_c_05": {
+   "frame": {
+    "x": 178,
+    "y": 197,
+    "w": 170,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 164,
+    "w": 170,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  },
+  "war_hound_attack_c_05_team": {
+   "frame": {
+    "x": 118,
+    "y": 439,
+    "w": 111,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 153,
+    "y": 177,
+    "w": 111,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 404,
+    "h": 296
+   },
+   "anchor": {
+    "x": 0.49505,
+    "y": 0.88514
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "war_hound_attack_00",
+   "war_hound_attack_b_01",
+   "war_hound_attack_b_01",
+   "war_hound_attack_b_02",
+   "war_hound_attack_b_03",
+   "war_hound_attack_b_03",
+   "war_hound_attack_b_04",
+   "war_hound_attack_b_05",
+   "war_hound_attack_b_05",
+   "war_hound_attack_09",
+   "war_hound_attack_10"
+  ],
+  "attack_b_team": [
+   "war_hound_attack_00_team",
+   "war_hound_attack_b_01_team",
+   "war_hound_attack_b_01_team",
+   "war_hound_attack_b_02_team",
+   "war_hound_attack_b_03_team",
+   "war_hound_attack_b_03_team",
+   "war_hound_attack_b_04_team",
+   "war_hound_attack_b_05_team",
+   "war_hound_attack_b_05_team",
+   "war_hound_attack_09_team",
+   "war_hound_attack_10_team"
+  ],
+  "attack_c": [
+   "war_hound_attack_00",
+   "war_hound_attack_c_01",
+   "war_hound_attack_c_01",
+   "war_hound_attack_c_02",
+   "war_hound_attack_c_03",
+   "war_hound_attack_c_03",
+   "war_hound_attack_c_04",
+   "war_hound_attack_c_05",
+   "war_hound_attack_c_05",
+   "war_hound_attack_09",
+   "war_hound_attack_10"
+  ],
+  "attack_c_team": [
+   "war_hound_attack_00_team",
+   "war_hound_attack_c_01_team",
+   "war_hound_attack_c_01_team",
+   "war_hound_attack_c_02_team",
+   "war_hound_attack_c_03_team",
+   "war_hound_attack_c_03_team",
+   "war_hound_attack_c_04_team",
+   "war_hound_attack_c_05_team",
+   "war_hound_attack_c_05_team",
+   "war_hound_attack_09_team",
+   "war_hound_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "war_hound.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 768,
+   "h": 540
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.war_hound",
+   "name": "War Hound",
+   "heightLu": 44,
+   "widthLu": 67.5,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    200,
+    262
+   ],
+   "anchorsLu": {
+    "head": [
+     14,
+     42
+    ],
+    "hitCenter": [
+     0,
+     21
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "quad",
+   "extrasOf": "war_hound",
+   "clips": {
+    "attack_b": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      3,
+      4,
+      5,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 4,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "anchorsLu": {
+      "fangTip": [
+       [
+        27.8,
+        8.6
+       ],
+       [
+        29.4,
+        33.1
+       ],
+       [
+        15.7,
+        59.5
+       ],
+       [
+        29.4,
+        21.0
+       ],
+       [
+        27.2,
+        5.0
+       ],
+       [
+        29.3,
+        4.8
+       ],
+       [
+        31.2,
+        6.5
+       ],
+       [
+        29.6,
+        9.9
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      3,
+      4,
+      5,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 4,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "anchorsLu": {
+      "fangTip": [
+       [
+        27.8,
+        8.6
+       ],
+       [
+        20.5,
+        2.0
+       ],
+       [
+        15.3,
+        0.8
+       ],
+       [
+        15.5,
+        -2.3
+       ],
+       [
+        13.8,
+        3.8
+       ],
+       [
+        21.4,
+        1.7
+       ],
+       [
+        31.2,
+        6.5
+       ],
+       [
+        29.6,
+        9.9
+       ]
+      ]
+     },
+     "holdStep": 3
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

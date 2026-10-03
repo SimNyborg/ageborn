@@ -1,34 +1,38 @@
 /**
- * The paused content expansion (CONTENT_PLAN, Stone wave W1; paused 2026-10-02) is live in the compiled
- * content, but its art, effects and sounds are not made yet: these cards draw as placeholders and play
- * no attack sound. The art and sound coverage checks skip exactly these ids until the wave resumes.
+ * Content-wave cards that are live in the compiled content but gated (`released: false`) while their art,
+ * effects and sounds are made: the art and sound coverage checks skip exactly these ids. The W1 Stone wave
+ * shipped its art and left this list on 2026-10-03, the W3 Medieval and W4 Gunpowder waves the same day.
  *
- * Release check 2026-10-02: delete this file and its uses when the wave's sheets, puppets, effects and
- * sounds ship; every coverage check re-arms then. Test data only; nothing in the game reads it.
+ * Delete this file and its uses when no wave is gated; every coverage check re-arms then. Test data only;
+ * nothing in the game reads it.
  */
 
-/** Cards, forts, summons, powers and skins of the paused wave. */
-export const PAUSED_WAVE_IDS: ReadonlySet<string> = new Set([
-  // troops (and the Beast Caller's summon)
-  'hunting_wolves', 'hide_shield', 'torch_runner', 'bolas_thrower', 'woolly_rhino', 'atlatl_thrower', 'boulder_hurler',
-  'herbalist', 'pelt_rager', 'beast_caller', 'cave_bear', 'rockfall_shaman', 'elk_chieftain', 'cave_pup',
-  // turrets, forts, powers
-  'quill_porcupine', 'sapling_sling', 'thorn_hedge', 'bone_watchtower', 'tangle_vines', 'pebble_hail',
-  // skins
-  'snowball_pebbler', 'fossil_sabertooth', 'aurora_elk',
-]);
+/**
+ * W2 Bronze wave (2026-10-03): gated (`released: false`) while its art, sounds and balance are made; the wave
+ * removes this block when it flips its cards.
+ */
+const BRONZE_WAVE_IDS: readonly string[] = [
+  'shield_bearer', 'thracian_raider', 'rhodian_slingers', 'discus_thrower', 'war_elephant', 'cretan_archer', 'belly_bowman',
+  'aulos_piper', 'tragic_chorus', 'wooden_horse', 'amazon_rider', 'minotaur', 'hydra',
+  'net_caster', 'polybolos', 'hoplon_line', 'slinger_camp', 'sandstorm', 'charybdis',
+  'marble_hoplite', 'sun_chariot', 'obsidian_colossus',
+];
+const BRONZE_WAVE_VISUALS: readonly string[] = [
+  ...BRONZE_WAVE_IDS.slice(0, 13).map((id) => `unit.${id}`),
+  'turret.net_caster', 'turret.polybolos', 'fort.hoplon_line', 'fort.slinger_camp', 'power.sandstorm', 'power.charybdis',
+  'unit.hoplite@marble_hoplite', 'unit.war_chariot@sun_chariot', 'unit.bronze_colossus@obsidian_colossus',
+  'proj.discus', 'proj.net', 'proj.arrow_arc', 'fx.note_pop', 'fx.wail_ring',
+];
+const BRONZE_WAVE_SOUNDS: readonly string[] = [
+  'kopis_hack', 'rhomphaia_cut', 'shot_discus', 'trunk_lash', 'shot_belly_bow', 'aulos_note', 'chorus_wail', 'horse_ram',
+  'sagaris_sweep', 'labrys_chop', 'hydra_bite', 'net_cast', 'shot_polybolos', 'pw_sandstorm', 'pw_whirlpool',
+];
 
-/** Visual and projectile ids the paused wave references (B5 manifest). */
-export const PAUSED_WAVE_VISUALS: ReadonlySet<string> = new Set([
-  ...[...PAUSED_WAVE_IDS].filter((id) => !['quill_porcupine', 'sapling_sling', 'thorn_hedge', 'bone_watchtower', 'tangle_vines', 'pebble_hail', 'snowball_pebbler', 'fossil_sabertooth', 'aurora_elk'].includes(id)).map((id) => `unit.${id}`),
-  'turret.quill_porcupine', 'turret.sapling_sling', 'fort.thorn_hedge', 'fort.bone_watchtower',
-  'power.tangle_vines', 'power.pebble_hail',
-  'unit.pebbler@snowball_pebbler', 'unit.sabertooth@fossil_sabertooth', 'unit.elk_chieftain@aurora_elk',
-  'proj.bolas', 'proj.dart', 'proj.herb', 'proj.quill',
-]);
+/** Cards, forts, summons, powers and skins of the gated wave. */
+export const PAUSED_WAVE_IDS: ReadonlySet<string> = new Set(BRONZE_WAVE_IDS);
 
-/** Sound ids the paused wave references (A13, B7 manifest). */
-export const PAUSED_WAVE_SOUNDS: ReadonlySet<string> = new Set([
-  'wolf_bite', 'shield_bash', 'torch_jab', 'shot_bolas', 'horn_hook', 'shot_atlatl', 'shot_heave', 'herb_puff',
-  'bear_swipe', 'antler_sweep', 'quill_fan', 'shot_sapling', 'pw_vines', 'pw_hail',
-]);
+/** Visual and projectile ids the gated wave references (B5 manifest). */
+export const PAUSED_WAVE_VISUALS: ReadonlySet<string> = new Set(BRONZE_WAVE_VISUALS);
+
+/** Sound ids the gated wave references (A13, B7 manifest). */
+export const PAUSED_WAVE_SOUNDS: ReadonlySet<string> = new Set(BRONZE_WAVE_SOUNDS);

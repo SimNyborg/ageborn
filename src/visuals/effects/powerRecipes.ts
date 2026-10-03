@@ -405,6 +405,60 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
       particles: [{ ...dust(10, 1.6), delay: [60, 90] }, { ...chunks(5), delay: [60, 80], tint: 0x9a8e7c }, { ...sparks(6, [140, 260]), delay: [60, 70] }],
     },
 
+    {
+      // Pebble Hail (Field lane volley, X0): a fistful of sling pebbles arcs down on each unit it screens.
+      id: 'fx.pebble_hail',
+      durationMs: 900,
+      fall: { sprite: 'proj.rock', count: 3, fromX: -90, fromY: -260, spreadX: 12, fallMs: 240, impact: 'fx.pebble_pop', scale: 1.5 },
+    },
+    {
+      // A pebble cracking on the ground: a chip spray and a little dust.
+      id: 'fx.pebble_pop',
+      durationMs: 520,
+      sprites: [ring(1.4, 260, 0xe8dcc4, 0.35)],
+      particles: [
+        { sprite: 'fx.p.rock2', count: 3, life: [260, 420], speed: [80, 160], angle: [-150, -30], spread: 10, gravity: 820, scale: [0.9, 0.7], alpha: [1, 0.4], spin: [-600, 600], tint: 0x9a8e7e },
+        { ...dust(3, 0.7), tint: 0xd8ccb4 },
+      ],
+    },
+    {
+      // Tangle Vines (Home pull, X0): a root bed bursts open, thorny tendrils whip up and sway for the
+      // field's 4 s, leaves drift off. Tendril spots assume the 300 lu zone; the bed scales with it.
+      id: 'fx.tangle_vines',
+      durationMs: 4000,
+      loops: true,
+      sprites: [
+        { sprite: 'fx.p.shadow', life: 0, sizeWith: 'zone', keys: [{ t: 0, sx: 0.3, sy: 1.2, a: 0 }, { t: 0.03, sx: 1.02, sy: 1.3, a: 0.3 }, { t: 0.94, a: 0.3 }, { t: 1, a: 0 }] },
+        { sprite: 'fx.p.vineMat', life: 0, sizeWith: 'zone', keys: [{ t: 0, sx: 0.2, sy: 0.4, a: 0, y: 2 }, { t: 0.025, sx: 1.06, sy: 2.4, a: 1, y: 1 }, { t: 0.045, sx: 0.98, sy: 1.6, y: 2 }, { t: 0.06, sx: 1, sy: 1.9 }, { t: 0.94, sx: 1, sy: 1.9, a: 1 }, { t: 1, sx: 0.94, sy: 1.2, a: 0 }] },
+        ...[-128, -96, -66, -34, -6, 24, 52, 82, 112, 136].map((x, i): SpriteSpec => {
+          const s = 1.6 + (i % 3) * 0.35;
+          const f = i % 2 === 0 ? 1 : -1;
+          const d = (i * 0.007) % 0.03;
+          return {
+            sprite: 'fx.p.vine',
+            life: 0,
+            keys: [
+              { t: 0, x, y: 2, sx: s * 0.4 * f, sy: 0, a: 0, r: 0 },
+              { t: 0.02 + d, x, y: 2, sx: s * 0.4 * f, sy: 0.05, a: 1, r: 0 },
+              { t: 0.045 + d, x, y: 1, sx: s * 0.85 * f, sy: s * 1.3, r: -12 * f },
+              { t: 0.07 + d, x, y: 1, sx: s * f, sy: s * 0.92, r: 8 * f },
+              { t: 0.1 + d, x, y: 1, sx: s * f, sy: s, r: -3 * f },
+              { t: 0.3, x, y: 1, sx: s * f, sy: s * 1.04, r: 6 * f },
+              { t: 0.5, x, y: 1, sx: s * f, sy: s * 0.97, r: -5 * f },
+              { t: 0.7, x, y: 1, sx: s * f, sy: s * 1.04, r: 6 * f },
+              { t: 0.9, x, y: 1, sx: s * f, sy: s, r: -2 * f, a: 1 },
+              { t: 1, x, y: 2, sx: s * 0.6 * f, sy: 0.1, r: 0, a: 0 },
+            ],
+          };
+        }),
+      ],
+      particles: [
+        { sprite: 'fx.p.clod', count: 14, life: [380, 640], box: [44, 2], sizeWith: 'zone', speed: [110, 220], angle: [-130, -50], gravity: 880, scale: [1.3, 1], alpha: [1, 0.5], spin: [-400, 400], tint: 0x6e5c48 },
+        { ...dust(10, 1.4), box: [44, 2], sizeWith: 'zone', tint: 0xcfc4a8 },
+        { sprite: 'fx.p.leaf', rate: 5, life: [900, 1500], box: [42, 4], sizeWith: 'zone', speed: [18, 46], angle: [-120, -60], gravity: 30, drag: 0.6, scale: [1.6, 1.2], alpha: [1, 0], spin: [-260, 260] },
+      ],
+    },
+
     // -----------------------------------------------------------------------------------------
     // Bronze Age: Hellas
 
@@ -908,6 +962,97 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
         { sprite: 'fx.p.xp', rate: 18, life: [300, 500], speed: [10, 40], angle: [-180, 180], box: [6, 4], followMove: true, scale: [1, 0.2], alpha: [1, 0], tint: 0xe7dcff, blendAdd: true },
         { sprite: 'fx.p.dust', rate: 12, life: [300, 500], speed: [10, 40], angle: [-160, -110], box: [4, 1], followMove: true, scale: [0.5, 1.2], alpha: [0.6, 0], tint: 0xc9c2d4 },
         { sprite: 'fx.p.shard', count: 7, atEnd: true, followMove: true, life: [400, 700], speed: [80, 180], angle: [-170, -10], gravity: 400, scale: [1.4, 0.6], alpha: [1, 0], spin: [-500, 500] },
+      ],
+    },
+    // Bronze wave (CONTENT_PLAN 5.2)
+    {
+      // Sandstorm (Field signal, whole lane): a wall of pale sand rolls down the lane with streaks of grit.
+      id: 'fx.sandstorm',
+      durationMs: 1600,
+      sprites: [
+        { sprite: 'fx.p.dust', life: 1600, moveBy: 'zone', tint: 0xe6d8bc, keys: [{ t: 0, x: -50, sx: 3, sy: 2.4, a: 0 }, { t: 0.1, x: -42, sx: 5.2, sy: 4.4, a: 0.7, y: -18 }, { t: 0.85, x: 38, sx: 5.6, sy: 4.6, a: 0.6, y: -20 }, { t: 1, x: 50, sx: 4, sy: 3, a: 0, y: -24 }] },
+        { sprite: 'fx.p.dust', life: 1500, delay: 100, moveBy: 'zone', tint: 0xd9cfbd, keys: [{ t: 0, x: -50, sx: 2, sy: 1.6, a: 0 }, { t: 0.12, x: -44, sx: 3.6, sy: 2.8, a: 0.55, y: -4 }, { t: 0.88, x: 40, sx: 3.8, sy: 3, a: 0.5, y: -6 }, { t: 1, x: 50, sx: 2.6, sy: 2, a: 0 }] },
+      ],
+      particles: [
+        { sprite: 'fx.p.spark', rate: 70, life: [260, 480], box: [45, 14], sizeWith: 'zone', speed: [220, 340], angle: [-6, 6], align: true, scale: [1.6, 0.8], alpha: [0.9, 0], tint: 0xf2e6cc },
+        { sprite: 'fx.p.dust', rate: 22, life: [600, 1000], box: [45, 4], sizeWith: 'zone', speed: [60, 140], angle: [-20, 0], gravity: -20, scale: [0.8, 1.8], alpha: [0.55, 0], tint: 0xd9cfbd },
+      ],
+    },
+    {
+      // Charybdis (Home pull): a churning whirlpool opens in the lane and drags units toward its eye.
+      id: 'fx.whirlpool',
+      durationMs: 4000,
+      loops: true,
+      sprites: [
+        { sprite: 'fx.p.shadow', life: 0, sizeWith: 'zone', keys: [{ t: 0, sx: 0.2, sy: 0.5, a: 0 }, { t: 0.05, sx: 0.85, sy: 0.6, a: 0.45 }, { t: 0.93, sx: 0.85, sy: 0.6, a: 0.45 }, { t: 1, sx: 0.3, sy: 0.5, a: 0 }] },
+        { sprite: 'fx.p.ring', life: 0, loop: 700, sizeWith: 'zone', tint: 0xa9d2da, keys: [{ t: 0, y: 2, sx: 0.5, sy: 0.16, a: 0, r: 0 }, { t: 0.3, y: 2, sx: 0.38, sy: 0.12, a: 0.9, r: 40 }, { t: 1, y: 2, sx: 0.06, sy: 0.02, a: 0, r: 120 }] },
+        { sprite: 'fx.p.ring', life: 0, loop: 700, delay: 350, sizeWith: 'zone', tint: 0xeef8f6, keys: [{ t: 0, y: 2, sx: 0.46, sy: 0.15, a: 0 }, { t: 0.3, y: 2, sx: 0.34, sy: 0.11, a: 0.8 }, { t: 1, y: 2, sx: 0.05, sy: 0.02, a: 0 }] },
+      ],
+      particles: [
+        { sprite: 'fx.p.snow', rate: 26, life: [500, 800], box: [48, 6], sizeWith: 'zone', attract: 5, speed: [20, 60], angle: [-180, 180], scale: [1.6, 0.5], alpha: [0.9, 0], tint: 0xeef8f6 },
+        { sprite: 'fx.p.dust', rate: 8, life: [500, 800], box: [40, 2], sizeWith: 'zone', attract: 4, speed: [10, 30], angle: [-150, -30], scale: [0.8, 0.3], alpha: [0.6, 0], tint: 0xa9d2da },
+      ],
+    },
+    // Medieval wave (CONTENT_PLAN 5.3)
+    {
+      // Longbow Volley (Field lane volley): a sheaf of long arrows drops steeply on each unit it screens.
+      id: 'fx.longbow_volley',
+      durationMs: 900,
+      fall: { sprite: 'proj.longarrow', count: 3, fromX: -110, fromY: -300, spreadX: 14, fallMs: 260, impact: 'fx.arrow_thud', scale: 1.3 },
+    },
+    {
+      // An arrow thudding home: a small ring, a puff of dust and a splinter.
+      id: 'fx.arrow_thud',
+      durationMs: 480,
+      sprites: [ring(1.2, 240, 0xf2ecdc, 0.35)],
+      particles: [{ ...dust(3, 0.7), tint: 0xd8ccb4 }, { ...chunks(2), tint: 0x9a8268 }],
+    },
+    {
+      // Great Bell (Home stun): one huge stroke rolls out as rings of sound over the zone; the stunned
+      // units wobble under the dizzy status. Gold stays pale (colour rule).
+      id: 'fx.great_bell',
+      durationMs: 1400,
+      sprites: [
+        { sprite: 'fx.p.groundDisc', life: 1200, sizeWith: 'zone', keys: [{ t: 0, sx: 0.2, sy: 0.03, a: 0 }, { t: 0.08, sx: 1.04, sy: 0.16, a: 0.35 }, { t: 1, sx: 1, sy: 0.15, a: 0 }], tint: 0xf2e6c4 },
+        { sprite: 'fx.p.ring', life: 700, sizeWith: 'zone', tint: 0xf8f0d8, keys: [{ t: 0, y: -30, sx: 0.1, sy: 0.06, a: 1 }, { t: 1, y: -30, sx: 1.1, sy: 0.5, a: 0 }] },
+        { sprite: 'fx.p.ring', life: 760, delay: 180, sizeWith: 'zone', tint: 0xe8dcb8, keys: [{ t: 0, y: -30, sx: 0.1, sy: 0.06, a: 0.9 }, { t: 1, y: -30, sx: 1.2, sy: 0.55, a: 0 }] },
+        { sprite: 'fx.p.ring', life: 820, delay: 360, sizeWith: 'zone', tint: 0xf8f0d8, keys: [{ t: 0, y: -30, sx: 0.1, sy: 0.06, a: 0.7 }, { t: 1, y: -30, sx: 1.3, sy: 0.6, a: 0 }] },
+        { ...flash(2.2, 0xfff6e0, 80), keys: [{ t: 0, y: -40, sx: 1, sy: 1, a: 0.9 }, { t: 1, y: -40, sx: 3, sy: 3, a: 0 }] },
+      ],
+      particles: [
+        { sprite: 'fx.p.note', count: 5, life: [600, 900], box: [30, 10], sizeWith: 'zone', speed: [30, 70], angle: [-130, -50], gravity: -30, scale: [1, 0.6], alpha: [1, 0], spin: [-60, 60], tint: 0xf8f0d8 },
+        { ...dust(6, 1.2), tint: 0xd8ccb4 },
+      ],
+    },
+    // Gunpowder wave (CONTENT_PLAN 5.4)
+    {
+      // Rocket Volley (Field lane volley): a salvo of war rockets streaks down on each unit it screens.
+      id: 'fx.rocket_volley',
+      durationMs: 1000,
+      fall: { sprite: 'proj.rocket', count: 2, fromX: -150, fromY: -240, spreadX: 16, fallMs: 300, impact: 'fx.rocket_pop', scale: 1.2 },
+    },
+    {
+      // A rocket bursting on the ground: a pale flash, a puff ring, a few sparks and a smoke curl.
+      id: 'fx.rocket_pop',
+      durationMs: 620,
+      sprites: [flash(1.1, 0xfff6e2, 90), ring(1.6, 300, 0xf4ecd8, 0.4), bloom(1.4, 220, 0xfff0d6, 0.5)],
+      particles: [sparks(5, [140, 260]), { ...smoke(2, 0.7), tint: 0xdcd8d2 }],
+    },
+    {
+      // Cannon Salute (Home stun): a ring of saluting guns fires over the zone; white smoke rolls across it
+      // and the stunned units wobble under the dizzy status.
+      id: 'fx.cannon_salute',
+      durationMs: 1500,
+      sprites: [
+        { sprite: 'fx.p.groundDisc', life: 1300, sizeWith: 'zone', keys: [{ t: 0, sx: 0.2, sy: 0.03, a: 0 }, { t: 0.08, sx: 1.04, sy: 0.16, a: 0.3 }, { t: 1, sx: 1, sy: 0.15, a: 0 }], tint: 0xefe6cf },
+        { sprite: 'fx.p.ring', life: 640, sizeWith: 'zone', tint: 0xfff6e2, keys: [{ t: 0, y: -10, sx: 0.1, sy: 0.05, a: 1 }, { t: 1, y: -10, sx: 1.1, sy: 0.32, a: 0 }] },
+        { sprite: 'fx.p.ring', life: 700, delay: 160, sizeWith: 'zone', tint: 0xe8e0d0, keys: [{ t: 0, y: -10, sx: 0.1, sy: 0.05, a: 0.9 }, { t: 1, y: -10, sx: 1.2, sy: 0.36, a: 0 }] },
+        { ...flash(2.4, 0xfff6e2, 90), keys: [{ t: 0, y: -20, sx: 1, sy: 1, a: 0.95 }, { t: 1, y: -20, sx: 3.2, sy: 3.2, a: 0 }] },
+      ],
+      particles: [
+        { sprite: 'fx.p.smoke', count: 10, life: [800, 1300], box: [40, 6], sizeWith: 'zone', speed: [20, 60], angle: [-150, -30], gravity: -30, drag: 1.2, scale: [1, 2.2], alpha: [0.75, 0], spin: [-40, 40], tint: 0xe8e4dc },
+        { ...sparks(8, [180, 320]), box: [30, 4], sizeWith: 'zone' },
+        { ...dust(6, 1.2), tint: 0xd8ccb4 },
       ],
     },
     {

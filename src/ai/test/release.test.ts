@@ -19,8 +19,8 @@ describe('release gate (AI)', () => {
         }
       }
     }
-    // The Stone tower is still the released Sling Perch.
-    expect(botFortCard(content, 'stone', { generalId: 'boomsworth', tier: 7 })).not.toBe('bone_watchtower');
+    // The Stone wave shipped (2026-10-03): its Bone Watchtower is a bot's tower card again.
+    expect(PAUSED_WAVE_IDS.has('bone_watchtower')).toBe(false);
   });
 
   it('age predictions expect released cards only', () => {

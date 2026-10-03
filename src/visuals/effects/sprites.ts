@@ -209,6 +209,64 @@ part('proj.log', [
   { d: ellipse(11, 0, 3.2, 5.6), zone: 'wood2', line: 1.6 },
   { d: arcBand(11, 0, 1.2, 2, 0, 360), zone: 'wood', line: 0, shade: false, light: false },
 ]);
+// Stone wave (CONTENT_PLAN 5.1): the Bolas Thrower's three-ball bolas, the Atlatl dart, the Herbalist's herb
+// puff and the Quill Porcupine's quill
+part('proj.bolas', [
+  { d: join(limb(0, 0, 0.6, -6, -4, 0.6), limb(0, 0, 0.6, 6, -3, 0.6), limb(0, 0, 0.6, 0, 6, 0.6)), zone: 'wood', line: 0.8 },
+  { d: join(ellipse(-6, -4, 2.6, 2.6), ellipse(6, -3, 2.6, 2.6), ellipse(0, 6, 2.6, 2.6)), zone: 'bone', line: 1.2 },
+]);
+part('proj.dart', [
+  { d: limb(-14, 0, 0.9, 9, 0, 0.8), zone: 'wood', line: 1 },
+  { d: poly([8, -2.2, 14, 0, 8, 2.2]), zone: 'stone', line: 1 },
+  { d: join(poly([-14, 0, -17.6, -3, -11, -0.6]), poly([-14, 0, -17.6, 3, -11, 0.6])), zone: 'feather', line: 0.8, shade: false, light: false },
+]);
+part('proj.herb', [
+  { d: join(ellipse(0, 0, 3.4, 3.0), ellipse(-3, -1.4, 2.2, 2.0), ellipse(2.6, 1.6, 2.0, 1.8)), zone: 'heal', line: 0.8, alpha: 0.85 },
+  { d: join(ellipse(-1, -1, 1.0, 1.0), ellipse(1.6, 0.4, 0.8, 0.8)), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('proj.quill', [
+  { d: limb(-7, 0, 0.8, 5, 0, 0.4), zone: 'bone', line: 0.9 },
+  { d: poly([4, -0.8, 8, 0, 4, 0.8]), zone: 'dark', line: 0.6 },
+]);
+// Snowball Pebbler skin: a snowball the size of the pebble it replaces (clarity parity, A5.8).
+part('proj.snowball', [
+  { d: circle(0, 0, 3.6), zone: 'white', line: 1.4 },
+  { d: join(circle(-1.2, -1.2, 1.1), circle(1.4, 1, 0.6)), zone: 'lilac', line: 0, alpha: 0.5, shade: false, light: false },
+]);
+// Bronze wave (CONTENT_PLAN 5.2): the Discus Thrower's discus (spun flat, seen edge-on), the Net
+// Caster's weighted net and the Aulos Piper's note (a particle of fx.note_pop)
+part('proj.discus', [
+  { d: ellipse(0, 0, 6, 2.6), zone: 'bronze', line: 1.4 },
+  { d: ellipse(-0.4, -0.7, 3.4, 1.0), zone: 'bone', line: 0, shade: false, light: false },
+]);
+part('proj.net', [
+  { d: blob([-7, -5, 0, -7.5, 7, -4, 7.5, 3, 0, 7, -6.5, 4], 0.8), zone: 'rope', line: 1.2, alpha: 0.5 },
+  { d: join(limb(-6, -4, 0.5, 6, 4, 0.5), limb(-6, 4, 0.5, 6, -4, 0.5), limb(0, -7, 0.5, 0, 7, 0.5), limb(-7, 0, 0.5, 7, 0, 0.5)), zone: 'rope', line: 0.6 },
+  { d: join(circle(-7, -5, 1.4), circle(7, -4, 1.4), circle(7.5, 3, 1.4), circle(-6.5, 4, 1.4)), zone: 'stone', line: 0.8 },
+]);
+part('fx.p.note', [
+  { d: join(ellipse(-2, 4, 2.8, 2.1), rect(0.2, -6, 1.3, 10.4), poly([1.5, -6, 6, -3.4, 6, -1.4, 1.5, -3.6])), zone: 'white', line: 1.2, shade: false },
+]);
+// Medieval wave (CONTENT_PLAN 5.3): the Yeoman Archer's long arrow, the Herald's trumpet note, the
+// Alchemist's corked vial and the Springald's spear bolt
+part('proj.longarrow', [
+  { d: limb(-16, 0, 0.9, 10, 0, 0.9), zone: 'wood', line: 1 },
+  { d: poly([9, -2.6, 16, 0, 9, 2.6]), zone: 'metal', line: 1 },
+  { d: join(poly([-16, 0, -20, -3.4, -12, -0.6]), poly([-16, 0, -20, 3.4, -12, 0.6])), zone: 'feather', line: 0.8, shade: false, light: false },
+]);
+part('proj.note', [
+  { d: join(ellipse(-2.4, 4.4, 3.2, 2.4), rect(0.2, -6.6, 1.5, 11.2), poly([1.7, -6.6, 6.6, -3.8, 6.6, -1.6, 1.7, -4])), zone: 'bone', line: 1.3 },
+]);
+part('proj.vial', [
+  { d: blob([-3.4, 0, -2.6, -3.6, 2.6, -3.6, 3.4, 0, 2.4, 3.6, -2.4, 3.6], 0.9), zone: 'mint', line: 1.3, alpha: 0.9 },
+  { d: rrect(-1.4, -6.4, 2.8, 3, 0.8), zone: 'wood', line: 0.9 },
+  { d: ellipse(-1.2, -0.8, 0.9, 1.4), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('proj.spear_bolt', [
+  { d: limb(-14, 0, 1.5, 8, 0, 1.4), zone: 'wood', line: 1.3 },
+  { d: poly([7, -3.4, 16, 0, 7, 3.4]), zone: 'metal', line: 1.3 },
+  { d: join(poly([-14, 0, -17.4, -3.4, -10, -0.8]), poly([-14, 0, -17.4, 3.4, -10, 0.8])), zone: 'canvas', line: 0.9, shade: false, light: false },
+]);
 part('proj.arrow', [
   { d: limb(-12, 0, 0.9, 8, 0, 0.9), zone: 'wood', line: 1 },
   { d: poly([7, -2.4, 13, 0, 7, 2.4]), zone: 'metal', line: 1 },
@@ -236,6 +294,12 @@ part('proj.lob', [
   { d: star(0.6, -7.6, 4, 0.8, 2.4, 0), zone: 'flash', line: 0, shade: false, light: false },
 ]);
 part('proj.cannonball', [{ d: circle(0, 0, 5), zone: 'iron', line: 1.8 }]);
+// Gunpowder wave (CONTENT_PLAN 5.4): the coehorn's iron shell with a lit fuse
+part('proj.mortar_shell', [
+  { d: circle(0, 0, 4.6), zone: 'iron', line: 1.7 },
+  { d: rrect(-1, -7, 2, 3, 0.8), zone: 'metal', line: 0.8, shade: false, light: false },
+  { d: star(0.4, -8.2, 4, 0.8, 2.6, 0), zone: 'flash', line: 0, shade: false, light: false },
+]);
 part('proj.grapeshot', [{ d: join(circle(0, 0, 2), circle(-3, -2.4, 1.8), circle(-3.4, 2.2, 1.8), circle(2.6, -2.6, 1.6), circle(2.4, 2.6, 1.6)), zone: 'iron', line: 1 }]);
 part('proj.rocket', [
   { d: blob([-6, -2.4, 4, -2.4, 9, 0, 4, 2.4, -6, 2.4], 0.4), zone: 'paper', line: 1.4 },

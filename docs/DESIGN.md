@@ -985,6 +985,31 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 | congreve_rack | Congreve Rack | R | 250 | 4 rockets × 55 splash r30 / 5.0 s | 460 | G+A | Scatter ±40 lu (sim RNG); air ×1.5 |
 | chainshot_cannon | Chainshot Cannon | E | 250 | 75 / 4.0 s | 400 | G | Pierces 4 targets total within 200 lu, starting at the frontmost |
 
+**W4 Gunpowder wave (X0, CONTENT_PLAN 5.4; released 2026-10-03; measured numbers, docs/decisions.md).** Capsule cards: Commons from Arena 2, Rares 3, Epics 4, the Legendary 5.
+
+| Slug | Name | Rar | Role | Cost | HP | Damage / interval | Range | Speed | Size | Hits | Traits and abilities |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| highlander | Highlander | C | Infantry | 50 | 345 | 23 / 1.0 s | 16 | 67 | S | G | Blunt; Guard (the targe takes 25% less from attacks with range ≥ 100) |
+| powder_monkey | Powder Monkey | C | Infantry | 50 | 262 | 34 / 1.0 s | 16 | 100 | S | G | Raider (base 68); bursts on death for 40 splash r35 |
+| voltigeurs | Voltigeurs | C | Ranged | 75 | 3 × 69 | 19 / 2.0 s | 210 | 65 | S | G+A | Squad of 3 (M1) |
+| blunderbuss | Blunderbuss | C | Ranged | 75 | 164 | 58 / 2.6 s | 120 | 65 | S | G+A | Cone: the target and up to 2 enemies within 60 lu behind it (instant `fx.blunderbuss_spray`) |
+| dragoon | Dragoon | C | Heavy | 150 | 820 | 52 splash r30 / 1.5 s | 90 | 55 | L | G | Mounted carbine; armored |
+| coehorn_crew | Coehorn Crew | R | Ranged (Long range, H6) | 75 | 210 | 80 splash r35 / 2.6 s | 360 (min 90) | 60 | S | G | Arc 300 lu/s (`proj.mortar_shell`); half damage to bases |
+| wall_gunner | Wall Gunner | R | Anti-heavy | 100 | 210 | 40 / 2.0 s | 220 | 65 | M | G | Ranged Anti-heavy mods; priority armored; Brace |
+| drummer_boy | Drummer Boy | R | Support | 110 | 340 | 32 / 1.2 s | 150 | 65 | S | G+A | Aura: allies within 160 lu attack 25% faster; followSupport |
+| bagpiper | Bagpiper | R | Support | 110 | 420 | 40 / 1.2 s | 150 | 60 | S | G+A | Dread aura (M4): enemies within 140 lu move 35% slower |
+| rocket_cart | Rocket Cart | E | Artillery | 200 | 1,100 | 4 rockets × 70 splash r30 / 4.0 s | 330 (min 90) | 45 | L | G | Volley with scatter ±40 lu (seeded sim RNG, SIM 7.2.0) |
+| hussar | Hussar | E | Skirmisher | 200 | 1,000 | 78 / 0.9 s | 16 | 95 | L | G | Pounce: leaps to the back line within 180 lu (12 s cooldown) |
+| mesmerist | Mesmerist | E | Support | 200 | 1,050 | 58 / 1.2 s | 170 | 60 | S | G+A | Every 12 s entrances enemies within 140 lu (a stop, not the clock freeze, M5) |
+| grand_marshal | Grand Marshal | L | Heavy | 350 | 1,500 | 80 / 1.5 s, cleave 2 | 20 | 55 | H | G | Aura: allies within 200 lu deal 15% more; every 10 s calls a battery strike (120 splash r50) within 400 lu |
+
+| Slug | Turret | Rar | Cost | Damage / interval | Range | Hits | Notes |
+|---|---|---|---|---|---|---|---|
+| carronade | Carronade | C | 175 | 66 / 2.5 s | 320 | G | Priority armored; the short "smasher" |
+| sea_mortar | Sea Mortar | R | 250 | 149 splash r50 / 4.5 s | 480 (min 150) | G | Arc 450 lu/s |
+
+Powers (A5.7): Rocket Volley (Field lane volley, War Path L3 / Road 3,300; 87 on up to 8, 50 gold, 25 s) and Cannon Salute (Home stun, War Path s1 / Road 4,400; 130 and a 2 s stun on up to 6 in a 350 lu zone, 75 gold, 35 s). Forts (A16.14): Cavalry Picket (camp; its levy, the Picket Rider, is 25% of the Cuirassier every 18 s, one at a time; War Path s2) and Fougasse (trap; 2 charges × 131 splash r45; the 20-star milestone). Skins (A5.8): Parade Cuirassier (Rare), Fireworks Grenadier (Epic), Pufferfish Balloon (Legendary).
+
 ### A5.5 Modern Age (P 2.46)
 
 | Slug | Name | Rar | Role | Cost | HP | Damage / interval | Range | Speed | Size | Hits | Tags | Traits and abilities |
@@ -1145,9 +1170,9 @@ Values are final at the age's P and L1 loadouts (A5.1), × the loadout multiplie
 
 | Age | Slug | Name | Family | Per unit | FX · sound (planned, A14.4) |
 |---|---|---|---|---|---|
-| Stone | `pebble_hail` | **Pebble Hail** | volley | 40 | `fx.pebble_hail` · `pw_hail` |
+| Stone | `pebble_hail` | **Pebble Hail** | volley | 48 (the 30% cap; X0 Stone wave, built) | `fx.pebble_hail` · `pw_hail` |
 | Bronze | `sandstorm` | **Sandstorm** | signal | 19 and snare 30% for 3 s | `fx.sandstorm` · `pw_sandstorm` |
-| Medieval | `longbow_volley` | **Longbow Volley** | volley | 54 | `fx.longbow_volley` · `pw_longbow` |
+| Medieval | `longbow_volley` | **Longbow Volley** | volley | 64 (the 30% cap; X0 Medieval wave, built) | `fx.longbow_volley` · `pw_longbow` |
 | Gunpowder | `rocket_volley` | **Rocket Volley** | volley | 73 | `fx.rocket_volley` · `pw_rockets` |
 | Industrial | `shrapnel_shells` | **Shrapnel Shells** | volley | 83 | `fx.shrapnel` · `pw_shrapnel` |
 | Modern | `creeping_barrage` | **Creeping Barrage** | volley | 99 | `fx.creeping_barrage` · `pw_barrage` |
@@ -2006,6 +2031,9 @@ All SFX are ZzFX definitions (3-5 variants each) pre-rendered to AudioBuffers at
 | Match | `last_stand_armed`, `last_stand_charge`, `last_stand_fire`, `overdrive_horn`, `siege_bell`, `victory_jingle`, `defeat_jingle` (gentle, not mocking), `emote_pop`, `alert_base` |
 | Capsules | `cap_thud`, `cap_riser`, `cap_climb_1`, `cap_climb_2`, `cap_climb_3`, `cap_climb_4`, `cap_climb_5` (Platinum: a glass-bell partial), `cap_climb_6` (Aeon: richer and lower, a choir pad and a clock tick), `cap_summit_rise` (a summit gem rising out of the capsule's cap: stone grind and a rising glass chime, 400 ms), `cap_strike_tick` (the hammer's count-in: a dry woodblock and brass tick, pitched by the plan), `cap_strike_perfect` (a Perfect hit: anvil clang, low punch, a bright C7 bell ring; pitched up with the combo), `cap_strike_good` (a Good hit: a light knock and a G6 ring), `cap_clunk`, `cap_burst`, `cap_burst_platinum` (a struck glass-bell chord), `cap_burst_aeon` (a deep bell, a choir chord and a clock chime, 2 s star-glitter tail), `card_flip`, `foil_shine`, `rarity_common` (pluck), `rarity_rare` (two rising notes), `rarity_epic` (triad arpeggio plus shimmer), `rarity_legendary` (5-note fanfare, pad, sub drop), `walkout_bass`, `copy_tick`, `upgrade_ready`, `upgrade_slam`, `level_up`, `reel_tick` (kept as an ID but unused: there is no reel, A15.3) |
 | MVP pass (2026-10-01, built) | UI (ui-plan 5.4, the War Path map): `ui_sheet`, `ui_pop`, `ui_whoosh`, `ui_stamp` (claims, equips), `card_lift`, `card_place`, `star_stamp` (pitched up a step per star by the caller), `path_draw`, `node_drop`, `region_open`, `ui_unlock`, `reward_fly`, `council_open`, `council_pick`, `vs_slam`, `sundial_claim`, `glyph_light`. Battle: `stance_charge` (war drums and a brass stab), `stance_hold` (shield clank), `stance_fallback` (a falling bugle; the enemy's stance plays 9 dB softer), `research_done` (the Council completion stinger), `alert_heavy` (an enemy Heavy enters, at most every 8 s), `hit_armor_crack` (layered on an Anti-heavy hit of ×2.5 or more on a Heavy), `brace_clank`, `thunder` (Thunderstorm lightning), `escalate_horn` (Last Base Standing steps 2+, the caller raises it 2, 4, 7, 9 semitones), `crumble_pulse` (the crumble beat). Energy forts (Future, Cosmic): `fort_build_energy`, `camp_warp`, `levy_warp`, `trap_blast_energy` |
+| Stone wave (X0, 2026-10-03, built) | Attacks: `wolf_bite` (Hunting Wolves, Cave Pup), `shield_bash` (Hide Shield), `torch_jab` (Torch Runner), `horn_hook` (Woolly Rhino), `bear_swipe` (Cave Bear), `antler_sweep` (Elk Chieftain), `shot_bolas`, `shot_atlatl`, `shot_heave` (Boulder Hurler), `herb_puff` (Herbalist). Turrets: `quill_fan` (Quill Porcupine), `shot_sapling` (Sapling Sling). Powers: `pw_hail` (Pebble Hail), `pw_vines` (Tangle Vines) |
+| Medieval wave (X0, 2026-10-03, built) | Attacks: `squire_jab` (Squires), `flail_smash` (Flailman), `dagger_stab` (Brigand), `greatsword_sweep` (Greatsword Knight), `hammer_clang` (Warhammer Sergeant), `whip_crack` (Kennel Master), `hound_bite` (War Hound), `drawbridge_slam` (Siege Belfry), `wyrm_breath` (Lindworm), `shot_windlass` (Crossbowman), `shot_longbow` (Yeoman Archer), `trumpet_toot` (Herald), `shot_mangonel` (Mangonel), `vial_toss` (Alchemist). Turrets: `shot_springald` (Springald), `crane_hook` (Grapple Crane). Powers: `pw_longbow` (Longbow Volley), `pw_bell` (Great Bell) |
+| Gunpowder wave (X0, 2026-10-03, built) | Attacks: `claymore_chop` (Highlander), `scoop_swing` (Powder Monkey), `sabre_slash` (Hussar), `marshal_sweep` (Grand Marshal), `shot_blunderbuss` (Blunderbuss), `shot_dragoon` (Dragoon), `shot_coehorn` (Coehorn Crew), `shot_wallgun` (Wall Gunner), `drum_roll` (Drummer Boy), `pipe_drone` (Bagpiper), `mesmer_chime` (Mesmerist); the Voltigeurs reuse `shot_musket` and the Rocket Cart `shot_rocket`. Turrets: `shot_carronade` (Carronade), `shot_sea_mortar` (Sea Mortar). Powers: `pw_rockets` (Rocket Volley), `pw_salute` (Cannon Salute) |
 
 **Mixer:**
 
@@ -2062,6 +2090,9 @@ All SFX are ZzFX definitions (3-5 variants each) pre-rendered to AudioBuffers at
 - **Power effects:** `fx.telegraph_zone`, `fx.aurochs`, `fx.meteor`, `fx.arrow_rain`, `fx.decree_glow`, `fx.cannonball_rain`, `fx.plane_bomber`, `fx.parachute`, `fx.orbital_beam`, `fx.nanite_swarm`, `fx.tidal_wave`, `fx.aegis_glow`, `fx.iron_horse`, `fx.zeppelin`, `fx.star_shard_rain`, `fx.warp_portal`. The power rework (A5.7): `fx.rockslide`, `fx.sticky_tar`, `fx.hunt_cry`, `fx.spear_throw`, `fx.lightning_bolt`, `fx.medusa_gaze`, `fx.chariot_rush`, `fx.golden_arrow`, `fx.caltrops`, `fx.boiling_oil`, `fx.knights_charge`, `fx.undermine`, `fx.volley_fire`, `fx.boarding_nets`, `fx.horse_artillery`, `fx.sharpshot`, `fx.gun_line`, `fx.barbed_wire`, `fx.railway_shell`, `fx.field_hospital`, `fx.strafing_run`, `fx.flak_burst`, `fx.tank_rush`, `fx.sniper_trace`, `fx.point_defense`, `fx.stasis_dome`, `fx.drone_swarm`, `fx.emp_blackout`, `fx.singularity`, `fx.solar_flare`, `fx.comet_run`, `fx.ion_cannon`; the shared `fx.field_zone`, `fx.target_lock`, `fx.turret_jammed`, `fx.power_cast_cue`; their parts `fx.tele_shadow`, `fx.tele_rumble`, `fx.tele_glint`, `fx.tele_gather`, `fx.tele_rally`, `fx.tele_sap`, `fx.tele_charge`, `fx.tele_flak` (telegraph decorations), `fx.storm_cloud`, `fx.dirt_blast`, `fx.plasma_pop`, `fx.drone_cloud` and `fx.jammed_rubble`. The reach band and target pip ids are still planned in A14.4.
 - **Match effects:** `fx.evolve_pillar`, `fx.last_stand_wave`, `fx.overdrive_frame`, `fx.siege_vignette`.
 - **MVP pass effects (2026-10-01, built):** `fx.stance_charge`, `fx.stance_hold`, `fx.stance_fallback` (on a side's 8 frontmost units, 6 for the enemy), `fx.status_slow` and `fx.status_snare` (on the unit for as long as the status lasts), `fx.brace_plant`, `fx.research_done` (Defences, Economy and Command picks, at the base), `fx.levy_marker` (a team pennant over every levy).
+- **Stone wave effects (X0, 2026-10-03, built):** `fx.pebble_hail` (pebbles drop on each unit Pebble Hail screens, from the `power.fx.<id>.hit` rule) with its `fx.pebble_pop` landing, and `fx.tangle_vines` (a root bed and thorny tendrils for the field's 4 s).
+- **Medieval wave effects (X0, 2026-10-03, built):** `fx.longbow_volley` (long arrows drop on each unit the volley screens, from the `power.fx.<id>.hit` rule) with its `fx.arrow_thud` landing, `fx.great_bell` (rings of sound and notes over the stun zone), the instant attacks `fx.lindworm_breath` (green marsh fire) and `fx.grapple_hook` (rope and hook), and the projectiles `proj.longarrow`, `proj.note`, `proj.vial` and `proj.spear_bolt`.
+- **Gunpowder wave effects (X0, 2026-10-03, built):** `fx.rocket_volley` (war rockets streak down on each unit the volley screens, from the `power.fx.<id>.hit` rule) with its `fx.rocket_pop` landing, `fx.cannon_salute` (a ring of saluting guns: shock rings and rolling white smoke over the stun zone), the instant attacks `fx.blunderbuss_spray` (a cone of shot), `fx.drum_boom`, `fx.pipe_drone` and `fx.mesmer_spiral`, and the projectile `proj.mortar_shell` (the Coehorn Crew's lit shell on its high arc). The Rocket Cart's volley of 4 lands spread by its `scatter` (±40 lu, seeded; SIM_VERSION 7.2.0).
 - **UI icons:** `icon.role.<group>`, `icon.age.<age>`, `icon.horn`, `icon.chevron`, `icon.base_alert`, `icon.follow`, `trim.bronze`, `trim.silver`, `trim.gold`, `foil.bronze`, `foil.silver`, `foil.holo`.
 
 ### A14.2 Per-card attack mapping

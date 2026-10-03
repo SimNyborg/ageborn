@@ -2,7 +2,7 @@
  * Stone Age parts (DESIGN A11 palette: stone brown, moss, bone, ochre accent). Authored in lu at
  * infantry scale with pivots at joints and grips; hand-held weapons point up (-y) from the grip.
  */
-import { arcBand, blob, circle, ellipse, join, limb, poly, rect, rrect } from '../svg';
+import { arcBand, blob, circle, ellipse, join, limb, poly, rect, rotate, rrect } from '../svg';
 import { part } from './registry';
 import { headLayers } from './shared';
 
@@ -358,3 +358,24 @@ part('stone.base.treasury3', [
   { d: join(limb(-3, -30, 1.2, -8, -40, 1.2), limb(3, -30, 1.2, 8, -40, 1.2)), zone: 'wood', line: 2 },
 ]);
 part('stone.base.smoke', [{ d: join(circle(0, 0, 10), circle(10, -8, 8), circle(-8, -12, 7), circle(4, -20, 9)), zone: 'smoke', alpha: 0.75, line: 0, light: false }]);
+
+// X0 Stone wave: a team-dyed hide blanket and collar for the procedural wolves and pup (A11 team share).
+// Body-local like stone.cat.body (size it with the body).
+part('stone.wolf.collar', [
+  { d: blob([-15, -8, -12, -14, -2, -16.4, 8, -15, 12, -10, 9, 1, 0, 3, -10, 2, -15, -2], 0.8), zone: 'team', banner: true, line: 2 },
+  { d: rotate(rrect(10.6, -12, 6.4, 19, 3), -14), zone: 'team', banner: true, line: 2 },
+  { d: join(circle(-9, -1.2, 1.4), circle(-2, 0.6, 1.4), circle(5, -0.4, 1.4)), zone: 'bone', line: 0.8 },
+]);
+// X0 Stone wave: the Elk Chieftain's broad antlers (head-local, like stone.cat.head).
+part('stone.elk.antlers', [
+  {
+    d: join(
+      limb(2, -10, 1.8, -4, -26, 1.4), limb(-3, -20, 1.2, -12, -26, 0.9), limb(-4, -26, 1.3, -1, -38, 0.8), limb(-4, -26, 1.1, -11, -36, 0.7),
+      limb(8, -11, 1.7, 12, -27, 1.3), limb(11, -20, 1.1, 19, -26, 0.8), limb(12, -27, 1.2, 9, -38, 0.7), limb(12, -27, 1, 18, -35, 0.6),
+    ),
+    zone: 'bone',
+    line: 1.8,
+  },
+]);
+/** A team leg wrap for the procedural wolves and pup (leg-local, origin at the hip). */
+part('stone.wolf.legband', [{ d: rrect(-5.6, 5, 11.2, 7, 2.4), zone: 'team', line: 1.6 }]);

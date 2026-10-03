@@ -1,0 +1,2544 @@
+{
+ "frames": {
+  "boulder_hurler_idle_00": {
+   "frame": {
+    "x": 654,
+    "y": 366,
+    "w": 102,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 216,
+    "w": 102,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_idle_00_team": {
+   "frame": {
+    "x": 648,
+    "y": 695,
+    "w": 98,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 214,
+    "w": 98,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_idle_01": {
+   "frame": {
+    "x": 135,
+    "y": 366,
+    "w": 102,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 215,
+    "w": 102,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_idle_01_team": {
+   "frame": {
+    "x": 341,
+    "y": 695,
+    "w": 98,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 213,
+    "w": 98,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_idle_02": {
+   "frame": {
+    "x": 713,
+    "y": 194,
+    "w": 101,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 211,
+    "w": 101,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_idle_02_team": {
+   "frame": {
+    "x": 1150,
+    "y": 533,
+    "w": 97,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 209,
+    "w": 97,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_idle_03": {
+   "frame": {
+    "x": 302,
+    "y": 194,
+    "w": 99,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 208,
+    "w": 99,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_idle_03_team": {
+   "frame": {
+    "x": 101,
+    "y": 533,
+    "w": 96,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 205,
+    "w": 96,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_idle_04": {
+   "frame": {
+    "x": 767,
+    "y": 2,
+    "w": 97,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 205,
+    "w": 97,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_idle_04_team": {
+   "frame": {
+    "x": 1179,
+    "y": 366,
+    "w": 95,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 202,
+    "w": 95,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_idle_05": {
+   "frame": {
+    "x": 868,
+    "y": 2,
+    "w": 97,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 205,
+    "w": 97,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_idle_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 533,
+    "w": 95,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 203,
+    "w": 95,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_idle_06": {
+   "frame": {
+    "x": 611,
+    "y": 194,
+    "w": 98,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 209,
+    "w": 98,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_idle_06_team": {
+   "frame": {
+    "x": 300,
+    "y": 533,
+    "w": 97,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 207,
+    "w": 97,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_idle_07": {
+   "frame": {
+    "x": 241,
+    "y": 366,
+    "w": 100,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 215,
+    "w": 100,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_idle_07_team": {
+   "frame": {
+    "x": 1048,
+    "y": 533,
+    "w": 98,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 211,
+    "w": 98,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_00": {
+   "frame": {
+    "x": 935,
+    "y": 533,
+    "w": 109,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 223,
+    "w": 109,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_00_team": {
+   "frame": {
+    "x": 603,
+    "y": 851,
+    "w": 96,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 221,
+    "w": 96,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_01": {
+   "frame": {
+    "x": 962,
+    "y": 695,
+    "w": 105,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 229,
+    "w": 105,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_01_team": {
+   "frame": {
+    "x": 1186,
+    "y": 851,
+    "w": 90,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 224,
+    "w": 90,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_02": {
+   "frame": {
+    "x": 970,
+    "y": 366,
+    "w": 96,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 215,
+    "w": 96,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 695,
+    "w": 88,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 210,
+    "w": 88,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_03": {
+   "frame": {
+    "x": 345,
+    "y": 366,
+    "w": 99,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 206,
+    "w": 99,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_03_team": {
+   "frame": {
+    "x": 443,
+    "y": 695,
+    "w": 95,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 202,
+    "w": 95,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_04": {
+   "frame": {
+    "x": 816,
+    "y": 533,
+    "w": 115,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 221,
+    "w": 115,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_04_team": {
+   "frame": {
+    "x": 161,
+    "y": 1002,
+    "w": 94,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 219,
+    "w": 94,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_05": {
+   "frame": {
+    "x": 912,
+    "y": 851,
+    "w": 114,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 228,
+    "w": 114,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_05_team": {
+   "frame": {
+    "x": 169,
+    "y": 1144,
+    "w": 90,
+    "h": 129
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 226,
+    "w": 90,
+    "h": 129
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_06": {
+   "frame": {
+    "x": 401,
+    "y": 533,
+    "w": 97,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 213,
+    "w": 97,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_06_team": {
+   "frame": {
+    "x": 815,
+    "y": 851,
+    "w": 93,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 213,
+    "w": 93,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_07": {
+   "frame": {
+    "x": 448,
+    "y": 366,
+    "w": 99,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 203,
+    "w": 99,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_walk_07_team": {
+   "frame": {
+    "x": 750,
+    "y": 695,
+    "w": 93,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 203,
+    "w": 93,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_00": {
+   "frame": {
+    "x": 760,
+    "y": 366,
+    "w": 101,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 213,
+    "w": 101,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_00_team": {
+   "frame": {
+    "x": 542,
+    "y": 695,
+    "w": 102,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 211,
+    "w": 102,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_01": {
+   "frame": {
+    "x": 118,
+    "y": 851,
+    "w": 109,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 231,
+    "w": 109,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_01_team": {
+   "frame": {
+    "x": 259,
+    "y": 1002,
+    "w": 118,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 228,
+    "w": 118,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_02": {
+   "frame": {
+    "x": 204,
+    "y": 2,
+    "w": 88,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 201,
+    "w": 88,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_02_team": {
+   "frame": {
+    "x": 926,
+    "y": 194,
+    "w": 83,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 198,
+    "w": 83,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 96,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 168,
+    "y": 188,
+    "w": 96,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_03_team": {
+   "frame": {
+    "x": 660,
+    "y": 2,
+    "w": 103,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 168,
+    "y": 190,
+    "w": 103,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_04": {
+   "frame": {
+    "x": 102,
+    "y": 2,
+    "w": 98,
+    "h": 185
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 191,
+    "w": 98,
+    "h": 185
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_04_team": {
+   "frame": {
+    "x": 1112,
+    "y": 2,
+    "w": 106,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 192,
+    "w": 106,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_05": {
+   "frame": {
+    "x": 969,
+    "y": 2,
+    "w": 139,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 209,
+    "w": 139,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_05_team": {
+   "frame": {
+    "x": 502,
+    "y": 533,
+    "w": 103,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 209,
+    "w": 103,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_06": {
+   "frame": {
+    "x": 1138,
+    "y": 1002,
+    "w": 123,
+    "h": 131
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 243,
+    "w": 123,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_06_team": {
+   "frame": {
+    "x": 735,
+    "y": 1144,
+    "w": 125,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 210,
+    "y": 240,
+    "w": 125,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_07": {
+   "frame": {
+    "x": 865,
+    "y": 366,
+    "w": 101,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 218,
+    "w": 101,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_07_team": {
+   "frame": {
+    "x": 231,
+    "y": 851,
+    "w": 103,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 213,
+    "y": 218,
+    "w": 103,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_08": {
+   "frame": {
+    "x": 2,
+    "y": 851,
+    "w": 112,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 233,
+    "w": 112,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_08_team": {
+   "frame": {
+    "x": 541,
+    "y": 1002,
+    "w": 119,
+    "h": 135
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 232,
+    "w": 119,
+    "h": 135
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_09": {
+   "frame": {
+    "x": 111,
+    "y": 194,
+    "w": 96,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 212,
+    "w": 96,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_09_team": {
+   "frame": {
+    "x": 201,
+    "y": 533,
+    "w": 95,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 209,
+    "w": 95,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_10": {
+   "frame": {
+    "x": 405,
+    "y": 194,
+    "w": 99,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 210,
+    "w": 99,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_attack_10_team": {
+   "frame": {
+    "x": 713,
+    "y": 533,
+    "w": 99,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 208,
+    "w": 99,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_hit_00": {
+   "frame": {
+    "x": 229,
+    "y": 695,
+    "w": 108,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 225,
+    "w": 108,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_hit_00_team": {
+   "frame": {
+    "x": 486,
+    "y": 851,
+    "w": 113,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 217,
+    "w": 113,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_hit_01": {
+   "frame": {
+    "x": 409,
+    "y": 2,
+    "w": 93,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 201,
+    "w": 93,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_hit_01_team": {
+   "frame": {
+    "x": 818,
+    "y": 194,
+    "w": 104,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 166,
+    "y": 195,
+    "w": 104,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_hit_02": {
+   "frame": {
+    "x": 2,
+    "y": 194,
+    "w": 105,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 208,
+    "w": 105,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_hit_02_team": {
+   "frame": {
+    "x": 1070,
+    "y": 366,
+    "w": 105,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 202,
+    "w": 105,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_hit_03": {
+   "frame": {
+    "x": 551,
+    "y": 366,
+    "w": 99,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 214,
+    "w": 99,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_hit_03_team": {
+   "frame": {
+    "x": 1071,
+    "y": 695,
+    "w": 95,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 214,
+    "w": 95,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_hit_04": {
+   "frame": {
+    "x": 508,
+    "y": 194,
+    "w": 99,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 210,
+    "w": 99,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_hit_04_team": {
+   "frame": {
+    "x": 609,
+    "y": 533,
+    "w": 100,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 208,
+    "w": 100,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_00": {
+   "frame": {
+    "x": 847,
+    "y": 695,
+    "w": 111,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 219,
+    "w": 111,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_00_team": {
+   "frame": {
+    "x": 703,
+    "y": 851,
+    "w": 108,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 214,
+    "w": 108,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_01": {
+   "frame": {
+    "x": 296,
+    "y": 2,
+    "w": 109,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 197,
+    "w": 109,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_01_team": {
+   "frame": {
+    "x": 211,
+    "y": 194,
+    "w": 87,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 188,
+    "w": 87,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_02": {
+   "frame": {
+    "x": 506,
+    "y": 2,
+    "w": 150,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 198,
+    "w": 150,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_02_team": {
+   "frame": {
+    "x": 1013,
+    "y": 194,
+    "w": 137,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 191,
+    "w": 137,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_03": {
+   "frame": {
+    "x": 2,
+    "y": 366,
+    "w": 129,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 208,
+    "w": 129,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_03_team": {
+   "frame": {
+    "x": 94,
+    "y": 695,
+    "w": 131,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 208,
+    "w": 131,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_04": {
+   "frame": {
+    "x": 1030,
+    "y": 851,
+    "w": 152,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 236,
+    "w": 152,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_04_team": {
+   "frame": {
+    "x": 664,
+    "y": 1002,
+    "w": 164,
+    "h": 134
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 230,
+    "w": 164,
+    "h": 134
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_05": {
+   "frame": {
+    "x": 338,
+    "y": 851,
+    "w": 144,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 161,
+    "y": 238,
+    "w": 144,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 1002,
+    "w": 155,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 147,
+    "y": 233,
+    "w": 155,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_06": {
+   "frame": {
+    "x": 832,
+    "y": 1002,
+    "w": 158,
+    "h": 132
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 147,
+    "y": 242,
+    "w": 158,
+    "h": 132
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_06_team": {
+   "frame": {
+    "x": 403,
+    "y": 1144,
+    "w": 168,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 238,
+    "w": 168,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_07": {
+   "frame": {
+    "x": 381,
+    "y": 1002,
+    "w": 156,
+    "h": 135
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 149,
+    "y": 241,
+    "w": 156,
+    "h": 135
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 1144,
+    "w": 163,
+    "h": 130
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 139,
+    "y": 235,
+    "w": 163,
+    "h": 130
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_08": {
+   "frame": {
+    "x": 994,
+    "y": 1002,
+    "w": 140,
+    "h": 131
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 243,
+    "w": 140,
+    "h": 131
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_08_team": {
+   "frame": {
+    "x": 575,
+    "y": 1144,
+    "w": 156,
+    "h": 125
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 239,
+    "w": 156,
+    "h": 125
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_09": {
+   "frame": {
+    "x": 263,
+    "y": 1144,
+    "w": 136,
+    "h": 127
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 247,
+    "w": 136,
+    "h": 127
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  },
+  "boulder_hurler_die_09_team": {
+   "frame": {
+    "x": 864,
+    "y": 1144,
+    "w": 154,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 148,
+    "y": 244,
+    "w": 154,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 416
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86538
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "boulder_hurler_idle_00",
+   "boulder_hurler_idle_01",
+   "boulder_hurler_idle_02",
+   "boulder_hurler_idle_03",
+   "boulder_hurler_idle_04",
+   "boulder_hurler_idle_05",
+   "boulder_hurler_idle_06",
+   "boulder_hurler_idle_07"
+  ],
+  "idle_team": [
+   "boulder_hurler_idle_00_team",
+   "boulder_hurler_idle_01_team",
+   "boulder_hurler_idle_02_team",
+   "boulder_hurler_idle_03_team",
+   "boulder_hurler_idle_04_team",
+   "boulder_hurler_idle_05_team",
+   "boulder_hurler_idle_06_team",
+   "boulder_hurler_idle_07_team"
+  ],
+  "walk": [
+   "boulder_hurler_walk_00",
+   "boulder_hurler_walk_01",
+   "boulder_hurler_walk_02",
+   "boulder_hurler_walk_03",
+   "boulder_hurler_walk_04",
+   "boulder_hurler_walk_05",
+   "boulder_hurler_walk_06",
+   "boulder_hurler_walk_07"
+  ],
+  "walk_team": [
+   "boulder_hurler_walk_00_team",
+   "boulder_hurler_walk_01_team",
+   "boulder_hurler_walk_02_team",
+   "boulder_hurler_walk_03_team",
+   "boulder_hurler_walk_04_team",
+   "boulder_hurler_walk_05_team",
+   "boulder_hurler_walk_06_team",
+   "boulder_hurler_walk_07_team"
+  ],
+  "attack": [
+   "boulder_hurler_attack_00",
+   "boulder_hurler_attack_01",
+   "boulder_hurler_attack_02",
+   "boulder_hurler_attack_03",
+   "boulder_hurler_attack_04",
+   "boulder_hurler_attack_05",
+   "boulder_hurler_attack_06",
+   "boulder_hurler_attack_07",
+   "boulder_hurler_attack_08",
+   "boulder_hurler_attack_09",
+   "boulder_hurler_attack_10"
+  ],
+  "attack_team": [
+   "boulder_hurler_attack_00_team",
+   "boulder_hurler_attack_01_team",
+   "boulder_hurler_attack_02_team",
+   "boulder_hurler_attack_03_team",
+   "boulder_hurler_attack_04_team",
+   "boulder_hurler_attack_05_team",
+   "boulder_hurler_attack_06_team",
+   "boulder_hurler_attack_07_team",
+   "boulder_hurler_attack_08_team",
+   "boulder_hurler_attack_09_team",
+   "boulder_hurler_attack_10_team"
+  ],
+  "hit": [
+   "boulder_hurler_hit_00",
+   "boulder_hurler_hit_01",
+   "boulder_hurler_hit_02",
+   "boulder_hurler_hit_03",
+   "boulder_hurler_hit_04"
+  ],
+  "hit_team": [
+   "boulder_hurler_hit_00_team",
+   "boulder_hurler_hit_01_team",
+   "boulder_hurler_hit_02_team",
+   "boulder_hurler_hit_03_team",
+   "boulder_hurler_hit_04_team"
+  ],
+  "die": [
+   "boulder_hurler_die_00",
+   "boulder_hurler_die_01",
+   "boulder_hurler_die_02",
+   "boulder_hurler_die_03",
+   "boulder_hurler_die_04",
+   "boulder_hurler_die_05",
+   "boulder_hurler_die_06",
+   "boulder_hurler_die_07",
+   "boulder_hurler_die_08",
+   "boulder_hurler_die_09"
+  ],
+  "die_team": [
+   "boulder_hurler_die_00_team",
+   "boulder_hurler_die_01_team",
+   "boulder_hurler_die_02_team",
+   "boulder_hurler_die_03_team",
+   "boulder_hurler_die_04_team",
+   "boulder_hurler_die_05_team",
+   "boulder_hurler_die_06_team",
+   "boulder_hurler_die_07_team",
+   "boulder_hurler_die_08_team",
+   "boulder_hurler_die_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "boulder_hurler.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1280,
+   "h": 1276
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.boulder_hurler",
+   "name": "Boulder Hurler",
+   "heightLu": 70,
+   "widthLu": 39.0,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    238,
+    360
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     66
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      115,
+      115,
+      115,
+      115,
+      115,
+      115,
+      115,
+      115
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        10.3,
+        33.6
+       ],
+       [
+        10.3,
+        34.4
+       ],
+       [
+        10.1,
+        36.0
+       ],
+       [
+        10.4,
+        36.7
+       ],
+       [
+        10.6,
+        36.6
+       ],
+       [
+        10.5,
+        35.8
+       ],
+       [
+        10.4,
+        34.6
+       ],
+       [
+        10.3,
+        33.8
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      80,
+      80,
+      80,
+      80,
+      80,
+      80,
+      80,
+      80
+     ],
+     "durationMs": 640,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 81.2,
+     "cycleMs": 640,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        12.0,
+        29.8
+       ],
+       [
+        11.7,
+        26.6
+       ],
+       [
+        11.8,
+        32.2
+       ],
+       [
+        11.7,
+        36.7
+       ],
+       [
+        12.4,
+        30.6
+       ],
+       [
+        13.1,
+        26.1
+       ],
+       [
+        13.7,
+        31.1
+       ],
+       [
+        13.4,
+        36.2
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 80.0,
+     "strideLu": 51.2,
+     "plantedDriftLu": 0.1,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        10.3,
+        -1.8
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        12.5,
+        1.7
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 5,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        10.2,
+        34.6
+       ],
+       [
+        7.5,
+        21.6
+       ],
+       [
+        -0.2,
+        52.3
+       ],
+       [
+        -16.8,
+        52.4
+       ],
+       [
+        -18.0,
+        50.9
+       ],
+       [
+        18.4,
+        45.9
+       ],
+       [
+        31.9,
+        20.1
+       ],
+       [
+        23.0,
+        21.4
+       ],
+       [
+        12.8,
+        15.4
+       ],
+       [
+        13.1,
+        29.1
+       ],
+       [
+        10.9,
+        35.1
+       ]
+      ]
+     },
+     "muzzle": [
+      31.9,
+      20.1
+     ]
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        4.0,
+        34.3
+       ],
+       [
+        0.6,
+        41.4
+       ],
+       [
+        6.2,
+        37.8
+       ],
+       [
+        11.4,
+        33.1
+       ],
+       [
+        10.1,
+        35.3
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        25.2
+       ],
+       "scale": 0.488
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        38.5
+       ],
+       "loops": 2,
+       "scale": 0.698
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        7.4,
+        38.4
+       ],
+       [
+        -1.7,
+        45.3
+       ],
+       [
+        -12.9,
+        44.8
+       ],
+       [
+        4.1,
+        37.8
+       ],
+       [
+        -4.3,
+        35.9
+       ],
+       [
+        -12.3,
+        34.0
+       ],
+       [
+        -14.0,
+        32.5
+       ],
+       [
+        -13.4,
+        33.1
+       ],
+       [
+        -13.3,
+        32.6
+       ],
+       [
+        -13.1,
+        31.9
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

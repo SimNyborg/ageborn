@@ -1,0 +1,2275 @@
+{
+ "frames": {
+  "yeoman_archer_idle_00": {
+   "frame": {
+    "x": 298,
+    "y": 328,
+    "w": 81,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 107,
+    "w": 81,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_idle_00_team": {
+   "frame": {
+    "x": 199,
+    "y": 608,
+    "w": 40,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 109,
+    "w": 40,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_idle_01": {
+   "frame": {
+    "x": 564,
+    "y": 225,
+    "w": 84,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 104,
+    "w": 84,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_idle_01_team": {
+   "frame": {
+    "x": 153,
+    "y": 608,
+    "w": 42,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 108,
+    "w": 42,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_idle_02": {
+   "frame": {
+    "x": 510,
+    "y": 2,
+    "w": 81,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 98,
+    "w": 81,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_idle_02_team": {
+   "frame": {
+    "x": 370,
+    "y": 525,
+    "w": 43,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 104,
+    "w": 43,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_idle_03": {
+   "frame": {
+    "x": 353,
+    "y": 2,
+    "w": 80,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 96,
+    "w": 80,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_idle_03_team": {
+   "frame": {
+    "x": 631,
+    "y": 429,
+    "w": 43,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 102,
+    "w": 43,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_idle_04": {
+   "frame": {
+    "x": 295,
+    "y": 119,
+    "w": 82,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 101,
+    "w": 82,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_idle_04_team": {
+   "frame": {
+    "x": 164,
+    "y": 525,
+    "w": 42,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 103,
+    "w": 42,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_idle_05": {
+   "frame": {
+    "x": 111,
+    "y": 328,
+    "w": 80,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 106,
+    "w": 80,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_idle_05_team": {
+   "frame": {
+    "x": 713,
+    "y": 525,
+    "w": 41,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 106,
+    "w": 41,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_00": {
+   "frame": {
+    "x": 2,
+    "y": 328,
+    "w": 105,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 69,
+    "y": 104,
+    "w": 105,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 608,
+    "w": 48,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 111,
+    "w": 48,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_01": {
+   "frame": {
+    "x": 63,
+    "y": 225,
+    "w": 98,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 72,
+    "y": 112,
+    "w": 98,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_01_team": {
+   "frame": {
+    "x": 618,
+    "y": 525,
+    "w": 45,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 114,
+    "w": 45,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_02": {
+   "frame": {
+    "x": 267,
+    "y": 225,
+    "w": 96,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 106,
+    "w": 96,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_02_team": {
+   "frame": {
+    "x": 113,
+    "y": 525,
+    "w": 47,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 107,
+    "w": 47,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_03": {
+   "frame": {
+    "x": 85,
+    "y": 119,
+    "w": 102,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 96,
+    "w": 102,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_03_team": {
+   "frame": {
+    "x": 567,
+    "y": 525,
+    "w": 47,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 102,
+    "w": 47,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_04": {
+   "frame": {
+    "x": 383,
+    "y": 328,
+    "w": 105,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 71,
+    "y": 104,
+    "w": 105,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_04_team": {
+   "frame": {
+    "x": 243,
+    "y": 608,
+    "w": 47,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 111,
+    "w": 47,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_05": {
+   "frame": {
+    "x": 367,
+    "y": 225,
+    "w": 96,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 111,
+    "w": 96,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_05_team": {
+   "frame": {
+    "x": 103,
+    "y": 608,
+    "w": 46,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 114,
+    "w": 46,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_06": {
+   "frame": {
+    "x": 467,
+    "y": 225,
+    "w": 93,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 106,
+    "w": 93,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_06_team": {
+   "frame": {
+    "x": 319,
+    "y": 525,
+    "w": 47,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 107,
+    "w": 47,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_07": {
+   "frame": {
+    "x": 191,
+    "y": 119,
+    "w": 100,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 71,
+    "y": 95,
+    "w": 100,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_walk_07_team": {
+   "frame": {
+    "x": 267,
+    "y": 525,
+    "w": 48,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 102,
+    "w": 48,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_00": {
+   "frame": {
+    "x": 538,
+    "y": 119,
+    "w": 93,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 103,
+    "w": 93,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_00_team": {
+   "frame": {
+    "x": 526,
+    "y": 608,
+    "w": 64,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 116,
+    "w": 64,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_01": {
+   "frame": {
+    "x": 165,
+    "y": 225,
+    "w": 98,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 104,
+    "w": 98,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_01_team": {
+   "frame": {
+    "x": 210,
+    "y": 525,
+    "w": 53,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 107,
+    "w": 53,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_02": {
+   "frame": {
+    "x": 2,
+    "y": 429,
+    "w": 105,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 67,
+    "y": 110,
+    "w": 105,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_02_team": {
+   "frame": {
+    "x": 508,
+    "y": 525,
+    "w": 55,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 108,
+    "w": 55,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_03": {
+   "frame": {
+    "x": 301,
+    "y": 429,
+    "w": 111,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 112,
+    "w": 111,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_03_team": {
+   "frame": {
+    "x": 406,
+    "y": 608,
+    "w": 56,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 77,
+    "y": 112,
+    "w": 56,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_04": {
+   "frame": {
+    "x": 635,
+    "y": 119,
+    "w": 91,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 72,
+    "y": 102,
+    "w": 91,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_04_team": {
+   "frame": {
+    "x": 472,
+    "y": 429,
+    "w": 49,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 103,
+    "w": 49,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_05": {
+   "frame": {
+    "x": 272,
+    "y": 2,
+    "w": 77,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 94,
+    "w": 77,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_05_team": {
+   "frame": {
+    "x": 58,
+    "y": 525,
+    "w": 51,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 106,
+    "w": 51,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_06": {
+   "frame": {
+    "x": 437,
+    "y": 2,
+    "w": 69,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 96,
+    "w": 69,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 525,
+    "w": 52,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 106,
+    "w": 52,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_07": {
+   "frame": {
+    "x": 465,
+    "y": 119,
+    "w": 69,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 101,
+    "w": 69,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_07_team": {
+   "frame": {
+    "x": 417,
+    "y": 525,
+    "w": 42,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 105,
+    "w": 42,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_08": {
+   "frame": {
+    "x": 381,
+    "y": 119,
+    "w": 80,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 101,
+    "w": 80,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_08_team": {
+   "frame": {
+    "x": 463,
+    "y": 525,
+    "w": 41,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 105,
+    "w": 41,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_09": {
+   "frame": {
+    "x": 185,
+    "y": 429,
+    "w": 112,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 58,
+    "y": 112,
+    "w": 112,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_attack_09_team": {
+   "frame": {
+    "x": 466,
+    "y": 608,
+    "w": 56,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 112,
+    "w": 56,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_hit_00": {
+   "frame": {
+    "x": 492,
+    "y": 328,
+    "w": 94,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 111,
+    "w": 94,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_hit_00_team": {
+   "frame": {
+    "x": 294,
+    "y": 608,
+    "w": 53,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 113,
+    "w": 53,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_hit_01": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 86,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 66,
+    "y": 93,
+    "w": 86,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_hit_01_team": {
+   "frame": {
+    "x": 416,
+    "y": 429,
+    "w": 52,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 101,
+    "w": 52,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_hit_02": {
+   "frame": {
+    "x": 652,
+    "y": 225,
+    "w": 75,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 104,
+    "w": 75,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_hit_02_team": {
+   "frame": {
+    "x": 583,
+    "y": 429,
+    "w": 44,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 103,
+    "w": 44,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_hit_03": {
+   "frame": {
+    "x": 595,
+    "y": 2,
+    "w": 93,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 98,
+    "w": 93,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_hit_03_team": {
+   "frame": {
+    "x": 54,
+    "y": 608,
+    "w": 45,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 108,
+    "w": 45,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_hit_04": {
+   "frame": {
+    "x": 2,
+    "y": 119,
+    "w": 79,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 98,
+    "w": 79,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_hit_04_team": {
+   "frame": {
+    "x": 667,
+    "y": 525,
+    "w": 42,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 105,
+    "w": 42,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_00": {
+   "frame": {
+    "x": 111,
+    "y": 429,
+    "w": 70,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 105,
+    "w": 70,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_00_team": {
+   "frame": {
+    "x": 351,
+    "y": 608,
+    "w": 51,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 112,
+    "w": 51,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_01": {
+   "frame": {
+    "x": 195,
+    "y": 328,
+    "w": 99,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 85,
+    "w": 99,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_01_team": {
+   "frame": {
+    "x": 678,
+    "y": 429,
+    "w": 61,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 92,
+    "w": 61,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_02": {
+   "frame": {
+    "x": 165,
+    "y": 2,
+    "w": 103,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 49,
+    "y": 82,
+    "w": 103,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_02_team": {
+   "frame": {
+    "x": 681,
+    "y": 328,
+    "w": 44,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 84,
+    "w": 44,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_03": {
+   "frame": {
+    "x": 92,
+    "y": 2,
+    "w": 69,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 69,
+    "y": 79,
+    "w": 69,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_03_team": {
+   "frame": {
+    "x": 525,
+    "y": 429,
+    "w": 54,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 90,
+    "w": 54,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_04": {
+   "frame": {
+    "x": 590,
+    "y": 328,
+    "w": 87,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 45,
+    "y": 107,
+    "w": 87,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 225,
+    "w": 57,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 65,
+    "y": 105,
+    "w": 57,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_05": {
+   "frame": {
+    "x": 101,
+    "y": 688,
+    "w": 118,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 22,
+    "y": 144,
+    "w": 118,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_05_team": {
+   "frame": {
+    "x": 289,
+    "y": 688,
+    "w": 63,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 58,
+    "y": 150,
+    "w": 63,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_06": {
+   "frame": {
+    "x": 594,
+    "y": 608,
+    "w": 101,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 31,
+    "y": 144,
+    "w": 101,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_06_team": {
+   "frame": {
+    "x": 223,
+    "y": 688,
+    "w": 62,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 152,
+    "w": 62,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_07": {
+   "frame": {
+    "x": 2,
+    "y": 688,
+    "w": 95,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 36,
+    "y": 144,
+    "w": 95,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  },
+  "yeoman_archer_die_07_team": {
+   "frame": {
+    "x": 356,
+    "y": 688,
+    "w": 61,
+    "h": 44
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 54,
+    "y": 155,
+    "w": 61,
+    "h": 44
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 225
+   },
+   "anchor": {
+    "x": 0.4728,
+    "y": 0.85333
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "yeoman_archer_idle_00",
+   "yeoman_archer_idle_01",
+   "yeoman_archer_idle_02",
+   "yeoman_archer_idle_03",
+   "yeoman_archer_idle_04",
+   "yeoman_archer_idle_05"
+  ],
+  "idle_team": [
+   "yeoman_archer_idle_00_team",
+   "yeoman_archer_idle_01_team",
+   "yeoman_archer_idle_02_team",
+   "yeoman_archer_idle_03_team",
+   "yeoman_archer_idle_04_team",
+   "yeoman_archer_idle_05_team"
+  ],
+  "walk": [
+   "yeoman_archer_walk_00",
+   "yeoman_archer_walk_01",
+   "yeoman_archer_walk_02",
+   "yeoman_archer_walk_03",
+   "yeoman_archer_walk_04",
+   "yeoman_archer_walk_05",
+   "yeoman_archer_walk_06",
+   "yeoman_archer_walk_07"
+  ],
+  "walk_team": [
+   "yeoman_archer_walk_00_team",
+   "yeoman_archer_walk_01_team",
+   "yeoman_archer_walk_02_team",
+   "yeoman_archer_walk_03_team",
+   "yeoman_archer_walk_04_team",
+   "yeoman_archer_walk_05_team",
+   "yeoman_archer_walk_06_team",
+   "yeoman_archer_walk_07_team"
+  ],
+  "attack": [
+   "yeoman_archer_attack_00",
+   "yeoman_archer_attack_01",
+   "yeoman_archer_attack_02",
+   "yeoman_archer_attack_03",
+   "yeoman_archer_attack_09",
+   "yeoman_archer_attack_04",
+   "yeoman_archer_attack_05",
+   "yeoman_archer_attack_06",
+   "yeoman_archer_attack_07",
+   "yeoman_archer_attack_08"
+  ],
+  "attack_team": [
+   "yeoman_archer_attack_00_team",
+   "yeoman_archer_attack_01_team",
+   "yeoman_archer_attack_02_team",
+   "yeoman_archer_attack_03_team",
+   "yeoman_archer_attack_09_team",
+   "yeoman_archer_attack_04_team",
+   "yeoman_archer_attack_05_team",
+   "yeoman_archer_attack_06_team",
+   "yeoman_archer_attack_07_team",
+   "yeoman_archer_attack_08_team"
+  ],
+  "hit": [
+   "yeoman_archer_hit_00",
+   "yeoman_archer_hit_01",
+   "yeoman_archer_hit_02",
+   "yeoman_archer_hit_03",
+   "yeoman_archer_hit_04"
+  ],
+  "hit_team": [
+   "yeoman_archer_hit_00_team",
+   "yeoman_archer_hit_01_team",
+   "yeoman_archer_hit_02_team",
+   "yeoman_archer_hit_03_team",
+   "yeoman_archer_hit_04_team"
+  ],
+  "die": [
+   "yeoman_archer_die_00",
+   "yeoman_archer_die_01",
+   "yeoman_archer_die_02",
+   "yeoman_archer_die_03",
+   "yeoman_archer_die_04",
+   "yeoman_archer_die_05",
+   "yeoman_archer_die_06",
+   "yeoman_archer_die_06",
+   "yeoman_archer_die_07",
+   "yeoman_archer_die_07"
+  ],
+  "die_team": [
+   "yeoman_archer_die_00_team",
+   "yeoman_archer_die_01_team",
+   "yeoman_archer_die_02_team",
+   "yeoman_archer_die_03_team",
+   "yeoman_archer_die_04_team",
+   "yeoman_archer_die_05_team",
+   "yeoman_archer_die_06_team",
+   "yeoman_archer_die_06_team",
+   "yeoman_archer_die_07_team",
+   "yeoman_archer_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "yeoman_archer.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 768,
+   "h": 748
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.yeoman_archer",
+   "name": "Yeoman Archer",
+   "heightLu": 68,
+   "widthLu": 60.2,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    113.0,
+    192.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     66
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     33,
+     34
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        23.1,
+        15.9
+       ],
+       [
+        23.2,
+        16.0
+       ],
+       [
+        22.6,
+        16.8
+       ],
+       [
+        22.0,
+        17.6
+       ],
+       [
+        21.9,
+        17.5
+       ],
+       [
+        22.4,
+        16.7
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77
+     ],
+     "durationMs": 616,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 75.0,
+     "cycleMs": 616,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        8.9,
+        32.7
+       ],
+       [
+        12.9,
+        29.6
+       ],
+       [
+        14.9,
+        35.3
+       ],
+       [
+        13.3,
+        40.5
+       ],
+       [
+        10.8,
+        34.5
+       ],
+       [
+        12.5,
+        31.6
+       ],
+       [
+        12.4,
+        36.2
+       ],
+       [
+        10.2,
+        40.0
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 75.3,
+     "strideLu": 46.4,
+     "plantedDriftLu": 0.0,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        9.5,
+        -1.8
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        11.6,
+        1.4
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      9,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      55,
+      60,
+      70,
+      160,
+      88,
+      60,
+      55,
+      55,
+      80,
+      116
+     ],
+     "durationMs": 799,
+     "impactFrame": 4,
+     "impactStep": 5,
+     "impactAt": 0.5419,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        31.7,
+        8.9
+       ],
+       [
+        30.4,
+        47.1
+       ],
+       [
+        22.3,
+        54.8
+       ],
+       [
+        17.9,
+        54.1
+       ],
+       [
+        21.4,
+        60.1
+       ],
+       [
+        27.1,
+        53.0
+       ],
+       [
+        31.5,
+        45.3
+       ],
+       [
+        29.0,
+        24.7
+       ],
+       [
+        24.6,
+        18.1
+       ],
+       [
+        16.0,
+        54.4
+       ]
+      ]
+     },
+     "muzzle": [
+      21.4,
+      60.1
+     ]
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        21.5,
+        24.6
+       ],
+       [
+        16.0,
+        35.4
+       ],
+       [
+        20.9,
+        24.5
+       ],
+       [
+        21.8,
+        12.9
+       ],
+       [
+        22.5,
+        17.3
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        24.5
+       ],
+       "scale": 0.753
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        37.4
+       ],
+       "loops": 2,
+       "scale": 0.867
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        21.5,
+        40.0
+       ],
+       [
+        -45.4,
+        50.0
+       ],
+       [
+        -7.5,
+        -0.3
+       ],
+       [
+        17.1,
+        50.7
+       ],
+       [
+        -18.4,
+        39.9
+       ],
+       [
+        -42.4,
+        33.8
+       ],
+       [
+        -27.0,
+        37.0
+       ],
+       [
+        -22.9,
+        35.4
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

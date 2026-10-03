@@ -1,5 +1,5 @@
 /**
- * Golden replays (DESIGN B13): 15 recorded matches on the frozen fixture content with known final
+ * Golden replays (DESIGN B13): 17 recorded matches on the frozen fixture content with known final
  * hashes. Any change to the simulation's behaviour changes a hash and fails this test on purpose.
  * 15-last-base plays Last Base Standing (A2.10.1) on the fixture plus a `last` format (`fixtureLast`,
  * its own content hash); SIM_VERSION 6.0.0 re-recorded 01-14 with identical hashes.
@@ -11,7 +11,7 @@ import { describe, expect, it } from 'vitest';
 import type { AgeId, Command, CompiledContent, MatchConfig, Observation, ReplayDoc, Side, SideConfig, SimEvent } from '@/contracts';
 import { simCtx } from '../debug';
 import { buildReplay, verifyReplay } from '../replay';
-import { STRATEGIES, baselineLoadout, fixture, fixtureLast, fixtureX0, matchConfig, runMatch, scriptedPlayer, sideConfig, type Strategy } from './helpers';
+import { STRATEGIES, baselineLoadout, fixture, fixtureBronze, fixtureLast, fixtureX0, matchConfig, runMatch, scriptedPlayer, sideConfig, type Strategy } from './helpers';
 
 /** The recorded files, loaded by Vite (src has no Node types; see `writeGolden` for recording). */
 const FILES = import.meta.glob<ReplayDoc>('./golden/*.json', { eager: true, import: 'default' });
@@ -275,6 +275,31 @@ const SCENARIOS: Scenario[] = [
       { ...S.rush, weights: [2, 0, 0, 2, 0], noEvolve: true },
     ],
   },
+  {
+    // SIM_VERSION 7.1.0 (Bronze wave): a Stone-only war on the Bronze wave fixture: a Dread aura (Tragic
+    // Chorus), an ally speed aura (Aulos Piper), siegeOnly with riders (Wooden Horse), a first-hit frenzy
+    // brawler (Minotaur) and the whole-lane Sandstorm signal cast by both sides.
+    name: '17-dread-speed-siege-riders',
+    content: fixtureBronze,
+    cfg: () => {
+      const lo = baselineLoadout(fixtureBronze, 'stone');
+      const stone = (units: (string | null)[]) => ({ ...lo, units, powers: { home: lo.powers.home, field: 'sandstorm' } });
+      return matchConfig({
+        seed: 1701,
+        format: 'short',
+        content: fixtureBronze,
+        sides: [
+          sideConfig(fixtureBronze, { loadouts: { stone: stone(['bonker', 'pebbler', 'tragic_chorus', 'spear_hunter', 'wooden_horse', null]) } }),
+          sideConfig(fixtureBronze, { isBot: true, label: 'AI Golden', loadouts: { stone: stone(['bonker', 'pebbler', 'minotaur', 'aulos_piper', 'tuskback', null]) } }),
+        ],
+      });
+    },
+    players: [
+      // Stone only, no research, one turret, a 3 s cadence so the 200-gold Epics get bought too.
+      { ...S.balanced, weights: [1, 0, 1, 0, 6], noEvolve: true, research: [], turrets: 1, powerAsap: false, every: 60 },
+      { ...S.rush, weights: [1, 0, 6, 1, 0], noEvolve: true, research: [], turrets: 1, powerAsap: false, every: 60 },
+    ],
+  },
 ];
 
 /** The players of a scenario (scripted, fort placers or fort directors). */
@@ -315,8 +340,8 @@ async function writeGolden(): Promise<void> {
 if (env.UPDATE_GOLDEN === '1') await writeGolden();
 
 describe('golden replays (B13)', () => {
-  it('has all 16 recorded files', () => {
-    expect(SCENARIOS).toHaveLength(16);
+  it('has all 17 recorded files', () => {
+    expect(SCENARIOS).toHaveLength(17);
     for (const sc of SCENARIOS) expect(golden(sc.name), sc.name).toBeDefined();
   });
 
@@ -396,6 +421,20 @@ describe('golden replays (B13)', () => {
     expect(spawns.some((e) => e.card === 'pelt_rager')).toBe(true);
     expect(events.some((e) => e.e === 'abilityUsed' && e.ability === 'timeStop')).toBe(true);
     const lane = events.filter((e): e is SimEvent & { e: 'powerTelegraph' } => e.e === 'powerTelegraph' && e.power === 'pebble_hail');
+    expect(new Set(lane.map((e) => e.side)).size).toBe(2);
+  });
+
+  it('17-dread-speed-siege-riders covers the Bronze wave kinds: dread slows, the speed aura, the horse, the Minotaur and Sandstorm', () => {
+    const sc = SCENARIOS.find((x) => x.name === '17-dread-speed-siege-riders');
+    if (!sc) throw new Error('no Bronze wave scenario');
+    const cfg = sc.cfg();
+    const { events } = runMatch(cfg, playersOf(sc, cfg.seed), { maxTicks: 30000, keepEvents: true });
+    const spawns = events.filter((e): e is SimEvent & { e: 'unitSpawned' } => e.e === 'unitSpawned');
+    for (const card of ['tragic_chorus', 'wooden_horse', 'minotaur', 'aulos_piper']) expect(spawns.some((e) => e.card === card), card).toBe(true);
+    const chorus = new Set(spawns.filter((e) => e.card === 'tragic_chorus').map((e) => e.id));
+    expect(chorus.size).toBeGreaterThan(0);
+    expect(events.some((e) => e.e === 'statusApplied' && e.kind === 'slow')).toBe(true);
+    const lane = events.filter((e): e is SimEvent & { e: 'powerTelegraph' } => e.e === 'powerTelegraph' && e.power === 'sandstorm');
     expect(new Set(lane.map((e) => e.side)).size).toBe(2);
   });
 

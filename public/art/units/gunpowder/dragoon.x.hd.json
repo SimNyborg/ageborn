@@ -1,0 +1,502 @@
+{
+ "frames": {
+  "dragoon_attack_b_01": {
+   "frame": {
+    "x": 289,
+    "y": 2,
+    "w": 245,
+    "h": 309
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 351,
+    "y": 219,
+    "w": 245,
+    "h": 309
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_b_01_team": {
+   "frame": {
+    "x": 134,
+    "y": 622,
+    "w": 128,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 371,
+    "y": 259,
+    "w": 128,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 315,
+    "w": 247,
+    "h": 303
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 349,
+    "y": 226,
+    "w": 247,
+    "h": 303
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_b_02_team": {
+   "frame": {
+    "x": 398,
+    "y": 622,
+    "w": 140,
+    "h": 185
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 369,
+    "y": 265,
+    "w": 140,
+    "h": 185
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_b_03": {
+   "frame": {
+    "x": 253,
+    "y": 315,
+    "w": 248,
+    "h": 296
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 349,
+    "y": 233,
+    "w": 248,
+    "h": 296
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_b_03_team": {
+   "frame": {
+    "x": 542,
+    "y": 622,
+    "w": 146,
+    "h": 181
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 369,
+    "y": 269,
+    "w": 146,
+    "h": 181
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_b_04": {
+   "frame": {
+    "x": 505,
+    "y": 315,
+    "w": 248,
+    "h": 294
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 349,
+    "y": 235,
+    "w": 248,
+    "h": 294
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_b_04_team": {
+   "frame": {
+    "x": 692,
+    "y": 622,
+    "w": 149,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 369,
+    "y": 271,
+    "w": 149,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_b_05": {
+   "frame": {
+    "x": 757,
+    "y": 315,
+    "w": 247,
+    "h": 294
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 350,
+    "y": 235,
+    "w": 247,
+    "h": 294
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_b_05_team": {
+   "frame": {
+    "x": 845,
+    "y": 622,
+    "w": 149,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 369,
+    "y": 271,
+    "w": 149,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_b_06": {
+   "frame": {
+    "x": 538,
+    "y": 2,
+    "w": 237,
+    "h": 308
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 343,
+    "y": 219,
+    "w": 237,
+    "h": 308
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_b_06_team": {
+   "frame": {
+    "x": 266,
+    "y": 622,
+    "w": 128,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 366,
+    "y": 260,
+    "w": 128,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 283,
+    "h": 309
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 217,
+    "w": 283,
+    "h": 309
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  },
+  "dragoon_attack_b_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 622,
+    "w": 128,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 365,
+    "y": 257,
+    "w": 128,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 820,
+    "h": 598
+   },
+   "anchor": {
+    "x": 0.54634,
+    "y": 0.85284
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "dragoon_attack_00",
+   "dragoon_attack_b_01",
+   "dragoon_attack_b_02",
+   "dragoon_attack_b_03",
+   "dragoon_attack_b_04",
+   "dragoon_attack_b_05",
+   "dragoon_attack_b_06",
+   "dragoon_attack_b_07",
+   "dragoon_attack_08",
+   "dragoon_attack_08",
+   "dragoon_attack_09",
+   "dragoon_attack_09"
+  ],
+  "attack_b_team": [
+   "dragoon_attack_00_team",
+   "dragoon_attack_b_01_team",
+   "dragoon_attack_b_02_team",
+   "dragoon_attack_b_03_team",
+   "dragoon_attack_b_04_team",
+   "dragoon_attack_b_05_team",
+   "dragoon_attack_b_06_team",
+   "dragoon_attack_b_07_team",
+   "dragoon_attack_08_team",
+   "dragoon_attack_08_team",
+   "dragoon_attack_09_team",
+   "dragoon_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "dragoon.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1024,
+   "h": 820
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.dragoon",
+   "name": "Dragoon",
+   "heightLu": 120,
+   "widthLu": 94.7,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    448,
+    510
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     116
+    ],
+    "hitCenter": [
+     0,
+     50
+    ],
+    "muzzle": [
+     52,
+     72
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "rider",
+   "extrasOf": "dragoon",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        7.6,
+        107.4
+       ],
+       [
+        45.2,
+        83.9
+       ],
+       [
+        46.8,
+        66.9
+       ],
+       [
+        48.4,
+        58.2
+       ],
+       [
+        49.0,
+        56.8
+       ],
+       [
+        49.0,
+        56.8
+       ],
+       [
+        28.2,
+        72.9
+       ],
+       [
+        17.4,
+        82.7
+       ],
+       [
+        16.9,
+        112.9
+       ],
+       [
+        11.3,
+        106.6
+       ]
+      ]
+     },
+     "muzzle": [
+      28.2,
+      72.9
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

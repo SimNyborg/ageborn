@@ -38,8 +38,20 @@ export const skinList: readonly SkinDef[] = [
   skin('crystal_spire', 'base.future', 'legendary', false),
   // X0 content waves (CONTENT_PLAN 5, 6): every wave skin joins the Wardrobe Crate pool and the capsule skin
   // rolls, craftable with Dust. W1 Stone (2026-10-02):
-  // Release gate: `released: false` (hidden from players and bots) until their art ships (docs/decisions.md).
-  { ...skin('snowball_pebbler', 'pebbler', 'rare'), released: false },
-  { ...skin('fossil_sabertooth', 'sabertooth', 'epic'), released: false },
-  { ...skin('aurora_elk', 'elk_chieftain', 'legendary'), released: false },
+  // released 2026-10-03 with their puppets (src/visuals/skins.ts).
+  skin('snowball_pebbler', 'pebbler', 'rare'),
+  skin('fossil_sabertooth', 'sabertooth', 'epic'),
+  skin('aurora_elk', 'elk_chieftain', 'legendary'),
+  // W2 Bronze (2026-10-03), released with their art:
+  { ...skin('marble_hoplite', 'hoplite', 'rare'), released: false },
+  { ...skin('sun_chariot', 'war_chariot', 'epic'), released: false },
+  { ...skin('obsidian_colossus', 'bronze_colossus', 'legendary'), released: false },
+  // W3 Medieval (2026-10-03), released with their art:
+  skin('greenwood_archer', 'longbowman', 'rare'),
+  skin('chess_knight', 'destrier_knight', 'epic'),
+  skin('bone_wyrm', 'lindworm', 'legendary'),
+  // W4 Gunpowder (2026-10-03), released with their art:
+  skin('parade_cuirassier', 'cuirassier', 'rare'),
+  skin('fireworks_grenadier', 'grenadier', 'epic'),
+  skin('pufferfish_balloon', 'balloon_admiral', 'legendary'),
 ];

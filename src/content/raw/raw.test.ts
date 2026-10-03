@@ -33,7 +33,7 @@ const GROUP: Record<RoleGroup, { cost: number; trainMs: number; pop: number }> =
 
 /** A5.1 default projectile speeds (lu/s) by projectile visual. Arc projectiles fly at 450. */
 /** Long range darts, arrows and shells (H6, A5.1) fly their arcs at 300 lu/s. */
-const LONG_RANGE_ARC: ReadonlySet<string> = new Set(['proj.dart']);
+const LONG_RANGE_ARC: ReadonlySet<string> = new Set(['proj.dart', 'proj.arrow_arc', 'proj.longarrow', 'proj.mortar_shell']);
 const DEFAULT_SPEED: Record<string, number> = {
   'proj.rock': 500,
   'proj.arrow': 650,

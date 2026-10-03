@@ -1,8 +1,8 @@
 /**
  * Fort and levy visuals (DESIGN A16.14.8, F3).
  *
- * - Forts (`fort.<slug>`) are rendered by the realistic Blender pipeline
- *   (`art/blender/styles/realistic/forts/`) into sheets at `public/art/forts/<age>/<slug>(.hd).json`
+ * - Forts (`fort.<slug>`) are rendered by the Blender pipeline (cartoon forts:
+ *   `art/blender/world/forts_<age>.py`; the ages not yet restyled: `art/blender/styles/realistic/forts/`) into sheets at `public/art/forts/<age>/<slug>(.hd).json`
  *   (clips body, front, scaffold, rubble, flag, door, trap; see the kit's docstring). `FORT_SHEETS` lists
  *   the installed ones; their manifest entries are kind 'atlas' and `fortViews/atlasFortView.ts` draws them
  *   (a code-drawn stand-in while a sheet loads or where none is installed). The procedural entries stay as
@@ -25,18 +25,30 @@ export const FORT_VISUALS: readonly { id: string; age: AgeId; kind: 'wall' | 'to
   { id: 'sling_perch', age: 'stone', kind: 'tower' },
   { id: 'war_camp', age: 'stone', kind: 'camp' },
   { id: 'spike_pit', age: 'stone', kind: 'trap' },
+  // Stone wave variants (CONTENT_PLAN 5.1)
+  { id: 'thorn_hedge', age: 'stone', kind: 'wall' },
+  { id: 'bone_watchtower', age: 'stone', kind: 'tower' },
   { id: 'cyclopean_wall', age: 'bronze', kind: 'wall' },
   { id: 'pyrgos_tower', age: 'bronze', kind: 'tower' },
   { id: 'muster_tents', age: 'bronze', kind: 'camp' },
   { id: 'hidden_stakes', age: 'bronze', kind: 'trap' },
+  // Bronze wave variants (CONTENT_PLAN 5.2)
+  { id: 'hoplon_line', age: 'bronze', kind: 'wall' },
+  { id: 'slinger_camp', age: 'bronze', kind: 'camp' },
   { id: 'shield_barricade', age: 'medieval', kind: 'wall' },
   { id: 'longbow_tower', age: 'medieval', kind: 'tower' },
   { id: 'levy_camp', age: 'medieval', kind: 'camp' },
   { id: 'wolf_pits', age: 'medieval', kind: 'trap' },
+  // Medieval wave variants (CONTENT_PLAN 5.3)
+  { id: 'bear_snares', age: 'medieval', kind: 'trap' },
+  { id: 'crossbow_keep', age: 'medieval', kind: 'tower' },
   { id: 'gabion_wall', age: 'gunpowder', kind: 'wall' },
   { id: 'musket_redoubt', age: 'gunpowder', kind: 'tower' },
   { id: 'militia_muster', age: 'gunpowder', kind: 'camp' },
   { id: 'powder_keg', age: 'gunpowder', kind: 'trap' },
+  // Gunpowder wave (CONTENT_PLAN 5.4)
+  { id: 'cavalry_picket', age: 'gunpowder', kind: 'camp' },
+  { id: 'fougasse', age: 'gunpowder', kind: 'trap' },
   { id: 'trench_parapet', age: 'industrial', kind: 'wall' },
   { id: 'sniper_nest', age: 'industrial', kind: 'tower' },
   { id: 'recruiting_depot', age: 'industrial', kind: 'camp' },
@@ -55,12 +67,19 @@ export const FORT_VISUALS: readonly { id: string; age: AgeId; kind: 'wall' | 'to
   { id: 'void_mine', age: 'cosmic', kind: 'trap' },
 ];
 
-/** Every levy (A16.14.3): id, age and the age's Infantry Common it is drawn from. */
+/**
+ * Every levy (A16.14.3): id, age and the Common it is drawn from (`infantry`: the age's Infantry Common,
+ * or the ranged or brute Common of an X0 camp variant with `levyFrom`).
+ */
 export const LEVY_VISUALS: readonly { id: string; age: AgeId; infantry: string }[] = [
   { id: 'cave_youth', age: 'stone', infantry: 'bonker' },
   { id: 'citizen_levy', age: 'bronze', infantry: 'hoplite' },
+  // Bronze wave: the Skirmisher Camp's levy, drawn from the Bronze ranged Common (CONTENT_PLAN 5.2)
+  { id: 'slinger_levy', age: 'bronze', infantry: 'javelineer' },
   { id: 'peasant_levy', age: 'medieval', infantry: 'footman' },
   { id: 'militiaman', age: 'gunpowder', infantry: 'corsair' },
+  // Gunpowder wave: the Cavalry Picket's levy, drawn from the Gunpowder heavy Common (CONTENT_PLAN 5.4)
+  { id: 'picket_rider', age: 'gunpowder', infantry: 'cuirassier' },
   { id: 'volunteer', age: 'industrial', infantry: 'riveter' },
   { id: 'conscript', age: 'modern', infantry: 'trench_raider' },
   { id: 'clone_cadet', age: 'future', infantry: 'photon_knight' },
@@ -72,10 +91,10 @@ export const LEVY_SCALE = 0.85;
 
 /** Fort sheets installed in `public/art/forts/<age>/` (keep in sync with art/blender/styles/realistic/forts/<age>.py). */
 export const FORT_SHEETS: Readonly<Record<AgeId, readonly string[]>> = {
-  stone: ['palisade', 'sling_perch', 'war_camp', 'spike_pit'],
-  bronze: ['cyclopean_wall', 'pyrgos_tower', 'muster_tents', 'hidden_stakes'],
-  medieval: ['shield_barricade', 'longbow_tower', 'levy_camp', 'wolf_pits'],
-  gunpowder: ['gabion_wall', 'musket_redoubt', 'militia_muster', 'powder_keg'],
+  stone: ['palisade', 'sling_perch', 'war_camp', 'spike_pit', 'thorn_hedge', 'bone_watchtower'],
+  bronze: ['cyclopean_wall', 'pyrgos_tower', 'muster_tents', 'hidden_stakes', 'hoplon_line', 'slinger_camp'],
+  medieval: ['shield_barricade', 'longbow_tower', 'levy_camp', 'wolf_pits', 'bear_snares', 'crossbow_keep'],
+  gunpowder: ['gabion_wall', 'musket_redoubt', 'militia_muster', 'powder_keg', 'cavalry_picket', 'fougasse'],
   industrial: ['trench_parapet', 'sniper_nest', 'recruiting_depot', 'tripwire_charge'],
   modern: ['sandbag_bunker', 'pillbox', 'forward_base', 'minefield'],
   future: ['hardlight_barrier', 'sentry_pylon', 'clone_bay', 'grav_mire'],
@@ -165,7 +184,10 @@ export const FORT_PUPPETS: readonly TurretPuppet[] = FORT_VISUALS.flatMap((f) =>
  * the plain levy outfit at 0.85 scale, A16.14.8).
  */
 export const LEVY_PUPPETS: readonly PuppetDef[] = LEVY_VISUALS.flatMap((l) => {
-  const base = infantryOf(l.age);
+  // An X0 camp variant's levy (`levyFrom`) is drawn from its own Common (a rider, a slinger), so its
+  // size class, group and muzzle follow that Common; the classic levies use the age's Infantry.
+  const base = AGE_PUPPETS[l.age].units.find((p) => p.id === `unit.${l.infantry}`) ?? infantryOf(l.age);
   if (!base) return [];
-  return [{ ...base, id: `unit.${l.id}` }];
+  // levies are Infantry-group units in the content (A16.14.8), whatever Common they are drawn from
+  return [{ ...base, id: `unit.${l.id}`, group: 'infantry' as const, legendary: false }];
 });

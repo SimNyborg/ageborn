@@ -11,10 +11,16 @@ tail. Two hatches in its flank open to show helmeted spearmen with team crests.
 
 Animation (cartoon kit v2, heavy timing; vehicle rig like the Battering Ram):
   idle    a hatch creaks open and a spearman peeks out and blinks, the tail sways
-  walk    the wheels roll with the ground, the hull bobs and creaks, the head nods
+  walk    walk v3 at ground speed (ANIM_SPEC G6 wheeled, card 45 x 1.25 = 56.25 lu/s): four-spoked
+          wheels turning 2 spoke spacings per 614 ms cycle (22.5 degrees a frame), one bump per cycle
+          with a pitch, the head nodding a frame late, dust kicked up behind the rear wheels
+  attack_b  HEAD HAMMER: the hull stays level while the neck swings far back on its hinge (held
+          extreme), then the head hammers down and forward into the gate
+  attack_alt  the hatch spearmen's own sim attack (6 every 1.2 s): both hatches open and the
+          spearmen jab out while the horse stands (they never jab in A or B)
   attack  ROCK AND BUTT: the horse rocks back onto its rear wheels (the front wheels lift, the
           head rears, held extreme), then lurches forward and slams its bronze nose into the
-          target (impact lines, dust, the planks rattle) while both hatch spearmen jab out
+          target (impact lines, dust, the planks rattle); the hatch spearmen hold on
   hit     vehicle: a bounce, the hatches slam shut
   die     wreck: a front wheel pops off, the hull sags and splits, the hatches burst open and
           two hoplites leap out (they become the two summoned Hoplites)
@@ -29,6 +35,7 @@ from ageborn_art.anim import merge, squash
 from ageborn_art.geometry import Geo
 
 SLUG = "wooden_horse"
+GAIT_NAME = "wheeled"
 NAME = "Wooden Horse"
 HEIGHT_LU = 104
 YAW_DEG = -10.0
@@ -43,9 +50,15 @@ SEAM = "#5E4C3C"
 ROPE = "#CDBB92"
 R_WHEEL = 11.0
 AXLES = (-24.0, 22.0)
-WALK_MS = 125
-CYCLE_LU = 40.0                                   # ground covered per walk cycle
-WHEEL_STEP = 360.0 * CYCLE_LU / (2 * math.pi * R_WHEEL) / 8
+SPOKES = 4
+# G6: 2 spoke spacings per cycle at the ground speed (card 45 x 1.25 = 56.25 lu/s): the rim travels
+# 2 x 2 pi r / 4 = 34.56 lu per cycle, so the cycle is 614 ms and the wheel turns 22.5 degrees a frame (25%)
+SPEED = 56.25
+CYCLE_LU = 2 * 2 * math.pi * R_WHEEL / SPOKES
+WALK_CYCLE_MS = round(1000 * CYCLE_LU / SPEED)
+WALK_DUR = [round(WALK_CYCLE_MS * (i + 1) / 8) - round(WALK_CYCLE_MS * i / 8) for i in range(8)]
+WHEEL_STEP = 2 * (360.0 / SPOKES) / 8
+ODO_AMP = CYCLE_LU / 4                            # strideLu = 2 x the odometer's x range
 HATCHES = ((-10.0, 44.0), (8.0, 44.0))
 
 
@@ -59,11 +72,11 @@ def _wheel(rig, name, x, y):
                   (x + (R_WHEEL - 1.4) * math.cos(a1), y, R_WHEEL + (R_WHEEL - 1.4) * math.sin(a1)), 2.1, segs=10, rings=2)
     rig.part(name, g, WOOD_DK)
     g = Geo()
-    for k in range(6):
-        a = math.radians(60 * k)
-        g.capsule((x, y, R_WHEEL), (x + (R_WHEEL - 2.2) * math.cos(a), y, R_WHEEL + (R_WHEEL - 2.2) * math.sin(a)), 1.3, 1.0,
+    for k in range(SPOKES):                      # four thick pale spokes that read at 1x
+        a = math.radians(360.0 / SPOKES * k)
+        g.capsule((x, y, R_WHEEL), (x + (R_WHEEL - 2.2) * math.cos(a), y, R_WHEEL + (R_WHEEL - 2.2) * math.sin(a)), 1.8, 1.4,
                   segs=8, rings=2)
-    rig.part(name, g, WOOD, outline=0.7)
+    rig.part(name, g, "#D9C7A4", outline=0.7)
     g = Geo().blob((x, y - 1.0, R_WHEEL), (4.2, 2.6, 4.2), p=2.4)
     rig.part(name, g, team=True, outline=0.6)
 
@@ -206,6 +219,32 @@ def build(rig):
     _jumper(rig, "jump0", -6.0, 40.0)
     _jumper(rig, "jump1", 8.0, 40.0)
     rig.track("_foot", "odo", (0, 0, 0))
+    # a hoplite pushes from behind, leaning into the platform (walk v3: his legs jog behind the horse,
+    # so the crew's steps read in the silhouette; G6 crew on foot)
+    for side, y, k in (("l", -2.0, 0.8), ("r", -8.0, 1.0)):
+        n = f"c_{side}"
+        rig.joint(n, "chassis", (-47.0, y, 23.0))
+        rig.joint(n + "2", n, (-46.0, y, 12.5))
+        skin = B.SKIN if k == 1.0 else B.SKIN_DK
+        rig.part(n, Geo().capsule((-47.0, y, 24.0), (-46.0, y, 12.5), 3.2, 2.8), skin)
+        g = Geo().capsule((-46.0, y, 12.5), (-45.5, y, 3.8), 2.8, 2.5)
+        rig.part(n + "2", g, skin)
+        g = Geo().blob((-43.4, y, 2.2), (4.2, 3.0, 2.2), p=2.8, taper=(1.02, 0.85))
+        rig.part(n + "2", g, B.LEATHER if k == 1.0 else B.LEATHER_DK)
+    rig.joint("c_body", "chassis", (-47.0, -4.0, 23.0))
+    rig.part("c_body", Geo().capsule((-47.0, -4.0, 25.0), (-41.5, -4.0, 34.0), 5.4, 5.0), team=True)
+    rig.part("c_body", Geo().blob((-47.0, -4.0, 23.6), (5.8, 5.4, 2.6), p=2.6), B.LINEN, outline=0.5)
+    g = Geo().capsule((-41.5, -7.0, 33.0), (-35.5, -7.0, 24.0), 2.3, 2.1).blob((-35.0, -7.0, 23.4), (2.5, 2.3, 2.5), p=2.3)
+    rig.part("c_body", g, B.SKIN)
+    g = Geo().blob((-39.0, -4.0, 40.4), (4.8, 4.6, 4.7), p=2.3)
+    g.blob((-34.6, -4.4, 39.6), (1.6, 1.5, 1.5), p=2.0)
+    rig.part("c_body", g, B.SKIN)
+    rig.part("c_body", Geo().blob((-35.8, -8.4, 41.4), (1.1, 0.6, 1.4), p=2.0), B.EYE, outline=0.4)
+    rig.part("c_body", Geo().blob((-35.2, -8.8, 41.2), (0.6, 0.4, 0.8), p=2.0), B.PUPIL, outline=0)
+    g = Geo().blob((-39.4, -4.0, 43.4), (5.2, 5.0, 3.8), p=2.4)
+    g.clip((0, 0, 42.6), (0, 0, -1))
+    rig.part("c_body", g, B.BRONZE, finish=B.POLISH)
+    rig.part("c_body", Geo().blob((-41.0, -4.0, 47.8), (4.4, 1.2, 2.2), p=2.2), team=True, outline=0.4)
 
 
 WHEELS = ("wheel_bn", "wheel_fn", "wheel_bf", "wheel_ff")
@@ -224,12 +263,33 @@ def _hatch(i, open_=0.0, poke=0.0, peek=0.0):
     return out
 
 
+def _crew(step=None, brace=0.0):
+    """The pusher's legs: `step` (walk phase, radians) jogs them; `brace` (0..1) plants them back in a lunge."""
+    pose = {}
+    for side, ph in (("l", 0.0), ("r", math.pi)):
+        n = f"c_{side}"
+        if step is not None:
+            p = step + ph
+            lift = max(0.0, math.sin(p))
+            pose[n] = {"r": -14 + 30 * math.cos(p) + 14 * lift, "z": 1.8 * lift}
+            pose[n + "2"] = {"r": -58 * lift}
+        else:
+            back = -30 if side == "r" else 10
+            pose[n] = {"r": brace * back - 8}
+            pose[n + "2"] = {"r": brace * (10 if side == "r" else -16)}
+    if step is not None:
+        pose["c_body"] = {"z": 1.4 * abs(math.sin(step)), "r": -2 * math.cos(2 * step)}
+    else:
+        pose["c_body"] = {"r": -6 * brace, "x": -1.5 * brace}
+    return pose
+
+
 def _idle(f):
     n = M.IDLE_FRAMES_HEAVY
     c = math.cos(2 * math.pi * f / n)
     op = [0.0, 0.5, 1.0, 1.0, 0.5, 0.0][f]
     pose = merge({"hull": dict(squash(0.012 * c), z=0.4 * c), "neck": {"r": 1.5 * c}},
-                 _hatch(1, op, 0.0, op), _hatch(0))
+                 _hatch(1, op, 0.0, op), _hatch(0), _crew(brace=0.2))
     if f == 3:
         pose = merge(pose, {"man1": {"z": 0.6}})
     return pose
@@ -237,12 +297,20 @@ def _idle(f):
 
 def _walk(f):
     p = 2 * math.pi * f / 8
-    bump = -abs(math.sin(p))
-    return merge(_wheels(WHEEL_STEP * f), {
-        "odo": {"x": CYCLE_LU / 4 * math.cos(p)},
-        "hull": dict(squash(0.02 * math.cos(2 * p)), z=1.2 * bump + 0.6, r=0.8 * math.sin(p)),
-        "neck": {"r": 2.5 * math.sin(2 * p - 0.8)}, "head": {"r": 2.0 * math.sin(2 * p - 1.4)},
-    }, _hatch(0), _hatch(1))
+    bump = -math.cos(p)            # one bump per cycle (G6): lowest on frame 0
+    return merge(_wheels(WHEEL_STEP * f), _crew(step=p), {
+        "odo": {"x": ODO_AMP * math.cos(p)},
+        "hull": dict(squash(-0.025 * math.cos(p)), z=2.2 * bump + 0.6, r=1.6 * math.sin(p)),
+        "neck": {"r": 3.5 * math.sin(p - 0.8)}, "head": {"r": 3.0 * math.sin(p - 1.4)},
+        "tail": {"r": 6 * math.sin(p - 1.2)},
+    }, _hatch(0), _hatch(1, 0.35, 0.0, 0.35 + 0.15 * math.sin(p - 1.0)))
+
+
+def _walk_clip():
+    dust = [{"kind": "dust", "ground": (AXLES[0] - 12.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 40 + f,
+             "spread": 0.9, "dir": -1.0} for f in range(8)]
+    ov = {0: [dust[0]], 2: [dust[2]], 4: [dust[4]], 6: [dust[6]]}
+    return M.clip("walk", [_walk(f) for f in range(8)], WALK_DUR, loop=True, overlays=ov)
 
 
 ATTACK_SEQ = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9]
@@ -253,14 +321,14 @@ BQ = [-0.01, -0.02, -0.03, -0.04, 0.02, 0.04, -0.08, 0.03, -0.01, 0.0]
 NK = [0, 4, 10, 14, 4, -6, -14, -10, -4, 0]
 HD = [0, 4, 8, 10, 2, -6, -10, -8, -2, 0]
 WHL = [-2, -6, -10, -12, -2, 8, 14, 10, 4, 0]
-OPEN = [0.0, 0.2, 0.6, 1.0, 1.0, 1.0, 1.0, 1.0, 0.6, 0.2]
-POKE = [0.0, 0.0, 0.0, 0.0, 0.2, 0.6, 1.0, 0.8, 0.2, 0.0]
+POKE = [0.0] * 10                     # the spearmen never jab in A or B (their own attack_alt)
+OPEN = [0.0, 0.0, 0.1, 0.2, 0.2, 0.2, 0.3, 0.3, 0.2, 0.0]   # they only peek and hold on
 
 
 def _attack_pose(f):
     r = BR[f]
     pivot = (AXLES[0], 0.0, 0.0) if r >= 0 else (AXLES[1], 0.0, 0.0)
-    pose = merge(M.body_about(pivot, x=BX[f], q=BQ[f], r=r), _wheels(WHL[f]), {
+    pose = merge(M.body_about(pivot, x=BX[f], q=BQ[f], r=r), _wheels(WHL[f]), _crew(brace=min(1.0, 0.3 + 0.12 * f)), {
         "neck": {"r": NK[f]}, "head": {"r": HD[f]}, "tail": {"r": -3 * r}, "pennant": {"r": -2 * r},
     }, _hatch(0, OPEN[f], POKE[f], OPEN[f]), _hatch(1, OPEN[f], POKE[max(0, f - 1)], OPEN[f]))
     if f in (2, 3):
@@ -287,6 +355,68 @@ def _attack_clip():
     }
     return M.clip("attack", [_attack_pose(f) for f in range(10)], M.HEAVY_MELEE_MS,
                   impact=6, smear=4, sequence=ATTACK_SEQ, overlays=ov)
+
+
+# -- attack B: the head hammer (the neck swings back on its hinge, the hull stays level) ---------------
+# 0 = A shift, 1 brace, 2 swing back, 3 HOLD (the neck swung far back, the head over the hull, the
+# hull level and squatting), 4-5 the hammer (smear), 6 IMPACT (the head hammered down and forward into
+# the gate), 7 shock, 8-9 = A's
+#      brace back HOLD ham  ham  IMP  shock
+HB_NK = [6, 26, 40, 20, -10, -26, -20]
+HB_HD = [4, 14, 20, 8, -10, -18, -14]
+HB_R = [0.0, -1.0, -1.5, 0.0, -2.0, -4.0, -2.5]
+HB_X = [0.0, -1.0, -1.5, 1.0, 3.0, 5.0, 4.0]
+HB_Q = [-0.02, -0.04, -0.05, 0.02, 0.03, -0.07, 0.02]
+HB_W = [-1, -3, -4, 0, 4, 8, 6]
+
+
+def _b_pose(i):
+    if i == 0 or i >= 8:
+        return _attack_pose(i)
+    k = i - 1
+    r = HB_R[k]
+    pivot = (AXLES[0], 0.0, 0.0) if r >= 0 else (AXLES[1], 0.0, 0.0)
+    pose = merge(M.body_about(pivot, x=HB_X[k], q=HB_Q[k], r=r), _wheels(HB_W[k]), _crew(brace=0.8), {
+        "neck": {"r": HB_NK[k]}, "head": {"r": HB_HD[k]}, "tail": {"r": 4 * k - 8},
+    }, _hatch(0, 0.2, 0.0, 0.2), _hatch(1, 0.2, 0.0, 0.2))
+    pose = merge(pose, {"brow": {"z": -1.0}}, F.expr("squeeze", mouth=None) if i == 6 else {})
+    return pose
+
+
+def _attack_b():
+    ov = {
+        4: [{"kind": "arc", "joint": "head", "inner": (40.0, 0.0, 80.0), "outer": NOSE, "color": WOOD,
+             "white": 0.3, "taper": 0.2, "lines": 3, "from": 3, "t1": 0.95}],
+        5: [{"kind": "arc", "joint": "head", "inner": (40.0, 0.0, 80.0), "outer": NOSE, "color": WOOD,
+             "white": 0.3, "taper": 0.2, "lines": 3, "from": 4, "t0": 0.2, "t1": 0.95}],
+        6: [{"kind": "burst", "joint": "head", "point": NOSE, "r0_lu": 8.0, "r1_lu": 17.0, "n": 6,
+             "a0": -110.0, "arc": 160.0},
+            {"kind": "dust", "ground": (34.0, 0.0), "size_lu": 8.0, "puffs": 4, "seed": 31, "spread": 1.2}],
+    }
+    reuse = {0: ("attack", 0), 8: ("attack", 8), 9: ("attack", 9)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(10)], M.HEAVY_MELEE_MS, impact=6,
+                  sequence=ATTACK_SEQ, overlays=ov, reuse=reuse)
+
+
+# -- attack_alt: the hatch spearmen's own attack (ANIM_SPEC R3), played while the horse stands -------
+# the horse holds idle pose 0; both hatches swing open and the spearmen draw back and jab out
+ALT_MS = [100, 140, 200, 160, 200, 200]       # 1000 ms, the jab at 440 ms (warped to the rider wind-up)
+ALT_SEQ = [0, 1, 2, 3, 4, 0]
+ALT_OPEN = [0.0, 0.8, 1.0, 1.0, 0.7]
+ALT_POKE = [0.0, -0.4, -0.6, 1.0, 0.5]
+
+
+def _alt_pose(i):
+    pose = _idle(0)
+    if i == 0:
+        return pose
+    return merge(pose, _hatch(0, ALT_OPEN[i], ALT_POKE[i], ALT_OPEN[i]),
+                 _hatch(1, ALT_OPEN[i], ALT_POKE[max(1, i - 1)] if i == 3 else ALT_POKE[i], ALT_OPEN[i]))
+
+
+def _attack_alt():
+    return M.clip("attack_alt", [_alt_pose(i) for i in range(5)], ALT_MS, impact=3, sequence=ALT_SEQ,
+                  reuse={0: ("idle", 0)}, extra={"noMuzzle": True})
 
 
 def _hit(k):
@@ -324,6 +454,11 @@ def _die(k):
         if path[k] is not None:
             x, z, r = path[k]
             pose[name] = {"show": True, "x": x, "z": z, "r": r}
+    # the pusher stumbles back from the collapsing horse and fades out (he is not one of the riders)
+    back = [0, -3, -7, -11, -14, -16, -16, -16][k]
+    fade = [1.0, 1.0, 0.85, 0.55, 0.25, 0.0, 0.0, 0.0][k]
+    for n, r in (("c_body", -10), ("c_l", 18), ("c_r", -22)):
+        pose[n] = {"x": back, "r": r * min(1.0, k / 2), "alpha": fade, "hide": fade < 0.02}
     if k == 0:
         pose = merge(pose, F.expr("squeeze", mouth=None))
     elif k >= 3:
@@ -335,10 +470,12 @@ def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(M.IDLE_FRAMES_HEAVY)],
                [M.IDLE_MS_HEAVY] * M.IDLE_FRAMES_HEAVY, loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], [WALK_MS] * 8, loop=True),
+        _walk_clip(),
         _attack_clip(),
+        _attack_b(),
+        _attack_alt(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(8)], M.DIE_MS_HEAVY, sequence=M.DIE_SEQ_HEAVY,
                extra=M.die_meta(HEIGHT_LU, heavy=True)),
     ]
-    return M.check_contract(cl, heavy=True)
+    return M.check_variants(M.check_contract(cl, heavy=True))

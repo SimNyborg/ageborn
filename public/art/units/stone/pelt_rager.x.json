@@ -1,0 +1,723 @@
+{
+ "frames": {
+  "pelt_rager_attack_b_01": {
+   "frame": {
+    "x": 425,
+    "y": 2,
+    "w": 61,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 93,
+    "w": 61,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_b_01_team": {
+   "frame": {
+    "x": 190,
+    "y": 195,
+    "w": 48,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 106,
+    "w": 48,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_b_02": {
+   "frame": {
+    "x": 167,
+    "y": 104,
+    "w": 56,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 97,
+    "w": 56,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_b_02_team": {
+   "frame": {
+    "x": 311,
+    "y": 195,
+    "w": 54,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 110,
+    "w": 54,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_b_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 68,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 88,
+    "w": 68,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_b_03_team": {
+   "frame": {
+    "x": 368,
+    "y": 104,
+    "w": 57,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 104,
+    "w": 57,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_b_04": {
+   "frame": {
+    "x": 227,
+    "y": 104,
+    "w": 82,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 100,
+    "w": 82,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_b_04_team": {
+   "frame": {
+    "x": 369,
+    "y": 195,
+    "w": 66,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 115,
+    "w": 66,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_b_05": {
+   "frame": {
+    "x": 251,
+    "y": 2,
+    "w": 68,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 88,
+    "w": 68,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 195,
+    "w": 56,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 104,
+    "w": 56,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_c_01": {
+   "frame": {
+    "x": 323,
+    "y": 2,
+    "w": 98,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 72,
+    "y": 88,
+    "w": 98,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_c_01_team": {
+   "frame": {
+    "x": 429,
+    "y": 104,
+    "w": 72,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 100,
+    "w": 72,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_c_02": {
+   "frame": {
+    "x": 2,
+    "y": 104,
+    "w": 55,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 93,
+    "w": 55,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_c_02_team": {
+   "frame": {
+    "x": 136,
+    "y": 195,
+    "w": 50,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 103,
+    "w": 50,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_c_03": {
+   "frame": {
+    "x": 155,
+    "y": 2,
+    "w": 92,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 72,
+    "y": 87,
+    "w": 92,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_c_03_team": {
+   "frame": {
+    "x": 62,
+    "y": 195,
+    "w": 70,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 104,
+    "w": 70,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_c_04": {
+   "frame": {
+    "x": 61,
+    "y": 104,
+    "w": 102,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 95,
+    "w": 102,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_c_04_team": {
+   "frame": {
+    "x": 242,
+    "y": 195,
+    "w": 65,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 107,
+    "w": 65,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_c_05": {
+   "frame": {
+    "x": 74,
+    "y": 2,
+    "w": 77,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 85,
+    "w": 77,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  },
+  "pelt_rager_attack_c_05_team": {
+   "frame": {
+    "x": 313,
+    "y": 104,
+    "w": 51,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 99,
+    "w": 51,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 198
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.86869
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "pelt_rager_attack_00",
+   "pelt_rager_attack_b_01",
+   "pelt_rager_attack_b_01",
+   "pelt_rager_attack_b_02",
+   "pelt_rager_attack_b_03",
+   "pelt_rager_attack_b_03",
+   "pelt_rager_attack_b_04",
+   "pelt_rager_attack_b_05",
+   "pelt_rager_attack_b_05",
+   "pelt_rager_attack_09",
+   "pelt_rager_attack_10"
+  ],
+  "attack_b_team": [
+   "pelt_rager_attack_00_team",
+   "pelt_rager_attack_b_01_team",
+   "pelt_rager_attack_b_01_team",
+   "pelt_rager_attack_b_02_team",
+   "pelt_rager_attack_b_03_team",
+   "pelt_rager_attack_b_03_team",
+   "pelt_rager_attack_b_04_team",
+   "pelt_rager_attack_b_05_team",
+   "pelt_rager_attack_b_05_team",
+   "pelt_rager_attack_09_team",
+   "pelt_rager_attack_10_team"
+  ],
+  "attack_c": [
+   "pelt_rager_attack_00",
+   "pelt_rager_attack_c_01",
+   "pelt_rager_attack_c_01",
+   "pelt_rager_attack_c_02",
+   "pelt_rager_attack_c_03",
+   "pelt_rager_attack_c_03",
+   "pelt_rager_attack_c_04",
+   "pelt_rager_attack_c_05",
+   "pelt_rager_attack_c_05",
+   "pelt_rager_attack_09",
+   "pelt_rager_attack_10"
+  ],
+  "attack_c_team": [
+   "pelt_rager_attack_00_team",
+   "pelt_rager_attack_c_01_team",
+   "pelt_rager_attack_c_01_team",
+   "pelt_rager_attack_c_02_team",
+   "pelt_rager_attack_c_03_team",
+   "pelt_rager_attack_c_03_team",
+   "pelt_rager_attack_c_04_team",
+   "pelt_rager_attack_c_05_team",
+   "pelt_rager_attack_c_05_team",
+   "pelt_rager_attack_09_team",
+   "pelt_rager_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "pelt_rager.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 512,
+   "h": 268
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.pelt_rager",
+   "name": "Pelt Rager",
+   "heightLu": 68,
+   "widthLu": 44.7,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    119.0,
+    172.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     66
+    ],
+    "hitCenter": [
+     0,
+     31
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "pelt_rager",
+   "clips": {
+    "attack_b": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      3,
+      4,
+      5,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 4,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        15.2,
+        46.6
+       ],
+       [
+        15.6,
+        14.1
+       ],
+       [
+        6.4,
+        16.6
+       ],
+       [
+        31.0,
+        16.1
+       ],
+       [
+        45.8,
+        14.0
+       ],
+       [
+        37.8,
+        21.2
+       ],
+       [
+        24.7,
+        41.1
+       ],
+       [
+        15.8,
+        47.7
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      3,
+      4,
+      5,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 4,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        15.2,
+        46.6
+       ],
+       [
+        32.2,
+        36.1
+       ],
+       [
+        -1.3,
+        40.1
+       ],
+       [
+        -29.9,
+        26.5
+       ],
+       [
+        38.7,
+        18.0
+       ],
+       [
+        31.9,
+        15.8
+       ],
+       [
+        24.7,
+        41.1
+       ],
+       [
+        15.8,
+        47.7
+       ]
+      ]
+     },
+     "holdStep": 3
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

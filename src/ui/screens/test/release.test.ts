@@ -15,11 +15,11 @@ import { albumProgress, ARMY_FILTER, armyCards, candidates } from '../model/plan
 const gated = (id: string): boolean => PAUSED_WAVE_IDS.has(id);
 
 describe('release gate (screens)', () => {
-  it('the Card Album lists no held-back card, and counts 17 Stone cards', () => {
+  it('the Card Album lists no held-back card, and counts 34 Stone cards (17 plus the shipped Stone wave)', () => {
     expect(dexOrder(content).map((x) => x.id).filter(gated)).toEqual([]);
     const dex = dexOf(maxedSave(content), content);
     expect(dex.ages.flatMap((a) => a.entries.map((e) => e.id)).filter(gated)).toEqual([]);
-    expect(dex.ages.find((a) => a.age === 'stone')?.total).toBe(17);
+    expect(dex.ages.find((a) => a.age === 'stone')?.total).toBe(34);
     expect(albumProgress(maxedSave(content), content)).toEqual({ owned: dex.total, total: dex.total });
   });
 
@@ -36,9 +36,9 @@ describe('release gate (screens)', () => {
 
   it('collection filters, completion and skin pickers skip held-back cards and skins', () => {
     expect(filterCards(maxedSave(content), content, NO_FILTER).filter(gated)).toEqual([]);
-    expect(collectionProgress(maxedSave(content), content).total).toBe(88);
-    expect(skinsFor(content, 'pebbler').map((k) => k.id)).toEqual([]);
-    expect(skinsFor(content, 'sabertooth').map((k) => k.id)).toEqual([]);
+    expect(collectionProgress(maxedSave(content), content).total).toBe(133);
+    expect(skinsFor(content, 'pebbler').map((k) => k.id)).toEqual(['snowball_pebbler']);
+    expect(skinsFor(content, 'sabertooth').map((k) => k.id)).toEqual(['fossil_sabertooth']);
     expect(skinsFor(content, 'bonker').map((k) => k.id)).toEqual(['pumpkin_head']);
   });
 });

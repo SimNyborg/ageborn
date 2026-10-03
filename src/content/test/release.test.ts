@@ -34,14 +34,14 @@ function metaCardIds(c: typeof content): { where: string; id: CardId }[] {
 }
 
 describe('the release gate (content)', () => {
-  it('holds back exactly the paused Stone wave: 14 troops (with the summon), 2 turrets, 2 forts, 2 powers, 3 skins', () => {
+  it('holds back exactly the gated wave (tests/fixtures/pausedWave.ts; the Stone wave shipped 2026-10-03)', () => {
     expect(content.order.unreleased).toEqual(GATED);
     expect(unreleasedIds(content)).toEqual(GATED);
     expect(full.order.unreleased).toEqual([]);
     for (const id of GATED) expect(isReleased(content, id), id).toBe(false);
   });
 
-  it('keeps every held-back card in the records, with its new mechanics, for the sim, tests and the later wave', () => {
+  it('keeps the X0 mechanics in the records (the shipped Stone wave: squad, summon, frenzy, lane reach)', () => {
     expect(content.units.hunting_wolves?.squad).toEqual({ count: 2 });
     expect(content.units.beast_caller?.abilities.some((a) => a.kind === 'summon')).toBe(true);
     expect(content.units.cave_pup?.summon).toBe(true);
@@ -69,11 +69,11 @@ describe('the release gate (content)', () => {
     expect(metaCardIds(full).some((x) => gated(x.id))).toBe(true);
   });
 
-  it('removes the War Path side nodes whose rewards are held back (Stone s1 Tangle Vines, s2 Thorn Hedge)', () => {
-    expect(content.warPath.levels['wp.stone.s1']).toBeUndefined();
-    expect(content.warPath.levels['wp.stone.s2']).toBeUndefined();
-    expect(content.warPath.regions.find((r) => r.age === 'stone')?.sides).toBeUndefined();
-    expect(full.warPath.regions.find((r) => r.age === 'stone')?.sides).toEqual(['wp.stone.s1', 'wp.stone.s2']);
+  it('keeps the shipped Stone side nodes (s1 Tangle Vines, s2 Thorn Hedge) and drops only gated rewards', () => {
+    expect(content.warPath.levels['wp.stone.s1']).toBeDefined();
+    expect(content.warPath.levels['wp.stone.s2']).toBeDefined();
+    expect(content.warPath.regions.find((r) => r.age === 'stone')?.sides).toEqual(['wp.stone.s1', 'wp.stone.s2']);
+    for (const l of Object.values(content.warPath.levels)) expect(l.reward.card ? gated(l.reward.card) : false, l.id).toBe(false);
     // Main path unchanged.
     expect(content.warPath.order).toEqual(full.warPath.order);
   });
@@ -88,12 +88,9 @@ describe('the release gate (content)', () => {
         expect(filled(l.turrets), `${g.id}.${age} turrets`).toBe(filled(before.turrets));
       }
     }
-    // Kettle's Stone plan is the pre-wave five again.
-    expect(content.generals.list.kettle.warPlan?.stone?.units).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth', null]);
-    expect(content.generals.list.kettle.warPlan?.stone?.turrets).toEqual(['angry_beehive', 'rock_tosser']);
-    // Tempest's two wave powers fall back to the Stone starters.
-    const stoneStarter = (slot: 'home' | 'field') => content.order.powers.find((p) => content.powers[p]?.age === 'stone' && content.powers[p]?.slot === slot && content.powers[p]?.source === 'starter');
-    expect(content.generals.list.tempest.warPlan?.stone?.powers).toEqual({ home: stoneStarter('home'), field: stoneStarter('field') });
+    // The Stone wave shipped: Kettle's and Tempest's Stone plans carry their wave cards again.
+    expect(content.generals.list.kettle.warPlan?.stone).toEqual(full.generals.list.kettle.warPlan?.stone);
+    expect(content.generals.list.tempest.warPlan?.stone?.powers).toEqual({ home: 'tangle_vines', field: 'pebble_hail' });
   });
 
   it('leaves released cards unaffected', () => {

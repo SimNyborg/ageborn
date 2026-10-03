@@ -54,9 +54,12 @@ describe('scale and width (A11)', () => {
   it.each([...units, ...skins.filter((s) => s.kind === 'unit')].map((p) => [p.id, p] as const))('%s: body width within 1.4x the collision width', (_id, p) => {
     expect(bodyWidth(p, getPart)).toBeLessThanOrEqual(maxBodyWidth(p) + 0.01);
   });
+  // X0 squads and summons draw small by design (CONTENT_PLAN 5.1: a wolf of a pair at 50 lu, a summoned pup at 0.8x;
+  // 5.3: the summoned War Hound, and the Lindworm, a long, low wingless dragon whose bulk is its length).
+  const SMALL_BY_DESIGN = new Set(['unit.hunting_wolves', 'unit.cave_pup', 'unit.war_hound', 'unit.lindworm']);
   it.each(units.map((p) => [p.id, p] as const))('%s: height in its A11 band, heightLu matches the drawing', (_id, p) => {
     const h = restHeight(p, getPart);
-    const band = heightBand(p);
+    const band = SMALL_BY_DESIGN.has(p.id) ? null : heightBand(p);
     if (band) {
       expect(h).toBeGreaterThanOrEqual(band[0]);
       expect(h).toBeLessThanOrEqual(band[1]);
@@ -104,6 +107,15 @@ describe('team readability (A11)', () => {
         'unit.steam_golem',
         'unit.land_dreadnought',
         'unit.hover_tank',
+        // X0 Stone wave
+        'unit.woolly_rhino',
+        'unit.elk_chieftain',
+        // Medieval wave
+        'unit.greatsword_knight',
+        'unit.lindworm',
+        // Gunpowder wave
+        'unit.dragoon',
+        'unit.grand_marshal',
       ].sort(),
     );
   });

@@ -9,7 +9,7 @@
  * 3. Otherwise the attack whiffs; the cooldown stays spent.
  * Only attack 0 stops movement; secondary attacks (riders, the Behemoth MG) fire whenever they have a target.
  */
-import { BP, roundDiv } from '@/core';
+import { BP, randRange, roundDiv } from '@/core';
 import { isLeaping, isStunned, makeImpact, statusBp, unitAttackSpeedBp, unitDamageBonusBp } from '../damage';
 import { emit } from '../events';
 import { xOf } from '../geometry';
@@ -139,6 +139,9 @@ function resolveWindup(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number, a: AttackR
   }
   const toX = st.targetId === BASE_TARGET ? xOf(0, other(u.side)) : (findUnit(ctx, st.targetId)?.x ?? u.x);
   for (let v = 0; v < a.volley; v += 1) {
+    // A unit volley with scatter (SIM_VERSION 7.2.0, Gunpowder wave: the Rocket Cart) lands each projectile
+    // within ±scatter of the aim point, like the Congreve turret (sim RNG; no draw when scatter is 0).
+    const jitter = a.scatter > 0 ? randRange(ctx.s.rng, -a.scatter, a.scatter) : 0;
     fireProjectile(ctx, {
       side: u.side,
       sourceId: u.id,
@@ -150,7 +153,7 @@ function resolveWindup(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number, a: AttackR
       attackIndex: ai,
       targetId: st.targetId,
       fromX: u.x,
-      toX,
+      toX: toX + jitter,
       dmg,
       vsBase,
       dmgBuffBp: buff,

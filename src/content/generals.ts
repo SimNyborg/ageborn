@@ -98,9 +98,9 @@ const PIP: Plan = {
 
 const KETTLE: Plan = {
   stone: lo(['hunting_wolves', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth', 'torch_runner'], ['angry_beehive', 'rock_tosser'], 'stampede'),
-  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer'], ['sun_mirror', 'archer_tower'], 'aegis'),
-  medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'battering_ram'], ['pitch_cauldron', 'crossbow_nest'], 'royal_decree'),
-  gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'field_surgeon'], ['grapeshot_gun', 'swivel_gun'], 'smoke_screen'),
+  bronze: lo(['hoplite', 'rhodian_slingers', 'war_chariot', 'phalangite', 'amazon_rider', 'thracian_raider'], ['sun_mirror', 'archer_tower'], 'aegis'),
+  medieval: lo(['squire_pair', 'longbowman', 'destrier_knight', 'pikeman', 'battering_ram', 'brigand'], ['pitch_cauldron', 'crossbow_nest'], 'royal_decree'),
+  gunpowder: lo(['voltigeurs', 'corsair', 'cuirassier', 'grenadier', 'hussar', 'powder_monkey'], ['grapeshot_gun', 'swivel_gun'], 'smoke_screen'),
   industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'sapper'], ['gatling_gun', 'mortar_pit'], 'iron_horse'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'gyrocopter'], ['mg_nest', 'flak_gun'], 'paratroopers'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'emp_saboteur'], ['pulse_laser', 'arc_coil'], 'orbital_lance'),
@@ -109,9 +109,9 @@ const KETTLE: Plan = {
 
 const MOSS: Plan = {
   stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'herbalist', 'hide_shield'], ['log_roller', 'grumpy_toad'], 'stampede'),
-  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer'], ['onager', 'gorgon_bust'], 'tidal_wave'),
-  medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar'], ['trebuchet', 'pitch_cauldron'], 'arrow_storm'),
-  gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'field_surgeon'], ['grapeshot_gun', 'chainshot_cannon'], 'smoke_screen'),
+  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer', 'shield_bearer'], ['onager', 'gorgon_bust'], 'tidal_wave'),
+  medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'herald', 'crossbowman'], ['trebuchet', 'pitch_cauldron'], 'arrow_storm'),
+  gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'drummer_boy', 'highlander'], ['grapeshot_gun', 'carronade'], 'smoke_screen'),
   industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'flare_spotter'], ['boiler_mortar', 'tesla_tower'], 'iron_horse'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'radio_operator'], ['howitzer', 'flak_gun'], 'paratroopers'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'repair_drone'], ['gravity_well', 'arc_coil'], 'orbital_lance'),
@@ -120,9 +120,9 @@ const MOSS: Plan = {
 
 const LEDGER: Plan = {
   stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman', 'beast_caller'], ['rock_tosser', 'angry_beehive'], 'stampede'),
-  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer'], ['archer_tower', 'onager'], 'aegis'),
-  medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar'], ['crossbow_nest', 'honk_ballista'], 'royal_decree'),
-  gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'bronze_cannon'], ['swivel_gun', 'congreve_rack'], 'broadside'),
+  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'aulos_piper', 'wooden_horse'], ['archer_tower', 'onager'], 'aegis'),
+  medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'kennel_master', 'siege_belfry'], ['crossbow_nest', 'honk_ballista'], 'royal_decree'),
+  gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'bronze_cannon', 'drummer_boy'], ['swivel_gun', 'congreve_rack'], 'broadside'),
   industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'sapper'], ['gatling_gun', 'tesla_tower'], 'zeppelin_raid'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'gyrocopter'], ['mg_nest', 'searchlight_sniper'], 'carpet_bomber'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'emp_saboteur'], ['pulse_laser', 'plasma_mortar'], 'nanite_surge'),
@@ -131,9 +131,9 @@ const LEDGER: Plan = {
 
 const BOOMSWORTH: Plan = {
   stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman', 'atlatl_thrower'], ['rock_tosser', 'sapling_sling'], 'meteor_shower'),
-  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'scorpion'], ['onager', 'archer_tower'], 'tidal_wave'),
-  medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar'], ['trebuchet', 'crossbow_nest'], 'arrow_storm'),
-  gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'bronze_cannon'], ['congreve_rack', 'swivel_gun'], 'broadside'),
+  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'scorpion', 'cretan_archer'], ['onager', 'polybolos'], 'tidal_wave'),
+  medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'mangonel_cart', 'yeoman_archer'], ['trebuchet', 'springald'], 'arrow_storm'),
+  gunpowder: lo(['corsair', 'coehorn_crew', 'cuirassier', 'grenadier', 'bronze_cannon', 'rocket_cart'], ['sea_mortar', 'swivel_gun'], 'broadside'),
   industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'flare_spotter'], ['boiler_mortar', 'mortar_pit'], 'zeppelin_raid'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'radio_operator'], ['howitzer', 'mg_nest'], 'carpet_bomber'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'repair_drone'], ['plasma_mortar', 'pulse_laser'], 'orbital_lance'),
@@ -142,9 +142,9 @@ const BOOMSWORTH: Plan = {
 
 const TWINS: Plan = {
   stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth', 'boulder_hurler'], ['rock_tosser', 'grumpy_toad'], 'stampede'),
-  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'scorpion'], ['archer_tower', 'gorgon_bust'], 'tidal_wave'),
-  medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar'], ['crossbow_nest', 'honk_ballista'], 'arrow_storm'),
-  gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'field_surgeon'], ['swivel_gun', 'chainshot_cannon'], 'smoke_screen'),
+  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'tragic_chorus', 'belly_bowman'], ['archer_tower', 'gorgon_bust'], 'tidal_wave'),
+  medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar', 'warhammer_sergeant'], ['crossbow_nest', 'honk_ballista'], 'arrow_storm'),
+  gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'bagpiper', 'wall_gunner'], ['swivel_gun', 'chainshot_cannon'], 'smoke_screen'),
   industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'sapper'], ['gatling_gun', 'tesla_tower'], 'iron_horse'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'gyrocopter'], ['flak_gun', 'searchlight_sniper'], 'paratroopers'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'emp_saboteur'], ['arc_coil', 'gravity_well'], 'orbital_lance'),
@@ -153,9 +153,9 @@ const TWINS: Plan = {
 
 const ROOK: Plan = {
   stone: lo(['bonker', 'pebbler', 'woolly_rhino', 'spear_hunter', 'drum_shaman', 'bolas_thrower'], ['quill_porcupine', 'grumpy_toad'], 'stampede'),
-  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'scorpion'], ['sun_mirror', 'onager'], 'tidal_wave'),
-  medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'battering_ram'], ['crossbow_nest', 'trebuchet'], 'arrow_storm'),
-  gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'bronze_cannon'], ['swivel_gun', 'congreve_rack'], 'smoke_screen'),
+  bronze: lo(['hoplite', 'javelineer', 'war_elephant', 'phalangite', 'scorpion', 'discus_thrower'], ['net_caster', 'onager'], 'tidal_wave'),
+  medieval: lo(['footman', 'longbowman', 'greatsword_knight', 'pikeman', 'battering_ram', 'flailman'], ['grapple_crane', 'trebuchet'], 'arrow_storm'),
+  gunpowder: lo(['corsair', 'fusilier', 'dragoon', 'grenadier', 'bronze_cannon', 'blunderbuss'], ['carronade', 'congreve_rack'], 'smoke_screen'),
   industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'flare_spotter'], ['mortar_pit', 'boiler_mortar'], 'iron_horse'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'gyrocopter'], ['flak_gun', 'howitzer'], 'paratroopers'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'emp_saboteur'], ['pulse_laser', 'gravity_well'], 'orbital_lance'),
@@ -164,9 +164,9 @@ const ROOK: Plan = {
 
 const TEMPEST: Plan = {
   stone: lo(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman', 'rockfall_shaman'], ['rock_tosser', 'angry_beehive'], 'tangle_vines', 'pebble_hail'),
-  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer'], ['archer_tower', 'gorgon_bust'], 'tidal_wave'),
-  medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar'], ['crossbow_nest', 'honk_ballista'], 'arrow_storm'),
-  gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'field_surgeon'], ['swivel_gun', 'chainshot_cannon'], 'broadside'),
+  bronze: lo(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer', 'minotaur'], ['archer_tower', 'gorgon_bust'], 'charybdis', 'sandstorm'),
+  medieval: lo(['footman', 'longbowman', 'destrier_knight', 'pikeman', 'friar', 'alchemist'], ['crossbow_nest', 'honk_ballista'], 'great_bell', 'longbow_volley'),
+  gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'field_surgeon', 'mesmerist'], ['swivel_gun', 'chainshot_cannon'], 'cannon_salute', 'rocket_volley'),
   industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'flare_spotter'], ['gatling_gun', 'tesla_tower'], 'zeppelin_raid'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'radio_operator'], ['mg_nest', 'searchlight_sniper'], 'carpet_bomber'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'repair_drone'], ['pulse_laser', 'gravity_well'], 'orbital_lance'),

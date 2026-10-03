@@ -1,0 +1,731 @@
+{
+ "frames": {
+  "cave_bear_attack_b_01": {
+   "frame": {
+    "x": 1082,
+    "y": 2,
+    "w": 274,
+    "h": 281
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 231,
+    "y": 235,
+    "w": 274,
+    "h": 281
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_b_01_team": {
+   "frame": {
+    "x": 1175,
+    "y": 308,
+    "w": 174,
+    "h": 243
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 240,
+    "y": 246,
+    "w": 174,
+    "h": 243
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_b_02": {
+   "frame": {
+    "x": 1643,
+    "y": 2,
+    "w": 277,
+    "h": 270
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 244,
+    "w": 277,
+    "h": 270
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_b_02_team": {
+   "frame": {
+    "x": 1353,
+    "y": 308,
+    "w": 175,
+    "h": 233
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 236,
+    "y": 255,
+    "w": 175,
+    "h": 233
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_b_03": {
+   "frame": {
+    "x": 265,
+    "y": 2,
+    "w": 271,
+    "h": 301
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 239,
+    "y": 220,
+    "w": 271,
+    "h": 301
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_b_03_team": {
+   "frame": {
+    "x": 1924,
+    "y": 2,
+    "w": 195,
+    "h": 268
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 265,
+    "y": 224,
+    "w": 195,
+    "h": 268
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 308,
+    "w": 319,
+    "h": 263
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 237,
+    "y": 249,
+    "w": 319,
+    "h": 263
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_b_04_team": {
+   "frame": {
+    "x": 1532,
+    "y": 308,
+    "w": 207,
+    "h": 232
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 272,
+    "y": 256,
+    "w": 207,
+    "h": 232
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_b_05": {
+   "frame": {
+    "x": 801,
+    "y": 2,
+    "w": 277,
+    "h": 282
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 255,
+    "y": 237,
+    "w": 277,
+    "h": 282
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_b_05_team": {
+   "frame": {
+    "x": 985,
+    "y": 308,
+    "w": 186,
+    "h": 243
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 274,
+    "y": 249,
+    "w": 186,
+    "h": 243
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_c_01": {
+   "frame": {
+    "x": 1360,
+    "y": 2,
+    "w": 279,
+    "h": 274
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 232,
+    "y": 235,
+    "w": 279,
+    "h": 274
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_c_01_team": {
+   "frame": {
+    "x": 1743,
+    "y": 308,
+    "w": 178,
+    "h": 227
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 235,
+    "y": 246,
+    "w": 178,
+    "h": 227
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_c_02": {
+   "frame": {
+    "x": 509,
+    "y": 308,
+    "w": 281,
+    "h": 260
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 245,
+    "w": 281,
+    "h": 260
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_c_02_team": {
+   "frame": {
+    "x": 2136,
+    "y": 308,
+    "w": 180,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 234,
+    "y": 256,
+    "w": 180,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_c_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 259,
+    "h": 302
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 254,
+    "y": 226,
+    "w": 259,
+    "h": 302
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_c_03_team": {
+   "frame": {
+    "x": 325,
+    "y": 308,
+    "w": 180,
+    "h": 263
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 256,
+    "y": 234,
+    "w": 180,
+    "h": 263
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_c_04": {
+   "frame": {
+    "x": 2123,
+    "y": 2,
+    "w": 290,
+    "h": 264
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 239,
+    "y": 247,
+    "w": 290,
+    "h": 264
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_c_04_team": {
+   "frame": {
+    "x": 1925,
+    "y": 308,
+    "w": 207,
+    "h": 224
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 274,
+    "y": 255,
+    "w": 207,
+    "h": 224
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_c_05": {
+   "frame": {
+    "x": 540,
+    "y": 2,
+    "w": 257,
+    "h": 291
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 257,
+    "y": 225,
+    "w": 257,
+    "h": 291
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  },
+  "cave_bear_attack_c_05_team": {
+   "frame": {
+    "x": 794,
+    "y": 308,
+    "w": 187,
+    "h": 251
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 269,
+    "y": 238,
+    "w": 187,
+    "h": 251
+   },
+   "sourceSize": {
+    "w": 650,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.52923,
+    "y": 0.88129
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "cave_bear_attack_00",
+   "cave_bear_attack_b_01",
+   "cave_bear_attack_b_01",
+   "cave_bear_attack_b_02",
+   "cave_bear_attack_b_03",
+   "cave_bear_attack_b_03",
+   "cave_bear_attack_b_04",
+   "cave_bear_attack_b_05",
+   "cave_bear_attack_08",
+   "cave_bear_attack_08",
+   "cave_bear_attack_09",
+   "cave_bear_attack_09"
+  ],
+  "attack_b_team": [
+   "cave_bear_attack_00_team",
+   "cave_bear_attack_b_01_team",
+   "cave_bear_attack_b_01_team",
+   "cave_bear_attack_b_02_team",
+   "cave_bear_attack_b_03_team",
+   "cave_bear_attack_b_03_team",
+   "cave_bear_attack_b_04_team",
+   "cave_bear_attack_b_05_team",
+   "cave_bear_attack_08_team",
+   "cave_bear_attack_08_team",
+   "cave_bear_attack_09_team",
+   "cave_bear_attack_09_team"
+  ],
+  "attack_c": [
+   "cave_bear_attack_00",
+   "cave_bear_attack_c_01",
+   "cave_bear_attack_c_01",
+   "cave_bear_attack_c_02",
+   "cave_bear_attack_c_03",
+   "cave_bear_attack_c_03",
+   "cave_bear_attack_c_04",
+   "cave_bear_attack_c_05",
+   "cave_bear_attack_08",
+   "cave_bear_attack_08",
+   "cave_bear_attack_09",
+   "cave_bear_attack_09"
+  ],
+  "attack_c_team": [
+   "cave_bear_attack_00_team",
+   "cave_bear_attack_c_01_team",
+   "cave_bear_attack_c_01_team",
+   "cave_bear_attack_c_02_team",
+   "cave_bear_attack_c_03_team",
+   "cave_bear_attack_c_03_team",
+   "cave_bear_attack_c_04_team",
+   "cave_bear_attack_c_05_team",
+   "cave_bear_attack_08_team",
+   "cave_bear_attack_08_team",
+   "cave_bear_attack_09_team",
+   "cave_bear_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "cave_bear.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 2560,
+   "h": 576
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.cave_bear",
+   "name": "Cave Bear",
+   "heightLu": 92,
+   "widthLu": 106.5,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    344,
+    490
+   ],
+   "anchorsLu": {
+    "head": [
+     30,
+     76
+    ],
+    "hitCenter": [
+     0,
+     40
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "quad",
+   "extrasOf": "cave_bear",
+   "clips": {
+    "attack_b": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 4,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "anchorsLu": {
+      "pawR": [
+       [
+        30.7,
+        -0.6
+       ],
+       [
+        21.9,
+        -2.0
+       ],
+       [
+        15.2,
+        -1.3
+       ],
+       [
+        46.7,
+        -2.9
+       ],
+       [
+        56.7,
+        0.8
+       ],
+       [
+        47.9,
+        -1.9
+       ],
+       [
+        31.0,
+        -2.7
+       ],
+       [
+        31.6,
+        -1.4
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 4,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "anchorsLu": {
+      "pawR": [
+       [
+        30.7,
+        -0.6
+       ],
+       [
+        -8.9,
+        3.0
+       ],
+       [
+        -26.3,
+        22.3
+       ],
+       [
+        29.9,
+        -8.6
+       ],
+       [
+        57.4,
+        6.4
+       ],
+       [
+        47.3,
+        1.2
+       ],
+       [
+        31.0,
+        -2.7
+       ],
+       [
+        31.6,
+        -1.4
+       ]
+      ]
+     },
+     "holdStep": 3
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

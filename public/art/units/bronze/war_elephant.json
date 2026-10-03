@@ -1,0 +1,2520 @@
+{
+ "frames": {
+  "war_elephant_idle_00": {
+   "frame": {
+    "x": 2,
+    "y": 476,
+    "w": 130,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 87,
+    "w": 130,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_idle_00_team": {
+   "frame": {
+    "x": 739,
+    "y": 1011,
+    "w": 80,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 105,
+    "w": 80,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_idle_01": {
+   "frame": {
+    "x": 272,
+    "y": 328,
+    "w": 128,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 85,
+    "w": 128,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_idle_01_team": {
+   "frame": {
+    "x": 89,
+    "y": 1143,
+    "w": 79,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 104,
+    "w": 79,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_idle_02": {
+   "frame": {
+    "x": 657,
+    "y": 176,
+    "w": 126,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 81,
+    "w": 126,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_idle_02_team": {
+   "frame": {
+    "x": 411,
+    "y": 1011,
+    "w": 78,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 100,
+    "w": 78,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_idle_03": {
+   "frame": {
+    "x": 764,
+    "y": 2,
+    "w": 129,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 78,
+    "w": 129,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_idle_03_team": {
+   "frame": {
+    "x": 85,
+    "y": 1011,
+    "w": 77,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 98,
+    "w": 77,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_idle_04": {
+   "frame": {
+    "x": 2,
+    "y": 176,
+    "w": 131,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 79,
+    "w": 131,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_idle_04_team": {
+   "frame": {
+    "x": 166,
+    "y": 1011,
+    "w": 77,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 99,
+    "w": 77,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_idle_05": {
+   "frame": {
+    "x": 787,
+    "y": 176,
+    "w": 132,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 83,
+    "w": 132,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_idle_05_team": {
+   "frame": {
+    "x": 172,
+    "y": 1143,
+    "w": 79,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 104,
+    "w": 79,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_00": {
+   "frame": {
+    "x": 135,
+    "y": 328,
+    "w": 133,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 86,
+    "w": 133,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_00_team": {
+   "frame": {
+    "x": 86,
+    "y": 1078,
+    "w": 79,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 107,
+    "w": 79,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_01": {
+   "frame": {
+    "x": 149,
+    "y": 622,
+    "w": 142,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 91,
+    "w": 142,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_01_team": {
+   "frame": {
+    "x": 493,
+    "y": 1011,
+    "w": 78,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 112,
+    "w": 78,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_02": {
+   "frame": {
+    "x": 744,
+    "y": 476,
+    "w": 157,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 92,
+    "w": 157,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_02_team": {
+   "frame": {
+    "x": 335,
+    "y": 1078,
+    "w": 78,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 113,
+    "w": 78,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_03": {
+   "frame": {
+    "x": 668,
+    "y": 328,
+    "w": 162,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 88,
+    "w": 162,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_03_team": {
+   "frame": {
+    "x": 827,
+    "y": 1078,
+    "w": 77,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 107,
+    "w": 77,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_04": {
+   "frame": {
+    "x": 294,
+    "y": 476,
+    "w": 149,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 83,
+    "w": 149,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_04_team": {
+   "frame": {
+    "x": 417,
+    "y": 1078,
+    "w": 78,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 101,
+    "w": 78,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_05": {
+   "frame": {
+    "x": 295,
+    "y": 622,
+    "w": 138,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 82,
+    "w": 138,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_05_team": {
+   "frame": {
+    "x": 575,
+    "y": 1011,
+    "w": 78,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 100,
+    "w": 78,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_06": {
+   "frame": {
+    "x": 437,
+    "y": 622,
+    "w": 138,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 86,
+    "w": 138,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_06_team": {
+   "frame": {
+    "x": 169,
+    "y": 1078,
+    "w": 79,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 107,
+    "w": 79,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_07": {
+   "frame": {
+    "x": 2,
+    "y": 622,
+    "w": 143,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 91,
+    "w": 143,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_07_team": {
+   "frame": {
+    "x": 887,
+    "y": 907,
+    "w": 79,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 111,
+    "w": 79,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_08": {
+   "frame": {
+    "x": 736,
+    "y": 622,
+    "w": 150,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 91,
+    "w": 150,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_08_team": {
+   "frame": {
+    "x": 657,
+    "y": 1011,
+    "w": 78,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 112,
+    "w": 78,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_09": {
+   "frame": {
+    "x": 447,
+    "y": 476,
+    "w": 149,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 87,
+    "w": 149,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_09_team": {
+   "frame": {
+    "x": 499,
+    "y": 1078,
+    "w": 78,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 107,
+    "w": 78,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_10": {
+   "frame": {
+    "x": 834,
+    "y": 328,
+    "w": 136,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 82,
+    "w": 136,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_10_team": {
+   "frame": {
+    "x": 581,
+    "y": 1078,
+    "w": 78,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 101,
+    "w": 78,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_11": {
+   "frame": {
+    "x": 404,
+    "y": 328,
+    "w": 128,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 82,
+    "w": 128,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_walk_11_team": {
+   "frame": {
+    "x": 328,
+    "y": 1011,
+    "w": 79,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 100,
+    "w": 79,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_00": {
+   "frame": {
+    "x": 536,
+    "y": 328,
+    "w": 128,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 85,
+    "w": 128,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_00_team": {
+   "frame": {
+    "x": 823,
+    "y": 1011,
+    "w": 80,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 103,
+    "w": 80,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_01": {
+   "frame": {
+    "x": 450,
+    "y": 2,
+    "w": 146,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 76,
+    "w": 146,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_01_team": {
+   "frame": {
+    "x": 807,
+    "y": 907,
+    "w": 76,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 97,
+    "w": 76,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_02": {
+   "frame": {
+    "x": 300,
+    "y": 2,
+    "w": 146,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 70,
+    "w": 146,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_02_team": {
+   "frame": {
+    "x": 728,
+    "y": 907,
+    "w": 75,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 91,
+    "w": 75,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_03": {
+   "frame": {
+    "x": 155,
+    "y": 2,
+    "w": 141,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 67,
+    "w": 141,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_03_team": {
+   "frame": {
+    "x": 651,
+    "y": 907,
+    "w": 73,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 88,
+    "w": 73,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_04": {
+   "frame": {
+    "x": 600,
+    "y": 2,
+    "w": 160,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 77,
+    "w": 160,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_04_team": {
+   "frame": {
+    "x": 247,
+    "y": 1011,
+    "w": 77,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 98,
+    "w": 77,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_05": {
+   "frame": {
+    "x": 136,
+    "y": 476,
+    "w": 154,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 87,
+    "w": 154,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 1143,
+    "w": 83,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 105,
+    "w": 83,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_06": {
+   "frame": {
+    "x": 340,
+    "y": 766,
+    "w": 127,
+    "h": 134
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 93,
+    "w": 127,
+    "h": 134
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_06_team": {
+   "frame": {
+    "x": 908,
+    "y": 1078,
+    "w": 88,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 126,
+    "y": 107,
+    "w": 88,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_07": {
+   "frame": {
+    "x": 137,
+    "y": 176,
+    "w": 119,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 80,
+    "w": 119,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 1011,
+    "w": 79,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 128,
+    "y": 99,
+    "w": 79,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_08": {
+   "frame": {
+    "x": 2,
+    "y": 328,
+    "w": 129,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 84,
+    "w": 129,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_08_team": {
+   "frame": {
+    "x": 907,
+    "y": 1011,
+    "w": 80,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 103,
+    "w": 80,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_09": {
+   "frame": {
+    "x": 260,
+    "y": 176,
+    "w": 129,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 82,
+    "w": 129,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_attack_09_team": {
+   "frame": {
+    "x": 663,
+    "y": 1078,
+    "w": 78,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 102,
+    "w": 78,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_hit_00": {
+   "frame": {
+    "x": 579,
+    "y": 622,
+    "w": 153,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 88,
+    "w": 153,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_hit_00_team": {
+   "frame": {
+    "x": 517,
+    "y": 1143,
+    "w": 81,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 106,
+    "w": 81,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_hit_01": {
+   "frame": {
+    "x": 2,
+    "y": 766,
+    "w": 167,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 90,
+    "w": 167,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_hit_01_team": {
+   "frame": {
+    "x": 345,
+    "y": 1143,
+    "w": 82,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 107,
+    "w": 82,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_hit_02": {
+   "frame": {
+    "x": 600,
+    "y": 476,
+    "w": 140,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 86,
+    "w": 140,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_hit_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 1078,
+    "w": 80,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 104,
+    "w": 80,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_hit_03": {
+   "frame": {
+    "x": 393,
+    "y": 176,
+    "w": 128,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 82,
+    "w": 128,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_hit_03_team": {
+   "frame": {
+    "x": 252,
+    "y": 1078,
+    "w": 79,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 102,
+    "w": 79,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_hit_04": {
+   "frame": {
+    "x": 525,
+    "y": 176,
+    "w": 128,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 82,
+    "w": 128,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_hit_04_team": {
+   "frame": {
+    "x": 745,
+    "y": 1078,
+    "w": 78,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 102,
+    "w": 78,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_00": {
+   "frame": {
+    "x": 173,
+    "y": 766,
+    "w": 163,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 85,
+    "w": 163,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_00_team": {
+   "frame": {
+    "x": 431,
+    "y": 1143,
+    "w": 82,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 104,
+    "w": 82,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_01": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 149,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 56,
+    "w": 149,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_01_team": {
+   "frame": {
+    "x": 455,
+    "y": 907,
+    "w": 86,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 77,
+    "w": 86,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_02": {
+   "frame": {
+    "x": 471,
+    "y": 766,
+    "w": 165,
+    "h": 133
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 78,
+    "w": 165,
+    "h": 133
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_02_team": {
+   "frame": {
+    "x": 545,
+    "y": 907,
+    "w": 102,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 93,
+    "w": 102,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_03": {
+   "frame": {
+    "x": 279,
+    "y": 907,
+    "w": 172,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 121,
+    "w": 172,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_03_team": {
+   "frame": {
+    "x": 255,
+    "y": 1143,
+    "w": 86,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 157,
+    "w": 86,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_04": {
+   "frame": {
+    "x": 797,
+    "y": 766,
+    "w": 150,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 115,
+    "w": 150,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_04_team": {
+   "frame": {
+    "x": 764,
+    "y": 1143,
+    "w": 75,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 159,
+    "w": 75,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_05": {
+   "frame": {
+    "x": 640,
+    "y": 766,
+    "w": 153,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 117,
+    "w": 153,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_05_team": {
+   "frame": {
+    "x": 602,
+    "y": 1143,
+    "w": 77,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 160,
+    "w": 77,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_06": {
+   "frame": {
+    "x": 2,
+    "y": 907,
+    "w": 140,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 119,
+    "w": 140,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_06_team": {
+   "frame": {
+    "x": 683,
+    "y": 1143,
+    "w": 77,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 160,
+    "w": 77,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_07": {
+   "frame": {
+    "x": 146,
+    "y": 907,
+    "w": 129,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 123,
+    "w": 129,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  },
+  "war_elephant_die_07_team": {
+   "frame": {
+    "x": 843,
+    "y": 1143,
+    "w": 75,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 161,
+    "w": 75,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 308,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.53247,
+    "y": 0.85317
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "war_elephant_idle_00",
+   "war_elephant_idle_01",
+   "war_elephant_idle_02",
+   "war_elephant_idle_03",
+   "war_elephant_idle_04",
+   "war_elephant_idle_05"
+  ],
+  "idle_team": [
+   "war_elephant_idle_00_team",
+   "war_elephant_idle_01_team",
+   "war_elephant_idle_02_team",
+   "war_elephant_idle_03_team",
+   "war_elephant_idle_04_team",
+   "war_elephant_idle_05_team"
+  ],
+  "walk": [
+   "war_elephant_walk_00",
+   "war_elephant_walk_01",
+   "war_elephant_walk_02",
+   "war_elephant_walk_03",
+   "war_elephant_walk_04",
+   "war_elephant_walk_05",
+   "war_elephant_walk_06",
+   "war_elephant_walk_07",
+   "war_elephant_walk_08",
+   "war_elephant_walk_09",
+   "war_elephant_walk_10",
+   "war_elephant_walk_11"
+  ],
+  "walk_team": [
+   "war_elephant_walk_00_team",
+   "war_elephant_walk_01_team",
+   "war_elephant_walk_02_team",
+   "war_elephant_walk_03_team",
+   "war_elephant_walk_04_team",
+   "war_elephant_walk_05_team",
+   "war_elephant_walk_06_team",
+   "war_elephant_walk_07_team",
+   "war_elephant_walk_08_team",
+   "war_elephant_walk_09_team",
+   "war_elephant_walk_10_team",
+   "war_elephant_walk_11_team"
+  ],
+  "attack": [
+   "war_elephant_attack_00",
+   "war_elephant_attack_01",
+   "war_elephant_attack_02",
+   "war_elephant_attack_03",
+   "war_elephant_attack_04",
+   "war_elephant_attack_05",
+   "war_elephant_attack_06",
+   "war_elephant_attack_07",
+   "war_elephant_attack_08",
+   "war_elephant_attack_08",
+   "war_elephant_attack_09",
+   "war_elephant_attack_09"
+  ],
+  "attack_team": [
+   "war_elephant_attack_00_team",
+   "war_elephant_attack_01_team",
+   "war_elephant_attack_02_team",
+   "war_elephant_attack_03_team",
+   "war_elephant_attack_04_team",
+   "war_elephant_attack_05_team",
+   "war_elephant_attack_06_team",
+   "war_elephant_attack_07_team",
+   "war_elephant_attack_08_team",
+   "war_elephant_attack_08_team",
+   "war_elephant_attack_09_team",
+   "war_elephant_attack_09_team"
+  ],
+  "hit": [
+   "war_elephant_hit_00",
+   "war_elephant_hit_01",
+   "war_elephant_hit_02",
+   "war_elephant_hit_03",
+   "war_elephant_hit_04"
+  ],
+  "hit_team": [
+   "war_elephant_hit_00_team",
+   "war_elephant_hit_01_team",
+   "war_elephant_hit_02_team",
+   "war_elephant_hit_03_team",
+   "war_elephant_hit_04_team"
+  ],
+  "die": [
+   "war_elephant_die_00",
+   "war_elephant_die_01",
+   "war_elephant_die_01",
+   "war_elephant_die_02",
+   "war_elephant_die_03",
+   "war_elephant_die_04",
+   "war_elephant_die_04",
+   "war_elephant_die_05",
+   "war_elephant_die_05",
+   "war_elephant_die_06",
+   "war_elephant_die_06",
+   "war_elephant_die_07"
+  ],
+  "die_team": [
+   "war_elephant_die_00_team",
+   "war_elephant_die_01_team",
+   "war_elephant_die_01_team",
+   "war_elephant_die_02_team",
+   "war_elephant_die_03_team",
+   "war_elephant_die_04_team",
+   "war_elephant_die_04_team",
+   "war_elephant_die_05_team",
+   "war_elephant_die_05_team",
+   "war_elephant_die_06_team",
+   "war_elephant_die_06_team",
+   "war_elephant_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "war_elephant.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1024,
+   "h": 1208
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.war_elephant",
+   "name": "War Elephant",
+   "heightLu": 112,
+   "widthLu": 98.4,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    164.0,
+    215.0
+   ],
+   "anchorsLu": {
+    "head": [
+     10,
+     104
+    ],
+    "hitCenter": [
+     0,
+     52
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "quad",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      150,
+      150,
+      150,
+      150,
+      150,
+      150
+     ],
+     "durationMs": 900,
+     "anchorsLu": {
+      "trunkTip": [
+       [
+        56.6,
+        10.3
+       ],
+       [
+        54.4,
+        11.6
+       ],
+       [
+        55.1,
+        12.2
+       ],
+       [
+        57.9,
+        12.0
+       ],
+       [
+        60.0,
+        11.2
+       ],
+       [
+        59.5,
+        10.1
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 12,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "durationsMs": [
+      85,
+      85,
+      85,
+      85,
+      85,
+      85,
+      85,
+      85,
+      85,
+      85,
+      85,
+      85
+     ],
+     "durationMs": 1020,
+     "gait": "quad",
+     "gaitSpeedLuPerS": 75.0,
+     "cycleMs": 1020,
+     "anchorsLu": {
+      "trunkTip": [
+       [
+        47.1,
+        3.5
+       ],
+       [
+        55.2,
+        -0.2
+       ],
+       [
+        63.1,
+        3.6
+       ],
+       [
+        67.1,
+        12.0
+       ],
+       [
+        66.8,
+        17.1
+       ],
+       [
+        63.5,
+        14.6
+       ],
+       [
+        59.0,
+        6.9
+       ],
+       [
+        54.4,
+        0.8
+       ],
+       [
+        49.9,
+        1.0
+       ],
+       [
+        45.5,
+        6.3
+       ],
+       [
+        42.3,
+        10.8
+       ],
+       [
+        42.4,
+        9.5
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 75.3,
+     "strideLu": 76.8,
+     "plantedDriftLu": 0.1,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "fr",
+       "atLu": [
+        24.4,
+        -3.4
+       ]
+      },
+      {
+       "step": 1,
+       "foot": "bl",
+       "atLu": [
+        -1.9,
+        3.1
+       ]
+      },
+      {
+       "step": 6,
+       "foot": "fl",
+       "atLu": [
+        23.6,
+        1.7
+       ]
+      },
+      {
+       "step": 7,
+       "foot": "br",
+       "atLu": [
+        -1.3,
+        -2.3
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "trunkTip": [
+       [
+        54.1,
+        9.5
+       ],
+       [
+        68.9,
+        30.0
+       ],
+       [
+        57.6,
+        79.9
+       ],
+       [
+        39.5,
+        94.2
+       ],
+       [
+        75.9,
+        53.5
+       ],
+       [
+        59.9,
+        9.8
+       ],
+       [
+        50.6,
+        6.0
+       ],
+       [
+        51.1,
+        7.7
+       ],
+       [
+        56.1,
+        9.8
+       ],
+       [
+        57.3,
+        11.1
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "trunkTip": [
+       [
+        74.1,
+        21.0
+       ],
+       [
+        83.3,
+        32.4
+       ],
+       [
+        62.6,
+        12.2
+       ],
+       [
+        51.5,
+        9.6
+       ],
+       [
+        56.2,
+        10.2
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      4,
+      4,
+      5,
+      5,
+      6,
+      6,
+      7
+     ],
+     "durationsMs": [
+      60,
+      70,
+      80,
+      80,
+      60,
+      70,
+      80,
+      90,
+      90,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 990,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 740,
+       "offsetLu": [
+        0,
+        40.3
+       ],
+       "scale": 1.23
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 820,
+       "offsetLu": [
+        0,
+        61.6
+       ],
+       "loops": 2,
+       "scale": 1.109
+      }
+     ],
+     "hideUnitAtMs": 990,
+     "anchorsLu": {
+      "trunkTip": [
+       [
+        79.4,
+        30.3
+       ],
+       [
+        73.3,
+        43.3
+       ],
+       [
+        76.6,
+        60.2
+       ],
+       [
+        83.0,
+        44.9
+       ],
+       [
+        71.1,
+        33.7
+       ],
+       [
+        63.3,
+        47.9
+       ],
+       [
+        58.1,
+        48.2
+       ],
+       [
+        51.1,
+        47.6
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

@@ -241,7 +241,8 @@ export interface UnitRules {
   maxRange: number;
   riders: { count: number; spawn: CardId } | null;
   firstHit: { multBp: number; knockback: number; idleTicks: number } | null;
-  aura: { radius: number; status: StatusRules } | null;
+  /** A card aura (A2.7); `foe` = a Dread aura on enemy ground units (Bronze wave M4). */
+  aura: { radius: number; status: StatusRules; foe: boolean } | null;
   heal: { poolPerPulse: number; radius: number; targets: number } | null;
   pounce: { slot: number; search: number; cooldown: number; leapTicks: number; biteBp: number } | null;
   deathExplode: { damage: number; radius: number } | null;
@@ -739,7 +740,7 @@ function unitRules(def: UnitDef, idx: number, content: CompiledContent, battle: 
         r.firstHit = { multBp: ab.multBp, knockback: mlu(ab.knockback), idleTicks: msToTicks(ab.idleResetMs) };
         break;
       case 'aura':
-        r.aura = { radius: mlu(ab.radius), status: statusRules(ab.status) };
+        r.aura = { radius: mlu(ab.radius), status: statusRules(ab.status), foe: ab.foe === true };
         break;
       case 'heal':
         // Per-pulse pool = hpPerSec × pulseMs / 1,000 (A2.7), in centi at level 1. Pulses run on the

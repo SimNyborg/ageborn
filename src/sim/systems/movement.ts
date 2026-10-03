@@ -124,10 +124,14 @@ export function unitSpeed(ctx: Ctx, u: UnitRt, r: UnitRules): number {
   const fx = u.fx;
   let fixed = fx ? fx.speedBp : 0;
   if (fx?.horns && !u.air && (r.levy || ctx.s.sides[u.side].stance === 'charge')) fixed += fx.horns.chargeSpeedBp;
-  const bonus = capSum(fixed, statusBp(u, 'speedBuff'), ctx.econ.caps.speedBp);
+  // A timed speed buff and an ally speed aura (Aulos Piper) never stack: the stronger applies.
+  const timedSpeed = statusBp(u, 'speedBuff');
+  const bonus = capSum(fixed, timedSpeed > u.auraSpeedBp ? timedSpeed : u.auraSpeedBp, ctx.econ.caps.speedBp);
   if (bonus !== 0) v = Math.trunc((v * (BP + bonus)) / BP);
   // Slows and snares (A2.9.6): the stronger applies, after the A18.2 caps.
-  const slowBp = statusBp(u, 'slow');
+  // A Dread aura's slow (Bronze wave M4) joins them: still only the strongest applies.
+  const timedSlow = statusBp(u, 'slow');
+  const slowBp = timedSlow > u.auraSlowBp ? timedSlow : u.auraSlowBp;
   const snareBp = statusBp(u, 'snare');
   const slow = slowBp > snareBp ? slowBp : snareBp;
   if (slow > 0) v = Math.trunc((v * (BP - (slow > BP ? BP : slow))) / BP);

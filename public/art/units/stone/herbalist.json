@@ -1,0 +1,2544 @@
+{
+ "frames": {
+  "herbalist_idle_00": {
+   "frame": {
+    "x": 528,
+    "y": 103,
+    "w": 50,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 81,
+    "w": 50,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_idle_00_team": {
+   "frame": {
+    "x": 481,
+    "y": 364,
+    "w": 44,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 112,
+    "w": 44,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_idle_01": {
+   "frame": {
+    "x": 315,
+    "y": 103,
+    "w": 48,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 80,
+    "w": 48,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_idle_01_team": {
+   "frame": {
+    "x": 632,
+    "y": 293,
+    "w": 44,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 108,
+    "w": 44,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_idle_02": {
+   "frame": {
+    "x": 213,
+    "y": 103,
+    "w": 44,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 78,
+    "w": 44,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_idle_02_team": {
+   "frame": {
+    "x": 339,
+    "y": 293,
+    "w": 43,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 102,
+    "w": 43,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_idle_03": {
+   "frame": {
+    "x": 420,
+    "y": 2,
+    "w": 45,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 76,
+    "w": 45,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_idle_03_team": {
+   "frame": {
+    "x": 82,
+    "y": 293,
+    "w": 42,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 99,
+    "w": 42,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_idle_04": {
+   "frame": {
+    "x": 160,
+    "y": 2,
+    "w": 45,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 74,
+    "w": 45,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_idle_04_team": {
+   "frame": {
+    "x": 128,
+    "y": 293,
+    "w": 42,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 98,
+    "w": 42,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_idle_05": {
+   "frame": {
+    "x": 209,
+    "y": 2,
+    "w": 45,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 75,
+    "w": 45,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_idle_05_team": {
+   "frame": {
+    "x": 386,
+    "y": 293,
+    "w": 42,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 102,
+    "w": 42,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_idle_06": {
+   "frame": {
+    "x": 643,
+    "y": 2,
+    "w": 49,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 77,
+    "w": 49,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_idle_06_team": {
+   "frame": {
+    "x": 188,
+    "y": 364,
+    "w": 43,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 108,
+    "w": 43,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_idle_07": {
+   "frame": {
+    "x": 53,
+    "y": 103,
+    "w": 50,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 79,
+    "w": 50,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_idle_07_team": {
+   "frame": {
+    "x": 529,
+    "y": 364,
+    "w": 44,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 112,
+    "w": 44,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_00": {
+   "frame": {
+    "x": 693,
+    "y": 103,
+    "w": 50,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 80,
+    "w": 50,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_00_team": {
+   "frame": {
+    "x": 524,
+    "y": 424,
+    "w": 43,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 114,
+    "w": 43,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_01": {
+   "frame": {
+    "x": 169,
+    "y": 200,
+    "w": 51,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 86,
+    "w": 51,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_01_team": {
+   "frame": {
+    "x": 672,
+    "y": 424,
+    "w": 43,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 118,
+    "w": 43,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_02": {
+   "frame": {
+    "x": 419,
+    "y": 103,
+    "w": 47,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 79,
+    "w": 47,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_02_team": {
+   "frame": {
+    "x": 625,
+    "y": 364,
+    "w": 43,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 111,
+    "w": 43,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_03": {
+   "frame": {
+    "x": 2,
+    "y": 103,
+    "w": 47,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 75,
+    "w": 47,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_03_team": {
+   "frame": {
+    "x": 672,
+    "y": 364,
+    "w": 43,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 108,
+    "w": 43,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_04": {
+   "frame": {
+    "x": 636,
+    "y": 103,
+    "w": 53,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 80,
+    "w": 53,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_04_team": {
+   "frame": {
+    "x": 571,
+    "y": 424,
+    "w": 43,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 114,
+    "w": 43,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_05": {
+   "frame": {
+    "x": 282,
+    "y": 200,
+    "w": 56,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 84,
+    "w": 56,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_05_team": {
+   "frame": {
+    "x": 719,
+    "y": 424,
+    "w": 43,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 118,
+    "w": 43,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_06": {
+   "frame": {
+    "x": 2,
+    "y": 200,
+    "w": 49,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 77,
+    "w": 49,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_06_team": {
+   "frame": {
+    "x": 368,
+    "y": 424,
+    "w": 44,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 110,
+    "w": 44,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_07": {
+   "frame": {
+    "x": 161,
+    "y": 103,
+    "w": 48,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 74,
+    "w": 48,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_walk_07_team": {
+   "frame": {
+    "x": 208,
+    "y": 424,
+    "w": 43,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 108,
+    "w": 43,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_00": {
+   "frame": {
+    "x": 261,
+    "y": 103,
+    "w": 50,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 79,
+    "w": 50,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_00_team": {
+   "frame": {
+    "x": 577,
+    "y": 364,
+    "w": 44,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 111,
+    "w": 44,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_01": {
+   "frame": {
+    "x": 112,
+    "y": 200,
+    "w": 53,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 84,
+    "w": 53,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_01_team": {
+   "frame": {
+    "x": 58,
+    "y": 424,
+    "w": 48,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 112,
+    "w": 48,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_02": {
+   "frame": {
+    "x": 258,
+    "y": 2,
+    "w": 52,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 78,
+    "w": 52,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_02_team": {
+   "frame": {
+    "x": 92,
+    "y": 364,
+    "w": 44,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 110,
+    "w": 44,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 48,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 75,
+    "w": 48,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_03_team": {
+   "frame": {
+    "x": 479,
+    "y": 293,
+    "w": 41,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 108,
+    "w": 41,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_04": {
+   "frame": {
+    "x": 54,
+    "y": 2,
+    "w": 49,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 76,
+    "w": 49,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_04_team": {
+   "frame": {
+    "x": 48,
+    "y": 364,
+    "w": 40,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 108,
+    "w": 40,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_05": {
+   "frame": {
+    "x": 367,
+    "y": 103,
+    "w": 48,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 80,
+    "w": 48,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_05_team": {
+   "frame": {
+    "x": 110,
+    "y": 424,
+    "w": 46,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 113,
+    "w": 46,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_06": {
+   "frame": {
+    "x": 224,
+    "y": 200,
+    "w": 54,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 86,
+    "w": 54,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_06_team": {
+   "frame": {
+    "x": 471,
+    "y": 424,
+    "w": 49,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 115,
+    "w": 49,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_07": {
+   "frame": {
+    "x": 314,
+    "y": 2,
+    "w": 49,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 77,
+    "w": 49,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_07_team": {
+   "frame": {
+    "x": 680,
+    "y": 293,
+    "w": 42,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 111,
+    "w": 42,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_08": {
+   "frame": {
+    "x": 55,
+    "y": 200,
+    "w": 53,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 83,
+    "w": 53,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_08_team": {
+   "frame": {
+    "x": 429,
+    "y": 364,
+    "w": 48,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 112,
+    "w": 48,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_09": {
+   "frame": {
+    "x": 367,
+    "y": 2,
+    "w": 49,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 77,
+    "w": 49,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_09_team": {
+   "frame": {
+    "x": 287,
+    "y": 364,
+    "w": 43,
+    "h": 54
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 110,
+    "w": 43,
+    "h": 54
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_10": {
+   "frame": {
+    "x": 696,
+    "y": 2,
+    "w": 49,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 77,
+    "w": 49,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_attack_10_team": {
+   "frame": {
+    "x": 382,
+    "y": 364,
+    "w": 43,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 110,
+    "w": 43,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_hit_00": {
+   "frame": {
+    "x": 464,
+    "y": 200,
+    "w": 58,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 69,
+    "y": 88,
+    "w": 58,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_hit_00_team": {
+   "frame": {
+    "x": 524,
+    "y": 293,
+    "w": 50,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 107,
+    "w": 50,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_hit_01": {
+   "frame": {
+    "x": 470,
+    "y": 103,
+    "w": 54,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 68,
+    "y": 79,
+    "w": 54,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_hit_01_team": {
+   "frame": {
+    "x": 250,
+    "y": 293,
+    "w": 44,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 99,
+    "w": 44,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_hit_02": {
+   "frame": {
+    "x": 588,
+    "y": 2,
+    "w": 51,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 77,
+    "w": 51,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_hit_02_team": {
+   "frame": {
+    "x": 432,
+    "y": 293,
+    "w": 43,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 103,
+    "w": 43,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_hit_03": {
+   "frame": {
+    "x": 582,
+    "y": 103,
+    "w": 50,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 80,
+    "w": 50,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_hit_03_team": {
+   "frame": {
+    "x": 160,
+    "y": 424,
+    "w": 44,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 112,
+    "w": 44,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_hit_04": {
+   "frame": {
+    "x": 107,
+    "y": 103,
+    "w": 50,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 78,
+    "w": 50,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_hit_04_team": {
+   "frame": {
+    "x": 334,
+    "y": 364,
+    "w": 44,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 110,
+    "w": 44,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_00": {
+   "frame": {
+    "x": 342,
+    "y": 200,
+    "w": 53,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 84,
+    "w": 53,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_00_team": {
+   "frame": {
+    "x": 578,
+    "y": 293,
+    "w": 50,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 104,
+    "w": 50,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_01": {
+   "frame": {
+    "x": 107,
+    "y": 2,
+    "w": 49,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 72,
+    "w": 49,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_01_team": {
+   "frame": {
+    "x": 298,
+    "y": 293,
+    "w": 37,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 99,
+    "w": 37,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_02": {
+   "frame": {
+    "x": 530,
+    "y": 2,
+    "w": 54,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 74,
+    "w": 54,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 364,
+    "w": 42,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 104,
+    "w": 42,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_03": {
+   "frame": {
+    "x": 469,
+    "y": 2,
+    "w": 57,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 75,
+    "w": 57,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_03_team": {
+   "frame": {
+    "x": 140,
+    "y": 364,
+    "w": 44,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 105,
+    "w": 44,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_04": {
+   "frame": {
+    "x": 605,
+    "y": 200,
+    "w": 67,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 68,
+    "y": 94,
+    "w": 67,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_04_team": {
+   "frame": {
+    "x": 255,
+    "y": 424,
+    "w": 51,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 110,
+    "w": 51,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_05": {
+   "frame": {
+    "x": 399,
+    "y": 200,
+    "w": 61,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 70,
+    "y": 91,
+    "w": 61,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_05_team": {
+   "frame": {
+    "x": 235,
+    "y": 364,
+    "w": 48,
+    "h": 54
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 115,
+    "w": 48,
+    "h": 54
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_06": {
+   "frame": {
+    "x": 676,
+    "y": 200,
+    "w": 76,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 61,
+    "y": 98,
+    "w": 76,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_06_team": {
+   "frame": {
+    "x": 310,
+    "y": 424,
+    "w": 54,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 117,
+    "w": 54,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_07": {
+   "frame": {
+    "x": 526,
+    "y": 200,
+    "w": 75,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 60,
+    "y": 98,
+    "w": 75,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 424,
+    "w": 52,
+    "h": 51
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 116,
+    "w": 52,
+    "h": 51
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_08": {
+   "frame": {
+    "x": 2,
+    "y": 293,
+    "w": 76,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 101,
+    "w": 76,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_08_team": {
+   "frame": {
+    "x": 416,
+    "y": 424,
+    "w": 51,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 117,
+    "w": 51,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_09": {
+   "frame": {
+    "x": 174,
+    "y": 293,
+    "w": 72,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 62,
+    "y": 102,
+    "w": 72,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  },
+  "herbalist_die_09_team": {
+   "frame": {
+    "x": 618,
+    "y": 424,
+    "w": 50,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 118,
+    "w": 50,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 215,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.51163,
+    "y": 0.87568
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "herbalist_idle_00",
+   "herbalist_idle_01",
+   "herbalist_idle_02",
+   "herbalist_idle_03",
+   "herbalist_idle_04",
+   "herbalist_idle_05",
+   "herbalist_idle_06",
+   "herbalist_idle_07"
+  ],
+  "idle_team": [
+   "herbalist_idle_00_team",
+   "herbalist_idle_01_team",
+   "herbalist_idle_02_team",
+   "herbalist_idle_03_team",
+   "herbalist_idle_04_team",
+   "herbalist_idle_05_team",
+   "herbalist_idle_06_team",
+   "herbalist_idle_07_team"
+  ],
+  "walk": [
+   "herbalist_walk_00",
+   "herbalist_walk_01",
+   "herbalist_walk_02",
+   "herbalist_walk_03",
+   "herbalist_walk_04",
+   "herbalist_walk_05",
+   "herbalist_walk_06",
+   "herbalist_walk_07"
+  ],
+  "walk_team": [
+   "herbalist_walk_00_team",
+   "herbalist_walk_01_team",
+   "herbalist_walk_02_team",
+   "herbalist_walk_03_team",
+   "herbalist_walk_04_team",
+   "herbalist_walk_05_team",
+   "herbalist_walk_06_team",
+   "herbalist_walk_07_team"
+  ],
+  "attack": [
+   "herbalist_attack_00",
+   "herbalist_attack_01",
+   "herbalist_attack_02",
+   "herbalist_attack_03",
+   "herbalist_attack_04",
+   "herbalist_attack_05",
+   "herbalist_attack_06",
+   "herbalist_attack_07",
+   "herbalist_attack_08",
+   "herbalist_attack_09",
+   "herbalist_attack_10"
+  ],
+  "attack_team": [
+   "herbalist_attack_00_team",
+   "herbalist_attack_01_team",
+   "herbalist_attack_02_team",
+   "herbalist_attack_03_team",
+   "herbalist_attack_04_team",
+   "herbalist_attack_05_team",
+   "herbalist_attack_06_team",
+   "herbalist_attack_07_team",
+   "herbalist_attack_08_team",
+   "herbalist_attack_09_team",
+   "herbalist_attack_10_team"
+  ],
+  "hit": [
+   "herbalist_hit_00",
+   "herbalist_hit_01",
+   "herbalist_hit_02",
+   "herbalist_hit_03",
+   "herbalist_hit_04"
+  ],
+  "hit_team": [
+   "herbalist_hit_00_team",
+   "herbalist_hit_01_team",
+   "herbalist_hit_02_team",
+   "herbalist_hit_03_team",
+   "herbalist_hit_04_team"
+  ],
+  "die": [
+   "herbalist_die_00",
+   "herbalist_die_01",
+   "herbalist_die_02",
+   "herbalist_die_03",
+   "herbalist_die_04",
+   "herbalist_die_05",
+   "herbalist_die_06",
+   "herbalist_die_07",
+   "herbalist_die_08",
+   "herbalist_die_09"
+  ],
+  "die_team": [
+   "herbalist_die_00_team",
+   "herbalist_die_01_team",
+   "herbalist_die_02_team",
+   "herbalist_die_03_team",
+   "herbalist_die_04_team",
+   "herbalist_die_05_team",
+   "herbalist_die_06_team",
+   "herbalist_die_07_team",
+   "herbalist_die_08_team",
+   "herbalist_die_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "herbalist.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 768,
+   "h": 480
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.herbalist",
+   "name": "Herbalist",
+   "heightLu": 62,
+   "widthLu": 34.1,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    110.0,
+    162.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     60
+    ],
+    "hitCenter": [
+     0,
+     28
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      115,
+      115,
+      115,
+      115,
+      115,
+      115,
+      115,
+      115
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        7.3,
+        22.8
+       ],
+       [
+        7.6,
+        22.9
+       ],
+       [
+        7.7,
+        23.8
+       ],
+       [
+        7.7,
+        24.9
+       ],
+       [
+        7.5,
+        25.6
+       ],
+       [
+        7.2,
+        25.5
+       ],
+       [
+        7.1,
+        24.7
+       ],
+       [
+        7.1,
+        23.6
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "durationMs": 560,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 81.2,
+     "cycleMs": 560,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        0.5,
+        16.3
+       ],
+       [
+        -1.1,
+        11.8
+       ],
+       [
+        1.9,
+        17.8
+       ],
+       [
+        6.6,
+        22.9
+       ],
+       [
+        8.3,
+        23.5
+       ],
+       [
+        8.3,
+        22.5
+       ],
+       [
+        7.9,
+        26.5
+       ],
+       [
+        4.9,
+        24.2
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 81.4,
+     "strideLu": 45.6,
+     "plantedDriftLu": 0.0,
+     "contacts": [
+      {
+       "step": 1,
+       "foot": "r",
+       "atLu": [
+        4.5,
+        -1.9
+       ]
+      },
+      {
+       "step": 5,
+       "foot": "l",
+       "atLu": [
+        6.6,
+        1.4
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 5,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        7.1,
+        23.9
+       ],
+       [
+        -4.6,
+        15.0
+       ],
+       [
+        -13.8,
+        19.1
+       ],
+       [
+        -12.1,
+        20.1
+       ],
+       [
+        -11.3,
+        19.7
+       ],
+       [
+        4.6,
+        17.1
+       ],
+       [
+        20.1,
+        22.8
+       ],
+       [
+        16.5,
+        34.2
+       ],
+       [
+        -1.6,
+        15.4
+       ],
+       [
+        5.4,
+        21.3
+       ],
+       [
+        6.9,
+        24.3
+       ]
+      ]
+     },
+     "muzzle": [
+      20.1,
+      22.8
+     ]
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        3.5,
+        24.3
+       ],
+       [
+        0.9,
+        31.4
+       ],
+       [
+        4.8,
+        27.1
+       ],
+       [
+        7.4,
+        22.3
+       ],
+       [
+        7.2,
+        24.4
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        22.3
+       ],
+       "scale": 0.426
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        34.1
+       ],
+       "loops": 2,
+       "scale": 0.653
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        6.9,
+        28.3
+       ],
+       [
+        11.3,
+        37.3
+       ],
+       [
+        -16.4,
+        41.1
+       ],
+       [
+        -2.7,
+        27.6
+       ],
+       [
+        -1.5,
+        27.5
+       ],
+       [
+        -8.9,
+        28.1
+       ],
+       [
+        -10.2,
+        26.7
+       ],
+       [
+        -9.7,
+        27.2
+       ],
+       [
+        -9.7,
+        26.7
+       ],
+       [
+        -9.6,
+        26.1
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

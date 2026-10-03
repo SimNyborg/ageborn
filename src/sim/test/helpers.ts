@@ -24,6 +24,7 @@ import type {
 import { LANE_MLU, MILLI, nextIncomePick, randInt, researchCommand, researchCost, seedSfc32, startablePicks, type Sfc32State } from '@/core';
 import { raw as fixtureRaw } from '../../../tests/fixtures/content';
 import { rawLast } from '../../../tests/fixtures/lastBase';
+import { rawBronzeWave } from '../../../tests/fixtures/bronzeWave';
 import { rawX0 } from '../../../tests/fixtures/x0';
 import { createSim } from '../createSim';
 import { applyStatus } from '../damage';
@@ -41,6 +42,9 @@ export const fixtureLast: CompiledContent = compileForSim(rawLast);
 
 /** The X0 content kinds on the frozen fixture (SIM_VERSION 7.0.0; `tests/fixtures/x0.ts`, golden 16). */
 export const fixtureX0: CompiledContent = compileForSim(rawX0);
+
+/** The Bronze wave kinds on the X0 fixture (SIM_VERSION 7.1.0; `tests/fixtures/bronzeWave.ts`, golden 17). */
+export const fixtureBronze: CompiledContent = compileForSim(rawBronzeWave);
 
 /** Lane length in whole lu (A17.2: 2,000). Tests place side-1 units at `L - p`. */
 export const L = LANE_MLU / MILLI;

@@ -1,0 +1,2279 @@
+{
+ "frames": {
+  "coehorn_crew_idle_00": {
+   "frame": {
+    "x": 952,
+    "y": 494,
+    "w": 198,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 410,
+    "y": 276,
+    "w": 198,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_idle_00_team": {
+   "frame": {
+    "x": 1154,
+    "y": 494,
+    "w": 158,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 408,
+    "y": 266,
+    "w": 158,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_idle_01": {
+   "frame": {
+    "x": 159,
+    "y": 494,
+    "w": 196,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 411,
+    "y": 274,
+    "w": 196,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_idle_01_team": {
+   "frame": {
+    "x": 518,
+    "y": 494,
+    "w": 155,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 410,
+    "y": 264,
+    "w": 155,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_idle_02": {
+   "frame": {
+    "x": 619,
+    "y": 270,
+    "w": 191,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 414,
+    "y": 267,
+    "w": 191,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_idle_02_team": {
+   "frame": {
+    "x": 971,
+    "y": 270,
+    "w": 154,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 412,
+    "y": 257,
+    "w": 154,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_idle_03": {
+   "frame": {
+    "x": 1308,
+    "y": 2,
+    "w": 189,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 415,
+    "y": 263,
+    "w": 189,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_idle_03_team": {
+   "frame": {
+    "x": 268,
+    "y": 270,
+    "w": 152,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 413,
+    "y": 253,
+    "w": 152,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_idle_04": {
+   "frame": {
+    "x": 424,
+    "y": 270,
+    "w": 191,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 414,
+    "y": 266,
+    "w": 191,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_idle_04_team": {
+   "frame": {
+    "x": 814,
+    "y": 270,
+    "w": 153,
+    "h": 215
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 412,
+    "y": 256,
+    "w": 153,
+    "h": 215
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_idle_05": {
+   "frame": {
+    "x": 1327,
+    "y": 270,
+    "w": 196,
+    "h": 210
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 411,
+    "y": 272,
+    "w": 196,
+    "h": 210
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_idle_05_team": {
+   "frame": {
+    "x": 359,
+    "y": 494,
+    "w": 155,
+    "h": 208
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 410,
+    "y": 262,
+    "w": 155,
+    "h": 208
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_00": {
+   "frame": {
+    "x": 572,
+    "y": 1452,
+    "w": 193,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 413,
+    "y": 280,
+    "w": 193,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_00_team": {
+   "frame": {
+    "x": 320,
+    "y": 1794,
+    "w": 160,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 412,
+    "y": 270,
+    "w": 160,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_01": {
+   "frame": {
+    "x": 1168,
+    "y": 1452,
+    "w": 197,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 409,
+    "y": 286,
+    "w": 197,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_01_team": {
+   "frame": {
+    "x": 484,
+    "y": 1794,
+    "w": 157,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 413,
+    "y": 276,
+    "w": 157,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_02": {
+   "frame": {
+    "x": 1311,
+    "y": 1272,
+    "w": 206,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 400,
+    "y": 272,
+    "w": 206,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 1794,
+    "w": 155,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 413,
+    "y": 262,
+    "w": 155,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_03": {
+   "frame": {
+    "x": 614,
+    "y": 906,
+    "w": 201,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 405,
+    "y": 263,
+    "w": 201,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_03_team": {
+   "frame": {
+    "x": 845,
+    "y": 1629,
+    "w": 159,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 413,
+    "y": 253,
+    "w": 159,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_04": {
+   "frame": {
+    "x": 2,
+    "y": 1629,
+    "w": 193,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 413,
+    "y": 280,
+    "w": 193,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_04_team": {
+   "frame": {
+    "x": 1293,
+    "y": 1629,
+    "w": 160,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 412,
+    "y": 270,
+    "w": 160,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_05": {
+   "frame": {
+    "x": 480,
+    "y": 1629,
+    "w": 201,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 405,
+    "y": 286,
+    "w": 201,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_05_team": {
+   "frame": {
+    "x": 645,
+    "y": 1794,
+    "w": 157,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 413,
+    "y": 277,
+    "w": 157,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_06": {
+   "frame": {
+    "x": 954,
+    "y": 1452,
+    "w": 210,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 396,
+    "y": 273,
+    "w": 210,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_06_team": {
+   "frame": {
+    "x": 161,
+    "y": 1794,
+    "w": 155,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 413,
+    "y": 263,
+    "w": 155,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_07": {
+   "frame": {
+    "x": 1102,
+    "y": 1272,
+    "w": 205,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 401,
+    "y": 263,
+    "w": 205,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_walk_07_team": {
+   "frame": {
+    "x": 685,
+    "y": 1629,
+    "w": 156,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 413,
+    "y": 253,
+    "w": 156,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_00": {
+   "frame": {
+    "x": 971,
+    "y": 708,
+    "w": 194,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 412,
+    "y": 270,
+    "w": 194,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_00_team": {
+   "frame": {
+    "x": 1076,
+    "y": 1090,
+    "w": 153,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 411,
+    "y": 260,
+    "w": 153,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_01": {
+   "frame": {
+    "x": 819,
+    "y": 906,
+    "w": 197,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 409,
+    "y": 280,
+    "w": 197,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_01_team": {
+   "frame": {
+    "x": 754,
+    "y": 1090,
+    "w": 160,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 404,
+    "y": 270,
+    "w": 160,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_02": {
+   "frame": {
+    "x": 408,
+    "y": 906,
+    "w": 202,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 404,
+    "y": 295,
+    "w": 202,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_02_team": {
+   "frame": {
+    "x": 736,
+    "y": 1272,
+    "w": 172,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 396,
+    "y": 286,
+    "w": 172,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_03": {
+   "frame": {
+    "x": 1218,
+    "y": 906,
+    "w": 204,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 402,
+    "y": 296,
+    "w": 204,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_03_team": {
+   "frame": {
+    "x": 205,
+    "y": 1272,
+    "w": 173,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 393,
+    "y": 286,
+    "w": 173,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_04": {
+   "frame": {
+    "x": 2,
+    "y": 1090,
+    "w": 204,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 402,
+    "y": 296,
+    "w": 204,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_04_team": {
+   "frame": {
+    "x": 382,
+    "y": 1272,
+    "w": 173,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 393,
+    "y": 286,
+    "w": 173,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_05": {
+   "frame": {
+    "x": 210,
+    "y": 1090,
+    "w": 204,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 402,
+    "y": 296,
+    "w": 204,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_05_team": {
+   "frame": {
+    "x": 559,
+    "y": 1272,
+    "w": 173,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 393,
+    "y": 286,
+    "w": 173,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_06": {
+   "frame": {
+    "x": 590,
+    "y": 708,
+    "w": 214,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 392,
+    "y": 292,
+    "w": 214,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 1452,
+    "w": 182,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 382,
+    "y": 286,
+    "w": 182,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_07": {
+   "frame": {
+    "x": 366,
+    "y": 708,
+    "w": 220,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 390,
+    "y": 292,
+    "w": 220,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_07_team": {
+   "frame": {
+    "x": 912,
+    "y": 1272,
+    "w": 186,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 379,
+    "y": 287,
+    "w": 186,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_08": {
+   "frame": {
+    "x": 200,
+    "y": 906,
+    "w": 204,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 406,
+    "y": 285,
+    "w": 204,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_08_team": {
+   "frame": {
+    "x": 418,
+    "y": 1090,
+    "w": 166,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 398,
+    "y": 274,
+    "w": 166,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_09": {
+   "frame": {
+    "x": 1020,
+    "y": 906,
+    "w": 194,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 412,
+    "y": 275,
+    "w": 194,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_09_team": {
+   "frame": {
+    "x": 588,
+    "y": 1090,
+    "w": 162,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 406,
+    "y": 265,
+    "w": 162,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_10": {
+   "frame": {
+    "x": 1169,
+    "y": 708,
+    "w": 194,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 412,
+    "y": 270,
+    "w": 194,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_attack_10_team": {
+   "frame": {
+    "x": 1233,
+    "y": 1090,
+    "w": 153,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 411,
+    "y": 260,
+    "w": 153,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_hit_00": {
+   "frame": {
+    "x": 352,
+    "y": 1452,
+    "w": 216,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 389,
+    "y": 279,
+    "w": 216,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_hit_00_team": {
+   "frame": {
+    "x": 769,
+    "y": 1452,
+    "w": 181,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 379,
+    "y": 270,
+    "w": 181,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_hit_01": {
+   "frame": {
+    "x": 1316,
+    "y": 494,
+    "w": 193,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 398,
+    "y": 251,
+    "w": 193,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_hit_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 708,
+    "w": 163,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 388,
+    "y": 243,
+    "w": 163,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_hit_02": {
+   "frame": {
+    "x": 169,
+    "y": 708,
+    "w": 193,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 407,
+    "y": 263,
+    "w": 193,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_hit_02_team": {
+   "frame": {
+    "x": 808,
+    "y": 708,
+    "w": 159,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 400,
+    "y": 253,
+    "w": 159,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_hit_03": {
+   "frame": {
+    "x": 2,
+    "y": 1272,
+    "w": 199,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 409,
+    "y": 274,
+    "w": 199,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_hit_03_team": {
+   "frame": {
+    "x": 188,
+    "y": 1452,
+    "w": 160,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 409,
+    "y": 264,
+    "w": 160,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_hit_04": {
+   "frame": {
+    "x": 2,
+    "y": 906,
+    "w": 194,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 412,
+    "y": 270,
+    "w": 194,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_hit_04_team": {
+   "frame": {
+    "x": 918,
+    "y": 1090,
+    "w": 154,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 410,
+    "y": 260,
+    "w": 154,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_die_00": {
+   "frame": {
+    "x": 1129,
+    "y": 270,
+    "w": 194,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 412,
+    "y": 270,
+    "w": 194,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_die_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 494,
+    "w": 153,
+    "h": 210
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 411,
+    "y": 260,
+    "w": 153,
+    "h": 210
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_die_01": {
+   "frame": {
+    "x": 932,
+    "y": 2,
+    "w": 201,
+    "h": 230
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 405,
+    "y": 253,
+    "w": 201,
+    "h": 230
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_die_01_team": {
+   "frame": {
+    "x": 1137,
+    "y": 2,
+    "w": 167,
+    "h": 224
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 398,
+    "y": 246,
+    "w": 167,
+    "h": 224
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_die_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 222,
+    "h": 264
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 384,
+    "y": 220,
+    "w": 222,
+    "h": 264
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_die_02_team": {
+   "frame": {
+    "x": 736,
+    "y": 2,
+    "w": 192,
+    "h": 238
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 374,
+    "y": 231,
+    "w": 192,
+    "h": 238
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_die_03": {
+   "frame": {
+    "x": 228,
+    "y": 2,
+    "w": 248,
+    "h": 254
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 356,
+    "y": 237,
+    "w": 248,
+    "h": 254
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_die_03_team": {
+   "frame": {
+    "x": 480,
+    "y": 2,
+    "w": 252,
+    "h": 240
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 345,
+    "y": 227,
+    "w": 252,
+    "h": 240
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_die_04": {
+   "frame": {
+    "x": 2,
+    "y": 270,
+    "w": 262,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 355,
+    "y": 271,
+    "w": 262,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_die_04_team": {
+   "frame": {
+    "x": 677,
+    "y": 494,
+    "w": 271,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 345,
+    "y": 262,
+    "w": 271,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_die_05": {
+   "frame": {
+    "x": 199,
+    "y": 1629,
+    "w": 277,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 355,
+    "y": 334,
+    "w": 277,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_die_05_team": {
+   "frame": {
+    "x": 1008,
+    "y": 1629,
+    "w": 281,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 345,
+    "y": 324,
+    "w": 281,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_die_06": {
+   "frame": {
+    "x": 806,
+    "y": 1794,
+    "w": 287,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 355,
+    "y": 354,
+    "w": 287,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "coehorn_crew_die_06_team": {
+   "frame": {
+    "x": 1097,
+    "y": 1794,
+    "w": 289,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 345,
+    "y": 377,
+    "w": 289,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 786,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "coehorn_crew_idle_00",
+   "coehorn_crew_idle_01",
+   "coehorn_crew_idle_02",
+   "coehorn_crew_idle_03",
+   "coehorn_crew_idle_04",
+   "coehorn_crew_idle_05"
+  ],
+  "idle_team": [
+   "coehorn_crew_idle_00_team",
+   "coehorn_crew_idle_01_team",
+   "coehorn_crew_idle_02_team",
+   "coehorn_crew_idle_03_team",
+   "coehorn_crew_idle_04_team",
+   "coehorn_crew_idle_05_team"
+  ],
+  "walk": [
+   "coehorn_crew_walk_00",
+   "coehorn_crew_walk_01",
+   "coehorn_crew_walk_02",
+   "coehorn_crew_walk_03",
+   "coehorn_crew_walk_04",
+   "coehorn_crew_walk_05",
+   "coehorn_crew_walk_06",
+   "coehorn_crew_walk_07"
+  ],
+  "walk_team": [
+   "coehorn_crew_walk_00_team",
+   "coehorn_crew_walk_01_team",
+   "coehorn_crew_walk_02_team",
+   "coehorn_crew_walk_03_team",
+   "coehorn_crew_walk_04_team",
+   "coehorn_crew_walk_05_team",
+   "coehorn_crew_walk_06_team",
+   "coehorn_crew_walk_07_team"
+  ],
+  "attack": [
+   "coehorn_crew_attack_00",
+   "coehorn_crew_attack_01",
+   "coehorn_crew_attack_02",
+   "coehorn_crew_attack_03",
+   "coehorn_crew_attack_04",
+   "coehorn_crew_attack_05",
+   "coehorn_crew_attack_06",
+   "coehorn_crew_attack_07",
+   "coehorn_crew_attack_08",
+   "coehorn_crew_attack_09",
+   "coehorn_crew_attack_10"
+  ],
+  "attack_team": [
+   "coehorn_crew_attack_00_team",
+   "coehorn_crew_attack_01_team",
+   "coehorn_crew_attack_02_team",
+   "coehorn_crew_attack_03_team",
+   "coehorn_crew_attack_04_team",
+   "coehorn_crew_attack_05_team",
+   "coehorn_crew_attack_06_team",
+   "coehorn_crew_attack_07_team",
+   "coehorn_crew_attack_08_team",
+   "coehorn_crew_attack_09_team",
+   "coehorn_crew_attack_10_team"
+  ],
+  "hit": [
+   "coehorn_crew_hit_00",
+   "coehorn_crew_hit_01",
+   "coehorn_crew_hit_02",
+   "coehorn_crew_hit_03",
+   "coehorn_crew_hit_04"
+  ],
+  "hit_team": [
+   "coehorn_crew_hit_00_team",
+   "coehorn_crew_hit_01_team",
+   "coehorn_crew_hit_02_team",
+   "coehorn_crew_hit_03_team",
+   "coehorn_crew_hit_04_team"
+  ],
+  "die": [
+   "coehorn_crew_die_00",
+   "coehorn_crew_die_01",
+   "coehorn_crew_die_02",
+   "coehorn_crew_die_02",
+   "coehorn_crew_die_03",
+   "coehorn_crew_die_04",
+   "coehorn_crew_die_05",
+   "coehorn_crew_die_05",
+   "coehorn_crew_die_06",
+   "coehorn_crew_die_06"
+  ],
+  "die_team": [
+   "coehorn_crew_die_00_team",
+   "coehorn_crew_die_01_team",
+   "coehorn_crew_die_02_team",
+   "coehorn_crew_die_02_team",
+   "coehorn_crew_die_03_team",
+   "coehorn_crew_die_04_team",
+   "coehorn_crew_die_05_team",
+   "coehorn_crew_die_05_team",
+   "coehorn_crew_die_06_team",
+   "coehorn_crew_die_06_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "coehorn_crew.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1536,
+   "h": 1940
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.coehorn_crew",
+   "name": "Coehorn Crew",
+   "heightLu": 66,
+   "widthLu": 75.2,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    516,
+    430
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     64
+    ],
+    "hitCenter": [
+     -8,
+     30
+    ],
+    "muzzle": [
+     2,
+     40
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        20.4,
+        -1.4
+       ],
+       [
+        20.2,
+        -1.4
+       ],
+       [
+        19.6,
+        -1.4
+       ],
+       [
+        19.4,
+        -1.4
+       ],
+       [
+        19.6,
+        -1.4
+       ],
+       [
+        20.2,
+        -1.4
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      82,
+      82,
+      82,
+      82,
+      82,
+      82,
+      82,
+      82
+     ],
+     "durationMs": 656,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 75.0,
+     "cycleMs": 656,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        19.9,
+        25.9
+       ],
+       [
+        19.4,
+        25.2
+       ],
+       [
+        19.2,
+        25.2
+       ],
+       [
+        19.4,
+        25.7
+       ],
+       [
+        19.9,
+        25.9
+       ],
+       [
+        20.3,
+        24.6
+       ],
+       [
+        20.5,
+        24.3
+       ],
+       [
+        20.3,
+        25.1
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 75.0,
+     "strideLu": 49.2,
+     "plantedDriftLu": 0.05,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        9.5,
+        -1.9
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        11.6,
+        1.4
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        19.9,
+        12.0
+       ],
+       [
+        19.9,
+        8.0
+       ],
+       [
+        19.6,
+        2.2
+       ],
+       [
+        19.4,
+        2.3
+       ],
+       [
+        19.4,
+        2.3
+       ],
+       [
+        19.4,
+        2.3
+       ],
+       [
+        20.5,
+        2.9
+       ],
+       [
+        19.6,
+        2.2
+       ],
+       [
+        19.9,
+        6.0
+       ],
+       [
+        19.9,
+        10.0
+       ],
+       [
+        19.9,
+        12.0
+       ]
+      ]
+     },
+     "muzzle": [
+      20.5,
+      2.9
+     ]
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        18.4,
+        10.8
+       ],
+       [
+        14.4,
+        13.1
+       ],
+       [
+        17.5,
+        12.4
+       ],
+       [
+        20.2,
+        11.6
+       ],
+       [
+        19.7,
+        12.0
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 7,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      2,
+      3,
+      4,
+      5,
+      5,
+      6,
+      6
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        23.8
+       ],
+       "scale": 0.94
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        36.3
+       ],
+       "loops": 2,
+       "scale": 0.97
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        19.9,
+        -1.4
+       ],
+       [
+        18.9,
+        -0.8
+       ],
+       [
+        17.8,
+        -0.3
+       ],
+       [
+        15.5,
+        0.4
+       ],
+       [
+        15.5,
+        0.4
+       ],
+       [
+        15.5,
+        0.4
+       ],
+       [
+        15.5,
+        0.4
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

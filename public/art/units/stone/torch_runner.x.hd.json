@@ -1,0 +1,723 @@
+{
+ "frames": {
+  "torch_runner_attack_b_01": {
+   "frame": {
+    "x": 147,
+    "y": 2,
+    "w": 120,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 160,
+    "y": 143,
+    "w": 120,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_b_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 387,
+    "w": 90,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 162,
+    "w": 90,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 141,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 137,
+    "w": 141,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_b_02_team": {
+   "frame": {
+    "x": 589,
+    "y": 205,
+    "w": 111,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 154,
+    "y": 155,
+    "w": 111,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_b_03": {
+   "frame": {
+    "x": 271,
+    "y": 2,
+    "w": 155,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 148,
+    "w": 155,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_b_03_team": {
+   "frame": {
+    "x": 225,
+    "y": 387,
+    "w": 112,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 169,
+    "w": 112,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_b_04": {
+   "frame": {
+    "x": 272,
+    "y": 205,
+    "w": 194,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 165,
+    "w": 194,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_b_04_team": {
+   "frame": {
+    "x": 115,
+    "y": 550,
+    "w": 152,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 183,
+    "w": 152,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 205,
+    "w": 150,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 157,
+    "w": 150,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_b_05_team": {
+   "frame": {
+    "x": 341,
+    "y": 387,
+    "w": 125,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 171,
+    "w": 125,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_c_01": {
+   "frame": {
+    "x": 470,
+    "y": 205,
+    "w": 115,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 156,
+    "y": 171,
+    "w": 115,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_c_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 550,
+    "w": 109,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 185,
+    "w": 109,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_c_02": {
+   "frame": {
+    "x": 594,
+    "y": 2,
+    "w": 123,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 151,
+    "y": 121,
+    "w": 123,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_c_02_team": {
+   "frame": {
+    "x": 470,
+    "y": 387,
+    "w": 105,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 138,
+    "w": 105,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_c_03": {
+   "frame": {
+    "x": 430,
+    "y": 2,
+    "w": 160,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 121,
+    "w": 160,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_c_03_team": {
+   "frame": {
+    "x": 96,
+    "y": 387,
+    "w": 125,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 155,
+    "y": 137,
+    "w": 125,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_c_04": {
+   "frame": {
+    "x": 271,
+    "y": 550,
+    "w": 215,
+    "h": 129
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 153,
+    "w": 215,
+    "h": 129
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_c_04_team": {
+   "frame": {
+    "x": 490,
+    "y": 550,
+    "w": 165,
+    "h": 117
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 163,
+    "w": 165,
+    "h": 117
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_c_05": {
+   "frame": {
+    "x": 156,
+    "y": 205,
+    "w": 112,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 160,
+    "w": 112,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  },
+  "torch_runner_attack_c_05_team": {
+   "frame": {
+    "x": 579,
+    "y": 387,
+    "w": 98,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 173,
+    "w": 98,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 452,
+    "h": 370
+   },
+   "anchor": {
+    "x": 0.50885,
+    "y": 0.86486
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "torch_runner_attack_00",
+   "torch_runner_attack_b_01",
+   "torch_runner_attack_b_01",
+   "torch_runner_attack_b_02",
+   "torch_runner_attack_b_03",
+   "torch_runner_attack_b_03",
+   "torch_runner_attack_b_04",
+   "torch_runner_attack_b_05",
+   "torch_runner_attack_b_05",
+   "torch_runner_attack_09",
+   "torch_runner_attack_10"
+  ],
+  "attack_b_team": [
+   "torch_runner_attack_00_team",
+   "torch_runner_attack_b_01_team",
+   "torch_runner_attack_b_01_team",
+   "torch_runner_attack_b_02_team",
+   "torch_runner_attack_b_03_team",
+   "torch_runner_attack_b_03_team",
+   "torch_runner_attack_b_04_team",
+   "torch_runner_attack_b_05_team",
+   "torch_runner_attack_b_05_team",
+   "torch_runner_attack_09_team",
+   "torch_runner_attack_10_team"
+  ],
+  "attack_c": [
+   "torch_runner_attack_00",
+   "torch_runner_attack_c_01",
+   "torch_runner_attack_c_01",
+   "torch_runner_attack_c_02",
+   "torch_runner_attack_c_03",
+   "torch_runner_attack_c_03",
+   "torch_runner_attack_c_04",
+   "torch_runner_attack_c_05",
+   "torch_runner_attack_c_05",
+   "torch_runner_attack_09",
+   "torch_runner_attack_10"
+  ],
+  "attack_c_team": [
+   "torch_runner_attack_00_team",
+   "torch_runner_attack_c_01_team",
+   "torch_runner_attack_c_01_team",
+   "torch_runner_attack_c_02_team",
+   "torch_runner_attack_c_03_team",
+   "torch_runner_attack_c_03_team",
+   "torch_runner_attack_c_04_team",
+   "torch_runner_attack_c_05_team",
+   "torch_runner_attack_c_05_team",
+   "torch_runner_attack_09_team",
+   "torch_runner_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "torch_runner.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 768,
+   "h": 692
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.torch_runner",
+   "name": "Torch Runner",
+   "heightLu": 62,
+   "widthLu": 39.0,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    230,
+    320
+   ],
+   "anchorsLu": {
+    "head": [
+     4,
+     60
+    ],
+    "hitCenter": [
+     0,
+     29
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "torch_runner",
+   "clips": {
+    "attack_b": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      3,
+      4,
+      5,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 4,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "anchorsLu": {
+      "torchTip": [
+       [
+        17.0,
+        48.7
+       ],
+       [
+        -18.6,
+        58.6
+       ],
+       [
+        -30.6,
+        50.7
+       ],
+       [
+        21.6,
+        56.7
+       ],
+       [
+        51.2,
+        24.6
+       ],
+       [
+        36.3,
+        8.8
+       ],
+       [
+        29.2,
+        43.1
+       ],
+       [
+        18.3,
+        49.3
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      1,
+      2,
+      3,
+      3,
+      4,
+      5,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 4,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "anchorsLu": {
+      "torchTip": [
+       [
+        17.0,
+        48.7
+       ],
+       [
+        -13.9,
+        52.1
+       ],
+       [
+        -23.6,
+        64.0
+       ],
+       [
+        -28.6,
+        50.9
+       ],
+       [
+        -36.4,
+        37.2
+       ],
+       [
+        0.3,
+        56.4
+       ],
+       [
+        29.2,
+        43.1
+       ],
+       [
+        18.3,
+        49.3
+       ]
+      ]
+     },
+     "holdStep": 3
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

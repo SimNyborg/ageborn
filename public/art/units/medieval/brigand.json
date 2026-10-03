@@ -1,0 +1,2484 @@
+{
+ "frames": {
+  "brigand_idle_00": {
+   "frame": {
+    "x": 142,
+    "y": 206,
+    "w": 74,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 98,
+    "w": 74,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_idle_00_team": {
+   "frame": {
+    "x": 124,
+    "y": 466,
+    "w": 42,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 93,
+    "w": 42,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_idle_01": {
+   "frame": {
+    "x": 220,
+    "y": 206,
+    "w": 74,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 98,
+    "w": 74,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_idle_01_team": {
+   "frame": {
+    "x": 103,
+    "y": 546,
+    "w": 42,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 93,
+    "w": 42,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_idle_02": {
+   "frame": {
+    "x": 513,
+    "y": 112,
+    "w": 73,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 96,
+    "w": 73,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_idle_02_team": {
+   "frame": {
+    "x": 262,
+    "y": 466,
+    "w": 41,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 91,
+    "w": 41,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_idle_03": {
+   "frame": {
+    "x": 438,
+    "y": 2,
+    "w": 72,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 93,
+    "w": 72,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_idle_03_team": {
+   "frame": {
+    "x": 202,
+    "y": 384,
+    "w": 40,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 88,
+    "w": 40,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_idle_04": {
+   "frame": {
+    "x": 362,
+    "y": 2,
+    "w": 72,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 91,
+    "w": 72,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_idle_04_team": {
+   "frame": {
+    "x": 534,
+    "y": 297,
+    "w": 40,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 86,
+    "w": 40,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_idle_05": {
+   "frame": {
+    "x": 299,
+    "y": 2,
+    "w": 59,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 91,
+    "w": 59,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_idle_05_team": {
+   "frame": {
+    "x": 395,
+    "y": 297,
+    "w": 41,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 86,
+    "w": 41,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_idle_06": {
+   "frame": {
+    "x": 227,
+    "y": 112,
+    "w": 60,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 94,
+    "w": 60,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_idle_06_team": {
+   "frame": {
+    "x": 157,
+    "y": 384,
+    "w": 41,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 89,
+    "w": 41,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_idle_07": {
+   "frame": {
+    "x": 447,
+    "y": 112,
+    "w": 62,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 96,
+    "w": 62,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_idle_07_team": {
+   "frame": {
+    "x": 367,
+    "y": 384,
+    "w": 41,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 91,
+    "w": 41,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_00": {
+   "frame": {
+    "x": 327,
+    "y": 297,
+    "w": 64,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 102,
+    "w": 64,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_00_team": {
+   "frame": {
+    "x": 408,
+    "y": 466,
+    "w": 44,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 97,
+    "w": 44,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_01": {
+   "frame": {
+    "x": 246,
+    "y": 384,
+    "w": 63,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 105,
+    "w": 63,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_01_team": {
+   "frame": {
+    "x": 579,
+    "y": 466,
+    "w": 49,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 100,
+    "w": 49,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_02": {
+   "frame": {
+    "x": 2,
+    "y": 297,
+    "w": 63,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 98,
+    "w": 63,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_02_team": {
+   "frame": {
+    "x": 313,
+    "y": 384,
+    "w": 50,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 93,
+    "w": 50,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_03": {
+   "frame": {
+    "x": 298,
+    "y": 206,
+    "w": 64,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 94,
+    "w": 64,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_03_team": {
+   "frame": {
+    "x": 55,
+    "y": 384,
+    "w": 48,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 89,
+    "w": 48,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_04": {
+   "frame": {
+    "x": 2,
+    "y": 466,
+    "w": 66,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 102,
+    "w": 66,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_04_team": {
+   "frame": {
+    "x": 359,
+    "y": 466,
+    "w": 45,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 97,
+    "w": 45,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_05": {
+   "frame": {
+    "x": 149,
+    "y": 546,
+    "w": 61,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 105,
+    "w": 61,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_05_team": {
+   "frame": {
+    "x": 431,
+    "y": 546,
+    "w": 45,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 100,
+    "w": 45,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_06": {
+   "frame": {
+    "x": 578,
+    "y": 297,
+    "w": 60,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 99,
+    "w": 60,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_06_team": {
+   "frame": {
+    "x": 307,
+    "y": 466,
+    "w": 48,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 94,
+    "w": 48,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_07": {
+   "frame": {
+    "x": 69,
+    "y": 297,
+    "w": 62,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 94,
+    "w": 62,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_walk_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 546,
+    "w": 47,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 89,
+    "w": 47,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_00": {
+   "frame": {
+    "x": 370,
+    "y": 112,
+    "w": 73,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 95,
+    "w": 73,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_00_team": {
+   "frame": {
+    "x": 170,
+    "y": 466,
+    "w": 42,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 91,
+    "w": 42,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_01": {
+   "frame": {
+    "x": 135,
+    "y": 297,
+    "w": 61,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 100,
+    "w": 61,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_01_team": {
+   "frame": {
+    "x": 326,
+    "y": 546,
+    "w": 45,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 95,
+    "w": 45,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_02": {
+   "frame": {
+    "x": 366,
+    "y": 206,
+    "w": 62,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 98,
+    "w": 62,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_02_team": {
+   "frame": {
+    "x": 53,
+    "y": 546,
+    "w": 46,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 93,
+    "w": 46,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_03": {
+   "frame": {
+    "x": 78,
+    "y": 112,
+    "w": 68,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 94,
+    "w": 68,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_03_team": {
+   "frame": {
+    "x": 72,
+    "y": 466,
+    "w": 48,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 90,
+    "w": 48,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 81,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 79,
+    "w": 81,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_04_team": {
+   "frame": {
+    "x": 432,
+    "y": 206,
+    "w": 38,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 85,
+    "w": 38,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_05": {
+   "frame": {
+    "x": 87,
+    "y": 2,
+    "w": 79,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 80,
+    "w": 79,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_05_team": {
+   "frame": {
+    "x": 440,
+    "y": 297,
+    "w": 44,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 90,
+    "w": 44,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_06": {
+   "frame": {
+    "x": 500,
+    "y": 384,
+    "w": 77,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 108,
+    "w": 77,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 624,
+    "w": 53,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 103,
+    "w": 53,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_07": {
+   "frame": {
+    "x": 2,
+    "y": 206,
+    "w": 57,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 98,
+    "w": 57,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_07_team": {
+   "frame": {
+    "x": 107,
+    "y": 384,
+    "w": 46,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 92,
+    "w": 46,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_08": {
+   "frame": {
+    "x": 551,
+    "y": 206,
+    "w": 70,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 100,
+    "w": 70,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_08_team": {
+   "frame": {
+    "x": 278,
+    "y": 546,
+    "w": 44,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 95,
+    "w": 44,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_09": {
+   "frame": {
+    "x": 514,
+    "y": 2,
+    "w": 72,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 94,
+    "w": 72,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_09_team": {
+   "frame": {
+    "x": 283,
+    "y": 297,
+    "w": 40,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 89,
+    "w": 40,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_10": {
+   "frame": {
+    "x": 291,
+    "y": 112,
+    "w": 75,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 95,
+    "w": 75,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_attack_10_team": {
+   "frame": {
+    "x": 412,
+    "y": 384,
+    "w": 40,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 90,
+    "w": 40,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_hit_00": {
+   "frame": {
+    "x": 474,
+    "y": 206,
+    "w": 73,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 77,
+    "y": 100,
+    "w": 73,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_hit_00_team": {
+   "frame": {
+    "x": 375,
+    "y": 546,
+    "w": 52,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 99,
+    "w": 52,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_hit_01": {
+   "frame": {
+    "x": 232,
+    "y": 2,
+    "w": 63,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 77,
+    "y": 87,
+    "w": 63,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_hit_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 384,
+    "w": 49,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 88,
+    "w": 49,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_hit_02": {
+   "frame": {
+    "x": 2,
+    "y": 112,
+    "w": 72,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 93,
+    "w": 72,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_hit_02_team": {
+   "frame": {
+    "x": 488,
+    "y": 297,
+    "w": 42,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 88,
+    "w": 42,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_hit_03": {
+   "frame": {
+    "x": 63,
+    "y": 206,
+    "w": 75,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 97,
+    "w": 75,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_hit_03_team": {
+   "frame": {
+    "x": 216,
+    "y": 466,
+    "w": 42,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 92,
+    "w": 42,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_hit_04": {
+   "frame": {
+    "x": 150,
+    "y": 112,
+    "w": 73,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 94,
+    "w": 73,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_hit_04_team": {
+   "frame": {
+    "x": 456,
+    "y": 384,
+    "w": 40,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 90,
+    "w": 40,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_00": {
+   "frame": {
+    "x": 456,
+    "y": 466,
+    "w": 65,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 77,
+    "y": 100,
+    "w": 65,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_00_team": {
+   "frame": {
+    "x": 480,
+    "y": 546,
+    "w": 48,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 96,
+    "w": 48,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_01": {
+   "frame": {
+    "x": 331,
+    "y": 624,
+    "w": 102,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 100,
+    "w": 102,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 693,
+    "w": 84,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 108,
+    "w": 84,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_02": {
+   "frame": {
+    "x": 170,
+    "y": 2,
+    "w": 58,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 78,
+    "w": 58,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_02_team": {
+   "frame": {
+    "x": 525,
+    "y": 466,
+    "w": 50,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 99,
+    "w": 50,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_03": {
+   "frame": {
+    "x": 200,
+    "y": 297,
+    "w": 79,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 85,
+    "w": 79,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_03_team": {
+   "frame": {
+    "x": 214,
+    "y": 546,
+    "w": 60,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 80,
+    "w": 60,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_04": {
+   "frame": {
+    "x": 532,
+    "y": 546,
+    "w": 83,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 116,
+    "w": 83,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_04_team": {
+   "frame": {
+    "x": 437,
+    "y": 624,
+    "w": 65,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 135,
+    "w": 65,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_05": {
+   "frame": {
+    "x": 506,
+    "y": 624,
+    "w": 101,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 43,
+    "y": 128,
+    "w": 101,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_05_team": {
+   "frame": {
+    "x": 163,
+    "y": 693,
+    "w": 81,
+    "h": 43
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 43,
+    "y": 135,
+    "w": 81,
+    "h": 43
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_06": {
+   "frame": {
+    "x": 149,
+    "y": 624,
+    "w": 89,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 119,
+    "w": 89,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_06_team": {
+   "frame": {
+    "x": 90,
+    "y": 693,
+    "w": 69,
+    "h": 44
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 139,
+    "w": 69,
+    "h": 44
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_07": {
+   "frame": {
+    "x": 59,
+    "y": 624,
+    "w": 86,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 52,
+    "y": 118,
+    "w": 86,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_07_team": {
+   "frame": {
+    "x": 248,
+    "y": 693,
+    "w": 75,
+    "h": 42
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 139,
+    "w": 75,
+    "h": 42
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_08": {
+   "frame": {
+    "x": 242,
+    "y": 624,
+    "w": 85,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 47,
+    "y": 120,
+    "w": 85,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  },
+  "brigand_die_08_team": {
+   "frame": {
+    "x": 327,
+    "y": 693,
+    "w": 59,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 140,
+    "w": 59,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.48536,
+    "y": 0.8607
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "brigand_idle_00",
+   "brigand_idle_01",
+   "brigand_idle_02",
+   "brigand_idle_03",
+   "brigand_idle_04",
+   "brigand_idle_05",
+   "brigand_idle_06",
+   "brigand_idle_07"
+  ],
+  "idle_team": [
+   "brigand_idle_00_team",
+   "brigand_idle_01_team",
+   "brigand_idle_02_team",
+   "brigand_idle_03_team",
+   "brigand_idle_04_team",
+   "brigand_idle_05_team",
+   "brigand_idle_06_team",
+   "brigand_idle_07_team"
+  ],
+  "walk": [
+   "brigand_walk_00",
+   "brigand_walk_01",
+   "brigand_walk_02",
+   "brigand_walk_03",
+   "brigand_walk_04",
+   "brigand_walk_05",
+   "brigand_walk_06",
+   "brigand_walk_07"
+  ],
+  "walk_team": [
+   "brigand_walk_00_team",
+   "brigand_walk_01_team",
+   "brigand_walk_02_team",
+   "brigand_walk_03_team",
+   "brigand_walk_04_team",
+   "brigand_walk_05_team",
+   "brigand_walk_06_team",
+   "brigand_walk_07_team"
+  ],
+  "attack": [
+   "brigand_attack_00",
+   "brigand_attack_01",
+   "brigand_attack_02",
+   "brigand_attack_03",
+   "brigand_attack_04",
+   "brigand_attack_05",
+   "brigand_attack_06",
+   "brigand_attack_07",
+   "brigand_attack_08",
+   "brigand_attack_09",
+   "brigand_attack_10"
+  ],
+  "attack_team": [
+   "brigand_attack_00_team",
+   "brigand_attack_01_team",
+   "brigand_attack_02_team",
+   "brigand_attack_03_team",
+   "brigand_attack_04_team",
+   "brigand_attack_05_team",
+   "brigand_attack_06_team",
+   "brigand_attack_07_team",
+   "brigand_attack_08_team",
+   "brigand_attack_09_team",
+   "brigand_attack_10_team"
+  ],
+  "hit": [
+   "brigand_hit_00",
+   "brigand_hit_01",
+   "brigand_hit_02",
+   "brigand_hit_03",
+   "brigand_hit_04"
+  ],
+  "hit_team": [
+   "brigand_hit_00_team",
+   "brigand_hit_01_team",
+   "brigand_hit_02_team",
+   "brigand_hit_03_team",
+   "brigand_hit_04_team"
+  ],
+  "die": [
+   "brigand_die_00",
+   "brigand_die_01",
+   "brigand_die_02",
+   "brigand_die_03",
+   "brigand_die_04",
+   "brigand_die_05",
+   "brigand_die_06",
+   "brigand_die_07",
+   "brigand_die_07",
+   "brigand_die_08"
+  ],
+  "die_team": [
+   "brigand_die_00_team",
+   "brigand_die_01_team",
+   "brigand_die_02_team",
+   "brigand_die_03_team",
+   "brigand_die_04_team",
+   "brigand_die_05_team",
+   "brigand_die_06_team",
+   "brigand_die_07_team",
+   "brigand_die_07_team",
+   "brigand_die_08_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "brigand.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 640,
+   "h": 744
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.brigand",
+   "name": "Brigand",
+   "heightLu": 66,
+   "widthLu": 54.1,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    116.0,
+    173.0
+   ],
+   "anchorsLu": {
+    "head": [
+     4,
+     62
+    ],
+    "hitCenter": [
+     0,
+     30
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      115,
+      115,
+      115,
+      115,
+      115,
+      115,
+      115,
+      115
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "daggerTip": [
+       [
+        32.4,
+        26.4
+       ],
+       [
+        32.5,
+        26.4
+       ],
+       [
+        32.2,
+        26.9
+       ],
+       [
+        31.8,
+        27.8
+       ],
+       [
+        31.5,
+        28.4
+       ],
+       [
+        17.0,
+        48.2
+       ],
+       [
+        -11.8,
+        36.2
+       ],
+       [
+        21.9,
+        42.5
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      64,
+      64,
+      64,
+      64,
+      64,
+      64,
+      64,
+      64
+     ],
+     "durationMs": 512,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 125.0,
+     "cycleMs": 512,
+     "anchorsLu": {
+      "daggerTip": [
+       [
+        -7.8,
+        28.9
+       ],
+       [
+        -7.8,
+        24.2
+       ],
+       [
+        -7.1,
+        29.7
+       ],
+       [
+        -7.0,
+        34.5
+       ],
+       [
+        -7.8,
+        28.9
+       ],
+       [
+        -9.8,
+        24.6
+       ],
+       [
+        -9.9,
+        30.3
+       ],
+       [
+        -9.0,
+        34.9
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 125.0,
+     "strideLu": 64.0,
+     "plantedDriftLu": 0.0,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        12.3,
+        -2.0
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        14.4,
+        1.2
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "daggerTip": [
+       [
+        31.9,
+        32.1
+       ],
+       [
+        14.5,
+        53.1
+       ],
+       [
+        -29.1,
+        56.9
+       ],
+       [
+        -38.2,
+        47.0
+       ],
+       [
+        17.9,
+        71.6
+       ],
+       [
+        42.5,
+        15.9
+       ],
+       [
+        37.5,
+        0.6
+       ],
+       [
+        32.1,
+        -0.6
+       ],
+       [
+        38.1,
+        8.6
+       ],
+       [
+        35.5,
+        20.4
+       ],
+       [
+        33.0,
+        27.6
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "daggerTip": [
+       [
+        24.0,
+        37.5
+       ],
+       [
+        15.5,
+        50.6
+       ],
+       [
+        26.2,
+        38.0
+       ],
+       [
+        33.2,
+        21.7
+       ],
+       [
+        31.7,
+        28.3
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      7,
+      8
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        23.8
+       ],
+       "scale": 0.676
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        36.3
+       ],
+       "loops": 2,
+       "scale": 0.822
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "daggerTip": [
+       [
+        15.9,
+        51.5
+       ],
+       [
+        -47.9,
+        35.1
+       ],
+       [
+        9.3,
+        2.9
+       ],
+       [
+        9.5,
+        64.3
+       ],
+       [
+        -28.1,
+        42.1
+       ],
+       [
+        -54.8,
+        26.5
+       ],
+       [
+        -38.1,
+        39.4
+       ],
+       [
+        -34.5,
+        40.5
+       ],
+       [
+        -31.3,
+        39.3
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

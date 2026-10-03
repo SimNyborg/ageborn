@@ -71,6 +71,11 @@ export interface BalanceOptions {
   /** Mirror formats; Full War only at gates (A18.3.4). */
   mirrorFormats: FormatId[];
   scenarios: boolean;
+  /**
+   * The format every card test plays in (CONTENT_PLAN section 10: the one-age window `w1.<age>` and the
+   * two-age window ending in the card's age). Omitted: the card's Standard window (`cardFormat`).
+   */
+  cardFormat?: FormatId;
   onProgress?: (done: number, total: number) => void;
 }
 
@@ -186,7 +191,7 @@ export function balanceJobs(content: CompiledContent, o: BalanceOptions, tests: 
   }
   for (const t of tests) {
     if (t.inBaseline) continue;
-    const format = cardFormat(content, t.age);
+    const format = o.cardFormat ?? cardFormat(content, t.age);
     const sit = situationOf(content, t.card);
     if (sit) {
       // The test plan and the baseline plan each meet the same opponent on the same seeds, on both sides.

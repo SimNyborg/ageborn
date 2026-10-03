@@ -435,6 +435,254 @@ const BASE_SOUNDS = {
     noiseBurst(100, { vol: 0.2, freq: 1200, release: 0.04, lowpass: 6000 }),
     at(110, { vol: 0.4, freq: 700 * (1 + 0.05 * v), attack: 0.005, release: 0.1, slide: -12 }),
   ])),
+  // Medieval wave (CONTENT_PLAN 5.3): attacks, turrets and powers of the new Medieval cards ---------------
+  squire_jab: mix('medieval', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.25, freq: 1400 * (1 + 0.06 * v), attack: 0.03, release: 0.04, slide: 4, lowpass: 6000 }),
+    at(60, { vol: 0.35, freq: 700 * (1 + 0.05 * v), attack: 0.001, release: 0.04, shape: 'tri', curve: 2 }),
+    at(170, { vol: 0.3, freq: 780 * (1 + 0.05 * v), attack: 0.001, release: 0.05, shape: 'tri', curve: 2 }),
+  ])),
+  flail_smash: mix('medieval', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.2, freq: 600 * (1 + 0.06 * v), attack: 0.08, sustain: 0.08, release: 0.05, tremolo: 0.6, repeat: 0.05, lowpass: 2600 }),
+    thump(220, 120 * (1 + 0.05 * v), 0.6, 0.2, -0.5),
+    at(240, { vol: 0.15, freq: 2400 * (1 + 0.04 * v), attack: 0.001, release: 0.06, shape: 'tri', repeat: 0.02 }),
+  ])),
+  dagger_stab: mix('medieval', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.2, freq: 5000, attack: 0.02, release: 0.04, highpass: 3000 }),
+    noiseBurst(70, { vol: 0.3, freq: 2000 * (1 + 0.06 * v), attack: 0.03, release: 0.04, slide: 5, lowpass: 7000 }),
+    thump(120, 220 * (1 + 0.05 * v), 0.5, 0.06, -0.6),
+  ])),
+  greatsword_sweep: mix('medieval', mixVariants(3, (v) => [
+    noiseBurst(80, { vol: 0.35, freq: 500 * (1 + 0.06 * v), attack: 0.15, release: 0.12, slide: 3, lowpass: 3000 }),
+    at(340, { vol: 0.35, freq: 820 * (1 + 0.04 * v), attack: 0.001, sustain: 0.05, release: 0.35, shape: 'tri', tremolo: 0.2, repeat: 0.03 }),
+    thump(340, 140 * (1 + 0.05 * v), 0.4, 0.12, -0.5),
+  ])),
+  hammer_clang: mix('medieval', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.3, freq: 400 * (1 + 0.06 * v), attack: 0.12, release: 0.08, slide: 2, lowpass: 1800 }),
+    at(200, { vol: 0.4, freq: 620 * (1 + 0.04 * v), attack: 0.001, sustain: 0.05, release: 0.5, shape: 'tri', tremolo: 0.15, repeat: 0.04 }),
+    thump(200, 110 * (1 + 0.05 * v), 0.6, 0.2, -0.5),
+  ])),
+  whip_crack: mix('medieval', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.2, freq: 900 * (1 + 0.06 * v), attack: 0.08, release: 0.04, slide: 4, lowpass: 3000 }),
+    noiseBurst(160, { vol: 0.5, freq: 6000, attack: 0.001, release: 0.02, highpass: 2500 }),
+    at(220, { vol: 0.2, freq: 520 * (1 + 0.05 * v), attack: 0.005, release: 0.05, shape: 'saw', slide: 3, lowpass: 2500 }),
+  ])),
+  hound_bite: mix('medieval', mixVariants(3, (v) => [
+    at(0, { vol: 0.25, freq: 220 * (1 + 0.06 * v), attack: 0.01, sustain: 0.04, release: 0.04, shape: 'saw', tremolo: 0.5, repeat: 0.02, lowpass: 2200 }),
+    noiseBurst(80, { vol: 0.45, freq: 2400 * (1 + 0.05 * v), attack: 0.001, release: 0.03, lowpass: 7000 }),
+    at(85, { vol: 0.2, freq: 950 * (1 + 0.04 * v), attack: 0.001, release: 0.05, shape: 'tri' }),
+  ])),
+  drawbridge_slam: mix('medieval', mixVariants(3, (v) => [
+    at(0, { vol: 0.15, freq: 1900 * (1 + 0.04 * v), attack: 0.001, sustain: 0.18, release: 0.05, shape: 'tri', tremolo: 0.7, repeat: 0.03 }),
+    thump(240, 80 * (1 + 0.05 * v), 0.8, 0.35, -0.5),
+    noiseBurst(250, { vol: 0.3, freq: 300, attack: 0.01, sustain: 0.1, release: 0.2, lowpass: 1400 }),
+  ])),
+  wyrm_breath: mix('medieval', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.15, freq: 1500, attack: 0.2, release: 0.02, lowpass: 3000 }),
+    at(200, { vol: 0.3, freq: 75 * (1 + 0.05 * v), attack: 0.03, sustain: 0.3, release: 0.2, shape: 'saw', tremolo: 0.5, repeat: 0.025, lowpass: 1200 }),
+    noiseBurst(200, { vol: 0.4, freq: 900 * (1 + 0.06 * v), attack: 0.04, sustain: 0.3, release: 0.2, slide: 2, lowpass: 3200 }),
+  ])),
+  shot_windlass: mix('medieval', mixVariants(3, (v) => [
+    at(0, { vol: 0.25, freq: 1300 * (1 + 0.04 * v), attack: 0.001, release: 0.02, shape: 'tri', repeat: 0.028 }),
+    at(150, { vol: 0.5, freq: 140 * (1 + 0.06 * v), attack: 0.001, release: 0.1, shape: 'square', curve: 0.6, slide: -1, lowpass: 2400 }),
+    noiseBurst(160, { vol: 0.2, freq: 3000, release: 0.06, highpass: 3500 }),
+  ])),
+  shot_longbow: mix('medieval', mixVariants(3, (v) => [
+    at(0, { vol: 0.12, freq: 120 * (1 + 0.05 * v), attack: 0.05, sustain: 0.08, release: 0.03, shape: 'saw', lowpass: 1800 }),
+    at(150, { vol: 0.45, freq: 180 * (1 + 0.06 * v), attack: 0.001, release: 0.2, shape: 'tri', curve: 2, slide: -0.2 }),
+    at(170, { vol: 0.08, freq: 1600 * (1 + 0.04 * v), attack: 0.04, sustain: 0.1, release: 0.12, slide: 6 }),
+  ])),
+  trumpet_toot: mix('medieval', mixVariants(3, (_v, k) => {
+    const horn: Zz = { attack: 0.02, release: 0.1, shape: 'saw', lowpass: 4400 };
+    const [a, b] = ([['D4', 'A4'], ['A4', 'D5'], ['F#4', 'A4']] as const)[k] ?? ['D4', 'A4'];
+    return [
+      note(0, a, { ...horn, vol: 0.35, sustain: 0.06 }),
+      note(130, b, { ...horn, vol: 0.4, sustain: 0.2, release: 0.2 }),
+    ];
+  })),
+  shot_mangonel: mix('medieval', mixVariants(3, (v) => [
+    at(0, { vol: 0.22, freq: 80 * (1 + 0.05 * v), attack: 0.02, sustain: 0.12, release: 0.05, shape: 'saw', tremolo: 0.5, repeat: 0.05, lowpass: 1500 }),
+    thump(180, 110 * (1 + 0.05 * v), 0.7, 0.25, -0.5),
+    noiseBurst(200, { vol: 0.3, freq: 350 * (1 + 0.06 * v), attack: 0.1, release: 0.15, slide: 2, lowpass: 1800 }),
+  ])),
+  vial_toss: mix('medieval', mixVariants(3, (v) => [
+    at(0, { vol: 0.25, freq: 2400 * (1 + 0.05 * v), attack: 0.001, release: 0.1, shape: 'sin', tremolo: 0.4, repeat: 0.06 }),
+    noiseBurst(220, { vol: 0.3, freq: 1500, attack: 0.001, release: 0.03, lowpass: 5000 }),
+    noiseBurst(230, { vol: 0.15, freq: 6000, attack: 0.01, sustain: 0.1, release: 0.12, highpass: 3500 }),
+  ])),
+  shot_springald: mix('medieval', mixVariants(3, (v) => [
+    at(0, { vol: 0.5, freq: 110 * (1 + 0.06 * v), attack: 0.001, release: 0.12, shape: 'square', curve: 0.6, slide: -1, lowpass: 2000 }),
+    noiseBurst(20, { vol: 0.25, freq: 900, attack: 0.03, release: 0.2, slide: 2, lowpass: 2600, tremolo: 0.4, repeat: 0.09 }),
+  ])),
+  crane_hook: mix('medieval', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.2, freq: 1600 * (1 + 0.06 * v), attack: 0.05, release: 0.1, tremolo: 0.6, repeat: 0.06, lowpass: 5000 }),
+    at(160, { vol: 0.35, freq: 980 * (1 + 0.04 * v), attack: 0.001, sustain: 0.03, release: 0.2, shape: 'tri', tremolo: 0.2, repeat: 0.03 }),
+    at(300, { vol: 0.2, freq: 700, attack: 0.001, sustain: 0.25, release: 0.03, shape: 'tri', repeat: 0.04 }),
+  ])),
+  pw_longbow: mix('medieval', mixVariants(3, (v) => [
+    at(0, { vol: 0.25, freq: 140, attack: 0.01, sustain: 0.1, release: 0.08, shape: 'saw', lowpass: 1800 }),
+    at(420, { vol: 0.35, freq: 190 * (1 + 0.04 * v), release: 0.15, shape: 'tri', curve: 2, repeat: 0.02 }),
+    noiseBurst(450, { vol: 0.3, freq: 2400, attack: 0.15, sustain: 0.3, release: 0.2, slide: -2, highpass: 2000 }),
+    noiseBurst(950, { vol: 0.35, freq: 600, attack: 0.002, sustain: 0.5, release: 0.15, tremolo: 0.6, repeat: 0.06, lowpass: 2500 }),
+  ]), { maxVoices: 2 }),
+  pw_bell: mix('medieval', mixVariants(3, (v) => [
+    thump(0, 70, 0.9, 0.5, -0.4),
+    note(0, 'D3', { vol: 0.45 * (1 - 0.03 * v), attack: 0.002, sustain: 0.3, release: 1.6, shape: 'tri', tremolo: 0.15, repeat: 0.3 }),
+    note(0, 'A4', { vol: 0.2, attack: 0.002, release: 1.2, shape: 'sin' }),
+    note(0, 'D5', { vol: 0.15, attack: 0.002, release: 1.0, shape: 'sin' }),
+  ]), { maxVoices: 1 }),
+  // Gunpowder wave (CONTENT_PLAN 5.4): attacks, turrets and powers of the new Gunpowder cards -------------
+  claymore_chop: mix('gunpowder', mixVariants(3, (v) => [
+    noiseBurst(50, { vol: 0.3, freq: 600 * (1 + 0.05 * v), attack: 0.05, release: 0.12, slide: 3, lowpass: 3000 }),
+    at(240, { vol: 0.35, freq: 900 * (1 + 0.04 * v), attack: 0.001, sustain: 0.02, release: 0.18, shape: 'tri', tremolo: 0.3, repeat: 0.03 }),
+    thump(240, 150 * (1 + 0.05 * v), 0.5, 0.1, -0.4),
+  ])),
+  scoop_swing: mix('gunpowder', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.25, freq: 1200 * (1 + 0.05 * v), attack: 0.03, release: 0.06, slide: 3, lowpass: 4000 }),
+    at(80, { vol: 0.4, freq: 720 * (1 + 0.05 * v), attack: 0.001, release: 0.06, shape: 'tri' }),
+  ])),
+  sabre_slash: mix('gunpowder', mixVariants(3, (v) => [
+    noiseBurst(100, { vol: 0.3, freq: 2000 * (1 + 0.05 * v), attack: 0.04, release: 0.08, slide: 4, highpass: 1200 }),
+    at(200, { vol: 0.35, freq: 1500 * (1 + 0.04 * v), attack: 0.001, sustain: 0.02, release: 0.2, shape: 'tri', tremolo: 0.3, repeat: 0.025 }),
+  ])),
+  marshal_sweep: mix('gunpowder', mixVariants(3, (v) => [
+    at(0, { vol: 0.3, freq: 115 * (1 + 0.05 * v), attack: 0.02, sustain: 0.12, release: 0.06, shape: 'saw', lowpass: 1600 }),
+    noiseBurst(120, { vol: 0.35, freq: 500 * (1 + 0.05 * v), attack: 0.08, release: 0.2, slide: 3, lowpass: 3200 }),
+    at(380, { vol: 0.35, freq: 760 * (1 + 0.04 * v), attack: 0.001, sustain: 0.04, release: 0.35, shape: 'tri', tremolo: 0.3, repeat: 0.04 }),
+    thump(380, 120, 0.6, 0.15, -0.4),
+  ])),
+  shot_blunderbuss: mix('gunpowder', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.7, freq: 1500 * (1 + 0.05 * v), attack: 0.001, release: 0.16, lowpass: 6000 }),
+    thump(10, 115 * (1 + 0.05 * v), 0.7, 0.25, -0.5),
+    noiseBurst(40, { vol: 0.3, freq: 4000, attack: 0.001, sustain: 0.1, release: 0.15, tremolo: 0.7, repeat: 0.02, highpass: 2500 }),
+  ])),
+  shot_dragoon: mix('gunpowder', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.6, freq: 1800 * (1 + 0.05 * v), attack: 0.001, release: 0.1, lowpass: 7000 }),
+    thump(10, 160 * (1 + 0.05 * v), 0.5, 0.15, -0.5),
+    at(260, { vol: 0.25, freq: 300 * (1 + 0.05 * v), attack: 0.001, release: 0.05, shape: 'tri' }),
+  ])),
+  shot_coehorn: mix('gunpowder', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.15, freq: 6000, attack: 0.01, sustain: 0.08, release: 0.03, highpass: 3000 }),
+    thump(100, 110 * (1 + 0.05 * v), 0.8, 0.3, -0.5),
+    at(140, { vol: 0.07, freq: 700 * (1 + 0.04 * v), attack: 0.05, sustain: 0.15, release: 0.12, slide: 6 }),
+  ])),
+  shot_wallgun: mix('gunpowder', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.7, freq: 1200 * (1 + 0.05 * v), attack: 0.001, release: 0.18, lowpass: 6000 }),
+    thump(10, 120 * (1 + 0.05 * v), 0.8, 0.3, -0.5),
+    noiseBurst(30, { vol: 0.25, freq: 300, attack: 0.05, sustain: 0.2, release: 0.3, lowpass: 900 }),
+  ])),
+  drum_roll: mix('gunpowder', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.3, freq: 2200 * (1 + 0.04 * v), attack: 0.001, release: 0.04, repeat: 0.028, highpass: 800 }),
+    noiseBurst(120, { vol: 0.5, freq: 2000 * (1 + 0.04 * v), attack: 0.001, release: 0.12, highpass: 600 }),
+    thump(130, 90 * (1 + 0.05 * v), 0.4, 0.2, -0.3),
+  ])),
+  pipe_drone: mix('gunpowder', mixVariants(3, (_v, k) => {
+    const reed: Zz = { attack: 0.02, release: 0.08, shape: 'saw', lowpass: 2600 };
+    const [a, b, c] = ([['G4', 'A4', 'D5'], ['G4', 'B4', 'D5'], ['A4', 'G4', 'D5']] as const)[k] ?? ['G4', 'A4', 'D5'];
+    return [
+      note(30, 'G2', { vol: 0.2, attack: 0.04, sustain: 0.4, release: 0.12, shape: 'saw', lowpass: 900 }),
+      note(60, a, { ...reed, vol: 0.25, sustain: 0.05 }),
+      note(130, b, { ...reed, vol: 0.25, sustain: 0.05 }),
+      note(200, c, { ...reed, vol: 0.3, sustain: 0.2, release: 0.15 }),
+    ];
+  })),
+  mesmer_chime: mix('gunpowder', mixVariants(3, (v) => [
+    at(0, { vol: 0.2, freq: 1800 * (1 + 0.04 * v), attack: 0.001, release: 0.02, shape: 'tri' }),
+    at(110, { vol: 0.18, freq: 1500 * (1 + 0.04 * v), attack: 0.001, release: 0.02, shape: 'tri' }),
+    at(200, { vol: 0.3, freq: 1180 * (1 + 0.04 * v), attack: 0.002, release: 0.5, shape: 'sin', tremolo: 0.3, repeat: 0.16 }),
+  ])),
+  shot_carronade: mix('gunpowder', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.7, freq: 900 * (1 + 0.05 * v), attack: 0.001, release: 0.3, lowpass: 4000 }),
+    thump(0, 85 * (1 + 0.05 * v), 1, 0.5, -0.5),
+    thump(120, 70, 0.4, 0.12, -0.3),
+  ])),
+  shot_sea_mortar: mix('gunpowder', mixVariants(3, (v) => [
+    thump(0, 70 * (1 + 0.05 * v), 1, 0.6, -0.5),
+    noiseBurst(0, { vol: 0.4, freq: 500, attack: 0.005, sustain: 0.1, release: 0.3, lowpass: 1500 }),
+    at(300, { vol: 0.06, freq: 1700 * (1 + 0.04 * v), attack: 0.1, sustain: 0.3, release: 0.2, slide: -4 }),
+  ])),
+  pw_rockets: mix('gunpowder', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.15, freq: 6000, attack: 0.02, sustain: 0.12, release: 0.05, highpass: 3000 }),
+    noiseBurst(180, { vol: 0.35, freq: 900 * (1 + 0.05 * v), attack: 0.05, sustain: 0.35, release: 0.25, slide: 4, lowpass: 5000, repeat: 0.05 }),
+    noiseBurst(850, { vol: 0.4, freq: 700, attack: 0.002, sustain: 0.4, release: 0.15, tremolo: 0.7, repeat: 0.07, lowpass: 3000 }),
+  ]), { maxVoices: 2 }),
+  pw_salute: mix('gunpowder', mixVariants(3, (v) => [
+    at(0, { vol: 0.25, freq: 150, attack: 0.01, sustain: 0.1, release: 0.08, shape: 'saw', lowpass: 1800 }),
+    thump(200, 92 * (1 + 0.02 * v), 1, 0.5, -0.5),
+    thump(360, 88, 0.9, 0.5, -0.5),
+    thump(520, 84, 0.9, 0.5, -0.5),
+    thump(680, 80, 0.9, 0.5, -0.5),
+    at(750, { vol: 0.04, freq: 3100, attack: 0.1, sustain: 0.4, release: 0.35, shape: 'sin' }),
+  ]), { maxVoices: 1 }),
+  // Stone wave (CONTENT_PLAN 5.1): attacks, turrets and powers of the new Stone cards -----------------------
+  wolf_bite: mix('stone', mixVariants(3, (v) => [
+    at(0, { vol: 0.25, freq: 140 * (1 + 0.06 * v), attack: 0.01, sustain: 0.06, release: 0.04, shape: 'saw', tremolo: 0.5, repeat: 0.02, lowpass: 1800 }),
+    noiseBurst(90, { vol: 0.45, freq: 2400 * (1 + 0.05 * v), attack: 0.001, release: 0.03, lowpass: 7000 }),
+    at(95, { vol: 0.2, freq: 900 * (1 + 0.04 * v), attack: 0.001, release: 0.05, shape: 'tri' }),
+  ])),
+  shield_bash: mix('stone', mixVariants(3, (v) => [
+    thump(0, 110 * (1 + 0.05 * v), 0.5, 0.14, -0.4),
+    noiseBurst(100, { vol: 0.25, freq: 900 * (1 + 0.06 * v), attack: 0.03, release: 0.05, slide: 3, lowpass: 4000 }),
+    at(180, { vol: 0.35, freq: 420 * (1 + 0.05 * v), attack: 0.001, release: 0.06, shape: 'tri', curve: 2 }),
+  ])),
+  torch_jab: mix('stone', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.3, freq: 800 * (1 + 0.08 * v), attack: 0.04, sustain: 0.02, release: 0.06, slide: 4, lowpass: 5200 }),
+    noiseBurst(80, { vol: 0.35, freq: 600, attack: 0.01, sustain: 0.06, release: 0.12, slide: 2, lowpass: 2600 }),
+    noiseBurst(100, { vol: 0.15, freq: 4000, attack: 0.002, sustain: 0.1, release: 0.08, highpass: 3000, tremolo: 0.6, repeat: 0.02 }),
+  ])),
+  horn_hook: mix('stone', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.25, freq: 700 * (1 + 0.05 * v), attack: 0.01, release: 0.06, lowpass: 1800 }),
+    noiseBurst(80, { vol: 0.3, freq: 350 * (1 + 0.06 * v), attack: 0.1, release: 0.08, slide: 2, lowpass: 2000 }),
+    thump(220, 60 * (1 + 0.05 * v), 0.7, 0.28, -0.5),
+  ])),
+  bear_swipe: mix('stone', mixVariants(3, (v) => [
+    at(0, { vol: 0.3, freq: 95 * (1 + 0.05 * v), attack: 0.03, sustain: 0.2, release: 0.1, shape: 'saw', tremolo: 0.5, repeat: 0.025, lowpass: 1400 }),
+    noiseBurst(220, { vol: 0.3, freq: 300 * (1 + 0.06 * v), attack: 0.1, release: 0.08, slide: 2, lowpass: 1800 }),
+    thump(380, 50 * (1 + 0.05 * v), 0.75, 0.3, -0.5),
+  ])),
+  antler_sweep: mix('stone', mixVariants(3, (v) => [
+    at(0, { vol: 0.3, freq: 196 * (1 + 0.04 * v), attack: 0.03, sustain: 0.25, release: 0.15, shape: 'saw', slide: 0.3, lowpass: 2200 }),
+    noiseBurst(180, { vol: 0.3, freq: 280 * (1 + 0.06 * v), attack: 0.12, release: 0.08, slide: 2, lowpass: 1800 }),
+    thump(360, 55 * (1 + 0.05 * v), 0.7, 0.25, -0.5),
+  ])),
+  shot_bolas: mix('stone', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.25, freq: 500 * (1 + 0.06 * v), attack: 0.08, sustain: 0.12, release: 0.05, tremolo: 0.6, repeat: 0.06, lowpass: 2400 }),
+    at(260, { vol: 0.3, freq: 700 * (1 + 0.05 * v), attack: 0.001, release: 0.04, shape: 'tri', repeat: 0.05 }),
+  ])),
+  shot_atlatl: mix('stone', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.3, freq: 1200 * (1 + 0.06 * v), attack: 0.05, release: 0.05, slide: 5, lowpass: 6000 }),
+    at(100, { vol: 0.35, freq: 900 * (1 + 0.05 * v), attack: 0.001, release: 0.04, shape: 'tri', curve: 2 }),
+    noiseBurst(110, { vol: 0.15, freq: 1800, attack: 0.05, release: 0.2, slide: -2, lowpass: 4000 }),
+  ])),
+  shot_heave: mix('stone', mixVariants(3, (v) => [
+    at(0, { vol: 0.25, freq: 120 * (1 + 0.06 * v), attack: 0.02, sustain: 0.1, release: 0.06, shape: 'saw', lowpass: 1600 }),
+    noiseBurst(120, { vol: 0.3, freq: 300 * (1 + 0.06 * v), attack: 0.1, release: 0.08, slide: 2, lowpass: 1800 }),
+    thump(280, 90 * (1 + 0.05 * v), 0.5, 0.15, -0.4),
+  ])),
+  herb_puff: mix('stone', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.2, freq: 1800 * (1 + 0.06 * v), attack: 0.03, release: 0.04, slide: 4, lowpass: 6000 }),
+    noiseBurst(50, { vol: 0.25, freq: 1600, attack: 0.01, sustain: 0.06, release: 0.14, slide: -2, lowpass: 3000 }),
+    at(60, { vol: 0.12, freq: 2400 * (1 + 0.05 * v), attack: 0.001, release: 0.02, shape: 'tri', repeat: 0.025 }),
+  ])),
+  quill_fan: mix('stone', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.2, freq: 5000 * (1 + 0.05 * v), attack: 0.01, sustain: 0.1, release: 0.03, highpass: 2500, tremolo: 0.6, repeat: 0.025 }),
+    noiseBurst(130, { vol: 0.3, freq: 2400, attack: 0.002, release: 0.1, slide: -3, lowpass: 6000 }),
+  ])),
+  shot_sapling: mix('stone', mixVariants(3, (v) => [
+    at(0, { vol: 0.2, freq: 260 * (1 + 0.05 * v), attack: 0.001, release: 0.03, shape: 'tri', repeat: 0.03 }),
+    noiseBurst(100, { vol: 0.35, freq: 600 * (1 + 0.06 * v), attack: 0.06, sustain: 0.05, release: 0.12, slide: 4, lowpass: 4000 }),
+    at(140, { vol: 0.3, freq: 70 * (1 + 0.05 * v), attack: 0.001, release: 0.2, shape: 'tri', curve: 2 }),
+  ])),
+  // Stone wave powers
+  pw_hail: mix('stone', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.3, freq: 600 * (1 + 0.05 * v), attack: 0.08, sustain: 0.15, release: 0.06, tremolo: 0.6, repeat: 0.08, lowpass: 2400 }),
+    noiseBurst(350, { vol: 0.2, freq: 2400, attack: 0.05, release: 0.2, slide: -2, lowpass: 5000 }),
+    at(600, { vol: 0.3, freq: 1100 * (1 + 0.05 * v), attack: 0.001, sustain: 0.3, release: 0.15, shape: 'tri', tremolo: 0.7, repeat: 0.05 }),
+  ]), { maxVoices: 2 }),
+  pw_vines: mix('stone', mixVariants(3, (v) => [
+    thump(0, 55 * (1 + 0.04 * v), 0.7, 0.4, -0.4),
+    at(50, { vol: 0.25, freq: 180 * (1 + 0.05 * v), attack: 0.15, sustain: 0.35, release: 0.3, shape: 'saw', tremolo: 0.5, repeat: 0.45, lowpass: 1600 }),
+    noiseBurst(80, { vol: 0.2, freq: 4000, attack: 0.1, sustain: 0.3, release: 0.25, highpass: 2500 }),
+  ]), { maxVoices: 2 }),
   goose_honk: fx('medieval', variants(4, (v) => ({ vol: 0.5, freq: 400 * (1 + 0.1 * v), attack: 0.015, sustain: 0.12, release: 0.08, shape: 'saw', curve: 0.8, slide: -0.6, jump: -40, jumpTime: 0.03, lowpass: 4400 }))),
   bomb_whistle: fx('gunpowder', variants(3, (v) => ({ vol: 0.45, freq: 1700 * (1 + 0.05 * v), attack: 0.06, sustain: 0.55, release: 0.08, slide: -2.6, tremolo: 0.08, repeat: 0.04 }))),
   radio_call: mix('modern', mixVariants(3, (v) => [
@@ -475,6 +723,71 @@ const BASE_SOUNDS = {
     noiseBurst(0, { vol: 0.28, freq: 3400 * (1 + 0.05 * v), attack: 0.05, sustain: 0.2, release: 0.15, highpass: 3000, tremolo: 0.4, repeat: 0.05 }),
     at(0, { vol: 0.3, freq: 330 * (1 + 0.04 * v), attack: 0.02, sustain: 0.12, release: 0.3, shape: 'saw', slide: -0.6, lowpass: 2400 }),
     thump(200, 85, 0.45, 0.25, -0.3),
+  ])),
+
+  // Bronze wave (CONTENT_PLAN 5.2): attacks, turrets and powers of the 13 new Bronze cards --------------
+  kopis_hack: mix('bronze', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.3, freq: 1100 * (1 + 0.08 * v), attack: 0.04, sustain: 0.03, release: 0.06, slide: 3, lowpass: 5200 }),
+    noiseBurst(110, { vol: 0.4, freq: 1800, attack: 0.001, release: 0.05, lowpass: 6000 }),
+    at(110, { vol: 0.14, freq: 620 * (1 + 0.04 * v), attack: 0.002, release: 0.18, shape: 'tri', curve: 2 }),
+  ])),
+  rhomphaia_cut: mix('bronze', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.34, freq: 700 * (1 + 0.08 * v), attack: 0.08, sustain: 0.04, release: 0.07, slide: 5, lowpass: 6400 }),
+    noiseBurst(150, { vol: 0.3, freq: 3200, attack: 0.002, release: 0.05, highpass: 1600 }),
+  ])),
+  shot_discus: mix('bronze', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.22, freq: 500 * (1 + 0.06 * v), attack: 0.06, release: 0.06, lowpass: 2400 }),
+    at(100, { vol: 0.2, freq: 410 * (1 + 0.05 * v), attack: 0.01, sustain: 0.12, release: 0.12, shape: 'tri', slide: -0.6, tremolo: 0.5, repeat: 0.025 }),
+    noiseBurst(100, { vol: 0.22, freq: 1600, attack: 0.02, sustain: 0.12, release: 0.08, tremolo: 0.5, repeat: 0.025, lowpass: 4800 }),
+  ])),
+  trunk_lash: mix('bronze', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.3, freq: 350 * (1 + 0.06 * v), attack: 0.1, release: 0.08, slide: 2, lowpass: 2000 }),
+    thump(160, 70 * (1 + 0.05 * v), 0.7, 0.3, -0.5),
+    at(200, { vol: 0.22, freq: 560 * (1 + 0.04 * v), attack: 0.02, sustain: 0.12, release: 0.15, shape: 'saw', slide: 0.6, lowpass: 2400 }),
+  ])),
+  shot_belly_bow: mix('bronze', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.35, freq: 1400 * (1 + 0.06 * v), attack: 0.001, release: 0.03, lowpass: 5000 }),
+    at(6, { vol: 0.4, freq: 82 * (1 + 0.05 * v), attack: 0.001, release: 0.18, shape: 'tri', curve: 2, slide: -0.3 }),
+    noiseBurst(20, { vol: 0.18, freq: 1600, attack: 0.03, release: 0.1, slide: 3, lowpass: 4400 }),
+  ])),
+  aulos_note: mix('bronze', mixVariants(3, (_v, k) => [
+    note(0, ['D5', 'A4', 'F#5'][k] as string, { vol: 0.24, attack: 0.012, sustain: 0.1, release: 0.04, shape: 'saw', lowpass: 3200, tremolo: 0.1, repeat: 0.15 }),
+    note(160, ['F#5', 'D5', 'A5'][k] as string, { vol: 0.24, attack: 0.012, sustain: 0.1, release: 0.05, shape: 'saw', lowpass: 3200, tremolo: 0.1, repeat: 0.15 }),
+  ]), MUSICAL),
+  chorus_wail: mix('bronze', mixVariants(3, (_v, k) => [
+    note(0, 'D4', { vol: 0.2, attack: 0.06, sustain: 0.3, release: 0.2, shape: 'saw', slide: -0.08, lowpass: 1600 - 100 * k }),
+    note(20, 'F4', { vol: 0.18, attack: 0.08, sustain: 0.28, release: 0.2, shape: 'saw', slide: -0.08, lowpass: 1600 }),
+    note(40, ['A4', 'G#4', 'C5'][k] as string, { vol: 0.16, attack: 0.1, sustain: 0.26, release: 0.2, shape: 'saw', slide: -0.08, lowpass: 1600 }),
+  ]), MUSICAL),
+  horse_ram: mix('bronze', mixVariants(3, (v) => [
+    at(0, { vol: 0.2, freq: 85 * (1 + 0.05 * v), attack: 0.02, sustain: 0.12, release: 0.06, shape: 'saw', slide: -0.4, lowpass: 1500 }),
+    thump(200, 60 * (1 + 0.05 * v), 0.8, 0.35, -0.5),
+    noiseBurst(200, { vol: 0.4, freq: 500, attack: 0.002, release: 0.2, lowpass: 2800 }),
+  ])),
+  sagaris_sweep: mix('bronze', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.25, freq: 300, attack: 0.002, release: 0.05, lowpass: 1600 }),
+    noiseBurst(20, { vol: 0.32, freq: 900 * (1 + 0.08 * v), attack: 0.06, release: 0.07, slide: 4, lowpass: 5600 }),
+    noiseBurst(150, { vol: 0.38, freq: 1600, attack: 0.001, release: 0.06, lowpass: 5000 }),
+  ])),
+  labrys_chop: mix('bronze', mixVariants(3, (v) => [
+    at(0, { vol: 0.25, freq: 95 * (1 + 0.04 * v), attack: 0.01, sustain: 0.12, release: 0.1, shape: 'saw', slide: -0.5, lowpass: 900 }),
+    noiseBurst(40, { vol: 0.32, freq: 420 * (1 + 0.06 * v), attack: 0.1, release: 0.08, slide: 3, lowpass: 3000 }),
+    thump(220, 62, 0.8, 0.3, -0.5),
+    noiseBurst(220, { vol: 0.4, freq: 1400, attack: 0.001, release: 0.08, lowpass: 4200 }),
+  ])),
+  hydra_bite: mix('bronze', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.2, freq: 4200, attack: 0.03, sustain: 0.12, release: 0.12, highpass: 2400 }),
+    at(0, { vol: 0.3, freq: 68 * (1 + 0.05 * v), attack: 0.02, sustain: 0.2, release: 0.12, shape: 'saw', tremolo: 0.3, repeat: 0.05, lowpass: 700 }),
+    ...[120, 190, 260].map((ms, k) => noiseBurst(ms, { vol: 0.32, freq: 1800 * (1 + 0.1 * k), attack: 0.001, release: 0.04, lowpass: 6000 })),
+  ])),
+  net_cast: mix('bronze', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.28, freq: 700 * (1 + 0.06 * v), attack: 0.05, sustain: 0.15, release: 0.06, tremolo: 0.5, repeat: 0.11, lowpass: 3000 }),
+    noiseBurst(240, { vol: 0.25, freq: 1100, attack: 0.02, sustain: 0.12, release: 0.1, tremolo: 0.5, repeat: 0.06, lowpass: 4200 }),
+  ])),
+  shot_polybolos: mix('bronze', mixVariants(3, (v) => [
+    ...[0, 30, 60].map((ms) => at(ms, { vol: 0.16, freq: 1600, attack: 0.001, release: 0.02, shape: 'square', curve: 0.5 })),
+    at(90, { vol: 0.45, freq: 96 * (1 + 0.06 * v), attack: 0.001, release: 0.16, shape: 'tri', curve: 2, slide: -0.4 }),
+    noiseBurst(100, { vol: 0.22, freq: 2200, attack: 0.004, release: 0.1, slide: 3, lowpass: 6400 }),
   ])),
 
   // A17.12 attacks: Industrial (carbine, harpoon, flare, fuse, gatling, tesla) --------------------------
@@ -736,6 +1049,17 @@ const BASE_SOUNDS = {
     at(0, { vol: 0.2, freq: 520, attack: 0.05, sustain: 0.3, release: 0.4, shape: 'tri', slide: 5, tremolo: 0.35, repeat: 0.04 }),
     thump(0, 90, 0.45, 0.35, -0.3),
   ]), { ...MUSICAL, maxVoices: 2 }),
+  // Bronze wave (CONTENT_PLAN 5.2) powers
+  pw_sandstorm: mix('bronze', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.5, freq: 900 * (1 + 0.05 * v), attack: 0.12, sustain: 0.8, release: 0.6, slide: 0.4, tremolo: 0.3, repeat: 0.08, lowpass: 3600 }),
+    noiseBurst(60, { vol: 0.25, freq: 5200, attack: 0.1, sustain: 0.7, release: 0.5, highpass: 3500, tremolo: 0.4, repeat: 0.07 }),
+    thump(0, 60, 0.5, 0.3, -0.4),
+  ]), { maxVoices: 2 }),
+  pw_whirlpool: mix('bronze', mixVariants(3, (v) => [
+    thump(0, 50 * (1 + 0.04 * v), 0.7, 0.4, -0.4),
+    noiseBurst(0, { vol: 0.45, freq: 360 * (1 + 0.05 * v), attack: 0.1, sustain: 1.4, release: 0.6, tremolo: 0.5, repeat: 0.3, lowpass: 1600 }),
+    noiseBurst(500, { vol: 0.25, freq: 1800, attack: 0.3, sustain: 0.8, release: 0.4, slide: -1.5, lowpass: 2600 }),
+  ]), { maxVoices: 2 }),
   pw_iron_horse: mix('industrial', mixVariants(3, (v) => [
     ...[0, 180, 360, 540, 720, 900].map((ms) => noiseBurst(ms, { vol: 0.4, freq: 180 * (1 + 0.05 * v), attack: 0.01, release: 0.12, lowpass: 1400 })),
     note(0, 'A4', { vol: 0.2, attack: 0.03, sustain: 0.5, release: 0.2, shape: 'square', curve: 0.8, lowpass: 3000 }),

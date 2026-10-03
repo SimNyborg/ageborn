@@ -11,13 +11,21 @@ kopis rides in the far hand.
 
 Animation (cartoon kit v2):
   idle    peeks over the rim (the head bobs up and down behind it), taps the kopis on the rim
-  walk    tucked march: knees bent, shield bobbing a frame late, head low behind the rim
+  walk    walk v3 bounce jog at ground speed (ANIM_SPEC G1, card 65 x 1.25 = 81.25 lu/s): the kopis
+          resting back on the far shoulder, the shield high on the near forearm swinging a frame
+          late, planted feet
+  attack_b  FLAT CLEAVE FROM BEHIND THE SHIELD: crouches with the kopis drawn back level at the hip
+          (the blade sticks out behind him), then sweeps it flat across at chest height
+  attack_c  SHIELD SHOVE AND LOW HACK: drops to a deep crouch behind the shield with the kopis
+          cocked low behind the hip, shoves, then hacks low at the legs under the rim
   attack  BRACE AND HACK: he plants behind the shield (shove, dust), rises with the kopis
           cocked high behind his head (the held extreme, blade clear above the rim), then
           hacks down over the rim (arc smear); impact on the chop, blade past the rim
   hit     armoured: ducks behind the shield, the pilos clanks down
   die     D2 topple backwards, the shield falls flat on top of him, the pilos pops off
 """
+import math
+
 from ageborn_art import face as F
 from ageborn_art import kit_bronze as K
 from ageborn_art import moves as M
@@ -26,6 +34,7 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "shield_bearer"
+GAIT_NAME = "biped"
 NAME = "Shield Bearer"
 HEIGHT_LU = 68
 CANVAS = (300, 250)
@@ -40,17 +49,19 @@ SH_C = (HR[0] + 2.0, HR[1] - 6.5, HR[2] + 5.0)
 
 
 def build(rig):
-    B.skeleton(rig)
-    B.sandal_legs(rig)
-    K.laces(rig, zs=(4.4, 7.0))
+    global RIG
+    RIG = rig
+    B.skeleton_v3(rig)           # walk v3: longer legs, planted feet (ANIM_SPEC 2.0 rule 5)
+    B.sandal_legs_v3(rig, greaves=False, wraps=B.VERD)   # verdigris leg wraps (bronze is an accent only)
 
     g = Geo().blob((0, 0, 20.0), (10.6, 9.8, 6.0), p=2.4)
     rig.part("torso", g, B.PLUM)
     B.cuirass(rig, B.LINEN, trim=B.VERD, z=28.5, bulk=1.04)
     rig.secondary("hem", "hips", (0.5, 0, 17.0), (0.5, 0, 9.0), max_deg=10, gain=0.9)
-    g = Geo().blob((0.6, 0, 13.4), (11.4, 10.6, 4.8), p=2.4, taper=(1.14, 0.94))     # plum skirt
+    rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 3.0)        # hem >= 9 lu above the soles (the knees show)
+    g = Geo().blob((0.6, 0, 13.6), (11.4, 10.6, 4.2), p=2.4, taper=(1.14, 0.94))     # plum skirt
     rig.part("hem", g, B.PLUM)
-    g = Geo().blob((0.6, 0, 9.4), (11.6, 10.8, 1.1), p=3.0)
+    g = Geo().blob((0.6, 0, 10.0), (11.6, 10.8, 1.1), p=3.0)
     rig.part("hem", g, B.VERD_DK, outline=0.5)
     g = Geo().blob((0.5, 0, 20.2), (11.6, 10.8, 1.7), p=3.2)
     rig.part("torso", g, B.LEATHER_DK, outline=0.6)
@@ -77,17 +88,16 @@ def build(rig):
 
     # kopis in the far hand
     rig.joint("kopis", "hand_l", HL)
-    tip = K.kopis(rig, "kopis", HL, length=24.0, width=1.9, blade=B.BRONZE)
+    tip = K.kopis(rig, "kopis", HL, length=24.0, width=1.9, blade=B.AGED)
     rig.track("kopisTip", "kopis", tip)
 
     # the thureos on the near hand
     rig.joint("shield", "hand_r", HR)
-    K.oval_shield(rig, "shield", SH_C, rx=11.2, rz=19.5, depth=2.8)
-    rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
+    K.oval_shield(rig, "shield", SH_C, rx=11.2, rz=19.5, depth=2.8, rim=B.AGED)
 
     # the loose shield for the death (falls flat on him)
     rig.joint("sh_loose", "root", (0, 0, 0), hidden=True)
-    K.oval_shield(rig, "sh_loose", (0.0, -14.0, 0.0), rx=11.2, rz=19.5, depth=2.8)
+    K.oval_shield(rig, "sh_loose", (0.0, -14.0, 0.0), rx=11.2, rz=19.5, depth=2.8, rim=B.AGED)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -117,13 +127,30 @@ def _idle(f):
     return M.idle_v2(f, NO_BLADE, frames=6, extra=extra, face_blink=F.expr("blink"), blink=4)
 
 
-def _walk(f):
+# -- walk v3: G1 bounce jog at ground speed (card 65 x 1.25 = 81.25 lu/s), 8 x 77 ms ----------
+RIG = None
+SPEED = 81.25
+LEGS = B.walk_legs_v3()
+GAIT = B.jog_gait(SPEED, LEGS)
+# walk carry: the kopis resting back on the far shoulder (blade up and back), pumping a little with
+# the far arm; the shield held high on the near forearm (its foot >= 9 lu above the soles), swinging
+# a frame late against the legs
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return {"arm_r": {"r": 3 * lag}, "hand_r": {"r": -2 * lag}, "hips": {"z": -1.2},
-                "kopis": {"r": -4 * lag}, "helm": {"z": 0.35 * lag}, "head": {"r": 6}}
-    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=34.0, knee=48.0, lift_lu=7.0, bob_pct=0.05,
-                     lean=-3.0, arm=10.0, fore=8.0, arms=("l",), extra=extra)
+        c = -math.cos(ctx["lag_p"])                  # +1 = the near (shield) arm forward
+        return merge(shield(-28 + 8 * c, 30 + 8 * c, 92),
+                     blade(-70 - 8 * c, 58 - 6 * c, 128 - 4 * lag),
+                     {"helm": {"z": 0.35 * lag}, "kopis": {"r": -3 * lag}})
+    base = {k: v for k, v in STANCE.items() if k not in ("arm_r", "fore_r", "hand_r", "arm_l", "fore_l", "hand_l")}
+    return M.walk_v3(RIG, f, base, GAIT, legs=LEGS, lean=-9.0, twist=6.0, nod=3.0, extra=extra, report=report)
+
+
+def _feet(pose, fr, fl, lr=0.0, ll=0.0, ar=0.0, al=0.0):
+    """Planted feet by IK (near foot x, far foot x, lifts, foot angles)."""
+    return B.plant(RIG, pose, LEGS, r=(fr, lr, ar), l=(fl, ll, al))
 
 
 # 11 unique frames, moves.SMALL_MELEE_MS
@@ -139,19 +166,18 @@ A_H = [0, 6, 4, -8, -2, 4, 10, 10, 4, 1, 0]
 A_Q = [-0.02, -0.12, -0.06, 0.1, 0.05, 0.02, -0.15, -0.11, -0.04, 0.02, 0.0]
 A_X = [-0.5, -1.0, 3.0, -1.5, 2.0, 4.0, 6.0, 6.5, 4.0, 1.5, 0.5]
 A_Z = [0.0, -3.0, -1.6, 1.6, 0.8, -0.4, -2.6, -2.2, -1.2, -0.3, 0.0]
-A_THR = [2, 10, 22, -2, 10, 18, 26, 26, 16, 6, 2]
-A_SHR = [0, -14, -18, 0, -8, -14, -22, -20, -12, -4, 0]
-A_THL = [-2, -10, -16, 8, -4, -12, -20, -20, -12, -4, -2]
-A_SHL = [0, -14, -6, -4, -4, -4, -6, -6, -4, -2, 0]
+# planted feet (ankle x): the near foot steps in with the brace and the chop, the far foot holds
+A_FR = [2.0, 3.0, 8.0, 5.0, 8.0, 10.0, 13.0, 13.0, 10.0, 5.0, 2.5]
+A_FL = [-2.0, -3.0, -3.0, -4.0, -2.0, -1.0, 1.0, 1.0, 0.0, -1.0, -2.0]
+A_LR = [0, 0, 1.0, 0, 2.0, 1.0, 0, 0, 0, 0, 0]
 
 
 def _attack_pose(f):
     t = A_T[f]
     pose = merge(blade(K_A[f] - t, K_F[f] - t, K_WW[f] - t), shield(H_A[f], H_F[f], 92), {
         "torso": {"r": A_T[f]}, "head": {"r": A_H[f]},
-        "thigh_r": {"r": A_THR[f]}, "shin_r": {"r": A_SHR[f]},
-        "thigh_l": {"r": A_THL[f]}, "shin_l": {"r": A_SHL[f]},
     }, M.body_about((0, 0, 22), x=A_X[f], z=A_Z[f], q=A_Q[f]))
+    pose = _feet(pose, A_FR[f], A_FL[f], lr=A_LR[f])
     if f in (4, 5):
         pose.setdefault("kopis", {})["sz"] = 1.12
     if f in (1, 3):
@@ -169,7 +195,7 @@ SHIELD_FACE = (SH_C[0], SH_C[1] - 3.0, SH_C[2])
 
 
 def _attack_clip():
-    arc = {"kind": "arc", "joint": "kopis", "inner": KOPIS_MID, "outer": KOPIS_TIP, "color": B.BRONZE_HI,
+    arc = {"kind": "arc", "joint": "kopis", "inner": KOPIS_MID, "outer": KOPIS_TIP, "color": B.SAND_LT,
            "white": 0.3, "taper": 0.2, "lines": 3}
     ov = {
         2: [{"kind": "burst", "joint": "hand_r", "point": (SHIELD_FACE[0] + 12.0, SHIELD_FACE[1], SHIELD_FACE[2]),
@@ -184,6 +210,117 @@ def _attack_clip():
     }
     return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
                   impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
+
+
+# -- attack B: flat cleave from behind the shield (ANIM_SPEC 2.2 "guard-and-cut") -------------------
+# 0-1 = A read and dip, 2 crouch (the kopis pulled back), 3 HOLD (crouched behind the shield, the kopis
+# drawn back LEVEL at the hip, the blade sticking out behind him), 4 smear, 5 lead, 6 IMPACT (a step in,
+# the blade swept flat across at chest height past the rim), 7 overshoot, 8-10 = A recoil and settle
+#      crouch HOLD smear lead  IMP  over
+B_KA = [-120, -150, -60, -20, 0, 6]          # kopis (far) arm: upper arm, forearm (world deg)
+B_KF = [-150, -175, -10, 10, 4, 0]
+B_KW = [-170, -178, -60, -10, 4, 8]          # blade direction (world deg): straight back, then forward
+B_HA = [-44, -40, -40, -46, -56, -56]        # shield arm (torso deg)
+B_HF = [-6, 0, -4, -10, -20, -20]
+B_T = [-8, -14, 2, -6, -14, -16]
+B_H = [6, 10, 2, 4, 8, 8]
+B_X = [-1.0, -2.5, 2.0, 5.0, 7.5, 8.0]
+B_Z = [-3.0, -5.5, -4.0, -3.0, -3.0, -2.8]
+B_Q = [-0.06, -0.12, 0.04, 0.0, -0.12, -0.08]
+B_FR = [4.0, 6.0, 9.0, 12.0, 15.0, 15.0]
+B_FL = [-5.0, -7.0, -6.0, -4.0, -3.0, -3.0]
+B_LR = [0.0, 0.0, 2.5, 1.0, 0.0, 0.0]
+
+
+def _b_pose(i):
+    if i in (0, 1) or i >= 8:
+        return _attack_pose(i)
+    k = i - 2
+    t = B_T[k]
+    pose = merge(blade(B_KA[k] - t, B_KF[k] - t, B_KW[k] - t), shield(B_HA[k], B_HF[k], 92), {
+        "torso": {"r": t, "rz": [-14, -24, 6, 18, 26, 26][k]}, "head": {"r": B_H[k]},
+    }, M.body_about((0, 0, 22), x=B_X[k], z=B_Z[k], q=B_Q[k]))
+    pose = _feet(pose, B_FR[k], B_FL[k], lr=B_LR[k])
+    if i in (4, 5):
+        pose.setdefault("kopis", {})["sz"] = 1.14
+    if i in (2, 3):
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+    else:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+    return pose
+
+
+def _attack_b():
+    arc = {"kind": "arc", "joint": "kopis", "inner": KOPIS_MID, "outer": KOPIS_TIP, "color": B.SAND_LT,
+           "white": 0.3, "taper": 0.2, "lines": 3}
+    ov = {
+        4: [dict(arc, **{"from": 3, "t1": 0.95})],
+        5: [dict(arc, **{"from": 3, "t0": 0.35, "t1": 0.95})],
+        6: [dict(arc, **{"from": 5, "t0": 0.1, "t1": 0.9}),
+            {"kind": "burst", "joint": "kopis", "point": KOPIS_TIP, "r0_lu": 5.0, "r1_lu": 11.0, "n": 5,
+             "a0": -60.0, "arc": 120.0},
+            {"kind": "dust", "ground": (14.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 13, "spread": 0.8}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, overlays=ov, reuse=reuse)
+
+
+# -- attack C: shield shove, then a low hack at the legs --------------------------------------------
+# 0-1 = A's, 2 the shove (shield driven forward, dust), 3 HOLD (a deep crouch behind the shield, the
+# kopis cocked LOW behind the hip, point down), 4 smear, 5 lead, 6 IMPACT (the blade hacked low and
+# forward under the rim, near the ground), 7 overshoot, 8-10 = A's
+#      shove HOLD smear lead  IMP  over
+C_KA = [-110, -130, -80, -50, -40, -38]
+C_KF = [-120, -150, -60, -40, -36, -34]
+C_KW = [-100, -120, -70, -40, -30, -28]       # blade pointing down and back, then low forward
+C_HA = [-10, -36, -34, -30, -26, -26]         # the shove: shield arm driven forward
+C_HF = [8, -2, 0, 2, 4, 4]
+C_T = [-18, -26, -24, -30, -36, -36]
+C_H = [10, 16, 14, 18, 22, 22]
+C_X = [4.0, 0.0, 3.0, 6.0, 9.0, 9.5]
+C_Z = [-3.0, -9.0, -8.5, -9.0, -10.0, -9.8]
+C_Q = [-0.04, -0.14, 0.02, -0.02, -0.16, -0.12]
+C_FR = [9.0, 8.0, 11.0, 14.0, 17.0, 17.0]
+C_FL = [-3.0, -9.0, -8.0, -7.0, -6.0, -6.0]
+C_LR = [0.0, 0.0, 1.5, 0.5, 0.0, 0.0]
+
+
+def _c_pose(i):
+    if i in (0, 1) or i >= 8:
+        return _attack_pose(i)
+    k = i - 2
+    t = C_T[k]
+    pose = merge(blade(C_KA[k] - t, C_KF[k] - t, C_KW[k] - t), shield(C_HA[k], C_HF[k], 92), {
+        "torso": {"r": t}, "head": {"r": C_H[k]},
+    }, M.body_about((0, 0, 22), x=C_X[k], z=C_Z[k], q=C_Q[k]))
+    pose = _feet(pose, C_FR[k], C_FL[k], lr=C_LR[k])
+    if i in (4, 5):
+        pose.setdefault("kopis", {})["sz"] = 1.14
+    if i == 3:
+        pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
+    else:
+        pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
+    return pose
+
+
+def _attack_c():
+    arc = {"kind": "arc", "joint": "kopis", "inner": KOPIS_MID, "outer": KOPIS_TIP, "color": B.SAND_LT,
+           "white": 0.3, "taper": 0.2, "lines": 3}
+    ov = {
+        2: [{"kind": "burst", "joint": "hand_r", "point": (SHIELD_FACE[0] + 12.0, SHIELD_FACE[1], SHIELD_FACE[2]),
+             "r0_lu": 4.0, "r1_lu": 10.0, "n": 4, "a0": -40.0, "arc": 80.0},
+            {"kind": "dust", "ground": (12.0, 0.0), "size_lu": 6.0, "puffs": 3, "seed": 17, "spread": 1.0}],
+        4: [dict(arc, **{"from": 3, "t1": 0.95})],
+        5: [dict(arc, **{"from": 3, "t0": 0.3, "t1": 0.95})],
+        6: [dict(arc, **{"from": 5, "t0": 0.1, "t1": 0.9}),
+            {"kind": "burst", "joint": "kopis", "point": KOPIS_TIP, "r0_lu": 5.0, "r1_lu": 11.0, "n": 5,
+             "a0": -110.0, "arc": 120.0},
+            {"kind": "dust", "ground": (24.0, 0.0), "size_lu": 6.0, "puffs": 4, "seed": 19, "spread": 1.0}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, overlays=ov, reuse=reuse)
 
 
 def _hit(k):
@@ -231,10 +368,12 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

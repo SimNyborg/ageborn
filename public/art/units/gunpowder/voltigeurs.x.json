@@ -1,0 +1,510 @@
+{
+ "frames": {
+  "voltigeurs_attack_b_01": {
+   "frame": {
+    "x": 259,
+    "y": 2,
+    "w": 87,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 83,
+    "w": 87,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_01_team": {
+   "frame": {
+    "x": 326,
+    "y": 121,
+    "w": 47,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 78,
+    "w": 47,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_02": {
+   "frame": {
+    "x": 447,
+    "y": 2,
+    "w": 88,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 87,
+    "w": 88,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_02_team": {
+   "frame": {
+    "x": 433,
+    "y": 121,
+    "w": 50,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 82,
+    "w": 50,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_03": {
+   "frame": {
+    "x": 138,
+    "y": 121,
+    "w": 90,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 90,
+    "w": 90,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_03_team": {
+   "frame": {
+    "x": 487,
+    "y": 121,
+    "w": 55,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 85,
+    "w": 55,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_04": {
+   "frame": {
+    "x": 232,
+    "y": 121,
+    "w": 90,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 90,
+    "w": 90,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_04_team": {
+   "frame": {
+    "x": 546,
+    "y": 121,
+    "w": 55,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 85,
+    "w": 55,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_05": {
+   "frame": {
+    "x": 140,
+    "y": 2,
+    "w": 115,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 80,
+    "w": 115,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_05_team": {
+   "frame": {
+    "x": 395,
+    "y": 2,
+    "w": 48,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 75,
+    "w": 48,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 121,
+    "w": 132,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 89,
+    "w": 132,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_06_team": {
+   "frame": {
+    "x": 377,
+    "y": 121,
+    "w": 52,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 84,
+    "w": 52,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 134,
+    "h": 115
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 73,
+    "w": 134,
+    "h": 115
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  },
+  "voltigeurs_attack_b_07_team": {
+   "frame": {
+    "x": 350,
+    "y": 2,
+    "w": 41,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 68,
+    "w": 41,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.41971,
+    "y": 0.83256
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "voltigeurs_attack_00",
+   "voltigeurs_attack_b_01",
+   "voltigeurs_attack_b_02",
+   "voltigeurs_attack_b_03",
+   "voltigeurs_attack_b_04",
+   "voltigeurs_attack_b_05",
+   "voltigeurs_attack_b_06",
+   "voltigeurs_attack_b_06",
+   "voltigeurs_attack_b_07",
+   "voltigeurs_attack_08",
+   "voltigeurs_attack_09",
+   "voltigeurs_attack_10"
+  ],
+  "attack_b_team": [
+   "voltigeurs_attack_00_team",
+   "voltigeurs_attack_b_01_team",
+   "voltigeurs_attack_b_02_team",
+   "voltigeurs_attack_b_03_team",
+   "voltigeurs_attack_b_04_team",
+   "voltigeurs_attack_b_05_team",
+   "voltigeurs_attack_b_06_team",
+   "voltigeurs_attack_b_06_team",
+   "voltigeurs_attack_b_07_team",
+   "voltigeurs_attack_08_team",
+   "voltigeurs_attack_09_team",
+   "voltigeurs_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "voltigeurs.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 640,
+   "h": 224
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.voltigeurs",
+   "name": "Voltigeurs",
+   "heightLu": 66,
+   "widthLu": 48.4,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    115.0,
+    179.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     64
+    ],
+    "hitCenter": [
+     0,
+     30
+    ],
+    "muzzle": [
+     54,
+     33
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "voltigeurs",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      50,
+      54,
+      160,
+      70,
+      70,
+      60,
+      60,
+      56,
+      50,
+      50,
+      70
+     ],
+     "durationMs": 790,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.4734,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        40.3,
+        40.7
+       ],
+       [
+        47.3,
+        10.5
+       ],
+       [
+        46.8,
+        7.1
+       ],
+       [
+        47.2,
+        4.4
+       ],
+       [
+        47.2,
+        4.4
+       ],
+       [
+        41.8,
+        7.9
+       ],
+       [
+        33.5,
+        30.4
+       ],
+       [
+        36.4,
+        39.4
+       ],
+       [
+        50.4,
+        37.8
+       ],
+       [
+        49.9,
+        31.3
+       ],
+       [
+        35.1,
+        51.5
+       ]
+      ]
+     },
+     "muzzle": [
+      41.8,
+      7.9
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

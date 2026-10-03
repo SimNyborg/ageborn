@@ -10,13 +10,20 @@ a long wrapped handle and a long, forward-curved polished blade, held in both ha
 
 Animation (cartoon kit v2):
   idle    bounces on the balls of his feet, rolls the shoulders, the blade resting on one
-  walk    low sprint: big strides, a deep forward lean, the cloak streaming, the blade at port
+  walk    walk v3 sprint at ground speed (ANIM_SPEC G1, card 90 x 1.25 = 112.5 lu/s, 568 ms, stance
+          0.32, hips low): a deep forward lean, the cloak streaming, the blade trailing low behind
+  attack_b  RISING DIAGONAL SLASH: drops into a deep crouch with the blade trailing low behind him
+          near the ground, then rips it up and forward in a rising cut
+  attack_c  FLAT SWEEP: stands tall and turns away with the blade drawn back level at chest height,
+          then sweeps it round flat at waist height
   attack  OVER-THE-SHOULDER HOOK: crouch, the blade swings up over the shoulder until it points
           back over his head (held extreme, the curved blade clear above him), then a big
           hooking down-cut in front (arc smear, yell) that ends low, blade past the target
   hit     light: head snaps back, the cap tail flicks
   die     D1 fling and spin, the fox cap flies off, the rhomphaia cartwheels away
 """
+import math
+
 from ageborn_art import face as F
 from ageborn_art import kit_bronze as K
 from ageborn_art import moves as M
@@ -25,16 +32,18 @@ from ageborn_art.anim import merge
 from ageborn_art.geometry import Geo
 
 SLUG = "thracian_raider"
+GAIT_NAME = "biped"
 NAME = "Thracian Raider"
 HEIGHT_LU = 68
-CANVAS = (320, 260)
-FEET = (150, 222)
+CANVAS = (380, 340)
+FEET = (180, 276)
 ANCHORS = {"head": (2, 66), "hitCenter": (0, 32)}
 NO_RETIME = True
 
 HR = (0.0, B.ARM_Y["r"], B.HAND_Z)
-FOX = "#A88A6E"
-FOX_DK = "#806A56"
+FOX = "#A39080"
+FOX_DK = "#7E6E62"
+HIDE = "#76685C"                      # boots and bracers: a greyer leather (cel shadows stay under 40% saturation)
 CREAM = "#EFE6D2"
 CAP_C = (0.5, 0, 56.0)
 
@@ -59,14 +68,16 @@ def _cap(rig, joint, c, tail=True):
 
 
 def build(rig):
-    B.skeleton(rig)
-    B.sandal_legs(rig, greaves=False)
-    K.boots(rig, color=B.LEATHER, cuff=CREAM)
+    global RIG
+    RIG = rig
+    B.skeleton_v3(rig)           # walk v3: longer legs, planted feet (ANIM_SPEC 2.0 rule 5)
+    B.sandal_legs_v3(rig, greaves=False)
+    K.boots_v3(rig, color=HIDE, cuff=CREAM)
 
     K.tunic(rig, team=True, hem_color=None)
+    rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 1.0)        # hem >= 9 lu above the soles
     g = Geo()                                                         # zig-zag hem band
     for k in range(10):
-        import math
         a = 3.14159 * (0.5 + 1.9 * k / 9)
         g.blob((11.6 * math.cos(a), 10.6 * math.sin(a), 10.6 + (1.2 if k % 2 else -0.4)), (2.4, 2.2, 1.6),
                p=2.4, rot=(0, 0, math.degrees(a) + 90))
@@ -95,14 +106,13 @@ def build(rig):
     for s in ("r", "l"):
         B.arm_parts(rig, s, B.SKIN, hand=B.SKIN, r0=4.0, r1=3.6)
         g = Geo().blob((0, B.ARM_Y[s], B.HAND_Z + 3.4), (4.4, 4.4, 1.8), p=2.6)
-        rig.part(f"fore_{s}", g, B.LEATHER, outline=0.7)
+        rig.part(f"fore_{s}", g, HIDE, outline=0.7)
 
     rig.joint("rhom", "hand_r", HR)
     tip = K.rhomphaia(rig, "rhom", HR)
     rig.track("bladeTip", "rhom", tip)
     rig.joint("rhom_loose", "root", (0, 0, 0), hidden=True)
-    K.rhomphaia(rig, "rhom_loose", (0.0, -2.0, -20.0))
-    rig.track("_foot", "shin_r", (3.1, -6.0, 0.5))
+    K.rhomphaia(rig, "rhom_loose", (0.0, -2.0, -20.0), blade_color=B.AGED)   # cartwheels face-on: aged bronze keeps the colour rule
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -124,12 +134,28 @@ def _idle(f):
     return M.idle_v2(f, STANCE, frames=6, extra=extra, face_blink=F.expr("blink"), blink=4)
 
 
-def _walk(f):
+# -- walk v3: G1 sprint at ground speed (card 90 x 1.25 = 112.5 lu/s), 8 x 71 ms ---------------------
+RIG = None
+SPEED = 112.5
+LEGS = B.walk_legs_v3()
+GAIT = B.jog_gait(SPEED, LEGS, cycle_ms=568, stance=0.32, lift=7.0, x_mid=3.5)
+SPRINT_BOB = [-6.4, -7.0, -2.8, -0.4]       # hips low (a hunched sprint), the bounce on top
+# walk carry: the blade trailing low behind him in both hands, point back and up (a raider's sprint)
+
+
+def _walk(f, report=None):
     def extra(ctx):
         lag = ctx["bob_lag"] / max(ctx["amp"], 1e-3)
-        return merge(wield(-50 + 4 * lag, 25 + 4 * lag, 134 + 5 * lag, lean=-20, d=6.0), {"cap": {"r": 4 * lag}})
-    return M.walk_v2(f, STANCE, HEIGHT_LU, thigh=48.0, knee=96.0, lift_lu=10.0, bob_pct=0.09,
-                     lean=-20.0, arm=0.0, fore=0.0, arms=(), extra=extra)
+        c = math.cos(ctx["lag_p"])
+        return merge(wield(-118 + 8 * c, -96 + 8 * c, 196 + 5 * lag, lean=-20, d=6.0),
+                     {"cap": {"r": 4 * lag}, "head": {"r": 8}})
+    base = {k: v for k, v in STANCE.items() if not k.startswith(("arm_", "fore_", "hand_"))}
+    return M.walk_v3(RIG, f, base, GAIT, legs=LEGS, bob=SPRINT_BOB, lean=-20.0, twist=8.0, nod=3.0,
+                     extra=extra, report=report)
+
+
+def _feet(pose, fr, fl, lr=0.0, ll=0.0, ar=0.0, al=0.0):
+    return B.plant(RIG, pose, LEGS, r=(fr, lr, ar), l=(fl, ll, al))
 
 
 # 11 unique frames, moves.SMALL_MELEE_MS (WORLD angles: near arm, forearm, blade)
@@ -142,19 +168,17 @@ A_H = [0, 4, -6, -8, 0, 6, 10, 10, 4, 1, 0]
 A_Q = [-0.02, -0.12, 0.04, 0.1, 0.06, 0.02, -0.16, -0.12, -0.04, 0.02, 0.0]
 A_X = [0.0, -1.5, -3.0, -4.5, 0.0, 4.0, 8.0, 9.0, 6.0, 2.0, 0.5]
 A_Z = [0.0, -3.2, 0.6, 1.6, 0.8, -0.6, -3.0, -2.6, -1.4, -0.4, 0.0]
-A_THR = [0, 14, 4, -6, 14, 26, 36, 36, 22, 8, 2]
-A_SHR = [0, -22, -6, 0, -16, -26, -34, -32, -18, -6, 0]
-A_THL = [0, -10, -10, 4, -10, -22, -34, -36, -22, -8, -2]
-A_SHL = [0, -22, -16, -12, -10, -16, -30, -32, -18, -6, 0]
+A_FR = [2.0, 3.0, 2.0, 1.0, 6.0, 10.0, 15.0, 15.5, 12.0, 6.0, 2.5]
+A_FL = [-2.0, -4.0, -5.0, -6.0, -5.0, -4.0, -3.0, -3.0, -2.5, -2.0, -2.0]
+A_LR = [0, 0, 0, 0, 2.5, 1.5, 0, 0, 0, 0, 0]
 
 
 def _attack_pose(f):
     t = A_T[f]
     pose = merge(wield(W_A[f], W_F[f], W_W[f], lean=t), {
         "torso": {"r": t}, "head": {"r": A_H[f]},
-        "thigh_r": {"r": A_THR[f]}, "shin_r": {"r": A_SHR[f]},
-        "thigh_l": {"r": A_THL[f]}, "shin_l": {"r": A_SHL[f]},
     }, M.body_about((0, 0, 22), x=A_X[f], z=A_Z[f], q=A_Q[f]))
+    pose = _feet(pose, A_FR[f], A_FL[f], lr=A_LR[f])
     if f in (4, 5):
         pose.setdefault("rhom", {})["sz"] = 1.1
     if f in (1, 2, 3):
@@ -171,7 +195,7 @@ MID = (HR[0] + 2.0, HR[1] - 0.8, HR[2] + 30.0)
 
 
 def _attack_clip():
-    arc = {"kind": "arc", "joint": "rhom", "inner": MID, "outer": TIP, "color": B.BRONZE_HI,
+    arc = {"kind": "arc", "joint": "rhom", "inner": MID, "outer": TIP, "color": B.SAND_LT,
            "white": 0.3, "taper": 0.2, "lines": 3}
     ov = {
         1: [{"kind": "dust", "ground": (-4.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 2, "spread": 0.7}],
@@ -184,6 +208,106 @@ def _attack_clip():
     }
     return M.clip("attack", [_attack_pose(f) for f in range(11)], M.SMALL_MELEE_MS,
                   impact=M.SMALL_MELEE_IMPACT, smear=4, overlays=ov)
+
+
+# -- attack B: rising diagonal slash from a deep crouch -------------------------------------------
+# 0-1 = A read and dip, 2 sink, 3 HOLD (deep crouch, the blade trailing LOW behind him near the ground,
+# point back and down), 4 smear, 5 lead, 6 IMPACT (risen onto the front leg, the blade ripped up and
+# forward to point high in front), 7 overshoot, 8-10 = A recoil and settle
+#      sink  HOLD smear lead  IMP  over
+B_WA = [-120, -135, -70, -20, 20, 26]         # near arm, forearm, blade (world deg)
+B_WF = [-130, -150, -50, 10, 50, 56]
+B_WW = [-150, -160, -60, 20, 62, 70]
+B_T = [-14, -20, -10, 0, 6, 8]
+B_H = [8, 12, 6, -2, -6, -6]
+B_X = [-1.0, -2.5, 2.0, 6.0, 9.0, 9.5]
+B_Z = [-5.0, -8.0, -6.0, -2.0, 0.8, 0.6]
+B_Q = [-0.08, -0.14, 0.04, 0.08, 0.04, 0.0]
+B_FR = [6.0, 8.0, 10.0, 13.0, 16.0, 16.0]
+B_FL = [-6.0, -8.0, -7.0, -5.0, -4.0, -4.0]
+B_LR = [0.0, 0.0, 2.0, 1.0, 0.0, 0.0]
+
+
+def _b_pose(i):
+    if i in (0, 1) or i >= 8:
+        return _attack_pose(i)
+    k = i - 2
+    t = B_T[k]
+    pose = merge(wield(B_WA[k], B_WF[k], B_WW[k], lean=t), {
+        "torso": {"r": t}, "head": {"r": B_H[k]},
+    }, M.body_about((0, 0, 22), x=B_X[k], z=B_Z[k], q=B_Q[k]))
+    pose = _feet(pose, B_FR[k], B_FL[k], lr=B_LR[k])
+    if i in (4, 5):
+        pose.setdefault("rhom", {})["sz"] = 1.1
+    pose = merge(pose, F.expr("grit") if i in (2, 3) else F.expr("yell"), {"brow": {"z": -1.1}})
+    return pose
+
+
+def _attack_b():
+    arc = {"kind": "arc", "joint": "rhom", "inner": MID, "outer": TIP, "color": B.SAND_LT,
+           "white": 0.3, "taper": 0.2, "lines": 3}
+    ov = {
+        3: [{"kind": "dust", "ground": (-14.0, 0.0), "size_lu": 4.5, "puffs": 3, "seed": 31, "spread": 0.7}],
+        4: [dict(arc, **{"from": 3, "t1": 0.95})],
+        5: [dict(arc, **{"from": 3, "t0": 0.3, "t1": 0.95})],
+        6: [dict(arc, **{"from": 5, "t0": 0.1, "t1": 0.9}),
+            {"kind": "burst", "joint": "rhom", "point": TIP, "r0_lu": 5.0, "r1_lu": 11.0, "n": 5,
+             "a0": -20.0, "arc": 130.0},
+            {"kind": "dust", "ground": (16.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 32, "spread": 0.8}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_b", [_b_pose(i) for i in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, overlays=ov, reuse=reuse)
+
+
+# -- attack C: flat sweep at waist height, turning away first ---------------------------------------
+# 0-1 = A's, 2 turn, 3 HOLD (standing tall, turned away, the blade drawn back LEVEL at chest height,
+# pointing straight back), 4 smear, 5 lead, 6 IMPACT (the blade swept round flat in front at waist
+# height), 7 overshoot, 8-10 = A's
+#      turn  HOLD smear lead  IMP  over
+C_WA = [-150, -170, -100, -40, -20, -16]
+C_WF = [-170, -185, -70, -10, 0, 4]
+C_WW = [175, 182, 90, 20, 0, -6]
+C_T = [10, 14, 4, -8, -14, -16]
+C_RZ = [-20, -32, 0, 18, 28, 30]
+C_H = [-4, -6, 0, 4, 8, 8]
+C_X = [-2.0, -3.0, 1.0, 5.0, 8.0, 8.5]
+C_Z = [0.5, 1.0, 0.0, -1.5, -2.5, -2.3]
+C_Q = [0.04, 0.08, 0.04, 0.0, -0.12, -0.08]
+C_FR = [1.0, 0.0, 6.0, 11.0, 14.0, 14.0]
+C_FL = [-5.0, -6.0, -5.0, -3.0, -2.0, -2.0]
+C_LR = [0.0, 0.0, 3.0, 1.0, 0.0, 0.0]
+
+
+def _c_pose(i):
+    if i in (0, 1) or i >= 8:
+        return _attack_pose(i)
+    k = i - 2
+    t = C_T[k]
+    pose = merge(wield(C_WA[k], C_WF[k], C_WW[k], lean=t), {
+        "torso": {"r": t, "rz": C_RZ[k]}, "head": {"r": C_H[k]},
+    }, M.body_about((0, 0, 22), x=C_X[k], z=C_Z[k], q=C_Q[k]))
+    pose = _feet(pose, C_FR[k], C_FL[k], lr=C_LR[k])
+    if i in (4, 5):
+        pose.setdefault("rhom", {})["sz"] = 1.1
+    pose = merge(pose, F.expr("grit") if i in (2, 3) else F.expr("yell"), {"brow": {"z": -1.1}})
+    return pose
+
+
+def _attack_c():
+    arc = {"kind": "arc", "joint": "rhom", "inner": MID, "outer": TIP, "color": B.SAND_LT,
+           "white": 0.3, "taper": 0.2, "lines": 3}
+    ov = {
+        4: [dict(arc, **{"from": 3, "t1": 0.95})],
+        5: [dict(arc, **{"from": 3, "t0": 0.3, "t1": 0.95})],
+        6: [dict(arc, **{"from": 5, "t0": 0.1, "t1": 0.9}),
+            {"kind": "burst", "joint": "rhom", "point": TIP, "r0_lu": 5.0, "r1_lu": 11.0, "n": 5,
+             "a0": -60.0, "arc": 120.0},
+            {"kind": "dust", "ground": (12.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 33, "spread": 0.8}],
+    }
+    reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10)}
+    return M.clip("attack_c", [_c_pose(i) for i in range(11)], M.SMALL_MELEE_MS,
+                  impact=M.SMALL_MELEE_IMPACT, overlays=ov, reuse=reuse)
 
 
 def _hit(k):
@@ -230,10 +354,12 @@ def _die(k):
 def clips():
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
-        M.clip("walk", [_walk(f) for f in range(8)], M.WALK_MS, loop=True),
+        M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
         _attack_clip(),
+        _attack_b(),
+        _attack_c(),
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 8)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 6, 7, 7], extra=M.die_meta(HEIGHT_LU)),
     ]
-    return M.check_contract(cl)
+    return M.check_variants(M.check_contract(cl))

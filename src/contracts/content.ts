@@ -100,8 +100,13 @@ export interface AttackDef {
 export type AbilityDef =
   /** First hit of each engagement (after ≥ 2 s idle); negative knockback pulls (DESIGN A2.7, A5.4 Corsair). */
   | { kind: 'firstHitBonus'; multBp: number; knockback: number; idleResetMs: number }
-  /** Auras never stack; the strongest applies (DESIGN A2.7). */
-  | { kind: 'aura'; radius: number; status: StatusApply }
+  /**
+   * Auras never stack; the strongest applies (DESIGN A2.7). An ally aura gives `damageBuff`,
+   * `attackSpeedBuff` or `speedBuff` (Bronze wave: the Aulos Piper) to allies in `radius`. A Dread aura
+   * (`foe: true`, Bronze wave M4) gives `slow` or `mark` to enemy ground units in `radius` (air, forts and
+   * the source excluded). Recomputed every tick: the effect ends when the unit leaves the radius.
+   */
+  | { kind: 'aura'; radius: number; status: StatusApply; foe?: boolean }
   /** Heal pulses on a shared 10-tick grid; a unit takes only its largest heal per pulse (DESIGN A2.7 Heal). */
   | { kind: 'heal'; hpPerSec: number; radius: number; targets: number; pulseMs: number }
   | { kind: 'pounce'; searchRange: number; cooldownMs: number; leapMs: number; firstBiteBp: number }

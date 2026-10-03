@@ -454,6 +454,215 @@ GORGON_OVERLAYS = {"fire": {
 }}
 
 
+
+# -- Net Caster (W2 Bronze wave): a fisherman on a wharf deck who whirls a weighted net and casts it ------
+NETMAN_S = 1.3
+
+
+def _net_bundle(rig, joint, at, spread=1.0):
+    """A bunched or spread casting net: a pale cord web with lead weights round the rim."""
+    x, y, z = at
+    g = Geo()
+    for k in range(7):
+        a = math.radians(-60 + 120 * k / 6)
+        e = (x + 7.0 * spread * math.cos(a), y, z - 7.0 * spread * math.sin(a) * 0.6 - 3.0)
+        g.capsule((x, y, z), e, 0.45)
+    for k in range(6):
+        a0 = math.radians(-60 + 120 * k / 6)
+        a1 = math.radians(-60 + 120 * (k + 1) / 6)
+        for t in (0.55, 1.0):
+            g.capsule((x + 7.0 * spread * t * math.cos(a0), y, z - (7.0 * spread * math.sin(a0) * 0.6 + 3.0) * t),
+                      (x + 7.0 * spread * t * math.cos(a1), y, z - (7.0 * spread * math.sin(a1) * 0.6 + 3.0) * t), 0.4)
+    rig.part(joint, g, LINEN, outline=0.3)
+    g = Geo()
+    for k in range(7):
+        a = math.radians(-60 + 120 * k / 6)
+        g.sphere((x + 7.0 * spread * math.cos(a), y, z - 7.0 * spread * math.sin(a) * 0.6 - 3.0), 0.9, cuts=2)
+    rig.part(joint, g, "#7C7A78", finish="metal", outline=0.3)
+
+
+def netcaster_build(rig):
+    sand_plinth(rig, r=14, h=5)
+    g = Geo()
+    for x, y in ((-9, -8), (9, -8), (-9, 9), (9, 9)):              # wharf posts
+        g.capsule((x, y, 5), (x, y, 18), 2.0)
+    rig.part("mount", g, WOOD_DK)
+    g = Geo()
+    box(g, (0, 0.5, 18.6), (12.5, 11.0, 1.4), p=5)                 # the plank deck
+    rig.part("mount", g, WOOD)
+    g = Geo()
+    for x in range(-10, 12, 4):
+        g.capsule((x, -11.2, 17.6), (x, -11.2, 19.6), 0.35)
+    rig.part("mount", g, WOOD_DK, outline=0)
+    g = Geo().slab([(-11, 17.4), (11, 17.4), (11, 10.5), (0, 8.0), (-11, 10.5)], -10.4, 1.2)
+    rig.part("mount", g, team=True, outline=0.6)                    # a team banner hung off the deck
+    g = Geo()
+    for x, z in ((-7.0, 13.0), (-2.0, 12.0), (3.0, 12.4), (8.0, 13.2)):  # floats tied along it
+        g.sphere((x, -11.6, z), 1.4, cuts=2)
+    rig.part("mount", g, SAND_LT, outline=0.4)
+    rig.part("mount", Geo().capsule((-10.0, -11.0, 15.0), (10.0, -11.0, 15.4), 0.4), ROPE, outline=0)
+    g = Geo()                                                       # a coiled spare net on the deck
+    g.lathe([(0, 0), (4.4, 0.2), (4.8, 1.6), (4.0, 2.6), (0, 2.8)], (-8.0, 5.0, 19.6), (-8.0, 5.0, 22.4), segs=16)
+    rig.part("mount", g, LINEN, outline=0.4)
+    pennant(rig, "mount", 11, 9, 19, h=16, length=12, width=7)
+    # head: the net man (drawn 1.3x so his face and the net read), turning at the deck
+    rig.joint("man", "head", (0, 0, 20), scale=NETMAN_S)
+    g = Geo().blob((0, 0, 26.0), (5.4, 5.0, 6.4), p=2.4)
+    rig.part("man", g, team=True)
+    g = Geo().blob((0, 0, 20.8), (5.6, 5.2, 1.4), p=3.0)
+    rig.part("man", g, P.LEATHER_DK, outline=0.3)
+    mhead = Geo().blob((0.6, 0, 35.0), (5.0, 4.8, 5.0), p=2.3)
+    mhead.blob((5.6, -0.3, 34.2), (1.5, 1.4, 1.5), p=2.0)
+    face = F.Face(rig, "man", [mhead])
+    rig.part("man", mhead, P.SKIN)
+    g = Geo()
+    face.decal(g, face.hit(3.8, 35.6), F.ellipse(0, 0, 1.9, 2.3, 14), 0.3)
+    rig.part("man", g, P.EYE, highlight=False, outline=0)
+    rig.joint("npupil", "man", (4.2, -4.0, 35.4))
+    g = Geo()
+    face.decal(g, face.hit(3.8, 35.6) - face.view * 0.3, F.ellipse(0.6, -0.2, 1.0, 1.3, 10), 0.3)
+    rig.part("npupil", g, P.PUPIL, highlight=False, outline=0)
+    rig.joint("nlid", "man", (4.2, -4.0, 35.4), hidden=True)
+    g = Geo()
+    face.decal(g, face.hit(3.8, 35.6) - face.view * 0.5, F.ellipse(0, 0, 2.1, 2.5, 14), 0.3)
+    rig.part("nlid", g, P.SKIN, highlight=False, outline=0)
+    g = Geo()
+    face.stroke(g, face.hit(3.6, 38.2) - face.view * 0.4, [(-1.8, 0.6), (1.6, -0.4)], 1.0, 0.3)
+    rig.part("man", g, P.HAIR, highlight=False, outline=0)
+    g = Geo()
+    face.stroke(g, face.hit(4.6, 32.0) - face.view * 0.3, [(-0.9, 0.2), (0.9, -0.1)], 0.8, 0.3)
+    rig.part("man", g, P.MOUTH, highlight=False, outline=0)
+    g = Geo()                                                       # a short beard
+    for x, y, z, r in ((4.2, -2.0, 31.4, 1.8), (4.8, 0.6, 31.0, 1.9), (3.8, 2.6, 31.6, 1.6)):
+        g.blob((x, y, z), (r, r, r * 0.9), p=2.1)
+    rig.part("man", g, P.HAIR, finish="hair")
+    g = Geo().lathe([(0, 0), (7.6, 0.3), (7.8, 1.0), (4.2, 1.6), (3.6, 4.4), (0, 4.8)], (0.6, 0, 38.4),
+                    (0.6, 0, 43.2), segs=20)                         # a straw petasos
+    rig.part("man", g, SAND, finish="hair")
+    g = Geo().blob((0.6, 0, 39.6), (4.6, 4.4, 0.9), p=3.0)
+    rig.part("man", g, team=True, outline=0.3)
+    # the casting arm holds the bunched net; the far arm points
+    rig.joint("narm", "man", (0.0, -5.0, 29.0))
+    g = Geo().capsule((0.0, -5.0, 29.0), (6.0, -5.4, 24.0), 1.5).blob((6.6, -5.4, 23.4), (1.8, 1.6, 1.8), p=2.2)
+    rig.part("narm", g, P.SKIN, outline=0.5)
+    rig.joint("net", "narm", (7.0, -6.6, 23.0))
+    _net_bundle(rig, "net", (7.0, -6.6, 23.0), spread=0.55)
+    rig.joint("farm", "man", (0.0, 5.0, 29.0))
+    g = Geo().capsule((0.0, 5.0, 29.0), (7.0, 5.2, 30.0), 1.4).blob((7.6, 5.2, 30.2), (1.7, 1.5, 1.7), p=2.2)
+    rig.part("farm", g, P.SKIN_DK, outline=0.5)
+
+
+def netcaster_idle(f):
+    # 6-frame loop: he mends the net (the bundle bobs in his hands), peeks, blinks on 3
+    t = f / 6 * 2 * math.pi
+    out = {"man": {"r": 2.0 * math.sin(t), "z": -0.6 * max(0.0, math.sin(t))},
+           "narm": {"r": 8 * math.sin(2 * t)}, "net": {"r": -10 * math.sin(2 * t)},
+           "farm": {"r": -14 + 10 * math.sin(2 * t + 1.0)}, "npupil": {"x": 0.4 * math.cos(t)}}
+    if f == 3:
+        out["nlid"] = {"show": True}
+        out["npupil"]["hide"] = True
+    return out
+
+
+def netcaster_fire(f):
+    # 0 the net whirled up overhead (leaning back, anticipation), 1 cast (the net is away: the arm
+    # whips through), 2 follow-through, 3 hauls the cord back, 4 the net bunched in his hands again
+    return {"narm": {"r": [150, -30, -50, 20, 0][f]},
+            "net": {"hide": f in (1, 2), "r": [40, 0, 0, -20, 0][f], "s": [1.25, 1, 1, 0.8, 1.0][f]},
+            "man": {"r": [10, -10, -6, 4, 0][f], "sz": [0.95, 1.06, 1.0, 1.0, 1.0][f]},
+            "farm": {"r": [-30, 10, 20, -10, -14][f]}}
+
+
+NETCASTER_OVERLAYS = {"fire": {
+    0: [{"kind": "arc", "joint": "net", "inner": (7.0, -6.6, 23.0), "outer": (12.0, -6.6, 20.0),
+         "color": LINEN, "white": 0.3, "taper": 0.2, "lines": 2, "band": 0.4}],
+    1: [{"kind": "streak", "joint": "narm", "point": (6.6, -5.4, 23.4), "from": 0, "color": SAND_LT,
+         "width_lu": 3.4, "white": 0.3}],
+}}
+
+
+# -- Polybolos (W2 Bronze wave): the chain-fed repeating bolt-thrower ---------------------------------------
+def polybolos_build(rig):
+    sand_plinth(rig, r=16, h=6)
+    g = Geo()
+    for y in (-7, 7):
+        g.capsule((-10, y, 6), (2, y, 20), 2.0)                       # the A-frame trestle
+        g.capsule((12, y, 6), (2, y, 20), 2.0)
+    g.capsule((2, -8, 20), (2, 8, 20), 1.8)
+    rig.part("mount", g, WOOD_DK)
+    g = Geo().slab([(-12, 7.0), (14, 7.0), (14, 13.0), (-12, 13.0)], -9.6, 1.2)
+    rig.part("mount", g, team=True, outline=0.5)
+    pennant(rig, "mount", -14, 8, 6, h=22, length=12, width=7)
+    # head: the long stock (rotates at the trestle top), the bow arms, the magazine and the chain drive
+    g = Geo()
+    box(g, (3, 0, 22.0), (19.0, 2.6, 2.0), p=5)                      # the stock
+    rig.part("head", g, WOOD)
+    g = Geo()
+    box(g, (3, 0, 25.0), (16.0, 2.2, 1.2), p=5)                      # the bolt slider
+    rig.part("head", g, team=True, outline=0.5)
+    g = Geo()
+    for sgn in (-1, 1):                                              # the torsion bow arms in their frame
+        g.capsule((16, sgn * 2.8, 22.5), (9, sgn * 12.0, 24.5), 1.4, 1.0)
+    rig.part("head", g, WOOD_DK, outline=0.5)
+    g = Geo()
+    for sgn in (-1, 1):
+        cyl(g, (16, sgn * 2.8, 18.5), (16, sgn * 2.8, 27.0), 2.4, bevel=0.3)
+    rig.part("head", g, ROPE, finish="hair", outline=0.4)            # the skeins
+    g = Geo()
+    for sgn in (-1, 1):
+        g.lathe([(2.8, -0.5), (3.2, 0), (2.8, 0.5)], (16, sgn * 2.8, 27.6), (16, sgn * 2.8, 28.4), segs=12)
+    rig.part("head", g, BRONZE, finish=P.POLISH, outline=0.3)
+    rig.part("head", Geo().capsule((9, -12.0, 24.5), (-8, 0, 25.0), 0.35).capsule((-8, 0, 25.0), (9, 12.0, 24.5), 0.35),
+             LINEN, outline=0)                                      # the string
+    g = Geo()
+    box(g, (8, 0, 30.5), (3.2, 2.6, 4.4), p=4)                       # the magazine hopper
+    rig.part("head", g, WOOD_DK)
+    g = Geo()
+    for k in range(3):
+        g.capsule((5.4, -1.6 + 1.6 * k, 33.2), (12.0, -1.6 + 1.6 * k, 33.6), 0.5)
+    rig.part("head", g, SAND_LT, outline=0.3)                        # bolts waiting in the hopper
+    # the chain drive: a crank wheel at the back that turns on every shot
+    rig.joint("crank", "head", (-14, -3.4, 22.0))
+    g = Geo()
+    cyl(g, (-14, -3.0, 22.0), (-14, -4.2, 22.0), 5.4, bevel=0.3)
+    rig.part("crank", g, AGED, finish="metal")
+    g = Geo()
+    for k in range(4):
+        a = math.radians(90 * k)
+        g.capsule((-14, -4.4, 22.0), (-14 + 4.8 * math.cos(a), -4.4, 22.0 + 4.8 * math.sin(a)), 0.9)
+    g.capsule((-14 + 4.8, -4.6, 22.0), (-14 + 4.8, -7.6, 22.0), 0.9)
+    rig.part("crank", g, team=True, outline=0.4)
+    g = Geo()
+    for k in range(9):                                               # the chain loop along the stock
+        x = -14 + 3.2 * k
+        g.sphere((x, -3.0, 26.4), 0.8, cuts=2).sphere((x, -3.0, 17.8), 0.8, cuts=2)
+    rig.part("head", g, AGED_DK, finish="metal", outline=0.3)
+    rig.joint("bolt", "head", (14, 0, 25.6))
+    g = Geo().capsule((-2, 0, 25.6), (18, 0, 25.6), 0.55)
+    g.lathe([(1.2, 0), (0.05, 2.8)], (18, 0, 25.6), (20.8, 0, 25.6), segs=8)
+    rig.part("bolt", g, SAND_LT, outline=0.4)
+    flare(rig, "head", (22.0, 0, 25.6), size=0.8)
+
+
+def polybolos_idle(f):
+    # 6-frame loop: the frame creaks, the crank rocks a little, a bolt nudges forward in the slot
+    t = f / 6 * 2 * math.pi
+    return {"crank": {"r": 6 * math.sin(t)}, "bolt": {"x": 0.6 * math.sin(2 * t)},
+            "head": {"r": 0.8 * math.sin(t)}}
+
+
+def polybolos_fire(f):
+    # 0 the crank wound back (anticipation), 1 the bolt snaps away (flash), 2 the next drops in, 3 the
+    # crank spins on, 4 settle
+    return {"crank": {"r": [-40, 60, 140, 220, 270][f]}, "bolt": {"hide": f in (1, 2), "x": [-3, 0, 0, -2, 0][f]},
+            "head": {"x": [0, -1.6, -0.6, 0, 0][f], "r": [1.0, -2.0, -1.0, 0.0, 0.0][f]}}
+
+
+POLYBOLOS_OVERLAYS = {"fire": {
+    1: [{"kind": "streak", "joint": "bolt", "point": (20.8, 0, 25.6), "from": 0, "color": SAND_LT,
+         "width_lu": 3.0, "white": 0.3}],
+}}
+
 TURRETS = [
     turret_module("archer_tower", "Archer Tower", "bronze", 48, CANVAS, FEET, (0, 28),
                   (ARCHER_S * 22.2, ARCHER_S * -5.0, 28 + ARCHER_S * 8.5), archer_build,
@@ -466,4 +675,12 @@ TURRETS = [
                   overlays=ONAGER_OVERLAYS),
     turret_module("gorgon_bust", "Gorgon Bust", "bronze", 52, CANVAS, FEET, (1, 26), _gp(10.5, -1.0, 33.6), gorgon_build,
                   gorgon_idle, gorgon_fire, aim=(-35, 25), fire_kind="gaze", idle_frames=6, overlays=GORGON_OVERLAYS),
+    # W2 Bronze wave
+    turret_module("net_caster", "Net Caster", "bronze", 52, CANVAS, FEET, (0, 20),
+                  (NETMAN_S * 7.0, NETMAN_S * -6.6, 20 + NETMAN_S * 3.0), netcaster_build,
+                  netcaster_idle, netcaster_fire, aim=(-40, 30), fire_kind="release", idle_frames=6,
+                  overlays=NETCASTER_OVERLAYS),
+    turret_module("polybolos", "Polybolos", "bronze", 40, (290, 220), (130, 180), (2, 22), (22.0, 0, 25.6),
+                  polybolos_build, polybolos_idle, polybolos_fire, aim=(-30, 30), fire_kind="recoil",
+                  idle_frames=6, overlays=POLYBOLOS_OVERLAYS),
 ]

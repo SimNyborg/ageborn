@@ -32,9 +32,12 @@ function after(forts: AgeRosterShape['forts']): AgeRosterShape {
 const shape: Record<AgeId, AgeRosterShape> = {
   // W1 (2026-10-02): Thorn Hedge (cheap wall) and Bone Watchtower (lob tower)
   stone: after({ wall: 2, tower: 2, camp: 1, trap: 1 }),
-  bronze: BEFORE,
-  medieval: BEFORE,
-  gunpowder: BEFORE,
+  // W2 (2026-10-03): Hoplon Line (cover wall) and Slinger Camp (ranged camp)
+  bronze: after({ wall: 2, tower: 1, camp: 2, trap: 1 }),
+  // W3 (2026-10-03): Bear Snares (chip trap) and Crossbow Keep (slow tower)
+  medieval: after({ wall: 1, tower: 2, camp: 1, trap: 2 }),
+  // W4 (2026-10-03): Cavalry Picket (brute camp) and Fougasse (double blast trap)
+  gunpowder: after({ wall: 1, tower: 1, camp: 2, trap: 2 }),
   industrial: BEFORE,
   modern: BEFORE,
   future: BEFORE,

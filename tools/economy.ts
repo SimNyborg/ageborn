@@ -19,7 +19,7 @@
  * catch-up) run through the real meta code; nothing here copies them.
  */
 import type { AgeId, CardId, Clock, CompiledContent, FormatId, MatchStats, Meta, PendingCapsule, Rarity, Result, SaveDoc, Side } from '../src/contracts';
-import { asContent, content as gameContent, type Content } from '../src/content';
+import { asContent, content as gameContent, isReleased, type Content } from '../src/content';
 import { chanceBp, seedSfc32, type Sfc32State } from '../src/core/rng';
 import { loadMeta } from './lib/modules';
 import { mean, median } from './lib/stats';
@@ -170,10 +170,13 @@ export class EconomyRecorder {
     const c = asContent(content);
     const need = (r: Rarity): number => c.rarities.cards[r].upgradeCopies.reduce((a, b) => a + b, 0);
     this.cards = [
+      // Cards held back by the release gate (`released: false`) never drop, so they are not part of the collection.
       ...Object.values(c.units)
-        .filter((u) => u.hidden !== true)
+        .filter((u) => u.hidden !== true && isReleased(c, u.id))
         .map((u) => ({ id: u.id, rarity: u.rarity, need: need(u.rarity) })),
-      ...Object.values(c.turrets).map((t) => ({ id: t.id, rarity: t.rarity as Rarity, need: need(t.rarity) })),
+      ...Object.values(c.turrets)
+        .filter((t) => isReleased(c, t.id))
+        .map((t) => ({ id: t.id, rarity: t.rarity as Rarity, need: need(t.rarity) })),
     ];
     this.amberNeed = this.cards.length * c.rarities.upgradeAmber.reduce((a, b) => a + b, 0);
   }
@@ -295,7 +298,7 @@ export function economyChecks(m: EconomyMeasures): Check[] {
     near('economy.allLegendaries', 'All 8 Legendaries owned', m.allLegendariesDay, T.allLegendariesDays, 'days'),
     near('economy.planL7', 'Focused War Plan at L7', m.planL7Day, T.planL7Days, 'days'),
     near('economy.copiesDone', 'Copies for the whole collection', m.copiesDoneDay, T.copiesDoneDays, 'days'),
-    near('economy.amberDone', 'Amber for the whole collection (88 cards × 4,970 = 437,360)', m.amberDoneDay, T.amberDoneDays, 'days'),
+    near('economy.amberDone', 'Amber for the whole collection (every released card × 4,970)', m.amberDoneDay, T.amberDoneDays, 'days'),
     near('economy.collectionMaxed', 'Whole collection maxed', m.collectionMaxedDay, T.collectionMaxedDays, 'days'),
     rangeCheck('economy.finishGap', 'Gap between the copy and Amber finish dates', gap, 0, T.maxGapDays - 1e-9, { target: `< ${T.maxGapDays} days`, show: (x) => (Number.isFinite(x) ? `${fmtNum(x, 0)} days` : 'not reached') }),
     // A model input rather than a result: the A6.9 player completes 3 quests a day.

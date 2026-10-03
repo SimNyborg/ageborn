@@ -70,6 +70,27 @@ const A13: Record<string, string[]> = {
   forts: [
     'fort_place', 'fort_build', 'fort_complete', 'fort_hit_wood', 'fort_hit_stone', 'fort_hit_metal', 'fort_hit_energy', 'fort_crumble', 'fort_collapse', 'fort_decay', 'trap_arm', 'trap_snap', 'trap_blast', 'camp_horn', 'levy_spawn', 'fort_denied',
   ],
+  /** Bronze wave (CONTENT_PLAN 5.2): the attacks, turrets and powers of the 13 new Bronze cards. */
+  bronzeWave: [
+    'kopis_hack', 'rhomphaia_cut', 'shot_discus', 'trunk_lash', 'shot_belly_bow', 'aulos_note', 'chorus_wail', 'horse_ram',
+    'sagaris_sweep', 'labrys_chop', 'hydra_bite', 'net_cast', 'shot_polybolos', 'pw_sandstorm', 'pw_whirlpool',
+  ],
+  /** Stone wave (CONTENT_PLAN 5.1): the attacks, turrets and powers of the new Stone cards. */
+  stoneWave: [
+    'wolf_bite', 'shield_bash', 'torch_jab', 'horn_hook', 'bear_swipe', 'antler_sweep', 'shot_bolas', 'shot_atlatl',
+    'shot_heave', 'herb_puff', 'quill_fan', 'shot_sapling', 'pw_hail', 'pw_vines',
+  ],
+  /** Medieval wave (CONTENT_PLAN 5.3): the attacks, turrets and powers of the new Medieval cards. */
+  medievalWave: [
+    'squire_jab', 'flail_smash', 'dagger_stab', 'shot_windlass', 'greatsword_sweep', 'shot_longbow', 'hammer_clang',
+    'trumpet_toot', 'whip_crack', 'shot_mangonel', 'drawbridge_slam', 'vial_toss', 'wyrm_breath', 'hound_bite',
+    'shot_springald', 'crane_hook', 'pw_longbow', 'pw_bell',
+  ],
+  /** Gunpowder wave (CONTENT_PLAN 5.4): the attacks, turrets and powers of the new Gunpowder cards. */
+  gunpowderWave: [
+    'claymore_chop', 'scoop_swing', 'shot_blunderbuss', 'shot_dragoon', 'shot_coehorn', 'shot_wallgun', 'drum_roll',
+    'pipe_drone', 'sabre_slash', 'mesmer_chime', 'marshal_sweep', 'shot_carronade', 'shot_sea_mortar', 'pw_rockets', 'pw_salute',
+  ],
   /** MVP pass (audio audit 2026-10-01): the ui-plan 5.4 UI ids, Council, stances, escalation, warnings, energy forts. */
   mvp: [
     'ui_sheet', 'ui_pop', 'ui_whoosh', 'ui_stamp', 'card_lift', 'card_place', 'star_stamp', 'path_draw', 'node_drop', 'region_open', 'ui_unlock', 'reward_fly',
@@ -90,8 +111,9 @@ function peak(a: Float32Array): number {
 
 describe('sound manifest (A13)', () => {
   it('has exactly the A13 sound ids', () => {
-    // 182 + the 16 fort sounds (A16.14.8) + the 31 of the MVP pass
-    expect(A13_IDS).toHaveLength(229);
+    // 182 + the 16 fort sounds (A16.14.8) + the 31 of the MVP pass + the 15 of the Bronze wave + the 14 of the Stone wave
+    // + the 18 of the Medieval wave + the 15 of the Gunpowder wave
+    expect(A13_IDS).toHaveLength(291);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 
