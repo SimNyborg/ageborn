@@ -67,6 +67,9 @@ export const FORT_VISUALS: readonly { id: string; age: AgeId; kind: 'wall' | 'to
   { id: 'sentry_pylon', age: 'future', kind: 'tower' },
   { id: 'clone_bay', age: 'future', kind: 'camp' },
   { id: 'grav_mire', age: 'future', kind: 'trap' },
+  // Future wave (CONTENT_PLAN 5.7)
+  { id: 'skyguard_pylon', age: 'future', kind: 'tower' },
+  { id: 'mech_bay', age: 'future', kind: 'camp' },
   { id: 'void_rampart', age: 'cosmic', kind: 'wall' },
   { id: 'ion_spire', age: 'cosmic', kind: 'tower' },
   { id: 'warp_barracks', age: 'cosmic', kind: 'camp' },
@@ -91,6 +94,8 @@ export const LEVY_VISUALS: readonly { id: string; age: AgeId; infantry: string }
   // Modern wave: the Rifle Depot's levy, drawn from the Modern ranged Common (CONTENT_PLAN 5.6)
   { id: 'rifle_levy', age: 'modern', infantry: 'rifleman' },
   { id: 'clone_cadet', age: 'future', infantry: 'photon_knight' },
+  // Future wave: the Mech Bay's levy, drawn from the Future heavy Common (CONTENT_PLAN 5.7)
+  { id: 'mini_mech', age: 'future', infantry: 'walker_mech' },
   { id: 'star_recruit', age: 'cosmic', infantry: 'star_legionnaire' },
 ];
 
@@ -105,7 +110,7 @@ export const FORT_SHEETS: Readonly<Record<AgeId, readonly string[]>> = {
   gunpowder: ['gabion_wall', 'musket_redoubt', 'militia_muster', 'powder_keg', 'cavalry_picket', 'fougasse'],
   industrial: ['trench_parapet', 'sniper_nest', 'recruiting_depot', 'tripwire_charge', 'rail_barricade', 'tesla_pylon'],
   modern: ['sandbag_bunker', 'pillbox', 'forward_base', 'minefield', 'rifle_depot', 'wire_snare'],
-  future: ['hardlight_barrier', 'sentry_pylon', 'clone_bay', 'grav_mire'],
+  future: ['hardlight_barrier', 'sentry_pylon', 'clone_bay', 'grav_mire', 'skyguard_pylon', 'mech_bay'],
   cosmic: ['void_rampart', 'ion_spire', 'warp_barracks', 'void_mine'],
 };
 

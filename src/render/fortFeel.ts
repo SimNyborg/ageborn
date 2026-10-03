@@ -49,6 +49,8 @@ export const FORT_MATERIAL: Readonly<Record<string, FortMaterial>> = {
   sentry_pylon: 'metal',
   clone_bay: 'metal',
   grav_mire: 'energy',
+  skyguard_pylon: 'metal',
+  mech_bay: 'metal',
   void_rampart: 'energy',
   ion_spire: 'energy',
   warp_barracks: 'metal',
@@ -81,7 +83,7 @@ export const FORT_SOUNDS = {
 } as const satisfies Record<string, SoundId>;
 
 /** Camps that muster by warp or clone vat rather than a horn and a tent (Future, Cosmic). */
-export const WARP_CAMPS: ReadonlySet<string> = new Set(['clone_bay', 'warp_barracks']);
+export const WARP_CAMPS: ReadonlySet<string> = new Set(['clone_bay', 'mech_bay', 'warp_barracks']);
 
 /** The scaffold's building sound: mallets on timber, stone and metal; a charging projector for energy. */
 export function fortBuildSound(card: CardId): SoundId {

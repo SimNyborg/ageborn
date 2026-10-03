@@ -114,7 +114,7 @@
     "assault_gun": { "name": "Assault Gun", "desc": "Armored mech heavy without a turret: its big gun fires at short range and splashes a small area." },
     "mortar_team": { "name": "Mortar Team", "desc": "Long range: a two-man crew lobs mortar bombs from far behind the front, splashing a small area where the target stood. Cannot hit units closer than 90, or air. Half damage to bases." },
     "sticky_bomber": { "name": "Sticky Bomber", "desc": "Melee anti-heavy: slaps sticky charges on hulls for triple damage to armored and mech targets, which he goes for first, but less to light units. Brace: immune to knockback and charge bonuses." },
-    "combat_medic": { "name": "Combat Medic", "desc": "Support. Heals the 2 most hurt allies nearby for 70 HP per second in all. Stays behind the front line." },
+    "combat_medic": { "name": "Combat Medic", "desc": "Support. Heals the 2 most hurt allies nearby for 67 HP per second in all. Stays behind the front line." },
     "bulldog_sergeant": { "name": "Bulldog Sergeant", "desc": "Frenzy: below half health he rolls up his sleeves, dealing 30% more damage and punching 20% faster." },
     "dive_bomber": { "name": "Dive Bomber", "desc": "Air bomber: never stops, dives over the lane and drops bombs on ground enemies right below it, and on the base at the enemy gate. Only attacks that hit air can hit it." },
     "bulldozer": { "name": "Bulldozer", "desc": "Armored siege vehicle: drives for the enemy base and shoves it (and forts) with its blade for heavy damage. It only fights units that block it." },

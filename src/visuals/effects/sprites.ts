@@ -353,6 +353,23 @@ part('proj.plasma_mortar', [
   { d: circle(0, 0, 4.4), zone: 'lilac', line: 0, shade: false, light: false },
   { d: circle(-1, -1, 2), zone: 'white', line: 0, shade: false, light: false },
 ]);
+// Future wave (CONTENT_PLAN 5.7): the Needle Gunner's mint flechette, the Arc Lobber's glowing canister shell
+// and the Cryo Pod's frost orb (sea-pale ice, under the colour rule's saturation)
+part('proj.needle', [
+  { d: poly([-9, -0.5, 4, -1.1, 8, 0, 4, 1.1, -9, 0.5]), zone: 'mint', line: 0, alpha: 0.6, shade: false, light: false },
+  { d: poly([-2, -0.7, 5, -0.8, 7.4, 0, 5, 0.8, -2, 0.7]), zone: 'white', line: 0.6, shade: false, light: false },
+]);
+part('proj.arc_shell', [
+  { d: circle(0, 0, 6.6), zone: 'mint', line: 0, alpha: 0.4, shade: false, light: false },
+  { d: rrect(-4.4, -3, 8.8, 6, 2.6), zone: 'engine', line: 1.3 },
+  { d: rrect(-1.4, -3, 2.8, 6, 0.8), zone: 'ion', line: 0, shade: false, light: false },
+  { d: ellipse(2.6, -1.4, 1.2, 0.8), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('proj.frost', [
+  { d: circle(0, 0, 6.2), zone: 'sea', line: 0, alpha: 0.5, shade: false, light: false },
+  { d: star(0, 0, 6, 1.6, 4.8, 0), zone: 'foam', line: 0.9 },
+  { d: circle(0, 0, 2.2), zone: 'white', line: 0, shade: false, light: false },
+]);
 part('proj.gravity_orb', [
   { d: circle(0, 0, 6.4), zone: 'void2', line: 1.6 },
   { d: join(arcBand(0, 0, 3, 4.4, 0, 140), arcBand(0, 0, 3, 4.4, 180, 320)), zone: 'lilac', line: 0, shade: false, light: false },

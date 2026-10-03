@@ -261,6 +261,17 @@ medallion('power.concussion_shells', [
   { d: blob([-3.6, -14, 3.6, -14, 3.4, -2, 0, 2, -3.4, -2], 0.6), zone: 'iron', line: 1.2 },
   { d: join(star(-9, 10, 4, 1.4, 3.4), star(9, 10, 4, 1.4, 3.4)), zone: 'bone', line: 0.6 },
 ]);
+// Future wave (CONTENT_PLAN 5.7): a spotter drone painting a reticle, and a hex net cast over the lane.
+medallion('power.target_painter', [
+  { d: join(arcBand(0, 4, 7, 9, 0, 360), limb(0, -8, 0.8, 0, -3, 0.8), limb(0, 11, 0.8, 0, 16, 0.8), limb(-12, 4, 0.8, -7, 4, 0.8), limb(7, 4, 0.8, 12, 4, 0.8)), zone: 'bone', line: 0.8 },
+  { d: blob([-8, -14, 8, -14, 10, -10, -10, -10], 0.6), zone: 'iron', line: 1.2 },
+  { d: circle(0, 4, 2.2), zone: 'bone', line: 0.6 },
+]);
+medallion('power.nano_mesh', [
+  { d: join(...[-8, 0, 8].flatMap((x) => [limb(x, -12, 0.7, x + 6, 12, 0.7), limb(x + 6, -12, 0.7, x, 12, 0.7)])), zone: 'bone', line: 0.6 },
+  { d: arcBand(0, 10, 12, 14, 180, 360), zone: 'iron', line: 1.1 },
+  { d: join(circle(-9, -4, 1.8), circle(0, 2, 1.8), circle(9, -4, 1.8)), zone: 'bone', line: 0.6 },
+]);
 medallion('power.knights_charge', [
   { d: limb(-13, 8, 1.8, 12, -6, 1), zone: 'metal' },
   { d: poly([-12, 2, -4, -6, -2, 4]), zone: 'wine' },

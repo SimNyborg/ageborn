@@ -1133,6 +1133,38 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
         { ...dust(6, 1.1), tint: 0x9a8e7a },
       ],
     },
+    // Future wave (CONTENT_PLAN 5.7)
+    {
+      // Target Painter (Field zone + mark): a hovering spotter drone sweeps a mint scan line over the zone, reticles
+      // lock onto each foe and a crackle of data sparks marks them for the volleys to come.
+      id: 'fx.target_paint',
+      durationMs: 2000,
+      sprites: [
+        { sprite: 'fx.p.groundDisc', life: 1900, sizeWith: 'zone', keys: [{ t: 0, sx: 0.2, sy: 0.03, a: 0 }, { t: 0.1, sx: 1.02, sy: 0.16, a: 0.28 }, { t: 0.85, sx: 1, sy: 0.15, a: 0.25 }, { t: 1, sx: 1, sy: 0.15, a: 0 }], tint: 0xbff5e0 },
+        { sprite: 'fx.p.drone', life: 1900, keys: [{ t: 0, x: -60, y: -150, sx: 1.4, sy: 1.4, a: 0 }, { t: 0.12, x: -20, y: -120, sx: 1.4, sy: 1.4, a: 1 }, { t: 0.5, x: 10, y: -126, sx: 1.4, sy: 1.4, a: 1 }, { t: 0.88, x: 30, y: -120, sx: 1.4, sy: 1.4, a: 1 }, { t: 1, x: 70, y: -160, sx: 1.4, sy: 1.4, a: 0 }] },
+        { sprite: 'fx.p.beam', life: 1500, delay: 200, keys: [{ t: 0, x: -40, y: -60, r: 90, sx: 0.9, sy: 0.8, a: 0 }, { t: 0.1, x: -40, y: -60, r: 90, sx: 0.9, sy: 0.8, a: 0.5 }, { t: 0.5, x: 40, y: -60, r: 90, sx: 0.9, sy: 0.8, a: 0.5 }, { t: 0.9, x: -40, y: -60, r: 90, sx: 0.9, sy: 0.8, a: 0.4 }, { t: 1, x: -40, y: -60, r: 90, sx: 0.9, sy: 0.8, a: 0 }], tint: 0x3af0b4 },
+        { sprite: 'fx.p.reticle', life: 900, delay: 500, keys: [{ t: 0, y: -30, sx: 2.6, sy: 2.6, a: 0, r: 0 }, { t: 0.3, y: -30, sx: 1.4, sy: 1.4, a: 1, r: 90 }, { t: 0.8, y: -30, sx: 1.3, sy: 1.3, a: 1, r: 90 }, { t: 1, y: -30, sx: 1.6, sy: 1.6, a: 0, r: 90 }], tint: 0xf8e0f0 },
+      ],
+      particles: [
+        { sprite: 'fx.p.nanite', rate: 14, life: [300, 600], box: [40, 3], sizeWith: 'zone', speed: [20, 50], angle: [-120, -60], scale: [1, 0.3], alpha: [1, 0], tint: 0xbff5e0, blendAdd: true },
+      ],
+    },
+    {
+      // Nano Mesh (Home snare zone, hits air): a glittering hex net unfurls over the zone; nanite threads crawl over
+      // anything inside and a dome of mesh catches the fliers too.
+      id: 'fx.nano_mesh',
+      durationMs: 6000,
+      loops: true,
+      sprites: [
+        { sprite: 'fx.p.groundDisc', life: 0, sizeWith: 'zone', keys: [{ t: 0, sx: 0.2, sy: 0.03, a: 0 }, { t: 0.03, sx: 1.04, sy: 0.17, a: 0.32 }, { t: 0.93, sx: 1, sy: 0.16, a: 0.3 }, { t: 1, sx: 1, sy: 0.16, a: 0 }], tint: 0x3af0b4 },
+        { sprite: 'fx.p.hexDome', life: 0, sizeWith: 'zone', keys: [{ t: 0, sx: 0.2, sy: 0.1, a: 0 }, { t: 0.04, sx: 1.06, sy: 0.9, a: 0.55 }, { t: 0.06, sx: 1, sy: 1, a: 0.5 }, { t: 0.93, sx: 1, sy: 1, a: 0.45 }, { t: 1, sx: 1.04, sy: 1.02, a: 0 }], tint: 0xbff5e0 },
+        { sprite: 'fx.p.ring', life: 0, loop: 900, sizeWith: 'zone', tint: 0xbff5e0, keys: [{ t: 0, y: 2, sx: 0.1, sy: 0.04, a: 0.8 }, { t: 1, y: 2, sx: 1, sy: 0.3, a: 0 }] },
+      ],
+      particles: [
+        { sprite: 'fx.p.nanite', rate: 26, life: [500, 900], box: [44, 30], sizeWith: 'zone', attract: 2, speed: [10, 30], angle: [-180, 180], scale: [1, 0.3], alpha: [1, 0], spin: [-180, 180], tint: 0xbff5e0, blendAdd: true },
+        { sprite: 'fx.p.glint', rate: 6, life: [300, 500], box: [40, 28], sizeWith: 'zone', scale: [1, 0.2], alpha: [1, 0], tint: 0xffffff },
+      ],
+    },
     {
       // Ion Cannon (Field strike): an orbital beam spears its target from the sky.
       id: 'fx.ion_cannon',

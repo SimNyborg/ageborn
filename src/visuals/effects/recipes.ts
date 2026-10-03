@@ -459,6 +459,36 @@ export const FX_RECIPES: readonly FxRecipe[] = [
     sprites: [flash(1.2, 0xfff6e2, 90), ring(2.2, 420, 0xf2ecdc, 0.3), { ...ring(3.0, 520, 0xd8ccb4, 0.25), delay: 80 }],
     particles: [{ ...dust(6, 1.1), tint: 0xd8ccb4 }, { ...chunks(4), tint: 0x9a9288 }, { ...smoke(3, 0.9), tint: 0xeeeae2 }],
   },
+  // Future wave instants (CONTENT_PLAN 5.7): the Overclock Engineer's multitool zap (a short crackling arc),
+  // the Particle Cannon's piercing beam (a thick white-mint lance that lingers) and the Tractor Beam's pull ray
+  {
+    id: 'fx.zap_beam',
+    durationMs: 240,
+    chain: { segments: 6, jitter: 6, tint: 0xbff5e0, width: 2.2, refreshMs: 40 },
+    sprites: [flash(0.8, 0xeafff6, 110)],
+    particles: [{ ...sparks(3, [90, 180]), tint: 0xbff5e0 }],
+  },
+  {
+    id: 'fx.particle_beam',
+    durationMs: 420,
+    sprites: [
+      { sprite: 'fx.p.beam', life: 420, toTarget: true, keys: [{ t: 0, sy: 0.4, a: 0 }, { t: 0.15, sy: 3.2, a: 0.6 }, { t: 0.6, sy: 2.4, a: 0.45 }, { t: 1, sy: 0.6, a: 0 }], tint: 0x3af0b4 },
+      { sprite: 'fx.p.beam', life: 360, toTarget: true, keys: [{ t: 0, sy: 0.3, a: 0 }, { t: 0.15, sy: 1.4, a: 1 }, { t: 1, sy: 0.3, a: 0 }], tint: 0xffffff },
+      flash(1.3, 0xeafff6, 160),
+      bloom(1.4, 300, 0xbff5e0, 0.5),
+    ],
+    particles: [{ ...sparks(6, [140, 260]), tint: 0xbff5e0 }],
+  },
+  {
+    id: 'fx.tractor_beam',
+    durationMs: 900,
+    sprites: [
+      { sprite: 'fx.p.beam', life: 900, toTarget: true, keys: [{ t: 0, sy: 0.6, a: 0 }, { t: 0.2, sy: 2.6, a: 0.4 }, { t: 0.8, sy: 2.2, a: 0.35 }, { t: 1, sy: 1.4, a: 0 }], tint: 0xbff5e0 },
+      { sprite: 'fx.p.beam', life: 800, toTarget: true, keys: [{ t: 0, sy: 0.3, a: 0 }, { t: 0.2, sy: 0.8, a: 0.8 }, { t: 1, sy: 0.4, a: 0 }], tint: 0xffffff },
+      ring(1.4, 600, 0xbff5e0, 0.4),
+    ],
+    particles: [{ sprite: 'fx.p.nanite', count: 5, life: [400, 700], speed: [20, 50], angle: [-180, 180], spread: 8, scale: [0.9, 0.3], alpha: [1, 0], tint: 0xbff5e0, blendAdd: true }],
+  },
   {
     id: 'fx.beam_void',
     durationMs: 200,
@@ -893,6 +923,10 @@ export const PROJECTILE_RECIPES: readonly ProjectileRecipe[] = [
   { id: 'proj.rifle_grenade', sprite: 'proj.rifle_grenade', tail: { length: 12, width: 3, alpha: 0.32 }, puff: { sprite: 'fx.p.smoke', every: 60 } },
   { id: 'proj.bowl_bomb', sprite: 'proj.bowl_bomb', spin: 540, tail: { length: 10, width: 3, alpha: 0.3 }, puff: { sprite: 'fx.p.ember', every: 45 } },
   { id: 'proj.rivet', sprite: 'proj.rivet', tail: { length: 18, width: 1.8, alpha: 0.5 }, puff: { sprite: 'fx.p.ember', every: 30 } },
+  // Future wave (CONTENT_PLAN 5.7): a long mint streak for the flechette, a fizzing canister on the high arc, a frost orb shedding flakes
+  { id: 'proj.needle', sprite: 'proj.needle', tail: { length: 26, width: 1.4, alpha: 0.55 } },
+  { id: 'proj.arc_shell', sprite: 'proj.arc_shell', spin: 300, tail: { length: 14, width: 4, alpha: 0.4 }, puff: { sprite: 'fx.p.nanite', every: 45, tint: 0xbff5e0 } },
+  { id: 'proj.frost', sprite: 'proj.frost', spin: 240, tail: { length: 16, width: 5, alpha: 0.4 }, puff: { sprite: 'fx.p.nanite', every: 40, tint: 0xe6f6f8 } },
   { id: 'proj.gravity_orb', sprite: 'proj.gravity_orb', spin: 360, tail: { length: 16, width: 5, alpha: 0.4 }, puff: { sprite: 'fx.p.nanite', every: 50, tint: 0xc9b8f0 } },
   // A17.12
   { id: 'proj.javelin', sprite: 'proj.javelin', tail: { length: 18, width: 1.6, alpha: 0.45 } },

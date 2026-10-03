@@ -139,11 +139,11 @@ export const modern: RawAgeTables = {
     {
       // Raider: a crouched sprint in a beret, a combat roll into a rifle-butt swing; fast; ×2 to bases
       id: 'commando', released: false, kind: 'unit', age: 'modern', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 395, speed: 110, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 380, speed: 110, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 48, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 47, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'blunt', sfx: 'butt_stroke', vsBaseDamage: 84,
         },
       ],
@@ -170,7 +170,7 @@ export const modern: RawAgeTables = {
       // Trio (X0 M1): one card trains 3 troopers with submachine guns; stats per trooper (0.40 × Rifleman, +15% damage
       // for the short range 170); cost and pop split evenly
       id: 'smg_squad', released: false, kind: 'unit', age: 'modern', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 80, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 77, speed: 65, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
@@ -191,7 +191,7 @@ export const modern: RawAgeTables = {
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 35, intervalMs: 1500, windupPct: 50, range: 230, hitsGround: true, hitsAir: false,
+          damage: 36, intervalMs: 1500, windupPct: 50, range: 230, hitsGround: true, hitsAir: false,
           projectile: { speed: 450, arc: true, visualId: 'proj.rifle_grenade' },
           dmgType: 'blast', sfx: 'shot_rifle_grenade', splashRadius: 30,
         },
@@ -241,7 +241,7 @@ export const modern: RawAgeTables = {
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 104, intervalMs: 2000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 110, intervalMs: 2000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'blast', sfx: 'sticky_thunk', mods: damageMods.meleeAntiArmor, priority: 'armored',
         },
       ],
@@ -263,7 +263,7 @@ export const modern: RawAgeTables = {
         },
       ],
       abilities: [
-        { kind: 'heal', hpPerSec: 70, radius: 160, targets: 2, pulseMs: 500 },
+        { kind: 'heal', hpPerSec: 67, radius: 160, targets: 2, pulseMs: 500 },
         { kind: 'followSupport', behindFront: 60, soloMaxP: 200 },
       ],
       visualId: 'unit.combat_medic', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
@@ -340,7 +340,7 @@ export const modern: RawAgeTables = {
       // air (their own targets, not the bomb window); when it falls it crashes for 270 splash r70 on ground enemies
       // and the 2 gunners bail out as Riflemen (summoned)
       id: 'sky_fortress', released: false, kind: 'unit', age: 'modern', rarity: 'legendary', role: 'airBomber', group: 'legendary',
-      cost: 350, trainMs: 7000, pop: 14, hp: 1300, speed: 40, size: 'huge',
+      cost: 350, trainMs: 7000, pop: 14, hp: 1270, speed: 40, size: 'huge',
       tags: ['air', 'mech', 'legendary'],
       attacks: [
         {

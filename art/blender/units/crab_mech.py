@@ -189,8 +189,8 @@ def _idle(f):
 
 
 SPEED = 56.25
-GAIT = GK.Gait(8, 720, SPEED, GK.quad_feet(LEGS, GK.TROT, x_off={n: (FOOT_X[n] - LEG_X[n]) * S for n in LEGS}, scale=S, ground=GROUND),
-               0.6, yaw_deg=YAW_DEG, scale=S, lift=9.0, reach=1.0, toe_off=0.0, heel_strike=0.0, lift_peak=0.45)
+GAIT = GK.Gait(8, 820, SPEED, GK.quad_feet(LEGS, GK.TROT, x_off={n: (FOOT_X[n] - LEG_X[n]) * S for n in LEGS}, scale=S, ground=GROUND),
+               0.5, yaw_deg=YAW_DEG, scale=S, lift=9.0, reach=1.0, toe_off=0.0, heel_strike=0.0, lift_peak=0.45)
 
 
 def _walk(f, report=None):
@@ -199,7 +199,7 @@ def _walk(f, report=None):
         return merge(REST, claws(4 * math.sin(p - 1.0), 2 * math.sin(p - 1.4), 4 + 4 * math.sin(2 * p),
                                  4 * math.sin(p - 0.6), 2 * math.sin(p - 1.0), 3),
                      {"hull": {"rz": 3.0 * math.sin(p)}, "antenna": {"r": 0.0}})
-    return GK.quad_walk(RIG, f, GAIT, {}, trunk="hull", base_z=-2.0, bob=1.8, beats=2, pitch=1.2, roll=2.0,
+    return GK.quad_walk(RIG, f, GAIT, {}, trunk="hull", base_z=-2.0, bob=2.8, beats=2, pitch=1.2, roll=2.0,
                         extra=extra, report=report)
 
 

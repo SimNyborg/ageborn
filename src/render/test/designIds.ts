@@ -16,6 +16,8 @@ export const A14_EFFECT_IDS = new Set([
   'fx.coil_arc', 'fx.hammer_shock', 'fx.shrapnel_shells', 'fx.shrapnel_burst', 'fx.great_magnet',
   // Modern wave (CONTENT_PLAN 5.6)
   'fx.creeping_barrage', 'fx.barrage_burst', 'fx.concussion_shells',
+  // Future wave (CONTENT_PLAN 5.7)
+  'fx.zap_beam', 'fx.particle_beam', 'fx.tractor_beam', 'fx.target_paint', 'fx.nano_mesh',
   // Hit and death effects
   'fx.spark_blunt', 'fx.spark_slash', 'fx.spark_pierce', 'fx.spark_bullet', 'fx.scorch_laser', 'fx.blast',
   'fx.spark_effective', 'fx.puff_resisted', 'fx.muzzle', 'fx.trail', 'fx.splash_ring', 'fx.explosion_s',

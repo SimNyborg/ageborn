@@ -291,6 +291,25 @@ export const SKIN_SPECS: readonly SkinSpec[] = [
     // A folded-paper bomber: cream paper planes and pale grey creases.
     palette: { cloth: 0xf2ece0, cloth2: 0xe6dfd0, cloth3: 0xc8c2b6, metal: 0xefe9dc, metal2: 0xb8b2a6, wood: 0xe6dfd0, wood2: 0xc8c2b6 },
   },
+  // Future wave (CONTENT_PLAN 5.7, released with the wave): palette puppets like the ones above.
+  {
+    skin: 'space_cadet',
+    target: 'unit.pulse_trooper',
+    // A retro space cadet: cream flight suit, a silver bubble-helmet trim, soft lilac piping.
+    palette: { cloth: 0x5a5470, cloth2: 0xefe6cf, sleeve: 0xefe6cf, forearm: 0xefe6cf, shin: 0xefe6cf, pants: 0x5a5470, metal: 0xd8dce0, metal2: 0x8a8fa0, cloth3: 0xc9b8f0 },
+  },
+  {
+    skin: 'chrome_rail',
+    target: 'unit.rail_gunner',
+    // Mirror chrome plates over a gunmetal suit, a pale ice-blue glow (under 40% saturation).
+    palette: { cloth: 0x3a3e48, cloth2: 0xe4e8ee, sleeve: 0xe4e8ee, forearm: 0xe4e8ee, shin: 0xe4e8ee, pants: 0x3a3e48, metal: 0xf2f4f8, metal2: 0x6a707c, cloth3: 0xbfe0e8 },
+  },
+  {
+    skin: 'grandfather_clock',
+    target: 'unit.chrono_titan',
+    // A grandfather clock: walnut casing, brass trim and an ivory dial.
+    palette: { cloth: 0x5a3e2e, cloth2: 0x8a6448, metal: 0xd8c08a, metal2: 0x6a4a36, wood: 0x6a4a36, wood2: 0x4a3426, stone: 0x8a6448, stone2: 0x5a3e2e, cloth3: 0xd8c08a, clockface: 0xf2ead8 },
+  },
 ];
 
 export const SKIN_PUPPETS: readonly PuppetDef[] = SKIN_SPECS.map(skinPuppet);
