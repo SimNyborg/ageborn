@@ -240,6 +240,8 @@ function machine(id: string, height: number, k: number, group: 'heavy' | 'epic' 
     { id: 'barrel', parent: 'turret', x: 14, y: -10 },
     { id: 'muzzle', parent: 'barrel', x: 38, y: 0 },
     { id: 'stack', parent: 'hull', x: -24, y: -60 },
+    { id: 'flag1', parent: 'turret', x: -12, y: -28 },
+    { id: 'sponsonF', parent: 'hull', x: 24, y: -18 },
   ];
   return vehicle({
     id,
@@ -249,6 +251,7 @@ function machine(id: string, height: number, k: number, group: 'heavy' | 'epic' 
     center: 34 * k,
     bones: scaleBones(bones, k),
     slots: scaleSlots([
+      slot('industrial.landship.flag', 'flag1', 4, { noWidth: true }),
       slot('industrial.landship.stack', 'stack', 5),
       slot('industrial.landship.cab', 'turret', 7),
       slot('industrial.landship.tread', 'hull', 10),
@@ -256,6 +259,7 @@ function machine(id: string, height: number, k: number, group: 'heavy' | 'epic' 
       slot('industrial.landship.roadwheel', 'wheel4', 12, { id: 'rw4' }),
       slot('industrial.landship.hull', 'hull', 14),
       slot('industrial.landship.gun', 'barrel', 15, { tag: 'weapon', noWidth: true }),
+      slot('industrial.landship.sponson', 'sponsonF', 16, { noWidth: true }),
     ], k),
     muzzleBone: 'muzzle',
     attack: 'vehicle.attack.recoil',
@@ -294,15 +298,14 @@ export const INDUSTRIAL_WAVE_UNITS: PuppetDef[] = [
     weapon: { part: 'industrial.carbine', rot: 180, y: 2, muzzle: { x: 0, y: -30 } },
     offhand: { part: sized('industrial.chargebox', 1.6), rot: 0, y: 2 },
   }),
-  worker2('unit.dispatch_rider', 66, { hat: [{ part: 'industrial.goggles', tag: 'prop' }], torso: 'industrial.torso.jacket', weapon: { part: 'industrial.wrench', rot: 100 }, size: 'medium' }),
+  worker2('unit.dispatch_rider', 74, { hat: [{ part: 'industrial.goggles', tag: 'prop' }], torso: 'industrial.torso.overalls', pelvis: 'industrial.pelvis.overalls', weapon: { part: 'industrial.wrench', rot: 100 }, size: 'medium' }),
   worker2('unit.bomb_bowler', 66, {
     hat: [{ part: 'industrial.cap', tag: 'prop' }], weapon: { part: 'industrial.chargebox', rot: 20, muzzle: { x: 0, y: -4 } },
     attack: 'biped.attack.throw', group: 'ranged',
   }),
-  machine('unit.steam_tractor', 92, 0.55, 'heavy', 'large', 50),
+  machine('unit.steam_tractor', 104, 0.6, 'heavy', 'large', 50),
   worker2('unit.trench_mortar', 66, {
-    hat: [{ part: 'industrial.helmet.sapper', tag: 'prop' }], torso: 'industrial.torso.jacket',
-    back: [{ part: 'industrial.chargebox', x: -10, y: -10, rot: -8 }],
+    hat: [{ part: 'industrial.helmet.sapper', tag: 'prop' }], torso: 'industrial.torso.overalls', pelvis: 'industrial.pelvis.overalls',
     weapon: { part: 'industrial.flarepistol', rot: 120, y: 1, muzzle: { x: 0, y: -18 } },
     attack: 'biped.attack.shoot', group: 'ranged',
   }),
@@ -317,7 +320,7 @@ export const INDUSTRIAL_WAVE_UNITS: PuppetDef[] = [
     attack: 'biped.attack.shoot', group: 'support',
   }),
   worker2('unit.clockwork_tinker', 64, {
-    hat: [{ part: 'industrial.goggles', tag: 'prop' }, { part: 'industrial.moustache' }], back: [{ part: 'industrial.chargebox', x: -10, y: -10, rot: -8 }],
+    hat: [{ part: 'industrial.goggles', tag: 'prop' }, { part: 'industrial.moustache' }], torso: 'industrial.torso.overalls', pelvis: 'industrial.pelvis.overalls',
     weapon: { part: 'industrial.wrench', rot: 100 }, group: 'support',
   }),
   worker2('unit.clockwork_soldier', 58, { hat: [{ part: 'industrial.kepi', tag: 'prop' }], torso: 'industrial.torso.jacket', weapon: { part: 'industrial.carbine', rot: 160, y: 2, muzzle: { x: 0, y: -30 } } }),
@@ -328,10 +331,10 @@ export const INDUSTRIAL_WAVE_UNITS: PuppetDef[] = [
   }),
   worker2('unit.spark_scientist', 68, {
     hat: [{ part: 'industrial.goggles', tag: 'prop' }], torso: 'industrial.torso.greatcoat', pelvis: 'industrial.pelvis.coat',
-    weapon: { part: 'industrial.harpoongun', rot: 180, y: 4, muzzle: { x: 0, y: -40 } },
+    weapon: { part: 'industrial.carbine', rot: 180, y: 2, muzzle: { x: 0, y: -30 } },
     attack: 'biped.attack.shoot', group: 'epic',
   }),
-  machine('unit.armoured_train', 132, 0.8, 'legendary', 'huge', 40, true),
+  machine('unit.armoured_train', 174, 1.0, 'legendary', 'huge', 40, true),
 ];
 
 export const INDUSTRIAL_TURRETS: TurretPuppet[] = [

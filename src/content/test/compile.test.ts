@@ -34,8 +34,9 @@ describe('contentHash (B4, B3 replays)', () => {
     // includes the paused content expansion's partial Stone and Bronze data in the tree. X0 Stone wave
     // (2026-10-03): its measured numbers (docs/decisions.md); the gated Bronze data is included as it stands.
     // X0 Medieval wave (2026-10-03): its measured numbers (docs/decisions.md). W4 Gunpowder wave (2026-10-03):
-    // its released, measured numbers (docs/decisions.md); the gated Bronze data is included as it stands.
-    expect(content.hash).toBe('95cac302');
+    // its released, measured numbers (docs/decisions.md). W2 Bronze wave (2026-10-03): its released, measured
+    // numbers (docs/decisions.md); the gated Industrial data is included as it stands.
+    expect(content.hash).toBe('c5880bd1');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {

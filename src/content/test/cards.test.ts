@@ -58,8 +58,8 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     // W2 Bronze wave (CONTENT_PLAN 5.2; DESIGN A17.9 wave table)
 ['shield_bearer', 'Shield Bearer', 'C', 'infantry', 50, 240, 16, 10, 16, 65, 'S', 'G', 'light bio melee'],
     ['thracian_raider', 'Thracian Raider', 'C', 'infantry', 50, 190, 22, 10, 16, 90, 'S', 'G', 'light bio melee'],
-    ['rhodian_slingers', 'Rhodian Slingers', 'C', 'ranged', 75, 40, 6, 15, 180, 65, 'S', 'GA', 'light bio ranged'],
-    ['discus_thrower', 'Discus Thrower', 'C', 'ranged', 75, 85, 11, 16, 200, 65, 'S', 'GA', 'light bio ranged'],
+    ['rhodian_slingers', 'Rhodian Slingers', 'C', 'ranged', 75, 36, 6, 16, 180, 65, 'S', 'GA', 'light bio ranged'],
+    ['discus_thrower', 'Discus Thrower', 'C', 'ranged', 75, 90, 12, 16, 200, 65, 'S', 'GA', 'light bio ranged'],
     ['war_elephant', 'War Elephant', 'C', 'heavy', 150, 690, 40, 18, 20, 60, 'L', 'G', 'armored bio melee'],
     ['cretan_archer', 'Cretan Archer', 'R', 'ranged', 75, 99, 38, 24, 330, 60, 'S', 'G', 'light bio ranged'],
     ['belly_bowman', 'Belly Bowman', 'R', 'antiArmor', 100, 220, 40, 12, 200, 65, 'M', 'G', 'light bio ranged'],
@@ -69,7 +69,6 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['amazon_rider', 'Amazon Rider', 'E', 'skirmisher', 200, 500, 40, 9, 16, 95, 'L', 'G', 'light bio melee'],
     ['minotaur', 'Minotaur', 'E', 'heavy', 200, 880, 45, 16, 18, 60, 'L', 'G', 'armored bio melee'],
     ['hydra', 'Hydra', 'L', 'heavy', 350, 1230, 48, 22, 40, 45, 'H', 'G', 'armored bio melee legendary'],
-    // end W2
   ],
   // A5.3 Medieval Age (P 1.35)
   medieval: [
@@ -196,7 +195,6 @@ const TURRETS: Record<AgeId, TurretRow[]> = {
     // W2 Bronze wave turrets
     ['net_caster', 'Net Caster', 'C', 175, 28, 15, 320, 'GA'],
     ['polybolos', 'Polybolos', 'R', 250, 35, 30, 420, 'GA'],
-    // end W2
   ],
   medieval: [
     ['crossbow_nest', 'Crossbow Nest', 'C', 150, 40, 15, 380, 'GA'],
@@ -267,7 +265,6 @@ const POWERS: PowerRow[] = [
   // W2 Bronze wave powers
   ['sandstorm', 'Sandstorm', 'bronze', 'field', 'signal', 'warPath', 50, 25000, 1000, 8],
   ['charybdis', 'Charybdis', 'bronze', 'home', 'pull', 'warPath', 75, 30000, 1000, 6],
-  // end W2
   ['arrow_storm', 'Arrow Storm', 'medieval', 'home', 'bombard', 'starter', 125, 40000, 1000, 3],
   ['caltrops', 'Caltrops', 'medieval', 'home', 'snare', 'warPath', 75, 30000, 1000, 6],
   ['boiling_oil', 'Boiling Oil', 'medieval', 'home', 'sweep', 'warPath', 125, 40000, 1000, 2],
@@ -630,7 +627,6 @@ const A14_2: Record<string, FxRow[]> = {
   hydra: [['hydra', 'melee', 'hydra_bite', 'slash']],
   net_caster: [['net_caster', 'proj.net', 'net_cast', 'blunt']],
   polybolos: [['polybolos', 'proj.bolt', 'shot_polybolos', 'pierce']],
-  // end W2
   riveter: [['riveter', 'melee', 'swing_whoosh', 'blunt']],
   carbineer: [['carbineer', 'proj.bullet', 'shot_carbine', 'bullet']],
   steam_golem: [['steam_golem', 'melee', 'swing_whoosh', 'blunt']],

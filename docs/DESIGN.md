@@ -1096,7 +1096,7 @@ Values are final at the age's P and L1 loadouts (A5.1), × the loadout multiplie
 | `tidal_wave` | Tidal Wave ✎ | Home · sweep | C | S | **125** · 40 s · 1.0 s (MVP balance pass; was 100 · 40 s) | **4** (was 5) | sweep: zone 450, 2.0 s, **170** (was 130) once, width 40, ground only | 170: 91% / 27% | `fx.tidal_wave` · `pw_wave` |
 | `zeus_bolts` | **Zeus's Bolts** | Home · bombard | R | WP L5 (Road 700) | **125** · 40 s · 1.0 s (MVP balance pass; was 100 · 40 s) | **3** (was 4) | barrage: 6 over 1.5 s, zone 400, 120, r45, ±20, even, ground only | 162: 87% / 26% | `fx.lightning_bolt` · `pw_bolts` |
 | `medusa_gaze` | **Medusa's Gaze** | Home · stun | E | WP L9 (Road 850) | 75 · 35 s · 1.0 s | 5 | field: zone **350** (MVP balance pass; was 300), one pulse, ground only; stun 2.0 s (frozen look) and mark (+20% damage taken) 4 s | 10 d·s (13.3 per 100 g) | `fx.medusa_gaze` · `pw_gaze` |
-| `charybdis` | **Charybdis** | Home · pull | E | WP Bronze s1 (Road 4,200) | 75 · 30 s · 1.0 s | 6 | field: zone 300, 4 s (8 pulses), ground only; first pulse pulls 40% of the way to the centre; each pulse 9 and snare 50% for 1 s (X0 Bronze wave, built) | 72 per unit over the field | `fx.whirlpool` · `pw_whirlpool` |
+| `charybdis` | **Charybdis** | Home · pull | E | WP Bronze s1 (Road 4,200) | 75 · 30 s · 1.0 s | 6 | field: zone 300, 4 s (8 pulses), ground only; first pulse pulls 40% of the way to the centre; each pulse 9 and snare 45% for 1 s (X0 Bronze wave, built) | 72 per unit over the field | `fx.whirlpool` · `pw_whirlpool` |
 | `chariot_rush` | **Chariot Rush** | Field · charge | C | S | 100 · 40 s · 1.0 s | **5** (was 6) | stampede: 3 chariots 0.5 s apart, 500 lu at 450 lu/s from your front, 80 and 40 lu knockback, max 2 hits, ground only | ≤ 160: 86% / 25% | `fx.chariot_rush` · `pw_chariots` |
 | `aegis` | Aegis ✎ | Field · ward | R | Road 200 | **75** · **30 s** · 0.5 s (MVP balance pass; was 125 · 45 s) | 8 own | buffAll: your 8 frontmost units (was: all) a **120** shield and **+25%** damage for **8 s** (MVP balance pass; was 80, +15%, 6 s) | shield 43% of Infantry | `fx.aegis_glow` · `pw_aegis` |
 | `apollo_arrow` | **Apollo's Arrow** | Field · strike | E | WP L7 (Road 750) | **50** · **15 s** · 1.5 s (MVP balance pass; was 75 · 30 s) | 1 | strike: 1 golden arrow, 380, ground and air | 60% of the Heavy; the Scorpion takes 190 | `fx.golden_arrow` · `pw_apollo` |
@@ -4838,8 +4838,8 @@ Theme: antiquity (hoplites, chariots, bolt-throwers, myths in bronze). Values ar
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | shield_bearer | Shield Bearer | C | Infantry | 50 | 240 | 16 / 1.0 s | 16 | 65 | S | G | Blunt; Guard (the oval shield takes 25% less from attacks with range ≥ 100) |
 | thracian_raider | Thracian Raider | C | Infantry | 50 | 190 | 22 / 1.0 s | 16 | 90 | S | G | Raider (base 41) |
-| rhodian_slingers | Rhodian Slingers | C | Ranged | 75 | 3 × 40 | 6 / 1.5 s | 180 | 65 | S | G+A | Squad of 3 (M1) |
-| discus_thrower | Discus Thrower | C | Ranged | 75 | 85 | 11 / 1.6 s | 200 | 65 | S | G+A | Chain: the discus skips to 1 more enemy within 50 lu (`proj.discus`) |
+| rhodian_slingers | Rhodian Slingers | C | Ranged | 75 | 3 × 36 | 6 / 1.6 s | 180 | 65 | S | G+A | Squad of 3 (M1) |
+| discus_thrower | Discus Thrower | C | Ranged | 75 | 90 | 12 / 1.6 s | 200 | 65 | S | G+A | Chain: the discus skips to 1 more enemy within 50 lu (`proj.discus`) |
 | war_elephant | War Elephant | C | Heavy | 150 | 690 | 40 / 1.8 s | 20 | 60 | L | G | Cleave 2 (reach 30); armored; no charge bonus |
 | cretan_archer | Cretan Archer | R | Ranged (Long range, H6) | 75 | 99 | 38 splash r35 / 2.4 s | 330 (min 90) | 60 | S | G | Arc 300 lu/s (`proj.arrow_arc`); half damage to bases |
 | belly_bowman | Belly Bowman | R | Anti-heavy | 100 | 220 | 40 / 1.2 s | 200 | 65 | M | G | Ranged Anti-heavy mods; priority armored; Brace |

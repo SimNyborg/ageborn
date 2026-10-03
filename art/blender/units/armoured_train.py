@@ -15,8 +15,8 @@ chatters, and to chug along on a short stretch of track that scrolls under it."
 
 Animation (ANIM_SPEC G6 wheeled/rail):
   idle        the hull breathes on its springs, the stack puffs, the gunner looks round
-  walk        the sleepers scroll exactly 2 spacings per 640 ms cycle at the ground speed (40 x 1.25 =
-              50 lu/s), the 4-spoke wheels turn 2 spoke spacings per cycle with the connecting rod
+  walk        the sleepers scroll exactly 2 spacings per cycle at the ground speed (40 x 1.25 =
+              50 lu/s; an 816 ms cycle), the 4-spoke wheels turn 2 spoke spacings per cycle with the connecting rod
               going round, the hull chugs (a jolt per half cycle), the stack puffs on 0 and 4
   attack      BROADSIDE BOOM: the turret traverses and settles (the held extreme, a hold loop with the
               barrel quivering), BOOM: a big flash, the barrel slides back, the whole train rocks back
@@ -42,20 +42,21 @@ from units.land_dreadnought import gunner
 SLUG = "armoured_train"
 GAIT_NAME = "wheeled"
 NAME = "Armoured Train"
-HEIGHT_LU = 132
+HEIGHT_LU = 172
 YAW_DEG = -10.0
-CANVAS = (700, 440)
-FEET = (330, 404)
-ANCHORS = {"head": (0, 118), "hitCenter": (0, 50)}
+CANVAS = (900, 560)
+FEET = (424, 520)
+ANCHORS = {"head": (0, 154), "hitCenter": (0, 65)}
 NO_RETIME = True
 
 R_W = 10.0                       # driving wheel radius
 SPOKES = 4
-WALK_MS = 80
-CYCLE = 8 * WALK_MS              # 640 ms
-STRIDE = 2 * (2 * math.pi * R_W / SPOKES)     # 31.4 lu per cycle = 49 lu/s (ground speed 50)
+S = 1.3                          # the whole train is modelled at 1/1.3 and scaled up (A11 Legendary band)
+WALK_MS = 102
+CYCLE = 8 * WALK_MS              # 816 ms
+STRIDE = 2 * (2 * math.pi * R_W / SPOKES)     # 31.4 model lu per cycle = 40.8 lu = 50.0 lu/s
 WHEEL_STEP = 2 * (360.0 / SPOKES) / 8         # 22.5 degrees per frame (25% of a spacing)
-ODO_AMP = STRIDE / 4
+ODO_AMP = STRIDE * S / 4         # the odometer sits on the unscaled root
 TIE = STRIDE / 2                 # sleeper spacing: 2 spacings per cycle
 AXLES = (-62.0, -26.0, 22.0, 58.0)
 WY = -22.0                       # near wheel plane
@@ -95,20 +96,21 @@ def _wheel(rig, name, x, y, parent="chassis", far=False):
 
 
 def build(rig):
-    rig.joint("body", "root", (0, 0, 0))
+    rig.joint("all", "root", (0, 0, 0), scale=S)
+    rig.joint("body", "all", (0, 0, 0))
     rig.joint("chassis", "body", (0, 0, 2.0))
     rig.joint("odo", "root", (0, 0, 0))
     # the track: two rails and the sleepers (the sleepers scroll on their own joint)
-    rig.joint("ties", "root", (0, 0, 0))
+    rig.joint("ties", "all", (0, 0, 0))
     g = Geo()
-    for k in range(-8, 9):
+    for k in range(-6, 9):      # the row slides left up to 1.75 spacings, so it starts short of the rail end
         x = k * TIE
         g.blob((x, 0, 0.8), (2.4, 30.0, 0.9), p=3.0)
     rig.part("ties", g, WOODTIE, outline=0.4)
     g = Geo()
     for y in (-22.0, 22.0):
         g.blob((0, y, 2.0), (128.0, 1.4, 1.0), p=4.0)
-    rig.joint("rails", "root", (0, 0, 0))
+    rig.joint("rails", "all", (0, 0, 0))
     rig.part("rails", g, I.IRON_LT, finish="metal", outline=0.5)
     for i, x in enumerate(AXLES):
         _wheel(rig, f"wf{i}", x, 20.0, far=True)
@@ -187,7 +189,7 @@ def build(rig):
     rig.part("barrel", g, BRASS, finish="metal", outline=0.4)
     rig.track("muzzle", "barrel", MUZZLE)
     I.muzzle_flash(rig, "barrel", MUZZLE, size=2.6)
-    rig.joint("smoke", "root", (MUZZLE[0] + 14, -20, BARREL_Z + 14), hidden=True)
+    rig.joint("smoke", "all", (MUZZLE[0] + 14, -20, BARREL_Z + 14), hidden=True)
     g = Geo()
     for dx, dz, r in ((0, 0, 10.0), (11, 5, 8.0), (-7, 9, 7.0), (5, 13, 6.6), (18, -2, 6.0)):
         g.sphere((MUZZLE[0] + 14 + dx, -20, BARREL_Z + 14 + dz), r, cuts=4)

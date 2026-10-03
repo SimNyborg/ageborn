@@ -178,11 +178,11 @@ export const bronze: RawAgeTables = {
     {
       // Discus: the discus skips to a second target within 50 lu (the second takes 50%, A2.6)
       id: 'discus_thrower', kind: 'unit', age: 'bronze', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 80, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 90, speed: 65, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 10, intervalMs: 1600, windupPct: 50, range: 200, hitsGround: true, hitsAir: true,
+          damage: 12, intervalMs: 1600, windupPct: 50, range: 200, hitsGround: true, hitsAir: true,
           projectile: { speed: 550, visualId: 'proj.discus' },
           dmgType: 'blunt', sfx: 'shot_discus', chain: { count: 2, hop: 50 },
         },

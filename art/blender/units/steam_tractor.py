@@ -12,7 +12,7 @@ chimney puffing; and to clank along on its big wheels."
 
 Animation (ANIM_SPEC G6 wheeled):
   idle      the boiler breathes, the flywheel ticks over, the stack puffs, the driver taps the gauge
-  walk      the rear wheel turns 2 spoke spacings per 656 ms cycle at the ground speed (50 x 1.25 =
+  walk      the rear wheel turns 2 spoke spacings per 728 ms cycle at the ground speed (50 x 1.25 =
             62.5 lu/s), the front wheel and the flywheel turn with it, the hull clanks (a jolt per half
             cycle), the stack puffs, dust from the rear wheel
   attack    PLOUGH SCOOP: it rocks back on the rear wheel with the blade dipped low (the held extreme),
@@ -33,20 +33,21 @@ from ageborn_art.geometry import Geo
 SLUG = "steam_tractor"
 GAIT_NAME = "wheeled"
 NAME = "Steam Tractor"
-HEIGHT_LU = 92
+HEIGHT_LU = 103
 YAW_DEG = -10.0
-CANVAS = (480, 350)
-FEET = (230, 302)
-ANCHORS = {"head": (0, 86), "hitCenter": (0, 40)}
+CANVAS = (540, 392)
+FEET = (258, 338)
+ANCHORS = {"head": (0, 96), "hitCenter": (0, 45)}
 NO_RETIME = True
 
 R_REAR, R_FRONT = 13.0, 8.0
 REAR_X, FRONT_X = -26.0, 30.0
 SPOKES = 4
-WALK_MS = 82
-STRIDE = 2 * (2 * math.pi * R_REAR / SPOKES)      # 40.8 lu per 656 ms cycle = 62.2 lu/s
+S = 1.12                                          # modelled at 1/1.12, scaled up into the A11 Heavy band
+WALK_MS = 91
+STRIDE = 2 * (2 * math.pi * R_REAR / SPOKES)      # 40.8 model lu = 45.7 lu per 728 ms cycle = 62.8 lu/s
 STEP = STRIDE / 8
-ODO_AMP = STRIDE / 4
+ODO_AMP = STRIDE * S / 4
 NY = -16.0                                        # near wheel plane
 BLADE_P = (46.0, 0.0, 14.0)                       # the blade arm's pivot
 BLADE_TIP = (60.0, -10.0, 6.0)
@@ -82,7 +83,8 @@ def _wheel(rig, name, x, y, r, spokes, far=False):
 
 
 def build(rig):
-    rig.joint("body", "root", (0, 0, 0))
+    rig.joint("all", "root", (0, 0, 0), scale=S)
+    rig.joint("body", "all", (0, 0, 0))
     rig.joint("chassis", "body", (0, 0, 0))
     rig.joint("odo", "root", (0, 0, 0))
     _wheel(rig, "rear_f", REAR_X, 14.0, R_REAR, SPOKES, far=True)
