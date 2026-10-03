@@ -8,7 +8,7 @@ export const arenas: ArenaTables = {
   // A6.3 arena table
   list: [
     {
-      index: 1, id: 'tar_pits', trophies: 0, ladderFormats: ['short'],
+      index: 1, id: 'tar_pits', trophies: 0, ladderFormats: ['short', 'standard', 'full', 'last'],
       // A17.13: the Short War ages
       dropAges: ['stone', 'bronze', 'medieval', 'gunpowder'], randomLegendaries: false,
       botTiers: [0, 2], botLevel: 1, botMaxRarity: 'rare', wardenChanceBp: 0,
@@ -16,7 +16,7 @@ export const arenas: ArenaTables = {
       groundVisualId: 'ground.tar_pits', nameKey: 'arena.tar_pits.name',
     },
     {
-      index: 2, id: 'frostfang', trophies: 150, ladderFormats: ['short', 'standard'],
+      index: 2, id: 'frostfang', trophies: 150, ladderFormats: ['short', 'standard', 'full', 'last'],
       // A17.13: the Standard War ages
       dropAges: ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern'], randomLegendaries: true,
       botTiers: [1, 3], botLevel: 2, botMaxRarity: 'epic', wardenChanceBp: 0,
