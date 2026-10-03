@@ -989,16 +989,16 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 
 | Slug | Name | Rar | Role | Cost | HP | Damage / interval | Range | Speed | Size | Hits | Traits and abilities |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| highlander | Highlander | C | Infantry | 50 | 345 | 23 / 1.0 s | 16 | 67 | S | G | Blunt; Guard (the targe takes 25% less from attacks with range ≥ 100) |
+| highlander | Highlander | C | Infantry | 50 | 380 | 25 / 1.0 s | 16 | 67 | S | G | Blunt; Guard (the targe takes 25% less from attacks with range ≥ 100) |
 | powder_monkey | Powder Monkey | C | Infantry | 50 | 262 | 34 / 1.0 s | 16 | 100 | S | G | Raider (base 68); bursts on death for 40 splash r35 |
 | voltigeurs | Voltigeurs | C | Ranged | 75 | 3 × 69 | 19 / 2.0 s | 210 | 65 | S | G+A | Squad of 3 (M1) |
-| blunderbuss | Blunderbuss | C | Ranged | 75 | 164 | 58 / 2.6 s | 120 | 65 | S | G+A | Cone: the target and up to 2 enemies within 60 lu behind it (instant `fx.blunderbuss_spray`) |
+| blunderbuss | Blunderbuss | C | Ranged | 75 | 164 | 57 / 2.6 s | 120 | 65 | S | G+A | Cone: the target and up to 2 enemies within 60 lu behind it (instant `fx.blunderbuss_spray`) |
 | dragoon | Dragoon | C | Heavy | 150 | 820 | 52 splash r30 / 1.5 s | 90 | 55 | L | G | Mounted carbine; armored |
 | coehorn_crew | Coehorn Crew | R | Ranged (Long range, H6) | 75 | 210 | 80 splash r35 / 2.6 s | 360 (min 90) | 60 | S | G | Arc 300 lu/s (`proj.mortar_shell`); half damage to bases |
 | wall_gunner | Wall Gunner | R | Anti-heavy | 100 | 210 | 40 / 2.0 s | 220 | 65 | M | G | Ranged Anti-heavy mods; priority armored; Brace |
 | drummer_boy | Drummer Boy | R | Support | 110 | 340 | 32 / 1.2 s | 150 | 65 | S | G+A | Aura: allies within 160 lu attack 25% faster; followSupport |
 | bagpiper | Bagpiper | R | Support | 110 | 420 | 40 / 1.2 s | 150 | 60 | S | G+A | Dread aura (M4): enemies within 140 lu move 35% slower |
-| rocket_cart | Rocket Cart | E | Artillery | 200 | 1,100 | 4 rockets × 70 splash r30 / 4.0 s | 330 (min 90) | 45 | L | G | Volley with scatter ±40 lu (seeded sim RNG, SIM 7.2.0) |
+| rocket_cart | Rocket Cart | E | Artillery | 200 | 1,300 | 4 rockets × 70 splash r30 / 3.5 s | 330 (min 90) | 45 | L | G | Volley with scatter ±40 lu (seeded sim RNG, SIM 7.2.0) |
 | hussar | Hussar | E | Skirmisher | 200 | 1,000 | 78 / 0.9 s | 16 | 95 | L | G | Pounce: leaps to the back line within 180 lu (12 s cooldown) |
 | mesmerist | Mesmerist | E | Support | 200 | 1,050 | 58 / 1.2 s | 170 | 60 | S | G+A | Every 12 s entrances enemies within 140 lu (a stop, not the clock freeze, M5) |
 | grand_marshal | Grand Marshal | L | Heavy | 350 | 1,500 | 80 / 1.5 s, cleave 2 | 20 | 55 | H | G | Aura: allies within 200 lu deal 15% more; every 10 s calls a battery strike (120 splash r50) within 400 lu |
@@ -1008,7 +1008,7 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 | carronade | Carronade | C | 175 | 66 / 2.5 s | 320 | G | Priority armored; the short "smasher" |
 | sea_mortar | Sea Mortar | R | 250 | 149 splash r50 / 4.5 s | 480 (min 150) | G | Arc 450 lu/s |
 
-Powers (A5.7): Rocket Volley (Field lane volley, War Path L3 / Road 3,300; 87 on up to 8, 50 gold, 25 s) and Cannon Salute (Home stun, War Path s1 / Road 4,400; 130 and a 2 s stun on up to 6 in a 350 lu zone, 75 gold, 35 s). Forts (A16.14): Cavalry Picket (camp; its levy, the Picket Rider, is 25% of the Cuirassier every 18 s, one at a time; War Path s2) and Fougasse (trap; 2 charges × 131 splash r45; the 20-star milestone). Skins (A5.8): Parade Cuirassier (Rare), Fireworks Grenadier (Epic), Pufferfish Balloon (Legendary).
+Powers (A5.7): Rocket Volley (Field lane volley, War Path L3 / Road 3,300; 80 on up to 8, 50 gold, 25 s) and Cannon Salute (Home stun, War Path s1 / Road 4,400; 130 and a 2 s stun on up to 6 in a 350 lu zone, 75 gold, 35 s). Forts (A16.14): Cavalry Picket (camp; its levy, the Picket Rider, is 25% of the Cuirassier every 18 s, one at a time; War Path s2) and Fougasse (trap; 2 charges × 131 splash r45; the 20-star milestone). Skins (A5.8): Parade Cuirassier (Rare), Fireworks Grenadier (Epic), Pufferfish Balloon (Legendary).
 
 ### A5.5 Modern Age (P 2.46)
 
@@ -1096,6 +1096,7 @@ Values are final at the age's P and L1 loadouts (A5.1), × the loadout multiplie
 | `tidal_wave` | Tidal Wave ✎ | Home · sweep | C | S | **125** · 40 s · 1.0 s (MVP balance pass; was 100 · 40 s) | **4** (was 5) | sweep: zone 450, 2.0 s, **170** (was 130) once, width 40, ground only | 170: 91% / 27% | `fx.tidal_wave` · `pw_wave` |
 | `zeus_bolts` | **Zeus's Bolts** | Home · bombard | R | WP L5 (Road 700) | **125** · 40 s · 1.0 s (MVP balance pass; was 100 · 40 s) | **3** (was 4) | barrage: 6 over 1.5 s, zone 400, 120, r45, ±20, even, ground only | 162: 87% / 26% | `fx.lightning_bolt` · `pw_bolts` |
 | `medusa_gaze` | **Medusa's Gaze** | Home · stun | E | WP L9 (Road 850) | 75 · 35 s · 1.0 s | 5 | field: zone **350** (MVP balance pass; was 300), one pulse, ground only; stun 2.0 s (frozen look) and mark (+20% damage taken) 4 s | 10 d·s (13.3 per 100 g) | `fx.medusa_gaze` · `pw_gaze` |
+| `charybdis` | **Charybdis** | Home · pull | E | WP Bronze s1 (Road 4,200) | 75 · 30 s · 1.0 s | 6 | field: zone 300, 4 s (8 pulses), ground only; first pulse pulls 40% of the way to the centre; each pulse 9 and snare 50% for 1 s (X0 Bronze wave, built) | 72 per unit over the field | `fx.whirlpool` · `pw_whirlpool` |
 | `chariot_rush` | **Chariot Rush** | Field · charge | C | S | 100 · 40 s · 1.0 s | **5** (was 6) | stampede: 3 chariots 0.5 s apart, 500 lu at 450 lu/s from your front, 80 and 40 lu knockback, max 2 hits, ground only | ≤ 160: 86% / 25% | `fx.chariot_rush` · `pw_chariots` |
 | `aegis` | Aegis ✎ | Field · ward | R | Road 200 | **75** · **30 s** · 0.5 s (MVP balance pass; was 125 · 45 s) | 8 own | buffAll: your 8 frontmost units (was: all) a **120** shield and **+25%** damage for **8 s** (MVP balance pass; was 80, +15%, 6 s) | shield 43% of Infantry | `fx.aegis_glow` · `pw_aegis` |
 | `apollo_arrow` | **Apollo's Arrow** | Field · strike | E | WP L7 (Road 750) | **50** · **15 s** · 1.5 s (MVP balance pass; was 75 · 30 s) | 1 | strike: 1 golden arrow, 380, ground and air | 60% of the Heavy; the Scorpion takes 190 | `fx.golden_arrow` · `pw_apollo` |
@@ -1171,7 +1172,7 @@ Values are final at the age's P and L1 loadouts (A5.1), × the loadout multiplie
 | Age | Slug | Name | Family | Per unit | FX · sound (planned, A14.4) |
 |---|---|---|---|---|---|
 | Stone | `pebble_hail` | **Pebble Hail** | volley | 48 (the 30% cap; X0 Stone wave, built) | `fx.pebble_hail` · `pw_hail` |
-| Bronze | `sandstorm` | **Sandstorm** | signal | 19 and snare 30% for 3 s | `fx.sandstorm` · `pw_sandstorm` |
+| Bronze | `sandstorm` | **Sandstorm** | signal | 55 (the 30% cap) and snare 40% for 3 s (X0 Bronze wave, built; 50 gold, 25 s, War Path Bronze L3) | `fx.sandstorm` · `pw_sandstorm` |
 | Medieval | `longbow_volley` | **Longbow Volley** | volley | 64 (the 30% cap; X0 Medieval wave, built) | `fx.longbow_volley` · `pw_longbow` |
 | Gunpowder | `rocket_volley` | **Rocket Volley** | volley | 73 | `fx.rocket_volley` · `pw_rockets` |
 | Industrial | `shrapnel_shells` | **Shrapnel Shells** | volley | 83 | `fx.shrapnel` · `pw_shrapnel` |
@@ -2034,6 +2035,7 @@ All SFX are ZzFX definitions (3-5 variants each) pre-rendered to AudioBuffers at
 | Stone wave (X0, 2026-10-03, built) | Attacks: `wolf_bite` (Hunting Wolves, Cave Pup), `shield_bash` (Hide Shield), `torch_jab` (Torch Runner), `horn_hook` (Woolly Rhino), `bear_swipe` (Cave Bear), `antler_sweep` (Elk Chieftain), `shot_bolas`, `shot_atlatl`, `shot_heave` (Boulder Hurler), `herb_puff` (Herbalist). Turrets: `quill_fan` (Quill Porcupine), `shot_sapling` (Sapling Sling). Powers: `pw_hail` (Pebble Hail), `pw_vines` (Tangle Vines) |
 | Medieval wave (X0, 2026-10-03, built) | Attacks: `squire_jab` (Squires), `flail_smash` (Flailman), `dagger_stab` (Brigand), `greatsword_sweep` (Greatsword Knight), `hammer_clang` (Warhammer Sergeant), `whip_crack` (Kennel Master), `hound_bite` (War Hound), `drawbridge_slam` (Siege Belfry), `wyrm_breath` (Lindworm), `shot_windlass` (Crossbowman), `shot_longbow` (Yeoman Archer), `trumpet_toot` (Herald), `shot_mangonel` (Mangonel), `vial_toss` (Alchemist). Turrets: `shot_springald` (Springald), `crane_hook` (Grapple Crane). Powers: `pw_longbow` (Longbow Volley), `pw_bell` (Great Bell) |
 | Gunpowder wave (X0, 2026-10-03, built) | Attacks: `claymore_chop` (Highlander), `scoop_swing` (Powder Monkey), `sabre_slash` (Hussar), `marshal_sweep` (Grand Marshal), `shot_blunderbuss` (Blunderbuss), `shot_dragoon` (Dragoon), `shot_coehorn` (Coehorn Crew), `shot_wallgun` (Wall Gunner), `drum_roll` (Drummer Boy), `pipe_drone` (Bagpiper), `mesmer_chime` (Mesmerist); the Voltigeurs reuse `shot_musket` and the Rocket Cart `shot_rocket`. Turrets: `shot_carronade` (Carronade), `shot_sea_mortar` (Sea Mortar). Powers: `pw_rockets` (Rocket Volley), `pw_salute` (Cannon Salute) |
+| Bronze wave (X0, 2026-10-03, built) | Attacks: `kopis_hack` (Shield Bearer), `rhomphaia_cut` (Thracian Raider), `trunk_lash` (War Elephant), `sagaris_sweep` (Amazon Rider), `labrys_chop` (Minotaur), `hydra_bite` (Hydra), `horse_ram` (Wooden Horse; its riders keep `swing_whoosh`), `shot_discus` (Discus Thrower), `shot_belly_bow` (Belly Bowman), `aulos_note` (Aulos Piper, in D), `chorus_wail` (Tragic Chorus, D minor); the Slingers reuse `shot_sling` and the Cretan Archer `shot_bow`. Turrets: `net_cast` (Net Caster), `shot_polybolos` (Polybolos). Powers: `pw_sandstorm` (Sandstorm), `pw_whirlpool` (Charybdis) |
 
 **Mixer:**
 
@@ -2093,6 +2095,7 @@ All SFX are ZzFX definitions (3-5 variants each) pre-rendered to AudioBuffers at
 - **Stone wave effects (X0, 2026-10-03, built):** `fx.pebble_hail` (pebbles drop on each unit Pebble Hail screens, from the `power.fx.<id>.hit` rule) with its `fx.pebble_pop` landing, and `fx.tangle_vines` (a root bed and thorny tendrils for the field's 4 s).
 - **Medieval wave effects (X0, 2026-10-03, built):** `fx.longbow_volley` (long arrows drop on each unit the volley screens, from the `power.fx.<id>.hit` rule) with its `fx.arrow_thud` landing, `fx.great_bell` (rings of sound and notes over the stun zone), the instant attacks `fx.lindworm_breath` (green marsh fire) and `fx.grapple_hook` (rope and hook), and the projectiles `proj.longarrow`, `proj.note`, `proj.vial` and `proj.spear_bolt`.
 - **Gunpowder wave effects (X0, 2026-10-03, built):** `fx.rocket_volley` (war rockets streak down on each unit the volley screens, from the `power.fx.<id>.hit` rule) with its `fx.rocket_pop` landing, `fx.cannon_salute` (a ring of saluting guns: shock rings and rolling white smoke over the stun zone), the instant attacks `fx.blunderbuss_spray` (a cone of shot), `fx.drum_boom`, `fx.pipe_drone` and `fx.mesmer_spiral`, and the projectile `proj.mortar_shell` (the Coehorn Crew's lit shell on its high arc). The Rocket Cart's volley of 4 lands spread by its `scatter` (±40 lu, seeded; SIM_VERSION 7.2.0).
+- **Bronze wave effects (X0, 2026-10-03, built):** projectiles `proj.discus` (a spinning bronze discus), `proj.net` (a weighted net) and `proj.arrow_arc` (the arrow with a longer trail for the Cretan Archer's high arc); instant `fx.note_pop` (a mint note ribbon and floating notes, part `fx.p.note`) and `fx.wail_ring` (lilac rings and a soft beam); power effects `fx.sandstorm` (a pale sand wall rolling down the whole lane with grit streaks, `power.fx.sandstorm.first`) and `fx.whirlpool` (a churning ring of water and foam over `fx.field_zone` for Charybdis's 4 s); icons `power.sandstorm`, `power.charybdis`. The Dread aura's slow shows through the existing slow status mark on each victim (the aura re-emits it on the heal-grid pulse).
 - **UI icons:** `icon.role.<group>`, `icon.age.<age>`, `icon.horn`, `icon.chevron`, `icon.base_alert`, `icon.follow`, `trim.bronze`, `trim.silver`, `trim.gold`, `foil.bronze`, `foil.silver`, `foil.holo`.
 
 ### A14.2 Per-card attack mapping
@@ -3738,6 +3741,8 @@ Emulated 2026-09-30 (A16.14.9, indicative only): the worst case won 0-4% against
 | Future | Hardlight Barrier (`hardlight_barrier`) 1,860 | Sentry Pylon (`sentry_pylon`) 930, 64 / 1.0 s, r260 | Clone Bay (`clone_bay`) 1,116 → Clone Cadet (`clone_cadet`) 164, 23 | Grav Mire (`grav_mire`): 1 × (110 and 60% slow 3 s, splash r60: the primary 110, up to 3 more at 55) |
 | Cosmic | Void Rampart (`void_rampart`) 2,509 | Ion Spire (`ion_spire`) 1,254, 81 / 1.0 s, r270 | Warp Barracks (`warp_barracks`) 1,505 → Star Recruit (`star_recruit`) 245, 31 | Void Mine (`void_mine`): 1 × 430 splash r50 |
 
+**W2 Bronze wave variants (X0, CONTENT_PLAN 5.2, built 2026-10-03):** Hoplon Line (`hoplon_line`, Common wall, 175 gold, 630 HP; cover: own ground units within 60 lu behind it take 20% less from attacks with range ≥ 100; War Path Bronze s2, Road 4,200) and Slinger Camp (`slinger_camp`, Rare camp, 150 gold; shown as **Skirmisher Camp**: its levy `slinger_levy`, shown as **Skirmisher Levy**, is 35% of the Bronze ranged Common, the Javelineer, every 12 s, one alive; the Bronze 20-star milestone, Road 4,200). Bots keep bringing the age's first wall and camp (`botFortCard` takes the first by id), so neither variant is a bot pick.
+
 Towers hit ground and air; tower ranges are card values, clamped to 244 on pad 300 by the cover invariant. Trap budget (primary damage ÷ I): 0.75, 0.74, 0.75, 0.79, 0.61, 0.66, control, 0.61. Levies (review fixes 2026-10-01) are 30% of the Infantry Common: Cave Youth 48, 6; Citizen Levy 55, 6; Peasant Levy 64, 8; Militiaman 87, 10; Volunteer 99, 12; Conscript 118, 14; Clone Cadet 141, 19; Star Recruit 210, 27. `caltrops` and `barbed_wire` are power ids since the power rework, so those trap names moved to Wolf Pits and Tripwire Charge; Grav Snare became Grav Mire (r60 inside the budget; it slows, and "snare" is a power status traps may not apply). Collection: 32 Fort cards (8 Common, 16 Rare, 8 Epic) plus 8 hidden levies and 24 hidden fort twins (A16.14.8); the schema wants exactly one fort of each kind per age and the wall as `source: 'starter'`; album numbers continue after the last card (A18.9.3).
 
 #### A16.14.5 Interplay
@@ -4826,6 +4831,33 @@ Theme: antiquity (hoplites, chariots, bolt-throwers, myths in bronze). Values ar
 | sun_mirror | Sun Mirror | C | 175 | 9 / 0.3 s | 230 | G+A | Instant beam of focused sunlight; high chip DPS, short range |
 | onager | Onager | R | 250 | 95 splash r50 / 4.5 s | 480 (min 150) | G | Arc |
 | gorgon_bust | Gorgon Bust | E | 250 | 55 / 6.0 s | 380 | G+A | Priority armored. Stone Gaze: stuns the target 1.5 s |
+
+**W2 Bronze wave (X0, CONTENT_PLAN 5.2; released 2026-10-03; measured numbers, docs/decisions.md).** Capsule cards: Commons from Arena 2, Rares 3, Epics 4, the Legendary 5. New sim rule: the Dread aura (M4, `aura.foe`) and the ally speed aura (SIM_VERSION 7.1.0).
+
+| Slug | Name | Rar | Role | Cost | HP | Damage / interval | Range | Speed | Size | Hits | Traits and abilities |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| shield_bearer | Shield Bearer | C | Infantry | 50 | 240 | 16 / 1.0 s | 16 | 65 | S | G | Blunt; Guard (the oval shield takes 25% less from attacks with range ≥ 100) |
+| thracian_raider | Thracian Raider | C | Infantry | 50 | 190 | 22 / 1.0 s | 16 | 90 | S | G | Raider (base 41) |
+| rhodian_slingers | Rhodian Slingers | C | Ranged | 75 | 3 × 40 | 6 / 1.5 s | 180 | 65 | S | G+A | Squad of 3 (M1) |
+| discus_thrower | Discus Thrower | C | Ranged | 75 | 85 | 11 / 1.6 s | 200 | 65 | S | G+A | Chain: the discus skips to 1 more enemy within 50 lu (`proj.discus`) |
+| war_elephant | War Elephant | C | Heavy | 150 | 690 | 40 / 1.8 s | 20 | 60 | L | G | Cleave 2 (reach 30); armored; no charge bonus |
+| cretan_archer | Cretan Archer | R | Ranged (Long range, H6) | 75 | 99 | 38 splash r35 / 2.4 s | 330 (min 90) | 60 | S | G | Arc 300 lu/s (`proj.arrow_arc`); half damage to bases |
+| belly_bowman | Belly Bowman | R | Anti-heavy | 100 | 220 | 40 / 1.2 s | 200 | 65 | M | G | Ranged Anti-heavy mods; priority armored; Brace |
+| aulos_piper | Aulos Piper | R | Support | 110 | 151 | 9 / 1.2 s | 150 | 65 | S | G+A | Aura: allies within 160 lu move 15% faster (instant `fx.note_pop`); followSupport |
+| tragic_chorus | Tragic Chorus | R | Support | 110 | 166 | 9 / 1.2 s | 150 | 60 | S | G+A | Dread aura (M4): enemy ground units within 130 lu move 20% slower (instant `fx.wail_ring`); followSupport |
+| wooden_horse | Wooden Horse | E | Siege | 200 | 800 | 12 (140 vs base) / 2.0 s | 12 | 45 | L | G | Siege only; riders: 2 spearmen poke 6 / 1.2 s (r40); on death 2 Hoplites jump out |
+| amazon_rider | Amazon Rider | E | Skirmisher | 200 | 500 | 40 / 0.9 s | 16 | 95 | L | G | Pounce (search 180): rides around the blocker to a ranged or support unit, first strike ×2 |
+| minotaur | Minotaur | E | Heavy (brawler) | 200 | 880 | 45 / 1.6 s | 18 | 60 | L | G | First hit ×2 and 40 lu knockback; Frenzy (M2) below 50% HP: +30% damage, +20% attack speed |
+| hydra | Hydra | L | Heavy (legendary) | 350 | 1,230 | 48 / 2.2 s | 40 | 45 | H | G | Cleave 3 (reach 40; the three heads); every bite slows 20% for 1.5 s |
+
+| Slug | Turret | Rar | Cost | Damage / interval | Range | Hits | Notes |
+|---|---|---|---|---|---|---|---|
+| net_caster | Net Caster | C | 175 | 28 / 1.5 s | 320 | G+A | `proj.net`; slows the target 30% for 2 s |
+| polybolos | Polybolos | R | 250 | 3 bolts × 35 / 3.0 s | 420 | G+A | Volley 3 (`proj.bolt`) |
+
+**Aura rules (SIM_VERSION 7.1.0).** `aura` takes `foe: true` for a Dread aura (M4): every tick the sim clears and recomputes the aura fields, so an aura ends the tick its victim leaves the radius (edge distance) or its source dies. A Dread aura with a `slow` (or `mark`) status sets the strongest such value on each enemy ground, non-fort unit within its radius; it never touches allies, air or the source, never stacks with another Dread aura, and a timed status of the same kind applies only when stronger (the timed one keeps its own duration). Each heal-grid pulse re-emits `statusApplied` for the victims so the slow mark shows. An ally aura now also takes `speedBuff` (the Aulos Piper): the stronger of it and a timed speed buff applies. Slows never stack with snares beyond the existing `max` rule.
+
+Powers: Sandstorm (A5.7 whole-lane table) and Charybdis (A5.7). Forts: Hoplon Line and Slinger Camp (A16.14.4). Skins: Marble Hoplite, Sun Chariot, Obsidian Colossus (A5.8; procedural puppets like the other wave skins).
 
 ### A17.10 Industrial Age (P 2.12)
 

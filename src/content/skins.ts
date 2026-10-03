@@ -43,9 +43,9 @@ export const skinList: readonly SkinDef[] = [
   skin('fossil_sabertooth', 'sabertooth', 'epic'),
   skin('aurora_elk', 'elk_chieftain', 'legendary'),
   // W2 Bronze (2026-10-03), released with their art:
-  { ...skin('marble_hoplite', 'hoplite', 'rare'), released: false },
-  { ...skin('sun_chariot', 'war_chariot', 'epic'), released: false },
-  { ...skin('obsidian_colossus', 'bronze_colossus', 'legendary'), released: false },
+  skin('marble_hoplite', 'hoplite', 'rare'),
+  skin('sun_chariot', 'war_chariot', 'epic'),
+  skin('obsidian_colossus', 'bronze_colossus', 'legendary'),
   // W3 Medieval (2026-10-03), released with their art:
   skin('greenwood_archer', 'longbowman', 'rare'),
   skin('chess_knight', 'destrier_knight', 'epic'),
@@ -54,4 +54,8 @@ export const skinList: readonly SkinDef[] = [
   skin('parade_cuirassier', 'cuirassier', 'rare'),
   skin('fireworks_grenadier', 'grenadier', 'epic'),
   skin('pufferfish_balloon', 'balloon_admiral', 'legendary'),
+  // W5 Industrial (2026-10-03), released with their art:
+  { ...skin('chimney_sweep', 'riveter', 'rare'), released: false },
+  { ...skin('teapot_golem', 'steam_golem', 'epic'), released: false },
+  { ...skin('circus_train', 'armoured_train', 'legendary'), released: false },
 ];

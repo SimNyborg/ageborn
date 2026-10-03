@@ -283,14 +283,14 @@ export const gunpowder: RawAgeTables = {
       nameKey: 'card.bagpiper.name', descKey: 'card.bagpiper.desc', strongVs: [], weakVs: [],
     },
     {
-      // Artillery: a rack of 4 rockets, each 70 splash r30, landing within ±40 lu of the aim / 4.0 s; range 330
+      // Artillery: a rack of 4 rockets, each 70 splash r30, landing within ±40 lu of the aim / 3.5 s; range 330
       // (min 90); half to bases; ground only
       id: 'rocket_cart', kind: 'unit', age: 'gunpowder', rarity: 'epic', role: 'artillery', group: 'epic',
       cost: 200, trainMs: 4000, pop: 8, hp: 1300, speed: 45, size: 'large',
       tags: ['light', 'mech', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 70, intervalMs: 4000, windupPct: 50, range: 330, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 70, intervalMs: 3500, windupPct: 50, range: 330, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 900, visualId: 'proj.rocket' },
           dmgType: 'blast', sfx: 'shot_rocket', splashRadius: 30, volley: 4, scatter: 40, vsBaseDamage: 20,
         },

@@ -1,0 +1,2320 @@
+{
+ "frames": {
+  "clockwork_soldier_idle_00": {
+   "frame": {
+    "x": 89,
+    "y": 231,
+    "w": 69,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 114,
+    "w": 69,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_idle_00_team": {
+   "frame": {
+    "x": 229,
+    "y": 522,
+    "w": 39,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 119,
+    "w": 39,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_idle_01": {
+   "frame": {
+    "x": 369,
+    "y": 124,
+    "w": 69,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 113,
+    "w": 69,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_idle_01_team": {
+   "frame": {
+    "x": 272,
+    "y": 522,
+    "w": 39,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 118,
+    "w": 39,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_idle_02": {
+   "frame": {
+    "x": 463,
+    "y": 2,
+    "w": 69,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 109,
+    "w": 69,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_idle_02_team": {
+   "frame": {
+    "x": 500,
+    "y": 434,
+    "w": 39,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 115,
+    "w": 39,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_idle_03": {
+   "frame": {
+    "x": 159,
+    "y": 2,
+    "w": 68,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 107,
+    "w": 68,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_idle_03_team": {
+   "frame": {
+    "x": 415,
+    "y": 434,
+    "w": 39,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 113,
+    "w": 39,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_idle_04": {
+   "frame": {
+    "x": 333,
+    "y": 2,
+    "w": 70,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 108,
+    "w": 70,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_idle_04_team": {
+   "frame": {
+    "x": 458,
+    "y": 434,
+    "w": 38,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 114,
+    "w": 38,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_idle_05": {
+   "frame": {
+    "x": 120,
+    "y": 124,
+    "w": 70,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 112,
+    "w": 70,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_idle_05_team": {
+   "frame": {
+    "x": 315,
+    "y": 522,
+    "w": 39,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 118,
+    "w": 39,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_00": {
+   "frame": {
+    "x": 516,
+    "y": 231,
+    "w": 55,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 116,
+    "w": 55,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_00_team": {
+   "frame": {
+    "x": 91,
+    "y": 605,
+    "w": 43,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 121,
+    "w": 43,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_01": {
+   "frame": {
+    "x": 2,
+    "y": 335,
+    "w": 55,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 119,
+    "w": 55,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_01_team": {
+   "frame": {
+    "x": 91,
+    "y": 522,
+    "w": 38,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 124,
+    "w": 38,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_02": {
+   "frame": {
+    "x": 442,
+    "y": 124,
+    "w": 56,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 112,
+    "w": 56,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_02_team": {
+   "frame": {
+    "x": 543,
+    "y": 434,
+    "w": 43,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 117,
+    "w": 43,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_03": {
+   "frame": {
+    "x": 2,
+    "y": 124,
+    "w": 56,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 107,
+    "w": 56,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_03_team": {
+   "frame": {
+    "x": 369,
+    "y": 434,
+    "w": 42,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 112,
+    "w": 42,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_04": {
+   "frame": {
+    "x": 575,
+    "y": 231,
+    "w": 57,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 116,
+    "w": 57,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_04_team": {
+   "frame": {
+    "x": 590,
+    "y": 434,
+    "w": 42,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 121,
+    "w": 42,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_05": {
+   "frame": {
+    "x": 301,
+    "y": 335,
+    "w": 55,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 119,
+    "w": 55,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_05_team": {
+   "frame": {
+    "x": 48,
+    "y": 605,
+    "w": 39,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 124,
+    "w": 39,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_06": {
+   "frame": {
+    "x": 456,
+    "y": 231,
+    "w": 56,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 112,
+    "w": 56,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_06_team": {
+   "frame": {
+    "x": 550,
+    "y": 522,
+    "w": 43,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 117,
+    "w": 43,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_07": {
+   "frame": {
+    "x": 502,
+    "y": 124,
+    "w": 55,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 107,
+    "w": 55,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_walk_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 605,
+    "w": 42,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 112,
+    "w": 42,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_00": {
+   "frame": {
+    "x": 312,
+    "y": 124,
+    "w": 53,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 111,
+    "w": 53,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_00_team": {
+   "frame": {
+    "x": 358,
+    "y": 522,
+    "w": 39,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 117,
+    "w": 39,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_01": {
+   "frame": {
+    "x": 162,
+    "y": 231,
+    "w": 62,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 114,
+    "w": 62,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_01_team": {
+   "frame": {
+    "x": 138,
+    "y": 605,
+    "w": 41,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 119,
+    "w": 41,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_02": {
+   "frame": {
+    "x": 61,
+    "y": 335,
+    "w": 76,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 119,
+    "w": 76,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_02_team": {
+   "frame": {
+    "x": 296,
+    "y": 605,
+    "w": 41,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 123,
+    "w": 41,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_03": {
+   "frame": {
+    "x": 360,
+    "y": 335,
+    "w": 79,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 123,
+    "w": 79,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_03_team": {
+   "frame": {
+    "x": 392,
+    "y": 605,
+    "w": 45,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 126,
+    "w": 45,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_04": {
+   "frame": {
+    "x": 536,
+    "y": 2,
+    "w": 79,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 111,
+    "w": 79,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 522,
+    "w": 42,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 117,
+    "w": 42,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_05": {
+   "frame": {
+    "x": 2,
+    "y": 231,
+    "w": 83,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 114,
+    "w": 83,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_05_team": {
+   "frame": {
+    "x": 498,
+    "y": 522,
+    "w": 48,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 119,
+    "w": 48,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_06": {
+   "frame": {
+    "x": 163,
+    "y": 434,
+    "w": 100,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 132,
+    "w": 100,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_06_team": {
+   "frame": {
+    "x": 545,
+    "y": 605,
+    "w": 56,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 125,
+    "y": 133,
+    "w": 56,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_07": {
+   "frame": {
+    "x": 289,
+    "y": 231,
+    "w": 82,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 117,
+    "w": 82,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_07_team": {
+   "frame": {
+    "x": 444,
+    "y": 522,
+    "w": 50,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 127,
+    "y": 120,
+    "w": 50,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_08": {
+   "frame": {
+    "x": 375,
+    "y": 231,
+    "w": 77,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 117,
+    "w": 77,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_08_team": {
+   "frame": {
+    "x": 183,
+    "y": 605,
+    "w": 48,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 121,
+    "y": 121,
+    "w": 48,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_09": {
+   "frame": {
+    "x": 194,
+    "y": 124,
+    "w": 56,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 112,
+    "w": 56,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_09_team": {
+   "frame": {
+    "x": 183,
+    "y": 522,
+    "w": 42,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 117,
+    "w": 42,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_10": {
+   "frame": {
+    "x": 62,
+    "y": 124,
+    "w": 54,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 111,
+    "w": 54,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_attack_10_team": {
+   "frame": {
+    "x": 401,
+    "y": 522,
+    "w": 39,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 117,
+    "w": 39,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_hit_00": {
+   "frame": {
+    "x": 141,
+    "y": 335,
+    "w": 57,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 119,
+    "w": 57,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_hit_00_team": {
+   "frame": {
+    "x": 235,
+    "y": 605,
+    "w": 57,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 121,
+    "w": 57,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_hit_01": {
+   "frame": {
+    "x": 231,
+    "y": 2,
+    "w": 52,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 106,
+    "w": 52,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_hit_01_team": {
+   "frame": {
+    "x": 555,
+    "y": 335,
+    "w": 53,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 107,
+    "w": 53,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_hit_02": {
+   "frame": {
+    "x": 407,
+    "y": 2,
+    "w": 52,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 108,
+    "w": 52,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_hit_02_team": {
+   "frame": {
+    "x": 267,
+    "y": 434,
+    "w": 46,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 112,
+    "w": 46,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_hit_03": {
+   "frame": {
+    "x": 228,
+    "y": 231,
+    "w": 57,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 115,
+    "w": 57,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_hit_03_team": {
+   "frame": {
+    "x": 133,
+    "y": 522,
+    "w": 46,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 118,
+    "w": 46,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_hit_04": {
+   "frame": {
+    "x": 254,
+    "y": 124,
+    "w": 54,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 111,
+    "w": 54,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_hit_04_team": {
+   "frame": {
+    "x": 48,
+    "y": 522,
+    "w": 39,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 116,
+    "w": 39,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_00": {
+   "frame": {
+    "x": 486,
+    "y": 335,
+    "w": 65,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 118,
+    "w": 65,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_00_team": {
+   "frame": {
+    "x": 341,
+    "y": 605,
+    "w": 47,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 122,
+    "w": 47,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_01": {
+   "frame": {
+    "x": 2,
+    "y": 434,
+    "w": 96,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 102,
+    "w": 96,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_01_team": {
+   "frame": {
+    "x": 102,
+    "y": 434,
+    "w": 57,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 101,
+    "w": 57,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 63,
+    "h": 118
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 89,
+    "w": 63,
+    "h": 118
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_02_team": {
+   "frame": {
+    "x": 443,
+    "y": 335,
+    "w": 39,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 98,
+    "w": 39,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_03": {
+   "frame": {
+    "x": 202,
+    "y": 335,
+    "w": 95,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 104,
+    "w": 95,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_03_team": {
+   "frame": {
+    "x": 317,
+    "y": 434,
+    "w": 48,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 99,
+    "w": 48,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_04": {
+   "frame": {
+    "x": 69,
+    "y": 2,
+    "w": 86,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 80,
+    "y": 112,
+    "w": 86,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_04_team": {
+   "frame": {
+    "x": 287,
+    "y": 2,
+    "w": 42,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 107,
+    "w": 42,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_05": {
+   "frame": {
+    "x": 441,
+    "y": 605,
+    "w": 100,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 65,
+    "y": 142,
+    "w": 100,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 686,
+    "w": 58,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 144,
+    "w": 58,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_06": {
+   "frame": {
+    "x": 64,
+    "y": 686,
+    "w": 138,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 53,
+    "y": 158,
+    "w": 138,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_06_team": {
+   "frame": {
+    "x": 361,
+    "y": 686,
+    "w": 87,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 164,
+    "w": 87,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_07": {
+   "frame": {
+    "x": 206,
+    "y": 686,
+    "w": 151,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 48,
+    "y": 158,
+    "w": 151,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  },
+  "clockwork_soldier_die_07_team": {
+   "frame": {
+    "x": 452,
+    "y": 686,
+    "w": 91,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 43,
+    "y": 165,
+    "w": 91,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.87234
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "clockwork_soldier_idle_00",
+   "clockwork_soldier_idle_01",
+   "clockwork_soldier_idle_02",
+   "clockwork_soldier_idle_03",
+   "clockwork_soldier_idle_04",
+   "clockwork_soldier_idle_05"
+  ],
+  "idle_team": [
+   "clockwork_soldier_idle_00_team",
+   "clockwork_soldier_idle_01_team",
+   "clockwork_soldier_idle_02_team",
+   "clockwork_soldier_idle_03_team",
+   "clockwork_soldier_idle_04_team",
+   "clockwork_soldier_idle_05_team"
+  ],
+  "walk": [
+   "clockwork_soldier_walk_00",
+   "clockwork_soldier_walk_01",
+   "clockwork_soldier_walk_02",
+   "clockwork_soldier_walk_03",
+   "clockwork_soldier_walk_04",
+   "clockwork_soldier_walk_05",
+   "clockwork_soldier_walk_06",
+   "clockwork_soldier_walk_07"
+  ],
+  "walk_team": [
+   "clockwork_soldier_walk_00_team",
+   "clockwork_soldier_walk_01_team",
+   "clockwork_soldier_walk_02_team",
+   "clockwork_soldier_walk_03_team",
+   "clockwork_soldier_walk_04_team",
+   "clockwork_soldier_walk_05_team",
+   "clockwork_soldier_walk_06_team",
+   "clockwork_soldier_walk_07_team"
+  ],
+  "attack": [
+   "clockwork_soldier_attack_00",
+   "clockwork_soldier_attack_01",
+   "clockwork_soldier_attack_02",
+   "clockwork_soldier_attack_03",
+   "clockwork_soldier_attack_04",
+   "clockwork_soldier_attack_05",
+   "clockwork_soldier_attack_06",
+   "clockwork_soldier_attack_07",
+   "clockwork_soldier_attack_08",
+   "clockwork_soldier_attack_09",
+   "clockwork_soldier_attack_10"
+  ],
+  "attack_team": [
+   "clockwork_soldier_attack_00_team",
+   "clockwork_soldier_attack_01_team",
+   "clockwork_soldier_attack_02_team",
+   "clockwork_soldier_attack_03_team",
+   "clockwork_soldier_attack_04_team",
+   "clockwork_soldier_attack_05_team",
+   "clockwork_soldier_attack_06_team",
+   "clockwork_soldier_attack_07_team",
+   "clockwork_soldier_attack_08_team",
+   "clockwork_soldier_attack_09_team",
+   "clockwork_soldier_attack_10_team"
+  ],
+  "hit": [
+   "clockwork_soldier_hit_00",
+   "clockwork_soldier_hit_01",
+   "clockwork_soldier_hit_02",
+   "clockwork_soldier_hit_03",
+   "clockwork_soldier_hit_04"
+  ],
+  "hit_team": [
+   "clockwork_soldier_hit_00_team",
+   "clockwork_soldier_hit_01_team",
+   "clockwork_soldier_hit_02_team",
+   "clockwork_soldier_hit_03_team",
+   "clockwork_soldier_hit_04_team"
+  ],
+  "die": [
+   "clockwork_soldier_die_00",
+   "clockwork_soldier_die_01",
+   "clockwork_soldier_die_02",
+   "clockwork_soldier_die_03",
+   "clockwork_soldier_die_04",
+   "clockwork_soldier_die_05",
+   "clockwork_soldier_die_06",
+   "clockwork_soldier_die_06",
+   "clockwork_soldier_die_07",
+   "clockwork_soldier_die_07"
+  ],
+  "die_team": [
+   "clockwork_soldier_die_00_team",
+   "clockwork_soldier_die_01_team",
+   "clockwork_soldier_die_02_team",
+   "clockwork_soldier_die_03_team",
+   "clockwork_soldier_die_04_team",
+   "clockwork_soldier_die_05_team",
+   "clockwork_soldier_die_06_team",
+   "clockwork_soldier_die_06_team",
+   "clockwork_soldier_die_07_team",
+   "clockwork_soldier_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "clockwork_soldier.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 640,
+   "h": 752
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.clockwork_soldier",
+   "name": "Clockwork Soldier",
+   "heightLu": 66,
+   "widthLu": 49.6,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    132.0,
+    205.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     66
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "bayonet": [
+       [
+        30.6,
+        40.7
+       ],
+       [
+        30.2,
+        41.4
+       ],
+       [
+        30.6,
+        42.0
+       ],
+       [
+        31.3,
+        41.8
+       ],
+       [
+        31.7,
+        41.1
+       ],
+       [
+        31.4,
+        40.6
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      70,
+      70,
+      70,
+      70,
+      70,
+      70,
+      70,
+      70
+     ],
+     "durationMs": 560,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 100.0,
+     "cycleMs": 560,
+     "anchorsLu": {
+      "bayonet": [
+       [
+        2.5,
+        51.8
+       ],
+       [
+        1.5,
+        47.8
+       ],
+       [
+        2.5,
+        53.3
+       ],
+       [
+        2.8,
+        58.1
+       ],
+       [
+        2.5,
+        51.8
+       ],
+       [
+        0.4,
+        47.8
+       ],
+       [
+        1.0,
+        53.2
+       ],
+       [
+        1.7,
+        58.0
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 98.2,
+     "strideLu": 55.0,
+     "plantedDriftLu": 0.22,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        10.8,
+        -1.6
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        12.9,
+        1.6
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "holdStep": 3,
+     "anchorsLu": {
+      "bayonet": [
+       [
+        -5.9,
+        52.4
+       ],
+       [
+        24.9,
+        45.4
+       ],
+       [
+        31.9,
+        23.8
+       ],
+       [
+        29.4,
+        22.3
+       ],
+       [
+        43.1,
+        20.8
+       ],
+       [
+        50.6,
+        19.4
+       ],
+       [
+        54.1,
+        13.1
+       ],
+       [
+        47.5,
+        21.0
+       ],
+       [
+        44.0,
+        35.7
+       ],
+       [
+        17.5,
+        54.4
+       ],
+       [
+        -1.4,
+        54.1
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "bayonet": [
+       [
+        -15.1,
+        48.9
+       ],
+       [
+        -17.8,
+        58.0
+       ],
+       [
+        -8.6,
+        56.7
+       ],
+       [
+        2.4,
+        53.0
+       ],
+       [
+        -1.2,
+        55.3
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        23.8
+       ],
+       "scale": 0.62
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        36.3
+       ],
+       "loops": 2,
+       "scale": 0.787
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "bayonet": [
+       [
+        -27.9,
+        40.6
+       ],
+       [
+        -8.5,
+        14.3
+       ],
+       [
+        8.0,
+        45.4
+       ],
+       [
+        -28.3,
+        52.9
+       ],
+       [
+        -40.5,
+        -1.9
+       ],
+       [
+        -35.4,
+        -5.8
+       ],
+       [
+        -44.1,
+        -1.6
+       ],
+       [
+        -45.1,
+        3.6
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

@@ -34,8 +34,8 @@ describe('contentHash (B4, B3 replays)', () => {
     // includes the paused content expansion's partial Stone and Bronze data in the tree. X0 Stone wave
     // (2026-10-03): its measured numbers (docs/decisions.md); the gated Bronze data is included as it stands.
     // X0 Medieval wave (2026-10-03): its measured numbers (docs/decisions.md). W4 Gunpowder wave (2026-10-03):
-    // its cards (gated until their art ships, then measured; docs/decisions.md).
-    expect(content.hash).toBe('c4d9ebd3');
+    // its released, measured numbers (docs/decisions.md); the gated Bronze data is included as it stands.
+    expect(content.hash).toBe('95cac302');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {
@@ -131,7 +131,7 @@ describe('compiled bundle (B4)', () => {
       'tidal_wave', 'chariot_rush', 'zeus_bolts', 'medusa_gaze', 'charybdis', 'aegis', 'sandstorm', 'apollo_arrow',
       'arrow_storm', 'knights_charge', 'caltrops', 'boiling_oil', 'great_bell', 'royal_decree', 'longbow_volley', 'undermine',
       'volley_fire', 'smoke_screen', 'broadside', 'boarding_nets', 'cannon_salute', 'rocket_volley', 'horse_artillery', 'sharpshooter',
-      'gun_line', 'iron_horse', 'zeppelin_raid', 'barbed_wire', 'railway_gun', 'field_hospital',
+      'gun_line', 'iron_horse', 'zeppelin_raid', 'barbed_wire', 'great_magnet', 'shrapnel_shells', 'railway_gun', 'field_hospital',
       'strafing_run', 'paratroopers', 'carpet_bomber', 'aa_screen', 'tank_rush', 'sniper_team',
       'orbital_lance', 'drone_swarm', 'point_defense', 'stasis_field', 'nanite_surge', 'emp_blackout',
       'starfall', 'comet_run', 'singularity', 'solar_flare', 'warp_strike', 'ion_cannon',

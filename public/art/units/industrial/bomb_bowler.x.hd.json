@@ -1,0 +1,507 @@
+{
+ "frames": {
+  "bomb_bowler_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 184,
+    "w": 111,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 213,
+    "y": 251,
+    "w": 111,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 464
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.875
+   }
+  },
+  "bomb_bowler_attack_b_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 518,
+    "w": 89,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 251,
+    "w": 89,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 464
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.875
+   }
+  },
+  "bomb_bowler_attack_b_03": {
+   "frame": {
+    "x": 117,
+    "y": 184,
+    "w": 119,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 261,
+    "w": 119,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 464
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.875
+   }
+  },
+  "bomb_bowler_attack_b_03_team": {
+   "frame": {
+    "x": 215,
+    "y": 518,
+    "w": 89,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 214,
+    "y": 261,
+    "w": 89,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 464
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.875
+   }
+  },
+  "bomb_bowler_attack_b_04": {
+   "frame": {
+    "x": 225,
+    "y": 2,
+    "w": 111,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 211,
+    "y": 249,
+    "w": 111,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 464
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.875
+   }
+  },
+  "bomb_bowler_attack_b_04_team": {
+   "frame": {
+    "x": 233,
+    "y": 359,
+    "w": 91,
+    "h": 132
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 250,
+    "w": 91,
+    "h": 132
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 464
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.875
+   }
+  },
+  "bomb_bowler_attack_b_05": {
+   "frame": {
+    "x": 116,
+    "y": 2,
+    "w": 105,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 246,
+    "w": 105,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 464
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.875
+   }
+  },
+  "bomb_bowler_attack_b_05_team": {
+   "frame": {
+    "x": 135,
+    "y": 359,
+    "w": 94,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 238,
+    "y": 246,
+    "w": 94,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 464
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.875
+   }
+  },
+  "bomb_bowler_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 359,
+    "w": 129,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 269,
+    "w": 129,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 464
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.875
+   }
+  },
+  "bomb_bowler_attack_b_06_team": {
+   "frame": {
+    "x": 308,
+    "y": 518,
+    "w": 114,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 242,
+    "y": 267,
+    "w": 114,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 464
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.875
+   }
+  },
+  "bomb_bowler_attack_b_07": {
+   "frame": {
+    "x": 240,
+    "y": 184,
+    "w": 128,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 237,
+    "y": 265,
+    "w": 128,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 464
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.875
+   }
+  },
+  "bomb_bowler_attack_b_07_team": {
+   "frame": {
+    "x": 95,
+    "y": 518,
+    "w": 116,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 261,
+    "w": 116,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 464
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.875
+   }
+  },
+  "bomb_bowler_attack_b_08": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 110,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 245,
+    "w": 110,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 464
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.875
+   }
+  },
+  "bomb_bowler_attack_b_08_team": {
+   "frame": {
+    "x": 328,
+    "y": 359,
+    "w": 100,
+    "h": 129
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 245,
+    "w": 100,
+    "h": 129
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 464
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.875
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "bomb_bowler_attack_00",
+   "bomb_bowler_attack_01",
+   "bomb_bowler_attack_b_02",
+   "bomb_bowler_attack_b_03",
+   "bomb_bowler_attack_b_04",
+   "bomb_bowler_attack_b_05",
+   "bomb_bowler_attack_b_06",
+   "bomb_bowler_attack_b_07",
+   "bomb_bowler_attack_b_08",
+   "bomb_bowler_attack_09",
+   "bomb_bowler_attack_10"
+  ],
+  "attack_b_team": [
+   "bomb_bowler_attack_00_team",
+   "bomb_bowler_attack_01_team",
+   "bomb_bowler_attack_b_02_team",
+   "bomb_bowler_attack_b_03_team",
+   "bomb_bowler_attack_b_04_team",
+   "bomb_bowler_attack_b_05_team",
+   "bomb_bowler_attack_b_06_team",
+   "bomb_bowler_attack_b_07_team",
+   "bomb_bowler_attack_b_08_team",
+   "bomb_bowler_attack_09_team",
+   "bomb_bowler_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "bomb_bowler.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 448,
+   "h": 648
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.bomb_bowler",
+   "name": "Bomb Bowler",
+   "heightLu": 66,
+   "widthLu": 34.6,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    260,
+    406
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     64
+    ],
+    "hitCenter": [
+     0,
+     31
+    ],
+    "muzzle": [
+     14,
+     56
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "bomb_bowler",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "holdStep": 3,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        8.3,
+        31.9
+       ],
+       [
+        12.1,
+        26.6
+       ],
+       [
+        -10.4,
+        12.9
+       ],
+       [
+        -17.0,
+        12.4
+       ],
+       [
+        -3.5,
+        8.8
+       ],
+       [
+        16.3,
+        13.3
+       ],
+       [
+        25.9,
+        16.9
+       ],
+       [
+        23.2,
+        14.1
+       ],
+       [
+        14.1,
+        15.9
+       ],
+       [
+        12.6,
+        24.6
+       ],
+       [
+        9.4,
+        31.2
+       ]
+      ]
+     },
+     "muzzle": [
+      25.9,
+      16.9
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

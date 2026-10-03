@@ -8,7 +8,7 @@
  */
 import type { PowerDef } from '@/contracts/content';
 import { antiHeavyMods, damageMods } from './economy';
-import { camp, tower, trap, wall } from './fortKit';
+import { FORT_COST, camp, tower, trap, wall } from './fortKit';
 import type { RawAgeTables } from './types';
 
 export const industrial: RawAgeTables = {
@@ -139,6 +139,248 @@ export const industrial: RawAgeTables = {
       visualId: 'unit.land_dreadnought', sfx: { spawn: 'spawn_legendary', die: 'die_mech' },
       nameKey: 'card.land_dreadnought.name', descKey: 'card.land_dreadnought.desc', strongVs: [], weakVs: [],
     },
+    // ---- W5 Industrial wave (content expansion, CONTENT_PLAN 5.5): capsule cards, appended in build order.
+    // Commons drop from Arena 2, Rares 3, Epics 4, Legendaries 5 (`cardArena`). Templates: plan 4 (I 330,
+    // R 201, H 1,187 at P 2.12). Release gate: `released: false` until their sheets, sounds and numbers ship.
+    {
+      // Pair (X0 M1): one card trains 2 coal miners; stats per miner, cost and pop split evenly; Blunt
+      id: 'coal_miners', released: false, kind: 'unit', age: 'industrial', rarity: 'common', role: 'infantry', group: 'infantry',
+      cost: 50, trainMs: 1500, pop: 2, hp: 185, speed: 82, size: 'small',
+      tags: ['light', 'bio', 'melee', 'ground'],
+      attacks: [
+        {
+          damage: 23, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          dmgType: 'pierce', sfx: 'pickaxe_clink', mods: damageMods.blunt,
+        },
+      ],
+      abilities: [],
+      squad: { count: 2 },
+      visualId: 'unit.coal_miners', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
+      nameKey: 'card.coal_miners.name', descKey: 'card.coal_miners.desc', strongVs: [], weakVs: [],
+    },
+    {
+      // Guard: the wheeled steel mantlet takes 25% less from attacks with range ≥ 100 (not powers); Blunt
+      id: 'iron_mantlet', released: false, kind: 'unit', age: 'industrial', rarity: 'common', role: 'infantry', group: 'infantry',
+      cost: 50, trainMs: 1500, pop: 2, hp: 390, speed: 67, size: 'small',
+      tags: ['light', 'bio', 'melee', 'ground'],
+      attacks: [
+        {
+          damage: 27, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          dmgType: 'pierce', sfx: 'mantlet_jab', mods: damageMods.blunt,
+        },
+      ],
+      abilities: [{ kind: 'resist', minSourceRange: 100, bp: 2500 }],
+      visualId: 'unit.iron_mantlet', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
+      nameKey: 'card.iron_mantlet.name', descKey: 'card.iron_mantlet.desc', strongVs: [], weakVs: [],
+    },
+    {
+      // Raider: the fastest Common (110 lu/s); ×2 to bases
+      id: 'dispatch_rider', released: false, kind: 'unit', age: 'industrial', rarity: 'common', role: 'infantry', group: 'infantry',
+      cost: 50, trainMs: 1500, pop: 2, hp: 350, speed: 110, size: 'medium',
+      tags: ['light', 'bio', 'melee', 'ground'],
+      attacks: [
+        {
+          damage: 44, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          dmgType: 'blunt', sfx: 'bike_skid', vsBaseDamage: 88,
+        },
+      ],
+      abilities: [],
+      visualId: 'unit.dispatch_rider', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
+      nameKey: 'card.dispatch_rider.name', descKey: 'card.dispatch_rider.desc', strongVs: [], weakVs: [],
+    },
+    {
+      // Thrower: a bowled bomb, splash r30, lobbed over allies; ground only
+      id: 'bomb_bowler', released: false, kind: 'unit', age: 'industrial', rarity: 'common', role: 'ranged', group: 'ranged',
+      cost: 75, trainMs: 2000, pop: 3, hp: 191, speed: 65, size: 'small',
+      tags: ['light', 'bio', 'ranged', 'ground'],
+      attacks: [
+        {
+          damage: 24, intervalMs: 1500, windupPct: 50, range: 220, hitsGround: true, hitsAir: false,
+          projectile: { speed: 450, arc: true, visualId: 'proj.bowl_bomb' },
+          dmgType: 'blast', sfx: 'shot_bowl', splashRadius: 30,
+        },
+      ],
+      abilities: [],
+      visualId: 'unit.bomb_bowler', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
+      nameKey: 'card.bomb_bowler.name', descKey: 'card.bomb_bowler.desc', strongVs: [], weakVs: [],
+    },
+    {
+      // Brute (armored mech): the plough blade scoops sideways, cleave 2 (reach 30); no first-hit bonus
+      id: 'steam_tractor', released: false, kind: 'unit', age: 'industrial', rarity: 'common', role: 'heavy', group: 'heavy',
+      cost: 150, trainMs: 4000, pop: 6, hp: 1200, speed: 50, size: 'large',
+      tags: ['armored', 'mech', 'melee', 'ground'],
+      attacks: [
+        {
+          damage: 66, intervalMs: 1500, windupPct: 40, range: 20, hitsGround: true, hitsAir: false,
+          dmgType: 'blunt', sfx: 'plough_scoop', cleave: { count: 2, reach: 30 },
+        },
+      ],
+      abilities: [],
+      visualId: 'unit.steam_tractor', sfx: { spawn: 'spawn_heavy', die: 'die_mech' },
+      nameKey: 'card.steam_tractor.name', descKey: 'card.steam_tractor.desc', strongVs: [], weakVs: [],
+    },
+    {
+      // Long range (H6, A5.1): an arcing mortar bomb at the target's spot, splash r35; range 370, min 90; half to bases; ground only
+      id: 'trench_mortar', released: false, kind: 'unit', age: 'industrial', rarity: 'rare', role: 'ranged', group: 'ranged',
+      cost: 75, trainMs: 2000, pop: 3, hp: 270, speed: 60, size: 'small',
+      tags: ['light', 'bio', 'ranged', 'ground'],
+      attacks: [
+        {
+          damage: 120, intervalMs: 2600, windupPct: 50, range: 370, minRange: 90, hitsGround: true, hitsAir: false,
+          projectile: { speed: 300, arc: true, visualId: 'proj.mortar_shell' },
+          dmgType: 'blast', sfx: 'shot_trench_mortar', splashRadius: 35, vsBaseDamage: 60,
+        },
+      ],
+      abilities: [],
+      visualId: 'unit.trench_mortar', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
+      nameKey: 'card.trench_mortar.name', descKey: 'card.trench_mortar.desc', strongVs: [], weakVs: [],
+    },
+    {
+      // Melee Anti-heavy: a steam drill, reach 40; melee AA mods (armored and mech ×3, Legendary ×2, light ×0.5);
+      // Brace; priority armored
+      id: 'steam_driller', released: false, kind: 'unit', age: 'industrial', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
+      cost: 100, trainMs: 2500, pop: 4, hp: 460, speed: 70, size: 'medium',
+      tags: ['light', 'bio', 'melee', 'ground'],
+      attacks: [
+        {
+          damage: 48, intervalMs: 1200, windupPct: 40, range: 40, hitsGround: true, hitsAir: false,
+          dmgType: 'pierce', sfx: 'drill_spin', mods: damageMods.meleeAntiArmor, priority: 'armored',
+        },
+      ],
+      abilities: [{ kind: 'brace' }],
+      visualId: 'unit.steam_driller', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
+      nameKey: 'card.steam_driller.name', descKey: 'card.steam_driller.desc', strongVs: [], weakVs: [],
+    },
+    {
+      // Aura: allies within 160 lu deal 20% more damage; a cornet blast note hits the target; followSupport
+      id: 'bandmaster', released: false, kind: 'unit', age: 'industrial', rarity: 'rare', role: 'support', group: 'support',
+      cost: 110, trainMs: 3000, pop: 4, hp: 390, speed: 65, size: 'small',
+      tags: ['light', 'bio', 'support', 'ranged', 'ground'],
+      attacks: [
+        {
+          damage: 36, intervalMs: 1200, windupPct: 50, range: 150, hitsGround: true, hitsAir: true,
+          projectile: { speed: 900, visualId: 'proj.note' },
+          dmgType: 'blunt', sfx: 'cornet_blast',
+        },
+      ],
+      abilities: [
+        { kind: 'aura', radius: 160, status: { kind: 'damageBuff', magnitudeBp: 2000, durationMs: 0 } },
+        { kind: 'followSupport', behindFront: 60, soloMaxP: 200 },
+      ],
+      visualId: 'unit.bandmaster', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
+      nameKey: 'card.bandmaster.name', descKey: 'card.bandmaster.desc', strongVs: [], weakVs: [],
+    },
+    {
+      // Summoner (X0 M3): winds up a Clockwork Soldier every 6.5 s, at most 3; whacks with a big wind-up key; followSupport
+      id: 'clockwork_tinker', released: false, kind: 'unit', age: 'industrial', rarity: 'rare', role: 'support', group: 'support',
+      cost: 110, trainMs: 3000, pop: 4, hp: 275, speed: 65, size: 'small',
+      tags: ['light', 'bio', 'support', 'melee', 'ground'],
+      attacks: [
+        {
+          damage: 17, intervalMs: 1200, windupPct: 40, range: 40, hitsGround: true, hitsAir: false,
+          dmgType: 'blunt', sfx: 'key_whack',
+        },
+      ],
+      abilities: [
+        { kind: 'summon', card: 'clockwork_soldier', firstMs: 2000, everyMs: 9000, maxAlive: 2 },
+        { kind: 'followSupport', behindFront: 60, soloMaxP: 200 },
+      ],
+      visualId: 'unit.clockwork_tinker', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
+      nameKey: 'card.clockwork_tinker.name', descKey: 'card.clockwork_tinker.desc', strongVs: [], weakVs: [],
+    },
+    {
+      // Vehicle (armored mech): a turret machine gun, 18 every 0.3 s, range 150, ground and air; it stops in range
+      id: 'armoured_car', released: false, kind: 'unit', age: 'industrial', rarity: 'epic', role: 'siege', group: 'epic',
+      cost: 200, trainMs: 4000, pop: 8, hp: 1400, speed: 55, size: 'large',
+      tags: ['armored', 'mech', 'ranged', 'ground'],
+      attacks: [
+        {
+          damage: 18, intervalMs: 300, windupPct: 50, range: 150, hitsGround: true, hitsAir: true,
+          projectile: { speed: 1500, visualId: 'proj.bullet' },
+          dmgType: 'bullet', sfx: 'car_mg',
+        },
+      ],
+      abilities: [],
+      visualId: 'unit.armoured_car', sfx: { spawn: 'spawn_heavy', die: 'die_mech' },
+      nameKey: 'card.armoured_car.name', descKey: 'card.armoured_car.desc', strongVs: [], weakVs: [],
+    },
+    {
+      // Skirmisher: swings over the blocker on a rope onto a back-line unit within 180 lu (pounce), the first
+      // strike ×2; ice-axe chop 90 / 0.9 s
+      id: 'alpine_climber', released: false, kind: 'unit', age: 'industrial', rarity: 'epic', role: 'skirmisher', group: 'epic',
+      cost: 200, trainMs: 4000, pop: 8, hp: 1000, speed: 85, size: 'medium',
+      tags: ['light', 'bio', 'melee', 'ground'],
+      attacks: [
+        {
+          damage: 82, intervalMs: 900, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          dmgType: 'pierce', sfx: 'ice_axe_chop',
+        },
+      ],
+      abilities: [{ kind: 'pounce', searchRange: 180, cooldownMs: 12000, leapMs: 500, firstBiteBp: 20000 }],
+      visualId: 'unit.alpine_climber', sfx: { spawn: 'spawn_heavy', die: 'die_bio' },
+      nameKey: 'card.alpine_climber.name', descKey: 'card.alpine_climber.desc', strongVs: [], weakVs: [],
+    },
+    {
+      // Caster: a coil gun whose arc jumps to a second foe (chain 2, hop 70), 55 / 1.2 s, range 170, ground and air;
+      // Arc Burst every 12 s, while an enemy is within 120 lu, stuns every enemy there for 1.0 s (Legendaries
+      // 0.5 s; hair on end and sparks, M5); followSupport
+      id: 'spark_scientist', released: false, kind: 'unit', age: 'industrial', rarity: 'epic', role: 'support', group: 'epic',
+      cost: 200, trainMs: 4000, pop: 8, hp: 1200, speed: 60, size: 'small',
+      tags: ['light', 'bio', 'support', 'ranged', 'ground'],
+      attacks: [
+        {
+          damage: 55, intervalMs: 1200, windupPct: 50, range: 170, hitsGround: true, hitsAir: true,
+          projectile: { instant: true, effectId: 'fx.coil_arc' },
+          dmgType: 'laser', sfx: 'coil_zap', chain: { count: 2, hop: 70 },
+        },
+      ],
+      abilities: [
+        { kind: 'timeStop', everyMs: 12000, radius: 120, freezeMs: 1000, legendaryFreezeMs: 500, frozen: false },
+        { kind: 'followSupport', behindFront: 60, soloMaxP: 200 },
+      ],
+      visualId: 'unit.spark_scientist', sfx: { spawn: 'spawn_heavy', die: 'die_bio' },
+      nameKey: 'card.spark_scientist.name', descKey: 'card.spark_scientist.desc', strongVs: [], weakVs: [],
+    },
+    {
+      // Legendary armoured train: turret gun 90 splash r45 / 2.4 s (range 220, ground) and a roof machine gun
+      // 10 / 0.4 s (range 150, ground and air, priority air; only the gun stops it). Overpressure (X0 M2): below
+      // 50% HP +20% damage and +25% attack speed
+      id: 'armoured_train', released: false, kind: 'unit', age: 'industrial', rarity: 'legendary', role: 'siegeHeavy', group: 'legendary',
+      cost: 350, trainMs: 7000, pop: 14, hp: 1520, speed: 40, size: 'huge',
+      tags: ['armored', 'mech', 'ranged', 'legendary', 'ground'],
+      attacks: [
+        {
+          damage: 90, intervalMs: 2400, windupPct: 50, range: 220, hitsGround: true, hitsAir: false,
+          projectile: { speed: 1200, visualId: 'proj.shell' },
+          dmgType: 'blast', sfx: 'train_gun', splashRadius: 45,
+        },
+        {
+          damage: 10, intervalMs: 400, windupPct: 50, range: 150, hitsGround: true, hitsAir: true,
+          projectile: { speed: 1500, visualId: 'proj.bullet' },
+          dmgType: 'bullet', sfx: 'shot_gatling', priority: 'air',
+        },
+      ],
+      abilities: [{ kind: 'frenzy', belowHpBp: 5000, damageBp: 2000, attackSpeedBp: 2500 }],
+      visualId: 'unit.armoured_train', sfx: { spawn: 'spawn_legendary', die: 'die_mech' },
+      nameKey: 'card.armoured_train.name', descKey: 'card.armoured_train.desc', strongVs: [], weakVs: [],
+    },
+    {
+      // Clockwork Tinker's summon (X0 M3): a wind-up toy soldier (about 0.75 × the Riveter's HP); no pop, no
+      // bounty, always marches
+      id: 'clockwork_soldier', released: false, kind: 'unit', age: 'industrial', rarity: 'common', role: 'infantry', group: 'infantry',
+      cost: 0, trainMs: 1500, pop: 2, hp: 150, speed: 80, size: 'small',
+      tags: ['light', 'mech', 'melee', 'ground'],
+      attacks: [
+        {
+          damage: 14, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          dmgType: 'pierce', sfx: 'toy_bayonet',
+        },
+      ],
+      abilities: [],
+      visualId: 'unit.clockwork_soldier', sfx: { spawn: 'spawn_pop', die: 'die_mech' },
+      nameKey: 'card.clockwork_soldier.name', descKey: 'card.clockwork_soldier.desc', strongVs: [], weakVs: [],
+      hidden: true, summon: true, aiValue: 18,
+    },
   ],
   turrets: [
     {
@@ -182,6 +424,29 @@ export const industrial: RawAgeTables = {
       },
       visualId: 'turret.tesla_tower', nameKey: 'card.tesla_tower.name', descKey: 'card.tesla_tower.desc',
     },
+    {
+      // W5 Industrial wave. Volley: a riveting gun rattles out 3 hot rivets every 1.5 s, each 19 and piercing 2
+      // within 60 lu; range 280, ground and air
+      id: 'rivet_spitter', released: false, kind: 'turret', age: 'industrial', rarity: 'common', cost: 175,
+      attack: {
+        damage: 19, intervalMs: 1500, windupPct: 0, range: 280, hitsGround: true, hitsAir: true,
+        projectile: { speed: 900, visualId: 'proj.rivet' },
+        dmgType: 'pierce', sfx: 'shot_rivet', volley: 3, pierce: { count: 2, length: 60 },
+      },
+      visualId: 'turret.rivet_spitter', nameKey: 'card.rivet_spitter.name', descKey: 'card.rivet_spitter.desc',
+    },
+    {
+      // W5 Industrial wave. Zone: a pile-driver slams the ground by your gate, 57 every 1.0 s to ground enemies
+      // within 150 lu of the gate (max 4), each hit slows 30% for 1 s
+      id: 'steam_hammer', released: false, kind: 'turret', age: 'industrial', rarity: 'rare', cost: 250,
+      attack: {
+        damage: 57, intervalMs: 1000, windupPct: 0, range: 150, hitsGround: true, hitsAir: false,
+        projectile: { instant: true, effectId: 'fx.hammer_shock' },
+        dmgType: 'blunt', sfx: 'hammer_slam', gateZone: { radius: 150 }, maxTargets: 4,
+        onHit: [{ kind: 'slow', magnitudeBp: 3000, durationMs: 1000 }],
+      },
+      visualId: 'turret.steam_hammer', nameKey: 'card.steam_hammer.name', descKey: 'card.steam_hammer.desc',
+    },
   ],
   // A16.14.4 Forts (Industrial, P 2.12): War Path L4 camp, L6 trap, L8 tower; Road fort set at 2,700
   forts: [
@@ -189,6 +454,11 @@ export const industrial: RawAgeTables = {
     tower('industrial', 'sniper_nest', { warPath: 8, road: 2700 }),
     camp('industrial', 'recruiting_depot', 'volunteer', { warPath: 4, road: 2700 }),
     trap('industrial', 'tripwire_charge', { warPath: 6, road: 2700 }, { charges: 1, damage: 200, radius: 40 }),
+    // W5 Industrial wave variants: a heavy wall (1.4 × the Heavy Common, 175 gold; War Path Industrial s2) and a
+    // chain tower (× 0.75 damage, the bolt jumps to a second foe within 80 lu; the Industrial 20-star milestone).
+    // Road fallback 4,500. Release gate until their art ships.
+    { ...wall('industrial', 'rail_barricade', { cost: FORT_COST.bunker, hpBp: 14000, from: { side: 2, road: 4500 } }), released: false },
+    { ...tower('industrial', 'tesla_pylon', { stars: 20, road: 4500 }, { damageBp: 7500, chain: { count: 2, hop: 80 } }), released: false },
   ],
 };
 
@@ -253,5 +523,31 @@ export const industrialPowers: readonly PowerDef[] = [
       statuses: [{ kind: 'shield', magnitudeBp: 0, durationMs: 6000, amount: 110 }, { kind: 'regen', magnitudeBp: 3500, durationMs: 4000 }],
     },
     visualId: 'power.field_hospital', sfx: 'pw_hospital', nameKey: 'card.field_hospital.name', descKey: 'card.field_hospital.desc',
+  },
+  {
+    // Release gate: `released: false` until its art ships. W5 Industrial wave, the H7 lane volley (A2.9.4 `lane`,
+    // A5.7 whole-lane powers): War Path Industrial L3 (Road 3,500). No aim: one pulse touches the 8 hittable
+    // enemies nearest your gate anywhere on the lane, ground and air, one shrapnel burst each, for 95 (29% of the
+    // Riveter; the lane cap is 30%). 50 gold, 25 s
+    id: 'shrapnel_shells', released: false, kind: 'power', age: 'industrial', slot: 'field', reach: 'lane', family: 'volley', rarity: 'rare',
+    source: 'warPath', warPathLevel: 3, road: 3500, cost: 50, reloadMs: 25000, telegraphMs: 1000, maxTargets: 8,
+    effect: {
+      kind: 'field', zone: 2000, durationMs: 0, hitsAir: true, damagePerPulse: 99,
+      statuses: [{ kind: 'mark', magnitudeBp: 2000, durationMs: 3000 }],
+    },
+    visualId: 'power.shrapnel_shells', sfx: 'pw_shrapnel', nameKey: 'card.shrapnel_shells.name', descKey: 'card.shrapnel_shells.desc',
+  },
+  {
+    // Release gate: `released: false` until its art ships. W5 Industrial wave, the new Home control (pull, A5.7
+    // family budget): War Path Industrial side node s1 (Road 4,500). A giant horseshoe magnet hangs over a 300 lu
+    // zone for 4 s (8 pulses), ground only: the first pulse pulls 40% toward the centre, each pulse 14 damage and
+    // snare 40% for 1.0 s; cap 6
+    id: 'great_magnet', released: false, kind: 'power', age: 'industrial', slot: 'home', reach: 'home', family: 'pull', rarity: 'epic',
+    source: 'warPath', warPathSide: 1, road: 4500, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 4500,
+    effect: {
+      kind: 'field', zone: 300, durationMs: 4000, hitsAir: false, damagePerPulse: 14, pullBp: 4000,
+      statuses: [{ kind: 'snare', magnitudeBp: 4000, durationMs: 1000 }],
+    },
+    visualId: 'power.great_magnet', sfx: 'pw_magnet', nameKey: 'card.great_magnet.name', descKey: 'card.great_magnet.desc',
   },
 ];

@@ -974,7 +974,7 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
         { sprite: 'fx.p.dust', life: 1500, delay: 100, moveBy: 'zone', tint: 0xd9cfbd, keys: [{ t: 0, x: -50, sx: 2, sy: 1.6, a: 0 }, { t: 0.12, x: -44, sx: 3.6, sy: 2.8, a: 0.55, y: -4 }, { t: 0.88, x: 40, sx: 3.8, sy: 3, a: 0.5, y: -6 }, { t: 1, x: 50, sx: 2.6, sy: 2, a: 0 }] },
       ],
       particles: [
-        { sprite: 'fx.p.spark', rate: 70, life: [260, 480], box: [45, 14], sizeWith: 'zone', speed: [220, 340], angle: [-6, 6], align: true, scale: [1.6, 0.8], alpha: [0.9, 0], tint: 0xf2e6cc },
+        { sprite: 'fx.p.spark', rate: 55, life: [260, 480], box: [45, 14], sizeWith: 'zone', speed: [220, 340], angle: [-6, 6], align: true, scale: [1.6, 0.8], alpha: [0.75, 0], tint: 0xf6f2ea },
         { sprite: 'fx.p.dust', rate: 22, life: [600, 1000], box: [45, 4], sizeWith: 'zone', speed: [60, 140], angle: [-20, 0], gravity: -20, scale: [0.8, 1.8], alpha: [0.55, 0], tint: 0xd9cfbd },
       ],
     },

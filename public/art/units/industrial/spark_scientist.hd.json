@@ -1,0 +1,2331 @@
+{
+ "frames": {
+  "spark_scientist_idle_00": {
+   "frame": {
+    "x": 277,
+    "y": 448,
+    "w": 122,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 184,
+    "w": 122,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_idle_00_team": {
+   "frame": {
+    "x": 1052,
+    "y": 929,
+    "w": 90,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 229,
+    "w": 90,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_idle_01": {
+   "frame": {
+    "x": 1005,
+    "y": 264,
+    "w": 122,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 181,
+    "w": 122,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_idle_01_team": {
+   "frame": {
+    "x": 959,
+    "y": 796,
+    "w": 92,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 221,
+    "w": 92,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_idle_02": {
+   "frame": {
+    "x": 1147,
+    "y": 2,
+    "w": 121,
+    "h": 181
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 174,
+    "w": 121,
+    "h": 181
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_idle_02_team": {
+   "frame": {
+    "x": 186,
+    "y": 796,
+    "w": 88,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 201,
+    "w": 88,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_idle_03": {
+   "frame": {
+    "x": 630,
+    "y": 2,
+    "w": 121,
+    "h": 185
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 170,
+    "w": 121,
+    "h": 185
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_idle_03_team": {
+   "frame": {
+    "x": 95,
+    "y": 796,
+    "w": 87,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 199,
+    "w": 87,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_idle_04": {
+   "frame": {
+    "x": 907,
+    "y": 2,
+    "w": 122,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 173,
+    "w": 122,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_idle_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 929,
+    "w": 93,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 221,
+    "w": 93,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_idle_05": {
+   "frame": {
+    "x": 879,
+    "y": 264,
+    "w": 122,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 180,
+    "w": 122,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_idle_05_team": {
+   "frame": {
+    "x": 657,
+    "y": 929,
+    "w": 90,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 227,
+    "w": 90,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_00": {
+   "frame": {
+    "x": 707,
+    "y": 448,
+    "w": 138,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 188,
+    "w": 138,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_00_team": {
+   "frame": {
+    "x": 530,
+    "y": 1040,
+    "w": 96,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 236,
+    "w": 96,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_01": {
+   "frame": {
+    "x": 578,
+    "y": 626,
+    "w": 134,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 195,
+    "w": 134,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_01_team": {
+   "frame": {
+    "x": 105,
+    "y": 1147,
+    "w": 90,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 242,
+    "w": 90,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_02": {
+   "frame": {
+    "x": 2,
+    "y": 448,
+    "w": 138,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 182,
+    "w": 138,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_02_team": {
+   "frame": {
+    "x": 378,
+    "y": 929,
+    "w": 89,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 227,
+    "w": 89,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_03": {
+   "frame": {
+    "x": 184,
+    "y": 264,
+    "w": 141,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 170,
+    "w": 141,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 1040,
+    "w": 94,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 218,
+    "w": 94,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_04": {
+   "frame": {
+    "x": 248,
+    "y": 626,
+    "w": 147,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 188,
+    "w": 147,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_04_team": {
+   "frame": {
+    "x": 1057,
+    "y": 1040,
+    "w": 96,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 236,
+    "w": 96,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_05": {
+   "frame": {
+    "x": 1064,
+    "y": 626,
+    "w": 135,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 195,
+    "w": 135,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_05_team": {
+   "frame": {
+    "x": 398,
+    "y": 1147,
+    "w": 86,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 242,
+    "w": 86,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_06": {
+   "frame": {
+    "x": 2,
+    "y": 626,
+    "w": 125,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 182,
+    "w": 125,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_06_team": {
+   "frame": {
+    "x": 954,
+    "y": 929,
+    "w": 94,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 229,
+    "w": 94,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_07": {
+   "frame": {
+    "x": 1131,
+    "y": 264,
+    "w": 131,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 171,
+    "w": 131,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_walk_07_team": {
+   "frame": {
+    "x": 751,
+    "y": 929,
+    "w": 98,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 219,
+    "w": 98,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_00": {
+   "frame": {
+    "x": 718,
+    "y": 264,
+    "w": 157,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 179,
+    "w": 157,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_00_team": {
+   "frame": {
+    "x": 853,
+    "y": 929,
+    "w": 97,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 226,
+    "w": 97,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_01": {
+   "frame": {
+    "x": 403,
+    "y": 448,
+    "w": 168,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 183,
+    "w": 168,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_01_team": {
+   "frame": {
+    "x": 1146,
+    "y": 929,
+    "w": 101,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 229,
+    "w": 101,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_02": {
+   "frame": {
+    "x": 1026,
+    "y": 448,
+    "w": 172,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 188,
+    "w": 172,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_02_team": {
+   "frame": {
+    "x": 853,
+    "y": 1040,
+    "w": 103,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 232,
+    "w": 103,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_03": {
+   "frame": {
+    "x": 849,
+    "y": 448,
+    "w": 173,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 188,
+    "w": 173,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_03_team": {
+   "frame": {
+    "x": 423,
+    "y": 1040,
+    "w": 103,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 232,
+    "w": 103,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_04": {
+   "frame": {
+    "x": 2,
+    "y": 264,
+    "w": 178,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 177,
+    "w": 178,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_04_team": {
+   "frame": {
+    "x": 862,
+    "y": 796,
+    "w": 93,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 226,
+    "w": 93,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_05": {
+   "frame": {
+    "x": 399,
+    "y": 626,
+    "w": 175,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 161,
+    "y": 194,
+    "w": 175,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_05_team": {
+   "frame": {
+    "x": 1157,
+    "y": 1040,
+    "w": 94,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 235,
+    "w": 94,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_06": {
+   "frame": {
+    "x": 131,
+    "y": 2,
+    "w": 142,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 135,
+    "w": 142,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_06_team": {
+   "frame": {
+    "x": 278,
+    "y": 796,
+    "w": 86,
+    "h": 125
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 174,
+    "y": 202,
+    "w": 86,
+    "h": 125
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_07": {
+   "frame": {
+    "x": 277,
+    "y": 2,
+    "w": 90,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 138,
+    "w": 90,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 796,
+    "w": 89,
+    "h": 129
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 202,
+    "w": 89,
+    "h": 129
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_08": {
+   "frame": {
+    "x": 575,
+    "y": 448,
+    "w": 128,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 183,
+    "w": 128,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_08_team": {
+   "frame": {
+    "x": 562,
+    "y": 929,
+    "w": 91,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 227,
+    "w": 91,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_09": {
+   "frame": {
+    "x": 580,
+    "y": 264,
+    "w": 134,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 178,
+    "w": 134,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_09_team": {
+   "frame": {
+    "x": 99,
+    "y": 929,
+    "w": 90,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 225,
+    "w": 90,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_10": {
+   "frame": {
+    "x": 329,
+    "y": 264,
+    "w": 122,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 177,
+    "w": 122,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_attack_10_team": {
+   "frame": {
+    "x": 471,
+    "y": 929,
+    "w": 87,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 225,
+    "w": 87,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_hit_00": {
+   "frame": {
+    "x": 131,
+    "y": 626,
+    "w": 113,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 153,
+    "y": 190,
+    "w": 113,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_hit_00_team": {
+   "frame": {
+    "x": 960,
+    "y": 1040,
+    "w": 93,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 168,
+    "y": 234,
+    "w": 93,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_hit_01": {
+   "frame": {
+    "x": 371,
+    "y": 2,
+    "w": 101,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 149,
+    "y": 156,
+    "w": 101,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_hit_01_team": {
+   "frame": {
+    "x": 1151,
+    "y": 796,
+    "w": 84,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 218,
+    "w": 84,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_hit_02": {
+   "frame": {
+    "x": 1033,
+    "y": 2,
+    "w": 110,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 174,
+    "w": 110,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_hit_02_team": {
+   "frame": {
+    "x": 193,
+    "y": 929,
+    "w": 89,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 222,
+    "w": 89,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_hit_03": {
+   "frame": {
+    "x": 144,
+    "y": 448,
+    "w": 129,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 182,
+    "w": 129,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_hit_03_team": {
+   "frame": {
+    "x": 100,
+    "y": 1040,
+    "w": 93,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 228,
+    "w": 93,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_hit_04": {
+   "frame": {
+    "x": 455,
+    "y": 264,
+    "w": 121,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 177,
+    "w": 121,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_hit_04_team": {
+   "frame": {
+    "x": 286,
+    "y": 929,
+    "w": 88,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 225,
+    "w": 88,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_00": {
+   "frame": {
+    "x": 946,
+    "y": 626,
+    "w": 114,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 161,
+    "y": 184,
+    "w": 114,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 1147,
+    "w": 99,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 228,
+    "w": 99,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_01": {
+   "frame": {
+    "x": 716,
+    "y": 626,
+    "w": 226,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 143,
+    "w": 226,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_01_team": {
+   "frame": {
+    "x": 313,
+    "y": 1040,
+    "w": 106,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 160,
+    "y": 206,
+    "w": 106,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 125,
+    "h": 258
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 144,
+    "y": 114,
+    "w": 125,
+    "h": 258
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_02_team": {
+   "frame": {
+    "x": 368,
+    "y": 796,
+    "w": 80,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 166,
+    "y": 164,
+    "w": 80,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_03": {
+   "frame": {
+    "x": 755,
+    "y": 2,
+    "w": 148,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 138,
+    "w": 148,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_03_team": {
+   "frame": {
+    "x": 197,
+    "y": 1040,
+    "w": 112,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 197,
+    "w": 112,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_04": {
+   "frame": {
+    "x": 476,
+    "y": 2,
+    "w": 150,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 165,
+    "w": 150,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_04_team": {
+   "frame": {
+    "x": 1055,
+    "y": 796,
+    "w": 92,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 150,
+    "y": 262,
+    "w": 92,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_05": {
+   "frame": {
+    "x": 630,
+    "y": 1040,
+    "w": 219,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 60,
+    "y": 244,
+    "w": 219,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_05_team": {
+   "frame": {
+    "x": 488,
+    "y": 1147,
+    "w": 114,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 140,
+    "y": 268,
+    "w": 114,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_06": {
+   "frame": {
+    "x": 661,
+    "y": 796,
+    "w": 197,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 65,
+    "y": 236,
+    "w": 197,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_06_team": {
+   "frame": {
+    "x": 199,
+    "y": 1147,
+    "w": 101,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 144,
+    "y": 268,
+    "w": 101,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_07": {
+   "frame": {
+    "x": 452,
+    "y": 796,
+    "w": 205,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 55,
+    "y": 234,
+    "w": 205,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  },
+  "spark_scientist_die_07_team": {
+   "frame": {
+    "x": 304,
+    "y": 1147,
+    "w": 90,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 269,
+    "w": 90,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 506,
+    "h": 396
+   },
+   "anchor": {
+    "x": 0.44269,
+    "y": 0.85859
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "spark_scientist_idle_00",
+   "spark_scientist_idle_01",
+   "spark_scientist_idle_02",
+   "spark_scientist_idle_03",
+   "spark_scientist_idle_04",
+   "spark_scientist_idle_05"
+  ],
+  "idle_team": [
+   "spark_scientist_idle_00_team",
+   "spark_scientist_idle_01_team",
+   "spark_scientist_idle_02_team",
+   "spark_scientist_idle_03_team",
+   "spark_scientist_idle_04_team",
+   "spark_scientist_idle_05_team"
+  ],
+  "walk": [
+   "spark_scientist_walk_00",
+   "spark_scientist_walk_01",
+   "spark_scientist_walk_02",
+   "spark_scientist_walk_03",
+   "spark_scientist_walk_04",
+   "spark_scientist_walk_05",
+   "spark_scientist_walk_06",
+   "spark_scientist_walk_07"
+  ],
+  "walk_team": [
+   "spark_scientist_walk_00_team",
+   "spark_scientist_walk_01_team",
+   "spark_scientist_walk_02_team",
+   "spark_scientist_walk_03_team",
+   "spark_scientist_walk_04_team",
+   "spark_scientist_walk_05_team",
+   "spark_scientist_walk_06_team",
+   "spark_scientist_walk_07_team"
+  ],
+  "attack": [
+   "spark_scientist_attack_00",
+   "spark_scientist_attack_01",
+   "spark_scientist_attack_02",
+   "spark_scientist_attack_03",
+   "spark_scientist_attack_04",
+   "spark_scientist_attack_05",
+   "spark_scientist_attack_06",
+   "spark_scientist_attack_07",
+   "spark_scientist_attack_08",
+   "spark_scientist_attack_09",
+   "spark_scientist_attack_10"
+  ],
+  "attack_team": [
+   "spark_scientist_attack_00_team",
+   "spark_scientist_attack_01_team",
+   "spark_scientist_attack_02_team",
+   "spark_scientist_attack_03_team",
+   "spark_scientist_attack_04_team",
+   "spark_scientist_attack_05_team",
+   "spark_scientist_attack_06_team",
+   "spark_scientist_attack_07_team",
+   "spark_scientist_attack_08_team",
+   "spark_scientist_attack_09_team",
+   "spark_scientist_attack_10_team"
+  ],
+  "hit": [
+   "spark_scientist_hit_00",
+   "spark_scientist_hit_01",
+   "spark_scientist_hit_02",
+   "spark_scientist_hit_03",
+   "spark_scientist_hit_04"
+  ],
+  "hit_team": [
+   "spark_scientist_hit_00_team",
+   "spark_scientist_hit_01_team",
+   "spark_scientist_hit_02_team",
+   "spark_scientist_hit_03_team",
+   "spark_scientist_hit_04_team"
+  ],
+  "die": [
+   "spark_scientist_die_00",
+   "spark_scientist_die_01",
+   "spark_scientist_die_02",
+   "spark_scientist_die_03",
+   "spark_scientist_die_04",
+   "spark_scientist_die_05",
+   "spark_scientist_die_06",
+   "spark_scientist_die_06",
+   "spark_scientist_die_07",
+   "spark_scientist_die_07"
+  ],
+  "die_team": [
+   "spark_scientist_die_00_team",
+   "spark_scientist_die_01_team",
+   "spark_scientist_die_02_team",
+   "spark_scientist_die_03_team",
+   "spark_scientist_die_04_team",
+   "spark_scientist_die_05_team",
+   "spark_scientist_die_06_team",
+   "spark_scientist_die_06_team",
+   "spark_scientist_die_07_team",
+   "spark_scientist_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "spark_scientist.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1280,
+   "h": 1248
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.spark_scientist",
+   "name": "Spark Scientist",
+   "heightLu": 68,
+   "widthLu": 46.7,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    224,
+    340
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     67
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     54,
+     36
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        25.3,
+        49.8
+       ],
+       [
+        25.6,
+        50.1
+       ],
+       [
+        25.9,
+        51.9
+       ],
+       [
+        25.9,
+        53.4
+       ],
+       [
+        25.7,
+        53.1
+       ],
+       [
+        25.3,
+        51.3
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      80,
+      80,
+      80,
+      80,
+      80,
+      80,
+      80,
+      80
+     ],
+     "durationMs": 640,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 75.0,
+     "cycleMs": 640,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        32.8,
+        42.0
+       ],
+       [
+        31.8,
+        41.6
+       ],
+       [
+        33.0,
+        47.0
+       ],
+       [
+        33.7,
+        50.2
+       ],
+       [
+        32.8,
+        42.0
+       ],
+       [
+        28.3,
+        40.2
+       ],
+       [
+        28.0,
+        45.0
+       ],
+       [
+        30.1,
+        48.6
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 75.0,
+     "strideLu": 48.0,
+     "plantedDriftLu": 0.0,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        9.8,
+        -1.9
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        11.9,
+        1.4
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      60,
+      130,
+      61,
+      60,
+      70,
+      60,
+      50,
+      70,
+      80,
+      84
+     ],
+     "durationMs": 765,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3804,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        39.4,
+        35.3
+       ],
+       [
+        43.5,
+        26.3
+       ],
+       [
+        45.4,
+        21.8
+       ],
+       [
+        45.5,
+        23.6
+       ],
+       [
+        41.0,
+        23.9
+       ],
+       [
+        33.3,
+        38.4
+       ],
+       [
+        1.2,
+        73.9
+       ],
+       [
+        -1.0,
+        73.0
+       ],
+       [
+        27.3,
+        53.2
+       ],
+       [
+        26.5,
+        51.9
+       ],
+       [
+        25.6,
+        51.6
+       ]
+      ]
+     },
+     "muzzle": [
+      41.0,
+      23.9
+     ]
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        9.3,
+        52.6
+       ],
+       [
+        1.6,
+        65.1
+       ],
+       [
+        15.2,
+        58.2
+       ],
+       [
+        28.0,
+        48.4
+       ],
+       [
+        24.8,
+        52.2
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        24.5
+       ],
+       "scale": 0.584
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        37.4
+       ],
+       "loops": 2,
+       "scale": 0.764
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        11.1,
+        55.2
+       ],
+       [
+        -50.0,
+        49.2
+       ],
+       [
+        -2.5,
+        -2.8
+       ],
+       [
+        16.7,
+        60.5
+       ],
+       [
+        -35.4,
+        38.9
+       ],
+       [
+        -56.1,
+        28.8
+       ],
+       [
+        -47.7,
+        34.3
+       ],
+       [
+        -45.6,
+        35.4
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

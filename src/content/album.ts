@@ -274,6 +274,26 @@ export const ALBUM: readonly CardId[] = [
   'cannon_salute', // 242
   'cavalry_picket', // 243
   'fougasse', // 244
+  // W5 Industrial wave (2026-10-03): troops, turrets, powers and forts in build order
+  'coal_miners', // 245
+  'iron_mantlet', // 246
+  'dispatch_rider', // 247
+  'bomb_bowler', // 248
+  'steam_tractor', // 249
+  'trench_mortar', // 250
+  'steam_driller', // 251
+  'bandmaster', // 252
+  'clockwork_tinker', // 253
+  'armoured_car', // 254
+  'alpine_climber', // 255
+  'spark_scientist', // 256
+  'armoured_train', // 257
+  'rivet_spitter', // 258
+  'steam_hammer', // 259
+  'shrapnel_shells', // 260
+  'great_magnet', // 261
+  'rail_barricade', // 262
+  'tesla_pylon', // 263
 ];
 
 /** Album number of every card (1-based), from {@link ALBUM}. */

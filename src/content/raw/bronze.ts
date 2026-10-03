@@ -127,12 +127,11 @@ export const bronze: RawAgeTables = {
       visualId: 'unit.bronze_colossus', sfx: { spawn: 'spawn_legendary', die: 'die_mech' },
       nameKey: 'card.bronze_colossus.name', descKey: 'card.bronze_colossus.desc', strongVs: [], weakVs: [],
     },
-    // W2 Bronze wave (CONTENT_PLAN 5.2). Release gate: every card of this wave is `released: false` (hidden
-    // from players and bots) until its art and sounds ship; the wave flips each card when its art lands.
+    // W2 Bronze wave (CONTENT_PLAN 5.2; DESIGN A17.9 wave table), released 2026-10-03 with its art and sounds.
     {
       // Guard: 25% less damage from attacks with range ≥ 100 (not powers); Blunt
-      id: 'shield_bearer', released: false, kind: 'unit', age: 'bronze', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 251, speed: 65, size: 'small',
+      id: 'shield_bearer', kind: 'unit', age: 'bronze', rarity: 'common', role: 'infantry', group: 'infantry',
+      cost: 50, trainMs: 1500, pop: 2, hp: 240, speed: 65, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -146,12 +145,12 @@ export const bronze: RawAgeTables = {
     },
     {
       // Raider: fast; 41 to bases (×2)
-      id: 'thracian_raider', released: false, kind: 'unit', age: 'bronze', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 235, speed: 90, size: 'small',
+      id: 'thracian_raider', kind: 'unit', age: 'bronze', rarity: 'common', role: 'infantry', group: 'infantry',
+      cost: 50, trainMs: 1500, pop: 2, hp: 190, speed: 90, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 23, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 22, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'slash', sfx: 'rhomphaia_cut', vsBaseDamage: 41,
         },
       ],
@@ -161,12 +160,12 @@ export const bronze: RawAgeTables = {
     },
     {
       // Trio (X0 M1): one card trains 3 slingers; stats per slinger (0.40 × Javelineer), cost and pop split evenly
-      id: 'rhodian_slingers', released: false, kind: 'unit', age: 'bronze', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 38, speed: 65, size: 'small',
+      id: 'rhodian_slingers', kind: 'unit', age: 'bronze', rarity: 'common', role: 'ranged', group: 'ranged',
+      cost: 75, trainMs: 2000, pop: 3, hp: 40, speed: 65, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 8, intervalMs: 1700, windupPct: 50, range: 180, hitsGround: true, hitsAir: true,
+          damage: 6, intervalMs: 1500, windupPct: 50, range: 180, hitsGround: true, hitsAir: true,
           projectile: { speed: 500, visualId: 'proj.rock' },
           dmgType: 'blunt', sfx: 'shot_sling',
         },
@@ -178,12 +177,12 @@ export const bronze: RawAgeTables = {
     },
     {
       // Discus: the discus skips to a second target within 50 lu (the second takes 50%, A2.6)
-      id: 'discus_thrower', released: false, kind: 'unit', age: 'bronze', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 110, speed: 65, size: 'small',
+      id: 'discus_thrower', kind: 'unit', age: 'bronze', rarity: 'common', role: 'ranged', group: 'ranged',
+      cost: 75, trainMs: 2000, pop: 3, hp: 85, speed: 65, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 17, intervalMs: 1600, windupPct: 50, range: 200, hitsGround: true, hitsAir: true,
+          damage: 11, intervalMs: 1600, windupPct: 50, range: 200, hitsGround: true, hitsAir: true,
           projectile: { speed: 550, visualId: 'proj.discus' },
           dmgType: 'blunt', sfx: 'shot_discus', chain: { count: 2, hop: 50 },
         },
@@ -194,12 +193,12 @@ export const bronze: RawAgeTables = {
     },
     {
       // Brute: trunk lash and forefoot stomp, cleave 2 (reach 30); no charge bonus
-      id: 'war_elephant', released: false, kind: 'unit', age: 'bronze', rarity: 'common', role: 'heavy', group: 'heavy',
-      cost: 150, trainMs: 4000, pop: 6, hp: 725, speed: 60, size: 'large',
+      id: 'war_elephant', kind: 'unit', age: 'bronze', rarity: 'common', role: 'heavy', group: 'heavy',
+      cost: 150, trainMs: 4000, pop: 6, hp: 690, speed: 60, size: 'large',
       tags: ['armored', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 42, intervalMs: 1700, windupPct: 40, range: 20, hitsGround: true, hitsAir: false,
+          damage: 40, intervalMs: 1800, windupPct: 40, range: 20, hitsGround: true, hitsAir: false,
           dmgType: 'blunt', sfx: 'trunk_lash', cleave: { count: 2, reach: 30 },
         },
       ],
@@ -209,12 +208,12 @@ export const bronze: RawAgeTables = {
     },
     {
       // Long range (H6, A5.1): an arcing arrow at the target's spot, splash r35; range 330, min 90; half to bases; ground only
-      id: 'cretan_archer', released: false, kind: 'unit', age: 'bronze', rarity: 'rare', role: 'ranged', group: 'ranged',
+      id: 'cretan_archer', kind: 'unit', age: 'bronze', rarity: 'rare', role: 'ranged', group: 'ranged',
       cost: 75, trainMs: 2000, pop: 3, hp: 99, speed: 60, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 39, intervalMs: 2400, windupPct: 50, range: 330, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 38, intervalMs: 2400, windupPct: 50, range: 330, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.arrow_arc' },
           dmgType: 'pierce', sfx: 'shot_bow', splashRadius: 35, vsBaseDamage: 19,
         },
@@ -225,7 +224,7 @@ export const bronze: RawAgeTables = {
     },
     {
       // Ranged Anti-heavy: range 200, 40 / 1.5 s; ranged AA mods (armored and mech ×3, Legendary ×2, light ×0.5); Brace; priority armored
-      id: 'belly_bowman', released: false, kind: 'unit', age: 'bronze', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
+      id: 'belly_bowman', kind: 'unit', age: 'bronze', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
       cost: 100, trainMs: 2500, pop: 4, hp: 220, speed: 65, size: 'medium',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
@@ -241,7 +240,7 @@ export const bronze: RawAgeTables = {
     },
     {
       // Aura: allies within 160 lu move 15% faster (Bronze wave ally speed aura); a sharp note pops on the target; followSupport
-      id: 'aulos_piper', released: false, kind: 'unit', age: 'bronze', rarity: 'rare', role: 'support', group: 'support',
+      id: 'aulos_piper', kind: 'unit', age: 'bronze', rarity: 'rare', role: 'support', group: 'support',
       cost: 110, trainMs: 3000, pop: 4, hp: 151, speed: 65, size: 'small',
       tags: ['light', 'bio', 'support', 'ranged', 'ground'],
       attacks: [
@@ -260,7 +259,7 @@ export const bronze: RawAgeTables = {
     },
     {
       // Dread (Bronze wave M4): enemy ground units within 130 lu move 20% slower; a sonic wail; followSupport
-      id: 'tragic_chorus', released: false, kind: 'unit', age: 'bronze', rarity: 'rare', role: 'support', group: 'support',
+      id: 'tragic_chorus', kind: 'unit', age: 'bronze', rarity: 'rare', role: 'support', group: 'support',
       cost: 110, trainMs: 3000, pop: 4, hp: 166, speed: 60, size: 'small',
       tags: ['light', 'bio', 'support', 'ranged', 'ground'],
       attacks: [
@@ -280,7 +279,7 @@ export const bronze: RawAgeTables = {
     {
       // Siege (siegeOnly + riders): head-ram 140 to bases / 2.0 s, 12 to units while blocked; 2 spearmen poke from
       // the hatches (6 / 1.2 s, range 40); when it falls, 2 Hoplites jump out (summoned)
-      id: 'wooden_horse', released: false, kind: 'unit', age: 'bronze', rarity: 'epic', role: 'siege', group: 'epic',
+      id: 'wooden_horse', kind: 'unit', age: 'bronze', rarity: 'epic', role: 'siege', group: 'epic',
       cost: 200, trainMs: 4000, pop: 8, hp: 800, speed: 45, size: 'large',
       tags: ['armored', 'mech', 'melee', 'ground'],
       attacks: [
@@ -305,7 +304,7 @@ export const bronze: RawAgeTables = {
     {
       // Skirmisher: Pounce (12 s cooldown): when blocked, rides (0.5 s) around the blocker to the nearest enemy ranged
       // or support unit within 180 lu; first strike ×2
-      id: 'amazon_rider', released: false, kind: 'unit', age: 'bronze', rarity: 'epic', role: 'skirmisher', group: 'epic',
+      id: 'amazon_rider', kind: 'unit', age: 'bronze', rarity: 'epic', role: 'skirmisher', group: 'epic',
       cost: 200, trainMs: 4000, pop: 8, hp: 500, speed: 95, size: 'large',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
@@ -320,12 +319,12 @@ export const bronze: RawAgeTables = {
     },
     {
       // Brawler: horn charge, first hit ×2 and 40 lu knockback; Frenzy (X0 M2) below 50% HP: +30% damage, +20% attack speed
-      id: 'minotaur', released: false, kind: 'unit', age: 'bronze', rarity: 'epic', role: 'heavy', group: 'epic',
+      id: 'minotaur', kind: 'unit', age: 'bronze', rarity: 'epic', role: 'heavy', group: 'epic',
       cost: 200, trainMs: 4000, pop: 8, hp: 880, speed: 60, size: 'large',
       tags: ['armored', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 46, intervalMs: 1600, windupPct: 40, range: 18, hitsGround: true, hitsAir: false,
+          damage: 45, intervalMs: 1600, windupPct: 40, range: 18, hitsGround: true, hitsAir: false,
           dmgType: 'slash', sfx: 'labrys_chop',
         },
       ],
@@ -339,8 +338,8 @@ export const bronze: RawAgeTables = {
     {
       // Legendary multi-head: three heads bite three targets in turn (cleave 3, reach 40, secondaries 50%);
       // the spit slows every target 20% for 1.5 s
-      id: 'hydra', released: false, kind: 'unit', age: 'bronze', rarity: 'legendary', role: 'heavy', group: 'legendary',
-      cost: 350, trainMs: 7000, pop: 14, hp: 1300, speed: 45, size: 'huge',
+      id: 'hydra', kind: 'unit', age: 'bronze', rarity: 'legendary', role: 'heavy', group: 'legendary',
+      cost: 350, trainMs: 7000, pop: 14, hp: 1230, speed: 45, size: 'huge',
       tags: ['armored', 'bio', 'melee', 'legendary', 'ground'],
       attacks: [
         {
@@ -398,7 +397,7 @@ export const bronze: RawAgeTables = {
     },
     {
       // W2 Bronze wave. Slow: a weighted net, 28 every 1.5 s; the target is slowed 30% for 2 s; ground and air
-      id: 'net_caster', released: false, kind: 'turret', age: 'bronze', rarity: 'common', cost: 175,
+      id: 'net_caster', kind: 'turret', age: 'bronze', rarity: 'common', cost: 175,
       attack: {
         damage: 28, intervalMs: 1500, windupPct: 0, range: 320, hitsGround: true, hitsAir: true,
         projectile: { speed: 500, visualId: 'proj.net' },
@@ -408,7 +407,7 @@ export const bronze: RawAgeTables = {
     },
     {
       // W2 Bronze wave. Repeater: the chain-fed bolt-thrower looses 3 bolts × 35 every 3.0 s; ground and air
-      id: 'polybolos', released: false, kind: 'turret', age: 'bronze', rarity: 'rare', cost: 250,
+      id: 'polybolos', kind: 'turret', age: 'bronze', rarity: 'rare', cost: 250,
       attack: {
         damage: 35, intervalMs: 3000, windupPct: 0, range: 420, hitsGround: true, hitsAir: true,
         projectile: { speed: 800, visualId: 'proj.bolt' },
@@ -425,9 +424,9 @@ export const bronze: RawAgeTables = {
     trap('bronze', 'hidden_stakes', { warPath: 6, road: 2200 }, { charges: 3, damage: 46, statuses: [slow(4000, 2000)] }),
     // W2 Bronze wave variants: a cover wall (1.0 × the Heavy Common, 175 gold; own ground units within 60 lu behind
     // take 20% less from range ≥ 100; War Path Bronze s2) and a ranged camp (its levy is 35% of the Javelineer,
-    // every 12 s, 1 alive; the Bronze 20-star milestone). Road fallback 4,200. Release gate until their art ships.
-    { ...wall('bronze', 'hoplon_line', { cost: FORT_COST.bunker, hpBp: 10000, cover: { behindLu: 60, rangedTakenBp: 2000 }, from: { side: 2, road: 4200 } }), released: false },
-    { ...camp('bronze', 'slinger_camp', 'slinger_levy', { stars: 20, road: 4200 }, { levyFrom: { group: 'ranged', hpBp: 3500, damageBp: 3500 }, everyMs: 12000, maxAlive: 1 }), released: false },
+    // every 12 s, 1 alive; the Bronze 20-star milestone). Road fallback 4,200.
+    wall('bronze', 'hoplon_line', { cost: FORT_COST.bunker, hpBp: 10000, cover: { behindLu: 60, rangedTakenBp: 2000 }, from: { side: 2, road: 4200 } }),
+    camp('bronze', 'slinger_camp', 'slinger_levy', { stars: 20, road: 4200 }, { levyFrom: { group: 'ranged', hpBp: 3500, damageBp: 3500 }, everyMs: 12000, maxAlive: 1 }),
   ],
 };
 
@@ -500,26 +499,26 @@ export const bronzePowers: readonly PowerDef[] = [
     visualId: 'power.apollo_arrow', sfx: 'pw_apollo', nameKey: 'card.apollo_arrow.name', descKey: 'card.apollo_arrow.desc',
   },
   {
-    // Release gate: `released: false` until its art ships. W2 Bronze wave, the H7 lane signal (A2.9.4 `lane`,
+    // W2 Bronze wave, the H7 lane signal (A2.9.4 `lane`,
     // A5.7 whole-lane powers): War Path Bronze L3 (Road 2,400). No aim: one pulse touches the 8 hittable enemies
     // nearest your gate anywhere on the lane, ground and air, for 19 (10% of I) and snares them 30% for 3 s. 50 gold, 25 s
-    id: 'sandstorm', released: false, kind: 'power', age: 'bronze', slot: 'field', reach: 'lane', family: 'signal', rarity: 'rare',
+    id: 'sandstorm', kind: 'power', age: 'bronze', slot: 'field', reach: 'lane', family: 'signal', rarity: 'rare',
     source: 'warPath', warPathLevel: 3, road: 2400, cost: 50, reloadMs: 25000, telegraphMs: 1000, maxTargets: 8, aiValueBp: 5000,
     effect: {
-      kind: 'field', zone: 2000, durationMs: 0, hitsAir: true, damagePerPulse: 65,
-      statuses: [{ kind: 'snare', magnitudeBp: 3000, durationMs: 3000 }],
+      kind: 'field', zone: 2000, durationMs: 0, hitsAir: true, damagePerPulse: 55,
+      statuses: [{ kind: 'snare', magnitudeBp: 4000, durationMs: 3000 }],
     },
     visualId: 'power.sandstorm', sfx: 'pw_sandstorm', nameKey: 'card.sandstorm.name', descKey: 'card.sandstorm.desc',
   },
   {
-    // Release gate: `released: false` until its art ships. W2 Bronze wave, the new Home control (pull, A5.7 family
+    // W2 Bronze wave, the new Home control (pull, A5.7 family
     // budget): War Path Bronze side node s1 (Road 4,200). A whirlpool opens in a 300 lu zone for 4 s (8 pulses),
     // ground only: the first pulse pulls 40% toward the centre, each pulse 8 damage and snare 40% for 1.0 s; cap 6
-    id: 'charybdis', released: false, kind: 'power', age: 'bronze', slot: 'home', reach: 'home', family: 'pull', rarity: 'epic',
+    id: 'charybdis', kind: 'power', age: 'bronze', slot: 'home', reach: 'home', family: 'pull', rarity: 'epic',
     source: 'warPath', warPathSide: 1, road: 4200, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 4500,
     effect: {
-      kind: 'field', zone: 300, durationMs: 4000, hitsAir: false, damagePerPulse: 12, pullBp: 4000,
-      statuses: [{ kind: 'snare', magnitudeBp: 4000, durationMs: 1000 }],
+      kind: 'field', zone: 300, durationMs: 4000, hitsAir: false, damagePerPulse: 9, pullBp: 4000,
+      statuses: [{ kind: 'snare', magnitudeBp: 5000, durationMs: 1000 }],
     },
     visualId: 'power.charybdis', sfx: 'pw_whirlpool', nameKey: 'card.charybdis.name', descKey: 'card.charybdis.desc',
   },

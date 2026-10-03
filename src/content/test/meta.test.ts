@@ -497,6 +497,10 @@ describe('Cosmetics and skins (A5.8)', () => {
       ['parade_cuirassier', 'cuirassier', 'rare'],
       ['fireworks_grenadier', 'grenadier', 'epic'],
       ['pufferfish_balloon', 'balloon_admiral', 'legendary'],
+      // W5 Industrial wave
+      ['chimney_sweep', 'riveter', 'rare'],
+      ['teapot_golem', 'steam_golem', 'epic'],
+      ['circus_train', 'armoured_train', 'legendary'],
     ]);
     expect(content.skins.pumpkin_head?.visualId).toBe('unit.bonker@pumpkin_head');
     expect(content.skins.crystal_spire).toMatchObject({ visualId: 'base.future@crystal_spire', inCratePool: false, craftable: false });

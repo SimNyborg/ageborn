@@ -180,21 +180,22 @@ describe('release gate: rewards and the starter set (A6.3, A18.7, A3)', () => {
 });
 
 describe('release gate: loading a save that holds a held-back card', () => {
-  // The gated wave is the Bronze wave (the Stone wave shipped 2026-10-03, tests/fixtures/pausedWave.ts).
+  // The gated wave is the Industrial wave (the Stone, Bronze, Medieval and Gunpowder waves shipped 2026-10-03,
+  // tests/fixtures/pausedWave.ts).
   function tainted(): SaveDoc {
     const s = ownsAll(fresh(9), 3, 2);
     const plan = s.warPlans[0]!;
-    const bronze = plan.loadouts.bronze;
+    const industrial = plan.loadouts.industrial;
     const loadouts = {
       ...plan.loadouts,
-      bronze: { ...bronze, units: ['shield_bearer', 'hoplite', 'war_elephant', 'javelineer', 'aulos_piper', 'hydra'], turrets: ['net_caster', 'archer_tower'], powers: { home: 'charybdis', field: 'sandstorm' }, fort: 'hoplon_line' },
+      industrial: { ...industrial, units: ['coal_miners', 'riveter', 'steam_tractor', 'carbineer', 'bandmaster', 'armoured_train'], turrets: ['rivet_spitter', 'gatling_gun'], powers: { home: 'great_magnet', field: 'shrapnel_shells' }, fort: 'rail_barricade' },
     };
     return {
       ...s,
-      collection: { ...s.collection, shield_bearer: { level: 3, copies: 4, isNew: true, foil: 'none' }, hydra: { level: 1, copies: 0, isNew: true, foil: 'holo' }, net_caster: { level: 2, copies: 1, isNew: false, foil: 'none' } },
-      powersOwned: [...s.powersOwned, 'charybdis', 'sandstorm'],
-      fortsOwned: [...(s.fortsOwned ?? []), 'hoplon_line', 'slinger_camp'],
-      skins: { owned: [...s.skins.owned, 'marble_hoplite', 'sun_chariot'], equipped: { ...s.skins.equipped, hoplite: 'marble_hoplite', war_chariot: 'sun_chariot' } },
+      collection: { ...s.collection, coal_miners: { level: 3, copies: 4, isNew: true, foil: 'none' }, armoured_train: { level: 1, copies: 0, isNew: true, foil: 'holo' }, rivet_spitter: { level: 2, copies: 1, isNew: false, foil: 'none' } },
+      powersOwned: [...s.powersOwned, 'great_magnet', 'shrapnel_shells'],
+      fortsOwned: [...(s.fortsOwned ?? []), 'rail_barricade', 'tesla_pylon'],
+      skins: { owned: [...s.skins.owned, 'chimney_sweep', 'teapot_golem'], equipped: { ...s.skins.equipped, riveter: 'chimney_sweep', steam_golem: 'teapot_golem' } },
       warPlans: [{ ...plan, loadouts }, ...s.warPlans.slice(1)],
     };
   }
@@ -204,15 +205,15 @@ describe('release gate: loading a save that holds a held-back card', () => {
     expect(Object.keys(s.collection).filter(gated)).toEqual([]);
     expect([...s.powersOwned, ...s.fortsOwned, ...s.skins.owned].filter(gated)).toEqual([]);
     expect(Object.entries(s.skins.equipped).filter(([k, v]) => gated(k) || gated(v))).toEqual([]);
-    const bronze = s.warPlans[0]!.loadouts.bronze;
-    expect(planIds({ bronze }).filter(gated)).toEqual([]);
-    expect(bronze.units.every((x) => x !== null)).toBe(true);
-    expect(bronze.turrets.every((x) => x !== null)).toBe(true);
-    expect(bronze.powers).toEqual(starterPowers(C, 'bronze'));
-    expect(bronze.fort).toBe(C.order.forts.find((f) => C.forts[f]?.age === 'bronze' && C.forts[f]?.fortKind === 'wall'));
+    const industrial = s.warPlans[0]!.loadouts.industrial;
+    expect(planIds({ industrial }).filter(gated)).toEqual([]);
+    expect(industrial.units.every((x) => x !== null)).toBe(true);
+    expect(industrial.turrets.every((x) => x !== null)).toBe(true);
+    expect(industrial.powers).toEqual(starterPowers(C, 'industrial'));
+    expect(industrial.fort).toBe(C.order.forts.find((f) => C.forts[f]?.age === 'industrial' && C.forts[f]?.fortKind === 'wall'));
     // Released cards and their levels stay as they were.
     expect(s.collection.bonker).toEqual(tainted().collection.bonker);
-    expect(bronze.units.slice(1, 2)).toEqual(['hoplite']);
+    expect(industrial.units.slice(1, 2)).toEqual(['riveter']);
   });
 
   it('runs on every load (tickTimers) and returns the same save when there is nothing to remove', () => {

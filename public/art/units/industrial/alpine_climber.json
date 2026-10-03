@@ -1,0 +1,2320 @@
+{
+ "frames": {
+  "alpine_climber_idle_00": {
+   "frame": {
+    "x": 204,
+    "y": 222,
+    "w": 60,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 117,
+    "w": 60,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_idle_00_team": {
+   "frame": {
+    "x": 373,
+    "y": 485,
+    "w": 50,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 113,
+    "w": 50,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_idle_01": {
+   "frame": {
+    "x": 2,
+    "y": 222,
+    "w": 64,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 116,
+    "w": 64,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_idle_01_team": {
+   "frame": {
+    "x": 211,
+    "y": 485,
+    "w": 50,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 112,
+    "w": 50,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_idle_02": {
+   "frame": {
+    "x": 60,
+    "y": 122,
+    "w": 59,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 112,
+    "w": 59,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_idle_02_team": {
+   "frame": {
+    "x": 55,
+    "y": 485,
+    "w": 48,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 109,
+    "w": 48,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_idle_03": {
+   "frame": {
+    "x": 2,
+    "y": 122,
+    "w": 54,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 110,
+    "w": 54,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_idle_03_team": {
+   "frame": {
+    "x": 170,
+    "y": 405,
+    "w": 47,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 106,
+    "w": 47,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_idle_04": {
+   "frame": {
+    "x": 690,
+    "y": 2,
+    "w": 62,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 111,
+    "w": 62,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_idle_04_team": {
+   "frame": {
+    "x": 66,
+    "y": 405,
+    "w": 48,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 107,
+    "w": 48,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_idle_05": {
+   "frame": {
+    "x": 380,
+    "y": 122,
+    "w": 60,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 114,
+    "w": 60,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_idle_05_team": {
+   "frame": {
+    "x": 265,
+    "y": 485,
+    "w": 49,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 111,
+    "w": 49,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_00": {
+   "frame": {
+    "x": 350,
+    "y": 222,
+    "w": 71,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 118,
+    "w": 71,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_00_team": {
+   "frame": {
+    "x": 551,
+    "y": 405,
+    "w": 50,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 115,
+    "w": 50,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_01": {
+   "frame": {
+    "x": 642,
+    "y": 222,
+    "w": 70,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 122,
+    "w": 70,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_01_team": {
+   "frame": {
+    "x": 605,
+    "y": 405,
+    "w": 50,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 118,
+    "w": 50,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_02": {
+   "frame": {
+    "x": 681,
+    "y": 122,
+    "w": 65,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 115,
+    "w": 65,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_02_team": {
+   "frame": {
+    "x": 329,
+    "y": 405,
+    "w": 52,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 111,
+    "w": 52,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_03": {
+   "frame": {
+    "x": 543,
+    "y": 122,
+    "w": 68,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 110,
+    "w": 68,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_03_team": {
+   "frame": {
+    "x": 441,
+    "y": 405,
+    "w": 51,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 107,
+    "w": 51,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_04": {
+   "frame": {
+    "x": 488,
+    "y": 222,
+    "w": 74,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 118,
+    "w": 74,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_04_team": {
+   "frame": {
+    "x": 659,
+    "y": 405,
+    "w": 50,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 115,
+    "w": 50,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_05": {
+   "frame": {
+    "x": 188,
+    "y": 318,
+    "w": 68,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 122,
+    "w": 68,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_05_team": {
+   "frame": {
+    "x": 221,
+    "y": 405,
+    "w": 50,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 118,
+    "w": 50,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_06": {
+   "frame": {
+    "x": 425,
+    "y": 222,
+    "w": 59,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 115,
+    "w": 59,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_06_team": {
+   "frame": {
+    "x": 496,
+    "y": 405,
+    "w": 51,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 112,
+    "w": 51,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_07": {
+   "frame": {
+    "x": 138,
+    "y": 222,
+    "w": 62,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 110,
+    "w": 62,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_walk_07_team": {
+   "frame": {
+    "x": 385,
+    "y": 405,
+    "w": 52,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 107,
+    "w": 52,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_00": {
+   "frame": {
+    "x": 250,
+    "y": 122,
+    "w": 61,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 113,
+    "w": 61,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_00_team": {
+   "frame": {
+    "x": 107,
+    "y": 485,
+    "w": 48,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 110,
+    "w": 48,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_01": {
+   "frame": {
+    "x": 123,
+    "y": 122,
+    "w": 52,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 112,
+    "w": 52,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_01_team": {
+   "frame": {
+    "x": 118,
+    "y": 405,
+    "w": 48,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 108,
+    "w": 48,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_02": {
+   "frame": {
+    "x": 557,
+    "y": 2,
+    "w": 62,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 109,
+    "w": 62,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_02_team": {
+   "frame": {
+    "x": 691,
+    "y": 318,
+    "w": 45,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 106,
+    "w": 45,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_03": {
+   "frame": {
+    "x": 374,
+    "y": 2,
+    "w": 70,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 105,
+    "w": 70,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_03_team": {
+   "frame": {
+    "x": 260,
+    "y": 318,
+    "w": 46,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 101,
+    "w": 46,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_04": {
+   "frame": {
+    "x": 66,
+    "y": 2,
+    "w": 84,
+    "h": 115
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 93,
+    "w": 84,
+    "h": 115
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_04_team": {
+   "frame": {
+    "x": 425,
+    "y": 318,
+    "w": 47,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 104,
+    "w": 47,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_05": {
+   "frame": {
+    "x": 154,
+    "y": 2,
+    "w": 85,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 95,
+    "w": 85,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_05_team": {
+   "frame": {
+    "x": 275,
+    "y": 405,
+    "w": 50,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 111,
+    "w": 50,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_06": {
+   "frame": {
+    "x": 89,
+    "y": 318,
+    "w": 95,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 133,
+    "w": 95,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_06_team": {
+   "frame": {
+    "x": 152,
+    "y": 563,
+    "w": 64,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 130,
+    "w": 64,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_07": {
+   "frame": {
+    "x": 2,
+    "y": 318,
+    "w": 83,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 125,
+    "w": 83,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_07_team": {
+   "frame": {
+    "x": 482,
+    "y": 485,
+    "w": 59,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 122,
+    "w": 59,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_08": {
+   "frame": {
+    "x": 268,
+    "y": 222,
+    "w": 78,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 118,
+    "w": 78,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_08_team": {
+   "frame": {
+    "x": 427,
+    "y": 485,
+    "w": 51,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 115,
+    "w": 51,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_09": {
+   "frame": {
+    "x": 179,
+    "y": 122,
+    "w": 67,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 114,
+    "w": 67,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_09_team": {
+   "frame": {
+    "x": 159,
+    "y": 485,
+    "w": 48,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 111,
+    "w": 48,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_10": {
+   "frame": {
+    "x": 615,
+    "y": 122,
+    "w": 62,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 114,
+    "w": 62,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_attack_10_team": {
+   "frame": {
+    "x": 713,
+    "y": 405,
+    "w": 49,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 110,
+    "w": 49,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_hit_00": {
+   "frame": {
+    "x": 566,
+    "y": 222,
+    "w": 72,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 121,
+    "w": 72,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_hit_00_team": {
+   "frame": {
+    "x": 545,
+    "y": 485,
+    "w": 58,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 116,
+    "w": 58,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_hit_01": {
+   "frame": {
+    "x": 488,
+    "y": 2,
+    "w": 65,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 108,
+    "w": 65,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_hit_01_team": {
+   "frame": {
+    "x": 310,
+    "y": 318,
+    "w": 55,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 103,
+    "w": 55,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_hit_02": {
+   "frame": {
+    "x": 623,
+    "y": 2,
+    "w": 63,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 111,
+    "w": 63,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_hit_02_team": {
+   "frame": {
+    "x": 639,
+    "y": 318,
+    "w": 48,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 106,
+    "w": 48,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_hit_03": {
+   "frame": {
+    "x": 70,
+    "y": 222,
+    "w": 64,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 115,
+    "w": 64,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_hit_03_team": {
+   "frame": {
+    "x": 318,
+    "y": 485,
+    "w": 51,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 113,
+    "w": 51,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_hit_04": {
+   "frame": {
+    "x": 315,
+    "y": 122,
+    "w": 61,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 113,
+    "w": 61,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_hit_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 485,
+    "w": 49,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 110,
+    "w": 49,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_00": {
+   "frame": {
+    "x": 476,
+    "y": 318,
+    "w": 57,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 121,
+    "w": 57,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_00_team": {
+   "frame": {
+    "x": 607,
+    "y": 485,
+    "w": 54,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 116,
+    "w": 54,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_01": {
+   "frame": {
+    "x": 537,
+    "y": 318,
+    "w": 98,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 67,
+    "y": 103,
+    "w": 98,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 405,
+    "w": 60,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 98,
+    "w": 60,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 60,
+    "h": 116
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 86,
+    "w": 60,
+    "h": 116
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_02_team": {
+   "frame": {
+    "x": 448,
+    "y": 2,
+    "w": 36,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 81,
+    "w": 36,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_03": {
+   "frame": {
+    "x": 444,
+    "y": 122,
+    "w": 95,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 98,
+    "w": 95,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_03_team": {
+   "frame": {
+    "x": 369,
+    "y": 318,
+    "w": 52,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 93,
+    "w": 52,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_04": {
+   "frame": {
+    "x": 243,
+    "y": 2,
+    "w": 87,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 104,
+    "w": 87,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_04_team": {
+   "frame": {
+    "x": 334,
+    "y": 2,
+    "w": 36,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 99,
+    "w": 36,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_05": {
+   "frame": {
+    "x": 379,
+    "y": 563,
+    "w": 100,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 60,
+    "y": 141,
+    "w": 100,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_05_team": {
+   "frame": {
+    "x": 483,
+    "y": 563,
+    "w": 56,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 139,
+    "w": 56,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_06": {
+   "frame": {
+    "x": 2,
+    "y": 563,
+    "w": 146,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 44,
+    "y": 150,
+    "w": 146,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_06_team": {
+   "frame": {
+    "x": 543,
+    "y": 563,
+    "w": 86,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 39,
+    "y": 158,
+    "w": 86,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_07": {
+   "frame": {
+    "x": 220,
+    "y": 563,
+    "w": 155,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 39,
+    "y": 153,
+    "w": 155,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  },
+  "alpine_climber_die_07_team": {
+   "frame": {
+    "x": 633,
+    "y": 563,
+    "w": 91,
+    "h": 44
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 34,
+    "y": 160,
+    "w": 91,
+    "h": 44
+   },
+   "sourceSize": {
+    "w": 253,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50198,
+    "y": 0.87281
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "alpine_climber_idle_00",
+   "alpine_climber_idle_01",
+   "alpine_climber_idle_02",
+   "alpine_climber_idle_03",
+   "alpine_climber_idle_04",
+   "alpine_climber_idle_05"
+  ],
+  "idle_team": [
+   "alpine_climber_idle_00_team",
+   "alpine_climber_idle_01_team",
+   "alpine_climber_idle_02_team",
+   "alpine_climber_idle_03_team",
+   "alpine_climber_idle_04_team",
+   "alpine_climber_idle_05_team"
+  ],
+  "walk": [
+   "alpine_climber_walk_00",
+   "alpine_climber_walk_01",
+   "alpine_climber_walk_02",
+   "alpine_climber_walk_03",
+   "alpine_climber_walk_04",
+   "alpine_climber_walk_05",
+   "alpine_climber_walk_06",
+   "alpine_climber_walk_07"
+  ],
+  "walk_team": [
+   "alpine_climber_walk_00_team",
+   "alpine_climber_walk_01_team",
+   "alpine_climber_walk_02_team",
+   "alpine_climber_walk_03_team",
+   "alpine_climber_walk_04_team",
+   "alpine_climber_walk_05_team",
+   "alpine_climber_walk_06_team",
+   "alpine_climber_walk_07_team"
+  ],
+  "attack": [
+   "alpine_climber_attack_00",
+   "alpine_climber_attack_01",
+   "alpine_climber_attack_02",
+   "alpine_climber_attack_03",
+   "alpine_climber_attack_04",
+   "alpine_climber_attack_05",
+   "alpine_climber_attack_06",
+   "alpine_climber_attack_07",
+   "alpine_climber_attack_08",
+   "alpine_climber_attack_09",
+   "alpine_climber_attack_10"
+  ],
+  "attack_team": [
+   "alpine_climber_attack_00_team",
+   "alpine_climber_attack_01_team",
+   "alpine_climber_attack_02_team",
+   "alpine_climber_attack_03_team",
+   "alpine_climber_attack_04_team",
+   "alpine_climber_attack_05_team",
+   "alpine_climber_attack_06_team",
+   "alpine_climber_attack_07_team",
+   "alpine_climber_attack_08_team",
+   "alpine_climber_attack_09_team",
+   "alpine_climber_attack_10_team"
+  ],
+  "hit": [
+   "alpine_climber_hit_00",
+   "alpine_climber_hit_01",
+   "alpine_climber_hit_02",
+   "alpine_climber_hit_03",
+   "alpine_climber_hit_04"
+  ],
+  "hit_team": [
+   "alpine_climber_hit_00_team",
+   "alpine_climber_hit_01_team",
+   "alpine_climber_hit_02_team",
+   "alpine_climber_hit_03_team",
+   "alpine_climber_hit_04_team"
+  ],
+  "die": [
+   "alpine_climber_die_00",
+   "alpine_climber_die_01",
+   "alpine_climber_die_02",
+   "alpine_climber_die_03",
+   "alpine_climber_die_04",
+   "alpine_climber_die_05",
+   "alpine_climber_die_06",
+   "alpine_climber_die_06",
+   "alpine_climber_die_07",
+   "alpine_climber_die_07"
+  ],
+  "die_team": [
+   "alpine_climber_die_00_team",
+   "alpine_climber_die_01_team",
+   "alpine_climber_die_02_team",
+   "alpine_climber_die_03_team",
+   "alpine_climber_die_04_team",
+   "alpine_climber_die_05_team",
+   "alpine_climber_die_06_team",
+   "alpine_climber_die_06_team",
+   "alpine_climber_die_07_team",
+   "alpine_climber_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "alpine_climber.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 768,
+   "h": 632
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.alpine_climber",
+   "name": "Alpine Climber",
+   "heightLu": 66,
+   "widthLu": 44.3,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    127.0,
+    199.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     64
+    ],
+    "hitCenter": [
+     0,
+     31
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "pickTip": [
+       [
+        28.2,
+        28.1
+       ],
+       [
+        27.5,
+        12.6
+       ],
+       [
+        16.7,
+        0.4
+       ],
+       [
+        24.1,
+        39.4
+       ],
+       [
+        24.8,
+        10.9
+       ],
+       [
+        27.8,
+        29.1
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72,
+      72
+     ],
+     "durationMs": 576,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 106.2,
+     "cycleMs": 576,
+     "anchorsLu": {
+      "pickTip": [
+       [
+        31.5,
+        16.9
+       ],
+       [
+        31.3,
+        19.4
+       ],
+       [
+        32.0,
+        25.2
+       ],
+       [
+        32.4,
+        26.5
+       ],
+       [
+        31.5,
+        16.9
+       ],
+       [
+        28.0,
+        18.0
+       ],
+       [
+        27.2,
+        23.2
+       ],
+       [
+        29.1,
+        25.0
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 102.1,
+     "strideLu": 58.8,
+     "plantedDriftLu": 0.35,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        11.3,
+        -1.3
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        13.4,
+        2.0
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "pickTip": [
+       [
+        28.5,
+        24.2
+       ],
+       [
+        -1.5,
+        55.5
+       ],
+       [
+        -16.0,
+        68.8
+       ],
+       [
+        -31.1,
+        67.8
+       ],
+       [
+        24.4,
+        68.9
+       ],
+       [
+        47.2,
+        23.3
+       ],
+       [
+        41.7,
+        -2.0
+       ],
+       [
+        34.3,
+        -2.6
+       ],
+       [
+        42.2,
+        14.9
+       ],
+       [
+        34.7,
+        22.2
+       ],
+       [
+        29.7,
+        24.4
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "pickTip": [
+       [
+        21.8,
+        35.4
+       ],
+       [
+        14.3,
+        47.4
+       ],
+       [
+        23.7,
+        36.2
+       ],
+       [
+        30.1,
+        22.0
+       ],
+       [
+        28.7,
+        27.9
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        23.8
+       ],
+       "scale": 0.554
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        36.3
+       ],
+       "loops": 2,
+       "scale": 0.744
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "pickTip": [
+       [
+        15.4,
+        50.3
+       ],
+       [
+        -47.4,
+        37.6
+       ],
+       [
+        7.7,
+        4.0
+       ],
+       [
+        9.7,
+        63.6
+       ],
+       [
+        -26.6,
+        41.3
+       ],
+       [
+        -52.2,
+        27.8
+       ],
+       [
+        -36.0,
+        38.7
+       ],
+       [
+        -31.2,
+        39.2
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

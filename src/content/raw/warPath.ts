@@ -126,6 +126,8 @@ const REGIONS: readonly RegionRow[] = [
     epic: 'sapper',
     bossCapsule: 'jade',
     bossTurret: 'gatling_gun',
+    // W5 Industrial (2026-10-03): Tempest drops the Great Magnet, Moss digs in behind the Rail Barricade
+    sides: { s1: 'tempest', s2: 'moss' },
   },
   {
     age: 'modern',

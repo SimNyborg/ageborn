@@ -2,6 +2,16 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-03: the Gunpowder content wave ships (cloud session, not yet published)
+
+The fourth content wave is in: 13 new Gunpowder troops (Highlander, Powder Monkey, Voltigeurs, Blunderbuss, Dragoon, Coehorn Crew, Wall Gunner, Drummer Boy, Bagpiper, Rocket Cart, Hussar, Mesmerist, Grand Marshal), 2 turrets (Carronade, Sea Mortar), 2 powers (Rocket Volley, Cannon Salute), 2 forts (Cavalry Picket, Fougasse) and 3 skins, each with a cartoon sprite sheet (2-3 attacks, walk by gait, KO death), card portrait, sounds and effects; all six Gunpowder forts are redrawn in the cartoon style. Bots use every new card (Generals' plans and the counter matrix). One small sim rule: the Rocket Cart's rockets scatter like the Congreve Rack's (SIM 7.2.0, replays of older matches stay valid). Numbers and details: `docs/decisions.md` ("X0 Gunpowder wave shipped").
+
+**Checks:** typecheck and lint clean, production build OK. Unit tests: the remaining failures belong to the gated Bronze wave (its table rows and its new wall) plus the known boot sound budget (476 of 300 ms) and the turret-turtle proxy test (not from this wave).
+
+**Still open:** the Wall Gunner row reads +15 (it measures the plan without the Grenadier, not the card); Rocket Volley's two windows disagree (-4.7 / +9.5); the Cavalry Picket is 7 points stronger than the Militia Muster on the same seeds; the capsule economy re-tune (`docs/requests/content-economy-retune.md`) is now more urgent (Common 153 / Rare 169 days to max).
+
+**What the owner should try** (once published): put the Grand Marshal, the Hussar and the Rocket Cart in your Gunpowder War Plan, fire the Cannon Salute into a crowd, and listen to the Bagpiper slow the enemy down.
+
 ## 2026-10-03: the Medieval content wave ships (cloud session, not yet published)
 
 The third content wave is in: 13 new Medieval troops (plus the Kennel Master's War Hound), 2 turrets, 2 powers, 2 forts and 3 skins, each with a cartoon sprite sheet (2-3 attacks, walk by gait, KO death), card portrait, sounds and effects; all six Medieval forts are redrawn in the cartoon style. Numbers and measurements: `docs/decisions.md` ("X0 Medieval wave shipped").

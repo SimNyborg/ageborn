@@ -55,6 +55,21 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['standard_bearer', 'Standard Bearer', 'R', 'support', 110, 151, 9, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['scorpion', 'Scorpion', 'E', 'artillery', 200, 330, 64, 30, 290, 45, 'L', 'G', 'light mech ranged'],
     ['bronze_colossus', 'Bronze Colossus', 'L', 'siegeHeavy', 350, 1700, 64, 20, 20, 40, 'H', 'G', 'armored mech melee legendary'],
+    // W2 Bronze wave (CONTENT_PLAN 5.2; DESIGN A17.9 wave table)
+['shield_bearer', 'Shield Bearer', 'C', 'infantry', 50, 240, 16, 10, 16, 65, 'S', 'G', 'light bio melee'],
+    ['thracian_raider', 'Thracian Raider', 'C', 'infantry', 50, 190, 22, 10, 16, 90, 'S', 'G', 'light bio melee'],
+    ['rhodian_slingers', 'Rhodian Slingers', 'C', 'ranged', 75, 40, 6, 15, 180, 65, 'S', 'GA', 'light bio ranged'],
+    ['discus_thrower', 'Discus Thrower', 'C', 'ranged', 75, 85, 11, 16, 200, 65, 'S', 'GA', 'light bio ranged'],
+    ['war_elephant', 'War Elephant', 'C', 'heavy', 150, 690, 40, 18, 20, 60, 'L', 'G', 'armored bio melee'],
+    ['cretan_archer', 'Cretan Archer', 'R', 'ranged', 75, 99, 38, 24, 330, 60, 'S', 'G', 'light bio ranged'],
+    ['belly_bowman', 'Belly Bowman', 'R', 'antiArmor', 100, 220, 40, 12, 200, 65, 'M', 'G', 'light bio ranged'],
+    ['aulos_piper', 'Aulos Piper', 'R', 'support', 110, 151, 9, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
+    ['tragic_chorus', 'Tragic Chorus', 'R', 'support', 110, 166, 9, 12, 150, 60, 'S', 'GA', 'light bio support ranged'],
+    ['wooden_horse', 'Wooden Horse', 'E', 'siege', 200, 800, 12, 20, 12, 45, 'L', 'G', 'armored mech melee'],
+    ['amazon_rider', 'Amazon Rider', 'E', 'skirmisher', 200, 500, 40, 9, 16, 95, 'L', 'G', 'light bio melee'],
+    ['minotaur', 'Minotaur', 'E', 'heavy', 200, 880, 45, 16, 18, 60, 'L', 'G', 'armored bio melee'],
+    ['hydra', 'Hydra', 'L', 'heavy', 350, 1230, 48, 22, 40, 45, 'H', 'G', 'armored bio melee legendary'],
+    // end W2
   ],
   // A5.3 Medieval Age (P 1.35)
   medieval: [
@@ -90,16 +105,16 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['bronze_cannon', 'Bronze Cannon', 'E', 'artillery', 200, 500, 110, 35, 280, 45, 'L', 'G', 'light mech ranged'],
     ['balloon_admiral', 'Balloon Admiral', 'L', 'airBomber', 350, 1200, 85, 16, 40, 45, 'H', 'G', 'air legendary'],
     // W4 Gunpowder wave (CONTENT_PLAN 5.4; DESIGN A5.4 wave table)
-    ['highlander', 'Highlander', 'C', 'infantry', 50, 345, 23, 10, 16, 67, 'S', 'G', 'light bio melee'],
+    ['highlander', 'Highlander', 'C', 'infantry', 50, 380, 25, 10, 16, 67, 'S', 'G', 'light bio melee'],
     ['powder_monkey', 'Powder Monkey', 'C', 'infantry', 50, 262, 34, 10, 16, 100, 'S', 'G', 'light bio melee'],
     ['voltigeurs', 'Voltigeurs', 'C', 'ranged', 75, 69, 19, 20, 210, 65, 'S', 'GA', 'light bio ranged'],
-    ['blunderbuss', 'Blunderbuss', 'C', 'ranged', 75, 164, 58, 26, 120, 65, 'S', 'GA', 'light bio ranged'],
+    ['blunderbuss', 'Blunderbuss', 'C', 'ranged', 75, 164, 57, 26, 120, 65, 'S', 'GA', 'light bio ranged'],
     ['dragoon', 'Dragoon', 'C', 'heavy', 150, 820, 52, 15, 90, 55, 'L', 'G', 'armored bio ranged'],
     ['coehorn_crew', 'Coehorn Crew', 'R', 'ranged', 75, 210, 80, 26, 360, 60, 'S', 'G', 'light bio ranged'],
     ['wall_gunner', 'Wall Gunner', 'R', 'antiArmor', 100, 210, 40, 20, 220, 65, 'M', 'G', 'light bio ranged'],
     ['drummer_boy', 'Drummer Boy', 'R', 'support', 110, 340, 32, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['bagpiper', 'Bagpiper', 'R', 'support', 110, 420, 40, 12, 150, 60, 'S', 'GA', 'light bio support ranged'],
-    ['rocket_cart', 'Rocket Cart', 'E', 'artillery', 200, 1100, 70, 40, 330, 45, 'L', 'G', 'light mech ranged'],
+    ['rocket_cart', 'Rocket Cart', 'E', 'artillery', 200, 1300, 70, 35, 330, 45, 'L', 'G', 'light mech ranged'],
     ['hussar', 'Hussar', 'E', 'skirmisher', 200, 1000, 78, 9, 16, 95, 'L', 'G', 'light bio melee'],
     ['mesmerist', 'Mesmerist', 'E', 'support', 200, 1050, 58, 12, 170, 60, 'S', 'GA', 'light bio support ranged'],
     ['grand_marshal', 'Grand Marshal', 'L', 'heavy', 350, 1500, 80, 15, 20, 55, 'H', 'G', 'armored bio melee legendary'],
@@ -113,6 +128,20 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['flare_spotter', 'Flare Spotter', 'R', 'support', 110, 276, 17, 12, 200, 65, 'S', 'GA', 'light bio support ranged'],
     ['sapper', 'Sapper', 'E', 'siege', 200, 560, 12, 20, 12, 85, 'M', 'G', 'light bio melee'],
     ['land_dreadnought', 'Land Dreadnought', 'L', 'siegeHeavy', 350, 1800, 85, 22, 160, 35, 'H', 'G', 'armored mech ranged legendary'],
+    // W5 Industrial wave (CONTENT_PLAN 5.5; DESIGN A5.x wave table)
+    ['coal_miners', 'Coal Miners', 'C', 'infantry', 50, 200, 25, 10, 16, 82, 'S', 'G', 'light bio melee'],
+    ['iron_mantlet', 'Iron Mantlet', 'C', 'infantry', 50, 430, 29, 10, 16, 67, 'S', 'G', 'light bio melee'],
+    ['dispatch_rider', 'Dispatch Rider', 'C', 'infantry', 50, 300, 39, 10, 16, 110, 'M', 'G', 'light bio melee'],
+    ['bomb_bowler', 'Bomb Bowler', 'C', 'ranged', 75, 191, 27, 15, 220, 65, 'S', 'G', 'light bio ranged'],
+    ['steam_tractor', 'Steam Tractor', 'C', 'heavy', 150, 1200, 70, 15, 20, 50, 'L', 'G', 'armored mech melee'],
+    ['trench_mortar', 'Trench Mortar', 'R', 'ranged', 75, 230, 90, 26, 370, 60, 'S', 'G', 'light bio ranged'],
+    ['steam_driller', 'Steam Driller', 'R', 'antiArmor', 100, 550, 55, 12, 40, 70, 'M', 'G', 'light bio melee'],
+    ['bandmaster', 'Bandmaster', 'R', 'support', 110, 390, 36, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
+    ['clockwork_tinker', 'Clockwork Tinker', 'R', 'support', 110, 275, 17, 12, 40, 65, 'S', 'G', 'light bio support melee'],
+    ['armoured_car', 'Armoured Car', 'E', 'siege', 200, 1400, 18, 3, 150, 55, 'L', 'GA', 'armored mech ranged'],
+    ['alpine_climber', 'Alpine Climber', 'E', 'skirmisher', 200, 1150, 90, 9, 16, 85, 'M', 'G', 'light bio melee'],
+    ['spark_scientist', 'Spark Scientist', 'E', 'support', 200, 1200, 55, 12, 170, 60, 'S', 'GA', 'light bio support ranged'],
+    ['armoured_train', 'Armoured Train', 'L', 'siegeHeavy', 350, 1620, 90, 24, 220, 40, 'H', 'G', 'armored mech ranged legendary'],
   ],
   // A5.5 Modern Age (P 2.46)
   modern: [
@@ -164,6 +193,10 @@ const TURRETS: Record<AgeId, TurretRow[]> = {
     ['sun_mirror', 'Sun Mirror', 'C', 175, 9, 3, 230, 'GA'],
     ['onager', 'Onager', 'R', 250, 95, 45, 480, 'G'],
     ['gorgon_bust', 'Gorgon Bust', 'E', 250, 55, 60, 380, 'GA'],
+    // W2 Bronze wave turrets
+    ['net_caster', 'Net Caster', 'C', 175, 28, 15, 320, 'GA'],
+    ['polybolos', 'Polybolos', 'R', 250, 35, 30, 420, 'GA'],
+    // end W2
   ],
   medieval: [
     ['crossbow_nest', 'Crossbow Nest', 'C', 150, 40, 15, 380, 'GA'],
@@ -188,6 +221,9 @@ const TURRETS: Record<AgeId, TurretRow[]> = {
     ['mortar_pit', 'Mortar Pit', 'C', 175, 68, 20, 300, 'G'],
     ['boiler_mortar', 'Boiler Mortar', 'R', 250, 172, 50, 480, 'G'],
     ['tesla_tower', 'Tesla Tower', 'E', 250, 130, 45, 380, 'GA'],
+    // W5 Industrial wave
+    ['rivet_spitter', 'Rivet Spitter', 'C', 175, 19, 15, 280, 'GA'],
+    ['steam_hammer', 'Steam Hammer', 'R', 250, 57, 10, 150, 'G'],
   ],
   modern: [
     ['mg_nest', 'MG Nest', 'C', 150, 15, 3, 340, 'GA'],
@@ -228,6 +264,10 @@ const POWERS: PowerRow[] = [
   ['chariot_rush', 'Chariot Rush', 'bronze', 'field', 'charge', 'starter', 100, 40000, 1000, 5],
   ['aegis', 'Aegis', 'bronze', 'field', 'ward', 'road', 75, 30000, 500, 8],
   ['apollo_arrow', 'Apollo’s Arrow', 'bronze', 'field', 'strike', 'warPath', 50, 15000, 1500, 1],
+  // W2 Bronze wave powers
+  ['sandstorm', 'Sandstorm', 'bronze', 'field', 'signal', 'warPath', 50, 25000, 1000, 8],
+  ['charybdis', 'Charybdis', 'bronze', 'home', 'pull', 'warPath', 75, 30000, 1000, 6],
+  // end W2
   ['arrow_storm', 'Arrow Storm', 'medieval', 'home', 'bombard', 'starter', 125, 40000, 1000, 3],
   ['caltrops', 'Caltrops', 'medieval', 'home', 'snare', 'warPath', 75, 30000, 1000, 6],
   ['boiling_oil', 'Boiling Oil', 'medieval', 'home', 'sweep', 'warPath', 125, 40000, 1000, 2],
@@ -250,6 +290,8 @@ const POWERS: PowerRow[] = [
   ['iron_horse', 'Iron Horse', 'industrial', 'field', 'charge', 'starter', 100, 40000, 1000, 5],
   ['railway_gun', 'Railway Gun', 'industrial', 'field', 'strike', 'warPath', 50, 15000, 2000, 1],
   ['field_hospital', 'Field Hospital', 'industrial', 'field', 'mend', 'warPath', 75, 30000, 500, 8],
+  ['shrapnel_shells', 'Shrapnel Shells', 'industrial', 'field', 'volley', 'warPath', 50, 25000, 1000, 8],
+  ['great_magnet', 'Great Magnet', 'industrial', 'home', 'pull', 'warPath', 75, 30000, 1000, 6],
   ['strafing_run', 'Strafing Run', 'modern', 'home', 'sweep', 'starter', 100, 40000, 1000, 4],
   ['carpet_bomber', 'Carpet Bomber', 'modern', 'home', 'bombard', 'road', 125, 40000, 1000, 3],
   ['aa_screen', 'AA Screen', 'modern', 'home', 'flak', 'warPath', 75, 25000, 500, 3],
@@ -530,6 +572,23 @@ const A14_2: Record<string, FxRow[]> = {
   carronade: [['carronade', 'proj.cannonball', 'shot_carronade', 'blunt']],
   sea_mortar: [['sea_mortar', 'proj.cannonball', 'shot_sea_mortar', 'blast']],
   sapling_sling: [['sapling_sling', 'proj.boulder', 'shot_sapling', 'blast']],
+  // W5 Industrial wave
+  coal_miners: [['coal_miners', 'melee', 'pickaxe_clink', 'pierce']],
+  iron_mantlet: [['iron_mantlet', 'melee', 'mantlet_jab', 'pierce']],
+  dispatch_rider: [['dispatch_rider', 'melee', 'bike_skid', 'blunt']],
+  bomb_bowler: [['bomb_bowler', 'proj.bowl_bomb', 'shot_bowl', 'blast']],
+  steam_tractor: [['steam_tractor', 'melee', 'plough_scoop', 'blunt']],
+  trench_mortar: [['trench_mortar', 'proj.mortar_shell', 'shot_trench_mortar', 'blast']],
+  steam_driller: [['steam_driller', 'melee', 'drill_spin', 'pierce']],
+  bandmaster: [['bandmaster', 'proj.note', 'cornet_blast', 'blunt']],
+  clockwork_tinker: [['clockwork_tinker', 'melee', 'key_whack', 'blunt']],
+  armoured_car: [['armoured_car', 'proj.bullet', 'car_mg', 'bullet']],
+  alpine_climber: [['alpine_climber', 'melee', 'ice_axe_chop', 'pierce']],
+  spark_scientist: [['spark_scientist', 'fx.coil_arc', 'coil_zap', 'laser']],
+  armoured_train: [['main gun', 'proj.shell', 'train_gun', 'blast'], ['MG', 'proj.bullet', 'shot_gatling', 'bullet']],
+  clockwork_soldier: [['clockwork_soldier', 'melee', 'toy_bayonet', 'pierce']],
+  rivet_spitter: [['rivet_spitter', 'proj.rivet', 'shot_rivet', 'pierce']],
+  steam_hammer: [['steam_hammer', 'fx.hammer_shock', 'hammer_slam', 'blunt']],
   grumpy_toad: [['grumpy_toad', 'fx.tongue', 'toad_tongue', 'blunt']],
   crossbow_nest: [['crossbow_nest', 'proj.bolt', 'shot_crossbow', 'pierce']],
   pitch_cauldron: [['pitch_cauldron', 'fx.pitch_pour', 'cauldron_pour', 'blast']],
@@ -555,6 +614,23 @@ const A14_2: Record<string, FxRow[]> = {
   standard_bearer: [['standard_bearer', 'proj.javelin', 'shot_javelin', 'pierce']],
   scorpion: [['scorpion', 'proj.scorpion_bolt', 'shot_scorpion', 'pierce']],
   bronze_colossus: [['bronze_colossus', 'melee', 'stomp_colossus', 'blast']],
+  // W2 Bronze wave attacks
+  shield_bearer: [['shield_bearer', 'melee', 'kopis_hack', 'slash']],
+  thracian_raider: [['thracian_raider', 'melee', 'rhomphaia_cut', 'slash']],
+  rhodian_slingers: [['rhodian_slingers', 'proj.rock', 'shot_sling', 'blunt']],
+  discus_thrower: [['discus_thrower', 'proj.discus', 'shot_discus', 'blunt']],
+  war_elephant: [['war_elephant', 'melee', 'trunk_lash', 'blunt']],
+  cretan_archer: [['cretan_archer', 'proj.arrow_arc', 'shot_bow', 'pierce']],
+  belly_bowman: [['belly_bowman', 'proj.bolt', 'shot_belly_bow', 'pierce']],
+  aulos_piper: [['aulos_piper', 'fx.note_pop', 'aulos_note', 'blunt']],
+  tragic_chorus: [['tragic_chorus', 'fx.wail_ring', 'chorus_wail', 'blunt']],
+  wooden_horse: [['wooden_horse', 'melee', 'horse_ram', 'blast'], ['wooden_horse', 'melee', 'swing_whoosh', 'pierce']],
+  amazon_rider: [['amazon_rider', 'melee', 'sagaris_sweep', 'slash']],
+  minotaur: [['minotaur', 'melee', 'labrys_chop', 'slash']],
+  hydra: [['hydra', 'melee', 'hydra_bite', 'slash']],
+  net_caster: [['net_caster', 'proj.net', 'net_cast', 'blunt']],
+  polybolos: [['polybolos', 'proj.bolt', 'shot_polybolos', 'pierce']],
+  // end W2
   riveter: [['riveter', 'melee', 'swing_whoosh', 'blunt']],
   carbineer: [['carbineer', 'proj.bullet', 'shot_carbine', 'bullet']],
   steam_golem: [['steam_golem', 'melee', 'swing_whoosh', 'blunt']],
@@ -619,6 +695,8 @@ const MODS_BY_CARD: Record<string, readonly { vs: string; bp: number }[]> = {
   training_dummy: MODS.blunt,
   hide_shield: MODS.blunt, pelt_rager: MODS.blunt, boulder_hurler: MODS.rangedAA,
   hoplite: MODS.blunt, riveter: MODS.blunt, star_legionnaire: MODS.blunt,
+  // W2 Bronze wave
+  shield_bearer: MODS.blunt, belly_bowman: MODS.rangedAA,
   spear_hunter: MODS.meleeAA, pikeman: MODS.meleeAA, phalangite: MODS.meleeAA, graviton_halberdier: MODS.meleeAA,
   bazooka_trooper: MODS.rangedAA, rail_gunner: MODS.rail, harpoon_gunner: MODS.harpoon,
   grenadier: MODS.grenadier,
@@ -628,6 +706,8 @@ const MODS_BY_CARD: Record<string, readonly { vs: string; bp: number }[]> = {
   squire_pair: MODS.blunt, flailman: MODS.blunt, warhammer_sergeant: MODS.meleeAA, crossbowman: [{ vs: 'armored', bp: 12500 }],
   // W4 Gunpowder wave: the Highlander's claymore (Infantry melee) and the Wall Gunner (ranged Anti-heavy)
   highlander: MODS.blunt, wall_gunner: MODS.rangedAA,
+  // W5 Industrial wave: the pickaxe Pair and the mantlet Guard (Infantry melee), the Steam Driller (melee Anti-heavy)
+  coal_miners: MODS.blunt, iron_mantlet: MODS.blunt, steam_driller: MODS.meleeAA,
 };
 
 /** A5 target priorities of first attacks ("priority armored", "priority air", ...); everything else `front`. */
@@ -638,8 +718,10 @@ const PRIORITY_BY_CARD: Record<string, string> = {
   // Grumpy Toad grabs "the nearest enemy ranged or support ground unit" first
   grumpy_toad: 'backline',
   boulder_hurler: 'armored',
+  belly_bowman: 'armored',
   warhammer_sergeant: 'armored', grapple_crane: 'armored',
   wall_gunner: 'armored', carronade: 'armored',
+  steam_driller: 'armored',
 };
 
 describe('A14.2 attack mapping, A2.6 mods and A5 priorities (every card)', () => {

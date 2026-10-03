@@ -1,38 +1,38 @@
 /**
  * Content-wave cards that are live in the compiled content but gated (`released: false`) while their art,
  * effects and sounds are made: the art and sound coverage checks skip exactly these ids. The W1 Stone wave
- * shipped its art and left this list on 2026-10-03, the W3 Medieval and W4 Gunpowder waves the same day.
+ * shipped its art and left this list on 2026-10-03, the W2 Bronze, W3 Medieval and W4 Gunpowder waves the same day.
  *
  * Delete this file and its uses when no wave is gated; every coverage check re-arms then. Test data only;
  * nothing in the game reads it.
  */
 
 /**
- * W2 Bronze wave (2026-10-03): gated (`released: false`) while its art, sounds and balance are made; the wave
- * removes this block when it flips its cards.
+ * W5 Industrial wave (2026-10-03): gated (`released: false`) while its art, sounds and balance are made; the
+ * wave removes this block when it flips its cards.
  */
-const BRONZE_WAVE_IDS: readonly string[] = [
-  'shield_bearer', 'thracian_raider', 'rhodian_slingers', 'discus_thrower', 'war_elephant', 'cretan_archer', 'belly_bowman',
-  'aulos_piper', 'tragic_chorus', 'wooden_horse', 'amazon_rider', 'minotaur', 'hydra',
-  'net_caster', 'polybolos', 'hoplon_line', 'slinger_camp', 'sandstorm', 'charybdis',
-  'marble_hoplite', 'sun_chariot', 'obsidian_colossus',
+const INDUSTRIAL_WAVE_IDS: readonly string[] = [
+  'coal_miners', 'iron_mantlet', 'dispatch_rider', 'bomb_bowler', 'steam_tractor', 'trench_mortar', 'steam_driller',
+  'bandmaster', 'clockwork_tinker', 'armoured_car', 'alpine_climber', 'spark_scientist', 'armoured_train', 'clockwork_soldier',
+  'rivet_spitter', 'steam_hammer', 'rail_barricade', 'tesla_pylon', 'shrapnel_shells', 'great_magnet',
+  'chimney_sweep', 'teapot_golem', 'circus_train',
 ];
-const BRONZE_WAVE_VISUALS: readonly string[] = [
-  ...BRONZE_WAVE_IDS.slice(0, 13).map((id) => `unit.${id}`),
-  'turret.net_caster', 'turret.polybolos', 'fort.hoplon_line', 'fort.slinger_camp', 'power.sandstorm', 'power.charybdis',
-  'unit.hoplite@marble_hoplite', 'unit.war_chariot@sun_chariot', 'unit.bronze_colossus@obsidian_colossus',
-  'proj.discus', 'proj.net', 'proj.arrow_arc', 'fx.note_pop', 'fx.wail_ring',
+const INDUSTRIAL_WAVE_VISUALS: readonly string[] = [
+  ...INDUSTRIAL_WAVE_IDS.slice(0, 14).map((id) => `unit.${id}`),
+  'turret.rivet_spitter', 'turret.steam_hammer', 'fort.rail_barricade', 'fort.tesla_pylon', 'power.shrapnel_shells', 'power.great_magnet',
+  'unit.riveter@chimney_sweep', 'unit.steam_golem@teapot_golem', 'unit.armoured_train@circus_train',
+  'proj.bowl_bomb', 'proj.rivet', 'fx.coil_arc', 'fx.hammer_shock',
 ];
-const BRONZE_WAVE_SOUNDS: readonly string[] = [
-  'kopis_hack', 'rhomphaia_cut', 'shot_discus', 'trunk_lash', 'shot_belly_bow', 'aulos_note', 'chorus_wail', 'horse_ram',
-  'sagaris_sweep', 'labrys_chop', 'hydra_bite', 'net_cast', 'shot_polybolos', 'pw_sandstorm', 'pw_whirlpool',
+const INDUSTRIAL_WAVE_SOUNDS: readonly string[] = [
+  'pickaxe_clink', 'mantlet_jab', 'bike_skid', 'shot_bowl', 'plough_scoop', 'shot_trench_mortar', 'drill_spin', 'cornet_blast',
+  'key_whack', 'car_mg', 'ice_axe_chop', 'coil_zap', 'train_gun', 'toy_bayonet', 'shot_rivet', 'hammer_slam', 'pw_shrapnel', 'pw_magnet',
 ];
 
 /** Cards, forts, summons, powers and skins of the gated wave. */
-export const PAUSED_WAVE_IDS: ReadonlySet<string> = new Set(BRONZE_WAVE_IDS);
+export const PAUSED_WAVE_IDS: ReadonlySet<string> = new Set([...INDUSTRIAL_WAVE_IDS]);
 
 /** Visual and projectile ids the gated wave references (B5 manifest). */
-export const PAUSED_WAVE_VISUALS: ReadonlySet<string> = new Set(BRONZE_WAVE_VISUALS);
+export const PAUSED_WAVE_VISUALS: ReadonlySet<string> = new Set([...INDUSTRIAL_WAVE_VISUALS]);
 
 /** Sound ids the gated wave references (A13, B7 manifest). */
-export const PAUSED_WAVE_SOUNDS: ReadonlySet<string> = new Set(BRONZE_WAVE_SOUNDS);
+export const PAUSED_WAVE_SOUNDS: ReadonlySet<string> = new Set([...INDUSTRIAL_WAVE_SOUNDS]);

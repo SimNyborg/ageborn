@@ -25,6 +25,10 @@ sys.dont_write_bytecode = True
 
 AGE = "industrial"
 UNITS = ["riveter", "carbineer", "steam_golem", "harpoon_gunner", "flare_spotter", "sapper", "land_dreadnought"]
+# W5 Industrial wave (CONTENT_PLAN 5.5)
+WAVE = ["coal_miners", "iron_mantlet", "dispatch_rider", "bomb_bowler", "steam_tractor", "trench_mortar",
+        "steam_driller", "bandmaster", "clockwork_tinker", "clockwork_soldier", "armoured_car", "alpine_climber",
+        "spark_scientist", "armoured_train"]
 
 
 def install(slug, out):

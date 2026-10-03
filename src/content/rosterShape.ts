@@ -38,7 +38,8 @@ const shape: Record<AgeId, AgeRosterShape> = {
   medieval: after({ wall: 1, tower: 2, camp: 1, trap: 2 }),
   // W4 (2026-10-03): Cavalry Picket (brute camp) and Fougasse (double blast trap)
   gunpowder: after({ wall: 1, tower: 1, camp: 2, trap: 2 }),
-  industrial: BEFORE,
+  // W5 (2026-10-03): Rail Barricade (heavy wall) and Tesla Pylon (chain tower)
+  industrial: after({ wall: 2, tower: 2, camp: 1, trap: 1 }),
   modern: BEFORE,
   future: BEFORE,
   cosmic: BEFORE,

@@ -1,0 +1,458 @@
+{
+ "frames": {
+  "trench_mortar_attack_b_02": {
+   "frame": {
+    "x": 123,
+    "y": 2,
+    "w": 109,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 132,
+    "w": 109,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 393,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "trench_mortar_attack_b_02_team": {
+   "frame": {
+    "x": 798,
+    "y": 2,
+    "w": 85,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 132,
+    "w": 85,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 393,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "trench_mortar_attack_b_03": {
+   "frame": {
+    "x": 236,
+    "y": 2,
+    "w": 109,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 132,
+    "w": 109,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 393,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "trench_mortar_attack_b_03_team": {
+   "frame": {
+    "x": 887,
+    "y": 2,
+    "w": 85,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 132,
+    "w": 85,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 393,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "trench_mortar_attack_b_04": {
+   "frame": {
+    "x": 349,
+    "y": 2,
+    "w": 109,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 132,
+    "w": 109,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 393,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "trench_mortar_attack_b_04_team": {
+   "frame": {
+    "x": 976,
+    "y": 2,
+    "w": 85,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 132,
+    "w": 85,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 393,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "trench_mortar_attack_b_05": {
+   "frame": {
+    "x": 462,
+    "y": 2,
+    "w": 109,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 132,
+    "w": 109,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 393,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "trench_mortar_attack_b_05_team": {
+   "frame": {
+    "x": 1065,
+    "y": 2,
+    "w": 85,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 132,
+    "w": 85,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 393,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "trench_mortar_attack_b_06": {
+   "frame": {
+    "x": 575,
+    "y": 2,
+    "w": 117,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 132,
+    "w": 117,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 393,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "trench_mortar_attack_b_06_team": {
+   "frame": {
+    "x": 1154,
+    "y": 2,
+    "w": 98,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 132,
+    "w": 98,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 393,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "trench_mortar_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 117,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 132,
+    "w": 117,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 393,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  },
+  "trench_mortar_attack_b_07_team": {
+   "frame": {
+    "x": 696,
+    "y": 2,
+    "w": 98,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 132,
+    "w": 98,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 393,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.65649,
+    "y": 0.85317
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "trench_mortar_attack_00",
+   "trench_mortar_attack_01",
+   "trench_mortar_attack_b_02",
+   "trench_mortar_attack_b_03",
+   "trench_mortar_attack_b_04",
+   "trench_mortar_attack_b_05",
+   "trench_mortar_attack_b_06",
+   "trench_mortar_attack_b_07",
+   "trench_mortar_attack_08",
+   "trench_mortar_attack_09",
+   "trench_mortar_attack_10"
+  ],
+  "attack_b_team": [
+   "trench_mortar_attack_00_team",
+   "trench_mortar_attack_01_team",
+   "trench_mortar_attack_b_02_team",
+   "trench_mortar_attack_b_03_team",
+   "trench_mortar_attack_b_04_team",
+   "trench_mortar_attack_b_05_team",
+   "trench_mortar_attack_b_06_team",
+   "trench_mortar_attack_b_07_team",
+   "trench_mortar_attack_08_team",
+   "trench_mortar_attack_09_team",
+   "trench_mortar_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "trench_mortar.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1280,
+   "h": 100
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.trench_mortar",
+   "name": "Trench Mortar",
+   "heightLu": 66,
+   "widthLu": 85.0,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    258.0,
+    215.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     64
+    ],
+    "hitCenter": [
+     -8,
+     30
+    ],
+    "muzzle": [
+     2,
+     40
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "trench_mortar",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        29.0,
+        26.5
+       ],
+       [
+        29.0,
+        22.4
+       ],
+       [
+        29.0,
+        25.4
+       ],
+       [
+        29.0,
+        25.4
+       ],
+       [
+        29.0,
+        25.4
+       ],
+       [
+        29.0,
+        25.4
+       ],
+       [
+        29.0,
+        27.4
+       ],
+       [
+        29.0,
+        25.4
+       ],
+       [
+        29.0,
+        20.4
+       ],
+       [
+        29.0,
+        24.4
+       ],
+       [
+        29.0,
+        26.5
+       ]
+      ]
+     },
+     "muzzle": [
+      29.0,
+      27.4
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}
