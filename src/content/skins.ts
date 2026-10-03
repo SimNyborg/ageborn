@@ -62,4 +62,8 @@ export const skinList: readonly SkinDef[] = [
   { ...skin('desert_raider', 'trench_raider', 'rare'), released: false },
   { ...skin('tin_tankette', 'tankette', 'epic'), released: false },
   { ...skin('origami_fortress', 'sky_fortress', 'legendary'), released: false },
+  // W7 Future (2026-10-03), released with their art:
+  { ...skin('space_cadet', 'pulse_trooper', 'rare'), released: false },
+  { ...skin('chrome_rail', 'rail_gunner', 'epic'), released: false },
+  { ...skin('grandfather_clock', 'chrono_titan', 'legendary'), released: false },
 ];

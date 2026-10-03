@@ -272,6 +272,25 @@ export const SKIN_SPECS: readonly SkinSpec[] = [
     // A circus train: cream and raspberry wagons (outside the team hue bands), gilt trim, pale bunting.
     palette: { cloth: 0x8a4a66, cloth2: 0xefe6cf, cloth3: 0xefe6cf, metal: 0xd8c08a, metal2: 0x4a3e48, stripe: 0xefe6cf, brick: 0x8a4a66, stone: 0xefe6cf, copper: 0xd8c08a },
   },
+  // Modern wave (CONTENT_PLAN 5.6, released with the wave): palette puppets like the ones above.
+  {
+    skin: 'desert_raider',
+    target: 'unit.trench_raider',
+    // Desert kit: a sand drill tunic and trousers, a pale sun-bleached helmet, a dark scarf.
+    palette: { cloth: 0xc8b48a, cloth2: 0xd8c8a0, sleeve: 0xd8c8a0, forearm: 0xd8c8a0, pants: 0xc8b48a, shin: 0xb8a67a, metal: 0xd2c6a8, metal2: 0x8a7c62, hair: 0x2e2826 },
+  },
+  {
+    skin: 'tin_tankette',
+    target: 'unit.tankette',
+    // A wind-up tin toy: bright tinplate, cream lithographed panels, a brass key (under 40% saturation).
+    palette: { cloth: 0xc8ccd0, cloth2: 0xefe6cf, cloth3: 0x9aa0a6, metal: 0xd8dce0, metal2: 0x8a9096, wood: 0xd8c08a, wood2: 0xb89a62 },
+  },
+  {
+    skin: 'origami_fortress',
+    target: 'unit.sky_fortress',
+    // A folded-paper bomber: cream paper planes and pale grey creases.
+    palette: { cloth: 0xf2ece0, cloth2: 0xe6dfd0, cloth3: 0xc8c2b6, metal: 0xefe9dc, metal2: 0xb8b2a6, wood: 0xe6dfd0, wood2: 0xc8c2b6 },
+  },
 ];
 
 export const SKIN_PUPPETS: readonly PuppetDef[] = SKIN_SPECS.map(skinPuppet);

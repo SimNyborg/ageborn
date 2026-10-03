@@ -139,7 +139,7 @@ export const future: RawAgeTables = {
       ],
       abilities: [],
       squad: { count: 2 },
-      visualId: 'unit.android_pair', sfx: { spawn: 'spawn_pop', die: 'die_mech' },
+      visualId: 'unit.android_pair', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
       nameKey: 'card.android_pair.name', descKey: 'card.android_pair.desc', strongVs: [], weakVs: [],
     },
     {
@@ -263,7 +263,7 @@ export const future: RawAgeTables = {
       attacks: [
         {
           damage: 27, intervalMs: 1200, windupPct: 50, range: 150, hitsGround: true, hitsAir: true,
-          projectile: { speed: 1500, visualId: 'proj.plasma' },
+          projectile: { speed: 1800, visualId: 'proj.plasma' },
           dmgType: 'laser', sfx: 'shot_holo',
         },
       ],
@@ -360,8 +360,8 @@ export const future: RawAgeTables = {
     {
       // Drone Carrier's summon (X0 M3, flying): a small attack drone (about 30% of a Gyrocopter at P 3.32), 9 every
       // 0.3 s, range 150, ground and air; no pop, no bounty, always flies forward
-      id: 'attack_drone', released: false, kind: 'unit', age: 'future', rarity: 'common', role: 'airGunship', group: 'epic',
-      cost: 0, trainMs: 1500, pop: 2, hp: 300, speed: 90, size: 'small',
+      id: 'attack_drone', released: false, kind: 'unit', age: 'future', rarity: 'epic', role: 'airGunship', group: 'epic',
+      cost: 0, trainMs: 4000, pop: 8, hp: 300, speed: 90, size: 'small',
       tags: ['air', 'mech'],
       attacks: [
         {
@@ -371,7 +371,7 @@ export const future: RawAgeTables = {
         },
       ],
       abilities: [],
-      visualId: 'unit.attack_drone', sfx: { spawn: 'spawn_pop', die: 'die_mech' },
+      visualId: 'unit.attack_drone', sfx: { spawn: 'spawn_heavy', die: 'die_mech' },
       nameKey: 'card.attack_drone.name', descKey: 'card.attack_drone.desc', strongVs: [], weakVs: [],
       hidden: true, summon: true, aiValue: 40,
     },

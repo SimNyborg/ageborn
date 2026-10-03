@@ -34,8 +34,8 @@ SLUG = "rifle_grenadier"
 GAIT_NAME = "biped"
 NAME = "Rifle Grenadier"
 HEIGHT_LU = 68
-CANVAS = (320, 300)
-FEET = (130, 262)
+CANVAS = (360, 300)
+FEET = (165, 262)
 ANCHORS = {"head": (2, 67), "hitCenter": (0, 32), "muzzle": (40, 50)}
 NO_RETIME = True
 
@@ -229,7 +229,7 @@ def _hit(k):
 
 
 def _die(k):
-    return W.die_d1_pose(k, STANCE, HEIGHT_LU, prop="gun", prop_path=W.PROP_PATH)
+    return W.die_d1_pose(k, STANCE, HEIGHT_LU, prop="gun", prop_path=W.RIFLE_PATH)
 
 
 def clips():

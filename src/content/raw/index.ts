@@ -8,7 +8,7 @@
 import { bronze, bronzePowers } from './bronze';
 import { cosmic, cosmicPowers } from './cosmic';
 import { ageScale, battle, damageMods, economy, formats, windowFormatId, WINDOW_CLOCKS, WINDOW_XP } from './economy';
-import { future } from './future';
+import { future, futurePowers } from './future';
 import { gunpowder } from './gunpowder';
 import { industrial, industrialPowers } from './industrial';
 import { medieval } from './medieval';
@@ -33,6 +33,7 @@ export {
   WINDOW_CLOCKS,
   WINDOW_XP,
   future,
+  futurePowers,
   gunpowder,
   industrial,
   industrialPowers,
@@ -47,7 +48,7 @@ export {
 export const raw: RawContent = {
   ages: [stone, bronze, medieval, gunpowder, industrial, modern, future, cosmic],
   // A5.7 powers, then the A17.11 powers of the new ages (the compiler sorts them by age and slot)
-  powers: [...powers, ...bronzePowers, ...industrialPowers, ...modernPowers, ...cosmicPowers],
+  powers: [...powers, ...bronzePowers, ...industrialPowers, ...modernPowers, ...futurePowers, ...cosmicPowers],
   economy,
   ageScale,
   formats,

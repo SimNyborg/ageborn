@@ -52,7 +52,11 @@ AGE_OF = {
                "sticky_bomber", "combat_medic", "bulldog_sergeant", "dive_bomber", "bulldozer", "ghillie_sniper",
                "sky_fortress"],
     "future": ["chrono_titan", "emp_saboteur", "photon_knight", "pulse_trooper", "rail_gunner",
-               "repair_drone", "walker_mech"],
+               "repair_drone", "walker_mech",
+               # W7 Future wave (CONTENT_PLAN 5.7)
+               "android_pair", "barrier_trooper", "hover_bike", "needle_gunner", "crab_mech", "arc_lobber",
+               "plasma_lancer", "overclock_engineer", "holo_projector", "holo_decoy", "jetpack_trooper",
+               "particle_cannon", "overload_android", "drone_carrier", "attack_drone"],
     "cosmic": ["graviton_halberdier", "hover_tank", "ion_ranger", "mothership", "star_legionnaire",
                "starwarden", "warp_stalker"],
 }

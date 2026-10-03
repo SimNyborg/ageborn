@@ -1,0 +1,1029 @@
+{
+ "frames": {
+  "android_pair_attack_b_01": {
+   "frame": {
+    "x": 326,
+    "y": 2,
+    "w": 114,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 211,
+    "w": 114,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_b_01_team": {
+   "frame": {
+    "x": 304,
+    "y": 446,
+    "w": 83,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 261,
+    "y": 233,
+    "w": 83,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_b_02": {
+   "frame": {
+    "x": 641,
+    "y": 250,
+    "w": 169,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 219,
+    "w": 169,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_b_02_team": {
+   "frame": {
+    "x": 910,
+    "y": 446,
+    "w": 106,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 242,
+    "w": 106,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_b_03": {
+   "frame": {
+    "x": 970,
+    "y": 250,
+    "w": 172,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 225,
+    "w": 172,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_b_03_team": {
+   "frame": {
+    "x": 1020,
+    "y": 446,
+    "w": 109,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 247,
+    "w": 109,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_b_04": {
+   "frame": {
+    "x": 148,
+    "y": 2,
+    "w": 174,
+    "h": 238
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 218,
+    "w": 174,
+    "h": 238
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_b_04_team": {
+   "frame": {
+    "x": 1146,
+    "y": 250,
+    "w": 88,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 268,
+    "y": 242,
+    "w": 88,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 142,
+    "h": 244
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 270,
+    "y": 212,
+    "w": 142,
+    "h": 244
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 446,
+    "w": 94,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 272,
+    "y": 237,
+    "w": 94,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_b_06": {
+   "frame": {
+    "x": 814,
+    "y": 250,
+    "w": 152,
+    "h": 181
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 270,
+    "y": 226,
+    "w": 152,
+    "h": 181
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_b_06_team": {
+   "frame": {
+    "x": 1133,
+    "y": 446,
+    "w": 97,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 270,
+    "y": 251,
+    "w": 97,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_b_07": {
+   "frame": {
+    "x": 187,
+    "y": 250,
+    "w": 134,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 271,
+    "y": 216,
+    "w": 134,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_b_07_team": {
+   "frame": {
+    "x": 504,
+    "y": 446,
+    "w": 92,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 271,
+    "y": 242,
+    "w": 92,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_b_08": {
+   "frame": {
+    "x": 943,
+    "y": 2,
+    "w": 146,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 266,
+    "y": 206,
+    "w": 146,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_b_08_team": {
+   "frame": {
+    "x": 203,
+    "y": 446,
+    "w": 97,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 266,
+    "y": 231,
+    "w": 97,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_01": {
+   "frame": {
+    "x": 784,
+    "y": 2,
+    "w": 155,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 256,
+    "y": 205,
+    "w": 155,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_01_team": {
+   "frame": {
+    "x": 100,
+    "y": 446,
+    "w": 99,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 257,
+    "y": 228,
+    "w": 99,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_02": {
+   "frame": {
+    "x": 1267,
+    "y": 2,
+    "w": 152,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 253,
+    "y": 209,
+    "w": 152,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_02_team": {
+   "frame": {
+    "x": 600,
+    "y": 446,
+    "w": 95,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 255,
+    "y": 232,
+    "w": 95,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_03": {
+   "frame": {
+    "x": 325,
+    "y": 250,
+    "w": 146,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 248,
+    "y": 216,
+    "w": 146,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_03_team": {
+   "frame": {
+    "x": 699,
+    "y": 446,
+    "w": 91,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 251,
+    "y": 233,
+    "w": 91,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_04": {
+   "frame": {
+    "x": 444,
+    "y": 2,
+    "w": 169,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 268,
+    "y": 206,
+    "w": 169,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_04_team": {
+   "frame": {
+    "x": 1238,
+    "y": 250,
+    "w": 111,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 272,
+    "y": 228,
+    "w": 111,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_05": {
+   "frame": {
+    "x": 1093,
+    "y": 2,
+    "w": 170,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 280,
+    "y": 209,
+    "w": 170,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_05_team": {
+   "frame": {
+    "x": 1353,
+    "y": 250,
+    "w": 116,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 286,
+    "y": 234,
+    "w": 116,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_06": {
+   "frame": {
+    "x": 2,
+    "y": 250,
+    "w": 181,
+    "h": 192
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 283,
+    "y": 229,
+    "w": 181,
+    "h": 192
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_06_team": {
+   "frame": {
+    "x": 1234,
+    "y": 446,
+    "w": 115,
+    "h": 135
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 292,
+    "y": 254,
+    "w": 115,
+    "h": 135
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_07": {
+   "frame": {
+    "x": 475,
+    "y": 250,
+    "w": 162,
+    "h": 185
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 285,
+    "y": 220,
+    "w": 162,
+    "h": 185
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_07_team": {
+   "frame": {
+    "x": 794,
+    "y": 446,
+    "w": 112,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 291,
+    "y": 245,
+    "w": 112,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_08": {
+   "frame": {
+    "x": 617,
+    "y": 2,
+    "w": 163,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 271,
+    "y": 206,
+    "w": 163,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  },
+  "android_pair_attack_c_08_team": {
+   "frame": {
+    "x": 391,
+    "y": 446,
+    "w": 109,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 273,
+    "y": 232,
+    "w": 109,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 566,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.52297,
+    "y": 0.84649
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "android_pair_attack_00",
+   "android_pair_attack_b_01",
+   "android_pair_attack_b_02",
+   "android_pair_attack_b_03",
+   "android_pair_attack_b_04",
+   "android_pair_attack_b_05",
+   "android_pair_attack_b_06",
+   "android_pair_attack_b_07",
+   "android_pair_attack_b_08",
+   "android_pair_attack_09",
+   "android_pair_attack_00"
+  ],
+  "attack_b_team": [
+   "android_pair_attack_00_team",
+   "android_pair_attack_b_01_team",
+   "android_pair_attack_b_02_team",
+   "android_pair_attack_b_03_team",
+   "android_pair_attack_b_04_team",
+   "android_pair_attack_b_05_team",
+   "android_pair_attack_b_06_team",
+   "android_pair_attack_b_07_team",
+   "android_pair_attack_b_08_team",
+   "android_pair_attack_09_team",
+   "android_pair_attack_00_team"
+  ],
+  "attack_c": [
+   "android_pair_attack_00",
+   "android_pair_attack_c_01",
+   "android_pair_attack_c_02",
+   "android_pair_attack_c_03",
+   "android_pair_attack_c_04",
+   "android_pair_attack_c_05",
+   "android_pair_attack_c_06",
+   "android_pair_attack_c_07",
+   "android_pair_attack_c_08",
+   "android_pair_attack_09",
+   "android_pair_attack_00"
+  ],
+  "attack_c_team": [
+   "android_pair_attack_00_team",
+   "android_pair_attack_c_01_team",
+   "android_pair_attack_c_02_team",
+   "android_pair_attack_c_03_team",
+   "android_pair_attack_c_04_team",
+   "android_pair_attack_c_05_team",
+   "android_pair_attack_c_06_team",
+   "android_pair_attack_c_07_team",
+   "android_pair_attack_c_08_team",
+   "android_pair_attack_09_team",
+   "android_pair_attack_00_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "android_pair.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1536,
+   "h": 604
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.android_pair",
+   "name": "Android Pair",
+   "heightLu": 66,
+   "widthLu": 48.8,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    296,
+    386
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     64
+    ],
+    "hitCenter": [
+     0,
+     31
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "android_pair",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      0
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "holdStep": 3,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        31.2,
+        40.7
+       ],
+       [
+        -14.2,
+        -10.0
+       ],
+       [
+        -33.1,
+        5.0
+       ],
+       [
+        -33.1,
+        14.4
+       ],
+       [
+        14.9,
+        -22.7
+       ],
+       [
+        38.9,
+        -6.3
+       ],
+       [
+        36.9,
+        3.7
+       ],
+       [
+        36.6,
+        9.0
+       ],
+       [
+        39.2,
+        22.1
+       ],
+       [
+        31.7,
+        40.7
+       ]
+      ]
+     }
+    },
+    "attack_c": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      0
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "holdStep": 3,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        31.2,
+        40.7
+       ],
+       [
+        38.3,
+        27.4
+       ],
+       [
+        35.9,
+        24.6
+       ],
+       [
+        31.7,
+        24.3
+       ],
+       [
+        48.7,
+        14.3
+       ],
+       [
+        54.4,
+        2.7
+       ],
+       [
+        54.1,
+        -1.7
+       ],
+       [
+        53.5,
+        1.1
+       ],
+       [
+        48.1,
+        18.1
+       ],
+       [
+        31.7,
+        40.7
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

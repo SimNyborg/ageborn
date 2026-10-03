@@ -1,0 +1,478 @@
+{
+ "frames": {
+  "needle_gunner_attack_b_00": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 166,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 192,
+    "w": 166,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.44747,
+    "y": 0.85572
+   }
+  },
+  "needle_gunner_attack_b_00_team": {
+   "frame": {
+    "x": 385,
+    "y": 175,
+    "w": 108,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 182,
+    "w": 108,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.44747,
+    "y": 0.85572
+   }
+  },
+  "needle_gunner_attack_b_01": {
+   "frame": {
+    "x": 487,
+    "y": 2,
+    "w": 161,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 173,
+    "y": 201,
+    "w": 161,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.44747,
+    "y": 0.85572
+   }
+  },
+  "needle_gunner_attack_b_01_team": {
+   "frame": {
+    "x": 166,
+    "y": 175,
+    "w": 105,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 191,
+    "w": 105,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.44747,
+    "y": 0.85572
+   }
+  },
+  "needle_gunner_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 175,
+    "w": 160,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 206,
+    "w": 160,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.44747,
+    "y": 0.85572
+   }
+  },
+  "needle_gunner_attack_b_02_team": {
+   "frame": {
+    "x": 497,
+    "y": 175,
+    "w": 106,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 196,
+    "w": 106,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.44747,
+    "y": 0.85572
+   }
+  },
+  "needle_gunner_attack_b_03": {
+   "frame": {
+    "x": 850,
+    "y": 2,
+    "w": 161,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 206,
+    "w": 161,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.44747,
+    "y": 0.85572
+   }
+  },
+  "needle_gunner_attack_b_03_team": {
+   "frame": {
+    "x": 607,
+    "y": 175,
+    "w": 105,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 196,
+    "w": 105,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.44747,
+    "y": 0.85572
+   }
+  },
+  "needle_gunner_attack_b_04": {
+   "frame": {
+    "x": 652,
+    "y": 2,
+    "w": 194,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 203,
+    "w": 194,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.44747,
+    "y": 0.85572
+   }
+  },
+  "needle_gunner_attack_b_04_team": {
+   "frame": {
+    "x": 275,
+    "y": 175,
+    "w": 106,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 194,
+    "w": 106,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.44747,
+    "y": 0.85572
+   }
+  },
+  "needle_gunner_attack_b_05": {
+   "frame": {
+    "x": 339,
+    "y": 2,
+    "w": 144,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 161,
+    "y": 199,
+    "w": 144,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.44747,
+    "y": 0.85572
+   }
+  },
+  "needle_gunner_attack_b_05_team": {
+   "frame": {
+    "x": 823,
+    "y": 175,
+    "w": 103,
+    "h": 132
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 161,
+    "y": 189,
+    "w": 103,
+    "h": 132
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.44747,
+    "y": 0.85572
+   }
+  },
+  "needle_gunner_attack_b_06": {
+   "frame": {
+    "x": 172,
+    "y": 2,
+    "w": 163,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 193,
+    "w": 163,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.44747,
+    "y": 0.85572
+   }
+  },
+  "needle_gunner_attack_b_06_team": {
+   "frame": {
+    "x": 716,
+    "y": 175,
+    "w": 103,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 183,
+    "w": 103,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.44747,
+    "y": 0.85572
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "needle_gunner_attack_b_00",
+   "needle_gunner_attack_b_01",
+   "needle_gunner_attack_b_02",
+   "needle_gunner_attack_b_03",
+   "needle_gunner_attack_b_04",
+   "needle_gunner_attack_b_05",
+   "needle_gunner_attack_b_06",
+   "needle_gunner_attack_07"
+  ],
+  "attack_b_team": [
+   "needle_gunner_attack_b_00_team",
+   "needle_gunner_attack_b_01_team",
+   "needle_gunner_attack_b_02_team",
+   "needle_gunner_attack_b_03_team",
+   "needle_gunner_attack_b_04_team",
+   "needle_gunner_attack_b_05_team",
+   "needle_gunner_attack_b_06_team",
+   "needle_gunner_attack_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "needle_gunner.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1024,
+   "h": 332
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.needle_gunner",
+   "name": "Needle Gunner",
+   "heightLu": 70,
+   "widthLu": 63.4,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    230,
+    344
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     68
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     46,
+     30
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "needle_gunner",
+   "clips": {
+    "attack_b": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      40,
+      60,
+      100,
+      50,
+      50,
+      60,
+      60,
+      80
+     ],
+     "durationMs": 500,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 2,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        42.3,
+        14.5
+       ],
+       [
+        38.1,
+        19.2
+       ],
+       [
+        35.6,
+        19.2
+       ],
+       [
+        36.4,
+        19.2
+       ],
+       [
+        37.5,
+        17.4
+       ],
+       [
+        24.1,
+        38.8
+       ],
+       [
+        37.6,
+        28.6
+       ],
+       [
+        43.1,
+        17.6
+       ]
+      ]
+     },
+     "muzzle": [
+      37.5,
+      17.4
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

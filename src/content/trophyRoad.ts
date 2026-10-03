@@ -98,7 +98,7 @@ const ROWS: readonly [number, RoadReward[]][] = [
   [3600, [dust(400)]],
   [3700, [capsule('jade'), power('creeping_barrage')]],
   [3800, [amber(860)]],
-  [3900, [dust(400)]],
+  [3900, [dust(400), power('target_painter')]],
   [4000, [capsule('aeon')]],
   // X0 (content expansion 2026-10-02): the road extends to 5,000, every 100, one region set tile per age in
   // region order (CONTENT_PLAN 6). Regions whose wave has not shipped yet hold their Amber or Dust node.
@@ -108,7 +108,7 @@ const ROWS: readonly [number, RoadReward[]][] = [
   [4400, [capsule('jade'), ...regionSet('cannon_salute', 'cavalry_picket', 'fougasse')]],
   [4500, [amber(1000), ...regionSet('great_magnet', 'rail_barricade', 'tesla_pylon')]],
   [4600, [dust(400), ...regionSet('concussion_shells', 'rifle_depot', 'wire_snare')]],
-  [4700, [amber(1040)]],
+  [4700, [amber(1040), ...regionSet('nano_mesh', 'skyguard_pylon', 'mech_bay')]],
   [4800, [capsule('jade')]],
   [4900, [amber(1080)]],
   [5000, [capsule('aeon')]],

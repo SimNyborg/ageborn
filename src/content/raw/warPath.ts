@@ -154,6 +154,8 @@ const REGIONS: readonly RegionRow[] = [
     epic: 'emp_saboteur',
     bossCapsule: 'jade',
     bossTurret: 'pulse_laser',
+    // W7 Future (2026-10-03): Tempest lays the Nano Mesh, Rook's air hunters meet the Skyguard Pylon
+    sides: { s1: 'tempest', s2: 'rook' },
   },
   {
     age: 'cosmic',

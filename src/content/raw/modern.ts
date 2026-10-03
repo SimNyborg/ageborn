@@ -139,11 +139,11 @@ export const modern: RawAgeTables = {
     {
       // Raider: a crouched sprint in a beret, a combat roll into a rifle-butt swing; fast; ×2 to bases
       id: 'commando', released: false, kind: 'unit', age: 'modern', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 330, speed: 110, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 370, speed: 110, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 42, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 46, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'blunt', sfx: 'butt_stroke', vsBaseDamage: 84,
         },
       ],
@@ -154,7 +154,7 @@ export const modern: RawAgeTables = {
     {
       // Guard: the shoulder sandbag takes 25% less from attacks with range ≥ 100 (not powers); an overhead slam; Blunt
       id: 'sandbag_carrier', released: false, kind: 'unit', age: 'modern', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 515, speed: 70, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 480, speed: 70, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -162,7 +162,7 @@ export const modern: RawAgeTables = {
           dmgType: 'blunt', sfx: 'sandbag_slam', mods: damageMods.blunt,
         },
       ],
-      abilities: [{ kind: 'resist', minSourceRange: 100, bp: 2500 }],
+      abilities: [{ kind: 'resist', minSourceRange: 100, bp: 2000 }],
       visualId: 'unit.sandbag_carrier', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
       nameKey: 'card.sandbag_carrier.name', descKey: 'card.sandbag_carrier.desc', strongVs: [], weakVs: [],
     },
@@ -170,11 +170,11 @@ export const modern: RawAgeTables = {
       // Trio (X0 M1): one card trains 3 troopers with submachine guns; stats per trooper (0.40 × Rifleman, +15% damage
       // for the short range 170); cost and pop split evenly
       id: 'smg_squad', released: false, kind: 'unit', age: 'modern', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 94, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 90, speed: 65, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 15, intervalMs: 1000, windupPct: 50, range: 170, hitsGround: true, hitsAir: true,
+          damage: 14, intervalMs: 1000, windupPct: 50, range: 170, hitsGround: true, hitsAir: true,
           projectile: { speed: 1500, visualId: 'proj.bullet' },
           dmgType: 'bullet', sfx: 'shot_smg',
         },
@@ -191,7 +191,7 @@ export const modern: RawAgeTables = {
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 30, intervalMs: 1500, windupPct: 50, range: 230, hitsGround: true, hitsAir: false,
+          damage: 32, intervalMs: 1500, windupPct: 50, range: 230, hitsGround: true, hitsAir: false,
           projectile: { speed: 450, arc: true, visualId: 'proj.rifle_grenade' },
           dmgType: 'blast', sfx: 'shot_rifle_grenade', splashRadius: 30,
         },
@@ -203,11 +203,11 @@ export const modern: RawAgeTables = {
     {
       // Gunner Heavy (armored mech): a turretless assault gun, range 90, splash r30; the whole hull recoils
       id: 'assault_gun', released: false, kind: 'unit', age: 'modern', rarity: 'common', role: 'heavy', group: 'heavy',
-      cost: 150, trainMs: 4000, pop: 6, hp: 1150, speed: 45, size: 'large',
+      cost: 150, trainMs: 4000, pop: 6, hp: 1250, speed: 45, size: 'large',
       tags: ['armored', 'mech', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 76, intervalMs: 1500, windupPct: 50, range: 90, hitsGround: true, hitsAir: false,
+          damage: 82, intervalMs: 1500, windupPct: 50, range: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 1200, visualId: 'proj.shell' },
           dmgType: 'blast', sfx: 'shot_assault_gun', splashRadius: 30,
         },
@@ -220,11 +220,11 @@ export const modern: RawAgeTables = {
       // Long range (H6, A5.1): a two-man bipod mortar, an arcing bomb at the target's spot, splash r35; range 380,
       // min 90; half to bases; ground only
       id: 'mortar_team', released: false, kind: 'unit', age: 'modern', rarity: 'rare', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 250, speed: 60, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 266, speed: 60, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 100, intervalMs: 2600, windupPct: 50, range: 380, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 116, intervalMs: 2600, windupPct: 50, range: 380, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.mortar_shell' },
           dmgType: 'blast', sfx: 'shot_mortar_team', splashRadius: 35, vsBaseDamage: 50,
         },
@@ -241,7 +241,7 @@ export const modern: RawAgeTables = {
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 92, intervalMs: 2000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 98, intervalMs: 2000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'blast', sfx: 'sticky_thunk', mods: damageMods.meleeAntiArmor, priority: 'armored',
         },
       ],
@@ -263,7 +263,7 @@ export const modern: RawAgeTables = {
         },
       ],
       abilities: [
-        { kind: 'heal', hpPerSec: 74, radius: 160, targets: 2, pulseMs: 500 },
+        { kind: 'heal', hpPerSec: 70, radius: 160, targets: 2, pulseMs: 500 },
         { kind: 'followSupport', behindFront: 60, soloMaxP: 200 },
       ],
       visualId: 'unit.combat_medic', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
@@ -340,11 +340,11 @@ export const modern: RawAgeTables = {
       // air (their own targets, not the bomb window); when it falls it crashes for 270 splash r70 on ground enemies
       // and the 2 gunners bail out as Riflemen (summoned)
       id: 'sky_fortress', released: false, kind: 'unit', age: 'modern', rarity: 'legendary', role: 'airBomber', group: 'legendary',
-      cost: 350, trainMs: 7000, pop: 14, hp: 1750, speed: 40, size: 'huge',
+      cost: 350, trainMs: 7000, pop: 14, hp: 1450, speed: 40, size: 'huge',
       tags: ['air', 'mech', 'legendary'],
       attacks: [
         {
-          damage: 100, vsBaseDamage: 130, intervalMs: 1600, windupPct: 50, range: 40, hitsGround: true, hitsAir: false,
+          damage: 80, vsBaseDamage: 130, intervalMs: 1600, windupPct: 50, range: 40, hitsGround: true, hitsAir: false,
           projectile: { speed: 450, visualId: 'proj.bomb' },
           dmgType: 'blast', sfx: 'bomb_stick', splashRadius: 50,
         },
@@ -354,7 +354,7 @@ export const modern: RawAgeTables = {
         {
           kind: 'riders', count: 2, onDeathSpawn: 'rifleman',
           attack: {
-            damage: 12, intervalMs: 400, windupPct: 50, range: 160, hitsGround: true, hitsAir: true,
+            damage: 6, intervalMs: 600, windupPct: 50, range: 160, hitsGround: true, hitsAir: true,
             projectile: { speed: 1500, visualId: 'proj.bullet' },
             dmgType: 'bullet', sfx: 'shot_mg', priority: 'air',
           },
@@ -466,7 +466,7 @@ export const modernPowers: readonly PowerDef[] = [
     id: 'concussion_shells', released: false, kind: 'power', age: 'modern', slot: 'home', reach: 'home', family: 'stun', rarity: 'epic',
     source: 'warPath', warPathSide: 1, road: 4600, cost: 75, reloadMs: 35000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 5000,
     effect: {
-      kind: 'field', zone: 350, durationMs: 0, hitsAir: false, damagePerPulse: 175,
+      kind: 'field', zone: 350, durationMs: 0, hitsAir: false, damagePerPulse: 200,
       statuses: [{ kind: 'stun', magnitudeBp: 10000, durationMs: 2000, frozen: false }],
     },
     visualId: 'power.concussion_shells', sfx: 'pw_concussion', nameKey: 'card.concussion_shells.name', descKey: 'card.concussion_shells.desc',

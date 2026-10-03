@@ -135,7 +135,7 @@ describe('compiled bundle (B4)', () => {
       'volley_fire', 'smoke_screen', 'broadside', 'boarding_nets', 'cannon_salute', 'rocket_volley', 'horse_artillery', 'sharpshooter',
       'gun_line', 'iron_horse', 'zeppelin_raid', 'barbed_wire', 'great_magnet', 'shrapnel_shells', 'railway_gun', 'field_hospital',
       'strafing_run', 'paratroopers', 'carpet_bomber', 'aa_screen', 'concussion_shells', 'creeping_barrage', 'tank_rush', 'sniper_team',
-      'orbital_lance', 'drone_swarm', 'point_defense', 'stasis_field', 'nanite_surge', 'emp_blackout',
+      'orbital_lance', 'drone_swarm', 'point_defense', 'stasis_field', 'nano_mesh', 'nanite_surge', 'target_painter', 'emp_blackout',
       'starfall', 'comet_run', 'singularity', 'solar_flare', 'warp_strike', 'ion_cannon',
     ]);
     expect(full.order.formats).toEqual(['tutorial', 'short', 'standard', 'full', 'last']);

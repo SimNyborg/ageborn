@@ -175,6 +175,20 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['repair_drone', 'Repair Drone', 'R', 'support', 110, 430, 0, 0, 160, 70, 'S', '-', 'air mech support'],
     ['emp_saboteur', 'EMP Saboteur', 'E', 'antiMech', 200, 700, 50, 10, 12, 85, 'M', 'G', 'light bio melee'],
     ['chrono_titan', 'Chrono Titan', 'L', 'siegeHeavy', 350, 4500, 190, 16, 60, 35, 'H', 'G', 'armored mech melee legendary'],
+    // W7 Future wave units (CONTENT_PLAN 5.7)
+    ['android_pair', 'Android Pair', 'C', 'infantry', 50, 300, 38, 10, 16, 85, 'S', 'G', 'light bio melee'],
+    ['barrier_trooper', 'Barrier Trooper', 'C', 'infantry', 50, 640, 44, 10, 16, 70, 'S', 'G', 'light bio melee'],
+    ['hover_bike', 'Hover Biker', 'C', 'infantry', 50, 500, 64, 10, 16, 110, 'M', 'G', 'light bio melee'],
+    ['needle_gunner', 'Needle Gunner', 'C', 'ranged', 75, 270, 22, 5, 220, 75, 'S', 'GA', 'light bio ranged'],
+    ['crab_mech', 'Crab Mech', 'C', 'heavy', 150, 1880, 104, 15, 20, 45, 'L', 'G', 'armored mech melee'],
+    ['arc_lobber', 'Arc Lobber', 'R', 'ranged', 75, 340, 140, 26, 380, 60, 'S', 'G', 'light bio ranged'],
+    ['plasma_lancer', 'Plasma Lancer', 'R', 'antiArmor', 100, 760, 80, 12, 60, 70, 'M', 'G', 'light bio melee'],
+    ['overclock_engineer', 'Overclock Engineer', 'R', 'support', 110, 610, 56, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
+    ['holo_projector', 'Holo Projector', 'R', 'support', 110, 430, 27, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
+    ['jetpack_trooper', 'Jetpack Trooper', 'E', 'airGunship', 200, 950, 46, 6, 160, 80, 'M', 'GA', 'air bio'],
+    ['particle_cannon', 'Particle Cannon', 'E', 'siege', 200, 1500, 200, 35, 300, 45, 'L', 'G', 'armored mech ranged'],
+    ['overload_android', 'Overload Android', 'E', 'skirmisher', 200, 1700, 90, 9, 16, 60, 'M', 'G', 'armored mech melee'],
+    ['drone_carrier', 'Drone Carrier', 'L', 'siegeHeavy', 350, 3200, 40, 5, 200, 35, 'H', 'GA', 'armored mech ranged legendary'],
   ],
   // A17.11 Cosmic Age (P 4.48)
   cosmic: [
@@ -251,6 +265,9 @@ const TURRETS: Record<AgeId, TurretRow[]> = {
     ['arc_coil', 'Arc Coil', 'C', 175, 60, 18, 260, 'GA'],
     ['plasma_mortar', 'Plasma Mortar', 'R', 250, 270, 50, 480, 'G'],
     ['gravity_well', 'Gravity Well', 'E', 250, 60, 70, 400, 'G'],
+    // W7 Future wave turrets
+    ['cryo_pod', 'Cryo Pod', 'C', 175, 80, 15, 320, 'GA'],
+    ['tractor_beam', 'Tractor Beam', 'R', 250, 166, 50, 380, 'G'],
   ],
   cosmic: [
     ['ion_turret', 'Ion Turret', 'C', 150, 27, 3, 370, 'GA'],
@@ -314,6 +331,9 @@ const POWERS: PowerRow[] = [
   ['sniper_team', 'Sniper Team', 'modern', 'field', 'strike', 'warPath', 50, 15000, 1000, 1],
   ['creeping_barrage', 'Creeping Barrage', 'modern', 'field', 'volley', 'warPath', 50, 25000, 1000, 8],
   ['concussion_shells', 'Concussion Shells', 'modern', 'home', 'stun', 'warPath', 75, 35000, 1000, 6],
+  // W7 Future wave powers
+  ['target_painter', 'Target Painter', 'future', 'field', 'signal', 'warPath', 50, 25000, 1000, 8],
+  ['nano_mesh', 'Nano Mesh', 'future', 'home', 'snare', 'warPath', 75, 30000, 1000, 6],
   ['orbital_lance', 'Orbital Lance', 'future', 'home', 'sweep', 'starter', 125, 40000, 1000, 4],
   ['point_defense', 'Point Defense Grid', 'future', 'home', 'bombard', 'warPath', 100, 40000, 1000, 4],
   ['stasis_field', 'Stasis Field', 'future', 'home', 'stun', 'warPath', 75, 35000, 1000, 6],
@@ -638,6 +658,24 @@ const A14_2: Record<string, FxRow[]> = {
   arc_coil: [['arc_coil', 'fx.arc_chain', 'shot_arc', 'laser']],
   plasma_mortar: [['plasma_mortar', 'proj.plasma_mortar', 'shot_plasma', 'blast']],
   gravity_well: [['gravity_well', 'proj.gravity_orb', 'gravity_hum', 'blast']],
+  // W7 Future wave attacks
+  android_pair: [['android_pair', 'melee', 'baton_spin', 'blunt']],
+  barrier_trooper: [['barrier_trooper', 'melee', 'shield_pulse', 'laser']],
+  hover_bike: [['hover_bike', 'melee', 'lance_swipe', 'laser']],
+  needle_gunner: [['needle_gunner', 'proj.needle', 'shot_needle', 'laser']],
+  crab_mech: [['crab_mech', 'melee', 'pincer_snap', 'blunt']],
+  arc_lobber: [['arc_lobber', 'proj.arc_shell', 'shot_lobber', 'blast']],
+  plasma_lancer: [['plasma_lancer', 'melee', 'lance_crackle', 'laser']],
+  overclock_engineer: [['overclock_engineer', 'fx.zap_beam', 'multitool_zap', 'laser']],
+  holo_projector: [['holo_projector', 'proj.plasma', 'shot_holo', 'laser']],
+  jetpack_trooper: [['jetpack_trooper', 'proj.plasma', 'shot_jet_beam', 'laser']],
+  particle_cannon: [['particle_cannon', 'fx.particle_beam', 'shot_particle', 'laser']],
+  overload_android: [['overload_android', 'melee', 'robot_punch', 'blunt']],
+  drone_carrier: [['drone_carrier', 'fx.beam_laser', 'shot_pd_laser', 'laser']],
+  holo_decoy: [['holo_decoy', 'melee', 'holo_flicker', 'laser']],
+  attack_drone: [['attack_drone', 'proj.plasma', 'shot_drone', 'laser']],
+  cryo_pod: [['cryo_pod', 'proj.frost', 'shot_cryo', 'laser']],
+  tractor_beam: [['tractor_beam', 'fx.tractor_beam', 'tractor_hum', 'laser']],
   // A17.12 attack mapping
   hoplite: [['hoplite', 'melee', 'swing_whoosh', 'pierce']],
   javelineer: [['javelineer', 'proj.javelin', 'shot_javelin', 'pierce']],
@@ -741,6 +779,8 @@ const MODS_BY_CARD: Record<string, readonly { vs: string; bp: number }[]> = {
   coal_miners: MODS.blunt, iron_mantlet: MODS.blunt, steam_driller: MODS.meleeAA,
   // W6 Modern wave: the sandbag Guard (Infantry melee) and the Sticky Bomber (melee Anti-heavy)
   sandbag_carrier: MODS.blunt, sticky_bomber: MODS.meleeAA,
+  // W7 Future wave: the android Pair and the hardlight Guard (Infantry melee), the Plasma Lancer (melee Anti-heavy)
+  android_pair: MODS.blunt, barrier_trooper: MODS.blunt, plasma_lancer: MODS.meleeAA,
 };
 
 /** A5 target priorities of first attacks ("priority armored", "priority air", ...); everything else `front`. */
@@ -756,6 +796,7 @@ const PRIORITY_BY_CARD: Record<string, string> = {
   wall_gunner: 'armored', carronade: 'armored',
   steam_driller: 'armored',
   sticky_bomber: 'armored', anti_tank_gun: 'armored', ghillie_sniper: 'backline',
+  plasma_lancer: 'armored', tractor_beam: 'armored',
 };
 
 describe('A14.2 attack mapping, A2.6 mods and A5 priorities (every card)', () => {

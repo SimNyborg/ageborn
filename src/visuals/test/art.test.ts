@@ -123,6 +123,8 @@ describe('team readability (A11)', () => {
         // Industrial wave
         'unit.steam_tractor',
         'unit.armoured_train',
+        // Modern wave
+        'unit.assault_gun',
       ].sort(),
     );
   });

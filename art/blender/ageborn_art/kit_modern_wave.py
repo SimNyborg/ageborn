@@ -147,6 +147,9 @@ def die_d1_pose(k, stance, height, prop=None, prop_path=None, hat_land=57.0):
 
 PROP_PATH = [None, (6, 20, 70), (10, 38, 190), (14, 42, 320), (18, 32, 440), (22, 14, 540),
              (24, 0, 600), (25, -6, 624), (25, -6, 624), (25, -6, 624)]
+# a long rifle lands flat (upside down) instead of standing on its muzzle below the ground line
+RIFLE_PATH = [None, (6, 20, 70), (10, 38, 190), (14, 42, 320), (18, 32, 430), (22, 16, 510),
+              (28, -2, 536), (32, -8, 540), (32, -8, 540), (32, -8, 540)]
 
 
 def leaf_tufts(rig, joint, pts, colors=(LEAF, LEAF_DK, LEAF_LT), size=3.2, seed=1):

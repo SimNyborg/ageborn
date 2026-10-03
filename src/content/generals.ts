@@ -103,7 +103,7 @@ const KETTLE: Plan = {
   gunpowder: lo(['voltigeurs', 'corsair', 'cuirassier', 'grenadier', 'hussar', 'powder_monkey'], ['grapeshot_gun', 'swivel_gun'], 'smoke_screen'),
   industrial: lo(['coal_miners', 'carbineer', 'steam_golem', 'harpoon_gunner', 'alpine_climber', 'dispatch_rider'], ['gatling_gun', 'mortar_pit'], 'iron_horse'),
   modern: lo(['smg_squad', 'rifleman', 'tankette', 'bazooka_trooper', 'gyrocopter', 'commando'], ['mg_nest', 'flak_gun'], 'paratroopers'),
-  future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'emp_saboteur'], ['pulse_laser', 'arc_coil'], 'orbital_lance'),
+  future: lo(['android_pair', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'jetpack_trooper', 'hover_bike'], ['pulse_laser', 'arc_coil'], 'orbital_lance'),
   cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'warp_stalker'], ['ion_turret', 'starburst_gun'], 'starfall'),
 };
 
@@ -114,7 +114,7 @@ const MOSS: Plan = {
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'drummer_boy', 'highlander'], ['grapeshot_gun', 'carronade'], 'smoke_screen'),
   industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'bandmaster', 'iron_mantlet'], ['steam_hammer', 'tesla_tower'], 'iron_horse'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'combat_medic', 'sandbag_carrier'], ['howitzer', 'flak_gun'], 'paratroopers'),
-  future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'repair_drone'], ['gravity_well', 'arc_coil'], 'orbital_lance'),
+  future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'overclock_engineer', 'barrier_trooper'], ['cryo_pod', 'gravity_well'], 'orbital_lance'),
   cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'starwarden'], ['starfall_battery', 'tachyon_lance'], 'starfall'),
 };
 
@@ -125,7 +125,7 @@ const LEDGER: Plan = {
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'bronze_cannon', 'drummer_boy'], ['swivel_gun', 'congreve_rack'], 'broadside'),
   industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'clockwork_tinker', 'sapper'], ['gatling_gun', 'tesla_tower'], 'zeppelin_raid'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'gyrocopter', 'bulldozer'], ['mg_nest', 'searchlight_sniper'], 'carpet_bomber'),
-  future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'emp_saboteur'], ['pulse_laser', 'plasma_mortar'], 'nanite_surge'),
+  future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'holo_projector', 'emp_saboteur'], ['pulse_laser', 'plasma_mortar'], 'nanite_surge'),
   cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'warp_stalker'], ['ion_turret', 'tachyon_lance'], 'warp_strike'),
 };
 
@@ -136,7 +136,7 @@ const BOOMSWORTH: Plan = {
   gunpowder: lo(['corsair', 'coehorn_crew', 'cuirassier', 'grenadier', 'bronze_cannon', 'rocket_cart'], ['sea_mortar', 'swivel_gun'], 'broadside'),
   industrial: lo(['riveter', 'trench_mortar', 'steam_golem', 'harpoon_gunner', 'flare_spotter', 'armoured_car'], ['boiler_mortar', 'mortar_pit'], 'zeppelin_raid'),
   modern: lo(['trench_raider', 'mortar_team', 'tankette', 'bazooka_trooper', 'radio_operator', 'dive_bomber'], ['howitzer', 'rocket_battery'], 'carpet_bomber'),
-  future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'repair_drone'], ['plasma_mortar', 'pulse_laser'], 'orbital_lance'),
+  future: lo(['photon_knight', 'arc_lobber', 'walker_mech', 'rail_gunner', 'repair_drone', 'particle_cannon'], ['plasma_mortar', 'pulse_laser'], 'orbital_lance'),
   cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'starwarden'], ['starfall_battery', 'ion_turret'], 'starfall'),
 };
 
@@ -147,7 +147,7 @@ const TWINS: Plan = {
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'bagpiper', 'wall_gunner'], ['swivel_gun', 'chainshot_cannon'], 'smoke_screen'),
   industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'sapper', 'steam_driller'], ['gatling_gun', 'tesla_tower'], 'iron_horse'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'gyrocopter', 'sticky_bomber'], ['flak_gun', 'searchlight_sniper'], 'paratroopers'),
-  future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'emp_saboteur'], ['arc_coil', 'gravity_well'], 'orbital_lance'),
+  future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'emp_saboteur', 'plasma_lancer'], ['arc_coil', 'gravity_well'], 'orbital_lance'),
   cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'warp_stalker'], ['starburst_gun', 'tachyon_lance'], 'starfall'),
 };
 
@@ -158,7 +158,7 @@ const ROOK: Plan = {
   gunpowder: lo(['corsair', 'fusilier', 'dragoon', 'grenadier', 'bronze_cannon', 'blunderbuss'], ['carronade', 'congreve_rack'], 'smoke_screen'),
   industrial: lo(['riveter', 'carbineer', 'steam_tractor', 'harpoon_gunner', 'flare_spotter', 'bomb_bowler'], ['rivet_spitter', 'boiler_mortar'], 'iron_horse'),
   modern: lo(['trench_raider', 'rifleman', 'assault_gun', 'bazooka_trooper', 'ghillie_sniper', 'rifle_grenadier'], ['anti_tank_gun', 'howitzer'], 'paratroopers'),
-  future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'emp_saboteur'], ['pulse_laser', 'gravity_well'], 'orbital_lance'),
+  future: lo(['photon_knight', 'pulse_trooper', 'crab_mech', 'rail_gunner', 'emp_saboteur', 'needle_gunner'], ['tractor_beam', 'gravity_well'], 'orbital_lance'),
   cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'starwarden'], ['ion_turret', 'starfall_battery'], 'starfall'),
 };
 
@@ -169,7 +169,7 @@ const TEMPEST: Plan = {
   gunpowder: lo(['corsair', 'fusilier', 'cuirassier', 'grenadier', 'field_surgeon', 'mesmerist'], ['swivel_gun', 'chainshot_cannon'], 'cannon_salute', 'rocket_volley'),
   industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'flare_spotter', 'spark_scientist'], ['gatling_gun', 'tesla_tower'], 'great_magnet', 'shrapnel_shells'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'radio_operator', 'bulldog_sergeant'], ['mg_nest', 'searchlight_sniper'], 'concussion_shells', 'creeping_barrage'),
-  future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'repair_drone'], ['pulse_laser', 'gravity_well'], 'orbital_lance'),
+  future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'repair_drone', 'overload_android'], ['pulse_laser', 'gravity_well'], 'nano_mesh', 'target_painter'),
   cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'starwarden'], ['ion_turret', 'tachyon_lance'], 'starfall'),
 };
 

@@ -42,7 +42,8 @@ const shape: Record<AgeId, AgeRosterShape> = {
   industrial: after({ wall: 2, tower: 2, camp: 1, trap: 1 }),
   // W6 (2026-10-03): Rifle Depot (ranged camp) and Wire Snare (chip trap)
   modern: after({ wall: 1, tower: 1, camp: 2, trap: 2 }),
-  future: BEFORE,
+  // W7 (2026-10-03): Skyguard Pylon (sky tower) and Mech Bay (brute camp)
+  future: after({ wall: 1, tower: 2, camp: 2, trap: 1 }),
   cosmic: BEFORE,
 };
 

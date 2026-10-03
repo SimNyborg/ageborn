@@ -314,6 +314,26 @@ export const ALBUM: readonly CardId[] = [
   'concussion_shells', // 280
   'rifle_depot', // 281
   'wire_snare', // 282
+  // W7 Future wave (2026-10-03): troops, turrets, powers and forts in build order
+  'android_pair', // 283
+  'barrier_trooper', // 284
+  'hover_bike', // 285
+  'needle_gunner', // 286
+  'crab_mech', // 287
+  'arc_lobber', // 288
+  'plasma_lancer', // 289
+  'overclock_engineer', // 290
+  'holo_projector', // 291
+  'jetpack_trooper', // 292
+  'particle_cannon', // 293
+  'overload_android', // 294
+  'drone_carrier', // 295
+  'cryo_pod', // 296
+  'tractor_beam', // 297
+  'target_painter', // 298
+  'nano_mesh', // 299
+  'skyguard_pylon', // 300
+  'mech_bay', // 301
 ];
 
 /** Album number of every card (1-based), from {@link ALBUM}. */
