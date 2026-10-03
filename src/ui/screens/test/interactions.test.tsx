@@ -182,8 +182,11 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
   });
 
   it('a locked length keeps its place and says which arena opens it (U12)', () => {
+    // Every length is open from Arena 1 (owner decision 2026-10-03); the lock stays for an arena table
+    // that gates one, here Long War and No clock from Arena 3 (the rule before 2026-10-03).
+    const gated = { ...content, arenas: { ...content.arenas, list: content.arenas.list.map((a) => ({ ...a, ladderFormats: a.index < 3 ? a.ladderFormats.filter((f) => f === 'short' || f === 'standard') : a.ladderFormats })) } };
     const s = midGameSave(content);
-    m = mount({ save: { ...s, trophies: { ...s.trophies, current: 220, best: 220 }, arenaIndex: 1 }, shell: true });
+    m = mount({ content: gated, save: { ...s, trophies: { ...s.trophies, current: 220, best: 220 }, arenaIndex: 1 }, shell: true });
     const long = m.q('[data-testid="home-format"] [data-format="full"]')!;
     expect(long.getAttribute('aria-disabled')).toBe('true');
     act(() => long.click());
@@ -531,9 +534,13 @@ describe('Capsules and Progress tabs (ui-plan 2.2, 4.1b, 4.6)', () => {
 });
 
 describe('Mode select', () => {
-  it('offers only the arena formats and locks Conquest and Skirmish for a new player', () => {
+  it('offers the arena formats, the shortest first, and locks Conquest and Skirmish for a new player', () => {
     m = mount({ save: { ...newPlayerSave(content), matchesPlayed: 0 }, routes: [{ id: 'home' }, { id: 'modeSelect' }] });
-    expect(m.q('[data-testid="ladder-format"]')).toBeNull();
+    // Owner decision 2026-10-03: every length is open from Arena 1; the Ladder card starts on the
+    // length Home's Battle plays (the Short War), never the Long War.
+    expect(m.qa('[data-testid="ladder-format"] [role="radio"]')).toHaveLength(4);
+    expect(text(m.q('[data-testid="ladder-format"] [aria-checked="true"]')!)).toBe(text(m.q('[data-testid="ladder-format"] [role="radio"]')!));
+    expect(text(m.q('[data-testid="ladder-format-note"]')!)).toContain('Stone Age to Medieval Age. 3 ages');
     expect(m.q('[data-testid="conquest-open"]')).toBeNull();
     expect(m.q('[data-testid="skirmish-open"]')).toBeNull();
     expect(text(m.q('[data-testid="mode-conquest"]')!)).toContain('Unlocks in Arena 3');
@@ -592,7 +599,7 @@ describe('Mode select', () => {
     expect(calls('prepareMatch')).toHaveLength(0);
     expect(m.router.current.value.id).toBe('modeSelect');
     const dialog = m.q('[data-testid="plan-blocked"]')!;
-    expect(text(dialog)).toContain("Your War Plan can't play Long War yet:");
+    expect(text(dialog)).toContain("Your War Plan can't play Short War yet:");
     expect(text(dialog)).toContain('Medieval Age needs a turret.');
     m.click('[data-testid="plan-blocked-fix"]');
     expect(m.router.current.value).toEqual({ id: 'warPlan', age: 'medieval' });

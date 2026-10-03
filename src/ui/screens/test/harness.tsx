@@ -2,7 +2,7 @@
  * Test harness: mounts the `ScreenHost` on the tiny DOM with a fixture save, real content, real EN
  * strings (or a pseudo-locale), preview services with a call log, and a router set to a route stack.
  */
-import { content } from '@/content';
+import { content as realContent, type Content } from '@/content';
 import type { SaveDoc } from '@/contracts';
 import { fakeSaveDoc } from '@/contracts/fakes/saveStore';
 import { i18n } from '@/i18n';
@@ -58,17 +58,28 @@ export const PSEUDO: Translate = (k, p) => {
 };
 
 export function saveFor(state: HarnessState): SaveDoc {
-  return state === 'raw' ? fakeSaveDoc() : fixtureSave(content, state);
+  return state === 'raw' ? fakeSaveDoc() : fixtureSave(realContent, state);
 }
 
 /** The ScreenHost with the tab shell of the save (ui-plan 2.2), as the app mounts it. */
 function ShellHost(p: { env: Parameters<typeof ScreenHost>[0]['env']; slots: ScreenSlots }) {
-  return <ScreenHost env={p.env} slots={p.slots} shell={{ tabs: shellTabs(p.env.save.value, content), roots: TAB_ROOTS }} />;
+  return <ScreenHost env={p.env} slots={p.slots} shell={{ tabs: shellTabs(p.env.save.value, p.env.content), roots: TAB_ROOTS }} />;
 }
 
 export function mount(
-  o: { state?: HarnessState; routes?: Route[]; t?: Translate; save?: SaveDoc; patch?: Partial<UiServices>; now?: () => number; shell?: boolean } = {},
+  o: {
+    state?: HarnessState;
+    routes?: Route[];
+    t?: Translate;
+    save?: SaveDoc;
+    patch?: Partial<UiServices>;
+    now?: () => number;
+    shell?: boolean;
+    /** A variant of the real content (e.g. an arena table with locked lengths); the real content by default. */
+    content?: Content;
+  } = {},
 ): Mounted {
+  const content = o.content ?? realContent;
   const { document, container } = installDom();
   const save = signal<SaveDoc>(o.save ?? saveFor(o.state ?? 'mid'));
   const routes = o.routes ?? [{ id: 'home' }];

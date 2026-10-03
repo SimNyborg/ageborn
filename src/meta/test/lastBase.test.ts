@@ -4,12 +4,13 @@
  * loss streak, counting win). The format family and the windows.
  */
 import { describe, expect, it } from 'vitest';
+import type { Content } from '@/content';
 import type { SaveDoc } from '@/contracts';
 import { formatKind, rewardFormat, windowOf } from '../formats';
 import { isUnranked, ladderWinFor, trophyDelta } from '../trophies';
 import { C, clock, M, matchInput, play, scripted } from './helpers';
 
-/** A save in Arena 3 (where Last Base Standing opens), past onboarding, every free capsule used. */
+/** A save in Arena 3 (where Conquest and the Fort slot open), past onboarding, every free capsule used. */
 function arena3(o: { trophies?: number; charges?: number } = {}): SaveDoc {
   const s = scripted();
   const t = o.trophies ?? 600;
@@ -97,10 +98,14 @@ describe('Last Base Standing rewards (A15.8)', () => {
     expect(full.rewards).toContainEqual({ kind: 'amber', amount: 15 });
   });
 
-  it('is only offered from Arena 3: below it the Ladder falls back to the arena first length', () => {
+  it('is offered from Arena 1 (owner decision 2026-10-03); an arena without it falls back to its first length', () => {
     const s = scripted();
-    const low: SaveDoc = { ...s, trophies: { current: 200, best: 200, roadClaimed: [] }, arenaIndex: 1, flags: { ...s.flags, 'meta.ladderPlayed': true } };
+    const low: SaveDoc = { ...s, trophies: { current: 50, best: 50, roadClaimed: [] }, arenaIndex: 0, flags: { ...s.flags, 'meta.ladderPlayed': true } };
     const r = play(low, 'ladder', 'win', undefined, { format: 'last' });
-    expect(r.opponent.format).toBe('short');
+    expect(r.opponent.format).toBe('last');
+    expect(r.rewards[0]).toEqual({ kind: 'trophies', delta: 0 });
+    // The fallback rule stays: a length the arena does not offer plays the arena's first one.
+    const shortOnly: Content = { ...C, arenas: { ...C.arenas, list: C.arenas.list.map((a) => ({ ...a, ladderFormats: ['short'] })) } };
+    expect(M.pickOpponent(low, 'ladder', shortOnly, clock(), { format: 'last' }).format).toBe('short');
   });
 });

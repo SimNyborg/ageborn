@@ -63,7 +63,8 @@ export function ladderFormat(save: SaveDoc, content: Content): FormatId {
   const picked = open.find((f) => save.flags[LADDER_FORMAT_FLAG + f]);
   if (picked) return picked;
   const timed = open.filter((f) => !untimed(content, f));
-  // The shortest length is the default (task 2.8: a new Arena 2 player keeps the 7-minute war).
+  // The shortest length is the default (task 2.8: a new player keeps the 7-minute war, though every
+  // length is open from Arena 1 since 2026-10-03).
   return timed[0] ?? open[0] ?? 'short';
 }
 
@@ -79,7 +80,7 @@ export interface LengthOption {
   opensAt: { arena: number; trophies: number } | null;
 }
 
-/** The lengths the Ladder picker shows from Arena 2 (A2.10: locked ones name their arena). */
+/** The lengths the Ladder picker shows (all open from Arena 1 since 2026-10-03; A2.10: a locked one names its arena). */
 export function lengthOptions(save: SaveDoc, content: Content): LengthOption[] {
   const open = arenaOf(save, content).ladderFormats;
   return LENGTHS.filter((f) => content.formats[f]).map((format) => {

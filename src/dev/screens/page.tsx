@@ -120,8 +120,8 @@ function online(id: string, label: string, o: Partial<OnlineMock>): Variant {
 }
 
 const HOME_MODES: Variant[] = [
-  { id: 'home-a1', label: 'Home: Ladder at Arena 1 (one length)', route: () => [{ id: 'home' }], save: homeAt(80) },
-  { id: 'home-a2', label: 'Home: Ladder at Arena 2 (Long and No clock locked)', route: () => [{ id: 'home' }], save: homeAt(220) },
+  { id: 'home-a1', label: 'Home: Ladder at Arena 1 (every length open)', route: () => [{ id: 'home' }], save: homeAt(80) },
+  { id: 'home-a2', label: 'Home: Ladder at Arena 2 (every length open)', route: () => [{ id: 'home' }], save: homeAt(220) },
   { id: 'home-last', label: 'Home: Last Base Standing picked (first time)', route: () => [{ id: 'home' }], save: homeAt(1020, { 'ui-ladderFormat.last': true }) },
   { id: 'home-quick', label: 'Home: Quick Battle selected', route: () => [{ id: 'home' }], save: homeAt(1020, { 'ui-homeMode.quick': true }) },
   { id: 'home-daily', label: 'Home: Daily selected', route: () => [{ id: 'home' }], save: homeAt(1020, { 'ui-homeMode.daily': true }) },

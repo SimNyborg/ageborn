@@ -47,13 +47,20 @@ describe('the mode switcher (1.3)', () => {
     expect(battleRequest(last, content, 1)).toEqual({ mode: 'ladder', format: 'last' });
   });
 
-  it('the picker shows all four lengths; locked ones name the arena that opens them', () => {
-    const s = mid();
-    const a2 = { ...s, trophies: { ...s.trophies, current: 220, best: 220 }, arenaIndex: 1 };
-    const opts = lengthOptions(a2, content);
+  it('the picker shows all four lengths, all open from Arena 1; a locked one would name the arena that opens it', () => {
+    // Owner decision 2026-10-03: every length is open on the Ladder from Arena 1.
+    const n = newPlayerSave(content);
+    const opts = lengthOptions(n, content);
     expect(opts.map((o) => o.format)).toEqual(['short', 'standard', 'full', 'last']);
-    expect(opts.map((o) => o.open)).toEqual([true, true, false, false]);
-    expect(opts[3]!.opensAt).toEqual({ arena: 3, trophies: 400 });
+    expect(opts.map((o) => o.open)).toEqual([true, true, true, true]);
+    expect(opts.map((o) => o.opensAt?.arena)).toEqual([1, 1, 1, 1]);
+    // A new Arena 1 player's Battle still plays the shortest timed length.
+    expect(ladderFormat(n, content)).toBe('short');
+    // The lock stays for an arena table that gates a length (Long War and No clock from Arena 3).
+    const gated = { ...content, arenas: { ...content.arenas, list: content.arenas.list.map((a) => ({ ...a, ladderFormats: a.index < 3 ? a.ladderFormats.filter((f) => f === 'short' || f === 'standard') : a.ladderFormats })) } };
+    const locked = lengthOptions(n, gated);
+    expect(locked.map((o) => o.open)).toEqual([true, true, false, false]);
+    expect(locked[3]!.opensAt).toEqual({ arena: 3, trophies: 400 });
   });
 
   it('quotes the upper bound in whole and half minutes', () => {

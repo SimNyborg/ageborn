@@ -7,8 +7,8 @@
  * | State | Opponent row | Choice row | Line |
  * |---|---|---|---|
  * | P1 Training | the onboarding General, AI | none | none |
- * | P2 Ladder, Arena 1 | the next AI General (`previewOpponent`) | none | "Short War · 3 ages · up to 8½ min" |
- * | P3 Ladder, Arena 2+ | as P2 | the length picker (Short, Medium, Long, No clock; locked ones name their arena) | "3 ages · up to 8½ min · win +26 🏆" |
+ * | P2 Ladder, one length | the next AI General (`previewOpponent`) | none | "Short War · 3 ages · up to 8½ min" |
+ * | P3 Ladder, several lengths (every arena since 2026-10-03) | as P2 | the length picker (Short, Medium, Long, No clock; locked ones name their arena) | "3 ages · up to 8½ min · win +26 🏆" |
  * | P4 Last Base Standing | as P2 | as P3, No clock lit | "7 ages · no clock" and an info button; a first-time caption (queued behind a currency caption) |
  * | P5 Quick Battle | the Quick General for the difficulty | a difficulty stepper | "Short War · 5 Amber per win" |
  * | P6 Daily | today's challenge, AI, its tier | Recruit / Veteran / Warlord | "Today: <modifier> · Medium War" |

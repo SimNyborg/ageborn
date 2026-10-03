@@ -87,7 +87,7 @@ export interface Unlocks {
   warPlan: boolean;
   skirmish: boolean;
   conquest: boolean;
-  /** The ladder format picker appears from Arena 2 (A9 #3). */
+  /** The ladder format picker appears when the arena offers more than one length: from Arena 1 (A9 #3, 2026-10-03). */
   formatPicker: boolean;
   ladderFormats: FormatId[];
   conquestArena: number;
