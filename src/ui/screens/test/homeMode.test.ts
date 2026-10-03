@@ -70,9 +70,11 @@ describe('the mode switcher (1.3)', () => {
     expect(minutesText(content.formats['last']!.endByMs!)).toBe('25½');
   });
 
-  it('Last Base Standing pays no trophies at any count (the plate never promises any)', () => {
+  it('every length shows its own win from Arena 1, No clock the most (owner decision 2026-10-03)', () => {
     const s = mid();
-    expect(ladderWin(s, content, 'last').trophies).toBe(0);
-    expect(ladderWin({ ...s, trophies: { ...s.trophies, current: 100 } }, content, 'last').trophies).toBe(0);
+    for (const current of [0, 100, s.trophies.current]) {
+      const at = { ...s, trophies: { ...s.trophies, current } };
+      expect((['short', 'standard', 'full', 'last'] as const).map((f) => ladderWin(at, content, f).trophies), String(current)).toEqual([30, 36, 46, 48]);
+    }
   });
 });

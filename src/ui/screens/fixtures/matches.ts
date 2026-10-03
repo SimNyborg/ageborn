@@ -111,7 +111,7 @@ export type ResultFixture = 'win' | 'loss' | 'draw' | 'conquest' | 'noCapsule' |
 
 export function fixtureResult(content: Content, which: ResultFixture): ResultInfo {
   const base = fixtureOpponent(content, which === 'conquest' ? 'warden' : 'general');
-  // Last Base Standing (A2.10.1): won at 23:41, in Crumble, unranked.
+  // Last Base Standing (A2.10.1): won at 23:41, in Crumble; ranked since 2026-10-03 (+48 trophies, 47 Amber).
   const last = which === 'lastWin';
   const opp = last ? { ...base, format: 'last' } : base;
   const winner = which === 'win' || which === 'conquest' || which === 'noCapsule' || which === 'warPath' || last ? 0 : which === 'loss' || which === 'warPathLoss' ? 1 : null;
@@ -143,8 +143,8 @@ export function fixtureResult(content: Content, which: ResultFixture): ResultInf
       break;
     case 'lastWin':
       rewards = [
-        { kind: 'trophies', delta: 0 },
-        { kind: 'amber', amount: 35 },
+        { kind: 'trophies', delta: 48 },
+        { kind: 'amber', amount: 47 },
         { kind: 'capsule', capsuleId: 'cap-mid-1' },
       ];
       break;

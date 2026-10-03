@@ -20,6 +20,7 @@
  */
 import type { AgeId, CardId, Clock, CompiledContent, FormatId, MatchStats, Meta, PendingCapsule, Rarity, Result, SaveDoc, Side } from '../src/contracts';
 import { asContent, content as gameContent, type Content } from '../src/content';
+import { isReleased } from '../src/content/release';
 import { chanceBp, seedSfc32, type Sfc32State } from '../src/core/rng';
 import { loadMeta } from './lib/modules';
 import { mean, median } from './lib/stats';
@@ -169,11 +170,14 @@ export class EconomyRecorder {
   constructor(content: CompiledContent) {
     const c = asContent(content);
     const need = (r: Rarity): number => c.rarities.cards[r].upgradeCopies.reduce((a, b) => a + b, 0);
+    // Unreleased cards (the release gate) never drop, so they never count toward a milestone.
     this.cards = [
       ...Object.values(c.units)
-        .filter((u) => u.hidden !== true)
+        .filter((u) => u.hidden !== true && isReleased(c, u.id))
         .map((u) => ({ id: u.id, rarity: u.rarity, need: need(u.rarity) })),
-      ...Object.values(c.turrets).map((t) => ({ id: t.id, rarity: t.rarity as Rarity, need: need(t.rarity) })),
+      ...Object.values(c.turrets)
+        .filter((t) => isReleased(c, t.id))
+        .map((t) => ({ id: t.id, rarity: t.rarity as Rarity, need: need(t.rarity) })),
     ];
     this.amberNeed = this.cards.length * c.rarities.upgradeAmber.reduce((a, b) => a + b, 0);
   }

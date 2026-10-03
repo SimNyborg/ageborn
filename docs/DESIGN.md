@@ -616,7 +616,7 @@ Every phase keeps `main` playable. Between P1 and P2 every match plays the Home 
 | Short War | 3 | 5:00 | 6:30 | 8:30 | 7:00 | 1:00 | Ladder (all arenas), Quick Battle, Skirmish |
 | Standard War | 5 | 8:00 | 10:00 | 12:30 | 10:30 | 1:00 | Ladder (all arenas; from Arena 2 until 2026-10-03), Daily Challenge, Skirmish |
 | Full War | 7 | 12:00 | 14:30 | 17:30 | 15:00 | 1:00 | Ladder (all arenas; from Arena 3 until 2026-10-03), Skirmish; never on the War Path |
-| Last Base Standing (`last`; A2.10.1) | 7 | 12:00 | Siege I 14:30, rising every 2:30; Crumble from 23:00 | **none** | ~19:50 (tier VII mirror median); a base always falls by 25:44 | 1:00 | Ladder from Arena 1 (unranked: no trophies; from Arena 3 until 2026-10-03), Skirmish, Friend Duel (M2); never on the War Path or in online queues |
+| Last Base Standing (`last`; A2.10.1) | 7 | 12:00 | Siege I 14:30, rising every 2:30; Crumble from 23:00 | **none** | ~19:50 (tier VII mirror median); a base always falls by 25:44 | 1:00 | Ladder from Arena 1 (ranked since 2026-10-03, +48 a win; unranked and from Arena 3 until then), Skirmish, Friend Duel (M2); never on the War Path or in online queues |
 
 **Player names (owner request 2026-10-01: "a short, a medium and a long battle, and one with no time limit").** Players see **Short War, Medium War, Long War** and **Last Base Standing** (DA v1.1: Kort, Mellem, Lang, Til sidste base). The ids `short`, `standard` and `full` and their clocks are unchanged, and this document keeps saying Standard and Full War for them. The rename also frees "Standard" for "Standard levels" (L8), which matters online. The plate's length picker quotes each length's upper bound ("up to 8½ min"), which is always true, not its median.
 
@@ -624,7 +624,7 @@ Shorter windows (War Path levels, custom) use the clocks in A18.3.4. **Which win
 
 **Built today (until A18 phase 1):** Short War Stone to Gunpowder (4 ages; 3:45 / 4:45 / 6:15), Standard War Stone to Modern (6 ages; 5:00 / 6:45 / 8:30; also Conquest), Full War Stone to Cosmic (8 ages; 6:45 / 8:45 / 10:45), per A17.8.
 
-From Arena 1 the player picks any length before each ladder match on the Home plate's length picker (Short, Medium, Long, No clock). **Owner decision 2026-10-03:** every length, Long War and No clock included, is open on the Ladder from Arena 1 (before, Arena 1 offered only Short War, Arena 2 added Standard War and Arena 3 the Full War and Last Base Standing). The default stays the shortest timed length (Short War) until the player picks another. The picker still supports a locked length that names its arena, should an arena table gate one again. Trophies and Amber per win depend on the format from Arena 3 (A15.8). Last Base Standing moves no trophies (A2.10.1).
+From Arena 1 the player picks any length before each ladder match on the Home plate's length picker (Short, Medium, Long, No clock). **Owner decision 2026-10-03:** every length, Long War and No clock included, is open on the Ladder from Arena 1 (before, Arena 1 offered only Short War, Arena 2 added Standard War and Arena 3 the Full War and Last Base Standing). The default stays the shortest timed length (Short War) until the player picks another. The picker still supports a locked length that names its arena, should an arena table gate one again. Trophies and Amber per win depend on the format from Arena 1, and a longer war pays more (A15.8; owner decision 2026-10-03, was from Arena 3). Last Base Standing is ranked like the timed lengths (A2.10.1; unranked until 2026-10-03).
 
 | Phase | Effect |
 |---|---|
@@ -672,8 +672,8 @@ Tuned at gate size on 2026-10-01 (fixer review; first values ×3/×4 and ×0.35/
   - So a base falls by **25:44** (`FormatDef.endByMs` 1,544,000, derived from the steps by a content test).
   - The online relay's cap for this format is `endByMs` + 2 min (A18.10).
 - **Window.** 7 ages: `last` (Stone to Future); Skirmish also offers `last.bronze`.
-- **Rewards.** Unranked: no trophies won or lost. Win 35 Amber (70 without a Sundial capsule); loss or draw 15; **a Retreat pays 0 Amber** (it costs no trophies, so loss Amber for a Retreat at 1:00 would be a free farm at every trophy count). Otherwise it is a Ladder match: a Sundial claim, or a Clay pip (never on a Retreat); a counting win; hidden MMR; loss protection (A6.3, A15.8).
-- **Result (A9 #7).** A reason line under the opponent ("Their base fell at 15:02", "Your walls crumbled at 23:41" when the base fell in a Crumble step, "Both bases fell together", "You retreated"), and the trophy row reads "Unranked · stays at N".
+- **Rewards.** Ranked (owner decision 2026-10-03, "ja, og uden ur skal også give trofæer"; unranked before): a win pays **+48 trophies** and 47 Amber (94 without a Sundial capsule), the most of any length (A15.8); a loss −20 trophies (none below 400, never below the arena gate) and 15 Amber; a draw 0 and 15, exactly as the timed lengths. **A Retreat pays 0 Amber** (it still costs the loss's trophies): the rule from the unranked days stays, because below 400 a Retreat costs nothing and, with no Final Bell, leaving at 1:00 is the only quick way out of a war that runs about 16 minutes (A15.4: every reward needs play). Otherwise it is a Ladder match: a Sundial claim, or a Clay pip (never on a Retreat); a counting win; hidden MMR (`ladder.mmr`, A6.8); loss protection (A6.3, A15.8).
+- **Result (A9 #7).** A reason line under the opponent ("Their base fell at 15:02", "Your walls crumbled at 23:41" when the base fell in a Crumble step, "Both bases fell together", "You retreated"), and the trophy row is the plain ranked row (+48 and the new count; it read "Unranked · stays at N" until 2026-10-03).
 - **HUD (A9.2).**
   - The clock counts up.
   - The timeline becomes a 6-pip escalation meter (Overdrive, Siege I-III, Crumble I-II) with the step's name under the clock. A tap shows the schedule as a drop-down that never pauses.
@@ -1256,7 +1256,7 @@ Ladder results:
 
 | Result | Trophies | Amber | Other |
 |---|---|---|---|
-| Win | +30 (by format from Arena 3: A15.8) | 20 with a Sundial Capsule, 40 without one (by format from Arena 3: A15.8) | A Sundial Capsule if the Sundial has one ready; otherwise +1 Clay meter pip |
+| Win | By format from Arena 1 (A15.8): Short +30, Standard +36, Full +46, Last Base Standing +48 (+30 for a match with no format) | By format (A15.8): 23 / 31 / 45 / 47 with a Sundial Capsule, double without one (20 / 40 with no format) | A Sundial Capsule if the Sundial has one ready; otherwise +1 Clay meter pip |
 | Loss | −20 (0 below 400; never below the current arena gate) | 15 | A Sundial Capsule if one is ready; otherwise +1 Clay meter pip. A Retreat claims no capsule and adds no pip |
 | Draw | 0 | 15 | As a loss |
 
@@ -1271,7 +1271,7 @@ Ladder results:
 - **Loss protection.** After 3 ladder losses in a row, the next opponent is one tier lower (minimum tier 0) and the VS screen says "Warm-up match". The same Result shows the tilt card (A15.6).
 - **Other modes.** Daily Challenge: A9.1 and A15.7. War Path (A18.7; replaces Conquest, A6.10): first-clear Amber, card unlocks and boss capsules. Quick Battle (a Short War Skirmish at a picked difficulty) and Skirmish: 5 Amber per win, no trophies. In every mode but the tutorial a finished match also claims a ready Sundial Capsule; only Ladder matches add Clay pips.
 - **Ladder window (A18.3.4).** Arenas 1-2 play windows that start at Stone. From Arena 3 the window is the **Era of the Week**, seeded weekly in `meta` from the date and shown on Mode select a week ahead.
-- **Last Base Standing (A2.10.1; 2026-10-01).** A Ladder length from Arena 1 (Arena 3 until the owner decision of 2026-10-03) that moves no trophies (win, loss or draw). It pays Amber like a Full War win (35, or 70 without a Sundial capsule; 15 on a loss or draw; 0 on a Retreat, which would otherwise be a free Amber farm). Like any Ladder match it claims a ready Sundial capsule or adds a Clay pip, counts its wins (A15.5), moves the hidden MMR and counts for loss protection. Data: every arena's `ladderFormats` holds `last`; `arenas.ladder.byFormat.last` = 0 trophies, 35 / 70 Amber, and a loss of 0 trophies.
+- **Last Base Standing (A2.10.1; 2026-10-01).** A Ladder length from Arena 1 (Arena 3 until the owner decision of 2026-10-03), **ranked since 2026-10-03** (it moved no trophies before). A win pays +48 trophies and 47 Amber (94 without a Sundial capsule); a loss −20 (the usual no-loss-below-400 and arena-gate rules) and 15 Amber; a draw 0 and 15; a Retreat costs the loss's trophies and pays 0 Amber. Like any Ladder match it claims a ready Sundial capsule or adds a Clay pip, counts its wins (A15.5), moves the hidden MMR and counts for loss protection. Data: every arena's `ladderFormats` holds `last`; `arenas.ladder.winByFormat.formats.last` = 48 trophies, 47 / 94 Amber (the `unranked` flag was removed from the schema).
 - **Clock.** Daily timers reset at local 04:00, capped by the banks. The Sundial runs on epoch ms, independent of time zone and 04:00. Every bank holds at least 7 days and nothing earned expires (A15.4). Clock tampering is accepted because no money is involved: a clock moved backwards restarts the current period and never removes a ready capsule; moved forwards, it fills at most to the cap.
 
 | # | Arena | Trophies | Ladder formats | Drop pool | Bot tiers | Bot level | Gate rewards |
@@ -2448,7 +2448,7 @@ It replaces the weekly quest "Win 15 battles", whose Monday behaviour A6.7 never
 
 | | |
 |---|---|
-| Class | Healthy: equal reward per minute, not more for playing longer |
+| Class | Healthy: a longer war pays more per win (owner decision 2026-10-03), never more per minute than a Short War |
 | Levers | Protects Pillar 2 and the Future Age content |
 | Size, phase, owners | XS · Phase 2b · WP1 (data in `arenas.ladder`), WP7, WP9 (the format picker shows the reward) |
 | From | EL-5; N3; BS EL-5 |
@@ -2457,17 +2457,19 @@ Today Short War pays about 55% more trophies per minute than Full War, which pus
 
 | Format | Win trophies | Win Amber (without a Sundial Capsule) | Loss |
 |---|---|---|---|
-| Short War | +26 | 20 (40) | −20 |
-| Standard War | +31 | 27 (54) | −20 |
-| Full War | +36 | 35 (70) | −20 |
-| Last Base Standing (A2.10.1) | 0 (unranked) | 35 (70) | 0 |
+| Short War | +30 | 23 (46) | −20 |
+| Standard War | +36 | 31 (62) | −20 |
+| Full War | +46 | 45 (90) | −20 |
+| Last Base Standing (A2.10.1) | +48 | 47 (94) | −20 |
 
-Last Base Standing is unranked because its length varies, so trophies per minute could not be equal. Retreat counts as a loss, so a long war must never be the price of keeping your trophies. And it would split the ranked online queue. It pays the Full War's Amber per win and nothing per minute, so it pays less per minute than the Full War.
+**Owner decision 2026-10-03** ("ja, og uden ur skal også give trofæer"): a longer war pays more trophies than a short one from the very first arena, and Last Base Standing is ranked. The table applies from 0 trophies (`winByFormat.fromTrophies` 0; it applied from 400 before, with a flat +30 and 20 (40) Amber below). The Amber keeps each row's old Amber-to-trophy ratio (Short 20/26, Standard 27/31, Full and Last Base Standing 35/36), rounded; the Amber in brackets doubles the win Amber as before. A match with no format (none today) pays A6.3's +30 and 20 (40); the tutorial pays that row's Amber.
 
-These are the A17 values (built; re-derived from the A17.2 medians at a 60% win rate: 1.60 / 1.63 / 1.60 trophies per minute). The Amber in brackets doubles the win Amber as before. A18's longer formats (A18.3.4) re-derive the table from the A18.12 medians with the same ±5% rule.
+Per minute at a 60% win rate, from the measured medians (Short 7:39, Medium 10:58, Long 15:21, No clock about 16:13): from 400 trophies (a loss −20) 1.31 / 1.24 / 1.28 / 1.28 trophies per minute; below 400 (a loss costs nothing) 2.35 / 1.97 / 1.80 / 1.78. Amber per minute (with a Sundial capsule; 15 per loss) 2.59 / 2.24 / 2.15 / 2.11. So a longer war pays more per match and never more per minute than a Short War. Until 2026-10-03 the rows were the A17 values +26 / +31 / +36 and Last Base Standing 0 (unranked), 20 / 27 / 35 Amber.
 
-- The table applies from 400 trophies (Arena 3; every format is open on the Ladder from Arena 1 since 2026-10-03). Below 400, every format pays +30 and 20 (40) Amber, as A6.3 does today, so onboarding is not slowed.
-- Loss rules (0 below 400, never below the arena gate), MMR, capsules and the Sundial are unchanged.
+Last Base Standing was unranked from 2026-10-01 because its length varies. The owner ranked it: it pays the most per win because it runs the longest. Retreat counts as a loss there too, and still pays no Amber (A2.10.1).
+
+- Loss rules (0 below 400, never below the arena gate), loss protection, MMR (every ladder length moves it, Last Base Standing included), capsules and the Sundial are unchanged.
+- Economy check (`tools/economy.ts`, 30 seeds, the A6.9 player who plays Short War): every A6.9 row that passed before still passes (Amber a day 3,151 → 3,163; Common 104 → 104 days, Rare 97 → 98, Epic 64 → 59, Legendary 100 → 99; whole collection 192 → 189). The four Phase 3 rows that missed before still miss. Per length (scratch harness, 10 seeds, 7 matches a day): Arena 8 at 3,400 trophies on day 59 → 46 (Short), 44 → 34 (Standard), 35.5 → 24 (Full) and never → 22.5 (Last Base Standing); at equal play time (about 50 minutes a day) 46 / 48 / 55.5 / 51.5 days. A6.9 has no time-to-arena target.
 - The Standard War row is set from the measured Standard median in Phase 3. The aim is trophies per minute within ±5% across formats at a 60% win rate. A2.14 gets no new gated target.
 - A2.10's sentence "Trophies and rewards are the same for every format" is replaced by a pointer to this table.
 
@@ -5236,7 +5238,7 @@ A format is a **window of consecutive ages**. `FormatId` becomes an open string 
 | Full War | 7 | ~1:10, 2:50, 4:35, 6:25, 8:20, 10:20 | 12:00 | 14:30 | 17:30 | **15:00** | 12:00-17:00 | "about 15 min" |
 | Last Base Standing (`last`, kind `untimed`; A2.10.1) | 7 | as Full War | 12:00 | 14:30 (Siege I; II 17:00, III 19:30, Crumble 23:00, Crumble II 24:30) | **none** (a base falls by 25:44) | ~19:50 (measured) | ~11:00-25:30 | "no clock" |
 
-**Plate labels (2026-10-01).** The Home length picker names these Short, Medium, Long and No clock, and the line under it quotes the upper bound: "3 ages · up to 8½ min", "5 ages · up to 12½ min", "7 ages · up to 17½ min", "7 ages · no clock" ("no trophies" is in the info panel, so the line never wraps on a phone). The "about N min" labels above stay in info panels. The upper bound is what the plate promises because the Standard mirror reaches the Bell in about 59% of tier VII matches today (A16.14.9 review), so "about 10 min" would mislead.
+**Plate labels (2026-10-01).** The Home length picker names these Short, Medium, Long and No clock, and the line under it quotes the upper bound: "3 ages · up to 8½ min", "5 ages · up to 12½ min", "7 ages · up to 17½ min", "7 ages · no clock" (the info panel holds the rest, so the line never wraps on a phone). Every length shows its win chip ("+30 🏆" … "+48 🏆" for No clock since it is ranked, 2026-10-03). The "about N min" labels above stay in info panels. The upper bound is what the plate promises because the Standard mirror reaches the Bell in about 59% of tier VII matches today (A16.14.9 review), so "about 10 min" would mislead.
 
 Shorter windows (War Path, Daily, custom) use these clocks:
 

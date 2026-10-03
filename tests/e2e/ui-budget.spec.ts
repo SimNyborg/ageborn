@@ -100,7 +100,7 @@ const PAGES: PageSpec[] = [
   { name: 'capsules', hash: 'screens/capsules/mid/{vp}', strict: true, primary: false },
   { name: 'progress', hash: 'screens/progress/mid/{vp}', strict: true, primary: false },
   { name: 'result-warPath', hash: 'screens/result-warPath/mid/{vp}', strict: true, primary: true },
-  // Last Base Standing's Result: the reason line and the unranked trophy row (A2.10.1).
+  // Last Base Standing's Result: the reason line and the trophy row (A2.10.1; ranked since 2026-10-03).
   { name: 'result-lastWin', hash: 'screens/result-lastWin/mid/{vp}', strict: true, primary: true },
   {
     // Home's one online entry (owner decision 2026-10-01): the Friend Duel chip opens the panel on its note.

@@ -181,18 +181,41 @@ describe('granting feats (A15.10)', () => {
 });
 
 describe('rewards by format (A15.8)', () => {
-  it('below 400 trophies every format pays +30 and 20 (40) Amber; from 400 each format its own row', () => {
-    const low = scripted();
-    for (const f of ['short', 'standard', 'full'] as const) expect(ladderWinFor(low, C, f)).toEqual({ trophies: 30, amber: 20, amberWithoutCharge: 40 });
-    const high = { ...scripted(1, 2), trophies: { ...low.trophies, current: 500, best: 500 } };
-    expect(ladderWinFor(high, C, 'short').trophies).toBe(26);
-    expect(ladderWinFor(high, C, 'standard').trophies).toBe(31);
-    expect(ladderWinFor(high, C, 'full')).toEqual({ trophies: 36, amber: 35, amberWithoutCharge: 70 });
-    const c = new TestClock();
-    const o = M.pickOpponent(high, 'ladder', C, c, { format: 'full' });
-    expect(o.format).toBe('full');
-    const r = M.applyMatchResult(high, matchInput('ladder', 'win', o), C, c);
-    expect(r.rewards[0]).toEqual({ kind: 'trophies', delta: 36 });
+  // Owner decision 2026-10-03: each length pays its own row from 0 trophies (Arena 1; was 400), longer
+  // wars more, Last Base Standing included.
+  const ROWS = {
+    short: { trophies: 30, amber: 23, amberWithoutCharge: 46 },
+    standard: { trophies: 36, amber: 31, amberWithoutCharge: 62 },
+    full: { trophies: 46, amber: 45, amberWithoutCharge: 90 },
+    last: { trophies: 48, amber: 47, amberWithoutCharge: 94 },
+  } as const;
+
+  it('each format pays its own row at 0, 150 and 400+ trophies; no format pays A6.3 row', () => {
+    const base = scripted();
+    for (const current of [0, 150, 399, 400, 500, 3500]) {
+      const s = { ...base, trophies: { ...base.trophies, current, best: current } };
+      for (const f of ['short', 'standard', 'full', 'last'] as const) expect(ladderWinFor(s, C, f), `${current} ${f}`).toEqual(ROWS[f]);
+      // A window pays its family's row (A18.3.4).
+      expect(ladderWinFor(s, C, 'full.bronze')).toEqual(ROWS.full);
+      expect(ladderWinFor(s, C, 'last.bronze')).toEqual(ROWS.last);
+      expect(ladderWinFor(s, C)).toEqual({ trophies: 30, amber: 20, amberWithoutCharge: 40 });
+    }
+    // Longer wars pay more per win.
+    expect(ROWS.short.trophies < ROWS.standard.trophies && ROWS.standard.trophies < ROWS.full.trophies && ROWS.full.trophies < ROWS.last.trophies).toBe(true);
+  });
+
+  it('a ladder win pays its format row through applyMatchResult, in Arena 1 and from 400', () => {
+    for (const current of [0, 150, 500]) {
+      const s = { ...scripted(1, 2), trophies: { current, best: current, roadClaimed: [] } };
+      for (const f of ['short', 'standard', 'full', 'last'] as const) {
+        const c = new TestClock();
+        const o = M.pickOpponent(s, 'ladder', C, c, { format: f });
+        expect(o.format).toBe(f);
+        const r = M.applyMatchResult(s, matchInput('ladder', 'win', o), C, c);
+        expect(r.rewards[0], `${current} ${f}`).toEqual({ kind: 'trophies', delta: ROWS[f].trophies });
+        expect(r.save.trophies.current).toBe(current + ROWS[f].trophies);
+      }
+    }
   });
 });
 

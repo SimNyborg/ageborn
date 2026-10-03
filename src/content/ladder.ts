@@ -31,21 +31,13 @@ export function rewardFormat(t: Pick<Content, 'formats'>, format: FormatId): Nam
 }
 
 /**
- * The ladder win reward for a format (A15.8): from 400 trophies each format pays its own row; below
- * that every format pays A6.3's. An unranked length (Last Base Standing, A2.10.1) pays its own row at
- * every trophy count. With no format, A6.3's row.
+ * The ladder win reward for a format (A15.8): from `winByFormat.fromTrophies` (0 since the owner
+ * decision of 2026-10-03, so from Arena 1) each format pays its own row, Last Base Standing included
+ * (A2.10.1; ranked since 2026-10-03); below it every format pays A6.3's. With no format, A6.3's row.
  */
 export function ladderWinFor(s: Pick<SaveDoc, 'trophies'>, t: Content, format?: FormatId): LadderWin {
   const l = t.arenas.ladder;
-  if (!format) return l.win;
+  if (!format || s.trophies.current < l.winByFormat.fromTrophies) return l.win;
   // A window pays the row of its family (A18.3.4: `short.bronze` pays Short War's).
-  const row = l.winByFormat.formats[rewardFormat(t, format)];
-  if (row?.unranked) return row;
-  if (s.trophies.current < l.winByFormat.fromTrophies) return l.win;
-  return row ?? l.win;
-}
-
-/** True when a format moves no trophies (A2.10.1: Last Base Standing is unranked). */
-export function isUnranked(t: Content, format?: FormatId): boolean {
-  return format !== undefined && t.arenas.ladder.winByFormat.formats[rewardFormat(t, format)]?.unranked === true;
+  return l.winByFormat.formats[rewardFormat(t, format)] ?? l.win;
 }

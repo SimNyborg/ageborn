@@ -85,18 +85,21 @@ export const arenas: ArenaTables = {
     },
   ],
   ladder: {
-    // A6.3 ladder results
+    // A6.3 ladder results: the row for a match with no format (every ladder match has one since
+    // 2026-10-03, so this is a fallback); the tutorial pays its Amber (A8).
     win: { trophies: 30, amber: 20, amberWithoutCharge: 40 },
-    // A15.8 rewards by format from 400 trophies (Arena 3): equal reward per minute. Re-derived from the
-    // A17.2 medians (4:45 / 6:30 / 8:30): trophies per minute at a 60% win rate 1.60 / 1.63 / 1.60
+    // A15.8 rewards by format. Owner decision 2026-10-03 ("ja, og uden ur skal også give trofæer"): from
+    // 0 trophies (Arena 1; was 400) a longer war pays more per win, and Last Base Standing is ranked.
+    // Medians then: Short 7:39, Medium 10:58, Long 15:21, No clock ~16:13. Amber keeps each row's old
+    // Amber-to-trophy ratio (Short 20/26, Standard 27/31, Full and No clock 35/36), rounded.
     winByFormat: {
-      fromTrophies: 400,
+      fromTrophies: 0,
       formats: {
-        short: { trophies: 26, amber: 20, amberWithoutCharge: 40 },
-        standard: { trophies: 31, amber: 27, amberWithoutCharge: 54 },
-        full: { trophies: 36, amber: 35, amberWithoutCharge: 70 },
-        // A2.10.1 Last Base Standing: unranked (no trophies won or lost at any count), the Full War's Amber
-        last: { trophies: 0, amber: 35, amberWithoutCharge: 70, unranked: true },
+        short: { trophies: 30, amber: 23, amberWithoutCharge: 46 },
+        standard: { trophies: 36, amber: 31, amberWithoutCharge: 62 },
+        full: { trophies: 46, amber: 45, amberWithoutCharge: 90 },
+        // A2.10.1 Last Base Standing: ranked like the timed lengths (unranked until 2026-10-03)
+        last: { trophies: 48, amber: 47, amberWithoutCharge: 94 },
       },
     },
     loss: { trophies: -20, amber: 15, noLossBelowTrophies: 400 },

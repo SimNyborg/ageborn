@@ -162,18 +162,21 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'standard' });
   });
 
-  it('Last Base Standing: no clock, no trophies, an info panel; Battle plays it (A2.10.1)', () => {
+  it('Last Base Standing: no clock, the win chip, an info panel; Battle plays it (A2.10.1, ranked since 2026-10-03)', () => {
     vi.useFakeTimers();
     m = mount({ state: 'mid', shell: true });
     act(() => m!.q('[data-testid="home-format"] [data-format="last"]')!.click());
     expect(m.save.value.flags['ui-ladderFormat.last']).toBe(true);
-    // One short line (no layout jump); "no trophies" lives in the info panel.
-    expect(text(m.q('[data-testid="home-format-desc"]')!)).toBe('7 ages · no clock');
+    // One short line (no layout jump) with the win chip, as the timed lengths have; the rest is in the info panel.
+    expect(text(m.q('[data-testid="home-format-desc"] span')!)).toBe('7 ages · no clock');
+    expect(text(m.q('[data-testid="home-format-win"]')!)).toBe('+48');
     // The fourth segment names itself on phones too (glyph over "No clock").
     expect(text(m.q('[data-testid="home-format"] [data-format="last"]')!)).toBe('No clock');
     m.click('[data-testid="home-last-info"]');
     expect(text(m.q('[data-testid="last-info"]')!)).toContain('Closing the game ends the war');
-    expect(text(m.q('[data-testid="last-info"]')!)).toContain('No trophies, win or lose');
+    expect(text(m.q('[data-testid="last-info"]')!)).toContain('Ranked: a win pays +48 trophies and 47 Amber');
+    expect(text(m.q('[data-testid="last-info"]')!)).toContain('A loss costs 20 trophies from 400 trophies');
+    expect(text(m.q('[data-testid="last-info"]')!)).not.toContain('No trophies');
     expect(text(m.q('[data-testid="last-info"]')!)).toContain('Every finished war claims a ready Sundial capsule');
     m.click('[data-testid="last-info"] .ui-modal__close');
     m.click('[data-testid="play"]');
@@ -698,17 +701,18 @@ describe('Result (rewards staged, each skippable)', () => {
     expect(m.q('[data-testid="ui-root"]')!.getAttribute('data-reduce-motion')).toBe('true');
   });
 
-  it('Last Base Standing: the reason line says how the war ended, and the trophy row says unranked (A2.10.1)', () => {
+  it('Last Base Standing: the reason line says how the war ended, and the trophy row is ranked (A2.10.1)', () => {
     m = mount({ routes: [{ id: 'home' as const }, { id: 'result' as const, info: fixtureResult(content, 'lastWin') }] });
     expect(text(m.q('[data-testid="result-reason"]')!)).toBe('Their walls crumbled at 23:41');
     m.click('[data-testid="result-skip"]');
-    expect(text(m.q('[data-testid="reward-unranked"]')!)).toContain('Unranked');
+    // Ranked since 2026-10-03: a plain trophy row with the win's +48, no "Unranked" note.
+    expect(text(m.q('[data-testid="reward-trophies"]')!)).toContain('+48');
+    expect(text(m.q('[data-testid="reward-trophies"]')!)).not.toContain('Unranked');
     // A timed war is ranked; with its Siege rope (A2.10.2) it has a reason line too (won at 5:31, before Siege).
     m.unmount();
     m = mount({ routes: route() });
     m.click('[data-testid="result-skip"]');
     expect(text(m.q('[data-testid="result-reason"]')!)).toBe('Their base fell at 5:31');
-    expect(m.q('[data-testid="reward-unranked"]')).toBeNull();
   });
 
   it('hides "Open capsule" once the earned capsule has been opened', () => {

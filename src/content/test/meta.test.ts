@@ -442,17 +442,19 @@ describe('Hidden feats (A15.10)', () => {
     expect(list.filter((f) => f.title).map((f) => f.title)).toEqual(['the_stubborn', 'photo_finisher', 'stone_cold', 'keeper_of_ages']);
   });
 
-  it('pays ladder wins by format from 400 trophies (A15.8)', () => {
+  it('pays ladder wins by format from 0 trophies, longer wars more (A15.8, owner decision 2026-10-03)', () => {
     expect(arenas.ladder.winByFormat).toEqual({
-      fromTrophies: 400,
+      fromTrophies: 0,
       formats: {
-        short: { trophies: 26, amber: 20, amberWithoutCharge: 40 },
-        standard: { trophies: 31, amber: 27, amberWithoutCharge: 54 },
-        full: { trophies: 36, amber: 35, amberWithoutCharge: 70 },
-        // A2.10.1: Last Base Standing is unranked and pays the Full War's Amber
-        last: { trophies: 0, amber: 35, amberWithoutCharge: 70, unranked: true },
+        short: { trophies: 30, amber: 23, amberWithoutCharge: 46 },
+        standard: { trophies: 36, amber: 31, amberWithoutCharge: 62 },
+        full: { trophies: 46, amber: 45, amberWithoutCharge: 90 },
+        // A2.10.1: Last Base Standing is ranked and pays the most per win
+        last: { trophies: 48, amber: 47, amberWithoutCharge: 94 },
       },
     });
+    // The Amber in brackets doubles the win Amber, as before.
+    for (const row of Object.values(arenas.ladder.winByFormat.formats)) expect(row?.amberWithoutCharge).toBe(2 * (row?.amber ?? 0));
   });
 });
 

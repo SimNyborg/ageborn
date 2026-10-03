@@ -15,6 +15,6 @@ export const FORMAT_MODES: Record<FormatId, readonly ('tutorial' | 'ladder' | 's
   // A17.18 owner decision: Conquest plays Standard War
   standard: ['ladder', 'daily', 'conquest', 'skirmish'],
   full: ['ladder', 'skirmish'],
-  // A2.10.1: Ladder from Arena 1 (unranked; owner decision 2026-10-03) and Skirmish; never the War Path, Daily or Conquest
+  // A2.10.1: Ladder from Arena 1 (ranked; owner decisions 2026-10-03) and Skirmish; never the War Path, Daily or Conquest
   last: ['ladder', 'skirmish'],
 };

@@ -10,7 +10,6 @@ import './result.css';
 import { ageNameKey, arenaNameKey, questNameKey, titleNameKey } from '@/content/keys';
 import type { Content, QuestDef } from '@/content/types';
 import type { AgeId, CapsuleTier, MatchResultInput, MatchStats, RewardStep } from '@/contracts';
-import { isUnranked } from '@/content/ladder';
 import { TICK_MS } from '@/core';
 import { goalMet, goalText, levelNameKey } from '../model/warPath';
 import type { ComponentChildren } from 'preact';
@@ -192,7 +191,7 @@ function RewardRow(p: {
   );
 }
 
-function TrophyReward(p: { delta: number; total: number; animate: boolean; unranked?: boolean | undefined }) {
+function TrophyReward(p: { delta: number; total: number; animate: boolean }) {
   const { t, locale } = useKit();
   const shown = useCountUp(p.total - p.delta, p.total, COUNT_UP_MS, p.animate);
   return (
@@ -203,10 +202,7 @@ function TrophyReward(p: { delta: number; total: number; animate: boolean; unran
       tone={p.delta > 0 ? 'good' : p.delta < 0 ? 'bad' : 'gold'}
       value={formatSigned(p.delta, locale)}
     >
-      {/* An unranked length (Last Base Standing, A2.10.1) says why the trophies did not move. */}
-      <span class="result-reward__sub ui-num" data-testid={p.unranked ? 'reward-unranked' : undefined}>
-        {p.unranked ? t('ui.result.unranked', { n: formatInt(shown, locale) }) : formatInt(shown, locale)}
-      </span>
+      <span class="result-reward__sub ui-num">{formatInt(shown, locale)}</span>
     </RewardRow>
   );
 }
@@ -228,12 +224,12 @@ function CapsuleClaimSound(p: { animate: boolean }): null {
 /** When the claim chime plays after the reward list mounts (after the trophy count-up starts). */
 const CAPSULE_CLAIM_SOUND_MS = 450;
 
-function Reward(p: { r: RewardStep; animate: boolean; unranked?: boolean | undefined }) {
+function Reward(p: { r: RewardStep; animate: boolean }) {
   const { t, locale, content, save } = useUi();
   const r = p.r;
   switch (r.kind) {
     case 'trophies':
-      return <TrophyReward delta={r.delta} total={save.value.trophies.current} animate={p.animate} unranked={p.unranked} />;
+      return <TrophyReward delta={r.delta} total={save.value.trophies.current} animate={p.animate} />;
     case 'amber':
       return (
         <RewardRow
@@ -431,12 +427,12 @@ function FeatStage(p: { featId: string }) {
   );
 }
 
-function Stage(p: { stage: ResultStage; animate: boolean; unranked?: boolean | undefined }) {
+function Stage(p: { stage: ResultStage; animate: boolean }) {
   const st = p.stage;
   switch (st.kind) {
     case 'trophies':
     case 'main':
-      return <Reward r={st.step} animate={p.animate} unranked={p.unranked} />;
+      return <Reward r={st.step} animate={p.animate} />;
     case 'progress':
       return <ProgressStage progress={st.progress} />;
     case 'feat':
@@ -687,9 +683,8 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
   const stats = info.input.stats;
   const opp = info.input.opponent;
   const night = info.endedHour !== undefined && isNight(info.endedHour);
-  // Last Base Standing (A2.10.1): the reason line, and the trophy row says it is unranked.
+  // Last Base Standing (A2.10.1): the reason line (the trophy row is a plain ranked row since 2026-10-03).
   const lastReason = lastBaseReason(info.input, content, t);
-  const unranked = info.input.mode === 'ladder' && isUnranked(content, opp.format);
 
   useEffect(() => {
     if (shown >= stages.length) return;
@@ -862,7 +857,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
           </h2>
           <ul class="result__list">
             {stages.slice(0, shown).map((st, i) => (
-              <Stage key={i} stage={st} animate={!reduce} unranked={unranked} />
+              <Stage key={i} stage={st} animate={!reduce} />
             ))}
           </ul>
           {done ? <SummaryRow steps={plan.summary} /> : null}

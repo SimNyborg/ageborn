@@ -8,8 +8,8 @@
  * |---|---|---|---|
  * | P1 Training | the onboarding General, AI | none | none |
  * | P2 Ladder, one length | the next AI General (`previewOpponent`) | none | "Short War · 3 ages · up to 8½ min" |
- * | P3 Ladder, several lengths (every arena since 2026-10-03) | as P2 | the length picker (Short, Medium, Long, No clock; locked ones name their arena) | "3 ages · up to 8½ min · win +26 🏆" |
- * | P4 Last Base Standing | as P2 | as P3, No clock lit | "7 ages · no clock" and an info button; a first-time caption (queued behind a currency caption) |
+ * | P3 Ladder, several lengths (every arena since 2026-10-03) | as P2 | the length picker (Short, Medium, Long, No clock; locked ones name their arena) | "3 ages · up to 8½ min · win +30 🏆" |
+ * | P4 Last Base Standing | as P2 | as P3, No clock lit | "7 ages · no clock · win +48 🏆" and an info button; a first-time caption (queued behind a currency caption) |
  * | P5 Quick Battle | the Quick General for the difficulty | a difficulty stepper | "Short War · 5 Amber per win" |
  * | P6 Daily | today's challenge, AI, its tier | Recruit / Veteran / Warlord | "Today: <modifier> · Medium War" |
  * | P7 Skirmish | the set-up General, AI | the summary and Change | the reward |
@@ -56,7 +56,7 @@ const LEN_KEY: Readonly<Record<string, string>> = {
 const DAILY_KEY: Readonly<Record<string, string>> = { recruit: 'ui.mode.daily.recruit', veteran: 'ui.mode.daily.veteran', warlord: 'ui.mode.daily.warlord' };
 const LAST_SEEN = 'ui-seen.lastBase';
 
-/** "3 ages · up to 8½ min" or "7 ages · no clock" (one line; "no trophies" is in the info panel). */
+/** "3 ages · up to 8½ min" or "7 ages · no clock" (one line; the win chip and the info panel say the rest). */
 export function lengthLine(content: ReturnType<typeof useUi>['content'], t: ReturnType<typeof useUi>['t'], f: FormatId): string {
   const def = content.formats[f];
   const ages = formatAges(content, f).length;
@@ -210,7 +210,10 @@ export function LengthPicker(p: { value: FormatId; options: readonly LengthOptio
 
 /** The Last Base Standing info panel (S17): the rule in plain words, the rewards, the void rule. */
 export function LastBaseInfo(p: { onClose(): void }) {
-  const { t, content } = useUi();
+  const { t, content, save, locale } = useUi();
+  // Ranked since 2026-10-03: the numbers come from the same rule meta pays (A15.8).
+  const win = ladderWin(save.value, content, 'last');
+  const loss = content.arenas.ladder.loss;
   const f = content.formats['last'];
   const steps = f?.escalation ?? [];
   const clock = (ms: number) => `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, '0')}`;
@@ -222,7 +225,14 @@ export function LastBaseInfo(p: { onClose(): void }) {
         <li>{t('ui.lastBase.what')}</li>
         <li>{t('ui.lastBase.siege', { from: clock(steps[0]?.atMs ?? 0), every })}</li>
         <li>{t('ui.lastBase.crumble', { crumble: clock(crumble?.atMs ?? 0), end: minutesText(f?.endByMs ?? 0) })}</li>
-        <li>{t('ui.lastBase.rewards')}</li>
+        <li>
+          {t('ui.lastBase.rewards', {
+            trophies: formatInt(win.trophies, locale),
+            amber: formatInt(win.amber, locale),
+            loss: formatInt(Math.abs(loss.trophies), locale),
+            from: formatInt(loss.noLossBelowTrophies, locale),
+          })}
+        </li>
       </ul>
       <p class="hub-lastInfo__warn">{t('ui.lastBase.closing')}</p>
     </Modal>
@@ -292,22 +302,26 @@ function LadderPlate(p: { opponent: OpponentSpec | null; format: FormatId; onFor
     }, 5000);
     return () => clearTimeout(id);
   }, [last, p.quiet]);
+  // What a win pays here (A15.8), in every length since 2026-10-03 (No clock is ranked too).
+  const showWin = picker && win.trophies > 0;
+  const winChip = showWin ? (
+    <span class="hub-plate__win" data-testid="home-format-win" title={t('ui.hub.winTrophies', { n: formatInt(win.trophies, locale) })} aria-label={t('ui.hub.winTrophies', { n: formatInt(win.trophies, locale) })}>
+      +{formatInt(win.trophies, locale)}
+      <TrophyIcon size={14} />
+    </span>
+  ) : null;
   const line = last ? (
     <span class="hub-plate__line">
-      <span class="hub-plate__desc" data-testid="home-format-desc">
-        {lengthLine(content, t, p.format)}
+      <span class={`hub-plate__desc${showWin ? ' has-win' : ''}`} data-testid="home-format-desc">
+        <span>{lengthLine(content, t, p.format)}</span>
+        {winChip}
       </span>
       <IconButton icon={<InfoIcon size={22} />} label={t('ui.hub.lastInfo')} kind="tertiary" class="hub-plate__info" testid="home-last-info" onClick={() => setInfo(true)} />
     </span>
   ) : (
-    <span class={`hub-plate__desc${picker && win.trophies > 0 ? ' has-win' : ''}`} data-testid="home-format-desc">
+    <span class={`hub-plate__desc${showWin ? ' has-win' : ''}`} data-testid="home-format-desc">
       <span>{picker ? lengthLine(content, t, p.format) : `${formatName(content, t, p.format)} · ${lengthLine(content, t, p.format)}`}</span>
-      {picker && win.trophies > 0 ? (
-        <span class="hub-plate__win" title={t('ui.hub.winTrophies', { n: formatInt(win.trophies, locale) })} aria-label={t('ui.hub.winTrophies', { n: formatInt(win.trophies, locale) })}>
-          +{formatInt(win.trophies, locale)}
-          <TrophyIcon size={14} />
-        </span>
-      ) : null}
+      {winChip}
     </span>
   );
   return (
