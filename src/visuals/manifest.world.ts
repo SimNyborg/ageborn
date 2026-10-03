@@ -24,7 +24,7 @@ export const WORLD_TURRET_SHEETS: Readonly<Record<AgeId, readonly string[]>> = {
   future: ['pulse_laser', 'arc_coil', 'plasma_mortar', 'gravity_well'],
   // A17 ages (art/blender/world/turrets_<age>.py)
   bronze: ['archer_tower', 'sun_mirror', 'onager', 'gorgon_bust'],
-  industrial: ['gatling_gun', 'mortar_pit', 'boiler_mortar', 'tesla_tower'],
+  industrial: ['gatling_gun', 'mortar_pit', 'boiler_mortar', 'tesla_tower', 'rivet_spitter', 'steam_hammer'],
   cosmic: ['ion_turret', 'starburst_gun', 'starfall_battery', 'tachyon_lance'],
 };
 

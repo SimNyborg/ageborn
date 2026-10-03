@@ -1,0 +1,975 @@
+{
+ "frames": {
+  "armoured_train_attack_b_01": {
+   "frame": {
+    "x": 2,
+    "y": 481,
+    "w": 328,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 212,
+    "w": 328,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_b_01_team": {
+   "frame": {
+    "x": 209,
+    "y": 926,
+    "w": 205,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 220,
+    "w": 205,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_b_02": {
+   "frame": {
+    "x": 666,
+    "y": 481,
+    "w": 328,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 213,
+    "w": 328,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_b_02_team": {
+   "frame": {
+    "x": 418,
+    "y": 926,
+    "w": 208,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 221,
+    "w": 208,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_b_03": {
+   "frame": {
+    "x": 2,
+    "y": 623,
+    "w": 328,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 214,
+    "w": 328,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_b_03_team": {
+   "frame": {
+    "x": 211,
+    "y": 763,
+    "w": 209,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 221,
+    "w": 209,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_b_04": {
+   "frame": {
+    "x": 334,
+    "y": 623,
+    "w": 328,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 214,
+    "w": 328,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_b_04_team": {
+   "frame": {
+    "x": 424,
+    "y": 763,
+    "w": 209,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 221,
+    "w": 209,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_b_05": {
+   "frame": {
+    "x": 334,
+    "y": 481,
+    "w": 328,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 212,
+    "w": 328,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 763,
+    "w": 205,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 210,
+    "y": 219,
+    "w": 205,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 328,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 163,
+    "w": 328,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_b_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 1007,
+    "w": 195,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 210,
+    "w": 195,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_b_07": {
+   "frame": {
+    "x": 666,
+    "y": 2,
+    "w": 328,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 184,
+    "w": 328,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_b_07_team": {
+   "frame": {
+    "x": 630,
+    "y": 926,
+    "w": 213,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 223,
+    "w": 213,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_b_08": {
+   "frame": {
+    "x": 334,
+    "y": 2,
+    "w": 328,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 183,
+    "w": 328,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_b_08_team": {
+   "frame": {
+    "x": 666,
+    "y": 623,
+    "w": 205,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 219,
+    "w": 205,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_alt_00": {
+   "frame": {
+    "x": 2,
+    "y": 193,
+    "w": 328,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 210,
+    "w": 328,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_alt_00_team": {
+   "frame": {
+    "x": 637,
+    "y": 763,
+    "w": 203,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 210,
+    "y": 218,
+    "w": 203,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_alt_01": {
+   "frame": {
+    "x": 334,
+    "y": 193,
+    "w": 328,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 210,
+    "w": 328,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_alt_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 845,
+    "w": 203,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 210,
+    "y": 218,
+    "w": 203,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_alt_02": {
+   "frame": {
+    "x": 666,
+    "y": 337,
+    "w": 328,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 211,
+    "w": 328,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_alt_02_team": {
+   "frame": {
+    "x": 209,
+    "y": 845,
+    "w": 203,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 210,
+    "y": 218,
+    "w": 203,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_alt_03": {
+   "frame": {
+    "x": 666,
+    "y": 193,
+    "w": 328,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 210,
+    "w": 328,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_alt_03_team": {
+   "frame": {
+    "x": 416,
+    "y": 845,
+    "w": 203,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 210,
+    "y": 218,
+    "w": 203,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_alt_04": {
+   "frame": {
+    "x": 2,
+    "y": 337,
+    "w": 328,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 210,
+    "w": 328,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_alt_04_team": {
+   "frame": {
+    "x": 623,
+    "y": 845,
+    "w": 203,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 210,
+    "y": 218,
+    "w": 203,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_alt_05": {
+   "frame": {
+    "x": 334,
+    "y": 337,
+    "w": 328,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 210,
+    "w": 328,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  },
+  "armoured_train_attack_alt_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 926,
+    "w": 203,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 210,
+    "y": 218,
+    "w": 203,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 599,
+    "h": 369
+   },
+   "anchor": {
+    "x": 0.53756,
+    "y": 0.8916
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "armoured_train_attack_00",
+   "armoured_train_attack_b_01",
+   "armoured_train_attack_b_02",
+   "armoured_train_attack_b_03",
+   "armoured_train_attack_b_04",
+   "armoured_train_attack_b_05",
+   "armoured_train_attack_b_06",
+   "armoured_train_attack_b_07",
+   "armoured_train_attack_b_08",
+   "armoured_train_attack_b_08",
+   "armoured_train_attack_09",
+   "armoured_train_attack_09"
+  ],
+  "attack_b_team": [
+   "armoured_train_attack_00_team",
+   "armoured_train_attack_b_01_team",
+   "armoured_train_attack_b_02_team",
+   "armoured_train_attack_b_03_team",
+   "armoured_train_attack_b_04_team",
+   "armoured_train_attack_b_05_team",
+   "armoured_train_attack_b_06_team",
+   "armoured_train_attack_b_07_team",
+   "armoured_train_attack_b_08_team",
+   "armoured_train_attack_b_08_team",
+   "armoured_train_attack_09_team",
+   "armoured_train_attack_09_team"
+  ],
+  "attack_alt": [
+   "armoured_train_attack_alt_00",
+   "armoured_train_attack_alt_01",
+   "armoured_train_attack_alt_02",
+   "armoured_train_attack_alt_03",
+   "armoured_train_attack_alt_04",
+   "armoured_train_attack_alt_05"
+  ],
+  "attack_alt_team": [
+   "armoured_train_attack_alt_00_team",
+   "armoured_train_attack_alt_01_team",
+   "armoured_train_attack_alt_02_team",
+   "armoured_train_attack_alt_03_team",
+   "armoured_train_attack_alt_04_team",
+   "armoured_train_attack_alt_05_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "armoured_train.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1024,
+   "h": 1080
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.armoured_train",
+   "name": "Armoured Train",
+   "heightLu": 132,
+   "widthLu": 261.0,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    322.0,
+    329.0
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     118
+    ],
+    "hitCenter": [
+     0,
+     50
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "wheeled",
+   "extrasOf": "armoured_train",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      8,
+      9,
+      9
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      100,
+      110
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        58.7,
+        69.6
+       ],
+       [
+        59.4,
+        68.8
+       ],
+       [
+        59.8,
+        74.5
+       ],
+       [
+        60.7,
+        76.4
+       ],
+       [
+        60.9,
+        76.2
+       ],
+       [
+        59.3,
+        77.7
+       ],
+       [
+        28.1,
+        100.6
+       ],
+       [
+        52.0,
+        79.9
+       ],
+       [
+        60.1,
+        73.2
+       ],
+       [
+        58.7,
+        69.6
+       ]
+      ],
+      "mgMuzzle": [
+       [
+        -22.4,
+        80.7
+       ],
+       [
+        -22.4,
+        80.7
+       ],
+       [
+        -22.0,
+        79.9
+       ],
+       [
+        -21.1,
+        78.7
+       ],
+       [
+        -21.0,
+        78.7
+       ],
+       [
+        -21.0,
+        80.2
+       ],
+       [
+        -36.8,
+        92.3
+       ],
+       [
+        -25.3,
+        78.3
+       ],
+       [
+        -19.7,
+        80.0
+       ],
+       [
+        -22.4,
+        80.7
+       ]
+      ]
+     },
+     "muzzle": [
+      28.1,
+      100.6
+     ]
+    },
+    "attack_alt": {
+     "frames": 6,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      60,
+      70,
+      110,
+      60,
+      70,
+      80
+     ],
+     "durationMs": 450,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.5333,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        58.1,
+        70.7
+       ],
+       [
+        58.1,
+        70.7
+       ],
+       [
+        58.1,
+        70.7
+       ],
+       [
+        58.1,
+        70.7
+       ],
+       [
+        58.1,
+        70.7
+       ],
+       [
+        58.1,
+        70.7
+       ]
+      ],
+      "mgMuzzle": [
+       [
+        -22.1,
+        82.2
+       ],
+       [
+        -22.2,
+        82.7
+       ],
+       [
+        -22.2,
+        82.7
+       ],
+       [
+        -22.1,
+        82.3
+       ],
+       [
+        -22.1,
+        81.1
+       ],
+       [
+        -22.1,
+        81.8
+       ]
+      ]
+     },
+     "holdStep": 2
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

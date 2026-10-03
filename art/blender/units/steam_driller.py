@@ -34,8 +34,8 @@ SLUG = "steam_driller"
 GAIT_NAME = "biped"
 NAME = "Steam Driller"
 HEIGHT_LU = 68
-CANVAS = (320, 280)
-FEET = (130, 250)
+CANVAS = (340, 300)
+FEET = (140, 266)
 ANCHORS = {"head": (2, 66), "hitCenter": (0, 32)}
 NO_RETIME = True
 

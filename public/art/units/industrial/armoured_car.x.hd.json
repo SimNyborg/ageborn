@@ -1,0 +1,298 @@
+{
+ "frames": {
+  "armoured_car_attack_b_00": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 219,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 274,
+    "w": 219,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_00_team": {
+   "frame": {
+    "x": 158,
+    "y": 201,
+    "w": 149,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 307,
+    "w": 149,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_01": {
+   "frame": {
+    "x": 670,
+    "y": 2,
+    "w": 223,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 302,
+    "y": 280,
+    "w": 223,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 201,
+    "w": 152,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 310,
+    "w": 152,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_02": {
+   "frame": {
+    "x": 448,
+    "y": 2,
+    "w": 218,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 275,
+    "w": 218,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_02_team": {
+   "frame": {
+    "x": 311,
+    "y": 201,
+    "w": 149,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 341,
+    "y": 306,
+    "w": 149,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_03": {
+   "frame": {
+    "x": 225,
+    "y": 2,
+    "w": 219,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 274,
+    "w": 219,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  },
+  "armoured_car_attack_b_03_team": {
+   "frame": {
+    "x": 464,
+    "y": 201,
+    "w": 149,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 342,
+    "y": 307,
+    "w": 149,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 752,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.55053,
+    "y": 0.88095
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "armoured_car_attack_b_00",
+   "armoured_car_attack_b_01",
+   "armoured_car_attack_b_02",
+   "armoured_car_attack_b_03"
+  ],
+  "attack_b_team": [
+   "armoured_car_attack_b_00_team",
+   "armoured_car_attack_b_01_team",
+   "armoured_car_attack_b_02_team",
+   "armoured_car_attack_b_03_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "armoured_car.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 896,
+   "h": 304
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.armoured_car",
+   "name": "Armoured Car",
+   "heightLu": 74,
+   "widthLu": 82.1,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    414,
+    444
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     70
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "wheeled",
+   "extrasOf": "armoured_car",
+   "clips": {
+    "attack_b": {
+     "frames": 4,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "durationsMs": [
+      60,
+      60,
+      70,
+      60
+     ],
+     "durationMs": 250,
+     "impactFrame": 1,
+     "impactStep": 1,
+     "impactAt": 0.24,
+     "holdStep": 0,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        22.0,
+        47.7
+       ],
+       [
+        21.6,
+        46.9
+       ],
+       [
+        20.9,
+        48.5
+       ],
+       [
+        22.0,
+        47.7
+       ]
+      ]
+     },
+     "muzzle": [
+      21.6,
+      46.9
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

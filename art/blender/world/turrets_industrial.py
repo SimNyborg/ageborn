@@ -4,6 +4,14 @@ and a rotating head (`idle`, `fire` with a per-frame muzzle anchor), plus `build
 
 Palette (A17.12): iron, coal, smoke cream, muted brick; copper and brass as small accents. The Tesla
 arcs are a pale violet-white (outside the team hue bands), never cyan.
+
+W5 Industrial wave (CONTENT_PLAN 5.5):
+  Rivet Spitter   a pneumatic riveting gun on a swivel pedestal with a hopper of hot rivets and an air
+                  hose; idle: the hopper rattles, the nozzle twitches, a hiss of air; fire: it braces,
+                  then rattles out three rivets (one bright flash, a puff), the whole gun shaking
+  Steam Hammer    a pile-driver on an A-frame by the gate: a heavy iron ram on a piston over a steam
+                  cylinder; idle: the ram lifts a little and puffs; fire: it is raised high, then SLAMS
+                  down with a shock ring on the ground and a jet of steam
 """
 import math
 
@@ -538,6 +546,137 @@ TESLA_OVERLAYS = {
 }
 
 
+# -- W5 Industrial wave: Rivet Spitter -------------------------------------------------------------
+RIVET_TIP = (25.0, 0, 21.0)
+
+
+def rivet_build(rig):
+    works_plinth(rig, r=15.0, h=7.0)
+    g = Geo()
+    cyl(g, (0, 0, 7), (0, 0, 15), 3.0, bevel=0.4)
+    rig.part("mount", g, IRON_DK, finish="metal", outline=0.6)
+    g = Geo()
+    cyl(g, (0, 0, 14), (0, 0, 16.5), 5.0, bevel=0.4, segs=18)
+    rig.part("head", g, IRON, finish="metal", outline=0.5)
+    rig.joint("gun", "head", (0, 0, 21))
+    g = Geo()
+    cyl(g, (-9, 0, 21), (10, 0, 21), 5.2, 4.6, bevel=0.8, segs=20)
+    rig.part("gun", g, IRON, finish="metal")                       # the air cylinder body
+    g = Geo()
+    for x in (-5.0, 4.0):
+        g.lathe([(5.3, -0.7), (5.7, 0), (5.3, 0.7)], (x, 0, 21), (x + 1, 0, 21), segs=20)
+    rig.part("gun", g, team=True, outline=0.4)                     # team bands
+    g = Geo()
+    cyl(g, (10, 0, 21), (RIVET_TIP[0] - 1, 0, 21), 2.2, 1.6, bevel=0.3, segs=14)
+    rig.part("gun", g, IRON_DK, finish="metal", outline=0.6)       # nozzle
+    g = Geo().lathe([(0, -0.2), (1.2, -0.2), (1.2, 0.4), (0, 0.4)], (RIVET_TIP[0] - 0.6, 0, 21), (RIVET_TIP[0], 0, 21), segs=12)
+    rig.part("gun", g, BORE, outline=0)
+    # the rivet hopper on top with glowing rivet heads
+    g = Geo().lathe([(0, 0), (3.6, 0), (5.0, 6.0), (0, 6.0)], (-2, 0, 25), (-2, 0, 31), segs=16)
+    rig.part("gun", g, COPPER, finish="metal", outline=0.6)
+    rig.joint("hop", "gun", (-2, 0, 31))
+    g = Geo()
+    for dx, dy in ((-1.6, -1.0), (1.4, -0.8), (0.0, 1.4), (-0.4, -2.2)):
+        g.sphere((-2 + dx, dy, 31.2), 1.1, cuts=2)
+    rig.part("hop", g, glow=EMBER, outline=0.3)
+    g = Geo().capsule((-9, -2, 19), (-12, -6, 12), 1.3).capsule((-12, -6, 12), (-10, -8, 6), 1.3)
+    rig.part("gun", g, COAL_LT, finish="gloss", outline=0.4)       # air hose
+    g = Geo().capsule((-8, 0, 21), (-14, 0, 24), 1.2)
+    rig.part("gun", g, LEATHER, outline=0.4)                       # grip handle
+    muzzle_flash(rig, "gun", RIVET_TIP, 1.0)
+    smoke_puff(rig, "gun", (RIVET_TIP[0] + 3, 0, 22), 0.8)
+
+
+def rivet_idle(f):
+    t = f / 6 * 2 * math.pi
+    return {"gun": {"r": 1.4 * math.sin(2 * t), "x": 0.3 * math.sin(3 * t)},
+            "hop": {"z": [0, 0.6, 0, 0.6, 0, 0.3][f], "r": [0, 6, -4, 6, -2, 0][f]},
+            "head": {"rz": 6.0 * math.sin(t)}}
+
+
+def rivet_fire(f):
+    return {"gun": {"x": [0.8, -3.0, -1.0, -2.4, 0][f], "r": [-2, 3, -1, 2, 0][f], "z": [0, 0.6, -0.4, 0.4, 0][f]},
+            "hop": {"z": [0, 1.0, 0.2, 0.8, 0][f]},
+            "smoke": {"show": f in (1, 2, 3), "s": [1, 0.7, 0.9, 1.1, 1][f]}}
+
+
+RIVET_OVERLAYS = {"fire": {
+    1: [{"kind": "burst", "joint": "gun", "point": (RIVET_TIP[0] + 2, 0, 21), "r0_lu": 4.0, "r1_lu": 9.0, "n": 5,
+         "a0": -40.0, "arc": 80.0, "color": "#FFF4D6"}],
+    2: [{"kind": "burst", "joint": "gun", "point": (RIVET_TIP[0] + 2, 0, 21), "r0_lu": 3.0, "r1_lu": 7.0, "n": 4,
+         "a0": -30.0, "arc": 60.0, "color": "#FFF4D6"}],
+    3: [{"kind": "burst", "joint": "gun", "point": (RIVET_TIP[0] + 2, 0, 21), "r0_lu": 3.0, "r1_lu": 7.0, "n": 4,
+         "a0": -30.0, "arc": 60.0, "color": "#FFF4D6"}]}}
+
+
+# -- W5 Industrial wave: Steam Hammer --------------------------------------------------------------
+HAMMER_TOP = 46.0
+
+
+def hammer_build(rig):
+    works_plinth(rig, r=17.0, h=6.0)
+    # the A-frame (static) with a crossbeam and the steam cylinder on top
+    g = Geo()
+    for x in (-12.0, 12.0):
+        g.capsule((x, -4.0, 6.0), (x * 0.4, -4.0, HAMMER_TOP), 1.8)
+        g.capsule((x, 6.0, 6.0), (x * 0.4, 6.0, HAMMER_TOP), 1.8)
+    g.capsule((-7.0, -4.0, 26.0), (7.0, -4.0, 26.0), 1.4)
+    rig.part("mount", g, IRON_DK, finish="metal", outline=0.6)
+    g = Geo()
+    cyl(g, (0, 1, HAMMER_TOP - 2), (0, 1, HAMMER_TOP + 8), 6.0, bevel=0.8, segs=20)
+    rig.part("mount", g, IRON, finish="metal")
+    g = Geo()
+    cyl(g, (0, 1, HAMMER_TOP + 1), (0, 1, HAMMER_TOP + 3), 6.3, bevel=0.3, segs=20)
+    rig.part("mount", g, team=True, outline=0.4)
+    g = Geo()
+    I_rivets = [(6.0 * math.cos(math.radians(a)), 1 + 6.0 * math.sin(math.radians(a)), HAMMER_TOP + 6.0) for a in range(200, 341, 35)]
+    for pt in I_rivets:
+        g.sphere(pt, 0.7, cuts=2)
+    rig.part("mount", g, BRASS_LT, finish="metal", outline=0)
+    KI_g = Geo()
+    rig.part("mount", KI_g.capsule((5.0, -4.0, HAMMER_TOP + 6.0), (9.0, -6.0, HAMMER_TOP + 9.0), 0.9), COPPER,
+             finish="metal", outline=0.4)                            # steam pipe
+    # the ram (head): a piston rod and a heavy iron block with a team stripe and hazard face
+    g = Geo()
+    cyl(g, (0, 1, 16), (0, 1, HAMMER_TOP - 2), 1.4, bevel=0.2, segs=12)
+    rig.part("head", g, IRON_LT, finish="metal", outline=0.5)
+    blk = Geo()
+    box(blk, (0, 1, 13.0), (10.0, 8.0, 6.4), p=5)
+    bf = F.Face(rig, "head", [blk], yaw_deg=TURRET_YAW)
+    rig.part("head", blk, IRON_DK, finish="metal")
+    g = KI.stripes(bf, Geo(), K.scr(bf, (0, -7.1, 13.0)), 17.0, 5.0, n=5, slant=0.8)
+    rig.part("head", g, STRIPE_LT, highlight=False, outline=0)
+    g = Geo()
+    box(g, (0, 1, 20.0), (10.3, 8.3, 1.2), p=5, cuts=2)
+    rig.part("head", g, team=True, outline=0.4)
+    rig.joint("jet", "mount", (8.0, -6.0, HAMMER_TOP + 10.0), hidden=True)
+    g = Geo()
+    for dx, dz, r in ((2, 2, 3.0), (5, 5, 2.4), (8, 8, 2.0)):
+        g.sphere((8.0 + dx, -6.0, HAMMER_TOP + 10.0 + dz), r, cuts=3)
+    rig.part("jet", g, STEAM, finish="dust", outline=0.5)
+    muzzle_flash(rig, "head", (0, 1, 7.0), 0.6)
+    smoke_puff(rig, "head", (10, -2, 6.0), 1.0)
+
+
+def hammer_idle(f):
+    t = f / 6 * 2 * math.pi
+    return {"head": {"z": 1.2 + 1.2 * math.sin(t)}, "jet": {"show": f in (2, 3), "s": 0.7}}
+
+
+def hammer_fire(f):
+    return {"head": {"z": [12.0, -4.0, -2.0, 4.0, 1.0][f], "sz": [1.02, 0.86, 1.04, 1.0, 1.0][f],
+                     "sx": [1.0, 1.1, 0.98, 1.0, 1.0][f]},
+            "jet": {"show": f in (0, 1, 2), "s": [0.8, 1.3, 1.1, 1, 1][f]},
+            "flash": {"hide": True},
+            "smoke": {"show": f in (1, 2, 3), "s": [1, 1.1, 1.4, 1.6, 1][f], "z": [0, 0, 1, 2, 0][f]}}
+
+
+HAMMER_OVERLAYS = {"fire": {
+    1: [{"kind": "rings", "joint": "mount", "point": (0, 1, 2.0), "radii_lu": (14.0, 20.0), "a0": 160.0, "a1": 380.0,
+         "color": "#FFF4D6"},
+        {"kind": "dust", "ground": (0.0, 0.0), "size_lu": 7.0, "puffs": 5, "seed": 91, "spread": 1.6}]}}
+
+
 TURRETS = [
     turret_module("gatling_gun", "Gatling Gun", "industrial", 34, CANVAS, FEET, (0, 20), (27.5, 0, 20.5), gatling_build,
                   gatling_idle, gatling_fire, muzzle_joint="gun", idle_frames=6, overlays=GATLING_OVERLAYS),
@@ -550,4 +689,10 @@ TURRETS = [
     turret_module("tesla_tower", "Tesla Tower", "industrial", 72, (300, 250), (100, 210), (0, 13), (0, 0, TESLA_TOP),
                   tesla_build,
                   tesla_idle, tesla_fire, aim=(0, 0), fire_kind="arc", idle_frames=6, overlays=TESLA_OVERLAYS),
+    # W5 Industrial wave (CONTENT_PLAN 5.5)
+    turret_module("rivet_spitter", "Rivet Spitter", "industrial", 34, CANVAS, FEET, (0, 18), RIVET_TIP, rivet_build,
+                  rivet_idle, rivet_fire, aim=(-40, 40), muzzle_joint="gun", idle_frames=6, overlays=RIVET_OVERLAYS),
+    turret_module("steam_hammer", "Steam Hammer", "industrial", 56, (300, 250), (100, 210), (0, 16), (0, 1, 7.0),
+                  hammer_build, hammer_idle, hammer_fire, aim=(0, 0), fire_kind="slam", idle_frames=6,
+                  overlays=HAMMER_OVERLAYS),
 ]

@@ -229,6 +229,111 @@ export const INDUSTRIAL_UNITS: PuppetDef[] = [
   }),
 ];
 
+/** W5 Industrial wave (CONTENT_PLAN 5.5): a vehicle fallback built from the landship parts at scale k. */
+function machine(id: string, height: number, k: number, group: PuppetDef['group'], size: 'large' | 'huge', speed: number, legendary = false): PuppetDef {
+  const bones: BoneDef[] = [
+    { id: 'hull', parent: 'spin', x: 0, y: 34 },
+    { id: 'treadTeeth', parent: 'hull', x: 0, y: 0 },
+    { id: 'wheel1', parent: 'hull', x: -36, y: -8 },
+    { id: 'wheel4', parent: 'hull', x: 36, y: -8 },
+    { id: 'turret', parent: 'hull', x: 0, y: -62 },
+    { id: 'barrel', parent: 'turret', x: 14, y: -10 },
+    { id: 'muzzle', parent: 'barrel', x: 38, y: 0 },
+    { id: 'stack', parent: 'hull', x: -24, y: -60 },
+  ];
+  return vehicle({
+    id,
+    age: 'industrial',
+    palette: { ...X, skin: 0xcfa98c },
+    height,
+    center: 34 * k,
+    bones: scaleBones(bones, k),
+    slots: scaleSlots([
+      slot('industrial.landship.stack', 'stack', 5),
+      slot('industrial.landship.cab', 'turret', 7),
+      slot('industrial.landship.tread', 'hull', 10),
+      slot('industrial.landship.roadwheel', 'wheel1', 12),
+      slot('industrial.landship.roadwheel', 'wheel4', 12, { id: 'rw4' }),
+      slot('industrial.landship.hull', 'hull', 14),
+      slot('industrial.landship.gun', 'barrel', 15, { tag: 'weapon', noWidth: true }),
+    ], k),
+    muzzleBone: 'muzzle',
+    attack: 'vehicle.attack.recoil',
+    ability: 'ability.recoil',
+    group,
+    size,
+    legendary,
+    wheelRadius: 6 * k,
+    speed,
+  });
+}
+
+/** W5 Industrial wave: a biped fallback with the age's worker look. */
+function worker2(id: string, height: number, o: Partial<Parameters<typeof biped>[0]>): PuppetDef {
+  return biped({
+    id,
+    age: 'industrial',
+    height,
+    palette: { ...worker, skin: 0xcfa98c, hair: 0x3f3530 },
+    head: 'industrial.head.worker',
+    eyes: 'shared.eyes.angry',
+    torso: 'industrial.torso.vest',
+    pelvis: 'industrial.pelvis.trousers',
+    pose: { armF: -30, foreF: -50, armB: 10, foreB: -30 },
+    attack: 'biped.attack.swing',
+    group: 'infantry',
+    size: 'small',
+    ...o,
+  } as Parameters<typeof biped>[0]);
+}
+
+export const INDUSTRIAL_WAVE_UNITS: PuppetDef[] = [
+  worker2('unit.coal_miners', 66, { hat: [{ part: 'industrial.helmet.sapper', tag: 'prop' }], weapon: { part: 'industrial.pick', rot: 100 } }),
+  worker2('unit.iron_mantlet', 66, {
+    hat: [{ part: 'industrial.kepi', tag: 'prop' }], torso: 'industrial.torso.jacket',
+    weapon: { part: 'industrial.carbine', rot: 180, y: 2, muzzle: { x: 0, y: -30 } },
+    offhand: { part: sized('industrial.chargebox', 1.6), rot: 0, y: 2 },
+  }),
+  worker2('unit.dispatch_rider', 66, { hat: [{ part: 'industrial.goggles', tag: 'prop' }], torso: 'industrial.torso.jacket', weapon: { part: 'industrial.wrench', rot: 100 }, size: 'medium' }),
+  worker2('unit.bomb_bowler', 66, {
+    hat: [{ part: 'industrial.cap', tag: 'prop' }], weapon: { part: 'industrial.chargebox', rot: 20, muzzle: { x: 0, y: -4 } },
+    attack: 'biped.attack.throw', group: 'ranged',
+  }),
+  machine('unit.steam_tractor', 92, 0.55, 'heavy', 'large', 50),
+  worker2('unit.trench_mortar', 66, {
+    hat: [{ part: 'industrial.helmet.sapper', tag: 'prop' }], torso: 'industrial.torso.jacket',
+    back: [{ part: 'industrial.chargebox', x: -10, y: -10, rot: -8 }],
+    weapon: { part: 'industrial.flarepistol', rot: 120, y: 1, muzzle: { x: 0, y: -18 } },
+    attack: 'biped.attack.shoot', group: 'ranged',
+  }),
+  worker2('unit.steam_driller', 68, {
+    hat: [{ part: 'industrial.goggles', tag: 'prop' }], torso: 'industrial.torso.overalls', pelvis: 'industrial.pelvis.overalls',
+    weapon: { part: 'industrial.harpoongun', rot: 170, x: 0, y: 6, muzzle: { x: 0, y: -42 } },
+    pose: { armF: -120, foreF: 40, armB: -60, foreB: -50 }, group: 'antiArmor', size: 'medium',
+  }),
+  worker2('unit.bandmaster', 70, {
+    hat: [{ part: 'industrial.kepi', tag: 'prop' }, { part: 'industrial.moustache' }], torso: 'industrial.torso.greatcoat', pelvis: 'industrial.pelvis.coat',
+    weapon: { part: 'industrial.flarepistol', rot: 180, y: 1, muzzle: { x: 0, y: -18 } },
+    attack: 'biped.attack.shoot', group: 'support',
+  }),
+  worker2('unit.clockwork_tinker', 64, {
+    hat: [{ part: 'industrial.goggles', tag: 'prop' }, { part: 'industrial.moustache' }], back: [{ part: 'industrial.chargebox', x: -10, y: -10, rot: -8 }],
+    weapon: { part: 'industrial.wrench', rot: 100 }, group: 'support',
+  }),
+  worker2('unit.clockwork_soldier', 58, { hat: [{ part: 'industrial.kepi', tag: 'prop' }], torso: 'industrial.torso.jacket', weapon: { part: 'industrial.carbine', rot: 160, y: 2, muzzle: { x: 0, y: -30 } } }),
+  machine('unit.armoured_car', 74, 0.45, 'epic', 'large', 55),
+  worker2('unit.alpine_climber', 66, {
+    hat: [{ part: 'industrial.hat.brim', tag: 'prop' }], back: [{ part: 'industrial.ropecoil', x: -9, y: -10 }],
+    weapon: { part: 'industrial.pick', rot: 100 }, group: 'epic', size: 'medium',
+  }),
+  worker2('unit.spark_scientist', 68, {
+    hat: [{ part: 'industrial.goggles', tag: 'prop' }], torso: 'industrial.torso.greatcoat', pelvis: 'industrial.pelvis.coat',
+    weapon: { part: 'industrial.harpoongun', rot: 180, y: 4, muzzle: { x: 0, y: -40 } },
+    attack: 'biped.attack.shoot', group: 'epic',
+  }),
+  machine('unit.armoured_train', 132, 0.8, 'legendary', 'huge', 40, true),
+];
+
 export const INDUSTRIAL_TURRETS: TurretPuppet[] = [
   turret({
     id: 'turret.gatling_gun',
@@ -280,6 +385,33 @@ export const INDUSTRIAL_TURRETS: TurretPuppet[] = [
       { id: 'muzzle', parent: 'pivot', x: 0, y: -40 },
     ],
     slots: [slot('industrial.turret.flag', 'root', 5, { x: -16, y: -4 }), slot('industrial.turret.teslaTower', 'pivot', 10), slot('industrial.turret.globe', 'orb', 12)],
+    aim: [0, 0],
+  }),
+  // W5 Industrial wave (CONTENT_PLAN 5.5)
+  turret({
+    id: 'turret.rivet_spitter',
+    age: 'industrial',
+    palette: X,
+    height: 32,
+    bones: [
+      { id: 'pivot', parent: 'root', x: 0, y: -18 },
+      { id: 'barrel', parent: 'pivot', x: 0, y: 0 },
+      { id: 'muzzle', parent: 'pivot', x: 26, y: 0 },
+    ],
+    slots: [slot('industrial.turret.flag', 'root', 5, { x: -14, y: -4 }), slot('industrial.turret.tripod', 'root', 10), slot('industrial.turret.gatling', 'barrel', 12)],
+    aim: [-40, 40],
+  }),
+  turret({
+    id: 'turret.steam_hammer',
+    age: 'industrial',
+    palette: X,
+    height: 48,
+    bones: [
+      { id: 'pivot', parent: 'root', x: 0, y: 0 },
+      { id: 'orb', parent: 'pivot', x: 0, y: -16 },
+      { id: 'muzzle', parent: 'pivot', x: 0, y: -6 },
+    ],
+    slots: [slot('industrial.turret.flag', 'root', 5, { x: -16, y: -4 }), slot('industrial.turret.boiler', 'root', 10)],
     aim: [0, 0],
   }),
 ];

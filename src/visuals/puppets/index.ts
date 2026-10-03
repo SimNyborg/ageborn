@@ -9,7 +9,7 @@ import { BRONZE_BASE, BRONZE_TURRETS, BRONZE_UNITS } from './bronze';
 import { COSMIC_BASE, COSMIC_TURRETS, COSMIC_UNITS } from './cosmic';
 import { FUTURE_BASE, FUTURE_TURRETS, FUTURE_UNITS } from './future';
 import { GUNPOWDER_BASE, GUNPOWDER_TURRETS, GUNPOWDER_UNITS } from './gunpowder';
-import { INDUSTRIAL_BASE, INDUSTRIAL_TURRETS, INDUSTRIAL_UNITS } from './industrial';
+import { INDUSTRIAL_BASE, INDUSTRIAL_TURRETS, INDUSTRIAL_UNITS, INDUSTRIAL_WAVE_UNITS } from './industrial';
 import { MODERN_BASE, MODERN_TURRETS, MODERN_UNITS } from './modern';
 import { MEDIEVAL_BASE, MEDIEVAL_TURRETS, MEDIEVAL_UNITS } from './medieval';
 import { STONE_BASE, STONE_TURRETS, STONE_UNITS } from './stone';
@@ -22,6 +22,6 @@ export const AGE_PUPPETS: Readonly<Record<AgeId, { units: readonly PuppetDef[]; 
   future: { units: FUTURE_UNITS, turrets: FUTURE_TURRETS, base: FUTURE_BASE },
   // A17 ages (DESIGN A17.9-A17.12)
   bronze: { units: BRONZE_UNITS, turrets: BRONZE_TURRETS, base: BRONZE_BASE },
-  industrial: { units: INDUSTRIAL_UNITS, turrets: INDUSTRIAL_TURRETS, base: INDUSTRIAL_BASE },
+  industrial: { units: [...INDUSTRIAL_UNITS, ...INDUSTRIAL_WAVE_UNITS], turrets: INDUSTRIAL_TURRETS, base: INDUSTRIAL_BASE },
   cosmic: { units: COSMIC_UNITS, turrets: COSMIC_TURRETS, base: COSMIC_BASE },
 };
