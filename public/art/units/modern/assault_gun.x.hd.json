@@ -1,0 +1,550 @@
+{
+ "frames": {
+  "assault_gun_attack_b_01": {
+   "frame": {
+    "x": 1427,
+    "y": 2,
+    "w": 334,
+    "h": 288
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 190,
+    "w": 334,
+    "h": 288
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  },
+  "assault_gun_attack_b_01_team": {
+   "frame": {
+    "x": 1115,
+    "y": 305,
+    "w": 253,
+    "h": 228
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 253,
+    "y": 196,
+    "w": 253,
+    "h": 228
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  },
+  "assault_gun_attack_b_02": {
+   "frame": {
+    "x": 758,
+    "y": 2,
+    "w": 331,
+    "h": 289
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 191,
+    "w": 331,
+    "h": 289
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  },
+  "assault_gun_attack_b_02_team": {
+   "frame": {
+    "x": 866,
+    "y": 305,
+    "w": 245,
+    "h": 231
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 250,
+    "y": 197,
+    "w": 245,
+    "h": 231
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  },
+  "assault_gun_attack_b_03": {
+   "frame": {
+    "x": 1093,
+    "y": 2,
+    "w": 330,
+    "h": 289
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 191,
+    "w": 330,
+    "h": 289
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  },
+  "assault_gun_attack_b_03_team": {
+   "frame": {
+    "x": 1372,
+    "y": 305,
+    "w": 246,
+    "h": 227
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 250,
+    "y": 201,
+    "w": 246,
+    "h": 227
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  },
+  "assault_gun_attack_b_04": {
+   "frame": {
+    "x": 387,
+    "y": 2,
+    "w": 367,
+    "h": 299
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 250,
+    "y": 184,
+    "w": 367,
+    "h": 299
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  },
+  "assault_gun_attack_b_04_team": {
+   "frame": {
+    "x": 629,
+    "y": 305,
+    "w": 233,
+    "h": 235
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 255,
+    "y": 190,
+    "w": 233,
+    "h": 235
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  },
+  "assault_gun_attack_b_05": {
+   "frame": {
+    "x": 2,
+    "y": 305,
+    "w": 379,
+    "h": 281
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 206,
+    "w": 379,
+    "h": 281
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  },
+  "assault_gun_attack_b_05_team": {
+   "frame": {
+    "x": 1622,
+    "y": 305,
+    "w": 253,
+    "h": 225
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 211,
+    "w": 253,
+    "h": 225
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  },
+  "assault_gun_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 381,
+    "h": 299
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 231,
+    "y": 178,
+    "w": 381,
+    "h": 299
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  },
+  "assault_gun_attack_b_06_team": {
+   "frame": {
+    "x": 385,
+    "y": 305,
+    "w": 240,
+    "h": 235
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 258,
+    "y": 186,
+    "w": 240,
+    "h": 235
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  },
+  "assault_gun_attack_b_07": {
+   "frame": {
+    "x": 2108,
+    "y": 2,
+    "w": 338,
+    "h": 284
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 242,
+    "y": 194,
+    "w": 338,
+    "h": 284
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  },
+  "assault_gun_attack_b_07_team": {
+   "frame": {
+    "x": 1879,
+    "y": 305,
+    "w": 258,
+    "h": 224
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 251,
+    "y": 202,
+    "w": 258,
+    "h": 224
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  },
+  "assault_gun_attack_b_08": {
+   "frame": {
+    "x": 1765,
+    "y": 2,
+    "w": 339,
+    "h": 284
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 191,
+    "w": 339,
+    "h": 284
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  },
+  "assault_gun_attack_b_08_team": {
+   "frame": {
+    "x": 2141,
+    "y": 305,
+    "w": 259,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 255,
+    "y": 201,
+    "w": 259,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49502,
+    "y": 0.88095
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "assault_gun_attack_00",
+   "assault_gun_attack_b_01",
+   "assault_gun_attack_b_02",
+   "assault_gun_attack_b_03",
+   "assault_gun_attack_b_04",
+   "assault_gun_attack_b_05",
+   "assault_gun_attack_b_06",
+   "assault_gun_attack_b_07",
+   "assault_gun_attack_b_08",
+   "assault_gun_attack_09",
+   "assault_gun_attack_10"
+  ],
+  "attack_b_team": [
+   "assault_gun_attack_00_team",
+   "assault_gun_attack_b_01_team",
+   "assault_gun_attack_b_02_team",
+   "assault_gun_attack_b_03_team",
+   "assault_gun_attack_b_04_team",
+   "assault_gun_attack_b_05_team",
+   "assault_gun_attack_b_06_team",
+   "assault_gun_attack_b_07_team",
+   "assault_gun_attack_b_08_team",
+   "assault_gun_attack_09_team",
+   "assault_gun_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "assault_gun.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 2560,
+   "h": 588
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.assault_gun",
+   "name": "Assault Gun",
+   "heightLu": 82,
+   "widthLu": 130.1,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    398,
+    444
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     74
+    ],
+    "hitCenter": [
+     0,
+     30
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "tracked",
+   "extrasOf": "assault_gun",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      40,
+      60,
+      130,
+      61,
+      60,
+      80,
+      70,
+      70,
+      70,
+      75,
+      74
+     ],
+     "durationMs": 790,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.3684,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        69.9,
+        44.3
+       ],
+       [
+        67.7,
+        42.3
+       ],
+       [
+        65.6,
+        41.6
+       ],
+       [
+        65.3,
+        42.9
+       ],
+       [
+        53.5,
+        47.7
+       ],
+       [
+        60.0,
+        42.4
+       ],
+       [
+        64.3,
+        45.5
+       ],
+       [
+        68.4,
+        42.4
+       ],
+       [
+        69.8,
+        42.1
+       ],
+       [
+        66.2,
+        42.8
+       ],
+       [
+        69.0,
+        41.6
+       ]
+      ]
+     },
+     "muzzle": [
+      53.5,
+      47.7
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

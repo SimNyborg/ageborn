@@ -43,6 +43,8 @@ export const FORT_MATERIAL: Readonly<Record<string, FortMaterial>> = {
   pillbox: 'stone',
   forward_base: 'metal',
   minefield: 'metal',
+  rifle_depot: 'wood',
+  wire_snare: 'metal',
   hardlight_barrier: 'energy',
   sentry_pylon: 'metal',
   clone_bay: 'metal',

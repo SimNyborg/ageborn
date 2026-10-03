@@ -1093,6 +1093,46 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
         { sprite: 'fx.p.dust', rate: 8, life: [500, 800], box: [40, 2], sizeWith: 'zone', attract: 4, speed: [10, 30], angle: [-150, -30], scale: [0.8, 0.3], alpha: [0.6, 0], tint: 0x8d9398 },
       ],
     },
+    // Modern wave (CONTENT_PLAN 5.6)
+    {
+      // Creeping Barrage (Field lane volley): a shell screams down onto each unit it screens and bursts on the ground.
+      id: 'fx.creeping_barrage',
+      durationMs: 1000,
+      fall: { sprite: 'proj.shell', count: 1, fromX: -150, fromY: -280, spreadX: 14, fallMs: 320, impact: 'fx.barrage_burst', scale: 1.25 },
+    },
+    {
+      // A ground burst: a hot flash, a column of dirt and smoke and a dust ring.
+      id: 'fx.barrage_burst',
+      durationMs: 820,
+      sprites: [
+        scorch(1.1, 700),
+        { ...flash(1.6, 0xfff0d6, 90), keys: [{ t: 0, y: -12, sx: 1, sy: 1, a: 1 }, { t: 1, y: -12, sx: 2.6, sy: 2.6, a: 0 }] },
+        { ...bloom(1.4, 280, 0xffe3b0, 0.55), keys: [{ t: 0, y: -12, sx: 0.6, sy: 0.6, a: 0.7 }, { t: 1, y: -12, sx: 1.8, sy: 1.8, a: 0 }] },
+        ring(1.5, 320, 0xe8dcc4, 0.4),
+      ],
+      particles: [
+        { sprite: 'fx.p.dust', count: 7, life: [380, 640], box: [6, 2], speed: [80, 180], angle: [-120, -60], gravity: 320, scale: [1.1, 0.5], alpha: [0.9, 0], tint: 0x8c7d68 },
+        { ...smoke(3, 1.0), tint: 0xb8b2a8 },
+        { ...sparks(5, [140, 240]), box: [4, 2] },
+      ],
+    },
+    {
+      // Concussion Shells (Home stun): shells thump down across the zone; grey smoke and shock rings roll out and
+      // the stunned units wobble under the dizzy status.
+      id: 'fx.concussion_shells',
+      durationMs: 1400,
+      sprites: [
+        { sprite: 'fx.p.groundDisc', life: 1200, sizeWith: 'zone', keys: [{ t: 0, sx: 0.2, sy: 0.03, a: 0 }, { t: 0.08, sx: 1.02, sy: 0.16, a: 0.3 }, { t: 1, sx: 1, sy: 0.15, a: 0 }], tint: 0xd8d2c4 },
+        { sprite: 'fx.p.ring', life: 560, sizeWith: 'zone', tint: 0xf4ecd8, keys: [{ t: 0, y: -6, sx: 0.1, sy: 0.04, a: 1 }, { t: 1, y: -6, sx: 1.1, sy: 0.3, a: 0 }] },
+        { sprite: 'fx.p.ring', life: 620, delay: 180, sizeWith: 'zone', tint: 0xe0d8c8, keys: [{ t: 0, y: -6, sx: 0.1, sy: 0.04, a: 0.9 }, { t: 1, y: -6, sx: 1.2, sy: 0.34, a: 0 }] },
+        { sprite: 'fx.p.ring', life: 620, delay: 360, sizeWith: 'zone', tint: 0xd8d0c0, keys: [{ t: 0, y: -6, sx: 0.1, sy: 0.04, a: 0.8 }, { t: 1, y: -6, sx: 1.15, sy: 0.32, a: 0 }] },
+        { ...flash(2.0, 0xfff6e2, 80), keys: [{ t: 0, y: -16, sx: 1, sy: 1, a: 0.9 }, { t: 1, y: -16, sx: 3, sy: 3, a: 0 }] },
+      ],
+      particles: [
+        { sprite: 'fx.p.smoke', count: 9, life: [700, 1200], box: [40, 6], sizeWith: 'zone', speed: [20, 60], angle: [-150, -30], gravity: -30, drag: 1.2, scale: [1, 2.1], alpha: [0.7, 0], spin: [-40, 40], tint: 0xbcb6ac },
+        { ...dust(6, 1.1), tint: 0x9a8e7a },
+      ],
+    },
     {
       // Ion Cannon (Field strike): an orbital beam spears its target from the sky.
       id: 'fx.ion_cannon',

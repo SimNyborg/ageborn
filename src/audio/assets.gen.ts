@@ -35,7 +35,7 @@ export interface MusicFile {
   alt?: string;
 }
 
-export const SFX_BYTES = 3004316;
+export const SFX_BYTES = 3162785;
 export const MUSIC_BYTES = 6730878;
 
 export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
@@ -47,7 +47,7 @@ export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
   match: { src: "audio/sfx/match.ed513481.ogg", bytes: 598464, seconds: 118.148, alt: "audio/sfx/match.190fc5ba.m4a", sync: 0.02031 },
   gunpowder: { src: "audio/sfx/gunpowder.b2f24923.ogg", bytes: 313040, seconds: 61.952, alt: "audio/sfx/gunpowder.d06c4e59.m4a", sync: 0.02031 },
   industrial: { src: "audio/sfx/industrial.2881b0b2.ogg", bytes: 324773, seconds: 63.957, alt: "audio/sfx/industrial.b67221b7.m4a", sync: 0.02031 },
-  modern: { src: "audio/sfx/modern.15a36d82.ogg", bytes: 117015, seconds: 23.036, alt: "audio/sfx/modern.f4239006.m4a", sync: 0.02031 },
+  modern: { src: "audio/sfx/modern.3beebedb.ogg", bytes: 275484, seconds: 54.899, alt: "audio/sfx/modern.9f8442bc.m4a", sync: 0.02031 },
   future: { src: "audio/sfx/future.d986f16f.ogg", bytes: 177890, seconds: 34.881, alt: "audio/sfx/future.805badcb.m4a", sync: 0.02031 },
   cosmic: { src: "audio/sfx/cosmic.439751f8.ogg", bytes: 151155, seconds: 29.71, alt: "audio/sfx/cosmic.95915212.m4a", sync: 0.02031 },
   capsule: { src: "audio/sfx/capsule.d5b3e7ce.ogg", bytes: 280307, seconds: 55.415, alt: "audio/sfx/capsule.6bdb5740.m4a", sync: 0.02031 },
@@ -298,13 +298,30 @@ export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
   shot_rifle: { sheet: "modern", variants: [[0.912, 0.58154], [1.54354, 0.62598], [2.21952, 0.56402]] },
   shot_mg: { sheet: "modern", variants: [[2.83354, 0.16], [3.04354, 0.16], [3.25354, 0.16]] },
   shot_flak: { sheet: "modern", variants: [[3.46354, 0.44354], [3.95708, 0.45658], [4.46367, 0.44462]] },
-  radio_call: { sheet: "modern", variants: [[4.95829, 0.56], [5.56829, 0.56]] },
-  pw_paratroop: { sheet: "modern", variants: [[6.17829, 1.78996], [8.01825, 1.78996]] },
-  pw_bomber: { sheet: "modern", variants: [[9.85821, 2.22817], [12.13637, 2.2236]] },
-  pw_strafe: { sheet: "modern", variants: [[14.40998, 1.92671], [16.38669, 1.92402]] },
-  pw_flak: { sheet: "modern", variants: [[18.36071, 0.99313]] },
-  pw_tanks: { sheet: "modern", variants: [[19.40383, 2.45]] },
-  pw_sniper: { sheet: "modern", variants: [[21.90383, 1.08181]] },
+  butt_stroke: { sheet: "modern", variants: [[4.95829, 0.19], [5.19829, 0.18958], [5.43788, 0.18985]] },
+  sandbag_slam: { sheet: "modern", variants: [[5.67773, 0.49912], [6.22685, 0.49738], [6.77423, 0.497]] },
+  shot_smg: { sheet: "modern", variants: [[7.32123, 0.4], [7.77123, 0.4], [8.22123, 0.4], [8.67123, 0.4]] },
+  shot_rifle_grenade: { sheet: "modern", variants: [[9.12123, 0.39], [9.56123, 0.39], [10.00123, 0.39]] },
+  shot_assault_gun: { sheet: "modern", variants: [[10.44123, 0.56183], [11.05306, 0.5484], [11.65146, 0.54444]] },
+  shot_mortar_team: { sheet: "modern", variants: [[12.2459, 0.47292], [12.76881, 0.50931], [13.32812, 0.50379]] },
+  sticky_thunk: { sheet: "modern", variants: [[13.88192, 0.38], [14.31192, 0.38], [14.74192, 0.38]] },
+  shot_pistol: { sheet: "modern", variants: [[15.17192, 0.35], [15.57192, 0.35], [15.97192, 0.35]] },
+  boxing_jab: { sheet: "modern", variants: [[16.37192, 0.14], [16.56192, 0.13994], [16.75185, 0.14]] },
+  dive_whistle: { sheet: "modern", variants: [[16.94185, 1.17167], [18.16352, 1.18379], [19.39731, 1.18762]] },
+  dozer_shove: { sheet: "modern", variants: [[20.63494, 0.6366], [21.32154, 0.65565], [22.02719, 0.67046]] },
+  shot_ghillie: { sheet: "modern", variants: [[22.74765, 0.70321], [23.50085, 0.7041], [24.25496, 0.70333]] },
+  bomb_stick: { sheet: "modern", variants: [[25.00829, 1.17892], [26.23721, 1.1721]] },
+  shot_at_gun: { sheet: "modern", variants: [[27.45931, 0.54463], [28.05394, 0.54144], [28.64538, 0.49788]] },
+  rocket_ripple: { sheet: "modern", variants: [[29.19325, 0.89973], [30.14298, 0.91112]] },
+  pw_barrage: { sheet: "modern", variants: [[31.1041, 1.48106], [32.63517, 1.50381]] },
+  pw_concussion: { sheet: "modern", variants: [[34.18898, 1.26575], [35.50473, 1.26681]] },
+  radio_call: { sheet: "modern", variants: [[36.82154, 0.56], [37.43154, 0.56]] },
+  pw_paratroop: { sheet: "modern", variants: [[38.04154, 1.78996], [39.8815, 1.78996]] },
+  pw_bomber: { sheet: "modern", variants: [[41.72146, 2.22817], [43.99963, 2.2236]] },
+  pw_strafe: { sheet: "modern", variants: [[46.27323, 1.92671], [48.24994, 1.92402]] },
+  pw_flak: { sheet: "modern", variants: [[50.22396, 0.99313]] },
+  pw_tanks: { sheet: "modern", variants: [[51.26708, 2.45]] },
+  pw_sniper: { sheet: "modern", variants: [[53.76708, 1.08181]] },
   shot_rail: { sheet: "future", variants: [[0.15, 0.54], [0.74, 0.54], [1.33, 0.54]] },
   shot_laser: { sheet: "future", variants: [[1.92, 0.16], [2.13, 0.16], [2.34, 0.16]] },
   shot_arc: { sheet: "future", variants: [[2.55, 0.28], [2.88, 0.28], [3.21, 0.28]] },

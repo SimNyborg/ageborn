@@ -20,7 +20,7 @@ export const WORLD_TURRET_SHEETS: Readonly<Record<AgeId, readonly string[]>> = {
   stone: ['rock_tosser', 'angry_beehive', 'log_roller', 'grumpy_toad', 'quill_porcupine', 'sapling_sling'],
   medieval: ['crossbow_nest', 'pitch_cauldron', 'trebuchet', 'honk_ballista', 'springald', 'grapple_crane'],
   gunpowder: ['swivel_gun', 'grapeshot_gun', 'congreve_rack', 'chainshot_cannon', 'carronade', 'sea_mortar'],
-  modern: ['mg_nest', 'flak_gun', 'howitzer', 'searchlight_sniper'],
+  modern: ['mg_nest', 'flak_gun', 'howitzer', 'searchlight_sniper', 'anti_tank_gun', 'rocket_battery'],
   future: ['pulse_laser', 'arc_coil', 'plasma_mortar', 'gravity_well'],
   // A17 ages (art/blender/world/turrets_<age>.py)
   bronze: ['archer_tower', 'sun_mirror', 'onager', 'gorgon_bust'],

@@ -55,9 +55,9 @@ describe('A14.1 coverage', () => {
     // Medieval wave's Crossbow Keep (its Bear Snares is a trap, no twin) and the Gunpowder wave's Cavalry Picket
     // (its Fougasse is a trap) and the Bronze wave's Hoplon Line and Slinger Camp and the Industrial wave's Rail
     // Barricade and Tesla Pylon; 10 levies with the X0 camp
-    // variants' Slinger Levy (Bronze) and Picket Rider (Gunpowder)
+    // variants' Slinger Levy (Bronze) and Picket Rider (Gunpowder); 11 with the Modern wave's Rifle Levy
     expect(shipped(Object.values(content.units)).filter((u) => u.fort).length).toBe(32);
-    expect(Object.values(content.units).filter((u) => u.levy).length).toBe(10);
+    expect(Object.values(content.units).filter((u) => u.levy).length).toBe(11);
     expect(shipped(Object.values(content.turrets)).length).toBe(42);
     expect(shipped(Object.values(content.skins)).length).toBe(27);
   });

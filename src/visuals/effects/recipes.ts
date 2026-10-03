@@ -889,6 +889,8 @@ export const PROJECTILE_RECIPES: readonly ProjectileRecipe[] = [
   { id: 'proj.plasma', sprite: 'proj.plasma', tail: { length: 24, width: 3, alpha: 0.6 } },
   { id: 'proj.plasma_mortar', sprite: 'proj.plasma_mortar', tail: { length: 20, width: 6, alpha: 0.5 }, puff: { sprite: 'fx.p.nanite', every: 40, tint: 0xf6c6e4 } },
   // Industrial wave (CONTENT_PLAN 5.5): the Bomb Bowler's rolling bomb (fuse sparking), the Rivet Spitter's hot rivet
+  // Modern wave (CONTENT_PLAN 5.6): a short smoky arc for the rifle grenade
+  { id: 'proj.rifle_grenade', sprite: 'proj.rifle_grenade', tail: { length: 12, width: 3, alpha: 0.32 }, puff: { sprite: 'fx.p.smoke', every: 60 } },
   { id: 'proj.bowl_bomb', sprite: 'proj.bowl_bomb', spin: 540, tail: { length: 10, width: 3, alpha: 0.3 }, puff: { sprite: 'fx.p.ember', every: 45 } },
   { id: 'proj.rivet', sprite: 'proj.rivet', tail: { length: 18, width: 1.8, alpha: 0.5 }, puff: { sprite: 'fx.p.ember', every: 30 } },
   { id: 'proj.gravity_orb', sprite: 'proj.gravity_orb', spin: 360, tail: { length: 16, width: 5, alpha: 0.4 }, puff: { sprite: 'fx.p.nanite', every: 50, tint: 0xc9b8f0 } },

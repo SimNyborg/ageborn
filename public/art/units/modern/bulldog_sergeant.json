@@ -1,0 +1,2268 @@
+{
+ "frames": {
+  "bulldog_sergeant_idle_00": {
+   "frame": {
+    "x": 167,
+    "y": 228,
+    "w": 53,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 116,
+    "w": 53,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_idle_00_team": {
+   "frame": {
+    "x": 254,
+    "y": 492,
+    "w": 45,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 125,
+    "w": 45,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_idle_01": {
+   "frame": {
+    "x": 572,
+    "y": 129,
+    "w": 52,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 115,
+    "w": 52,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_idle_01_team": {
+   "frame": {
+    "x": 104,
+    "y": 492,
+    "w": 46,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 123,
+    "w": 46,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_idle_02": {
+   "frame": {
+    "x": 60,
+    "y": 129,
+    "w": 52,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 112,
+    "w": 52,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_idle_02_team": {
+   "frame": {
+    "x": 246,
+    "y": 414,
+    "w": 44,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 120,
+    "w": 44,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_idle_03": {
+   "frame": {
+    "x": 305,
+    "y": 2,
+    "w": 52,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 110,
+    "w": 52,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_idle_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 414,
+    "w": 44,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 119,
+    "w": 44,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_idle_04": {
+   "frame": {
+    "x": 492,
+    "y": 2,
+    "w": 51,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 111,
+    "w": 51,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_idle_04_team": {
+   "frame": {
+    "x": 50,
+    "y": 414,
+    "w": 45,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 120,
+    "w": 45,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_idle_05": {
+   "frame": {
+    "x": 455,
+    "y": 129,
+    "w": 52,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 114,
+    "w": 52,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_idle_05_team": {
+   "frame": {
+    "x": 396,
+    "y": 414,
+    "w": 45,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 123,
+    "w": 45,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_00": {
+   "frame": {
+    "x": 278,
+    "y": 228,
+    "w": 57,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 117,
+    "w": 57,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_00_team": {
+   "frame": {
+    "x": 346,
+    "y": 414,
+    "w": 46,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 126,
+    "w": 46,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_01": {
+   "frame": {
+    "x": 580,
+    "y": 228,
+    "w": 52,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 120,
+    "w": 52,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_01_team": {
+   "frame": {
+    "x": 154,
+    "y": 492,
+    "w": 46,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 128,
+    "w": 46,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_02": {
+   "frame": {
+    "x": 282,
+    "y": 129,
+    "w": 49,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 112,
+    "w": 49,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_02_team": {
+   "frame": {
+    "x": 99,
+    "y": 414,
+    "w": 45,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 121,
+    "w": 45,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_03": {
+   "frame": {
+    "x": 547,
+    "y": 2,
+    "w": 51,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 108,
+    "w": 51,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_03_team": {
+   "frame": {
+    "x": 148,
+    "y": 414,
+    "w": 45,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 117,
+    "w": 45,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_04": {
+   "frame": {
+    "x": 517,
+    "y": 228,
+    "w": 59,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 117,
+    "w": 59,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_04_team": {
+   "frame": {
+    "x": 543,
+    "y": 414,
+    "w": 42,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 126,
+    "w": 42,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_05": {
+   "frame": {
+    "x": 225,
+    "y": 324,
+    "w": 60,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 121,
+    "w": 60,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_05_team": {
+   "frame": {
+    "x": 504,
+    "y": 492,
+    "w": 45,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 129,
+    "w": 45,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_06": {
+   "frame": {
+    "x": 339,
+    "y": 228,
+    "w": 55,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 114,
+    "w": 55,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 492,
+    "w": 47,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 123,
+    "w": 47,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_07": {
+   "frame": {
+    "x": 396,
+    "y": 129,
+    "w": 55,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 109,
+    "w": 55,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_walk_07_team": {
+   "frame": {
+    "x": 294,
+    "y": 414,
+    "w": 48,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 117,
+    "w": 48,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_00": {
+   "frame": {
+    "x": 172,
+    "y": 129,
+    "w": 51,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 112,
+    "w": 51,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_00_team": {
+   "frame": {
+    "x": 445,
+    "y": 414,
+    "w": 45,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 121,
+    "w": 45,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_01": {
+   "frame": {
+    "x": 2,
+    "y": 228,
+    "w": 51,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 115,
+    "w": 51,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_01_team": {
+   "frame": {
+    "x": 303,
+    "y": 492,
+    "w": 45,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 123,
+    "w": 45,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_02": {
+   "frame": {
+    "x": 224,
+    "y": 228,
+    "w": 50,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 116,
+    "w": 50,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_02_team": {
+   "frame": {
+    "x": 352,
+    "y": 492,
+    "w": 45,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 124,
+    "w": 45,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_03": {
+   "frame": {
+    "x": 398,
+    "y": 228,
+    "w": 51,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 118,
+    "w": 51,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_03_team": {
+   "frame": {
+    "x": 401,
+    "y": 492,
+    "w": 45,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 126,
+    "w": 45,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_04": {
+   "frame": {
+    "x": 361,
+    "y": 2,
+    "w": 49,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 111,
+    "w": 49,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_04_team": {
+   "frame": {
+    "x": 553,
+    "y": 324,
+    "w": 43,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 120,
+    "w": 43,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_05": {
+   "frame": {
+    "x": 2,
+    "y": 129,
+    "w": 54,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 113,
+    "w": 54,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_05_team": {
+   "frame": {
+    "x": 505,
+    "y": 324,
+    "w": 44,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 122,
+    "w": 44,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_06": {
+   "frame": {
+    "x": 57,
+    "y": 324,
+    "w": 63,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 119,
+    "y": 123,
+    "w": 63,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 566,
+    "w": 53,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 131,
+    "w": 53,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_07": {
+   "frame": {
+    "x": 453,
+    "y": 228,
+    "w": 60,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 119,
+    "y": 120,
+    "w": 60,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_07_team": {
+   "frame": {
+    "x": 450,
+    "y": 492,
+    "w": 50,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 119,
+    "y": 129,
+    "w": 50,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_08": {
+   "frame": {
+    "x": 511,
+    "y": 129,
+    "w": 57,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 116,
+    "w": 57,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_08_team": {
+   "frame": {
+    "x": 204,
+    "y": 492,
+    "w": 46,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 124,
+    "w": 46,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_09": {
+   "frame": {
+    "x": 116,
+    "y": 129,
+    "w": 52,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 112,
+    "w": 52,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_attack_09_team": {
+   "frame": {
+    "x": 494,
+    "y": 414,
+    "w": 45,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 121,
+    "w": 45,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_hit_00": {
+   "frame": {
+    "x": 102,
+    "y": 228,
+    "w": 61,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 116,
+    "w": 61,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_hit_00_team": {
+   "frame": {
+    "x": 589,
+    "y": 414,
+    "w": 49,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 124,
+    "w": 49,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_hit_01": {
+   "frame": {
+    "x": 139,
+    "y": 2,
+    "w": 57,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 102,
+    "w": 57,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_hit_01_team": {
+   "frame": {
+    "x": 346,
+    "y": 324,
+    "w": 46,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 110,
+    "w": 46,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_hit_02": {
+   "frame": {
+    "x": 248,
+    "y": 2,
+    "w": 53,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 108,
+    "w": 53,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_hit_02_team": {
+   "frame": {
+    "x": 458,
+    "y": 324,
+    "w": 43,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 117,
+    "w": 43,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_hit_03": {
+   "frame": {
+    "x": 335,
+    "y": 129,
+    "w": 57,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 114,
+    "w": 57,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_hit_03_team": {
+   "frame": {
+    "x": 53,
+    "y": 492,
+    "w": 47,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 123,
+    "w": 47,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_hit_04": {
+   "frame": {
+    "x": 227,
+    "y": 129,
+    "w": 51,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 112,
+    "w": 51,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_hit_04_team": {
+   "frame": {
+    "x": 197,
+    "y": 414,
+    "w": 45,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 121,
+    "w": 45,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_00": {
+   "frame": {
+    "x": 289,
+    "y": 324,
+    "w": 53,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 118,
+    "w": 53,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_00_team": {
+   "frame": {
+    "x": 553,
+    "y": 492,
+    "w": 47,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 125,
+    "w": 47,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_01": {
+   "frame": {
+    "x": 124,
+    "y": 324,
+    "w": 97,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 71,
+    "y": 96,
+    "w": 97,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_01_team": {
+   "frame": {
+    "x": 396,
+    "y": 324,
+    "w": 58,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 104,
+    "w": 58,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 58,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 79,
+    "w": 58,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_02_team": {
+   "frame": {
+    "x": 57,
+    "y": 228,
+    "w": 41,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 89,
+    "w": 41,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_03": {
+   "frame": {
+    "x": 414,
+    "y": 2,
+    "w": 74,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 94,
+    "w": 74,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 324,
+    "w": 51,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 93,
+    "w": 51,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_04": {
+   "frame": {
+    "x": 64,
+    "y": 2,
+    "w": 71,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 100,
+    "w": 71,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_04_team": {
+   "frame": {
+    "x": 200,
+    "y": 2,
+    "w": 44,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 107,
+    "w": 44,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_05": {
+   "frame": {
+    "x": 59,
+    "y": 566,
+    "w": 95,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 63,
+    "y": 141,
+    "w": 95,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_05_team": {
+   "frame": {
+    "x": 380,
+    "y": 566,
+    "w": 55,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 150,
+    "w": 55,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_06": {
+   "frame": {
+    "x": 271,
+    "y": 566,
+    "w": 105,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 44,
+    "y": 151,
+    "w": 105,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_06_team": {
+   "frame": {
+    "x": 439,
+    "y": 566,
+    "w": 85,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 50,
+    "y": 158,
+    "w": 85,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_07": {
+   "frame": {
+    "x": 158,
+    "y": 566,
+    "w": 109,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 39,
+    "y": 152,
+    "w": 109,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  },
+  "bulldog_sergeant_die_07_team": {
+   "frame": {
+    "x": 528,
+    "y": 566,
+    "w": 90,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 45,
+    "y": 159,
+    "w": 90,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.87281
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "bulldog_sergeant_idle_00",
+   "bulldog_sergeant_idle_01",
+   "bulldog_sergeant_idle_02",
+   "bulldog_sergeant_idle_03",
+   "bulldog_sergeant_idle_04",
+   "bulldog_sergeant_idle_05"
+  ],
+  "idle_team": [
+   "bulldog_sergeant_idle_00_team",
+   "bulldog_sergeant_idle_01_team",
+   "bulldog_sergeant_idle_02_team",
+   "bulldog_sergeant_idle_03_team",
+   "bulldog_sergeant_idle_04_team",
+   "bulldog_sergeant_idle_05_team"
+  ],
+  "walk": [
+   "bulldog_sergeant_walk_00",
+   "bulldog_sergeant_walk_01",
+   "bulldog_sergeant_walk_02",
+   "bulldog_sergeant_walk_03",
+   "bulldog_sergeant_walk_04",
+   "bulldog_sergeant_walk_05",
+   "bulldog_sergeant_walk_06",
+   "bulldog_sergeant_walk_07"
+  ],
+  "walk_team": [
+   "bulldog_sergeant_walk_00_team",
+   "bulldog_sergeant_walk_01_team",
+   "bulldog_sergeant_walk_02_team",
+   "bulldog_sergeant_walk_03_team",
+   "bulldog_sergeant_walk_04_team",
+   "bulldog_sergeant_walk_05_team",
+   "bulldog_sergeant_walk_06_team",
+   "bulldog_sergeant_walk_07_team"
+  ],
+  "attack": [
+   "bulldog_sergeant_attack_00",
+   "bulldog_sergeant_attack_01",
+   "bulldog_sergeant_attack_02",
+   "bulldog_sergeant_attack_03",
+   "bulldog_sergeant_attack_04",
+   "bulldog_sergeant_attack_05",
+   "bulldog_sergeant_attack_06",
+   "bulldog_sergeant_attack_07",
+   "bulldog_sergeant_attack_08",
+   "bulldog_sergeant_attack_09",
+   "bulldog_sergeant_attack_00"
+  ],
+  "attack_team": [
+   "bulldog_sergeant_attack_00_team",
+   "bulldog_sergeant_attack_01_team",
+   "bulldog_sergeant_attack_02_team",
+   "bulldog_sergeant_attack_03_team",
+   "bulldog_sergeant_attack_04_team",
+   "bulldog_sergeant_attack_05_team",
+   "bulldog_sergeant_attack_06_team",
+   "bulldog_sergeant_attack_07_team",
+   "bulldog_sergeant_attack_08_team",
+   "bulldog_sergeant_attack_09_team",
+   "bulldog_sergeant_attack_00_team"
+  ],
+  "hit": [
+   "bulldog_sergeant_hit_00",
+   "bulldog_sergeant_hit_01",
+   "bulldog_sergeant_hit_02",
+   "bulldog_sergeant_hit_03",
+   "bulldog_sergeant_hit_04"
+  ],
+  "hit_team": [
+   "bulldog_sergeant_hit_00_team",
+   "bulldog_sergeant_hit_01_team",
+   "bulldog_sergeant_hit_02_team",
+   "bulldog_sergeant_hit_03_team",
+   "bulldog_sergeant_hit_04_team"
+  ],
+  "die": [
+   "bulldog_sergeant_die_00",
+   "bulldog_sergeant_die_01",
+   "bulldog_sergeant_die_02",
+   "bulldog_sergeant_die_03",
+   "bulldog_sergeant_die_04",
+   "bulldog_sergeant_die_05",
+   "bulldog_sergeant_die_06",
+   "bulldog_sergeant_die_06",
+   "bulldog_sergeant_die_07",
+   "bulldog_sergeant_die_07"
+  ],
+  "die_team": [
+   "bulldog_sergeant_die_00_team",
+   "bulldog_sergeant_die_01_team",
+   "bulldog_sergeant_die_02_team",
+   "bulldog_sergeant_die_03_team",
+   "bulldog_sergeant_die_04_team",
+   "bulldog_sergeant_die_05_team",
+   "bulldog_sergeant_die_06_team",
+   "bulldog_sergeant_die_06_team",
+   "bulldog_sergeant_die_07_team",
+   "bulldog_sergeant_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "bulldog_sergeant.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 640,
+   "h": 636
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.bulldog_sergeant",
+   "name": "Bulldog Sergeant",
+   "heightLu": 68,
+   "widthLu": 36.6,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    130.0,
+    199.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     67
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        8.3,
+        32.5
+       ],
+       [
+        8.9,
+        34.5
+       ],
+       [
+        9.4,
+        35.4
+       ],
+       [
+        9.1,
+        35.3
+       ],
+       [
+        8.6,
+        36.2
+       ],
+       [
+        8.1,
+        33.6
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      73,
+      73,
+      73,
+      73,
+      73,
+      73,
+      73,
+      73
+     ],
+     "durationMs": 584,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 93.8,
+     "cycleMs": 584,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        2.0,
+        18.5
+       ],
+       [
+        0.8,
+        15.8
+       ],
+       [
+        3.7,
+        22.3
+       ],
+       [
+        7.5,
+        29.1
+       ],
+       [
+        8.3,
+        25.8
+       ],
+       [
+        8.0,
+        24.3
+       ],
+       [
+        8.1,
+        27.6
+       ],
+       [
+        6.0,
+        27.8
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 92.5,
+     "strideLu": 54.0,
+     "plantedDriftLu": 0.05,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        10.7,
+        -1.7
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        12.8,
+        1.5
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      0
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "holdStep": 3,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        8.6,
+        35.0
+       ],
+       [
+        3.4,
+        35.0
+       ],
+       [
+        -0.6,
+        34.6
+       ],
+       [
+        -2.3,
+        33.3
+       ],
+       [
+        5.4,
+        36.0
+       ],
+       [
+        12.4,
+        31.5
+       ],
+       [
+        16.5,
+        22.7
+       ],
+       [
+        13.0,
+        24.5
+       ],
+       [
+        11.3,
+        30.4
+       ],
+       [
+        9.6,
+        35.0
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        -1.7,
+        34.1
+       ],
+       [
+        -5.1,
+        42.2
+       ],
+       [
+        1.9,
+        38.2
+       ],
+       [
+        9.6,
+        33.2
+       ],
+       [
+        7.1,
+        35.4
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        24.5
+       ],
+       "scale": 0.458
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        37.4
+       ],
+       "loops": 2,
+       "scale": 0.676
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        -1.5,
+        38.0
+       ],
+       [
+        -23.8,
+        36.0
+       ],
+       [
+        -3.4,
+        24.6
+       ],
+       [
+        -4.0,
+        48.8
+       ],
+       [
+        -25.9,
+        18.2
+       ],
+       [
+        -34.1,
+        15.6
+       ],
+       [
+        -31.5,
+        16.7
+       ],
+       [
+        -30.4,
+        17.9
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

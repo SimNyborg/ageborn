@@ -1,0 +1,2268 @@
+{
+ "frames": {
+  "sticky_bomber_idle_00": {
+   "frame": {
+    "x": 242,
+    "y": 238,
+    "w": 54,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 121,
+    "w": 54,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_idle_00_team": {
+   "frame": {
+    "x": 477,
+    "y": 525,
+    "w": 45,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 128,
+    "w": 45,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_idle_01": {
+   "frame": {
+    "x": 122,
+    "y": 238,
+    "w": 53,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 120,
+    "w": 53,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_idle_01_team": {
+   "frame": {
+    "x": 526,
+    "y": 525,
+    "w": 45,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 127,
+    "w": 45,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_idle_02": {
+   "frame": {
+    "x": 2,
+    "y": 132,
+    "w": 53,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 117,
+    "w": 53,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_idle_02_team": {
+   "frame": {
+    "x": 421,
+    "y": 437,
+    "w": 47,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 124,
+    "w": 47,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_idle_03": {
+   "frame": {
+    "x": 538,
+    "y": 2,
+    "w": 54,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 116,
+    "w": 54,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_idle_03_team": {
+   "frame": {
+    "x": 116,
+    "y": 437,
+    "w": 48,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 122,
+    "w": 48,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_idle_04": {
+   "frame": {
+    "x": 59,
+    "y": 132,
+    "w": 52,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 116,
+    "w": 52,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_idle_04_team": {
+   "frame": {
+    "x": 309,
+    "y": 437,
+    "w": 46,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 124,
+    "w": 46,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_idle_05": {
+   "frame": {
+    "x": 420,
+    "y": 132,
+    "w": 53,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 118,
+    "w": 53,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_idle_05_team": {
+   "frame": {
+    "x": 226,
+    "y": 525,
+    "w": 44,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 126,
+    "w": 44,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_00": {
+   "frame": {
+    "x": 372,
+    "y": 238,
+    "w": 64,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 124,
+    "w": 64,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_00_team": {
+   "frame": {
+    "x": 519,
+    "y": 437,
+    "w": 56,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 130,
+    "w": 56,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_01": {
+   "frame": {
+    "x": 134,
+    "y": 340,
+    "w": 58,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 127,
+    "w": 58,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 607,
+    "w": 55,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 134,
+    "w": 55,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_02": {
+   "frame": {
+    "x": 2,
+    "y": 238,
+    "w": 58,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 120,
+    "w": 58,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_02_team": {
+   "frame": {
+    "x": 579,
+    "y": 437,
+    "w": 56,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 127,
+    "w": 56,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_03": {
+   "frame": {
+    "x": 355,
+    "y": 132,
+    "w": 61,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 115,
+    "w": 61,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_03_team": {
+   "frame": {
+    "x": 368,
+    "y": 525,
+    "w": 55,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 122,
+    "w": 55,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_04": {
+   "frame": {
+    "x": 64,
+    "y": 340,
+    "w": 66,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 124,
+    "w": 66,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 525,
+    "w": 56,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 130,
+    "w": 56,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_05": {
+   "frame": {
+    "x": 433,
+    "y": 340,
+    "w": 64,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 128,
+    "w": 64,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_05_team": {
+   "frame": {
+    "x": 292,
+    "y": 607,
+    "w": 52,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 135,
+    "w": 52,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_06": {
+   "frame": {
+    "x": 2,
+    "y": 340,
+    "w": 58,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 121,
+    "w": 58,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_06_team": {
+   "frame": {
+    "x": 575,
+    "y": 525,
+    "w": 55,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 128,
+    "w": 55,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_07": {
+   "frame": {
+    "x": 179,
+    "y": 238,
+    "w": 59,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 116,
+    "w": 59,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_walk_07_team": {
+   "frame": {
+    "x": 62,
+    "y": 525,
+    "w": 55,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 122,
+    "w": 55,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_00": {
+   "frame": {
+    "x": 115,
+    "y": 132,
+    "w": 53,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 117,
+    "w": 53,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_00_team": {
+   "frame": {
+    "x": 274,
+    "y": 525,
+    "w": 43,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 125,
+    "w": 43,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_01": {
+   "frame": {
+    "x": 64,
+    "y": 238,
+    "w": 54,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 120,
+    "w": 54,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_01_team": {
+   "frame": {
+    "x": 427,
+    "y": 525,
+    "w": 46,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 127,
+    "w": 46,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_02": {
+   "frame": {
+    "x": 300,
+    "y": 238,
+    "w": 68,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 122,
+    "w": 68,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_02_team": {
+   "frame": {
+    "x": 61,
+    "y": 607,
+    "w": 51,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 129,
+    "w": 51,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_03": {
+   "frame": {
+    "x": 545,
+    "y": 238,
+    "w": 72,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 77,
+    "y": 124,
+    "w": 72,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_03_team": {
+   "frame": {
+    "x": 116,
+    "y": 607,
+    "w": 52,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 131,
+    "w": 52,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_04": {
+   "frame": {
+    "x": 458,
+    "y": 2,
+    "w": 76,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 116,
+    "w": 76,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_04_team": {
+   "frame": {
+    "x": 168,
+    "y": 437,
+    "w": 40,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 124,
+    "w": 40,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_05": {
+   "frame": {
+    "x": 286,
+    "y": 132,
+    "w": 65,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 119,
+    "w": 65,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_05_team": {
+   "frame": {
+    "x": 212,
+    "y": 437,
+    "w": 48,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 118,
+    "y": 127,
+    "w": 48,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_06": {
+   "frame": {
+    "x": 251,
+    "y": 340,
+    "w": 78,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 123,
+    "y": 131,
+    "w": 78,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_06_team": {
+   "frame": {
+    "x": 229,
+    "y": 607,
+    "w": 59,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 137,
+    "w": 59,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_07": {
+   "frame": {
+    "x": 346,
+    "y": 2,
+    "w": 51,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 114,
+    "w": 51,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_07_team": {
+   "frame": {
+    "x": 264,
+    "y": 437,
+    "w": 41,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 122,
+    "w": 41,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_08": {
+   "frame": {
+    "x": 537,
+    "y": 132,
+    "w": 54,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 119,
+    "w": 54,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_08_team": {
+   "frame": {
+    "x": 176,
+    "y": 525,
+    "w": 46,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 126,
+    "w": 46,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_09": {
+   "frame": {
+    "x": 172,
+    "y": 132,
+    "w": 53,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 117,
+    "w": 53,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_attack_09_team": {
+   "frame": {
+    "x": 321,
+    "y": 525,
+    "w": 43,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 125,
+    "w": 43,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_hit_00": {
+   "frame": {
+    "x": 440,
+    "y": 238,
+    "w": 61,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 123,
+    "w": 61,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_hit_00_team": {
+   "frame": {
+    "x": 359,
+    "y": 437,
+    "w": 58,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 126,
+    "w": 58,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_hit_01": {
+   "frame": {
+    "x": 203,
+    "y": 2,
+    "w": 55,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 109,
+    "w": 55,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_hit_01_team": {
+   "frame": {
+    "x": 196,
+    "y": 340,
+    "w": 51,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 111,
+    "w": 51,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_hit_02": {
+   "frame": {
+    "x": 401,
+    "y": 2,
+    "w": 53,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 114,
+    "w": 53,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_hit_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 437,
+    "w": 46,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 120,
+    "w": 46,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_hit_03": {
+   "frame": {
+    "x": 477,
+    "y": 132,
+    "w": 56,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 120,
+    "w": 56,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_hit_03_team": {
+   "frame": {
+    "x": 121,
+    "y": 525,
+    "w": 51,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 126,
+    "w": 51,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_hit_04": {
+   "frame": {
+    "x": 229,
+    "y": 132,
+    "w": 53,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 117,
+    "w": 53,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_hit_04_team": {
+   "frame": {
+    "x": 472,
+    "y": 437,
+    "w": 43,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 125,
+    "w": 43,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_00": {
+   "frame": {
+    "x": 501,
+    "y": 340,
+    "w": 61,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 124,
+    "w": 61,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_00_team": {
+   "frame": {
+    "x": 172,
+    "y": 607,
+    "w": 53,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 130,
+    "w": 53,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_01": {
+   "frame": {
+    "x": 333,
+    "y": 340,
+    "w": 96,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 72,
+    "y": 104,
+    "w": 96,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_01_team": {
+   "frame": {
+    "x": 52,
+    "y": 437,
+    "w": 60,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 107,
+    "w": 60,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 64,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 85,
+    "w": 64,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_02_team": {
+   "frame": {
+    "x": 505,
+    "y": 238,
+    "w": 36,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 96,
+    "w": 36,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_03": {
+   "frame": {
+    "x": 262,
+    "y": 2,
+    "w": 80,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 96,
+    "w": 80,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_03_team": {
+   "frame": {
+    "x": 566,
+    "y": 340,
+    "w": 53,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 105,
+    "w": 53,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_04": {
+   "frame": {
+    "x": 70,
+    "y": 2,
+    "w": 81,
+    "h": 115
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 105,
+    "w": 81,
+    "h": 115
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_04_team": {
+   "frame": {
+    "x": 155,
+    "y": 2,
+    "w": 44,
+    "h": 113
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 109,
+    "w": 44,
+    "h": 113
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_05": {
+   "frame": {
+    "x": 348,
+    "y": 607,
+    "w": 103,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 63,
+    "y": 148,
+    "w": 103,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_05_team": {
+   "frame": {
+    "x": 455,
+    "y": 607,
+    "w": 60,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 79,
+    "y": 152,
+    "w": 60,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_06": {
+   "frame": {
+    "x": 2,
+    "y": 686,
+    "w": 143,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 39,
+    "y": 162,
+    "w": 143,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_06_team": {
+   "frame": {
+    "x": 304,
+    "y": 686,
+    "w": 91,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 44,
+    "y": 170,
+    "w": 91,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_07": {
+   "frame": {
+    "x": 149,
+    "y": 686,
+    "w": 151,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 34,
+    "y": 164,
+    "w": 151,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  },
+  "sticky_bomber_die_07_team": {
+   "frame": {
+    "x": 399,
+    "y": 686,
+    "w": 96,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 39,
+    "y": 172,
+    "w": 96,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 246
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85366
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "sticky_bomber_idle_00",
+   "sticky_bomber_idle_01",
+   "sticky_bomber_idle_02",
+   "sticky_bomber_idle_03",
+   "sticky_bomber_idle_04",
+   "sticky_bomber_idle_05"
+  ],
+  "idle_team": [
+   "sticky_bomber_idle_00_team",
+   "sticky_bomber_idle_01_team",
+   "sticky_bomber_idle_02_team",
+   "sticky_bomber_idle_03_team",
+   "sticky_bomber_idle_04_team",
+   "sticky_bomber_idle_05_team"
+  ],
+  "walk": [
+   "sticky_bomber_walk_00",
+   "sticky_bomber_walk_01",
+   "sticky_bomber_walk_02",
+   "sticky_bomber_walk_03",
+   "sticky_bomber_walk_04",
+   "sticky_bomber_walk_05",
+   "sticky_bomber_walk_06",
+   "sticky_bomber_walk_07"
+  ],
+  "walk_team": [
+   "sticky_bomber_walk_00_team",
+   "sticky_bomber_walk_01_team",
+   "sticky_bomber_walk_02_team",
+   "sticky_bomber_walk_03_team",
+   "sticky_bomber_walk_04_team",
+   "sticky_bomber_walk_05_team",
+   "sticky_bomber_walk_06_team",
+   "sticky_bomber_walk_07_team"
+  ],
+  "attack": [
+   "sticky_bomber_attack_00",
+   "sticky_bomber_attack_01",
+   "sticky_bomber_attack_02",
+   "sticky_bomber_attack_03",
+   "sticky_bomber_attack_04",
+   "sticky_bomber_attack_05",
+   "sticky_bomber_attack_06",
+   "sticky_bomber_attack_07",
+   "sticky_bomber_attack_08",
+   "sticky_bomber_attack_09",
+   "sticky_bomber_attack_00"
+  ],
+  "attack_team": [
+   "sticky_bomber_attack_00_team",
+   "sticky_bomber_attack_01_team",
+   "sticky_bomber_attack_02_team",
+   "sticky_bomber_attack_03_team",
+   "sticky_bomber_attack_04_team",
+   "sticky_bomber_attack_05_team",
+   "sticky_bomber_attack_06_team",
+   "sticky_bomber_attack_07_team",
+   "sticky_bomber_attack_08_team",
+   "sticky_bomber_attack_09_team",
+   "sticky_bomber_attack_00_team"
+  ],
+  "hit": [
+   "sticky_bomber_hit_00",
+   "sticky_bomber_hit_01",
+   "sticky_bomber_hit_02",
+   "sticky_bomber_hit_03",
+   "sticky_bomber_hit_04"
+  ],
+  "hit_team": [
+   "sticky_bomber_hit_00_team",
+   "sticky_bomber_hit_01_team",
+   "sticky_bomber_hit_02_team",
+   "sticky_bomber_hit_03_team",
+   "sticky_bomber_hit_04_team"
+  ],
+  "die": [
+   "sticky_bomber_die_00",
+   "sticky_bomber_die_01",
+   "sticky_bomber_die_02",
+   "sticky_bomber_die_03",
+   "sticky_bomber_die_04",
+   "sticky_bomber_die_05",
+   "sticky_bomber_die_06",
+   "sticky_bomber_die_06",
+   "sticky_bomber_die_07",
+   "sticky_bomber_die_07"
+  ],
+  "die_team": [
+   "sticky_bomber_die_00_team",
+   "sticky_bomber_die_01_team",
+   "sticky_bomber_die_02_team",
+   "sticky_bomber_die_03_team",
+   "sticky_bomber_die_04_team",
+   "sticky_bomber_die_05_team",
+   "sticky_bomber_die_06_team",
+   "sticky_bomber_die_06_team",
+   "sticky_bomber_die_07_team",
+   "sticky_bomber_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "sticky_bomber.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 640,
+   "h": 744
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.sticky_bomber",
+   "name": "Sticky Bomber",
+   "heightLu": 68,
+   "widthLu": 37.4,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    130.0,
+    210.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     67
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        13.1,
+        43.1
+       ],
+       [
+        13.1,
+        43.9
+       ],
+       [
+        13.9,
+        44.6
+       ],
+       [
+        14.6,
+        44.8
+       ],
+       [
+        14.5,
+        44.4
+       ],
+       [
+        13.8,
+        43.9
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      75,
+      75,
+      75,
+      75,
+      75,
+      75,
+      75,
+      75
+     ],
+     "durationMs": 600,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 87.5,
+     "cycleMs": 600,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        10.9,
+        45.9
+       ],
+       [
+        18.4,
+        41.4
+       ],
+       [
+        20.3,
+        46.4
+       ],
+       [
+        15.8,
+        52.1
+       ],
+       [
+        10.9,
+        45.9
+       ],
+       [
+        15.9,
+        40.7
+       ],
+       [
+        16.8,
+        45.3
+       ],
+       [
+        13.4,
+        51.5
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 87.3,
+     "strideLu": 52.4,
+     "plantedDriftLu": 0.05,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        10.5,
+        -1.9
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        12.6,
+        1.4
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      0
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "holdStep": 3,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        12.9,
+        45.5
+       ],
+       [
+        -13.9,
+        52.0
+       ],
+       [
+        -28.5,
+        44.4
+       ],
+       [
+        -33.6,
+        39.9
+       ],
+       [
+        11.4,
+        58.9
+       ],
+       [
+        35.4,
+        31.0
+       ],
+       [
+        43.2,
+        20.6
+       ],
+       [
+        2.3,
+        57.3
+       ],
+       [
+        -1.3,
+        53.3
+       ],
+       [
+        12.9,
+        45.5
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        0.4,
+        44.5
+       ],
+       [
+        -4.8,
+        54.7
+       ],
+       [
+        5.8,
+        49.5
+       ],
+       [
+        15.5,
+        42.1
+       ],
+       [
+        13.2,
+        44.9
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        24.5
+       ],
+       "scale": 0.467
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        37.4
+       ],
+       "loops": 2,
+       "scale": 0.684
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        -8.3,
+        46.5
+       ],
+       [
+        -27.8,
+        26.1
+       ],
+       [
+        7.9,
+        25.7
+       ],
+       [
+        -10.2,
+        59.2
+       ],
+       [
+        -35.6,
+        17.8
+       ],
+       [
+        -44.6,
+        9.5
+       ],
+       [
+        -42.2,
+        16.5
+       ],
+       [
+        -40.8,
+        19.7
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

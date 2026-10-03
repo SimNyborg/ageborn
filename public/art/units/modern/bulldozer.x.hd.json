@@ -1,0 +1,598 @@
+{
+ "frames": {
+  "bulldozer_attack_b_01": {
+   "frame": {
+    "x": 2,
+    "y": 329,
+    "w": 303,
+    "h": 283
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 277,
+    "y": 222,
+    "w": 303,
+    "h": 283
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_01_team": {
+   "frame": {
+    "x": 542,
+    "y": 616,
+    "w": 275,
+    "h": 225
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 293,
+    "y": 228,
+    "w": 275,
+    "h": 225
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_02": {
+   "frame": {
+    "x": 309,
+    "y": 329,
+    "w": 309,
+    "h": 280
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 276,
+    "y": 226,
+    "w": 309,
+    "h": 280
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_02_team": {
+   "frame": {
+    "x": 821,
+    "y": 616,
+    "w": 275,
+    "h": 224
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 294,
+    "y": 233,
+    "w": 275,
+    "h": 224
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_03": {
+   "frame": {
+    "x": 938,
+    "y": 329,
+    "w": 314,
+    "h": 277
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 274,
+    "y": 231,
+    "w": 314,
+    "h": 277
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_03_team": {
+   "frame": {
+    "x": 283,
+    "y": 852,
+    "w": 280,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 291,
+    "y": 239,
+    "w": 280,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_04": {
+   "frame": {
+    "x": 622,
+    "y": 329,
+    "w": 312,
+    "h": 279
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 275,
+    "y": 228,
+    "w": 312,
+    "h": 279
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_04_team": {
+   "frame": {
+    "x": 567,
+    "y": 852,
+    "w": 279,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 293,
+    "y": 238,
+    "w": 279,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_05": {
+   "frame": {
+    "x": 1227,
+    "y": 2,
+    "w": 290,
+    "h": 296
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 289,
+    "y": 210,
+    "w": 290,
+    "h": 296
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 616,
+    "w": 264,
+    "h": 232
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 306,
+    "y": 220,
+    "w": 264,
+    "h": 232
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_06": {
+   "frame": {
+    "x": 650,
+    "y": 2,
+    "w": 278,
+    "h": 309
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 300,
+    "y": 203,
+    "w": 278,
+    "h": 309
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_06_team": {
+   "frame": {
+    "x": 270,
+    "y": 616,
+    "w": 268,
+    "h": 230
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 307,
+    "y": 213,
+    "w": 268,
+    "h": 230
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 303,
+    "h": 323
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 308,
+    "y": 196,
+    "w": 303,
+    "h": 323
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_07_team": {
+   "frame": {
+    "x": 1256,
+    "y": 329,
+    "w": 271,
+    "h": 237
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 304,
+    "y": 200,
+    "w": 271,
+    "h": 237
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_08": {
+   "frame": {
+    "x": 309,
+    "y": 2,
+    "w": 337,
+    "h": 311
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 296,
+    "y": 211,
+    "w": 337,
+    "h": 311
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_08_team": {
+   "frame": {
+    "x": 1100,
+    "y": 616,
+    "w": 271,
+    "h": 224
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 300,
+    "y": 220,
+    "w": 271,
+    "h": 224
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_09": {
+   "frame": {
+    "x": 932,
+    "y": 2,
+    "w": 291,
+    "h": 299
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 287,
+    "y": 216,
+    "w": 291,
+    "h": 299
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  },
+  "bulldozer_attack_b_09_team": {
+   "frame": {
+    "x": 2,
+    "y": 852,
+    "w": 277,
+    "h": 222
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 297,
+    "y": 226,
+    "w": 277,
+    "h": 222
+   },
+   "sourceSize": {
+    "w": 804,
+    "h": 538
+   },
+   "anchor": {
+    "x": 0.51493,
+    "y": 0.88104
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "bulldozer_attack_00",
+   "bulldozer_attack_b_01",
+   "bulldozer_attack_b_02",
+   "bulldozer_attack_b_03",
+   "bulldozer_attack_b_04",
+   "bulldozer_attack_b_05",
+   "bulldozer_attack_b_06",
+   "bulldozer_attack_b_07",
+   "bulldozer_attack_b_08",
+   "bulldozer_attack_b_09",
+   "bulldozer_attack_10",
+   "bulldozer_attack_10"
+  ],
+  "attack_b_team": [
+   "bulldozer_attack_00_team",
+   "bulldozer_attack_b_01_team",
+   "bulldozer_attack_b_02_team",
+   "bulldozer_attack_b_03_team",
+   "bulldozer_attack_b_04_team",
+   "bulldozer_attack_b_05_team",
+   "bulldozer_attack_b_06_team",
+   "bulldozer_attack_b_07_team",
+   "bulldozer_attack_b_08_team",
+   "bulldozer_attack_b_09_team",
+   "bulldozer_attack_10_team",
+   "bulldozer_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "bulldozer.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1536,
+   "h": 1076
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.bulldozer",
+   "name": "Bulldozer",
+   "heightLu": 86,
+   "widthLu": 112.2,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    414,
+    474
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     78
+    ],
+    "hitCenter": [
+     0,
+     30
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "tracked",
+   "extrasOf": "bulldozer",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      10
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      130,
+      70,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      210
+     ],
+     "durationMs": 1230,
+     "impactFrame": 7,
+     "impactStep": 7,
+     "impactAt": 0.4634,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        50.1,
+        -1.2
+       ],
+       [
+        53.8,
+        0.5
+       ],
+       [
+        56.8,
+        2.3
+       ],
+       [
+        58.2,
+        2.0
+       ],
+       [
+        57.9,
+        2.4
+       ],
+       [
+        54.4,
+        1.1
+       ],
+       [
+        51.6,
+        -3.6
+       ],
+       [
+        48.3,
+        -6.8
+       ],
+       [
+        49.2,
+        -8.2
+       ],
+       [
+        50.6,
+        -5.1
+       ],
+       [
+        50.1,
+        -1.2
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

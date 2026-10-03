@@ -704,6 +704,90 @@ const BASE_SOUNDS = {
     at(350, { vol: 0.25, freq: 55, attack: 0.25, sustain: 0.6, release: 0.3, shape: 'saw', slide: 0.6, tremolo: 0.2, repeat: 0.14, lowpass: 900 }),
     noiseBurst(500, { vol: 0.12, freq: 7000, attack: 0.05, sustain: 0.6, release: 0.2, highpass: 4000, tremolo: 0.5, repeat: 0.03 }),
   ]), { maxVoices: 1 }),
+  // Modern wave (CONTENT_PLAN 5.6): attacks, turrets and powers of the new Modern cards ----------------------
+  butt_stroke: mix('modern', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.2, freq: 1100 * (1 + 0.05 * v), attack: 0.04, release: 0.06, slide: 3, lowpass: 4000 }),
+    at(110, { vol: 0.4, freq: 300 * (1 + 0.04 * v), attack: 0.001, release: 0.14, shape: 'tri', curve: 2 }),
+    thump(110, 150, 0.45, 0.1, -0.5),
+  ])),
+  sandbag_slam: mix('modern', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.2, freq: 700 * (1 + 0.05 * v), attack: 0.05, release: 0.08, slide: 2, lowpass: 2500 }),
+    thump(160, 90 * (1 + 0.05 * v), 0.8, 0.2, -0.5),
+    noiseBurst(170, { vol: 0.25, freq: 2600, attack: 0.005, sustain: 0.08, release: 0.15, lowpass: 5000 }),
+  ])),
+  shot_smg: mix('modern', mixVariants(4, (v) => [
+    ...[0, 55, 110].map((ms) => noiseBurst(ms, { vol: 0.4, freq: 1500 * (1 + 0.07 * v), attack: 0.001, decay: 0.01, sustainVol: 0.25, release: 0.05, lowpass: 8000 })),
+    thump(0, 170, 0.25, 0.05, -1.5),
+  ])),
+  shot_rifle_grenade: mix('modern', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.35, freq: 900 * (1 + 0.05 * v), attack: 0.001, release: 0.1, lowpass: 5000 }),
+    thump(0, 110 * (1 + 0.05 * v), 0.8, 0.25, -0.6),
+    at(90, { vol: 0.05, freq: 1400, attack: 0.05, sustain: 0.15, release: 0.1, slide: -4 }),
+  ])),
+  shot_assault_gun: mix('modern', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.6, freq: 700 * (1 + 0.05 * v), attack: 0.001, release: 0.35, lowpass: 3800 }),
+    thump(0, 70 * (1 + 0.05 * v), 1, 0.45, -0.5),
+    noiseBurst(120, { vol: 0.15, freq: 300, attack: 0.05, sustain: 0.2, release: 0.2, lowpass: 900 }),
+  ])),
+  shot_mortar_team: mix('modern', mixVariants(3, (v) => [
+    at(0, { vol: 0.15, freq: 900 * (1 + 0.04 * v), attack: 0.001, release: 0.05, shape: 'tri' }),
+    thump(70, 130 * (1 + 0.05 * v), 1, 0.3, -0.5),
+    noiseBurst(70, { vol: 0.2, freq: 2400, attack: 0.002, release: 0.08, highpass: 1200 }),
+  ])),
+  sticky_thunk: mix('modern', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.15, freq: 1200, attack: 0.03, release: 0.05, slide: 3, lowpass: 3000 }),
+    at(120, { vol: 0.4, freq: 200 * (1 + 0.05 * v), attack: 0.001, release: 0.09, shape: 'sin', curve: 3 }),
+    noiseBurst(320, { vol: 0.45, freq: 1000, attack: 0.001, release: 0.18, lowpass: 4500 }),
+    thump(320, 110, 0.6, 0.18, -0.5),
+  ])),
+  shot_pistol: mix('modern', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.45, freq: 2000 * (1 + 0.07 * v), attack: 0.001, decay: 0.01, sustainVol: 0.2, release: 0.08, lowpass: 9000 }),
+    thump(0, 220, 0.2, 0.05, -1.5),
+  ])),
+  boxing_jab: mix('modern', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.15, freq: 1400 * (1 + 0.05 * v), attack: 0.02, release: 0.04, slide: 3, lowpass: 4000 }),
+    thump(70, 160 * (1 + 0.05 * v), 0.55, 0.08, -0.6),
+    noiseBurst(70, { vol: 0.25, freq: 2200, attack: 0.001, release: 0.04, lowpass: 5000 }),
+  ])),
+  dive_whistle: mix('modern', mixVariants(3, (v) => [
+    at(0, { vol: 0.12, freq: 1900 * (1 + 0.03 * v), attack: 0.08, sustain: 0.4, release: 0.1, shape: 'sin', slide: -4 }),
+    noiseBurst(560, { vol: 0.5, freq: 600, attack: 0.001, release: 0.35, lowpass: 3500 }),
+    thump(560, 80, 0.9, 0.4, -0.5),
+  ])),
+  dozer_shove: mix('modern', mixVariants(3, (v) => [
+    at(0, { vol: 0.2, freq: 70 * (1 + 0.04 * v), attack: 0.05, sustain: 0.3, release: 0.15, shape: 'saw', tremolo: 0.5, repeat: 0.05, lowpass: 900 }),
+    noiseBurst(250, { vol: 0.4, freq: 800, attack: 0.02, sustain: 0.2, release: 0.25, lowpass: 2400 }),
+    thump(250, 75, 0.9, 0.35, -0.5),
+  ])),
+  shot_ghillie: mix('modern', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.6, freq: 2400 * (1 + 0.05 * v), attack: 0.001, decay: 0.01, sustainVol: 0.35, release: 0.2, lowpass: 10000 }),
+    thump(0, 120, 0.4, 0.15, -1),
+    at(260, { vol: 0.15, freq: 700, attack: 0.001, release: 0.04, shape: 'square', curve: 0.5 }),
+    at(360, { vol: 0.15, freq: 900, attack: 0.001, release: 0.04, shape: 'square', curve: 0.5 }),
+  ])),
+  bomb_stick: mix('modern', mixVariants(3, (v) => [
+    at(0, { vol: 0.1, freq: 1600 * (1 + 0.03 * v), attack: 0.06, sustain: 0.25, release: 0.08, shape: 'sin', slide: -3 }),
+    ...[380, 470, 560].map((ms) => noiseBurst(ms, { vol: 0.45, freq: 500, attack: 0.001, release: 0.25, lowpass: 3000 })),
+    thump(380, 70, 0.9, 0.5, -0.5),
+  ]), { maxVoices: 2 }),
+  shot_at_gun: mix('modern', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.6, freq: 1300 * (1 + 0.05 * v), attack: 0.001, release: 0.25, lowpass: 6000 }),
+    thump(0, 95 * (1 + 0.05 * v), 0.9, 0.3, -0.6),
+    at(40, { vol: 0.12, freq: 2600, attack: 0.001, release: 0.25, shape: 'tri', tremolo: 0.2, repeat: 0.05 }),
+  ])),
+  rocket_ripple: mix('modern', mixVariants(3, (v) => [
+    ...[0, 110, 220, 330, 440, 550].map((ms) => noiseBurst(ms, { vol: 0.3, freq: 250 * (1 + 0.06 * v), attack: 0.02, sustain: 0.08, release: 0.15, slide: 1.5, lowpass: 4500 })),
+  ]), { maxVoices: 1 }),
+  pw_barrage: mix('modern', mixVariants(3, (v) => [
+    at(0, { vol: 0.06, freq: 1700 * (1 + 0.03 * v), attack: 0.1, sustain: 0.3, release: 0.1, slide: -4 }),
+    ...[500, 620, 760, 880].map((ms) => noiseBurst(ms, { vol: 0.4, freq: 700, attack: 0.001, release: 0.25, lowpass: 3000 })),
+    thump(500, 75, 0.8, 0.45, -0.5),
+  ]), { maxVoices: 2 }),
+  pw_concussion: mix('modern', mixVariants(3, (v) => [
+    thump(0, 60 * (1 + 0.04 * v), 1, 0.5, -0.4),
+    noiseBurst(0, { vol: 0.35, freq: 400, attack: 0.002, release: 0.4, lowpass: 1600 }),
+    at(150, { vol: 0.08, freq: 3200, attack: 0.05, sustain: 0.6, release: 0.3, shape: 'sin', tremolo: 0.1, repeat: 0.2 }),
+  ]), { maxVoices: 1 }),
   // Stone wave (CONTENT_PLAN 5.1): attacks, turrets and powers of the new Stone cards -----------------------
   wolf_bite: mix('stone', mixVariants(3, (v) => [
     at(0, { vol: 0.25, freq: 140 * (1 + 0.06 * v), attack: 0.01, sustain: 0.06, release: 0.04, shape: 'saw', tremolo: 0.5, repeat: 0.02, lowpass: 1800 }),

@@ -37,3 +37,9 @@ days, focused War Plan at L7 135 days, whole collection 335 days, copy-Amber gap
 Amber a day (3,229) still pass, and `drops --mode smoke` passes 17 of 17. This is the pool CONTENT_PLAN 8 planned
 the single re-tune for (option B: one more stack per tier, copies ×1.4 / 2.3 / 2.3 / 2.0, Amber ×1.8); the
 multipliers above should be re-measured on it before the table changes.
+
+**Update (W5 Industrial wave released, 2026-10-03):** with the Stone, Bronze, Medieval, Gunpowder and Industrial
+waves released (Industrial adds 6 Commons, 5 Rares, 3 Epics and 1 Legendary to the capsule pool), `economy --seeds 30`
+gives Common 203 / Rare 226 / Epic 132 / Legendary 177 days to max (targets 110 / 101 / 69 / 112 ± 20%), all 8
+Legendaries 22 days, focused War Plan at L7 148 days, Amber for the whole collection 268 days (copies not reached in
+365 days); copies a day (100) and Amber a day (3,234) and the per-capsule targets still pass. The re-tune is now due.

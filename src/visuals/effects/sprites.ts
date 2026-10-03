@@ -314,6 +314,12 @@ part('proj.rivet', [
   { d: blob([2, -3.6, 4.6, -3, 5.6, 0, 4.6, 3, 2, 3.6], 0.8), zone: 'ember', line: 1.2 },
   { d: ellipse(3.8, -1, 1, 1.6), zone: 'flash', line: 0, shade: false, light: false },
 ]);
+// Modern wave (CONTENT_PLAN 5.6): the Rifle Grenadier's finned rifle grenade
+part('proj.rifle_grenade', [
+  { d: blob([-5, -2.2, 3, -2.6, 6.4, 0, 3, 2.6, -5, 2.2], 0.7), zone: 'iron', line: 1.4 },
+  { d: join(poly([-5, -1.8, -9, -3.6, -8, 0]), poly([-5, 1.8, -9, 3.6, -8, 0])), zone: 'metal', line: 0.9, shade: false, light: false },
+  { d: rrect(-1.2, -2.5, 1.6, 5, 0.6), zone: 'canvas', line: 0, shade: false, light: false },
+]);
 part('proj.grapeshot', [{ d: join(circle(0, 0, 2), circle(-3, -2.4, 1.8), circle(-3.4, 2.2, 1.8), circle(2.6, -2.6, 1.6), circle(2.4, 2.6, 1.6)), zone: 'iron', line: 1 }]);
 part('proj.rocket', [
   { d: blob([-6, -2.4, 4, -2.4, 9, 0, 4, 2.4, -6, 2.4], 0.4), zone: 'paper', line: 1.4 },

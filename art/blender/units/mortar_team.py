@@ -39,7 +39,7 @@ NAME = "Mortar Team"
 HEIGHT_LU = 68
 CANVAS = (460, 300)
 FEET = (280, 262)
-ANCHORS = {"head": (2, 66), "hitCenter": (-8, 30), "muzzle": (12, 44)}
+ANCHORS = {"head": (2, 66), "hitCenter": (-8, 30), "muzzle": (30, 27)}
 NO_RETIME = True
 
 SHOE = B.BOOT
@@ -47,7 +47,7 @@ MORTAR = B.GUNMETAL
 BED = "#4E5238"
 CREAM = "#E8DFC8"
 MATE_X = -30.0                       # the mate's hips (character space)
-MORT = (6.0, -4.0, 18.0)            # the mortar sits in front of the gunner (carried height)
+MORT = (20.0, -4.0, 18.0)           # the mortar sits in front of the gunner, clear of his body
 AX = 62.0                            # tube elevation (deg)
 TUBE = 24.0
 MOUTH = (MORT[0] + TUBE * math.cos(math.radians(AX)) - 4.0, MORT[1], MORT[2] + TUBE * math.sin(math.radians(AX)) - 2.0)

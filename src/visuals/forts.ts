@@ -60,6 +60,9 @@ export const FORT_VISUALS: readonly { id: string; age: AgeId; kind: 'wall' | 'to
   { id: 'pillbox', age: 'modern', kind: 'tower' },
   { id: 'forward_base', age: 'modern', kind: 'camp' },
   { id: 'minefield', age: 'modern', kind: 'trap' },
+  // Modern wave (CONTENT_PLAN 5.6)
+  { id: 'rifle_depot', age: 'modern', kind: 'camp' },
+  { id: 'wire_snare', age: 'modern', kind: 'trap' },
   { id: 'hardlight_barrier', age: 'future', kind: 'wall' },
   { id: 'sentry_pylon', age: 'future', kind: 'tower' },
   { id: 'clone_bay', age: 'future', kind: 'camp' },
@@ -85,6 +88,8 @@ export const LEVY_VISUALS: readonly { id: string; age: AgeId; infantry: string }
   { id: 'picket_rider', age: 'gunpowder', infantry: 'cuirassier' },
   { id: 'volunteer', age: 'industrial', infantry: 'riveter' },
   { id: 'conscript', age: 'modern', infantry: 'trench_raider' },
+  // Modern wave: the Rifle Depot's levy, drawn from the Modern ranged Common (CONTENT_PLAN 5.6)
+  { id: 'rifle_levy', age: 'modern', infantry: 'rifleman' },
   { id: 'clone_cadet', age: 'future', infantry: 'photon_knight' },
   { id: 'star_recruit', age: 'cosmic', infantry: 'star_legionnaire' },
 ];
@@ -99,7 +104,7 @@ export const FORT_SHEETS: Readonly<Record<AgeId, readonly string[]>> = {
   medieval: ['shield_barricade', 'longbow_tower', 'levy_camp', 'wolf_pits', 'bear_snares', 'crossbow_keep'],
   gunpowder: ['gabion_wall', 'musket_redoubt', 'militia_muster', 'powder_keg', 'cavalry_picket', 'fougasse'],
   industrial: ['trench_parapet', 'sniper_nest', 'recruiting_depot', 'tripwire_charge', 'rail_barricade', 'tesla_pylon'],
-  modern: ['sandbag_bunker', 'pillbox', 'forward_base', 'minefield'],
+  modern: ['sandbag_bunker', 'pillbox', 'forward_base', 'minefield', 'rifle_depot', 'wire_snare'],
   future: ['hardlight_barrier', 'sentry_pylon', 'clone_bay', 'grav_mire'],
   cosmic: ['void_rampart', 'ion_spire', 'warp_barracks', 'void_mine'],
 };

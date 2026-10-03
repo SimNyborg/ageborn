@@ -251,6 +251,16 @@ medallion('power.great_magnet', [
   { d: join(rect(-11, 5, 6, 4), rect(5, 5, 6, 4)), zone: 'metal', line: 1.2 },
   { d: join(limb(-8, 12, 0.7, -8, 15, 0.7), limb(0, 10, 0.7, 0, 15, 0.7), limb(8, 12, 0.7, 8, 15, 0.7)), zone: 'bone', line: 0 },
 ]);
+// Modern wave (CONTENT_PLAN 5.6): three shells falling in a walking line, and a shell bursting into shock rings.
+medallion('power.creeping_barrage', [
+  { d: join(blob([-12, -10, -9, -13, -6, -10, -6, -3, -12, -3], 0.6), blob([-3, -6, 0, -9, 3, -6, 3, 1, -3, 1], 0.6), blob([6, -2, 9, -5, 12, -2, 12, 5, 6, 5], 0.6)), zone: 'iron', line: 1.1 },
+  { d: join(circle(-9, 4, 2.6), circle(0, 8, 2.8), circle(9, 11, 3)), zone: 'bone', line: 0.8 },
+]);
+medallion('power.concussion_shells', [
+  { d: join(arcBand(0, 4, 7, 9, 200, 340), arcBand(0, 4, 11, 13, 205, 335)), zone: 'bone', line: 0.8 },
+  { d: blob([-3.6, -14, 3.6, -14, 3.4, -2, 0, 2, -3.4, -2], 0.6), zone: 'iron', line: 1.2 },
+  { d: join(star(-9, 10, 4, 1.4, 3.4), star(9, 10, 4, 1.4, 3.4)), zone: 'bone', line: 0.6 },
+]);
 medallion('power.knights_charge', [
   { d: limb(-13, 8, 1.8, 12, -6, 1), zone: 'metal' },
   { d: poly([-12, 2, -4, -6, -2, 4]), zone: 'wine' },

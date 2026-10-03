@@ -2,6 +2,16 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-03: the Industrial content wave ships (cloud session, not yet published)
+
+The fifth content wave is in: 13 new Industrial troops (Coal Miners, Iron Mantlet, Dispatch Rider, Bomb Bowler, Steam Tractor, Trench Mortar, Steam Driller, Bandmaster, Clockwork Tinker, Armoured Car, Alpine Climber, Spark Scientist, Armoured Train), the Tinker's Clockwork Soldier, 2 turrets (Rivet Spitter, Steam Hammer), 2 powers (Shrapnel Shells, Great Magnet), 2 forts (Rail Barricade, Tesla Pylon) and 3 skins, each with a cartoon sprite sheet (2-3 attacks, walk by gait, KO death), card portrait, sounds and effects; the four older Industrial forts are redrawn in the cartoon style. Bots use every new card (Generals' plans and the counter matrix). No sim rule changed. Numbers and details: `docs/decisions.md` ("X0 Industrial wave shipped"); table in DESIGN A5.4.
+
+**Checks:** typecheck and lint clean, production build OK. Unit tests: the Industrial rows pass; remaining failures belong to the in-progress Modern wave (its Rifle Levy and newly installed sheets), the arena/format change in progress elsewhere (meta, Last Base and mode-picker tests), the known boot sound budget and the turret-turtle proxy.
+
+**Still open:** the two-age window reads about +8 to +11 for the Dispatch Rider, Trench Mortar and Bomb Bowler (the plan without the Riveter or Carbineer wins more; one-age window within ±5); Shrapnel Shells sits at the lane caps (-25 / -24); the capsule economy re-tune is now due (Common 203 / Rare 226 days to max).
+
+**What the owner should try** (once published): put the Armoured Train, the Clockwork Tinker and the Spark Scientist in your Industrial War Plan, drop the Great Magnet on a crowd, and build a Tesla Pylon.
+
 ## 2026-10-03: the Bronze content wave ships (cloud session, not yet published)
 
 The second content wave is in: 13 new Bronze troops (Shield Bearer, Thracian Raider, Rhodian Slingers, Discus Thrower, War Elephant, Cretan Archer, Belly Bowman, Aulos Piper, Tragic Chorus, Wooden Horse, Amazon Rider, Minotaur, Hydra), 2 turrets (Net Caster, Polybolos), 2 powers (Sandstorm, Charybdis), 2 forts (Hoplon Line, Skirmisher Camp) and 3 skins, each with a cartoon sprite sheet (2-3 attacks, walk by gait, KO death), card portrait, sounds and effects; the four older Bronze forts are redrawn in the cartoon style. New sim rule: the Dread aura (the Tragic Chorus slows nearby enemies) and a speed aura (the Aulos Piper), SIM_VERSION 7.1.0, golden 17. Numbers and misses in `docs/decisions.md`; tables in DESIGN A17.9.

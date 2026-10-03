@@ -1,0 +1,2186 @@
+{
+ "frames": {
+  "dive_bomber_idle_00": {
+   "frame": {
+    "x": 329,
+    "y": 537,
+    "w": 107,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 139,
+    "w": 107,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_idle_00_team": {
+   "frame": {
+    "x": 303,
+    "y": 795,
+    "w": 100,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 138,
+    "w": 100,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_idle_01": {
+   "frame": {
+    "x": 110,
+    "y": 537,
+    "w": 106,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 137,
+    "w": 106,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_idle_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 795,
+    "w": 95,
+    "h": 54
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 135,
+    "w": 95,
+    "h": 54
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_idle_02": {
+   "frame": {
+    "x": 220,
+    "y": 537,
+    "w": 105,
+    "h": 62
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 139,
+    "w": 105,
+    "h": 62
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_idle_02_team": {
+   "frame": {
+    "x": 102,
+    "y": 734,
+    "w": 100,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 135,
+    "w": 100,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_idle_03": {
+   "frame": {
+    "x": 223,
+    "y": 604,
+    "w": 105,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 141,
+    "w": 105,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_idle_03_team": {
+   "frame": {
+    "x": 407,
+    "y": 795,
+    "w": 99,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 138,
+    "w": 99,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_00": {
+   "frame": {
+    "x": 332,
+    "y": 470,
+    "w": 105,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 138,
+    "w": 105,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_00_team": {
+   "frame": {
+    "x": 402,
+    "y": 734,
+    "w": 97,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 134,
+    "w": 97,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_01": {
+   "frame": {
+    "x": 2,
+    "y": 470,
+    "w": 106,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 137,
+    "w": 106,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_01_team": {
+   "frame": {
+    "x": 206,
+    "y": 734,
+    "w": 94,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 133,
+    "w": 94,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_02": {
+   "frame": {
+    "x": 112,
+    "y": 470,
+    "w": 106,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 137,
+    "w": 106,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 669,
+    "w": 98,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 132,
+    "w": 98,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_03": {
+   "frame": {
+    "x": 221,
+    "y": 401,
+    "w": 105,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 136,
+    "w": 105,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 734,
+    "w": 96,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 132,
+    "w": 96,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_04": {
+   "frame": {
+    "x": 111,
+    "y": 401,
+    "w": 106,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 137,
+    "w": 106,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_04_team": {
+   "frame": {
+    "x": 104,
+    "y": 669,
+    "w": 93,
+    "h": 60
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 132,
+    "w": 93,
+    "h": 60
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_05": {
+   "frame": {
+    "x": 515,
+    "y": 322,
+    "w": 106,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 137,
+    "w": 106,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_05_team": {
+   "frame": {
+    "x": 435,
+    "y": 401,
+    "w": 97,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 133,
+    "w": 97,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_06": {
+   "frame": {
+    "x": 2,
+    "y": 401,
+    "w": 105,
+    "h": 65
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 138,
+    "w": 105,
+    "h": 65
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_06_team": {
+   "frame": {
+    "x": 529,
+    "y": 669,
+    "w": 96,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 133,
+    "w": 96,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_07": {
+   "frame": {
+    "x": 222,
+    "y": 470,
+    "w": 106,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 139,
+    "w": 106,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_walk_07_team": {
+   "frame": {
+    "x": 304,
+    "y": 734,
+    "w": 94,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 134,
+    "w": 94,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_00": {
+   "frame": {
+    "x": 441,
+    "y": 470,
+    "w": 105,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 135,
+    "w": 105,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_00_team": {
+   "frame": {
+    "x": 211,
+    "y": 853,
+    "w": 98,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 136,
+    "w": 98,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_01": {
+   "frame": {
+    "x": 204,
+    "y": 322,
+    "w": 106,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 132,
+    "w": 106,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_01_team": {
+   "frame": {
+    "x": 419,
+    "y": 322,
+    "w": 92,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 139,
+    "y": 128,
+    "w": 92,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_02": {
+   "frame": {
+    "x": 264,
+    "y": 230,
+    "w": 99,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 127,
+    "w": 99,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_02_team": {
+   "frame": {
+    "x": 209,
+    "y": 122,
+    "w": 92,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 150,
+    "y": 122,
+    "w": 92,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_03": {
+   "frame": {
+    "x": 367,
+    "y": 230,
+    "w": 95,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 144,
+    "y": 128,
+    "w": 95,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_03_team": {
+   "frame": {
+    "x": 305,
+    "y": 122,
+    "w": 87,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 151,
+    "y": 123,
+    "w": 87,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_04": {
+   "frame": {
+    "x": 466,
+    "y": 230,
+    "w": 92,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 130,
+    "w": 92,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_04_team": {
+   "frame": {
+    "x": 396,
+    "y": 122,
+    "w": 89,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 151,
+    "y": 125,
+    "w": 89,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_05": {
+   "frame": {
+    "x": 330,
+    "y": 401,
+    "w": 101,
+    "h": 64
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 135,
+    "w": 101,
+    "h": 64
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_05_team": {
+   "frame": {
+    "x": 107,
+    "y": 853,
+    "w": 100,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 138,
+    "w": 100,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_06": {
+   "frame": {
+    "x": 441,
+    "y": 604,
+    "w": 104,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 132,
+    "w": 104,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_06_team": {
+   "frame": {
+    "x": 527,
+    "y": 853,
+    "w": 97,
+    "h": 43
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 126,
+    "y": 136,
+    "w": 97,
+    "h": 43
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_07": {
+   "frame": {
+    "x": 440,
+    "y": 537,
+    "w": 107,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 136,
+    "w": 107,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_07_team": {
+   "frame": {
+    "x": 510,
+    "y": 795,
+    "w": 97,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 129,
+    "y": 137,
+    "w": 97,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_08": {
+   "frame": {
+    "x": 332,
+    "y": 604,
+    "w": 105,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 139,
+    "w": 105,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_attack_08_team": {
+   "frame": {
+    "x": 503,
+    "y": 734,
+    "w": 101,
+    "h": 54
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 136,
+    "w": 101,
+    "h": 54
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_hit_00": {
+   "frame": {
+    "x": 412,
+    "y": 669,
+    "w": 113,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 127,
+    "y": 142,
+    "w": 113,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_hit_00_team": {
+   "frame": {
+    "x": 313,
+    "y": 853,
+    "w": 104,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 147,
+    "w": 104,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_hit_01": {
+   "frame": {
+    "x": 201,
+    "y": 669,
+    "w": 110,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 127,
+    "y": 143,
+    "w": 110,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_hit_01_team": {
+   "frame": {
+    "x": 421,
+    "y": 853,
+    "w": 102,
+    "h": 43
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 149,
+    "w": 102,
+    "h": 43
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_hit_02": {
+   "frame": {
+    "x": 2,
+    "y": 537,
+    "w": 104,
+    "h": 63
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 139,
+    "w": 104,
+    "h": 63
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_hit_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 853,
+    "w": 101,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 141,
+    "w": 101,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_hit_03": {
+   "frame": {
+    "x": 2,
+    "y": 604,
+    "w": 107,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 140,
+    "w": 107,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_hit_03_team": {
+   "frame": {
+    "x": 101,
+    "y": 795,
+    "w": 99,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 136,
+    "w": 99,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_hit_04": {
+   "frame": {
+    "x": 113,
+    "y": 604,
+    "w": 106,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 139,
+    "w": 106,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_hit_04_team": {
+   "frame": {
+    "x": 204,
+    "y": 795,
+    "w": 95,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 137,
+    "w": 95,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_00": {
+   "frame": {
+    "x": 314,
+    "y": 322,
+    "w": 101,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 133,
+    "y": 133,
+    "w": 101,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_00_team": {
+   "frame": {
+    "x": 315,
+    "y": 669,
+    "w": 93,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 129,
+    "w": 93,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_01": {
+   "frame": {
+    "x": 96,
+    "y": 322,
+    "w": 104,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 134,
+    "w": 104,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 322,
+    "w": 90,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 129,
+    "w": 90,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_02": {
+   "frame": {
+    "x": 2,
+    "y": 230,
+    "w": 94,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 127,
+    "w": 94,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_02_team": {
+   "frame": {
+    "x": 100,
+    "y": 230,
+    "w": 80,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 142,
+    "y": 121,
+    "w": 80,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_03": {
+   "frame": {
+    "x": 489,
+    "y": 122,
+    "w": 88,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 136,
+    "w": 88,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_03_team": {
+   "frame": {
+    "x": 184,
+    "y": 230,
+    "w": 76,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 134,
+    "w": 76,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_04": {
+   "frame": {
+    "x": 67,
+    "y": 122,
+    "w": 69,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 147,
+    "y": 134,
+    "w": 69,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_04_team": {
+   "frame": {
+    "x": 560,
+    "y": 2,
+    "w": 71,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 149,
+    "y": 128,
+    "w": 71,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_05": {
+   "frame": {
+    "x": 74,
+    "y": 2,
+    "w": 66,
+    "h": 114
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 145,
+    "y": 136,
+    "w": 66,
+    "h": 114
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_05_team": {
+   "frame": {
+    "x": 283,
+    "y": 2,
+    "w": 67,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 149,
+    "y": 131,
+    "w": 67,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_06": {
+   "frame": {
+    "x": 140,
+    "y": 122,
+    "w": 65,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 135,
+    "w": 65,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_06_team": {
+   "frame": {
+    "x": 423,
+    "y": 2,
+    "w": 67,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 148,
+    "y": 132,
+    "w": 67,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_07": {
+   "frame": {
+    "x": 215,
+    "y": 2,
+    "w": 64,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 147,
+    "y": 133,
+    "w": 64,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_07_team": {
+   "frame": {
+    "x": 354,
+    "y": 2,
+    "w": 65,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 148,
+    "y": 137,
+    "w": 65,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_08": {
+   "frame": {
+    "x": 144,
+    "y": 2,
+    "w": 67,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 147,
+    "y": 133,
+    "w": 67,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_08_team": {
+   "frame": {
+    "x": 2,
+    "y": 122,
+    "w": 61,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 149,
+    "y": 138,
+    "w": 61,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_09": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 68,
+    "h": 116
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 129,
+    "w": 68,
+    "h": 116
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  },
+  "dive_bomber_die_09_team": {
+   "frame": {
+    "x": 494,
+    "y": 2,
+    "w": 62,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 148,
+    "y": 136,
+    "w": 62,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.56308,
+    "y": 0.7619
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "dive_bomber_idle_00",
+   "dive_bomber_idle_01",
+   "dive_bomber_idle_02",
+   "dive_bomber_idle_03"
+  ],
+  "idle_team": [
+   "dive_bomber_idle_00_team",
+   "dive_bomber_idle_01_team",
+   "dive_bomber_idle_02_team",
+   "dive_bomber_idle_03_team"
+  ],
+  "walk": [
+   "dive_bomber_walk_00",
+   "dive_bomber_walk_01",
+   "dive_bomber_walk_02",
+   "dive_bomber_walk_03",
+   "dive_bomber_walk_04",
+   "dive_bomber_walk_05",
+   "dive_bomber_walk_06",
+   "dive_bomber_walk_07"
+  ],
+  "walk_team": [
+   "dive_bomber_walk_00_team",
+   "dive_bomber_walk_01_team",
+   "dive_bomber_walk_02_team",
+   "dive_bomber_walk_03_team",
+   "dive_bomber_walk_04_team",
+   "dive_bomber_walk_05_team",
+   "dive_bomber_walk_06_team",
+   "dive_bomber_walk_07_team"
+  ],
+  "attack": [
+   "dive_bomber_attack_00",
+   "dive_bomber_attack_01",
+   "dive_bomber_attack_02",
+   "dive_bomber_attack_03",
+   "dive_bomber_attack_04",
+   "dive_bomber_attack_05",
+   "dive_bomber_attack_06",
+   "dive_bomber_attack_07",
+   "dive_bomber_attack_08"
+  ],
+  "attack_team": [
+   "dive_bomber_attack_00_team",
+   "dive_bomber_attack_01_team",
+   "dive_bomber_attack_02_team",
+   "dive_bomber_attack_03_team",
+   "dive_bomber_attack_04_team",
+   "dive_bomber_attack_05_team",
+   "dive_bomber_attack_06_team",
+   "dive_bomber_attack_07_team",
+   "dive_bomber_attack_08_team"
+  ],
+  "hit": [
+   "dive_bomber_hit_00",
+   "dive_bomber_hit_01",
+   "dive_bomber_hit_02",
+   "dive_bomber_hit_03",
+   "dive_bomber_hit_04"
+  ],
+  "hit_team": [
+   "dive_bomber_hit_00_team",
+   "dive_bomber_hit_01_team",
+   "dive_bomber_hit_02_team",
+   "dive_bomber_hit_03_team",
+   "dive_bomber_hit_04_team"
+  ],
+  "die": [
+   "dive_bomber_die_00",
+   "dive_bomber_die_01",
+   "dive_bomber_die_02",
+   "dive_bomber_die_03",
+   "dive_bomber_die_04",
+   "dive_bomber_die_05",
+   "dive_bomber_die_06",
+   "dive_bomber_die_07",
+   "dive_bomber_die_08",
+   "dive_bomber_die_09"
+  ],
+  "die_team": [
+   "dive_bomber_die_00_team",
+   "dive_bomber_die_01_team",
+   "dive_bomber_die_02_team",
+   "dive_bomber_die_03_team",
+   "dive_bomber_die_04_team",
+   "dive_bomber_die_05_team",
+   "dive_bomber_die_06_team",
+   "dive_bomber_die_07_team",
+   "dive_bomber_die_08_team",
+   "dive_bomber_die_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "dive_bomber.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 640,
+   "h": 904
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.dive_bomber",
+   "name": "Dive Bomber",
+   "heightLu": 46,
+   "widthLu": 80.5,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    183.0,
+    192.0
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     44
+    ],
+    "hitCenter": [
+     0,
+     22
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "fly",
+   "clips": {
+    "idle": {
+     "frames": 4,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3
+     ],
+     "durationsMs": [
+      100,
+      100,
+      100,
+      100
+     ],
+     "durationMs": 400,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        2.4,
+        6.7
+       ],
+       [
+        2.1,
+        8.3
+       ],
+       [
+        1.5,
+        6.6
+       ],
+       [
+        1.9,
+        5.0
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      62,
+      63,
+      62,
+      63,
+      62,
+      63,
+      62,
+      63
+     ],
+     "durationMs": 500,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        0.7,
+        6.6
+       ],
+       [
+        0.8,
+        7.3
+       ],
+       [
+        0.6,
+        7.5
+       ],
+       [
+        0.3,
+        7.3
+       ],
+       [
+        0.1,
+        6.6
+       ],
+       [
+        0.1,
+        5.9
+       ],
+       [
+        0.2,
+        5.6
+       ],
+       [
+        0.5,
+        5.9
+       ]
+      ]
+     },
+     "strideLu": 49.2,
+     "naturalSpeedLuPerS": 98.4,
+     "gait": "fly"
+    },
+    "attack": {
+     "frames": 9,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "durationsMs": [
+      60,
+      80,
+      160,
+      60,
+      60,
+      80,
+      80,
+      100,
+      80
+     ],
+     "durationMs": 760,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.4737,
+     "holdStep": 2,
+     "holdLoop": [
+      2,
+      3
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        2.0,
+        8.4
+       ],
+       [
+        -0.6,
+        7.0
+       ],
+       [
+        -2.8,
+        4.6
+       ],
+       [
+        -3.0,
+        4.1
+       ],
+       [
+        -3.1,
+        2.6
+       ],
+       [
+        2.5,
+        7.0
+       ],
+       [
+        2.6,
+        10.9
+       ],
+       [
+        2.0,
+        8.7
+       ],
+       [
+        2.0,
+        6.6
+       ]
+      ]
+     },
+     "muzzle": [
+      -3.1,
+      2.6
+     ]
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        1.7,
+        5.3
+       ],
+       [
+        1.5,
+        3.9
+       ],
+       [
+        1.8,
+        4.8
+       ],
+       [
+        1.4,
+        6.4
+       ],
+       [
+        2.0,
+        6.5
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        16.6
+       ],
+       "scale": 1.006
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        25.3
+       ],
+       "loops": 2,
+       "scale": 1.003
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        -2.2,
+        8.1
+       ],
+       [
+        -6.4,
+        9.3
+       ],
+       [
+        -12.1,
+        4.3
+       ],
+       [
+        -12.8,
+        4.9
+       ],
+       [
+        -18.4,
+        -3.6
+       ],
+       [
+        -18.1,
+        -4.2
+       ],
+       [
+        -20.0,
+        -3.8
+       ],
+       [
+        -19.2,
+        -5.3
+       ],
+       [
+        -19.4,
+        -5.4
+       ],
+       [
+        -18.9,
+        -5.2
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

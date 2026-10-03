@@ -1,0 +1,494 @@
+{
+ "frames": {
+  "rifle_grenadier_attack_b_01": {
+   "frame": {
+    "x": 146,
+    "y": 2,
+    "w": 79,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 125,
+    "w": 79,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.85317
+   }
+  },
+  "rifle_grenadier_attack_b_01_team": {
+   "frame": {
+    "x": 51,
+    "y": 226,
+    "w": 43,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 132,
+    "w": 43,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.85317
+   }
+  },
+  "rifle_grenadier_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 124,
+    "w": 68,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 126,
+    "w": 68,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.85317
+   }
+  },
+  "rifle_grenadier_attack_b_02_team": {
+   "frame": {
+    "x": 207,
+    "y": 226,
+    "w": 42,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 134,
+    "w": 42,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.85317
+   }
+  },
+  "rifle_grenadier_attack_b_03": {
+   "frame": {
+    "x": 141,
+    "y": 124,
+    "w": 61,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 128,
+    "w": 61,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.85317
+   }
+  },
+  "rifle_grenadier_attack_b_03_team": {
+   "frame": {
+    "x": 158,
+    "y": 226,
+    "w": 45,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 135,
+    "w": 45,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.85317
+   }
+  },
+  "rifle_grenadier_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 70,
+    "h": 118
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 106,
+    "w": 70,
+    "h": 118
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.85317
+   }
+  },
+  "rifle_grenadier_attack_b_04_team": {
+   "frame": {
+    "x": 206,
+    "y": 124,
+    "w": 42,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 129,
+    "w": 42,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.85317
+   }
+  },
+  "rifle_grenadier_attack_b_05": {
+   "frame": {
+    "x": 74,
+    "y": 124,
+    "w": 63,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 125,
+    "w": 63,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.85317
+   }
+  },
+  "rifle_grenadier_attack_b_05_team": {
+   "frame": {
+    "x": 98,
+    "y": 226,
+    "w": 56,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 92,
+    "y": 135,
+    "w": 56,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.85317
+   }
+  },
+  "rifle_grenadier_attack_b_06": {
+   "frame": {
+    "x": 76,
+    "y": 2,
+    "w": 66,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 112,
+    "w": 66,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.85317
+   }
+  },
+  "rifle_grenadier_attack_b_06_team": {
+   "frame": {
+    "x": 252,
+    "y": 124,
+    "w": 48,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 133,
+    "w": 48,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.85317
+   }
+  },
+  "rifle_grenadier_attack_b_07": {
+   "frame": {
+    "x": 229,
+    "y": 2,
+    "w": 53,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 124,
+    "w": 53,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.85317
+   }
+  },
+  "rifle_grenadier_attack_b_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 226,
+    "w": 45,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 132,
+    "w": 45,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48175,
+    "y": 0.85317
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "rifle_grenadier_attack_00",
+   "rifle_grenadier_attack_b_01",
+   "rifle_grenadier_attack_b_02",
+   "rifle_grenadier_attack_b_03",
+   "rifle_grenadier_attack_b_04",
+   "rifle_grenadier_attack_b_05",
+   "rifle_grenadier_attack_b_06",
+   "rifle_grenadier_attack_b_07",
+   "rifle_grenadier_attack_08",
+   "rifle_grenadier_attack_09"
+  ],
+  "attack_b_team": [
+   "rifle_grenadier_attack_00_team",
+   "rifle_grenadier_attack_b_01_team",
+   "rifle_grenadier_attack_b_02_team",
+   "rifle_grenadier_attack_b_03_team",
+   "rifle_grenadier_attack_b_04_team",
+   "rifle_grenadier_attack_b_05_team",
+   "rifle_grenadier_attack_b_06_team",
+   "rifle_grenadier_attack_b_07_team",
+   "rifle_grenadier_attack_08_team",
+   "rifle_grenadier_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "rifle_grenadier.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 320,
+   "h": 304
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.rifle_grenadier",
+   "name": "Rifle Grenadier",
+   "heightLu": 68,
+   "widthLu": 37.4,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    132.0,
+    215.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     67
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     40,
+     50
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "rifle_grenadier",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      40,
+      60,
+      70,
+      160,
+      60,
+      70,
+      60,
+      80,
+      80,
+      80
+     ],
+     "durationMs": 760,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.4342,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        15.7,
+        60.9
+       ],
+       [
+        37.9,
+        52.6
+       ],
+       [
+        25.7,
+        59.1
+       ],
+       [
+        18.7,
+        59.6
+       ],
+       [
+        17.3,
+        65.5
+       ],
+       [
+        5.2,
+        59.6
+       ],
+       [
+        10.9,
+        63.6
+       ],
+       [
+        11.0,
+        65.6
+       ],
+       [
+        20.0,
+        58.7
+       ],
+       [
+        10.7,
+        62.4
+       ]
+      ]
+     },
+     "muzzle": [
+      17.3,
+      65.5
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

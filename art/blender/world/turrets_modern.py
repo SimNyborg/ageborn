@@ -489,3 +489,177 @@ TURRETS = [
     turret_module("searchlight_sniper", "Searchlight Sniper", "modern", 34, CANVAS, FEET, (0, 18), SL_MUZ,
                   searchlight_build, searchlight_idle, searchlight_fire, idle_frames=6, overlays=SL_OVERLAYS),
 ]
+
+# -- W6 Modern wave (CONTENT_PLAN 5.6) ---------------------------------------------------------------
+# Anti-Tank Gun: a long-barrelled gun behind a low shield on split trails, the gunner squinting along it.
+# "A viewer expects the long barrel to slam back on the shot while the spades dig in."
+AT_MUZ = (40.0, 0.0, 15.0)
+
+
+def at_gun_build(rig):
+    concrete_pad(rig, r=18.0, h=3.0)
+    g = Geo()   # split trails and spades
+    for y in (-6.0, 6.0):
+        g.capsule((-2.0, y * 0.5, 8.0), (-20.0, y, 4.0), 1.6)
+    rig.part("mount", g, OLIVE, outline=0.5)
+    g = Geo()
+    for y in (-6.0, 6.0):
+        box(g, (-21.0, y, 3.4), (1.2, 2.4, 2.4), p=4)
+    rig.part("mount", g, GUNMETAL, finish="metal", outline=0.4)
+    g = Geo()   # small wheels with a team hub
+    for y in (-8, 8):
+        cyl(g, (-1, y, 7), (-1, y * 1.3, 7), 5.4, bevel=0.6, segs=16)
+    rig.part("mount", g, "#34373C")
+    g = Geo()
+    for y in (-10.4, 10.4):
+        cyl(g, (-1, y, 7), (-1, y * 1.02, 7), 3.0, bevel=0.3, segs=14)
+    rig.part("mount", g, team=True, outline=0.4)
+    pennant(rig, "mount", -17, 7, 4, h=28, pole=STEEL, finial=STEEL)
+    # a low angled shield with a team panel
+    shield = Geo().slab([(2, 6), (8, 6), (9.4, 22), (2, 24)], -6.5, 1.6)
+    rig.part("head", shield, OLIVE)
+    panel = Geo().slab([(2.8, 8), (7.6, 8), (8.6, 20.6), (2.8, 22.0)], -7.8, 0.8)
+    pface = F.Face(rig, "head", [panel], yaw_deg=TURRET_YAW)
+    rig.part("head", panel, team=True, outline=0.4)
+    g = KM.chevron(pface, Geo(), K.scr(pface, (5.6, -8.6, 15.5)), s=0.5, n=1, w=1.9)
+    rig.part("head", g, KM.CREAM, highlight=False, outline=0)
+    hand = gunner(rig, "head", (-12.0, -3.0, 3.0), name="crew", k=1.0, cap=False)
+    del hand
+    rig.joint("gun", "head", (0, 0, 15))
+    g = Geo()
+    cyl(g, (-8, 0, 15), (6, 0, 15), 3.6, bevel=0.6, segs=16)
+    rig.part("gun", g, OLIVE_LT, finish="metal")
+    g = Geo()
+    cyl(g, (6, 0, 15), (AT_MUZ[0] - 4, 0, 15), 1.8, 1.6, bevel=0.2, segs=14)
+    rig.part("gun", g, GUNMETAL, finish="metal", outline=0.5)
+    g = Geo().lathe([(2.0, 0), (3.0, 0.8), (3.0, 3.6), (2.2, 4.4)], (AT_MUZ[0] - 4.5, 0, 15), (AT_MUZ[0] + 0.5, 0, 15),
+                    segs=14)                                                   # muzzle brake
+    rig.part("gun", g, GUNMETAL, finish="metal", outline=0.5)
+    g = Geo()
+    cyl(g, (16, 0, 15), (17.5, 0, 15), 2.0, bevel=0.2, segs=14)
+    rig.part("gun", g, SIGNAL, outline=0.3)
+    rig.joint("casing", "gun", (-9.0, 0.0, 15.0), hidden=True)
+    g = Geo().capsule((-8.0, -2.0, 15.0), (-13.0, -2.0, 15.0), 1.6)
+    rig.part("casing", g, BRASS, finish="metal", outline=0.4)
+    muzzle_flash(rig, "gun", AT_MUZ, 1.3)
+    smoke_puff(rig, "gun", (AT_MUZ[0] + 2, 0, 16), 1.0)
+
+
+def at_gun_idle(f):
+    t = f / 6 * 2 * math.pi
+    return {"gun": {"r": 0.8 * math.sin(t)},
+            "crew": {"z": 0.4 * math.sin(t), "r": [0, 2, 4, 4, 2, 0][f]},
+            "crew_arms": {"r": -10.0 + 3.0 * math.sin(t)},
+            "crew_eyes": {"sz": 0.25 if f in (2, 3) else (0.2 if f == 5 else 1.0)}}
+
+
+def at_gun_fire(f):
+    # 0 the gunner squints along the barrel, 1 CRACK: the barrel slams back, 2 the casing flies, 3-4 run out
+    return {"gun": {"x": [0.4, -8.0, -5.5, -2.0, 0][f], "r": [0.5, 3.0, 1.5, 0.5, 0][f],
+                    "sz": [1.0, 0.92, 1.04, 1.0, 1.0][f]},
+            "head": {"z": [0, 0.8, 0.3, 0, 0][f], "x": [0, -1.2, -0.6, 0, 0][f]},
+            "casing": {"show": f in (2, 3), "x": [0, 0, -5.0, -10.0, 0][f], "z": [0, 0, 3.0, -5.0, 0][f],
+                       "r": [0, 0, 60, 160, 0][f]},
+            "crew": {"z": [-1.0, -2.5, -2.0, -1.0, 0][f], "r": [6, 12, 8, 3, 0][f]},
+            "crew_eyes": {"sz": [0.25, 0.2, 0.25, 1.0, 1.0][f]},
+            "crew_yell": {"show": f in (1, 2)},
+            "smoke": {"show": f in (1, 2, 3), "s": [1, 0.8, 1.15, 1.4, 1][f], "z": [0, 0, 2, 4, 0][f]}}
+
+
+AT_OVERLAYS = {"fire": {1: [_burst("gun", (AT_MUZ[0] + 3.0, 0, 15.0), 7.0, 13.0, n=6, a0=-60.0, arc=120.0),
+                            {"kind": "dust", "ground": (-21.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 211,
+                             "spread": 0.9, "dir": -1.0}]}}
+
+
+# Rocket Battery: a rack of six launch rails on a small olive truck bed, a crewman with a firing box.
+# "A viewer expects the rack to ripple six rockets one after another, the truck rocking on its springs."
+RB_MUZ = (18.0, 0.0, 36.0)
+
+
+def rocket_build(rig):
+    concrete_pad(rig, r=19.0, h=3.0, sign=False)
+    g = Geo()   # the truck bed and cab
+    box(g, (-2, 0, 8.5), (16, 8, 3.0), p=5)
+    rig.part("mount", g, OLIVE)
+    g = Geo()
+    box(g, (14, 0, 13.0), (5.5, 7.4, 6.0), p=5)
+    rig.part("mount", g, OLIVE_LT)
+    g = Geo()
+    box(g, (17.0, -7.6, 15.0), (2.4, 0.4, 2.6), p=5)
+    rig.part("mount", g, "#BFD8E0", finish="gloss", outline=0.4)
+    plate = Geo()
+    box(plate, (-2, -8.2, 8.5), (12, 0.5, 2.4), p=5, cuts=2)
+    pf = F.Face(rig, "mount", [plate], yaw_deg=TURRET_YAW)
+    rig.part("mount", plate, team=True, outline=0.4)
+    g = KM.chevron(pf, Geo(), K.scr(pf, (-2.0, -8.8, 8.5)), s=0.55, n=2, w=1.8)
+    rig.part("mount", g, KM.CREAM, highlight=False, outline=0)
+    g = Geo()
+    for x in (-12.0, 10.0):
+        for y in (-8.0, 8.0):
+            cyl(g, (x, y, 5.0), (x, y * 1.2, 5.0), 3.8, bevel=0.5, segs=14)
+    rig.part("mount", g, "#34373C")
+    pennant(rig, "mount", -16, 6, 11, h=26, pole=STEEL, finial=STEEL)
+    hand = gunner(rig, "mount", (-18.0, -9.0, 2.0), name="crew", k=0.95, cap=True)
+    rig.joint("box", "crew_arms", hand)
+    g = Geo()
+    box(g, (hand[0], hand[1] - 1.0, hand[2]), (2.0, 1.4, 1.4), p=5)
+    rig.part("box", g, KHAKI, outline=0.4)
+    # the launcher rack: six rails on a tilting frame, a team side plate, rockets loaded
+    rig.joint("gun", "head", (0, 0, 16))
+    g = Geo()
+    box(g, (0, 0, 16), (4.0, 4.0, 2.0), p=5)
+    rig.part("gun", g, GUNMETAL, finish="metal", outline=0.5)
+    side = Geo().slab([(-12, 14), (16, 30), (16, 38), (-12, 22)], -7.0, 1.0)
+    sface = F.Face(rig, "gun", [side], yaw_deg=TURRET_YAW)
+    rig.part("gun", side, team=True, outline=0.5)
+    for k in range(2):
+        rig.joint(f"rk{k}", "gun", (0, 0, 16), hidden=k == 1)
+        g = Geo()
+        for row in range(2):
+            for col in range(3):
+                y = -4.0 + 4.0 * col
+                z0 = 18.0 + 4.6 * row
+                g.capsule((-10.0, y, z0), (14.0, y, z0 + 14.0), 1.5)
+        rig.part(f"rk{k}", g, OLIVE_LT if k == 0 else GUNMETAL, finish="metal", outline=0.4)
+    g = Geo()
+    for row in range(2):
+        for col in range(3):
+            y = -4.0 + 4.0 * col
+            z0 = 18.0 + 4.6 * row
+            g.lathe([(1.5, 0), (1.0, 1.8), (0, 2.6)], (14.0, y, z0 + 14.0), (15.6, y, z0 + 15.0), segs=10)
+    rig.part("rk0", g, SIGNAL, outline=0.3)
+    muzzle_flash(rig, "gun", RB_MUZ, 1.0)
+    smoke_puff(rig, "gun", (-14, 0, 16), 1.4)
+
+
+def rocket_idle(f):
+    t = f / 6 * 2 * math.pi
+    return {"gun": {"r": 1.0 * math.sin(t)},
+            "crew": {"z": 0.4 * math.sin(t), "rz": [0, 10, 20, 10, 0, -6][f]},
+            "crew_arms": {"r": -30.0 + 3.0 * math.sin(t)},
+            "crew_eyes": {"sz": 0.2 if f == 4 else 1.0}}
+
+
+def rocket_fire(f):
+    # 0 the crewman twists the firing box, 1 WHOOSH: the first rockets leave in a sheet of back-blast,
+    # 2-3 the rest ripple off (the rails empty), the truck rocks on its springs, 4 settle (reloaded look)
+    return {"gun": {"r": [0.5, -1.5, 1.2, -0.8, 0][f], "x": [0, -1.0, -0.5, -0.3, 0][f]},
+            "rk0": {"hide": f in (2, 3)}, "rk1": {"show": f in (2, 3)},
+            "mount": {},
+            "crew": {"z": [-1.0, -2.5, -2.5, -1.5, 0][f], "r": [6, 14, 12, 6, 0][f]},
+            "crew_arms": {"r": [10.0, 60.0, 60.0, 40.0, -30.0][f]},
+            "crew_eyes": {"sz": [0.25, 0.2, 0.2, 0.25, 1.0][f]},
+            "crew_yell": {"show": f in (1, 2)},
+            "smoke": {"show": f in (1, 2, 3), "s": [1, 0.9, 1.25, 1.5, 1][f], "x": [0, 0, -3, -6, 0][f],
+                      "z": [0, 0, 1, 3, 0][f]}}
+
+
+RB_OVERLAYS = {"fire": {1: [_burst("gun", (RB_MUZ[0] + 2.0, 0, RB_MUZ[2]), 5.0, 10.0, n=5, a0=0.0, arc=90.0)],
+                        2: [_burst("gun", (RB_MUZ[0] + 1.0, 0, RB_MUZ[2] - 4.0), 4.0, 8.0, n=4, a0=0.0, arc=90.0)]}}
+
+TURRETS += [
+    turret_module("anti_tank_gun", "Anti-Tank Gun", "modern", 30, CANVAS, FEET, (0, 14), AT_MUZ, at_gun_build,
+                  at_gun_idle, at_gun_fire, muzzle_joint="gun", aim=(-20, 10), idle_frames=6, overlays=AT_OVERLAYS),
+    turret_module("rocket_battery", "Rocket Battery", "modern", 38, CANVAS, FEET, (0, 16), RB_MUZ, rocket_build,
+                  rocket_idle, rocket_fire, muzzle_joint="gun", aim=(-30, 20), idle_frames=6, overlays=RB_OVERLAYS),
+]

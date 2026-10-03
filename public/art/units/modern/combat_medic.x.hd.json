@@ -1,0 +1,430 @@
+{
+ "frames": {
+  "combat_medic_attack_b_01": {
+   "frame": {
+    "x": 215,
+    "y": 2,
+    "w": 106,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 237,
+    "w": 106,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_01_team": {
+   "frame": {
+    "x": 108,
+    "y": 355,
+    "w": 104,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 258,
+    "w": 104,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_02": {
+   "frame": {
+    "x": 110,
+    "y": 189,
+    "w": 120,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 251,
+    "w": 120,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_02_team": {
+   "frame": {
+    "x": 317,
+    "y": 355,
+    "w": 113,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 270,
+    "w": 113,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_03": {
+   "frame": {
+    "x": 104,
+    "y": 2,
+    "w": 107,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 213,
+    "y": 241,
+    "w": 107,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_03_team": {
+   "frame": {
+    "x": 331,
+    "y": 189,
+    "w": 105,
+    "h": 146
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 262,
+    "w": 105,
+    "h": 146
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 189,
+    "w": 104,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 247,
+    "w": 104,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_04_team": {
+   "frame": {
+    "x": 216,
+    "y": 355,
+    "w": 97,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 268,
+    "w": 97,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_05": {
+   "frame": {
+    "x": 325,
+    "y": 2,
+    "w": 104,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 242,
+    "w": 104,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 355,
+    "w": 102,
+    "h": 143
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 263,
+    "w": 102,
+    "h": 143
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 98,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 226,
+    "w": 98,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  },
+  "combat_medic_attack_b_06_team": {
+   "frame": {
+    "x": 234,
+    "y": 189,
+    "w": 93,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 248,
+    "w": 93,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 456
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85965
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "combat_medic_attack_00",
+   "combat_medic_attack_b_01",
+   "combat_medic_attack_b_02",
+   "combat_medic_attack_b_03",
+   "combat_medic_attack_b_04",
+   "combat_medic_attack_b_05",
+   "combat_medic_attack_b_06",
+   "combat_medic_attack_07"
+  ],
+  "attack_b_team": [
+   "combat_medic_attack_00_team",
+   "combat_medic_attack_b_01_team",
+   "combat_medic_attack_b_02_team",
+   "combat_medic_attack_b_03_team",
+   "combat_medic_attack_b_04_team",
+   "combat_medic_attack_b_05_team",
+   "combat_medic_attack_b_06_team",
+   "combat_medic_attack_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "combat_medic.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 448,
+   "h": 500
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.combat_medic",
+   "name": "Combat Medic",
+   "heightLu": 68,
+   "widthLu": 33.7,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    244,
+    392
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     67
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     30,
+     34
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "combat_medic",
+   "clips": {
+    "attack_b": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      40,
+      60,
+      160,
+      50,
+      60,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 560,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.4643,
+     "holdStep": 2,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        21.3,
+        29.3
+       ],
+       [
+        18.0,
+        12.5
+       ],
+       [
+        20.8,
+        6.4
+       ],
+       [
+        19.3,
+        6.9
+       ],
+       [
+        17.3,
+        11.7
+       ],
+       [
+        18.3,
+        9.6
+       ],
+       [
+        14.2,
+        17.1
+       ],
+       [
+        16.2,
+        34.6
+       ]
+      ]
+     },
+     "muzzle": [
+      19.3,
+      6.9
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

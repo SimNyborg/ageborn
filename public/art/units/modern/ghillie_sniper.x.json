@@ -1,0 +1,542 @@
+{
+ "frames": {
+  "ghillie_sniper_attack_b_01": {
+   "frame": {
+    "x": 118,
+    "y": 2,
+    "w": 115,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 128,
+    "y": 133,
+    "w": 115,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  },
+  "ghillie_sniper_attack_b_01_team": {
+   "frame": {
+    "x": 189,
+    "y": 165,
+    "w": 65,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 135,
+    "y": 139,
+    "w": 65,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  },
+  "ghillie_sniper_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 89,
+    "w": 119,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 152,
+    "w": 119,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  },
+  "ghillie_sniper_attack_b_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 239,
+    "w": 69,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 158,
+    "w": 69,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  },
+  "ghillie_sniper_attack_b_03": {
+   "frame": {
+    "x": 237,
+    "y": 2,
+    "w": 149,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 152,
+    "w": 149,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  },
+  "ghillie_sniper_attack_b_03_team": {
+   "frame": {
+    "x": 75,
+    "y": 239,
+    "w": 69,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 158,
+    "w": 69,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  },
+  "ghillie_sniper_attack_b_04": {
+   "frame": {
+    "x": 258,
+    "y": 165,
+    "w": 117,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 151,
+    "w": 117,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  },
+  "ghillie_sniper_attack_b_04_team": {
+   "frame": {
+    "x": 148,
+    "y": 239,
+    "w": 66,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 157,
+    "w": 66,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  },
+  "ghillie_sniper_attack_b_05": {
+   "frame": {
+    "x": 125,
+    "y": 89,
+    "w": 119,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 152,
+    "w": 119,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  },
+  "ghillie_sniper_attack_b_05_team": {
+   "frame": {
+    "x": 218,
+    "y": 239,
+    "w": 66,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 158,
+    "w": 66,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  },
+  "ghillie_sniper_attack_b_06": {
+   "frame": {
+    "x": 248,
+    "y": 89,
+    "w": 119,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 152,
+    "w": 119,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  },
+  "ghillie_sniper_attack_b_06_team": {
+   "frame": {
+    "x": 288,
+    "y": 239,
+    "w": 66,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 158,
+    "w": 66,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  },
+  "ghillie_sniper_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 165,
+    "w": 119,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 131,
+    "y": 152,
+    "w": 119,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  },
+  "ghillie_sniper_attack_b_07_team": {
+   "frame": {
+    "x": 358,
+    "y": 239,
+    "w": 66,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 146,
+    "y": 158,
+    "w": 66,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  },
+  "ghillie_sniper_attack_b_08": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 112,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 132,
+    "y": 128,
+    "w": 112,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  },
+  "ghillie_sniper_attack_b_08_team": {
+   "frame": {
+    "x": 125,
+    "y": 165,
+    "w": 60,
+    "h": 70
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 135,
+    "w": 60,
+    "h": 70
+   },
+   "sourceSize": {
+    "w": 325,
+    "h": 228
+   },
+   "anchor": {
+    "x": 0.47077,
+    "y": 0.87281
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "ghillie_sniper_attack_00",
+   "ghillie_sniper_attack_b_01",
+   "ghillie_sniper_attack_b_02",
+   "ghillie_sniper_attack_b_03",
+   "ghillie_sniper_attack_b_04",
+   "ghillie_sniper_attack_b_05",
+   "ghillie_sniper_attack_b_06",
+   "ghillie_sniper_attack_b_07",
+   "ghillie_sniper_attack_b_08",
+   "ghillie_sniper_attack_09"
+  ],
+  "attack_b_team": [
+   "ghillie_sniper_attack_00_team",
+   "ghillie_sniper_attack_b_01_team",
+   "ghillie_sniper_attack_b_02_team",
+   "ghillie_sniper_attack_b_03_team",
+   "ghillie_sniper_attack_b_04_team",
+   "ghillie_sniper_attack_b_05_team",
+   "ghillie_sniper_attack_b_06_team",
+   "ghillie_sniper_attack_b_07_team",
+   "ghillie_sniper_attack_b_08_team",
+   "ghillie_sniper_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "ghillie_sniper.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 448,
+   "h": 300
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.ghillie_sniper",
+   "name": "Ghillie Sniper",
+   "heightLu": 66,
+   "widthLu": 74.4,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    153.0,
+    199.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     64
+    ],
+    "hitCenter": [
+     0,
+     30
+    ],
+    "muzzle": [
+     60,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "ghillie_sniper",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      50,
+      70,
+      220,
+      70,
+      80,
+      80,
+      80,
+      80,
+      80,
+      90
+     ],
+     "durationMs": 900,
+     "impactFrame": 3,
+     "impactStep": 3,
+     "impactAt": 0.3778,
+     "holdStep": 2,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        57.7,
+        16.0
+       ],
+       [
+        69.1,
+        -0.1
+       ],
+       [
+        74.6,
+        -6.3
+       ],
+       [
+        74.6,
+        -6.3
+       ],
+       [
+        72.5,
+        3.4
+       ],
+       [
+        74.6,
+        -4.5
+       ],
+       [
+        74.6,
+        -4.5
+       ],
+       [
+        74.6,
+        -4.5
+       ],
+       [
+        70.1,
+        12.4
+       ],
+       [
+        57.3,
+        -0.4
+       ]
+      ]
+     },
+     "muzzle": [
+      74.6,
+      -6.3
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}
