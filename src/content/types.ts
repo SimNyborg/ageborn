@@ -884,6 +884,12 @@ export interface ContentOrder {
   /** The hidden units forts bring (A16.14.8): levies, then the fort twins. Never collectable. */
   fortUnits: CardId[];
   skins: SkinId[];
+  /**
+   * The release gate (`release.ts`): every unit, turret, power, fort and skin id with `released: false`
+   * (or a skin of such a card), sorted. These ids are in the records but in none of the lists above,
+   * so players and bots never meet them; dev tools and the schema read them from here.
+   */
+  unreleased: string[];
 }
 
 /**

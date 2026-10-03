@@ -152,9 +152,11 @@ export const stone: RawAgeTables = {
     },
     // ---- X0 Stone wave (content expansion 2026-10-02, CONTENT_PLAN 5.1): capsule cards, appended in build
     // order. Commons drop from Arena 2, Rares 3, Epics 4, Legendaries 5 (`cardArena`). Templates: plan 4.
+    // Release gate: every card of this wave is `released: false` (hidden from players and bots) until its
+    // art and sounds ship; the wave flips each card to true when its art lands (docs/decisions.md).
     {
       // Pair (X0 M1): one card trains 2 wolves; stats per wolf (0.55 × Bonker), cost and pop split evenly
-      id: 'hunting_wolves', kind: 'unit', age: 'stone', rarity: 'common', role: 'infantry', group: 'infantry',
+      id: 'hunting_wolves', released: false, kind: 'unit', age: 'stone', rarity: 'common', role: 'infantry', group: 'infantry',
       cost: 50, trainMs: 1500, pop: 2, hp: 88, speed: 80, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
@@ -170,7 +172,7 @@ export const stone: RawAgeTables = {
     },
     {
       // Guard: 25% less damage from attacks with range ≥ 100 (not powers); Blunt
-      id: 'hide_shield', kind: 'unit', age: 'stone', rarity: 'common', role: 'infantry', group: 'infantry',
+      id: 'hide_shield', released: false, kind: 'unit', age: 'stone', rarity: 'common', role: 'infantry', group: 'infantry',
       cost: 50, trainMs: 1500, pop: 2, hp: 216, speed: 65, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
@@ -185,7 +187,7 @@ export const stone: RawAgeTables = {
     },
     {
       // Raider: fast; 36 to bases (×2)
-      id: 'torch_runner', kind: 'unit', age: 'stone', rarity: 'common', role: 'infantry', group: 'infantry',
+      id: 'torch_runner', released: false, kind: 'unit', age: 'stone', rarity: 'common', role: 'infantry', group: 'infantry',
       cost: 50, trainMs: 1500, pop: 2, hp: 120, speed: 100, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
@@ -200,7 +202,7 @@ export const stone: RawAgeTables = {
     },
     {
       // Snarer: hits slow the target 25% for 1.5 s; ground only
-      id: 'bolas_thrower', kind: 'unit', age: 'stone', rarity: 'common', role: 'ranged', group: 'ranged',
+      id: 'bolas_thrower', released: false, kind: 'unit', age: 'stone', rarity: 'common', role: 'ranged', group: 'ranged',
       cost: 75, trainMs: 2000, pop: 3, hp: 90, speed: 65, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
@@ -216,7 +218,7 @@ export const stone: RawAgeTables = {
     },
     {
       // Brute: steady horn hook, cleave 2 (reach 30); no charge bonus
-      id: 'woolly_rhino', kind: 'unit', age: 'stone', rarity: 'common', role: 'heavy', group: 'heavy',
+      id: 'woolly_rhino', released: false, kind: 'unit', age: 'stone', rarity: 'common', role: 'heavy', group: 'heavy',
       cost: 150, trainMs: 4000, pop: 6, hp: 644, speed: 50, size: 'large',
       tags: ['armored', 'bio', 'melee', 'ground'],
       attacks: [
@@ -231,7 +233,7 @@ export const stone: RawAgeTables = {
     },
     {
       // Long range (H6, A5.1): an arcing dart at the target's spot, splash r35; range 320, min 90; half to bases; ground only
-      id: 'atlatl_thrower', kind: 'unit', age: 'stone', rarity: 'rare', role: 'ranged', group: 'ranged',
+      id: 'atlatl_thrower', released: false, kind: 'unit', age: 'stone', rarity: 'rare', role: 'ranged', group: 'ranged',
       cost: 75, trainMs: 2000, pop: 3, hp: 85, speed: 60, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
@@ -247,7 +249,7 @@ export const stone: RawAgeTables = {
     },
     {
       // Ranged Anti-heavy: range 130, 40 / 1.8 s; ranged AA mods (armored and mech ×3, Legendary ×2, light ×0.5); Brace; priority armored
-      id: 'boulder_hurler', kind: 'unit', age: 'stone', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
+      id: 'boulder_hurler', released: false, kind: 'unit', age: 'stone', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
       cost: 100, trainMs: 2500, pop: 4, hp: 130, speed: 65, size: 'medium',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
@@ -263,7 +265,7 @@ export const stone: RawAgeTables = {
     },
     {
       // Heal: 30 HP/s split between the 2 most hurt allies within 160 lu; followSupport
-      id: 'herbalist', kind: 'unit', age: 'stone', rarity: 'rare', role: 'support', group: 'support',
+      id: 'herbalist', released: false, kind: 'unit', age: 'stone', rarity: 'rare', role: 'support', group: 'support',
       cost: 110, trainMs: 3000, pop: 4, hp: 130, speed: 65, size: 'small',
       tags: ['light', 'bio', 'support', 'ranged', 'ground'],
       attacks: [
@@ -282,7 +284,7 @@ export const stone: RawAgeTables = {
     },
     {
       // Frenzy (X0 M2): below 50% HP, +30% damage and +20% attack speed; Blunt
-      id: 'pelt_rager', kind: 'unit', age: 'stone', rarity: 'rare', role: 'infantry', group: 'infantry',
+      id: 'pelt_rager', released: false, kind: 'unit', age: 'stone', rarity: 'rare', role: 'infantry', group: 'infantry',
       cost: 50, trainMs: 1500, pop: 2, hp: 160, speed: 70, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
@@ -297,7 +299,7 @@ export const stone: RawAgeTables = {
     },
     {
       // Summoner (X0 M3): a Cave Pup (35% of a Bonker, fast) every 8 s, at most 2; staff poke; followSupport
-      id: 'beast_caller', kind: 'unit', age: 'stone', rarity: 'epic', role: 'support', group: 'epic',
+      id: 'beast_caller', released: false, kind: 'unit', age: 'stone', rarity: 'epic', role: 'support', group: 'epic',
       cost: 200, trainMs: 4000, pop: 8, hp: 260, speed: 65, size: 'small',
       tags: ['light', 'bio', 'support', 'melee', 'ground'],
       attacks: [
@@ -315,7 +317,7 @@ export const stone: RawAgeTables = {
     },
     {
       // Brawler: wide paw swat; Roar every 14 s stuns enemies within 110 lu for 1.0 s (Legendaries 0.5 s), dizzy (M5)
-      id: 'cave_bear', kind: 'unit', age: 'stone', rarity: 'epic', role: 'heavy', group: 'epic',
+      id: 'cave_bear', released: false, kind: 'unit', age: 'stone', rarity: 'epic', role: 'heavy', group: 'epic',
       cost: 200, trainMs: 4000, pop: 8, hp: 900, speed: 55, size: 'large',
       tags: ['armored', 'bio', 'melee', 'ground'],
       attacks: [
@@ -330,7 +332,7 @@ export const stone: RawAgeTables = {
     },
     {
       // Caster: every 9 s a boulder lands on the nearest enemy ground unit within 380 lu after 1.0 s (70 splash r45)
-      id: 'rockfall_shaman', kind: 'unit', age: 'stone', rarity: 'epic', role: 'support', group: 'epic',
+      id: 'rockfall_shaman', released: false, kind: 'unit', age: 'stone', rarity: 'epic', role: 'support', group: 'epic',
       cost: 200, trainMs: 4000, pop: 8, hp: 240, speed: 60, size: 'small',
       tags: ['light', 'bio', 'support', 'ranged', 'ground'],
       attacks: [
@@ -349,7 +351,7 @@ export const stone: RawAgeTables = {
     },
     {
       // Legendary war leader: antler sweep cleave 2 (reach 30); first hit ×2 and 40 lu knockback; War Horn aura +15% damage within 180
-      id: 'elk_chieftain', kind: 'unit', age: 'stone', rarity: 'legendary', role: 'heavy', group: 'legendary',
+      id: 'elk_chieftain', released: false, kind: 'unit', age: 'stone', rarity: 'legendary', role: 'heavy', group: 'legendary',
       cost: 350, trainMs: 7000, pop: 14, hp: 1530, speed: 50, size: 'large',
       tags: ['armored', 'bio', 'melee', 'legendary', 'ground'],
       attacks: [
@@ -367,7 +369,7 @@ export const stone: RawAgeTables = {
     },
     {
       // Beast Caller's summon (X0 M3): 35% of a Bonker (HP 56, 7 damage), fast; no pop, no bounty, always marches
-      id: 'cave_pup', kind: 'unit', age: 'stone', rarity: 'common', role: 'infantry', group: 'infantry',
+      id: 'cave_pup', released: false, kind: 'unit', age: 'stone', rarity: 'common', role: 'infantry', group: 'infantry',
       cost: 0, trainMs: 1500, pop: 2, hp: 56, speed: 90, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
@@ -427,7 +429,7 @@ export const stone: RawAgeTables = {
     },
     {
       // X0 Stone wave. Volley (anti-swarm): 3 quills × 9, each piercing 2 within 60 lu, every 1.5 s; ground and air
-      id: 'quill_porcupine', kind: 'turret', age: 'stone', rarity: 'common', cost: 175,
+      id: 'quill_porcupine', released: false, kind: 'turret', age: 'stone', rarity: 'common', cost: 175,
       attack: {
         damage: 9, intervalMs: 1500, windupPct: 0, range: 280, hitsGround: true, hitsAir: true,
         projectile: { speed: 600, visualId: 'proj.quill' },
@@ -437,7 +439,7 @@ export const stone: RawAgeTables = {
     },
     {
       // X0 Stone wave. Arc: a bent sapling flings a stone, 82 splash r50 every 4.5 s, range 480 (min 150); ground only
-      id: 'sapling_sling', kind: 'turret', age: 'stone', rarity: 'rare', cost: 250,
+      id: 'sapling_sling', released: false, kind: 'turret', age: 'stone', rarity: 'rare', cost: 250,
       attack: {
         damage: 82, intervalMs: 4500, windupPct: 0, range: 480, minRange: 150, hitsGround: true, hitsAir: false,
         projectile: { speed: 450, arc: true, visualId: 'proj.boulder' },
@@ -454,7 +456,8 @@ export const stone: RawAgeTables = {
     trap('stone', 'spike_pit', { unlock: true }, { charges: 3, damage: 40, statuses: [slow(4000, 2000)] }),
     // X0 Stone wave variants: a cheap wall (0.75 × the Heavy Common, 100 gold; War Path Stone s2) and a lob tower
     // (× 0.8 damage, splash r30, interval × 1.3, arc, ground only; the Stone 20-star milestone). Road fallback 4,100.
-    wall('stone', 'thorn_hedge', { cost: 100, hpBp: 7500, from: { side: 2, road: 4100 } }),
-    tower('stone', 'bone_watchtower', { stars: 20, road: 4100 }, { damageBp: 8000, intervalBp: 13000, splashRadius: 30, arc: true, groundOnly: true }),
+    // Release gate: `released: false` until their art ships (docs/decisions.md).
+    { ...wall('stone', 'thorn_hedge', { cost: 100, hpBp: 7500, from: { side: 2, road: 4100 } }), released: false },
+    { ...tower('stone', 'bone_watchtower', { stars: 20, road: 4100 }, { damageBp: 8000, intervalBp: 13000, splashRadius: 30, arc: true, groundOnly: true }), released: false },
   ],
 };

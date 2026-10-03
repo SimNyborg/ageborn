@@ -19,6 +19,7 @@ import { BP, LANE_MLU, MILLI } from '@/core/fixed';
 import { skinnedVisualId } from '@/core/ids';
 import { AGE_ORDER } from './ages';
 import type { RawContent } from './raw/types';
+import { isReleased } from './release';
 import { roadAmber } from './trophyRoad';
 import type { AgeRosterShape, Content } from './types';
 
@@ -173,6 +174,8 @@ export const UnitSchema = v.strictObject({
   summon: v.optional(v.boolean()),
   squad: v.optional(v.strictObject({ count: v.picklist([2, 3]) })),
   starter: v.optional(v.boolean()),
+  // The release gate (`release.ts`): false hides the card from players and bots until its art ships.
+  released: v.optional(v.boolean()),
 });
 
 /** A Fort card (A16.14.8). */
@@ -208,6 +211,8 @@ export const FortSchema = v.strictObject({
   descKey: key,
   strongVs: v.array(id),
   weakVs: v.array(id),
+  // The release gate (`release.ts`): false hides the card from players and bots until its art ships.
+  released: v.optional(v.boolean()),
 });
 
 export const TurretSchema = v.strictObject({
@@ -221,6 +226,8 @@ export const TurretSchema = v.strictObject({
   nameKey: key,
   descKey: key,
   starter: v.optional(v.boolean()),
+  // The release gate (`release.ts`): false hides the card from players and bots until its art ships.
+  released: v.optional(v.boolean()),
 });
 
 const PowerEffectSchema = v.variant('kind', [
@@ -269,6 +276,8 @@ export const PowerSchema = v.strictObject({
   sfx: sound,
   nameKey: key,
   descKey: key,
+  // The release gate (`release.ts`): false hides the card from players and bots until its art ships.
+  released: v.optional(v.boolean()),
 });
 
 const AgeSchema = v.strictObject({
@@ -389,6 +398,8 @@ const SkinSchema = v.strictObject({
   craftable: v.boolean(),
   sfxOverrides: v.optional(v.record(v.string(), sound)),
   nameKey: key,
+  // The release gate (`release.ts`): false hides the card from players and bots until its art ships.
+  released: v.optional(v.boolean()),
 });
 
 const TicksSchema = v.strictObject({
@@ -869,7 +880,7 @@ export const ContentSchema = v.strictObject({
   int: IntegerTablesSchema,
   order: v.strictObject({
     ages: v.array(AGE), formats: v.array(FORMAT), units: v.array(id), hiddenUnits: v.array(id), turrets: v.array(id),
-    powers: v.array(id), forts: v.array(id), fortUnits: v.array(id), skins: v.array(id),
+    powers: v.array(id), forts: v.array(id), fortUnits: v.array(id), skins: v.array(id), unreleased: v.array(id),
   }),
   battle: BattleSchema,
 });
@@ -1109,8 +1120,11 @@ function checkCards(issues: Issues, c: Content): void {
  * Common turrets; Epic and Legendary units sit in their own role groups.
  */
 function checkCollection(issues: Issues, c: Content): void {
-  const units = c.order.units.map((x) => c.units[x] as UnitDef);
-  const turrets = c.order.turrets.map((x) => c.turrets[x]);
+  // The roster shape counts every card, released or not (the release gate only hides cards, `release.ts`).
+  const unreleased = c.order.unreleased;
+  const units = [...c.order.units, ...unreleased.filter((x) => c.units[x] !== undefined && c.units[x].hidden !== true)].map((x) => c.units[x] as UnitDef);
+  const turrets = [...c.order.turrets, ...unreleased.filter((x) => c.turrets[x] !== undefined)].map((x) => c.turrets[x]);
+  const powerCount = c.order.powers.length + unreleased.filter((x) => c.powers[x] !== undefined).length;
   const shape = c.rosterShape;
   const total = (f: (a: AgeId) => number): number => AGE_ORDER.reduce((n, a) => n + f(a), 0);
   const want: Record<Rarity, number> = { common: 0, rare: 0, epic: 0, legendary: 0 };
@@ -1123,7 +1137,7 @@ function checkCollection(issues: Issues, c: Content): void {
   const wantPowers = total((a) => shape[a].powers.home + shape[a].powers.field);
   issues.check(units.length === wantUnits, 'order.units', `${wantUnits} collectable units (rosterShape), found ${units.length}`);
   issues.check(turrets.length === wantTurrets, 'order.turrets', `${wantTurrets} turrets (rosterShape), found ${turrets.length}`);
-  issues.check(c.order.powers.length === wantPowers, 'order.powers', `${wantPowers} Age Powers (rosterShape), found ${c.order.powers.length}`);
+  issues.check(powerCount === wantPowers, 'order.powers', `${wantPowers} Age Powers (rosterShape), found ${powerCount}`);
   const count = (r: Rarity): number => [...units, ...turrets].filter((x) => x?.rarity === r).length;
   for (const r of ['common', 'rare', 'epic', 'legendary'] as const) {
     issues.check(count(r) === want[r], 'collection', `${want[r]} ${r} cards (rosterShape), found ${count(r)}`);
@@ -1568,7 +1582,8 @@ function checkMeta(issues: Issues, c: Content): void {
     const gates = nodes.filter((n) => n.rewards.some((r) => r.kind === 'gate' && r.arena === a.index));
     issues.check(gates.length === 1, `arenas.${a.id}`, 'each arena after the first has one gate node');
   }
-  const roadPowers = Object.values(c.powers).filter((p) => p.road !== undefined).map((p) => p.id);
+  // An unreleased power's road node is gated out at compile time (`gate.ts`).
+  const roadPowers = Object.values(c.powers).filter((p) => p.road !== undefined && isReleased(c, p.id)).map((p) => p.id);
   for (const pw of roadPowers) {
     const n = nodes.filter((x) => x.rewards.some((r) => r.kind === 'power' && r.card === pw)).length;
     issues.check(n === 1, 'trophyRoad', `one node gives "${pw}", found ${n}`);

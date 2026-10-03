@@ -124,9 +124,9 @@ export function sideMapNodes(save: SaveDoc, content: Content): MapNode[] {
 export function sideRewardCard(content: Content, level: WarPathLevel): string | null {
   if (!level.side) return null;
   const n = level.side.n;
-  const pw = Object.values(content.powers).find((x) => x.age === level.region && x.warPathSide === n);
+  const pw = Object.values(content.powers).find((x) => x.age === level.region && x.warPathSide === n && x.released !== false);
   if (pw) return pw.id;
-  const f = Object.values(content.forts).find((x) => x.age === level.region && x.warPathSide === n);
+  const f = Object.values(content.forts).find((x) => x.age === level.region && x.warPathSide === n && x.released !== false);
   return f?.id ?? null;
 }
 

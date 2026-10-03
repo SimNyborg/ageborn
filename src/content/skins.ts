@@ -38,7 +38,8 @@ export const skinList: readonly SkinDef[] = [
   skin('crystal_spire', 'base.future', 'legendary', false),
   // X0 content waves (CONTENT_PLAN 5, 6): every wave skin joins the Wardrobe Crate pool and the capsule skin
   // rolls, craftable with Dust. W1 Stone (2026-10-02):
-  skin('snowball_pebbler', 'pebbler', 'rare'),
-  skin('fossil_sabertooth', 'sabertooth', 'epic'),
-  skin('aurora_elk', 'elk_chieftain', 'legendary'),
+  // Release gate: `released: false` (hidden from players and bots) until their art ships (docs/decisions.md).
+  { ...skin('snowball_pebbler', 'pebbler', 'rare'), released: false },
+  { ...skin('fossil_sabertooth', 'sabertooth', 'epic'), released: false },
+  { ...skin('aurora_elk', 'elk_chieftain', 'legendary'), released: false },
 ];

@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 import type { CapsuleTier, Rarity } from '@/contracts/ids';
 import { seedSfc32 } from '@/core/rng';
 import { AGE_ORDER, FORMAT_MODES, FORMAT_ORDER, commanderName, content, playerName, roadAmber } from '../index';
+import { contentAllReleased as full } from '../../../tests/fixtures/allReleased';
 
 const { capsules, rarities, arenas, trophyRoad, generals, quests, dailyModifiers, cosmetics, names } = content;
 
@@ -468,7 +469,8 @@ describe('Cosmetics and skins (A5.8)', () => {
   });
 
   it('has the 12 v1 skins and the X0 wave skins with targets and rarities', () => {
-    expect(content.order.skins.map((s) => [s, content.skins[s]?.target, content.skins[s]?.rarity])).toEqual([
+    // Every skin, with the release gate open (`full`): the wave skins are held back in the game.
+    expect(full.order.skins.map((s) => [s, full.skins[s]?.target, full.skins[s]?.rarity])).toEqual([
       ['pumpkin_head', 'bonker', 'rare'],
       ['woolly_tuskback', 'tuskback', 'epic'],
       ['frost_matriarch', 'mammoth_matriarch', 'legendary'],

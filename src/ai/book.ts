@@ -359,7 +359,8 @@ export function cardBook(content: CompiledContent): CardBook {
       strength: turretStrength(t),
     };
   }
-  const unitsByAge = ageOrder.map((age) => Object.values(units).filter((u) => u.age === age && !u.hidden));
+  // Age predictions only expect cards a player can meet (the release gate, `UnitDef.released`).
+  const unitsByAge = ageOrder.map((age) => Object.values(units).filter((u) => u.age === age && !u.hidden && content.units[u.id]?.released !== false));
 
   const counterBp: Record<CardId, Record<CardId, number>> = {};
   for (const a of Object.keys(content.counters ?? {}).sort()) {

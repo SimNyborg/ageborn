@@ -25,7 +25,7 @@
  * bot profile from it with {@link commanderInfo}.
  */
 import type { AgeId, CardId, FormatId, Loadout, MatchResultInput, OpponentSpec, Rarity, SaveDoc, SideConfig, SkirmishOptions, WarPathMatch } from '@/contracts';
-import { commanderName, type ArenaDef, type Content, type DailyDifficulty, type GeneralDef, type GeneralId } from '@/content';
+import { commanderName, isReleased, type ArenaDef, type Content, type DailyDifficulty, type GeneralDef, type GeneralId } from '@/content';
 import { chanceBp, fnv1a32, pick, pickWeighted, seedSfc32, type Sfc32State } from '@/core';
 import { formatAges } from './formats';
 import { starterLoadout, activePlan } from './warplan';
@@ -127,7 +127,7 @@ export function allowedPlan(
   // X0: a content-wave card only from the arena that drops it (a player there could own it, `cardArena`).
   const allowed = (id: CardId): boolean => {
     const d = t.units[id] ?? t.turrets[id];
-    return !!d && d.rarity !== 'legendary' && RARITY_INDEX[d.rarity] <= cap && !(t.units[id]?.hidden ?? false) && inArenaPool(t, id, arenaIndex);
+    return !!d && d.rarity !== 'legendary' && RARITY_INDEX[d.rarity] <= cap && !(t.units[id]?.hidden ?? false) && isReleased(t, id) && inArenaPool(t, id, arenaIndex);
   };
   const out: Plan = {};
   for (const age of ages) {
@@ -148,10 +148,19 @@ export function allowedPlan(
   return out;
 }
 
-/** A General's personal plan for the ages of a format (the starter loadout where it has none). */
+/**
+ * A General's personal plan for the ages of a format (the starter loadout where it has none). The release
+ * gate: a troop or turret whose art has not shipped leaves its slot empty (compile already keeps such cards
+ * out of every General plan; this also guards Echo's copy of the player's plan). Powers and forts are
+ * gated by the power and fort match rules.
+ */
 function fullPlan(t: Content, plan: Plan | null, ages: readonly AgeId[]): Plan {
   const out: Plan = {};
-  for (const age of ages) out[age] = plan?.[age] ?? starterLoadout(t, age);
+  const keep = (id: CardId | null): CardId | null => (id !== null && isReleased(t, id) ? id : null);
+  for (const age of ages) {
+    const l = plan?.[age] ?? starterLoadout(t, age);
+    out[age] = { ...l, units: l.units.map(keep), turrets: l.turrets.map(keep) };
+  }
   return out;
 }
 

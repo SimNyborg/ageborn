@@ -38,6 +38,8 @@ import { hashCanonical } from '@/core/hash';
 import { AGE_ORDER, agesIn, buildAges } from './ages';
 import { strongWeak } from './counters/matrix';
 import { FORMAT_ORDER } from './formats';
+import { gateMeta } from './gate';
+import { isReleased, unreleasedIds } from './release';
 import type { RawBattleRules, RawContent } from './raw/types';
 import type {
   Content,
@@ -76,12 +78,6 @@ export function compileContent(input: CompileInput): Content {
   const fortList: FortDef[] = built.forts;
   const allUnits: UnitDef[] = [...tableUnits, ...built.levies, ...built.twins];
   const collectable = allUnits.filter((u) => !u.hidden);
-  const ageIndex = Object.fromEntries(ageIds.map((a) => [a, ages[a].index])) as Record<AgeId, number>;
-  for (const u of collectable) {
-    const sw = strongWeak(u.id, collectable, ageIndex, input.counters.matrixBp);
-    u.strongVs = sw.strongVs;
-    u.weakVs = sw.weakVs;
-  }
   const turretList: TurretDef[] = raw.ages.flatMap((t) => t.turrets.map((x) => cloneData(x)));
   const powerList: PowerDef[] = sortPowers(raw.powers.map((p) => cloneData(p)));
   const skinList: SkinDef[] = input.skins.map((s) => cloneData(s));
@@ -93,6 +89,17 @@ export function compileContent(input: CompileInput): Content {
   const skins = byId(skinList, 'skin');
   assertDistinctCardIds(allUnits, turretList, powerList, fortList);
 
+  // The release gate (`release.ts`): unreleased cards stay in the records but never in a player list.
+  const released = (id: string): boolean => isReleased({ units, turrets, powers, forts, skins }, id);
+  const shown = collectable.filter((u) => released(u.id));
+  const ageIndex = Object.fromEntries(ageIds.map((a) => [a, ages[a].index])) as Record<AgeId, number>;
+  for (const u of collectable) {
+    // Counter hints name released cards only (an unreleased card still gets its own, for dev tools).
+    const sw = strongWeak(u.id, released(u.id) ? shown : [...shown, u], ageIndex, input.counters.matrixBp);
+    u.strongVs = sw.strongVs;
+    u.weakVs = sw.weakVs;
+  }
+
   const formats = cloneData(raw.formats);
   const research = cloneData(raw.research ?? EMPTY_RESEARCH);
   const ticks = compileTicks(economy, battle);
@@ -102,15 +109,16 @@ export function compileContent(input: CompileInput): Content {
   const order: ContentOrder = {
     ages: ageIds,
     formats: [...FORMAT_ORDER],
-    units: collectable.map((u) => u.id),
-    hiddenUnits: allUnits.filter((u) => u.hidden && !u.fort && !u.levy).map((u) => u.id),
-    turrets: turretList.map((t) => t.id),
-    powers: powerList.map((p) => p.id),
-    forts: fortList.map((f) => f.id),
-    fortUnits: [...built.levies, ...built.twins].map((u) => u.id),
-    skins: skinList.map((s) => s.id),
+    units: shown.map((u) => u.id),
+    hiddenUnits: allUnits.filter((u) => u.hidden && !u.fort && !u.levy && released(u.id)).map((u) => u.id),
+    turrets: turretList.filter((t) => released(t.id)).map((t) => t.id),
+    powers: powerList.filter((p) => released(p.id)).map((p) => p.id),
+    forts: fortList.filter((f) => released(f.id)).map((f) => f.id),
+    fortUnits: [...built.levies, ...built.twins].filter((u) => released(u.id)).map((u) => u.id),
+    skins: skinList.filter((s) => released(s.id)).map((s) => s.id),
+    unreleased: unreleasedIds({ units, turrets, powers, forts, skins }),
   };
-  const metaCopy = cloneData(meta);
+  const metaCopy = gateMeta(cloneData(meta), released, { units, turrets, powers, forts });
 
   const body: Omit<Content, 'hash'> = {
     ages,

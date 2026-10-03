@@ -196,6 +196,12 @@ export interface UnitDef {
    * the Anti-heavy Rare). Later Commons are capsule cards with discovery and copies.
    */
   starter?: boolean;
+  /**
+   * Release gate (default true): false keeps the card in the content (sim, tests, dev tools) but hides it
+   * from players and bots everywhere until its art and sounds ship (docs/decisions.md, release gate).
+   * The content wave that owns the card flips it to true (or deletes the line) when the art lands.
+   */
+  released?: boolean;
 }
 
 /** The four fort kinds (DESIGN A16.14.1). */
@@ -268,6 +274,12 @@ export interface FortDef {
   /** Per-age class hints (A16.14.1 kind rows). */
   strongVs: CardId[];
   weakVs: CardId[];
+  /**
+   * Release gate (default true): false keeps the card in the content (sim, tests, dev tools) but hides it
+   * from players and bots everywhere until its art and sounds ship (docs/decisions.md, release gate).
+   * The content wave that owns the card flips it to true (or deletes the line) when the art lands.
+   */
+  released?: boolean;
 }
 
 /**
@@ -338,6 +350,12 @@ export interface TurretDef {
   descKey: string;
   /** A starter turret (X0): the two original Common turrets of each age. */
   starter?: boolean;
+  /**
+   * Release gate (default true): false keeps the card in the content (sim, tests, dev tools) but hides it
+   * from players and bots everywhere until its art and sounds ship (docs/decisions.md, release gate).
+   * The content wave that owns the card flips it to true (or deletes the line) when the art lands.
+   */
+  released?: boolean;
 }
 
 /**
@@ -463,6 +481,12 @@ export interface PowerDef {
   sfx: SoundId;
   nameKey: string;
   descKey: string;
+  /**
+   * Release gate (default true): false keeps the card in the content (sim, tests, dev tools) but hides it
+   * from players and bots everywhere until its art and sounds ship (docs/decisions.md, release gate).
+   * The content wave that owns the card flips it to true (or deletes the line) when the art lands.
+   */
+  released?: boolean;
 }
 
 /** An age (DESIGN A2.2, A2.4). Base max HP = k × P, the same k in every age (8,000 since the MVP balance pass). `xpToNext` is null in the last age. */
@@ -774,6 +798,8 @@ export interface SkinDef {
   craftable: boolean;
   sfxOverrides?: Record<string, SoundId>;
   nameKey: string;
+  /** Release gate (default true), as on cards; a skin of an unreleased card is unreleased too. */
+  released?: boolean;
 }
 
 /** Durations precompiled to 50 ms ticks: `max(1, round(ms / 50))` (DESIGN B3, B4 Compilation). */

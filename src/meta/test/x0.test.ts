@@ -8,7 +8,11 @@ import { craft } from '../dust';
 import { META_FLAGS } from '../rules';
 import { inArenaPool, isStarterCard, poolOf } from '../tables';
 import { applyWarPath, currentLevelId, levelOpen, warPathSideNodes } from '../warPath';
-import { C, fresh, stats } from './helpers';
+import { contentAllReleased } from '../../../tests/fixtures/allReleased';
+import { fresh, stats } from './helpers';
+
+/** The wave's own rules run with the release gate open (the game itself hides the wave, release.test.ts). */
+const C = contentAllReleased;
 
 const win = (s: SaveDoc, level: string) => applyWarPath(s, C, { level, difficulty: 'normal' }, 'win', stats({ ownBaseHpBpAtEnd: 9000 }), 0);
 

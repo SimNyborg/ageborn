@@ -100,7 +100,7 @@ export function perUnitDamage(def: PowerDef): number {
 /** The age's L1 Infantry and Heavy Common (the per-unit yardsticks of A2.9.6), if the content has them. */
 export function ageYardsticks(content: Pick<CompiledContent, 'units'>, age: string): { infantry: UnitDef | null; heavy: UnitDef | null } {
   const pick = (group: 'infantry' | 'heavy'): UnitDef | null =>
-    Object.values(content.units).find((u) => !u.hidden && u.age === age && u.group === group && u.rarity === 'common') ?? null;
+    Object.values(content.units).find((u) => !u.hidden && u.released !== false && u.age === age && u.group === group && u.rarity === 'common') ?? null;
   return { infantry: pick('infantry'), heavy: pick('heavy') };
 }
 

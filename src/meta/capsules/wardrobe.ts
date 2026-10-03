@@ -10,7 +10,7 @@
  *   is empty and `stopOffsetBp` is 0. `winnerIndex` stays 45 for contract stability.
  */
 import type { PendingCrate, SaveDoc, SkinId, SkinRarity, WardrobeReveal } from '@/contracts';
-import type { Content } from '@/content';
+import { isReleased, type Content } from '@/content';
 import { pickWeighted, randInt, rngId, cloneSfc32, type Sfc32State } from '@/core';
 import { REEL_WINNER_INDEX } from '../rules';
 import { grantOpened, rollCrateCosmetic } from '../cosmetics';
@@ -23,7 +23,7 @@ const SKIN_RARITY_INDEX: Readonly<Record<SkinRarity, number>> = { rare: 0, epic:
 export function crateSkins(t: Content, rarity: SkinRarity): SkinId[] {
   return t.order.skins.filter((id) => {
     const d = t.skins[id];
-    return d !== undefined && d.inCratePool && d.rarity === rarity;
+    return d !== undefined && d.inCratePool && d.rarity === rarity && isReleased(t, id);
   });
 }
 

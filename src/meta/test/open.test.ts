@@ -5,6 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import type { PendingCapsule, SaveDoc } from '@/contracts';
 import { seedSfc32 } from '@/core';
+import { isReleased } from '@/content';
 import { rollSkinRarity, strikePattern } from '../capsules';
 import { C, M, clock, deepFreeze, fresh, lastPending, ownsAll, passesChi2, scripted } from './helpers';
 
@@ -196,7 +197,7 @@ describe('openWardrobe (A6.4, A6.5, A10.1)', () => {
       const before = new Set(s.skins.owned);
       s = M.grantWardrobe(s, 'codex', C, clock());
       const crate = s.capsules.wardrobe[0]!;
-      const pool = Object.values(C.skins).filter((d) => d.inCratePool && d.rarity === crate.rarity).map((d) => d.id);
+      const pool = Object.values(C.skins).filter((d) => d.inCratePool && d.rarity === crate.rarity && isReleased(C, d.id)).map((d) => d.id);
       if (pool.some((id) => !before.has(id))) expect(before.has(crate.skin)).toBe(false);
       const o = M.openWardrobe(s, crate.id);
       expect(o.reveal.crate.duplicateDust).toBe(before.has(crate.skin) ? C.rarities.skins[crate.rarity].duplicateDust : 0);
@@ -211,7 +212,9 @@ describe('openWardrobe (A6.4, A6.5, A10.1)', () => {
     expect(maxLeg).toBeLessThanOrEqual(24);
     // Pity lifts Epic and Legendary above the base odds (a Rare-only run ends at 5 crates).
     expect(counts.epic + counts.legendary).toBeGreaterThan(n * 0.22);
-    expect(s.skins.owned.filter((id) => C.skins[id]?.inCratePool).length).toBe(Object.values(C.skins).filter((x) => x.inCratePool).length);
+    // Every released crate skin; a skin held back by the release gate never drops.
+    expect(s.skins.owned.filter((id) => C.skins[id]?.inCratePool).length).toBe(Object.values(C.skins).filter((x) => x.inCratePool && isReleased(C, x.id)).length);
+    expect(s.skins.owned.some((id) => !isReleased(C, id))).toBe(false);
     expect(s.skins.owned).not.toContain('crystal_spire');
   });
 

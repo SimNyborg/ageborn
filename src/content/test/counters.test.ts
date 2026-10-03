@@ -13,6 +13,7 @@ import { DUEL_RULES, duelCounts, runDuel, type DuelContent } from '../counters/d
 import { counterInputHash, duelPair, duelUnitTable, matrixBpOf, SIM_DUEL_ENGINE, strongWeak, type DuelFn } from '../counters/matrix';
 import { content, counterFile } from '../index';
 import { raw } from '../raw';
+import { contentAllReleased as full } from '../../../tests/fixtures/allReleased';
 // Tests may cross layers (eslint): the counter file is the sim's own duel output.
 import { runDuel as simDuel } from '@/sim/duel';
 import { SIM_VERSION } from '@/sim/replay';
@@ -27,7 +28,8 @@ describe('generated/counters.json', () => {
     const expected = counterInputHash(allUnits, raw.economy, raw.battle, SIM_VERSION);
     expect(counterFile.inputHash, 'counters.json is stale: run `npx tsx tools/counters.ts`').toBe(expected);
     expect(counterFile.engine).toBe(SIM_DUEL_ENGINE);
-    expect(counterFile.units).toEqual(content.order.units);
+    // The matrix covers every collectable unit, released or held back (the release gate only hides cards).
+    expect(counterFile.units).toEqual(full.order.units);
   });
 
   it('holds a full antisymmetric matrix in bp', () => {

@@ -4,7 +4,7 @@
  * modules: card definitions, ownership, the arena and its drop pool.
  */
 import type { AgeId, CapsuleTier, CardId, CompiledContent, LoadoutPowers, PowerSlot, Rarity, SaveDoc, TurretDef, UnitDef } from '@/contracts';
-import { asContent, type ArenaDef, type Content } from '@/content';
+import { asContent, isReleased, type ArenaDef, type Content } from '@/content';
 
 /** The typed content (throws on content without meta tables, such as the contract fakes). */
 export function tables(c: CompiledContent): Content {
@@ -44,8 +44,12 @@ export function cardDef(t: Content, id: CardId): CardDef | null {
   return t.units[id] ?? t.turrets[id] ?? null;
 }
 
-/** Units and turrets that can be collected (the hidden Training Dummy cannot). */
+/**
+ * Units and turrets that can be collected (the hidden Training Dummy cannot, nor a card the release gate
+ * holds back: `released: false`, docs/decisions.md).
+ */
 export function isCollectable(t: Content, id: CardId): boolean {
+  if (!isReleased(t, id)) return false;
   const u = t.units[id];
   if (u) return u.hidden !== true;
   return t.turrets[id] !== undefined;
@@ -82,7 +86,7 @@ function buildPool(t: Content, ages: readonly AgeId[], arenaIndex: number | null
   const inAges = (age: AgeId): boolean => ages.includes(age);
   const cards = [
     ...t.order.units.filter((id) => inAges(t.units[id]?.age ?? 'stone') && isCollectable(t, id) && inArenaPool(t, id, arenaIndex)),
-    ...t.order.turrets.filter((id) => inAges(t.turrets[id]?.age ?? 'stone') && inArenaPool(t, id, arenaIndex)),
+    ...t.order.turrets.filter((id) => inAges(t.turrets[id]?.age ?? 'stone') && isCollectable(t, id) && inArenaPool(t, id, arenaIndex)),
   ];
   const byRarity: Record<Rarity, CardId[]> = { common: [], rare: [], epic: [], legendary: [] };
   for (const id of cards) byRarity[cardRarity(t, id)].push(id);
@@ -112,7 +116,7 @@ export function poolOf(t: Content, ages: readonly AgeId[], arenaIndex: number | 
 export function ageCards(t: Content, age: AgeId): { units: CardId[]; turrets: CardId[] } {
   return {
     units: t.order.units.filter((id) => t.units[id]?.age === age && isCollectable(t, id)),
-    turrets: t.order.turrets.filter((id) => t.turrets[id]?.age === age),
+    turrets: t.order.turrets.filter((id) => t.turrets[id]?.age === age && isCollectable(t, id)),
   };
 }
 

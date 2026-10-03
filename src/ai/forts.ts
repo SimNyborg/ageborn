@@ -87,7 +87,8 @@ export function fortKindsFor(t: TierParams, P: Personality): FortKind[] {
 export function botFortCard(content: CompiledContent, age: AgeId, o: { generalId: string; tier: number; allowed?: (id: CardId) => boolean }): CardId | null {
   const kinds = fortKindsFor(tierParams(o.tier), personalityFor(content, o.generalId));
   if (kinds.length === 0) return null;
-  const ids = Object.keys(content.forts ?? {}).sort();
+  // The release gate (`FortDef.released`): never a fort whose art has not shipped.
+  const ids = Object.keys(content.forts ?? {}).filter((id) => content.forts[id]?.released !== false).sort();
   const of = (kind: FortKind): CardId | null => ids.find((id) => content.forts[id]?.age === age && content.forts[id]?.fortKind === kind) ?? null;
   const allowed = o.allowed ?? ((): boolean => true);
   const P = personalityFor(content, o.generalId);

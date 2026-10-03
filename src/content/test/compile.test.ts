@@ -11,6 +11,7 @@ import { raw } from '../raw';
 import { skinList } from '../skins';
 import type { Content } from '../types';
 import { cloneData } from '../util';
+import { contentAllReleased as full } from '../../../tests/fixtures/allReleased';
 
 function compileWith(mutate: (r: typeof raw) => void = () => {}): Content {
   const r = cloneData(raw);
@@ -107,21 +108,22 @@ describe('compiled bundle (B4)', () => {
   });
 
   it('lists the collectable units in DESIGN order (56 plus the X0 waves), then hidden ones apart', () => {
-    const shape = Object.values(content.rosterShape);
-    expect(content.order.units).toHaveLength(shape.reduce((n, s) => n + s.units.common + s.units.rare + s.units.epic + s.units.legendary, 0));
+    // The whole roster, with the release gate open (`full`); the gate itself is tested in release.test.ts.
+    const shape = Object.values(full.rosterShape);
+    expect(full.order.units).toHaveLength(shape.reduce((n, s) => n + s.units.common + s.units.rare + s.units.epic + s.units.legendary, 0));
     // Each age's original seven in DESIGN order, then its X0 wave cards; ages in order.
-    const byAge = (age: string) => content.order.units.filter((id) => content.units[id]?.age === age);
+    const byAge = (age: string) => full.order.units.filter((id) => full.units[id]?.age === age);
     expect(byAge('stone').slice(0, 7)).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman', 'sabertooth', 'mammoth_matriarch']);
     expect(byAge('bronze').slice(0, 7)).toEqual(['hoplite', 'javelineer', 'war_chariot', 'phalangite', 'standard_bearer', 'scorpion', 'bronze_colossus']);
-    const ageIdx = content.order.units.map((id) => content.order.ages.indexOf(content.units[id]?.age ?? 'stone'));
+    const ageIdx = full.order.units.map((id) => full.order.ages.indexOf(full.units[id]?.age ?? 'stone'));
     expect(ageIdx.every((a, i) => i === 0 || a >= (ageIdx[i - 1] ?? 0))).toBe(true);
     // The Training Dummy, then the summoners' summons (X0 M3).
-    expect(content.order.hiddenUnits[0]).toBe('training_dummy');
-    expect(content.order.hiddenUnits.slice(1).every((id) => content.units[id]?.summon === true)).toBe(true);
-    expect(content.order.turrets).toHaveLength(Object.values(content.rosterShape).reduce((n, s) => n + s.turrets.common + s.turrets.rare + s.turrets.epic, 0));
-    expect(content.order.ages).toEqual(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
+    expect(full.order.hiddenUnits[0]).toBe('training_dummy');
+    expect(full.order.hiddenUnits.slice(1).every((id) => full.units[id]?.summon === true)).toBe(true);
+    expect(full.order.turrets).toHaveLength(Object.values(full.rosterShape).reduce((n, s) => n + s.turrets.common + s.turrets.rare + s.turrets.epic, 0));
+    expect(full.order.ages).toEqual(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
     // A2.9.11: by age; starters first (Home, Field), then Home and Field by source (Road, War Path by level)
-    expect(content.order.powers).toEqual([
+    expect(full.order.powers).toEqual([
       'rockslide', 'stampede', 'meteor_shower', 'sticky_tar', 'tangle_vines', 'pebble_hail', 'hunt_cry', 'hunters_spear',
       'tidal_wave', 'chariot_rush', 'zeus_bolts', 'medusa_gaze', 'aegis', 'apollo_arrow',
       'arrow_storm', 'knights_charge', 'caltrops', 'boiling_oil', 'royal_decree', 'undermine',
@@ -131,7 +133,7 @@ describe('compiled bundle (B4)', () => {
       'orbital_lance', 'drone_swarm', 'point_defense', 'stasis_field', 'nanite_surge', 'emp_blackout',
       'starfall', 'comet_run', 'singularity', 'solar_flare', 'warp_strike', 'ion_cannon',
     ]);
-    expect(content.order.formats).toEqual(['tutorial', 'short', 'standard', 'full', 'last']);
+    expect(full.order.formats).toEqual(['tutorial', 'short', 'standard', 'full', 'last']);
   });
 
   it('adds palette, visual and music ids to the ages (A14.1, A14.3)', () => {

@@ -19,7 +19,7 @@
  *   else becomes the age's wall.
  */
 import type { AgeId, CardId, Loadout, MatchConfig, RewardStep, SaveDoc, SideConfig } from '@/contracts';
-import type { Content } from '@/content';
+import { isReleased, type Content } from '@/content';
 import { FORT_SLOT_IN_BATTLE } from '@/core/fortPads';
 import { BOT_ROAD_LOOKAHEAD } from './powers';
 import { FORT_OWNED_AMBER, FORT_SLOT_TROPHIES, FORT_UNLOCK_LEVEL, META_FLAGS } from './rules';
@@ -44,9 +44,9 @@ function levelId(age: AgeId, level: number): string {
   return `wp.${age}.l${level < 10 ? `0${level}` : `${level}`}`;
 }
 
-/** The forts of the content, in table order (`order.forts`). */
+/** The forts of the content, in table order (`order.forts`; released forts only, the release gate). */
 function fortIds(t: Content): CardId[] {
-  return t.order.forts ?? Object.keys(t.forts ?? {}).sort();
+  return t.order.forts ?? Object.keys(t.forts ?? {}).filter((id) => isReleased(t, id)).sort();
 }
 
 /** An age's wall (the starter, A16.14.4), or null for content without one. */
@@ -216,7 +216,8 @@ export function grantRoadFort(s: SaveDoc, id: CardId): SaveDoc {
  */
 export function botMayUseFort(t: Content, s: SaveDoc | null, id: CardId, warPathRegions: readonly AgeId[] = []): boolean {
   const f = t.forts[id];
-  if (!f || !fortSlotUnlocked(s)) return false;
+  // The release gate: no bot ever builds a fort whose art has not shipped.
+  if (!f || !fortSlotUnlocked(s) || !isReleased(t, id)) return false;
   if (f.source === 'starter' || f.source === 'unlock') return true;
   if (warPathRegions.includes(f.age)) return true;
   const best = s?.trophies.best ?? 0;

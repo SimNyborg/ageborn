@@ -71,8 +71,9 @@ export function hasUnownedInPool(s: SaveDoc, content: CompiledContent): boolean 
   const c = asContent(content);
   const ages = new Set(c.arenas.list[s.arenaIndex]?.dropAges ?? []);
   const owned = (id: CardId) => (s.collection[id]?.level ?? 0) >= 1;
-  for (const u of Object.values(c.units)) if (!u.hidden && ages.has(u.age) && !owned(u.id)) return true;
-  for (const t of Object.values(c.turrets)) if (ages.has(t.age) && !owned(t.id)) return true;
+  // The release gate: a card whose art has not shipped is in no drop pool.
+  for (const u of Object.values(c.units)) if (!u.hidden && u.released !== false && ages.has(u.age) && !owned(u.id)) return true;
+  for (const t of Object.values(c.turrets)) if (t.released !== false && ages.has(t.age) && !owned(t.id)) return true;
   return false;
 }
 

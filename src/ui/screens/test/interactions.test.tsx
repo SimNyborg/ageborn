@@ -1013,10 +1013,10 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6; owner request 2026-09-30)', 
   });
 });
 
-/** Album cards in all and per age (troops, turrets, powers; a content wave adds to them). */
+/** Album cards in all and per age (troops, turrets, powers; a content wave adds to them once released). */
 const ALBUM_TOTAL = content.order.units.length + content.order.turrets.length + content.order.powers.length;
 const albumOfAge = (age: string): number =>
-  [...Object.values(content.units).filter((u) => content.order.units.includes(u.id)), ...Object.values(content.turrets), ...Object.values(content.powers)].filter((c) => c.age === age).length;
+  [...content.order.units.map((id) => content.units[id]), ...content.order.turrets.map((id) => content.turrets[id]), ...content.order.powers.map((id) => content.powers[id])].filter((c) => c?.age === age).length;
 
 describe('Collection and card detail', () => {
   it('the Card Album lists every card by age, numbered, and filters by Have / Missing, rarity and class', () => {

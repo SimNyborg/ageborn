@@ -26,7 +26,7 @@ export interface HeavyGap {
 export function antiHeavyOf(content: CompiledContent, age: AgeId): CardId | null {
   return Object.keys(content.units).find((id) => {
     const u = content.units[id];
-    return u !== undefined && !u.hidden && u.age === age && u.group === 'antiArmor' && u.rarity === 'rare';
+    return u !== undefined && !u.hidden && u.released !== false && u.age === age && u.group === 'antiArmor' && u.rarity === 'rare';
   }) ?? null;
 }
 

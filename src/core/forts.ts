@@ -29,6 +29,8 @@ export interface FortSpec {
   pop: number;
   /** X0 fort variants (compile only): HP as bp of the age's Heavy Common instead of the kind's ratio. */
   hpBp?: number;
+  /** Release gate (default true), copied to the FortDef (`FortDef.released`). */
+  released?: boolean;
   /**
    * X0 tower variants (compile only): changes to the derived tower attack (the age's Ranged Common × 1.5):
    * damage and interval scaled in bp, and an optional splash (with an arc), chain, slow, priority or air bonus.
@@ -221,6 +223,7 @@ export function compileForts(specs: readonly FortSpec[], units: readonly UnitDef
     if (s.warPathLevel !== undefined) def.warPathLevel = s.warPathLevel;
     if (s.warPathSide !== undefined) def.warPathSide = s.warPathSide;
     if (s.warPathStars !== undefined) def.warPathStars = s.warPathStars;
+    if (s.released !== undefined) def.released = s.released;
     if (kind === 'tower' && r0) def.attack = s.towerMods ? towerVariant(towerAttack(r0, f.towerDamageBp), s.towerMods) : towerAttack(r0, f.towerDamageBp);
     if (s.camp) def.camp = { spawn: s.camp.levy, everyMs: s.camp.everyMs, firstMs: s.camp.firstMs, maxAlive: s.camp.maxAlive };
     if (s.trap) def.trap = { ...s.trap, statuses: s.trap.statuses.map((x) => ({ ...x })) };
@@ -228,7 +231,8 @@ export function compileForts(specs: readonly FortSpec[], units: readonly UnitDef
     if (s.regen) def.regen = { ...s.regen };
     // Per-age class hints (A16.14.1 kind rows): walls hold Infantry and Ranged, towers shoot Ranged, traps
     // punish plain Infantry; the age's Heavies, Legendaries, siege and artillery break every fort.
-    const age = units.filter((u) => u.age === s.age && !u.hidden && !u.fort && !u.levy);
+    // Hints name only cards players can meet (the release gate, `UnitDef.released`).
+    const age = units.filter((u) => u.age === s.age && !u.hidden && !u.fort && !u.levy && u.released !== false);
     const commons = (g: UnitDef['group']): CardId[] => age.filter((u) => u.group === g && u.rarity === 'common').map((u) => u.id);
     def.strongVs = kind === 'wall' ? [...commons('infantry'), ...commons('ranged')] : kind === 'tower' ? commons('ranged') : kind === 'trap' ? commons('infantry') : [];
     def.weakVs = age.filter((u) => u.group === 'heavy' || u.group === 'legendary' || u.role === 'siege' || u.role === 'artillery').map((u) => u.id);

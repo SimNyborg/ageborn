@@ -24,9 +24,11 @@ export function cloneData<T>(value: T): T {
 }
 
 /**
- * Fields that never change what happens in a battle: presentation ids, string keys and the derived
- * counter hints. `stripPresentation` drops them before hashing (B3 replays, B4 counter staleness),
- * so swapping art, sounds or strings never invalidates replays or the counter matrix.
+ * Fields that never change what happens in a battle: presentation ids, string keys, the derived
+ * counter hints and the release gate (`released`, which only decides whether players and bots may meet
+ * a card). `stripPresentation` drops them before hashing (B3 replays, B4 counter staleness), so swapping
+ * art, sounds or strings, or releasing a card once its art ships, never invalidates replays or the
+ * counter matrix.
  */
 const PRESENTATION_KEYS = new Set([
   'visualId',
@@ -41,6 +43,7 @@ const PRESENTATION_KEYS = new Set([
   'baseVisualId',
   'backdropVisualId',
   'musicCue',
+  'released',
 ]);
 
 /** A deep copy of `value` without presentation fields (see {@link PRESENTATION_KEYS}). */

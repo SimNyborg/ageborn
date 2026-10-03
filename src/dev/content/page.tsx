@@ -66,6 +66,10 @@ function Summary({ c }: { c: Content }) {
         contentHash <b>{c.hash}</b> · {c.order.units.length} units (+{c.order.hiddenUnits.length} hidden) · {c.order.turrets.length} turrets ·{' '}
         {c.order.powers.length} powers · {c.order.skins.length} skins · {c.trophyRoad.nodes.length} road nodes · {c.generals.order.length} generals
       </p>
+      <p data-testid="content-unreleased">
+        Release gate: {c.order.unreleased.length} unreleased ids, hidden from players and bots until their art ships (marked UNRELEASED below):{' '}
+        {c.order.unreleased.join(', ') || 'none'}
+      </p>
       <p>
         Counter matrix: engine {counterFile.engine}, input hash {counterFile.inputHash}{' '}
         {stale ? <b style={{ color: '#ff7a7a' }}>STALE: run npx tsx tools/counters.ts</b> : <span style={{ color: '#7ad97a' }}>up to date</span>}
@@ -91,7 +95,8 @@ function Summary({ c }: { c: Content }) {
 }
 
 function Units({ c }: { c: Content }) {
-  const ids = [...c.order.units, ...c.order.hiddenUnits];
+  // Unreleased units (the release gate) are listed too, marked, so balance work can still see them.
+  const ids = [...c.order.units, ...c.order.hiddenUnits, ...c.order.unreleased.filter((id) => c.units[id] !== undefined && !c.units[id].fort)];
   return (
     <table style={{ borderCollapse: 'collapse' }}>
       <thead>
@@ -116,6 +121,7 @@ function Units({ c }: { c: Content }) {
               <td style={td} title={i18n.t(u.descKey)}>
                 {name(id)}
                 {u.hidden ? ' (hidden)' : ''}
+                {u.released === false ? ' (UNRELEASED: no art yet)' : ''}
               </td>
               <td style={td}>{u.rarity}</td>
               <td style={td}>{u.role}</td>

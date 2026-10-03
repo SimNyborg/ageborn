@@ -10,6 +10,7 @@ import { carriesStructureMod } from '@/core/forts';
 import { AGE_ORDER } from '../ages';
 import { content } from '../index';
 import { validateContent } from '../schema';
+import { contentAllReleased as full } from '../../../tests/fixtures/allReleased';
 
 const f = content.economy.fort;
 if (!f) throw new Error('content has no economy.fort');
@@ -61,7 +62,7 @@ describe('the Fort roster (A16.14.4)', () => {
     expect(forts.filter((x) => x.rarity === 'epic')).toHaveLength(n('tower'));
     expect(Object.values(content.units).filter((u) => u.fort)).toHaveLength(n('wall') + n('tower') + n('camp'));
     expect(Object.values(content.units).filter((u) => u.levy)).toHaveLength(n('camp'));
-    expect(content.order.forts).toHaveLength(forts.length);
+    expect(full.order.forts).toHaveLength(forts.length);
     // Never collectable: no fort, twin or levy in the collection order, pools or counters.
     for (const id of [...content.order.forts, ...content.order.fortUnits]) {
       expect(content.order.units.includes(id), id).toBe(false);
@@ -110,12 +111,12 @@ describe('the Fort roster (A16.14.4)', () => {
 
 describe('X0 fort variants (CONTENT_PLAN 4, 5.1)', () => {
   it('Stone: Thorn Hedge is a cheap wall from side node s2, Bone Watchtower a lob tower from the 20-star milestone', () => {
-    expect(content.forts.thorn_hedge).toMatchObject({ fortKind: 'wall', rarity: 'common', cost: 100, hp: 420, source: 'warPath', warPathSide: 2, road: 4100 });
-    expect(content.forts.bone_watchtower).toMatchObject({ fortKind: 'tower', rarity: 'epic', cost: 150, hp: 280, source: 'warPath', warPathStars: 20, road: 4100 });
-    expect(content.forts.bone_watchtower?.attack).toMatchObject({ damage: 21, intervalMs: 1800, range: 200, splashRadius: 30, hitsGround: true, hitsAir: false });
-    const p = content.forts.bone_watchtower?.attack?.projectile;
+    expect(full.forts.thorn_hedge).toMatchObject({ fortKind: 'wall', rarity: 'common', cost: 100, hp: 420, source: 'warPath', warPathSide: 2, road: 4100 });
+    expect(full.forts.bone_watchtower).toMatchObject({ fortKind: 'tower', rarity: 'epic', cost: 150, hp: 280, source: 'warPath', warPathStars: 20, road: 4100 });
+    expect(full.forts.bone_watchtower?.attack).toMatchObject({ damage: 21, intervalMs: 1800, range: 200, splashRadius: 30, hitsGround: true, hitsAir: false });
+    const p = full.forts.bone_watchtower?.attack?.projectile;
     expect(p && 'speed' in p ? p.arc : false).toBe(true);
-    const tile = content.trophyRoad.nodes.find((x) => x.trophies === 4100);
+    const tile = full.trophyRoad.nodes.find((x) => x.trophies === 4100);
     expect(tile?.rewards.filter((r) => r.kind === 'fort').map((r) => (r.kind === 'fort' ? r.card : '')).sort()).toEqual(['bone_watchtower', 'thorn_hedge']);
   });
 });

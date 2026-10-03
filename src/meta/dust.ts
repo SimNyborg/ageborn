@@ -13,7 +13,7 @@
  * the Crystal Spire (the Arena 8 reward) cannot (A5.8).
  */
 import type { CardId, Result, SaveDoc } from '@/contracts';
-import type { Content } from '@/content';
+import { isReleased, type Content } from '@/content';
 import { cardDef, inArenaPool, isCollectable, isOwned } from './tables';
 import { unlockTitles } from './titles';
 
@@ -22,7 +22,8 @@ export function craftCost(t: Content, id: string): number | null {
   const card = cardDef(t, id);
   if (card) return isCollectable(t, id) ? t.rarities.cards[card.rarity].craftCopyDust : null;
   const skin = t.skins[id];
-  if (skin) return skin.craftable ? t.rarities.skins[skin.rarity].craftDust : null;
+  // The release gate: a skin (or a skin of a card) whose art has not shipped cannot be crafted.
+  if (skin) return skin.craftable && isReleased(t, id) ? t.rarities.skins[skin.rarity].craftDust : null;
   return null;
 }
 

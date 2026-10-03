@@ -5,6 +5,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import type { CapsuleTier, Foil, Rarity, SaveDoc } from '@/contracts';
+import { isReleased } from '@/content';
 import { C, M, clock, lastPending, passesChi2, scripted } from './helpers';
 
 const RARITIES: Rarity[] = ['common', 'rare', 'epic', 'legendary'];
@@ -168,7 +169,8 @@ describe('drop pools by arena (A17.13)', () => {
     expect(wave(0)).toEqual([]);
     for (let i = 1; i < C.arenas.list.length; i += 1) {
       for (const id of wave(i)) expect(C.cardArena[id]! <= i + 1, `${id} in arena ${i + 1}`).toBe(true);
-      const want = Object.entries(C.cardArena).filter(([id, a]) => a <= i + 1 && C.arenas.list[i]!.dropAges.includes((C.units[id] ?? C.turrets[id])!.age)).length;
+      // The release gate: a wave card whose art has not shipped drops nowhere (x0.test.ts runs the wave with the gate open).
+      const want = Object.entries(C.cardArena).filter(([id, a]) => a <= i + 1 && isReleased(C, id) && C.arenas.list[i]!.dropAges.includes((C.units[id] ?? C.turrets[id])!.age)).length;
       expect(wave(i)).toHaveLength(want);
     }
     const ages = new Set(poolOf(C, C.arenas.list[0]!.dropAges).cards.map((id) => (C.units[id] ?? C.turrets[id])!.age));

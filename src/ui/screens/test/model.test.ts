@@ -94,13 +94,14 @@ describe('cards (A6.6 upgrades, A5.1 level scaling)', () => {
   });
 
   it('collection completion counts units and turrets', () => {
-    // 88 cards (A17.13) plus the Stone wave's 13 troops and 2 turrets (CONTENT_PLAN W1)
-    expect(collectionProgress(maxedSave(content), content)).toEqual({ owned: 103, total: 103 });
+    // 88 cards (A17.13); the Stone wave's 13 troops and 2 turrets (CONTENT_PLAN W1) are held back by the
+    // release gate until their art ships, so they count nowhere yet.
+    expect(collectionProgress(maxedSave(content), content)).toEqual({ owned: 88, total: 88 });
     const n = collectionProgress(newPlayerSave(content), content);
-    expect(n.total).toBe(103);
-    // 24 unit and 16 turret Commons, plus Spear Hunter, Phalangite, Pikeman and Grenadier
-    // plus the Stone wave's 5 troop and 1 turret Commons (CONTENT_PLAN W1)
-    expect(n.owned).toBe(24 + 16 + 4 + 6);
+    expect(n.total).toBe(88);
+    // 24 unit and 16 turret Commons, plus Spear Hunter, Phalangite, Pikeman and Grenadier (the Stone
+    // wave's Commons are held back by the release gate)
+    expect(n.owned).toBe(24 + 16 + 4);
   });
 });
 
@@ -258,8 +259,8 @@ describe('profile and history (A6.1)', () => {
     const v = profileView(midGameSave(content), content);
     expect(v.favourite).toBe('bonker');
     expect(v.legendaries).toBe(1);
-    // one per age plus the Stone wave's Elk Chieftain
-    expect(v.legendariesTotal).toBe(9);
+    // one per age (the Stone wave's Elk Chieftain is held back by the release gate)
+    expect(v.legendariesTotal).toBe(8);
     expect(v.byTier[0]).toEqual({ tier: 0, wins: 5, losses: 1 });
     expect(v.conquestStars).toBe(6);
     const raw = profileView(fakeSaveDoc(), content);
@@ -354,16 +355,16 @@ describe('misc', () => {
 
   it('filters the collection by age, role, rarity and ownership', () => {
     const s = midGameSave(content);
-    // A17.13's 56 + 32 + 48 plus the Stone wave's 13 troops, 2 turrets and 2 powers (CONTENT_PLAN W1)
-    expect(filterCards(s, content, NO_FILTER)).toHaveLength(69 + 34 + 50);
-    expect(filterCards(s, content, { ...NO_FILTER, role: 'turret' })).toHaveLength(34);
-    expect(filterCards(s, content, { ...NO_FILTER, role: 'power' })).toHaveLength(50);
-    expect(filterCards(s, content, { ...NO_FILTER, age: 'stone', rarity: 'legendary' })).toEqual(['mammoth_matriarch', 'elk_chieftain']);
+    // A17.13's 56 + 32 + 48; the Stone wave's 13 troops, 2 turrets and 2 powers (CONTENT_PLAN W1) are held
+    // back by the release gate until their art ships
+    expect(filterCards(s, content, NO_FILTER)).toHaveLength(56 + 32 + 48);
+    expect(filterCards(s, content, { ...NO_FILTER, role: 'turret' })).toHaveLength(32);
+    expect(filterCards(s, content, { ...NO_FILTER, role: 'power' })).toHaveLength(48);
+    expect(filterCards(s, content, { ...NO_FILTER, age: 'stone', rarity: 'legendary' })).toEqual(['mammoth_matriarch']);
     expect(filterCards(s, content, { ...NO_FILTER, age: 'bronze', rarity: 'legendary' })).toEqual(['bronze_colossus']);
-    expect(filterCards(s, content, { ...NO_FILTER, own: 'missing', rarity: 'legendary' })).toHaveLength(8);
+    expect(filterCards(s, content, { ...NO_FILTER, own: 'missing', rarity: 'legendary' })).toHaveLength(7);
     expect(filterCards(s, content, { ...NO_FILTER, role: 'antiArmor' })).toEqual([
       'spear_hunter',
-      'boulder_hurler',
       'phalangite',
       'pikeman',
       'grenadier',

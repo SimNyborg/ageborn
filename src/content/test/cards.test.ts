@@ -11,6 +11,7 @@ import { carriesStructureMod } from '@/core/forts';
 import type { AgeId, Rarity, Role, Tag } from '@/contracts/ids';
 import strings from '@/i18n/content.en.json';
 import { content } from '../index';
+import { contentAllReleased as full } from '../../../tests/fixtures/allReleased';
 
 type Hits = 'G' | 'A' | 'GA' | '-';
 type Size = UnitDef['size'];
@@ -280,8 +281,9 @@ describe('A5 unit tables', () => {
 
   it('lists every collectable unit (56 in A17.13, plus the X0 content waves)', () => {
     const rows = Object.values(UNITS).flat().map((r) => r[0]);
-    expect(rows).toHaveLength(content.order.units.length);
-    expect([...content.order.units].sort()).toEqual([...rows].sort());
+    // Every card of the tables, released or held back by the release gate (`full` opens the gate).
+    expect(rows).toHaveLength(full.order.units.length);
+    expect([...full.order.units].sort()).toEqual([...rows].sort());
   });
 
   it('has the hidden tutorial Training Dummy (A5.6)', () => {
@@ -367,7 +369,7 @@ describe('A5 turret tables', () => {
 
   it('lists every turret (32, plus the X0 content waves) and the listed notes', () => {
     expect(Object.values(TURRETS).flat()).toHaveLength(Object.keys(content.turrets).length);
-    expect([...content.order.turrets].sort()).toEqual(Object.values(TURRETS).flat().map((r) => r[0]).sort());
+    expect([...full.order.turrets].sort()).toEqual(Object.values(TURRETS).flat().map((r) => r[0]).sort());
     // X0 Stone wave
     expect(content.turrets.quill_porcupine?.attack).toMatchObject({ volley: 3, pierce: { count: 2, length: 60 } });
     expect(content.turrets.sapling_sling?.attack).toMatchObject({ splashRadius: 50, minRange: 150 });
@@ -564,7 +566,7 @@ const PRIORITY_BY_CARD: Record<string, string> = {
 };
 
 describe('A14.2 attack mapping, A2.6 mods and A5 priorities (every card)', () => {
-  const cards = [...content.order.units, ...content.order.hiddenUnits, ...content.order.turrets];
+  const cards = [...full.order.units, ...full.order.hiddenUnits, ...full.order.turrets];
 
   it('lists every unit and turret exactly once', () => {
     expect(Object.keys(A14_2).sort()).toEqual([...cards].sort());

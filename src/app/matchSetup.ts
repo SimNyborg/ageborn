@@ -170,7 +170,8 @@ export function generalPlan(content: CompiledContent, id: string, maxRarity: 'co
   const ok = (card: CardId | null, kind: 'unit' | 'turret'): CardId | null => {
     if (!card) return null;
     const def = kind === 'unit' ? content.units[card] : content.turrets[card];
-    return def && (RARITY_RANK[def.rarity] ?? 0) <= cap ? card : null;
+    // The release gate: a card whose art has not shipped never reaches a bot.
+    return def && def.released !== false && (RARITY_RANK[def.rarity] ?? 0) <= cap ? card : null;
   };
   const out: Partial<Record<AgeId, Loadout>> = {};
   for (const age of Object.keys(plan).sort() as AgeId[]) {

@@ -14,7 +14,7 @@
  *   bots may use their own region's War Path powers. Anything else becomes the age's starter of that slot.
  */
 import type { AgeId, CardId, Loadout, LoadoutPowers, MatchConfig, PowerSlot, RewardStep, SaveDoc, SideConfig } from '@/contracts';
-import type { Content } from '@/content';
+import { isReleased, type Content } from '@/content';
 import { FIELD_SLOT_IN_BATTLE, META_FLAGS, POWER_OWNED_AMBER } from './rules';
 import { starterPower } from './tables';
 
@@ -46,7 +46,8 @@ function levelId(age: AgeId, level: number): string {
  */
 export function botMayUsePower(t: Content, s: SaveDoc | null, id: CardId, warPathRegions: readonly AgeId[] = []): boolean {
   const p = t.powers[id];
-  if (!p) return false;
+  // The release gate: no bot ever casts a power whose art has not shipped.
+  if (!p || !isReleased(t, id)) return false;
   if (p.source === 'starter') return true;
   const best = s?.trophies.best ?? 0;
   if (p.road !== undefined && p.road <= best + BOT_ROAD_LOOKAHEAD) return true;
@@ -73,7 +74,7 @@ export const FIELD_UNLOCK_LEVEL = 'wp.stone.l05';
 export function warPathPowerOf(t: Content, region: AgeId, level: number, side?: 1 | 2): CardId | null {
   for (const id of Object.keys(t.powers).sort()) {
     const p = t.powers[id];
-    if (!p || p.source !== 'warPath' || p.age !== region) continue;
+    if (!p || p.source !== 'warPath' || p.age !== region || !isReleased(t, id)) continue;
     if (side !== undefined ? p.warPathSide === side : p.warPathLevel === level && p.warPathSide === undefined) return id;
   }
   return null;
