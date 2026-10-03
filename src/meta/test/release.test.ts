@@ -180,22 +180,22 @@ describe('release gate: rewards and the starter set (A6.3, A18.7, A3)', () => {
 });
 
 describe('release gate: loading a save that holds a held-back card', () => {
-  // The gated wave is the Industrial wave (the Stone, Bronze, Medieval and Gunpowder waves shipped 2026-10-03,
-  // tests/fixtures/pausedWave.ts).
+  // The gated wave is the Modern wave (the Stone, Bronze, Medieval, Gunpowder and Industrial waves shipped
+  // 2026-10-03, tests/fixtures/pausedWave.ts).
   function tainted(): SaveDoc {
     const s = ownsAll(fresh(9), 3, 2);
     const plan = s.warPlans[0]!;
-    const industrial = plan.loadouts.industrial;
+    const modern = plan.loadouts.modern;
     const loadouts = {
       ...plan.loadouts,
-      industrial: { ...industrial, units: ['coal_miners', 'riveter', 'steam_tractor', 'carbineer', 'bandmaster', 'armoured_train'], turrets: ['rivet_spitter', 'gatling_gun'], powers: { home: 'great_magnet', field: 'shrapnel_shells' }, fort: 'rail_barricade' },
+      modern: { ...modern, units: ['commando', 'trench_raider', 'assault_gun', 'rifleman', 'combat_medic', 'sky_fortress'], turrets: ['anti_tank_gun', 'mg_nest'], powers: { home: 'concussion_shells', field: 'creeping_barrage' }, fort: 'rifle_depot' },
     };
     return {
       ...s,
-      collection: { ...s.collection, coal_miners: { level: 3, copies: 4, isNew: true, foil: 'none' }, armoured_train: { level: 1, copies: 0, isNew: true, foil: 'holo' }, rivet_spitter: { level: 2, copies: 1, isNew: false, foil: 'none' } },
-      powersOwned: [...s.powersOwned, 'great_magnet', 'shrapnel_shells'],
-      fortsOwned: [...(s.fortsOwned ?? []), 'rail_barricade', 'tesla_pylon'],
-      skins: { owned: [...s.skins.owned, 'chimney_sweep', 'teapot_golem'], equipped: { ...s.skins.equipped, riveter: 'chimney_sweep', steam_golem: 'teapot_golem' } },
+      collection: { ...s.collection, commando: { level: 3, copies: 4, isNew: true, foil: 'none' }, sky_fortress: { level: 1, copies: 0, isNew: true, foil: 'holo' }, anti_tank_gun: { level: 2, copies: 1, isNew: false, foil: 'none' } },
+      powersOwned: [...s.powersOwned, 'concussion_shells', 'creeping_barrage'],
+      fortsOwned: [...(s.fortsOwned ?? []), 'rifle_depot', 'wire_snare'],
+      skins: { owned: [...s.skins.owned, 'desert_raider', 'tin_tankette'], equipped: { ...s.skins.equipped, trench_raider: 'desert_raider', tankette: 'tin_tankette' } },
       warPlans: [{ ...plan, loadouts }, ...s.warPlans.slice(1)],
     };
   }
@@ -205,15 +205,15 @@ describe('release gate: loading a save that holds a held-back card', () => {
     expect(Object.keys(s.collection).filter(gated)).toEqual([]);
     expect([...s.powersOwned, ...s.fortsOwned, ...s.skins.owned].filter(gated)).toEqual([]);
     expect(Object.entries(s.skins.equipped).filter(([k, v]) => gated(k) || gated(v))).toEqual([]);
-    const industrial = s.warPlans[0]!.loadouts.industrial;
-    expect(planIds({ industrial }).filter(gated)).toEqual([]);
-    expect(industrial.units.every((x) => x !== null)).toBe(true);
-    expect(industrial.turrets.every((x) => x !== null)).toBe(true);
-    expect(industrial.powers).toEqual(starterPowers(C, 'industrial'));
-    expect(industrial.fort).toBe(C.order.forts.find((f) => C.forts[f]?.age === 'industrial' && C.forts[f]?.fortKind === 'wall'));
+    const modern = s.warPlans[0]!.loadouts.modern;
+    expect(planIds({ modern }).filter(gated)).toEqual([]);
+    expect(modern.units.every((x) => x !== null)).toBe(true);
+    expect(modern.turrets.every((x) => x !== null)).toBe(true);
+    expect(modern.powers).toEqual(starterPowers(C, 'modern'));
+    expect(modern.fort).toBe(C.order.forts.find((f) => C.forts[f]?.age === 'modern' && C.forts[f]?.fortKind === 'wall'));
     // Released cards and their levels stay as they were.
     expect(s.collection.bonker).toEqual(tainted().collection.bonker);
-    expect(industrial.units.slice(1, 2)).toEqual(['riveter']);
+    expect(modern.units.slice(1, 2)).toEqual(['trench_raider']);
   });
 
   it('runs on every load (tickTimers) and returns the same save when there is nothing to remove', () => {

@@ -152,12 +152,20 @@ function currentTarget(ctx: Ctx, u: UnitRt, r: UnitRules, a: AttackRules, target
   if (targetId === NO_TARGET) return null;
   const e = findUnit(ctx, targetId);
   if (!e || !alive(e) || e.side === u.side || !canHit(a, e)) return null;
-  if (e.fort && !r.bomber && !fortAllowed(ctx, u, a, e)) return null;
+  if (e.fort && !bombs(r, ai) && !fortAllowed(ctx, u, a, e)) return null;
   const er = unitRules(ctx, e);
   const d = edgeDist(u.x, r.half, e.x, er.half);
   const contact = e.fort !== undefined && contactFort(ctx, u, ai) === e.id;
   if (!contact && (d > rangeOf(ctx, u, a) + leash || d < a.minRange)) return null;
   return { id: e.id, cls: priorityClass(a.priority, er), dist: d, fort: e.fort !== undefined };
+}
+
+/**
+ * Does attack `ai` drop bombs? Only a bomber's own attack (index 0) uses the drop window; its riders (the Sky
+ * Fortress's waist gunners, W6 Modern wave, SIM 7.3.0) pick and keep targets like any secondary attack.
+ */
+function bombs(r: UnitRules, ai: number): boolean {
+  return r.bomber !== null && ai === 0;
 }
 
 /** Bomber (A2.7 Air units): ground enemies within ±window of its x (units, then forts; A16.14.2), else the base at the gate. */
@@ -193,7 +201,7 @@ export function updateTarget(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): voi
   const tick = ctx.tick;
   const retarget = ctx.econ.retargetTicks;
   const range = rangeOf(ctx, u, a);
-  if (r.bomber) {
+  if (r.bomber && ai === 0) {
     st.targetId = bomberTarget(ctx, u, r, a, r.bomber.window);
     return;
   }
@@ -255,7 +263,7 @@ export function targetInRange(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): bo
   if (st.targetId === BASE_TARGET) return baseInRange(ctx, u, r, a, 0);
   const e = findUnit(ctx, st.targetId);
   if (!e || !alive(e) || !canHit(a, e)) return false;
-  if (r.bomber) return centreDist(u.x, e.x) <= r.bomber.window;
+  if (r.bomber && ai === 0) return centreDist(u.x, e.x) <= r.bomber.window;
   if (e.fort && !fortAllowed(ctx, u, a, e)) return false;
   if (e.fort && contactFort(ctx, u, ai) === e.id) return true;
   const d = edgeDist(u.x, r.half, e.x, unitRules(ctx, e).half);
@@ -270,7 +278,7 @@ export function targetValidForImpact(ctx: Ctx, u: UnitRt, r: UnitRules, ai: numb
   if (st.targetId === BASE_TARGET) return baseInRange(ctx, u, r, a, ctx.econ.leash);
   const e = findUnit(ctx, st.targetId);
   if (!e || !alive(e) || !canHit(a, e)) return false;
-  if (r.bomber) return centreDist(u.x, e.x) <= r.bomber.window + ctx.econ.leash;
+  if (r.bomber && ai === 0) return centreDist(u.x, e.x) <= r.bomber.window + ctx.econ.leash;
   if (e.fort && !fortAllowed(ctx, u, a, e)) return false;
   if (e.fort && contactFort(ctx, u, ai) === e.id) return true;
   return edgeDist(u.x, r.half, e.x, unitRules(ctx, e).half) <= rangeOf(ctx, u, a) + ctx.econ.leash;

@@ -1,0 +1,2268 @@
+{
+ "frames": {
+  "sandbag_carrier_idle_00": {
+   "frame": {
+    "x": 253,
+    "y": 457,
+    "w": 122,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 246,
+    "w": 122,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_idle_00_team": {
+   "frame": {
+    "x": 1163,
+    "y": 1000,
+    "w": 107,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 260,
+    "w": 107,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_idle_01": {
+   "frame": {
+    "x": 1143,
+    "y": 254,
+    "w": 122,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 244,
+    "w": 122,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_idle_01_team": {
+   "frame": {
+    "x": 736,
+    "y": 1000,
+    "w": 108,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 257,
+    "w": 108,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_idle_02": {
+   "frame": {
+    "x": 2,
+    "y": 254,
+    "w": 119,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 238,
+    "w": 119,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_idle_02_team": {
+   "frame": {
+    "x": 752,
+    "y": 838,
+    "w": 104,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 226,
+    "y": 253,
+    "w": 104,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_idle_03": {
+   "frame": {
+    "x": 921,
+    "y": 2,
+    "w": 118,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 225,
+    "y": 235,
+    "w": 118,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_idle_03_team": {
+   "frame": {
+    "x": 326,
+    "y": 838,
+    "w": 105,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 226,
+    "y": 250,
+    "w": 105,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_idle_04": {
+   "frame": {
+    "x": 1043,
+    "y": 2,
+    "w": 121,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 236,
+    "w": 121,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_idle_04_team": {
+   "frame": {
+    "x": 546,
+    "y": 838,
+    "w": 106,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 225,
+    "y": 251,
+    "w": 106,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_idle_05": {
+   "frame": {
+    "x": 635,
+    "y": 254,
+    "w": 121,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 241,
+    "w": 121,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_idle_05_team": {
+   "frame": {
+    "x": 968,
+    "y": 838,
+    "w": 108,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 256,
+    "w": 108,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_00": {
+   "frame": {
+    "x": 644,
+    "y": 457,
+    "w": 125,
+    "h": 185
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 231,
+    "y": 251,
+    "w": 125,
+    "h": 185
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_00_team": {
+   "frame": {
+    "x": 214,
+    "y": 1000,
+    "w": 99,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 264,
+    "w": 99,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_01": {
+   "frame": {
+    "x": 2,
+    "y": 654,
+    "w": 120,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 234,
+    "y": 257,
+    "w": 120,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_01_team": {
+   "frame": {
+    "x": 108,
+    "y": 1156,
+    "w": 94,
+    "h": 147
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 246,
+    "y": 271,
+    "w": 94,
+    "h": 147
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_02": {
+   "frame": {
+    "x": 2,
+    "y": 457,
+    "w": 120,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 236,
+    "y": 243,
+    "w": 120,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_02_team": {
+   "frame": {
+    "x": 1080,
+    "y": 838,
+    "w": 105,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 239,
+    "y": 258,
+    "w": 105,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_03": {
+   "frame": {
+    "x": 760,
+    "y": 254,
+    "w": 121,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 235,
+    "y": 233,
+    "w": 121,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_03_team": {
+   "frame": {
+    "x": 860,
+    "y": 838,
+    "w": 104,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 239,
+    "y": 248,
+    "w": 104,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_04": {
+   "frame": {
+    "x": 1045,
+    "y": 457,
+    "w": 130,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 226,
+    "y": 251,
+    "w": 130,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_04_team": {
+   "frame": {
+    "x": 633,
+    "y": 1000,
+    "w": 99,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 264,
+    "w": 99,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_05": {
+   "frame": {
+    "x": 415,
+    "y": 654,
+    "w": 125,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 257,
+    "w": 125,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_05_team": {
+   "frame": {
+    "x": 663,
+    "y": 1156,
+    "w": 109,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 232,
+    "y": 272,
+    "w": 109,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_06": {
+   "frame": {
+    "x": 918,
+    "y": 457,
+    "w": 123,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 244,
+    "w": 123,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_06_team": {
+   "frame": {
+    "x": 414,
+    "y": 1000,
+    "w": 110,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 258,
+    "w": 110,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_07": {
+   "frame": {
+    "x": 126,
+    "y": 457,
+    "w": 123,
+    "h": 192
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 234,
+    "w": 123,
+    "h": 192
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_walk_07_team": {
+   "frame": {
+    "x": 1048,
+    "y": 1000,
+    "w": 111,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 248,
+    "w": 111,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_00": {
+   "frame": {
+    "x": 125,
+    "y": 254,
+    "w": 118,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 239,
+    "w": 118,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 1000,
+    "w": 104,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 254,
+    "w": 104,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_01": {
+   "frame": {
+    "x": 805,
+    "y": 2,
+    "w": 112,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 233,
+    "w": 112,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_01_team": {
+   "frame": {
+    "x": 435,
+    "y": 838,
+    "w": 107,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 249,
+    "w": 107,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_02": {
+   "frame": {
+    "x": 537,
+    "y": 2,
+    "w": 117,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 231,
+    "w": 117,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 838,
+    "w": 118,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 247,
+    "w": 118,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_03": {
+   "frame": {
+    "x": 413,
+    "y": 2,
+    "w": 120,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 229,
+    "w": 120,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_03_team": {
+   "frame": {
+    "x": 1095,
+    "y": 654,
+    "w": 125,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 245,
+    "w": 125,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_04": {
+   "frame": {
+    "x": 1168,
+    "y": 2,
+    "w": 110,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 236,
+    "w": 110,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_04_team": {
+   "frame": {
+    "x": 124,
+    "y": 838,
+    "w": 97,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 251,
+    "w": 97,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_05": {
+   "frame": {
+    "x": 885,
+    "y": 254,
+    "w": 114,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 251,
+    "y": 243,
+    "w": 114,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_05_team": {
+   "frame": {
+    "x": 225,
+    "y": 838,
+    "w": 97,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 255,
+    "y": 258,
+    "w": 97,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_06": {
+   "frame": {
+    "x": 126,
+    "y": 654,
+    "w": 144,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 254,
+    "y": 274,
+    "w": 144,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_06_team": {
+   "frame": {
+    "x": 776,
+    "y": 1156,
+    "w": 129,
+    "h": 136
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 255,
+    "y": 283,
+    "w": 129,
+    "h": 136
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_07": {
+   "frame": {
+    "x": 274,
+    "y": 654,
+    "w": 137,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 256,
+    "y": 266,
+    "w": 137,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_07_team": {
+   "frame": {
+    "x": 331,
+    "y": 1156,
+    "w": 124,
+    "h": 141
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 256,
+    "y": 277,
+    "w": 124,
+    "h": 141
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_08": {
+   "frame": {
+    "x": 522,
+    "y": 457,
+    "w": 118,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 249,
+    "y": 251,
+    "w": 118,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_08_team": {
+   "frame": {
+    "x": 2,
+    "y": 1156,
+    "w": 102,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 251,
+    "y": 265,
+    "w": 102,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_09": {
+   "frame": {
+    "x": 247,
+    "y": 254,
+    "w": 114,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 239,
+    "w": 114,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_attack_09_team": {
+   "frame": {
+    "x": 110,
+    "y": 1000,
+    "w": 100,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 254,
+    "w": 100,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_hit_00": {
+   "frame": {
+    "x": 379,
+    "y": 457,
+    "w": 139,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 214,
+    "y": 248,
+    "w": 139,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_hit_00_team": {
+   "frame": {
+    "x": 848,
+    "y": 1000,
+    "w": 98,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 259,
+    "w": 98,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_hit_01": {
+   "frame": {
+    "x": 773,
+    "y": 457,
+    "w": 141,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 252,
+    "w": 141,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_hit_01_team": {
+   "frame": {
+    "x": 528,
+    "y": 1000,
+    "w": 101,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 214,
+    "y": 259,
+    "w": 101,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_hit_02": {
+   "frame": {
+    "x": 1003,
+    "y": 254,
+    "w": 136,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 244,
+    "w": 136,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_hit_02_team": {
+   "frame": {
+    "x": 950,
+    "y": 1000,
+    "w": 94,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 232,
+    "y": 258,
+    "w": 94,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_hit_03": {
+   "frame": {
+    "x": 365,
+    "y": 254,
+    "w": 131,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 238,
+    "y": 240,
+    "w": 131,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_hit_03_team": {
+   "frame": {
+    "x": 317,
+    "y": 1000,
+    "w": 93,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 254,
+    "w": 93,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_hit_04": {
+   "frame": {
+    "x": 500,
+    "y": 254,
+    "w": 131,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 235,
+    "y": 240,
+    "w": 131,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_hit_04_team": {
+   "frame": {
+    "x": 656,
+    "y": 838,
+    "w": 92,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 241,
+    "y": 254,
+    "w": 92,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_00": {
+   "frame": {
+    "x": 744,
+    "y": 654,
+    "w": 124,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 252,
+    "w": 124,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_00_team": {
+   "frame": {
+    "x": 206,
+    "y": 1156,
+    "w": 121,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 261,
+    "w": 121,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_01": {
+   "frame": {
+    "x": 544,
+    "y": 654,
+    "w": 196,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 157,
+    "y": 211,
+    "w": 196,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_01_team": {
+   "frame": {
+    "x": 970,
+    "y": 654,
+    "w": 121,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 216,
+    "w": 121,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 133,
+    "h": 248
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 175,
+    "w": 133,
+    "h": 248
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_02_team": {
+   "frame": {
+    "x": 1179,
+    "y": 457,
+    "w": 80,
+    "h": 181
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 197,
+    "w": 80,
+    "h": 181
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_03": {
+   "frame": {
+    "x": 658,
+    "y": 2,
+    "w": 143,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 197,
+    "w": 143,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_03_team": {
+   "frame": {
+    "x": 872,
+    "y": 654,
+    "w": 94,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 213,
+    "w": 94,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_04": {
+   "frame": {
+    "x": 139,
+    "y": 2,
+    "w": 166,
+    "h": 233
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 213,
+    "w": 166,
+    "h": 233
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_04_team": {
+   "frame": {
+    "x": 309,
+    "y": 2,
+    "w": 100,
+    "h": 223
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 221,
+    "w": 100,
+    "h": 223
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_05": {
+   "frame": {
+    "x": 459,
+    "y": 1156,
+    "w": 200,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 143,
+    "y": 299,
+    "w": 200,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_05_team": {
+   "frame": {
+    "x": 909,
+    "y": 1156,
+    "w": 129,
+    "h": 127
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 308,
+    "w": 129,
+    "h": 127
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_06": {
+   "frame": {
+    "x": 262,
+    "y": 1308,
+    "w": 246,
+    "h": 114
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 329,
+    "w": 246,
+    "h": 114
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_06_team": {
+   "frame": {
+    "x": 512,
+    "y": 1308,
+    "w": 200,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 348,
+    "w": 200,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_07": {
+   "frame": {
+    "x": 2,
+    "y": 1308,
+    "w": 256,
+    "h": 114
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 330,
+    "w": 256,
+    "h": 114
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  },
+  "sandbag_carrier_die_07_team": {
+   "frame": {
+    "x": 716,
+    "y": 1308,
+    "w": 209,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 350,
+    "w": 209,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 548,
+    "h": 492
+   },
+   "anchor": {
+    "x": 0.5073,
+    "y": 0.85366
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "sandbag_carrier_idle_00",
+   "sandbag_carrier_idle_01",
+   "sandbag_carrier_idle_02",
+   "sandbag_carrier_idle_03",
+   "sandbag_carrier_idle_04",
+   "sandbag_carrier_idle_05"
+  ],
+  "idle_team": [
+   "sandbag_carrier_idle_00_team",
+   "sandbag_carrier_idle_01_team",
+   "sandbag_carrier_idle_02_team",
+   "sandbag_carrier_idle_03_team",
+   "sandbag_carrier_idle_04_team",
+   "sandbag_carrier_idle_05_team"
+  ],
+  "walk": [
+   "sandbag_carrier_walk_00",
+   "sandbag_carrier_walk_01",
+   "sandbag_carrier_walk_02",
+   "sandbag_carrier_walk_03",
+   "sandbag_carrier_walk_04",
+   "sandbag_carrier_walk_05",
+   "sandbag_carrier_walk_06",
+   "sandbag_carrier_walk_07"
+  ],
+  "walk_team": [
+   "sandbag_carrier_walk_00_team",
+   "sandbag_carrier_walk_01_team",
+   "sandbag_carrier_walk_02_team",
+   "sandbag_carrier_walk_03_team",
+   "sandbag_carrier_walk_04_team",
+   "sandbag_carrier_walk_05_team",
+   "sandbag_carrier_walk_06_team",
+   "sandbag_carrier_walk_07_team"
+  ],
+  "attack": [
+   "sandbag_carrier_attack_00",
+   "sandbag_carrier_attack_01",
+   "sandbag_carrier_attack_02",
+   "sandbag_carrier_attack_03",
+   "sandbag_carrier_attack_04",
+   "sandbag_carrier_attack_05",
+   "sandbag_carrier_attack_06",
+   "sandbag_carrier_attack_07",
+   "sandbag_carrier_attack_08",
+   "sandbag_carrier_attack_09",
+   "sandbag_carrier_attack_00"
+  ],
+  "attack_team": [
+   "sandbag_carrier_attack_00_team",
+   "sandbag_carrier_attack_01_team",
+   "sandbag_carrier_attack_02_team",
+   "sandbag_carrier_attack_03_team",
+   "sandbag_carrier_attack_04_team",
+   "sandbag_carrier_attack_05_team",
+   "sandbag_carrier_attack_06_team",
+   "sandbag_carrier_attack_07_team",
+   "sandbag_carrier_attack_08_team",
+   "sandbag_carrier_attack_09_team",
+   "sandbag_carrier_attack_00_team"
+  ],
+  "hit": [
+   "sandbag_carrier_hit_00",
+   "sandbag_carrier_hit_01",
+   "sandbag_carrier_hit_02",
+   "sandbag_carrier_hit_03",
+   "sandbag_carrier_hit_04"
+  ],
+  "hit_team": [
+   "sandbag_carrier_hit_00_team",
+   "sandbag_carrier_hit_01_team",
+   "sandbag_carrier_hit_02_team",
+   "sandbag_carrier_hit_03_team",
+   "sandbag_carrier_hit_04_team"
+  ],
+  "die": [
+   "sandbag_carrier_die_00",
+   "sandbag_carrier_die_01",
+   "sandbag_carrier_die_02",
+   "sandbag_carrier_die_03",
+   "sandbag_carrier_die_04",
+   "sandbag_carrier_die_05",
+   "sandbag_carrier_die_06",
+   "sandbag_carrier_die_06",
+   "sandbag_carrier_die_07",
+   "sandbag_carrier_die_07"
+  ],
+  "die_team": [
+   "sandbag_carrier_die_00_team",
+   "sandbag_carrier_die_01_team",
+   "sandbag_carrier_die_02_team",
+   "sandbag_carrier_die_03_team",
+   "sandbag_carrier_die_04_team",
+   "sandbag_carrier_die_05_team",
+   "sandbag_carrier_die_06_team",
+   "sandbag_carrier_die_06_team",
+   "sandbag_carrier_die_07_team",
+   "sandbag_carrier_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "sandbag_carrier.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1280,
+   "h": 1424
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.sandbag_carrier",
+   "name": "Sandbag Carrier",
+   "heightLu": 70,
+   "widthLu": 43.9,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    278,
+    420
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     68
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        4.9,
+        40.6
+       ],
+       [
+        5.4,
+        41.5
+       ],
+       [
+        6.0,
+        42.7
+       ],
+       [
+        6.0,
+        43.0
+       ],
+       [
+        5.5,
+        42.4
+       ],
+       [
+        4.9,
+        41.4
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      78,
+      78,
+      78,
+      78,
+      78,
+      78,
+      78,
+      78
+     ],
+     "durationMs": 624,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 87.5,
+     "cycleMs": 624,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        10.1,
+        37.2
+       ],
+       [
+        10.8,
+        33.5
+       ],
+       [
+        11.6,
+        38.9
+       ],
+       [
+        11.1,
+        43.6
+       ],
+       [
+        10.1,
+        37.2
+       ],
+       [
+        9.7,
+        33.2
+       ],
+       [
+        10.0,
+        38.4
+       ],
+       [
+        10.0,
+        43.3
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 86.5,
+     "strideLu": 54.0,
+     "plantedDriftLu": 0.05,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        10.7,
+        -1.7
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        12.8,
+        1.5
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      0
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "holdStep": 3,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        5.4,
+        42.3
+       ],
+       [
+        -3.3,
+        53.9
+       ],
+       [
+        -13.9,
+        60.3
+       ],
+       [
+        -20.4,
+        62.9
+       ],
+       [
+        7.1,
+        57.1
+       ],
+       [
+        25.9,
+        27.3
+       ],
+       [
+        29.2,
+        4.4
+       ],
+       [
+        26.5,
+        2.6
+       ],
+       [
+        24.5,
+        20.0
+       ],
+       [
+        8.8,
+        40.5
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        21.4,
+        28.4
+       ],
+       [
+        19.7,
+        28.3
+       ],
+       [
+        23.5,
+        28.3
+       ],
+       [
+        27.7,
+        26.9
+       ],
+       [
+        26.4,
+        28.1
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        25.2
+       ],
+       "scale": 0.549
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        38.5
+       ],
+       "loops": 2,
+       "scale": 0.741
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        -0.4,
+        40.9
+       ],
+       [
+        24.9,
+        36.8
+       ],
+       [
+        -25.5,
+        66.7
+       ],
+       [
+        -16.9,
+        12.5
+       ],
+       [
+        10.0,
+        18.6
+       ],
+       [
+        13.9,
+        22.6
+       ],
+       [
+        8.2,
+        22.7
+       ],
+       [
+        8.0,
+        21.7
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

@@ -128,19 +128,19 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['sapper', 'Sapper', 'E', 'siege', 200, 560, 12, 20, 12, 85, 'M', 'G', 'light bio melee'],
     ['land_dreadnought', 'Land Dreadnought', 'L', 'siegeHeavy', 350, 1800, 85, 22, 160, 35, 'H', 'G', 'armored mech ranged legendary'],
     // W5 Industrial wave (CONTENT_PLAN 5.5; DESIGN A5.x wave table)
-    ['coal_miners', 'Coal Miners', 'C', 'infantry', 50, 200, 25, 10, 16, 82, 'S', 'G', 'light bio melee'],
-    ['iron_mantlet', 'Iron Mantlet', 'C', 'infantry', 50, 430, 29, 10, 16, 67, 'S', 'G', 'light bio melee'],
-    ['dispatch_rider', 'Dispatch Rider', 'C', 'infantry', 50, 300, 39, 10, 16, 110, 'M', 'G', 'light bio melee'],
-    ['bomb_bowler', 'Bomb Bowler', 'C', 'ranged', 75, 191, 27, 15, 220, 65, 'S', 'G', 'light bio ranged'],
-    ['steam_tractor', 'Steam Tractor', 'C', 'heavy', 150, 1200, 70, 15, 20, 50, 'L', 'G', 'armored mech melee'],
-    ['trench_mortar', 'Trench Mortar', 'R', 'ranged', 75, 230, 90, 26, 370, 60, 'S', 'G', 'light bio ranged'],
-    ['steam_driller', 'Steam Driller', 'R', 'antiArmor', 100, 550, 55, 12, 40, 70, 'M', 'G', 'light bio melee'],
+    ['coal_miners', 'Coal Miners', 'C', 'infantry', 50, 194, 24, 10, 16, 82, 'S', 'G', 'light bio melee'],
+    ['iron_mantlet', 'Iron Mantlet', 'C', 'infantry', 50, 420, 28, 10, 16, 67, 'S', 'G', 'light bio melee'],
+    ['dispatch_rider', 'Dispatch Rider', 'C', 'infantry', 50, 325, 42, 10, 16, 110, 'M', 'G', 'light bio melee'],
+    ['bomb_bowler', 'Bomb Bowler', 'C', 'ranged', 75, 191, 24, 15, 220, 65, 'S', 'G', 'light bio ranged'],
+    ['steam_tractor', 'Steam Tractor', 'C', 'heavy', 150, 1200, 66, 15, 20, 50, 'L', 'G', 'armored mech melee'],
+    ['trench_mortar', 'Trench Mortar', 'R', 'ranged', 75, 266, 118, 26, 370, 60, 'S', 'G', 'light bio ranged'],
+    ['steam_driller', 'Steam Driller', 'R', 'antiArmor', 100, 490, 50, 12, 40, 70, 'M', 'G', 'light bio melee'],
     ['bandmaster', 'Bandmaster', 'R', 'support', 110, 390, 36, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['clockwork_tinker', 'Clockwork Tinker', 'R', 'support', 110, 275, 17, 12, 40, 65, 'S', 'G', 'light bio support melee'],
     ['armoured_car', 'Armoured Car', 'E', 'siege', 200, 1400, 18, 3, 150, 55, 'L', 'GA', 'armored mech ranged'],
-    ['alpine_climber', 'Alpine Climber', 'E', 'skirmisher', 200, 1150, 90, 9, 16, 85, 'M', 'G', 'light bio melee'],
+    ['alpine_climber', 'Alpine Climber', 'E', 'skirmisher', 200, 980, 80, 9, 16, 85, 'M', 'G', 'light bio melee'],
     ['spark_scientist', 'Spark Scientist', 'E', 'support', 200, 1200, 55, 12, 170, 60, 'S', 'GA', 'light bio support ranged'],
-    ['armoured_train', 'Armoured Train', 'L', 'siegeHeavy', 350, 1620, 90, 24, 220, 40, 'H', 'G', 'armored mech ranged legendary'],
+    ['armoured_train', 'Armoured Train', 'L', 'siegeHeavy', 350, 1520, 90, 24, 220, 40, 'H', 'G', 'armored mech ranged legendary'],
   ],
   // A5.5 Modern Age (P 2.46)
   modern: [
@@ -151,6 +151,20 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['radio_operator', 'Radio Operator', 'R', 'support', 110, 320, 20, 12, 200, 65, 'S', 'GA', 'light bio support ranged'],
     ['gyrocopter', 'Gyrocopter', 'E', 'airGunship', 200, 740, 20, 3, 150, 80, 'M', 'GA', 'air mech'],
     ['behemoth_tank', 'Behemoth Tank', 'L', 'siegeHeavy', 350, 2500, 130, 35, 240, 35, 'H', 'G', 'armored mech legendary'],
+    // W6 Modern wave (CONTENT_PLAN 5.6)
+    ['commando', 'Commando', 'C', 'infantry', 50, 330, 42, 10, 16, 110, 'S', 'G', 'light bio melee'],
+    ['sandbag_carrier', 'Sandbag Carrier', 'C', 'infantry', 50, 515, 33, 10, 16, 70, 'S', 'G', 'light bio melee'],
+    ['smg_squad', 'SMG Squad', 'C', 'ranged', 75, 94, 15, 10, 170, 65, 'S', 'GA', 'light bio ranged'],
+    ['rifle_grenadier', 'Rifle Grenadier', 'C', 'ranged', 75, 205, 30, 15, 230, 65, 'S', 'G', 'light bio ranged'],
+    ['assault_gun', 'Assault Gun', 'C', 'heavy', 150, 1150, 76, 15, 90, 45, 'L', 'G', 'armored mech ranged'],
+    ['mortar_team', 'Mortar Team', 'R', 'ranged', 75, 250, 100, 26, 380, 60, 'S', 'G', 'light bio ranged'],
+    ['sticky_bomber', 'Sticky Bomber', 'R', 'antiArmor', 100, 560, 92, 20, 16, 70, 'M', 'G', 'light bio melee'],
+    ['combat_medic', 'Combat Medic', 'R', 'support', 110, 330, 22, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
+    ['bulldog_sergeant', 'Bulldog Sergeant', 'R', 'infantry', 50, 430, 42, 10, 16, 75, 'S', 'G', 'light bio melee'],
+    ['dive_bomber', 'Dive Bomber', 'E', 'airBomber', 200, 800, 66, 20, 40, 80, 'M', 'G', 'air mech'],
+    ['bulldozer', 'Bulldozer', 'E', 'siege', 200, 1600, 28, 20, 12, 45, 'L', 'G', 'armored mech melee'],
+    ['ghillie_sniper', 'Ghillie Sniper', 'E', 'ranged', 200, 640, 180, 40, 360, 55, 'S', 'GA', 'light bio ranged'],
+    ['sky_fortress', 'Sky Fortress', 'L', 'airBomber', 350, 1750, 100, 16, 40, 40, 'H', 'G', 'air mech legendary'],
   ],
   // A5.6 Future Age (P 3.32)
   future: [
@@ -228,6 +242,9 @@ const TURRETS: Record<AgeId, TurretRow[]> = {
     ['flak_gun', 'Flak Gun', 'C', 175, 60, 15, 420, 'GA'],
     ['howitzer', 'Howitzer', 'R', 250, 200, 50, 480, 'G'],
     ['searchlight_sniper', 'Searchlight Sniper', 'E', 250, 280, 40, 480, 'GA'],
+    // W6 Modern wave
+    ['anti_tank_gun', 'Anti-Tank Gun', 'C', 175, 110, 25, 320, 'G'],
+    ['rocket_battery', 'Rocket Battery', 'R', 250, 74, 60, 460, 'G'],
   ],
   future: [
     ['pulse_laser', 'Pulse Laser', 'C', 150, 20, 3, 360, 'GA'],
@@ -295,6 +312,8 @@ const POWERS: PowerRow[] = [
   ['paratroopers', 'Paratroopers', 'modern', 'field', 'drop', 'starter', 150, 60000, 1000, 0],
   ['tank_rush', 'Tank Rush', 'modern', 'field', 'charge', 'warPath', 100, 40000, 1000, 5],
   ['sniper_team', 'Sniper Team', 'modern', 'field', 'strike', 'warPath', 50, 15000, 1000, 1],
+  ['creeping_barrage', 'Creeping Barrage', 'modern', 'field', 'volley', 'warPath', 50, 25000, 1000, 8],
+  ['concussion_shells', 'Concussion Shells', 'modern', 'home', 'stun', 'warPath', 75, 35000, 1000, 6],
   ['orbital_lance', 'Orbital Lance', 'future', 'home', 'sweep', 'starter', 125, 40000, 1000, 4],
   ['point_defense', 'Point Defense Grid', 'future', 'home', 'bombard', 'warPath', 100, 40000, 1000, 4],
   ['stasis_field', 'Stasis Field', 'future', 'home', 'stun', 'warPath', 75, 35000, 1000, 6],
@@ -599,6 +618,22 @@ const A14_2: Record<string, FxRow[]> = {
   flak_gun: [['flak_gun', 'proj.flak', 'shot_flak', 'blast']],
   howitzer: [['howitzer', 'proj.shell', 'shot_cannon', 'blast']],
   searchlight_sniper: [['searchlight_sniper', 'proj.bullet', 'shot_rifle', 'bullet']],
+  // W6 Modern wave
+  commando: [['commando', 'melee', 'butt_stroke', 'blunt']],
+  sandbag_carrier: [['sandbag_carrier', 'melee', 'sandbag_slam', 'blunt']],
+  smg_squad: [['smg_squad', 'proj.bullet', 'shot_smg', 'bullet']],
+  rifle_grenadier: [['rifle_grenadier', 'proj.rifle_grenade', 'shot_rifle_grenade', 'blast']],
+  assault_gun: [['assault_gun', 'proj.shell', 'shot_assault_gun', 'blast']],
+  mortar_team: [['mortar_team', 'proj.mortar_shell', 'shot_mortar_team', 'blast']],
+  sticky_bomber: [['sticky_bomber', 'melee', 'sticky_thunk', 'blast']],
+  combat_medic: [['combat_medic', 'proj.bullet', 'shot_pistol', 'bullet']],
+  bulldog_sergeant: [['bulldog_sergeant', 'melee', 'boxing_jab', 'blunt']],
+  dive_bomber: [['dive_bomber', 'proj.bomb', 'dive_whistle', 'blast']],
+  bulldozer: [['bulldozer', 'melee', 'dozer_shove', 'blunt']],
+  ghillie_sniper: [['ghillie_sniper', 'proj.bullet', 'shot_ghillie', 'bullet']],
+  sky_fortress: [['sky_fortress', 'proj.bomb', 'bomb_stick', 'blast'], ['riders', 'proj.bullet', 'shot_mg', 'bullet']],
+  anti_tank_gun: [['anti_tank_gun', 'proj.shell', 'shot_at_gun', 'pierce']],
+  rocket_battery: [['rocket_battery', 'proj.rocket', 'rocket_ripple', 'blast']],
   pulse_laser: [['pulse_laser', 'fx.beam_laser', 'shot_laser', 'laser']],
   arc_coil: [['arc_coil', 'fx.arc_chain', 'shot_arc', 'laser']],
   plasma_mortar: [['plasma_mortar', 'proj.plasma_mortar', 'shot_plasma', 'blast']],
@@ -704,6 +739,8 @@ const MODS_BY_CARD: Record<string, readonly { vs: string; bp: number }[]> = {
   highlander: MODS.blunt, wall_gunner: MODS.rangedAA,
   // W5 Industrial wave: the pickaxe Pair and the mantlet Guard (Infantry melee), the Steam Driller (melee Anti-heavy)
   coal_miners: MODS.blunt, iron_mantlet: MODS.blunt, steam_driller: MODS.meleeAA,
+  // W6 Modern wave: the sandbag Guard (Infantry melee) and the Sticky Bomber (melee Anti-heavy)
+  sandbag_carrier: MODS.blunt, sticky_bomber: MODS.meleeAA,
 };
 
 /** A5 target priorities of first attacks ("priority armored", "priority air", ...); everything else `front`. */
@@ -718,6 +755,7 @@ const PRIORITY_BY_CARD: Record<string, string> = {
   warhammer_sergeant: 'armored', grapple_crane: 'armored',
   wall_gunner: 'armored', carronade: 'armored',
   steam_driller: 'armored',
+  sticky_bomber: 'armored', anti_tank_gun: 'armored', ghillie_sniper: 'backline',
 };
 
 describe('A14.2 attack mapping, A2.6 mods and A5 priorities (every card)', () => {

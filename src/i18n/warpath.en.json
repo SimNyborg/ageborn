@@ -79,7 +79,9 @@
         "l07": "Airfield",
         "l08": "Counter Battery",
         "l09": "Night Offensive",
-        "l10": "Rook's Endgame"
+        "l10": "Rook's Endgame",
+        "s1": "Shell Shock",
+        "s2": "The Rifle Depot"
       },
       "future": {
         "l01": "Neon Frontier",

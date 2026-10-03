@@ -55,7 +55,11 @@ export const skinList: readonly SkinDef[] = [
   skin('fireworks_grenadier', 'grenadier', 'epic'),
   skin('pufferfish_balloon', 'balloon_admiral', 'legendary'),
   // W5 Industrial (2026-10-03), released with their art:
-  { ...skin('chimney_sweep', 'riveter', 'rare'), released: false },
-  { ...skin('teapot_golem', 'steam_golem', 'epic'), released: false },
-  { ...skin('circus_train', 'armoured_train', 'legendary'), released: false },
+  skin('chimney_sweep', 'riveter', 'rare'),
+  skin('teapot_golem', 'steam_golem', 'epic'),
+  skin('circus_train', 'armoured_train', 'legendary'),
+  // W6 Modern (2026-10-03), released with their art:
+  { ...skin('desert_raider', 'trench_raider', 'rare'), released: false },
+  { ...skin('tin_tankette', 'tankette', 'epic'), released: false },
+  { ...skin('origami_fortress', 'sky_fortress', 'legendary'), released: false },
 ];

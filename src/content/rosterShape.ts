@@ -40,7 +40,8 @@ const shape: Record<AgeId, AgeRosterShape> = {
   gunpowder: after({ wall: 1, tower: 1, camp: 2, trap: 2 }),
   // W5 (2026-10-03): Rail Barricade (heavy wall) and Tesla Pylon (chain tower)
   industrial: after({ wall: 2, tower: 2, camp: 1, trap: 1 }),
-  modern: BEFORE,
+  // W6 (2026-10-03): Rifle Depot (ranged camp) and Wire Snare (chip trap)
+  modern: after({ wall: 1, tower: 1, camp: 2, trap: 2 }),
   future: BEFORE,
   cosmic: BEFORE,
 };

@@ -12,7 +12,7 @@ import { future } from './future';
 import { gunpowder } from './gunpowder';
 import { industrial, industrialPowers } from './industrial';
 import { medieval } from './medieval';
-import { modern } from './modern';
+import { modern, modernPowers } from './modern';
 import { powers } from './powers';
 import { research } from './research';
 import { stone } from './stone';
@@ -36,6 +36,7 @@ export {
   gunpowder,
   industrial,
   industrialPowers,
+  modernPowers,
   medieval,
   modern,
   powers,
@@ -46,7 +47,7 @@ export {
 export const raw: RawContent = {
   ages: [stone, bronze, medieval, gunpowder, industrial, modern, future, cosmic],
   // A5.7 powers, then the A17.11 powers of the new ages (the compiler sorts them by age and slot)
-  powers: [...powers, ...bronzePowers, ...industrialPowers, ...cosmicPowers],
+  powers: [...powers, ...bronzePowers, ...industrialPowers, ...modernPowers, ...cosmicPowers],
   economy,
   ageScale,
   formats,

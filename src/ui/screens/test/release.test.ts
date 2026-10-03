@@ -36,7 +36,7 @@ describe('release gate (screens)', () => {
 
   it('collection filters, completion and skin pickers skip held-back cards and skins', () => {
     expect(filterCards(maxedSave(content), content, NO_FILTER).filter(gated)).toEqual([]);
-    expect(collectionProgress(maxedSave(content), content).total).toBe(148);
+    expect(collectionProgress(maxedSave(content), content).total).toBe(163);
     expect(skinsFor(content, 'pebbler').map((k) => k.id)).toEqual(['snowball_pebbler']);
     expect(skinsFor(content, 'sabertooth').map((k) => k.id)).toEqual(['fossil_sabertooth']);
     expect(skinsFor(content, 'bonker').map((k) => k.id)).toEqual(['pumpkin_head']);

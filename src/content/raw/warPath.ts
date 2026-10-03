@@ -140,6 +140,8 @@ const REGIONS: readonly RegionRow[] = [
     epic: 'gyrocopter',
     bossCapsule: 'jade',
     bossTurret: 'mg_nest',
+    // W6 Modern (2026-10-03): Tempest calls in the Concussion Shells, Ledger's levies march from the Rifle Depot
+    sides: { s1: 'tempest', s2: 'ledger' },
   },
   {
     age: 'future',

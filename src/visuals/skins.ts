@@ -269,8 +269,8 @@ export const SKIN_SPECS: readonly SkinSpec[] = [
   {
     skin: 'circus_train',
     target: 'unit.armoured_train',
-    // A circus train: cream and circus-red wagons, gilt trim, pale bunting.
-    palette: { cloth: 0xa8605a, cloth2: 0xefe6cf, cloth3: 0xefe6cf, metal: 0xd8c08a, metal2: 0x6a4a44, stripe: 0xefe6cf, brick: 0xa8605a },
+    // A circus train: cream and raspberry wagons (outside the team hue bands), gilt trim, pale bunting.
+    palette: { cloth: 0x8a4a66, cloth2: 0xefe6cf, cloth3: 0xefe6cf, metal: 0xd8c08a, metal2: 0x4a3e48, stripe: 0xefe6cf, brick: 0x8a4a66, stone: 0xefe6cf, copper: 0xd8c08a },
   },
 ];
 

@@ -294,6 +294,26 @@ export const ALBUM: readonly CardId[] = [
   'great_magnet', // 261
   'rail_barricade', // 262
   'tesla_pylon', // 263
+  // W6 Modern wave (2026-10-03): troops, turrets, powers and forts in build order
+  'commando', // 264
+  'sandbag_carrier', // 265
+  'smg_squad', // 266
+  'rifle_grenadier', // 267
+  'assault_gun', // 268
+  'mortar_team', // 269
+  'sticky_bomber', // 270
+  'combat_medic', // 271
+  'bulldog_sergeant', // 272
+  'dive_bomber', // 273
+  'bulldozer', // 274
+  'ghillie_sniper', // 275
+  'sky_fortress', // 276
+  'anti_tank_gun', // 277
+  'rocket_battery', // 278
+  'creeping_barrage', // 279
+  'concussion_shells', // 280
+  'rifle_depot', // 281
+  'wire_snare', // 282
 ];
 
 /** Album number of every card (1-based), from {@link ALBUM}. */

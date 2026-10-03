@@ -30,8 +30,11 @@ import { SimImpl } from './createSim';
  * 7.2.0 (Gunpowder wave, 2026-10-03): a unit volley with `scatter` lands each projectile within ±scatter
  * of the aim point, as turret volleys already did (the Rocket Cart). The RNG is drawn only when scatter is
  * above 0 and no earlier unit has scatter, so every golden keeps its hash (re-recorded for this string).
+ * 7.3.0 (Modern wave, 2026-10-03): a bomber's riders (the Sky Fortress's waist gunners) target like any
+ * secondary attack (range, leash, priority, air included); only the bomber's own attack (index 0) uses the
+ * drop window. No golden has a bomber with riders, so every golden keeps its hash (re-recorded for this string).
  */
-export const SIM_VERSION = '7.2.0';
+export const SIM_VERSION = '7.3.0';
 
 /** Thrown when a replay was recorded on different content (B3: "from an older version"). */
 export class ReplayContentMismatchError extends Error {

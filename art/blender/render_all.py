@@ -46,7 +46,11 @@ AGE_OF = {
                   "wall_gunner", "drummer_boy", "bagpiper", "rocket_cart", "hussar", "mesmerist",
                   "grand_marshal"],
     "modern": ["bazooka_trooper", "behemoth_tank", "gyrocopter", "radio_operator", "rifleman",
-               "tankette", "trench_raider"],
+               "tankette", "trench_raider",
+               # W6 Modern wave (CONTENT_PLAN 5.6)
+               "commando", "sandbag_carrier", "smg_squad", "rifle_grenadier", "assault_gun", "mortar_team",
+               "sticky_bomber", "combat_medic", "bulldog_sergeant", "dive_bomber", "bulldozer", "ghillie_sniper",
+               "sky_fortress"],
     "future": ["chrono_titan", "emp_saboteur", "photon_knight", "pulse_trooper", "rail_gunner",
                "repair_drone", "walker_mech"],
     "cosmic": ["graviton_halberdier", "hover_tank", "ion_ranger", "mothership", "star_legionnaire",
