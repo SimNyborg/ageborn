@@ -91,6 +91,11 @@ const A13: Record<string, string[]> = {
     'claymore_chop', 'scoop_swing', 'shot_blunderbuss', 'shot_dragoon', 'shot_coehorn', 'shot_wallgun', 'drum_roll',
     'pipe_drone', 'sabre_slash', 'mesmer_chime', 'marshal_sweep', 'shot_carronade', 'shot_sea_mortar', 'pw_rockets', 'pw_salute',
   ],
+  /** Industrial wave (CONTENT_PLAN 5.5): the attacks, turrets and powers of the new Industrial cards. */
+  industrialWave: [
+    'pickaxe_clink', 'mantlet_jab', 'bike_skid', 'shot_bowl', 'plough_scoop', 'shot_trench_mortar', 'drill_spin', 'cornet_blast',
+    'key_whack', 'car_mg', 'ice_axe_chop', 'coil_zap', 'train_gun', 'toy_bayonet', 'shot_rivet', 'hammer_slam', 'pw_shrapnel', 'pw_magnet',
+  ],
   /** MVP pass (audio audit 2026-10-01): the ui-plan 5.4 UI ids, Council, stances, escalation, warnings, energy forts. */
   mvp: [
     'ui_sheet', 'ui_pop', 'ui_whoosh', 'ui_stamp', 'card_lift', 'card_place', 'star_stamp', 'path_draw', 'node_drop', 'region_open', 'ui_unlock', 'reward_fly',
@@ -113,7 +118,7 @@ describe('sound manifest (A13)', () => {
   it('has exactly the A13 sound ids', () => {
     // 182 + the 16 fort sounds (A16.14.8) + the 31 of the MVP pass + the 15 of the Bronze wave + the 14 of the Stone wave
     // + the 18 of the Medieval wave + the 15 of the Gunpowder wave
-    expect(A13_IDS).toHaveLength(291);
+    expect(A13_IDS).toHaveLength(309);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 

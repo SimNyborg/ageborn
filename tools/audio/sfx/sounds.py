@@ -1729,3 +1729,4 @@ import sounds_bronze_wave  # noqa: E402,F401
 import sounds_stone_wave  # noqa: E402,F401
 import sounds_medieval_wave  # noqa: E402,F401
 import sounds_gunpowder_wave  # noqa: E402,F401
+import sounds_industrial_wave  # noqa: E402,F401

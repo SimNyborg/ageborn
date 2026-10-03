@@ -2,6 +2,16 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-03: the Bronze content wave ships (cloud session, not yet published)
+
+The second content wave is in: 13 new Bronze troops (Shield Bearer, Thracian Raider, Rhodian Slingers, Discus Thrower, War Elephant, Cretan Archer, Belly Bowman, Aulos Piper, Tragic Chorus, Wooden Horse, Amazon Rider, Minotaur, Hydra), 2 turrets (Net Caster, Polybolos), 2 powers (Sandstorm, Charybdis), 2 forts (Hoplon Line, Skirmisher Camp) and 3 skins, each with a cartoon sprite sheet (2-3 attacks, walk by gait, KO death), card portrait, sounds and effects; the four older Bronze forts are redrawn in the cartoon style. New sim rule: the Dread aura (the Tragic Chorus slows nearby enemies) and a speed aura (the Aulos Piper), SIM_VERSION 7.1.0, golden 17. Numbers and misses in `docs/decisions.md`; tables in DESIGN A17.9.
+
+**Checks:** typecheck and lint clean, production build OK. Unit tests: the Bronze rows pass; remaining failures belong to the in-progress Industrial wave (its gated cards, sheets, sounds and an emptied `pausedWave` set), an arena/format change in progress elsewhere (meta and mode-picker tests), the boot sound budget and the turret-turtle proxy.
+
+**Still open:** Rhodian Slingers and Discus Thrower read about +11 in the two-age window (the plan without the Javelineer wins more whatever the replacement; one-age window within ±5); the Hydra and Charybdis windows disagree (about -0 / +6 and -6 / +4); Sandstorm sits at the lane caps (-6.6 / -1.1); the capsule economy needs the CONTENT_PLAN 8 re-tune (time to max 176 / 194 / 116 / 163 days, request updated).
+
+**What the owner should try** (once published): put the Hydra, the War Elephant and the Tragic Chorus in your Bronze War Plan, cast Charybdis on a crowd, and watch the Wooden Horse ram the gate and spill out two Hoplites.
+
 ## 2026-10-03: the Gunpowder content wave ships (cloud session, not yet published)
 
 The fourth content wave is in: 13 new Gunpowder troops (Highlander, Powder Monkey, Voltigeurs, Blunderbuss, Dragoon, Coehorn Crew, Wall Gunner, Drummer Boy, Bagpiper, Rocket Cart, Hussar, Mesmerist, Grand Marshal), 2 turrets (Carronade, Sea Mortar), 2 powers (Rocket Volley, Cannon Salute), 2 forts (Cavalry Picket, Fougasse) and 3 skins, each with a cartoon sprite sheet (2-3 attacks, walk by gait, KO death), card portrait, sounds and effects; all six Gunpowder forts are redrawn in the cartoon style. Bots use every new card (Generals' plans and the counter matrix). One small sim rule: the Rocket Cart's rockets scatter like the Congreve Rack's (SIM 7.2.0, replays of older matches stay valid). Numbers and details: `docs/decisions.md` ("X0 Gunpowder wave shipped").

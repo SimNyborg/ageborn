@@ -613,6 +613,97 @@ const BASE_SOUNDS = {
     thump(680, 80, 0.9, 0.5, -0.5),
     at(750, { vol: 0.04, freq: 3100, attack: 0.1, sustain: 0.4, release: 0.35, shape: 'sin' }),
   ]), { maxVoices: 1 }),
+  // Industrial wave (CONTENT_PLAN 5.5): attacks, turrets and powers of the new Industrial cards ----------
+  pickaxe_clink: mix('industrial', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.2, freq: 1000 * (1 + 0.05 * v), attack: 0.03, release: 0.06, slide: 3, lowpass: 4000 }),
+    at(90, { vol: 0.3, freq: 1350 * (1 + 0.04 * v), attack: 0.001, release: 0.15, shape: 'tri', tremolo: 0.3, repeat: 0.04 }),
+    noiseBurst(95, { vol: 0.2, freq: 5000, attack: 0.001, release: 0.04, highpass: 3000 }),
+  ])),
+  mantlet_jab: mix('industrial', mixVariants(3, (v) => [
+    noiseBurst(80, { vol: 0.25, freq: 1800 * (1 + 0.05 * v), attack: 0.02, release: 0.05, slide: 3, lowpass: 5000 }),
+    at(160, { vol: 0.35, freq: 420 * (1 + 0.04 * v), attack: 0.001, release: 0.2, shape: 'tri', curve: 2 }),
+    thump(160, 140, 0.4, 0.1, -0.4),
+  ])),
+  bike_skid: mix('industrial', mixVariants(3, (v) => [
+    at(0, { vol: 0.2, freq: 95 * (1 + 0.04 * v), attack: 0.01, sustain: 0.15, release: 0.1, shape: 'saw', tremolo: 0.6, repeat: 0.045, lowpass: 1600 }),
+    noiseBurst(50, { vol: 0.35, freq: 1800, attack: 0.01, sustain: 0.15, release: 0.12, lowpass: 3200 }),
+    thump(240, 130 * (1 + 0.05 * v), 0.5, 0.1, -0.4),
+  ])),
+  plough_scoop: mix('industrial', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.25, freq: 4000, attack: 0.005, sustain: 0.05, release: 0.1, highpass: 1500 }),
+    noiseBurst(100, { vol: 0.3, freq: 1400 * (1 + 0.05 * v), attack: 0.02, sustain: 0.12, release: 0.1, lowpass: 2600 }),
+    at(300, { vol: 0.4, freq: 260 * (1 + 0.04 * v), attack: 0.001, release: 0.3, shape: 'tri', curve: 2 }),
+    thump(300, 100, 0.7, 0.2, -0.5),
+  ])),
+  drill_spin: mix('industrial', mixVariants(3, (v) => [
+    at(0, { vol: 0.25, freq: 220 * (1 + 0.05 * v), attack: 0.03, sustain: 0.25, release: 0.1, shape: 'saw', slide: 6, tremolo: 0.3, repeat: 0.026, lowpass: 3500 }),
+    noiseBurst(140, { vol: 0.3, freq: 4000, attack: 0.01, sustain: 0.15, release: 0.12, highpass: 1500 }),
+  ])),
+  key_whack: mix('industrial', mixVariants(3, (v) => [
+    ...[0, 25, 50, 75].map((ms) => at(ms, { vol: 0.12, freq: 2400, attack: 0.001, release: 0.01, shape: 'square', curve: 0.5 })),
+    noiseBurst(110, { vol: 0.2, freq: 1200, attack: 0.03, release: 0.05, slide: 3, lowpass: 4000 }),
+    at(190, { vol: 0.35, freq: 560 * (1 + 0.05 * v), attack: 0.001, release: 0.12, shape: 'sin', curve: 2 }),
+  ])),
+  ice_axe_chop: mix('industrial', mixVariants(3, (v) => [
+    noiseBurst(50, { vol: 0.3, freq: 1500 * (1 + 0.05 * v), attack: 0.06, release: 0.1, slide: 3, lowpass: 5000 }),
+    noiseBurst(200, { vol: 0.4, freq: 6000, attack: 0.001, release: 0.05, highpass: 3000 }),
+    at(200, { vol: 0.25, freq: 1700 * (1 + 0.04 * v), attack: 0.001, release: 0.12, shape: 'tri' }),
+  ])),
+  toy_bayonet: mix('industrial', mixVariants(3, (v) => [
+    at(0, { vol: 0.12, freq: 1800, attack: 0.001, release: 0.015, shape: 'square', curve: 0.5 }),
+    at(60, { vol: 0.12, freq: 1500, attack: 0.001, release: 0.015, shape: 'square', curve: 0.5 }),
+    at(210, { vol: 0.25, freq: 1900 * (1 + 0.04 * v), attack: 0.001, release: 0.1, shape: 'tri', tremolo: 0.3, repeat: 0.02 }),
+  ])),
+  shot_bowl: mix('industrial', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.2, freq: 900 * (1 + 0.05 * v), attack: 0.04, release: 0.08, slide: 3, lowpass: 2500 }),
+    noiseBurst(100, { vol: 0.3, freq: 300, attack: 0.02, sustain: 0.25, release: 0.1, tremolo: 0.5, repeat: 0.03, lowpass: 900 }),
+    noiseBurst(80, { vol: 0.12, freq: 6000, attack: 0.02, sustain: 0.25, release: 0.1, highpass: 3500 }),
+  ])),
+  shot_trench_mortar: mix('industrial', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.2, freq: 3000, attack: 0.01, release: 0.06, highpass: 1500 }),
+    thump(90, 120 * (1 + 0.05 * v), 1, 0.35, -0.5),
+    at(140, { vol: 0.05, freq: 800 * (1 + 0.04 * v), attack: 0.05, sustain: 0.2, release: 0.12, slide: 6 }),
+  ])),
+  cornet_blast: mix('industrial', mixVariants(3, (_v, k) => [
+    note(0, (['F#4', 'A#4', 'C#5'] as const)[k % 3]!, { vol: 0.3, attack: 0.01, sustain: 0.06, release: 0.03, shape: 'saw', lowpass: 3200 }),
+    note(75, (['A#4', 'C#5', 'F#5'] as const)[k % 3]!, { vol: 0.3, attack: 0.01, sustain: 0.06, release: 0.03, shape: 'saw', lowpass: 3200 }),
+    note(150, (['C#5', 'F#5', 'A#5'] as const)[k % 3]!, { vol: 0.3, attack: 0.01, sustain: 0.16, release: 0.08, shape: 'saw', lowpass: 3200 }),
+  ])),
+  car_mg: mix('industrial', mixVariants(4, (v) => [
+    ...[0, 60, 120].map((ms) => noiseBurst(ms, { vol: 0.45, freq: 1100 * (1 + 0.08 * v), attack: 0.001, decay: 0.01, sustainVol: 0.3, release: 0.06, lowpass: 7000 })),
+    thump(0, 150, 0.3, 0.06, -1.2),
+  ])),
+  coil_zap: mix('industrial', mixVariants(3, (v) => [
+    at(0, { vol: 0.1, freq: 600 * (1 + 0.05 * v), attack: 0.02, sustain: 0.1, release: 0.04, slide: 12 }),
+    at(180, { vol: 0.35, freq: 420 * (1 + 0.1 * v), attack: 0.002, sustain: 0.12, release: 0.1, shape: 'tan', noise: 3, mod: 60, repeat: 0.02, lowpass: 9000 }),
+    noiseBurst(180, { vol: 0.25, freq: 7000, attack: 0.001, release: 0.05, highpass: 5000 }),
+  ])),
+  train_gun: mix('industrial', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.6, freq: 800 * (1 + 0.05 * v), attack: 0.001, release: 0.3, lowpass: 4000 }),
+    thump(0, 80 * (1 + 0.05 * v), 1, 0.5, -0.5),
+    at(450, { vol: 0.05, freq: 740, attack: 0.04, sustain: 0.15, release: 0.1, shape: 'sin', tremolo: 0.05, repeat: 0.16 }),
+  ])),
+  shot_rivet: mix('industrial', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.15, freq: 6000, attack: 0.005, sustain: 0.04, release: 0.06, highpass: 3000 }),
+    ...[30, 100, 170].map((ms, k) => at(ms, { vol: 0.3, freq: 1600 * (1 + 0.04 * k + 0.03 * v), attack: 0.001, release: 0.08, shape: 'tri', curve: 2 })),
+    thump(30, 180, 0.3, 0.05, -0.6),
+  ])),
+  hammer_slam: mix('industrial', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.25, freq: 4000, attack: 0.01, sustain: 0.1, release: 0.1, highpass: 1800 }),
+    at(220, { vol: 0.45, freq: 310 * (1 + 0.04 * v), attack: 0.001, sustain: 0.05, release: 0.5, shape: 'tri', tremolo: 0.2, repeat: 0.1 }),
+    thump(220, 70, 1, 0.45, -0.5),
+  ])),
+  pw_shrapnel: mix('industrial', mixVariants(3, (v) => [
+    thump(0, 70, 0.5, 0.3, -0.5),
+    at(300, { vol: 0.05, freq: 1900 * (1 + 0.03 * v), attack: 0.1, sustain: 0.3, release: 0.15, slide: -5 }),
+    noiseBurst(800, { vol: 0.45, freq: 1200, attack: 0.001, sustain: 0.45, release: 0.15, tremolo: 0.7, repeat: 0.08, lowpass: 5000 }),
+  ]), { maxVoices: 2 }),
+  pw_magnet: mix('industrial', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.2, freq: 2000, attack: 0.01, sustain: 0.25, release: 0.1, tremolo: 0.6, repeat: 0.03, highpass: 1000 }),
+    at(250, { vol: 0.4, freq: 180 * (1 + 0.03 * v), attack: 0.001, release: 0.6, shape: 'tri', curve: 2 }),
+    at(350, { vol: 0.25, freq: 55, attack: 0.25, sustain: 0.6, release: 0.3, shape: 'saw', slide: 0.6, tremolo: 0.2, repeat: 0.14, lowpass: 900 }),
+    noiseBurst(500, { vol: 0.12, freq: 7000, attack: 0.05, sustain: 0.6, release: 0.2, highpass: 4000, tremolo: 0.5, repeat: 0.03 }),
+  ]), { maxVoices: 1 }),
   // Stone wave (CONTENT_PLAN 5.1): attacks, turrets and powers of the new Stone cards -----------------------
   wolf_bite: mix('stone', mixVariants(3, (v) => [
     at(0, { vol: 0.25, freq: 140 * (1 + 0.06 * v), attack: 0.01, sustain: 0.06, release: 0.04, shape: 'saw', tremolo: 0.5, repeat: 0.02, lowpass: 1800 }),
