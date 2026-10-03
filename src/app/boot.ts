@@ -127,7 +127,9 @@ export async function boot(o: BootOptions): Promise<Booted> {
   const pixi = o.initPixi ? await o.initPixi() : null;
   steps.push('pixi');
   const settings = save?.settings;
-  const lite = settings?.graphics === 'lite' || (settings?.graphics !== 'high' && o.isMobile === true);
+  // Owner feedback 2026-10-03: phones get the full art under Auto too (HD sheets, DPR up to 2); only
+  // an explicit Lite setting loads the lite tier. The render's Auto monitor still drops effects if slow.
+  const lite = settings?.graphics === 'lite';
   const art = services.createArt({
     quality: lite ? 'lite' : 'high',
     dpr: lite ? 1 : Math.min(2, o.devicePixelRatio ?? 1),
