@@ -124,16 +124,15 @@ export const future: RawAgeTables = {
     // ---- W7 Future wave (content expansion, CONTENT_PLAN 5.7): capsule cards, appended in build order.
     // Commons drop from Arena 2 (the Future age first drops in Arena 3, so Arena 3 in practice), Rares 3, Epics 4,
     // Legendaries 5 (`cardArena`). Templates: plan 4 (I 470 + 90 shield, R 315, H 1,860 at P 3.32).
-    // Release gate (`released: false`) until their sheets, sounds and measured numbers ship.
     {
       // Pair (X0 M1): one card trains 2 androids; stats per android, cost and pop split evenly; Blunt. Tagged
       // light bio like the age's soldiers (synthetic, but not a mech for the Anti-heavy and EMP rules)
-      id: 'android_pair', released: false, kind: 'unit', age: 'future', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 300, speed: 85, size: 'small',
+      id: 'android_pair', kind: 'unit', age: 'future', rarity: 'common', role: 'infantry', group: 'infantry',
+      cost: 50, trainMs: 1500, pop: 2, hp: 328, speed: 85, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 38, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 40, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'blunt', sfx: 'baton_spin', mods: damageMods.blunt,
         },
       ],
@@ -144,12 +143,12 @@ export const future: RawAgeTables = {
     },
     {
       // Guard: the hardlight shield takes 25% less from attacks with range ≥ 100 (not powers); Blunt
-      id: 'barrier_trooper', released: false, kind: 'unit', age: 'future', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 640, speed: 70, size: 'small',
+      id: 'barrier_trooper', kind: 'unit', age: 'future', rarity: 'common', role: 'infantry', group: 'infantry',
+      cost: 50, trainMs: 1500, pop: 2, hp: 650, speed: 70, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 44, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 47, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'laser', sfx: 'shield_pulse', mods: damageMods.blunt,
         },
       ],
@@ -159,13 +158,13 @@ export const future: RawAgeTables = {
     },
     {
       // Raider: a hover bike at 110 lu/s; ×2 to bases
-      id: 'hover_bike', released: false, kind: 'unit', age: 'future', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 500, speed: 110, size: 'medium',
+      id: 'hover_bike', kind: 'unit', age: 'future', rarity: 'common', role: 'infantry', group: 'infantry',
+      cost: 50, trainMs: 1500, pop: 2, hp: 545, speed: 110, size: 'medium',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 64, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
-          dmgType: 'laser', sfx: 'lance_swipe', vsBaseDamage: 128,
+          damage: 68, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          dmgType: 'laser', sfx: 'lance_swipe', vsBaseDamage: 100,
         },
       ],
       abilities: [],
@@ -173,13 +172,13 @@ export const future: RawAgeTables = {
       nameKey: 'card.hover_bike.name', descKey: 'card.hover_bike.desc', strongVs: [], weakVs: [],
     },
     {
-      // Skirmisher: twin barrels stitch light needles, 22 every 0.5 s, range 220, ground and air
-      id: 'needle_gunner', released: false, kind: 'unit', age: 'future', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 270, speed: 75, size: 'small',
+      // Skirmisher: twin barrels stitch light needles, 20 every 0.5 s, range 220, ground and air
+      id: 'needle_gunner', kind: 'unit', age: 'future', rarity: 'common', role: 'ranged', group: 'ranged',
+      cost: 75, trainMs: 2000, pop: 3, hp: 250, speed: 75, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 22, intervalMs: 500, windupPct: 50, range: 220, hitsGround: true, hitsAir: true,
+          damage: 20, intervalMs: 500, windupPct: 50, range: 220, hitsGround: true, hitsAir: true,
           projectile: { speed: 1800, visualId: 'proj.needle' },
           dmgType: 'laser', sfx: 'shot_needle',
         },
@@ -190,12 +189,12 @@ export const future: RawAgeTables = {
     },
     {
       // Brute (armored mech): a double pincer snap, cleave 2 (reach 30); no first-hit bonus
-      id: 'crab_mech', released: false, kind: 'unit', age: 'future', rarity: 'common', role: 'heavy', group: 'heavy',
-      cost: 150, trainMs: 4000, pop: 6, hp: 1880, speed: 45, size: 'large',
+      id: 'crab_mech', kind: 'unit', age: 'future', rarity: 'common', role: 'heavy', group: 'heavy',
+      cost: 150, trainMs: 4000, pop: 6, hp: 2000, speed: 45, size: 'large',
       tags: ['armored', 'mech', 'melee', 'ground'],
       attacks: [
         {
-          damage: 104, intervalMs: 1500, windupPct: 40, range: 20, hitsGround: true, hitsAir: false,
+          damage: 112, intervalMs: 1500, windupPct: 40, range: 20, hitsGround: true, hitsAir: false,
           dmgType: 'blunt', sfx: 'pincer_snap', cleave: { count: 2, reach: 30 },
         },
       ],
@@ -206,12 +205,12 @@ export const future: RawAgeTables = {
     {
       // Long range (H6, A5.1): a glowing shell lobbed high at the target's spot, splash r35; range 380, min 90; half to
       // bases; ground only
-      id: 'arc_lobber', released: false, kind: 'unit', age: 'future', rarity: 'rare', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 340, speed: 60, size: 'small',
+      id: 'arc_lobber', kind: 'unit', age: 'future', rarity: 'rare', role: 'ranged', group: 'ranged',
+      cost: 75, trainMs: 2000, pop: 3, hp: 360, speed: 60, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 140, intervalMs: 2600, windupPct: 50, range: 380, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 172, intervalMs: 2600, windupPct: 50, range: 380, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.arc_shell' },
           dmgType: 'blast', sfx: 'shot_lobber', splashRadius: 35, vsBaseDamage: 70,
         },
@@ -223,12 +222,12 @@ export const future: RawAgeTables = {
     {
       // Melee Anti-heavy: a crackling plasma lance, reach 60; melee AA mods (armored and mech ×3, Legendary ×2,
       // light ×0.75); Brace; priority armored
-      id: 'plasma_lancer', released: false, kind: 'unit', age: 'future', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 760, speed: 70, size: 'medium',
+      id: 'plasma_lancer', kind: 'unit', age: 'future', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
+      cost: 100, trainMs: 2500, pop: 4, hp: 800, speed: 70, size: 'medium',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 80, intervalMs: 1200, windupPct: 40, range: 60, hitsGround: true, hitsAir: false,
+          damage: 96, intervalMs: 1200, windupPct: 40, range: 60, hitsGround: true, hitsAir: false,
           dmgType: 'laser', sfx: 'lance_crackle', mods: damageMods.meleeAntiArmor, priority: 'armored',
         },
       ],
@@ -238,7 +237,7 @@ export const future: RawAgeTables = {
     },
     {
       // Aura: allies within 160 lu attack 20% faster; a multitool zap beam hits the target; followSupport
-      id: 'overclock_engineer', released: false, kind: 'unit', age: 'future', rarity: 'rare', role: 'support', group: 'support',
+      id: 'overclock_engineer', kind: 'unit', age: 'future', rarity: 'rare', role: 'support', group: 'support',
       cost: 110, trainMs: 3000, pop: 4, hp: 610, speed: 65, size: 'small',
       tags: ['light', 'bio', 'support', 'ranged', 'ground'],
       attacks: [
@@ -256,19 +255,19 @@ export const future: RawAgeTables = {
       nameKey: 'card.overclock_engineer.name', descKey: 'card.overclock_engineer.desc', strongVs: [], weakVs: [],
     },
     {
-      // Summoner (X0 M3): projects a Holo Decoy every 7 s, at most 3; a light-pulse shot; followSupport
-      id: 'holo_projector', released: false, kind: 'unit', age: 'future', rarity: 'rare', role: 'support', group: 'support',
+      // Summoner (X0 M3): projects a Holo Decoy every 6 s, at most 3; a light-pulse shot; followSupport
+      id: 'holo_projector', kind: 'unit', age: 'future', rarity: 'rare', role: 'support', group: 'support',
       cost: 110, trainMs: 3000, pop: 4, hp: 430, speed: 65, size: 'small',
       tags: ['light', 'bio', 'support', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 27, intervalMs: 1200, windupPct: 50, range: 150, hitsGround: true, hitsAir: true,
+          damage: 40, intervalMs: 1200, windupPct: 50, range: 150, hitsGround: true, hitsAir: true,
           projectile: { speed: 1800, visualId: 'proj.plasma' },
           dmgType: 'laser', sfx: 'shot_holo',
         },
       ],
       abilities: [
-        { kind: 'summon', card: 'holo_decoy', firstMs: 2000, everyMs: 7000, maxAlive: 3 },
+        { kind: 'summon', card: 'holo_decoy', firstMs: 2000, everyMs: 6000, maxAlive: 3 },
         { kind: 'followSupport', behindFront: 60, soloMaxP: 200 },
       ],
       visualId: 'unit.holo_projector', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
@@ -276,7 +275,7 @@ export const future: RawAgeTables = {
     },
     {
       // Air gunship: a beam rifle, 46 every 0.6 s, range 160, ground and air; obeys stance
-      id: 'jetpack_trooper', released: false, kind: 'unit', age: 'future', rarity: 'epic', role: 'airGunship', group: 'epic',
+      id: 'jetpack_trooper', kind: 'unit', age: 'future', rarity: 'epic', role: 'airGunship', group: 'epic',
       cost: 200, trainMs: 4000, pop: 8, hp: 950, speed: 80, size: 'medium',
       tags: ['air', 'bio'],
       attacks: [
@@ -293,7 +292,7 @@ export const future: RawAgeTables = {
     {
       // Artillery (armored mech): an instant particle beam pierces 3 targets within 200 lu, 200 every 3.5 s,
       // range 300 (min 60); ground only
-      id: 'particle_cannon', released: false, kind: 'unit', age: 'future', rarity: 'epic', role: 'siege', group: 'epic',
+      id: 'particle_cannon', kind: 'unit', age: 'future', rarity: 'epic', role: 'siege', group: 'epic',
       cost: 200, trainMs: 4000, pop: 8, hp: 1500, speed: 45, size: 'large',
       tags: ['armored', 'mech', 'ranged', 'ground'],
       attacks: [
@@ -310,7 +309,7 @@ export const future: RawAgeTables = {
     {
       // Brawler (armored mech): dual energy fists, 90 every 0.9 s. Overload (X0 M2): below 50% HP +35% damage and
       // +25% attack speed (the A18.2 caps)
-      id: 'overload_android', released: false, kind: 'unit', age: 'future', rarity: 'epic', role: 'skirmisher', group: 'epic',
+      id: 'overload_android', kind: 'unit', age: 'future', rarity: 'epic', role: 'skirmisher', group: 'epic',
       cost: 200, trainMs: 4000, pop: 8, hp: 1700, speed: 60, size: 'medium',
       tags: ['armored', 'mech', 'melee', 'ground'],
       attacks: [
@@ -325,9 +324,9 @@ export const future: RawAgeTables = {
     },
     {
       // Legendary carrier (ground, armored mech): a point-defence laser, 40 every 0.5 s, range 200, ground and air;
-      // launches an Attack Drone (X0 M3, an air summon) every 6 s, at most 3
-      id: 'drone_carrier', released: false, kind: 'unit', age: 'future', rarity: 'legendary', role: 'siegeHeavy', group: 'legendary',
-      cost: 350, trainMs: 7000, pop: 14, hp: 3200, speed: 35, size: 'huge',
+      // launches an Attack Drone (X0 M3, an air summon) every 7 s, at most 2
+      id: 'drone_carrier', kind: 'unit', age: 'future', rarity: 'legendary', role: 'siegeHeavy', group: 'legendary',
+      cost: 350, trainMs: 7000, pop: 14, hp: 1900, speed: 35, size: 'huge',
       tags: ['armored', 'mech', 'ranged', 'legendary', 'ground'],
       attacks: [
         {
@@ -336,15 +335,15 @@ export const future: RawAgeTables = {
           dmgType: 'laser', sfx: 'shot_pd_laser',
         },
       ],
-      abilities: [{ kind: 'summon', card: 'attack_drone', firstMs: 2000, everyMs: 6000, maxAlive: 3 }],
+      abilities: [{ kind: 'summon', card: 'attack_drone', firstMs: 2000, everyMs: 7000, maxAlive: 2 }],
       visualId: 'unit.drone_carrier', sfx: { spawn: 'spawn_legendary', die: 'die_mech' },
       nameKey: 'card.drone_carrier.name', descKey: 'card.drone_carrier.desc', strongVs: [], weakVs: [],
     },
     {
       // Holo Projector's summon (X0 M3): a flickering hologram of a Photon Knight; 1 damage, it draws fire; no pop,
       // no bounty, always marches
-      id: 'holo_decoy', released: false, kind: 'unit', age: 'future', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 0, trainMs: 1500, pop: 2, hp: 200, speed: 75, size: 'small',
+      id: 'holo_decoy', kind: 'unit', age: 'future', rarity: 'common', role: 'infantry', group: 'infantry',
+      cost: 0, trainMs: 1500, pop: 2, hp: 320, speed: 75, size: 'small',
       tags: ['light', 'mech', 'melee', 'ground'],
       attacks: [
         {
@@ -358,14 +357,14 @@ export const future: RawAgeTables = {
       hidden: true, summon: true, aiValue: 12,
     },
     {
-      // Drone Carrier's summon (X0 M3, flying): a small attack drone (about 30% of a Gyrocopter at P 3.32), 9 every
+      // Drone Carrier's summon (X0 M3, flying): a small attack drone (about 30% of a Gyrocopter at P 3.32), 8 every
       // 0.3 s, range 150, ground and air; no pop, no bounty, always flies forward
-      id: 'attack_drone', released: false, kind: 'unit', age: 'future', rarity: 'epic', role: 'airGunship', group: 'epic',
+      id: 'attack_drone', kind: 'unit', age: 'future', rarity: 'epic', role: 'airGunship', group: 'epic',
       cost: 0, trainMs: 4000, pop: 8, hp: 300, speed: 90, size: 'small',
       tags: ['air', 'mech'],
       attacks: [
         {
-          damage: 9, intervalMs: 300, windupPct: 50, range: 150, hitsGround: true, hitsAir: true,
+          damage: 8, intervalMs: 300, windupPct: 50, range: 150, hitsGround: true, hitsAir: true,
           projectile: { speed: 1800, visualId: 'proj.plasma' },
           dmgType: 'laser', sfx: 'shot_drone',
         },
@@ -423,8 +422,8 @@ export const future: RawAgeTables = {
     },
     {
       // W7 Future wave. Slow: the pod inhales and spits a white-mint frost bolt, 80 every 1.5 s; the target is
-      // slowed 30% for 2 s; ground and air. Release gate until its art ships
-      id: 'cryo_pod', released: false, kind: 'turret', age: 'future', rarity: 'common', cost: 175,
+      // slowed 30% for 2 s; ground and air
+      id: 'cryo_pod', kind: 'turret', age: 'future', rarity: 'common', cost: 175,
       attack: {
         damage: 80, intervalMs: 1500, windupPct: 0, range: 320, hitsGround: true, hitsAir: true,
         projectile: { speed: 900, visualId: 'proj.frost' },
@@ -435,7 +434,7 @@ export const future: RawAgeTables = {
     {
       // W7 Future wave. Drag: a dish latches a beam on the nearest armored ground enemy in range (else the nearest)
       // and pulls it 100 lu toward your gate (large units resist 50%); 166 every 5.0 s; ground only
-      id: 'tractor_beam', released: false, kind: 'turret', age: 'future', rarity: 'rare', cost: 250,
+      id: 'tractor_beam', kind: 'turret', age: 'future', rarity: 'rare', cost: 250,
       attack: {
         damage: 166, intervalMs: 5000, windupPct: 0, range: 380, hitsGround: true, hitsAir: false,
         projectile: { instant: true, effectId: 'fx.tractor_beam' },
@@ -453,22 +452,22 @@ export const future: RawAgeTables = {
     trap('future', 'grav_mire', { warPath: 6, road: 3100 }, { charges: 1, damage: 110, radius: 60, statuses: [slow(6000, 3000)] }),
     // W7 Future wave variants: a sky tower (the Ranged Common × 1.5, priority air, air ×1.5; War Path Future s2) and
     // a brute camp (its levy, the Mini Mech, is 25% of the Walker Mech, every 16 s; the Future 20-star milestone).
-    // Road fallback 4,700. Release gate until their art ships.
-    { ...tower('future', 'skyguard_pylon', { side: 2, road: 4700 }, { priority: 'air', airBp: 15000 }), released: false },
-    { ...camp('future', 'mech_bay', 'mini_mech', { stars: 20, road: 4700 }, { levyFrom: { group: 'heavy', hpBp: 2500, damageBp: 2500 }, everyMs: 16000, maxAlive: 1 }), released: false },
+    // Road fallback 4,700.
+    tower('future', 'skyguard_pylon', { side: 2, road: 4700 }, { priority: 'air', airBp: 15000 }),
+    camp('future', 'mech_bay', 'mini_mech', { stars: 20, road: 4700 }, { levyFrom: { group: 'heavy', hpBp: 2500, damageBp: 2500 }, everyMs: 16000, maxAlive: 1 }),
   ],
 };
 
 /**
  * W7 Future wave powers (CONTENT_PLAN 5.7; values at P 3.32 and L1 loadouts; I 470 + 90 shield, H 1,860). The age's
- * first six powers live in `powers.ts`. Release gate (`released: false`) until their art and sounds ship.
+ * first six powers live in `powers.ts`.
  */
 export const futurePowers: readonly PowerDef[] = [
   {
     // The H7 lane signal (A2.9.4 `lane`, A5.7 whole-lane powers): War Path Future L3 (Road 3,900). No aim: one pulse
     // touches the 8 hittable enemies nearest your gate anywhere on the lane, ground and air: a targeting laser paints
     // each for 56 and marks it (+20% damage taken) for 6 s. 50 gold, 25 s
-    id: 'target_painter', released: false, kind: 'power', age: 'future', slot: 'field', reach: 'lane', family: 'signal', rarity: 'rare',
+    id: 'target_painter', kind: 'power', age: 'future', slot: 'field', reach: 'lane', family: 'signal', rarity: 'rare',
     source: 'warPath', warPathLevel: 3, road: 3900, cost: 50, reloadMs: 25000, telegraphMs: 1000, maxTargets: 8, aiValueBp: 5000,
     effect: {
       kind: 'field', zone: 2000, durationMs: 0, hitsAir: true, damagePerPulse: 56,
@@ -478,12 +477,12 @@ export const futurePowers: readonly PowerDef[] = [
   },
   {
     // The new Home control (snare, A5.7 family budget): War Path Future side node s1 (Road 4,700). A glittering nanite
-    // net settles over a 350 lu zone for 6 s (12 pulses), ground and air: each pulse 17 damage and snare 40% for
+    // net settles over a 350 lu zone for 6 s (12 pulses), ground and air: each pulse 19 damage and snare 40% for
     // 1.0 s; cap 6
-    id: 'nano_mesh', released: false, kind: 'power', age: 'future', slot: 'home', reach: 'home', family: 'snare', rarity: 'epic',
+    id: 'nano_mesh', kind: 'power', age: 'future', slot: 'home', reach: 'home', family: 'snare', rarity: 'epic',
     source: 'warPath', warPathSide: 1, road: 4700, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 4500,
     effect: {
-      kind: 'field', zone: 350, durationMs: 6000, hitsAir: true, damagePerPulse: 17,
+      kind: 'field', zone: 350, durationMs: 6000, hitsAir: true, damagePerPulse: 19,
       statuses: [{ kind: 'snare', magnitudeBp: 4000, durationMs: 1000 }],
     },
     visualId: 'power.nano_mesh', sfx: 'pw_nanomesh', nameKey: 'card.nano_mesh.name', descKey: 'card.nano_mesh.desc',

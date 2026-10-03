@@ -190,7 +190,7 @@ def _idle(f):
 
 SPEED = 56.25
 GAIT = GK.Gait(8, 820, SPEED, GK.quad_feet(LEGS, GK.TROT, x_off={n: (FOOT_X[n] - LEG_X[n]) * S for n in LEGS}, scale=S, ground=GROUND),
-               0.5, yaw_deg=YAW_DEG, scale=S, lift=9.0, reach=1.0, toe_off=0.0, heel_strike=0.0, lift_peak=0.45)
+               0.5, yaw_deg=YAW_DEG, scale=1.0, lift=9.0, reach=1.0, toe_off=0.0, heel_strike=0.0, lift_peak=0.45)
 
 
 def _walk(f, report=None):

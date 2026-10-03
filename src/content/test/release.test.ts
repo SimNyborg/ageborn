@@ -65,8 +65,9 @@ describe('the release gate (content)', () => {
   it('names no held-back card in a General plan, signature, Trophy Road reward, War Path reward or counter hint', () => {
     const bad = metaCardIds(content).filter((x) => gated(x.id));
     expect(bad).toEqual([]);
-    // With the gate open the same tables do name the wave (the check above is not vacuous).
-    expect(metaCardIds(full).some((x) => gated(x.id))).toBe(true);
+    // With the gate open the same tables do name the wave (the check above is not vacuous; no wave is gated
+    // between waves, tests/fixtures/pausedWave.ts).
+    if (GATED.length > 0) expect(metaCardIds(full).some((x) => gated(x.id))).toBe(true);
   });
 
   it('keeps the shipped Stone side nodes (s1 Tangle Vines, s2 Thorn Hedge) and drops only gated rewards', () => {

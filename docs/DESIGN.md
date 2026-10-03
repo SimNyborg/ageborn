@@ -1054,6 +1054,31 @@ Powers (A5.7): Shrapnel Shells (Field lane volley, War Path L3 / Road 3,500; 99 
 | howitzer | Howitzer | R | 250 | 200 splash r60 / 5.0 s | 480 (min 180) | G | Arc |
 | searchlight_sniper | Searchlight Sniper | E | 250 | 280 / 4.0 s | 480 | G+A | Priority armored; Mark: target takes +20% damage from all sources for 4 s |
 
+**W6 Modern wave (X0, CONTENT_PLAN 5.6; released 2026-10-03; measured numbers, docs/decisions.md).** Capsule cards: Commons from Arena 2, Rares 3, Epics 4, the Legendary 5.
+
+| Slug | Name | Rar | Role | Cost | HP | Damage / interval | Range | Speed | Size | Hits | Traits and abilities |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| commando | Commando | C | Infantry | 50 | 368 | 47 / 1.0 s | 16 | 110 | S | G | Raider (base 84); the fastest Modern Common |
+| sandbag_carrier | Sandbag Carrier | C | Infantry | 50 | 455 | 33 / 1.0 s | 16 | 70 | S | G | Guard (the shoulder sandbag takes 20% less from attacks with range ≥ 100); Blunt |
+| smg_squad | SMG Squad | C | Ranged | 75 | 3 × 74 | 11 / 1.0 s | 170 | 65 | S | G+A | Trio (M1 squad of 3) |
+| rifle_grenadier | Rifle Grenadier | C | Ranged | 75 | 205 | 39 splash r30 / 1.5 s | 230 | 65 | S | G | Arc (`proj.rifle_grenade`) |
+| assault_gun | Assault Gun | C | Heavy | 150 | 1,350 | 88 splash r30 / 1.5 s | 90 | 45 | L | G | Armored mech; a turretless casemate gun |
+| mortar_team | Mortar Team | R | Ranged (Long range, H6) | 75 | 266 | 124 splash r35 / 2.6 s | 380 (min 90) | 60 | S | G | Arc 300 lu/s (`proj.mortar_shell`); half damage to bases |
+| sticky_bomber | Sticky Bomber | R | Anti-heavy | 100 | 580 | 124 / 2.0 s | 16 | 70 | M | G | Melee Anti-heavy mods; priority armored; Brace |
+| combat_medic | Combat Medic | R | Support | 110 | 330 | 22 / 1.2 s | 150 | 65 | S | G+A | Heals 65 HP/s split between the 2 lowest-HP% allies within 160 lu; followSupport; a plain cream disc, never a red cross |
+| bulldog_sergeant | Bulldog Sergeant | R | Infantry | 50 | 415 | 42 / 1.0 s | 16 | 75 | S | G | Frenzy (M2): below 50% HP +30% damage and +20% attack speed |
+| dive_bomber | Dive Bomber | E | Air bomber | 200 | 800 | 66 splash r40 / 2.0 s (base 80) | ±40 drop window | 80 | M | G | Air mech; never stops; bombs only inside the window |
+| bulldozer | Bulldozer | E | Siege | 200 | 1,600 | 28 / 2.0 s (base and forts 220) | 12 | 45 | L | G | Armored mech; siege only |
+| ghillie_sniper | Ghillie Sniper | E | Sniper | 200 | 640 | 180 / 4.0 s | 360 | 55 | S | G+A | Priority back line (ranged and support) |
+| sky_fortress | Sky Fortress | L | Air bomber | 350 | 1,270 | 70 splash r50 / 1.6 s (base 130) and 2 waist gunners 6 / 0.6 s (range 160, G+A, priority air) | ±40 drop window | 40 | H | G | Never stops; crashes for 270 splash r70 and the gunners bail out as 2 Riflemen (sim 7.3.0: riders of a bomber shoot their own targets) |
+
+| Slug | Turret | Rar | Cost | Damage / interval | Range | Hits | Notes |
+|---|---|---|---|---|---|---|---|
+| anti_tank_gun | Anti-Tank Gun | C | 175 | 110 / 2.5 s | 320 | G | Priority armored; the shell pierces |
+| rocket_battery | Rocket Battery | R | 250 | 6 rockets × 74 splash r35 / 6.0 s | 460 | G | Scatter 50 lu |
+
+Powers (A5.7): Creeping Barrage (Field lane volley, War Path L3 / Road 3,700; 110 on up to 8, 50 gold, 25 s) and Concussion Shells (Home stun, War Path s1 / Road 4,600; 177 and a 2.5 s stun on up to 6 in a 350 lu zone, 75 gold, 35 s). Forts (A16.14): Rifle Depot (camp; its levy, the Rifle Levy, is 35% of the Rifleman every 12 s, one at a time; War Path s2) and Wire Snare (trap; 4 charges × 79, each slowing 40% for 2 s; the Modern 20-star milestone). Skins (A5.8): Desert Raider (Trench Raider, rare), Tin Tankette (Tankette, epic), Origami Fortress (Sky Fortress, legendary).
+
 ### A5.6 Future Age (P 3.32)
 
 | Slug | Name | Rar | Role | Cost | HP | Damage / interval | Range | Speed | Size | Hits | Tags | Traits and abilities |
@@ -1074,6 +1099,31 @@ Powers (A5.7): Shrapnel Shells (Field lane volley, War Path L3 / Road 3,500; 99 
 | gravity_well | Gravity Well | E | 250 | 60 / 7.0 s | 400 | G | Priority densest. Damage hits up to 4 ground enemies within 90 lu of impact (area rule). Every ground enemy within 90 lu is pulled 60% of the way to the centre and slowed 50% for 2.5 s |
 
 **Tutorial only (hidden):** `training_dummy`, Training Dummy: cost 50 (for bounty), HP 40, 4 / 1.0 s, range 16, speed 50, small, G, light bio melee.
+
+**W7 Future wave (X0, CONTENT_PLAN 5.7; released 2026-10-03; measured numbers, docs/decisions.md).** Capsule cards: Commons from Arena 2, Rares 3, Epics 4, the Legendary 5.
+
+| Slug | Name | Rar | Role | Cost | HP | Damage / interval | Range | Speed | Size | Hits | Traits and abilities |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| android_pair | Android Pair | C | Infantry | 50 | 2 × 328 | 40 / 1.0 s | 16 | 85 | S | G | Pair (M1 squad of 2); Blunt; light bio (synthetic, not a mech for the Anti-heavy and EMP rules) |
+| barrier_trooper | Barrier Trooper | C | Infantry | 50 | 650 | 47 / 1.0 s | 16 | 70 | S | G | Guard (the hardlight shield takes 25% less from attacks with range ≥ 100) |
+| hover_bike | Hover Biker | C | Infantry | 50 | 545 | 68 / 1.0 s (base 100) | 16 | 110 | M | G | Raider; the fastest Future Common |
+| needle_gunner | Needle Gunner | C | Ranged | 75 | 250 | 20 / 0.5 s | 220 | 75 | S | G+A | Fast light needles (`proj.needle`) |
+| crab_mech | Crab Mech | C | Heavy | 150 | 2,000 | 112 / 1.5 s, cleave 2 | 20 | 45 | L | G | Armored mech; both pincers snap on 2 targets within 30 lu |
+| arc_lobber | Arc Lobber | R | Ranged (Long range, H6) | 75 | 360 | 172 splash r35 / 2.6 s | 380 (min 90) | 60 | S | G | Arc 300 lu/s (`proj.arc_shell`); half damage to bases |
+| plasma_lancer | Plasma Lancer | R | Anti-heavy | 100 | 800 | 96 / 1.2 s | 60 | 70 | M | G | Melee Anti-heavy mods; priority armored; Brace |
+| overclock_engineer | Overclock Engineer | R | Support | 110 | 610 | 56 / 1.2 s (`fx.zap_beam`) | 150 | 65 | S | G+A | Aura: allies within 160 lu attack 20% faster; followSupport |
+| holo_projector | Holo Projector | R | Support | 110 | 430 | 40 / 1.2 s | 150 | 65 | S | G+A | Summoner (M3): a Holo Decoy (320 HP, 1 damage, light mech) after 2 s, then every 6 s, up to 3 |
+| jetpack_trooper | Jetpack Trooper | E | Air gunship | 200 | 950 | 46 / 0.6 s | 160 | 80 | M | G+A | Air bio; obeys stance |
+| particle_cannon | Particle Cannon | E | Siege | 200 | 1,500 | 200 / 3.5 s (`fx.particle_beam`), pierces 3 within 200 lu | 300 (min 60) | 45 | L | G | Armored mech artillery |
+| overload_android | Overload Android | E | Skirmisher | 200 | 1,700 | 90 / 0.9 s | 16 | 60 | M | G | Armored mech; Frenzy (M2): below 50% HP +35% damage and +25% attack speed |
+| drone_carrier | Drone Carrier | L | Siege heavy | 350 | 1,900 | 40 / 0.5 s point-defence laser | 200 | 35 | H | G+A | Summoner (M3) of flying Attack Drones (300 HP, 8 / 0.3 s, range 150, G+A) after 2 s, then every 7 s, up to 2; a ground summoner with an air summon (no new mechanic) |
+
+| Slug | Turret | Rar | Cost | Damage / interval | Range | Hits | Notes |
+|---|---|---|---|---|---|---|---|
+| cryo_pod | Cryo Pod | C | 175 | 80 / 1.5 s | 320 | G+A | Frost orb (`proj.frost`): the target is slowed 30% for 2 s |
+| tractor_beam | Tractor Beam | R | 250 | 166 / 5.0 s | 380 | G | Priority armored; drags its target 100 lu toward your gate (large units resist 50%) |
+
+Powers (A5.7): Target Painter (Field lane signal, War Path L3 / Road 3,900; 56 on up to 8 and a +20% damage mark for 6 s, 50 gold, 25 s) and Nano Mesh (Home snare, War Path s1 / Road 4,700; a 350 lu zone for 6 s that hits air, 19 a pulse and a 40% snare, up to 6, 75 gold, 30 s). Forts (A16.14): Skyguard Pylon (tower; the Ranged Common × 1.5, priority air, air ×1.5; War Path s2) and Mech Bay (camp; its levy, the Mini Mech, is 25% of the Walker Mech every 16 s, one at a time; the Future 20-star milestone). The age's four classic forts (Hardlight Barrier, Sentry Pylon, Clone Bay, Grav Mire) are redrawn in the cartoon style. Skins (A5.8): Space Cadet (Pulse Trooper, rare), Chrome Rail (Rail Gunner, epic), Grandfather Clock (Chrono Titan, legendary).
 
 ### A5.7 Age Powers
 
@@ -1201,8 +1251,8 @@ Values are final at the age's P and L1 loadouts (A5.1), × the loadout multiplie
 | Medieval | `longbow_volley` | **Longbow Volley** | volley | 64 (the 30% cap; X0 Medieval wave, built) | `fx.longbow_volley` · `pw_longbow` |
 | Gunpowder | `rocket_volley` | **Rocket Volley** | volley | 73 | `fx.rocket_volley` · `pw_rockets` |
 | Industrial | `shrapnel_shells` | **Shrapnel Shells** | volley | 83 | `fx.shrapnel` · `pw_shrapnel` |
-| Modern | `creeping_barrage` | **Creeping Barrage** | volley | 99 | `fx.creeping_barrage` · `pw_barrage` |
-| Future | `target_painter` | **Target Painter** | signal | 56 and mark +20% for 6 s | `fx.target_paint` · `pw_painter` |
+| Modern | `creeping_barrage` | **Creeping Barrage** | volley | 110 (X0 Modern wave, built) | `fx.creeping_barrage` · `pw_barrage` |
+| Future | `target_painter` | **Target Painter** | signal | 56 and mark +20% for 6 s (X0 Future wave, built) | `fx.target_paint` · `pw_painter` |
 | Cosmic | `meteor_drizzle` | **Meteor Drizzle** | volley | 175 | `fx.meteor_drizzle` · `pw_drizzle` |
 
 - **Totals:** 48 powers (16 built, 32 new), 24 Home and 24 Field (56 and 32 Field with the 8 lane powers); 16 Common (the starters), 16 Rare (the 8 Road powers and the 8 War Path L5 powers), 16 Epic (the War Path L7 and L9 powers). No Legendary powers. Rarity is a sidegrade (A3): every power follows its family's budget; rarity marks the source and the specialisation.
@@ -2061,6 +2111,8 @@ All SFX are ZzFX definitions (3-5 variants each) pre-rendered to AudioBuffers at
 | Medieval wave (X0, 2026-10-03, built) | Attacks: `squire_jab` (Squires), `flail_smash` (Flailman), `dagger_stab` (Brigand), `greatsword_sweep` (Greatsword Knight), `hammer_clang` (Warhammer Sergeant), `whip_crack` (Kennel Master), `hound_bite` (War Hound), `drawbridge_slam` (Siege Belfry), `wyrm_breath` (Lindworm), `shot_windlass` (Crossbowman), `shot_longbow` (Yeoman Archer), `trumpet_toot` (Herald), `shot_mangonel` (Mangonel), `vial_toss` (Alchemist). Turrets: `shot_springald` (Springald), `crane_hook` (Grapple Crane). Powers: `pw_longbow` (Longbow Volley), `pw_bell` (Great Bell) |
 | Gunpowder wave (X0, 2026-10-03, built) | Attacks: `claymore_chop` (Highlander), `scoop_swing` (Powder Monkey), `sabre_slash` (Hussar), `marshal_sweep` (Grand Marshal), `shot_blunderbuss` (Blunderbuss), `shot_dragoon` (Dragoon), `shot_coehorn` (Coehorn Crew), `shot_wallgun` (Wall Gunner), `drum_roll` (Drummer Boy), `pipe_drone` (Bagpiper), `mesmer_chime` (Mesmerist); the Voltigeurs reuse `shot_musket` and the Rocket Cart `shot_rocket`. Turrets: `shot_carronade` (Carronade), `shot_sea_mortar` (Sea Mortar). Powers: `pw_rockets` (Rocket Volley), `pw_salute` (Cannon Salute) |
 | Industrial wave (X0, 2026-10-03, built) | Attacks: `pickaxe_clink` (Coal Miners), `mantlet_jab` (Iron Mantlet), `bike_skid` (Dispatch Rider), `plough_scoop` (Steam Tractor), `drill_spin` (Steam Driller), `key_whack` (Clockwork Tinker), `ice_axe_chop` (Alpine Climber), `toy_bayonet` (Clockwork Soldier), `shot_bowl` (Bomb Bowler), `shot_trench_mortar` (Trench Mortar), `cornet_blast` (Bandmaster, in F#), `car_mg` (Armoured Car), `coil_zap` (Spark Scientist), `train_gun` (Armoured Train's turret gun; its roof machine gun reuses `shot_gatling`). Turrets: `shot_rivet` (Rivet Spitter), `hammer_slam` (Steam Hammer). Powers: `pw_shrapnel` (Shrapnel Shells), `pw_magnet` (Great Magnet) |
+| Modern wave (X0, 2026-10-03, built) | Attacks: `butt_stroke` (Commando), `sandbag_slam` (Sandbag Carrier), `shot_smg` (SMG Squad), `shot_rifle_grenade` (Rifle Grenadier), `shot_assault_gun` (Assault Gun), `shot_mortar_team` (Mortar Team), `sticky_thunk` (Sticky Bomber), `shot_pistol` (Combat Medic), `boxing_jab` (Bulldog Sergeant), `dive_whistle` (Dive Bomber), `dozer_shove` (Bulldozer), `shot_ghillie` (Ghillie Sniper), `bomb_stick` (Sky Fortress; its waist gunners reuse `shot_mg`). Turrets: `shot_at_gun` (Anti-Tank Gun), `rocket_ripple` (Rocket Battery). Powers: `pw_barrage` (Creeping Barrage), `pw_concussion` (Concussion Shells) |
+| Future wave (X0, 2026-10-03, built) | Attacks: `baton_spin` (Android Pair), `shield_pulse` (Barrier Trooper), `lance_swipe` (Hover Bike), `shot_needle` (Needle Gunner), `pincer_snap` (Crab Mech), `shot_lobber` (Arc Lobber), `lance_crackle` (Plasma Lancer), `multitool_zap` (Overclock Engineer), `shot_holo` (Holo Projector), `shot_jet_beam` (Jetpack Trooper), `shot_particle` (Particle Cannon), `robot_punch` (Overload Android), `shot_pd_laser` (Drone Carrier), `holo_flicker` (Holo Decoy), `shot_drone` (Attack Drone). Turrets: `shot_cryo` (Cryo Pod), `tractor_hum` (Tractor Beam). Powers: `pw_painter` (Target Painter), `pw_nanomesh` (Nano Mesh) |
 | Bronze wave (X0, 2026-10-03, built) | Attacks: `kopis_hack` (Shield Bearer), `rhomphaia_cut` (Thracian Raider), `trunk_lash` (War Elephant), `sagaris_sweep` (Amazon Rider), `labrys_chop` (Minotaur), `hydra_bite` (Hydra), `horse_ram` (Wooden Horse; its riders keep `swing_whoosh`), `shot_discus` (Discus Thrower), `shot_belly_bow` (Belly Bowman), `aulos_note` (Aulos Piper, in D), `chorus_wail` (Tragic Chorus, D minor); the Slingers reuse `shot_sling` and the Cretan Archer `shot_bow`. Turrets: `net_cast` (Net Caster), `shot_polybolos` (Polybolos). Powers: `pw_sandstorm` (Sandstorm), `pw_whirlpool` (Charybdis) |
 
 **Mixer:**
@@ -2122,6 +2174,8 @@ All SFX are ZzFX definitions (3-5 variants each) pre-rendered to AudioBuffers at
 - **Medieval wave effects (X0, 2026-10-03, built):** `fx.longbow_volley` (long arrows drop on each unit the volley screens, from the `power.fx.<id>.hit` rule) with its `fx.arrow_thud` landing, `fx.great_bell` (rings of sound and notes over the stun zone), the instant attacks `fx.lindworm_breath` (green marsh fire) and `fx.grapple_hook` (rope and hook), and the projectiles `proj.longarrow`, `proj.note`, `proj.vial` and `proj.spear_bolt`.
 - **Gunpowder wave effects (X0, 2026-10-03, built):** `fx.rocket_volley` (war rockets streak down on each unit the volley screens, from the `power.fx.<id>.hit` rule) with its `fx.rocket_pop` landing, `fx.cannon_salute` (a ring of saluting guns: shock rings and rolling white smoke over the stun zone), the instant attacks `fx.blunderbuss_spray` (a cone of shot), `fx.drum_boom`, `fx.pipe_drone` and `fx.mesmer_spiral`, and the projectile `proj.mortar_shell` (the Coehorn Crew's lit shell on its high arc). The Rocket Cart's volley of 4 lands spread by its `scatter` (±40 lu, seeded; SIM_VERSION 7.2.0).
 - **Industrial wave effects (X0, 2026-10-03, built):** `fx.shrapnel_shells` (a shell whistles down over each unit the volley screens, from the `power.fx.<id>.hit` rule) with its `fx.shrapnel_burst` air burst, `fx.great_magnet` (a giant horseshoe magnet swings down over the pull zone, sparks and filings streaming in), the instant attacks `fx.coil_arc` (the Spark Scientist's lilac arc that jumps to a second foe) and `fx.hammer_shock` (the Steam Hammer's ground shock at its gate), and the projectiles `proj.bowl_bomb` (the Bomb Bowler's banded bomb, fuse sparking) and `proj.rivet` (the Rivet Spitter's hot rivet). Medallions `power.shrapnel_shells` and `power.great_magnet`.
+- **Modern wave effects (X0, 2026-10-03, built):** `fx.creeping_barrage` (a shell screams down onto each unit the volley screens, from the `power.fx.<id>.hit` rule) with its `fx.barrage_burst` ground burst, `fx.concussion_shells` (three shock rings and grey smoke over the stun zone; the stunned units wobble under the dizzy status) and the projectile `proj.rifle_grenade` (the finned rifle grenade, a short smoky arc). Medallions `power.creeping_barrage` and `power.concussion_shells`.
+- **Future wave effects (X0, 2026-10-03, built):** `fx.zap_beam` (the Overclock Engineer's short crackling multitool arc), `fx.particle_beam` (the Particle Cannon's thick white-mint lance with a bloom at the muzzle), `fx.tractor_beam` (the Tractor Beam's pull ray, a lingering mint beam with drifting nanites), `fx.target_paint` (Target Painter: a spotter drone sweeps a scan line over the zone and reticles lock on) and `fx.nano_mesh` (Nano Mesh: a hex dome and glittering nanite threads over the snare zone; it catches fliers too), and the projectiles `proj.needle` (a mint flechette streak), `proj.arc_shell` (a glowing canister on the high arc) and `proj.frost` (the Cryo Pod's frost orb shedding flakes). Medallions `power.target_painter` and `power.nano_mesh`.
 - **Bronze wave effects (X0, 2026-10-03, built):** projectiles `proj.discus` (a spinning bronze discus), `proj.net` (a weighted net) and `proj.arrow_arc` (the arrow with a longer trail for the Cretan Archer's high arc); instant `fx.note_pop` (a mint note ribbon and floating notes) and `fx.wail_ring` (lilac rings and a soft beam); power effects `fx.sandstorm` (a pale sand wall rolling down the whole lane with grit streaks, on the power's first impact) and `fx.whirlpool` (a churning ring of water and foam over `fx.field_zone` for Charybdis's 4 s); icons `power.sandstorm`, `power.charybdis`. The Dread aura's slow shows through the existing slow status mark on each victim (the aura re-emits it on the heal-grid pulse).
 - **UI icons:** `icon.role.<group>`, `icon.age.<age>`, `icon.horn`, `icon.chevron`, `icon.base_alert`, `icon.follow`, `trim.bronze`, `trim.silver`, `trim.gold`, `foil.bronze`, `foil.silver`, `foil.holo`.
 

@@ -49,17 +49,19 @@ describe('A14.1 coverage', () => {
     const shipped = <T extends { id: string }>(list: T[]): T[] => list.filter((x) => !PAUSED_WAVE_IDS.has(x.id));
     // A17.13: 56 units (plus the hidden Training Dummy) and 32 turrets; the Stone and Medieval waves add 13
     // troops and a summon (Cave Pup, War Hound), 2 turrets, 2 forts and 3 skins each, the Bronze and Gunpowder waves
-    // 13 troops, 2 turrets, 2 forts and 3 skins each, the Industrial wave 13 troops and a summon (Clockwork Soldier)
-    expect(shipped(Object.values(content.units)).filter((u) => !u.fort && !u.levy).length).toBe(125);
+    // 13 troops, 2 turrets, 2 forts and 3 skins each, the Industrial wave 13 troops and a summon (Clockwork Soldier),
+    // the Modern wave 13 troops, the Future wave 13 troops and 2 summons (Holo Decoy, Attack Drone)
+    expect(shipped(Object.values(content.units)).filter((u) => !u.fort && !u.levy).length).toBe(153);
     // A16.14.8: 24 hidden fort twins (walls, towers, camps) and 8 levies, plus the Stone wave's 2 twins and the
     // Medieval wave's Crossbow Keep (its Bear Snares is a trap, no twin) and the Gunpowder wave's Cavalry Picket
     // (its Fougasse is a trap) and the Bronze wave's Hoplon Line and Slinger Camp and the Industrial wave's Rail
-    // Barricade and Tesla Pylon; 10 levies with the X0 camp
-    // variants' Slinger Levy (Bronze) and Picket Rider (Gunpowder); 11 with the Modern wave's Rifle Levy
-    expect(shipped(Object.values(content.units)).filter((u) => u.fort).length).toBe(32);
-    expect(Object.values(content.units).filter((u) => u.levy).length).toBe(11);
-    expect(shipped(Object.values(content.turrets)).length).toBe(42);
-    expect(shipped(Object.values(content.skins)).length).toBe(27);
+    // Barricade and Tesla Pylon and the Modern wave's Rifle Depot (its Wire Snare is a trap); 10 levies with the X0 camp
+    // variants' Slinger Levy (Bronze) and Picket Rider (Gunpowder); 11 with the Modern wave's Rifle Levy,
+    // 12 with the Future wave's Mini Mech; the Future wave's Skyguard Pylon and Mech Bay add 2 twins
+    expect(shipped(Object.values(content.units)).filter((u) => u.fort).length).toBe(35);
+    expect(Object.values(content.units).filter((u) => u.levy).length).toBe(12);
+    expect(shipped(Object.values(content.turrets)).length).toBe(46);
+    expect(shipped(Object.values(content.skins)).length).toBe(33);
   });
 
   it('has every projectile and effect the content fires', () => {

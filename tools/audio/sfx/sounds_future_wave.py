@@ -125,7 +125,7 @@ def holo_flicker(v, rng):
 def shot_needle(v, rng):
     # Needle Gunner: a fast, dry flechette tick-tick, a tiny rail snap and a thin whistle.
     p = pv(v)
-    snaps = mixdown(*[at(0.045 * k, mixdown(click(rng, 0.004, 2500, 9000), at(0, _pew(rng, p * (1 + 0.04 * k), 3200, 1400, 0.06, 0.4))), 0.8) for k in range(2)])
+    snaps = mixdown(*[at(0.045 * k, mixdown(click(rng, 0.004, 5000, 11000) * 0.6, at(0, lp(_pew(rng, p * (1 + 0.04 * k), 1600, 700, 0.07, 0.5), 2200))), 0.8) for k in range(2)])
     return _cut(snaps, 0.22)
 
 
@@ -197,9 +197,9 @@ def shot_drone(v, rng):
 def shot_cryo(v, rng):
     # Cryo Pod: a pressurised hiss of coolant and a crystalline frost chime as the orb leaves.
     p = pv(v)
-    hiss = bp(noise(0.3, rng), 2500, 9000) * dsp.env_adsr(0.3, 0.005, 0.08, 0.5, 0.15) * 0.45
+    hiss = bp(noise(0.3, rng), 5500, 11000) * dsp.env_adsr(0.3, 0.005, 0.08, 0.5, 0.15) * 0.45
     pop = thump(170 * p, 90, 0.1, 0.01, 0.03, 1.6) * 0.6
-    chime_ = sum(fm_bell(f * p, 0.45, 3.5, 1.4, 0.16, 0.04) * g for f, g in ((2350, 0.3), (3130, 0.2), (3950, 0.12)))
+    chime_ = sum(bell(f * p, 0.45, 0.6, 0.16, ((1, 1.0), (4.9, 0.25))) * g for f, g in ((1180, 0.3), (1570, 0.2)))
     return mixdown(pop, at(0, hiss), at(0.03, chime_))
 
 

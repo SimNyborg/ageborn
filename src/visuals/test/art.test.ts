@@ -125,6 +125,9 @@ describe('team readability (A11)', () => {
         'unit.armoured_train',
         // Modern wave
         'unit.assault_gun',
+        // Future wave
+        'unit.crab_mech',
+        'unit.drone_carrier',
       ].sort(),
     );
   });

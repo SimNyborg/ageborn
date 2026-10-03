@@ -180,40 +180,42 @@ describe('release gate: rewards and the starter set (A6.3, A18.7, A3)', () => {
 });
 
 describe('release gate: loading a save that holds a held-back card', () => {
-  // The gated wave is the Modern wave (the Stone, Bronze, Medieval, Gunpowder and Industrial waves shipped
-  // 2026-10-03, tests/fixtures/pausedWave.ts).
+  // The last gated wave was the Future wave (all seven waves through Future shipped 2026-10-03,
+  // tests/fixtures/pausedWave.ts).
   function tainted(): SaveDoc {
     const s = ownsAll(fresh(9), 3, 2);
     const plan = s.warPlans[0]!;
-    const modern = plan.loadouts.modern;
+    const future = plan.loadouts.future;
     const loadouts = {
       ...plan.loadouts,
-      modern: { ...modern, units: ['commando', 'trench_raider', 'assault_gun', 'rifleman', 'combat_medic', 'sky_fortress'], turrets: ['anti_tank_gun', 'mg_nest'], powers: { home: 'concussion_shells', field: 'creeping_barrage' }, fort: 'rifle_depot' },
+      future: { ...future, units: ['android_pair', 'photon_knight', 'crab_mech', 'pulse_trooper', 'overclock_engineer', 'drone_carrier'], turrets: ['cryo_pod', 'pulse_laser'], powers: { home: 'nano_mesh', field: 'target_painter' }, fort: 'mech_bay' },
     };
     return {
       ...s,
-      collection: { ...s.collection, commando: { level: 3, copies: 4, isNew: true, foil: 'none' }, sky_fortress: { level: 1, copies: 0, isNew: true, foil: 'holo' }, anti_tank_gun: { level: 2, copies: 1, isNew: false, foil: 'none' } },
-      powersOwned: [...s.powersOwned, 'concussion_shells', 'creeping_barrage'],
-      fortsOwned: [...(s.fortsOwned ?? []), 'rifle_depot', 'wire_snare'],
-      skins: { owned: [...s.skins.owned, 'desert_raider', 'tin_tankette'], equipped: { ...s.skins.equipped, trench_raider: 'desert_raider', tankette: 'tin_tankette' } },
+      collection: { ...s.collection, android_pair: { level: 3, copies: 4, isNew: true, foil: 'none' }, drone_carrier: { level: 1, copies: 0, isNew: true, foil: 'holo' }, cryo_pod: { level: 2, copies: 1, isNew: false, foil: 'none' } },
+      powersOwned: [...s.powersOwned, 'nano_mesh', 'target_painter'],
+      fortsOwned: [...(s.fortsOwned ?? []), 'skyguard_pylon', 'mech_bay'],
+      skins: { owned: [...s.skins.owned, 'space_cadet', 'chrome_rail'], equipped: { ...s.skins.equipped, pulse_trooper: 'space_cadet', rail_gunner: 'chrome_rail' } },
       warPlans: [{ ...plan, loadouts }, ...s.warPlans.slice(1)],
     };
   }
 
-  it('drops every held-back card from the collection, owned lists, skins and War Plans; refills troop and turret slots', () => {
+  // Needs a gated wave: the save below holds Future wave cards, which shipped 2026-10-03; the W8 Cosmic wave swaps in
+  // its own ids while it is gated (tests/fixtures/pausedWave.ts).
+  it.skipIf(PAUSED_WAVE_IDS.size === 0)('drops every held-back card from the collection, owned lists, skins and War Plans; refills troop and turret slots', () => {
     const s = withoutUnreleased(tainted(), C);
     expect(Object.keys(s.collection).filter(gated)).toEqual([]);
     expect([...s.powersOwned, ...s.fortsOwned, ...s.skins.owned].filter(gated)).toEqual([]);
     expect(Object.entries(s.skins.equipped).filter(([k, v]) => gated(k) || gated(v))).toEqual([]);
-    const modern = s.warPlans[0]!.loadouts.modern;
-    expect(planIds({ modern }).filter(gated)).toEqual([]);
-    expect(modern.units.every((x) => x !== null)).toBe(true);
-    expect(modern.turrets.every((x) => x !== null)).toBe(true);
-    expect(modern.powers).toEqual(starterPowers(C, 'modern'));
-    expect(modern.fort).toBe(C.order.forts.find((f) => C.forts[f]?.age === 'modern' && C.forts[f]?.fortKind === 'wall'));
+    const future = s.warPlans[0]!.loadouts.future;
+    expect(planIds({ future }).filter(gated)).toEqual([]);
+    expect(future.units.every((x) => x !== null)).toBe(true);
+    expect(future.turrets.every((x) => x !== null)).toBe(true);
+    expect(future.powers).toEqual(starterPowers(C, 'future'));
+    expect(future.fort).toBe(C.order.forts.find((f) => C.forts[f]?.age === 'future' && C.forts[f]?.fortKind === 'wall'));
     // Released cards and their levels stay as they were.
     expect(s.collection.bonker).toEqual(tainted().collection.bonker);
-    expect(modern.units.slice(1, 2)).toEqual(['trench_raider']);
+    expect(future.units.slice(1, 2)).toEqual(['photon_knight']);
   });
 
   it('runs on every load (tickTimers) and returns the same save when there is nothing to remove', () => {

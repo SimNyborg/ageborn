@@ -94,14 +94,14 @@ describe('cards (A6.6 upgrades, A5.1 level scaling)', () => {
   });
 
   it('collection completion counts units and turrets', () => {
-    // 88 cards (A17.13) plus the Stone, Bronze, Medieval, Gunpowder and Industrial waves' 13 troops and 2 turrets
-    // each (CONTENT_PLAN W1-W5, shipped 2026-10-03)
-    expect(collectionProgress(maxedSave(content), content)).toEqual({ owned: 163, total: 163 });
+    // 88 cards (A17.13) plus the Stone, Bronze, Medieval, Gunpowder, Industrial and Modern waves' 13 troops and 2
+    // turrets each (CONTENT_PLAN W1-W6, shipped 2026-10-03)
+    expect(collectionProgress(maxedSave(content), content)).toEqual({ owned: 178, total: 178 });
     const n = collectionProgress(newPlayerSave(content), content);
-    expect(n.total).toBe(163);
+    expect(n.total).toBe(178);
     // 24 unit and 16 turret Commons, plus Spear Hunter, Phalangite, Pikeman and Grenadier, plus the Stone,
-    // Bronze, Medieval, Gunpowder and Industrial waves' 5 troop Commons and Common turret each
-    expect(n.owned).toBe(24 + 16 + 4 + 6 + 6 + 6 + 6 + 6);
+    // Bronze, Medieval, Gunpowder, Industrial and Modern waves' 5 troop Commons and Common turret each
+    expect(n.owned).toBe(24 + 16 + 4 + 6 + 6 + 6 + 6 + 6 + 6);
   });
 });
 
@@ -260,8 +260,8 @@ describe('profile and history (A6.1)', () => {
     expect(v.favourite).toBe('bonker');
     expect(v.legendaries).toBe(1);
     // one per age, plus the Stone wave's Elk Chieftain, the Bronze wave's Hydra, the Medieval wave's Lindworm, the
-    // Gunpowder wave's Grand Marshal and the Industrial wave's Armoured Train
-    expect(v.legendariesTotal).toBe(13);
+    // Gunpowder wave's Grand Marshal, the Industrial wave's Armoured Train and the Modern wave's Sky Fortress
+    expect(v.legendariesTotal).toBe(14);
     expect(v.byTier[0]).toEqual({ tier: 0, wins: 5, losses: 1 });
     expect(v.conquestStars).toBe(6);
     const raw = profileView(fakeSaveDoc(), content);
@@ -356,14 +356,14 @@ describe('misc', () => {
 
   it('filters the collection by age, role, rarity and ownership', () => {
     const s = midGameSave(content);
-    // A17.13's 56 + 32 + 48, plus the Stone, Bronze, Medieval, Gunpowder and Industrial waves' 13 troops, 2 turrets
-    // and 2 powers each (CONTENT_PLAN W1-W5)
-    expect(filterCards(s, content, NO_FILTER)).toHaveLength(56 + 32 + 48 + 17 + 17 + 17 + 17 + 17);
-    expect(filterCards(s, content, { ...NO_FILTER, role: 'turret' })).toHaveLength(42);
-    expect(filterCards(s, content, { ...NO_FILTER, role: 'power' })).toHaveLength(58);
+    // A17.13's 56 + 32 + 48, plus the Stone, Bronze, Medieval, Gunpowder, Industrial and Modern waves' 13 troops,
+    // 2 turrets and 2 powers each (CONTENT_PLAN W1-W6)
+    expect(filterCards(s, content, NO_FILTER)).toHaveLength(56 + 32 + 48 + 17 + 17 + 17 + 17 + 17 + 17);
+    expect(filterCards(s, content, { ...NO_FILTER, role: 'turret' })).toHaveLength(44);
+    expect(filterCards(s, content, { ...NO_FILTER, role: 'power' })).toHaveLength(60);
     expect(filterCards(s, content, { ...NO_FILTER, age: 'stone', rarity: 'legendary' })).toEqual(['mammoth_matriarch', 'elk_chieftain']);
     expect(filterCards(s, content, { ...NO_FILTER, age: 'bronze', rarity: 'legendary' })).toEqual(['bronze_colossus', 'hydra']);
-    expect(filterCards(s, content, { ...NO_FILTER, own: 'missing', rarity: 'legendary' })).toHaveLength(12);
+    expect(filterCards(s, content, { ...NO_FILTER, own: 'missing', rarity: 'legendary' })).toHaveLength(13);
     expect(filterCards(s, content, { ...NO_FILTER, role: 'antiArmor' })).toEqual([
       'spear_hunter',
       'boulder_hurler',
@@ -376,6 +376,7 @@ describe('misc', () => {
       'harpoon_gunner',
       'steam_driller',
       'bazooka_trooper',
+      'sticky_bomber',
       'rail_gunner',
       'emp_saboteur',
       'graviton_halberdier',

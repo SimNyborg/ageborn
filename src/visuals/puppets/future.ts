@@ -43,7 +43,7 @@ const MECH_K = 1.16;
 const TITAN_K = 1.06;
 /** W7 Future wave fallback scales (the Blender sheets are the shipped art). */
 const CRAB_K = 1.1;
-const CARRIER_K = 1.7;
+const CARRIER_K = 1.6;
 const ANDROID = { ...armored, skin: zone('metal2'), glove: zone('metal2') };
 
 export const FUTURE_UNITS: PuppetDef[] = [
@@ -290,14 +290,14 @@ export const FUTURE_UNITS: PuppetDef[] = [
     center: 20,
     bones: [
       { id: 'hull', parent: 'spin', x: 0, y: 10 },
-      { id: 'pilot', parent: 'hull', x: -2, y: -20 },
-      { id: 'lance', parent: 'pilot', x: 10, y: 4 },
-      { id: 'flag1', parent: 'hull', x: -16, y: -8 },
+      { id: 'pilot', parent: 'hull', x: -2, y: -30 },
+      { id: 'lance', parent: 'pilot', x: 12, y: 4 },
+      { id: 'flag1', parent: 'hull', x: -16, y: -22 },
     ],
     slots: [
-      slot(sized('future.turret.flag', 0.9), 'flag1', 4, { noWidth: true }),
+      slot(sized('future.turret.flag', 1.1), 'flag1', 4, { noWidth: true }),
       slot(sized('future.drone.body', 1.1), 'hull', 10),
-      slot('future.mech.pilot', 'pilot', 12, { tag: 'prop' }),
+      slot(sized('future.mech.pilot', 1.8), 'pilot', 12, { tag: 'prop' }),
       slot(sized('future.photonblade', 0.9), 'lance', 13, { tag: 'weapon', noWidth: true, rot: 80 }),
     ],
     attack: 'vehicle.attack.ram',
@@ -417,9 +417,9 @@ export const FUTURE_UNITS: PuppetDef[] = [
     eyes: 'shared.eyes.angry',
     hat: [{ part: 'future.hood', tag: 'prop' }],
     torso: 'future.torso.suit',
-    back: [{ part: 'future.capacitor', x: -10, y: -10 }],
+    back: [{ part: sized('future.capacitor', 0.8), x: -8, y: -10 }],
     pelvis: 'future.pelvis.suit',
-    weapon: { part: sized('future.baton', 1.2), rot: 140, muzzle: { x: 0, y: -14 } },
+    weapon: { part: 'future.baton', rot: 140, muzzle: { x: 0, y: -12 } },
     pose: { armF: -60, foreF: -30, armB: 14, foreB: -30 },
     attack: 'biped.attack.cast',
     ability: 'ability.beacon',
@@ -464,6 +464,7 @@ export const FUTURE_UNITS: PuppetDef[] = [
       slot('future.drone.pod', 'body', 8, { x: -13, y: -6, noWidth: true }),
       slot('future.drone.pod', 'body', 8, { x: 13, y: -6, id: 'podB', noWidth: true }),
       slot('future.drone.emitter', 'emitter', 9),
+      slot(sized('future.turret.flag', 0.8), 'body', 7, { x: -10, y: -10, id: 'pennant', noWidth: true }),
       slot('future.drone.body', 'body', 10),
       slot('future.mech.pilot', 'pilot', 11, { tag: 'prop' }),
     ],
@@ -535,8 +536,9 @@ export const FUTURE_UNITS: PuppetDef[] = [
         { id: 'turret', parent: 'hull', x: -4, y: -22 },
         { id: 'barrel', parent: 'turret', x: 10, y: -7 },
         { id: 'muzzle', parent: 'barrel', x: 32, y: 0 },
-        { id: 'deck', parent: 'turret', x: -2, y: -14 },
-        { id: 'flag1', parent: 'turret', x: -10, y: -12 },
+        { id: 'tower', parent: 'turret', x: -8, y: -8 },
+        { id: 'deck', parent: 'tower', x: 0, y: -54 },
+        { id: 'flag1', parent: 'tower', x: -6, y: -40 },
       ],
       CARRIER_K,
     ),
@@ -548,6 +550,7 @@ export const FUTURE_UNITS: PuppetDef[] = [
         slot('cosmic.hover.turret', 'turret', 10),
         slot('cosmic.hover.hull', 'hull', 12),
         slot('cosmic.hover.pad', 'padF', 13),
+        slot(sized('future.turret.pylon', 1.5), 'tower', 13.5, { noWidth: true }),
         slot('future.drone.body', 'deck', 14, { noWidth: true }),
       ],
       CARRIER_K,

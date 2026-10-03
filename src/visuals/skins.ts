@@ -308,7 +308,7 @@ export const SKIN_SPECS: readonly SkinSpec[] = [
     skin: 'grandfather_clock',
     target: 'unit.chrono_titan',
     // A grandfather clock: walnut casing, brass trim and an ivory dial.
-    palette: { cloth: 0x5a3e2e, cloth2: 0x8a6448, metal: 0xd8c08a, metal2: 0x6a4a36, wood: 0x6a4a36, wood2: 0x4a3426, stone: 0x8a6448, stone2: 0x5a3e2e, cloth3: 0xd8c08a, clockface: 0xf2ead8 },
+    palette: { cloth: 0x5a4c40, cloth2: 0x7a6858, metal: 0xc8b48a, metal2: 0x6a5a4c, wood: 0x6a5a4c, wood2: 0x4a4038, stone: 0x7a6858, stone2: 0x5a4c40, cloth3: 0xc8b48a, clockface: 0xf2ead8 },
   },
 ];
 

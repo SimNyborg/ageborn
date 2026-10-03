@@ -102,6 +102,12 @@ const A13: Record<string, string[]> = {
     'shot_pistol', 'boxing_jab', 'dive_whistle', 'dozer_shove', 'shot_ghillie', 'bomb_stick', 'shot_at_gun', 'rocket_ripple',
     'pw_barrage', 'pw_concussion',
   ],
+  /** Future wave (CONTENT_PLAN 5.7): the attacks, turrets and powers of the new Future cards. */
+  futureWave: [
+    'baton_spin', 'shield_pulse', 'lance_swipe', 'shot_needle', 'pincer_snap', 'shot_lobber', 'lance_crackle', 'multitool_zap',
+    'shot_holo', 'shot_jet_beam', 'shot_particle', 'robot_punch', 'shot_pd_laser', 'holo_flicker', 'shot_drone', 'shot_cryo',
+    'tractor_hum', 'pw_painter', 'pw_nanomesh',
+  ],
   /** MVP pass (audio audit 2026-10-01): the ui-plan 5.4 UI ids, Council, stances, escalation, warnings, energy forts. */
   mvp: [
     'ui_sheet', 'ui_pop', 'ui_whoosh', 'ui_stamp', 'card_lift', 'card_place', 'star_stamp', 'path_draw', 'node_drop', 'region_open', 'ui_unlock', 'reward_fly',
@@ -124,7 +130,8 @@ describe('sound manifest (A13)', () => {
   it('has exactly the A13 sound ids', () => {
     // 182 + the 16 fort sounds (A16.14.8) + the 31 of the MVP pass + the 15 of the Bronze wave + the 14 of the Stone wave
     // + the 18 of the Medieval wave + the 15 of the Gunpowder wave + the 18 of the Industrial wave + the 17 of the Modern wave
-    expect(A13_IDS).toHaveLength(326);
+    // + the 19 of the Future wave
+    expect(A13_IDS).toHaveLength(345);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 

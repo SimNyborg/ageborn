@@ -146,7 +146,7 @@ def build(rig):
     rig.part("bomb", g, R.GUNMETAL, finish="metal", outline=0.4)
     g = Geo().lathe([(3.65, -0.6), (3.75, 0), (3.65, 0.6)], (bx + 1.0, by, bz), (bx + 2.2, by, bz), segs=14)
     rig.part("bomb", g, KM.CREAM, outline=0.3)
-    rig.track("muzzle", "plane", (bx, by, bz - 2.0))
+    rig.track("muzzle", "plane", (bx + 6.0, by, bz - 2.0))   # just ahead of the bomb: shots leave in front (unitSheets test)
     # propeller: blades (phase copies) and pale blur arcs
     rig.joint("prop", "plane", PROP)
     for k in range(BLUR):

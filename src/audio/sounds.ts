@@ -850,7 +850,7 @@ const BASE_SOUNDS = {
     ...[0, 70, 140].map((ms) => at(ms, { vol: 0.3, freq: 2100 * (1 + 0.04 * v), attack: 0.002, sustain: 0.01, release: 0.08, shape: 'square', curve: 0.6, slide: -20, lowpass: 10000 })),
   ])),
   holo_flicker: mix('future', mixVariants(3, (v) => [
-    ...[0, 35, 70, 105].map((ms, k) => at(ms, { vol: 0.12, freq: [880, 1320, 990, 1480][k] * (1 + 0.04 * v), attack: 0.002, release: 0.03, shape: 'sin', mod: 8 })),
+    ...([[0, 880], [35, 1320], [70, 990], [105, 1480]] as const).map(([ms, f]) => at(ms, { vol: 0.12, freq: f * (1 + 0.04 * v), attack: 0.002, release: 0.03, shape: 'sin', mod: 8 })),
   ])),
   shot_drone: mix('future', mixVariants(4, (v) => [
     ...[0, 60].map((ms) => at(ms, { vol: 0.22, freq: 2600 * (1 + 0.05 * v), attack: 0.002, release: 0.06, shape: 'square', curve: 0.6, slide: -18, lowpass: 10000 })),

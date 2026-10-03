@@ -28,8 +28,8 @@ function sheet(source: string): SheetFile {
 describe('world art manifest', () => {
   const entries = Object.entries(WORLD_OVERRIDES);
 
-  it('covers all 42 turrets (32 plus the Stone, Bronze, Medieval, Gunpowder and Modern waves) and 8 bases, merged into the main manifest', () => {
-    expect(entries.filter(([id]) => id.startsWith('turret.'))).toHaveLength(42);
+  it('covers all 44 turrets (32 plus the Stone, Bronze, Medieval, Gunpowder, Modern and Future waves) and 8 bases, merged into the main manifest', () => {
+    expect(entries.filter(([id]) => id.startsWith('turret.'))).toHaveLength(44);
     expect(entries.filter(([id]) => id.startsWith('base.'))).toHaveLength(8);
     for (const [id, def] of entries) expect(MANIFEST[id]?.source, id).toBe(def.source);
   });
