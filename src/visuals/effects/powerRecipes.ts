@@ -1055,6 +1055,44 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
         { ...dust(6, 1.2), tint: 0xd8ccb4 },
       ],
     },
+    // Industrial wave (CONTENT_PLAN 5.5)
+    {
+      // Shrapnel Shells (Field lane volley): a shell whistles down over each unit it screens and bursts just above it.
+      id: 'fx.shrapnel_shells',
+      durationMs: 1000,
+      fall: { sprite: 'proj.shell', count: 1, fromX: -170, fromY: -250, spreadX: 10, fallMs: 300, impact: 'fx.shrapnel_burst', scale: 1.2 },
+    },
+    {
+      // An air burst: a pale flash and a smoke ball over the target, a fan of shrapnel raining down onto it.
+      id: 'fx.shrapnel_burst',
+      durationMs: 720,
+      sprites: [
+        { ...flash(1.3, 0xfff6e2, 100), keys: [{ t: 0, y: -28, sx: 1, sy: 1, a: 1 }, { t: 1, y: -28, sx: 2.4, sy: 2.4, a: 0 }] },
+        { ...bloom(1.2, 260, 0xfff0d6, 0.5), keys: [{ t: 0, y: -28, sx: 0.6, sy: 0.6, a: 0.6 }, { t: 1, y: -28, sx: 1.6, sy: 1.6, a: 0 }] },
+        ring(1.2, 300, 0xf4ecd8, 0.35),
+      ],
+      particles: [
+        { ...sparks(8, [160, 280], 'fx.p.spark', [40, 140]), box: [6, 2] },
+        { ...smoke(3, 0.9), tint: 0xdcd8d2 },
+        { ...dust(3, 0.7), tint: 0xd8ccb4 },
+      ],
+    },
+    {
+      // Great Magnet (Home pull): a giant horseshoe magnet swings down over the zone; sparks and iron filings
+      // stream in toward the centre while the drag lines pull units in.
+      id: 'fx.great_magnet',
+      durationMs: 4000,
+      loops: true,
+      sprites: [
+        { sprite: 'fx.p.shadow', life: 0, sizeWith: 'zone', keys: [{ t: 0, sx: 0.2, sy: 0.5, a: 0 }, { t: 0.05, sx: 0.8, sy: 0.55, a: 0.4 }, { t: 0.93, sx: 0.8, sy: 0.55, a: 0.4 }, { t: 1, sx: 0.3, sy: 0.5, a: 0 }] },
+        { sprite: 'fx.p.magnet', life: 0, keys: [{ t: 0, y: -260, sx: 3.2, sy: 3.2, a: 0 }, { t: 0.06, y: -118, sx: 3.2, sy: 3.2, a: 1 }, { t: 0.09, y: -128, sx: 3.4, sy: 3.0, a: 1 }, { t: 0.12, y: -124, sx: 3.2, sy: 3.2, a: 1 }, { t: 0.92, y: -124, sx: 3.2, sy: 3.2, a: 1 }, { t: 1, y: -260, sx: 3.2, sy: 3.2, a: 0 }] },
+        { sprite: 'fx.p.ring', life: 0, loop: 600, sizeWith: 'zone', tint: 0xe7dcff, keys: [{ t: 0, y: 2, sx: 0.5, sy: 0.16, a: 0 }, { t: 0.3, y: 2, sx: 0.36, sy: 0.12, a: 0.8 }, { t: 1, y: 2, sx: 0.05, sy: 0.02, a: 0 }] },
+      ],
+      particles: [
+        { sprite: 'fx.p.spark', rate: 22, life: [400, 700], box: [44, 6], sizeWith: 'zone', attract: 5, speed: [20, 60], angle: [-180, 180], scale: [1.2, 0.4], alpha: [1, 0], tint: 0xe7dcff },
+        { sprite: 'fx.p.dust', rate: 8, life: [500, 800], box: [40, 2], sizeWith: 'zone', attract: 4, speed: [10, 30], angle: [-150, -30], scale: [0.8, 0.3], alpha: [0.6, 0], tint: 0x8d9398 },
+      ],
+    },
     {
       // Ion Cannon (Field strike): an orbital beam spears its target from the sky.
       id: 'fx.ion_cannon',

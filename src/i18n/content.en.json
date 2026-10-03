@@ -36,7 +36,7 @@
     "hydra": { "name": "Hydra", "desc": "Legendary beast. Three heads bite three enemies in turn, and its venom slows them. Splash and anti-heavy troops are its answer." },
     "net_caster": { "name": "Net Caster", "desc": "Casts a weighted net that slows the target by 30% for 2 s. Hits ground and air." },
     "polybolos": { "name": "Polybolos", "desc": "A chain-fed bolt-thrower that looses three bolts in a row at long range. Hits ground and air." },
-    "sandstorm": { "name": "Sandstorm", "desc": "Whole lane, no aim: a sandstorm lashes up to 8 enemies nearest your gate, anywhere on the lane, and slows their moves and attacks by 40% for 3 s. Light damage." },
+    "sandstorm": { "name": "Sandstorm", "desc": "Whole lane, no aim: a sandstorm lashes up to 8 enemies nearest your gate, anywhere on the lane, and slows their moves and attacks by 30% for 3 s. Light damage." },
     "charybdis": { "name": "Charybdis", "desc": "A whirlpool opens in your half: it pulls up to 6 ground enemies together, slows their moves and attacks and chips them for 4 s." },
     "hoplon_line": { "name": "Hoplon Line", "desc": "A wall of locked shields on a pad. Your ground troops just behind it take 20% less damage from ranged attacks." },
     "slinger_camp": { "name": "Skirmisher Camp", "desc": "A camp on a pad that sends a weak javelin-throwing Skirmisher Levy every 12 s (one at a time)." },

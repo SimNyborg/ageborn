@@ -253,6 +253,25 @@ export const SKIN_SPECS: readonly SkinSpec[] = [
     // A pufferfish envelope: pale sand belly and soft olive-grey back, with rope kept pale.
     palette: { cloth2: 0xe8dcb8, metal2: 0x8a8a6e, rope: 0xd8ccb4 },
   },
+  // Industrial wave (CONTENT_PLAN 5.5, released with the wave): palette puppets like the ones above.
+  {
+    skin: 'chimney_sweep',
+    target: 'unit.riveter',
+    // A chimney sweep: soot-black shirt and trousers, sooty hands, a dusty charcoal cap.
+    palette: { cloth2: 0x4a4746, sleeve: 0x4a4746, pants: 0x34322f, shin: 0x34322f, hair: 0x221e1c, glove: 0x2e2b29, boot: 0x2a2725, metal: 0x5a5a5c },
+  },
+  {
+    skin: 'teapot_golem',
+    target: 'unit.steam_golem',
+    // A porcelain teapot: glazed white body, a soft blue floral trim (under 40% saturation), a gilt lid.
+    palette: { metal: 0xf2efe8, metal2: 0xd8d2c6, cloth: 0xe8e4dc, cloth3: 0x8a9ab8, stone: 0xe8e4dc, brick: 0x8a9ab8, leather: 0xd8c08a },
+  },
+  {
+    skin: 'circus_train',
+    target: 'unit.armoured_train',
+    // A circus train: cream and circus-red wagons, gilt trim, pale bunting.
+    palette: { cloth: 0xa8605a, cloth2: 0xefe6cf, cloth3: 0xefe6cf, metal: 0xd8c08a, metal2: 0x6a4a44, stripe: 0xefe6cf, brick: 0xa8605a },
+  },
 ];
 
 export const SKIN_PUPPETS: readonly PuppetDef[] = SKIN_SPECS.map(skinPuppet);

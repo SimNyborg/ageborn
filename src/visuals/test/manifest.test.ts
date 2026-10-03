@@ -48,16 +48,17 @@ describe('A14.1 coverage', () => {
     expect(missing.filter((id) => !PAUSED_WAVE_VISUALS.has(id))).toEqual([]);
     const shipped = <T extends { id: string }>(list: T[]): T[] => list.filter((x) => !PAUSED_WAVE_IDS.has(x.id));
     // A17.13: 56 units (plus the hidden Training Dummy) and 32 turrets; the Stone and Medieval waves add 13
-    // troops and a summon (Cave Pup, War Hound), 2 turrets, 2 forts and 3 skins each, the Gunpowder wave 13 troops,
-    // 2 turrets, 2 forts and 3 skins
-    expect(shipped(Object.values(content.units)).filter((u) => !u.fort && !u.levy).length).toBe(98);
+    // troops and a summon (Cave Pup, War Hound), 2 turrets, 2 forts and 3 skins each, the Bronze and Gunpowder waves
+    // 13 troops, 2 turrets, 2 forts and 3 skins each
+    expect(shipped(Object.values(content.units)).filter((u) => !u.fort && !u.levy).length).toBe(111);
     // A16.14.8: 24 hidden fort twins (walls, towers, camps) and 8 levies, plus the Stone wave's 2 twins and the
     // Medieval wave's Crossbow Keep (its Bear Snares is a trap, no twin) and the Gunpowder wave's Cavalry Picket
-    // (its Fougasse is a trap); 10 levies with the X0 camp variants' Slinger Levy (Bronze) and Picket Rider (Gunpowder)
-    expect(shipped(Object.values(content.units)).filter((u) => u.fort).length).toBe(28);
+    // (its Fougasse is a trap) and the Bronze wave's Hoplon Line and Slinger Camp; 10 levies with the X0 camp
+    // variants' Slinger Levy (Bronze) and Picket Rider (Gunpowder)
+    expect(shipped(Object.values(content.units)).filter((u) => u.fort).length).toBe(30);
     expect(Object.values(content.units).filter((u) => u.levy).length).toBe(10);
-    expect(shipped(Object.values(content.turrets)).length).toBe(38);
-    expect(shipped(Object.values(content.skins)).length).toBe(21);
+    expect(shipped(Object.values(content.turrets)).length).toBe(40);
+    expect(shipped(Object.values(content.skins)).length).toBe(24);
   });
 
   it('has every projectile and effect the content fires', () => {

@@ -29,10 +29,10 @@ const INDUSTRIAL_WAVE_SOUNDS: readonly string[] = [
 ];
 
 /** Cards, forts, summons, powers and skins of the gated wave. */
-export const PAUSED_WAVE_IDS: ReadonlySet<string> = new Set([...INDUSTRIAL_WAVE_IDS]);
+export const PAUSED_WAVE_IDS: ReadonlySet<string> = new Set<string>([]);
 
 /** Visual and projectile ids the gated wave references (B5 manifest). */
-export const PAUSED_WAVE_VISUALS: ReadonlySet<string> = new Set([...INDUSTRIAL_WAVE_VISUALS]);
+export const PAUSED_WAVE_VISUALS: ReadonlySet<string> = new Set<string>([]);
 
 /** Sound ids the gated wave references (A13, B7 manifest). */
-export const PAUSED_WAVE_SOUNDS: ReadonlySet<string> = new Set([...INDUSTRIAL_WAVE_SOUNDS]);
+export const PAUSED_WAVE_SOUNDS: ReadonlySet<string> = new Set<string>([]);

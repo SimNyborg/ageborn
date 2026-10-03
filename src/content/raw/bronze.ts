@@ -506,7 +506,7 @@ export const bronzePowers: readonly PowerDef[] = [
     source: 'warPath', warPathLevel: 3, road: 2400, cost: 50, reloadMs: 25000, telegraphMs: 1000, maxTargets: 8, aiValueBp: 5000,
     effect: {
       kind: 'field', zone: 2000, durationMs: 0, hitsAir: true, damagePerPulse: 55,
-      statuses: [{ kind: 'snare', magnitudeBp: 4000, durationMs: 3000 }],
+      statuses: [{ kind: 'snare', magnitudeBp: 3000, durationMs: 3000 }],
     },
     visualId: 'power.sandstorm', sfx: 'pw_sandstorm', nameKey: 'card.sandstorm.name', descKey: 'card.sandstorm.desc',
   },

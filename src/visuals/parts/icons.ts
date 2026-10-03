@@ -240,6 +240,17 @@ medallion('power.cannon_salute', [
   { d: join(circle(9, 0, 5), circle(13, -5, 3.6), circle(6, -6, 3.4), circle(14, 3, 3)), zone: 'bone', line: 1 },
   { d: join(arcBand(0, 0, 12.6, 14, -60, 0), arcBand(0, 0, 12.6, 14, 180, 230)), zone: 'bone', line: 0 },
 ]);
+// Industrial wave (CONTENT_PLAN 5.5): a shell bursting into shrapnel, and a horseshoe magnet pulling sparks.
+medallion('power.shrapnel_shells', [
+  { d: star(0, -5, 8, 4, 10), zone: 'bone', line: 1.2 },
+  { d: blob([-3.4, 2, 3.4, 2, 3, 10, 0, 13, -3, 10], 0.6), zone: 'iron', line: 1.2 },
+  { d: join(poly([-12, 4, -9, 3, -10, 6]), poly([12, 4, 9, 3, 10, 6]), poly([-7, 9, -5, 8, -6, 11]), poly([7, 9, 5, 8, 6, 11])), zone: 'iron', line: 0.8 },
+]);
+medallion('power.great_magnet', [
+  { d: join(arcBand(0, -2, 5, 11, 180, 360), rect(-11, -2, 6, 7), rect(5, -2, 6, 7)), zone: 'wine', line: 1.4 },
+  { d: join(rect(-11, 5, 6, 4), rect(5, 5, 6, 4)), zone: 'metal', line: 1.2 },
+  { d: join(limb(-8, 12, 0.7, -8, 15, 0.7), limb(0, 10, 0.7, 0, 15, 0.7), limb(8, 12, 0.7, 8, 15, 0.7)), zone: 'bone', line: 0 },
+]);
 medallion('power.knights_charge', [
   { d: limb(-13, 8, 1.8, 12, -6, 1), zone: 'metal' },
   { d: poly([-12, 2, -4, -6, -2, 4]), zone: 'wine' },

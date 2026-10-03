@@ -112,6 +112,9 @@ export const POWER_IDS = [
   // Gunpowder wave (CONTENT_PLAN 5.4)
   'rocket_volley',
   'cannon_salute',
+  // Industrial wave (CONTENT_PLAN 5.5)
+  'shrapnel_shells',
+  'great_magnet',
 ] as const;
 
 export const ICON_SPRITES: readonly PuppetDef[] = [

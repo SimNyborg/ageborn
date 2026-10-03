@@ -145,11 +145,11 @@ export const industrial: RawAgeTables = {
     {
       // Pair (X0 M1): one card trains 2 coal miners; stats per miner, cost and pop split evenly; Blunt
       id: 'coal_miners', released: false, kind: 'unit', age: 'industrial', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 185, speed: 82, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 198, speed: 82, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 23, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 24, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'pierce', sfx: 'pickaxe_clink', mods: damageMods.blunt,
         },
       ],
@@ -161,11 +161,11 @@ export const industrial: RawAgeTables = {
     {
       // Guard: the wheeled steel mantlet takes 25% less from attacks with range ≥ 100 (not powers); Blunt
       id: 'iron_mantlet', released: false, kind: 'unit', age: 'industrial', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 390, speed: 67, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 420, speed: 67, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 27, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 28, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'pierce', sfx: 'mantlet_jab', mods: damageMods.blunt,
         },
       ],
@@ -176,12 +176,12 @@ export const industrial: RawAgeTables = {
     {
       // Raider: the fastest Common (110 lu/s); ×2 to bases
       id: 'dispatch_rider', released: false, kind: 'unit', age: 'industrial', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 350, speed: 110, size: 'medium',
+      cost: 50, trainMs: 1500, pop: 2, hp: 330, speed: 110, size: 'medium',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 44, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
-          dmgType: 'blunt', sfx: 'bike_skid', vsBaseDamage: 88,
+          damage: 42, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          dmgType: 'blunt', sfx: 'bike_skid', vsBaseDamage: 84,
         },
       ],
       abilities: [],
@@ -191,11 +191,11 @@ export const industrial: RawAgeTables = {
     {
       // Thrower: a bowled bomb, splash r30, lobbed over allies; ground only
       id: 'bomb_bowler', released: false, kind: 'unit', age: 'industrial', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 191, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 178, speed: 65, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 24, intervalMs: 1500, windupPct: 50, range: 220, hitsGround: true, hitsAir: false,
+          damage: 23, intervalMs: 1500, windupPct: 50, range: 220, hitsGround: true, hitsAir: false,
           projectile: { speed: 450, arc: true, visualId: 'proj.bowl_bomb' },
           dmgType: 'blast', sfx: 'shot_bowl', splashRadius: 30,
         },
@@ -222,11 +222,11 @@ export const industrial: RawAgeTables = {
     {
       // Long range (H6, A5.1): an arcing mortar bomb at the target's spot, splash r35; range 370, min 90; half to bases; ground only
       id: 'trench_mortar', released: false, kind: 'unit', age: 'industrial', rarity: 'rare', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 270, speed: 60, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 260, speed: 60, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 120, intervalMs: 2600, windupPct: 50, range: 370, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 115, intervalMs: 2600, windupPct: 50, range: 370, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.mortar_shell' },
           dmgType: 'blast', sfx: 'shot_trench_mortar', splashRadius: 35, vsBaseDamage: 60,
         },
@@ -239,11 +239,11 @@ export const industrial: RawAgeTables = {
       // Melee Anti-heavy: a steam drill, reach 40; melee AA mods (armored and mech ×3, Legendary ×2, light ×0.5);
       // Brace; priority armored
       id: 'steam_driller', released: false, kind: 'unit', age: 'industrial', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 460, speed: 70, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 490, speed: 70, size: 'medium',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 48, intervalMs: 1200, windupPct: 40, range: 40, hitsGround: true, hitsAir: false,
+          damage: 50, intervalMs: 1200, windupPct: 40, range: 40, hitsGround: true, hitsAir: false,
           dmgType: 'pierce', sfx: 'drill_spin', mods: damageMods.meleeAntiArmor, priority: 'armored',
         },
       ],
@@ -271,7 +271,7 @@ export const industrial: RawAgeTables = {
       nameKey: 'card.bandmaster.name', descKey: 'card.bandmaster.desc', strongVs: [], weakVs: [],
     },
     {
-      // Summoner (X0 M3): winds up a Clockwork Soldier every 6.5 s, at most 3; whacks with a big wind-up key; followSupport
+      // Summoner (X0 M3): winds up a Clockwork Soldier every 7.5 s, at most 3; whacks with a big wind-up key; followSupport
       id: 'clockwork_tinker', released: false, kind: 'unit', age: 'industrial', rarity: 'rare', role: 'support', group: 'support',
       cost: 110, trainMs: 3000, pop: 4, hp: 275, speed: 65, size: 'small',
       tags: ['light', 'bio', 'support', 'melee', 'ground'],
@@ -282,7 +282,7 @@ export const industrial: RawAgeTables = {
         },
       ],
       abilities: [
-        { kind: 'summon', card: 'clockwork_soldier', firstMs: 2000, everyMs: 9000, maxAlive: 2 },
+        { kind: 'summon', card: 'clockwork_soldier', firstMs: 2000, everyMs: 7500, maxAlive: 3 },
         { kind: 'followSupport', behindFront: 60, soloMaxP: 200 },
       ],
       visualId: 'unit.clockwork_tinker', sfx: { spawn: 'spawn_pop', die: 'die_bio' },
@@ -306,13 +306,13 @@ export const industrial: RawAgeTables = {
     },
     {
       // Skirmisher: swings over the blocker on a rope onto a back-line unit within 180 lu (pounce), the first
-      // strike ×2; ice-axe chop 90 / 0.9 s
+      // strike ×2; ice-axe chop 80 / 0.9 s
       id: 'alpine_climber', released: false, kind: 'unit', age: 'industrial', rarity: 'epic', role: 'skirmisher', group: 'epic',
-      cost: 200, trainMs: 4000, pop: 8, hp: 1000, speed: 85, size: 'medium',
+      cost: 200, trainMs: 4000, pop: 8, hp: 980, speed: 85, size: 'medium',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 82, intervalMs: 900, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 80, intervalMs: 900, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'pierce', sfx: 'ice_axe_chop',
         },
       ],
@@ -365,14 +365,14 @@ export const industrial: RawAgeTables = {
       nameKey: 'card.armoured_train.name', descKey: 'card.armoured_train.desc', strongVs: [], weakVs: [],
     },
     {
-      // Clockwork Tinker's summon (X0 M3): a wind-up toy soldier (about 0.75 × the Riveter's HP); no pop, no
+      // Clockwork Tinker's summon (X0 M3): a wind-up toy soldier (about 0.6 × the Riveter's HP); no pop, no
       // bounty, always marches
       id: 'clockwork_soldier', released: false, kind: 'unit', age: 'industrial', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 0, trainMs: 1500, pop: 2, hp: 150, speed: 80, size: 'small',
+      cost: 0, trainMs: 1500, pop: 2, hp: 190, speed: 80, size: 'small',
       tags: ['light', 'mech', 'melee', 'ground'],
       attacks: [
         {
-          damage: 14, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 18, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'pierce', sfx: 'toy_bayonet',
         },
       ],
@@ -527,8 +527,8 @@ export const industrialPowers: readonly PowerDef[] = [
   {
     // Release gate: `released: false` until its art ships. W5 Industrial wave, the H7 lane volley (A2.9.4 `lane`,
     // A5.7 whole-lane powers): War Path Industrial L3 (Road 3,500). No aim: one pulse touches the 8 hittable
-    // enemies nearest your gate anywhere on the lane, ground and air, one shrapnel burst each, for 95 (29% of the
-    // Riveter; the lane cap is 30%). 50 gold, 25 s
+    // enemies nearest your gate anywhere on the lane, ground and air, one shrapnel burst each, for 99 (30% of the
+    // Riveter, the lane cap) and marks each for 3 s (+20% damage taken). 50 gold, 25 s
     id: 'shrapnel_shells', released: false, kind: 'power', age: 'industrial', slot: 'field', reach: 'lane', family: 'volley', rarity: 'rare',
     source: 'warPath', warPathLevel: 3, road: 3500, cost: 50, reloadMs: 25000, telegraphMs: 1000, maxTargets: 8,
     effect: {

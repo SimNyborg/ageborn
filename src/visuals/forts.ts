@@ -53,6 +53,9 @@ export const FORT_VISUALS: readonly { id: string; age: AgeId; kind: 'wall' | 'to
   { id: 'sniper_nest', age: 'industrial', kind: 'tower' },
   { id: 'recruiting_depot', age: 'industrial', kind: 'camp' },
   { id: 'tripwire_charge', age: 'industrial', kind: 'trap' },
+  // Industrial wave (CONTENT_PLAN 5.5)
+  { id: 'rail_barricade', age: 'industrial', kind: 'wall' },
+  { id: 'tesla_pylon', age: 'industrial', kind: 'tower' },
   { id: 'sandbag_bunker', age: 'modern', kind: 'wall' },
   { id: 'pillbox', age: 'modern', kind: 'tower' },
   { id: 'forward_base', age: 'modern', kind: 'camp' },
@@ -95,7 +98,7 @@ export const FORT_SHEETS: Readonly<Record<AgeId, readonly string[]>> = {
   bronze: ['cyclopean_wall', 'pyrgos_tower', 'muster_tents', 'hidden_stakes', 'hoplon_line', 'slinger_camp'],
   medieval: ['shield_barricade', 'longbow_tower', 'levy_camp', 'wolf_pits', 'bear_snares', 'crossbow_keep'],
   gunpowder: ['gabion_wall', 'musket_redoubt', 'militia_muster', 'powder_keg', 'cavalry_picket', 'fougasse'],
-  industrial: ['trench_parapet', 'sniper_nest', 'recruiting_depot', 'tripwire_charge'],
+  industrial: ['trench_parapet', 'sniper_nest', 'recruiting_depot', 'tripwire_charge', 'rail_barricade', 'tesla_pylon'],
   modern: ['sandbag_bunker', 'pillbox', 'forward_base', 'minefield'],
   future: ['hardlight_barrier', 'sentry_pylon', 'clone_bay', 'grav_mire'],
   cosmic: ['void_rampart', 'ion_spire', 'warp_barracks', 'void_mine'],

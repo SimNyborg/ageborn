@@ -110,6 +110,9 @@ describe('team readability (A11)', () => {
         // X0 Stone wave
         'unit.woolly_rhino',
         'unit.elk_chieftain',
+        // Bronze wave
+        'unit.war_elephant',
+        'unit.hydra',
         // Medieval wave
         'unit.greatsword_knight',
         'unit.lindworm',

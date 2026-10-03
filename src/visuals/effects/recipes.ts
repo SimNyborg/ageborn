@@ -444,6 +444,21 @@ export const FX_RECIPES: readonly FxRecipe[] = [
     particles: [{ sprite: 'fx.p.xp', count: 4, life: [380, 600], speed: [20, 50], angle: [-180, 180], spread: 6, scale: [1, 0.3], alpha: [1, 0], tint: 0xe7dcff, blendAdd: true }],
   },
   { id: 'fx.tesla_arc', durationMs: 260, chain: { segments: 8, jitter: 9, tint: 0xe6ecff, width: 2.4, refreshMs: 40 }, sprites: [flash(1, 0xe6ecff, 130)] },
+  // Industrial wave instants (CONTENT_PLAN 5.5): the Spark Scientist's coil-gun arc (it jumps on to a second foe)
+  // and the Steam Hammer's ground shock at its gate
+  {
+    id: 'fx.coil_arc',
+    durationMs: 300,
+    chain: { segments: 9, jitter: 10, tint: 0xe7dcff, width: 2.6, refreshMs: 35 },
+    sprites: [flash(1.1, 0xf2ecff, 140), bloom(1.2, 220, 0xe7dcff, 0.5)],
+    particles: [{ ...sparks(5, [120, 240]), tint: 0xe7dcff }],
+  },
+  {
+    id: 'fx.hammer_shock',
+    durationMs: 640,
+    sprites: [flash(1.2, 0xfff6e2, 90), ring(2.2, 420, 0xf2ecdc, 0.3), { ...ring(3.0, 520, 0xd8ccb4, 0.25), delay: 80 }],
+    particles: [{ ...dust(6, 1.1), tint: 0xd8ccb4 }, { ...chunks(4), tint: 0x9a9288 }, { ...smoke(3, 0.9), tint: 0xeeeae2 }],
+  },
   {
     id: 'fx.beam_void',
     durationMs: 200,
@@ -873,6 +888,9 @@ export const PROJECTILE_RECIPES: readonly ProjectileRecipe[] = [
   { id: 'proj.flak', sprite: 'proj.flak', tail: { length: 20, width: 2, alpha: 0.5 } },
   { id: 'proj.plasma', sprite: 'proj.plasma', tail: { length: 24, width: 3, alpha: 0.6 } },
   { id: 'proj.plasma_mortar', sprite: 'proj.plasma_mortar', tail: { length: 20, width: 6, alpha: 0.5 }, puff: { sprite: 'fx.p.nanite', every: 40, tint: 0xf6c6e4 } },
+  // Industrial wave (CONTENT_PLAN 5.5): the Bomb Bowler's rolling bomb (fuse sparking), the Rivet Spitter's hot rivet
+  { id: 'proj.bowl_bomb', sprite: 'proj.bowl_bomb', spin: 540, tail: { length: 10, width: 3, alpha: 0.3 }, puff: { sprite: 'fx.p.ember', every: 45 } },
+  { id: 'proj.rivet', sprite: 'proj.rivet', tail: { length: 18, width: 1.8, alpha: 0.5 }, puff: { sprite: 'fx.p.ember', every: 30 } },
   { id: 'proj.gravity_orb', sprite: 'proj.gravity_orb', spin: 360, tail: { length: 16, width: 5, alpha: 0.4 }, puff: { sprite: 'fx.p.nanite', every: 50, tint: 0xc9b8f0 } },
   // A17.12
   { id: 'proj.javelin', sprite: 'proj.javelin', tail: { length: 18, width: 1.6, alpha: 0.45 } },

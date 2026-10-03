@@ -10,18 +10,18 @@
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 87,
-    "y": 116,
+    "x": 96,
+    "y": 129,
     "w": 67,
     "h": 97
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_b_02_team": {
@@ -34,47 +34,47 @@
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 111,
-    "y": 117,
+    "x": 120,
+    "y": 130,
     "w": 39,
     "h": 91
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_b_03": {
    "frame": {
     "x": 334,
     "y": 2,
-    "w": 81,
+    "w": 80,
     "h": 96
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 68,
-    "y": 117,
-    "w": 81,
+    "x": 78,
+    "y": 130,
+    "w": 80,
     "h": 96
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_b_03_team": {
    "frame": {
-    "x": 2,
+    "x": 96,
     "y": 135,
     "w": 45,
     "h": 94
@@ -82,18 +82,18 @@
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
-    "y": 112,
+    "x": 113,
+    "y": 125,
     "w": 45,
     "h": 94
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_b_04": {
@@ -106,42 +106,42 @@
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 67,
-    "y": 90,
+    "x": 76,
+    "y": 103,
     "w": 95,
     "h": 124
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_b_04_team": {
    "frame": {
-    "x": 146,
+    "x": 145,
     "y": 135,
     "w": 41,
-    "h": 93
+    "h": 94
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 115,
-    "y": 116,
+    "x": 124,
+    "y": 128,
     "w": 41,
-    "h": 93
+    "h": 94
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_b_05": {
@@ -154,90 +154,90 @@
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 114,
-    "y": 85,
+    "x": 123,
+    "y": 98,
     "w": 92,
     "h": 129
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_b_05_team": {
    "frame": {
-    "x": 164,
-    "y": 233,
+    "x": 87,
+    "y": 234,
     "w": 49,
-    "h": 88
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 118,
-    "y": 121,
+    "x": 127,
+    "y": 134,
     "w": 49,
-    "h": 88
+    "h": 89
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_b_06": {
    "frame": {
-    "x": 241,
+    "x": 2,
     "y": 135,
     "w": 90,
-    "h": 91
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 117,
-    "y": 144,
+    "x": 126,
+    "y": 157,
     "w": 90,
-    "h": 91
+    "h": 95
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_b_06_team": {
    "frame": {
-    "x": 273,
-    "y": 416,
+    "x": 275,
+    "y": 417,
     "w": 64,
     "h": 71
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 116,
-    "y": 139,
+    "x": 125,
+    "y": 152,
     "w": 64,
     "h": 71
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_b_07": {
@@ -245,311 +245,311 @@
     "x": 197,
     "y": 2,
     "w": 62,
-    "h": 99
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 120,
-    "y": 129,
+    "x": 129,
+    "y": 141,
     "w": 62,
-    "h": 99
+    "h": 100
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_b_07_team": {
    "frame": {
-    "x": 266,
-    "y": 233,
+    "x": 267,
+    "y": 234,
     "w": 52,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 130,
+    "y": 136,
+    "w": 52,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48454,
+    "y": 0.86508
+   }
+  },
+  "steam_driller_attack_b_08": {
+   "frame": {
+    "x": 87,
+    "y": 328,
+    "w": 96,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 143,
+    "w": 96,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48454,
+    "y": 0.86508
+   }
+  },
+  "steam_driller_attack_b_08_team": {
+   "frame": {
+    "x": 383,
+    "y": 328,
+    "w": 48,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 126,
+    "y": 138,
+    "w": 48,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48454,
+    "y": 0.86508
+   }
+  },
+  "steam_driller_attack_c_01": {
+   "frame": {
+    "x": 370,
+    "y": 234,
+    "w": 66,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 140,
+    "w": 66,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48454,
+    "y": 0.86508
+   }
+  },
+  "steam_driller_attack_c_01_team": {
+   "frame": {
+    "x": 323,
+    "y": 234,
+    "w": 43,
     "h": 87
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 121,
-    "y": 123,
-    "w": 52,
-    "h": 87
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 235
-   },
-   "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
-   }
-  },
-  "steam_driller_attack_b_08": {
-   "frame": {
-    "x": 87,
-    "y": 327,
-    "w": 96,
-    "h": 84
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 113,
-    "y": 130,
-    "w": 96,
-    "h": 84
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 235
-   },
-   "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
-   }
-  },
-  "steam_driller_attack_b_08_team": {
-   "frame": {
-    "x": 383,
-    "y": 327,
-    "w": 48,
-    "h": 83
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 117,
-    "y": 125,
-    "w": 48,
-    "h": 83
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 235
-   },
-   "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
-   }
-  },
-  "steam_driller_attack_c_01": {
-   "frame": {
-    "x": 369,
-    "y": 233,
-    "w": 66,
-    "h": 86
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 107,
-    "y": 127,
-    "w": 66,
-    "h": 86
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 235
-   },
-   "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
-   }
-  },
-  "steam_driller_attack_c_01_team": {
-   "frame": {
-    "x": 322,
-    "y": 233,
-    "w": 43,
-    "h": 87
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 112,
-    "y": 122,
+    "y": 135,
     "w": 43,
     "h": 87
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_c_02": {
    "frame": {
     "x": 2,
-    "y": 416,
+    "y": 417,
     "w": 83,
     "h": 80
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 103,
-    "y": 133,
+    "x": 112,
+    "y": 146,
     "w": 83,
     "h": 80
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_c_02_team": {
    "frame": {
     "x": 89,
-    "y": 416,
-    "w": 43,
+    "y": 417,
+    "w": 46,
     "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 142,
+    "w": 46,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48454,
+    "y": 0.86508
+   }
+  },
+  "steam_driller_attack_c_03": {
+   "frame": {
+    "x": 139,
+    "y": 417,
+    "w": 78,
+    "h": 72
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 108,
-    "y": 129,
-    "w": 43,
-    "h": 79
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 235
-   },
-   "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
-   }
-  },
-  "steam_driller_attack_c_03": {
-   "frame": {
-    "x": 136,
-    "y": 416,
-    "w": 78,
-    "h": 72
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 99,
-    "y": 141,
+    "y": 154,
     "w": 78,
     "h": 72
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_c_03_team": {
    "frame": {
-    "x": 218,
-    "y": 416,
-    "w": 51,
+    "x": 221,
+    "y": 417,
+    "w": 50,
     "h": 72
-   },
-   "rotated": false,
-   "trimmed": true,
-   "spriteSourceSize": {
-    "x": 101,
-    "y": 136,
-    "w": 51,
-    "h": 72
-   },
-   "sourceSize": {
-    "w": 274,
-    "h": 235
-   },
-   "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
-   }
-  },
-  "steam_driller_attack_c_04": {
-   "frame": {
-    "x": 2,
-    "y": 327,
-    "w": 81,
-    "h": 85
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 110,
-    "y": 129,
+    "y": 149,
+    "w": 50,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 291,
+    "h": 252
+   },
+   "anchor": {
+    "x": 0.48454,
+    "y": 0.86508
+   }
+  },
+  "steam_driller_attack_c_04": {
+   "frame": {
+    "x": 2,
+    "y": 328,
+    "w": 81,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 119,
+    "y": 142,
     "w": 81,
     "h": 85
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_c_04_team": {
    "frame": {
     "x": 284,
-    "y": 327,
+    "y": 328,
     "w": 41,
     "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 115,
-    "y": 124,
+    "x": 124,
+    "y": 137,
     "w": 41,
     "h": 84
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_c_05": {
    "frame": {
     "x": 2,
-    "y": 233,
+    "y": 234,
     "w": 81,
     "h": 90
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 116,
-    "y": 124,
+    "x": 125,
+    "y": 137,
     "w": 81,
     "h": 90
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_c_05_team": {
@@ -562,23 +562,23 @@
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 119,
-    "y": 119,
+    "x": 128,
+    "y": 132,
     "w": 45,
     "h": 91
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_c_06": {
    "frame": {
-    "x": 51,
+    "x": 190,
     "y": 135,
     "w": 91,
     "h": 93
@@ -586,138 +586,138 @@
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 121,
-    "y": 121,
+    "x": 130,
+    "y": 134,
     "w": 91,
     "h": 93
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_c_06_team": {
    "frame": {
-    "x": 191,
+    "x": 285,
     "y": 135,
     "w": 46,
-    "h": 92
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 123,
-    "y": 116,
+    "x": 132,
+    "y": 129,
     "w": 46,
-    "h": 92
+    "h": 91
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_c_07": {
    "frame": {
     "x": 187,
-    "y": 327,
+    "y": 328,
     "w": 93,
     "h": 84
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 119,
-    "y": 130,
+    "x": 128,
+    "y": 143,
     "w": 93,
     "h": 84
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_c_07_team": {
    "frame": {
     "x": 329,
-    "y": 327,
+    "y": 328,
     "w": 50,
     "h": 83
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 122,
-    "y": 125,
+    "x": 131,
+    "y": 138,
     "w": 50,
     "h": 83
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_c_08": {
    "frame": {
-    "x": 87,
-    "y": 233,
+    "x": 140,
+    "y": 234,
     "w": 73,
     "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 115,
-    "y": 126,
+    "x": 124,
+    "y": 139,
     "w": 73,
     "h": 88
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   },
   "steam_driller_attack_c_08_team": {
    "frame": {
     "x": 217,
-    "y": 233,
-    "w": 45,
+    "y": 234,
+    "w": 46,
     "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 118,
-    "y": 121,
-    "w": 45,
+    "x": 127,
+    "y": 134,
+    "w": 46,
     "h": 88
    },
    "sourceSize": {
-    "w": 274,
-    "h": 235
+    "w": 291,
+    "h": 252
    },
    "anchor": {
-    "x": 0.48175,
-    "y": 0.87234
+    "x": 0.48454,
+    "y": 0.86508
    }
   }
  },
@@ -792,8 +792,8 @@
    "widthLu": 54.9,
    "pxPerLu": 1.23,
    "feetPx": [
-    132.0,
-    205.0
+    141.0,
+    218.0
    ],
    "anchorsLu": {
     "head": [

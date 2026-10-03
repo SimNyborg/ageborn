@@ -12,6 +12,8 @@ export const A14_EFFECT_IDS = new Set([
   'fx.lindworm_breath', 'fx.grapple_hook', 'fx.longbow_volley', 'fx.arrow_thud', 'fx.great_bell',
   // Gunpowder wave (CONTENT_PLAN 5.4)
   'fx.blunderbuss_spray', 'fx.drum_boom', 'fx.pipe_drone', 'fx.mesmer_spiral', 'fx.rocket_volley', 'fx.rocket_pop', 'fx.cannon_salute',
+  // Industrial wave (CONTENT_PLAN 5.5)
+  'fx.coil_arc', 'fx.hammer_shock', 'fx.shrapnel_shells', 'fx.shrapnel_burst', 'fx.great_magnet',
   // Hit and death effects
   'fx.spark_blunt', 'fx.spark_slash', 'fx.spark_pierce', 'fx.spark_bullet', 'fx.scorch_laser', 'fx.blast',
   'fx.spark_effective', 'fx.puff_resisted', 'fx.muzzle', 'fx.trail', 'fx.splash_ring', 'fx.explosion_s',

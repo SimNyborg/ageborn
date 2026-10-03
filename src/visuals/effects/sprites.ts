@@ -300,6 +300,20 @@ part('proj.mortar_shell', [
   { d: rrect(-1, -7, 2, 3, 0.8), zone: 'metal', line: 0.8, shade: false, light: false },
   { d: star(0.4, -8.2, 4, 0.8, 2.6, 0), zone: 'flash', line: 0, shade: false, light: false },
 ]);
+// Industrial wave (CONTENT_PLAN 5.5): the Bomb Bowler's banded bowling bomb with a sputtering fuse, and the
+// Rivet Spitter's red-hot rivet (pale ember, colour rule)
+part('proj.bowl_bomb', [
+  { d: circle(0, 0, 5.4), zone: 'iron', line: 1.7 },
+  { d: arcBand(0, 0, 3.4, 4.6, 200, 340), zone: 'canvas', line: 0, shade: false, light: false },
+  { d: join(circle(-1.6, 1.4, 0.7), circle(0.4, 2.4, 0.7), circle(1.8, 0.9, 0.7)), zone: 'dark', line: 0, shade: false, light: false },
+  { d: rrect(-1, -8.2, 2, 3, 0.8), zone: 'metal', line: 0.8, shade: false, light: false },
+  { d: star(0.4, -9.4, 4, 0.8, 2.6, 0), zone: 'flash', line: 0, shade: false, light: false },
+]);
+part('proj.rivet', [
+  { d: rrect(-6, -1.3, 8.4, 2.6, 1), zone: 'ember', line: 1.1 },
+  { d: blob([2, -3.6, 4.6, -3, 5.6, 0, 4.6, 3, 2, 3.6], 0.8), zone: 'ember', line: 1.2 },
+  { d: ellipse(3.8, -1, 1, 1.6), zone: 'flash', line: 0, shade: false, light: false },
+]);
 part('proj.grapeshot', [{ d: join(circle(0, 0, 2), circle(-3, -2.4, 1.8), circle(-3.4, 2.2, 1.8), circle(2.6, -2.6, 1.6), circle(2.4, 2.6, 1.6)), zone: 'iron', line: 1 }]);
 part('proj.rocket', [
   { d: blob([-6, -2.4, 4, -2.4, 9, 0, 4, 2.4, -6, 2.4], 0.4), zone: 'paper', line: 1.4 },
@@ -391,6 +405,12 @@ part('fx.p.zeppelin', [
   { d: join(rect(-26, -1, 52, 1.4), rect(-12, -8, 1.4, 16), rect(8, -8, 1.4, 16)), zone: 'dust2', line: 0, shade: false, light: false },
   { d: join(poly([-28, -2, -36, -9, -32, 0]), poly([-28, 2, -36, 9, -32, 0])), zone: 'canvas', line: 1.4 },
   { d: rrect(-6, 8, 14, 4, 1.6), zone: 'engine', line: 1.4 },
+]);
+/** A giant horseshoe magnet, poles down, with pale steel pole tips (Great Magnet). */
+part('fx.p.magnet', [
+  { d: join(arcBand(0, 0, 7, 15, 180, 360), rect(-15, 0, 8, 9), rect(7, 0, 8, 9)), zone: 'rust', line: 1.8 },
+  { d: join(rect(-15, 9, 8, 5), rect(7, 9, 8, 5)), zone: 'metal', line: 1.4 },
+  { d: arcBand(0, 0, 11.4, 12.8, 215, 260), zone: 'white', line: 0, alpha: 0.6, shade: false, light: false },
 ]);
 /** A warp portal seen edge-on (Warp Strike, Warp Stalker blink). */
 part('fx.p.portal', [
