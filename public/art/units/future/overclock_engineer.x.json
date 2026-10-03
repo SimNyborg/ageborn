@@ -1,0 +1,602 @@
+{
+ "frames": {
+  "overclock_engineer_attack_b_01": {
+   "frame": {
+    "x": 115,
+    "y": 2,
+    "w": 64,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 106,
+    "w": 64,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_01_team": {
+   "frame": {
+    "x": 114,
+    "y": 269,
+    "w": 50,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 101,
+    "w": 50,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_02": {
+   "frame": {
+    "x": 86,
+    "y": 94,
+    "w": 67,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 107,
+    "w": 67,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_02_team": {
+   "frame": {
+    "x": 221,
+    "y": 269,
+    "w": 49,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 103,
+    "w": 49,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_03": {
+   "frame": {
+    "x": 2,
+    "y": 182,
+    "w": 73,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 108,
+    "w": 73,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_03_team": {
+   "frame": {
+    "x": 132,
+    "y": 182,
+    "w": 50,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 103,
+    "w": 50,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_04": {
+   "frame": {
+    "x": 236,
+    "y": 94,
+    "w": 74,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 108,
+    "w": 74,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_04_team": {
+   "frame": {
+    "x": 79,
+    "y": 182,
+    "w": 49,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 103,
+    "w": 49,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_05": {
+   "frame": {
+    "x": 157,
+    "y": 94,
+    "w": 75,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 108,
+    "w": 75,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_05_team": {
+   "frame": {
+    "x": 186,
+    "y": 182,
+    "w": 50,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 103,
+    "w": 50,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 94,
+    "w": 80,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 107,
+    "w": 80,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 269,
+    "w": 52,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 102,
+    "w": 52,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_07": {
+   "frame": {
+    "x": 183,
+    "y": 2,
+    "w": 63,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 106,
+    "w": 63,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_07_team": {
+   "frame": {
+    "x": 58,
+    "y": 269,
+    "w": 52,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 101,
+    "w": 52,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_08": {
+   "frame": {
+    "x": 69,
+    "y": 2,
+    "w": 42,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 105,
+    "w": 42,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_08_team": {
+   "frame": {
+    "x": 168,
+    "y": 269,
+    "w": 49,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 100,
+    "w": 49,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_09": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 63,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 103,
+    "w": 63,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  },
+  "overclock_engineer_attack_b_09_team": {
+   "frame": {
+    "x": 240,
+    "y": 182,
+    "w": 49,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 98,
+    "w": 49,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 215
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.84651
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "overclock_engineer_attack_00",
+   "overclock_engineer_attack_b_01",
+   "overclock_engineer_attack_b_02",
+   "overclock_engineer_attack_b_03",
+   "overclock_engineer_attack_b_04",
+   "overclock_engineer_attack_b_05",
+   "overclock_engineer_attack_b_06",
+   "overclock_engineer_attack_b_07",
+   "overclock_engineer_attack_b_08",
+   "overclock_engineer_attack_b_09",
+   "overclock_engineer_attack_10"
+  ],
+  "attack_b_team": [
+   "overclock_engineer_attack_00_team",
+   "overclock_engineer_attack_b_01_team",
+   "overclock_engineer_attack_b_02_team",
+   "overclock_engineer_attack_b_03_team",
+   "overclock_engineer_attack_b_04_team",
+   "overclock_engineer_attack_b_05_team",
+   "overclock_engineer_attack_b_06_team",
+   "overclock_engineer_attack_b_07_team",
+   "overclock_engineer_attack_b_08_team",
+   "overclock_engineer_attack_b_09_team",
+   "overclock_engineer_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "overclock_engineer.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 320,
+   "h": 352
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.overclock_engineer",
+   "name": "Overclock Engineer",
+   "heightLu": 68,
+   "widthLu": 45.5,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    122.0,
+    182.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     66
+    ],
+    "hitCenter": [
+     0,
+     31
+    ],
+    "muzzle": [
+     30,
+     30
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "overclock_engineer",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        30.1,
+        32.7
+       ],
+       [
+        32.4,
+        22.7
+       ],
+       [
+        35.1,
+        22.5
+       ],
+       [
+        34.7,
+        23.2
+       ],
+       [
+        35.0,
+        23.2
+       ],
+       [
+        34.7,
+        23.2
+       ],
+       [
+        35.7,
+        22.9
+       ],
+       [
+        26.0,
+        37.3
+       ],
+       [
+        11.6,
+        56.9
+       ],
+       [
+        31.1,
+        32.9
+       ],
+       [
+        30.1,
+        32.7
+       ]
+      ]
+     },
+     "muzzle": [
+      35.7,
+      22.9
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

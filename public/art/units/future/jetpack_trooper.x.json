@@ -1,0 +1,526 @@
+{
+ "frames": {
+  "jetpack_trooper_attack_b_00": {
+   "frame": {
+    "x": 314,
+    "y": 2,
+    "w": 96,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 107,
+    "w": 96,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  },
+  "jetpack_trooper_attack_b_00_team": {
+   "frame": {
+    "x": 156,
+    "y": 98,
+    "w": 56,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 102,
+    "w": 56,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  },
+  "jetpack_trooper_attack_b_01": {
+   "frame": {
+    "x": 98,
+    "y": 189,
+    "w": 92,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 108,
+    "w": 92,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  },
+  "jetpack_trooper_attack_b_01_team": {
+   "frame": {
+    "x": 280,
+    "y": 98,
+    "w": 63,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 103,
+    "w": 63,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  },
+  "jetpack_trooper_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 189,
+    "w": 92,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 109,
+    "w": 92,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  },
+  "jetpack_trooper_attack_b_02_team": {
+   "frame": {
+    "x": 335,
+    "y": 189,
+    "w": 66,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 119,
+    "y": 104,
+    "w": 66,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  },
+  "jetpack_trooper_attack_b_03": {
+   "frame": {
+    "x": 347,
+    "y": 98,
+    "w": 93,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 109,
+    "w": 93,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  },
+  "jetpack_trooper_attack_b_03_team": {
+   "frame": {
+    "x": 194,
+    "y": 189,
+    "w": 66,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 119,
+    "y": 104,
+    "w": 66,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  },
+  "jetpack_trooper_attack_b_04": {
+   "frame": {
+    "x": 200,
+    "y": 2,
+    "w": 110,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 109,
+    "w": 110,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  },
+  "jetpack_trooper_attack_b_04_team": {
+   "frame": {
+    "x": 264,
+    "y": 189,
+    "w": 67,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 104,
+    "w": 67,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  },
+  "jetpack_trooper_attack_b_05": {
+   "frame": {
+    "x": 63,
+    "y": 98,
+    "w": 89,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 107,
+    "w": 89,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  },
+  "jetpack_trooper_attack_b_05_team": {
+   "frame": {
+    "x": 216,
+    "y": 98,
+    "w": 60,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 102,
+    "w": 60,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  },
+  "jetpack_trooper_attack_b_06": {
+   "frame": {
+    "x": 102,
+    "y": 2,
+    "w": 94,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 107,
+    "w": 94,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  },
+  "jetpack_trooper_attack_b_06_team": {
+   "frame": {
+    "x": 414,
+    "y": 2,
+    "w": 57,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 102,
+    "w": 57,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  },
+  "jetpack_trooper_attack_b_07": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 96,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 117,
+    "y": 106,
+    "w": 96,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  },
+  "jetpack_trooper_attack_b_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 98,
+    "w": 57,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 116,
+    "y": 101,
+    "w": 57,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 274,
+    "h": 244
+   },
+   "anchor": {
+    "x": 0.5365,
+    "y": 0.79508
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "jetpack_trooper_attack_b_00",
+   "jetpack_trooper_attack_b_01",
+   "jetpack_trooper_attack_b_02",
+   "jetpack_trooper_attack_b_03",
+   "jetpack_trooper_attack_b_04",
+   "jetpack_trooper_attack_b_05",
+   "jetpack_trooper_attack_b_06",
+   "jetpack_trooper_attack_b_07"
+  ],
+  "attack_b_team": [
+   "jetpack_trooper_attack_b_00_team",
+   "jetpack_trooper_attack_b_01_team",
+   "jetpack_trooper_attack_b_02_team",
+   "jetpack_trooper_attack_b_03_team",
+   "jetpack_trooper_attack_b_04_team",
+   "jetpack_trooper_attack_b_05_team",
+   "jetpack_trooper_attack_b_06_team",
+   "jetpack_trooper_attack_b_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "jetpack_trooper.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 512,
+   "h": 272
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.jetpack_trooper",
+   "name": "Jetpack Trooper",
+   "heightLu": 70,
+   "widthLu": 72.0,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    147.0,
+    194.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     68
+    ],
+    "hitCenter": [
+     0,
+     34
+    ],
+    "muzzle": [
+     50,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "fly",
+   "extrasOf": "jetpack_trooper",
+   "clips": {
+    "attack_b": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      50,
+      70,
+      130,
+      50,
+      70,
+      80,
+      70,
+      80
+     ],
+     "durationMs": 600,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 2,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        48.7,
+        16.7
+       ],
+       [
+        46.3,
+        14.6
+       ],
+       [
+        44.5,
+        10.2
+       ],
+       [
+        44.8,
+        10.2
+       ],
+       [
+        43.9,
+        9.2
+       ],
+       [
+        41.3,
+        32.4
+       ],
+       [
+        47.0,
+        28.8
+       ],
+       [
+        50.4,
+        20.3
+       ]
+      ]
+     },
+     "muzzle": [
+      43.9,
+      9.2
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

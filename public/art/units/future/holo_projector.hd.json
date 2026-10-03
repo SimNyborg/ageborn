@@ -1,0 +1,2493 @@
+{
+ "frames": {
+  "holo_projector_idle_00": {
+   "frame": {
+    "x": 234,
+    "y": 457,
+    "w": 109,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 280,
+    "w": 109,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_idle_00_team": {
+   "frame": {
+    "x": 702,
+    "y": 1004,
+    "w": 101,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 321,
+    "w": 101,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_idle_01": {
+   "frame": {
+    "x": 1159,
+    "y": 233,
+    "w": 108,
+    "h": 215
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 278,
+    "w": 108,
+    "h": 215
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_idle_01_team": {
+   "frame": {
+    "x": 920,
+    "y": 845,
+    "w": 99,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 318,
+    "w": 99,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_idle_02": {
+   "frame": {
+    "x": 459,
+    "y": 2,
+    "w": 106,
+    "h": 222
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 271,
+    "w": 106,
+    "h": 222
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_idle_02_team": {
+   "frame": {
+    "x": 774,
+    "y": 675,
+    "w": 97,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 314,
+    "w": 97,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_idle_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 105,
+    "h": 227
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 266,
+    "w": 105,
+    "h": 227
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_idle_03_team": {
+   "frame": {
+    "x": 463,
+    "y": 675,
+    "w": 96,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 311,
+    "w": 96,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_idle_04": {
+   "frame": {
+    "x": 111,
+    "y": 2,
+    "w": 105,
+    "h": 225
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 268,
+    "w": 105,
+    "h": 225
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_idle_04_team": {
+   "frame": {
+    "x": 672,
+    "y": 675,
+    "w": 98,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 312,
+    "w": 98,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_idle_05": {
+   "frame": {
+    "x": 936,
+    "y": 233,
+    "w": 107,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 275,
+    "w": 107,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_idle_05_team": {
+   "frame": {
+    "x": 304,
+    "y": 845,
+    "w": 99,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 317,
+    "w": 99,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_00": {
+   "frame": {
+    "x": 347,
+    "y": 457,
+    "w": 109,
+    "h": 210
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 283,
+    "w": 109,
+    "h": 210
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_00_team": {
+   "frame": {
+    "x": 910,
+    "y": 1004,
+    "w": 94,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 325,
+    "w": 94,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_01": {
+   "frame": {
+    "x": 460,
+    "y": 457,
+    "w": 108,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 286,
+    "w": 108,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_01_team": {
+   "frame": {
+    "x": 232,
+    "y": 1160,
+    "w": 96,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 331,
+    "w": 96,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_02": {
+   "frame": {
+    "x": 902,
+    "y": 2,
+    "w": 109,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 272,
+    "w": 109,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_02_team": {
+   "frame": {
+    "x": 205,
+    "y": 845,
+    "w": 95,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 317,
+    "w": 95,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_03": {
+   "frame": {
+    "x": 346,
+    "y": 2,
+    "w": 109,
+    "h": 222
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 264,
+    "w": 109,
+    "h": 222
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_03_team": {
+   "frame": {
+    "x": 361,
+    "y": 675,
+    "w": 98,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 307,
+    "w": 98,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_04": {
+   "frame": {
+    "x": 572,
+    "y": 457,
+    "w": 109,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 283,
+    "w": 109,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_04_team": {
+   "frame": {
+    "x": 104,
+    "y": 845,
+    "w": 97,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 325,
+    "w": 97,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_05": {
+   "frame": {
+    "x": 685,
+    "y": 457,
+    "w": 110,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 286,
+    "w": 110,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_05_team": {
+   "frame": {
+    "x": 1008,
+    "y": 1004,
+    "w": 99,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 331,
+    "w": 99,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_06": {
+   "frame": {
+    "x": 119,
+    "y": 457,
+    "w": 111,
+    "h": 213
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 271,
+    "w": 111,
+    "h": 213
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_06_team": {
+   "frame": {
+    "x": 510,
+    "y": 845,
+    "w": 98,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 317,
+    "w": 98,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_07": {
+   "frame": {
+    "x": 822,
+    "y": 233,
+    "w": 110,
+    "h": 218
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 264,
+    "w": 110,
+    "h": 218
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_walk_07_team": {
+   "frame": {
+    "x": 816,
+    "y": 845,
+    "w": 100,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 307,
+    "w": 100,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_00": {
+   "frame": {
+    "x": 1015,
+    "y": 2,
+    "w": 108,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 273,
+    "w": 108,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_00_team": {
+   "frame": {
+    "x": 875,
+    "y": 675,
+    "w": 99,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 314,
+    "w": 99,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_01": {
+   "frame": {
+    "x": 787,
+    "y": 2,
+    "w": 111,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 273,
+    "w": 111,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_01_team": {
+   "frame": {
+    "x": 612,
+    "y": 845,
+    "w": 98,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 316,
+    "w": 98,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_02": {
+   "frame": {
+    "x": 705,
+    "y": 233,
+    "w": 113,
+    "h": 219
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 274,
+    "w": 113,
+    "h": 219
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 1004,
+    "w": 92,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 317,
+    "w": 92,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_03": {
+   "frame": {
+    "x": 349,
+    "y": 233,
+    "w": 115,
+    "h": 219
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 274,
+    "w": 115,
+    "h": 219
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_03_team": {
+   "frame": {
+    "x": 513,
+    "y": 1004,
+    "w": 91,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 318,
+    "w": 91,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_04": {
+   "frame": {
+    "x": 468,
+    "y": 233,
+    "w": 115,
+    "h": 219
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 274,
+    "w": 115,
+    "h": 219
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_04_team": {
+   "frame": {
+    "x": 98,
+    "y": 1004,
+    "w": 91,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 318,
+    "w": 91,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_05": {
+   "frame": {
+    "x": 587,
+    "y": 233,
+    "w": 114,
+    "h": 219
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 274,
+    "w": 114,
+    "h": 219
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_05_team": {
+   "frame": {
+    "x": 608,
+    "y": 1004,
+    "w": 90,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 318,
+    "w": 90,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_06": {
+   "frame": {
+    "x": 224,
+    "y": 233,
+    "w": 121,
+    "h": 219
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 274,
+    "w": 121,
+    "h": 219
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_06_team": {
+   "frame": {
+    "x": 1023,
+    "y": 845,
+    "w": 91,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 316,
+    "w": 91,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_07": {
+   "frame": {
+    "x": 1047,
+    "y": 233,
+    "w": 108,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 276,
+    "w": 108,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_07_team": {
+   "frame": {
+    "x": 807,
+    "y": 1004,
+    "w": 99,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 319,
+    "w": 99,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_08": {
+   "frame": {
+    "x": 114,
+    "y": 233,
+    "w": 106,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 273,
+    "w": 106,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_08_team": {
+   "frame": {
+    "x": 2,
+    "y": 845,
+    "w": 98,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 315,
+    "w": 98,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_09": {
+   "frame": {
+    "x": 1127,
+    "y": 2,
+    "w": 108,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 273,
+    "w": 108,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_09_team": {
+   "frame": {
+    "x": 978,
+    "y": 675,
+    "w": 99,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 314,
+    "w": 99,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_10": {
+   "frame": {
+    "x": 2,
+    "y": 233,
+    "w": 108,
+    "h": 220
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 273,
+    "w": 108,
+    "h": 220
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_attack_10_team": {
+   "frame": {
+    "x": 1081,
+    "y": 675,
+    "w": 99,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 314,
+    "w": 99,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_hit_00": {
+   "frame": {
+    "x": 799,
+    "y": 457,
+    "w": 125,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 297,
+    "w": 125,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_hit_00_team": {
+   "frame": {
+    "x": 425,
+    "y": 1160,
+    "w": 106,
+    "h": 135
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 335,
+    "w": 106,
+    "h": 135
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_hit_01": {
+   "frame": {
+    "x": 220,
+    "y": 2,
+    "w": 122,
+    "h": 222
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 269,
+    "w": 122,
+    "h": 222
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_hit_01_team": {
+   "frame": {
+    "x": 1118,
+    "y": 845,
+    "w": 98,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 317,
+    "w": 98,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_hit_02": {
+   "frame": {
+    "x": 569,
+    "y": 2,
+    "w": 104,
+    "h": 222
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 270,
+    "w": 104,
+    "h": 222
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_hit_02_team": {
+   "frame": {
+    "x": 714,
+    "y": 845,
+    "w": 98,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 314,
+    "w": 98,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_hit_03": {
+   "frame": {
+    "x": 2,
+    "y": 457,
+    "w": 113,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 279,
+    "w": 113,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_hit_03_team": {
+   "frame": {
+    "x": 408,
+    "y": 1004,
+    "w": 101,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 319,
+    "w": 101,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_hit_04": {
+   "frame": {
+    "x": 677,
+    "y": 2,
+    "w": 106,
+    "h": 221
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 272,
+    "w": 106,
+    "h": 221
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_hit_04_team": {
+   "frame": {
+    "x": 407,
+    "y": 845,
+    "w": 99,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 315,
+    "w": 99,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_00": {
+   "frame": {
+    "x": 1058,
+    "y": 457,
+    "w": 130,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 298,
+    "w": 130,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_00_team": {
+   "frame": {
+    "x": 535,
+    "y": 1160,
+    "w": 106,
+    "h": 133
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 328,
+    "w": 106,
+    "h": 133
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_01": {
+   "frame": {
+    "x": 2,
+    "y": 675,
+    "w": 195,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 141,
+    "y": 276,
+    "w": 195,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_01_team": {
+   "frame": {
+    "x": 452,
+    "y": 1306,
+    "w": 169,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 144,
+    "y": 347,
+    "w": 169,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_02": {
+   "frame": {
+    "x": 928,
+    "y": 457,
+    "w": 126,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 282,
+    "w": 126,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_02_team": {
+   "frame": {
+    "x": 563,
+    "y": 675,
+    "w": 105,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 307,
+    "w": 105,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_03": {
+   "frame": {
+    "x": 201,
+    "y": 675,
+    "w": 156,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 151,
+    "y": 296,
+    "w": 156,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_03_team": {
+   "frame": {
+    "x": 332,
+    "y": 1160,
+    "w": 89,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 292,
+    "w": 89,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_04": {
+   "frame": {
+    "x": 193,
+    "y": 1004,
+    "w": 211,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 87,
+    "y": 363,
+    "w": 211,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_04_team": {
+   "frame": {
+    "x": 1103,
+    "y": 1160,
+    "w": 126,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 151,
+    "y": 404,
+    "w": 126,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_05": {
+   "frame": {
+    "x": 2,
+    "y": 1160,
+    "w": 226,
+    "h": 142
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 354,
+    "w": 226,
+    "h": 142
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_05_team": {
+   "frame": {
+    "x": 144,
+    "y": 1306,
+    "w": 165,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 125,
+    "y": 398,
+    "w": 165,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_06": {
+   "frame": {
+    "x": 645,
+    "y": 1160,
+    "w": 226,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 72,
+    "y": 384,
+    "w": 226,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_06_team": {
+   "frame": {
+    "x": 313,
+    "y": 1306,
+    "w": 135,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 141,
+    "y": 410,
+    "w": 135,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_07": {
+   "frame": {
+    "x": 875,
+    "y": 1160,
+    "w": 224,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 72,
+    "y": 389,
+    "w": 224,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  },
+  "holo_projector_die_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 1306,
+    "w": 138,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 137,
+    "y": 406,
+    "w": 138,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 556
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85612
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "holo_projector_idle_00",
+   "holo_projector_idle_01",
+   "holo_projector_idle_02",
+   "holo_projector_idle_03",
+   "holo_projector_idle_04",
+   "holo_projector_idle_05"
+  ],
+  "idle_team": [
+   "holo_projector_idle_00_team",
+   "holo_projector_idle_01_team",
+   "holo_projector_idle_02_team",
+   "holo_projector_idle_03_team",
+   "holo_projector_idle_04_team",
+   "holo_projector_idle_05_team"
+  ],
+  "walk": [
+   "holo_projector_walk_00",
+   "holo_projector_walk_01",
+   "holo_projector_walk_02",
+   "holo_projector_walk_03",
+   "holo_projector_walk_04",
+   "holo_projector_walk_05",
+   "holo_projector_walk_06",
+   "holo_projector_walk_07"
+  ],
+  "walk_team": [
+   "holo_projector_walk_00_team",
+   "holo_projector_walk_01_team",
+   "holo_projector_walk_02_team",
+   "holo_projector_walk_03_team",
+   "holo_projector_walk_04_team",
+   "holo_projector_walk_05_team",
+   "holo_projector_walk_06_team",
+   "holo_projector_walk_07_team"
+  ],
+  "attack": [
+   "holo_projector_attack_00",
+   "holo_projector_attack_01",
+   "holo_projector_attack_02",
+   "holo_projector_attack_03",
+   "holo_projector_attack_04",
+   "holo_projector_attack_05",
+   "holo_projector_attack_06",
+   "holo_projector_attack_07",
+   "holo_projector_attack_08",
+   "holo_projector_attack_09",
+   "holo_projector_attack_10"
+  ],
+  "attack_team": [
+   "holo_projector_attack_00_team",
+   "holo_projector_attack_01_team",
+   "holo_projector_attack_02_team",
+   "holo_projector_attack_03_team",
+   "holo_projector_attack_04_team",
+   "holo_projector_attack_05_team",
+   "holo_projector_attack_06_team",
+   "holo_projector_attack_07_team",
+   "holo_projector_attack_08_team",
+   "holo_projector_attack_09_team",
+   "holo_projector_attack_10_team"
+  ],
+  "hit": [
+   "holo_projector_hit_00",
+   "holo_projector_hit_01",
+   "holo_projector_hit_02",
+   "holo_projector_hit_03",
+   "holo_projector_hit_04"
+  ],
+  "hit_team": [
+   "holo_projector_hit_00_team",
+   "holo_projector_hit_01_team",
+   "holo_projector_hit_02_team",
+   "holo_projector_hit_03_team",
+   "holo_projector_hit_04_team"
+  ],
+  "die": [
+   "holo_projector_die_00",
+   "holo_projector_die_01",
+   "holo_projector_die_02",
+   "holo_projector_die_03",
+   "holo_projector_die_04",
+   "holo_projector_die_05",
+   "holo_projector_die_06",
+   "holo_projector_die_06",
+   "holo_projector_die_07",
+   "holo_projector_die_07"
+  ],
+  "die_team": [
+   "holo_projector_die_00_team",
+   "holo_projector_die_01_team",
+   "holo_projector_die_02_team",
+   "holo_projector_die_03_team",
+   "holo_projector_die_04_team",
+   "holo_projector_die_05_team",
+   "holo_projector_die_06_team",
+   "holo_projector_die_06_team",
+   "holo_projector_die_07_team",
+   "holo_projector_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "holo_projector.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1280,
+   "h": 1412
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.holo_projector",
+   "name": "Holo Projector",
+   "heightLu": 68,
+   "widthLu": 37.8,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    260,
+    476
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     66
+    ],
+    "hitCenter": [
+     0,
+     31
+    ],
+    "muzzle": [
+     26,
+     30
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "lens": [
+       [
+        -9.2,
+        69.7
+       ],
+       [
+        -10.0,
+        70.9
+       ],
+       [
+        -9.9,
+        73.5
+       ],
+       [
+        -9.1,
+        75.3
+       ],
+       [
+        -8.4,
+        74.5
+       ],
+       [
+        -8.5,
+        71.8
+       ]
+      ],
+      "muzzle": [
+       [
+        7.3,
+        18.0
+       ],
+       [
+        7.6,
+        18.3
+       ],
+       [
+        7.5,
+        18.8
+       ],
+       [
+        7.2,
+        19.4
+       ],
+       [
+        7.0,
+        19.5
+       ],
+       [
+        7.0,
+        18.9
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77
+     ],
+     "durationMs": 616,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 81.2,
+     "cycleMs": 616,
+     "anchorsLu": {
+      "lens": [
+       [
+        -1.2,
+        68.4
+       ],
+       [
+        -3.0,
+        67.1
+       ],
+       [
+        -1.6,
+        72.9
+       ],
+       [
+        -1.0,
+        76.1
+       ],
+       [
+        -1.2,
+        68.4
+       ],
+       [
+        -4.2,
+        67.2
+       ],
+       [
+        -3.3,
+        73.0
+       ],
+       [
+        -2.3,
+        76.2
+       ]
+      ],
+      "muzzle": [
+       [
+        4.5,
+        13.8
+       ],
+       [
+        2.6,
+        10.5
+       ],
+       [
+        6.0,
+        17.0
+       ],
+       [
+        11.2,
+        24.9
+       ],
+       [
+        12.7,
+        23.7
+       ],
+       [
+        12.2,
+        23.4
+       ],
+       [
+        12.0,
+        26.1
+       ],
+       [
+        9.3,
+        24.6
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 81.2,
+     "strideLu": 50.0,
+     "plantedDriftLu": 0.05,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "r",
+       "atLu": [
+        10.1,
+        -1.9
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "l",
+       "atLu": [
+        12.2,
+        1.4
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "lens": [
+       [
+        -7.5,
+        72.8
+       ],
+       [
+        -5.0,
+        72.2
+       ],
+       [
+        -2.4,
+        72.0
+       ],
+       [
+        -1.4,
+        71.8
+       ],
+       [
+        -1.0,
+        71.8
+       ],
+       [
+        -1.2,
+        71.8
+       ],
+       [
+        -5.5,
+        72.0
+       ],
+       [
+        -18.7,
+        71.5
+       ],
+       [
+        -10.6,
+        72.3
+       ],
+       [
+        -7.5,
+        72.8
+       ],
+       [
+        -7.5,
+        72.8
+       ]
+      ],
+      "muzzle": [
+       [
+        7.3,
+        19.2
+       ],
+       [
+        13.5,
+        28.7
+       ],
+       [
+        15.5,
+        31.6
+       ],
+       [
+        15.0,
+        31.4
+       ],
+       [
+        15.3,
+        31.4
+       ],
+       [
+        15.2,
+        31.4
+       ],
+       [
+        12.9,
+        32.5
+       ],
+       [
+        6.2,
+        40.7
+       ],
+       [
+        9.1,
+        32.4
+       ],
+       [
+        9.6,
+        22.4
+       ],
+       [
+        7.3,
+        19.2
+       ]
+      ]
+     },
+     "muzzle": [
+      12.9,
+      32.5
+     ]
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "lens": [
+       [
+        -26.1,
+        64.2
+       ],
+       [
+        -28.3,
+        75.1
+       ],
+       [
+        -17.3,
+        74.1
+       ],
+       [
+        -4.0,
+        70.2
+       ],
+       [
+        -8.4,
+        72.8
+       ]
+      ],
+      "muzzle": [
+       [
+        1.4,
+        22.0
+       ],
+       [
+        -1.7,
+        29.1
+       ],
+       [
+        3.7,
+        23.6
+       ],
+       [
+        7.5,
+        18.0
+       ],
+       [
+        7.0,
+        19.6
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        24.5
+       ],
+       "scale": 0.472
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        37.4
+       ],
+       "loops": 2,
+       "scale": 0.687
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "lens": [
+       [
+        -21.1,
+        63.7
+       ],
+       [
+        -62.2,
+        41.4
+       ],
+       [
+        14.1,
+        -7.8
+       ],
+       [
+        8.5,
+        80.6
+       ],
+       [
+        -54.4,
+        10.7
+       ],
+       [
+        -68.7,
+        9.3
+       ],
+       [
+        -61.1,
+        3.2
+       ],
+       [
+        -60.3,
+        4.8
+       ]
+      ],
+      "muzzle": [
+       [
+        10.7,
+        31.0
+       ],
+       [
+        -27.0,
+        45.3
+       ],
+       [
+        -10.9,
+        17.7
+       ],
+       [
+        5.3,
+        42.3
+       ],
+       [
+        -14.7,
+        24.4
+       ],
+       [
+        -27.7,
+        25.1
+       ],
+       [
+        -19.6,
+        22.8
+       ],
+       [
+        -17.4,
+        21.3
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

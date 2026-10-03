@@ -374,3 +374,129 @@ TURRETS = [
                   gravity_idle, gravity_fire, aim=(0, 0), fire_kind="orb", muzzle_joint="orb", idle_frames=6,
                   overlays=GW_OVERLAYS),
 ]
+
+# -- W7 Future wave: Cryo Pod ---------------------------------------------------------------------
+CRYO_MUZ = (20.0, 0.0, 20.0)
+FROSTC = "#E6FFF7"
+
+
+def cryo_build(rig):
+    hover_pad(rig)
+    g = Geo()
+    cyl(g, (0, 0, 7), (0, 0, 12), 4.2, 3.4, bevel=0.5)
+    rig.part("mount", g, TRIM, finish="metal", outline=0.5)
+    # the pod: a round white tank with a team band, frost-white coolant ribs and a mint intake mouth
+    rig.joint("pod", "head", (0, 0, 20))
+    pod = Geo().blob((0, 0, 20), (10.5, 9.0, 9.0), p=2.2)
+    band = Geo().blob((-1.0, 0, 20), (10.8, 9.3, 2.6), p=3.0)
+    bf = FC.Face(rig, "pod", [band], yaw_deg=TURRET_YAW)
+    g = KF.hexmark(bf, Geo(), K.scr(bf, (-3.0, -8.6, 20.0)), s=0.5, w=1.0, dot=False)
+    rig.part("pod", pod, WHITE, finish="gloss", outline_hex=TRIM)
+    rig.part("pod", band, team=True, outline=0.4)
+    rig.part("pod", g, KF.HEX_PALE, highlight=False, outline=0)
+    g = Geo()
+    for z in (25.5, 14.5):
+        g.blob((-1.0, 0, z), (8.4, 7.4, 0.9), p=3.0)
+    rig.part("pod", g, FROSTC, finish="gloss", outline=0.3)
+    visor = Geo().blob((7.6, -3.4, 24.0), (3.4, 4.4, 2.4), p=3.0)
+    KF.visor_face(rig, "pod", [visor], (8.0, 24.2), eye_dx=(0.0,), eye_rx=1.4, eye_rz=1.8, yaw_deg=TURRET_YAW)
+    rig.part("pod", visor, VISOR, finish="gloss", outline=0.4, outline_hex=CHARCOAL)
+    g = Geo().lathe([(0, 0), (4.6, 0.2), (5.2, 2.6), (3.6, 3.6), (0, 3.4)], (9.0, 0, 18.0), (12.6, 0, 18.4), segs=18)
+    rig.part("pod", g, CHAR_LT, finish="metal", outline=0.5)
+    g = Geo().lathe([(0, -0.6), (3.4, -0.5), (3.4, 0.5), (0, 0.6)], (12.4, -0.3, 18.4), (13.0, -0.3, 18.4), segs=18)
+    rig.part("pod", g, glow=MINT, outline=0.4, outline_hex=CHARCOAL)
+    rig.joint("frost", "pod", (14.0, 0, 18.6), hidden=True)
+    g = Geo().sphere((15.5, -0.6, 18.6), 3.0, cuts=3)
+    rig.part("frost", g, glow=FROSTC, outline=0.6, outline_hex=MINT)
+    glow_flash(rig, "pod", CRYO_MUZ, MINT, FROSTC, 1.0)
+    steam(rig, "pod", (-4.0, 0, 30.0), 0.8, name="vent")
+
+
+def cryo_idle(f):
+    t = 2 * math.pi * f / 6
+    pose = {"pod": {"sz": 1.0 + 0.03 * math.cos(t), "sx": 1.0 - 0.02 * math.cos(t), "r": 1.0 * math.sin(t)},
+            "vent": {"show": f == 3, "s": 0.7}}
+    if f == 4:
+        pose.update(KF.glyph("g_blink"))
+    return pose
+
+
+def cryo_fire(f):
+    # the inhale (squash, the mouth glows) and then the frost spit (stretch forward)
+    pose = {"pod": {"sz": [0.88, 1.08, 1.04, 0.98, 1.0][f], "sx": [1.08, 0.94, 0.97, 1.01, 1.0][f],
+                    "x": [-1.2, 1.4, -0.6, -0.2, 0][f], "r": [3.0, -2.0, 1.0, 0.4, 0][f]},
+            "frost": {"show": f == 0}, "vent": {"show": f in (2, 3), "s": 1.0 if f == 2 else 1.3}}
+    pose.update(KF.glyph(["g_squint", "g_wide", "g_angry", "eyes", "eyes"][f]))
+    return pose
+
+
+CRYO_OVERLAYS = {"fire": {
+    0: [{"kind": "rings", "joint": "pod", "point": (14.0, 0, 18.4), "radii_lu": (4.0, 7.0), "a0": -110.0,
+         "a1": 110.0, "color": FROSTC}],
+    1: [{"kind": "burst", "joint": "pod", "point": (16.0, 0, 18.4), "r0_lu": 6.0, "r1_lu": 11.0, "n": 6,
+         "a0": -60.0, "arc": 120.0, "color": FROSTC}]}}
+
+
+# -- W7 Future wave: Tractor Beam -----------------------------------------------------------------
+TB_DISH = (6.0, 0.0, 30.0)
+TB_MUZ = (17.0, -0.6, 30.0)
+
+
+def tractor_build(rig):
+    hover_pad(rig, 16)
+    g = Geo()
+    for y in (-6.0, 6.0):
+        g.capsule((-2.0, y, 7.0), (0.0, y, 26.0), 1.8)
+    rig.part("mount", g, CHAR_LT, finish="metal", outline=0.5)            # the gimbal fork
+    g = Geo()
+    cyl(g, (0, 0, 7), (0, 0, 10), 7.0, 6.0, bevel=0.6, segs=16)
+    rig.part("mount", g, TRIM, finish="metal", outline=0.5)
+    # the dish (head): a white bowl with a team rim and back, a magenta coil and a mint emitter prong
+    dx, dy, dz = TB_DISH
+    g = Geo().blob((dx - 6.0, dy, dz), (5.0, 7.4, 7.4), p=2.6)
+    rig.part("head", g, team=True)
+    g = Geo().lathe([(0, -2.6), (8.0, -0.8), (12.6, 3.2), (13.0, 4.6), (11.6, 4.6), (7.4, 1.8), (0, 0.6)],
+                    (dx - 3.0, dy, dz), (dx - 2.0, dy, dz), segs=28)
+    rig.part("head", g, WHITE, finish="gloss", outline_hex=TRIM)
+    g = Geo().lathe([(11.4, 3.6), (13.2, 4.0), (13.2, 5.4), (11.2, 5.2)], (dx - 3.0, dy, dz), (dx - 2.0, dy, dz), segs=28)
+    rig.part("head", g, team=True, outline=0.4)
+    g = Geo().lathe([(0, -0.8), (3.6, -0.7), (3.6, 0.7), (0, 0.8)], (dx + 1.0, dy - 0.3, dz), (dx + 2.0, dy - 0.3, dz), segs=18)
+    rig.part("head", g, glow=MAGENTA, outline=0.4, outline_hex=CHARCOAL)
+    g = Geo().capsule((dx, dy - 0.5, dz), (TB_MUZ[0] - 1.0, TB_MUZ[1], TB_MUZ[2]), 1.3, 0.7)
+    rig.part("head", g, CHAR_LT, finish="metal", outline=0.5)
+    rig.joint("emit", "head", TB_MUZ)
+    g = Geo().sphere((TB_MUZ[0], TB_MUZ[1] - 0.4, TB_MUZ[2]), 2.0, cuts=3)
+    rig.part("emit", g, glow=MINT_CORE, outline=0.5, outline_hex=MINT)
+    for i, r in enumerate((10.0, 6.6)):
+        rig.joint(f"tring{i}", "head", (dx, dy, dz), hidden=True)
+        g = Geo().lathe([(r - 0.7, 0), (r + 0.7, 0), (r + 0.7, 0.5), (r - 0.7, 0.5)], (dx - 1.2 + i, dy - 0.3, dz),
+                        (dx - 0.2 + i, dy - 0.3, dz), segs=24)
+        rig.part(f"tring{i}", g, glow=MINT, outline=0.5, outline_hex=MINT)
+    glow_flash(rig, "head", TB_MUZ, MINT, MINT_CORE, 1.1)
+
+
+def tractor_idle(f):
+    t = 2 * math.pi * f / 6
+    return {"head": {"r": 2.0 * math.sin(t)}, "emit": {"s": 0.85 + 0.2 * math.cos(t)},
+            "tring0": {"show": f in (1, 4)}}
+
+
+def tractor_fire(f):
+    return {"head": {"x": [-1.0, 0.4, -2.0, -0.8, 0][f], "r": [1.5, 0.0, 2.5, 1.0, 0][f]},
+            "tring0": {"show": f in (0, 1)}, "tring1": {"show": f == 0}, "emit": {"s": [1.5, 1.7, 1.1, 0.9, 0.85][f]}}
+
+
+TB_OVERLAYS = {"fire": {
+    0: [{"kind": "rings", "joint": "head", "point": TB_MUZ, "radii_lu": (5.0, 8.5), "a0": -110.0, "a1": 110.0,
+         "color": MINT_CORE}],
+    1: [{"kind": "burst", "joint": "head", "point": (TB_MUZ[0] + 2.0, TB_MUZ[1], TB_MUZ[2]), "r0_lu": 7.0,
+         "r1_lu": 12.0, "n": 6, "a0": -60.0, "arc": 120.0, "color": MINT_CORE}]}}
+
+
+TURRETS += [
+    # W7 Future wave (CONTENT_PLAN 5.7)
+    turret_module("cryo_pod", "Cryo Pod", "future", 34, CANVAS, FEET, (0, 20), CRYO_MUZ, cryo_build,
+                  cryo_idle, cryo_fire, muzzle_joint="pod", idle_frames=6, overlays=CRYO_OVERLAYS),
+    turret_module("tractor_beam", "Tractor Beam", "future", 44, CANVAS, FEET, (0, 30), TB_MUZ, tractor_build,
+                  tractor_idle, tractor_fire, aim=(-35, 25), fire_kind="beam", idle_frames=6, overlays=TB_OVERLAYS),
+]

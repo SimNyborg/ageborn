@@ -139,11 +139,11 @@ export const modern: RawAgeTables = {
     {
       // Raider: a crouched sprint in a beret, a combat roll into a rifle-butt swing; fast; ×2 to bases
       id: 'commando', released: false, kind: 'unit', age: 'modern', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 370, speed: 110, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 395, speed: 110, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 46, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 48, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'blunt', sfx: 'butt_stroke', vsBaseDamage: 84,
         },
       ],
@@ -154,7 +154,7 @@ export const modern: RawAgeTables = {
     {
       // Guard: the shoulder sandbag takes 25% less from attacks with range ≥ 100 (not powers); an overhead slam; Blunt
       id: 'sandbag_carrier', released: false, kind: 'unit', age: 'modern', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 480, speed: 70, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 455, speed: 70, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -170,11 +170,11 @@ export const modern: RawAgeTables = {
       // Trio (X0 M1): one card trains 3 troopers with submachine guns; stats per trooper (0.40 × Rifleman, +15% damage
       // for the short range 170); cost and pop split evenly
       id: 'smg_squad', released: false, kind: 'unit', age: 'modern', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 90, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 80, speed: 65, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 14, intervalMs: 1000, windupPct: 50, range: 170, hitsGround: true, hitsAir: true,
+          damage: 11, intervalMs: 1000, windupPct: 50, range: 170, hitsGround: true, hitsAir: true,
           projectile: { speed: 1500, visualId: 'proj.bullet' },
           dmgType: 'bullet', sfx: 'shot_smg',
         },
@@ -191,7 +191,7 @@ export const modern: RawAgeTables = {
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 32, intervalMs: 1500, windupPct: 50, range: 230, hitsGround: true, hitsAir: false,
+          damage: 35, intervalMs: 1500, windupPct: 50, range: 230, hitsGround: true, hitsAir: false,
           projectile: { speed: 450, arc: true, visualId: 'proj.rifle_grenade' },
           dmgType: 'blast', sfx: 'shot_rifle_grenade', splashRadius: 30,
         },
@@ -203,11 +203,11 @@ export const modern: RawAgeTables = {
     {
       // Gunner Heavy (armored mech): a turretless assault gun, range 90, splash r30; the whole hull recoils
       id: 'assault_gun', released: false, kind: 'unit', age: 'modern', rarity: 'common', role: 'heavy', group: 'heavy',
-      cost: 150, trainMs: 4000, pop: 6, hp: 1250, speed: 45, size: 'large',
+      cost: 150, trainMs: 4000, pop: 6, hp: 1350, speed: 45, size: 'large',
       tags: ['armored', 'mech', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 82, intervalMs: 1500, windupPct: 50, range: 90, hitsGround: true, hitsAir: false,
+          damage: 88, intervalMs: 1500, windupPct: 50, range: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 1200, visualId: 'proj.shell' },
           dmgType: 'blast', sfx: 'shot_assault_gun', splashRadius: 30,
         },
@@ -224,7 +224,7 @@ export const modern: RawAgeTables = {
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 116, intervalMs: 2600, windupPct: 50, range: 380, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 124, intervalMs: 2600, windupPct: 50, range: 380, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.mortar_shell' },
           dmgType: 'blast', sfx: 'shot_mortar_team', splashRadius: 35, vsBaseDamage: 50,
         },
@@ -237,11 +237,11 @@ export const modern: RawAgeTables = {
       // Melee Anti-heavy: slaps a sticky charge on the hull, 2.0 s interval; melee AA mods (armored and mech ×3,
       // Legendary ×2, light ×0.75); Brace; priority armored
       id: 'sticky_bomber', released: false, kind: 'unit', age: 'modern', rarity: 'rare', role: 'antiArmor', group: 'antiArmor',
-      cost: 100, trainMs: 2500, pop: 4, hp: 560, speed: 70, size: 'medium',
+      cost: 100, trainMs: 2500, pop: 4, hp: 580, speed: 70, size: 'medium',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 98, intervalMs: 2000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 104, intervalMs: 2000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'blast', sfx: 'sticky_thunk', mods: damageMods.meleeAntiArmor, priority: 'armored',
         },
       ],
@@ -272,7 +272,7 @@ export const modern: RawAgeTables = {
     {
       // Frenzy (X0 M2): a boxing combo; below 50% HP he rolls up his sleeves: +30% damage, +20% attack speed
       id: 'bulldog_sergeant', released: false, kind: 'unit', age: 'modern', rarity: 'rare', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 430, speed: 75, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 415, speed: 75, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -340,11 +340,11 @@ export const modern: RawAgeTables = {
       // air (their own targets, not the bomb window); when it falls it crashes for 270 splash r70 on ground enemies
       // and the 2 gunners bail out as Riflemen (summoned)
       id: 'sky_fortress', released: false, kind: 'unit', age: 'modern', rarity: 'legendary', role: 'airBomber', group: 'legendary',
-      cost: 350, trainMs: 7000, pop: 14, hp: 1450, speed: 40, size: 'huge',
+      cost: 350, trainMs: 7000, pop: 14, hp: 1300, speed: 40, size: 'huge',
       tags: ['air', 'mech', 'legendary'],
       attacks: [
         {
-          damage: 80, vsBaseDamage: 130, intervalMs: 1600, windupPct: 50, range: 40, hitsGround: true, hitsAir: false,
+          damage: 70, vsBaseDamage: 130, intervalMs: 1600, windupPct: 50, range: 40, hitsGround: true, hitsAir: false,
           projectile: { speed: 450, visualId: 'proj.bomb' },
           dmgType: 'blast', sfx: 'bomb_stick', splashRadius: 50,
         },

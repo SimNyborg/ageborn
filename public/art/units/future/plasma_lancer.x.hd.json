@@ -1,0 +1,1029 @@
+{
+ "frames": {
+  "plasma_lancer_attack_b_01": {
+   "frame": {
+    "x": 362,
+    "y": 210,
+    "w": 153,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 246,
+    "y": 247,
+    "w": 153,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_b_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 585,
+    "w": 99,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 248,
+    "y": 237,
+    "w": 99,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 210,
+    "w": 170,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 241,
+    "y": 243,
+    "w": 170,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_b_02_team": {
+   "frame": {
+    "x": 466,
+    "y": 402,
+    "w": 93,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 245,
+    "y": 233,
+    "w": 93,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_b_03": {
+   "frame": {
+    "x": 602,
+    "y": 2,
+    "w": 164,
+    "h": 192
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 240,
+    "y": 239,
+    "w": 164,
+    "h": 192
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_b_03_team": {
+   "frame": {
+    "x": 202,
+    "y": 402,
+    "w": 88,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 242,
+    "y": 229,
+    "w": 88,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_b_04": {
+   "frame": {
+    "x": 519,
+    "y": 210,
+    "w": 197,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 252,
+    "y": 249,
+    "w": 197,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_b_04_team": {
+   "frame": {
+    "x": 434,
+    "y": 585,
+    "w": 117,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 256,
+    "y": 239,
+    "w": 117,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_b_05": {
+   "frame": {
+    "x": 223,
+    "y": 585,
+    "w": 207,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 261,
+    "y": 262,
+    "w": 207,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_b_05_team": {
+   "frame": {
+    "x": 319,
+    "y": 760,
+    "w": 130,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 268,
+    "y": 252,
+    "w": 130,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_b_06": {
+   "frame": {
+    "x": 197,
+    "y": 2,
+    "w": 212,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 269,
+    "y": 276,
+    "w": 212,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_b_06_team": {
+   "frame": {
+    "x": 478,
+    "y": 925,
+    "w": 122,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 280,
+    "y": 266,
+    "w": 122,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_b_07": {
+   "frame": {
+    "x": 413,
+    "y": 2,
+    "w": 185,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 270,
+    "y": 267,
+    "w": 185,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_b_07_team": {
+   "frame": {
+    "x": 558,
+    "y": 760,
+    "w": 116,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 280,
+    "y": 257,
+    "w": 116,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_b_08": {
+   "frame": {
+    "x": 563,
+    "y": 402,
+    "w": 200,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 258,
+    "y": 258,
+    "w": 200,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_b_08_team": {
+   "frame": {
+    "x": 2,
+    "y": 760,
+    "w": 118,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 265,
+    "y": 248,
+    "w": 118,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_01": {
+   "frame": {
+    "x": 671,
+    "y": 585,
+    "w": 170,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 249,
+    "y": 269,
+    "w": 170,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_01_team": {
+   "frame": {
+    "x": 678,
+    "y": 760,
+    "w": 100,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 258,
+    "y": 259,
+    "w": 100,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_02": {
+   "frame": {
+    "x": 2,
+    "y": 925,
+    "w": 178,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 247,
+    "y": 279,
+    "w": 178,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_02_team": {
+   "frame": {
+    "x": 184,
+    "y": 925,
+    "w": 104,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 261,
+    "y": 270,
+    "w": 104,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_03": {
+   "frame": {
+    "x": 292,
+    "y": 925,
+    "w": 182,
+    "h": 145
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 285,
+    "w": 182,
+    "h": 145
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_03_team": {
+   "frame": {
+    "x": 604,
+    "y": 925,
+    "w": 107,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 264,
+    "y": 276,
+    "w": 107,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_04": {
+   "frame": {
+    "x": 124,
+    "y": 760,
+    "w": 191,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 259,
+    "y": 272,
+    "w": 191,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_04_team": {
+   "frame": {
+    "x": 453,
+    "y": 760,
+    "w": 101,
+    "h": 158
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 269,
+    "y": 262,
+    "w": 101,
+    "h": 158
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_05": {
+   "frame": {
+    "x": 2,
+    "y": 402,
+    "w": 196,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 263,
+    "y": 252,
+    "w": 196,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_05_team": {
+   "frame": {
+    "x": 105,
+    "y": 585,
+    "w": 114,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 269,
+    "y": 242,
+    "w": 114,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_06": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 191,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 267,
+    "y": 228,
+    "w": 191,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_06_team": {
+   "frame": {
+    "x": 720,
+    "y": 210,
+    "w": 115,
+    "h": 181
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 267,
+    "y": 229,
+    "w": 115,
+    "h": 181
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_07": {
+   "frame": {
+    "x": 176,
+    "y": 210,
+    "w": 182,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 264,
+    "y": 246,
+    "w": 182,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_07_team": {
+   "frame": {
+    "x": 767,
+    "y": 402,
+    "w": 117,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 268,
+    "y": 236,
+    "w": 117,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_08": {
+   "frame": {
+    "x": 294,
+    "y": 402,
+    "w": 168,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 256,
+    "y": 255,
+    "w": 168,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  },
+  "plasma_lancer_attack_c_08_team": {
+   "frame": {
+    "x": 555,
+    "y": 585,
+    "w": 112,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 261,
+    "y": 245,
+    "w": 112,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 616,
+    "h": 504
+   },
+   "anchor": {
+    "x": 0.49026,
+    "y": 0.82143
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "plasma_lancer_attack_00",
+   "plasma_lancer_attack_b_01",
+   "plasma_lancer_attack_b_02",
+   "plasma_lancer_attack_b_03",
+   "plasma_lancer_attack_b_04",
+   "plasma_lancer_attack_b_05",
+   "plasma_lancer_attack_b_06",
+   "plasma_lancer_attack_b_07",
+   "plasma_lancer_attack_b_08",
+   "plasma_lancer_attack_09",
+   "plasma_lancer_attack_00"
+  ],
+  "attack_b_team": [
+   "plasma_lancer_attack_00_team",
+   "plasma_lancer_attack_b_01_team",
+   "plasma_lancer_attack_b_02_team",
+   "plasma_lancer_attack_b_03_team",
+   "plasma_lancer_attack_b_04_team",
+   "plasma_lancer_attack_b_05_team",
+   "plasma_lancer_attack_b_06_team",
+   "plasma_lancer_attack_b_07_team",
+   "plasma_lancer_attack_b_08_team",
+   "plasma_lancer_attack_09_team",
+   "plasma_lancer_attack_00_team"
+  ],
+  "attack_c": [
+   "plasma_lancer_attack_00",
+   "plasma_lancer_attack_c_01",
+   "plasma_lancer_attack_c_02",
+   "plasma_lancer_attack_c_03",
+   "plasma_lancer_attack_c_04",
+   "plasma_lancer_attack_c_05",
+   "plasma_lancer_attack_c_06",
+   "plasma_lancer_attack_c_07",
+   "plasma_lancer_attack_c_08",
+   "plasma_lancer_attack_09",
+   "plasma_lancer_attack_00"
+  ],
+  "attack_c_team": [
+   "plasma_lancer_attack_00_team",
+   "plasma_lancer_attack_c_01_team",
+   "plasma_lancer_attack_c_02_team",
+   "plasma_lancer_attack_c_03_team",
+   "plasma_lancer_attack_c_04_team",
+   "plasma_lancer_attack_c_05_team",
+   "plasma_lancer_attack_c_06_team",
+   "plasma_lancer_attack_c_07_team",
+   "plasma_lancer_attack_c_08_team",
+   "plasma_lancer_attack_09_team",
+   "plasma_lancer_attack_00_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "plasma_lancer.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 896,
+   "h": 1080
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.plasma_lancer",
+   "name": "Plasma Lancer",
+   "heightLu": 72,
+   "widthLu": 37.0,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    302,
+    414
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     70
+    ],
+    "hitCenter": [
+     0,
+     33
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "plasma_lancer",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      0
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "holdStep": 3,
+     "anchorsLu": {
+      "lanceTip": [
+       [
+        11.2,
+        65.3
+       ],
+       [
+        35.1,
+        62.6
+       ],
+       [
+        39.9,
+        48.8
+       ],
+       [
+        37.1,
+        47.0
+       ],
+       [
+        55.4,
+        22.5
+       ],
+       [
+        63.0,
+        0.3
+       ],
+       [
+        58.6,
+        -11.1
+       ],
+       [
+        54.8,
+        -12.0
+       ],
+       [
+        59.2,
+        27.5
+       ],
+       [
+        11.7,
+        65.3
+       ]
+      ]
+     }
+    },
+    "attack_c": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      0
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "holdStep": 3,
+     "anchorsLu": {
+      "lanceTip": [
+       [
+        11.2,
+        65.3
+       ],
+       [
+        43.2,
+        31.6
+       ],
+       [
+        45.5,
+        17.7
+       ],
+       [
+        46.1,
+        12.4
+       ],
+       [
+        55.9,
+        20.8
+       ],
+       [
+        56.5,
+        42.6
+       ],
+       [
+        49.0,
+        61.0
+       ],
+       [
+        50.6,
+        60.1
+       ],
+       [
+        45.5,
+        52.6
+       ],
+       [
+        11.7,
+        65.3
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

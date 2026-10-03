@@ -1,0 +1,2082 @@
+{
+ "frames": {
+  "attack_drone_idle_00": {
+   "frame": {
+    "x": 2,
+    "y": 165,
+    "w": 63,
+    "h": 40
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 80,
+    "w": 63,
+    "h": 40
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_idle_00_team": {
+   "frame": {
+    "x": 117,
+    "y": 209,
+    "w": 43,
+    "h": 38
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 75,
+    "w": 43,
+    "h": 38
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_idle_01": {
+   "frame": {
+    "x": 2,
+    "y": 209,
+    "w": 63,
+    "h": 38
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 65,
+    "y": 82,
+    "w": 63,
+    "h": 38
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_idle_01_team": {
+   "frame": {
+    "x": 2,
+    "y": 251,
+    "w": 43,
+    "h": 37
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 77,
+    "w": 43,
+    "h": 37
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_idle_02": {
+   "frame": {
+    "x": 511,
+    "y": 117,
+    "w": 64,
+    "h": 40
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 83,
+    "w": 64,
+    "h": 40
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_idle_02_team": {
+   "frame": {
+    "x": 49,
+    "y": 251,
+    "w": 43,
+    "h": 37
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 79,
+    "w": 43,
+    "h": 37
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_idle_03": {
+   "frame": {
+    "x": 398,
+    "y": 117,
+    "w": 63,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 84,
+    "w": 63,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_idle_03_team": {
+   "frame": {
+    "x": 164,
+    "y": 209,
+    "w": 43,
+    "h": 38
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 79,
+    "w": 43,
+    "h": 38
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_idle_04": {
+   "frame": {
+    "x": 64,
+    "y": 117,
+    "w": 63,
+    "h": 42
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 82,
+    "w": 63,
+    "h": 42
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_idle_04_team": {
+   "frame": {
+    "x": 446,
+    "y": 209,
+    "w": 42,
+    "h": 38
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 77,
+    "w": 42,
+    "h": 38
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_idle_05": {
+   "frame": {
+    "x": 131,
+    "y": 117,
+    "w": 63,
+    "h": 42
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 80,
+    "w": 63,
+    "h": 42
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_idle_05_team": {
+   "frame": {
+    "x": 492,
+    "y": 209,
+    "w": 42,
+    "h": 38
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 75,
+    "w": 42,
+    "h": 38
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_00": {
+   "frame": {
+    "x": 404,
+    "y": 67,
+    "w": 61,
+    "h": 44
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 65,
+    "y": 81,
+    "w": 61,
+    "h": 44
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_00_team": {
+   "frame": {
+    "x": 411,
+    "y": 165,
+    "w": 42,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 76,
+    "w": 42,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_01": {
+   "frame": {
+    "x": 469,
+    "y": 67,
+    "w": 61,
+    "h": 44
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 65,
+    "y": 80,
+    "w": 61,
+    "h": 44
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_01_team": {
+   "frame": {
+    "x": 503,
+    "y": 165,
+    "w": 41,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 75,
+    "w": 41,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_02": {
+   "frame": {
+    "x": 338,
+    "y": 67,
+    "w": 62,
+    "h": 44
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 80,
+    "w": 62,
+    "h": 44
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_02_team": {
+   "frame": {
+    "x": 211,
+    "y": 209,
+    "w": 43,
+    "h": 38
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 75,
+    "w": 43,
+    "h": 38
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_03": {
+   "frame": {
+    "x": 130,
+    "y": 67,
+    "w": 61,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 80,
+    "w": 61,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_03_team": {
+   "frame": {
+    "x": 548,
+    "y": 165,
+    "w": 41,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 75,
+    "w": 41,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_04": {
+   "frame": {
+    "x": 567,
+    "y": 2,
+    "w": 61,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 80,
+    "w": 61,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_04_team": {
+   "frame": {
+    "x": 593,
+    "y": 165,
+    "w": 41,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 75,
+    "w": 41,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_05": {
+   "frame": {
+    "x": 2,
+    "y": 67,
+    "w": 60,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 65,
+    "y": 81,
+    "w": 60,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_05_team": {
+   "frame": {
+    "x": 538,
+    "y": 209,
+    "w": 42,
+    "h": 38
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 76,
+    "w": 42,
+    "h": 38
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_06": {
+   "frame": {
+    "x": 66,
+    "y": 67,
+    "w": 60,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 65,
+    "y": 81,
+    "w": 60,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_06_team": {
+   "frame": {
+    "x": 258,
+    "y": 209,
+    "w": 43,
+    "h": 38
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 76,
+    "w": 43,
+    "h": 38
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_07": {
+   "frame": {
+    "x": 195,
+    "y": 67,
+    "w": 60,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 65,
+    "y": 81,
+    "w": 60,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_walk_07_team": {
+   "frame": {
+    "x": 584,
+    "y": 209,
+    "w": 42,
+    "h": 38
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 76,
+    "w": 42,
+    "h": 38
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_attack_00": {
+   "frame": {
+    "x": 534,
+    "y": 67,
+    "w": 61,
+    "h": 44
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 65,
+    "y": 81,
+    "w": 61,
+    "h": 44
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_attack_00_team": {
+   "frame": {
+    "x": 305,
+    "y": 209,
+    "w": 43,
+    "h": 38
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 76,
+    "w": 43,
+    "h": 38
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_attack_01": {
+   "frame": {
+    "x": 503,
+    "y": 2,
+    "w": 60,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 66,
+    "y": 82,
+    "w": 60,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_attack_01_team": {
+   "frame": {
+    "x": 317,
+    "y": 165,
+    "w": 43,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 77,
+    "w": 43,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_attack_02": {
+   "frame": {
+    "x": 377,
+    "y": 2,
+    "w": 59,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 66,
+    "y": 83,
+    "w": 59,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_attack_02_team": {
+   "frame": {
+    "x": 364,
+    "y": 165,
+    "w": 43,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 78,
+    "w": 43,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_attack_03": {
+   "frame": {
+    "x": 440,
+    "y": 2,
+    "w": 59,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 66,
+    "y": 83,
+    "w": 59,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_attack_03_team": {
+   "frame": {
+    "x": 269,
+    "y": 165,
+    "w": 44,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 78,
+    "w": 44,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_attack_04": {
+   "frame": {
+    "x": 215,
+    "y": 2,
+    "w": 64,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 67,
+    "y": 78,
+    "w": 64,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_attack_04_team": {
+   "frame": {
+    "x": 184,
+    "y": 165,
+    "w": 40,
+    "h": 40
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 76,
+    "y": 73,
+    "w": 40,
+    "h": 40
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_attack_05": {
+   "frame": {
+    "x": 198,
+    "y": 117,
+    "w": 63,
+    "h": 42
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 61,
+    "y": 81,
+    "w": 63,
+    "h": 42
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_attack_05_team": {
+   "frame": {
+    "x": 96,
+    "y": 251,
+    "w": 43,
+    "h": 37
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 71,
+    "y": 76,
+    "w": 43,
+    "h": 37
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_attack_06": {
+   "frame": {
+    "x": 332,
+    "y": 117,
+    "w": 62,
+    "h": 42
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 81,
+    "w": 62,
+    "h": 42
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_attack_06_team": {
+   "frame": {
+    "x": 457,
+    "y": 165,
+    "w": 42,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 76,
+    "w": 42,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_hit_00": {
+   "frame": {
+    "x": 505,
+    "y": 251,
+    "w": 68,
+    "h": 30
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 60,
+    "y": 92,
+    "w": 68,
+    "h": 30
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_hit_00_team": {
+   "frame": {
+    "x": 344,
+    "y": 251,
+    "w": 45,
+    "h": 35
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 67,
+    "y": 87,
+    "w": 45,
+    "h": 35
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_hit_01": {
+   "frame": {
+    "x": 440,
+    "y": 251,
+    "w": 61,
+    "h": 33
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 63,
+    "y": 90,
+    "w": 61,
+    "h": 33
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_hit_01_team": {
+   "frame": {
+    "x": 143,
+    "y": 251,
+    "w": 42,
+    "h": 37
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 67,
+    "y": 86,
+    "w": 42,
+    "h": 37
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_hit_02": {
+   "frame": {
+    "x": 276,
+    "y": 251,
+    "w": 64,
+    "h": 35
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 62,
+    "y": 86,
+    "w": 64,
+    "h": 35
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_hit_02_team": {
+   "frame": {
+    "x": 393,
+    "y": 251,
+    "w": 43,
+    "h": 34
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 70,
+    "y": 81,
+    "w": 43,
+    "h": 34
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_hit_03": {
+   "frame": {
+    "x": 265,
+    "y": 117,
+    "w": 63,
+    "h": 42
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 83,
+    "w": 63,
+    "h": 42
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_hit_03_team": {
+   "frame": {
+    "x": 352,
+    "y": 209,
+    "w": 43,
+    "h": 38
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 78,
+    "w": 43,
+    "h": 38
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_hit_04": {
+   "frame": {
+    "x": 69,
+    "y": 165,
+    "w": 63,
+    "h": 40
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 64,
+    "y": 82,
+    "w": 63,
+    "h": 40
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_hit_04_team": {
+   "frame": {
+    "x": 399,
+    "y": 209,
+    "w": 43,
+    "h": 38
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 77,
+    "w": 43,
+    "h": 38
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_00": {
+   "frame": {
+    "x": 2,
+    "y": 117,
+    "w": 58,
+    "h": 44
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 66,
+    "y": 81,
+    "w": 58,
+    "h": 44
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_00_team": {
+   "frame": {
+    "x": 69,
+    "y": 209,
+    "w": 44,
+    "h": 38
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 71,
+    "y": 76,
+    "w": 44,
+    "h": 38
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_01": {
+   "frame": {
+    "x": 324,
+    "y": 2,
+    "w": 49,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 69,
+    "y": 83,
+    "w": 49,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_01_team": {
+   "frame": {
+    "x": 465,
+    "y": 117,
+    "w": 42,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 71,
+    "y": 78,
+    "w": 42,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_02": {
+   "frame": {
+    "x": 82,
+    "y": 2,
+    "w": 41,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 74,
+    "y": 84,
+    "w": 41,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_02_team": {
+   "frame": {
+    "x": 232,
+    "y": 251,
+    "w": 40,
+    "h": 36
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 79,
+    "w": 40,
+    "h": 36
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_03": {
+   "frame": {
+    "x": 167,
+    "y": 2,
+    "w": 44,
+    "h": 54
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 91,
+    "w": 44,
+    "h": 54
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_03_team": {
+   "frame": {
+    "x": 136,
+    "y": 165,
+    "w": 44,
+    "h": 40
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 86,
+    "w": 44,
+    "h": 40
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 36,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 91,
+    "w": 36,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_04_team": {
+   "frame": {
+    "x": 300,
+    "y": 67,
+    "w": 34,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 86,
+    "w": 34,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_05": {
+   "frame": {
+    "x": 283,
+    "y": 2,
+    "w": 37,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 93,
+    "w": 37,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_05_team": {
+   "frame": {
+    "x": 189,
+    "y": 251,
+    "w": 39,
+    "h": 37
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 81,
+    "y": 88,
+    "w": 39,
+    "h": 37
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_06": {
+   "frame": {
+    "x": 42,
+    "y": 2,
+    "w": 36,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 93,
+    "w": 36,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_06_team": {
+   "frame": {
+    "x": 259,
+    "y": 67,
+    "w": 37,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 84,
+    "y": 88,
+    "w": 37,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_07": {
+   "frame": {
+    "x": 127,
+    "y": 2,
+    "w": 36,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 94,
+    "w": 36,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  },
+  "attack_drone_die_07_team": {
+   "frame": {
+    "x": 228,
+    "y": 165,
+    "w": 37,
+    "h": 40
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 83,
+    "y": 89,
+    "w": 37,
+    "h": 40
+   },
+   "sourceSize": {
+    "w": 188,
+    "h": 160
+   },
+   "anchor": {
+    "x": 0.52128,
+    "y": 0.775
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "attack_drone_idle_00",
+   "attack_drone_idle_01",
+   "attack_drone_idle_02",
+   "attack_drone_idle_03",
+   "attack_drone_idle_04",
+   "attack_drone_idle_05"
+  ],
+  "idle_team": [
+   "attack_drone_idle_00_team",
+   "attack_drone_idle_01_team",
+   "attack_drone_idle_02_team",
+   "attack_drone_idle_03_team",
+   "attack_drone_idle_04_team",
+   "attack_drone_idle_05_team"
+  ],
+  "walk": [
+   "attack_drone_walk_00",
+   "attack_drone_walk_01",
+   "attack_drone_walk_02",
+   "attack_drone_walk_03",
+   "attack_drone_walk_04",
+   "attack_drone_walk_05",
+   "attack_drone_walk_06",
+   "attack_drone_walk_07"
+  ],
+  "walk_team": [
+   "attack_drone_walk_00_team",
+   "attack_drone_walk_01_team",
+   "attack_drone_walk_02_team",
+   "attack_drone_walk_03_team",
+   "attack_drone_walk_04_team",
+   "attack_drone_walk_05_team",
+   "attack_drone_walk_06_team",
+   "attack_drone_walk_07_team"
+  ],
+  "attack": [
+   "attack_drone_attack_00",
+   "attack_drone_attack_01",
+   "attack_drone_attack_02",
+   "attack_drone_attack_03",
+   "attack_drone_attack_04",
+   "attack_drone_attack_05",
+   "attack_drone_attack_06"
+  ],
+  "attack_team": [
+   "attack_drone_attack_00_team",
+   "attack_drone_attack_01_team",
+   "attack_drone_attack_02_team",
+   "attack_drone_attack_03_team",
+   "attack_drone_attack_04_team",
+   "attack_drone_attack_05_team",
+   "attack_drone_attack_06_team"
+  ],
+  "hit": [
+   "attack_drone_hit_00",
+   "attack_drone_hit_01",
+   "attack_drone_hit_02",
+   "attack_drone_hit_03",
+   "attack_drone_hit_04"
+  ],
+  "hit_team": [
+   "attack_drone_hit_00_team",
+   "attack_drone_hit_01_team",
+   "attack_drone_hit_02_team",
+   "attack_drone_hit_03_team",
+   "attack_drone_hit_04_team"
+  ],
+  "die": [
+   "attack_drone_die_00",
+   "attack_drone_die_01",
+   "attack_drone_die_02",
+   "attack_drone_die_03",
+   "attack_drone_die_04",
+   "attack_drone_die_05",
+   "attack_drone_die_06",
+   "attack_drone_die_06",
+   "attack_drone_die_07",
+   "attack_drone_die_07"
+  ],
+  "die_team": [
+   "attack_drone_die_00_team",
+   "attack_drone_die_01_team",
+   "attack_drone_die_02_team",
+   "attack_drone_die_03_team",
+   "attack_drone_die_04_team",
+   "attack_drone_die_05_team",
+   "attack_drone_die_06_team",
+   "attack_drone_die_06_team",
+   "attack_drone_die_07_team",
+   "attack_drone_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "attack_drone.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 640,
+   "h": 292
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.attack_drone",
+   "name": "Attack Drone",
+   "heightLu": 40,
+   "widthLu": 44.7,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    98.0,
+    124.0
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     38
+    ],
+    "hitCenter": [
+     0,
+     20
+    ],
+    "muzzle": [
+     20,
+     10
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "fly",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        18.6,
+        10.0
+       ],
+       [
+        18.9,
+        9.6
+       ],
+       [
+        18.7,
+        7.4
+       ],
+       [
+        18.2,
+        5.7
+       ],
+       [
+        17.9,
+        6.2
+       ],
+       [
+        18.1,
+        8.3
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      62,
+      63,
+      62,
+      63,
+      62,
+      63,
+      62,
+      63
+     ],
+     "durationMs": 500,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        17.3,
+        5.9
+       ],
+       [
+        17.3,
+        6.4
+       ],
+       [
+        17.2,
+        6.4
+       ],
+       [
+        16.9,
+        5.8
+       ],
+       [
+        16.7,
+        5.0
+       ],
+       [
+        16.6,
+        4.4
+       ],
+       [
+        16.8,
+        4.4
+       ],
+       [
+        17.0,
+        5.0
+       ]
+      ]
+     },
+     "strideLu": 53.6,
+     "naturalSpeedLuPerS": 107.2,
+     "gait": "fly"
+    },
+    "attack": {
+     "frames": 7,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "durationsMs": [
+      30,
+      40,
+      50,
+      30,
+      50,
+      50,
+      50
+     ],
+     "durationMs": 300,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 2,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        17.8,
+        6.0
+       ],
+       [
+        17.0,
+        2.7
+       ],
+       [
+        16.8,
+        0.9
+       ],
+       [
+        16.8,
+        0.9
+       ],
+       [
+        14.5,
+        2.6
+       ],
+       [
+        16.0,
+        7.5
+       ],
+       [
+        17.6,
+        7.5
+       ]
+      ]
+     },
+     "muzzle": [
+      14.5,
+      2.6
+     ]
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        18.9,
+        8.6
+       ],
+       [
+        16.4,
+        11.6
+       ],
+       [
+        17.3,
+        9.0
+       ],
+       [
+        18.3,
+        6.2
+       ],
+       [
+        18.4,
+        8.0
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        14.4
+       ],
+       "scale": 0.559
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        22.0
+       ],
+       "loops": 2,
+       "scale": 0.747
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        15.7,
+        5.2
+       ],
+       [
+        10.4,
+        -0.6
+       ],
+       [
+        6.3,
+        -6.7
+       ],
+       [
+        4.9,
+        -11.3
+       ],
+       [
+        4.2,
+        -17.8
+       ],
+       [
+        3.4,
+        -12.5
+       ],
+       [
+        5.1,
+        -16.3
+       ],
+       [
+        5.0,
+        -15.4
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

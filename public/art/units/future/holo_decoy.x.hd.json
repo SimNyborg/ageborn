@@ -1,0 +1,1036 @@
+{
+ "frames": {
+  "holo_decoy_attack_b_01": {
+   "frame": {
+    "x": 742,
+    "y": 2,
+    "w": 132,
+    "h": 243
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 137,
+    "w": 132,
+    "h": 243
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_b_01_team": {
+   "frame": {
+    "x": 460,
+    "y": 303,
+    "w": 123,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 178,
+    "w": 123,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_b_02": {
+   "frame": {
+    "x": 589,
+    "y": 2,
+    "w": 149,
+    "h": 262
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 117,
+    "w": 149,
+    "h": 262
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_b_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 303,
+    "w": 122,
+    "h": 185
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 171,
+    "w": 122,
+    "h": 185
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_b_03": {
+   "frame": {
+    "x": 211,
+    "y": 2,
+    "w": 133,
+    "h": 277
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 102,
+    "w": 133,
+    "h": 277
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_b_03_team": {
+   "frame": {
+    "x": 878,
+    "y": 2,
+    "w": 128,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 167,
+    "w": 128,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 205,
+    "h": 297
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 84,
+    "w": 205,
+    "h": 297
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_b_04_team": {
+   "frame": {
+    "x": 335,
+    "y": 303,
+    "w": 121,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 175,
+    "w": 121,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_b_05": {
+   "frame": {
+    "x": 348,
+    "y": 2,
+    "w": 237,
+    "h": 268
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 114,
+    "w": 237,
+    "h": 268
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_b_05_team": {
+   "frame": {
+    "x": 215,
+    "y": 674,
+    "w": 107,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 237,
+    "y": 186,
+    "w": 107,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 1018,
+    "w": 281,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 216,
+    "y": 234,
+    "w": 281,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_b_06_team": {
+   "frame": {
+    "x": 401,
+    "y": 1018,
+    "w": 112,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 253,
+    "y": 224,
+    "w": 112,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_b_07": {
+   "frame": {
+    "x": 587,
+    "y": 303,
+    "w": 213,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 238,
+    "y": 203,
+    "w": 213,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_b_07_team": {
+   "frame": {
+    "x": 742,
+    "y": 674,
+    "w": 97,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 254,
+    "y": 193,
+    "w": 97,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_b_08": {
+   "frame": {
+    "x": 409,
+    "y": 492,
+    "w": 220,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 204,
+    "w": 220,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_b_08_team": {
+   "frame": {
+    "x": 186,
+    "y": 850,
+    "w": 114,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 236,
+    "y": 194,
+    "w": 114,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_01": {
+   "frame": {
+    "x": 227,
+    "y": 492,
+    "w": 178,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 202,
+    "w": 178,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_01_team": {
+   "frame": {
+    "x": 608,
+    "y": 674,
+    "w": 130,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 192,
+    "w": 130,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_02": {
+   "frame": {
+    "x": 425,
+    "y": 674,
+    "w": 179,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 210,
+    "w": 179,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_02_team": {
+   "frame": {
+    "x": 415,
+    "y": 850,
+    "w": 128,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 201,
+    "w": 128,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_03": {
+   "frame": {
+    "x": 2,
+    "y": 850,
+    "w": 180,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 216,
+    "w": 180,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_03_team": {
+   "frame": {
+    "x": 547,
+    "y": 850,
+    "w": 126,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 207,
+    "w": 126,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_04": {
+   "frame": {
+    "x": 128,
+    "y": 303,
+    "w": 203,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 225,
+    "y": 198,
+    "w": 203,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_04_team": {
+   "frame": {
+    "x": 633,
+    "y": 492,
+    "w": 114,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 188,
+    "w": 114,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_05": {
+   "frame": {
+    "x": 2,
+    "y": 492,
+    "w": 221,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 240,
+    "y": 205,
+    "w": 221,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_05_team": {
+   "frame": {
+    "x": 326,
+    "y": 674,
+    "w": 95,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 253,
+    "y": 195,
+    "w": 95,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_06": {
+   "frame": {
+    "x": 677,
+    "y": 850,
+    "w": 254,
+    "h": 149
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 244,
+    "y": 234,
+    "w": 254,
+    "h": 149
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_06_team": {
+   "frame": {
+    "x": 287,
+    "y": 1018,
+    "w": 110,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 261,
+    "y": 224,
+    "w": 110,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_07": {
+   "frame": {
+    "x": 2,
+    "y": 674,
+    "w": 209,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 247,
+    "y": 211,
+    "w": 209,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_07_team": {
+   "frame": {
+    "x": 843,
+    "y": 674,
+    "w": 97,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 262,
+    "y": 201,
+    "w": 97,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_08": {
+   "frame": {
+    "x": 751,
+    "y": 492,
+    "w": 213,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 208,
+    "w": 213,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "holo_decoy_attack_c_08_team": {
+   "frame": {
+    "x": 304,
+    "y": 850,
+    "w": 107,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 243,
+    "y": 198,
+    "w": 107,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "holo_decoy_attack_00",
+   "holo_decoy_attack_b_01",
+   "holo_decoy_attack_b_02",
+   "holo_decoy_attack_b_03",
+   "holo_decoy_attack_b_04",
+   "holo_decoy_attack_b_05",
+   "holo_decoy_attack_b_06",
+   "holo_decoy_attack_b_07",
+   "holo_decoy_attack_b_08",
+   "holo_decoy_attack_09",
+   "holo_decoy_attack_10"
+  ],
+  "attack_b_team": [
+   "holo_decoy_attack_00_team",
+   "holo_decoy_attack_b_01_team",
+   "holo_decoy_attack_b_02_team",
+   "holo_decoy_attack_b_03_team",
+   "holo_decoy_attack_b_04_team",
+   "holo_decoy_attack_b_05_team",
+   "holo_decoy_attack_b_06_team",
+   "holo_decoy_attack_b_07_team",
+   "holo_decoy_attack_b_08_team",
+   "holo_decoy_attack_09_team",
+   "holo_decoy_attack_10_team"
+  ],
+  "attack_c": [
+   "holo_decoy_attack_00",
+   "holo_decoy_attack_c_01",
+   "holo_decoy_attack_c_02",
+   "holo_decoy_attack_c_03",
+   "holo_decoy_attack_c_04",
+   "holo_decoy_attack_c_05",
+   "holo_decoy_attack_c_06",
+   "holo_decoy_attack_c_07",
+   "holo_decoy_attack_c_08",
+   "holo_decoy_attack_09",
+   "holo_decoy_attack_10"
+  ],
+  "attack_c_team": [
+   "holo_decoy_attack_00_team",
+   "holo_decoy_attack_c_01_team",
+   "holo_decoy_attack_c_02_team",
+   "holo_decoy_attack_c_03_team",
+   "holo_decoy_attack_c_04_team",
+   "holo_decoy_attack_c_05_team",
+   "holo_decoy_attack_c_06_team",
+   "holo_decoy_attack_c_07_team",
+   "holo_decoy_attack_c_08_team",
+   "holo_decoy_attack_09_team",
+   "holo_decoy_attack_10_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "holo_decoy.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1024,
+   "h": 1168
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.holo_decoy",
+   "name": "Holo Decoy",
+   "heightLu": 70,
+   "widthLu": 69.1,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    260,
+    364
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     68
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "holo_decoy",
+   "clips": {
+    "attack_b": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        44.0,
+        54.4
+       ],
+       [
+        -22.8,
+        87.6
+       ],
+       [
+        -32.5,
+        95.8
+       ],
+       [
+        -27.4,
+        101.9
+       ],
+       [
+        43.4,
+        80.3
+       ],
+       [
+        70.9,
+        26.9
+       ],
+       [
+        81.9,
+        0.1
+       ],
+       [
+        72.4,
+        12.1
+       ],
+       [
+        69.8,
+        27.5
+       ],
+       [
+        56.6,
+        47.5
+       ],
+       [
+        49.0,
+        48.9
+       ]
+      ]
+     },
+     "holdStep": 3
+    },
+    "attack_c": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "anchorsLu": {
+      "bladeTip": [
+       [
+        44.0,
+        54.4
+       ],
+       [
+        45.5,
+        23.5
+       ],
+       [
+        42.2,
+        27.0
+       ],
+       [
+        40.9,
+        28.7
+       ],
+       [
+        58.1,
+        17.5
+       ],
+       [
+        71.1,
+        15.3
+       ],
+       [
+        81.6,
+        7.2
+       ],
+       [
+        74.2,
+        13.6
+       ],
+       [
+        69.6,
+        27.6
+       ],
+       [
+        56.6,
+        47.5
+       ],
+       [
+        49.0,
+        48.9
+       ]
+      ]
+     },
+     "holdStep": 3
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

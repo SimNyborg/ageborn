@@ -85,6 +85,11 @@ def attack_meta(clip, m, tracks):
     if m.pop("noMuzzle", False):    # a melee attack whose unit carries a rider muzzle tracker
         return
     tr = tracks or {}
+    # W7 Future wave: a variant that fires from another emitter names its tracker (Holo Projector B: the lens)
+    own = m.pop("muzzleTracker", None) or clip.extra.get("muzzleTracker")
+    if own and own in tr:
+        m["muzzle"] = list(tr[own][clip.impact])
+        return
     for key in ("muzzle", "beam"):
         if key in tr:
             m["muzzle"] = list(tr[key][clip.impact])

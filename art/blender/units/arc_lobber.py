@@ -209,7 +209,7 @@ def _attack_b():
 
 
 def _hit(k):
-    base = {"torso": {"r": -2.0}} if M.HIT_AMT[k] > 0 else STANCE
+    base = {"torso": {"r": -2.0}}
     return W.hit_pose(k, base, lambda a: hold(REST[0] - 2 * max(a, 0), REST[1] + 2 * max(a, 0), REST[2] + 18 * a))
 
 
