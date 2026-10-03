@@ -1731,3 +1731,4 @@ import sounds_medieval_wave  # noqa: E402,F401
 import sounds_gunpowder_wave  # noqa: E402,F401
 import sounds_industrial_wave  # noqa: E402,F401
 import sounds_modern_wave  # noqa: E402,F401
+import sounds_future_wave  # noqa: E402,F401

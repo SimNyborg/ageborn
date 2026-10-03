@@ -788,6 +788,95 @@ const BASE_SOUNDS = {
     noiseBurst(0, { vol: 0.35, freq: 400, attack: 0.002, release: 0.4, lowpass: 1600 }),
     at(150, { vol: 0.08, freq: 3200, attack: 0.05, sustain: 0.6, release: 0.3, shape: 'sin', tremolo: 0.1, repeat: 0.2 }),
   ]), { maxVoices: 1 }),
+  // Future wave (CONTENT_PLAN 5.7): attacks, turrets and powers of the new Future cards ----------------------
+  baton_spin: mix('future', mixVariants(3, (v) => [
+    ...[0, 50, 100].map((ms) => noiseBurst(ms, { vol: 0.12, freq: 1800 * (1 + 0.05 * v), attack: 0.02, release: 0.04, slide: 3, lowpass: 5000 })),
+    thump(170, 220 * (1 + 0.04 * v), 0.4, 0.07, -0.6),
+    at(170, { vol: 0.2, freq: 160, attack: 0.001, release: 0.08, shape: 'saw', noise: 1.5, lowpass: 3000 }),
+  ])),
+  shield_pulse: mix('future', mixVariants(3, (v) => [
+    at(0, { vol: 0.15, freq: 140 * (1 + 0.04 * v), attack: 0.05, sustain: 0.1, release: 0.05, shape: 'sin', slide: 2 }),
+    thump(160, 150, 0.6, 0.12, -0.5),
+    at(160, { vol: 0.2, freq: 620 * (1 + 0.04 * v), attack: 0.001, release: 0.3, shape: 'sin', tremolo: 0.2, repeat: 0.05 }),
+  ])),
+  lance_swipe: mix('future', mixVariants(3, (v) => [
+    at(0, { vol: 0.12, freq: 420 * (1 + 0.04 * v), attack: 0.05, sustain: 0.2, release: 0.08, shape: 'saw', slide: 4, lowpass: 2600 }),
+    noiseBurst(140, { vol: 0.25, freq: 2600, attack: 0.02, release: 0.1, slide: 4, highpass: 1500 }),
+    at(180, { vol: 0.15, freq: 220, attack: 0.001, release: 0.1, shape: 'saw', noise: 2, lowpass: 4000 }),
+  ])),
+  shot_needle: mix('future', mixVariants(4, (v) => [
+    ...[0, 45].map((ms) => at(ms, { vol: 0.25, freq: 3200 * (1 + 0.05 * v), attack: 0.001, release: 0.05, shape: 'sin', slide: -30 })),
+    noiseBurst(0, { vol: 0.15, freq: 6000, attack: 0.001, release: 0.02, highpass: 3000 }),
+  ])),
+  pincer_snap: mix('future', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.15, freq: 5000, attack: 0.01, sustain: 0.06, release: 0.08, highpass: 2000 }),
+    at(50, { vol: 0.12, freq: 160 * (1 + 0.04 * v), attack: 0.02, sustain: 0.1, release: 0.06, shape: 'saw', slide: 3, lowpass: 2000 }),
+    thump(240, 110 * (1 + 0.05 * v), 0.9, 0.2, -0.5),
+    at(245, { vol: 0.2, freq: 380, attack: 0.001, release: 0.3, shape: 'tri', tremolo: 0.2, repeat: 0.04 }),
+  ])),
+  shot_lobber: mix('future', mixVariants(3, (v) => [
+    thump(0, 130 * (1 + 0.05 * v), 0.8, 0.2, -0.6),
+    at(50, { vol: 0.1, freq: 500 * (1 + 0.04 * v), attack: 0.02, sustain: 0.15, release: 0.15, shape: 'sin', slide: 3, tremolo: 0.3, repeat: 0.07 }),
+  ])),
+  lance_crackle: mix('future', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.15, freq: 1000 * (1 + 0.05 * v), attack: 0.03, release: 0.06, slide: 3, lowpass: 3000 }),
+    thump(80, 180, 0.5, 0.09, -0.6),
+    at(80, { vol: 0.3, freq: 120 * (1 + 0.05 * v), attack: 0.003, sustain: 0.08, release: 0.12, shape: 'tan', noise: 2.5, mod: 35, repeat: 0.03, lowpass: 9000 }),
+  ])),
+  multitool_zap: mix('future', mixVariants(3, (v) => [
+    at(0, { vol: 0.1, freq: 500 * (1 + 0.04 * v), attack: 0.02, sustain: 0.06, release: 0.04, shape: 'saw', slide: 5, lowpass: 2600 }),
+    at(40, { vol: 0.3, freq: 140 * (1 + 0.08 * v), attack: 0.003, sustain: 0.06, release: 0.1, shape: 'tan', noise: 2.5, mod: 35, repeat: 0.03, lowpass: 10000 }),
+  ])),
+  shot_holo: mix('future', mixVariants(3, (v) => [
+    at(0, { vol: 0.4, freq: 700 * (1 + 0.06 * v), attack: 0.006, release: 0.2, curve: 0.7, slide: -3.5, mod: 18 }),
+    at(0, { vol: 0.08, freq: 1760, attack: 0.001, release: 0.25, shape: 'sin', tremolo: 0.3, repeat: 0.03 }),
+  ])),
+  shot_jet_beam: mix('future', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.2, freq: 600, attack: 0.01, release: 0.1, lowpass: 1500 }),
+    at(40, { vol: 0.35, freq: 1500 * (1 + 0.06 * v), attack: 0.002, sustain: 0.02, release: 0.14, shape: 'square', curve: 0.6, slide: -14, lowpass: 9000 }),
+  ])),
+  shot_particle: mix('future', mixVariants(3, (v) => [
+    at(0, { vol: 0.12, freq: 200 * (1 + 0.04 * v), attack: 0.3, release: 0.02, shape: 'sin', slide: 20 }),
+    at(320, { vol: 0.45, freq: 1400, attack: 0.002, sustain: 0.1, release: 0.3, shape: 'saw', slide: -12, lowpass: 7000 }),
+    thump(320, 90 * (1 + 0.04 * v), 1, 0.4, -0.5),
+    noiseBurst(340, { vol: 0.2, freq: 3000, attack: 0.01, sustain: 0.2, release: 0.2, tremolo: 0.6, repeat: 0.02, highpass: 1500 }),
+  ]), { maxVoices: 2 }),
+  robot_punch: mix('future', mixVariants(3, (v) => [
+    at(0, { vol: 0.12, freq: 300 * (1 + 0.04 * v), attack: 0.02, sustain: 0.06, release: 0.04, shape: 'saw', slide: 6, lowpass: 2600 }),
+    thump(100, 130 * (1 + 0.05 * v), 0.8, 0.15, -0.5),
+    at(100, { vol: 0.18, freq: 300, attack: 0.001, release: 0.2, shape: 'tri', tremolo: 0.2, repeat: 0.04 }),
+  ])),
+  shot_pd_laser: mix('future', mixVariants(3, (v) => [
+    ...[0, 70, 140].map((ms) => at(ms, { vol: 0.3, freq: 2100 * (1 + 0.04 * v), attack: 0.002, sustain: 0.01, release: 0.08, shape: 'square', curve: 0.6, slide: -20, lowpass: 10000 })),
+  ])),
+  holo_flicker: mix('future', mixVariants(3, (v) => [
+    ...[0, 35, 70, 105].map((ms, k) => at(ms, { vol: 0.12, freq: [880, 1320, 990, 1480][k] * (1 + 0.04 * v), attack: 0.002, release: 0.03, shape: 'sin', mod: 8 })),
+  ])),
+  shot_drone: mix('future', mixVariants(4, (v) => [
+    ...[0, 60].map((ms) => at(ms, { vol: 0.22, freq: 2600 * (1 + 0.05 * v), attack: 0.002, release: 0.06, shape: 'square', curve: 0.6, slide: -18, lowpass: 10000 })),
+  ])),
+  shot_cryo: mix('future', mixVariants(3, (v) => [
+    thump(0, 170, 0.5, 0.1, -0.6),
+    noiseBurst(0, { vol: 0.3, freq: 6000, attack: 0.005, sustain: 0.1, release: 0.15, highpass: 2500 }),
+    at(30, { vol: 0.15, freq: 2350 * (1 + 0.03 * v), attack: 0.001, release: 0.4, shape: 'sin', tremolo: 0.2, repeat: 0.04 }),
+  ])),
+  tractor_hum: mix('future', mixVariants(3, (v) => [
+    at(0, { vol: 0.45, freq: 70 * (1 + 0.04 * v), attack: 0.3, sustain: 0.3, release: 0.3, shape: 'sin', slide: 0.4, mod: 5, tremolo: 0.4, repeat: 0.11 }),
+    at(0, { vol: 0.15, freq: 990, attack: 0.001, release: 0.25, shape: 'sin' }),
+  ]), { maxVoices: 1 }),
+  pw_painter: mix('future', mixVariants(3, (v) => [
+    at(0, { vol: 0.08, freq: 600 * (1 + 0.03 * v), attack: 0.05, sustain: 0.2, release: 0.15, shape: 'sin', slide: 8 }),
+    note(420, 'C6', { vol: 0.2, shape: 'sin', release: 0.12 }),
+    note(570, 'G6', { vol: 0.2, shape: 'sin', release: 0.12 }),
+    note(720, 'C7', { vol: 0.2, shape: 'sin', release: 0.18 }),
+    noiseBurst(880, { vol: 0.15, freq: 3000, attack: 0.01, sustain: 0.2, release: 0.15, tremolo: 0.6, repeat: 0.02, highpass: 1500 }),
+  ]), { maxVoices: 1 }),
+  pw_nanomesh: mix('future', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.15, freq: 3000 * (1 + 0.03 * v), attack: 0.4, release: 0.08, slide: 6, highpass: 1500 }),
+    thump(480, 140, 0.7, 0.16, -0.5),
+    at(480, { vol: 0.15, freq: 520, attack: 0.001, release: 0.5, shape: 'sin', tremolo: 0.3, repeat: 0.06 }),
+    noiseBurst(550, { vol: 0.12, freq: 4000, attack: 0.05, sustain: 0.6, release: 0.3, tremolo: 0.6, repeat: 0.03, highpass: 2000 }),
+  ]), { maxVoices: 1 }),
   // Stone wave (CONTENT_PLAN 5.1): attacks, turrets and powers of the new Stone cards -----------------------
   wolf_bite: mix('stone', mixVariants(3, (v) => [
     at(0, { vol: 0.25, freq: 140 * (1 + 0.06 * v), attack: 0.01, sustain: 0.06, release: 0.04, shape: 'saw', tremolo: 0.5, repeat: 0.02, lowpass: 1800 }),
