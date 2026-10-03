@@ -99,9 +99,9 @@ describe('cards (A6.6 upgrades, A5.1 level scaling)', () => {
     expect(collectionProgress(maxedSave(content), content)).toEqual({ owned: 148, total: 148 });
     const n = collectionProgress(newPlayerSave(content), content);
     expect(n.total).toBe(148);
-    // 24 unit and 16 turret Commons, plus Spear Hunter, Phalangite, Pikeman and Grenadier, plus the Stone
-    // Medieval and Gunpowder waves' 5 troop Commons and Common turret each
-    expect(n.owned).toBe(24 + 16 + 4 + 6 + 6 + 6);
+    // 24 unit and 16 turret Commons, plus Spear Hunter, Phalangite, Pikeman and Grenadier, plus the Stone,
+    // Bronze, Medieval and Gunpowder waves' 5 troop Commons and Common turret each
+    expect(n.owned).toBe(24 + 16 + 4 + 6 + 6 + 6 + 6);
   });
 });
 
@@ -362,12 +362,13 @@ describe('misc', () => {
     expect(filterCards(s, content, { ...NO_FILTER, role: 'turret' })).toHaveLength(40);
     expect(filterCards(s, content, { ...NO_FILTER, role: 'power' })).toHaveLength(56);
     expect(filterCards(s, content, { ...NO_FILTER, age: 'stone', rarity: 'legendary' })).toEqual(['mammoth_matriarch', 'elk_chieftain']);
-    expect(filterCards(s, content, { ...NO_FILTER, age: 'bronze', rarity: 'legendary' })).toEqual(['bronze_colossus']);
-    expect(filterCards(s, content, { ...NO_FILTER, own: 'missing', rarity: 'legendary' })).toHaveLength(10);
+    expect(filterCards(s, content, { ...NO_FILTER, age: 'bronze', rarity: 'legendary' })).toEqual(['bronze_colossus', 'hydra']);
+    expect(filterCards(s, content, { ...NO_FILTER, own: 'missing', rarity: 'legendary' })).toHaveLength(11);
     expect(filterCards(s, content, { ...NO_FILTER, role: 'antiArmor' })).toEqual([
       'spear_hunter',
       'boulder_hurler',
       'phalangite',
+      'belly_bowman',
       'pikeman',
       'warhammer_sergeant',
       'grenadier',

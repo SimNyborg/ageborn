@@ -29,3 +29,11 @@ C 58 / R 39 / E 25 / L 11 units and turrets, without the gated Bronze cards), `e
 Epic 103 / Legendary 147 days to max, all 8 Legendaries 20 days, whole collection 305 days, copy-Amber gap 90 days;
 the per-capsule and per-day targets still pass and `drops --mode smoke` passes 17 of 17. The multipliers above were
 measured for two waves; re-measure them once the Bronze wave ships.
+
+**Update (W2 Bronze wave released, 2026-10-03):** with the Stone, Bronze, Medieval and Gunpowder waves released (the
+Bronze wave adds 6 Commons, 5 Rares, 3 Epics and 1 Legendary to the capsule pool), `economy --seeds 30` gives Common
+176 / Rare 194 / Epic 116 / Legendary 163 days to max (targets 110 / 101 / 69 / 112 ± 20%), all 8 Legendaries 21
+days, focused War Plan at L7 135 days, whole collection 335 days, copy-Amber gap 94 days; copies a day (100) and
+Amber a day (3,229) still pass, and `drops --mode smoke` passes 17 of 17. This is the pool CONTENT_PLAN 8 planned
+the single re-tune for (option B: one more stack per tier, copies ×1.4 / 2.3 / 2.3 / 2.0, Amber ×1.8); the
+multipliers above should be re-measured on it before the table changes.

@@ -36,7 +36,7 @@ describe('contentHash (B4, B3 replays)', () => {
     // X0 Medieval wave (2026-10-03): its measured numbers (docs/decisions.md). W4 Gunpowder wave (2026-10-03):
     // its released, measured numbers (docs/decisions.md). W2 Bronze wave (2026-10-03): its released, measured
     // numbers (docs/decisions.md); the gated Industrial data is included as it stands.
-    expect(content.hash).toBe('c5880bd1');
+    expect(content.hash).toBe('1c57ba5b');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {
