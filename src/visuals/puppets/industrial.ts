@@ -230,7 +230,7 @@ export const INDUSTRIAL_UNITS: PuppetDef[] = [
 ];
 
 /** W5 Industrial wave (CONTENT_PLAN 5.5): a vehicle fallback built from the landship parts at scale k. */
-function machine(id: string, height: number, k: number, group: PuppetDef['group'], size: 'large' | 'huge', speed: number, legendary = false): PuppetDef {
+function machine(id: string, height: number, k: number, group: 'heavy' | 'epic' | 'legendary', size: 'large' | 'huge', speed: number, legendary = false): PuppetDef {
   const bones: BoneDef[] = [
     { id: 'hull', parent: 'spin', x: 0, y: 34 },
     { id: 'treadTeeth', parent: 'hull', x: 0, y: 0 },

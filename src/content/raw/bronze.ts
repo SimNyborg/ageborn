@@ -161,11 +161,11 @@ export const bronze: RawAgeTables = {
     {
       // Trio (X0 M1): one card trains 3 slingers; stats per slinger (0.40 × Javelineer), cost and pop split evenly
       id: 'rhodian_slingers', kind: 'unit', age: 'bronze', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 40, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 36, speed: 65, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 6, intervalMs: 1500, windupPct: 50, range: 180, hitsGround: true, hitsAir: true,
+          damage: 6, intervalMs: 1600, windupPct: 50, range: 180, hitsGround: true, hitsAir: true,
           projectile: { speed: 500, visualId: 'proj.rock' },
           dmgType: 'blunt', sfx: 'shot_sling',
         },
@@ -178,11 +178,11 @@ export const bronze: RawAgeTables = {
     {
       // Discus: the discus skips to a second target within 50 lu (the second takes 50%, A2.6)
       id: 'discus_thrower', kind: 'unit', age: 'bronze', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 85, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 80, speed: 65, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 11, intervalMs: 1600, windupPct: 50, range: 200, hitsGround: true, hitsAir: true,
+          damage: 10, intervalMs: 1600, windupPct: 50, range: 200, hitsGround: true, hitsAir: true,
           projectile: { speed: 550, visualId: 'proj.discus' },
           dmgType: 'blunt', sfx: 'shot_discus', chain: { count: 2, hop: 50 },
         },
@@ -518,7 +518,7 @@ export const bronzePowers: readonly PowerDef[] = [
     source: 'warPath', warPathSide: 1, road: 4200, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 4500,
     effect: {
       kind: 'field', zone: 300, durationMs: 4000, hitsAir: false, damagePerPulse: 9, pullBp: 4000,
-      statuses: [{ kind: 'snare', magnitudeBp: 5000, durationMs: 1000 }],
+      statuses: [{ kind: 'snare', magnitudeBp: 4500, durationMs: 1000 }],
     },
     visualId: 'power.charybdis', sfx: 'pw_whirlpool', nameKey: 'card.charybdis.name', descKey: 'card.charybdis.desc',
   },
