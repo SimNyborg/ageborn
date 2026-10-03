@@ -2,6 +2,33 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-02: unit animations in every age and the Siege rope, release check (cloud session, not yet published)
+
+All 56 shipped troops in all eight ages now walk with their feet on the ground and have 2-3 different attacks (A plus B, most melee units also C); the Siege rope is in Short, Medium and Long War. Details per age and for the rope in `docs/decisions.md` (2026-10-02 entries).
+
+**Checks (whole tree):** typecheck clean, lint clean, 4,704 unit tests pass (241 files, 1 skipped), production build OK, full e2e suite 286 of 286 pass (Chromium), initial download 964 KB gzip (limit 3 MB).
+
+**Played and measured:**
+
+- **Every age, both sizes (844x390 and 1280x720):** one battle per age (real AI vs autoplayer forced into the age, plus all seven units of the age dev-spawned on both sides, 36 s each). Moving units show their walk on 94-97% of frames in every age; every unit played at least two attack variants (Repair Drone has no attack, it heals). No console errors, no failed requests.
+- **Siege rope, live in a Ladder battle from Home (Arena 3 profile), Short, Medium and Long at both sizes:** VS shows "Push or crumble · Siege from 6:30 / 10:00 / 14:30", the clock turns to Siege and Siege II at the right time, tapping it opens the schedule, the side fighting in its own half gets the Crumbling chip and cracked bar, and the Result says "Your walls crumbled at 7:18" or "They led at the Final Bell". No console errors.
+- **Balance gates rerun on this tree (same seeds, identical to the rope report):** tier VII Final Bell 8.0 / 5.0 / 4.0% (targets 10 / 8 / 5), no draws, medians 7:39 / 10:58 / 15:21, first mover 48.5 / 53.3 / 51.8%; tier V Bell 8.5 / 9.0 / 5.0%; flag ball 41.0 / 16.5 / 39.5% (limit 45); turtles 0% in every format. Last Base Standing unchanged (median 16:13, already open).
+- **Frame cost:** the same as before the animation work (production build, 40 units, Stone and Future): about 3-7 ms of JS per frame median.
+- **Download:** unit sheets grew about 37% (phone sheets 11.2 → 15.4 MB in all, 1.7-2.6 MB per age; HD 26 → 36 MB). They load per age, so the first download is unchanged.
+
+**Blocker before this tree goes to `main`:** the paused content expansion (new Stone cards) is live in the content but has no art or sounds yet. AI Generals' Stone War Plans already use these cards, so in a Ladder battle the enemy fields plain team-coloured placeholder shapes (seen vs Captain Kettle), and from Arena 2 the cards can drop from capsules. The published `main` does not have this. Gate the wave (or ship its art) before publishing.
+
+**Still open:**
+
+- Balance: medians are set by age pacing, not the rope (Short 7:39 vs 7:00); the turtle band in A2.14 should become a ceiling (turtles win 0%); tier V Medium Final Bell 9.0% (target 8%); Last Base Standing median 16:13 (band 17:00-23:00).
+- Art: Feet-apart gate met by few bipeds (accepted per age); vehicle motion gate 0.23-0.29 on tanks, Cannon, Ram (gate 0.30); Graviton Halberdier 0.89 MB (cap 0.75); some variant muzzles beyond 25 lu (Flare Spotter B, Behemoth B, Starwarden B; deliberate); Repair Drone's heal clips never play (its heal has no clip trigger); the Balloon Admiral and Mothership play attacks while drifting (about 25% / 12% of moving frames).
+- Performance: in big Stone fights draw calls reach 100-290 (budget 80); the build before the animation work does the same.
+
+**What the owner should try** (once published)
+
+1. Play a Short War on your phone and watch your troops: they should walk, not slide, and swing in a few different ways.
+2. Hold back until 6:30 in a Short War: the clock says Siege, your HP bar cracks and "Crumbling" shows while the fight is in your half. Tap the clock to read the schedule.
+
 ## MVP pass 2026-10-01: release check (cloud session, not yet published)
 
 All three MVP tracks (bug hunt and first 30 minutes, sounds/effects/loading, balance) are in the tree and checked together.
