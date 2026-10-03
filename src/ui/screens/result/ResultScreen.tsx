@@ -685,6 +685,8 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
   const night = info.endedHour !== undefined && isNight(info.endedHour);
   // Last Base Standing (A2.10.1): the reason line (the trophy row is a plain ranked row since 2026-10-03).
   const lastReason = lastBaseReason(info.input, content, t);
+  // A Retreat gives no rewards (A6.3, owner decision 2026-10-03); the Rewards column says so plainly (A15).
+  const retreated = info.input.outcome.reason === 'retreat' && kind === 'loss';
 
   useEffect(() => {
     if (shown >= stages.length) return;
@@ -855,6 +857,12 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
           <h2 class="result__h" id="result-rewards-title">
             {t('ui.result.rewards')}
           </h2>
+          {retreated ? (
+            <p class="result__retreat" data-testid="result-retreat-none">
+              <InfoIcon size={18} />
+              <span>{t('ui.result.retreatNoRewards')}</span>
+            </p>
+          ) : null}
           <ul class="result__list">
             {stages.slice(0, shown).map((st, i) => (
               <Stage key={i} stage={st} animate={!reduce} />

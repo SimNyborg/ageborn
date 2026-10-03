@@ -6,7 +6,8 @@
  * record of it in local storage; the match's end (any outcome, including Retreat) removes it. If the
  * app boots with the record still there, the battle was left: meta applies it as a Retreat, the same
  * result the player could have chosen. Before 1:00 nothing is recorded (Retreat is not open yet, and a
- * crash in the first minute should not cost anything).
+ * crash in the first minute should not cost anything). Like a chosen Retreat it pays nothing (owner
+ * decision 2026-10-03): it costs the loss's trophies and brings no Amber, capsule or progress.
  */
 import type { MatchResultInput, MatchStats, OpponentSpec, SaveDoc, Side } from '@/contracts';
 import type { Services } from './services';

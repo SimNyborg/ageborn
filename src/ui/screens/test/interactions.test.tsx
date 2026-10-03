@@ -715,6 +715,17 @@ describe('Result (rewards staged, each skippable)', () => {
     expect(text(m.q('[data-testid="result-reason"]')!)).toBe('Their base fell at 5:31');
   });
 
+  it('a Retreat says plainly that it gives no rewards; other results do not (A6.3, 2026-10-03)', () => {
+    m = mount({ routes: [{ id: 'home' as const }, { id: 'result' as const, info: fixtureResult(content, 'retreat') }] });
+    expect(text(m.q('[data-testid="result-retreat-none"]')!)).toBe('You retreated, so this battle gives no rewards.');
+    expect(text(m.q('[data-testid="result-reason"]')!)).toBe('You retreated at 1:05');
+    m.click('[data-testid="result-skip"]');
+    expect(m.q('[data-testid="reward-amber"]')).toBeNull();
+    m.unmount();
+    m = mount({ routes: [{ id: 'home' as const }, { id: 'result' as const, info: fixtureResult(content, 'loss') }] });
+    expect(m.q('[data-testid="result-retreat-none"]')).toBeNull();
+  });
+
   it('hides "Open capsule" once the earned capsule has been opened', () => {
     const save = midGameSave(content);
     save.capsules.pending = save.capsules.pending.filter((c) => c.id !== 'cap-mid-1');
@@ -778,7 +789,7 @@ describe('Pause', () => {
       ],
     });
     m.click('[data-testid="pause-retreat"]');
-    expect(text(m.q('[data-testid="retreat-confirm"]')!)).toContain('Retreating counts as a loss and claims no Sundial Capsule.');
+    expect(text(m.q('[data-testid="retreat-confirm"]')!)).toContain('Retreating counts as a loss and gives no rewards');
     m.click('[data-testid="retreat-yes"]');
     expect(calls('retreat')).toHaveLength(1);
   });

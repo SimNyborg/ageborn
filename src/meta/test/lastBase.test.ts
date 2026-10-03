@@ -2,7 +2,7 @@
  * Last Base Standing rewards (DESIGN A2.10.1, A6.3, A15.8): ranked since the owner decision of
  * 2026-10-03 (+48 trophies a win from Arena 1, −20 a loss from 400, draw 0), 47 (94) Amber, and
  * otherwise a Ladder match (Sundial claim or Clay pip, hidden MMR, loss streak, counting win). A
- * Retreat still pays no Amber. The format family and the windows.
+ * Retreat pays nothing, here as in every length (2026-10-03). The format family and the windows.
  */
 import { describe, expect, it } from 'vitest';
 import type { Content } from '@/content';
@@ -121,7 +121,7 @@ describe('Last Base Standing rewards (A15.8)', () => {
     expect(o.warmUp).toBe(true);
   });
 
-  it('a Retreat costs trophies like any loss but pays no Amber (A15.4), and the timed lengths keep theirs', () => {
+  it('a Retreat costs trophies like any loss but pays no Amber, in every length (A6.3, 2026-10-03)', () => {
     const retreat = (format: string, trophies = 600) => {
       const s = arena3({ charges: 0, trophies });
       const c = clock();
@@ -136,9 +136,12 @@ describe('Last Base Standing rewards (A15.8)', () => {
     const low = retreat('last', 200);
     expect(low.rewards[0]).toEqual({ kind: 'trophies', delta: 0 });
     expect(low.rewards.some((x) => x.kind === 'amber')).toBe(false);
-    const full = retreat('full');
-    expect(full.rewards[0]).toEqual({ kind: 'trophies', delta: -20 });
-    expect(full.rewards).toContainEqual({ kind: 'amber', amount: 15 });
+    // The timed lengths too (they paid the 15 loss Amber before 2026-10-03).
+    for (const format of ['short', 'standard', 'full']) {
+      const r = retreat(format);
+      expect(r.rewards).toEqual([{ kind: 'trophies', delta: -20 }]);
+      expect(r.save.currencies.amber).toBe(arena3({ charges: 0 }).currencies.amber);
+    }
   });
 
   it('is offered from Arena 1 (owner decision 2026-10-03); an arena without it falls back to its first length', () => {

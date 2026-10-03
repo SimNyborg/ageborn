@@ -233,10 +233,10 @@ describe('BattleView on the fake stream (C2/WP5 Phase 1)', () => {
     expect(s.view.root.destroyed).toBe(true);
   });
 
-  it('uses the Lite particle cap on mobile under Auto', () => {
+  it('starts High on mobile under Auto, with the mobile particle cap (owner feedback 2026-10-03)', () => {
     const s = setup({ isMobile: true });
-    expect(s.view.stats().particleCap).toBe(300);
-    expect(s.view.resolution(3)).toBe(1);
+    expect(s.view.stats().particleCap).toBe(600);
+    expect(s.view.resolution(3)).toBe(2);
   });
 });
 

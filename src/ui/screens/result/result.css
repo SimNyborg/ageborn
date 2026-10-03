@@ -465,6 +465,26 @@
   }
 }
 
+/* ---- A6.3 Retreat line: a Retreat gives no rewards (2026-10-03) ---- */
+.result__retreat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 8px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: rgba(224, 90, 60, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(224, 90, 60, 0.4);
+  color: #ffd2c4;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1.35;
+  animation: ui-enter 320ms var(--ui-ease-out) both;
+}
+.result__retreat svg {
+  flex: none;
+}
+
 /* ---- A15.6 night line and stopping cards ---- */
 .result__night {
   margin-top: 8px;

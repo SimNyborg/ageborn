@@ -278,6 +278,7 @@ const VARIANTS: Variant[] = [
   result('noCapsule'),
   result('warPath'),
   result('warPathLoss'),
+  result('retreat'),
   { id: 'warPlan', label: 'War Plan', route: () => [{ id: 'home' }, { id: 'warPlan' }] },
   { id: 'army', label: 'Army tab', tab: 'army', route: () => [{ id: 'warPlan' }] },
   { id: 'army-bronze', label: 'Army tab: Bronze', tab: 'army', route: () => [{ id: 'warPlan', age: 'bronze' }] },
