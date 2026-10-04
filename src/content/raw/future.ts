@@ -163,7 +163,7 @@ export const future: RawAgeTables = {
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 68, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 66, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'laser', sfx: 'lance_swipe', vsBaseDamage: 100,
         },
       ],
@@ -172,13 +172,13 @@ export const future: RawAgeTables = {
       nameKey: 'card.hover_bike.name', descKey: 'card.hover_bike.desc', strongVs: [], weakVs: [],
     },
     {
-      // Skirmisher: twin barrels stitch light needles, 20 every 0.5 s, range 220, ground and air
+      // Skirmisher: twin barrels stitch light needles, 13 every 0.5 s, range 220, ground and air
       id: 'needle_gunner', kind: 'unit', age: 'future', rarity: 'common', role: 'ranged', group: 'ranged',
       cost: 75, trainMs: 2000, pop: 3, hp: 250, speed: 75, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 20, intervalMs: 500, windupPct: 50, range: 220, hitsGround: true, hitsAir: true,
+          damage: 13, intervalMs: 500, windupPct: 50, range: 220, hitsGround: true, hitsAir: true,
           projectile: { speed: 1800, visualId: 'proj.needle' },
           dmgType: 'laser', sfx: 'shot_needle',
         },
@@ -227,7 +227,7 @@ export const future: RawAgeTables = {
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 96, intervalMs: 1200, windupPct: 40, range: 60, hitsGround: true, hitsAir: false,
+          damage: 100, intervalMs: 1200, windupPct: 40, range: 60, hitsGround: true, hitsAir: false,
           dmgType: 'laser', sfx: 'lance_crackle', mods: damageMods.meleeAntiArmor, priority: 'armored',
         },
       ],
@@ -477,13 +477,13 @@ export const futurePowers: readonly PowerDef[] = [
   },
   {
     // The new Home control (snare, A5.7 family budget): War Path Future side node s1 (Road 4,700). A glittering nanite
-    // net settles over a 350 lu zone for 6 s (12 pulses), ground and air: each pulse 19 damage and snare 40% for
+    // net settles over a 350 lu zone for 6 s (12 pulses), ground and air: each pulse 15 damage and snare 50% for
     // 1.0 s; cap 6
     id: 'nano_mesh', kind: 'power', age: 'future', slot: 'home', reach: 'home', family: 'snare', rarity: 'epic',
     source: 'warPath', warPathSide: 1, road: 4700, cost: 75, reloadMs: 30000, telegraphMs: 1000, maxTargets: 6, aiValueBp: 4500,
     effect: {
-      kind: 'field', zone: 350, durationMs: 6000, hitsAir: true, damagePerPulse: 19,
-      statuses: [{ kind: 'snare', magnitudeBp: 4000, durationMs: 1000 }],
+      kind: 'field', zone: 350, durationMs: 6000, hitsAir: true, damagePerPulse: 15,
+      statuses: [{ kind: 'snare', magnitudeBp: 5000, durationMs: 1000 }],
     },
     visualId: 'power.nano_mesh', sfx: 'pw_nanomesh', nameKey: 'card.nano_mesh.name', descKey: 'card.nano_mesh.desc',
   },

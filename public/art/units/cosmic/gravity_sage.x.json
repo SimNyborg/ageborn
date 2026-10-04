@@ -1,0 +1,542 @@
+{
+ "frames": {
+  "gravity_sage_attack_b_01": {
+   "frame": {
+    "x": 71,
+    "y": 2,
+    "w": 55,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 69,
+    "w": 55,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_b_01_team": {
+   "frame": {
+    "x": 179,
+    "y": 213,
+    "w": 51,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 109,
+    "w": 51,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_b_02": {
+   "frame": {
+    "x": 62,
+    "y": 110,
+    "w": 70,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 71,
+    "w": 70,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_b_02_team": {
+   "frame": {
+    "x": 64,
+    "y": 213,
+    "w": 56,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 103,
+    "w": 56,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_b_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 65,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 64,
+    "w": 65,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_b_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 213,
+    "w": 58,
+    "h": 59
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 100,
+    "w": 58,
+    "h": 59
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 110,
+    "w": 56,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 71,
+    "w": 56,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_b_04_team": {
+   "frame": {
+    "x": 124,
+    "y": 213,
+    "w": 51,
+    "h": 54
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 107,
+    "w": 51,
+    "h": 54
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_b_05": {
+   "frame": {
+    "x": 136,
+    "y": 110,
+    "w": 53,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 76,
+    "w": 53,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_b_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 276,
+    "w": 51,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 111,
+    "w": 51,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_b_06": {
+   "frame": {
+    "x": 193,
+    "y": 110,
+    "w": 52,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 78,
+    "w": 52,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_b_06_team": {
+   "frame": {
+    "x": 57,
+    "y": 276,
+    "w": 51,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 111,
+    "w": 51,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_b_07": {
+   "frame": {
+    "x": 186,
+    "y": 2,
+    "w": 51,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 73,
+    "w": 51,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_b_07_team": {
+   "frame": {
+    "x": 112,
+    "y": 276,
+    "w": 50,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 110,
+    "w": 50,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_b_08": {
+   "frame": {
+    "x": 130,
+    "y": 2,
+    "w": 52,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 73,
+    "w": 52,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_b_08_team": {
+   "frame": {
+    "x": 166,
+    "y": 276,
+    "w": 50,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 110,
+    "w": 50,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 235
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "gravity_sage_attack_00",
+   "gravity_sage_attack_b_01",
+   "gravity_sage_attack_b_02",
+   "gravity_sage_attack_b_03",
+   "gravity_sage_attack_b_04",
+   "gravity_sage_attack_b_05",
+   "gravity_sage_attack_b_06",
+   "gravity_sage_attack_b_07",
+   "gravity_sage_attack_b_08",
+   "gravity_sage_attack_09"
+  ],
+  "attack_b_team": [
+   "gravity_sage_attack_00_team",
+   "gravity_sage_attack_b_01_team",
+   "gravity_sage_attack_b_02_team",
+   "gravity_sage_attack_b_03_team",
+   "gravity_sage_attack_b_04_team",
+   "gravity_sage_attack_b_05_team",
+   "gravity_sage_attack_b_06_team",
+   "gravity_sage_attack_b_07_team",
+   "gravity_sage_attack_b_08_team",
+   "gravity_sage_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "gravity_sage.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 256,
+   "h": 332
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.gravity_sage",
+   "name": "Gravity Sage",
+   "heightLu": 76,
+   "widthLu": 36.2,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    130.0,
+    200.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     78
+    ],
+    "hitCenter": [
+     0,
+     40
+    ],
+    "muzzle": [
+     20,
+     40
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "hover",
+   "extrasOf": "gravity_sage",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      60,
+      80,
+      100,
+      160,
+      50,
+      100,
+      90,
+      90,
+      80,
+      90
+     ],
+     "durationMs": 900,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        6.2,
+        34.9
+       ],
+       [
+        -4.6,
+        56.9
+       ],
+       [
+        -11.1,
+        62.4
+       ],
+       [
+        -14.1,
+        63.3
+       ],
+       [
+        0.7,
+        60.4
+       ],
+       [
+        11.8,
+        52.4
+       ],
+       [
+        11.9,
+        51.6
+       ],
+       [
+        8.8,
+        51.2
+       ],
+       [
+        6.7,
+        49.2
+       ],
+       [
+        6.2,
+        34.9
+       ]
+      ]
+     },
+     "muzzle": [
+      11.8,
+      52.4
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

@@ -6,7 +6,7 @@
  * copy in `tests/fixtures/content`, so tuning here never breaks them.
  */
 import { bronze, bronzePowers } from './bronze';
-import { cosmic, cosmicPowers } from './cosmic';
+import { cosmic, cosmicPowers, cosmicWavePowers } from './cosmic';
 import { ageScale, battle, damageMods, economy, formats, windowFormatId, WINDOW_CLOCKS, WINDOW_XP } from './economy';
 import { future, futurePowers } from './future';
 import { gunpowder } from './gunpowder';
@@ -26,6 +26,7 @@ export {
   bronzePowers,
   cosmic,
   cosmicPowers,
+  cosmicWavePowers,
   damageMods,
   economy,
   formats,
@@ -48,7 +49,7 @@ export {
 export const raw: RawContent = {
   ages: [stone, bronze, medieval, gunpowder, industrial, modern, future, cosmic],
   // A5.7 powers, then the A17.11 powers of the new ages (the compiler sorts them by age and slot)
-  powers: [...powers, ...bronzePowers, ...industrialPowers, ...modernPowers, ...futurePowers, ...cosmicPowers],
+  powers: [...powers, ...bronzePowers, ...industrialPowers, ...modernPowers, ...futurePowers, ...cosmicPowers, ...cosmicWavePowers],
   economy,
   ageScale,
   formats,

@@ -1,0 +1,2268 @@
+{
+ "frames": {
+  "crystal_guard_idle_00": {
+   "frame": {
+    "x": 229,
+    "y": 395,
+    "w": 110,
+    "h": 181
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 199,
+    "w": 110,
+    "h": 181
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_idle_00_team": {
+   "frame": {
+    "x": 186,
+    "y": 1151,
+    "w": 109,
+    "h": 117
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 242,
+    "w": 109,
+    "h": 117
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_idle_01": {
+   "frame": {
+    "x": 2,
+    "y": 395,
+    "w": 106,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 197,
+    "w": 106,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_idle_01_team": {
+   "frame": {
+    "x": 776,
+    "y": 1026,
+    "w": 108,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 240,
+    "w": 108,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_idle_02": {
+   "frame": {
+    "x": 860,
+    "y": 2,
+    "w": 108,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 192,
+    "w": 108,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_idle_02_team": {
+   "frame": {
+    "x": 875,
+    "y": 899,
+    "w": 106,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 237,
+    "w": 106,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_idle_03": {
+   "frame": {
+    "x": 120,
+    "y": 2,
+    "w": 107,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 188,
+    "w": 107,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_idle_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 899,
+    "w": 105,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 235,
+    "w": 105,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_idle_04": {
+   "frame": {
+    "x": 433,
+    "y": 2,
+    "w": 107,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 190,
+    "w": 107,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_idle_04_team": {
+   "frame": {
+    "x": 428,
+    "y": 899,
+    "w": 106,
+    "h": 122
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 236,
+    "w": 106,
+    "h": 122
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_idle_05": {
+   "frame": {
+    "x": 797,
+    "y": 202,
+    "w": 109,
+    "h": 185
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 195,
+    "w": 109,
+    "h": 185
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_idle_05_team": {
+   "frame": {
+    "x": 223,
+    "y": 1026,
+    "w": 108,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 239,
+    "w": 108,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_00": {
+   "frame": {
+    "x": 821,
+    "y": 395,
+    "w": 114,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 203,
+    "w": 114,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 1273,
+    "w": 107,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 245,
+    "w": 107,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_01": {
+   "frame": {
+    "x": 2,
+    "y": 582,
+    "w": 121,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 209,
+    "w": 121,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_01_team": {
+   "frame": {
+    "x": 690,
+    "y": 1273,
+    "w": 107,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 254,
+    "w": 107,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_02": {
+   "frame": {
+    "x": 682,
+    "y": 202,
+    "w": 111,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 195,
+    "w": 111,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_02_team": {
+   "frame": {
+    "x": 888,
+    "y": 1026,
+    "w": 108,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 240,
+    "w": 108,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_03": {
+   "frame": {
+    "x": 114,
+    "y": 202,
+    "w": 111,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 185,
+    "w": 111,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_03_team": {
+   "frame": {
+    "x": 783,
+    "y": 758,
+    "w": 109,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 228,
+    "w": 109,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_04": {
+   "frame": {
+    "x": 579,
+    "y": 395,
+    "w": 119,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 203,
+    "w": 119,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_04_team": {
+   "frame": {
+    "x": 652,
+    "y": 899,
+    "w": 108,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 245,
+    "w": 108,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_05": {
+   "frame": {
+    "x": 493,
+    "y": 582,
+    "w": 127,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 209,
+    "w": 127,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_05_team": {
+   "frame": {
+    "x": 471,
+    "y": 1273,
+    "w": 102,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 226,
+    "y": 254,
+    "w": 102,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_06": {
+   "frame": {
+    "x": 463,
+    "y": 395,
+    "w": 112,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 195,
+    "w": 112,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_06_team": {
+   "frame": {
+    "x": 557,
+    "y": 1026,
+    "w": 101,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 239,
+    "w": 101,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_07": {
+   "frame": {
+    "x": 910,
+    "y": 202,
+    "w": 111,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 185,
+    "w": 111,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_walk_07_team": {
+   "frame": {
+    "x": 299,
+    "y": 1151,
+    "w": 108,
+    "h": 117
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 230,
+    "w": 108,
+    "h": 117
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_00": {
+   "frame": {
+    "x": 229,
+    "y": 202,
+    "w": 109,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 193,
+    "w": 109,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_00_team": {
+   "frame": {
+    "x": 764,
+    "y": 899,
+    "w": 107,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 236,
+    "w": 107,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_01": {
+   "frame": {
+    "x": 544,
+    "y": 2,
+    "w": 102,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 190,
+    "w": 102,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_01_team": {
+   "frame": {
+    "x": 896,
+    "y": 758,
+    "w": 99,
+    "h": 124
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 234,
+    "w": 99,
+    "h": 124
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_02": {
+   "frame": {
+    "x": 333,
+    "y": 2,
+    "w": 96,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 212,
+    "y": 188,
+    "w": 96,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_02_team": {
+   "frame": {
+    "x": 578,
+    "y": 758,
+    "w": 107,
+    "h": 126
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 232,
+    "w": 107,
+    "h": 126
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_03": {
+   "frame": {
+    "x": 231,
+    "y": 2,
+    "w": 98,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 188,
+    "w": 98,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_03_team": {
+   "frame": {
+    "x": 464,
+    "y": 758,
+    "w": 110,
+    "h": 127
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 230,
+    "w": 110,
+    "h": 127
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_04": {
+   "frame": {
+    "x": 650,
+    "y": 2,
+    "w": 101,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 191,
+    "w": 101,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_04_team": {
+   "frame": {
+    "x": 111,
+    "y": 899,
+    "w": 102,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 235,
+    "w": 102,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_05": {
+   "frame": {
+    "x": 343,
+    "y": 395,
+    "w": 116,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 203,
+    "w": 116,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_05_team": {
+   "frame": {
+    "x": 616,
+    "y": 1151,
+    "w": 114,
+    "h": 115
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 246,
+    "w": 114,
+    "h": 115
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_06": {
+   "frame": {
+    "x": 746,
+    "y": 582,
+    "w": 130,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 231,
+    "y": 225,
+    "w": 130,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_06_team": {
+   "frame": {
+    "x": 801,
+    "y": 1273,
+    "w": 122,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 231,
+    "y": 261,
+    "w": 122,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_07": {
+   "frame": {
+    "x": 367,
+    "y": 582,
+    "w": 122,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 213,
+    "w": 122,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_07_team": {
+   "frame": {
+    "x": 350,
+    "y": 1273,
+    "w": 117,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 253,
+    "w": 117,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_08": {
+   "frame": {
+    "x": 112,
+    "y": 395,
+    "w": 113,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 199,
+    "w": 113,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_08_team": {
+   "frame": {
+    "x": 662,
+    "y": 1026,
+    "w": 110,
+    "h": 119
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 241,
+    "w": 110,
+    "h": 119
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_09": {
+   "frame": {
+    "x": 342,
+    "y": 202,
+    "w": 109,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 193,
+    "w": 109,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_attack_09_team": {
+   "frame": {
+    "x": 335,
+    "y": 1026,
+    "w": 108,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 237,
+    "w": 108,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_hit_00": {
+   "frame": {
+    "x": 624,
+    "y": 582,
+    "w": 118,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 201,
+    "y": 219,
+    "w": 118,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_hit_00_team": {
+   "frame": {
+    "x": 577,
+    "y": 1273,
+    "w": 109,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 210,
+    "y": 255,
+    "w": 109,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_hit_01": {
+   "frame": {
+    "x": 254,
+    "y": 582,
+    "w": 109,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 215,
+    "w": 109,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_hit_01_team": {
+   "frame": {
+    "x": 113,
+    "y": 1273,
+    "w": 103,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 252,
+    "w": 103,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_hit_02": {
+   "frame": {
+    "x": 755,
+    "y": 2,
+    "w": 101,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 193,
+    "w": 101,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_hit_02_team": {
+   "frame": {
+    "x": 323,
+    "y": 899,
+    "w": 101,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 236,
+    "w": 101,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_hit_03": {
+   "frame": {
+    "x": 567,
+    "y": 202,
+    "w": 111,
+    "h": 187
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 194,
+    "w": 111,
+    "h": 187
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_hit_03_team": {
+   "frame": {
+    "x": 538,
+    "y": 899,
+    "w": 110,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 236,
+    "w": 110,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_hit_04": {
+   "frame": {
+    "x": 455,
+    "y": 202,
+    "w": 108,
+    "h": 188
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 193,
+    "w": 108,
+    "h": 188
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_hit_04_team": {
+   "frame": {
+    "x": 447,
+    "y": 1026,
+    "w": 106,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 237,
+    "w": 106,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_00": {
+   "frame": {
+    "x": 127,
+    "y": 582,
+    "w": 123,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 210,
+    "w": 123,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_00_team": {
+   "frame": {
+    "x": 858,
+    "y": 1151,
+    "w": 123,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 247,
+    "w": 123,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_01": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 114,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 242,
+    "y": 180,
+    "w": 114,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_01_team": {
+   "frame": {
+    "x": 346,
+    "y": 758,
+    "w": 114,
+    "h": 127
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 242,
+    "y": 224,
+    "w": 114,
+    "h": 127
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_02": {
+   "frame": {
+    "x": 2,
+    "y": 202,
+    "w": 108,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 231,
+    "y": 189,
+    "w": 108,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 1026,
+    "w": 101,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 233,
+    "w": 101,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_03": {
+   "frame": {
+    "x": 702,
+    "y": 395,
+    "w": 115,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 190,
+    "w": 115,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_03_team": {
+   "frame": {
+    "x": 689,
+    "y": 758,
+    "w": 90,
+    "h": 125
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 216,
+    "w": 90,
+    "h": 125
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_04": {
+   "frame": {
+    "x": 2,
+    "y": 758,
+    "w": 171,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 217,
+    "w": 171,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_04_team": {
+   "frame": {
+    "x": 107,
+    "y": 1026,
+    "w": 112,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 138,
+    "y": 229,
+    "w": 112,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_05": {
+   "frame": {
+    "x": 177,
+    "y": 758,
+    "w": 165,
+    "h": 130
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 242,
+    "w": 165,
+    "h": 130
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_05_team": {
+   "frame": {
+    "x": 217,
+    "y": 899,
+    "w": 102,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 134,
+    "y": 246,
+    "w": 102,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_06": {
+   "frame": {
+    "x": 411,
+    "y": 1151,
+    "w": 201,
+    "h": 116
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 59,
+    "y": 241,
+    "w": 201,
+    "h": 116
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_06_team": {
+   "frame": {
+    "x": 220,
+    "y": 1273,
+    "w": 126,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 244,
+    "w": 126,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_07": {
+   "frame": {
+    "x": 2,
+    "y": 1151,
+    "w": 180,
+    "h": 118
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 78,
+    "y": 251,
+    "w": 180,
+    "h": 118
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "crystal_guard_die_07_team": {
+   "frame": {
+    "x": 734,
+    "y": 1151,
+    "w": 120,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 115,
+    "y": 254,
+    "w": 120,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "crystal_guard_idle_00",
+   "crystal_guard_idle_01",
+   "crystal_guard_idle_02",
+   "crystal_guard_idle_03",
+   "crystal_guard_idle_04",
+   "crystal_guard_idle_05"
+  ],
+  "idle_team": [
+   "crystal_guard_idle_00_team",
+   "crystal_guard_idle_01_team",
+   "crystal_guard_idle_02_team",
+   "crystal_guard_idle_03_team",
+   "crystal_guard_idle_04_team",
+   "crystal_guard_idle_05_team"
+  ],
+  "walk": [
+   "crystal_guard_walk_00",
+   "crystal_guard_walk_01",
+   "crystal_guard_walk_02",
+   "crystal_guard_walk_03",
+   "crystal_guard_walk_04",
+   "crystal_guard_walk_05",
+   "crystal_guard_walk_06",
+   "crystal_guard_walk_07"
+  ],
+  "walk_team": [
+   "crystal_guard_walk_00_team",
+   "crystal_guard_walk_01_team",
+   "crystal_guard_walk_02_team",
+   "crystal_guard_walk_03_team",
+   "crystal_guard_walk_04_team",
+   "crystal_guard_walk_05_team",
+   "crystal_guard_walk_06_team",
+   "crystal_guard_walk_07_team"
+  ],
+  "attack": [
+   "crystal_guard_attack_00",
+   "crystal_guard_attack_01",
+   "crystal_guard_attack_02",
+   "crystal_guard_attack_03",
+   "crystal_guard_attack_04",
+   "crystal_guard_attack_05",
+   "crystal_guard_attack_06",
+   "crystal_guard_attack_07",
+   "crystal_guard_attack_08",
+   "crystal_guard_attack_09",
+   "crystal_guard_attack_00"
+  ],
+  "attack_team": [
+   "crystal_guard_attack_00_team",
+   "crystal_guard_attack_01_team",
+   "crystal_guard_attack_02_team",
+   "crystal_guard_attack_03_team",
+   "crystal_guard_attack_04_team",
+   "crystal_guard_attack_05_team",
+   "crystal_guard_attack_06_team",
+   "crystal_guard_attack_07_team",
+   "crystal_guard_attack_08_team",
+   "crystal_guard_attack_09_team",
+   "crystal_guard_attack_00_team"
+  ],
+  "hit": [
+   "crystal_guard_hit_00",
+   "crystal_guard_hit_01",
+   "crystal_guard_hit_02",
+   "crystal_guard_hit_03",
+   "crystal_guard_hit_04"
+  ],
+  "hit_team": [
+   "crystal_guard_hit_00_team",
+   "crystal_guard_hit_01_team",
+   "crystal_guard_hit_02_team",
+   "crystal_guard_hit_03_team",
+   "crystal_guard_hit_04_team"
+  ],
+  "die": [
+   "crystal_guard_die_00",
+   "crystal_guard_die_01",
+   "crystal_guard_die_02",
+   "crystal_guard_die_03",
+   "crystal_guard_die_04",
+   "crystal_guard_die_05",
+   "crystal_guard_die_06",
+   "crystal_guard_die_06",
+   "crystal_guard_die_07",
+   "crystal_guard_die_07"
+  ],
+  "die_team": [
+   "crystal_guard_die_00_team",
+   "crystal_guard_die_01_team",
+   "crystal_guard_die_02_team",
+   "crystal_guard_die_03_team",
+   "crystal_guard_die_04_team",
+   "crystal_guard_die_05_team",
+   "crystal_guard_die_06_team",
+   "crystal_guard_die_06_team",
+   "crystal_guard_die_07_team",
+   "crystal_guard_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "crystal_guard.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1024,
+   "h": 1388
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.crystal_guard",
+   "name": "Crystal Guard",
+   "heightLu": 70,
+   "widthLu": 38.6,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    260,
+    364
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     70
+    ],
+    "hitCenter": [
+     0,
+     32
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        1.5,
+        17.5
+       ],
+       [
+        1.8,
+        18.1
+       ],
+       [
+        1.9,
+        18.5
+       ],
+       [
+        1.5,
+        18.8
+       ],
+       [
+        1.1,
+        19.0
+       ],
+       [
+        1.1,
+        18.3
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77
+     ],
+     "durationMs": 616,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 87.5,
+     "cycleMs": 616,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        1.8,
+        14.2
+       ],
+       [
+        3.4,
+        11.8
+       ],
+       [
+        2.9,
+        17.4
+       ],
+       [
+        -0.0,
+        21.4
+       ],
+       [
+        -3.6,
+        15.3
+       ],
+       [
+        -5.4,
+        13.1
+       ],
+       [
+        -4.5,
+        18.5
+       ],
+       [
+        -1.7,
+        21.5
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 88.3,
+     "strideLu": 54.4,
+     "plantedDriftLu": 0.0,
+     "contacts": [
+      {
+       "step": 1,
+       "foot": "r",
+       "atLu": [
+        7.8,
+        -2.1
+       ]
+      },
+      {
+       "step": 5,
+       "foot": "l",
+       "atLu": [
+        9.9,
+        1.2
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      0
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "holdStep": 3,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        1.5,
+        18.7
+       ],
+       [
+        -2.3,
+        31.2
+       ],
+       [
+        -10.1,
+        35.6
+       ],
+       [
+        -13.2,
+        35.7
+       ],
+       [
+        -0.9,
+        40.0
+       ],
+       [
+        12.5,
+        28.3
+       ],
+       [
+        14.7,
+        13.4
+       ],
+       [
+        14.1,
+        14.8
+       ],
+       [
+        8.3,
+        18.0
+       ],
+       [
+        2.0,
+        18.7
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        -1.7,
+        15.8
+       ],
+       [
+        -2.9,
+        17.0
+       ],
+       [
+        -0.4,
+        19.6
+       ],
+       [
+        1.5,
+        18.0
+       ],
+       [
+        1.4,
+        18.7
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        25.2
+       ],
+       "scale": 0.483
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        38.5
+       ],
+       "loops": 2,
+       "scale": 0.695
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        4.5,
+        15.6
+       ],
+       [
+        12.2,
+        20.9
+       ],
+       [
+        6.3,
+        19.0
+       ],
+       [
+        -4.2,
+        24.2
+       ],
+       [
+        -21.6,
+        29.0
+       ],
+       [
+        -30.4,
+        21.4
+       ],
+       [
+        -34.6,
+        27.0
+       ],
+       [
+        -33.7,
+        23.0
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

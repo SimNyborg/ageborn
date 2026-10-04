@@ -44,7 +44,8 @@ const shape: Record<AgeId, AgeRosterShape> = {
   modern: after({ wall: 1, tower: 1, camp: 2, trap: 2 }),
   // W7 (2026-10-03): Skyguard Pylon (sky tower) and Mech Bay (brute camp)
   future: after({ wall: 1, tower: 2, camp: 2, trap: 1 }),
-  cosmic: BEFORE,
+  // W8 (2026-10-04): Star Bulwark (cover wall) and Stardust Snare (chip trap)
+  cosmic: after({ wall: 2, tower: 1, camp: 1, trap: 2 }),
 };
 
 export const rosterShape: RosterShape = shape;

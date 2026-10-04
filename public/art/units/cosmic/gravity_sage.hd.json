@@ -1,0 +1,2250 @@
+{
+ "frames": {
+  "gravity_sage_idle_00": {
+   "frame": {
+    "x": 657,
+    "y": 2,
+    "w": 101,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 142,
+    "w": 101,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_idle_00_team": {
+   "frame": {
+    "x": 714,
+    "y": 978,
+    "w": 100,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 219,
+    "w": 100,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_idle_01": {
+   "frame": {
+    "x": 550,
+    "y": 2,
+    "w": 103,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 142,
+    "w": 103,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_idle_01_team": {
+   "frame": {
+    "x": 862,
+    "y": 1089,
+    "w": 100,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 221,
+    "w": 100,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_idle_02": {
+   "frame": {
+    "x": 336,
+    "y": 2,
+    "w": 100,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 143,
+    "w": 100,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_idle_02_team": {
+   "frame": {
+    "x": 418,
+    "y": 1198,
+    "w": 99,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 223,
+    "w": 99,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_idle_03": {
+   "frame": {
+    "x": 231,
+    "y": 628,
+    "w": 100,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 153,
+    "w": 100,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_idle_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 1198,
+    "w": 100,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 224,
+    "w": 100,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_idle_04": {
+   "frame": {
+    "x": 764,
+    "y": 425,
+    "w": 100,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 149,
+    "w": 100,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_idle_04_team": {
+   "frame": {
+    "x": 521,
+    "y": 1198,
+    "w": 99,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 223,
+    "w": 99,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_idle_05": {
+   "frame": {
+    "x": 93,
+    "y": 2,
+    "w": 103,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 140,
+    "w": 103,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_idle_05_team": {
+   "frame": {
+    "x": 106,
+    "y": 1198,
+    "w": 100,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 221,
+    "w": 100,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_00": {
+   "frame": {
+    "x": 859,
+    "y": 220,
+    "w": 108,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 146,
+    "w": 108,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_00_team": {
+   "frame": {
+    "x": 835,
+    "y": 826,
+    "w": 98,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 223,
+    "w": 98,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_01": {
+   "frame": {
+    "x": 218,
+    "y": 425,
+    "w": 102,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 146,
+    "w": 102,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_01_team": {
+   "frame": {
+    "x": 512,
+    "y": 978,
+    "w": 97,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 234,
+    "y": 222,
+    "w": 97,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_02": {
+   "frame": {
+    "x": 237,
+    "y": 220,
+    "w": 102,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 144,
+    "w": 102,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 978,
+    "w": 98,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 223,
+    "w": 98,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_03": {
+   "frame": {
+    "x": 447,
+    "y": 425,
+    "w": 102,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 147,
+    "w": 102,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_03_team": {
+   "frame": {
+    "x": 104,
+    "y": 978,
+    "w": 98,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 234,
+    "y": 225,
+    "w": 98,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_04": {
+   "frame": {
+    "x": 123,
+    "y": 628,
+    "w": 104,
+    "h": 193
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 152,
+    "w": 104,
+    "h": 193
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_04_team": {
+   "frame": {
+    "x": 206,
+    "y": 978,
+    "w": 98,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 223,
+    "w": 98,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_05": {
+   "frame": {
+    "x": 335,
+    "y": 628,
+    "w": 109,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 154,
+    "w": 109,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_05_team": {
+   "frame": {
+    "x": 613,
+    "y": 978,
+    "w": 97,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 234,
+    "y": 222,
+    "w": 97,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_06": {
+   "frame": {
+    "x": 658,
+    "y": 425,
+    "w": 102,
+    "h": 197
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 148,
+    "w": 102,
+    "h": 197
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_06_team": {
+   "frame": {
+    "x": 410,
+    "y": 978,
+    "w": 98,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 233,
+    "y": 224,
+    "w": 98,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_07": {
+   "frame": {
+    "x": 633,
+    "y": 220,
+    "w": 104,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 145,
+    "w": 104,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_walk_07_team": {
+   "frame": {
+    "x": 308,
+    "y": 978,
+    "w": 98,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 234,
+    "y": 225,
+    "w": 98,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_00": {
+   "frame": {
+    "x": 2,
+    "y": 425,
+    "w": 104,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 177,
+    "w": 104,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_00_team": {
+   "frame": {
+    "x": 922,
+    "y": 978,
+    "w": 99,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 252,
+    "w": 99,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_01": {
+   "frame": {
+    "x": 2,
+    "y": 220,
+    "w": 123,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 174,
+    "w": 123,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_01_team": {
+   "frame": {
+    "x": 210,
+    "y": 1198,
+    "w": 100,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 221,
+    "y": 252,
+    "w": 100,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_02": {
+   "frame": {
+    "x": 200,
+    "y": 2,
+    "w": 132,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 172,
+    "w": 132,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_02_team": {
+   "frame": {
+    "x": 534,
+    "y": 1089,
+    "w": 112,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 252,
+    "w": 112,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_03": {
+   "frame": {
+    "x": 504,
+    "y": 220,
+    "w": 125,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 175,
+    "w": 125,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_03_team": {
+   "frame": {
+    "x": 414,
+    "y": 1089,
+    "w": 116,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 252,
+    "w": 116,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_04": {
+   "frame": {
+    "x": 440,
+    "y": 2,
+    "w": 106,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 215,
+    "y": 174,
+    "w": 106,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_04_team": {
+   "frame": {
+    "x": 2,
+    "y": 1089,
+    "w": 99,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 252,
+    "w": 99,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_05": {
+   "frame": {
+    "x": 324,
+    "y": 425,
+    "w": 119,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 179,
+    "w": 119,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_05_team": {
+   "frame": {
+    "x": 725,
+    "y": 1198,
+    "w": 98,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 257,
+    "w": 98,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_06": {
+   "frame": {
+    "x": 2,
+    "y": 628,
+    "w": 117,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 226,
+    "y": 183,
+    "w": 117,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_06_team": {
+   "frame": {
+    "x": 827,
+    "y": 1198,
+    "w": 98,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 256,
+    "w": 98,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_07": {
+   "frame": {
+    "x": 448,
+    "y": 628,
+    "w": 105,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 186,
+    "w": 105,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_07_team": {
+   "frame": {
+    "x": 624,
+    "y": 1198,
+    "w": 97,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 226,
+    "y": 254,
+    "w": 97,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_08": {
+   "frame": {
+    "x": 553,
+    "y": 425,
+    "w": 101,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 178,
+    "w": 101,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_08_team": {
+   "frame": {
+    "x": 105,
+    "y": 1089,
+    "w": 99,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 252,
+    "w": 99,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_09": {
+   "frame": {
+    "x": 762,
+    "y": 2,
+    "w": 101,
+    "h": 202
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 174,
+    "w": 101,
+    "h": 202
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_attack_09_team": {
+   "frame": {
+    "x": 208,
+    "y": 1089,
+    "w": 99,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 252,
+    "w": 99,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_hit_00": {
+   "frame": {
+    "x": 867,
+    "y": 2,
+    "w": 143,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 178,
+    "w": 143,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_hit_00_team": {
+   "frame": {
+    "x": 757,
+    "y": 1089,
+    "w": 101,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 216,
+    "y": 256,
+    "w": 101,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_hit_01": {
+   "frame": {
+    "x": 343,
+    "y": 220,
+    "w": 157,
+    "h": 200
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 160,
+    "y": 183,
+    "w": 157,
+    "h": 200
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_hit_01_team": {
+   "frame": {
+    "x": 650,
+    "y": 1089,
+    "w": 103,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 210,
+    "y": 261,
+    "w": 103,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_hit_02": {
+   "frame": {
+    "x": 741,
+    "y": 220,
+    "w": 114,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 182,
+    "w": 114,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_hit_02_team": {
+   "frame": {
+    "x": 818,
+    "y": 978,
+    "w": 100,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 257,
+    "w": 100,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_hit_03": {
+   "frame": {
+    "x": 129,
+    "y": 220,
+    "w": 104,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 173,
+    "w": 104,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_hit_03_team": {
+   "frame": {
+    "x": 314,
+    "y": 1198,
+    "w": 100,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 222,
+    "y": 251,
+    "w": 100,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_hit_04": {
+   "frame": {
+    "x": 110,
+    "y": 425,
+    "w": 104,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 217,
+    "y": 177,
+    "w": 104,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_hit_04_team": {
+   "frame": {
+    "x": 311,
+    "y": 1089,
+    "w": 99,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 224,
+    "y": 252,
+    "w": 99,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_00": {
+   "frame": {
+    "x": 557,
+    "y": 628,
+    "w": 132,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 164,
+    "w": 132,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_00_team": {
+   "frame": {
+    "x": 123,
+    "y": 1306,
+    "w": 112,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 211,
+    "y": 230,
+    "w": 112,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_01": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 87,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 122,
+    "w": 87,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_01_team": {
+   "frame": {
+    "x": 423,
+    "y": 826,
+    "w": 99,
+    "h": 111
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 202,
+    "w": 99,
+    "h": 111
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_02": {
+   "frame": {
+    "x": 868,
+    "y": 425,
+    "w": 123,
+    "h": 196
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 139,
+    "w": 123,
+    "h": 196
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_02_team": {
+   "frame": {
+    "x": 631,
+    "y": 826,
+    "w": 97,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 208,
+    "w": 97,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_03": {
+   "frame": {
+    "x": 807,
+    "y": 628,
+    "w": 104,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 182,
+    "w": 104,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_03_team": {
+   "frame": {
+    "x": 526,
+    "y": 826,
+    "w": 101,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 227,
+    "w": 101,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_04": {
+   "frame": {
+    "x": 269,
+    "y": 826,
+    "w": 150,
+    "h": 132
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 168,
+    "y": 229,
+    "w": 150,
+    "h": 132
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_04_team": {
+   "frame": {
+    "x": 354,
+    "y": 1306,
+    "w": 134,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 264,
+    "w": 134,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_05": {
+   "frame": {
+    "x": 693,
+    "y": 628,
+    "w": 110,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 201,
+    "w": 110,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_05_team": {
+   "frame": {
+    "x": 732,
+    "y": 826,
+    "w": 99,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 249,
+    "w": 99,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_06": {
+   "frame": {
+    "x": 2,
+    "y": 826,
+    "w": 133,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 216,
+    "w": 133,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 1306,
+    "w": 117,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 258,
+    "w": 117,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_07": {
+   "frame": {
+    "x": 139,
+    "y": 826,
+    "w": 126,
+    "h": 144
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 219,
+    "w": 126,
+    "h": 144
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  },
+  "gravity_sage_die_07_team": {
+   "frame": {
+    "x": 239,
+    "y": 1306,
+    "w": 111,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 259,
+    "w": 111,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.85106
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "gravity_sage_idle_00",
+   "gravity_sage_idle_01",
+   "gravity_sage_idle_02",
+   "gravity_sage_idle_03",
+   "gravity_sage_idle_04",
+   "gravity_sage_idle_05"
+  ],
+  "idle_team": [
+   "gravity_sage_idle_00_team",
+   "gravity_sage_idle_01_team",
+   "gravity_sage_idle_02_team",
+   "gravity_sage_idle_03_team",
+   "gravity_sage_idle_04_team",
+   "gravity_sage_idle_05_team"
+  ],
+  "walk": [
+   "gravity_sage_walk_00",
+   "gravity_sage_walk_01",
+   "gravity_sage_walk_02",
+   "gravity_sage_walk_03",
+   "gravity_sage_walk_04",
+   "gravity_sage_walk_05",
+   "gravity_sage_walk_06",
+   "gravity_sage_walk_07"
+  ],
+  "walk_team": [
+   "gravity_sage_walk_00_team",
+   "gravity_sage_walk_01_team",
+   "gravity_sage_walk_02_team",
+   "gravity_sage_walk_03_team",
+   "gravity_sage_walk_04_team",
+   "gravity_sage_walk_05_team",
+   "gravity_sage_walk_06_team",
+   "gravity_sage_walk_07_team"
+  ],
+  "attack": [
+   "gravity_sage_attack_00",
+   "gravity_sage_attack_01",
+   "gravity_sage_attack_02",
+   "gravity_sage_attack_03",
+   "gravity_sage_attack_04",
+   "gravity_sage_attack_05",
+   "gravity_sage_attack_06",
+   "gravity_sage_attack_07",
+   "gravity_sage_attack_08",
+   "gravity_sage_attack_09"
+  ],
+  "attack_team": [
+   "gravity_sage_attack_00_team",
+   "gravity_sage_attack_01_team",
+   "gravity_sage_attack_02_team",
+   "gravity_sage_attack_03_team",
+   "gravity_sage_attack_04_team",
+   "gravity_sage_attack_05_team",
+   "gravity_sage_attack_06_team",
+   "gravity_sage_attack_07_team",
+   "gravity_sage_attack_08_team",
+   "gravity_sage_attack_09_team"
+  ],
+  "hit": [
+   "gravity_sage_hit_00",
+   "gravity_sage_hit_01",
+   "gravity_sage_hit_02",
+   "gravity_sage_hit_03",
+   "gravity_sage_hit_04"
+  ],
+  "hit_team": [
+   "gravity_sage_hit_00_team",
+   "gravity_sage_hit_01_team",
+   "gravity_sage_hit_02_team",
+   "gravity_sage_hit_03_team",
+   "gravity_sage_hit_04_team"
+  ],
+  "die": [
+   "gravity_sage_die_00",
+   "gravity_sage_die_01",
+   "gravity_sage_die_02",
+   "gravity_sage_die_03",
+   "gravity_sage_die_04",
+   "gravity_sage_die_05",
+   "gravity_sage_die_06",
+   "gravity_sage_die_06",
+   "gravity_sage_die_07",
+   "gravity_sage_die_07"
+  ],
+  "die_team": [
+   "gravity_sage_die_00_team",
+   "gravity_sage_die_01_team",
+   "gravity_sage_die_02_team",
+   "gravity_sage_die_03_team",
+   "gravity_sage_die_04_team",
+   "gravity_sage_die_05_team",
+   "gravity_sage_die_06_team",
+   "gravity_sage_die_06_team",
+   "gravity_sage_die_07_team",
+   "gravity_sage_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "gravity_sage.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1024,
+   "h": 1404
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.gravity_sage",
+   "name": "Gravity Sage",
+   "heightLu": 76,
+   "widthLu": 36.2,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    260,
+    400
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     78
+    ],
+    "hitCenter": [
+     0,
+     40
+    ],
+    "muzzle": [
+     20,
+     40
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "hover",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        6.3,
+        48.3
+       ],
+       [
+        6.4,
+        47.7
+       ],
+       [
+        6.6,
+        46.5
+       ],
+       [
+        6.7,
+        45.9
+       ],
+       [
+        6.6,
+        46.5
+       ],
+       [
+        6.4,
+        47.7
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      62,
+      63,
+      62,
+      63,
+      62,
+      63,
+      62,
+      63
+     ],
+     "durationMs": 500,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        9.7,
+        47.2
+       ],
+       [
+        9.6,
+        47.8
+       ],
+       [
+        9.5,
+        47.3
+       ],
+       [
+        9.5,
+        46.7
+       ],
+       [
+        9.7,
+        47.2
+       ],
+       [
+        9.9,
+        47.6
+       ],
+       [
+        9.9,
+        47.0
+       ],
+       [
+        9.8,
+        46.5
+       ]
+      ]
+     },
+     "strideLu": 36.8,
+     "naturalSpeedLuPerS": 73.6,
+     "gait": "hover"
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      60,
+      80,
+      100,
+      160,
+      50,
+      100,
+      90,
+      90,
+      80,
+      90
+     ],
+     "durationMs": 900,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        6.2,
+        34.9
+       ],
+       [
+        -4.3,
+        41.3
+       ],
+       [
+        -11.7,
+        45.1
+       ],
+       [
+        -15.2,
+        45.2
+       ],
+       [
+        1.0,
+        46.8
+       ],
+       [
+        21.0,
+        39.8
+       ],
+       [
+        17.6,
+        38.5
+       ],
+       [
+        10.4,
+        38.2
+       ],
+       [
+        6.7,
+        36.7
+       ],
+       [
+        6.2,
+        34.9
+       ]
+      ]
+     },
+     "muzzle": [
+      21.0,
+      39.8
+     ]
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        2.1,
+        34.7
+       ],
+       [
+        -0.4,
+        33.4
+       ],
+       [
+        4.2,
+        33.2
+       ],
+       [
+        5.5,
+        35.6
+       ],
+       [
+        6.1,
+        35.0
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        27.4
+       ],
+       "scale": 0.452
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        41.8
+       ],
+       "loops": 2,
+       "scale": 0.673
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        2.2,
+        46.0
+       ],
+       [
+        10.7,
+        58.0
+       ],
+       [
+        -13.7,
+        61.3
+       ],
+       [
+        -4.7,
+        47.0
+       ],
+       [
+        -5.2,
+        43.3
+       ],
+       [
+        -2.3,
+        47.4
+       ],
+       [
+        -4.8,
+        45.5
+       ],
+       [
+        -4.0,
+        44.8
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

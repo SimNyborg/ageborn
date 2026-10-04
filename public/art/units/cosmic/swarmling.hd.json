@@ -1,0 +1,2300 @@
+{
+ "frames": {
+  "swarmling_idle_00": {
+   "frame": {
+    "x": 729,
+    "y": 127,
+    "w": 108,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 198,
+    "w": 108,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_idle_00_team": {
+   "frame": {
+    "x": 342,
+    "y": 635,
+    "w": 81,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 211,
+    "w": 81,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_idle_01": {
+   "frame": {
+    "x": 2,
+    "y": 240,
+    "w": 107,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 198,
+    "w": 107,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_idle_01_team": {
+   "frame": {
+    "x": 779,
+    "y": 552,
+    "w": 82,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 211,
+    "w": 82,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_idle_02": {
+   "frame": {
+    "x": 766,
+    "y": 240,
+    "w": 108,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 201,
+    "w": 108,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_idle_02_team": {
+   "frame": {
+    "x": 682,
+    "y": 635,
+    "w": 80,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 213,
+    "w": 80,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_idle_03": {
+   "frame": {
+    "x": 467,
+    "y": 349,
+    "w": 110,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 204,
+    "w": 110,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_idle_03_team": {
+   "frame": {
+    "x": 339,
+    "y": 689,
+    "w": 79,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 214,
+    "w": 79,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_idle_04": {
+   "frame": {
+    "x": 237,
+    "y": 349,
+    "w": 111,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 204,
+    "w": 111,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_idle_04_team": {
+   "frame": {
+    "x": 170,
+    "y": 742,
+    "w": 77,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 214,
+    "w": 77,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_idle_05": {
+   "frame": {
+    "x": 653,
+    "y": 240,
+    "w": 109,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 201,
+    "w": 109,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_idle_05_team": {
+   "frame": {
+    "x": 255,
+    "y": 689,
+    "w": 80,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 212,
+    "w": 80,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_00": {
+   "frame": {
+    "x": 510,
+    "y": 240,
+    "w": 139,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 165,
+    "y": 197,
+    "w": 139,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_00_team": {
+   "frame": {
+    "x": 404,
+    "y": 552,
+    "w": 101,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 207,
+    "w": 101,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_01": {
+   "frame": {
+    "x": 113,
+    "y": 240,
+    "w": 131,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 200,
+    "w": 131,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_01_team": {
+   "frame": {
+    "x": 509,
+    "y": 552,
+    "w": 99,
+    "h": 67
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 162,
+    "y": 214,
+    "w": 99,
+    "h": 67
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_02": {
+   "frame": {
+    "x": 142,
+    "y": 454,
+    "w": 108,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 208,
+    "w": 108,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_02_team": {
+   "frame": {
+    "x": 321,
+    "y": 552,
+    "w": 79,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 222,
+    "w": 79,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_03": {
+   "frame": {
+    "x": 581,
+    "y": 349,
+    "w": 146,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 166,
+    "y": 205,
+    "w": 146,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_03_team": {
+   "frame": {
+    "x": 422,
+    "y": 689,
+    "w": 78,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 215,
+    "w": 78,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_04": {
+   "frame": {
+    "x": 577,
+    "y": 127,
+    "w": 148,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 160,
+    "y": 196,
+    "w": 148,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_04_team": {
+   "frame": {
+    "x": 251,
+    "y": 742,
+    "w": 82,
+    "h": 46
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 208,
+    "w": 82,
+    "h": 46
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_05": {
+   "frame": {
+    "x": 360,
+    "y": 240,
+    "w": 146,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 200,
+    "w": 146,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 742,
+    "w": 81,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 214,
+    "w": 81,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_06": {
+   "frame": {
+    "x": 254,
+    "y": 454,
+    "w": 108,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 209,
+    "w": 108,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_06_team": {
+   "frame": {
+    "x": 758,
+    "y": 689,
+    "w": 85,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 221,
+    "w": 85,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_07": {
+   "frame": {
+    "x": 2,
+    "y": 454,
+    "w": 136,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 206,
+    "w": 136,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_walk_07_team": {
+   "frame": {
+    "x": 224,
+    "y": 552,
+    "w": 93,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 168,
+    "y": 215,
+    "w": 93,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_00": {
+   "frame": {
+    "x": 465,
+    "y": 127,
+    "w": 108,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 197,
+    "w": 108,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_00_team": {
+   "frame": {
+    "x": 427,
+    "y": 635,
+    "w": 81,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 212,
+    "w": 81,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_01": {
+   "frame": {
+    "x": 633,
+    "y": 454,
+    "w": 114,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 219,
+    "w": 114,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_01_team": {
+   "frame": {
+    "x": 504,
+    "y": 689,
+    "w": 78,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 216,
+    "w": 78,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_02": {
+   "frame": {
+    "x": 116,
+    "y": 127,
+    "w": 102,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 192,
+    "w": 102,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_02_team": {
+   "frame": {
+    "x": 255,
+    "y": 635,
+    "w": 83,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 214,
+    "w": 83,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 102,
+    "h": 121
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 180,
+    "w": 102,
+    "h": 121
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_03_team": {
+   "frame": {
+    "x": 167,
+    "y": 635,
+    "w": 84,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 213,
+    "w": 84,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_04": {
+   "frame": {
+    "x": 450,
+    "y": 2,
+    "w": 110,
+    "h": 114
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 187,
+    "w": 110,
+    "h": 114
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_04_team": {
+   "frame": {
+    "x": 83,
+    "y": 689,
+    "w": 83,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 207,
+    "w": 83,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_05": {
+   "frame": {
+    "x": 115,
+    "y": 349,
+    "w": 118,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 203,
+    "w": 118,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_05_team": {
+   "frame": {
+    "x": 2,
+    "y": 689,
+    "w": 77,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 207,
+    "w": 77,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_06": {
+   "frame": {
+    "x": 493,
+    "y": 454,
+    "w": 136,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 219,
+    "w": 136,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_06_team": {
+   "frame": {
+    "x": 699,
+    "y": 552,
+    "w": 76,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 210,
+    "w": 76,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_07": {
+   "frame": {
+    "x": 751,
+    "y": 454,
+    "w": 132,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 220,
+    "w": 132,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_07_team": {
+   "frame": {
+    "x": 86,
+    "y": 635,
+    "w": 77,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 211,
+    "w": 77,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_08": {
+   "frame": {
+    "x": 366,
+    "y": 454,
+    "w": 123,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 218,
+    "w": 123,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_08_team": {
+   "frame": {
+    "x": 586,
+    "y": 689,
+    "w": 77,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 212,
+    "w": 77,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_09": {
+   "frame": {
+    "x": 731,
+    "y": 349,
+    "w": 112,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 206,
+    "w": 112,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_attack_09_team": {
+   "frame": {
+    "x": 512,
+    "y": 635,
+    "w": 81,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 212,
+    "w": 81,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_hit_00": {
+   "frame": {
+    "x": 248,
+    "y": 240,
+    "w": 108,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 199,
+    "w": 108,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_hit_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 635,
+    "w": 80,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 213,
+    "w": 80,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_hit_01": {
+   "frame": {
+    "x": 2,
+    "y": 127,
+    "w": 110,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 194,
+    "w": 110,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_hit_01_team": {
+   "frame": {
+    "x": 612,
+    "y": 552,
+    "w": 83,
+    "h": 53
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 212,
+    "w": 83,
+    "h": 53
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_hit_02": {
+   "frame": {
+    "x": 354,
+    "y": 127,
+    "w": 107,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 196,
+    "w": 107,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_hit_02_team": {
+   "frame": {
+    "x": 766,
+    "y": 635,
+    "w": 78,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 182,
+    "y": 213,
+    "w": 78,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_hit_03": {
+   "frame": {
+    "x": 2,
+    "y": 349,
+    "w": 109,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 184,
+    "y": 202,
+    "w": 109,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_hit_03_team": {
+   "frame": {
+    "x": 87,
+    "y": 742,
+    "w": 79,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 213,
+    "w": 79,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_hit_04": {
+   "frame": {
+    "x": 352,
+    "y": 349,
+    "w": 111,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 204,
+    "w": 111,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_hit_04_team": {
+   "frame": {
+    "x": 597,
+    "y": 635,
+    "w": 81,
+    "h": 49
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 212,
+    "w": 81,
+    "h": 49
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_00": {
+   "frame": {
+    "x": 689,
+    "y": 2,
+    "w": 106,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 205,
+    "w": 106,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_00_team": {
+   "frame": {
+    "x": 667,
+    "y": 689,
+    "w": 87,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 214,
+    "w": 87,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_01": {
+   "frame": {
+    "x": 225,
+    "y": 2,
+    "w": 97,
+    "h": 117
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 195,
+    "w": 97,
+    "h": 117
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_01_team": {
+   "frame": {
+    "x": 170,
+    "y": 689,
+    "w": 81,
+    "h": 48
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 205,
+    "w": 81,
+    "h": 48
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_02": {
+   "frame": {
+    "x": 117,
+    "y": 552,
+    "w": 103,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 207,
+    "w": 103,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_02_team": {
+   "frame": {
+    "x": 337,
+    "y": 742,
+    "w": 75,
+    "h": 45
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 208,
+    "w": 75,
+    "h": 45
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_03": {
+   "frame": {
+    "x": 2,
+    "y": 552,
+    "w": 111,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 201,
+    "w": 111,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_03_team": {
+   "frame": {
+    "x": 769,
+    "y": 742,
+    "w": 77,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 229,
+    "w": 77,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_04": {
+   "frame": {
+    "x": 222,
+    "y": 127,
+    "w": 128,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 198,
+    "w": 128,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_04_team": {
+   "frame": {
+    "x": 416,
+    "y": 742,
+    "w": 89,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 172,
+    "y": 240,
+    "w": 89,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_05": {
+   "frame": {
+    "x": 108,
+    "y": 2,
+    "w": 113,
+    "h": 120
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 181,
+    "y": 196,
+    "w": 113,
+    "h": 120
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_05_team": {
+   "frame": {
+    "x": 684,
+    "y": 742,
+    "w": 81,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 248,
+    "w": 81,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_06": {
+   "frame": {
+    "x": 564,
+    "y": 2,
+    "w": 121,
+    "h": 112
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 202,
+    "w": 121,
+    "h": 112
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_06_team": {
+   "frame": {
+    "x": 509,
+    "y": 742,
+    "w": 84,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 249,
+    "w": 84,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_07": {
+   "frame": {
+    "x": 326,
+    "y": 2,
+    "w": 120,
+    "h": 114
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 202,
+    "w": 120,
+    "h": 114
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  },
+  "swarmling_die_07_team": {
+   "frame": {
+    "x": 597,
+    "y": 742,
+    "w": 83,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 176,
+    "y": 249,
+    "w": 83,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 444,
+    "h": 336
+   },
+   "anchor": {
+    "x": 0.52703,
+    "y": 0.85714
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "swarmling_idle_00",
+   "swarmling_idle_01",
+   "swarmling_idle_02",
+   "swarmling_idle_03",
+   "swarmling_idle_04",
+   "swarmling_idle_05"
+  ],
+  "idle_team": [
+   "swarmling_idle_00_team",
+   "swarmling_idle_01_team",
+   "swarmling_idle_02_team",
+   "swarmling_idle_03_team",
+   "swarmling_idle_04_team",
+   "swarmling_idle_05_team"
+  ],
+  "walk": [
+   "swarmling_walk_00",
+   "swarmling_walk_01",
+   "swarmling_walk_02",
+   "swarmling_walk_03",
+   "swarmling_walk_04",
+   "swarmling_walk_05",
+   "swarmling_walk_06",
+   "swarmling_walk_07"
+  ],
+  "walk_team": [
+   "swarmling_walk_00_team",
+   "swarmling_walk_01_team",
+   "swarmling_walk_02_team",
+   "swarmling_walk_03_team",
+   "swarmling_walk_04_team",
+   "swarmling_walk_05_team",
+   "swarmling_walk_06_team",
+   "swarmling_walk_07_team"
+  ],
+  "attack": [
+   "swarmling_attack_00",
+   "swarmling_attack_01",
+   "swarmling_attack_02",
+   "swarmling_attack_03",
+   "swarmling_attack_04",
+   "swarmling_attack_05",
+   "swarmling_attack_06",
+   "swarmling_attack_07",
+   "swarmling_attack_08",
+   "swarmling_attack_09",
+   "swarmling_attack_00"
+  ],
+  "attack_team": [
+   "swarmling_attack_00_team",
+   "swarmling_attack_01_team",
+   "swarmling_attack_02_team",
+   "swarmling_attack_03_team",
+   "swarmling_attack_04_team",
+   "swarmling_attack_05_team",
+   "swarmling_attack_06_team",
+   "swarmling_attack_07_team",
+   "swarmling_attack_08_team",
+   "swarmling_attack_09_team",
+   "swarmling_attack_00_team"
+  ],
+  "hit": [
+   "swarmling_hit_00",
+   "swarmling_hit_01",
+   "swarmling_hit_02",
+   "swarmling_hit_03",
+   "swarmling_hit_04"
+  ],
+  "hit_team": [
+   "swarmling_hit_00_team",
+   "swarmling_hit_01_team",
+   "swarmling_hit_02_team",
+   "swarmling_hit_03_team",
+   "swarmling_hit_04_team"
+  ],
+  "die": [
+   "swarmling_die_00",
+   "swarmling_die_01",
+   "swarmling_die_02",
+   "swarmling_die_03",
+   "swarmling_die_04",
+   "swarmling_die_05",
+   "swarmling_die_06",
+   "swarmling_die_06",
+   "swarmling_die_07",
+   "swarmling_die_07"
+  ],
+  "die_team": [
+   "swarmling_die_00_team",
+   "swarmling_die_01_team",
+   "swarmling_die_02_team",
+   "swarmling_die_03_team",
+   "swarmling_die_04_team",
+   "swarmling_die_05_team",
+   "swarmling_die_06_team",
+   "swarmling_die_06_team",
+   "swarmling_die_07_team",
+   "swarmling_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "swarmling.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 896,
+   "h": 792
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.swarmling",
+   "name": "Swarmling",
+   "heightLu": 38,
+   "widthLu": 38.2,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    234,
+    288
+   ],
+   "anchorsLu": {
+    "head": [
+     12,
+     34
+    ],
+    "hitCenter": [
+     0,
+     18
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "walker",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      150,
+      150,
+      150,
+      150,
+      150,
+      170
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        16.8,
+        19.2
+       ],
+       [
+        16.7,
+        19.2
+       ],
+       [
+        16.8,
+        18.4
+       ],
+       [
+        16.8,
+        17.6
+       ],
+       [
+        16.8,
+        17.6
+       ],
+       [
+        16.8,
+        18.4
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      60,
+      60,
+      60,
+      60,
+      60,
+      60,
+      60,
+      60
+     ],
+     "durationMs": 480,
+     "gait": "walker",
+     "gaitSpeedLuPerS": 118.8,
+     "cycleMs": 480,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        16.8,
+        20.5
+       ],
+       [
+        16.9,
+        17.7
+       ],
+       [
+        16.8,
+        14.8
+       ],
+       [
+        16.8,
+        17.6
+       ],
+       [
+        16.8,
+        20.5
+       ],
+       [
+        16.8,
+        17.7
+       ],
+       [
+        16.7,
+        14.8
+       ],
+       [
+        16.7,
+        17.6
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 116.4,
+     "strideLu": 55.9,
+     "plantedDriftLu": 0.89,
+     "contacts": [
+      {
+       "step": 0,
+       "foot": "br",
+       "atLu": [
+        -2.0,
+        -0.4
+       ]
+      },
+      {
+       "step": 0,
+       "foot": "ml",
+       "atLu": [
+        16.7,
+        2.0
+       ]
+      },
+      {
+       "step": 1,
+       "foot": "fr",
+       "atLu": [
+        23.3,
+        -2.0
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "bl",
+       "atLu": [
+        -0.8,
+        2.1
+       ]
+      },
+      {
+       "step": 4,
+       "foot": "mr",
+       "atLu": [
+        14.9,
+        -0.6
+       ]
+      },
+      {
+       "step": 5,
+       "foot": "fl",
+       "atLu": [
+        24.2,
+        0.2
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      0
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "smearFrame": 4,
+     "holdStep": 3,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        16.8,
+        18.4
+       ],
+       [
+        15.8,
+        14.3
+       ],
+       [
+        14.1,
+        24.0
+       ],
+       [
+        12.7,
+        26.7
+       ],
+       [
+        17.5,
+        22.5
+       ],
+       [
+        19.7,
+        16.4
+       ],
+       [
+        20.4,
+        10.4
+       ],
+       [
+        20.7,
+        11.2
+       ],
+       [
+        18.8,
+        14.7
+       ],
+       [
+        16.8,
+        18.4
+       ]
+      ]
+     }
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        15.0,
+        19.7
+       ],
+       [
+        14.3,
+        20.3
+       ],
+       [
+        16.1,
+        19.0
+       ],
+       [
+        17.2,
+        18.1
+       ],
+       [
+        16.8,
+        18.4
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        13.7
+       ],
+       "scale": 0.478
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        20.9
+       ],
+       "loops": 2,
+       "scale": 0.691
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "clubHead": [
+       [
+        17.7,
+        18.1
+       ],
+       [
+        15.8,
+        22.4
+       ],
+       [
+        15.6,
+        22.4
+       ],
+       [
+        15.1,
+        17.3
+       ],
+       [
+        15.7,
+        10.4
+       ],
+       [
+        13.2,
+        8.1
+       ],
+       [
+        14.4,
+        7.3
+       ],
+       [
+        14.2,
+        7.3
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

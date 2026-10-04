@@ -17,11 +17,21 @@ anticipation pose before its one-frame flash.
                     squashes and the shard glows hot, then it is released with a flash and regrows
   Tachyon Lance     a long prism with rail fins and three lights chasing along it; on fire the rails
                     spread and the lights all run to the tip, then the snap
+
+W8 Cosmic wave (CONTENT_PLAN 5.8):
+
+  Shard Spitter     a lilac crystal geode with a visor eye and a crown of crystal spikes that shimmer in
+                    turn; a triangle of three crystal barrels; on fire the geode squeezes and the three
+                    barrel tips glow (angry eye), then it spits with a kick and a crystal sparkle
+  Event Horizon     a tiny black hole held in three struts: a void orb with a violet rim, a team accretion
+                    ring with dust lumps that turns, and a sleepy eye; on fire the orb shrinks and the ring
+                    tightens (the inward suck), then a violet pulse rings out
 """
 import math
 
 from ageborn_art import face as FC
 from ageborn_art import kit_cosmic as KC
+from ageborn_art import kit_cosmic_wave as CW
 from ageborn_art import kit_future as KF
 from ageborn_art import kit_medieval as KM
 from ageborn_art import rigs_cosmic as K
@@ -374,6 +384,170 @@ TL_OVERLAYS = {"fire": {
          "a0": -60.0, "arc": 120.0, "color": K.VIOLET_CORE}]}}
 
 
+# -- Shard Spitter (W8): a crystal geode spitting three shards (volley, pierce) -----------------------
+SS_MUZ = (24.0, -1.0, 21.0)
+SS_BARRELS = ((0.0, 2.6), (2.4, -1.4), (-2.4, -1.4))       # (y, z) offsets of the barrel triangle
+
+
+def _hexrod(g, a, b, r0, r1, tip=2.0):
+    """A hexagonal crystal rod from a to b (x axis) with a pointed tip."""
+    L = b[0] - a[0]
+    g.lathe([(0, 0), (r0, 0.2), (r1, L - tip), (0, L)], a, b, segs=6)
+
+
+def shard_build(rig):
+    pad(rig, 16)
+    g = Geo().blob((0, 0, 9.5), (7.0, 6.4, 3.4), p=1.8)
+    rig.part("mount", g, CW.ROCK, finish="gloss", outline_hex=CW.ROCK_DK)
+    g = Geo().blob((-2.0, -2.0, 11.0), (2.6, 2.4, 1.8), p=1.8)
+    rig.part("mount", g, CW.ROCK_LT, outline=0.4)
+    # the geode: a lilac crystal body with a team band and a team back plate
+    g = Geo().blob((0, 0, 20.0), (10.0, 9.0, 7.6), p=2.2, taper=(1.0, 0.85))
+    rig.part("head", g, CW.LILAC, finish="gloss", outline_hex=CW.LILAC_DK)
+    g = Geo().blob((-1.0, 0, 16.4), (10.4, 9.4, 2.6), p=2.8)
+    rig.part("head", g, team=True, outline=0.4)
+    g = Geo().blob((-8.6, 0, 21.0), (3.6, 7.8, 5.6), p=3.0)
+    rig.part("head", g, team=True)
+    g = Geo().star((-3.0, -9.2, 18.0), 2.0, 0.8, 0.8, points=5)
+    rig.part("head", g, KC.STAR_PALE, outline=0.4, outline_hex=K.STAR_TRIM)
+    pod_eye(rig, "head", (0, 0, 20.0), (10.0, 9.0, 7.6), x0=3.4, z_top=26.6, z_bot=21.6, eye_at=(6.6, 24.2))
+    # the crown of crystal spikes (each shimmers in turn on its own joint)
+    for i, (x, y, h, lean) in enumerate(((-4.0, 1.0, 11.0, -14.0), (0.5, 2.0, 8.5, 6.0), (-7.0, -1.5, 7.0, -30.0))):
+        j = f"spike{i}"
+        rig.joint(j, "head", (x, y, 25.0))
+        a = math.radians(90 + lean)
+        b = (x + h * math.cos(a), y, 25.0 + h * math.sin(a))
+        g = Geo().lathe([(0, 0), (2.4, 0.4), (2.0, h - 2.6), (0, h)], (x, y, 24.0), b, segs=6)
+        rig.part(j, g, glow=CW.LILAC, outline=0.8, outline_hex=CW.LILAC_DK)
+        rig.joint(f"spark{i}", j, b, hidden=True)
+        g = Geo().lathe([(0, 0), (2.8, 0.4), (2.4, h - 2.2), (0, h + 0.6)], (x, y - 0.3, 23.8), (b[0], b[1] - 0.3, b[2] + 0.4),
+                        segs=6)
+        rig.part(f"spark{i}", g, glow=CW.LILAC_CORE, outline=0.8, outline_hex=CW.GLOW)
+    # the three crystal barrels in a triangle
+    rig.joint("gun", "head", (6, 0, 21))
+    g = Geo().blob((8.0, -0.6, 21.0), (3.8, 5.6, 5.6), p=2.4)
+    rig.part("gun", g, CW.ROCK, finish="gloss", outline_hex=CW.ROCK_DK)
+    g = Geo()
+    for y, z in SS_BARRELS:
+        _hexrod(g, (9.0, -1.0 + y, 21.0 + z), (22.0, -1.0 + y, 21.0 + z), 1.9, 1.5, tip=1.8)
+    rig.part("gun", g, glow=CW.LILAC, outline=0.7, outline_hex=CW.LILAC_DK)
+    g = Geo()
+    cyl(g, (11.0, -1.0, 21.0), (12.6, -1.0, 21.0), 5.0, bevel=0.3, segs=16)
+    rig.part("gun", g, team=True, outline=0.4)
+    rig.joint("charge", "gun", SS_MUZ, hidden=True)
+    g = Geo()
+    for y, z in SS_BARRELS:
+        g.sphere((21.4, -2.0 + y, 21.0 + z), 1.9, cuts=2)
+    rig.part("charge", g, glow=CW.LILAC_CORE, outline=0.6, outline_hex=CW.GLOW)
+    glow_flash(rig, "gun", SS_MUZ, CW.LILAC, CW.LILAC_CORE, 1.0, points=6)
+
+
+def shard_idle(f):
+    w = math.sin(2 * math.pi * f / 6)
+    pose = {"gun": {"r": 0.8 * w}, "head": {"z": 0.4 * w, "sz": 1 + 0.012 * w},
+            f"spark{f % 3}": {"show": f in (0, 1, 2, 3, 4, 5)}, f"spike{f % 3}": {"s": 1.06}}
+    if f == 5:
+        pose.update(KF.glyph("g_blink"))
+    return pose
+
+
+def shard_fire(f):
+    pose = {"gun": {"x": [-1.4, 1.0, -2.6, -1.0, -0.2][f], "r": [1.8, -0.5, 2.4, 1.0, 0.2][f]},
+            "head": {"x": [-0.8, 0.4, -1.0, -0.4, 0][f], "sz": [0.9, 1.06, 0.98, 1.0, 1.0][f],
+                     "sx": [1.06, 0.96, 1.01, 1.0, 1.0][f]},
+            "charge": {"show": f == 0}}
+    for i in range(3):
+        pose[f"spark{i}"] = {"show": f in (0, 1)}
+    pose.update(KF.glyph(["g_angry", "g_squint", "g_squint", "g_angry", "eyes"][f]))
+    return pose
+
+
+SS_OVERLAYS = {"fire": {
+    0: [{"kind": "rings", "joint": "gun", "point": (23.0, -1.0, 21.0), "radii_lu": (5.0, 8.0), "a0": -110.0,
+         "a1": 110.0, "color": CW.LILAC_CORE}],
+    1: [{"kind": "burst", "joint": "gun", "point": (26.0, -1.0, 21.0), "r0_lu": 7.0, "r1_lu": 13.0, "n": 6,
+         "a0": -50.0, "arc": 100.0, "color": CW.LILAC_CORE}]}}
+
+
+# -- Event Horizon (W8): a tiny black hole in three struts (a gate zone pulse) -------------------------
+EH_C = (0.0, 0.0, 30.0)
+
+
+def _ring(g, c, R, r, tilt=0.26, n=32):
+    for i in range(n):
+        a0, a1 = 2 * math.pi * i / n, 2 * math.pi * (i + 1) / n
+        p0 = (c[0] + R * math.cos(a0), c[1] + R * math.sin(a0), c[2] - tilt * R * math.sin(a0))
+        p1 = (c[0] + R * math.cos(a1), c[1] + R * math.sin(a1), c[2] - tilt * R * math.sin(a1))
+        g.capsule(p0, p1, r, segs=8, rings=2)
+
+
+def horizon_build(rig):
+    pad(rig, 17)
+    cx, cy, cz = EH_C
+    g = Geo()
+    for k in range(3):                              # three struts curling up to cradle the orb
+        a = math.radians(90 + 120 * k)
+        x0, y0 = 11.0 * math.cos(a), 11.0 * math.sin(a) * 0.8
+        g.capsule((x0, y0, 7.0), (x0 * 0.9, y0 * 0.9, 18.0), 1.8, 1.4)
+        g.capsule((x0 * 0.9, y0 * 0.9, 18.0), (x0 * 0.55, y0 * 0.55, 24.0), 1.4, 1.0)
+    rig.part("mount", g, K.STAR_TRIM, finish="metal", outline=0.5)
+    g = Geo()
+    for k in range(3):
+        a = math.radians(90 + 120 * k)
+        g.sphere((6.2 * math.cos(a), 6.2 * math.sin(a) * 0.8 - 0.6, 24.4), 1.3, cuts=2)
+    rig.part("mount", g, glow=K.MINT_CORE, outline=0.4, outline_hex=K.MINT)
+    # the orb: a void sphere with a violet rim glow and a sleepy eye
+    rig.joint("gun", "head", (cx, cy, cz))
+    rig.joint("orb", "gun", (cx, cy, cz))
+    g = Geo().sphere((cx, cy + 2.6, cz), 9.4, cuts=4)
+    rig.part("orb", g, glow=K.VIOLET_GLOW, outline=0.8, outline_hex=K.VIOLET)
+    g = Geo().sphere((cx + 0.4, cy - 0.4, cz), 8.2, cuts=4)
+    rig.part("orb", g, K.VOID_DK, finish="gloss", outline=0)
+    pod_eye(rig, "orb", (cx + 0.4, cy - 0.4, cz), (8.2, 8.2, 8.2), x0=1.0, z_top=cz + 6.4, z_bot=cz + 0.4,
+            eye_at=(cx + 3.6, cz + 3.4))
+    # the accretion ring: a team band, a mint inner ring and dust lumps (they turn with the ring)
+    rig.joint("ring", "gun", (cx, cy, cz))
+    g = Geo()
+    _ring(g, (cx, cy, cz - 3.0), 15.0, 1.8, tilt=0.42)
+    rig.part("ring", g, team=True, outline=0.5)
+    g = Geo()
+    _ring(g, (cx, cy, cz - 3.0), 11.6, 0.9, tilt=0.42)
+    rig.part("ring", g, glow=K.MINT, outline=0.4, outline_hex=K.VOID)
+    g = Geo()
+    for k in range(5):
+        a = 2 * math.pi * k / 5 + 0.3
+        g.blob((cx + 15.0 * math.cos(a), cy + 15.0 * math.sin(a), cz - 3.0 - 0.42 * 15.0 * math.sin(a)),
+               (2.2, 2.0, 1.8), p=1.8)
+    rig.part("ring", g, CW.ROCK_LT, finish="gloss", outline_hex=CW.ROCK_DK)
+    rig.joint("pulse", "gun", (cx, cy, cz), hidden=True)
+    g = Geo()
+    _ring(g, (cx, cy - 1.0, cz), 12.5, 1.6, tilt=0.0)
+    rig.part("pulse", g, glow=K.VIOLET_CORE, outline=0.6, outline_hex=K.VIOLET_GLOW)
+    glow_flash(rig, "gun", (cx + 6.0, cy, cz), K.VIOLET_GLOW, K.VIOLET_CORE, 1.4, points=8)
+
+
+def horizon_idle(f):
+    w = math.sin(2 * math.pi * f / 6)
+    pose = {"ring": {"rz": 12.0 * f, "z": 0.5 * w}, "orb": {"s": 1.0 + 0.03 * w}, "gun": {"z": 0.5 * w}}
+    pose.update(KF.glyph("g_squint" if f in (2, 3) else "g_blink" if f == 5 else "eyes"))
+    return pose
+
+
+def horizon_fire(f):
+    pose = {"orb": {"s": [0.82, 1.12, 1.03, 1.0, 1.0][f]},
+            "ring": {"s": [0.86, 1.1, 1.04, 1.0, 1.0][f], "rz": [0, 30, 50, 60, 64][f]},
+            "pulse": {"show": f == 1}, "gun": {"z": [-1.0, 1.0, 0.4, 0, 0][f]}}
+    pose.update(KF.glyph(["g_angry", "g_squint", "g_angry", "eyes", "eyes"][f]))
+    return pose
+
+
+EH_OVERLAYS = {"fire": {
+    1: [{"kind": "rings", "joint": "gun", "point": EH_C, "radii_lu": (16.0, 22.0), "a0": -180.0, "a1": 180.0,
+         "color": K.VIOLET_CORE}],
+    2: [{"kind": "rings", "joint": "gun", "point": EH_C, "radii_lu": (22.0, 27.0), "a0": -180.0, "a1": 180.0,
+         "color": K.VIOLET_GLOW}]}}
+
+
 TURRETS = [
     turret_module("ion_turret", "Ion Turret", "cosmic", 30, CANVAS, FEET, (0, 20), ION_MUZ, ion_build,
                   ion_idle, ion_fire, muzzle_joint="gun", fire_kind="beam", idle_frames=6, overlays=ION_OVERLAYS),
@@ -386,4 +560,9 @@ TURRETS = [
     turret_module("tachyon_lance", "Tachyon Lance", "cosmic", 30, (300, 230), FEET, (0, 21), TL_MUZ,
                   tachyon_build, tachyon_idle, tachyon_fire, muzzle_joint="gun", fire_kind="beam", idle_frames=6,
                   overlays=TL_OVERLAYS),
+    turret_module("shard_spitter", "Shard Spitter", "cosmic", 36, CANVAS, FEET, (0, 20), SS_MUZ, shard_build,
+                  shard_idle, shard_fire, muzzle_joint="gun", idle_frames=6, overlays=SS_OVERLAYS),
+    turret_module("event_horizon", "Event Horizon", "cosmic", 46, CANVAS, FEET, (0, 30), (6.0, 0, 30.0),
+                  horizon_build, horizon_idle, horizon_fire, aim=(0, 0), muzzle_joint="gun", fire_kind="beam",
+                  idle_frames=6, overlays=EH_OVERLAYS),
 ]

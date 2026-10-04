@@ -375,6 +375,41 @@ part('proj.gravity_orb', [
   { d: join(arcBand(0, 0, 3, 4.4, 0, 140), arcBand(0, 0, 3, 4.4, 180, 320)), zone: 'lilac', line: 0, shade: false, light: false },
 ]);
 
+// Cosmic wave (CONTENT_PLAN 5.8): pellets, orbs, a tiny star, the antimatter bolt, twin lasers, a glob and a shard
+part('proj.moon_pellet', [
+  { d: circle(0, 0, 4.2), zone: 'mint', line: 0, alpha: 0.5, shade: false, light: false },
+  { d: circle(0, 0, 2.2), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('proj.nova_orb', [
+  { d: circle(0, 0, 6.4), zone: 'mint', line: 0, alpha: 0.45, shade: false, light: false },
+  { d: circle(0, 0, 4.0), zone: 'mint', line: 1.2 },
+  { d: circle(-1.2, -1.2, 1.8), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('proj.mini_star', [
+  { d: circle(0, 0, 7.0), zone: 'mint', line: 0, alpha: 0.4, shade: false, light: false },
+  { d: star(0, 0, 5, 2.2, 5.6, 0), zone: 'white', line: 0.9 },
+]);
+part('proj.antimatter', [
+  { d: ellipse(-4, 0, 10, 3.4), zone: 'mint', line: 0, alpha: 0.55, shade: false, light: false },
+  { d: ellipse(0, 0, 4.6, 2.6), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('proj.twin_laser', [
+  { d: join(rrect(-8, -3.4, 14, 1.8, 0.9), rrect(-8, 1.6, 14, 1.8, 0.9)), zone: 'mint', line: 0, alpha: 0.85, shade: false, light: false },
+  { d: join(rrect(0, -3.2, 6, 1.2, 0.6), rrect(0, 1.8, 6, 1.2, 0.6)), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('proj.swarm_glob', [
+  { d: blob([-5, -3, 2, -4, 5, 0, 2, 4, -5, 3], 0.7), zone: 'mint', line: 1.2 },
+  { d: circle(1, -1, 1.4), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('proj.sage_orb', [
+  { d: circle(0, 0, 5.4), zone: 'lilac', line: 1.4 },
+  { d: arcBand(0, 0, 3.2, 4.4, 20, 160), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('proj.shard', [
+  { d: poly([-6, 0, 0, -2.6, 7, 0, 0, 2.6]), zone: 'lilac', line: 1.1 },
+  { d: poly([-2, 0, 0, -1.2, 4, 0, 0, 1.2]), zone: 'white', line: 0, shade: false, light: false },
+]);
+
 // A17.12 projectiles
 part('proj.javelin', [
   { d: limb(-16, 0, 0.9, 10, 0, 0.8), zone: 'wood', line: 1 },

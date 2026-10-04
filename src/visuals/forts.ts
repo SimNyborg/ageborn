@@ -74,6 +74,9 @@ export const FORT_VISUALS: readonly { id: string; age: AgeId; kind: 'wall' | 'to
   { id: 'ion_spire', age: 'cosmic', kind: 'tower' },
   { id: 'warp_barracks', age: 'cosmic', kind: 'camp' },
   { id: 'void_mine', age: 'cosmic', kind: 'trap' },
+  // Cosmic wave (CONTENT_PLAN 5.8)
+  { id: 'star_bulwark', age: 'cosmic', kind: 'wall' },
+  { id: 'stardust_snare', age: 'cosmic', kind: 'trap' },
 ];
 
 /**
@@ -111,7 +114,7 @@ export const FORT_SHEETS: Readonly<Record<AgeId, readonly string[]>> = {
   industrial: ['trench_parapet', 'sniper_nest', 'recruiting_depot', 'tripwire_charge', 'rail_barricade', 'tesla_pylon'],
   modern: ['sandbag_bunker', 'pillbox', 'forward_base', 'minefield', 'rifle_depot', 'wire_snare'],
   future: ['hardlight_barrier', 'sentry_pylon', 'clone_bay', 'grav_mire', 'skyguard_pylon', 'mech_bay'],
-  cosmic: ['void_rampart', 'ion_spire', 'warp_barracks', 'void_mine'],
+  cosmic: ['void_rampart', 'ion_spire', 'warp_barracks', 'void_mine', 'star_bulwark', 'stardust_snare'],
 };
 
 export type FortKindId = 'wall' | 'tower' | 'camp' | 'trap';

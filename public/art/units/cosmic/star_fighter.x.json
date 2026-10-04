@@ -1,0 +1,470 @@
+{
+ "frames": {
+  "star_fighter_attack_b_00": {
+   "frame": {
+    "x": 88,
+    "y": 2,
+    "w": 77,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 87,
+    "w": 77,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.78378
+   }
+  },
+  "star_fighter_attack_b_00_team": {
+   "frame": {
+    "x": 225,
+    "y": 2,
+    "w": 41,
+    "h": 57
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 90,
+    "w": 41,
+    "h": 57
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.78378
+   }
+  },
+  "star_fighter_attack_b_01": {
+   "frame": {
+    "x": 171,
+    "y": 67,
+    "w": 85,
+    "h": 40
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 97,
+    "w": 85,
+    "h": 40
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.78378
+   }
+  },
+  "star_fighter_attack_b_01_team": {
+   "frame": {
+    "x": 260,
+    "y": 67,
+    "w": 47,
+    "h": 39
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 100,
+    "w": 47,
+    "h": 39
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.78378
+   }
+  },
+  "star_fighter_attack_b_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 82,
+    "h": 61
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 86,
+    "w": 82,
+    "h": 61
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.78378
+   }
+  },
+  "star_fighter_attack_b_02_team": {
+   "frame": {
+    "x": 169,
+    "y": 2,
+    "w": 52,
+    "h": 58
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 89,
+    "w": 52,
+    "h": 58
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.78378
+   }
+  },
+  "star_fighter_attack_b_03": {
+   "frame": {
+    "x": 87,
+    "y": 67,
+    "w": 80,
+    "h": 41
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 89,
+    "y": 96,
+    "w": 80,
+    "h": 41
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.78378
+   }
+  },
+  "star_fighter_attack_b_03_team": {
+   "frame": {
+    "x": 270,
+    "y": 2,
+    "w": 48,
+    "h": 44
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 92,
+    "w": 48,
+    "h": 44
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.78378
+   }
+  },
+  "star_fighter_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 67,
+    "w": 81,
+    "h": 43
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 90,
+    "w": 81,
+    "h": 43
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.78378
+   }
+  },
+  "star_fighter_attack_b_04_team": {
+   "frame": {
+    "x": 165,
+    "y": 114,
+    "w": 42,
+    "h": 36
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 85,
+    "w": 42,
+    "h": 36
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.78378
+   }
+  },
+  "star_fighter_attack_b_05": {
+   "frame": {
+    "x": 82,
+    "y": 114,
+    "w": 79,
+    "h": 36
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 86,
+    "y": 96,
+    "w": 79,
+    "h": 36
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.78378
+   }
+  },
+  "star_fighter_attack_b_05_team": {
+   "frame": {
+    "x": 261,
+    "y": 114,
+    "w": 47,
+    "h": 32
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 91,
+    "w": 47,
+    "h": 32
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.78378
+   }
+  },
+  "star_fighter_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 114,
+    "w": 76,
+    "h": 37
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 95,
+    "w": 76,
+    "h": 37
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.78378
+   }
+  },
+  "star_fighter_attack_b_06_team": {
+   "frame": {
+    "x": 211,
+    "y": 114,
+    "w": 46,
+    "h": 33
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 90,
+    "w": 46,
+    "h": 33
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 185
+   },
+   "anchor": {
+    "x": 0.53307,
+    "y": 0.78378
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "star_fighter_attack_b_00",
+   "star_fighter_attack_b_01",
+   "star_fighter_attack_b_02",
+   "star_fighter_attack_b_03",
+   "star_fighter_attack_b_04",
+   "star_fighter_attack_b_05",
+   "star_fighter_attack_b_06"
+  ],
+  "attack_b_team": [
+   "star_fighter_attack_b_00_team",
+   "star_fighter_attack_b_01_team",
+   "star_fighter_attack_b_02_team",
+   "star_fighter_attack_b_03_team",
+   "star_fighter_attack_b_04_team",
+   "star_fighter_attack_b_05_team",
+   "star_fighter_attack_b_06_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "star_fighter.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 320,
+   "h": 156
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.star_fighter",
+   "name": "Star Fighter",
+   "heightLu": 46,
+   "widthLu": 56.1,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    137.0,
+    145.0
+   ],
+   "anchorsLu": {
+    "head": [
+     0,
+     44
+    ],
+    "hitCenter": [
+     0,
+     22
+    ],
+    "muzzle": [
+     30,
+     18
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "fly",
+   "extrasOf": "star_fighter",
+   "clips": {
+    "attack_b": {
+     "frames": 7,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "durationsMs": [
+      50,
+      60,
+      90,
+      50,
+      80,
+      90,
+      80
+     ],
+     "durationMs": 500,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 2,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        21.8,
+        24.0
+       ],
+       [
+        25.8,
+        24.1
+       ],
+       [
+        23.3,
+        10.5
+       ],
+       [
+        19.9,
+        11.7
+       ],
+       [
+        16.1,
+        18.3
+       ],
+       [
+        16.7,
+        15.9
+       ],
+       [
+        18.9,
+        16.2
+       ]
+      ]
+     },
+     "muzzle": [
+      16.1,
+      18.3
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

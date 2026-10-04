@@ -18,6 +18,8 @@ export const A14_EFFECT_IDS = new Set([
   'fx.creeping_barrage', 'fx.barrage_burst', 'fx.concussion_shells',
   // Future wave (CONTENT_PLAN 5.7)
   'fx.zap_beam', 'fx.particle_beam', 'fx.tractor_beam', 'fx.target_paint', 'fx.nano_mesh',
+  // Cosmic wave (CONTENT_PLAN 5.8)
+  'fx.tendril_lash', 'fx.void_ripple', 'fx.song_wave', 'fx.horizon_pulse', 'fx.meteor_drizzle', 'fx.meteor_pop', 'fx.pulsar_pulse',
   // Hit and death effects
   'fx.spark_blunt', 'fx.spark_slash', 'fx.spark_pierce', 'fx.spark_bullet', 'fx.scorch_laser', 'fx.blast',
   'fx.spark_effective', 'fx.puff_resisted', 'fx.muzzle', 'fx.trail', 'fx.splash_ring', 'fx.explosion_s',
@@ -94,7 +96,15 @@ const MEDIEVAL_WAVE_SOUND_IDS = [
   'shot_springald', 'crane_hook', 'pw_longbow', 'pw_bell',
 ];
 
+/** Cosmic wave sounds (CONTENT_PLAN 5.8). */
+const COSMIC_WAVE_SOUND_IDS = [
+  'crystal_slam', 'board_kick', 'moon_spit', 'nova_lob', 'golem_uppercut', 'shot_star_mortar', 'shot_antimatter', 'tendril_flick',
+  'void_whisper', 'shot_twin_laser', 'matron_spit', 'sage_orb', 'leviathan_song', 'swarm_bite', 'shot_shard', 'horizon_pulse',
+  'pw_drizzle', 'pw_pulsar',
+];
+
 export const A13_SOUND_IDS = new Set([
+  ...COSMIC_WAVE_SOUND_IDS,
   ...A17_SOUND_IDS,
   ...BRONZE_WAVE_SOUND_IDS,
   ...MEDIEVAL_WAVE_SOUND_IDS,

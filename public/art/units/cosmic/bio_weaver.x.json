@@ -1,0 +1,542 @@
+{
+ "frames": {
+  "bio_weaver_attack_b_01": {
+   "frame": {
+    "x": 126,
+    "y": 2,
+    "w": 51,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 107,
+    "w": 51,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "bio_weaver_attack_b_01_team": {
+   "frame": {
+    "x": 623,
+    "y": 2,
+    "w": 44,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 112,
+    "w": 44,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "bio_weaver_attack_b_02": {
+   "frame": {
+    "x": 65,
+    "y": 2,
+    "w": 57,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 106,
+    "w": 57,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "bio_weaver_attack_b_02_team": {
+   "frame": {
+    "x": 849,
+    "y": 2,
+    "w": 44,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 113,
+    "w": 44,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "bio_weaver_attack_b_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 59,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 106,
+    "w": 59,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "bio_weaver_attack_b_03_team": {
+   "frame": {
+    "x": 800,
+    "y": 2,
+    "w": 45,
+    "h": 74
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 113,
+    "w": 45,
+    "h": 74
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "bio_weaver_attack_b_04": {
+   "frame": {
+    "x": 181,
+    "y": 2,
+    "w": 59,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 108,
+    "w": 59,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "bio_weaver_attack_b_04_team": {
+   "frame": {
+    "x": 760,
+    "y": 2,
+    "w": 36,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 114,
+    "y": 112,
+    "w": 36,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "bio_weaver_attack_b_05": {
+   "frame": {
+    "x": 441,
+    "y": 2,
+    "w": 70,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 112,
+    "w": 70,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "bio_weaver_attack_b_05_team": {
+   "frame": {
+    "x": 567,
+    "y": 2,
+    "w": 52,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 113,
+    "w": 52,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "bio_weaver_attack_b_06": {
+   "frame": {
+    "x": 372,
+    "y": 2,
+    "w": 65,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 111,
+    "w": 65,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "bio_weaver_attack_b_06_team": {
+   "frame": {
+    "x": 515,
+    "y": 2,
+    "w": 48,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 112,
+    "w": 48,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "bio_weaver_attack_b_07": {
+   "frame": {
+    "x": 306,
+    "y": 2,
+    "w": 62,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 109,
+    "w": 62,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "bio_weaver_attack_b_07_team": {
+   "frame": {
+    "x": 671,
+    "y": 2,
+    "w": 42,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 112,
+    "w": 42,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "bio_weaver_attack_b_08": {
+   "frame": {
+    "x": 244,
+    "y": 2,
+    "w": 58,
+    "h": 91
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 108,
+    "w": 58,
+    "h": 91
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "bio_weaver_attack_b_08_team": {
+   "frame": {
+    "x": 717,
+    "y": 2,
+    "w": 39,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 112,
+    "w": 39,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "bio_weaver_attack_00",
+   "bio_weaver_attack_b_01",
+   "bio_weaver_attack_b_02",
+   "bio_weaver_attack_b_03",
+   "bio_weaver_attack_b_04",
+   "bio_weaver_attack_b_05",
+   "bio_weaver_attack_b_06",
+   "bio_weaver_attack_b_07",
+   "bio_weaver_attack_b_08",
+   "bio_weaver_attack_09"
+  ],
+  "attack_b_team": [
+   "bio_weaver_attack_00_team",
+   "bio_weaver_attack_b_01_team",
+   "bio_weaver_attack_b_02_team",
+   "bio_weaver_attack_b_03_team",
+   "bio_weaver_attack_b_04_team",
+   "bio_weaver_attack_b_05_team",
+   "bio_weaver_attack_b_06_team",
+   "bio_weaver_attack_b_07_team",
+   "bio_weaver_attack_b_08_team",
+   "bio_weaver_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "bio_weaver.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 896,
+   "h": 96
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.bio_weaver",
+   "name": "Bio-Weaver",
+   "heightLu": 70,
+   "widthLu": 38.6,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    130.0,
+    190.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     70
+    ],
+    "hitCenter": [
+     0,
+     30
+    ],
+    "muzzle": [
+     26,
+     30
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "bio_weaver",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      60,
+      80,
+      100,
+      160,
+      50,
+      100,
+      90,
+      90,
+      80,
+      90
+     ],
+     "durationMs": 900,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        5.2,
+        24.7
+       ],
+       [
+        -2.4,
+        30.1
+       ],
+       [
+        -7.0,
+        30.9
+       ],
+       [
+        -8.5,
+        30.8
+       ],
+       [
+        5.0,
+        30.6
+       ],
+       [
+        19.1,
+        25.4
+       ],
+       [
+        17.7,
+        25.5
+       ],
+       [
+        11.6,
+        26.4
+       ],
+       [
+        7.0,
+        25.5
+       ],
+       [
+        5.2,
+        24.7
+       ]
+      ]
+     },
+     "muzzle": [
+      19.1,
+      25.4
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

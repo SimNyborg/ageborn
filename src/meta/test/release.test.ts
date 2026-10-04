@@ -185,37 +185,37 @@ describe('release gate: loading a save that holds a held-back card', () => {
   function tainted(): SaveDoc {
     const s = ownsAll(fresh(9), 3, 2);
     const plan = s.warPlans[0]!;
-    const future = plan.loadouts.future;
+    const cosmic = plan.loadouts.cosmic;
     const loadouts = {
       ...plan.loadouts,
-      future: { ...future, units: ['android_pair', 'photon_knight', 'crab_mech', 'pulse_trooper', 'overclock_engineer', 'drone_carrier'], turrets: ['cryo_pod', 'pulse_laser'], powers: { home: 'nano_mesh', field: 'target_painter' }, fort: 'mech_bay' },
+      cosmic: { ...cosmic, units: ['moonlings', 'star_legionnaire', 'asteroid_golem', 'ion_ranger', 'void_whisperer', 'star_leviathan'], turrets: ['shard_spitter', 'ion_turret'], powers: { home: 'pulsar_pulse', field: 'meteor_drizzle' }, fort: 'star_bulwark' },
     };
     return {
       ...s,
-      collection: { ...s.collection, android_pair: { level: 3, copies: 4, isNew: true, foil: 'none' }, drone_carrier: { level: 1, copies: 0, isNew: true, foil: 'holo' }, cryo_pod: { level: 2, copies: 1, isNew: false, foil: 'none' } },
-      powersOwned: [...s.powersOwned, 'nano_mesh', 'target_painter'],
-      fortsOwned: [...(s.fortsOwned ?? []), 'skyguard_pylon', 'mech_bay'],
-      skins: { owned: [...s.skins.owned, 'space_cadet', 'chrome_rail'], equipped: { ...s.skins.equipped, pulse_trooper: 'space_cadet', rail_gunner: 'chrome_rail' } },
+      collection: { ...s.collection, moonlings: { level: 3, copies: 4, isNew: true, foil: 'none' }, star_leviathan: { level: 1, copies: 0, isNew: true, foil: 'holo' }, shard_spitter: { level: 2, copies: 1, isNew: false, foil: 'none' } },
+      powersOwned: [...s.powersOwned, 'pulsar_pulse', 'meteor_drizzle'],
+      fortsOwned: [...(s.fortsOwned ?? []), 'star_bulwark', 'stardust_snare'],
+      skins: { owned: [...s.skins.owned, 'starlight_legionnaire', 'shadow_stalker'], equipped: { ...s.skins.equipped, star_legionnaire: 'starlight_legionnaire', warp_stalker: 'shadow_stalker' } },
       warPlans: [{ ...plan, loadouts }, ...s.warPlans.slice(1)],
     };
   }
 
-  // Needs a gated wave: the save below holds Future wave cards, which shipped 2026-10-03; the W8 Cosmic wave swaps in
+  // Needs a gated wave: the save below holds W8 Cosmic wave cards, which shipped 2026-10-04; a later wave swaps in
   // its own ids while it is gated (tests/fixtures/pausedWave.ts).
   it.skipIf(PAUSED_WAVE_IDS.size === 0)('drops every held-back card from the collection, owned lists, skins and War Plans; refills troop and turret slots', () => {
     const s = withoutUnreleased(tainted(), C);
     expect(Object.keys(s.collection).filter(gated)).toEqual([]);
     expect([...s.powersOwned, ...s.fortsOwned, ...s.skins.owned].filter(gated)).toEqual([]);
     expect(Object.entries(s.skins.equipped).filter(([k, v]) => gated(k) || gated(v))).toEqual([]);
-    const future = s.warPlans[0]!.loadouts.future;
-    expect(planIds({ future }).filter(gated)).toEqual([]);
-    expect(future.units.every((x) => x !== null)).toBe(true);
-    expect(future.turrets.every((x) => x !== null)).toBe(true);
-    expect(future.powers).toEqual(starterPowers(C, 'future'));
-    expect(future.fort).toBe(C.order.forts.find((f) => C.forts[f]?.age === 'future' && C.forts[f]?.fortKind === 'wall'));
+    const cosmic = s.warPlans[0]!.loadouts.cosmic;
+    expect(planIds({ cosmic }).filter(gated)).toEqual([]);
+    expect(cosmic.units.every((x) => x !== null)).toBe(true);
+    expect(cosmic.turrets.every((x) => x !== null)).toBe(true);
+    expect(cosmic.powers).toEqual(starterPowers(C, 'cosmic'));
+    expect(cosmic.fort).toBe(C.order.forts.find((f) => C.forts[f]?.age === 'cosmic' && C.forts[f]?.fortKind === 'wall'));
     // Released cards and their levels stay as they were.
     expect(s.collection.bonker).toEqual(tainted().collection.bonker);
-    expect(future.units.slice(1, 2)).toEqual(['photon_knight']);
+    expect(cosmic.units.slice(1, 2)).toEqual(['star_legionnaire']);
   });
 
   it('runs on every load (tickTimers) and returns the same save when there is nothing to remove', () => {

@@ -108,6 +108,12 @@ const A13: Record<string, string[]> = {
     'shot_holo', 'shot_jet_beam', 'shot_particle', 'robot_punch', 'shot_pd_laser', 'holo_flicker', 'shot_drone', 'shot_cryo',
     'tractor_hum', 'pw_painter', 'pw_nanomesh',
   ],
+  /** Cosmic wave (CONTENT_PLAN 5.8): the attacks, turrets and powers of the new Cosmic cards. */
+  cosmicWave: [
+    'crystal_slam', 'board_kick', 'moon_spit', 'nova_lob', 'golem_uppercut', 'shot_star_mortar', 'shot_antimatter', 'tendril_flick',
+    'void_whisper', 'shot_twin_laser', 'matron_spit', 'sage_orb', 'leviathan_song', 'swarm_bite', 'shot_shard', 'horizon_pulse',
+    'pw_drizzle', 'pw_pulsar',
+  ],
   /** MVP pass (audio audit 2026-10-01): the ui-plan 5.4 UI ids, Council, stances, escalation, warnings, energy forts. */
   mvp: [
     'ui_sheet', 'ui_pop', 'ui_whoosh', 'ui_stamp', 'card_lift', 'card_place', 'star_stamp', 'path_draw', 'node_drop', 'region_open', 'ui_unlock', 'reward_fly',
@@ -130,8 +136,8 @@ describe('sound manifest (A13)', () => {
   it('has exactly the A13 sound ids', () => {
     // 182 + the 16 fort sounds (A16.14.8) + the 31 of the MVP pass + the 15 of the Bronze wave + the 14 of the Stone wave
     // + the 18 of the Medieval wave + the 15 of the Gunpowder wave + the 18 of the Industrial wave + the 17 of the Modern wave
-    // + the 19 of the Future wave
-    expect(A13_IDS).toHaveLength(345);
+    // + the 19 of the Future wave + the 18 of the Cosmic wave
+    expect(A13_IDS).toHaveLength(363);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 

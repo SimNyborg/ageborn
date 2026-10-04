@@ -1,0 +1,430 @@
+{
+ "frames": {
+  "moonlings_attack_b_01": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 52,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 91,
+    "y": 74,
+    "w": 52,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_b_01_team": {
+   "frame": {
+    "x": 84,
+    "y": 112,
+    "w": 36,
+    "h": 55
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 115,
+    "w": 36,
+    "h": 55
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_b_02": {
+   "frame": {
+    "x": 175,
+    "y": 2,
+    "w": 62,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 75,
+    "y": 85,
+    "w": 62,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_b_02_team": {
+   "frame": {
+    "x": 44,
+    "y": 112,
+    "w": 36,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 115,
+    "w": 36,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_b_03": {
+   "frame": {
+    "x": 311,
+    "y": 2,
+    "w": 65,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 69,
+    "y": 92,
+    "w": 65,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_b_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 112,
+    "w": 38,
+    "h": 56
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 116,
+    "w": 38,
+    "h": 56
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_b_04": {
+   "frame": {
+    "x": 241,
+    "y": 2,
+    "w": 66,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 92,
+    "w": 66,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_b_04_team": {
+   "frame": {
+    "x": 212,
+    "y": 112,
+    "w": 44,
+    "h": 47
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 104,
+    "y": 123,
+    "w": 44,
+    "h": 47
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_b_05": {
+   "frame": {
+    "x": 113,
+    "y": 2,
+    "w": 58,
+    "h": 98
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 83,
+    "w": 58,
+    "h": 98
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_b_05_team": {
+   "frame": {
+    "x": 166,
+    "y": 112,
+    "w": 42,
+    "h": 50
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 120,
+    "w": 42,
+    "h": 50
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_b_06": {
+   "frame": {
+    "x": 58,
+    "y": 2,
+    "w": 51,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 75,
+    "w": 51,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_b_06_team": {
+   "frame": {
+    "x": 124,
+    "y": 112,
+    "w": 38,
+    "h": 52
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 117,
+    "w": 38,
+    "h": 52
+   },
+   "sourceSize": {
+    "w": 239,
+    "h": 201
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "moonlings_attack_00",
+   "moonlings_attack_b_01",
+   "moonlings_attack_b_02",
+   "moonlings_attack_b_03",
+   "moonlings_attack_b_04",
+   "moonlings_attack_b_05",
+   "moonlings_attack_b_06",
+   "moonlings_attack_07"
+  ],
+  "attack_b_team": [
+   "moonlings_attack_00_team",
+   "moonlings_attack_b_01_team",
+   "moonlings_attack_b_02_team",
+   "moonlings_attack_b_03_team",
+   "moonlings_attack_b_04_team",
+   "moonlings_attack_b_05_team",
+   "moonlings_attack_b_06_team",
+   "moonlings_attack_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "moonlings.x.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 384,
+   "h": 172
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.moonlings",
+   "name": "Moonling",
+   "heightLu": 64,
+   "widthLu": 35.0,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    119.0,
+    172.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     62
+    ],
+    "hitCenter": [
+     0,
+     30
+    ],
+    "muzzle": [
+     16,
+     44
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "moonlings",
+   "clips": {
+    "attack_b": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      50,
+      70,
+      100,
+      130,
+      100,
+      90,
+      80,
+      80
+     ],
+     "durationMs": 700,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        14.8,
+        42.2
+       ],
+       [
+        7.5,
+        47.1
+       ],
+       [
+        -0.5,
+        49.4
+       ],
+       [
+        -3.7,
+        49.7
+       ],
+       [
+        27.9,
+        28.3
+       ],
+       [
+        23.8,
+        33.8
+       ],
+       [
+        17.2,
+        40.9
+       ],
+       [
+        14.8,
+        42.2
+       ]
+      ]
+     },
+     "muzzle": [
+      27.9,
+      28.3
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

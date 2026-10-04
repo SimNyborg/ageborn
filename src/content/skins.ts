@@ -66,4 +66,8 @@ export const skinList: readonly SkinDef[] = [
   skin('space_cadet', 'pulse_trooper', 'rare'),
   skin('chrome_rail', 'rail_gunner', 'epic'),
   skin('grandfather_clock', 'chrono_titan', 'legendary'),
+  // W8 Cosmic (2026-10-04), gated until their art ships (their cards are released, so the skins carry the flag):
+  skin('starlight_legionnaire', 'star_legionnaire', 'rare'),
+  skin('shadow_stalker', 'warp_stalker', 'epic'),
+  skin('classic_saucer', 'mothership', 'legendary'),
 ];

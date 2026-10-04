@@ -334,6 +334,26 @@ export const ALBUM: readonly CardId[] = [
   'nano_mesh', // 299
   'skyguard_pylon', // 300
   'mech_bay', // 301
+  // W8 Cosmic wave (2026-10-04): troops, turrets, powers and forts in build order
+  'crystal_guard', // 302
+  'void_skimmer', // 303
+  'moonlings', // 304
+  'nova_thrower', // 305
+  'asteroid_golem', // 306
+  'star_mortar', // 307
+  'antimatter_rifler', // 308
+  'bio_weaver', // 309
+  'void_whisperer', // 310
+  'star_fighter', // 311
+  'swarm_matron', // 312
+  'gravity_sage', // 313
+  'star_leviathan', // 314
+  'shard_spitter', // 315
+  'event_horizon', // 316
+  'meteor_drizzle', // 317
+  'pulsar_pulse', // 318
+  'star_bulwark', // 319
+  'stardust_snare', // 320
 ];
 
 /** Album number of every card (1-based), from {@link ALBUM}. */

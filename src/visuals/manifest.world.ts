@@ -25,7 +25,7 @@ export const WORLD_TURRET_SHEETS: Readonly<Record<AgeId, readonly string[]>> = {
   // A17 ages (art/blender/world/turrets_<age>.py)
   bronze: ['archer_tower', 'sun_mirror', 'onager', 'gorgon_bust'],
   industrial: ['gatling_gun', 'mortar_pit', 'boiler_mortar', 'tesla_tower', 'rivet_spitter', 'steam_hammer'],
-  cosmic: ['ion_turret', 'starburst_gun', 'starfall_battery', 'tachyon_lance'],
+  cosmic: ['ion_turret', 'starburst_gun', 'starfall_battery', 'tachyon_lance', 'shard_spitter', 'event_horizon'],
 };
 
 /** Ages whose base has a sheet (art/blender/world/base_<age>.py). */

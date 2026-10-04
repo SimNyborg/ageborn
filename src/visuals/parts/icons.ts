@@ -272,6 +272,17 @@ medallion('power.nano_mesh', [
   { d: arcBand(0, 10, 12, 14, 180, 360), zone: 'iron', line: 1.1 },
   { d: join(circle(-9, -4, 1.8), circle(0, 2, 1.8), circle(9, -4, 1.8)), zone: 'bone', line: 0.6 },
 ]);
+// Cosmic wave (CONTENT_PLAN 5.8): three little meteors streaking down, and a pulsar beaming rings.
+medallion('power.meteor_drizzle', [
+  { d: join(limb(-12, -12, 0.8, -6, -2, 1.6), limb(-2, -14, 0.8, 4, -4, 1.6), limb(6, -8, 0.8, 12, 2, 1.6)), zone: 'bone', line: 0 },
+  { d: join(circle(-6, -1, 3.2), circle(4, -3, 3.4), circle(12, 3, 3)), zone: 'iron', line: 1.1 },
+  { d: arcBand(0, 12, 9, 11, 200, 340), zone: 'bone', line: 0.6 },
+]);
+medallion('power.pulsar_pulse', [
+  { d: join(arcBand(0, 0, 7, 9, 0, 360), arcBand(0, 0, 11, 12.6, 30, 150), arcBand(0, 0, 11, 12.6, 210, 330)), zone: 'bone', line: 0.6 },
+  { d: star(0, 0, 4, 2, 5), zone: 'iron', line: 1.1 },
+  { d: join(limb(0, -15, 0.9, 0, -9, 0.9), limb(0, 9, 0.9, 0, 15, 0.9)), zone: 'bone', line: 0 },
+]);
 medallion('power.knights_charge', [
   { d: limb(-13, 8, 1.8, 12, -6, 1), zone: 'metal' },
   { d: poly([-12, 2, -4, -6, -2, 4]), zone: 'wine' },

@@ -1,0 +1,2159 @@
+{
+ "frames": {
+  "moonlings_idle_00": {
+   "frame": {
+    "x": 739,
+    "y": 223,
+    "w": 100,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 161,
+    "w": 100,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_idle_00_team": {
+   "frame": {
+    "x": 800,
+    "y": 744,
+    "w": 76,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 239,
+    "w": 76,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_idle_01": {
+   "frame": {
+    "x": 105,
+    "y": 223,
+    "w": 102,
+    "h": 204
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 157,
+    "w": 102,
+    "h": 204
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_idle_01_team": {
+   "frame": {
+    "x": 418,
+    "y": 744,
+    "w": 73,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 236,
+    "w": 73,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_idle_02": {
+   "frame": {
+    "x": 666,
+    "y": 2,
+    "w": 100,
+    "h": 211
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 150,
+    "w": 100,
+    "h": 211
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_idle_02_team": {
+   "frame": {
+    "x": 1104,
+    "y": 630,
+    "w": 71,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 232,
+    "w": 71,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_idle_03": {
+   "frame": {
+    "x": 252,
+    "y": 2,
+    "w": 97,
+    "h": 216
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 145,
+    "w": 97,
+    "h": 216
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_idle_03_team": {
+   "frame": {
+    "x": 345,
+    "y": 630,
+    "w": 71,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 231,
+    "w": 71,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_idle_04": {
+   "frame": {
+    "x": 463,
+    "y": 2,
+    "w": 98,
+    "h": 213
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 148,
+    "w": 98,
+    "h": 213
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_idle_04_team": {
+   "frame": {
+    "x": 267,
+    "y": 744,
+    "w": 72,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 233,
+    "w": 72,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_idle_05": {
+   "frame": {
+    "x": 1087,
+    "y": 2,
+    "w": 97,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 155,
+    "w": 97,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_idle_05_team": {
+   "frame": {
+    "x": 723,
+    "y": 744,
+    "w": 73,
+    "h": 102
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 237,
+    "w": 73,
+    "h": 102
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_00": {
+   "frame": {
+    "x": 958,
+    "y": 223,
+    "w": 101,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 160,
+    "w": 101,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_00_team": {
+   "frame": {
+    "x": 244,
+    "y": 853,
+    "w": 69,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 245,
+    "w": 69,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_01": {
+   "frame": {
+    "x": 378,
+    "y": 432,
+    "w": 101,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 173,
+    "w": 101,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_01_team": {
+   "frame": {
+    "x": 658,
+    "y": 853,
+    "w": 63,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 210,
+    "y": 251,
+    "w": 63,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_02": {
+   "frame": {
+    "x": 1063,
+    "y": 223,
+    "w": 98,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 163,
+    "w": 98,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_02_team": {
+   "frame": {
+    "x": 190,
+    "y": 744,
+    "w": 73,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 235,
+    "w": 73,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_03": {
+   "frame": {
+    "x": 2,
+    "y": 223,
+    "w": 99,
+    "h": 205
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 148,
+    "w": 99,
+    "h": 205
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_03_team": {
+   "frame": {
+    "x": 271,
+    "y": 630,
+    "w": 70,
+    "h": 109
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 223,
+    "w": 70,
+    "h": 109
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_04": {
+   "frame": {
+    "x": 520,
+    "y": 223,
+    "w": 106,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 160,
+    "w": 106,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_04_team": {
+   "frame": {
+    "x": 1027,
+    "y": 630,
+    "w": 73,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 242,
+    "w": 73,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_05": {
+   "frame": {
+    "x": 254,
+    "y": 432,
+    "w": 120,
+    "h": 189
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 168,
+    "w": 120,
+    "h": 189
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_05_team": {
+   "frame": {
+    "x": 166,
+    "y": 853,
+    "w": 74,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 250,
+    "w": 74,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_06": {
+   "frame": {
+    "x": 409,
+    "y": 223,
+    "w": 107,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 153,
+    "w": 107,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_06_team": {
+   "frame": {
+    "x": 959,
+    "y": 744,
+    "w": 76,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 236,
+    "w": 76,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_07": {
+   "frame": {
+    "x": 873,
+    "y": 2,
+    "w": 103,
+    "h": 207
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 141,
+    "w": 103,
+    "h": 207
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_walk_07_team": {
+   "frame": {
+    "x": 1039,
+    "y": 744,
+    "w": 72,
+    "h": 100
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 225,
+    "w": 72,
+    "h": 100
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_00": {
+   "frame": {
+    "x": 770,
+    "y": 2,
+    "w": 99,
+    "h": 210
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 151,
+    "w": 99,
+    "h": 210
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_00_team": {
+   "frame": {
+    "x": 495,
+    "y": 744,
+    "w": 72,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 234,
+    "w": 72,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_01": {
+   "frame": {
+    "x": 142,
+    "y": 432,
+    "w": 108,
+    "h": 191
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 170,
+    "w": 108,
+    "h": 191
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_01_team": {
+   "frame": {
+    "x": 317,
+    "y": 853,
+    "w": 79,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 245,
+    "w": 79,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_02": {
+   "frame": {
+    "x": 597,
+    "y": 432,
+    "w": 111,
+    "h": 180
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 180,
+    "w": 111,
+    "h": 180
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_02_team": {
+   "frame": {
+    "x": 400,
+    "y": 853,
+    "w": 82,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 250,
+    "w": 82,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_03": {
+   "frame": {
+    "x": 833,
+    "y": 432,
+    "w": 111,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 191,
+    "w": 111,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_03_team": {
+   "frame": {
+    "x": 570,
+    "y": 853,
+    "w": 84,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 252,
+    "w": 84,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_04": {
+   "frame": {
+    "x": 135,
+    "y": 2,
+    "w": 113,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 210,
+    "y": 138,
+    "w": 113,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_04_team": {
+   "frame": {
+    "x": 195,
+    "y": 630,
+    "w": 72,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 213,
+    "y": 220,
+    "w": 72,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_05": {
+   "frame": {
+    "x": 353,
+    "y": 2,
+    "w": 106,
+    "h": 214
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 143,
+    "w": 106,
+    "h": 214
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_05_team": {
+   "frame": {
+    "x": 949,
+    "y": 630,
+    "w": 74,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 226,
+    "w": 74,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_06": {
+   "frame": {
+    "x": 630,
+    "y": 223,
+    "w": 105,
+    "h": 199
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 161,
+    "w": 105,
+    "h": 199
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 853,
+    "w": 78,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 240,
+    "w": 78,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_07": {
+   "frame": {
+    "x": 211,
+    "y": 223,
+    "w": 99,
+    "h": 203
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 158,
+    "w": 99,
+    "h": 203
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_attack_07_team": {
+   "frame": {
+    "x": 571,
+    "y": 744,
+    "w": 72,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 234,
+    "w": 72,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_hit_00": {
+   "frame": {
+    "x": 483,
+    "y": 432,
+    "w": 110,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 162,
+    "y": 178,
+    "w": 110,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_hit_00_team": {
+   "frame": {
+    "x": 84,
+    "y": 853,
+    "w": 78,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 242,
+    "w": 78,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_hit_01": {
+   "frame": {
+    "x": 843,
+    "y": 223,
+    "w": 111,
+    "h": 198
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 154,
+    "y": 161,
+    "w": 111,
+    "h": 198
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_hit_01_team": {
+   "frame": {
+    "x": 420,
+    "y": 630,
+    "w": 66,
+    "h": 107
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 227,
+    "w": 66,
+    "h": 107
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_hit_02": {
+   "frame": {
+    "x": 314,
+    "y": 223,
+    "w": 91,
+    "h": 201
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 159,
+    "w": 91,
+    "h": 201
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_hit_02_team": {
+   "frame": {
+    "x": 343,
+    "y": 744,
+    "w": 71,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 232,
+    "w": 71,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_hit_03": {
+   "frame": {
+    "x": 980,
+    "y": 2,
+    "w": 103,
+    "h": 206
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 155,
+    "w": 103,
+    "h": 206
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_hit_03_team": {
+   "frame": {
+    "x": 880,
+    "y": 744,
+    "w": 75,
+    "h": 101
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 202,
+    "y": 237,
+    "w": 75,
+    "h": 101
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_hit_04": {
+   "frame": {
+    "x": 565,
+    "y": 2,
+    "w": 97,
+    "h": 212
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 149,
+    "w": 97,
+    "h": 212
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_hit_04_team": {
+   "frame": {
+    "x": 647,
+    "y": 744,
+    "w": 72,
+    "h": 103
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 234,
+    "w": 72,
+    "h": 103
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_00": {
+   "frame": {
+    "x": 712,
+    "y": 432,
+    "w": 117,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 177,
+    "y": 167,
+    "w": 117,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_00_team": {
+   "frame": {
+    "x": 486,
+    "y": 853,
+    "w": 80,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 235,
+    "w": 80,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_01": {
+   "frame": {
+    "x": 490,
+    "y": 630,
+    "w": 228,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 203,
+    "w": 228,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_01_team": {
+   "frame": {
+    "x": 911,
+    "y": 853,
+    "w": 117,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 226,
+    "w": 117,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_02": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 129,
+    "h": 217
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 161,
+    "w": 129,
+    "h": 217
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_02_team": {
+   "frame": {
+    "x": 1122,
+    "y": 432,
+    "w": 78,
+    "h": 116
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 175,
+    "y": 187,
+    "w": 78,
+    "h": 116
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_03": {
+   "frame": {
+    "x": 2,
+    "y": 432,
+    "w": 136,
+    "h": 194
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 155,
+    "y": 136,
+    "w": 136,
+    "h": 194
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_03_team": {
+   "frame": {
+    "x": 1115,
+    "y": 744,
+    "w": 82,
+    "h": 99
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 168,
+    "y": 206,
+    "w": 82,
+    "h": 99
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_04": {
+   "frame": {
+    "x": 948,
+    "y": 432,
+    "w": 170,
+    "h": 123
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 246,
+    "w": 170,
+    "h": 123
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_04_team": {
+   "frame": {
+    "x": 725,
+    "y": 853,
+    "w": 86,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 279,
+    "w": 86,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_05": {
+   "frame": {
+    "x": 722,
+    "y": 630,
+    "w": 223,
+    "h": 106
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 67,
+    "y": 248,
+    "w": 223,
+    "h": 106
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_05_team": {
+   "frame": {
+    "x": 1130,
+    "y": 853,
+    "w": 112,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 152,
+    "y": 274,
+    "w": 112,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_06": {
+   "frame": {
+    "x": 2,
+    "y": 630,
+    "w": 189,
+    "h": 110
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 85,
+    "y": 258,
+    "w": 189,
+    "h": 110
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_06_team": {
+   "frame": {
+    "x": 1032,
+    "y": 853,
+    "w": 94,
+    "h": 75
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 158,
+    "y": 280,
+    "w": 94,
+    "h": 75
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_07": {
+   "frame": {
+    "x": 2,
+    "y": 744,
+    "w": 184,
+    "h": 105
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 259,
+    "w": 184,
+    "h": 105
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  },
+  "moonlings_die_07_team": {
+   "frame": {
+    "x": 815,
+    "y": 853,
+    "w": 92,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 159,
+    "y": 276,
+    "w": 92,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 478,
+    "h": 402
+   },
+   "anchor": {
+    "x": 0.49791,
+    "y": 0.85572
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "moonlings_idle_00",
+   "moonlings_idle_01",
+   "moonlings_idle_02",
+   "moonlings_idle_03",
+   "moonlings_idle_04",
+   "moonlings_idle_05"
+  ],
+  "idle_team": [
+   "moonlings_idle_00_team",
+   "moonlings_idle_01_team",
+   "moonlings_idle_02_team",
+   "moonlings_idle_03_team",
+   "moonlings_idle_04_team",
+   "moonlings_idle_05_team"
+  ],
+  "walk": [
+   "moonlings_walk_00",
+   "moonlings_walk_01",
+   "moonlings_walk_02",
+   "moonlings_walk_03",
+   "moonlings_walk_04",
+   "moonlings_walk_05",
+   "moonlings_walk_06",
+   "moonlings_walk_07"
+  ],
+  "walk_team": [
+   "moonlings_walk_00_team",
+   "moonlings_walk_01_team",
+   "moonlings_walk_02_team",
+   "moonlings_walk_03_team",
+   "moonlings_walk_04_team",
+   "moonlings_walk_05_team",
+   "moonlings_walk_06_team",
+   "moonlings_walk_07_team"
+  ],
+  "attack": [
+   "moonlings_attack_00",
+   "moonlings_attack_01",
+   "moonlings_attack_02",
+   "moonlings_attack_03",
+   "moonlings_attack_04",
+   "moonlings_attack_05",
+   "moonlings_attack_06",
+   "moonlings_attack_07"
+  ],
+  "attack_team": [
+   "moonlings_attack_00_team",
+   "moonlings_attack_01_team",
+   "moonlings_attack_02_team",
+   "moonlings_attack_03_team",
+   "moonlings_attack_04_team",
+   "moonlings_attack_05_team",
+   "moonlings_attack_06_team",
+   "moonlings_attack_07_team"
+  ],
+  "hit": [
+   "moonlings_hit_00",
+   "moonlings_hit_01",
+   "moonlings_hit_02",
+   "moonlings_hit_03",
+   "moonlings_hit_04"
+  ],
+  "hit_team": [
+   "moonlings_hit_00_team",
+   "moonlings_hit_01_team",
+   "moonlings_hit_02_team",
+   "moonlings_hit_03_team",
+   "moonlings_hit_04_team"
+  ],
+  "die": [
+   "moonlings_die_00",
+   "moonlings_die_01",
+   "moonlings_die_02",
+   "moonlings_die_03",
+   "moonlings_die_04",
+   "moonlings_die_05",
+   "moonlings_die_06",
+   "moonlings_die_06",
+   "moonlings_die_07",
+   "moonlings_die_07"
+  ],
+  "die_team": [
+   "moonlings_die_00_team",
+   "moonlings_die_01_team",
+   "moonlings_die_02_team",
+   "moonlings_die_03_team",
+   "moonlings_die_04_team",
+   "moonlings_die_05_team",
+   "moonlings_die_06_team",
+   "moonlings_die_06_team",
+   "moonlings_die_07_team",
+   "moonlings_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "moonlings.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1280,
+   "h": 956
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.moonlings",
+   "name": "Moonling",
+   "heightLu": 64,
+   "widthLu": 35.0,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    238,
+    344
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     62
+    ],
+    "hitCenter": [
+     0,
+     30
+    ],
+    "muzzle": [
+     16,
+     44
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        14.8,
+        39.5
+       ],
+       [
+        15.8,
+        40.5
+       ],
+       [
+        16.0,
+        42.8
+       ],
+       [
+        15.4,
+        44.0
+       ],
+       [
+        14.5,
+        43.5
+       ],
+       [
+        13.8,
+        41.3
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      75,
+      75,
+      75,
+      75,
+      75,
+      75,
+      75,
+      75
+     ],
+     "durationMs": 600,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 81.2,
+     "cycleMs": 600,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        16.9,
+        36.5
+       ],
+       [
+        15.3,
+        36.2
+       ],
+       [
+        14.9,
+        42.5
+       ],
+       [
+        15.4,
+        45.8
+       ],
+       [
+        16.9,
+        36.5
+       ],
+       [
+        18.5,
+        34.2
+       ],
+       [
+        19.9,
+        39.9
+       ],
+       [
+        19.0,
+        44.1
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 81.3,
+     "strideLu": 48.8,
+     "plantedDriftLu": 0.0,
+     "contacts": [
+      {
+       "step": 1,
+       "foot": "r",
+       "atLu": [
+        7.2,
+        -2.0
+       ]
+      },
+      {
+       "step": 5,
+       "foot": "l",
+       "atLu": [
+        9.3,
+        1.2
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      50,
+      70,
+      100,
+      130,
+      100,
+      90,
+      80,
+      80
+     ],
+     "durationMs": 700,
+     "impactFrame": 4,
+     "impactStep": 4,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        14.8,
+        42.2
+       ],
+       [
+        18.3,
+        36.2
+       ],
+       [
+        18.5,
+        34.1
+       ],
+       [
+        18.6,
+        33.6
+       ],
+       [
+        23.4,
+        40.0
+       ],
+       [
+        21.5,
+        40.7
+       ],
+       [
+        18.1,
+        38.2
+       ],
+       [
+        14.8,
+        42.2
+       ]
+      ]
+     },
+     "muzzle": [
+      23.4,
+      40.0
+     ]
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        6.0,
+        42.1
+       ],
+       [
+        1.4,
+        51.3
+       ],
+       [
+        9.1,
+        46.2
+       ],
+       [
+        16.5,
+        39.2
+       ],
+       [
+        14.3,
+        42.4
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        23.0
+       ],
+       "scale": 0.438
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        35.2
+       ],
+       "loops": 2,
+       "scale": 0.661
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        10.3,
+        42.4
+       ],
+       [
+        -27.1,
+        49.9
+       ],
+       [
+        -12.0,
+        13.9
+       ],
+       [
+        11.9,
+        44.8
+       ],
+       [
+        -22.4,
+        31.0
+       ],
+       [
+        -34.6,
+        28.1
+       ],
+       [
+        -31.0,
+        27.4
+       ],
+       [
+        -30.1,
+        27.1
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

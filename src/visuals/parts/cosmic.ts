@@ -280,3 +280,79 @@ part('cosmic.base.treasury3', [
   { d: star(0, -12, 4, 1.4, 4.4, 0), zone: 'white', line: 0, shade: false, light: false },
 ]);
 part('cosmic.base.smoke', [{ d: join(circle(0, 0, 10), circle(10, -8, 8), circle(-8, -12, 7), circle(4, -20, 9)), zone: 'smoke', alpha: 0.75, line: 0, light: false }]);
+
+// ---------------------------------------------------------------------------------------------
+// W8 Cosmic wave (CONTENT_PLAN 5.8): procedural fallbacks for the new cards (the 3D sheets replace them).
+
+part('cosmic.crystalfist', [
+  { d: blob([-6, 2, -7, -6, -2, -12, 6, -11, 8, -4, 5, 3], 0.4), zone: 'crystal', line: 1.6 },
+  { d: blob([-2, -8, 2, -10, 4, -6, 0, -4], 0.4), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('cosmic.crystalslab', [
+  { d: poly([-6, -16, 6, -18, 8, 10, -4, 14]), zone: 'crystal', line: 1.8 },
+  { d: poly([-4, -12, 5, -13, 6, 7, -3, 10]), zone: 'team', banner: true, line: 0 },
+  { d: star(1, -2, 5, 1.2, 3.2, 0), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('cosmic.board', [
+  { d: rrect(-24, -3, 48, 5, 2.4), zone: 'cloth2' },
+  { d: rrect(-18, -3, 36, 2, 1), zone: 'team', banner: true, line: 0 },
+  { d: join(ellipse(-12, 3, 5, 1.6), ellipse(12, 3, 5, 1.6)), zone: 'glow', line: 0, shade: false, light: false },
+]);
+part('cosmic.orb', [
+  { d: circle(0, -4, 4.6), zone: 'glow', line: 1.4, shade: false },
+  { d: circle(-1.2, -5.4, 1.6), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('cosmic.cannon', [
+  { d: rrect(-4, -4, 34, 7, 3), zone: 'cloth2' },
+  { d: rrect(2, -5, 14, 9, 3), zone: 'team', banner: true, line: 1.4 },
+  { d: circle(6, -7, 3), zone: 'glow', line: 1, shade: false },
+]);
+part('cosmic.mortar', [
+  { d: poly([-4, -4, 22, -6, 26, -9, 26, 6, 22, 4, -4, 4]), zone: 'cloth3' },
+  { d: rect(4, -5, 3, 10), zone: 'team', banner: true, line: 0 },
+  { d: join(rect(10, -5, 1.4, 10), rect(14, -5, 1.4, 10)), zone: 'glow', line: 0, shade: false, light: false },
+]);
+part('cosmic.bug.body', [
+  { d: ellipse(-14, -6, 15, 12), zone: 'team', banner: true },
+  { d: ellipse(6, -4, 13, 8), zone: 'cloth2' },
+  { d: join(circle(-18, -8, 2), circle(-10, -2, 1.6)), zone: 'glow', line: 0, shade: false, light: false },
+]);
+part('cosmic.bug.leg', [{ d: join(limb(0, 0, 1.6, 6, -10, 1.4), limb(6, -10, 1.4, 10, 14, 1)), zone: 'cloth2', line: 1.4 }]);
+part('cosmic.bug.head', [
+  { d: ellipse(4, -2, 8, 7), zone: 'cloth2' },
+  { d: ellipse(8, -3, 4, 3.4), zone: 'void', line: 1, shade: false },
+  { d: join(poly([10, 2, 15, 6, 11, 5]), poly([8, 3, 12, 8, 8, 6])), zone: 'cloth3', line: 1 },
+]);
+part('cosmic.whale.body', [
+  { d: blob([-70, -6, -50, -22, -10, -34, 30, -30, 54, -14, 56, 4, 30, 14, -20, 14, -60, 6], 0.6), zone: 'cloth2' },
+  { d: blob([-40, 6, 0, 12, 40, 6, 50, 0, 30, 10, -30, 12], 0.5), zone: 'cloth3' },
+  { d: blob([-30, -32, 0, -38, 10, -30, -20, -26], 0.5), zone: 'team', banner: true, line: 1.4 },
+  { d: blob([-90, -24, -70, -8, -90, 8, -80, -8], 0.4), zone: 'team', banner: true, line: 1.6 },
+]);
+part('cosmic.whale.fin', [{ d: poly([0, 0, -10, 10, -26, 22, -30, 18, -14, 4]), zone: 'team', banner: true, line: 1.6 }]);
+part('cosmic.whale.rider', [
+  { d: ellipse(0, -6, 4, 5), zone: 'team', banner: true },
+  { d: circle(1, -15, 5.4), zone: 'glass', line: 1.4 },
+  { d: limb(-1, -20, 0.7, -3, -26, 0.6), zone: 'glow', line: 0.8, shade: false },
+]);
+part('cosmic.fighter.body', [
+  { d: blob([-22, -3, -14, -12, 10, -12, 24, -3, 12, 7, -18, 6], 0.6), zone: 'cloth3' },
+  { d: poly([-6, -2, -16, -14, -22, -14, -14, -2]), zone: 'team', banner: true, line: 1.4 },
+  { d: blob([-8, 0, 6, 0, 2, 8, -10, 6], 0.5), zone: 'team', banner: true, line: 1.4 },
+  { d: ellipse(4, -8, 6, 3.4), zone: 'glass', line: 1.2, shade: false },
+  { d: poly([-22, -1, -27, -2, -27, 1.5, -22, 1.5]), zone: 'white', line: 0, shade: false, light: false },
+]);
+part('cosmic.rock.body', [
+  { d: blob([-16, 0, -18, -18, -10, -30, 8, -32, 18, -20, 16, 0], 0.4), zone: 'metal2' },
+  { d: blob([-8, -26, 8, -26, 10, -12, -6, -12], 0.5), zone: 'team', banner: true, line: 1.4 },
+  { d: join(limb(4, -6, 0.8, 8, -14, 0.6), limb(-10, -10, 0.8, -6, -18, 0.6)), zone: 'glow', line: 0, shade: false, light: false },
+]);
+part('cosmic.turret.shards', [
+  { d: join(poly([-8, 4, -6, -10, -2, 4]), poly([-2, 4, 2, -14, 6, 4]), poly([4, 4, 10, -8, 12, 4])), zone: 'crystal', line: 1.6 },
+  { d: rrect(-10, 2, 24, 5, 2), zone: 'metal2' },
+]);
+part('cosmic.turret.horizon', [
+  { d: ellipse(0, -8, 16, 8), zone: 'void', line: 1.8 },
+  { d: arcBand(0, -8, 9, 13, 0, 360), zone: 'glow', line: 0, alpha: 0.8, shade: false, light: false },
+  { d: rrect(-14, -2, 28, 4, 2), zone: 'team', banner: true, line: 0 },
+]);

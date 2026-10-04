@@ -104,7 +104,7 @@ const KETTLE: Plan = {
   industrial: lo(['coal_miners', 'carbineer', 'steam_golem', 'harpoon_gunner', 'alpine_climber', 'dispatch_rider'], ['gatling_gun', 'mortar_pit'], 'iron_horse'),
   modern: lo(['smg_squad', 'rifleman', 'tankette', 'bazooka_trooper', 'gyrocopter', 'commando'], ['mg_nest', 'flak_gun'], 'paratroopers'),
   future: lo(['android_pair', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'jetpack_trooper', 'hover_bike'], ['pulse_laser', 'arc_coil'], 'orbital_lance'),
-  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'warp_stalker'], ['ion_turret', 'starburst_gun'], 'starfall'),
+  cosmic: lo(['moonlings', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'star_fighter', 'void_skimmer'], ['ion_turret', 'starburst_gun'], 'starfall'),
 };
 
 const MOSS: Plan = {
@@ -115,7 +115,7 @@ const MOSS: Plan = {
   industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'bandmaster', 'iron_mantlet'], ['steam_hammer', 'tesla_tower'], 'iron_horse'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'combat_medic', 'sandbag_carrier'], ['howitzer', 'flak_gun'], 'paratroopers'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'overclock_engineer', 'barrier_trooper'], ['cryo_pod', 'gravity_well'], 'orbital_lance'),
-  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'starwarden'], ['starfall_battery', 'tachyon_lance'], 'starfall'),
+  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'starwarden', 'crystal_guard'], ['starfall_battery', 'event_horizon'], 'starfall'),
 };
 
 const LEDGER: Plan = {
@@ -126,7 +126,7 @@ const LEDGER: Plan = {
   industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'clockwork_tinker', 'sapper'], ['gatling_gun', 'tesla_tower'], 'zeppelin_raid'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'gyrocopter', 'bulldozer'], ['mg_nest', 'searchlight_sniper'], 'carpet_bomber'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'holo_projector', 'emp_saboteur'], ['pulse_laser', 'plasma_mortar'], 'nanite_surge'),
-  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'warp_stalker'], ['ion_turret', 'tachyon_lance'], 'warp_strike'),
+  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'bio_weaver', 'swarm_matron'], ['ion_turret', 'tachyon_lance'], 'warp_strike'),
 };
 
 const BOOMSWORTH: Plan = {
@@ -137,7 +137,7 @@ const BOOMSWORTH: Plan = {
   industrial: lo(['riveter', 'trench_mortar', 'steam_golem', 'harpoon_gunner', 'flare_spotter', 'armoured_car'], ['boiler_mortar', 'mortar_pit'], 'zeppelin_raid'),
   modern: lo(['trench_raider', 'mortar_team', 'tankette', 'bazooka_trooper', 'radio_operator', 'dive_bomber'], ['howitzer', 'rocket_battery'], 'carpet_bomber'),
   future: lo(['photon_knight', 'arc_lobber', 'walker_mech', 'rail_gunner', 'repair_drone', 'particle_cannon'], ['plasma_mortar', 'pulse_laser'], 'orbital_lance'),
-  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'starwarden'], ['starfall_battery', 'ion_turret'], 'starfall'),
+  cosmic: lo(['star_legionnaire', 'star_mortar', 'hover_tank', 'graviton_halberdier', 'starwarden', 'nova_thrower'], ['starfall_battery', 'ion_turret'], 'starfall'),
 };
 
 const TWINS: Plan = {
@@ -148,7 +148,7 @@ const TWINS: Plan = {
   industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'sapper', 'steam_driller'], ['gatling_gun', 'tesla_tower'], 'iron_horse'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'gyrocopter', 'sticky_bomber'], ['flak_gun', 'searchlight_sniper'], 'paratroopers'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'emp_saboteur', 'plasma_lancer'], ['arc_coil', 'gravity_well'], 'orbital_lance'),
-  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'warp_stalker'], ['starburst_gun', 'tachyon_lance'], 'starfall'),
+  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'void_whisperer', 'antimatter_rifler'], ['starburst_gun', 'tachyon_lance'], 'starfall'),
 };
 
 const ROOK: Plan = {
@@ -159,7 +159,7 @@ const ROOK: Plan = {
   industrial: lo(['riveter', 'carbineer', 'steam_tractor', 'harpoon_gunner', 'flare_spotter', 'bomb_bowler'], ['rivet_spitter', 'boiler_mortar'], 'iron_horse'),
   modern: lo(['trench_raider', 'rifleman', 'assault_gun', 'bazooka_trooper', 'ghillie_sniper', 'rifle_grenadier'], ['anti_tank_gun', 'howitzer'], 'paratroopers'),
   future: lo(['photon_knight', 'pulse_trooper', 'crab_mech', 'rail_gunner', 'emp_saboteur', 'needle_gunner'], ['tractor_beam', 'gravity_well'], 'orbital_lance'),
-  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'starwarden'], ['ion_turret', 'starfall_battery'], 'starfall'),
+  cosmic: lo(['star_legionnaire', 'ion_ranger', 'asteroid_golem', 'graviton_halberdier', 'starwarden', 'moonlings'], ['shard_spitter', 'starfall_battery'], 'starfall'),
 };
 
 const TEMPEST: Plan = {
@@ -170,7 +170,7 @@ const TEMPEST: Plan = {
   industrial: lo(['riveter', 'carbineer', 'steam_golem', 'harpoon_gunner', 'flare_spotter', 'spark_scientist'], ['gatling_gun', 'tesla_tower'], 'great_magnet', 'shrapnel_shells'),
   modern: lo(['trench_raider', 'rifleman', 'tankette', 'bazooka_trooper', 'radio_operator', 'bulldog_sergeant'], ['mg_nest', 'searchlight_sniper'], 'concussion_shells', 'creeping_barrage'),
   future: lo(['photon_knight', 'pulse_trooper', 'walker_mech', 'rail_gunner', 'repair_drone', 'overload_android'], ['pulse_laser', 'gravity_well'], 'nano_mesh', 'target_painter'),
-  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'starwarden'], ['ion_turret', 'tachyon_lance'], 'starfall'),
+  cosmic: lo(['star_legionnaire', 'ion_ranger', 'hover_tank', 'graviton_halberdier', 'starwarden', 'gravity_sage'], ['ion_turret', 'tachyon_lance'], 'pulsar_pulse', 'meteor_drizzle'),
 };
 
 const WARDEN: Plan = {

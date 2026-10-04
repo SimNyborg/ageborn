@@ -35,7 +35,7 @@ export interface MusicFile {
   alt?: string;
 }
 
-export const SFX_BYTES = 3298582;
+export const SFX_BYTES = 3422451;
 export const MUSIC_BYTES = 6730878;
 
 export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
@@ -49,7 +49,7 @@ export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
   industrial: { src: "audio/sfx/industrial.2881b0b2.ogg", bytes: 324773, seconds: 63.957, alt: "audio/sfx/industrial.b67221b7.m4a", sync: 0.02031 },
   modern: { src: "audio/sfx/modern.3beebedb.ogg", bytes: 275484, seconds: 54.899, alt: "audio/sfx/modern.9f8442bc.m4a", sync: 0.02031 },
   future: { src: "audio/sfx/future.690cc856.ogg", bytes: 313687, seconds: 61.683, alt: "audio/sfx/future.5d802444.m4a", sync: 0.02031 },
-  cosmic: { src: "audio/sfx/cosmic.439751f8.ogg", bytes: 151155, seconds: 29.71, alt: "audio/sfx/cosmic.95915212.m4a", sync: 0.02031 },
+  cosmic: { src: "audio/sfx/cosmic.15c3e017.ogg", bytes: 275024, seconds: 54.66, alt: "audio/sfx/cosmic.4415733d.m4a", sync: 0.02031 },
   capsule: { src: "audio/sfx/capsule.d5b3e7ce.ogg", bytes: 280307, seconds: 55.415, alt: "audio/sfx/capsule.6bdb5740.m4a", sync: 0.02031 },
 };
 
@@ -358,19 +358,37 @@ export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
   camp_warp: { sheet: "future", variants: [[57.0179, 0.53], [57.5979, 0.53], [58.1779, 0.53]] },
   levy_warp: { sheet: "future", variants: [[58.7579, 0.17], [58.9779, 0.17], [59.1979, 0.17]] },
   trap_blast_energy: { sheet: "future", variants: [[59.4179, 0.71327], [60.18117, 0.71723], [60.9484, 0.68506]] },
-  shot_ion: { sheet: "cosmic", variants: [[0.15, 0.36], [0.56, 0.36], [0.97, 0.36]] },
-  shot_void: { sheet: "cosmic", variants: [[1.38, 0.38], [1.81, 0.38], [2.24, 0.38]] },
-  shot_starburst: { sheet: "cosmic", variants: [[2.67, 0.27], [2.99, 0.27], [3.31, 0.2699]] },
-  shot_tachyon: { sheet: "cosmic", variants: [[3.6299, 0.63652], [4.31642, 0.64008], [5.0065, 0.63604]] },
-  blink_warp: { sheet: "cosmic", variants: [[5.69254, 0.53], [6.27254, 0.53], [6.85254, 0.53]] },
-  drone_launch: { sheet: "cosmic", variants: [[7.43254, 0.6], [8.08254, 0.6], [8.73254, 0.6]] },
-  evolve_fanfare_cosmic: { sheet: "cosmic", variants: [[9.38254, 2.0]] },
-  pw_starfall: { sheet: "cosmic", variants: [[11.43254, 2.59479], [14.07733, 2.59735]] },
-  pw_warp: { sheet: "cosmic", variants: [[16.72469, 1.86475], [18.63944, 1.86481]] },
-  pw_singularity: { sheet: "cosmic", variants: [[20.55425, 1.98902]] },
-  pw_flare: { sheet: "cosmic", variants: [[22.59327, 1.83417]] },
-  pw_comet: { sheet: "cosmic", variants: [[24.47744, 1.87552], [26.40296, 1.82879]] },
-  pw_ion: { sheet: "cosmic", variants: [[28.28175, 1.37873]] },
+  crystal_slam: { sheet: "cosmic", variants: [[0.15, 0.455], [0.655, 0.455], [1.16, 0.455]] },
+  board_kick: { sheet: "cosmic", variants: [[1.665, 0.29981], [2.01481, 0.29979], [2.3646, 0.29983]] },
+  moon_spit: { sheet: "cosmic", variants: [[2.71444, 0.11], [2.87444, 0.11], [3.03444, 0.11], [3.19444, 0.11]] },
+  nova_lob: { sheet: "cosmic", variants: [[3.35444, 0.4984], [3.90283, 0.49829], [4.45113, 0.49846]] },
+  golem_uppercut: { sheet: "cosmic", variants: [[4.99958, 0.47802], [5.5276, 0.4774], [6.055, 0.4764]] },
+  shot_star_mortar: { sheet: "cosmic", variants: [[6.5814, 0.53], [7.1614, 0.53], [7.7414, 0.53]] },
+  shot_antimatter: { sheet: "cosmic", variants: [[8.3214, 0.3966], [8.768, 0.39654], [9.21454, 0.39687]] },
+  tendril_flick: { sheet: "cosmic", variants: [[9.66142, 0.15823], [9.86965, 0.15852], [10.07817, 0.15852]] },
+  void_whisper: { sheet: "cosmic", variants: [[10.28669, 0.4], [10.73669, 0.4], [11.18669, 0.4]] },
+  shot_twin_laser: { sheet: "cosmic", variants: [[11.63669, 0.14], [11.82669, 0.14], [12.01669, 0.14], [12.20669, 0.14]] },
+  matron_spit: { sheet: "cosmic", variants: [[12.39669, 0.18], [12.62669, 0.18], [12.85669, 0.18]] },
+  sage_orb: { sheet: "cosmic", variants: [[13.08669, 0.27], [13.40669, 0.27], [13.72669, 0.27]] },
+  leviathan_song: { sheet: "cosmic", variants: [[14.04669, 1.0739], [15.17058, 1.0785], [16.29908, 1.07012]] },
+  swarm_bite: { sheet: "cosmic", variants: [[17.41921, 0.12], [17.58921, 0.12], [17.75921, 0.12]] },
+  shot_shard: { sheet: "cosmic", variants: [[17.92921, 0.33], [18.30921, 0.33], [18.68921, 0.33]] },
+  horizon_pulse: { sheet: "cosmic", variants: [[19.06921, 0.56708], [19.68629, 0.56856]] },
+  pw_drizzle: { sheet: "cosmic", variants: [[20.30485, 1.07746], [21.43231, 1.06088]] },
+  pw_pulsar: { sheet: "cosmic", variants: [[22.54319, 1.21152], [23.80471, 1.245]] },
+  shot_ion: { sheet: "cosmic", variants: [[25.09971, 0.36], [25.50971, 0.36], [25.91971, 0.36]] },
+  shot_void: { sheet: "cosmic", variants: [[26.32971, 0.38], [26.75971, 0.38], [27.18971, 0.38]] },
+  shot_starburst: { sheet: "cosmic", variants: [[27.61971, 0.27], [27.93971, 0.27], [28.25971, 0.2699]] },
+  shot_tachyon: { sheet: "cosmic", variants: [[28.5796, 0.63652], [29.26612, 0.64008], [29.95621, 0.63604]] },
+  blink_warp: { sheet: "cosmic", variants: [[30.64225, 0.53], [31.22225, 0.53], [31.80225, 0.53]] },
+  drone_launch: { sheet: "cosmic", variants: [[32.38225, 0.6], [33.03225, 0.6], [33.68225, 0.6]] },
+  evolve_fanfare_cosmic: { sheet: "cosmic", variants: [[34.33225, 2.0]] },
+  pw_starfall: { sheet: "cosmic", variants: [[36.38225, 2.59479], [39.02704, 2.59735]] },
+  pw_warp: { sheet: "cosmic", variants: [[41.6744, 1.86475], [43.58915, 1.86481]] },
+  pw_singularity: { sheet: "cosmic", variants: [[45.50396, 1.98902]] },
+  pw_flare: { sheet: "cosmic", variants: [[47.54298, 1.83417]] },
+  pw_comet: { sheet: "cosmic", variants: [[49.42715, 1.87552], [51.35267, 1.82879]] },
+  pw_ion: { sheet: "cosmic", variants: [[53.23146, 1.37873]] },
   cap_thud: { sheet: "capsule", variants: [[0.15, 0.55365], [0.75365, 0.54933], [1.35298, 0.54931]] },
   cap_riser: { sheet: "capsule", variants: [[1.95229, 1.5]] },
   cap_climb_1: { sheet: "capsule", variants: [[3.50229, 0.99096], [4.54325, 0.99287]] },

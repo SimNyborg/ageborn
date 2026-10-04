@@ -50,18 +50,20 @@ describe('A14.1 coverage', () => {
     // A17.13: 56 units (plus the hidden Training Dummy) and 32 turrets; the Stone and Medieval waves add 13
     // troops and a summon (Cave Pup, War Hound), 2 turrets, 2 forts and 3 skins each, the Bronze and Gunpowder waves
     // 13 troops, 2 turrets, 2 forts and 3 skins each, the Industrial wave 13 troops and a summon (Clockwork Soldier),
-    // the Modern wave 13 troops, the Future wave 13 troops and 2 summons (Holo Decoy, Attack Drone)
-    expect(shipped(Object.values(content.units)).filter((u) => !u.fort && !u.levy).length).toBe(153);
+    // the Modern wave 13 troops, the Future wave 13 troops and 2 summons (Holo Decoy, Attack Drone), the Cosmic wave 13
+    // troops and a summon (Swarmling)
+    expect(shipped(Object.values(content.units)).filter((u) => !u.fort && !u.levy).length).toBe(167);
     // A16.14.8: 24 hidden fort twins (walls, towers, camps) and 8 levies, plus the Stone wave's 2 twins and the
     // Medieval wave's Crossbow Keep (its Bear Snares is a trap, no twin) and the Gunpowder wave's Cavalry Picket
     // (its Fougasse is a trap) and the Bronze wave's Hoplon Line and Slinger Camp and the Industrial wave's Rail
     // Barricade and Tesla Pylon and the Modern wave's Rifle Depot (its Wire Snare is a trap); 10 levies with the X0 camp
     // variants' Slinger Levy (Bronze) and Picket Rider (Gunpowder); 11 with the Modern wave's Rifle Levy,
-    // 12 with the Future wave's Mini Mech; the Future wave's Skyguard Pylon and Mech Bay add 2 twins
-    expect(shipped(Object.values(content.units)).filter((u) => u.fort).length).toBe(35);
+    // 12 with the Future wave's Mini Mech; the Future wave's Skyguard Pylon and Mech Bay add 2 twins, the Cosmic wave's
+    // Star Bulwark 1 (its Stardust Snare is a trap)
+    expect(shipped(Object.values(content.units)).filter((u) => u.fort).length).toBe(36);
     expect(Object.values(content.units).filter((u) => u.levy).length).toBe(12);
-    expect(shipped(Object.values(content.turrets)).length).toBe(46);
-    expect(shipped(Object.values(content.skins)).length).toBe(33);
+    expect(shipped(Object.values(content.turrets)).length).toBe(48);
+    expect(shipped(Object.values(content.skins)).length).toBe(36);
   });
 
   it('has every projectile and effect the content fires', () => {

@@ -121,6 +121,9 @@ export const POWER_IDS = [
   // Future wave (CONTENT_PLAN 5.7)
   'target_painter',
   'nano_mesh',
+  // Cosmic wave (CONTENT_PLAN 5.8)
+  'meteor_drizzle',
+  'pulsar_pulse',
 ] as const;
 
 export const ICON_SPRITES: readonly PuppetDef[] = [

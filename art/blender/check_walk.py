@@ -38,7 +38,8 @@ CLASS_OF_GAIT = {"biped": "G1", "heavy": "G3", "quad": "G4", "rider": "G5", "whe
 BIG_BEASTS = {"mammoth_matriarch", "war_elephant"}
 CLASS_OVERRIDE = {"drum_shaman": "G2", "friar": "G2", "starwarden": "G2", "standard_bearer": "G2",
                   "aulos_piper": "G2", "tragic_chorus": "G2",
-                  "herbalist": "G2", "rockfall_shaman": "G2"}
+                  "herbalist": "G2", "rockfall_shaman": "G2",
+                  "bio_weaver": "G2", "void_whisperer": "G2"}
 LIMITS = {
     "G1": {"step": 20.0, "bob": 5.0, "apart": 4, "gap": 5.0},
     "G2": {"step": 16.5, "bob": 4.0},

@@ -1,0 +1,542 @@
+{
+ "frames": {
+  "nova_thrower_attack_b_01": {
+   "frame": {
+    "x": 325,
+    "y": 2,
+    "w": 97,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 203,
+    "w": 97,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "nova_thrower_attack_b_01_team": {
+   "frame": {
+    "x": 93,
+    "y": 363,
+    "w": 91,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 194,
+    "w": 91,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "nova_thrower_attack_b_02": {
+   "frame": {
+    "x": 102,
+    "y": 2,
+    "w": 104,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 202,
+    "w": 104,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "nova_thrower_attack_b_02_team": {
+   "frame": {
+    "x": 188,
+    "y": 363,
+    "w": 84,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 194,
+    "w": 84,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "nova_thrower_attack_b_03": {
+   "frame": {
+    "x": 210,
+    "y": 2,
+    "w": 111,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 203,
+    "w": 111,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "nova_thrower_attack_b_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 363,
+    "w": 87,
+    "h": 166
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 194,
+    "w": 87,
+    "h": 166
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "nova_thrower_attack_b_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 96,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 202,
+    "w": 96,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "nova_thrower_attack_b_04_team": {
+   "frame": {
+    "x": 276,
+    "y": 363,
+    "w": 90,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 193,
+    "w": 90,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "nova_thrower_attack_b_05": {
+   "frame": {
+    "x": 107,
+    "y": 185,
+    "w": 103,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 209,
+    "w": 103,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "nova_thrower_attack_b_05_team": {
+   "frame": {
+    "x": 100,
+    "y": 533,
+    "w": 97,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 226,
+    "y": 199,
+    "w": 97,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "nova_thrower_attack_b_06": {
+   "frame": {
+    "x": 324,
+    "y": 185,
+    "w": 108,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 230,
+    "y": 215,
+    "w": 108,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "nova_thrower_attack_b_06_team": {
+   "frame": {
+    "x": 303,
+    "y": 533,
+    "w": 97,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 239,
+    "y": 205,
+    "w": 97,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "nova_thrower_attack_b_07": {
+   "frame": {
+    "x": 214,
+    "y": 185,
+    "w": 106,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 229,
+    "y": 213,
+    "w": 106,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "nova_thrower_attack_b_07_team": {
+   "frame": {
+    "x": 201,
+    "y": 533,
+    "w": 98,
+    "h": 156
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 237,
+    "y": 203,
+    "w": 98,
+    "h": 156
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "nova_thrower_attack_b_08": {
+   "frame": {
+    "x": 2,
+    "y": 185,
+    "w": 101,
+    "h": 174
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 207,
+    "w": 101,
+    "h": 174
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  },
+  "nova_thrower_attack_b_08_team": {
+   "frame": {
+    "x": 2,
+    "y": 533,
+    "w": 94,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 223,
+    "y": 197,
+    "w": 94,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 430
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.84651
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "nova_thrower_attack_00",
+   "nova_thrower_attack_b_01",
+   "nova_thrower_attack_b_02",
+   "nova_thrower_attack_b_03",
+   "nova_thrower_attack_b_04",
+   "nova_thrower_attack_b_05",
+   "nova_thrower_attack_b_06",
+   "nova_thrower_attack_b_07",
+   "nova_thrower_attack_b_08",
+   "nova_thrower_attack_09"
+  ],
+  "attack_b_team": [
+   "nova_thrower_attack_00_team",
+   "nova_thrower_attack_b_01_team",
+   "nova_thrower_attack_b_02_team",
+   "nova_thrower_attack_b_03_team",
+   "nova_thrower_attack_b_04_team",
+   "nova_thrower_attack_b_05_team",
+   "nova_thrower_attack_b_06_team",
+   "nova_thrower_attack_b_07_team",
+   "nova_thrower_attack_b_08_team",
+   "nova_thrower_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "nova_thrower.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 448,
+   "h": 696
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.nova_thrower",
+   "name": "Nova Thrower",
+   "heightLu": 68,
+   "widthLu": 35.4,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    260,
+    364
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     68
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     14,
+     50
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "nova_thrower",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      60,
+      80,
+      100,
+      210,
+      50,
+      40,
+      110,
+      80,
+      80,
+      90
+     ],
+     "durationMs": 900,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.6,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        2.0,
+        22.6
+       ],
+       [
+        -7.3,
+        30.9
+       ],
+       [
+        -12.4,
+        36.3
+       ],
+       [
+        -17.2,
+        36.5
+       ],
+       [
+        -2.7,
+        40.7
+       ],
+       [
+        11.2,
+        35.4
+       ],
+       [
+        18.6,
+        26.2
+       ],
+       [
+        16.5,
+        25.7
+       ],
+       [
+        6.7,
+        24.3
+       ],
+       [
+        2.0,
+        22.6
+       ]
+      ]
+     },
+     "muzzle": [
+      18.6,
+      26.2
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

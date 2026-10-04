@@ -877,6 +877,89 @@ const BASE_SOUNDS = {
     at(480, { vol: 0.15, freq: 520, attack: 0.001, release: 0.5, shape: 'sin', tremolo: 0.3, repeat: 0.06 }),
     noiseBurst(550, { vol: 0.12, freq: 4000, attack: 0.05, sustain: 0.6, release: 0.3, tremolo: 0.6, repeat: 0.03, highpass: 2000 }),
   ]), { maxVoices: 1 }),
+  // Cosmic wave (CONTENT_PLAN 5.8): attacks, turrets and powers of the new Cosmic cards ----------------------
+  crystal_slam: mix('cosmic', mixVariants(3, (v) => [
+    thump(0, 120 * (1 + 0.05 * v), 0.8, 0.16, -0.5),
+    at(0, { vol: 0.2, freq: 1760 * (1 + 0.04 * v), attack: 0.001, release: 0.35, shape: 'sin', tremolo: 0.2, repeat: 0.03 }),
+    noiseBurst(10, { vol: 0.15, freq: 6000, attack: 0.002, release: 0.08, highpass: 3000 }),
+  ])),
+  board_kick: mix('cosmic', mixVariants(3, (v) => [
+    at(0, { vol: 0.12, freq: 380 * (1 + 0.04 * v), attack: 0.04, sustain: 0.12, release: 0.06, shape: 'saw', slide: 5, lowpass: 2600 }),
+    noiseBurst(120, { vol: 0.25, freq: 2400, attack: 0.02, release: 0.08, slide: 4, highpass: 1500 }),
+    thump(160, 160 * (1 + 0.05 * v), 0.6, 0.1, -0.6),
+  ])),
+  moon_spit: mix('cosmic', mixVariants(4, (v) => [
+    at(0, { vol: 0.2, freq: 520 * (1 + 0.06 * v), attack: 0.002, release: 0.08, shape: 'sin', slide: 12 }),
+    noiseBurst(20, { vol: 0.12, freq: 3000, attack: 0.002, release: 0.04, highpass: 1500 }),
+  ])),
+  nova_lob: mix('cosmic', mixVariants(3, (v) => [
+    at(0, { vol: 0.1, freq: 300 * (1 + 0.04 * v), attack: 0.2, release: 0.02, shape: 'sin', slide: 6 }),
+    at(200, { vol: 0.2, freq: 900 * (1 + 0.04 * v), attack: 0.002, release: 0.2, shape: 'sin', slide: -4 }),
+    noiseBurst(200, { vol: 0.1, freq: 4000, attack: 0.01, release: 0.1, highpass: 2000 }),
+  ])),
+  golem_uppercut: mix('cosmic', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.25, freq: 500 * (1 + 0.05 * v), attack: 0.1, release: 0.06, slide: 3, lowpass: 2000 }),
+    thump(160, 70 * (1 + 0.05 * v), 1, 0.3, -0.5),
+    noiseBurst(170, { vol: 0.3, freq: 1500, attack: 0.002, release: 0.25, lowpass: 3000, tremolo: 0.4, repeat: 0.03 }),
+  ])),
+  shot_star_mortar: mix('cosmic', mixVariants(3, (v) => [
+    thump(0, 110 * (1 + 0.05 * v), 0.9, 0.22, -0.6),
+    at(30, { vol: 0.15, freq: 1320 * (1 + 0.03 * v), attack: 0.002, release: 0.4, shape: 'sin', tremolo: 0.25, repeat: 0.05 }),
+    noiseBurst(40, { vol: 0.12, freq: 5000, attack: 0.01, release: 0.2, highpass: 2500 }),
+  ])),
+  shot_antimatter: mix('cosmic', mixVariants(3, (v) => [
+    at(0, { vol: 0.1, freq: 200 * (1 + 0.04 * v), attack: 0.15, release: 0.02, shape: 'sin', slide: 18 }),
+    at(150, { vol: 0.4, freq: 900, attack: 0.002, sustain: 0.05, release: 0.2, shape: 'saw', slide: -10, lowpass: 6000 }),
+    thump(150, 80 * (1 + 0.04 * v), 0.9, 0.25, -0.5),
+  ]), { maxVoices: 2 }),
+  tendril_flick: mix('cosmic', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.2, freq: 1800 * (1 + 0.05 * v), attack: 0.03, release: 0.05, slide: 4, highpass: 1000 }),
+    noiseBurst(70, { vol: 0.35, freq: 3500, attack: 0.001, release: 0.03, highpass: 2000 }),
+    at(75, { vol: 0.12, freq: 700 * (1 + 0.04 * v), attack: 0.001, release: 0.1, shape: 'sin', slide: -6 }),
+  ])),
+  void_whisper: mix('cosmic', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.15, freq: 1200 * (1 + 0.04 * v), attack: 0.08, sustain: 0.1, release: 0.15, tremolo: 0.5, repeat: 0.05, lowpass: 3000 }),
+    at(60, { vol: 0.15, freq: 220 * (1 + 0.04 * v), attack: 0.05, sustain: 0.1, release: 0.2, shape: 'sin', slide: -2, tremolo: 0.3, repeat: 0.07 }),
+  ])),
+  shot_twin_laser: mix('cosmic', mixVariants(4, (v) => [
+    ...[0, 40].map((ms) => at(ms, { vol: 0.25, freq: 1900 * (1 + 0.05 * v), attack: 0.002, sustain: 0.01, release: 0.07, shape: 'square', curve: 0.6, slide: -18, lowpass: 10000 })),
+  ])),
+  matron_spit: mix('cosmic', mixVariants(3, (v) => [
+    at(0, { vol: 0.15, freq: 180 * (1 + 0.05 * v), attack: 0.03, sustain: 0.04, release: 0.08, shape: 'saw', slide: 3, lowpass: 1500 }),
+    noiseBurst(80, { vol: 0.3, freq: 900, attack: 0.002, release: 0.12, lowpass: 2500 }),
+    at(90, { vol: 0.12, freq: 400 * (1 + 0.04 * v), attack: 0.001, release: 0.12, shape: 'sin', slide: -5 }),
+  ])),
+  sage_orb: mix('cosmic', mixVariants(3, (v) => [
+    at(0, { vol: 0.2, freq: 660 * (1 + 0.05 * v), attack: 0.01, release: 0.25, shape: 'sin', slide: -2, tremolo: 0.3, repeat: 0.05 }),
+    at(0, { vol: 0.08, freq: 1320, attack: 0.01, release: 0.2, shape: 'sin' }),
+  ])),
+  leviathan_song: mix('cosmic', mixVariants(3, (v) => [
+    at(0, { vol: 0.3, freq: 110 * (1 + 0.03 * v), attack: 0.15, sustain: 0.3, release: 0.4, shape: 'sin', slide: 1.5, tremolo: 0.2, repeat: 0.12 }),
+    at(80, { vol: 0.15, freq: 330 * (1 + 0.03 * v), attack: 0.1, sustain: 0.2, release: 0.4, shape: 'tri', slide: 2 }),
+    thump(300, 60, 0.7, 0.4, -0.3),
+  ]), { maxVoices: 1 }),
+  swarm_bite: mix('cosmic', mixVariants(3, (v) => [
+    at(0, { vol: 0.15, freq: 900 * (1 + 0.06 * v), attack: 0.005, release: 0.04, shape: 'saw', tremolo: 0.5, repeat: 0.015, lowpass: 4000 }),
+    noiseBurst(50, { vol: 0.35, freq: 3000 * (1 + 0.05 * v), attack: 0.001, release: 0.03, lowpass: 8000 }),
+  ])),
+  shot_shard: mix('cosmic', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.15, freq: 5000, attack: 0.001, release: 0.05, highpass: 3000 }),
+    ...[0, 60, 120].map((ms) => at(ms, { vol: 0.15, freq: 2200 * (1 + 0.04 * v), attack: 0.001, release: 0.12, shape: 'sin', slide: -6 })),
+  ])),
+  horizon_pulse: mix('cosmic', mixVariants(3, (v) => [
+    at(0, { vol: 0.35, freq: 90 * (1 + 0.04 * v), attack: 0.05, sustain: 0.1, release: 0.25, shape: 'sin', slide: -0.5 }),
+    noiseBurst(0, { vol: 0.15, freq: 2000, attack: 0.1, release: 0.05, slide: -4, lowpass: 3000 }),
+  ]), { maxVoices: 2 }),
+  pw_drizzle: mix('cosmic', mixVariants(3, (v) => [
+    ...[0, 120, 240].map((ms, k) => at(ms, { vol: 0.12, freq: (2400 - 300 * k) * (1 + 0.03 * v), attack: 0.002, release: 0.25, shape: 'sin', slide: -10 })),
+    thump(320, 90, 0.8, 0.25, -0.5),
+    noiseBurst(330, { vol: 0.2, freq: 2500, attack: 0.002, release: 0.25, lowpass: 5000 }),
+  ]), { maxVoices: 1 }),
+  pw_pulsar: mix('cosmic', mixVariants(3, (v) => [
+    at(0, { vol: 0.12, freq: 300 * (1 + 0.03 * v), attack: 0.3, release: 0.02, shape: 'sin', slide: 10 }),
+    at(320, { vol: 0.3, freq: 880, attack: 0.002, sustain: 0.2, release: 0.4, shape: 'sin', tremolo: 0.5, repeat: 0.04 }),
+    thump(320, 70 * (1 + 0.03 * v), 1, 0.45, -0.4),
+  ]), { maxVoices: 1 }),
   // Stone wave (CONTENT_PLAN 5.1): attacks, turrets and powers of the new Stone cards -----------------------
   wolf_bite: mix('stone', mixVariants(3, (v) => [
     at(0, { vol: 0.25, freq: 140 * (1 + 0.06 * v), attack: 0.01, sustain: 0.06, release: 0.04, shape: 'saw', tremolo: 0.5, repeat: 0.02, lowpass: 1800 }),

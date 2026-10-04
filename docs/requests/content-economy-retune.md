@@ -44,6 +44,11 @@ gives Common 203 / Rare 226 / Epic 132 / Legendary 177 days to max (targets 110 
 Legendaries 22 days, focused War Plan at L7 148 days, Amber for the whole collection 268 days (copies not reached in
 365 days); copies a day (100) and Amber a day (3,234) and the per-capsule targets still pass. The re-tune is now due.
 
+**Update (W6 Modern wave released, 2026-10-03):** Modern adds 6 Commons, 5 Rares, 3 Epics and 1 Legendary to the
+capsule pool (Commando, Sandbag Carrier, SMG Squad, Rifle Grenadier, Assault Gun, Anti-Tank Gun; Mortar Team, Sticky
+Bomber, Combat Medic, Bulldog Sergeant, Rocket Battery; Dive Bomber, Bulldozer, Ghillie Sniper; Sky Fortress). It was
+measured together with the Future wave (next update): Common and Rare to max no longer finish in 365 days.
+
 **Update (W7 Future wave released, 2026-10-03):** with every wave through Future released (Future adds 6 Commons, 5
 Rares, 3 Epics and 1 Legendary to the capsule pool, 193 collection cards in all), `economy --seeds 30` gives Common and
 Rare to max not reached in 365 days, Epic 165 / Legendary 206 days (targets 110 / 101 / 69 / 112 ± 20%), all 8

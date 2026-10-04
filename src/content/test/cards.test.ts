@@ -175,20 +175,20 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['repair_drone', 'Repair Drone', 'R', 'support', 110, 430, 0, 0, 160, 70, 'S', '-', 'air mech support'],
     ['emp_saboteur', 'EMP Saboteur', 'E', 'antiMech', 200, 700, 50, 10, 12, 85, 'M', 'G', 'light bio melee'],
     ['chrono_titan', 'Chrono Titan', 'L', 'siegeHeavy', 350, 4500, 190, 16, 60, 35, 'H', 'G', 'armored mech melee legendary'],
-    // W7 Future wave units (CONTENT_PLAN 5.7)
-    ['android_pair', 'Android Pair', 'C', 'infantry', 50, 300, 38, 10, 16, 85, 'S', 'G', 'light bio melee'],
-    ['barrier_trooper', 'Barrier Trooper', 'C', 'infantry', 50, 640, 44, 10, 16, 70, 'S', 'G', 'light bio melee'],
-    ['hover_bike', 'Hover Biker', 'C', 'infantry', 50, 500, 64, 10, 16, 110, 'M', 'G', 'light bio melee'],
-    ['needle_gunner', 'Needle Gunner', 'C', 'ranged', 75, 270, 22, 5, 220, 75, 'S', 'GA', 'light bio ranged'],
-    ['crab_mech', 'Crab Mech', 'C', 'heavy', 150, 1880, 104, 15, 20, 45, 'L', 'G', 'armored mech melee'],
-    ['arc_lobber', 'Arc Lobber', 'R', 'ranged', 75, 340, 140, 26, 380, 60, 'S', 'G', 'light bio ranged'],
-    ['plasma_lancer', 'Plasma Lancer', 'R', 'antiArmor', 100, 760, 80, 12, 60, 70, 'M', 'G', 'light bio melee'],
+    // W7 Future wave units (CONTENT_PLAN 5.7; measured numbers, docs/decisions.md)
+    ['android_pair', 'Android Pair', 'C', 'infantry', 50, 328, 40, 10, 16, 85, 'S', 'G', 'light bio melee'],
+    ['barrier_trooper', 'Barrier Trooper', 'C', 'infantry', 50, 650, 47, 10, 16, 70, 'S', 'G', 'light bio melee'],
+    ['hover_bike', 'Hover Biker', 'C', 'infantry', 50, 545, 66, 10, 16, 110, 'M', 'G', 'light bio melee'],
+    ['needle_gunner', 'Needle Gunner', 'C', 'ranged', 75, 250, 13, 5, 220, 75, 'S', 'GA', 'light bio ranged'],
+    ['crab_mech', 'Crab Mech', 'C', 'heavy', 150, 2000, 112, 15, 20, 45, 'L', 'G', 'armored mech melee'],
+    ['arc_lobber', 'Arc Lobber', 'R', 'ranged', 75, 360, 172, 26, 380, 60, 'S', 'G', 'light bio ranged'],
+    ['plasma_lancer', 'Plasma Lancer', 'R', 'antiArmor', 100, 800, 100, 12, 60, 70, 'M', 'G', 'light bio melee'],
     ['overclock_engineer', 'Overclock Engineer', 'R', 'support', 110, 610, 56, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
-    ['holo_projector', 'Holo Projector', 'R', 'support', 110, 430, 27, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
+    ['holo_projector', 'Holo Projector', 'R', 'support', 110, 430, 40, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['jetpack_trooper', 'Jetpack Trooper', 'E', 'airGunship', 200, 950, 46, 6, 160, 80, 'M', 'GA', 'air bio'],
     ['particle_cannon', 'Particle Cannon', 'E', 'siege', 200, 1500, 200, 35, 300, 45, 'L', 'G', 'armored mech ranged'],
     ['overload_android', 'Overload Android', 'E', 'skirmisher', 200, 1700, 90, 9, 16, 60, 'M', 'G', 'armored mech melee'],
-    ['drone_carrier', 'Drone Carrier', 'L', 'siegeHeavy', 350, 3200, 40, 5, 200, 35, 'H', 'GA', 'armored mech ranged legendary'],
+    ['drone_carrier', 'Drone Carrier', 'L', 'siegeHeavy', 350, 1900, 40, 5, 200, 35, 'H', 'GA', 'armored mech ranged legendary'],
   ],
   // A17.11 Cosmic Age (P 4.48)
   cosmic: [
@@ -199,6 +199,20 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['starwarden', 'Starwarden', 'R', 'support', 110, 582, 36, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['warp_stalker', 'Warp Stalker', 'E', 'skirmisher', 200, 1600, 140, 8, 12, 100, 'M', 'G', 'light bio melee'],
     ['mothership', 'Mothership', 'L', 'airGunship', 350, 2100, 40, 6, 180, 40, 'H', 'GA', 'air mech legendary'],
+    // W8 Cosmic wave units (CONTENT_PLAN 5.8; measured numbers, docs/decisions.md)
+    ['crystal_guard', 'Crystal Guard', 'C', 'infantry', 50, 830, 64, 10, 16, 70, 'S', 'G', 'light bio melee'],
+    ['void_skimmer', 'Void Skimmer', 'C', 'infantry', 50, 660, 88, 10, 16, 110, 'S', 'G', 'light bio melee'],
+    ['moonlings', 'Moonlings', 'C', 'ranged', 75, 172, 22, 10, 240, 65, 'S', 'GA', 'light bio ranged'],
+    ['nova_thrower', 'Nova Thrower', 'C', 'ranged', 75, 440, 59, 11.5, 240, 65, 'S', 'G', 'light bio ranged'],
+    ['asteroid_golem', 'Asteroid Golem', 'C', 'heavy', 150, 2850, 150, 15, 20, 50, 'L', 'G', 'armored mech melee'],
+    ['star_mortar', 'Star Mortar', 'R', 'ranged', 75, 470, 195, 26, 390, 60, 'S', 'G', 'light bio ranged'],
+    ['antimatter_rifler', 'Antimatter Rifler', 'R', 'antiArmor', 100, 700, 140, 16, 220, 65, 'M', 'G', 'light bio ranged'],
+    ['bio_weaver', 'Bio-Weaver', 'R', 'support', 110, 580, 36, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
+    ['void_whisperer', 'Void Whisperer', 'R', 'support', 110, 760, 48, 12, 150, 60, 'S', 'GA', 'light bio support ranged'],
+    ['star_fighter', 'Star Fighter', 'E', 'airGunship', 200, 1250, 48, 5, 170, 85, 'M', 'GA', 'air mech'],
+    ['swarm_matron', 'Swarm Matron', 'E', 'support', 200, 1300, 50, 12, 150, 60, 'M', 'GA', 'light bio ranged'],
+    ['gravity_sage', 'Gravity Sage', 'E', 'support', 200, 1700, 70, 12, 160, 60, 'S', 'GA', 'light bio support ranged'],
+    ['star_leviathan', 'Star Leviathan', 'L', 'heavy', 350, 2900, 128, 20, 90, 40, 'H', 'G', 'armored bio ranged legendary'],
   ],
 };
 
@@ -274,6 +288,9 @@ const TURRETS: Record<AgeId, TurretRow[]> = {
     ['starburst_gun', 'Starburst Gun', 'C', 175, 123, 20, 240, 'GA'],
     ['starfall_battery', 'Starfall Battery', 'R', 250, 363, 50, 480, 'G'],
     ['tachyon_lance', 'Tachyon Lance', 'E', 250, 184, 40, 420, 'GA'],
+    // W8 Cosmic wave turrets
+    ['shard_spitter', 'Shard Spitter', 'C', 175, 40, 15, 280, 'GA'],
+    ['event_horizon', 'Event Horizon', 'R', 250, 120, 10, 150, 'G'],
   ],
 };
 
@@ -345,7 +362,10 @@ const POWERS: PowerRow[] = [
   ['solar_flare', 'Solar Flare', 'cosmic', 'home', 'sweep', 'warPath', 125, 40000, 1000, 3],
   ['comet_run', 'Comet Run', 'cosmic', 'field', 'charge', 'starter', 100, 40000, 1000, 5],
   ['warp_strike', 'Warp Strike', 'cosmic', 'field', 'drop', 'road', 150, 60000, 1000, 0],
-  ['ion_cannon', 'Ion Cannon', 'cosmic', 'field', 'strike', 'warPath', 50, 15000, 1500, 1],
+  ['ion_cannon', 'Ion Strike', 'cosmic', 'field', 'strike', 'warPath', 50, 15000, 1500, 1],
+  // W8 Cosmic wave powers
+  ['meteor_drizzle', 'Meteor Drizzle', 'cosmic', 'field', 'volley', 'warPath', 35, 18000, 1000, 8],
+  ['pulsar_pulse', 'Pulsar Pulse', 'cosmic', 'home', 'stun', 'warPath', 75, 35000, 1000, 6],
 ];
 
 /** A2.7 train times and pop per role group (derived by the compiler). */
@@ -726,6 +746,23 @@ const A14_2: Record<string, FxRow[]> = {
   starburst_gun: [['starburst_gun', 'proj.starburst', 'shot_starburst', 'laser']],
   starfall_battery: [['starfall_battery', 'proj.star_shard', 'shot_plasma', 'blast']],
   tachyon_lance: [['tachyon_lance', 'fx.beam_tachyon', 'shot_tachyon', 'laser']],
+  // W8 Cosmic wave
+  crystal_guard: [['crystal_guard', 'melee', 'crystal_slam', 'blunt']],
+  void_skimmer: [['void_skimmer', 'melee', 'board_kick', 'slash']],
+  moonlings: [['moonlings', 'proj.moon_pellet', 'moon_spit', 'laser']],
+  nova_thrower: [['nova_thrower', 'proj.nova_orb', 'nova_lob', 'blast']],
+  asteroid_golem: [['asteroid_golem', 'melee', 'golem_uppercut', 'blunt']],
+  star_mortar: [['star_mortar', 'proj.mini_star', 'shot_star_mortar', 'blast']],
+  antimatter_rifler: [['antimatter_rifler', 'proj.antimatter', 'shot_antimatter', 'laser']],
+  bio_weaver: [['bio_weaver', 'fx.tendril_lash', 'tendril_flick', 'slash']],
+  void_whisperer: [['void_whisperer', 'fx.void_ripple', 'void_whisper', 'laser']],
+  star_fighter: [['star_fighter', 'proj.twin_laser', 'shot_twin_laser', 'laser']],
+  swarm_matron: [['swarm_matron', 'proj.swarm_glob', 'matron_spit', 'blast']],
+  gravity_sage: [['gravity_sage', 'proj.sage_orb', 'sage_orb', 'laser']],
+  star_leviathan: [['star_leviathan', 'fx.song_wave', 'leviathan_song', 'blast'], ['riders', 'proj.moon_pellet', 'moon_spit', 'laser']],
+  swarmling: [['swarmling', 'melee', 'swarm_bite', 'slash']],
+  shard_spitter: [['shard_spitter', 'proj.shard', 'shot_shard', 'pierce']],
+  event_horizon: [['event_horizon', 'fx.horizon_pulse', 'horizon_pulse', 'laser']],
 };
 
 /** Every attack of a card, primary first, then secondary attacks, then riders. */
@@ -781,6 +818,8 @@ const MODS_BY_CARD: Record<string, readonly { vs: string; bp: number }[]> = {
   sandbag_carrier: MODS.blunt, sticky_bomber: MODS.meleeAA,
   // W7 Future wave: the android Pair and the hardlight Guard (Infantry melee), the Plasma Lancer (melee Anti-heavy)
   android_pair: MODS.blunt, barrier_trooper: MODS.blunt, plasma_lancer: MODS.meleeAA,
+  // W8 Cosmic wave: the Crystal Guard (Infantry melee), the Antimatter Rifler (ranged Anti-heavy)
+  crystal_guard: MODS.blunt, antimatter_rifler: MODS.rangedAA,
 };
 
 /** A5 target priorities of first attacks ("priority armored", "priority air", ...); everything else `front`. */
@@ -797,6 +836,7 @@ const PRIORITY_BY_CARD: Record<string, string> = {
   steam_driller: 'armored',
   sticky_bomber: 'armored', anti_tank_gun: 'armored', ghillie_sniper: 'backline',
   plasma_lancer: 'armored', tractor_beam: 'armored',
+  antimatter_rifler: 'armored',
 };
 
 describe('A14.2 attack mapping, A2.6 mods and A5 priorities (every card)', () => {

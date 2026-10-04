@@ -508,6 +508,10 @@ describe('Cosmetics and skins (A5.8)', () => {
       ['space_cadet', 'pulse_trooper', 'rare'],
       ['chrome_rail', 'rail_gunner', 'epic'],
       ['grandfather_clock', 'chrono_titan', 'legendary'],
+      // W8 Cosmic wave
+      ['starlight_legionnaire', 'star_legionnaire', 'rare'],
+      ['shadow_stalker', 'warp_stalker', 'epic'],
+      ['classic_saucer', 'mothership', 'legendary'],
     ]);
     expect(content.skins.pumpkin_head?.visualId).toBe('unit.bonker@pumpkin_head');
     expect(content.skins.crystal_spire).toMatchObject({ visualId: 'base.future@crystal_spire', inCratePool: false, craftable: false });

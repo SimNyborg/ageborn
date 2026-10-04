@@ -109,8 +109,9 @@ const ROWS: readonly [number, RoadReward[]][] = [
   [4500, [amber(1000), ...regionSet('great_magnet', 'rail_barricade', 'tesla_pylon')]],
   [4600, [dust(400), ...regionSet('concussion_shells', 'rifle_depot', 'wire_snare')]],
   [4700, [amber(1040), ...regionSet('nano_mesh', 'skyguard_pylon', 'mech_bay')]],
-  [4800, [capsule('jade')]],
-  [4900, [amber(1080)]],
+  [4800, [capsule('jade'), ...regionSet('pulsar_pulse', 'star_bulwark', 'stardust_snare')]],
+  // W8 Cosmic: the last whole-lane power, after the region set tiles (no free plain node is left before them)
+  [4900, [amber(1080), power('meteor_drizzle')]],
   [5000, [capsule('aeon')]],
 ];
 

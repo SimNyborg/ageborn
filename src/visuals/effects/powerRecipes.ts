@@ -1165,6 +1165,46 @@ export function powerFxRecipes(k: FxKit): FxRecipe[] {
         { sprite: 'fx.p.glint', rate: 6, life: [300, 500], box: [40, 28], sizeWith: 'zone', scale: [1, 0.2], alpha: [1, 0], tint: 0xffffff },
       ],
     },
+    // Cosmic wave (CONTENT_PLAN 5.8)
+    {
+      // Meteor Drizzle (Field lane volley): a small glowing meteor streaks down onto each unit it screens and pops in
+      // a violet-white burst.
+      id: 'fx.meteor_drizzle',
+      durationMs: 1000,
+      fall: { sprite: 'proj.mini_star', count: 1, fromX: -130, fromY: -300, spreadX: 14, fallMs: 300, impact: 'fx.meteor_pop', scale: 1.3 },
+    },
+    {
+      // A meteor pop: a white-hot flash, a violet bloom, star sparkles and rock dust.
+      id: 'fx.meteor_pop',
+      durationMs: 760,
+      sprites: [
+        scorch(1.0, 640),
+        { ...flash(1.5, 0xfff8e8, 90), keys: [{ t: 0, y: -10, sx: 1, sy: 1, a: 1 }, { t: 1, y: -10, sx: 2.4, sy: 2.4, a: 0 }] },
+        { ...bloom(1.3, 260, 0xe7dcff, 0.6), keys: [{ t: 0, y: -10, sx: 0.6, sy: 0.6, a: 0.7 }, { t: 1, y: -10, sx: 1.7, sy: 1.7, a: 0 }] },
+        ring(1.4, 320, 0xe7dcff, 0.4),
+      ],
+      particles: [
+        { sprite: 'fx.p.nanite', count: 7, life: [300, 560], speed: [80, 180], angle: [-160, -20], gravity: 200, scale: [1.1, 0.3], alpha: [1, 0], tint: 0xfff8d8, blendAdd: true },
+        { ...dust(5, 0.9), tint: 0x9a90aa },
+      ],
+    },
+    {
+      // Pulsar Pulse (Home stun, hits air): a pulsar beam sweeps once across the zone; the ground and the sky above
+      // flash violet in rings and the stunned units wobble under the dizzy status.
+      id: 'fx.pulsar_pulse',
+      durationMs: 1400,
+      sprites: [
+        { sprite: 'fx.p.groundDisc', life: 1200, sizeWith: 'zone', keys: [{ t: 0, sx: 0.2, sy: 0.03, a: 0 }, { t: 0.08, sx: 1.02, sy: 0.16, a: 0.34 }, { t: 1, sx: 1, sy: 0.15, a: 0 }], tint: 0xc08cff },
+        { sprite: 'fx.p.beam', life: 700, keys: [{ t: 0, x: -150, y: -110, r: 70, sx: 1.6, sy: 3.0, a: 0 }, { t: 0.15, x: -110, y: -110, r: 75, sx: 1.6, sy: 3.0, a: 0.75 }, { t: 0.85, x: 110, y: -110, r: 105, sx: 1.6, sy: 3.0, a: 0.75 }, { t: 1, x: 150, y: -110, r: 110, sx: 1.6, sy: 3.0, a: 0 }], tint: 0xe7dcff, blendAdd: true },
+        { sprite: 'fx.p.ring', life: 560, delay: 300, sizeWith: 'zone', tint: 0xe7dcff, keys: [{ t: 0, y: -6, sx: 0.1, sy: 0.04, a: 1 }, { t: 1, y: -6, sx: 1.1, sy: 0.3, a: 0 }] },
+        { sprite: 'fx.p.ring', life: 620, delay: 480, sizeWith: 'zone', tint: 0xc08cff, keys: [{ t: 0, y: -60, sx: 0.1, sy: 0.08, a: 0.8 }, { t: 1, y: -60, sx: 1.1, sy: 0.6, a: 0 }] },
+        { ...flash(2.2, 0xf1e6ff, 90), delay: 360, keys: [{ t: 0, y: -40, sx: 1, sy: 1, a: 0.9 }, { t: 1, y: -40, sx: 3.2, sy: 3.2, a: 0 }] },
+      ],
+      particles: [
+        { sprite: 'fx.p.glint', count: 10, life: [400, 700], box: [40, 30], sizeWith: 'zone', scale: [1.2, 0.2], alpha: [1, 0], tint: 0xffffff },
+        { sprite: 'fx.p.nanite', count: 12, life: [500, 900], box: [40, 10], sizeWith: 'zone', speed: [20, 60], angle: [-150, -30], scale: [1, 0.3], alpha: [1, 0], tint: 0xe7dcff, blendAdd: true },
+      ],
+    },
     {
       // Ion Cannon (Field strike): an orbital beam spears its target from the sky.
       id: 'fx.ion_cannon',

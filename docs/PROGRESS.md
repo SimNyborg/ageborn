@@ -2,6 +2,26 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-04: the Future content wave ships (cloud session, not yet published)
+
+The seventh content wave is in: 13 new Future troops (Android Pair, Barrier Trooper, Hover Biker, Needle Gunner, Crab Mech, Arc Lobber, Plasma Lancer, Overclock Engineer, Holo Projector, Jetpack Trooper, Particle Cannon, Overload Android, Drone Carrier), the Holo Decoy and the flying Attack Drone they summon, 2 turrets (Cryo Pod, Tractor Beam), 2 powers (Target Painter, Nano Mesh), 2 forts (Skyguard Pylon, Mech Bay) and 3 skins (Space Cadet, Chrome Rail, Grandfather Clock), each with a cartoon sprite sheet (2-3 attacks, walk by gait, KO death), card portrait, sounds and effects; the four older Future forts are redrawn in the cartoon style. Bots use the new cards (every new troop, turret and power except the Legendary sits in a General's Future plan, as in the earlier waves; the counter matrix is regenerated; forts are player picks). No sim rule changed. Numbers and details: `docs/decisions.md` ("X0 Future wave shipped"); table in DESIGN A5.6.
+
+**Checks (2026-10-04):** typecheck clean, production build OK; lint has one error in `src/content/rosterShape.ts` from the Cosmic wave in progress. Unit tests 6,200 pass, 34 fail, none in Future rows: the Cosmic wave in progress (its table rows, attack mapping and the counters file), the arena/format change in progress elsewhere (meta, Last Base, matchmaking and mode-picker tests), the known boot sound budget and the turret-turtle proxy.
+
+**Still open:** the Needle Gunner reads +14 in the two-age window (the plan without the Pulse Trooper wins more there: even a near-harmless Needle Gunner reads +9; one-age window +4.5); the Tractor Beam row measures nothing (the bot never builds the rare-turret mount); the capsule economy re-tune is overdue (Common and Rare no longer reach max in a year, `docs/requests/content-economy-retune.md`).
+
+**What the owner should try** (once published): put the Drone Carrier, the Crab Mech and the Holo Projector in your Future War Plan, throw a Nano Mesh over a crowd (it catches fliers too), and build a Skyguard Pylon.
+
+## 2026-10-03/04: the Modern content wave ships (cloud session, not yet published)
+
+The sixth content wave is in: 13 new Modern troops (Commando, Sandbag Carrier, SMG Squad, Rifle Grenadier, Assault Gun, Mortar Team, Sticky Bomber, Combat Medic, Bulldog Sergeant, Dive Bomber, Bulldozer, Ghillie Sniper, Sky Fortress), 2 turrets (Anti-Tank Gun, Rocket Battery), 2 powers (Creeping Barrage, Concussion Shells), 2 forts (Rifle Depot with its Rifle Levy, Wire Snare) and 3 skins (Desert Raider, Tin Tankette, Origami Fortress), each with a cartoon sprite sheet (2-3 attacks, walk by gait, KO death), card portrait, sounds and effects; the four older Modern forts are redrawn in the cartoon style. One sim rule: a bomber's riders shoot their own targets (the Sky Fortress's waist gunners; SIM_VERSION 7.3.0, goldens re-recorded). Bots use every new card (Generals' plans and the counter matrix). Sources: capsules by arena (`cardArena.ts`), Trophy Road 3,700 (Creeping Barrage) and 4,600 (Concussion Shells, Rifle Depot, Wire Snare). Numbers and details: `docs/decisions.md` ("X0 Modern wave shipped"); table in DESIGN A5.5.
+
+**Checks (2026-10-04, after a container restart):** typecheck and lint clean, production build OK. Unit tests 6,190 pass, 27 fail, none in Modern rows: the Future wave's unit-table rows, the Nano Mesh control cap and the content-hash snapshot (Future numbers moved after the snapshot), the arena/format change in progress elsewhere (meta, Last Base, matchmaking and mode-picker tests), the known boot sound budget and the turret-turtle proxy. Battle screenshots in the session scratchpad `content/modern/`.
+
+**Still open:** SMG Squad reads +10 in the two-age window (the plan without the Rifleman wins more; one-age window +2.7); Combat Medic +5.1 and Sticky Bomber / Concussion Shells about -5 to -6 in the two-age window; Creeping Barrage sits at the lane caps (-25 / -17) like every lane volley; the capsule economy re-tune is overdue (Common and Rare no longer reach max in a year; `docs/requests/content-economy-retune.md`).
+
+**What the owner should try** (once published): put the Sky Fortress, the Ghillie Sniper and the Bulldozer in your Modern War Plan, stun a crowd with Concussion Shells, and lay a Wire Snare in front of your gate.
+
 ## 2026-10-03: the Industrial content wave ships (cloud session, not yet published)
 
 The fifth content wave is in: 13 new Industrial troops (Coal Miners, Iron Mantlet, Dispatch Rider, Bomb Bowler, Steam Tractor, Trench Mortar, Steam Driller, Bandmaster, Clockwork Tinker, Armoured Car, Alpine Climber, Spark Scientist, Armoured Train), the Tinker's Clockwork Soldier, 2 turrets (Rivet Spitter, Steam Hammer), 2 powers (Shrapnel Shells, Great Magnet), 2 forts (Rail Barricade, Tesla Pylon) and 3 skins, each with a cartoon sprite sheet (2-3 attacks, walk by gait, KO death), card portrait, sounds and effects; the four older Industrial forts are redrawn in the cartoon style. Bots use every new card (Generals' plans and the counter matrix). No sim rule changed. Numbers and details: `docs/decisions.md` ("X0 Industrial wave shipped"); table in DESIGN A5.4.

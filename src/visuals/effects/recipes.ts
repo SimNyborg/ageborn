@@ -459,6 +459,47 @@ export const FX_RECIPES: readonly FxRecipe[] = [
     sprites: [flash(1.2, 0xfff6e2, 90), ring(2.2, 420, 0xf2ecdc, 0.3), { ...ring(3.0, 520, 0xd8ccb4, 0.25), delay: 80 }],
     particles: [{ ...dust(6, 1.1), tint: 0xd8ccb4 }, { ...chunks(4), tint: 0x9a9288 }, { ...smoke(3, 0.9), tint: 0xeeeae2 }],
   },
+  // Cosmic wave instants (CONTENT_PLAN 5.8): the Bio-Weaver's tendril lash, the Void Whisperer's ripple, the Star
+  // Leviathan's song wave (a broad mint cone through the line) and the Event Horizon's inward pulse at the gate
+  {
+    id: 'fx.tendril_lash',
+    durationMs: 380,
+    sprites: [
+      { sprite: 'fx.p.beam', life: 320, toTarget: true, keys: [{ t: 0, sx: 0, sy: 0.7, a: 1 }, { t: 0.35, sx: 1, sy: 0.9, a: 1 }, { t: 0.7, sx: 1, sy: 0.6, a: 0.8 }, { t: 1, sx: 0.2, sy: 0.4, a: 0 }], tint: 0x3fe0b0 },
+      flash(0.6, 0xd8fff0, 110),
+    ],
+    particles: [{ sprite: 'fx.p.leaf', count: 3, life: [300, 520], speed: [30, 70], angle: [-150, -30], spread: 4, gravity: 60, scale: [0.8, 0.4], alpha: [1, 0], spin: [-120, 120], tint: 0x8af2d2 }],
+  },
+  {
+    id: 'fx.void_ripple',
+    durationMs: 620,
+    sprites: [
+      ring(1.4, 420, 0xd8c4f4, 0.5),
+      { ...ring(2.2, 520, 0xc08cff, 0.35), delay: 90 },
+      { sprite: 'fx.p.beam', life: 400, toTarget: true, keys: [{ t: 0, sx: 0, sy: 0.6, a: 0 }, { t: 0.3, sx: 1, sy: 1.5, a: 0.4 }, { t: 1, sx: 1, sy: 0.6, a: 0 }], tint: 0xc08cff },
+    ],
+  },
+  {
+    id: 'fx.song_wave',
+    durationMs: 720,
+    sprites: [
+      { sprite: 'fx.p.beam', life: 620, toTarget: true, keys: [{ t: 0, sx: 0, sy: 2.4, a: 0.6 }, { t: 0.3, sx: 1, sy: 4.6, a: 0.5 }, { t: 1, sx: 1, sy: 6.0, a: 0 }], tint: 0x8af2d2 },
+      { sprite: 'fx.p.beam', life: 480, toTarget: true, keys: [{ t: 0, sx: 0, sy: 1.0, a: 1 }, { t: 0.3, sx: 1, sy: 1.6, a: 0.9 }, { t: 1, sx: 1, sy: 0.6, a: 0 }], tint: 0xffffff },
+      ring(2.6, 520, 0xd8fff0, 0.4),
+      { ...ring(3.6, 600, 0x8af2d2, 0.3), delay: 120 },
+    ],
+    particles: [{ sprite: 'fx.p.note', count: 4, life: [420, 700], speed: [40, 90], angle: [-140, -40], spread: 10, gravity: -30, scale: [1.1, 0.6], alpha: [1, 0], spin: [-60, 60], tint: 0xd8fff0 }],
+  },
+  {
+    id: 'fx.horizon_pulse',
+    durationMs: 640,
+    sprites: [
+      { sprite: 'fx.p.ring', life: 520, tint: 0xc08cff, keys: [{ t: 0, y: -4, sx: 2.6, sy: 0.9, a: 0 }, { t: 0.2, y: -4, sx: 2.2, sy: 0.8, a: 0.7 }, { t: 1, y: -4, sx: 0.2, sy: 0.08, a: 0 }] },
+      { sprite: 'fx.p.ring', life: 520, delay: 140, tint: 0xe7dcff, keys: [{ t: 0, y: -4, sx: 2.2, sy: 0.8, a: 0 }, { t: 0.2, y: -4, sx: 1.8, sy: 0.7, a: 0.6 }, { t: 1, y: -4, sx: 0.1, sy: 0.05, a: 0 }] },
+      flash(0.9, 0xe7dcff, 100),
+    ],
+    particles: [{ sprite: 'fx.p.nanite', count: 6, life: [300, 520], box: [24, 4], attract: 4, speed: [20, 40], angle: [-180, 180], scale: [1, 0.3], alpha: [1, 0], tint: 0xe7dcff, blendAdd: true }],
+  },
   // Future wave instants (CONTENT_PLAN 5.7): the Overclock Engineer's multitool zap (a short crackling arc),
   // the Particle Cannon's piercing beam (a thick white-mint lance that lingers) and the Tractor Beam's pull ray
   {
@@ -928,6 +969,16 @@ export const PROJECTILE_RECIPES: readonly ProjectileRecipe[] = [
   { id: 'proj.arc_shell', sprite: 'proj.arc_shell', spin: 300, tail: { length: 14, width: 4, alpha: 0.4 }, puff: { sprite: 'fx.p.nanite', every: 45, tint: 0xbff5e0 } },
   { id: 'proj.frost', sprite: 'proj.frost', spin: 240, tail: { length: 16, width: 5, alpha: 0.4 }, puff: { sprite: 'fx.p.nanite', every: 40, tint: 0xe6f6f8 } },
   { id: 'proj.gravity_orb', sprite: 'proj.gravity_orb', spin: 360, tail: { length: 16, width: 5, alpha: 0.4 }, puff: { sprite: 'fx.p.nanite', every: 50, tint: 0xc9b8f0 } },
+  // Cosmic wave (CONTENT_PLAN 5.8): moon pellets, a nova orb on its arc, a tiny star on the high lob, the antimatter
+  // bolt, twin laser darts, the Matron's glob, the sage's gravity orb and the crystal shard
+  { id: 'proj.moon_pellet', sprite: 'proj.moon_pellet', tail: { length: 14, width: 2.4, alpha: 0.5 } },
+  { id: 'proj.nova_orb', sprite: 'proj.nova_orb', spin: 300, tail: { length: 14, width: 4, alpha: 0.45 }, puff: { sprite: 'fx.p.nanite', every: 45, tint: 0xd8fff0 } },
+  { id: 'proj.mini_star', sprite: 'proj.mini_star', spin: 420, tail: { length: 18, width: 5, alpha: 0.45 }, puff: { sprite: 'fx.p.nanite', every: 40, tint: 0xfff8d8 } },
+  { id: 'proj.antimatter', sprite: 'proj.antimatter', tail: { length: 26, width: 3.4, alpha: 0.6 } },
+  { id: 'proj.twin_laser', sprite: 'proj.twin_laser', tail: { length: 22, width: 1.6, alpha: 0.6 } },
+  { id: 'proj.swarm_glob', sprite: 'proj.swarm_glob', wobble: 1.5, tail: { length: 12, width: 3, alpha: 0.4 } },
+  { id: 'proj.sage_orb', sprite: 'proj.sage_orb', spin: 360, tail: { length: 16, width: 4, alpha: 0.45 }, puff: { sprite: 'fx.p.nanite', every: 50, tint: 0xe7dcff } },
+  { id: 'proj.shard', sprite: 'proj.shard', spin: 200, tail: { length: 14, width: 1.6, alpha: 0.45 } },
   // A17.12
   { id: 'proj.javelin', sprite: 'proj.javelin', tail: { length: 18, width: 1.6, alpha: 0.45 } },
   { id: 'proj.scorpion_bolt', sprite: 'proj.scorpion_bolt', tail: { length: 22, width: 2.4, alpha: 0.5 } },

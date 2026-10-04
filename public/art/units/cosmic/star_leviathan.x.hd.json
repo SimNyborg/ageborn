@@ -1,0 +1,1396 @@
+{
+ "frames": {
+  "star_leviathan_attack_b_01": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 535,
+    "h": 354
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 436,
+    "y": 439,
+    "w": 535,
+    "h": 354
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_b_01_team": {
+   "frame": {
+    "x": 408,
+    "y": 1686,
+    "w": 405,
+    "h": 278
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 415,
+    "y": 517,
+    "w": 405,
+    "h": 278
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_b_02": {
+   "frame": {
+    "x": 1831,
+    "y": 2,
+    "w": 506,
+    "h": 349
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 446,
+    "y": 441,
+    "w": 506,
+    "h": 349
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_b_02_team": {
+   "frame": {
+    "x": 1946,
+    "y": 1368,
+    "w": 403,
+    "h": 281
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 408,
+    "y": 509,
+    "w": 403,
+    "h": 281
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_b_03": {
+   "frame": {
+    "x": 2,
+    "y": 360,
+    "w": 528,
+    "h": 343
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 414,
+    "y": 444,
+    "w": 528,
+    "h": 343
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_b_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 1686,
+    "w": 402,
+    "h": 279
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 405,
+    "y": 507,
+    "w": 402,
+    "h": 279
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_b_04": {
+   "frame": {
+    "x": 2341,
+    "y": 2,
+    "w": 551,
+    "h": 348
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 436,
+    "y": 439,
+    "w": 551,
+    "h": 348
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_b_04_team": {
+   "frame": {
+    "x": 2353,
+    "y": 1368,
+    "w": 404,
+    "h": 280
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 415,
+    "y": 510,
+    "w": 404,
+    "h": 280
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_b_05": {
+   "frame": {
+    "x": 562,
+    "y": 1041,
+    "w": 592,
+    "h": 322
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 425,
+    "y": 446,
+    "w": 592,
+    "h": 322
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_b_05_team": {
+   "frame": {
+    "x": 1253,
+    "y": 1969,
+    "w": 414,
+    "h": 253
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 417,
+    "y": 521,
+    "w": 414,
+    "h": 253
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_b_06": {
+   "frame": {
+    "x": 541,
+    "y": 2,
+    "w": 653,
+    "h": 353
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 427,
+    "y": 461,
+    "w": 653,
+    "h": 353
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_b_06_team": {
+   "frame": {
+    "x": 1266,
+    "y": 2228,
+    "w": 418,
+    "h": 229
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 419,
+    "y": 539,
+    "w": 418,
+    "h": 229
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_b_07": {
+   "frame": {
+    "x": 562,
+    "y": 1368,
+    "w": 562,
+    "h": 308
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 430,
+    "y": 461,
+    "w": 562,
+    "h": 308
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_b_07_team": {
+   "frame": {
+    "x": 2,
+    "y": 2228,
+    "w": 415,
+    "h": 237
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 422,
+    "y": 539,
+    "w": 415,
+    "h": 237
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_b_08": {
+   "frame": {
+    "x": 562,
+    "y": 707,
+    "w": 552,
+    "h": 328
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 432,
+    "y": 449,
+    "w": 552,
+    "h": 328
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_b_08_team": {
+   "frame": {
+    "x": 2049,
+    "y": 1686,
+    "w": 406,
+    "h": 258
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 424,
+    "y": 525,
+    "w": 406,
+    "h": 258
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_01": {
+   "frame": {
+    "x": 2300,
+    "y": 1041,
+    "w": 559,
+    "h": 320
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 415,
+    "y": 453,
+    "w": 559,
+    "h": 320
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_01_team": {
+   "frame": {
+    "x": 2506,
+    "y": 1969,
+    "w": 411,
+    "h": 250
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 407,
+    "y": 530,
+    "w": 411,
+    "h": 250
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_02": {
+   "frame": {
+    "x": 1730,
+    "y": 1041,
+    "w": 566,
+    "h": 320
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 399,
+    "y": 459,
+    "w": 566,
+    "h": 320
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_02_team": {
+   "frame": {
+    "x": 421,
+    "y": 2228,
+    "w": 418,
+    "h": 235
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 391,
+    "y": 537,
+    "w": 418,
+    "h": 235
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_03": {
+   "frame": {
+    "x": 1654,
+    "y": 360,
+    "w": 570,
+    "h": 336
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 394,
+    "y": 463,
+    "w": 570,
+    "h": 336
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_03_team": {
+   "frame": {
+    "x": 843,
+    "y": 2228,
+    "w": 419,
+    "h": 230
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 386,
+    "y": 540,
+    "w": 419,
+    "h": 230
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_04": {
+   "frame": {
+    "x": 1158,
+    "y": 1041,
+    "w": 568,
+    "h": 322
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 426,
+    "y": 461,
+    "w": 568,
+    "h": 322
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_04_team": {
+   "frame": {
+    "x": 1671,
+    "y": 1969,
+    "w": 414,
+    "h": 252
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 418,
+    "y": 538,
+    "w": 414,
+    "h": 252
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_05": {
+   "frame": {
+    "x": 534,
+    "y": 360,
+    "w": 573,
+    "h": 340
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 470,
+    "y": 456,
+    "w": 573,
+    "h": 340
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_05_team": {
+   "frame": {
+    "x": 817,
+    "y": 1686,
+    "w": 403,
+    "h": 278
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 448,
+    "y": 525,
+    "w": 403,
+    "h": 278
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_06": {
+   "frame": {
+    "x": 1198,
+    "y": 2,
+    "w": 629,
+    "h": 351
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 494,
+    "y": 463,
+    "w": 629,
+    "h": 351
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_06_team": {
+   "frame": {
+    "x": 1128,
+    "y": 1368,
+    "w": 405,
+    "h": 298
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 457,
+    "y": 508,
+    "w": 405,
+    "h": 298
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_07": {
+   "frame": {
+    "x": 2228,
+    "y": 360,
+    "w": 532,
+    "h": 335
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 485,
+    "y": 463,
+    "w": 532,
+    "h": 335
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_07_team": {
+   "frame": {
+    "x": 1537,
+    "y": 1368,
+    "w": 405,
+    "h": 284
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 457,
+    "y": 520,
+    "w": 405,
+    "h": 284
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_08": {
+   "frame": {
+    "x": 1111,
+    "y": 360,
+    "w": 539,
+    "h": 337
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 455,
+    "y": 447,
+    "w": 539,
+    "h": 337
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_c_08_team": {
+   "frame": {
+    "x": 1224,
+    "y": 1686,
+    "w": 404,
+    "h": 265
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 437,
+    "y": 526,
+    "w": 404,
+    "h": 265
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_alt_00": {
+   "frame": {
+    "x": 1678,
+    "y": 707,
+    "w": 556,
+    "h": 326
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 423,
+    "y": 442,
+    "w": 556,
+    "h": 326
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_alt_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 1969,
+    "w": 413,
+    "h": 255
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 415,
+    "y": 520,
+    "w": 413,
+    "h": 255
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_alt_01": {
+   "frame": {
+    "x": 2,
+    "y": 1368,
+    "w": 556,
+    "h": 314
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 423,
+    "y": 454,
+    "w": 556,
+    "h": 314
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_alt_01_team": {
+   "frame": {
+    "x": 2089,
+    "y": 1969,
+    "w": 413,
+    "h": 252
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 415,
+    "y": 523,
+    "w": 413,
+    "h": 252
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_alt_02": {
+   "frame": {
+    "x": 2,
+    "y": 707,
+    "w": 556,
+    "h": 330
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 423,
+    "y": 438,
+    "w": 556,
+    "h": 330
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_alt_02_team": {
+   "frame": {
+    "x": 1632,
+    "y": 1686,
+    "w": 413,
+    "h": 261
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 415,
+    "y": 514,
+    "w": 413,
+    "h": 261
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_alt_03": {
+   "frame": {
+    "x": 1118,
+    "y": 707,
+    "w": 556,
+    "h": 327
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 423,
+    "y": 441,
+    "w": 556,
+    "h": 327
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_alt_03_team": {
+   "frame": {
+    "x": 2459,
+    "y": 1686,
+    "w": 413,
+    "h": 257
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 415,
+    "y": 518,
+    "w": 413,
+    "h": 257
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_alt_04": {
+   "frame": {
+    "x": 2238,
+    "y": 707,
+    "w": 556,
+    "h": 326
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 423,
+    "y": 442,
+    "w": 556,
+    "h": 326
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_alt_04_team": {
+   "frame": {
+    "x": 419,
+    "y": 1969,
+    "w": 413,
+    "h": 255
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 415,
+    "y": 520,
+    "w": 413,
+    "h": 255
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_alt_05": {
+   "frame": {
+    "x": 2,
+    "y": 1041,
+    "w": 556,
+    "h": 323
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 423,
+    "y": 445,
+    "w": 556,
+    "h": 323
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  },
+  "star_leviathan_attack_alt_05_team": {
+   "frame": {
+    "x": 836,
+    "y": 1969,
+    "w": 413,
+    "h": 255
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 415,
+    "y": 520,
+    "w": 413,
+    "h": 255
+   },
+   "sourceSize": {
+    "w": 1340,
+    "h": 896
+   },
+   "anchor": {
+    "x": 0.56119,
+    "y": 0.89509
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "star_leviathan_attack_00",
+   "star_leviathan_attack_b_01",
+   "star_leviathan_attack_b_02",
+   "star_leviathan_attack_b_03",
+   "star_leviathan_attack_b_04",
+   "star_leviathan_attack_b_05",
+   "star_leviathan_attack_b_06",
+   "star_leviathan_attack_b_07",
+   "star_leviathan_attack_b_08",
+   "star_leviathan_attack_09",
+   "star_leviathan_attack_00"
+  ],
+  "attack_b_team": [
+   "star_leviathan_attack_00_team",
+   "star_leviathan_attack_b_01_team",
+   "star_leviathan_attack_b_02_team",
+   "star_leviathan_attack_b_03_team",
+   "star_leviathan_attack_b_04_team",
+   "star_leviathan_attack_b_05_team",
+   "star_leviathan_attack_b_06_team",
+   "star_leviathan_attack_b_07_team",
+   "star_leviathan_attack_b_08_team",
+   "star_leviathan_attack_09_team",
+   "star_leviathan_attack_00_team"
+  ],
+  "attack_c": [
+   "star_leviathan_attack_00",
+   "star_leviathan_attack_c_01",
+   "star_leviathan_attack_c_02",
+   "star_leviathan_attack_c_03",
+   "star_leviathan_attack_c_04",
+   "star_leviathan_attack_c_05",
+   "star_leviathan_attack_c_06",
+   "star_leviathan_attack_c_07",
+   "star_leviathan_attack_c_08",
+   "star_leviathan_attack_09",
+   "star_leviathan_attack_00"
+  ],
+  "attack_c_team": [
+   "star_leviathan_attack_00_team",
+   "star_leviathan_attack_c_01_team",
+   "star_leviathan_attack_c_02_team",
+   "star_leviathan_attack_c_03_team",
+   "star_leviathan_attack_c_04_team",
+   "star_leviathan_attack_c_05_team",
+   "star_leviathan_attack_c_06_team",
+   "star_leviathan_attack_c_07_team",
+   "star_leviathan_attack_c_08_team",
+   "star_leviathan_attack_09_team",
+   "star_leviathan_attack_00_team"
+  ],
+  "attack_alt": [
+   "star_leviathan_attack_alt_00",
+   "star_leviathan_attack_alt_01",
+   "star_leviathan_attack_alt_02",
+   "star_leviathan_attack_alt_03",
+   "star_leviathan_attack_alt_04",
+   "star_leviathan_attack_alt_05"
+  ],
+  "attack_alt_team": [
+   "star_leviathan_attack_alt_00_team",
+   "star_leviathan_attack_alt_01_team",
+   "star_leviathan_attack_alt_02_team",
+   "star_leviathan_attack_alt_03_team",
+   "star_leviathan_attack_alt_04_team",
+   "star_leviathan_attack_alt_05_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "star_leviathan.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 3072,
+   "h": 2468
+  },
+  "scale": "2.5",
+  "ageborn": {
+   "visualId": "unit.star_leviathan",
+   "name": "Star Leviathan",
+   "heightLu": 172,
+   "widthLu": 269.3,
+   "pxPerLu": 2.05,
+   "feetPx": [
+    752,
+    802
+   ],
+   "anchorsLu": {
+    "head": [
+     72,
+     144
+    ],
+    "hitCenter": [
+     0,
+     79
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "hover",
+   "extrasOf": "star_leviathan",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      0
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      210
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        99.9,
+        60.3
+       ],
+       [
+        95.8,
+        79.7
+       ],
+       [
+        90.6,
+        95.6
+       ],
+       [
+        88.1,
+        100.9
+       ],
+       [
+        95.8,
+        83.2
+       ],
+       [
+        101.6,
+        61.9
+       ],
+       [
+        104.7,
+        51.3
+       ],
+       [
+        104.8,
+        53.0
+       ],
+       [
+        101.6,
+        58.5
+       ],
+       [
+        99.9,
+        60.3
+       ]
+      ]
+     },
+     "muzzle": [
+      104.7,
+      51.3
+     ]
+    },
+    "attack_c": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      0
+     ],
+     "durationsMs": [
+      70,
+      90,
+      100,
+      200,
+      60,
+      50,
+      150,
+      90,
+      110,
+      100,
+      210
+     ],
+     "durationMs": 1230,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4634,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        99.9,
+        60.3
+       ],
+       [
+        95.7,
+        48.4
+       ],
+       [
+        91.0,
+        38.3
+       ],
+       [
+        88.9,
+        34.9
+       ],
+       [
+        102.5,
+        42.8
+       ],
+       [
+        112.0,
+        52.6
+       ],
+       [
+        117.5,
+        57.6
+       ],
+       [
+        117.5,
+        57.6
+       ],
+       [
+        106.9,
+        59.9
+       ],
+       [
+        99.9,
+        60.3
+       ]
+      ]
+     },
+     "muzzle": [
+      117.5,
+      57.6
+     ]
+    },
+    "attack_alt": {
+     "frames": 6,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      80,
+      120,
+      100,
+      100,
+      100,
+      100
+     ],
+     "durationMs": 600,
+     "impactFrame": 2,
+     "impactStep": 2,
+     "impactAt": 0.3333,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        2.1,
+        131.6
+       ],
+       [
+        2.1,
+        131.6
+       ],
+       [
+        2.1,
+        131.6
+       ],
+       [
+        2.1,
+        131.6
+       ],
+       [
+        2.1,
+        131.6
+       ],
+       [
+        2.1,
+        131.6
+       ]
+      ]
+     },
+     "holdStep": 1,
+     "muzzle": [
+      2.1,
+      131.6
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

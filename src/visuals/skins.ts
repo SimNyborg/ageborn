@@ -310,6 +310,27 @@ export const SKIN_SPECS: readonly SkinSpec[] = [
     // A grandfather clock: walnut casing, brass trim and an ivory dial.
     palette: { cloth: 0x5a4c40, cloth2: 0x7a6858, metal: 0xc8b48a, metal2: 0x6a5a4c, wood: 0x6a5a4c, wood2: 0x4a4038, stone: 0x7a6858, stone2: 0x5a4c40, cloth3: 0xc8b48a, clockface: 0xf2ead8 },
   },
+  // Cosmic wave (CONTENT_PLAN 5.8, released with the wave): palette puppets like the ones above.
+  {
+    skin: 'starlight_legionnaire',
+    target: 'unit.star_legionnaire',
+    // Constellation armour: a midnight-violet suit, silver-lilac plates and pale starlight trim (low saturation).
+    palette: { cloth: 0x1c1630, cloth2: 0x4e4478, cloth3: 0xdcd6f0, sleeve: 0xdcd6f0, forearm: 0xdcd6f0, shin: 0xdcd6f0, metal: 0xece6d2, metal2: 0x3a3358 },
+  },
+  {
+    skin: 'shadow_stalker',
+    target: 'unit.warp_stalker',
+    // A see-through shadow body with a ghostly glowing edge (A5.8: translucency of at least 0.7).
+    palette: { cloth: 0x15111f, cloth2: 0x2c2442, cloth3: 0x3c3456, metal: 0x4a4266, metal2: 0x1e1a2c, glow: 0xd8ccff, mint: 0xd8ccff },
+    alpha: 0.72,
+    aura: 'ghost',
+  },
+  {
+    skin: 'classic_saucer',
+    target: 'unit.mothership',
+    // A 1950s flying saucer: polished silver hull, grey rivets, a pale green glass dome.
+    palette: { cloth: 0x5a5e68, cloth2: 0x9aa0aa, cloth3: 0xeef0f4, metal: 0xd8dce2, metal2: 0x7a808c, glass: 0xd2eee2, magenta: 0x9aa0aa },
+  },
 ];
 
 export const SKIN_PUPPETS: readonly PuppetDef[] = SKIN_SPECS.map(skinPuppet);

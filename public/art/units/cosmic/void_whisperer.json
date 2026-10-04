@@ -1,0 +1,2271 @@
+{
+ "frames": {
+  "void_whisperer_idle_00": {
+   "frame": {
+    "x": 256,
+    "y": 201,
+    "w": 56,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 108,
+    "w": 56,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_idle_00_team": {
+   "frame": {
+    "x": 390,
+    "y": 472,
+    "w": 44,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 111,
+    "w": 44,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_idle_01": {
+   "frame": {
+    "x": 66,
+    "y": 201,
+    "w": 56,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 107,
+    "w": 56,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_idle_01_team": {
+   "frame": {
+    "x": 245,
+    "y": 472,
+    "w": 43,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 110,
+    "w": 43,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_idle_02": {
+   "frame": {
+    "x": 234,
+    "y": 2,
+    "w": 55,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 104,
+    "w": 55,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_idle_02_team": {
+   "frame": {
+    "x": 50,
+    "y": 472,
+    "w": 43,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 108,
+    "w": 43,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_idle_03": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 57,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 102,
+    "w": 57,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_idle_03_team": {
+   "frame": {
+    "x": 2,
+    "y": 387,
+    "w": 43,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 106,
+    "w": 43,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_idle_04": {
+   "frame": {
+    "x": 112,
+    "y": 2,
+    "w": 58,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 104,
+    "w": 58,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_idle_04_team": {
+   "frame": {
+    "x": 469,
+    "y": 297,
+    "w": 44,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 106,
+    "w": 44,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_idle_05": {
+   "frame": {
+    "x": 429,
+    "y": 103,
+    "w": 58,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 106,
+    "w": 58,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_idle_05_team": {
+   "frame": {
+    "x": 420,
+    "y": 387,
+    "w": 45,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 109,
+    "w": 45,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_00": {
+   "frame": {
+    "x": 535,
+    "y": 201,
+    "w": 62,
+    "h": 87
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 109,
+    "w": 62,
+    "h": 87
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_00_team": {
+   "frame": {
+    "x": 469,
+    "y": 387,
+    "w": 45,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 112,
+    "w": 45,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_01": {
+   "frame": {
+    "x": 2,
+    "y": 297,
+    "w": 54,
+    "h": 86
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 113,
+    "w": 54,
+    "h": 86
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_01_team": {
+   "frame": {
+    "x": 438,
+    "y": 472,
+    "w": 42,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 115,
+    "w": 42,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_02": {
+   "frame": {
+    "x": 126,
+    "y": 201,
+    "w": 52,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 103,
+    "y": 107,
+    "w": 52,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_02_team": {
+   "frame": {
+    "x": 97,
+    "y": 472,
+    "w": 43,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 109,
+    "w": 43,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_03": {
+   "frame": {
+    "x": 2,
+    "y": 103,
+    "w": 59,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 103,
+    "w": 59,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_03_team": {
+   "frame": {
+    "x": 421,
+    "y": 297,
+    "w": 44,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 105,
+    "w": 44,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_04": {
+   "frame": {
+    "x": 316,
+    "y": 201,
+    "w": 64,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 109,
+    "w": 64,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_04_team": {
+   "frame": {
+    "x": 517,
+    "y": 297,
+    "w": 44,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 112,
+    "w": 44,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_05": {
+   "frame": {
+    "x": 60,
+    "y": 297,
+    "w": 55,
+    "h": 85
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 112,
+    "w": 55,
+    "h": 85
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_05_team": {
+   "frame": {
+    "x": 537,
+    "y": 472,
+    "w": 43,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 115,
+    "w": 43,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_06": {
+   "frame": {
+    "x": 384,
+    "y": 201,
+    "w": 56,
+    "h": 89
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 105,
+    "w": 56,
+    "h": 89
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_06_team": {
+   "frame": {
+    "x": 565,
+    "y": 297,
+    "w": 44,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 108,
+    "w": 44,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_07": {
+   "frame": {
+    "x": 467,
+    "y": 2,
+    "w": 62,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 101,
+    "w": 62,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_walk_07_team": {
+   "frame": {
+    "x": 292,
+    "y": 472,
+    "w": 45,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 106,
+    "w": 45,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_00": {
+   "frame": {
+    "x": 127,
+    "y": 103,
+    "w": 57,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 105,
+    "w": 57,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_00_team": {
+   "frame": {
+    "x": 235,
+    "y": 387,
+    "w": 44,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 108,
+    "w": 44,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_01": {
+   "frame": {
+    "x": 410,
+    "y": 2,
+    "w": 53,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 104,
+    "w": 53,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_01_team": {
+   "frame": {
+    "x": 283,
+    "y": 387,
+    "w": 43,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 107,
+    "w": 43,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_02": {
+   "frame": {
+    "x": 352,
+    "y": 2,
+    "w": 54,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 104,
+    "w": 54,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_02_team": {
+   "frame": {
+    "x": 96,
+    "y": 387,
+    "w": 42,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 107,
+    "w": 42,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_03": {
+   "frame": {
+    "x": 174,
+    "y": 2,
+    "w": 56,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 104,
+    "w": 56,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_03_team": {
+   "frame": {
+    "x": 181,
+    "y": 297,
+    "w": 41,
+    "h": 83
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 105,
+    "w": 41,
+    "h": 83
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_04": {
+   "frame": {
+    "x": 361,
+    "y": 103,
+    "w": 64,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 106,
+    "w": 64,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_04_team": {
+   "frame": {
+    "x": 144,
+    "y": 472,
+    "w": 48,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 109,
+    "w": 48,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_05": {
+   "frame": {
+    "x": 444,
+    "y": 201,
+    "w": 87,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 111,
+    "w": 87,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_05_team": {
+   "frame": {
+    "x": 584,
+    "y": 472,
+    "w": 52,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 116,
+    "w": 52,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_06": {
+   "frame": {
+    "x": 182,
+    "y": 201,
+    "w": 70,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 109,
+    "w": 70,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_06_team": {
+   "frame": {
+    "x": 484,
+    "y": 472,
+    "w": 49,
+    "h": 76
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 113,
+    "w": 49,
+    "h": 76
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_07": {
+   "frame": {
+    "x": 533,
+    "y": 2,
+    "w": 61,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 105,
+    "w": 61,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_07_team": {
+   "frame": {
+    "x": 567,
+    "y": 387,
+    "w": 44,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 111,
+    "y": 109,
+    "w": 44,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_08": {
+   "frame": {
+    "x": 491,
+    "y": 103,
+    "w": 58,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 98,
+    "y": 106,
+    "w": 58,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_08_team": {
+   "frame": {
+    "x": 2,
+    "y": 472,
+    "w": 44,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 108,
+    "w": 44,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_09": {
+   "frame": {
+    "x": 65,
+    "y": 103,
+    "w": 58,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 105,
+    "w": 58,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_09_team": {
+   "frame": {
+    "x": 49,
+    "y": 387,
+    "w": 43,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 107,
+    "w": 43,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_hit_00": {
+   "frame": {
+    "x": 119,
+    "y": 297,
+    "w": 58,
+    "h": 84
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 115,
+    "w": 58,
+    "h": 84
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_hit_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 555,
+    "w": 44,
+    "h": 73
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 106,
+    "y": 115,
+    "w": 44,
+    "h": 73
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_hit_01": {
+   "frame": {
+    "x": 248,
+    "y": 103,
+    "w": 54,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 104,
+    "w": 54,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_hit_01_team": {
+   "frame": {
+    "x": 330,
+    "y": 387,
+    "w": 41,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 108,
+    "w": 41,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_hit_02": {
+   "frame": {
+    "x": 553,
+    "y": 103,
+    "w": 51,
+    "h": 93
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 105,
+    "w": 51,
+    "h": 93
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_hit_02_team": {
+   "frame": {
+    "x": 375,
+    "y": 387,
+    "w": 41,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 109,
+    "y": 106,
+    "w": 41,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_hit_03": {
+   "frame": {
+    "x": 2,
+    "y": 201,
+    "w": 60,
+    "h": 92
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 96,
+    "y": 107,
+    "w": 60,
+    "h": 92
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_hit_03_team": {
+   "frame": {
+    "x": 196,
+    "y": 472,
+    "w": 45,
+    "h": 78
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 110,
+    "w": 45,
+    "h": 78
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_hit_04": {
+   "frame": {
+    "x": 293,
+    "y": 2,
+    "w": 55,
+    "h": 95
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 104,
+    "w": 55,
+    "h": 95
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_hit_04_team": {
+   "frame": {
+    "x": 186,
+    "y": 387,
+    "w": 45,
+    "h": 80
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 108,
+    "y": 108,
+    "w": 45,
+    "h": 80
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_00": {
+   "frame": {
+    "x": 308,
+    "y": 297,
+    "w": 55,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 112,
+    "w": 55,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_00_team": {
+   "frame": {
+    "x": 50,
+    "y": 555,
+    "w": 46,
+    "h": 72
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 107,
+    "y": 113,
+    "w": 46,
+    "h": 72
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_01": {
+   "frame": {
+    "x": 63,
+    "y": 2,
+    "w": 45,
+    "h": 97
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 102,
+    "y": 98,
+    "w": 45,
+    "h": 97
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_01_team": {
+   "frame": {
+    "x": 367,
+    "y": 297,
+    "w": 50,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 101,
+    "y": 103,
+    "w": 50,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_02": {
+   "frame": {
+    "x": 306,
+    "y": 103,
+    "w": 51,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 101,
+    "w": 51,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_02_team": {
+   "frame": {
+    "x": 142,
+    "y": 387,
+    "w": 40,
+    "h": 81
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 100,
+    "y": 102,
+    "w": 40,
+    "h": 81
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_03": {
+   "frame": {
+    "x": 188,
+    "y": 103,
+    "w": 56,
+    "h": 94
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 88,
+    "y": 105,
+    "w": 56,
+    "h": 94
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_03_team": {
+   "frame": {
+    "x": 518,
+    "y": 387,
+    "w": 45,
+    "h": 79
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 99,
+    "y": 110,
+    "w": 45,
+    "h": 79
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_04": {
+   "frame": {
+    "x": 380,
+    "y": 555,
+    "w": 96,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 65,
+    "y": 132,
+    "w": 96,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_04_team": {
+   "frame": {
+    "x": 480,
+    "y": 555,
+    "w": 61,
+    "h": 66
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 90,
+    "y": 132,
+    "w": 61,
+    "h": 66
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_05": {
+   "frame": {
+    "x": 226,
+    "y": 297,
+    "w": 78,
+    "h": 82
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 73,
+    "y": 121,
+    "w": 78,
+    "h": 82
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_05_team": {
+   "frame": {
+    "x": 341,
+    "y": 472,
+    "w": 45,
+    "h": 77
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 97,
+    "y": 122,
+    "w": 45,
+    "h": 77
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_06": {
+   "frame": {
+    "x": 231,
+    "y": 555,
+    "w": 87,
+    "h": 69
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 70,
+    "y": 128,
+    "w": 87,
+    "h": 69
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_06_team": {
+   "frame": {
+    "x": 322,
+    "y": 555,
+    "w": 54,
+    "h": 68
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 93,
+    "y": 128,
+    "w": 54,
+    "h": 68
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_07": {
+   "frame": {
+    "x": 100,
+    "y": 555,
+    "w": 73,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 82,
+    "y": 129,
+    "w": 73,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_die_07_team": {
+   "frame": {
+    "x": 177,
+    "y": 555,
+    "w": 50,
+    "h": 71
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 95,
+    "y": 128,
+    "w": 50,
+    "h": 71
+   },
+   "sourceSize": {
+    "w": 257,
+    "h": 227
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "void_whisperer_idle_00",
+   "void_whisperer_idle_01",
+   "void_whisperer_idle_02",
+   "void_whisperer_idle_03",
+   "void_whisperer_idle_04",
+   "void_whisperer_idle_05"
+  ],
+  "idle_team": [
+   "void_whisperer_idle_00_team",
+   "void_whisperer_idle_01_team",
+   "void_whisperer_idle_02_team",
+   "void_whisperer_idle_03_team",
+   "void_whisperer_idle_04_team",
+   "void_whisperer_idle_05_team"
+  ],
+  "walk": [
+   "void_whisperer_walk_00",
+   "void_whisperer_walk_01",
+   "void_whisperer_walk_02",
+   "void_whisperer_walk_03",
+   "void_whisperer_walk_04",
+   "void_whisperer_walk_05",
+   "void_whisperer_walk_06",
+   "void_whisperer_walk_07"
+  ],
+  "walk_team": [
+   "void_whisperer_walk_00_team",
+   "void_whisperer_walk_01_team",
+   "void_whisperer_walk_02_team",
+   "void_whisperer_walk_03_team",
+   "void_whisperer_walk_04_team",
+   "void_whisperer_walk_05_team",
+   "void_whisperer_walk_06_team",
+   "void_whisperer_walk_07_team"
+  ],
+  "attack": [
+   "void_whisperer_attack_00",
+   "void_whisperer_attack_01",
+   "void_whisperer_attack_02",
+   "void_whisperer_attack_03",
+   "void_whisperer_attack_04",
+   "void_whisperer_attack_05",
+   "void_whisperer_attack_06",
+   "void_whisperer_attack_07",
+   "void_whisperer_attack_08",
+   "void_whisperer_attack_09"
+  ],
+  "attack_team": [
+   "void_whisperer_attack_00_team",
+   "void_whisperer_attack_01_team",
+   "void_whisperer_attack_02_team",
+   "void_whisperer_attack_03_team",
+   "void_whisperer_attack_04_team",
+   "void_whisperer_attack_05_team",
+   "void_whisperer_attack_06_team",
+   "void_whisperer_attack_07_team",
+   "void_whisperer_attack_08_team",
+   "void_whisperer_attack_09_team"
+  ],
+  "hit": [
+   "void_whisperer_hit_00",
+   "void_whisperer_hit_01",
+   "void_whisperer_hit_02",
+   "void_whisperer_hit_03",
+   "void_whisperer_hit_04"
+  ],
+  "hit_team": [
+   "void_whisperer_hit_00_team",
+   "void_whisperer_hit_01_team",
+   "void_whisperer_hit_02_team",
+   "void_whisperer_hit_03_team",
+   "void_whisperer_hit_04_team"
+  ],
+  "die": [
+   "void_whisperer_die_00",
+   "void_whisperer_die_01",
+   "void_whisperer_die_02",
+   "void_whisperer_die_03",
+   "void_whisperer_die_04",
+   "void_whisperer_die_05",
+   "void_whisperer_die_06",
+   "void_whisperer_die_06",
+   "void_whisperer_die_07",
+   "void_whisperer_die_07"
+  ],
+  "die_team": [
+   "void_whisperer_die_00_team",
+   "void_whisperer_die_01_team",
+   "void_whisperer_die_02_team",
+   "void_whisperer_die_03_team",
+   "void_whisperer_die_04_team",
+   "void_whisperer_die_05_team",
+   "void_whisperer_die_06_team",
+   "void_whisperer_die_06_team",
+   "void_whisperer_die_07_team",
+   "void_whisperer_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "void_whisperer.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 640,
+   "h": 632
+  },
+  "scale": "1.5",
+  "ageborn": {
+   "visualId": "unit.void_whisperer",
+   "name": "Void Whisperer",
+   "heightLu": 72,
+   "widthLu": 39.8,
+   "pxPerLu": 1.23,
+   "feetPx": [
+    130.0,
+    190.0
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     72
+    ],
+    "hitCenter": [
+     0,
+     30
+    ],
+    "muzzle": [
+     22,
+     44
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        5.1,
+        23.2
+       ],
+       [
+        5.4,
+        23.6
+       ],
+       [
+        5.5,
+        24.4
+       ],
+       [
+        5.3,
+        25.2
+       ],
+       [
+        5.0,
+        25.1
+       ],
+       [
+        4.9,
+        24.3
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77,
+      77
+     ],
+     "durationMs": 616,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 75.0,
+     "cycleMs": 616,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        6.2,
+        19.6
+       ],
+       [
+        7.4,
+        17.0
+       ],
+       [
+        6.5,
+        22.6
+       ],
+       [
+        4.2,
+        25.0
+       ],
+       [
+        2.3,
+        19.8
+       ],
+       [
+        1.7,
+        17.7
+       ],
+       [
+        3.0,
+        23.5
+       ],
+       [
+        4.6,
+        25.4
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 74.7,
+     "strideLu": 46.0,
+     "plantedDriftLu": 0.05,
+     "contacts": [
+      {
+       "step": 1,
+       "foot": "r",
+       "atLu": [
+        8.4,
+        -2.1
+       ]
+      },
+      {
+       "step": 5,
+       "foot": "l",
+       "atLu": [
+        10.4,
+        1.2
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      60,
+      80,
+      100,
+      160,
+      50,
+      100,
+      90,
+      90,
+      80,
+      90
+     ],
+     "durationMs": 900,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        5.2,
+        24.7
+       ],
+       [
+        0.1,
+        33.2
+       ],
+       [
+        -0.0,
+        39.1
+       ],
+       [
+        -1.5,
+        41.4
+       ],
+       [
+        11.0,
+        38.3
+       ],
+       [
+        22.5,
+        30.5
+       ],
+       [
+        21.0,
+        30.0
+       ],
+       [
+        11.7,
+        28.4
+       ],
+       [
+        7.4,
+        26.1
+       ],
+       [
+        5.2,
+        24.7
+       ]
+      ]
+     },
+     "muzzle": [
+      22.5,
+      30.5
+     ]
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        2.0,
+        23.8
+       ],
+       [
+        -0.1,
+        30.3
+       ],
+       [
+        3.0,
+        26.8
+       ],
+       [
+        5.1,
+        23.1
+       ],
+       [
+        5.0,
+        24.8
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        25.9
+       ],
+       "scale": 0.497
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        39.6
+       ],
+       "loops": 2,
+       "scale": 0.705
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        3.2,
+        25.1
+       ],
+       [
+        8.5,
+        32.7
+       ],
+       [
+        -13.9,
+        36.4
+       ],
+       [
+        -6.9,
+        24.9
+       ],
+       [
+        -7.3,
+        22.1
+       ],
+       [
+        -6.4,
+        22.9
+       ],
+       [
+        -7.1,
+        22.4
+       ],
+       [
+        -7.1,
+        22.5
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

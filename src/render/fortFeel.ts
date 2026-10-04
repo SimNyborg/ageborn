@@ -55,6 +55,8 @@ export const FORT_MATERIAL: Readonly<Record<string, FortMaterial>> = {
   ion_spire: 'energy',
   warp_barracks: 'metal',
   void_mine: 'energy',
+  star_bulwark: 'metal',
+  stardust_snare: 'energy',
 };
 
 export function fortMaterial(card: CardId): FortMaterial {

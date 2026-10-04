@@ -58,7 +58,11 @@ AGE_OF = {
                "plasma_lancer", "overclock_engineer", "holo_projector", "holo_decoy", "jetpack_trooper",
                "particle_cannon", "overload_android", "drone_carrier", "attack_drone"],
     "cosmic": ["graviton_halberdier", "hover_tank", "ion_ranger", "mothership", "star_legionnaire",
-               "starwarden", "warp_stalker"],
+               "starwarden", "warp_stalker",
+               # W8 Cosmic wave (CONTENT_PLAN 5.8)
+               "crystal_guard", "void_skimmer", "moonlings", "nova_thrower", "asteroid_golem", "star_mortar",
+               "antimatter_rifler", "bio_weaver", "void_whisperer", "star_fighter", "swarm_matron", "swarmling",
+               "gravity_sage", "star_leviathan"],
 }
 ALL_UNITS = [u for us in AGE_OF.values() for u in us]
 

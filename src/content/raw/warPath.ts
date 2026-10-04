@@ -168,6 +168,8 @@ const REGIONS: readonly RegionRow[] = [
     epic: 'warp_stalker',
     bossCapsule: 'aeon',
     bossTurret: 'ion_turret',
+    // W8 Cosmic (2026-10-04): Tempest fires the Pulsar Pulse, Moss's walls meet the Star Bulwark
+    sides: { s1: 'tempest', s2: 'moss' },
   },
 ];
 

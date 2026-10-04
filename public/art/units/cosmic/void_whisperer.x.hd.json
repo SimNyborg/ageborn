@@ -1,0 +1,542 @@
+{
+ "frames": {
+  "void_whisperer_attack_b_01": {
+   "frame": {
+    "x": 121,
+    "y": 2,
+    "w": 110,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 211,
+    "w": 110,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_b_01_team": {
+   "frame": {
+    "x": 411,
+    "y": 192,
+    "w": 84,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 216,
+    "w": 84,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_b_02": {
+   "frame": {
+    "x": 482,
+    "y": 2,
+    "w": 115,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 213,
+    "w": 115,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_b_02_team": {
+   "frame": {
+    "x": 696,
+    "y": 192,
+    "w": 82,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 220,
+    "w": 82,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_b_03": {
+   "frame": {
+    "x": 601,
+    "y": 2,
+    "w": 117,
+    "h": 182
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 183,
+    "y": 214,
+    "w": 117,
+    "h": 182
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_b_03_team": {
+   "frame": {
+    "x": 235,
+    "y": 192,
+    "w": 82,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 216,
+    "y": 216,
+    "w": 82,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_b_04": {
+   "frame": {
+    "x": 235,
+    "y": 2,
+    "w": 121,
+    "h": 185
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 212,
+    "w": 121,
+    "h": 185
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_b_04_team": {
+   "frame": {
+    "x": 141,
+    "y": 192,
+    "w": 90,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 219,
+    "y": 216,
+    "w": 90,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_b_05": {
+   "frame": {
+    "x": 722,
+    "y": 2,
+    "w": 148,
+    "h": 181
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 216,
+    "w": 148,
+    "h": 181
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_b_05_team": {
+   "frame": {
+    "x": 782,
+    "y": 192,
+    "w": 103,
+    "h": 154
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 225,
+    "y": 225,
+    "w": 103,
+    "h": 154
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_b_06": {
+   "frame": {
+    "x": 2,
+    "y": 192,
+    "w": 135,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 203,
+    "y": 218,
+    "w": 135,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_b_06_team": {
+   "frame": {
+    "x": 591,
+    "y": 192,
+    "w": 101,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 227,
+    "y": 227,
+    "w": 101,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_b_07": {
+   "frame": {
+    "x": 360,
+    "y": 2,
+    "w": 118,
+    "h": 185
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 199,
+    "y": 212,
+    "w": 118,
+    "h": 185
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_b_07_team": {
+   "frame": {
+    "x": 499,
+    "y": 192,
+    "w": 88,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 220,
+    "y": 220,
+    "w": 88,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_b_08": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 115,
+    "h": 186
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 211,
+    "w": 115,
+    "h": 186
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  },
+  "void_whisperer_attack_b_08_team": {
+   "frame": {
+    "x": 321,
+    "y": 192,
+    "w": 86,
+    "h": 160
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 218,
+    "y": 216,
+    "w": 86,
+    "h": 160
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 454
+   },
+   "anchor": {
+    "x": 0.50584,
+    "y": 0.837
+   }
+  }
+ },
+ "animations": {
+  "attack_b": [
+   "void_whisperer_attack_00",
+   "void_whisperer_attack_b_01",
+   "void_whisperer_attack_b_02",
+   "void_whisperer_attack_b_03",
+   "void_whisperer_attack_b_04",
+   "void_whisperer_attack_b_05",
+   "void_whisperer_attack_b_06",
+   "void_whisperer_attack_b_07",
+   "void_whisperer_attack_b_08",
+   "void_whisperer_attack_09"
+  ],
+  "attack_b_team": [
+   "void_whisperer_attack_00_team",
+   "void_whisperer_attack_b_01_team",
+   "void_whisperer_attack_b_02_team",
+   "void_whisperer_attack_b_03_team",
+   "void_whisperer_attack_b_04_team",
+   "void_whisperer_attack_b_05_team",
+   "void_whisperer_attack_b_06_team",
+   "void_whisperer_attack_b_07_team",
+   "void_whisperer_attack_b_08_team",
+   "void_whisperer_attack_09_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "void_whisperer.x.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 896,
+   "h": 376
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.void_whisperer",
+   "name": "Void Whisperer",
+   "heightLu": 72,
+   "widthLu": 39.8,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    260,
+    380
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     72
+    ],
+    "hitCenter": [
+     0,
+     30
+    ],
+    "muzzle": [
+     22,
+     44
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "extrasOf": "void_whisperer",
+   "clips": {
+    "attack_b": {
+     "frames": 10,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+     ],
+     "durationsMs": [
+      60,
+      80,
+      100,
+      160,
+      50,
+      100,
+      90,
+      90,
+      80,
+      90
+     ],
+     "durationMs": 900,
+     "impactFrame": 5,
+     "impactStep": 5,
+     "impactAt": 0.5,
+     "holdStep": 3,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        5.2,
+        24.7
+       ],
+       [
+        -4.9,
+        34.3
+       ],
+       [
+        -13.0,
+        39.2
+       ],
+       [
+        -15.7,
+        39.7
+       ],
+       [
+        1.4,
+        39.6
+       ],
+       [
+        18.7,
+        25.4
+       ],
+       [
+        19.3,
+        21.0
+       ],
+       [
+        12.4,
+        23.8
+       ],
+       [
+        7.0,
+        25.5
+       ],
+       [
+        5.2,
+        24.7
+       ]
+      ]
+     },
+     "muzzle": [
+      18.7,
+      25.4
+     ]
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

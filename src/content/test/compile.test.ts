@@ -37,8 +37,9 @@ describe('contentHash (B4, B3 replays)', () => {
     // its released, measured numbers (docs/decisions.md). W2 Bronze wave (2026-10-03): its released, measured
     // numbers (docs/decisions.md). W5 Industrial wave (2026-10-03): its released, measured numbers
     // (docs/decisions.md). W6 Modern wave (2026-10-03): its released, measured numbers (docs/decisions.md); the
-    // gated Future data is included as it stands.
-    expect(content.hash).toBe('81aab1f5');
+    // gated Future data is included as it stands. W7 Future wave (2026-10-04): its released, measured numbers
+    // (docs/decisions.md); the gated Cosmic data in the tree is included as it stands.
+    expect(content.hash).toBe('7ec0568f');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {
@@ -137,7 +138,7 @@ describe('compiled bundle (B4)', () => {
       'gun_line', 'iron_horse', 'zeppelin_raid', 'barbed_wire', 'great_magnet', 'shrapnel_shells', 'railway_gun', 'field_hospital',
       'strafing_run', 'paratroopers', 'carpet_bomber', 'aa_screen', 'concussion_shells', 'creeping_barrage', 'tank_rush', 'sniper_team',
       'orbital_lance', 'drone_swarm', 'point_defense', 'stasis_field', 'nano_mesh', 'nanite_surge', 'target_painter', 'emp_blackout',
-      'starfall', 'comet_run', 'singularity', 'solar_flare', 'warp_strike', 'ion_cannon',
+      'starfall', 'comet_run', 'singularity', 'solar_flare', 'pulsar_pulse', 'warp_strike', 'meteor_drizzle', 'ion_cannon',
     ]);
     expect(full.order.formats).toEqual(['tutorial', 'short', 'standard', 'full', 'last']);
   });

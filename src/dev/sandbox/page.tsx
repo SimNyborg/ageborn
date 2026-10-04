@@ -12,7 +12,7 @@
  * `#sandbox/battle`, `#sandbox/hud` and `#sandbox/sim` open a tab directly;
  * `?source=real&art=procedural&opponent=ai&autoplay=1` preselects the battle options; `&stage=1` shows
  * only the battle (no bars or panel) for screenshots at a device size, `&format=standard` picks the
- * format. Browser checks reach the running stage through `window.__sandbox` and the dev cheats through
+ * format (`last`, `w1.cosmic` and `w2.future` reach the late ages for content-wave screenshots). Browser checks reach the running stage through `window.__sandbox` and the dev cheats through
  * `window.__sandboxDev` (gold, power reload, spawns, a lane clear).
  */
 import type { FormatId } from '@/contracts';
@@ -153,7 +153,7 @@ function BattleTab(p: { bare?: boolean }) {
   const [source, setSource] = useState<SourceKind>(() => param('source', ['fake', 'real', 'stress'] as const, 'fake'));
   const [art, setArt] = useState<ArtKind>(() => param('art', ['fake', 'procedural'] as const, 'fake'));
   const [opponent, setOpponent] = useState<OpponentKind>(() => param('opponent', ['ai', 'autoplayer'] as const, 'ai'));
-  const [format, setFormat] = useState<FormatId>(() => param('format', ['full', 'standard', 'short', 'tutorial'] as const, 'full'));
+  const [format, setFormat] = useState<FormatId>(() => param('format', ['full', 'standard', 'short', 'tutorial', 'last', 'w1.cosmic', 'w2.future'] as const, 'full'));
   const [seed, setSeed] = useState(1);
   const [autoplayMe, setAutoplayMe] = useState(() => param('autoplay', ['1', '0'] as const, '0') === '1');
   const [settings, setSettings] = useState<ViewSettings>({ ...DEFAULT_VIEW_SETTINGS });

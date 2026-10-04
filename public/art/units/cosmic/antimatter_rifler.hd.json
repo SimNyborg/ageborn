@@ -1,0 +1,2331 @@
+{
+ "frames": {
+  "antimatter_rifler_idle_00": {
+   "frame": {
+    "x": 680,
+    "y": 404,
+    "w": 141,
+    "h": 170
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 250,
+    "w": 141,
+    "h": 170
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_idle_00_team": {
+   "frame": {
+    "x": 875,
+    "y": 922,
+    "w": 97,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 240,
+    "w": 97,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_idle_01": {
+   "frame": {
+    "x": 2,
+    "y": 404,
+    "w": 140,
+    "h": 173
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 248,
+    "w": 140,
+    "h": 173
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_idle_01_team": {
+   "frame": {
+    "x": 560,
+    "y": 922,
+    "w": 95,
+    "h": 161
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 238,
+    "w": 95,
+    "h": 161
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_idle_02": {
+   "frame": {
+    "x": 288,
+    "y": 221,
+    "w": 138,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 242,
+    "w": 138,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_idle_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 753,
+    "w": 93,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 233,
+    "w": 93,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_idle_03": {
+   "frame": {
+    "x": 615,
+    "y": 2,
+    "w": 137,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 238,
+    "w": 137,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_idle_03_team": {
+   "frame": {
+    "x": 922,
+    "y": 404,
+    "w": 92,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 229,
+    "w": 92,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_idle_04": {
+   "frame": {
+    "x": 888,
+    "y": 2,
+    "w": 138,
+    "h": 181
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 240,
+    "w": 138,
+    "h": 181
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_idle_04_team": {
+   "frame": {
+    "x": 1183,
+    "y": 404,
+    "w": 93,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 197,
+    "y": 230,
+    "w": 93,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_idle_05": {
+   "frame": {
+    "x": 852,
+    "y": 221,
+    "w": 140,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 246,
+    "w": 140,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_idle_05_team": {
+   "frame": {
+    "x": 808,
+    "y": 753,
+    "w": 96,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 236,
+    "w": 96,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_00": {
+   "frame": {
+    "x": 190,
+    "y": 922,
+    "w": 130,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 255,
+    "w": 130,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_00_team": {
+   "frame": {
+    "x": 250,
+    "y": 1088,
+    "w": 99,
+    "h": 153
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 246,
+    "w": 99,
+    "h": 153
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_01": {
+   "frame": {
+    "x": 324,
+    "y": 922,
+    "w": 129,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 259,
+    "w": 129,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_01_team": {
+   "frame": {
+    "x": 104,
+    "y": 1249,
+    "w": 91,
+    "h": 148
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 250,
+    "w": 91,
+    "h": 148
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_02": {
+   "frame": {
+    "x": 717,
+    "y": 221,
+    "w": 131,
+    "h": 176
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 193,
+    "y": 245,
+    "w": 131,
+    "h": 176
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_02_team": {
+   "frame": {
+    "x": 1007,
+    "y": 753,
+    "w": 92,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 236,
+    "w": 92,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_03": {
+   "frame": {
+    "x": 996,
+    "y": 221,
+    "w": 132,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 238,
+    "w": 132,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_03_team": {
+   "frame": {
+    "x": 199,
+    "y": 753,
+    "w": 94,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 208,
+    "y": 228,
+    "w": 94,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_04": {
+   "frame": {
+    "x": 674,
+    "y": 753,
+    "w": 130,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 255,
+    "w": 130,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_04_team": {
+   "frame": {
+    "x": 457,
+    "y": 922,
+    "w": 99,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 246,
+    "w": 99,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_05": {
+   "frame": {
+    "x": 2,
+    "y": 1088,
+    "w": 126,
+    "h": 157
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 260,
+    "w": 126,
+    "h": 157
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_05_team": {
+   "frame": {
+    "x": 782,
+    "y": 1088,
+    "w": 92,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 251,
+    "w": 92,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_06": {
+   "frame": {
+    "x": 1070,
+    "y": 581,
+    "w": 123,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 247,
+    "w": 123,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_06_team": {
+   "frame": {
+    "x": 1075,
+    "y": 922,
+    "w": 92,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 209,
+    "y": 238,
+    "w": 92,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_07": {
+   "frame": {
+    "x": 451,
+    "y": 404,
+    "w": 126,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 191,
+    "y": 238,
+    "w": 126,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_walk_07_team": {
+   "frame": {
+    "x": 976,
+    "y": 922,
+    "w": 95,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 207,
+    "y": 228,
+    "w": 95,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_00": {
+   "frame": {
+    "x": 2,
+    "y": 221,
+    "w": 139,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 242,
+    "w": 139,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_00_team": {
+   "frame": {
+    "x": 297,
+    "y": 753,
+    "w": 94,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 233,
+    "w": 94,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_01": {
+   "frame": {
+    "x": 146,
+    "y": 404,
+    "w": 152,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 188,
+    "y": 249,
+    "w": 152,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_01_team": {
+   "frame": {
+    "x": 659,
+    "y": 922,
+    "w": 108,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 200,
+    "y": 239,
+    "w": 108,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_02": {
+   "frame": {
+    "x": 1018,
+    "y": 404,
+    "w": 161,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 253,
+    "w": 161,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_02_team": {
+   "frame": {
+    "x": 132,
+    "y": 1088,
+    "w": 114,
+    "h": 155
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 243,
+    "w": 114,
+    "h": 155
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_03": {
+   "frame": {
+    "x": 493,
+    "y": 753,
+    "w": 177,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 258,
+    "w": 177,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_03_team": {
+   "frame": {
+    "x": 983,
+    "y": 1088,
+    "w": 117,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 248,
+    "w": 117,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_04": {
+   "frame": {
+    "x": 887,
+    "y": 581,
+    "w": 179,
+    "h": 165
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 190,
+    "y": 256,
+    "w": 179,
+    "h": 165
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_04_team": {
+   "frame": {
+    "x": 663,
+    "y": 1088,
+    "w": 115,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 206,
+    "y": 246,
+    "w": 115,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_05": {
+   "frame": {
+    "x": 2,
+    "y": 922,
+    "w": 184,
+    "h": 162
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 189,
+    "y": 259,
+    "w": 184,
+    "h": 162
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_05_team": {
+   "frame": {
+    "x": 1104,
+    "y": 1088,
+    "w": 117,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 205,
+    "y": 249,
+    "w": 117,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_06": {
+   "frame": {
+    "x": 1030,
+    "y": 2,
+    "w": 175,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 192,
+    "y": 242,
+    "w": 175,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_06_team": {
+   "frame": {
+    "x": 775,
+    "y": 581,
+    "w": 108,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 204,
+    "y": 232,
+    "w": 108,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_07": {
+   "frame": {
+    "x": 474,
+    "y": 581,
+    "w": 160,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 164,
+    "y": 253,
+    "w": 160,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_07_team": {
+   "frame": {
+    "x": 878,
+    "y": 1088,
+    "w": 101,
+    "h": 151
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 247,
+    "w": 101,
+    "h": 151
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_08": {
+   "frame": {
+    "x": 459,
+    "y": 2,
+    "w": 152,
+    "h": 184
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 237,
+    "w": 152,
+    "h": 184
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_08_team": {
+   "frame": {
+    "x": 825,
+    "y": 404,
+    "w": 93,
+    "h": 169
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 228,
+    "w": 93,
+    "h": 169
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_09": {
+   "frame": {
+    "x": 572,
+    "y": 221,
+    "w": 141,
+    "h": 177
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 185,
+    "y": 244,
+    "w": 141,
+    "h": 177
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_09_team": {
+   "frame": {
+    "x": 99,
+    "y": 753,
+    "w": 96,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 194,
+    "y": 234,
+    "w": 96,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_10": {
+   "frame": {
+    "x": 145,
+    "y": 221,
+    "w": 139,
+    "h": 179
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 242,
+    "w": 139,
+    "h": 179
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_attack_10_team": {
+   "frame": {
+    "x": 395,
+    "y": 753,
+    "w": 94,
+    "h": 164
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 196,
+    "y": 233,
+    "w": 94,
+    "h": 164
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_hit_00": {
+   "frame": {
+    "x": 638,
+    "y": 581,
+    "w": 133,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 167,
+    "y": 253,
+    "w": 133,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_hit_00_team": {
+   "frame": {
+    "x": 2,
+    "y": 1249,
+    "w": 98,
+    "h": 150
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 248,
+    "w": 98,
+    "h": 150
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_hit_01": {
+   "frame": {
+    "x": 345,
+    "y": 2,
+    "w": 110,
+    "h": 190
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 170,
+    "y": 229,
+    "w": 110,
+    "h": 190
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_hit_01_team": {
+   "frame": {
+    "x": 581,
+    "y": 404,
+    "w": 95,
+    "h": 171
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 169,
+    "y": 223,
+    "w": 95,
+    "h": 171
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_hit_02": {
+   "frame": {
+    "x": 756,
+    "y": 2,
+    "w": 128,
+    "h": 183
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 180,
+    "y": 237,
+    "w": 128,
+    "h": 183
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_hit_02_team": {
+   "frame": {
+    "x": 2,
+    "y": 581,
+    "w": 86,
+    "h": 168
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 228,
+    "w": 86,
+    "h": 168
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_hit_03": {
+   "frame": {
+    "x": 302,
+    "y": 404,
+    "w": 145,
+    "h": 172
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 186,
+    "y": 249,
+    "w": 145,
+    "h": 172
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_hit_03_team": {
+   "frame": {
+    "x": 771,
+    "y": 922,
+    "w": 100,
+    "h": 159
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 198,
+    "y": 239,
+    "w": 100,
+    "h": 159
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_hit_04": {
+   "frame": {
+    "x": 430,
+    "y": 221,
+    "w": 138,
+    "h": 178
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 187,
+    "y": 243,
+    "w": 138,
+    "h": 178
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_hit_04_team": {
+   "frame": {
+    "x": 908,
+    "y": 753,
+    "w": 95,
+    "h": 163
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 195,
+    "y": 234,
+    "w": 95,
+    "h": 163
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_00": {
+   "frame": {
+    "x": 509,
+    "y": 1088,
+    "w": 150,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 171,
+    "y": 251,
+    "w": 150,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_00_team": {
+   "frame": {
+    "x": 199,
+    "y": 1249,
+    "w": 104,
+    "h": 139
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 245,
+    "w": 104,
+    "h": 139
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_01": {
+   "frame": {
+    "x": 307,
+    "y": 1249,
+    "w": 196,
+    "h": 138
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 124,
+    "y": 233,
+    "w": 196,
+    "h": 138
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_01_team": {
+   "frame": {
+    "x": 987,
+    "y": 1403,
+    "w": 185,
+    "h": 88
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 113,
+    "y": 262,
+    "w": 185,
+    "h": 88
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_02": {
+   "frame": {
+    "x": 198,
+    "y": 2,
+    "w": 143,
+    "h": 195
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 162,
+    "y": 208,
+    "w": 143,
+    "h": 195
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_02_team": {
+   "frame": {
+    "x": 1132,
+    "y": 221,
+    "w": 113,
+    "h": 175
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 179,
+    "y": 234,
+    "w": 113,
+    "h": 175
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_03": {
+   "frame": {
+    "x": 92,
+    "y": 581,
+    "w": 193,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 156,
+    "y": 219,
+    "w": 193,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_03_team": {
+   "frame": {
+    "x": 353,
+    "y": 1088,
+    "w": 152,
+    "h": 152
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 178,
+    "y": 209,
+    "w": 152,
+    "h": 152
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_04": {
+   "frame": {
+    "x": 2,
+    "y": 2,
+    "w": 192,
+    "h": 215
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 136,
+    "y": 227,
+    "w": 192,
+    "h": 215
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_04_team": {
+   "frame": {
+    "x": 289,
+    "y": 581,
+    "w": 181,
+    "h": 167
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 126,
+    "y": 258,
+    "w": 181,
+    "h": 167
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_05": {
+   "frame": {
+    "x": 517,
+    "y": 1403,
+    "w": 233,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 105,
+    "y": 319,
+    "w": 233,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_05_team": {
+   "frame": {
+    "x": 754,
+    "y": 1403,
+    "w": 229,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 94,
+    "y": 322,
+    "w": 229,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_06": {
+   "frame": {
+    "x": 507,
+    "y": 1249,
+    "w": 275,
+    "h": 137
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 120,
+    "y": 310,
+    "w": 275,
+    "h": 137
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_06_team": {
+   "frame": {
+    "x": 2,
+    "y": 1403,
+    "w": 255,
+    "h": 108
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 110,
+    "y": 323,
+    "w": 255,
+    "h": 108
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_07": {
+   "frame": {
+    "x": 786,
+    "y": 1249,
+    "w": 273,
+    "h": 128
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 122,
+    "y": 309,
+    "w": 273,
+    "h": 128
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  },
+  "antimatter_rifler_die_07_team": {
+   "frame": {
+    "x": 261,
+    "y": 1403,
+    "w": 252,
+    "h": 104
+   },
+   "rotated": false,
+   "trimmed": true,
+   "spriteSourceSize": {
+    "x": 112,
+    "y": 323,
+    "w": 252,
+    "h": 104
+   },
+   "sourceSize": {
+    "w": 514,
+    "h": 470
+   },
+   "anchor": {
+    "x": 0.47471,
+    "y": 0.85957
+   }
+  }
+ },
+ "animations": {
+  "idle": [
+   "antimatter_rifler_idle_00",
+   "antimatter_rifler_idle_01",
+   "antimatter_rifler_idle_02",
+   "antimatter_rifler_idle_03",
+   "antimatter_rifler_idle_04",
+   "antimatter_rifler_idle_05"
+  ],
+  "idle_team": [
+   "antimatter_rifler_idle_00_team",
+   "antimatter_rifler_idle_01_team",
+   "antimatter_rifler_idle_02_team",
+   "antimatter_rifler_idle_03_team",
+   "antimatter_rifler_idle_04_team",
+   "antimatter_rifler_idle_05_team"
+  ],
+  "walk": [
+   "antimatter_rifler_walk_00",
+   "antimatter_rifler_walk_01",
+   "antimatter_rifler_walk_02",
+   "antimatter_rifler_walk_03",
+   "antimatter_rifler_walk_04",
+   "antimatter_rifler_walk_05",
+   "antimatter_rifler_walk_06",
+   "antimatter_rifler_walk_07"
+  ],
+  "walk_team": [
+   "antimatter_rifler_walk_00_team",
+   "antimatter_rifler_walk_01_team",
+   "antimatter_rifler_walk_02_team",
+   "antimatter_rifler_walk_03_team",
+   "antimatter_rifler_walk_04_team",
+   "antimatter_rifler_walk_05_team",
+   "antimatter_rifler_walk_06_team",
+   "antimatter_rifler_walk_07_team"
+  ],
+  "attack": [
+   "antimatter_rifler_attack_00",
+   "antimatter_rifler_attack_01",
+   "antimatter_rifler_attack_02",
+   "antimatter_rifler_attack_03",
+   "antimatter_rifler_attack_04",
+   "antimatter_rifler_attack_05",
+   "antimatter_rifler_attack_06",
+   "antimatter_rifler_attack_07",
+   "antimatter_rifler_attack_08",
+   "antimatter_rifler_attack_09",
+   "antimatter_rifler_attack_10"
+  ],
+  "attack_team": [
+   "antimatter_rifler_attack_00_team",
+   "antimatter_rifler_attack_01_team",
+   "antimatter_rifler_attack_02_team",
+   "antimatter_rifler_attack_03_team",
+   "antimatter_rifler_attack_04_team",
+   "antimatter_rifler_attack_05_team",
+   "antimatter_rifler_attack_06_team",
+   "antimatter_rifler_attack_07_team",
+   "antimatter_rifler_attack_08_team",
+   "antimatter_rifler_attack_09_team",
+   "antimatter_rifler_attack_10_team"
+  ],
+  "hit": [
+   "antimatter_rifler_hit_00",
+   "antimatter_rifler_hit_01",
+   "antimatter_rifler_hit_02",
+   "antimatter_rifler_hit_03",
+   "antimatter_rifler_hit_04"
+  ],
+  "hit_team": [
+   "antimatter_rifler_hit_00_team",
+   "antimatter_rifler_hit_01_team",
+   "antimatter_rifler_hit_02_team",
+   "antimatter_rifler_hit_03_team",
+   "antimatter_rifler_hit_04_team"
+  ],
+  "die": [
+   "antimatter_rifler_die_00",
+   "antimatter_rifler_die_01",
+   "antimatter_rifler_die_02",
+   "antimatter_rifler_die_03",
+   "antimatter_rifler_die_04",
+   "antimatter_rifler_die_05",
+   "antimatter_rifler_die_06",
+   "antimatter_rifler_die_06",
+   "antimatter_rifler_die_07",
+   "antimatter_rifler_die_07"
+  ],
+  "die_team": [
+   "antimatter_rifler_die_00_team",
+   "antimatter_rifler_die_01_team",
+   "antimatter_rifler_die_02_team",
+   "antimatter_rifler_die_03_team",
+   "antimatter_rifler_die_04_team",
+   "antimatter_rifler_die_05_team",
+   "antimatter_rifler_die_06_team",
+   "antimatter_rifler_die_06_team",
+   "antimatter_rifler_die_07_team",
+   "antimatter_rifler_die_07_team"
+  ]
+ },
+ "meta": {
+  "app": "ageborn art/blender pipeline",
+  "version": "2",
+  "image": "antimatter_rifler.hd.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 1280,
+   "h": 1516
+  },
+  "scale": "3",
+  "ageborn": {
+   "visualId": "unit.antimatter_rifler",
+   "name": "Antimatter Rifler",
+   "heightLu": 70,
+   "widthLu": 51.6,
+   "pxPerLu": 2.46,
+   "feetPx": [
+    244,
+    404
+   ],
+   "anchorsLu": {
+    "head": [
+     2,
+     68
+    ],
+    "hitCenter": [
+     0,
+     32
+    ],
+    "muzzle": [
+     30,
+     58
+    ]
+   },
+   "facing": "right",
+   "note": "anchorsLu are screen-plane lu from the feet (x right, y up)",
+   "gait": "biped",
+   "clips": {
+    "idle": {
+     "frames": 6,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "durationsMs": [
+      153,
+      154,
+      153,
+      153,
+      154,
+      153
+     ],
+     "durationMs": 920,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        28.5,
+        36.4
+       ],
+       [
+        28.7,
+        36.6
+       ],
+       [
+        28.5,
+        37.2
+       ],
+       [
+        28.3,
+        38.0
+       ],
+       [
+        28.2,
+        38.2
+       ],
+       [
+        28.3,
+        37.6
+       ]
+      ]
+     }
+    },
+    "walk": {
+     "frames": 8,
+     "loop": true,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "durationsMs": [
+      80,
+      80,
+      80,
+      80,
+      80,
+      80,
+      80,
+      80
+     ],
+     "durationMs": 640,
+     "gait": "biped",
+     "gaitSpeedLuPerS": 81.2,
+     "cycleMs": 640,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        26.1,
+        37.0
+       ],
+       [
+        25.8,
+        36.2
+       ],
+       [
+        26.9,
+        41.7
+       ],
+       [
+        27.1,
+        44.9
+       ],
+       [
+        26.1,
+        37.0
+       ],
+       [
+        22.9,
+        35.2
+       ],
+       [
+        22.8,
+        40.2
+       ],
+       [
+        24.2,
+        43.9
+       ]
+      ]
+     },
+     "naturalSpeedLuPerS": 81.2,
+     "strideLu": 52.0,
+     "plantedDriftLu": 0.0,
+     "contacts": [
+      {
+       "step": 1,
+       "foot": "r",
+       "atLu": [
+        7.6,
+        -2.0
+       ]
+      },
+      {
+       "step": 5,
+       "foot": "l",
+       "atLu": [
+        9.7,
+        1.2
+       ]
+      }
+     ]
+    },
+    "attack": {
+     "frames": 11,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "durationsMs": [
+      30,
+      45,
+      50,
+      110,
+      35,
+      20,
+      120,
+      60,
+      50,
+      70,
+      90
+     ],
+     "durationMs": 680,
+     "impactFrame": 6,
+     "impactStep": 6,
+     "impactAt": 0.4265,
+     "holdStep": 3,
+     "holdLoop": [
+      3,
+      4
+     ],
+     "anchorsLu": {
+      "muzzle": [
+       [
+        28.4,
+        37.8
+       ],
+       [
+        34.9,
+        30.4
+       ],
+       [
+        38.5,
+        25.2
+       ],
+       [
+        39.8,
+        22.4
+       ],
+       [
+        39.8,
+        22.7
+       ],
+       [
+        40.4,
+        22.0
+       ],
+       [
+        34.9,
+        27.7
+       ],
+       [
+        20.7,
+        39.4
+       ],
+       [
+        23.9,
+        38.7
+       ],
+       [
+        28.8,
+        35.4
+       ],
+       [
+        28.4,
+        37.8
+       ]
+      ]
+     },
+     "muzzle": [
+      34.9,
+      27.7
+     ]
+    },
+    "hit": {
+     "frames": 5,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4
+     ],
+     "durationsMs": [
+      45,
+      75,
+      60,
+      60,
+      70
+     ],
+     "durationMs": 310,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        15.5,
+        43.7
+       ],
+       [
+        7.5,
+        56.4
+       ],
+       [
+        19.8,
+        46.4
+       ],
+       [
+        31.0,
+        32.9
+       ],
+       [
+        27.8,
+        38.5
+       ]
+      ]
+     }
+    },
+    "die": {
+     "frames": 8,
+     "loop": false,
+     "sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      6,
+      7,
+      7
+     ],
+     "durationsMs": [
+      45,
+      60,
+      70,
+      60,
+      50,
+      60,
+      70,
+      90,
+      90,
+      100
+     ],
+     "durationMs": 695,
+     "fx": [
+      {
+       "id": "fx.dust_poof",
+       "atMs": 465,
+       "offsetLu": [
+        0,
+        25.2
+       ],
+       "scale": 0.645
+      },
+      {
+       "id": "fx.ko_stars",
+       "atMs": 545,
+       "offsetLu": [
+        0,
+        38.5
+       ],
+       "loops": 2,
+       "scale": 0.803
+      }
+     ],
+     "hideUnitAtMs": 695,
+     "anchorsLu": {
+      "muzzle": [
+       [
+        25.1,
+        41.8
+       ],
+       [
+        -8.4,
+        62.9
+       ],
+       [
+        -38.8,
+        25.0
+       ],
+       [
+        17.5,
+        20.0
+       ],
+       [
+        -9.4,
+        47.1
+       ],
+       [
+        -21.6,
+        43.1
+       ],
+       [
+        -22.4,
+        45.1
+       ],
+       [
+        -21.6,
+        43.4
+       ]
+      ]
+     }
+    }
+   },
+   "team": {
+    "mode": "tint-underlay",
+    "frameSuffix": "_team",
+    "howTo": "draw <frame>_team tinted with the team colour, then <frame> on top"
+   }
+  }
+ }
+}

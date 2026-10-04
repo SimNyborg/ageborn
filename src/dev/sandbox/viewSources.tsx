@@ -41,7 +41,7 @@ export interface BattleSource {
   step(human: readonly Command[]): ReturnType<Sim['step']>;
 }
 
-const AGES: readonly AgeId[] = ['stone', 'medieval', 'gunpowder', 'modern', 'future'];
+const AGES: readonly AgeId[] = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
 
 /** A showcase plan per age: Infantry, Ranged and Heavy commons, then an Epic and the Legendary when present. */
 export function showcaseLoadout(c: CompiledContent, age: AgeId): Loadout {
