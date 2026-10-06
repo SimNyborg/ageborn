@@ -283,3 +283,66 @@
     font-size: 17px;
   }
 }
+
+/* Collection milestones (content re-tune 2026-10-04): one row per collection title, progress toward it. */
+.prof-goals {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.prof-goals__hint {
+  margin: 0;
+  color: var(--ui-text-2);
+  font-size: 12px;
+  font-weight: 700;
+}
+.prof-goal {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) minmax(64px, 120px) 68px;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 10px;
+  background: var(--ui-well);
+  transition: background-color 180ms ease-out, border-color 180ms ease-out;
+}
+.prof-goal.is-done {
+  border-color: var(--ui-green);
+}
+.prof-goal__mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ui-surface-3);
+  color: var(--ui-primary-light, #ffe08a);
+}
+.prof-goal.is-done .prof-goal__mark {
+  background: var(--ui-green);
+  color: var(--ui-ink);
+}
+.prof-goal__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.prof-goal__text b {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--ui-text);
+}
+.prof-goal__text small {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ui-text-2);
+  overflow-wrap: anywhere;
+}
+.prof-goal__n {
+  font-size: 13px;
+  font-weight: 800;
+  text-align: right;
+  white-space: nowrap;
+}

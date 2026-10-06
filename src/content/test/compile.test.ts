@@ -38,8 +38,9 @@ describe('contentHash (B4, B3 replays)', () => {
     // numbers (docs/decisions.md). W5 Industrial wave (2026-10-03): its released, measured numbers
     // (docs/decisions.md). W6 Modern wave (2026-10-03): its released, measured numbers (docs/decisions.md); the
     // gated Future data is included as it stands. W7 Future wave (2026-10-04): its released, measured numbers
-    // (docs/decisions.md); the gated Cosmic data in the tree is included as it stands.
-    expect(content.hash).toBe('7ec0568f');
+    // (docs/decisions.md); the gated Cosmic data in the tree is included as it stands. W8 Cosmic wave (2026-10-04):
+    // its released, measured numbers (docs/decisions.md).
+    expect(content.hash).toBe('abfaa160');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {

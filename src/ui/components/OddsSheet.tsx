@@ -175,6 +175,9 @@ export function OddsSheet(p: { model: OddsModel; hideHonest?: boolean }) {
             </table>
           </div>
           <p class="ui-odds__note">{t('ui.odds.copiesNote')}</p>
+          <p class="ui-odds__note" data-testid="odds-all-ages">
+            {m.allAges.active ? t('ui.odds.allAgesActive') : t('ui.odds.allAgesLater', { n: m.allAges.fromArena })}
+          </p>
           <ul class="ui-odds__extras">
             {m.tiers
               .map((r) => ({ r, extras: tierExtras(r, m, t, locale) }))

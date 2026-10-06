@@ -1125,6 +1125,31 @@ Powers (A5.7): Creeping Barrage (Field lane volley, War Path L3 / Road 3,700; 11
 
 Powers (A5.7): Target Painter (Field lane signal, War Path L3 / Road 3,900; 56 on up to 8 and a +20% damage mark for 6 s, 50 gold, 25 s) and Nano Mesh (Home snare, War Path s1 / Road 4,700; a 350 lu zone for 6 s that hits air, 15 a pulse (38% of the Photon Knight, the snare family cap) and a 50% snare, up to 6, 75 gold, 30 s). Forts (A16.14): Skyguard Pylon (tower; the Ranged Common × 1.5, priority air, air ×1.5; War Path s2) and Mech Bay (camp; its levy, the Mini Mech, is 25% of the Walker Mech every 16 s, one at a time; the Future 20-star milestone). The age's four classic forts (Hardlight Barrier, Sentry Pylon, Clone Bay, Grav Mire) are redrawn in the cartoon style. Skins (A5.8): Space Cadet (Pulse Trooper, rare), Chrome Rail (Rail Gunner, epic), Grandfather Clock (Chrono Titan, legendary).
 
+**W8 Cosmic wave (X0, CONTENT_PLAN 5.8; released 2026-10-04; measured numbers, docs/decisions.md).** Capsule cards: Commons from Arena 3, Rares 3, Epics 4, the Legendary 5. No new mechanic (M1 squads, M3 summons, M4 auras, M5 non-freezing stuns, riders and `onDeathSpawn` exist); no SIM_VERSION change.
+
+| Slug | Name | Rar | Role | Cost | HP | Damage / interval | Range | Speed | Size | Hits | Traits and abilities |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| crystal_guard | Crystal Guard | C | Infantry | 50 | 890 | 67 / 1.0 s | 16 | 70 | S | G | Guard (the crystal body takes 25% less from attacks with range ≥ 100); Blunt |
+| void_skimmer | Void Skimmer | C | Infantry | 50 | 670 | 94 / 1.0 s (base 90) | 16 | 110 | S | G | Raider; the fastest Cosmic Common |
+| moonlings | Moonlings | C | Ranged | 75 | 3 × 172 | 21 / 1.0 s (`proj.moon_pellet`) | 230 | 65 | S | G+A | Trio (M1 squad of 3) |
+| nova_thrower | Nova Thrower | C | Ranged | 75 | 440 | 62 splash r30 / 1.15 s | 240 | 65 | S | G | Lobbed nova orb (`proj.nova_orb`, arc 450 lu/s) |
+| asteroid_golem | Asteroid Golem | C | Heavy | 150 | 2,950 | 150 / 1.5 s, cleave 2 | 20 | 50 | L | G | Armored mech rock construct; the uppercut hits 2 targets within 30 lu |
+| star_mortar | Star Mortar | R | Ranged (Long range, H6) | 75 | 470 | 190 splash r35 / 2.6 s | 390 (min 90) | 60 | S | G | Arc 300 lu/s (`proj.mini_star`); half damage to bases |
+| antimatter_rifler | Antimatter Rifler | R | Anti-heavy | 100 | 700 | 140 / 1.6 s | 220 | 65 | M | G | Ranged Anti-heavy mods; priority armored; Brace |
+| bio_weaver | Bio-Weaver | R | Support | 110 | 580 | 36 / 1.2 s (`fx.tendril_lash`) | 150 | 65 | S | G+A | Heal 135 HP/s split between the 2 most hurt allies within 160 lu; followSupport |
+| void_whisperer | Void Whisperer | R | Support | 110 | 760 | 48 / 1.2 s (`fx.void_ripple`) | 150 | 60 | S | G+A | Dread aura (M4): enemy ground units within 130 lu move 20% slower; followSupport |
+| star_fighter | Star Fighter | E | Air gunship | 200 | 1,250 | 48 / 0.5 s twin lasers | 170 | 85 | M | G+A | Air mech; obeys stance |
+| swarm_matron | Swarm Matron | E | Support | 200 | 1,300 | 50 / 1.2 s | 150 | 60 | M | G+A | Summoner (M3): a Swarmling (250 HP, 30 / 1.0 s, speed 95) after 2 s, then every 7 s, up to 3 |
+| gravity_sage | Gravity Sage | E | Support | 200 | 1,700 | 70 / 1.2 s | 160 | 60 | S | G+A | Collapse (M5, not frozen): every 14 s enemies within 120 lu are stunned 1 s (Legendaries 0.5 s); followSupport |
+| star_leviathan | Star Leviathan | L | Heavy | 350 | 2,800 | 118 / 2.0 s song (`fx.song_wave`), the target and up to 4 within 100 lu behind | 90 | 40 | H | G | Two Moonling riders (20 / 1.4 s, range 200, G+A); when it falls they hop off as 2 Moonlings |
+
+| Slug | Turret | Rar | Cost | Damage / interval | Range | Hits | Notes |
+|---|---|---|---|---|---|---|---|
+| shard_spitter | Shard Spitter | C | 175 | 40 × 3 / 1.5 s | 280 | G+A | A volley of 3 crystal shards (`proj.shard`), each piercing 2 within 60 lu |
+| event_horizon | Event Horizon | R | 250 | 120 / 1.0 s | 150 | G | Gate zone 150 lu, up to 4 targets, slowed 30% for 1 s (`fx.horizon_pulse`) |
+
+Powers (A5.7): Meteor Drizzle (Field lane volley, War Path L3 / Road 4,900; 210 on the 8 hittable enemies nearest your gate, ground and air, 50 gold, 25 s; the lane cap and the price and reload floors keep it below the ±5 window, an accepted miss) and Pulsar Pulse (Home stun, War Path s1 / Road 4,800; a 350 lu zone, 165 and a 2 s stun, up to 6, ground and air, 75 gold, 35 s). Forts (A16.14): Star Bulwark (wall, bunker family: cover 20% less ranged damage within 60 lu behind; War Path s2) and Stardust Snare (trap, 4 charges of 140 and a 40% slow for 2 s; the Cosmic 20-star milestone). The age's four classic forts (Void Rampart, Ion Spire, Warp Barracks, Void Mine) are redrawn in the cartoon style. Skins (A5.8): Starlight Legionnaire (Star Legionnaire, rare), Shadow Stalker (Warp Stalker, epic, 72% opaque), Classic Saucer (Mothership, legendary).
+
 ### A5.7 Age Powers
 
 **The power rework roster (owner request 2026-09-29; rules in A2.9; decided, not built).** 48 powers, 6 per age: 3 **Home** (an area damage power, a second one of the other area family, and a control; in Modern, an air age, Flak fills the control role) and 3 **Field** (an assault: charge or front barrage; a strike or Suppress; a support: buff, cloud or drop). The schema checks this template per age. Per age: 2 starters (one per slot), 1 Trophy Road power, 3 War Path powers. This table replaces the old A5.7 table and the A17.11 power table; the 16 built powers keep their effects except where marked ✎ (the old value is given as "was"), and until build phase P1 the build plays them as before (A2.9.14).
@@ -1316,6 +1341,15 @@ Counts: 4 Rare, 4 Epic, 4 Legendary. The Wardrobe Crate pool holds the first 11.
   | Conqueror | 27 Conquest stars; with A18.7.10 the carried-over War Path boss stars count (titles "Pathfinder", "Veteran", "Legend" and "Crowned" join in v1.1) |
   | Ageborn | Arena 8 |
 
+- **4 collection milestone titles** (content re-tune 2026-10-04: long-term goals for the 208-card pool; earned only by opening capsules and upgrading; nothing is sold). They count released troop and turret cards (the Card Album's cards without powers and forts). Profile lists all four with progress ("62/208") under "Collection milestones", done ones with a green check; an earned title is never taken away when a later release adds cards. Unlock kinds `cardsOwned`, `albumComplete`, `cardsMaxed`, `collectionMaxed` (`src/meta/titles.ts`; checked when a capsule opens, after a craft and when a card reaches L10). Engaged player (A6.9 model, 30 seeds): days 3, 24, 133 and 224.5.
+
+  | Title | Unlocked by |
+  |---|---|
+  | Card Scout | own 100 troop and turret cards |
+  | Archivist | own every troop and turret card |
+  | Master Smith | 50 troop and turret cards at L10 |
+  | Grand Curator | every troop and turret card at L10 |
+
 - **6 emotes:** Laugh, Salute, Cry, Angry, Thumbs up, GG. There is no text chat anywhere.
 - **Cosmetic collections (A18.9.4, owner direction):** emotes, quotes, base flags, national flags, base skins, base decorations and battle backdrops (a themed background for your half of the lane, owner request 2026-09-30), all earned, with rarities and completion counts, equipped in the Customize screen.
 
@@ -1426,6 +1460,20 @@ Amber nodes pay 100 + 20 × (trophies / 100). Road capsules have a fixed tier an
 | Platinum | 7 | 26 / 12 / 5 / 2; the 2nd Legendary stack holds 1 copy | 2 Legendary stacks (different cards, unowned first), ≥ 2 Epic stacks; 1 skin (Wardrobe odds) | 2,800 | 200 | 77.9 |
 | Aeon | 8 | 40 / 14 / 6 / 2; the 2nd and 3rd Legendary stacks hold 1 copy | 3 Legendary stacks (different cards, unowned first), ≥ 3 Epic stacks; 1 skin, Epic or better; 1 Aeon Collection item | 3,600 | 500 | 86.4 |
 
+**All-ages table (content re-tune 2026-10-04; CONTENT_PLAN 8 option B, data `capsules.allAges`).** The content waves (A17.9, A5.4-A5.7) grew the capsule pool from 88 to 208 cards (Common 40 → 88, Rare 24 → 64, Epic 16 → 40, Legendary 8 → 16). From **Arena 3 (Kingsmoat)**, where all eight ages drop and 176-208 of the 208 cards are in the pool, every tier holds one more stack and more copies and Amber, so the time to max a card stays on the A6.9 targets. Arenas 1-2 (pools of 44 and 102 cards, the first 3-8 days of an engaged player) and the onboarding script (A6.5) keep the table above exactly. Guarantees, the stack roll, pity, Dust, skins, collection items and the bag do not change. The odds panel shows the table of the player's arena and says either "Every age drops in your arena, so each capsule holds one more stack and more copies and Amber" or "From Arena 3, where every age drops, …". Lookups go through `capsuleTierFor(capsules, tier, arenaIndex)` (`src/content/capsuleTiers.ts`), shared by the roll (`meta`), the odds panel and the tools.
+
+| Tier (Arena 3 and up) | Stacks | Copies per stack: Common / Rare / Epic / Legendary | Amber | Expected copies |
+|---|---|---|---|---|
+| Clay | 3 | 6 / 2 / 2 / 2 | 181 | 14.6 |
+| Bronze | 4 | 7 / 5 / 5 / 2 | 363 | 24.2 |
+| Silver | 5 | 13 / 12 / 5 / 2 | 916 | 53.5 |
+| Jade | 6 | 32 / 23 / 12 / 4 | 2,419 | 127.5 |
+| Gold | 7 | 34 / 23 / 12 / 4 | 4,562 | 148.7 |
+| Platinum | 8 | 34 / 28 / 12 / 4; the 2nd Legendary stack holds 1 copy | 4,838 | 154.1 |
+| Aeon | 9 | 53 / 32 / 14 / 4; the 2nd and 3rd Legendary stacks hold 1 copy | 6,221 | 185.8 |
+
+Expected per bag capsule before pity on the all-ages table: 38.5 copies and 710.7 Amber (16.1 and 411.3 on the base table). An Age Capsule from Arena 3 has 5 stacks (`allAges.ageCapsuleStacks`) with the all-ages Silver copies and Amber. The values come from the plan's option B (one more stack on every tier; copies ×1.4 / 2.3 / 2.3 / 2.0, Amber ×1.8) tuned on the real released pool: Common copies ×0.95 and Amber ×0.96 of option B, so the median card sits within 5% of the pre-wave measured medians and the copy and Amber finish dates stay within 30 days (A6.9). Every column still rises or stays going up the ladder, and no all-ages value is below the base table (schema checks). **Per content release:** add the cards, run `npx tsx tools/sim-cli.ts economy --seeds 30` and `drops --mode smoke`, and if a rarity's median card drifts more than 5% from the pre-wave medians (107 / 100.5 / 63.75 / 101.5 days) or the copy-Amber gap reaches 30 days, move that rarity's all-ages copies by ±1 per stack and the Amber by ±5%, then log the numbers in `docs/decisions.md`.
+
 Stacks, Legendaries, Epic guarantees, Amber, Dust and skin chance never fall going up the ladder. Foils stay purely rolled on every stack: no tier has a foil floor (A15.11, A15.22). Tier data fields (`CapsuleTierDef`): `extraLegendaryCopies` (1 for Platinum and Aeon), `skinChanceBp` (Gold 3,000, Platinum and Aeon 10,000), `skinMinRarity` (Aeon `epic`), `exclusiveItems` (Aeon); tables: `summitAbove: 'gold'`, `legendaryCatchUp: true`, `exclusiveCompleteDust: 500`, `exclusiveCraftDust: 3000`. The content bag size is the sum of the bag counts. The collection item chance (`capsuleChanceBp`, A18.9.4) is Clay 800, Bronze 1,200, Silver 2,000, Jade 3,500, Gold 6,000, Platinum 8,000, Aeon 10,000 bp.
 
 Copies and Amber are the A17 values (built): with 88 cards instead of 55, capsules carry about ×1.75 copies and Amber so the time to max a card stays as before (A17.13). The 2026-09-29 ladder was checked with the economy sim over 100 seeds on the shipped code (median days to max Common / Rare / Epic / Legendary 108.5 / 97.3 / 66 / 111.5 against 110.3 / 101 / 69 / 111.5 before; details in `docs/decisions.md`). Expected values per bag capsule, before pity: 16.1 copies, 411 Amber and 13 Dust (was 15.7, 399 and 7; before A17 9.1 and 227). The per-tier expected copies come from `meta/economy.ts`.
@@ -1460,7 +1508,7 @@ Copies and Amber are the A17 values (built): with 88 cards instead of 55, capsul
 | Supply Capsule (retired 2026-09-30) | Every 3rd finished match turns one allowance banked before 2026-09-30 into one (A6.3, A15.4) | Tier table above; climb starts at Bronze (summit strikes above Gold, A10) |
 | Trophy Road Capsule | Road nodes and gates | Fixed tier, no climb (reveal starts at step 4). Gate 7 Gold, Gate 8 Platinum, the 4,000 node Aeon |
 | Clay meter capsule | 2 meter pips (3 until 2026-09-30) | Clay tier, climb from Clay (no climbs) |
-| Age Capsule | Quests, Daily Challenge, Conquest (War Path from A18.7), War Chest | Silver-sized (4 stacks, Silver copies), all from one age picked in a dialog (8 ages) when granted, ≥ 1 Epic stack |
+| Age Capsule | Quests, Daily Challenge, Conquest (War Path from A18.7), War Chest | Silver-sized (4 stacks, Silver copies; from Arena 3 5 stacks and the all-ages Silver copies and Amber), all from one age picked in a dialog (8 ages) when granted, ≥ 1 Epic stack |
 | Codex Capsule | Every 10th Codex Level from 5 | Silver tier, fixed |
 | Age Unlock Capsule | Arena 2 and Arena 3 gates (A17.13) | Fixed contents (A6.3) |
 | Wardrobe Crate | Every 10th Codex Level from 10, War Chest, Trophy Road | 1 skin: Rare 78%, Epic 18%, Legendary 4%; no duplicate until all crate skins of that rarity are owned. Revealed with the card flip (A10); there is no reel |
@@ -1558,6 +1606,26 @@ Rebased 2026-09-29 on the measured values (88 cards, A17; the capsule ladder, A6
 **The Sundial (2026-09-30, A6.3, A15.4).** Measured before the build with the `tools/economy.ts` player model and the real meta rules (the Sundial run as a harness around them; the unchanged model reproduces the shipped tool exactly), median of 100 seeds, blocks 1-100 and 101-200, for the same player before and after: 7 finished ladder matches a day at 60% wins. Before → after: Common to max 105.75 / 106.25 → 106 / 107 days (+0.5%), Rare 96.5 / 95.75 → 97.5 / 98.75 (+2.1%), Epic 63.75 / 65 → 63 / 62.5 (−2.5%), Legendary 107.25 / 110 → 106 / 104.25 (−3.2%); copies a day 100.4 → 97.4 (−3.0%), Amber a day 3,102 → 3,055 (−1.5%); whole collection 188.5 → 193 days (+2.4%), Amber done 139 → 140, focused plan at L7 77.75 → 77.5. The table's targets stay; `tools/economy.ts` changes its player from "play until 4 wins used a charge" to "play 7 finished ladder matches a day" (that old player never spent its 12 starting charges, which made the old baseline about 3 days slower on Epic and Legendary), and reports Sundial and Clay capsules per day instead of Win and Supply.
 
 **The Sundial as built (review fixes 2026-09-30).** Same player and seeds on the built code: Common 106 / 106.75 (+0.4%), Rare 99.5 / 99.5 (+3.5%), Epic 63.25 / 62.5 (−2.3%), Legendary 105 / 104.5 (−3.6%); copies a day −2.9%, Amber −1.5%; whole collection 188.5 → 195 days (+3.4%). **Deviation, accepted and logged:** Rare, Legendary and the collection sit 0.4-0.6 points past the brief's "about 3%". The cause is the rarity mix, not the income: bag capsules replace the Bronze-heavy Supply Capsule, so Rare slows while Epic and Legendary speed up, and any income lever (period, bank, Clay pips) moves all four the same way, fixing one side only by pushing the other past 3%. The casual player (3 matches a day; `sim:economy` now runs it over 730 days so every rarity finishes; 50 seeds): copies 55.3 → 57.3 a day (+3.6%), Common 204.75 → 200 (−2.3%), Rare 180 → 168.75 (−6.3%), Epic 129.5 → 114.25 (−11.8%), Legendary 211.75 → 185 (−12.6%), whole collection 357.5 → 369 days (+3.2%). That player gains on purpose: the Supply Capsule was theirs, and each of their matches now claims a bag capsule. All A6.9 ±20% gates pass as before.
+
+**Content re-tune (2026-10-04, the 208-card pool; CONTENT_PLAN 8).** The eight content waves grew the capsule pool from 88 to 208 cards. With every wave released and the old table, the same engaged player (30 seeds, 365 days) no longer maxed a median Common or Rare in a year (a 730-day run: 245.5 and 289 days), Epic took 187.5 days and Legendary 222.75 (targets 110 / 101 / 69 / 112), the focused War Plan reached L7 on day 199.5 and the whole collection on day 490.5. The all-ages table (A6.4, from Arena 3) brings them back: Common 105, Rare 97, Epic 62.25, Legendary 106.5 days, each within 5% of the pre-wave measured medians (107 / 100.5 / 63.75 / 101.5: −1.9%, −3.5%, −2.4%, +4.9%), plan L7 94 days, copies done 224.5 and Amber done 210 days (gap 15), whole collection 224.5 days (7.4 months). Every capsule card is owned on day 24 (25 before) and all 16 Legendaries on day 24. The casual player (3 matches a day, 730 days) maxes a median card in 196 / 165.25 / 114.25 / 186.25 days and the collection in 418.5 (before: Common and Rare not in 730 days, Epic 300.5, Legendary 386.75). `drops --mode smoke` passes 17 of 17 before and after. Income rows are rebased on the all-ages table, where the player spends nearly the whole year (Arena 3 arrives in the first week); time-to-max targets stay. **Dust** rises with the copies (214 → 498 a day in days 11-120; 0.32 → 1.41 million in a year, mostly copies past L10 once cards max), and its prices stay: the sinks grew too (36 skins, about 48,000 Dust to craft, against 12 for about 16,000; 173 collection items), so Wardrobe completion by Dust takes about as long as before. **Pity** stays: the Epic pity, the Legendary pity (all 16 Legendaries on day 24) and new-card protection (every card on day 24) already fit the bigger pool.
+
+| Measure | Target (±20%) | Measured (old table, all waves) | Measured (re-tune) |
+|---|---|---|---|
+| Copies per bag capsule | 38 (16.0 for 88 cards) | 16.0 | 38.2 (38.5 expected before pity) |
+| Amber per bag capsule | 710 (411) | 411 | 708 (710.7 expected) |
+| Capsules per day | 4.8 Sundial + ~1.1 Clay meter | 4.8 and 1.1 | 4.8 and 1.1 |
+| Daily income | ~240 copies and ~5,150 Amber (~98 and ~3,030) | 100 and 3,279 | 240 and 5,156 |
+| Common to max (153 copies) | 110 days | not in 365 days (245.5 in 730) | 105 |
+| Rare to max (130 copies) | 101 days | not in 365 days (289 in 730) | 97 |
+| Epic to max (44 copies) | 69 days | 187.5 | 62.25 |
+| Legendary to max (11 copies each) | 112 days | 222.75 | 106.5 |
+| All Legendaries owned (16; 8 before) | ~3 weeks (~2 weeks for 8) | 25 days | 24 days |
+| Focused War Plan at L7 | ~6 weeks, faster with Dust crafting | 199.5 days | 94 days (open: Phase 3, as before) |
+| Whole collection maxed | ~7-7.5 months (~5-5.5 for 88 cards), copies and Amber finishing within 30 days of each other | not in 365 days (490.5 in 730) | 224.5 days; copies 224.5, Amber 210 (gap 15) |
+| Collection milestones (A5.8 titles; reported) | none | 100 cards day 3, every card day 25 | 100 cards day 3, every card day 24, 50 cards maxed day 133, everything day 224.5 |
+| Dust a day, days 11-120 (reported) | none | 214 | 498 |
+
+**Before the content waves (2026-09-29 ladder, 88 cards; kept for reference):**
 
 | Measure | Target (±20%) | Measured |
 |---|---|---|

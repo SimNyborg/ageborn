@@ -6,7 +6,7 @@
 import type { FormatId, SaveDoc } from '@/contracts';
 import type { Content, TitleUnlock } from '@/content';
 import { formatKind } from './formats';
-import { isOwned } from './tables';
+import { ageCards, isOwned } from './tables';
 
 /** Facts of the match that just ended, for the match-based titles. */
 export interface TitleMatchFacts {
@@ -55,9 +55,29 @@ function earned(u: TitleUnlock, s: SaveDoc, t: Content, m: TitleMatchFacts | nul
       return !!m && m.win && m.generalId === u.general;
     case 'conquestStars':
       return conquestStarTotal(s) >= u.stars;
+    case 'cardsOwned':
+      return collectable(t).filter((id) => isOwned(s, id)).length >= u.count;
+    case 'albumComplete':
+      return collectable(t).every((id) => isOwned(s, id));
+    case 'cardsMaxed':
+      return collectable(t).filter((id) => maxed(s, t, id)).length >= u.count;
+    case 'collectionMaxed':
+      return collectable(t).every((id) => maxed(s, t, id));
     case 'feat':
       return s.flags[`feat.${u.feat}`] === true;
   }
+}
+
+/** Every collectable troop and turret card (released, not hidden), every age (the collection milestones). */
+function collectable(t: Content): string[] {
+  return t.order.ages.flatMap((age) => {
+    const { units, turrets } = ageCards(t, age);
+    return [...units, ...turrets];
+  });
+}
+
+function maxed(s: Pick<SaveDoc, 'collection'>, t: Content, id: string): boolean {
+  return (s.collection[id]?.level ?? 0) >= t.economy.maxLevel;
 }
 
 /** Adds every title the save has earned and not yet owned. Returns the save and the new title ids. */

@@ -11,8 +11,11 @@
 import type { AgeId } from '@/contracts/ids';
 import type { AgeRosterShape, RosterShape } from './types';
 
-/** The A17.13 shape of an age before its content wave. */
-const BEFORE: AgeRosterShape = {
+/**
+ * The A17.13 shape of an age before its content wave. Every age has had its wave since W8 (2026-10-04); kept as the
+ * reference shape for a new age (A18.8) or a season that starts from the base roster.
+ */
+const _BEFORE: AgeRosterShape = {
   units: { common: 3, rare: 2, epic: 1, legendary: 1 },
   turrets: { common: 2, rare: 1, epic: 1 },
   powers: { home: 3, field: 3 },

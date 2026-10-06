@@ -217,6 +217,8 @@
         "stacks": "Stacks"
       },
       "copiesNote": "Copies per stack by rarity.",
+      "allAgesActive": "Every age drops in your arena, so each capsule holds one more stack and more copies and Amber.",
+      "allAgesLater": "From Arena {n}, where every age drops, each capsule holds one more stack and more copies and Amber.",
       "guarantees": "at least {list}.",
       "stackCount": "{n} {rarity}",
       "rareToLegendary": "{p} chance one Rare stack becomes Legendary.",
@@ -585,6 +587,8 @@
       "youAreHere": "You are here"
     },
     "profile": {
+      "milestones": "Collection milestones",
+      "milestonesHint": "Each one earns a title. Open capsules and upgrade cards to get there.",
       "codex": "Codex Level",
       "name": "Name",
       "editName": "Change name",

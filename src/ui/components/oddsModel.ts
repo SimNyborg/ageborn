@@ -8,6 +8,7 @@
  * size of that bag (100 for a bag filled before the 2026-09-29 ladder, then the content bag size). An
  * empty bag means the next Win Capsule starts a fresh bag.
  */
+import { capsuleTierFor, usesAllAgesTable } from '@/content/capsuleTiers';
 import type { CapsuleTables, CosmeticCollections, Rarities } from '@/content/types';
 import type { CapsuleTier, Foil, Rarity, SaveDoc, SkinRarity } from '@/contracts';
 import { legendaryBagTiers, tierCrests } from './capsuleLook';
@@ -91,6 +92,11 @@ export interface OddsModel {
   pity: PityRow[];
   /** False in arenas without random Legendaries (A6.4 step 1.2). */
   randomLegendaries: boolean;
+  /**
+   * The all-ages table (A6.4, content re-tune 2026-10-04): `active` when the player's arena rolls it (the
+   * tier rows then show its stacks, copies and Amber), and the arena (1-based) where it starts.
+   */
+  allAges: { active: boolean; fromArena: number };
   /** The cosmetic collection drops (A18.9.4): chance per Time Capsule tier and both pools' rarity odds. */
   cosmetics?: {
     capsuleChanceBp: { tier: CapsuleTier; bp: number }[];
@@ -148,10 +154,11 @@ function guaranteeIn(every: number, since: number): number {
 export function oddsModel(
   capsules: CapsuleTables,
   rarities: Rarities,
-  save: Pick<SaveDoc, 'pity' | 'capsules'> & Partial<Pick<SaveDoc, 'cosmetics' | 'flags'>>,
+  save: Pick<SaveDoc, 'pity' | 'capsules'> & Partial<Pick<SaveDoc, 'cosmetics' | 'flags' | 'arenaIndex'>>,
   randomLegendaries: boolean,
   collections?: CosmeticCollections,
 ): OddsModel {
+  const arenaIndex = save.arenaIndex ?? null;
   const left = bagLeft(capsules, save.capsules.bag);
   const bagSize = capsules.tierOrder.reduce((n, tier) => n + capsules.bag[tier], 0);
   const bagTotal = save.capsules.bag.length > 0 && (save.capsules.bagSize ?? 0) > 0 ? save.capsules.bagSize : bagSize;
@@ -202,8 +209,9 @@ export function oddsModel(
     notice: flags['notice.capsuleLadder'] === true,
     dailyBp: capsules.tierOrder.filter((tier) => capsules.dailyOddsBp[tier] > 0).map((tier) => ({ tier, bp: capsules.dailyOddsBp[tier] })),
     stackBp: rarities.order.map((rarity) => ({ rarity, bp: capsules.stackRollBp[rarity] })),
+    // The tier as the player's arena rolls it (the all-ages table from Arena 3, A6.4); no arena: the base table.
     tiers: capsules.tierOrder.map((tier) => {
-      const d = capsules.tiers[tier];
+      const d = capsuleTierFor(capsules, tier, arenaIndex);
       return {
         tier,
         stacks: d.stacks,
@@ -256,6 +264,7 @@ export function oddsModel(
       },
     ],
     randomLegendaries,
+    allAges: { active: usesAllAgesTable(capsules, arenaIndex), fromArena: capsules.allAges.fromArena },
   };
 }
 

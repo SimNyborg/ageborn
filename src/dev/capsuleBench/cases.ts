@@ -19,7 +19,7 @@ import type {
   WardrobeReveal,
 } from '@/contracts';
 import { mulberry32 } from '@/core';
-import { asContent, content } from '@/content';
+import { asContent, capsuleTierFor, content } from '@/content';
 // Pure capsule modules only, so the bench cases load in Node tests without Pixi or CSS.
 import { progressFromCollections } from '@/capsule/summaryModel';
 import { climbCount, strikePattern, strikeSplit, TIER_ORDER } from '@/capsule/tiers';
@@ -73,9 +73,12 @@ export interface StackSpec {
   copies?: number;
 }
 
-/** Stack rarities for a tier: guarantees first, the rest Common (A6.4 table shape). */
-function tierStacks(tier: CapsuleTier): StackSpec[] {
-  const def = C.capsules.tiers[tier];
+/** The last arena (0-based): it rolls the all-ages table (A6.4, content re-tune 2026-10-04). */
+const ALL_AGES_ARENA = C.arenas.list.length - 1;
+
+/** Stack rarities for a tier: guarantees first, the rest Common (A6.4 table shape; `allAges`: Arena 3 and up). */
+function tierStacks(tier: CapsuleTier, allAges = false): StackSpec[] {
+  const def = capsuleTierFor(C.capsules, tier, allAges ? ALL_AGES_ARENA : null);
   const out: StackSpec[] = def.guaranteed.map((r) => ({ rarity: r }));
   while (out.length < def.stacks) out.push({ rarity: 'common' });
   return out;
@@ -95,6 +98,8 @@ interface RevealSpec {
   seed?: number;
   /** The first capsule of this Legendary tier the save opens (A10 step 4b). */
   firstOfTier?: boolean;
+  /** Rolled in Arena 3 or later: the all-ages stacks and copies (A6.4). */
+  allAges?: boolean;
 }
 
 export function makeReveal(spec: RevealSpec): CapsuleReveal {
@@ -102,10 +107,10 @@ export function makeReveal(spec: RevealSpec): CapsuleReveal {
   const kind = spec.kind ?? 'win';
   const climbFrom = C.capsules.kinds[kind].climbFrom;
   const startTier = spec.startTier ?? climbFrom ?? spec.tier;
-  const def = C.capsules.tiers[spec.tier];
+  const def = capsuleTierFor(C.capsules, spec.tier, spec.allAges ? ALL_AGES_ARENA : null);
   const used = new Set<CardId>();
   let legendaries = 0;
-  const stacks: CapsuleStack[] = (spec.stacks ?? tierStacks(spec.tier)).map((s) => {
+  const stacks: CapsuleStack[] = (spec.stacks ?? tierStacks(spec.tier, spec.allAges)).map((s) => {
     let card = s.card;
     if (!card) {
       const pool = POOL[s.rarity].filter((c) => !used.has(c));
@@ -252,6 +257,10 @@ function buildCases(): BenchCase[] {
       tier: 'jade',
       stacks: [{ rarity: 'common', card: 'bonker', dust: 70, copies: 14 }, { rarity: 'rare' }, { rarity: 'rare' }, { rarity: 'epic' }, { rarity: 'epic', card: 'battering_ram', isNew: false }],
     }),
+    // The all-ages table (A6.4, Arena 3 and up): one more stack and bigger copies on every tier.
+    single('allages-clay', 'All-ages table', 'Clay from Arena 3 (3 stacks)', { tier: 'clay', allAges: true }),
+    single('allages-jade', 'All-ages table', 'Jade from Arena 3 (6 stacks)', { tier: 'jade', allAges: true }),
+    single('allages-aeon', 'All-ages table', 'Aeon from Arena 3 (9 stacks, 3 Legendaries)', { tier: 'aeon', allAges: true, skin: 'ghost_corsair' }),
     single('aeon-skin', 'Other', 'Platinum with its sure skin (owned Legendaries)', {
       tier: 'platinum',
       skin: 'ghost_corsair',

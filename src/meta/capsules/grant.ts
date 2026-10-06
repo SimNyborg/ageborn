@@ -22,7 +22,7 @@
  * item plus `exclusiveCompleteDust` (the cosmetic stream, `cosmetics.ts`).
  */
 import type { AgeId, CapsuleContents, CapsuleStack, CapsuleTier, CardId, PendingCapsule, SaveDoc, SkinId } from '@/contracts';
-import type { CapsuleTierDef, Content } from '@/content';
+import { ageCapsuleStacksFor, capsuleTierFor, type CapsuleTierDef, type Content } from '@/content';
 import { chanceBp, cloneSfc32, pickWeighted, rngId, type Sfc32State } from '@/core';
 import { AGE_UNLOCK_TIER } from '../rules';
 import { ageCards, arenaOf, cardRarity, isOwned, poolOf, tierIndex, tierOrder } from '../tables';
@@ -174,6 +174,7 @@ export function grantCapsuleAt(
     contents = { stacks: ageUnlockStacks(t, age, owned), amber: 0, dust: 0, skin: null };
   } else if (script) {
     tier = script.tier;
+    // The onboarding script always uses the base table (A6.5), whatever the arena.
     const def = caps.tiers[tier];
     const stacks = rollScripted(script, {
       t,
@@ -188,10 +189,11 @@ export function grantCapsuleAt(
   } else if (kind === 'age') {
     age = o.age ?? defaultCapsuleAge(s, t);
     const ac = caps.ageCapsule;
-    const copiesTier = caps.tiers[ac.copiesTier];
+    // From Arena 3 the all-ages table (A6.4): one more stack, the all-ages Silver copies and Amber.
+    const copiesTier = capsuleTierFor(caps, ac.copiesTier, s.arenaIndex);
     tier = ac.copiesTier;
     const stacks = rollStacks(
-      { stacks: ac.stacks, guaranteed: ac.guaranteed, copies: copiesTier.copies, randomLegendaries: arena.randomLegendaries },
+      { stacks: ageCapsuleStacksFor(caps, s.arenaIndex), guaranteed: ac.guaranteed, copies: copiesTier.copies, randomLegendaries: arena.randomLegendaries },
       { t, rng, pool: poolOf(t, [age], s.arenaIndex), owned, pity: pityDraw(s, t), reserved, need },
     );
     contents = { stacks, amber: copiesTier.amber, dust: 0, skin: null };
@@ -206,7 +208,8 @@ export function grantCapsuleAt(
     else if (kind === 'meter') tier = 'clay';
     else if (kind === 'codex') tier = caps.codexCapsuleTier;
     else tier = 'silver';
-    const def = caps.tiers[tier];
+    // Arenas 1-2 roll the base table, Arena 3 and up the all-ages table (A6.4, content re-tune 2026-10-04).
+    const def = capsuleTierFor(caps, tier, s.arenaIndex);
     const stacks = rollStacks(spec(def, arena.randomLegendaries), {
       t,
       rng,

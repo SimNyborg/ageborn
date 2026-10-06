@@ -32,8 +32,20 @@ function bag(seed: number): CapsuleTier[] {
 }
 
 describe('DropsTally (A6.4, A6.5)', () => {
+  it('checks stack counts against the table of its arena (the all-ages table from Arena 3, A6.4)', () => {
+    const last = c.arenas.list.length - 1;
+    const wide = new DropsTally(content);
+    const base = capsule('silver');
+    wide.add(base);
+    expect(wide.summary().stackCountViolations).toBe(1);
+    const t = new DropsTally(content, last);
+    const stacks = c.capsules.allAges.tiers.silver.stacks;
+    t.add({ ...base, stacks: Array.from({ length: stacks }, (_, i) => base.stacks[i] ?? { rarity: 'common' as Rarity, foil: 'none' as Foil, isNew: false, card: 'bonker' }) });
+    expect(t.summary().stackCountViolations).toBe(0);
+  });
+
   it('accepts exact bags and flags a wrong one', () => {
-    const t = new DropsTally(content);
+    const t = new DropsTally(content, 0);
     for (const tier of [...bag(1), ...bag(2)]) t.add(capsule(tier, { extra: ['epic', 'legendary'] }));
     expect(t.summary().bag).toEqual({ groups: 2, badGroups: 0, firstBad: null });
     const wrong = bag(3);
@@ -45,12 +57,12 @@ describe('DropsTally (A6.4, A6.5)', () => {
   });
 
   it('runs chi-square tests against the published odds', () => {
-    const daily = new DropsTally(content);
+    const daily = new DropsTally(content, 0);
     const odds = c.capsules.dailyOddsBp;
     for (const tier of c.capsules.tierOrder) for (let i = 0; i < odds[tier] / 10; i += 1) daily.add(capsule(tier, { kind: 'daily' }));
     expect(daily.summary().daily?.p).toBeGreaterThan(0.99);
     // Clay stacks rolled exactly at 72/22/5/1 with no pity pending.
-    const t = new DropsTally(content);
+    const t = new DropsTally(content, 0);
     const rolls: Rarity[] = [...Array<Rarity>(72).fill('common'), ...Array<Rarity>(22).fill('rare'), ...Array<Rarity>(5).fill('epic'), 'legendary'];
     for (let i = 0; i < rolls.length; i += 2) t.add(capsule('clay', { extra: [rolls[i] as Rarity, rolls[i + 1] as Rarity] }));
     const s = t.summary();
@@ -60,20 +72,20 @@ describe('DropsTally (A6.4, A6.5)', () => {
     const verdicts = Object.fromEntries(dropsChecks(s, content).map((x) => [x.id, x.verdict]));
     expect(verdicts).toMatchObject({ 'drops.daily': 'skipped', 'drops.rarity': 'pass', 'drops.guarantees': 'pass', 'drops.stackCount': 'pass' });
     // 2,000 stacks and not one foil is far from the published 5.25%.
-    const plain = new DropsTally(content);
+    const plain = new DropsTally(content, 0);
     for (let i = 0; i < 1000; i += 1) plain.add(capsule('clay'));
     expect(plain.summary().foils?.p).toBeLessThan(0.01);
     expect(dropsChecks(plain.summary(), content).find((x) => x.id === 'drops.foils')?.verdict).toBe('fail');
   });
 
   it('leaves stacks that pity may have touched out of the rarity test', () => {
-    const t = new DropsTally(content);
+    const t = new DropsTally(content, 0);
     t.add(capsule('clay', { extra: ['epic', 'epic'], pityBefore: { ...PITY0, sinceEpic: 9 } }));
     expect(t.summary().rarity).toBeNull();
   });
 
   it('finds pity boundary and guarantee violations', () => {
-    const t = new DropsTally(content);
+    const t = new DropsTally(content, 0);
     for (let i = 0; i < 12; i += 1) t.add(capsule('clay', { unownedBefore: 3 }));
     const bad = capsule('silver');
     bad.stacks = bad.stacks.map((s) => ({ ...s, rarity: 'common' }));
@@ -99,15 +111,15 @@ describe('DropsTally (A6.4, A6.5)', () => {
         n += 1;
         return { ...x, card: `L${i}`, copies: n === 1 ? def.copies.legendary : def.extraLegendaryCopies };
       });
-      const ok = new DropsTally(content);
+      const ok = new DropsTally(content, 0);
       ok.add({ ...good, skin: true });
       expect(ok.summary().legendaryViolations, tier).toBe(0);
       // the same Legendary twice
-      const dup = new DropsTally(content);
+      const dup = new DropsTally(content, 0);
       dup.add({ ...good, skin: true, stacks: good.stacks.map((x) => (x.rarity === 'legendary' ? { ...x, card: 'same' } : x)) });
       expect(dup.summary().legendaryViolations, tier).toBe(1);
       // one Legendary short (the extra stack fell back to Epic)
-      const short = new DropsTally(content);
+      const short = new DropsTally(content, 0);
       const idx = good.stacks.findIndex((x) => x.rarity === 'legendary');
       short.add({ ...good, skin: true, stacks: good.stacks.map((x, i) => (i === idx ? { ...x, rarity: 'epic' as Rarity } : x)) });
       expect(short.summary().legendaryViolations, tier).toBe(1);
@@ -117,7 +129,7 @@ describe('DropsTally (A6.4, A6.5)', () => {
   it('checks sure skins, skin floors and the Wardrobe pity counters', () => {
     const sure = c.capsules.tierOrder.filter((t) => c.capsules.tiers[t].skinChanceBp >= 10_000);
     expect(sure.length).toBeGreaterThan(0);
-    const t = new DropsTally(content);
+    const t = new DropsTally(content, 0);
     for (const tier of sure) t.add({ ...capsule(tier), skin: false });
     const floor = sure.find((x) => c.capsules.tiers[x].skinMinRarity !== 'rare');
     if (floor) t.add({ ...capsule(floor), skin: true, skinRarity: 'rare' });
@@ -134,7 +146,7 @@ describe('DropsTally (A6.4, A6.5)', () => {
     expect(skinTiers.length).toBeGreaterThan(0);
     const rarities = ['rare', 'epic', 'legendary'] as const;
     // Exactly at the published split: passes. Aeon from Epic is 1800 : 400 (81.82% / 18.18%).
-    const good = new DropsTally(content);
+    const good = new DropsTally(content, 0);
     for (const tier of skinTiers) {
       const w = skinRarityWeights(c, c.capsules.tiers[tier].skinMinRarity);
       w.forEach((x, i) => {
@@ -148,21 +160,21 @@ describe('DropsTally (A6.4, A6.5)', () => {
     const goodVerdicts = dropsChecks(gs, content).filter((x) => x.id.startsWith('drops.skinRarity.'));
     expect(goodVerdicts.map((x) => x.verdict)).toEqual(skinTiers.map(() => 'pass'));
     // A wrong split (every skin Epic) fails for each tier.
-    const bad = new DropsTally(content);
+    const bad = new DropsTally(content, 0);
     for (const tier of skinTiers) for (let n = 0; n < 200; n += 1) bad.add({ ...capsule(tier), skin: true, skinRarity: 'epic' });
     const bv = Object.fromEntries(dropsChecks(bad.summary(), content).map((x) => [x.id, x.verdict]));
     for (const tier of skinTiers) expect(bv[`drops.skinRarity.${tier}`], tier).toBe('fail');
   });
 
   it('shares the 0.01 false-alarm budget across the chi-square checks of a run (Bonferroni)', () => {
-    const checks = dropsChecks(new DropsTally(content).summary(), content);
+    const checks = dropsChecks(new DropsTally(content, 0).summary(), content);
     const chi = checks.filter((x) => x.target.startsWith('chi-square'));
     expect(chi.length).toBeGreaterThan(3);
     const alpha = chiAlpha(chi.length);
     expect(alpha).toBeCloseTo(P_MIN / chi.length, 12);
     for (const x of chi) expect(x.target).toContain(`${P_MIN} / ${chi.length} checks`);
     // A p between alpha and 0.01 (seed 1's full-run Supply draw, p = 0.0074) passes; below alpha fails.
-    const t = new DropsTally(content);
+    const t = new DropsTally(content, 0);
     const odds = c.capsules.dailyOddsBp;
     for (const tier of c.capsules.tierOrder) for (let i = 0; i < odds[tier] / 10; i += 1) t.add(capsule(tier, { kind: 'daily' }));
     const s = t.summary();
@@ -184,7 +196,7 @@ describe('DropsTally (A6.4, A6.5)', () => {
     }
     expect(climbIssue(c, 'aeon', { startTier: 'clay', climbs: 6, strikeClimbs: [true, false, true, true] })).toMatch(/non-climb/);
     expect(climbIssue(c, 'gold', { startTier: 'clay', climbs: 5, strikeClimbs: [true, true, true, true] })).toMatch(/summit/);
-    const t = new DropsTally(content);
+    const t = new DropsTally(content, 0);
     t.add({ ...capsule('silver'), climb: { startTier: 'clay', climbs: 2, strikeClimbs: [true, true, false, false] } });
     expect(t.summary().climbViolations).toBe(1);
   });

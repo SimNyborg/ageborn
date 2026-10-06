@@ -55,3 +55,23 @@ Rare to max not reached in 365 days, Epic 165 / Legendary 206 days (targets 110 
 Legendaries 24 days, focused War Plan at L7 178 days, Amber for the whole collection 322 days (copies not reached);
 copies a day (100), Amber a day (3,260) and the per-capsule targets still pass. The time-to-max targets now fail by
 1.5-2.5x; the CONTENT_PLAN 8 re-tune (option B) is overdue and should land before the W8 Cosmic wave adds its 15 cards.
+
+**Update (W8 Cosmic wave released, 2026-10-04):** with every wave released (Cosmic adds 6 Commons, 5 Rares, 3 Epics
+and 1 Legendary to the capsule pool: Crystal Guard, Void Skimmer, Moonlings, Nova Thrower, Asteroid Golem, Shard
+Spitter; Star Mortar, Antimatter Rifler, Bio-Weaver, Void Whisperer, Event Horizon; Star Fighter, Swarm Matron,
+Gravity Sage; Star Leviathan; 208 collection cards in all), `economy --seeds 30` gives Common and Rare to max not
+reached in 365 days, Epic 188 / Legendary 223 days (targets 110 / 101 / 69 / 112 ± 20%), all 8 Legendaries 25 days,
+focused War Plan at L7 200 days, Amber for the whole collection 348 days (copies not reached); copies a day (100),
+Amber a day (3,279) and the per-capsule targets still pass. All eight waves are in: the CONTENT_PLAN 8 re-tune
+(option B) can now be measured on the final pool and should land next.
+
+**Done (economy and collection lead, 2026-10-04):** the CONTENT_PLAN 8 option B re-tune landed as the **all-ages
+table** (`capsules.allAges` in `src/content/capsules.ts`, read through `capsuleTierFor` in
+`src/content/capsuleTiers.ts`): from Arena 3 every tier holds one more stack and the copies and Amber of option B
+(Common ×0.95 and Amber ×0.96 of the plan's values after measuring on the real pool); Arenas 1-2 and the
+onboarding script keep the old table, so the A6.4 table tests and the first days of a save are unchanged.
+`economy --seeds 30`: Common / Rare / Epic / Legendary to max 105 / 97 / 62.25 / 106.5 days (was not reached /
+not reached / 187.5 / 222.75), plan L7 94 (199.5), copies and Amber done 224.5 and 210 (gap 15), whole collection
+224.5 days; `drops --mode smoke` 17 of 17. The A6.9 income targets are rebased in `tools/economy.ts` (38 copies
+and 710 Amber per bag capsule, ~240 copies and ~5,150 Amber a day). DESIGN A6.4 and A6.9, `docs/decisions.md`
+("Content re-tune: the all-ages capsule table and collection milestones").

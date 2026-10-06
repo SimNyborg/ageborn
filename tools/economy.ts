@@ -31,18 +31,19 @@ const MONTH_DAYS = 30.44;
 /** A6.9 targets. Months are converted at 30.44 days. */
 export const ECONOMY_TARGETS = {
   tolerance: 0.2,
-  // The 2026-09-29 capsule ladder (owner: "keep today's time to max a card"): income and time-to-max
-  // targets are rebased on the measured 100-seed medians of the model before the ladder (A6.9). The
-  // old month-based bands (4.5 / 4.3 / 3 / 4.5 months) were stale: that model's own Rare median (101
-  // days) was below its band.
-  copiesPerBagCapsule: 16.0,
-  amberPerBagCapsule: 411,
+  // The 2026-09-29 capsule ladder (owner: "keep today's time to max a card"): time-to-max targets are the
+  // measured 100-seed medians of the model before the ladder (A6.9). The content re-tune (2026-10-04,
+  // CONTENT_PLAN 8) keeps them for the 208-card pool and rebases the income rows on the all-ages table
+  // (A6.4, Arena 3 and up, where the player spends nearly the whole year): before it, 16.0 copies and
+  // 411 Amber per bag capsule and about 98 copies and 3,030 Amber a day for the 88-card pool.
+  copiesPerBagCapsule: 38,
+  amberPerBagCapsule: 710,
   // The Sundial (2026-09-30, A6.3): one every 5 h is 4.8 a day, all claimed by 7 matches; the 2-pip
   // Clay meter fills from the ladder matches that bring none (the Supply Capsule retired).
   sundialCapsulesPerDay: 4.8,
   clayCapsulesPerDay: 1.1,
-  copiesPerDay: 98,
-  amberPerDay: 3030,
+  copiesPerDay: 240,
+  amberPerDay: 5150,
   commonMaxDays: 110,
   rareMaxDays: 101,
   epicMaxDays: 69,
@@ -55,14 +56,16 @@ export const ECONOMY_TARGETS = {
    * keep their own length.
    */
   casualDays: 730,
-  // Design targets the model misses both before and after the ladder: Phase 3 tuning items (A6.9).
-
-  allLegendariesDays: 14,
+  // Design targets (A6.9). The 2026-10-04 re-tune rebased them on the 208-card pool (CONTENT_PLAN 8):
+  // all 16 Legendaries owned in about 3 weeks (8 in 2 before), the whole collection in about 7.25
+  // months (5.25 before). The focused War Plan at L7 stays an open Phase 3 item (about 6 weeks wanted,
+  // about 3 months measured before and after the content waves).
+  allLegendariesDays: 21,
   planL7Days: 42,
-  copiesDoneDays: 135,
-  amberDoneDays: 160,
-  /** "Whole collection maxed: ~5-5.5 months" (the middle, 5.25 months). */
-  collectionMaxedDays: 5.25 * MONTH_DAYS,
+  copiesDoneDays: 7.25 * MONTH_DAYS,
+  amberDoneDays: 7 * MONTH_DAYS,
+  /** "Whole collection maxed: ~7-7.5 months" (the middle, 7.25 months; ~5-5.5 months for 88 cards). */
+  collectionMaxedDays: 7.25 * MONTH_DAYS,
   maxGapDays: 30,
 } as const;
 
@@ -107,6 +110,7 @@ export function medianMeasures(list: readonly EconomyMeasures[]): EconomyMeasure
       clay: num((m) => m.perDay.clay),
       copies: num((m) => m.perDay.copies),
       amber: num((m) => m.perDay.amber),
+      dust: num((m) => m.perDay.dust),
       quests: num((m) => m.perDay.quests),
     },
     maxDay: {
@@ -115,7 +119,11 @@ export function medianMeasures(list: readonly EconomyMeasures[]): EconomyMeasure
       epic: day((m) => m.maxDay.epic),
       legendary: day((m) => m.maxDay.legendary),
     },
+    dustTotal: num((m) => m.dustTotal),
     allLegendariesDay: day((m) => m.allLegendariesDay),
+    cards100Day: day((m) => m.cards100Day),
+    albumCompleteDay: day((m) => m.albumCompleteDay),
+    maxed50Day: day((m) => m.maxed50Day),
     planL7Day: day((m) => m.planL7Day),
     copiesDoneDay: day((m) => m.copiesDoneDay),
     amberDoneDay: day((m) => m.amberDoneDay),
@@ -129,6 +137,8 @@ export function medianMeasures(list: readonly EconomyMeasures[]): EconomyMeasure
 export interface DayTotals {
   copies: number;
   amber: number;
+  /** Dust earned (capsule bonus Dust, copies past L10, duplicate skins and items, road, quests, feats). */
+  dust: number;
   capsules: Partial<Record<PendingCapsule['kind'], number>>;
   matches: number;
   wins: number;
@@ -140,10 +150,16 @@ export interface EconomyMeasures {
   days: number;
   copiesPerBagCapsule: number;
   amberPerBagCapsule: number;
-  perDay: { win: number; daily: number; clay: number; copies: number; amber: number; quests: number };
+  perDay: { win: number; daily: number; clay: number; copies: number; amber: number; dust: number; quests: number };
+  /** Dust earned over the whole run (reported: Dust buys card copies, skins and items, A6.6). */
+  dustTotal: number;
   /** Median day a card of each rarity has received the copies for L10 (null = never). */
   maxDay: Record<Rarity, number | null>;
   allLegendariesDay: number | null;
+  /** Collection milestones (titles, 2026-10-04): 100 cards owned, every card owned, 50 cards at the cap. */
+  cards100Day: number | null;
+  albumCompleteDay: number | null;
+  maxed50Day: number | null;
   planL7Day: number | null;
   copiesDoneDay: number | null;
   amberDoneDay: number | null;
@@ -163,7 +179,7 @@ export class EconomyRecorder {
   private winCaps = 0;
   private winCopies = 0;
   private winAmber = 0;
-  private readonly cards: { id: CardId; rarity: Rarity; need: number }[];
+  private readonly cards: { id: CardId; rarity: Rarity; need: number; age: AgeId }[];
   private readonly amberNeed: number;
 
   constructor(content: CompiledContent) {
@@ -173,16 +189,16 @@ export class EconomyRecorder {
       // Cards held back by the release gate (`released: false`) never drop, so they are not part of the collection.
       ...Object.values(c.units)
         .filter((u) => u.hidden !== true && isReleased(c, u.id))
-        .map((u) => ({ id: u.id, rarity: u.rarity, need: need(u.rarity) })),
+        .map((u) => ({ id: u.id, rarity: u.rarity, need: need(u.rarity), age: u.age })),
       ...Object.values(c.turrets)
         .filter((t) => isReleased(c, t.id))
-        .map((t) => ({ id: t.id, rarity: t.rarity as Rarity, need: need(t.rarity) })),
+        .map((t) => ({ id: t.id, rarity: t.rarity as Rarity, need: need(t.rarity), age: t.age })),
     ];
     this.amberNeed = this.cards.length * c.rarities.upgradeAmber.reduce((a, b) => a + b, 0);
   }
 
   private today(day: number): DayTotals {
-    while (this.totals.length <= day) this.totals.push({ copies: 0, amber: 0, capsules: {}, matches: 0, wins: 0, quests: 0 });
+    while (this.totals.length <= day) this.totals.push({ copies: 0, amber: 0, dust: 0, capsules: {}, matches: 0, wins: 0, quests: 0 });
     return this.totals[day] as DayTotals;
   }
 
@@ -201,6 +217,10 @@ export class EconomyRecorder {
     this.today(day).amber += amount;
     this.amberSum += amount;
     if (this.amberDone === null && this.amberSum >= this.amberNeed) this.amberDone = day;
+  }
+
+  dust(day: number, amount: number): void {
+    this.today(day).dust += amount;
   }
 
   /**
@@ -249,6 +269,8 @@ export class EconomyRecorder {
     const allOwned = legendaries.every((c) => this.owned.has(c.id)) ? Math.max(...legendaries.map((c) => this.owned.get(c.id) as number)) : null;
     const copiesDone = this.cards.every((c) => this.copiesDone.has(c.id)) ? Math.max(...this.cards.map((c) => this.copiesDone.get(c.id) as number)) : null;
     const maxedAll = this.cards.every((c) => this.maxed.has(c.id)) ? Math.max(...this.cards.map((c) => this.maxed.get(c.id) as number)) : null;
+    const ownedDays = this.cards.map((c) => this.owned.get(c.id)).filter((d): d is number => d !== undefined).sort((a, b) => a - b);
+    const maxedDays = this.cards.map((c) => this.maxed.get(c.id)).filter((d): d is number => d !== undefined).sort((a, b) => a - b);
     return {
       days: this.totals.length,
       copiesPerBagCapsule: this.winCaps ? this.winCopies / this.winCaps : Number.NaN,
@@ -259,10 +281,15 @@ export class EconomyRecorder {
         clay: perDay((t) => t.capsules.meter ?? 0),
         copies: perDay((t) => t.copies),
         amber: perDay((t) => t.amber),
+        dust: perDay((t) => t.dust),
         quests: perDay((t) => t.quests),
       },
+      dustTotal: this.totals.reduce((n, t) => n + t.dust, 0),
       maxDay: { common: byRarity('common'), rare: byRarity('rare'), epic: byRarity('epic'), legendary: byRarity('legendary') },
       allLegendariesDay: allOwned,
+      cards100Day: ownedDays.length >= 100 ? (ownedDays[99] as number) : null,
+      albumCompleteDay: ownedDays.length === this.cards.length ? (ownedDays[ownedDays.length - 1] as number) : null,
+      maxed50Day: maxedDays.length >= 50 ? (maxedDays[49] as number) : null,
       planL7Day: this.planL7,
       copiesDoneDay: copiesDone,
       amberDoneDay: this.amberDone,
@@ -295,12 +322,20 @@ export function economyChecks(m: EconomyMeasures): Check[] {
     near('economy.rareMax', 'Rare to max (median card)', m.maxDay.rare, T.rareMaxDays, 'days'),
     near('economy.epicMax', 'Epic to max (median card)', m.maxDay.epic, T.epicMaxDays, 'days'),
     near('economy.legendaryMax', 'Legendary to max (median card)', m.maxDay.legendary, T.legendaryMaxDays, 'days'),
-    near('economy.allLegendaries', 'All 8 Legendaries owned', m.allLegendariesDay, T.allLegendariesDays, 'days'),
+    near('economy.allLegendaries', 'All Legendaries owned', m.allLegendariesDay, T.allLegendariesDays, 'days'),
     near('economy.planL7', 'Focused War Plan at L7', m.planL7Day, T.planL7Days, 'days'),
     near('economy.copiesDone', 'Copies for the whole collection', m.copiesDoneDay, T.copiesDoneDays, 'days'),
     near('economy.amberDone', 'Amber for the whole collection (every released card × 4,970)', m.amberDoneDay, T.amberDoneDays, 'days'),
     near('economy.collectionMaxed', 'Whole collection maxed', m.collectionMaxedDay, T.collectionMaxedDays, 'days'),
     rangeCheck('economy.finishGap', 'Gap between the copy and Amber finish dates', gap, 0, T.maxGapDays - 1e-9, { target: `< ${T.maxGapDays} days`, show: (x) => (Number.isFinite(x) ? `${fmtNum(x, 0)} days` : 'not reached') }),
+    // The collection milestones (titles, 2026-10-04) are reported, not gated.
+    infoCheck(
+      'economy.milestones',
+      'Collection milestones: 100 cards owned, every card owned, 50 cards maxed, everything maxed',
+      [m.cards100Day, m.albumCompleteDay, m.maxed50Day, m.collectionMaxedDay].map((x) => (x === null ? 'not reached' : `day ${x}`)).join(' / '),
+    ),
+    // Dust is reported, not gated (A6.6 prices did not change with the content re-tune).
+    infoCheck('economy.dust', 'Dust earned: a day (averaging window) and over the whole run', `${fmtNum(m.perDay.dust, 0)} /day; ${fmtNum(m.dustTotal, 0)} in ${m.days} days`),
     // A model input rather than a result: the A6.9 player completes 3 quests a day.
     infoCheck('economy.questsPerDay', 'Quests claimed per day (A6.9 assumes 3)', `${fmtNum(m.perDay.quests, 2)} /day`),
   ];
@@ -397,10 +432,12 @@ function levelsOf(s: SaveDoc): Map<CardId, number> {
   return new Map(Object.entries(s.collection).map(([id, e]) => [id, e.level]));
 }
 
-/** Amber income of one step: the currency change plus what the step itself spent. */
+/** Amber and Dust income of one step: the currency change plus the Amber the step itself spent. */
 function income(rec: EconomyRecorder, day: number, before: SaveDoc, after: SaveDoc, spent = 0): void {
   const got = after.currencies.amber - before.currencies.amber + spent;
   if (got > 0) rec.amber(day, got);
+  const dust = after.currencies.dust - before.currencies.dust;
+  if (dust > 0) rec.dust(day, dust);
 }
 
 function openAll(meta: Meta, s: SaveDoc, day: number, rec: EconomyRecorder): SaveDoc {
@@ -560,6 +597,9 @@ export function economySections(r: Report<EconomyData>): string[] {
         ['Epic to max', d(m.maxDay.epic)],
         ['Legendary to max', d(m.maxDay.legendary)],
         ['All Legendaries owned', d(m.allLegendariesDay)],
+        ['100 cards owned (Card Scout)', d(m.cards100Day)],
+        ['Every card owned (Archivist)', d(m.albumCompleteDay)],
+        ['50 cards maxed (Master Smith)', d(m.maxed50Day)],
         ['War Plan at L7', d(m.planL7Day)],
         ['Copies done', d(m.copiesDoneDay)],
         ['Amber done', d(m.amberDoneDay)],

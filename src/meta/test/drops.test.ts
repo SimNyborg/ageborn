@@ -5,7 +5,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import type { CapsuleTier, Foil, Rarity, SaveDoc } from '@/contracts';
-import { isReleased } from '@/content';
+import { capsuleTierFor, isReleased } from '@/content';
 import { C, M, clock, lastPending, passesChi2, scripted } from './helpers';
 
 const RARITIES: Rarity[] = ['common', 'rare', 'epic', 'legendary'];
@@ -66,7 +66,8 @@ function run(): Tally {
       const o = M.openCapsule(g, lastPending(g).id);
       s = o.save;
       const cap = o.reveal.capsule;
-      const def = C.capsules.tiers[cap.tier];
+      // The last arena rolls the all-ages table (A6.4): its stacks, the base tier's guarantees.
+      const def = capsuleTierFor(C.capsules, cap.tier, s.arenaIndex);
       const rs = cap.contents.stacks.map((x) => x.rarity);
       for (const st of cap.contents.stacks) tally.foils[FOILS.indexOf(st.foil)]! += 1;
       if (kind === 'daily') tally.daily[TIERS.indexOf(cap.tier)]! += 1;

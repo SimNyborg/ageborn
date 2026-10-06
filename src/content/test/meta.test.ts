@@ -12,8 +12,8 @@ import { contentAllReleased as full } from '../../../tests/fixtures/allReleased'
 const { capsules, rarities, arenas, trophyRoad, generals, quests, dailyModifiers, cosmetics, names } = content;
 
 /** Expected copies of one capsule tier before pity (A6.4 steps 1-3), ×10,000 to stay integral. */
-function expectedCopies(tier: CapsuleTier): number {
-  const t = capsules.tiers[tier];
+function expectedCopies(tier: CapsuleTier, allAges = false): number {
+  const t = allAges ? { ...capsules.tiers[tier], ...capsules.allAges.tiers[tier] } : capsules.tiers[tier];
   const copies = (r: Rarity): number => t.copies[r];
   // Guaranteed stacks; the 2nd and later guaranteed Legendary stacks hold `extraLegendaryCopies`.
   let legendaries = 0;
@@ -123,6 +123,33 @@ describe('Time Capsules (A6.4)', () => {
     }
     expect(Math.round(copies / size / 1000)).toBe(161);
     expect(amber / size).toBe(411.3);
+  });
+
+  it('has the all-ages table from Arena 3 (A6.4, content re-tune 2026-10-04)', () => {
+    const w = capsules.allAges;
+    expect(w.fromArena).toBe(3);
+    expect(w.ageCapsuleStacks).toBe(capsules.ageCapsule.stacks + 1);
+    const rows = capsules.tierOrder.map((t) => [t, w.tiers[t].stacks, w.tiers[t].copies.common, w.tiers[t].copies.rare, w.tiers[t].copies.epic, w.tiers[t].copies.legendary, w.tiers[t].amber]);
+    expect(rows).toEqual([
+      ['clay', 3, 6, 2, 2, 2, 181],
+      ['bronze', 4, 7, 5, 5, 2, 363],
+      ['silver', 5, 13, 12, 5, 2, 916],
+      ['jade', 6, 32, 23, 12, 4, 2419],
+      ['gold', 7, 34, 23, 12, 4, 4562],
+      ['platinum', 8, 34, 28, 12, 4, 4838],
+      ['aeon', 9, 53, 32, 14, 4, 6221],
+    ]);
+    for (const t of capsules.tierOrder) {
+      // One more stack than the base tier on every rung; its Expected copies column in tenths.
+      expect(w.tiers[t].stacks, t).toBe(capsules.tiers[t].stacks + 1);
+      expect(Math.round(expectedCopies(t, true) / 1000), t).toBe(Math.round(w.tiers[t].expectedCopiesCenti / 10));
+    }
+    // 38.5 copies and 710.7 Amber per bag capsule before pity (16.1 and 411.3 on the base table).
+    const size = capsules.tierOrder.reduce((n, t) => n + capsules.bag[t], 0);
+    const copies = capsules.tierOrder.reduce((n, t) => n + capsules.bag[t] * expectedCopies(t, true), 0);
+    const amber = capsules.tierOrder.reduce((n, t) => n + capsules.bag[t] * w.tiers[t].amber, 0);
+    expect(Math.round(copies / size / 1000)).toBe(385);
+    expect(amber / size).toBeCloseTo(710.66, 2);
   });
 
   it('has the odds, pity, charges and script', () => {
@@ -454,7 +481,7 @@ describe('Hidden feats (A15.10)', () => {
 });
 
 describe('Cosmetics and skins (A5.8)', () => {
-  it('has banners from the arena gates, frames from Codex levels and 13 titles plus 4 feat titles', () => {
+  it('has banners from the arena gates, frames from Codex levels and 13 titles, 4 collection titles and 4 feat titles', () => {
     expect(cosmetics.banners.map((b) => b.id)).toEqual(['tar_pit', 'frostfang', 'moat', 'harbor', 'barbed', 'neon', 'starfield', 'rift']);
     for (const b of cosmetics.banners.slice(1)) {
       expect(arenas.list[b.arena - 1]?.gateRewards).toContainEqual({ kind: 'banner', banner: b.id });
@@ -462,7 +489,8 @@ describe('Cosmetics and skins (A5.8)', () => {
     expect(cosmetics.frames.map((f) => f.codexLevel)).toEqual([5, 15, 25, 35, 45, 55, 65, 75]);
     expect(cosmetics.titles.map((t) => t.id)).toEqual([
       'recruit', 'firestarter', 'evolver', 'mammoth_tamer', 'collector', 'siege_scholar', 'last_stander', 'speedrunner',
-      'veteran', 'curator', 'wardens_bane', 'conqueror', 'ageborn', 'the_stubborn', 'photo_finisher', 'stone_cold', 'keeper_of_ages',
+      'veteran', 'curator', 'wardens_bane', 'conqueror', 'ageborn', 'card_scout', 'archivist', 'master_smith', 'grand_curator',
+      'the_stubborn', 'photo_finisher', 'stone_cold', 'keeper_of_ages',
     ]);
     expect(cosmetics.emotes.map((e) => e.id)).toEqual(['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg']);
     expect(cosmetics.defaults).toEqual({ banner: 'tar_pit', frame: 'none', title: 'recruit' });

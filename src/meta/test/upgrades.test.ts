@@ -143,3 +143,52 @@ describe('Dust and crafting (A6.6)', () => {
     });
   });
 });
+
+describe('collection milestones (titles, content re-tune 2026-10-04)', () => {
+  const collectable = (): CardId[] => C.order.ages.flatMap((age) => [...C.order.units, ...C.order.turrets].filter((id) => {
+    const def = C.units[id] ?? C.turrets[id];
+    return def !== undefined && def.age === age && C.units[id]?.hidden !== true && def.released !== false;
+  }));
+  const owns = (s: SaveDoc, id: string): boolean => s.cosmetics.owned.includes(id);
+  const withCards = (s: SaveDoc, ids: readonly CardId[], level: number): SaveDoc => ({
+    ...s,
+    collection: { ...s.collection, ...Object.fromEntries(ids.map((id) => [id, { level, copies: 0, isNew: false, foil: 'none' as const }])) },
+  });
+
+  it('Card Scout at 100 cards and Archivist with every card, earned when a capsule is opened', () => {
+    const all = collectable();
+    expect(all.length).toBeGreaterThan(100);
+    const base = fresh();
+    expect(owns(base, 'card_scout')).toBe(false);
+    const ninetyNine = withCards(base, all.slice(0, 99), 1);
+    const g99 = M.grantCapsule(ninetyNine, 'road', C, { now: () => ninetyNine.createdAt + 1 }, { tier: 'clay' });
+    const o99 = M.openCapsule(g99, g99.capsules.pending.at(-1)!.id).save;
+    // A Clay capsule may add the 100th card itself; otherwise the title waits.
+    const count = all.filter((id) => (o99.collection[id]?.level ?? 0) >= 1).length;
+    expect(owns(o99, 'card_scout')).toBe(count >= 100);
+    const every = withCards(base, all, 1);
+    const g = M.grantCapsule(every, 'road', C, { now: () => every.createdAt + 1 }, { tier: 'clay' });
+    const o = M.openCapsule(g, g.capsules.pending.at(-1)!.id).save;
+    expect(owns(o, 'card_scout')).toBe(true);
+    expect(owns(o, 'archivist')).toBe(true);
+    expect(owns(o, 'master_smith')).toBe(false);
+  });
+
+  it('Master Smith when the 50th card reaches the cap, Grand Curator with every card at the cap', () => {
+    const all = collectable();
+    const ready = (s: SaveDoc, id: CardId): SaveDoc => ({ ...s, currencies: { amber: 1_000_000, dust: 0 }, collection: { ...s.collection, [id]: { level: 9, copies: 100, isNew: false, foil: 'none' } } });
+    const [fiftieth, ...rest] = all;
+    const s = ready(withCards(withCards(fresh(), all, 1), rest.slice(0, 49), 10), fiftieth!);
+    expect(owns(s, 'master_smith')).toBe(false);
+    const up = M.upgrade(s, fiftieth!, C);
+    expect(up.ok).toBe(true);
+    if (!up.ok) return;
+    expect(owns(up.value, 'master_smith')).toBe(true);
+    expect(owns(up.value, 'grand_curator')).toBe(false);
+    const [final, ...done] = rest.slice(49);
+    const m = ready(withCards(up.value, done, 10), final!);
+    const end = M.upgrade(m, final!, C);
+    expect(end.ok).toBe(true);
+    if (end.ok) expect(owns(end.value, 'grand_curator')).toBe(true);
+  });
+});

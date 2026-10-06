@@ -34,6 +34,7 @@ export { formatKind, isUnranked, ladderWinFor, rewardFormat } from './ladder';
 export { commanderName, playerName } from './names';
 export { roadAmber } from './trophyRoad';
 export { isReleased, unreleasedIds } from './release';
+export { ageCapsuleStacksFor, capsuleTierFor, usesAllAgesTable } from './capsuleTiers';
 export * from './keys';
 
 /** The meta tables, before compilation (for tools and tests that compile other raw tables). */

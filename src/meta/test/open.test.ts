@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import type { PendingCapsule, SaveDoc } from '@/contracts';
 import { seedSfc32 } from '@/core';
-import { isReleased } from '@/content';
+import { capsuleTierFor, isReleased } from '@/content';
 import { rollSkinRarity, strikePattern } from '../capsules';
 import { C, M, clock, deepFreeze, fresh, lastPending, ownsAll, passesChi2, scripted } from './helpers';
 
@@ -66,10 +66,13 @@ describe('openCapsule', () => {
   });
 
   it('each tier pays its table Amber and bonus Dust; Gold, Platinum and Aeon hold 1, 2 and 3 Legendaries (A6.4, A10)', () => {
+    // Arena 1 rolls the base table, the last arena the all-ages table (A6.4, content re-tune 2026-10-04).
     for (const arena of [0, 7]) {
       let s = scripted(21 + arena, arena);
       for (const tier of C.capsules.tierOrder) {
-        const def = C.capsules.tiers[tier];
+        const def = capsuleTierFor(C.capsules, tier, arena);
+        if (arena === 0) expect(def).toBe(C.capsules.tiers[tier]);
+        else expect(def.stacks).toBe(C.capsules.allAges.tiers[tier].stacks);
         for (let i = 0; i < 40; i += 1) {
           const g = M.grantCapsule(s, 'road', C, clock(), { tier });
           const cap = lastPending(g);

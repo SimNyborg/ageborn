@@ -140,11 +140,11 @@ export const cosmic: RawAgeTables = {
     {
       // Guard: the crystal body takes 25% less from attacks with range ≥ 100 (not powers); Blunt
       id: 'crystal_guard', kind: 'unit', age: 'cosmic', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 830, speed: 70, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 890, speed: 70, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 64, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 67, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'blunt', sfx: 'crystal_slam', mods: damageMods.blunt,
         },
       ],
@@ -155,11 +155,11 @@ export const cosmic: RawAgeTables = {
     {
       // Raider: a hover board at 110 lu/s; a board-flip kick, 90 to bases
       id: 'void_skimmer', kind: 'unit', age: 'cosmic', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 655, speed: 110, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 670, speed: 110, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 88, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 94, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'slash', sfx: 'board_kick', vsBaseDamage: 90,
         },
       ],
@@ -171,7 +171,7 @@ export const cosmic: RawAgeTables = {
       // Trio (X0 M1): one card trains 3 little moon aliens; stats per Moonling, cost and pop split evenly. Each
       // hops and spits a glowing pellet; ground and air
       id: 'moonlings', kind: 'unit', age: 'cosmic', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 176, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 172, speed: 65, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
@@ -192,7 +192,7 @@ export const cosmic: RawAgeTables = {
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 59, intervalMs: 1150, windupPct: 50, range: 240, hitsGround: true, hitsAir: false,
+          damage: 62, intervalMs: 1150, windupPct: 50, range: 240, hitsGround: true, hitsAir: false,
           projectile: { speed: 450, arc: true, visualId: 'proj.nova_orb' },
           dmgType: 'blast', sfx: 'nova_lob', splashRadius: 30,
         },
@@ -204,7 +204,7 @@ export const cosmic: RawAgeTables = {
     {
       // Brute (armored, a rock construct): a boulder-fist uppercut, cleave 2 (reach 30); no first-hit bonus
       id: 'asteroid_golem', kind: 'unit', age: 'cosmic', rarity: 'common', role: 'heavy', group: 'heavy',
-      cost: 150, trainMs: 4000, pop: 6, hp: 2850, speed: 50, size: 'large',
+      cost: 150, trainMs: 4000, pop: 6, hp: 2950, speed: 50, size: 'large',
       tags: ['armored', 'mech', 'melee', 'ground'],
       attacks: [
         {
@@ -224,7 +224,7 @@ export const cosmic: RawAgeTables = {
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 195, intervalMs: 2600, windupPct: 50, range: 390, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 190, intervalMs: 2600, windupPct: 50, range: 390, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.mini_star' },
           dmgType: 'blast', sfx: 'shot_star_mortar', splashRadius: 35, vsBaseDamage: 98,
         },

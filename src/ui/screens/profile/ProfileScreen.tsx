@@ -5,7 +5,7 @@
  * of the last 20 matches, each with a replay and an "AI" marker (A7.1). No login, no account.
  */
 import './profile.css';
-import { bannerNameKey, formatNameKey, frameNameKey, titleNameKey } from '@/content/keys';
+import { bannerNameKey, formatNameKey, frameNameKey, titleNameKey, titleUnlockKey } from '@/content/keys';
 import type { CardId } from '@/contracts';
 import type { ComponentChildren } from 'preact';
 import { useState } from 'preact/hooks';
@@ -14,14 +14,14 @@ import { Button, IconButton } from '../../components/Button';
 import { CardTile } from '../../components/CardTile';
 import { AiBadge, Pill } from '../../components/Chips';
 import { formatClock, formatInt, tierNumeral, withoutAiPrefix } from '../../components/format';
-import { CardsIcon, CastleIcon, CrownIcon, PencilIcon, ReplayIcon, RobotIcon, StarIcon, SwordsIcon, TrophyIcon } from '../../components/icons';
+import { CardsIcon, CastleIcon, CheckIcon, CrownIcon, PencilIcon, ReplayIcon, RobotIcon, StarIcon, SwordsIcon, TrophyIcon } from '../../components/icons';
 import { Empty, Panel, ScreenFrame } from '../../components/Layout';
 import { ProgressBar } from '../../components/Meters';
 import { Modal } from '../../components/Modal';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { cardTile, isOwned } from '../model/cards';
-import { historyRows, profileView } from '../model/profile';
+import { collectionMilestones, historyRows, profileView } from '../model/profile';
 
 const RESULT_KEYS = { win: 'ui.profile.win', loss: 'ui.profile.loss', draw: 'ui.profile.draw' } as const;
 
@@ -175,6 +175,7 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
   const winRate = v.matches > 0 ? Math.round((v.wins * 100) / v.matches) : 0;
   const frame = content.cosmetics.frames.find((f) => f.id === s.profile.frame);
   const maxTier = Math.max(1, ...v.byTier.map((r) => r.wins + r.losses));
+  const milestones = collectionMilestones(s, content);
 
   return (
     <ScreenFrame id="profile" title={t('ui.nav.profile')} onBack={() => router.back()}>
@@ -283,6 +284,25 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
               ))}
             </div>
           </div>
+          {milestones.length > 0 ? (
+            <div class="prof-goals" data-testid="profile-milestones">
+              <span class="prof-sub">{t('ui.profile.milestones')}</span>
+              <p class="prof-goals__hint">{t('ui.profile.milestonesHint')}</p>
+              {milestones.map((m) => (
+                <div key={m.id} class={`prof-goal${m.done ? ' is-done' : ''}`} data-testid={`milestone-${m.id}`}>
+                  <span class="prof-goal__mark" aria-hidden="true">
+                    {m.done ? <CheckIcon size={16} /> : <CardsIcon size={18} />}
+                  </span>
+                  <span class="prof-goal__text">
+                    <b>{t(titleNameKey(m.id))}</b>
+                    <small>{t(titleUnlockKey(m.id))}</small>
+                  </span>
+                  <ProgressBar value={m.n} max={m.max} tone={m.done ? 'green' : 'gold'} thin label={t(titleNameKey(m.id))} />
+                  <span class="prof-goal__n ui-num">{t('ui.common.progress', { n: formatInt(m.n, locale), max: formatInt(m.max, locale) })}</span>
+                </div>
+              ))}
+            </div>
+          ) : null}
         </div>
         <Panel title={t('ui.profile.history')} class="prof-history" testid="profile-history" labelledBy="prof-history-title">
           {rows.length === 0 ? <Empty>{t('ui.profile.noMatches')}</Empty> : null}

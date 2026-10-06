@@ -143,10 +143,36 @@ export interface ScriptedCapsuleDef {
   fullWalkout: boolean;
 }
 
+/** The size of one tier in the all-ages table (DESIGN A6.4, X0): what changes once every age drops. */
+export interface CapsuleTierSize {
+  stacks: number;
+  copies: Record<Rarity, number>;
+  amber: number;
+  /** Expected copies ×100, checked against the table by tests (as `CapsuleTierDef.expectedCopiesCenti`). */
+  expectedCopiesCenti: number;
+}
+
+/**
+ * The all-ages capsule table (content re-tune 2026-10-04, CONTENT_PLAN 8 option B; DESIGN A6.4): from
+ * `fromArena` (1-based), where all eight ages and nearly the whole 208-card pool drop, every capsule
+ * tier holds these stacks, copies and Amber instead of `tiers`' values, so time to max a card stays on
+ * the A6.9 targets with a pool 2.4 times the size. Guarantees, odds, pity, Dust, skins and the bag do
+ * not change. Arenas below `fromArena` and the onboarding script keep `tiers` exactly.
+ */
+export interface AllAgesCapsules {
+  fromArena: number;
+  /** Stacks of an Age Capsule from `fromArena` (one more than `ageCapsule.stacks`). */
+  ageCapsuleStacks: number;
+  tiers: Record<CapsuleTier, CapsuleTierSize>;
+}
+
 export interface CapsuleTables {
   /** Clay → Aeon: the ladder, lowest first; a tier's index is its place here. */
   tierOrder: CapsuleTier[];
+  /** The tier table of Arenas 1-2 and the onboarding script (A6.4); see `allAges` for Arena 3 and up. */
   tiers: Record<CapsuleTier, CapsuleTierDef>;
+  /** Stacks, copies and Amber from Arena 3 on (A6.4 all-ages table); read through `capsuleTierFor`. */
+  allAges: AllAgesCapsules;
   /** Remaining stacks roll these rarities (A6.4 step 1.2). */
   stackRollBp: Record<Rarity, number>;
   /** Win Capsule shuffle bag contents (A6.4); the bag size is the sum of the counts (200), never a constant. */
@@ -666,6 +692,14 @@ export type TitleUnlock =
   | { kind: 'wins'; count: number }
   | { kind: 'beatGeneral'; general: GeneralId }
   | { kind: 'conquestStars'; stars: number }
+  /** Collection milestones (content re-tune 2026-10-04): own `count` troop and turret cards. */
+  | { kind: 'cardsOwned'; count: number }
+  /** Own every collectable troop and turret card (the Card Album's cards, released ones only). */
+  | { kind: 'albumComplete' }
+  /** `count` collectable troop and turret cards at the level cap. */
+  | { kind: 'cardsMaxed'; count: number }
+  /** Every collectable troop and turret card at the level cap. */
+  | { kind: 'collectionMaxed' }
   /** A hidden feat's title (A15.10). */
   | { kind: 'feat'; feat: string };
 

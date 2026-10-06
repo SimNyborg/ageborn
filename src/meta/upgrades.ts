@@ -9,6 +9,7 @@
 import type { CardId, Result, SaveDoc } from '@/contracts';
 import type { Content } from '@/content';
 import { addCodexPoints } from './codex';
+import { unlockTitles } from './titles';
 import { countUpgrade } from './quests';
 import { cardDef, lastKnownTime } from './tables';
 
@@ -60,5 +61,7 @@ export function upgradeCard(s: SaveDoc, card: CardId, t: Content): Result<SaveDo
     currencies: { amber: s.currencies.amber - cost.amber, dust },
   };
   const counted = countUpgrade(upgraded, t);
-  return { ok: true, value: addCodexPoints(counted, t, t.rarities.cards[def.rarity].codexPoints, lastKnownTime(counted)).save };
+  const save = addCodexPoints(counted, t, t.rarities.cards[def.rarity].codexPoints, lastKnownTime(counted)).save;
+  // A card reaching the cap may complete an age or the whole collection (the collection milestones).
+  return { ok: true, value: level >= t.economy.maxLevel ? unlockTitles(save, t).save : save };
 }

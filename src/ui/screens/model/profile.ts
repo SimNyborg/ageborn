@@ -114,3 +114,39 @@ export function historyRows(replays: readonly ReplayDoc[], contentHash: string):
     };
   });
 }
+
+/** One collection milestone row (the collection titles, content re-tune 2026-10-04). */
+export interface MilestoneRow {
+  /** The title it earns. */
+  id: string;
+  /** Progress toward it: cards owned, or cards at the level cap. */
+  n: number;
+  max: number;
+  done: boolean;
+}
+
+/**
+ * The collection milestones in content order: every title whose unlock is a collection goal
+ * (`cardsOwned`, `albumComplete`, `cardsMaxed`, `collectionMaxed`), with progress from the save. A title
+ * already owned is done even if a later content release added cards (titles are never taken away).
+ */
+export function collectionMilestones(save: SaveDoc, content: Content): MilestoneRow[] {
+  const ids = [...content.order.units, ...content.order.turrets];
+  const cap = content.economy.maxLevel;
+  const owned = ids.filter((id) => isOwned(save, id, content)).length;
+  const maxedIn = (list: readonly CardId[]): number => list.filter((id) => (save.collection[id]?.level ?? 0) >= cap).length;
+  const rows: MilestoneRow[] = [];
+  for (const title of content.cosmetics.titles) {
+    const u = title.unlock;
+    let n: number;
+    let max: number;
+    if (u.kind === 'cardsOwned') [n, max] = [Math.min(owned, u.count), u.count];
+    else if (u.kind === 'albumComplete') [n, max] = [owned, ids.length];
+    else if (u.kind === 'cardsMaxed') [n, max] = [Math.min(maxedIn(ids), u.count), u.count];
+    else if (u.kind === 'collectionMaxed') [n, max] = [maxedIn(ids), ids.length];
+    else continue;
+    const done = save.cosmetics.owned.includes(title.id) || n >= max;
+    rows.push({ id: title.id, n: done ? max : n, max, done });
+  }
+  return rows;
+}

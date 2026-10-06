@@ -31,7 +31,7 @@
  * for 10^6 openings. Without `src/meta` (WP7) the tool writes a skipped report and exits 0.
  */
 import type { CapsuleReveal, CapsuleTier, CardId, Clock, CompiledContent, Foil, Meta, PendingCapsule, Rarity, SaveDoc, SkinRarity } from '../src/contracts';
-import { asContent, content as gameContent, isReleased, type Content } from '../src/content';
+import { asContent, capsuleTierFor, content as gameContent, isReleased, type Content } from '../src/content';
 import { loadMeta } from './lib/modules';
 import { chiSquare, type ChiSquare } from './lib/stats';
 import { fmtNum, markdownTable, skippedCheck, startReport, type Check, type Report } from './report';
@@ -165,8 +165,12 @@ export class DropsTally {
   private winCopies = 0;
   private winAmber = 0;
 
-  constructor(content: CompiledContent) {
+  /** The arena the openings play in (0-based; `openCapsules` uses the last): it picks the tier table (A6.4). */
+  private readonly arenaIndex: number;
+
+  constructor(content: CompiledContent, arenaIndex?: number) {
     this.c = asContent(content);
+    this.arenaIndex = arenaIndex ?? this.c.arenas.list.length - 1;
   }
 
   private stream(id: number): StreamState {
@@ -182,7 +186,8 @@ export class DropsTally {
   add(o: OpenedCapsule, extra: { copies: number; amber: number } = { copies: 0, amber: 0 }): void {
     this.openings += 1;
     const caps = this.c.capsules;
-    const tierDef = caps.tiers[o.tier];
+    // The tier as rolled in this arena: the all-ages stacks and copies from Arena 3 (A6.4).
+    const tierDef = capsuleTierFor(caps, o.tier, this.arenaIndex);
     const st = this.stream(o.stream);
     const rarities = o.stacks.map((s) => s.rarity);
     const counts = (rs: readonly Rarity[]): number[] => RARITIES.map((r) => rs.filter((x) => x === r).length);
@@ -496,7 +501,7 @@ export async function runDrops(o: DropsOptions, content: CompiledContent = gameC
   try {
     const s = openCapsules(meta, content, o, onProgress).summary();
     return rep.finish(dropsChecks(s, content), { meta: 'src/meta', summary: s }, [
-      `A6.9 reference (the 2026-09-29 ladder): 16.05 copies and 411.3 Amber per bag capsule before pity; measured ${fmtNum(s.copiesPerWin, 2)} copies and ${fmtNum(s.amberPerWin, 1)} Amber per Sundial Capsule.`,
+      `A6.9 reference (the all-ages table of the last arena, A6.4): 38.5 copies and 710.7 Amber per bag capsule before pity (16.05 and 411.3 on the Arena 1-2 table); measured ${fmtNum(s.copiesPerWin, 2)} copies and ${fmtNum(s.amberPerWin, 1)} Amber per Sundial Capsule.`,
     ]);
   } catch (e) {
     return rep.finish([{ id: 'drops.run', metric: 'Capsule openings through Meta', target: 'runs', value: 'error', verdict: 'fail', note: String(e) }], { meta: 'src/meta', summary: null });

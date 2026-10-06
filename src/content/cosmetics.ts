@@ -47,6 +47,13 @@ export const cosmetics: Cosmetics = {
     { id: 'wardens_bane', unlock: { kind: 'beatGeneral', general: 'warden' }, nameKey: 'title.wardens_bane.name' },
     { id: 'conqueror', unlock: { kind: 'conquestStars', stars: 27 }, nameKey: 'title.conqueror.name' },
     { id: 'ageborn', unlock: { kind: 'arena', arena: 8 }, nameKey: 'title.ageborn.name' },
+    // Collection milestones (content re-tune 2026-10-04): long-term goals for the 208-card pool, earned
+    // only by opening capsules and upgrading. Engaged player (A6.9 model, 30 seeds): 100 cards in 3 days,
+    // every card in about 3.5 weeks, 50 cards maxed in about 4.5 months, everything in about 7.5.
+    { id: 'card_scout', unlock: { kind: 'cardsOwned', count: 100 }, nameKey: 'title.card_scout.name' },
+    { id: 'archivist', unlock: { kind: 'albumComplete' }, nameKey: 'title.archivist.name' },
+    { id: 'master_smith', unlock: { kind: 'cardsMaxed', count: 50 }, nameKey: 'title.master_smith.name' },
+    { id: 'grand_curator', unlock: { kind: 'collectionMaxed' }, nameKey: 'title.grand_curator.name' },
     // A15.10: four hidden feats give a title
     { id: 'the_stubborn', unlock: { kind: 'feat', feat: 'stubborn' }, nameKey: 'title.the_stubborn.name' },
     { id: 'photo_finisher', unlock: { kind: 'feat', feat: 'photo_finish' }, nameKey: 'title.photo_finisher.name' },

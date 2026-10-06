@@ -438,6 +438,11 @@ const CapsulesSchema = v.strictObject({
       exclusiveItems: v.boolean(), bonusDust: nonNeg, amber: pos, expectedCopiesCenti: pos, nameKey: key,
     }),
   ),
+  allAges: v.strictObject({
+    fromArena: pos,
+    ageCapsuleStacks: pos,
+    tiers: perTier(v.strictObject({ stacks: pos, copies: perRarity(pos), amber: pos, expectedCopiesCenti: pos })),
+  }),
   stackRollBp: perRarity(bp),
   bag: perTier(nonNeg),
   dailyOddsBp: perTier(bp),
@@ -685,6 +690,10 @@ const TitleUnlockSchema = v.variant('kind', [
   v.strictObject({ kind: v.literal('wins'), count: pos }),
   v.strictObject({ kind: v.literal('beatGeneral'), general: GENERAL }),
   v.strictObject({ kind: v.literal('conquestStars'), stars: pos }),
+  v.strictObject({ kind: v.literal('cardsOwned'), count: pos }),
+  v.strictObject({ kind: v.literal('albumComplete') }),
+  v.strictObject({ kind: v.literal('cardsMaxed'), count: pos }),
+  v.strictObject({ kind: v.literal('collectionMaxed') }),
   v.strictObject({ kind: v.literal('feat'), feat: id }),
 ]);
 
@@ -1520,6 +1529,26 @@ function checkMeta(issues: Issues, c: Content): void {
       'extraLegendaryCopies is 1..copies.legendary',
     );
   });
+  // The all-ages table (A6.4, content re-tune 2026-10-04): never smaller than the base table, room for
+  // every guarantee, and every column rises (or stays) going up the ladder.
+  const wide = cap.allAges;
+  issues.check(wide.fromArena >= 2 && wide.fromArena <= c.arenas.list.length, 'capsules.allAges.fromArena', 'is an arena after the first');
+  issues.check(wide.ageCapsuleStacks >= cap.ageCapsule.stacks && wide.ageCapsuleStacks >= cap.ageCapsule.guaranteed.length, 'capsules.allAges.ageCapsuleStacks', 'not below the base Age Capsule');
+  cap.tierOrder.forEach((t, i) => {
+    const w = wide.tiers[t];
+    const base = cap.tiers[t];
+    const p = `capsules.allAges.tiers.${t}`;
+    issues.check(w.stacks >= base.stacks && w.stacks >= base.guaranteed.length, p, 'stacks not below the base tier');
+    issues.check(w.amber >= base.amber, p, 'Amber not below the base tier');
+    issues.check((['common', 'rare', 'epic', 'legendary'] as const).every((r) => w.copies[r] >= base.copies[r]), p, 'copies not below the base tier');
+    issues.check(base.extraLegendaryCopies <= w.copies.legendary, p, 'extraLegendaryCopies is 1..copies.legendary');
+    const prevTier = i > 0 ? cap.tierOrder[i - 1] : undefined;
+    const prev = prevTier ? wide.tiers[prevTier] : null;
+    if (prev) {
+      issues.check(w.stacks >= prev.stacks && w.amber >= prev.amber, p, 'stacks and Amber rise up the ladder');
+      issues.check((['common', 'rare', 'epic', 'legendary'] as const).every((r) => w.copies[r] >= prev.copies[r]), p, 'copies rise up the ladder');
+    }
+  });
   issues.check(new Set(cap.tierOrder).size === cap.tierOrder.length && cap.tierOrder.length === Object.keys(cap.tiers).length, 'capsules.tierOrder', 'lists every tier once');
   issues.check(cap.tierOrder.includes(cap.summitAbove), 'capsules.summitAbove', 'is a tier of the ladder');
   cap.script.forEach((s, i) => {
@@ -1607,7 +1636,7 @@ function checkMeta(issues: Issues, c: Content): void {
   unique(issues, 'cosmetics.titles', cos.titles.map((t) => t.id));
   unique(issues, 'cosmetics.emotes', cos.emotes.map((e) => e.id));
   issues.check(cos.banners.length === 8 && cos.frames.length === 8, 'cosmetics', '8 banners and 8 frames (A5.8)');
-  issues.check(cos.titles.length === 17 && cos.emotes.length === 6, 'cosmetics', '13 titles plus 4 feat titles and 6 emotes (A5.8, A15.10)');
+  issues.check(cos.titles.length === 21 && cos.emotes.length === 6, 'cosmetics', '13 titles, 4 collection titles, 4 feat titles and 6 emotes (A5.8, A15.10)');
   issues.check(c.feats.order.length === 12, 'feats', '12 hidden feats (A15.10)');
   for (const t of cos.titles) {
     if (t.unlock.kind === 'feat') issues.check(c.feats.list[t.unlock.feat] !== undefined, `cosmetics.titles.${t.id}`, `unknown feat "${t.unlock.feat}"`);

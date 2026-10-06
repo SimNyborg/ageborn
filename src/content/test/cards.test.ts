@@ -200,19 +200,19 @@ const UNITS: Record<AgeId, UnitRow[]> = {
     ['warp_stalker', 'Warp Stalker', 'E', 'skirmisher', 200, 1600, 140, 8, 12, 100, 'M', 'G', 'light bio melee'],
     ['mothership', 'Mothership', 'L', 'airGunship', 350, 2100, 40, 6, 180, 40, 'H', 'GA', 'air mech legendary'],
     // W8 Cosmic wave units (CONTENT_PLAN 5.8; measured numbers, docs/decisions.md)
-    ['crystal_guard', 'Crystal Guard', 'C', 'infantry', 50, 830, 64, 10, 16, 70, 'S', 'G', 'light bio melee'],
-    ['void_skimmer', 'Void Skimmer', 'C', 'infantry', 50, 660, 88, 10, 16, 110, 'S', 'G', 'light bio melee'],
-    ['moonlings', 'Moonlings', 'C', 'ranged', 75, 172, 22, 10, 240, 65, 'S', 'GA', 'light bio ranged'],
-    ['nova_thrower', 'Nova Thrower', 'C', 'ranged', 75, 440, 59, 11.5, 240, 65, 'S', 'G', 'light bio ranged'],
-    ['asteroid_golem', 'Asteroid Golem', 'C', 'heavy', 150, 2850, 150, 15, 20, 50, 'L', 'G', 'armored mech melee'],
-    ['star_mortar', 'Star Mortar', 'R', 'ranged', 75, 470, 195, 26, 390, 60, 'S', 'G', 'light bio ranged'],
+    ['crystal_guard', 'Crystal Guard', 'C', 'infantry', 50, 890, 67, 10, 16, 70, 'S', 'G', 'light bio melee'],
+    ['void_skimmer', 'Void Skimmer', 'C', 'infantry', 50, 670, 94, 10, 16, 110, 'S', 'G', 'light bio melee'],
+    ['moonlings', 'Moonlings', 'C', 'ranged', 75, 172, 21, 10, 230, 65, 'S', 'GA', 'light bio ranged'],
+    ['nova_thrower', 'Nova Thrower', 'C', 'ranged', 75, 440, 62, 11.5, 240, 65, 'S', 'G', 'light bio ranged'],
+    ['asteroid_golem', 'Asteroid Golem', 'C', 'heavy', 150, 2950, 150, 15, 20, 50, 'L', 'G', 'armored mech melee'],
+    ['star_mortar', 'Star Mortar', 'R', 'ranged', 75, 470, 190, 26, 390, 60, 'S', 'G', 'light bio ranged'],
     ['antimatter_rifler', 'Antimatter Rifler', 'R', 'antiArmor', 100, 700, 140, 16, 220, 65, 'M', 'G', 'light bio ranged'],
     ['bio_weaver', 'Bio-Weaver', 'R', 'support', 110, 580, 36, 12, 150, 65, 'S', 'GA', 'light bio support ranged'],
     ['void_whisperer', 'Void Whisperer', 'R', 'support', 110, 760, 48, 12, 150, 60, 'S', 'GA', 'light bio support ranged'],
     ['star_fighter', 'Star Fighter', 'E', 'airGunship', 200, 1250, 48, 5, 170, 85, 'M', 'GA', 'air mech'],
     ['swarm_matron', 'Swarm Matron', 'E', 'support', 200, 1300, 50, 12, 150, 60, 'M', 'GA', 'light bio ranged'],
     ['gravity_sage', 'Gravity Sage', 'E', 'support', 200, 1700, 70, 12, 160, 60, 'S', 'GA', 'light bio support ranged'],
-    ['star_leviathan', 'Star Leviathan', 'L', 'heavy', 350, 2900, 128, 20, 90, 40, 'H', 'G', 'armored bio ranged legendary'],
+    ['star_leviathan', 'Star Leviathan', 'L', 'heavy', 350, 2800, 118, 20, 90, 40, 'H', 'G', 'armored bio ranged legendary'],
   ],
 };
 
@@ -364,7 +364,7 @@ const POWERS: PowerRow[] = [
   ['warp_strike', 'Warp Strike', 'cosmic', 'field', 'drop', 'road', 150, 60000, 1000, 0],
   ['ion_cannon', 'Ion Strike', 'cosmic', 'field', 'strike', 'warPath', 50, 15000, 1500, 1],
   // W8 Cosmic wave powers
-  ['meteor_drizzle', 'Meteor Drizzle', 'cosmic', 'field', 'volley', 'warPath', 35, 18000, 1000, 8],
+  ['meteor_drizzle', 'Meteor Drizzle', 'cosmic', 'field', 'volley', 'warPath', 50, 25000, 1000, 8],
   ['pulsar_pulse', 'Pulsar Pulse', 'cosmic', 'home', 'stun', 'warPath', 75, 35000, 1000, 6],
 ];
 

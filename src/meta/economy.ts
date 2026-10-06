@@ -5,13 +5,16 @@
  * contract.
  */
 import type { CapsuleTier, Rarity } from '@/contracts';
-import type { Content } from '@/content';
+import { capsuleTierFor, type Content } from '@/content';
 import { roundDiv } from '@/core';
 import { RARITY_ORDER, tierOrder } from './tables';
 
-/** Expected copies of one capsule of `tier`, × 10,000 (exact, before pity). */
-export function expectedCopiesX10k(t: Content, tier: CapsuleTier, randomLegendaries = true): number {
-  const def = t.capsules.tiers[tier];
+/**
+ * Expected copies of one capsule of `tier`, × 10,000 (exact, before pity). `arenaIndex` (0-based) picks
+ * the table that arena rolls (A6.4: the all-ages table from Arena 3); null = the base table.
+ */
+export function expectedCopiesX10k(t: Content, tier: CapsuleTier, randomLegendaries = true, arenaIndex: number | null = null): number {
+  const def = capsuleTierFor(t.capsules, tier, arenaIndex);
   const roll = t.capsules.stackRollBp;
   const bp = (r: Rarity): number => {
     if (randomLegendaries) return roll[r];
@@ -30,13 +33,13 @@ export function expectedCopiesX10k(t: Content, tier: CapsuleTier, randomLegendar
   return guaranteed + random;
 }
 
-/** Expected copies and Amber per Win Capsule drawn from the bag, before pity (A6.4, A6.9). */
-export function bagCapsuleAverages(t: Content): { copiesCenti: number; amberCenti: number } {
+/** Expected copies and Amber per Win Capsule drawn from the bag in an arena (null = the base table), before pity (A6.4, A6.9). */
+export function bagCapsuleAverages(t: Content, arenaIndex: number | null = null): { copiesCenti: number; amberCenti: number } {
   const bag = t.capsules.bag;
   const order = tierOrder(t);
   const total = order.reduce((n, tier) => n + bag[tier], 0);
-  const copies = order.reduce((n, tier) => n + bag[tier] * expectedCopiesX10k(t, tier), 0);
-  const amber = order.reduce((n, tier) => n + bag[tier] * t.capsules.tiers[tier].amber, 0);
+  const copies = order.reduce((n, tier) => n + bag[tier] * expectedCopiesX10k(t, tier, true, arenaIndex), 0);
+  const amber = order.reduce((n, tier) => n + bag[tier] * capsuleTierFor(t.capsules, tier, arenaIndex).amber, 0);
   return { copiesCenti: roundDiv(copies, total * 100), amberCenti: roundDiv(amber * 100, total) };
 }
 

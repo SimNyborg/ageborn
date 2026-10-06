@@ -75,6 +75,25 @@ export const capsules: CapsuleTables = {
       bonusDust: 500, amber: 3600, expectedCopiesCenti: 8640, nameKey: 'capsuleTier.aeon.name',
     },
   },
+  // A6.4 all-ages table (content re-tune 2026-10-04, CONTENT_PLAN 8 option B, set with the A6.9 economy
+  // sim on the released 208-card pool). From Arena 3 (Kingsmoat), where all eight ages and 176-208 of
+  // the 208 cards drop (88 before the content waves), every tier holds one more stack and more copies
+  // and Amber, so the median card still maxes in about 110 / 101 / 69 / 112 days. Arenas 1-2 (pool
+  // 44-102) and the onboarding script keep the table above exactly. Every column still rises (or stays)
+  // going up the ladder; guarantees, odds, pity, Dust, skins and the bag are unchanged.
+  allAges: {
+    fromArena: 3,
+    ageCapsuleStacks: 5,
+    tiers: {
+      clay: { stacks: 3, copies: { common: 6, rare: 2, epic: 2, legendary: 2 }, amber: 181, expectedCopiesCenti: 1460 },
+      bronze: { stacks: 4, copies: { common: 7, rare: 5, epic: 5, legendary: 2 }, amber: 363, expectedCopiesCenti: 2420 },
+      silver: { stacks: 5, copies: { common: 13, rare: 12, epic: 5, legendary: 2 }, amber: 916, expectedCopiesCenti: 5350 },
+      jade: { stacks: 6, copies: { common: 32, rare: 23, epic: 12, legendary: 4 }, amber: 2419, expectedCopiesCenti: 12750 },
+      gold: { stacks: 7, copies: { common: 34, rare: 23, epic: 12, legendary: 4 }, amber: 4562, expectedCopiesCenti: 14870 },
+      platinum: { stacks: 8, copies: { common: 34, rare: 28, epic: 12, legendary: 4 }, amber: 4838, expectedCopiesCenti: 15410 },
+      aeon: { stacks: 9, copies: { common: 53, rare: 32, epic: 14, legendary: 4 }, amber: 6221, expectedCopiesCenti: 18580 },
+    },
+  },
   // A6.4 step 1.2: Common 72%, Rare 22%, Epic 5%, Legendary 1%
   stackRollBp: { common: 7200, rare: 2200, epic: 500, legendary: 100 },
   // A6.4: exactly 60 Clay, 80 Bronze, 40 Silver, 13 Jade, 4 Gold, 2 Platinum and 1 Aeon in every 200

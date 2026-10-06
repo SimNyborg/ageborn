@@ -26,7 +26,7 @@ import {
   planAvgLevel,
   researchLines,
 } from '../model/plan';
-import { historyRows, profileView } from '../model/profile';
+import { collectionMilestones, historyRows, profileView } from '../model/profile';
 import { chargesView, conquestView, dailyCapsuleView, questViews, roadNodes, roadProgress, trayCapsules, unlocks, warChestView } from '../model/progress';
 import { earnedCapsule, resultKind, stagedRewards } from '../model/result';
 import { needsBackup } from '../settings/SettingsScreen';
@@ -392,5 +392,24 @@ describe('misc', () => {
     expect(needsBackup(null, FIXTURE_NOW - 6 * day, FIXTURE_NOW)).toBe(true);
     expect(needsBackup(FIXTURE_NOW - 4 * day, 0, FIXTURE_NOW)).toBe(false);
     expect(needsBackup(FIXTURE_NOW - 9 * day, 0, FIXTURE_NOW)).toBe(true);
+  });
+});
+
+describe('collection milestones (Profile, content re-tune 2026-10-04)', () => {
+  it('lists the four collection titles with progress, done once earned', () => {
+    const total = content.order.units.length + content.order.turrets.length;
+    const fresh = collectionMilestones(newPlayerSave(content), content);
+    expect(fresh.map((m) => m.id)).toEqual(['card_scout', 'archivist', 'master_smith', 'grand_curator']);
+    expect(fresh.find((m) => m.id === 'card_scout')?.max).toBe(100);
+    expect(fresh.find((m) => m.id === 'archivist')?.max).toBe(total);
+    expect(fresh.find((m) => m.id === 'master_smith')).toMatchObject({ n: 0, max: 50, done: false });
+    expect(fresh.find((m) => m.id === 'grand_curator')).toMatchObject({ n: 0, max: total, done: false });
+    expect(fresh.every((m) => !m.done)).toBe(true);
+    const maxed = collectionMilestones(maxedSave(content), content);
+    expect(maxed.every((m) => m.done && m.n === m.max)).toBe(true);
+    // An owned title stays done after a content release adds cards (titles are never taken away).
+    const s = newPlayerSave(content);
+    const kept = collectionMilestones({ ...s, cosmetics: { ...s.cosmetics, owned: [...s.cosmetics.owned, 'archivist'] } }, content);
+    expect(kept.find((m) => m.id === 'archivist')).toMatchObject({ done: true, n: total });
   });
 });

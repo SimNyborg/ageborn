@@ -42,6 +42,7 @@ describe('EconomyRecorder (A6.9 measures)', () => {
     expect(m.perDay.clay).toBe(0);
     expect(m.perDay.amber).toBe(16_000);
     expect(m.perDay.quests).toBe(3);
+    expect(m.perDay.dust).toBe(0);
     expect(m.maxDay).toEqual({ common: 19, rare: 14, epic: 9, legendary: 24 });
     expect(m.copiesDoneDay).toBe(24);
     // Every collectable card × 4,970 Amber (88 cards = 437,360, A17.13) at 16,000 a day: 88 cards finish on
@@ -51,6 +52,10 @@ describe('EconomyRecorder (A6.9 measures)', () => {
     const amberDay = Math.ceil((cards.length * perCard) / 16_000) - 1;
     expect(m.amberDoneDay).toBe(amberDay < 30 ? amberDay : null);
     expect(m.allLegendariesDay).toBe(5);
+    // Every card but the Legendaries is owned on day 0 here, the Legendaries on day 5; none reaches the cap.
+    expect(m.cards100Day).toBe(0);
+    expect(m.albumCompleteDay).toBe(5);
+    expect(m.maxed50Day).toBeNull();
     expect(m.planL7Day).toBe(12);
     expect(m.collectionMaxedDay).toBeNull();
   });
@@ -62,22 +67,27 @@ describe('economyChecks', () => {
     days: 365,
     copiesPerBagCapsule: T.copiesPerBagCapsule,
     amberPerBagCapsule: T.amberPerBagCapsule,
-    perDay: { win: T.sundialCapsulesPerDay, daily: 0, clay: T.clayCapsulesPerDay, copies: 98, amber: 3030, quests: 3 },
+    perDay: { win: T.sundialCapsulesPerDay, daily: 0, clay: T.clayCapsulesPerDay, copies: T.copiesPerDay, amber: T.amberPerDay, dust: 40, quests: 3 },
+    dustTotal: 30_000,
     maxDay: { common: 110, rare: 101, epic: 69, legendary: 112 },
-    allLegendariesDay: 14,
+    allLegendariesDay: 21,
+    cards100Day: 7,
+    albumCompleteDay: 25,
+    maxed50Day: 80,
     planL7Day: 42,
-    copiesDoneDay: 135,
-    amberDoneDay: 160,
-    collectionMaxedDay: 160,
+    copiesDoneDay: 220,
+    amberDoneDay: 213,
+    collectionMaxedDay: 220,
   };
 
   it('passes the A6.9 table itself', () => {
     expect(economyChecks(onTarget).filter((c) => c.verdict !== 'pass' && c.verdict !== 'info')).toEqual([]);
     expect(economyChecks(onTarget).find((c) => c.id === 'economy.questsPerDay')).toMatchObject({ verdict: 'info', value: '3.00 /day' });
+    expect(economyChecks(onTarget).find((c) => c.id === 'economy.dust')).toMatchObject({ verdict: 'info' });
   });
 
   it('fails outside ±20%, a finish gap of 30 days or more, and milestones never reached', () => {
-    const bad = economyChecks({ ...onTarget, perDay: { ...onTarget.perDay, amber: 3700 }, copiesDoneDay: 130, amberDoneDay: 160, planL7Day: null });
+    const bad = economyChecks({ ...onTarget, perDay: { ...onTarget.perDay, amber: 6300 }, copiesDoneDay: 240, amberDoneDay: 205, planL7Day: null });
     const failed = bad.filter((c) => c.verdict === 'fail').map((c) => c.id);
     expect(failed).toEqual(['economy.amberPerDay', 'economy.planL7', 'economy.finishGap']);
   });
@@ -88,9 +98,13 @@ describe('medianMeasures (the 30-seed gate)', () => {
     days: 365,
     copiesPerBagCapsule: 16,
     amberPerBagCapsule: 411,
-    perDay: { win: 4.8, daily: 0, clay: 1.1, copies: 98, amber: 3030, quests: 3 },
+    perDay: { win: 4.8, daily: 0, clay: 1.1, copies: 98, amber: 3030, dust: 40, quests: 3 },
+    dustTotal: 30_000,
     maxDay: { common: 110, rare: 101, epic: 69, legendary: 112 },
     allLegendariesDay: 9,
+    cards100Day: 7,
+    albumCompleteDay: 25,
+    maxed50Day: 80,
     planL7Day: 78,
     copiesDoneDay: 190,
     amberDoneDay: 143,
