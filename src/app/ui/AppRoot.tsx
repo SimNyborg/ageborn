@@ -21,6 +21,7 @@ import { FirstUpgrade } from './FirstUpgrade';
 import { AppUiContext, type AppUi } from './context';
 import { MetaHost } from './MetaHost';
 import { ResultScreen } from './ResultScreen';
+import { TesterDialog } from './TesterDialog';
 import { TitleScreen } from './TitleScreen';
 import './app.css';
 
@@ -214,6 +215,7 @@ export function AppRoot(p: { ui: AppUi }) {
           <Screen ui={p.ui} meta={meta} shows={shows} />
           {shows?.current.value ? null : <FirstUpgrade />}
           <AgeDialog />
+          <TesterDialog />
           <div class="ab-rotate" data-testid="rotate">
             <div class="ab-rotate-phone" aria-hidden="true" />
             <span>{p.ui.t('app.rotate')}</span>

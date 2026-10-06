@@ -10,6 +10,7 @@ import './settings.css';
 import type { Bus, Settings } from '@/contracts';
 import { useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
+import { Pill } from '../../components/Chips';
 import { Segmented, Slider, Toggle } from '../../components/Controls';
 import { formatInt } from '../../components/format';
 import {
@@ -31,6 +32,7 @@ import { oddsModel } from '../../components/oddsModel';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { arenaOf } from '../model/progress';
+import { isTesterProfile } from '../model/tester';
 
 const BUSES: { bus: Bus; key: string }[] = [
   { bus: 'master', key: 'ui.settings.volume.master' },
@@ -266,6 +268,14 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
           </Panel>
 
           <Panel title={t('ui.settings.save')} icon={<DownloadIcon size={24} />} testid="set-save" labelledBy="set-save-t">
+            {isTesterProfile(s) ? (
+              <p class="set-tester" data-testid="tester-note">
+                <Pill tone="violet" testid="tester-chip">
+                  {t('tester.chip')}
+                </Pill>
+                <span>{t('tester.chipNote')}</span>
+              </p>
+            ) : null}
             <p class="set-note">{t('ui.settings.saveLocal')}</p>
             <div class="set-buttons">
               <Button kind="secondary" size="sm" icon={<CopyIcon size={20} />} testid="export-code" onClick={openExport}>

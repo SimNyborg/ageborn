@@ -73,6 +73,16 @@
   color: var(--ui-muted);
   margin: 2px 0 6px;
 }
+.set-tester {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 2px 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ui-muted);
+}
 .set-buttons {
   display: flex;
   flex-wrap: wrap;

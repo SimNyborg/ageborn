@@ -1,0 +1,26 @@
+{
+  "tester": {
+    "title": "Test profile",
+    "lead": "Load a ready-made profile to test the game. Only for testing: players never see this.",
+    "badge": "Testing only",
+    "everything": {
+      "name": "Everything unlocked",
+      "desc": "Every age, card, mode and length, the whole War Path, all cosmetics, lots of Amber and Dust, and capsules of every tier."
+    },
+    "mid": {
+      "name": "Mid-game",
+      "desc": "A player about three weeks in: Arena 3, part of the War Path and a mixed collection."
+    },
+    "cancel": "Cancel",
+    "confirm": {
+      "title": "Replace progress?",
+      "text": "This replaces the progress saved in this browser. It cannot be undone.",
+      "go": "Replace progress",
+      "back": "Back"
+    },
+    "loading": "Loading the test profile…",
+    "failed": "The test profile could not be saved. Nothing was changed.",
+    "chip": "Test profile",
+    "chipNote": "This browser holds a test profile, not real progress. Reset the progress to start over."
+  }
+}

@@ -22,6 +22,7 @@ import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { cardTile, isOwned } from '../model/cards';
 import { historyRows, profileView } from '../model/profile';
+import { isTesterProfile } from '../model/tester';
 
 const RESULT_KEYS = { win: 'ui.profile.win', loss: 'ui.profile.loss', draw: 'ui.profile.draw' } as const;
 
@@ -211,6 +212,11 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
                   </Pill>
                   <Pill tone="blue">{t(v.arenaNameKey)}</Pill>
                   {s.profile.banner ? <Pill tone="red">{t(bannerNameKey(s.profile.banner))}</Pill> : null}
+                  {isTesterProfile(s) ? (
+                    <Pill tone="violet" testid="tester-chip" title={t('tester.chipNote')}>
+                      {t('tester.chip')}
+                    </Pill>
+                  ) : null}
                 </span>
               </div>
             </div>
