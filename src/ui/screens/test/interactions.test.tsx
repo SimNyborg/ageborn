@@ -183,7 +183,14 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
 
   it('a locked length keeps its place and says which arena opens it (U12)', () => {
     const s = midGameSave(content);
-    m = mount({ save: { ...s, trophies: { ...s.trophies, current: 220, best: 220 }, arenaIndex: 1 }, shell: true });
+    const a2 = { ...s, trophies: { ...s.trophies, current: 220, best: 220 }, arenaIndex: 1 };
+    // Owner request 2026-10-03: every length is open from Arena 1 in the live content.
+    m = mount({ save: a2, shell: true });
+    expect(m.q('[data-testid="home-format"] [data-format="full"]')!.getAttribute('aria-disabled')).not.toBe('true');
+    m.unmount();
+    // The lock still works for content whose Arena 2 does not list Long War (the table before that request).
+    const old = { ...content, arenas: { ...content.arenas, list: content.arenas.list.map((a) => (a.index < 3 ? { ...a, ladderFormats: a.ladderFormats.filter((f) => f === 'short' || (a.index === 2 && f === 'standard')) } : a)) } };
+    m = mount({ save: a2, shell: true, content: old });
     const long = m.q('[data-testid="home-format"] [data-format="full"]')!;
     expect(long.getAttribute('aria-disabled')).toBe('true');
     act(() => long.click());
@@ -531,9 +538,10 @@ describe('Capsules and Progress tabs (ui-plan 2.2, 4.1b, 4.6)', () => {
 });
 
 describe('Mode select', () => {
-  it('offers only the arena formats and locks Conquest and Skirmish for a new player', () => {
+  it('offers the arena formats and locks Conquest and Skirmish for a new player', () => {
     m = mount({ save: { ...newPlayerSave(content), matchesPlayed: 0 }, routes: [{ id: 'home' }, { id: 'modeSelect' }] });
-    expect(m.q('[data-testid="ladder-format"]')).toBeNull();
+    // Owner request 2026-10-03: every length is on the Ladder from Arena 1.
+    expect(m.qa('[data-testid="ladder-format"] [role="radio"]').length).toBe(content.arenas.list[0]!.ladderFormats.length);
     expect(m.q('[data-testid="conquest-open"]')).toBeNull();
     expect(m.q('[data-testid="skirmish-open"]')).toBeNull();
     expect(text(m.q('[data-testid="mode-conquest"]')!)).toContain('Unlocks in Arena 3');

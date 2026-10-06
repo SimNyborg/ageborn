@@ -8,7 +8,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { SFX_SAMPLE_RATE, SoundBank } from '../bank';
-import { BOOT_GROUPS, SOUND_IDS, sounds } from '../sounds';
+import { BOOT_GROUPS, LAZY_BOOT_SOUNDS, SOUND_IDS, sounds } from '../sounds';
 import type { ZzfxParams } from '../vendor/zzfx';
 import { zzfxLength } from '../vendor/zzfx';
 
@@ -46,11 +46,25 @@ describe('boot pre-render budget', () => {
     let generated = 0;
     for (const id of SOUND_IDS) {
       const d = sounds[id]!;
-      if (!BOOT_GROUPS.includes(d.group)) continue;
+      // Lazy sounds are left out of the boot render (they render on first use or when idle).
+      if (!BOOT_GROUPS.includes(d.group) || d.lazy === true) continue;
       const lists: ZzfxParams[] = d.kind === 'zzfx' ? d.variants : d.kind === 'zzfxMix' ? d.variants.flat().map((n) => n.params) : [];
       for (const p of lists) generated += zzfxLength(p, SFX_SAMPLE_RATE);
     }
     // At a pessimistic 80 ns per sample (a mid-range phone, about 3x a desktop) this stays in budget.
     expect((generated * 80) / 1e6).toBeLessThan(BUDGET_MS);
+  });
+
+  it('skips the lazy content-wave sounds at boot and still renders them on demand', () => {
+    expect(LAZY_BOOT_SOUNDS.length).toBe(29);
+    for (const id of LAZY_BOOT_SOUNDS) {
+      expect(sounds[id], id).toBeDefined();
+      expect(BOOT_GROUPS, id).toContain(sounds[id]!.group);
+    }
+    const bank = new SoundBank();
+    bank.renderGroups(BOOT_GROUPS);
+    expect(LAZY_BOOT_SOUNDS.some((id) => bank.isRendered(id))).toBe(false);
+    expect(bank.pending(BOOT_GROUPS)).toEqual(expect.arrayContaining([...LAZY_BOOT_SOUNDS]));
+    expect(bank.get(LAZY_BOOT_SOUNDS[0]!)?.variants.length).toBeGreaterThan(0);
   });
 });

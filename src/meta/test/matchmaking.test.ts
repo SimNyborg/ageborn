@@ -93,7 +93,8 @@ describe('ladder opponents', () => {
         expect((deltas.get(1) ?? 0) / n).toBeGreaterThan(0.15);
       }
     }
-  });
+    // 3,200 opponent picks over the 208-card pool: about 5 s alone, more under a full parallel run.
+  }, 30_000);
 
   it('rarity allowance: Commons and Rares in Arena 1, Epics from Arena 2, no Legendary unless the player brings one', () => {
     for (let m = 0; m < 60; m += 1) {
@@ -159,7 +160,11 @@ describe('ladder opponents', () => {
 
   it('the format is one the arena offers; previewing and starting give the same spec', () => {
     const s = ladderSave(1, { matchesPlayed: 9 });
-    expect(M.pickOpponent(s, 'ladder', C, new TestClock(), { format: 'full' }).format).toBe('short');
+    // Every length is on the Ladder from Arena 1 (owner request 2026-10-03); the fallback to the arena's first
+    // length still holds for an arena that does not list one (the table before that request).
+    expect(M.pickOpponent(s, 'ladder', C, new TestClock(), { format: 'full' }).format).toBe('full');
+    const old: typeof C = { ...C, arenas: { ...C.arenas, list: C.arenas.list.map((a) => (a.index < 3 ? { ...a, ladderFormats: a.ladderFormats.filter((f) => f === 'short' || (a.index === 2 && f === 'standard')) } : a)) } };
+    expect(M.pickOpponent(s, 'ladder', old, new TestClock(), { format: 'full' }).format).toBe('short');
     expect(M.pickOpponent(s, 'ladder', C, new TestClock(), { format: 'standard' }).format).toBe('standard');
     expect(M.pickOpponent(s, 'ladder', C, new TestClock())).toEqual(M.pickOpponent(s, 'ladder', C, new TestClock(123)));
   });

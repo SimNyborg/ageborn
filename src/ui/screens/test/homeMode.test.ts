@@ -52,8 +52,14 @@ describe('the mode switcher (1.3)', () => {
     const a2 = { ...s, trophies: { ...s.trophies, current: 220, best: 220 }, arenaIndex: 1 };
     const opts = lengthOptions(a2, content);
     expect(opts.map((o) => o.format)).toEqual(['short', 'standard', 'full', 'last']);
-    expect(opts.map((o) => o.open)).toEqual([true, true, false, false]);
-    expect(opts[3]!.opensAt).toEqual({ arena: 3, trophies: 400 });
+    // Owner request 2026-10-03: every length is open from Arena 1.
+    expect(opts.map((o) => o.open)).toEqual([true, true, true, true]);
+    expect(opts[3]!.opensAt).toEqual({ arena: 1, trophies: 0 });
+    // A locked length (content whose Arena 2 does not list it, the table before that request) names its arena.
+    const old = { ...content, arenas: { ...content.arenas, list: content.arenas.list.map((a) => (a.index < 3 ? { ...a, ladderFormats: a.ladderFormats.filter((f) => f === 'short' || (a.index === 2 && f === 'standard')) } : a)) } };
+    const locked = lengthOptions(a2, old);
+    expect(locked.map((o) => o.open)).toEqual([true, true, false, false]);
+    expect(locked[3]!.opensAt).toEqual({ arena: 3, trophies: 400 });
   });
 
   it('quotes the upper bound in whole and half minutes', () => {

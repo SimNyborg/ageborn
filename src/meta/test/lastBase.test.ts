@@ -97,10 +97,12 @@ describe('Last Base Standing rewards (A15.8)', () => {
     expect(full.rewards).toContainEqual({ kind: 'amber', amount: 15 });
   });
 
-  it('is only offered from Arena 3: below it the Ladder falls back to the arena first length', () => {
+  it('is offered from Arena 1 (owner request 2026-10-03); an arena without it falls back to its first length', () => {
     const s = scripted();
     const low: SaveDoc = { ...s, trophies: { current: 200, best: 200, roadClaimed: [] }, arenaIndex: 1, flags: { ...s.flags, 'meta.ladderPlayed': true } };
-    const r = play(low, 'ladder', 'win', undefined, { format: 'last' });
-    expect(r.opponent.format).toBe('short');
+    expect(play(low, 'ladder', 'win', undefined, { format: 'last' }).opponent.format).toBe('last');
+    // The fallback rule still holds for content whose arena does not list the length (the table before 2026-10-03).
+    const old: typeof C = { ...C, arenas: { ...C.arenas, list: C.arenas.list.map((a) => (a.index < 3 ? { ...a, ladderFormats: a.ladderFormats.filter((f) => f === 'short' || (a.index === 2 && f === 'standard')) } : a)) } };
+    expect(M.pickOpponent(low, 'ladder', old, clock(), { format: 'last' }).format).toBe('short');
   });
 });

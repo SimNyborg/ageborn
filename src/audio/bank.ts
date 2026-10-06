@@ -154,9 +154,9 @@ export class SoundBank {
     return stats;
   }
 
-  /** Renders whole groups now. */
+  /** Renders whole groups now, except their `lazy` sounds (those render on first use or in `pending`). */
   renderGroups(groups: readonly SoundGroup[]): RenderStats {
-    return this.renderIds(this.idsIn(groups));
+    return this.renderIds(this.idsIn(groups).filter((id) => this.manifest[id]?.lazy !== true));
   }
 
   /** ZzFX sounds not rendered yet, boot groups first. */

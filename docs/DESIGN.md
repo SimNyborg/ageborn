@@ -614,9 +614,9 @@ Every phase keeps `main` playable. Between P1 and P2 every match plays the Home 
 |---|---|---|---|---|---|---|---|
 | Tutorial | Stone, Medieval, Gunpowder, Modern, Future (scripted; thresholds 680 / 690 / 520 / 700) | none | none | none | ~2:30-3:00 | never | Onboarding match 1 (War Path Stone L1) |
 | Short War | 3 | 5:00 | 6:30 | 8:30 | 7:00 | 1:00 | Ladder (all arenas), Quick Battle, Skirmish |
-| Standard War | 5 | 8:00 | 10:00 | 12:30 | 10:30 | 1:00 | Ladder from Arena 2, Daily Challenge, Skirmish |
-| Full War | 7 | 12:00 | 14:30 | 17:30 | 15:00 | 1:00 | Ladder from Arena 3, Skirmish; never on the War Path |
-| Last Base Standing (`last`; A2.10.1) | 7 | 12:00 | Siege I 14:30, rising every 2:30; Crumble from 23:00 | **none** | ~19:50 (tier VII mirror median); a base always falls by 25:44 | 1:00 | Ladder from Arena 3 (unranked: no trophies), Skirmish, Friend Duel (M2); never on the War Path or in online queues |
+| Standard War | 5 | 8:00 | 10:00 | 12:30 | 10:30 | 1:00 | Ladder (all arenas since the owner request of 2026-10-03; was from Arena 2), Daily Challenge, Skirmish |
+| Full War | 7 | 12:00 | 14:30 | 17:30 | 15:00 | 1:00 | Ladder (all arenas since 2026-10-03; was from Arena 3), Skirmish; never on the War Path |
+| Last Base Standing (`last`; A2.10.1) | 7 | 12:00 | Siege I 14:30, rising every 2:30; Crumble from 23:00 | **none** | ~19:50 (tier VII mirror median); a base always falls by 25:44 | 1:00 | Ladder (all arenas since 2026-10-03; was from Arena 3; unranked: no trophies), Skirmish, Friend Duel (M2); never on the War Path or in online queues |
 
 **Player names (owner request 2026-10-01: "a short, a medium and a long battle, and one with no time limit").** Players see **Short War, Medium War, Long War** and **Last Base Standing** (DA v1.1: Kort, Mellem, Lang, Til sidste base). The ids `short`, `standard` and `full` and their clocks are unchanged, and this document keeps saying Standard and Full War for them. The rename also frees "Standard" for "Standard levels" (L8), which matters online. The plate's length picker quotes each length's upper bound ("up to 8½ min"), which is always true, not its median.
 
@@ -624,7 +624,7 @@ Shorter windows (War Path levels, custom) use the clocks in A18.3.4. **Which win
 
 **Built today (until A18 phase 1):** Short War Stone to Gunpowder (4 ages; 3:45 / 4:45 / 6:15), Standard War Stone to Modern (6 ages; 5:00 / 6:45 / 8:30; also Conquest), Full War Stone to Cosmic (8 ages; 6:45 / 8:45 / 10:45), per A17.8.
 
-From Arena 2 the player picks any unlocked length before each ladder match on the Home plate's length picker (Short, Medium, Long, No clock; locked lengths show their arena). Trophies and Amber per win depend on the format from Arena 3 (A15.8). Last Base Standing moves no trophies (A2.10.1).
+After the onboarding the player picks any length before each ladder match on the Home plate's length picker (Short, Medium, Long, No clock). **Owner request 2026-10-03:** every length is on the Ladder from Arena 1 (`ladderFormats` lists all four in every arena; before, Medium opened in Arena 2 and Long and No clock in Arena 3). The picker still shows a padlock and the opening arena for a length an arena does not list. Trophies and Amber per win depend on the format from Arena 3 (A15.8). Last Base Standing moves no trophies (A2.10.1).
 
 | Phase | Effect |
 |---|---|
@@ -1406,13 +1406,13 @@ Ladder results:
 - **Loss protection.** After 3 ladder losses in a row, the next opponent is one tier lower (minimum tier 0) and the VS screen says "Warm-up match". The same Result shows the tilt card (A15.6).
 - **Other modes.** Daily Challenge: A9.1 and A15.7. War Path (A18.7; replaces Conquest, A6.10): first-clear Amber, card unlocks and boss capsules. Quick Battle (a Short War Skirmish at a picked difficulty) and Skirmish: 5 Amber per win, no trophies. In every mode but the tutorial a finished match also claims a ready Sundial Capsule; only Ladder matches add Clay pips.
 - **Ladder window (A18.3.4).** Arenas 1-2 play windows that start at Stone. From Arena 3 the window is the **Era of the Week**, seeded weekly in `meta` from the date and shown on Mode select a week ahead.
-- **Last Base Standing (A2.10.1; 2026-10-01).** A Ladder length from Arena 3 that moves no trophies (win, loss or draw). It pays Amber like a Full War win (35, or 70 without a Sundial capsule; 15 on a loss or draw; 0 on a Retreat, which would otherwise be a free Amber farm). Like any Ladder match it claims a ready Sundial capsule or adds a Clay pip, counts its wins (A15.5), moves the hidden MMR and counts for loss protection. Data: `ladderFormats` gains `last` from Arena 3; `arenas.ladder.byFormat.last` = 0 trophies, 35 / 70 Amber, and a loss of 0 trophies.
+- **Last Base Standing (A2.10.1; 2026-10-01).** A Ladder length (from Arena 1 since the owner request of 2026-10-03; was Arena 3) that moves no trophies (win, loss or draw). It pays Amber like a Full War win (35, or 70 without a Sundial capsule; 15 on a loss or draw; 0 on a Retreat, which would otherwise be a free Amber farm). Like any Ladder match it claims a ready Sundial capsule or adds a Clay pip, counts its wins (A15.5), moves the hidden MMR and counts for loss protection. Data: `ladderFormats` gains `last` from Arena 3; `arenas.ladder.byFormat.last` = 0 trophies, 35 / 70 Amber, and a loss of 0 trophies.
 - **Clock.** Daily timers reset at local 04:00, capped by the banks. The Sundial runs on epoch ms, independent of time zone and 04:00. Every bank holds at least 7 days and nothing earned expires (A15.4). Clock tampering is accepted because no money is involved: a clock moved backwards restarts the current period and never removes a ready capsule; moved forwards, it fills at most to the cap.
 
 | # | Arena | Trophies | Ladder formats | Drop pool | Bot tiers | Bot level | Gate rewards |
 |---|---|---|---|---|---|---|---|
-| 1 | Tar Pits | 0 | Short | Stone to Gunpowder (4 ages, A17.13), no random Legendaries | 0-II | 1 | Starter War Plan, Tar Pit banner |
-| 2 | Frostfang Pass | 150 | Short, Standard | Stone to Modern (6 ages) | I-III | 2 | Age Unlock Capsules (Industrial and Modern), Frostfang banner, Silver Capsule |
+| 1 | Tar Pits | 0 | All (owner request 2026-10-03; was Short) | Stone to Gunpowder (4 ages, A17.13), no random Legendaries | 0-II | 1 | Starter War Plan, Tar Pit banner |
+| 2 | Frostfang Pass | 150 | All (was Short, Standard) | Stone to Modern (6 ages) | I-III | 2 | Age Unlock Capsules (Industrial and Modern), Frostfang banner, Silver Capsule |
 | 3 | Kingsmoat | 400 | All | All 8 ages | II-IV | 3 | Age Unlock Capsules (Future and Cosmic), Moat banner, Jade Capsule, Conquest unlocked (the War Path is open from the start once A18.7 ships) |
 | 4 | Powder Bay | 800 | All | All | III-V | 4 | Harbor banner, Jade Capsule |
 | 5 | Iron Front | 1,300 | All | All | IV-VI | 5 | Barbed banner, Jade Capsule |

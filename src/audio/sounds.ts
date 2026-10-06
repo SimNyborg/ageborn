@@ -55,6 +55,11 @@ export interface SoundMix {
   pitchVarBp?: number;
   /** Random volume spread per play in dB (default 3 = ±3 dB, A13). */
   volVarDb?: number;
+  /**
+   * Left out of the boot render even in a boot group (B16 budget): it renders on first use or in the idle
+   * queue (`renderLazily`). For content-wave sounds that are only heard once their card is on the lane.
+   */
+  lazy?: boolean;
 }
 
 export type SoundSource =
@@ -1781,7 +1786,30 @@ const MVP_SOUNDS: Record<SoundId, SoundDef> = {
   trap_blast_energy: like(B.trap_blast, 'future', { maxVoices: 2 }),
 };
 
-export const sounds: Readonly<Record<SoundId, SoundDef>> = { ...BASE_SOUNDS, ...MVP_SOUNDS };
+/**
+ * Content-wave sounds in the boot groups (the Stone and Bronze waves' attacks, turrets and powers) that skip
+ * the boot ZzFX render (`docs/requests/done/audio-boot-budget.md`): the boot set was at 299.6 of its 300 ms
+ * before the waves. The recorded sheets carry them; the ZzFX fallback renders on first use or when idle.
+ */
+export const LAZY_BOOT_SOUNDS: readonly SoundId[] = [
+  // Stone wave
+  'wolf_bite', 'shield_bash', 'torch_jab', 'horn_hook', 'bear_swipe', 'antler_sweep', 'shot_bolas', 'shot_atlatl',
+  'shot_heave', 'herb_puff', 'quill_fan', 'shot_sapling', 'pw_hail', 'pw_vines',
+  // Bronze wave
+  'kopis_hack', 'rhomphaia_cut', 'trunk_lash', 'sagaris_sweep', 'labrys_chop', 'hydra_bite', 'horse_ram', 'shot_discus',
+  'shot_belly_bow', 'aulos_note', 'chorus_wail', 'net_cast', 'shot_polybolos', 'pw_sandstorm', 'pw_whirlpool',
+];
+
+function withLazy(all: Record<SoundId, SoundDef>, ids: readonly SoundId[]): Record<SoundId, SoundDef> {
+  const out = { ...all };
+  for (const id of ids) {
+    const d = out[id];
+    if (d) out[id] = { ...d, lazy: true };
+  }
+  return out;
+}
+
+export const sounds: Readonly<Record<SoundId, SoundDef>> = withLazy({ ...BASE_SOUNDS, ...MVP_SOUNDS }, LAZY_BOOT_SOUNDS);
 
 /** Every sound id in the manifest, in declaration order. */
 export const SOUND_IDS: readonly SoundId[] = Object.keys(sounds);

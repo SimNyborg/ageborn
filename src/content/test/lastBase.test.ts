@@ -58,9 +58,10 @@ describe('Last Base Standing formats (A2.10.1)', () => {
     expect(escalationEndMs([{ atMs: 0, crumbleBpPerSec: 100 }])).toBe(200000);
   });
 
-  it('is offered on the Ladder from Arena 3 and in Skirmish, never the Daily, Conquest or War Path', () => {
+  // Owner request 2026-10-03: Long War and No clock open on the Ladder from Arena 1 (was Arena 3).
+  it('is offered on the Ladder from Arena 1 and in Skirmish, never the Daily, Conquest or War Path', () => {
     expect(FORMAT_MODES['last']).toEqual(['ladder', 'skirmish']);
-    expect(content.arenas.list.map((a) => a.ladderFormats.includes('last'))).toEqual([false, false, true, true, true, true, true, true]);
+    expect(content.arenas.list.map((a) => a.ladderFormats.includes('last'))).toEqual([true, true, true, true, true, true, true, true]);
     expect(content.dailyModifiers.challenge.format).not.toBe('last');
     expect(content.generals.conquest.format).not.toBe('last');
   });

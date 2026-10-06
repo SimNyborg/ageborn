@@ -20,3 +20,8 @@ render in `renderLazily` like the non-boot groups), and the budget test skips th
 attack, turret and power sounds `lazy: true` (they are only heard once a wave card is on the lane).
 Alternatively raise the budget, or trim the heaviest base fallbacks (`pw_wave` 39.9, `pw_stampede` 36.3,
 `pw_aegis` 29.6, `evolve_fanfare_bronze` 27.1 ms).
+
+**Done (release checker, 2026-10-06).** Built as proposed: `SoundMix.lazy`, `LAZY_BOOT_SOUNDS` in
+`src/audio/sounds.ts` (the 14 Stone and 15 Bronze wave sounds), `SoundBank.renderGroups` skips lazy ids (they
+stay in `pending`, so `renderLazily` and first use render them), and the budget test skips them. Boot work at
+80 ns per sample: 476.3 ms before, 299.6 ms after (budget 300). Later waves' sounds are in non-boot groups.

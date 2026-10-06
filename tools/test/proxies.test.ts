@@ -83,8 +83,10 @@ describe('exploit proxies (DESIGN B12)', () => {
 
   it('the turtle fills four mounts and holds', () => {
     // A18: the turtle also researches (the Balanced list), so the fourth mount comes later; since the
-    // power rework (A2.9.2) its casts cost gold too, which moves the fourth mount to ~13 min.
-    const { sim, commands } = play('turret_turtle', 800);
+    // power rework (A2.9.2) its casts cost gold too, which moves the fourth mount to ~13 min, and on
+    // the MVP-pass content (base HP, falling gate) seed 3 buys its third mount late, so the fourth
+    // lands at 14-15 min (seeds 1-5: 13:00-15:00; the war ends at 17:00).
+    const { sim, commands } = play('turret_turtle', 960);
     expect(sim.state.sides[0].mountsOwned).toBe(4);
     expect(sim.state.sides[0].turrets.filter((t) => t !== null).length).toBeGreaterThanOrEqual(3);
     expect(commands.some((c) => c.side === 0 && c.t === 'stance' && c.mode === 'hold')).toBe(true);

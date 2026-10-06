@@ -46,9 +46,9 @@ describe('CLAUDE.md hard rules', () => {
     const files = gameFiles();
     expect(files.length).toBeGreaterThan(50);
     expect(files.filter((f) => FORBIDDEN_NAME.test(readFileSync(f, 'utf8').replace(/[_-]/g, ' '))).map(rel)).toEqual([]);
-    // About 6.5 MB of sprite-sheet JSON (core, extras and HD sheets): under a full parallel run the scan
-    // can pass the default 5 s, so it gets the same allowance as the source scan below.
-  }, 30_000);
+    // The sprite-sheet JSON (core, extras and HD sheets) grew with the eight content waves: alone the scan
+    // takes a few seconds, under a full parallel run on 4 cores it passed 30 s (release check 2026-10-06).
+  }, 120_000);
 
   it('production code makes no external requests (no http(s) URL strings outside dev pages)', () => {
     const hits: string[] = [];

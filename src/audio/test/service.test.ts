@@ -220,8 +220,10 @@ describe('WebAudioService', () => {
   it('renders boot groups up front and the rest lazily in idle slices', () => {
     const queue: (() => void)[] = [];
     const { service, boot } = createWebAudioService({ createContext: () => null, scheduler: 'manual', idle: (t) => queue.push(t), sfxFiles: null });
-    expect(boot!.sounds).toBe(SOUND_IDS.filter((id) => BOOT_GROUPS.includes(sounds[id]!.group)).length);
-    for (const id of SOUND_IDS) expect(service.bank.isRendered(id), id).toBe(BOOT_GROUPS.includes(sounds[id]!.group));
+    // Boot renders the boot groups except their lazy content-wave sounds (B16 budget); those join the idle queue.
+    const atBoot = (id: string): boolean => BOOT_GROUPS.includes(sounds[id]!.group) && sounds[id]!.lazy !== true;
+    expect(boot!.sounds).toBe(SOUND_IDS.filter(atBoot).length);
+    for (const id of SOUND_IDS) expect(service.bank.isRendered(id), id).toBe(atBoot(id));
     let slices = 0;
     while (queue.length > 0 && slices < 1000) {
       queue.shift()!();

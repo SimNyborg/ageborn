@@ -42,7 +42,8 @@ describe('onboarding Result capsule icon', () => {
 });
 
 describe('capsule show settings', () => {
-  it('pass the Lite graphics preset to the show (A10 step 4)', async () => {
+  // The dynamic import pulls in the capsule show's module graph: 5 s is too little under a full parallel run.
+  it('pass the Lite graphics preset to the show (A10 step 4)', { timeout: 30_000 }, async () => {
     const { showSettings } = await import('../capsules/CapsuleHost');
     const s = meta.newSave(content, new FixedClock(), 9);
     expect(showSettings({ ...s, settings: { ...s.settings, graphics: 'lite' } }).lite).toBe(true);
