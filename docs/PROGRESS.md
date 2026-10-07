@@ -12,7 +12,7 @@ Newest entry first. Each session appends what it finished, what is next, and any
 
 **Gates (this tree / `633e433`, same seeds):** balance mirror: Short 7:28 / 7:23 with the Final Bell 10.0 / 10.0%, Standard 10:38 / 10:43 with the Bell 8.5 / 12.0%; exploits 72 pass / 13 fail (70 / 15): every turtle still wins 0%, mono Long range 3% (≤ 35%), mono Heavy 0%; economy 23 pass / 1 fail (the open War Plan L7 row), Dust 476 a day (176). Per-card rows of every touched wave card within ±5 except the Star Mortar (−5.75; −6.0 before).
 
-**Checks (whole tree, 2026-10-07):** typecheck and lint clean; 6,539 unit tests pass (258 files, 2 skipped); production build OK; full e2e E2E_RESULT.
+**Checks (whole tree, 2026-10-07):** typecheck and lint clean; 6,539 unit tests pass (258 files, 2 skipped); production build OK; full e2e 289 of 289 pass (Chromium, test-results cleaned first, no reruns).
 
 **Still open:** the Heavy share of winning armies barely moved (it reflects which bot is ahead; the next lever would be how often the bots buy Heavies, or the Heavy's price, an owner decision); the Wall Gunner loses equal-gold duels to Gunpowder Heavies; Gunpowder's Corsairs beat both Gunpowder Heavies; the Star Mortar's balance row stays just under −5 as before.
 
