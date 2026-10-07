@@ -48,6 +48,8 @@ const A13: Record<string, string[]> = {
     // The hammer's count-in and the graded hit layers (A10 step 3, 2026-09-29).
     'cap_strike_tick', 'cap_strike_perfect', 'cap_strike_good',
     'card_flip', 'foil_shine', 'rarity_common', 'rarity_rare', 'rarity_epic', 'rarity_legendary', 'walkout_bass',
+    // The rarity burst (A10 step 5a, owner request 2026-10-07): the anticipation riser and the burst per rarity.
+    'rarity_riser', 'rarity_burst_rare', 'rarity_burst_epic', 'rarity_burst_legendary',
     'copy_tick', 'upgrade_ready', 'upgrade_slam', 'level_up', 'reel_tick',
   ],
   /** A17.4: the off-screen "base under attack" badge. */
