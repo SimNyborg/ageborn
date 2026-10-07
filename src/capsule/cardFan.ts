@@ -90,6 +90,14 @@ export class CardView {
   private readonly foilTint = new Graphics();
   private readonly stamp = new Container();
   private readonly bolts = new Graphics();
+  /** Light leaking from the face-down card's edges and cracks (the rarity burst's anticipation). */
+  private readonly leakG = new Graphics();
+  private leakK = 0;
+  /** Cracks of light across the back: polylines from the medallion out to the edge (Rare 3 … Legendary 7). */
+  private readonly cracks: [number, number][][] = [];
+  /** The burst's squash and stretch (anticipation compress, blast, slam, bounce), set by the stage. */
+  private burstSx = 1;
+  private burstSy = 1;
   private readonly barRoot = new Container();
   private readonly barFill = new Graphics();
   private readonly barText: Text;
@@ -168,7 +176,9 @@ export class CardView {
 
     cardShape(this.flashG).fill(0xffffff);
     this.flashG.alpha = 0;
-    this.body.addChild(this.rays, this.glow, this.back, this.front, this.flashG, this.bolts);
+    this.leakG.blendMode = 'add';
+    this.buildCracks();
+    this.body.addChild(this.rays, this.glow, this.back, this.leakG, this.front, this.flashG, this.bolts);
     this.root.addChild(this.body, this.barRoot, this.chip);
   }
 
@@ -241,6 +251,81 @@ export class CardView {
     g.roundRect(-13, 14, 26, 4, 2).fill(ROOM.brassDark);
     g.circle(-8, -9, 2).fill({ color: 0xffffff, alpha: 0.5 });
     this.back.addChild(g);
+  }
+
+  /** Seeded from the card key, so a replay draws the same cracks (cosmetic only). */
+  private buildCracks(): void {
+    const n = this.card.rarity === 'legendary' ? 7 : this.card.rarity === 'epic' ? 5 : this.card.rarity === 'rare' ? 3 : 0;
+    let h = 17;
+    for (const ch of this.card.key) h = (h * 31 + ch.charCodeAt(0)) | 0;
+    const r = mulberry32(h >>> 0);
+    const hw = CARD_W / 2 - 6;
+    const hh = CARD_H / 2 - 6;
+    for (let i = 0; i < n; i++) {
+      const a = ((i + 0.3 + r.next() * 0.4) / n) * Math.PI * 2;
+      const dx = Math.cos(a);
+      const dy = Math.sin(a);
+      // Out to the frame: the nearer of the side and the top/bottom edge.
+      const reach = Math.min(Math.abs(dx) > 1e-3 ? hw / Math.abs(dx) : 1e9, Math.abs(dy) > 1e-3 ? hh / Math.abs(dy) : 1e9);
+      const pts: [number, number][] = [];
+      const steps = 5;
+      for (let k = 0; k <= steps; k++) {
+        const d = 30 + (reach - 30) * (k / steps);
+        const jag = k === 0 || k === steps ? 0 : (r.next() - 0.5) * 16;
+        pts.push([dx * d - dy * jag, dy * d + dx * jag]);
+      }
+      this.cracks.push(pts);
+    }
+  }
+
+  /** Light leaking from the back's edges and cracks, 0..1 (rarity colour, honest: the pre-signal shows it). */
+  setLeak(u: number): void {
+    this.leakK = clamp01(u);
+    if (this.leakK <= 0.001) this.leakG.clear();
+  }
+
+  private drawLeak(): void {
+    const g = this.leakG;
+    g.clear();
+    const k = this.leakK;
+    if (k <= 0.001 || !this.back.visible) return;
+    const c = RARITY_COLORS[this.card.rarity];
+    const flick = this.d.reduceMotion ? 1 : 0.82 + 0.18 * Math.sin(this.time / 37) * Math.sin(this.time / 23 + 1.1);
+    // The rim: light spilling round the frame.
+    cardShape(g, -2).stroke({ width: 4 + 12 * k, color: c, alpha: 0.45 * k * flick });
+    cardShape(g, 1).stroke({ width: 1.5 + 2.5 * k, color: 0xffffff, alpha: 0.75 * k * flick });
+    // Cracks grow out from the medallion as the build rises.
+    const len = clamp01(k * 1.25);
+    this.cracks.forEach((pts, i) => {
+      const segs = (pts.length - 1) * clamp01(len - i * 0.04);
+      if (segs <= 0) return;
+      const draw = (w: number, col: number, a: number) => {
+        const p0 = pts[0];
+        if (!p0) return;
+        g.moveTo(p0[0], p0[1]);
+        for (let j = 1; j <= Math.ceil(segs); j++) {
+          const p = pts[j];
+          const q = pts[j - 1];
+          if (!p || !q) break;
+          const f = Math.min(1, segs - (j - 1));
+          g.lineTo(q[0] + (p[0] - q[0]) * f, q[1] + (p[1] - q[1]) * f);
+        }
+        g.stroke({ width: w, color: col, alpha: a, join: 'round', cap: 'round' });
+      };
+      const pulse = this.d.reduceMotion ? 1 : 0.85 + 0.15 * Math.sin(this.time / 45 + i * 1.7);
+      draw(3 + 7 * k, c, 0.55 * k * pulse);
+      draw(1 + 1.8 * k, 0xffffff, 0.95 * k * pulse);
+    });
+    // The medallion glows from inside.
+    g.circle(0, 0, 26 + 8 * k).fill({ color: c, alpha: 0.35 * k * flick });
+    g.circle(0, 0, 12 + 6 * k).fill({ color: 0xffffff, alpha: 0.5 * k * flick });
+  }
+
+  /** The burst's squash and stretch on top of the lift and the pop spring (1, 1 = none). */
+  setBurstShape(sx: number, sy: number): void {
+    this.burstSx = sx;
+    this.burstSy = sy;
+    this.applyScale();
   }
 
   private buildFront(color: number, age: AgeId | null): void {
@@ -394,10 +479,11 @@ export class CardView {
     const k = clamp01(u);
     const showFront = k >= 0.5;
     this.back.visible = !showFront;
+    this.leakG.visible = !showFront;
     this.front.visible = showFront;
     this.flipped = showFront;
     const sx = Math.abs(Math.cos(Math.PI * easeInOutCubic(k)));
-    this.back.scale.x = this.front.scale.x = Math.max(0.02, sx);
+    this.back.scale.x = this.front.scale.x = this.leakG.scale.x = Math.max(0.02, sx);
     this.body.skew.y = (showFront ? -1 : 1) * 0.12 * (1 - sx);
   }
 
@@ -416,7 +502,7 @@ export class CardView {
 
   private applyScale(): void {
     const sq = this.popA * Math.exp(-this.popT / 120) * Math.cos(this.popT / 38);
-    this.body.scale.set((1 + 0.16 * this.liftK) * (1 + sq), (1 + 0.16 * this.liftK) * (1 + sq * 0.7));
+    this.body.scale.set((1 + 0.16 * this.liftK) * (1 + sq) * this.burstSx, (1 + 0.16 * this.liftK) * (1 + sq * 0.7) * this.burstSy);
   }
 
   /** A springy scale pop (landing, snap). */
@@ -429,6 +515,11 @@ export class CardView {
   snap(strength: number): void {
     this.flashA = Math.min(1, 0.7 + 0.3 * strength);
     this.pop(0.14 + 0.16 * strength);
+  }
+
+  /** A white flare over the card alone (the rarity burst's pop); no scale pop. */
+  flare(alpha: number): void {
+    this.flashA = Math.max(this.flashA, Math.min(1, alpha));
   }
 
   /** The copies badge counts up from 0 to its copies, 0..1 (bumps on every new number). */
@@ -456,6 +547,7 @@ export class CardView {
     const w = this.d.reduceMotion ? 0 : this.wobble;
     this.body.rotation = w > 0 ? Math.sin(this.time / 26) * 0.035 * w * w : 0;
     this.body.x = w > 0 ? Math.sin(this.time / 19 + 1.3) * 3.5 * w * w : 0;
+    this.drawLeak();
   }
 
   /** Foil sweep across the card, 0..1; afterwards a lasting soft sheen. */
@@ -555,6 +647,8 @@ export class CardView {
     this.wobble = 0;
     this.glow.alpha = 0;
     this.rays.alpha = 0;
+    this.setLeak(0);
+    this.setBurstShape(1, 1);
     this.drawBolts(false, 0);
     this.setLift(0);
   }

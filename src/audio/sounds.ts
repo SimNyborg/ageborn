@@ -1653,6 +1653,40 @@ const BASE_SOUNDS = {
       at(480, { vol: 0.7, freq: 110, attack: 0.005, release: 1.0, slide: -0.7 }),
     ];
   }), { ...MUSICAL, maxVoices: 1 }),
+  // The rarity burst (DESIGN A10 step 5a, owner request 2026-10-07). The riser climbs under an Epic or
+  // Legendary pre-signal and is pitched by the plan to peak at the pop; each burst layers a deep boom,
+  // a bright shimmer and (Legendary) a choir-and-brass sting, scaled with the rarity.
+  rarity_riser: mix('capsule', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.3, freq: 300, attack: 0.85, release: 0.05, tremolo: 0.3, repeat: 0.04, lowpass: 5000 }),
+    at(0, { vol: 0.28, freq: 220 * (1 + 0.02 * v), attack: 0.85, release: 0.05, shape: 'saw', slide: 1.6, lowpass: 3000 }),
+    at(300, { vol: 0.14, freq: 1600, attack: 0.55, release: 0.05, shape: 'tri', slide: 2, tremolo: 0.6, repeat: 0.03 }),
+  ]), { ...TIMED, maxVoices: 1 }),
+  rarity_burst_rare: mix('capsule', mixVariants(3, (v) => [
+    thump(0, 120 * (1 + 0.03 * v), 0.5, 0.18, -0.8),
+    noiseBurst(0, { vol: 0.3, freq: 2400, attack: 0.002, release: 0.18, highpass: 1500 }),
+    note(10, 'G6', { vol: 0.2, attack: 0.001, release: 0.4, shape: 'sin' }),
+    note(40, 'C7', { vol: 0.14, attack: 0.001, release: 0.35, shape: 'sin' }),
+  ]), { ...MUSICAL, maxVoices: 2 }),
+  rarity_burst_epic: mix('capsule', mixVariants(3, (v) => [
+    thump(0, 85 * (1 + 0.03 * v), 0.85, 0.4, -0.85),
+    noiseBurst(0, { vol: 0.5, freq: 900, decay: 0.03, sustainVol: 0.35, release: 0.45, lowpass: 5000 }),
+    note(20, 'C6', { vol: 0.18, attack: 0.002, release: 0.8, shape: 'tri' }),
+    note(20, 'G6', { vol: 0.16, attack: 0.002, release: 0.8, shape: 'tri' }),
+    at(40, { vol: 0.1, freq: 3600, attack: 0.05, sustain: 0.25, release: 0.4, shape: 'tri', slide: -1, tremolo: 0.5, repeat: 0.025 }),
+  ]), { ...MUSICAL, maxVoices: 1 }),
+  rarity_burst_legendary: mix('capsule', mixVariants(3, (v) => {
+    const pad: Zz = { attack: 0.06, sustain: 0.7, release: 0.9, shape: 'saw', lowpass: 2600 };
+    return [
+      thump(0, 70 * (1 + 0.02 * v), 0.95, 0.6, -0.9),
+      at(0, { vol: 0.7, freq: 55, attack: 0.004, release: 1.1, slide: -0.4 }),
+      noiseBurst(0, { vol: 0.6, freq: 600, decay: 0.04, sustainVol: 0.4, release: 0.8, lowpass: 4200 }),
+      note(30, 'C4', { ...pad, vol: 0.16 }),
+      note(30, 'G4', { ...pad, vol: 0.14 }),
+      note(30, 'E5', { ...pad, vol: 0.12 }),
+      note(30, 'C5', { vol: 0.2, attack: 0.01, sustain: 0.5, release: 0.6, shape: 'square', curve: 1, lowpass: 3800 }),
+      at(60, { vol: 0.1, freq: 4200, attack: 0.08, sustain: 0.6, release: 0.8, shape: 'tri', slide: -1, tremolo: 0.6, repeat: 0.03 }),
+    ];
+  }), { ...MUSICAL, maxVoices: 1 }),
   walkout_bass: mix('capsule', mixVariants(3, (v) => [
     at(0, { vol: 0.9, freq: 95 * (1 + 0.03 * v), attack: 0.005, release: 1.4, slide: -0.25 }),
     noiseBurst(0, { vol: 0.4, freq: 200, release: 0.4, lowpass: 1400 }),

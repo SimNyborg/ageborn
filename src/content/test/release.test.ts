@@ -79,13 +79,14 @@ describe('the release gate (content)', () => {
     expect(content.warPath.order).toEqual(full.warPath.order);
   });
 
-  it('refills a General plan from released cards: five troops, both turrets, starter powers', () => {
+  it('refills a General plan from released cards: as many troops as it named (seven, A18.9), both turrets, starter powers', () => {
     const filled = (ids: readonly (CardId | null)[]): number => ids.filter((x) => x !== null).length;
     for (const g of Object.values(content.generals.list)) {
       for (const [age, l] of Object.entries(g.warPlan ?? {})) {
         const before = full.generals.list[g.id].warPlan?.[age as 'stone'];
         if (!before) continue;
-        expect(filled(l.units), `${g.id}.${age} troops`).toBeGreaterThanOrEqual(Math.min(5, filled(before.units)));
+        expect(filled(l.units), `${g.id}.${age} troops`).toBe(filled(before.units));
+        expect(l.units, `${g.id}.${age} slots`).toHaveLength(7);
         expect(filled(l.turrets), `${g.id}.${age} turrets`).toBe(filled(before.turrets));
       }
     }

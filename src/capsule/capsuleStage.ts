@@ -13,7 +13,7 @@ import { mulberry32, type CosmeticRng } from '@/core';
 import { CARD_H, CardFan, portraitTexture, type CardView } from './cardFan';
 import { BLOW, HAMMER, blowPose, type BlowPose } from './blow';
 import { CapsuleDrum, Hammer, Pedestal, Pips, drumState, ornamentScaleFor, type DrumState } from './climb';
-import { clamp01, easeInQuad, easeOutBack, easeOutCubic, hump, lerp, span } from './ease';
+import { clamp01, easeInCubic, easeInQuad, easeOutBack, easeOutCubic, hump, lerp, span } from './ease';
 import { Particles, Trauma, glowSprite, label } from './fx';
 import { AEON_FILIGREE, HOLO_BANDS, RARITY_COLORS, ROOM, TIER_COLORS, TIER_RAMPS, mixColor, shade } from './palette';
 import { SHOW_TIMING } from './plan';
@@ -22,6 +22,7 @@ import type {
   FirstTierStep,
   FlipStep,
   MiniWalkoutStep,
+  RarityBurstStep,
   ShowPlan,
   ShowStep,
   StrikeStep,
@@ -34,6 +35,7 @@ import { CrateView } from './crate';
 import type { ShowView, StrikeHit, TimedStrike } from './runner';
 import type { RevealCard } from './summaryModel';
 import { coneTexture, confettiTexture, dotTexture, glowTexture, leafTexture, raysTexture, roomTexture, shaftsTexture, shardTexture, splinterTexture, starTexture, streakTexture } from './textures';
+import { burstLevel, resolveBurstFx, type BurstFx, type BurstLevel } from './rarityBurst';
 import { crestCount, summitGemCount, tierIndex } from './tiers';
 import type { CapsuleCatalog, ProgressLookup, ShowSettings } from './types';
 import { Walkout, ageGlyph } from './walkout';
@@ -323,6 +325,18 @@ export class CapsuleStage implements ShowView {
   private cuePulse = 0;
   private heatSparkT = 0;
   private glintT = 0;
+  /**
+   * The rarity burst's light (owner request 2026-10-07): a soft glow behind the card, a white core and
+   * a star flare over it. They run on real time, so they flare at once and hold through the hit-stop.
+   */
+  private readonly burstGlow: Sprite;
+  private readonly burstCore: Sprite;
+  private readonly burstStar: Sprite;
+  private burstT = -1;
+  private burstFxNow: BurstFx | null = null;
+  private burstAt = { x: 0, y: 0 };
+  /** Epic bolts crackle round the card for a moment after its pop. */
+  private boltsUntil = -1;
 
   constructor(
     readonly plan: ShowPlan,
@@ -418,6 +432,9 @@ export class CapsuleStage implements ShowView {
     this.impactStar.position.set(HIT.x - 6, HIT.y);
     this.impactGlow = glowSprite(glowTexture(), 0xffffff, 200, 0);
     this.impactGlow.position.set(HIT.x - 20, HIT.y);
+    this.burstGlow = glowSprite(glowTexture(), 0xffffff, 100, 0);
+    this.burstCore = glowSprite(glowTexture(), 0xffffff, 100, 0);
+    this.burstStar = glowSprite(starTexture(), 0xffffff, 100, 0);
 
     this.shadow.ellipse(0, 0, 100, 16).fill({ color: 0x000000, alpha: 0.45 });
     this.shadow.position.set(PED.x, PED.y + 4);
@@ -469,7 +486,10 @@ export class CapsuleStage implements ShowView {
       this.ringG,
       this.cueG,
       this.impactStar,
+      this.burstGlow,
       ...(this.fan ? [this.fan.root] : []),
+      this.burstCore,
+      this.burstStar,
       this.flightLayer,
       this.walkoutLayer,
       this.particles.root,
@@ -556,6 +576,12 @@ export class CapsuleStage implements ShowView {
         if (this.plan.mode === 'wardrobe') this.riseFromCrate(step.kind === 'signal' && !instant ? 0 : 1);
         if (step.kind === 'signal' && !instant) this.signalMood(step.card.rarity, 1);
         break;
+      case 'rarityBurst':
+        this.focusSlot = step.card.slot;
+        this.signal.set(step.card.slot, 1);
+        if (this.plan.mode === 'wardrobe') this.riseFromCrate(1);
+        if (!instant) this.signalMood(step.card.rarity, 1);
+        break;
       case 'walkout':
       case 'miniWalkout':
         if (!instant) this.startWalkout(step);
@@ -573,6 +599,8 @@ export class CapsuleStage implements ShowView {
       case 'summary':
         this.focusSlot = -1;
         this.summaryDim = 1;
+        this.burstT = -1;
+        this.burstGlow.alpha = this.burstCore.alpha = this.burstStar.alpha = 0;
         this.confettiOn = false;
         this.embersOn = false;
         this.dimTarget = 0;
@@ -624,6 +652,9 @@ export class CapsuleStage implements ShowView {
         break;
       case 'signal':
         this.preSignal(step.card, t / step.durationMs, dt);
+        break;
+      case 'rarityBurst':
+        this.rarityBurst(step, t, dt);
         break;
       case 'flip':
         this.flip(step, t);
@@ -709,6 +740,21 @@ export class CapsuleStage implements ShowView {
         if (this.plan.mode === 'wardrobe') this.riseFromCrate(1);
         const v = this.fan?.view(step.card.slot);
         if (v) v.wobble = 0;
+        break;
+      }
+      case 'rarityBurst': {
+        // Cut short or done: the pop and the slam never replay; the card rests in place, its back still lit.
+        this.fire(`rb-pop-${step.card.key}`);
+        this.fire(`rb-slam-${step.card.key}`);
+        this.signal.set(step.card.slot, 1);
+        const v = this.fan?.view(step.card.slot);
+        if (v) {
+          v.wobble = 0;
+          v.setBurstShape(1, 1);
+          v.setLeak(this.burstFxFor(step.level).leak * 0.4);
+          v.drawBolts(false, 0);
+        }
+        this.boltsUntil = -1;
         break;
       }
       case 'flip':
@@ -1823,33 +1869,13 @@ export class CapsuleStage implements ShowView {
     const rank = r === 'legendary' ? 1 : r === 'epic' ? 0.8 : r === 'rare' ? 0.45 : 0;
     const v = this.fan?.view(card.slot);
     if (v) v.wobble = rank * u;
+    // Light starts leaking from the back's edges and cracks (the rarity burst's anticipation).
+    const level = burstLevel(r);
+    if (v && level) v.setLeak(this.burstFxFor(level).leak * 0.6 * u * u);
     if (r === 'legendary') this.bigRaysLevel = lerp(0.35, 0.9, u);
     else if (r === 'epic') this.bigRaysLevel = lerp(0.35, 0.6, u);
     if (this.plan.mode === 'wardrobe') this.riseFromCrate(u);
-    if (v && rank >= 0.8 && !this.d.settings.reduceMotion) {
-      this.emberT += dt * (0.5 + 2 * u);
-      while (this.emberT > 16) {
-        this.emberT -= 16;
-        const a = this.rng.next() * Math.PI * 2;
-        const rr = (170 + this.rng.next() * 120) * Math.max(1, v.root.scale.x / 1.2);
-        const life = 240 + this.rng.next() * 140;
-        const sx = v.root.x + Math.cos(a) * rr;
-        const sy = v.root.y + Math.sin(a) * rr;
-        this.particles.spawn({
-          tex: streakTexture(),
-          x: sx,
-          y: sy,
-          vx: ((v.root.x - sx) / life) * 1000,
-          vy: ((v.root.y - sy) / life) * 1000,
-          life,
-          scale: [0.3, 0.7],
-          alpha: [0, 1],
-          tint: this.rng.next() < 0.35 ? 0xffffff : RARITY_COLORS[r],
-          add: true,
-          align: true,
-        });
-      }
-    }
+    if (v && rank >= 0.8) this.drawIn(v, r, dt, 0.5 + 2 * u);
   }
 
   private flip(s: FlipStep, t: number): void {
@@ -1902,6 +1928,259 @@ export class CapsuleStage implements ShowView {
       this.flash(0.3, shade(c, 0.5));
       this.sparkBurst(v.root.x, v.root.y - 26, c, this.d.settings.reduceMotion ? 8 : 30, 520);
       this.vibrate(25);
+    }
+  }
+
+  private burstFxFor(level: BurstLevel): BurstFx {
+    return resolveBurstFx(level, { reduceMotion: this.d.settings.reduceMotion, lite: this.lite });
+  }
+
+  /** Where a presented card's centre is now (its body is lifted 26 px in card space). */
+  private cardCentre(v: CardView): { x: number; y: number } {
+    return { x: v.root.x, y: v.root.y - 26 * v.root.scale.y };
+  }
+
+  /**
+   * The rarity burst (A10 step 5a): a short windup (the card compresses and trembles harder, the
+   * leaks peak, light is drawn in), the pop, a hit-stop with the card blasted out, then it falls back
+   * and slams into place with a bounce while embers drift up. Effects scale with the rarity; Reduce
+   * motion keeps a calm glow (and the sound).
+   */
+  private rarityBurst(s: RarityBurstStep, t: number, dt: number): void {
+    const v = this.fan?.view(s.card.slot);
+    if (!v) return;
+    const fx = this.burstFxFor(s.level);
+    const rank = s.level === 'legendary' ? 1 : s.level === 'epic' ? 0.8 : 0.45;
+    this.signal.set(s.card.slot, 1);
+    if (t < s.popMs) {
+      const u = t / s.popMs;
+      v.wobble = fx.motion ? rank * (1 + 0.8 * u) : 0;
+      v.setLeak(fx.leak * lerp(0.6, 1, u));
+      if (fx.motion) {
+        // Anticipation: the card gathers itself, wider and shorter, just before it goes.
+        const e = easeInQuad(u);
+        v.setBurstShape(1 + 0.3 * fx.blast * e, 1 - 0.45 * fx.blast * e);
+      }
+      if (s.level !== 'rare') this.bigRaysLevel = lerp(this.bigRaysLevel, s.level === 'legendary' ? 1 : 0.7, Math.min(1, dt / 120));
+      this.drawIn(v, s.card.rarity, dt, 1.4);
+      return;
+    }
+    if (this.fire(`rb-pop-${s.card.key}`)) this.rarityExplode(v, s, fx);
+    v.wobble = 0;
+    v.setLeak(fx.leak * lerp(1, 0.4, span(t, s.popMs, s.popMs + 320)));
+    if (s.level === 'epic' && t < this.boltsUntil) {
+      if (Math.floor(t / 50) !== Math.floor((t - dt) / 50)) v.drawBolts(true, RARITY_COLORS.epic);
+    } else v.drawBolts(false, 0);
+    if (!fx.motion) return;
+    // After the freeze the card falls back, faster and faster, slams into place, squashes and bounces.
+    const a = t - s.popMs - s.hitStopMs;
+    const B = fx.blast;
+    if (a <= 0) v.setBurstShape(1 + 0.85 * B, 1 + 1.1 * B);
+    else if (a < s.slamMs) {
+      const k = 1 - easeInCubic(a / s.slamMs);
+      v.setBurstShape(1 + 0.85 * B * k, 1 + 1.1 * B * k);
+    } else {
+      if (this.fire(`rb-slam-${s.card.key}`)) this.burstSlam(v, s, fx);
+      const b = a - s.slamMs;
+      const q = 0.6 * B * Math.exp(-b / 95) * Math.cos(b / 30);
+      v.setBurstShape(1 + 0.6 * q, 1 - q);
+    }
+  }
+
+  /** Streaks of light drawn into the card (the pre-signal and the burst's windup). */
+  private drawIn(v: CardView, r: RevealCard['rarity'], dt: number, rate: number): void {
+    if (this.d.settings.reduceMotion) return;
+    this.emberT += dt * rate * (this.lite ? 0.5 : 1);
+    while (this.emberT > 16) {
+      this.emberT -= 16;
+      const a = this.rng.next() * Math.PI * 2;
+      const rr = (170 + this.rng.next() * 120) * Math.max(1, v.root.scale.x / 1.2);
+      const life = 240 + this.rng.next() * 140;
+      const sx = v.root.x + Math.cos(a) * rr;
+      const sy = v.root.y + Math.sin(a) * rr;
+      this.particles.spawn({
+        tex: streakTexture(),
+        x: sx,
+        y: sy,
+        vx: ((v.root.x - sx) / life) * 1000,
+        vy: ((v.root.y - sy) / life) * 1000,
+        life,
+        scale: [0.3, 0.7],
+        alpha: [0, 1],
+        tint: this.rng.next() < 0.35 ? 0xffffff : RARITY_COLORS[r],
+        add: true,
+        align: true,
+      });
+    }
+  }
+
+  /** The pop: light, shockwaves, particles, hit-stop, shake and embers, all in the rarity colour. */
+  private rarityExplode(v: CardView, s: RarityBurstStep, fx: BurstFx): void {
+    const c = RARITY_COLORS[s.card.rarity];
+    const light = shade(c, 0.45);
+    const { x, y } = this.cardCentre(v);
+    const L = fx.lightPx;
+    this.burstT = 0;
+    this.burstFxNow = fx;
+    this.burstAt = { x, y };
+    this.burstGlow.tint = c;
+    this.burstStar.tint = light;
+    if (fx.flash > 0) this.flash(fx.flash, mixColor(0xffffff, c, 0.3));
+    if (fx.motion) {
+      this.hitstop = Math.max(this.hitstop, s.hitStopMs);
+      v.flare(0.95);
+    } else v.flare(0.25);
+    this.trauma.add(fx.trauma);
+    this.addPunch(fx.punch);
+    if (fx.vibrate.length > 0) this.vibrate(fx.vibrate);
+    // Shockwaves: a wide ring in the rarity colour, a fast white one, and for a Legendary a slow
+    // second wave and a ring along the floor.
+    if (fx.rings >= 1) this.ring(x, y, 50, L * 0.5, c, 26, 560, 1);
+    if (fx.rings >= 2) this.ring(x, y, 40, L * 0.34, 0xffffff, 10, 320, 0.95);
+    if (fx.rings >= 3) {
+      this.ring(x, y, 70, L * 0.72, light, 14, 900, 0.85);
+      this.ring(x, y + (CARD_H / 2) * v.root.scale.y, 60, L * 0.6, c, 12, 760, 0.7, 0.28);
+    }
+    if (s.level !== 'rare') {
+      this.bigRays.tint = c;
+      this.bigRays.scale.set(0.3);
+      this.bigRaysLevel = s.level === 'legendary' ? 1 : 0.75;
+    }
+    if (s.level === 'epic') this.boltsUntil = s.popMs + s.hitStopMs + 360;
+    const p = this.particles;
+    const rng = this.rng;
+    const n = fx.particles;
+    if (!fx.motion) {
+      // Reduce motion: a few soft motes lift away, slowly.
+      for (let i = 0; i < n; i++) {
+        const a = (i / Math.max(1, n)) * Math.PI * 2;
+        p.spawn({ tex: glowTexture(), x: x + Math.cos(a) * 60, y: y + Math.sin(a) * 80, vx: Math.cos(a) * 20, vy: -25 - rng.next() * 20, life: 1400, scale: [0.25, 0.5], alpha: [0.5, 0], tint: c, add: true });
+      }
+    } else {
+      const power = s.level === 'legendary' ? 1.25 : s.level === 'epic' ? 1 : 0.7;
+      const streaks = Math.round(n * 0.38);
+      const sparks = Math.round(n * 0.34);
+      const puffs = Math.round(n * 0.1);
+      const glints = n - streaks - sparks - puffs;
+      for (let i = 0; i < streaks; i++) {
+        const a = (i / streaks) * Math.PI * 2 + rng.next() * 0.25;
+        const sp = (650 + rng.next() * 950) * power;
+        p.spawn({
+          tex: streakTexture(),
+          x: x + Math.cos(a) * 40,
+          y: y + Math.sin(a) * 50,
+          vx: Math.cos(a) * sp,
+          vy: Math.sin(a) * sp,
+          life: 360 + rng.next() * 280,
+          drag: 0.04,
+          scale: [1.3 + rng.next() * 1.1, 0.25],
+          alpha: [1, 0],
+          tint: i % 3 === 0 ? 0xffffff : i % 3 === 1 ? light : c,
+          add: true,
+          align: true,
+        });
+      }
+      for (let i = 0; i < sparks; i++) {
+        const a = rng.next() * Math.PI * 2;
+        const sp = (220 + rng.next() * 620) * power;
+        p.spawn({
+          tex: i % 3 === 0 ? starTexture() : dotTexture(),
+          x: x + Math.cos(a) * 30,
+          y: y + Math.sin(a) * 40,
+          vx: Math.cos(a) * sp,
+          vy: Math.sin(a) * sp - 160 * power,
+          life: 600 + rng.next() * 600,
+          drag: 0.12,
+          gravity: 620,
+          scale: [0.8 + rng.next() * 0.9, 0],
+          alpha: [1, 0],
+          tint: i % 4 === 0 ? 0xffffff : i % 2 === 0 ? light : c,
+          add: true,
+        });
+      }
+      for (let i = 0; i < puffs; i++) {
+        const a = rng.next() * Math.PI * 2;
+        const sp = (90 + rng.next() * 180) * power;
+        p.spawn({ tex: glowTexture(), x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 700 + rng.next() * 400, drag: 0.2, scale: [0.6, 1.6 + rng.next()], alpha: [0.55, 0], tint: c, add: true });
+      }
+      for (let i = 0; i < glints; i++) {
+        const a = rng.next() * Math.PI * 2;
+        const sp = (300 + rng.next() * 500) * power;
+        p.spawn({ tex: starTexture(), x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 80, life: 700 + rng.next() * 500, drag: 0.1, gravity: 260, scale: [1.2 + rng.next(), 0], alpha: [1, 0], rot: rng.next() * 6, vr: (rng.next() - 0.5) * 14, tint: 0xffffff, add: true });
+      }
+      // A Legendary leaves gold leaf drifting down through the rest of its reveal.
+      if (s.level === 'legendary') {
+        const leaves = this.lite ? 12 : 24;
+        for (let i = 0; i < leaves; i++) {
+          const a = -Math.PI / 2 + (rng.next() - 0.5) * 2.6;
+          const sp = 380 + rng.next() * 520;
+          p.spawn({ tex: leafTexture(), x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1800 + rng.next() * 900, drag: 0.3, gravity: 380, scale: [0.9 + rng.next() * 0.6, 0.8], alpha: [1, 0], rot: rng.next() * 6, vr: (rng.next() - 0.5) * 9, tint: rng.next() < 0.5 ? c : 0xfff1c4, flutter: true });
+        }
+      }
+    }
+    // Embers drift up from the card for a while after the pop.
+    const span0 = v.root.scale.x * 70;
+    for (let i = 0; i < fx.embers; i++) {
+      p.spawn({
+        tex: dotTexture(),
+        x: x + (rng.next() - 0.5) * span0 * 2.2,
+        y: y + (rng.next() - 0.3) * span0 * 2,
+        vx: (rng.next() - 0.5) * 50,
+        vy: -45 - rng.next() * (fx.motion ? 110 : 40),
+        life: 1500 + rng.next() * 900,
+        drag: 0.7,
+        scale: [0.45 + rng.next() * 0.55, 0.05],
+        alpha: [0.95, 0],
+        tint: rng.next() < 0.3 ? 0xffffff : rng.next() < 0.5 ? light : c,
+        add: true,
+        delay: (i / Math.max(1, fx.embers)) * fx.emberMs * (0.6 + 0.4 * rng.next()),
+      });
+    }
+  }
+
+  /** The card lands back in place: a small thump along its bottom edge. */
+  private burstSlam(v: CardView, s: RarityBurstStep, fx: BurstFx): void {
+    const c = RARITY_COLORS[s.card.rarity];
+    const bottom = v.root.y + (CARD_H / 2 - 26) * v.root.scale.y;
+    this.trauma.add(fx.trauma * 0.35);
+    this.addPunch(fx.punch * 0.35);
+    this.ring(v.root.x, bottom, 30, 150 * v.root.scale.x, 0xffffff, 6, 300, 0.7, 0.3);
+    this.sparkBurst(v.root.x, bottom, shade(c, 0.4), s.level === 'legendary' ? 16 : s.level === 'epic' ? 10 : 5, 300);
+  }
+
+  /** The burst light over a few hundred ms (real time: it flares at once and holds through the freeze). */
+  private updateBurstLight(dt: number): void {
+    const fx = this.burstFxNow;
+    if (this.burstT < 0 || !fx) return;
+    this.burstT += dt;
+    const t = this.burstT;
+    const L = fx.lightPx;
+    const { x, y } = this.burstAt;
+    this.burstGlow.position.set(x, y);
+    this.burstCore.position.set(x, y);
+    this.burstStar.position.set(x, y);
+    if (!fx.motion) {
+      // Reduce motion: one calm glow that swells and fades; no core, no star.
+      const u = span(t, 0, 1100);
+      this.burstGlow.width = this.burstGlow.height = L * 0.7;
+      this.burstGlow.alpha = fx.glow * hump(u);
+      this.burstCore.alpha = 0;
+      this.burstStar.alpha = 0;
+      if (u >= 1) this.burstT = -1;
+      return;
+    }
+    const grow = easeOutCubic(Math.min(1, t / 90));
+    this.burstGlow.width = this.burstGlow.height = L * (0.35 + 0.75 * grow + 0.2 * span(t, 90, 800));
+    this.burstGlow.alpha = 0.95 * (1 - span(t, 160, 800));
+    this.burstCore.width = this.burstCore.height = L * (0.25 + 0.2 * grow);
+    this.burstCore.alpha = 1 - span(t, 40, 300);
+    const st = Math.min(1, t / 110);
+    this.burstStar.width = this.burstStar.height = L * 0.85 * (0.3 + 0.7 * easeOutBack(st, 2));
+    this.burstStar.rotation = 0.0009 * t;
+    this.burstStar.alpha = 1 - span(t, 80, 460);
+    if (t > 820) {
+      this.burstT = -1;
+      this.burstGlow.alpha = this.burstCore.alpha = this.burstStar.alpha = 0;
     }
   }
 
@@ -2347,6 +2626,7 @@ export class CapsuleStage implements ShowView {
     this.drumWhite = Math.max(0, this.drumWhite - dt / 220);
     this.drum.setWhite(this.drumWhite);
     this.updateGrade(dt);
+    this.updateBurstLight(dt);
     this.updateRays(dt);
     this.updatePedestal(dt);
     this.updateCards(dt);

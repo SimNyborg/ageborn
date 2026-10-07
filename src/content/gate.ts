@@ -3,8 +3,9 @@
  * table that names cards drops the unreleased ones, so no General plan, Trophy Road node or War Path
  * node can hand a player or a bot a card whose art has not shipped.
  *
- * - General plans: an unreleased troop or turret leaves its slot; the plan is refilled to five troops
- *   (and every turret slot) from the age's released starter cards first, then other released non-Legendary
+ * - General plans: an unreleased troop or turret leaves its slot; the plan is refilled to as many troops as
+ *   it named (seven for a full plan since A18.9's seven troop slots; five before) and every turret slot
+ *   from the age's released starter cards first, then other released non-Legendary
  *   cards in table order. An unreleased power becomes the age's starter of its slot, an unreleased fort
  *   the age's wall. Signature cards drop unreleased ids.
  * - Trophy Road: power and fort rewards of unreleased cards are removed (the node keeps its other items).
@@ -26,9 +27,6 @@ interface Records {
 }
 
 const RARITY_RANK: Readonly<Record<Rarity, number>> = { common: 0, rare: 1, epic: 2, legendary: 3 };
-
-/** A General keeps at least this many troops when unreleased ones leave its plan (the pre-X0 plan size). */
-const MIN_TROOPS = 5;
 
 /** The released cards a plan may refill with: starters first, then by rarity, then table order; no Legendaries. */
 function fillers(defs: readonly (UnitDef | TurretDef)[], age: AgeId, released: (id: CardId) => boolean): CardId[] {
@@ -62,7 +60,8 @@ function gateLoadout(l: Loadout, age: AgeId, r: Records, released: (id: CardId) 
     return id === null || released(id) ? id : starterPower(slot);
   };
   const out: Loadout = {
-    units: touched ? refill(units, fillers(Object.values(r.units), age, released), Math.min(MIN_TROOPS, units.length)) : [...l.units],
+    // A18.9: refill to as many troops as the plan named, so bots keep fielding seven.
+    units: touched ? refill(units, fillers(Object.values(r.units), age, released), l.units.filter((x) => x !== null).length) : [...l.units],
     turrets: touchedT ? refill(turrets, fillers(Object.values(r.turrets), age, released), turrets.length) : [...l.turrets],
     powers: { home: power('home'), field: power('field') },
   };

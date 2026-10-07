@@ -535,8 +535,8 @@ const TrophyRoadSchema = v.strictObject({
 });
 
 const LoadoutSchema = v.strictObject({
-  // Five troop slots, or six (A18.9; the paused content expansion gives some Generals a sixth Stone troop).
-  units: v.pipe(v.array(v.nullable(id)), v.minLength(5), v.maxLength(6)),
+  // Seven troop slots (A18.9, owner request 2026-10-07: bots field seven like the player).
+  units: v.pipe(v.array(v.nullable(id)), v.length(7)),
   turrets: v.pipe(v.array(v.nullable(id)), v.length(2)),
   powers: v.strictObject({ home: v.nullable(id), field: v.nullable(id) }),
 });
