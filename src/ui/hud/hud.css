@@ -358,8 +358,11 @@
   white-space: nowrap;
   color: var(--hud-dim);
 }
-/* Condensed to fit (fit.ts sets --fit and --fit-m) instead of an ellipsis. */
-.hud-name-fit {
+/* Condensed to fit (fit.ts sets --fit and --fit-m) instead of an ellipsis. `.hud-fit` is the round
+   buttons' labels (Council, Evolve); it had no rule, so their fit never applied (found in the A18.9
+   seven-card layout pass). */
+.hud-name-fit,
+.hud-fit {
   display: inline-block;
   margin: 0 var(--fit-m, 0px);
   transform: scaleX(var(--fit, 1));
@@ -1354,10 +1357,23 @@
   transition: color var(--ui-dur-micro) var(--ui-ease-out);
 }
 
-/* Narrow phones: the gold row ("1,240 +12/s") keeps inside the 92 px cluster, clear of the cards. */
+/* Narrow phones: the gold row ("308 +6/s") keeps inside the 92 px cluster, clear of the cards. */
 @container hud (max-height: 499px) and (max-width: 819px) {
   .hud-gold {
     padding: 0 5px 6px;
+  }
+
+  .hud-gold-main {
+    gap: 2px;
+  }
+
+  .hud-gold-main > svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .hud-gold-value {
+    font-size: 16px;
   }
 }
 
