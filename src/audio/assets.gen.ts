@@ -35,7 +35,7 @@ export interface MusicFile {
   alt?: string;
 }
 
-export const SFX_BYTES = 3422451;
+export const SFX_BYTES = 3466334;
 export const MUSIC_BYTES = 6730878;
 
 export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
@@ -50,7 +50,7 @@ export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
   modern: { src: "audio/sfx/modern.3beebedb.ogg", bytes: 275484, seconds: 54.899, alt: "audio/sfx/modern.9f8442bc.m4a", sync: 0.02031 },
   future: { src: "audio/sfx/future.690cc856.ogg", bytes: 313687, seconds: 61.683, alt: "audio/sfx/future.5d802444.m4a", sync: 0.02031 },
   cosmic: { src: "audio/sfx/cosmic.15c3e017.ogg", bytes: 275024, seconds: 54.66, alt: "audio/sfx/cosmic.4415733d.m4a", sync: 0.02031 },
-  capsule: { src: "audio/sfx/capsule.d5b3e7ce.ogg", bytes: 280307, seconds: 55.415, alt: "audio/sfx/capsule.6bdb5740.m4a", sync: 0.02031 },
+  capsule: { src: "audio/sfx/capsule.f9ff7eba.ogg", bytes: 324190, seconds: 64.005, alt: "audio/sfx/capsule.071bd619.m4a", sync: 0.02031 },
 };
 
 export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
@@ -411,12 +411,16 @@ export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
   rarity_rare: { sheet: "capsule", variants: [[42.84075, 1.758]] },
   rarity_epic: { sheet: "capsule", variants: [[44.64875, 1.6]] },
   rarity_legendary: { sheet: "capsule", variants: [[46.29875, 2.6]] },
-  walkout_bass: { sheet: "capsule", variants: [[48.94875, 1.6]] },
-  copy_tick: { sheet: "capsule", variants: [[50.59875, 0.03], [50.67875, 0.03], [50.75875, 0.03]] },
-  upgrade_ready: { sheet: "capsule", variants: [[50.83875, 0.7]] },
-  upgrade_slam: { sheet: "capsule", variants: [[51.58875, 0.93835], [52.5771, 0.92756]] },
-  level_up: { sheet: "capsule", variants: [[53.55467, 1.6]] },
-  reel_tick: { sheet: "capsule", variants: [[55.20467, 0.02], [55.27467, 0.02], [55.34467, 0.02]] },
+  rarity_riser: { sheet: "capsule", variants: [[48.94875, 0.9]] },
+  rarity_burst_rare: { sheet: "capsule", variants: [[49.89875, 0.94825], [50.897, 0.94633]] },
+  rarity_burst_epic: { sheet: "capsule", variants: [[51.89333, 1.55012], [53.49346, 1.55079]] },
+  rarity_burst_legendary: { sheet: "capsule", variants: [[55.09425, 2.39521]] },
+  walkout_bass: { sheet: "capsule", variants: [[57.53946, 1.6]] },
+  copy_tick: { sheet: "capsule", variants: [[59.18946, 0.03], [59.26946, 0.03], [59.34946, 0.03]] },
+  upgrade_ready: { sheet: "capsule", variants: [[59.42946, 0.7]] },
+  upgrade_slam: { sheet: "capsule", variants: [[60.17946, 0.93835], [61.16781, 0.92756]] },
+  level_up: { sheet: "capsule", variants: [[62.14538, 1.6]] },
+  reel_tick: { sheet: "capsule", variants: [[63.79537, 0.02], [63.86538, 0.02], [63.93538, 0.02]] },
 };
 
 export const MUSIC_FILES: Readonly<Record<string, MusicFile>> = {

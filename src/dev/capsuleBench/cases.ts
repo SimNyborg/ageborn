@@ -351,6 +351,19 @@ function buildCases(): BenchCase[] {
     const quickAeon = makeReveal({ id: 'quick-aeon', tier: 'aeon', startTier: 'clay', seed: 78, pity: PITY, firstOfTier: true });
     cases.push({ id: 'quick-aeon', group: 'Quick reveal', title: 'Quick reveal: a first Aeon (no summit strikes; crests, stinger and banner stay)', reveals: [quickAeon], progress: benchProgress([quickAeon]), quickReveal: true });
   }
+  // The rarity burst (A10 step 5a, owner request 2026-10-07): Quick reveal, so the cards come at once.
+  {
+    const burst = (id: string, title: string, tier: CapsuleTier, stacks: StackSpec[]) => {
+      const r = makeReveal({ id, tier, stacks, seed: 500 + id.length });
+      cases.push({ id, group: 'Rarity burst', title, reveals: [r], progress: benchProgress([r]), quickReveal: true });
+    };
+    burst('burst-rare', 'Rare pop (owned Rare)', 'bronze', [{ rarity: 'common', card: 'bonker' }, { rarity: 'rare', card: 'spear_hunter', isNew: false }]);
+    burst('burst-epic', 'Epic burst (owned Epic)', 'silver', [{ rarity: 'common', card: 'bonker' }, { rarity: 'epic', card: 'battering_ram', isNew: false }]);
+    burst('burst-legendary', 'Legendary explosion (owned Legendary, 3 s walkout)', 'gold', [{ rarity: 'common', card: 'bonker' }, { rarity: 'legendary', card: 'ursa_paladin', isNew: false }]);
+    burst('burst-ladder', 'Ladder: Common, Rare, Epic, Legendary in one opening', 'gold', [
+      { rarity: 'common', card: 'bonker' }, { rarity: 'rare', card: 'spear_hunter', isNew: false }, { rarity: 'epic', card: 'battering_ram', isNew: false }, { rarity: 'legendary', card: 'ursa_paladin', isNew: false },
+    ]);
+  }
   // Wardrobe Crate: the card flip for each skin rarity (A10, A15.3; there is no reel).
   cases.push(
     { id: 'crate-rare', group: 'Wardrobe', title: 'Card flip: Rare skin', crate: makeCrate('crate-rare', 'pumpkin_head'), pity: PITY },
