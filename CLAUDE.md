@@ -23,7 +23,7 @@ Ageborn is a browser-first, one-lane tug-of-war battler (inspired by the classic
 ## Hard rules
 
 - **No real money, ever.** No store, no payment code, no ads SDK in v1. All currencies are earned.
-- **Bots are labeled AI** on every surface listed in DESIGN A7.1. Never present a bot as a human.
+- **Bots and the online preview** (owner decision 2026-10-07, replacing the earlier "never present a bot as a human" rule): until real online play exists, the Battle flow simulates online matchmaking (search, "player found" with a generated name, avatar and trophies, a Player chip on VS) and the match is played against an AI. The War Path, Conquest, Daily, Skirmish and training opponents stay labelled AI. When real online play ships, real players replace the simulated ones.
 - **Our own IP.** Never use the name "Age of War" (or its art, sounds or unit names) in the game, tags, store text or code identifiers.
 - **Free tiers only.** GitHub free, GitHub Pages, Actions on a public repo. No paid services or APIs. Cloud sessions run on the owner's promotional credit and, once that is used, on the owner's regular Max plan usage (paid usage credits are off, so nothing may ever cost extra money). Work efficiently: plan before fanning out, do not rerun expensive steps without a reason.
 - **Determinism.** `sim`, `ai`, `meta`, `core` and `content` are pure and deterministic (DESIGN B2/B3): integer math, seeded RNG, no `Math.random`, `Date`, floats in stat math, DOM or rendering imports.
