@@ -3,7 +3,7 @@
  *
  * The schema checks shape and types exactly (a type-parity test pins `InferOutput` to the contract's
  * `SaveDoc`), plus the invariants other code relies on: finite numbers, integer counts that are never
- * negative, 6 unit (A18.9) and 2 turret slots per loadout, a War Plan for every age, an `activePlan` that
+ * negative, 7 unit (A18.9) and 2 turret slots per loadout, a War Plan for every age, an `activePlan` that
  * points into `warPlans`, and a uint32 capsule RNG state.
  *
  * It deliberately does not check ids against the content (cards and skins come and go between
@@ -48,11 +48,11 @@ const CRATE_SOURCE = v.picklist(['codex', 'weekly', 'road', 'aeon', 'welcome']);
 // ---------------------------------------------------------------------------------------------
 
 /**
- * One age of a War Plan: 6 unit slots (A18.9; 5 before save v4), 2 turret slots, the Home and Field power
+ * One age of a War Plan: 7 unit slots (A18.9; 6 before save v13, 5 before save v4), 2 turret slots, the Home and Field power
  * slots (A2.9.1; one `power` before save v7).
  */
 export const LoadoutSchema = v.object({
-  units: v.pipe(v.array(v.nullable(id)), v.length(6)),
+  units: v.pipe(v.array(v.nullable(id)), v.length(7)),
   turrets: v.pipe(v.array(v.nullable(id)), v.length(2)),
   powers: v.object({ home: v.nullable(id), field: v.nullable(id) }),
   // The Fort slot (A16.14.1, save v11): a Fort card or null

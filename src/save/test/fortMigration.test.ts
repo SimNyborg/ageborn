@@ -67,7 +67,8 @@ function keepsEverything(before: Doc, after: Doc): void {
     for (const age of Object.keys(plan.loadouts)) {
       const b = plan.loadouts[age];
       const a = after.warPlans[i]?.loadouts[age];
-      expect(a?.units).toEqual(b?.units);
+      // v13 (A18.9) then adds an empty seventh troop slot
+      expect(a?.units).toEqual([...(b?.units ?? []), null].slice(0, 7));
       expect(a?.turrets).toEqual(b?.turrets);
       expect(a?.powers).toEqual(b?.powers);
     }

@@ -12,8 +12,8 @@ import { validateWith, type Validation } from './schema';
 const num = v.pipe(v.number(), v.finite());
 const int = v.pipe(v.number(), v.integer());
 const SIDE = v.picklist([0, 1]);
-/** Six tray slots from SIM_VERSION 3.0.0 (A18.9); older replays only use 0-4. */
-const SLOT6 = v.picklist([0, 1, 2, 3, 4, 5]);
+/** Seven tray slots from SIM_VERSION 7.4.0 (A18.9); six from 3.0.0; older replays only use 0-4. */
+const SLOT7 = v.picklist([0, 1, 2, 3, 4, 5, 6]);
 const MOUNT = v.picklist([0, 1, 2, 3]);
 const SLOT2 = v.picklist([0, 1]);
 const bool2 = v.tuple([v.boolean(), v.boolean()]);
@@ -33,9 +33,9 @@ function partialPerAge<TSchema extends v.GenericSchema>(schema: TSchema) {
   });
 }
 
-/** A loadout as recorded: 6 unit slots from SIM_VERSION 3.0.0, 5 in older replays (their cards stay, D8). */
+/** A loadout as recorded: 7 unit slots from SIM_VERSION 7.4.0, 6 from 3.0.0, 5 in older replays (their cards stay, D8). */
 const ReplayLoadoutSchema = v.object({
-  units: v.pipe(v.array(v.nullable(v.string())), v.minLength(5), v.maxLength(6)),
+  units: v.pipe(v.array(v.nullable(v.string())), v.minLength(5), v.maxLength(7)),
   turrets: v.pipe(v.array(v.nullable(v.string())), v.length(2)),
   // Two typed power slots from SIM_VERSION 4.0.0 (A2.9.1)
   powers: v.object({ home: v.nullable(v.string()), field: v.nullable(v.string()) }),
@@ -104,8 +104,8 @@ function cmd<const TEntries extends v.ObjectEntries>(entries: TEntries) {
 }
 
 export const TimedCommandSchema = v.variant('t', [
-  cmd({ t: v.literal('train'), side: SIDE, slot: SLOT6 }),
-  cmd({ t: v.literal('cancelTrain'), side: SIDE, slot: v.optional(SLOT6) }),
+  cmd({ t: v.literal('train'), side: SIDE, slot: SLOT7 }),
+  cmd({ t: v.literal('cancelTrain'), side: SIDE, slot: v.optional(SLOT7) }),
   cmd({ t: v.literal('buildTurret'), side: SIDE, mount: MOUNT, slot: SLOT2 }),
   cmd({ t: v.literal('replaceTurret'), side: SIDE, mount: MOUNT, slot: SLOT2 }),
   cmd({ t: v.literal('sellTurret'), side: SIDE, mount: MOUNT }),
