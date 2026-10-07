@@ -82,7 +82,7 @@ export interface RunnerOptions {
 }
 
 /** Steps a tap speeds up ("Tap flips faster", A10 step 5). Strikes keep their beat: a tap there is graded. */
-const RUSHABLE: ReadonlySet<StepKind> = new Set<StepKind>(['burst', 'firstTier', 'volley', 'fan', 'signal', 'flip', 'duplicates', 'miniWalkout', 'walkout', 'crateOpen']);
+const RUSHABLE: ReadonlySet<StepKind> = new Set<StepKind>(['burst', 'firstTier', 'volley', 'fan', 'signal', 'rarityBurst', 'flip', 'duplicates', 'miniWalkout', 'walkout', 'crateOpen']);
 /** Steps that land on a beat and grade a tap near their hit. */
 const TIMED: ReadonlySet<StepKind> = new Set<StepKind>(['strike', 'summitStrike']);
 /** Steps that are "visually" opened: after these the capsule is open. */

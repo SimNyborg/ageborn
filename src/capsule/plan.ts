@@ -20,6 +20,7 @@ import {
   type RevealCard,
   type SummaryModel,
 } from './summaryModel';
+import { burstLevel, RARITY_BURST, RARITY_BURST_LIMIT_MS, RARITY_RISER_MS, type BurstLevel } from './rarityBurst';
 import { isBackLoaded, isSummitTier, resolveStrikes, STRIKES, summitGemCount, tierIndex } from './tiers';
 import type { CapsuleCatalog, CardProgress, ProgressLookup } from './types';
 
@@ -101,6 +102,8 @@ export const SHOW_LIMITS = {
   fan: 1000,
   signal: 800,
   flip: 800,
+  /** The rarity burst after a Rare, Epic or Legendary pre-signal (owner request 2026-10-07). */
+  rarityBurst: RARITY_BURST_LIMIT_MS,
   foil: 1000,
   stamp: 500,
   count: 500,
@@ -217,6 +220,24 @@ export type VolleyStep = StepBase & {
 };
 export type FanStep = StepBase & { kind: 'fan'; cards: RevealCard[] };
 export type SignalStep = StepBase & { kind: 'signal'; card: RevealCard };
+/**
+ * The rarity burst (A10 step 5a, owner request 2026-10-07): right after a Rare, Epic or Legendary
+ * card's pre-signal, the face-down card explodes in its rarity colour, scaled with the rarity. It
+ * shows the rarity the pre-signal already showed (never more), before the flip or the walkout shows
+ * who it is. Timing comes from `RARITY_BURST`; the stage scales the effects for Reduce motion and Lite.
+ */
+export type RarityBurstStep = StepBase & {
+  kind: 'rarityBurst';
+  card: RevealCard;
+  /** Always the card's own rarity (tested). */
+  level: BurstLevel;
+  /** The pop happens this far in, after the windup. */
+  popMs: number;
+  /** The view-only freeze at the pop (motion on). */
+  hitStopMs: number;
+  /** The card slams back into place this long after the hit-stop. */
+  slamMs: number;
+};
 export type FlipStep = StepBase & {
   kind: 'flip';
   card: RevealCard;
@@ -244,6 +265,7 @@ export type ShowStep =
   | VolleyStep
   | FanStep
   | SignalStep
+  | RarityBurstStep
   | FlipStep
   | WalkoutStep
   | MiniWalkoutStep
@@ -279,6 +301,11 @@ function step<T extends ShowStep>(s: Omit<T, 'skippable' | 'fastForward' | 'cues
   return { skippable: true, fastForward: true, ...s, cues } as T;
 }
 
+/** Playback rate (bp) that makes the rendered riser peak `ms` after it starts. */
+export function riserPitchBp(ms: number): number {
+  return Math.round((10000 * RARITY_RISER_MS) / Math.max(1, ms));
+}
+
 function signalSound(r: Rarity, kind: RevealCard['kind']): SoundId | null {
   // A Legendary card's sound belongs to its walkout flare; a Legendary skin has no walkout.
   if (r === 'legendary') return kind === 'skin' ? 'rarity_legendary' : null;
@@ -298,15 +325,35 @@ function cardSteps(card: RevealCard, intro = false): ShowStep[] {
   const T = SHOW_TIMING;
   const out: ShowStep[] = [];
   const sig = signalSound(card.rarity, card.kind);
+  const level = burstLevel(card.rarity);
+  const burst = level ? RARITY_BURST[level] : null;
+  const signalCues: Cue[] = sig ? [{ atMs: 0, sound: sig, ...(card.rarity === 'common' ? { volumeDb: -4 } : {}) }] : [];
+  // The rising tone under the anticipation: pitched so it peaks exactly at the pop (Epic, Legendary).
+  if (burst && level !== 'rare') signalCues.push({ atMs: 0, sound: 'rarity_riser', pitchBp: riserPitchBp(T.signalMs[card.rarity] + burst.popMs), volumeDb: level === 'legendary' ? -3 : -5 });
   out.push(
     step<SignalStep>({
       kind: 'signal',
       id: `signal-${card.key}`,
       durationMs: T.signalMs[card.rarity],
       card,
-      cues: sig ? [{ atMs: 0, sound: sig, ...(card.rarity === 'common' ? { volumeDb: -4 } : {}) }] : [],
+      cues: signalCues,
     }),
   );
+  if (level && burst) {
+    out.push(
+      step<RarityBurstStep>({
+        kind: 'rarityBurst',
+        id: `burst-${card.key}`,
+        durationMs: burst.durationMs,
+        card,
+        level,
+        popMs: burst.popMs,
+        hitStopMs: burst.hitStopMs,
+        slamMs: burst.slamMs,
+        cues: [{ atMs: burst.popMs, sound: `rarity_burst_${level}` }],
+      }),
+    );
+  }
   const legendaryWalkout = card.kind === 'card' && card.rarity === 'legendary';
   if (legendaryWalkout) {
     const first = card.firstLegendary;
@@ -681,6 +728,7 @@ export function checkPlan(plan: ShowPlan): string[] {
   let summitRises = 0;
   let summitStrikes = 0;
   let burstTier: CapsuleTier | null = null;
+  let prev: ShowStep | null = null;
   for (const s of plan.steps) {
     if (!s.skippable) unskippable++;
     if (!s.skippable && s.durationMs > L.unskippable) out.push(`${s.id}: ${s.durationMs} ms without a skip`);
@@ -737,6 +785,15 @@ export function checkPlan(plan: ShowPlan): string[] {
       case 'signal':
         over(s, 'pre-signal', s.durationMs, L.signal);
         break;
+      case 'rarityBurst': {
+        over(s, 'rarity burst', s.durationMs, L.rarityBurst);
+        // Honest (A10, A15.3): only right after this card's own pre-signal, at its own rarity, never Common.
+        if (prev?.kind !== 'signal' || prev.card.key !== s.card.key) out.push(`${s.id}: a rarity burst must follow its card's pre-signal`);
+        if (s.level !== s.card.rarity) out.push(`${s.id}: a ${s.level} burst for a ${s.card.rarity} card`);
+        if (s.popMs <= 0 || s.popMs >= s.durationMs) out.push(`${s.id}: the pop at ${s.popMs} ms is outside the step`);
+        if (!s.skippable || !s.fastForward) out.push(`${s.id}: a rarity burst must be skippable and fast-forwardable`);
+        break;
+      }
       case 'flip':
         over(s, 'flip', s.flipMs, L.flip);
         over(s, 'foil sweep', s.foilMs, L.foil);
@@ -768,6 +825,11 @@ export function checkPlan(plan: ShowPlan): string[] {
       case 'summary':
         break;
     }
+    if (s.kind === 'signal' && burstLevel(s.card.rarity) !== null) {
+      const next = plan.steps[plan.steps.indexOf(s) + 1];
+      if (next?.kind !== 'rarityBurst') out.push(`${s.id}: a ${s.card.rarity} pre-signal without its rarity burst`);
+    }
+    prev = s;
   }
   if (!isBackLoaded(strikes)) out.push(`strikes [${strikes.join(',')}]: a climb is followed by a non-climb`);
   if (unskippable > 1) out.push(`${unskippable} steps cannot be skipped (at most one full walkout per opening)`);
