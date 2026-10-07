@@ -596,7 +596,8 @@ function FortSlot(p: { c: HudCtx; v: FortSlotView; def: FortDef; powerAiming: bo
         <span class="hud-fort-kind" aria-hidden="true">
           <FortKindBadge kind={kind} size={c.compact ? 18 : 24} />
         </span>
-        <span class="hud-fort-pop" aria-hidden="true">
+        {/* A badge like the cap and Siege tags (11 px allowed, found by the seven-troop HUD budget). */}
+        <span class="hud-fort-pop" aria-hidden="true" data-tag>
           <PopGlyph />
           {v.f.pop ?? def.pop}
         </span>
