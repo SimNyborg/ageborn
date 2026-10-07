@@ -2028,7 +2028,7 @@ export class CapsuleStage implements ShowView {
     if (fx.flash > 0) this.flash(fx.flash, mixColor(0xffffff, c, 0.3));
     if (fx.motion) {
       this.hitstop = Math.max(this.hitstop, s.hitStopMs);
-      v.flare(0.95);
+      v.flare(0.8);
     } else v.flare(0.25);
     this.trauma.add(fx.trauma);
     this.addPunch(fx.punch);
@@ -2058,10 +2058,11 @@ export class CapsuleStage implements ShowView {
       }
     } else {
       const power = s.level === 'legendary' ? 1.25 : s.level === 'epic' ? 1 : 0.7;
-      const streaks = Math.round(n * 0.38);
-      const sparks = Math.round(n * 0.34);
+      const streaks = Math.round(n * 0.3);
+      const sparks = Math.round(n * 0.3);
       const puffs = Math.round(n * 0.1);
-      const glints = n - streaks - sparks - puffs;
+      const shards = Math.round(n * 0.18);
+      const glints = n - streaks - sparks - puffs - shards;
       for (let i = 0; i < streaks; i++) {
         const a = (i / streaks) * Math.PI * 2 + rng.next() * 0.25;
         const sp = (650 + rng.next() * 950) * power;
@@ -2071,9 +2072,9 @@ export class CapsuleStage implements ShowView {
           y: y + Math.sin(a) * 50,
           vx: Math.cos(a) * sp,
           vy: Math.sin(a) * sp,
-          life: 360 + rng.next() * 280,
-          drag: 0.04,
-          scale: [1.3 + rng.next() * 1.1, 0.25],
+          life: 450 + rng.next() * 320,
+          drag: 0.05,
+          scale: [1.6 + rng.next() * 1.4, 0.3],
           alpha: [1, 0],
           tint: i % 3 === 0 ? 0xffffff : i % 3 === 1 ? light : c,
           add: true,
@@ -2089,10 +2090,10 @@ export class CapsuleStage implements ShowView {
           y: y + Math.sin(a) * 40,
           vx: Math.cos(a) * sp,
           vy: Math.sin(a) * sp - 160 * power,
-          life: 600 + rng.next() * 600,
+          life: 800 + rng.next() * 600,
           drag: 0.12,
           gravity: 620,
-          scale: [0.8 + rng.next() * 0.9, 0],
+          scale: [1.1 + rng.next() * 1.1, 0],
           alpha: [1, 0],
           tint: i % 4 === 0 ? 0xffffff : i % 2 === 0 ? light : c,
           add: true,
@@ -2101,7 +2102,13 @@ export class CapsuleStage implements ShowView {
       for (let i = 0; i < puffs; i++) {
         const a = rng.next() * Math.PI * 2;
         const sp = (90 + rng.next() * 180) * power;
-        p.spawn({ tex: glowTexture(), x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 700 + rng.next() * 400, drag: 0.2, scale: [0.6, 1.6 + rng.next()], alpha: [0.55, 0], tint: c, add: true });
+        p.spawn({ tex: glowTexture(), x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 700 + rng.next() * 500, drag: 0.2, scale: [0.9, 2.4 + rng.next()], alpha: [0.6, 0], tint: c, add: true });
+      }
+      // Chunky shards of light: the readable debris of the blast.
+      for (let i = 0; i < shards; i++) {
+        const a = rng.next() * Math.PI * 2;
+        const sp = (320 + rng.next() * 520) * power;
+        p.spawn({ tex: shardTexture(), x: x + Math.cos(a) * 40, y: y + Math.sin(a) * 50, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 180 * power, life: 900 + rng.next() * 500, drag: 0.2, gravity: 760, scale: [0.9 + rng.next() * 0.9, 0.4], alpha: [1, 0], rot: rng.next() * 6, vr: (rng.next() - 0.5) * 16, tint: i % 3 === 0 ? 0xffffff : i % 2 === 0 ? light : c, add: true });
       }
       for (let i = 0; i < glints; i++) {
         const a = rng.next() * Math.PI * 2;
@@ -2172,12 +2179,12 @@ export class CapsuleStage implements ShowView {
     const grow = easeOutCubic(Math.min(1, t / 90));
     this.burstGlow.width = this.burstGlow.height = L * (0.35 + 0.75 * grow + 0.2 * span(t, 90, 800));
     this.burstGlow.alpha = 0.95 * (1 - span(t, 160, 800));
-    this.burstCore.width = this.burstCore.height = L * (0.25 + 0.2 * grow);
-    this.burstCore.alpha = 1 - span(t, 40, 300);
+    this.burstCore.width = this.burstCore.height = L * (0.18 + 0.14 * grow);
+    this.burstCore.alpha = 1 - span(t, 20, 200);
     const st = Math.min(1, t / 110);
     this.burstStar.width = this.burstStar.height = L * 0.85 * (0.3 + 0.7 * easeOutBack(st, 2));
     this.burstStar.rotation = 0.0009 * t;
-    this.burstStar.alpha = 1 - span(t, 80, 460);
+    this.burstStar.alpha = 1 - span(t, 60, 360);
     if (t > 820) {
       this.burstT = -1;
       this.burstGlow.alpha = this.burstCore.alpha = this.burstStar.alpha = 0;
