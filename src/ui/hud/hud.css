@@ -1139,6 +1139,10 @@
     padding-bottom: 6px;
   }
 
+  .hud-gold-main {
+    gap: 3px;
+  }
+
   .hud-gold::before {
     inset: 1px 0 6px;
     border-radius: 10px;
@@ -1350,6 +1354,13 @@
   transition: color var(--ui-dur-micro) var(--ui-ease-out);
 }
 
+/* Narrow phones: the gold row ("1,240 +12/s") keeps inside the 92 px cluster, clear of the cards. */
+@container hud (max-height: 499px) and (max-width: 819px) {
+  .hud-gold {
+    padding: 0 5px 6px;
+  }
+}
+
 @container hud (max-height: 499px) and (max-width: 819px) {
   .hud-card-cost svg {
     display: none;
@@ -1357,6 +1368,38 @@
 
   .hud-card-cost {
     padding: 0 4px;
+  }
+}
+
+/* Narrow cards (seven in a tight tray, A18.9: under about 60 px): the cost drops its coin (the gold
+   colour says gold) and the class icon shrinks, so "200" and the icon never overlap. */
+@container hudcards (max-width: 455px) {
+  .hud-card-cost {
+    top: 1px;
+    left: 1px;
+    padding: 0 3px;
+  }
+
+  .hud-card-cost svg {
+    display: none;
+  }
+
+  .hud-card-class {
+    top: 2px;
+    right: 1px;
+  }
+
+  .hud-card-class svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Very narrow cards (under about 50 px, 800 px phones with the Fort button): the class icon sits under
+   the cost row at the right edge instead of beside it. */
+@container hudcards (max-width: 380px) {
+  .hud-card .hud-card-class {
+    top: 20px;
   }
 }
 
@@ -4148,6 +4191,14 @@
 @container hud (max-height: 499px) {
   .hud-stance-btn {
     width: 50px;
+  }
+}
+
+/* Narrow phones: "Charge" fits a 44 px stance button (labels are tags, 11 px allowed). */
+@container hud (max-height: 499px) and (max-width: 819px) {
+  .hud-stance-btn .hud-stance-label {
+    font-size: 11px;
+    letter-spacing: -0.02em;
   }
 }
 

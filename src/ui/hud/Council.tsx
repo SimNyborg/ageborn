@@ -90,7 +90,9 @@ export function CouncilButton(p: { c: HudCtx; v: CouncilView; open: boolean; onT
   const cur = v.current;
   const self = useRef<HTMLButtonElement | null>(null);
   const labelEl = useRef<HTMLSpanElement>(null);
-  useFitLabel(labelEl, () => (self.current ? self.current.clientWidth : 0), [c.compact, c.t('hud.council.buttonShort')]);
+  // The pill's padding (3 px a side on phones) and outline stay inside the button's width, so the
+  // Council and Evolve labels never overlap in the tight tray (A18.9 seven cards).
+  useFitLabel(labelEl, () => (self.current ? self.current.clientWidth - 8 : 0), [c.compact, c.t('hud.council.buttonShort')]);
   // Completion: a springy pop (the sparks are CSS, keyed by `burst`).
   const lastBurst = useRef(p.burst);
   useEffect(() => {

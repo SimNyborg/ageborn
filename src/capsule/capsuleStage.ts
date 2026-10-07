@@ -1975,10 +1975,10 @@ export class CapsuleStage implements ShowView {
     // After the freeze the card falls back, faster and faster, slams into place, squashes and bounces.
     const a = t - s.popMs - s.hitStopMs;
     const B = fx.blast;
-    if (a <= 0) v.setBurstShape(1 + 0.85 * B, 1 + 1.1 * B);
+    if (a <= 0) v.setBurstShape(1 + 0.95 * B, 1 + 1.05 * B);
     else if (a < s.slamMs) {
       const k = 1 - easeInCubic(a / s.slamMs);
-      v.setBurstShape(1 + 0.85 * B * k, 1 + 1.1 * B * k);
+      v.setBurstShape(1 + 0.95 * B * k, 1 + 1.05 * B * k);
     } else {
       if (this.fire(`rb-slam-${s.card.key}`)) this.burstSlam(v, s, fx);
       const b = a - s.slamMs;
@@ -2028,7 +2028,7 @@ export class CapsuleStage implements ShowView {
     if (fx.flash > 0) this.flash(fx.flash, mixColor(0xffffff, c, 0.3));
     if (fx.motion) {
       this.hitstop = Math.max(this.hitstop, s.hitStopMs);
-      v.flare(0.8);
+      v.flare(0.6);
     } else v.flare(0.25);
     this.trauma.add(fx.trauma);
     this.addPunch(fx.punch);

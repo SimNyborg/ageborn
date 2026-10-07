@@ -8,8 +8,9 @@
  *    **Evolve** button with its XP ring (moved from the top bar to the left thumb, UA-05). Evolve
  *    glows when ready and breathes only when it is the one pulse (U11); after your evolve it stays dark
  *    for 2 s even with full XP (UA-07).
- * 2. **Six unit cards** (62 × 84 on 844 px phones, 56 × 76 below 820 px wide, 72 × 96 from 900 px,
- *    88 × 116 on desktops). Cost top-left, class icon top-right, the name in up to two lines at the
+ * 2. **Seven unit cards** (A18.9, owner request 2026-10-07; at most 62 × 84 on 844 px phones, 56 × 76
+ *    below 820 px wide, 72 × 96 from 900 px, 88 × 116 on desktops; each takes a seventh of the room the
+ *    other controls leave, so with the Fort button and both powers they are 50 × 68 at 844 px). Cost top-left, class icon top-right, the name in up to two lines at the
  *    bottom (never an ellipsis), a radial training fill, the queue badge, the key badge once keys are
  *    used. Affordable cards glow and rest (they never keep moving). Empty loadout slots show a quiet
  *    socket so the tray never jumps between ages.
@@ -63,7 +64,7 @@ import {
 } from './model';
 import { FortButton } from './FortButton';
 import { PowerDock } from './PowerButton';
-import { useFitLabel } from './fit';
+import { MIN_FIT, useFitLabel } from './fit';
 import { ReasonTip } from './Reason';
 import { StanceControl } from './Stance';
 import { usePortrait } from './usePortrait';
@@ -213,12 +214,28 @@ function Card(p: { c: HudCtx; card: HudCard; floats: Float[]; onFloat: (f: Omit<
   const nameText = def ? t(def.nameKey) : '';
   // Names wrap between words and never take an ellipsis (U6); a word wider than the card ("Dreadnought"
   // on a 62 px card) is condensed horizontally to fit, never cut.
+  // The card's width follows the room the tray leaves (A18.9 seven cards: the Fort button or a second
+  // power narrows them), so the fit reruns whenever the card itself changes width.
   const [fitSeq, setFitSeq] = useState(0);
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
     const on = (): void => setFitSeq((n) => n + 1);
     window.addEventListener('resize', on);
-    return () => window.removeEventListener('resize', on);
+    const box = self.current;
+    let last = box?.clientWidth ?? -1;
+    const ro =
+      box && typeof ResizeObserver !== 'undefined'
+        ? new ResizeObserver(() => {
+            if (box.clientWidth === last) return;
+            last = box.clientWidth;
+            on();
+          })
+        : null;
+    if (box) ro?.observe(box);
+    return () => {
+      window.removeEventListener('resize', on);
+      ro?.disconnect();
+    };
   }, []);
   useLayoutEffect(() => {
     const el = nameEl.current;
@@ -227,7 +244,7 @@ function Card(p: { c: HudCtx; card: HudCard; floats: Float[]; onFloat: (f: Omit<
     let widest = 0;
     for (const w of Array.from(el.children)) widest = Math.max(widest, (w as HTMLElement).offsetWidth);
     const avail = box.clientWidth - 4;
-    el.style.setProperty('--fit', String(widest > avail && widest > 0 ? Math.max(0.7, avail / widest) : 1));
+    el.style.setProperty('--fit', String(widest > avail && widest > 0 ? Math.max(MIN_FIT, avail / widest) : 1));
   }, [nameText, c.compact, fitSeq]);
   // The long press fires 450 ms later; it must read the model of that moment, not of the press.
   const latest = useRef(c);
@@ -422,7 +439,7 @@ function Card(p: { c: HudCtx; card: HudCard; floats: Float[]; onFloat: (f: Omit<
   );
 }
 
-/** A loadout slot without a card: a quiet socket, so six slots always show and nothing jumps. */
+/** A loadout slot without a card: a quiet socket, so seven slots always show and nothing jumps. */
 function EmptySlot(p: { c: HudCtx; slot: number }) {
   return (
     <div class="hud-card-slot">
@@ -456,7 +473,8 @@ function EvolveButton(p: { c: HudCtx; nextAge: AgeId | undefined; rearming: bool
   const xp = p.rearming ? 0 : Math.max(0, Math.min(1, m.me.xpBp / 10000));
   const tagEl = useRef<HTMLSpanElement>(null);
   const btnEl = useRef<HTMLButtonElement>(null);
-  useFitLabel(tagEl, () => (btnEl.current ? btnEl.current.clientWidth : 0), [tag, c.compact]);
+  // Inside the button's width with the pill's padding, like the Council label beside it.
+  useFitLabel(tagEl, () => (btnEl.current ? btnEl.current.clientWidth - 8 : 0), [tag, c.compact]);
   return (
     <div class="hud-evolve-wrap">
       <button
@@ -577,7 +595,7 @@ export function Tray(p: {
   const fmt = c.config.content.formats[c.config.format];
   const finalAge = !fmt || c.m.me.ageIndex >= fmt.ages.length - 1;
   // The scripted first match shows only its cards (and a padlock for the one to come); every other
-  // match shows all six loadout slots, empty ones as quiet sockets.
+  // match shows all seven loadout slots, empty ones as quiet sockets.
   const scripted = c.config.training?.script !== undefined;
   const cards = scripted ? c.m.me.cards.filter((card) => card.state !== 'empty' && card.card) : c.m.me.cards;
   // The Fort button joins the placement dock (A16.14.7); with it the tray uses the tighter 4.7 sizes.

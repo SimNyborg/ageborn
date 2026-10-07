@@ -58,8 +58,8 @@ export interface RarityBurstSpec {
  */
 export const RARITY_BURST: Readonly<Record<BurstLevel, RarityBurstSpec>> = {
   rare: { popMs: 70, durationMs: 400, hitStopMs: 40, slamMs: 110, flash: 0.18, trauma: 0.16, punch: 0.012, rings: 1, particles: 28, embers: 8, emberMs: 400, blast: 0.1, leak: 0.45, lightPx: 420, vibrate: [15] },
-  epic: { popMs: 150, durationMs: 700, hitStopMs: 80, slamMs: 150, flash: 0.45, trauma: 0.45, punch: 0.032, rings: 2, particles: 72, embers: 18, emberMs: 900, blast: 0.2, leak: 0.8, lightPx: 700, vibrate: [30, 20, 40] },
-  legendary: { popMs: 230, durationMs: 1000, hitStopMs: 130, slamMs: 190, flash: 0.85, trauma: 0.72, punch: 0.06, rings: 3, particles: 150, embers: 32, emberMs: 1600, blast: 0.3, leak: 1, lightPx: 1100, vibrate: [50, 30, 90] },
+  epic: { popMs: 150, durationMs: 700, hitStopMs: 80, slamMs: 150, flash: 0.45, trauma: 0.45, punch: 0.032, rings: 2, particles: 72, embers: 18, emberMs: 900, blast: 0.17, leak: 0.8, lightPx: 700, vibrate: [30, 20, 40] },
+  legendary: { popMs: 230, durationMs: 1000, hitStopMs: 130, slamMs: 190, flash: 0.85, trauma: 0.72, punch: 0.06, rings: 3, particles: 150, embers: 32, emberMs: 1600, blast: 0.23, leak: 1, lightPx: 1100, vibrate: [50, 30, 90] },
 };
 
 /** Upper bound for the step (A10 limits; `checkPlan` enforces it). */
