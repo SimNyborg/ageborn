@@ -102,6 +102,11 @@ export interface OddsModel {
     capsuleChanceBp: { tier: CapsuleTier; bp: number }[];
     capsuleRarityBp: { rarity: Rarity; bp: number; items: number }[];
     crateRarityBp: { rarity: Rarity; bp: number; items: number }[];
+    /**
+     * The General's wardrobe (owner request 2026-10-07): how many of each pool's items are avatar
+     * wearables (they follow the same rarity odds) and how many of all wearables the save owns.
+     */
+    wardrobe: { capsuleItems: number; crateItems: number; owned: number; total: number };
   };
 }
 
@@ -194,6 +199,12 @@ export function oddsModel(
             capsuleChanceBp: capsules.tierOrder.map((tier) => ({ tier, bp: collections.drops.capsuleChanceBp[tier] })),
             capsuleRarityBp: pool('capsule', collections.drops.capsuleRarityBp),
             crateRarityBp: pool('crate', collections.drops.crateRarityBp),
+            wardrobe: {
+              capsuleItems: collections.items.filter((x) => x.collection === 'avatar' && x.source.kind === 'capsule').length,
+              crateItems: collections.items.filter((x) => x.collection === 'avatar' && x.source.kind === 'crate').length,
+              owned: collections.items.filter((x) => x.collection === 'avatar' && owned.has(`avatar.${x.id}`)).length,
+              total: collections.items.filter((x) => x.collection === 'avatar').length,
+            },
           },
         }
       : {}),

@@ -350,3 +350,19 @@
   transform: none;
   filter: drop-shadow(0 2px 0 var(--ui-ink));
 }
+
+/* The Generals' boards as wood planks (AUDIT §2.10): grain strokes in the shadow colour, a lit top
+   edge, a shadow band on the lower edge and iron nail heads in the corners. */
+.cq-board--ladder .cq-gen {
+  background:
+    radial-gradient(circle at 12px 12px, #c7d0da 0 2px, #505357 2.4px 3.6px, transparent 4px),
+    radial-gradient(circle at calc(100% - 12px) 12px, #c7d0da 0 2px, #505357 2.4px 3.6px, transparent 4px),
+    radial-gradient(circle at 12px calc(100% - 12px), #c7d0da 0 2px, #505357 2.4px 3.6px, transparent 4px),
+    radial-gradient(circle at calc(100% - 12px) calc(100% - 12px), #c7d0da 0 2px, #505357 2.4px 3.6px, transparent 4px),
+    repeating-linear-gradient(178deg, transparent 0 13px, rgb(57 40 26 / 0.35) 13px 14.5px, transparent 14.5px 27px),
+    linear-gradient(180deg, #8e6440 0 3px, #6e4e32 3px 70%, #57391f 70% 100%);
+  box-shadow: var(--ui-shadow-drop), inset 0 2px 0 rgb(255 230 190 / 0.25);
+}
+.cq-board--ladder .cq-gen .ui-general {
+  border-color: #39281a;
+}

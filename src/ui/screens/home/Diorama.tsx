@@ -22,6 +22,7 @@ import { useMemo } from 'preact/hooks';
 import { BaseLook } from '../../components/cosmeticArt';
 import { usePortrait } from '../../components/kit';
 import { ink, light, shade } from '../../components/tone';
+import { Keep, Volcano } from './landmarks';
 import { boulder, broadleaf, Cel, crystal, Grove, type KitProp, pine } from '../warPath/propKit';
 import type { RegionTheme } from '../warPath/regionArt';
 
@@ -146,11 +147,7 @@ function Landmark(p: { arena: ArenaId }): ComponentChildren {
     case 'tar_pits':
       return (
         <g>
-          <Cel d="M196 196 L262 96 Q272 88 282 96 L292 90 Q300 86 308 92 Q316 88 322 98 L392 196Z" fill="#6a4a42" band="M296 80 L410 196 V210 H300Z" hi="M214 192 L264 112 L270 108 L226 192Z" sw={2.4} />
-          <path d="M240 160 L256 150 M330 150 L346 164 M268 130 L280 124 M306 120 L318 128" stroke={shade('#6a4a42')} stroke-width="2" stroke-linecap="round" />
-          <path class="hd-glow" d="M272 96 Q290 84 312 94 Q298 102 286 100Z" fill="#ff8a3a" />
-          <path class="hd-glow" d="M292 100 Q298 140 284 176 Q290 140 286 104Z" fill="#ff7a2a" stroke="#ffcf6a" stroke-width="1.2" />
-          <Smoke x={294} y={78} s={1.15} color="#93868a" />
+          <Volcano smoke={<Smoke x={292} y={80} s={1.15} color="#93868a" />} />
           <Cel d="M370 206 Q408 196 446 206 Q408 214 370 206Z" fill="#2a201a" sw={1.8} />
           <path d="M386 204 Q400 200 414 203" stroke="#5a4a3c" stroke-width="1.6" fill="none" />
           <circle class="hd-bubble" cx="398" cy="205" r="3" fill="#3a2e24" stroke="#6a5a4a" stroke-width="1" />
@@ -170,33 +167,8 @@ function Landmark(p: { arena: ArenaId }): ComponentChildren {
           </g>
         </g>
       );
-    case 'kingsmoat': {
-      const wall = '#8f97a6';
-      return (
-        <g>
-          <Cel d="M200 200 Q300 184 400 200 Q300 214 200 200Z" fill="#3f8fc4" band={202} sw={1.8} />
-          <path class="hd-shimmer" d="M224 200 h26 M266 203 h20 M322 199 h30 M364 202 h14" stroke="#e8f7ff" stroke-width="2" stroke-linecap="round" />
-          <Cel d="M250 130 H350 V196 H250Z" fill={wall} band="M318 120H360V200H318Z" hi="M251.4 131.4H256V194.6H251.4Z" sw={2.2} />
-          {[238, 336].map((x) => (
-            <g key={x}>
-              <Cel d={`M${x} 104 H${x + 26} V196 H${x}Z`} fill={wall} band={`M${x + 16} 96H${x + 34}V200H${x + 16}Z`} hi={`M${x + 1.4} 105.4H${x + 5}V194.6H${x + 1.4}Z`} sw={2.2} />
-              <Cel d={`M${x - 4} 104 L${x + 13} 82 L${x + 30} 104Z`} fill="#a8473c" band={`M${x + 13} 76 L${x + 36} 104 V110 H${x + 13}Z`} sw={2} />
-              <Win x={x + 9.5} y={132} flicker={x > 300} />
-            </g>
-          ))}
-          <Cel d="M286 84 H314 V196 H286Z" fill={wall} band="M304 76H322V200H304Z" sw={2.2} />
-          <Cel d="M282 84 L300 58 L318 84Z" fill="#a8473c" band="M300 52 L324 84 V90 H300Z" sw={2} />
-          {[146, 158, 170, 182].map((y) => (
-            <path key={y} d={`M250 ${y} H350`} stroke={shade(wall)} stroke-width="1.2" opacity=".75" />
-          ))}
-          <Win x={296} y={108} flicker />
-          <Cel d="M290 196 V172 Q300 160 310 172 V196Z" fill="#2b2420" sw={1.6} />
-          <path d="M300 58 V42" stroke={ink('#5a3a24')} stroke-width="3.6" stroke-linecap="round" />
-          <path d="M300 58 V42" stroke="#8e6440" stroke-width="1.8" stroke-linecap="round" />
-          <path class="hd-flag" d="M301 42 h18 l-5 5 l5 5 h-18 z" fill="#ffd466" stroke={ink('#ffd466')} stroke-width="1.2" stroke-linejoin="round" />
-        </g>
-      );
-    }
+    case 'kingsmoat':
+      return <Keep />;
     case 'powder_bay':
       return (
         <g>
@@ -508,9 +480,11 @@ export function Diorama(p: {
               [356, 240, 30],
               [470, 226, 22],
             ].map(([x, y, len], i) => (
-              <g key={`root${i}`} class="hd-root" style={{ animationDelay: `${-i * 0.9}s` }} transform={`translate(${x} ${y})`}>
-                <path d={`M0 0 q-4 ${len! * 0.4} 2 ${len! * 0.7} q4 ${len! * 0.2} -1 ${len! * 0.3}`} stroke={ink('#6b4a2e')} stroke-width="3.6" fill="none" stroke-linecap="round" />
-                <path d={`M0 0 q-4 ${len! * 0.4} 2 ${len! * 0.7} q4 ${len! * 0.2} -1 ${len! * 0.3}`} stroke="#7a5433" stroke-width="1.8" fill="none" stroke-linecap="round" />
+              <g key={`root${i}`} transform={`translate(${x} ${y})`}>
+                <g class="hd-root" style={{ animationDelay: `${-i * 0.9}s` }}>
+                  <path d={`M0 0 q-4 ${len! * 0.4} 2 ${len! * 0.7} q4 ${len! * 0.2} -1 ${len! * 0.3}`} stroke={ink('#6b4a2e')} stroke-width="3.6" fill="none" stroke-linecap="round" />
+                  <path d={`M0 0 q-4 ${len! * 0.4} 2 ${len! * 0.7} q4 ${len! * 0.2} -1 ${len! * 0.3}`} stroke="#7a5433" stroke-width="1.8" fill="none" stroke-linecap="round" />
+                </g>
               </g>
             ))}
             {/* the top: a shaded back rim, a lit front lip, patches with texture and the outline in the grass's own dark */}

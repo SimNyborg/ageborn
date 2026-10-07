@@ -471,3 +471,16 @@
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+
+/* Phone audit: in small slots the upgrade arrow covered the level ("Lv 9" read "Lv S"). A ready card's
+   level moves left of the arrow; the smallest cards use a tighter label. */
+.ui-card:has(.ui-card__ready) .ui-card__level {
+  transform: translateX(calc(-50% - min(9px, var(--card-w) * 0.1)));
+}
+.ui-card--xs .ui-card__level,
+.ui-card--sm .ui-card__level {
+  letter-spacing: -0.02em;
+}
+.ui-card--xs .ui-card__ready {
+  right: 0;
+}

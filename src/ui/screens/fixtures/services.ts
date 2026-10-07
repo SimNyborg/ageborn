@@ -291,6 +291,11 @@ export function createPreviewServices(o: {
     equipCosmetic(e) {
       log('equipCosmetic', e);
       // Preview only: the real rules (ownership, wheel sizes) live in meta.equipCosmetic.
+      if (e.slot === 'avatar') {
+        const a = save.value.profile.avatar;
+        set((s) => ({ ...s, profile: { ...s.profile, avatar: { ...a, look: { ...(a.look ?? {}), ...e.look }, tints: { ...(a.tints ?? {}), ...(e.tints ?? {}) } } } }));
+        return ok;
+      }
       set((s) => {
         const eq = { ...s.cosmetics.equipped };
         if (e.slot === 'emotes' || e.slot === 'quotes') eq[e.slot] = [...e.keys];

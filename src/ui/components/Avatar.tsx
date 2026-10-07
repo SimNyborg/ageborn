@@ -21,6 +21,7 @@ import { generalLook, lookKey, resolveLook, wearablesIn } from './avatar/look';
 import { avatarSvg, type AvatarCrop, type AvatarMood, type RenderOptions, type ResolvedLook } from './avatar/render';
 import { STARTER_ART } from './avatar/starter';
 import type { PartLibrary } from './avatar/types';
+import { frameStyle } from './avatar/ProfileArt';
 
 export type { AvatarCrop, AvatarMood, ResolvedLook };
 export { legacyRoll, resolveLook, randomStarterLook, generalLook } from './avatar/look';
@@ -44,6 +45,19 @@ export function loadWearableArt(): Promise<void> {
       });
   }
   return wearablesLoading;
+}
+
+/**
+ * The crop that shows one accessory best in a creator tile: face pieces (glasses, patches, paint) on
+ * the face, neck pieces (necklaces, scarves, medals) on the chest, anything larger on the bust. Reads
+ * the library signal, so a tile re-crops once the wearables' art has loaded.
+ */
+export function accessoryCrop(id: string): AvatarCrop {
+  const a = library.value[id];
+  if (!a || a.aura) return 'bust';
+  if (a.layers.faceAcc) return 'face';
+  if (a.layers.over) return 'chest';
+  return 'bust';
 }
 
 const cache = new Map<string, string>();
@@ -90,6 +104,8 @@ export interface AvatarProps {
   detail?: 'low' | 'full';
   /** Replays the equip pop (the creator bumps it on each change). */
   pop?: number;
+  /** A Codex frame id: draws that frame's metal ring (Profile, the creator). */
+  ring?: string;
   class?: string;
 }
 
@@ -104,13 +120,24 @@ export function Avatar(p: AvatarProps) {
       </span>
     );
   }
-  return <LookPlate look={resolveLook(p.spec)} size={size} style={style} {...p} kind="ui-avatar" />;
+  const ring = p.ring && p.ring !== 'none' ? p.ring : null;
+  return (
+    <LookPlate
+      look={resolveLook(p.spec)}
+      {...p}
+      size={size}
+      style={{ ...style, ...(ring ? frameStyle(ring) : {}) }}
+      kind="ui-avatar"
+      class={`${ring ? 'av--ring ' : ''}${p.class ?? ''}`}
+    />
+  );
 }
 
-/** A look drawn directly (the creator's preview and tiles). */
-export function AvatarLookView(p: { look: ResolvedLook; size: number; crop?: AvatarCrop; mood?: AvatarMood; detail?: 'low' | 'full'; frameColor?: string; pop?: number; testid?: string; label?: string; class?: string }) {
-  const style = { width: `${p.size}px`, height: `${p.size}px`, '--frame': p.frameColor ?? '#f2c14e' };
-  return <LookPlate {...p} style={style} kind="ui-avatar" />;
+/** A look drawn directly (the creator's preview and tiles). `ring` draws a Codex frame's metal ring. */
+export function AvatarLookView(p: { look: ResolvedLook; size: number; crop?: AvatarCrop; mood?: AvatarMood; detail?: 'low' | 'full'; frameColor?: string; ring?: string; pop?: number; testid?: string; label?: string; class?: string }) {
+  const ring = p.ring && p.ring !== 'none' ? p.ring : null;
+  const style = { width: `${p.size}px`, height: `${p.size}px`, '--frame': p.frameColor ?? '#f2c14e', ...(ring ? frameStyle(ring) : {}) };
+  return <LookPlate {...p} style={style} kind="ui-avatar" class={`${ring ? 'av--ring ' : ''}${p.class ?? ''}`} />;
 }
 
 function LookPlate(p: {

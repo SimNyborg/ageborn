@@ -18,6 +18,7 @@ import { tierCrests } from '../../components/capsuleLook';
 import { ScreenFrame } from '../../components/Layout';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
+import { GateArch } from './GateArch';
 import { itemKey, roadItemsAt } from '../model/cosmetics';
 import { roadNodes, roadProgress, type RoadNodeView } from '../model/progress';
 import { RoadRewardView } from '../shared/RoadReward';
@@ -173,6 +174,7 @@ export function TrophyRoadScreen(_p: { route: RouteOf<'trophyRoad'> }) {
           class={`road-gate${v.node.trophies <= s.trophies.best ? ' is-open' : ''}`}
           data-testid={`road-gate-${v.gate.index}`}
         >
+          <GateArch banner={content.cosmetics.banners[v.gate.index - 1]?.id ?? null} open={v.node.trophies <= s.trophies.best} />
           <span class="road-gate__num">{t('ui.home.arenaN', { n: v.gate.index })}</span>
           <span class="road-gate__name">{t(arenaNameKey(v.gate.id))}</span>
           <GateLines arena={v.gate} prev={prev} />
@@ -185,6 +187,7 @@ export function TrophyRoadScreen(_p: { route: RouteOf<'trophyRoad'> }) {
   const first = arenas[0]!;
   items.push(
     <li key="start" class="road-gate is-open road-gate--start" data-testid="road-gate-1">
+      <GateArch banner={content.cosmetics.banners[0]?.id ?? null} open />
       <span class="road-gate__num">{t('ui.home.arenaN', { n: first.index })}</span>
       <span class="road-gate__name">{t(arenaNameKey(first.id))}</span>
       <GateLines arena={first} prev={null} />

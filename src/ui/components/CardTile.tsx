@@ -93,11 +93,13 @@ export function CardArt(p: {
   fortKind?: FortKind;
   /** 1 paints the portrait in the opponent's team colours (scouted enemy cards). */
   side?: Side;
+  /** false draws the portrait without its age plate (small medallions supply their own bezel). */
+  plate?: boolean;
 }) {
   // Silhouettes (unowned cards) use a plate-free portrait darkened by CSS; without a provider the
   // role glyph stands in (docs/requests/wp4-portrait-plate-contract.md).
   const fortArt = p.fortKind !== undefined && !FORT_PORTRAITS;
-  const url = usePortrait(fortArt ? '' : p.card, { skin: p.skin ?? null, foil: 'none', size: Math.round(p.size * 2), plate: !p.silhouette, ...(p.side ? { side: p.side } : {}) });
+  const url = usePortrait(fortArt ? '' : p.card, { skin: p.skin ?? null, foil: 'none', size: Math.round(p.size * 2), plate: !p.silhouette && p.plate !== false, ...(p.side ? { side: p.side } : {}) });
   const age = AGE_COLOR[p.age];
   return (
     <span

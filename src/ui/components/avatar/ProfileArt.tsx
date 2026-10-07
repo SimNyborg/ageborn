@@ -28,11 +28,27 @@ const BANNERS: Record<string, BannerLook> = {
 
 const STROKED = new Set(['barbed']);
 
-/** A banner's cloth pennant (`width` px wide; the height follows). */
-export function BannerArt(p: { id: string; width?: number; class?: string; testid?: string }) {
+/**
+ * A banner's cloth pennant (`width` px wide; the height follows). `backer` draws the cloth that hangs
+ * behind a portrait: no rod or emblem (the portrait covers them, and a rod corner peeking past a round
+ * plate reads as a stray bar), a trim hem on the swallowtail, and it stretches to the box CSS gives it so
+ * the tails end exactly where the layout reserves room for them.
+ */
+export function BannerArt(p: { id: string; width?: number; class?: string; testid?: string; backer?: boolean }) {
   const b = BANNERS[p.id] ?? BANNERS.tar_pit!;
   const w = p.width ?? 40;
   const c = ramp(b.cloth, 'cloth');
+  if (p.backer) {
+    const back = 'M2 0H38V58L20 49L2 58Z';
+    return (
+      <svg class={`av-banner av-banner--backer ${p.class ?? ''}`} viewBox="0 0 40 60" preserveAspectRatio="none" aria-hidden="true" data-testid={p.testid}>
+        <path d={back} fill={c.fill} />
+        <path d="M2 0H38V58L20 49L2 58ZM2 0H38V53L20 44L2 53Z" fill-rule="evenodd" fill={c.shadow} />
+        <path d="M5 0H8V52L5 54Z" fill={c.hl} opacity=".5" />
+        <path d={back} fill="none" stroke={c.line} stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+      </svg>
+    );
+  }
   const t = ramp(b.trim, 'gold');
   const e = ramp(b.emblem, 'matte');
   const cloth = 'M4 4H36V48L20 40L4 48Z';

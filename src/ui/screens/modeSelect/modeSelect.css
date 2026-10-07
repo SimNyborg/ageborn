@@ -392,3 +392,27 @@
 .skirmish__row--diff .ui-seg {
   flex-wrap: wrap;
 }
+
+/* The header scenes (AUDIT §2.10): hills and a silhouette per mode under the bobbing glyph. */
+.mode-card__scene {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 46%;
+  pointer-events: none;
+}
+.mode-card__art,
+.mode-card__title {
+  position: relative;
+  z-index: 1;
+}
+
+/* Desktop: all five battle cards fit side by side instead of the last one being cut at the edge
+   (review fix); phones keep the sideways scroll. */
+@media (min-width: 1180px) {
+  .modes {
+    grid-auto-columns: minmax(212px, 1fr);
+  }
+}

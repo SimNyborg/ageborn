@@ -293,6 +293,12 @@ export function OddsSheet(p: { model: OddsModel; hideHonest?: boolean }) {
                   </span>
                 ))}
               </div>
+              {m.cosmetics.wardrobe.total > 0 ? (
+                <p class="ui-odds__note" data-testid="odds-wardrobe">
+                  <b>{t('cosmetic.odds.wardrobe')}</b>{' '}
+                  {t('cosmetic.odds.wardrobeLine', { capsule: m.cosmetics.wardrobe.capsuleItems, crate: m.cosmetics.wardrobe.crateItems, n: m.cosmetics.wardrobe.owned, total: m.cosmetics.wardrobe.total })}
+                </p>
+              ) : null}
               <p class="ui-odds__note">{t('cosmetic.odds.rules')}</p>
             </div>
           ) : null}

@@ -205,3 +205,10 @@
   width: auto;
   margin: 0 auto;
 }
+
+/* Every ambient loop pauses while the browser tab is hidden (ScreenHost sets the attribute). */
+.ui-root[data-page-hidden='true'] *,
+.ui-root[data-page-hidden='true'] *::before,
+.ui-root[data-page-hidden='true'] *::after {
+  animation-play-state: paused !important;
+}

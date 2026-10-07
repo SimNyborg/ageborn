@@ -108,14 +108,41 @@
     radial-gradient(55% 90% at 78% 100%, color-mix(in srgb, var(--age-accent) 25%, #0c0f14) 0 60%, transparent 61%);
   opacity: 0.85;
 }
+.cd-stage__backdrop {
+  position: absolute;
+  inset: 0 0 18% 0;
+  overflow: hidden;
+}
+.cd-stage__backdrop .cos-bd {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+}
+.cd-stage__backdrop .cos-bd__img {
+  object-position: 40% 100%;
+  filter: saturate(0.9) brightness(0.9);
+}
+/* The ground strip in the age's colours, cel shaded: a lit lip, the fill, a darker lower band. */
 .cd-stage__ground {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: -2%;
+  right: -2%;
   bottom: 0;
   height: 30%;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--age-main) 45%, #1a1712) 0%, color-mix(in srgb, var(--age-main) 18%, #0c0d10) 100%);
-  box-shadow: inset 0 2px 0 color-mix(in srgb, var(--age-light) 30%, rgba(255, 255, 255, 0.25));
+  border-top: 3px solid color-mix(in srgb, var(--age-main) 40%, #1a1712);
+  border-radius: 50% 50% 0 0 / 16px 16px 0 0;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--age-light) 55%, var(--age-main)) 0 5px, color-mix(in srgb, var(--age-main) 70%, #2a2418) 5px 46%, color-mix(in srgb, var(--age-main) 45%, #14120e) 46% 100%);
+}
+.cd-stage__ground::after {
+  content: '';
+  position: absolute;
+  inset: 8px 6% auto;
+  height: 40%;
+  background:
+    radial-gradient(ellipse 10px 3px at 12% 40%, rgb(0 0 0 / 0.22), transparent),
+    radial-gradient(ellipse 14px 4px at 70% 70%, rgb(0 0 0 / 0.2), transparent),
+    radial-gradient(ellipse 8px 3px at 88% 30%, rgb(0 0 0 / 0.22), transparent);
 }
 /* Life: a few motes drift across the lane (5.5 "life"; static under reduce motion). */
 .cd-stage__dust {

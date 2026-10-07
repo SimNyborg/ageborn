@@ -9,7 +9,7 @@ import type { RoadReward } from '@/content/types';
 import { CardArt } from '../../components/CardTile';
 import { tierCrests } from '../../components/capsuleLook';
 import { formatInt } from '../../components/format';
-import { AmberIcon, CapsuleIcon, CastleIcon, CrateIcon, DustIcon } from '../../components/icons';
+import { AGE_COLOR, AmberIcon, CapsuleIcon, CastleIcon, CrateIcon, DustIcon } from '../../components/icons';
 import { useUi } from '../context';
 import { cardDef, cardGlyph } from '../model/cards';
 
@@ -38,7 +38,9 @@ export function RoadRewardView(p: { r: RoadReward; compact?: boolean }) {
       const def = cardDef(content, r.card);
       return (
         <span class={`${cls} road-rw--power`}>
-          <span class="road-rw__art">{def ? <CardArt card={r.card} age={def.age} glyph={cardGlyph(def)} size={px(40)} /> : null}</span>
+          <span class="road-rw__art road-rw__medal" style={def ? { '--medal': AGE_COLOR[def.age].main, '--medal-hi': AGE_COLOR[def.age].light } : undefined}>
+            {def ? <CardArt card={r.card} age={def.age} glyph={cardGlyph(def)} size={px(44)} plate={false} /> : null}
+          </span>
           {def ? <b>{t(def.nameKey)}</b> : null}
         </span>
       );

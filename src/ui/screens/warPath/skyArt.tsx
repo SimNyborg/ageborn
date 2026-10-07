@@ -30,25 +30,51 @@ const CLOUDS: readonly (readonly [number, number, number][])[] = [
   ],
 ];
 
+let cloudN = 0;
+
+/** A crescent along the upper-left rim of a puff (the sun-lit edge), as a filled path. */
+function crescent(cx: number, cy: number, r: number): string {
+  const pt = (a: number, rr: number, oy = 0) => `${(cx + Math.cos((a * Math.PI) / 180) * rr).toFixed(1)} ${(cy + oy + Math.sin((a * Math.PI) / 180) * rr).toFixed(1)}`;
+  const R = r * 0.9;
+  const ri = r * 0.7;
+  return `M${pt(196, R)}A${R} ${R} 0 0 1 ${pt(330, R)}A${ri} ${ri} 0 0 0 ${pt(206, ri, r * 0.16)}Z`;
+}
+
 /**
- * A cumulus cloud: the underside colour first (cloud shadow mixed with the sky), the lit body over it
- * lifted 3 units so a hard band stays along the flat base, then a highlight on the crown. No outline
- * (a soft edge, per the art sheet), so it sits behind the outlined layers.
+ * A cumulus cloud (UI art audit §2.1, review fix): puffs over a rounded base, the shaded underside
+ * first (cloud shadow mixed with the sky) with a soft feathered rim, the lit body lifted over it so a
+ * curved shadow crescent stays along the bottom, then sun-lit crescents on the crowns of the tallest
+ * puffs. No outline (a soft edge, per the art sheet), so it sits behind the outlined layers.
  */
 export function Cumulus(p: { kind?: number; sky: string; tint?: string; opacity?: number }): ComponentChildren {
   const parts = CLOUDS[(p.kind ?? 0) % CLOUDS.length]!;
   const body = p.tint ?? '#f4f1ea';
-  const under = mix('#b5b2ad', p.sky, 0.35);
-  // domes with straight sides down to the flat base, so the union has a flat underside and no corners
-  const dome = (x: number, cy: number, r: number, lift: number): string => `M${x - r} ${-lift}V${cy - lift}A${r} ${r} 0 0 1 ${x + r} ${cy - lift}V${-lift}Z`;
-  const all = parts.map(([x, y, r]) => dome(x, y, r, 0)).join('');
-  const lit = parts.map(([x, y, r]) => dome(x, y, r * 0.97, 3.6)).join('');
-  const [hx, hy, hr] = parts.reduce((a, b) => (b[1] - b[2] < a[1] - a[2] ? b : a));
+  const under = mix('#a9a6b0', p.sky, 0.38);
+  const mid = mix(body, under, 0.35);
+  const id = `cu${(cloudN = (cloudN + 1) % 1e9)}`;
+  const x0 = Math.min(...parts.map(([x, , r]) => x - r));
+  const x1 = Math.max(...parts.map(([x, , r]) => x + r));
+  const cx = (x0 + x1) / 2;
+  const base = (lift: number, k: number): string => {
+    const rx = ((x1 - x0) / 2) * k;
+    return `M${cx - rx} ${-3 - lift}a${rx} 5 0 1 0 ${2 * rx} 0a${rx} 5 0 1 0 ${-2 * rx} 0Z`;
+  };
+  const all = parts.map(([x, y, r]) => blob(x, y, r)).join('') + base(0, 1);
+  const lit = parts.map(([x, y, r]) => blob(x - r * 0.04, y - 4.2, r * 0.95)).join('') + base(4.2, 0.9);
+  const tops = [...parts].sort((a, b) => a[1] - a[2] - (b[1] - b[2])).slice(0, 2);
   return (
     <g opacity={p.opacity ?? 1}>
-      <path d={all} fill={under} />
-      <path d={lit} fill={body} />
-      <path d={blob(hx - hr * 0.3, hy - 3.6 - hr * 0.35, hr * 0.55)} fill="#fff" opacity=".8" />
+      <clipPath id={id}>
+        <path d="M-80 -80H80V3.4H-80Z" />
+      </clipPath>
+      <g clip-path={`url(#${id})`}>
+        <path d={all} fill={under} />
+        <path d={lit} fill={mid} />
+        <path d={parts.map(([x, y, r]) => blob(x - r * 0.05, y - 5.4, r * 0.93)).join('') + base(5.4, 0.86)} fill={body} />
+        {tops.map(([x, y, r], i) => (
+          <path key={i} d={crescent(x - r * 0.05, y - 5.4, r * 0.93)} fill="#fff" opacity={i ? 0.6 : 0.9} />
+        ))}
+      </g>
     </g>
   );
 }
@@ -97,8 +123,8 @@ export function Mountains(p: { rng: Rng; w: number; base: number; amp: number; s
 
 export type BirdKind = 'crow' | 'gull' | 'pigeon' | 'drone' | 'manta';
 
-const BIRD_LOOK: Readonly<Record<BirdKind, { body: string; wing: string; far: string; beak: string; eye: string; glow?: string }>> = {
-  crow: { body: '#3a3844', wing: '#2c2a35', far: '#22212a', beak: '#e0a43a', eye: '#f4ecd8' },
+const BIRD_LOOK: Readonly<Record<BirdKind, { body: string; wing: string; far: string; beak: string; eye: string; glow?: string; rim?: string }>> = {
+  crow: { body: '#4a4756', wing: '#3a3846', far: '#2a2934', beak: '#e0a43a', eye: '#f4ecd8', rim: '#a9b4d0' },
   gull: { body: '#f2f1ec', wing: '#c3cad2', far: '#9aa3ad', beak: '#f0b43a', eye: '#2b2a30' },
   pigeon: { body: '#8d93a3', wing: '#a9aebb', far: '#6f7584', beak: '#d8a07a', eye: '#f2c14e' },
   drone: { body: '#5d6c7c', wing: '#9fd0ff', far: '#3f4d5c', beak: '#5ff2ff', eye: '#5ff2ff', glow: '#5ff2ff' },
@@ -113,6 +139,8 @@ const WING_FRAMES: readonly string[] = [
   'M10.8 9.2Q12.2 12 14.8 13.4Q14.6 11 14.2 9.4Z',
   'M10.6 8.8Q13.2 6.4 17 6.4Q15.2 8.4 14.8 9.2Z',
 ];
+/** Wings drawn 1.4x about the shoulder, so the span reads at Home and War Path sizes (review fix). */
+const WING_SCALE = 'translate(12 8.8) scale(1.4) translate(-12 -8.8)';
 const WING_GLIDE = 'M10.4 8.6Q14.2 7.4 19.4 7Q15.8 9.6 14.6 9.6Z';
 /** The far wing peeks out behind the body on the up-strokes. */
 const FAR_FRAMES: readonly (string | null)[] = ['M12 8Q13.4 3 16.6 2.2Q15.6 5.6 15 8.2Z', 'M12 8.2Q14.4 5.4 18 5.2Q16 7.6 15.2 8.6Z', null, null, 'M12 8.4Q14.2 6.8 17.4 6.8Q15.6 8.4 15 8.8Z'];
@@ -125,7 +153,7 @@ function BirdFrame(p: { k: BirdKind; wing: string; far: string | null }) {
   const o = ink(c.body);
   return (
     <>
-      {p.far ? <path d={p.far} fill={c.far} stroke={ink(c.far)} stroke-width=".8" stroke-linejoin="round" /> : null}
+      {p.far ? <path d={p.far} transform={WING_SCALE} fill={c.far} stroke={ink(c.far)} stroke-width=".7" stroke-linejoin="round" /> : null}
       <path d={TAIL} fill={c.wing} stroke={ink(c.wing)} stroke-width=".8" stroke-linejoin="round" />
       <path d={BEAK} fill={c.beak} stroke={ink(c.beak)} stroke-width=".7" stroke-linejoin="round" />
       <path d={BODY} fill={c.body} stroke={o} stroke-width=".9" stroke-linejoin="round" />
@@ -133,7 +161,12 @@ function BirdFrame(p: { k: BirdKind; wing: string; far: string | null }) {
       <path d="M12 7.7Q15 7.3 17.4 7.6Q15.2 8 12.6 8.4Z" fill={light(c.body)} />
       <circle cx="18.2" cy="8.3" r=".75" fill={c.eye} />
       {c.glow ? <circle cx="18.2" cy="8.3" r="1.8" fill={c.glow} opacity=".35" /> : null}
-      <path d={p.wing} fill={c.wing} stroke={ink(c.wing)} stroke-width=".85" stroke-linejoin="round" />
+      {/* a pale rim under the body and along the wing's leading edge, so dark birds read on dark skies */}
+      <path d="M6.4 9.9Q10 11.3 13 11.3Q16.6 11.2 18.9 9.9" stroke={c.rim ?? light(c.body, 'gloss')} stroke-width=".55" fill="none" opacity=".85" />
+      <g transform={WING_SCALE}>
+        <path d={p.wing} fill={c.wing} stroke={ink(c.wing)} stroke-width=".7" stroke-linejoin="round" />
+        <path d={p.wing} fill="none" stroke={c.rim ?? light(c.wing, 'gloss')} stroke-width=".45" stroke-dasharray="3.2 40" opacity=".9" />
+      </g>
     </>
   );
 }
@@ -146,7 +179,7 @@ function BirdFrame(p: { k: BirdKind; wing: string; far: string | null }) {
 export function Bird(p: { kind: BirdKind; size: number; phase?: number; cycle?: number; flip?: boolean }) {
   const delay = `${-(p.phase ?? 0).toFixed(2)}s`;
   return (
-    <svg class={`ui-bird${p.flip ? ' ui-bird--flip' : ''}`} viewBox="0 0 24 16" width={p.size} height={(p.size * 2) / 3} aria-hidden="true" style={{ '--bird-cycle': `${p.cycle ?? 6}s`, '--bird-delay': delay }}>
+    <svg class={`ui-bird${p.flip ? ' ui-bird--flip' : ''}`} viewBox="0 -4 24 22" width={p.size} height={(p.size * 22) / 24} aria-hidden="true" style={{ '--bird-cycle': `${p.cycle ?? 6}s`, '--bird-delay': delay }}>
       <g class="ui-bird__flap">
         <g class="ui-bird__strip">
           {WING_FRAMES.map((w, i) => (

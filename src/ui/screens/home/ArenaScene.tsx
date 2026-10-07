@@ -196,7 +196,7 @@ export function ArenaScene(p: { arena: ArenaId }) {
   );
   const motes = useMemo(() => {
     const rng = mulberry32(seed + 7);
-    return Array.from({ length: 16 }, () => ({
+    return Array.from({ length: 8 }, () => ({
       left: `${(rng.next() * 100).toFixed(1)}%`,
       delay: `${(-rng.next() * 12).toFixed(2)}s`,
       dur: `${(9 + rng.next() * 8).toFixed(2)}s`,
@@ -254,7 +254,7 @@ export function ArenaScene(p: { arena: ArenaId }) {
       <div class="home-scene__birds">
         {[0, 1].map((k) => (
           <span key={k} class={`home-scene__flock home-scene__flock--${k}`}>
-            <Flock kind={ARENA_BIRDS[p.arena]} n={k ? 3 : 5} size={k ? 18 : 22} seed={seed + k} />
+            <Flock kind={ARENA_BIRDS[p.arena]} n={k ? 3 : 5} size={k ? 24 : 30} seed={seed + k} />
           </span>
         ))}
       </div>

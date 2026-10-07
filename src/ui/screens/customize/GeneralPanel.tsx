@@ -15,7 +15,7 @@ import type { AvatarPartDef, Content } from '@/content/types';
 import type { AvatarSlot, AvatarTint, CardId } from '@/contracts';
 import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo, useState } from 'preact/hooks';
-import { AvatarLookView, loadWearableArt, randomStarterLook, resolveLook, type AvatarCrop, type ResolvedLook } from '../../components/Avatar';
+import { accessoryCrop, AvatarLookView, loadWearableArt, randomStarterLook, resolveLook, type AvatarCrop, type ResolvedLook } from '../../components/Avatar';
 import { BannerArt, FRAME_COLORS, TitleRibbon } from '../../components/avatar/ProfileArt';
 import { TINTS } from '../../components/avatar/palette';
 import { IconButton } from '../../components/Button';
@@ -49,6 +49,23 @@ const TILE_CROP: Record<AvatarSlot, AvatarCrop> = {
 const TINT_OF: Partial<Record<AvatarSlot, AvatarTint>> = { face: 'skin', hair: 'hair', brows: 'hair', facialHair: 'hair', eyes: 'eyes', top: 'cloth' };
 
 const withPart = (l: ResolvedLook, slot: AvatarSlot, id: string): ResolvedLook => ({ ...l, parts: { ...l.parts, [slot]: id } });
+
+/**
+ * What a creator tile draws (AUDIT §6.6): the player's General wearing the part, with whatever would
+ * hide it taken off, so tiles in one row differ only in that part. Face shapes go on a bald, beardless,
+ * hatless head; features lose the hat and glasses; hair loses the hat; a mouth loses the beard.
+ */
+const TILE_STRIP: Partial<Record<AvatarSlot, Partial<Record<AvatarSlot, string>>>> = {
+  face: { hair: 'hair_bald', facialHair: 'beard_none', headwear: 'hat_none', accessory: 'acc_none' },
+  eyes: { headwear: 'hat_none', accessory: 'acc_none' },
+  brows: { headwear: 'hat_none', accessory: 'acc_none' },
+  nose: { headwear: 'hat_none', accessory: 'acc_none' },
+  mouth: { headwear: 'hat_none', facialHair: 'beard_none', accessory: 'acc_none' },
+  hair: { headwear: 'hat_none' },
+  facialHair: { headwear: 'hat_none', accessory: 'acc_none' },
+  accessory: { headwear: 'hat_none' },
+};
+const tileLook = (l: ResolvedLook, slot: AvatarSlot, id: string): ResolvedLook => ({ ...l, parts: { ...l.parts, ...TILE_STRIP[slot], [slot]: id } });
 
 function avatarTables(content: Content): Content['cosmetics']['avatar'] | null {
   return (content.cosmetics as Partial<Content['cosmetics']> | null)?.avatar ?? null;
@@ -108,18 +125,30 @@ export function GeneralPanel(p: { initialTab?: GeneralTab }) {
   return (
     <div class="gen" data-testid="cust-general">
       <div class="gen-stage">
-        <div class="gen-stage__plate">
-          <BannerArt id={s.profile.banner} width={84} class="gen-stage__banner" />
-          <AvatarLookView look={preview} size={220} crop="bust" pop={pop} frameColor={FRAME_COLORS[frame] ?? FRAME_COLORS.none} class="gen-stage__avatar" testid="gen-preview" label={s.profile.name} />
-          {tryPart ? (
-            <span class="gen-stage__trying" style={{ '--rar': RARITY_COLOR[tryPart.rarity as 'common'] }} data-testid="gen-trying">
-              {t('avatar.ui.tryingOn')}
-            </span>
-          ) : null}
-        </div>
-        <div class="gen-stage__id">
-          <b class="gen-stage__name">{s.profile.name}</b>
-          {s.profile.title ? <TitleRibbon text={t(titleNameKey(s.profile.title))} /> : null}
+        <div class="gen-stage__hero">
+          <BannerArt id={s.profile.banner} backer class="gen-stage__banner" />
+          <div class="gen-stage__plate">
+            <AvatarLookView
+              look={preview}
+              size={220}
+              crop="bust"
+              pop={pop}
+              ring={frame}
+              frameColor={FRAME_COLORS[frame] ?? FRAME_COLORS.none}
+              class="gen-stage__avatar"
+              testid="gen-preview"
+              label={s.profile.name}
+            />
+            {tryPart ? (
+              <span class="gen-stage__trying" style={{ '--rar': RARITY_COLOR[tryPart.rarity as 'common'] }} data-testid="gen-trying">
+                {t('avatar.ui.tryingOn')}
+              </span>
+            ) : null}
+          </div>
+          <div class="gen-stage__id">
+            <b class="gen-stage__name">{s.profile.name}</b>
+            {s.profile.title ? <TitleRibbon text={t(titleNameKey(s.profile.title))} /> : null}
+          </div>
         </div>
         {tryPart && tryItem ? (
           <p class="gen-stage__source" data-testid="gen-source">
@@ -279,7 +308,7 @@ function PartGrid(p: {
               onClick={() => p.onPick(x)}
               testid={`gen-part-${x.id}`}
             >
-              <AvatarLookView look={withPart(p.look, p.slot, x.id)} size={72} crop={crop} detail="full" />
+              <AvatarLookView look={tileLook(p.look, p.slot, x.id)} size={72} crop={p.slot === 'accessory' ? accessoryCrop(x.id) : crop} detail="full" />
             </Tile>
           );
         })}
@@ -311,7 +340,7 @@ function FrameGrid(p: { look: ResolvedLook }) {
               testid={`frame-${f.id}`}
             >
               <span class={`gen-frame gen-frame--${f.id}`} style={{ '--frame': FRAME_COLORS[f.id] ?? FRAME_COLORS.none }}>
-                <AvatarLookView look={p.look} size={56} crop="head" frameColor={FRAME_COLORS[f.id] ?? FRAME_COLORS.none} />
+                <AvatarLookView look={p.look} size={54} crop="head" ring={f.id} frameColor={FRAME_COLORS[f.id] ?? FRAME_COLORS.none} />
               </span>
               {locked ? <small class="gen-tile__hint">{t('avatar.ui.frameLocked', { n: f.codexLevel })}</small> : null}
             </Tile>

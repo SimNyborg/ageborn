@@ -969,10 +969,23 @@ export class Pedestal {
     g.moveTo(-112, 22).lineTo(112, 22).lineTo(126, 120).quadraticCurveTo(0, 134, -126, 120).closePath().fill(cylinder(s)).stroke({ width: 4, color: line });
     // Recessed band that holds the four strike pips.
     g.roundRect(-104, 48, 208, 46, 14).fill({ color: shade(s, -0.4), alpha: 0.85 }).stroke({ width: 3, color: shade(s, 0.15), alpha: 0.6 });
-    // Top slab.
+    // Carved stone courses (texture strokes in the shadow colour, AUDIT §3.1) and a cel shadow band.
+    for (const [y, xs] of [
+      [36, [-80, 0, 70]],
+      [106, [-60, 30, 96]],
+    ] as const) {
+      g.moveTo(-118, y).quadraticCurveTo(0, y + 10, 118, y).stroke({ width: 2.5, color: shade(s, -0.32), alpha: 0.75 });
+      for (const x of xs) g.moveTo(x, y - 12).lineTo(x, y).stroke({ width: 2.2, color: shade(s, -0.32), alpha: 0.6 });
+    }
+    g.moveTo(-124, 104).quadraticCurveTo(0, 120, 124, 104).lineTo(126, 120).quadraticCurveTo(0, 134, -126, 120).closePath().fill({ color: shade(s, -0.3), alpha: 0.55 });
+    // A brass inlay ring under the slab, with its highlight.
+    band(g.context, 26, 34, 114, 10).fill(cylinder(ROOM.brass)).stroke({ width: 2.5, color: ROOM.brassDark });
+    g.moveTo(-96, 30).quadraticCurveTo(0, 38, 96, 30).stroke({ width: 1.8, color: ROOM.brassLight, alpha: 0.85 });
+    // Top slab, lit rim on its upper edge.
     band(g.context, 0, 24, 142, 12).fill(cylinder(shade(s, 0.1))).stroke({ width: 4, color: line });
     g.ellipse(0, 0, 142, 20).fill(shade(s, 0.28)).stroke({ width: 4, color: line });
     g.ellipse(0, 1, 118, 13).fill({ color: shade(s, 0.05) });
+    g.moveTo(-118, -6).quadraticCurveTo(0, -24, 118, -6).stroke({ width: 3, color: shade(s, 0.6), alpha: 0.7 });
     this.runes.blendMode = 'add';
     this.root.addChild(this.base, this.runes);
   }

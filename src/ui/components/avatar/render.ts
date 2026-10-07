@@ -12,7 +12,8 @@ import { TINTS } from './palette';
 import { LAYERS, type Layer, type PartArt, type PartLibrary, type Shape, type Tone } from './types';
 
 export type AvatarMood = 'neutral' | 'cheer' | 'determined' | 'wry';
-export type AvatarCrop = 'head' | 'bust' | 'face';
+/** `chest` frames the neck and chest (creator tiles for necklaces, scarves and medals). */
+export type AvatarCrop = 'head' | 'bust' | 'face' | 'chest';
 
 export interface ResolvedLook {
   parts: Partial<Record<AvatarSlot, string>>;
@@ -32,14 +33,17 @@ export interface RenderOptions {
 /** Slot order inside one layer. */
 const SLOT_ORDER: AvatarSlot[] = ['background', 'top', 'face', 'facialHair', 'mouth', 'nose', 'eyes', 'brows', 'accessory', 'hair', 'headwear'];
 
-/** Moods override the eyes and mouth only, and never change the saved look (AUDIT §6.4). */
-const MOODS: Record<Exclude<AvatarMood, 'neutral'>, { eyes: string; mouth: string }> = {
+/**
+ * Moods override the eyes and mouth (and, for "determined", the brows), and never change the saved
+ * look (AUDIT §6.4). Determined after a loss is a set jaw under brows angled down, not a grin.
+ */
+const MOODS: Record<Exclude<AvatarMood, 'neutral'>, { eyes: string; mouth: string; brows?: string }> = {
   cheer: { eyes: 'eyes_happy', mouth: 'mouth_laugh' },
-  determined: { eyes: 'eyes_sharp', mouth: 'mouth_grin' },
+  determined: { eyes: 'eyes_sharp', mouth: 'mouth_flat', brows: 'brows_determined' },
   wry: { eyes: 'eyes_tired', mouth: 'mouth_smirk' },
 };
 
-export const VIEWBOX: Record<AvatarCrop, string> = { bust: '0 0 120 120', head: '13 5 94 94', face: '27 30 66 66' };
+export const VIEWBOX: Record<AvatarCrop, string> = { bust: '0 0 120 120', head: '13 5 94 94', face: '27 30 66 66', chest: '25 56 70 70' };
 
 const DEFAULT_MAT: Partial<Record<Tone, Material>> = { skin: 'skin', hair: 'hair', cloth: 'cloth', clothDark: 'cloth', clothLight: 'cloth' };
 
@@ -141,6 +145,8 @@ function partsFor(look: ResolvedLook, mood: AvatarMood | undefined): Partial<Rec
   if (mood && mood !== 'neutral') {
     p.eyes = MOODS[mood].eyes;
     p.mouth = MOODS[mood].mouth;
+    const brows = MOODS[mood].brows;
+    if (brows && p.brows !== 'brows_uni' && p.brows !== 'brows_scarred') p.brows = brows;
   }
   return p;
 }

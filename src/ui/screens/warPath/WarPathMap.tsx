@@ -391,7 +391,9 @@ export function WarPathMap(p: Props) {
               if (!pt || pt.x - scroll < -200 || pt.x - scroll > layout.w + 200) return null;
               return <Node key={n.level.id} n={n} layout={layout} show={show} onTap={p.onNode} at={pt} />;
             })}
-            {layout.pts[show.bearer ?? p.current] ? <Bearer at={layout.pts[show.bearer ?? p.current]!} size={layout.node} /> : null}
+            {layout.pts[show.bearer ?? p.current] ? (
+              <Bearer at={layout.pts[show.bearer ?? p.current]!} size={layout.node} boss={p.nodes.find((n) => n.i === (show.bearer ?? p.current))?.kind === 'boss' ? layout.boss : 0} />
+            ) : null}
           </div>
           <ForegroundLayer layout={layout} regions={p.regions} scroll={scroll} />
           <div class="wp-flocks" aria-hidden="true">
@@ -750,10 +752,14 @@ function SideGlyph() {
  * motion holds a still frame and the move fades (warPath.css). The old code-drawn figure stays as the
  * fallback while the sheet loads.
  */
-function Bearer(p: { at: { x: number; y: number }; size: number }) {
-  const s = p.size / 56;
-  const footX = p.at.x - p.size * 0.5 - 14 * s;
-  const footY = p.at.y + 9 * s;
+function Bearer(p: { at: { x: number; y: number }; size: number; boss?: number }) {
+  // 1.3x the old figure, standing in front of its node's lower-left rim (review fix: it read small and
+  // beside the node); at a boss it stands clear of the lair banner on the far side, away from the
+  // Hard node before it. The strip is rasterised for the scaled size at 2x so it stays crisp.
+  const s = (p.size / 56) * 1.3;
+  const footX = p.boss ? p.at.x + p.boss * 1.4 : p.at.x - p.size * 0.52;
+  const footY = p.boss ? p.at.y + p.boss * 0.3 : p.at.y + p.size * 0.36;
+  const px = Math.min(384, Math.max(192, Math.round((96 * s * 2) / 32) * 32));
   const prev = useRef(footX);
   const [walk, setWalk] = useState<{ left: boolean } | null>(null);
   useEffect(() => {
@@ -769,7 +775,7 @@ function Bearer(p: { at: { x: number; y: number }; size: number }) {
       <SpriteStrip
         card={BEARER_CARD}
         clip={walk ? 'walk' : 'idle'}
-        size={192}
+        size={px}
         frameMs={walk ? 70 : 150}
         class="wp-bearer__strip"
         flip={walk?.left ?? false}

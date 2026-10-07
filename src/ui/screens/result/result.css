@@ -868,10 +868,64 @@
 .result__banner.has-hero .result__bannerText {
   flex: 1 1 auto;
 }
-/* Long unit names never clip under the MVP card (audit: "Longbowman" on phones). */
+/* Long unit names never clip under the MVP card (audit: "Longbowman" on phones): the column leaves
+   room for the name's overhang past the card, so the recap's scroll box does not cut its first letter. */
+.result__mvp {
+  padding-inline: 8px;
+}
 .result__mvp .ui-card__name {
   max-width: calc(var(--card-w, 96px) + 16px);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Tall screens (desktop): the recap fills the left column and the MVP becomes the hero of it, a large
+   card on a lit disc under a spotlight cone, instead of a small card above an empty half screen. */
+@container ui-root (min-height: 600px) {
+  .result__left:not(:has(.result-level)) .result__recap {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .result__left:not(:has(.result-level)) .result__recapBody {
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 28px;
+    padding: 4px 8px 8px;
+  }
+  .result__left:not(:has(.result-level)) .result__mvp {
+    flex: none;
+    width: 190px;
+    padding-top: 6px;
+  }
+  .result__left:not(:has(.result-level)) .result__mvp .ui-card--md {
+    --card-w: 136px;
+  }
+  .result__left:not(:has(.result-level)) .result__mvp .ui-card__name {
+    max-width: 180px;
+    font-size: 16px;
+  }
+  .result__left:not(:has(.result-level)) .result__mvpLabel {
+    font-size: 14px;
+    padding: 2px 14px;
+  }
+  .result__left:not(:has(.result-level)) .result__mvp::before {
+    top: -16px;
+    bottom: 30px;
+    width: 150%;
+    background: linear-gradient(180deg, rgb(255 236 180 / 0.34), rgb(255 236 180 / 0.08) 75%, transparent);
+  }
+  .result__left:not(:has(.result-level)) .result__mvp::after {
+    bottom: 34px;
+    width: 140%;
+    height: 34px;
+    background: radial-gradient(closest-side, rgb(255 232 170 / 0.75), rgb(255 200 90 / 0.28) 55%, transparent);
+  }
+  .result__left:not(:has(.result-level)) .result__stats {
+    gap: 8px;
+  }
+  .result__left:not(:has(.result-level)) .result__stats li {
+    padding-block: 5px;
+  }
 }

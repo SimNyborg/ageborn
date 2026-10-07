@@ -165,6 +165,13 @@ export function ScreenHost(p: ScreenHostProps) {
   envRef.current = env;
 
   const osReduced = useOsReducedMotion();
+  // Ambient CSS motion pauses while the tab is hidden (review fix: Home runs dozens of loops).
+  const [pageHidden, setPageHidden] = useState(() => typeof document !== 'undefined' && document.hidden);
+  useEffect(() => {
+    const on = () => setPageHidden(document.hidden);
+    document.addEventListener('visibilitychange', on);
+    return () => document.removeEventListener('visibilitychange', on);
+  }, []);
   const reduceMotion = save.settings.reduceMotion || osReduced;
   const kit: UiKit = useMemo(
     () => ({ t: env.t, locale: env.locale, portrait: env.portrait, reduceMotion, ...(env.sound ? { sound: env.sound } : {}) }),
@@ -224,6 +231,8 @@ export function ScreenHost(p: ScreenHostProps) {
             data-testid="ui-root"
             data-screen-id={top.route.id}
             data-reduce-motion={reduceMotion ? 'true' : 'false'}
+            data-page-hidden={pageHidden ? 'true' : undefined}
+            data-graphics={save.settings.graphics === 'lite' ? 'lite' : undefined}
             data-team={save.settings.teamPreset}
             data-tab={tab ?? undefined}
           >

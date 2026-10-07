@@ -186,7 +186,7 @@
 .ui-swords__b {
   transform-box: view-box;
   transform-origin: 12px 11px;
-  transition: transform 220ms var(--ui-ease-back, cubic-bezier(0.34, 1.56, 0.64, 1));
+  transition: transform 220ms var(--ui-ease-back);
 }
 .ui-swords__spark {
   transform-box: view-box;
@@ -197,15 +197,15 @@
 :is(.ui-btn[data-pressed], .ui-btn:active:not([aria-disabled='true']), .is-clash) .ui-swords__a {
   transform: rotate(-8deg);
   transition-duration: 80ms;
-  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  transition-timing-function: var(--ui-ease-standard);
 }
 :is(.ui-btn[data-pressed], .ui-btn:active:not([aria-disabled='true']), .is-clash) .ui-swords__b {
   transform: rotate(8deg);
   transition-duration: 80ms;
-  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  transition-timing-function: var(--ui-ease-standard);
 }
 :is(.ui-btn[data-pressed], .is-clash) .ui-swords__spark {
-  animation: ui-swords-spark 260ms cubic-bezier(0.2, 0, 0, 1) 60ms both;
+  animation: ui-swords-spark 260ms var(--ui-ease-standard) 60ms both;
 }
 @keyframes ui-swords-spark {
   0% {

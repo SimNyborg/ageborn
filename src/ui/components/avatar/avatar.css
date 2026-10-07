@@ -207,23 +207,6 @@
     inset 0 0 0 2px var(--frame-sh, rgb(0 0 0 / 0.3)),
     0 5px 0 6px var(--ui-ink);
 }
-.ui-avatar.av--ring::before {
-  content: '';
-  position: absolute;
-  inset: -8px;
-  z-index: 1;
-  border-radius: 24px;
-  pointer-events: none;
-  background: linear-gradient(180deg, var(--frame-hl, #fff) 0 3px, transparent 3px calc(100% - 4px), var(--frame-sh, #000) calc(100% - 4px));
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  padding: 4px;
-  opacity: 0.7;
-}
-
 /* The title as a parchment ribbon (AUDIT §2.8). */
 .av-ribbon {
   position: relative;

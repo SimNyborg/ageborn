@@ -172,26 +172,74 @@ export class CardView {
     this.root.addChild(this.body, this.barRoot, this.chip);
   }
 
+  /**
+   * The card back (AUDIT §2.6): a deep plum field with a fine diamond lattice, a double brass frame with
+   * filigree corner scrolls, and an embossed hourglass-and-swords emblem on a sunburst; a bevel light on
+   * the top edge and a shadow band on the lower edge, as every card front has.
+   */
   private buildBack(): void {
     const g = new Graphics();
-    cardShape(g).fill({ color: 0x241d36 }).stroke({ width: 4, color: ROOM.brass });
+    const hw = CARD_W / 2;
+    const hh = CARD_H / 2;
+    cardShape(g).fill({ color: 0x241d36 });
+    // Fine diamond lattice.
+    const L = -hw + 8;
+    const R = hw - 8;
+    const T = -hh + 8;
+    const B = hh - 8;
+    for (let k = -8; k <= 8; k++) {
+      const x0 = k * 22;
+      // x = x0 - hh + t, y = -hh + t, clipped to the inner frame
+      const a0 = Math.max(0, L - x0 + hh, T + hh);
+      const a1 = Math.min(2 * hh, R - x0 + hh, B + hh);
+      if (a1 > a0) g.moveTo(x0 - hh + a0, -hh + a0).lineTo(x0 - hh + a1, -hh + a1).stroke({ width: 1.2, color: 0x3a2f55, alpha: 0.8 });
+      // x = x0 + hh - t, y = -hh + t
+      const b0 = Math.max(0, x0 + hh - R, T + hh);
+      const b1 = Math.min(2 * hh, x0 + hh - L, B + hh);
+      if (b1 > b0) g.moveTo(x0 + hh - b0, -hh + b0).lineTo(x0 + hh - b1, -hh + b1).stroke({ width: 1.2, color: 0x3a2f55, alpha: 0.8 });
+    }
+    // The cel shadow band on the lower edge and the bevel light on the top edge.
+    g.rect(-hw + 4, hh - 34, CARD_W - 8, 30).fill({ color: 0x000000, alpha: 0.22 });
+    g.roundRect(-hw + 10, -hh + 6, CARD_W - 20, 5, 2.5).fill({ color: 0xffffff, alpha: 0.14 });
+    cardShape(g).stroke({ width: 4, color: ROOM.brass });
     cardShape(g, 9).stroke({ width: 2, color: ROOM.brassDark });
-    // Carved sunburst emblem.
-    for (let i = 0; i < 12; i++) {
-      const a = (i / 12) * Math.PI * 2;
-      g.moveTo(Math.cos(a) * 24, Math.sin(a) * 24).lineTo(Math.cos(a) * 44, Math.sin(a) * 44).stroke({ width: 3, color: ROOM.brassDark, alpha: 0.7 });
-    }
-    g.circle(0, 0, 26).fill(0x302646).stroke({ width: 4, color: ROOM.brass });
-    g.poly([-11, -14, 11, -14, 0, 0, 11, 14, -11, 14, 0, 0]).fill(ROOM.brass);
-    for (const [x, y] of [
-      [-50, -72],
-      [50, -72],
-      [-50, 72],
-      [50, 72],
+    // Filigree scrolls in each corner.
+    for (const [sx, sy] of [
+      [-1, -1],
+      [1, -1],
+      [-1, 1],
+      [1, 1],
     ] as const) {
-      g.circle(x, y, 5).fill(ROOM.brass).stroke({ width: 2, color: ROOM.brassDark });
+      const cx = sx * (hw - 18);
+      const cy = sy * (hh - 18);
+      g.moveTo(cx, cy - sy * 0)
+        .bezierCurveTo(cx - sx * 4, cy - sy * 26, cx - sx * 22, cy - sy * 30, cx - sx * 30, cy - sy * 18)
+        .stroke({ width: 2.6, color: ROOM.brass, alpha: 0.9 });
+      g.moveTo(cx, cy)
+        .bezierCurveTo(cx - sx * 26, cy - sy * 4, cx - sx * 30, cy - sy * 22, cx - sx * 18, cy - sy * 30)
+        .stroke({ width: 2.6, color: ROOM.brass, alpha: 0.9 });
+      g.circle(cx, cy, 5).fill(ROOM.brass).stroke({ width: 2, color: ROOM.brassDark });
+      g.circle(cx - sx * 1.4, cy - sy * 1.6, 1.6).fill({ color: ROOM.brassLight, alpha: 0.9 });
     }
-    g.roundRect(-CARD_W / 2 + 12, -CARD_H / 2 + 14, 10, CARD_H - 40, 5).fill({ color: 0xffffff, alpha: 0.06 });
+    // Sunburst.
+    for (let i = 0; i < 16; i++) {
+      const a = (i / 16) * Math.PI * 2;
+      const r1 = i % 2 ? 40 : 46;
+      g.moveTo(Math.cos(a) * 28, Math.sin(a) * 28).lineTo(Math.cos(a) * r1, Math.sin(a) * r1).stroke({ width: 3, color: ROOM.brassDark, alpha: 0.75 });
+    }
+    // Embossed medallion: crossed swords behind an hourglass.
+    g.circle(0, 0, 28).fill(0x302646).stroke({ width: 4, color: ROOM.brass });
+    g.circle(0, 2, 24).stroke({ width: 2, color: ROOM.brassDark, alpha: 0.8 });
+    for (const sx of [-1, 1]) {
+      g.moveTo(sx * -17, -17).lineTo(sx * 17, 17).stroke({ width: 4, color: 0xc7d0da });
+      g.moveTo(sx * -17, -17).lineTo(sx * 17, 17).stroke({ width: 1.4, color: 0xe9ecf0 });
+      g.moveTo(sx * 11, 19).lineTo(sx * 19, 11).stroke({ width: 3.4, color: ROOM.brass });
+    }
+    g.poly([-11, -15, 11, -15, 2, -1, 2, 1, 11, 15, -11, 15, -2, 1, -2, -1]).fill(ROOM.brass).stroke({ width: 2, color: ROOM.brassDark });
+    g.poly([-6, 11, 6, 11, 0, 4]).fill({ color: ROOM.brassLight, alpha: 0.9 });
+    g.roundRect(-13, -18, 26, 4, 2).fill(ROOM.brassDark);
+    g.roundRect(-13, 14, 26, 4, 2).fill(ROOM.brassDark);
+    g.circle(-8, -9, 2).fill({ color: 0xffffff, alpha: 0.5 });
     this.back.addChild(g);
   }
 

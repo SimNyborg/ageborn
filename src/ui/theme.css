@@ -905,6 +905,10 @@
     transform: translateY(-1px);
   }
 }
+/* Reduce motion: hover is a brightness change only, no lift. */
+.ui-root[data-reduce-motion='true'] .ui-btn:hover:not([aria-disabled='true']):not([data-pressed]):not(:active) .ui-btn__face {
+  transform: none;
+}
 /* MR-01 pressed: on pointerdown (data-pressed is set in the same frame) and :active. */
 .ui-btn[data-pressed] .ui-btn__face,
 .ui-btn:active:not([aria-disabled='true']) .ui-btn__face,

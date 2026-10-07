@@ -59,6 +59,7 @@ import {
 } from '../model/progress';
 import { useMatchStarter } from '../shared/MatchStarter';
 import { RoadRewardView } from '../shared/RoadReward';
+import { QuestGlyph, WarChestArt } from '../progress/ProgressArt';
 
 export function ProfileChip() {
   const { save, content, t, locale, router } = useUi();
@@ -162,6 +163,9 @@ function QuestRow(p: { q: QuestView; rerollLeft: boolean }) {
   const name = t(questNameKey(q.def.id), { n: formatInt(q.target, locale) });
   return (
     <li class={`home-quest${q.done ? ' is-done' : ''}${q.claimed ? ' is-claimed' : ''}`} data-testid={`quest-${q.slot}`}>
+      <span class="home-quest__icon" aria-hidden="true">
+        <QuestGlyph stat={q.def.metric} size={26} />
+      </span>
       <div class="home-quest__main">
         <span class="home-quest__name">{name}</span>
         <span class="home-quest__bar">
@@ -250,7 +254,7 @@ export function WarChestBar() {
   return (
     <div class="home-chest" data-testid="war-chest" title={t('ui.home.warChestHint')}>
       <span class="home-chest__icon" aria-hidden="true">
-        <CrateIcon size={34} />
+        <WarChestArt fillBp={Math.round((w.wins * 10000) / Math.max(1, w.of))} size={40} />
       </span>
       <span class="home-chest__main">
         <span class="home-chest__row">

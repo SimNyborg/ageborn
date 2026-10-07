@@ -410,7 +410,7 @@
 }
 .home-quest {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: auto 1fr auto auto;
   align-items: center;
   gap: 8px;
   padding: 6px 6px 6px 10px;
@@ -425,6 +425,14 @@
 }
 .home-quest.is-claimed {
   opacity: 0.6;
+}
+.home-quest__icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: rgb(255 255 255 / 0.07);
 }
 .home-quest__main {
   display: flex;

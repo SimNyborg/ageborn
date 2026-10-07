@@ -57,6 +57,13 @@ test.describe('first session (A8)', () => {
     await page.getByTestId('next').click();
     await openCapsule(page);
 
+    // "Make your General" (owner request 2026-10-07): once, right after capsule 1 (A8: nothing before the
+    // first win). It is pre-filled, so one tap on Done keeps the look and battle 2 is one tap away.
+    await expect(page.getByTestId('make-general')).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByTestId('make-general-preview')).toBeVisible();
+    await page.getByTestId('make-general-done').click();
+    await expect(page.getByTestId('make-general')).toHaveCount(0);
+
     // ui-plan 2.7 ~3:40: after match 1 and capsule 1 the Battle hub is Home. The tabs rise with Army
     // open (its unlock pointer), and Battle offers match 2 vs Pip (labelled AI).
     await expect(page.getByTestId('play')).toBeVisible({ timeout: 20_000 });

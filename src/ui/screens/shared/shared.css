@@ -123,3 +123,37 @@
   font-weight: 700;
   color: var(--ui-red-hi);
 }
+
+/* An Age Power reward as a medallion (UI art audit §2.4 bezels): the power's art on its age's colour
+   inside a beveled gold ring, instead of a dark plate with a tiny glyph. */
+.road-rw__medal {
+  width: 46px;
+  padding: 3px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 28%, #fff3c4 0 12%, transparent 30%),
+    conic-gradient(from 200deg, #a8741e, #ffe08a, #d9a636, #8a5a14, #d9a636, #a8741e);
+  box-shadow:
+    0 2px 0 var(--ui-ink),
+    inset 0 0 0 1px rgb(255 255 255 / 0.35);
+}
+.road-rw__medal .ui-art {
+  border-radius: 50%;
+  background: radial-gradient(circle at 42% 34%, var(--medal-hi, #ddd) 0%, var(--medal, #777) 62%, color-mix(in srgb, var(--medal, #777) 55%, #000) 100%);
+  box-shadow:
+    inset 0 0 0 1.5px var(--ui-ink),
+    inset 0 -4px 0 rgb(0 0 0 / 0.22);
+}
+.road-rw__medal .ui-art::before {
+  display: none;
+}
+.road-rw--compact .road-rw__medal {
+  width: 32px;
+  padding: 2px;
+}
+/* The power portrait carries its own dark disc and ring: zoom past them so the glyph fills the medal,
+   lifted a little so it reads on the dark road cards. */
+.road-rw__medal .ui-art__img {
+  transform: scale(1.5);
+  filter: brightness(1.3) saturate(1.25);
+}

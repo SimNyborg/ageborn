@@ -38,6 +38,8 @@ import {
   LockIcon,
   StarIcon,
   SundialIcon,
+  QuickBattleIcon,
+  SkirmishIcon,
   SwordsIcon,
   TrophyIcon,
 } from "../../components/icons";
@@ -45,6 +47,7 @@ import { ScreenFrame } from "../../components/Layout";
 import { Modal } from "../../components/Modal";
 import type { MatchRequest, RouteOf } from "../../router";
 import { useUi } from "../context";
+import { ModeScene } from "./ModeScene";
 import { agesAwaitingAntiArmor } from "../model/plan";
 import { homeModeFlags, ladderFormat, quickGeneralFor, skirmishSetupFlags } from "../model/homeMode";
 import {
@@ -138,6 +141,7 @@ function ModeCard(p: {
       aria-labelledby={`mode-${p.id}-title`}
     >
       <header class="mode-card__head">
+        <ModeScene id={p.id} />
         <span class="mode-card__art" aria-hidden="true">
           {p.icon}
         </span>
@@ -370,7 +374,7 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
         <ModeCard
           id="quick"
           tone="green"
-          icon={<SwordsIcon size={64} />}
+          icon={<QuickBattleIcon size={64} />}
           title={t("ui.mode.quick.title")}
           desc={t("ui.mode.quick.desc")}
           locked={
@@ -511,7 +515,7 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
         <ModeCard
           id="skirmish"
           tone="green"
-          icon={<SwordsIcon size={64} />}
+          icon={<SkirmishIcon size={64} />}
           title={t("ui.mode.skirmish.title")}
           desc={t("ui.mode.skirmish.desc")}
           locked={

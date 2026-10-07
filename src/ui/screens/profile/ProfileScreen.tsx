@@ -8,7 +8,9 @@ import './profile.css';
 import { formatNameKey, titleNameKey, titleUnlockKey } from '@/content/keys';
 import type { ComponentChildren } from 'preact';
 import { useState } from 'preact/hooks';
+import { avatar as avatarTables } from '@/content/raw/avatar';
 import { Avatar } from '../../components/Avatar';
+import { AvatarItemArt } from '../../components/cosmeticArt';
 import { BannerArt, FRAME_COLORS, TitleRibbon } from '../../components/avatar/ProfileArt';
 import { Button, IconButton } from '../../components/Button';
 import { CardTile } from '../../components/CardTile';
@@ -25,6 +27,11 @@ import { collectionMilestones, historyRows, profileView } from '../model/profile
 import { isTesterProfile } from '../model/tester';
 
 const RESULT_KEYS = { win: 'ui.profile.win', loss: 'ui.profile.loss', draw: 'ui.profile.draw' } as const;
+
+/** The named Legendary wearable a collection milestone's title also earns (AUDIT §6.5). */
+function milestoneWearable(title: string): { id: string; nameKey: string } | undefined {
+  return avatarTables.parts.find((x) => x.source.kind === 'title' && x.source.title === title);
+}
 
 function NameModal(p: { name: string; onSave: (n: string) => void; onClose: () => void }) {
   const { t } = useUi();
@@ -95,8 +102,8 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
                 aria-label={t('avatar.ui.edit')}
                 data-testid="edit-look"
               >
-                <BannerArt id={s.profile.banner} width={122} class="prof-avatar__banner" />
-                <Avatar spec={s.profile.avatar} size={104} crop="bust" frameColor={FRAME_COLORS[frame?.id ?? 'none'] ?? 'var(--ui-gold)'} />
+                <BannerArt id={s.profile.banner} backer class="prof-avatar__banner" />
+                <Avatar spec={s.profile.avatar} size={104} crop="bust" ring={frame?.id ?? 'none'} frameColor={FRAME_COLORS[frame?.id ?? 'none'] ?? 'var(--ui-gold)'} />
                 <span class="prof-avatar__edit">
                   <PencilIcon size={18} />
                 </span>
@@ -208,6 +215,11 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
                     <small>{t(titleUnlockKey(m.id))}</small>
                   </span>
                   <ProgressBar value={m.n} max={m.max} tone={m.done ? 'green' : 'gold'} thin label={t(titleNameKey(m.id))} />
+                  {milestoneWearable(m.id) ? (
+                    <span class={`prof-goal__reward${m.done ? ' is-done' : ''}`} title={t(milestoneWearable(m.id)!.nameKey)}>
+                      <AvatarItemArt item={`avatar.${milestoneWearable(m.id)!.id}`} size={40} />
+                    </span>
+                  ) : null}
                   <span class="prof-goal__n ui-num">{t('ui.common.progress', { n: formatInt(m.n, locale), max: formatInt(m.max, locale) })}</span>
                 </div>
               ))}

@@ -983,3 +983,25 @@ button.cos-mock__deco.is-picked {
     animation: none;
   }
 }
+
+/* Decoration tiles (AUDIT §2.8): the prop larger on a parchment card with a contact shadow. */
+.cos-tile--decoration {
+  background:
+    radial-gradient(60% 18% at 50% 74%, rgb(67 61 51 / 0.32), transparent 70%),
+    linear-gradient(180deg, #efe9da 0%, #e8dfc8 62%, #d8ccb0 100%);
+}
+.cos-tile--decoration .cos-tile__art {
+  width: 60px;
+  height: 78px;
+  filter: drop-shadow(0 2px 0 rgb(67 61 51 / 0.35));
+}
+/* Flag tiles: a soft cloth fold over the flag picture. */
+.cos-tile--nationalFlag .cos-tile__art::after,
+.cos-tile--baseFlag .cos-tile__art::after {
+  content: '';
+  position: absolute;
+  inset: 8% 6%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, rgb(255 255 255 / 0.18) 0 12%, transparent 12% 38%, rgb(0 0 0 / 0.12) 38% 52%, transparent 52% 74%, rgb(255 255 255 / 0.12) 74% 84%, transparent 84%);
+  pointer-events: none;
+}

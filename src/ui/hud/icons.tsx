@@ -273,9 +273,14 @@ export function RoleGlyph(p: P & { group: RoleGroup }) {
 
 /** Emote faces (A5.8: six emotes, no text chat). */
 export function EmoteGlyph(p: P & { emote: EmoteId }) {
+  // The same three cel layers as the collected emotes (visuals/cosmetics/emotes.ts `face()`): fill, a
+  // lower shadow crescent, a highlight, then the outline (request uiart-b-starter-emotes).
   const face = (children: JSX.Element | JSX.Element[], fill = '#ffd447') => (
     <Svg {...p}>
-      <circle cx="12" cy="12.5" r="9.3" fill={fill} stroke={OUT} stroke-width="1.6" />
+      <circle cx="12" cy="12.5" r="9.3" fill={fill} />
+      <path d="M2.75 12.9A9.3 9.3 0 0 0 21.25 12.9A9.3 7.2 0 0 1 2.75 12.9Z" fill="#b5650f" opacity=".26" />
+      <ellipse cx="8.6" cy="7.6" rx="2.6" ry="1.4" fill="#fff" opacity=".55" />
+      <circle cx="12" cy="12.5" r="9.3" fill="none" stroke={OUT} stroke-width="1.6" />
       {children}
     </Svg>
   );

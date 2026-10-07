@@ -678,11 +678,13 @@
     },
     "odds": {
       "title": "Cosmetic collections",
-      "capsuleLine": "Chance that a Time Capsule holds one collection item (emote, quote, flag or decoration):",
+      "capsuleLine": "Chance that a Time Capsule holds one collection item (emote, quote, flag, decoration or a piece for your General):",
       "capsuleRarityLine": "Which item it is, by rarity:",
       "crateLine": "Every Wardrobe Crate also holds one collection item:",
       "items": "({n} items)",
-      "rules": "Items you do not own come first; a duplicate only when you own every item of that rarity, and it turns into Dust. Every Time Capsule and crate item can also be crafted with Dust."
+      "rules": "Items you do not own come first; a duplicate only when you own every item of that rarity, and it turns into Dust. Every Time Capsule and crate item can also be crafted with Dust.",
+      "wardrobe": "General’s wardrobe:",
+      "wardrobeLine": "{capsule} of the Time Capsule items and {crate} of the crate items are pieces for your General, with the same odds as the rest. You have {n}/{total}. Earned in play. Never sold."
     },
     "avatar": {
       "hat_wool_cap": {

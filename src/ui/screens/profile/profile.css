@@ -350,7 +350,9 @@
 /* The General on the player's banner (owner request 2026-10-07): the banner cloth hangs behind the
    bust, the title is a parchment ribbon. The avatar hops a little on hover (lift) and press (squash). */
 .prof-avatar {
-  margin: 8px 6px 4px;
+  /* The bottom margin reserves the banner tails' room inside the header card. */
+  margin: 6px 6px 18px;
+  isolation: isolate;
   transition: transform 180ms var(--ui-ease-out);
 }
 .prof-avatar:hover {
@@ -365,9 +367,12 @@
 }
 .prof-avatar__banner {
   position: absolute;
-  top: -8px;
+  top: 16px;
+  bottom: -12px;
   left: 50%;
-  z-index: 0;
+  width: 82%;
+  height: auto;
+  z-index: -1;
   transform: translateX(-50%);
 }
 .prof-avatar__edit {
@@ -383,4 +388,18 @@
 .ui-root[data-reduce-motion='true'] .prof-avatar {
   transition: none;
   transform: none;
+}
+
+/* Each milestone shows the named Legendary piece for your General it also earns (AUDIT §6.5). */
+.prof-goal__reward {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  filter: grayscale(0.7) brightness(0.8);
+}
+.prof-goal__reward.is-done {
+  filter: drop-shadow(0 0 6px rgb(255 236 180 / 0.6));
+}
+.prof-goal:has(.prof-goal__reward) {
+  grid-template-columns: 28px minmax(0, 1fr) minmax(64px, 120px) 40px 68px;
 }

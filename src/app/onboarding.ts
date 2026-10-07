@@ -57,14 +57,16 @@ export function afterOnboardingMatch(step: OnboardingStep, won: boolean): Onboar
 
 /**
  * True when the one-time "Make your General" sheet is due (owner request 2026-10-07, AUDIT §6.6): A8
- * allows no name or look step before the first win, so it opens after capsule 1 (step `match2` or
- * `capsule2`) until the player taps Done (`flag`). Saves already past onboarding keep their migrated
+ * allows no name or look step before the first win, so it opens on Home after capsule 1 (steps
+ * `capsule1` to `capsule2`) until the player taps Done (`flag`). Saves already past onboarding keep their migrated
  * look and never see it; they edit it in Customize › General.
  */
 export function makeGeneralDue(save: SaveDoc | null, flag: string): boolean {
   if (!save || save.flags[flag] === true) return false;
   const step = onboardingStep(save);
-  return step === 'match2' || step === 'capsule2';
+  // `capsule1` too: Home can mount in the commit before the step moves on, and the sheet must be up
+  // by then so Home holds its unlock moment (the Army pointer) until the General is made.
+  return step === 'capsule1' || step === 'match2' || step === 'capsule2';
 }
 
 /** What the player can open, by matches played (A3 unlock order). */

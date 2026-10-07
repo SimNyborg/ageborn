@@ -14,6 +14,7 @@ import type { CardId, FortKind } from '@/contracts';
 import { FORT_PORTRAITS, FortArt } from '../../components/FortGlyphs';
 import type { Ref } from 'preact';
 import { CardTile, type CardTileData } from '../../components/CardTile';
+import { BackdropLook } from '../../components/cosmeticArt';
 import { AGE_COLOR, HammerIcon, LockIcon, RoleGlyph } from '../../components/icons';
 import { useKit, usePortrait } from '../../components/kit';
 import { CopiesBar } from '../../components/Meters';
@@ -79,6 +80,10 @@ export function CardStage(p: CardStageProps) {
     >
       <i class="cd-stage__sky" aria-hidden="true" />
       <i class="cd-stage__hills" aria-hidden="true" />
+      {/* The card's own age as the lane shows it (AUDIT #14): its classic sky and far layers. */}
+      <span class="cd-stage__backdrop" aria-hidden="true">
+        <BackdropLook skin={null} age={tile.age} animate={false} />
+      </span>
       <i class="cd-stage__ground" aria-hidden="true" />
       <i class="cd-stage__dust" aria-hidden="true" />
       <div class="cd-stage__actor">

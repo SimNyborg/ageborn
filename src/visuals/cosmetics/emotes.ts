@@ -25,7 +25,16 @@ export interface EmoteArt {
 const FACE = '#ffd447';
 const O = { stroke: INK, width: 1.4 };
 
-const face = (fill = FACE): Shape => circle(12, 12.5, 9.3, fill, { stroke: INK, width: 1.6 });
+/**
+ * A cartoon face in the art sheet's style (AUDIT #15): the fill, a cel shadow band on the lower edge, a
+ * highlight near the top and the outline last, so the features sit on a lit, rounded head.
+ */
+const face = (fill = FACE): Shape[] => [
+  circle(12, 12.5, 9.3, fill),
+  { d: 'M2.75 12.9A9.3 9.3 0 0 0 21.25 12.9A9.3 7.2 0 0 1 2.75 12.9Z', fill: '#b5650f', alpha: 0.26 },
+  ellipse(8.6, 7.6, 2.6, 1.4, '#ffffff', { alpha: 0.55 }),
+  circle(12, 12.5, 9.3, 'none', { stroke: INK, width: 1.6 }),
+];
 const eyes = (y = 11, dx = 3): Shape[] => [circle(12 - dx, y, 1.15, INK), circle(12 + dx, y, 1.15, INK)];
 const smile = (y = 14.6): Shape => ({ d: `M8.6 ${y}c1.8 2.4 5 2.4 6.8 0`, stroke: INK, width: 1.5, fill: 'none' });
 const note = (x: number, y: number, fill = '#6c5cff'): Shape[] => [circle(x, y, 1.6, fill, { stroke: INK, width: 0.9 }), rect(x + 1.1, y - 5, 1, 5, INK)];
@@ -45,7 +54,7 @@ export const EMOTES: Readonly<Record<string, EmoteArt>> = {
   // Stone
   bonk: {
     layers: [
-      { shapes: [face(), { d: 'M7.6 10.2l2.4 1.6M7.6 11.8l2.4-1.6M14 10.2l2.4 1.6M14 11.8l2.4-1.6', stroke: INK, width: 1.2, fill: 'none' }, ellipse(12, 16, 2, 1.6, '#8a2338', O)] },
+      { shapes: [...face(), { d: 'M7.6 10.2l2.4 1.6M7.6 11.8l2.4-1.6M14 10.2l2.4 1.6M14 11.8l2.4-1.6', stroke: INK, width: 1.2, fill: 'none' }, ellipse(12, 16, 2, 1.6, '#8a2338', O)] },
       { shapes: [rotRect(17, 5, 3, 10, 35, '#b07a45', O), ellipse(19.6, 1.8, 3, 2.4, '#8f5f33', O)], motion: 'wobble', at: [14, 9] },
       { shapes: [star(4, 5, 2.2, '#ffcf3a', O), star(20, 13, 1.6, '#ffcf3a', O)], motion: 'spin', at: [12, 9], delay: 0.2 },
     ],
@@ -69,7 +78,7 @@ export const EMOTES: Readonly<Record<string, EmoteArt>> = {
   // Bronze
   laurel_crown: {
     layers: [
-      { shapes: [face(), ...eyes(), smile()] },
+      { shapes: [...face(), ...eyes(), smile()] },
       {
         shapes: [
           ...[0, 1, 2, 3].map((i) => rotRect(4.8 + i * 1.6, 7.6 - i * 1.4, 2, 3.8, -60 + i * 16, '#7fd65f', { stroke: INK, width: 0.8 })),
@@ -101,7 +110,7 @@ export const EMOTES: Readonly<Record<string, EmoteArt>> = {
   royal_bow: {
     layers: [
       {
-        shapes: [face(), ...eyes(11.6), smile(15), { d: 'M6.6 6.6l2 -3.4 2.2 2.6L12 2.4l1.2 3.4 2.2-2.6 2 3.4z', fill: '#ffcf3a', ...O }, circle(12, 4.4, 0.8, '#ff5f7a')],
+        shapes: [...face(), ...eyes(11.6), smile(15), { d: 'M6.6 6.6l2 -3.4 2.2 2.6L12 2.4l1.2 3.4 2.2-2.6 2 3.4z', fill: '#ffcf3a', ...O }, circle(12, 4.4, 0.8, '#ff5f7a')],
         motion: 'tilt',
         at: [12, 21],
       },
@@ -126,7 +135,7 @@ export const EMOTES: Readonly<Record<string, EmoteArt>> = {
   // Gunpowder
   hat_tip: {
     layers: [
-      { shapes: [face(), ...eyes(12.4), smile(15.6)] },
+      { shapes: [...face(), ...eyes(12.4), smile(15.6)] },
       { shapes: [{ d: 'M3 8.4c3-.4 5-2.6 9-2.6s6 2.2 9 2.6c-2.4 1.6-5.6 2-9 2s-6.6-.4-9-2z', fill: '#2b2438', ...O }, rect(8, 7.4, 8, 1.2, '#ffcf3a')], motion: 'bounce', delay: 0.1 },
     ],
   },
@@ -215,38 +224,38 @@ export const EMOTES: Readonly<Record<string, EmoteArt>> = {
   },
   wow: {
     layers: [
-      { shapes: [face(), circle(8.8, 10, 2, '#ffffff', O), circle(15.2, 10, 2, '#ffffff', O), circle(8.8, 10, 0.9, INK), circle(15.2, 10, 0.9, INK), ellipse(12, 16.4, 2.2, 2.8, '#8a2338', O)], motion: 'pop', at: [12, 12.5] },
+      { shapes: [...face(), circle(8.8, 10, 2, '#ffffff', O), circle(15.2, 10, 2, '#ffffff', O), circle(8.8, 10, 0.9, INK), circle(15.2, 10, 0.9, INK), ellipse(12, 16.4, 2.2, 2.8, '#8a2338', O)], motion: 'pop', at: [12, 12.5] },
       { shapes: [line('M2 4l2 2M22 4l-2 2M12 0.6v2', '#ff8a2b', 1.2)], motion: 'pulse', at: [12, 4] },
     ],
   },
   thinking: {
     layers: [
-      { shapes: [face(), ...eyes(10.6), { d: 'M9 15.4h5', stroke: INK, width: 1.5, fill: 'none' }, { d: 'M6.6 10.4c1-1 2.4-1.2 3.4-.8', stroke: INK, width: 1.1, fill: 'none' }, roundRect(10, 16.6, 6, 5, 2, FACE, O)] },
+      { shapes: [...face(), ...eyes(10.6), { d: 'M9 15.4h5', stroke: INK, width: 1.5, fill: 'none' }, { d: 'M6.6 10.4c1-1 2.4-1.2 3.4-.8', stroke: INK, width: 1.1, fill: 'none' }, roundRect(10, 16.6, 6, 5, 2, FACE, O)] },
       { shapes: [circle(19, 5, 1.2, '#ffffff', O), circle(21.4, 2.6, 1.6, '#ffffff', O)], motion: 'float' },
     ],
   },
   sleepy: {
     layers: [
-      { shapes: [face('#ffe08a'), { d: 'M7 11.4c1 1 2.4 1 3.4 0M13.6 11.4c1 1 2.4 1 3.4 0', stroke: INK, width: 1.3, fill: 'none' }, ellipse(12, 16, 1.6, 1.2, '#8a2338', O)], motion: 'tilt', at: [12, 21] },
+      { shapes: [...face('#ffe08a'), { d: 'M7 11.4c1 1 2.4 1 3.4 0M13.6 11.4c1 1 2.4 1 3.4 0', stroke: INK, width: 1.3, fill: 'none' }, ellipse(12, 16, 1.6, 1.2, '#8a2338', O)], motion: 'tilt', at: [12, 21] },
       { shapes: [zee(16, 2, 1.2), zee(20.4, 0.4, 0.8)], motion: 'float' },
     ],
   },
   party: {
     layers: [
-      { shapes: [face(), ...eyes(12.6), smile(15.8)], motion: 'bounce' },
+      { shapes: [...face(), ...eyes(12.6), smile(15.8)], motion: 'bounce' },
       { shapes: [poly([7, 7, 12, -2, 15, 5.6], '#ff6fa8', O), circle(12, -1.4, 1.4, '#ffcf3a', O), line('M9 4.4l4 1.6', '#ffffff', 0.9)], motion: 'wobble', at: [11, 6] },
       { shapes: [rect(2, 3, 1.8, 1.8, '#57f0ff'), rect(20, 4, 1.8, 1.8, '#7fd65f'), rect(21, 12, 1.6, 1.6, '#ffcf3a'), rect(1.6, 14, 1.6, 1.6, '#b14bff')], motion: 'float', delay: 0.4 },
     ],
   },
   cool_shades: {
     layers: [
-      { shapes: [face(), roundRect(5.6, 8.8, 5.8, 3.8, 1.4, INK), roundRect(12.6, 8.8, 5.8, 3.8, 1.4, INK), rect(10.6, 9.4, 3, 1, INK), { d: 'M9 15.6c2 1.4 4.6 1.2 6.4-.6', stroke: INK, width: 1.5, fill: 'none' }] },
+      { shapes: [...face(), roundRect(5.6, 8.8, 5.8, 3.8, 1.4, INK), roundRect(12.6, 8.8, 5.8, 3.8, 1.4, INK), rect(10.6, 9.4, 3, 1, INK), { d: 'M9 15.6c2 1.4 4.6 1.2 6.4-.6', stroke: INK, width: 1.5, fill: 'none' }] },
       { shapes: [band(6.6, 12, 9.6, 9, 1, '#ffffff', { alpha: 0.85 }), band(13.6, 12, 16.6, 9, 1, '#ffffff', { alpha: 0.85 })], motion: 'pulse', at: [12, 10.6] },
     ],
   },
   oops: {
     layers: [
-      { shapes: [face('#ffe08a'), ...eyes(11), { d: 'M8.4 16.4c1.2-1 2.2-1 3.6 0s2.4 1 3.6 0', stroke: INK, width: 1.4, fill: 'none' }], motion: 'shake' },
+      { shapes: [...face('#ffe08a'), ...eyes(11), { d: 'M8.4 16.4c1.2-1 2.2-1 3.6 0s2.4 1 3.6 0', stroke: INK, width: 1.4, fill: 'none' }], motion: 'shake' },
       { shapes: [{ d: 'M19 3c1.4 2 2.2 3.4 2.2 4.6a2.2 2.2 0 0 1-4.4 0c0-1.2.8-2.6 2.2-4.6z', fill: '#57b8ff', stroke: INK, width: 1.1 }], motion: 'float' },
     ],
   },

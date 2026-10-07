@@ -59,4 +59,36 @@ test.describe('test profile', () => {
     const flagged = await page.evaluate(() => Object.keys(localStorage).some((k) => (localStorage.getItem(k) ?? '').includes('tester.profile')));
     expect(flagged).toBe(false);
   });
+
+  test('Customize › General on a phone: Undo and Shuffle in view, troop portraits drawn', async ({ page }) => {
+    test.setTimeout(120_000);
+    const problems = watchPage(page);
+    await page.goto('./?tester=1');
+    const dialog = page.getByTestId('tester-dialog');
+    await expect(dialog).toBeVisible({ timeout: 30_000 });
+    await dialog.getByTestId('tester-everything').click();
+    await Promise.all([page.waitForURL((u) => !u.search.includes('tester'), { timeout: 30_000 }), dialog.getByTestId('tester-confirm').click()]);
+    await expect(page.getByTestId('play')).toBeVisible({ timeout: 30_000 });
+    await page.getByTestId('tab-customize').click();
+    await expect(page.getByTestId('cust-general')).toBeVisible();
+    // The creator's tools sit on the preview, inside the viewport and not under the tab bar.
+    for (const id of ['gen-undo', 'gen-shuffle']) {
+      const hit = await page.evaluate((tid) => {
+        const el = document.querySelector(`[data-testid="${tid}"]`);
+        if (!el) return false;
+        const r = el.getBoundingClientRect();
+        const top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+        return r.bottom <= innerHeight && (top === el || el.contains(top));
+      }, id);
+      expect(hit, id).toBe(true);
+    }
+    // Portrait tab: a troop tile's picture has a real box (it measured 0 x 0 before the fix).
+    await page.getByTestId('gen-tab-portrait').click();
+    const img = page.locator('[data-testid^="portrait-"]:not([data-testid="portrait-face"]) img').first();
+    await expect(img).toBeVisible({ timeout: 20_000 });
+    const box = await img.boundingBox();
+    expect(box?.width ?? 0).toBeGreaterThan(20);
+    expect(box?.height ?? 0).toBeGreaterThan(20);
+    expect(problems.errors).toEqual([]);
+  });
 });

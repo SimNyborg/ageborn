@@ -6,16 +6,38 @@
  * Everything can be changed later in Customize › General. A reload shows it again until Done.
  */
 import './general.css';
-import { useMemo, useState } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { AvatarLookView, randomStarterLook, type ResolvedLook } from '../../components/Avatar';
 import { TINTS } from '../../components/avatar/palette';
 import { Button, IconButton } from '../../components/Button';
 import { RefreshIcon } from '../../components/icons';
 import { Modal } from '../../components/Modal';
+import { blockingOverlays } from '../../components/overlay';
 import { useUi } from '../context';
 
 /** The UI flag set once the sheet is done (`SaveDoc.flags`, UI keys start with `ui-`). */
 export const MAKE_GENERAL_FLAG = 'ui-onboard.general';
+
+/**
+ * Counts the sheet as a blocking overlay from the render in which it becomes due, so Home, which may
+ * mount in that same commit, already holds its unlock moment (the Army pointer) and plays it once the
+ * General is made (U13). An effect would be too late: Home's own effect reads the count from its render.
+ * Call it in the component that decides to show the sheet, above the screens.
+ */
+export function useMakeGeneralHold(active: boolean): void {
+  const held = useRef(false);
+  if (active !== held.current) {
+    blockingOverlays.value += active ? 1 : -1;
+    held.current = active;
+  }
+  useEffect(
+    () => () => {
+      if (held.current) blockingOverlays.value -= 1;
+      held.current = false;
+    },
+    [],
+  );
+}
 
 export function MakeGeneral(p: { onDone?: () => void }) {
   const { save, t, services, sound } = useUi();

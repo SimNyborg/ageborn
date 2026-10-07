@@ -589,15 +589,11 @@
     transform: translateY(-5px) rotate(-2deg);
   }
 }
+/* One sway per root (both strokes ride it), not one per stroke. */
 .hd-root {
   transform-box: fill-box;
   transform-origin: 50% 0;
-}
-.hd-root > path {
-  transform-box: fill-box;
-  transform-origin: 50% 0;
   animation: hd-root 3800ms ease-in-out infinite alternate;
-  animation-delay: inherit;
 }
 @keyframes hd-root {
   from {
@@ -1220,7 +1216,7 @@
 }
 
 /* ---- reduce motion: ambient loops still; entrances become fades (U14) ---- */
-.ui-root[data-reduce-motion='true'] .hub :is(.hd__bob, .hd__unitAct, .hd__unitBody, .hd__clash, .hd__art, .hd__base, .hd__base img, .hd-clash, .hd__spark, .hd-smoke__puff, .hd-banner, .hd-flag, .hd-sway, .hd-shimmer, .hd-ship, .hd-glow, .hd-bubble, .hd-snow circle, .hd-neon, .hd-blink, .hd-twinkle, .hd-orbit, .hd-rift, .hd-windows rect, .hd-chunk, .hd-root > path, .hd-win, .home-scene__rays, .hub-slot__drum, .hub-camp__node, .hub-camp__flag::after, .hub-road__shine, .home-scene__layer, .home-scene__motes i) {
+.ui-root[data-reduce-motion='true'] .hub :is(.hd__bob, .hd__unitAct, .hd__unitBody, .hd__clash, .hd__art, .hd__base, .hd__base img, .hd-clash, .hd__spark, .hd-smoke__puff, .hd-banner, .hd-flag, .hd-sway, .hd-shimmer, .hd-ship, .hd-glow, .hd-bubble, .hd-snow circle, .hd-neon, .hd-blink, .hd-twinkle, .hd-orbit, .hd-rift, .hd-windows rect, .hd-chunk, .hd-root, .hd-win, .home-scene__rays, .hub-slot__drum, .hub-camp__node, .hub-camp__flag::after, .hub-road__shine, .home-scene__layer, .home-scene__motes i) {
   animation: none !important;
 }
 .ui-root[data-reduce-motion='true'] .hub :is(.hd__float, .hub-camp, .hub-slots, .hub-stage__caption, .hub-plate) {
@@ -1330,4 +1326,13 @@
 /* Touch target (ui-plan 1.3): the Sundial chip is at least 44 px wide. */
 .hub-sundial {
   min-width: 44px;
+}
+
+/* Lite graphics (B6): Home keeps its living centre (troops, flags, smoke) and drops the ambient
+   extras: motes, the second flock, the drifting skyline layers, swaying roots and bobbing chunks. */
+.ui-root[data-graphics='lite'] :is(.home-scene__motes, .home-scene__flock--1) {
+  display: none;
+}
+.ui-root[data-graphics='lite'] :is(.hd-root, .hd-chunk, .home-scene__layer, .hd-shimmer) {
+  animation: none;
 }

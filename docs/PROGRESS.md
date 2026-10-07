@@ -2,6 +2,18 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-07: UI art pass (Tracks A and B) with review fixes (cloud session, not yet published)
+
+The menus were raised toward the Blender battle art without changing layouts or flows. Track A: Home's bases and turret cards drawn from the Blender sheets, a redrawn island, cel-shaded icons and nav, straight swords, the War Path card's hover fixed, real birds, a denser War Path map with a walking Standard Bearer, and a wordmark. Track B: "Make your General", an avatar creator with 87 free parts and 96 wearables you win in play (never sold; save v12 with a migration), and redrawn VS, Result, Feats, Capsules stage, capsule card back and Trophy Road gates. Details per track and for the fixes in `docs/decisions.md` (the three "UI art pass" entries).
+
+**Fixed after the strict review:** blank troop tiles in Customize › General › Portrait; the banner covering the wardrobe line and hanging out of the Profile card; Undo and Shuffle hidden under the tab bar on phones (now on the preview's corners, and only the part grid scrolls); face and accessory tiles that all looked the same; a grin after a defeat; Kingsmoat's keep and the Tar Pits volcano on Home redrawn with masonry, shading and detail; softer clouds and bigger, readable birds; a half-empty Result page (big MVP on a spotlight); the War Path bearer small and off its node; Home's background loops pause when the tab is hidden; Trophy Road power medallions, quest glyphs, the War Chest, the starter emotes' shading, the Progress road row and the last Choose a battle card.
+
+**Checks (whole tree, 2026-10-07):** typecheck and lint clean; 6,529 unit tests pass (258 files, 2 skipped); production build OK (initial download 1,158.6 KB gzip, limit 3 MB; 1,099 KB before the pass); full e2e suite 289 of 289 pass (Chromium, one new test for the creator on a phone). Reviewed with screenshots at 844x390, 844x340 and 1280x720, no console errors.
+
+**Still open:** Home troop pictures are a little soft on sharp screens (needs higher-resolution renders); starter emotes are still faces, not General heads; the Industrial and Modern War Path regions are sparse; the six other Home landmarks keep the Track A drawing; a few Track A details (trophy bar edge, switcher caret, road edge stones).
+
+**What the owner should try** (once published): open Customize › General on your phone and change face, hair and hat (Undo and Shuffle are on the picture's corners); look at Home in Arena 3 (the castle); lose a battle and see your General's face on the Result page.
+
 ## 2026-10-07: release check after the eight content waves and the economy re-tune (cloud session, not yet published)
 
 The whole content expansion is checked together: 8 ages with 160 troops (56 before), 48 turrets (32), 64 powers (48), 48 forts (32) and 36 skins (12), all released, plus the all-ages capsule table and the collection milestones. Every gate ran on this tree and on the published `main` with the same seeds; details and numbers in `docs/decisions.md` ("Release check: the eight content waves and the capsule re-tune").
