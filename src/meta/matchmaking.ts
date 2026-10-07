@@ -318,7 +318,10 @@ function dailyOpponent(s: SaveDoc, t: Content, lt: LocalTime, difficulty: DailyD
   if (!g) throw new Error('meta: the content has no Daily Generals');
   const ages = formatAges(t, ch.format);
   const std = ch.standardLevel;
-  const loadouts = allowedPlan(t, g.warPlan, ages, 'epic', playerLegendaries(s, t, ages), s.arenaIndex);
+  // The same plan for everyone on that date (A15.7): no arena gate on content-wave cards, so the General's
+  // seven troops (A18.9) do not depend on the player's arena (with the gate, a low arena refilled them
+  // differently). The Epic cap and the Legendary rule still apply.
+  const loadouts = allowedPlan(t, g.warPlan, ages, 'epic', playerLegendaries(s, t, ages), null);
   return spec({
     generalId: g.id,
     displayName: g.nameKey,
