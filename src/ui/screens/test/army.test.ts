@@ -87,8 +87,8 @@ describe('Equip now (A3, ui-plan 4.2 "Use")', () => {
 });
 
 describe('slots and changes', () => {
-  it('has six troops, two turrets, the Home and Field powers and the Fort slot, with stable keys', () => {
-    expect(ALL_SLOTS.map(slotKey)).toEqual(['unit-0', 'unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5', 'turret-0', 'turret-1', 'power-home', 'power-field', 'fort']);
+  it('has seven troops, two turrets, the Home and Field powers and the Fort slot, with stable keys', () => {
+    expect(ALL_SLOTS.map(slotKey)).toEqual(['unit-0', 'unit-1', 'unit-2', 'unit-3', 'unit-4', 'unit-5', 'unit-6', 'turret-0', 'turret-1', 'power-home', 'power-field', 'fort']);
     for (const s of ALL_SLOTS) expect(slotFromKey(slotKey(s))).toEqual(s);
     expect(slotFromKey('grid')).toBeNull();
   });
@@ -97,10 +97,10 @@ describe('slots and changes', () => {
     const a = stone();
     const b = {
       ...a,
-      units: [...a.units.slice(0, 5), null],
+      units: [...a.units.slice(0, 6), null],
       turrets: [a.turrets[1]!, a.turrets[0]!],
     };
-    expect(changedSlots(a, b).map(slotKey)).toEqual(['unit-5', 'turret-0', 'turret-1']);
+    expect(changedSlots(a, b).map(slotKey)).toEqual(['unit-6', 'turret-0', 'turret-1']);
     expect(changedSlots(a, a)).toEqual([]);
   });
 

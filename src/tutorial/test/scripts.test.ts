@@ -82,7 +82,7 @@ describe('match 1 script (A8)', () => {
   });
 
   it('uses the starter kit: Infantry, Ranged, Heavy, the Anti-heavy Rare, both Common turrets, the default powers', () => {
-    expect(starterLoadout(content, 'stone')).toEqual({ units: ['bonker', 'pebbler', 'tuskback', 'spear_hunter', null], turrets: ['rock_tosser', 'angry_beehive'], powers: { home: 'rockslide', field: 'stampede' } });
+    expect(starterLoadout(content, 'stone')).toEqual({ units: ['bonker', 'pebbler', 'tuskback', 'spear_hunter', null, null, null], turrets: ['rock_tosser', 'angry_beehive'], powers: { home: 'rockslide', field: 'stampede' } });
     expect(starterLoadout(content, 'medieval').units.slice(0, 2)).toEqual(['footman', 'longbowman']);
     expect(Object.keys(match1Loadouts(content))).toEqual(['stone', 'medieval', 'gunpowder', 'modern', 'future']);
   });

@@ -49,12 +49,13 @@ function planFrom(
   content: Content,
   collection: SaveDoc['collection'],
   name: string,
-  pick: (ids: CardId[]) => CardId[] = (x) => x,
+  // Legendaries last, so a seven-troop plan (A18.9) keeps an owned Legendary on the bench by default.
+  pick: (ids: CardId[]) => CardId[] = (x) => [...x.filter((id) => content.units[id]?.rarity !== 'legendary'), ...x.filter((id) => content.units[id]?.rarity === 'legendary')],
 ): SaveDoc['warPlans'][number] {
   const loadouts = {} as Record<AgeId, Loadout>;
   for (const age of content.order.ages) {
     const a = byAge(content, age);
-    const units = pick(a.units.filter((id) => collection[id])).slice(0, 6);
+    const units = pick(a.units.filter((id) => collection[id])).slice(0, 7);
     const turrets = a.turrets.filter((id) => collection[id]).slice(0, 2);
     loadouts[age] = loadout(units, turrets, { home: starterPower(content, age, 'home'), field: starterPower(content, age, 'field') });
   }
@@ -197,6 +198,8 @@ export function midGameSave(content: Content): SaveDoc {
     bonker: [7, 20, 'silver'],
     pebbler: [6, 14, 'holo'],
     tuskback: [6, 3],
+    // A18.9: a seventh Stone troop for the seven-slot plan
+    hunting_wolves: [4, 2],
     footman: [6, 12, 'bronze'],
     longbowman: [6, 9],
     destrier_knight: [5, 8],

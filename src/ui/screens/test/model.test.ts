@@ -106,18 +106,19 @@ describe('cards (A6.6 upgrades, A5.1 level scaling)', () => {
 });
 
 describe('War Plan edits (A3)', () => {
-  const base: Loadout = { units: ['bonker', 'pebbler', 'tuskback', null, null, null], turrets: ['rock_tosser', null], powers: { home: 'rockslide', field: 'stampede' } };
+  const base: Loadout = { units: ['bonker', 'pebbler', 'tuskback', null, null, null, null], turrets: ['rock_tosser', null], powers: { home: 'rockslide', field: 'stampede' } };
 
   it('puts a card in a slot and never duplicates it', () => {
     const moved = assignCard(content, base, { kind: 'unit', index: 0 }, 'pebbler');
-    expect(moved.units).toEqual(['pebbler', 'bonker', 'tuskback', null, null, null]);
+    expect(moved.units).toEqual(['pebbler', 'bonker', 'tuskback', null, null, null, null]);
     const added = assignCard(content, base, { kind: 'unit', index: 3 }, 'spear_hunter');
-    expect(added.units).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', null, null]);
+    expect(added.units).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', null, null, null]);
     const intoEmpty = assignCard(content, base, { kind: 'unit', index: 4 }, 'bonker');
-    expect(intoEmpty.units).toEqual([null, 'pebbler', 'tuskback', null, 'bonker', null]);
-    // A18.9: the sixth troop slot is editable and kept.
+    expect(intoEmpty.units).toEqual([null, 'pebbler', 'tuskback', null, 'bonker', null, null]);
+    // A18.9: the sixth and seventh troop slots are editable and kept; an older six-slot loadout pads to seven.
     expect(assignCard(content, base, { kind: 'unit', index: 5 }, 'spear_hunter').units[5]).toBe('spear_hunter');
-    expect(normalizeLoadout({ ...base, units: ['bonker', null, null, null, null, 'pebbler'] }).units).toHaveLength(6);
+    expect(assignCard(content, base, { kind: 'unit', index: 6 }, 'spear_hunter').units[6]).toBe('spear_hunter');
+    expect(normalizeLoadout({ ...base, units: ['bonker', null, null, null, null, 'pebbler'] }).units).toEqual(['bonker', null, null, null, null, 'pebbler', null]);
   });
 
   it('rejects a card of the wrong kind and handles turrets and the power', () => {
@@ -130,7 +131,7 @@ describe('War Plan edits (A3)', () => {
   });
 
   it('clears slots and finds the first empty one', () => {
-    expect(clearSlot(base, { kind: 'unit', index: 1 }).units).toEqual(['bonker', null, 'tuskback', null, null, null]);
+    expect(clearSlot(base, { kind: 'unit', index: 1 }).units).toEqual(['bonker', null, 'tuskback', null, null, null, null]);
     // Empty power slots are legal (A2.9.1); the advisor warns about them.
     expect(clearSlot(base, { kind: 'power', slot: 'field' }).powers).toEqual({ home: 'rockslide', field: null });
     expect(firstEmptySlot(content, base, 'spear_hunter')).toEqual({ kind: 'unit', index: 3 });

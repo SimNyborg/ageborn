@@ -224,7 +224,7 @@ describe('HUD model (A9.2)', () => {
     expect(m.me.stanceVisible).toBe(false);
     expect(m.me.lastStandManual).toBe(false);
     expect(m.canRetreat).toBe(false);
-    expect(m.me.cards.map((c) => c.state === 'empty')).toEqual([false, true, true, true, true, true]);
+    expect(m.me.cards.map((c) => c.state === 'empty')).toEqual([false, true, true, true, true, true, true]);
     for (let i = 0; i < 6; i++) {
       sim.step([]);
       b.afterStep();
