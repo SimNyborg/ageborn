@@ -43,7 +43,7 @@ export function sampleHudModel(config: Readonly<MatchConfig>, side: Side = 0, ov
   const eco = config.content.economy;
   const gold = over.me?.gold ?? 245;
   const foeField: HudFoePowerSlot | null = foeLo?.powers.field ? { card: foeLo.powers.field, ppm: 1_000_000 } : null;
-  const cards: HudCard[] = [0, 1, 2, 3, 4, 5].map((slot) => {
+  const cards: HudCard[] = [0, 1, 2, 3, 4, 5, 6].map((slot) => {
     const card = lo?.units[slot] ?? null;
     const def = card ? config.content.units[card] : undefined;
     return { slot, card, cost: def?.cost ?? 0, queued: 0, trainFillBp: 0, state: card ? 'ready' : 'empty', foil: 'none' };

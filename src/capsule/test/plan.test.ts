@@ -27,6 +27,8 @@ const A13_SOUNDS = new Set([
   // explosion, the card snap, count-up ticks and the name slam.
   'step_heavy', 'hit_heavy', 'evolve_riser', 'explosion_m', 'explosion_l', 'flare_pop', 'xp_tick', 'upgrade_slam',
   // The 2026-09-29 ladder: summit climbs, the summit gem and the Platinum and Aeon stingers.
+  // The rarity burst (2026-10-07): the riser under the anticipation and the burst per rarity.
+  'rarity_riser', 'rarity_burst_rare', 'rarity_burst_epic', 'rarity_burst_legendary',
   'cap_climb_5', 'cap_climb_6', 'cap_summit_rise', 'cap_burst_platinum', 'cap_burst_aeon',
   // The hammer's count-in (A10 step 3; the graded Perfect and Good layers are played by the runner).
   'cap_strike_tick',
@@ -47,7 +49,7 @@ describe('planCapsuleShow (DESIGN A10)', () => {
     const plan = planCapsuleShow(bronze(), { catalog });
     expect(kinds(plan.steps)).toEqual([
       'arrival', 'charge', 'strike', 'strike', 'strike', 'strike', 'burst', 'fan',
-      'signal', 'flip', 'signal', 'flip', 'signal', 'flip',
+      'signal', 'flip', 'signal', 'flip', 'signal', 'rarityBurst', 'flip',
       'duplicates', 'duplicates', 'duplicates', 'summary',
     ]);
     expect(checkPlan(plan)).toEqual([]);
@@ -305,9 +307,9 @@ describe('planWardrobeShow (DESIGN A10, A15.3: card flip, no reel)', () => {
     ['ghost_corsair', 'epic'],
     ['frost_matriarch', 'legendary'],
   ] as const) {
-    it(`reveals a ${rarity} skin with the card flip: arrival, crate open, pre-signal, flip`, () => {
+    it(`reveals a ${rarity} skin with the card flip: arrival, crate open, pre-signal, rarity burst, flip`, () => {
       const plan = planWardrobeShow(crate(skin, rarity), { catalog });
-      expect(kinds(plan.steps)).toEqual(['crateArrival', 'crateOpen', 'signal', 'flip', 'summary']);
+      expect(kinds(plan.steps)).toEqual(['crateArrival', 'crateOpen', 'signal', 'rarityBurst', 'flip', 'summary']);
       expect(plan.steps.some((x) => (x.kind as string).startsWith('reel'))).toBe(false);
       expect(plan.steps.flatMap((x) => x.cues).some((c) => c.sound === 'reel_tick')).toBe(false);
       expect(plan.steps[2]?.cues[0]?.sound).toBe(`rarity_${rarity}`);

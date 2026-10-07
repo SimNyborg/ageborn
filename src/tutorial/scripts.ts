@@ -23,6 +23,8 @@ export type PromptTarget =
   | 'card2'
   | 'card3'
   | 'card4'
+  | 'card5'
+  | 'card6'
   | 'gold'
   | 'mount0'
   | 'mount1'
@@ -443,7 +445,8 @@ export function starterLoadout(content: CompiledContent, age: AgeId): Loadout {
   const starter = (slot: 'home' | 'field'): CardId | null =>
     Object.values(content.powers).find((p) => p.age === age && p.slot === slot && p.source === 'starter')?.id ?? null;
   return {
-    units: [byGroup('infantry'), byGroup('ranged'), byGroup('heavy'), antiHeavy, null],
+    // A18.9: seven troop slots; the starter kit fills four.
+    units: [byGroup('infantry'), byGroup('ranged'), byGroup('heavy'), antiHeavy, null, null, null],
     turrets: [turrets[0] ?? null, turrets[1] ?? null],
     powers: { home: starter('home'), field: starter('field') },
   };

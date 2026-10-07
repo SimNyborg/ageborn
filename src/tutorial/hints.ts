@@ -87,7 +87,7 @@ export class AdaptiveHints {
         const slot = antiHeavySlot(i);
         const card = slot === null ? null : trayCard(i, slot);
         const nameKey = card ? i.config.content.units[card]?.nameKey : undefined;
-        return { ...def, target: slot !== null && slot <= 4 ? (`card${slot}` as PromptTarget) : null, ...(nameKey ? { varKeys: { card: nameKey } } : {}) };
+        return { ...def, target: slot !== null && slot <= 6 ? (`card${slot}` as PromptTarget) : null, ...(nameKey ? { varKeys: { card: nameKey } } : {}) };
       }
       return def;
     }

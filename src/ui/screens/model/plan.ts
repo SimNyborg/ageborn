@@ -13,7 +13,7 @@ import { isOwned, levelOf } from './cards';
 import { arenaOf } from './progress';
 import { featureOpen, unlockWins } from './warPath';
 
-/** A loadout slot: six troops, two turrets, the two typed power slots, Home and Field (A2.9.1), and the Fort slot (A16.14.7). */
+/** A loadout slot: seven troops, two turrets, the two typed power slots, Home and Field (A2.9.1), and the Fort slot (A16.14.7). */
 export type SlotRef = { kind: 'unit'; index: number } | { kind: 'turret'; index: number } | { kind: 'power'; slot: PowerSlot } | { kind: 'fort' };
 
 /**
@@ -63,7 +63,8 @@ export function fortSlotOpen(save: SaveDoc, inBattle: boolean = FORT_SLOT_IN_BAT
   return fortSlotShown(inBattle) && save.flags[FORT_SLOT_FLAG] === true;
 }
 
-export const UNIT_SLOTS = 6;
+/** Seven troops per battle (A18.9, owner request 2026-10-07; six before). */
+export const UNIT_SLOTS = 7;
 export const TURRET_SLOTS = 2;
 /** A3: three renamable presets. */
 export const PRESETS = 3;
@@ -84,7 +85,7 @@ export function powerSlotOf(content: Content, card: CardId): PowerSlot | null {
   return content.powers[card]?.slot ?? null;
 }
 
-/** Pads a loadout to 6 unit (A18.9) and 2 turret slots (older or partial saves); keeps the Fort slot. */
+/** Pads a loadout to 7 unit (A18.9) and 2 turret slots (older or partial saves); keeps the Fort slot. */
 export function normalizeLoadout(l: Loadout): Loadout {
   const units = Array.from({ length: UNIT_SLOTS }, (_, i) => l.units[i] ?? null);
   const turrets = Array.from({ length: TURRET_SLOTS }, (_, i) => l.turrets[i] ?? null);
@@ -264,7 +265,7 @@ export const AGE_SHORT_KEY: Readonly<Record<AgeId, string>> = {
   cosmic: 'ui.army.ageShort.cosmic',
 };
 
-/** Every slot of a loadout in reading order: six troops, two turrets, the Home and Field powers, the Fort. */
+/** Every slot of a loadout in reading order: seven troops, two turrets, the Home and Field powers, the Fort. */
 export const ALL_SLOTS: readonly SlotRef[] = [
   ...Array.from({ length: UNIT_SLOTS }, (_, index) => ({
     kind: 'unit' as const,

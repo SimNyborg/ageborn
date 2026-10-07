@@ -372,8 +372,8 @@ export function buildHudModel(src: HudSource, extras: HudExtras, side: Side = 0,
   }
   const threat = heavyThreat(foeUnits);
   const cards: HudCard[] = [];
-  // Six troops per battle (A18.9).
-  for (let slot = 0; slot < 6; slot++) {
+  // Seven troops per battle (A18.9, owner request 2026-10-07).
+  for (let slot = 0; slot < 7; slot++) {
     const card = loadout?.units[slot] ?? null;
     const unlocked = tray ? tray.unlocked(side, myAge, slot) : true;
     const hc = cardFor(state, config, side, slot, card, unlocked, foils);

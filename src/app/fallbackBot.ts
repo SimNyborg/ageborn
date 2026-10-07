@@ -8,7 +8,7 @@
  * can afford, fill empty mounts, evolve when ready, fire the power into a crowd, fire Last Stand when
  * armed); the real utility AI (A7.2) replaces it.
  */
-import type { BotController, BotProfile, CardId, Command, CompiledContent, CreateBot, Observation, Side } from '@/contracts';
+import type { BotController, BotProfile, CardId, Command, CompiledContent, CreateBot, Observation, Side, TraySlot } from '@/contracts';
 import { randInt, seedSfc32, type Sfc32State } from '@/core';
 
 /** A7.3 anchor rows: tier → [decision interval ms, snapshot delay ms]. Other tiers interpolate. */
@@ -97,7 +97,7 @@ class FallbackBot implements BotController {
     });
     if (affordable.length > 0 && me.queue.length < this.content.economy.queueMax) {
       const pick = affordable[randInt(this.rng, affordable.length)]!;
-      return { t: 'train', side, slot: pick.slot as 0 | 1 | 2 | 3 | 4 };
+      return { t: 'train', side, slot: pick.slot as TraySlot };
     }
     return null;
   }

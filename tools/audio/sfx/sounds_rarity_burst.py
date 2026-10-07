@@ -52,6 +52,8 @@ def rarity_riser(v, rng):
     trill = gm_notes(GM["glock"], trill_notes, tail=0.2)[: n_of(d)]
     trill = np.pad(trill, (0, max(0, n_of(d) - len(trill))))
     x = mixdown(air, at(0, rev, 0.6), at(0, saw), at(0, trill, 0.45))[: n_of(d)]
+    # One overall swell, so it keeps climbing right up to the pop.
+    x = x * (0.18 + 0.82 * np.linspace(0, 1, len(x)) ** 1.6)
     return fade(x, 0.05, 0.004)
 
 

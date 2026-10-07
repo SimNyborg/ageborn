@@ -17,6 +17,7 @@ export type DenyTarget =
   | 'card3'
   | 'card4'
   | 'card5'
+  | 'card6'
   | 'gold'
   | 'evolve'
   | 'power'
@@ -75,12 +76,12 @@ export const DENY_MS = 280;
 export const BUBBLE_MS = 2200;
 export const BANNER_MS = 2600;
 
-/** Six troops per battle (A18.9). */
-type Slot = 0 | 1 | 2 | 3 | 4 | 5;
+/** Seven troops per battle (A18.9, owner request 2026-10-07). */
+type Slot = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 type Mount = 0 | 1 | 2 | 3;
 
 export function cardTarget(slot: number): DenyTarget {
-  return `card${Math.max(0, Math.min(5, slot)) as Slot}`;
+  return `card${Math.max(0, Math.min(6, slot)) as Slot}`;
 }
 
 function cmd(c: Command, target: DenyTarget): HudIntent {
@@ -499,7 +500,7 @@ export function quickTurretIntent(m: HudModel, config: Readonly<MatchConfig>, si
 export function keyIntent(key: string, m: HudModel, config: Readonly<MatchConfig>, side: Side, shift = false, rearming = false): HudIntent {
   if (m.phase === 'ended') return NONE;
   const k = key.length === 1 ? key.toLowerCase() : key;
-  if (k >= '1' && k <= '6') return trainIntent(m, Number(k) - 1, side, config.content.economy.queueMax);
+  if (k >= '1' && k <= '7') return trainIntent(m, Number(k) - 1, side, config.content.economy.queueMax);
   switch (k) {
     case 'Backspace':
       return cancelIntent(m, side);

@@ -3,9 +3,9 @@
  * loadout per age. Owner request 2026-09-30: for the selected age, three plain sections top to
  * bottom, so it is obvious what goes into battle, what could, and what is still to find.
  *
- * - **In battle** (a fixed band, always visible, U4): six troop slots, two turrets and the two power
+ * - **In battle** (a fixed band, always visible, U4): seven troop slots (A18.9), two turrets and the two power
  *   slots, Home (house) and Field (flag) (A2.9.10; the Field slot shows a padlock and its unlock line
- *   until it opens), each group with its count ("Troops 5/6"), the War Council lines it can use
+ *   until it opens), each group with its count ("Troops 5/7"), the War Council lines it can use
  *   (A18.5.2) and the advisor's first warning (A3; never a blocker). A power fits only its own slot.
  * - **Available** (scrolls under the band): the cards of this age you own that are not in battle;
  *   tap one and Use, tap-tap, or drag it onto a slot to swap it in. Its head sticks while it scrolls.

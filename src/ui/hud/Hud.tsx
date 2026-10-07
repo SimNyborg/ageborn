@@ -9,7 +9,7 @@
  *   gets the denied feedback (red flash, 2-frame shake, `ui_deny`); everything else becomes a command
  *   for `issue` and the sim has the final word. A command the sim rejects flashes the element that sent
  *   it (the view plays `ui_deny`).
- * - Keyboard controls from A2.12 and A18 (1-6, Backspace, Q/W, B, G, E, Space, S, Shift+S, L, P, F; P
+ * - Keyboard controls from A2.12 and A18 (1-7, Backspace, Q/W, B, G, E, Space, S, Shift+S, L, P, F; P
  *   pauses, never Esc; Esc closes the War Council).
  * - The War Council (A18.5.7, `Council.tsx`): its button sits in the tray, its sheet slides up over
  *   the tray; a started pick's badge flies into the button and a finished one pops a card above it.

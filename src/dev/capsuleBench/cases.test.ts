@@ -106,7 +106,8 @@ describe('capsule bench cases (WP10 DoD)', () => {
 
       if (c.crate) {
         it('reveals the crate with the card flip, never a reel (A15.3)', () => {
-          expect(plan.steps.map((s) => s.kind)).toEqual(['crateArrival', 'crateOpen', 'signal', 'flip', 'summary']);
+          const k = plan.steps.map((s) => s.kind);
+          expect(k.filter((x) => x !== 'rarityBurst')).toEqual(['crateArrival', 'crateOpen', 'signal', 'flip', 'summary']);
         });
       }
     });

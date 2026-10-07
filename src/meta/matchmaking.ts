@@ -19,6 +19,9 @@
  * - **Skirmish.** The chosen General (or Echo of You, the player's own plan) at the chosen tier and
  *   format; "Standard levels" puts every card at L7 (the app sets the player's side the same way).
  * - **Tutorial.** Match 1 is Old Grogg (Training match), match 2 Pip Quickstep at tier 0 (A8).
+ * - **Seven troops (A18.9).** Every bot plan has 7 troop slots like the player's: General plans carry
+ *   seven, the rarity allowance refills every empty or disallowed slot from the allowed cards of that
+ *   age, and a shorter plan (Echo of an older save) is padded with empty slots.
  *
  * Opponents are deterministic in the save: previewing and starting the same match give the same spec.
  * A Commander's `generalId` is `commander:<personality General>:<favourite card>`; the app builds its
@@ -27,6 +30,7 @@
 import type { AgeId, CardId, FormatId, Loadout, MatchResultInput, OpponentSpec, Rarity, SaveDoc, SideConfig, SkirmishOptions, WarPathMatch } from '@/contracts';
 import { commanderName, isReleased, type ArenaDef, type Content, type DailyDifficulty, type GeneralDef, type GeneralId } from '@/content';
 import { chanceBp, fnv1a32, pick, pickWeighted, seedSfc32, type Sfc32State } from '@/core';
+import { UNIT_SLOTS } from './advisor';
 import { formatAges } from './formats';
 import { starterLoadout, activePlan } from './warplan';
 import { dailyDrawAt, defaultDailyDifficulty } from './daily';
@@ -101,6 +105,11 @@ function clampLevel(t: Content, level: number): number {
   return Math.max(1, Math.min(t.economy.maxLevel, level));
 }
 
+/** A loadout's troops at the A18.9 slot count (an older or shorter plan plays its missing slots as empty). */
+function padUnits(ids: readonly (CardId | null)[]): (CardId | null)[] {
+  return Array.from({ length: UNIT_SLOTS }, (_, i) => ids[i] ?? null);
+}
+
 function fill(ids: (CardId | null)[], pool: readonly CardId[], upTo: number = ids.length): (CardId | null)[] {
   const out = [...ids];
   for (let i = 0; i < out.length && i < upTo; i += 1) {
@@ -133,9 +142,9 @@ export function allowedPlan(
   for (const age of ages) {
     const src = plan?.[age] ?? starterLoadout(t, age);
     const { units, turrets } = ageCards(t, age);
-    // The sixth troop slot (X0: a General's content-wave signature card) stays empty when its card is not
-    // allowed yet, so early bots field the same five cards as before.
-    let u = fill(src.units.map((id) => (id !== null && allowed(id) ? id : null)), units.filter(allowed), 5);
+    // A18.9 (owner request 2026-10-07): bots field seven troops like the player. A card above the
+    // allowance is replaced, and every empty slot is filled, from the allowed cards of that age.
+    let u = fill(padUnits(src.units).map((id) => (id !== null && allowed(id) ? id : null)), units.filter(allowed));
     const legendary = legendaries[age] ? units.find((id) => t.units[id]?.rarity === 'legendary') : undefined;
     if (legendary && !u.includes(legendary)) {
       const epic = u.findIndex((id) => id !== null && t.units[id]?.rarity === 'epic');
@@ -159,7 +168,7 @@ function fullPlan(t: Content, plan: Plan | null, ages: readonly AgeId[]): Plan {
   const keep = (id: CardId | null): CardId | null => (id !== null && isReleased(t, id) ? id : null);
   for (const age of ages) {
     const l = plan?.[age] ?? starterLoadout(t, age);
-    out[age] = { ...l, units: l.units.map(keep), turrets: l.turrets.map(keep) };
+    out[age] = { ...l, units: padUnits(l.units).map(keep), turrets: l.turrets.map(keep) };
   }
   return out;
 }

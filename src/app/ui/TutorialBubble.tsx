@@ -17,6 +17,8 @@ const TESTID: Partial<Record<PromptTarget, string>> = {
   card2: 'hud-card-2',
   card3: 'hud-card-3',
   card4: 'hud-card-4',
+  card5: 'hud-card-5',
+  card6: 'hud-card-6',
   gold: 'hud-gold',
   evolve: 'hud-evolve',
   power: 'hud-power',
