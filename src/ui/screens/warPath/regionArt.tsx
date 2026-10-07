@@ -17,6 +17,8 @@ import type { AgeId } from '@/contracts';
 import { fnv1a32, mulberry32 } from '@/core';
 import type { ComponentChildren } from 'preact';
 import { GroundDetail, Hills, SetPieces, Water } from './regionScenery';
+import { Cumulus, Mountains } from './skyArt';
+import { mix } from '../../components/tone';
 import { bones, boulder, broadleaf, cannon, chimney, column, cottage, crates, crystal, cypress, dome, Grove, hay, type KitProp, lamp, mast, palm, pine, pylon, sandbags, shroom, tent, whiteHouse, windmill, barrels, block } from './propKit';
 
 export interface RegionTheme {
@@ -100,15 +102,6 @@ function ridge(rng: Rng, w: number, base: number, amp: number, step: number, bot
   return `${d} L${last[0]} ${last[1].toFixed(1)} L${last[0]} ${bottom} Z`;
 }
 
-/** A jagged mountain range (Stone Age, crystal peaks). */
-function peaks(rng: Rng, w: number, base: number, amp: number, step: number, bottom: number): string {
-  let d = `M${-step} ${bottom} L${-step} ${base}`;
-  for (let x = -step; x <= w + step; x += step) {
-    const top = base - amp * (0.45 + rng.next() * 0.55);
-    d += ` L${(x + step * 0.5).toFixed(1)} ${top.toFixed(1)} L${(x + step).toFixed(1)} ${(base - rng.next() * amp * 0.25).toFixed(1)}`;
-  }
-  return `${d} L${w + step * 2} ${bottom} Z`;
-}
 
 // ---------------------------------------------------------------------------------------------
 // Far skylines (one landmark per age)
@@ -329,17 +322,15 @@ export function RegionFar(p: { age: AgeId; w: number; h: number; horizon: number
           const k = 0.6 + rng.next() * 0.8;
           return (
             <g key={`c${i}`} class="wp-cloud" style={{ animationDuration: `${50 + i * 17}s`, animationDelay: `${-i * 13}s` }}>
-              <g transform={`translate(${cx.toFixed(0)} ${cy.toFixed(0)}) scale(${k.toFixed(2)})`} opacity=".55">
-                <ellipse cx="0" cy="0" rx="46" ry="11" fill="#fff" opacity=".5" />
-                <ellipse cx="-14" cy="-6" rx="22" ry="11" fill="#fff" opacity=".55" />
-                <ellipse cx="12" cy="-8" rx="18" ry="10" fill="#fff" opacity=".6" />
-                <ellipse cx="0" cy="3" rx="40" ry="6" fill={t.skyBottom} opacity=".5" />
+              <g transform={`translate(${cx.toFixed(0)} ${cy.toFixed(0)}) scale(${k.toFixed(2)})`}>
+                <Cumulus kind={i} sky={t.skyBottom} tint={mix('#f4f1ea', t.sun, 0.18)} opacity={0.82} />
               </g>
             </g>
           );
         })
       )}
-      <path d={p.age === 'stone' || p.age === 'cosmic' ? peaks(rng, p.w, hz, p.h * 0.2, 90, p.h) : ridge(rng, p.w, hz, p.h * 0.14, 120, p.h)} fill={t.far1} opacity=".8" />
+      {/* UI art audit #7: a two-tone far range (snow caps where the age has peaks) faded toward the sky, then the nearer ridge */}
+      {Mountains({ rng, w: p.w, base: hz + 2, amp: p.h * (p.age === 'stone' || p.age === 'cosmic' || p.age === 'medieval' ? 0.22 : 0.15), step: 110, color: t.far1, sky: t.skyBottom, fade: 0.32, snow: p.age === 'stone' || p.age === 'medieval' || p.age === 'gunpowder', bottom: p.h })}
       {Skyline({ age: p.age, w: p.w, h: p.h, hz: hz + 4, t, rng, ceiling: p.ceiling })}
       <path d={ridge(rng, p.w, hz + 10, p.h * 0.07, 80, p.h)} fill={t.far2} />
       <rect y={hz - 6} width={p.w} height="24" fill={t.skyBottom} opacity=".22" />
@@ -352,7 +343,7 @@ export function RegionFar(p: { age: AgeId; w: number; h: number; horizon: number
 // ---------------------------------------------------------------------------------------------
 
 /** Each age's trees (grown in groves) and its other props (UI art audit #7: the shared prop kit). */
-const TREES: Readonly<Record<AgeId, readonly KitProp[]>> = {
+export const TREES: Readonly<Record<AgeId, readonly KitProp[]>> = {
   stone: [pine, pine, broadleaf],
   bronze: [cypress, broadleaf, palm],
   medieval: [broadleaf, broadleaf, pine],
@@ -426,7 +417,7 @@ export function RegionGround(p: { age: AgeId; w: number; h: number; horizon: num
   const fit = Math.max(0.85, Math.min(1.15, p.h / 600));
   const top = hz + 30;
   const bottom = p.h - p.bottomClear;
-  for (let x = 30; x < p.w - 20; x += 120 + rng.next() * 70) {
+  for (let x = 24; x < p.w - 20; x += 64 + rng.next() * 56) {
     const ry = p.roadY(x);
     const above = rng.next() < 0.5;
     const y = above ? ry - p.clear - 14 - rng.next() * Math.max(10, ry - p.clear - 14 - top) : ry + p.clear + 34 + rng.next() * Math.max(10, bottom - ry - p.clear - 34);

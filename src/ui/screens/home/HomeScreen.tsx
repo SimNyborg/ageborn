@@ -30,6 +30,7 @@ import '../warPath/warPath.css';
 import './lobby.css';
 import type { AgeId, CardId, FormatId, Loadout } from '@/contracts';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { Wordmark } from '../../components/Wordmark';
 import { Button } from '../../components/Button';
 import { SwordsIcon } from '../../components/icons';
 import { useKit } from '../../components/kit';
@@ -309,7 +310,7 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
           <HubProfile />
         ) : (
           <span class="hub-wordmark" data-testid="home-wordmark">
-            {t('ui.home.gameName')}
+            <Wordmark text={t('ui.home.gameName')} height={44} />
           </span>
         )}
         <span />

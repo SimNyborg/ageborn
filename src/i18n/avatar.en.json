@@ -1,0 +1,314 @@
+{
+  "avatar": {
+    "part": {
+      "face_round": {
+        "name": "Round"
+      },
+      "face_oval": {
+        "name": "Oval"
+      },
+      "face_square": {
+        "name": "Square jaw"
+      },
+      "face_long": {
+        "name": "Long"
+      },
+      "face_heart": {
+        "name": "Heart"
+      },
+      "eyes_bright": {
+        "name": "Bright"
+      },
+      "eyes_wide": {
+        "name": "Wide"
+      },
+      "eyes_happy": {
+        "name": "Happy"
+      },
+      "eyes_sleepy": {
+        "name": "Sleepy"
+      },
+      "eyes_sharp": {
+        "name": "Sharp"
+      },
+      "eyes_round": {
+        "name": "Round"
+      },
+      "eyes_almond": {
+        "name": "Almond"
+      },
+      "eyes_wink": {
+        "name": "Wink"
+      },
+      "eyes_tired": {
+        "name": "Tired"
+      },
+      "eyes_starry": {
+        "name": "Starry"
+      },
+      "brows_determined": {
+        "name": "Determined"
+      },
+      "brows_raised": {
+        "name": "Raised"
+      },
+      "brows_arched": {
+        "name": "Arched"
+      },
+      "brows_bushy": {
+        "name": "Bushy"
+      },
+      "brows_thin": {
+        "name": "Thin"
+      },
+      "brows_scarred": {
+        "name": "Scarred"
+      },
+      "brows_uni": {
+        "name": "Unibrow"
+      },
+      "brows_worried": {
+        "name": "Worried"
+      },
+      "nose_button": {
+        "name": "Button"
+      },
+      "nose_round": {
+        "name": "Round"
+      },
+      "nose_long": {
+        "name": "Long"
+      },
+      "nose_hook": {
+        "name": "Hooked"
+      },
+      "nose_wide": {
+        "name": "Wide"
+      },
+      "nose_small": {
+        "name": "Small"
+      },
+      "mouth_smile": {
+        "name": "Smile"
+      },
+      "mouth_grin": {
+        "name": "Grin"
+      },
+      "mouth_flat": {
+        "name": "Straight"
+      },
+      "mouth_shout": {
+        "name": "Shout"
+      },
+      "mouth_smirk": {
+        "name": "Smirk"
+      },
+      "mouth_whistle": {
+        "name": "Whistle"
+      },
+      "mouth_toothy": {
+        "name": "Toothy"
+      },
+      "mouth_gap": {
+        "name": "Gap tooth"
+      },
+      "mouth_laugh": {
+        "name": "Laugh"
+      },
+      "mouth_frown": {
+        "name": "Frown"
+      },
+      "hair_bald": {
+        "name": "Bald"
+      },
+      "hair_crop": {
+        "name": "Crop"
+      },
+      "hair_spikes": {
+        "name": "Spikes"
+      },
+      "hair_long": {
+        "name": "Long"
+      },
+      "hair_topknot": {
+        "name": "Topknot"
+      },
+      "hair_mohawk": {
+        "name": "Crest"
+      },
+      "hair_braids": {
+        "name": "Braids"
+      },
+      "hair_bob": {
+        "name": "Bob"
+      },
+      "hair_curls": {
+        "name": "Curls"
+      },
+      "hair_afro": {
+        "name": "Afro"
+      },
+      "hair_ponytail": {
+        "name": "Ponytail"
+      },
+      "hair_sidepart": {
+        "name": "Side part"
+      },
+      "hair_buzz": {
+        "name": "Buzz cut"
+      },
+      "hair_bun": {
+        "name": "Bun"
+      },
+      "hair_wild": {
+        "name": "Wild"
+      },
+      "hair_tiedback": {
+        "name": "Tied back"
+      },
+      "beard_none": {
+        "name": "None"
+      },
+      "beard_stubble": {
+        "name": "Stubble"
+      },
+      "beard_full": {
+        "name": "Full beard"
+      },
+      "beard_moustache": {
+        "name": "Moustache"
+      },
+      "beard_goatee": {
+        "name": "Goatee"
+      },
+      "beard_chops": {
+        "name": "Mutton chops"
+      },
+      "beard_braided": {
+        "name": "Braided beard"
+      },
+      "beard_handlebar": {
+        "name": "Handlebar"
+      },
+      "hat_none": {
+        "name": "None"
+      },
+      "hat_horned_helm": {
+        "name": "Horned Helm"
+      },
+      "hat_headband": {
+        "name": "Red Headband"
+      },
+      "hat_ranger_hat": {
+        "name": "Ranger Hat"
+      },
+      "hat_tin_crown": {
+        "name": "Tin Crown"
+      },
+      "hat_olive_helmet": {
+        "name": "Olive Helmet"
+      },
+      "top_tunic": {
+        "name": "Tunic"
+      },
+      "top_hoodie": {
+        "name": "Hoodie"
+      },
+      "top_vest": {
+        "name": "Leather Vest"
+      },
+      "top_tee": {
+        "name": "Tee"
+      },
+      "top_padded": {
+        "name": "Padded Jacket"
+      },
+      "top_robe": {
+        "name": "Robe"
+      },
+      "acc_none": {
+        "name": "None"
+      },
+      "acc_war_paint": {
+        "name": "War Paint"
+      },
+      "acc_freckles": {
+        "name": "Freckles"
+      },
+      "acc_bandage": {
+        "name": "Bandage"
+      },
+      "bg_sky": {
+        "name": "Sky"
+      },
+      "bg_meadow": {
+        "name": "Meadow"
+      },
+      "bg_violet": {
+        "name": "Violet"
+      },
+      "bg_ember": {
+        "name": "Ember"
+      },
+      "bg_sun": {
+        "name": "Sun"
+      },
+      "bg_lagoon": {
+        "name": "Lagoon"
+      },
+      "bg_rose": {
+        "name": "Rose"
+      },
+      "bg_slate": {
+        "name": "Slate"
+      }
+    },
+    "slot": {
+      "face": "Face",
+      "eyes": "Eyes",
+      "brows": "Brows",
+      "nose": "Nose",
+      "mouth": "Mouth",
+      "hair": "Hair",
+      "facialHair": "Beard",
+      "headwear": "Hat",
+      "top": "Top",
+      "accessory": "Extras",
+      "background": "Backdrop",
+      "frame": "Frame",
+      "banner": "Banner",
+      "title": "Title"
+    },
+    "tint": {
+      "skin": "Skin tone",
+      "hair": "Hair colour",
+      "eyes": "Eye colour",
+      "cloth": "Cloth colour"
+    },
+    "ui": {
+      "make": "Make your General",
+      "makeLead": "This is you on the battlefield. Change anything now or later in Customize.",
+      "done": "Done",
+      "shuffle": "Shuffle",
+      "undo": "Undo",
+      "name": "Name",
+      "general": "General",
+      "look": "Your General",
+      "earned": "Earned in play. Never sold.",
+      "tryingOn": "Trying on",
+      "locked": "Locked",
+      "equip": "Wear",
+      "equipped": "Wearing",
+      "new": "New",
+      "wardrobe": "General’s wardrobe",
+      "wardrobeFound": "{n}/{total} found",
+      "edit": "Edit your General",
+      "none": "None",
+      "frameNone": "No frame",
+      "frameLocked": "Codex Level {n}",
+      "bannerLocked": "Reach Arena {n}",
+      "titleLocked": "Not earned yet",
+      "back": "Back to Profile"
+    }
+  }
+}

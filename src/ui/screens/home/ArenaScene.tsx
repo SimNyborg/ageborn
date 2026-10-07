@@ -8,6 +8,20 @@
 import type { ArenaId } from '@/content/types';
 import { fnv1a32, mulberry32 } from '@/core';
 import { useMemo } from 'preact/hooks';
+import { mix } from '../../components/tone';
+import { Cumulus, Flock, type BirdKind } from '../warPath/skyArt';
+
+/** Each arena's birds (UI art audit #5): crows, gulls, pigeons, hover-drones and star-mantas. */
+export const ARENA_BIRDS: Readonly<Record<ArenaId, BirdKind>> = {
+  tar_pits: 'crow',
+  frostfang: 'gull',
+  kingsmoat: 'crow',
+  powder_bay: 'gull',
+  iron_front: 'pigeon',
+  neon_harbor: 'pigeon',
+  orbital_ring: 'drone',
+  chrono_rift: 'manta',
+};
 
 interface ArenaPalette {
   skyTop: string;
@@ -191,13 +205,18 @@ export function ArenaScene(p: { arena: ArenaId }) {
   }, [seed]);
   const clouds = useMemo(() => {
     const rng = mulberry32(seed + 11);
-    return Array.from({ length: 4 }, (_, i) => ({
-      top: `${(6 + rng.next() * 30).toFixed(1)}%`,
-      w: `${(14 + rng.next() * 14).toFixed(1)}%`,
-      dur: `${(70 + rng.next() * 50).toFixed(0)}s`,
-      delay: `${(-(i * 30) - rng.next() * 20).toFixed(0)}s`,
-      o: (0.35 + rng.next() * 0.35).toFixed(2),
-    }));
+    // three depths: far clouds small, slow and hazy; near ones larger, faster and crisper
+    return Array.from({ length: 5 }, (_, i) => {
+      const depth = i % 3;
+      return {
+        top: `${(4 + rng.next() * 28 + depth * 3).toFixed(1)}%`,
+        w: `${(9 + depth * 6 + rng.next() * 5).toFixed(1)}%`,
+        dur: `${(150 - depth * 40 + rng.next() * 30).toFixed(0)}s`,
+        delay: `${(-(i * 37) - rng.next() * 20).toFixed(0)}s`,
+        o: (0.55 + depth * 0.15).toFixed(2),
+        kind: i,
+      };
+    });
   }, [seed]);
   const gid = `home-sky-${p.arena}`;
   return (
@@ -212,24 +231,30 @@ export function ArenaScene(p: { arena: ArenaId }) {
         <rect width={W} height={H} fill={`url(#${gid})`} />
         <circle cx="800" cy="520" r="260" fill={pal.glow} opacity=".16" />
         <circle cx="800" cy="520" r="140" fill={pal.glow} opacity=".14" />
+        {/* a soft sun with a lit rim and faint rays (UI art audit §2.1), tinted by the arena glow */}
+        <g class="home-scene__sun" transform="translate(1210 210)">
+          <g class="home-scene__rays" opacity=".045">
+            {Array.from({ length: 12 }, (_, i) => (
+              <path key={i} d="M-6 -78 L0 -150 L6 -78Z" fill={pal.glow} transform={`rotate(${i * 30})`} />
+            ))}
+          </g>
+          <circle r="120" fill={pal.glow} opacity=".12" />
+          <circle r="50" fill={pal.glow} opacity=".5" />
+          <circle r="40" fill={mix(pal.glow, '#ffffff', 0.45)} />
+          <path d="M-40 0 A40 40 0 0 0 40 0 A40 33 0 0 1 -40 0Z" fill={pal.glow} opacity=".5" />
+        </g>
       </svg>
       <div class="home-scene__clouds">
         {clouds.map((c, i) => (
-          <svg key={i} class="home-scene__cloud" viewBox="0 0 200 60" style={{ top: c.top, width: c.w, animationDuration: c.dur, animationDelay: c.delay, opacity: c.o }}>
-            <ellipse cx="100" cy="40" rx="92" ry="16" fill="#fff" opacity=".45" />
-            <ellipse cx="72" cy="30" rx="40" ry="20" fill="#fff" opacity=".55" />
-            <ellipse cx="118" cy="24" rx="34" ry="20" fill="#fff" opacity=".6" />
-            <ellipse cx="100" cy="46" rx="80" ry="8" fill={pal.skyBottom} opacity=".5" />
+          <svg key={i} class="home-scene__cloud" viewBox="-60 -50 120 54" style={{ top: c.top, width: c.w, animationDuration: c.dur, animationDelay: c.delay, opacity: c.o }}>
+            <Cumulus kind={c.kind} sky={pal.skyBottom} tint={mix('#f4f1ea', pal.glow, 0.22)} />
           </svg>
         ))}
       </div>
       <div class="home-scene__birds">
         {[0, 1].map((k) => (
           <span key={k} class={`home-scene__flock home-scene__flock--${k}`}>
-            <i />
-            <i />
-            <i />
-            <i />
+            <Flock kind={ARENA_BIRDS[p.arena]} n={k ? 3 : 5} size={k ? 18 : 22} seed={seed + k} />
           </span>
         ))}
       </div>

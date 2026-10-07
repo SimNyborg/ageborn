@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { CardId, Meta, SaveDoc } from '../../src/contracts';
 import { content, isReleased } from '../../src/content';
 import { seedSfc32 } from '../../src/core/rng';
-import { amberBacklog, ECONOMY_TARGETS, economyChecks, economyDefaults, EconomyRecorder, medianMeasures, questApi, runEconomy, simulateEconomy, syntheticStats, type EconomyMeasures } from '../economy';
+import { amberBacklog, ECONOMY_TARGETS, economyChecks, economyDefaults, EconomyRecorder, medianMeasures, planChecks, questApi, runEconomy, simulateEconomy, syntheticStats, type EconomyMeasures } from '../economy';
 import { loadMeta } from '../lib/modules';
 
 // The collectable cards the recorder counts: released ones only (an unreleased card never drops).
@@ -46,12 +46,15 @@ describe('EconomyRecorder (A6.9 measures)', () => {
     expect(m.perDay.dust).toBe(0);
     expect(m.maxDay).toEqual({ common: 19, rare: 14, epic: 9, legendary: 24 });
     expect(m.copiesDoneDay).toBe(24);
-    // Every collectable card × 4,970 Amber (88 cards = 437,360, A17.13) at 16,000 a day: 88 cards finish on
-    // day index 27; a content wave's extra cards push it past the 30 recorded days (null).
+    // Every collectable card × 20,020 Amber (the years-long curve, 2026-10-07; 4,970 before) at 16,000 a
+    // day: past the 30 recorded days, so the finish is projected at the last 60 days' income (16,000).
     const perCard = content.rarities.upgradeAmber.reduce((a, b) => a + b, 0);
-    expect(perCard).toBe(4970);
+    expect(perCard).toBe(20020);
     const amberDay = Math.ceil((cards.length * perCard) / 16_000) - 1;
     expect(m.amberDoneDay).toBe(amberDay < 30 ? amberDay : null);
+    expect(m.amberDoneProjected).toBe(amberDay < 30 ? amberDay : 29 + Math.ceil((cards.length * perCard - 30 * 16_000) / 16_000));
+    // The copies finish on day 24, so the collection is projected to max when the Amber does.
+    expect(m.collectionMaxedProjected).toBe(m.amberDoneProjected);
     expect(m.allLegendariesDay).toBe(5);
     // Every card but the Legendaries is owned on day 0 here, the Legendaries on day 5; none reaches the cap.
     expect(m.cards100Day).toBe(0);
@@ -68,14 +71,14 @@ describe('the Amber gate (owner feedback 2026-10-07)', () => {
       collection: {
         // Common L1 with 6 copies: L2 (2 copies, 20 Amber) and L3 (3 copies, 50 Amber); 1 copy left.
         bonker: { level: 1, copies: 6 },
-        // Legendary L9 with 2 copies: L10 (2 copies, 1,700 Amber).
+        // Legendary L9 with 2 copies: L10 (2 copies, 12,000 Amber; 1,700 before the years-long curve).
         [cards.find((c) => c.rarity === 'legendary')?.id ?? '']: { level: 9, copies: 2 },
         // Not owned, and an unknown id: never counted.
         pebbler: { level: 0, copies: 40 },
         nope: { level: 1, copies: 99 },
       },
     } as unknown as SaveDoc;
-    expect(amberBacklog(save, content)).toBe(20 + 50 + 1700);
+    expect(amberBacklog(save, content)).toBe(20 + 50 + 12_000);
     expect(amberBacklog(save, content, new Set(['bonker']))).toBe(70);
   });
 
@@ -91,11 +94,34 @@ describe('the Amber gate (owner feedback 2026-10-07)', () => {
     const m = rec.measures([0, 30]);
     expect(m.amberGate.blockedShareWeek1).toBeCloseTo(4 / 7, 6);
     expect(m.amberGate.blockedShare).toBeCloseTo(28 / 31, 6);
+    // Days 10-364, clipped to the 31 recorded days: 10-30 are all blocked.
+    expect(m.amberGate.blockedShareYear).toBe(1);
     expect(m.amberGate.backlogDays.d7).toBeCloseTo(2.5, 6);
     expect(m.amberGate.backlogDays.d30).toBeCloseTo(14, 6);
     expect(m.amberGate.backlogDays.d90).toBeNaN();
     expect(m.amberGate.bankDays).toBeCloseTo(0.1, 6);
     expect(m.starter).toEqual({ level7: 3, plan7: 4, maxed7: 0, maxed30: 0, planMaxDay: null });
+    expect(m.planMaxDay).toBeNull();
+    expect(m.upgradeCost.maxDays).toBeNaN();
+  });
+
+  it('measures each upgrade in days of income when bought and the day the active War Plan is maxed', () => {
+    const rec = new EconomyRecorder(content);
+    const cap = content.economy.maxLevel;
+    for (let day = 0; day <= 20; day += 1) {
+      rec.amber(day, 1000);
+      if (day === 5) rec.upgrade(day, 7, 800);
+      if (day === 10) rec.upgrade(day, cap, 3000);
+      if (day === 15) rec.upgrade(day, cap, 5000);
+      // The plan changes on day 12 (a turret joins it); the whole active plan is at the cap from day 18.
+      const plan = day < 12 ? ['bonker'] : ['bonker', 'pebbler'];
+      rec.snapshot(day, new Map([['bonker', day >= 8 ? cap : 1], ['pebbler', day >= 18 ? cap : 1]]), plan, cap);
+    }
+    const m = rec.measures([0, 20]);
+    expect(m.upgradeCost).toEqual({ maxDays: 5, topMedianDays: 4, topMaxDays: 5 });
+    expect(m.planMaxDay).toBe(8);
+    // The first War Plan (day 0: bonker) is all at the cap on day 8 too.
+    expect(m.starter.planMaxDay).toBe(8);
   });
 });
 
@@ -114,11 +140,23 @@ describe('economyChecks', () => {
     maxed50Day: 80,
     planL7Day: 42,
     levelMaxDay: { common: 230, rare: 255, epic: 265, legendary: 257 },
-    amberGate: { blockedShare: 1, blockedShareWeek1: 0.7, backlogDays: { d7: 3.5, d30: 35, d90: 130 }, bankDays: 0.05 },
-    starter: { level7: 3.5, plan7: 3.65, maxed7: 0, maxed30: 0, planMaxDay: 215 },
+    amberGate: { blockedShare: 1, blockedShareWeek1: 0.7, blockedShareYear: 1, backlogDays: { d7: 5.5, d30: 88, d90: 760 }, bankDays: 0.05 },
+    starter: { level7: 3.5, plan7: 3.65, maxed7: 0, maxed30: 0, planMaxDay: null },
+    planMaxDay: null,
+    upgradeCost: { maxDays: 2.3, topMedianDays: Number.NaN, topMaxDays: Number.NaN },
     copiesDoneDay: 220,
-    amberDoneDay: 300,
-    collectionMaxedDay: 300,
+    amberDoneDay: null,
+    collectionMaxedDay: null,
+    amberDoneProjected: 1300,
+    collectionMaxedProjected: 1300,
+  };
+  // The War-Plan-only player on target (owner decision 2026-10-07).
+  const planOnTarget: EconomyMeasures = {
+    ...onTarget,
+    days: 548,
+    amberGate: { ...onTarget.amberGate, blockedShare: 0.78, blockedShareWeek1: 0, blockedShareYear: 0.94, bankDays: 0.8 },
+    planMaxDay: 410,
+    upgradeCost: { maxDays: 5.8, topMedianDays: 4, topMaxDays: 5.8 },
   };
 
   it('passes the A6.9 table itself', () => {
@@ -128,9 +166,14 @@ describe('economyChecks', () => {
   });
 
   it('fails outside ±20%, Amber finishing too close to the copies, milestones never reached and a loose Amber gate', () => {
-    const bad = economyChecks({ ...onTarget, perDay: { ...onTarget.perDay, amber: 6300 }, copiesDoneDay: 240, amberDoneDay: 250, planL7Day: null });
+    const bad = economyChecks({ ...onTarget, perDay: { ...onTarget.perDay, amber: 6300 }, copiesDoneDay: 240, amberDoneDay: 250, amberDoneProjected: 250, planL7Day: null });
     const failed = bad.filter((c) => c.verdict === 'fail').map((c) => c.id);
-    expect(failed).toEqual(['economy.amberPerDay', 'economy.planL7', 'economy.amberLag']);
+    expect(failed).toEqual(['economy.amberPerDay', 'economy.planL7', 'economy.amberDone', 'economy.amberLag']);
+    // A collection that maxes within a year fails the years-long target (owner decision 2026-10-07).
+    const fast = economyChecks({ ...onTarget, collectionMaxedDay: 313, collectionMaxedProjected: 313, amberDoneDay: 313, amberDoneProjected: 313 });
+    expect(fast.filter((c) => c.verdict === 'fail').map((c) => c.id)).toEqual(['economy.amberDone', 'economy.collectionMaxed']);
+    expect(fast.find((c) => c.id === 'economy.collectionMaxed')?.metric).not.toMatch(/projected/);
+    expect(economyChecks(onTarget).find((c) => c.id === 'economy.collectionMaxed')?.metric).toMatch(/projected/);
     // The Amber gate (owner feedback 2026-10-07): Amber must bind on most days, the first week stays
     // generous (a day-7 backlog of 1-7 days of income) and the first War Plan keeps its pace.
     const loose = economyChecks({ ...onTarget, amberGate: { ...onTarget.amberGate, blockedShare: 0.5, backlogDays: { d7: 0, d30: 2, d90: 5 } }, starter: { ...onTarget.starter, plan7: 3.0 } });
@@ -138,6 +181,17 @@ describe('economyChecks', () => {
     const stingy = economyChecks({ ...onTarget, amberGate: { ...onTarget.amberGate, backlogDays: { d7: 9, d30: 60, d90: 200 } } });
     expect(stingy.filter((c) => c.verdict === 'fail').map((c) => c.id)).toEqual(['economy.week1Backlog']);
     expect(bad.find((c) => c.id === 'economy.amberGate')?.verdict).toBe('info');
+  });
+
+  it('gates the War-Plan-only player: save up on most days, L10 takes days, no level out of reach, the plan in 12-18 months', () => {
+    const ok = planChecks(planOnTarget);
+    expect(ok.filter((c) => c.verdict !== 'pass' && c.verdict !== 'info')).toEqual([]);
+    // Before the years-long curve: never Amber-blocked, L10 half a day of income, the plan maxed in 7 months.
+    const loose = planChecks({ ...planOnTarget, amberGate: { ...planOnTarget.amberGate, blockedShareYear: 0 }, upgradeCost: { maxDays: 0.8, topMedianDays: 0.5, topMaxDays: 0.8 }, planMaxDay: 214 });
+    expect(loose.filter((c) => c.verdict === 'fail').map((c) => c.id)).toEqual(['economy.plan.blocked', 'economy.plan.topUpgrade', 'economy.plan.maxed']);
+    // Too stingy: an upgrade costing three weeks of income, the plan not maxed in 18 months.
+    const stingy = planChecks({ ...planOnTarget, upgradeCost: { maxDays: 21, topMedianDays: 15, topMaxDays: 21 }, planMaxDay: null });
+    expect(stingy.filter((c) => c.verdict === 'fail').map((c) => c.id)).toEqual(['economy.plan.maxUpgrade', 'economy.plan.maxed']);
   });
 });
 
@@ -155,11 +209,15 @@ describe('medianMeasures (the 30-seed gate)', () => {
     maxed50Day: 80,
     planL7Day: 78,
     levelMaxDay: { common: 160, rare: 170, epic: 175, legendary: 170 },
-    amberGate: { blockedShare: 1, blockedShareWeek1: 0.14, backlogDays: { d7: 0.4, d30: 14, d90: 62 }, bankDays: 0.07 },
+    amberGate: { blockedShare: 1, blockedShareWeek1: 0.14, blockedShareYear: 1, backlogDays: { d7: 0.4, d30: 14, d90: 62 }, bankDays: 0.07 },
     starter: { level7: 3.5, plan7: 3.65, maxed7: 0, maxed30: 0, planMaxDay: 224 },
+    planMaxDay: 224,
+    upgradeCost: { maxDays: 1, topMedianDays: 0.5, topMaxDays: 1 },
     copiesDoneDay: 190,
     amberDoneDay: 143,
     collectionMaxedDay: 200,
+    amberDoneProjected: 143,
+    collectionMaxedProjected: 200,
   };
 
   it('takes the median of every measure; a milestone missed by half the runs is not reached', () => {
@@ -175,6 +233,8 @@ describe('medianMeasures (the 30-seed gate)', () => {
     expect(economyDefaults().seeds).toBe(30);
     // The Sundial player (2026-09-30, A6.9): 7 finished ladder matches a day.
     expect(economyDefaults().matchesPerDay).toBe(7);
+    // The War-Plan-only player runs 18 months beside the collector (owner decision 2026-10-07).
+    expect(economyDefaults().planDays).toBe(548);
   });
 });
 
@@ -214,6 +274,10 @@ describe('runEconomy', () => {
     // The casual player (3 matches a day) is reported, never gated.
     expect(r.data.casual?.days).toBe(3);
     expect(r.checks.find((x) => x.id === 'economy.casual')?.verdict).toBe('info');
+    // The War-Plan-only player runs (as long as the run, here) and is gated; its casual twin is reported.
+    expect(r.data.plan?.days).toBe(3);
+    expect(r.checks.find((x) => x.id === 'economy.plan.maxed')).toBeDefined();
+    expect(r.checks.find((x) => x.id === 'economy.casualPlan')?.verdict).toBe('info');
   }, 120_000);
 
   it('claims the daily quests of the A6.9 player when src/meta can', async (ctx) => {

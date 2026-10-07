@@ -6,7 +6,7 @@
  *
  * The dev page and tests use `createPreviewServices` (fixtures), which fakes the effects locally.
  */
-import type { AgeId, CardId, FormatId, OpponentSpec, PlanIssue, ReplayDoc, SaveDoc, Settings, SkinId, WarPathDifficulty } from '@/contracts';
+import type { AgeId, AvatarSlot, AvatarTint, CardId, FormatId, OpponentSpec, PlanIssue, ReplayDoc, SaveDoc, Settings, SkinId, WarPathDifficulty } from '@/contracts';
 import type { DailyDifficulty, MatchRequest } from '../router';
 
 export type WarPlan = SaveDoc['warPlans'][number];
@@ -31,7 +31,9 @@ export type CosmeticEquipPatch =
   | { slot: 'baseFlag' | 'nationalFlag' | 'backdrop'; key: string | null }
   | { slot: 'baseSkin'; age: AgeId; key: string | null }
   | { slot: 'decoration'; anchor: number; key: string | null }
-  | { slot: 'emotes' | 'quotes'; keys: string[] };
+  | { slot: 'emotes' | 'quotes'; keys: string[] }
+  /** The avatar creator's look ("Make your General"): starter parts and owned wearables only. */
+  | { slot: 'avatar'; look: Partial<Record<AvatarSlot, string>>; tints?: Partial<Record<AvatarTint, number>> };
 
 export interface UiServices {
   // ---- queries -------------------------------------------------------------------------------

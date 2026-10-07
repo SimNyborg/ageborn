@@ -7,7 +7,8 @@
       "nationalFlag": "National flags",
       "baseSkin": "Base skins",
       "decoration": "Decorations",
-      "backdrop": "Backdrops"
+      "backdrop": "Backdrops",
+      "avatar": "General’s wardrobe"
     },
     "emote": {
       "bonk": {
@@ -681,6 +682,296 @@
       "crateLine": "Every Wardrobe Crate also holds one collection item:",
       "items": "({n} items)",
       "rules": "Items you do not own come first; a duplicate only when you own every item of that rarity, and it turns into Dust. Every Time Capsule and crate item can also be crafted with Dust."
+    },
+    "avatar": {
+      "hat_wool_cap": {
+        "name": "Wool Cap"
+      },
+      "hat_bone_band": {
+        "name": "Tooth Band"
+      },
+      "hat_straw_hat": {
+        "name": "Straw Hat"
+      },
+      "hat_hood": {
+        "name": "Traveller’s Hood"
+      },
+      "hat_sailor_cap": {
+        "name": "Sailor Cap"
+      },
+      "hat_flat_cap": {
+        "name": "Flat Cap"
+      },
+      "hat_beret": {
+        "name": "Beret"
+      },
+      "hat_field_cap": {
+        "name": "Field Cap"
+      },
+      "hat_space_beanie": {
+        "name": "Space Beanie"
+      },
+      "hat_bandana": {
+        "name": "Bandana"
+      },
+      "hat_laurel": {
+        "name": "Laurel Wreath"
+      },
+      "hat_coif": {
+        "name": "Mail Coif"
+      },
+      "hat_tricorne": {
+        "name": "Tricorne"
+      },
+      "hat_pith_helmet": {
+        "name": "Pith Helmet"
+      },
+      "hat_aviator": {
+        "name": "Aviator Cap"
+      },
+      "hat_visor_band": {
+        "name": "Visor Band"
+      },
+      "hat_feather_cap": {
+        "name": "Feathered Cap"
+      },
+      "hat_wizard": {
+        "name": "Star Wizard Hat"
+      },
+      "hat_pirate": {
+        "name": "Captain’s Hat"
+      },
+      "hat_mammoth_hood": {
+        "name": "Mammoth Hood"
+      },
+      "hat_crest_helm": {
+        "name": "Crested Bronze Helm"
+      },
+      "hat_great_helm": {
+        "name": "Plumed Great Helm"
+      },
+      "hat_bicorne": {
+        "name": "Admiral’s Bicorne"
+      },
+      "hat_top_hat": {
+        "name": "Gas-Lamp Top Hat"
+      },
+      "hat_tank_goggles": {
+        "name": "Tank Commander Cap"
+      },
+      "hat_holo_crown": {
+        "name": "Holo-Crown"
+      },
+      "hat_astro_helm": {
+        "name": "Astro Helm"
+      },
+      "hat_frost_helm": {
+        "name": "Frost Jarl Helm"
+      },
+      "hat_sun_crown": {
+        "name": "Sun-Emperor Crown"
+      },
+      "hat_chrono_helm": {
+        "name": "Chrono Hourglass Helm"
+      },
+      "hat_curator_laurel": {
+        "name": "Grand Curator’s Laurel"
+      },
+      "hat_starborn_halo": {
+        "name": "Starborn Halo"
+      },
+      "top_fur_wrap": {
+        "name": "Fur Wrap"
+      },
+      "top_linen_chiton": {
+        "name": "Linen Chiton"
+      },
+      "top_peasant_tunic": {
+        "name": "Farmhand Tunic"
+      },
+      "top_sailor_shirt": {
+        "name": "Striped Sailor Shirt"
+      },
+      "top_work_overalls": {
+        "name": "Work Overalls"
+      },
+      "top_jumpsuit": {
+        "name": "Mechanic Jumpsuit"
+      },
+      "top_track_jacket": {
+        "name": "Track Jacket"
+      },
+      "top_cadet_suit": {
+        "name": "Cadet Suit"
+      },
+      "top_space_poncho": {
+        "name": "Comet Poncho"
+      },
+      "top_scarf_sweater": {
+        "name": "Scarf Sweater"
+      },
+      "top_apron": {
+        "name": "Smith’s Apron"
+      },
+      "top_rain_slicker": {
+        "name": "Rain Slicker"
+      },
+      "top_fur_mantle": {
+        "name": "Chieftain’s Mantle"
+      },
+      "top_bronze_cuirass": {
+        "name": "Bronze Cuirass"
+      },
+      "top_surcoat": {
+        "name": "Heraldic Surcoat"
+      },
+      "top_naval_coat": {
+        "name": "Naval Coat"
+      },
+      "top_waistcoat": {
+        "name": "Inventor’s Waistcoat"
+      },
+      "top_flight_jacket": {
+        "name": "Flight Jacket"
+      },
+      "top_hardlight_suit": {
+        "name": "Hardlight Suit"
+      },
+      "top_star_cloak": {
+        "name": "Star Cloak"
+      },
+      "top_chainmail": {
+        "name": "Chainmail Shirt"
+      },
+      "top_ranger_cloak": {
+        "name": "Ranger Cloak"
+      },
+      "top_dragon_scale": {
+        "name": "Dragonscale Armour"
+      },
+      "top_admiral_coat": {
+        "name": "Admiral’s Greatcoat"
+      },
+      "top_steam_armor": {
+        "name": "Steamplate Armour"
+      },
+      "top_nebula_cape": {
+        "name": "Nebula Cape"
+      },
+      "top_mech_harness": {
+        "name": "Mech Harness"
+      },
+      "top_royal_robe": {
+        "name": "Royal Robe"
+      },
+      "top_titan_pauldrons": {
+        "name": "Iron Titan Pauldrons"
+      },
+      "top_archivist_robe": {
+        "name": "Archivist’s Robe"
+      },
+      "top_phoenix_mantle": {
+        "name": "Phoenix Mantle"
+      },
+      "top_aeon_armor": {
+        "name": "Aeon Armour"
+      },
+      "acc_bone_necklace": {
+        "name": "Bone Necklace"
+      },
+      "acc_eyepatch": {
+        "name": "Eyepatch"
+      },
+      "acc_monocle": {
+        "name": "Monocle"
+      },
+      "acc_round_glasses": {
+        "name": "Round Glasses"
+      },
+      "acc_red_scarf": {
+        "name": "Red Scarf"
+      },
+      "acc_medal": {
+        "name": "Bronze Medal"
+      },
+      "acc_goggles": {
+        "name": "Brass Goggles"
+      },
+      "acc_aviator_shades": {
+        "name": "Aviator Shades"
+      },
+      "acc_war_horn": {
+        "name": "War Horn"
+      },
+      "acc_compass_pendant": {
+        "name": "Compass Pendant"
+      },
+      "acc_cyber_eye": {
+        "name": "Cyber Eyepiece"
+      },
+      "acc_gold_chain": {
+        "name": "Captain’s Chain"
+      },
+      "acc_dragon_tooth": {
+        "name": "Dragon Tooth"
+      },
+      "acc_holo_monocle": {
+        "name": "Holo Monocle"
+      },
+      "acc_scout_spyglass": {
+        "name": "Scout’s Golden Spyglass"
+      },
+      "acc_comet_orbit": {
+        "name": "Orbiting Comets"
+      },
+      "bg_cave": {
+        "name": "Cave Mouth"
+      },
+      "bg_temple": {
+        "name": "Hill Temple"
+      },
+      "bg_castle": {
+        "name": "Castle Walls"
+      },
+      "bg_harbor": {
+        "name": "Harbour"
+      },
+      "bg_foundry": {
+        "name": "Foundry"
+      },
+      "bg_city": {
+        "name": "City Blocks"
+      },
+      "bg_skyline": {
+        "name": "Neon Skyline"
+      },
+      "bg_nebula": {
+        "name": "Nebula"
+      },
+      "bg_sunset_dunes": {
+        "name": "Sunset Dunes"
+      },
+      "bg_aurora": {
+        "name": "Aurora"
+      },
+      "bg_volcano": {
+        "name": "Volcano"
+      },
+      "bg_battle_flags": {
+        "name": "Battle Flags"
+      },
+      "bg_storm": {
+        "name": "Storm"
+      },
+      "bg_starfield": {
+        "name": "Starfield"
+      },
+      "bg_golden_sky": {
+        "name": "Golden Sky"
+      },
+      "bg_time_vortex": {
+        "name": "Time Vortex"
+      }
     }
   }
 }

@@ -25,6 +25,8 @@ export interface RenderOptions {
   mood?: AvatarMood;
   /** Idle motion classes (blink, bob, sways); Reduce motion keeps only the blink (AUDIT §4). */
   motion: boolean;
+  /** Only the background plate, or only the figure (two-face portraits compose them). */
+  part?: 'all' | 'bg' | 'figure';
 }
 
 /** Slot order inside one layer. */
@@ -208,5 +210,8 @@ export function avatarSvg(look: ResolvedLook, lib: PartLibrary, o: RenderOptions
     );
   }
   const cls = `av-svg${o.motion ? ' av-svg--live' : ''}`;
-  return `<svg class="${cls}" viewBox="${VIEWBOX[o.crop]}" width="100%" height="100%" aria-hidden="true" focusable="false"><defs>${ctx.defs.join('')}</defs>${bg}<g class="av-bob">${body.join('')}</g></svg>`;
+  const part = o.part ?? 'all';
+  const back = part === 'figure' ? '' : bg;
+  const front = part === 'bg' ? '' : `<g class="av-bob">${body.join('')}</g>`;
+  return `<svg class="${cls}" viewBox="${VIEWBOX[o.crop]}" width="100%" height="100%" aria-hidden="true" focusable="false"><defs>${ctx.defs.join('')}</defs>${back}${front}</svg>`;
 }

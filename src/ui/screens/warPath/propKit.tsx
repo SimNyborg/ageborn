@@ -8,9 +8,13 @@
  * Props are drawn about their foot (0, 0), y up negative. Pure functions of the region theme and a
  * variant number, so the map's cached ground layers stay deterministic.
  */
+import type { CardId } from '@/contracts';
 import type { ComponentChildren } from 'preact';
 import { ink, light, shade } from '../../components/tone';
 import type { RegionTheme } from './regionArt';
+
+/** The player's stand-in on the map and the Home card: the Bronze Standard Bearer's Blender sheet (audit #6). */
+export const BEARER_CARD = 'standard_bearer' as CardId;
 
 let clipN = 0;
 

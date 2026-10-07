@@ -17,13 +17,15 @@ import type { AgeId } from '@/contracts';
 import type { ComponentChildren } from 'preact';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { GeneralPortrait } from '../../components/Avatar';
-import { CrownIcon, LockIcon, StarIcon } from '../../components/icons';
+import { ChestIcon, CrownIcon, LockIcon, StarIcon } from '../../components/icons';
+import { SpriteStrip } from '../../components/SpriteStrip';
 import { useKit } from '../../components/kit';
 import { useUi } from '../context';
 import { levelNameKey, regionNameKey, type MapNode, type MapRegion } from '../model/warPath';
 import { REGION_THEMES, RegionFar, RegionGround } from './regionArt';
 import { BossLair, Chest, EliteCrest, Foreground, Lantern, Scroll, UnlockBurst } from './mapDeco';
 import { StartCamp } from './regionScenery';
+import { BEARER_CARD } from './propKit';
 
 /** The map's geometry at a size. */
 export interface MapLayout {
@@ -739,37 +741,58 @@ function Node(p: { n: MapNode; layout: MapLayout; show: MapShow; onTap: Props['o
   );
 }
 
-/** X0: the side-node glyph: a small forked path sign. */
+/** X0: the side-node glyph: a small reward chest (UI art audit §2.2: the old forked sign read as a "Y"). */
 function SideGlyph() {
+  return <ChestIcon size={22} />;
+}
+
+/**
+ * The player's banner-bearer on the current node (MR-48): the Standard Bearer's own sheet in the
+ * player's team colour (SpriteStrip). It idles on its node and plays its walk clip, facing the way it
+ * goes, while it moves to the next node during the level-complete ceremony (the 450 ms move). Reduce
+ * motion holds a still frame and the move fades (warPath.css). The old code-drawn figure stays as the
+ * fallback while the sheet loads.
+ */
+function Bearer(p: { at: { x: number; y: number }; size: number }) {
+  const s = p.size / 56;
+  const footX = p.at.x - p.size * 0.5 - 14 * s;
+  const footY = p.at.y + 9 * s;
+  const prev = useRef(footX);
+  const [walk, setWalk] = useState<{ left: boolean } | null>(null);
+  useEffect(() => {
+    if (Math.abs(prev.current - footX) < 1) return;
+    setWalk({ left: footX < prev.current });
+    prev.current = footX;
+    const id = setTimeout(() => setWalk(null), 520);
+    return () => clearTimeout(id);
+  }, [footX]);
   return (
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-      <path d="M12 21V9" stroke="#1b140d" stroke-width="3" stroke-linecap="round" />
-      <path d="M12 9L6 4M12 9l6-5" stroke="#1b140d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M12 21V9" stroke="#fff3d6" stroke-width="1.4" stroke-linecap="round" />
-      <path d="M12 9L6 4M12 9l6-5" stroke="#fff3d6" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
+    <div class={`wp-bearer${walk ? ' is-walking' : ''}`} style={{ transform: `translate3d(${(footX - 48 * s).toFixed(1)}px, ${(footY - 94 * s).toFixed(1)}px, 0) scale(${s.toFixed(2)})` }} data-testid="wp-bearer" aria-hidden="true">
+      <i class="wp-bearer__shadow" />
+      <SpriteStrip
+        card={BEARER_CARD}
+        clip={walk ? 'walk' : 'idle'}
+        size={192}
+        frameMs={walk ? 70 : 150}
+        class="wp-bearer__strip"
+        flip={walk?.left ?? false}
+        fallback={<BearerFallback />}
+      />
+    </div>
   );
 }
 
-/** The player's banner-bearer on the current node (MR-48): a small figure with the team banner. */
-function Bearer(p: { at: { x: number; y: number }; size: number }) {
-  const s = p.size / 56;
+function BearerFallback() {
   return (
-    <div class="wp-bearer" style={{ transform: `translate3d(${(p.at.x - p.size * 0.5 - 30 * s).toFixed(1)}px, ${(p.at.y - 52 * s).toFixed(1)}px, 0) scale(${s.toFixed(2)})` }} data-testid="wp-bearer" aria-hidden="true">
-      <svg viewBox="0 0 40 64" width="40" height="64">
-        <ellipse cx="18" cy="61" rx="11" ry="3" fill="#000" opacity=".35" />
-        <g class="wp-bearer__body">
-          <path d="M14 60 L16 44 M22 60 L20 44" stroke="#2a2118" stroke-width="4" stroke-linecap="round" />
-          <path d="M11 44 Q10 30 18 28 Q26 30 25 44 Z" fill="#6b4a2c" stroke="#1b140d" stroke-width="1.5" />
-          <path d="M12 34 h12" stroke="#c9a15a" stroke-width="2" />
-          <circle cx="18" cy="23" r="6" fill="#e8b98e" stroke="#1b140d" stroke-width="1.5" />
-          <path d="M12 21 Q18 13 24 21 Z" fill="#8a6a48" stroke="#1b140d" stroke-width="1.2" />
-          <path d="M27 60 V6" stroke="#3b2a1e" stroke-width="2.6" stroke-linecap="round" />
-          <path d="M25 34 L27 34" stroke="#e8b98e" stroke-width="4" stroke-linecap="round" />
-          <path class="wp-bearer__flag" d="M27 7 H40 L36 13 L40 19 H27 Z" fill="var(--ui-team-me)" stroke="#0f1218" stroke-width="1.2" />
-        </g>
-      </svg>
-    </div>
+    <svg class="wp-bearer__fallback" viewBox="0 0 40 64" width="40" height="64">
+      <g class="wp-bearer__body">
+        <path d="M14 60 L16 44 M22 60 L20 44" stroke="#2a2118" stroke-width="4" stroke-linecap="round" />
+        <path d="M11 44 Q10 30 18 28 Q26 30 25 44 Z" fill="#6b4a2c" stroke="#3a2614" stroke-width="1.5" />
+        <circle cx="18" cy="23" r="6" fill="#e8b98e" stroke="#5a3a24" stroke-width="1.5" />
+        <path d="M27 60 V6" stroke="#3b2a1e" stroke-width="2.6" stroke-linecap="round" />
+        <path class="wp-bearer__flag" d="M27 7 H40 L36 13 L40 19 H27 Z" fill="var(--ui-team-me)" stroke="#133161" stroke-width="1.2" />
+      </g>
+    </svg>
   );
 }
 

@@ -18,9 +18,10 @@
  *
  * Pure and deterministic (B2).
  */
-import type { AgeId, BaseEmoteId, CapsuleTier, CosmeticLoadout, PendingCapsule, Rarity, Result, SaveDoc, SideLook } from '@/contracts';
+import type { AgeId, AvatarSlot, AvatarTint, BaseEmoteId, CapsuleTier, CosmeticLoadout, PendingCapsule, Rarity, Result, SaveDoc, SideLook } from '@/contracts';
 import type { Content, CosmeticCollection, CosmeticItemDef } from '@/content';
 import { cloneSfc32, pickWeighted, randInt, seedSfc32, type Sfc32State } from '@/core';
+import { setAvatarLook } from './avatar';
 
 export const COSMETIC_COLLECTIONS: readonly CosmeticCollection[] = ['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop', 'avatar'];
 const RARITIES: readonly Rarity[] = ['common', 'rare', 'epic', 'legendary'];
@@ -82,7 +83,9 @@ export type CosmeticEquip =
   | { slot: 'decoration'; anchor: number; key: string | null }
   | { slot: 'backdrop'; key: string | null }
   | { slot: 'emotes'; keys: string[] }
-  | { slot: 'quotes'; keys: string[] };
+  | { slot: 'quotes'; keys: string[] }
+  /** The avatar creator's look (owner request 2026-10-07): starter parts and owned wearables only. */
+  | { slot: 'avatar'; look: Partial<Record<AvatarSlot, string>>; tints?: Partial<Record<AvatarTint, number>> };
 
 const fail = (reason: string): Result<SaveDoc> => ({ ok: false, reason });
 
@@ -91,6 +94,7 @@ const fail = (reason: string): Result<SaveDoc> => ({ ok: false, reason });
  * `wheelFull`, `duplicate`.
  */
 export function equipCosmetic(s: SaveDoc, t: Content, e: CosmeticEquip): Result<SaveDoc> {
+  if (e.slot === 'avatar') return setAvatarLook(s, t, e.look, e.tints ?? {});
   const col = t.cosmetics.collections;
   const cur = equippedOf(s, t);
   const check = (key: string | null, collection: CosmeticCollection): string | null => {

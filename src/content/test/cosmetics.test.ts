@@ -54,7 +54,7 @@ describe('cosmetic collections (A18.9.4)', () => {
 
   it('is all earned: every source is a starter, a drop pool, the road, a feat, an arena, a Codex Level or the War Path', () => {
     const kinds = new Set(col.items.map((x) => x.source.kind));
-    for (const k of kinds) expect(['start', 'capsule', 'crate', 'road', 'feat', 'arena', 'codexLevel', 'warPath']).toContain(k);
+    for (const k of kinds) expect(['start', 'capsule', 'crate', 'road', 'feat', 'arena', 'codexLevel', 'warPath', 'warPathBoss', 'warPathStars', 'title']).toContain(k);
     for (const k of ['start', 'capsule', 'crate', 'road', 'feat']) expect(kinds.has(k as never), k).toBe(true);
   });
 

@@ -15,6 +15,7 @@ import type { Difficulty } from '@/content';
 import type { FormatId } from '@/contracts';
 import { tierNumeral } from '@/ui/components/format';
 import { GearIcon } from '@/ui/components/icons';
+import { Wordmark } from '@/ui/components/Wordmark';
 import { QUICK_BATTLE_GENERAL } from '../controller';
 import { difficultyTable } from '../matchSetup';
 import { displayName } from '../names';
@@ -162,7 +163,10 @@ export function TitleScreen(p: TitleScreenProps = {}) {
           ) : null}
         </div>
       ) : null}
-      <h1 class="ab-logo">{GAME_NAME}</h1>
+      <h1 class="ab-logo" style={{ WebkitTextStroke: '0', textShadow: 'none' }}>
+        {/* The logo lockup (UI art audit #19); the h1 keeps the name for assistive tech through the SVG label. */}
+        <Wordmark text={GAME_NAME} height={88} class="ab-logo__mark" />
+      </h1>
       {newPlayer ? (
         playCard
       ) : (

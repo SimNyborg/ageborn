@@ -735,3 +735,8 @@ export function StartCamp(p: { x: number; y: number; s: number; t: RegionTheme }
     </g>
   );
 }
+
+/** A region's hero set piece on its own (the Home War Path card draws it in its mid layer). */
+export function HeroPiece(p: { age: AgeId; t: RegionTheme }): ComponentChildren {
+  return PIECES[p.age][0](p.t);
+}

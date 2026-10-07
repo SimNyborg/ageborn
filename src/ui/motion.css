@@ -110,3 +110,98 @@
     animation: none;
   }
 }
+
+/* Birds (skyArt.tsx, UI art audit #5): a 5-frame flap strip stepped at 90 ms a frame, which hands over
+   to the glide pose for about 1.5 s of every cycle; reduce motion keeps the glide pose only. */
+.ui-bird {
+  display: block;
+  overflow: hidden;
+}
+.ui-bird--flip {
+  transform: scaleX(-1);
+}
+.ui-bird__strip {
+  animation: ui-bird-flap 450ms steps(5) infinite;
+  animation-delay: var(--bird-delay, 0s);
+}
+.ui-bird__flap {
+  animation: ui-bird-flapvis var(--bird-cycle, 6s) linear infinite;
+  animation-delay: var(--bird-delay, 0s);
+}
+.ui-bird__glide {
+  opacity: 0;
+  animation: ui-bird-glidevis var(--bird-cycle, 6s) linear infinite;
+  animation-delay: var(--bird-delay, 0s);
+}
+@keyframes ui-bird-flap {
+  to {
+    transform: translateX(-120px);
+  }
+}
+@keyframes ui-bird-flapvis {
+  0%,
+  72% {
+    opacity: 1;
+  }
+  72.1%,
+  97% {
+    opacity: 0;
+  }
+  97.1% {
+    opacity: 1;
+  }
+}
+@keyframes ui-bird-glidevis {
+  0%,
+  72% {
+    opacity: 0;
+  }
+  72.1%,
+  97% {
+    opacity: 1;
+  }
+  97.1% {
+    opacity: 0;
+  }
+}
+.ui-flock__bird {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.ui-root[data-reduce-motion='true'] :is(.ui-bird__strip, .ui-bird__flap, .ui-bird__glide) {
+  animation: none !important;
+}
+.ui-root[data-reduce-motion='true'] .ui-bird__flap {
+  opacity: 0;
+}
+.ui-root[data-reduce-motion='true'] .ui-bird__glide {
+  opacity: 1;
+}
+
+/* The logo lockup's one-time shine (Wordmark.tsx, UI art audit #19). */
+.ui-wordmark {
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+}
+.ui-wordmark__shine {
+  animation: ui-wordmark-shine 600ms var(--ui-ease-standard, ease-out) 450ms both;
+}
+@keyframes ui-wordmark-shine {
+  from {
+    transform: skewX(-20deg) translateX(0);
+  }
+  to {
+    transform: skewX(-20deg) translateX(320px);
+  }
+}
+.ui-root[data-reduce-motion='true'] .ui-wordmark__shine {
+  animation: none;
+  opacity: 0;
+}
+.ab-logo__mark {
+  height: 1.1em;
+  width: auto;
+  margin: 0 auto;
+}

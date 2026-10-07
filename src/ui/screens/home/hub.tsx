@@ -29,7 +29,11 @@ import { arenaOf, roadProgress, trayCapsules } from '../model/progress';
 import { currentLevelId, featureOpen, levelNameKey, mapRegions, playLevelId, regionNameKey, type HomeUnlock } from '../model/warPath';
 import { RoadRewardView } from '../shared/RoadReward';
 import { CurrencyInfo, SundialChip } from './parts';
-import { RegionFar } from '../warPath/regionArt';
+import { REGION_THEMES, RegionFar, TREES } from '../warPath/regionArt';
+import { BEARER_CARD, Grove } from '../warPath/propKit';
+import { HeroPiece } from '../warPath/regionScenery';
+import { SpriteStrip } from '../../components/SpriteStrip';
+import type { AgeId } from '@/contracts';
 
 // ---------------------------------------------------------------------------------------------
 // Top bar
@@ -177,6 +181,24 @@ export function TrophyBar() {
 // The campaign card (the War Path, the offline side road)
 // ---------------------------------------------------------------------------------------------
 
+/** The card's mid layer: the region's hills, a grove and its hero set piece (the War Path prop kit). */
+function CampMid(p: { age: AgeId }) {
+  const t = REGION_THEMES[p.age];
+  return (
+    <svg class="hub-camp__midart" viewBox="0 0 260 64" preserveAspectRatio="xMidYMax slice">
+      <path d="M-10 44 Q40 30 90 38 T190 34 T270 38 V70 H-10Z" fill={t.patchDark} />
+      <path d="M-10 48 Q50 38 110 46 T270 44 V70 H-10Z" fill={t.groundTop} />
+      <path d="M20 44 Q50 38 80 42" stroke={t.patchLight} stroke-width="2" fill="none" opacity=".6" stroke-linecap="round" />
+      <g transform="translate(206 47) scale(.42)">
+        <HeroPiece age={p.age} t={t} />
+      </g>
+      <g transform="translate(34 46) scale(.5)">
+        <Grove t={t} seed={7} n={6} kinds={TREES[p.age]} />
+      </g>
+    </svg>
+  );
+}
+
 export function CampaignCard() {
   const { save, content, t, router, locale } = useUi();
   const kit = useKit();
@@ -205,14 +227,28 @@ export function CampaignCard() {
       aria-label={`${t('ui.hub.campaign')}. ${t('ui.hub.campaignSub')}. ${where}`}
     >
       <span class="hub-camp__art" aria-hidden="true">
-        <RegionFar age={level.region} w={240} h={120} horizon={70} />
-        <svg class="hub-camp__road" viewBox="0 0 240 64" preserveAspectRatio="none">
-          <path d="M-4 52 C40 30 70 60 110 40 S180 18 244 34" fill="none" stroke="#0f1218" stroke-width="9" stroke-linecap="round" opacity=".55" />
-          <path d="M-4 52 C40 30 70 60 110 40 S180 18 244 34" fill="none" stroke="#d8c79a" stroke-width="5" stroke-linecap="round" />
-          <path d="M-4 52 C40 30 70 60 110 40" fill="none" stroke="#f1e6c4" stroke-width="2.5" stroke-dasharray="6 5" stroke-linecap="round" />
-        </svg>
-        <span class="hub-camp__node">{done ? <StarIcon size={14} filled /> : <b>{level.index}</b>}</span>
-        <span class="hub-camp__flag" />
+        {/* UI art audit #8: three parallax layers (far sky and range, the region's hero set piece on
+            its hills, the road with the node and the Standard Bearer) that pan at 1x / 1.2x / 1.5x when
+            the card lifts on hover. */}
+        <span class="hub-camp__layer hub-camp__far">
+          <RegionFar age={level.region} w={260} h={120} horizon={74} />
+        </span>
+        <span class="hub-camp__layer hub-camp__mid">
+          <CampMid age={level.region} />
+        </span>
+        <span class="hub-camp__layer hub-camp__near">
+          <svg class="hub-camp__road" viewBox="0 0 260 64" preserveAspectRatio="xMidYMax slice">
+            <path d="M-6 58 C40 36 74 64 116 46 S190 26 268 40" fill="none" stroke="#3a2c1c" stroke-width="11" stroke-linecap="round" opacity=".7" />
+            <path d="M-6 58 C40 36 74 64 116 46 S190 26 268 40" fill="none" stroke="#d8c79a" stroke-width="7" stroke-linecap="round" />
+            <path d="M-6 56.6 C40 34.6 74 62.6 116 44.6 S190 24.6 268 38.6" fill="none" stroke="#efe2bb" stroke-width="2.2" stroke-linecap="round" />
+            <path d="M-6 58 C40 36 74 64 116 46" fill="none" stroke="#a8946a" stroke-width="1.4" stroke-dasharray="5 6" stroke-linecap="round" />
+          </svg>
+          <span class="hub-camp__node">{done ? <StarIcon size={14} filled /> : <b>{level.index}</b>}</span>
+          <span class="hub-camp__bearer">
+            <SpriteStrip card={BEARER_CARD} clip="idle" size={128} frameMs={150} class="hub-camp__strip" fallback={<i class="hub-camp__flag" />} />
+          </span>
+        </span>
+        <i class="hub-camp__glint" />
       </span>
       <span class="hub-camp__body">
         <span class="hub-camp__head">

@@ -9,7 +9,7 @@ import { act } from 'preact/test-utils';
 import { afterEach, describe, expect, it } from 'vitest';
 import { midGameSave, newPlayerSave } from '../../screens/fixtures/saves';
 import { installDom, keydown, text, type FakeElement } from '../../screens/test/dom';
-import { avatarLook, AVATAR_PARTS } from '../Avatar';
+import { legacyRoll } from '../Avatar';
 import { Button } from '../Button';
 import { CardTile, type CardTileData } from '../CardTile';
 import { AiBadge, CurrencyChip } from '../Chips';
@@ -142,11 +142,11 @@ describe('odds model (A6.4, A6.5)', () => {
 
 describe('avatars (A6.1)', () => {
   it('is deterministic per seed and honours explicit parts', () => {
-    expect(avatarLook(4821)).toEqual(avatarLook(4821));
-    expect(avatarLook(1)).not.toEqual(avatarLook(2));
-    expect(avatarLook(4821, { hat: 3 }).hat).toBe(3);
-    expect(avatarLook(4821, { hat: AVATAR_PARTS.hat + 1 }).hat).toBe(1);
-    expect(avatarLook(4821, { skin: -1 }).skin).toBe(AVATAR_PARTS.skin.length - 1);
+    expect(legacyRoll(4821)).toEqual(legacyRoll(4821));
+    expect(legacyRoll(1)).not.toEqual(legacyRoll(2));
+    expect(legacyRoll(4821, { hat: 3 }).hat).toBe(3);
+    expect(legacyRoll(4821, { hat: 7 }).hat).toBe(1);
+    expect(legacyRoll(4821, { skin: -1 }).skin).toBe(5);
   });
 });
 

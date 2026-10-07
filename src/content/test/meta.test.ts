@@ -196,10 +196,12 @@ describe('Rarities, upgrades and Dust (A6.6, A6.7, A5.8)', () => {
     expect(total('epic')).toBe(44);
     expect(total('legendary')).toBe(11);
     const amber = rarities.upgradeAmber.reduce((a, b) => a + b, 0);
-    expect(amber).toBe(4970);
-    // A6.9 / A17.13: maxing the 88 original cards costs 437,360 Amber; each X0 wave card adds 4,970.
-    expect(amber * 88).toBe(437360);
-    expect(amber * (content.order.units.length + content.order.turrets.length)).toBe(4970 * (content.order.units.length + content.order.turrets.length));
+    // The years-long curve (owner decision 2026-10-07): 20,020 a card (4,970 before), L2-L6 unchanged.
+    expect(amber).toBe(20020);
+    expect(rarities.upgradeAmber.slice(0, 5)).toEqual([20, 50, 100, 200, 350]);
+    // A6.9: maxing the 88 original cards costs 1,761,760 Amber (437,360 before); each X0 wave card adds 20,020.
+    expect(amber * 88).toBe(1761760);
+    expect(amber * (content.order.units.length + content.order.turrets.length)).toBe(20020 * (content.order.units.length + content.order.turrets.length));
   });
 
   it('has the Dust, Codex and foil rates', () => {

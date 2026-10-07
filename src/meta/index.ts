@@ -162,6 +162,7 @@ export type { ConquestEntry } from './conquest';
 export type { WarPathNode, WarPathNodeState } from './warPath';
 export { BOSS_DISCLOSURE_KEY } from './matchmaking';
 export type { CosmeticEquip, CosmeticPool, ExclusiveSetOdds, PoolOdds } from './cosmetics';
+export { avatarPart, ownsAvatarPart, setAvatarLook, wearablesOf } from './avatar';
 export { COSMETIC_COLLECTIONS, cosmeticCraftPrice, cosmeticItem, cosmeticKey, exclusiveSets, firstOfTierFlag, ownsCosmetic, tierExclusiveItems } from './cosmetics';
 export type { OpponentOptions } from './matchmaking';
 export { commanderId, commanderInfo, ECHO_DISCLOSURE_KEY, ladderGenerals, newPlayerMistakeBonusBp, newPlayerMistakesApply, ROOKIE_DISCLOSURE_KEY } from './matchmaking';

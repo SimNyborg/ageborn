@@ -73,10 +73,16 @@ export const WarPlanSchema = v.object({
   }),
 });
 
+const AVATAR_SLOT = v.picklist(['face', 'eyes', 'brows', 'nose', 'mouth', 'hair', 'facialHair', 'headwear', 'top', 'accessory', 'background']);
+const AVATAR_TINT = v.picklist(['skin', 'hair', 'eyes', 'cloth']);
+
+/** Save v12: the creator's `look` (slot → part id) and `tints` (palette indices) are optional. */
 export const AvatarSchema = v.object({
   seed: int,
   parts: v.record(v.string(), num),
   portraitCard: v.optional(id),
+  look: v.optional(v.record(AVATAR_SLOT, id)),
+  tints: v.optional(v.record(AVATAR_TINT, int)),
 });
 
 const d = DEFAULT_SETTINGS;

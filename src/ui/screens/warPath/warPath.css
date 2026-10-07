@@ -812,11 +812,30 @@
   transform-origin: 0 0;
   pointer-events: none;
   transition: transform 450ms var(--ui-ease-standard);
-  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
 }
 .wp-bearer svg {
   display: block;
   overflow: visible;
+}
+/* The Standard Bearer's sheet (UI art audit #6): a 96 px cell standing on its foot line. */
+.wp-bearer__strip {
+  position: relative;
+  width: 96px;
+  height: 96px;
+}
+.wp-bearer__shadow {
+  position: absolute;
+  left: 28px;
+  top: 88px;
+  width: 40px;
+  height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.45), transparent);
+}
+.wp-bearer__fallback {
+  position: relative;
+  margin: 30px 0 0 30px;
 }
 .wp-bearer__body {
   animation: wp-bob 1600ms ease-in-out infinite;

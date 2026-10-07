@@ -15,7 +15,8 @@ const COPIES: Record<Rarity, number[]> = {
   epic: [1, 1, 1, 2, 3, 5, 7, 10, 14],
   legendary: [1, 1, 1, 1, 1, 1, 1, 2, 2],
 };
-const AMBER = [20, 50, 100, 200, 350, 550, 800, 1200, 1700];
+// The years-long curve (owner decision 2026-10-07; was 550 / 800 / 1,200 / 1,700 for L7-L10, total 4,970).
+const AMBER = [20, 50, 100, 200, 350, 800, 1700, 4800, 12000];
 const SAMPLE: Record<Rarity, CardId> = { common: 'bonker', rare: 'friar', epic: 'sabertooth', legendary: 'chrono_titan' };
 
 function rich(s: SaveDoc, card: CardId, level: number, copies: number): SaveDoc {
@@ -23,13 +24,13 @@ function rich(s: SaveDoc, card: CardId, level: number, copies: number): SaveDoc 
 }
 
 describe('upgrades (A6.6)', () => {
-  it('costs follow the A6.6 table for every rarity; totals 153 / 130 / 44 / 11 copies and 4,970 Amber', () => {
+  it('costs follow the A6.6 table for every rarity; totals 153 / 130 / 44 / 11 copies and 20,020 Amber', () => {
     for (const r of ['common', 'rare', 'epic', 'legendary'] as const) {
       for (let level = 1; level < 10; level += 1) expect(upgradeCost(C, SAMPLE[r], level)).toEqual({ copies: COPIES[r][level - 1], amber: AMBER[level - 1] });
       expect(upgradeCost(C, SAMPLE[r], 10)).toBeNull();
     }
     expect(COPIES.common.reduce((a, b) => a + b)).toBe(153);
-    expect(AMBER.reduce((a, b) => a + b)).toBe(4970);
+    expect(AMBER.reduce((a, b) => a + b)).toBe(20020);
   });
 
   it('an upgrade spends copies and Amber, raises the level and earns Codex points', () => {

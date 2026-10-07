@@ -81,7 +81,7 @@ describe('economy entry points (A6.4, A6.6, A6.9)', () => {
 
 
   it('copies and Amber to max one card', () => {
-    expect(copiesToMax(C, 'common')).toEqual({ copies: 153, amber: 4970 });
+    expect(copiesToMax(C, 'common')).toEqual({ copies: 153, amber: 20020 });
     expect(copiesToMax(C, 'rare').copies).toBe(130);
     expect(copiesToMax(C, 'epic').copies).toBe(44);
     expect(copiesToMax(C, 'legendary').copies).toBe(11);

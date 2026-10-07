@@ -39,16 +39,8 @@
 /* The game's name on the first screen: a cartoon wordmark, gold with an ink outline and a soft drop. */
 .hub-wordmark {
   align-self: center;
-  padding: 2px 6px;
-  font-family: var(--ui-font-display);
-  font-size: clamp(22px, 3.2vw, 34px);
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ui-gold-hi, #ffe58a);
-  -webkit-text-stroke: 2px var(--ui-ink, #1b1330);
-  paint-order: stroke fill;
-  text-shadow: 0 3px 0 var(--ui-ink, #1b1330), 0 8px 18px rgba(0, 0, 0, 0.45);
+  display: block;
+  padding: 2px 4px;
   animation: ui-rise var(--ui-dur-small) var(--ui-ease-back) both;
 }
 
@@ -581,6 +573,54 @@
 .hd-windows rect:nth-child(3n) {
   animation: wp-twinkle 3400ms ease-in-out infinite;
 }
+/* UI art audit #3: floating rock chunks bob out of phase, roots sway, a few windows flicker. */
+.hd-chunk {
+  animation: hd-chunk 4600ms ease-in-out infinite;
+}
+@keyframes hd-chunk {
+  50% {
+    transform: translateY(-5px) rotate(-2deg);
+  }
+}
+.hd-root {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+}
+.hd-root > path {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: hd-root 3800ms ease-in-out infinite alternate;
+  animation-delay: inherit;
+}
+@keyframes hd-root {
+  from {
+    transform: rotate(-5deg);
+  }
+  to {
+    transform: rotate(5deg);
+  }
+}
+.hd-win {
+  animation: hd-win 5200ms steps(1, jump-none) infinite;
+}
+@keyframes hd-win {
+  0%,
+  70% {
+    opacity: 1;
+  }
+  72% {
+    opacity: 0.45;
+  }
+  76% {
+    opacity: 1;
+  }
+  86% {
+    opacity: 0.6;
+  }
+  88% {
+    opacity: 1;
+  }
+}
 
 /* ---- the arena's name and the trophy bar ---- */
 .hub-arena {
@@ -746,15 +786,61 @@
   color: var(--ui-text);
   text-align: left;
   cursor: pointer;
-  animation: hub-in-left var(--ui-dur-large) var(--ui-ease-enter) both;
-  transition: transform var(--ui-dur-press) var(--ui-ease-standard);
-}
-.hub-camp:active {
-  transform: scale(var(--ui-press-scale));
+  /* backwards, not both: a held entrance would override the hover and press transforms */
+  animation: hub-in-left var(--ui-dur-large) var(--ui-ease-enter) backwards;
+  /* UI art audit #8 (motion sheet §4): the card lifts on hover and squashes on press; the art pans
+     inside it. Transforms only, never a bare scale() that drops a base transform. */
+  transition:
+    transform 180ms var(--ui-ease-standard),
+    box-shadow 180ms var(--ui-ease-standard),
+    border-color 180ms var(--ui-ease-standard);
 }
 @media (hover: hover) {
-  .hub-camp:hover .hub-camp__art :is(.wp-art) {
-    transform: scale(1.05);
+  .hub-camp:hover {
+    transform: translateY(-4px) scale(1.02);
+    border-color: rgba(214, 222, 235, 0.75);
+    box-shadow: var(--ui-e5, 0 14px 30px rgba(0, 0, 0, 0.55)), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+  .hub-camp:hover .hub-camp__far {
+    transform: translateX(-4px);
+  }
+  .hub-camp:hover .hub-camp__mid {
+    transform: translateX(-6px);
+  }
+  .hub-camp:hover .hub-camp__near {
+    transform: translateX(-9px);
+  }
+  .hub-camp:hover .hub-camp__bearer {
+    animation: hub-camp-step 360ms var(--ui-ease-standard);
+  }
+  .hub-camp:hover .hub-camp__glint {
+    animation: hub-camp-glint 700ms var(--ui-ease-standard) both;
+  }
+}
+.hub-camp:active {
+  transform: translateY(-1px) scale(0.97);
+  transition-duration: 80ms;
+  box-shadow: var(--ui-e2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+@keyframes hub-camp-step {
+  40% {
+    transform: translate(3px, -3px) rotate(4deg);
+  }
+  70% {
+    transform: translate(5px, 0) rotate(0deg);
+  }
+}
+@keyframes hub-camp-glint {
+  from {
+    transform: translateX(-120%) skewX(-24deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    transform: translateX(360%) skewX(-24deg);
+    opacity: 0;
   }
 }
 @keyframes hub-in-left {
@@ -766,44 +852,55 @@
 .hub-camp__art {
   position: relative;
   display: block;
-  height: 56px;
+  height: 64px;
   overflow: hidden;
   border-bottom: 2px solid rgba(15, 18, 24, 0.9);
 }
-.hub-camp__art .wp-art {
+@container ui-root (max-height: 420px) {
+  .hub-camp__art {
+    height: 56px;
+  }
+}
+.hub-camp__layer {
   position: absolute;
-  left: 50%;
+  inset: 0 -12px 0 -4px;
+  transition: transform 220ms var(--ui-ease-standard);
+}
+.hub-camp__far .wp-art {
+  position: absolute;
+  left: 0;
   top: 50%;
-  width: 110%;
+  width: 100%;
   height: auto;
-  transform: translate(-50%, -54%);
-  transition: transform var(--ui-dur-large) var(--ui-ease-standard);
+  /* the base transform stays (the old bug replaced it on hover, audit #8) */
+  transform: translateY(-58%);
 }
-.hub-camp__art .wp-art {
-  transform: translate(-50%, -54%);
-}
+.hub-camp__midart,
 .hub-camp__road {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   width: 100%;
-  height: 64%;
+  height: 100%;
 }
 .hub-camp__node {
   position: absolute;
-  left: 44%;
-  bottom: 14%;
+  left: 46%;
+  bottom: 12%;
   display: grid;
   place-items: center;
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  /* Slate, not gold: Battle is Home's only gold call to action (U1). */
-  background: radial-gradient(circle at 34% 28%, #f4f7fb, #aab5c6 48%, #5b667a);
+  /* Slate, not gold: Battle is Home's only gold call to action (U1). Glossy like the map nodes. */
+  background:
+    radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.95) 0 14%, transparent 34%),
+    radial-gradient(circle at 50% 40%, #e9eef5, #aab5c6 52%, #5b667a);
   box-shadow:
-    0 0 0 2px #10141b,
-    0 0 0 3px rgba(214, 222, 235, 0.55),
+    0 0 0 2px #2b3342,
+    0 0 0 3.5px rgba(214, 222, 235, 0.6),
+    inset 0 -3px 0 rgba(40, 48, 64, 0.35),
     0 3px 6px rgba(0, 0, 0, 0.45);
   color: #1a202b;
   font: 800 var(--ui-fs-label) / 1 var(--ui-font-display);
@@ -814,10 +911,22 @@
     transform: translateY(-2px);
   }
 }
+.hub-camp__bearer {
+  position: absolute;
+  left: calc(46% - 34px);
+  bottom: 6%;
+  width: 46px;
+  height: 46px;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
+}
+.hub-camp__strip {
+  width: 100%;
+  height: 100%;
+}
 .hub-camp__flag {
   position: absolute;
-  left: calc(44% - 16px);
-  bottom: 30%;
+  left: 18px;
+  bottom: 6px;
   width: 3px;
   height: 30px;
   background: #3b2a1e;
@@ -833,6 +942,37 @@
   clip-path: polygon(0 0, 100% 0, 78% 50%, 100% 100%, 0 100%);
   transform-origin: 0 50%;
   animation: wp-flag 1100ms ease-in-out infinite;
+}
+.hub-camp__glint {
+  position: absolute;
+  top: -10%;
+  bottom: -10%;
+  left: 0;
+  width: 28%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+.ui-root[data-reduce-motion='true'] .hub-camp {
+  transition: none;
+}
+.ui-root[data-reduce-motion='true'] .hub-camp :is(.hub-camp__layer, .hub-camp__bearer, .hub-camp__glint) {
+  transition: none;
+  animation: none !important;
+}
+@media (hover: hover) {
+  .ui-root[data-reduce-motion='true'] .hub-camp:hover {
+    transform: none;
+    filter: brightness(1.06);
+    box-shadow: 0 0 0 2px rgba(214, 222, 235, 0.6), var(--ui-e3);
+  }
+  .ui-root[data-reduce-motion='true'] .hub-camp:hover :is(.hub-camp__far, .hub-camp__mid, .hub-camp__near) {
+    transform: none;
+  }
+}
+.ui-root[data-reduce-motion='true'] .hub-camp:active {
+  transform: none;
+  filter: brightness(0.94);
 }
 .hub-camp__body {
   display: flex;
@@ -1073,7 +1213,7 @@
 }
 
 /* ---- reduce motion: ambient loops still; entrances become fades (U14) ---- */
-.ui-root[data-reduce-motion='true'] .hub :is(.hd__bob, .hd__unitAct, .hd__unitBody, .hd__clash, .hd__art, .hd__base, .hd-clash, .hd__spark, .hd-smoke__puff, .hd-banner, .hd-flag, .hd-sway, .hd-shimmer, .hd-ship, .hd-glow, .hd-bubble, .hd-snow circle, .hd-neon, .hd-blink, .hd-twinkle, .hd-orbit, .hd-rift, .hd-windows rect, .hub-slot__drum, .hub-camp__node, .hub-camp__flag::after, .hub-road__shine, .home-scene__layer, .home-scene__motes i) {
+.ui-root[data-reduce-motion='true'] .hub :is(.hd__bob, .hd__unitAct, .hd__unitBody, .hd__clash, .hd__art, .hd__base, .hd-clash, .hd__spark, .hd-smoke__puff, .hd-banner, .hd-flag, .hd-sway, .hd-shimmer, .hd-ship, .hd-glow, .hd-bubble, .hd-snow circle, .hd-neon, .hd-blink, .hd-twinkle, .hd-orbit, .hd-rift, .hd-windows rect, .hd-chunk, .hd-root > path, .hd-win, .home-scene__rays, .hub-slot__drum, .hub-camp__node, .hub-camp__flag::after, .hub-road__shine, .home-scene__layer, .home-scene__motes i) {
   animation: none !important;
 }
 .ui-root[data-reduce-motion='true'] .hub :is(.hd__float, .hub-camp, .hub-slots, .hub-stage__caption, .hub-plate) {
@@ -1126,64 +1266,43 @@
 .home-scene__flock {
   position: absolute;
   left: 0;
-  top: 18%;
-  width: 60px;
-  height: 24px;
-  animation: hub-flock 26s linear infinite;
+  top: 16%;
+  width: 0;
+  height: 0;
+  animation: hub-flock 30s linear infinite;
 }
 .home-scene__flock--1 {
-  top: 30%;
-  animation-duration: 34s;
-  animation-delay: -17s;
+  top: 28%;
+  animation-duration: 40s;
+  animation-delay: -19s;
 }
+/* The flock crosses the sky, climbing a little, and banks now and then (UI art audit #5). */
 @keyframes hub-flock {
   0% {
-    transform: translate(-80px, 0);
+    transform: translate(-80px, 0) rotate(0deg);
+  }
+  20% {
+    transform: translate(calc(20cqw), -10px) rotate(-4deg);
+  }
+  32% {
+    transform: translate(calc(34cqw), -14px) rotate(2deg);
   }
   60% {
-    transform: translate(calc(100cqw + 80px), -40px);
+    transform: translate(calc(100cqw + 120px), -40px) rotate(-3deg);
   }
   100% {
-    transform: translate(calc(100cqw + 80px), -40px);
+    transform: translate(calc(100cqw + 120px), -40px) rotate(0deg);
   }
 }
-.home-scene__flock i {
-  position: absolute;
-  width: 12px;
-  height: 5px;
-  border-top: 2px solid rgba(20, 16, 24, 0.75);
-  border-radius: 50% 50% 0 0;
-  animation: hub-wing 520ms ease-in-out infinite alternate;
-}
-.home-scene__flock i:nth-child(1) {
-  left: 0;
-  top: 8px;
-}
-.home-scene__flock i:nth-child(2) {
-  left: 16px;
-  top: 2px;
-  animation-delay: -160ms;
-}
-.home-scene__flock i:nth-child(3) {
-  left: 30px;
-  top: 10px;
-  animation-delay: -300ms;
-}
-.home-scene__flock i:nth-child(4) {
-  left: 44px;
-  top: 4px;
-  animation-delay: -80ms;
-}
-@keyframes hub-wing {
-  to {
-    transform: scaleY(-0.6) translateY(2px);
-  }
-}
-.ui-root[data-reduce-motion='true'] .hub :is(.home-scene__cloud, .home-scene__flock, .home-scene__flock i) {
+/* Reduce motion: still gliding birds that drift at half speed. */
+.ui-root[data-reduce-motion='true'] .hub .home-scene__cloud {
   animation: none !important;
 }
 .ui-root[data-reduce-motion='true'] .hub .home-scene__flock {
-  display: none;
+  animation-duration: 60s;
+}
+.ui-root[data-reduce-motion='true'] .hub .home-scene__flock--1 {
+  animation-duration: 80s;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
