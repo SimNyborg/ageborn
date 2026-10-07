@@ -55,8 +55,8 @@ export function applyCommands(ctx: Ctx, cmds: readonly TimedCommand[]): void {
 
 const isSlot = (n: unknown, max: number): n is number => typeof n === 'number' && Number.isInteger(n) && n >= 0 && n < max;
 
-/** Tray slots per loadout (A18.9: six troops). */
-export const TRAY_SLOTS = 6;
+/** Tray slots per loadout (A18.9: seven troops since owner request 2026-10-07; six before SIM_VERSION 7.4.0). */
+export const TRAY_SLOTS = 7;
 
 /** Clamps a Hold flag p (lu) to the flag range and snaps it to the flag step (A18.4.2), in mlu. */
 export function clampHoldP(ctx: Ctx, holdP: number): number {

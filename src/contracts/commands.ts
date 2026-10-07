@@ -7,8 +7,8 @@
 import type { PowerSlot, ResearchClass, ResearchTrack } from './content';
 import type { EmoteId, Side } from './ids';
 
-/** A tray slot: 6 unit cards per loadout from A18 phase 2 (DESIGN A18.9; was 5). */
-export type TraySlot = 0 | 1 | 2 | 3 | 4 | 5;
+/** A tray slot: 7 unit cards per loadout from owner request 2026-10-07 (DESIGN A18.9; 6 before, 5 before A18 phase 2). */
+export type TraySlot = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 /** A fort pad index: 0-2 Home pads, 3-4 Field pads (DESIGN A16.14.1, `economy.fort.pads`). */
 export type FortPad = 0 | 1 | 2 | 3 | 4;
@@ -17,7 +17,7 @@ export type FortPad = 0 | 1 | 2 | 3 | 4;
 export type StanceMode = 'charge' | 'hold' | 'fallback';
 
 export type Command =
-  /** Train the card in tray slot 0-5; gold is paid on enqueue (DESIGN A2.7 Training, A18.9 six troops). */
+  /** Train the card in tray slot 0-6; gold is paid on enqueue (DESIGN A2.7 Training, A18.9 seven troops). */
   | { t: 'train'; side: Side; slot: TraySlot }
   /** No slot = last item; with a slot, removes the last queued instance of that card, full refund (DESIGN A2.7). */
   | { t: 'cancelTrain'; side: Side; slot?: TraySlot }

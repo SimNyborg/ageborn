@@ -264,12 +264,12 @@ export const fakeContent: CompiledContent = deepFreeze({
 /** A complete fake loadout per fake age. */
 export const fakeLoadouts: Record<'stone' | 'medieval', Loadout> = {
   stone: {
-    units: ['bonker', 'pebbler', 'tuskback', null, null, null],
+    units: ['bonker', 'pebbler', 'tuskback', null, null, null, null],
     turrets: ['rock_tosser', null],
     powers: { home: 'rockslide', field: 'stampede' },
   },
   medieval: {
-    units: ['footman', 'longbowman', 'destrier_knight', null, null, null],
+    units: ['footman', 'longbowman', 'destrier_knight', null, null, null, null],
     turrets: ['crossbow_nest', null],
     powers: { home: 'arrow_storm', field: null },
   },

@@ -8,6 +8,7 @@
  */
 import type { ObservedEscalation, ObservedFort, ObservedFortPad, ObservedTrap, Observation, PowerSlot, ResearchView, Side } from '@/contracts';
 import { MILLI, effectiveReloadMs, padKind, slotIndex, towerRangeOnPad } from '@/core';
+import { TRAY_SLOTS } from './commands';
 import { escalationStep, ropeTargets } from './escalation';
 import { pOf, xOf } from './geometry';
 import { ranksOpen, researchProgressBp } from './research';
@@ -50,10 +51,10 @@ function researchView(ctx: Ctx, side: Side): ResearchView {
   };
 }
 
-/** The six tray slots (A18.9): a shorter loadout plays as empty slots; tutorial trays hide locked slots. */
+/** The seven tray slots (A18.9): a shorter loadout plays as empty slots; tutorial trays hide locked slots. */
 function trayOf(units: readonly (string | null)[] | undefined, tray: readonly number[] | undefined): Observation['me']['tray'] {
   const out: Observation['me']['tray'] = [];
-  for (let i = 0; i < 6; i += 1) {
+  for (let i = 0; i < TRAY_SLOTS; i += 1) {
     const c = units?.[i] ?? null;
     out.push(c && (!tray || tray.includes(i)) ? c : null);
   }

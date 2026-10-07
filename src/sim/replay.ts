@@ -33,8 +33,11 @@ import { SimImpl } from './createSim';
  * 7.3.0 (Modern wave, 2026-10-03): a bomber's riders (the Sky Fortress's waist gunners) target like any
  * secondary attack (range, leash, priority, air included); only the bomber's own attack (index 0) uses the
  * drop window. No golden has a bomber with riders, so every golden keeps its hash (re-recorded for this string).
+ * 7.4.0 (seven troops, owner request 2026-10-07): a loadout has 7 unit slots, so `train` and `cancelTrain`
+ * accept tray slot 6 (a `badCommand` before) and the observation's tray has 7 entries. No golden trains from
+ * slot 6, so every golden keeps its hash (re-recorded for this string, A2.9.11 / F3 minor-bump policy).
  */
-export const SIM_VERSION = '7.3.0';
+export const SIM_VERSION = '7.4.0';
 
 /** Thrown when a replay was recorded on different content (B3: "from an older version"). */
 export class ReplayContentMismatchError extends Error {

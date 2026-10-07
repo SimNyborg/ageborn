@@ -411,19 +411,21 @@ describe('side modifiers (A18.11) and victory rules (A18.7.3)', () => {
   });
 });
 
-describe('six troops and age windows (A18.9, A18.3.4)', () => {
-  it('trains from tray slot 6; slot 7 is a bad command', () => {
+describe('seven troops and age windows (A18.9, A18.3.4)', () => {
+  it('trains from tray slots 6 and 7; slot 8 is a bad command', () => {
     const sc = sideConfig(fixture);
     const stone = sc.loadouts.stone!;
     const sim = createSim(
-      matchConfig({ training: { noClock: true }, sides: [{ ...sc, loadouts: { ...sc.loadouts, stone: { ...stone, units: [...stone.units.slice(0, 5), 'sabertooth'] } } }, sideConfig(fixture, { isBot: true, label: 'AI' })] }),
+      matchConfig({ training: { noClock: true }, sides: [{ ...sc, loadouts: { ...sc.loadouts, stone: { ...stone, units: [...stone.units.slice(0, 5), 'sabertooth', 'mammoth_matriarch'] } } }, sideConfig(fixture, { isBot: true, label: 'AI' })] }),
     );
     const st = new Stamper(sim);
     devSetGold(sim, 0, 1000);
     expect(ofKind(st.step({ t: 'train', side: 0, slot: 5 }), 'queueChanged')).toHaveLength(1);
     expect(sim.state.sides[0].queue[0]?.card).toBe('sabertooth');
-    expect(ofKind(st.step({ t: 'train', side: 0, slot: 6 as 5 }), 'commandRejected')[0]?.reason).toBe('badCommand');
-    expect(sim.observe(0).me.tray).toHaveLength(6);
+    expect(ofKind(st.step({ t: 'train', side: 0, slot: 6 }), 'queueChanged')).toHaveLength(1);
+    expect(sim.state.sides[0].queue[1]?.card).toBe('mammoth_matriarch');
+    expect(ofKind(st.step({ t: 'train', side: 0, slot: 7 as 6 }), 'commandRejected')[0]?.reason).toBe('badCommand');
+    expect(sim.observe(0).me.tray).toHaveLength(7);
   });
 
   it('live formats are windows: Short 3, Standard 5, Full 7 ages with the A18.3.4 clocks; thresholds follow the position', () => {

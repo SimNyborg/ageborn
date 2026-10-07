@@ -107,13 +107,14 @@ export function baselineLoadout(
   age: AgeId,
   o: { epic?: boolean; legendary?: boolean; rareTurret?: boolean; epicTurret?: boolean; altPower?: boolean; warPath?: number | number[]; power?: CardId } = {},
 ): Loadout {
-  // Six troop slots (A18.9); the A2.14 baseline fills five and leaves the sixth empty.
+  // Seven troop slots (A18.9); the A2.14 baseline fills five and leaves the last two empty.
   const units = [
     byGroup(content, age, 'infantry', 'common'),
     byGroup(content, age, 'ranged', 'common'),
     byGroup(content, age, 'heavy', 'common'),
     byGroup(content, age, 'antiArmor'),
     byGroup(content, age, 'support'),
+    null,
     null,
   ];
   if (o.epic) units[4] = byGroup(content, age, 'epic');

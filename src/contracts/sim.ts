@@ -12,9 +12,9 @@ import type { MatchOutcome, SimEvent } from './events';
 import type { AgeId, CardId, FormatId, RoleGroup, Side, SideLook, SkinId, VisualId } from './ids';
 import type { Observation } from './observation';
 
-/** One age loadout of a War Plan: 6 unit slots, 2 turret slots, 2 typed power slots (DESIGN A3, A18.9, A2.9.1). */
+/** One age loadout of a War Plan: 7 unit slots, 2 turret slots, 2 typed power slots (DESIGN A3, A18.9, A2.9.1). */
 export interface Loadout {
-  /** Length 6 (A18.9 six troops; 5 before SIM_VERSION 3.0.0, a shorter array plays as empty slots). */
+  /** Length 7 (A18.9 seven troops from SIM_VERSION 7.4.0; 6 from 3.0.0, 5 before; a shorter array plays as empty slots). */
   units: (CardId | null)[];
   /** Length 2. */
   turrets: (CardId | null)[];
