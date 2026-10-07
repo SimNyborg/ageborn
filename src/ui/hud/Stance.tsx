@@ -14,6 +14,7 @@ import { animate, ease, reducedMotion } from '../components/motion';
 import { haptic } from '../components/haptics';
 import type { HudCtx } from './context';
 import { StanceGlyph } from './councilIcons';
+import { useFitLabel } from './fit';
 import { stanceSetIntent } from './model';
 import { ReasonTip } from './Reason';
 
@@ -119,12 +120,23 @@ export function StanceControl(p: { c: HudCtx }) {
           <span ref={s === cur ? icon : undefined} class="hud-stance-icon">
             <StanceGlyph mode={s} size={c.compact ? 20 : 24} />
           </span>
-          <span class="hud-stance-label" data-tag>
-            {c.t(`hud.stanceShort.${s}`)}
-          </span>
+          <StanceLabel text={c.t(`hud.stanceShort.${s}`)} compact={c.compact} />
         </button>
       ))}
       <ReasonTip c={c} target="stance" />
     </div>
+  );
+}
+
+/** A stance label, condensed to its button's width when the tray is tight (44 px buttons, A18.9). */
+function StanceLabel(p: { text: string; compact: boolean }) {
+  const el = useRef<HTMLSpanElement>(null);
+  useFitLabel(el, () => (el.current?.closest('button')?.clientWidth ?? 0) - 4, [p.text, p.compact]);
+  return (
+    <span class="hud-stance-label" data-tag>
+      <span ref={el} class="hud-fit">
+        {p.text}
+      </span>
+    </span>
   );
 }

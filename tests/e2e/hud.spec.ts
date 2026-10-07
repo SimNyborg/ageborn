@@ -34,19 +34,41 @@ interface HudDev {
   view(): { camera: { layout: { groundY: number; scale: number } } } | null;
 }
 
-/** A Quick Battle for a returning player (stance and army counter taught, hints seen). */
-async function battle(page: Page): Promise<void> {
+/**
+ * A Quick Battle for a returning player (stance and army counter taught, hints seen). `full`: the
+ * tightest tray (A18.9): seven Stone troops, the Field power and the Fort button.
+ */
+async function battle(page: Page, full = false): Promise<void> {
   await page.goto('./?dev=1&game=1');
   await page.waitForFunction(() => (window as unknown as { __agebornDev?: unknown }).__agebornDev !== undefined, null, { timeout: 30_000 });
-  await page.evaluate(() => {
+  await page.evaluate((full) => {
+    type Lo = { units: (string | null)[]; fort?: string | null };
+    type Save = { collection: Record<string, unknown>; warPlans: { loadouts: Record<string, Lo> }[]; activePlan: number; fortsOwned?: string[] };
     const c = (window as unknown as { __agebornDev: HudDev }).__agebornDev.controller;
-    const s = c.save.peek();
+    const s = c.save.peek() as ReturnType<HudDev['controller']['save']['peek']> & Save;
+    let extra: Partial<Save> = {};
+    let flags: Record<string, boolean> = {};
+    if (full) {
+      const seven = ['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman', 'sabertooth', 'hunting_wolves'];
+      const collection = { ...s.collection };
+      for (const id of seven) collection[id] ??= { level: 3, copies: 0, isNew: false, foil: 'none' };
+      const warPlans = s.warPlans.map((p, i) => (i === s.activePlan ? { ...p, loadouts: { ...p.loadouts, stone: { ...p.loadouts['stone']!, units: seven, fort: 'palisade' } } } : p));
+      extra = { collection, warPlans, fortsOwned: ['palisade', 'cyclopean_wall', 'shield_barricade'] };
+      flags = { 'power.field': true, 'fort.slot': true };
+    }
     c.setSave(
-      { ...s, matchesPlayed: Math.max(30, s.matchesPlayed), tutorial: { ...s.tutorial, step: 4, hintsShown: { ...(s.tutorial.hintsShown ?? {}), powerReady: 3 } }, flags: { ...s.flags, 'tutorial.warPlanPrompt': true } },
+      {
+        ...s,
+        ...extra,
+        matchesPlayed: Math.max(30, s.matchesPlayed),
+        tutorial: { ...s.tutorial, step: 4, hintsShown: { ...(s.tutorial.hintsShown ?? {}), powerReady: 3 } },
+        flags: { ...s.flags, ...flags, 'tutorial.warPlanPrompt': true },
+      },
       { immediate: true },
     );
     localStorage.setItem('ageborn.hud.powerDragHint', '1');
-  });
+    if (full) localStorage.setItem('ageborn.hud.fortHint', '1');
+  }, full);
   await page.goto('./?dev=1&game=1&quick=short');
   await expect(page.getByTestId('hud-tray')).toBeVisible({ timeout: 30_000 });
   expect(await fastForward(page, 1)).toBeGreaterThanOrEqual(0);
@@ -117,8 +139,8 @@ test.describe('Battle HUD (ui-plan 4.7)', () => {
       await fastForward(page, 400);
       await page.waitForTimeout(600);
       expect(await budget(page)).toEqual([]);
-      // Six loadout slots, always (empty ones are quiet sockets).
-      await expect(page.locator('.hud-cards .hud-card-slot')).toHaveCount(6);
+      // Seven loadout slots, always (empty ones are quiet sockets, A18.9).
+      await expect(page.locator('.hud-cards .hud-card-slot')).toHaveCount(7);
       // One pulse at most (U11), sampled every 250 ms.
       for (let i = 0; i < 8; i++) {
         const n = await page.locator('[data-testid="hud"] [data-pulse]').count();
@@ -137,6 +159,44 @@ test.describe('Battle HUD (ui-plan 4.7)', () => {
       if (frame) {
         expect(frame.ground).toBeLessThanOrEqual(frame.trayTop - 11);
         expect(frame.ground - 240 * frame.scale).toBeGreaterThanOrEqual(frame.top - 2);
+      }
+      expect(problems.errors).toEqual([]);
+    });
+  }
+
+  // A18.9: the tightest tray (seven troops, the Field power and the Fort button) passes the same
+  // budget: every card and control fits, no target under 44 px, no text under the floor.
+  for (const [w, h] of VIEWPORTS) {
+    test(`seven troops with the Fort button and both powers fit at ${w} x ${h}`, async ({ page }) => {
+      test.setTimeout(120_000);
+      const problems = watchPage(page);
+      await page.setViewportSize({ width: w, height: h });
+      await battle(page, true);
+      await fastForward(page, 400);
+      await page.waitForTimeout(600);
+      await expect(page.locator('.hud-cards .hud-card-slot')).toHaveCount(7);
+      await expect(page.locator('.hud-cards [data-testid="hud-card-6"]')).toBeVisible();
+      await expect(page.getByTestId('hud-fort')).toBeVisible();
+      expect(await budget(page)).toEqual([]);
+      // Every card shows its whole cost (12 px) and the cards sit in one row inside the tray.
+      const cards = await page.evaluate(() =>
+        [...document.querySelectorAll<HTMLElement>('.hud-cards .hud-card')].map((el) => {
+          const r = el.getBoundingClientRect();
+          const cost = el.querySelector<HTMLElement>('.hud-card-cost');
+          const cls = el.querySelector<HTMLElement>('.hud-card-class');
+          const cr = cost?.getBoundingClientRect();
+          const kr = cls?.getBoundingClientRect();
+          const overlap = cr && kr ? cr.right > kr.left + 0.5 && kr.bottom > cr.top + 0.5 && cr.bottom > kr.top + 0.5 : false;
+          return { w: r.width, h: r.height, top: r.top, costPx: cost ? parseFloat(getComputedStyle(cost).fontSize) : 0, overlap };
+        }),
+      );
+      expect(cards).toHaveLength(7);
+      for (const c of cards) {
+        expect(c.w).toBeGreaterThanOrEqual(44);
+        expect(c.h).toBeGreaterThanOrEqual(44);
+        expect(c.costPx).toBeGreaterThanOrEqual(12);
+        expect(c.overlap).toBe(false);
+        expect(c.top).toBe(cards[0]!.top);
       }
       expect(problems.errors).toEqual([]);
     });

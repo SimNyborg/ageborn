@@ -87,7 +87,7 @@
     --hud-card-w: 62px;
     --hud-card-h: 84px;
     --hud-card-ar: 0.738;
-    --hud-card-gap: 6px;
+    --hud-card-gap: 5px;
     --hud-cluster-w: 100px;
     --hud-cluster-gap: 2px;
     --hud-gold-h: 44px;
@@ -4207,6 +4207,18 @@
 @container hud (max-height: 499px) {
   .hud-stance-btn {
     width: 50px;
+  }
+}
+
+/* Phones: the seven cards get the room (A18.9): 46 px stance buttons (the Fort tray's size) and 6 px
+   between the tray's groups. */
+@container hud (max-height: 499px) {
+  .hud-stance-btn {
+    width: 46px;
+  }
+
+  .hud-tray {
+    gap: 6px;
   }
 }
 
