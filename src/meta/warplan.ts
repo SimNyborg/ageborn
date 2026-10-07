@@ -1,5 +1,5 @@
 /**
- * The War Plan (DESIGN A3): one Age Loadout per age, each with 6 unit slots (A18.9), 2 turret slots
+ * The War Plan (DESIGN A3): one Age Loadout per age, each with 7 unit slots (A18.9), 2 turret slots
  * and 2 typed power slots, Home and Field (A2.9.1), all from that age, all owned, no duplicates; three
  * presets.
  *
@@ -100,27 +100,45 @@ export function autoFillLoadout(s: SaveDoc, t: Content, age: AgeId, current?: Lo
 
 /** Save flag: the sixth troop slot of save v4 has been filled once (A18.9, A18.11). */
 export const SIXTH_SLOT_FLAG = 'meta-troop-slot-6';
+/** Save flag: the seventh troop slot of save v13 has been filled once (A18.9, owner request 2026-10-07). */
+export const SEVENTH_SLOT_FLAG = 'meta-troop-slot-7';
+
+/** The troop slots a save migration added empty, oldest first: the slot index and its one-time flag. */
+const NEW_TROOP_SLOTS: readonly (readonly [number, string])[] = [
+  [5, SIXTH_SLOT_FLAG],
+  [6, SEVENTH_SLOT_FLAG],
+];
 
 /**
- * Six troops (A18.9): the sixth unit slot that save v4 added empty is filled once, in every plan and
- * age, with the highest-level owned unit of that age not already in the loadout (ties: content
- * order). A slot the player empties later stays empty.
+ * New troop slots (A18.9): the sixth unit slot that save v4 added and the seventh that save v13 added
+ * are each filled once, in every plan (all presets) and every age, with the best owned eligible troop
+ * of that age not already in the loadout: the highest level, ties in content order; collectable and
+ * released cards only (`ageCards`). With none left the slot stays empty. A slot the player empties
+ * later stays empty (the flag is set once). Older slots are filled first, so a v3 save fills the sixth
+ * slot before the seventh.
  */
 export function fillNewTroopSlots(s: SaveDoc, t: Content): SaveDoc {
-  if (s.flags[SIXTH_SLOT_FLAG]) return s;
+  const todo = NEW_TROOP_SLOTS.filter(([, flag]) => !s.flags[flag]);
+  if (todo.length === 0) return s;
   const warPlans = s.warPlans.map((plan) => {
     const loadouts = { ...plan.loadouts };
     for (const age of Object.keys(loadouts) as AgeId[]) {
       const l = loadouts[age];
-      if (!l || (l.units[UNIT_SLOTS - 1] ?? null) !== null) continue;
-      const pick = byLevel(s, ageCards(t, age).units).find((id) => !l.units.includes(id));
+      if (!l) continue;
       const units: (CardId | null)[] = Array.from({ length: UNIT_SLOTS }, (_, i) => l.units[i] ?? null);
-      if (pick) units[UNIT_SLOTS - 1] = pick;
+      const ranked = byLevel(s, ageCards(t, age).units);
+      for (const [slot] of todo) {
+        if (units[slot] !== null) continue;
+        const pick = ranked.find((id) => !units.includes(id));
+        if (pick) units[slot] = pick;
+      }
       loadouts[age] = { ...l, units };
     }
     return { ...plan, loadouts };
   });
-  return { ...s, warPlans, flags: { ...s.flags, [SIXTH_SLOT_FLAG]: true } };
+  const flags = { ...s.flags };
+  for (const [, flag] of todo) flags[flag] = true;
+  return { ...s, warPlans, flags };
 }
 
 /** Auto-fill for the active plan (A3); not saved until the player keeps it. */
@@ -183,7 +201,7 @@ export function equipNow(s: SaveDoc, card: CardId, t: Content): SaveDoc {
 /**
  * A newly found card goes into an **empty** troop or turret slot of its age in the active plan, if
  * there is one; nothing is ever replaced (FTUE audit 2026-10-01 #7: capsule 1's two new cards stayed
- * on the bench, so match 2 ran with 4 of 6 troops and two empty sockets).
+ * on the bench, so match 2 ran with 4 of 6 troops and two empty sockets; 7 troop slots since 2026-10-07).
  */
 export function fillEmptySlot(s: SaveDoc, card: CardId, t: Content): SaveDoc {
   const plan = activePlan(s);

@@ -34,7 +34,7 @@ import { localNow, type LocalClock } from '@/meta/time';
 import { tickTimersAt } from '@/meta/timers';
 import { unlockTitles } from '@/meta/titles';
 import { arenaIndexFor } from '@/meta/trophies';
-import { autoFill, PLAN_PRESETS, SIXTH_SLOT_FLAG } from '@/meta/warplan';
+import { autoFill, PLAN_PRESETS, SEVENTH_SLOT_FLAG, SIXTH_SLOT_FLAG } from '@/meta/warplan';
 import { TESTER_PROFILE_FLAG } from '@/ui/screens/model/tester';
 import { UNLOCK_ORDER, unlockFlag } from '@/ui/screens/model/warPath';
 
@@ -89,6 +89,7 @@ function pastOnboardingFlags(): Record<string, boolean> {
   flags[META_FLAGS.dailyUnlocked] = true;
   flags[META_FLAGS.powerField] = true;
   flags[SIXTH_SLOT_FLAG] = true;
+  flags[SEVENTH_SLOT_FLAG] = true;
   flags[TESTER_PROFILE_FLAG] = true;
   return flags;
 }

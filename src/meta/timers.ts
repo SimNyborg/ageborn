@@ -19,7 +19,7 @@ import { fillNewTroopSlots } from './warplan';
 export function tickTimersAt(s: SaveDoc, t: Content, lt: LocalTime): SaveDoc {
   // The release gate: a save holding a card whose art has not shipped loads without it (`release.ts`).
   let save = withoutUnreleased(s, t);
-  // A18.9: the sixth troop slot a save v4 migration added is filled once at the first tick after load.
+  // A18.9: the sixth (save v4) and seventh (save v13) troop slots are filled once at the first tick after load.
   save = fillNewTroopSlots(save, t);
   // A6.4, B8: the capsule ladder migration's one-time legacy skill Aeons
   save = grantLegacySkillAeons(save, t, lt.t);

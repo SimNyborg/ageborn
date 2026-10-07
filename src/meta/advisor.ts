@@ -33,8 +33,8 @@ export type PlanIssueCode =
 /** Minimum units and turrets per age used by the format (A3 "Minimum to play"). */
 export const MIN_UNITS = 3;
 export const MIN_TURRETS = 1;
-/** Loadout shape (B15 `Loadout`: 6 unit slots from A18.9, and 2 turret slots). */
-export const UNIT_SLOTS = 6;
+/** Loadout shape (B15 `Loadout`: 7 unit slots from A18.9, owner request 2026-10-07, and 2 turret slots). */
+export const UNIT_SLOTS = 7;
 export const TURRET_SLOTS = 2;
 
 function issue(age: AgeId, severity: PlanIssue['severity'], code: PlanIssueCode): PlanIssue {
