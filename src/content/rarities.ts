@@ -31,8 +31,10 @@ export const rarities: Rarities = {
       codexPoints: 8, dustPerExtraCopy: 400, craftCopyDust: 1600, nameKey: 'rarity.legendary.name',
     },
   },
-  // A6.6 Amber per level (to L2 ... to L10), total 4,970
-  upgradeAmber: [20, 50, 100, 200, 350, 550, 800, 1200, 1700],
+  // A6.6 Amber per level (to L2 ... to L10), total 20,020. The years-long curve (owner decision
+  // 2026-10-07): L2-L6 unchanged so the first week stays generous, L7-L10 steeper (was 550 / 800 /
+  // 1,200 / 1,700, total 4,970) so the War Plan takes about a year and the whole collection years.
+  upgradeAmber: [20, 50, 100, 200, 350, 800, 1700, 4800, 12000],
   skinOrder: ['rare', 'epic', 'legendary'],
   skins: {
     // A6.4 Wardrobe odds; A6.6 duplicate skin and craft Dust

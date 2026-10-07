@@ -10,11 +10,23 @@ import type { Locale } from './i18n';
 import type { AgeId, CapsuleTier, CardId, CosmeticKey, Foil, Rarity, Result, SkinId, SkinRarity, TeamPreset } from './ids';
 import type { Loadout, ReplayDoc } from './sim';
 
-/** Generated profile avatar (DESIGN A6.1). */
+/** The slots of the avatar creator's look (owner request 2026-10-07, "Make your General"). */
+export type AvatarSlot = 'face' | 'eyes' | 'brows' | 'nose' | 'mouth' | 'hair' | 'facialHair' | 'headwear' | 'top' | 'accessory' | 'background';
+
+/** The tintable colours of a look; each value is an index into the content's tint table. */
+export type AvatarTint = 'skin' | 'hair' | 'eyes' | 'cloth';
+
+/**
+ * Generated profile avatar (DESIGN A6.1). From save v12 the creator's look lives in `look` (slot →
+ * part id) and `tints`; `seed` and `parts` stay for compatibility (a save without `look` is drawn from
+ * them by the frozen v12 mapping). `portraitCard` shows an owned troop instead.
+ */
 export interface AvatarSpec {
   seed: number;
   parts: Record<string, number>;
   portraitCard?: CardId;
+  look?: Partial<Record<AvatarSlot, string>>;
+  tints?: Partial<Record<AvatarTint, number>>;
 }
 
 /** Player settings (DESIGN A9 Settings, A12 feel options, B6 graphics presets). */

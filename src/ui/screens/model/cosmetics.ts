@@ -3,10 +3,14 @@
  * how a locked item is earned and the equipped look. Mirrors the meta rules (starters and the six
  * starter emotes are owned by everyone), so the screens can mark tiles without calling meta.
  */
+import { ageNameKey, capsuleTierShortKey, titleNameKey } from '@/content/keys';
 import type { Content, CosmeticCollection, CosmeticItemDef } from '@/content/types';
 import type { CosmeticLoadout, SaveDoc } from '@/contracts';
 
 export const COLLECTIONS: readonly CosmeticCollection[] = ['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop'];
+
+/** Every collection, the avatar wearables included (they live in Customize › General, not their own tab). */
+export const ALL_COLLECTIONS: readonly CosmeticCollection[] = [...COLLECTIONS, 'avatar'];
 
 export const itemKey = (x: Pick<CosmeticItemDef, 'collection' | 'id'>): string => `${x.collection}.${x.id}`;
 
@@ -73,10 +77,28 @@ export function sourceHint(x: CosmeticItemDef): { key: string; params?: Record<s
       return { key: 'cosmetic.ui.source.codex', params: { n: s.level } };
     case 'warPath':
       return { key: 'cosmetic.ui.source.warPath' };
+    case 'warPathBoss':
+      // `age` is the age id: the caller shows `age.<id>.name`
+      return { key: 'cosmetic.ui.source.warPathBoss', params: { age: s.age } };
+    case 'warPathStars':
+      return { key: 'cosmetic.ui.source.warPathStars', params: { age: s.age } };
+    case 'title':
+      // `title` is the title id: the caller shows `title.<id>.name`
+      return { key: 'cosmetic.ui.source.title', params: { title: s.title } };
     case 'capsuleTier':
       // A6.4 step 8 (the Aeon Collection); `tier` is the tier id: the caller shows `capsuleTier.<id>.short`
       return { key: 'cosmetic.ui.source.capsuleTier', params: { tier: s.tier } };
   }
+}
+
+/** How a locked item is earned, as display text (age, tier and title names resolved). */
+export function sourceText(t: (key: string, params?: Record<string, string | number>) => string, x: CosmeticItemDef): string {
+  const h = sourceHint(x);
+  const s = x.source;
+  if (s.kind === 'capsuleTier') return t(h.key, { tier: t(capsuleTierShortKey(s.tier)) });
+  if (s.kind === 'warPathBoss' || s.kind === 'warPathStars') return t(h.key, { age: t(ageNameKey(s.age)) });
+  if (s.kind === 'title') return t(h.key, { title: t(titleNameKey(s.title)) });
+  return t(h.key, h.params);
 }
 
 /**

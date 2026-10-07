@@ -9,10 +9,10 @@
  * one to unlock shows "5 wins" on its icon and a tap shows "Unlocks at 5 wins" above it (U8; wins in
  * any mode count, owner decision 2026-09-30). Keys 1-5 switch tabs on desktop (the shell binds them).
  */
-import type { ComponentChildren } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { TabId } from '../router';
 import { haptic } from './haptics';
+import { NavIcon } from './navIcons';
 import { useKit } from './kit';
 
 export interface NavTab {
@@ -144,67 +144,4 @@ function LockMark() {
   );
 }
 
-/**
- * Tab glyphs: simple two-tone shapes that read at 28 px, slate when inactive and in colour when
- * active (`--tab-accent`). Distinct silhouettes, so colour is never the only cue.
- */
-export function NavIcon(p: { id: TabId; size?: number }): ComponentChildren {
-  const s = p.size ?? 28;
-  const common = { class: 'ui-tabbar__glyph', width: s, height: s, viewBox: '0 0 32 32', 'aria-hidden': 'true' as const, focusable: 'false' as const };
-  const edge = { stroke: '#0f1218', 'stroke-width': 1.8, 'stroke-linejoin': 'round' as const, 'stroke-linecap': 'round' as const };
-  switch (p.id) {
-    case 'army':
-      // Two cards fanned with a sword emblem: "your troops".
-      return (
-        <svg {...common}>
-          <rect x="5" y="7" width="14" height="19" rx="2.5" fill="var(--g2)" {...edge} transform="rotate(-10 12 16.5)" />
-          <rect x="12" y="5" width="14" height="19" rx="2.5" fill="var(--g1)" {...edge} transform="rotate(8 19 14.5)" />
-          <path d="M19.5 9.5l-4.2 7.4m0 0l-1.4-.8m1.4.8l.8 1.4m-.2-5.4l2.3 1.3" fill="none" stroke="#0f1218" stroke-width="2" transform="rotate(8 19 14.5)" />
-        </svg>
-      );
-    case 'capsules':
-      // A drum with lit ring pips.
-      return (
-        <svg {...common}>
-          <ellipse cx="16" cy="9" rx="10" ry="4" fill="var(--g1)" {...edge} />
-          <path d="M6 9v12c0 2.2 4.5 4 10 4s10-1.8 10-4V9" fill="var(--g2)" {...edge} />
-          <path d="M6 15c0 2.2 4.5 4 10 4s10-1.8 10-4" fill="none" {...edge} />
-          <circle cx="11" cy="20.5" r="1.3" fill="var(--g1)" />
-          <circle cx="16" cy="21.3" r="1.3" fill="var(--g1)" />
-          <circle cx="21" cy="20.5" r="1.3" fill="var(--g1)" />
-        </svg>
-      );
-    case 'battle':
-      // Two crossed swords over a round shield: "fight".
-      return (
-        <svg {...common}>
-          <circle cx="16" cy="17" r="8.5" fill="var(--g2)" {...edge} />
-          <path d="M5 5l15.5 15.5M27 5L11.5 20.5" fill="none" stroke="#0f1218" stroke-width="5" stroke-linecap="round" />
-          <path d="M5 5l15.5 15.5M27 5L11.5 20.5" fill="none" stroke="var(--g1)" stroke-width="2.6" stroke-linecap="round" />
-          <path d="M18 23l6 6M14 23l-6 6M20.5 20.5l3-3M11.5 20.5l-3-3" fill="none" stroke="#0f1218" stroke-width="3.2" stroke-linecap="round" />
-          <path d="M18 23l6 6M14 23l-6 6" fill="none" stroke="var(--g2)" stroke-width="1.4" stroke-linecap="round" />
-        </svg>
-      );
-    case 'progress':
-      // A cup on a plinth.
-      return (
-        <svg {...common}>
-          <path d="M9 5h14v5a7 7 0 0 1-14 0z" fill="var(--g1)" {...edge} />
-          <path d="M9 7H5.5a3.5 3.5 0 0 0 4.2 5.4M23 7h3.5a3.5 3.5 0 0 1-4.2 5.4" fill="none" {...edge} />
-          <path d="M14 17h4v4h-4z" fill="var(--g2)" {...edge} />
-          <path d="M9.5 21h13l1 5h-15z" fill="var(--g2)" {...edge} />
-        </svg>
-      );
-    case 'customize':
-      // A banner flag with a brush: "how you look".
-      return (
-        <svg {...common}>
-          <path d="M6 4v24" {...edge} fill="none" stroke-width="2.2" />
-          <path d="M6.5 5h15l-3.5 5 3.5 5h-15z" fill="var(--g1)" {...edge} />
-          <path d="M27 14l-8.5 8.5" stroke="#0f1218" stroke-width="4.4" stroke-linecap="round" />
-          <path d="M27 14l-8.5 8.5" stroke="var(--g2)" stroke-width="2.4" stroke-linecap="round" />
-          <path d="M18.5 22.5c-2 0-3.5 1.5-3.5 3.6 0 .6-.4 1.2-1 1.4 3 .9 6.2-.6 6.3-3.4z" fill="var(--g1)" {...edge} />
-        </svg>
-      );
-  }
-}
+export { NavIcon };

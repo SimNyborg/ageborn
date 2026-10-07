@@ -114,3 +114,45 @@ export function starPitchBp(star: number): number {
   const semis = [0, 0, 2, 4, 7][Math.max(0, Math.min(4, star))] ?? 0;
   return Math.round(10000 * 2 ** (semis / 12));
 }
+
+/** A sprite strip (one clip, square cells side by side) and its frame count. */
+export interface SpriteStripArt {
+  url: string;
+  frames: number;
+}
+
+const stripFrames = new Map<string, number>();
+
+/**
+ * One unit clip as a CSS sprite strip (UI art audit #6), through the injected portrait provider with
+ * the card id `strip:<clip>:<card>` (the provider composites the Blender sheet's frames, team layer
+ * tinted). Null while loading, without a provider, or for a unit without a sheet (draw a fallback).
+ */
+export function useSpriteStrip(card: CardId | null, clip: 'idle' | 'walk', size: number): SpriteStripArt | null {
+  const url = usePortrait(card ? (`strip:${clip}:${card}` as CardId) : null, { size, plate: false });
+  const [frames, setFrames] = useState<number | null>(() => (url ? (stripFrames.get(url) ?? null) : null));
+  useEffect(() => {
+    if (!url) {
+      setFrames(null);
+      return;
+    }
+    const known = stripFrames.get(url);
+    if (known) {
+      setFrames(known);
+      return;
+    }
+    if (typeof Image === 'undefined') return;
+    let live = true;
+    const im = new Image();
+    im.onload = () => {
+      const n = Math.max(1, Math.round(im.naturalWidth / Math.max(1, im.naturalHeight)));
+      stripFrames.set(url, n);
+      if (live) setFrames(n);
+    };
+    im.src = url;
+    return () => {
+      live = false;
+    };
+  }, [url]);
+  return url && frames ? { url, frames } : null;
+}

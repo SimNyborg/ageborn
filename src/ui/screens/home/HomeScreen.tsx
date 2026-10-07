@@ -379,7 +379,7 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
             autofocus
             disabled={unavailable}
             reason={unavailable ? t('ui.online.battleBlocked', { reason: t(unavailableKey) }) : undefined}
-            icon={searching ? null : <SwordsIcon size={30} />}
+            icon={searching ? null : <SwordsIcon size={36} hero />}
             onClick={(e) => {
               e.stopPropagation();
               battle();

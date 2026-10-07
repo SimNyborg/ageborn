@@ -644,7 +644,10 @@
         "arena": "Reach Arena {n}",
         "codex": "Codex Level {n}",
         "warPath": "War Path (coming later)",
-        "capsuleTier": "From {tier} Capsules. Craftable after your first."
+        "capsuleTier": "From {tier} Capsules. Craftable after your first.",
+        "warPathBoss": "Beat the {age} boss on Normal",
+        "warPathStars": "All 3 stars in the {age} region",
+        "title": "Collection milestone: {title}"
       },
       "reason": {
         "notOwned": "You do not own that yet.",

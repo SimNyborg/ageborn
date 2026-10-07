@@ -720,7 +720,9 @@ const FeatsSchema = v.strictObject({
   ),
 });
 
-const COLLECTION = v.picklist(['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop']);
+const COLLECTION = v.picklist(['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop', 'avatar']);
+const AVATAR_SLOT = v.picklist(['face', 'eyes', 'brows', 'nose', 'mouth', 'hair', 'facialHair', 'headwear', 'top', 'accessory', 'background']);
+const AVATAR_TINT = v.picklist(['skin', 'hair', 'eyes', 'cloth']);
 const CosmeticSourceSchema = v.variant('kind', [
   v.strictObject({ kind: v.literal('start') }),
   v.strictObject({ kind: v.literal('capsule') }),
@@ -730,6 +732,9 @@ const CosmeticSourceSchema = v.variant('kind', [
   v.strictObject({ kind: v.literal('arena'), arena: pos }),
   v.strictObject({ kind: v.literal('codexLevel'), level: pos }),
   v.strictObject({ kind: v.literal('warPath') }),
+  v.strictObject({ kind: v.literal('warPathBoss'), age: AGE }),
+  v.strictObject({ kind: v.literal('warPathStars'), age: AGE }),
+  v.strictObject({ kind: v.literal('title'), title: id }),
   v.strictObject({ kind: v.literal('capsuleTier'), tier: TIER }),
 ]);
 const CosmeticItemSchema = v.strictObject({
@@ -744,6 +749,7 @@ const CosmeticItemSchema = v.strictObject({
   age: v.optional(AGE),
   kind: v.optional(v.picklist(['statue', 'banner', 'brazier', 'trophy', 'plant'])),
   country: v.optional(v.pipe(v.string(), v.regex(/^[a-z]{2}(-[a-z]{3})?$/, 'ISO 3166 codes'))),
+  slot: v.optional(AVATAR_SLOT),
 });
 const cosmeticKey = v.pipe(v.string(), v.regex(/^[a-zA-Z]+\.[a-z0-9_]+$/, 'cosmetic keys look like "baseFlag.ember"'));
 const CollectionsSchema = v.strictObject({
@@ -775,6 +781,16 @@ const CosmeticsSchema = v.strictObject({
   emotes: v.array(v.strictObject({ id: EMOTE, botAllowed: v.boolean(), nameKey: key })),
   defaults: v.strictObject({ banner: id, frame: id, title: id }),
   collections: CollectionsSchema,
+  avatar: v.strictObject({
+    slots: v.array(AVATAR_SLOT),
+    parts: v.array(
+      v.strictObject({ id, slot: AVATAR_SLOT, rarity: v.union([v.literal('starter'), RARITY]), source: CosmeticSourceSchema, nameKey: key, age: v.optional(AGE) }),
+    ),
+    tints: v.strictObject({ skin: pos, hair: pos, eyes: pos, cloth: pos }),
+    tintOf: v.record(AVATAR_SLOT, AVATAR_TINT),
+    optional: v.array(AVATAR_SLOT),
+    generals: v.record(id, v.strictObject({ look: v.record(AVATAR_SLOT, id), tints: v.strictObject({ skin: nonNeg, hair: nonNeg, eyes: nonNeg, cloth: nonNeg }) })),
+  }),
 });
 
 const IntAttackSchema = v.strictObject({
@@ -1679,11 +1695,15 @@ function checkCollections(issues: Issues, c: Content): void {
     issues.check((x.collection === 'baseSkin') === (x.age !== undefined), p, 'base skins (and only base skins) have an age');
     issues.check((x.collection === 'decoration') === (x.kind !== undefined), p, 'decorations (and only decorations) have a kind');
     issues.check((x.collection === 'nationalFlag') === (x.country !== undefined), p, 'national flags (and only national flags) have a country');
+    issues.check((x.collection === 'avatar') === (x.slot !== undefined), p, 'avatar wearables (and only they) have a slot');
     const s = x.source;
     if (s.kind === 'road') issues.check(roadTrophies.has(s.trophies), p, `no Trophy Road node at ${s.trophies}`);
     if (s.kind === 'feat') issues.check(c.feats.list[s.feat] !== undefined, p, `unknown feat "${s.feat}"`);
     if (s.kind === 'arena') issues.check(c.arenas.list[s.arena - 1] !== undefined, p, `unknown arena ${s.arena}`);
+    if (s.kind === 'title') issues.check(c.cosmetics.titles.some((t) => t.id === s.title), p, `unknown title "${s.title}"`);
+    if (s.kind === 'warPathBoss' || s.kind === 'warPathStars') issues.check(x.collection === 'avatar', p, 'War Path boss and star sources are avatar wearables');
   }
+  checkAvatar(issues, c);
   const sum = (r: Record<string, number>) => Object.values(r).reduce((a, b) => a + b, 0);
   issues.check(sum(col.drops.capsuleRarityBp) === 10000, 'cosmetics.collections.drops', 'capsule rarity odds sum to 100%');
   issues.check(sum(col.drops.crateRarityBp) === 10000, 'cosmetics.collections.drops', 'crate rarity odds sum to 100%');
@@ -1711,6 +1731,43 @@ function checkCollections(issues: Issues, c: Content): void {
   issues.check(d.nationalFlag === null, 'cosmetics.collections.defaults', 'no national flag by default (never inferred from location)');
   issues.check(d.decorations.length === col.decorationAnchors, 'cosmetics.collections.defaults', 'one default per decoration anchor');
   issues.check(d.decorations.every((k) => starter(k) && (k === null || k.startsWith('decoration.'))), 'cosmetics.collections.defaults', 'default decorations are starters');
+}
+
+/**
+ * The avatar creator (owner request 2026-10-07, AUDIT §6.8): unique ids, at least one starter per slot,
+ * the wearable counts by rarity (36 / 28 / 20 / 12), earned sources only (nothing sold) and every
+ * wearable mirrored by its `avatar` collection item.
+ */
+function checkAvatar(issues: Issues, c: Content): void {
+  const a = c.cosmetics.avatar;
+  const p = 'cosmetics.avatar';
+  unique(issues, `${p}.parts`, a.parts.map((x) => x.id));
+  for (const slot of a.slots) issues.check(a.parts.some((x) => x.slot === slot && x.rarity === 'starter'), p, `slot "${slot}" has a starter part`);
+  for (const slot of a.optional) issues.check(a.parts.some((x) => x.slot === slot && x.rarity === 'starter' && x.id.endsWith('_none')), p, `optional slot "${slot}" has a none part`);
+  const wear = a.parts.filter((x) => x.rarity !== 'starter');
+  const count = (r: string) => wear.filter((x) => x.rarity === r).length;
+  issues.check(count('common') === 36 && count('rare') === 28 && count('epic') === 20 && count('legendary') === 12, p, '96 wearables: 36 Common, 28 Rare, 20 Epic, 12 Legendary');
+  const earnedKinds = new Set(['capsule', 'crate', 'road', 'feat', 'warPathBoss', 'warPathStars', 'title']);
+  const items = new Map(c.cosmetics.collections.items.filter((x) => x.collection === 'avatar').map((x) => [x.id, x]));
+  for (const x of a.parts) {
+    const q = `${p}.${x.id}`;
+    if (x.rarity === 'starter') {
+      issues.check(x.source.kind === 'start' && !items.has(x.id), q, 'starter parts are free and not collection items');
+      continue;
+    }
+    issues.check(earnedKinds.has(x.source.kind), q, 'wearables are earned in play (never sold)');
+    issues.check(x.slot === 'headwear' || x.slot === 'top' || x.slot === 'accessory' || x.slot === 'background', q, 'wearables are headwear, tops, accessories or backgrounds');
+    issues.check(x.source.kind !== 'capsule' || x.rarity !== 'legendary', q, 'no Legendary wearable in the Time Capsule pool');
+    issues.check(x.source.kind !== 'crate' || x.rarity !== 'common', q, 'no Common wearable in the Wardrobe Crate pool');
+    const it = items.get(x.id);
+    issues.check(it !== undefined && it.rarity === x.rarity && it.slot === x.slot && JSON.stringify(it.source) === JSON.stringify(x.source), q, 'mirrored by its avatar collection item');
+  }
+  issues.check(items.size === wear.length, p, 'every avatar collection item is a wearable part');
+  const byId = new Map(a.parts.map((x) => [x.id, x]));
+  for (const [gid, look] of Object.entries(a.generals)) {
+    for (const [slot, part] of Object.entries(look.look)) issues.check(byId.get(part)?.slot === slot, `${p}.generals.${gid}`, `"${part}" is a ${slot} part`);
+    for (const [tint, n] of Object.entries(look.tints)) issues.check(n < a.tints[tint as keyof typeof a.tints], `${p}.generals.${gid}`, `${tint} tint in range`);
+  }
 }
 
 function checkCounters(issues: Issues, c: Content): void {

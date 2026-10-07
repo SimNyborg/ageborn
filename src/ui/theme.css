@@ -1036,6 +1036,31 @@
 .ui-root[data-reduce-motion='true'] .ui-btn[data-pulse] .ui-btn__face::after {
   display: none;
 }
+/* Hover on a primary that is not pulsing (Play level, Fight): one 30° shine band crosses the face in
+   600 ms (UI art audit §4). Reduce motion keeps only the hover brightness. */
+@media (hover: hover) {
+  .ui-btn--primary:not([data-pulse]):not([aria-disabled='true']):hover .ui-btn__face::after {
+    content: '';
+    position: absolute;
+    top: -20%;
+    bottom: -20%;
+    left: 0;
+    width: 30%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    transform: translateX(-160%) skewX(-30deg);
+    animation: ui-shine-once 600ms var(--ui-ease-standard) both;
+    pointer-events: none;
+  }
+}
+@keyframes ui-shine-once {
+  to {
+    transform: translateX(460%) skewX(-30deg);
+  }
+}
+.ui-root[data-reduce-motion='true'] .ui-btn--primary .ui-btn__face::after {
+  animation: none !important;
+  display: none;
+}
 
 /* Roles (U5) */
 .ui-btn--primary {
@@ -2299,11 +2324,127 @@ button.ui-chip {
   height: 36px;
 }
 .ui-tabbar__tab--battle.is-on .ui-tabbar__icon::before {
+  /* a warm glow disc behind the shield (no ring, so nothing overlaps the label; audit #13) */
   content: '';
   position: absolute;
-  inset: -3px -6px;
-  border-radius: 12px;
-  box-shadow: 0 0 0 2px var(--ui-primary), 0 0 14px rgba(242, 181, 44, 0.45);
+  inset: -4px -4px -2px;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 212, 102, 0.5), rgba(242, 181, 44, 0.18) 60%, transparent);
+}
+/* UI art audit #13: the glyphs are full-colour pictures; inactive tabs show them muted (about 55%
+   saturation, still over 3:1 on the bar), the active one in full colour with a per-icon motion. */
+.ui-tabbar__tab:not(.is-on):not(.is-locked) .ui-tabbar__glyph {
+  filter: saturate(0.5) brightness(0.86) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+  transition: filter var(--ui-dur-small) var(--ui-ease-standard);
+}
+@media (hover: hover) {
+  .ui-tabbar__tab:hover:not(.is-on):not(.is-locked) .ui-tabbar__glyph {
+    filter: saturate(0.85) brightness(1) drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+  }
+}
+.ui-tabbar__tab.is-on .ui-tabbar__glyph {
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.25)) drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
+}
+.nav-g :is(.nav-army__front, .nav-army__back, .nav-cap__lid, .nav-sw__a, .nav-sw__b, .nav-brush, .nav-flag, .nav-cup__glint) {
+  transform-box: view-box;
+}
+.nav-army__front {
+  transform-origin: 16px 28px;
+}
+.nav-army__back {
+  transform-origin: 16px 28px;
+}
+.nav-brush {
+  transform-origin: 28px 12px;
+}
+.nav-flag {
+  transform-origin: 8px 10px;
+}
+.nav-sw__a,
+.nav-sw__b {
+  transform-origin: 12px 11px;
+}
+.ui-tabbar__icon.is-pop .nav-army__front {
+  animation: nav-fan-front 320ms var(--ui-ease-back);
+}
+.ui-tabbar__icon.is-pop .nav-army__back {
+  animation: nav-fan-back 320ms var(--ui-ease-back);
+}
+.ui-tabbar__icon.is-pop .nav-cap__lid {
+  animation: nav-lid 340ms var(--ui-ease-standard);
+}
+.ui-tabbar__icon.is-pop .nav-sw__a {
+  animation: nav-clash-a 300ms var(--ui-ease-standard);
+}
+.ui-tabbar__icon.is-pop .nav-sw__b {
+  animation: nav-clash-b 300ms var(--ui-ease-standard);
+}
+.ui-tabbar__icon.is-pop .nav-cup__glint {
+  animation: nav-glint 420ms var(--ui-ease-standard);
+}
+.ui-tabbar__icon.is-pop .nav-brush {
+  animation: nav-stroke 360ms var(--ui-ease-standard);
+}
+.ui-tabbar__icon.is-pop .nav-flag {
+  animation: nav-wave 360ms var(--ui-ease-standard);
+}
+@keyframes nav-fan-front {
+  45% {
+    transform: rotate(9deg) translateX(1px);
+  }
+}
+@keyframes nav-fan-back {
+  45% {
+    transform: rotate(-7deg);
+  }
+}
+@keyframes nav-lid {
+  35% {
+    transform: translateY(-4px) rotate(-6deg);
+  }
+  70% {
+    transform: translateY(0.5px);
+  }
+}
+@keyframes nav-clash-a {
+  40% {
+    transform: rotate(-9deg);
+  }
+}
+@keyframes nav-clash-b {
+  40% {
+    transform: rotate(9deg);
+  }
+}
+@keyframes nav-glint {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  30% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+}
+@keyframes nav-stroke {
+  40% {
+    transform: rotate(-14deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+@keyframes nav-wave {
+  50% {
+    transform: skewY(-6deg) scaleX(0.94);
+  }
+}
+.ui-root[data-reduce-motion='true'] .ui-tabbar__icon.is-pop :is(.nav-army__front, .nav-army__back, .nav-cap__lid, .nav-sw__a, .nav-sw__b, .nav-cup__glint, .nav-brush, .nav-flag) {
+  animation: none;
 }
 .ui-tabbar__tab.is-locked {
   cursor: default;

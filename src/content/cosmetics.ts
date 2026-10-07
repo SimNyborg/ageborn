@@ -4,6 +4,7 @@
  * decorations and battle backdrops (items in `raw/cosmetics.ts`). There is no text chat anywhere
  * (A5.8, A7.1): quotes are fixed lines. Cosmetics never change stats.
  */
+import { avatar, avatarCollectionItems } from './raw/avatar';
 import { collectionItems } from './raw/cosmetics';
 import type { Cosmetics } from './types';
 
@@ -73,7 +74,8 @@ export const cosmetics: Cosmetics = {
   // A18.9.4 collections. Odds are disclosed on every capsule and crate screen (A15.3); only
   // `capsule` items drop from Time Capsules and only `crate` items from the Wardrobe Crate.
   collections: {
-    items: collectionItems,
+    // The avatar wearables (owner request 2026-10-07) are the `avatar` collection: earned only, never sold
+    items: [...collectionItems, ...avatarCollectionItems],
     drops: {
       // Script (onboarding) and Age Unlock capsules never hold a collection item.
       capsuleChanceBp: { clay: 800, bronze: 1200, silver: 2000, jade: 3500, gold: 6000, platinum: 8000, aeon: 10000 },
@@ -99,4 +101,5 @@ export const cosmetics: Cosmetics = {
       backdrop: null,
     },
   },
+  avatar,
 };

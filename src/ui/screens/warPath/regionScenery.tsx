@@ -11,6 +11,8 @@
  */
 import type { AgeId } from '@/contracts';
 import type { ComponentChildren } from 'preact';
+import { ink, shade } from '../../components/tone';
+import { Cel, Contact } from './propKit';
 import type { RegionTheme } from './regionArt';
 
 type Rng = { next(): number };
@@ -75,10 +77,11 @@ function Boat(p: { x: number; y: number; s: number; sail: string }) {
   return (
     <g transform={`translate(${p.x.toFixed(0)} ${p.y.toFixed(0)}) scale(${p.s.toFixed(2)})`}>
       <g class="wp-boat">
-        <path d="M-22 0 h44 l-8 10 h-28 z" fill="#6b4a2c" stroke={INK} stroke-width="1.5" />
-        <path d="M0 0 V-34" stroke="#3b2a1e" stroke-width="2.4" />
-        <path d="M2 -32 q18 12 0 28 z" fill={p.sail} stroke={INK} stroke-width="1.2" />
-        <path d="M-2 -26 q-12 10 0 22 z" fill="#f0e6cc" stroke={INK} stroke-width="1.2" />
+        <Cel d="M-22 0 H22 L14 10 H-14Z" fill="#7a5433" band={5} hi="M-18 1.4 H18 V3 H-18Z" sw={1.5} />
+        <path d="M0 0 V-34" stroke={ink('#5a3a24')} stroke-width="3.6" />
+        <path d="M0 0 V-34" stroke="#6b4a2c" stroke-width="2" />
+        <Cel d="M2 -32 Q20 -20 2 -4Z" fill={p.sail} band="M8 -40H30V0H8Z" sw={1.3} />
+        <Cel d="M-2 -26 Q-14 -16 -2 -4Z" fill="#f0e6cc" band="M-6 -30H-20V0H-6Z" sw={1.3} />
       </g>
     </g>
   );
@@ -195,241 +198,314 @@ function Pennant(p: { x: number; y: number; color: string; h?: number }) {
   const h = p.h ?? 30;
   return (
     <g transform={`translate(${p.x} ${p.y})`}>
-      <path d={`M0 0 V-${h}`} stroke="#3b2a1e" stroke-width="2" />
-      <path class="wp-flag" d={`M1 -${h} h14 l-4 4 l4 4 h-14 z`} fill={p.color} stroke={INK} stroke-width="1" />
+      <path d={`M0 0 V-${h}`} stroke={ink('#6b4a2e')} stroke-width="3.4" stroke-linecap="round" />
+      <path d={`M0 0 V-${h}`} stroke="#8e6440" stroke-width="1.6" stroke-linecap="round" />
+      <path class="wp-flag" d={`M1 -${h} h14 l-4 4 l4 4 h-14 z`} fill={p.color} stroke={ink(p.color)} stroke-width="1.2" stroke-linejoin="round" />
+      <path class="wp-flag" d={`M1 -${h - 4.6} h10.6 l.9 1 l-.9 2 h-10.6z`} fill={shade(p.color)} />
     </g>
   );
 }
 
 type Piece = (t: RegionTheme) => ComponentChildren;
 
+const blob = (cx: number, cy: number, r: number): string => `M${cx - r} ${cy}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0Z`;
+const WOOD = '#8e6440';
+
+/** Stone: a cave in a rock outcrop with its camp fire and drying hides. */
 const caveCamp: Piece = (t) => (
   <g>
-    <ellipse cx="0" cy="0" rx="62" ry="12" fill="#000" opacity=".28" />
-    <path d="M-58 0 Q-60 -52 -18 -66 Q24 -76 52 -44 Q64 -24 58 0 Z" fill="#6f665c" stroke={INK} stroke-width="2.5" />
-    <path d="M-58 0 Q-60 -52 -18 -66 Q-4 -60 -30 -40 Q-44 -20 -40 0 Z" fill="#8f877a" />
-    <path d="M-22 0 Q-24 -34 0 -38 Q24 -34 22 0 Z" fill="#1e1914" />
-    <path d="M-18 -4 Q-16 -26 0 -30" stroke="#ff9a2a" stroke-width="3" fill="none" opacity=".35" />
-    <path d="M22 -62 q10 -8 20 -2" stroke={t.lit} stroke-width="5" fill="none" stroke-linecap="round" />
-    <Fire x={40} y={-2} s={1.1} />
-    <Smoke x={40} y={-26} s={0.55} color="#9a8f86" />
-    <path d="M-62 0 l-6 -26 l10 0 z M-70 -26 l6 -8 l6 8" fill="#c8733a" stroke={INK} stroke-width="1.5" />
-  </g>
-);
-const mammoth: Piece = () => (
-  <g>
-    <ellipse cx="0" cy="0" rx="54" ry="10" fill="#000" opacity=".25" />
-    <g stroke="#efe6d0" stroke-width="5" fill="none" stroke-linecap="round">
-      {[-24, -12, 0, 12].map((x) => (
-        <path key={x} d={`M${x} 0 Q${x - 4} -26 ${x + 8} -34`} />
-      ))}
-      <path d="M-30 -34 Q0 -44 30 -32" stroke-width="6" />
-      <path d="M30 -32 Q48 -30 50 -12 Q52 0 40 2" stroke-width="4" />
+    <Contact rx={66} />
+    <Cel d="M-60 0 Q-64 -50 -22 -68 Q22 -80 54 -46 Q68 -24 60 0Z" fill="#7c7266" band="M-80 -26 Q0 -10 80 -30 V20 H-80Z" hi="M-50 -14 Q-52 -48 -20 -60 Q-8 -58 -28 -42 Q-42 -26 -40 -14Z" sw={2.4} />
+    <path d="M-36 -40 Q-24 -46 -12 -44 M10 -58 Q24 -60 34 -50 M30 -22 Q42 -26 50 -18 M-46 -18 Q-40 -24 -30 -22" stroke={shade('#7c7266')} stroke-width="1.8" fill="none" stroke-linecap="round" />
+    <Cel d="M-22 0 Q-24 -36 0 -40 Q24 -36 22 0Z" fill="#2a211a" sw={2} />
+    <path d="M-16 -4 Q-14 -27 0 -31" stroke="#ff9a2a" stroke-width="3" fill="none" opacity=".4" />
+    <path d="M18 -64 Q28 -74 40 -66 Q48 -60 44 -54" stroke={ink(t.lit)} stroke-width="7" fill="none" stroke-linecap="round" />
+    <path d="M18 -64 Q28 -74 40 -66 Q48 -60 44 -54" stroke={t.lit} stroke-width="4" fill="none" stroke-linecap="round" />
+    <Fire x={42} y={-2} s={1.15} />
+    <Smoke x={42} y={-28} s={0.55} color="#a39a90" />
+    <g transform="translate(-70 0)">
+      <path d="M-8 0 V-30 M8 0 V-30 M-10 -28 H10" stroke={ink(WOOD)} stroke-width="3.6" stroke-linecap="round" />
+      <path d="M-8 0 V-30 M8 0 V-30 M-10 -28 H10" stroke={WOOD} stroke-width="1.8" stroke-linecap="round" />
+      <Cel d="M-6 -27 H6 L7 -10 Q0 -7 -7 -10Z" fill="#c8733a" band={-14} sw={1.4} />
     </g>
-    <circle cx="36" cy="-30" r="10" fill="#e3d8bd" stroke={INK} stroke-width="1.5" />
-    <circle cx="39" cy="-31" r="2" fill={INK} />
   </g>
 );
-const temple: Piece = (t) => (
-  <g>
-    <ellipse cx="0" cy="0" rx="66" ry="12" fill="#000" opacity=".28" />
-    <path d="M-60 0 h120 v-8 h-120 z M-54 -8 h108 v-6 h-108 z" fill="#d8ceb2" stroke={INK} stroke-width="1.5" />
-    {[-44, -26, -8, 10, 28, 46].map((x) => (
-      <g key={x}>
-        <rect x={x - 5} y="-56" width="10" height="42" fill={t.accent} stroke={INK} stroke-width="1.2" />
-        <rect x={x - 5} y="-56" width="4" height="42" fill="#fff" opacity=".4" />
-      </g>
-    ))}
-    <path d="M-60 -56 h120 v-7 h-120 z" fill="#e7dec6" stroke={INK} stroke-width="1.5" />
-    <path d="M-62 -63 L0 -88 L62 -63 Z" fill="#efe7d2" stroke={INK} stroke-width="2" />
-    <path d="M-62 -63 L0 -88 L0 -63 Z" fill="#fff" opacity=".3" />
-    <circle cx="0" cy="-72" r="5" fill="#d9a441" />
-  </g>
-);
+
+/** Stone: a mammoth skeleton half sunk in the grass. */
+const mammoth: Piece = () => {
+  const bone = '#efe6d0';
+  return (
+    <g>
+      <Contact rx={58} />
+      {[-26, -14, -2, 10].map((x, i) => (
+        <g key={x}>
+          <path d={`M${x} 0 Q${x - 5} -26 ${x + 8} -${36 - i}`} stroke={ink(bone)} stroke-width="8.4" fill="none" stroke-linecap="round" />
+          <path d={`M${x} 0 Q${x - 5} -26 ${x + 8} -${36 - i}`} stroke={bone} stroke-width="5" fill="none" stroke-linecap="round" />
+          <path d={`M${x + 1.4} -3 Q${x - 2.6} -24 ${x + 8} -${33 - i}`} stroke={shade(bone)} stroke-width="1.6" fill="none" stroke-linecap="round" />
+        </g>
+      ))}
+      <path d="M-34 -36 Q0 -46 30 -34" stroke={ink(bone)} stroke-width="9.6" fill="none" stroke-linecap="round" />
+      <path d="M-34 -36 Q0 -46 30 -34" stroke={bone} stroke-width="6" fill="none" stroke-linecap="round" />
+      <path d="M32 -30 Q52 -28 54 -10 Q55 2 42 4" stroke={ink('#f4ecd8')} stroke-width="7.6" fill="none" stroke-linecap="round" />
+      <path d="M32 -30 Q52 -28 54 -10 Q55 2 42 4" stroke="#f4ecd8" stroke-width="4.4" fill="none" stroke-linecap="round" />
+      <Cel d={blob(36, -32, 11)} fill="#e3d8bd" band={-29} hi={blob(32, -37, 3.4)} sw={1.8} />
+      <circle cx="39" cy="-33" r="2.4" fill={ink('#e3d8bd')} />
+    </g>
+  );
+};
+
+/** Bronze: a hill temple with a gilded pediment. */
+const temple: Piece = () => {
+  const marble = '#ece4cf';
+  return (
+    <g>
+      <Contact rx={70} />
+      <Cel d="M-62 0 H62 V-8 H-62Z" fill="#d8ceb2" band={-3} sw={1.8} />
+      <Cel d="M-56 -8 H56 V-14 H-56Z" fill="#e2d9c0" band={-10} sw={1.6} />
+      {[-44, -26, -8, 10, 28, 46].map((x) => (
+        <g key={x}>
+          <Cel d={`M${x - 5} -56 H${x + 5} V-14 H${x - 5}Z`} fill={marble} band={`M${x + 1.6} -60H${x + 9}V-10H${x + 1.6}Z`} hi={`M${x - 4} -55H${x - 2}V-15H${x - 4}Z`} sw={1.4} />
+          <path d={`M${x - 0.5} -54V-16`} stroke={shade(marble)} stroke-width=".8" />
+        </g>
+      ))}
+      <Cel d="M-62 -56 H62 V-63 H-62Z" fill="#e7dec6" band={-58.6} sw={1.6} />
+      <Cel d="M-64 -63 L0 -90 L64 -63Z" fill="#efe7d2" band="M0 -96 L80 -60 V-50 H0Z" hi="M-52 -65 L-2 -86 L-2 -82 L-44 -65Z" sw={2} />
+      <Cel d={blob(0, -73, 5.6)} fill="#e8b23a" band={-72} hi={blob(-1.6, -75, 1.6)} sw={1.3} />
+    </g>
+  );
+};
+
+/** Bronze: a hero statue on its plinth. */
 const statue: Piece = () => (
   <g>
-    <ellipse cx="0" cy="0" rx="26" ry="7" fill="#000" opacity=".28" />
-    <rect x="-16" y="-18" width="32" height="18" fill="#bfb49a" stroke={INK} stroke-width="1.5" />
-    <rect x="-16" y="-18" width="10" height="18" fill="#fff" opacity=".3" />
-    <path d="M-6 -18 L-4 -44 Q0 -52 4 -44 L6 -18 Z" fill="#c9a86a" stroke={INK} stroke-width="1.5" />
-    <circle cx="0" cy="-52" r="6" fill="#c9a86a" stroke={INK} stroke-width="1.5" />
-    <path d="M4 -42 L18 -62" stroke="#8a6a3a" stroke-width="3" stroke-linecap="round" />
-    <path d="M18 -62 l4 -6 l-8 2 z" fill="#d9a441" />
+    <Contact rx={28} />
+    <Cel d="M-16 -18 H16 V0 H-16Z" fill="#c8bea4" band="M4 -22H24V4H4Z" hi="M-14.6 -16.6H-11V-1.4H-14.6Z" sw={1.6} />
+    <Cel d="M-6 -18 L-4.4 -44 Q0 -52 4.4 -44 L6 -18Z" fill="#c9a86a" band="M1 -50H12V-14H1Z" metal sw={1.5} />
+    <Cel d={blob(0, -53, 6.4)} fill="#c9a86a" band={-51} hi={blob(-2, -55, 1.8)} metal sw={1.5} />
+    <path d="M4 -42 L18 -62" stroke={ink('#8a6a3a')} stroke-width="4.6" stroke-linecap="round" />
+    <path d="M4 -42 L18 -62" stroke="#a8844a" stroke-width="2.6" stroke-linecap="round" />
+    <Cel d="M18 -62 L22 -70 L13 -66Z" fill="#e8b23a" sw={1.2} />
   </g>
 );
-const keep: Piece = (t) => (
-  <g>
-    <ellipse cx="0" cy="0" rx="64" ry="12" fill="#000" opacity=".28" />
-    <path d="M-50 0 Q-40 -18 0 -20 Q40 -18 50 0 Z" fill="#6a8a4a" />
-    <g fill="#8b93a3" stroke={INK} stroke-width="2">
-      <rect x="-30" y="-64" width="60" height="50" />
-      <rect x="-44" y="-78" width="20" height="64" />
-      <rect x="24" y="-78" width="20" height="64" />
+
+/** Medieval: a moated keep with towers and pennants. */
+const keep: Piece = (t) => {
+  const wall = '#9aa0a6';
+  return (
+    <g>
+      <Contact rx={70} />
+      <Cel d="M-58 2 Q-50 -16 0 -18 Q50 -16 58 2 Q0 10 -58 2Z" fill="#3f8fc4" band={-3} hi="M-40 -10 Q-20 -14 0 -14.6 L-2 -12 Q-24 -11 -38 -7Z" sw={1.6} />
+      <path class="wp-shimmerline" d="M-36 -4 H-22 M6 -6 H22 M30 -2 H42" stroke="#e8f7ff" stroke-width="1.6" stroke-linecap="round" />
+      <Cel d="M-30 -64 H30 V-12 H-30Z" fill={wall} band="M8 -70H40V-8H8Z" hi="M-28.6 -62.6H-25V-13.4H-28.6Z" sw={2} />
+      {[-44, 24].map((x) => (
+        <g key={x}>
+          <Cel d={`M${x} -80 H${x + 20} V-12 H${x}Z`} fill={wall} band={`M${x + 12} -84H${x + 30}V-8H${x + 12}Z`} hi={`M${x + 1.4} -78.6H${x + 4.6}V-13.4H${x + 1.4}Z`} sw={2} />
+          {[0, 8, 15].map((dx) => (
+            <Cel key={dx} d={`M${x + dx} -86 h5 v6 h-5Z`} fill={wall} sw={1.3} />
+          ))}
+          <Cel d={`M${x + 7} -60 h6 v8 h-6Z`} fill="#ffd27a" sw={1.1} />
+        </g>
+      ))}
+      {[-48, -40, -32, -24].map((y) => (
+        <path key={y} d={`M-30 ${y} H30`} stroke={shade(wall)} stroke-width="1" opacity=".7" />
+      ))}
+      <Cel d="M-8 -12 V-30 Q0 -40 8 -30 V-12Z" fill="#3a2f28" sw={1.6} />
+      <Pennant x={-34} y={-86} color={t.accent} h={22} />
+      <Pennant x={34} y={-86} color={t.accent} h={22} />
     </g>
-    <path d="M-30 -64 h60 v6 h-60 z" fill="#aab2c0" />
-    <path d="M-44 -78 v64 h7 v-64 z M24 -78 v64 h7 v-64 z" fill="#fff" opacity=".22" />
-    {[-44, -36, -28, 24, 32, 40].map((x) => (
-      <rect key={x} x={x} y="-84" width="5" height="6" fill="#8b93a3" stroke={INK} stroke-width="1.2" />
-    ))}
-    <path d="M-8 -14 v-18 a8 8 0 0 1 16 0 v18z" fill="#2b2420" />
-    <Pennant x={-34} y={-84} color={t.accent} h={22} />
-    <Pennant x={34} y={-84} color={t.accent} h={22} />
-  </g>
-);
+  );
+};
+
+/** Medieval: a tourney camp of striped tents. */
 const tourney: Piece = (t) => (
   <g>
-    <ellipse cx="0" cy="0" rx="60" ry="10" fill="#000" opacity=".25" />
+    <Contact rx={62} />
     {[
       [-34, '#e9e1cc'],
       [0, t.accent],
       [34, '#e9e1cc'],
     ].map(([x, c], i) => (
       <g key={i} transform={`translate(${x} 0)`}>
-        <path d="M-16 0 L0 -34 L16 0 Z" fill={c as string} stroke={INK} stroke-width="1.5" />
-        <path d="M-16 0 L0 -34 L-4 0 Z" fill="#fff" opacity=".25" />
-        <path d="M-3 0 L0 -10 L3 0 Z" fill="#3b2a1e" />
-        <Pennant x={0} y={-34} color={i === 1 ? '#e9e1cc' : (t.accent as string)} h={12} />
+        <Cel d="M-17 0 L0 -36 L17 0Z" fill={c as string} band="M0 -44 L26 0 V8 H0Z" hi="M-12 -3 L-1.4 -28 L-1 -24 L-8 -3Z" sw={1.6} />
+        <path d="M-6 -1 L-1 -26 M6 -1 L1 -26" stroke={i === 1 ? '#e9e1cc' : (t.accent as string)} stroke-width="2.2" opacity=".85" />
+        <Cel d="M-3.4 0 L0 -11 L3.4 0Z" fill="#3b2a1e" sw={1} />
+        <Pennant x={0} y={-36} color={i === 1 ? '#e9e1cc' : (t.accent as string)} h={13} />
       </g>
     ))}
   </g>
 );
+
+/** Gunpowder: a star fort with its cannon puff. */
 const starFort: Piece = (t) => (
   <g>
-    <ellipse cx="0" cy="0" rx="70" ry="13" fill="#000" opacity=".28" />
-    <path d="M-66 -4 L-40 -20 L-22 -12 L0 -26 L22 -12 L40 -20 L66 -4 L40 6 L0 2 L-40 6 Z" fill="#7a786c" stroke={INK} stroke-width="2" />
-    <path d="M-66 -4 L-40 -20 L-22 -12 L0 -26 L0 -18 L-22 -6 L-40 -12 Z" fill="#a09c8c" />
-    <rect x="-12" y="-44" width="24" height="22" fill="#8a8676" stroke={INK} stroke-width="1.5" />
-    <Pennant x={0} y={-44} color={t.accent} h={20} />
-    <g transform="translate(-44 -20)">
-      <rect x="-2" y="-4" width="16" height="5" rx="2" fill="#2d2d30" transform="rotate(-14)" />
+    <Contact rx={74} />
+    <Cel d="M-68 -4 L-41 -21 L-22 -13 L0 -27 L22 -13 L41 -21 L68 -4 L41 7 L0 3 L-41 7Z" fill="#8a8676" band={-6} hi="M-60 -5 L-41 -17 L-23 -10 L-2 -23 L-2 -20 L-23 -7 L-41 -13Z" sw={2} />
+    <path d="M-48 -4 L-30 -14 M30 -14 L48 -4 M-10 -4 H10" stroke={shade('#8a8676')} stroke-width="1.2" />
+    <Cel d="M-12 -46 H12 V-22 H-12Z" fill="#9a9584" band="M3 -50H20V-18H3Z" hi="M-10.6 -44.6H-8V-23.4H-10.6Z" sw={1.6} />
+    <Cel d="M-14 -50 H14 V-46 H-14Z" fill="#a8a392" sw={1.3} />
+    <Pennant x={0} y={-50} color={t.accent} h={20} />
+    <g transform="translate(-44 -20) rotate(-14)">
+      <Cel d="M-2 -4 H14 Q16 -1.5 14 1 H-2Z" fill="#3d3f45" band={-1} metal sw={1.3} />
     </g>
     <g transform="translate(-26 -30)">
       <g class="wp-cannonPuff">
-        <circle r="6" fill="#d8d0c0" />
-        <circle cx="6" cy="-3" r="4" fill="#e8e0d0" />
+        <circle r="6.4" fill="#d8d0c0" stroke={ink('#d8d0c0')} stroke-width="1.2" />
+        <circle cx="6" cy="-3" r="4.4" fill="#ece6d8" stroke={ink('#ece6d8')} stroke-width="1.2" />
       </g>
     </g>
   </g>
 );
+
+/** Gunpowder: two windmills over a wheat field. */
 const windFarm: Piece = (t) => (
   <g>
-    <ellipse cx="0" cy="0" rx="56" ry="10" fill="#000" opacity=".25" />
+    <Contact rx={58} />
     {[-30, 26].map((x, i) => (
       <g key={x} transform={`translate(${x} 0) scale(${i ? 0.8 : 1})`}>
-        <path d="M-12 0 L-7 -50 H7 L12 0 Z" fill="#d8ccb2" stroke={INK} stroke-width="1.5" />
-        <path d="M-12 0 L-7 -50 H-2 L-3 0 Z" fill="#fff" opacity=".35" />
-        <path d="M-9 -50 L0 -62 L9 -50 Z" fill={t.roadEdge} stroke={INK} stroke-width="1.2" />
-        <g class="wp-blades" transform="translate(0 -50)">
+        <Cel d="M-12 0 L-7 -50 H7 L12 0Z" fill="#ddd0b4" band="M2 -54 L16 -54 L18 4 H3Z" hi="M-10 -2 L-5.6 -48 H-3.4 L-7 -2Z" sw={1.6} />
+        <Cel d="M-3.4 0 V-10 Q0 -13.4 3.4 -10 V0Z" fill="#5a3a24" sw={1.1} />
+        <Cel d="M-9.6 -49 L0 -62 L9.6 -49Z" fill={t.roadEdge} band="M0 -66H14V-46H0Z" sw={1.4} />
+        <g class="wp-blades" transform="translate(0 -51)">
           <g style={{ animationDuration: `${5 + i}s` }}>
-            <path d="M0 0 L3 -30 L10 -30 L2 0 Z M0 0 L30 3 L30 10 L0 2 Z M0 0 L-3 30 L-10 30 L-2 0 Z M0 0 L-30 -3 L-30 -10 L0 -2 Z" fill="#f2ead8" stroke="#5a4631" stroke-width="1" />
+            <path d="M0 0 L3 -30 L10 -30 L2 0Z M0 0 L30 3 L30 10 L0 2Z M0 0 L-3 30 L-10 30 L-2 0Z M0 0 L-30 -3 L-30 -10 L0 -2Z" fill="#f2ead8" stroke={ink('#f2ead8')} stroke-width="1.2" stroke-linejoin="round" />
           </g>
         </g>
+        <circle cx="0" cy="-51" r="2.4" fill="#5a3a24" />
       </g>
     ))}
-    <path d="M-50 4 q10 -10 20 0 q10 -10 20 0 q10 -10 20 0 q10 -10 20 0 q10 -10 20 0" stroke="#d6b35a" stroke-width="4" fill="none" />
+    <path d="M-52 4 q10 -10 20 0 q10 -10 20 0 q10 -10 20 0 q10 -10 20 0 q10 -10 20 0" stroke={ink('#d6b35a')} stroke-width="6.4" fill="none" />
+    <path d="M-52 4 q10 -10 20 0 q10 -10 20 0 q10 -10 20 0 q10 -10 20 0 q10 -10 20 0" stroke="#d6b35a" stroke-width="3.6" fill="none" />
   </g>
 );
-const factory: Piece = () => (
-  <g>
-    <ellipse cx="0" cy="0" rx="70" ry="12" fill="#000" opacity=".3" />
-    <g fill="#6a4a3c" stroke={INK} stroke-width="2">
-      <rect x="-60" y="-36" width="76" height="36" />
-      <path d="M-60 -36 l12 -12 l12 12 l12 -12 l12 12 l12 -12 l12 12 z" />
-      <rect x="16" y="-52" width="44" height="52" />
-      <rect x="26" y="-96" width="10" height="46" />
-      <rect x="44" y="-84" width="9" height="34" />
-    </g>
-    <g fill="#ffbe6e">
-      {[-52, -40, -28, -16, -4].map((x) => (
-        <rect key={x} class={x === -28 ? 'wp-twinkle' : undefined} x={x} y="-24" width="6" height="8" />
+
+/** Industrial: a brick foundry with two smoking stacks and glowing windows. */
+const factory: Piece = () => {
+  const brick = '#8a4f3e';
+  return (
+    <g>
+      <Contact rx={74} />
+      <Cel d="M26 -98 H37 V-50 H26Z" fill="#7a4a3a" band="M32 -102H44V-46H32Z" sw={1.8} />
+      <Cel d="M44 -86 H54 V-50 H44Z" fill="#7a4a3a" band="M49.6 -90H60V-46H49.6Z" sw={1.8} />
+      <path d="M26 -90 H37 M26 -82 H37 M44 -78 H54 M44 -70 H54" stroke={shade('#7a4a3a')} stroke-width="1" />
+      <Cel d="M16 -54 H62 V0 H16Z" fill={brick} band="M44 -58H70V4H44Z" hi="M17.4 -52.6H21V-1.4H17.4Z" sw={2} />
+      <Cel d="M-62 -36 H16 V0 H-62Z" fill={brick} band="M-6 -40H20V4H-6Z" hi="M-60.6 -34.6H-57V-1.4H-60.6Z" sw={2} />
+      <Cel d="M-62 -36 L-50 -48 L-38 -36 L-26 -48 L-14 -36 L-2 -48 L10 -36 L16 -36 L16 -38Z" fill="#5d6576" band={-40} sw={1.8} />
+      {[-28, -20, -12].map((y) => (
+        <path key={y} d={`M-62 ${y} H16 M16 ${y - 18} H62`} stroke={shade(brick)} stroke-width=".9" opacity=".8" />
       ))}
-      {[22, 34, 46].map((x) => (
-        <rect key={x} x={x} y="-40" width="6" height="8" />
+      {[-54, -42, -30, -18, -6].map((x) => (
+        <Cel key={x} class={x === -30 ? 'wp-twinkle' : undefined} d={`M${x} -26 h7 v9 h-7Z`} fill="#ffbe6e" sw={1} />
       ))}
+      {[22, 35, 48].map((x) => (
+        <Cel key={x} d={`M${x} -42 h7 v9 h-7Z`} fill="#ffbe6e" sw={1} />
+      ))}
+      <Cel d="M30 0 V-16 H44 V0Z" fill="#3a2f28" sw={1.3} />
+      <Smoke x={31} y={-104} s={0.95} color="#7a726c" />
+      <Smoke x={49} y={-92} s={0.75} color="#867d76" />
     </g>
-    <Smoke x={31} y={-102} s={0.9} color="#6d6560" />
-    <Smoke x={48} y={-90} s={0.7} color="#7a716a" />
-  </g>
-);
+  );
+};
+
+/** Industrial: a rail line with a steam train crossing. */
 const railway: Piece = () => (
   <g>
-    <ellipse cx="0" cy="4" rx="80" ry="8" fill="#000" opacity=".22" />
-    <path d="M-80 2 H80 M-80 8 H80" stroke="#3c362e" stroke-width="2.5" />
+    <ellipse cx="0" cy="4" rx="82" ry="8" fill="#000" opacity=".22" />
     {Array.from({ length: 11 }, (_, i) => (
-      <path key={i} d={`M${-76 + i * 15} 0 v10`} stroke="#6b4a2c" stroke-width="3" />
+      <path key={i} d={`M${-76 + i * 15} -1 v12`} stroke={ink('#6b4a2c')} stroke-width="4.4" />
     ))}
+    {Array.from({ length: 11 }, (_, i) => (
+      <path key={`s${i}`} d={`M${-76 + i * 15} 0 v10`} stroke="#7a5433" stroke-width="2.6" />
+    ))}
+    <path d="M-82 2 H82 M-82 8 H82" stroke={ink('#8a8f98')} stroke-width="3.6" />
+    <path d="M-82 2 H82 M-82 8 H82" stroke="#8a8f98" stroke-width="1.8" />
     <g class="wp-train">
-      <rect x="-30" y="-18" width="26" height="18" rx="2" fill="#2d2d30" stroke={INK} stroke-width="1.5" />
-      <rect x="-26" y="-28" width="12" height="12" fill="#3a3a40" stroke={INK} stroke-width="1.5" />
-      <rect x="-8" y="-26" width="6" height="10" fill="#2d2d30" />
-      <circle cx="-24" cy="1" r="4" fill="#1b1b1e" />
-      <circle cx="-10" cy="1" r="4" fill="#1b1b1e" />
-      <rect x="0" y="-14" width="22" height="14" rx="2" fill="#8b3a2c" stroke={INK} stroke-width="1.5" />
-      <circle cx="6" cy="1" r="3.5" fill="#1b1b1e" />
-      <circle cx="16" cy="1" r="3.5" fill="#1b1b1e" />
-      <Smoke x={-5} y={-32} s={0.45} color="#9a9290" />
+      <Cel d="M-31 -19 H-3 V0 H-31Z" fill="#33363c" band={-6} hi="M-29.6 -17.6H-26V-1.4H-29.6Z" metal sw={1.6} />
+      <Cel d="M-27 -30 H-14 V-17 H-27Z" fill="#3e424a" band={-20} metal sw={1.4} />
+      <Cel d="M-9 -28 H-2 V-17 H-9Z" fill="#33363c" sw={1.3} />
+      <Cel d="M-25 -27 H-17 V-22 H-25Z" fill="#ffd27a" sw={1} />
+      <Cel d="M0 -15 H23 V0 H0Z" fill="#9a3e2e" band={-5} hi="M1.4 -13.6H4V-1.4H1.4Z" sw={1.5} />
+      {[-24, -10, 6, 17].map((x) => (
+        <g key={x}>
+          <circle cx={x} cy="1" r="4.2" fill="#24262a" stroke={ink('#24262a')} stroke-width="1" />
+          <circle cx={x} cy="1" r="1.4" fill="#c7d0da" />
+        </g>
+      ))}
+      <Smoke x={-5} y={-34} s={0.45} color="#a39c98" />
     </g>
   </g>
 );
+
+/** Modern: a radar station with a turning dish. */
 const radar: Piece = (t) => (
   <g>
-    <ellipse cx="0" cy="0" rx="40" ry="9" fill="#000" opacity=".28" />
-    <rect x="-24" y="-20" width="48" height="20" fill="#56606a" stroke={INK} stroke-width="1.5" />
-    <rect x="-24" y="-20" width="14" height="20" fill="#fff" opacity=".15" />
-    <path d="M0 -20 V-40" stroke="#3a4048" stroke-width="4" />
+    <Contact rx={42} />
+    <Cel d="M-24 -20 H24 V0 H-24Z" fill="#5f6a74" band="M8 -24H30V4H8Z" hi="M-22.6 -18.6H-19V-1.4H-22.6Z" sw={1.6} />
+    <Cel d="M-16 -12 H-8 V-6 H-16Z" fill="#f4d28a" sw={1} />
+    <path d="M0 -20 V-40" stroke={ink('#4a525c')} stroke-width="6" />
+    <path d="M0 -20 V-40" stroke="#4a525c" stroke-width="3.4" />
     <g transform="translate(0 -44)">
       <g class="wp-radar">
-        <path d="M-26 -6 Q0 20 26 -6 Q0 4 -26 -6 Z" fill="#c9d1dc" stroke={INK} stroke-width="1.5" />
-        <path d="M0 2 V-18" stroke="#3a4048" stroke-width="2" />
-        <circle cx="0" cy="-19" r="3" fill={t.accent} />
+        <Cel d="M-26 -6 Q0 20 26 -6 Q0 4 -26 -6Z" fill="#c9d1dc" band={2} metal sw={1.5} />
+        <path d="M0 2 V-18" stroke={ink('#4a525c')} stroke-width="2.4" />
+        <circle cx="0" cy="-19" r="3.2" fill={t.accent} stroke={ink(t.accent)} stroke-width="1" />
       </g>
     </g>
-    <circle class="wp-blink" cx="18" cy="-22" r="2.5" fill="#ff4a3a" />
+    <circle class="wp-blink" cx="18" cy="-22" r="2.6" fill="#ff4a3a" stroke="#6a1a12" stroke-width="1" />
   </g>
 );
+
+/** Modern: an airfield pad with a helicopter. */
 const helipad: Piece = () => (
   <g>
-    <ellipse cx="0" cy="0" rx="50" ry="14" fill="#3a3e40" stroke={INK} stroke-width="1.5" />
+    <Cel d="M-52 0 A52 14 0 1 0 52 0 A52 14 0 1 0 -52 0Z" fill="#454a4e" band={4} sw={1.6} />
     <ellipse cx="0" cy="0" rx="40" ry="10" fill="none" stroke="#f4d28a" stroke-width="2" />
-    <path d="M-8 -5 v10 M8 -5 v10 M-8 0 h16" stroke="#f4d28a" stroke-width="2.5" />
+    <path d="M-8 -5 v10 M8 -5 v10 M-8 0 h16" stroke="#f4d28a" stroke-width="2.6" />
     <g class="wp-heli">
-      <path d="M-22 -26 q0 -12 16 -12 h12 q10 0 10 10 q0 8 -10 8 h-20 z" fill="#4a5a3a" stroke={INK} stroke-width="1.5" />
-      <path d="M16 -30 h26 l4 -6" stroke="#4a5a3a" stroke-width="4" stroke-linecap="round" fill="none" />
-      <path d="M-18 -18 v6 M6 -18 v6 M-24 -12 h36" stroke={INK} stroke-width="2" />
-      <path d="M-4 -38 v-6" stroke={INK} stroke-width="2" />
+      <Cel d="M-22 -26 Q-22 -38 -6 -38 H6 Q16 -38 16 -28 Q16 -20 6 -20 H-14Z" fill="#56683e" band={-26} hi="M-16 -32 Q-14 -36 -6 -36 H0 V-34 H-6 Q-12 -34 -14 -31Z" sw={1.6} />
+      <Cel d="M-12 -34 Q-12 -36.6 -8 -36.6 H-2 V-29 H-12Z" fill="#9fd0ff" sw={1.1} />
+      <path d="M16 -30 H42 L46 -36" stroke={ink('#56683e')} stroke-width="6" stroke-linecap="round" fill="none" />
+      <path d="M16 -30 H42 L46 -36" stroke="#56683e" stroke-width="3.4" stroke-linecap="round" fill="none" />
+      <path d="M-18 -18 v6 M6 -18 v6 M-24 -12 h36" stroke={ink('#56683e')} stroke-width="2.2" />
+      <path d="M-4 -38 v-6" stroke={ink('#56683e')} stroke-width="2.2" />
       <g transform="translate(-4 -45)">
         <ellipse class="wp-rotor" cx="0" cy="0" rx="34" ry="2.5" fill="#2b2b2e" opacity=".7" />
       </g>
     </g>
   </g>
 );
+
+/** Future: a hovering platform (the arcology's landing deck). */
 const platform: Piece = (t) => (
   <g>
-    <ellipse cx="0" cy="0" rx="46" ry="9" fill="#000" opacity=".25" />
+    <Contact rx={48} />
     <g class="wp-hover">
-      <path d="M-44 -30 h88 l-10 12 h-68 z" fill="#34506a" stroke={INK} stroke-width="2" />
-      <path d="M-44 -30 h88 v-4 h-88 z" fill="#6fa8c8" />
-      <path d="M-24 -18 l6 10 h36 l6 -10" fill="#23364a" stroke={INK} stroke-width="1.5" />
-      <path d="M-14 -8 h28" stroke={t.accent} stroke-width="3" class="wp-twinkle" />
-      <path d="M-20 -34 v-18 h40 v18" fill="#2c4a6e" stroke={INK} stroke-width="1.5" />
-      <path d="M-14 -46 h28" stroke={t.accent} stroke-width="3" opacity=".8" />
+      <Cel d="M-20 -34 V-54 H20 V-34Z" fill="#2c4a6e" band="M6 -58H26V-30H6Z" metal sw={1.6} />
+      <path d="M-14 -48 h28" stroke={t.accent} stroke-width="3" opacity=".85" />
+      <Cel d="M-46 -30 H46 L36 -17 H-36Z" fill="#34506a" band={-24} hi="M-42 -29 H42 V-27.4 H-42Z" metal sw={2} />
+      <Cel d="M-24 -17 L-18 -7 H18 L24 -17Z" fill="#23364a" sw={1.5} />
+      <path d="M-14 -9 h28" stroke={t.accent} stroke-width="3" class="wp-twinkle" />
     </g>
   </g>
 );
+
+/** Future: a beacon tower with its sweeping light. */
 const beacon: Piece = (t) => (
   <g>
-    <ellipse cx="0" cy="0" rx="30" ry="8" fill="#000" opacity=".28" />
-    <path d="M-16 0 L-6 -70 H6 L16 0 Z" fill="#34506a" stroke={INK} stroke-width="1.8" />
-    <path d="M-16 0 L-6 -70 H-1 L-4 0 Z" fill="#6fa8c8" opacity=".6" />
-    <circle class="wp-pulse" cx="0" cy="-76" r="8" fill={t.accent} />
-    <path class="wp-beam" d="M0 -76 L-60 -200 L-40 -200 Z" fill={t.accent} opacity=".12" />
+    <Contact rx={32} />
+    <path class="wp-beam" d="M0 -76 L-60 -200 L-40 -200Z" fill={t.accent} opacity=".12" />
+    <Cel d="M-16 0 L-6 -70 H6 L16 0Z" fill="#34506a" band="M2 -74 L20 -74 L22 4 H3Z" hi="M-13 -2 L-4.4 -66 H-2 L-9 -2Z" metal sw={1.8} />
+    <path d="M-12 -20 H12 M-9 -42 H9" stroke={t.accent} stroke-width="1.8" opacity=".8" />
+    <circle class="wp-pulse" cx="0" cy="-76" r="8" fill={t.accent} stroke={ink(t.accent)} stroke-width="1.2" />
   </g>
 );
+
+/** Cosmic: a stone portal with a swirling rift. */
 const portal: Piece = (t) => (
   <g>
-    <ellipse cx="0" cy="0" rx="46" ry="10" fill="#000" opacity=".3" />
-    <path d="M-34 0 L-26 -10 L26 -10 L34 0 Z" fill="#3b2d5a" stroke={INK} stroke-width="1.5" />
-    <ellipse cx="0" cy="-46" rx="28" ry="38" fill="#150f28" stroke="#4a3a7c" stroke-width="6" />
+    <Contact rx={48} o={0.3} />
+    <Cel d="M-34 0 L-26 -10 H26 L34 0Z" fill="#4a3a6e" band={-4} sw={1.6} />
+    <path d={blob(0, -46, 34).replace(/a34 34/g, 'a30 40')} fill="none" stroke={ink('#5a4a8c')} stroke-width="10" />
+    <path d={blob(0, -46, 34).replace(/a34 34/g, 'a30 40')} fill="#150f28" stroke="#5a4a8c" stroke-width="6.4" />
     <g transform="translate(0 -46)">
       <g class="wp-swirl">
         <ellipse cx="0" cy="0" rx="20" ry="28" fill="none" stroke={t.accent} stroke-width="3" stroke-dasharray="10 8" />
@@ -437,8 +513,13 @@ const portal: Piece = (t) => (
       </g>
     </g>
     <ellipse cx="0" cy="-46" rx="6" ry="9" fill="#fff4d0" opacity=".6" class="wp-twinkle" />
+    {[-32, 32].map((x) => (
+      <Cel key={x} d={`M${x - 5} -4 L${x} -${x < 0 ? 30 : 24} L${x + 5} -4Z`} fill={t.lit} band={`M${x} -40H${x + 10}V4H${x}Z`} sw={1.3} />
+    ))}
   </g>
 );
+
+/** Cosmic: floating rock islands with crystals. */
 const floatRocks: Piece = (t) => (
   <g>
     {[
@@ -448,9 +529,9 @@ const floatRocks: Piece = (t) => (
     ].map(([x, y, s], i) => (
       <g key={i} transform={`translate(${x} ${y}) scale(${s})`}>
         <g class="wp-hover" style={{ animationDelay: `${-i * 1.1}s` }}>
-          <path d="M-18 0 Q-16 -10 0 -12 Q16 -10 18 0 L8 16 L-6 14 Z" fill="#4d3b72" stroke={INK} stroke-width="1.8" />
-          <path d="M-18 0 Q-16 -10 0 -12 Q16 -10 18 0 Q0 4 -18 0 Z" fill="#6f5a9e" />
-          <path d="M-4 -12 L-1 -24 L3 -12 Z" fill={t.lit} />
+          <Cel d="M-18 0 Q-16 -10 0 -12 Q16 -10 18 0 L8 16 L-6 14Z" fill="#5a4a86" band={2} sw={1.8} />
+          <Cel d="M-18 0 Q-16 -10 0 -12 Q16 -10 18 0 Q0 4 -18 0Z" fill="#7a66b0" hi="M-12 -3 Q-8 -8 0 -9 Q-6 -6 -9 -2Z" sw={1.4} />
+          <Cel d="M-4 -11 L-1 -26 L3 -11Z" fill={t.lit} band="M-1 -30H6V-8H-1Z" sw={1.2} />
         </g>
       </g>
     ))}
@@ -491,7 +572,7 @@ export function SetPieces(p: { age: AgeId; w: number; h: number; hz: number; roa
     const y = room > 10 ? Math.min(p.bottomLimit, below + Math.min(40, room)) : Math.max(p.hz + 60, ry - p.clear - 10);
     const depth = (y - p.hz) / Math.max(1, p.h - p.hz);
     // Smaller on short screens, so a set piece never crowds the nodes on a phone.
-    const s = Math.max(0.5, Math.min(1.25, (0.6 + depth * 0.6) * Math.min(1, p.h / 560)));
+    const s = Math.max(0.62, Math.min(1.3, (0.7 + depth * 0.6) * Math.min(1.05, p.h / 520)));
     items.push({ x, y, s, art: piece(p.t) });
     blocked.push({ x0: x - PIECE_HALF * s, x1: x + PIECE_HALF * s, y0: y - 100 * s, y1: y + 20 });
   });

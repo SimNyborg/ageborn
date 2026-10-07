@@ -24,7 +24,7 @@ import type {
   SkinRarity,
   VisualId,
 } from '@/contracts/ids';
-import type { PendingCapsule } from '@/contracts/save';
+import type { AvatarSlot, AvatarTint, PendingCapsule } from '@/contracts/save';
 import type { RawBattleRules } from './raw/types';
 
 // ---------------------------------------------------------------------------------------------
@@ -716,7 +716,7 @@ export interface EmoteDef {
  * battle background skin (A18.9.4 "Backdrop skins", owner request 2026-09-30): a themed restyle of your
  * half's sky and parallax layers in every age.
  */
-export type CosmeticCollection = 'emote' | 'quote' | 'baseFlag' | 'nationalFlag' | 'baseSkin' | 'decoration' | 'backdrop';
+export type CosmeticCollection = 'emote' | 'quote' | 'baseFlag' | 'nationalFlag' | 'baseSkin' | 'decoration' | 'backdrop' | 'avatar';
 
 /**
  * Where a collection item comes from (A18.9.4: all earned, nothing sold). `capsule` and `crate` items
@@ -733,6 +733,12 @@ export type CosmeticSource =
   | { kind: 'arena'; arena: number }
   | { kind: 'codexLevel'; level: number }
   | { kind: 'warPath' }
+  /** Avatar wearables (owner request 2026-10-07): the first clear of an age's War Path boss on Normal or harder. */
+  | { kind: 'warPathBoss'; age: AgeId }
+  /** Avatar wearables: every level of an age's War Path region at 3 stars (its star chest). */
+  | { kind: 'warPathStars'; age: AgeId }
+  /** Avatar wearables: a title is owned (the collection milestones). */
+  | { kind: 'title'; title: string }
   /** A top-tier exclusive (the Aeon Collection, A6.4 step 8): from that tier's capsules, craftable after the first one. */
   | { kind: 'capsuleTier'; tier: CapsuleTier };
 
@@ -757,6 +763,48 @@ export interface CosmeticItemDef {
   kind?: DecorationKind;
   /** National flags: ISO 3166 code (`gb-eng` for England), for search and sorting only. */
   country?: string;
+  /** Avatar wearables: the creator slot the item fills. */
+  slot?: AvatarSlot;
+}
+
+/**
+ * One part of the avatar creator ("Make your General", owner request 2026-10-07, AUDIT §6). Starter
+ * parts belong to everyone; wearables are earned only (their `collection: 'avatar'` items carry the
+ * source and rarity) and never sold. The UI draws each id (`src/ui/components/avatar`).
+ */
+export interface AvatarPartDef {
+  id: string;
+  slot: AvatarSlot;
+  rarity: 'starter' | Rarity;
+  /** Starter parts: `start`; wearables: the earned source (also on the collection item). */
+  source: CosmeticSource;
+  nameKey: string;
+  /** The age a wearable belongs to (War Path sources, themed items). */
+  age?: AgeId;
+}
+
+/** A fixed look (AI Generals): slot → part id and tint indices. */
+export interface AvatarLookDef {
+  look: Partial<Record<AvatarSlot, string>>;
+  tints: Record<AvatarTint, number>;
+}
+
+/** The avatar creator's tables. */
+export interface AvatarTables {
+  /** Slots in creator order. */
+  slots: AvatarSlot[];
+  parts: AvatarPartDef[];
+  /** How many colours each tint has (indices into the UI palette). */
+  tints: Record<AvatarTint, number>;
+  /** The tint each slot's tile row offers. */
+  tintOf: Partial<Record<AvatarSlot, AvatarTint>>;
+  /** Slots that may be empty (their `<slot>_none` part). */
+  optional: AvatarSlot[];
+  /**
+   * The AI Generals' fixed looks, built from the same parts (A7.1: every portrait still shows the AI
+   * label). Ada & Ivo have two (`twins` and `twins_b`).
+   */
+  generals: Record<string, AvatarLookDef>;
 }
 
 /** Disclosed drop tables of the collections (A18.9.4, A15.3 honesty: odds shown on every screen). */
@@ -804,6 +852,8 @@ export interface Cosmetics {
   defaults: { banner: string; frame: string; title: string };
   /** Emotes, quotes, base and national flags, base skins, decorations and backdrops (A18.9.4). */
   collections: CosmeticCollections;
+  /** The avatar creator's parts (owner request 2026-10-07). */
+  avatar: AvatarTables;
 }
 
 // ---------------------------------------------------------------------------------------------

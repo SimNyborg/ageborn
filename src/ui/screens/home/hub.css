@@ -1044,6 +1044,22 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
+/* The hero swords stay on Battle at phone width too (owner feedback 2026-10-07), a little smaller;
+   they clash on press (capsuleLadder.css). */
+.ui-btn.hub-battle .ui-btn__icon {
+  margin: -6px -2px -6px -6px;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.45)) drop-shadow(0 2px 2px rgba(80, 50, 0, 0.35));
+}
+@container ui-root (max-width: 900px) {
+  .ui-btn.hub-battle .ui-btn__icon {
+    display: flex;
+    margin: -4px -4px -4px -8px;
+  }
+  .ui-btn.hub-battle .ui-btn__icon .ui-swords {
+    width: 30px;
+    height: 30px;
+  }
+}
 /* MR-15: Battle dips and the stage leans in, then VS. */
 .hub.is-launching .hub-battle .ui-btn__face {
   transform: scale(0.94);

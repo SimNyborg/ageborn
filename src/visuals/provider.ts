@@ -10,6 +10,7 @@ import type { AgeId, CardId, CosmeticKey, EffectId, Foil, Side, SideLook, SkinId
 import { parseSkinnedVisualId, skinnedVisualId } from '@/core/ids';
 import { AtlasAdapter, wantsHdSheets } from './adapters/atlas';
 import { WorldAtlas } from './adapters/worldAtlas';
+import { renderSpriteStrip, stripRequest } from './adapters/spriteStrip';
 import { AtlasFortView } from './fortViews/atlasFortView';
 import { fortSource, type FortKindId } from './forts';
 import type { BakeStats } from './bake';
@@ -356,6 +357,9 @@ export class VisualsArtProvider implements ArtProvider {
    * current colourblind preset (`setTeamPreset`), like the lane.
    */
   portrait(o: { card: CardId; skin?: SkinId; foil?: Foil; size: number; side?: Side; plate?: boolean }): Promise<string> {
+    // `strip:<clip>:<card>`: a unit clip as a CSS sprite strip for the menus (adapters/spriteStrip.ts)
+    const strip = stripRequest(o.card);
+    if (strip) return this.spriteStrip(strip.card, strip.clip, o.size, o.side ?? 0);
     const visualId = this.visualIdForCard(o.card);
     const cacheKey = `${skinnedVisualId(visualId, o.skin)}|${o.foil ?? 'none'}|${o.size}|${o.side ?? 0}|${o.plate === false ? 'bare' : 'plate'}|${this.preset}`;
     const hit = this.portraits.get(cacheKey);
@@ -369,6 +373,32 @@ export class VisualsArtProvider implements ArtProvider {
       .catch(() => '');
     this.portraits.set(cacheKey, p);
     return p;
+  }
+
+  /**
+   * A unit clip (`idle`, `walk`) as a horizontal strip of square `size` cells for CSS `steps()`
+   * playback (UI art audit #6), cached like portraits; '' when the unit has no sprite sheet.
+   */
+  spriteStrip(card: CardId, clip: string, size: number, side: Side): Promise<string> {
+    const visualId = this.visualIdForCard(card);
+    const cacheKey = `strip|${visualId}|${clip}|${size}|${side}|${this.preset}`;
+    const hit = this.portraits.get(cacheKey);
+    if (hit) return hit;
+    const def = this.resolve(visualId)?.def;
+    const p =
+      def && def.kind === 'atlas' && !this.force
+        ? renderSpriteStrip({ url: this.atlasUrl(def.source), clip, size, teamColor: teamColor(side, this.preset) })
+            .then((u) => u ?? '')
+            .catch(() => '')
+        : Promise.resolve('');
+    this.portraits.set(cacheKey, p);
+    return p;
+  }
+
+  private atlasUrl(source: string): string {
+    if (/^(https?:|data:|\/)/.test(source)) return source;
+    const base = (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? '/';
+    return `${base}${source}`;
   }
 
   /**

@@ -5,7 +5,7 @@
  * locked ones say how they are earned and, for drop-pool items, offer Dust crafting. Nothing here can
  * be bought (A6.2).
  */
-import { ageNameKey, capsuleTierShortKey, cosmeticCollectionKey, cosmeticNameKey, emoteNameKey, quoteTextKey, rarityNameKey } from '@/content/keys';
+import { ageNameKey, cosmeticCollectionKey, cosmeticNameKey, emoteNameKey, quoteTextKey, rarityNameKey } from '@/content/keys';
 import type { CosmeticCollection, CosmeticItemDef } from '@/content/types';
 import type { AgeId, BaseEmoteId, CosmeticLoadout } from '@/contracts';
 import type { ComponentChildren } from 'preact';
@@ -16,7 +16,7 @@ import { CheckIcon, DustIcon, LockIcon, RARITY_COLOR } from '../../components/ic
 import { AgePicker } from '../../components/Tabs';
 import { EmoteGlyph } from '../../hud/icons';
 import { useUi } from '../context';
-import { craftLocked, craftPrice, equippedOf, itemKey, itemsOf, ownedFirst, owns, progressOf, sourceHint } from '../model/cosmetics';
+import { craftLocked, craftPrice, equippedOf, itemKey, itemsOf, ownedFirst, owns, progressOf, sourceText } from '../model/cosmetics';
 import { playLevelId } from '../model/warPath';
 import type { ActionResult, CosmeticEquipPatch } from '../services';
 
@@ -100,9 +100,8 @@ export function ItemTile(p: {
   const have = owns(save.value, content, key);
   const price = craftPrice(content, p.item);
   const locked = craftLocked(save.value, p.item);
-  const src = sourceHint(p.item);
   // A tier's own set names its tier ("From Aeon Capsules. Craftable after your first.").
-  const hint = p.item.source.kind === 'capsuleTier' ? { key: src.key, params: { tier: t(capsuleTierShortKey(p.item.source.tier)) } } : src;
+  const hintText = sourceText(t, p.item);
   const rarity = p.item.rarity;
   return (
     <div
@@ -115,7 +114,7 @@ export function ItemTile(p: {
         class="cos-tile__hit"
         aria-pressed={p.on || !!p.trying}
         aria-disabled={have || p.onPreview ? undefined : 'true'}
-        aria-label={`${t(p.item.nameKey)}. ${have ? (p.on ? t('cosmetic.ui.equipped') : (p.pickLabel ?? t('cosmetic.ui.equip'))) : `${p.onPreview ? `${t('cosmetic.ui.tryOn')}. ` : ''}${t(hint.key, hint.params)}`}`}
+        aria-label={`${t(p.item.nameKey)}. ${have ? (p.on ? t('cosmetic.ui.equipped') : (p.pickLabel ?? t('cosmetic.ui.equip'))) : `${p.onPreview ? `${t('cosmetic.ui.tryOn')}. ` : ''}${hintText}`}`}
         onClick={() => {
           p.onPreview?.();
           if (have) p.onPick();
@@ -152,7 +151,7 @@ export function ItemTile(p: {
       ) : null}
       {!have ? (
         <span class="cos-tile__how">
-          <small>{t(hint.key, hint.params)}</small>
+          <small>{hintText}</small>
           {price !== null ? (
             <Button
               size="sm"

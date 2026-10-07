@@ -22,7 +22,7 @@ import type { AgeId, BaseEmoteId, CapsuleTier, CosmeticLoadout, PendingCapsule, 
 import type { Content, CosmeticCollection, CosmeticItemDef } from '@/content';
 import { cloneSfc32, pickWeighted, randInt, seedSfc32, type Sfc32State } from '@/core';
 
-export const COSMETIC_COLLECTIONS: readonly CosmeticCollection[] = ['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop'];
+export const COSMETIC_COLLECTIONS: readonly CosmeticCollection[] = ['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop', 'avatar'];
 const RARITIES: readonly Rarity[] = ['common', 'rare', 'epic', 'legendary'];
 
 export const cosmeticKey = (x: Pick<CosmeticItemDef, 'collection' | 'id'>): string => `${x.collection}.${x.id}`;
@@ -214,10 +214,28 @@ export function grantCosmetics(s: SaveDoc, t: Content, keys: readonly string[]):
   };
 }
 
-/** True when a state-earned item's condition holds (road node claimed, feat found, arena, Codex Level). */
-function earned(x: CosmeticItemDef, s: SaveDoc): boolean {
+/** Normal is the second difficulty: a boss crown of 2 or more is a clear on Normal or harder (A18.7.4). */
+const NORMAL_CROWN = 2;
+
+/**
+ * True when a state-earned item's condition holds (road node claimed, feat found, arena, Codex Level,
+ * and for avatar wearables: an age's War Path boss beaten on Normal or harder, every level of a region
+ * at 3 stars, or a milestone title owned).
+ */
+function earned(x: CosmeticItemDef, s: SaveDoc, t: Content): boolean {
   const src = x.source;
   switch (src.kind) {
+    case 'warPathBoss': {
+      const region = t.warPath.regions.find((r) => r.age === src.age);
+      const bossId = region?.levels.find((id) => t.warPath.levels[id]?.role === 'boss');
+      return bossId !== undefined && (s.warPath?.crowns?.[bossId] ?? 0) >= NORMAL_CROWN;
+    }
+    case 'warPathStars': {
+      const region = t.warPath.regions.find((r) => r.age === src.age);
+      return region !== undefined && region.levels.length > 0 && region.levels.every((id) => (s.warPath?.stars?.[id] ?? 0) >= 3);
+    }
+    case 'title':
+      return s.cosmetics.owned.includes(src.title);
     case 'road':
       return s.trophies.roadClaimed.includes(src.trophies);
     case 'feat':
@@ -234,7 +252,7 @@ function earned(x: CosmeticItemDef, s: SaveDoc): boolean {
 /** Grants every road, feat, arena and Codex Level item the save has earned and does not own yet. */
 export function syncEarnedCosmetics(s: SaveDoc, t: Content): { save: SaveDoc; granted: string[] } {
   const owned = new Set(s.cosmetics.owned);
-  const granted = t.cosmetics.collections.items.filter((x) => !owned.has(cosmeticKey(x)) && earned(x, s)).map(cosmeticKey);
+  const granted = t.cosmetics.collections.items.filter((x) => !owned.has(cosmeticKey(x)) && earned(x, s, t)).map(cosmeticKey);
   if (granted.length === 0) return { save: s, granted };
   return { save: { ...s, cosmetics: { ...s.cosmetics, owned: [...s.cosmetics.owned, ...granted] } }, granted };
 }

@@ -9,7 +9,7 @@
  *                                      [--formats short,standard,full] [--general echo] [--level 7] [--workers N] [--no-gate]
  *   npx tsx tools/sim-cli.ts forts     [--mode smoke|full] [--rows placebo,mirror,...] [--kinds wall,camp] [--formats short,standard]
  *                                      [--matches N] [--matches-full N] [--card-matches N] [--tier 7] [--level 7] [--seed 5001] [--raw f.json] [--patch file.json]
- *   npx tsx tools/sim-cli.ts economy   [--days 365] [--seed 1] [--seeds 30] [--matches-per-day 7] [--formats mixed|short,full,...] [--no-gate]
+ *   npx tsx tools/sim-cli.ts economy   [--days 365] [--seed 1] [--seeds 30] [--matches-per-day 7] [--formats mixed|short,full,...] [--plan-days 548] [--no-gate]
  *   npx tsx tools/sim-cli.ts drops     [--mode smoke|full] [--openings N] [--streams N] [--no-gate]
  *   npx tsx tools/sim-cli.ts replay-verify <file|dir>...
  *   npx tsx tools/sim-cli.ts csv export|import [--dir reports/csv] [--raw src/content/raw] [--dry-run]
@@ -69,7 +69,8 @@ Commands:
                   --mode smoke|full --matches N (per cell) --pairs N (per tier pair, 0 = none)
                   --tiers 2,4,6,8,10 --proxies a,b --formats short,standard,full --general echo --level 7 --seed 1
   economy         365-day economy sim against the A6.9 pacing table (median of --seeds runs)
-                  --days 365 --seed 1 --seeds 30 --matches-per-day 7 (a casual 3-match player is reported too)
+                  --days 365 --seed 1 --seeds 30 --matches-per-day 7 --plan-days 548 (a War-Plan-only player is gated,
+                  a casual 3-match player is reported; --plan-days 0 skips the War-Plan-only runs)
                   --formats mixed (3 Short, 2 Standard, 1 Long, 1 No clock a day) or a list of lengths to cycle
   drops           capsule openings: bag totals, chi-square of published odds, pity (A6.4, A6.5)
                   --mode smoke|full --openings N --streams N --seed 1
@@ -97,7 +98,7 @@ export const COMMAND_FLAGS: Record<string, readonly string[]> = {
   exploits: ['mode', 'matches', 'proxies', 'formats', 'tier', 'level', 'seed', 'a18', 'power-rows', 'lane', 'lane-matches', 'patch'],
   strength: ['mode', 'matches', 'pairs', 'tiers', 'proxies', 'formats', 'general', 'level', 'seed', 'patch'],
   forts: ['mode', 'rows', 'kinds', 'formats', 'matches', 'matches-full', 'card-matches', 'tier', 'level', 'seed', 'raw', 'patch'],
-  economy: ['days', 'seed', 'seeds', 'matches-per-day', 'formats'],
+  economy: ['days', 'seed', 'seeds', 'matches-per-day', 'formats', 'plan-days'],
   drops: ['mode', 'openings', 'streams', 'seed'],
   'replay-verify': [],
   csv: ['dir', 'raw', 'dry-run'],
@@ -290,7 +291,7 @@ export async function main(argv: readonly string[]): Promise<number> {
       const d = economyDefaults();
       const fm = str(a, 'formats', '');
       const formats = fm === 'mixed' ? MIXED_FORMATS : fm === '' ? d.formats : (fm.split(',').map((x) => x.trim()).filter((x) => x !== '') as FormatId[]);
-      const report = await runEconomy({ ...d, days: int(a, 'days', d.days), seed: int(a, 'seed', d.seed), seeds: int(a, 'seeds', d.seeds), matchesPerDay: int(a, 'matches-per-day', d.matchesPerDay), formats });
+      const report = await runEconomy({ ...d, days: int(a, 'days', d.days), seed: int(a, 'seed', d.seed), seeds: int(a, 'seeds', d.seeds), matchesPerDay: int(a, 'matches-per-day', d.matchesPerDay), formats, planDays: int(a, 'plan-days', d.planDays) });
       return finish(report, economySections(report), a);
     }
     case 'drops': {

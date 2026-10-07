@@ -83,3 +83,30 @@
   animation: none !important;
   box-shadow: 0 0 0 3px rgba(255, 212, 102, 0.7);
 }
+
+/* Sprite strips (SpriteStrip.tsx, UI art audit #6): a unit clip from its sheet, stepped through its
+   square cells. The element's size is set by the caller; reduce motion holds the first frame. */
+.ui-strip {
+  display: block;
+  aspect-ratio: 1;
+  background-repeat: no-repeat;
+  background-size: calc(var(--strip-frames) * 100%) 100%;
+  background-position: 0 0;
+  animation: ui-strip-play var(--strip-ms) steps(var(--strip-frames)) infinite;
+}
+.ui-strip--flip {
+  transform: scaleX(-1);
+}
+@keyframes ui-strip-play {
+  to {
+    background-position: calc(100% * var(--strip-frames) / (var(--strip-frames) - 1)) 0;
+  }
+}
+.ui-root[data-reduce-motion='true'] .ui-strip {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-strip {
+    animation: none;
+  }
+}

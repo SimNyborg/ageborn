@@ -254,6 +254,8 @@ export interface EconomyMeasures {
     blockedShare: number;
     /** The same for days 0-6. */
     blockedShareWeek1: number;
+    /** The same for days 10-364 (the War-Plan-only gate: "most days from day ~10"). */
+    blockedShareYear: number;
     /** Amber for every upgrade the copies allow, at the end of day 7, 30 and 90, in days of Amber income (trailing 7 days). */
     backlogDays: { d7: number; d30: number; d90: number };
     /** Median end-of-day Amber balance over the averaging window, in days of Amber income. */
@@ -271,9 +273,23 @@ export interface EconomyMeasures {
     /** Day every card of the first War Plan reached L10. */
     planMaxDay: number | null;
   };
+  /** Day every card of the active War Plan (units and turrets, as it is that day) is at L10. */
+  planMaxDay: number | null;
+  /**
+   * What each upgrade cost in days of Amber income at the time (trailing 7 days): the most expensive
+   * upgrade of the run, and the median and largest upgrade to L10 (NaN while none was bought).
+   */
+  upgradeCost: { maxDays: number; topMedianDays: number; topMaxDays: number };
   copiesDoneDay: number | null;
   amberDoneDay: number | null;
   collectionMaxedDay: number | null;
+  /**
+   * `amberDoneDay`, or, when the run ended first, its projection: the last day plus the Amber still
+   * missing divided by the last 60 days' mean Amber income. Null when no Amber came in at the end.
+   */
+  amberDoneProjected: number | null;
+  /** `collectionMaxedDay`, or, once the copies are done, the later of the copies and `amberDoneProjected`. */
+  collectionMaxedProjected: number | null;
 }
 
 /** Collects per-day totals and per-card milestones. Feed it in day order. */
@@ -295,6 +311,9 @@ export class EconomyRecorder {
   private firstPlan: CardId[] = [];
   private readonly levelsByDay: ReadonlyMap<CardId, number>[] = [];
   private firstPlanMax: number | null = null;
+  private planMax: number | null = null;
+  /** Every upgrade bought: its day, the level it reached and its Amber. */
+  private readonly upgrades: { day: number; level: number; amber: number }[] = [];
   private readonly cap: number;
   private readonly cards: { id: CardId; rarity: Rarity; need: number; age: AgeId }[];
   private readonly amberNeed: number;
@@ -365,6 +384,12 @@ export class EconomyRecorder {
     }
   }
 
+  /** An upgrade bought on `day` that took a card to `level` for `amber`. */
+  upgrade(day: number, level: number, amber: number): void {
+    this.today(day);
+    this.upgrades.push({ day, level, amber });
+  }
+
   /** The cards a new save owns (the starter cards). */
   starter(cards: readonly CardId[]): void {
     this.starterCards = [...cards];
@@ -386,6 +411,7 @@ export class EconomyRecorder {
     if (this.firstPlan.length === 0 && planCards.length > 0) this.firstPlan = [...planCards];
     if (day === 7 || day === 30) this.levelsByDay[day] = new Map(levels);
     if (this.firstPlan.length > 0 && this.firstPlanMax === null && this.firstPlan.every((c) => (levels.get(c) ?? 0) >= maxLevel)) this.firstPlanMax = day;
+    if (planCards.length > 0 && this.planMax === null && planCards.every((c) => (levels.get(c) ?? 0) >= maxLevel)) this.planMax = day;
     for (const [id, lvl] of levels) {
       if (lvl >= 1 && !this.owned.has(id)) this.owned.set(id, day);
       if (lvl >= maxLevel && !this.maxed.has(id)) this.maxed.set(id, day);
@@ -428,6 +454,12 @@ export class EconomyRecorder {
       return span.length ? span.filter((g) => g.backlog > 0).length / span.length : Number.NaN;
     };
     const bankSpan = this.gates.slice(a, b + 1).map((g, i) => g.bank / income7(a + i));
+    const costDays = this.upgrades.map((u) => ({ level: u.level, days: u.amber / income7(u.day) }));
+    const top = costDays.filter((u) => u.level >= this.cap).map((u) => u.days);
+    // The whole collection's Amber, projected past the run's end at the last 60 days' income.
+    const last = this.totals.slice(-60);
+    const lastRate = last.length ? mean(last.map((t) => t.amber)) : 0;
+    const amberProjected = this.amberDone ?? (lastRate > 0 ? this.totals.length - 1 + Math.ceil((this.amberNeed - this.amberSum) / lastRate) : null);
     const levelsAt = (day: number, ids: readonly CardId[]): number[] => ids.map((id) => this.levelsByDay[day]?.get(id) ?? 0);
     const atCap = (lv: number[]): number => lv.filter((l) => l >= this.cap).length;
     return {
@@ -454,6 +486,7 @@ export class EconomyRecorder {
       amberGate: {
         blockedShare: blocked(a, b),
         blockedShareWeek1: blocked(0, 6),
+        blockedShareYear: blocked(10, 364),
         backlogDays: { d7: backlogDays(7), d30: backlogDays(30), d90: backlogDays(90) },
         bankDays: bankSpan.length ? median(bankSpan) : Number.NaN,
       },
@@ -464,9 +497,17 @@ export class EconomyRecorder {
         maxed30: this.levelsByDay[30] ? atCap(levelsAt(30, this.starterCards)) : Number.NaN,
         planMaxDay: this.firstPlanMax,
       },
+      planMaxDay: this.planMax,
+      upgradeCost: {
+        maxDays: costDays.length ? Math.max(...costDays.map((u) => u.days)) : Number.NaN,
+        topMedianDays: top.length ? median(top) : Number.NaN,
+        topMaxDays: top.length ? Math.max(...top) : Number.NaN,
+      },
       copiesDoneDay: copiesDone,
       amberDoneDay: this.amberDone,
       collectionMaxedDay: maxedAll,
+      amberDoneProjected: amberProjected,
+      collectionMaxedProjected: maxedAll ?? (copiesDone !== null && amberProjected !== null ? Math.max(copiesDone, amberProjected) : null),
     };
   }
 }
@@ -481,8 +522,10 @@ export function economyChecks(m: EconomyMeasures): Check[] {
       show: (x) => (Number.isFinite(x) ? `${fmtNum(x, x < 10 ? 2 : 0)} ${unit}` : 'not reached'),
     });
   };
-  const lag = m.copiesDoneDay !== null && m.amberDoneDay !== null ? m.amberDoneDay - m.copiesDoneDay : Number.NaN;
+  const lag = m.copiesDoneDay !== null && m.amberDoneProjected !== null ? m.amberDoneProjected - m.copiesDoneDay : Number.NaN;
   const days = (x: number): string => (Number.isFinite(x) ? `${fmtNum(x, x < 10 ? 1 : 0)} days` : 'not reached');
+  const projected = (reached: number | null): string => (reached === null ? ' (projected past the run)' : '');
+  const years = (x: number | null): string => (x === null ? 'not reached' : `${fmtNum(x, 0)} days (${fmtNum(x / YEAR_DAYS, 1)} years)`);
   return [
     near('economy.copiesPerBag', 'Copies per bag capsule', m.copiesPerBagCapsule, T.copiesPerBagCapsule, 'copies'),
     near('economy.amberPerBag', 'Amber per bag capsule', m.amberPerBagCapsule, T.amberPerBagCapsule, 'Amber'),
@@ -499,9 +542,10 @@ export function economyChecks(m: EconomyMeasures): Check[] {
     near('economy.allLegendaries', 'All Legendaries owned', m.allLegendariesDay, T.allLegendariesDays, 'days'),
     near('economy.planL7', 'Focused War Plan at L7', m.planL7Day, T.planL7Days, 'days'),
     near('economy.copiesDone', 'Copies for the whole collection', m.copiesDoneDay, T.copiesDoneDays, 'days'),
-    near('economy.amberDone', 'Amber for the whole collection (every released card × 4,970)', m.amberDoneDay, T.amberDoneDays, 'days'),
-    near('economy.collectionMaxed', 'Whole collection maxed', m.collectionMaxedDay, T.collectionMaxedDays, 'days'),
-    rangeCheck('economy.amberLag', 'Amber finishes after the copies (Amber done minus copies done)', lag, T.amberLagDays[0], T.amberLagDays[1], { target: `${T.amberLagDays[0]}-${T.amberLagDays[1]} days`, show: days }),
+    near('economy.amberDone', `Amber for the whole collection (every released card × the A6.6 Amber row)${projected(m.amberDoneDay)}`, m.amberDoneProjected, T.amberDoneDays, 'days'),
+    near('economy.collectionMaxed', `Whole collection maxed${projected(m.collectionMaxedDay)}`, m.collectionMaxedProjected, T.collectionMaxedDays, 'days'),
+    rangeCheck('economy.amberLag', 'Amber finishes after the copies (Amber done minus copies done)', lag, T.amberLagMinDays, Number.POSITIVE_INFINITY, { target: `≥ ${T.amberLagMinDays} days`, show: days }),
+    infoCheck('economy.collectionYears', 'Whole collection maxed, in years (Amber-gated; projected when the run ends first)', years(m.collectionMaxedProjected)),
     // The Amber gate (owner feedback 2026-10-07): Amber decides which card to upgrade, from the first week on.
     rangeCheck('economy.amberBlocked', 'Days 11-120 ending with a copy-ready upgrade the Amber cannot pay', m.amberGate.blockedShare, T.amberBlockedShareMin, 1, { target: `≥ ${Math.round(T.amberBlockedShareMin * 100)}%`, show: fmtPct }),
     rangeCheck('economy.week1Backlog', 'Amber for every copy-ready upgrade on day 7, in days of Amber income', m.amberGate.backlogDays.d7, T.week1BacklogDays[0], T.week1BacklogDays[1], { target: `${T.week1BacklogDays[0]}-${T.week1BacklogDays[1]} days`, show: days }),
@@ -532,6 +576,48 @@ export function economyChecks(m: EconomyMeasures): Check[] {
     ),
     // A model input rather than a result: the A6.9 player completes 3 quests a day.
     infoCheck('economy.questsPerDay', 'Quests claimed per day (A6.9 assumes 3)', `${fmtNum(m.perDay.quests, 2)} /day`),
+    infoCheck('economy.upgradeCost', 'Upgrade cost in days of Amber income when bought: the dearest upgrade; L10 median / largest', upgradeCostText(m)),
+  ];
+}
+
+function upgradeCostText(m: EconomyMeasures): string {
+  const d = (x: number): string => (Number.isFinite(x) ? fmtNum(x, 1) : 'n/a');
+  return `${d(m.upgradeCost.maxDays)} days; L10 ${d(m.upgradeCost.topMedianDays)} / ${d(m.upgradeCost.topMaxDays)} days`;
+}
+
+/**
+ * The War-Plan-only player (owner decision 2026-10-07: "you must save up"; the game is played for
+ * years): levels only its active War Plan's cards. It must meet the Amber gate on most days from day 10,
+ * an upgrade to L10 takes several days of saving, no upgrade costs more than two weeks of income, and the
+ * whole War Plan reaches L10 in 12-18 months.
+ */
+export function planChecks(p: EconomyMeasures): Check[] {
+  const T = ECONOMY_TARGETS;
+  const fmtDays = (x: number): string => (Number.isFinite(x) ? `${fmtNum(x, 1)} days of income` : 'n/a');
+  const [lo, hi] = T.planMaxDays;
+  return [
+    rangeCheck('economy.plan.blocked', 'War-Plan-only player: days 10-364 ending with a copy-ready War Plan upgrade the Amber cannot pay', p.amberGate.blockedShareYear, T.planBlockedShareMin, 1, {
+      target: `≥ ${Math.round(T.planBlockedShareMin * 100)}%`,
+      show: fmtPct,
+    }),
+    rangeCheck('economy.plan.topUpgrade', 'War-Plan-only player: an upgrade to L10 in days of Amber income when bought (median)', p.upgradeCost.topMedianDays, T.topUpgradeDaysMin, Number.POSITIVE_INFINITY, {
+      target: `≥ ${T.topUpgradeDaysMin} days`,
+      show: fmtDays,
+    }),
+    rangeCheck('economy.plan.maxUpgrade', 'War-Plan-only player: the dearest upgrade in days of Amber income when bought', p.upgradeCost.maxDays, 0, T.upgradeDaysMax, {
+      target: `≤ ${T.upgradeDaysMax} days`,
+      show: fmtDays,
+    }),
+    rangeCheck('economy.plan.maxed', 'War-Plan-only player: every card of the active War Plan at L10', p.planMaxDay ?? Number.NaN, lo, hi, {
+      target: `${fmtNum(lo / MONTH_DAYS, 0)}-${fmtNum(hi / MONTH_DAYS, 0)} months (${fmtNum(lo, 0)}-${fmtNum(hi, 0)} days)`,
+      show: (x) => (Number.isFinite(x) ? `${fmtNum(x, 0)} days (${fmtNum(x / MONTH_DAYS, 1)} months)` : 'not reached'),
+    }),
+    infoCheck(
+      'economy.plan.gate',
+      'War-Plan-only player: blocked days 0-6 / 11-120; median bank (days 11-120) in days of income; War Plan L7; the first War Plan on day 7; Amber a day',
+      `${fmtPct(p.amberGate.blockedShareWeek1)} / ${fmtPct(p.amberGate.blockedShare)}; bank ${fmtNum(p.amberGate.bankDays, 1)} days; L7 ${p.planL7Day === null ? 'not reached' : `day ${p.planL7Day}`}; L${fmtNum(p.starter.plan7, 2)} on day 7; ${fmtNum(p.perDay.amber, 0)} Amber/day`,
+    ),
+    infoCheck('economy.plan.upgradeCost', 'War-Plan-only player: upgrade cost in days of Amber income when bought: the dearest; L10 median / largest', upgradeCostText(p)),
   ];
 }
 
@@ -666,6 +752,7 @@ function upgradeAll(meta: Meta, s: SaveDoc, content: CompiledContent, c: Content
       const r = meta.upgrade(save, id, content);
       if (r.ok) {
         income(rec, day, save, r.value, amberFor(e.level));
+        rec.upgrade(day, e.level + 1, amberFor(e.level));
         save = r.value;
         upgraded = true;
         break;
@@ -773,36 +860,62 @@ export interface EconomyData {
   measures: EconomyMeasures | null;
   /** The casual player (3 matches a day), reported and not gated; null when it did not run. */
   casual: EconomyMeasures | null;
+  /** The War-Plan-only player (levels only its War Plan's cards), gated by `planChecks`; null when it did not run. */
+  plan: EconomyMeasures | null;
+  /** The casual War-Plan-only player (3 matches a day), reported; null when it did not run. */
+  casualPlan: EconomyMeasures | null;
 }
+
+/** The War Plan's ages: a War-Plan-only player levels the cards of all of them. */
+const PLAN_AGES = 8;
 
 export async function runEconomy(m: EconomyModel, content: CompiledContent = gameContent): Promise<Report<EconomyData>> {
   const rep = startReport<EconomyData>('economy', 'Ageborn 365-day economy sim (DESIGN A6.9)', { ...m, contentHash: content.hash });
+  const empty = { model: m, measures: null, casual: null, plan: null, casualPlan: null };
   const { meta, reason } = await loadMeta();
   if (!meta) {
-    return rep.finish([skippedCheck('economy.all', 'A6.9 pacing check', 'within ±20%, finish gap < 30 days', `skipped: ${reason ?? 'no meta'}`)], { meta: 'unavailable', model: m, measures: null, casual: null }, [
+    return rep.finish([skippedCheck('economy.all', 'A6.9 pacing check', 'within ±20%, finish gap < 30 days', `skipped: ${reason ?? 'no meta'}`)], { meta: 'unavailable', ...empty }, [
       `Skipped until the meta rules exist: ${reason ?? 'unknown reason'}.`,
     ]);
   }
   try {
     const seeds = Math.max(1, m.seeds);
-    const runs = Array.from({ length: seeds }, (_, i) => simulateEconomy(meta, content, { ...m, seed: m.seed + i }).measures(m.averageDays));
-    const measures = medianMeasures(runs);
+    const median30 = (model: EconomyModel): EconomyMeasures => medianMeasures(Array.from({ length: seeds }, (_, i) => simulateEconomy(meta, content, { ...model, seed: m.seed + i }).measures(m.averageDays)));
+    const measures = median30(m);
+    const fullYear = m.days >= 365;
     // The casual player (A15.4): 3 matches a day, reported beside the engaged player, not gated.
-    const casualModel = { ...m, matchesPerDay: ECONOMY_TARGETS.casualMatchesPerDay, days: m.days >= 365 ? Math.max(m.days, ECONOMY_TARGETS.casualDays) : m.days };
-    const casual = m.matchesPerDay === casualModel.matchesPerDay && m.days === casualModel.days ? measures : medianMeasures(Array.from({ length: seeds }, (_, i) => simulateEconomy(meta, content, { ...casualModel, seed: m.seed + i }).measures(m.averageDays)));
+    const casualModel = { ...m, matchesPerDay: ECONOMY_TARGETS.casualMatchesPerDay, days: fullYear ? Math.max(m.days, ECONOMY_TARGETS.casualDays) : m.days };
+    const casual = m.matchesPerDay === casualModel.matchesPerDay && m.days === casualModel.days ? measures : median30(casualModel);
+    const over = (x: number | null, days: number): string => (x === null ? `>${days}` : String(x));
     const casualCheck = infoCheck(
       'economy.casual',
-      `Casual player (${casualModel.matchesPerDay} matches a day, ${casualModel.days} days): copies and Sundial Capsules a day; days to max Common / Rare / Epic / Legendary; collection maxed`,
-      `${fmtNum(casual.perDay.copies, 1)} copies/day, ${fmtNum(casual.perDay.win, 2)} Sundial/day; ${[casual.maxDay.common, casual.maxDay.rare, casual.maxDay.epic, casual.maxDay.legendary].map((x) => (x === null ? `>${casualModel.days}` : String(x))).join(' / ')} days; collection ${casual.collectionMaxedDay === null ? `>${casualModel.days}` : casual.collectionMaxedDay} days`,
+      `Casual player (${casualModel.matchesPerDay} matches a day, ${casualModel.days} days): copies and Sundial Capsules a day; days to max Common / Rare / Epic / Legendary; collection maxed (projected past the run)`,
+      `${fmtNum(casual.perDay.copies, 1)} copies/day, ${fmtNum(casual.perDay.win, 2)} Sundial/day; ${[casual.maxDay.common, casual.maxDay.rare, casual.maxDay.epic, casual.maxDay.legendary].map((x) => over(x, casualModel.days)).join(' / ')} days; collection ${casual.collectionMaxedDay ?? `~${over(casual.collectionMaxedProjected, casualModel.days)} (projected)`} days`,
     );
+    // The War-Plan-only player (owner decision 2026-10-07), gated, and its casual twin, reported.
+    const planDays = fullYear ? m.planDays : Math.min(m.days, m.planDays);
+    const plan = m.planDays > 0 && m.focusAges === 0 ? median30({ ...m, focusAges: PLAN_AGES, days: planDays }) : null;
+    const casualPlan = plan ? median30({ ...casualModel, focusAges: PLAN_AGES, days: fullYear ? Math.max(planDays, ECONOMY_TARGETS.casualDays) : planDays }) : null;
+    const planRows = plan ? planChecks(plan) : [];
+    const casualPlanCheck = casualPlan
+      ? [
+          infoCheck(
+            'economy.casualPlan',
+            `Casual War-Plan-only player (${casualModel.matchesPerDay} matches a day, ${casualPlan.days} days): War Plan at L10; blocked days 10-364; upgrade cost in days of income`,
+            `${casualPlan.planMaxDay === null ? `>${casualPlan.days}` : casualPlan.planMaxDay} days; ${fmtPct(casualPlan.amberGate.blockedShareYear)}; ${upgradeCostText(casualPlan)}`,
+          ),
+        ]
+      : [];
     const notes = [
       `Median of ${seeds} seed${seeds === 1 ? '' : 's'} (${m.seed}-${m.seed + seeds - 1}).`,
       `Per-day averages use days ${m.averageDays[0]}-${m.averageDays[1]}. Amber income is every increase of the Amber balance (matches, quests, capsules, road, Codex Levels) plus what upgrades spent.`,
+      'Finish dates past the end of a run are projected from the Amber still missing and the last 60 days of Amber income (labelled "projected").',
     ];
+    if (plan) notes.push(`The War-Plan-only player levels only its active War Plan's cards (every age) and runs ${plan.days} days.`);
     if (!questApi(meta)) notes.push('src/meta exports no claimQuest: quests were never claimed, so quest rewards are missing from every figure.');
-    return rep.finish([...economyChecks(measures), casualCheck], { meta: 'src/meta', model: m, measures, casual }, notes);
+    return rep.finish([...economyChecks(measures), ...planRows, casualCheck, ...casualPlanCheck], { meta: 'src/meta', model: m, measures, casual, plan, casualPlan }, notes);
   } catch (e) {
-    return rep.finish([{ id: 'economy.run', metric: 'Player model through Meta', target: 'runs', value: 'error', verdict: 'fail', note: String(e) }], { meta: 'src/meta', model: m, measures: null, casual: null });
+    return rep.finish([{ id: 'economy.run', metric: 'Player model through Meta', target: 'runs', value: 'error', verdict: 'fail', note: String(e) }], { meta: 'src/meta', ...empty });
   }
 }
 
@@ -810,6 +923,9 @@ export function economySections(r: Report<EconomyData>): string[] {
   const m = r.data.measures;
   if (!m) return [];
   const d = (x: number | null): string => (x === null ? 'not reached' : `day ${x}`);
+  const proj = (reached: number | null, projected: number | null): string => reached !== null ? `day ${reached}` : projected === null ? 'not reached' : `~day ${projected} (projected, ${fmtNum(projected / YEAR_DAYS, 1)} years)`;
+  const p = r.data.plan;
+  const cp = r.data.casualPlan;
   return [
     '## Milestones',
     '',
@@ -825,11 +941,31 @@ export function economySections(r: Report<EconomyData>): string[] {
         ['Every card owned (Archivist)', d(m.albumCompleteDay)],
         ['50 cards maxed (Master Smith)', d(m.maxed50Day)],
         ['War Plan at L7', d(m.planL7Day)],
+        ['Active War Plan at L10', d(m.planMaxDay)],
         ['Copies done', d(m.copiesDoneDay)],
-        ['Amber done', d(m.amberDoneDay)],
-        ['Collection maxed', d(m.collectionMaxedDay)],
+        ['Amber done', proj(m.amberDoneDay, m.amberDoneProjected)],
+        ['Collection maxed', proj(m.collectionMaxedDay, m.collectionMaxedProjected)],
       ],
     ),
+    ...(p
+      ? [
+          '',
+          `## War-Plan-only player (levels only its War Plan's cards, ${p.days} days; gated)`,
+          '',
+          markdownTable(
+            ['Measure', 'Value'],
+            [
+              ['Amber a day (days 11-120)', fmtNum(p.perDay.amber, 0)],
+              ['Blocked days 0-6 / 11-120 / 10-364', [p.amberGate.blockedShareWeek1, p.amberGate.blockedShare, p.amberGate.blockedShareYear].map(fmtPct).join(' / ')],
+              ['Median bank, days 11-120 (days of income)', fmtNum(p.amberGate.bankDays, 1)],
+              ['First War Plan, mean level on day 7', `L${fmtNum(p.starter.plan7, 2)}`],
+              ['War Plan at L7', d(p.planL7Day)],
+              ['Active War Plan at L10', d(p.planMaxDay)],
+              ['Upgrade cost in days of income: dearest; L10 median / largest', upgradeCostText(p)],
+            ],
+          ),
+        ]
+      : []),
     ...(r.data.casual
       ? [
           '',
@@ -840,8 +976,10 @@ export function economySections(r: Report<EconomyData>): string[] {
             [
               ['Sundial Capsules per day', fmtNum(r.data.casual.perDay.win, 2)],
               ['Copies per day', fmtNum(r.data.casual.perDay.copies, 1)],
+              ['Amber per day', fmtNum(r.data.casual.perDay.amber, 0)],
               ['Common / Rare / Epic / Legendary to max', [r.data.casual.maxDay.common, r.data.casual.maxDay.rare, r.data.casual.maxDay.epic, r.data.casual.maxDay.legendary].map(d).join(' / ')],
-              ['Collection maxed', d(r.data.casual.collectionMaxedDay)],
+              ['Collection maxed', proj(r.data.casual.collectionMaxedDay, r.data.casual.collectionMaxedProjected)],
+              ...(cp ? [['War-Plan-only: active War Plan at L10', d(cp.planMaxDay)], ['War-Plan-only: upgrade cost in days of income', upgradeCostText(cp)]] : []),
             ],
           ),
         ]
