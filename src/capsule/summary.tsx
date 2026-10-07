@@ -138,7 +138,10 @@ function Item(p: { item: SummaryItem; index: number; art: ArtProvider; i18n: I18
       <div class={css.itemName}>{name}</div>
       {item.kind === 'skin' && item.skin ? <div class={css.itemSub}>{skinTarget(catalog, item.skin, t)}</div> : null}
       {item.foil !== 'none' ? <span class={css.foil} data-tag="">{t('capsule.foilUnlocked', { foil: t(`foil.${item.foil}.name`) })}</span> : null}
-      {item.dust > 0 ? <span class={css.dust}>{t('capsule.dustPlus', { n: item.dust })}</span> : null}
+      {item.dust > 0 ? (
+        // A6.6 surplus rule: copies beyond what max level needs turned into Dust; the bar shows the copies kept.
+        <span class={css.dust}>{t(item.kind === 'card' && pr && pr.need !== null ? 'capsule.dustSpare' : 'capsule.dustPlus', { n: item.dust })}</span>
+      ) : null}
       {pr && pr.need !== null ? (
         <div class={`${css.bar} ${item.upgradeReady || pr.after >= pr.need ? css.barReady : ''}`}>
           <div class={css.barFill} style={{ width: `${Math.min(100, Math.round((pr.after / Math.max(1, pr.need)) * 100))}%` }} />

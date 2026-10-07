@@ -507,8 +507,14 @@ export class CardView {
     const fill = span(k, 0.24, 0.8);
     // "+N" (or "+N Dust") flies from the card into its bar.
     const dust = this.card.dust > 0;
+    // A6.6 surplus rule: a stack can keep some copies and turn the spare ones into Dust.
+    const kept = p && p.need !== null ? Math.max(0, p.after - p.before) : 0;
     this.chip.visible = fly > 0 && fly < 1;
-    this.chip.text = dust ? t('capsule.dustPlus', { n: this.card.dust }) : t('capsule.copiesPlus', { n: this.card.copies });
+    this.chip.text = dust
+      ? kept > 0
+        ? t('capsule.copiesAndDust', { n: kept, dust: this.card.dust })
+        : t('capsule.dustPlus', { n: this.card.dust })
+      : t('capsule.copiesPlus', { n: this.card.copies });
     this.chip.position.set(0, lerp(-10, CARD_H / 2 + 24, easeInOutCubic(fly)));
     this.chip.scale.set(lerp(1.4, 0.7, fly));
     this.barRoot.scale.set(1 + 0.12 * hump(fill));

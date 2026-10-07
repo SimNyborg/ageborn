@@ -207,7 +207,8 @@ describe('Rarities, upgrades and Dust (A6.6, A6.7, A5.8)', () => {
   it('has the Dust, Codex and foil rates', () => {
     const r = rarities.cards;
     expect([r.common, r.rare, r.epic, r.legendary].map((x) => [x.dustPerExtraCopy, x.craftCopyDust, x.codexPoints])).toEqual([
-      [5, 40, 1], [20, 100, 2], [100, 400, 4], [400, 1600, 8],
+      // Spare copies → Dust at reveal (A6.6 surplus rule, 2026-10-07): 1 / 3 / 15 / 60 (were 5 / 20 / 100 / 400 at L10 only).
+      [1, 40, 1], [3, 100, 2], [15, 400, 4], [60, 1600, 8],
     ]);
     const s = rarities.skins;
     expect([s.rare, s.epic, s.legendary].map((x) => [x.crateOddsBp, x.duplicateDust, x.craftDust])).toEqual([

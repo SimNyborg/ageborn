@@ -323,7 +323,7 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
         </Button>
       </span>
     );
-    if (craftPrice !== null) {
+    if (craftPrice !== null && !up.copiesFull) {
       secondary.push(
         <span ref={craftRef} class="cd-action" key="craft">
           <Button

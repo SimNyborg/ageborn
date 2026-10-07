@@ -131,7 +131,7 @@ const UNIT_ROWS: UnitRow[] = [
   { id: 'rifleman', age: 'modern', rarity: 'common', role: 'ranged', cost: 75, hp: 234, damage: 32, intervalMs: 1000,
     range: 260, speed: 65, size: 'small', hits: 'G+A', tags: ['light', 'bio', 'ranged'], fx: 'proj.bullet', sfx: 'shot_rifle', dmgType: 'bullet',
     extra: (u) => expect(u.attacks[0]?.onHit).toEqual([{ kind: 'slow', magnitudeBp: 1500, durationMs: 1000 }]) },
-  { id: 'tankette', age: 'modern', rarity: 'common', role: 'heavy', cost: 150, hp: 1378, damage: 104, intervalMs: 1500,
+  { id: 'tankette', age: 'modern', rarity: 'common', role: 'heavy', cost: 150, hp: 1378, damage: 99, intervalMs: 1500,
     range: 90, speed: 50, size: 'large', hits: 'G', tags: ['armored', 'mech', 'ranged'], fx: 'proj.shell', sfx: 'shot_cannon', dmgType: 'blast' },
   { id: 'radio_operator', age: 'modern', rarity: 'rare', role: 'support', cost: 110, hp: 320, damage: 20, intervalMs: 1200,
     range: 200, speed: 65, size: 'small', hits: 'G+A', tags: ['light', 'bio', 'support', 'ranged'], fx: 'proj.bullet', sfx: 'shot_rifle', dmgType: 'bullet',
@@ -286,6 +286,8 @@ const FIXTURE_UNIT: Record<string, Pick<UnitRow, 'hp' | 'extra'> & Partial<Pick<
     extra: (u) => expect(u.attacks[0]?.mods).toEqual([{ vs: 'armored', bp: 20000 }, { vs: 'mech', bp: 20000 }, { vs: 'light', bp: 7500 }]),
   },
   pikeman: { hp: 270, extra: (u) => expect(u.abilities).toContainEqual({ kind: 'brace' }) },
+  // The Heavy damage trim (owner decision 2026-10-07: Heavy a bit overpowered) left the fixture at 104.
+  tankette: { hp: 1378, damage: 104 },
   grenadier: {
     hp: 230,
     damage: 50,

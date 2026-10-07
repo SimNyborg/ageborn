@@ -49,6 +49,12 @@ export const ECONOMY_TARGETS = {
   clayCapsulesPerDay: 1.1,
   copiesPerDay: 240,
   amberPerDay: 3600,
+  /**
+   * Dust a day in the averaging window (days 11-120). Owner decision 2026-10-07: spare copies (beyond what
+   * L10 needs) turn into Dust when their capsule opens, at 1 / 3 / 15 / 60 per copy, so Dust is back at
+   * the ~470 a day it was before the years-long Amber curve (176 after it, when copies converted only at L10).
+   */
+  dustPerDay: 470,
   commonMaxDays: 110,
   rareMaxDays: 101,
   epicMaxDays: 69,
@@ -556,7 +562,8 @@ export function economyChecks(m: EconomyMeasures): Check[] {
       'Collection milestones: 100 cards owned, every card owned, 50 cards maxed, everything maxed',
       [m.cards100Day, m.albumCompleteDay, m.maxed50Day, m.collectionMaxedDay].map((x) => (x === null ? 'not reached' : `day ${x}`)).join(' / '),
     ),
-    // Dust is reported, not gated (A6.6 prices did not change with the content re-tune).
+    // Dust (owner decision 2026-10-07, A6.6 surplus rule): gated a day in the window, the run's total reported.
+    near('economy.dustPerDay', 'Dust a day (spare copies at reveal, capsule bonus Dust, road, quests, feats)', m.perDay.dust, T.dustPerDay, '/day'),
     infoCheck('economy.dust', 'Dust earned: a day (averaging window) and over the whole run', `${fmtNum(m.perDay.dust, 0)} /day; ${fmtNum(m.dustTotal, 0)} in ${m.days} days`),
     // The Amber gate (owner feedback 2026-10-07), reported: how often Amber, not copies, holds an upgrade back.
     infoCheck(

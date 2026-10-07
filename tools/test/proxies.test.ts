@@ -5,7 +5,7 @@ import { createSim } from '../../src/sim';
 import { HeadlessMatch } from '../lib/driver';
 import { MatchTally } from '../lib/metrics';
 import { agesOf, planIssues, sideConfig } from '../lib/plans';
-import { EXPLOIT_PROXIES, STRATEGIES, createProxy, isProxyId, type ProxyId } from '../proxies';
+import { EXPLOIT_PROXIES, STRATEGIES, createProxy, inMonoGroup, isLongRange, isProxyId, type ProxyId } from '../proxies';
 
 /** Plays `id` on side 0 against the balanced proxy for `seconds` and returns the sim and tallies. */
 function play(id: ProxyId, seconds: number, seed = 3) {
@@ -28,18 +28,34 @@ function play(id: ProxyId, seconds: number, seed = 3) {
 }
 
 describe('exploit proxies (DESIGN B12)', () => {
-  it('lists the eight B12 proxies, the A16.5 random-spam and mono-heavy proxies and the five A18.12 proxies', () => {
-    expect(EXPLOIT_PROXIES).toHaveLength(20);
+  it('lists the eight B12 proxies, the A16.5 random-spam and mono-heavy proxies, the five A18.12 proxies and the H6 Long range pair', () => {
+    expect(EXPLOIT_PROXIES).toHaveLength(22);
     expect(EXPLOIT_PROXIES.slice(8, 10)).toEqual(['random_spam', 'mono_heavy']);
     expect(EXPLOIT_PROXIES.slice(10, 15)).toEqual(['drill_rush', 'tech_turtle', 'flag_ball', 'fallback_turtle', 'stance_toggler']);
     // A2.9.12 power proxies (the wave pair, no_power and the gate sniper run in their own job set)
-    expect(EXPLOIT_PROXIES.slice(15)).toEqual(['power_hoarder', 'home_turtle', 'power_spam', 'drop_spam', 'runner_reach']);
+    expect(EXPLOIT_PROXIES.slice(15, 20)).toEqual(['power_hoarder', 'home_turtle', 'power_spam', 'drop_spam', 'runner_reach']);
+    // H6 Long range (A5.1): the mono row and the turtle behind it (built 2026-10-07)
+    expect(EXPLOIT_PROXIES.slice(20)).toEqual(['mono_longrange', 'longrange_turtle']);
     expect(isProxyId('turret_turtle')).toBe(true);
     expect(isProxyId('nope')).toBe(false);
   });
 
   it.each(Object.keys(STRATEGIES) as ProxyId[])('%s plays an A3-valid War Plan', (id) => {
     expect(planIssues(content, STRATEGIES[id].plan(content), 'full')).toEqual([]);
+  });
+
+  it('the Long range proxies field each age\'s Long range Rare in the Ranged slot and train only it (H6)', () => {
+    for (const id of ['mono_longrange', 'longrange_turtle'] as const) {
+      const plan = STRATEGIES[id].plan(content);
+      for (const age of agesOf(content)) {
+        const lr = (plan[age] as Loadout).units[1];
+        expect(lr && isLongRange(content.units[lr]!), `${id} ${age}`).toBe(true);
+      }
+    }
+    const lrs = Object.values(content.units).filter((u) => !u.hidden && isLongRange(u));
+    expect(lrs.map((u) => u.id).sort()).toEqual(['arc_lobber', 'atlatl_thrower', 'coehorn_crew', 'cretan_archer', 'mortar_team', 'star_mortar', 'trench_mortar', 'yeoman_archer']);
+    expect(lrs.every((u) => inMonoGroup(u, 'longRange'))).toBe(true);
+    expect(STRATEGIES.longrange_turtle).toMatchObject({ turrets: 4, stance: 'hold' });
   });
 
   it('mass splash fields the splash cards DESIGN names', () => {

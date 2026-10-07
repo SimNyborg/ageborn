@@ -87,6 +87,8 @@ export interface UpgradeState {
   /** Enough copies and Amber: the Upgrade button works. */
   affordable: boolean;
   maxed: boolean;
+  /** The card already holds every copy it needs for max level: more copies would only turn into Dust (A6.6), so no Craft. */
+  copiesFull: boolean;
 }
 
 export function upgradeState(save: SaveDoc, content: Content, id: CardId): UpgradeState | null {
@@ -95,12 +97,14 @@ export function upgradeState(save: SaveDoc, content: Content, id: CardId): Upgra
   if (!def || def.kind === 'power' || def.kind === 'fort' || !entry) return null;
   const cost = upgradeCost(content, def.rarity, entry.level);
   const copiesReady = cost !== null && entry.copies >= cost.copies;
+  const stillNeeded = content.rarities.cards[def.rarity].upgradeCopies.slice(Math.max(0, entry.level - 1)).reduce((a, b) => a + b, 0);
   return {
     cost,
     copies: entry.copies,
     copiesReady,
     affordable: copiesReady && cost !== null && save.currencies.amber >= cost.amber,
     maxed: cost === null,
+    copiesFull: entry.copies >= stillNeeded,
   };
 }
 

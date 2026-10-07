@@ -231,13 +231,13 @@ export const stone: RawAgeTables = {
       nameKey: 'card.woolly_rhino.name', descKey: 'card.woolly_rhino.desc', strongVs: [], weakVs: [],
     },
     {
-      // Long range (H6, A5.1): an arcing dart at the target's spot, splash r35; range 320, min 90; half to bases; ground only
+      // Long range (H6, A5.1; range +50-80 on 2026-10-07): an arcing dart at the target's spot, splash r35; range 400, min 90; half to bases; ground only
       id: 'atlatl_thrower', kind: 'unit', age: 'stone', rarity: 'rare', role: 'ranged', group: 'ranged',
       cost: 75, trainMs: 2000, pop: 3, hp: 92, speed: 60, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 39, intervalMs: 2600, windupPct: 50, range: 320, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 39, intervalMs: 2600, windupPct: 50, range: 400, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.dart' },
           dmgType: 'pierce', sfx: 'shot_atlatl', splashRadius: 35, vsBaseDamage: 17,
         },

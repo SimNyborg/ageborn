@@ -16,7 +16,8 @@
  *    power on auto-aim when full (A16.5).
  * 10. `mono_heavy`, `mono_ranged`, `mono_antiair`: the mono family at m = 100% (A16.5): only that role
  *    group while the tray has one, otherwise random; no turrets, no research. `mono_antiheavy` is the
- *    same with the Anti-heavy card (the exploits' per-age lane gate).
+ *    same with the Anti-heavy card (the exploits' per-age lane gate). `mono_longrange` plays only the
+ *    age's Long range Rare (H6, A5.1; in the Ranged slot of the baseline plan).
  *
  * Human-like strategies for the AI strength matrix (`strength.ts`, owner feedback 2026-09-28):
  *
@@ -54,6 +55,8 @@
  * 26. `runner_reach`: a front barrage (else the charge) in the Field slot; sends a lone fast runner ahead
  *     and casts the Field slot on every reload at the enemy's staging area behind it.
  * 27. `gate_sniper`: a strike in the Field slot where the age has one, cast at the enemy's rearmost unit.
+ * 28. `longrange_turtle` (H6, A5.1; built 2026-10-07): the 4-turret Hold turtle with the age's Long range
+ *     Rare in its Ranged slot, so it shells the lane from behind its turrets (the turtle band).
  *
  * Fort driver hooks (A16.14.9, used by `tools/forts.ts`): `FortTurtleDriver` wraps any controller and
  * re-places its Fort card on every recharge (paid from its gold) on the most forward safe Home pad, else
@@ -89,6 +92,8 @@ export type ProxyId =
   | 'mono_ranged'
   | 'mono_antiair'
   | 'mono_antiheavy'
+  | 'mono_longrange'
+  | 'longrange_turtle'
   | 'few_then_evolve'
   | 'rush'
   | 'save_counter'
@@ -121,7 +126,7 @@ export type ProxyId =
 export type PowerHabit = 'hoard' | 'spam' | 'never' | 'homeWave' | 'drop' | 'runner' | 'sniper';
 
 /** Mono family groups (A16.5): Heavy, anti-air and Ranged; Anti-heavy for the per-age lane gate (A2.6). */
-export type MonoGroup = 'heavy' | 'antiAir' | 'ranged' | 'antiArmor';
+export type MonoGroup = 'heavy' | 'antiAir' | 'ranged' | 'antiArmor' | 'longRange';
 
 export interface Strategy {
   id: ProxyId;
@@ -224,6 +229,23 @@ function healPlan(content: CompiledContent): Plan {
 
 const base = (content: CompiledContent): Plan => baselinePlan(content);
 
+/** A Long range unit (H6, A5.1): a Ranged-group unit whose first attack is an arc with a minimum range. */
+export function isLongRange(u: UnitDef): boolean {
+  const a = u.attacks[0];
+  const arc = a?.projectile !== undefined && 'arc' in a.projectile && a.projectile.arc === true;
+  return u.group === 'ranged' && arc && (a?.minRange ?? 0) > 0;
+}
+
+/** The baseline plan with each age's Long range card in the Ranged slot (slot 1). */
+export function longRangePlan(content: CompiledContent): Plan {
+  const plan = clonePlan(baselinePlan(content));
+  for (const age of agesOf(content)) {
+    const lr = unitsOfAge(content, age).find(isLongRange);
+    if (lr) (plan[age] as Loadout).units[1] = lr.id;
+  }
+  return plan;
+}
+
 /** The baseline plan with a Field power of `family` in every age that has one (the starter elsewhere). */
 function fieldFamilyPlan(content: CompiledContent, families: readonly PowerDef['family'][]): Plan {
   const plan = clonePlan(baselinePlan(content));
@@ -311,6 +333,8 @@ export const STRATEGIES: Record<ProxyId, Strategy> = {
   mono_antiair: { ...BALANCED, id: 'mono_antiair', title: 'Mono anti-air spam', train: 'mono', mono: 'antiAir', income: 0, research: [], turrets: 0, modernise: false, power: 'full' },
   // The per-age lane gate (exploits `lane.*`): only the Anti-heavy card, set up like `mono_heavy`.
   mono_antiheavy: { ...BALANCED, id: 'mono_antiheavy', title: 'Mono Anti-heavy', train: 'mono', mono: 'antiArmor', income: 0, research: [], turrets: 0, modernise: false, power: 'full' },
+  // H6 Long range (A5.1): only the Long range card, set up like `mono_heavy`; and the turtle behind it.
+  mono_longrange: { ...BALANCED, id: 'mono_longrange', title: 'Mono Long range', train: 'mono', mono: 'longRange', income: 0, research: [], turrets: 0, modernise: false, power: 'full', plan: longRangePlan },
   few_then_evolve: { ...BALANCED, id: 'few_then_evolve', title: 'A few soldiers, then evolve', income: 0, research: [], turrets: 1, maxAlive: 4 },
   rush: { ...BALANCED, id: 'rush', title: 'All-out melee rush', train: 'melee', income: 0, research: [], turrets: 0, modernise: false, power: 'full' },
   save_counter: {
@@ -381,6 +405,17 @@ export const STRATEGIES: Record<ProxyId, Strategy> = {
     researchFromMs: 0,
   },
   stance_toggler: { ...BALANCED, id: 'stance_toggler', title: 'Stance toggler (flips on every engagement)', stance: 'toggle' },
+  longrange_turtle: {
+    ...BALANCED,
+    id: 'longrange_turtle',
+    title: 'Long range turtle (Hold, 4 turrets, Long range shelling from behind)',
+    weights: [2, 5, 1, 3, 1],
+    turrets: 4,
+    stance: 'hold',
+    reserve: 50,
+    research: ['troops.ranged.long_draw', 'defences.watchtowers', ...BALANCED_RESEARCH],
+    plan: longRangePlan,
+  },
   // A2.9.12 power proxies.
   power_hoarder: {
     ...BALANCED,
@@ -441,6 +476,7 @@ export function inMonoGroup(u: UnitDef, g: MonoGroup): boolean {
   if (g === 'antiAir') return u.attacks.some((a) => a.hitsAir) && !u.tags.includes('air');
   if (g === 'heavy') return u.group === 'heavy';
   if (g === 'antiArmor') return u.group === 'antiArmor';
+  if (g === 'longRange') return isLongRange(u);
   return u.group === 'ranged';
 }
 
@@ -468,6 +504,9 @@ export const EXPLOIT_PROXIES: readonly ProxyId[] = [
   'power_spam',
   'drop_spam',
   'runner_reach',
+  // H6 Long range (A5.1; built 2026-10-07)
+  'mono_longrange',
+  'longrange_turtle',
 ];
 
 /** Every other proxy the tools know (run with `--proxies`). */

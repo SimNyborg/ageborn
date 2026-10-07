@@ -52,7 +52,7 @@ export const industrial: RawAgeTables = {
       tags: ['armored', 'mech', 'melee', 'ground'],
       attacks: [
         {
-          damage: 89, intervalMs: 1500, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 85, intervalMs: 1500, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'blunt', sfx: 'swing_whoosh',
         },
       ],
@@ -211,7 +211,7 @@ export const industrial: RawAgeTables = {
       tags: ['armored', 'mech', 'melee', 'ground'],
       attacks: [
         {
-          damage: 66, intervalMs: 1500, windupPct: 40, range: 20, hitsGround: true, hitsAir: false,
+          damage: 65, intervalMs: 1500, windupPct: 40, range: 20, hitsGround: true, hitsAir: false,
           dmgType: 'blunt', sfx: 'plough_scoop', cleave: { count: 2, reach: 30 },
         },
       ],
@@ -220,13 +220,13 @@ export const industrial: RawAgeTables = {
       nameKey: 'card.steam_tractor.name', descKey: 'card.steam_tractor.desc', strongVs: [], weakVs: [],
     },
     {
-      // Long range (H6, A5.1): an arcing mortar bomb at the target's spot, splash r35; range 370, min 90; half to bases; ground only
+      // Long range (H6, A5.1; range +50-80 on 2026-10-07): an arcing mortar bomb at the target's spot, splash r35; range 440, min 90; half to bases; ground only
       id: 'trench_mortar', kind: 'unit', age: 'industrial', rarity: 'rare', role: 'ranged', group: 'ranged',
       cost: 75, trainMs: 2000, pop: 3, hp: 266, speed: 60, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 118, intervalMs: 2600, windupPct: 50, range: 370, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 118, intervalMs: 3400, windupPct: 50, range: 440, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.mortar_shell' },
           dmgType: 'blast', sfx: 'shot_trench_mortar', splashRadius: 35, vsBaseDamage: 60,
         },

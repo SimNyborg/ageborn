@@ -131,7 +131,7 @@ describe('economyChecks', () => {
     days: 365,
     copiesPerBagCapsule: T.copiesPerBagCapsule,
     amberPerBagCapsule: T.amberPerBagCapsule,
-    perDay: { win: T.sundialCapsulesPerDay, daily: 0, clay: T.clayCapsulesPerDay, copies: T.copiesPerDay, amber: T.amberPerDay, dust: 40, quests: 3 },
+    perDay: { win: T.sundialCapsulesPerDay, daily: 0, clay: T.clayCapsulesPerDay, copies: T.copiesPerDay, amber: T.amberPerDay, dust: T.dustPerDay, quests: 3 },
     dustTotal: 30_000,
     maxDay: { common: 110, rare: 101, epic: 69, legendary: 112 },
     allLegendariesDay: 21,
@@ -163,6 +163,13 @@ describe('economyChecks', () => {
     expect(economyChecks(onTarget).filter((c) => c.verdict !== 'pass' && c.verdict !== 'info')).toEqual([]);
     expect(economyChecks(onTarget).find((c) => c.id === 'economy.questsPerDay')).toMatchObject({ verdict: 'info', value: '3.00 /day' });
     expect(economyChecks(onTarget).find((c) => c.id === 'economy.dust')).toMatchObject({ verdict: 'info' });
+  });
+
+  it('gates Dust a day at ~470 ± 20% (spare copies at reveal, owner decision 2026-10-07)', () => {
+    const dust = (d: number) => economyChecks({ ...onTarget, perDay: { ...onTarget.perDay, dust: d } }).find((c) => c.id === 'economy.dustPerDay')?.verdict;
+    expect(dust(470)).toBe('pass');
+    expect(dust(176)).toBe('fail');
+    expect(dust(2143)).toBe('fail');
   });
 
   it('fails outside ±20%, Amber finishing too close to the copies, milestones never reached and a loose Amber gate', () => {

@@ -40,8 +40,9 @@ describe('contentHash (B4, B3 replays)', () => {
     // gated Future data is included as it stands. W7 Future wave (2026-10-04): its released, measured numbers
     // (docs/decisions.md); the gated Cosmic data in the tree is included as it stands. W8 Cosmic wave (2026-10-04):
     // its released, measured numbers (docs/decisions.md). Release check (2026-10-07): Kennel Master, Squires,
-    // Brigand, Commando and Rifle Grenadier re-tuned after drifting outside ±5 (docs/decisions.md).
-    expect(content.hash).toBe('cba469d0');
+    // Brigand, Commando and Rifle Grenadier re-tuned after drifting outside ±5 (docs/decisions.md). Owner
+    // decisions 2026-10-07: the Heavy damage trim, longer Long range, and the spare-copy Dust rates.
+    expect(content.hash).toBe('7af6a652');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {

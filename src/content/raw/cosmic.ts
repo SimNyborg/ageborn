@@ -52,7 +52,7 @@ export const cosmic: RawAgeTables = {
       tags: ['armored', 'mech', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 188, intervalMs: 1500, windupPct: 50, range: 90, hitsGround: true, hitsAir: false,
+          damage: 179, intervalMs: 1500, windupPct: 50, range: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 1800, visualId: 'proj.plasma' },
           dmgType: 'blast', sfx: 'shot_plasma',
         },
@@ -208,7 +208,7 @@ export const cosmic: RawAgeTables = {
       tags: ['armored', 'mech', 'melee', 'ground'],
       attacks: [
         {
-          damage: 150, intervalMs: 1500, windupPct: 40, range: 20, hitsGround: true, hitsAir: false,
+          damage: 146, intervalMs: 1500, windupPct: 40, range: 20, hitsGround: true, hitsAir: false,
           dmgType: 'blunt', sfx: 'golem_uppercut', cleave: { count: 2, reach: 30 },
         },
       ],
@@ -217,14 +217,14 @@ export const cosmic: RawAgeTables = {
       nameKey: 'card.asteroid_golem.name', descKey: 'card.asteroid_golem.desc', strongVs: [], weakVs: [],
     },
     {
-      // Long range (H6, A5.1): a gravity mortar lobs a tiny star high at the target's spot, splash r35; range 390,
+      // Long range (H6, A5.1; range +50-80 on 2026-10-07): a gravity mortar lobs a tiny star high at the target's spot, splash r35; range 440,
       // min 90; half to bases; ground only
       id: 'star_mortar', kind: 'unit', age: 'cosmic', rarity: 'rare', role: 'ranged', group: 'ranged',
       cost: 75, trainMs: 2000, pop: 3, hp: 470, speed: 60, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 190, intervalMs: 2600, windupPct: 50, range: 390, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 190, intervalMs: 2800, windupPct: 50, range: 440, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.mini_star' },
           dmgType: 'blast', sfx: 'shot_star_mortar', splashRadius: 35, vsBaseDamage: 98,
         },

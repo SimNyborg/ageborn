@@ -157,14 +157,19 @@ export function benchProgress(reveals: readonly CapsuleReveal[]): ProgressLookup
   const rng = mulberry32(reveals.length * 977);
   for (const r of reveals) {
     for (const s of r.capsule.contents.stacks) {
+      // A6.6 surplus rule (2026-10-07): a stack whose Dust pays for only some of its copies kept the rest;
+      // the bench shows it on an L8 card that ends holding every copy L10 needs.
+      const spare = s.dust > 0 ? Math.trunc(s.dust / C.rarities.cards[s.rarity].dustPerExtraCopy) : 0;
+      const kept = Math.max(0, s.copies - spare);
+      const toMax = C.rarities.cards[s.rarity].upgradeCopies.slice(7).reduce((x, y) => x + y, 0);
       if (!before[s.card] && !s.isNew) {
-        const level = s.dust > 0 ? 10 : 3;
-        before[s.card] = { level, copies: s.dust > 0 ? 0 : rng.int(4), isNew: false, foil: 'none' };
+        const level = s.dust > 0 ? (kept > 0 ? 8 : 10) : 3;
+        before[s.card] = { level, copies: s.dust > 0 ? (kept > 0 ? toMax - kept : 0) : rng.int(4), isNew: false, foil: 'none' };
       }
       const b = before[s.card];
       const a = after[s.card] ?? (b ? { ...b } : { level: 1, copies: 0, isNew: true, foil: 'none' as Foil });
-      // As the meta applies them: a new card starts at L1 with all of its stack's copies.
-      if (s.dust === 0) a.copies += s.copies;
+      // As the meta applies them: a new card starts at L1 with all of its stack's copies; spare copies are Dust.
+      a.copies += s.dust === 0 ? s.copies : kept;
       after[s.card] = a;
     }
   }
@@ -255,7 +260,12 @@ function buildCases(): BenchCase[] {
     single('foil-holo', 'Foil', 'Holo (1 s sweep)', { tier: 'silver', stacks: [{ rarity: 'common' }, { rarity: 'rare' }, { rarity: 'rare' }, { rarity: 'epic', foil: 'holo', card: 'battering_ram', isNew: false }] }),
     single('dust-max', 'Other', 'Max-level copies become Dust', {
       tier: 'jade',
-      stacks: [{ rarity: 'common', card: 'bonker', dust: 70, copies: 14 }, { rarity: 'rare' }, { rarity: 'rare' }, { rarity: 'epic' }, { rarity: 'epic', card: 'battering_ram', isNew: false }],
+      stacks: [{ rarity: 'common', card: 'bonker', dust: 14 * C.rarities.cards.common.dustPerExtraCopy, copies: 14 }, { rarity: 'rare' }, { rarity: 'rare' }, { rarity: 'epic' }, { rarity: 'epic', card: 'battering_ram', isNew: false }],
+    }),
+    // A6.6 surplus rule (owner decision 2026-10-07): 4 of the 14 copies fill the card up to L10, 10 are spare.
+    single('dust-spare', 'Other', 'Spare copies become Dust (some kept)', {
+      tier: 'jade',
+      stacks: [{ rarity: 'common', card: 'bonker', dust: 10 * C.rarities.cards.common.dustPerExtraCopy, copies: 14, isNew: false }, { rarity: 'rare' }, { rarity: 'rare' }, { rarity: 'epic' }, { rarity: 'epic', card: 'battering_ram', isNew: false }],
     }),
     // The all-ages table (A6.4, Arena 3 and up): one more stack and bigger copies on every tier.
     single('allages-clay', 'All-ages table', 'Clay from Arena 3 (3 stacks)', { tier: 'clay', allAges: true }),

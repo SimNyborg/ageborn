@@ -49,7 +49,7 @@ export const gunpowder: RawAgeTables = {
       tags: ['armored', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 76, intervalMs: 1500, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 74, intervalMs: 1500, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'slash', sfx: 'swing_whoosh',
         },
       ],
@@ -202,7 +202,7 @@ export const gunpowder: RawAgeTables = {
       tags: ['armored', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 52, intervalMs: 1500, windupPct: 50, range: 90, hitsGround: true, hitsAir: false,
+          damage: 49, intervalMs: 1500, windupPct: 50, range: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 1500, visualId: 'proj.musket' },
           dmgType: 'bullet', sfx: 'shot_dragoon', splashRadius: 30,
         },
@@ -212,13 +212,13 @@ export const gunpowder: RawAgeTables = {
       nameKey: 'card.dragoon.name', descKey: 'card.dragoon.desc', strongVs: [], weakVs: [],
     },
     {
-      // Long range (H6, A5.1): an arcing mortar shell at the target's spot, splash r35; range 360, min 90; half to bases; ground only
+      // Long range (H6, A5.1; range +50-80 on 2026-10-07): an arcing mortar shell at the target's spot, splash r35; range 440, min 90; half to bases; ground only
       id: 'coehorn_crew', kind: 'unit', age: 'gunpowder', rarity: 'rare', role: 'ranged', group: 'ranged',
       cost: 75, trainMs: 2000, pop: 3, hp: 210, speed: 60, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 80, intervalMs: 2600, windupPct: 50, range: 360, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 80, intervalMs: 3000, windupPct: 50, range: 440, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.mortar_shell' },
           dmgType: 'blast', sfx: 'shot_coehorn', splashRadius: 35, vsBaseDamage: 31,
         },

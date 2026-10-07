@@ -51,7 +51,7 @@ export const bronze: RawAgeTables = {
       tags: ['armored', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 49, intervalMs: 1500, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 48, intervalMs: 1500, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'slash', sfx: 'swing_whoosh',
         },
       ],
@@ -198,7 +198,7 @@ export const bronze: RawAgeTables = {
       tags: ['armored', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 40, intervalMs: 1800, windupPct: 40, range: 20, hitsGround: true, hitsAir: false,
+          damage: 38, intervalMs: 1800, windupPct: 40, range: 20, hitsGround: true, hitsAir: false,
           dmgType: 'blunt', sfx: 'trunk_lash', cleave: { count: 2, reach: 30 },
         },
       ],
@@ -207,13 +207,13 @@ export const bronze: RawAgeTables = {
       nameKey: 'card.war_elephant.name', descKey: 'card.war_elephant.desc', strongVs: [], weakVs: [],
     },
     {
-      // Long range (H6, A5.1): an arcing arrow at the target's spot, splash r35; range 330, min 90; half to bases; ground only
+      // Long range (H6, A5.1; range +50-80 on 2026-10-07): an arcing arrow at the target's spot, splash r35; range 410, min 90; half to bases; ground only
       id: 'cretan_archer', kind: 'unit', age: 'bronze', rarity: 'rare', role: 'ranged', group: 'ranged',
       cost: 75, trainMs: 2000, pop: 3, hp: 99, speed: 60, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 38, intervalMs: 2400, windupPct: 50, range: 330, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 38, intervalMs: 2500, windupPct: 50, range: 410, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.arrow_arc' },
           dmgType: 'pierce', sfx: 'shot_bow', splashRadius: 35, vsBaseDamage: 19,
         },

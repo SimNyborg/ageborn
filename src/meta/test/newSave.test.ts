@@ -3,7 +3,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import type { AgeId } from '@/contracts';
-import { bagCapsuleAverages, copiesToMax, expectedCopiesX10k } from '../economy';
+import { bagCapsuleAverages, copiesStillNeeded, copiesToMax, expectedCopiesX10k } from '../economy';
 import { SAVE_VERSION } from '../rules';
 import { C, M, TestClock, T0, fresh } from './helpers';
 
@@ -85,5 +85,13 @@ describe('economy entry points (A6.4, A6.6, A6.9)', () => {
     expect(copiesToMax(C, 'rare').copies).toBe(130);
     expect(copiesToMax(C, 'epic').copies).toBe(44);
     expect(copiesToMax(C, 'legendary').copies).toBe(11);
+  });
+
+  it('copies a card still needs for max level, counting the copies it holds (A6.6 surplus rule)', () => {
+    expect(copiesStillNeeded(C, 'common', 1, 0)).toBe(153);
+    expect(copiesStillNeeded(C, 'common', 8, 70)).toBe(10);
+    expect(copiesStillNeeded(C, 'common', 8, 95)).toBe(0);
+    expect(copiesStillNeeded(C, 'legendary', 8, 1)).toBe(3);
+    expect(copiesStillNeeded(C, 'epic', 10, 0)).toBe(0);
   });
 });

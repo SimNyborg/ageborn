@@ -250,6 +250,8 @@ Ages are data. New ages need only content, visuals and audio entries plus one `A
 - **Available from the start:** every age's Anti-heavy Rare is in the starter kit and the starter loadouts (A3).
 - **Told everywhere:** "Strong vs Heavy" on every Anti-heavy card and "Weak vs Anti-heavy" on every Heavy card (A18.9.1), the counter table regenerated on the real sim (B4), a battle hint when the enemy fields Heavies (A9.2), and the bots answer Heavy with it (A7.2).
 
+**Heavy trim (owner decision 2026-10-07: "Heavy is a bit overpowered"; its strength is HP, so HP stays).** Heavy Common damage −2 to −5% where the hits needed to kill the age's Infantry Commons stay the same, so Heavy still beats Infantry exactly as before: War Chariot 49 → 48, War Elephant 40 → 38, Destrier Knight 57 → 54, Greatsword Knight 42 → 40, Cuirassier 76 → 74, Dragoon 52 → 49, Steam Golem 89 → 85, Steam Tractor 66 → 65, Tankette 104 → 99, Assault Gun 88 → 84, Crab Mech 112 → 109, Hover Tank 188 → 179, Asteroid Golem 150 → 146. Tuskback (42), Woolly Rhino (33) and Walker Mech (140) keep theirs: one point less flips a breakpoint (Torch Runner, Photon Knight) or, for the Woolly Rhino, moved its per-card row outside ±5. The Anti-heavy multipliers are unchanged: Anti-heavy already wins the equal-gold duels clearly (3 v 2 M 69-88 for every age's starter Anti-heavy, mean 78.7 over all 16 Anti-heavy cards), and raising them would also hit 16 armored or mech Epics. Measured before and after in `docs/decisions.md`; the main finding is that the Heavy share of winning bot armies is mostly the winner's bank (a bot plan with no Heavy at all beats the baseline plan 56.5% Short and 65.5% Standard), so a damage trim moves it little: winners' Heavy share 28.5-31.2% after against 28.6-30.6% before, and the side with more Heavy gold wins 72.7-78.9% (74.0-81.4%); a second Heavy in the plan is worth less than before (it wins 56.5 / 53.5% against the baseline plan, was 58.5 / 59.5%).
+
 Each attack carries an ordered `mods` list. The **first** mod whose tag the target has applies; otherwise the multiplier is ×1.0. Role defaults:
 
 | Attacker role / attack | Mods (in order) |
@@ -847,7 +849,7 @@ All card tests use both sides at tier V with the Balanced brain and every card a
 | Save-and-counter mirror; Save-and-counter vs turtle | Bell share reported |
 | Rules sanity: counter-picker vs each mono spam | ≥ 80% |
 | Rules sanity: triangle, mono vs mono (Heavy > Infantry, AA > Heavy, Infantry > AA) | Each ≥ 70% |
-| Anti-heavy duels (static, real sim, L7, equal gold; owner feedback 2026-09-29) | Anti-heavy vs Heavy M 65-85 in every age at 6 v 4 and 3 v 2; ≥ 60 swapped into an Infantry mix; 1 v 1 ≥ 40 in the melee ages; Heavy vs Infantry and Infantry vs Anti-heavy ≥ 65. Measured with the A2.6 numbers: 72-89, 68-83, 59-78, 49-52, 66-84, 73-84 (before: 41-80, 36-78, 46-74, 19-28, 66-84, 72-85) |
+| Anti-heavy duels (static, real sim, L7, equal gold; owner feedback 2026-09-29) | Anti-heavy vs Heavy M 65-85 in every age at 6 v 4 and 3 v 2; ≥ 60 swapped into an Infantry mix; 1 v 1 ≥ 40 in the melee ages; Heavy vs Infantry and Infantry vs Anti-heavy ≥ 65. Measured with the A2.6 numbers: 72-89, 68-83, 59-78, 49-52, 66-84, 73-84 (before: 41-80, 36-78, 46-74, 19-28, 66-84, 72-85). Re-measured with the Heavy trim (2026-10-07; every age's starter Anti-heavy against both Heavy Commons): 3 v 2 69-88, 6 v 4 62-91, 1 v 1 27-63; Heavy vs the starter Infantry 65-83 except Gunpowder (42 / 50, Corsairs; open) |
 | Anti-heavy per-age lane gate (review 2026-09-30) | In every one-age window `w1.<age>`: mono Heavy vs tier VII ≤ 35% and mono Anti-heavy vs mono Heavy ≥ 70% (40 matches per row and age in the smoke run). Measured: mono Heavy 0 / 0 / 0 / 2.5 / 5.0 / 0 / 6.3 / 0% (Stone to Cosmic; Industrial was 87.5%), mono Anti-heavy 100% in every age except Gunpowder 75% (Modern was 0%) |
 | Anti-heavy package guard | Mono Heavy vs tier VII ≤ 35% in Short and Standard (as built: **14.0 / 26.5%**, after the review fixes **0 / 0%**; 73.5 / 73.0% before); the Standard War mirror Bell not above today's (tier V 23.0%, tier VII 40.0%; as built **35.5 and 53.0%**, open; after the review fixes of 2026-09-30 **41.5 and 58.0%** (tier X 51.5%; ±7 points at 200 matches), still open: the fixed Industrial counter did not bring it down, and restoring the old Harpoon Gunner numbers alone gave 36.5% at tier V while mono Heavy won 72.5% in Industrial again; Short 47.0 → 45.0 and 57.0 → 50.0%; 200 matches each). Measured Standard levers on the built package (tier V / VII): Gunpowder and Industrial back to ×2.0 with Brace and no HP 31.0 / 52.0% (and mono Heavy 36.5%), the Harpoon Gunner alone at ×2.0 34.0 / 46.0%, Siege base damage ×3 33.0 / 49.0%, ×4 31.0 / 45.5%: none closes it, so the Gunpowder and Industrial lines stay and the Standard grind goes to the owner with the Supply Cache (A18.3.5) as the next step |
 | Rules sanity: skill gradient (Save-and-counter vs Balanced script; Balanced script vs cheapest spam) | Each ≥ 80% |
@@ -904,7 +906,7 @@ The targets that tighten after v1 are in A16.5. **Release rule for the Bell rows
 | Heavy | 150 | 4.0 s | 6 | 560 | 42 / 1.5 s | 28 | 16 | 55 | large |
 | Anti-heavy (melee reach; Anti-armor role) | 100 | 2.5 s | 4 | 220 (was 200) | 26 / 1.2 s, ×3.0 vs armored and mech | 21.7 (65 vs Heavy) | 60 | 70 | medium |
 | Anti-heavy (ranged) | 100 | 2.5 s | 4 | ~130 (was ~120) | per card, ×2.5-3.0 vs armored and mech | per card | 150-240 | 65 | medium |
-| **Long range** (Ranged class, Rare; owner feedback 2026-09-30, build phase H6) | 75 | 2.0 s | 3 | 85 | 34 splash r35 / 2.6 s, arc | 13.1 (+50% to up to 3 more) | the age's Ranged Common + 120 (320-390), min 90 | 60 | small |
+| **Long range** (Ranged class, Rare; owner feedback 2026-09-30, build phase H6; range raised 2026-10-07) | 75 | 2.0 s | 3 | 85 | 34 splash r35 / 2.5-3.4 s, arc | 10.0-13.6 (+50% to up to 3 more) | 400-440 (320-390 until 2026-10-07; about twice the age's Ranged Common), min 90 | 60 | small |
 | Support | 110 | 3.0 s | 4 | 130 | heal 30/s or aura | - | 150 | 65 | small |
 | Epic | 200 | 4.0 s | 8 | varies | varies | - | - | - | varies |
 | Legendary | 350 | 7.0 s | 14 | ~3× Heavy | ~1.5-2× Heavy DPS plus a trait | - | - | - | huge |
@@ -913,18 +915,18 @@ The targets that tighten after v1 are in A16.5. **Release rule for the Bell rows
 
 **Anti-heavy class traits** (A2.6): every card has Brace (immune to knockback and first-hit bonuses); its mods start with `legendary` at the old multiplier, so Legendary matchups do not change.
 
-**Long range** (owner feedback 2026-09-30: "krigere i skyde-klassen som kan skyde en del længere men f.eks. angriber langsommere, f.eks. longbow mænd der skyder i en parabel"; decided, not built; build phase H6). Ranged class with a "Long range" trait (the Ranged badge plus an arc glyph); role and group `ranged`, so pop, research lines and queue conversion treat it as Ranged (conversion prefers the new loadout's card with the same trait, else the group's first card; prices are flat within the group). One Rare per age from capsules. Ground only (arcs never hit air), `vsBaseDamage` 50%, priority front. The projectile is an **arc** at 300 lu/s (1.1-1.3 s in the air at range) with splash aimed at the target's position at fire time (A2.7), so a walking unit steps out of the 35 lu circle and a fighting one does not; the renderer draws the parabola and a **landing marker** at `projectileFired.toX` that closes over `travelTicks` (view only; no sim change). Range stays ≤ 390, at least 90 lu inside every Rare arc turret (480) and within 20-40 lu of the single-target Common turrets. Counters: air, Rare arc turrets, anything that reaches it (min range 90, 85×P HP: a breakthrough, a Field charge running 450-600 lu, a drop, a strike) and Ranged units that walk inside 90 lu; divers only if their leap search reaches the back line (option: Sabertooth pounce search 150 → 350, Warp Stalker 200 → 400, each gated by its per-card ±3 row). Measured on a prototype (A2.14 per-card rows, 200 matches, replacing the age's Ranged Common): Yeoman Archer −1.8 [−8.0, 4.5], Atlatl Thrower −8.5 [−15.2, −1.8]; the gate is the ±3 row, levers in order interval, splash radius, damage; new proxies `mono_longrange` (≤ 35%) and `longrange_turtle` (the turtle band).
+**Long range** (owner feedback 2026-09-30: "krigere i skyde-klassen som kan skyde en del længere men f.eks. angriber langsommere, f.eks. longbow mænd der skyder i en parabel"; decided, not built; build phase H6). Ranged class with a "Long range" trait (the Ranged badge plus an arc glyph); role and group `ranged`, so pop, research lines and queue conversion treat it as Ranged (conversion prefers the new loadout's card with the same trait, else the group's first card; prices are flat within the group). One Rare per age from capsules. Ground only (arcs never hit air), `vsBaseDamage` 50%, priority front. The projectile is an **arc** at 300 lu/s (1.1-1.3 s in the air at range) with splash aimed at the target's position at fire time (A2.7), so a walking unit steps out of the 35 lu circle and a fighting one does not; the renderer draws the parabola and a **landing marker** at `projectileFired.toX` that closes over `travelTicks` (view only; no sim change). Range stays ≤ 440, so even with Long Draw (+30, A18.5.2) a Long range unit that shells a base stands inside the Rare arc turrets' cover (480; edge distances, A2.8). **Longer range (owner decision 2026-10-07: "extra-long-range units are too weak"; the battle should form layers, tanks in front, infantry in the middle, long range at the back, instead of one clump):** range +50 to +80 in every age (Stone 320 → 400, Bronze 330 → 410, Medieval 350 → 430, Gunpowder to Future 360-380 → 440, Cosmic 390 → 440), about twice the Ranged Commons' 200-270, with the trait otherwise unchanged (slow arcs at 300 lu/s, now 1.3-1.5 s in the air at full range, ground only, half damage to bases, min range 90). The per-card rows (one-age windows, n = 400) rose by up to 13 points with range alone, so most fire more slowly to stay within ±5: Cretan Archer 2.4 → 2.5 s, Coehorn Crew 2.6 → 3.0 s, Trench Mortar 2.6 → 3.4 s, Mortar Team 2.6 → 3.0 s, Arc Lobber 2.6 → 2.9 s, Star Mortar 2.6 → 2.8 s; Atlatl Thrower and Yeoman Archer keep 2.6 s. Damage, HP, splash and base damage are unchanged. Bots need no change: a ranged unit stops at its range and melee walks past parked ranged units (A2.7), so the Long range units settle behind their front; the probe numbers are in `docs/decisions.md`. Counters: air, Rare arc turrets, anything that reaches it (min range 90, 85×P HP: a breakthrough, a Field charge running 450-600 lu, a drop, a strike) and Ranged units that walk inside 90 lu; divers only if their leap search reaches the back line (option: Sabertooth pounce search 150 → 350, Warp Stalker 200 → 400, each gated by its per-card ±3 row). Measured on a prototype (A2.14 per-card rows, 200 matches, replacing the age's Ranged Common): Yeoman Archer −1.8 [−8.0, 4.5], Atlatl Thrower −8.5 [−15.2, −1.8]; the gate is the ±3 row, levers in order interval, splash radius, damage; new proxies `mono_longrange` (≤ 35%) and `longrange_turtle` (the turtle band).
 
-| Age | Card (id) | HP | Damage (splash r35 / 2.6 s) | Range (min 90) | Look |
+| Age | Card (id) | HP | Damage (splash r35) / interval | Range (min 90; before 2026-10-07) | Look |
 |---|---|---|---|---|---|
-| Stone | Atlatl Thrower (`atlatl_thrower`) | 85 | 34 | 320 | a spear-thrower hurling long darts high |
-| Bronze | Cretan Archer (`cretan_archer`) | 99 | 39 | 330 | a tall recurve bow aimed skyward |
-| Medieval | Yeoman Archer (`yeoman_archer`) | 115 | 46 | 350 | the owner's longbowmen: a great longbow, volleys in a high arc |
-| Gunpowder | Coehorn Crew (`coehorn_crew`) | 155 | 62 | 360 | a two-man hand mortar |
-| Industrial | Trench Mortar (`trench_mortar`) | 180 | 72 | 370 | a stovepipe mortar and a loader |
-| Modern | Mortar Team (`mortar_team`) | 209 | 84 | 380 | a light mortar on a bipod |
-| Future | Arc Lobber (`arc_lobber`) | 282 | 113 | 380 | a plasma lobber with a glowing shell |
-| Cosmic | Star Mortar (`star_mortar`) | 381 | 152 | 390 | a gravity mortar that lobs a small star |
+| Stone | Atlatl Thrower (`atlatl_thrower`) | 92 | 39 / 2.6 s | 400 (320) | a spear-thrower hurling long darts high |
+| Bronze | Cretan Archer (`cretan_archer`) | 99 | 38 / 2.5 s (2.4 s) | 410 (330) | a tall recurve bow aimed skyward |
+| Medieval | Yeoman Archer (`yeoman_archer`) | 124 | 62 / 2.6 s | 430 (350) | the owner's longbowmen: a great longbow, volleys in a high arc |
+| Gunpowder | Coehorn Crew (`coehorn_crew`) | 210 | 80 / 3.0 s (2.6 s) | 440 (360) | a two-man hand mortar |
+| Industrial | Trench Mortar (`trench_mortar`) | 266 | 118 / 3.4 s (2.6 s) | 440 (370) | a stovepipe mortar and a loader |
+| Modern | Mortar Team (`mortar_team`) | 266 | 124 / 3.0 s (2.6 s) | 440 (380) | a light mortar on a bipod |
+| Future | Arc Lobber (`arc_lobber`) | 360 | 172 / 2.9 s (2.6 s) | 440 (380) | a plasma lobber with a glowing shell |
+| Cosmic | Star Mortar (`star_mortar`) | 470 | 190 / 2.8 s (2.6 s) | 440 (390) | a gravity mortar that lobs a small star |
 
 **Default projectile speeds (lu/s):** rock 500, arrow 650, musket 1,500, bullet 1,500, shell 1,200, rocket 900, arc/lob 450, plasma bolt 1,800. Lasers and rails are instant.
 
@@ -955,7 +957,7 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | footman | Footman | C | Infantry | 50 | 216 | 27 / 1.0 s | 16 | 70 | S | G | light bio melee | Blunt. Shield Wall: takes 25% less damage from attacks with range ≥ 100 (not powers) |
 | longbowman | Longbowman | C | Ranged | 75 | 128 | 24 / 1.4 s | 230 | 65 | S | G+A | light bio ranged | Arrow |
-| destrier_knight | Destrier Knight | C | Heavy | 150 | 756 | 57 / 1.5 s | 16 | 60 | L | G | armored bio melee | Lance charge: first hit ×2 and 30 lu knockback |
+| destrier_knight | Destrier Knight | C | Heavy | 150 | 756 | 54 / 1.5 s (57 until 2026-10-07) | 16 | 60 | L | G | armored bio melee | Lance charge: first hit ×2 and 30 lu knockback |
 | pikeman | Pikeman | R | Anti-heavy | 100 | 297 (was 270) | 35 / 1.2 s | 70 | 70 | M | G | light bio melee | Reach; melee Anti-heavy mods (armored ×3.0); priority armored; Brace (immune to knockback and to first-hit bonuses); starter kit |
 | friar | Friar | R | Support | 110 | 175 | 11 / 1.2 s | 150 | 65 | S | G+A | light bio support ranged | Heals 40 HP/s split between the 2 lowest-HP% allies within 160 lu; followSupport |
 | battering_ram | Battering Ram | E | Siege | 200 | 900 | 160 vs base / 2.0 s (10 vs units) | 12 | 45 | L | G | armored mech melee | siegeOnly: targets the base; attacks units only while blocked |
@@ -974,7 +976,7 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | corsair | Corsair | C | Infantry | 50 | 291 | 36 / 1.0 s | 16 | 72 | S | G | light bio melee | Blunt. Boarding Hook: first hit of each engagement pulls the target 20 lu toward the Corsair |
 | fusilier | Fusilier | C | Ranged | 75 | 173 | 47 / 2.0 s | 240 | 65 | S | G+A | light bio ranged | Musket |
-| cuirassier | Cuirassier | C | Heavy | 150 | 1,019 | 76 / 1.5 s | 16 | 60 | L | G | armored bio melee | Charge: first hit ×2 and 30 lu knockback |
+| cuirassier | Cuirassier | C | Heavy | 150 | 1,019 | 74 / 1.5 s (76 until 2026-10-07) | 16 | 60 | L | G | armored bio melee | Charge: first hit ×2 and 30 lu knockback |
 | grenadier | Grenadier | R | Anti-heavy | 100 | 253 (was 230) | 55 splash r35 / 1.8 s (was 50) | 150 | 68 | M | G | light bio ranged | Lob over allies; legendary ×1.5, armored ×2.5, mech ×2.5 (were ×1.5), light ×0.5; priority armored; Brace (new); starter kit |
 | field_surgeon | Field Surgeon | R | Support | 110 | 237 | 15 / 1.2 s | 150 | 65 | S | G+A | light bio support ranged | Heals 55 HP/s split between the 2 lowest-HP% allies within 160 lu; followSupport |
 | bronze_cannon | Bronze Cannon | E | Artillery | 200 | 500 | 110 splash r50 / 3.5 s | 280 (min 80) | 45 | L | G | light mech ranged | Arc |
@@ -995,8 +997,8 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 | powder_monkey | Powder Monkey | C | Infantry | 50 | 262 | 34 / 1.0 s | 16 | 100 | S | G | Raider (base 68); bursts on death for 40 splash r35 |
 | voltigeurs | Voltigeurs | C | Ranged | 75 | 3 × 69 | 19 / 2.0 s | 210 | 65 | S | G+A | Squad of 3 (M1) |
 | blunderbuss | Blunderbuss | C | Ranged | 75 | 164 | 57 / 2.6 s | 120 | 65 | S | G+A | Cone: the target and up to 2 enemies within 60 lu behind it (instant `fx.blunderbuss_spray`) |
-| dragoon | Dragoon | C | Heavy | 150 | 820 | 52 splash r30 / 1.5 s | 90 | 55 | L | G | Mounted carbine; armored |
-| coehorn_crew | Coehorn Crew | R | Ranged (Long range, H6) | 75 | 210 | 80 splash r35 / 2.6 s | 360 (min 90) | 60 | S | G | Arc 300 lu/s (`proj.mortar_shell`); half damage to bases |
+| dragoon | Dragoon | C | Heavy | 150 | 820 | 49 splash r30 / 1.5 s (52 until 2026-10-07) | 90 | 55 | L | G | Mounted carbine; armored |
+| coehorn_crew | Coehorn Crew | R | Ranged (Long range, H6) | 75 | 210 | 80 splash r35 / 3.0 s (2.6 until 2026-10-07) | 440 (min 90; 360 until 2026-10-07) | 60 | S | G | Arc 300 lu/s (`proj.mortar_shell`); half damage to bases |
 | wall_gunner | Wall Gunner | R | Anti-heavy | 100 | 210 | 40 / 2.0 s | 220 | 65 | M | G | Ranged Anti-heavy mods; priority armored; Brace |
 | drummer_boy | Drummer Boy | R | Support | 110 | 340 | 32 / 1.2 s | 150 | 65 | S | G+A | Aura: allies within 160 lu attack 25% faster; followSupport |
 | bagpiper | Bagpiper | R | Support | 110 | 420 | 40 / 1.2 s | 150 | 60 | S | G+A | Dread aura (M4): enemies within 140 lu move 35% slower |
@@ -1020,8 +1022,8 @@ Powers (A5.7): Rocket Volley (Field lane volley, War Path L3 / Road 3,300; 80 on
 | iron_mantlet | Iron Mantlet | C | Infantry | 50 | 420 | 28 / 1.0 s | 16 | 67 | S | G | Guard (the wheeled shield takes 25% less from attacks with range ≥ 100); Blunt |
 | dispatch_rider | Dispatch Rider | C | Infantry | 50 | 325 | 42 / 1.0 s | 16 | 110 | M | G | Raider on a motorbike (base 84); the fastest Common |
 | bomb_bowler | Bomb Bowler | C | Ranged | 75 | 191 | 24 splash r30 / 1.5 s | 220 | 65 | S | G | Arc 450 lu/s (`proj.bowl_bomb`) |
-| steam_tractor | Steam Tractor | C | Heavy | 150 | 1,200 | 66 / 1.5 s, cleave 2 (reach 30) | 20 | 50 | L | G | Armored mech; plough blade |
-| trench_mortar | Trench Mortar | R | Ranged (Long range, H6) | 75 | 266 | 118 splash r35 / 2.6 s | 370 (min 90) | 60 | S | G | Arc 300 lu/s (`proj.mortar_shell`); half damage to bases |
+| steam_tractor | Steam Tractor | C | Heavy | 150 | 1,200 | 65 / 1.5 s (66 until 2026-10-07), cleave 2 (reach 30) | 20 | 50 | L | G | Armored mech; plough blade |
+| trench_mortar | Trench Mortar | R | Ranged (Long range, H6) | 75 | 266 | 118 splash r35 / 3.4 s (2.6 until 2026-10-07) | 440 (min 90; 370 until 2026-10-07) | 60 | S | G | Arc 300 lu/s (`proj.mortar_shell`); half damage to bases |
 | steam_driller | Steam Driller | R | Anti-heavy | 100 | 490 | 50 / 1.2 s | 40 | 70 | M | G | Melee Anti-heavy mods; priority armored; Brace |
 | bandmaster | Bandmaster | R | Support | 110 | 390 | 36 / 1.2 s | 150 | 65 | S | G+A | Aura: allies within 160 lu deal 20% more; followSupport |
 | clockwork_tinker | Clockwork Tinker | R | Support | 110 | 275 | 17 / 1.2 s | 40 | 65 | S | G | Summoner (M3): a Clockwork Soldier (168 HP, 16 / 1.0 s) every 8 s, at most 3; followSupport |
@@ -1043,7 +1045,7 @@ Powers (A5.7): Shrapnel Shells (Field lane volley, War Path L3 / Road 3,500; 99 
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | trench_raider | Trench Raider | C | Infantry | 50 | 394 | 49 / 1.0 s | 16 | 75 | S | G | light bio melee | Blunt |
 | rifleman | Rifleman | C | Ranged | 75 | 234 | 32 / 1.0 s | 260 | 65 | S | G+A | light bio ranged | Bullet. Suppressing Fire: hits slow the target's move speed 15% for 1.0 s |
-| tankette | Tankette | C | Heavy | 150 | 1,378 | 104 / 1.5 s | 90 | 50 | L | G | armored mech ranged | Shell |
+| tankette | Tankette | C | Heavy | 150 | 1,378 | 99 / 1.5 s (104 until 2026-10-07) | 90 | 50 | L | G | armored mech ranged | Shell |
 | bazooka_trooper | Bazooka Trooper | R | Anti-heavy | 100 | 363 (was 300, then 330) | 64 / 1.2 s | 200 | 65 | M | G+A | light bio ranged | Rocket; ranged Anti-heavy mods, armored ×3.0; priority armored; Brace (new); starter kit |
 | radio_operator | Radio Operator | R | Support | 110 | 320 | 20 / 1.2 s (G+A) | 200 | 65 | S | G+A | light bio support ranged | Every 8 s calls a shell on the nearest enemy ground unit within 400 lu: lands after 1.0 s, 120 splash r50 (area rule). One call-in per side per 3 s. followSupport |
 | gyrocopter | Gyrocopter | E | Air gunship | 200 | 740 | 20 / 0.3 s | 150 | 80 | M | G+A | air mech | Obeys stance |
@@ -1064,8 +1066,8 @@ Powers (A5.7): Shrapnel Shells (Field lane volley, War Path L3 / Road 3,500; 99 
 | sandbag_carrier | Sandbag Carrier | C | Infantry | 50 | 455 | 33 / 1.0 s | 16 | 70 | S | G | Guard (the shoulder sandbag takes 20% less from attacks with range ≥ 100); Blunt |
 | smg_squad | SMG Squad | C | Ranged | 75 | 3 × 74 | 11 / 1.0 s | 170 | 65 | S | G+A | Trio (M1 squad of 3) |
 | rifle_grenadier | Rifle Grenadier | C | Ranged | 75 | 210 | 42 splash r30 / 1.5 s | 230 | 65 | S | G | Arc (`proj.rifle_grenade`) |
-| assault_gun | Assault Gun | C | Heavy | 150 | 1,350 | 88 splash r30 / 1.5 s | 90 | 45 | L | G | Armored mech; a turretless casemate gun |
-| mortar_team | Mortar Team | R | Ranged (Long range, H6) | 75 | 266 | 124 splash r35 / 2.6 s | 380 (min 90) | 60 | S | G | Arc 300 lu/s (`proj.mortar_shell`); half damage to bases |
+| assault_gun | Assault Gun | C | Heavy | 150 | 1,350 | 84 splash r30 / 1.5 s (88 until 2026-10-07) | 90 | 45 | L | G | Armored mech; a turretless casemate gun |
+| mortar_team | Mortar Team | R | Ranged (Long range, H6) | 75 | 266 | 124 splash r35 / 3.0 s (2.6 until 2026-10-07) | 440 (min 90; 380 until 2026-10-07) | 60 | S | G | Arc 300 lu/s (`proj.mortar_shell`); half damage to bases |
 | sticky_bomber | Sticky Bomber | R | Anti-heavy | 100 | 580 | 124 / 2.0 s | 16 | 70 | M | G | Melee Anti-heavy mods; priority armored; Brace |
 | combat_medic | Combat Medic | R | Support | 110 | 330 | 22 / 1.2 s | 150 | 65 | S | G+A | Heals 65 HP/s split between the 2 lowest-HP% allies within 160 lu; followSupport; a plain cream disc, never a red cross |
 | bulldog_sergeant | Bulldog Sergeant | R | Infantry | 50 | 415 | 42 / 1.0 s | 16 | 75 | S | G | Frenzy (M2): below 50% HP +30% damage and +20% attack speed |
@@ -1110,8 +1112,8 @@ Powers (A5.7): Creeping Barrage (Field lane volley, War Path L3 / Road 3,700; 11
 | barrier_trooper | Barrier Trooper | C | Infantry | 50 | 650 | 47 / 1.0 s | 16 | 70 | S | G | Guard (the hardlight shield takes 25% less from attacks with range ≥ 100) |
 | hover_bike | Hover Biker | C | Infantry | 50 | 545 | 66 / 1.0 s (base 100) | 16 | 110 | M | G | Raider; the fastest Future Common |
 | needle_gunner | Needle Gunner | C | Ranged | 75 | 250 | 13 / 0.5 s | 220 | 75 | S | G+A | Fast light needles (`proj.needle`) |
-| crab_mech | Crab Mech | C | Heavy | 150 | 2,000 | 112 / 1.5 s, cleave 2 | 20 | 45 | L | G | Armored mech; both pincers snap on 2 targets within 30 lu |
-| arc_lobber | Arc Lobber | R | Ranged (Long range, H6) | 75 | 360 | 172 splash r35 / 2.6 s | 380 (min 90) | 60 | S | G | Arc 300 lu/s (`proj.arc_shell`); half damage to bases |
+| crab_mech | Crab Mech | C | Heavy | 150 | 2,000 | 109 / 1.5 s (112 until 2026-10-07), cleave 2 | 20 | 45 | L | G | Armored mech; both pincers snap on 2 targets within 30 lu |
+| arc_lobber | Arc Lobber | R | Ranged (Long range, H6) | 75 | 360 | 172 splash r35 / 2.9 s (2.6 until 2026-10-07) | 440 (min 90; 380 until 2026-10-07) | 60 | S | G | Arc 300 lu/s (`proj.arc_shell`); half damage to bases |
 | plasma_lancer | Plasma Lancer | R | Anti-heavy | 100 | 800 | 100 / 1.2 s | 60 | 70 | M | G | Melee Anti-heavy mods; priority armored; Brace |
 | overclock_engineer | Overclock Engineer | R | Support | 110 | 610 | 56 / 1.2 s (`fx.zap_beam`) | 150 | 65 | S | G+A | Aura: allies within 160 lu attack 20% faster; followSupport |
 | holo_projector | Holo Projector | R | Support | 110 | 430 | 40 / 1.2 s | 150 | 65 | S | G+A | Summoner (M3): a Holo Decoy (320 HP, 1 damage, light mech) after 2 s, then every 6 s, up to 3 |
@@ -1135,8 +1137,8 @@ Powers (A5.7): Target Painter (Field lane signal, War Path L3 / Road 3,900; 56 o
 | void_skimmer | Void Skimmer | C | Infantry | 50 | 670 | 94 / 1.0 s (base 90) | 16 | 110 | S | G | Raider; the fastest Cosmic Common |
 | moonlings | Moonlings | C | Ranged | 75 | 3 × 172 | 21 / 1.0 s (`proj.moon_pellet`) | 230 | 65 | S | G+A | Trio (M1 squad of 3) |
 | nova_thrower | Nova Thrower | C | Ranged | 75 | 440 | 62 splash r30 / 1.15 s | 240 | 65 | S | G | Lobbed nova orb (`proj.nova_orb`, arc 450 lu/s) |
-| asteroid_golem | Asteroid Golem | C | Heavy | 150 | 2,950 | 150 / 1.5 s, cleave 2 | 20 | 50 | L | G | Armored mech rock construct; the uppercut hits 2 targets within 30 lu |
-| star_mortar | Star Mortar | R | Ranged (Long range, H6) | 75 | 470 | 190 splash r35 / 2.6 s | 390 (min 90) | 60 | S | G | Arc 300 lu/s (`proj.mini_star`); half damage to bases |
+| asteroid_golem | Asteroid Golem | C | Heavy | 150 | 2,950 | 146 / 1.5 s (150 until 2026-10-07), cleave 2 | 20 | 50 | L | G | Armored mech rock construct; the uppercut hits 2 targets within 30 lu |
+| star_mortar | Star Mortar | R | Ranged (Long range, H6) | 75 | 470 | 190 splash r35 / 2.8 s (2.6 until 2026-10-07) | 440 (min 90; 390 until 2026-10-07) | 60 | S | G | Arc 300 lu/s (`proj.mini_star`); half damage to bases |
 | antimatter_rifler | Antimatter Rifler | R | Anti-heavy | 100 | 700 | 140 / 1.6 s | 220 | 65 | M | G | Ranged Anti-heavy mods; priority armored; Brace |
 | bio_weaver | Bio-Weaver | R | Support | 110 | 580 | 36 / 1.2 s (`fx.tendril_lash`) | 150 | 65 | S | G+A | Heal 135 HP/s split between the 2 most hurt allies within 160 lu; followSupport |
 | void_whisperer | Void Whisperer | R | Support | 110 | 760 | 48 / 1.2 s (`fx.void_ripple`) | 150 | 60 | S | G+A | Dread aura (M4): enemy ground units within 130 lu move 20% slower; followSupport |
@@ -1381,7 +1383,7 @@ Counts: 4 Rare, 4 Epic, 4 Legendary. The Wardrobe Crate pool holds the first 11.
 | Gold | In battle only, resets each match | Income, bounties |
 | Amber | Card upgrades | Capsules, matches, quests, Trophy Road, Codex Level, Conquest |
 | Copies (per card) | Upgrading that card | Capsules |
-| Dust | Crafting card copies and skins (and foils after L10, A15.11 stretch) | Jade, Gold, Platinum and Aeon capsules, Trophy Road, quests, Conquest, feats (A15.10), copies past L10, duplicate skins, Amber after max (A15.11 stretch) |
+| Dust | Crafting card copies and skins (and foils after L10, A15.11 stretch) | Jade, Gold, Platinum and Aeon capsules, Trophy Road, quests, Conquest, feats (A15.10), spare copies (beyond what L10 needs, A6.6), duplicate skins, Amber after max (A15.11 stretch) |
 | Trophies | Ladder rank | Ladder wins |
 | Codex points | Codex Level | Upgrades |
 
@@ -1503,7 +1505,7 @@ Copies and Amber are the A17 values (built): with 88 cards instead of 55, capsul
    - **Legendary catch-up:** a Legendary pick uses it whenever every Legendary in the pool is owned, waiting in an unopened capsule, or already picked in this capsule (so it can apply to the 2nd and 3rd stacks of the capsule whose 1st stack took the last unowned one). Each candidate then weighs 1 + the copies that card still needs to reach L10 after its unopened capsules (a maxed card weighs 1). The rarity odds never change, only which Legendary. The odds panel says: "Once you own every Legendary here, Legendary stacks favour the ones you are furthest from maxing."
    - A stack set by new-card protection picks only unowned cards.
 5. Each stack rolls a foil on a 10,000-bp scale: Holo 25 bp (0.25%), Silver foil 100 bp (1%), Bronze foil 400 bp (4%), else none. A foil unlocks for that card if it beats the one owned. No tier sets a foil floor.
-6. Owned cards at max level convert their copies to Dust at reveal time (shown on the card).
+6. Copies a card can never use convert to Dust at reveal time (shown on the card and in the summary as "Spare copies: +N Dust"): every copy of a card at max level and, since 2026-10-07 (owner decision, A6.6 surplus rule), every copy beyond what the card still needs to reach max level, counting the copies it already holds. The stack keeps its rolled copy count; the copies bar shows the copies kept.
 7. Skin: with the tier's skin chance, one crate skin at Wardrobe odds from `skinMinRarity` up, renormalised (Gold and Platinum: Rare 78%, Epic 18%, Legendary 4%; Aeon: the Wardrobe weights 1,800 : 400, so Epic 81.82% and Legendary 18.18%, exactly 9 : 2); no duplicate until every crate skin of that rarity is owned. Capsule skins never read or advance the Wardrobe pity counters. The odds panel prints each tier's split next to its skin line, from the same weights.
 8. Aeon Collection item (on the `rng.cosmetic` stream, so the cards never change): while the player lacks an Aeon Collection item that no unopened capsule holds, the Aeon's collection item is one of those (uniform). Once all 4 are owned, it rolls the normal capsule collection pool and adds 500 Dust.
 
@@ -1554,11 +1556,13 @@ All rarities share one level scale: every card starts at L1, and each level adds
 
 **The years-long Amber curve (owner decision 2026-10-07, translated from Danish: "you should not just be able to afford upgrading everything all the time; you must save up … the game can be played for years, like Clash of Clans or Clash Royale, so there are always new goals to fight for").** L2-L6 keep their Amber (20 / 50 / 100 / 200 / 350), so the first session, the forced first upgrade and the first week are unchanged; L7-L10 cost 800 / 1,700 / 4,800 / 12,000 (were 550 / 800 / 1,200 / 1,700; a card from L1 to L10 costs 20,020 Amber instead of 4,970). Copies, income and every capsule table are unchanged, so the time to collect a card's copies stays on the A6.9 targets; Amber is now what paces the endgame. For the A6.9 player (about 3,500 Amber a day) an upgrade to L10 is about 4 days of income and no upgrade costs more than about 6 days (about 11 days for a casual 3-match player), so every level stays within reach while a player who levels only its War Plan has to save up on most days from day 10 and maxes its whole War Plan (48 troop slots plus the turret slots, up to 64 cards) in about 13.5 months; the whole collection takes about 3.7 years (A6.9). The level cap stays 10.
 
+**Spare copies turn into Dust when the capsule opens (owner decision 2026-10-07).** With the years-long Amber curve cards reach L10 much later, and copies past L10 only turned into Dust when a card reached L10, so Dust fell from about 470 to 176 a day in days 11-120 (1.40 million to 53,000 in the first year). Now every copy a card can never use (more than it still needs to reach L10, counting the copies it already holds) turns into Dust at reveal time, shown on the card and in the capsule summary as "Spare copies: +N Dust"; the copies bar shows the copies kept, and the odds panel states the rule. A card that already holds every copy it needs cannot be crafted (reason `copiesFull`), since the copy would only turn back into Dust. At the old rates this paid 2,143 Dust a day in days 11-120 (1.39 million in the first year), which would make every skin and collection item (about 85,000 Dust together) a matter of weeks, so the per-copy rates drop to 1 / 3 / 15 / 60 and Dust lands back at about 470 a day (A6.9). Crafting and skin prices are unchanged, so a Legendary crate skin is still about a week of Dust and crafting a copy costs 27-40 spare copies' worth: crafting stays the fallback for a card you still need, never a loop.
+
 **Dust rates:**
 
 | | Common | Rare | Epic | Legendary |
 |---|---|---|---|---|
-| Card copy past L10 → Dust | 5 | 20 | 100 | 400 |
+| Spare card copy → Dust (beyond what L10 needs, at reveal; until 2026-10-07: past L10 only, 5 / 20 / 100 / 400) | 1 | 3 | 15 | 60 |
 | Craft one card copy (also unlocks an unowned card) | 40 | 100 | 400 | 1,600 |
 | Duplicate skin → Dust | - | 50 | 200 | 800 |
 | Craft a crate skin | - | 200 | 800 | 3,000 |
@@ -1643,7 +1647,7 @@ Rebased 2026-09-29 on the measured values (88 cards, A17; the capsule ladder, A6
 | Casual player (3 a day): copies to max (median card) | reported | 198.25 / 164.25 / 109.25 / 184.5 | 198 / 167 / 109.5 / 186.5 |
 | Casual player: whole collection / War-Plan-only plan maxed / dearest upgrade | reported | 524 days / 391 days / 1.5 days of income | 2,273 days projected (6.2 years; 2,281 measured) / 687 days (1.9 years) / 10.7 days |
 | Collector: median card at L10, copies and Amber paid | reported | 233.25 / 258.25 / 270 / 262.5 days | 799 / 988 / 1,069 / 1,010 days (1,600-day run, 4 seeds) |
-| Dust a day, days 11-120 / in the first year | reported | 470 / 1.40 million | 176 / 53,000 |
+| Dust a day, days 11-120 / in the first year | reported until 2026-10-07; then **~470 a day ± 20%** (gated) | 470 / 1.40 million | 176 / 53,000; with spare copies at reveal (2026-10-07): 2,143 / 1.39 million at the old rates, **476 / 262,000** at 1 / 3 / 15 / 60 (every other row unchanged) |
 
 **The first Amber re-tune table (2026-10-07, kept for reference):**
 
@@ -2797,7 +2801,7 @@ It closes the gap analysis's most important structural gap: after months 5-6 eve
   | Silver | 2,000 | 4,000 | 12,000 | 32,000 | 390,000 |
   | Holo | 5,000 | 10,000 | 30,000 | 80,000 | 975,000 |
 
-- **Amber after max.** Once no upgrade is left to buy, Amber from every source is paid as Dust at 10 Amber = 1 Dust, shown as Dust on the reward (as copies past L10 are, A6.6). The Amber info panel explains it.
+- **Amber after max.** Once no upgrade is left to buy, Amber from every source is paid as Dust at 10 Amber = 1 Dust, shown as Dust on the reward (as spare copies are, A6.6). The Amber info panel explains it.
 - **Pacing** at about 1,370 Dust a day after max (about 1,200 Dust plus 170 from Amber, gap analysis model): the Bronze set about 2.5 months, Silver about 7 months later, Holo about 14 months after that. Foils from capsules shorten this.
 - Capsule foil odds (A6.4 step 5) are unchanged. There is no Holo compass.
 
@@ -5035,7 +5039,7 @@ Theme: antiquity (hoplites, chariots, bolt-throwers, myths in bronze). Values ar
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | hoplite | Hoplite | C | Infantry | 50 | 186 | 23 / 1.0 s | 16 | 70 | S | G | light bio melee | Blunt. Shield Bash: the first hit of each engagement knocks the target back 15 lu (no damage bonus) |
 | javelineer | Javelineer | C | Ranged | 75 | 110 | 20 / 1.4 s | 210 | 65 | S | G+A | light bio ranged | Javelin; pierces 2 targets total within 50 lu |
-| war_chariot | War Chariot | C | Heavy | 150 | 630 | 49 / 1.5 s | 16 | 65 | L | G | armored bio melee | Scythe Charge: first hit ×2 and 30 lu knockback. The fastest Common Heavy, with 3% less HP |
+| war_chariot | War Chariot | C | Heavy | 150 | 630 | 48 / 1.5 s (49 until 2026-10-07) | 16 | 65 | L | G | armored bio melee | Scythe Charge: first hit ×2 and 30 lu knockback. The fastest Common Heavy, with 3% less HP |
 | phalangite | Phalangite | R | Anti-heavy | 100 | 255 (was 232) | 30 / 1.2 s | 65 | 70 | M | G | light bio melee | Reach; melee Anti-heavy mods (armored ×3.0); priority armored; Brace (new); starter kit |
 | standard_bearer | Standard Bearer | R | Support | 110 | 151 | 9 / 1.2 s | 150 | 65 | S | G+A | light bio support ranged | Aura: allies within 160 lu deal +15% damage; followSupport |
 | scorpion | Scorpion | E | Artillery | 200 | 330 | 64 / 3.0 s | 290 (min 60) | 45 | L | G | light mech ranged | Bolt pierces 3 targets total within 150 lu |
@@ -5056,8 +5060,8 @@ Theme: antiquity (hoplites, chariots, bolt-throwers, myths in bronze). Values ar
 | thracian_raider | Thracian Raider | C | Infantry | 50 | 190 | 22 / 1.0 s | 16 | 90 | S | G | Raider (base 41) |
 | rhodian_slingers | Rhodian Slingers | C | Ranged | 75 | 3 × 36 | 6 / 1.6 s | 180 | 65 | S | G+A | Squad of 3 (M1) |
 | discus_thrower | Discus Thrower | C | Ranged | 75 | 90 | 12 / 1.6 s | 200 | 65 | S | G+A | Chain: the discus skips to 1 more enemy within 50 lu (`proj.discus`) |
-| war_elephant | War Elephant | C | Heavy | 150 | 690 | 40 / 1.8 s | 20 | 60 | L | G | Cleave 2 (reach 30); armored; no charge bonus |
-| cretan_archer | Cretan Archer | R | Ranged (Long range, H6) | 75 | 99 | 38 splash r35 / 2.4 s | 330 (min 90) | 60 | S | G | Arc 300 lu/s (`proj.arrow_arc`); half damage to bases |
+| war_elephant | War Elephant | C | Heavy | 150 | 690 | 38 / 1.8 s (40 until 2026-10-07) | 20 | 60 | L | G | Cleave 2 (reach 30); armored; no charge bonus |
+| cretan_archer | Cretan Archer | R | Ranged (Long range, H6) | 75 | 99 | 38 splash r35 / 2.5 s (2.4 until 2026-10-07) | 410 (min 90; 330 until 2026-10-07) | 60 | S | G | Arc 300 lu/s (`proj.arrow_arc`); half damage to bases |
 | belly_bowman | Belly Bowman | R | Anti-heavy | 100 | 220 | 40 / 1.2 s | 200 | 65 | M | G | Ranged Anti-heavy mods; priority armored; Brace |
 | aulos_piper | Aulos Piper | R | Support | 110 | 151 | 9 / 1.2 s | 150 | 65 | S | G+A | Aura: allies within 160 lu move 15% faster (instant `fx.note_pop`); followSupport |
 | tragic_chorus | Tragic Chorus | R | Support | 110 | 166 | 9 / 1.2 s | 150 | 60 | S | G+A | Dread aura (M4): enemy ground units within 130 lu move 20% slower (instant `fx.wail_ring`); followSupport |
@@ -5083,7 +5087,7 @@ Theme: steam, rivets, rail and the first electric light, roughly 1850-1915. No g
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | riveter | Riveter | C | Infantry | 50 | 330 | 42 / 1.0 s | 16 | 72 | S | G | light bio melee | Blunt. Big Wrench: the first hit of each engagement deals ×1.5 |
 | carbineer | Carbineer | C | Ranged | 75 | 201 | 33 / 1.2 s | 250 | 65 | S | G+A | light bio ranged | Bullet |
-| steam_golem | Steam Golem | C | Heavy | 150 | 1,187 | 89 / 1.5 s | 16 | 55 | L | G | armored mech melee | Piston Punch: first hit ×2 and 30 lu knockback |
+| steam_golem | Steam Golem | C | Heavy | 150 | 1,187 | 85 / 1.5 s (89 until 2026-10-07) | 16 | 55 | L | G | armored mech melee | Piston Punch: first hit ×2 and 30 lu knockback |
 | harpoon_gunner | Harpoon Gunner | R | Anti-heavy | 100 | 286 (was 260) | 55 / 1.2 s | 210 | 65 | M | G+A | light bio ranged | Harpoon; ranged Anti-heavy mods, armored ×3.0 (was 2.0, then 2.5 until the review of 2026-09-30); priority armored; Brace (new); starter kit. Reel In: the first hit of each engagement pulls the target 25 lu toward the gunner |
 | flare_spotter | Flare Spotter | R | Support | 110 | 276 | 17 / 1.2 s | 200 | 65 | S | G+A | light bio support ranged | Priority armored. Every hit marks the target (+20% damage taken from all sources) for 3 s; followSupport |
 | sapper | Sapper | E | Siege | 200 | 560 | 240 vs base / 2.0 s (12 vs units) | 12 | 85 | M | G | light bio melee | siegeOnly. Short Fuse: on death the charge goes off for 180 splash r60 on ground enemies (never the base) |
@@ -5104,7 +5108,7 @@ Theme: space opera beyond the Future (star legions, warp, motherships). Raw file
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | star_legionnaire | Star Legionnaire | C | Infantry | 50 | 700 | 90 / 1.0 s | 16 | 75 | S | G | light bio melee | Blunt. Deflector: takes 20% less damage from attacks with range ≥ 100 (not powers) |
 | ion_ranger | Ion Ranger | C | Ranged | 75 | 426 | 54 / 1.0 s | 270 | 65 | S | G+A | light bio ranged | Ion bolt; arcs to 1 more enemy within 50 lu (chain, 2 targets total) |
-| hover_tank | Hover Tank | C | Heavy | 150 | 2,509 | 188 / 1.5 s | 90 | 55 | L | G | armored mech ranged | Plasma cannon. Hovers, but is a ground unit (blocks and is blocked) |
+| hover_tank | Hover Tank | C | Heavy | 150 | 2,509 | 179 / 1.5 s (188 until 2026-10-07) | 90 | 55 | L | G | armored mech ranged | Plasma cannon. Hovers, but is a ground unit (blocks and is blocked) |
 | graviton_halberdier | Graviton Halberdier | R | Anti-heavy | 100 | 985 (was 896) | 116 / 1.2 s | 70 | 70 | M | G | light bio melee | Reach; melee Anti-heavy mods (armored ×3.0); priority armored; Brace; starter kit |
 | starwarden | Starwarden | R | Support | 110 | 582 | 36 / 1.2 s | 150 | 65 | S | G+A | light bio support ranged | Shield Beacon every 8 s while it has a target: the nearest 4 allies within 180 lu get a 200 shield for 5 s; followSupport |
 | warp_stalker | Warp Stalker | E | Skirmisher | 200 | 1,600 | 140 / 0.8 s | 12 | 100 | M | G | light bio melee | Blink (10 s cooldown): when blocked, warps (0.4 s, untargetable by melee) to the nearest enemy ranged or support unit within 200 lu beyond the blocker; first strike ×2 (the pounce rule) |
@@ -7392,7 +7396,7 @@ Checkpoint A is the fun gate. If the core loop does not feel good there, feel an
 28. Capsule strikes never show a non-climb after a climb.
 29. "Open all" works for 10 capsules; reloading mid-animation keeps the same result.
 30. An upgrade spends copies and Amber, raises stats by +5% (card detail preview matches), and grants Codex points.
-31. A copy past L10 becomes Dust; crafting a card and a crate skin works; Crystal Spire cannot be crafted.
+31. A spare copy (past L10, or beyond what L10 still needs) becomes Dust when its capsule opens; crafting a card and a crate skin works; Crystal Spire cannot be crafted.
 32. The War Plan builder enforces the rules, shows advisor warnings, and auto-fill and Equip now work; presets save.
 33. The Trophy Road claims nodes; 150 trophies unlocks Standard War, the ladder format picker and the Industrial and Modern Age Unlock Capsules; 400 trophies the Future and Cosmic ones; the eight alternate powers unlock at 100-500 (A17.13).
 34. Conquest opens at Arena 3 and plays Standard War; stars and milestones pay once. (Replaced by item 80 when the War Path ships.)

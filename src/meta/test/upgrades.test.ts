@@ -61,7 +61,7 @@ describe('upgrades (A6.6)', () => {
     expect(res.ok).toBe(true);
     if (!res.ok) return;
     expect(res.value.collection['friar']).toMatchObject({ level: 10, copies: 0 });
-    expect(res.value.currencies.dust).toBe(5 * 20);
+    expect(res.value.currencies.dust).toBe(5 * C.rarities.cards.rare.dustPerExtraCopy);
   });
 
   it('counts for "Upgrade 2 cards"', () => {
@@ -142,6 +142,13 @@ describe('Dust and crafting (A6.6)', () => {
       ok: false,
       reason: 'maxLevel',
     });
+    // A6.6 surplus rule (2026-10-07): a card that already holds every copy L10 needs takes no crafted copy.
+    // L8 Common: 35 + 45 copies to L10.
+    expect(M.craft({ ...s, collection: { ...s.collection, bonker: { level: 8, copies: 80, isNew: false, foil: 'none' } } }, 'bonker', C)).toEqual({
+      ok: false,
+      reason: 'copiesFull',
+    });
+    expect(M.craft({ ...s, collection: { ...s.collection, bonker: { level: 8, copies: 79, isNew: false, foil: 'none' } } }, 'bonker', C).ok).toBe(true);
   });
 });
 

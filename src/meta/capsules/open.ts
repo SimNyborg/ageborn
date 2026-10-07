@@ -4,7 +4,10 @@
  * collection *now*:
  *
  * - `isNew`: the card is not owned when revealed (a crafted card is no longer new).
- * - `dust`: copies of a card at max level convert to Dust (A6.4 step 6), per stack.
+ * - `dust`: copies a card can never use convert to Dust (A6.4 step 6), per stack: every copy of a card
+ *   at max level, and since 2026-10-07 every copy beyond what the card still needs to reach max level
+ *   (counting the copies it already holds). `copies` stays the rolled count, so the reveal shows what
+ *   the capsule held; the copies bar shows what was kept.
  * - `contents.dust`: the capsule's bonus Dust (Jade and Gold +100, Platinum +200, Aeon +500, plus 500
  *   for an Aeon after its collection set is complete) plus a duplicate skin's Dust.
  *
@@ -29,6 +32,7 @@ import { unlockTitles } from '../titles';
 import { betterFoil } from './foil';
 import { advancePity } from './pity';
 import { fillEmptySlot } from '../warplan';
+import { copiesStillNeeded } from '../economy';
 
 /** Number of strikes on the capsule (A10 step 3). */
 export const STRIKES = 4;
@@ -72,9 +76,11 @@ export function openCapsuleWith(s: SaveDoc, id: string, t: Content): { save: Sav
     const isNew = !had || had.level < 1;
     const entry = isNew ? { level: 1, copies: 0, isNew: true, foil: 'none' as const } : { ...had };
     if (isNew && st.rarity === 'legendary') firstLegendaryReveal.push(st.card);
-    let dust = 0;
-    if (entry.level >= maxLevel) dust = st.copies * t.rarities.cards[st.rarity].dustPerExtraCopy;
-    else entry.copies += st.copies;
+    // A6.4 step 6 (surplus rule, 2026-10-07): copies the card can never use (more than it still needs
+    // for the cap, counting the copies it holds) turn into Dust now; the rest add to its copies.
+    const usable = entry.level >= maxLevel ? 0 : Math.min(st.copies, copiesStillNeeded(t, st.rarity, entry.level, entry.copies));
+    const dust = (st.copies - usable) * t.rarities.cards[st.rarity].dustPerExtraCopy;
+    entry.copies += usable;
     entry.foil = betterFoil(entry.foil, st.foil, t.rarities);
     collection[st.card] = entry;
     stackDust += dust;

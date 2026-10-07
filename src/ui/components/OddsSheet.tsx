@@ -230,6 +230,7 @@ export function OddsSheet(p: { model: OddsModel; hideHonest?: boolean }) {
           </div>
           {!m.randomLegendaries ? <p class="ui-odds__note">{t('ui.odds.noRandomLegendaries')}</p> : null}
           <p class="ui-odds__note">{t('ui.odds.unownedWeight')}</p>
+          <p class="ui-odds__note" data-testid="odds-spare-rule">{t('ui.odds.spareCopies')}</p>
 
           <h3>{t('ui.odds.supplyTitle')}</h3>
           <div class="ui-odds__chips">

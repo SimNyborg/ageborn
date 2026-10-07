@@ -9,26 +9,28 @@ import type { Rarities } from './types';
 export const rarities: Rarities = {
   order: ['common', 'rare', 'epic', 'legendary'],
   cards: {
-    // A6.6 copies per level (to L2 ... to L10); A6.7 codex points; A6.6 Dust rates
+    // A6.6 copies per level (to L2 ... to L10); A6.7 codex points; A6.6 Dust rates. A spare copy (beyond what
+    // L10 needs, converted when its capsule opens; owner decision 2026-10-07) pays 1 / 3 / 15 / 60 Dust (was
+    // 5 / 20 / 100 / 400, paid only at L10), so Dust stays about 470 a day in days 11-120 (A6.9).
     common: {
       id: 'common', index: 0,
       upgradeCopies: [2, 3, 5, 8, 12, 18, 25, 35, 45],
-      codexPoints: 1, dustPerExtraCopy: 5, craftCopyDust: 40, nameKey: 'rarity.common.name',
+      codexPoints: 1, dustPerExtraCopy: 1, craftCopyDust: 40, nameKey: 'rarity.common.name',
     },
     rare: {
       id: 'rare', index: 1,
       upgradeCopies: [1, 2, 4, 6, 10, 15, 22, 30, 40],
-      codexPoints: 2, dustPerExtraCopy: 20, craftCopyDust: 100, nameKey: 'rarity.rare.name',
+      codexPoints: 2, dustPerExtraCopy: 3, craftCopyDust: 100, nameKey: 'rarity.rare.name',
     },
     epic: {
       id: 'epic', index: 2,
       upgradeCopies: [1, 1, 1, 2, 3, 5, 7, 10, 14],
-      codexPoints: 4, dustPerExtraCopy: 100, craftCopyDust: 400, nameKey: 'rarity.epic.name',
+      codexPoints: 4, dustPerExtraCopy: 15, craftCopyDust: 400, nameKey: 'rarity.epic.name',
     },
     legendary: {
       id: 'legendary', index: 3,
       upgradeCopies: [1, 1, 1, 1, 1, 1, 1, 2, 2],
-      codexPoints: 8, dustPerExtraCopy: 400, craftCopyDust: 1600, nameKey: 'rarity.legendary.name',
+      codexPoints: 8, dustPerExtraCopy: 60, craftCopyDust: 1600, nameKey: 'rarity.legendary.name',
     },
   },
   // A6.6 Amber per level (to L2 ... to L10), total 20,020. The years-long curve (owner decision

@@ -22,6 +22,8 @@
     "copiesTimes": "×{n}",
     "max": "MAX",
     "dustPlus": "+{n} Dust",
+    "dustSpare": "Spare copies: +{n} Dust",
+    "copiesAndDust": "+{n} · +{dust} Dust",
     "amber": "Amber",
     "dust": "Dust",
     "foilUnlocked": "{foil}!",

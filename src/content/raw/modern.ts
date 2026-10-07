@@ -50,7 +50,7 @@ export const modern: RawAgeTables = {
       tags: ['armored', 'mech', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 104, intervalMs: 1500, windupPct: 50, range: 90, hitsGround: true, hitsAir: false,
+          damage: 99, intervalMs: 1500, windupPct: 50, range: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 1200, visualId: 'proj.shell' },
           dmgType: 'blast', sfx: 'shot_cannon',
         },
@@ -207,7 +207,7 @@ export const modern: RawAgeTables = {
       tags: ['armored', 'mech', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 88, intervalMs: 1500, windupPct: 50, range: 90, hitsGround: true, hitsAir: false,
+          damage: 84, intervalMs: 1500, windupPct: 50, range: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 1200, visualId: 'proj.shell' },
           dmgType: 'blast', sfx: 'shot_assault_gun', splashRadius: 30,
         },
@@ -217,14 +217,14 @@ export const modern: RawAgeTables = {
       nameKey: 'card.assault_gun.name', descKey: 'card.assault_gun.desc', strongVs: [], weakVs: [],
     },
     {
-      // Long range (H6, A5.1): a two-man bipod mortar, an arcing bomb at the target's spot, splash r35; range 380,
+      // Long range (H6, A5.1; range +50-80 on 2026-10-07): a two-man bipod mortar, an arcing bomb at the target's spot, splash r35; range 440,
       // min 90; half to bases; ground only
       id: 'mortar_team', kind: 'unit', age: 'modern', rarity: 'rare', role: 'ranged', group: 'ranged',
       cost: 75, trainMs: 2000, pop: 3, hp: 266, speed: 60, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 124, intervalMs: 2600, windupPct: 50, range: 380, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 124, intervalMs: 3000, windupPct: 50, range: 440, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.mortar_shell' },
           dmgType: 'blast', sfx: 'shot_mortar_team', splashRadius: 35, vsBaseDamage: 50,
         },

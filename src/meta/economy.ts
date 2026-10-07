@@ -43,6 +43,17 @@ export function bagCapsuleAverages(t: Content, arenaIndex: number | null = null)
   return { copiesCenti: roundDiv(copies, total * 100), amberCenti: roundDiv(amber * 100, total) };
 }
 
+/**
+ * Copies a card of `rarity` at `level` still needs to reach the cap, counting the `owned` copies it
+ * already holds (0 at the cap). A6.6 surplus rule (owner decision 2026-10-07): capsule copies beyond
+ * this can never be used and turn into Dust when the capsule is opened.
+ */
+export function copiesStillNeeded(t: Pick<Content, 'rarities'>, rarity: Rarity, level: number, owned: number): number {
+  const table = t.rarities.cards[rarity].upgradeCopies;
+  const need = table.slice(Math.max(0, level - 1)).reduce((a, b) => a + b, 0);
+  return Math.max(0, need - owned);
+}
+
 /** Total copies and Amber to take one card of `rarity` from L1 to the cap (A6.6). */
 export function copiesToMax(t: Content, rarity: Rarity): { copies: number; amber: number } {
   return {

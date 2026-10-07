@@ -59,10 +59,47 @@ describe('openCapsule', () => {
       contents: { stacks: [{ card: 'tuskback', rarity: 'common', copies: 14, isNew: false, foil: 'none', dust: 0 }], amber: 0, dust: 100, skin: null },
     });
     const o = M.openCapsule(withPending(maxed, cap), cap.id);
-    expect(o.reveal.capsule.contents.stacks[0]?.dust).toBe(14 * 5);
+    expect(o.reveal.capsule.contents.stacks[0]?.dust).toBe(14 * C.rarities.cards.common.dustPerExtraCopy);
     expect(o.reveal.capsule.contents.dust).toBe(100);
     expect(o.save.collection['tuskback']?.copies).toBe(0);
-    expect(o.save.currencies.dust).toBe(s.currencies.dust + 100 + 70);
+    const per = C.rarities.cards.common.dustPerExtraCopy;
+    expect(o.save.currencies.dust).toBe(s.currencies.dust + 100 + 14 * per);
+  });
+
+  it('copies a card can never use turn into Dust at reveal; the copies it still needs are kept (A6.6 surplus rule, 2026-10-07)', () => {
+    const s = fresh();
+    // L8 Common: L9 needs 35 and L10 45, so 80 copies; it holds 70 and still needs 10.
+    const near: SaveDoc = { ...s, collection: { ...s.collection, tuskback: { level: 8, copies: 70, isNew: false, foil: 'none' } } };
+    const cap = capsule({
+      contents: { stacks: [{ card: 'tuskback', rarity: 'common', copies: 14, isNew: false, foil: 'none', dust: 0 }], amber: 0, dust: 0, skin: null },
+    });
+    const per = C.rarities.cards.common.dustPerExtraCopy;
+    const o = M.openCapsule(withPending(near, cap), cap.id);
+    expect(o.save.collection['tuskback']?.copies).toBe(80);
+    expect(o.reveal.capsule.contents.stacks[0]).toMatchObject({ copies: 14, dust: 4 * per });
+    expect(o.save.currencies.dust).toBe(s.currencies.dust + 4 * per);
+    // Every copy is spare once the card holds what it needs; the shown capsule Dust stays the bonus only.
+    const again = capsule({ id: 'cap_2', contents: { stacks: [{ card: 'tuskback', rarity: 'common', copies: 3, isNew: false, foil: 'none', dust: 0 }], amber: 0, dust: 0, skin: null } });
+    const o2 = M.openCapsule(withPending(o.save, again), 'cap_2');
+    expect(o2.save.collection['tuskback']?.copies).toBe(80);
+    expect(o2.reveal.capsule.contents.stacks[0]?.dust).toBe(3 * per);
+    expect(o2.reveal.capsule.contents.dust).toBe(0);
+    // A card below that line keeps every copy (no Dust), as before.
+    const low: SaveDoc = { ...s, collection: { ...s.collection, tuskback: { level: 3, copies: 4, isNew: false, foil: 'none' } } };
+    const o3 = M.openCapsule(withPending(low, cap), cap.id);
+    expect(o3.save.collection['tuskback']?.copies).toBe(18);
+    expect(o3.reveal.capsule.contents.stacks[0]?.dust).toBe(0);
+  });
+
+  it('a new card keeps up to the copies L1 to L10 needs and the rest is Dust (A6.6 surplus rule)', () => {
+    const s = fresh();
+    const need = C.rarities.cards.legendary.upgradeCopies.reduce((a, b) => a + b, 0);
+    const cap = capsule({
+      contents: { stacks: [{ card: 'mammoth_matriarch', rarity: 'legendary', copies: need + 2, isNew: true, foil: 'none', dust: 0 }], amber: 0, dust: 0, skin: null },
+    });
+    const o = M.openCapsule(withPending(s, cap), cap.id);
+    expect(o.save.collection['mammoth_matriarch']).toMatchObject({ level: 1, copies: need });
+    expect(o.reveal.capsule.contents.stacks[0]).toMatchObject({ isNew: true, dust: 2 * C.rarities.cards.legendary.dustPerExtraCopy });
   });
 
   it('each tier pays its table Amber and bonus Dust; Gold, Platinum and Aeon hold 1, 2 and 3 Legendaries (A6.4, A10)', () => {

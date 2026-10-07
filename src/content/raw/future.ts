@@ -194,7 +194,7 @@ export const future: RawAgeTables = {
       tags: ['armored', 'mech', 'melee', 'ground'],
       attacks: [
         {
-          damage: 112, intervalMs: 1500, windupPct: 40, range: 20, hitsGround: true, hitsAir: false,
+          damage: 109, intervalMs: 1500, windupPct: 40, range: 20, hitsGround: true, hitsAir: false,
           dmgType: 'blunt', sfx: 'pincer_snap', cleave: { count: 2, reach: 30 },
         },
       ],
@@ -203,14 +203,14 @@ export const future: RawAgeTables = {
       nameKey: 'card.crab_mech.name', descKey: 'card.crab_mech.desc', strongVs: [], weakVs: [],
     },
     {
-      // Long range (H6, A5.1): a glowing shell lobbed high at the target's spot, splash r35; range 380, min 90; half to
+      // Long range (H6, A5.1; range +50-80 on 2026-10-07): a glowing shell lobbed high at the target's spot, splash r35; range 440, min 90; half to
       // bases; ground only
       id: 'arc_lobber', kind: 'unit', age: 'future', rarity: 'rare', role: 'ranged', group: 'ranged',
       cost: 75, trainMs: 2000, pop: 3, hp: 360, speed: 60, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 172, intervalMs: 2600, windupPct: 50, range: 380, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 172, intervalMs: 2900, windupPct: 50, range: 440, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.arc_shell' },
           dmgType: 'blast', sfx: 'shot_lobber', splashRadius: 35, vsBaseDamage: 70,
         },

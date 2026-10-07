@@ -2,6 +2,22 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-07: three owner decisions: Heavy trim, longer Long range, spare copies to Dust (cloud session, not yet published)
+
+**Heavy (a bit overpowered).** HP stays. Heavy Commons lose 2-5% damage wherever no Infantry Common of their age needs an extra hit, so Heavy still beats Infantry exactly as before; Tuskback, Woolly Rhino and Walker Mech keep theirs (one point less would flip a matchup or a balance row). Anti-heavy already wins equal-gold fights clearly (3 against 2: 69-88 in every age), so its numbers stay. The measured "Heavy share of winning armies" hardly moves: it mostly shows that the bot that is ahead can afford Heavies (a bot with no Heavy in its plan beats the normal plan 56-66%), not that Heavies win games. Details and numbers in `docs/decisions.md`.
+
+**Long range shoots further.** The eight Long range Rares reach 400-440 (320-390 before), about twice an ordinary archer, so a battle shows tanks in front, infantry behind them and the long-range line at the back. Most fire a little slower so each card stays as strong as before. Two new exploit proxies (`mono_longrange`, `longrange_turtle`) check that camping behind turrets with them does not pay.
+
+**Spare copies become Dust.** Copies a card can never use (more than it still needs to reach level 10) turn into Dust when the capsule opens, shown as "Spare copies: +N Dust" on the card. At the old rates that would have been 2,143 Dust a day, so the rates are 1 / 3 / 15 / 60 per spare copy: Dust is back at about 470 a day (176 before), gated in `tools/economy.ts`. A card that already has every copy it needs cannot be crafted.
+
+**Gates (this tree / `633e433`, same seeds):** balance mirror: Short 7:28 / 7:23 with the Final Bell 10.0 / 10.0%, Standard 10:38 / 10:43 with the Bell 8.5 / 12.0%; exploits 72 pass / 13 fail (70 / 15): every turtle still wins 0%, mono Long range 3% (≤ 35%), mono Heavy 0%; economy 23 pass / 1 fail (the open War Plan L7 row), Dust 476 a day (176). Per-card rows of every touched wave card within ±5 except the Star Mortar (−5.75; −6.0 before).
+
+**Checks (whole tree, 2026-10-07):** typecheck and lint clean; 6,539 unit tests pass (258 files, 2 skipped); production build OK; full e2e E2E_RESULT.
+
+**Still open:** the Heavy share of winning armies barely moved (it reflects which bot is ahead; the next lever would be how often the bots buy Heavies, or the Heavy's price, an owner decision); the Wall Gunner loses equal-gold duels to Gunpowder Heavies; Gunpowder's Corsairs beat both Gunpowder Heavies; the Star Mortar's balance row stays just under −5 as before.
+
+**What the owner should try** (once published): play a Medieval or later battle with the Long range card (Yeoman Archer, Coehorn Crew …) in your Army and watch it stay back while your front holds; open a few capsules on a save with well-levelled cards and look for "Spare copies: +N Dust".
+
 ## 2026-10-07: UI art pass (Tracks A and B) with review fixes (cloud session, not yet published)
 
 The menus were raised toward the Blender battle art without changing layouts or flows. Track A: Home's bases and turret cards drawn from the Blender sheets, a redrawn island, cel-shaded icons and nav, straight swords, the War Path card's hover fixed, real birds, a denser War Path map with a walking Standard Bearer, and a wordmark. Track B: "Make your General", an avatar creator with 87 free parts and 96 wearables you win in play (never sold; save v12 with a migration), and redrawn VS, Result, Feats, Capsules stage, capsule card back and Trophy Road gates. Details per track and for the fixes in `docs/decisions.md` (the three "UI art pass" entries).
