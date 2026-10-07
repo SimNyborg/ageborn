@@ -44,7 +44,7 @@ describe('newSave', () => {
       const l = plan.loadouts[age];
       expect(l.units.filter(Boolean)).toHaveLength(4);
       expect(C.units[l.units[3]!]).toMatchObject({ group: 'antiArmor', rarity: 'rare', age });
-      expect(l.units.slice(4)).toEqual([null, null]);
+      expect(l.units.slice(4)).toEqual([null, null, null]);
       expect(l.turrets.filter(Boolean)).toHaveLength(2);
       expect(C.powers[l.powers.home!]).toMatchObject({ slot: 'home', source: 'starter', age });
       expect(C.powers[l.powers.field!]).toMatchObject({ slot: 'field', source: 'starter', age });

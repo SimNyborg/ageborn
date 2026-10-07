@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import type { AgeId, Loadout, SaveDoc } from '@/contracts';
 import { hitsAir, type WarPlan } from '../advisor';
-import { autoFill, equipNow, starterPlan } from '../warplan';
+import { autoFill, equipNow, fillNewTroopSlots, SEVENTH_SLOT_FLAG, SIXTH_SLOT_FLAG, starterPlan } from '../warplan';
 import { C, M, fresh, ownsAll } from './helpers';
 
 function withLoadout(plan: WarPlan, age: AgeId, l: Partial<Loadout>): WarPlan {
@@ -83,7 +83,8 @@ describe('auto-fill (A3)', () => {
     s = { ...s, collection: { ...s.collection, sabertooth: { level: 9, copies: 0, isNew: false, foil: 'none' }, drum_shaman: { level: 8, copies: 0, isNew: false, foil: 'none' } } };
     const plan = autoFill(s, C);
     const stone = plan.loadouts.stone;
-    expect(stone.units.filter(Boolean)).toHaveLength(6);
+    expect(stone.units).toHaveLength(7);
+    expect(stone.units.filter(Boolean)).toHaveLength(7);
     const groups = stone.units.map((id) => (id ? C.units[id]?.group : null));
     expect(groups.some((g) => g === 'heavy' || g === 'legendary')).toBe(true);
     expect(groups).toContain('ranged');
@@ -113,14 +114,14 @@ describe('Equip now (A3)', () => {
   it('fills an empty slot, else the same-role slot, else the lowest-level slot', () => {
     let s: SaveDoc = { ...fresh(), collection: { ...fresh().collection, spear_hunter: { level: 1, copies: 0, isNew: true, foil: 'none' as const } } };
     s = equipNow(s, 'spear_hunter', C);
-    expect(s.warPlans[0]!.loadouts.stone.units).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', null, null]);
-    // Full loadout (six troops, A18.9): a Support replaces nothing of its role, so the lowest level (ties: last) goes.
-    const full = withLoadout(s.warPlans[0]!, 'stone', { units: ['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth', 'mammoth_matriarch'] });
+    expect(s.warPlans[0]!.loadouts.stone.units).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', null, null, null]);
+    // Full loadout (seven troops, A18.9): a Support replaces nothing of its role, so the lowest level (ties: last) goes.
+    const full = withLoadout(s.warPlans[0]!, 'stone', { units: ['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth', 'mammoth_matriarch', 'hunting_wolves'] });
     let t: SaveDoc = ownsAll({ ...s, warPlans: [full] }, 2);
     t = { ...t, collection: { ...t.collection, tuskback: { level: 1, copies: 0, isNew: false, foil: 'none' } } };
-    expect(equipNow(t, 'drum_shaman', C).warPlans[0]!.loadouts.stone.units).toEqual(['bonker', 'pebbler', 'drum_shaman', 'spear_hunter', 'sabertooth', 'mammoth_matriarch']);
+    expect(equipNow(t, 'drum_shaman', C).warPlans[0]!.loadouts.stone.units).toEqual(['bonker', 'pebbler', 'drum_shaman', 'spear_hunter', 'sabertooth', 'mammoth_matriarch', 'hunting_wolves']);
     // Same role: the Matriarch (Legendary group) has no same-group card here; a Heavy for a Heavy.
-    const noMatriarch = withLoadout(full, 'stone', { units: ['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth', 'drum_shaman'] });
+    const noMatriarch = withLoadout(full, 'stone', { units: ['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'sabertooth', 'drum_shaman', 'hunting_wolves'] });
     const heavy = { ...t, warPlans: [noMatriarch], collection: { ...t.collection, tuskback: { level: 5, copies: 0, isNew: false, foil: 'none' as const } } };
     expect(equipNow(heavy, 'mammoth_matriarch', C).warPlans[0]!.loadouts.stone.units).toContain('mammoth_matriarch');
     // Turrets and powers.
@@ -129,6 +130,64 @@ describe('Equip now (A3)', () => {
     // Unowned cards and cards already in the loadout change nothing.
     expect(equipNow(fresh(), 'sabertooth', C)).toEqual(fresh());
     expect(equipNow(t, 'bonker', C)).toBe(t);
+  });
+});
+
+describe('new troop slots (A18.9: the sixth from save v4, the seventh from save v13)', () => {
+  const level = (n: number) => ({ level: n, copies: 0, isNew: false, foil: 'none' as const });
+  /** A save after the v13 migration: six filled troops per age and an empty seventh slot, sixth flag set. */
+  function migrated(): SaveDoc {
+    const s = ownsAll(fresh(), 2);
+    const six: Partial<Record<AgeId, (string | null)[]>> = { stone: ['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman', 'sabertooth', null] };
+    const plans = [0, 1, 2].map((i) => {
+      let p = { ...starterPlan(C), name: `Plan ${i + 1}` };
+      for (const age of C.order.ages) {
+        const units = six[age] ?? [...p.loadouts[age].units.slice(0, 6), null];
+        p = withLoadout(p, age, { units });
+      }
+      return p;
+    });
+    return { ...s, warPlans: plans, flags: { ...s.flags, [SIXTH_SLOT_FLAG]: true } };
+  }
+
+  it('fills the seventh slot of every plan and age with the best owned troop not in the loadout, once', () => {
+    let s = migrated();
+    // Best = highest level, ties in content order: the Matriarch (L9) beats the Wolves (L5).
+    s = { ...s, collection: { ...s.collection, mammoth_matriarch: level(9), hunting_wolves: level(5) } };
+    const out = fillNewTroopSlots(s, C);
+    expect(out.flags[SEVENTH_SLOT_FLAG]).toBe(true);
+    for (const plan of out.warPlans) {
+      expect(plan.loadouts.stone.units).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'drum_shaman', 'sabertooth', 'mammoth_matriarch']);
+      for (const age of C.order.ages) {
+        const units = plan.loadouts[age].units;
+        expect(units).toHaveLength(7);
+        expect(new Set(units.filter(Boolean)).size).toBe(units.filter(Boolean).length);
+        for (const id of units) if (id) expect(C.units[id]?.age).toBe(age);
+      }
+    }
+    for (const age of C.order.ages) expect(M.validatePlan(out.warPlans[0]!, out, C, 'full').filter((i) => i.severity === 'error' && i.age === age)).toEqual([]);
+    // Once: a slot emptied later stays empty, and a second call changes nothing.
+    const emptied = { ...out, warPlans: out.warPlans.map((p) => withLoadout(p, 'stone', { units: [...p.loadouts.stone.units.slice(0, 6), null] })) };
+    expect(fillNewTroopSlots(emptied, C)).toBe(emptied);
+  });
+
+  it('leaves the seventh slot empty when no eligible troop is left, and never picks a hidden or unowned card', () => {
+    const s = fresh();
+    const plan = withLoadout(s.warPlans[0]!, 'stone', { units: ['bonker', 'pebbler', 'tuskback', 'spear_hunter', null, null, null] });
+    const out = fillNewTroopSlots({ ...s, warPlans: [plan], flags: { ...s.flags, [SIXTH_SLOT_FLAG]: true } }, C);
+    expect(out.warPlans[0]!.loadouts.stone.units).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', null, null, null]);
+    expect(out.flags[SEVENTH_SLOT_FLAG]).toBe(true);
+    expect(out.warPlans[0]!.loadouts.stone.units).not.toContain('training_dummy');
+  });
+
+  it('a save from before v4 fills the sixth slot first, then the seventh', () => {
+    let s = ownsAll(fresh(), 1);
+    s = { ...s, collection: { ...s.collection, sabertooth: level(8), drum_shaman: level(6) } };
+    const plan = withLoadout(s.warPlans[0]!, 'stone', { units: ['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'hunting_wolves', null, null] });
+    const out = fillNewTroopSlots({ ...s, warPlans: [plan] }, C);
+    expect(out.warPlans[0]!.loadouts.stone.units).toEqual(['bonker', 'pebbler', 'tuskback', 'spear_hunter', 'hunting_wolves', 'sabertooth', 'drum_shaman']);
+    expect(out.flags[SIXTH_SLOT_FLAG]).toBe(true);
+    expect(out.flags[SEVENTH_SLOT_FLAG]).toBe(true);
   });
 });
 
