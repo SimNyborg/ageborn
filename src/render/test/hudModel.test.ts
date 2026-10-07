@@ -230,7 +230,7 @@ describe('HUD model (A9.2)', () => {
       b.afterStep();
     }
     m = b.build(EXTRAS);
-    expect(m.me.cards.map((c) => c.state === 'empty')).toEqual([false, false, true, true, true, true]);
+    expect(m.me.cards.map((c) => c.state === 'empty')).toEqual([false, false, true, true, true, true, true]);
     // Trays only restrict the learner (side 0).
     expect(new TrayUnlocks(cfg).unlocked(1, 'stone', 4)).toBe(true);
   });

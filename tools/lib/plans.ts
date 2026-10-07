@@ -44,10 +44,31 @@ function unitId(content: CompiledContent, age: AgeId, group: UnitDef['group'], r
   return unitsOfAge(content, age).find((u) => u.group === group && (rarity === undefined || u.rarity === rarity))?.id ?? null;
 }
 
-/** The A2.14 baseline loadout of one age. */
-export function baselineLoadout(content: CompiledContent, age: AgeId): Loadout {
+/** Troop slots of a loadout (A18.9, owner request 2026-10-07: seven; six before, five before A18). */
+export const TROOP_SLOTS = 7;
+
+const RARITY_RANK: Readonly<Record<Rarity, number>> = { common: 0, rare: 1, epic: 2, legendary: 3 };
+
+/**
+ * The A2.14 baseline loadout of one age. `deck` (5-7, default 5) is how many troop slots it fills: the
+ * A2.14 baseline fills five; a bigger deck (`balance --deck 7`, the seven-troop check of 2026-10-07) fills
+ * the empty slots with the age's next collectable troops, Commons first, then Rares and Epics, in table
+ * order, never a Legendary (the release gate's refill order for General plans).
+ */
+export function baselineLoadout(content: CompiledContent, age: AgeId, deck = 5): Loadout {
   const commons = turretsOfAge(content, age).filter((t) => t.rarity === 'common');
   const starter = (slot: 'home' | 'field'): CardId | null => powersOfAge(content, age).find((p) => p.slot === slot && p.source === 'starter')?.id ?? null;
+  const l = baselineFive(content, age, commons, starter);
+  const extra = unitsOfAge(content, age)
+    .map((u, i) => ({ u, i }))
+    .filter(({ u }) => u.rarity !== 'legendary' && u.released !== false && !l.units.includes(u.id))
+    .sort((a, b) => RARITY_RANK[a.u.rarity] - RARITY_RANK[b.u.rarity] || a.i - b.i)
+    .map(({ u }) => u.id);
+  for (let s = 5; s < Math.min(deck, TROOP_SLOTS); s += 1) l.units[s] = extra[s - 5] ?? null;
+  return l;
+}
+
+function baselineFive(content: CompiledContent, age: AgeId, commons: readonly TurretDef[], starter: (slot: 'home' | 'field') => CardId | null): Loadout {
   return {
     units: [
       unitId(content, age, 'infantry', 'common'),
@@ -55,7 +76,9 @@ export function baselineLoadout(content: CompiledContent, age: AgeId): Loadout {
       unitId(content, age, 'heavy', 'common'),
       unitId(content, age, 'antiArmor', 'rare'),
       unitId(content, age, 'support', 'rare'),
-      // A18.9: a loadout has six troop slots; the A2.14 baseline keeps the sixth empty
+      // A18.9: a loadout has seven troop slots (owner request 2026-10-07); the A2.14 baseline keeps
+      // the last two empty, so per-card deltas stay comparable with earlier runs
+      null,
       null,
     ],
     turrets: [commons[0]?.id ?? null, commons[1]?.id ?? null],
@@ -63,10 +86,10 @@ export function baselineLoadout(content: CompiledContent, age: AgeId): Loadout {
   };
 }
 
-/** The A2.14 baseline plan over every age. */
-export function baselinePlan(content: CompiledContent): Plan {
+/** The A2.14 baseline plan over every age (`deck`: troop slots filled, see `baselineLoadout`). */
+export function baselinePlan(content: CompiledContent, deck = 5): Plan {
   const plan: Plan = {};
-  for (const age of agesOf(content)) plan[age] = baselineLoadout(content, age);
+  for (const age of agesOf(content)) plan[age] = baselineLoadout(content, age, deck);
   return plan;
 }
 
@@ -107,10 +130,10 @@ function kindOf(content: CompiledContent, card: CardId): CardKind | null {
 }
 
 /** The test plan for one card (A2.14). Throws for unknown or hidden cards. */
-export function cardTest(content: CompiledContent, card: CardId): CardTest {
+export function cardTest(content: CompiledContent, card: CardId, deck = 5): CardTest {
   const kind = kindOf(content, card);
   if (!kind) throw new Error(`cardTest: "${card}" is not a collectable unit, turret or power`);
-  const base = baselinePlan(content);
+  const base = baselinePlan(content, deck);
   const plan = clonePlan(base);
   if (kind === 'unit') {
     const u = content.units[card] as UnitDef;
@@ -140,12 +163,12 @@ export function cardTest(content: CompiledContent, card: CardId): CardTest {
 }
 
 /** Every collectable card with its test, in age order: units, turrets, powers. */
-export function allCardTests(content: CompiledContent): CardTest[] {
+export function allCardTests(content: CompiledContent, deck = 5): CardTest[] {
   const out: CardTest[] = [];
   for (const age of agesOf(content)) {
-    for (const u of unitsOfAge(content, age)) out.push(cardTest(content, u.id));
-    for (const t of turretsOfAge(content, age)) out.push(cardTest(content, t.id));
-    for (const p of powersOfAge(content, age)) out.push(cardTest(content, p.id));
+    for (const u of unitsOfAge(content, age)) out.push(cardTest(content, u.id, deck));
+    for (const t of turretsOfAge(content, age)) out.push(cardTest(content, t.id, deck));
+    for (const p of powersOfAge(content, age)) out.push(cardTest(content, p.id, deck));
   }
   return out;
 }
@@ -159,7 +182,7 @@ export function sideConfig(content: CompiledContent, plan: Plan, o: { level: num
 }
 
 /**
- * A3 checks for a plan over the ages a format uses: 6 unit and 2 turret slots, all cards from that
+ * A3 checks for a plan over the ages a format uses: 7 unit and 2 turret slots, all cards from that
  * age, no duplicates, at least 3 units and 1 turret, powers from that age in their own slots (A2.9.1).
  * Returns the problems found.
  */
@@ -171,7 +194,7 @@ export function planIssues(content: CompiledContent, plan: Plan, format: FormatI
       issues.push(`${age}: no loadout`);
       continue;
     }
-    if (l.units.length !== 6) issues.push(`${age}: ${l.units.length} unit slots, want 6`);
+    if (l.units.length !== 7) issues.push(`${age}: ${l.units.length} unit slots, want 7`);
     if (l.turrets.length !== 2) issues.push(`${age}: ${l.turrets.length} turret slots, want 2`);
     const units = l.units.filter((c): c is CardId => c !== null);
     const turrets = l.turrets.filter((c): c is CardId => c !== null);

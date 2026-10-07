@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 import type { Content } from '@/content';
 import type { AgeId, CardId, OpponentSpec, SaveDoc } from '@/contracts';
 import { commanderInfo, ladderGenerals, newPlayerMistakeBonusBp, newPlayerMistakesApply } from '../matchmaking';
+import { ageCards, inArenaPool } from '../tables';
 import { ELO_EXPECTED_BP, expectedScoreBp, ladderTier, tierRating, updateMmr } from '../mmr';
 import { C, M, TestClock, fresh, ownsAll, scripted } from './helpers';
 
@@ -224,6 +225,56 @@ describe('other modes', () => {
     expect(std.disclosures).not.toContain('general.warden.disclosure');
     const moss = M.pickOpponent(s, 'skirmish', C, c, { skirmish: { generalId: 'moss', tier: 4, format: 'standard', standardLevels: true } });
     expect(moss.disclosures.filter((d) => d.startsWith('general.') || d === 'app.disclosure.wardenStandard')).toEqual([]);
+  });
+});
+
+describe('seven troops for bots (A18.9, owner request 2026-10-07)', () => {
+  const filled = (u: readonly (CardId | null)[]): number => u.filter((x) => x !== null).length;
+
+  it('every General plan names seven troop slots; all but Old Grogg fill all seven', () => {
+    for (const g of Object.values(C.generals.list)) {
+      for (const [age, l] of Object.entries(g.warPlan ?? {})) {
+        expect(l.units, `${g.id}.${age}`).toHaveLength(7);
+        expect(new Set(l.units.filter(Boolean)).size, `${g.id}.${age} duplicates`).toBe(filled(l.units));
+        for (const id of l.units) if (id) expect(C.units[id]?.age, `${g.id}.${age}.${id}`).toBe(age);
+        if (g.id === 'grogg') continue;
+        expect(filled(l.units), `${g.id}.${age}`).toBe(7);
+        // Pip still fields no Anti-heavy card (onboarding match 2 teaches the answer to his Heavies, A8).
+        if (g.id === 'pip') expect(l.units.some((id) => id !== null && C.units[id]?.group === 'antiArmor')).toBe(false);
+      }
+    }
+  });
+
+  it('ladder, Daily, Conquest, War Path and Skirmish bots field seven troops in every age', () => {
+    const c = new TestClock();
+    const s = ownsAll(ladderSave(3), 3);
+    const specs: OpponentSpec[] = [
+      M.pickOpponent(s, 'ladder', C, c),
+      M.pickOpponent(s, 'daily', C, c),
+      M.pickOpponent(s, 'conquest', C, c, { conquestGeneral: C.generals.conquest.board[0]!.general }),
+      M.pickOpponent(s, 'warPath', C, c, { warPath: { level: C.warPath.order.find((id) => C.warPath.levels[id]?.general !== 'grogg')!, difficulty: 'normal' } }),
+      M.pickOpponent(s, 'skirmish', C, c, { skirmish: { generalId: 'kettle', tier: 4, format: 'standard', standardLevels: false } }),
+      M.pickOpponent(s, 'skirmish', C, c, { skirmish: { generalId: 'echo', tier: 4, format: 'short', standardLevels: false } }),
+    ];
+    for (const o of specs) {
+      for (const [age, l] of Object.entries(o.side.loadouts)) {
+        expect(l?.units, `${o.generalId}.${age}`).toHaveLength(7);
+        if (o.generalId !== 'echo') expect(filled(l?.units ?? []), `${o.generalId}.${age}`).toBe(7);
+      }
+    }
+  });
+
+  it('the arena allowance refills every empty or disallowed slot from the cards a player there could own', () => {
+    const c = new TestClock();
+    const arena = C.arenas.list[0]!;
+    for (let seed = 1; seed <= 6; seed += 1) {
+      const o = M.pickOpponent(ladderSave(0, { createdAt: seed }), 'ladder', C, c);
+      for (const [age, l] of Object.entries(o.side.loadouts)) {
+        const pool = ageCards(C, age as AgeId).units.filter((id) => ['common', 'rare'].includes(rarity(id)) && inArenaPool(C, id, arena.index - 1));
+        expect(filled(l?.units ?? []), `${o.generalId}.${age}`).toBe(Math.min(7, pool.length));
+        for (const id of l?.units ?? []) if (id) expect(['common', 'rare']).toContain(rarity(id));
+      }
+    }
   });
 });
 

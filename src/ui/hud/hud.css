@@ -1251,15 +1251,19 @@
 /* The seven unit cards (A18.9), centred between the left cluster and the stance. The area is a size
    container: each card slot takes a seventh of the room left by the other controls (minus the gaps),
    capped at the breakpoint's card size, so the row always fits whichever controls the match shows (one
-   or two powers, the Fort button) and the cards stay as large as the room allows. The budget: at 844 x
-   390 with the Fort button and both powers the cards are 50 x 68 (no target under 44 px), 62 x 84 with
-   the Home power only; at 1280 x 720 80-88 px wide. */
+   or two powers, the Fort button) and the cards stay as large as the room allows. Measured: 56 x 76 at
+   844 x 390, 51 x 69 with the Fort button and both powers, 48 x 65 at 800 x 360 (no target under 44 px);
+   at 1280 x 720 81-88 px wide. */
 .hud-cards-area {
   display: flex;
   flex: 1;
   min-width: 0;
   justify-content: center;
   container: hudcards / inline-size;
+  /* The container is a stacking context: lift it over the Fort hint (z 7) so a card's tip (asked for by a
+     long press) paints on top. */
+  position: relative;
+  z-index: 8;
 }
 
 .hud-cards {

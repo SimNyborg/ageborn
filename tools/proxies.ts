@@ -8,8 +8,10 @@
  * 2. `turret_turtle`: 4 turrets with Hold (target: wins 35-45% against tier VII).
  * 3. `cheap_spam`: only ever trains the cheapest unit.
  * 4. `heavy_ranged`: Heavy plus mass Ranged, held back until the pop cap, then one push.
- * 5. `mass_splash`: Grenadier, Bronze Cannon, Radio Operator and every other splash card.
- * 6. `heal_stack`: healers behind a Heavy wall.
+ * 5. `mass_splash`: Grenadier, Bronze Cannon, Radio Operator and every other splash card, stacked into the
+ *    two empty troop slots first (A18.9 seven troops), then the Support and Heavy slots.
+ * 6. `heal_stack`: healers behind a Heavy wall, stacked into the two empty troop slots first (A18.9), then
+ *    the Support and Ranged slots.
  * 7. `xp_bank`: banks XP to the cap before every evolve.
  * 8. `power_on_evolve`: saves the Age Power for the moment before each evolve.
  * 9. `random_spam`: a uniformly random affordable tray unit, no turrets, no research, evolves at once,
@@ -136,8 +138,8 @@ export interface Strategy {
   /** `mono`: the role group trained. */
   mono?: MonoGroup;
   /** Power: `value` casts on a clump, `full` casts on auto-aim as soon as the ring is full. */
-  /** Tray-slot weights for `weighted` training. */
-  weights: [number, number, number, number, number];
+  /** Tray-slot weights for `weighted` training (slots 5 and 6, A18.9's sixth and seventh, default to 0). */
+  weights: [number, number, number, number, number] | [number, number, number, number, number, number, number];
   /** Economy income research to buy: Granary, then Market (A18.5.4; the Treasury levels before). */
   income: number;
   /** Save for the income research before training (unless the base is threatened). */
@@ -208,7 +210,8 @@ function splashPlan(content: CompiledContent): Plan {
   for (const age of agesOf(content)) {
     const l = plan[age] as Loadout;
     const isSplash = (id: CardId | null): boolean => id !== null && content.units[id] !== undefined && splashy(content.units[id]);
-    placeUnits(l, unitsOfAge(content, age).filter(splashy).map((u) => u.id), [4, 2], isSplash);
+    // A18.9: a bigger deck stacks more: the two empty slots first, then Support and Heavy.
+    placeUnits(l, unitsOfAge(content, age).filter(splashy).map((u) => u.id), [5, 6, 4, 2], isSplash);
     const splashTurrets = turretsOfAge(content, age).filter((t) => (t.attack.splashRadius ?? 0) > 0);
     const [first, second] = splashTurrets;
     if (first && !l.turrets.includes(first.id)) l.turrets[1] = first.id;
@@ -222,7 +225,7 @@ function healPlan(content: CompiledContent): Plan {
   for (const age of agesOf(content)) {
     const l = plan[age] as Loadout;
     const heal = unitsOfAge(content, age).filter(healer).map((u) => u.id);
-    placeUnits(l, heal, [4, 1], (id) => id !== null && content.units[id] !== undefined && healer(content.units[id]));
+    placeUnits(l, heal, [5, 6, 4, 1], (id) => id !== null && content.units[id] !== undefined && healer(content.units[id]));
   }
   return plan;
 }
@@ -323,8 +326,8 @@ export const STRATEGIES: Record<ProxyId, Strategy> = {
   },
   cheap_spam: { ...BALANCED, id: 'cheap_spam', title: 'Cheapest-unit spam', train: 'cheapest', income: 0, research: [], turrets: 1 },
   heavy_ranged: { ...BALANCED, id: 'heavy_ranged', title: 'Heavy plus mass Ranged at the pop cap', train: 'heavyRanged', stance: 'massThenCharge' },
-  mass_splash: { ...BALANCED, id: 'mass_splash', title: 'Mass splash', weights: [2, 1, 3, 3, 3], plan: splashPlan },
-  heal_stack: { ...BALANCED, id: 'heal_stack', title: 'Heal stacking', weights: [1, 1, 3, 1, 5], plan: healPlan },
+  mass_splash: { ...BALANCED, id: 'mass_splash', title: 'Mass splash', weights: [2, 1, 3, 3, 3, 3, 3], plan: splashPlan },
+  heal_stack: { ...BALANCED, id: 'heal_stack', title: 'Heal stacking', weights: [1, 1, 3, 1, 5, 5, 5], plan: healPlan },
   xp_bank: { ...BALANCED, id: 'xp_bank', title: 'XP bank and double evolve', evolve: 'bank' },
   power_on_evolve: { ...BALANCED, id: 'power_on_evolve', title: 'Power saved for evolve moments', power: 'beforeEvolve' },
   random_spam: { ...BALANCED, id: 'random_spam', title: 'Random spam', train: 'random', income: 0, research: [], turrets: 0, modernise: false, power: 'full' },

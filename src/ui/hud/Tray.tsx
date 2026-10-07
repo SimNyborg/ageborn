@@ -10,8 +10,8 @@
  *    for 2 s even with full XP (UA-07).
  * 2. **Seven unit cards** (A18.9, owner request 2026-10-07; at most 62 × 84 on 844 px phones, 56 × 76
  *    below 820 px wide, 72 × 96 from 900 px, 88 × 116 on desktops; each takes a seventh of the room the
- *    other controls leave, so with the Fort button and both powers they are 50 × 68 at 844 px). Cost top-left, class icon top-right, the name in up to two lines at the
- *    bottom (never an ellipsis), a radial training fill, the queue badge, the key badge once keys are
+ *    other controls leave: 56 × 76 at 844 px, 51 × 69 with the Fort button and both powers). Cost
+ *    top-left, class icon top-right, the name in up to two lines at the bottom (never an ellipsis), a radial training fill, the queue badge, the key badge once keys are
  *    used. Affordable cards glow and rest (they never keep moving). Empty loadout slots show a quiet
  *    socket so the tray never jumps between ages.
  *    - **Train on release** (U10): a card trains when a press ends within 450 ms and moved less than
@@ -29,10 +29,13 @@
  *    desktops), 6 px apart; drag onto the field (A18.9.2). Last Stand floats above the Home button only
  *    while armed (A2.11).
  *
- * Width check at 844 (A2.9.10): cluster 100 + 8 + cards 402 + 8 + stance 56 + 8 + dock 134 = 716 within
- * 750; below 820 px 92 + 6 + 361 + 6 + 56 + 6 + 117 = 644 within 686. With the Fort button (`has-fort`,
- * A16.14.7): 100 + 6 + cards 58 × 6 + 4 × 5 = 368 + 6 + stance 56 + 6 + Fort 58 + 6 + dock 58 × 2 + 6 =
- * 122 = 728 within 750; below 820 px cards 52 × 70, stance 48, Fort 52, powers 52: 657 within 686.
+ * Width check (A18.9 seven cards, measured with Playwright 2026-10-07): the cards area is a size container
+ * and each card is min(the breakpoint's card, a seventh of the area minus the gaps). At 844 the row is 828:
+ * cluster 100, stance 3 × 46 + 14 = 152, dock 2 × 64 + 6 = 134, 6 px gaps leave 424, so the cards are
+ * 56 × 76; with the Fort button (`has-fort`, A16.14.7) the dock is
+ * 2 × 56 + 6 and the Fort 56, leaving 378: cards 51 × 69 with 4 px gaps. Below 820 px (800: row 784,
+ * cluster 92, stance 3 × 44 + 14, Fort 52, dock 2 × 52 + 6) 48 × 65. Desktop 1280: 88 × 116, with the
+ * Fort button 81 × 106. `tests/e2e/hud.spec.ts` checks the budget with all of it.
  */
 import type { AgeId, HudCard, UnitDef } from '@/contracts';
 import { Fragment } from 'preact';

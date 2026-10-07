@@ -296,6 +296,10 @@ describe('keyboard (A2.12)', () => {
     // 6 trains the sixth slot (A18.9); the fake plan leaves it empty.
     expect(key('6')).toEqual({ k: 'none' });
     expect(cmdOf(key('6', withCard(m, 5, { card: 'bonker', state: 'ready' })))).toEqual({ t: 'train', side: 0, slot: 5 });
+    // 7 trains the seventh slot (A18.9, owner request 2026-10-07); 8 is free.
+    expect(key('7')).toEqual({ k: 'none' });
+    expect(cmdOf(key('7', withCard(m, 6, { card: 'bonker', state: 'ready' })))).toEqual({ t: 'train', side: 0, slot: 6 });
+    expect(key('8')).toEqual({ k: 'none' });
     expect(cmdOf(key('e'))).toEqual({ t: 'evolve', side: 0 });
     expect(cmdOf(key(' '))).toEqual({ t: 'power', side: 0, slot: 'home' });
     expect(cmdOf(key('x'))).toEqual({ t: 'power', side: 0, slot: 'field' });

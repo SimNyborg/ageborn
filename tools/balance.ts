@@ -72,6 +72,12 @@ export interface BalanceOptions {
   mirrorFormats: FormatId[];
   scenarios: boolean;
   /**
+   * Troop slots the baseline plan fills (A2.14: 5, the default). `--deck 7` fills all seven (A18.9, the
+   * seven-troop check of 2026-10-07): the mirror and every card test then play full decks; the report
+   * says so, and its gates are read against the same A2.14 targets.
+   */
+  deck?: number;
+  /**
    * The format every card test plays in (CONTENT_PLAN section 10: the one-age window `w1.<age>` and the
    * two-age window ending in the card's age). Omitted: the card's Standard window (`cardFormat`).
    */
@@ -136,13 +142,13 @@ export const TARGETS = {
  */
 export type Situation = { kind: 'airEpic'; plan: Plan } | { kind: 'turtle' };
 
-export function situationOf(content: CompiledContent, card: CardId): Situation | null {
+export function situationOf(content: CompiledContent, card: CardId, deck = 5): Situation | null {
   const pw = content.powers[card];
   if (!pw) return null;
   if (pw.family === 'suppress') return { kind: 'turtle' };
   if (pw.family !== 'flak') return null;
   const air = unitsOfAge(content, pw.age).find((u) => u.rarity === 'epic' && u.tags.includes('air'));
-  const plan = clonePlan(baselinePlan(content));
+  const plan = clonePlan(baselinePlan(content, deck));
   const l = plan[pw.age];
   // The Support Rare slot (the baseline's fifth troop slot) holds the air Epic.
   if (air && l) l.units[4] = air.id;
@@ -173,14 +179,14 @@ function botSeat(tier: number): MatchJob['seats'][number] {
 }
 
 /** The tested cards: `cards` (baseline members are reported as control) or every non-baseline card. */
-export function selectTests(content: CompiledContent, cards: CardId[] | null): CardTest[] {
-  return cards ? cards.map((c) => cardTest(content, c)) : allCardTests(content);
+export function selectTests(content: CompiledContent, cards: CardId[] | null, deck = 5): CardTest[] {
+  return cards ? cards.map((c) => cardTest(content, c, deck)) : allCardTests(content, deck);
 }
 
 /** Builds every match job of a balance run, in a stable order. */
 export function balanceJobs(content: CompiledContent, o: BalanceOptions, tests: readonly CardTest[]): MatchJob[] {
   const jobs: MatchJob[] = [];
-  const base = baselinePlan(content);
+  const base = baselinePlan(content, o.deck ?? 5);
   const seats: MatchJob['seats'] = [botSeat(o.tier), botSeat(o.tier)];
   if (o.mirror) {
     for (const format of o.mirrorFormats) {
@@ -192,7 +198,7 @@ export function balanceJobs(content: CompiledContent, o: BalanceOptions, tests: 
   for (const t of tests) {
     if (t.inBaseline) continue;
     const format = o.cardFormat ?? cardFormat(content, t.age);
-    const sit = situationOf(content, t.card);
+    const sit = situationOf(content, t.card, o.deck ?? 5);
     if (sit) {
       // The test plan and the baseline plan each meet the same opponent on the same seeds, on both sides.
       const opp: Plan = sit.kind === 'airEpic' ? sit.plan : base;
@@ -624,9 +630,10 @@ export function scenarioChecks(content: CompiledContent): { checks: Check[]; bas
 
 /** Plays a balance run and returns the report (no files written). */
 export async function runBalance(o: BalanceOptions, content: CompiledContent = gameContent): Promise<Report<BalanceData>> {
-  const tests = selectTests(content, o.cards);
+  const tests = selectTests(content, o.cards, o.deck ?? 5);
   const params = {
     mode: o.mode,
+    deck: o.deck ?? 5,
     pairsPerCard: o.pairsPerCard,
     matchesPerCard: o.pairsPerCard * 2,
     mirrorMatchesPerFormat: o.mirror ? o.mirrorMatches : 0,

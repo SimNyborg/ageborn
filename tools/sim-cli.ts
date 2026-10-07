@@ -54,6 +54,7 @@ Commands:
                   --mode smoke|full --matches N (per card) --mirror N (per format) | --no-mirror
                   --formats short,standard (mirror formats; Full War only at gates, A18.3.4)
                   --cards a,b --card-format w1.stone (the window card tests play in) --tier 5 --level 7 --seed 1 --bound 6 (CI half-width) --no-scenarios
+                  --deck 5|6|7 (troop slots the baseline fills; 5 = A2.14, 7 = every slot, A18.9)
   exploits        scripted exploit proxies vs the tier VII Balanced bot (A2.14)
                   --mode smoke|full --matches N (per proxy and format) --proxies a,b --formats short,standard
                   --tier 7 --level 7 --seed 1 --no-a18 (skip the A18.12 duel and difficulty rows)
@@ -94,7 +95,7 @@ const COMMON_FLAGS = ['out', 'gate', 'workers'];
 
 /** The flags of each command; anything else is a typo and must not silently start a default run. */
 export const COMMAND_FLAGS: Record<string, readonly string[]> = {
-  balance: ['mode', 'matches', 'mirror', 'cards', 'card-format', 'formats', 'tier', 'level', 'seed', 'bound', 'scenarios', 'patch'],
+  balance: ['mode', 'matches', 'mirror', 'cards', 'card-format', 'formats', 'tier', 'level', 'seed', 'bound', 'scenarios', 'patch', 'deck'],
   exploits: ['mode', 'matches', 'proxies', 'formats', 'tier', 'level', 'seed', 'a18', 'power-rows', 'lane', 'lane-matches', 'patch'],
   strength: ['mode', 'matches', 'pairs', 'tiers', 'proxies', 'formats', 'general', 'level', 'seed', 'patch'],
   forts: ['mode', 'rows', 'kinds', 'formats', 'matches', 'matches-full', 'card-matches', 'tier', 'level', 'seed', 'raw', 'patch'],
@@ -215,6 +216,7 @@ export async function main(argv: readonly string[]): Promise<number> {
         bound: int(a, 'bound', d.bound),
         mirror: bool(a, 'mirror', true) && int(a, 'mirror', d.mirrorMatches) > 0,
         scenarios: bool(a, 'scenarios', true),
+        deck: Math.max(5, Math.min(7, int(a, 'deck', 5))),
         workers,
         onProgress: progressPrinter('balance'),
       }, patchedGameContent());

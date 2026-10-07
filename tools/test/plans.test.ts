@@ -15,13 +15,29 @@ describe('A2.14 baseline plan', () => {
       ['common', 'heavy'],
       ['rare', 'antiArmor'],
       ['rare', 'support'],
-      // A18.9: six troop slots; the baseline keeps the sixth empty
+      // A18.9: seven troop slots; the baseline keeps the last two empty
+      [undefined, undefined],
       [undefined, undefined],
     ]);
     expect(l.turrets.map((id) => (id ? content.turrets[id]?.rarity : null))).toEqual(['common', 'common']);
     expect(content.powers[l.powers.home ?? '']).toMatchObject({ slot: 'home', source: 'starter', age });
     expect(content.powers[l.powers.field ?? '']).toMatchObject({ slot: 'field', source: 'starter', age });
     for (const id of [...l.units, ...l.turrets]) if (id !== null) expect(content.units[id]?.age ?? content.turrets[id]?.age).toBe(age);
+  });
+
+  it('--deck 7 fills the two empty troop slots with the next Commons of the age, never a Legendary (A18.9)', () => {
+    for (const age of agesOf(content)) {
+      const five = baselineLoadout(content, age);
+      const seven = baselineLoadout(content, age, 7);
+      expect(seven.units.slice(0, 5)).toEqual(five.units.slice(0, 5));
+      expect(seven.units.filter((id) => id !== null)).toHaveLength(7);
+      expect(new Set(seven.units).size).toBe(7);
+      for (const id of seven.units.slice(5)) {
+        expect(content.units[id ?? '']?.age).toBe(age);
+        expect(content.units[id ?? '']?.rarity).not.toBe('legendary');
+      }
+    }
+    expect(planIssues(content, baselinePlan(content, 7), 'standard')).toEqual([]);
   });
 
   it('is a valid A3 War Plan for every format', () => {
@@ -31,7 +47,7 @@ describe('A2.14 baseline plan', () => {
   it('planIssues catches A3 violations', () => {
     const plan = baselinePlan(content);
     const stone = plan.stone as Loadout;
-    stone.units = [stone.units[0] ?? null, stone.units[0] ?? null, null, null, null, null];
+    stone.units = [stone.units[0] ?? null, stone.units[0] ?? null, null, null, null, null, null];
     stone.turrets = [null, null];
     const issues = planIssues(content, plan, 'short');
     expect(issues.some((i) => i.includes('duplicate'))).toBe(true);
