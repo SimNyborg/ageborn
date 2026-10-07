@@ -274,19 +274,55 @@
     transform: translateX(460%);
   }
 }
+.cos-mock__sky .cos-bd {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+}
+.cos-mock__sky .cos-bd__img {
+  object-position: 20% 100%;
+}
+/* A cel-shaded ground strip (AUDIT §3): lit top edge, grass fill, a darker band below and tufts. */
 .cos-mock__ground {
   position: absolute;
-  inset: auto 0 0 0;
+  inset: auto -2% 0 -2%;
   height: 22%;
-  border-top: 3px solid var(--ui-ink);
-  background: linear-gradient(180deg, #9ad35a 0%, #74b243 40%, #5a8f35 100%);
+  border-top: 3px solid #33401e;
+  border-radius: 40% 60% 0 0 / 14px 18px 0 0;
+  background:
+    linear-gradient(180deg, #a8be84 0 5px, #7fa04a 5px 48%, #5e7637 48% 100%);
+  box-shadow: 0 -2px 0 rgb(255 255 255 / 0.18) inset;
 }
 .cos-mock__ground::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0 3px, transparent 3px 14px);
-  mask: linear-gradient(180deg, #000, transparent 60%);
+  background:
+    radial-gradient(ellipse 8px 3px at 18% 70%, rgb(51 64 30 / 0.35), transparent),
+    radial-gradient(ellipse 10px 3px at 56% 82%, rgb(51 64 30 / 0.3), transparent),
+    radial-gradient(ellipse 7px 2px at 84% 66%, rgb(51 64 30 / 0.35), transparent);
+}
+.cos-mock__tufts {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -9px;
+  height: 12px;
+  background:
+    radial-gradient(ellipse 5px 9px at 12% 100%, #7fa04a 60%, transparent 62%),
+    radial-gradient(ellipse 4px 7px at 14% 100%, #92b379 60%, transparent 62%),
+    radial-gradient(ellipse 5px 10px at 63% 100%, #7fa04a 60%, transparent 62%),
+    radial-gradient(ellipse 4px 8px at 65.5% 100%, #92b379 60%, transparent 62%),
+    radial-gradient(ellipse 5px 9px at 90% 100%, #7fa04a 60%, transparent 62%);
+}
+.cos-mock__shadow {
+  position: absolute;
+  left: 2%;
+  bottom: 15%;
+  width: 52%;
+  height: 7%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(20 24 10 / 0.45), transparent);
 }
 .cos-mock__keep {
   position: absolute;

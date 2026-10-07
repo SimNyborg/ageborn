@@ -438,6 +438,8 @@ interface Amb {
   node: Sprite;
   t: number;
   acc: number;
+  /** Flap and glide frames (birds): textures with their anchors. */
+  frames?: { tex: Texture; ax: number; ay: number }[];
 }
 
 interface Mote {
@@ -807,7 +809,11 @@ export class ProceduralBackdropView implements BackdropView {
   /** Reduce motion and Lite (duck-typed like the base views): quieter weather, no lightning. */
   setMotion(o: { reduce: boolean; lite: boolean }): void {
     this.weather.setMotion(o);
+    this.reduceMotion = o.reduce;
   }
+
+  /** Reduce motion: birds glide (no flapping) and drift at half speed (UI art audit §4). */
+  private reduceMotion = false;
 
   update(dtMs: number): void {
     if (this.destroyed) return;
@@ -933,13 +939,20 @@ export class ProceduralBackdropView implements BackdropView {
       this.ambient.push({ spec, age, node: holder, t: 0, acc: 0 });
       return;
     }
+    if (spec.liteSkip && this.o.quality === 'lite') return;
     const s = fxSprite(this.o.baker, spec.part);
     s.position.set(spec.x, spec.y);
     s.scale.set(spec.scale ?? 1);
     s.tint = spec.tint ?? 0xffffff;
     s.alpha = spec.alpha ?? 1;
     this.ambientLayers[spec.layer].addChild(s);
-    this.ambient.push({ spec, age, node: s, t: this.rng.next() * 5000, acc: 0 });
+    const frames = spec.frames?.map((id) => {
+      const f = fxSprite(this.o.baker, id);
+      const fr = { tex: f.texture, ax: f.anchor.x, ay: f.anchor.y };
+      f.destroy();
+      return fr;
+    });
+    this.ambient.push({ spec, age, node: s, t: this.rng.next() * 5000, acc: 0, ...(frames ? { frames } : {}) });
   }
 
   private stepAmbient(dtMs: number): void {
@@ -962,9 +975,19 @@ export class ProceduralBackdropView implements BackdropView {
           a.node.alpha = (a.node.visible ? 1 : 0) * (0.25 + 0.75 * (Math.sin((a.t / (s.period ?? 1000)) * Math.PI * 2) > 0.6 ? 1 : 0));
           break;
         case 'drift': {
-          a.node.x += (s.speed ?? 20) * dt;
+          a.node.x += (s.speed ?? 20) * dt * (a.frames && this.reduceMotion ? 0.5 : 1);
           a.node.y = s.y + Math.sin(a.t / 700) * 4;
-          if (s.period) {
+          if (a.frames && a.frames.length >= 6) {
+            // UI art audit #5: five flap frames at `period` ms each, a glide pose for 1-2 s every few seconds
+            const glide = this.reduceMotion || Math.sin(a.t / 2300 + a.spec.x * 0.01) > 0.62;
+            const f = a.frames[glide ? 5 : Math.floor(a.t / (s.period ?? 90)) % 5]!;
+            if (a.node.texture !== f.tex) {
+              a.node.texture = f.tex;
+              a.node.anchor.set(f.ax, f.ay);
+            }
+            a.node.scale.set((s.scale ?? 1) * Math.sign(s.speed ?? 1), s.scale ?? 1);
+            a.node.rotation = glide ? 0.04 * Math.sin(a.t / 900) : 0;
+          } else if (s.period) {
             // flapping wings: squash the bird vertically, glide now and then
             const flap = Math.sin((a.t / s.period) * Math.PI * 2);
             const glide = Math.sin(a.t / 2300) > 0.55;

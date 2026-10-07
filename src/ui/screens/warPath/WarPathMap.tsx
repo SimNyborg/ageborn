@@ -26,6 +26,7 @@ import { REGION_THEMES, RegionFar, RegionGround } from './regionArt';
 import { BossLair, Chest, EliteCrest, Foreground, Lantern, Scroll, UnlockBurst } from './mapDeco';
 import { StartCamp } from './regionScenery';
 import { BEARER_CARD } from './propKit';
+import { Bird, Flock } from './skyArt';
 
 /** The map's geometry at a size. */
 export interface MapLayout {
@@ -396,20 +397,16 @@ export function WarPathMap(p: Props) {
           <div class="wp-flocks" aria-hidden="true">
             {[0, 1].map((k) => (
               <span key={k} class={`wp-flock wp-flock--${k}`}>
-                <i />
-                <i />
-                <i />
-                <i />
-                <i />
+                <Flock kind="crow" n={k ? 3 : 5} size={k ? 16 : 20} seed={k + 3} />
               </span>
             ))}
           </div>
           <div class="wp-map__shade" aria-hidden="true" />
           {birds.map((b) => (
             <span key={b.id} class="wp-birds" style={{ left: `${b.x}px`, top: `${b.y}px` }} aria-hidden="true">
-              <i />
-              <i />
-              <i />
+              <Bird kind="crow" size={26} phase={0} cycle={60} />
+              <Bird kind="crow" size={22} phase={0.15} cycle={60} flip />
+              <Bird kind="crow" size={24} phase={0.3} cycle={60} />
             </span>
           ))}
           {away ? (

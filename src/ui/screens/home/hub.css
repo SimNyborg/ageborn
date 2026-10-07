@@ -171,6 +171,13 @@
   height: 100%;
   object-fit: contain;
   object-position: 50% 100%;
+  /* the Blender base replaces the code-drawn stand-in with a 200 ms cross-fade (UI art audit #1) */
+  animation: hd-base-in 200ms var(--ui-ease-standard) both;
+}
+@keyframes hd-base-in {
+  from {
+    opacity: 0;
+  }
 }
 .hd__base--me {
   left: 7%;
@@ -1213,7 +1220,7 @@
 }
 
 /* ---- reduce motion: ambient loops still; entrances become fades (U14) ---- */
-.ui-root[data-reduce-motion='true'] .hub :is(.hd__bob, .hd__unitAct, .hd__unitBody, .hd__clash, .hd__art, .hd__base, .hd-clash, .hd__spark, .hd-smoke__puff, .hd-banner, .hd-flag, .hd-sway, .hd-shimmer, .hd-ship, .hd-glow, .hd-bubble, .hd-snow circle, .hd-neon, .hd-blink, .hd-twinkle, .hd-orbit, .hd-rift, .hd-windows rect, .hd-chunk, .hd-root > path, .hd-win, .home-scene__rays, .hub-slot__drum, .hub-camp__node, .hub-camp__flag::after, .hub-road__shine, .home-scene__layer, .home-scene__motes i) {
+.ui-root[data-reduce-motion='true'] .hub :is(.hd__bob, .hd__unitAct, .hd__unitBody, .hd__clash, .hd__art, .hd__base, .hd__base img, .hd-clash, .hd__spark, .hd-smoke__puff, .hd-banner, .hd-flag, .hd-sway, .hd-shimmer, .hd-ship, .hd-glow, .hd-bubble, .hd-snow circle, .hd-neon, .hd-blink, .hd-twinkle, .hd-orbit, .hd-rift, .hd-windows rect, .hd-chunk, .hd-root > path, .hd-win, .home-scene__rays, .hub-slot__drum, .hub-camp__node, .hub-camp__flag::after, .hub-road__shine, .home-scene__layer, .home-scene__motes i) {
   animation: none !important;
 }
 .ui-root[data-reduce-motion='true'] .hub :is(.hd__float, .hub-camp, .hub-slots, .hub-stage__caption, .hub-plate) {

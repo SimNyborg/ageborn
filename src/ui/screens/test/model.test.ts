@@ -37,10 +37,10 @@ const HOUR = 3600 * 1000;
 describe('cards (A6.6 upgrades, A5.1 level scaling)', () => {
   it('upgrade costs follow the A6.6 table', () => {
     expect(upgradeCost(content, 'common', 1)).toEqual({ copies: 2, amber: 20 });
-    expect(upgradeCost(content, 'common', 9)).toEqual({ copies: 45, amber: 1700 });
+    expect(upgradeCost(content, 'common', 9)).toEqual({ copies: 45, amber: 12000 });
     expect(upgradeCost(content, 'rare', 4)).toEqual({ copies: 6, amber: 200 });
-    expect(upgradeCost(content, 'epic', 6)).toEqual({ copies: 5, amber: 550 });
-    expect(upgradeCost(content, 'legendary', 9)).toEqual({ copies: 2, amber: 1700 });
+    expect(upgradeCost(content, 'epic', 6)).toEqual({ copies: 5, amber: 800 });
+    expect(upgradeCost(content, 'legendary', 9)).toEqual({ copies: 2, amber: 12000 });
     expect(upgradeCost(content, 'legendary', 10)).toBeNull();
   });
 

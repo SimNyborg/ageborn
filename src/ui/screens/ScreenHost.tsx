@@ -79,6 +79,8 @@ export interface ScreenHostProps {
   slots?: ScreenSlots;
   /** The tab shell; without it screens render as before (no bottom tabs). */
   shell?: ShellConfig;
+  /** A one-time sheet over the screens, inside the UI contexts (the onboarding "Make your General"). */
+  overlay?: ComponentChildren;
 }
 
 /** True when the OS asks for reduced motion (ui-plan 5.6); the setting is the other source. */
@@ -249,6 +251,7 @@ export function ScreenHost(p: ScreenHostProps) {
                 {renderRoute(o.route, p.slots)}
               </div>
             ))}
+            {p.overlay ?? null}
             <ToastHost store={toasts} />
             <RotateOverlay />
           </div>

@@ -7,6 +7,7 @@
  * Try again, Next battle, Open capsule or Home; the next battle is always at most one tap away.
  */
 import './result.css';
+import { ResultCrest, ResultHero } from './ResultCrest';
 import { ageNameKey, arenaNameKey, questNameKey, titleNameKey } from '@/content/keys';
 import type { Content, QuestDef } from '@/content/types';
 import type { AgeId, CapsuleTier, MatchResultInput, MatchStats, RewardStep } from '@/contracts';
@@ -32,7 +33,6 @@ import {
   InfoIcon,
   ReplayIcon,
   RoadIcon,
-  ScalesIcon,
   ShieldBrokenIcon,
   StarIcon,
   SwordsIcon,
@@ -808,6 +808,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
     <ResultLayout
       kind={kind}
       title={t(BANNER_KEYS[kind])}
+      hero={<ResultHero spec={save.value.profile.avatar} kind={kind} reduce={reduce} />}
       badge={pathLevel ? <LevelBadge level={pathLevel} rewards={info.rewards} stats={stats} won={kind === 'win'} difficulty={info.input.warPath?.difficulty ?? 'normal'} /> : null}
       vs={
         <>
@@ -996,8 +997,9 @@ export function ResultLayout(p: {
   onTap?: () => void;
   /** The War Path level badge whose stars stamp in (4.9, MR-94). */
   badge?: ComponentChildren;
+  /** Your General reacting (AUDIT #11), right of the banner. */
+  hero?: ComponentChildren;
 }) {
-  const BannerIcon = p.kind === 'win' ? CrownIcon : p.kind === 'loss' ? ShieldBrokenIcon : ScalesIcon;
   return (
     <section
       class={`ui-screen result result--${p.kind}`}
@@ -1011,14 +1013,17 @@ export function ResultLayout(p: {
       {p.kind === 'win' ? <Confetti /> : null}
       <div class="result__body">
         <div class="result__left">
-          <header class="result__banner">
+          <header class={`result__banner${p.hero ? ' has-hero' : ''}`}>
             <span class="result__bannerIcon">
-              <BannerIcon size={44} />
+              <ResultCrest kind={p.kind} />
             </span>
-            <h1 class="result__title" id="result-title" data-testid="result-title" data-outcome={p.kind}>
-              {p.title}
-            </h1>
-            {p.vs ? <p class="result__vs">{p.vs}</p> : null}
+            <span class="result__bannerText">
+              <h1 class="result__title" id="result-title" data-testid="result-title" data-outcome={p.kind}>
+                {p.title}
+              </h1>
+              {p.vs ? <p class="result__vs">{p.vs}</p> : null}
+            </span>
+            {p.hero ?? null}
           </header>
           {p.badge}
           {p.recap}

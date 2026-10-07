@@ -14,7 +14,8 @@ import { EMOTES, type EmoteLayer, type EmoteMotion } from './emotes';
 import { BANNER_OUTLINE, BASE_FLAGS, FLAG_H, FLAG_W, flagFinish, NATIONAL_FLAGS } from './flags';
 import { circle, drawShapes, hex, INK, poly, rect, roundRect, shade, shapesToSvg, star, type Ctx2D, type Paints, type Shape } from './shapes';
 
-export const COSMETIC_COLLECTIONS = ['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop'] as const;
+/** `avatar` (the General's wardrobe) is drawn by the UI's avatar renderer, so the visuals have no art for it. */
+export const COSMETIC_COLLECTIONS = ['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop', 'avatar'] as const;
 export type CosmeticCollectionId = (typeof COSMETIC_COLLECTIONS)[number];
 
 /** The default team colour of previews (side 0, A11). */
@@ -349,6 +350,8 @@ export function cosmeticSvg(key: string, o: CosmeticSvgOptions = {}): string | n
     case 'backdrop':
       // the emblem; the screens show the painted still (a PNG, `cosmeticImageUrl`) when they can
       return backdropIconSvg(k.id);
+    case 'avatar':
+      return null;
   }
 }
 

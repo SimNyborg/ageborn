@@ -27,6 +27,7 @@ import { ScreenFrame } from '../../components/Layout';
 import { ClayMeter } from '../../components/Meters';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
+import { StonePedestal } from './Pedestal';
 import { CapsuleInfo } from '../home/parts';
 import { chargesView, supplyView, trayCapsules } from '../model/progress';
 import { featureOpen } from '../model/warPath';
@@ -109,9 +110,20 @@ export function CapsulesScreen(_p: { route: RouteOf<'capsules'> }) {
           {best ? (
             <>
               <div class="caps-stage__hero">
+                <span class="caps-stage__cone" aria-hidden="true" />
                 <span class="caps-stage__glow" aria-hidden="true" />
-                <span class={`caps-stage__drum caps-stage__drum--${shown(best)}`} key={best.c.id}>
-                  {icon(best, 128)}
+                <span class="caps-stage__motes" aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                </span>
+                <span class="caps-stage__float">
+                  <span class={`caps-stage__drum caps-stage__drum--${shown(best)}`} key={best.c.id}>
+                    {icon(best, 128)}
+                  </span>
+                  <StonePedestal />
                 </span>
                 <span class="caps-stage__name" data-clip-check="">
                   {name(best)}
@@ -130,8 +142,11 @@ export function CapsulesScreen(_p: { route: RouteOf<'capsules'> }) {
           ) : (
             <>
               <div class="caps-stage__hero">
-                <span class="caps-stage__drum is-empty" aria-hidden="true">
-                  <CapsuleIcon tier="bronze" size={96} />
+                <span class="caps-stage__float" aria-hidden="true">
+                  <span class="caps-stage__drum is-empty">
+                    <CapsuleIcon tier="bronze" size={96} />
+                  </span>
+                  <StonePedestal />
                 </span>
                 <span class="caps-stage__name">{t('ui.capsules.emptyTitle')}</span>
                 <span class="caps-stage__source">{t('ui.home.noCapsules')}</span>

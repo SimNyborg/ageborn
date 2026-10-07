@@ -86,7 +86,7 @@ export type ResultCard =
   | { kind: 'wrap'; wins: number; losses: number; newCards: number; chargesOut: boolean };
 
 /** The Customize screen's tabs. */
-export type CustomizeTab = 'troops' | 'bases' | 'backdrops' | 'flags' | 'decorations' | 'emotes' | 'quotes' | 'look';
+export type CustomizeTab = 'general' | 'troops' | 'bases' | 'backdrops' | 'flags' | 'decorations' | 'emotes' | 'quotes' | 'look';
 
 /** Screens without parameters. */
 export type NoParams = object;

@@ -19,7 +19,7 @@ const cust = (tab: string) => mount({ state: 'mid', routes: [{ id: 'home' }, { i
 describe('Customize: collections (A18.9.4)', () => {
   it('shows every tab and the completion over skins and collections', () => {
     m = cust('troops');
-    for (const tab of ['troops', 'bases', 'backdrops', 'flags', 'decorations', 'emotes', 'quotes', 'look']) expect(m.q(`[data-testid="tab-${tab}"]`), tab).not.toBeNull();
+    for (const tab of ['general', 'troops', 'bases', 'backdrops', 'flags', 'decorations', 'emotes', 'quotes']) expect(m.q(`[data-testid="tab-${tab}"]`), tab).not.toBeNull();
     expect(text(m.q('[data-testid="cust-total"]')!)).toMatch(/^\d+\/\d+ found$/);
     // The per-collection counts live on each collection's own tab (review 9: not on Troops).
     expect(m.q('[data-testid="cosmetic-completion"]')).toBeNull();

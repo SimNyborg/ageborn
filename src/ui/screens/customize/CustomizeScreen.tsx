@@ -9,26 +9,26 @@
  * - Flags: the base flag and the national flag (only ever the player's own pick).
  * - Decorations: three fixed spots on the base.
  * - Emotes and Quotes: the battle wheel (fixed lines only; no text chat).
- * - Look: banner, frame and title (owned ones pick; locked ones say how they unlock).
+ * - General (first tab, owner request 2026-10-07): the avatar creator plus frame, banner and title as
+ *   picture tiles ("Banner & title" moved here).
  *
  * Base tabs show a live mock-up of the base; every collection shows "12/40 found". Everything shown
  * exists in the content; nothing here can be bought (A15 red lines).
  */
 import './customize.css';
-import { bannerNameKey, frameNameKey, titleNameKey } from '@/content/keys';
 import type { SkinDef } from '@/contracts';
-import type { ComponentChildren } from 'preact';
 import { useState } from 'preact/hooks';
 import { Pill } from '../../components/Chips';
-import { BrushIcon, CastleIcon, CheckIcon, CrownIcon, FlagIcon, LockIcon } from '../../components/icons';
+import { BrushIcon, CastleIcon } from '../../components/icons';
 import { ScreenFrame } from '../../components/Layout';
 import { Tabs } from '../../components/Tabs';
 import type { CustomizeTab, RouteOf } from '../../router';
 import { SkinTile } from '../collection/CollectionScreen';
 import { useUi } from '../context';
-import { COLLECTIONS, progressOf } from '../model/cosmetics';
+import { ALL_COLLECTIONS, progressOf } from '../model/cosmetics';
+import { GeneralPanel } from './GeneralPanel';
 import { BackdropsPanel, BasesPanel, DecorationsPanel, EmotesPanel, FlagsPanel, QuotesPanel } from './CollectionPanels';
-import { BackdropTabIcon, FlagsTabIcon, QuoteTabIcon, SmileTabIcon, StatueTabIcon } from './icons';
+import { BackdropTabIcon, FlagsTabIcon, QuoteTabIcon, SlotIcon, SmileTabIcon, StatueTabIcon } from './icons';
 
 const isBaseSkin = (k: SkinDef): boolean => k.target.startsWith('base.');
 
@@ -56,109 +56,21 @@ function SkinGrid(p: { skins: SkinDef[]; testid: string }) {
   );
 }
 
-function Choice(p: { on: boolean; locked: boolean; label: string; hint?: string; onPick: () => void; testid: string; icon?: ComponentChildren }) {
-  return (
-    <button
-      type="button"
-      class={`cust-choice${p.on ? ' is-on' : ''}${p.locked ? ' is-locked' : ''}`}
-      aria-pressed={p.on}
-      aria-disabled={p.locked ? 'true' : undefined}
-      data-testid={p.testid}
-      onClick={() => {
-        if (!p.locked && !p.on) p.onPick();
-      }}
-    >
-      <span class="cust-choice__icon" aria-hidden="true">
-        {p.locked ? <LockIcon size={22} /> : p.on ? <CheckIcon size={22} /> : p.icon}
-      </span>
-      <span class="cust-choice__text">
-        <b>{p.label}</b>
-        {p.hint ? <small>{p.hint}</small> : null}
-      </span>
-    </button>
-  );
-}
-
-function LookPanel() {
-  const { save, content, t, services } = useUi();
-  const s = save.value;
-  const c = content.cosmetics;
-  const ownsBanner = (id: string) => id === c.defaults.banner || s.cosmetics.owned.includes(id);
-  const ownsTitle = (id: string) => id === c.defaults.title || s.cosmetics.owned.includes(id);
-  return (
-    <div class="cust-look" data-testid="cust-look">
-      <section>
-        <h3 class="cust-h">
-          <FlagIcon size={22} /> {t('ui.profile.banner')}
-        </h3>
-        <div class="cust-choices">
-          {c.banners.map((b) => (
-            <Choice
-              key={b.id}
-              on={s.profile.banner === b.id}
-              locked={!ownsBanner(b.id)}
-              label={t(bannerNameKey(b.id))}
-              {...(ownsBanner(b.id) ? {} : { hint: t('ui.lock.arena', { n: b.arena }) })}
-              onPick={() => services.setProfile({ banner: b.id })}
-              testid={`banner-${b.id}`}
-              icon={<FlagIcon size={22} />}
-            />
-          ))}
-        </div>
-      </section>
-      <section>
-        <h3 class="cust-h">
-          <CrownIcon size={22} /> {t('ui.profile.frame')}
-        </h3>
-        <div class="cust-choices">
-          <Choice on={s.profile.frame === 'none'} locked={false} label={t('ui.profile.noFrame')} onPick={() => services.setProfile({ frame: 'none' })} testid="frame-none" />
-          {c.frames.map((f) => (
-            <Choice
-              key={f.id}
-              on={s.profile.frame === f.id}
-              locked={f.codexLevel > s.codexLevel}
-              label={t(frameNameKey(f.id))}
-              {...(f.codexLevel > s.codexLevel ? { hint: t('ui.customize.codexLevel', { n: f.codexLevel }) } : {})}
-              onPick={() => services.setProfile({ frame: f.id })}
-              testid={`frame-${f.id}`}
-              icon={<CrownIcon size={22} />}
-            />
-          ))}
-        </div>
-      </section>
-      <section>
-        <h3 class="cust-h">{t('ui.profile.title')}</h3>
-        <div class="cust-choices">
-          {c.titles.map((x) => (
-            <Choice
-              key={x.id}
-              on={s.profile.title === x.id}
-              locked={!ownsTitle(x.id)}
-              label={t(titleNameKey(x.id))}
-              {...(ownsTitle(x.id) ? {} : { hint: t('ui.customize.titleLocked') })}
-              onPick={() => services.setProfile({ title: x.id })}
-              testid={`title-${x.id}`}
-            />
-          ))}
-        </div>
-      </section>
-    </div>
-  );
-}
-
 export function CustomizeScreen(p: { route: RouteOf<'customize'> }) {
   const { save, content, t, router } = useUi();
   const s = save.value;
-  const [tab, setTab] = useState<CustomizeTab>(p.route.tab ?? 'troops');
+  // "Banner & title" moved into General (owner request 2026-10-07); the old tab id opens General.
+  const [tab, setTab] = useState<CustomizeTab>(p.route.tab === 'look' ? 'general' : (p.route.tab ?? 'general'));
   const all = content.order.skins.map((id) => content.skins[id]!);
   const troops = all.filter((k) => !isBaseSkin(k));
   const bases = all.filter(isBaseSkin);
   // "N/M found" over every skin and every cosmetic collection
   const skinsOwned = all.filter((k) => s.skins.owned.includes(k.id)).length;
-  const cos = COLLECTIONS.map((c) => progressOf(s, content, c));
+  const cos = ALL_COLLECTIONS.map((c) => progressOf(s, content, c));
   const owned = skinsOwned + cos.reduce((n, g) => n + g.owned, 0);
   const total = all.length + cos.reduce((n, g) => n + g.total, 0);
   const tabs = [
+    { value: 'general', label: t('avatar.ui.general'), icon: <SlotIcon slot="face" size={20} />, testid: 'tab-general' },
     { value: 'troops', label: t('ui.customize.troops'), icon: <BrushIcon size={20} />, testid: 'tab-troops' },
     { value: 'bases', label: t('ui.customize.bases'), icon: <CastleIcon size={20} />, testid: 'tab-bases' },
     { value: 'backdrops', label: t('cosmetic.ui.tab.backdrops'), icon: <BackdropTabIcon size={20} />, testid: 'tab-backdrops' },
@@ -166,7 +78,6 @@ export function CustomizeScreen(p: { route: RouteOf<'customize'> }) {
     { value: 'decorations', label: t('cosmetic.ui.tab.decorations'), icon: <StatueTabIcon size={20} />, testid: 'tab-decorations' },
     { value: 'emotes', label: t('ui.customize.emotes'), icon: <SmileTabIcon size={20} />, testid: 'tab-emotes' },
     { value: 'quotes', label: t('cosmetic.ui.tab.quotes'), icon: <QuoteTabIcon size={20} />, testid: 'tab-quotes' },
-    { value: 'look', label: t('ui.customize.look'), icon: <CrownIcon size={20} />, testid: 'tab-look' },
   ] as const;
   return (
     <ScreenFrame
@@ -183,7 +94,9 @@ export function CustomizeScreen(p: { route: RouteOf<'customize'> }) {
         {/* Every tab keeps its label (U9: icon plus label). */}
         <Tabs label={t('ui.nav.customize')} value={tab} onChange={setTab} variant="folder" idPrefix="cust" items={tabs} />
         <div class={`col-panel cust-panel cust-panel--${tab}`} role="tabpanel" id="cust-panel" aria-labelledby={`cust-tab-${tab}`} key={tab}>
-          {tab === 'troops' ? (
+          {tab === 'general' || tab === 'look' ? (
+            <GeneralPanel {...(p.route.tab === 'look' ? { initialTab: 'banner' as const } : {})} />
+          ) : tab === 'troops' ? (
             <SkinGrid skins={troops} testid="cust-troops" />
           ) : tab === 'bases' ? (
             <BasesPanel
@@ -200,10 +113,8 @@ export function CustomizeScreen(p: { route: RouteOf<'customize'> }) {
             <DecorationsPanel />
           ) : tab === 'emotes' ? (
             <EmotesPanel />
-          ) : tab === 'quotes' ? (
-            <QuotesPanel />
           ) : (
-            <LookPanel />
+            <QuotesPanel />
           )}
         </div>
       </div>

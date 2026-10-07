@@ -13,7 +13,8 @@ import { BASE_SKINS } from '../cosmetics/baseSkins';
 import { BaseDressing, DRESSING_ANCHORS } from '../cosmetics/dressing';
 import { NATIONAL_FLAGS } from '../cosmetics/flags';
 
-const items = content.cosmetics.collections.items;
+// The General's wardrobe (collection `avatar`) is drawn by the UI's avatar renderer, not by the visuals.
+const items = content.cosmetics.collections.items.filter((x) => x.collection !== 'avatar');
 const FROST = BASE_SKINS.frost_cave!.tint;
 const ROSE = BASE_SKINS.rose_keep!.tint;
 

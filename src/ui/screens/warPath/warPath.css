@@ -911,21 +911,24 @@
   height: 0;
   pointer-events: none;
 }
-.wp-birds i {
+/* MR-49 with real birds (UI art audit #5): three birds take off from the tap and scatter upward,
+   flapping fast, and fade. Reduce motion: they glide and fade without the climb. */
+.wp-birds .ui-bird {
   position: absolute;
-  width: 14px;
-  height: 6px;
-  border-top: 2px solid #1b1712;
-  border-radius: 50% 50% 0 0;
+  left: -14px;
+  top: -10px;
   animation: wp-bird 900ms var(--ui-ease-out) forwards;
 }
-.wp-birds i:nth-child(2) {
+.wp-birds .ui-bird:nth-child(2) {
   --bx: -70px;
   animation-delay: 60ms;
 }
-.wp-birds i:nth-child(3) {
+.wp-birds .ui-bird:nth-child(3) {
   --bx: 90px;
   animation-delay: 110ms;
+}
+.wp-birds .ui-bird__strip {
+  animation-duration: 300ms;
 }
 @keyframes wp-bird {
   from {
@@ -936,6 +939,9 @@
     opacity: 0;
     transform: translate(var(--bx, 30px), -120px) scale(1.2);
   }
+}
+.ui-root[data-reduce-motion='true'] .wp-birds .ui-bird {
+  animation: ui-fade-out 600ms ease-out forwards;
 }
 
 /* ---- ambient life in the region art ---- */
@@ -1789,8 +1795,8 @@
   position: absolute;
   left: 0;
   top: 12%;
-  width: 70px;
-  height: 26px;
+  width: 0;
+  height: 0;
   animation: hub-flock 30s linear infinite;
 }
 .wp-flock--1 {
@@ -1798,39 +1804,6 @@
   animation-duration: 42s;
   animation-delay: -21s;
 }
-.wp-flock i {
-  position: absolute;
-  width: 12px;
-  height: 5px;
-  border-top: 2px solid rgba(20, 16, 24, 0.75);
-  border-radius: 50% 50% 0 0;
-  animation: hub-wing 520ms ease-in-out infinite alternate;
-}
-.wp-flock i:nth-child(1) {
-  left: 0;
-  top: 10px;
-}
-.wp-flock i:nth-child(2) {
-  left: 14px;
-  top: 4px;
-  animation-delay: -150ms;
-}
-.wp-flock i:nth-child(3) {
-  left: 28px;
-  top: 0;
-  animation-delay: -300ms;
-}
-.wp-flock i:nth-child(4) {
-  left: 42px;
-  top: 6px;
-  animation-delay: -80ms;
-}
-.wp-flock i:nth-child(5) {
-  left: 56px;
-  top: 12px;
-  animation-delay: -220ms;
-}
-
 /* ---- node dressings: chest, scroll, elite crest, boss lair, current marker ---- */
 .wp-chest,
 .wp-scroll {
@@ -2036,7 +2009,7 @@
     transform: translate(var(--dx), -6px) scale(1.6);
   }
 }
-.ui-root[data-reduce-motion='true'] .wp-map :is(.wp-grass, .wp-lantern__flame, .wp-lantern__glow, .wp-flock, .wp-flock i, .wp-chest, .wp-chest__glint, .wp-scroll, .wp-lair__flame, .wp-lair__aura, .wp-lair__banner, .wp-node__marker) {
+.ui-root[data-reduce-motion='true'] .wp-map :is(.wp-grass, .wp-lantern__flame, .wp-lantern__glow, .wp-flock, .wp-chest, .wp-chest__glint, .wp-scroll, .wp-lair__flame, .wp-lair__aura, .wp-lair__banner, .wp-node__marker) {
   animation: none !important;
 }
 .ui-root[data-reduce-motion='true'] .wp-map :is(.wp-flocks, .wp-burst__shard, .wp-burst__dust) {

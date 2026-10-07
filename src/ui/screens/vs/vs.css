@@ -34,8 +34,9 @@
   margin-left: -12%;
   animation: vs-in-right 420ms var(--ui-ease-out) both;
 }
-/* Your backdrop skin fills your half under a wash of your team colour (review 11), so the half still
-   reads as yours and the card on it stays readable. */
+/* Each half is a strip of its own lane (AUDIT #10): the sky still (your backdrop skin or the age's
+   classic sky), a soft wash of the team colour so the side still reads as yours or theirs, a cel-shaded
+   ground band and the side's base at the outer edge. */
 .vs__backdrop {
   position: absolute;
   inset: 0;
@@ -50,13 +51,96 @@
   object-position: 30% 100%;
   animation: vs-bd-in 520ms var(--ui-ease-out) both;
 }
+.vs__backdrop--foe .cos-bd__img {
+  object-position: 70% 100%;
+  transform: scaleX(-1);
+  animation: none;
+}
 .vs__backdrop::after {
   content: '';
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 40% 45%, color-mix(in srgb, var(--ui-team-me) 30%, transparent) 0%, transparent 50%),
-    linear-gradient(135deg, color-mix(in srgb, var(--ui-team-me) 62%, transparent), color-mix(in srgb, var(--ui-team-me) 28%, rgba(0, 0, 0, 0.35)));
+    radial-gradient(circle at 46% 42%, rgb(255 255 255 / 0.18) 0%, transparent 42%),
+    linear-gradient(90deg, color-mix(in srgb, var(--ui-team-me) 62%, rgb(0 0 0 / 0.4)), color-mix(in srgb, var(--ui-team-me) 26%, transparent) 70%);
+}
+.vs__backdrop--foe::after {
+  background:
+    radial-gradient(circle at 54% 42%, rgb(255 255 255 / 0.18) 0%, transparent 42%),
+    linear-gradient(270deg, color-mix(in srgb, var(--ui-team-foe) 62%, rgb(0 0 0 / 0.4)), color-mix(in srgb, var(--ui-team-foe) 26%, transparent) 70%);
+}
+.vs__ground {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: 0;
+  z-index: 0;
+  height: 22%;
+  border-top: 3px solid #33401e;
+  background:
+    linear-gradient(180deg, #a8be84 0 6px, #7fa04a 6px 55%, #5e7637 55%);
+  border-radius: 50% 50% 0 0 / 18px 18px 0 0;
+  pointer-events: none;
+}
+.vs__base {
+  position: absolute;
+  bottom: 10%;
+  z-index: 0;
+  width: clamp(110px, 34vh, 220px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 0 rgb(0 0 0 / 0.25));
+  animation: vs-base-in 520ms 120ms var(--ui-ease-out) both;
+}
+.vs__base > * {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.vs__base--me {
+  left: 2%;
+}
+.vs__base--foe {
+  right: 2%;
+}
+.vs__base--foe .cos-base,
+.vs__base--foe .cos-img {
+  transform: scaleX(-1);
+}
+@keyframes vs-base-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+.vs__bust {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding-top: 8px;
+}
+.vs__banner {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  z-index: -1;
+  transform: translateX(-50%) rotate(-2deg);
+  transform-origin: 50% 0;
+  animation: vs-banner 900ms 300ms var(--ui-ease-out) both;
+}
+@keyframes vs-banner {
+  0% {
+    transform: translateX(-50%) rotate(-9deg);
+  }
+  45% {
+    transform: translateX(-50%) rotate(5deg);
+  }
+  75% {
+    transform: translateX(-50%) rotate(-3deg);
+  }
+  100% {
+    transform: translateX(-50%) rotate(-2deg);
+  }
 }
 .vs__half--me.has-backdrop > .vs__card {
   position: relative;
@@ -69,7 +153,9 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .vs__backdrop .cos-bd__img {
+  .vs__backdrop .cos-bd__img,
+  .vs__base,
+  .vs__banner {
     animation: none;
   }
 }
@@ -77,7 +163,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.05) 0 3px, transparent 3px 22px);
+  background: repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.035) 0 3px, transparent 3px 26px);
   pointer-events: none;
 }
 @keyframes vs-in-left {
@@ -159,40 +245,126 @@
 .vs__emblem {
   position: absolute;
   left: 50%;
-  top: 44%;
+  top: 42%;
   z-index: 3;
   display: grid;
   place-items: center;
-  width: clamp(90px, 18vh, 140px);
-  height: clamp(90px, 18vh, 140px);
+  width: clamp(104px, 26vh, 170px);
+  aspect-ratio: 120 / 132;
   transform: translate(-50%, -50%);
-  border: 5px solid var(--ui-ink);
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 35%, #fff6c4, #ffcf3a 50%, #d4870f);
-  box-shadow: 0 8px 0 var(--ui-ink), 0 0 60px rgba(255, 207, 58, 0.7);
-  animation: vs-slam 520ms 260ms var(--ui-ease-back) both;
+  filter: drop-shadow(0 6px 0 var(--ui-ink)) drop-shadow(0 0 24px rgb(255 214 120 / 0.55));
+  animation: vs-slam 620ms 260ms var(--ui-ease-back) both;
 }
-.vs__emblem span {
-  font-size: clamp(38px, 8vh, 64px);
+.vs__shield {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.vs__blades {
+  transform-box: view-box;
+  transform-origin: 60px 64px;
+  animation: vs-clash 420ms 420ms var(--ui-ease-out) both;
+}
+.vs__vs {
+  grid-area: 1 / 1;
+  margin-top: -6%;
+  font-size: clamp(30px, 7.4vh, 54px);
   font-weight: 900;
   font-style: italic;
-  color: #fff;
+  color: #fff6d0;
   paint-order: stroke fill;
-  -webkit-text-stroke: 8px var(--ui-ink);
+  -webkit-text-stroke: 7px var(--ui-ink);
   text-shadow: 0 4px 0 var(--ui-ink);
 }
+/* The slam: a fall from 3x, a 60 ms hold at the impact, a small overshoot (AUDIT §4). */
 @keyframes vs-slam {
   0% {
-    transform: translate(-50%, -50%) scale(3) rotate(-20deg);
+    transform: translate(-50%, -50%) scale(3) rotate(-18deg);
     opacity: 0;
   }
-  70% {
-    transform: translate(-50%, -50%) scale(0.9) rotate(4deg);
+  58% {
+    transform: translate(-50%, -50%) scale(0.88) rotate(3deg);
     opacity: 1;
+  }
+  68% {
+    transform: translate(-50%, -50%) scale(0.88) rotate(3deg);
+  }
+  84% {
+    transform: translate(-50%, -50%) scale(1.04) rotate(-1deg);
   }
   100% {
     transform: translate(-50%, -50%) scale(1) rotate(0);
   }
+}
+@keyframes vs-clash {
+  0% {
+    transform: scale(1.18) rotate(0);
+  }
+  40% {
+    transform: scale(0.96) rotate(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.vs__dust {
+  position: absolute;
+  bottom: 4%;
+  width: 34%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 60%, rgb(244 241 234 / 0.95) 0 22%, transparent 23%),
+    radial-gradient(circle at 62% 48%, rgb(244 241 234 / 0.9) 0 26%, transparent 27%),
+    radial-gradient(circle at 48% 70%, rgb(214 206 190 / 0.9) 0 24%, transparent 25%);
+  filter: blur(1.5px);
+  opacity: 0;
+  animation: vs-dust 620ms 560ms ease-out both;
+}
+.vs__dust--a {
+  left: -14%;
+  --dx: -60%;
+}
+.vs__dust--b {
+  right: -14%;
+  --dx: 60%;
+}
+.vs__dust--c {
+  left: 8%;
+  bottom: -6%;
+  width: 26%;
+  --dx: -30%;
+  animation-delay: 640ms;
+}
+.vs__dust--d {
+  right: 8%;
+  bottom: -6%;
+  width: 26%;
+  --dx: 30%;
+  animation-delay: 640ms;
+}
+@keyframes vs-dust {
+  0% {
+    opacity: 0.9;
+    transform: translate(0, 0) scale(0.4);
+  }
+  60% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), -40%) scale(1.4);
+  }
+}
+.ui-root[data-reduce-motion='true'] .vs__emblem {
+  animation: ui-fade 240ms ease-out both;
+}
+.ui-root[data-reduce-motion='true'] :is(.vs__blades, .vs__dust, .vs__base, .vs__banner, .vs__half--me, .vs__half--foe) {
+  animation: none;
+}
+.ui-root[data-reduce-motion='true'] .vs__dust {
+  display: none;
 }
 .vs__strip {
   grid-column: 1 / -1;
@@ -264,9 +436,17 @@
   }
   .vs__card .ui-avatar,
   .vs__card .ui-general {
-    width: 72px !important;
-    height: 72px !important;
+    width: 96px !important;
+    height: 96px !important;
     border-radius: 18px;
+  }
+  .vs__banner {
+    width: 124px;
+    height: auto;
+  }
+  .vs__base {
+    width: 120px;
+    bottom: 12%;
   }
   .vs__name {
     font-size: 24px;

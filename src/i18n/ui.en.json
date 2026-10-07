@@ -543,12 +543,9 @@
     "customize": {
       "troops": "Troops",
       "bases": "Bases",
-      "look": "Banner & title",
       "emotes": "Emotes",
       "owned": "{n}/{max} skins",
-      "howToGet": "Win skins from Wardrobe Crates, the Trophy Road and War Chests, or craft them with Dust.",
-      "codexLevel": "Codex Level {n}",
-      "titleLocked": "Earned by a feat or milestone"
+      "howToGet": "Win skins from Wardrobe Crates, the Trophy Road and War Chests, or craft them with Dust."
     },
     "collection": {
       "cards": "Cards",
@@ -593,13 +590,6 @@
       "name": "Name",
       "editName": "Change name",
       "nameHint": "Any name you like. You can change it any time.",
-      "look": "Your look",
-      "portrait": "Portrait",
-      "face": "Face",
-      "frame": "Frame",
-      "noFrame": "No frame",
-      "banner": "Banner",
-      "title": "Title",
       "best": "Best trophies",
       "record": "Wins, losses, draws",
       "recordValue": "{w}-{l}-{d}",

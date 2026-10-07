@@ -390,7 +390,7 @@ function EdgeStones(p: { pal: IslandPalette; seed: number }) {
  * stretch from the feet) and the picture (mirrored for the AI, who faces left).
  */
 function LaneUnit(p: { card: CardId; side: Side; slot: 0 | 1 }) {
-  const url = usePortrait(p.card, { size: 192, plate: false, ...(p.side ? { side: 1 as const } : {}) });
+  const url = usePortrait(p.card, { size: 256, plate: false, ...(p.side ? { side: 1 as const } : {}) });
   return (
     <span class={`hd__unit hd__unit--${p.side ? 'foe' : 'me'} hd__unit--s${p.slot}`} data-card={p.card}>
       <i class="hd__unitShadow" />

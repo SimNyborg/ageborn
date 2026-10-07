@@ -55,6 +55,18 @@ export function afterOnboardingMatch(step: OnboardingStep, won: boolean): Onboar
   return step;
 }
 
+/**
+ * True when the one-time "Make your General" sheet is due (owner request 2026-10-07, AUDIT §6.6): A8
+ * allows no name or look step before the first win, so it opens after capsule 1 (step `match2` or
+ * `capsule2`) until the player taps Done (`flag`). Saves already past onboarding keep their migrated
+ * look and never see it; they edit it in Customize › General.
+ */
+export function makeGeneralDue(save: SaveDoc | null, flag: string): boolean {
+  if (!save || save.flags[flag] === true) return false;
+  const step = onboardingStep(save);
+  return step === 'match2' || step === 'capsule2';
+}
+
 /** What the player can open, by matches played (A3 unlock order). */
 export function unlocks(save: SaveDoc | null): { warPlan: boolean; skirmish: boolean; stance: boolean; lastStandButton: boolean } {
   const played = save?.matchesPlayed ?? 0;

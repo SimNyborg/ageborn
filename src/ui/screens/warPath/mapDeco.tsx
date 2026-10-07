@@ -9,6 +9,8 @@
 import type { AgeId } from '@/contracts';
 import { fnv1a32, mulberry32 } from '@/core';
 import type { ComponentChildren } from 'preact';
+import { ink, light, mix, shade } from '../../components/tone';
+import { SwordsIcon } from '../../components/icons';
 import { REGION_THEMES } from './regionArt';
 
 const INK = '#1b1712';
@@ -58,18 +60,12 @@ export function Scroll() {
   );
 }
 
-/** Two crossed swords behind an elite (Hard) shield. */
+/** Two crossed swords behind an elite (Hard) shield: the shared steel swords (UI art audit §2.2). */
 export function EliteCrest(p: { size: number }) {
-  const s = p.size * 1.5;
+  const s = p.size * 2.05;
   return (
-    <i class="wp-crest" aria-hidden="true" style={{ width: `${s}px`, height: `${s}px`, left: `${(p.size - s) / 2}px`, top: `${(p.size - s) / 2 - 4}px` }}>
-      <svg viewBox="0 0 60 60" width={s} height={s}>
-        <g stroke-linecap="round">
-          <path d="M8 8 L52 52 M52 8 L8 52" stroke={INK} stroke-width="7" />
-          <path d="M8 8 L52 52 M52 8 L8 52" stroke="#c9d1dc" stroke-width="3.5" />
-          <path d="M14 20 l6 -6 M40 14 l6 6" stroke="#d9a441" stroke-width="4" />
-        </g>
-      </svg>
+    <i class="wp-crest" aria-hidden="true" style={{ width: `${s}px`, height: `${s}px`, left: `${(p.size - s) / 2}px`, top: `${(p.size - s) / 2 - 2}px` }}>
+      <SwordsIcon size={s} hero />
     </i>
   );
 }
@@ -84,10 +80,16 @@ export function BossLair(p: { size: number; lit: boolean }) {
         <ellipse class="wp-lair__aura" cx="60" cy="54" rx="50" ry="22" fill="#ff5a3a" opacity=".25" />
         {[14, 106].map((x, i) => (
           <g key={x}>
-            <path d={`M${x} 80 V14`} stroke="#3b2a1e" stroke-width="3" />
-            <path d={`M${x} 14 l-4 -8 l4 3 l4 -3 z`} fill="#c9d1dc" stroke={INK} stroke-width="1" />
-            <path class="wp-lair__banner" d={i ? `M${x} 18 h-14 v22 l7 -5 l7 5 z` : `M${x} 18 h14 v22 l-7 -5 l-7 5 z`} fill="#7a2a24" stroke={INK} stroke-width="1.5" />
-            <path d={i ? `M${x - 10} 26 l3 4 l3 -4` : `M${x + 4} 26 l3 4 l3 -4`} stroke="#d9a441" stroke-width="1.6" fill="none" />
+            <path d={`M${x} 80 V14`} stroke={ink('#5a3a24')} stroke-width="4.6" stroke-linecap="round" />
+            <path d={`M${x} 80 V14`} stroke="#6b4a2e" stroke-width="2.6" stroke-linecap="round" />
+            <path d={`M${x} 14 l-4 -8 l4 3 l4 -3 z`} fill="#c9d1dc" stroke={ink('#c9d1dc')} stroke-width="1" />
+            <g class="wp-lair__banner">
+              <path d={i ? `M${x} 18 h-14 v22 l7 -5 l7 5 z` : `M${x} 18 h14 v22 l-7 -5 l-7 5 z`} fill="#8a2e26" />
+              <path d={i ? `M${x - 14} 18 h5 v19 l-5 3 z` : `M${x + 9} 18 h5 v22 l-5 -3.6 z`} fill={shade('#8a2e26')} />
+              <path d={i ? `M${x - 1.4} 19.4 h-3 v14 h3 z` : `M${x + 1.4} 19.4 h3 v14 h-3 z`} fill={light('#8a2e26')} opacity=".7" />
+              <path d={i ? `M${x} 18 h-14 v22 l7 -5 l7 5 z` : `M${x} 18 h14 v22 l-7 -5 l-7 5 z`} fill="none" stroke={ink('#8a2e26')} stroke-width="1.5" stroke-linejoin="round" />
+              <path d={i ? `M${x - 10} 26 l3 4 l3 -4` : `M${x + 4} 26 l3 4 l3 -4`} stroke="#e8b23a" stroke-width="1.8" fill="none" />
+            </g>
           </g>
         ))}
         {[30, 90].map((x, i) => (
@@ -105,25 +107,26 @@ export function BossLair(p: { size: number; lit: boolean }) {
 /** A lantern beside the road, in the region's style: lit (glow and flicker) or dark. */
 export function Lantern(p: { x: number; y: number; age: AgeId; lit: boolean; s: number }) {
   const t = REGION_THEMES[p.age];
-  const glow = p.age === 'future' || p.age === 'cosmic' ? t.accent : '#ffcf6a';
-  const post = p.age === 'future' || p.age === 'cosmic' ? '#34506a' : '#3b2a1e';
+  const late = p.age === 'future' || p.age === 'cosmic';
+  const glow = late ? t.accent : '#ffcf6a';
+  const post = late ? '#4a6684' : '#6b4a2e';
+  const cage = late ? '#3a4a5c' : p.age === 'stone' || p.age === 'bronze' ? '#7a5433' : '#3d3f45';
   return (
     <g transform={`translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) scale(${p.s.toFixed(2)})`} class={p.lit ? 'wp-lantern is-lit' : 'wp-lantern'}>
-      <ellipse cx="0" cy="0" rx="6" ry="2" fill="#000" opacity=".3" />
-      <path d="M0 0 V-22" stroke={post} stroke-width="2.4" />
+      <ellipse cx="0" cy="0" rx="6.4" ry="2.2" fill="#000" opacity=".3" />
+      {p.lit ? <circle class="wp-lantern__glow" cx="0" cy="-26" r="12" fill={glow} opacity=".28" /> : null}
+      <path d="M0 0 V-22" stroke={ink(post)} stroke-width="4" stroke-linecap="round" />
+      <path d="M0 0 V-22" stroke={post} stroke-width="2.2" stroke-linecap="round" />
       {p.age === 'stone' || p.age === 'bronze' ? (
-        <path d="M-5 -22 h10 l-2 5 h-6 z" fill="#6b4a2c" stroke={INK} stroke-width="1" />
+        <path d="M-5.4 -22 h10.8 l-2.2 5.4 h-6.4 z" fill={cage} stroke={ink(cage)} stroke-width="1.1" stroke-linejoin="round" />
       ) : (
-        <rect x="-4" y="-30" width="8" height="9" rx="1.5" fill={p.lit ? '#3b2a1e' : '#2a2f38'} stroke={INK} stroke-width="1" />
-      )}
-      {p.lit ? (
         <>
-          <circle class="wp-lantern__glow" cx="0" cy="-26" r="9" fill={glow} opacity=".35" />
-          <path class="wp-lantern__flame" d="M-2.6 -23 Q-3 -28 0 -31 Q3 -28 2.6 -23 Z" fill={glow} />
+          <path d="M-4.6 -21 h9.2 v-9.4 l-1.6 -2 h-6 l-1.6 2 z" fill={p.lit ? mix(glow, '#ffffff', 0.25) : '#2a2f38'} stroke={ink(cage)} stroke-width="1.3" stroke-linejoin="round" />
+          <path d="M-4.6 -21 h9.2 M0 -32.4 V-21 M-5.6 -30.4 h11.2" stroke={cage} stroke-width="1.3" />
+          <path d="M-2.4 -32.4 L0 -35 L2.4 -32.4Z" fill={cage} stroke={ink(cage)} stroke-width="1" />
         </>
-      ) : (
-        <circle cx="0" cy="-25.5" r="2" fill="#5a6070" />
       )}
+      {p.lit ? <path class="wp-lantern__flame" d="M-2.6 -23 Q-3 -28 0 -31 Q3 -28 2.6 -23 Z" fill={glow} stroke={mix(glow, '#ffffff', 0.5)} stroke-width=".8" /> : <circle cx="0" cy="-25.5" r="2" fill="#5a6070" />}
     </g>
   );
 }

@@ -189,11 +189,15 @@ export function BaseMock(p: { age: AgeId; look?: Partial<CosmeticLoadout>; ancho
   const decorations = Array.from({ length: ANCHOR_COUNT }, (_, i) => eq.decorations[i] ?? null);
   return (
     <figure class={`cos-mock${reduce ? ' is-still' : ''}`} data-testid="base-mock" aria-label={t('cosmetic.ui.preview')}>
+      {/* The age's own sky and far layers (your backdrop skin when one is on), as the lane shows them
+          (AUDIT #12), then a cel-shaded ground strip with a contact shadow under the keep. */}
       <div class="cos-mock__sky" aria-hidden="true">
-        <span class="cos-mock__cloud" />
-        <span class="cos-mock__cloud cos-mock__cloud--b" />
+        <BackdropLook skin={eq.backdrop ?? null} age={p.age} animate={false} />
       </div>
-      <div class="cos-mock__ground" aria-hidden="true" />
+      <div class="cos-mock__ground" aria-hidden="true">
+        <span class="cos-mock__tufts" />
+      </div>
+      <span class="cos-mock__shadow" aria-hidden="true" />
       {/* keyed by age and skin, so a change re-runs the entrance (the equip feedback) */}
       <div class="cos-mock__keep" key={`${p.age}|${skin ?? ''}`} aria-hidden="true">
         <BaseLook age={p.age} skin={skin} animate={!reduce} testid="base-mock-keep" />

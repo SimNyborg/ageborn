@@ -17,6 +17,7 @@ import { ScreenFrame } from '../../components/Layout';
 import { Tabs } from '../../components/Tabs';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
+import { FeatMedal } from './FeatMedal';
 import { CompletionStrip } from '../customize/CollectionPanels';
 import { cardDef, cardGlyph } from '../model/cards';
 import { featViews } from '../model/collection';
@@ -105,22 +106,25 @@ function FeatsPanel() {
         {views.map((v) => (
           <li key={v.id} class={`col-feat${v.found ? ' is-found' : ''}`} data-testid={`feat-${v.id}`}>
             <span class="col-feat__badge" aria-hidden="true">
-              {v.found ? <StarIcon size={30} /> : <span class="col-feat__q">?</span>}
+              <FeatMedal id={v.id} found={v.found} />
             </span>
             <span class="col-feat__text">
               <b class="col-feat__name">{v.found ? t(v.nameKey) : t('ui.feats.unknown')}</b>
               <span class="col-feat__riddle">{t(v.riddleKey)}</span>
               {v.found || v.hinted ? <span class="col-feat__hint">{t(v.hintKey)}</span> : null}
-              <span class="col-feat__reward">
-                <DustIcon size={16} /> {v.dust}
-                {v.title ? <span class="col-feat__title">{t('ui.feats.plusTitle')}</span> : null}
+              {/* The reward and the hint button share the last row, so the riddle never runs under it. */}
+              <span class="col-feat__foot">
+                <span class="col-feat__reward">
+                  <DustIcon size={16} /> {v.dust}
+                  {v.title ? <span class="col-feat__title">{t('ui.feats.plusTitle')}</span> : null}
+                </span>
+                {!v.found && !v.hinted ? (
+                  <Button kind="secondary" size="sm" testid={`feat-hint-${v.id}`} onClick={() => services.showFeatHint(v.id)}>
+                    {t('ui.feats.showHint')}
+                  </Button>
+                ) : null}
               </span>
             </span>
-            {!v.found && !v.hinted ? (
-              <Button kind="secondary" size="sm" testid={`feat-hint-${v.id}`} onClick={() => services.showFeatHint(v.id)}>
-                {t('ui.feats.showHint')}
-              </Button>
-            ) : null}
           </li>
         ))}
       </ul>

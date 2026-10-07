@@ -346,3 +346,41 @@
   text-align: right;
   white-space: nowrap;
 }
+
+/* The General on the player's banner (owner request 2026-10-07): the banner cloth hangs behind the
+   bust, the title is a parchment ribbon. The avatar hops a little on hover (lift) and press (squash). */
+.prof-avatar {
+  margin: 8px 6px 4px;
+  transition: transform 180ms var(--ui-ease-out);
+}
+.prof-avatar:hover {
+  transform: translateY(-3px);
+}
+.prof-avatar:active {
+  transform: translateY(1px) scale(0.97);
+}
+.prof-avatar .ui-avatar {
+  position: relative;
+  z-index: 1;
+}
+.prof-avatar__banner {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  z-index: 0;
+  transform: translateX(-50%);
+}
+.prof-avatar__edit {
+  z-index: 2;
+}
+.prof-id__title.av-ribbon {
+  align-self: flex-start;
+  margin-left: 10px;
+  color: #3a2a22;
+  letter-spacing: 0.04em;
+  font-size: 12px;
+}
+.ui-root[data-reduce-motion='true'] .prof-avatar {
+  transition: none;
+  transform: none;
+}

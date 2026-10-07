@@ -5,11 +5,11 @@
  * of the last 20 matches, each with a replay and an "AI" marker (A7.1). No login, no account.
  */
 import './profile.css';
-import { bannerNameKey, formatNameKey, frameNameKey, titleNameKey, titleUnlockKey } from '@/content/keys';
-import type { CardId } from '@/contracts';
+import { formatNameKey, titleNameKey, titleUnlockKey } from '@/content/keys';
 import type { ComponentChildren } from 'preact';
 import { useState } from 'preact/hooks';
 import { Avatar } from '../../components/Avatar';
+import { BannerArt, FRAME_COLORS, TitleRibbon } from '../../components/avatar/ProfileArt';
 import { Button, IconButton } from '../../components/Button';
 import { CardTile } from '../../components/CardTile';
 import { AiBadge, Pill } from '../../components/Chips';
@@ -20,7 +20,7 @@ import { ProgressBar } from '../../components/Meters';
 import { Modal } from '../../components/Modal';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
-import { cardTile, isOwned } from '../model/cards';
+import { cardTile } from '../model/cards';
 import { collectionMilestones, historyRows, profileView } from '../model/profile';
 import { isTesterProfile } from '../model/tester';
 
@@ -60,101 +60,6 @@ function NameModal(p: { name: string; onSave: (n: string) => void; onClose: () =
   );
 }
 
-function LookModal(p: { onClose: () => void }) {
-  const { save, content, t, services } = useUi();
-  const s = save.value;
-  const frames = content.cosmetics.frames.filter((f) => f.codexLevel <= s.codexLevel);
-  const banners = content.cosmetics.banners.filter(
-    (b) => b.id === s.profile.banner || s.cosmetics.owned.includes(b.id) || b.id === content.cosmetics.defaults.banner,
-  );
-  const titles = content.cosmetics.titles.filter(
-    (x) => x.id === s.profile.title || s.cosmetics.owned.includes(x.id) || x.id === content.cosmetics.defaults.title,
-  );
-  const portraits = content.order.units.filter((id) => isOwned(s, id, content)).slice(0, 40);
-  return (
-    <Modal title={t('ui.profile.look')} size="lg" onClose={p.onClose} testid="look-modal">
-      <div class="prof-look">
-        <section>
-          <h3>{t('ui.profile.portrait')}</h3>
-          <div class="prof-look__grid">
-            <button
-              type="button"
-              class={`prof-look__opt${s.profile.avatar.portraitCard ? '' : ' is-on'}`}
-              onClick={() => services.setProfile({ portraitCard: null })}
-              data-testid="look-face"
-            >
-              <Avatar spec={{ ...s.profile.avatar, portraitCard: undefined }} size={56} />
-              <span>{t('ui.profile.face')}</span>
-            </button>
-            {portraits.map((id: CardId) => {
-              const tile = cardTile(s, content, id, t)!;
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  class={`prof-look__opt${s.profile.avatar.portraitCard === id ? ' is-on' : ''}`}
-                  onClick={() => services.setProfile({ portraitCard: id })}
-                >
-                  <CardTile card={{ ...tile, isNew: false, upgradeReady: false }} size="xs" hideLevel />
-                  <span>{tile.name}</span>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-        <section>
-          <h3>{t('ui.profile.frame')}</h3>
-          <div class="prof-look__chips">
-            <button
-              type="button"
-              class={`prof-chipbtn${s.profile.frame === 'none' ? ' is-on' : ''}`}
-              onClick={() => services.setProfile({ frame: 'none' })}
-            >
-              {t('ui.profile.noFrame')}
-            </button>
-            {frames.map((f) => (
-              <button
-                key={f.id}
-                type="button"
-                class={`prof-chipbtn${s.profile.frame === f.id ? ' is-on' : ''}`}
-                onClick={() => services.setProfile({ frame: f.id })}
-              >
-                {t(frameNameKey(f.id))}
-              </button>
-            ))}
-          </div>
-          <h3>{t('ui.profile.banner')}</h3>
-          <div class="prof-look__chips">
-            {banners.map((b) => (
-              <button
-                key={b.id}
-                type="button"
-                class={`prof-chipbtn${s.profile.banner === b.id ? ' is-on' : ''}`}
-                onClick={() => services.setProfile({ banner: b.id })}
-              >
-                {t(bannerNameKey(b.id))}
-              </button>
-            ))}
-          </div>
-          <h3>{t('ui.profile.title')}</h3>
-          <div class="prof-look__chips">
-            {titles.map((x) => (
-              <button
-                key={x.id}
-                type="button"
-                class={`prof-chipbtn${s.profile.title === x.id ? ' is-on' : ''}`}
-                onClick={() => services.setProfile({ title: x.id })}
-              >
-                {t(titleNameKey(x.id))}
-              </button>
-            ))}
-          </div>
-        </section>
-      </div>
-    </Modal>
-  );
-}
-
 function Stat(p: { label: string; value: string; icon?: ComponentChildren; testid?: string }) {
   return (
     <div class="prof-stat" data-testid={p.testid}>
@@ -171,7 +76,6 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
   const v = profileView(s, content);
   const rows = historyRows(services.matchHistory(), content.hash);
   const [editName, setEditName] = useState(false);
-  const [look, setLook] = useState(false);
   const fav = v.favourite ? cardTile(s, content, v.favourite, t) : null;
   const winRate = v.matches > 0 ? Math.round((v.wins * 100) / v.matches) : 0;
   const frame = content.cosmetics.frames.find((f) => f.id === s.profile.frame);
@@ -187,11 +91,12 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
               <button
                 type="button"
                 class="prof-avatar"
-                onClick={() => setLook(true)}
-                aria-label={t('ui.profile.look')}
+                onClick={() => router.go({ id: 'customize', tab: 'general' })}
+                aria-label={t('avatar.ui.edit')}
                 data-testid="edit-look"
               >
-                <Avatar spec={s.profile.avatar} size={104} frameColor={frame ? 'var(--ui-gold)' : 'var(--ui-team-me)'} />
+                <BannerArt id={s.profile.banner} width={122} class="prof-avatar__banner" />
+                <Avatar spec={s.profile.avatar} size={104} crop="bust" frameColor={FRAME_COLORS[frame?.id ?? 'none'] ?? 'var(--ui-gold)'} />
                 <span class="prof-avatar__edit">
                   <PencilIcon size={18} />
                 </span>
@@ -206,13 +111,12 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
                     testid="edit-name-btn"
                   />
                 </div>
-                {s.profile.title ? <span class="prof-id__title">{t(titleNameKey(s.profile.title))}</span> : null}
+                {s.profile.title ? <TitleRibbon class="prof-id__title" text={t(titleNameKey(s.profile.title))} /> : null}
                 <span class="prof-id__pills">
                   <Pill tone="gold" icon={<TrophyIcon size={16} />}>
                     {formatInt(v.trophies, locale)}
                   </Pill>
                   <Pill tone="blue">{t(v.arenaNameKey)}</Pill>
-                  {s.profile.banner ? <Pill tone="red">{t(bannerNameKey(s.profile.banner))}</Pill> : null}
                   {isTesterProfile(s) ? (
                     <Pill tone="violet" testid="tester-chip" title={t('tester.chipNote')}>
                       {t('tester.chip')}
@@ -352,7 +256,6 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
           }}
         />
       ) : null}
-      {look ? <LookModal onClose={() => setLook(false)} /> : null}
     </ScreenFrame>
   );
 }

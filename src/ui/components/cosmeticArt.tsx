@@ -8,6 +8,8 @@ import './cosmeticArt.css';
 import type { AgeId, CardId, Side } from '@/contracts';
 import { createContext } from 'preact';
 import { useContext, useEffect, useState } from 'preact/hooks';
+import { avatar as avatarTables } from '@/content/raw/avatar';
+import { AvatarLookView, type ResolvedLook } from './Avatar';
 import { usePortrait } from './kit';
 
 export interface CosmeticImageOptions {
@@ -33,9 +35,29 @@ export function useCosmeticImage(): CosmeticImageFn | null {
   return useContext(CosmeticArtContext);
 }
 
+/** A General's wardrobe item shown on a plain General (the UI draws avatar parts itself, AUDIT §6). */
+export function AvatarItemArt(p: { item: string; class?: string; testid?: string; size?: number }) {
+  const id = p.item.slice('avatar.'.length);
+  const part = avatarTables.parts.find((x) => x.id === id);
+  if (!part) return <span class={`cos-img cos-img--empty ${p.class ?? ''}`} aria-hidden="true" data-testid={p.testid} />;
+  const look = { ...ITEM_LOOK, parts: { ...ITEM_LOOK.parts, [part.slot]: id } };
+  return (
+    <span class={`cos-img cos-img--avatar ${p.class ?? ''}`} aria-hidden="true" data-testid={p.testid}>
+      <AvatarLookView look={look} size={p.size ?? 72} crop={part.slot === 'headwear' ? 'head' : 'bust'} />
+    </span>
+  );
+}
+
+/** The plain General wardrobe items are shown on. */
+const ITEM_LOOK: ResolvedLook = {
+  parts: { face: 'face_round', eyes: 'eyes_round', brows: 'brows_raised', nose: 'nose_button', mouth: 'mouth_smile', hair: 'hair_crop', facialHair: 'beard_none', headwear: 'hat_none', top: 'top_tee', accessory: 'acc_none', background: 'bg_slate' },
+  tints: { skin: 1, hair: 2, eyes: 0, cloth: 6 },
+};
+
 /** An item's picture, or a soft placeholder when no art provider is present. */
 export function CosmeticImage(p: { item: string; class?: string; team?: number; animate?: boolean; testid?: string }) {
   const fn = useCosmeticImage();
+  if (p.item.startsWith('avatar.')) return <AvatarItemArt item={p.item} {...(p.class ? { class: p.class } : {})} {...(p.testid ? { testid: p.testid } : {})} />;
   const url = fn ? fn(p.item, { ...(p.team !== undefined ? { team: p.team } : {}), ...(p.animate !== undefined ? { animate: p.animate } : {}) }) : null;
   if (!url) return <span class={`cos-img cos-img--empty ${p.class ?? ''}`} aria-hidden="true" data-testid={p.testid} />;
   return <img class={`cos-img ${p.class ?? ''}`} src={url} alt="" aria-hidden="true" draggable={false} data-testid={p.testid} />;

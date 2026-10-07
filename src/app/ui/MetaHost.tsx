@@ -9,7 +9,9 @@ import { useEffect, useMemo } from 'preact/hooks';
 import { asContent } from '@/content';
 import { bindHistory, LEAVE_AGAIN_KEY } from '@/ui/history';
 import { handleBack, ScreenHost, shellTabs, TAB_ROOTS, visibleEntries, type ScreenSlots, type ShellConfig, type UiEnv } from '@/ui/screens';
+import { MakeGeneral, MAKE_GENERAL_FLAG } from '@/ui/screens/customize/MakeGeneral';
 import type { MetaUi } from '../metaUi';
+import { makeGeneralDue } from '../onboarding';
 import { BattleScreen } from './BattleScreen';
 import { useApp } from './context';
 import './meta.css';
@@ -78,9 +80,12 @@ export function MetaHost(p: MetaHostProps) {
   const shell: ShellConfig = useMemo(() => ({ tabs: shellTabs(save, env.content), roots: TAB_ROOTS }), [save, env.content]);
   const route = ui.controller.route.value;
   const behind = route.id === 'result' && !!route.result.battle;
+  // "Make your General" (owner request 2026-10-07): once, on Home after the first capsule's summary.
+  const top = p.meta.router.current.value;
+  const general = top.id === 'home' && route.id !== 'battle' && makeGeneralDue(save, MAKE_GENERAL_FLAG) ? <MakeGeneral /> : null;
   return (
     <div class="ab-meta" data-testid="meta-ui" data-base={base.route.id} {...(behind ? { 'data-behind': '' } : {})}>
-      <ScreenHost env={env} slots={slots} shell={shell} />
+      <ScreenHost env={env} slots={slots} shell={shell} overlay={general} />
     </div>
   );
 }

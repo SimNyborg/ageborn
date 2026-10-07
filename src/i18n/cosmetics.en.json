@@ -622,7 +622,8 @@
         "nationalFlag": "National flag",
         "baseSkin": "Base skin",
         "decoration": "Decoration",
-        "backdrop": "Backdrop"
+        "backdrop": "Backdrop",
+        "avatar": "General’s wardrobe"
       },
       "wheel": "Battle wheel",
       "wheelHint": "Tap an emote to add or remove it. {n} of {max} slots used.",

@@ -94,18 +94,36 @@ export function finishLayer(canvas: HTMLCanvasElement, ctx: Ctx2D, kind: 'far' |
 export function extraAmbient(age: AgeId): AmbientSpec[] {
   const pal = BACKDROP_PALETTES[age];
   const out: AmbientSpec[] = [];
-  if (age !== 'future' && age !== 'cosmic') {
-    const birdTint = mix(pal.far, 0x2a2630, 0.45);
-    const flocks: [number, number, number][] = [
-      [120, -430, 16],
-      [860, -500, -12],
-    ];
-    for (const [x, y, speed] of flocks) {
-      for (let i = 0; i < 4; i++) {
-        out.push({ kind: 'drift', part: 'bd.bird', x: x + i * 22 * Math.sign(speed) * -1 + (i % 2) * 6, y: y + (i % 2 ? 10 : 0) + i * 4, layer: 'sky', speed, scale: 0.7 + (i % 3) * 0.12, tint: birdTint, period: 420 + i * 60 });
-      }
+  // UI art audit #5: real birds in 6 frames (flap and glide), per age: crows, gulls, pigeons, hover-drones,
+  // star-mantas. Each flock flies a loose V with staggered flap phases; Lite keeps half the flocks.
+  const kind = age === 'future' ? 'drone' : age === 'cosmic' ? 'manta' : 'bird';
+  const frames = Array.from({ length: 6 }, (_, i) => `bd.${kind}.f${i}`);
+  const light = age === 'bronze' || age === 'gunpowder';
+  const birdTint = kind !== 'bird' ? mix(pal.far, 0xffffff, 0.35) : light ? mix(pal.skyBottom, 0xffffff, 0.75) : mix(pal.far, 0x2a2630, 0.45);
+  const flocks: [number, number, number][] = [
+    [120, -430, 16],
+    [860, -500, -12],
+  ];
+  flocks.forEach(([x, y, speed], f) => {
+    const n = kind === 'bird' ? 5 : 3;
+    for (let i = 0; i < n; i++) {
+      const row = Math.ceil(i / 2);
+      const side = i % 2 ? 1 : -1;
+      out.push({
+        kind: 'drift',
+        part: frames[0]!,
+        frames,
+        x: x - row * 20 * Math.sign(speed),
+        y: y + row * side * 9,
+        layer: 'sky',
+        speed,
+        scale: 0.85 + (i % 3) * 0.1,
+        tint: birdTint,
+        period: 90 + (i % 3) * 8,
+        ...(f === 1 ? { liteSkip: true } : {}),
+      });
     }
-  }
+  });
   const mist = mix(pal.skyBottom, 0xffffff, age === 'future' || age === 'cosmic' ? 0.1 : 0.35);
   for (const [x, y, sc, sp, a] of [
     [80, -70, 3.2, 5, 0.12],

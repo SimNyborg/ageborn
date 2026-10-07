@@ -277,7 +277,8 @@
       "background": "Backdrop",
       "frame": "Frame",
       "banner": "Banner",
-      "title": "Title"
+      "title": "Title",
+      "portrait": "Portrait"
     },
     "tint": {
       "skin": "Skin tone",
@@ -308,7 +309,8 @@
       "frameLocked": "Codex Level {n}",
       "bannerLocked": "Reach Arena {n}",
       "titleLocked": "Not earned yet",
-      "back": "Back to Profile"
+      "back": "Back to Profile",
+      "portraitHint": "Show your General, or one of your troops instead."
     }
   }
 }

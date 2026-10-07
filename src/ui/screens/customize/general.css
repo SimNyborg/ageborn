@@ -1,0 +1,380 @@
+/* Customize › General: the creator (AUDIT §6.6). Phone: the preview takes the left 40%, the editor
+   the rest; desktop: half and half with 80 px tiles. */
+
+.gen {
+  display: grid;
+  grid-template-columns: minmax(170px, 38%) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+/* ---- The stage ---------------------------------------------------------------------------- */
+.gen-stage {
+  position: sticky;
+  top: 0;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 10px 8px 8px;
+  border: 3px solid var(--ui-ink);
+  border-radius: 18px;
+  background:
+    radial-gradient(120% 70% at 50% 0%, rgb(255 236 180 / 0.22), transparent 60%),
+    radial-gradient(80% 40% at 50% 92%, rgb(0 0 0 / 0.35), transparent 70%),
+    linear-gradient(180deg, #3d3778 0%, #2a2558 60%, #1d1a40 100%);
+  box-shadow: inset 0 3px 0 rgb(255 255 255 / 0.12), 0 4px 0 var(--ui-ink);
+}
+.gen-stage__plate {
+  --gs: clamp(120px, min(26vw, 44vh), 230px);
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: calc(var(--gs) + 24px);
+  padding-top: 6px;
+}
+.gen-stage__banner {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: calc(var(--gs) * 1.14);
+  height: auto;
+  transform: translateX(-50%);
+}
+.gen-stage__avatar.ui-avatar {
+  width: var(--gs) !important;
+  height: var(--gs) !important;
+  border-radius: 26px;
+}
+/* The pedestal shadow under the bust. */
+.gen-stage__plate::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  width: 70%;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(0 0 0 / 0.45), transparent);
+  transform: translateX(-50%);
+  z-index: -1;
+}
+.gen-stage__trying {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  padding: 2px 10px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 999px;
+  background: var(--rar, var(--ui-gold));
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  text-shadow: 0 1px 0 rgb(0 0 0 / 0.5);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  animation: ui-pop 260ms var(--ui-ease-out) both;
+}
+.gen-stage__id {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  max-width: 100%;
+  margin-top: 4px;
+}
+.gen-stage__name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 18px;
+  font-weight: 900;
+}
+.gen-stage__source,
+.gen-stage__found {
+  margin: 0;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--ui-muted);
+}
+.gen-stage__source b {
+  color: #fff;
+}
+.gen-stage__source small {
+  color: var(--ui-gold);
+  font-weight: 900;
+}
+.gen-stage__tools {
+  display: flex;
+  gap: 10px;
+}
+
+/* ---- The editor --------------------------------------------------------------------------- */
+.gen-edit {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+.gen-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 2px 2px 6px;
+  scrollbar-width: thin;
+}
+.gen-tab {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 44px;
+  padding: 4px 10px 4px 6px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #4a4486, #34306a);
+  box-shadow: 0 3px 0 var(--ui-ink), inset 0 2px 0 rgb(255 255 255 / 0.14);
+  color: #e6e2ff;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    transform 120ms var(--ui-ease-out),
+    background 160ms var(--ui-ease-out);
+}
+.gen-tab:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ui-ink);
+}
+.gen-tab.is-on {
+  background: linear-gradient(180deg, #ffd76a, #e8a92e);
+  color: #3a2410;
+  box-shadow: 0 3px 0 var(--ui-ink), inset 0 2px 0 rgb(255 255 255 / 0.5);
+}
+.gen-tab--split {
+  margin-left: 10px;
+}
+
+.gen-body {
+  display: grid;
+  gap: 8px;
+  animation: ui-fade 180ms var(--ui-ease-out) both;
+}
+.gen-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.gen-swatch {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--ui-ink);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgb(255 255 255 / 0.55) 0 18%, transparent 20%),
+    linear-gradient(180deg, var(--sw) 55%, color-mix(in srgb, var(--sw) 72%, #000) 56%);
+  box-shadow: 0 3px 0 var(--ui-ink);
+  cursor: pointer;
+  transition: transform 140ms var(--ui-ease-out);
+}
+.gen-swatch.is-on {
+  outline: 3px solid var(--ui-gold);
+  outline-offset: 2px;
+  transform: scale(1.08);
+}
+
+.gen-grid {
+  --tile: 72px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--tile), 1fr));
+  gap: 8px;
+}
+.gen-grid--banner {
+  --tile: 76px;
+}
+.gen-tile {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 2px;
+  min-height: var(--tile);
+  padding: 4px;
+  border: 3px solid var(--ui-ink);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #f6f1e4 0%, #e3dac4 100%);
+  box-shadow: 0 4px 0 var(--ui-ink), inset 0 2px 0 rgb(255 255 255 / 0.6), inset 0 0 0 2px var(--rar, transparent);
+  cursor: pointer;
+  transition:
+    transform 140ms var(--ui-ease-out),
+    box-shadow 140ms var(--ui-ease-out);
+}
+.gen-tile:hover {
+  transform: translateY(-2px);
+}
+.gen-tile:active {
+  transform: translateY(2px) scale(0.97);
+  box-shadow: 0 1px 0 var(--ui-ink);
+}
+.gen-tile.is-on {
+  background: linear-gradient(180deg, #fff6d0 0%, #ffd76a 100%);
+  box-shadow: 0 4px 0 var(--ui-ink), 0 0 0 3px var(--ui-gold), inset 0 2px 0 rgb(255 255 255 / 0.7);
+}
+.gen-tile__art {
+  display: grid;
+  place-items: center;
+}
+.gen-tile__art .ui-avatar {
+  border-width: 2px;
+  border-radius: 12px;
+  box-shadow: none;
+}
+.gen-tile.is-locked .gen-tile__art {
+  filter: grayscale(0.85) brightness(0.62);
+}
+.gen-tile.is-trying {
+  box-shadow: 0 4px 0 var(--ui-ink), 0 0 0 3px var(--rar, var(--ui-gold));
+}
+.gen-tile.is-trying .gen-tile__art {
+  filter: none;
+}
+.gen-tile__gem {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+}
+.gen-tile__mark {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 50%;
+  background: #3cc46b;
+  color: #fff;
+  animation: ui-pop 240ms var(--ui-ease-out) both;
+}
+.gen-tile__mark--lock {
+  background: #5a5f74;
+  animation: none;
+}
+.gen-tile__hint {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #4a3e30;
+  font-size: 10.5px;
+  font-weight: 800;
+}
+.gen-frame {
+  display: grid;
+  place-items: center;
+}
+.gen-frame .ui-avatar {
+  box-shadow: 0 0 0 3px var(--frame);
+}
+.gen-titles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  padding: 4px 10px;
+}
+.gen-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: #fff;
+  cursor: pointer;
+}
+.gen-title.is-locked {
+  opacity: 0.5;
+  filter: grayscale(0.6);
+}
+.gen-title.is-on .av-ribbon {
+  outline: 3px solid var(--ui-gold);
+  outline-offset: 3px;
+}
+.gen-note {
+  margin: 0;
+  color: var(--ui-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+.gen-note--top {
+  margin-bottom: 2px;
+}
+
+@media (min-width: 1000px) {
+  .gen {
+    grid-template-columns: minmax(260px, 44%) minmax(0, 1fr);
+  }
+  .gen-grid {
+    --tile: 84px;
+  }
+}
+@media (max-height: 420px) {
+  .gen-stage__plate {
+    --gs: clamp(110px, 38vh, 150px);
+  }
+  .gen-stage {
+    gap: 3px;
+    padding: 6px;
+  }
+  .gen-stage__name {
+    font-size: 15px;
+  }
+  .gen-grid {
+    --tile: 64px;
+  }
+}
+
+.ui-root[data-reduce-motion='true'] :is(.gen-tile, .gen-tab, .gen-swatch) {
+  transition: none;
+}
+.ui-root[data-reduce-motion='true'] :is(.gen-tile__mark, .gen-stage__trying, .gen-body) {
+  animation: none;
+}
+
+/* "Make your General" (onboarding sheet). */
+.mkg {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+.mkg-stage {
+  position: relative;
+  display: grid;
+  justify-items: center;
+}
+.mkg-stage .ui-iconbtn {
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+}
+.mkg-form {
+  display: grid;
+  gap: 10px;
+}
+.mkg-lead {
+  margin: 0;
+  font-weight: 700;
+  color: var(--ui-muted);
+}
+@media (max-height: 420px) {
+  .mkg-stage .ui-avatar {
+    width: 112px !important;
+    height: 112px !important;
+  }
+  .mkg-form {
+    gap: 6px;
+  }
+}

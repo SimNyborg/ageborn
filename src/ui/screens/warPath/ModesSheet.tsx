@@ -16,7 +16,7 @@
 import type { ComponentChildren } from 'preact';
 import { useRef, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
-import { AmberIcon, CalendarIcon, CapsuleIcon, CastleIcon, CheckIcon, FriendsIcon, GlobeIcon, LockIcon, SwordsIcon, TrophyIcon } from '../../components/icons';
+import { AmberIcon, CalendarIcon, CapsuleIcon, CastleIcon, CheckIcon, FriendsIcon, GlobeIcon, LockIcon, QuickBattleIcon, SkirmishIcon, SwordsIcon, TrophyIcon } from '../../components/icons';
 import { Sheet } from '../../components/Modal';
 import { useUi } from '../context';
 import type { SwitcherMode } from '../home/switcher';
@@ -74,7 +74,7 @@ export function ModesSheet(p: {
     },
     {
       id: 'quick',
-      icon: <SwordsIcon size={30} />,
+      icon: <QuickBattleIcon size={30} />,
       title: t('warPath.ui.quick'),
       desc: t('warPath.ui.quickDesc'),
       reward: (
@@ -97,7 +97,7 @@ export function ModesSheet(p: {
     },
     {
       id: 'skirmish',
-      icon: <SwordsIcon size={28} />,
+      icon: <SkirmishIcon size={30} />,
       title: t('warPath.ui.skirmish'),
       desc: t('warPath.ui.skirmishDesc'),
       side: (

@@ -12,7 +12,7 @@ import { TINTS } from './palette';
 import { LAYERS, type Layer, type PartArt, type PartLibrary, type Shape, type Tone } from './types';
 
 export type AvatarMood = 'neutral' | 'cheer' | 'determined' | 'wry';
-export type AvatarCrop = 'head' | 'bust';
+export type AvatarCrop = 'head' | 'bust' | 'face';
 
 export interface ResolvedLook {
   parts: Partial<Record<AvatarSlot, string>>;
@@ -39,7 +39,7 @@ const MOODS: Record<Exclude<AvatarMood, 'neutral'>, { eyes: string; mouth: strin
   wry: { eyes: 'eyes_tired', mouth: 'mouth_smirk' },
 };
 
-export const VIEWBOX: Record<AvatarCrop, string> = { bust: '0 0 120 120', head: '13 5 94 94' };
+export const VIEWBOX: Record<AvatarCrop, string> = { bust: '0 0 120 120', head: '13 5 94 94', face: '27 30 66 66' };
 
 const DEFAULT_MAT: Partial<Record<Tone, Material>> = { skin: 'skin', hair: 'hair', cloth: 'cloth', clothDark: 'cloth', clothLight: 'cloth' };
 

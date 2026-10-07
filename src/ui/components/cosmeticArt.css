@@ -138,3 +138,18 @@ img.cos-bd__img {
     animation: none;
   }
 }
+
+/* General's wardrobe items (AUDIT §6): the avatar renderer draws them on a plain General. */
+.cos-img--avatar {
+  display: grid;
+  place-items: center;
+}
+.cos-img--avatar .ui-avatar {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100%;
+  max-height: 100%;
+  border-width: 2px;
+  border-radius: 14px;
+  box-shadow: none;
+}
