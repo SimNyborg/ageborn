@@ -2,6 +2,25 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-07: release check after the eight content waves and the economy re-tune (cloud session, not yet published)
+
+The whole content expansion is checked together: 8 ages with 160 troops (56 before), 48 turrets (32), 64 powers (48), 48 forts (32) and 36 skins (12), all released, plus the all-ages capsule table and the collection milestones. Every gate ran on this tree and on the published `main` with the same seeds; details and numbers in `docs/decisions.md` ("Release check: the eight content waves and the capsule re-tune").
+
+**Fixed in this check:**
+
+- Five wave cards had drifted outside the ±5 balance band since their waves measured them: Kennel Master (+23), Brigand (+14), Squires (+11.5), Commando (-6) and Rifle Grenadier (-6.4). New numbers, measured after the counter matrix was regenerated: +1.6, -1.1, -4.5, -1.3 and -4.1. The Kennel Master now does what its card says (a hound every 9 s, two at a time).
+- The art gallery's automatic checks (one e2e test) flagged nine wave puppets for being shorter or taller than their size class. They are small or long by design (wolves, pups, hounds, the Hydra, the Lindworm and its skin, the Swarmling, two fort levies drawn from a heavy unit); the exemption list the unit test already had is now shared with the gallery.
+
+**Checks (whole tree, 2026-10-07):** typecheck and lint clean; 6,461 unit tests pass (250 files, 2 skipped); production build OK (initial download 1,099 KB gzip, limit 3 MB; 964 KB on 2026-10-02, as the content grew); full e2e suite 286 of 286 pass (Chromium).
+
+**Gates (this tree / published `main`):** per-card sweep of all 200 non-baseline cards in their own age: 123 of the 136 wave cards within ±5 (117 before the fixes); the 13 left are the ones the waves already reported (five lane volleys at the lane caps, Sandstorm, Charybdis, Wall Gunner, Bolas Thrower, Torch Runner, and Rhodian Slingers, Crystal Guard and Star Mortar about one point out). The 64 original cards in their Standard window: 60 within ±5 (64 on `main`); Field Hospital -8.3 and AA Screen -6.5 drifted (their numbers did not change; a lower price barely moves them), Bronze Colossus +5.6 and Sharpshooter +5.2 sit at the edge. Mirror 110 pass / 27 fail (96 / 27, the same failing rows). Exploits 92 / 18 (91 / 19). Strength 45 / 4 (46 / 3). Forts 114 / 53 (122 / 45; the shared no-fort control drew fewer Final Bells at this sample size, so every fort Bell row reads higher together). Last Base Standing 22 / 1, economy 15 / 1 (the War Plan at L7, open), drops 17 / 17.
+
+**Played (production build, 844x390 and 1280x720, no console errors):** a new player from first launch through match 1, both first capsules, the forced upgrade, a first Ladder win, the Wardrobe Crate and a Long War from Arena 1; a returning Arena 4 player with half the collection (wave cards in every age): Home, odds panel, Army, Album, Profile milestones, a Medium War with wave cards, a reload mid-battle, a Short Ladder battle, Jade and Aeon capsules (6 and 9 stacks), an upgrade and the replay viewer (screenshots in the session scratchpad `release/play/out/`).
+
+**Still open:** Field Hospital and AA Screen read -8.3 / -6.5 in their Standard window; the flag ball exploit in Short War reads 46.6% against the 45% limit (43.3% on `main`, within the noise); the turtle exploits win 0% (the band should become a ceiling); tiers VIII and X tie near 95% in the strength table; power share of kills and the Standard and Full length windows, as on `main`; the focused War Plan at L7 (94 days against 42); Last Base Standing median 16:17.
+
+**What the owner should try** (once published): put the Kennel Master in your Medieval War Plan and count the hounds (never more than two), then open a few capsules in Arena 3 or later.
+
 ## 2026-10-04: capsule economy re-tuned for the 208-card pool; collection milestones (cloud session, not yet published)
 
 With all eight content waves in, a card took 2-3 times too long to max. From Arena 3 (where every age drops) every capsule now holds one more stack and more copies and Amber (the "all-ages table", DESIGN A6.4); Arenas 1-2 and the first five scripted capsules are unchanged. Engaged player, 30 seeds: Common / Rare / Epic / Legendary to max 105 / 97 / 62 / 107 days (targets 110 / 101 / 69 / 112; before: Common and Rare not within a year, Epic 188, Legendary 223), whole collection 225 days (7.4 months), every card found on day 24. Dust prices and pity are unchanged (reasons in `docs/decisions.md`, "Content re-tune: the all-ages capsule table and collection milestones"). The odds panel shows the table of your arena. Four new earned titles give long-term goals: Card Scout (100 cards), Archivist (every card), Master Smith (50 cards at L10), Grand Curator (every card at L10), with progress bars on Profile.

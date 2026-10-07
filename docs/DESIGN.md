@@ -1058,10 +1058,10 @@ Powers (A5.7): Shrapnel Shells (Field lane volley, War Path L3 / Road 3,500; 99 
 
 | Slug | Name | Rar | Role | Cost | HP | Damage / interval | Range | Speed | Size | Hits | Traits and abilities |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| commando | Commando | C | Infantry | 50 | 368 | 47 / 1.0 s | 16 | 110 | S | G | Raider (base 84); the fastest Modern Common |
+| commando | Commando | C | Infantry | 50 | 380 | 48 / 1.0 s | 16 | 110 | S | G | Raider (base 84); the fastest Modern Common |
 | sandbag_carrier | Sandbag Carrier | C | Infantry | 50 | 455 | 33 / 1.0 s | 16 | 70 | S | G | Guard (the shoulder sandbag takes 20% less from attacks with range ≥ 100); Blunt |
 | smg_squad | SMG Squad | C | Ranged | 75 | 3 × 74 | 11 / 1.0 s | 170 | 65 | S | G+A | Trio (M1 squad of 3) |
-| rifle_grenadier | Rifle Grenadier | C | Ranged | 75 | 205 | 39 splash r30 / 1.5 s | 230 | 65 | S | G | Arc (`proj.rifle_grenade`) |
+| rifle_grenadier | Rifle Grenadier | C | Ranged | 75 | 210 | 42 splash r30 / 1.5 s | 230 | 65 | S | G | Arc (`proj.rifle_grenade`) |
 | assault_gun | Assault Gun | C | Heavy | 150 | 1,350 | 88 splash r30 / 1.5 s | 90 | 45 | L | G | Armored mech; a turretless casemate gun |
 | mortar_team | Mortar Team | R | Ranged (Long range, H6) | 75 | 266 | 124 splash r35 / 2.6 s | 380 (min 90) | 60 | S | G | Arc 300 lu/s (`proj.mortar_shell`); half damage to bases |
 | sticky_bomber | Sticky Bomber | R | Anti-heavy | 100 | 580 | 124 / 2.0 s | 16 | 70 | M | G | Melee Anti-heavy mods; priority armored; Brace |

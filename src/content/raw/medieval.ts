@@ -134,7 +134,7 @@ export const medieval: RawAgeTables = {
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 16, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 15, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'pierce', sfx: 'squire_jab', mods: damageMods.blunt,
         },
       ],
@@ -165,7 +165,7 @@ export const medieval: RawAgeTables = {
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 27, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 26, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'slash', sfx: 'dagger_stab', vsBaseDamage: 52,
         },
       ],
@@ -268,7 +268,7 @@ export const medieval: RawAgeTables = {
         },
       ],
       abilities: [
-        { kind: 'summon', card: 'war_hound', firstMs: 2000, everyMs: 6500, maxAlive: 3 },
+        { kind: 'summon', card: 'war_hound', firstMs: 2000, everyMs: 9000, maxAlive: 2 },
         { kind: 'followSupport', behindFront: 60, soloMaxP: 200 },
       ],
       visualId: 'unit.kennel_master', sfx: { spawn: 'spawn_pop', die: 'die_bio' },

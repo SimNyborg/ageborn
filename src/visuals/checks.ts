@@ -220,6 +220,27 @@ export function maxBodyWidth(p: PuppetDef): number {
   return STYLE.collisionWidthLu[p.size ?? 'small'] * STYLE.maxWidthFactor + STYLE.outlineLu;
 }
 
+/**
+ * Units drawn outside their group's A11 height band by design, shared by the art unit test and the dev
+ * gallery's checks (the gallery e2e). X0 squads and summons draw small (CONTENT_PLAN 5.1: a wolf of a pair at
+ * 50 lu, a summoned pup at 0.8x; 5.3: the summoned War Hound, and the Lindworm, a long, low wingless dragon
+ * whose bulk is its length; 5.2: the Hydra's fallback puppet, a long, low beast like the Lindworm, its three
+ * necks drawn only on the sheet; 5.5: the Tinker's Clockwork Soldier; 5.8: the Swarm Matron's Swarmling, a
+ * little void bug). Two camp levies are drawn from a heavy Common, not the Infantry one, yet count as
+ * Infantry in the content (5.4: the Cavalry Picket's rider; 5.7: the Mech Bay's mini mech).
+ */
+export const HEIGHT_BAND_EXEMPT: ReadonlySet<string> = new Set([
+  'unit.hunting_wolves',
+  'unit.cave_pup',
+  'unit.war_hound',
+  'unit.lindworm',
+  'unit.clockwork_soldier',
+  'unit.hydra',
+  'unit.swarmling',
+  'unit.picket_rider',
+  'unit.mini_mech',
+]);
+
 export function restHeight(p: PuppetDef, parts: PartLookup): number {
   const b = puppetBounds(p, parts);
   return -b.minY;
@@ -228,10 +249,12 @@ export function restHeight(p: PuppetDef, parts: PartLookup): number {
 /**
  * A11 scale bands for ground units by role group, measured feet to the top of the drawing (hat,
  * plume, pennant): heavies 100-120 lu and Legendaries 170-220 lu exactly as A11 states; infantry
- * "~68 lu" gets a band of 54-90 for the small and medium roles. Air units and Epics vary.
+ * "~68 lu" gets a band of 54-90 for the small and medium roles. Air units and Epics vary. Puppets in
+ * {@link HEIGHT_BAND_EXEMPT} (and their skins) have no band.
  */
 export function heightBand(p: PuppetDef): readonly [number, number] | null {
   if (p.kind !== 'unit' || p.motion.air) return null;
+  if (HEIGHT_BAND_EXEMPT.has(p.skinOf ?? p.id)) return null;
   switch (p.group) {
     case 'infantry':
     case 'ranged':

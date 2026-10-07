@@ -139,11 +139,11 @@ export const modern: RawAgeTables = {
     {
       // Raider: a crouched sprint in a beret, a combat roll into a rifle-butt swing; fast; ×2 to bases
       id: 'commando', kind: 'unit', age: 'modern', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 368, speed: 110, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 380, speed: 110, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
-          damage: 47, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
+          damage: 48, intervalMs: 1000, windupPct: 40, range: 16, hitsGround: true, hitsAir: false,
           dmgType: 'blunt', sfx: 'butt_stroke', vsBaseDamage: 84,
         },
       ],
@@ -187,11 +187,11 @@ export const modern: RawAgeTables = {
     {
       // Thrower: a rifle grenade fired from the planted butt, lobbed over allies, splash r30; ground only
       id: 'rifle_grenadier', kind: 'unit', age: 'modern', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 205, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 210, speed: 65, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 39, intervalMs: 1500, windupPct: 50, range: 230, hitsGround: true, hitsAir: false,
+          damage: 42, intervalMs: 1500, windupPct: 50, range: 230, hitsGround: true, hitsAir: false,
           projectile: { speed: 450, arc: true, visualId: 'proj.rifle_grenade' },
           dmgType: 'blast', sfx: 'shot_rifle_grenade', splashRadius: 30,
         },
