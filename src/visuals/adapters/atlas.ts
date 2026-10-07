@@ -42,7 +42,8 @@ import { portraitStillBase, renderStillPortrait } from './atlasPortrait';
 import { partSprite, PuffList, tintPartSprite } from './procedural/shared';
 import { AtlasBaseView } from './world/atlasBaseView';
 import { AtlasTurretView } from './world/atlasTurretView';
-import { isWorldSource, WorldAtlas } from './worldAtlas';
+import { isWorldSource, WorldAtlas, worldSourceAge } from './worldAtlas';
+import { renderWorldPortrait } from './worldPortrait';
 import {
   ALT_ATTACK,
   ALT_LATE_MIN_MS,
@@ -391,6 +392,8 @@ export class AtlasAdapter implements VisualAdapter {
 
   canDraw(what: ViewKind, def: VisualDef): boolean {
     if (def.kind === 'atlas' && isWorldSource(def.source)) {
+      // menu and card portraits composite the sheet's resting frames (worldPortrait.ts, audit #1/#2)
+      if (what === 'portrait') return true;
       if (what !== 'turret' && what !== 'base') return false;
       if (this.world.get(def.source)) return true;
       void this.world.ensure(def.source);
@@ -577,6 +580,10 @@ export class AtlasAdapter implements VisualAdapter {
     const still = portraitStillBase(r.def.source);
     const puppet = puppetById(r.key);
     const color = teamColor(r.side, r.teamPreset);
+    if (isWorldSource(r.def.source)) {
+      const url = await renderWorldPortrait({ url: this.url(r.def.source), age: worldSourceAge(r.def.source), size: r.size, foil: r.foil, teamColor: color, plate: r.plate });
+      if (url) return url;
+    }
     if (still) {
       const url = await renderStillPortrait({ url: this.url(still), age: unitSheetAge(r.def.source) ?? (/art\/forts\/([a-z]+)\//.exec(r.def.source)?.[1] as AgeId | undefined) ?? puppet?.age ?? null, size: r.size, foil: r.foil, teamColor: color, plate: r.plate });
       if (url) return url;

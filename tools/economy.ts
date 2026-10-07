@@ -28,6 +28,7 @@ import { fmtNum, infoCheck, markdownTable, rangeCheck, skippedCheck, startReport
 const DAY_MS = 86_400_000;
 const fmtPct = (x: number): string => (Number.isFinite(x) ? `${Math.round(x * 100)}%` : 'n/a');
 const MONTH_DAYS = 30.44;
+const YEAR_DAYS = 365.25;
 
 /** A6.9 targets. Months are converted at 30.44 days. */
 export const ECONOMY_TARGETS = {
@@ -67,15 +68,29 @@ export const ECONOMY_TARGETS = {
   allLegendariesDays: 21,
   planL7Days: 42,
   copiesDoneDays: 7.25 * MONTH_DAYS,
-  // The Amber re-tune (2026-10-07) makes Amber the last gate of the whole collection: about 10 months
-  // (was 7-7.5, with Amber done at 7 and copies and Amber within 30 days of each other).
-  amberDoneDays: 10 * MONTH_DAYS,
-  /** "Whole collection maxed: ~10 months", Amber-gated (7-7.5 months, copy-gated, until 2026-10-07). */
-  collectionMaxedDays: 10 * MONTH_DAYS,
-  /** Amber finishes after the copies, by 30-120 days: Amber binds, and copies still matter to the end. */
-  amberLagDays: [30, 120] as const,
+  // The years-long curve (owner decision 2026-10-07, A6.6): Amber is the last gate of the whole
+  // collection, about 3.5 years for the A6.9 player (10 months after the first Amber re-tune, 7-7.5
+  // months copy-gated before it). A 365-day run projects it from the Amber still missing at the run's end
+  // and the last 60 days' Amber income (`amberDoneProjected`); a 1,500-day run checks the projection.
+  amberDoneDays: 3.5 * YEAR_DAYS,
+  /** "Whole collection maxed: ~3.5 years", Amber-gated (~10 months until the years-long curve, 2026-10-07). */
+  collectionMaxedDays: 3.5 * YEAR_DAYS,
+  /** Amber finishes at least 30 days after the copies: Amber, not copies, is the long goal (30-120 days until the years-long curve). */
+  amberLagMinDays: 30,
   /** Amber gate: at least this share of days 11-120 ends with a copy-ready upgrade the Amber cannot pay. */
   amberBlockedShareMin: 0.75,
+  // The War-Plan-only player (owner decision 2026-10-07): levels only its active War Plan's cards
+  // (`focusAges` 8), the player who never ran short of Amber before the years-long curve.
+  /** Days the War-Plan-only player is run in a full-year run (18 months, so the plan target can be seen). */
+  planDays: 548,
+  /** Every card of the active War Plan (48 unit slots and the turret slots filled as turrets drop) at L10: 12-18 months. */
+  planMaxDays: [12 * MONTH_DAYS, 18 * MONTH_DAYS] as const,
+  /** Days 10-364 that end with a copy-ready War Plan upgrade the Amber cannot pay ("you must save up"). */
+  planBlockedShareMin: 0.75,
+  /** An upgrade to L10 costs at least this many days of Amber income (median at the time it is bought): several days of saving. */
+  topUpgradeDaysMin: 3,
+  /** No upgrade costs more than this many days of Amber income at the time it is bought: each level stays reachable. */
+  upgradeDaysMax: 14,
   /** The first week stays generous: the Amber backlog on day 7 is 1-7 days of Amber income. */
   week1BacklogDays: [1, 7] as const,
   /** The first War Plan's mean level on day 7 (3.65 before the re-tune: the cards you play keep their pace). */
@@ -103,10 +118,15 @@ export interface EconomyModel {
    * plan). Owner feedback 2026-10-07: players level the cards they play, so Amber must bind there too.
    */
   focusAges: number;
+  /**
+   * Days the War-Plan-only player (`focusAges` 8) runs beside the collector, gated by `planChecks`
+   * (owner decision 2026-10-07); 0 skips it. Runs shorter than a year use their own length.
+   */
+  planDays: number;
 }
 
 export function economyDefaults(): EconomyModel {
-  return { days: 365, winRateBp: 6000, matchesPerDay: 7, seed: 1, seeds: 30, averageDays: [11, 120], formats: [], focusAges: 0 };
+  return { days: 365, winRateBp: 6000, matchesPerDay: 7, seed: 1, seeds: 30, averageDays: [11, 120], formats: [], focusAges: 0, planDays: ECONOMY_TARGETS.planDays };
 }
 
 /**
@@ -164,6 +184,7 @@ export function medianMeasures(list: readonly EconomyMeasures[]): EconomyMeasure
     amberGate: {
       blockedShare: num((m) => m.amberGate.blockedShare),
       blockedShareWeek1: num((m) => m.amberGate.blockedShareWeek1),
+      blockedShareYear: num((m) => m.amberGate.blockedShareYear),
       backlogDays: {
         d7: num((m) => m.amberGate.backlogDays.d7),
         d30: num((m) => m.amberGate.backlogDays.d30),
@@ -178,9 +199,17 @@ export function medianMeasures(list: readonly EconomyMeasures[]): EconomyMeasure
       maxed30: num((m) => m.starter.maxed30),
       planMaxDay: day((m) => m.starter.planMaxDay),
     },
+    planMaxDay: day((m) => m.planMaxDay),
+    upgradeCost: {
+      maxDays: num((m) => m.upgradeCost.maxDays),
+      topMedianDays: num((m) => m.upgradeCost.topMedianDays),
+      topMaxDays: num((m) => m.upgradeCost.topMaxDays),
+    },
     copiesDoneDay: day((m) => m.copiesDoneDay),
     amberDoneDay: day((m) => m.amberDoneDay),
     collectionMaxedDay: day((m) => m.collectionMaxedDay),
+    amberDoneProjected: day((m) => m.amberDoneProjected),
+    collectionMaxedProjected: day((m) => m.collectionMaxedProjected),
   };
 }
 
