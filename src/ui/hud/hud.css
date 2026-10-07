@@ -44,6 +44,8 @@
   --hud-tray-h: 128px;
   --hud-card-w: 88px;
   --hud-card-h: 116px;
+  /* Width / height of a card (88 x 116); a narrower card keeps the shape (A18.9 seven cards). */
+  --hud-card-ar: 0.759;
   --hud-card-gap: 8px;
   --hud-cluster-w: 132px;
   --hud-cluster-gap: 8px;
@@ -84,6 +86,7 @@
     --hud-tray-h: 94px;
     --hud-card-w: 62px;
     --hud-card-h: 84px;
+    --hud-card-ar: 0.738;
     --hud-card-gap: 6px;
     --hud-cluster-w: 100px;
     --hud-cluster-gap: 2px;
@@ -1238,12 +1241,18 @@
   }
 }
 
-/* The six unit cards, centred between the left cluster and the stance. */
+/* The seven unit cards (A18.9), centred between the left cluster and the stance. The area is a size
+   container: each card slot takes a seventh of the room left by the other controls (minus the gaps),
+   capped at the breakpoint's card size, so the row always fits whichever controls the match shows (one
+   or two powers, the Fort button) and the cards stay as large as the room allows. The budget: at 844 x
+   390 with the Fort button and both powers the cards are 50 x 68 (no target under 44 px), 62 x 84 with
+   the Home power only; at 1280 x 720 80-88 px wide. */
 .hud-cards-area {
   display: flex;
   flex: 1;
   min-width: 0;
   justify-content: center;
+  container: hudcards / inline-size;
 }
 
 .hud-cards {
@@ -1272,14 +1281,17 @@
 
 .hud-card-slot {
   position: relative;
+  width: min(var(--hud-card-w), calc((100cqw - 6 * var(--hud-card-gap)) / 7));
 }
 
 .hud-card {
   position: relative;
   display: block;
   flex: none;
-  width: var(--hud-card-w);
-  height: var(--hud-card-h);
+  width: 100%;
+  height: auto;
+  aspect-ratio: var(--hud-card-ar);
+  max-height: var(--hud-card-h);
   padding: 0;
   overflow: hidden;
   box-sizing: border-box;
