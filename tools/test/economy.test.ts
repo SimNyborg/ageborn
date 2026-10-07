@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import type { CardId, Meta } from '../../src/contracts';
+import type { CardId, Meta, SaveDoc } from '../../src/contracts';
 import { content, isReleased } from '../../src/content';
 import { seedSfc32 } from '../../src/core/rng';
-import { ECONOMY_TARGETS, economyChecks, economyDefaults, EconomyRecorder, medianMeasures, questApi, runEconomy, simulateEconomy, syntheticStats, type EconomyMeasures } from '../economy';
+import { amberBacklog, ECONOMY_TARGETS, economyChecks, economyDefaults, EconomyRecorder, medianMeasures, questApi, runEconomy, simulateEconomy, syntheticStats, type EconomyMeasures } from '../economy';
 import { loadMeta } from '../lib/modules';
 
 // The collectable cards the recorder counts: released ones only (an unreleased card never drops).
@@ -62,6 +62,43 @@ describe('EconomyRecorder (A6.9 measures)', () => {
   });
 });
 
+describe('the Amber gate (owner feedback 2026-10-07)', () => {
+  it('counts the Amber of every upgrade the copies allow, climbing as far as the copies reach', () => {
+    const save = {
+      collection: {
+        // Common L1 with 6 copies: L2 (2 copies, 20 Amber) and L3 (3 copies, 50 Amber); 1 copy left.
+        bonker: { level: 1, copies: 6 },
+        // Legendary L9 with 2 copies: L10 (2 copies, 1,700 Amber).
+        [cards.find((c) => c.rarity === 'legendary')?.id ?? '']: { level: 9, copies: 2 },
+        // Not owned, and an unknown id: never counted.
+        pebbler: { level: 0, copies: 40 },
+        nope: { level: 1, copies: 99 },
+      },
+    } as unknown as SaveDoc;
+    expect(amberBacklog(save, content)).toBe(20 + 50 + 1700);
+    expect(amberBacklog(save, content, new Set(['bonker']))).toBe(70);
+  });
+
+  it('measures blocked days, the backlog in days of income, the bank and the first week', () => {
+    const rec = new EconomyRecorder(content);
+    rec.starter(['bonker', 'pebbler']);
+    for (let day = 0; day <= 30; day += 1) {
+      rec.amber(day, 1000);
+      // Amber binds from day 3; the backlog grows by 500 a day.
+      rec.gate(day, day < 3 ? 2000 : 100, day < 3 ? 0 : (day - 2) * 500);
+      rec.snapshot(day, new Map([['bonker', day >= 7 ? 4 : 1], ['pebbler', day >= 7 ? 2 : 1]]), ['bonker'], content.economy.maxLevel);
+    }
+    const m = rec.measures([0, 30]);
+    expect(m.amberGate.blockedShareWeek1).toBeCloseTo(4 / 7, 6);
+    expect(m.amberGate.blockedShare).toBeCloseTo(28 / 31, 6);
+    expect(m.amberGate.backlogDays.d7).toBeCloseTo(2.5, 6);
+    expect(m.amberGate.backlogDays.d30).toBeCloseTo(14, 6);
+    expect(m.amberGate.backlogDays.d90).toBeNaN();
+    expect(m.amberGate.bankDays).toBeCloseTo(0.1, 6);
+    expect(m.starter).toEqual({ level7: 3, plan7: 4, maxed7: 0, maxed30: 0, planMaxDay: null });
+  });
+});
+
 describe('economyChecks', () => {
   const T = ECONOMY_TARGETS;
   const onTarget: EconomyMeasures = {
@@ -76,9 +113,12 @@ describe('economyChecks', () => {
     albumCompleteDay: 25,
     maxed50Day: 80,
     planL7Day: 42,
+    levelMaxDay: { common: 230, rare: 255, epic: 265, legendary: 257 },
+    amberGate: { blockedShare: 1, blockedShareWeek1: 0.7, backlogDays: { d7: 3.5, d30: 35, d90: 130 }, bankDays: 0.05 },
+    starter: { level7: 3.5, plan7: 3.65, maxed7: 0, maxed30: 0, planMaxDay: 215 },
     copiesDoneDay: 220,
-    amberDoneDay: 213,
-    collectionMaxedDay: 220,
+    amberDoneDay: 300,
+    collectionMaxedDay: 300,
   };
 
   it('passes the A6.9 table itself', () => {
@@ -87,10 +127,17 @@ describe('economyChecks', () => {
     expect(economyChecks(onTarget).find((c) => c.id === 'economy.dust')).toMatchObject({ verdict: 'info' });
   });
 
-  it('fails outside ±20%, a finish gap of 30 days or more, and milestones never reached', () => {
-    const bad = economyChecks({ ...onTarget, perDay: { ...onTarget.perDay, amber: 6300 }, copiesDoneDay: 240, amberDoneDay: 205, planL7Day: null });
+  it('fails outside ±20%, Amber finishing too close to the copies, milestones never reached and a loose Amber gate', () => {
+    const bad = economyChecks({ ...onTarget, perDay: { ...onTarget.perDay, amber: 6300 }, copiesDoneDay: 240, amberDoneDay: 250, planL7Day: null });
     const failed = bad.filter((c) => c.verdict === 'fail').map((c) => c.id);
-    expect(failed).toEqual(['economy.amberPerDay', 'economy.planL7', 'economy.finishGap']);
+    expect(failed).toEqual(['economy.amberPerDay', 'economy.planL7', 'economy.amberLag']);
+    // The Amber gate (owner feedback 2026-10-07): Amber must bind on most days, the first week stays
+    // generous (a day-7 backlog of 1-7 days of income) and the first War Plan keeps its pace.
+    const loose = economyChecks({ ...onTarget, amberGate: { ...onTarget.amberGate, blockedShare: 0.5, backlogDays: { d7: 0, d30: 2, d90: 5 } }, starter: { ...onTarget.starter, plan7: 3.0 } });
+    expect(loose.filter((c) => c.verdict === 'fail').map((c) => c.id)).toEqual(['economy.amberBlocked', 'economy.week1Backlog', 'economy.week1Plan']);
+    const stingy = economyChecks({ ...onTarget, amberGate: { ...onTarget.amberGate, backlogDays: { d7: 9, d30: 60, d90: 200 } } });
+    expect(stingy.filter((c) => c.verdict === 'fail').map((c) => c.id)).toEqual(['economy.week1Backlog']);
+    expect(bad.find((c) => c.id === 'economy.amberGate')?.verdict).toBe('info');
   });
 });
 
@@ -107,6 +154,9 @@ describe('medianMeasures (the 30-seed gate)', () => {
     albumCompleteDay: 25,
     maxed50Day: 80,
     planL7Day: 78,
+    levelMaxDay: { common: 160, rare: 170, epic: 175, legendary: 170 },
+    amberGate: { blockedShare: 1, blockedShareWeek1: 0.14, backlogDays: { d7: 0.4, d30: 14, d90: 62 }, bankDays: 0.07 },
+    starter: { level7: 3.5, plan7: 3.65, maxed7: 0, maxed30: 0, planMaxDay: 224 },
     copiesDoneDay: 190,
     amberDoneDay: 143,
     collectionMaxedDay: 200,

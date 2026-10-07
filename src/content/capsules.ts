@@ -13,13 +13,17 @@ export const capsules: CapsuleTables = {
   // The 2026-09-29 ladder (owner request "more capsule tiers"): Gold and Platinum above Jade, Aeon on
   // top; Gold is the old Aeon plus 100 Dust. Gold or better always holds 1, 2 or 3 Legendaries.
   // Stacks, Legendaries, Epic guarantees, Amber, Dust and skin chance never fall going up the ladder.
+  // Amber re-tune (owner feedback 2026-10-07, "you earn money a bit too fast compared to upgrading
+  // everything you want"): capsule Amber ×0.8 on this table (Arenas 1-2 and the onboarding script) and
+  // ×0.65 on the all-ages table, so Amber, not only copies, decides which card to upgrade from day 2
+  // (A6.9 Amber gate). Copies are unchanged, so the per-card time to max stays on the A6.9 targets.
   tiers: {
     clay: {
       id: 'clay', index: 0, stacks: 2,
       copies: { common: 4, rare: 1, epic: 1, legendary: 1 },
       guaranteed: [], rareToLegendaryBp: 0, legendaryUnownedFirst: false, skinChanceBp: 0, skinMinRarity: 'rare',
       extraLegendaryCopies: 1, exclusiveItems: false, bonusDust: 0,
-      amber: 105, expectedCopiesCenti: 630, nameKey: 'capsuleTier.clay.name',
+      amber: 85, expectedCopiesCenti: 630, nameKey: 'capsuleTier.clay.name',
     },
     bronze: {
       id: 'bronze', index: 1, stacks: 3,
@@ -27,7 +31,7 @@ export const capsules: CapsuleTables = {
       // ≥ 1 Rare stack
       guaranteed: ['rare'], rareToLegendaryBp: 0, legendaryUnownedFirst: false, skinChanceBp: 0, skinMinRarity: 'rare',
       extraLegendaryCopies: 1, exclusiveItems: false, bonusDust: 0,
-      amber: 210, expectedCopiesCenti: 1030, nameKey: 'capsuleTier.bronze.name',
+      amber: 170, expectedCopiesCenti: 1030, nameKey: 'capsuleTier.bronze.name',
     },
     silver: {
       id: 'silver', index: 2, stacks: 4,
@@ -35,7 +39,7 @@ export const capsules: CapsuleTables = {
       // ≥ 2 Rare and ≥ 1 Epic stack
       guaranteed: ['rare', 'rare', 'epic'], rareToLegendaryBp: 0, legendaryUnownedFirst: false, skinChanceBp: 0,
       skinMinRarity: 'rare', extraLegendaryCopies: 1, exclusiveItems: false,
-      bonusDust: 0, amber: 530, expectedCopiesCenti: 2040, nameKey: 'capsuleTier.silver.name',
+      bonusDust: 0, amber: 425, expectedCopiesCenti: 2040, nameKey: 'capsuleTier.silver.name',
     },
     jade: {
       id: 'jade', index: 3, stacks: 5,
@@ -44,7 +48,7 @@ export const capsules: CapsuleTables = {
       // conversion was removed with the 2026-09-29 ladder)
       guaranteed: ['rare', 'rare', 'epic', 'epic'], rareToLegendaryBp: 0, legendaryUnownedFirst: false,
       skinChanceBp: 0, skinMinRarity: 'rare', extraLegendaryCopies: 2, exclusiveItems: false,
-      bonusDust: 100, amber: 1400, expectedCopiesCenti: 4980, nameKey: 'capsuleTier.jade.name',
+      bonusDust: 100, amber: 1120, expectedCopiesCenti: 4980, nameKey: 'capsuleTier.jade.name',
     },
     gold: {
       id: 'gold', index: 4, stacks: 6,
@@ -53,7 +57,7 @@ export const capsules: CapsuleTables = {
       // (Wardrobe odds); +100 Dust. The old Aeon's contents plus 100 Dust.
       guaranteed: ['legendary', 'epic', 'epic'], rareToLegendaryBp: 0, legendaryUnownedFirst: true,
       skinChanceBp: 3000, skinMinRarity: 'rare', extraLegendaryCopies: 2, exclusiveItems: false,
-      bonusDust: 100, amber: 2640, expectedCopiesCenti: 7560, nameKey: 'capsuleTier.gold.name',
+      bonusDust: 100, amber: 2110, expectedCopiesCenti: 7560, nameKey: 'capsuleTier.gold.name',
     },
     platinum: {
       id: 'platinum', index: 5, stacks: 7,
@@ -62,7 +66,7 @@ export const capsules: CapsuleTables = {
       // 1 copy), ≥ 2 Epic stacks; a skin at Wardrobe odds; +200 Dust
       guaranteed: ['legendary', 'legendary', 'epic', 'epic'], rareToLegendaryBp: 0, legendaryUnownedFirst: true,
       skinChanceBp: 10000, skinMinRarity: 'rare', extraLegendaryCopies: 1, exclusiveItems: false,
-      bonusDust: 200, amber: 2800, expectedCopiesCenti: 7790, nameKey: 'capsuleTier.platinum.name',
+      bonusDust: 200, amber: 2240, expectedCopiesCenti: 7790, nameKey: 'capsuleTier.platinum.name',
     },
     aeon: {
       id: 'aeon', index: 6, stacks: 8,
@@ -72,7 +76,7 @@ export const capsules: CapsuleTables = {
       // Collection item while the set is incomplete (then +500 Dust); +500 Dust
       guaranteed: ['legendary', 'legendary', 'legendary', 'epic', 'epic', 'epic'], rareToLegendaryBp: 0,
       legendaryUnownedFirst: true, skinChanceBp: 10000, skinMinRarity: 'epic', extraLegendaryCopies: 1, exclusiveItems: true,
-      bonusDust: 500, amber: 3600, expectedCopiesCenti: 8640, nameKey: 'capsuleTier.aeon.name',
+      bonusDust: 500, amber: 2880, expectedCopiesCenti: 8640, nameKey: 'capsuleTier.aeon.name',
     },
   },
   // A6.4 all-ages table (content re-tune 2026-10-04, CONTENT_PLAN 8 option B, set with the A6.9 economy
@@ -81,17 +85,18 @@ export const capsules: CapsuleTables = {
   // and Amber, so the median card still maxes in about 110 / 101 / 69 / 112 days. Arenas 1-2 (pool
   // 44-102) and the onboarding script keep the table above exactly. Every column still rises (or stays)
   // going up the ladder; guarantees, odds, pity, Dust, skins and the bag are unchanged.
+  // Amber ×0.65 since the 2026-10-07 re-tune (was 181 / 363 / 916 / 2,419 / 4,562 / 4,838 / 6,221).
   allAges: {
     fromArena: 3,
     ageCapsuleStacks: 5,
     tiers: {
-      clay: { stacks: 3, copies: { common: 6, rare: 2, epic: 2, legendary: 2 }, amber: 181, expectedCopiesCenti: 1460 },
-      bronze: { stacks: 4, copies: { common: 7, rare: 5, epic: 5, legendary: 2 }, amber: 363, expectedCopiesCenti: 2420 },
-      silver: { stacks: 5, copies: { common: 13, rare: 12, epic: 5, legendary: 2 }, amber: 916, expectedCopiesCenti: 5350 },
-      jade: { stacks: 6, copies: { common: 32, rare: 23, epic: 12, legendary: 4 }, amber: 2419, expectedCopiesCenti: 12750 },
-      gold: { stacks: 7, copies: { common: 34, rare: 23, epic: 12, legendary: 4 }, amber: 4562, expectedCopiesCenti: 14870 },
-      platinum: { stacks: 8, copies: { common: 34, rare: 28, epic: 12, legendary: 4 }, amber: 4838, expectedCopiesCenti: 15410 },
-      aeon: { stacks: 9, copies: { common: 53, rare: 32, epic: 14, legendary: 4 }, amber: 6221, expectedCopiesCenti: 18580 },
+      clay: { stacks: 3, copies: { common: 6, rare: 2, epic: 2, legendary: 2 }, amber: 120, expectedCopiesCenti: 1460 },
+      bronze: { stacks: 4, copies: { common: 7, rare: 5, epic: 5, legendary: 2 }, amber: 235, expectedCopiesCenti: 2420 },
+      silver: { stacks: 5, copies: { common: 13, rare: 12, epic: 5, legendary: 2 }, amber: 595, expectedCopiesCenti: 5350 },
+      jade: { stacks: 6, copies: { common: 32, rare: 23, epic: 12, legendary: 4 }, amber: 1570, expectedCopiesCenti: 12750 },
+      gold: { stacks: 7, copies: { common: 34, rare: 23, epic: 12, legendary: 4 }, amber: 2965, expectedCopiesCenti: 14870 },
+      platinum: { stacks: 8, copies: { common: 34, rare: 28, epic: 12, legendary: 4 }, amber: 3145, expectedCopiesCenti: 15410 },
+      aeon: { stacks: 9, copies: { common: 53, rare: 32, epic: 14, legendary: 4 }, amber: 4045, expectedCopiesCenti: 18580 },
     },
   },
   // A6.4 step 1.2: Common 72%, Rare 22%, Epic 5%, Legendary 1%

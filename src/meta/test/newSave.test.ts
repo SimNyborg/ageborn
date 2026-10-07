@@ -73,10 +73,10 @@ describe('economy entry points (A6.4, A6.6, A6.9)', () => {
     }
   });
 
-  it('16.1 copies and 411.3 Amber per bag capsule before pity (the 2026-09-29 ladder; A6.9)', () => {
+  it('16.1 copies and 330.3 Amber per bag capsule before pity (the 2026-09-29 ladder, Amber re-tuned 2026-10-07; A6.9)', () => {
     const a = bagCapsuleAverages(C);
     expect(Math.round(a.copiesCenti / 10) / 10).toBe(16.1);
-    expect(a.amberCenti).toBe(41130);
+    expect(a.amberCenti).toBe(33030);
   });
 
 

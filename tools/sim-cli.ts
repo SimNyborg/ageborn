@@ -9,7 +9,7 @@
  *                                      [--formats short,standard,full] [--general echo] [--level 7] [--workers N] [--no-gate]
  *   npx tsx tools/sim-cli.ts forts     [--mode smoke|full] [--rows placebo,mirror,...] [--kinds wall,camp] [--formats short,standard]
  *                                      [--matches N] [--matches-full N] [--card-matches N] [--tier 7] [--level 7] [--seed 5001] [--raw f.json] [--patch file.json]
- *   npx tsx tools/sim-cli.ts economy   [--days 365] [--seed 1] [--seeds 30] [--matches-per-day 7] [--no-gate]
+ *   npx tsx tools/sim-cli.ts economy   [--days 365] [--seed 1] [--seeds 30] [--matches-per-day 7] [--formats mixed|short,full,...] [--no-gate]
  *   npx tsx tools/sim-cli.ts drops     [--mode smoke|full] [--openings N] [--streams N] [--no-gate]
  *   npx tsx tools/sim-cli.ts replay-verify <file|dir>...
  *   npx tsx tools/sim-cli.ts csv export|import [--dir reports/csv] [--raw src/content/raw] [--dry-run]
@@ -30,7 +30,7 @@ import { buildReplay, createSim } from '../src/sim';
 import { balanceDefaults, balanceSections, runBalance, writeCardsCsv, type BalanceMode } from './balance';
 import { csvSections, runCsv } from './csv';
 import { dropsDefaults, dropsSections, runDrops } from './drops';
-import { economyDefaults, economySections, runEconomy } from './economy';
+import { economyDefaults, economySections, MIXED_FORMATS, runEconomy } from './economy';
 import { exploitDefaults, exploitSections, runExploits } from './exploits';
 import { FORT_KINDS, FORT_ROW_GROUPS, fortsDefaults, fortsSections, runForts, type FortRowGroup } from './forts';
 import { lbsDefaults, lbsSections, runLbs } from './lbs';
@@ -70,6 +70,7 @@ Commands:
                   --tiers 2,4,6,8,10 --proxies a,b --formats short,standard,full --general echo --level 7 --seed 1
   economy         365-day economy sim against the A6.9 pacing table (median of --seeds runs)
                   --days 365 --seed 1 --seeds 30 --matches-per-day 7 (a casual 3-match player is reported too)
+                  --formats mixed (3 Short, 2 Standard, 1 Long, 1 No clock a day) or a list of lengths to cycle
   drops           capsule openings: bag totals, chi-square of published odds, pity (A6.4, A6.5)
                   --mode smoke|full --openings N --streams N --seed 1
   replay-verify   re-simulate replay files or folders and compare hashes (B3)
@@ -96,7 +97,7 @@ export const COMMAND_FLAGS: Record<string, readonly string[]> = {
   exploits: ['mode', 'matches', 'proxies', 'formats', 'tier', 'level', 'seed', 'a18', 'power-rows', 'lane', 'lane-matches', 'patch'],
   strength: ['mode', 'matches', 'pairs', 'tiers', 'proxies', 'formats', 'general', 'level', 'seed', 'patch'],
   forts: ['mode', 'rows', 'kinds', 'formats', 'matches', 'matches-full', 'card-matches', 'tier', 'level', 'seed', 'raw', 'patch'],
-  economy: ['days', 'seed', 'seeds', 'matches-per-day'],
+  economy: ['days', 'seed', 'seeds', 'matches-per-day', 'formats'],
   drops: ['mode', 'openings', 'streams', 'seed'],
   'replay-verify': [],
   csv: ['dir', 'raw', 'dry-run'],
@@ -287,7 +288,9 @@ export async function main(argv: readonly string[]): Promise<number> {
     }
     case 'economy': {
       const d = economyDefaults();
-      const report = await runEconomy({ ...d, days: int(a, 'days', d.days), seed: int(a, 'seed', d.seed), seeds: int(a, 'seeds', d.seeds), matchesPerDay: int(a, 'matches-per-day', d.matchesPerDay) });
+      const fm = str(a, 'formats', '');
+      const formats = fm === 'mixed' ? MIXED_FORMATS : fm === '' ? d.formats : (fm.split(',').map((x) => x.trim()).filter((x) => x !== '') as FormatId[]);
+      const report = await runEconomy({ ...d, days: int(a, 'days', d.days), seed: int(a, 'seed', d.seed), seeds: int(a, 'seeds', d.seeds), matchesPerDay: int(a, 'matches-per-day', d.matchesPerDay), formats });
       return finish(report, economySections(report), a);
     }
     case 'drops': {

@@ -32,15 +32,16 @@ describe('Time Capsules (A6.4)', () => {
       const x = capsules.tiers[t];
       return [x.stacks, x.copies.common, x.copies.rare, x.copies.epic, x.copies.legendary, x.amber];
     };
-    // A17.13: about ×1.75 copies and Amber (the pool grew 55 → 88 cards; time to max stays)
-    expect(row('clay')).toEqual([2, 4, 1, 1, 1, 105]);
-    expect(row('bronze')).toEqual([3, 5, 2, 2, 1, 210]);
-    expect(row('silver')).toEqual([4, 10, 5, 2, 1, 530]);
-    expect(row('jade')).toEqual([5, 24, 10, 5, 2, 1400]);
+    // A17.13: about ×1.75 copies and Amber (the pool grew 55 → 88 cards; time to max stays). The Amber
+    // re-tune (owner feedback 2026-10-07) cut this table's Amber ×0.8 (was 105 / 210 / 530 / 1,400 / 2,640 / 2,800 / 3,600).
+    expect(row('clay')).toEqual([2, 4, 1, 1, 1, 85]);
+    expect(row('bronze')).toEqual([3, 5, 2, 2, 1, 170]);
+    expect(row('silver')).toEqual([4, 10, 5, 2, 1, 425]);
+    expect(row('jade')).toEqual([5, 24, 10, 5, 2, 1120]);
     // The 2026-09-29 ladder: Gold is the old Aeon (+100 Dust), then Platinum and the new Aeon
-    expect(row('gold')).toEqual([6, 26, 10, 5, 2, 2640]);
-    expect(row('platinum')).toEqual([7, 26, 12, 5, 2, 2800]);
-    expect(row('aeon')).toEqual([8, 40, 14, 6, 2, 3600]);
+    expect(row('gold')).toEqual([6, 26, 10, 5, 2, 2110]);
+    expect(row('platinum')).toEqual([7, 26, 12, 5, 2, 2240]);
+    expect(row('aeon')).toEqual([8, 40, 14, 6, 2, 2880]);
     expect(capsules.tierOrder).toEqual(['clay', 'bronze', 'silver', 'jade', 'gold', 'platinum', 'aeon']);
     expect(capsules.tiers.bronze.guaranteed).toEqual(['rare']);
     expect(capsules.tiers.silver.guaranteed).toEqual(['rare', 'rare', 'epic']);
@@ -110,7 +111,7 @@ describe('Time Capsules (A6.4)', () => {
     expect(capsules.tiers.aeon.expectedCopiesCenti).toBe(8640);
   });
 
-  it('averages 16.1 copies and 411.3 Amber per bag capsule (A6.4, A6.9)', () => {
+  it('averages 16.1 copies and 330.3 Amber per bag capsule (A6.4, A6.9; 411.3 Amber before 2026-10-07)', () => {
     const bag = capsules.bag;
     expect(bag).toEqual({ clay: 60, bronze: 80, silver: 40, jade: 13, gold: 4, platinum: 2, aeon: 1 });
     const size = capsules.tierOrder.reduce((n, t) => n + bag[t], 0);
@@ -122,7 +123,7 @@ describe('Time Capsules (A6.4)', () => {
       amber += bag[t] * capsules.tiers[t].amber;
     }
     expect(Math.round(copies / size / 1000)).toBe(161);
-    expect(amber / size).toBe(411.3);
+    expect(amber / size).toBe(330.3);
   });
 
   it('has the all-ages table from Arena 3 (A6.4, content re-tune 2026-10-04)', () => {
@@ -131,25 +132,27 @@ describe('Time Capsules (A6.4)', () => {
     expect(w.ageCapsuleStacks).toBe(capsules.ageCapsule.stacks + 1);
     const rows = capsules.tierOrder.map((t) => [t, w.tiers[t].stacks, w.tiers[t].copies.common, w.tiers[t].copies.rare, w.tiers[t].copies.epic, w.tiers[t].copies.legendary, w.tiers[t].amber]);
     expect(rows).toEqual([
-      ['clay', 3, 6, 2, 2, 2, 181],
-      ['bronze', 4, 7, 5, 5, 2, 363],
-      ['silver', 5, 13, 12, 5, 2, 916],
-      ['jade', 6, 32, 23, 12, 4, 2419],
-      ['gold', 7, 34, 23, 12, 4, 4562],
-      ['platinum', 8, 34, 28, 12, 4, 4838],
-      ['aeon', 9, 53, 32, 14, 4, 6221],
+      // Amber ×0.65 since the 2026-10-07 re-tune (was 181 / 363 / 916 / 2,419 / 4,562 / 4,838 / 6,221)
+      ['clay', 3, 6, 2, 2, 2, 120],
+      ['bronze', 4, 7, 5, 5, 2, 235],
+      ['silver', 5, 13, 12, 5, 2, 595],
+      ['jade', 6, 32, 23, 12, 4, 1570],
+      ['gold', 7, 34, 23, 12, 4, 2965],
+      ['platinum', 8, 34, 28, 12, 4, 3145],
+      ['aeon', 9, 53, 32, 14, 4, 4045],
     ]);
     for (const t of capsules.tierOrder) {
       // One more stack than the base tier on every rung; its Expected copies column in tenths.
       expect(w.tiers[t].stacks, t).toBe(capsules.tiers[t].stacks + 1);
       expect(Math.round(expectedCopies(t, true) / 1000), t).toBe(Math.round(w.tiers[t].expectedCopiesCenti / 10));
     }
-    // 38.5 copies and 710.7 Amber per bag capsule before pity (16.1 and 411.3 on the base table).
+    // 38.5 copies and 462.0 Amber per bag capsule before pity (16.1 and 330.3 on the base table; 710.7 and
+    // 411.3 Amber before the 2026-10-07 re-tune).
     const size = capsules.tierOrder.reduce((n, t) => n + capsules.bag[t], 0);
     const copies = capsules.tierOrder.reduce((n, t) => n + capsules.bag[t] * expectedCopies(t, true), 0);
     const amber = capsules.tierOrder.reduce((n, t) => n + capsules.bag[t] * w.tiers[t].amber, 0);
     expect(Math.round(copies / size / 1000)).toBe(385);
-    expect(amber / size).toBeCloseTo(710.66, 2);
+    expect(amber / size).toBeCloseTo(462.025, 3);
   });
 
   it('has the odds, pity, charges and script', () => {

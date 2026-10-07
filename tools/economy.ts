@@ -26,6 +26,7 @@ import { mean, median } from './lib/stats';
 import { fmtNum, infoCheck, markdownTable, rangeCheck, skippedCheck, startReport, type Check, type Report } from './report';
 
 const DAY_MS = 86_400_000;
+const fmtPct = (x: number): string => (Number.isFinite(x) ? `${Math.round(x * 100)}%` : 'n/a');
 const MONTH_DAYS = 30.44;
 
 /** A6.9 targets. Months are converted at 30.44 days. */
@@ -37,13 +38,16 @@ export const ECONOMY_TARGETS = {
   // (A6.4, Arena 3 and up, where the player spends nearly the whole year): before it, 16.0 copies and
   // 411 Amber per bag capsule and about 98 copies and 3,030 Amber a day for the 88-card pool.
   copiesPerBagCapsule: 38,
-  amberPerBagCapsule: 710,
+  // Amber re-tune (owner feedback 2026-10-07): capsule Amber ×0.65 on the all-ages table (×0.8 on the
+  // Arena 1-2 table), so Amber is a real constraint beside copies: 710 Amber per bag capsule and ~5,150
+  // a day before.
+  amberPerBagCapsule: 460,
   // The Sundial (2026-09-30, A6.3): one every 5 h is 4.8 a day, all claimed by 7 matches; the 2-pip
   // Clay meter fills from the ladder matches that bring none (the Supply Capsule retired).
   sundialCapsulesPerDay: 4.8,
   clayCapsulesPerDay: 1.1,
   copiesPerDay: 240,
-  amberPerDay: 5150,
+  amberPerDay: 3600,
   commonMaxDays: 110,
   rareMaxDays: 101,
   epicMaxDays: 69,
@@ -63,10 +67,19 @@ export const ECONOMY_TARGETS = {
   allLegendariesDays: 21,
   planL7Days: 42,
   copiesDoneDays: 7.25 * MONTH_DAYS,
-  amberDoneDays: 7 * MONTH_DAYS,
-  /** "Whole collection maxed: ~7-7.5 months" (the middle, 7.25 months; ~5-5.5 months for 88 cards). */
-  collectionMaxedDays: 7.25 * MONTH_DAYS,
-  maxGapDays: 30,
+  // The Amber re-tune (2026-10-07) makes Amber the last gate of the whole collection: about 10 months
+  // (was 7-7.5, with Amber done at 7 and copies and Amber within 30 days of each other).
+  amberDoneDays: 10 * MONTH_DAYS,
+  /** "Whole collection maxed: ~10 months", Amber-gated (7-7.5 months, copy-gated, until 2026-10-07). */
+  collectionMaxedDays: 10 * MONTH_DAYS,
+  /** Amber finishes after the copies, by 30-120 days: Amber binds, and copies still matter to the end. */
+  amberLagDays: [30, 120] as const,
+  /** Amber gate: at least this share of days 11-120 ends with a copy-ready upgrade the Amber cannot pay. */
+  amberBlockedShareMin: 0.75,
+  /** The first week stays generous: the Amber backlog on day 7 is 1-7 days of Amber income. */
+  week1BacklogDays: [1, 7] as const,
+  /** The first War Plan's mean level on day 7 (3.65 before the re-tune: the cards you play keep their pace). */
+  week1PlanLevelMin: 3.3,
 } as const;
 
 export interface EconomyModel {
@@ -79,11 +92,28 @@ export interface EconomyModel {
   seeds: number;
   /** Days used for the per-day averages (steady state before the collection maxes out). */
   averageDays: [number, number];
+  /**
+   * Ladder lengths played, cycled match by match through each day (2026-10-07: trophies and Amber scale
+   * with the length, A15.8). Empty: the arena's first length (Short War), the A6.9 player.
+   */
+  formats: readonly FormatId[];
+  /**
+   * Which cards the player levels: 0 = every card it owns (the collector, the A6.9 player); N = only the
+   * War Plan's cards in its first N ages (a focused player: 3 for a Short War player, 8 for the whole
+   * plan). Owner feedback 2026-10-07: players level the cards they play, so Amber must bind there too.
+   */
+  focusAges: number;
 }
 
 export function economyDefaults(): EconomyModel {
-  return { days: 365, winRateBp: 6000, matchesPerDay: 7, seed: 1, seeds: 30, averageDays: [11, 120] };
+  return { days: 365, winRateBp: 6000, matchesPerDay: 7, seed: 1, seeds: 30, averageDays: [11, 120], formats: [], focusAges: 0 };
 }
+
+/**
+ * The mixed-length player (owner feedback 2026-10-07, reported beside the A6.9 player): 7 Ladder matches a
+ * day, 3 Short, 2 Standard, 1 Long and 1 No clock (about 75 minutes a day at the A2.10 medians).
+ */
+export const MIXED_FORMATS: readonly FormatId[] = ['short', 'standard', 'short', 'full', 'short', 'standard', 'last'];
 
 /**
  * The median of each measure over several runs. A milestone some runs never reach counts as later
@@ -125,6 +155,29 @@ export function medianMeasures(list: readonly EconomyMeasures[]): EconomyMeasure
     albumCompleteDay: day((m) => m.albumCompleteDay),
     maxed50Day: day((m) => m.maxed50Day),
     planL7Day: day((m) => m.planL7Day),
+    levelMaxDay: {
+      common: day((m) => m.levelMaxDay.common),
+      rare: day((m) => m.levelMaxDay.rare),
+      epic: day((m) => m.levelMaxDay.epic),
+      legendary: day((m) => m.levelMaxDay.legendary),
+    },
+    amberGate: {
+      blockedShare: num((m) => m.amberGate.blockedShare),
+      blockedShareWeek1: num((m) => m.amberGate.blockedShareWeek1),
+      backlogDays: {
+        d7: num((m) => m.amberGate.backlogDays.d7),
+        d30: num((m) => m.amberGate.backlogDays.d30),
+        d90: num((m) => m.amberGate.backlogDays.d90),
+      },
+      bankDays: num((m) => m.amberGate.bankDays),
+    },
+    starter: {
+      level7: num((m) => m.starter.level7),
+      plan7: num((m) => m.starter.plan7),
+      maxed7: num((m) => m.starter.maxed7),
+      maxed30: num((m) => m.starter.maxed30),
+      planMaxDay: day((m) => m.starter.planMaxDay),
+    },
     copiesDoneDay: day((m) => m.copiesDoneDay),
     amberDoneDay: day((m) => m.amberDoneDay),
     collectionMaxedDay: day((m) => m.collectionMaxedDay),
@@ -161,6 +214,34 @@ export interface EconomyMeasures {
   albumCompleteDay: number | null;
   maxed50Day: number | null;
   planL7Day: number | null;
+  /** Median day a card of each rarity actually reached L10 (copies and Amber both paid; null = never). */
+  levelMaxDay: Record<Rarity, number | null>;
+  /**
+   * The Amber gate (owner feedback 2026-10-07): is Amber a real constraint beside the copies? Measured at
+   * the end of each day, after the player upgraded everything it could.
+   */
+  amberGate: {
+    /** Share of the averaging window's days that end with an upgrade the player has the copies for but not the Amber. */
+    blockedShare: number;
+    /** The same for days 0-6. */
+    blockedShareWeek1: number;
+    /** Amber for every upgrade the copies allow, at the end of day 7, 30 and 90, in days of Amber income (trailing 7 days). */
+    backlogDays: { d7: number; d30: number; d90: number };
+    /** Median end-of-day Amber balance over the averaging window, in days of Amber income. */
+    bankDays: number;
+  };
+  /** The starter cards (owned in a new save) and the first War Plan's cards in the first week. */
+  starter: {
+    /** Mean level of the starter cards at the end of day 7. */
+    level7: number;
+    /** Mean level of the first War Plan's cards at the end of day 7. */
+    plan7: number;
+    /** Starter cards at L10 at the end of day 7 and day 30. */
+    maxed7: number;
+    maxed30: number;
+    /** Day every card of the first War Plan reached L10. */
+    planMaxDay: number | null;
+  };
   copiesDoneDay: number | null;
   amberDoneDay: number | null;
   collectionMaxedDay: number | null;
@@ -179,11 +260,19 @@ export class EconomyRecorder {
   private winCaps = 0;
   private winCopies = 0;
   private winAmber = 0;
+  /** End-of-day Amber balance and the Amber of every copy-ready upgrade, by day. */
+  private readonly gates: { bank: number; backlog: number }[] = [];
+  private starterCards: CardId[] = [];
+  private firstPlan: CardId[] = [];
+  private readonly levelsByDay: ReadonlyMap<CardId, number>[] = [];
+  private firstPlanMax: number | null = null;
+  private readonly cap: number;
   private readonly cards: { id: CardId; rarity: Rarity; need: number; age: AgeId }[];
   private readonly amberNeed: number;
 
   constructor(content: CompiledContent) {
     const c = asContent(content);
+    this.cap = content.economy.maxLevel;
     const need = (r: Rarity): number => c.rarities.cards[r].upgradeCopies.reduce((a, b) => a + b, 0);
     // Unreleased cards (the release gate) never drop, so they never count toward a milestone.
     this.cards = [
@@ -247,9 +336,27 @@ export class EconomyRecorder {
     }
   }
 
+  /** The cards a new save owns (the starter cards). */
+  starter(cards: readonly CardId[]): void {
+    this.starterCards = [...cards];
+  }
+
+  /**
+   * End-of-day Amber state, after the day's upgrades: the balance and the Amber every upgrade the copies
+   * already allow would cost (more than zero means Amber, not copies, held an upgrade back).
+   */
+  gate(day: number, bank: number, backlog: number): void {
+    this.today(day);
+    while (this.gates.length <= day) this.gates.push({ bank: 0, backlog: 0 });
+    this.gates[day] = { bank, backlog };
+  }
+
   /** End-of-day collection state (owned and maxed cards, the plan at L7). */
   snapshot(day: number, levels: ReadonlyMap<CardId, number>, planCards: readonly CardId[], maxLevel: number): void {
     this.today(day);
+    if (this.firstPlan.length === 0 && planCards.length > 0) this.firstPlan = [...planCards];
+    if (day === 7 || day === 30) this.levelsByDay[day] = new Map(levels);
+    if (this.firstPlan.length > 0 && this.firstPlanMax === null && this.firstPlan.every((c) => (levels.get(c) ?? 0) >= maxLevel)) this.firstPlanMax = day;
     for (const [id, lvl] of levels) {
       if (lvl >= 1 && !this.owned.has(id)) this.owned.set(id, day);
       if (lvl >= maxLevel && !this.maxed.has(id)) this.maxed.set(id, day);
@@ -272,6 +379,28 @@ export class EconomyRecorder {
     const maxedAll = this.cards.every((c) => this.maxed.has(c.id)) ? Math.max(...this.cards.map((c) => this.maxed.get(c.id) as number)) : null;
     const ownedDays = this.cards.map((c) => this.owned.get(c.id)).filter((d): d is number => d !== undefined).sort((a, b) => a - b);
     const maxedDays = this.cards.map((c) => this.maxed.get(c.id)).filter((d): d is number => d !== undefined).sort((a, b) => a - b);
+    const levelByRarity = (r: Rarity): number | null => {
+      const days = this.cards.filter((c) => c.rarity === r).map((c) => this.maxed.get(c.id));
+      if (days.some((d) => d === undefined)) return null;
+      return median(days as number[]);
+    };
+    // Amber income per day over the 7 days up to `day` (the first days count from day 0).
+    const income7 = (day: number): number => {
+      const from = Math.max(0, day - 6);
+      const xs = this.totals.slice(from, day + 1).map((t) => t.amber);
+      return xs.length ? Math.max(1, mean(xs)) : 1;
+    };
+    const backlogDays = (day: number): number => {
+      const g = this.gates[day];
+      return g ? g.backlog / income7(day) : Number.NaN;
+    };
+    const blocked = (from: number, to: number): number => {
+      const span = this.gates.slice(from, to + 1);
+      return span.length ? span.filter((g) => g.backlog > 0).length / span.length : Number.NaN;
+    };
+    const bankSpan = this.gates.slice(a, b + 1).map((g, i) => g.bank / income7(a + i));
+    const levelsAt = (day: number, ids: readonly CardId[]): number[] => ids.map((id) => this.levelsByDay[day]?.get(id) ?? 0);
+    const atCap = (lv: number[]): number => lv.filter((l) => l >= this.cap).length;
     return {
       days: this.totals.length,
       copiesPerBagCapsule: this.winCaps ? this.winCopies / this.winCaps : Number.NaN,
@@ -292,6 +421,20 @@ export class EconomyRecorder {
       albumCompleteDay: ownedDays.length === this.cards.length ? (ownedDays[ownedDays.length - 1] as number) : null,
       maxed50Day: maxedDays.length >= 50 ? (maxedDays[49] as number) : null,
       planL7Day: this.planL7,
+      levelMaxDay: { common: levelByRarity('common'), rare: levelByRarity('rare'), epic: levelByRarity('epic'), legendary: levelByRarity('legendary') },
+      amberGate: {
+        blockedShare: blocked(a, b),
+        blockedShareWeek1: blocked(0, 6),
+        backlogDays: { d7: backlogDays(7), d30: backlogDays(30), d90: backlogDays(90) },
+        bankDays: bankSpan.length ? median(bankSpan) : Number.NaN,
+      },
+      starter: {
+        level7: this.levelsByDay[7] && this.starterCards.length ? mean(levelsAt(7, this.starterCards)) : Number.NaN,
+        plan7: this.levelsByDay[7] && this.firstPlan.length ? mean(levelsAt(7, this.firstPlan)) : Number.NaN,
+        maxed7: this.levelsByDay[7] ? atCap(levelsAt(7, this.starterCards)) : Number.NaN,
+        maxed30: this.levelsByDay[30] ? atCap(levelsAt(30, this.starterCards)) : Number.NaN,
+        planMaxDay: this.firstPlanMax,
+      },
       copiesDoneDay: copiesDone,
       amberDoneDay: this.amberDone,
       collectionMaxedDay: maxedAll,
@@ -309,7 +452,8 @@ export function economyChecks(m: EconomyMeasures): Check[] {
       show: (x) => (Number.isFinite(x) ? `${fmtNum(x, x < 10 ? 2 : 0)} ${unit}` : 'not reached'),
     });
   };
-  const gap = m.copiesDoneDay !== null && m.amberDoneDay !== null ? Math.abs(m.amberDoneDay - m.copiesDoneDay) : Number.NaN;
+  const lag = m.copiesDoneDay !== null && m.amberDoneDay !== null ? m.amberDoneDay - m.copiesDoneDay : Number.NaN;
+  const days = (x: number): string => (Number.isFinite(x) ? `${fmtNum(x, x < 10 ? 1 : 0)} days` : 'not reached');
   return [
     near('economy.copiesPerBag', 'Copies per bag capsule', m.copiesPerBagCapsule, T.copiesPerBagCapsule, 'copies'),
     near('economy.amberPerBag', 'Amber per bag capsule', m.amberPerBagCapsule, T.amberPerBagCapsule, 'Amber'),
@@ -328,7 +472,11 @@ export function economyChecks(m: EconomyMeasures): Check[] {
     near('economy.copiesDone', 'Copies for the whole collection', m.copiesDoneDay, T.copiesDoneDays, 'days'),
     near('economy.amberDone', 'Amber for the whole collection (every released card × 4,970)', m.amberDoneDay, T.amberDoneDays, 'days'),
     near('economy.collectionMaxed', 'Whole collection maxed', m.collectionMaxedDay, T.collectionMaxedDays, 'days'),
-    rangeCheck('economy.finishGap', 'Gap between the copy and Amber finish dates', gap, 0, T.maxGapDays - 1e-9, { target: `< ${T.maxGapDays} days`, show: (x) => (Number.isFinite(x) ? `${fmtNum(x, 0)} days` : 'not reached') }),
+    rangeCheck('economy.amberLag', 'Amber finishes after the copies (Amber done minus copies done)', lag, T.amberLagDays[0], T.amberLagDays[1], { target: `${T.amberLagDays[0]}-${T.amberLagDays[1]} days`, show: days }),
+    // The Amber gate (owner feedback 2026-10-07): Amber decides which card to upgrade, from the first week on.
+    rangeCheck('economy.amberBlocked', 'Days 11-120 ending with a copy-ready upgrade the Amber cannot pay', m.amberGate.blockedShare, T.amberBlockedShareMin, 1, { target: `≥ ${Math.round(T.amberBlockedShareMin * 100)}%`, show: fmtPct }),
+    rangeCheck('economy.week1Backlog', 'Amber for every copy-ready upgrade on day 7, in days of Amber income', m.amberGate.backlogDays.d7, T.week1BacklogDays[0], T.week1BacklogDays[1], { target: `${T.week1BacklogDays[0]}-${T.week1BacklogDays[1]} days`, show: days }),
+    rangeCheck('economy.week1Plan', 'First War Plan: mean card level on day 7', m.starter.plan7, T.week1PlanLevelMin, Number.POSITIVE_INFINITY, { target: `≥ L${T.week1PlanLevelMin}`, show: (x) => (Number.isFinite(x) ? `L${fmtNum(x, 2)}` : 'n/a') }),
     // The collection milestones (titles, 2026-10-04) are reported, not gated.
     infoCheck(
       'economy.milestones',
@@ -337,6 +485,22 @@ export function economyChecks(m: EconomyMeasures): Check[] {
     ),
     // Dust is reported, not gated (A6.6 prices did not change with the content re-tune).
     infoCheck('economy.dust', 'Dust earned: a day (averaging window) and over the whole run', `${fmtNum(m.perDay.dust, 0)} /day; ${fmtNum(m.dustTotal, 0)} in ${m.days} days`),
+    // The Amber gate (owner feedback 2026-10-07), reported: how often Amber, not copies, holds an upgrade back.
+    infoCheck(
+      'economy.amberGate',
+      'Amber gate: days ending with a copy-ready upgrade the Amber cannot pay (window / days 0-6); that backlog on day 7 / 30 / 90 and the median bank, in days of Amber income',
+      `${fmtPct(m.amberGate.blockedShare)} / ${fmtPct(m.amberGate.blockedShareWeek1)}; backlog ${[m.amberGate.backlogDays.d7, m.amberGate.backlogDays.d30, m.amberGate.backlogDays.d90].map((x) => fmtNum(x, 1)).join(' / ')} days; bank ${fmtNum(m.amberGate.bankDays, 2)} days`,
+    ),
+    infoCheck(
+      'economy.levelMax',
+      'Common / Rare / Epic / Legendary at L10 (median card; copies and Amber paid)',
+      [m.levelMaxDay.common, m.levelMaxDay.rare, m.levelMaxDay.epic, m.levelMaxDay.legendary].map((x) => (x === null ? 'not reached' : `day ${x}`)).join(' / '),
+    ),
+    infoCheck(
+      'economy.starter',
+      'First week: mean level of the starter cards / the first War Plan on day 7; starter cards at L10 on day 7 / 30; first War Plan all L10',
+      `L${fmtNum(m.starter.level7, 1)} / L${fmtNum(m.starter.plan7, 1)}; ${fmtNum(m.starter.maxed7, 0)} / ${fmtNum(m.starter.maxed30, 0)} at L10; plan maxed ${m.starter.planMaxDay === null ? 'not reached' : `day ${m.starter.planMaxDay}`}`,
+    ),
     // A model input rather than a result: the A6.9 player completes 3 quests a day.
     infoCheck('economy.questsPerDay', 'Quests claimed per day (A6.9 assumes 3)', `${fmtNum(m.perDay.quests, 2)} /day`),
   ];
@@ -348,7 +512,7 @@ export function economyChecks(m: EconomyMeasures): Check[] {
 /** Evolve times by position in the window (s), the A18 Balanced mirror medians: 1:13, 2:55, 4:41, 6:34, 8:47, 10:49. */
 const EVOLVE_AT_SEC = [73, 175, 281, 394, 527, 649] as const;
 /** Typical match length per format (s): the A18.3.4 medians (Short 7:00, Standard 10:30, Full 15:00). */
-const MATCH_SEC: Record<FormatId, number> = { tutorial: 180, short: 420, standard: 630, full: 900 };
+const MATCH_SEC: Record<FormatId, number> = { tutorial: 180, short: 420, standard: 630, full: 900, last: 975 };
 
 /**
  * Plausible per-match stats of an engaged player, for quest progress only (A6.7): the economy does not
@@ -418,11 +582,11 @@ function rerollStuck(api: QuestApi, s: SaveDoc, content: CompiledContent): SaveD
   return r.ok ? r.value : s;
 }
 
-function planCards(s: SaveDoc): CardId[] {
+function planCards(s: SaveDoc, ages = Number.POSITIVE_INFINITY): CardId[] {
   const plan = s.warPlans[s.activePlan];
   if (!plan) return [];
   const out: CardId[] = [];
-  for (const age of Object.keys(plan.loadouts) as AgeId[]) {
+  for (const age of (Object.keys(plan.loadouts) as AgeId[]).slice(0, ages)) {
     const l = plan.loadouts[age];
     for (const c of [...l.units, ...l.turrets]) if (c && !out.includes(c)) out.push(c);
   }
@@ -459,13 +623,14 @@ function openAll(meta: Meta, s: SaveDoc, day: number, rec: EconomyRecorder): Sav
   return save;
 }
 
-function upgradeAll(meta: Meta, s: SaveDoc, content: CompiledContent, c: Content, day: number, rec: EconomyRecorder): SaveDoc {
+function upgradeAll(meta: Meta, s: SaveDoc, content: CompiledContent, c: Content, day: number, rec: EconomyRecorder, focusAges = 0): SaveDoc {
   let save = s;
   const plan = new Set(planCards(save));
+  const focus = focusAges > 0 ? new Set(planCards(save, focusAges)) : null;
   const amberFor = (lvl: number): number => c.rarities.upgradeAmber[lvl - 1] ?? Number.POSITIVE_INFINITY;
   for (let pass = 0; pass < 500; pass += 1) {
     const cands = Object.entries(save.collection)
-      .filter(([, e]) => e.level >= 1 && e.level < content.economy.maxLevel)
+      .filter(([id, e]) => e.level >= 1 && e.level < content.economy.maxLevel && (!focus || focus.has(id)))
       .sort(([a, ea], [b, eb]) => Number(plan.has(b)) - Number(plan.has(a)) || amberFor(ea.level) - amberFor(eb.level) || a.localeCompare(b));
     let upgraded = false;
     for (const [id, e] of cands) {
@@ -482,6 +647,32 @@ function upgradeAll(meta: Meta, s: SaveDoc, content: CompiledContent, c: Content
   return save;
 }
 
+/**
+ * Amber every upgrade the copies already allow would cost: each owned card climbs as far as its copies
+ * reach. Measured after the day's upgrades, so more than zero means Amber held an upgrade back.
+ */
+export function amberBacklog(s: SaveDoc, content: CompiledContent, only: ReadonlySet<CardId> | null = null): number {
+  const c = asContent(content);
+  let amber = 0;
+  for (const [id, e] of Object.entries(s.collection)) {
+    if (e.level < 1 || (only && !only.has(id))) continue;
+    const rarity = c.units[id]?.rarity ?? (c.turrets[id]?.rarity as Rarity | undefined);
+    if (!rarity) continue;
+    const copiesFor = c.rarities.cards[rarity].upgradeCopies;
+    let level = e.level;
+    let copies = e.copies;
+    while (level < content.economy.maxLevel) {
+      const need = copiesFor[level - 1];
+      const cost = c.rarities.upgradeAmber[level - 1];
+      if (need === undefined || cost === undefined || copies < need) break;
+      copies -= need;
+      amber += cost;
+      level += 1;
+    }
+  }
+  return amber;
+}
+
 /** Runs the player model for `days` days and returns the recorder. */
 export function simulateEconomy(meta: Meta, content: CompiledContent, m: EconomyModel): EconomyRecorder {
   const c = asContent(content);
@@ -491,6 +682,7 @@ export function simulateEconomy(meta: Meta, content: CompiledContent, m: Economy
   let now = Date.UTC(2026, 0, 1, 5);
   const clock: Clock = { now: () => now };
   let save = meta.newSave(content, clock, m.seed);
+  rec.starter(Object.entries(save.collection).filter(([, e]) => e.level >= 1).map(([id]) => id));
   const mySide: Side = 0;
   for (let day = 0; day < m.days; day += 1) {
     now = Date.UTC(2026, 0, 1, 5) + day * DAY_MS;
@@ -500,7 +692,8 @@ export function simulateEconomy(meta: Meta, content: CompiledContent, m: Economy
     // The Supply allowance is retired (A15.4): an old allowance would convert inside applyMatchResult.
     for (let n = 0; n < m.matchesPerDay; n += 1) {
       now += 10 * 60_000;
-      const opp = meta.pickOpponent(save, 'ladder', content, clock);
+      const format = m.formats.length > 0 ? m.formats[n % m.formats.length] : undefined;
+      const opp = meta.pickOpponent(save, 'ladder', content, clock, format ? { format } : undefined);
       const won = chanceBp(rng, m.winRateBp);
       const stats = syntheticStats(content, opp.format, won, rng, planCards(save)[0] ?? null);
       const r = meta.applyMatchResult(
@@ -529,16 +722,17 @@ export function simulateEconomy(meta: Meta, content: CompiledContent, m: Economy
       }
     }
     save = openAll(meta, save, day, rec);
-    save = upgradeAll(meta, save, content, c, day, rec);
+    save = upgradeAll(meta, save, content, c, day, rec, m.focusAges);
     if (quests) {
       // Twice: quest rewards open and upgrade into "Upgrade 2 cards", which can then be claimed too.
       for (let pass = 0; pass < 2; pass += 1) {
         save = claimQuests(quests, save, content, clock, day, rec);
         save = openAll(meta, save, day, rec);
-        save = upgradeAll(meta, save, content, c, day, rec);
+        save = upgradeAll(meta, save, content, c, day, rec, m.focusAges);
       }
       save = rerollStuck(quests, save, content);
     }
+    rec.gate(day, save.currencies.amber, amberBacklog(save, content, m.focusAges > 0 ? new Set(planCards(save, m.focusAges)) : null));
     rec.snapshot(day, levelsOf(save), planCards(save), content.economy.maxLevel);
   }
   return rec;

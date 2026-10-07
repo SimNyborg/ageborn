@@ -501,7 +501,7 @@ export async function runDrops(o: DropsOptions, content: CompiledContent = gameC
   try {
     const s = openCapsules(meta, content, o, onProgress).summary();
     return rep.finish(dropsChecks(s, content), { meta: 'src/meta', summary: s }, [
-      `A6.9 reference (the all-ages table of the last arena, A6.4): 38.5 copies and 710.7 Amber per bag capsule before pity (16.05 and 411.3 on the Arena 1-2 table); measured ${fmtNum(s.copiesPerWin, 2)} copies and ${fmtNum(s.amberPerWin, 1)} Amber per Sundial Capsule.`,
+      `A6.9 reference (the all-ages table of the last arena, A6.4): 38.5 copies and 462.0 Amber per bag capsule before pity (16.05 and 330.3 on the Arena 1-2 table; Amber re-tuned 2026-10-07); measured ${fmtNum(s.copiesPerWin, 2)} copies and ${fmtNum(s.amberPerWin, 1)} Amber per Sundial Capsule.`,
     ]);
   } catch (e) {
     return rep.finish([{ id: 'drops.run', metric: 'Capsule openings through Meta', target: 'runs', value: 'error', verdict: 'fail', note: String(e) }], { meta: 'src/meta', summary: null });
