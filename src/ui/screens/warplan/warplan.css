@@ -4,9 +4,15 @@
    Compact (phones): 62 x 84 slots; regular: 88-96 px slots with names. */
 
 .army-screen {
-  --slot-w: 88px;
+  /* The largest In battle slot; the band's slots shrink below it to keep one row (A18.9, see .army-slots). */
+  --slot-max: 88px;
+  --slot-w: var(--slot-max);
   --cell-w: 84px;
   --slot-gap: 8px;
+  /* The band's width is the ui-root's minus the screen's and the band's paddings. */
+  --band-pad: 74px;
+  /* The side column's least width (the advisor chip or the hint). */
+  --band-side: 100px;
 }
 @container ui-root (min-height: 700px) and (min-width: 1180px) {
   /* Slots stay 88 so the advisor's chip keeps its room at the band's end (review 3). */
@@ -16,9 +22,10 @@
 }
 @container ui-root (max-height: 480px) {
   .army-screen {
-    --slot-w: 58px;
+    --slot-max: 58px;
     --cell-w: 62px;
     --slot-gap: 5px;
+    --band-pad: 50px;
   }
   /* The lit Army tab says where we are; the header's room goes to the ages. */
   .army-screen .ui-screen__titles {
@@ -443,7 +450,18 @@
   font-weight: 800;
 }
 
+/* One row, always (U4): seven troops (A18.9), two turrets, the Home and Field powers and the Fort slot.
+   Each slot takes an equal share of the band's room after the gaps, the group rules and the side column,
+   capped at --slot-max: 54 px on an 844 px phone with the Fort group (58 before seven troops), 81 px at
+   1280 x 720. `--band-slots` and `--band-groups` come from the screen (11 or 12 slots, 3 or 4 groups). */
 .army-slots {
+  --slot-w: min(
+    var(--slot-max),
+    calc(
+      (100cqw - var(--band-pad) - 4px - var(--band-side) - var(--ui-s2) - (var(--band-slots, 11) - var(--band-groups, 3)) * var(--slot-gap) -
+          (var(--band-groups, 3) - 1) * (4 * var(--slot-gap) + 1px)) / var(--band-slots, 11)
+    )
+  );
   display: flex;
   align-items: stretch;
   gap: calc(var(--slot-gap) * 2);
@@ -609,6 +627,25 @@
   font-weight: 700;
   line-height: 1.15;
   text-align: center;
+}
+/* Phones (A18.9: seven troops make the band's slots 51-55 px): the cost drops its coin (the gold says
+   gold) and the class icon shrinks, so "150" and the icon never overlap; an empty slot keeps "+ Troop"
+   and leaves "More in capsules" to the Locked section, so the band stays one card tall. */
+@container ui-root (max-height: 480px) {
+  .army-slots .ui-card__cost {
+    gap: 0;
+    padding: 0 3px;
+  }
+  .army-slots .ui-card__cost svg {
+    display: none;
+  }
+  .army-slots .ui-card__class .ui-class-icon {
+    width: 15px !important;
+    height: 15px !important;
+  }
+  .army-slots .army-slot__more {
+    display: none;
+  }
 }
 /* Valid drop targets light up green (U5) with a soft inner glow; the one under the finger grows. */
 .army-slot::before {
@@ -1290,6 +1327,7 @@
 }
 .army-slots.has-fort {
   --slot-gap: 6px;
+  --band-side: 92px;
 }
 .army-slots.has-fort .army-bandside {
   flex-basis: 88px;
@@ -1298,6 +1336,8 @@
 @container ui-root (max-height: 480px) {
   .army-slots.has-fort {
     --slot-gap: 4px;
+    /* "Lv 3.9" only (the advisor's mark moves to the title row), and the Fort label's spare width. */
+    --band-side: 64px;
   }
   .army-slots.has-fort .army-bandside {
     flex: 1 1 0;

@@ -139,7 +139,8 @@ describe('sound manifest (A13)', () => {
     // 182 + the 16 fort sounds (A16.14.8) + the 31 of the MVP pass + the 15 of the Bronze wave + the 14 of the Stone wave
     // + the 18 of the Medieval wave + the 15 of the Gunpowder wave + the 18 of the Industrial wave + the 17 of the Modern wave
     // + the 19 of the Future wave + the 18 of the Cosmic wave
-    expect(A13_IDS).toHaveLength(363);
+    // + the 4 of the rarity burst (2026-10-07)
+    expect(A13_IDS).toHaveLength(367);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 

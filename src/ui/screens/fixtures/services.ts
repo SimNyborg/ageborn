@@ -81,10 +81,10 @@ export function createPreviewServices(o: {
       for (const age of content.order.ages) {
         const byLevel = (ids: string[]) =>
           ids.filter((id) => isOwned(s, id, content)).sort((a, b) => (s.collection[b]?.level ?? 0) - (s.collection[a]?.level ?? 0));
-        const units = byLevel(content.order.units.filter((id) => content.units[id]!.age === age)).slice(0, 6);
+        const units = byLevel(content.order.units.filter((id) => content.units[id]!.age === age)).slice(0, 7);
         const turrets = byLevel(content.order.turrets.filter((id) => content.turrets[id]!.age === age)).slice(0, 2);
         loadouts[age] = {
-          units: Array.from({ length: 6 }, (_, i) => units[i] ?? null),
+          units: Array.from({ length: 7 }, (_, i) => units[i] ?? null),
           turrets: Array.from({ length: 2 }, (_, i) => turrets[i] ?? null),
           powers: plan.loadouts[age]?.powers ?? { home: null, field: null },
         };

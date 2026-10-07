@@ -1165,7 +1165,13 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
       <div class={`army${sel ? ' has-sel' : ''}`} ref={root}>
         {/* 1. In battle: the loadout of this age, always in view (owner request 2026-09-30, U4) */}
         <section class="army-battle" data-army-col="" aria-labelledby="army-deck-title" data-testid="army-battle">
-          <div class={`army-slots${fresh ? ' is-fresh' : ''}${fortShown ? ' has-fort' : ''}`} key={age} data-testid="wp-board">
+          <div
+            class={`army-slots${fresh ? ' is-fresh' : ''}${fortShown ? ' has-fort' : ''}`}
+            key={age}
+            data-testid="wp-board"
+            // The slots share the band's room (A18.9 seven troops keep one row): see `.army-slots`.
+            style={{ '--band-slots': bandGroups.reduce((n, g) => n + g.slots.length, 0), '--band-groups': bandGroups.length }}
+          >
             {bandGroups.map((g, gi) => (
               <div key={g.id} class={`army-bandgroup army-bandgroup--${g.id}`} role="group" aria-label={t(g.key, { n: filled(g), max: groupMax(g) })}>
                 <span class="army-bandgroup__label">

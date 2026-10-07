@@ -38,7 +38,7 @@ function starterPower(content: Content, age: AgeId, slot: 'home' | 'field'): Car
 
 function loadout(units: (CardId | null)[], turrets: (CardId | null)[], powers: Loadout['powers']): Loadout {
   return {
-    units: Array.from({ length: 6 }, (_, i) => units[i] ?? null),
+    units: Array.from({ length: 7 }, (_, i) => units[i] ?? null),
     turrets: Array.from({ length: 2 }, (_, i) => turrets[i] ?? null),
     powers,
   };

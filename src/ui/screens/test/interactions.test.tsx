@@ -866,13 +866,13 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6; owner request 2026-09-30)', 
     expect(sectionOf('mammoth_matriarch')).toBe('free');
     // Counts per section (recognition over recall).
     const troops = stone().units.filter((u) => !!u).length;
-    expect(text(m.q('[data-testid="band-unit"]')!)).toBe(`Troops ${troops}/6`);
+    expect(text(m.q('[data-testid="band-unit"]')!)).toBe(`Troops ${troops}/7`);
     expect(text(free.querySelector('.army-sec-title') as FakeElement)).toMatch(/^Available · \d+$/);
     expect(text(m.q('[data-testid="army-owned-count"]')!)).toMatch(new RegExp(`All ${albumOfAge('stone')} Stone cards found!|You own \\d+ of ${albumOfAge('stone')} Stone cards`));
     m.click('[data-testid="slot-unit-4"] .ui-card');
     m.click('[data-testid="remove-unit-4"]');
     expect(sectionOf('drum_shaman')).toBe('free');
-    expect(text(m.q('[data-testid="band-unit"]')!)).toBe(`Troops ${troops - 1}/6`);
+    expect(text(m.q('[data-testid="band-unit"]')!)).toBe(`Troops ${troops - 1}/7`);
     m.click('[data-testid="cand-mammoth_matriarch"]');
     m.click('[data-testid="card-use"]');
     expect(sectionOf('mammoth_matriarch')).toBe('battle');
