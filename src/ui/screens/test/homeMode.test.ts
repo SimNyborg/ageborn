@@ -47,17 +47,18 @@ describe('the mode switcher (1.3)', () => {
     expect(battleRequest(last, content, 1)).toEqual({ mode: 'ladder', format: 'last' });
   });
 
-  it('the picker shows all four lengths; locked ones name the arena that opens them', () => {
-    const s = mid();
-    const a2 = { ...s, trophies: { ...s.trophies, current: 220, best: 220 }, arenaIndex: 1 };
-    const opts = lengthOptions(a2, content);
+  it('the picker shows all four lengths, all open from Arena 1; a locked one would name the arena that opens it', () => {
+    // Owner decision 2026-10-03: every length is open on the Ladder from Arena 1.
+    const n = newPlayerSave(content);
+    const opts = lengthOptions(n, content);
     expect(opts.map((o) => o.format)).toEqual(['short', 'standard', 'full', 'last']);
-    // Owner request 2026-10-03: every length is open from Arena 1.
     expect(opts.map((o) => o.open)).toEqual([true, true, true, true]);
-    expect(opts[3]!.opensAt).toEqual({ arena: 1, trophies: 0 });
-    // A locked length (content whose Arena 2 does not list it, the table before that request) names its arena.
-    const old = { ...content, arenas: { ...content.arenas, list: content.arenas.list.map((a) => (a.index < 3 ? { ...a, ladderFormats: a.ladderFormats.filter((f) => f === 'short' || (a.index === 2 && f === 'standard')) } : a)) } };
-    const locked = lengthOptions(a2, old);
+    expect(opts.map((o) => o.opensAt?.arena)).toEqual([1, 1, 1, 1]);
+    // A new Arena 1 player's Battle still plays the shortest timed length.
+    expect(ladderFormat(n, content)).toBe('short');
+    // The lock stays for an arena table that gates a length (Long War and No clock from Arena 3).
+    const gated = { ...content, arenas: { ...content.arenas, list: content.arenas.list.map((a) => ({ ...a, ladderFormats: a.index < 3 ? a.ladderFormats.filter((f) => f === 'short' || f === 'standard') : a.ladderFormats })) } };
+    const locked = lengthOptions(n, gated);
     expect(locked.map((o) => o.open)).toEqual([true, true, false, false]);
     expect(locked[3]!.opensAt).toEqual({ arena: 3, trophies: 400 });
   });
@@ -69,9 +70,11 @@ describe('the mode switcher (1.3)', () => {
     expect(minutesText(content.formats['last']!.endByMs!)).toBe('25½');
   });
 
-  it('Last Base Standing pays no trophies at any count (the plate never promises any)', () => {
+  it('every length shows its own win from Arena 1, No clock the most (owner decision 2026-10-03)', () => {
     const s = mid();
-    expect(ladderWin(s, content, 'last').trophies).toBe(0);
-    expect(ladderWin({ ...s, trophies: { ...s.trophies, current: 100 } }, content, 'last').trophies).toBe(0);
+    for (const current of [0, 100, s.trophies.current]) {
+      const at = { ...s, trophies: { ...s.trophies, current } };
+      expect((['short', 'standard', 'full', 'last'] as const).map((f) => ladderWin(at, content, f).trophies), String(current)).toEqual([30, 36, 46, 48]);
+    }
   });
 });

@@ -2,7 +2,7 @@
  * Test harness: mounts the `ScreenHost` on the tiny DOM with a fixture save, real content, real EN
  * strings (or a pseudo-locale), preview services with a call log, and a router set to a route stack.
  */
-import { content } from '@/content';
+import { content as realContent, type Content } from '@/content';
 import type { SaveDoc } from '@/contracts';
 import { fakeSaveDoc } from '@/contracts/fakes/saveStore';
 import { i18n } from '@/i18n';
@@ -58,7 +58,7 @@ export const PSEUDO: Translate = (k, p) => {
 };
 
 export function saveFor(state: HarnessState): SaveDoc {
-  return state === 'raw' ? fakeSaveDoc() : fixtureSave(content, state);
+  return state === 'raw' ? fakeSaveDoc() : fixtureSave(realContent, state);
 }
 
 /** The ScreenHost with the tab shell of the save (ui-plan 2.2), as the app mounts it. */
@@ -75,19 +75,19 @@ export function mount(
     patch?: Partial<UiServices>;
     now?: () => number;
     shell?: boolean;
-    /** A content override (for rules the live tables no longer exercise); the real content by default. */
-    content?: typeof content;
+    /** A variant of the real content (e.g. an arena table with locked lengths); the real content by default. */
+    content?: Content;
   } = {},
 ): Mounted {
-  const c = o.content ?? content;
+  const content = o.content ?? realContent;
   const { document, container } = installDom();
   const save = signal<SaveDoc>(o.save ?? saveFor(o.state ?? 'mid'));
   const routes = o.routes ?? [{ id: 'home' }];
   const router = createRouter(routes[0]);
   for (const r of routes.slice(1)) router.go(r);
   const log: PreviewLog = { calls: [] };
-  const services: UiServices = { ...createPreviewServices({ save, content: c, router, log }), ...o.patch };
-  const env = { save, content: c, t: o.t ?? EN, locale: 'en', now: o.now ?? (() => FIXTURE_NOW), router, services, portrait: null };
+  const services: UiServices = { ...createPreviewServices({ save, content, router, log }), ...o.patch };
+  const env = { save, content, t: o.t ?? EN, locale: 'en', now: o.now ?? (() => FIXTURE_NOW), router, services, portrait: null };
   const slots = { battle: (): ComponentChildren => <div data-testid="battle-slot" /> };
   act(() => {
     render(o.shell ? <ShellHost env={env} slots={slots} /> : <ScreenHost env={env} slots={slots} />, container as unknown as HTMLElement);

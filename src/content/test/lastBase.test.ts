@@ -58,17 +58,19 @@ describe('Last Base Standing formats (A2.10.1)', () => {
     expect(escalationEndMs([{ atMs: 0, crumbleBpPerSec: 100 }])).toBe(200000);
   });
 
-  // Owner request 2026-10-03: Long War and No clock open on the Ladder from Arena 1 (was Arena 3).
   it('is offered on the Ladder from Arena 1 and in Skirmish, never the Daily, Conquest or War Path', () => {
     expect(FORMAT_MODES['last']).toEqual(['ladder', 'skirmish']);
-    expect(content.arenas.list.map((a) => a.ladderFormats.includes('last'))).toEqual([true, true, true, true, true, true, true, true]);
+    // Owner decision 2026-10-03: No clock is open on the Ladder in every arena.
+    expect(content.arenas.list.every((a) => a.ladderFormats.includes('last'))).toBe(true);
     expect(content.dailyModifiers.challenge.format).not.toBe('last');
     expect(content.generals.conquest.format).not.toBe('last');
   });
 
-  it('pays the Full War Amber and no trophies (unranked, A15.8)', () => {
+  it('is ranked and pays more than a Full War per win (A15.8, owner decision 2026-10-03)', () => {
     const l = content.arenas.ladder.winByFormat.formats;
-    expect(l.last).toEqual({ trophies: 0, amber: l.full?.amber, amberWithoutCharge: l.full?.amberWithoutCharge, unranked: true });
+    expect(l.last).toEqual({ trophies: 48, amber: 47, amberWithoutCharge: 94 });
+    expect(l.last!.trophies).toBeGreaterThan(l.full!.trophies);
+    expect(l.last!.amber).toBeGreaterThan(l.full!.amber);
   });
 });
 

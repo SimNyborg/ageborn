@@ -513,7 +513,9 @@ function FortSlot(p: { c: HudCtx; v: FortSlotView; def: FortDef; powerAiming: bo
               held.current = false;
               setTip(false);
             }
-            if (!live.current.v || live.current.v.state !== 'ready' || live.current.v.legal.length === 0) return;
+            // A ready fort lifts even when no pad is legal: the card in hand then says "No clear pad" (and
+            // a hovered blocked pad's reason) before the drop, instead of the press staying a dead tap.
+            if (!live.current.v || live.current.v.state !== 'ready') return;
             begin('drag');
           }
           const r = hudRoot()?.getBoundingClientRect();

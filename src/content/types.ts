@@ -291,17 +291,12 @@ export interface LadderWin {
   trophies: number;
   amber: number;
   amberWithoutCharge: number;
-  /**
-   * An unranked length (A2.10.1 Last Base Standing): its row applies at every trophy count, and no
-   * result moves trophies (`trophies` is then 0). Everything else is a Ladder match.
-   */
-  unranked?: true;
 }
 
 export interface LadderRules {
-  /** Every format below `winByFormat.fromTrophies` (A6.3). */
+  /** A ladder match with no format, or below `winByFormat.fromTrophies` (A6.3). */
   win: LadderWin;
-  /** Rewards by format from 400 trophies (A15.8). */
+  /** Rewards by format from `fromTrophies` (A15.8: 0 since 2026-10-03; Last Base Standing included). */
   winByFormat: { fromTrophies: number; formats: Partial<Record<FormatId, LadderWin>> };
   loss: { trophies: number; amber: number; noLossBelowTrophies: number };
   draw: { trophies: number; amber: number };

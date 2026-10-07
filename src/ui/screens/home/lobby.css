@@ -120,6 +120,19 @@
 .hub-plate[data-state='ladder-last'] .hub-plate__info.ui-iconbtn {
   margin: -9px -6px -9px 0;
 }
+/* No clock is ranked (2026-10-03), so its line carries the win chip too: tighter gaps and the info
+   button's 13 px of empty hit area tucked under the chip's edge keep "7 ages · no clock" on one line
+   at 844 x 390. The button stays 48 px and on top. */
+.hub-plate[data-state='ladder-last'] .hub-plate__line {
+  gap: 2px;
+}
+.hub-plate[data-state='ladder-last'] .hub-plate__desc.has-win {
+  gap: 6px;
+}
+.hub-plate[data-state='ladder-last'] .hub-plate__info.ui-iconbtn {
+  position: relative;
+  margin-left: -10px;
+}
 .hub-plate__desc.has-win {
   display: flex;
   align-items: center;

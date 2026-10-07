@@ -1,5 +1,5 @@
 /**
- * Mode select (A9 #3): Quick Battle, Ladder (format picker from Arena 2), Conquest (from Arena 3),
+ * Mode select (A9 #3): Quick Battle, Ladder (format picker from Arena 1), Conquest (from Arena 3),
  * Skirmish (General or Echo, difficulty, format, speed, "Standard levels"; 5 Amber per win) and the
  * Daily Challenge (A9.1). Starting a mode asks the app for the opponent and shows VS.
  *
@@ -46,7 +46,7 @@ import { Modal } from "../../components/Modal";
 import type { MatchRequest, RouteOf } from "../../router";
 import { useUi } from "../context";
 import { agesAwaitingAntiArmor } from "../model/plan";
-import { homeModeFlags, quickGeneralFor, skirmishSetupFlags } from "../model/homeMode";
+import { homeModeFlags, ladderFormat, quickGeneralFor, skirmishSetupFlags } from "../model/homeMode";
 import {
   chargesView,
   conquestView,
@@ -323,9 +323,10 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
   const { save, content, t, locale, router, services, now } = useUi();
   const s = save.value;
   const u = unlocks(s, content);
-  // The longest timed length by default; Last Base Standing (A2.10.1) is only ever picked on purpose.
-  const timed = u.ladderFormats.filter((f) => content.formats[f]?.kind !== "untimed");
-  const [format, setFormat] = useState<FormatId>(timed[timed.length - 1] ?? "short");
+  // The length Home's Battle plays: the remembered one, else the shortest timed length (every length is
+  // open from Arena 1, so a new player must not land on the Long War here). Last Base Standing (A2.10.1)
+  // is only ever picked on purpose.
+  const [format, setFormat] = useState<FormatId>(() => ladderFormat(s, content));
   const [skirmish, setSkirmish] = useState(
     p.route.focus === "skirmish" && u.skirmish,
   );

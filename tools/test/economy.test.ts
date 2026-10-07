@@ -5,6 +5,7 @@ import { seedSfc32 } from '../../src/core/rng';
 import { ECONOMY_TARGETS, economyChecks, economyDefaults, EconomyRecorder, medianMeasures, questApi, runEconomy, simulateEconomy, syntheticStats, type EconomyMeasures } from '../economy';
 import { loadMeta } from '../lib/modules';
 
+// The collectable cards the recorder counts: released ones only (an unreleased card never drops).
 const cards = [
   ...Object.values(content.units)
     .filter((u) => !u.hidden && isReleased(content, u.id))

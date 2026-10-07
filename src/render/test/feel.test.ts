@@ -309,9 +309,9 @@ describe('health bars (A11)', () => {
 });
 
 describe('graphics presets (B6)', () => {
-  it('starts High on desktop and Lite on mobile under Auto', () => {
+  it('starts High on desktop and on mobile under Auto (owner feedback 2026-10-03)', () => {
     expect(initialPreset('auto', false)).toBe('high');
-    expect(initialPreset('auto', true)).toBe('lite');
+    expect(initialPreset('auto', true)).toBe('high');
     expect(initialPreset('high', true)).toBe('high');
   });
 

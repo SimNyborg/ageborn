@@ -89,11 +89,11 @@ describe('the Sundial clock (A6.3)', () => {
 });
 
 describe('claiming (A6.3)', () => {
-  it('a Ladder win with one ready: a Sundial Capsule and 20 Amber, no pip', () => {
+  it('a Ladder (Short War) win with one ready: a Sundial Capsule and 23 Amber, no pip', () => {
     const c = clock();
     const r = apply(withReady(2, c), 'ladder', 'win', c);
     expect(r.rewards.slice(0, 3).map((x) => x.kind)).toEqual(['trophies', 'amber', 'capsule']);
-    expect(r.rewards[1]).toEqual({ kind: 'amber', amount: 20 });
+    expect(r.rewards[1]).toEqual({ kind: 'amber', amount: 23 });
     expect(r.rewards.some((x) => x.kind === 'clayPip')).toBe(false);
     expect(r.save.capsules.charges).toBe(1);
     expect(r.save.capsules.pending.at(-1)).toMatchObject({ kind: 'win', startTier: 'clay', scriptIndex: null });
@@ -110,10 +110,10 @@ describe('claiming (A6.3)', () => {
     }
   });
 
-  it('with none ready: a win pays 40 Amber and a pip, a loss 15 Amber and a pip', () => {
+  it('with none ready: a (Short War) win pays 46 Amber and a pip, a loss 15 Amber and a pip', () => {
     const c = clock();
     const win = apply(withReady(0, c), 'ladder', 'win', c);
-    expect(win.rewards).toContainEqual({ kind: 'amber', amount: 40 });
+    expect(win.rewards).toContainEqual({ kind: 'amber', amount: 46 });
     expect(win.rewards).toContainEqual({ kind: 'clayPip', meter: 1 });
     expect(sundialCaps(win.save)).toBe(0);
     const loss = apply(withReady(0, c), 'ladder', 'loss', c);

@@ -3,10 +3,11 @@
  *
  * | Mode | Rewards |
  * |---|---|
- * | Ladder win | +30 trophies; a Sundial Capsule and 20 Amber if the Sundial has one ready (or a free capsule is left), otherwise 40 Amber and a Clay pip |
- * | Ladder loss | −20 trophies (none below 400, never below the arena gate); 15 Amber; a Sundial Capsule if one is ready, otherwise a Clay pip (a Retreat: neither) |
+ * | Ladder win | the format's row from Arena 1 (A15.8: Short 30, Standard 36, Full 46, Last Base Standing 48 trophies); a Sundial Capsule and the row's Amber (23 / 31 / 45 / 47) if the Sundial has one ready (or a free capsule is left), otherwise double Amber and a Clay pip |
+ * | Ladder loss | −20 trophies (none below 400, never below the arena gate); 15 Amber; a Sundial Capsule if one is ready, otherwise a Clay pip |
  * | Ladder draw | 0 trophies; 15 Amber; as a loss |
- * | Last Base Standing (A2.10.1) | as the Ladder with 0 trophies either way; a Retreat pays no Amber |
+ * | Retreat (any mode, any length) | nothing (owner decision 2026-10-03, "at give op giver intet"); a Ladder Retreat still costs the loss's trophies |
+ * | Last Base Standing (A2.10.1) | a Ladder match (ranked since 2026-10-03) |
  * | Tutorial (A8 matches 1-2) | the ladder Amber for the result and the next scripted capsule, win or lose ("a loss still gives rewards"); no trophies, Sundial or MMR |
  * | Skirmish | 5 Amber per win; no trophies |
  * | Daily Challenge | first win of the day: an Age Capsule; later wins 20 Amber; no trophies |
@@ -16,6 +17,12 @@
  * Sundial Capsule (kind `win`, from the bag), win or lose; a Retreat never claims one, and one match
  * claims at most one. Only Ladder matches that bring no capsule add a Clay pip; a Retreat adds none
  * (A15.4: every reward needs play, never a Retreat).
+ *
+ * A Retreat (A6.3, 2026-10-03) pays nothing at all, so it is never more rewarding than playing on: no
+ * Amber, Sundial Capsule, Clay pip, feat, quest progress, Supply Capsule or match-based title. It is
+ * still a loss: trophies (with the no-loss-below-400 protection), hidden MMR, loss streak and the
+ * profile stats move as for any loss. A Ladder battle left after Retreat opens is applied as this
+ * same Retreat on the next boot (`src/app/abandon.ts`), so it pays nothing either.
  *
  * Ladder results also move the hidden MMR and the loss streak (loss protection). Every mode updates
  * the profile stats, quest progress and titles. A counting win fills the War Chest (A15.5), and every
@@ -39,7 +46,7 @@ import { META_FLAGS } from './rules';
 import { tickTimersAt } from './timers';
 import { unlockTitles } from './titles';
 import { rewardFormat } from './formats';
-import { applyTrophies, isUnranked, ladderWinFor, trophyDelta, type LadderResult } from './trophies';
+import { applyTrophies, ladderWinFor, trophyDelta, type LadderResult } from './trophies';
 import { planAverageLevelCenti, planHasLegendary } from './warplan';
 import { grantFeats } from './feats';
 import { supplyAfterMatch } from './supply';
@@ -83,7 +90,8 @@ function recordStats(s: SaveDoc, t: Content, r: MatchResultInput, result: Ladder
   const tier = Math.max(0, Math.trunc(r.opponent.tier));
   const ages = t.formats[r.opponent.format]?.ages ?? [];
   // `futureReached` counts matches that reached the game's last age (Cosmic since A17.8; Future before).
-  const reachedFuture = r.stats.reachedFinalAgeAtMs !== null && ages[ages.length - 1] === t.order.ages[t.order.ages.length - 1];
+  // A Retreat does not count (it would unlock the last age's title, and a Retreat earns no title).
+  const reachedFuture = !isRetreat(r) && r.stats.reachedFinalAgeAtMs !== null && ages[ages.length - 1] === t.order.ages[t.order.ages.length - 1];
   const win = result === 'win';
   return {
     ...s,
@@ -102,7 +110,7 @@ function recordStats(s: SaveDoc, t: Content, r: MatchResultInput, result: Ladder
   };
 }
 
-/** True when the player left the match with Retreat (A15.6): it counts as a loss and claims no Sundial Capsule. */
+/** True when the player left the match with Retreat (A15.6): it counts as a loss and pays nothing (A6.3). */
 export function isRetreat(r: Pick<MatchResultInput, 'outcome' | 'mySide'>): boolean {
   return r.outcome.reason === 'retreat' && resultOf(r) === 'loss';
 }
@@ -138,13 +146,12 @@ function ladder(s: SaveDoc, t: Content, r: MatchResultInput, result: LadderResul
   const capsuleSteps: RewardStep[] = [];
   const claimed = sundialCapsule(save, t, r, now, capsuleSteps);
   if (claimed) save = claimed;
-  // A Retreat in an unranked length (Last Base Standing, A2.10.1) pays no Amber: it costs no trophies,
-  // so loss Amber for a Retreat at 1:00 would be a free farm at every trophy count.
-  const freeRetreat = isRetreat(r) && isUnranked(t, format);
-  const amber = freeRetreat ? 0 : result === 'win' ? (claimed ? winRow.amber : winRow.amberWithoutCharge) : result === 'loss' ? rules.loss.amber : rules.draw.amber;
+  // A Retreat pays no Amber in any length (owner decision 2026-10-03; Last Base Standing only before):
+  // below 400 trophies a Retreat costs nothing, so loss Amber made leaving at 1:00 a free farm.
+  const amber = isRetreat(r) ? 0 : result === 'win' ? (claimed ? winRow.amber : winRow.amberWithoutCharge) : result === 'loss' ? rules.loss.amber : rules.draw.amber;
   save = addAmber(save, amber, steps);
   steps.push(...capsuleSteps);
-  // A Retreat brings no capsule and no pip either (A15.4), so a Retreat farm earns only loss Amber.
+  // A Retreat brings no capsule and no pip either (A15.4), so a Retreat farm earns nothing.
   if (!claimed && !isRetreat(r)) {
     const p = addClayPip(save, t, now);
     save = p.save;
@@ -186,6 +193,8 @@ export function applyMatchResultAt(
   const now = lt.t;
   const result = resultOf(r);
   const win = result === 'win';
+  // A Retreat pays nothing (see the module note); it still moves trophies, MMR and the stats.
+  const retreat = isRetreat(r);
   const steps: RewardStep[] = [];
   const arenas: number[] = [];
   let save = tickTimersAt(s, t, lt);
@@ -237,7 +246,7 @@ export function applyMatchResultAt(
   if (r.mode !== 'ladder' && r.mode !== 'tutorial') save = sundialCapsule(save, t, r, now, steps) ?? save;
 
   save = recordStats(save, t, r, result);
-  if (r.mode !== 'tutorial') {
+  if (r.mode !== 'tutorial' && !retreat) {
     // A15.10: each new feat pays once and stages its own step.
     const f = grantFeats(save, t, r.feats);
     save = f.save;
@@ -252,22 +261,22 @@ export function applyMatchResultAt(
     save = w.save;
     steps.push(...w.steps);
   }
-  const supply = supplyAfterMatch(save, t, r.mode, now);
-  save = supply.save;
-  if (supply.capsule) steps.push({ kind: 'capsule', capsuleId: supply.capsule.id });
-  // Quest thresholds are per named format; a window counts as its family (A18.3.4).
-  const facts = { mode: r.mode, win, format: rewardFormat(t, r.opponent.format), outcome: r.outcome, stats: r.stats, legendaryInPlan: planHasLegendary(save, t, r.opponent.format) };
-  const q = addQuestProgress(save, t, (def) => matchProgress(def, facts));
-  save = q.save;
-  steps.push(...q.steps);
+  if (!retreat) {
+    const supply = supplyAfterMatch(save, t, r.mode, now);
+    save = supply.save;
+    if (supply.capsule) steps.push({ kind: 'capsule', capsuleId: supply.capsule.id });
+    // Quest thresholds are per named format; a window counts as its family (A18.3.4).
+    const facts = { mode: r.mode, win, format: rewardFormat(t, r.opponent.format), outcome: r.outcome, stats: r.stats, legendaryInPlan: planHasLegendary(save, t, r.opponent.format) };
+    const q = addQuestProgress(save, t, (def) => matchProgress(def, facts));
+    save = q.save;
+    steps.push(...q.steps);
+  }
   for (const a of arenas) steps.push({ kind: 'arena', arenaIndex: a });
-  save = unlockTitles(save, t, {
-    win,
-    usedLastStand: r.stats.usedLastStand,
-    format: r.opponent.format,
-    reachedFinalAgeAtMs: r.stats.reachedFinalAgeAtMs,
-    generalId: r.opponent.generalId,
-  }).save;
+  // A Retreat earns no match-based title; titles the save already earned (state-based) still unlock.
+  const titleFacts = retreat
+    ? null
+    : { win, usedLastStand: r.stats.usedLastStand, format: r.opponent.format, reachedFinalAgeAtMs: r.stats.reachedFinalAgeAtMs, generalId: r.opponent.generalId };
+  save = unlockTitles(save, t, titleFacts).save;
   const titleIds = new Set(t.cosmetics.titles.map((d) => d.id));
   for (const id of save.cosmetics.owned) if (titleIds.has(id) && !titlesBefore.has(id)) steps.push({ kind: 'title', title: id });
   return { save, rewards: steps };

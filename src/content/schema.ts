@@ -505,7 +505,7 @@ const ArenasSchema = v.strictObject({
     win: v.strictObject({ trophies: int, amber: nonNeg, amberWithoutCharge: nonNeg }),
     winByFormat: v.strictObject({
       fromTrophies: nonNeg,
-      formats: v.partial(byKeys(['tutorial', 'short', 'standard', 'full', 'last'], v.strictObject({ trophies: int, amber: nonNeg, amberWithoutCharge: nonNeg, unranked: v.optional(v.literal(true)) }))),
+      formats: v.partial(byKeys(['tutorial', 'short', 'standard', 'full', 'last'], v.strictObject({ trophies: int, amber: nonNeg, amberWithoutCharge: nonNeg }))),
     }),
     loss: v.strictObject({ trophies: int, amber: nonNeg, noLossBelowTrophies: nonNeg }),
     draw: v.strictObject({ trophies: int, amber: nonNeg }),

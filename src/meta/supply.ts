@@ -5,9 +5,10 @@
  *
  * - While `accrues` is true, the allowance (`capsules.dailyBank`) gains 1 at each local 04:00 once it
  *   is unlocked, up to 7 (`accrueDaily` in `daily.ts` adds it; the cap comes from {@link supplyRules}).
- * - Every 3rd finished match (`matchesPlayed` = 3, 6, 9 …, any mode but the tutorial, a Retreat
- *   included) turns one banked allowance into a Supply Capsule (`PendingCapsule.kind 'daily'`).
- *   With no allowance banked, nothing happens.
+ * - Every 3rd finished match (`matchesPlayed` = 3, 6, 9 …, any mode but the tutorial) turns one
+ *   banked allowance into a Supply Capsule (`PendingCapsule.kind 'daily'`). With no allowance banked,
+ *   nothing happens. A Retreat still counts in `matchesPlayed` but pays nothing (2026-10-03): when it
+ *   lands on a 3rd match, no capsule is made and the allowance stays banked for the next 3rd match.
  * - The first Supply Capsule is granted right after capsule 2 is opened, with no matches needed
  *   (`open.ts`), so the A8 beat at about 10:00 is unchanged.
  * - Odds as the old Daily Capsule (Bronze 78%, Silver 15%, Jade 5%, Aeon 2%), climb from Bronze.

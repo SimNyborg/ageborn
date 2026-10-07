@@ -3,6 +3,7 @@
  * A8, A9.1).
  */
 import { describe, expect, it } from 'vitest';
+import type { Content } from '@/content';
 import type { AgeId, CardId, OpponentSpec, SaveDoc } from '@/contracts';
 import { commanderInfo, ladderGenerals, newPlayerMistakeBonusBp, newPlayerMistakesApply } from '../matchmaking';
 import { ELO_EXPECTED_BP, expectedScoreBp, ladderTier, tierRating, updateMmr } from '../mmr';
@@ -159,13 +160,12 @@ describe('ladder opponents', () => {
   });
 
   it('the format is one the arena offers; previewing and starting give the same spec', () => {
-    const s = ladderSave(1, { matchesPlayed: 9 });
-    // Every length is on the Ladder from Arena 1 (owner request 2026-10-03); the fallback to the arena's first
-    // length still holds for an arena that does not list one (the table before that request).
-    expect(M.pickOpponent(s, 'ladder', C, new TestClock(), { format: 'full' }).format).toBe('full');
-    const old: typeof C = { ...C, arenas: { ...C.arenas, list: C.arenas.list.map((a) => (a.index < 3 ? { ...a, ladderFormats: a.ladderFormats.filter((f) => f === 'short' || (a.index === 2 && f === 'standard')) } : a)) } };
-    expect(M.pickOpponent(s, 'ladder', old, new TestClock(), { format: 'full' }).format).toBe('short');
-    expect(M.pickOpponent(s, 'ladder', C, new TestClock(), { format: 'standard' }).format).toBe('standard');
+    // Owner decision 2026-10-03: every length is open from Arena 1.
+    const s = ladderSave(0, { matchesPlayed: 9 });
+    for (const f of ['short', 'standard', 'full', 'last'] as const) expect(M.pickOpponent(s, 'ladder', C, new TestClock(), { format: f }).format).toBe(f);
+    // A length the arena does not offer falls back to the arena's first one.
+    const shortOnly: Content = { ...C, arenas: { ...C.arenas, list: C.arenas.list.map((a) => ({ ...a, ladderFormats: ['short'] })) } };
+    expect(M.pickOpponent(s, 'ladder', shortOnly, new TestClock(), { format: 'full' }).format).toBe('short');
     expect(M.pickOpponent(s, 'ladder', C, new TestClock())).toEqual(M.pickOpponent(s, 'ladder', C, new TestClock(123)));
   });
 

@@ -162,18 +162,21 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'standard' });
   });
 
-  it('Last Base Standing: no clock, no trophies, an info panel; Battle plays it (A2.10.1)', () => {
+  it('Last Base Standing: no clock, the win chip, an info panel; Battle plays it (A2.10.1, ranked since 2026-10-03)', () => {
     vi.useFakeTimers();
     m = mount({ state: 'mid', shell: true });
     act(() => m!.q('[data-testid="home-format"] [data-format="last"]')!.click());
     expect(m.save.value.flags['ui-ladderFormat.last']).toBe(true);
-    // One short line (no layout jump); "no trophies" lives in the info panel.
-    expect(text(m.q('[data-testid="home-format-desc"]')!)).toBe('7 ages · no clock');
+    // One short line (no layout jump) with the win chip, as the timed lengths have; the rest is in the info panel.
+    expect(text(m.q('[data-testid="home-format-desc"] span')!)).toBe('7 ages · no clock');
+    expect(text(m.q('[data-testid="home-format-win"]')!)).toBe('+48');
     // The fourth segment names itself on phones too (glyph over "No clock").
     expect(text(m.q('[data-testid="home-format"] [data-format="last"]')!)).toBe('No clock');
     m.click('[data-testid="home-last-info"]');
     expect(text(m.q('[data-testid="last-info"]')!)).toContain('Closing the game ends the war');
-    expect(text(m.q('[data-testid="last-info"]')!)).toContain('No trophies, win or lose');
+    expect(text(m.q('[data-testid="last-info"]')!)).toContain('Ranked: a win pays +48 trophies and 47 Amber');
+    expect(text(m.q('[data-testid="last-info"]')!)).toContain('A loss costs 20 trophies from 400 trophies');
+    expect(text(m.q('[data-testid="last-info"]')!)).not.toContain('No trophies');
     expect(text(m.q('[data-testid="last-info"]')!)).toContain('Every finished war claims a ready Sundial capsule');
     m.click('[data-testid="last-info"] .ui-modal__close');
     m.click('[data-testid="play"]');
@@ -182,15 +185,11 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
   });
 
   it('a locked length keeps its place and says which arena opens it (U12)', () => {
+    // Every length is open from Arena 1 (owner decision 2026-10-03); the lock stays for an arena table
+    // that gates one, here Long War and No clock from Arena 3 (the rule before 2026-10-03).
+    const gated = { ...content, arenas: { ...content.arenas, list: content.arenas.list.map((a) => ({ ...a, ladderFormats: a.index < 3 ? a.ladderFormats.filter((f) => f === 'short' || f === 'standard') : a.ladderFormats })) } };
     const s = midGameSave(content);
-    const a2 = { ...s, trophies: { ...s.trophies, current: 220, best: 220 }, arenaIndex: 1 };
-    // Owner request 2026-10-03: every length is open from Arena 1 in the live content.
-    m = mount({ save: a2, shell: true });
-    expect(m.q('[data-testid="home-format"] [data-format="full"]')!.getAttribute('aria-disabled')).not.toBe('true');
-    m.unmount();
-    // The lock still works for content whose Arena 2 does not list Long War (the table before that request).
-    const old = { ...content, arenas: { ...content.arenas, list: content.arenas.list.map((a) => (a.index < 3 ? { ...a, ladderFormats: a.ladderFormats.filter((f) => f === 'short' || (a.index === 2 && f === 'standard')) } : a)) } };
-    m = mount({ save: a2, shell: true, content: old });
+    m = mount({ content: gated, save: { ...s, trophies: { ...s.trophies, current: 220, best: 220 }, arenaIndex: 1 }, shell: true });
     const long = m.q('[data-testid="home-format"] [data-format="full"]')!;
     expect(long.getAttribute('aria-disabled')).toBe('true');
     act(() => long.click());
@@ -538,10 +537,13 @@ describe('Capsules and Progress tabs (ui-plan 2.2, 4.1b, 4.6)', () => {
 });
 
 describe('Mode select', () => {
-  it('offers the arena formats and locks Conquest and Skirmish for a new player', () => {
+  it('offers the arena formats, the shortest first, and locks Conquest and Skirmish for a new player', () => {
     m = mount({ save: { ...newPlayerSave(content), matchesPlayed: 0 }, routes: [{ id: 'home' }, { id: 'modeSelect' }] });
-    // Owner request 2026-10-03: every length is on the Ladder from Arena 1.
-    expect(m.qa('[data-testid="ladder-format"] [role="radio"]').length).toBe(content.arenas.list[0]!.ladderFormats.length);
+    // Owner decision 2026-10-03: every length is open from Arena 1; the Ladder card starts on the
+    // length Home's Battle plays (the Short War), never the Long War.
+    expect(m.qa('[data-testid="ladder-format"] [role="radio"]')).toHaveLength(4);
+    expect(text(m.q('[data-testid="ladder-format"] [aria-checked="true"]')!)).toBe(text(m.q('[data-testid="ladder-format"] [role="radio"]')!));
+    expect(text(m.q('[data-testid="ladder-format-note"]')!)).toContain('Stone Age to Medieval Age. 3 ages');
     expect(m.q('[data-testid="conquest-open"]')).toBeNull();
     expect(m.q('[data-testid="skirmish-open"]')).toBeNull();
     expect(text(m.q('[data-testid="mode-conquest"]')!)).toContain('Unlocks in Arena 3');
@@ -600,7 +602,7 @@ describe('Mode select', () => {
     expect(calls('prepareMatch')).toHaveLength(0);
     expect(m.router.current.value.id).toBe('modeSelect');
     const dialog = m.q('[data-testid="plan-blocked"]')!;
-    expect(text(dialog)).toContain("Your War Plan can't play Long War yet:");
+    expect(text(dialog)).toContain("Your War Plan can't play Short War yet:");
     expect(text(dialog)).toContain('Medieval Age needs a turret.');
     m.click('[data-testid="plan-blocked-fix"]');
     expect(m.router.current.value).toEqual({ id: 'warPlan', age: 'medieval' });
@@ -699,17 +701,29 @@ describe('Result (rewards staged, each skippable)', () => {
     expect(m.q('[data-testid="ui-root"]')!.getAttribute('data-reduce-motion')).toBe('true');
   });
 
-  it('Last Base Standing: the reason line says how the war ended, and the trophy row says unranked (A2.10.1)', () => {
+  it('Last Base Standing: the reason line says how the war ended, and the trophy row is ranked (A2.10.1)', () => {
     m = mount({ routes: [{ id: 'home' as const }, { id: 'result' as const, info: fixtureResult(content, 'lastWin') }] });
     expect(text(m.q('[data-testid="result-reason"]')!)).toBe('Their walls crumbled at 23:41');
     m.click('[data-testid="result-skip"]');
-    expect(text(m.q('[data-testid="reward-unranked"]')!)).toContain('Unranked');
+    // Ranked since 2026-10-03: a plain trophy row with the win's +48, no "Unranked" note.
+    expect(text(m.q('[data-testid="reward-trophies"]')!)).toContain('+48');
+    expect(text(m.q('[data-testid="reward-trophies"]')!)).not.toContain('Unranked');
     // A timed war is ranked; with its Siege rope (A2.10.2) it has a reason line too (won at 5:31, before Siege).
     m.unmount();
     m = mount({ routes: route() });
     m.click('[data-testid="result-skip"]');
     expect(text(m.q('[data-testid="result-reason"]')!)).toBe('Their base fell at 5:31');
-    expect(m.q('[data-testid="reward-unranked"]')).toBeNull();
+  });
+
+  it('a Retreat says plainly that it gives no rewards; other results do not (A6.3, 2026-10-03)', () => {
+    m = mount({ routes: [{ id: 'home' as const }, { id: 'result' as const, info: fixtureResult(content, 'retreat') }] });
+    expect(text(m.q('[data-testid="result-retreat-none"]')!)).toBe('You retreated, so this battle gives no rewards.');
+    expect(text(m.q('[data-testid="result-reason"]')!)).toBe('You retreated at 1:05');
+    m.click('[data-testid="result-skip"]');
+    expect(m.q('[data-testid="reward-amber"]')).toBeNull();
+    m.unmount();
+    m = mount({ routes: [{ id: 'home' as const }, { id: 'result' as const, info: fixtureResult(content, 'loss') }] });
+    expect(m.q('[data-testid="result-retreat-none"]')).toBeNull();
   });
 
   it('hides "Open capsule" once the earned capsule has been opened', () => {
@@ -775,7 +789,7 @@ describe('Pause', () => {
       ],
     });
     m.click('[data-testid="pause-retreat"]');
-    expect(text(m.q('[data-testid="retreat-confirm"]')!)).toContain('Retreating counts as a loss and claims no Sundial Capsule.');
+    expect(text(m.q('[data-testid="retreat-confirm"]')!)).toContain('Retreating counts as a loss and gives no rewards');
     m.click('[data-testid="retreat-yes"]');
     expect(calls('retreat')).toHaveLength(1);
   });

@@ -4,7 +4,8 @@
  * | Preset | DPR | Particle cap | Parallax layers | Shadows | Legendary auras | Draw call budget |
  * | Lite   | 1   | 300          | 2               | off     | off             | ≤ 40             |
  * | High   | 2   | 1,500        | 3               | on      | on              | ≤ 80             |
- * Auto = High on desktop, Lite on mobile or when the average frame time over 3 s exceeds 20 ms.
+ * Auto = High everywhere (owner feedback 2026-10-03: phones looked simple in Lite), dropping to Lite
+ * when the average frame time over 3 s exceeds 20 ms.
  *
  * The render applies DPR (as a recommendation to the host), the particle cap, shadows and Legendary
  * auras; parallax layers are passed on to whoever builds the art provider.
@@ -28,8 +29,9 @@ export const PRESETS: Record<GraphicsPreset, PresetSpec> = {
 };
 
 /** The preset a setting starts with. */
-export function initialPreset(setting: GraphicsSetting, isMobile: boolean): GraphicsPreset {
-  if (setting === 'auto') return isMobile ? 'lite' : 'high';
+export function initialPreset(setting: GraphicsSetting, _isMobile: boolean): GraphicsPreset {
+  // Owner feedback 2026-10-03: Auto starts High on phones too; the frame-time monitor drops to Lite.
+  if (setting === 'auto') return 'high';
   return setting;
 }
 

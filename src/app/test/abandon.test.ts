@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { MatchResultInput, OpponentSpec, SaveDoc } from '@/contracts';
+import { content } from '@/content';
+import { createMeta } from '@/meta';
 import { abandonedResult, clearOpenMatch, markOpenMatch, settleAbandoned, takeAbandonNotice } from '../abandon';
 
 function memoryStorage(): Storage {
@@ -57,6 +59,19 @@ describe('a Ladder battle left by a reload (bug hunt 2026-10-01 #9)', () => {
     const save = { matchesPlayed: 2 } as unknown as SaveDoc;
     const services = { meta: { applyMatchResult: () => { throw new Error('not expected'); } } } as unknown as Parameters<typeof settleAbandoned>[0];
     expect(await settleAbandoned(services, save)).toBe(save);
+  });
+
+  it('pays nothing, like a chosen Retreat (owner decision 2026-10-03): only the loss\'s trophies move', () => {
+    const M = createMeta(content);
+    const clock = { now: () => Date.UTC(2026, 2, 2, 12), offsetMs: () => 0 };
+    const fresh = M.newSave(content, clock, 4);
+    const s: SaveDoc = { ...fresh, trophies: { current: 600, best: 600, roadClaimed: [] }, arenaIndex: 2, matchesPlayed: 12, flags: { ...fresh.flags, 'meta.ladderPlayed': true } };
+    const foe = M.pickOpponent(s, 'ladder', content, clock, { format: 'standard' });
+    const r = M.applyMatchResult(s, abandonedResult({ mode: 'ladder', mySide: 0, opponent: foe, durationMs: 75000 }), content, clock);
+    expect(r.rewards).toEqual([{ kind: 'trophies', delta: -20 }]);
+    expect(r.save.currencies).toEqual(s.currencies);
+    expect(r.save.capsules.pending).toEqual(s.capsules.pending);
+    expect(r.save.quests).toEqual(s.quests);
   });
 
   it('the Retreat result names the other side as the winner', () => {

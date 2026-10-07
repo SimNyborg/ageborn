@@ -185,6 +185,7 @@ export class EconomyRecorder {
   constructor(content: CompiledContent) {
     const c = asContent(content);
     const need = (r: Rarity): number => c.rarities.cards[r].upgradeCopies.reduce((a, b) => a + b, 0);
+    // Unreleased cards (the release gate) never drop, so they never count toward a milestone.
     this.cards = [
       // Cards held back by the release gate (`released: false`) never drop, so they are not part of the collection.
       ...Object.values(c.units)

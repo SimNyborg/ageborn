@@ -107,27 +107,28 @@ export const fixtureStats: MatchStats = {
   mvpCard: 'pikeman',
 };
 
-export type ResultFixture = 'win' | 'loss' | 'draw' | 'conquest' | 'noCapsule' | 'warPath' | 'warPathLoss' | 'lastWin';
+export type ResultFixture = 'win' | 'loss' | 'draw' | 'conquest' | 'noCapsule' | 'warPath' | 'warPathLoss' | 'lastWin' | 'retreat';
 
 export function fixtureResult(content: Content, which: ResultFixture): ResultInfo {
   const base = fixtureOpponent(content, which === 'conquest' ? 'warden' : 'general');
-  // Last Base Standing (A2.10.1): won at 23:41, in Crumble, unranked.
+  // Last Base Standing (A2.10.1): won at 23:41, in Crumble; ranked since 2026-10-03 (+48 trophies, 47 Amber).
   const last = which === 'lastWin';
   const opp = last ? { ...base, format: 'last' } : base;
-  const winner = which === 'win' || which === 'conquest' || which === 'noCapsule' || which === 'warPath' || last ? 0 : which === 'loss' || which === 'warPathLoss' ? 1 : null;
+  const winner = which === 'win' || which === 'conquest' || which === 'noCapsule' || which === 'warPath' || last ? 0 : which === 'loss' || which === 'warPathLoss' || which === 'retreat' ? 1 : null;
   const path = which === 'warPath' ? 'wp.bronze.l03' : which === 'warPathLoss' ? 'wp.bronze.l07' : null;
   const input: MatchResultInput = {
     mode: which === 'conquest' ? 'conquest' : path ? 'warPath' : 'ladder',
     ...(path ? { warPath: { level: path, difficulty: 'normal' as const } } : {}),
     outcome: {
       winner,
-      reason: which === 'draw' ? 'finalBell' : 'baseDestroyed',
-      tick: last ? 28420 : 6620,
-      baseHpBp: winner === 0 ? [6200, 0] : winner === 1 ? [0, 4100] : [3100, 3080],
+      reason: which === 'draw' ? 'finalBell' : which === 'retreat' ? 'retreat' : 'baseDestroyed',
+      // A Retreat (A6.3): left at 1:05, both bases standing; it costs the loss's trophies and pays nothing.
+      tick: last ? 28420 : which === 'retreat' ? 1300 : 6620,
+      baseHpBp: which === 'retreat' ? [8400, 9300] : winner === 0 ? [6200, 0] : winner === 1 ? [0, 4100] : [3100, 3080],
     },
     mySide: 0,
     opponent: opp,
-    stats: last ? { ...fixtureStats, durationMs: 1421000 } : which === 'warPath' ? { ...fixtureStats, usedLastStand: true } : which === 'loss' || which === 'warPathLoss' ? { ...fixtureStats, mvpCard: 'longbowman', ownBaseHpBpAtEnd: 0, baseDamage: 9100 } : fixtureStats,
+    stats: last ? { ...fixtureStats, durationMs: 1421000 } : which === 'retreat' ? { ...fixtureStats, durationMs: 65000 } : which === 'warPath' ? { ...fixtureStats, usedLastStand: true } : which === 'loss' || which === 'warPathLoss' ? { ...fixtureStats, mvpCard: 'longbowman', ownBaseHpBpAtEnd: 0, baseDamage: 9100 } : fixtureStats,
   };
   let rewards: RewardStep[];
   switch (which) {
@@ -143,8 +144,8 @@ export function fixtureResult(content: Content, which: ResultFixture): ResultInf
       break;
     case 'lastWin':
       rewards = [
-        { kind: 'trophies', delta: 0 },
-        { kind: 'amber', amount: 35 },
+        { kind: 'trophies', delta: 48 },
+        { kind: 'amber', amount: 47 },
         { kind: 'capsule', capsuleId: 'cap-mid-1' },
       ];
       break;
@@ -181,6 +182,9 @@ export function fixtureResult(content: Content, which: ResultFixture): ResultInf
       break;
     case 'warPathLoss':
       rewards = [{ kind: 'quest', questId: 'play_3', progress: 2, done: false }];
+      break;
+    case 'retreat':
+      rewards = [{ kind: 'trophies', delta: -20 }];
       break;
     case 'conquest':
       rewards = [

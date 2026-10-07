@@ -20,25 +20,25 @@ function empty(seed = 1): SaveDoc {
 }
 
 describe('ladder results (A6.3)', () => {
-  it('a win: +30 trophies, 20 Amber and a Sundial Capsule while one is ready', () => {
+  it('a Short War win: +30 trophies, 23 Amber and a Sundial Capsule while one is ready (A15.8)', () => {
     const s = noFree();
     const r = play(s, 'ladder', 'win');
     expect(r.rewards.slice(0, 3).map((x) => x.kind)).toEqual(['trophies', 'amber', 'capsule']);
     expect(r.rewards.some((x) => x.kind === 'clayPip')).toBe(false);
     expect(r.rewards[0]).toEqual({ kind: 'trophies', delta: 30 });
-    expect(r.rewards[1]).toEqual({ kind: 'amber', amount: 20 });
+    expect(r.rewards[1]).toEqual({ kind: 'amber', amount: 23 });
     expect(r.save.trophies).toMatchObject({ current: 30, best: 30 });
     expect(r.save.capsules.charges).toBe(11);
     expect(r.save.capsules.pending).toHaveLength(1);
-    expect(r.save.currencies.amber).toBe(20);
+    expect(r.save.currencies.amber).toBe(23);
   });
 
-  it('a win with the Sundial empty: 40 Amber and a Clay pip; 2 pips make a Clay capsule without the Sundial (C5 #25)', () => {
+  it('a win with the Sundial empty: 46 Amber and a Clay pip; 2 pips make a Clay capsule without the Sundial (C5 #25)', () => {
     let s: SaveDoc = empty();
     const c = clock();
     for (let i = 1; i <= 2; i += 1) {
       const r = play(s, 'ladder', 'win', c);
-      expect(r.rewards).toContainEqual({ kind: 'amber', amount: 40 });
+      expect(r.rewards).toContainEqual({ kind: 'amber', amount: 46 });
       expect(r.rewards).toContainEqual({ kind: 'clayPip', meter: i });
       s = r.save;
     }

@@ -365,7 +365,7 @@
       "retreat": "Retreat",
       "retreatLocked": "Retreat unlocks at {time}",
       "retreatTitle": "Retreat?",
-      "retreatBody": "Retreating counts as a loss and claims no Sundial Capsule.",
+      "retreatBody": "Retreating counts as a loss and gives no rewards: no Amber, no capsule and no quest progress.",
       "quitSkirmish": "Quit battle",
       "quitBody": "Leave this Skirmish? It gives no rewards.",
       "scouted": "Scouted ({n})",
@@ -376,7 +376,6 @@
       "defeat": "Defeat",
       "draw": "Draw",
       "vs": "vs {name}",
-      "unranked": "Unranked · stays at {n}",
       "lastReason": {
         "theirFell": "Their base fell at {time}",
         "yoursFell": "Your base fell at {time}",
@@ -393,6 +392,7 @@
       },
       "recap": "Battle recap",
       "rewards": "Rewards",
+      "retreatNoRewards": "You retreated, so this battle gives no rewards.",
       "mvp": "MVP",
       "time": "Time",
       "trained": "Units trained",
@@ -986,7 +986,7 @@
       "what": "No Final Bell and no countdown. The war ends when a base falls.",
       "siege": "Siege begins at {from} and rises every {every} min: bases take more damage, turrets deal less.",
       "crumble": "From {crumble}, the side fighting in its own half crumbles, so every war ends by about {end} min.",
-      "rewards": "No trophies, win or lose. A win pays Amber like a Long War. Every finished war claims a ready Sundial capsule; a Retreat pays nothing.",
+      "rewards": "Ranked: a win pays +{trophies} trophies and {amber} Amber, the most of any length. A loss costs {loss} trophies from {from} trophies, as in every length. Every finished war claims a ready Sundial capsule; a Retreat gives no rewards.",
       "closing": "Closing the game ends the war with no result."
     },
     "switcher": {

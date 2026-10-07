@@ -186,7 +186,7 @@ export function planAvgLevel(save: SaveDoc, content: Content, plan: WarPlan, age
 
 /**
  * The format the averages refer to: the longest ladder format the current arena offers (A3 "the ages
- * the next format uses"; the player picks among these from Arena 2).
+ * the next format uses"; the player picks among these from Arena 1).
  */
 export function nextFormat(save: SaveDoc, content: Content): FormatId {
   // Last Base Standing (A2.10.1) plays the Long War's ages; the longest timed length names them.

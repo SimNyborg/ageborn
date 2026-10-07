@@ -3,7 +3,7 @@
  * Challenge, C2/WP11): every mode asks meta for an AI opponent (A6.8 matchmaking) and turns it into
  * a `MatchSetup`. The onboarding matches are built in `matchSetup.ts` instead.
  *
- * - Ladder: an optional format from the format picker (from Arena 2).
+ * - Ladder: an optional format from the format picker (every length from Arena 1, owner decision 2026-10-03).
  * - Conquest: the chosen General of the board (from Arena 3), Full War.
  * - Skirmish: General or Echo, tier, format and "Standard levels" (after match 3). With Standard
  *   levels every card on both sides plays at L7 (A6.8): meta sets the bot's, the setup the player's.

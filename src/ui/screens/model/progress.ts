@@ -87,7 +87,7 @@ export interface Unlocks {
   warPlan: boolean;
   skirmish: boolean;
   conquest: boolean;
-  /** The ladder format picker appears from Arena 2 (A9 #3). */
+  /** The ladder format picker appears when the arena offers more than one length: from Arena 1 (A9 #3, 2026-10-03). */
   formatPicker: boolean;
   ladderFormats: FormatId[];
   conquestArena: number;
@@ -398,7 +398,7 @@ export function conquestView(save: SaveDoc, content: Content): ConquestView {
 // Ladder rewards by format (A15.8) and the Daily difficulty (A9.1, A15.7)
 // ---------------------------------------------------------------------------------------------
 
-/** What a ladder win pays in a format (meta's own rule, shared through content: A15.8, A2.10.1). */
+/** What a ladder win pays in a format (meta's own rule, shared through content: A15.8, every length from Arena 1). */
 export function ladderWin(save: SaveDoc, content: Content, format: FormatId): LadderWin {
   return ladderWinFor(save, content, format);
 }

@@ -1,8 +1,9 @@
 /**
  * Trophies, arenas and the Trophy Road (DESIGN A6.3).
  *
- * - Ladder results: win +30, loss −20 (no loss below 400 trophies, never below the current arena
- *   gate), draw 0. The best count only rises. Last Base Standing (A2.10.1) is unranked: 0 either way.
+ * - Ladder results: a win pays its format's trophies (A15.8: Short 30, Standard 36, Full 46, Last Base
+ *   Standing 48, from Arena 1), loss −20 (no loss below 400 trophies, never below the current arena
+ *   gate), draw 0, in every length (Last Base Standing is ranked since 2026-10-03). The best count only rises.
  * - The arena follows the trophies and never goes down (a loss can never drop below its gate). An
  *   arena sets the ladder formats, the drop pool, the bot tiers and the bot level.
  * - The Trophy Road: 60 nodes, claimable once each up to the best trophies. "Gate N" nodes pay that
@@ -14,7 +15,7 @@ import type { FormatId, Result, SaveDoc } from '@/contracts';
 import type { Content, GateReward, RoadReward } from '@/content';
 import { grantCapsuleAt } from './capsules/grant';
 import { grantCrateAt } from './capsules/wardrobe';
-import { isUnranked, ladderWinFor } from '@/content/ladder';
+import { ladderWinFor } from '@/content/ladder';
 import { META_FLAGS, POWER_FIELD_TROPHIES, POWER_OWNED_AMBER } from './rules';
 import { arenaOf } from './tables';
 import { addCosmetics, unlockTitles } from './titles';
@@ -22,13 +23,12 @@ import { checkFortUnlock, grantRoadFort } from './forts';
 
 export type LadderResult = 'win' | 'loss' | 'draw';
 
-/** The ladder win row of a format and whether it is unranked (A15.8, A2.10.1; shared with the UI). */
-export { isUnranked, ladderWinFor } from '@/content/ladder';
+/** The ladder win row of a format (A15.8; shared with the UI). */
+export { ladderWinFor } from '@/content/ladder';
 
-/** The trophy change of a ladder result (A6.3, A15.8 for wins by format; 0 in an unranked length, A2.10.1). */
+/** The trophy change of a ladder result (A6.3, A15.8 for wins by format). */
 export function trophyDelta(s: SaveDoc, t: Content, result: LadderResult, format?: FormatId): number {
   const l = t.arenas.ladder;
-  if (isUnranked(t, format)) return 0;
   if (result === 'win') return ladderWinFor(s, t, format).trophies;
   if (result === 'draw') return l.draw.trophies;
   const cur = s.trophies.current;

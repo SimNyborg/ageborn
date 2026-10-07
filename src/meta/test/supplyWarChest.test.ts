@@ -32,7 +32,7 @@ describe('Supply Capsule (A15.4)', () => {
     expect(s.capsules.dailyBank).toBe(2);
   });
 
-  it('a retreat (a loss) counts; with no allowance banked nothing happens', () => {
+  it('a retreat counts as a played match but pays no Supply Capsule; the allowance stays banked (2026-10-03)', () => {
     const c = clock();
     let s = withAllowance(scripted(4), 0, 2);
     s = M.applyMatchResult(s, matchInput('skirmish', 'loss', M.pickOpponent(s, 'skirmish', C, c), { reason: 'retreat' }), C, c).save;
@@ -40,8 +40,9 @@ describe('Supply Capsule (A15.4)', () => {
     expect(dailyCount(s)).toBe(0);
     let t = withAllowance(scripted(4), 1, 2);
     t = M.applyMatchResult(t, matchInput('skirmish', 'loss', M.pickOpponent(t, 'skirmish', C, c), { reason: 'retreat' }), C, c).save;
-    expect(dailyCount(t)).toBe(1);
-    expect(t.capsules.dailyBank).toBe(0);
+    expect(t.matchesPlayed).toBe(3);
+    expect(dailyCount(t)).toBe(0);
+    expect(t.capsules.dailyBank).toBe(1);
   });
 
   it('tutorial matches never grant a Supply Capsule', () => {

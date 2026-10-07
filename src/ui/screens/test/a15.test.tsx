@@ -174,12 +174,14 @@ describe('Home banks (A15.4, A15.5)', () => {
 });
 
 describe('Rewards by format and the Daily difficulty (A15.8, A15.7)', () => {
-  it('pays the A15.8 row from 400 trophies and the A6.3 row below', () => {
+  it('pays the A15.8 row from 0 trophies, longer wars more (owner decision 2026-10-03)', () => {
     const s = midGameSave(content);
-    const low = { ...s, trophies: { ...s.trophies, current: 100 } };
-    const high = { ...s, trophies: { ...s.trophies, current: 500 } };
-    expect(ladderWin(low, content, 'full')).toEqual(content.arenas.ladder.win);
-    expect(ladderWin(high, content, 'short').trophies).toBeLessThan(ladderWin(high, content, 'full').trophies);
+    for (const current of [0, 100, 500]) {
+      const at = { ...s, trophies: { ...s.trophies, current } };
+      for (const f of ['short', 'standard', 'full', 'last'] as const) expect(ladderWin(at, content, f)).toEqual(content.arenas.ladder.winByFormat.formats[f]);
+      expect(ladderWin(at, content, 'short').trophies).toBeLessThan(ladderWin(at, content, 'full').trophies);
+      expect(ladderWin(at, content, 'full').trophies).toBeLessThan(ladderWin(at, content, 'last').trophies);
+    }
   });
 
   it('defaults the Daily difficulty to the one nearest the skill tier', () => {

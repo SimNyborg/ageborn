@@ -162,9 +162,9 @@ describe('War Plan edits (A3)', () => {
 });
 
 describe('progress (A3, A6.3, A6.7, A6.10)', () => {
-  it('unlocks the War Plan and Skirmish after the training match, every length from Arena 1, Conquest in Arena 3', () => {
+  it('unlocks the War Plan and Skirmish after the training match, the format picker in Arena 1, Conquest in Arena 3', () => {
     const n = { ...newPlayerSave(content), matchesPlayed: 0 };
-    // Owner request 2026-10-03: every length (and so the format picker) is on the Ladder from Arena 1.
+    // Owner decision 2026-10-03: every ladder length is open from Arena 1, so the picker shows there.
     expect(unlocks(n, content)).toMatchObject({
       warPlan: false,
       skirmish: false,
@@ -178,6 +178,9 @@ describe('progress (A3, A6.3, A6.7, A6.10)', () => {
       conquest: false,
       ladderFormats: ['short', 'standard', 'full', 'last'],
     });
+    // The picker still hides in an arena that offers a single length.
+    const oneLength = { ...content, arenas: { ...content.arenas, list: content.arenas.list.map((a) => ({ ...a, ladderFormats: ['short' as const] })) } };
+    expect(unlocks(n, oneLength)).toMatchObject({ formatPicker: false, ladderFormats: ['short'] });
     expect(unlocks({ ...n, arenaIndex: 2 }, content).conquest).toBe(true);
   });
 
