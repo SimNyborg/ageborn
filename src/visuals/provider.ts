@@ -9,6 +9,7 @@ import type { ArtProvider, BackdropView, BaseDressingView, BaseView, EffectView,
 import type { AgeId, CardId, CosmeticKey, EffectId, Foil, Side, SideLook, SkinId, TeamPreset, VisualId } from '@/contracts/ids';
 import { parseSkinnedVisualId, skinnedVisualId } from '@/core/ids';
 import { AtlasAdapter, wantsHdSheets, type SheetLease } from './adapters/atlas';
+import type { GpuHooks } from './gpuUpload';
 import { isBaseSkinSource, isWorldSource, WorldAtlas, worldSourceAge } from './adapters/worldAtlas';
 import { renderWorldPortrait } from './adapters/worldPortrait';
 import { BASE_SKINS } from './cosmetics/baseSkins';
@@ -47,7 +48,36 @@ export interface ArtProviderOptions {
   teamPreset?: TeamPreset;
   /** Dev logging of fallbacks. */
   warn?: (msg: string) => void;
+  /**
+   * `match` (the game, G7 Safari memory): `preload(ages)` loads the ages' turret, base and fort sheets
+   * only; unit sheets load per match through `holdArt` (the battle's decks, the next age ahead of an
+   * evolve) and unload once nothing holds or draws them. `all` (default; dev pages, the gallery):
+   * `preload` loads and keeps every unit sheet of the ages.
+   */
+  unitSheets?: 'all' | 'match';
+  /** The app's renderer (G7): loaded unit sheets go to the GPU and their decoded CPU copies are released. */
+  gpu?: GpuHooks;
 }
+
+/** A visual an art hold keeps loaded: a unit (with its skin) or a fort (G7, `holdArt`). */
+export interface HeldVisual {
+  visualId: VisualId;
+  skin?: SkinId | null;
+}
+
+/**
+ * The sheets one match draws (G7): `set` makes `visuals` the wanted ones, loading what is new and
+ * releasing the rest (a released sheet unloads a few seconds after nothing holds or draws it); it
+ * resolves once every wanted sheet's core has loaded or failed. `release` lets go of everything.
+ * Duck-typed for the render layer and the app (no contract change).
+ */
+export interface ArtHold {
+  set(visuals: readonly HeldVisual[]): Promise<void>;
+  release(): void;
+}
+
+/** How long VS's warm-up keeps a match's opening sheets (the battle's own hold takes over long before). */
+export const PREFETCH_HOLD_MS = 30_000;
 
 /**
  * Atlas bake scale for a screen (px per lu at DPR 1): the battle camera's world scale (DESIGN A17.7:
@@ -106,7 +136,14 @@ export class VisualsArtProvider implements ArtProvider {
     };
     this.procedural = new ProceduralAdapter({ pxPerLu: world * dpr, quality: this.quality, teamPreset: () => this.preset, bakePuppet });
     const rawDpr = o.dpr ?? (typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
-    this.atlas = new AtlasAdapter({ entries: () => Object.values(this.manifest), decor: this.procedural.baker, quality: this.quality, hd: this.quality !== 'lite' && wantsHdSheets(world, o.hdDpr ?? rawDpr) });
+    this.atlas = new AtlasAdapter({
+      entries: () => Object.values(this.manifest),
+      decor: this.procedural.baker,
+      quality: this.quality,
+      hd: this.quality !== 'lite' && wantsHdSheets(world, o.hdDpr ?? rawDpr),
+      lazyUnits: o.unitSheets === 'match',
+      ...(o.gpu ? { gpu: o.gpu } : {}),
+    });
     this.adapters = { placeholder: this.placeholder, procedural: this.procedural, atlas: this.atlas, spine: new SpineAdapter() };
     this.fortHd = this.quality !== 'lite' && wantsHdSheets(world, o.hdDpr ?? rawDpr);
     const base = (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? '/';
@@ -218,6 +255,8 @@ export class VisualsArtProvider implements ArtProvider {
     const def: VisualDef = r?.def ?? { ...this.missing(o.visualId), heightLu: o.kind === 'trap' ? 24 : o.kind === 'tower' ? 100 : 90 };
     const src = def.kind === 'atlas' && fortSource(def.source) ? def.source : null;
     const age = src ? (fortSource(src)?.age ?? null) : null;
+    // the tower crew's unit sheet stays while this fort draws it (G7: never unloaded under a live view)
+    let crewHeld: (() => void) | null = null;
     return new AtlasFortView({
       def,
       side: o.side,
@@ -230,9 +269,80 @@ export class VisualsArtProvider implements ArtProvider {
       age,
       crewSheet: (visualId) => {
         const c = this.resolve(visualId)?.def;
-        return c && c.kind === 'atlas' ? this.atlas.sheetFor(c.source) : undefined;
+        const sheet = c && c.kind === 'atlas' ? this.atlas.sheetFor(c.source) : undefined;
+        if (sheet && c && !crewHeld) crewHeld = this.atlas.holdSheet(c.source);
+        return sheet;
       },
+      onDestroy: () => crewHeld?.(),
     });
+  }
+
+  /**
+   * A hold on the unit sheets one match draws (G7, Safari memory): see {@link ArtHold}. Units resolve
+   * with their skins; a fort's sheet is small and stays cached, but its tower crew (a unit sheet, named
+   * in the fort sheet's meta) is held with it. Turret and base sheets load per age (`preload`). With a
+   * forced tier other than the sheets the hold does nothing.
+   */
+  holdArt(): ArtHold {
+    const leases = new Map<string, SheetLease>();
+    let live = true;
+    let last: readonly HeldVisual[] = [];
+    const sheetsOn = this.force === null || this.force === 'atlas';
+    const unitSource = (def: VisualDef | undefined): string | null =>
+      def && def.kind === 'atlas' && !isWorldSource(def.source) && !fortSource(def.source) ? def.source : null;
+    const set = (visuals: readonly HeldVisual[]): Promise<void> => {
+      if (!live || !sheetsOn) return Promise.resolve();
+      last = visuals;
+      const want = new Set<string>();
+      const waits: Promise<unknown>[] = [];
+      for (const v of visuals) {
+        const def = this.resolve(v.visualId, v.skin ?? undefined)?.def;
+        if (!def || def.kind !== 'atlas') continue;
+        const unit = unitSource(def);
+        if (unit) {
+          want.add(unit);
+          continue;
+        }
+        if (!fortSource(def.source)) continue;
+        const url = this.fortSheetUrl(def.source);
+        const sheet = this.forts.get(url);
+        if (!sheet) {
+          // the crew is named in the fort sheet: once it is in, the same visuals are held again
+          waits.push(
+            this.forts.ensure(url).then((s) => {
+              if (s && live && last === visuals) return set(visuals);
+              return undefined;
+            }),
+          );
+          continue;
+        }
+        const crew = (sheet.meta as { crew?: { visualId?: string } }).crew?.visualId;
+        const src = crew ? unitSource(this.resolve(crew)?.def) : null;
+        if (src) want.add(src);
+      }
+      for (const src of want) if (!leases.has(src)) leases.set(src, this.atlas.lease(src));
+      for (const [src, l] of leases) {
+        if (want.has(src)) continue;
+        l.release();
+        leases.delete(src);
+      }
+      for (const src of want) {
+        const l = leases.get(src);
+        if (l) waits.push(l.core);
+      }
+      return Promise.all(waits).then(
+        () => undefined,
+        () => undefined,
+      );
+    };
+    return {
+      set,
+      release: () => {
+        live = false;
+        for (const l of leases.values()) l.release();
+        leases.clear();
+      },
+    };
   }
 
   /**
@@ -389,7 +499,12 @@ export class VisualsArtProvider implements ArtProvider {
    * the painted layers swapping over. Duck-typed for the app (no contract change); resolves once the skin
    * models are in (the scenes stream into the backdrop textures the battle's backdrop reads).
    */
-  prefetchMatch(o: { age: AgeId; sides: readonly { skins?: Partial<Record<AgeId, SkinId>>; scenes?: Partial<Record<AgeId, CosmeticKey>> }[] }): Promise<void> {
+  prefetchMatch(o: {
+    age: AgeId;
+    sides: readonly { skins?: Partial<Record<AgeId, SkinId>>; scenes?: Partial<Record<AgeId, CosmeticKey>> }[];
+    /** The units both decks can field in the opening age (G7): held for {@link PREFETCH_HOLD_MS}. */
+    units?: readonly HeldVisual[];
+  }): Promise<void> {
     const skins: Partial<Record<AgeId, SkinId>>[] = [];
     const scenes: { age: AgeId; scene: string }[] = [];
     for (const side of o.sides) {
@@ -399,7 +514,14 @@ export class VisualsArtProvider implements ArtProvider {
       scenes.push({ age: o.age, scene: key?.startsWith('scene.') ? key.slice('scene.'.length) : 'classic' });
     }
     if (this.force === null || this.force === 'procedural' || this.force === 'atlas') this.procedural.backdrops.prefetch([o.age], [], scenes);
-    return Promise.all(skins.map((s) => this.prefetchBaseSkins(s))).then(() => undefined);
+    const waits: Promise<unknown>[] = skins.map((s) => this.prefetchBaseSkins(s));
+    if (o.units && o.units.length > 0) {
+      // the battle's own hold takes the same sheets over when it starts; this one lets go a while later
+      const hold = this.holdArt();
+      waits.push(hold.set(o.units));
+      setTimeout(() => hold.release(), PREFETCH_HOLD_MS);
+    }
+    return Promise.all(waits).then(() => undefined);
   }
 
   /** Base flag, national flag, decorations and skin restyle of one side (DESIGN A18.9.4). */

@@ -14,6 +14,7 @@ import { render } from 'preact';
 import type { FormatId, Sim } from '@/contracts';
 import { DevRouter, isDevMode } from '@/dev/router';
 import { BattleView, DEFAULT_VIEW_SETTINGS, detectMobile, type ViewSettings } from '@/render';
+import { textureMemory } from '@/visuals/textureMemory';
 import { boot, bootFlags, validateContentInDev } from './boot';
 import { AppController } from './controller';
 import type { KeyValueStore } from './eventLog';
@@ -187,6 +188,14 @@ async function start(root: HTMLElement): Promise<void> {
         const r = controller.route.peek();
         const battle = r.id === 'battle' || r.id === 'title' ? r.battle : null;
         return battle ? (views.get(battle.session.sim) ?? null) : null;
+      },
+      /**
+       * Decoded image memory now (G7, Safari memory): textures on the GPU, decoded copies on the CPU and
+       * the unit sheets loaded (`visuals/textureMemory.ts`; the e2e memory budget reads it).
+       */
+      memory(): unknown {
+        const sheets = (art as { atlas?: { sheetStats?: () => unknown } }).atlas?.sheetStats?.() ?? null;
+        return { ...textureMemory(pixi.app.renderer), sheets };
       },
       /** Client (page) point of your turret mount `i` on the battle on screen, for e2e taps. */
       mountPoint(i: number): { x: number; y: number } | null {

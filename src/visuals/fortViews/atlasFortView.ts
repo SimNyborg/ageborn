@@ -65,6 +65,8 @@ export interface FortViewOptions {
   sheets: WorldAtlas;
   /** The loaded unit sheet of a crew visual id (a tower's crew), or undefined while it loads. */
   crewSheet: (visualId: string) => AtlasData | undefined;
+  /** Runs once when the view is destroyed (the provider lets go of the crew's sheet, G7). */
+  onDestroy?: () => void;
   age: AgeId | null;
   /** The sheet source to load (`hd` or 1x); null draws the code stand-in only (no sheet installed). */
   source: string | null;
@@ -1047,5 +1049,6 @@ export class AtlasFortView implements FortView {
     this.puffs.clear();
     this.bits.clear();
     this.root.destroy({ children: true });
+    this.o.onDestroy?.();
   }
 }

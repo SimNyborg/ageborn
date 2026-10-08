@@ -6,9 +6,12 @@
  * while both are in flight. A failed file is forgotten, so the next ask tries again. Images decode off the
  * main thread where the browser can (`decode()`), before anything draws them.
  */
+import { imageLedger } from '../textureMemory';
 
 const jsons = new Map<string, Promise<unknown>>();
 const images = new Map<string, Promise<HTMLImageElement>>();
+/** The decoded scene images this cache holds (the memory hook, `textureMemory.ts`). */
+const ledger = imageLedger('sceneImages');
 
 /** A scene's JSON file (`layers.json`), fetched once. */
 export function sceneJson(url: string): Promise<unknown> {
@@ -33,7 +36,10 @@ export function sceneImage(url: string): Promise<HTMLImageElement> {
       im.decoding = 'async';
       im.onload = () => {
         const decoded = typeof im.decode === 'function' ? im.decode().catch(() => undefined) : Promise.resolve();
-        void decoded.then(() => resolve(im));
+        void decoded.then(() => {
+          ledger.set(url, im);
+          resolve(im);
+        });
       };
       im.onerror = () => reject(new Error(`image ${url} failed to load`));
       im.src = url;

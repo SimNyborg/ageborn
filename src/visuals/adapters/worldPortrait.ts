@@ -17,6 +17,7 @@
  */
 import type { AgeId, Foil } from '@/contracts/ids';
 import { drawPortraitPlate, foilFrame } from '../portraits';
+import { imageLedger } from '../textureMemory';
 
 interface FrameRect {
   x: number;
@@ -44,6 +45,8 @@ interface LoadedSheet {
 }
 
 const sheets = new Map<string, Promise<LoadedSheet | null>>();
+/** The decoded sheet images this cache holds (the memory hook, `textureMemory.ts`). */
+const ledger = imageLedger('worldSheets');
 
 function loadImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -64,6 +67,7 @@ export function loadWorldSheet(url: string): Promise<LoadedSheet | null> {
         if (!res.ok) return null;
         const json = (await res.json()) as SheetJson;
         const image = await loadImage(new URL(json.meta.image, new URL(url, location.href)).href);
+        ledger.set(url, image);
         return { json, image };
       } catch {
         return null;

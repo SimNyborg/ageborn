@@ -25,7 +25,7 @@
  * the same team cues. Units and one-shot effects are supported; turrets, bases and backdrops in an
  * atlas entry draw as placeholders until needed.
  */
-import { Assets, Container, Sprite, Texture, type Spritesheet } from 'pixi.js';
+import { Assets, Container, Sprite, Texture, type Spritesheet, type TextureSource } from 'pixi.js';
 import type { Anchors, BackdropView, BaseView, ClipName, ClipRef, EffectView, TurretView, UnitPose, UnitView, VisualDef } from '@/contracts/art';
 import type { AgeId, Pt, RoleGroup, Side } from '@/contracts/ids';
 import { clipU } from '../animator';
@@ -35,6 +35,8 @@ import { teamColor, TRIM_COLORS } from '../palette';
 import { mulberry32, type CosmeticRng } from '@/core/rng';
 import { CLIP_TIMING, STYLE } from '../style';
 import { BLOCKING_UNIT_SHEET_AGES, unitSheetAge } from '../unitSheetPaths';
+import { SheetReleaser, type GpuHooks } from '../gpuUpload';
+import { trackSource } from '../textureMemory';
 import type { ClipDef } from '../types';
 import { puppetById } from '../library';
 import { renderPortrait } from '../portraits';
@@ -109,6 +111,8 @@ export interface AtlasData {
   /** Frame name -> texture, and animation -> frame names (extras sheets reuse core frames by name, P3/P4). */
   textures?: Readonly<Record<string, Texture>>;
   frameNames?: Readonly<Record<string, readonly string[]>>;
+  /** The sheet image's texture source (Pixi's loader); its CPU copy is released once on the GPU (G7). */
+  source?: TextureSource;
 }
 
 export interface AtlasClipMeta {
@@ -314,6 +318,7 @@ async function loadWithAssets(url: string): Promise<AtlasData> {
     ...(gait ? { gait } : {}),
     textures: sheet.textures,
     ...(data.animations ? { frameNames: data.animations } : {}),
+    source: sheet.textureSource,
   };
 }
 
@@ -340,6 +345,15 @@ export interface AtlasOptions {
   unload?: (url: string) => Promise<void> | void;
   /** How long a showcase-only sheet stays after its last lease ends, ms (default `LEASE_LINGER_MS`). */
   leaseLingerMs?: number;
+  /**
+   * Unit sheets load per match (G7, Safari memory): `preload(ages)` loads only the ages' turret and base
+   * sheets, and a unit sheet stays while a lease (a battle's hold, a showcase) or a drawn view keeps it;
+   * the last one to let go unloads it `leaseLingerMs` later. Default false: `preload` loads every unit
+   * sheet of the ages and keeps it (dev pages, the gallery).
+   */
+  lazyUnits?: boolean;
+  /** The app's renderer: each loaded unit sheet is uploaded and its decoded CPU copy released (G7). */
+  gpu?: GpuHooks;
 }
 
 /**
@@ -348,10 +362,12 @@ export interface AtlasOptions {
  */
 export const LEASE_LINGER_MS = 4000;
 
-/** A sheet held for a card detail showcase (`AtlasAdapter.lease`). */
+/** A sheet held for a card detail showcase or a battle (`AtlasAdapter.lease`). */
 export interface SheetLease {
   /** Resolves once the sheet (and its extras sheet, if any) has loaded or failed. */
   readonly ready: Promise<void>;
+  /** Resolves once the core sheet has loaded or failed (its views can draw; extras may still stream). */
+  readonly core: Promise<void>;
   /** True when the views must come from the showcase's HD copy (`createUnit` with `hd`). */
   readonly hd: boolean;
   /** Ends the lease; a sheet only showcases used is unloaded `leaseLingerMs` later. Idempotent. */
@@ -367,10 +383,14 @@ interface SheetSet {
   readonly extrasPending: Map<string, Promise<void>>;
   /** The URLs a loaded sheet came from (core, then extras), for unloading. */
   readonly urls: Map<string, string[]>;
+  /** The texture sources a loaded sheet holds (core, then extras), to free their decoded copies. */
+  readonly sources: Map<string, TextureSource[]>;
+  /** Atlas views drawing from each sheet right now: a sheet is never unloaded under a live view. */
+  readonly views: Map<string, number>;
 }
 
 function sheetSet(hd: boolean): SheetSet {
-  return { hd, sheets: new Map(), failed: new Set(), pending: new Map(), extrasPending: new Map(), urls: new Map() };
+  return { hd, sheets: new Map(), failed: new Set(), pending: new Map(), extrasPending: new Map(), urls: new Map(), sources: new Map(), views: new Map() };
 }
 
 /** Device px per lu above which the HD unit sheets are worth their download (1x sheets are 1.23 px/lu). */
@@ -419,8 +439,11 @@ export class AtlasAdapter implements VisualAdapter {
 
   /** Turret and base sheets (3D world art), loaded per age. */
   readonly world: WorldAtlas;
+  /** Uploads loaded unit sheets and releases their CPU copies (G7); null without the app's renderer. */
+  private readonly releaser: SheetReleaser | null;
 
   constructor(private readonly o: AtlasOptions) {
+    this.releaser = o.gpu ? new SheetReleaser(o.gpu) : null;
     this.world = new WorldAtlas((s) => this.url(s));
     this.main = sheetSet(o.hd === true);
     this.hdOnly = sheetSet(true);
@@ -455,8 +478,9 @@ export class AtlasAdapter implements VisualAdapter {
     // units with a sheet also get a rendered card still (falls back to the procedural portrait)
     if (what === 'portrait') return portraitStillBase(def.source) !== null;
     if (!this.sheets.has(def.source)) {
-      // a unit whose age has not streamed in yet: load it now, draw the fallback meanwhile
-      if (what === 'unit' && unitSheetAge(def.source)) void this.ensure(def.source);
+      // a unit whose sheet is not in yet (a battle's hold loads the decks ahead; this is the last resort):
+      // load it now, draw the fallback meanwhile. Not pinned: a battle's hold or a view keeps it.
+      if (what === 'unit' && unitSheetAge(def.source)) this.loadLoose(def.source);
       return false;
     }
     return what === 'unit' || what === 'effect' || what === 'projectile';
@@ -470,6 +494,62 @@ export class AtlasAdapter implements VisualAdapter {
     this.pinned.add(source);
     this.cancelUnload(this.main, source);
     return this.load(this.main, source);
+  }
+
+  /**
+   * Loads a unit sheet nothing holds yet (a unit drawn before its sheet: the fallback path, or a fort's
+   * crew). With `lazyUnits` it is not pinned: once loaded it unloads `leaseLingerMs` later unless a lease
+   * or a view keeps it by then. Without, it is pinned as `ensure` does (dev pages).
+   */
+  private loadLoose(source: string): void {
+    if (!this.o.lazyUnits) {
+      void this.ensure(source);
+      return;
+    }
+    this.cancelUnload(this.main, source);
+    void this.load(this.main, source).then(() => {
+      if (!this.held(this.main, source)) this.scheduleUnload(this.main, source);
+    });
+  }
+
+  /** True while something keeps a set's sheet: a lease, a live view, or (battle set) a pin. */
+  private held(set: SheetSet, source: string): boolean {
+    return (this.leases.get(set)?.get(source) ?? 0) > 0 || (set.views.get(source) ?? 0) > 0 || (set === this.main && this.pinned.has(source));
+  }
+
+  /** A loaded sheet's texture source joins its set (memory hook) and, with a renderer, the release queue. */
+  private adopt(set: SheetSet, source: string, d: AtlasData): void {
+    const ts = d.source;
+    if (!ts) return;
+    set.sources.set(source, [...(set.sources.get(source) ?? []), ts]);
+    trackSource(ts);
+    this.releaser?.add(ts);
+  }
+
+  /**
+   * Counts a view drawing from a set's sheet until the returned release runs (idempotent): the sheet is
+   * never unloaded under it, and when the last view goes and nothing else holds it, it unloads
+   * `leaseLingerMs` later (G7).
+   */
+  private retainView(set: SheetSet, source: string): () => void {
+    set.views.set(source, (set.views.get(source) ?? 0) + 1);
+    this.cancelUnload(set, source);
+    let done = false;
+    return () => {
+      if (done) return;
+      done = true;
+      const n = (set.views.get(source) ?? 1) - 1;
+      if (n > 0) set.views.set(source, n);
+      else {
+        set.views.delete(source);
+        if (!this.held(set, source)) this.scheduleUnload(set, source);
+      }
+    };
+  }
+
+  /** Keeps a battle-set sheet for a non-unit drawer (a fort's crew) until the returned release runs. */
+  holdSheet(source: string): () => void {
+    return this.retainView(this.main, source);
   }
 
   /** Loads a sheet into a set (once): the HD sheet where the set wants it, else (or on failure) the 1x one. */
@@ -492,6 +572,7 @@ export class AtlasAdapter implements VisualAdapter {
         .then((d) => {
           set.sheets.set(source, d);
           set.urls.set(source, [from.url]);
+          this.adopt(set, source, d);
           // B, C and attack_alt stream in after the core sheet; they never block a boot or a battle (P4)
           this.loadExtras(set, source, d, from.url);
         })
@@ -532,6 +613,7 @@ export class AtlasAdapter implements VisualAdapter {
     )
       .then((x) => {
         set.urls.set(source, [...(set.urls.get(source) ?? []), got.url]);
+        this.adopt(set, source, x);
         const added = mergeExtras(core, x);
         if (added.length === 0) console.warn(`[visuals] extras sheet "${xUrl}" added no clips (scale mismatch or missing frames)`);
       })
@@ -559,13 +641,15 @@ export class AtlasAdapter implements VisualAdapter {
     this.leases.set(set, counts);
     counts.set(source, (counts.get(source) ?? 0) + 1);
     this.cancelUnload(set, source);
+    const core = this.load(set, source);
     const ready = (async () => {
-      await this.load(set, source);
+      await core;
       await set.extrasPending.get(source);
     })();
     let done = false;
     return {
       ready,
+      core,
       hd: set === this.hdOnly,
       release: () => {
         if (done) return;
@@ -576,7 +660,7 @@ export class AtlasAdapter implements VisualAdapter {
           return;
         }
         counts.delete(source);
-        this.scheduleUnload(set, source);
+        if (!this.held(set, source)) this.scheduleUnload(set, source);
       },
     };
   }
@@ -585,6 +669,23 @@ export class AtlasAdapter implements VisualAdapter {
   leaseCount(source: string, o: { hd?: boolean } = {}): number {
     const set = o.hd && !this.main.hd ? this.hdOnly : this.main;
     return this.leases.get(set)?.get(source) ?? 0;
+  }
+
+  /**
+   * Unit sheets loaded now (the memory hook): the battle's set, the showcase's HD copies, loads in flight,
+   * sheets with live views, and the release queue (uploads waiting, CPU copies released).
+   */
+  sheetStats(): { loaded: number; hdCopies: number; pending: number; viewed: number; queued: number; released: number; sources: string[] } {
+    const r = this.releaser?.stats ?? { queued: 0, released: 0 };
+    return {
+      loaded: this.main.sheets.size,
+      hdCopies: this.hdOnly.sheets.size,
+      pending: this.main.pending.size + this.hdOnly.pending.size,
+      viewed: this.main.views.size + this.hdOnly.views.size,
+      queued: r.queued,
+      released: r.released,
+      sources: [...this.main.sheets.keys()].sort(),
+    };
   }
 
   /** True when the showcase's HD copy of a source is loaded (tests). */
@@ -601,7 +702,7 @@ export class AtlasAdapter implements VisualAdapter {
   }
 
   private scheduleUnload(set: SheetSet, source: string): void {
-    if (set === this.main && this.pinned.has(source)) return;
+    if (this.held(set, source)) return;
     const timers = this.unloads.get(set) ?? new Map<string, ReturnType<typeof setTimeout>>();
     this.unloads.set(set, timers);
     this.cancelUnload(set, source);
@@ -615,15 +716,22 @@ export class AtlasAdapter implements VisualAdapter {
     );
   }
 
-  /** Drops a showcase-only sheet (both its URLs) unless the game or a new lease wants it by now. */
+  /**
+   * Drops a sheet (its core and extras URLs) unless a lease, a live view or a pin wants it by now. Its
+   * decoded CPU copies are closed at once (an ImageBitmap otherwise waits for the JS garbage collector).
+   */
   private async unloadNow(set: SheetSet, source: string): Promise<void> {
-    if ((this.leases.get(set)?.get(source) ?? 0) > 0) return;
-    if (set === this.main && this.pinned.has(source)) return;
+    if (this.held(set, source)) return;
     // never pull a sheet out from under a load or extras merge still in flight
     await set.pending.get(source);
     await set.extrasPending.get(source);
-    if ((this.leases.get(set)?.get(source) ?? 0) > 0 || (set === this.main && this.pinned.has(source))) return;
+    if (this.held(set, source)) return;
     const urls = set.urls.get(source) ?? [];
+    for (const ts of set.sources.get(source) ?? []) {
+      if (this.releaser) this.releaser.forget(ts);
+      else if (typeof ImageBitmap !== 'undefined' && ts.resource instanceof ImageBitmap) ts.resource.close();
+    }
+    set.sources.delete(source);
     set.sheets.delete(source);
     set.urls.delete(source);
     set.failed.delete(source);
@@ -654,6 +762,11 @@ export class AtlasAdapter implements VisualAdapter {
    */
   async preload(ages: AgeId[]): Promise<void> {
     const world = this.world.preload(ages, this.o.entries());
+    // per match (G7): a battle's hold loads its decks' unit sheets (`lazyUnits`)
+    if (this.o.lazyUnits) {
+      await world;
+      return;
+    }
     const blocking = new Set<AgeId>(BLOCKING_UNIT_SHEET_AGES);
     const now: Promise<void>[] = [];
     for (const s of this.unitSources(ages)) {
@@ -675,7 +788,7 @@ export class AtlasAdapter implements VisualAdapter {
    */
   sheetFor(source: string): AtlasData | undefined {
     const s = this.sheets.get(source);
-    if (!s) void this.ensure(source);
+    if (!s) this.loadLoose(source);
     return s;
   }
 
@@ -696,12 +809,15 @@ export class AtlasAdapter implements VisualAdapter {
   }
 
   createUnit(r: ViewRequest): UnitView {
-    const sheet = (r.hd ? this.hdOnly.sheets.get(r.def.source) : undefined) ?? this.sheet(r.def);
+    const hd = r.hd ? this.hdOnly.sheets.get(r.def.source) : undefined;
+    const sheet = hd ?? this.sheet(r.def);
+    const release = this.retainView(hd ? this.hdOnly : this.main, r.def.source);
     return new AtlasUnitView(r.def, sheet, this.o.decor, r.side, teamColor(r.side, r.teamPreset), {
       seed: r.seed,
       gait: sheet.gait ?? inferGait(r.key, r.def),
       style: this.o.motionStyle ?? 'cartoon',
       ...(this.o.quality ? { quality: this.o.quality } : {}),
+      onDestroy: release,
     });
   }
 
@@ -898,6 +1014,8 @@ interface AtlasUnitOptions {
   /** The walk's body type (sheet meta, or inferred from the puppet for older sheets). */
   gait?: UnitGait | null;
   style?: AtlasMotionStyle;
+  /** Runs once when the view is destroyed (the adapter's view count on its sheet, G7). */
+  onDestroy?: () => void;
 }
 
 /** Sheets this tall (lu) or taller put dust at the foot on each contact step (R8). */
@@ -977,6 +1095,8 @@ class AtlasUnitView implements UnitView {
   private hideAtMs = -1;
   private sinkDust = false;
   private destroyed = false;
+  /** The adapter's view count on this sheet (G7); runs once on destroy. */
+  private readonly onDestroy: (() => void) | null;
   // ANIM_SPEC R1-R8 state
   private unitId = 0;
   private attackPlays = 0;
@@ -1021,6 +1141,7 @@ class AtlasUnitView implements UnitView {
     this.rng = mulberry32(o.seed ?? 1);
     this.gait = o.gait ?? null;
     this.style = o.style ?? 'cartoon';
+    this.onDestroy = o.onDestroy ?? null;
     this.lite = o.quality === 'lite';
     this.hoverPeriod = HOVER_PERIOD_MS[0] + this.rng.next() * (HOVER_PERIOD_MS[1] - HOVER_PERIOD_MS[0]);
     this.hoverPhase = this.rng.next();
@@ -1851,6 +1972,7 @@ class AtlasUnitView implements UnitView {
     if (this.destroyed) return;
     this.destroyed = true;
     this.root.destroy({ children: true });
+    this.onDestroy?.();
   }
 }
 

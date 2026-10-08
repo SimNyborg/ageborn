@@ -8,6 +8,7 @@
 import type { AgeId, Foil } from '@/contracts/ids';
 import { drawPortraitPlate, foilFrame } from '../portraits';
 import { drawCloth2d, PORTRAIT_DRESS } from '../fortViews/fortDress';
+import { imageLedger } from '../textureMemory';
 
 /**
  * Units whose sheet is installed but whose card still is not rendered yet (`art/blender/gen_portraits.py`
@@ -27,13 +28,18 @@ export function portraitStillBase(source: string): string | null {
 }
 
 const images = new Map<string, Promise<HTMLImageElement>>();
+/** The decoded portrait stills this cache holds (the memory hook, `textureMemory.ts`). */
+const ledger = imageLedger('portraitStills');
 
 function loadImage(url: string): Promise<HTMLImageElement> {
   let p = images.get(url);
   if (!p) {
     p = new Promise((resolve, reject) => {
       const im = new Image();
-      im.onload = () => resolve(im);
+      im.onload = () => {
+        ledger.set(url, im);
+        resolve(im);
+      };
       im.onerror = () => reject(new Error(`portrait still "${url}" failed`));
       im.src = url;
     });
