@@ -130,6 +130,13 @@ export function readSprites(v: unknown, frames: Readonly<Record<string, unknown>
               .filter((k): k is unknown[] => Array.isArray(k) && k.length >= 3)
               .map((k): PathKey => (k[4] === 0 || k[4] === 1 ? [num(k[0], 0), num(k[1], 0), num(k[2], 0), num(k[3], 1), k[4]] : [num(k[0], 0), num(k[1], 0), num(k[2], 0), num(k[3], 1)]))
           : [];
+        // the short form (PLAN 2b example): `from` → `to` over `periodS`
+        const from = pt(s['from']);
+        const to = pt(s['to']);
+        if (keys.length === 0 && from && to) {
+          const period = Math.max(1, num(s['periodS'], 60));
+          keys.push([0, from[0], from[1], 1], [period, to[0], to[1], 1]);
+        }
         keys.sort((a, b) => a[0] - b[0]);
         const group: SpriteMember[] = [];
         if (Array.isArray(s['group'])) {
@@ -139,8 +146,11 @@ export function readSprites(v: unknown, frames: Readonly<Record<string, unknown>
             if (fr) group.push({ frames: fr, dx: num(m['dx'], 0), dy: num(m['dy'], 0), phase: num(m['phase'], 0) });
           }
         } else {
+          // one walker, or `count` of them `spacing` lu apart, each a frame out of step
           const fr = known(s['frames']);
-          if (fr) group.push({ frames: fr, dx: 0, dy: 0, phase: 0 });
+          const count = Math.max(1, Math.min(8, Math.round(num(s['count'], 1))));
+          const spacing = num(s['spacing'], 40);
+          if (fr) for (let i = 0; i < count; i++) group.push({ frames: fr, dx: i === 0 ? 0 : -i * spacing, dy: 0, phase: i });
         }
         const tr = s['trail'];
         const trail =

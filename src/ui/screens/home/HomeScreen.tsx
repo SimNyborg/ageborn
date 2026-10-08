@@ -170,6 +170,9 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
   const eq = content.cosmetics.collections ? equippedOf(s, content) : null;
   const skin = eq?.baseSkins?.[age] ?? null;
   const mySkin = skin && owns(s, content, skin) ? skin : null;
+  // your base flies your equipped base flag and national flag on the lane's pole (PLAN 2d)
+  const myFlag = (k: string | null | undefined): string | null => (k && owns(s, content, k) ? k : null);
+  const myFlags = { baseFlag: myFlag(eq?.baseFlag), nationalFlag: myFlag(eq?.nationalFlag) };
   // The ranked Ladder's found player: their base look and frontline drop in when the search ends.
   const found = ranked.phase === 'found' ? ranked.opponent : null;
   const foeSkin = found?.side.look?.baseSkins?.[age] ?? null;
@@ -421,6 +424,7 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
           foe={foeLook === 'ai' || foeLook === 'found' ? foe : []}
           foeLook={foeLook}
           launching={launching}
+          myFlags={myFlags}
         />
         {ladderOpen ? (
           <div class="hub-stage__caption">

@@ -90,6 +90,14 @@ describe('routing (PLAN 2f interface 2)', () => {
       if (own) expect(cosmeticImageUrl('nationalFlag.dk', { size })).toBe(own);
       else expect(cosmeticImageUrl('nationalFlag.dk', { size })).toMatch(/^data:image\/svg\+xml/);
     }
+    // every national flag picture is the vendored one, with or without a size (the big SVG by default),
+    // so VS, Customize and the ranked "player found" never show a blank or a second design of a flag
+    expect(nationalFlagUrl('dk', 'big')).toMatch(/art\/flags\/svg\/dk\.svg$/);
+    expect(cosmeticImageUrl('nationalFlag.dk')).toBe(nationalFlagUrl('dk', 'big'));
+    expect(cosmeticImageUrl('nationalFlag.br')).toBe(nationalFlagUrl('br', 'big'));
+    // the hand-drawn design is only the markup fallback; an unknown flag has no picture
+    expect(cosmeticSvg('nationalFlag.dk')).toMatch(/^<svg/);
+    expect(cosmeticImageUrl('nationalFlag.nowhere')).toBeNull();
     const prop = decorationArtUrl('fern', { hd: true });
     if (prop) expect(cosmeticImageUrl('decoration.fern', { hd: true })).toBe(prop);
     else expect(cosmeticImageUrl('decoration.fern', { hd: true })).toMatch(/^data:image\/svg\+xml/);

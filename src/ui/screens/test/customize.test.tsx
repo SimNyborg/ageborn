@@ -32,7 +32,7 @@ describe('Customize: collections (A18.9.4)', () => {
     expect(text(m.q('[data-testid="found-baseFlag"]')!)).toMatch(/^5\/\d+ found$/);
     // national flags count on the Atlas card: the six regions' flags you own, of all of them
     const atlas = m.services.flagAtlasProgress();
-    expect(text(m.q('[data-testid="atlas-count"]')!)).toBe(`${atlas.owned}/${atlas.total}`);
+    expect(text(m.q('[data-testid="open-flag-atlas-count"]')!)).toBe(`${atlas.owned}/${atlas.total}`);
     m.click('[data-testid="item-nationalFlag.se"] button');
     expect(calls('equipCosmetic')).toEqual([{ slot: 'nationalFlag', key: 'nationalFlag.se' }]);
     m.click('[data-testid="national-none"]');
@@ -76,7 +76,7 @@ describe('Customize: collections (A18.9.4)', () => {
     expect(owned).toContain('item-nationalFlag.se');
     expect(owned.every((id) => id === 'national-none' || !m!.q(`[data-testid="${id}"]`)!.getAttribute('class')!.includes('is-locked'))).toBe(true);
     // a save that owns a flag pays the one price: no first-flag line
-    expect(m.q('[data-testid="atlas-first"]')).toBeNull();
+    expect(m.q('[data-testid="open-flag-atlas-first"]')).toBeNull();
     m.click('[data-testid="open-flag-atlas"]');
     expect(m.router.current.value).toMatchObject({ id: 'flagAtlas' });
   });
@@ -84,7 +84,7 @@ describe('Customize: collections (A18.9.4)', () => {
   it("a save's first flag says it costs no Dust, never with the word the copy review bans", () => {
     m = mount({ state: 'new', routes: [{ id: 'home' }, { id: 'customize', tab: 'flags' }] });
     expect(m.services.flagAtlasProgress().price).toBe(0);
-    expect(text(m.q('[data-testid="atlas-first"]')!)).toBe('Your first flag costs no Dust');
+    expect(text(m.q('[data-testid="open-flag-atlas-first"]')!)).toBe('Your first flag costs no Dust');
     expect(text(m.q('[data-testid="open-flag-atlas"]')!)).not.toMatch(/\bfree\b/i);
     expect(m.q('[data-testid="open-flag-atlas"]')!.getAttribute('aria-label')).toContain('costs no Dust');
   });

@@ -362,6 +362,10 @@ SKIN_P = {
                       rings="#9A764F", stone="#8C7B68", stone_lt="#A08E78", stone_dk="#76685A", moss="#6E8B3D",
                       moss_lt="#7E9A4A", shelf="#C2A26E", shelf_rim="#E9D8B4", shelf_dk="#9A7A52", glow="#F1F0C8",
                       glow_stem="#D9D2B0", cream="#EDE3C8"),
+    "coral_fort": dict(stone="#A2A7AA", stone_lt="#B2B7B9", stone_dk="#878D92", stone_pink="#B4A6A1", coral="#D8907A",
+                       coral_lt="#E8AA96", brain="#D6B061", brain_dk="#B08A44", star="#E07A4F", wood="#5E4A38",
+                       wood_lt="#7E654C", wood_dk="#47382B", iron="#3C3F45", shell="#F0E2CC", shell_pink="#E7B7A2",
+                       cream="#EFE6CF"),
 }
 
 
@@ -514,10 +518,77 @@ def mossy_den_extras(c):
     return extras
 
 
+def coral_chunk(rig, j, c, seed=0):
+    """A broken-off branch of pink coral: a stub with two forks and knobbly lighter tips."""
+    rnd = random.Random(seed)
+    g, t = Geo(), Geo()
+    p0, p1 = (-6.0, 0.0, -5.0), (0.0, 0.0, 2.0)
+    g.capsule(p0, p1, 2.6, 2.2, segs=10, rings=2)
+    for d in (-1, 1):
+        a = math.radians(90 + d * rnd.uniform(28, 40))
+        q = (p1[0] + math.cos(a) * 9.0, 0.0, p1[2] + math.sin(a) * 9.0)
+        g.capsule(p1, q, 2.1, 1.7, segs=10, rings=2)
+        t.sphere(q, 2.1, cuts=2)
+    rig.part(j, g, c["coral"], outline=0.4)
+    rig.part(j, t, c["coral_lt"], outline=0.3)
+
+
+def brain_lump(rig, j, c, r=7.0):
+    g = Geo().blob((0, 0, 0), (r, r * 0.9, r * 0.72), p=2.2, cuts=5)
+    rig.part(j, g, c["brain"])
+    g = Geo()
+    for k in range(3):
+        z = -r * 0.3 + k * r * 0.3
+        pts = [(math.cos(math.radians(a)) * r * 0.98 * math.cos(z / r), math.sin(math.radians(a)) * r * 0.9 * math.cos(z / r) * 1.01,
+                z + math.sin(math.radians(a * 3)) * 0.8) for a in range(200, 345, 15)]
+        for a, b in zip(pts, pts[1:]):
+            g.capsule(a, b, 0.5, segs=6, rings=1)
+    rig.part(j, g, glow=c["brain_dk"], outline=0)
+
+
+def kit_coral_fort(rig, c):
+    yield lambda j: block(rig, j, (12, 8, 7), c["stone"], chip=True, seed=1)
+    yield lambda j: block(rig, j, (10, 7, 6), c["stone_pink"], rot=(0, 15, 6))
+    yield lambda j: coral_chunk(rig, j, c, seed=3)
+    yield lambda j: beam(rig, j, 28, 6, c["wood"], c["wood_dk"], seed=4)
+    yield lambda j: (rig.part(j, Geo().sphere((0, 0, 0), 6.0, cuts=4), c["iron"], finish="metal"))
+    yield lambda j: (rig.part(j, Geo().star((0, 0, 0), 8.0, 3.4, 2.6, points=5, rot=(0, 12, 0)), c["star"], outline=0.5))
+    yield lambda j: brain_lump(rig, j, c)
+    yield lambda j: block(rig, j, (14, 7, 6), c["stone_dk"], rot=(0, -12, 0), chip=True, seed=8)
+
+
+def coral_fort_extras(c):
+    """Broken hull planks, coral branches and shells in the sea fort's rubble."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(2):
+            x = rnd.uniform(-30, 30)
+            box(g, (x, -2, 12), (16, 2.4, 2.4), p=5, rot=(0, rnd.uniform(-40, 40), rnd.uniform(-20, 20)))
+        rig.part(j, g, c["wood_lt"])
+        g, t = Geo(), Geo()
+        for k in range(3):
+            x = rnd.uniform(-34, 34)
+            b = (x, -10, 6 + rnd.uniform(0, 4))
+            for d in (-1, 1):
+                a = math.radians(90 + d * rnd.uniform(20, 40))
+                q = (b[0] + math.cos(a) * 7, b[1], b[2] + math.sin(a) * 7)
+                g.capsule(b, q, 1.7, 1.4, segs=8, rings=1)
+                t.sphere(q, 1.8, cuts=2)
+        rig.part(j, g, c["coral"], outline=0.4)
+        rig.part(j, t, c["coral_lt"], outline=0.3)
+        g = Geo()
+        for k in range(4):
+            x = rnd.uniform(-38, 38)
+            g.blob((x, -13, 3.0), (3.2, 1.2, 2.6), p=2.2, cuts=3, rot=(0, rnd.uniform(-30, 30), 0))
+        rig.part(j, g, c["shell"], outline=0.4)
+    return extras
+
+
 # skin -> (age, pieces, heap colour keys (back, middle, front + pebbles), what sticks out of the heaps)
 SKIN_KITS = {
     "rose_keep": ("medieval", kit_rose_keep, ("stone", "stone_lt", "stone_dk"), rose_keep_extras),
     "mossy_den": ("stone", kit_mossy_den, ("bark_dk", "stone", "bark_lt"), mossy_den_extras),
+    "coral_fort": ("gunpowder", kit_coral_fort, ("stone_dk", "stone", "stone_lt"), coral_fort_extras),
 }
 
 

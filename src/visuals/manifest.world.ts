@@ -64,10 +64,11 @@ export const BASE_COLLAPSE_MS = 2600;
 export const WORLD_BASE_SKINS: Readonly<Record<string, AgeId>> = {
   rose_keep: 'medieval',
   mossy_den: 'stone',
+  coral_fort: 'gunpowder',
 };
 
 /** Skin models with their own collapse kit (`art/bases/skins/<skin>.collapse.json`); the others use their age's. */
-export const WORLD_BASE_SKIN_KITS: readonly string[] = ['rose_keep', 'mossy_den'];
+export const WORLD_BASE_SKIN_KITS: readonly string[] = ['rose_keep', 'mossy_den', 'coral_fort'];
 
 export function baseSkinSheetSource(skin: string): string {
   return `art/bases/skins/${skin}.json`;

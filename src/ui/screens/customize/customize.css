@@ -923,6 +923,8 @@ button.cos-mock__deco.is-picked {
     0 1.5px 0 var(--plate-line),
     0 0 2px var(--plate-line),
     0 0 1px var(--plate-line);
+  /* a long one-word name ("Turkmenistan") breaks with a hyphen where the browser can, never clips */
+  hyphens: auto;
   overflow-wrap: anywhere;
 }
 /* the foot band: the plate's shadow band, with the state pill or the source chip */

@@ -4,8 +4,8 @@ Classic "Iron Valley" (format 2, the first Blender layers for Industrial): a smo
 hazy cream sky. Far: a many-arched brick viaduct across the valley, tall banded chimneys, two lattice gas
 holders, saw-tooth sheds, a pithead winding tower and a chapel spire on the hill. Mid: rows of terraced
 houses with chimney pots, a brick works with a bottle kiln, a canal with a lock and a narrowboat, a gantry
-crane, lamp posts and telegraph wires. Ambient: chimney and kiln smoke, a steam train crossing the viaduct
-every 26 s, the crane swings, the winding wheel turns, the narrowboat bobs, lit windows under night skies.
+crane loading coal, lamp posts. Ambient: chimney and kiln smoke, a steam train crossing the viaduct every
+26 s, the crane swings, the winding wheel turns, the narrowboat bobs, lit windows under night skies.
 
 Palette (A17.12): iron #5B6168, coal #2B2A2E, smoke cream #DCD6C8, muted brick #8A6A63; copper #B06A3B
 only as a small accent (A11 colour rule).

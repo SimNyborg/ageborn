@@ -2,11 +2,11 @@
 import type { ComponentChildren } from 'preact';
 import { useEffect, useErrorBoundary, useMemo } from 'preact/hooks';
 import { asContent } from '@/content';
-import { CosmeticArtContext } from '@/ui/components/cosmeticArt';
+import { CosmeticArtContext, CosmeticPicturesContext } from '@/ui/components/cosmeticArt';
 import { dioramaMount, showcaseMount } from '@/render';
 import { DioramaContext } from '@/ui/components/diorama';
 import { ShowcaseContext } from '@/ui/components/showcase';
-import { cosmeticImageUrl, parseCosmeticKey } from '@/visuals/cosmetics/art';
+import { cosmeticImageUrl, onCosmeticPicturesChanged, parseCosmeticKey } from '@/visuals/cosmetics/art';
 import { cosmeticCollectionKey, cosmeticNameKey } from '@/content/keys';
 import { foundCosmetics } from '../capsules/capsuleFlow';
 import { CapsuleHost } from '../capsules/CapsuleHost';
@@ -219,20 +219,23 @@ export function AppRoot(p: { ui: AppUi }) {
     <AppUiContext.Provider value={p.ui}>
       {/* A18.9.4: the code-drawn cosmetic art (flags, decorations, emotes) for the screens and the HUD */}
       <CosmeticArtContext.Provider value={cosmeticImageUrl}>
-        <ShowcaseContext.Provider value={showcase}>
-          <DioramaContext.Provider value={diorama}>
-            <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
-              <Screen ui={p.ui} meta={meta} shows={shows} />
-              {shows?.current.value ? null : <FirstUpgrade />}
-              <AgeDialog />
-              <TesterDialog />
-              <div class="ab-rotate" data-testid="rotate">
-                <div class="ab-rotate-phone" aria-hidden="true" />
-                <span>{p.ui.t('app.rotate')}</span>
+        {/* a scene or sky still updates itself once its strips have streamed in (Track A) */}
+        <CosmeticPicturesContext.Provider value={onCosmeticPicturesChanged}>
+          <ShowcaseContext.Provider value={showcase}>
+            <DioramaContext.Provider value={diorama}>
+              <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
+                <Screen ui={p.ui} meta={meta} shows={shows} />
+                {shows?.current.value ? null : <FirstUpgrade />}
+                <AgeDialog />
+                <TesterDialog />
+                <div class="ab-rotate" data-testid="rotate">
+                  <div class="ab-rotate-phone" aria-hidden="true" />
+                  <span>{p.ui.t('app.rotate')}</span>
+                </div>
               </div>
-            </div>
-          </DioramaContext.Provider>
-        </ShowcaseContext.Provider>
+            </DioramaContext.Provider>
+          </ShowcaseContext.Provider>
+        </CosmeticPicturesContext.Provider>
       </CosmeticArtContext.Provider>
     </AppUiContext.Provider>
   );

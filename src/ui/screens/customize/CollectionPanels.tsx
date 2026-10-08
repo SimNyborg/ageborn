@@ -226,7 +226,7 @@ export function ItemTile(p: {
       >
         <span class="cos-card__window">
           <span class={`cos-tile__art${pop ? ' is-pop' : ''}`} key={pop}>
-            {p.art ?? <CosmeticImage item={key} animate={!reduce} />}
+            {p.art ?? <CosmeticImage item={key} animate={!reduce} {...(p.item.collection === 'nationalFlag' ? { size: 'tile' as const } : {})} />}
           </span>
           {rated ? (
             <span class="cos-card__gem" aria-hidden="true">
@@ -622,11 +622,11 @@ function AtlasCard(p: { equipped: string | null }) {
       </span>
       <span class="cos-atlas__text">
         <b>{t('cosmetic.ui.atlas')}</b>
-        <span class="cos-atlas__count ui-num" data-testid="atlas-count">
+        <span class="cos-atlas__count ui-num" data-testid="open-flag-atlas-count">
           {atlas.owned}/{atlas.total}
         </span>
         {atlas.price === 0 ? (
-          <span class="cos-atlas__first" data-testid="atlas-first">
+          <span class="cos-atlas__first" data-testid="open-flag-atlas-first">
             {t('cosmetic.ui.atlasFirst')}
           </span>
         ) : null}

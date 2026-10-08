@@ -282,7 +282,8 @@ const scene = (id: string, age: CosmeticItemDef['age'], o: Partial<CosmeticItemD
 });
 
 describe('scenes per age (save v14, PLAN 2b)', () => {
-  const T = withItems(scene('glacier_valley', 'stone'), scene('sabre_savanna', 'stone', { rarity: 'epic', source: { kind: 'crate' } }), scene('misty_moor', 'medieval'));
+  // test-only scenes (the content's own scenes ship unreleased until their art is in, PLAN 2e)
+  const T = withItems(scene('test_glacier', 'stone'), scene('test_savanna', 'stone', { rarity: 'epic', source: { kind: 'crate' } }), scene('test_moor', 'medieval'));
 
   it('a new save shows every classic scene', () => {
     expect(fresh().cosmetics.equipped.scenes).toEqual({});
@@ -290,40 +291,41 @@ describe('scenes per age (save v14, PLAN 2b)', () => {
   });
 
   it('equips an owned scene on its own age only, and clears it back to the classic', () => {
-    const s = withOwned(fresh(), 'scene.glacier_valley', 'scene.misty_moor');
-    const a = ok(equipCosmetic(s, T, { slot: 'scene', age: 'stone', key: 'scene.glacier_valley' }));
-    expect(a.cosmetics.equipped.scenes).toEqual({ stone: 'scene.glacier_valley' });
-    const b = ok(equipCosmetic(a, T, { slot: 'scene', age: 'medieval', key: 'scene.misty_moor' }));
-    expect(b.cosmetics.equipped.scenes).toEqual({ stone: 'scene.glacier_valley', medieval: 'scene.misty_moor' });
-    expect(ok(equipCosmetic(b, T, { slot: 'scene', age: 'stone', key: null })).cosmetics.equipped.scenes).toEqual({ medieval: 'scene.misty_moor' });
-    expect(equipCosmetic(s, T, { slot: 'scene', age: 'bronze', key: 'scene.glacier_valley' })).toEqual({ ok: false, reason: 'wrongAge' });
-    expect(equipCosmetic(s, T, { slot: 'scene', age: 'stone', key: 'scene.sabre_savanna' })).toEqual({ ok: false, reason: 'notOwned' });
+    const s = withOwned(fresh(), 'scene.test_glacier', 'scene.test_moor');
+    const a = ok(equipCosmetic(s, T, { slot: 'scene', age: 'stone', key: 'scene.test_glacier' }));
+    expect(a.cosmetics.equipped.scenes).toEqual({ stone: 'scene.test_glacier' });
+    const b = ok(equipCosmetic(a, T, { slot: 'scene', age: 'medieval', key: 'scene.test_moor' }));
+    expect(b.cosmetics.equipped.scenes).toEqual({ stone: 'scene.test_glacier', medieval: 'scene.test_moor' });
+    expect(ok(equipCosmetic(b, T, { slot: 'scene', age: 'stone', key: null })).cosmetics.equipped.scenes).toEqual({ medieval: 'scene.test_moor' });
+    expect(equipCosmetic(s, T, { slot: 'scene', age: 'bronze', key: 'scene.test_glacier' })).toEqual({ ok: false, reason: 'wrongAge' });
+    expect(equipCosmetic(s, T, { slot: 'scene', age: 'stone', key: 'scene.test_savanna' })).toEqual({ ok: false, reason: 'notOwned' });
   });
 
   it('rejects unknown keys and other collections', () => {
-    const s = withOwned(fresh(), 'scene.glacier_valley', 'backdrop.winterfall');
+    const s = withOwned(fresh(), 'scene.test_glacier', 'backdrop.winterfall');
     expect(equipCosmetic(s, T, { slot: 'scene', age: 'stone', key: 'scene.atlantis' })).toEqual({ ok: false, reason: 'wrongCollection' });
     expect(equipCosmetic(s, T, { slot: 'scene', age: 'stone', key: 'backdrop.winterfall' })).toEqual({ ok: false, reason: 'wrongCollection' });
-    expect(equipCosmetic(s, C, { slot: 'scene', age: 'stone', key: 'scene.glacier_valley' })).toEqual({ ok: false, reason: 'wrongCollection' });
+    expect(equipCosmetic(s, C, { slot: 'scene', age: 'stone', key: 'scene.test_glacier' })).toEqual({ ok: false, reason: 'wrongCollection' });
   });
 
   it('shows owned scenes in the match look; the sky stays one for every age; AI bots keep the classics', () => {
-    let s = withOwned(fresh(), 'scene.glacier_valley', 'backdrop.winterfall');
-    s = ok(equipCosmetic(s, T, { slot: 'scene', age: 'stone', key: 'scene.glacier_valley' }));
+    let s = withOwned(fresh(), 'scene.test_glacier', 'backdrop.winterfall');
+    s = ok(equipCosmetic(s, T, { slot: 'scene', age: 'stone', key: 'scene.test_glacier' }));
     s = ok(equipCosmetic(s, T, { slot: 'backdrop', key: 'backdrop.winterfall' }));
-    expect(sideLook(s, T)).toMatchObject({ scenes: { stone: 'scene.glacier_valley' }, backdrop: 'backdrop.winterfall' });
+    expect(sideLook(s, T)).toMatchObject({ scenes: { stone: 'scene.test_glacier' }, backdrop: 'backdrop.winterfall' });
     // a scene no longer owned, or one on the wrong age (a save edited by hand), is never shown
-    const lost = { ...s, cosmetics: { ...s.cosmetics, owned: s.cosmetics.owned.filter((k) => k !== 'scene.glacier_valley') } };
+    const lost = { ...s, cosmetics: { ...s.cosmetics, owned: s.cosmetics.owned.filter((k) => k !== 'scene.test_glacier') } };
     expect(sideLook(lost, T).scenes).toEqual({});
-    const moved = { ...s, cosmetics: { ...s.cosmetics, equipped: { ...s.cosmetics.equipped, scenes: { bronze: 'scene.glacier_valley' } } } };
+    const moved = { ...s, cosmetics: { ...s.cosmetics, equipped: { ...s.cosmetics.equipped, scenes: { bronze: 'scene.test_glacier' } } } };
     expect(sideLook(moved, T).scenes).toEqual({});
     for (const seed of ['Pip', 'The Warden', 'AI Commander 7']) expect(botLook(T, seed).scenes).toEqual({});
   });
 
   it('counts scenes in the collection progress, and rolls released scenes from the capsule pool', () => {
-    expect(collectionProgress(withOwned(fresh(), 'scene.glacier_valley'), T).scene).toEqual({ owned: 1, total: 3 });
-    expect(poolItems(T, 'capsule').map(cosmeticKey)).toEqual(expect.arrayContaining(['scene.glacier_valley', 'scene.misty_moor']));
-    expect(poolItems(T, 'crate').map(cosmeticKey)).toContain('scene.sabre_savanna');
+    const shipped = collectionProgress(fresh(), C).scene.total;
+    expect(collectionProgress(withOwned(fresh(), 'scene.test_glacier'), T).scene).toEqual({ owned: 1, total: shipped + 3 });
+    expect(poolItems(T, 'capsule').map(cosmeticKey)).toEqual(expect.arrayContaining(['scene.test_glacier', 'scene.test_moor']));
+    expect(poolItems(T, 'crate').map(cosmeticKey)).toContain('scene.test_savanna');
   });
 });
 
@@ -433,13 +435,16 @@ describe('one base skin per age across both skin systems (save v14, PLAN 2c)', (
 });
 
 describe('the Flag Atlas rewards are earned (PLAN 2d)', () => {
-  const pennant: CosmeticItemDef = { id: 'pennant_oceania', collection: 'baseFlag', rarity: 'epic', source: { kind: 'flagRegion', region: 'oceania' }, art: 'cosmetic.baseFlag.pennant_oceania', nameKey: 'cosmetic.baseFlag.pennant_oceania.name' };
-  const compass: CosmeticItemDef = { id: 'world_compass', collection: 'baseFlag', rarity: 'legendary', source: { kind: 'flagsOwned', count: 3 }, art: 'cosmetic.baseFlag.world_compass', nameKey: 'cosmetic.baseFlag.world_compass.name' };
-  const T = withItems(pennant, compass);
+  // The real rewards (Track D: a Region Pennant per region, World Compass for all 195), with World
+  // Compass's count lowered to one more than Oceania's flags (the pattern of flagAtlas.test.ts worldAt()).
+  const oceania = col.items.filter((x) => x.collection === 'nationalFlag' && x.region === 'oceania').map(cosmeticKey);
+  const lowered = (x: CosmeticItemDef): CosmeticItemDef => (x.source.kind === 'flagsOwned' ? { ...x, source: { kind: 'flagsOwned', count: oceania.length + 1 } } : x);
+  const T: Content = { ...C, cosmetics: { ...C.cosmetics, collections: { ...col, items: col.items.map(lowered) } } };
 
   it('a region reward with every flag of its region, the total reward with the count (the Other flags do not count)', () => {
-    const oceania = col.items.filter((x) => x.collection === 'nationalFlag' && x.region === 'oceania').map(cosmeticKey);
-    expect(oceania.length).toBeGreaterThan(0);
+    expect(cosmeticItem(T, 'baseFlag.pennant_oceania')?.source).toEqual({ kind: 'flagRegion', region: 'oceania' });
+    expect(cosmeticItem(T, 'baseFlag.world_compass')?.source).toEqual({ kind: 'flagsOwned', count: oceania.length + 1 });
+    expect(oceania.length).toBeGreaterThan(1);
     const partial = withOwned(fresh(), ...oceania.slice(1), 'nationalFlag.fo', 'nationalFlag.gl', 'nationalFlag.gb_eng');
     expect(syncEarnedCosmetics(partial, T).granted).not.toContain('baseFlag.pennant_oceania');
     expect(syncEarnedCosmetics(partial, T).granted).not.toContain('baseFlag.world_compass');

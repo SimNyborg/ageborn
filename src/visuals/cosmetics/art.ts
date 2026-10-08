@@ -9,7 +9,7 @@
  * | `backdrop.<id>` (`{ age, scene? }`; `layer: 'fx'` the weather) | `scenePreview.ts`, `backdropPreview.ts` | Track A |
  * | `baseSkin.<id>` (`layer: 'tint' \| 'fx' \| 'thumb'`) | `baseSkins.ts` | Track B |
  * | `decoration.<id>` (`{ hd? }`) | `decorations.ts` | Track B |
- * | `nationalFlag.<id>` (`{ size? }`) | `nationalFlags.ts` | Track D |
+ * | `nationalFlag.<id>` (`{ size?: 'tile' \| 'big', cached? }`, default big) | `nationalFlags.ts` | Track D |
  * | `baseFlag.<id>`, `emote.<id>`, `quote.<id>` | `flags.ts` (and `nationalFlags.ts REGION_PENNANTS`), `emotes.ts`, here | Track C |
  *
  * The UI may not import the visuals (B2), so the app injects {@link cosmeticImageUrl} into the screens
@@ -25,8 +25,7 @@ import { baseSkinArt, baseSkinLayerSvg, baseSkinSvg, baseSkinThumbUrl, BASE_SKIN
 import { decorationArtUrl, decorationSvg, DECO_H, DECO_W, DECORATIONS, drawDecoration, hasDecorationArt } from './decorations';
 import { EMOTES, type EmoteLayer, type EmoteMotion } from './emotes';
 import { BANNER_OUTLINE, BASE_FLAGS, baseFlagTier, FLAG_GLINT, FLAG_H, FLAG_POLE_BOX, FLAG_W, flagCloth, flagFringe, flagPole, flagTrim, type FlagTier } from './flags';
-import * as nationalFlagArt from './nationalFlags';
-import { drawNationalFlag, hasNationalFlagArt, NATIONAL_FLAGS, nationalFlagSvg, nationalFlagUrl, REGION_PENNANTS } from './nationalFlags';
+import { drawNationalFlag, hasNationalFlagArt, NATIONAL_FLAGS, nationalFlagSvg, nationalFlagSvgUrl, nationalFlagUrl, REGION_PENNANT_TIER, REGION_PENNANTS } from './nationalFlags';
 import { celRamp, circle, drawShapes, hex, INK, shapesToSvg, type Ctx2D, type Paints, type Shape } from './shapes';
 
 /** `avatar` (the General's wardrobe) is drawn by the UI's avatar renderer, so the visuals have no art for it. */
@@ -75,13 +74,10 @@ export function hasCosmeticArt(collection: string, id: string): boolean {
 export type FlagKind = 'nationalFlag' | 'baseFlag';
 
 /**
- * The finish tier of a Flag Atlas reward (Track D's `REGION_PENNANT_TIER`, when it exports one): the
- * Region Pennants are Epic-styled, World Compass Legendary (PLAN 2d).
+ * The finish tier of a Flag Atlas reward (Track D's `REGION_PENNANT_TIER`): the Region Pennants are
+ * Epic-styled, World Compass Legendary (PLAN 2d).
  */
-function pennantTier(id: string): FlagTier {
-  const tiers = (nationalFlagArt as { REGION_PENNANT_TIER?: Readonly<Record<string, FlagTier>> }).REGION_PENNANT_TIER;
-  return tiers?.[id] ?? 'epic';
-}
+const pennantTier = (id: string): FlagTier => REGION_PENNANT_TIER[id] ?? 'epic';
 
 /**
  * A base flag's design: `flags.ts` (cloth and emblem), or one of the Flag Atlas's rewards
@@ -241,7 +237,10 @@ export interface CosmeticSvgOptions {
   age?: AgeId;
   /** Backdrops and scenes: the small still for a collection tile. */
   thumb?: boolean;
-  /** Backdrops and scenes: only a still already painted, else null (the screens paint tiles one per frame). */
+  /**
+   * Backdrops and scenes: only a still already painted, else null (the screens paint tiles one per
+   * frame). National flags: a `tile` waits for the atlas cell (null while the atlas loads).
+   */
   cached?: boolean;
   /** Scenes: the sky (`backdrop.<id>`) that grades the still; null or absent is the scene's own daylight. */
   sky?: string | null;
@@ -249,7 +248,7 @@ export interface CosmeticSvgOptions {
   scene?: string | null;
   /** Decorations: the HD picture (Customize's big stage). */
   hd?: boolean;
-  /** National flags: a grid tile picture or the big detail view's picture. */
+  /** National flags: a grid tile picture (an atlas cell) or the big picture (the SVG, the default). */
   size?: 'tile' | 'big';
   /** Base flags: drawn on their pole with the rarity's finial (collection tiles). */
   pole?: boolean;
@@ -314,11 +313,15 @@ export function cosmeticImageUrl(key: string, o: CosmeticSvgOptions = {}): strin
   }
   // A base skin model's thumbnail (Track B; null until it has one)
   if (o.layer === 'thumb') return key.startsWith('baseSkin.') ? baseSkinThumbUrl(key.slice('baseSkin.'.length)) : null;
-  // The vendored national flags (Track D) and the Blender props (Track B) when they are in
-  if (key.startsWith('nationalFlag.') && o.size) {
-    const url = nationalFlagUrl(key.slice('nationalFlag.'.length), o.size);
-    if (url) return url;
+  // The vendored national flags (Track D): every picture, with or without a size. 'big' (the SVG) by
+  // default, one request per flag shown; a grid of many asks for 'tile' (one atlas for all of them),
+  // and `cached` waits for the atlas (null meanwhile). The hand-drawn design (`nationalFlagSvg`) is only
+  // the fallback for an id without a vendored picture.
+  if (key.startsWith('nationalFlag.')) {
+    const id = key.slice('nationalFlag.'.length);
+    if (nationalFlagSvgUrl(id)) return nationalFlagUrl(id, o.size ?? 'big', { cached: !!o.cached });
   }
+  // The Blender props (Track B) when they are in
   if (key.startsWith('decoration.')) {
     const url = decorationArtUrl(key.slice('decoration.'.length), o.hd ? { hd: true } : {});
     if (url) return url;
@@ -335,3 +338,10 @@ export function cosmeticImageUrl(key: string, o: CosmeticSvgOptions = {}): strin
 }
 
 export { baseSkinArt, drawDecoration, DECORATIONS, DECO_W, DECO_H, EMOTES, NATIONAL_FLAGS, BASE_FLAGS, BASE_SKINS, FLAG_W, FLAG_H };
+
+/**
+ * Calls `cb` whenever a picture asked for with `cached: true` got better (Track A re-composes a scene or
+ * sky still once its Blender strips have streamed in); returns the unsubscribe. The app hands it to the
+ * screens through `CosmeticPicturesContext`, so a still shown before its strips arrived updates itself.
+ */
+export { onBackdropPicturesChanged as onCosmeticPicturesChanged } from './backdropPreview';

@@ -177,6 +177,23 @@ describe('scene sprites (render clock, seeded, limits)', () => {
     expect(s.map((x) => x.kind)).toEqual(['loop', 'bob', 'emit']);
   });
 
+  it('reads the short path form of the PLAN 2b example (`from`, `to`, `count`, `spacing`)', () => {
+    const herd = readSprites(
+      [{ kind: 'path', frames: ['a', 'b'], fps: 4, layer: 'far', from: [-200, -180], to: [1400, -180], periodS: 90, count: 3, spacing: 70 }],
+      FRAMES,
+    )[0] as PathSprite;
+    expect(herd.keys).toEqual([
+      [0, -200, -180, 1],
+      [90, 1400, -180, 1],
+    ]);
+    expect(herd.group.map((m) => [m.dx, m.phase])).toEqual([
+      [0, 0],
+      [-70, 1],
+      [-140, 2],
+    ]);
+    expect(spriteInstances(herd, 45000, 0).map((i) => i.x)).toEqual([600, 530, 460]);
+  });
+
   it('moves by render time only: the same moment gives the same pose at any frame rate', () => {
     const phase = spritePhaseMs(1234, 0, 20000);
     const at = (steps: number, dt: number) => {

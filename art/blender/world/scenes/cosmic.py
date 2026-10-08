@@ -11,7 +11,9 @@ lifts off, the rover crawls, the dish turns.
 
 Palette (A17.12): void #1E1830, nebula violet #8E44C8, star white #F2F0FF, mint #3FE0B0 accents. Saturated
 colours stay outside the team-hue bands (violets at hue 258-300, mint at 162; A11 colour rule).
-Hints: `weather: 'space'` (a sky theme's snow, rain and petals become ice motes, meteors and sparkles).
+Hints: `weather: 'space'` (a sky theme's snow, rain and petals become ice motes, meteors and sparkles) and
+`celestial: 'own'` (the planet is this sky's object: a sky theme brings its colours and stars, no sun or
+moon). Less haze than the A11 default (`look`): there is no air on the moon; the colour rule still holds.
 """
 import math
 import random

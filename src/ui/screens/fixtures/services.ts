@@ -373,7 +373,13 @@ export function createPreviewServices(o: {
         return { region, owned: list.filter((x) => owned.has(itemKey(x))).length, total: list.length, reward: rewardKey, rewardOwned: rewardKey !== null && owned.has(rewardKey) };
       });
       const atlas = flags.filter((x) => x.region !== 'other');
-      return { owned: atlas.filter((x) => owned.has(itemKey(x))).length, total: atlas.length, regions, price: nationalFlagPrice(s, content), equipped: equippedOf(s, content).nationalFlag };
+      // the reward for all 195 (World Compass and the World Ambassador title), as meta's flagAtlasProgress builds it
+      const compass = itemsOf(content, 'baseFlag').find((x) => x.source.kind === 'flagsOwned');
+      const compassKey = compass ? itemKey(compass) : null;
+      const title = content.cosmetics.titles.find((x) => x.unlock.kind === 'flagsOwned');
+      const count = compass?.source.kind === 'flagsOwned' ? compass.source.count : title?.unlock.kind === 'flagsOwned' ? title.unlock.count : atlas.length;
+      const world = { count, reward: compassKey, rewardOwned: compassKey !== null && owned.has(compassKey), title: title?.id ?? null, titleOwned: title ? owned.has(title.id) : false };
+      return { owned: atlas.filter((x) => owned.has(itemKey(x))).length, total: atlas.length, regions, price: nationalFlagPrice(s, content), equipped: equippedOf(s, content).nationalFlag, world };
     },
     searchFlags(query) {
       // Preview only: a plain prefix match on the name or the code (meta.searchFlags has the full rules).

@@ -22,7 +22,7 @@ import { usePortrait } from './kit';
  * | `backdrop.<id>` (`backdrop.classic` = none) | `{ age, scene? }` | the sky over the scene (the classic without one) |
  * | `baseSkin.<id>` | `{ layer: 'thumb' }` | the model's pre-rendered thumbnail (null until it has one) |
  * | `decoration.<id>` | `{ hd? }` | the prop |
- * | `nationalFlag.<id>` | `{ size: 'tile' \| 'big' }` | a tile picture or the big flag |
+ * | `nationalFlag.<id>` | `{ size?: 'tile' \| 'big', cached? }` | a grid's atlas cell, or the big flag (the default) |
  * | `baseFlag.*`, `emote.*`, `quote.*` | `{ team?, animate? }` | the code-drawn art |
  */
 export interface CosmeticImageOptions {
@@ -39,7 +39,7 @@ export interface CosmeticImageOptions {
   age?: AgeId;
   /** Backdrops and scenes: the small still for a collection tile. */
   thumb?: boolean;
-  /** Backdrops and scenes: only a still already painted, else null (never paints). */
+  /** Backdrops and scenes: only a still already painted, else null (never paints). National flags: the atlas cell or null while it loads. */
   cached?: boolean;
   /** Scenes: the sky (`backdrop.<id>`) to grade the still with; null or absent is the scene's own daylight. */
   sky?: string | null;
@@ -47,7 +47,7 @@ export interface CosmeticImageOptions {
   scene?: string | null;
   /** Decorations: the HD picture (Customize's big stage). */
   hd?: boolean;
-  /** National flags: a grid tile or the big detail view. */
+  /** National flags: a grid tile (one atlas for all) or the big picture (the default). */
   size?: 'tile' | 'big';
   /** Base flags: drawn on their pole with the rarity's finial (collection tiles, PLAN 2a). */
   pole?: boolean;
@@ -56,6 +56,14 @@ export interface CosmeticImageOptions {
 export type CosmeticImageFn = (key: string, o?: CosmeticImageOptions) => string | null;
 
 export const CosmeticArtContext = createContext<CosmeticImageFn | null>(null);
+
+/**
+ * Subscribes to "a cached picture got better" (the visuals' `onCosmeticPicturesChanged`: a scene or sky
+ * still re-composed once its strips streamed in) and returns the unsubscribe. Without a provider the
+ * stills simply keep their first answer.
+ */
+export type CosmeticPicturesChanged = (cb: () => void) => () => void;
+export const CosmeticPicturesContext = createContext<CosmeticPicturesChanged | null>(null);
 
 export function useCosmeticImage(): CosmeticImageFn | null {
   return useContext(CosmeticArtContext);
@@ -80,11 +88,14 @@ const ITEM_LOOK: ResolvedLook = {
   tints: { skin: 1, hair: 2, eyes: 0, cloth: 6 },
 };
 
-/** An item's picture, or a soft placeholder when no art provider is present. `pole`: a base flag on its pole. */
-export function CosmeticImage(p: { item: string; class?: string; team?: number; animate?: boolean; testid?: string; pole?: boolean }) {
+/**
+ * An item's picture, or a soft placeholder when no art provider is present. `pole`: a base flag on its
+ * pole. `size`: a national flag's grid tile (`'tile'`, an atlas cell) or its big picture (the default).
+ */
+export function CosmeticImage(p: { item: string; class?: string; team?: number; animate?: boolean; testid?: string; pole?: boolean; size?: 'tile' | 'big' }) {
   const fn = useCosmeticImage();
   if (p.item.startsWith('avatar.')) return <AvatarItemArt item={p.item} {...(p.class ? { class: p.class } : {})} {...(p.testid ? { testid: p.testid } : {})} />;
-  const url = fn ? fn(p.item, { ...(p.team !== undefined ? { team: p.team } : {}), ...(p.animate !== undefined ? { animate: p.animate } : {}), ...(p.pole ? { pole: true } : {}) }) : null;
+  const url = fn ? fn(p.item, { ...(p.team !== undefined ? { team: p.team } : {}), ...(p.animate !== undefined ? { animate: p.animate } : {}), ...(p.pole ? { pole: true } : {}), ...(p.size ? { size: p.size } : {}) }) : null;
   if (!url) return <span class={`cos-img cos-img--empty ${p.class ?? ''}`} aria-hidden="true" data-testid={p.testid} />;
   return <img class={`cos-img ${p.class ?? ''}`} src={url} alt="" aria-hidden="true" draggable={false} data-testid={p.testid} />;
 }
@@ -144,6 +155,16 @@ function queueStill(run: () => void, urgent: boolean): StillJob {
  * shimmer; the big preview (`keepLast`) keeps the still it showed before.
  */
 function useBackdropStill(fn: CosmeticImageFn | null, key: string, age: AgeId, thumb: boolean, keepLast: boolean): string | null {
+  // a re-composed still (its strips arrived) re-renders the mounted stills, which then read the final one
+  const onChange = useContext(CosmeticPicturesContext);
+  const [, bump] = useState(0);
+  useEffect(() => {
+    if (!onChange) return undefined;
+    const off = onChange(() => bump((n) => n + 1));
+    return () => {
+      off();
+    };
+  }, [onChange]);
   const id = `${key}|${age}|${thumb ? 't' : 'p'}`;
   const opts: CosmeticImageOptions = thumb ? { age, thumb: true } : { age };
   const ready = fn ? fn(key, { ...opts, cached: true }) : null;

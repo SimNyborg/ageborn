@@ -2,6 +2,8 @@
 
 **From:** Track A (backdrops), round 1, 2026-10-08. **To:** Track C (owner of `src/visuals/cosmetics/art.ts`, `src/ui/components/cosmeticArt.tsx`, `src/meta/test/cosmetics.test.ts`) and the orchestrator (owner of `src/dev/sandbox/viewBattle.tsx`).
 
+**Status (end of round 1):** 1 and 2 are in the tree from Track C (`CosmeticPicturesContext` in `cosmeticArt.tsx` and `AppRoot.tsx`, the re-export in `art.ts`, the meta test on `scene.atlantis`); the dev screens page (`src/dev/screens/page.tsx`) does not provide the context yet, so its Customize preview still shows the stand-in on a first visit. 3 and 4 are open.
+
 What landed on Track A's side this round (PLAN 2b):
 
 - Layer format v2 (`src/visuals/backdrops/scenes.ts`, `sceneSprites.ts`) with format 1 still read. Blender classics in format 2 for Bronze ("Hill Temples"), Industrial ("Iron Valley") and Cosmic ("Crystal Moon Base") under `public/art/backdrops/<age>/classic/`; the other five ages keep their format 1 classic until round 3.

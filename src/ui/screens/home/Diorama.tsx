@@ -1,7 +1,8 @@
 /**
  * The arena diorama at the centre of the Battle hub (owner decision 2026-09-30; ui-plan 2.3): the
  * player's arena as a floating island in the A11 cartoon look, with the lane across it, your base on
- * the left (team colour) and the AI's base on the right, each with its banner, and the arena's own
+ * the left (team colour; with the lane's flag pole carrying your base flag and national flag, `FlagPole`)
+ * and the AI's base on the right, each with its banner, and the arena's own
  * landmark behind them (a smoking volcano, an ice peak, a moated keep, a harbour with a tall ship, a
  * factory, a neon skyline, a ringed planet, a time rift).
  *
@@ -20,6 +21,7 @@ import type { ArenaId } from '@/content/types';
 import { fnv1a32, mulberry32 } from '@/core';
 import type { ComponentChildren } from 'preact';
 import { useMemo } from 'preact/hooks';
+import { useCosmeticImage } from '../../components/cosmeticArt';
 import { usePortrait } from '../../components/kit';
 import { ink, light, shade } from '../../components/tone';
 import { Keep, Volcano } from './landmarks';
@@ -313,6 +315,80 @@ function Props(p: { pal: IslandPalette; seed: number; arena: ArenaId }) {
   );
 }
 
+/**
+ * Your base's flag pole as the lane flies it beside the gate (A18.9.4; PLAN 2d "Where the chosen flag
+ * shows"; `visuals/cosmetics/dressing.ts` `buildPole`): the equipped base flag on top in your team colour,
+ * the national flag under it (its 4:3 picture with the lane cloth's finish: fold bands, a sheen, a darker
+ * hem and an outline in the flag's own dark), each waving from the hoist. A flag without a picture (no art
+ * provider) shows the neutral parchment cloth the lane shows while a flag loads.
+ */
+function FlagPole(p: { id: string; x: number; y: number; team: string; baseFlag: string | null; nationalFlag: string | null }) {
+  const fn = useCosmeticImage();
+  const team = Number.parseInt(p.team.replace('#', ''), 16);
+  const base = p.baseFlag && fn ? fn(p.baseFlag, { team: Number.isFinite(team) ? team : 0x2f7df6, animate: false }) : null;
+  const nation = p.nationalFlag && fn ? fn(p.nationalFlag) : null;
+  // sizes in island units: a little larger than the lane's proportions so a flag reads on a phone, and
+  // the pole tall enough that both flags fly above the frontline troops standing in front of it
+  const top = 104;
+  const bw = 27;
+  const bh = (bw * 44) / 64;
+  const nh = 15.6;
+  const nw = (nh * 4) / 3;
+  let y = -top + 3;
+  const flags: ComponentChildren[] = [];
+  if (p.baseFlag) {
+    // the base flag's picture has a 2-unit margin round its 60 x 40 cloth: the hoist edge sits on the pole
+    const m = (bw * 2) / 64;
+    flags.push(
+      <g key="base" class="hd-banner" data-flag={p.baseFlag}>
+        {base ? (
+          <image href={base} x={(1.4 - m).toFixed(2)} y={(y - m).toFixed(2)} width={bw.toFixed(2)} height={bh.toFixed(2)} preserveAspectRatio="none" />
+        ) : (
+          <rect x="1.4" y={y.toFixed(2)} width={(bw - 2 * m).toFixed(2)} height={(bh - 2 * m).toFixed(2)} rx="1.2" fill="#e8dfc8" stroke="rgba(0,0,0,.45)" stroke-width="1" />
+        )}
+      </g>,
+    );
+    y += bh - 2 * m + 2.6;
+  }
+  if (p.nationalFlag) {
+    const clip = `${p.id}-nation`;
+    const x0 = 1.4;
+    flags.push(
+      <g key="nation" class="hd-banner" style={{ animationDelay: '-0.45s' }} data-flag={p.nationalFlag}>
+        <clipPath id={clip}>
+          <rect x={x0} y={y.toFixed(2)} width={nw.toFixed(2)} height={nh.toFixed(2)} rx="1" />
+        </clipPath>
+        <g clip-path={`url(#${clip})`}>
+          {nation ? (
+            <image href={nation} x={x0} y={y.toFixed(2)} width={nw.toFixed(2)} height={nh.toFixed(2)} preserveAspectRatio="none" />
+          ) : (
+            <rect x={x0} y={y.toFixed(2)} width={nw.toFixed(2)} height={nh.toFixed(2)} fill="#e8dfc8" />
+          )}
+          {/* the lane cloth's finish (nationalFlags.ts clothFinish) */}
+          <rect x={(x0 + nw * 0.29).toFixed(2)} y={y.toFixed(2)} width={(nw * 0.1).toFixed(2)} height={nh.toFixed(2)} fill="#000" opacity=".09" />
+          <rect x={(x0 + nw * 0.47).toFixed(2)} y={y.toFixed(2)} width={(nw * 0.06).toFixed(2)} height={nh.toFixed(2)} fill="#fff" opacity=".09" />
+          <rect x={(x0 + nw * 0.66).toFixed(2)} y={y.toFixed(2)} width={(nw * 0.13).toFixed(2)} height={nh.toFixed(2)} fill="#000" opacity=".11" />
+          <path d={`M${x0} ${y.toFixed(2)} h${(nw * 0.42).toFixed(2)} L${x0} ${(y + nh * 0.58).toFixed(2)}Z`} fill="#fff" opacity=".14" />
+          <rect x={x0} y={y.toFixed(2)} width=".5" height={nh.toFixed(2)} fill="#000" opacity=".16" />
+          <rect x={x0} y={(y + nh - 1).toFixed(2)} width={nw.toFixed(2)} height="1" fill="#000" opacity=".08" />
+        </g>
+        <rect x={x0 + 0.5} y={(y + 0.5).toFixed(2)} width={(nw - 1).toFixed(2)} height={(nh - 1).toFixed(2)} rx=".7" fill="none" stroke="#000" stroke-opacity=".62" stroke-width="1" />
+      </g>,
+    );
+  }
+  return (
+    <g transform={`translate(${p.x} ${p.y})`} data-testid="hub-flagpole">
+      <ellipse cx="0" cy="0" rx="7" ry="2" fill="#000" opacity=".3" />
+      <path d={`M0 0 V-${top}`} stroke={ink('#6b4a2e')} stroke-width="4.6" stroke-linecap="round" />
+      <path d={`M0 0 V-${top}`} stroke="#8e6440" stroke-width="2.4" stroke-linecap="round" />
+      <path d={`M-.5 -3 V-${top - 3}`} stroke="#fff" stroke-width=".7" stroke-linecap="round" opacity=".35" />
+      <circle cx="0" cy={-top - 1} r="3.2" fill="#e8b23a" stroke={ink('#e8b23a')} stroke-width="1.2" />
+      <circle cx="-1" cy={-top - 2} r="1" fill="#fff" opacity=".7" />
+      {flags}
+    </g>
+  );
+}
+
 /** A banner on a pole, waving (team colour), with a shaded fold and its own dark edge. */
 function Banner(p: { x: number; y: number; color: string; flip?: boolean }) {
   return (
@@ -393,6 +469,8 @@ export function Diorama(p: {
   foe?: readonly CardId[];
   foeLook?: FoeLook;
   launching?: boolean;
+  /** Your equipped flags (owned keys or null): with either, your base flies the lane's flag pole instead of the plain banner. */
+  myFlags?: { baseFlag: string | null; nationalFlag: string | null };
 }) {
   const look = p.foeLook ?? 'ai';
   const hidden = look === 'unknown' || look === 'searching';
@@ -514,7 +592,11 @@ export function Diorama(p: {
             <path d="M96 214 Q300 206 504 214" stroke={pal.laneLit} stroke-width="4" stroke-dasharray="14 12" stroke-linecap="round" fill="none" opacity=".6" />
             <EdgeStones pal={pal} seed={seed} />
             <Props pal={pal} seed={seed} arena={p.arena} />
-            <Banner x={176} y={214} color={p.teamMe} />
+            {p.myFlags && (p.myFlags.baseFlag || p.myFlags.nationalFlag) ? (
+              <FlagPole id={id} x={170} y={214} team={p.teamMe} baseFlag={p.myFlags.baseFlag} nationalFlag={p.myFlags.nationalFlag} />
+            ) : (
+              <Banner x={176} y={214} color={p.teamMe} />
+            )}
             <Banner x={424} y={214} color={hidden ? '#7a8294' : p.teamFoe} flip />
             {/* the clash point at the lane's middle */}
             <g class="hd-clash" transform="translate(300 206)">
