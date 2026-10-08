@@ -616,6 +616,8 @@ interface LightNode {
 
 interface Mote {
   s: Sprite;
+  /** `layer|part`: a mote that runs out waits under this key for the next puff of its kind. */
+  key: string;
   vx: number;
   vy: number;
   life: number;
@@ -929,6 +931,13 @@ export class ProceduralBackdropView implements BackdropView {
   private propNodes: PropNode[] = [];
   private lightNodes: LightNode[] = [];
   private motes: Mote[] = [];
+  /**
+   * Motes that ran out, kept in their layer at alpha 0 for the next puff of the same part (review 1,
+   * frame time). Adding or removing a child makes the backdrop's render group rebuild its instruction
+   * set, and chimneys, embers and snow did that on about two frames in three; reused, the backdrop's
+   * structure stays the same from frame to frame. At most the peak count of live motes per kind.
+   */
+  private spareMotes = new Map<string, Sprite[]>();
   private destroyed = false;
   /** Render time since the view was made (ms): drives the scene sprites and the arrival fades. */
   private clock = 0;
@@ -1445,7 +1454,11 @@ export class ProceduralBackdropView implements BackdropView {
       if (!m) continue;
       m.age += dtMs;
       if (m.age >= m.life) {
-        m.s.destroy();
+        // kept for the next puff (see `spareMotes`), invisible meanwhile
+        m.s.alpha = 0;
+        const spare = this.spareMotes.get(m.key);
+        if (spare) spare.push(m.s);
+        else this.spareMotes.set(m.key, [m.s]);
         this.motes.splice(i, 1);
         continue;
       }
@@ -1499,17 +1512,30 @@ export class ProceduralBackdropView implements BackdropView {
   }
 
   private emit(s: AmbientSpec, weight: number): void {
-    const sp = fxSprite(this.o.baker, s.part);
+    const key = `${s.layer}|${s.part}`;
+    // a spare of the same kind is already in its layer (`spareMotes`); only a new one joins it
+    let sp = this.spareMotes.get(key)?.pop();
+    if (!sp) {
+      sp = fxSprite(this.o.baker, s.part);
+      this.ambientLayers[s.layer].addChild(sp);
+    }
     const x = s.x + (s.spreadX ? (this.rng.next() * 2 - 1) * s.spreadX : (this.rng.next() - 0.5) * 8);
     sp.position.set(x, s.y);
     sp.scale.set(s.scale ?? 1);
     sp.tint = s.tint ?? 0xffffff;
+    sp.alpha = 0;
     const speed = (s.speed ?? 15) * (this.reduceMotion ? 0.6 : 1);
     const vx = s.fall ? (this.rng.next() - 0.3) * speed * 0.3 : (this.rng.next() - 0.5) * speed * 0.4 + 4;
     const vy = s.fall ? speed * (0.8 + this.rng.next() * 0.4) : -speed * (0.7 + this.rng.next() * 0.6);
-    if (s.part === 'fx.p.beam') sp.rotation = Math.PI / 2 + 0.15;
-    this.ambientLayers[s.layer].addChild(sp);
-    this.motes.push({ s: sp, vx, vy, life: s.life ?? 2600, age: 0, a0: (s.alpha ?? 1) * (weight || 1) });
+    sp.rotation = s.part === 'fx.p.beam' ? Math.PI / 2 + 0.15 : 0;
+    this.motes.push({ s: sp, key, vx, vy, life: s.life ?? 2600, age: 0, a0: (s.alpha ?? 1) * (weight || 1) });
+  }
+
+  /** Live and spare motes (tests): the spares stay in their layers, so the backdrop's structure holds. */
+  get moteCount(): { live: number; spare: number } {
+    let spare = 0;
+    for (const list of this.spareMotes.values()) spare += list.length;
+    return { live: this.motes.length, spare };
   }
 
   destroy(): void {
@@ -1517,6 +1543,8 @@ export class ProceduralBackdropView implements BackdropView {
     this.destroyed = true;
     for (const m of this.motes) m.s.destroy();
     this.motes = [];
+    for (const list of this.spareMotes.values()) for (const s of list) s.destroy();
+    this.spareMotes.clear();
     this.weather.destroy();
     for (const l of this.layers) l.destroy();
     this.groundSkin.destroy();

@@ -4,11 +4,13 @@
  * no saturated team hues), each half carries its own skin through the seam and an evolve wipe, the
  * provider resolves skins through the manifest, and the weather respects Reduce motion.
  */
+import { Texture } from 'pixi.js';
 import { describe, expect, it } from 'vitest';
 import { content } from '@/content';
 import { AGES } from '../ages';
 import { ageRegions, composePieces, themedSkyLift } from '../adapters/procedural/backdropView';
 import { BackdropWeatherLayer } from '../adapters/procedural/backdropWeather';
+import type { PartBaker } from '../bake';
 import { BACKDROP_THEMES, backdropTheme } from '../backdrops/themes';
 import { backdropIconSvg, backdropWeatherSvg } from '../cosmetics/backdropPreview';
 import { hasCosmeticArt } from '../cosmetics/art';
@@ -116,12 +118,33 @@ describe('backdrop skins in the lane', () => {
       let most = 0;
       for (let i = 0; i < 400; i++) {
         w.update(50, { left: 0, width: 1400, above: 500, seam: 1000 });
-        most = Math.max(most, w.root.children.length - w.count);
+        most = Math.max(most, w.flashCount);
       }
       w.destroy();
       return most;
     };
     expect(run(false)).toBeGreaterThan(0);
     expect(run(true)).toBe(0);
+  });
+
+  it('a drop that runs out waits in the layer for the next one, so the backdrop keeps its structure (review 1)', () => {
+    // adding or removing a child makes the backdrop's render group rebuild its instruction set
+    // (a baker that always has a picture: without a canvas the real one bakes none, and no drop spawns)
+    const baker = { get: () => ({ main: Texture.WHITE, origin: { x: -8, y: -8 } }), flush: () => undefined } as unknown as PartBaker;
+    const w = new BackdropWeatherLayer(baker, 'high', { next: () => 0.5 });
+    w.setTheme(0, BACKDROP_THEMES['winterfall']!);
+    const view = { left: 0, width: 1400, above: 500, seam: 1000 };
+    // 20 s: the first flakes have run their life and come back as new ones
+    for (let i = 0; i < 400; i++) w.update(50, view);
+    expect(w.count).toBeGreaterThan(0);
+    expect(w.spareCount).toBeGreaterThan(0);
+    let changed = 0;
+    w.root.on('childAdded', () => changed++);
+    w.root.on('childRemoved', () => changed++);
+    for (let i = 0; i < 200; i++) w.update(50, view);
+    expect(changed).toBe(0);
+    expect(w.root.children.length).toBe(w.count + w.spareCount);
+    expect(w.root.children.length).toBeLessThanOrEqual(90);
+    w.destroy();
   });
 });

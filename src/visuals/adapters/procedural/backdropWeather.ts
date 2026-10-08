@@ -19,6 +19,8 @@ import type { PartBaker } from '../../bake';
 
 interface Drop {
   s: Sprite;
+  /** The sprite's part (`PART`): a drop that runs out waits under it for the next one. */
+  part: string;
   side: Side;
   vx: number;
   vy: number;
@@ -68,6 +70,12 @@ export class BackdropWeatherLayer {
   readonly root = new Container();
   private readonly themes: [BackdropTheme | null, BackdropTheme | null] = [null, null];
   private drops: Drop[] = [];
+  /**
+   * Drops that ran out, kept in the layer at alpha 0 for the next one of the same part: adding or
+   * removing a child makes the backdrop's render group rebuild its instruction set, which a snowfall
+   * would otherwise do every frame (review 1, frame time). At most the particle cap.
+   */
+  private spare = new Map<string, Sprite[]>();
   private flashes: Flash[] = [];
   /** Lightning strikes since the last `drainStrikes` (the battle view plays their thunder). */
   private strikes: { side: Side; x: number }[] = [];
@@ -104,6 +112,18 @@ export class BackdropWeatherLayer {
   /** Live particle count (tests and the gallery). */
   get count(): number {
     return this.drops.length;
+  }
+
+  /** Lightning flashes on screen (tests). */
+  get flashCount(): number {
+    return this.flashes.length;
+  }
+
+  /** Spare particles waiting in the layer (tests). */
+  get spareCount(): number {
+    let n = 0;
+    for (const list of this.spare.values()) n += list.length;
+    return n;
   }
 
   private weight(side: Side, x: number, seam: number): number {
@@ -148,7 +168,11 @@ export class BackdropWeatherLayer {
       const u = d.t / d.life;
       const gone = u >= 1 || d.s.y > FLOOR_Y + 4 || d.s.y < top - 40 || d.s.x < v.left - 120 || d.s.x > v.left + v.width + 120;
       if (gone || !this.themes[d.side]) {
-        d.s.destroy();
+        // kept for the next drop of its part (see `spare`), invisible meanwhile
+        d.s.alpha = 0;
+        const list = this.spare.get(d.part);
+        if (list) list.push(d.s);
+        else this.spare.set(d.part, [d.s]);
         this.drops.splice(i, 1);
         continue;
       }
@@ -202,12 +226,19 @@ export class BackdropWeatherLayer {
   private spawn(side: Side, th: BackdropTheme, x0: number, x1: number, v: WeatherView, prime: boolean): void {
     if (th.weather === 'none') return;
     const r = () => this.rng.next();
-    const s = fxSprite(this.baker, PART[th.weather]);
-    if (s.texture === Texture.EMPTY) return;
+    const part = PART[th.weather];
+    // a spare of the same part is already in the layer (`spare`); only a new one joins it
+    const reused = this.spare.get(part)?.pop();
+    const s = reused ?? fxSprite(this.baker, part);
+    if (s.texture === Texture.EMPTY) {
+      s.destroy();
+      return;
+    }
+    s.rotation = 0;
     const top = -v.above;
     const x = x0 + r() * (x1 - x0);
     const life = this.lifeOf(th) * (0.8 + r() * 0.4);
-    const d: Drop = { s, side, vx: 0, vy: 0, spin: 0, sway: 0, swayHz: 0.2 + r() * 0.3, t: prime ? r() * life * 0.7 : 0, life, a0: 1, x0: r() * 10, kind: th.weather };
+    const d: Drop = { s, part, side, vx: 0, vy: 0, spin: 0, sway: 0, swayHz: 0.2 + r() * 0.3, t: prime ? r() * life * 0.7 : 0, life, a0: 1, x0: r() * 10, kind: th.weather };
     // falling weather starts above the view, or anywhere in it when the half is being primed
     const falling = (): number => (prime ? top + r() * (FLOOR_Y - top) : top - 20 - r() * 40);
     let y = 0;
@@ -281,7 +312,7 @@ export class BackdropWeatherLayer {
     s.tint = th.weatherColor;
     s.position.set(x, y);
     s.alpha = 0;
-    this.root.addChild(s);
+    if (!reused) this.root.addChild(s);
     this.drops.push(d);
   }
 
@@ -319,6 +350,8 @@ export class BackdropWeatherLayer {
   destroy(): void {
     for (const d of this.drops) d.s.destroy();
     this.drops = [];
+    for (const list of this.spare.values()) for (const s of list) s.destroy();
+    this.spare.clear();
     for (const f of this.flashes) this.endFlash(f);
     this.flashes = [];
   }

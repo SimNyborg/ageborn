@@ -440,6 +440,28 @@ describe('scenes in the lane: seam, wipe, arrival fade, lights, release', () => 
     v.destroy();
   });
 
+  it('a mote that runs out waits in its layer for the next puff, so the render group keeps its structure (review 1)', () => {
+    const { t } = fakeTextures();
+    // a smoking ground (as the arenas' embers and snow): 8 puffs a second, each 1 s long
+    const smoke = { tex: Texture.EMPTY, ambient: [{ kind: 'emit', part: 'fx.p.smoke', x: 600, y: -100, layer: 'ground', rate: 8, speed: 12, life: 1000 }] };
+    (t as unknown as { ground: () => unknown }).ground = () => smoke;
+    const v = view(null, t);
+    expect(v.root.isRenderGroup).toBe(true);
+    for (let i = 0; i < 60; i++) v.update(50);
+    const warm = v.moteCount;
+    expect(warm.live).toBeGreaterThan(0);
+    // (the puffs that ran out came back as new ones: far fewer sprites than puffs so far)
+    expect(warm.live + warm.spare).toBeLessThan(24);
+    // steady puffing reuses the spares: no child joins or leaves, so the group's instructions hold
+    const rg = v.root.renderGroup!;
+    rg.structureDidChange = false;
+    for (let i = 0; i < 60; i++) v.update(50);
+    expect(rg.structureDidChange).toBe(false);
+    const later = v.moteCount;
+    expect(later.live + later.spare).toBe(warm.live + warm.spare);
+    v.destroy();
+  });
+
   it('releases the GPU textures of the age a side left once its wipe ends', () => {
     const { t, released } = fakeTextures();
     const v = view(null, t);
