@@ -218,7 +218,8 @@ function Scouted(p: { c: HudCtx }) {
       <FoeFortRing c={c} />
       {open ? (
         <div class="hud-dropdown" data-testid="hud-scouted-list">
-          <div class="hud-dropdown-title">{c.t('hud.scoutedTitle')}</div>
+          {/* "Cards the AI has played"; "Cards they have played" for the online player of Home's Battle. */}
+          <div class="hud-dropdown-title">{c.t(c.config.sides[c.side === 0 ? 1 : 0].online ? 'hud.scoutedTitleOnline' : 'hud.scoutedTitle')}</div>
           {list.length === 0 ? <div class="hud-dropdown-empty">{c.t('hud.scoutedNone')}</div> : <ul>{list.map((card) => <ScoutedItem key={card} c={c} card={card} />)}</ul>}
           {research.length > 0 ? (
             <>
@@ -532,7 +533,9 @@ export function TopBar(p: {
   const meEl = useRef<HTMLDivElement>(null);
   const foeEl = useRef<HTMLDivElement>(null);
   // The foe's name fits its box on phones (condensed, never cut; bug hunt 2026-10-01 #14).
-  const foeIsBot = c.config.sides[c.side === 0 ? 1 : 0].isBot;
+  // A bot shown as the online player of Home's Battle (owner decision 2026-10-07) carries no AI chip.
+  const foeConfig = c.config.sides[c.side === 0 ? 1 : 0];
+  const foeIsBot = foeConfig.isBot && !foeConfig.online;
   const foeNameBox = useRef<HTMLSpanElement>(null);
   const foeNameEl = useRef<HTMLSpanElement>(null);
   // When even the condensed name does not fit (a long procedural name beside the AI chip and the
@@ -598,8 +601,9 @@ export function TopBar(p: {
         {crumbling?.foe ? <Crumbling t={t} /> : null}
         <div class="hud-bars">
           <div class="hud-name hud-name-foe">
-            {/* The foe is always an AI in a live battle (A7.1); in a replay shown from the AI's side
-                the "foe" is the human player, who gets no chip. */}
+            {/* The foe is an AI in a live battle (A7.1), labelled so unless it is shown as the online
+                player of Home's Battle; in a replay shown from the AI's side the "foe" is the human
+                player, who gets no chip. */}
             {foeIsBot ? (
               <span class="hud-ai-chip" data-testid="hud-ai-chip" data-tag>
                 <RobotIcon size={13} />

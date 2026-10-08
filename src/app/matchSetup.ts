@@ -8,7 +8,9 @@
  * match 1, manual Last Stand from match 2 since the owner feedback of 2026-09-28, A2.11) come from
  * `tutorial/scripts.ts`.
  *
- * Every opponent is an AI and is labeled so (A7.1): `OpponentSpec.isAI` is always true.
+ * Every opponent is an AI and is labeled so (A7.1): `OpponentSpec.isAI` is always true. A Ladder match
+ * from Home's Battle shows its bot as the generated online player in `side.online` (owner decision
+ * 2026-10-07); the brain, plan and seed built here are the same.
  */
 import type {
   AgeId,

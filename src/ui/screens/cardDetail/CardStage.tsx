@@ -8,17 +8,25 @@
  * The owner drives the phases: `phase` is null at rest, 'charge' for the anticipation beat and
  * 'impact' for the rest of MR-39; `armed` is the confirm state of MR-38b. A tap on the stage calls
  * `onSkip` (U13: anything over 1 s can be skipped).
+ *
+ * **Live showcase** (owner request 2026-10-07): when the app provides one (`ShowcaseContext`), the
+ * card's real battle art plays on the stage: it idles, walks in, shows every attack variant against a
+ * sparring dummy, takes a hit and a KO, and loops (`CardShowcase.tsx`, render's `showcase/`). The still
+ * portrait stays until the live art has loaded and cross-fades away; a tap on the stage plays the next
+ * move, the caption names it, and play/pause holds the loop. On a level-up the unit cheers.
  */
 import './cardDetail.css';
-import type { CardId, FortKind } from '@/contracts';
+import type { CardId, CompiledContent, FortKind, TeamPreset } from '@/contracts';
 import { FORT_PORTRAITS, FortArt } from '../../components/FortGlyphs';
 import type { Ref } from 'preact';
+import { useEffect, useRef } from 'preact/hooks';
 import { CardTile, type CardTileData } from '../../components/CardTile';
 import { BackdropLook } from '../../components/cosmeticArt';
 import { AGE_COLOR, HammerIcon, LockIcon, RoleGlyph } from '../../components/icons';
 import { useKit, usePortrait } from '../../components/kit';
 import { CopiesBar } from '../../components/Meters';
 import type { cardGlyph } from '../model/cards';
+import { ShowcaseControls, useCardShowcase } from './CardShowcase';
 
 /**
  * The unit on the stage: the plate-free portrait (DESIGN B5), or the role glyph without art. A fort
@@ -57,6 +65,17 @@ export interface CardStageProps {
   stageRef?: Ref<HTMLDivElement>;
   testid?: string;
   levelTestid?: string;
+  /** For the live showcase: the content (absent: the injected mount's own), the team preset, Lite graphics. */
+  content?: CompiledContent;
+  teamPreset?: TeamPreset;
+  lite?: boolean;
+}
+
+/** Hands an element to a Preact ref (object or callback). */
+function setRef<T>(ref: Ref<T> | undefined, el: T | null): void {
+  if (!ref) return;
+  if (typeof ref === 'function') ref(el);
+  else (ref as { current: T | null }).current = el;
 }
 
 export function CardStage(p: CardStageProps) {
@@ -65,18 +84,42 @@ export function CardStage(p: CardStageProps) {
   const age = AGE_COLOR[tile.age];
   const cer = p.ceremony;
   const showLevel = p.owned && p.kind !== 'power' && p.kind !== 'fort';
+  const stage = useRef<HTMLDivElement>(null);
+  const host = useRef<HTMLDivElement>(null);
+  const show = useCardShowcase(stage, host, {
+    card: tile.id,
+    skin: tile.skin,
+    level: tile.level,
+    silhouette: !p.owned,
+    teamPreset: p.teamPreset ?? 'default',
+    lite: p.lite === true,
+    ...(p.content ? { content: p.content } : {}),
+    enabled: true,
+  });
+  const live = show.state !== null;
+  // MR-39 follow-through on the stage: the unit cheers as the level flips
+  useEffect(() => {
+    if (cer?.phase === 'impact') show.celebrate();
+  }, [cer?.phase, cer?.n]);
   return (
     <div
-      ref={p.stageRef}
-      class={`cd-stage cd-stage--${p.kind}${cer ? ` is-${cer.phase}` : ''}${p.armed ? ' is-armed' : ''}`}
+      ref={(el) => {
+        stage.current = el;
+        setRef(p.stageRef, el);
+      }}
+      class={`cd-stage cd-stage--${p.kind}${cer ? ` is-${cer.phase}` : ''}${p.armed ? ' is-armed' : ''}${live ? ' is-live' : ''}`}
       data-testid={p.testid ?? 'card-stage'}
       data-anim={cer ? '' : undefined}
+      data-live={live ? 'true' : undefined}
       style={{
         '--age-main': age.main,
         '--age-accent': age.accent,
         '--age-light': age.light,
       }}
-      onClick={() => cer && p.onSkip?.()}
+      onClick={() => {
+        if (cer) p.onSkip?.();
+        else if (live) show.next();
+      }}
     >
       <i class="cd-stage__sky" aria-hidden="true" />
       <i class="cd-stage__hills" aria-hidden="true" />
@@ -111,6 +154,12 @@ export function CardStage(p: CardStageProps) {
           </div>
         ) : null}
       </div>
+      {/*
+        The live showcase draws here (a transparent canvas over the card, so the next soldier steps out of
+        its card); the still above cross-fades out once it is live.
+      */}
+      <div class="cd-stage__live" ref={host} data-testid="card-showcase" aria-hidden="true" />
+      {live && show.state && !cer ? <ShowcaseControls state={show.state} inset={show.inset} onNext={show.next} onToggle={show.toggle} /> : null}
       {cer?.phase === 'impact' ? (
         <>
           <i class="cd-stage__burst" aria-hidden="true" />

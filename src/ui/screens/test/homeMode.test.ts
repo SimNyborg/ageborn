@@ -3,6 +3,7 @@
  * the switcher; the lengths and their locks; the plate's "up to" minutes.
  */
 import { content } from '@/content';
+import { onlineTrophyWindow } from '@/meta';
 import { describe, expect, it } from 'vitest';
 import { midGameSave, newPlayerSave } from '../fixtures/saves';
 import {
@@ -13,6 +14,7 @@ import {
   ladderFormatFlags,
   lengthOptions,
   minutesText,
+  rankedWindow,
   skirmishSetup,
   skirmishSetupFlags,
 } from '../model/homeMode';
@@ -44,7 +46,24 @@ describe('the mode switcher (1.3)', () => {
     expect(ladderFormat(s, content)).toBe('short');
     const last = { ...s, flags: { ...s.flags, ...ladderFormatFlags(content, 'last') } };
     expect(ladderFormat(last, content)).toBe('last');
-    expect(battleRequest(last, content, 1)).toEqual({ mode: 'ladder', format: 'last' });
+    // The Ladder is online ranked play (owner decision 2026-10-07): Battle's request asks for the search.
+    expect(battleRequest(last, content, 1)).toEqual({ mode: 'ladder', format: 'last', online: true });
+  });
+
+  it('the ranked search window is the player trophies ± the spread inside their arena (the same as meta draws from)', () => {
+    const s = mid();
+    const spread = content.names.online.trophySpread;
+    for (const trophies of [0, 60, 149, 150, 220, 399, 1020, 1299, 3400, 5200]) {
+      const arenaIndex = Math.max(0, content.arenas.list.filter((a) => a.trophies <= trophies).length - 1);
+      const save = { ...s, arenaIndex, trophies: { ...s.trophies, current: trophies } };
+      const w = rankedWindow(save, content);
+      const a = content.arenas.list[arenaIndex]!;
+      const next = content.arenas.list[arenaIndex + 1];
+      expect(w.arena).toBe(a.index);
+      expect(w.min).toBe(Math.max(0, a.trophies, trophies - spread));
+      expect(w.max).toBe(next ? Math.min(next.trophies - 1, trophies + spread) : trophies + spread);
+      expect(w).toEqual(onlineTrophyWindow(save, content));
+    }
   });
 
   it('the picker shows all four lengths, all open from Arena 1; a locked one would name the arena that opens it', () => {

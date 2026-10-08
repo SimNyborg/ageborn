@@ -148,7 +148,9 @@ export function createUiServices(d: UiServicesDeps): UiServices {
     prepareMatch(req) {
       const s = ticked();
       const o = req.mode === 'tutorial' ? meta.pickOpponent(s, 'tutorial', content, clock, {}) : meta.pickOpponent(s, req.mode, content, clock, opponentOptions(req));
-      return withLook(o);
+      // Home's Battle: the Ladder as online ranked play (owner decision 2026-10-07). The same bot plays;
+      // it is shown as the player the simulated search finds (name, avatar, trophies, flag; seeded).
+      return withLook(req.mode === 'ladder' && req.online ? meta.onlineOpponent(s, o, content) : o);
     },
     beginBattle(req, opponent) {
       flow.begin(req, opponent);

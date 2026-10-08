@@ -25,7 +25,12 @@ import type { AgeId, CardId, FormatId, MatchResultInput, OpponentSpec, RewardSte
  * matches 1 and 2 are built by the app, not picked by meta (docs/requests/wp11-router-tutorial-route.md).
  */
 export type MatchRequest =
-  | { mode: 'ladder'; format: FormatId }
+  /**
+   * `online`: started from Home's Battle, the Ladder shown as online ranked play (owner decision
+   * 2026-10-07): Home runs the simulated matchmaking search and the bot is shown as the player it
+   * "finds" (`OpponentSpec.side.online`); the match itself is the same Ladder match against the AI.
+   */
+  | { mode: 'ladder'; format: FormatId; online?: boolean }
   | { mode: 'conquest'; general: string }
   /** `quick`: started as Quick Battle (it plays as a Skirmish; the VS chip names it, bug hunt 2026-10-01). */
   | { mode: 'skirmish'; options: SkirmishOptions; speed: 1 | 1.5 | 2; quick?: boolean }

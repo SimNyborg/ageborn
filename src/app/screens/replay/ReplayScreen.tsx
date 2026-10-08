@@ -3,8 +3,9 @@
  * to show. Seek arrives in v1.1. The HUD is WP5's, read-only. A replay from an older version shows
  * a notice instead (B3).
  *
- * Layout: a broadcast-style "REPLAY" plate with both names (the AI side always carries its AI chip,
- * A7.1) and a timeline of the match, docked under the HUD's clock so the lane stays clear; icon
+ * Layout: a broadcast-style "REPLAY" plate with both names (the AI side carries its AI chip, A7.1,
+ * unless it was shown as the online player of Home's Battle, owner decision 2026-10-07) and a timeline
+ * of the match, docked under the HUD's clock so the lane stays clear; icon
  * controls in one compact pill; and an end card that says whether the re-simulated match ended
  * exactly like the recording (outcome and final hash, B3).
  */
@@ -18,6 +19,7 @@ import { useApp } from '../../ui/context';
 import './replay.css';
 import { Button } from '@/ui/components/Button';
 import { withoutAiPrefix } from '@/ui/components/format';
+import { showsAiChip } from '@/ui/screens/model/opponent';
 
 const TICKS_PER_SECOND = 20;
 /** The controls fade out after this long without a pointer move or tap while the replay plays. */
@@ -186,9 +188,11 @@ export function ReplayScreen(p: { replay: ReplayDoc; onBack: () => void }) {
           <span class="ab-replay-names">
             <b class="ab-replay-me">{name(0)}</b>
             <span class="ab-replay-vs">{ui.t('app.vs')}</span>
-            {/* The AI chip beside the name is the label, so the "AI · " prefix is dropped here (bug hunt #14). */}
-            <b class="ab-replay-foe">{p.replay.sides[1].isBot ? withoutAiPrefix(name(1)) : name(1)}</b>
-            {p.replay.sides[1].isBot ? <span class="ab-chip ab-chip--ai ab-replay-ai">{ui.t('app.aiChip')}</span> : null}
+            {/* The AI chip beside the name is the label, so the "AI · " prefix is dropped here (bug hunt #14).
+                A bot shown as the online player of Home's Battle keeps that player's name and no chip
+                (owner decision 2026-10-07), so the replay reads like the match did. */}
+            <b class="ab-replay-foe">{showsAiChip(p.replay.sides[1]) ? withoutAiPrefix(name(1)) : name(1)}</b>
+            {showsAiChip(p.replay.sides[1]) ? <span class="ab-chip ab-chip--ai ab-replay-ai">{ui.t('app.aiChip')}</span> : null}
           </span>
         </div>
         <div class="ab-replay-timeline" aria-hidden="true">

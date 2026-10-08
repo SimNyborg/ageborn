@@ -45,7 +45,9 @@ import { ClayMeter, ProgressBar } from '../../components/Meters';
 import type { ResultCard, RouteOf } from '../../router';
 import { useUi } from '../context';
 import { cardTile } from '../model/cards';
-import { opponentName } from '../model/opponent';
+import { onlineOf, opponentName } from '../model/opponent';
+import { PlayerChip } from '../home/online';
+import { requestRankedSearch } from '../home/ranked';
 import {
   COUNT_UP_MS,
   dailyResultLine,
@@ -676,6 +678,7 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
   const capsuleTier: CapsuleTier = earnedCap ? visibleTier(content.capsules, earnedCap) : 'silver';
   const stats = info.input.stats;
   const opp = info.input.opponent;
+  const oppOnline = onlineOf(opp);
   // Last Base Standing (A2.10.1): the reason line (the trophy row is a plain ranked row since 2026-10-03).
   const lastReason = lastBaseReason(info.input, content, t);
   // A Retreat gives no rewards (A6.3, owner decision 2026-10-03); the Rewards column says so plainly (A15).
@@ -703,6 +706,13 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
     if (!req) {
       router.reset({ id: 'home' });
       router.go({ id: 'modeSelect' });
+      return;
+    }
+    // A ranked Ladder match goes back into the search, like a real online game (owner decision
+    // 2026-10-07): Home opens with the plate already searching for the next opponent.
+    if (req.mode === 'ladder' && req.online) {
+      requestRankedSearch();
+      router.reset({ id: 'home' });
       return;
     }
     starter.start(req, { resetToHome: true });
@@ -805,7 +815,16 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
       badge={pathLevel ? <LevelBadge level={pathLevel} rewards={info.rewards} stats={stats} won={kind === 'win'} difficulty={info.input.warPath?.difficulty ?? 'normal'} /> : null}
       vs={
         <>
-          {t('ui.result.vs', { name: withoutAiPrefix(opponentName(opp, content, t)) })} <AiBadge size="sm" />
+          {/* The ranked Ladder's found online player keeps their name and the Player chip (owner decision 2026-10-07). */}
+          {oppOnline ? (
+            <>
+              {t('ui.result.vs', { name: oppOnline.name })} <PlayerChip />
+            </>
+          ) : (
+            <>
+              {t('ui.result.vs', { name: withoutAiPrefix(opponentName(opp, content, t)) })} <AiBadge size="sm" />
+            </>
+          )}
           {lastReason ? (
             <span class="result__reason" data-testid="result-reason">
               {lastReason}

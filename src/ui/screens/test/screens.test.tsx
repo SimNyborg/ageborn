@@ -8,6 +8,7 @@ import { i18n } from '@/i18n';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { Route } from '../../router';
 import {
+  FIXTURE_PLAYER,
   fixtureOpponent,
   fixturePause,
   fixtureRequest,
@@ -17,7 +18,7 @@ import {
 } from '../fixtures/matches';
 import { SCREEN_COMPONENTS } from '../ScreenHost';
 import { text, textNodes } from './dom';
-import { mount, PSEUDO, RAW_KEY, type HarnessState, type Mounted } from './harness';
+import { mount, PSEUDO, RAW_KEY, saveFor, type HarnessState, type Mounted } from './harness';
 
 const STATES: HarnessState[] = ['new', 'mid', 'maxed', 'raw'];
 
@@ -50,6 +51,8 @@ export const CASES: Case[] = [
   vs('grogg'),
   vs('daily'),
   vs('echo'),
+  // The ranked Ladder from Home's Battle: the bot shown as the online player it found (owner decision 2026-10-07).
+  vs('player'),
   {
     name: 'pause-early',
     screen: 'pause',
@@ -75,6 +78,7 @@ export const CASES: Case[] = [
     ],
   },
   result('win'),
+  result('player'),
   result('loss'),
   result('draw'),
   result('conquest'),
@@ -159,6 +163,8 @@ describe('no hard-coded UI text (pseudo-locale)', () => {
           'Mama Moss',
           'Pip Quickstep',
           'You',
+          // The ranked Ladder's found online player (owner decision 2026-10-07).
+          FIXTURE_PLAYER.name,
         ],
         // Tier numerals (A7.3) are symbols, not words.
         'VIII',
@@ -198,15 +204,28 @@ describe('AI labeling on every surface (A7.1)', () => {
     expect(m.q('.result__vs [data-testid="ai-badge"]')).not.toBeNull();
   });
 
-  it('match history marks every opponent as AI', () => {
+  it('match history marks every AI opponent as AI; a ranked match keeps the online player it showed (owner decision 2026-10-07)', () => {
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'profile' }] });
     const rows = m.qa('[data-testid^="history-"]');
     expect(rows.length).toBe(20);
-    for (const r of rows) expect(r.querySelector('[data-testid="ai-badge"]')).not.toBeNull();
+    let online = 0;
+    for (const r of rows) {
+      if (text(r).includes(FIXTURE_PLAYER.name)) {
+        online += 1;
+        expect(r.querySelector('[data-testid="ai-badge"]')).toBeNull();
+      } else expect(r.querySelector('[data-testid="ai-badge"]')).not.toBeNull();
+    }
+    expect(online).toBe(5);
   });
 
-  it("Home's match plate, the level plate, the Level preview and the Conquest board carry the AI badge", () => {
+  it("the level plate, the Level preview, the Conquest board and Home's plate in an AI mode carry the AI badge; the ranked Ladder's plate does not", () => {
     m = mount({ state: 'mid' });
+    // The Ladder is online ranked play (owner decision 2026-10-07): a neutral silhouette, no AI label.
+    expect(m.q('[data-testid="home-opponent"] [data-testid="ai-badge"]')).toBeNull();
+    expect(text(m.q('[data-testid="home-opponent"]')!)).toContain('A player');
+    m.unmount();
+    const s = saveFor('mid');
+    m = mount({ save: { ...s, flags: { ...s.flags, 'ui-homeMode.quick': true } } });
     expect(m.q('[data-testid="home-opponent"] [data-testid="ai-badge"]')).not.toBeNull();
     m.unmount();
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'warPath' }] });
@@ -233,6 +252,50 @@ describe('AI labeling on every surface (A7.1)', () => {
   it('Mode select carries the difficulty help text', () => {
     m = mount({ routes: [{ id: 'home' }, { id: 'modeSelect' }] });
     expect(text(m.q('[data-testid="mode-ladder"]')!)).toContain('Opponent difficulty adapts to your recent results.');
+  });
+});
+
+describe('the ranked Ladder shown as online play (owner decision 2026-10-07)', () => {
+  it('VS shows the found player like the player: banner, avatar, Player chip, trophies, arena, bars and flag; no AI label', () => {
+    m = mount({ routes: CASES.find((c) => c.name === 'vs-player')!.routes() });
+    const foe = m.q('[data-testid="vs-foe"]')!;
+    expect(text(foe)).toContain(FIXTURE_PLAYER.name);
+    expect(foe.querySelector('[data-testid="player-chip"]')).not.toBeNull();
+    expect(foe.querySelector('[data-testid="ai-badge"]')).toBeNull();
+    expect(text(foe)).not.toContain('AI General');
+    expect(text(foe)).not.toContain('Plays by the same rules as you');
+    expect(foe.querySelector('.vs__personality')).toBeNull();
+    expect(foe.querySelector('[data-testid="vs-line"]')).toBeNull();
+    expect(text(foe)).toContain('1,064');
+    expect(text(foe)).toContain('Arena 4');
+    expect(m.q('[data-testid="vs-bars-foe"]')).not.toBeNull();
+    expect(m.q('[data-testid="vs-flags-foe"]')).not.toBeNull();
+    // The mode reads Ranked, and the VS starts by itself (no "Tap to start now").
+    expect(text(m.q('.vs__strip')!)).toContain('Ranked');
+    expect(text(m.q('.vs__strip')!)).not.toContain('Tap to start now');
+  });
+
+  it('the Result names the found player with the Player chip, no AI label', () => {
+    m = mount({ routes: CASES.find((c) => c.name === 'result-player')!.routes() });
+    const vs = m.q('.result__vs')!;
+    expect(text(vs)).toContain(`vs ${FIXTURE_PLAYER.name}`);
+    expect(vs.querySelector('[data-testid="player-chip"]')).not.toBeNull();
+    expect(vs.querySelector('[data-testid="ai-badge"]')).toBeNull();
+  });
+
+  it('every other mode keeps its AI labels exactly as before', () => {
+    for (const o of ['general', 'commander', 'warmUp', 'warden', 'grogg', 'daily', 'echo'] as const) {
+      m = mount({ routes: CASES.find((c) => c.name === `vs-${o}`)!.routes() });
+      expect(m.q('[data-testid="vs-foe"] [data-testid="ai-badge"]'), o).not.toBeNull();
+      expect(m.q('[data-testid="vs-foe"] [data-testid="player-chip"]'), o).toBeNull();
+      m.unmount();
+    }
+    for (const r of ['win', 'loss', 'conquest'] as const) {
+      m = mount({ routes: CASES.find((c) => c.name === `result-${r}`)!.routes() });
+      expect(m.q('.result__vs [data-testid="ai-badge"]'), r).not.toBeNull();
+      m.unmount();
+    }
+    m = null;
   });
 });
 

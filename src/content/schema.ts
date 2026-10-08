@@ -606,6 +606,20 @@ const NamesSchema = v.strictObject({
   commanderFirst: v.strictObject({ start: v.array(v.string()), end: v.array(v.string()) }),
   commanderLast: v.strictObject({ start: v.array(v.string()), end: v.array(v.string()) }),
   player: v.strictObject({ prefixes: v.array(v.string()), digits: pos }),
+  // The simulated online players of the Ladder (owner decision 2026-10-07)
+  online: v.strictObject({
+    adjectives: v.pipe(v.array(v.pipe(v.string(), v.regex(/^[A-Z][a-z]+$/))), v.minLength(20)),
+    nouns: v.pipe(v.array(v.pipe(v.string(), v.regex(/^[A-Z][a-z]+$/))), v.minLength(20)),
+    given: v.pipe(
+      v.array(v.strictObject({ flags: v.pipe(v.array(id), v.minLength(1)), names: v.pipe(v.array(v.pipe(v.string(), v.regex(/^[A-Z][a-z]+$/))), v.minLength(4)) })),
+      v.minLength(6),
+    ),
+    numbers: v.pipe(v.array(v.pipe(v.string(), v.regex(/^[0-9]{1,4}$/))), v.minLength(10)),
+    titles: v.array(v.pipe(v.string(), v.regex(/^[A-Z][a-z]+$/))),
+    blocked: v.pipe(v.array(v.pipe(v.string(), v.regex(/^[a-z]+$/))), v.minLength(10)),
+    maxLength: pos,
+    trophySpread: pos,
+  }),
 });
 
 const QuestRewardSchema = v.variant('kind', [
@@ -1664,6 +1678,9 @@ function checkMeta(issues: Issues, c: Content): void {
     if (title) issues.check(cos.titles.some((x) => x.id === title), `feats.${id}`, `unknown title "${title}"`);
   }
   for (const b of cos.banners) issues.check(list[b.arena - 1] !== undefined, `cosmetics.banners.${b.id}`, 'unknown arena');
+  // The simulated online players fly real national flags (owner decision 2026-10-07).
+  const nations = new Set(cos.collections.items.filter((x) => x.collection === 'nationalFlag').map((x) => x.id));
+  for (const g of c.names.online.given) for (const f of g.flags) issues.check(nations.has(f), 'names.online.given', `unknown national flag "${f}"`);
   for (const t of cos.titles) {
     const u = t.unlock;
     const p = `cosmetics.titles.${t.id}`;

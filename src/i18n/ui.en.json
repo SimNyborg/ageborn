@@ -337,13 +337,15 @@
       "standardLevels": "Both sides: every card Lv {n}",
       "warmUp": "Warm-up match",
       "skip": "Tap to start now",
+      "ready": "Get ready",
       "mode": {
         "ladder": "Ladder",
         "conquest": "Conquest",
         "skirmish": "Skirmish",
         "quick": "Quick Battle",
         "daily": "Daily Challenge",
-        "warPath": "War Path"
+        "warPath": "War Path",
+        "ranked": "Ranked"
       },
       "lastRow": "No clock · Siege rises every {every} min from {from} · Crumble from {crumble}",
       "ropeTitle": "Push or crumble",
@@ -962,9 +964,10 @@
     "switcher": {
       "label": "Mode: {mode}. Change mode",
       "tagAi": "vs AI",
+      "tagOnline": "Online",
       "tagPlayers": "vs players",
       "tagFriend": "vs a friend",
-      "ladder": "Ladder",
+      "ladder": "Ranked",
       "quick": "Quick",
       "daily": "Daily",
       "skirmish": "Skirmish",
@@ -974,7 +977,7 @@
     "modesPanel": {
       "groupAi": "vs AI",
       "groupPlayers": "vs players",
-      "ladderDesc": "Climb the arenas against AI Generals.",
+      "ladderDesc": "Climb the arenas against players online.",
       "ladderReward": "Trophies and capsules",
       "friend": "Friend Duel",
       "friendDesc": "Play a friend with a room code.",
@@ -1032,6 +1035,15 @@
         "block": "Block",
         "report": "Report"
       }
+    },
+    "ranked": {
+      "online": "Online",
+      "searching": "Searching",
+      "searchingFor": "Searching for an opponent…",
+      "searchLabel": "Searching for an opponent: {time}",
+      "window": "{min}-{max}",
+      "found": "Opponent found!",
+      "foundLabel": "Opponent found: {name}"
     }
   }
 }

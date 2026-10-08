@@ -7,7 +7,7 @@
  */
 import * as v from 'valibot';
 import type { EmoteId, ReplayDoc } from '@/contracts';
-import { validateWith, type Validation } from './schema';
+import { AvatarSchema, validateWith, type Validation } from './schema';
 
 const num = v.pipe(v.number(), v.finite());
 const int = v.pipe(v.number(), v.integer());
@@ -77,6 +77,18 @@ export const SideConfigSchema = v.object({
       baseSkins: v.optional(partialPerAge(v.string())),
       decorations: v.optional(v.array(v.nullable(v.string()))),
       backdrop: v.optional(v.nullable(v.string())),
+    }),
+  ),
+  // The side shown as an online player (owner decision 2026-10-07; presentation only): the replay
+  // shows the same player as the match did.
+  online: v.optional(
+    v.object({
+      name: v.pipe(v.string(), v.minLength(1), v.maxLength(32)),
+      avatar: AvatarSchema,
+      trophies: int,
+      arena: int,
+      banner: v.string(),
+      bars: v.picklist([1, 2, 3]),
     }),
   ),
 });

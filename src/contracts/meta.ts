@@ -43,7 +43,9 @@ export interface MatchStats {
 }
 
 /**
- * The chosen opponent. `isAI` is always true in v1 and every surface must label it (DESIGN A7.1).
+ * The chosen opponent. `isAI` is always true in v1 and every surface must label it (DESIGN A7.1), except
+ * the Ladder from Home's Battle, whose bot is shown as the generated online player in `side.online`
+ * (owner decision 2026-10-07; its `displayName` and `side.label` are then that player's name).
  * `disclosures` lists what the pre-match screen must reveal (tier, warm-up, modifiers; A7.1, A6.8).
  */
 export interface OpponentSpec {

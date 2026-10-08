@@ -478,6 +478,31 @@ export interface NameTables {
   commanderLast: { start: string[]; end: string[] };
   /** Auto profile names: prefix, a dash and `digits` digits ("Chief-4821"; A6.1). */
   player: { prefixes: string[]; digits: number };
+  /** The simulated online players of the Ladder (owner decision 2026-10-07; meta `onlinePlayer.ts`). */
+  online: OnlineNameTables;
+}
+
+/**
+ * Gamer tags for the simulated online players (owner decision 2026-10-07): our own family-friendly
+ * words and common given names, never a real person, a brand or a General (tests check the lists).
+ */
+export interface OnlineNameTables {
+  /** "Swift", "Sleepy": the first word of a two-word tag. */
+  adjectives: string[];
+  /** "Otter", "Pancake": the second word, or a tag of its own with a number. */
+  nouns: string[];
+  /** Common given names by region, with the national flags (`nationalFlag` item ids) most often beside them. */
+  given: { flags: string[]; names: string[] }[];
+  /** Number suffixes ("7", "21", "404"); vetted: never a rude or hateful code. */
+  numbers: string[];
+  /** "Sir", "Lady": a playful title in front of a noun ("SirPancake"). */
+  titles: string[];
+  /** Letters a tag may never contain, even across word joins ("xXMooseXx"): such a tag is drawn again. */
+  blocked: string[];
+  /** The longest tag (the HUD nameplate and the plate keep it whole). */
+  maxLength: number;
+  /** The search pairs within this many trophies of the player, inside the player's arena. */
+  trophySpread: number;
 }
 
 // ---------------------------------------------------------------------------------------------

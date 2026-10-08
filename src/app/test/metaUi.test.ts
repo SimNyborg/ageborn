@@ -119,6 +119,36 @@ describe('createUiServices over the real meta rules', () => {
     }
   });
 
+  it("Home's ranked request shows the same bot as the online player the search finds (owner decision 2026-10-07)", async () => {
+    const { services, meta, save } = await setup();
+    const s = servicesOnly(services, meta, { ...save, flags: { ...save.flags, 'meta.ladderPlayed': true } });
+    for (const format of ['short', 'standard'] as const) {
+      const ai = s.ui.prepareMatch({ mode: 'ladder', format });
+      const shown = s.ui.prepareMatch({ mode: 'ladder', format, online: true });
+      // The bot that plays is unchanged: General or Commander, tier, level, plan, levels and seed.
+      expect(shown.generalId).toBe(ai.generalId);
+      expect(shown.tier).toBe(ai.tier);
+      expect(shown.level).toBe(ai.level);
+      expect(shown.seed).toBe(ai.seed);
+      expect(shown.side.loadouts).toEqual(ai.side.loadouts);
+      expect(shown.side.levels).toEqual(ai.side.levels);
+      expect(shown.isAI).toBe(true);
+      expect(shown.side.isBot).toBe(true);
+      // Only the presentation: the found player's name everywhere, avatar, trophies, flag.
+      expect(ai.side.online).toBeUndefined();
+      const who = shown.side.online!;
+      expect(shown.displayName).toBe(who.name);
+      expect(shown.side.label).toBe(who.name);
+      expect(who.name.startsWith('AI')).toBe(false);
+      // The same match always finds the same player.
+      expect(s.ui.prepareMatch({ mode: 'ladder', format, online: true })).toEqual(shown);
+    }
+    // Every other mode stays a labelled AI.
+    expect(s.ui.prepareMatch({ mode: 'daily' }).side.online).toBeUndefined();
+    expect(s.ui.prepareMatch({ mode: 'skirmish', options: { generalId: 'pip', tier: 2, format: 'short', standardLevels: false }, speed: 1, quick: true }).side.online).toBeUndefined();
+    expect(s.ui.prepareMatch({ mode: 'conquest', general: 'pip' }).side.online).toBeUndefined();
+  });
+
   it('export and import round-trip; import replaces the save and routes Home', async () => {
     const { services, meta, save } = await setup();
     const s = servicesOnly(services, meta, { ...save, currencies: { ...save.currencies, amber: 1234 } });
@@ -256,6 +286,40 @@ describe('createMetaUi: the meta screens and the battle in step', () => {
 
     ui.router.reset({ id: 'home' });
     expect(c.route.value).toEqual({ id: 'title', battle: null });
+    ui.dispose();
+  });
+
+  it('a ranked match keeps the found player in the battle, the bot brain, the result and the stored replay (owner decision 2026-10-07)', async () => {
+    const { c, ui, services } = await app();
+    const req: MatchRequest = { mode: 'ladder', format: 'short', online: true };
+    const opponent = ui.services.prepareMatch(req);
+    const who = opponent.side.online!;
+    expect(who).toBeDefined();
+    ui.router.go({ id: 'vs', request: req, opponent });
+    ui.services.beginBattle(req, opponent);
+    const r = c.route.value;
+    expect(r.id).toBe('battle');
+    if (r.id !== 'battle') return;
+    // The HUD reads the sides: the found player's name and look; still a bot, played by its General's brain.
+    const foe = r.battle.setup.config.sides[1];
+    expect(foe.label).toBe(who.name);
+    expect(foe.online).toEqual(who);
+    expect(foe.isBot).toBe(true);
+    expect(foe.look?.nationalFlag ?? null).toBe(opponent.side.look?.nationalFlag ?? null);
+    expect(r.battle.setup.brain.kind).toBe('general');
+    if (r.battle.setup.brain.kind === 'general') expect(r.battle.setup.brain.profile.tier).toBe(opponent.tier);
+
+    await finishBattle(c);
+    const top = ui.router.current.value;
+    expect(top.id).toBe('result');
+    if (top.id !== 'result') return;
+    expect(top.info.request).toEqual(req);
+    expect(top.info.input.opponent.side.online?.name).toBe(who.name);
+    // The replay ring keeps the player (read back through the store's schema), so a replay shows the same name.
+    const newest = services.saveStore.loadReplays().at(-1)!;
+    expect(newest.sides[1].label).toBe(who.name);
+    expect(newest.sides[1].online).toEqual(who);
+    expect(newest.sides[1].isBot).toBe(true);
     ui.dispose();
   });
 

@@ -75,7 +75,9 @@ function bump(list: readonly number[], index: number): number[] {
 /**
  * A15.9 peak rank: "Highest AI tier beaten" (`winsByTier`) counts Ladder, Daily and Conquest wins
  * only, and a Ladder or Conquest win only when the player's average level over the format's ages is
- * at most 1 above the opponent's (A16.7). The Daily always counts (both sides play at L7).
+ * at most 1 above the opponent's (A16.7). The Daily always counts (both sides play at L7). A Ranked
+ * match, whose bot was shown as an online player (owner decision 2026-10-07), is no AI tier at all
+ * (see `recordStats`).
  */
 function raisesPeak(s: SaveDoc, t: Content, r: MatchResultInput): boolean {
   if (r.mode === 'daily') return true;
@@ -93,6 +95,10 @@ function recordStats(s: SaveDoc, t: Content, r: MatchResultInput, result: Ladder
   // A Retreat does not count (it would unlock the last age's title, and a Retreat earns no title).
   const reachedFuture = !isRetreat(r) && r.stats.reachedFinalAgeAtMs !== null && ages[ages.length - 1] === t.order.ages[t.order.ages.length - 1];
   const win = result === 'win';
+  // The profile's AI tiers ("Results by AI tier", "Highest AI tier beaten") count labelled AIs only: a
+  // Ranked match's bot was shown as an online player (owner decision 2026-10-07, A7.1), so the profile
+  // reads like the match did. Everything else (wins, losses, MMR, trophies) counts as before.
+  const aiTier = !r.opponent.side.online;
   return {
     ...s,
     matchesPlayed: s.matchesPlayed + 1,
@@ -102,8 +108,8 @@ function recordStats(s: SaveDoc, t: Content, r: MatchResultInput, result: Ladder
       wins: st.wins + (win ? 1 : 0),
       losses: st.losses + (result === 'loss' ? 1 : 0),
       draws: st.draws + (result === 'draw' ? 1 : 0),
-      winsByTier: win && raisesPeak(s, t, r) ? bump(st.winsByTier, tier) : st.winsByTier,
-      lossesByTier: result === 'loss' ? bump(st.lossesByTier, tier) : st.lossesByTier,
+      winsByTier: aiTier && win && raisesPeak(s, t, r) ? bump(st.winsByTier, tier) : st.winsByTier,
+      lossesByTier: aiTier && result === 'loss' ? bump(st.lossesByTier, tier) : st.lossesByTier,
       fastestWinMs: win ? (st.fastestWinMs === null ? r.stats.durationMs : Math.min(st.fastestWinMs, r.stats.durationMs)) : st.fastestWinMs,
       futureReached: st.futureReached + (reachedFuture ? 1 : 0),
     },

@@ -57,6 +57,8 @@ export class ProceduralUnitView implements UnitView {
   private glyphGroup: RoleGroup | null = null;
   private trim: Container | null = null;
   private trimName: UnitPose['levelTrim'] = 'none';
+  /** Team ring, role glyph and level trim on the ground (off on the card detail showcase). */
+  private marks = true;
   private stars: Container | null = null;
   private clock: Container | null = null;
   private bubble: Container | null = null;
@@ -175,6 +177,7 @@ export class ProceduralUnitView implements UnitView {
     this.glyph = partSprite(this.o.baker, `icon.role.${g}`, UI_ZONES, this.o.teamColor);
     this.glyph.position.set(0, 6.6 + (this.sizeScale() - 1) * 2);
     this.glyph.scale.set(STYLE.roleGlyphLu / 17.2);
+    this.glyph.visible = this.marks;
     this.ground.addChild(this.glyph);
     if (this.trim) this.ground.addChild(this.trim);
   }
@@ -188,7 +191,14 @@ export class ProceduralUnitView implements UnitView {
     this.trim = partSprite(this.o.baker, `trim.${t}`, UI_ZONES);
     this.trim.position.set(9.6, 5.4);
     this.trim.scale.set(STYLE.levelTrimScale);
+    this.trim.visible = this.marks;
     this.ground.addChild(this.trim);
+  }
+
+  /** Shows or hides the ground marks (team ring, role glyph, level trim; duck-typed, the card showcase). */
+  setGroundMarks(on: boolean): void {
+    this.marks = on;
+    for (const c of [this.ring, this.glyph, this.trim]) if (c) c.visible = on;
   }
 
   private showStars(on: boolean): void {

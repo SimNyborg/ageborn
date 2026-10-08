@@ -88,7 +88,10 @@ export type MatchResultKind = 'win' | 'loss' | 'draw';
 export interface HistoryRow {
   index: number;
   opponent: string;
-  /** Always true in v1: every opponent is an AI (A7.1). Kept so the marker can never be skipped. */
+  /**
+   * True for every labelled AI (A7.1); false for a Ladder match from Home's Battle, whose bot was shown
+   * as an online player (owner decision 2026-10-07), so its row reads like the match did.
+   */
   isAI: boolean;
   result: MatchResultKind;
   format: FormatId;
@@ -106,7 +109,7 @@ export function historyRows(replays: readonly ReplayDoc[], contentHash: string):
     return {
       index,
       opponent: r.sides[foe].label,
-      isAI: r.sides[foe].isBot,
+      isAI: r.sides[foe].isBot && !r.sides[foe].online,
       result: w === null ? 'draw' : w === me ? 'win' : 'loss',
       format: r.format,
       durationMs: r.result.tick * TICK_MS,

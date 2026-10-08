@@ -123,6 +123,8 @@ export function createPreviewServices(o: {
         const g = l ? content.generals.list[l.general] : undefined;
         return { ...fixtureOpponent(content, 'general'), generalId: l?.general ?? 'pip', displayName: g?.nameKey ?? 'general.pip.name', format: l?.format ?? 'w1.stone', modifiers: [...(l?.modifiers ?? [])] };
       }
+      // Home's Battle: the ranked Ladder's bot shown as the player the search finds (owner decision 2026-10-07).
+      if (req.online) return { ...fixtureOpponent(content, 'player'), format: req.format };
       return { ...fixtureOpponent(content, o.opponent ?? 'general'), format: req.format };
     },
     beginBattle(req, opponent) {

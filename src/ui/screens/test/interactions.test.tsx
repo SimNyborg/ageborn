@@ -8,6 +8,7 @@ import { i18n } from '@/i18n';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fixtureOpponent, fixturePause, fixtureRequest, fixtureResult } from '../fixtures/matches';
 import { FIXTURE_NOW, midGameSave, newPlayerSave } from '../fixtures/saves';
+import { searchDelayMs } from '../home/ranked';
 import { VS_MS } from '../vs/VsScreen';
 import { REWARD_STEP_MS } from '../model/result';
 import { input, keydown, text, type FakeElement } from './dom';
@@ -131,19 +132,101 @@ function afterMatch1() {
 describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => {
   beforeEach(() => primeWarPathSeen(null));
 
-  it('Battle is the one primary and starts a Ladder match through VS, in one tap (U2)', () => {
+  it('Battle is the one primary and starts a ranked Ladder match: search, found, VS, in one tap (U2, owner decision 2026-10-07)', () => {
     vi.useFakeTimers();
     m = mount({ state: 'mid', shell: true });
     expect(m.qa('[data-primary]')).toHaveLength(1);
     expect(text(m.q('[data-testid="play"]')!)).toBe('Battle');
-    expect(m.q('[data-testid="home-opponent"] [data-testid="ai-badge"]')).not.toBeNull();
+    // Online ranked play: the opponent is not known yet, so the plate is the neutral silhouette, no AI.
+    const plate = m.q('[data-testid="home-opponent"]')!;
+    expect(plate.querySelector('[data-testid="ai-badge"]')).toBeNull();
+    expect(text(plate)).toContain('A player');
+    expect(m.q('[data-testid="ranked-online"]')).not.toBeNull();
     expect(m.q('[data-testid="home-trophies"]')).not.toBeNull();
     expect(m.q('[data-testid="home-campaign"]')).not.toBeNull();
     m.click('[data-testid="play"]');
-    flush(() => vi.advanceTimersByTime(300));
-    const req = calls('prepareMatch')[0]!.args[0] as { mode: string; format: string };
-    expect(req.mode).toBe('ladder');
+    const req = calls('prepareMatch')[0]!.args[0] as { mode: string; format: string; online?: boolean };
+    expect(req).toEqual({ mode: 'ladder', format: 'short', online: true });
+    // The search: the radar, the time counting up, the trophy window; Battle is Cancel.
+    expect(m.router.current.value.id).toBe('home');
+    expect(m.q('[data-testid="home-opponent"]')!.getAttribute('data-state')).toBe('ranked-search');
+    expect(text(m.q('[data-testid="play"]')!)).toBe('Cancel');
+    expect(m.qa('[data-primary]')).toHaveLength(0);
+    expect(m.q('[data-testid="ranked-window"]')).not.toBeNull();
+    flush(() => vi.advanceTimersByTime(1600));
+    expect(text(m.q('[data-testid="online-elapsed"]')!)).toBe('0:01');
+    expect(m.q('[data-testid="home-modes"]')!.getAttribute('aria-disabled')).toBe('true');
+    // After a natural few seconds (at most 12.5 s) the plate finds the player: their tag, the Player chip, no AI.
+    flush(() => vi.advanceTimersByTime(11_000));
+    const found = m.q('[data-testid="home-opponent"]')!;
+    expect(found.getAttribute('data-state')).toBe('ranked-found');
+    expect(text(m.q('[data-testid="ranked-name"]')!)).toBe('Kenji_77');
+    expect(found.querySelector('[data-testid="player-chip"]')).not.toBeNull();
+    expect(found.querySelector('[data-testid="ai-badge"]')).toBeNull();
+    expect(text(m.q('[data-testid="ranked-trophies"]')!)).toContain('1,064');
+    // Then VS with the same opponent.
+    flush(() => vi.advanceTimersByTime(2000));
     expect(m.router.current.value.id).toBe('vs');
+    const vs = m.router.current.value as { opponent: { side: { online?: { name: string } } } };
+    expect(vs.opponent.side.online?.name).toBe('Kenji_77');
+  });
+
+  it('the ranked search cancels at once: Cancel, Esc and back (owner decision 2026-10-07)', () => {
+    vi.useFakeTimers();
+    m = mount({ state: 'mid', shell: true });
+    m.click('[data-testid="play"]');
+    expect(m.q('[data-testid="home-opponent"]')!.getAttribute('data-state')).toBe('ranked-search');
+    m.click('[data-testid="play"]');
+    expect(m.q('[data-testid="home-opponent"]')!.getAttribute('data-state')).toBe('ladder');
+    expect(text(m.q('[data-testid="play"]')!)).toBe('Battle');
+    // Nothing is found after a cancel.
+    flush(() => vi.advanceTimersByTime(15_000));
+    expect(m.router.current.value.id).toBe('home');
+    expect(m.q('[data-testid="ranked-found"]')).toBeNull();
+    // Esc cancels too.
+    m.click('[data-testid="play"]');
+    flush(() => keydown(m!.document.body, 'Escape'));
+    expect(m.q('[data-testid="home-opponent"]')!.getAttribute('data-state')).toBe('ladder');
+    flush(() => vi.advanceTimersByTime(15_000));
+    expect(m.router.current.value.id).toBe('home');
+  });
+
+  it('a tap on Battle while the found card shows skips the beat to VS', () => {
+    vi.useFakeTimers();
+    m = mount({ state: 'mid', shell: true });
+    m.click('[data-testid="play"]');
+    flush(() => vi.advanceTimersByTime(12_600));
+    expect(m.q('[data-testid="ranked-found"]')).not.toBeNull();
+    m.click('[data-testid="play"]');
+    flush(() => vi.advanceTimersByTime(300));
+    expect(m.router.current.value.id).toBe('vs');
+    expect(calls('prepareMatch')).toHaveLength(1);
+  });
+
+  it('the search takes a natural 2-9 s, now and then a little longer', () => {
+    const seq = (xs: number[]) => {
+      let i = 0;
+      return () => xs[i++ % xs.length]!;
+    };
+    expect(searchDelayMs(seq([0, 0]))).toBe(2000);
+    expect(searchDelayMs(seq([0.71, 1]))).toBe(5500);
+    expect(searchDelayMs(seq([0.8, 0.5]))).toBe(7250);
+    expect(searchDelayMs(seq([0.99, 0.999]))).toBeLessThanOrEqual(12_500);
+    for (let i = 0; i < 400; i++) {
+      const ms = searchDelayMs();
+      expect(ms).toBeGreaterThanOrEqual(2000);
+      expect(ms).toBeLessThanOrEqual(12_500);
+    }
+  });
+
+  it("the Result's Next battle after a ranked match goes back into the search", () => {
+    vi.useFakeTimers();
+    m = mount({ state: 'mid', shell: true, routes: [{ id: 'home' }, { id: 'result', info: fixtureResult(content, 'player') }] });
+    m.click('[data-testid="result-skip"]');
+    m.click('[data-testid="result-next"]');
+    expect(m.router.current.value.id).toBe('home');
+    expect(m.q('[data-testid="home-opponent"]')!.getAttribute('data-state')).toBe('ranked-search');
+    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'short', online: true });
   });
 
   it('the length picker sets the length Battle plays and remembers it (Short, Medium, Long, No clock)', () => {
@@ -156,10 +239,9 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     expect(m.save.value.flags['ui-ladderFormat.standard']).toBe(true);
     // The picker names the length; the line under it quotes the upper bound (never cut off at 844).
     expect(text(m.q('[data-testid="home-format-desc"]')!)).toContain('5 ages · up to 12½ min');
-    expect(calls('previewOpponent').some((c) => c.args[0] === 'standard')).toBe(true);
     m.click('[data-testid="play"]');
     flush(() => vi.advanceTimersByTime(300));
-    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'standard' });
+    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'standard', online: true });
   });
 
   it('the deck switch on the plate picks the deck Battle plays, next to Battle (owner request 2026-10-07)', () => {
@@ -178,7 +260,9 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     expect(m.qa('[data-primary]')).toHaveLength(1);
     m.click('[data-testid="play"]');
     flush(() => vi.advanceTimersByTime(300));
-    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'short' });
+    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'short', online: true });
+    // The deck stays at the foot during the search, inert (no deck change mid-search).
+    expect(m.q('[data-testid="home-decks"]')!.closest('[inert]')).not.toBeNull();
   });
 
   it('the deck hint waits while the No clock caption is due (one caption at a time, U8)', () => {
@@ -212,7 +296,7 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     m.click('[data-testid="last-info"] .ui-modal__close');
     m.click('[data-testid="play"]');
     flush(() => vi.advanceTimersByTime(300));
-    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'last' });
+    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'last', online: true });
   });
 
   it('a locked length keeps its place and says which arena opens it (U12)', () => {
@@ -280,11 +364,17 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
   it('the mode switcher selects a mode (never starts one); Battle then plays it (spec 1.3)', () => {
     vi.useFakeTimers();
     m = mount({ state: 'mid' });
-    expect(text(m.q('[data-testid="home-modes"]')!)).toContain('Ladder');
+    // The Ladder is online ranked play (owner decision 2026-10-07): "Ranked · Online", never "vs AI".
+    expect(text(m.q('[data-testid="home-modes"]')!)).toContain('Ranked');
+    expect(text(m.q('[data-testid="home-modes"]')!)).toContain('Online');
+    expect(text(m.q('[data-testid="home-modes"]')!)).not.toContain('vs AI');
     m.click('[data-testid="home-modes"]');
     expect(m.q('[data-testid="modes-sheet"]')).not.toBeNull();
-    // Ladder is a card (the default, selected); online play is shown as a locked card that says so.
+    // Ranked is a card (the default, selected) under "vs players"; Friend Duel is a locked card that says so.
     expect(m.q('[data-testid="mode-ladder"]')!.getAttribute('aria-pressed')).toBe('true');
+    expect(text(m.q('[data-testid="mode-ladder"]')!)).toContain('Ranked');
+    expect(m.q('[data-testid="mode-ladder"]')!.closest('.md-list')!.getAttribute('aria-label')).toBe('vs players');
+    expect(m.q('[data-testid="mode-quick"]')!.closest('.md-list')!.getAttribute('aria-label')).toBe('vs AI');
     expect(m.q('[data-testid="mode-friend"]')!.getAttribute('aria-disabled')).toBe('true');
     m.click('[data-testid="mode-quick"]');
     flush(() => vi.advanceTimersByTime(400));
@@ -379,7 +469,7 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     const moment = m.q('[data-testid="unlock-ladder"]');
     expect(moment).not.toBeNull();
     expect(moment!.getAttribute('data-also')).toBe('campaign');
-    expect(text(moment!)).toContain('Ladder and War Path');
+    expect(text(moment!)).toContain('Ranked and War Path');
     expect(m.save.value.flags['ui-unlock.ladder']).toBe(true);
     expect(m.save.value.flags['ui-unlock.campaign']).toBe(true);
     m.unmount();

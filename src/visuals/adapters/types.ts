@@ -17,6 +17,8 @@ export interface ViewRequest {
   side: Side;
   teamPreset: TeamPreset;
   seed: number;
+  /** Draw from the showcase's HD copy of the sheet (`AtlasAdapter.lease` with `hd`; atlas units only). */
+  hd?: boolean;
 }
 
 export interface BaseRequest extends ViewRequest {

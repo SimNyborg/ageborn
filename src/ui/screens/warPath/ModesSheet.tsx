@@ -5,12 +5,14 @@
  * stay in the card's tooltip and label). A tap **selects** the mode and closes the panel; it never
  * starts a match: Battle on Home plays the selected mode (MR-120: the card's icon flies into the switcher).
  *
- * - **vs AI**: Ladder (the default), Quick Battle, Daily Challenge (opens at 6 wins), Skirmish ("Set
- *   up" opens its setup; once a setup has been played the card selects it), Conquest (opens its
- *   board, until A18.7.10 folds it into the map).
- * - **vs players** (first): Friend Duel, shown now as a locked card that says it arrives with online play and
- *   what it will be (owner request 2026-10-01: Home should lead towards 2-player online battles).
- *   Online Battle and Ranked join when they work (M4, M5); the dev mock shows them.
+ * - **vs players** (first): Ranked, the Ladder as online ranked play (the default; owner decision
+ *   2026-10-07: Battle searches and finds a player, the match is played against the AI), and Friend
+ *   Duel, shown now as a locked card that says it arrives with online play and what it will be (owner
+ *   request 2026-10-01: Home should lead towards 2-player online battles). The real Online Battle
+ *   joins when it works (M4); the dev mock shows it.
+ * - **vs AI**: Quick Battle, Daily Challenge (opens at 6 wins), Skirmish ("Set up" opens its setup;
+ *   once a setup has been played the card selects it), Conquest (opens its board, until A18.7.10
+ *   folds it into the map).
  *
  * No timers, no countdowns, no player counts. Mode cards use neutral surfaces (U5).
  */
@@ -61,18 +63,19 @@ export function ModesSheet(p: {
     router.go({ id: 'modeSelect', focus: 'skirmish' });
   };
 
+  // The Ladder is online ranked play (owner decision 2026-10-07): its card leads "vs players".
+  const ranked: Card = {
+    id: 'ladder',
+    icon: <TrophyIcon size={30} />,
+    title: t('warPath.ui.ladder'),
+    desc: t('ui.modesPanel.ladderDesc'),
+    reward: (
+      <>
+        <TrophyIcon size={16} /> {t('ui.modesPanel.ladderReward')}
+      </>
+    ),
+  };
   const ai: Card[] = [
-    {
-      id: 'ladder',
-      icon: <TrophyIcon size={30} />,
-      title: t('warPath.ui.ladder'),
-      desc: t('ui.modesPanel.ladderDesc'),
-      reward: (
-        <>
-          <TrophyIcon size={16} /> {t('ui.modesPanel.ladderReward')}
-        </>
-      ),
-    },
     {
       id: 'quick',
       icon: <QuickBattleIcon size={30} />,
@@ -132,6 +135,7 @@ export function ModesSheet(p: {
       : []),
   ];
   const players: Card[] = [
+    ranked,
     ...(p.online
       ? [
           {

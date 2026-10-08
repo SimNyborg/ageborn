@@ -3,6 +3,11 @@
  * honesty rules ask for (A7.1): the AI badge and "AI General", tier, levels ("Plan Lv 3.4 vs Lv 3"),
  * format, the personality line, Daily Challenge modifiers, warm-up (A6.3) and boss or training
  * disclosures (A7.4). Then the app starts the battle.
+ *
+ * The ranked Ladder from Home's Battle (owner decision 2026-10-07): the opponent is the online player
+ * the simulated search found (`side.online`), so their card mirrors yours: banner, avatar, name, the
+ * Player chip, trophies and arena, plan level, connection bars and flags; no AI chip, "AI General",
+ * tier or General lines. Like an online VS it is not skipped by a tap; it starts by itself.
  */
 import './vs.css';
 import { modifierDescKey, modifierNameKey } from '@/content/keys';
@@ -12,18 +17,21 @@ import { BannerArt } from '../../components/avatar/ProfileArt';
 import { AiBadge, Pill } from '../../components/Chips';
 import { BackdropLook, BaseLook, LookFlags } from '../../components/cosmeticArt';
 import { formatDec, formatInt, tierNumeral } from '../../components/format';
-import { TrophyIcon } from '../../components/icons';
+import { SignalIcon, TrophyIcon } from '../../components/icons';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { hudTeamColors } from '../../hud/model';
+import { PlayerChip } from '../home/online';
 import { equippedOf, owns } from '../model/cosmetics';
-import { generalOf, opponentName, personalityOf } from '../model/opponent';
+import { generalOf, onlineOf, opponentName, personalityOf } from '../model/opponent';
 import { activePlan, formatAges, formatName, planAvgLevel } from '../model/plan';
 import { featureOpen, levelNameKey } from '../model/warPath';
 import { minutesText } from '../model/homeMode';
 
 /** A9 #4: the VS screen shows for 2 s. */
 export const VS_MS = 2000;
+/** The ranked Ladder's VS against the found online player: a little longer, and not skipped by a tap. */
+export const VS_ONLINE_MS = 2600;
 /** When the slam sound starts (the CSS `vs-slam` runs 260-780 ms and peaks near 450 ms). */
 const VS_SLAM_SOUND_MS = 300;
 /** Both Generals turn determined on the slam (AUDIT §4: the mood swaps on the impact). */
@@ -95,6 +103,9 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
   const { save, content, t, locale, services, sound } = useUi();
   const { opponent: o, request } = p.route;
   const s = save.value;
+  // The ranked Ladder's found player (owner decision 2026-10-07), else null for a labelled AI.
+  const online = onlineOf(o);
+  const ms = online ? VS_ONLINE_MS : VS_MS;
   const started = useRef(false);
   const begin = () => {
     if (started.current) return;
@@ -103,10 +114,14 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
   };
   const beginRef = useRef(begin);
   beginRef.current = begin;
+  /** A tap skips an AI's VS; an online VS starts by itself, as it would against a person. */
+  const tapBegin = () => {
+    if (!online) begin();
+  };
 
   const [clash, setClash] = useState(false);
   useEffect(() => {
-    const id = setTimeout(() => beginRef.current(), VS_MS);
+    const id = setTimeout(() => beginRef.current(), ms);
     const mood = setTimeout(() => setClash(true), VS_MOOD_MS);
     // The plates slide in on a whoosh and meet on a slam (audit 2026-10-01: the VS was silent). The
     // slam sound has its own 150 ms run-in, timed so its impact lands with the CSS `vs-slam` peak.
@@ -141,14 +156,14 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
 
   return (
     <section
-      class="ui-screen vs"
+      class={`ui-screen vs${online ? ' is-online' : ''}`}
       data-screen="vs"
       aria-labelledby="vs-title"
-      onClick={begin}
+      onClick={tapBegin}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          begin();
+          tapBegin();
         }
       }}
     >
@@ -176,6 +191,11 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
             <span class="vs__row">
               <TrophyIcon size={20} />
               {formatInt(s.trophies.current, locale)}
+              {online ? (
+                <span class="vs__bars" title={t('ui.online.vs.connection', { n: 3 })} data-testid="vs-bars-me">
+                  <SignalIcon size={18} bars={3} />
+                </span>
+              ) : null}
             </span>
           ) : null}
           {tutorial ? null : (
@@ -194,34 +214,60 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
         <span class="vs__base vs__base--foe" aria-hidden="true">
           <BaseLook age={firstAge} skin={foeLook?.baseSkins?.[firstAge] ?? null} animate={false} side={1} />
         </span>
-        <div class="vs__card vs__card--foe" data-testid="vs-foe">
-          <span class="vs__bust">
-            <GeneralPortrait generalId={o.generalId} name={o.displayName} size={150} crop="bust" mood={clash ? 'determined' : 'neutral'} />
-          </span>
-          <AiBadge general />
-          <span class="vs__name">{name}</span>
-          <span class="vs__row">
-            {general?.scripted ? null : <Pill tone="violet">{t('ui.vs.tier', { tier: tierNumeral(o.tier) })}</Pill>}
-            {tutorial ? null : (
-              <span class="vs__level" data-testid="vs-ai-level">
-                {t('ui.vs.aiLevel', { n: o.level })}
+        {online ? (
+          // The found online player's card mirrors yours (owner decision 2026-10-07).
+          <div class="vs__card vs__card--foe is-player" data-testid="vs-foe">
+            <span class="vs__bust">
+              <BannerArt id={online.banner} width={186} class="vs__banner" />
+              <Avatar spec={online.avatar} size={150} crop="bust" mood={clash ? 'determined' : 'neutral'} frameColor="var(--ui-team-foe)" label={name} />
+            </span>
+            <PlayerChip />
+            <span class="vs__name">{name}</span>
+            <span class="vs__row">
+              <TrophyIcon size={20} />
+              {formatInt(online.trophies, locale)}
+              <span class="vs__arena">{t('ui.home.arenaN', { n: online.arena })}</span>
+              <span class="vs__bars" title={t('ui.online.vs.connection', { n: online.bars })} data-testid="vs-bars-foe">
+                <SignalIcon size={18} bars={online.bars} />
               </span>
-            )}
-          </span>
-          {persona ? <span class="vs__personality">{t(persona.personalityKey)}</span> : null}
-          {general ? (
-            <q class="vs__line" data-testid="vs-line">
-              {t(general.lineKey)}
-            </q>
-          ) : null}
-          <span class="vs__rules">{t('ui.ai.sameRules')}</span>
-          {foeLook ? <LookFlags baseFlag={foeLook.baseFlag} nationalFlag={foeLook.nationalFlag} team={hex(teams.foe)} testid="vs-flags-foe" still={s.settings.reduceMotion} large /> : null}
-        </div>
+            </span>
+            <span class="vs__level" data-testid="vs-foe-level">
+              {t('ui.vs.planLevel', { n: formatInt(o.level, locale) })}
+            </span>
+            {foeLook ? <LookFlags baseFlag={foeLook.baseFlag} nationalFlag={foeLook.nationalFlag} team={hex(teams.foe)} testid="vs-flags-foe" still={s.settings.reduceMotion} large /> : null}
+          </div>
+        ) : (
+          <div class="vs__card vs__card--foe" data-testid="vs-foe">
+            <span class="vs__bust">
+              <GeneralPortrait generalId={o.generalId} name={o.displayName} size={150} crop="bust" mood={clash ? 'determined' : 'neutral'} />
+            </span>
+            <AiBadge general />
+            <span class="vs__name">{name}</span>
+            <span class="vs__row">
+              {general?.scripted ? null : <Pill tone="violet">{t('ui.vs.tier', { tier: tierNumeral(o.tier) })}</Pill>}
+              {tutorial ? null : (
+                <span class="vs__level" data-testid="vs-ai-level">
+                  {t('ui.vs.aiLevel', { n: o.level })}
+                </span>
+              )}
+            </span>
+            {persona ? <span class="vs__personality">{t(persona.personalityKey)}</span> : null}
+            {general ? (
+              <q class="vs__line" data-testid="vs-line">
+                {t(general.lineKey)}
+              </q>
+            ) : null}
+            <span class="vs__rules">{t('ui.ai.sameRules')}</span>
+            {foeLook ? <LookFlags baseFlag={foeLook.baseFlag} nationalFlag={foeLook.nationalFlag} team={hex(teams.foe)} testid="vs-flags-foe" still={s.settings.reduceMotion} large /> : null}
+          </div>
+        )}
       </div>
       <VsShield label={t('ui.vs.vs')} />
       <footer class="vs__strip">
         <div class="vs__chips">
-          {request.mode === 'tutorial' ? null : <Pill tone="blue">{t(request.mode === 'skirmish' && request.quick ? 'ui.vs.mode.quick' : MODE_KEYS[request.mode])}</Pill>}
+          {request.mode === 'tutorial' ? null : (
+            <Pill tone="blue">{t(online ? 'ui.vs.mode.ranked' : request.mode === 'skirmish' && request.quick ? 'ui.vs.mode.quick' : MODE_KEYS[request.mode])}</Pill>
+          )}
           {request.mode === 'warPath' && content.warPath.levels[request.level] ? (
             <Pill tone="gold" testid="vs-level">
               {t('ui.vs.level', { n: content.warPath.levels[request.level]!.index, name: t(levelNameKey(request.level)) })}
@@ -264,13 +310,15 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
           </ul>
         ) : null}
         <div class="vs__skip">
-          <span>{t('ui.vs.skip')}</span>
-          <i class="vs__timer" style={{ animationDuration: `${VS_MS}ms` }} />
+          <span>{online ? t('ui.vs.ready') : t('ui.vs.skip')}</span>
+          <i class="vs__timer" style={{ animationDuration: `${ms}ms` }} />
         </div>
       </footer>
-      <button type="button" class="ui-sr" data-autofocus="" onClick={begin}>
-        {t('ui.vs.skip')}
-      </button>
+      {online ? null : (
+        <button type="button" class="ui-sr" data-autofocus="" onClick={begin}>
+          {t('ui.vs.skip')}
+        </button>
+      )}
     </section>
   );
 }

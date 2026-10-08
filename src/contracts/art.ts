@@ -7,7 +7,7 @@
  *
  * Pixi types are referenced as type-only `import()` types, so this module has no runtime imports (B2).
  */
-import type { AgeId, CardId, CosmeticKey, EffectId, Foil, Pt, RoleGroup, Side, SideLook, SkinId, TeamPreset, VisualId } from './ids';
+import type { AgeId, CardId, CosmeticKey, EffectId, Foil, Pt, RoleGroup, Side, SideLook, SkinId, SoundId, TeamPreset, VisualId } from './ids';
 
 export type ClipName = 'spawn' | 'idle' | 'walk' | 'attack' | 'hit' | 'stun' | 'die' | 'victory' | 'ability';
 
@@ -191,3 +191,91 @@ export interface ArtProvider {
   /** Data URL, cached by (card, skin, size) (DESIGN B5 Portraits). */
   portrait(o: { card: CardId; skin?: SkinId; foil?: Foil; size: number; side?: Side }): Promise<string>;
 }
+
+// ---------------------------------------------------------------------------------------------
+// Card detail showcase (ui-plan 4.4, owner request 2026-10-07): a live stage where a card's real
+// battle art moves and shows its attacks. Presentation only: no sim, no gameplay timing. The render
+// layer implements `ShowcaseMount` with the injected `ArtProvider`; the UI receives it through its
+// `ShowcaseContext` (the UI may not import render or Pixi, B2) and keeps the still portrait until
+// `ready` resolves true.
+
+/** One move of the showcase. Troops: walk, idle, the attack variants, the specials, a hit and a KO. */
+export type ShowcaseMove =
+  | 'idle'
+  | 'walk'
+  | 'attack'
+  | 'attack_b'
+  | 'attack_c'
+  | 'attack_alt'
+  | 'ability'
+  | 'summon'
+  | 'hit'
+  | 'ko'
+  | 'build'
+  | 'fire'
+  | 'spawn'
+  | 'trigger'
+  | 'cast';
+
+/** What the stage plays and how it may sound. `content` is the compiled content (read-only). */
+export interface ShowcaseRequest {
+  card: CardId;
+  skin: SkinId | null;
+  /** Card level: the battle's level trim under the unit. */
+  level: number;
+  /** An unowned card plays as a dark silhouette (the album rule). */
+  silhouette: boolean;
+  teamPreset: TeamPreset;
+  /** Reduce motion: the stage idles and plays a move only when asked (one tap, one move). */
+  reduceMotion: boolean;
+  /** Lite graphics: fewer particles, no footfall dust. */
+  lite: boolean;
+  /** The compiled content (read-only); absent: the mount's own (`showcaseMount(art, { content })`). */
+  content?: import('./content').CompiledContent;
+  /** The UI's sound hook (it follows the player's sound settings); absent = silent. */
+  sound?: (id: SoundId, o?: { pitchBp?: number; volumeDb?: number }) => void;
+  /**
+   * Where the stage's floor is, as fractions of the host box: the ground line, and the box an overlay
+   * covers (the lg card in the bottom-left corner); the action is framed to its right.
+   */
+  frame?: { groundY: number; coverRight: number; coverTop: number };
+}
+
+/** The stage's state for the UI's caption and play/pause button. */
+export interface ShowcaseState {
+  /** True while the live art draws (the still portrait is hidden). */
+  live: boolean;
+  /** The move playing now. */
+  move: ShowcaseMove;
+  /** 1-based variant number for attack moves (`attack_b` is 2), else 0; with `of`, "Attack 2/3". */
+  index: number;
+  of: number;
+  /** The ability kind the `ability` move shows (`pounce`, `callStrike`, ...), else null. */
+  ability: string | null;
+  /** True while the showcase loop plays by itself. */
+  auto: boolean;
+  /** The moves this card shows, in cycle order. */
+  moves: readonly ShowcaseMove[];
+}
+
+export interface ShowcaseHandle {
+  /** Resolves true once the live stage draws, false when it cannot (no WebGL, no art): keep the still. */
+  readonly ready: Promise<boolean>;
+  state(): ShowcaseState;
+  /** Plays one move now and pauses the loop; without a move, the next one in cycle order. */
+  play(move?: ShowcaseMove): void;
+  /** Resumes (true) or pauses (false) the loop. Pausing lets the current move finish, then idles. */
+  setAuto(on: boolean): void;
+  /** Applies a changed skin, level, ownership, team preset, motion setting or sound hook. */
+  update(patch: Partial<Pick<ShowcaseRequest, 'skin' | 'level' | 'silhouette' | 'teamPreset' | 'reduceMotion' | 'lite' | 'sound' | 'frame'>>): void;
+  /** A level-up: the unit cheers (MR-39 follow-through on the stage). */
+  celebrate(): void;
+  /** Stops drawing while hidden (tab hidden, scrolled away); the loop resumes where it was. */
+  setVisible(on: boolean): void;
+  subscribe(fn: (s: ShowcaseState) => void): () => void;
+  /** Destroys the stage: views, its Pixi app and its GPU context; leased sheets are released. */
+  destroy(): void;
+}
+
+/** Mounts a showcase stage into `host` (a positioned element the stage fills). */
+export type ShowcaseMount = (host: HTMLElement, req: ShowcaseRequest) => ShowcaseHandle;

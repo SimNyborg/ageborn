@@ -4,7 +4,7 @@
  * with staged rewards (A6.3), pause snapshots and a replay ring for the match history.
  */
 import type { Content } from '@/content/types';
-import type { FormatId, MatchResultInput, MatchStats, OpponentSpec, ReplayDoc, RewardStep, SideConfig } from '@/contracts';
+import type { FormatId, MatchResultInput, MatchStats, OnlinePlayer, OpponentSpec, ReplayDoc, RewardStep, SideConfig } from '@/contracts';
 import { fakeSideConfig } from '@/contracts/fakes/content';
 import type { MatchRequest, PauseInfo, ResultInfo } from '../../router';
 
@@ -25,11 +25,36 @@ function opponent(o: Partial<OpponentSpec> & Pick<OpponentSpec, 'generalId' | 'd
   };
 }
 
-export type OpponentFixture = 'general' | 'commander' | 'warmUp' | 'warden' | 'grogg' | 'daily' | 'echo';
+export type OpponentFixture = 'general' | 'commander' | 'warmUp' | 'warden' | 'grogg' | 'daily' | 'echo' | 'player';
+
+/**
+ * The player the ranked Ladder's simulated search "finds" for the fixtures (owner decision 2026-10-07):
+ * the bot underneath is a Commander, shown as this made-up online player (meta builds real ones).
+ */
+export const FIXTURE_PLAYER: OnlinePlayer = {
+  name: 'Kenji_77',
+  avatar: {
+    seed: 7707,
+    parts: {},
+    look: { face: 'face_oval', eyes: 'eyes_bright', brows: 'brows_determined', nose: 'nose_small', mouth: 'mouth_grin', hair: 'hair_spikes', facialHair: 'beard_none', headwear: 'hat_aviator', top: 'top_flight_jacket', accessory: 'acc_none', background: 'bg_city' },
+    tints: { skin: 1, hair: 6, eyes: 1, cloth: 4 },
+  },
+  trophies: 1064,
+  arena: 4,
+  banner: 'harbor',
+  bars: 3,
+};
 
 export function fixtureOpponent(content: Content, which: OpponentFixture): OpponentSpec {
   const name = (id: string) => content.generals.list[id as 'pip']?.nameKey ?? id;
   switch (which) {
+    case 'player': {
+      const bot = opponent({ generalId: 'commander:kettle:bonker', displayName: FIXTURE_PLAYER.name, tier: 3, level: 4, format: 'short' });
+      return {
+        ...bot,
+        side: { ...bot.side, label: FIXTURE_PLAYER.name, online: FIXTURE_PLAYER, look: { baseFlag: 'baseFlag.cogwheel', nationalFlag: 'nationalFlag.jp', baseSkins: {}, decorations: ['decoration.iron_brazier', null, null] } },
+      };
+    }
     case 'general':
       return opponent({ generalId: 'kettle', displayName: name('kettle'), tier: 3, level: 4, format: 'standard' });
     case 'commander':
@@ -86,6 +111,8 @@ export function fixtureRequest(which: OpponentFixture): MatchRequest {
       return { mode: 'skirmish', options: { generalId: 'echo', tier: 5, format: 'short', standardLevels: false }, speed: 1 };
     case 'grogg':
       return { mode: 'tutorial', match: 1 };
+    case 'player':
+      return { mode: 'ladder', format: 'short', online: true };
     default:
       return { mode: 'ladder', format: 'standard' };
   }
@@ -107,14 +134,15 @@ export const fixtureStats: MatchStats = {
   mvpCard: 'pikeman',
 };
 
-export type ResultFixture = 'win' | 'loss' | 'draw' | 'conquest' | 'noCapsule' | 'warPath' | 'warPathLoss' | 'lastWin' | 'retreat';
+export type ResultFixture = 'win' | 'loss' | 'draw' | 'conquest' | 'noCapsule' | 'warPath' | 'warPathLoss' | 'lastWin' | 'retreat' | 'player';
 
 export function fixtureResult(content: Content, which: ResultFixture): ResultInfo {
-  const base = fixtureOpponent(content, which === 'conquest' ? 'warden' : 'general');
+  // 'player': a ranked Ladder win against the bot shown as an online player (owner decision 2026-10-07).
+  const base = fixtureOpponent(content, which === 'conquest' ? 'warden' : which === 'player' ? 'player' : 'general');
   // Last Base Standing (A2.10.1): won at 23:41, in Crumble; ranked since 2026-10-03 (+48 trophies, 47 Amber).
   const last = which === 'lastWin';
   const opp = last ? { ...base, format: 'last' } : base;
-  const winner = which === 'win' || which === 'conquest' || which === 'noCapsule' || which === 'warPath' || last ? 0 : which === 'loss' || which === 'warPathLoss' || which === 'retreat' ? 1 : null;
+  const winner = which === 'win' || which === 'player' || which === 'conquest' || which === 'noCapsule' || which === 'warPath' || last ? 0 : which === 'loss' || which === 'warPathLoss' || which === 'retreat' ? 1 : null;
   const path = which === 'warPath' ? 'wp.bronze.l03' : which === 'warPathLoss' ? 'wp.bronze.l07' : null;
   const input: MatchResultInput = {
     mode: which === 'conquest' ? 'conquest' : path ? 'warPath' : 'ladder',
@@ -133,6 +161,7 @@ export function fixtureResult(content: Content, which: ResultFixture): ResultInf
   let rewards: RewardStep[];
   switch (which) {
     case 'win':
+    case 'player':
       rewards = [
         { kind: 'trophies', delta: 30 },
         { kind: 'amber', amount: 20 },
@@ -202,7 +231,14 @@ export function fixtureResult(content: Content, which: ResultFixture): ResultInf
     input,
     rewards,
     replayIndex: 0,
-    request: which === 'conquest' ? { mode: 'conquest', general: 'warden' } : path ? { mode: 'warPath', level: path, difficulty: 'normal' } : { mode: 'ladder', format: last ? 'last' : 'standard' },
+    request:
+      which === 'conquest'
+        ? { mode: 'conquest', general: 'warden' }
+        : path
+          ? { mode: 'warPath', level: path, difficulty: 'normal' }
+          : which === 'player'
+            ? { mode: 'ladder', format: 'short', online: true }
+            : { mode: 'ladder', format: last ? 'last' : 'standard' },
   };
 }
 
@@ -229,13 +265,16 @@ export function fixtureReplays(content: Content, count: number): ReplayDoc[] {
   const formats: FormatId[] = ['short', 'standard', 'full'];
   return Array.from({ length: count }, (_, i) => {
     const winner = i % 5 === 3 ? null : i % 3 === 1 ? 1 : 0;
+    // Every fourth match is a ranked Ladder match, its bot shown as an online player (owner decision 2026-10-07).
+    const online = i % 4 === 2;
+    const foe = online ? { ...side(FIXTURE_PLAYER.name, true), online: FIXTURE_PLAYER } : side(names[i % names.length]!, true);
     return {
       v: 1,
       simVersion: 'fixture',
       contentHash: i === count - 1 && count > 5 ? 'older-content' : content.hash,
       seed: 1000 + i,
       format: formats[i % 3]!,
-      sides: [side('You', false), side(names[i % names.length]!, true)],
+      sides: [side('You', false), foe],
       modifiers: [],
       training: null,
       commands: [],

@@ -25,10 +25,13 @@ import { createPreviewServices } from '@/ui/screens/fixtures/services';
 import { ScreenHost } from '@/ui/screens/ScreenHost';
 import { primeWarPathSeen } from '@/ui/screens/warPath/WarPathScreen';
 import { onlineMock, type OnlineMock } from '@/ui/screens/home/online';
+import { rankedPreview } from '@/ui/screens/home/ranked';
 import { shellTabs, TAB_ROOTS } from '@/ui/screens/warPath/shell';
-import type { SaveDoc } from '@/contracts';
+import type { SaveDoc, ShowcaseHandle, ShowcaseMount } from '@/contracts';
 import { setFortSlotPreview } from '@/ui/screens/model/plan';
 import { CosmeticArtContext } from '@/ui/components/cosmeticArt';
+import { ShowcaseContext } from '@/ui/components/showcase';
+import { showcaseMount } from '@/render/showcase';
 import { createArtProvider } from '@/visuals';
 import { cosmeticImageUrl } from '@/visuals/cosmetics/art';
 import { signal } from '@preact/signals';
@@ -107,7 +110,7 @@ function homeAt(trophies: number, flags: Record<string, boolean> = {}) {
  * The online mock (spec "online-first Battle hub" 1.8): the plate, search, room and VS of online play,
  * shown only here until M2/M4 work. The player Ana is a made-up person for the screenshots.
  */
-const ANA = { name: 'Ana', avatar: { seed: 4242, parts: {} }, trophies: 1180, arena: 4, bars: 3 as const };
+const ANA = { name: 'Ana', avatar: { seed: 4242, parts: {} }, trophies: 1180, arena: 4, banner: 'harbor', bars: 3 as const };
 function online(id: string, label: string, o: Partial<OnlineMock>): Variant {
   return {
     id,
@@ -119,7 +122,24 @@ function online(id: string, label: string, o: Partial<OnlineMock>): Variant {
   };
 }
 
+/**
+ * The ranked Ladder's simulated matchmaking (owner decision 2026-10-07), held in one phase for
+ * screenshots: the radar search (the time frozen) or the found player (the beat never moves on to VS).
+ */
+function ranked(id: string, label: string, preview: { phase: 'searching' | 'found'; elapsedMs?: number }): Variant {
+  return {
+    id,
+    label: `Home ranked: ${label}`,
+    route: () => [{ id: 'home' }],
+    prime: () => {
+      rankedPreview.value = preview;
+    },
+  };
+}
+
 const HOME_MODES: Variant[] = [
+  ranked('home-search', 'searching for an opponent (0:04)', { phase: 'searching', elapsedMs: 4000 }),
+  ranked('home-found', 'opponent found', { phase: 'found' }),
   { id: 'home-a1', label: 'Home: Ladder at Arena 1 (every length open)', route: () => [{ id: 'home' }], save: homeAt(80) },
   { id: 'home-a2', label: 'Home: Ladder at Arena 2 (every length open)', route: () => [{ id: 'home' }], save: homeAt(220) },
   { id: 'home-last', label: 'Home: Last Base Standing picked (first time)', route: () => [{ id: 'home' }], save: homeAt(1020, { 'ui-ladderFormat.last': true }) },
@@ -254,6 +274,8 @@ const VARIANTS: Variant[] = [
   vs('grogg'),
   vs('daily'),
   vs('echo'),
+  // The ranked Ladder's VS: the bot shown as the online player the search found (owner decision 2026-10-07).
+  vs('player'),
   {
     // A18.9.4 backdrop skins: your equipped backdrop behind your half of VS (review 11)
     ...vs('general'),
@@ -266,6 +288,7 @@ const VARIANTS: Variant[] = [
   pause('skirmish'),
   pause('tutorial'),
   result('win'),
+  result('player'),
   result('loss'),
   {
     id: 'result-heavyGap',
@@ -330,6 +353,8 @@ const VARIANTS: Variant[] = [
   card('horse_artillery'),
   card('hunters_spear'),
   card('undermine'),
+  // Card detail's live showcase (owner request 2026-10-07): a card per gait and kind.
+  ...['longbowman', 'atlatl_thrower', 'sabertooth', 'destrier_knight', 'war_chariot', 'gyrocopter', 'hunting_wolves', 'beast_caller', 'bronze_cannon', 'photon_knight', 'arrow_storm', 'paratroopers', 'archer_tower', 'gatling_gun', 'stampede', 'hunt_cry', 'sticky_tar', 'land_dreadnought'].map(card),
   { id: 'trophyRoad', label: 'Trophy Road', route: () => [{ id: 'home' }, { id: 'trophyRoad' }] },
   { id: 'profile', label: 'Profile', route: () => [{ id: 'home' }, { id: 'profile' }] },
   { id: 'settings', label: 'Settings', route: () => [{ id: 'home' }, { id: 'settings' }] },
@@ -354,6 +379,28 @@ function applyRoutes(router: Router, routes: Route[], tab?: TabId) {
 }
 
 const art = createArtProvider({ quality: 'high' });
+/**
+ * Card detail's live showcase (owner request 2026-10-07), as the app injects it. Live stages are listed
+ * in `window.__showcaseStages` so screenshots can pause one (`setVisible(false)`) and step it.
+ */
+const mountShowcase = showcaseMount(art, { content });
+const showcase: ShowcaseMount = (host, req) => {
+  const h = mountShowcase(host, req);
+  const w = window as Window & { __showcaseStages?: ShowcaseHandle[] };
+  (w.__showcaseStages ??= []).push(h);
+  return h;
+};
+/**
+ * `&sfx=log` records the UI's sound calls in `window.__uiSounds` instead of staying silent (the
+ * showcase's hits and swings can then be checked from Playwright; the dev page has no audio).
+ */
+const logSounds = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('sfx') === 'log';
+const soundLog = (id: string, o?: { pitchBp?: number; volumeDb?: number }): void => {
+  const w = window as Window & { __uiSounds?: { id: string; volumeDb?: number; t: number }[] };
+  const list = (w.__uiSounds ??= []);
+  list.push({ id, ...(o?.volumeDb !== undefined ? { volumeDb: o.volumeDb } : {}), t: Math.round(performance.now()) });
+  if (list.length > 400) list.splice(0, list.length - 400);
+};
 
 const bar: Record<string, string | number> = {
   display: 'flex',
@@ -382,6 +429,7 @@ export default function ScreensPage() {
     const initial = v.save ? v.save(base) : base;
     primeWarPathSeen(null);
     onlineMock.value = null;
+    rankedPreview.value = null;
     v.prime?.(initial);
     const save = signal(initial);
     const router = createRouter({ id: 'home' });
@@ -396,6 +444,7 @@ export default function ScreensPage() {
       router,
       services,
       portrait: portraits ? art.portrait.bind(art) : null,
+      ...(logSounds ? { sound: soundLog } : {}),
     };
   }, [variant, state, portraits, epoch]);
 
@@ -447,6 +496,7 @@ export default function ScreensPage() {
       </div>
       <div style={frame} key={`${variant}|${state}|${portraits}|${epoch}`}>
         <CosmeticArtContext.Provider value={cosmeticImageUrl}>
+          <ShowcaseContext.Provider value={portraits ? showcase : null}>
           <ScreenHost
             env={env}
             shell={{ tabs: shellTabs(env.save.value, content), roots: TAB_ROOTS }}
@@ -468,6 +518,7 @@ export default function ScreensPage() {
             ),
           }}
           />
+          </ShowcaseContext.Provider>
         </CosmeticArtContext.Provider>
       </div>
     </div>

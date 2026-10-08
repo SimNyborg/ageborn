@@ -12,30 +12,38 @@
  *   Dust chips, the gear.
  * - **Left**: the War Path card (after the onboarding) and the four capsule slots (once Capsules open).
  * - **Right, over Battle**: the match plate, the lobby card that always shows exactly what Battle will
- *   do (`plate.tsx`: who you fight, with the AI chip; the one choice the mode needs, like the battle
- *   length; one line), and **Battle** (gold, XL, bottom-right, the only primary and the one pulse),
- *   with the **mode switcher** to its left once open (3 wins). The switcher shows the mode Battle
- *   plays ("Ladder · vs AI"); its panel selects a mode and never starts one. The five tabs are the
- *   shell's bottom bar.
+ *   do (`plate.tsx`: who you fight, with the AI chip in the AI modes; the one choice the mode needs,
+ *   like the battle length; one line), and **Battle** (gold, XL, bottom-right, the only primary and the
+ *   one pulse), with the **mode switcher** to its left once open (3 wins). The switcher shows the mode
+ *   Battle plays ("Ranked · Online", "Quick · vs AI"); its panel selects a mode and never starts one.
+ *   The five tabs are the shell's bottom bar.
+ *
+ * **The Ladder is online ranked play** (owner decision 2026-10-07, `ranked.tsx`): Battle starts a
+ * simulated matchmaking search in the plate (a radar, the time counting up, the trophy window; Battle
+ * becomes Cancel), and after a natural 2-9 s the plate slams in the found player (their tag, avatar,
+ * flag, trophies, arena and the Player chip); then VS. The match is the same Ladder match against the
+ * AI bot matchmaking picked; only its presentation is the found player.
  *
  * While the onboarding runs (A8), Battle starts its matches (the training match vs Old Grogg, then
  * match 2 vs Pip; both are War Path Stone L1 and L2). Feature unlocks play here (MR-40).
  *
- * Online play (Friend Duel at M2, Online Battle at M4) has its plate states, search, room and VS in
- * `online.tsx`; they render only in the dev mock (`onlineMock`) until they work (spec 1.8).
+ * Real online play (Friend Duel at M2, Online Battle at M4) has its plate states, search, room and VS
+ * in `online.tsx`; they render only in the dev mock (`onlineMock`) until they work (spec 1.8).
  */
 import './home.css';
 import './hub.css';
 import '../warPath/warPath.css';
 import './lobby.css';
-import type { AgeId, CardId, FormatId, Loadout } from '@/contracts';
+import type { AgeId, CardId, FormatId, Loadout, OpponentSpec } from '@/contracts';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Wordmark } from '../../components/Wordmark';
 import { Button } from '../../components/Button';
+import { haptic } from '../../components/haptics';
 import { SwordsIcon } from '../../components/icons';
 import { useKit } from '../../components/kit';
 import { fly } from '../../components/motion';
 import { blockingOverlays } from '../../components/overlay';
+import { pushBackHandler } from '../../history';
 import type { MatchRequest, RouteOf, TabId } from '../../router';
 import { useUi } from '../context';
 import { hudTeamColors } from '../../hud/model';
@@ -54,7 +62,11 @@ import { Diorama, type FoeLook } from './Diorama';
 import { ArenaTitle, CampaignCard, CapsuleSlots, HubProfile, HubTopRight, pendingCurrencyCaption, TrophyBar, UnlockPointer } from './hub';
 import { JoinPanel, onlineLengths, onlineMock, OnlinePlate, OnlineVs, RoomPanel, useElapsed, type OnlineState } from './online';
 import { LAST_SEEN, MatchPlate } from './plate';
+import { FOUND_HOLD_MS, FOUND_IMPACT_MS, RankedPlate, rankedPreview, searchDelayMs, takeRankedSearch, type RankedPhase } from './ranked';
 import { FriendSoonChip, ModeSwitcher, type SwitcherMode } from './switcher';
+
+/** The ranked Ladder's search (owner decision 2026-10-07): the prepared match it reveals, and its phase. */
+type Ranked = { phase: 'idle' } | { phase: Exclude<RankedPhase, 'idle'>; req: MatchRequest; opponent: OpponentSpec; frozen?: boolean; elapsedMs?: number };
 
 const UNLOCK_TAB: Readonly<Partial<Record<HomeUnlock, TabId>>> = { army: 'army', capsules: 'capsules', customize: 'customize', progress: 'progress' };
 
@@ -101,7 +113,20 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
   const mode: SwitcherMode = onlineMode ?? aiMode;
   const format = ladderFormat(s, content);
   const [onlineFormat, setOnlineFormat] = useState<FormatId>('short');
-  const opponent = ladderOpen && mode === 'ladder' ? services.previewOpponent(format) : null;
+  // The Ladder is online ranked play (owner decision 2026-10-07): its opponent is unknown until the
+  // search finds one, so nothing is previewed (the AI modes show their General on the plate).
+  const rankedOn = ladderOpen && mode === 'ladder';
+
+  // ---- The ranked Ladder's simulated search (ranked.tsx): idle → searching → found → VS ----------
+  const [ranked, setRanked] = useState<Ranked>({ phase: 'idle' });
+  const rankedRef = useRef(ranked);
+  rankedRef.current = ranked;
+  const rankedBusy = ranked.phase !== 'idle';
+  const rankedElapsed = useElapsed(ranked.phase === 'searching' && !ranked.frozen, ranked.phase === 'idle' ? 0 : (ranked.elapsedMs ?? 0));
+  const leaving = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (leaving.current) clearTimeout(leaving.current);
+  }, []);
 
   // ---- Online flow (mock): search counts up, the AI is offered after 25 s, Found, VS ------------
   const [ostate, setOstate] = useState<OnlineState>(mock?.state ?? 'idle');
@@ -145,20 +170,36 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
   const eq = content.cosmetics.collections ? equippedOf(s, content) : null;
   const skin = eq?.baseSkins?.[age] ?? null;
   const mySkin = skin && owns(s, content, skin) ? skin : null;
-  const foeSkin = opponent?.side.look?.baseSkins?.[age] ?? null;
+  // The ranked Ladder's found player: their base look and frontline drop in when the search ends.
+  const found = ranked.phase === 'found' ? ranked.opponent : null;
+  const foeSkin = found?.side.look?.baseSkins?.[age] ?? null;
   const teams = hudTeamColors(s.settings.teamPreset, 0);
-  // Each side's frontline troops in the lane: your active War Plan's, and the AI's own plan (the
-  // training General's during the onboarding, the Quick or Skirmish General's in those modes).
+  // Each side's frontline troops in the lane: your active War Plan's, and the opponent's own plan (the
+  // training General's during the onboarding, the Quick or Skirmish General's in those modes, the found
+  // player's once the ranked search has found one).
   const plan = s.warPlans[s.activePlan] ?? s.warPlans[0];
   const mine = frontline(plan?.loadouts[age]);
   const trainingGeneral = training ? content.warPath.levels[content.warPath.order[training - 1]!]?.general : undefined;
   const modeGeneral = mode === 'quick' ? quickGeneralFor(content, lastDifficulty(s, content)) : mode === 'skirmish' ? skirmishSetup(s, content)?.generalId : undefined;
   const planGeneral = trainingGeneral ?? modeGeneral;
   const generalPlan = planGeneral ? content.generals.list[planGeneral as keyof typeof content.generals.list]?.warPlan : null;
-  const foeUnits = frontline(opponent ? opponent.side.loadouts[age] : generalPlan?.[age]);
+  const foeUnits = frontline(found ? found.side.loadouts[age] : generalPlan?.[age]);
   const foe = foeUnits.length > 0 ? foeUnits : mine;
-  // Online, the far base is a "?" until a player is found; it fogs while searching (spec 1.6).
-  const foeLook: FoeLook = onlineMode ? (ostate === 'found' ? 'found' : searching ? 'searching' : 'unknown') : 'ai';
+  // Online (the ranked Ladder, and the mock's modes) the far base is a "?" until a player is found; it
+  // fogs while searching and drops in once found (spec 1.6, MR-121, MR-122).
+  const foeLook: FoeLook = onlineMode
+    ? ostate === 'found'
+      ? 'found'
+      : searching
+        ? 'searching'
+        : 'unknown'
+    : rankedOn
+      ? ranked.phase === 'found'
+        ? 'found'
+        : ranked.phase === 'searching'
+          ? 'searching'
+          : 'unknown'
+      : 'ai';
 
   // ---- MR-40: a feature that just opened (never for a legacy save) ------------------------------
   const covered = blockingOverlays.value > 0;
@@ -205,6 +246,87 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
     }, 220);
   }
 
+  // ---- The ranked Ladder (owner decision 2026-10-07): the simulated search, then VS --------------
+
+  /**
+   * Battle on the ranked Ladder: the War Plan is checked and the match prepared now (the opponent is
+   * fixed by the match seed), then the plate searches until it "finds" that opponent.
+   */
+  function startSearch() {
+    const req: MatchRequest = { mode: 'ladder', format: ladderFormat(s, content), online: true };
+    const opponent = starter.prepare(req);
+    if (!opponent) return;
+    setUnlock(null);
+    askFullscreen();
+    kit.sound?.('ui_click');
+    haptic('tick');
+    setRanked({ phase: 'searching', req, opponent });
+  }
+
+  /** Cancel: instant, nothing lost (Battle as Cancel, Esc, back). */
+  function cancelSearch() {
+    if (rankedRef.current.phase !== 'searching') return;
+    kit.sound?.('ui_toggle');
+    setRanked({ phase: 'idle' });
+  }
+
+  /** The found beat is over (or tapped through): MR-15's dip and whoosh, then VS with the found player. */
+  function toVs() {
+    const r = rankedRef.current;
+    if (r.phase !== 'found' || leaving.current) return;
+    const show = () => starter.show(r.req, r.opponent);
+    if (reduce) {
+      leaving.current = setTimeout(show, 0);
+      return;
+    }
+    setLaunching(true);
+    kit.sound?.('ui_whoosh');
+    leaving.current = setTimeout(show, 220);
+  }
+
+  // The search runs a natural 2-9 s (UI randomness), then the plate finds the prepared opponent.
+  useEffect(() => {
+    if (ranked.phase !== 'searching' || ranked.frozen) return;
+    const id = setTimeout(() => setRanked((r) => (r.phase === 'searching' ? { ...r, phase: 'found' } : r)), searchDelayMs());
+    return () => clearTimeout(id);
+  }, [ranked.phase]);
+  // Esc and the browser or Android back cancel a search; once found the match is on (back waits).
+  useEffect(() => {
+    if (!rankedBusy) return;
+    return pushBackHandler(() => cancelSearch());
+  }, [rankedBusy]);
+  // MR-128: the found card slams in; its impact sounds and thumps, the shine rings out, then VS.
+  useEffect(() => {
+    if (ranked.phase !== 'found') return;
+    const impact = setTimeout(
+      () => {
+        kit.sound?.('ui_stamp');
+        haptic('thump');
+      },
+      reduce ? 0 : FOUND_IMPACT_MS,
+    );
+    const shine = setTimeout(() => kit.sound?.('ui_unlock'), reduce ? 60 : FOUND_IMPACT_MS + 90);
+    const go = ranked.frozen ? null : setTimeout(toVs, FOUND_HOLD_MS);
+    return () => {
+      clearTimeout(impact);
+      clearTimeout(shine);
+      if (go) clearTimeout(go);
+    };
+  }, [ranked.phase]);
+  // The Result's "Next battle" after a ranked match goes straight back into the search (the request is
+  // consumed on every mount, so it never fires later); the dev screens page can hold a phase.
+  useEffect(() => {
+    const again = takeRankedSearch();
+    if (!rankedOn) return;
+    const preview = rankedPreview.peek();
+    if (preview) {
+      const req: MatchRequest = { mode: 'ladder', format, online: true };
+      setRanked({ phase: preview.phase, req, opponent: services.prepareMatch(req), frozen: true, elapsedMs: preview.elapsedMs ?? 0 });
+      return;
+    }
+    if (again) startSearch();
+  }, []);
+
   function battle() {
     if (onlineMode) {
       if (onlineMode === 'friend') {
@@ -216,6 +338,12 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
         kit.sound?.('ui_click');
         setOstate('searching');
       }
+      return;
+    }
+    if (rankedOn) {
+      if (ranked.phase === 'searching') cancelSearch();
+      else if (ranked.phase === 'found') toVs();
+      else startSearch();
       return;
     }
     launch(training ? { mode: 'tutorial', match: training } : battleRequest(s, content, s.settings.defaultSpeed));
@@ -263,7 +391,9 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
   }
 
   const unavailable = !!onlineMode && (ostate === 'noConnection' || ostate === 'full' || ostate === 'update');
-  const battleLabel = onlineMode === 'friend' ? t('ui.hub.createRoom') : searching ? t('ui.online.cancel') : t('ui.home.battle');
+  // While a search runs (the ranked Ladder's, or the mock's) Battle is Cancel: slate, same place, no pulse.
+  const cancel = searching || ranked.phase === 'searching';
+  const battleLabel = onlineMode === 'friend' ? t('ui.hub.createRoom') : cancel ? t('ui.online.cancel') : t('ui.home.battle');
   const quiet = !!unlock || held || !!pendingUnlock(s, content);
   const scene = useMemo(() => <ArenaScene arena={arena.id} />, [arena.id]);
   const overlay = modes || !!room || vs;
@@ -271,7 +401,7 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
 
   return (
     <section
-      class={`ui-screen hub${launching ? ' is-launching' : ''}${armyOpen ? '' : ' is-first'}${ladderOpen ? ' is-ladder' : ' is-training'}${searching ? ' is-searching' : ''}`}
+      class={`ui-screen hub${launching ? ' is-launching' : ''}${armyOpen ? '' : ' is-first'}${ladderOpen ? ' is-ladder' : ' is-training'}${searching || rankedBusy ? ' is-searching' : ''}${ranked.phase === 'found' ? ' is-found' : ''}`}
       data-screen="home"
       data-arena={arena.id}
       data-mode={mode}
@@ -284,7 +414,7 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
           arena={arena.id}
           age={age}
           mySkin={mySkin}
-          foeSkin={foeLook === 'ai' ? foeSkin : null}
+          foeSkin={foeLook === 'ai' || found ? foeSkin : null}
           teamMe={teams.me}
           teamFoe={teams.foe}
           mine={mine}
@@ -337,10 +467,18 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
             onJoin={() => setRoom('join')}
             aside={unlock === 'modes' || unlock === 'daily'}
           />
+        ) : rankedOn && ranked.phase !== 'idle' ? (
+          <RankedPlate
+            phase={ranked.phase}
+            opponent={ranked.opponent}
+            elapsed={rankedElapsed}
+            format={ranked.req.mode === 'ladder' ? ranked.req.format : format}
+            aside={unlock === 'modes' || unlock === 'daily'}
+            deck={decksOpen(s) ? <DeckSwitch variant="plate" testid="home-decks" /> : null}
+          />
         ) : (
           <MatchPlate
             mode={aiMode}
-            opponent={opponent}
             training={training}
             format={format}
             onFormat={(f) => services.setUiFlags(ladderFormatFlags(content, f))}
@@ -378,21 +516,21 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
                 setModesFocus(null);
                 setModes(true);
               }}
-              disabled={searching}
+              disabled={searching || rankedBusy}
               reason={t('ui.online.searching')}
             />
           ) : null}
           <Button
-            kind={searching ? 'secondary' : 'primary'}
+            kind={cancel ? 'secondary' : 'primary'}
             size="xl"
-            class={`wp-play hub-battle${searching ? ' is-cancel' : ''}`}
-            pulse={!overlay && !covered && !searching && !unavailable}
-            primary={!overlay && !covered && !searching}
+            class={`wp-play hub-battle${cancel ? ' is-cancel' : ''}`}
+            pulse={!overlay && !covered && !cancel && !unavailable && ranked.phase === 'idle'}
+            primary={!overlay && !covered && !cancel}
             testid="play"
             autofocus
             disabled={unavailable}
             reason={unavailable ? t('ui.online.battleBlocked', { reason: t(unavailableKey) }) : undefined}
-            icon={searching ? null : <SwordsIcon size={36} hero />}
+            icon={cancel ? null : <SwordsIcon size={36} hero />}
             onClick={(e) => {
               e.stopPropagation();
               battle();

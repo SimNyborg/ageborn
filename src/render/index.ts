@@ -33,6 +33,7 @@ export { DRAG_THRESHOLD_PX, clampPowerP, powerZoneLu } from './powerTargeting';
 export { AutoPresetMonitor, PRESETS, detectMobile, initialPreset, particleCap, presetDpr } from './presets';
 export type { GraphicsPreset, GraphicsSetting, PresetSpec } from './presets';
 export { SEAM_MAX_LU, SEAM_MIN_LU, SEAM_START_LU, frontMidpoint, stepSeam } from './seam';
+export { showcaseMount } from './showcase';
 export { TEAM_COLORS, teamColor } from './teamColors';
 export { DEFAULT_VIEW_SETTINGS } from './types';
 export type { Anchor, ViewAction, ViewEvent, ViewEventListener, ViewSettings } from './types';

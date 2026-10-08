@@ -143,6 +143,28 @@ describe('ReplayDoc schema', () => {
     expect(res.ok && res.value.training).toBe(null);
   });
 
+  it('keeps the online player a bot was shown as, so the replay shows the same name (owner decision 2026-10-07)', () => {
+    const base = golden[0]!;
+    const online = {
+      name: 'Kenji_77',
+      avatar: { seed: 7707, parts: {}, look: { face: 'face_oval', headwear: 'hat_aviator' }, tints: { skin: 1, hair: 6 } },
+      trophies: 1064,
+      arena: 4,
+      banner: 'harbor',
+      bars: 3 as const,
+    };
+    const r: ReplayDoc = { ...base, sides: [base.sides[0], { ...base.sides[1], label: online.name, online, look: { nationalFlag: 'nationalFlag.jp' } }] };
+    const res = validateReplay(JSON.parse(JSON.stringify(r)));
+    expect(res.ok ? 'ok' : res.issues).toBe('ok');
+    if (res.ok) {
+      expect(res.value.sides[1].online).toEqual(online);
+      expect(res.value.sides[1].label).toBe('Kenji_77');
+      expect(res.value.sides[1].isBot).toBe(true);
+    }
+    // A damaged one is refused rather than shown half-built.
+    expect(validateReplay({ ...r, sides: [r.sides[0], { ...r.sides[1], online: { ...online, bars: 7 } }] }).ok).toBe(false);
+  });
+
   it('rejects a damaged command, outcome or version', () => {
     const base = golden[0]!;
     expect(validateReplay({ ...base, v: 2 }).ok).toBe(false);

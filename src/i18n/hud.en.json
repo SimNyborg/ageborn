@@ -15,6 +15,7 @@
     "emote": "Emotes",
     "scouted": "Scouted ({n})",
     "scoutedTitle": "Cards the AI has played",
+    "scoutedTitleOnline": "Cards they have played",
     "scoutedNone": "Nothing yet",
     "pause": "Pause",
     "resume": "Resume",

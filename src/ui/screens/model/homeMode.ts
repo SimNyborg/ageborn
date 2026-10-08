@@ -57,6 +57,20 @@ export function untimed(content: Content, f: FormatId): boolean {
   return content.formats[f]?.kind === 'untimed';
 }
 
+/**
+ * The trophy window Home's simulated search shows ("940-1,100 · Arena 4"): the player's trophies ±
+ * `names.online.trophySpread` inside their arena, the same window meta draws the found player from
+ * (`meta/onlinePlayer.ts` `onlineTrophyWindow`; a test keeps the two equal).
+ */
+export function rankedWindow(save: SaveDoc, content: Content): { min: number; max: number; arena: number } {
+  const a = arenaOf(save, content);
+  const next = content.arenas.list[a.index];
+  const hi = next ? next.trophies - 1 : Number.MAX_SAFE_INTEGER;
+  const spread = content.names.online.trophySpread;
+  const at = Math.max(a.trophies, Math.min(hi, save.trophies.current));
+  return { min: Math.max(0, a.trophies, at - spread), max: Math.min(hi, at + spread), arena: a.index };
+}
+
 /** The Ladder length Battle plays: the remembered open one, else the shortest open timed length. */
 export function ladderFormat(save: SaveDoc, content: Content): FormatId {
   const open = arenaOf(save, content).ladderFormats;
@@ -143,12 +157,15 @@ export function quickGeneralFor(content: Content, d: Difficulty): GeneralId {
   return fit?.id ?? 'kettle';
 }
 
-/** What Battle starts in the selected mode (the onboarding matches are the caller's). */
+/**
+ * What Battle starts in the selected mode (the onboarding matches are the caller's). The Ladder is
+ * online ranked play (owner decision 2026-10-07): `online` makes Home search and show the found player.
+ */
 export function battleRequest(save: SaveDoc, content: Content, speed: 1 | 1.5 | 2): MatchRequest {
   const m = homeMode(save, content);
   switch (m) {
     case 'ladder':
-      return { mode: 'ladder', format: ladderFormat(save, content) };
+      return { mode: 'ladder', format: ladderFormat(save, content), online: true };
     case 'quick': {
       const d = lastDifficulty(save, content);
       return { mode: 'skirmish', options: { generalId: quickGeneralFor(content, d), tier: content.generals.difficulty.tiers[d], format: 'short', standardLevels: false }, speed, quick: true };

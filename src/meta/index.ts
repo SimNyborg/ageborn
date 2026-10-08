@@ -12,7 +12,7 @@
  * Use `meta` (bound to the game content) or `createMeta(content)`. The `Meta` contract methods that
  * take no content (`openCapsule`, `openWardrobe`, `tickTimers`) use the bound content.
  */
-import type { AgeId, CardId, Clock, CompiledContent, FormatId, MatchResultInput, Meta, PendingCrate, Result, RewardStep, SaveDoc, SideLook, SkinId, WarPathDifficulty } from '@/contracts';
+import type { AgeId, CardId, Clock, CompiledContent, FormatId, MatchResultInput, Meta, OpponentSpec, PendingCrate, Result, RewardStep, SaveDoc, SideLook, SkinId, WarPathDifficulty } from '@/contracts';
 import { content as gameContent, type Content, type ModifierId } from '@/content';
 import { grantCapsuleAt, grantCrateAt, openCapsuleWith, openCrate } from './capsules';
 import { conquestBoard, type ConquestEntry } from './conquest';
@@ -31,6 +31,7 @@ import { craft } from './dust';
 import { claimDaily, dailyModifierAt } from './daily';
 import { pickOpponentAt } from './matchmaking';
 import { newSaveAt } from './newSave';
+import { asOnlineOpponent } from './onlinePlayer';
 import { claimQuest, rerollQuest } from './quests';
 import { ageCapsuleChoices, ageCapsuleDue, applyMatchResultAt, questGrantsAgeCapsule } from './rewards';
 import { tables } from './tables';
@@ -99,6 +100,12 @@ export interface MetaRules extends Meta {
   sideLook(s: SaveDoc, c: CompiledContent): SideLook;
   /** An AI opponent's base look, seeded by its name (never a national flag). */
   botLook(c: CompiledContent, seed: string): SideLook;
+  /**
+   * A Ladder opponent shown as the simulated online player of Home's Battle (owner decision 2026-10-07):
+   * name, avatar, trophies, arena, banner, flag and connection bars seeded by the match; the bot that
+   * plays (General, tier, level, plan, seed) is unchanged (`onlinePlayer.ts`).
+   */
+  onlineOpponent(s: SaveDoc, o: OpponentSpec, c: CompiledContent): OpponentSpec;
 }
 
 /** Meta rules bound to a content set (the game's by default). */
@@ -146,6 +153,7 @@ export function createMeta(bound: CompiledContent = gameContent): MetaRules {
     cosmeticOdds: (s, c) => cosmeticOdds(s, tables(c)),
     sideLook: (s, c) => sideLook(s, tables(c)),
     botLook: (c, seed) => botLook(tables(c), seed),
+    onlineOpponent: (s, o, c) => asOnlineOpponent(s, tables(c), o),
     markSeen: (s, card) => {
       const e = s.collection[card];
       return e && e.isNew ? { ...s, collection: { ...s.collection, [card]: { ...e, isNew: false } } } : s;
@@ -166,6 +174,7 @@ export { avatarPart, ownsAvatarPart, setAvatarLook, wearablesOf } from './avatar
 export { COSMETIC_COLLECTIONS, cosmeticCraftPrice, cosmeticItem, cosmeticKey, exclusiveSets, firstOfTierFlag, ownsCosmetic, tierExclusiveItems } from './cosmetics';
 export type { OpponentOptions } from './matchmaking';
 export { commanderId, commanderInfo, ECHO_DISCLOSURE_KEY, ladderGenerals, newPlayerMistakeBonusBp, newPlayerMistakesApply, ROOKIE_DISCLOSURE_KEY } from './matchmaking';
+export { asOnlineOpponent, onlinePlayerFor, onlineTag, onlineTrophyWindow, type OnlineWindow } from './onlinePlayer';
 export { bagLeft, bagSize, bagTotal, legendaryPityBp, strikeCounts, strikePattern } from './capsules';
 export { grantLegacySkillAeons, LEGACY_SKILL_AEON_FLAG, legacyGrantedFlag, legacySkillAeonCount } from './legacyAeons';
 export { guaranteedLegendaries, tierIndex, tierOrder, topTier } from './tables';

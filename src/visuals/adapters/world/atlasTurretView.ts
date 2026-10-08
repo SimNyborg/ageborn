@@ -419,6 +419,16 @@ export class AtlasTurretView implements TurretView {
     return { x: this.root.x + mz.x * sx, y: this.root.y + (this.body.y + mz.y * this.body.scale.y) * this.root.scale.y };
   }
 
+  /**
+   * How far the drawn turret reaches from its foot (lu): toward its target, behind it and up, from the
+   * sheet's measured size (duck-typed; the card showcase frames its stage with it).
+   */
+  extentLu(): { front: number; back: number; top: number } {
+    const m = this.o.sheet.meta;
+    const half = (m.widthLu ?? m.heightLu * 0.8) / 2;
+    return { front: half, back: half, top: m.heightLu };
+  }
+
   /** Muzzle point in body space (lu, y down, facing right) for the current fire frame and aim. */
   private muzzle(): { x: number; y: number } {
     const list = this.o.sheet.meta.clips['fire']?.anchorsLu?.['muzzle'];

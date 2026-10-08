@@ -1,0 +1,399 @@
+/*
+ * The ranked Ladder's simulated matchmaking on Home's match plate (owner decision 2026-10-07,
+ * `ranked.tsx`). MR-127 the search: a radar sweeps and lights blips, sonar pings ripple out of the
+ * portrait, a scan light crosses the plate, the time counts up. MR-128 the found moment: anticipation
+ * (the plate dips), the player's avatar slams in with a light burst, a soft flash and sparks on the
+ * impact frame (with `ui_stamp`, `ui_unlock` and a thump), follow-through (an overshoot and settle, the
+ * green ring), then the name and the Player chip rise in. Tokens only; reduce motion swaps the sweep,
+ * pings, scan, slam, burst and sparks for fades and glows (U14).
+ */
+
+/* ---- the radar: the searching portrait ---- */
+.hub-radar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+}
+.hub-radar__screen {
+  position: relative;
+  z-index: 1;
+  width: 52px;
+  height: 52px;
+  margin: -4px;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.45)) drop-shadow(0 0 6px rgba(63, 214, 166, 0.45));
+}
+/* One turn every 2 s; the bright edge leads, the glow trails (transform-origin in the 56-unit box). */
+.hub-radar__sweep {
+  transform-origin: 28px 28px;
+  animation: hub-radar-sweep 2000ms linear infinite;
+}
+@keyframes hub-radar-sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Each blip lights as the beam passes its angle (clockwise from the top), then fades. */
+.hub-radar__blip {
+  fill: #b6ffe4;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hub-radar-blip 2000ms linear infinite both;
+}
+.hub-radar__blip--a {
+  animation-delay: 210ms;
+}
+.hub-radar__blip--b {
+  animation-delay: 690ms;
+}
+.hub-radar__blip--c {
+  animation-delay: 1250ms;
+}
+@keyframes hub-radar-blip {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  4% {
+    opacity: 1;
+    transform: scale(1.6);
+  }
+  14% {
+    transform: scale(1);
+  }
+  55% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+/* Sonar pings ripple out of the portrait, one every second. */
+.hub-radar__ping {
+  position: absolute;
+  inset: -2px;
+  border: 2px solid rgba(90, 229, 190, 0.7);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: hub-radar-ping 2000ms var(--ui-ease-out) infinite;
+}
+.hub-radar__ping--b {
+  animation-delay: 1000ms;
+}
+@keyframes hub-radar-ping {
+  0% {
+    opacity: 0.8;
+    transform: scale(0.85);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.95);
+  }
+}
+
+/* ---- the searching plate ---- */
+.hub-plate.is-ranked.is-searching {
+  border-color: rgba(63, 214, 166, 0.65);
+  box-shadow:
+    var(--ui-e3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 18px rgba(63, 214, 166, 0.12);
+}
+.hub-plate.is-ranked .hub-plate__body {
+  position: relative;
+  z-index: 1;
+}
+/* A scan light crosses the plate every 2.6 s (clipped to its rounded frame). */
+.hub-plate__scan {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.hub-plate__scan i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 42%;
+  background: linear-gradient(100deg, rgba(90, 229, 190, 0), rgba(90, 229, 190, 0.09) 40%, rgba(190, 255, 236, 0.16) 50%, rgba(90, 229, 190, 0.09) 60%, rgba(90, 229, 190, 0));
+  animation: hub-scan 2600ms var(--ui-ease-standard) infinite;
+}
+@keyframes hub-scan {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(270%);
+  }
+}
+.hub-plate.is-ranked.is-searching .hub-plate__over {
+  color: #9ff0d2;
+}
+/* The choice row: the trophy window (or their trophies) and the connection bars. */
+.hub-plate__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-s2);
+  min-width: 0;
+}
+.hub-range.hub-plate__chip {
+  flex: 1 1 auto;
+  gap: 6px;
+  min-width: 0;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+.hub-range b {
+  font: 800 var(--ui-fs-caption) / 1.2 var(--ui-font-text);
+  color: var(--ui-text);
+}
+.hub-range__arena {
+  overflow: hidden;
+  color: var(--ui-text-2);
+  font: 700 var(--ui-fs-caption) / 1.2 var(--ui-font-text);
+  text-overflow: ellipsis;
+}
+.hub-range.is-found {
+  box-shadow: inset 0 0 0 1px rgba(242, 181, 44, 0.55);
+  animation: hub-plate-swap var(--ui-dur-medium) var(--ui-ease-enter) 300ms both;
+}
+.hub-bars {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  color: #8fe3b0;
+}
+.hub-bars__text {
+  font: 800 11px / 1.2 var(--ui-font-text);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+/* Phones (plate < 300 px): the bars alone, so the trophy window keeps its arena. */
+@container hub-plate (max-width: 299px) {
+  .hub-bars__text {
+    display: none;
+  }
+}
+.hub-plate__player .ui-player {
+  flex: none;
+  margin-left: 2px;
+  animation: hub-found-word var(--ui-dur-small) var(--ui-ease-back) 320ms both;
+}
+/* The deck switch stays at the foot, inert while the search runs (no deck change mid-search). */
+.hub-plate__inert {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  opacity: 0.45;
+  filter: grayscale(0.5);
+  transition: opacity var(--ui-dur-medium) var(--ui-ease-standard);
+}
+
+/* ---- the found moment ---- */
+.hub-plate.is-ranked.is-found {
+  /* The green ring lands with the slam's impact. */
+  animation-delay: 170ms;
+}
+.hub-plate__found {
+  color: #8fe3b0;
+  animation: hub-found-word var(--ui-dur-small) var(--ui-ease-back) 200ms both;
+}
+@keyframes hub-found-word {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+.hub-slam {
+  position: relative;
+  display: block;
+  width: 44px;
+  height: 44px;
+  animation: hub-slam 520ms var(--ui-ease-out) both;
+}
+/* Anticipation from above, the impact at 40% (210 ms, FOUND_IMPACT_MS), overshoot, settle. */
+@keyframes hub-slam {
+  0% {
+    opacity: 0;
+    transform: scale(2.2) rotate(-12deg);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(0.86) rotate(3deg);
+  }
+  62% {
+    transform: scale(1.08) rotate(-1deg);
+  }
+  80% {
+    transform: scale(0.97);
+  }
+  100% {
+    transform: none;
+  }
+}
+.hub-slam .ui-avatar {
+  position: relative;
+  z-index: 1;
+  border-radius: var(--ui-r-sm);
+  box-shadow:
+    0 0 0 2px var(--ui-team-foe),
+    0 0 0 4px rgba(15, 18, 24, 0.9);
+}
+/* Light rays burst from behind the avatar on the impact and turn as they fade. */
+.hub-slam__burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 236, 170, 0.6) 0deg 8deg, rgba(255, 236, 170, 0) 8deg 24deg);
+  -webkit-mask-image: radial-gradient(circle, #000 16%, transparent 68%);
+  mask-image: radial-gradient(circle, #000 16%, transparent 68%);
+  opacity: 0;
+  pointer-events: none;
+  animation: hub-burst 1100ms var(--ui-ease-out) 190ms both;
+}
+@keyframes hub-burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(0deg);
+  }
+  16% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.25) rotate(40deg);
+  }
+}
+/* A soft, warm flash on the impact frame (tinted, never white; U14). */
+.hub-slam__flash {
+  position: absolute;
+  inset: -6px;
+  z-index: 2;
+  border-radius: var(--ui-r-md);
+  background: radial-gradient(circle, rgba(255, 244, 214, 0.85), rgba(255, 244, 214, 0) 70%);
+  opacity: 0;
+  pointer-events: none;
+  animation: hub-flash 380ms var(--ui-ease-out) 200ms both;
+}
+@keyframes hub-flash {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/* Spark streaks shoot out of the impact in eight directions, from the avatar's edge (they read at
+   phone size: a 4 x 12 streak along its flight, stretched on the burst, shrinking as it slows). */
+.hub-slam__sparks i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  width: 4px;
+  height: 12px;
+  margin: -6px -2px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #fffbe6, #ffcf4d);
+  box-shadow: 0 0 6px rgba(255, 206, 84, 0.95);
+  opacity: 0;
+  animation: hub-spark 600ms var(--ui-ease-out) 205ms both;
+}
+@keyframes hub-spark {
+  0% {
+    opacity: 0;
+    transform: rotate(calc(var(--i) * 45deg + 20deg)) translateY(-17px) scaleY(0.5);
+  }
+  14% {
+    opacity: 1;
+    transform: rotate(calc(var(--i) * 45deg + 20deg)) translateY(-25px) scaleY(1.35);
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(calc(var(--i) * 45deg + 20deg)) translateY(-50px) scaleY(0.45);
+  }
+}
+/* The tag and the flag rise in after the impact. */
+/* The tag never breaks inside (a long one sends the Player chip to the next row instead). */
+.hub-plate__player {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 5px;
+  min-width: 0;
+  max-width: 100%;
+}
+@container hub-plate (max-width: 299px) {
+  .hub-plate__player .ui-player svg {
+    display: none;
+  }
+}
+.hub-plate__flag {
+  display: block;
+  flex: none;
+  width: 24px;
+  height: 16px;
+  overflow: hidden;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1.5px rgba(15, 18, 24, 0.85);
+  animation: hub-plate-swap var(--ui-dur-medium) var(--ui-ease-enter) 240ms both;
+}
+.hub-plate__flag .cos-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hub-plate__tag {
+  white-space: nowrap;
+  animation: hub-plate-swap var(--ui-dur-medium) var(--ui-ease-enter) 220ms both;
+}
+/* While the found beat plays, Battle waits pressed in (a tap skips the beat). */
+.hub.is-found .hub-battle .ui-btn__face {
+  transform: scale(0.97);
+}
+
+/* ---- reduce motion: fades and glows instead of movement (U14) ---- */
+.ui-root[data-reduce-motion='true'] :is(.hub-radar__sweep, .hub-radar__ping, .hub-plate__scan, .hub-slam__burst, .hub-slam__sparks) {
+  display: none;
+}
+.ui-root[data-reduce-motion='true'] .hub-radar__blip {
+  transform: none;
+  animation-name: hub-radar-fade;
+  animation-timing-function: ease-in-out;
+}
+@keyframes hub-radar-fade {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+.ui-root[data-reduce-motion='true'] :is(.hub-slam, .hub-plate__found, .hub-plate__flag, .hub-plate__tag, .hub-range.is-found, .hub-plate__player .ui-player) {
+  animation: ui-fade-in var(--ui-dur-reduced) var(--ui-ease-standard) both !important;
+}
+.ui-root[data-reduce-motion='true'] .hub-slam__flash {
+  animation-duration: var(--ui-dur-large);
+  animation-delay: 0ms;
+}

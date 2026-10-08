@@ -14,7 +14,7 @@
  *   after 25 s of searching, never swapped in;
  * - the search time counts up (a status, never a countdown); no player counts; Cancel is instant.
  */
-import type { AvatarSpec, FormatId } from '@/contracts';
+import type { AvatarSpec, FormatId, OnlinePlayer } from '@/contracts';
 import { signal } from '@preact/signals';
 import type { ComponentChildren } from 'preact';
 import { createPortal } from 'preact/compat';
@@ -29,18 +29,15 @@ import { Sheet } from '../../components/Modal';
 import { useUi } from '../context';
 import { lengthOptions, LENGTHS } from '../model/homeMode';
 import { formatName } from '../model/plan';
-import { LengthPicker, lengthLine, PlateFrame } from './plate';
+import { LengthPicker, lengthLine, PlateFrame, Silhouette } from './plate';
 
 export type OnlineState = 'idle' | 'searching' | 'found' | 'noConnection' | 'full' | 'update';
 
-/** A found player, as the relay will send it (the mock passes one in). */
-export interface OnlinePlayer {
-  name: string;
-  avatar: AvatarSpec;
-  trophies: number;
-  arena: number;
-  bars: 1 | 2 | 3;
-}
+/**
+ * A found player, as the relay will send it (the mock passes one in): the contract's `OnlinePlayer`, the
+ * shape the Ladder's simulated matchmaking already shows (owner decision 2026-10-07).
+ */
+export type { OnlinePlayer };
 
 export interface OnlineMock {
   mode: 'online' | 'friend';
@@ -71,7 +68,8 @@ export function onlineLengths(mode: 'online' | 'friend'): FormatId[] {
   return mode === 'online' ? LENGTHS.filter((f) => f !== 'last') : [...LENGTHS];
 }
 
-function clock(ms: number): string {
+/** "0:07": a search or wait time counting up (a status, never a countdown). */
+export function clock(ms: number): string {
   const s = Math.max(0, Math.floor(ms / 1000));
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
@@ -90,23 +88,13 @@ export function useElapsed(running: boolean, offsetMs: number): number {
 }
 
 const AI_CHOICE_MS = 25_000;
-const TIPS = ['ui.online.tip1', 'ui.online.tip2', 'ui.online.tip3'];
+/** One tip line while searching, a new one every 6 s. */
+export const TIPS = ['ui.online.tip1', 'ui.online.tip2', 'ui.online.tip3'];
 
-function Silhouette(p: { dim?: boolean }) {
-  return (
-    <span class={`hub-plate__glyph is-unknown${p.dim ? ' is-dim' : ''}`} aria-hidden="true">
-      <svg viewBox="0 0 44 44" width="44" height="44">
-        <circle cx="22" cy="16" r="8" fill="#5b6478" />
-        <path d="M8 42a14 14 0 0 1 28 0z" fill="#5b6478" />
-        <text x="22" y="20" text-anchor="middle" font-size="12" font-weight="900" fill="#c9d1dc">
-          ?
-        </text>
-      </svg>
-    </span>
-  );
-}
-
-/** The Player chip: on a found human only, never on a bot (A16.21). */
+/**
+ * The Player chip: on a found player only (a human online, or the simulated online player of the
+ * Ladder, owner decision 2026-10-07); a labelled AI keeps the AI chip (A16.21).
+ */
 export function PlayerChip() {
   const { t } = useUi();
   return (

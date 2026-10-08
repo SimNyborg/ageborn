@@ -8,8 +8,8 @@
 import type { ArtProvider, BackdropView, BaseDressingView, BaseView, EffectView, FortView, TurretView, UnitView, VisualDef } from '@/contracts/art';
 import type { AgeId, CardId, CosmeticKey, EffectId, Foil, Side, SideLook, SkinId, TeamPreset, VisualId } from '@/contracts/ids';
 import { parseSkinnedVisualId, skinnedVisualId } from '@/core/ids';
-import { AtlasAdapter, wantsHdSheets } from './adapters/atlas';
-import { WorldAtlas } from './adapters/worldAtlas';
+import { AtlasAdapter, wantsHdSheets, type SheetLease } from './adapters/atlas';
+import { isWorldSource, WorldAtlas } from './adapters/worldAtlas';
 import { renderSpriteStrip, stripRequest } from './adapters/spriteStrip';
 import { AtlasFortView } from './fortViews/atlasFortView';
 import { fortSource, type FortKindId } from './forts';
@@ -233,13 +233,62 @@ export class VisualsArtProvider implements ArtProvider {
     });
   }
 
-  createUnit(o: { visualId: VisualId; skin?: SkinId; side: Side; teamPreset: TeamPreset }): UnitView {
+  /**
+   * `hd` (duck-typed, the card detail showcase): draw from the showcase's HD copy of the unit's sheet
+   * when `showcaseLease` loaded one (a large stage on a screen whose battle draws the 1x sheets).
+   */
+  createUnit(o: { visualId: VisualId; skin?: SkinId; side: Side; teamPreset: TeamPreset; hd?: boolean }): UnitView {
     const r = this.resolve(o.visualId, o.skin);
     const def = r?.def ?? this.missing(o.visualId);
     const key = r?.key ?? o.visualId;
+    if (o.hd && r && !this.force && this.atlas.canDrawHd(r.def)) return this.atlas.createUnit({ key, def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++, hd: true });
     const fb = this.sheetFallback(key, r?.def, 'unit');
     if (fb) return fb.adapter.createUnit({ key, def: fb.def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++ });
     return this.adapterFor(key, r?.def, 'unit').createUnit({ key, def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++ });
+  }
+
+  /**
+   * The card detail showcase (docs/decisions.md, "card showcase"): holds the sheets a stage draws
+   * (`visuals`: units with their skins, turrets, forts) until `release`, and says when they have
+   * loaded. Unit sheets are leased from the atlas tier: shared with the battle when it already drew
+   * them, else a showcase-only copy that is unloaded a few seconds after the stage goes (`hd` asks for
+   * the 2.46 px/lu copy where the battle draws the 1x one; such views come from `createUnit` with
+   * `hd: true`). Turret and fort sheets are small and stay cached as in a battle; procedural visuals
+   * (troop skins, effects, projectiles) bake on first use.
+   */
+  showcaseLease(o: { visuals: readonly { visualId: VisualId; skin?: SkinId | null }[]; hd?: boolean }): { ready: Promise<void>; hd: boolean; release(): void } {
+    const leases: SheetLease[] = [];
+    const waits: Promise<unknown>[] = [];
+    let hd = false;
+    for (const v of o.visuals) {
+      const def = this.resolve(v.visualId, v.skin ?? undefined)?.def;
+      if (!def || def.kind !== 'atlas' || (this.force !== null && this.force !== 'atlas')) continue;
+      if (isWorldSource(def.source)) {
+        waits.push(this.atlas.world.ensure(def.source));
+        continue;
+      }
+      if (fortSource(def.source)) {
+        waits.push(this.forts.ensure(this.fortSheetUrl(def.source)));
+        continue;
+      }
+      const l = this.atlas.lease(def.source, { hd: o.hd === true });
+      leases.push(l);
+      waits.push(l.ready);
+      if (l.hd) hd = true;
+    }
+    let done = false;
+    return {
+      ready: Promise.all(waits).then(
+        () => undefined,
+        () => undefined,
+      ),
+      hd,
+      release: () => {
+        if (done) return;
+        done = true;
+        for (const l of leases) l.release();
+      },
+    };
   }
 
   /**

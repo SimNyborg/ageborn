@@ -1,7 +1,8 @@
 /**
  * The mode switcher (spec "online-first Battle hub" 1.3, 2026-10-01): the Modes tile left of Battle
- * now *shows* the mode Battle plays ("Ladder · vs AI") and opens the chooser. Same box as the Modes
- * tile (88 × 64 phone, 112 × 80 desktop), slate, never a second primary. Opens at 3 wins.
+ * now *shows* the mode Battle plays ("Ranked · Online", "Quick · vs AI") and opens the chooser. Same
+ * box as the Modes tile (88 × 64 phone, 112 × 80 desktop), slate, never a second primary. Opens at 3
+ * wins. The Ladder reads "Ranked · Online": online ranked play (owner decision 2026-10-07).
  */
 import type { ComponentChildren } from 'preact';
 import { Button } from '../../components/Button';
@@ -13,7 +14,7 @@ import type { HomeMode } from '../model/homeMode';
 export type SwitcherMode = HomeMode | 'online' | 'friend';
 
 export const MODE_LOOK: Readonly<Record<SwitcherMode, { icon: (size: number) => ComponentChildren; nameKey: string; tagKey: string }>> = {
-  ladder: { icon: (s) => <TrophyIcon size={s} />, nameKey: 'ui.switcher.ladder', tagKey: 'ui.switcher.tagAi' },
+  ladder: { icon: (s) => <TrophyIcon size={s} />, nameKey: 'ui.switcher.ladder', tagKey: 'ui.switcher.tagOnline' },
   quick: { icon: (s) => <SwordsIcon size={s} />, nameKey: 'ui.switcher.quick', tagKey: 'ui.switcher.tagAi' },
   daily: { icon: (s) => <CalendarIcon size={s} />, nameKey: 'ui.switcher.daily', tagKey: 'ui.switcher.tagAi' },
   skirmish: { icon: (s) => <SwordsIcon size={s} />, nameKey: 'ui.switcher.skirmish', tagKey: 'ui.switcher.tagAi' },

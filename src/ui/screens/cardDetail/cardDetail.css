@@ -992,3 +992,124 @@
 [data-reduce-motion='true'] .cd-stage__figure.is-fort {
   animation: none;
 }
+
+/* ---- The live showcase (owner request 2026-10-07): the card's real battle art on the stage ------ */
+
+/* The canvas layer: over the lane and the lg card (a unit steps out of its card on a walk-in), under
+   the level and copies (they stay readable), the controls and the MR-39 hammer and banner. Hidden until
+   live. */
+.cd-stage__live {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--ui-dur-medium) var(--ui-ease-out);
+}
+.cd-stage.is-live .cd-stage__live {
+  opacity: 1;
+}
+.cd-stage.is-live .cd-stage__meta {
+  z-index: 4;
+}
+/* The still cross-fades away once the live art draws (the motion it had is the live art's now). */
+.cd-stage__actor {
+  transition: opacity var(--ui-dur-medium-out) var(--ui-ease-out);
+}
+.cd-stage.is-live .cd-stage__actor {
+  opacity: 0;
+}
+.cd-stage.is-live .cd-stage__figure {
+  animation: none;
+}
+.cd-stage.is-live {
+  cursor: pointer;
+}
+
+/* The move caption (a button: the next move) and play/pause, over the sky; they never cover the card. */
+.cd-show {
+  position: absolute;
+  top: var(--pad);
+  left: var(--pad);
+  right: var(--pad);
+  z-index: 4;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ui-s2);
+  pointer-events: none;
+  animation: cd-show-in var(--ui-dur-medium) var(--ui-ease-out) both;
+}
+@keyframes cd-show-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+.cd-show > button {
+  pointer-events: auto;
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(13, 16, 22, 0.62);
+  color: var(--ui-text);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition:
+    transform var(--ui-dur-release) var(--ui-ease-out),
+    background-color var(--ui-dur-micro) var(--ui-ease-out);
+}
+.cd-show > button:active {
+  transform: scale(0.94);
+  transition-duration: var(--ui-dur-press);
+}
+.cd-show > button:focus-visible {
+  outline: 2px solid var(--ui-primary-light, #ffd36b);
+  outline-offset: 2px;
+}
+.cd-show__move {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  min-width: 44px;
+  max-width: 70%;
+  padding: 0 var(--ui-s3) 0 var(--ui-s3);
+  border-radius: var(--ui-r-pill);
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.cd-show__label {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  animation: cd-show-label var(--ui-dur-small) var(--ui-ease-out) both;
+}
+@keyframes cd-show-label {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+.cd-show__chev {
+  flex: none;
+  opacity: 0.8;
+}
+.cd-show__play {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 50%;
+}
+.cd-show__play[aria-pressed='false'] {
+  color: var(--ui-primary-light, #ffd36b);
+}
+[data-reduce-motion='true'] .cd-show,
+[data-reduce-motion='true'] .cd-show__label {
+  animation-name: ui-fade;
+}

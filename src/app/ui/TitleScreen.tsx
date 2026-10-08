@@ -16,6 +16,7 @@ import type { FormatId } from '@/contracts';
 import { tierNumeral } from '@/ui/components/format';
 import { GearIcon } from '@/ui/components/icons';
 import { Wordmark } from '@/ui/components/Wordmark';
+import { showsAiChip } from '@/ui/screens/model/opponent';
 import { QUICK_BATTLE_GENERAL } from '../controller';
 import { difficultyTable } from '../matchSetup';
 import { displayName } from '../names';
@@ -182,7 +183,9 @@ export function TitleScreen(p: TitleScreenProps = {}) {
             .reverse()
             .map((rep, i) => (
               <Button key={`${rep.seed}-${i}`} kind="tertiary" size="s" testid="title-replay" onClick={() => c.watchReplay(rep)}>
-                {ui.t('app.watchReplay')} · {displayName(rep.sides[1].label, ui.services.i18n)} · {ui.t('app.aiChip')}
+                {ui.t('app.watchReplay')} · {displayName(rep.sides[1].label, ui.services.i18n)}
+                {/* A bot shown as an online player (owner decision 2026-10-07) keeps that player's name only. */}
+                {showsAiChip(rep.sides[1]) ? ` · ${ui.t('app.aiChip')}` : null}
               </Button>
             ))}
         </div>

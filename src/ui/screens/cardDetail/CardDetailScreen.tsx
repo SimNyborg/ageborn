@@ -419,6 +419,9 @@ export function CardDetailScreen(p: { route: RouteOf<'cardDetail'> }) {
             ceremony={cer ? { phase: cer.phase, n: cer.n } : null}
             armed={armed}
             onSkip={() => setCer(null)}
+            content={content}
+            teamPreset={s.settings.teamPreset}
+            lite={s.settings.graphics === 'lite'}
           />
         </div>
 

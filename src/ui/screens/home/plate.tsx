@@ -7,9 +7,10 @@
  * | State | Opponent row | Choice row | Line |
  * |---|---|---|---|
  * | P1 Training | the onboarding General, AI | none | none |
- * | P2 Ladder, one length | the next AI General (`previewOpponent`) | none | "Short War · 3 ages · up to 8½ min" |
+ * | P2 Ladder, one length | online ranked play (owner decision 2026-10-07): a neutral silhouette, "Opponent · ● Online", "A player" | none | "Short War · 3 ages · up to 8½ min" |
  * | P3 Ladder, several lengths (every arena since 2026-10-03) | as P2 | the length picker (Short, Medium, Long, No clock; locked ones name their arena) | "3 ages · up to 8½ min · win +30 🏆" |
  * | P4 Last Base Standing | as P2 | as P3, No clock lit | "7 ages · no clock · win +48 🏆" and an info button; a first-time caption (queued behind a currency caption) |
+ * | Ladder searching and found | `ranked.tsx`: the radar and the time counting up, then the found player with the Player chip | the trophy window, then their trophies | a tip, then the length |
  * | P5 Quick Battle | the Quick General for the difficulty | a difficulty stepper | "Short War · 5 Amber per win" |
  * | P6 Daily | today's challenge, AI, its tier | Recruit / Veteran / Warlord | "Today: <modifier> · Medium War" |
  * | P7 Skirmish | the set-up General, AI | the summary and Change | the reward |
@@ -22,7 +23,7 @@
  */
 import { formatNameKey, modifierNameKey } from '@/content/keys';
 import type { Difficulty } from '@/content/types';
-import type { FormatId, OpponentSpec } from '@/contracts';
+import type { FormatId } from '@/contracts';
 import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { GeneralPortrait } from '../../components/Avatar';
@@ -123,6 +124,32 @@ export function PlateFrame(p: {
 
 function Portrait(p: { generalId: string | null; label: string }) {
   return p.generalId ? <GeneralPortrait generalId={p.generalId} size={44} label={p.label} /> : <span class="hub-plate__glyph" />;
+}
+
+/** The opponent before one is found: a neutral silhouette with no face, name or avatar. */
+export function Silhouette(p: { dim?: boolean }) {
+  return (
+    <span class={`hub-plate__glyph is-unknown${p.dim ? ' is-dim' : ''}`} aria-hidden="true">
+      <svg viewBox="0 0 44 44" width="44" height="44">
+        <circle cx="22" cy="16" r="8" fill="#5b6478" />
+        <path d="M8 42a14 14 0 0 1 28 0z" fill="#5b6478" />
+        <text x="22" y="20" text-anchor="middle" font-size="12" font-weight="900" fill="#c9d1dc">
+          ?
+        </text>
+      </svg>
+    </span>
+  );
+}
+
+/** "● Online": the ranked Ladder's status beside "Opponent" (owner decision 2026-10-07). */
+function OnlineDot() {
+  const { t } = useUi();
+  return (
+    <span class="hub-conn" data-testid="ranked-online">
+      <i />
+      {t('ui.ranked.online')}
+    </span>
+  );
 }
 
 function TierPill(p: { tier: number; testid?: string }) {
@@ -252,7 +279,6 @@ export function LastBaseInfo(p: { onClose(): void }) {
 
 export function MatchPlate(p: {
   mode: HomeMode;
-  opponent: OpponentSpec | null;
   /** The onboarding match Battle starts while it is due (A8), else null. */
   training: 1 | 2 | null;
   format: FormatId;
@@ -289,12 +315,15 @@ function TrainingPlate(p: { training: 1 | 2; aside?: boolean | undefined }) {
   );
 }
 
-function LadderPlate(p: { opponent: OpponentSpec | null; format: FormatId; onFormat(f: FormatId): void; aside?: boolean | undefined; quiet?: boolean | undefined; deck?: ComponentChildren }) {
+/**
+ * P2-P4, the Ladder as online ranked play (owner decision 2026-10-07): before Battle the opponent is not
+ * known, so the plate shows the neutral silhouette, "Opponent · ● Online" and "A player" (no General, no
+ * AI chip); Battle starts the simulated search (`ranked.tsx`), which fills this plate with the radar and
+ * then the found player.
+ */
+function LadderPlate(p: { format: FormatId; onFormat(f: FormatId): void; aside?: boolean | undefined; quiet?: boolean | undefined; deck?: ComponentChildren }) {
   const { t, content, save, services, locale } = useUi();
   const s = save.value;
-  const o = p.opponent;
-  const g = o ? content.generals.list[o.generalId as keyof typeof content.generals.list] : undefined;
-  const name = o ? opponentName(o, content, t) : g ? t(g.nameKey) : '';
   const options = lengthOptions(s, content);
   const picker = unlocks(s, content).ladderFormats.length > 1;
   const last = untimed(content, p.format);
@@ -338,15 +367,15 @@ function LadderPlate(p: { opponent: OpponentSpec | null; format: FormatId; onFor
       state={last ? 'ladder-last' : picker ? 'ladder' : 'ladder-one'}
       swapKey="ladder"
       aside={p.aside}
-      ai
-      portrait={<Portrait generalId={o?.generalId ?? null} label={name} />}
+      class="is-online is-ranked"
+      portrait={<Silhouette />}
       over={
         <>
           {t('ui.hub.opponent')}
-          {o ? <TierPill tier={o.tier} testid="home-opponent-tier" /> : null}
+          <OnlineDot />
         </>
       }
-      name={name}
+      name={t('ui.online.unknown')}
       choice={picker ? <LengthPicker value={p.format} options={options} onChange={p.onFormat} testid="home-format" /> : null}
       line={line}
       foot={p.deck}

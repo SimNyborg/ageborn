@@ -196,7 +196,11 @@ export interface HudModel {
     lastStandManual: boolean;
     cards: HudCard[];
   };
-  /** The opponent is always an AI in v1 and must be labeled so (DESIGN A7.1). */
+  /**
+   * The opponent is always an AI in v1 and must be labeled so (DESIGN A7.1), except the Ladder's online
+   * preview (owner decision 2026-10-07): a bot shown as the found online player (`SideConfig.online`),
+   * whose nameplate carries that player's name and no AI chip.
+   */
   foe: {
     label: string;
     isAI: true;

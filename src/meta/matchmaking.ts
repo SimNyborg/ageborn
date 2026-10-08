@@ -1,7 +1,9 @@
 /**
  * Opponent selection against the AI ladder (DESIGN A6.8, A6.3, A6.10, A7.4, A8, A9.1).
  *
- * Every opponent is an AI and is labeled so (`OpponentSpec.isAI` is always true, A7.1).
+ * Every opponent is an AI and is labeled so (`OpponentSpec.isAI` is always true, A7.1). The one
+ * exception is presentation only: a Ladder match from Home's Battle shows its bot as a generated online
+ * player (owner decision 2026-10-07, `onlinePlayer.ts`); the pick below is the same either way.
  *
  * - **Ladder.** Tier from the hidden MMR inside the arena's tier range (`mmr.ts`). After 3 ladder
  *   losses in a row the next opponent is one tier lower (minimum 0) and flagged `warmUp` ("Warm-up

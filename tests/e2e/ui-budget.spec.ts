@@ -97,6 +97,12 @@ const PAGES: PageSpec[] = [
   { name: 'room-joined', hash: 'screens/home-room-joined/mid/{vp}', strict: true, primary: true },
   { name: 'join', hash: 'screens/home-join/mid/{vp}', strict: true, primary: false },
   { name: 'vs-online', hash: 'screens/vs-online/mid/{vp}', strict: true, primary: false },
+  // The Ladder as online ranked play (owner decision 2026-10-07): the search (Battle is Cancel, so no
+  // primary), the found player, their VS card and the Result line with the Player chip.
+  { name: 'home-search', hash: 'screens/home-search/mid/{vp}', strict: true, primary: false, home: true },
+  { name: 'home-found', hash: 'screens/home-found/mid/{vp}', strict: true, primary: true, home: true },
+  { name: 'vs-player', hash: 'screens/vs-player/mid/{vp}', strict: true, primary: false },
+  { name: 'result-player', hash: 'screens/result-player/mid/{vp}', strict: true, primary: true },
   { name: 'capsules', hash: 'screens/capsules/mid/{vp}', strict: true, primary: false },
   { name: 'progress', hash: 'screens/progress/mid/{vp}', strict: true, primary: false },
   { name: 'result-warPath', hash: 'screens/result-warPath/mid/{vp}', strict: true, primary: true },

@@ -336,6 +336,41 @@ export interface AtlasOptions {
   hd?: boolean;
   /** Runtime motion of atlas units (default 'cartoon': spawn pop, hit squash, KO hand-off; R6). */
   motionStyle?: AtlasMotionStyle;
+  /** Unloads a sheet URL (tests pass a fake; default Pixi `Assets.unload`). */
+  unload?: (url: string) => Promise<void> | void;
+  /** How long a showcase-only sheet stays after its last lease ends, ms (default `LEASE_LINGER_MS`). */
+  leaseLingerMs?: number;
+}
+
+/**
+ * A showcase-only sheet stays this long after its last lease ends (ms), so going back and forth
+ * between two cards, or a skin change that re-creates the stage, does not load it twice.
+ */
+export const LEASE_LINGER_MS = 4000;
+
+/** A sheet held for a card detail showcase (`AtlasAdapter.lease`). */
+export interface SheetLease {
+  /** Resolves once the sheet (and its extras sheet, if any) has loaded or failed. */
+  readonly ready: Promise<void>;
+  /** True when the views must come from the showcase's HD copy (`createUnit` with `hd`). */
+  readonly hd: boolean;
+  /** Ends the lease; a sheet only showcases used is unloaded `leaseLingerMs` later. Idempotent. */
+  release(): void;
+}
+
+/** One density of loaded unit sheets: the battle's (`main`), or the showcase's HD copies. */
+interface SheetSet {
+  readonly hd: boolean;
+  readonly sheets: Map<string, AtlasData>;
+  readonly failed: Set<string>;
+  readonly pending: Map<string, Promise<void>>;
+  readonly extrasPending: Map<string, Promise<void>>;
+  /** The URLs a loaded sheet came from (core, then extras), for unloading. */
+  readonly urls: Map<string, string[]>;
+}
+
+function sheetSet(hd: boolean): SheetSet {
+  return { hd, sheets: new Map(), failed: new Set(), pending: new Map(), extrasPending: new Map(), urls: new Map() };
 }
 
 /** Device px per lu above which the HD unit sheets are worth their download (1x sheets are 1.23 px/lu). */
@@ -369,15 +404,30 @@ const RING_ALPHA = 0.6;
 export class AtlasAdapter implements VisualAdapter {
   readonly kind = 'atlas' as const;
   readonly available = true;
-  private readonly sheets = new Map<string, AtlasData>();
-  private readonly failed = new Set<string>();
-  private readonly pending = new Map<string, Promise<void>>();
+  /** The sheets the battle draws (at its density, `hd`). */
+  private readonly main: SheetSet;
+  /** Showcase-only HD copies, used while the battle draws the 1x sheets (`lease` with `hd`). */
+  private readonly hdOnly: SheetSet;
+  private readonly sheets: Map<string, AtlasData>;
+  private readonly failed: Set<string>;
+  private readonly pending: Map<string, Promise<void>>;
+  /** Sources the game itself asked for (`ensure`): shared with showcases, never unloaded by them. */
+  private readonly pinned = new Set<string>();
+  /** Live showcase leases per set and source, and the delayed unloads of their last release. */
+  private readonly leases = new Map<SheetSet, Map<string, number>>();
+  private readonly unloads = new Map<SheetSet, Map<string, ReturnType<typeof setTimeout>>>();
 
   /** Turret and base sheets (3D world art), loaded per age. */
   readonly world: WorldAtlas;
 
   constructor(private readonly o: AtlasOptions) {
     this.world = new WorldAtlas((s) => this.url(s));
+    this.main = sheetSet(o.hd === true);
+    this.hdOnly = sheetSet(true);
+    this.sheets = this.main.sheets;
+    this.failed = this.main.failed;
+    this.pending = this.main.pending;
+    this.extrasPending = this.main.extrasPending;
   }
 
   private url(source: string): string {
@@ -412,14 +462,24 @@ export class AtlasAdapter implements VisualAdapter {
     return what === 'unit' || what === 'effect' || what === 'projectile';
   }
 
-  /** Loads one unit or effect sheet (once); failures are remembered and warned about. */
+  /**
+   * Loads one unit or effect sheet (once) because the game draws it; failures are remembered and
+   * warned about. An ensured sheet is never unloaded by a showcase lease.
+   */
   ensure(source: string): Promise<void> {
-    if (this.sheets.has(source) || this.failed.has(source)) return Promise.resolve();
-    let p = this.pending.get(source);
+    this.pinned.add(source);
+    this.cancelUnload(this.main, source);
+    return this.load(this.main, source);
+  }
+
+  /** Loads a sheet into a set (once): the HD sheet where the set wants it, else (or on failure) the 1x one. */
+  private load(set: SheetSet, source: string): Promise<void> {
+    if (set.sheets.has(source) || set.failed.has(source)) return Promise.resolve();
+    let p = set.pending.get(source);
     if (!p) {
       const load = this.o.load ?? loadWithAssets;
       const url = this.url(source);
-      const hd = this.o.hd ? hdSheetUrl(url) : url;
+      const hd = set.hd ? hdSheetUrl(url) : url;
       const from = { url: hd };
       p = (
         hd === url
@@ -430,29 +490,30 @@ export class AtlasAdapter implements VisualAdapter {
             })
       )
         .then((d) => {
-          this.sheets.set(source, d);
+          set.sheets.set(source, d);
+          set.urls.set(source, [from.url]);
           // B, C and attack_alt stream in after the core sheet; they never block a boot or a battle (P4)
-          this.loadExtras(source, d, from.url);
+          this.loadExtras(set, source, d, from.url);
         })
         .catch((e: unknown) => {
-          this.failed.add(source);
+          set.failed.add(source);
           console.warn(`[visuals] atlas "${source}" failed to load; the procedural art is drawn instead`, e);
         })
-        .finally(() => this.pending.delete(source));
-      this.pending.set(source, p);
+        .finally(() => set.pending.delete(source));
+      set.pending.set(source, p);
     }
     return p;
   }
 
   /** Extras sheets in flight (ANIM_SPEC P4), by source. */
-  private readonly extrasPending = new Map<string, Promise<void>>();
+  private readonly extrasPending: Map<string, Promise<void>>;
 
   /**
    * Loads `<slug>.x.json` (or `.x.hd.json`) when the manifest lists variant clips the core sheet does
    * not have, and merges its animations into the loaded sheet. Views pick variants only from what has
    * loaded, so a missing or failed extras sheet just keeps attack A.
    */
-  private loadExtras(source: string, core: AtlasData, coreUrl: string): void {
+  private loadExtras(set: SheetSet, source: string, core: AtlasData, coreUrl: string): void {
     const def = this.o.entries().find((d) => d.kind === 'atlas' && d.source === source);
     if (!def) return;
     const missing = EXTRA_CLIPS.filter((c) => def.clips[c] && !core.animations[def.clips[c]?.ref ?? c]);
@@ -460,20 +521,120 @@ export class AtlasAdapter implements VisualAdapter {
     const load = this.o.load ?? loadWithAssets;
     const xUrl = extrasSheetUrl(coreUrl);
     const plainX = extrasSheetUrl(this.url(source));
-    const p = (xUrl === plainX ? load(xUrl) : load(xUrl).catch(() => load(plainX)))
+    const got = { url: xUrl };
+    const p = (
+      xUrl === plainX
+        ? load(xUrl)
+        : load(xUrl).catch(() => {
+            got.url = plainX;
+            return load(plainX);
+          })
+    )
       .then((x) => {
+        set.urls.set(source, [...(set.urls.get(source) ?? []), got.url]);
         const added = mergeExtras(core, x);
         if (added.length === 0) console.warn(`[visuals] extras sheet "${xUrl}" added no clips (scale mismatch or missing frames)`);
       })
       .catch((e: unknown) => console.warn(`[visuals] extras sheet for "${source}" failed to load; attack A is used`, e))
-      .finally(() => this.extrasPending.delete(source));
-    this.extrasPending.set(source, p);
+      .finally(() => set.extrasPending.delete(source));
+    set.extrasPending.set(source, p);
   }
 
   /** Resolves once the source's extras sheet (if any) has loaded or failed (tests, screenshots). */
   async extrasReady(source: string): Promise<void> {
     await this.ensure(source);
     await this.extrasPending.get(source);
+  }
+
+  /**
+   * Holds a unit sheet for a card detail showcase (docs/decisions.md, "card showcase"): loads it
+   * (and its extras sheet) and keeps it until `release`. A sheet the game asked for (`ensure`) is
+   * shared and stays; a sheet loaded only for showcases is unloaded `leaseLingerMs` after its last
+   * lease ends, so browsing cards does not pile up decoded sheets. `hd` asks for the 2.46 px/lu sheet
+   * where the battle draws the 1x one (a large stage on a 1x screen): such copies are showcase-only.
+   */
+  lease(source: string, o: { hd?: boolean } = {}): SheetLease {
+    const set = o.hd && !this.main.hd && unitSheetAge(source) ? this.hdOnly : this.main;
+    const counts = this.leases.get(set) ?? new Map<string, number>();
+    this.leases.set(set, counts);
+    counts.set(source, (counts.get(source) ?? 0) + 1);
+    this.cancelUnload(set, source);
+    const ready = (async () => {
+      await this.load(set, source);
+      await set.extrasPending.get(source);
+    })();
+    let done = false;
+    return {
+      ready,
+      hd: set === this.hdOnly,
+      release: () => {
+        if (done) return;
+        done = true;
+        const n = (counts.get(source) ?? 1) - 1;
+        if (n > 0) {
+          counts.set(source, n);
+          return;
+        }
+        counts.delete(source);
+        this.scheduleUnload(set, source);
+      },
+    };
+  }
+
+  /** Live showcase leases on a source (tests, the dev overlay). */
+  leaseCount(source: string, o: { hd?: boolean } = {}): number {
+    const set = o.hd && !this.main.hd ? this.hdOnly : this.main;
+    return this.leases.get(set)?.get(source) ?? 0;
+  }
+
+  /** True when the showcase's HD copy of a source is loaded (tests). */
+  hasHdCopy(source: string): boolean {
+    return this.hdOnly.sheets.has(source);
+  }
+
+  private cancelUnload(set: SheetSet, source: string): void {
+    const timers = this.unloads.get(set);
+    const t = timers?.get(source);
+    if (t === undefined) return;
+    clearTimeout(t);
+    timers?.delete(source);
+  }
+
+  private scheduleUnload(set: SheetSet, source: string): void {
+    if (set === this.main && this.pinned.has(source)) return;
+    const timers = this.unloads.get(set) ?? new Map<string, ReturnType<typeof setTimeout>>();
+    this.unloads.set(set, timers);
+    this.cancelUnload(set, source);
+    const linger = Math.max(0, this.o.leaseLingerMs ?? LEASE_LINGER_MS);
+    timers.set(
+      source,
+      setTimeout(() => {
+        timers.delete(source);
+        void this.unloadNow(set, source);
+      }, linger),
+    );
+  }
+
+  /** Drops a showcase-only sheet (both its URLs) unless the game or a new lease wants it by now. */
+  private async unloadNow(set: SheetSet, source: string): Promise<void> {
+    if ((this.leases.get(set)?.get(source) ?? 0) > 0) return;
+    if (set === this.main && this.pinned.has(source)) return;
+    // never pull a sheet out from under a load or extras merge still in flight
+    await set.pending.get(source);
+    await set.extrasPending.get(source);
+    if ((this.leases.get(set)?.get(source) ?? 0) > 0 || (set === this.main && this.pinned.has(source))) return;
+    const urls = set.urls.get(source) ?? [];
+    set.sheets.delete(source);
+    set.urls.delete(source);
+    set.failed.delete(source);
+    const unload = this.o.unload ?? ((url: string) => Assets.unload(url));
+    for (const url of urls) {
+      try {
+        await unload(url);
+      } catch (e: unknown) {
+        console.warn(`[visuals] unloading "${url}" failed`, e);
+      }
+    }
   }
 
   /** Non-world sheet sources of the given ages (sheets outside `art/units/<age>/` count for every age). */
@@ -529,8 +690,13 @@ export class AtlasAdapter implements VisualAdapter {
     return s;
   }
 
+  /** True when the showcase's HD copy of the sheet is loaded (`createUnit` with `hd` then draws it). */
+  canDrawHd(def: VisualDef): boolean {
+    return def.kind === 'atlas' && this.hdOnly.sheets.has(def.source);
+  }
+
   createUnit(r: ViewRequest): UnitView {
-    const sheet = this.sheet(r.def);
+    const sheet = (r.hd ? this.hdOnly.sheets.get(r.def.source) : undefined) ?? this.sheet(r.def);
     return new AtlasUnitView(r.def, sheet, this.o.decor, r.side, teamColor(r.side, r.teamPreset), {
       seed: r.seed,
       gait: sheet.gait ?? inferGait(r.key, r.def),
@@ -781,6 +947,9 @@ class AtlasUnitView implements UnitView {
   private reduceMotion = false;
   private glyph: Container | null = null;
   private glyphGroup: RoleGroup | null = null;
+  private ring: Container | null = null;
+  /** Team ring, role glyph and level trim on the ground (off on the card detail showcase). */
+  private marks = true;
   private trim: Container | null = null;
   private trimName: UnitPose['levelTrim'] = 'none';
   private stars: Container | null = null;
@@ -859,6 +1028,7 @@ class AtlasUnitView implements UnitView {
     // Team ring (A11 redundant cue) behind the contact shadow: flatter and a little wider than the
     // body, at 60% alpha, so it reads as a ground marker and does not clutter the feet of a crowd.
     const ring = partSprite(decor, side === 0 ? 'shared.ring.circle' : 'shared.ring.diamond', UI_ZONES, team);
+    this.ring = ring;
     ring.scale.set(size * RING_WIDEN, RING_FLATTEN);
     ring.alpha = RING_ALPHA;
     this.ground.addChild(ring);
@@ -912,6 +1082,47 @@ class AtlasUnitView implements UnitView {
   setGait(o: { speedLuPerS: number }): void {
     this.gaitV = Number.isFinite(o.speedLuPerS) ? o.speedLuPerS : 0;
     this.retimeWalk();
+  }
+
+  /**
+   * How far the frame on screen reaches from the feet (duck-typed, the card detail showcase): `front`
+   * toward where the unit faces, `back` behind it and `top` above the feet, in lu, from the visible
+   * (trimmed) part of the frame. Null before a frame shows.
+   */
+  extentLu(): { front: number; back: number; top: number } | null {
+    return this.frameExtent(this.baseSprite.texture);
+  }
+
+  /**
+   * Where the unit's attack lands (duck-typed, the card detail showcase): how far attack A's impact
+   * frame reaches in front of the feet, lu. Null without an attack clip.
+   */
+  impactReachLu(): number | null {
+    const tr = track(this.sheet, this.def, 'attack', { loop: false }, 'attack');
+    if (!tr || tr.impactAt === null) return null;
+    const meta = this.sheet.clips[tr.anim];
+    const step = impactStepOf(tr.steps, tr.impactAt, meta?.impactFrame, meta?.sequence, meta?.impactStep);
+    if (step === null) return null;
+    return this.frameExtent(tr.frames[step])?.front ?? null;
+  }
+
+  private frameExtent(tex: Texture | undefined): { front: number; back: number; top: number } | null {
+    if (!tex || tex === Texture.EMPTY) return null;
+    const o = tex.orig;
+    const tr = tex.trim ?? { x: 0, y: 0, width: o.width, height: o.height };
+    const a = tex.defaultAnchor ?? { x: 0.5, y: 1 };
+    const ax = a.x * o.width;
+    const ay = a.y * o.height;
+    return { front: (tr.x + tr.width - ax) * this.k, back: (ax - tr.x) * this.k, top: (ay - tr.y) * this.k };
+  }
+
+  /**
+   * Shows or hides the battle's ground marks (team ring, role glyph, level trim; duck-typed). The card
+   * detail showcase draws a unit alone on its stage, with its contact shadow only.
+   */
+  setGroundMarks(on: boolean): void {
+    this.marks = on;
+    for (const c of [this.ring, this.glyph, this.trim]) if (c) c.visible = on;
   }
 
   /** Reduce motion and Lite (duck-typed, like the world views): no lean and no footfall dust. */
@@ -995,6 +1206,7 @@ class AtlasUnitView implements UnitView {
       this.glyphGroup = p.roleGlyph;
       this.glyph?.destroy({ children: true });
       this.glyph = partSprite(this.decor, `icon.role.${p.roleGlyph}`, UI_ZONES, this.team);
+      this.glyph.visible = this.marks;
       this.glyph.position.set(0, 5.2);
       this.glyph.scale.set(STYLE.roleGlyphLu / 17.2, (STYLE.roleGlyphLu / 17.2) * 0.72);
       this.glyph.alpha = 0.85;
@@ -1004,6 +1216,7 @@ class AtlasUnitView implements UnitView {
       this.trimName = p.levelTrim;
       this.trim?.destroy({ children: true });
       this.trim = p.levelTrim === 'none' ? null : partSprite(this.decor, `trim.${p.levelTrim}`, UI_ZONES);
+      if (this.trim) this.trim.visible = this.marks;
       if (this.trim) {
         this.trim.position.set(9.6, 5.4);
         this.trim.scale.set(STYLE.levelTrimScale);
@@ -1023,7 +1236,11 @@ class AtlasUnitView implements UnitView {
     this.showBubble(p.shieldBp);
   }
 
-  play(clip: ClipName | string, o?: { durationMs?: number; impactAtMs?: number; loop?: boolean }): void {
+  /**
+   * `variant` (duck-typed, the card detail showcase): plays that attack variant instead of the next one
+   * of the per-unit cycle (R4), when it has loaded.
+   */
+  play(clip: ClipName | string, o?: { durationMs?: number; impactAtMs?: number; loop?: boolean; variant?: string }): void {
     if (this.destroyed || this.dead) return;
     if (clip === ALT_ATTACK) {
       this.playAlt(o?.impactAtMs !== undefined ? { impactAtMs: o.impactAtMs } : {});
@@ -1056,7 +1273,7 @@ class AtlasUnitView implements UnitView {
       }
     }
     // R4: the attack variant comes from a fixed per-unit cycle over the variants that have loaded
-    const anim = clip === 'attack' ? this.pickVariant() : undefined;
+    const anim = clip === 'attack' ? this.variantFor(o?.variant) : undefined;
     // a one-shot never loops, whatever the clip it falls back to (review B1)
     const t = track(this.sheet, this.def, clip, loops ? { loop: true, ...opts } : { ...opts, loop: false }, anim);
     if (!t) return;
@@ -1135,6 +1352,30 @@ class AtlasUnitView implements UnitView {
   private pickVariant(): string {
     const cycle = attackCycle((a) => (this.sheet.animations[a]?.length ?? 0) > 0);
     return pickAttackVariant(cycle, this.unitId, this.attackPlays++);
+  }
+
+  /** The asked variant when it has loaded (it still counts as a play of the cycle), else the cycle's next. */
+  private variantFor(want: string | undefined): string {
+    if (want && (ATTACK_VARIANTS as readonly string[]).includes(want) && (this.sheet.animations[want]?.length ?? 0) > 0) {
+      this.attackPlays++;
+      return want;
+    }
+    return this.pickVariant();
+  }
+
+  /**
+   * What this unit's art can show (duck-typed, the card detail showcase): the attack variants that have
+   * loaded (A first), whether a second attacker has its own `attack_alt` clip, the walk's body type and
+   * its natural ground speed (lu/s on screen; null for sheets without one, such as flyers).
+   */
+  motionInfo(): { attacks: string[]; alt: boolean; gait: UnitGait | null; naturalSpeedLuPerS: number | null } {
+    const has = (a: string): boolean => (this.sheet.animations[a]?.length ?? 0) > 0;
+    return {
+      attacks: ATTACK_VARIANTS.filter((a) => has(a)),
+      alt: has(ALT_ATTACK),
+      gait: this.gait,
+      naturalSpeedLuPerS: this.naturalSpeed() ?? null,
+    };
   }
 
   /** The walk's natural speed in screen lu/s (a smaller entry, a levy, strides shorter). */

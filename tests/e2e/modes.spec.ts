@@ -1,7 +1,9 @@
 /**
  * Ladder, Conquest and the replay viewer in the browser (DESIGN A6.3 format picker, A6.8 AI opponent,
- * A6.10 Conquest board, A7.1 AI labels, A9 #14 replay viewer). The profile is moved past onboarding
- * into Arena 3 with the dev controller (`?dev=1&game=1`), so every mode is open.
+ * A6.10 Conquest board, A7.1 AI labels, A9 #14 replay viewer), and the Ladder from Home's Battle as
+ * online ranked play (owner decision 2026-10-07, A9 #21: the simulated search, the found player through
+ * VS, the battle, the Result and the replay). The profile is moved past onboarding into Arena 3 with the
+ * dev controller (`?dev=1&game=1`), so every mode is open.
  */
 import { expect, test, type Page } from '@playwright/test';
 import { fastForward, watchPage } from './helpers';
@@ -68,10 +70,84 @@ test.describe('modes and replays', () => {
     expect(problems.errors).toEqual([]);
   });
 
+  test("Ranked from Home's Battle: search, Cancel, then a found player through VS, the battle, the Result and the replay", async ({ page }) => {
+    test.setTimeout(240_000);
+    const problems = watchPage(page);
+    await veteranHome(page);
+    const plate = page.getByTestId('home-opponent');
+    // Idle: online ranked play, the opponent unknown (no General, no AI chip).
+    await expect(page.getByTestId('home-modes')).toContainText('Ranked');
+    await expect(plate).toHaveAttribute('data-state', /^ladder/);
+    await expect(plate.getByTestId('ranked-online')).toBeVisible();
+    await expect(plate).toContainText('A player');
+    await expect(plate.getByTestId('ai-badge')).toHaveCount(0);
+
+    // Battle searches: the radar, the time counting up, the trophy window; Battle turns into Cancel.
+    await page.getByTestId('play').click();
+    await expect(plate).toHaveAttribute('data-state', 'ranked-search');
+    await expect(plate).toContainText('Searching for an opponent');
+    await expect(plate.getByTestId('online-elapsed')).toBeVisible();
+    await expect(plate.getByTestId('ranked-window')).toContainText('Arena 3');
+    await expect(page.getByTestId('play')).toHaveText(/cancel/i);
+    // Cancel stops it at once; nothing starts.
+    await page.getByTestId('play').click();
+    await expect(plate).toHaveAttribute('data-state', /^ladder/);
+    await expect(page.getByTestId('play')).toHaveText(/battle/i);
+
+    // Search again: after a few seconds the opponent is found, a named player with the Player chip.
+    await page.getByTestId('play').click();
+    await expect(plate).toHaveAttribute('data-state', 'ranked-search');
+    await expect(plate.getByTestId('ranked-found')).toBeVisible({ timeout: 20_000 });
+    const name = ((await plate.getByTestId('ranked-name').textContent()) ?? '').trim();
+    expect(name.length).toBeGreaterThan(2);
+    await expect(plate.getByTestId('player-chip')).toBeVisible();
+    await expect(plate.getByTestId('ranked-trophies')).toBeVisible();
+    await expect(plate.getByTestId('ai-badge')).toHaveCount(0);
+
+    // VS: the same player, the Player chip, no AI chip or "AI General".
+    const foe = page.getByTestId('vs-foe');
+    await expect(foe).toBeVisible({ timeout: 10_000 });
+    await expect(foe).toContainText(name);
+    await expect(foe.getByTestId('player-chip')).toBeVisible();
+    await expect(foe.getByTestId('ai-badge')).toHaveCount(0);
+    await expect(foe).not.toContainText('AI General');
+
+    // The battle: their name on the foe panel, no AI chip.
+    await expect(page.getByTestId('battle')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('hud-foe')).toContainText(name.split(' ')[0]!);
+    await expect(page.getByTestId('hud-ai-chip')).toHaveCount(0);
+    await expect
+      .poll(
+        async () => {
+          await fastForward(page, 2_000);
+          return page.getByTestId('result-title').count();
+        },
+        { timeout: 120_000, intervals: [250] },
+      )
+      .toBeGreaterThan(0);
+
+    // The Result: "vs <name>" with the Player chip.
+    const vs = page.locator('.result__vs');
+    await expect(vs).toContainText(`vs ${name}`);
+    await expect(vs.getByTestId('player-chip')).toBeVisible();
+    await expect(vs.getByTestId('ai-badge')).toHaveCount(0);
+
+    // The replay keeps the player's name and no AI chip.
+    await page.getByTestId('result-replay').click();
+    await expect(page.getByTestId('replay')).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('.ab-replay-foe')).toHaveText(name);
+    await expect(page.locator('.ab-replay-ai')).toHaveCount(0);
+    await expect(page.getByTestId('hud-ai-chip')).toHaveCount(0);
+    await page.keyboard.press('Shift');
+    await page.getByTestId('replay-back').click({ force: true });
+    await expect(page.getByTestId('play')).toBeVisible({ timeout: 15_000 });
+    expect(problems.errors).toEqual([]);
+  });
+
   test('the mode switcher selects Quick Battle; Battle plays it vs a labelled AI (no search)', async ({ page }) => {
     const problems = watchPage(page);
     await veteranHome(page);
-    await expect(page.getByTestId('home-modes')).toContainText('Ladder');
+    await expect(page.getByTestId('home-modes')).toContainText('Ranked');
     await page.getByTestId('home-modes').click();
     await page.getByTestId('mode-quick').click();
     await expect(page.getByTestId('modes-sheet')).toHaveCount(0);

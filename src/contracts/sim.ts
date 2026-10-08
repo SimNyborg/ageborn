@@ -11,6 +11,7 @@ import type { CompiledContent, PowerSlot, StatusKind } from './content';
 import type { MatchOutcome, SimEvent } from './events';
 import type { AgeId, CardId, FormatId, RoleGroup, Side, SideLook, SkinId, VisualId } from './ids';
 import type { Observation } from './observation';
+import type { AvatarSpec } from './save';
 
 /** One age loadout of a War Plan: 7 unit slots, 2 turret slots, 2 typed power slots (DESIGN A3, A18.9, A2.9.1). */
 export interface Loadout {
@@ -37,7 +38,29 @@ export interface LoadoutPowers {
   field: CardId | null;
 }
 
-/** One side of a match. Bots are labeled AI on every surface (DESIGN A7.1). */
+/**
+ * A side shown as an online player (owner decision 2026-10-07, DESIGN A7.1, A9 #21): until real online
+ * play exists, a Ladder battle started from Home's Battle simulates matchmaking and shows its bot as this
+ * generated player (meta builds it, seeded by the match); when online play ships, a real opponent's side
+ * carries the same fields. Presentation only: the sim, the bot's brain, deck and tier never read it, and
+ * `isBot` keeps saying who plays. The national flag lives in `SideConfig.look.nationalFlag`.
+ */
+export interface OnlinePlayer {
+  name: string;
+  avatar: AvatarSpec;
+  trophies: number;
+  /** The arena number (1-based) shown beside the trophies. */
+  arena: number;
+  /** The profile banner id (`content.cosmetics.banners`). */
+  banner: string;
+  /** Connection bars on the nameplates, 1-3. */
+  bars: 1 | 2 | 3;
+}
+
+/**
+ * One side of a match. Bots are labeled AI on every surface (DESIGN A7.1), except a side shown as an
+ * online player (`online`, owner decision 2026-10-07).
+ */
 export interface SideConfig {
   label: string;
   isBot: boolean;
@@ -47,6 +70,8 @@ export interface SideConfig {
   skins: Record<string, SkinId>;
   /** Base flag, national flag, base skins and decorations (A18.9.4). Cosmetic: the sim ignores it. */
   look?: SideLook;
+  /** Shown as an online player (see {@link OnlinePlayer}); absent for every labelled AI and the player. Cosmetic. */
+  online?: OnlinePlayer;
   /**
    * Per-side modifiers, disclosed on the node and the VS screen (DESIGN A18.11, A18.7.6 boss base,
    * A18.2 rule 5). Read at base init, at every evolve and at every spawn; clamped to the A18.2 caps.

@@ -8,13 +8,13 @@
  */
 import { content } from '@/content';
 import type { Clock, MatchResultInput, OpponentSpec, SaveDoc } from '@/contracts';
-import { flattenStrings } from '@/i18n';
+import { flattenStrings, i18n } from '@/i18n';
 import { createMeta, META_FLAGS, type WarPlan } from '@/meta';
 import { afterEach, describe, expect, it } from 'vitest';
 import uiStrings from '../../../i18n/ui.en.json';
 import type { MatchRequest, Route } from '../../router';
 import { fixtureStats } from '../fixtures/matches';
-import { FIXTURE_NOW } from '../fixtures/saves';
+import { FIXTURE_NOW, midGameSave } from '../fixtures/saves';
 import type { UiServices } from '../services';
 import { text } from './dom';
 import { mount, rawKeyIn, type Mounted } from './harness';
@@ -40,8 +40,11 @@ function metaQueries(save: () => SaveDoc): Partial<UiServices> {
   const request = (req: MatchRequest): OpponentSpec => {
     const s = save();
     switch (req.mode) {
-      case 'ladder':
-        return meta.pickOpponent(s, 'ladder', content, clock, { format: req.format });
+      case 'ladder': {
+        const o = meta.pickOpponent(s, 'ladder', content, clock, { format: req.format });
+        // Home's Battle: the bot shown as the online player the search finds (owner decision 2026-10-07).
+        return req.online ? meta.onlineOpponent(s, o, content) : o;
+      }
       case 'conquest':
         return meta.pickOpponent(s, 'conquest', content, clock, { conquestGeneral: req.general });
       case 'skirmish':
@@ -228,6 +231,58 @@ describe('VS with real opponents (A7.1 labels, disclosures)', () => {
     const foe = text(m.q('[data-testid="vs-foe"]')!);
     expect(foe).toContain(content.names.aiPrefix);
     expect(m.q('.vs__personality')).not.toBeNull();
+  });
+});
+
+describe('the ranked Ladder with real opponents (owner decision 2026-10-07)', () => {
+  const req: MatchRequest = { mode: 'ladder', format: 'short', online: true };
+  const generals = Object.values(content.generals.list).map((g) => i18n.t(g.nameKey));
+
+  it('VS shows each found player (name, Player chip, trophies) and never the AI label or the General', () => {
+    const names = new Set<string>();
+    for (let i = 0; i < 12; i++) {
+      const s = { ...playedSave(), matchesPlayed: 3 + i, trophies: { current: 400 + i * 97, best: 400 + i * 97, roadClaimed: [] }, arenaIndex: i < 4 ? 2 : 3 };
+      const opponent = metaQueries(() => s).prepareMatch!(req);
+      const who = opponent.side.online!;
+      expect(who).toBeDefined();
+      names.add(who.name);
+      m = mount({ save: s, routes: [{ id: 'home' }, { id: 'vs', request: req, opponent }] });
+      const foe = m.q('[data-testid="vs-foe"]')!;
+      expect(text(foe)).toContain(who.name);
+      expect(foe.querySelector('[data-testid="player-chip"]')).not.toBeNull();
+      expect(foe.querySelector('[data-testid="ai-badge"]')).toBeNull();
+      expect(text(foe)).not.toContain('AI');
+      for (const general of generals) expect(text(foe)).not.toContain(general);
+      expect(rawKeyIn(m.container)).toBeNull();
+      m.unmount();
+      m = null;
+    }
+    // Different matches find different players.
+    expect(names.size).toBeGreaterThan(8);
+  });
+
+  it("Home finds the same player meta picked for this match (the plate, then VS)", async () => {
+    const { vi } = await import('vitest');
+    vi.useFakeTimers();
+    try {
+      // A save past the onboarding with the Ladder open (Home's Battle plays it).
+      const s = midGameSave(content);
+      m = mountWithMeta(s, [{ id: 'home' }]);
+      const expected = metaQueries(() => m!.save.value).prepareMatch!(req).side.online!.name;
+      m.click('[data-testid="play"]');
+      const { act } = await import('preact/test-utils');
+      act(() => {
+        vi.advanceTimersByTime(12_600);
+      });
+      expect(text(m.q('[data-testid="ranked-name"]')!)).toBe(expected);
+      act(() => {
+        vi.advanceTimersByTime(2000);
+      });
+      expect(m.router.current.value.id).toBe('vs');
+      expect(text(m.q('[data-testid="vs-foe"]')!)).toContain(expected);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 
