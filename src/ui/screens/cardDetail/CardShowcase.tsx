@@ -50,9 +50,13 @@ export function showcaseFrame(stage: HTMLElement | null): NonNullable<ShowcaseRe
   const fb = { groundY: SHOWCASE_GROUND_Y, coverRight: 0, coverTop: 1 };
   if (!stage || typeof stage.getBoundingClientRect !== 'function') return fb;
   const r = stage.getBoundingClientRect();
-  const card = stage.querySelector('.cd-stage__card')?.getBoundingClientRect();
-  if (!card || !(r.width > 0) || !(r.height > 0) || !(card.width > 0)) return fb;
-  return { groundY: SHOWCASE_GROUND_Y, coverRight: Math.min(0.7, Math.max(0, (card.right - r.left + 4) / r.width)), coverTop: Math.min(1, Math.max(0, (card.top - r.top) / r.height)) };
+  const el = stage.querySelector('.cd-stage__card');
+  const card = el?.getBoundingClientRect();
+  if (!el || !card || !(r.width > 0) || !(r.height > 0) || !(card.width > 0)) return fb;
+  // the class badge and the crown stick out past the card's corner: the floor starts after them
+  let right = card.right;
+  for (const b of el.querySelectorAll('.ui-card__class, .ui-card__crown')) right = Math.max(right, b.getBoundingClientRect().right);
+  return { groundY: SHOWCASE_GROUND_Y, coverRight: Math.min(0.7, Math.max(0, (right - r.left + 4) / r.width)), coverTop: Math.min(1, Math.max(0, (card.top - r.top) / r.height)) };
 }
 
 /** The controls row (the caption and play/pause) fills this much of the stage's top, px. */
@@ -178,9 +182,20 @@ export function useCardShowcase(stage: RefObject<HTMLElement>, host: RefObject<H
 /** The i18n key of a move's caption (attack variants read "Attack 2/3", an ability its own name). */
 export function moveLabel(t: Translate, s: ShowcaseState): string {
   if ((s.move === 'attack' || s.move === 'attack_b' || s.move === 'attack_c') && s.of > 1) return t('ui.card.showcase.attackOf', { n: s.index, of: s.of });
-  if (s.move === 'ability' && s.ability) return t(`ui.card.showcase.ability.${s.ability}`);
+  const ability = s.move === 'ability' && s.ability ? ABILITY_KEYS[s.ability] : undefined;
+  if (ability) return t(ability);
   return t(MOVE_KEYS[s.move]);
 }
+
+/** The specials a showcase names (whole keys, so the strings check sees them). */
+const ABILITY_KEYS: Record<string, string> = {
+  pounce: 'ui.card.showcase.ability.pounce',
+  callStrike: 'ui.card.showcase.ability.callStrike',
+  timeStop: 'ui.card.showcase.ability.timeStop',
+  emp: 'ui.card.showcase.ability.emp',
+  periodicShieldAura: 'ui.card.showcase.ability.periodicShieldAura',
+  roar: 'ui.card.showcase.ability.roar',
+};
 
 const MOVE_KEYS: Record<ShowcaseMove, string> = {
   idle: 'ui.card.showcase.move.idle',

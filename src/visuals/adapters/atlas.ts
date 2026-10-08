@@ -1087,10 +1087,19 @@ class AtlasUnitView implements UnitView {
   /**
    * How far the frame on screen reaches from the feet (duck-typed, the card detail showcase): `front`
    * toward where the unit faces, `back` behind it and `top` above the feet, in lu, from the visible
-   * (trimmed) part of the frame. Null before a frame shows.
+   * (trimmed) part of the frame. With `clips`, the furthest any frame of those loaded clips reaches
+   * (an attack's wind-up behind the back). Null before a frame shows, or when none of the clips loaded.
    */
-  extentLu(): { front: number; back: number; top: number } | null {
-    return this.frameExtent(this.baseSprite.texture);
+  extentLu(o: { clips?: readonly string[] } = {}): { front: number; back: number; top: number } | null {
+    if (!o.clips) return this.frameExtent(this.baseSprite.texture);
+    let out: { front: number; back: number; top: number } | null = null;
+    for (const name of o.clips) {
+      for (const tex of this.sheet.animations[name] ?? []) {
+        const e = this.frameExtent(tex);
+        if (e) out = out ? { front: Math.max(out.front, e.front), back: Math.max(out.back, e.back), top: Math.max(out.top, e.top) } : e;
+      }
+    }
+    return out;
   }
 
   /**

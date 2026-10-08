@@ -3,6 +3,8 @@ import type { ComponentChildren } from 'preact';
 import { useEffect, useErrorBoundary, useMemo } from 'preact/hooks';
 import { asContent } from '@/content';
 import { CosmeticArtContext } from '@/ui/components/cosmeticArt';
+import { showcaseMount } from '@/render';
+import { ShowcaseContext } from '@/ui/components/showcase';
 import { cosmeticImageUrl, parseCosmeticKey } from '@/visuals/cosmetics/art';
 import { cosmeticCollectionKey, cosmeticNameKey } from '@/content/keys';
 import { foundCosmetics } from '../capsules/capsuleFlow';
@@ -207,20 +209,25 @@ export function AppRoot(p: { ui: AppUi }) {
     if (!scripted || !shows.open([scripted.id], step)) p.ui.controller.finishCapsuleStep();
   }, [shows, step, routeId]);
   const reduceMotion = p.ui.controller.save.value?.settings.reduceMotion ?? false;
+  // The live card showcase (owner request 2026-10-07): Card detail and the first forced upgrade play the
+  // card's real battle art when the app provides a mount (docs/requests/wp11-card-showcase-wiring.md).
+  const showcase = useMemo(() => showcaseMount(p.ui.art, { content: p.ui.services.content }), [p.ui.art, p.ui.services.content]);
   return (
     <AppUiContext.Provider value={p.ui}>
       {/* A18.9.4: the code-drawn cosmetic art (flags, decorations, emotes) for the screens and the HUD */}
       <CosmeticArtContext.Provider value={cosmeticImageUrl}>
-        <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
-          <Screen ui={p.ui} meta={meta} shows={shows} />
-          {shows?.current.value ? null : <FirstUpgrade />}
-          <AgeDialog />
-          <TesterDialog />
-          <div class="ab-rotate" data-testid="rotate">
-            <div class="ab-rotate-phone" aria-hidden="true" />
-            <span>{p.ui.t('app.rotate')}</span>
+        <ShowcaseContext.Provider value={showcase}>
+          <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
+            <Screen ui={p.ui} meta={meta} shows={shows} />
+            {shows?.current.value ? null : <FirstUpgrade />}
+            <AgeDialog />
+            <TesterDialog />
+            <div class="ab-rotate" data-testid="rotate">
+              <div class="ab-rotate-phone" aria-hidden="true" />
+              <span>{p.ui.t('app.rotate')}</span>
+            </div>
           </div>
-        </div>
+        </ShowcaseContext.Provider>
       </CosmeticArtContext.Provider>
     </AppUiContext.Provider>
   );

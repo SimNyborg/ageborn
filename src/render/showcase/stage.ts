@@ -94,7 +94,7 @@ interface ShowView extends UnitView {
   muzzleNow?(attackIndex?: number): Pt | null;
   motionInfo?(): { attacks: string[]; alt: boolean; gait: string | null; naturalSpeedLuPerS: number | null };
   setGroundMarks?(on: boolean): void;
-  extentLu?(): { front: number; back: number; top: number } | null;
+  extentLu?(o?: { clips?: readonly string[] }): { front: number; back: number; top: number } | null;
   impactReachLu?(): number | null;
   readonly finished?: boolean;
 }
@@ -157,7 +157,9 @@ export function heroShare(h: number): number {
 }
 
 /** The hero's back may overlap the lg card's right edge by this share of the stage width. */
-const COVER_OVERLAP = 0.03;
+const COVER_OVERLAP = 0;
+/** The clips whose frames the framing keeps clear of the card (the rest pose and every swing). */
+const SWING_CLIPS = ['idle', 'attack', 'attack_b', 'attack_c', 'attack_alt'] as const;
 /** Room kept free at the top for the caption and play/pause row, px. */
 const TOP_ROOM_PX = 40;
 /** The Training Dummy's drawn reach behind its feet (lu), until a troop stage measures it. */
@@ -319,7 +321,8 @@ export class ShowcaseStage implements ShowcaseHandle {
       // continue the loop from the move after the one on stage
       const i = this.loopMoves.indexOf(this.move);
       this.loopIndex = i >= 0 ? i : 0;
-      if (!this.script || this.moveT >= this.script.ms) this.advance();
+      // the rest after a tapped move has no end: play goes straight on to the next move
+      if (!this.script || !Number.isFinite(this.script.ms) || this.moveT >= this.script.ms) this.advance();
     }
     this.emit();
   }
@@ -373,6 +376,7 @@ export class ShowcaseStage implements ShowcaseHandle {
   destroy(): void {
     if (this.destroyed) return;
     this.destroyed = true;
+    this.live = false;
     if (this.frameHandle) this.frames().cancel(this.frameHandle);
     this.frameHandle = 0;
     for (const o of this.observers) o.disconnect();
@@ -453,11 +457,17 @@ export class ShowcaseStage implements ShowcaseHandle {
     const visuals = planVisuals(content, plan0).map((visualId) => ({ visualId, skin: plan0.kind === 'troop' && visualId === plan0.visualId ? this.req.skin : null }));
     const leaser = this.art as ArtProvider & LeasingArt;
     if (leaser.showcaseLease) {
-      const l = leaser.showcaseLease({ visuals, hd: true });
+      // the HD sheets (2.46 px/lu) where the battle draws the 1x ones: a stage draws units 2-3x
+      // larger than a battle; Lite keeps the battle's sheets
+      const l = leaser.showcaseLease({ visuals, hd: !this.req.lite });
       this.lease = l;
       this.hd = l.hd;
-      const timeout = new Promise<'late'>((r) => setTimeout(() => r('late'), this.deps.loadTimeoutMs ?? 12_000));
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const timeout = new Promise<'late'>((r) => {
+        timer = setTimeout(() => r('late'), this.deps.loadTimeoutMs ?? 12_000);
+      });
       const r = await Promise.race([l.ready.then(() => 'ok' as const), timeout]);
+      clearTimeout(timer);
       if (r === 'late' && !this.destroyed) {
         this.destroy();
         return;
@@ -607,7 +617,9 @@ export class ShowcaseStage implements ShowcaseHandle {
     const d = reachOf(dummy);
     const impact = hero?.view?.impactReachLu?.() ?? null;
     const extent = h && d ? { heroFront: h.front, heroBack: h.back, heroImpact: impact, dummyFront: d.front } : undefined;
-    this.extents = { heroBack: h?.back ?? null, dummyBack: d?.back ?? null };
+    // framing keeps the whole swing clear of the card: an attack's wind-up reaches further back than the idle
+    const swing = hero?.view?.extentLu?.({ clips: SWING_CLIPS })?.back ?? null;
+    this.extents = { heroBack: h ? Math.max(h.back, swing ?? 0) : swing, dummyBack: d?.back ?? null };
     if (!info && !extent) return undefined;
     return { attacks: info?.attacks ?? ['attack'], alt: info?.alt ?? false, ...(extent ? { extent } : {}) };
   }
@@ -637,8 +649,9 @@ export class ShowcaseStage implements ShowcaseHandle {
       const leaser = this.art as ArtProvider & LeasingArt;
       const prev = this.lease;
       if (leaser.showcaseLease) {
-        const l = leaser.showcaseLease({ visuals: planVisuals(this.content, p).map((visualId) => ({ visualId, skin: visualId === p.visualId ? this.req.skin : null })), hd: true });
+        const l = leaser.showcaseLease({ visuals: planVisuals(this.content, p).map((visualId) => ({ visualId, skin: visualId === p.visualId ? this.req.skin : null })), hd: !this.req.lite });
         this.lease = l;
+        this.hd = l.hd;
         await l.ready;
         prev?.release();
         if (this.destroyed) return;
@@ -1655,7 +1668,8 @@ export class ShowcaseStage implements ShowcaseHandle {
 
 /** The default drawing surface: a transparent WebGL Pixi app filling the host. Null without WebGL. */
 export async function createPixiApp(host: HTMLElement, size: { width: number; height: number }): Promise<StageApp | null> {
-  if (typeof document === 'undefined') return null;
+  // no browser canvas (unit tests, a server render): the UI keeps its still
+  if (typeof document === 'undefined' || typeof HTMLCanvasElement === 'undefined') return null;
   const app = new Application();
   try {
     await app.init({

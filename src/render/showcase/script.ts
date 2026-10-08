@@ -194,7 +194,7 @@ function marksmanOf(content: CompiledContent, age: string): UnitDef | undefined 
  * the shooter stays big on a phone stage while its shot still crosses open ground.
  */
 export function shownRange(range: number): number {
-  return Math.min(84, Math.max(56, Math.round(range * 0.3)));
+  return Math.min(72, Math.max(44, Math.round(range * 0.25)));
 }
 
 /**
@@ -235,7 +235,7 @@ export function troopPlan(content: CompiledContent, def: UnitDef, art?: HeroArt)
   // drawn spacing: the idle poses just touching, never so far that the impact frame falls short
   const rest = ext ? ext.heroFront + ext.dummyFront - REST_OVERLAP_LU : 0.95 * (sizeLu * 0.75 + dummySize * 0.85) + 22;
   // a shooter never stands in the dummy (its shot needs a little air), however big its body
-  const drawn = !melee && a0 ? (ext ? ext.heroFront + ext.dummyFront + 14 : rest) : ext && ext.heroImpact !== null ? Math.min(rest, ext.heroImpact + ext.dummyFront * 0.5) : rest;
+  const drawn = !melee && a0 ? (ext ? ext.heroFront + ext.dummyFront + 10 : rest) : ext && ext.heroImpact !== null ? Math.min(rest, ext.heroImpact + ext.dummyFront * 0.5) : rest;
   const heroX = -Math.max(sizeLu / 2 + dummySize / 2 + reach, drawn);
   const walkLu = Math.min(170, Math.max(90, Math.round(groundSpeed * 1.5)));
   const members = def.squad?.count ?? 1;

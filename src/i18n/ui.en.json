@@ -82,7 +82,36 @@
       "oddsTitle": "Capsule odds",
       "stats": "Stats",
       "traits": "Traits",
-      "counterCards": "Card by card"
+      "counterCards": "Card by card",
+      "showcase": {
+        "next": "Next move (now: {move})",
+        "play": "Play the moves",
+        "pause": "Pause the moves",
+        "attackOf": "Attack {n}/{of}",
+        "move": {
+          "idle": "Idle",
+          "walk": "Walk",
+          "attack": "Attack",
+          "attack_alt": "Riders attack",
+          "ability": "Special",
+          "summon": "Summon",
+          "hit": "Hit",
+          "ko": "Knocked out",
+          "build": "Build",
+          "fire": "Fire",
+          "spawn": "Send a levy",
+          "trigger": "Trap springs",
+          "cast": "Cast"
+        },
+        "ability": {
+          "pounce": "Pounce",
+          "callStrike": "Call a strike",
+          "timeStop": "Time Stop",
+          "emp": "EMP blast",
+          "periodicShieldAura": "Shield wave",
+          "roar": "Roar"
+        }
+      }
     },
     "stat": {
       "hp": "HP",
