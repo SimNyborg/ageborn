@@ -49,7 +49,7 @@ import { extraAmbient, finishLayer } from '../../backdrops/lighting';
 import { BACK_FRAME, drawnScene, parseScene, SCENE_ART, sceneDir, sceneIdOf, type SceneData, type SceneFrame, type SceneLight } from '../../backdrops/scenes';
 import { lightAlpha, limitSprites, spriteInstances, spritePeriodMs, spritePhaseMs, type SceneSprite } from '../../backdrops/sceneSprites';
 import { CLOUD_TINT, paintSceneSky, paintSky, SKY_FRAME, type LayerFrame } from '../../backdrops/sky';
-import { backdropId, BACKDROP_THEMES, isNightSky, spaceWeather, themeGround, themeLayer, themeSky } from '../../backdrops/themes';
+import { backdropId, BACKDROP_THEMES, isNightSky, sceneGradeKey, spaceWeather, themeForScene, themeGround, themeLayer, themeSky } from '../../backdrops/themes';
 import { BACKDROP_PALETTES, desaturate, mix } from '../../palette';
 import { WORLD } from '../../style';
 import { BackdropWeatherLayer } from './backdropWeather';
@@ -200,19 +200,34 @@ export class BackdropTextures {
         if (!data) throw new Error('no usable strip');
         this.scenes.set(key, data);
         this.version++;
+        // the strips and the props atlas download side by side (review 1: one after another they took
+        // about four round trips), and each one swaps in (with its cross-fade) as soon as it lands. Lite
+        // keeps the back strip too (one sprite: the Bronze volcano, the Cosmic planet); it only leaves
+        // out the strip's moving props, lights and emitters.
+        const jobs: Promise<void>[] = [];
         for (const kind of ['back', 'far', 'mid'] as const) {
           const m = data.layers[kind];
-          if (!m || (kind === 'back' && this.quality === 'lite')) continue;
-          const tex = await this.loadImage(dir + m.image, m.pxPerLu);
-          this.images.set(`${kind}.${key}`, { tex, ambient: m.ambient });
-          this.version++;
+          if (!m) continue;
+          jobs.push(
+            this.loadImage(dir + m.image, m.pxPerLu).then((tex) => {
+              this.images.set(`${kind}.${key}`, { tex, ambient: m.ambient });
+              this.version++;
+            }),
+          );
         }
-        if (data.props && Object.keys(data.props.frames).length > 0) {
-          const atlas = (await Assets.load(this.baseUrl + dir + data.props.image)) as Texture;
-          const frames = new Map<string, PropFrame>();
-          for (const [name, f] of Object.entries(data.props.frames)) frames.set(name, propFrame(atlas, f));
-          this.props.set(key, frames);
-          this.version++;
+        const props = data.props;
+        if (props && Object.keys(props.frames).length > 0) {
+          jobs.push(
+            (Assets.load(this.baseUrl + dir + props.image) as Promise<Texture>).then((atlas) => {
+              const frames = new Map<string, PropFrame>();
+              for (const [name, f] of Object.entries(props.frames)) frames.set(name, propFrame(atlas, f));
+              this.props.set(key, frames);
+              this.version++;
+            }),
+          );
+        }
+        for (const r of await Promise.allSettled(jobs)) {
+          if (r.status === 'rejected') console.warn(`[visuals] a file of backdrop scene "${key}" failed to load; its painted layer is used`, r.reason);
         }
       } catch (e) {
         console.warn(`[visuals] backdrop scene "${key}" failed to load; the painted layers are used`, e);
@@ -255,10 +270,16 @@ export class BackdropTextures {
    * `celestial: 'own'`) keeps it, without the theme's sun or moon.
    */
   private themed(kind: LayerKind, age: AgeId, id: string, base: Painted, scene: string): Painted {
-    const th = BACKDROP_THEMES[id];
-    if (!th || !this.canBake || base.tex === Texture.EMPTY) return base;
+    const theme = BACKDROP_THEMES[id];
+    if (!theme || !this.canBake || base.tex === Texture.EMPTY) return base;
+    // how the scene takes the theme (review 1): a space scene keeps its own sky, a pale or dark scene a
+    // gentler grade of a light theme, the back strip half the grade
+    const hints = this.scenes.get(sceneKey(age, drawnScene(age, scene)))?.hints;
+    const th = themeForScene(theme, hints, kind);
+    if (!th) return base;
     const src = base.tex.source;
-    const key = `${kind}.${age}@${id}#${src.uid}`;
+    // (the source uid stays last: `release` drops a released image's themed copies by it)
+    const key = `${kind}.${age}@${id}~${sceneGradeKey(hints)}#${src.uid}`;
     const hit = this.cache.get(key);
     if (hit) return hit;
     const t0 = performance.now();
@@ -272,7 +293,7 @@ export class BackdropTextures {
     const resource = src.resource as CanvasImageSource | undefined;
     if (resource) ctx.drawImage(resource, 0, 0, canvas.width, canvas.height);
     const f = { ...FRAMES[kind], pxPerLu: res };
-    if (kind === 'sky') themeSky(ctx, id, age, th, f, { celestial: this.scenes.get(sceneKey(age, drawnScene(age, scene)))?.hints.celestial !== 'own' });
+    if (kind === 'sky') themeSky(ctx, id, age, th, f, { celestial: hints?.celestial !== 'own' });
     else themeLayer(canvas, ctx, id, kind === 'back' ? 'far' : kind, age, th, f);
     const source = new CanvasSource({ resource: canvas, resolution: 1 });
     source.resolution = res;
@@ -864,7 +885,15 @@ export interface BackdropViewOptions {
 type AmbLayer = 'sky' | 'back' | 'far' | 'mid' | 'ground';
 
 export class ProceduralBackdropView implements BackdropView {
-  readonly root = new Container();
+  /**
+   * A render group (Pixi v8): the battle's scene graph changes almost every frame (units, effects,
+   * numbers), and without its own group the backdrop's strips, props and motes were re-collected into
+   * the frame's instructions every time. As a group they keep their own instruction set, rebuilt only
+   * when the backdrop itself changes, and the camera moves it as one transform on the GPU. Review 1
+   * (844 x 390, CPU 4x, High): the scenes' extra cost over the painted layers went from +0.7-1.1 ms to
+   * at most +0.25 ms a frame, same draw calls, same image.
+   */
+  readonly root = new Container({ isRenderGroup: true });
   private readonly layers: StripLayer[];
   private readonly clouds = new Container();
   private readonly haze = new HazeLayer();
@@ -921,8 +950,10 @@ export class ProceduralBackdropView implements BackdropView {
     this.rng = mulberry32(o.seed);
     this.root.label = `backdrop.${o.left}${l ? `@${l}` : ''}|${o.right}${r ? `@${r}` : ''}|ground.${this.arena}`;
     // Lite keeps the mid layer since A17: with a scrolling camera it is the layer that shows the
-    // parallax depth (A17.7); it drops a scene's back strip and half its ambient life.
-    this.layers = LAYERS.filter((k) => k !== 'back' || o.quality === 'high').map((k) => new StripLayer(k, o.textures));
+    // parallax depth (A17.7). It keeps a scene's back strip too (review 1: one sprite, and without it
+    // Bronze lost its volcano and Cosmic its planet), but not the strip's moving props, lights or
+    // emitters, and it halves the rest of the ambient life.
+    this.layers = LAYERS.map((k) => new StripLayer(k, o.textures));
     this.ambientLayers = { sky: new Container(), back: new Container(), far: new Container(), mid: new Container(), ground: new Container() };
     this.lightLayers = { back: new Container(), far: new Container(), mid: new Container() };
     const byKind = (k: LayerKind): StripLayer | undefined => this.layers.find((x) => x.kind === k);
@@ -1012,10 +1043,20 @@ export class ProceduralBackdropView implements BackdropView {
     this.seamTarget = Math.max(WORLD.seamMinLu, Math.min(WORLD.seamMaxLu, x));
   }
 
+  /**
+   * Starts loading a side's scene for an age it is about to reach (duck-typed; the battle view calls it
+   * once that side's evolve is near and again on its Ascension, so the files are in before the wipe
+   * starts; review 1). Idempotent, and an age no side nears is never requested.
+   */
+  prefetchAge(side: Side, age: AgeId): void {
+    this.o.textures.prefetch([age], [], [this.sceneRef(side, age)]);
+  }
+
   wipe(side: Side, age: AgeId, ms: number = WORLD.evolveWipeMs): void {
     // finish a running wipe first
     if (this.wipeState) this.finishWipe();
     this.wipeState = { side, age, t: 0, ms: Math.max(1, ms) };
+    // (normally prefetched already, see `prefetchAge`; a wipe without a warning still loads it now)
     this.o.textures.prefetch([age], [], [this.sceneRef(side, age)]);
     this.rebuildAmbient();
     this.dirty = true;
@@ -1240,15 +1281,18 @@ export class ProceduralBackdropView implements BackdropView {
     // cloud tint follows the side ages (and a side's backdrop skin or scene sky); space scenes hide them
     const lt = this.skins.left ? BACKDROP_THEMES[this.skins.left.slice(9)] : undefined;
     const rt = this.skins.right ? BACKDROP_THEMES[this.skins.right.slice(9)] : undefined;
-    const ls = this.sceneData(this.left, this.sceneOf(0, this.left))?.sky ?? null;
-    const rs = this.sceneData(this.right, this.sceneOf(1, this.right))?.sky ?? null;
+    const ld = this.sceneData(this.left, this.sceneOf(0, this.left));
+    const rd = this.sceneData(this.right, this.sceneOf(1, this.right));
     this.clouds.children.forEach((c, i) => {
       if (!(c instanceof Sprite)) return;
       const leftSide = c.x < this.seam;
       const theme = leftSide ? lt : rt;
-      const sky = leftSide ? ls : rs;
-      c.tint = theme ? theme.cloudTint : (sky?.cloudTint ?? CLOUD_TINT[leftSide ? this.left : this.right] ?? CLOUD_TINT[i % 2 ? this.left : this.right]);
-      c.alpha = (this.cloudAlpha[i] ?? 0.6) * (theme ? 1 : (sky?.clouds ?? 1));
+      const data = leftSide ? ld : rd;
+      const sky = data?.sky ?? null;
+      // a space scene keeps its own sky under a theme (review 1), so no theme clouds drift over it
+      const own = !theme || data?.hints.weather === 'space';
+      c.tint = theme && !own ? theme.cloudTint : (sky?.cloudTint ?? CLOUD_TINT[leftSide ? this.left : this.right] ?? CLOUD_TINT[i % 2 ? this.left : this.right]);
+      c.alpha = (this.cloudAlpha[i] ?? 0.6) * (own ? (sky?.clouds ?? 1) : 1);
     });
   }
 

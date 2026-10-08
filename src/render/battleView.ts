@@ -52,7 +52,7 @@ import { ParticlePool, type ParticleHandle } from './feel/particlePool';
 import { cloneFeelConfig, defaultFeelConfig, type RenderFeelConfig } from './feelConfig';
 import { HealthBars, barWidthLu, newBar, stepBar, type BarDraw, type BarState } from './healthbars';
 import { HOLD_FLAG_FOOT_Y, HOLD_FLAG_TOP_Y, HoldFlagMarker } from './holdFlag';
-import { ageOrder, canEvolve } from './hudModel';
+import { ageOrder, canEvolve, xpThreshold } from './hudModel';
 import { BattleInput, edgeSpeed } from './input';
 import { createLayers, type BattleLayers } from './layers';
 import { LANE_LU, MILLI_LU, WORLD_LEFT_LU, WORLD_RIGHT_LU, baseCenterX, facingOf, gateX, pToX, xToP } from './layout';
@@ -332,6 +332,8 @@ export class BattleView {
   private readonly ages: AgeId[];
   /** Ages this view asked the art provider to load (`preloadAhead`). */
   private readonly preloadedAges = new Set<AgeId>();
+  /** Each side's next age whose scene the backdrop was asked to load (`<side>.<age>`, `prefetchNextScenes`). */
+  private readonly scenesAsked = new Set<string>();
   /** Created on the first base flash (a filter needs a GPU context). */
   private baseFlashFilter: ColorMatrixFilter | null | undefined;
   /**
@@ -450,6 +452,31 @@ export class BattleView {
       }
     }
     if (want.length > 0) void Promise.resolve(this.art.preload(want)).catch(() => undefined);
+  }
+
+  /**
+   * A side's backdrop scene for its next age starts loading once that side's evolve is near (70% of the
+   * XP it needs) or its Ascension starts (`force`), so the strips are in before the evolve wipe (review 1:
+   * they were requested only when the wipe began). An age a match never nears is never downloaded (B16).
+   * Duck-typed: a backdrop without `prefetchAge` loads at the wipe as before.
+   */
+  private prefetchNextScenes(force?: { side: Side; age: AgeId }): void {
+    const bd = this.backdrop as BackdropView & { prefetchAge?: (side: Side, age: AgeId) => void };
+    if (typeof bd.prefetchAge !== 'function') return;
+    const ask = (side: Side, age: AgeId): void => {
+      const key = `${side}.${age}`;
+      if (this.scenesAsked.has(key)) return;
+      this.scenesAsked.add(key);
+      bd.prefetchAge?.(side, age);
+    };
+    if (force) ask(force.side, force.age);
+    for (const side of [0, 1] as const) {
+      const st = this.sim.state.sides[side];
+      const next = this.ages[st.ageIndex + 1];
+      if (!next || this.scenesAsked.has(`${side}.${next}`)) continue;
+      const need = xpThreshold(this.config, st.ageIndex);
+      if (need !== null && st.xp >= need * 700) ask(side, next);
+    }
   }
 
   // ------------------------------------------------------------------------------------------
@@ -1103,6 +1130,7 @@ export class BattleView {
       const actions = this.mapper.map(evs, (id) => this.lookup(id), () => this.liveUnitInfos());
       for (const a of actions) this.exec(a);
     }
+    this.prefetchNextScenes();
     // A13 `evolve_ready`: one soft chime when your Evolve becomes available (there is no sim event).
     const ready = canEvolve(this.sim.state, this.config, this.mySide);
     if (ready && !this.evolveReady && !this.ended) {
@@ -1199,6 +1227,9 @@ export class BattleView {
   private watchEvent(ev: SimEvent): void {
     switch (ev.e) {
       case 'ascendStart':
+        this.prefetchNextScenes({ side: ev.side, age: ev.age });
+        this.preloadAhead();
+        return;
       case 'ageUp':
         this.preloadAhead();
         return;

@@ -382,6 +382,26 @@ export class VisualsArtProvider implements ArtProvider {
     return Promise.all(all).then(() => undefined);
   }
 
+  /**
+   * Warms what a match opening in `age` shows, while VS is up (PLAN 2b/2c "prefetched during VS"; review
+   * 1): each side's base skin model of that age and each half's scene of it (the classic when it has
+   * none), so the battle's first frame shows the models and the Blender scenery instead of the tint and
+   * the painted layers swapping over. Duck-typed for the app (no contract change); resolves once the skin
+   * models are in (the scenes stream into the backdrop textures the battle's backdrop reads).
+   */
+  prefetchMatch(o: { age: AgeId; sides: readonly { skins?: Partial<Record<AgeId, SkinId>>; scenes?: Partial<Record<AgeId, CosmeticKey>> }[] }): Promise<void> {
+    const skins: Partial<Record<AgeId, SkinId>>[] = [];
+    const scenes: { age: AgeId; scene: string }[] = [];
+    for (const side of o.sides) {
+      const skin = side.skins?.[o.age];
+      if (skin) skins.push({ [o.age]: skin });
+      const key = side.scenes?.[o.age];
+      scenes.push({ age: o.age, scene: key?.startsWith('scene.') ? key.slice('scene.'.length) : 'classic' });
+    }
+    if (this.force === null || this.force === 'procedural' || this.force === 'atlas') this.procedural.backdrops.prefetch([o.age], [], scenes);
+    return Promise.all(skins.map((s) => this.prefetchBaseSkins(s))).then(() => undefined);
+  }
+
   /** Base flag, national flag, decorations and skin restyle of one side (DESIGN A18.9.4). */
   createBaseDressing(o: { age: AgeId; side: Side; look: SideLook; teamPreset: TeamPreset; base?: BaseView }): BaseDressingView {
     return new BaseDressing({ ...o, team: teamColor(o.side, o.teamPreset), seed: this.nextSeed++ });

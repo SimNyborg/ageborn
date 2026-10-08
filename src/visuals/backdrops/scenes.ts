@@ -123,8 +123,17 @@ export interface SceneLight {
 export interface SceneHints {
   /** `own`: the scene has its own big sky object, so a sky theme skips its sun or moon. */
   celestial: 'keep' | 'own';
-  /** `space`: a sky theme's snow, rain and petals become ice motes, meteor streaks and sparkles. */
+  /**
+   * `space`: a sky theme's snow, rain and petals become ice motes, meteor streaks and sparkles, and the
+   * scene keeps its own sky (a day sky over space reads wrong; review 1).
+   */
   weather: 'ground' | 'space';
+  /**
+   * How strongly a light sky theme may grade this scene, 0..1 (default 1). Pale, hazed scenes (Bronze's
+   * sandstone hills) and dark space scenes take less, or Winterfall washes them almost white (review 1):
+   * the grade, sky and glow of a theme scale toward this by the theme's lightness (`themeForScene`).
+   */
+  skyGrade: number;
 }
 
 /** A loaded scene, either format (format 1 has no sky, props, lights or thumbnail). */
@@ -147,7 +156,7 @@ export const SCENE_FRAMES: Record<SceneLayer, { yTop: number; height: number }> 
   mid: { yTop: -300, height: 320 },
 };
 
-const DEFAULT_HINTS: SceneHints = { celestial: 'keep', weather: 'ground' };
+const DEFAULT_HINTS: SceneHints = { celestial: 'keep', weather: 'ground', skyGrade: 1 };
 
 type Json = Record<string, unknown>;
 const isObj = (v: unknown): v is Json => typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -257,7 +266,11 @@ export function parseScene(json: unknown, age: AgeId, scene: string): SceneData 
   const lights = version === 2 ? readLights(json['lights']) : [];
   const h = json['hints'];
   const hints: SceneHints = isObj(h)
-    ? { celestial: h['celestial'] === 'own' ? 'own' : 'keep', weather: h['weather'] === 'space' ? 'space' : 'ground' }
+    ? {
+        celestial: h['celestial'] === 'own' ? 'own' : 'keep',
+        weather: h['weather'] === 'space' ? 'space' : 'ground',
+        skyGrade: Math.max(0, Math.min(1, num(h['skyGrade'], 1))),
+      }
     : DEFAULT_HINTS;
   return {
     version,

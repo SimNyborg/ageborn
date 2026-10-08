@@ -30,11 +30,11 @@ import { momentPreview, VICTORY_MOVES, type VictoryMoveDef } from '@/ui/screens/
 import { shellTabs, TAB_ROOTS } from '@/ui/screens/warPath/shell';
 import type { SaveDoc, ShowcaseHandle, ShowcaseMount } from '@/contracts';
 import { setFortSlotPreview } from '@/ui/screens/model/plan';
-import { CosmeticArtContext } from '@/ui/components/cosmeticArt';
+import { CosmeticArtContext, CosmeticPicturesContext } from '@/ui/components/cosmeticArt';
 import { ShowcaseContext } from '@/ui/components/showcase';
 import { showcaseMount } from '@/render/showcase';
 import { createArtProvider } from '@/visuals';
-import { cosmeticImageUrl } from '@/visuals/cosmetics/art';
+import { cosmeticImageUrl, onCosmeticPicturesChanged } from '@/visuals/cosmetics/art';
 import { signal } from '@preact/signals';
 import { useEffect, useMemo, useState } from 'preact/hooks';
 
@@ -516,6 +516,8 @@ export default function ScreensPage() {
       </div>
       <div style={frame} key={`${variant}|${state}|${portraits}|${epoch}`}>
         <CosmeticArtContext.Provider value={cosmeticImageUrl}>
+          {/* stills that improve once their Blender strips stream in re-render, as in the app (custom-a-scenes 1) */}
+          <CosmeticPicturesContext.Provider value={onCosmeticPicturesChanged}>
           <ShowcaseContext.Provider value={portraits ? showcase : null}>
           <ScreenHost
             env={env}
@@ -539,6 +541,7 @@ export default function ScreensPage() {
           }}
           />
           </ShowcaseContext.Provider>
+          </CosmeticPicturesContext.Provider>
         </CosmeticArtContext.Provider>
       </div>
     </div>

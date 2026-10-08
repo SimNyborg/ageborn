@@ -438,7 +438,8 @@ class Scene:
     """One age's scenery. `pal`: colours for the haze and builders (skyTop, skyBottom, light, ...);
     `sky`: the daylight sky the game paints (hex strings: top, bottom, horizon, cloudTint, celestial,
     sunAt [x, y, r], stars, smog, night); `far`, `mid`, `back`: builders `fn(st, P)`; `props()`:
-    returns (list of Prop, list of sprite specs); `hints`: celestial keep|own, weather ground|space.
+    returns (list of Prop, list of sprite specs); `hints`: celestial keep|own, weather ground|space, and
+    skyGrade 0..1 (how strongly a light sky theme may grade the scene; pale or dark scenes take less).
     `version=1` writes the first five ages' classic format (two strips, no sky, props or thumb)."""
 
     def __init__(self, age, sid, pal, far, mid, back=None, sky=None, props=None, hints=None, version=2,

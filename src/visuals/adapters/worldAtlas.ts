@@ -15,9 +15,10 @@
  *   `treasury` (frame n = Treasury level n + 1), plus `mountsLu`, `lightsLu`, `smokeLu`, `hornLu`.
  * Every clip has a `<clip>_team` twin: grey team surfaces drawn tinted UNDER the base frame.
  */
-import { Assets, Texture, type Spritesheet } from 'pixi.js';
+import { Assets, ImageSource, Spritesheet, Texture, type SpritesheetData } from 'pixi.js';
 import type { VisualDef } from '@/contracts/art';
 import type { AgeId } from '@/contracts/ids';
+import { loadWorldSheet } from './worldPortrait';
 
 export interface WorldClipMeta {
   durationsMs?: number[];
@@ -72,12 +73,33 @@ interface SheetJson {
 export type WorldLoader = (url: string) => Promise<WorldSheet>;
 
 async function loadWithAssets(url: string): Promise<WorldSheet> {
+  if (isBaseSkinSource(url)) return loadSharedSheet(url);
   const sheet = (await Assets.load(url)) as Spritesheet;
+  return worldSheetOf(sheet, url);
+}
+
+function worldSheetOf(sheet: Spritesheet, url: string): WorldSheet {
   const data = sheet.data as unknown as SheetJson;
   const m = data.meta.ageborn;
   if (!m) throw new Error(`World sheet "${url}" has no meta.ageborn block`);
   const scale = Number(data.meta.scale ?? 1) || 1;
   return { animations: sheet.animations, luPerUnit: scale / m.pxPerLu, meta: m };
+}
+
+/**
+ * A base skin model's sheet (PLAN 2c) through the menus' loader (`loadWorldSheet`: one fetch of the JSON
+ * and one decode of the PNG, shared with the portraits of VS, Home and Customize), parsed into a Pixi
+ * spritesheet here. Review 1 saw every model's sheet download twice, once for the portraits and once
+ * for the battle; now whichever asks first loads it and the other reuses it.
+ */
+async function loadSharedSheet(url: string): Promise<WorldSheet> {
+  const shared = await loadWorldSheet(url);
+  if (!shared) throw new Error(`World sheet "${url}" failed to load`);
+  // the same source settings as Pixi's own image loader (premultiplied on upload)
+  const source = new ImageSource({ resource: shared.image, alphaMode: 'premultiply-alpha-on-upload', label: url });
+  const sheet = new Spritesheet(new Texture({ source, label: url }), shared.json as unknown as SpritesheetData);
+  await sheet.parse();
+  return worldSheetOf(sheet, url);
 }
 
 /** Age of a world sheet from its source path (`art/turrets/<age>/<slug>.json`, `art/bases/<age>.json`). */

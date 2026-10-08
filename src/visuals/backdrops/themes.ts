@@ -65,6 +65,8 @@ export interface BackdropTheme {
   accent: number;
   /** A night sky: a scene's window and lantern lights come on (PLAN 2b `lights`). */
   night?: boolean;
+  /** How strong the rim prop paints (1 by default; `themeForScene` lowers it on scenes that take less grade). */
+  rimAlpha?: number;
 }
 
 /** Every backdrop skin, by item id (`backdrop.<id>` in the content). */
@@ -330,6 +332,41 @@ export function spaceWeather(th: BackdropTheme): BackdropTheme {
   }
 }
 
+/** The share of a theme's grade the back strip takes (review 1: it sat under the full far grade). */
+export const BACK_GRADE_SCALE = 0.5;
+
+/** Relative luminance of a colour, 0..1 (sRGB weights on the 8-bit channels; enough for a blend factor). */
+function lightness(c: number): number {
+  return (0.2126 * ((c >> 16) & 255) + 0.7152 * ((c >> 8) & 255) + 0.0722 * (c & 255)) / 255;
+}
+
+/**
+ * A sky theme as a scene wears it on one layer (PLAN 2b hints, review 1), or null when the layer keeps
+ * its own look:
+ * - a space scene (`weather: 'space'`) keeps its own sky (stars and nebula, never a day sky over space);
+ * - `skyGrade` < 1 tones a light theme down on a scene that is already pale or dark: the sky gradient and
+ *   glow, the far and mid grade and the rim prop scale toward `skyGrade` by the theme's lightness, so
+ *   Winterfall stops washing Bronze and Cosmic white while night themes (dark grades) keep almost their
+ *   full strength;
+ * - the back strip takes half the grade ({@link BACK_GRADE_SCALE}): it is already hazed into the sky.
+ * The lane (`backdropView`) and the Customize stills (`backdropPreview`) both bake through this, so a
+ * preview still matches the lane.
+ */
+export function themeForScene(th: BackdropTheme, hints: { skyGrade?: number; weather?: 'ground' | 'space' } | null | undefined, kind: 'sky' | 'back' | 'far' | 'mid'): BackdropTheme | null {
+  if (kind === 'sky' && hints?.weather === 'space') return null;
+  const g = Math.max(0, Math.min(1, hints?.skyGrade ?? 1));
+  const light = kind === 'sky' ? lightness(mix(th.skyTop, th.skyBottom, 0.5)) : lightness(th.grade);
+  const k = (1 - (1 - g) * light) * (kind === 'back' ? BACK_GRADE_SCALE : 1);
+  if (k >= 0.999) return th;
+  if (kind === 'sky') return { ...th, skyMix: th.skyMix * k, glowAlpha: th.glowAlpha * k };
+  return { ...th, gradeMix: th.gradeMix * k, rimAlpha: (th.rimAlpha ?? 1) * (0.45 + 0.55 * k) };
+}
+
+/** A short cache key part for the way a scene takes themes (`themeForScene`'s inputs besides the theme). */
+export function sceneGradeKey(hints: { skyGrade?: number; weather?: 'ground' | 'space' } | null | undefined): string {
+  return `${hints?.skyGrade ?? 1}${hints?.weather === 'space' ? 's' : ''}`;
+}
+
 /** The bare id of a backdrop key, or null. */
 export function backdropId(key: string | null | undefined): string | null {
   if (!key) return null;
@@ -566,8 +603,9 @@ function paintRim(canvas: HTMLCanvasElement, ctx: Ctx2D, id: string, kind: 'far'
   s.x.globalCompositeOperation = 'destination-out';
   s.x.drawImage(canvas, 0, dy);
   s.x.globalCompositeOperation = 'source-in';
+  const rimAlpha = th.rimAlpha ?? 1;
   if (th.rim === 'snow') {
-    s.x.fillStyle = toCss(th.rimColor, kind === 'far' ? 0.78 : 0.9);
+    s.x.fillStyle = toCss(th.rimColor, (kind === 'far' ? 0.78 : 0.9) * rimAlpha);
     s.x.fillRect(0, 0, W, H);
     ctx.save();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -604,6 +642,7 @@ function paintRim(canvas: HTMLCanvasElement, ctx: Ctx2D, id: string, kind: 'far'
   ctx.save();
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   if (th.rim === 'lights') ctx.globalCompositeOperation = 'lighter';
+  ctx.globalAlpha = Math.min(1, rimAlpha);
   ctx.drawImage(s.c, 0, 0);
   ctx.restore();
 }

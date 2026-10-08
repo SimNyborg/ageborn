@@ -334,7 +334,7 @@ def props():
 SCENES = {
     # the ringed planet is this sky's object: a sky theme brings its stars and colours, not a second moon
     "classic": Scene("cosmic", "classic", PAL, far, mid, back=back, sky=SKY, props=props,
-                     hints={"celestial": "own", "weather": "space"}, ground="deck",
+                     hints={"celestial": "own", "weather": "space", "skyGrade": 0.35}, ground="deck",
                      # no air on the moon: less haze and desaturation than the A11 default (still muted)
                      look={"back": (0.26, 0.22, 0.3), "far": (0.16, 0.06, 0.14), "mid": (0.1, 0.0, 0.06)}),
 }

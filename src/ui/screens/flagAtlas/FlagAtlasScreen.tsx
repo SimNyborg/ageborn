@@ -27,7 +27,7 @@ import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Button, IconButton } from '../../components/Button';
 import { useConfirmSpend } from '../../components/confirm';
-import { CosmeticImage, useCosmeticImage, type CosmeticImageFn } from '../../components/cosmeticArt';
+import { CosmeticImage, useCosmeticImage, useFlagAtlasReady } from '../../components/cosmeticArt';
 import { formatInt } from '../../components/format';
 import { haptic } from '../../components/haptics';
 import { CheckIcon, CloseIcon, DustIcon } from '../../components/icons';
@@ -39,30 +39,8 @@ import { atlasAction, atlasFlags, atlasSections, newRewards, type AtlasFlag, typ
 import type { FlagAtlasInfo } from './types';
 import { WavingFlag } from './WavingFlag';
 
-/** How long the grid waits for the flag atlas before it shows the flags one by one instead (ms). */
-const ATLAS_WAIT_MS = 4000;
 /** The reward reveal waits for the purchase moment to land (the unfurl settles in about 0.8 s). */
 const REVEAL_AFTER_MS = 850;
-/** The key the atlas probe asks for (any vendored flag). */
-const PROBE = 'nationalFlag.dk';
-
-/** True once the flag atlas's cells are in (or the wait is over): until then the grid shows soft placeholders. */
-function useAtlasReady(art: CosmeticImageFn | null): boolean {
-  const probe = (): boolean => (art?.(PROBE, { size: 'tile', cached: true }) ?? '').startsWith('blob:');
-  const [ready, setReady] = useState(() => !art || typeof requestAnimationFrame !== 'function' || probe());
-  useEffect(() => {
-    if (ready) return undefined;
-    const t0 = performance.now();
-    let raf = 0;
-    const tick = (): void => {
-      if (probe() || performance.now() - t0 > ATLAS_WAIT_MS) setReady(true);
-      else raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [ready, art]);
-  return ready;
-}
 
 /** The OS preference for reduced motion. */
 function osReducedMotion(): boolean {
@@ -253,7 +231,7 @@ function FlagDetail(p: {
   still: boolean;
   unfurl: number;
   onBuy: () => boolean;
-  onFly: (anchor: HTMLElement | null) => void;
+  onFly: () => void;
   onClose: () => void;
 }) {
   const { t, locale, content, sound } = useUi();
@@ -284,7 +262,7 @@ function FlagDetail(p: {
       break;
     case 'fly':
       primary = (
-        <Button kind="primary" size="l" wide testid="atlas-fly" onClick={(e) => p.onFly(e.currentTarget as HTMLElement)}>
+        <Button kind="primary" size="l" wide testid="atlas-fly" onClick={() => p.onFly()}>
           {t('cosmetic.flagAtlas.fly')}
         </Button>
       );
@@ -454,7 +432,8 @@ function RewardReveal(p: { item: { kind: 'region'; region: FlagRegion; reward: s
 export function FlagAtlasScreen(p: { route: RouteOf<'flagAtlas'> }) {
   const { t, locale, router, services, save, content, sound, toasts } = useUi();
   const art = useCosmeticImage();
-  const ready = useAtlasReady(art);
+  // the grid waits for the one flag atlas (soft placeholders meanwhile), then shows its cells
+  const ready = useFlagAtlasReady(art);
   const still = useStill();
   const s = save.value;
   const atlas = services.flagAtlasProgress();
@@ -466,6 +445,8 @@ export function FlagAtlasScreen(p: { route: RouteOf<'flagAtlas'> }) {
   const [reveals, setReveals] = useState<ReturnType<typeof newRewards>>([]);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const revealTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** The "… is flying · Undo" toast, closed when another flag is picked (review 1: it covered the detail). */
+  const flyToast = useRef<number | null>(null);
   useEffect(
     () => () => {
       if (revealTimer.current) clearTimeout(revealTimer.current);
@@ -503,6 +484,13 @@ export function FlagAtlasScreen(p: { route: RouteOf<'flagAtlas'> }) {
     return () => document.removeEventListener('keydown', key, true);
   }, [selected, reveals.length]);
 
+  // the Undo toast belongs to the flag it flew: picking another flag (or closing the sheet) closes it
+  useEffect(() => {
+    if (flyToast.current === null) return;
+    toasts.dismiss(flyToast.current);
+    flyToast.current = null;
+  }, [selected]);
+
   const pick = (f: AtlasFlag): void => {
     if (selected === f.key) return;
     sound?.(selected ? 'ui_click' : 'ui_sheet');
@@ -536,7 +524,7 @@ export function FlagAtlasScreen(p: { route: RouteOf<'flagAtlas'> }) {
     return true;
   };
 
-  const fly = (anchor: HTMLElement | null): void => {
+  const fly = (): void => {
     if (!chosen) return;
     const before = atlas.equipped;
     const r = services.equipCosmetic({ slot: 'nationalFlag', key: chosen.key });
@@ -547,9 +535,11 @@ export function FlagAtlasScreen(p: { route: RouteOf<'flagAtlas'> }) {
     sound?.('ui_stamp');
     setPop(chosen.key);
     setUnfurl((n) => n + 1);
-    toasts.show(t('cosmetic.flagAtlas.flyingToast', { name: t(chosen.item.nameKey) }), {
+    // in the screen's usual toast place (as every Customize equip), never over the detail's name,
+    // region and progress (review 1); the "Flying" state in the detail is the feedback at the button
+    if (flyToast.current !== null) toasts.dismiss(flyToast.current);
+    flyToast.current = toasts.show(t('cosmetic.flagAtlas.flyingToast', { name: t(chosen.item.nameKey) }), {
       tone: 'good',
-      anchor,
       undo: () => {
         services.equipCosmetic({ slot: 'nationalFlag', key: before });
       },

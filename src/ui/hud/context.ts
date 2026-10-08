@@ -1,5 +1,5 @@
 /** Shared props of the HUD pieces. */
-import type { AudioService, EmoteId, HudModel, MatchConfig, Side } from '@/contracts';
+import type { AudioService, AvatarSpec, EmoteId, HudModel, MatchConfig, Side } from '@/contracts';
 import type { Signal } from '@preact/signals';
 import type { HudViewBridge } from './bridge';
 import type { FortAim, FortCommit } from './fortAim';
@@ -13,6 +13,8 @@ export interface EmoteWheel {
   emotes: readonly EmoteId[];
   quotes: readonly EmoteId[];
   quoteCooldownMs: number;
+  /** Your General (the quote bubble's head, PLAN 2a); absent in replays and tests. */
+  speaker?: AvatarSpec;
 }
 
 export interface HudCtx {

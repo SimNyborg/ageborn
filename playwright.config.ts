@@ -1,4 +1,5 @@
-import { defineConfig, devices } from '@playwright/test';
+import { existsSync } from 'node:fs';
+import { defineConfig, devices, firefox } from '@playwright/test';
 
 /**
  * E2E smoke tests (DESIGN B13) against the production build served by `vite preview`.
@@ -6,6 +7,21 @@ import { defineConfig, devices } from '@playwright/test';
  */
 const chromiumPath = process.env['PW_CHROMIUM_PATH'];
 const port = 4173;
+
+/**
+ * True when Playwright's Firefox is installed. CI installs only Chromium and WebKit
+ * (`.github/workflows/ci.yml`), so a Firefox project there failed every run with "Executable doesn't
+ * exist" (red since 2026-10-03); it now runs only where the browser is present.
+ */
+function firefoxInstalled(): boolean {
+  try {
+    const p = firefox.executablePath();
+    return p !== '' && existsSync(p);
+  } catch {
+    return false;
+  }
+}
+const wantFirefox = process.env['CI'] !== undefined || process.env['PW_FIREFOX'] === '1';
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -29,10 +45,10 @@ export default defineConfig({
     // WebKit runs in CI (B13, C4.3: determinism across engines) and locally with PW_WEBKIT=1.
     ...(process.env['CI'] !== undefined || process.env['PW_WEBKIT'] === '1' ? [{ name: 'webkit', use: { ...devices['Desktop Safari'] } }] : []),
     // Online M1 (DESIGN A18.10): the golden replays also re-simulate in Firefox (SpiderMonkey), so the
-    // sim is proven identical on all three engines. Only the determinism spec; locally with PW_FIREFOX=1.
-    ...(process.env['CI'] !== undefined || process.env['PW_FIREFOX'] === '1'
-      ? [{ name: 'firefox', testMatch: '**/determinism.spec.ts', use: { ...devices['Desktop Firefox'] } }]
-      : []),
+    // sim is proven identical on all three engines. Only the determinism spec; locally with PW_FIREFOX=1,
+    // and only where Firefox is installed (`npx playwright install firefox`); without it the project is
+    // left out, so the run stays clean.
+    ...(wantFirefox && firefoxInstalled() ? [{ name: 'firefox', testMatch: '**/determinism.spec.ts', use: { ...devices['Desktop Firefox'] } }] : []),
   ],
   webServer: {
     command: `npm run build && npx vite preview --port ${port} --strictPort`,

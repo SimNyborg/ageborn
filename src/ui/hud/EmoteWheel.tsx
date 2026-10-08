@@ -48,7 +48,7 @@ export function quoteRarity(c: Pick<HudCtx, 'config'> | undefined, id: EmoteId):
  */
 function speakerOf(c: HudCtx | undefined, side: 'me' | 'foe'): AvatarSpec | undefined {
   if (!c) return undefined;
-  if (side === 'me') return (c.wheel as { speaker?: AvatarSpec } | undefined)?.speaker;
+  if (side === 'me') return c.wheel?.speaker;
   return c.config.sides[c.side === 0 ? 1 : 0]?.online?.avatar;
 }
 

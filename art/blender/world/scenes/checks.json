@@ -9,12 +9,12 @@
   "sizes": {
    "back.webp": 3114,
    "far.webp": 26750,
-   "layers.json": 2263,
+   "layers.json": 2278,
    "mid.webp": 43972,
    "props.webp": 7024,
    "thumb.webp": 4412
   },
-  "total": 87535
+  "total": 87550
  },
  "cosmic.classic": {
   "rule": {
@@ -26,12 +26,12 @@
   "sizes": {
    "back.webp": 8694,
    "far.webp": 19576,
-   "layers.json": 2388,
+   "layers.json": 2404,
    "mid.webp": 31482,
    "props.webp": 6790,
    "thumb.webp": 4360
   },
-  "total": 73290
+  "total": 73306
  },
  "industrial.classic": {
   "rule": {

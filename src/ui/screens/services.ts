@@ -68,6 +68,11 @@ export interface UiServices {
   // ---- match flow ----------------------------------------------------------------------------
   /** Picks the opponent for a request (A6.8; `meta.pickOpponent`). The UI then shows VS. */
   prepareMatch(req: MatchRequest): OpponentSpec;
+  /**
+   * VS is up: the app starts loading what the battle opens with (both sides' base skin models and
+   * scenes of the first age; review 1), so its first frame never swaps art. Optional; a no-op without it.
+   */
+  warmMatch?(req: MatchRequest, opponent: OpponentSpec): void;
   /** Starts the battle after VS; the app routes to the battle screen. */
   beginBattle(req: MatchRequest, opponent: OpponentSpec): void;
   /** Pause menu (A9 #6). */

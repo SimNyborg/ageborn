@@ -12,7 +12,9 @@
  * `#sandbox/battle`, `#sandbox/hud` and `#sandbox/sim` open a tab directly;
  * `?source=real&art=procedural&opponent=ai&autoplay=1` preselects the battle options; `&stage=1` shows
  * only the battle (no bars or panel) for screenshots at a device size, `&format=standard` picks the
- * format (`last`, `w1.cosmic` and `w2.future` reach the late ages for content-wave screenshots). Browser checks reach the running stage through `window.__sandbox` and the dev cheats through
+ * format (`last`, `w1.cosmic`, `w2.future`, `standard.bronze` and `short.industrial` reach the later ages
+ * for content-wave screenshots; `&backdrop=`, `&scene=` and `&foeScene=` dress the backdrop, see
+ * `viewBattle.tsx`). Browser checks reach the running stage through `window.__sandbox` and the dev cheats through
  * `window.__sandboxDev` (gold, power reload, spawns, a lane clear).
  */
 import type { FormatId } from '@/contracts';
@@ -155,7 +157,22 @@ function BattleTab(p: { bare?: boolean }) {
   const [opponent, setOpponent] = useState<OpponentKind>(() => param('opponent', ['ai', 'autoplayer'] as const, 'ai'));
   // `w1.<age>` starts both sides in one age (base collapse captures of every age)
   const [format, setFormat] = useState<FormatId>(() =>
-    param('format', ['full', 'standard', 'short', 'tutorial', 'last', 'w2.future', ...(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'] as const).map((a) => `w1.${a}` as const)] as const, 'full'),
+    param(
+      'format',
+      [
+        'full',
+        'standard',
+        'short',
+        'tutorial',
+        'last',
+        'w2.future',
+        ...(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'] as const).map((a) => `w1.${a}` as const),
+        // later starts of the named lengths (a Standard War from Bronze shows a Blender scene on both halves)
+        ...(['bronze', 'medieval', 'gunpowder'] as const).map((a) => `standard.${a}` as const),
+        ...(['bronze', 'medieval', 'gunpowder', 'industrial', 'modern'] as const).map((a) => `short.${a}` as const),
+      ] as const,
+      'full',
+    ),
   );
   const [seed, setSeed] = useState(1);
   const [autoplayMe, setAutoplayMe] = useState(() => param('autoplay', ['1', '0'] as const, '0') === '1');

@@ -15,14 +15,15 @@
  * the title. Match 2 starts from Home (owner feedback 2026-09-28).
  */
 import { computed, effect, signal, type ReadonlySignal } from '@preact/signals';
-import type { OpponentSpec, ReplayDoc, SaveDoc } from '@/contracts';
+import type { AgeId, ArtProvider, CosmeticKey, OpponentSpec, ReplayDoc, SaveDoc, SkinId } from '@/contracts';
+import { ageOrder, baseSkinsOf } from '@/render';
 import type { MetaRules } from '@/meta';
 import { isFirstWin, persist, type SaveFile } from '@/save';
 import { createRouter, createToastStore, visibleEntries, type DailyDifficulty, type ToastStore, type MatchRequest, type PauseInfo, type Router, type UiServices } from '@/ui/screens';
 import type { BattleHandle } from './battle';
 import { applySettings } from './boot';
 import type { AppController, AppRoute } from './controller';
-import { matchSetupFor } from './matchSetup';
+import { matchSetupFor, type MatchSetup } from './matchSetup';
 import { displayName } from './names';
 import { homeStep } from './onboarding';
 import type { Services } from './services';
@@ -66,6 +67,27 @@ export interface MetaUiOptions {
   cues?: StoppingCues;
   /** A promise while the boot art is still loading, else null: a match start waits for it (VS stays up). */
   artReady?: () => Promise<void> | null;
+  /**
+   * VS is up: warm the art the match will open with (the app passes the art provider's prefetch;
+   * `warmMatchArt`). It gets the setup exactly as the battle will be built.
+   */
+  warm?: (setup: MatchSetup) => void;
+}
+
+/** The art provider's duck-typed match warm-up (visuals' `VisualsArtProvider.prefetchMatch`). */
+type PrefetchMatch = (o: { age: AgeId; sides: readonly { skins?: Partial<Record<AgeId, SkinId>>; scenes?: Partial<Record<AgeId, CosmeticKey>> }[] }) => Promise<void>;
+
+/**
+ * Warms a match's opening art while VS is up (review 1): the first age of its format, each side's base
+ * skin model of that age (the troop-system skin wins, as in battle) and each half's scene of it. A
+ * provider without `prefetchMatch` (fakes, tests) does nothing.
+ */
+export function warmMatchArt(art: ArtProvider, setup: MatchSetup): void {
+  const prefetch = (art as ArtProvider & { prefetchMatch?: PrefetchMatch }).prefetchMatch;
+  const age = ageOrder(setup.config)[0];
+  if (typeof prefetch !== 'function' || !age) return;
+  const sides = setup.config.sides.map((sd) => ({ skins: baseSkinsOf(sd) as Partial<Record<AgeId, SkinId>>, ...(sd.look?.scenes ? { scenes: sd.look.scenes } : {}) }));
+  void prefetch.call(art, { age, sides }).catch(() => undefined);
 }
 
 /** Pause overlay contents from the battle on screen (A9 #6). */
@@ -151,6 +173,23 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
       if (router.current.peek() === from) beginNow(req, opponent);
     });
   };
+  /** The setup a request builds (the battle's own, and VS's warm-up). */
+  const setupFor = (req: MatchRequest, opponent: OpponentSpec) => {
+    const built = matchSetupFor(controller.save.peek(), opponent, req.mode, services.content, {
+      opponentLabel: displayName(opponent.displayName, services.i18n),
+      standardLevels: opponent.standardLevels === true || (req.mode === 'skirmish' && req.options.standardLevels),
+    });
+    return req.mode === 'warPath' ? { ...built, warPath: { level: req.level, difficulty: req.difficulty } } : built;
+  };
+  /** VS is up: the art the battle opens with starts loading now (review 1); a failure never blocks the match. */
+  const warm = (req: MatchRequest, opponent: OpponentSpec): void => {
+    if (!o.warm || req.mode === 'tutorial') return;
+    try {
+      o.warm(setupFor(req, opponent));
+    } catch {
+      /* the battle loads its art itself */
+    }
+  };
   const beginNow = (req: MatchRequest, opponent: OpponentSpec): void => {
     if (req.mode === 'tutorial') {
       // Match 2 from Home's Battle button (owner feedback 2026-09-28): the app builds it and keeps
@@ -160,11 +199,7 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
       return;
     }
     const s = controller.save.peek();
-    const built = matchSetupFor(s, opponent, req.mode, services.content, {
-      opponentLabel: displayName(opponent.displayName, services.i18n),
-      standardLevels: opponent.standardLevels === true || (req.mode === 'skirmish' && req.options.standardLevels),
-    });
-    const setup = req.mode === 'warPath' ? { ...built, warPath: { level: req.level, difficulty: req.difficulty } } : built;
+    const setup = setupFor(req, opponent);
     // The request is known before the route changes, so the route effect already sees the match
     // as one of the meta screens'.
     pending = req;
@@ -188,6 +223,7 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
     ...(o.download ? { download: o.download } : {}),
     flow: {
       begin,
+      warm,
       resume: () => current()?.session.resume(),
       retreat: () => {
         const b = current();

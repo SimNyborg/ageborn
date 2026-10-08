@@ -287,5 +287,5 @@ def props():
 
 SCENES = {
     "classic": Scene("bronze", "classic", PAL, far, mid, back=back, sky=SKY, props=props,
-                     hints={"celestial": "keep", "weather": "ground"}, ground="earth"),
+                     hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.6}, ground="earth"),
 }

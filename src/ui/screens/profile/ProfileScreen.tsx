@@ -11,7 +11,7 @@ import { useState } from 'preact/hooks';
 import { avatar as avatarTables } from '@/content/raw/avatar';
 import { Avatar } from '../../components/Avatar';
 import { AvatarItemArt, useCosmeticImage } from '../../components/cosmeticArt';
-import { BannerArt, FRAME_COLORS, TitleRibbon } from '../../components/avatar/ProfileArt';
+import { BannerArt, FRAME_COLORS, TitleRibbon, titleTier } from '../../components/avatar/ProfileArt';
 import { Button, IconButton } from '../../components/Button';
 import { CardTile } from '../../components/CardTile';
 import { AiBadge, Pill } from '../../components/Chips';
@@ -153,7 +153,15 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
                     testid="edit-name-btn"
                   />
                 </div>
-                {s.profile.title ? <TitleRibbon class="prof-id__title" text={t(titleNameKey(s.profile.title))} /> : null}
+                {/* the ribbon shows how the title was earned (PLAN 2a: parchment, metal caps, wax seal, gold leaf) */}
+                {s.profile.title ? (
+                  <TitleRibbon
+                    class="prof-id__title"
+                    text={t(titleNameKey(s.profile.title))}
+                    tier={titleTier(content.cosmetics.titles.find((x) => x.id === s.profile.title))}
+                    testid="profile-title"
+                  />
+                ) : null}
                 <span class="prof-id__pills">
                   <Pill tone="gold" icon={<TrophyIcon size={16} />}>
                     {formatInt(v.trophies, locale)}

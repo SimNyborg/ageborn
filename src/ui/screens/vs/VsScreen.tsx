@@ -123,6 +123,9 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
 
   const [clash, setClash] = useState(false);
   useEffect(() => {
+    // The battle's opening art (both sides' base skin models and scenes) loads while VS shows, so the
+    // first frame never swaps the tint or the painted layers for them (review 1).
+    services.warmMatch?.(request, o);
     // The Result's victory moment loads while the battle plays, so it never waits (MR-129).
     loadMoment().catch(() => undefined);
     const id = setTimeout(() => beginRef.current(), ms);

@@ -21,6 +21,8 @@ import type { Services } from './services';
 export interface UiFlow {
   /** VS is over: build the match for `req` against `opponent` and start it. */
   begin(req: MatchRequest, opponent: OpponentSpec): void;
+  /** VS is up: start loading the art the match opens with (optional). */
+  warm?(req: MatchRequest, opponent: OpponentSpec): void;
   resume(): void;
   retreat(): void;
   quitSkirmish(): void;
@@ -155,6 +157,9 @@ export function createUiServices(d: UiServicesDeps): UiServices {
       // Home's Battle: the Ladder as online ranked play (owner decision 2026-10-07). The same bot plays;
       // it is shown as the player the simulated search finds (name, avatar, trophies, flag; seeded).
       return withLook(req.mode === 'ladder' && req.online ? meta.onlineOpponent(s, o, content) : o);
+    },
+    warmMatch(req, opponent) {
+      flow.warm?.(req, opponent);
     },
     beginBattle(req, opponent) {
       flow.begin(req, opponent);

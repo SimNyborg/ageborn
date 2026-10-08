@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
 import { useConfirmSpend } from '../../components/confirm';
 import { AvatarLookView, resolveLook, type ResolvedLook } from '../../components/Avatar';
-import { BackdropLook, BaseLook, CosmeticImage, QuoteBubble, type BubbleTail } from '../../components/cosmeticArt';
+import { BackdropLook, BaseLook, CosmeticImage, FlagTileImage, QuoteBubble, useCosmeticImage, useFlagAtlasReady, type BubbleTail } from '../../components/cosmeticArt';
 import { formatInt } from '../../components/format';
 import { CapsuleIcon, CheckIcon, ChevronIcon, CrateIcon, CrownIcon, DustIcon, FlagIcon, GlobeIcon, LockIcon, RARITY_COLOR, RarityGem, StarIcon, TrophyIcon } from '../../components/icons';
 import { Modal } from '../../components/Modal';
@@ -503,7 +503,8 @@ export function BasesPanel(p: { extra?: (age: AgeId) => ComponentChildren }) {
       <AgePicker ages={ages} value={age} onChange={setAge} compact testid="cust-age" idPrefix="cust-age" />
       <div class="cos-grid cos-grid--skins">
         <PlainCard on={cur === null} testid="base-default" name={t('cosmetic.ui.defaultSkin')} onClick={() => equip(null)}>
-          <BaseLook age={age} skin={null} />
+          {/* keyed by age: a new age's base never shows the last age's picture for a frame */}
+          <BaseLook key={age} age={age} skin={null} />
         </PlainCard>
         {ownedFirst(save.value, content, items).map((x) => (
           <ItemTile
@@ -512,6 +513,8 @@ export function BasesPanel(p: { extra?: (age: AgeId) => ComponentChildren }) {
             on={cur === itemKey(x)}
             onPick={() => equip(itemKey(x), t(x.nameKey))}
             art={<BaseLook age={age} skin={itemKey(x)} animate={!save.value.settings.reduceMotion} />}
+            // the info panel of a locked skin shows the same model, bigger (review 1, blocker 1)
+            bigArt={() => <BaseLook age={age} skin={itemKey(x)} animate={!save.value.settings.reduceMotion} />}
           />
         ))}
       </div>
@@ -547,7 +550,7 @@ export function BackdropsPanel() {
         <BackdropLook skin={shown} age={age} animate={!reduce} testid="backdrop-look" />
       </span>
       <span class="cos-bdmock__base" aria-hidden="true">
-        <BaseLook age={age} skin={eq.baseSkins[age] ?? null} />
+        <BaseLook key={`${age}|${eq.baseSkins[age] ?? ''}`} age={age} skin={eq.baseSkins[age] ?? null} />
       </span>
       <figcaption class="cos-mock__caption">{t('cosmetic.ui.backdropPreview', { age: t(ageNameKey(age)) })}</figcaption>
       <span class={`cos-bdmock__name${trying ? ' is-trying' : ''}`} data-testid="backdrop-name">
@@ -647,6 +650,8 @@ export function FlagsPanel() {
   const equip = (e: CosmeticEquipPatch) => act(services.equipCosmetic(e));
   // Only the flags you own: the Atlas is the one place to browse and buy the rest (U3: one home each).
   const nations = itemsOf(content, 'nationalFlag').filter((x) => owns(save.value, content, itemKey(x)));
+  // their tiles wait for the one flag atlas instead of downloading every flag's SVG (review 1)
+  const atlasReady = useFlagAtlasReady(useCosmeticImage());
   return (
     <MockLayout testid="cust-flags" mock={<BaseMock age={age} />}>
       <div class="cos-head">
@@ -665,7 +670,13 @@ export function FlagsPanel() {
       <div class="cos-grid cos-grid--flags" data-testid="owned-national">
         <PlainCard on={eq.nationalFlag === null} testid="national-none" name={t('cosmetic.ui.noNational')} none onClick={() => equip({ slot: 'nationalFlag', key: null })} />
         {nations.map((x) => (
-          <ItemTile key={x.id} item={x} on={eq.nationalFlag === itemKey(x)} onPick={() => withUndo({ slot: 'nationalFlag', key: itemKey(x) }, { slot: 'nationalFlag', key: eq.nationalFlag }, t(x.nameKey))} />
+          <ItemTile
+            key={x.id}
+            item={x}
+            on={eq.nationalFlag === itemKey(x)}
+            onPick={() => withUndo({ slot: 'nationalFlag', key: itemKey(x) }, { slot: 'nationalFlag', key: eq.nationalFlag }, t(x.nameKey))}
+            art={<FlagTileImage item={itemKey(x)} ready={atlasReady} />}
+          />
         ))}
       </div>
     </MockLayout>

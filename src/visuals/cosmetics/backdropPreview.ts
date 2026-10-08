@@ -19,10 +19,10 @@ import type { AgeId } from '@/contracts/ids';
 import { mulberry32 } from '@/core/rng';
 import { GROUND_FRAME, MID_FRAME, paintGround, paintMid } from '../backdrops/ground';
 import { finishLayer } from '../backdrops/lighting';
-import { BACK_FRAME, drawnScene, parseScene, sceneDir, type SceneData, type SceneLayer } from '../backdrops/scenes';
+import { BACK_FRAME, drawnScene, parseScene, sceneDir, type SceneData, type SceneHints, type SceneLayer } from '../backdrops/scenes';
 import { FAR_FRAME, paintFar } from '../backdrops/silhouettes';
 import { paintSceneSky, paintSky, SKY_FRAME, type LayerFrame } from '../backdrops/sky';
-import { backdropId, BACKDROP_THEMES, themeLayer, themeSky, type BackdropTheme } from '../backdrops/themes';
+import { backdropId, BACKDROP_THEMES, themeForScene, themeLayer, themeSky, type BackdropTheme } from '../backdrops/themes';
 import { toCss } from '../palette';
 
 /** The crop of the lane a preview shows (world lu): your base's side of the lane, sky to ground. */
@@ -240,19 +240,24 @@ function copyOf(src: HTMLCanvasElement): { c: HTMLCanvasElement; x: CanvasRender
   return { c, x };
 }
 
-/** The layers wearing a sky theme (the scene's own daylight for null), with the lane's mid-ground tint. */
-function themedLayers(age: AgeId, scene: string, base: Layers, id: string | null, own: boolean, tag: string): Layers {
+/**
+ * The layers wearing a sky theme (the scene's own daylight for null), with the lane's mid-ground tint.
+ * `hints`: how the scene takes a theme (`themeForScene`, as the lane bakes it: a space scene keeps its
+ * own sky, a pale or dark scene takes a light theme more gently, the back strip half the grade).
+ */
+function themedLayers(age: AgeId, scene: string, base: Layers, id: string | null, hints: SceneHints | null, tag: string): Layers {
   const ck = `${age}|${scene}|${id ?? 'classic'}|${tag}`;
   const hit = themedCache.get(ck);
   if (hit) return hit;
-  const th = id ? BACKDROP_THEMES[id] : undefined;
+  const theme = id ? BACKDROP_THEMES[id] : undefined;
   const layer = (kind: 'sky' | 'back' | 'far' | 'mid'): Layer | undefined => {
     const b = base[kind];
+    const th = theme ? themeForScene(theme, hints, kind) : null;
     if (!b || !th || !id) return b;
     const copy = copyOf(b.c);
     if (!copy) return b;
     // the crop is narrower than the lane's sky: fewer stars, so they are as dense as in battle
-    if (kind === 'sky') themeSky(copy.x, id, age, { ...th, stars: Math.round((th.stars * b.f.width) / SKY_FRAME.width) }, b.f, { celestial: !own });
+    if (kind === 'sky') themeSky(copy.x, id, age, { ...th, stars: Math.round((th.stars * b.f.width) / SKY_FRAME.width) }, b.f, { celestial: hints?.celestial !== 'own' });
     else themeLayer(copy.c, copy.x, id, kind === 'back' ? 'far' : kind, age, th, b.f);
     return { c: copy.c, f: b.f };
   };
@@ -293,7 +298,7 @@ function compose(age: AgeId, scene: string, sky: string | null, thumb: boolean):
   const s = previewScene(age, scene);
   const base = s ? imageLayers(age, scene, s) : scene === 'classic' ? paintedLayers(age) : null;
   if (!base) return null;
-  const layers = themedLayers(age, scene, base, sky, s?.data.hints.celestial === 'own', s ? 'i' : 'p');
+  const layers = themedLayers(age, scene, base, sky, s?.data.hints ?? null, s ? 'i' : 'p');
   const out = thumb ? draw(layers, THUMB, THUMB.k) : draw(layers, CROP, K);
   if (!out) return null;
   try {

@@ -7,8 +7,9 @@
   pointer-events: none;
   user-select: none;
 }
-/* A base with a skin (BaseLook): the base picture, the tint multiplied over it inside its own
-   silhouette, and the particle layer. */
+/* A base with its skin (BaseLook): the provider's picture (the skin's own model, or the standard base
+   with the tint baked in) and the skin's particle layer. A model's sheet loads on demand: meanwhile a
+   soft shimmer holds the slot, and the picture fades in when it lands. */
 .cos-base {
   position: relative;
   display: block;
@@ -26,15 +27,23 @@
   pointer-events: none;
   user-select: none;
 }
-.cos-base__tint {
-  object-fit: fill;
-  mix-blend-mode: multiply;
-  mask-size: contain;
-  mask-position: center;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
+.cos-base__img:first-child {
+  animation: cos-base-in 160ms ease-out both;
+}
+@keyframes cos-base-in {
+  from {
+    opacity: 0;
+  }
+}
+.cos-base.is-pending::after {
+  content: '';
+  position: absolute;
+  inset: 16% 28% 4%;
+  border-radius: 42% 42% 10px 10px;
+  background:
+    linear-gradient(100deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.38) 50%, rgba(255, 255, 255, 0) 70%) -150% 0 / 200% 100% no-repeat,
+    rgba(255, 255, 255, 0.16);
+  animation: cos-bd-shimmer 1.1s linear infinite;
 }
 .cos-base__fx {
   object-fit: fill;
@@ -134,7 +143,9 @@ img.cos-bd__img {
 }
 @media (prefers-reduced-motion: reduce) {
   img.cos-bd__img,
-  .cos-bd.is-pending .cos-bd__img--empty {
+  .cos-bd.is-pending .cos-bd__img--empty,
+  .cos-base__img:first-child,
+  .cos-base.is-pending::after {
     animation: none;
   }
 }
@@ -407,4 +418,26 @@ img.cos-bd__img {
   .cos-qb.is-pop {
     animation: cos-qb-fade 160ms ease-out both;
   }
+}
+.ui-root[data-reduce-motion='true'] .cos-base.is-pending::after {
+  animation: none;
+}
+/* A national flag tile waiting for the flag atlas (FlagTileImage): a soft cloth-coloured shimmer. */
+.cos-img--empty.is-pending {
+  border-radius: 6px;
+  background: linear-gradient(100deg, rgba(232, 223, 200, 0.1) 30%, rgba(232, 223, 200, 0.3) 50%, rgba(232, 223, 200, 0.1) 70%) 0 0 / 200% 100%;
+  animation: cos-flag-shimmer 1.1s linear infinite;
+}
+@keyframes cos-flag-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cos-img--empty.is-pending {
+    animation: none;
+  }
+}
+.ui-root[data-reduce-motion='true'] .cos-img--empty.is-pending {
+  animation: none;
 }

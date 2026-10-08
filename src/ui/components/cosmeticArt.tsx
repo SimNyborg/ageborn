@@ -10,7 +10,7 @@ import { createContext, type ComponentChildren } from 'preact';
 import { useContext, useEffect, useState } from 'preact/hooks';
 import { avatar as avatarTables } from '@/content/raw/avatar';
 import { AvatarLookView, type ResolvedLook } from './Avatar';
-import { usePortrait } from './kit';
+import { useKit, usePortrait } from './kit';
 
 /**
  * What `cosmeticImageUrl(key, options)` takes (the app passes the visuals' function; PLAN 2f interface 2):
@@ -31,7 +31,7 @@ export interface CosmeticImageOptions {
   /** Emote motion (off for Reduce motion). */
   animate?: boolean;
   /**
-   * A base skin's tint swatch or particle layer, drawn over the real base picture ({@link BaseLook});
+   * A base skin's tint swatch or particle layer (`fx`, drawn over the real base picture, {@link BaseLook});
    * `thumb`: the base skin model's pre-rendered thumbnail.
    */
   layer?: 'tint' | 'fx' | 'thumb';
@@ -69,6 +69,45 @@ export function useCosmeticImage(): CosmeticImageFn | null {
   return useContext(CosmeticArtContext);
 }
 
+/** How long a grid of national flags waits for the flag atlas before it shows the flags one by one (ms). */
+export const FLAG_ATLAS_WAIT_MS = 4000;
+/** The key the atlas probe asks for (any vendored flag). */
+const FLAG_ATLAS_PROBE = 'nationalFlag.dk';
+
+/**
+ * True once the national flag atlas's cells are in (or the wait is over): until then a grid of flags
+ * shows soft placeholders, so it never downloads every flag's SVG while the one atlas loads (review 1:
+ * Customize › Flags asked for 199 SVGs on a profile that owns them all). The Flag Atlas and Customize ›
+ * Flags share it. Without a provider or animation frames (tests) it is ready at once.
+ */
+export function useFlagAtlasReady(art: CosmeticImageFn | null): boolean {
+  const probe = (): boolean => (art?.(FLAG_ATLAS_PROBE, { size: 'tile', cached: true }) ?? '').startsWith('blob:');
+  const [ready, setReady] = useState(() => !art || typeof requestAnimationFrame !== 'function' || probe());
+  useEffect(() => {
+    if (ready) return undefined;
+    const t0 = performance.now();
+    let raf = 0;
+    const tick = (): void => {
+      if (probe() || performance.now() - t0 > FLAG_ATLAS_WAIT_MS) setReady(true);
+      else raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [ready, art]);
+  return ready;
+}
+
+/**
+ * A national flag's grid tile (PLAN 2d): its atlas cell once {@link useFlagAtlasReady} says the atlas is
+ * in (one download for every flag), a soft placeholder before.
+ */
+export function FlagTileImage(p: { item: string; ready: boolean; class?: string }) {
+  const fn = useCosmeticImage();
+  const url = fn && p.ready ? fn(p.item, { size: 'tile' }) : null;
+  if (!url) return <span class={`cos-img cos-img--empty${fn && !p.ready ? ' is-pending' : ''} ${p.class ?? ''}`} aria-hidden="true" />;
+  return <img class={`cos-img ${p.class ?? ''}`} src={url} alt="" aria-hidden="true" draggable={false} decoding="async" />;
+}
+
 /** A General's wardrobe item shown on a plain General (the UI draws avatar parts itself, AUDIT §6). */
 export function AvatarItemArt(p: { item: string; class?: string; testid?: string; size?: number }) {
   const id = p.item.slice('avatar.'.length);
@@ -101,22 +140,25 @@ export function CosmeticImage(p: { item: string; class?: string; team?: number; 
 }
 
 /**
- * A base as the lane draws it (A18.9.4): the age's own base picture with a base skin's body tint
- * multiplied over it and its ambient particles on top, so the preview matches the battle. Without a
+ * A base as the lane draws it (A18.9.4; PLAN 2c "base skins as real models"): the ArtProvider portrait
+ * `base.<age>` with the base skin, which is the skin's own Blender model (`base.<age>@<skin>`, its sheet
+ * loads on demand) or, for a skin still on its tint, the standard base with the tint baked into the
+ * body (never the team layer), exactly as the lane draws it; the skin's ambient particle layer moves
+ * over it (still when `animate` is off). Customize's tiles, preview and info panel, Home and VS all use
+ * it. While the portrait renders, the slot stays empty (never the wrong base for a frame); without a
  * portrait provider (tests, some dev pages) the skin's code-drawn keep stands in. `side: 1` flies the
  * opponent's team colour on the base's banners and trims.
  */
 export function BaseLook(p: { age: AgeId; skin: string | null; animate?: boolean; testid?: string; side?: Side }) {
   const fn = useCosmeticImage();
-  const body = usePortrait(`base.${p.age}` as CardId, { size: 256, plate: false, ...(p.side ? { side: p.side } : {}) });
-  if (!body) return <CosmeticImage item={p.skin ?? 'baseSkin.default'} {...(p.testid ? { testid: p.testid } : {})} />;
-  const tint = p.skin && fn ? fn(p.skin, { layer: 'tint' }) : null;
-  const fx = p.skin && fn ? fn(p.skin, { layer: 'fx', animate: p.animate ?? true }) : null;
-  const mask = `url("${body}")`;
+  const { portrait } = useKit();
+  const skinId = p.skin && p.skin.startsWith('baseSkin.') ? p.skin.slice('baseSkin.'.length) : null;
+  const body = usePortrait(`base.${p.age}` as CardId, { size: 256, plate: false, skin: skinId, ...(p.side ? { side: p.side } : {}) });
+  if (!portrait) return <CosmeticImage item={p.skin ?? 'baseSkin.default'} {...(p.testid ? { testid: p.testid } : {})} />;
+  const fx = body && p.skin && fn ? fn(p.skin, { layer: 'fx', animate: p.animate ?? true }) : null;
   return (
-    <span class="cos-base" data-testid={p.testid} data-age={p.age} data-skin={p.skin ?? ''} aria-hidden="true">
-      <img class="cos-base__img" src={body} alt="" draggable={false} />
-      {tint ? <img class="cos-base__img cos-base__tint" src={tint} alt="" draggable={false} style={{ maskImage: mask, WebkitMaskImage: mask }} /> : null}
+    <span class={`cos-base${body ? '' : ' is-pending'}`} data-testid={p.testid} data-age={p.age} data-skin={p.skin ?? ''} aria-hidden="true">
+      {body ? <img class="cos-base__img" src={body} alt="" draggable={false} /> : null}
       {fx ? <img class="cos-base__img cos-base__fx" src={fx} alt="" draggable={false} /> : null}
     </span>
   );

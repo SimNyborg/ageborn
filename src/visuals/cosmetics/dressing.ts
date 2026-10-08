@@ -24,11 +24,11 @@ import { Container, Graphics, Mesh, MeshGeometry, Sprite, Texture } from 'pixi.j
 import type { BaseDressingView, BaseView } from '@/contracts/art';
 import type { AgeId, Side, SideLook } from '@/contracts/ids';
 import { mulberry32, type CosmeticRng } from '@/core/rng';
-import { baseSkinArt, drawDecoration, drawFlag, parseCosmeticKey, type FlagKind } from './art';
+import { baseFlagDesign, baseSkinArt, drawDecoration, drawFlag, parseCosmeticKey, type FlagKind } from './art';
 import type { BaseSkinArt, SkinParticles } from './baseSkins';
 import { nationalFlagTexture } from './nationalFlags';
 import { DECO_GROUND, DECO_H, DECO_W, DECORATIONS, type DecorationArt } from './decorations';
-import { FLAG_H, FLAG_W } from './flags';
+import { BANNER_OUTLINE, FLAG_H, FLAG_W } from './flags';
 import { INK } from './shapes';
 
 /** Pixels per view-box unit of the baked textures (crisp up to about 4 px per lu on screen). */
@@ -68,6 +68,25 @@ function bake(key: string, w: number, h: number, draw: (ctx: CanvasRenderingCont
   return tex;
 }
 
+/**
+ * The Legendary base flag's glint (custom-c-lane-flag-glint; PLAN 2a: Legendary flags glint): the band of
+ * Customize's `FLAG_GLINT` (a slant 8 view-box units wide, 12 units further back at the foot than at the
+ * top) sweeps from x = -8 to 86 over the first 30% of a 5 s loop and rests for the remaining 70%.
+ */
+export const GLINT_LOOP_MS = 5000;
+const GLINT_SWEEP = 0.3;
+const GLINT_FROM = -8;
+const GLINT_TO = 86;
+/** Three nested bands (half widths in view-box units) at one alpha each make a soft white centre (about 0.4). */
+const GLINT_BANDS = [4, 2.5, 1.25] as const;
+const GLINT_ALPHA = 0.16;
+
+/** The glint's offset (view-box units) at `ms` into its loop, or null while it rests. */
+export function glintOffset(ms: number): number | null {
+  const k = (((ms % GLINT_LOOP_MS) + GLINT_LOOP_MS) % GLINT_LOOP_MS) / GLINT_LOOP_MS;
+  return k < GLINT_SWEEP ? GLINT_FROM + ((GLINT_TO - GLINT_FROM) * k) / GLINT_SWEEP : null;
+}
+
 /** A flag on a strip mesh that ripples from the hoist (x = 0) to the fly. */
 class FlagCloth {
   readonly root = new Container();
@@ -75,6 +94,8 @@ class FlagCloth {
   private geom: MeshGeometry | null = null;
   private base: Float32Array | null = null;
   private readonly cols = 14;
+  /** The Legendary glint: a few quads over the cloth, textured with the flag's white silhouette. */
+  private glint: { mesh: Mesh; geom: MeshGeometry } | null = null;
   constructor(
     tex: Texture,
     private readonly w: number,
@@ -125,18 +146,74 @@ class FlagCloth {
     const n = this.cols;
     for (let i = 0; i < n; i += 1) {
       const u = i / (n - 1);
-      const s = Math.sin(t * 5.2 - u * 5.4 + this.phase);
-      const s2 = Math.sin(t * 3.1 - u * 3.2 + this.phase * 1.7);
-      const lift = amp * u * (s * 2.2 + s2 * 1.1);
-      const pull = amp * u * u * (1.6 + s2 * 0.8);
       for (let r = 0; r < 2; r += 1) {
         const k = (i * 2 + r) * 2;
-        p[k] = this.base[k]! - pull;
-        // the lower edge droops a little more than the top edge
-        p[k + 1] = this.base[k + 1]! + lift + (r === 1 ? amp * u * 0.9 : 0);
+        const [x, y] = this.point(u, r, t, amp);
+        p[k] = x;
+        p[k + 1] = y;
       }
     }
     this.geom.getBuffer('aPosition').update();
+  }
+
+  /** Where the cloth's point at (u, row r) is at `t` (the ripple: lifted, pulled toward the hoist). */
+  private point(u: number, r: number, t: number, amp: number): [number, number] {
+    const s = Math.sin(t * 5.2 - u * 5.4 + this.phase);
+    const s2 = Math.sin(t * 3.1 - u * 3.2 + this.phase * 1.7);
+    const lift = amp * u * (s * 2.2 + s2 * 1.1);
+    const pull = amp * u * u * (1.6 + s2 * 0.8);
+    // the lower edge droops a little more than the top edge
+    return [u * this.w - pull, r * this.h + lift + (r === 1 ? amp * u * 0.9 : 0)];
+  }
+
+  /**
+   * Adds the Legendary glint (`mask`: the flag's silhouette in white, laid out like its cloth texture).
+   * The band's quads take the cloth's own ripple at their corners and sample the silhouette there, so the
+   * glint stays exactly on the cloth (never on the swallowtail's notch or past the edge) with no mask or
+   * filter: one small mesh, drawn only while it sweeps.
+   */
+  addGlint(mask: Texture): void {
+    if (mask === Texture.EMPTY || this.glint) return;
+    const quads = GLINT_BANDS.length;
+    const idx: number[] = [];
+    for (let q = 0; q < quads; q += 1) idx.push(q * 4, q * 4 + 1, q * 4 + 2, q * 4 + 1, q * 4 + 3, q * 4 + 2);
+    const geom = new MeshGeometry({ positions: new Float32Array(quads * 8), uvs: new Float32Array(quads * 8), indices: new Uint32Array(idx) });
+    const mesh = new Mesh({ geometry: geom, texture: mask });
+    mesh.alpha = GLINT_ALPHA;
+    mesh.visible = false;
+    this.root.addChild(mesh);
+    this.glint = { mesh, geom };
+  }
+
+  /** Moves the glint to `dx` view-box units along its sweep (null hides it), on the cloth as it is at `t`. */
+  sweep(dx: number | null, t: number, amp: number): void {
+    const g = this.glint;
+    if (!g) return;
+    g.mesh.visible = dx !== null;
+    if (dx === null) return;
+    const span = FLAG_W + 4;
+    const toU = (x: number) => (x + 2) / span;
+    const pos = g.geom.positions;
+    const uv = g.geom.uvs;
+    GLINT_BANDS.forEach((hw, q) => {
+      // the band's centre line: x = -2 + dx at the top edge (y = -2), 12 units further back at the foot
+      const corners: [number, number][] = [
+        [toU(-2 + dx - hw), 0],
+        [toU(-2 + dx + hw), 0],
+        [toU(-14 + dx - hw), 1],
+        [toU(-14 + dx + hw), 1],
+      ];
+      corners.forEach(([u, r], c) => {
+        const k = (q * 4 + c) * 2;
+        const [x, y] = this.point(u, r, t, amp);
+        pos[k] = x;
+        pos[k + 1] = y;
+        uv[k] = u;
+        uv[k + 1] = r;
+      });
+    });
+    g.geom.getBuffer('aPosition').update();
+    g.geom.getBuffer('aUV').update();
   }
 
   get size(): { w: number; h: number } {
@@ -199,6 +276,8 @@ export class BaseDressing implements BaseDressingView {
   private readonly facing: 1 | -1;
   private readonly pole = new Container();
   private readonly flags: FlagCloth[] = [];
+  /** The Legendary base flag's cloth, whose glint sweeps every 5 s (custom-c-lane-flag-glint). */
+  private glintCloth: FlagCloth | null = null;
   /** The pole flies a national flag: on the collapse it is lowered intact, never snapped over (PLAN 2d). */
   private fliesNation = false;
   private readonly props: Prop[] = [];
@@ -258,6 +337,24 @@ export class BaseDressing implements BaseDressingView {
     return bake(`${kind}.${id}|${this.o.team}`, w, h, (ctx) => drawFlag(ctx, kind, id, { team: this.o.team }, TEX_PX), this.make);
   }
 
+  /** A base flag's white silhouette inside its swallowtail (the glint's texture), laid out like its cloth. */
+  private glintMask(id: string): Texture {
+    const w = (FLAG_W + 4) * TEX_PX;
+    const h = (FLAG_H + 4) * TEX_PX;
+    return bake(`glint.${id}|${this.o.team}`, w, h, (ctx) => {
+      if (!drawFlag(ctx, 'baseFlag', id, { team: this.o.team }, TEX_PX)) return false;
+      ctx.globalCompositeOperation = 'source-in';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
+      // only the cloth inside the outline (the fringe below it stays out of the glint, as in Customize)
+      ctx.globalCompositeOperation = 'destination-in';
+      ctx.setTransform(TEX_PX, 0, 0, TEX_PX, 2 * TEX_PX, 2 * TEX_PX);
+      ctx.fill(new Path2D(BANNER_OUTLINE));
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      return true;
+    }, this.make);
+  }
+
   private buildPole(): void {
     const look = this.o.look;
     const flags: { kind: FlagKind; id: string; lu: number }[] = [];
@@ -288,6 +385,11 @@ export class BaseDressing implements BaseDressingView {
       const w = (FLAG_W + 4) * f.lu;
       const h = (FLAG_H + 4) * f.lu;
       cloth = new FlagCloth(tex, w, h, i * 1.3 + this.o.side * 0.7);
+      // a Legendary base flag (Wyvern, Phoenix, World Compass) glints as in Customize (PLAN 2a)
+      if (f.kind === 'baseFlag' && baseFlagDesign(f.id)?.tier === 'legendary') {
+        cloth.addGlint(this.glintMask(f.id));
+        this.glintCloth = cloth;
+      }
       // the texture has a 2-unit margin: the hoist edge sits on the pole
       cloth.root.position.set(2 - 2 * f.lu, y - 2 * f.lu);
       this.pole.addChild(cloth.root);
@@ -396,6 +498,12 @@ export class BaseDressing implements BaseDressingView {
     this.flutter = Math.max(0, this.flutter - dt / 900);
     const amp = this.reduce ? 0 : 1 + this.flutter;
     for (const f of this.flags) f.wave(t, amp);
+    // the Legendary glint: side 1 half a loop later, so two Legendary flags never flash together; none
+    // under Reduce motion, on Lite or once the base falls
+    if (this.glintCloth) {
+      const on = !this.reduce && !this.lite && this.collapseT < 0;
+      this.glintCloth.sweep(on ? glintOffset(this.clock + this.o.side * (GLINT_LOOP_MS / 2)) : null, t, amp);
+    }
     for (const p of this.props) {
       if (p.art.sway && !this.reduce) p.root.skew.x = Math.sin(t * 1.7 + p.phase) * 0.045;
       if (p.glow) p.glow.alpha = this.reduce ? 0.85 : 0.75 + 0.18 * Math.sin(t * 9 + p.phase) + 0.08 * Math.sin(t * 23 + p.phase * 2);

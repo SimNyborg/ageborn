@@ -10,7 +10,7 @@
  *
  * It also measures what the B16 budgets need: frames per second, frame time and WebGL draw calls.
  */
-import type { ArtProvider, Command, Foil, FormatId, HudModel, SimEvent } from '@/contracts';
+import type { AgeId, ArtProvider, Command, Foil, FormatId, HudModel, SimEvent } from '@/contracts';
 import { FakeArtProvider } from '@/contracts/fakes/art';
 import { FakeAudio } from '@/contracts/fakes/audio';
 import { BattleView, FixedStepClock, HudModelBuilder, type GraphicsPreset, type RenderFeelConfig, type ViewSettings } from '@/render';
@@ -165,11 +165,28 @@ export function BattleStage(p: {
       const o = opts.current;
       const src = createSource({ kind: source, format, seed, autoplayMe, ai });
       const audio = new FakeAudio();
-      // `&backdrop=<id>` dresses your half in a backdrop skin (A18.9.4) for screenshots
-      const bd = new URLSearchParams(window.location.search).get('backdrop');
-      const art: ArtProvider = bd
+      // Screenshots of the backdrop looks (dev only):
+      // - `&backdrop=<id>` dresses your half in a backdrop skin, the Sky (A18.9.4);
+      // - `&scene=<id>` puts a scene (PLAN 2b) on your half in the age it belongs to, `&foeScene=<id>` on
+      //   the enemy's (seams between two scenes); unreleased scenes too: `&scene=aegean_harbour`.
+      const q = new URLSearchParams(window.location.search);
+      const bd = q.get('backdrop');
+      const sceneItems = (src.sim.config.content.cosmetics as { collections?: { items?: readonly { collection: string; id: string; age?: AgeId }[] } }).collections?.items ?? [];
+      const sceneOn = (id: string | null): Partial<Record<AgeId, string>> => {
+        const age = id ? sceneItems.find((x) => x.collection === 'scene' && x.id === id)?.age : undefined;
+        return age ? { [age]: `scene.${id}` } : {};
+      };
+      const myScene = sceneOn(q.get('scene'));
+      const foeScene = sceneOn(q.get('foeScene'));
+      const dressed = bd || Object.keys(myScene).length > 0 || Object.keys(foeScene).length > 0;
+      const art: ArtProvider = dressed
         ? Object.assign(Object.create(baseArt) as ArtProvider, {
-            createBackdrop: (b: Parameters<ArtProvider['createBackdrop']>[0]) => baseArt.createBackdrop({ ...b, skins: { left: `backdrop.${bd}`, right: b.skins?.right ?? null } }),
+            createBackdrop: (b: Parameters<ArtProvider['createBackdrop']>[0]) =>
+              baseArt.createBackdrop({
+                ...b,
+                skins: bd ? { left: `backdrop.${bd}`, right: b.skins?.right ?? null } : (b.skins ?? {}),
+                scenes: { left: { ...(b.scenes?.left ?? {}), ...myScene }, right: { ...(b.scenes?.right ?? {}), ...foeScene } },
+              }),
           })
         : baseArt;
       const view = new BattleView({

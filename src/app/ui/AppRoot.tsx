@@ -11,7 +11,7 @@ import { cosmeticCollectionKey, cosmeticNameKey } from '@/content/keys';
 import { foundCosmetics } from '../capsules/capsuleFlow';
 import { CapsuleHost } from '../capsules/CapsuleHost';
 import { CapsuleShows } from '../capsules/capsuleFlow';
-import { createMetaUi, type MetaUi } from '../metaUi';
+import { createMetaUi, warmMatchArt, type MetaUi } from '../metaUi';
 import { attachActivity } from '../stopping';
 import { takeAbandonNotice } from '../abandon';
 import { ReplayScreen } from '../screens/replay/ReplayScreen';
@@ -174,6 +174,8 @@ export function AppRoot(p: { ui: AppUi }) {
           meta: m,
           download: p.ui.download,
           ...(p.ui.artReady ? { artReady: p.ui.artReady } : {}),
+          // VS warms the battle's opening art: base skin models and scenes (review 1)
+          warm: (setup) => warmMatchArt(p.ui.art, setup),
           ...(shows
             ? {
                 openCapsules: (ids: string[]) => void shows.open(ids),

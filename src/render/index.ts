@@ -3,7 +3,7 @@
  * graphics presets and the fixed-step clock helper. Layer rules (B2): contracts, core and pixi.js
  * only; the `ArtProvider` and `AudioService` arrive by injection.
  */
-export { BattleView } from './battleView';
+export { BattleView, baseSkinsOf } from './battleView';
 export type { BattleViewOptions } from './battleView';
 export { Camera, followFraction } from './camera';
 export { depthRows, rowForRank, AIR_ALTITUDE_LU } from './depth';
