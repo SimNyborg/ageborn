@@ -396,6 +396,10 @@
   display: grid;
   place-items: center;
 }
+/* a locked frame's "Codex Level 65" sits clear of the frame's ring and its drop shadow (review 1) */
+.gen-frame + .gen-tile__hint {
+  margin-top: 6px;
+}
 .gen-tile__art .gen-frame .ui-avatar.av--ring {
   border-width: 2px;
   box-shadow: 0 2px 0 var(--frame-line, var(--ui-ink));

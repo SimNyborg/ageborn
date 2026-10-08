@@ -129,11 +129,11 @@ export interface SceneHints {
    */
   weather: 'ground' | 'space';
   /**
-   * How strongly a light sky theme may grade this scene, 0..1 (default 1). Pale, hazed scenes (Bronze's
+   * How strongly a light sky theme may grade this scene, 0..1 (absent = 1). Pale, hazed scenes (Bronze's
    * sandstone hills) and dark space scenes take less, or Winterfall washes them almost white (review 1):
    * the grade, sky and glow of a theme scale toward this by the theme's lightness (`themeForScene`).
    */
-  skyGrade: number;
+  skyGrade?: number;
 }
 
 /** A loaded scene, either format (format 1 has no sky, props, lights or thumbnail). */
