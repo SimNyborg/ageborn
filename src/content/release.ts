@@ -37,3 +37,13 @@ export function unreleasedIds(c: ReleaseView): string[] {
   }
   return [...ids].sort();
 }
+
+/**
+ * The release gate of a cosmetic collection item (PLAN 2e): released unless it says `released: false`.
+ * An unreleased item stays in the content (tests and dev pages see it) but no player meets it: meta
+ * leaves it out of the drop pools, the odds, state-earned grants, crafting and every look, and the
+ * screens leave it out of Customize and the Flag Atlas.
+ */
+export function isCosmeticReleased(x: { readonly released?: boolean }): boolean {
+  return x.released !== false;
+}

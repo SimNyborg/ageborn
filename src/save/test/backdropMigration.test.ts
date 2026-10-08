@@ -17,7 +17,9 @@ describe('v7 → v8: the battle backdrop skin', () => {
     expect(doc.v).toBe(SAVE_VERSION);
     expect(doc.cosmetics.equipped.backdrop).toBeNull();
     expect(doc.cosmetics.owned).toEqual(old.cosmetics.owned);
-    const { backdrop: _b, ...rest } = doc.cosmetics.equipped;
+    // (v14 then adds the scenes, every age on its classic one)
+    const { backdrop: _b, scenes: _s, ...rest } = doc.cosmetics.equipped;
+    expect(_s).toEqual({});
     expect(rest).toEqual(old.cosmetics.equipped);
     expect(validateSaveDoc(doc).ok).toBe(true);
   });

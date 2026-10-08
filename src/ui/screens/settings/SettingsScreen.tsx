@@ -424,6 +424,7 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
           <ul class="set-about">
             <li>{t('ui.settings.creditsGame')}</li>
             <li>{t('ui.settings.creditsSound')}</li>
+            <li>{t('ui.settings.creditsFlags')}</li>
             <li>{t('ui.settings.creditsTech')}</li>
           </ul>
         </Modal>

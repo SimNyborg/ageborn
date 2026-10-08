@@ -12,19 +12,43 @@ import { avatar as avatarTables } from '@/content/raw/avatar';
 import { AvatarLookView, type ResolvedLook } from './Avatar';
 import { usePortrait } from './kit';
 
+/**
+ * What `cosmeticImageUrl(key, options)` takes (the app passes the visuals' function; PLAN 2f interface 2):
+ *
+ * | Key | Options | Picture |
+ * |---|---|---|
+ * | `scene.<id>` (`scene.classic` = the age's classic) | `{ age, thumb: true }` | the scene's thumbnail |
+ * | `scene.<id>` | `{ age, sky? }` | a still of the scene with the sky (`backdrop.<id>` or null) applied |
+ * | `backdrop.<id>` (`backdrop.classic` = none) | `{ age, scene? }` | the sky over the scene (the classic without one) |
+ * | `baseSkin.<id>` | `{ layer: 'thumb' }` | the model's pre-rendered thumbnail (null until it has one) |
+ * | `decoration.<id>` | `{ hd? }` | the prop |
+ * | `nationalFlag.<id>` | `{ size: 'tile' \| 'big' }` | a tile picture or the big flag |
+ * | `baseFlag.*`, `emote.*`, `quote.*` | `{ team?, animate? }` | the code-drawn art |
+ */
 export interface CosmeticImageOptions {
   /** Team colour for team paints (base flags, some decorations). */
   team?: number;
   /** Emote motion (off for Reduce motion). */
   animate?: boolean;
-  /** A base skin's tint swatch or particle layer, drawn over the real base picture ({@link BaseLook}). */
-  layer?: 'tint' | 'fx';
-  /** Backdrops: the age whose half of the lane the still shows ({@link BackdropLook}). */
+  /**
+   * A base skin's tint swatch or particle layer, drawn over the real base picture ({@link BaseLook});
+   * `thumb`: the base skin model's pre-rendered thumbnail.
+   */
+  layer?: 'tint' | 'fx' | 'thumb';
+  /** Backdrops and scenes: the age whose half of the lane the still shows ({@link BackdropLook}). */
   age?: AgeId;
-  /** Backdrops: the small still for a collection tile. */
+  /** Backdrops and scenes: the small still for a collection tile. */
   thumb?: boolean;
-  /** Backdrops: only a still already painted, else null (never paints). */
+  /** Backdrops and scenes: only a still already painted, else null (never paints). */
   cached?: boolean;
+  /** Scenes: the sky (`backdrop.<id>`) to grade the still with; null or absent is the scene's own daylight. */
+  sky?: string | null;
+  /** Backdrops (skies): the scene (`scene.<id>`) under the sky; absent is the age's classic scene. */
+  scene?: string | null;
+  /** Decorations: the HD picture (Customize's big stage). */
+  hd?: boolean;
+  /** National flags: a grid tile or the big detail view. */
+  size?: 'tile' | 'big';
 }
 
 export type CosmeticImageFn = (key: string, o?: CosmeticImageOptions) => string | null;

@@ -232,11 +232,11 @@ export class FakeArtProvider implements ArtProvider {
     this.calls.push({ method: 'createTurret', args: [o] });
     return new FakeTurretView(o.side);
   }
-  createBase(o: { age: AgeId; skin?: SkinId; side: Side; teamPreset: TeamPreset }): BaseView {
+  createBase(o: { age: AgeId; skin?: SkinId; skins?: Partial<Record<AgeId, SkinId>>; side: Side; teamPreset: TeamPreset }): BaseView {
     this.calls.push({ method: 'createBase', args: [o] });
     return new FakeBaseView(o.age, o.side);
   }
-  createBackdrop(o: { left: AgeId; right: AgeId; arena: string }): BackdropView {
+  createBackdrop(o: { left: AgeId; right: AgeId; arena: string; scenes?: { left?: Partial<Record<AgeId, string>>; right?: Partial<Record<AgeId, string>> } }): BackdropView {
     this.calls.push({ method: 'createBackdrop', args: [o] });
     return new FakeBackdropView(o.left, o.right);
   }

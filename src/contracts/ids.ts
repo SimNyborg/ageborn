@@ -57,8 +57,16 @@ export interface SideLook {
   baseSkins?: Partial<Record<AgeId, CosmeticKey>>;
   /** One per decoration anchor, in anchor order; null leaves the anchor empty. */
   decorations?: (CosmeticKey | null)[];
-  /** The backdrop skin of this side's half of the battlefield (`backdrop.<id>`); null or absent is classic. */
+  /**
+   * The sky of this side's half of the battlefield (`backdrop.<id>`, shown as "Skies" from save v14):
+   * one for every age, re-grading whichever scene shows; null or absent is each scene's own daylight.
+   */
   backdrop?: CosmeticKey | null;
+  /**
+   * The scene of this side's half per age (`scene.<id>`, save v14; PLAN 2b): an age without an entry
+   * shows its classic scene. Presentation only, like the rest of the look.
+   */
+  scenes?: Partial<Record<AgeId, CosmeticKey>>;
 }
 
 /**

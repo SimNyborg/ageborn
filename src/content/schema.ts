@@ -713,6 +713,7 @@ const TitleUnlockSchema = v.variant('kind', [
   v.strictObject({ kind: v.literal('cardsMaxed'), count: pos }),
   v.strictObject({ kind: v.literal('collectionMaxed') }),
   v.strictObject({ kind: v.literal('feat'), feat: id }),
+  v.strictObject({ kind: v.literal('flagsOwned'), count: pos }),
 ]);
 
 const FeatPredicateSchema = v.variant('kind', [
@@ -738,7 +739,8 @@ const FeatsSchema = v.strictObject({
   ),
 });
 
-const COLLECTION = v.picklist(['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop', 'avatar']);
+const COLLECTION = v.picklist(['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop', 'scene', 'avatar']);
+const FLAG_REGION = v.picklist(['europe', 'asia', 'africa', 'northAmerica', 'southAmerica', 'oceania', 'other']);
 const AVATAR_SLOT = v.picklist(['face', 'eyes', 'brows', 'nose', 'mouth', 'hair', 'facialHair', 'headwear', 'top', 'accessory', 'background']);
 const AVATAR_TINT = v.picklist(['skin', 'hair', 'eyes', 'cloth']);
 const CosmeticSourceSchema = v.variant('kind', [
@@ -754,6 +756,9 @@ const CosmeticSourceSchema = v.variant('kind', [
   v.strictObject({ kind: v.literal('warPathStars'), age: AGE }),
   v.strictObject({ kind: v.literal('title'), title: id }),
   v.strictObject({ kind: v.literal('capsuleTier'), tier: TIER }),
+  v.strictObject({ kind: v.literal('dust') }),
+  v.strictObject({ kind: v.literal('flagRegion'), region: FLAG_REGION }),
+  v.strictObject({ kind: v.literal('flagsOwned'), count: pos }),
 ]);
 const CosmeticItemSchema = v.strictObject({
   id,
@@ -768,6 +773,8 @@ const CosmeticItemSchema = v.strictObject({
   kind: v.optional(v.picklist(['statue', 'banner', 'brazier', 'trophy', 'plant'])),
   country: v.optional(v.pipe(v.string(), v.regex(/^[a-z]{2}(-[a-z]{3})?$/, 'ISO 3166 codes'))),
   slot: v.optional(AVATAR_SLOT),
+  region: v.optional(FLAG_REGION),
+  released: v.optional(v.boolean()),
 });
 const cosmeticKey = v.pipe(v.string(), v.regex(/^[a-zA-Z]+\.[a-z0-9_]+$/, 'cosmetic keys look like "baseFlag.ember"'));
 const CollectionsSchema = v.strictObject({
@@ -778,6 +785,8 @@ const CollectionsSchema = v.strictObject({
     crateRarityBp: perRarity(bp),
     duplicateDust: perRarity(nonNeg),
     craftDust: perRarity(pos),
+    flagDust: pos,
+    firstFlagFree: v.boolean(),
   }),
   wheel: v.strictObject({ emotes: pos, quotes: pos }),
   quoteCooldownMs: nonNeg,
@@ -789,6 +798,7 @@ const CollectionsSchema = v.strictObject({
     nationalFlag: v.nullable(cosmeticKey),
     decorations: v.array(v.nullable(cosmeticKey)),
     backdrop: v.nullable(cosmeticKey),
+    scenes: v.record(AGE, cosmeticKey),
   }),
 });
 
@@ -1670,7 +1680,9 @@ function checkMeta(issues: Issues, c: Content): void {
   unique(issues, 'cosmetics.titles', cos.titles.map((t) => t.id));
   unique(issues, 'cosmetics.emotes', cos.emotes.map((e) => e.id));
   issues.check(cos.banners.length === 8 && cos.frames.length === 8, 'cosmetics', '8 banners and 8 frames (A5.8)');
-  issues.check(cos.titles.length === 21 && cos.emotes.length === 6, 'cosmetics', '13 titles, 4 collection titles, 4 feat titles and 6 emotes (A5.8, A15.10)');
+  // The Flag Atlas's title (PLAN 2d, `raw/nationalFlags.ts`) comes on top of the 21.
+  const baseTitles = cos.titles.filter((t) => t.unlock.kind !== 'flagsOwned');
+  issues.check(baseTitles.length === 21 && cos.emotes.length === 6, 'cosmetics', '13 titles, 4 collection titles, 4 feat titles and 6 emotes (A5.8, A15.10)');
   issues.check(c.feats.order.length === 12, 'feats', '12 hidden feats (A15.10)');
   for (const t of cos.titles) {
     if (t.unlock.kind === 'feat') issues.check(c.feats.list[t.unlock.feat] !== undefined, `cosmetics.titles.${t.id}`, `unknown feat "${t.unlock.feat}"`);
@@ -1713,9 +1725,13 @@ function checkCollections(issues: Issues, c: Content): void {
     issues.check(x.nameKey === `cosmetic.${x.collection}.${x.id}.name`, p, 'name key is cosmetic.<collection>.<id>.name');
     issues.check((x.collection === 'quote') === (x.textKey === `cosmetic.quote.${x.id}.text`), p, 'quotes (and only quotes) have a text key');
     issues.check((x.collection === 'emote') === (x.theme !== undefined), p, 'emotes (and only emotes) have a theme');
-    issues.check((x.collection === 'baseSkin') === (x.age !== undefined), p, 'base skins (and only base skins) have an age');
+    issues.check((x.collection === 'baseSkin' || x.collection === 'scene') === (x.age !== undefined), p, 'base skins and scenes (and only they) have an age');
     issues.check((x.collection === 'decoration') === (x.kind !== undefined), p, 'decorations (and only decorations) have a kind');
     issues.check((x.collection === 'nationalFlag') === (x.country !== undefined), p, 'national flags (and only national flags) have a country');
+    issues.check((x.collection === 'nationalFlag') === (x.region !== undefined), p, 'national flags (and only national flags) have a Flag Atlas region');
+    // PLAN 2d: national flags are bought with Dust, nothing else is, and they never sit in a drop pool.
+    issues.check((x.collection === 'nationalFlag') === (x.source.kind === 'dust'), p, 'national flags (and only national flags) are bought with Dust');
+    if (x.source.kind === 'flagRegion' || x.source.kind === 'flagsOwned') issues.check(x.collection === 'baseFlag', p, 'the Flag Atlas rewards are base flags');
     issues.check((x.collection === 'avatar') === (x.slot !== undefined), p, 'avatar wearables (and only they) have a slot');
     const s = x.source;
     if (s.kind === 'road') issues.check(roadTrophies.has(s.trophies), p, `no Trophy Road node at ${s.trophies}`);
@@ -1725,6 +1741,11 @@ function checkCollections(issues: Issues, c: Content): void {
     if (s.kind === 'warPathBoss' || s.kind === 'warPathStars') issues.check(x.collection === 'avatar', p, 'War Path boss and star sources are avatar wearables');
   }
   checkAvatar(issues, c);
+  // PLAN 2b: two scenes per age at most (the classic scene of each age is not an item; Track A's test
+  // asks for exactly two once the 16 rows are in).
+  for (const age of c.order.ages) {
+    issues.check(items.filter((x) => x.collection === 'scene' && x.age === age).length <= 2, `cosmetics.collections.scene.${age}`, 'at most two scenes per age');
+  }
   const sum = (r: Record<string, number>) => Object.values(r).reduce((a, b) => a + b, 0);
   issues.check(sum(col.drops.capsuleRarityBp) === 10000, 'cosmetics.collections.drops', 'capsule rarity odds sum to 100%');
   issues.check(sum(col.drops.crateRarityBp) === 10000, 'cosmetics.collections.drops', 'crate rarity odds sum to 100%');
@@ -1752,6 +1773,8 @@ function checkCollections(issues: Issues, c: Content): void {
   issues.check(d.nationalFlag === null, 'cosmetics.collections.defaults', 'no national flag by default (never inferred from location)');
   issues.check(d.decorations.length === col.decorationAnchors, 'cosmetics.collections.defaults', 'one default per decoration anchor');
   issues.check(d.decorations.every((k) => starter(k) && (k === null || k.startsWith('decoration.'))), 'cosmetics.collections.defaults', 'default decorations are starters');
+  issues.check(Object.keys(d.scenes).length === 0, 'cosmetics.collections.defaults', 'every age starts on its classic scene (scenes are earned)');
+  issues.check(col.drops.flagDust > 0, 'cosmetics.collections.drops', 'national flags have a Dust price');
 }
 
 /**

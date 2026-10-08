@@ -721,7 +721,12 @@ export type TitleUnlock =
   /** Every collectable troop and turret card at the level cap. */
   | { kind: 'collectionMaxed' }
   /** A hidden feat's title (A15.10). */
-  | { kind: 'feat'; feat: string };
+  | { kind: 'feat'; feat: string }
+  /**
+   * National flags (PLAN 2d, the Flag Atlas): own `count` released national flags of the six regions
+   * ("World Ambassador" at all 195; the Other flags group does not count).
+   */
+  | { kind: 'flagsOwned'; count: number };
 
 export interface TitleDef {
   id: string;
@@ -739,9 +744,19 @@ export interface EmoteDef {
 /**
  * The cosmetic collections (DESIGN A18.9.4). An item's key is `<collection>.<id>`. `backdrop` is the
  * battle background skin (A18.9.4 "Backdrop skins", owner request 2026-09-30): a themed restyle of your
- * half's sky and parallax layers in every age.
+ * half's sky and parallax layers in every age, shown as the "Sky" from save v14 (it re-grades whichever
+ * scene shows). `scene` (save v14, PLAN 2b) is the scenery of one age, equipped per age; each age's
+ * classic scene is free and is not an item.
  */
-export type CosmeticCollection = 'emote' | 'quote' | 'baseFlag' | 'nationalFlag' | 'baseSkin' | 'decoration' | 'backdrop' | 'avatar';
+export type CosmeticCollection = 'emote' | 'quote' | 'baseFlag' | 'nationalFlag' | 'baseSkin' | 'decoration' | 'backdrop' | 'scene' | 'avatar';
+
+/**
+ * The browsing groups of the national flags (PLAN 2d): the UN M49 continents with the Americas split
+ * into North (with Central America and the Caribbean) and South, Cyprus under Europe, plus `other`, the
+ * flags outside the 195 (Faroe Islands, Greenland, England, Scotland, Wales). A region is a browsing
+ * group only; the search finds every flag from any region.
+ */
+export type FlagRegion = 'europe' | 'asia' | 'africa' | 'northAmerica' | 'southAmerica' | 'oceania' | 'other';
 
 /**
  * Where a collection item comes from (A18.9.4: all earned, nothing sold). `capsule` and `crate` items
@@ -765,7 +780,16 @@ export type CosmeticSource =
   /** Avatar wearables: a title is owned (the collection milestones). */
   | { kind: 'title'; title: string }
   /** A top-tier exclusive (the Aeon Collection, A6.4 step 8): from that tier's capsules, craftable after the first one. */
-  | { kind: 'capsuleTier'; tier: CapsuleTier };
+  | { kind: 'capsuleTier'; tier: CapsuleTier }
+  /**
+   * National flags (PLAN 2d, owner decision 2026-10-08): bought with Dust at the one price
+   * `drops.flagDust` (a save's first flag costs nothing while `drops.firstFlagFree` is on). Never in a pool.
+   */
+  | { kind: 'dust' }
+  /** A Flag Atlas region reward (PLAN 2d): every released national flag of `region` owned. Earned, never sold. */
+  | { kind: 'flagRegion'; region: FlagRegion }
+  /** A Flag Atlas reward: `count` released national flags of the six regions owned (World Compass at 195). */
+  | { kind: 'flagsOwned'; count: number };
 
 export type DecorationKind = 'statue' | 'banner' | 'brazier' | 'trophy' | 'plant';
 
@@ -782,7 +806,7 @@ export interface CosmeticItemDef {
   textKey?: string;
   /** Emotes: an age theme or `general`. */
   theme?: AgeId | 'general';
-  /** Base skins: the one age the skin restyles. */
+  /** Base skins and scenes: the one age the item belongs to (required for both, PLAN 2e). */
   age?: AgeId;
   /** Decorations: what it is. */
   kind?: DecorationKind;
@@ -790,6 +814,15 @@ export interface CosmeticItemDef {
   country?: string;
   /** Avatar wearables: the creator slot the item fills. */
   slot?: AvatarSlot;
+  /** National flags: the Flag Atlas browsing group (PLAN 2d). */
+  region?: FlagRegion;
+  /**
+   * The release gate (PLAN 2e): `false` while the item's art is not finished. An unreleased item stays
+   * in the content (tests and dev pages see it) but leaves the capsule and crate pools and the odds,
+   * Customize and the Flag Atlas, state-earned grants, crafting, bot looks and match looks. Absent is
+   * released. A track ships its items by flipping this flag (or deleting the line).
+   */
+  released?: boolean;
 }
 
 /**
@@ -844,6 +877,14 @@ export interface CosmeticDrops {
   duplicateDust: Record<Rarity, number>;
   /** Dust price to craft a `capsule` or `crate` item. */
   craftDust: Record<Rarity, number>;
+  /** The one Dust price of every national flag (source `dust`; PLAN 2d, owner decision 2026-10-08: 500). */
+  flagDust: number;
+  /**
+   * A save's first national flag costs nothing (owner decision 2026-10-08: once, any country). Derived
+   * from ownership (a save that owns no national flag), so it needs no save field; a switch, so it can
+   * be turned off.
+   */
+  firstFlagFree: boolean;
 }
 
 export interface CosmeticCollections {
@@ -863,8 +904,10 @@ export interface CosmeticCollections {
     baseFlag: string | null;
     nationalFlag: string | null;
     decorations: (string | null)[];
-    /** The battle backdrop skin; null is each age's own classic sky. */
+    /** The battle backdrop skin (the "Sky"); null is each age's own classic sky. */
     backdrop: string | null;
+    /** The scene per age (save v14); empty: every age on its classic scene. */
+    scenes: Partial<Record<AgeId, string>>;
   };
 }
 

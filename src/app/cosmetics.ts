@@ -1,8 +1,13 @@
 /**
- * App glue for the cosmetic collections (DESIGN A18.9.4): the battle wheel the HUD shows.
+ * App glue for the cosmetic collections (DESIGN A18.9.4): the battle wheel the HUD shows, and the
+ * Flag Atlas services the screens call (PLAN 2d: buy a national flag, the Atlas's progress, the search),
+ * built on meta's `flagAtlas.ts` (Track D) so the screens never import meta (B2).
  */
-import type { CompiledContent, EmoteId, SaveDoc } from '@/contracts';
+import type { ReadonlySignal } from '@preact/signals';
+import type { CompiledContent, EmoteId, I18n, Result, SaveDoc } from '@/contracts';
 import type { Content } from '@/content';
+import type { MetaRules } from '@/meta';
+import type { ActionResult, UiServices } from '@/ui/screens';
 
 /**
  * The player's equipped battle wheel (A18.9.4): owned emotes and quotes only; the content defaults
@@ -24,3 +29,21 @@ export function emoteWheelOf(save: SaveDoc | null | undefined, compiled: Compile
   };
 }
 
+export interface FlagServicesDeps {
+  meta: MetaRules;
+  content: CompiledContent;
+  save: ReadonlySignal<SaveDoc>;
+  /** The names and aliases the search reads (the app's i18n). */
+  i18n: Pick<I18n, 't' | 'has'>;
+  /** Commits a meta result (immediately: a Dust spend is never left to the debounce, B8). */
+  apply(r: Result<SaveDoc>, immediate?: boolean): ActionResult;
+}
+
+/** The Flag Atlas's services (PLAN 2d), for `createUiServices`. */
+export function flagServices(d: FlagServicesDeps): Pick<UiServices, 'buyNationalFlag' | 'flagAtlasProgress' | 'searchFlags'> {
+  return {
+    buyNationalFlag: (key) => d.apply(d.meta.buyNationalFlag(d.save.peek(), key, d.content), true),
+    flagAtlasProgress: () => d.meta.flagAtlas(d.save.peek(), d.content),
+    searchFlags: (query) => d.meta.searchFlags(d.content, d.i18n, query).map((x) => `${x.collection}.${x.id}`),
+  };
+}

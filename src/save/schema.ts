@@ -160,7 +160,10 @@ export const PendingCrateSchema = v.object({
   cosmetic: v.optional(v.nullable(id)),
 });
 
-/** The equipped cosmetic collection items (A18.9.4, save v3; the backdrop since v8); keys are not checked against the content. */
+/**
+ * The equipped cosmetic collection items (A18.9.4, save v3; the backdrop since v8, the scenes since v14);
+ * keys are not checked against the content.
+ */
 export const CosmeticLoadoutSchema = v.object({
   emotes: v.array(id),
   quotes: v.array(id),
@@ -168,8 +171,10 @@ export const CosmeticLoadoutSchema = v.object({
   nationalFlag: v.nullable(id),
   baseSkins: v.record(AGE, id),
   decorations: v.array(v.nullable(id)),
-  /** The battle backdrop skin (save v8); null keeps each age's classic sky. */
+  /** The battle backdrop skin (save v8), the "Sky" from v14; null keeps each scene's own daylight. */
   backdrop: v.nullable(id),
+  /** The scene per age (save v14); an age without one shows its classic scene. */
+  scenes: v.record(AGE, id),
 });
 
 const flag3 = v.tuple([v.boolean(), v.boolean(), v.boolean()]);

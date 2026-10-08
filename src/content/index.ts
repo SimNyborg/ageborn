@@ -33,7 +33,8 @@ export { FORMAT_MODES, FORMAT_ORDER } from './formats';
 export { formatKind, ladderWinFor, rewardFormat } from './ladder';
 export { commanderName, playerName } from './names';
 export { roadAmber } from './trophyRoad';
-export { isReleased, unreleasedIds } from './release';
+export { isCosmeticReleased, isReleased, unreleasedIds } from './release';
+export { FLAG_REGIONS } from './raw/nationalFlags';
 export { ageCapsuleStacksFor, capsuleTierFor, usesAllAgesTable } from './capsuleTiers';
 export * from './keys';
 

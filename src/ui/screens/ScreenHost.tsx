@@ -14,7 +14,7 @@ import type { ComponentChildren, ComponentType } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { setHapticsEnabled } from '../components/haptics';
 import { PortalContext, UiKitContext, type UiKit } from '../components/kit';
-import { RotateOverlay } from '../components/Layout';
+import { RotateOverlay, ScreenFrame } from '../components/Layout';
 import { TabBar, type NavTab } from '../components/Nav';
 import { createToastStore, ToastHost, type ToastStore } from '../components/Toasts';
 import { runBackHandler } from '../history';
@@ -24,7 +24,7 @@ import { CardDetailScreen } from './cardDetail/CardDetailScreen';
 import { CollectionScreen } from './collection/CollectionScreen';
 import { ConquestScreen } from './conquest/ConquestScreen';
 import { CustomizeScreen } from './customize/CustomizeScreen';
-import { UiEnvContext, type UiEnv } from './context';
+import { UiEnvContext, useUi, type UiEnv } from './context';
 import { HomeScreen } from './home/HomeScreen';
 import { ModeSelectScreen } from './modeSelect/ModeSelectScreen';
 import { PauseScreen } from './pause/PauseScreen';
@@ -39,7 +39,54 @@ import { WarPlanScreen } from './warplan/WarPlanScreen';
 
 type ScreenComponent<K extends ScreenId> = ComponentType<{ route: RouteOf<K> }>;
 
-/** The screens this package renders (A9 numbers 2-4, 6-7, 9-13, 15 and 17, plus 19-22). */
+type FlagAtlasModule = typeof import('./flagAtlas/FlagAtlasScreen');
+let flagAtlasLoading: Promise<FlagAtlasModule> | null = null;
+let flagAtlasLoaded: FlagAtlasModule | null = null;
+
+/** Loads the Flag Atlas screen (its own chunk; PLAN 2d). Customize may call it ahead to prefetch. */
+export function loadFlagAtlas(): Promise<FlagAtlasModule> {
+  if (!flagAtlasLoading) {
+    flagAtlasLoading = import('./flagAtlas/FlagAtlasScreen').then(
+      (m) => {
+        flagAtlasLoaded = m;
+        return m;
+      },
+      (e: unknown) => {
+        flagAtlasLoading = null;
+        throw e;
+      },
+    );
+  }
+  return flagAtlasLoading;
+}
+
+/**
+ * The Flag Atlas route: the screen's frame (title and Back) at once, its content as soon as the lazy
+ * module is in (Track D's `flagAtlas/FlagAtlasScreen.tsx`).
+ */
+function FlagAtlasLazy(p: { route: RouteOf<'flagAtlas'> }) {
+  const { router, t } = useUi();
+  const [mod, setMod] = useState<FlagAtlasModule | null>(flagAtlasLoaded);
+  useEffect(() => {
+    if (mod) return undefined;
+    let live = true;
+    loadFlagAtlas().then(
+      (m) => live && setMod(m),
+      () => undefined,
+    );
+    return () => {
+      live = false;
+    };
+  }, [mod]);
+  if (mod) return <mod.FlagAtlasScreen route={p.route} />;
+  return (
+    <ScreenFrame id="flagAtlas" title={t('cosmetic.flagAtlas.title')} onBack={() => router.back()}>
+      <div class="col" data-testid="flag-atlas-loading" aria-busy="true" />
+    </ScreenFrame>
+  );
+}
+
+/** The screens this package renders (A9 numbers 2-4, 6-7, 9-13, 15 and 17, plus 19-23; the Flag Atlas loads lazily). */
 export const SCREEN_COMPONENTS: { [K in ScreenId]?: ScreenComponent<K> } = {
   home: HomeScreen,
   modeSelect: ModeSelectScreen,
@@ -57,6 +104,7 @@ export const SCREEN_COMPONENTS: { [K in ScreenId]?: ScreenComponent<K> } = {
   capsules: CapsulesScreen,
   progress: ProgressScreen,
   warPath: WarPathScreen,
+  flagAtlas: FlagAtlasLazy,
 };
 
 export type ScreenSlots = { [K in ScreenId]?: (route: RouteOf<K>) => ComponentChildren };

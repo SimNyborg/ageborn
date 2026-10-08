@@ -98,7 +98,7 @@ export function ItemTile(p: {
   const act = useAct();
   const key = itemKey(p.item);
   const have = owns(save.value, content, key);
-  const price = craftPrice(content, p.item);
+  const price = craftPrice(content, p.item, save.value);
   const locked = craftLocked(save.value, p.item);
   // A tier's own set names its tier ("From Aeon Capsules. Craftable after your first.").
   const hintText = sourceText(t, p.item);

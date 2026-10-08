@@ -1,11 +1,12 @@
 /**
  * Profile cosmetics (DESIGN A5.8 "Other cosmetics", A6.1): 8 banners, 8 frames, 13 titles, 6 emotes,
  * and the cosmetic collections (A18.9.4): emotes, quotes, base and national flags, base skins,
- * decorations and battle backdrops (items in `raw/cosmetics.ts`). There is no text chat anywhere
+ * decorations, battle backdrops (the "Skies") and scenes (items in `raw/cosmetics.ts`). There is no text chat anywhere
  * (A5.8, A7.1): quotes are fixed lines. Cosmetics never change stats.
  */
 import { avatar, avatarCollectionItems } from './raw/avatar';
 import { collectionItems } from './raw/cosmetics';
+import { flagTitles } from './raw/nationalFlags';
 import type { Cosmetics } from './types';
 
 export const cosmetics: Cosmetics = {
@@ -60,6 +61,8 @@ export const cosmetics: Cosmetics = {
     { id: 'photo_finisher', unlock: { kind: 'feat', feat: 'photo_finish' }, nameKey: 'title.photo_finisher.name' },
     { id: 'stone_cold', unlock: { kind: 'feat', feat: 'stone_cold' }, nameKey: 'title.stone_cold.name' },
     { id: 'keeper_of_ages', unlock: { kind: 'feat', feat: 'old_guard' }, nameKey: 'title.keeper_of_ages.name' },
+    // The Flag Atlas's title (PLAN 2d, Track D's data)
+    ...flagTitles,
   ],
   // A5.8 six emotes; A7.2 bots use only GG, Salute and Thumbs up
   emotes: [
@@ -86,6 +89,10 @@ export const cosmetics: Cosmetics = {
       // A duplicate only once every item of that pool and rarity is owned
       duplicateDust: { common: 5, rare: 20, epic: 60, legendary: 150 },
       craftDust: { common: 40, rare: 150, epic: 500, legendary: 1500 },
+      // National flags (PLAN 2d, owner decisions 2026-10-08): every flag the same 500 Dust, never in a
+      // pool; a save's first flag costs nothing (once, any country). Turn the switch off to drop that.
+      flagDust: 500,
+      firstFlagFree: true,
     },
     wheel: { emotes: 8, quotes: 4 },
     quoteCooldownMs: 8000,
@@ -99,6 +106,8 @@ export const cosmetics: Cosmetics = {
       decorations: ['decoration.fire_bowl', null, 'decoration.fern'],
       // Each age's own classic sky until the player picks a backdrop skin
       backdrop: null,
+      // Every age on its classic scene (save v14); scenes are earned, never given
+      scenes: {},
     },
   },
   avatar,

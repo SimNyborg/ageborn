@@ -62,6 +62,15 @@ function planFrom(
   return { name, loadouts };
 }
 
+/** The first released scene of every age that has one (save v14 `cosmetics.equipped.scenes`). */
+function releasedScenes(content: Content): Partial<Record<AgeId, string>> {
+  const out: Partial<Record<AgeId, string>> = {};
+  for (const x of content.cosmetics.collections.items) {
+    if (x.collection === 'scene' && x.age && x.released !== false && out[x.age] === undefined) out[x.age] = `scene.${x.id}`;
+  }
+  return out;
+}
+
 function quests(ids: [string, number, boolean][], weekly: [number, boolean]): SaveDoc['quests'] {
   const daily: QuestSlot[] = ids.map(([id, progress, claimed]) => ({ id, progress, claimed }));
   return {
@@ -303,6 +312,8 @@ export function midGameSave(content: Content): SaveDoc {
         baseSkins: { stone: 'baseSkin.frost_cave', medieval: 'baseSkin.rose_keep' },
         decorations: ['decoration.lion_statue', 'decoration.iron_brazier', 'decoration.olive_tree'],
         backdrop: null,
+        // save v14: every age on its classic scene
+        scenes: {},
       },
     },
     warPlans: [rush, turtle, air],
@@ -402,9 +413,13 @@ export function maxedSave(content: Content): SaveDoc {
         quotes: ['quote.honour', 'quote.legendary', 'quote.to_the_stars', 'quote.gg_wp'],
         baseFlag: 'baseFlag.phoenix',
         nationalFlag: 'nationalFlag.gb_eng',
-        baseSkins: { future: 'baseSkin.midnight_neon', cosmic: 'baseSkin.nebula_ark' },
+        // One base skin per age (save v14): the Future base wears Crystal Spire (the troop-system skin
+        // above), so the cosmetic skin sits on Cosmic only.
+        baseSkins: { cosmic: 'baseSkin.nebula_ark' },
         decorations: ['decoration.star_trophy', 'decoration.plasma_brazier', 'decoration.astro_statue'],
         backdrop: 'backdrop.northern_lights',
+        // Every released scene on its age (none ship yet: every age on its classic scene).
+        scenes: releasedScenes(content),
       },
     },
     warPlans: [plan, planFrom(content, collection, 'Classic'), planFrom(content, collection, 'Air')],

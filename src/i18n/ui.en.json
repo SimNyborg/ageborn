@@ -690,6 +690,7 @@
       "credits": "Credits",
       "creditsGame": "Ageborn: design, code and art made for this game.",
       "creditsSound": "Sound effects made with ZzFX by Frank Force (MIT).",
+      "creditsFlags": "Flag artwork: flag-icons by Panayiotis Lipiridis (MIT).",
       "creditsTech": "Built with PixiJS, Preact and Vite.",
       "breakReminder": "Break reminder",
       "breakReminderHint": "After 60 minutes of play",

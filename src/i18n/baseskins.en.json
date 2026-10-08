@@ -1,0 +1,36 @@
+{
+  "cosmetic": {
+    "baseSkin": {
+      "frost_cave": {
+        "name": "Frost Cave"
+      },
+      "mossy_den": {
+        "name": "Mossy Den"
+      },
+      "gilded_ziggurat": {
+        "name": "Gilded Ziggurat"
+      },
+      "rose_keep": {
+        "name": "Rose Keep"
+      },
+      "snowy_keep": {
+        "name": "Snowbound Keep"
+      },
+      "coral_fort": {
+        "name": "Coral Fort"
+      },
+      "copper_foundry": {
+        "name": "Copper Foundry"
+      },
+      "desert_bunker": {
+        "name": "Desert Bunker"
+      },
+      "midnight_neon": {
+        "name": "Midnight Neon"
+      },
+      "nebula_ark": {
+        "name": "Nebula Ark"
+      }
+    }
+  }
+}

@@ -8,10 +8,12 @@
  * (battles, the capsule show, replays) go through `flow`, so this file stays testable in Node.
  */
 import type { ReadonlySignal } from '@preact/signals';
-import type { AgeId, CardId, OpponentSpec, ReplayDoc, Result, SaveDoc } from '@/contracts';
+import type { AgeId, CardId, I18n, OpponentSpec, ReplayDoc, Result, SaveDoc } from '@/contracts';
+import { i18n as appI18n } from '@/i18n';
 import { legacySkillAeonCount, type MetaRules } from '@/meta';
 import { IMPORT_MESSAGE_KEYS, markExported, saveFileFor, type SaveFile } from '@/save';
 import type { ActionResult, MatchRequest, Router, UiServices, WarPlan } from '@/ui/screens';
+import { flagServices } from './cosmetics';
 import { opponentLook } from './matchSetup';
 import type { Services } from './services';
 
@@ -45,6 +47,8 @@ export interface UiServicesDeps {
   download?(file: SaveFile): void;
   /** Seed for a brand-new save after Reset progress. */
   newSeed?(): number;
+  /** The names the Flag Atlas search reads (default: the app's i18n). */
+  i18n?: Pick<I18n, 't' | 'has'>;
 }
 
 /** True when the meta passed in has WP7's helpers (the real rules do). */
@@ -244,6 +248,8 @@ export function createUiServices(d: UiServicesDeps): UiServices {
     craftCosmetic(key) {
       return apply(meta.craftCosmetic(d.save.peek(), key, content), true);
     },
+    // The Flag Atlas (PLAN 2d): buying, progress and search (`app/cosmetics.ts` over meta's flagAtlas.ts)
+    ...flagServices({ meta, content, save: d.save, i18n: d.i18n ?? appI18n, apply }),
 
     // ---- progression -------------------------------------------------------------------------
     claimRoadNode(trophies) {

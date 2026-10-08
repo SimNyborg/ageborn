@@ -6,7 +6,7 @@
 import type { CapsuleTier, CardId } from '@/contracts';
 
 /** The `SaveDoc.v` that `newSave` writes (WP8 migrates from this version on). */
-export const SAVE_VERSION = 13;
+export const SAVE_VERSION = 14;
 
 /**
  * Share of ladder and Daily Challenge opponents that are named AI Generals; the rest are procedural

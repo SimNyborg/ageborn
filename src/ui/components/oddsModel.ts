@@ -169,10 +169,12 @@ export function oddsModel(
   const bagTotal = save.capsules.bag.length > 0 && (save.capsules.bagSize ?? 0) > 0 ? save.capsules.bagSize : bagSize;
   const flags = save.flags ?? {};
   const owned = new Set(save.cosmetics?.owned ?? []);
+  // The release gate (PLAN 2e): an item whose art is not finished is in no pool and on no odds line.
+  const released = (collections?.items ?? []).filter((x) => x.released !== false);
   const exclusive: ExclusiveSetRow[] = capsules.tierOrder
     .filter((tier) => capsules.tiers[tier].exclusiveItems)
     .map((tier) => {
-      const items = (collections?.items ?? []).filter((x) => x.source.kind === 'capsuleTier' && x.source.tier === tier);
+      const items = released.filter((x) => x.source.kind === 'capsuleTier' && x.source.tier === tier);
       return {
         tier,
         owned: items.filter((x) => owned.has(`${x.collection}.${x.id}`)).length,
@@ -191,7 +193,7 @@ export function oddsModel(
   const ahead = (save.capsules.pending ?? []).filter((c) => capsules.kinds[c.kind]?.countsForPity !== false).length;
   const nextLegendary = pity.sinceLegendary + ahead + 1;
   const pool = (kind: 'capsule' | 'crate', odds: Record<Rarity, number>) =>
-    rarities.order.filter((rarity) => odds[rarity] > 0).map((rarity) => ({ rarity, bp: odds[rarity], items: collections?.items.filter((x) => x.source.kind === kind && x.rarity === rarity).length ?? 0 }));
+    rarities.order.filter((rarity) => odds[rarity] > 0).map((rarity) => ({ rarity, bp: odds[rarity], items: released.filter((x) => x.source.kind === kind && x.rarity === rarity).length }));
   return {
     ...(collections
       ? {
@@ -200,10 +202,10 @@ export function oddsModel(
             capsuleRarityBp: pool('capsule', collections.drops.capsuleRarityBp),
             crateRarityBp: pool('crate', collections.drops.crateRarityBp),
             wardrobe: {
-              capsuleItems: collections.items.filter((x) => x.collection === 'avatar' && x.source.kind === 'capsule').length,
-              crateItems: collections.items.filter((x) => x.collection === 'avatar' && x.source.kind === 'crate').length,
-              owned: collections.items.filter((x) => x.collection === 'avatar' && owned.has(`avatar.${x.id}`)).length,
-              total: collections.items.filter((x) => x.collection === 'avatar').length,
+              capsuleItems: released.filter((x) => x.collection === 'avatar' && x.source.kind === 'capsule').length,
+              crateItems: released.filter((x) => x.collection === 'avatar' && x.source.kind === 'crate').length,
+              owned: released.filter((x) => x.collection === 'avatar' && owned.has(`avatar.${x.id}`)).length,
+              total: released.filter((x) => x.collection === 'avatar').length,
             },
           },
         }

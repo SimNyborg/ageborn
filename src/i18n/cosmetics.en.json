@@ -8,6 +8,7 @@
       "baseSkin": "Base skins",
       "decoration": "Decorations",
       "backdrop": "Backdrops",
+      "scene": "Scenes",
       "avatar": "General’s wardrobe"
     },
     "emote": {
@@ -293,190 +294,6 @@
         "name": "Phoenix"
       }
     },
-    "nationalFlag": {
-      "dk": {
-        "name": "Denmark"
-      },
-      "fo": {
-        "name": "Faroe Islands"
-      },
-      "gl": {
-        "name": "Greenland"
-      },
-      "se": {
-        "name": "Sweden"
-      },
-      "no": {
-        "name": "Norway"
-      },
-      "fi": {
-        "name": "Finland"
-      },
-      "is": {
-        "name": "Iceland"
-      },
-      "gb": {
-        "name": "United Kingdom"
-      },
-      "gb_eng": {
-        "name": "England"
-      },
-      "gb_sct": {
-        "name": "Scotland"
-      },
-      "ie": {
-        "name": "Ireland"
-      },
-      "us": {
-        "name": "USA"
-      },
-      "ca": {
-        "name": "Canada"
-      },
-      "de": {
-        "name": "Germany"
-      },
-      "fr": {
-        "name": "France"
-      },
-      "nl": {
-        "name": "Netherlands"
-      },
-      "be": {
-        "name": "Belgium"
-      },
-      "lu": {
-        "name": "Luxembourg"
-      },
-      "ch": {
-        "name": "Switzerland"
-      },
-      "at": {
-        "name": "Austria"
-      },
-      "it": {
-        "name": "Italy"
-      },
-      "es": {
-        "name": "Spain"
-      },
-      "pt": {
-        "name": "Portugal"
-      },
-      "pl": {
-        "name": "Poland"
-      },
-      "cz": {
-        "name": "Czechia"
-      },
-      "hu": {
-        "name": "Hungary"
-      },
-      "gr": {
-        "name": "Greece"
-      },
-      "ee": {
-        "name": "Estonia"
-      },
-      "lv": {
-        "name": "Latvia"
-      },
-      "lt": {
-        "name": "Lithuania"
-      },
-      "ua": {
-        "name": "Ukraine"
-      },
-      "ro": {
-        "name": "Romania"
-      },
-      "bg": {
-        "name": "Bulgaria"
-      },
-      "tr": {
-        "name": "Türkiye"
-      },
-      "jp": {
-        "name": "Japan"
-      },
-      "kr": {
-        "name": "South Korea"
-      },
-      "in": {
-        "name": "India"
-      },
-      "th": {
-        "name": "Thailand"
-      },
-      "vn": {
-        "name": "Vietnam"
-      },
-      "id": {
-        "name": "Indonesia"
-      },
-      "au": {
-        "name": "Australia"
-      },
-      "nz": {
-        "name": "New Zealand"
-      },
-      "br": {
-        "name": "Brazil"
-      },
-      "ar": {
-        "name": "Argentina"
-      },
-      "cl": {
-        "name": "Chile"
-      },
-      "co": {
-        "name": "Colombia"
-      },
-      "za": {
-        "name": "South Africa"
-      },
-      "ng": {
-        "name": "Nigeria"
-      },
-      "gh": {
-        "name": "Ghana"
-      },
-      "jm": {
-        "name": "Jamaica"
-      }
-    },
-    "baseSkin": {
-      "frost_cave": {
-        "name": "Frost Cave"
-      },
-      "mossy_den": {
-        "name": "Mossy Den"
-      },
-      "gilded_ziggurat": {
-        "name": "Gilded Ziggurat"
-      },
-      "rose_keep": {
-        "name": "Rose Keep"
-      },
-      "snowy_keep": {
-        "name": "Snowbound Keep"
-      },
-      "coral_fort": {
-        "name": "Coral Fort"
-      },
-      "copper_foundry": {
-        "name": "Copper Foundry"
-      },
-      "desert_bunker": {
-        "name": "Desert Bunker"
-      },
-      "midnight_neon": {
-        "name": "Midnight Neon"
-      },
-      "nebula_ark": {
-        "name": "Nebula Ark"
-      }
-    },
     "decoration": {
       "stone_idol": {
         "name": "Stone Idol"
@@ -621,6 +438,7 @@
         "baseSkin": "Base skin",
         "decoration": "Decoration",
         "backdrop": "Backdrop",
+        "scene": "Scene",
         "avatar": "General’s wardrobe"
       },
       "wheel": "Battle wheel",
@@ -646,7 +464,10 @@
         "capsuleTier": "From {tier} Capsules. Craftable after your first.",
         "warPathBoss": "Beat the {age} boss on Normal",
         "warPathStars": "All 3 stars in the {age} region",
-        "title": "Collection milestone: {title}"
+        "title": "Collection milestone: {title}",
+        "dust": "Bought with Dust",
+        "flagRegion": "Collect every flag of {region}",
+        "flagsOwned": "Collect {n} national flags"
       },
       "reason": {
         "notOwned": "You do not own that yet.",
@@ -656,7 +477,9 @@
         "owned": "Already yours.",
         "notCraftable": "This one is earned, not crafted.",
         "locked": "Craftable after your first Aeon Capsule.",
-        "pending": "This one is already waiting for you in an unopened capsule or crate."
+        "pending": "This one is already waiting for you in an unopened capsule or crate.",
+        "unreleased": "Not available yet.",
+        "wrongAge": "That one belongs to another age."
       },
       "collectionsTitle": "Cosmetic collections",
       "inWheel": "In wheel",

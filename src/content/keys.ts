@@ -8,7 +8,7 @@
  * Card keys (`card.<slug>.name` / `.desc`) are set in `src/content/raw` (WP0).
  */
 import type { AgeId, BaseEmoteId, CapsuleTier, EmoteId, Foil, FormatId, Rarity, Role, RoleGroup, Tag } from '@/contracts/ids';
-import type { CosmeticCollection } from './types';
+import type { CosmeticCollection, FlagRegion } from './types';
 import type { PendingCapsule } from '@/contracts/save';
 
 export const ageNameKey = (age: AgeId): string => `age.${age}.name`;
@@ -45,6 +45,15 @@ export const cosmeticNameKey = (collection: CosmeticCollection, id: string): str
 export const quoteTextKey = (id: string): string => `cosmetic.quote.${id}.text`;
 /** A collection's name: `cosmetic.collection.<collection>`. */
 export const cosmeticCollectionKey = (collection: CosmeticCollection): string => `cosmetic.collection.${collection}`;
+/**
+ * Other names a national flag is searched by (PLAN 2d: "UK", "USA", "Holland"), comma separated:
+ * `cosmetic.nationalFlag.<id>.aliases` (`src/i18n/flags.en.json`); most flags have none.
+ */
+export const flagAliasesKey = (id: string): string => `cosmetic.nationalFlag.${id}.aliases`;
+/** A Flag Atlas browsing group's name (PLAN 2d): `cosmetic.flagRegion.<region>.name` (`src/i18n/flags.en.json`). */
+export const flagRegionNameKey = (region: FlagRegion): string => `cosmetic.flagRegion.${region}.name`;
+/** An age's classic scene, which is not an item (PLAN 2b): `cosmetic.sceneClassic.<age>.name` (`src/i18n/scenes.en.json`). */
+export const sceneClassicNameKey = (age: AgeId): string => `cosmetic.sceneClassic.${age}.name`;
 /**
  * What an emote command shows: a starter emote's name, a collected emote's name, or a quote's line.
  */

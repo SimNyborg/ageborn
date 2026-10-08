@@ -4,11 +4,14 @@
  * the app (WP11). Not game logic: the real rules live in `src/meta`; this only makes previews move.
  */
 import type { Content } from '@/content/types';
+import { FLAG_REGIONS } from '@/content/raw/nationalFlags';
 import type { AgeId, PlanIssue, SaveDoc } from '@/contracts';
 import { InMemorySaveStore } from '@/contracts/fakes/saveStore';
+import { i18n } from '@/i18n';
 import type { Signal } from '@preact/signals';
 import type { Router } from '../../router';
 import { cardDef, isOwned, upgradeCost } from '../model/cards';
+import { craftPrice, equippedOf, findItem, itemKey, itemsOf, nationalFlagPrice } from '../model/cosmetics';
 import type { ActionResult, UiServices, WarPlan } from '../services';
 import { fixtureOpponent, fixtureReplays, fixtureResult, type OpponentFixture } from './matches';
 import { newPlayerSave } from './saves';
@@ -287,6 +290,13 @@ export function createPreviewServices(o: {
         const equipped = { ...s.skins.equipped };
         if (skin) equipped[target] = skin;
         else delete equipped[target];
+        // one base skin per age across both systems (save v14): a base's troop skin replaces its cosmetic one
+        const age = target.startsWith('base.') ? (target.slice(5) as AgeId) : null;
+        if (skin && age && s.cosmetics.equipped.baseSkins[age] !== undefined) {
+          const baseSkins = { ...s.cosmetics.equipped.baseSkins };
+          delete baseSkins[age];
+          return { ...s, skins: { ...s.skins, equipped }, cosmetics: { ...s.cosmetics, equipped: { ...s.cosmetics.equipped, baseSkins } } };
+        }
         return { ...s, skins: { ...s.skins, equipped } };
       });
     },
@@ -299,7 +309,8 @@ export function createPreviewServices(o: {
         return ok;
       }
       set((s) => {
-        const eq = { ...s.cosmetics.equipped };
+        const eq = { ...equippedOf(s, content) };
+        let skins = s.skins;
         if (e.slot === 'emotes' || e.slot === 'quotes') eq[e.slot] = [...e.keys];
         else if (e.slot === 'baseFlag' || e.slot === 'nationalFlag' || e.slot === 'backdrop') eq[e.slot] = e.key;
         else if (e.slot === 'baseSkin') {
@@ -307,25 +318,68 @@ export function createPreviewServices(o: {
           if (e.key) baseSkins[e.age] = e.key;
           else delete baseSkins[e.age];
           eq.baseSkins = baseSkins;
+          // one base skin per age across both systems (save v14): it replaces the base's troop skin
+          if (e.key && s.skins.equipped[`base.${e.age}`] !== undefined) {
+            const equipped = { ...s.skins.equipped };
+            delete equipped[`base.${e.age}`];
+            skins = { ...s.skins, equipped };
+          }
+        } else if (e.slot === 'scene') {
+          const scenes = { ...eq.scenes };
+          if (e.key) scenes[e.age] = e.key;
+          else delete scenes[e.age];
+          eq.scenes = scenes;
         } else if (e.slot === 'decoration') {
           const decorations = eq.decorations.map((k) => (e.key !== null && k === e.key ? null : k));
           decorations[e.anchor] = e.key;
           eq.decorations = decorations;
         }
-        return { ...s, cosmetics: { ...s.cosmetics, equipped: eq } };
+        return { ...s, skins, cosmetics: { ...s.cosmetics, equipped: eq } };
       });
       return ok;
     },
     craftCosmetic(key) {
       log('craftCosmetic', key);
-      const x = content.cosmetics.collections.items.find((i) => `${i.collection}.${i.id}` === key);
-      if (!x || (x.source.kind !== 'capsule' && x.source.kind !== 'crate')) return fail('notCraftable');
-      const price = content.cosmetics.collections.drops.craftDust[x.rarity];
+      const x = findItem(content, key);
+      if (!x || (x.source.kind !== 'capsule' && x.source.kind !== 'crate' && x.source.kind !== 'dust')) return fail('notCraftable');
       const s = save.value;
+      const price = craftPrice(content, x, s) ?? 0;
       if (s.cosmetics.owned.includes(key)) return fail('owned');
       if (s.currencies.dust < price) return fail('dust');
       set((y) => ({ ...y, currencies: { ...y.currencies, dust: y.currencies.dust - price }, cosmetics: { ...y.cosmetics, owned: [...y.cosmetics.owned, key] } }));
       return ok;
+    },
+    buyNationalFlag(key) {
+      log('buyNationalFlag', key);
+      // Preview only: the real rules (price, rewards, pending capsules) live in meta.buyNationalFlag.
+      const x = findItem(content, key);
+      if (!x || x.collection !== 'nationalFlag') return fail('wrongCollection');
+      const s = save.value;
+      const price = nationalFlagPrice(s, content);
+      if (s.cosmetics.owned.includes(key)) return fail('owned');
+      if (s.currencies.dust < price) return fail('notEnoughDust');
+      set((y) => ({ ...y, currencies: { ...y.currencies, dust: y.currencies.dust - price }, cosmetics: { ...y.cosmetics, owned: [...y.cosmetics.owned, key] } }));
+      return ok;
+    },
+    flagAtlasProgress() {
+      const s = save.value;
+      const owned = new Set(s.cosmetics.owned);
+      const flags = itemsOf(content, 'nationalFlag');
+      const rewards = itemsOf(content, 'baseFlag').filter((x) => x.source.kind === 'flagRegion');
+      const regions = FLAG_REGIONS.map((region) => {
+        const list = flags.filter((x) => x.region === region);
+        const reward = rewards.find((x) => x.source.kind === 'flagRegion' && x.source.region === region);
+        const rewardKey = reward ? itemKey(reward) : null;
+        return { region, owned: list.filter((x) => owned.has(itemKey(x))).length, total: list.length, reward: rewardKey, rewardOwned: rewardKey !== null && owned.has(rewardKey) };
+      });
+      const atlas = flags.filter((x) => x.region !== 'other');
+      return { owned: atlas.filter((x) => owned.has(itemKey(x))).length, total: atlas.length, regions, price: nationalFlagPrice(s, content), equipped: equippedOf(s, content).nationalFlag };
+    },
+    searchFlags(query) {
+      // Preview only: a plain prefix match on the name or the code (meta.searchFlags has the full rules).
+      const q = query.trim().toLocaleLowerCase();
+      const flags = itemsOf(content, 'nationalFlag');
+      return flags.filter((x) => q === '' || x.id === q || i18n.t(x.nameKey).toLocaleLowerCase().startsWith(q)).map(itemKey);
     },
     claimRoadNode(trophies) {
       const s = save.value;

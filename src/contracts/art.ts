@@ -174,12 +174,26 @@ export interface ArtProvider {
    * fort through `createUnit` (its twin's visual id falls back to a placeholder).
    */
   createFort?(o: { visualId: VisualId; side: Side; teamPreset: TeamPreset; kind: 'wall' | 'tower' | 'camp' | 'trap' }): FortView;
-  createBase(o: { age: AgeId; skin?: SkinId; side: Side; teamPreset: TeamPreset }): BaseView;
   /**
-   * `skins`: each half's backdrop skin (`backdrop.<id>`, A18.9.4), left = side 0; absent or null
-   * draws that half's classic sky. Optional: providers that do not know skins ignore it.
+   * A side's base. `skins` (save v14, PLAN 2c): the base skin per age as art skin ids (`frost_cave`,
+   * `crystal_spire`), resolved as `base.<age>@<skin>`; each age shows its own and the view morphs
+   * between them on an evolve. `skin` (older callers): one skin applied to whichever age has an entry
+   * for it; `skins[age]` wins over it. An age whose skin has no model draws its plain base.
    */
-  createBackdrop(o: { left: AgeId; right: AgeId; arena: string; skins?: { left?: CosmeticKey | null; right?: CosmeticKey | null } }): BackdropView;
+  createBase(o: { age: AgeId; skin?: SkinId; skins?: Partial<Record<AgeId, SkinId>>; side: Side; teamPreset: TeamPreset }): BaseView;
+  /**
+   * `skins`: each half's backdrop skin (`backdrop.<id>`, A18.9.4; the "Sky" from save v14), left =
+   * side 0; absent or null draws that half's classic sky. `scenes` (save v14, PLAN 2b): each half's
+   * scene per age (`scene.<id>`); an age without one shows its classic scene, and an evolve wipes to
+   * the new age's scene from the same map. Optional: providers that do not know them ignore them.
+   */
+  createBackdrop(o: {
+    left: AgeId;
+    right: AgeId;
+    arena: string;
+    skins?: { left?: CosmeticKey | null; right?: CosmeticKey | null };
+    scenes?: { left?: Partial<Record<AgeId, CosmeticKey>>; right?: Partial<Record<AgeId, CosmeticKey>> };
+  }): BackdropView;
   createProjectile(visualId: VisualId, side: Side): EffectView;
   createEffect(effectId: EffectId, o?: Record<string, number>): EffectView;
   /** Base flag, national flag, decorations and skin restyle of one side (A18.9.4); optional. */
@@ -279,3 +293,55 @@ export interface ShowcaseHandle {
 
 /** Mounts a showcase stage into `host` (a positioned element the stage fills). */
 export type ShowcaseMount = (host: HTMLElement, req: ShowcaseRequest) => ShowcaseHandle;
+
+// ---------------------------------------------------------------------------------------------
+// Customize diorama (PLAN 2a "Backdrop and base-skin previews", ui-plan 4.5 PreviewStage): a live
+// half of the lane with a side's look: its scene and sky, its base (model, flags, decorations) and two
+// idle turrets. Presentation only, like the card showcase: the render layer implements
+// `DioramaMount` with the injected `ArtProvider` (`createBackdrop`, `createBase`, `createBaseDressing`),
+// the UI receives it through its `DioramaContext` and keeps its still picture until `ready` resolves
+// true (or for good when it resolves false: no WebGL, no art).
+
+/** What the diorama shows. */
+export interface DioramaRequest {
+  /** The age shown: its base, the base skin of that age and the scene of that age. */
+  age: AgeId;
+  /** Whose half: 0 is the player's (left, blue). */
+  side: Side;
+  /** The side's look: flags, decorations, base skins per age, the sky (`backdrop`) and the scenes per age. */
+  look: SideLook;
+  /**
+   * The scene shown for `age` in place of `look.scenes[age]` (a tile being tried on; the plan's
+   * `sceneOf`): `scene.<id>`, or null for the age's classic scene; absent keeps the look's.
+   */
+  scene?: CosmeticKey | null;
+  /** The sky shown in place of `look.backdrop` (`backdrop.<id>`), or null for none; absent keeps the look's. */
+  sky?: CosmeticKey | null;
+  /**
+   * The base skin per age as art skin ids, the same map the battle passes to `createBase` (the look's
+   * `baseSkins` without their `baseSkin.` prefix, with the troop-system skin of an age, Crystal Spire,
+   * in its place). Absent: derived from `look.baseSkins`.
+   */
+  baseSkins?: Partial<Record<AgeId, SkinId>>;
+  /** Crumble stage shown (the Damage toggle steps 0-3): the model's quality and that the mounts stay put. */
+  crumble: 0 | 1 | 2 | 3;
+  teamPreset: TeamPreset;
+  /** Reduce motion: a still frame, the weather paused. */
+  reduceMotion: boolean;
+  /** Lite graphics: half the particles and sprites. */
+  lite: boolean;
+}
+
+export interface DioramaHandle {
+  /** Resolves true once the live stage draws, false when it cannot (no WebGL, no art): keep the still. */
+  readonly ready: Promise<boolean>;
+  /** Applies a changed look, age, try-on, crumble stage, team preset or motion setting. */
+  update(patch: Partial<Omit<DioramaRequest, 'side'>>): void;
+  /** Stops drawing while hidden (tab hidden, scrolled away). */
+  setVisible(on: boolean): void;
+  /** Destroys the stage: views, its Pixi app and its GPU context; leased sheets are released. */
+  destroy(): void;
+}
+
+/** Mounts a diorama into `host` (a positioned element the stage fills). */
+export type DioramaMount = (host: HTMLElement, req: DioramaRequest) => DioramaHandle;

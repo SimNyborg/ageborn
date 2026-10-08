@@ -1,10 +1,12 @@
 /**
  * Profile titles (DESIGN A5.8 "13 titles", A6.1). Titles, banners and frames live in
  * `SaveDoc.cosmetics.owned` by their content ids. State-based titles (wins, Codex Level, arena, owned
- * cards, Conquest stars) are checked against the save; match-based ones need the match facts.
+ * cards, Conquest stars, national flags owned) are checked against the save; match-based ones need the
+ * match facts.
  */
 import type { FormatId, SaveDoc } from '@/contracts';
 import type { Content, TitleUnlock } from '@/content';
+import { ownedNationalFlags } from './cosmetics';
 import { formatKind } from './formats';
 import { ageCards, isOwned } from './tables';
 
@@ -65,6 +67,9 @@ function earned(u: TitleUnlock, s: SaveDoc, t: Content, m: TitleMatchFacts | nul
       return collectable(t).every((id) => maxed(s, t, id));
     case 'feat':
       return s.flags[`feat.${u.feat}`] === true;
+    case 'flagsOwned':
+      // PLAN 2d: the Flag Atlas's "World Ambassador" (the six regions; the Other flags do not count)
+      return ownedNationalFlags(s, t) >= u.count;
   }
 }
 

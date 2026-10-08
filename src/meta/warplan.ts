@@ -236,17 +236,29 @@ export function setActivePlan(s: SaveDoc, index: number): Result<SaveDoc> {
   return { ok: true, value: { ...s, activePlan: index } };
 }
 
-/** Equips an owned skin on its card or base, or clears the target with null. Reasons: notOwned, wrongTarget. */
+/**
+ * Equips an owned skin on its card or base, or clears the target with null. Reasons: notOwned, wrongTarget.
+ * A base skin (`base.<age>`, Crystal Spire) replaces the cosmetic base skin of that age, which stays
+ * owned: one base skin per age across both systems (PLAN 2c, save v14).
+ */
 export function equipSkin(s: SaveDoc, target: string, skin: SkinId | null, t: Content): Result<SaveDoc> {
   const equipped = { ...s.skins.equipped };
+  let cosmetics = s.cosmetics;
   if (skin === null) delete equipped[target];
   else {
     const def = t.skins[skin];
     if (!def || def.target !== target) return { ok: false, reason: 'wrongTarget' };
     if (!s.skins.owned.includes(skin)) return { ok: false, reason: 'notOwned' };
     equipped[target] = skin;
+    const age = target.startsWith('base.') ? (target.slice(5) as AgeId) : null;
+    const baseSkins = s.cosmetics.equipped?.baseSkins;
+    if (age !== null && baseSkins?.[age] !== undefined) {
+      const rest = { ...baseSkins };
+      delete rest[age];
+      cosmetics = { ...s.cosmetics, equipped: { ...s.cosmetics.equipped, baseSkins: rest } };
+    }
   }
-  return { ok: true, value: { ...s, skins: { ...s.skins, equipped } } };
+  return { ok: true, value: { ...s, skins: { ...s.skins, equipped }, ...(cosmetics !== s.cosmetics ? { cosmetics } : {}) } };
 }
 
 /** True when the active plan holds a Legendary in an age of `format` (A6.7, A6.8). */

@@ -103,6 +103,8 @@ export const CASES: Case[] = [
   { name: 'customize-flags', screen: 'customize', routes: () => [{ id: 'home' }, { id: 'customize', tab: 'flags' }] },
   { name: 'customize-decorations', screen: 'customize', routes: () => [{ id: 'home' }, { id: 'customize', tab: 'decorations' }] },
   { name: 'customize-quotes', screen: 'customize', routes: () => [{ id: 'home' }, { id: 'customize', tab: 'quotes' }] },
+  // PLAN 2d: the Flag Atlas (a lazy chunk: its frame shows at once)
+  { name: 'flagAtlas', screen: 'flagAtlas', routes: () => [{ id: 'home' }, { id: 'flagAtlas' }] },
 ];
 
 
@@ -113,7 +115,7 @@ afterEach(() => {
 });
 
 describe('every WP9 screen renders in every fixture state', () => {
-  it('covers all 16 WP9 screens', () => {
+  it('covers all 17 WP9 screens', () => {
     const covered = new Set(CASES.map((c) => c.screen));
     expect([...covered].sort()).toEqual(Object.keys(SCREEN_COMPONENTS).sort());
   });

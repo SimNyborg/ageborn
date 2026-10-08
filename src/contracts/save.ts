@@ -182,10 +182,15 @@ export interface CosmeticLoadout {
   /** One per base decoration anchor (3 anchors); null leaves it empty. */
   decorations: (CosmeticKey | null)[];
   /**
-   * The battle backdrop skin (`backdrop.<id>`, save v8): restyles your half of the battlefield in
-   * every age; null keeps each age's classic sky.
+   * The battle backdrop skin (`backdrop.<id>`, save v8), shown as the "Sky" from save v14: one for
+   * every age, re-grading whichever scene shows; null keeps each scene's own daylight.
    */
   backdrop: CosmeticKey | null;
+  /**
+   * The scene per age (`scene.<id>`, save v14; PLAN 2b): an age without an entry shows its classic
+   * scene, which everyone owns. Only an owned, released scene of that age can be equipped.
+   */
+  scenes: Partial<Record<AgeId, CosmeticKey>>;
 }
 
 /** A single-player difficulty (A18.6): Easy, Normal, Hard, Expert, Legendary. */

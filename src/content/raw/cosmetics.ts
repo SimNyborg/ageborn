@@ -1,17 +1,26 @@
 /**
  * The cosmetic collections (DESIGN A18.9.4, owner direction 2026-09-28): emotes, quotes, base flags,
- * national flags, base skins, base decorations and battle backdrops (2026-09-30). Data only: id, collection, rarity, source and the
- * art id (`cosmetic.<collection>.<id>`, A14.4) that the visuals draw.
+ * national flags, base skins, base decorations, battle backdrops (2026-09-30; the "Skies" from save v14)
+ * and scenes (2026-10-08). Data only: id, collection, rarity, source and the art id
+ * (`cosmetic.<collection>.<id>`, A14.4) that the visuals draw.
+ *
+ * Three collections keep their rows in their own files, one owner each, which this list spreads in
+ * place (they never import each other): `scenes.ts` (Track A), `baseSkins.ts` (Track B) and
+ * `nationalFlags.ts` (Track D, with the Flag Atlas's rewards). The order of the list is the display
+ * order per collection and the order the drop pools roll in.
  *
  * - All earned (A6.2: nothing is sold): starters, the Time Capsule and Wardrobe Crate drop pools
  *   (odds disclosed, see `drops` in `../cosmetics.ts`), Trophy Road nodes, hidden feats; `capsule`
  *   and `crate` items can also be crafted with Dust.
  * - Quotes are fixed, friendly lines (A16.28: no taunts). There is no free text chat anywhere.
- * - National flags are country flags only, drawn in our own style; no political or hate symbols.
- *   A player's flag is only ever their own pick, never inferred from location.
+ * - National flags are country flags only; no political or hate symbols. They are bought with Dust
+ *   (PLAN 2d), never dropped. A player's flag is only ever their own pick, never inferred from location.
  * - Cosmetics never change numbers, hitboxes or readability (A11 team colour and silhouette rules).
  */
 import type { CosmeticItemDef } from '../types';
+import { baseSkinItems } from './baseSkins';
+import { flagRewardItems, nationalFlagItems } from './nationalFlags';
+import { sceneItems } from './scenes';
 
 export const collectionItems: CosmeticItemDef[] = [
   // Emotes: 24 collected emotes, two per age and eight general ones (the 6 starter emotes stay in `emotes`)
@@ -96,68 +105,13 @@ export const collectionItems: CosmeticItemDef[] = [
   { id: 'comet', collection: 'baseFlag', rarity: 'epic', source: { kind: 'road', trophies: 2000 }, art: 'cosmetic.baseFlag.comet', nameKey: 'cosmetic.baseFlag.comet.name' },
   { id: 'wyvern', collection: 'baseFlag', rarity: 'legendary', source: { kind: 'crate' }, art: 'cosmetic.baseFlag.wyvern', nameKey: 'cosmetic.baseFlag.wyvern.name' },
   { id: 'phoenix', collection: 'baseFlag', rarity: 'legendary', source: { kind: 'feat', feat: 'horn_of_legends' }, art: 'cosmetic.baseFlag.phoenix', nameKey: 'cosmetic.baseFlag.phoenix.name' },
-  // National flags: 50 country flags in our own clean style; only ever the player's own pick
-  { id: 'dk', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.dk', nameKey: 'cosmetic.nationalFlag.dk.name', country: 'dk' },
-  { id: 'fo', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.fo', nameKey: 'cosmetic.nationalFlag.fo.name', country: 'fo' },
-  { id: 'gl', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.gl', nameKey: 'cosmetic.nationalFlag.gl.name', country: 'gl' },
-  { id: 'se', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.se', nameKey: 'cosmetic.nationalFlag.se.name', country: 'se' },
-  { id: 'no', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.no', nameKey: 'cosmetic.nationalFlag.no.name', country: 'no' },
-  { id: 'fi', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.fi', nameKey: 'cosmetic.nationalFlag.fi.name', country: 'fi' },
-  { id: 'is', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.is', nameKey: 'cosmetic.nationalFlag.is.name', country: 'is' },
-  { id: 'gb', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.gb', nameKey: 'cosmetic.nationalFlag.gb.name', country: 'gb' },
-  { id: 'gb_eng', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.gb_eng', nameKey: 'cosmetic.nationalFlag.gb_eng.name', country: 'gb-eng' },
-  { id: 'gb_sct', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.gb_sct', nameKey: 'cosmetic.nationalFlag.gb_sct.name', country: 'gb-sct' },
-  { id: 'ie', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.ie', nameKey: 'cosmetic.nationalFlag.ie.name', country: 'ie' },
-  { id: 'us', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.us', nameKey: 'cosmetic.nationalFlag.us.name', country: 'us' },
-  { id: 'ca', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.ca', nameKey: 'cosmetic.nationalFlag.ca.name', country: 'ca' },
-  { id: 'de', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.de', nameKey: 'cosmetic.nationalFlag.de.name', country: 'de' },
-  { id: 'fr', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.fr', nameKey: 'cosmetic.nationalFlag.fr.name', country: 'fr' },
-  { id: 'nl', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.nl', nameKey: 'cosmetic.nationalFlag.nl.name', country: 'nl' },
-  { id: 'be', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.be', nameKey: 'cosmetic.nationalFlag.be.name', country: 'be' },
-  { id: 'lu', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.lu', nameKey: 'cosmetic.nationalFlag.lu.name', country: 'lu' },
-  { id: 'ch', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.ch', nameKey: 'cosmetic.nationalFlag.ch.name', country: 'ch' },
-  { id: 'at', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.at', nameKey: 'cosmetic.nationalFlag.at.name', country: 'at' },
-  { id: 'it', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.it', nameKey: 'cosmetic.nationalFlag.it.name', country: 'it' },
-  { id: 'es', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.es', nameKey: 'cosmetic.nationalFlag.es.name', country: 'es' },
-  { id: 'pt', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.pt', nameKey: 'cosmetic.nationalFlag.pt.name', country: 'pt' },
-  { id: 'pl', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.pl', nameKey: 'cosmetic.nationalFlag.pl.name', country: 'pl' },
-  { id: 'cz', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.cz', nameKey: 'cosmetic.nationalFlag.cz.name', country: 'cz' },
-  { id: 'hu', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.hu', nameKey: 'cosmetic.nationalFlag.hu.name', country: 'hu' },
-  { id: 'gr', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.gr', nameKey: 'cosmetic.nationalFlag.gr.name', country: 'gr' },
-  { id: 'ee', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.ee', nameKey: 'cosmetic.nationalFlag.ee.name', country: 'ee' },
-  { id: 'lv', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.lv', nameKey: 'cosmetic.nationalFlag.lv.name', country: 'lv' },
-  { id: 'lt', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.lt', nameKey: 'cosmetic.nationalFlag.lt.name', country: 'lt' },
-  { id: 'ua', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.ua', nameKey: 'cosmetic.nationalFlag.ua.name', country: 'ua' },
-  { id: 'ro', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.ro', nameKey: 'cosmetic.nationalFlag.ro.name', country: 'ro' },
-  { id: 'bg', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.bg', nameKey: 'cosmetic.nationalFlag.bg.name', country: 'bg' },
-  { id: 'tr', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.tr', nameKey: 'cosmetic.nationalFlag.tr.name', country: 'tr' },
-  { id: 'jp', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.jp', nameKey: 'cosmetic.nationalFlag.jp.name', country: 'jp' },
-  { id: 'kr', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.kr', nameKey: 'cosmetic.nationalFlag.kr.name', country: 'kr' },
-  { id: 'in', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.in', nameKey: 'cosmetic.nationalFlag.in.name', country: 'in' },
-  { id: 'th', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.th', nameKey: 'cosmetic.nationalFlag.th.name', country: 'th' },
-  { id: 'vn', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.vn', nameKey: 'cosmetic.nationalFlag.vn.name', country: 'vn' },
-  { id: 'id', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.id', nameKey: 'cosmetic.nationalFlag.id.name', country: 'id' },
-  { id: 'au', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.au', nameKey: 'cosmetic.nationalFlag.au.name', country: 'au' },
-  { id: 'nz', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.nz', nameKey: 'cosmetic.nationalFlag.nz.name', country: 'nz' },
-  { id: 'br', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.br', nameKey: 'cosmetic.nationalFlag.br.name', country: 'br' },
-  { id: 'ar', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.ar', nameKey: 'cosmetic.nationalFlag.ar.name', country: 'ar' },
-  { id: 'cl', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.cl', nameKey: 'cosmetic.nationalFlag.cl.name', country: 'cl' },
-  { id: 'co', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.co', nameKey: 'cosmetic.nationalFlag.co.name', country: 'co' },
-  { id: 'za', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.za', nameKey: 'cosmetic.nationalFlag.za.name', country: 'za' },
-  { id: 'ng', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.ng', nameKey: 'cosmetic.nationalFlag.ng.name', country: 'ng' },
-  { id: 'gh', collection: 'nationalFlag', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.gh', nameKey: 'cosmetic.nationalFlag.gh.name', country: 'gh' },
-  { id: 'jm', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.nationalFlag.jm', nameKey: 'cosmetic.nationalFlag.jm.name', country: 'jm' },
-  // Base skins: at least one per age (a restyle of that age's base; same size and mounts)
-  { id: 'frost_cave', collection: 'baseSkin', rarity: 'rare', source: { kind: 'crate' }, art: 'cosmetic.baseSkin.frost_cave', nameKey: 'cosmetic.baseSkin.frost_cave.name', age: 'stone' },
-  { id: 'mossy_den', collection: 'baseSkin', rarity: 'rare', source: { kind: 'road', trophies: 700 }, art: 'cosmetic.baseSkin.mossy_den', nameKey: 'cosmetic.baseSkin.mossy_den.name', age: 'stone' },
-  { id: 'gilded_ziggurat', collection: 'baseSkin', rarity: 'epic', source: { kind: 'crate' }, art: 'cosmetic.baseSkin.gilded_ziggurat', nameKey: 'cosmetic.baseSkin.gilded_ziggurat.name', age: 'bronze' },
-  { id: 'rose_keep', collection: 'baseSkin', rarity: 'rare', source: { kind: 'crate' }, art: 'cosmetic.baseSkin.rose_keep', nameKey: 'cosmetic.baseSkin.rose_keep.name', age: 'medieval' },
-  { id: 'snowy_keep', collection: 'baseSkin', rarity: 'epic', source: { kind: 'crate' }, art: 'cosmetic.baseSkin.snowy_keep', nameKey: 'cosmetic.baseSkin.snowy_keep.name', age: 'medieval' },
-  { id: 'coral_fort', collection: 'baseSkin', rarity: 'rare', source: { kind: 'crate' }, art: 'cosmetic.baseSkin.coral_fort', nameKey: 'cosmetic.baseSkin.coral_fort.name', age: 'gunpowder' },
-  { id: 'copper_foundry', collection: 'baseSkin', rarity: 'rare', source: { kind: 'road', trophies: 1800 }, art: 'cosmetic.baseSkin.copper_foundry', nameKey: 'cosmetic.baseSkin.copper_foundry.name', age: 'industrial' },
-  { id: 'desert_bunker', collection: 'baseSkin', rarity: 'rare', source: { kind: 'crate' }, art: 'cosmetic.baseSkin.desert_bunker', nameKey: 'cosmetic.baseSkin.desert_bunker.name', age: 'modern' },
-  { id: 'midnight_neon', collection: 'baseSkin', rarity: 'epic', source: { kind: 'crate' }, art: 'cosmetic.baseSkin.midnight_neon', nameKey: 'cosmetic.baseSkin.midnight_neon.name', age: 'future' },
-  { id: 'nebula_ark', collection: 'baseSkin', rarity: 'legendary', source: { kind: 'crate' }, art: 'cosmetic.baseSkin.nebula_ark', nameKey: 'cosmetic.baseSkin.nebula_ark.name', age: 'cosmic' },
+  // The Flag Atlas's region rewards (base flags, earned only; PLAN 2d, Track D)
+  ...flagRewardItems,
+  // National flags (PLAN 2d): bought with Dust, never in a pool; their rows, regions and the Atlas's
+  // rewards live in `nationalFlags.ts` (Track D)
+  ...nationalFlagItems,
+  // Base skins (PLAN 2c): full models of one age's base; their rows live in `baseSkins.ts` (Track B)
+  ...baseSkinItems,
   // Decorations: statues, banners, braziers, trophies and plants for the fixed base anchors; 2 starters
   { id: 'stone_idol', collection: 'decoration', rarity: 'common', source: { kind: 'capsule' }, art: 'cosmetic.decoration.stone_idol', nameKey: 'cosmetic.decoration.stone_idol.name', kind: 'statue' },
   { id: 'lion_statue', collection: 'decoration', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.decoration.lion_statue', nameKey: 'cosmetic.decoration.lion_statue.name', kind: 'statue' },
@@ -197,4 +151,7 @@ export const collectionItems: CosmeticItemDef[] = [
   { id: 'ember_sky', collection: 'backdrop', rarity: 'epic', source: { kind: 'road', trophies: 2100 }, art: 'cosmetic.backdrop.ember_sky', nameKey: 'cosmetic.backdrop.ember_sky.name' },
   { id: 'northern_lights', collection: 'backdrop', rarity: 'legendary', source: { kind: 'crate' }, art: 'cosmetic.backdrop.northern_lights', nameKey: 'cosmetic.backdrop.northern_lights.name' },
   { id: 'eclipse', collection: 'backdrop', rarity: 'legendary', source: { kind: 'road', trophies: 3500 }, art: 'cosmetic.backdrop.eclipse', nameKey: 'cosmetic.backdrop.eclipse.name' },
+  // Scenes (PLAN 2b): the scenery of one age, equipped per age (the classic scene of each age is free and
+  // not an item); their rows live in `scenes.ts` (Track A)
+  ...sceneItems,
 ];

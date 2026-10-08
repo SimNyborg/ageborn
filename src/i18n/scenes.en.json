@@ -1,0 +1,30 @@
+{
+  "cosmetic": {
+    "sceneClassic": {
+      "stone": {
+        "name": "Smoke Mountain"
+      },
+      "bronze": {
+        "name": "Hill Temples"
+      },
+      "medieval": {
+        "name": "Castle Hills"
+      },
+      "gunpowder": {
+        "name": "Star Fort Coast"
+      },
+      "industrial": {
+        "name": "Iron Valley"
+      },
+      "modern": {
+        "name": "City Skyline"
+      },
+      "future": {
+        "name": "Spire City"
+      },
+      "cosmic": {
+        "name": "Crystal Moon Base"
+      }
+    }
+  }
+}

@@ -7,6 +7,7 @@
  * The dev page and tests use `createPreviewServices` (fixtures), which fakes the effects locally.
  */
 import type { AgeId, AvatarSlot, AvatarTint, CardId, FormatId, OpponentSpec, PlanIssue, ReplayDoc, SaveDoc, Settings, SkinId, WarPathDifficulty } from '@/contracts';
+import type { FlagRegion } from '@/content/types';
 import type { DailyDifficulty, MatchRequest } from '../router';
 
 export type WarPlan = SaveDoc['warPlans'][number];
@@ -28,12 +29,39 @@ export interface ProfileLookPatch {
  * owned items equip; the national flag is only ever the player's own pick.
  */
 export type CosmeticEquipPatch =
+  /** `backdrop` is the Sky (one for every age); null is each scene's own daylight. */
   | { slot: 'baseFlag' | 'nationalFlag' | 'backdrop'; key: string | null }
+  /** A cosmetic base skin on its own age; it replaces the troop-system skin of that base (one per age). */
   | { slot: 'baseSkin'; age: AgeId; key: string | null }
+  /** A scene (`scene.<id>`) on its own age (save v14); null returns the age to its classic scene. */
+  | { slot: 'scene'; age: AgeId; key: string | null }
   | { slot: 'decoration'; anchor: number; key: string | null }
   | { slot: 'emotes' | 'quotes'; keys: string[] }
   /** The avatar creator's look ("Make your General"): starter parts and owned wearables only. */
   | { slot: 'avatar'; look: Partial<Record<AvatarSlot, string>>; tints?: Partial<Record<AvatarTint, number>> };
+
+/** One Flag Atlas browsing group (PLAN 2d; mirrors meta's `FlagRegionProgress`). */
+export interface FlagRegionInfo {
+  region: FlagRegion;
+  owned: number;
+  total: number;
+  /** The region's completion reward (`baseFlag.<id>`), or null (the Other flags have none, or not released yet). */
+  reward: string | null;
+  rewardOwned: boolean;
+}
+
+/** The Flag Atlas as the screens show it (PLAN 2d; mirrors meta's `FlagAtlasProgress`). */
+export interface FlagAtlasInfo {
+  /** Owned flags of the six regions and their number (the "37/195"); the Other flags do not count. */
+  owned: number;
+  total: number;
+  /** Every browsing group in chip order, the Other flags last. */
+  regions: FlagRegionInfo[];
+  /** What the next flag costs in Dust (0 for a save's first flag while the content's `firstFlagFree` is on). */
+  price: number;
+  /** The equipped national flag (`nationalFlag.<id>`), or null. */
+  equipped: string | null;
+}
 
 export interface UiServices {
   // ---- queries -------------------------------------------------------------------------------
@@ -113,6 +141,20 @@ export interface UiServices {
   equipCosmetic(e: CosmeticEquipPatch): ActionResult;
   /** Crafts a Time Capsule or Wardrobe Crate collection item with Dust (`meta.craftCosmetic`). */
   craftCosmetic(key: string): ActionResult;
+  /**
+   * Buys a national flag (`nationalFlag.<id>`) at its Dust price and grants what the purchase completes
+   * (the Flag Atlas's region and total rewards; PLAN 2d, `meta.buyNationalFlag`). Cannot be undone: the
+   * screen's two-tap confirm (U14) comes first. Reasons: unknownItem, wrongCollection, unreleased,
+   * owned, pending, notEnoughDust.
+   */
+  buyNationalFlag(key: string): ActionResult;
+  /** The Flag Atlas's counts, rewards, the next flag's price and the equipped flag (PLAN 2d). */
+  flagAtlasProgress(): FlagAtlasInfo;
+  /**
+   * The released national flags matching a search, as keys in display order: a prefix of the name or
+   * of a word in it (accent-insensitive), an alias ("UK", "Holland") or the ISO code; all for "".
+   */
+  searchFlags(query: string): string[];
 
   // ---- War Path --------------------------------------------------------------------------------
   /** Remembers the War Path difficulty (A18.7, default Normal; `meta.setWarPathDifficulty`). */

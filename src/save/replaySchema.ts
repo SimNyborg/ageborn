@@ -77,6 +77,8 @@ export const SideConfigSchema = v.object({
       baseSkins: v.optional(partialPerAge(v.string())),
       decorations: v.optional(v.array(v.nullable(v.string()))),
       backdrop: v.optional(v.nullable(v.string())),
+      // Save v14 (PLAN 2b): the scene per age; replays recorded before show the classic scenes
+      scenes: v.optional(partialPerAge(v.string())),
     }),
   ),
   // The side shown as an online player (owner decision 2026-10-07; presentation only): the replay

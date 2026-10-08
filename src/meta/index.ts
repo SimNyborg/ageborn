@@ -13,7 +13,7 @@
  * take no content (`openCapsule`, `openWardrobe`, `tickTimers`) use the bound content.
  */
 import type { AgeId, CardId, Clock, CompiledContent, FormatId, MatchResultInput, Meta, OpponentSpec, PendingCrate, Result, RewardStep, SaveDoc, SideLook, SkinId, WarPathDifficulty } from '@/contracts';
-import { content as gameContent, type Content, type ModifierId } from '@/content';
+import { content as gameContent, type Content, type CosmeticItemDef, type ModifierId } from '@/content';
 import { grantCapsuleAt, grantCrateAt, openCapsuleWith, openCrate } from './capsules';
 import { conquestBoard, type ConquestEntry } from './conquest';
 import { setWarPathDifficulty, warPathNodes, type WarPathNode } from './warPath';
@@ -28,6 +28,7 @@ import {
   type CosmeticEquip,
 } from './cosmetics';
 import { craft } from './dust';
+import { buyNationalFlag, flagAtlasProgress, searchFlags, type FlagAtlasProgress, type FlagNames } from './flagAtlas';
 import { claimDaily, dailyModifierAt } from './daily';
 import { pickOpponentAt } from './matchmaking';
 import { newSaveAt } from './newSave';
@@ -88,8 +89,17 @@ export interface MetaRules extends Meta {
   markSeen(s: SaveDoc, card: CardId): SaveDoc;
   /** Equips owned cosmetic collection items (A18.9.4). */
   equipCosmetic(s: SaveDoc, e: CosmeticEquip, c: CompiledContent): Result<SaveDoc>;
-  /** Crafts a capsule or crate collection item with Dust (A18.9.4). */
+  /** Crafts a capsule or crate collection item with Dust (A18.9.4); a national flag is bought this way too. */
   craftCosmetic(s: SaveDoc, key: string, c: CompiledContent): Result<SaveDoc>;
+  /**
+   * Buys a national flag at its Dust price and grants what the purchase completes (the Flag Atlas's
+   * region and total rewards, PLAN 2d; `flagAtlas.ts`, Track D).
+   */
+  buyNationalFlag(s: SaveDoc, key: string, c: CompiledContent): Result<SaveDoc>;
+  /** The Flag Atlas's counts, rewards, the next flag's price and the equipped flag (PLAN 2d). */
+  flagAtlas(s: SaveDoc, c: CompiledContent): FlagAtlasProgress;
+  /** The released national flags matching a search (names, aliases, ISO codes; PLAN 2d). */
+  searchFlags(c: CompiledContent, i18n: FlagNames, query: string): CosmeticItemDef[];
   /** Grants the road, feat, arena and Codex Level items the save has earned. */
   syncCosmetics(s: SaveDoc, c: CompiledContent): SaveDoc;
   /** "12/40 found" per collection. */
@@ -148,6 +158,9 @@ export function createMeta(bound: CompiledContent = gameContent): MetaRules {
     equipSkin: (s, target, skin, c) => equipSkin(s, target, skin, tables(c)),
     equipCosmetic: (s, e, c) => equipCosmetic(s, tables(c), e),
     craftCosmetic: (s, key, c) => craftCosmetic(s, tables(c), key),
+    buyNationalFlag: (s, key, c) => buyNationalFlag(s, tables(c), key),
+    flagAtlas: (s, c) => flagAtlasProgress(s, tables(c)),
+    searchFlags: (c, i18n, query) => searchFlags(tables(c), i18n, query),
     syncCosmetics: (s, c) => syncEarnedCosmetics(s, tables(c)).save,
     collectionProgress: (s, c) => collectionProgress(s, tables(c)),
     cosmeticOdds: (s, c) => cosmeticOdds(s, tables(c)),
@@ -170,8 +183,23 @@ export type { ConquestEntry } from './conquest';
 export type { WarPathNode, WarPathNodeState } from './warPath';
 export { BOSS_DISCLOSURE_KEY } from './matchmaking';
 export type { CosmeticEquip, CosmeticPool, ExclusiveSetOdds, PoolOdds } from './cosmetics';
+export type { FlagAtlasProgress, FlagNames, FlagRegionProgress } from './flagAtlas';
+export { buyNationalFlag, flagAtlasProgress, searchFlags } from './flagAtlas';
 export { avatarPart, ownsAvatarPart, setAvatarLook, wearablesOf } from './avatar';
-export { COSMETIC_COLLECTIONS, cosmeticCraftPrice, cosmeticItem, cosmeticKey, exclusiveSets, firstOfTierFlag, ownsCosmetic, tierExclusiveItems } from './cosmetics';
+export {
+  COSMETIC_COLLECTIONS,
+  cosmeticCraftPrice,
+  cosmeticItem,
+  cosmeticKey,
+  cosmeticReleased,
+  exclusiveSets,
+  firstOfTierFlag,
+  flagRegionComplete,
+  nationalFlagPrice,
+  ownedNationalFlags,
+  ownsCosmetic,
+  tierExclusiveItems,
+} from './cosmetics';
 export type { OpponentOptions } from './matchmaking';
 export { commanderId, commanderInfo, ECHO_DISCLOSURE_KEY, ladderGenerals, newPlayerMistakeBonusBp, newPlayerMistakesApply, ROOKIE_DISCLOSURE_KEY } from './matchmaking';
 export { asOnlineOpponent, onlinePlayerFor, onlineTag, onlineTrophyWindow, type OnlineWindow } from './onlinePlayer';

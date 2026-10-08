@@ -19,6 +19,7 @@
  */
 import { computed, signal, type ReadonlySignal } from '@preact/signals';
 import type { AgeId, CardId, FormatId, MatchResultInput, OpponentSpec, RewardStep, SkirmishOptions, WarPathDifficulty } from '@/contracts';
+import type { FlagRegion } from '@/content/types';
 
 /**
  * How a match is started (A9 Mode select, A9.1 Daily, A6.10 Conquest, A8 onboarding). The onboarding
@@ -144,6 +145,12 @@ export interface RouteParams {
   capsules: NoParams;
   /** The Progress tab (ui-plan 4.1b, S13). */
   progress: NoParams;
+  /**
+   * The Flag Atlas (PLAN 2d, Track D): every national flag, bought with Dust, by region. Reached from
+   * Customize › Flags and the Profile's flag. `flag` opens that flag's detail (`nationalFlag.<id>`);
+   * `region` preselects a region chip.
+   */
+  flagAtlas: { flag?: string; region?: FlagRegion };
 }
 
 export type ScreenId = keyof RouteParams;
@@ -186,6 +193,8 @@ export const SCREENS: Readonly<Record<ScreenId, ScreenInfo>> = {
   progress: { a9: 21, owner: 'WP9', overlay: false },
   /** Owner decision 2026-09-30: the campaign map left Home for its own sub-screen (S2c). */
   warPath: { a9: 22, owner: 'WP9', overlay: false },
+  /** PLAN 2d (owner request 2026-10-08): the Flag Atlas, loaded lazily (`ScreenHost`). */
+  flagAtlas: { a9: 23, owner: 'WP9', overlay: false },
 };
 
 /** Screen ids rendered by this package (WP9). */
