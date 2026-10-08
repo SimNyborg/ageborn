@@ -6,7 +6,7 @@
  */
 import './cosmeticArt.css';
 import type { AgeId, CardId, Side } from '@/contracts';
-import { createContext } from 'preact';
+import { createContext, type ComponentChildren } from 'preact';
 import { useContext, useEffect, useState } from 'preact/hooks';
 import { avatar as avatarTables } from '@/content/raw/avatar';
 import { AvatarLookView, type ResolvedLook } from './Avatar';
@@ -49,6 +49,8 @@ export interface CosmeticImageOptions {
   hd?: boolean;
   /** National flags: a grid tile or the big detail view. */
   size?: 'tile' | 'big';
+  /** Base flags: drawn on their pole with the rarity's finial (collection tiles, PLAN 2a). */
+  pole?: boolean;
 }
 
 export type CosmeticImageFn = (key: string, o?: CosmeticImageOptions) => string | null;
@@ -78,11 +80,11 @@ const ITEM_LOOK: ResolvedLook = {
   tints: { skin: 1, hair: 2, eyes: 0, cloth: 6 },
 };
 
-/** An item's picture, or a soft placeholder when no art provider is present. */
-export function CosmeticImage(p: { item: string; class?: string; team?: number; animate?: boolean; testid?: string }) {
+/** An item's picture, or a soft placeholder when no art provider is present. `pole`: a base flag on its pole. */
+export function CosmeticImage(p: { item: string; class?: string; team?: number; animate?: boolean; testid?: string; pole?: boolean }) {
   const fn = useCosmeticImage();
   if (p.item.startsWith('avatar.')) return <AvatarItemArt item={p.item} {...(p.class ? { class: p.class } : {})} {...(p.testid ? { testid: p.testid } : {})} />;
-  const url = fn ? fn(p.item, { ...(p.team !== undefined ? { team: p.team } : {}), ...(p.animate !== undefined ? { animate: p.animate } : {}) }) : null;
+  const url = fn ? fn(p.item, { ...(p.team !== undefined ? { team: p.team } : {}), ...(p.animate !== undefined ? { animate: p.animate } : {}), ...(p.pole ? { pole: true } : {}) }) : null;
   if (!url) return <span class={`cos-img cos-img--empty ${p.class ?? ''}`} aria-hidden="true" data-testid={p.testid} />;
   return <img class={`cos-img ${p.class ?? ''}`} src={url} alt="" aria-hidden="true" draggable={false} data-testid={p.testid} />;
 }
@@ -176,6 +178,49 @@ export function BackdropLook(p: { skin: string | null; age: AgeId; animate?: boo
     <span class={`cos-bd${still ? '' : ' is-pending'}`} data-testid={p.testid} data-age={p.age} data-skin={p.skin ?? ''} aria-hidden="true">
       {still ? <img class="cos-bd__img" src={still} alt="" draggable={false} key={`${p.skin ?? ''}|${p.age}`} /> : <span class="cos-bd__img cos-bd__img--empty" />}
       {fx ? <img class="cos-bd__fx" src={fx} alt="" draggable={false} /> : null}
+    </span>
+  );
+}
+
+/** Where a quote bubble's tail points (toward its speaker). */
+export type BubbleTail = 'bl' | 'br' | 'tl' | 'tr';
+
+/**
+ * The battle speech bubble (PLAN 2a "Quotes"; the same one in the HUD, the Customize tiles and the wheel
+ * preview): a cream bubble with the line, its tail toward the speaker's General head, and the quote's
+ * rarity on its edge: Common plain, Rare a teal edge with corner rivets, Epic a violet edge with laurel
+ * sprigs, Legendary a gold scroll edge with a glint (and a soft gold aura in battle, `aura`). `pop`
+ * replays the 240 ms pop (scale 0 → 1.06 → 1); reduce motion fades instead.
+ */
+export function QuoteBubble(p: {
+  text: string;
+  rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+  head?: ComponentChildren;
+  tail?: BubbleTail;
+  aura?: boolean;
+  pop?: boolean;
+  small?: boolean;
+  class?: string;
+  testid?: string;
+}) {
+  const rarity = p.rarity ?? 'common';
+  const tail = p.tail ?? 'bl';
+  return (
+    <span
+      class={`cos-qb cos-qb--${rarity} cos-qb--tail-${tail}${p.head ? ' has-head' : ''}${p.aura ? ' is-aura' : ''}${p.pop ? ' is-pop' : ''}${p.small ? ' cos-qb--sm' : ''} ${p.class ?? ''}`}
+      data-testid={p.testid}
+      data-rarity={rarity}
+    >
+      {p.head ? (
+        <span class="cos-qb__head" aria-hidden="true">
+          {p.head}
+        </span>
+      ) : null}
+      <span class="cos-qb__body">
+        <span class="cos-qb__text">{p.text}</span>
+        {rarity !== 'common' ? <span class="cos-qb__orn" aria-hidden="true" /> : null}
+        {rarity === 'legendary' ? <span class="cos-qb__glint" aria-hidden="true" /> : null}
+      </span>
     </span>
   );
 }

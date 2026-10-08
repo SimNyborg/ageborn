@@ -35,7 +35,7 @@ interface SheetFrame {
 interface SheetJson {
   frames: Record<string, SheetFrame>;
   animations: Record<string, string[]>;
-  meta: { image: string; ageborn?: { kind?: 'turret' | 'base'; flags?: { clip: string; z: 'front' | 'back' }[] } };
+  meta: { image: string; ageborn?: { kind?: 'turret' | 'base'; age?: AgeId; flags?: { clip: string; z: 'front' | 'back' }[] } };
 }
 
 interface LoadedSheet {
@@ -101,19 +101,27 @@ const css = (c: number): string => `#${c.toString(16).padStart(6, '0')}`;
 export interface WorldPortraitOptions {
   /** Absolute or base-relative URL of the sheet JSON. */
   url: string;
+  /** The age plate (null: the sheet's own age, as for a base skin model's sheet). */
   age: AgeId | null;
   size: number;
   foil: Foil;
   teamColor: number;
   plate: boolean;
+  /**
+   * A base skin still on its tint (A18.9.4; PLAN 2c until its model ships): multiplied into the base's
+   * own frames, never into the team layer, as the lane tints the body.
+   */
+  bodyTint?: number;
 }
 
 export async function renderWorldPortrait(o: WorldPortraitOptions): Promise<string | null> {
   if (typeof document === 'undefined') return null;
   const sheet = await loadWorldSheet(o.url);
   if (!sheet) return null;
+  const age = o.age ?? sheet.json.meta.ageborn?.age ?? null;
   const names = worldPortraitFrames(sheet.json);
-  const frames = names.map((n) => ({ base: sheet.json.frames[n], team: sheet.json.frames[`${n}_team`] })).filter((f): f is { base: SheetFrame; team: SheetFrame | undefined } => f.base !== undefined);
+  const body = sheet.json.animations['body']?.[0];
+  const frames = names.map((n) => ({ base: sheet.json.frames[n], team: sheet.json.frames[`${n}_team`], body: n === body })).filter((f): f is { base: SheetFrame; team: SheetFrame | undefined; body: boolean } => f.base !== undefined);
   if (frames.length === 0) return null;
   // union of the drawn frames in the shared source space
   let x0 = Infinity;
@@ -133,7 +141,7 @@ export async function renderWorldPortrait(o: WorldPortraitOptions): Promise<stri
   c.height = size;
   const ctx = c.getContext('2d');
   if (!ctx) return null;
-  if (o.plate) drawPortraitPlate(ctx, o.age, size);
+  if (o.plate) drawPortraitPlate(ctx, age, size);
   const inner = size * (o.plate ? (o.foil === 'none' ? 0.8 : 0.7) : 0.96);
   const k = Math.min(inner / (x1 - x0), inner / (y1 - y0));
   const ox = size / 2 - ((x0 + x1) / 2) * k;
@@ -159,21 +167,25 @@ export async function renderWorldPortrait(o: WorldPortraitOptions): Promise<stri
   tint.width = size;
   tint.height = size;
   const tc = tint.getContext('2d');
+  // frame × colour (multiply), clipped back to the frame's own alpha, drawn onto the portrait
+  const multiplied = (f: SheetFrame, color: number): void => {
+    if (!tc) return;
+    tc.globalCompositeOperation = 'source-over';
+    tc.clearRect(0, 0, size, size);
+    tc.imageSmoothingQuality = 'high';
+    blit(tc, f);
+    tc.globalCompositeOperation = 'multiply';
+    tc.fillStyle = css(color);
+    tc.fillRect(0, 0, size, size);
+    tc.globalCompositeOperation = 'destination-in';
+    blit(tc, f);
+    ctx.drawImage(tint, 0, 0);
+  };
   for (const f of frames) {
-    if (f.team && tc) {
-      // grey team layer x team colour (multiply), clipped back to the layer's own alpha
-      tc.globalCompositeOperation = 'source-over';
-      tc.clearRect(0, 0, size, size);
-      tc.imageSmoothingQuality = 'high';
-      blit(tc, f.team);
-      tc.globalCompositeOperation = 'multiply';
-      tc.fillStyle = css(o.teamColor);
-      tc.fillRect(0, 0, size, size);
-      tc.globalCompositeOperation = 'destination-in';
-      blit(tc, f.team);
-      ctx.drawImage(tint, 0, 0);
-    }
-    blit(ctx, f.base);
+    // the grey team layer in the side's colour, under the base frame
+    if (f.team) multiplied(f.team, o.teamColor);
+    if (o.bodyTint !== undefined && f.body && tc) multiplied(f.base, o.bodyTint);
+    else blit(ctx, f.base);
   }
   if (o.plate) foilFrame(ctx, o.foil, size);
   return c.toDataURL('image/png');

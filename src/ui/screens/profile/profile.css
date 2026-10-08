@@ -397,3 +397,135 @@
 .prof-goal:has(.prof-goal__reward) {
   grid-template-columns: 28px minmax(0, 1fr) minmax(64px, 120px) 40px 68px;
 }
+
+/* The flag the player flies (PLAN 2d, Track D): a small waving cloth on a pole at the card's corner,
+   the Flag Atlas count under it; a tap opens the Atlas. The cloth keeps the designs' 4:3, with the
+   cloth finish of the Atlas (fold bands, sheen, an outline in the flag's own dark). */
+.prof-card {
+  position: relative;
+}
+.prof-flag {
+  position: absolute;
+  z-index: 1;
+  right: 12px;
+  bottom: 10px;
+  display: grid;
+  grid-template-columns: 4px 48px;
+  grid-template-rows: 36px auto;
+  column-gap: 0;
+  row-gap: 3px;
+  justify-items: start;
+  min-width: 56px;
+  min-height: 56px;
+  padding: 4px 4px 2px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: var(--ui-text);
+  cursor: pointer;
+  transition: transform var(--ui-dur-press) var(--ui-ease-standard);
+}
+.prof-flag:active {
+  transform: scale(0.95);
+}
+.prof-flag__pole {
+  grid-row: 1 / span 2;
+  grid-column: 1;
+  width: 4px;
+  height: 52px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #8a6a45, #6b4a2b);
+  box-shadow: 0 0 0 1px #2b1d10;
+  position: relative;
+}
+.prof-flag__pole::before {
+  content: '';
+  position: absolute;
+  left: -3px;
+  top: -6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff3d6 0 20%, #f2b52c 22%);
+  box-shadow: 0 0 0 1px #2b1d10;
+}
+.prof-flag__cloth {
+  grid-row: 1;
+  grid-column: 2;
+  position: relative;
+  display: block;
+  width: 48px;
+  height: 36px;
+  border-radius: 2px 4px 4px 2px;
+  overflow: hidden;
+  transform-origin: 0 50%;
+  animation: prof-flag-wave 2.6s ease-in-out infinite;
+  filter: drop-shadow(2px 3px 0 rgba(0, 0, 0, 0.3));
+}
+.prof-flag__cloth img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.prof-flag__cloth::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0 28%, transparent 28%),
+    linear-gradient(90deg, transparent 0 30%, rgba(0, 0, 0, 0.1) 30% 40%, transparent 40% 48%, rgba(255, 255, 255, 0.09) 48% 54%, transparent 54% 66%, rgba(0, 0, 0, 0.12) 66% 79%, transparent 79%);
+  box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, 0.62);
+}
+.prof-flag.is-empty .prof-flag__cloth {
+  border: 2px dashed rgba(244, 239, 228, 0.55);
+  background: rgba(244, 239, 228, 0.06);
+  animation: none;
+  filter: none;
+  display: grid;
+  place-items: center;
+}
+.prof-flag.is-empty .prof-flag__cloth::after {
+  display: none;
+}
+.prof-flag__plus {
+  color: var(--ui-text-2);
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+}
+.prof-flag__count {
+  grid-row: 2;
+  grid-column: 2;
+  justify-self: center;
+  padding: 0 6px;
+  border-radius: var(--ui-r-pill);
+  background: rgba(63, 143, 196, 0.2);
+  border: 1px solid rgba(124, 179, 215, 0.4);
+  font-size: 11px;
+  line-height: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+@keyframes prof-flag-wave {
+  0%,
+  100% {
+    transform: perspective(160px) rotateY(0deg) skewY(0deg);
+  }
+  50% {
+    transform: perspective(160px) rotateY(-14deg) skewY(-2deg) scaleX(0.97);
+  }
+}
+.prof-flag.is-still .prof-flag__cloth {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .prof-flag__cloth {
+    animation: none;
+  }
+}
+@media (hover: hover) {
+  .prof-flag:hover .prof-flag__count {
+    background: rgba(63, 143, 196, 0.35);
+  }
+}

@@ -1,15 +1,30 @@
 /**
- * National flags in the visuals (PLAN 2d; `cosmetics/nationalFlags.ts`). Owned by Track D.
+ * National flags in the visuals (PLAN 2d, 2g Track D; `cosmetics/nationalFlags.ts`). Owned by Track D.
  *
- * C0 moved the 50 hand-drawn designs here unchanged; these checks are the ones they had (review
- * 2026-09-29), plus the hooks Track D fills in with the vendored flag-icons designs.
+ * The vendored flag-icons designs (`public/art/flags/`, written by `tools/flags/vendor.ts`; the files
+ * themselves are checked in `tools/flags/vendor.test.ts` and pixel by pixel in `tests/e2e/flagAtlas.spec.ts`),
+ * the picture routes, the lane cloth hook, the region rewards, and the hand-drawn fallback designs.
  */
 import { describe, expect, it } from 'vitest';
 import { content } from '@/content';
+import atlas from '../../../public/art/flags/atlas.json';
 import { cosmeticSvg, hasCosmeticArt } from '../cosmetics/art';
-import { hasNationalFlagArt, NATIONAL_FLAGS, nationalFlagSvg, nationalFlagTexture, nationalFlagUrl, REGION_PENNANTS } from '../cosmetics/nationalFlags';
+import {
+  flagFileName,
+  hasNationalFlagArt,
+  NATIONAL_FLAGS,
+  nationalFlagSvg,
+  nationalFlagSvgUrl,
+  nationalFlagTexture,
+  nationalFlagUrl,
+  REGION_PENNANT_TIER,
+  REGION_PENNANTS,
+  VENDORED_FLAGS,
+} from '../cosmetics/nationalFlags';
 
-const flags = content.cosmetics.collections.items.filter((x) => x.collection === 'nationalFlag' && x.released !== false);
+const items = content.cosmetics.collections.items;
+const flags = items.filter((x) => x.collection === 'nationalFlag' && x.released !== false);
+const svgs = import.meta.glob<string>('/public/art/flags/svg/*.svg', { query: '?raw', import: 'default', eager: true });
 
 /** The centre of a path shape's points (polygons only: M/L pairs). */
 function centreOf(d: string): [number, number] {
@@ -24,27 +39,74 @@ function centreOf(d: string): [number, number] {
   return [x / k, y / k];
 }
 
-describe('national flags', () => {
-  it('draws every released national flag of the content', () => {
-    for (const x of flags) expect(hasNationalFlagArt(x.id) && hasCosmeticArt('nationalFlag', x.id), x.id).toBe(true);
+describe('the vendored national flags', () => {
+  it('cover exactly the national flags of the content: one SVG and one atlas cell each', () => {
+    expect([...VENDORED_FLAGS].sort()).toEqual(flags.map((x) => x.id).sort());
+    const cells = atlas.cells as Record<string, number>;
+    for (const x of flags) {
+      expect(hasNationalFlagArt(x.id) && hasCosmeticArt('nationalFlag', x.id), x.id).toBe(true);
+      const file = flagFileName(x.id);
+      expect(file, x.id).toBe(x.country);
+      expect(svgs[`/public/art/flags/svg/${file}.svg`], x.id).toMatch(/^<svg [^>]*viewBox="0 0 640 480"/);
+      expect(cells[file], x.id).toBeGreaterThanOrEqual(0);
+      expect(cells[file]!, x.id).toBeLessThan(atlas.cols * atlas.rows);
+    }
+    expect(new Set(Object.values(atlas.cells)).size).toBe(flags.length);
+    expect(Object.keys(svgs)).toHaveLength(flags.length);
   });
 
-  it('draws the Danish flag with a white Nordic cross on red', () => {
-    const svg = cosmeticSvg('nationalFlag.dk')!;
-    expect(svg).toContain('#c8102e');
-    expect(svg).toContain('#ffffff');
-    expect(nationalFlagSvg('dk')).not.toBeNull();
-    expect(Object.keys(NATIONAL_FLAGS).length).toBeGreaterThanOrEqual(40);
+  it('routes the big view to the SVG and a tile to the SVG until the atlas is in (no DOM here)', () => {
+    expect(nationalFlagUrl('dk', 'big')).toBe('/art/flags/svg/dk.svg');
+    expect(nationalFlagUrl('gb_eng', 'big')).toBe('/art/flags/svg/gb-eng.svg');
+    expect(nationalFlagUrl('gb_wls', 'tile')).toBe('/art/flags/svg/gb-wls.svg');
+    // without a DOM the atlas can never load, so even a grid that waits gets the SVG
+    expect(nationalFlagUrl('mx', 'tile', { cached: true })).toBe('/art/flags/svg/mx.svg');
+    expect(nationalFlagUrl('atlantis', 'big')).toBeNull();
+    expect(nationalFlagSvgUrl('atlantis')).toBeNull();
   });
 
-  it('has its hooks: no vendored picture or lane texture yet, and no region pennant yet', () => {
-    expect(nationalFlagUrl('dk', 'tile')).toBeNull();
+  it('has no lane cloth without a DOM (the dressing then keeps its own fallback)', () => {
     expect(nationalFlagTexture('dk')).toBeNull();
-    expect(Object.keys(REGION_PENNANTS)).toEqual([]);
+    expect(nationalFlagTexture('atlantis')).toBeNull();
   });
 });
 
-describe('national flags are drawn correctly (review 2026-09-29)', () => {
+describe('the Flag Atlas rewards (PLAN 2d)', () => {
+  const rewards = items.filter((x) => x.source.kind === 'flagRegion' || x.source.kind === 'flagsOwned');
+
+  it('every reward base flag has a design here, drawn by the router like a base flag on the team colour', () => {
+    expect(Object.keys(REGION_PENNANTS).sort()).toEqual(rewards.map((x) => x.id).sort());
+    for (const x of rewards) {
+      expect(hasCosmeticArt('baseFlag', x.id), x.id).toBe(true);
+      const blue = cosmeticSvg(`baseFlag.${x.id}`, { team: 0x2f7df6 })!;
+      const orange = cosmeticSvg(`baseFlag.${x.id}`, { team: 0xf28a1e })!;
+      expect(blue, x.id).toContain('<svg');
+      expect(blue.toLowerCase(), x.id).toContain('#2f7df6');
+      expect(orange.toLowerCase(), x.id).toContain('#f28a1e');
+      // gold edge and compass star on every reward
+      expect(blue.toLowerCase(), x.id).toContain('#ffcf3a');
+    }
+  });
+
+  it('their finish tier follows their rarity: Epic pennants, the Legendary World Compass', () => {
+    for (const x of rewards) expect(REGION_PENNANT_TIER[x.id], x.id).toBe(x.rarity);
+  });
+
+  it('each pennant shows a different continent', () => {
+    const pennants = rewards.filter((x) => x.source.kind === 'flagRegion').map((x) => JSON.stringify(REGION_PENNANTS[x.id]));
+    expect(new Set(pennants).size).toBe(6);
+  });
+});
+
+describe('the hand-drawn fallback designs (review 2026-09-29)', () => {
+  it('draws the Danish flag with a white Nordic cross on red', () => {
+    const svg = nationalFlagSvg('dk')!;
+    expect(svg).toContain('#c8102e');
+    expect(svg).toContain('#ffffff');
+    expect(cosmeticSvg('nationalFlag.dk')).not.toBeNull();
+    expect(Object.keys(NATIONAL_FLAGS).length).toBeGreaterThanOrEqual(40);
+  });
+
   it('Korea: geon upper left, gam upper right, ri lower left, gon lower right, bars across their diagonal', () => {
     const bars = NATIONAL_FLAGS.kr!.filter((sh) => 'fill' in sh && sh.fill === '#111111') as { d: string }[];
     const quad = (fx: (x: number) => boolean, fy: (y: number) => boolean) =>
@@ -80,12 +142,9 @@ describe('national flags are drawn correctly (review 2026-09-29)', () => {
     // the four diagonal arms (the upright and bar of the cross are rects)
     const arms = red.map((r) => centreOf(r.d)).filter(([x, y]) => Math.abs(x - 30) > 4 && Math.abs(y - 20) > 3);
     expect(arms).toHaveLength(4);
-    // facing out from the centre, each arm's red lies on its anticlockwise side (offset off the white diagonal)
     for (const [x, y] of arms) {
-      // the signed offset (y down) from the white diagonal the arm lies on
       const along = (x - 30) * (40 / 60);
       const off = x < 30 === y < 20 ? y - 20 - along : y - 20 + along;
-      // upper hoist below the white, lower fly above it; upper fly above, lower hoist below
       if (x < 30 && y < 20) expect(off).toBeGreaterThan(2);
       if (x > 30 && y > 20) expect(off).toBeLessThan(-2);
       if (x > 30 && y < 20) expect(off).toBeLessThan(-2);

@@ -53,6 +53,8 @@ interface Ctx {
   defs: string[];
   n: number;
   faceClip: string | null;
+  /** Id prefix after `§` (several markups in one SVG never share an id). */
+  p?: string;
 }
 
 function toneHex(t: Tone, look: ResolvedLook): string {
@@ -96,7 +98,7 @@ function lineColour(s: Shape, r: Ramp, ctx: Ctx): string {
 
 function gradFill(s: Shape, ctx: Ctx): string {
   const g = s.grad!;
-  const id = `§g${ctx.n++}`;
+  const id = `§${ctx.p ?? ''}g${ctx.n++}`;
   const stops = g.stops.map(([o, t, op]) => `<stop offset="${o}" stop-color="${toneHex(t, ctx.look)}"${op !== undefined ? ` stop-opacity="${op}"` : ''}/>`).join('');
   if (g.kind === 'radial') {
     ctx.defs.push(`<radialGradient id="${id}" cx="${g.cx ?? 0.5}" cy="${g.cy ?? 0.4}" r="${g.r ?? 0.7}">${stops}</radialGradient>`);
@@ -128,14 +130,15 @@ function shapeSvg(s: Shape, ctx: Ctx): string {
   }
   const sh = s.sh ?? 0;
   const hl = s.hl ?? 0;
-  if (sh === 0 && hl === 0) return `${out}<path d="${s.d}" fill="${fill}"${stroke}${op}${cls}/>`;
-  const id = `§c${ctx.n++}`;
+  // `data-part`, `data-hl`, `data-sh` and `data-outline` mark the cel structure for the tone test (PLAN 2g)
+  if (sh === 0 && hl === 0) return `${out}<path d="${s.d}" fill="${fill}"${stroke}${op}${cls} data-part=""/>`;
+  const id = `§${ctx.p ?? ''}c${ctx.n++}`;
   ctx.defs.push(`<clipPath id="${id}"><path d="${s.d}"/></clipPath>`);
   let inner = '';
-  if (hl > 0) inner += `<path d="${s.d}${movePath(s.d, hl * 0.5, hl)}" fill-rule="evenodd" fill="${r.hl}"/>`;
-  if (sh > 0) inner += `<path d="${s.d}${movePath(s.d, 0, -sh)}" fill-rule="evenodd" fill="${r.shadow}"/>`;
-  out += `<g${op}${cls}><path d="${s.d}" fill="${fill}"/><g clip-path="url(#${id})">${inner}</g>`;
-  if (ln > 0) out += `<path d="${s.d}" fill="none"${stroke}/>`;
+  if (hl > 0) inner += `<path d="${s.d}${movePath(s.d, hl * 0.5, hl)}" fill-rule="evenodd" fill="${r.hl}" data-hl=""/>`;
+  if (sh > 0) inner += `<path d="${s.d}${movePath(s.d, 0, -sh)}" fill-rule="evenodd" fill="${r.shadow}" data-sh=""/>`;
+  out += `<g${op}${cls} data-part=""><path d="${s.d}" fill="${fill}"/><g clip-path="url(#${id})">${inner}</g>`;
+  if (ln > 0) out += `<path d="${s.d}" fill="none"${stroke} data-outline=""/>`;
   return `${out}</g>`;
 }
 
@@ -175,6 +178,17 @@ export function shapesSvg(shapes: readonly Shape[], viewBox: string, look: Resol
   const ctx: Ctx = { look, low: detail === 'low', defs: [], n: 0, faceClip: null };
   const body = shapes.map((s) => shapeSvg(s, ctx)).join('');
   return `<svg class="av-svg" viewBox="${viewBox}" width="100%" height="100%" aria-hidden="true" focusable="false"><defs>${ctx.defs.join('')}</defs>${body}</svg>`;
+}
+
+/**
+ * Free shapes as SVG markup without the `<svg>` wrapper (the profile frames and banners compose groups
+ * of them): the defs (clip paths, gradients) and the body. Ids carry `§` plus `prefix`, so groups built
+ * with different prefixes can share one SVG; swap `§` for a unique string before use.
+ */
+export function shapesMarkup(shapes: readonly Shape[], prefix = '', look: ResolvedLook = PLAIN_LOOK, detail: 'low' | 'full' = 'full'): { defs: string; body: string } {
+  const ctx: Ctx = { look, low: detail === 'low', defs: [], n: 0, faceClip: null, p: prefix };
+  const body = shapes.map((s) => shapeSvg(s, ctx)).join('');
+  return { defs: ctx.defs.join(''), body };
 }
 
 /** Writes the SVG for a look. Unknown part ids are skipped (a wearable whose art is still loading). */

@@ -4,16 +4,17 @@
  * built on meta's `flagAtlas.ts` (Track D) so the screens never import meta (B2).
  */
 import type { ReadonlySignal } from '@preact/signals';
-import type { CompiledContent, EmoteId, I18n, Result, SaveDoc } from '@/contracts';
+import type { AvatarSpec, CompiledContent, EmoteId, I18n, Result, SaveDoc } from '@/contracts';
 import type { Content } from '@/content';
 import type { MetaRules } from '@/meta';
 import type { ActionResult, UiServices } from '@/ui/screens';
 
 /**
  * The player's equipped battle wheel (A18.9.4): owned emotes and quotes only; the content defaults
- * for a save without a wheel. Null without a save or collections (the fakes).
+ * for a save without a wheel. `speaker` is the player's General, whose head the HUD's quote bubble
+ * shows (PLAN 2a). Null without a save or collections (the fakes).
  */
-export function emoteWheelOf(save: SaveDoc | null | undefined, compiled: CompiledContent): { emotes: EmoteId[]; quotes: EmoteId[]; quoteCooldownMs: number } | null {
+export function emoteWheelOf(save: SaveDoc | null | undefined, compiled: CompiledContent): { emotes: EmoteId[]; quotes: EmoteId[]; quoteCooldownMs: number; speaker: AvatarSpec } | null {
   const cos = compiled.cosmetics as Partial<Content['cosmetics']> | null | undefined;
   const col = cos?.collections;
   if (!save || !col || !cos.emotes) return null;
@@ -26,6 +27,7 @@ export function emoteWheelOf(save: SaveDoc | null | undefined, compiled: Compile
     emotes: eq.emotes.filter(ok) as EmoteId[],
     quotes: eq.quotes.filter(ok) as EmoteId[],
     quoteCooldownMs: col.quoteCooldownMs,
+    speaker: save.profile.avatar,
   };
 }
 

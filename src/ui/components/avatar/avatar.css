@@ -198,28 +198,55 @@
   right: -10%;
 }
 
-/* A metal frame ring (Codex frames): fill, bevel highlight on the top edge, shadow on the lower edge. */
+/* A Codex frame (PLAN 2a): the material ring drawn inside the plate by ProfileArt's `frameStyle`
+   (`--frame-art`, and `--frame-art-live` with the Chrome glint or the Aeon shimmer), over the portrait,
+   with the plate's edge in the frame's own dark. Reduce motion keeps the still ring. */
 .ui-avatar.av--ring {
   border-color: var(--frame-line, var(--ui-ink));
   box-shadow:
-    0 0 0 4px var(--frame),
-    0 0 0 6px var(--frame-line, var(--ui-ink)),
-    inset 0 0 0 2px var(--frame-sh, rgb(0 0 0 / 0.3)),
-    0 5px 0 6px var(--ui-ink);
+    0 4px 0 var(--frame-line, var(--ui-ink)),
+    0 7px 12px rgb(0 0 0 / 0.32);
 }
-/* The title as a parchment ribbon (AUDIT §2.8). */
+.ui-avatar.av--ring::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--frame-art-live, var(--frame-art, none)) center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+.ui-root[data-reduce-motion='true'] .ui-avatar.av--ring::before {
+  background-image: var(--frame-art, none);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-avatar.av--ring::before {
+    background-image: var(--frame-art, none);
+  }
+}
+
+/* The title as a ribbon (AUDIT §2.8), dressed by how it was earned (PLAN 2a): parchment for the
+   basics; bronze, silver or gold end caps with a rivet for milestones; a red wax seal for feats; gold
+   leaf with a slow sheen for the grandest two. */
 .av-ribbon {
+  --rb-a: #efe9da;
+  --rb-b: #e8dfc8;
+  --rb-c: #aca294;
+  --rb-line: #5d5950;
+  --rb-end: #aca294;
+  --rb-end-line: #5d5950;
+  --rb-ink: #3a2a22;
   position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   min-height: 26px;
   max-width: 100%;
   padding: 0 14px;
-  border: 2px solid #5d5950;
+  border: 2px solid var(--rb-line);
   border-radius: 4px;
-  background: linear-gradient(180deg, #efe9da 0 30%, #e8dfc8 30% 72%, #aca294 72%);
+  background: linear-gradient(180deg, var(--rb-a) 0 30%, var(--rb-b) 30% 72%, var(--rb-c) 72%);
   box-shadow: 0 2px 0 rgb(0 0 0 / 0.35);
-  color: #3a2a22;
+  color: var(--rb-ink);
   font-weight: 900;
   font-size: 13px;
   letter-spacing: 0.02em;
@@ -235,8 +262,8 @@
   top: 5px;
   width: 12px;
   height: 22px;
-  background: #aca294;
-  border: 2px solid #5d5950;
+  background: var(--rb-end);
+  border: 2px solid var(--rb-end-line);
   z-index: -1;
 }
 .av-ribbon__end--l {
@@ -247,8 +274,122 @@
   right: -9px;
   clip-path: polygon(0 0, 100% 0, 55% 50%, 100% 100%, 0 100%);
 }
+/* milestone caps: the folded ends in metal, a rivet on each end of the band */
+.av-ribbon--bronze,
+.av-ribbon--silver,
+.av-ribbon--gold {
+  padding: 0 17px;
+  background:
+    radial-gradient(circle at 7px 50%, var(--rb-rivet) 0 2.2px, var(--rb-end-line) 2.3px 3px, transparent 3.1px),
+    radial-gradient(circle at calc(100% - 7px) 50%, var(--rb-rivet) 0 2.2px, var(--rb-end-line) 2.3px 3px, transparent 3.1px),
+    linear-gradient(180deg, var(--rb-a) 0 30%, var(--rb-b) 30% 72%, var(--rb-c) 72%);
+}
+.av-ribbon--bronze {
+  --rb-end: linear-gradient(180deg, #e3a65c, #b06f2e 60%, #8a5220);
+  --rb-end-line: #4a2c10;
+  --rb-rivet: #e8b06a;
+}
+.av-ribbon--silver {
+  --rb-end: linear-gradient(180deg, #f2f5f8, #b9c1ca 60%, #8d96a0);
+  --rb-end-line: #3e444a;
+  --rb-rivet: #e6ebf0;
+}
+.av-ribbon--gold {
+  --rb-end: linear-gradient(180deg, #fff0b8, #f2be3c 60%, #c8891c);
+  --rb-end-line: #5a3a08;
+  --rb-rivet: #ffe58a;
+}
+/* feats: a red wax seal pressed over the left end */
+.av-ribbon--seal {
+  padding-left: 20px;
+}
+.av-ribbon__seal {
+  position: absolute;
+  left: -11px;
+  top: 50%;
+  width: 24px;
+  height: 24px;
+  margin-top: -12px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 5px, rgb(0 0 0 / 0.18) 5.5px 6.5px, transparent 7px),
+    radial-gradient(circle at 38% 32%, #e8665a 0 18%, #b8302a 52%, #7c1a18 100%);
+  box-shadow:
+    0 0 0 1.5px #5a1210,
+    0 2px 0 rgb(0 0 0 / 0.35);
+  clip-path: polygon(50% 0, 63% 6%, 78% 4%, 86% 16%, 98% 26%, 95% 42%, 100% 56%, 90% 68%, 92% 84%, 77% 90%, 66% 100%, 50% 95%, 34% 100%, 22% 90%, 8% 86%, 8% 70%, 0 56%, 5% 42%, 2% 26%, 14% 16%, 22% 4%, 37% 6%);
+}
+.av-ribbon__seal::after {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  background: #f6c9b8;
+  opacity: 0.55;
+  clip-path: polygon(50% 0, 62% 38%, 100% 38%, 69% 60%, 80% 100%, 50% 75%, 20% 100%, 31% 60%, 0 38%, 38% 38%);
+}
+/* the grandest two: a gold-leaf ribbon with a faint damask (kept low so the name reads) and a slow sheen */
+.av-ribbon--leaf {
+  --rb-line: #5a3a08;
+  --rb-end: linear-gradient(180deg, #ffe58a, #e0a52c 60%, #b47a12);
+  --rb-end-line: #5a3a08;
+  --rb-ink: #4a2a04;
+  overflow: visible;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M2 10c0-4 3-6 6-4.6 2.2 1.2 1.8 4.6-.8 4.6-1.8 0-2-2.2-.8-2.6M18 10c0 4-3 6-6 4.6-2.2-1.2-1.8-4.6.8-4.6 1.8 0 2 2.2.8 2.6' stroke='%23a8701a' stroke-width='.8' fill='none' opacity='.2'/%3E%3C/svg%3E") 0 0 / 20px 20px,
+    linear-gradient(180deg, #fff3c4 0 28%, #f0c454 28% 70%, #c8891c 70%);
+  text-shadow: 0 1px 0 rgb(255 240 190 / 0.7);
+}
+.av-ribbon--leaf::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(110deg, transparent 0 40%, rgb(255 255 255 / 0.75) 50%, transparent 60%) no-repeat;
+  background-size: 300% 100%;
+  background-position: 160% 0;
+  pointer-events: none;
+  animation: av-leaf-sheen 5.2s ease-in-out infinite;
+}
+@keyframes av-leaf-sheen {
+  0% {
+    background-position: 160% 0;
+  }
+  22%,
+  100% {
+    background-position: -60% 0;
+  }
+}
+
+/* Banners: the cloth (and its fringe) sways from the rod, 2.4 s; still under reduce motion. */
 .av-banner {
   display: block;
   overflow: visible;
   filter: drop-shadow(0 2px 0 rgb(0 0 0 / 0.35));
+}
+.av-banner__cloth {
+  transform-box: view-box;
+  transform-origin: 20px 5px;
+  animation: av-banner-sway 2.4s ease-in-out infinite;
+}
+@keyframes av-banner-sway {
+  0%,
+  100% {
+    transform: skewX(0deg);
+  }
+  30% {
+    transform: skewX(-2.6deg) scaleY(1.004);
+  }
+  70% {
+    transform: skewX(2.2deg) scaleY(0.997);
+  }
+}
+.ui-root[data-reduce-motion='true'] .av-banner__cloth,
+.ui-root[data-reduce-motion='true'] .av-ribbon--leaf::after {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .av-banner__cloth,
+  .av-ribbon--leaf::after {
+    animation: none;
+  }
 }

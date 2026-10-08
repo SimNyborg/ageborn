@@ -53,6 +53,30 @@ export function baseCollapseSource(age: AgeId): string {
 /** How long a destroyed base's collapse plays before its ruin only smokes (the manifest clip length). */
 export const BASE_COLLAPSE_MS = 2600;
 
+/**
+ * Base skins with a real model (PLAN 2c, art/blender/world/base_skins_<age>.py): skin id (the cosmetic
+ * item id, `baseSkin.<id>`) → the age whose base it replaces. Each is the manifest entry
+ * `base.<age>@<skin>` with the sheet `art/bases/skins/<skin>.json`, which loads lazily (only when that
+ * skin shows); until it arrives the age's standard base draws with the skin's old tint
+ * (`cosmetics/baseSkins.ts` `BASE_SKINS`). Same footprint, mounts, flags, Treasury and crumble stages as
+ * the standard base (tests in `cosmetics.bases.test.ts`).
+ */
+export const WORLD_BASE_SKINS: Readonly<Record<string, AgeId>> = {
+  rose_keep: 'medieval',
+  mossy_den: 'stone',
+};
+
+/** Skin models with their own collapse kit (`art/bases/skins/<skin>.collapse.json`); the others use their age's. */
+export const WORLD_BASE_SKIN_KITS: readonly string[] = ['rose_keep', 'mossy_den'];
+
+export function baseSkinSheetSource(skin: string): string {
+  return `art/bases/skins/${skin}.json`;
+}
+
+export function baseSkinCollapseSource(skin: string): string {
+  return `art/bases/skins/${skin}.collapse.json`;
+}
+
 /** Turret mounts of every 3D base (screen lu from the gate: x toward the lane, y UP), bottom to top. */
 export const WORLD_BASE_MOUNTS_LU: readonly (readonly [number, number])[] = [
   [-6, 46],
@@ -103,6 +127,15 @@ export function buildWorldOverrides(): Record<string, VisualDef> {
     // the destroyed collapse: its kit sheet is a clip of the base entry (the swap point, B5)
     if (WORLD_BASE_COLLAPSE_KITS.includes(age)) e.clips['collapse'] = { kind: 'atlas', ref: baseCollapseSource(age), durationMs: BASE_COLLAPSE_MS, loop: false };
     out[b.id] = e;
+  }
+  // base skin models: the same anchors as the age's base (same footprint), their own sheet and kit
+  for (const [skin, age] of Object.entries(WORLD_BASE_SKINS)) {
+    const b = BASE_PUPPETS[age];
+    if (!b) continue;
+    const e = entry(baseSkinSheetSource(skin), b.anchors, b.heightLu);
+    const kit = WORLD_BASE_SKIN_KITS.includes(skin) ? baseSkinCollapseSource(skin) : WORLD_BASE_COLLAPSE_KITS.includes(age) ? baseCollapseSource(age) : null;
+    if (kit) e.clips['collapse'] = { kind: 'atlas', ref: kit, durationMs: BASE_COLLAPSE_MS, loop: false };
+    out[`${b.id}@${skin}`] = e;
   }
   return out;
 }

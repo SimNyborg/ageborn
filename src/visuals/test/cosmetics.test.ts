@@ -7,6 +7,8 @@
 import { describe, expect, it } from 'vitest';
 import { content } from '@/content';
 import { COSMETIC_COLLECTIONS, cosmeticImageUrl, cosmeticSvg, hasCosmeticArt, parseCosmeticKey } from '../cosmetics/art';
+import { decorationArtUrl } from '../cosmetics/decorations';
+import { nationalFlagUrl } from '../cosmetics/nationalFlags';
 
 // The General's wardrobe (collection `avatar`) is drawn by the UI's avatar renderer, not by the visuals.
 const released = content.cosmetics.collections.items.filter((x) => x.collection !== 'avatar' && x.released !== false);
@@ -82,9 +84,23 @@ describe('routing (PLAN 2f interface 2)', () => {
     expect(cosmeticImageUrl('decoration.fern', { layer: 'thumb' })).toBeNull();
   });
 
-  it('flags and props fall back to their SVG while the vendored art and the Blender props are not in', () => {
-    expect(cosmeticImageUrl('nationalFlag.dk', { size: 'tile' })).toMatch(/^data:image\/svg\+xml/);
-    expect(cosmeticImageUrl('nationalFlag.dk', { size: 'big' })).toMatch(/^data:image\/svg\+xml/);
-    expect(cosmeticImageUrl('decoration.fern', { hd: true })).toMatch(/^data:image\/svg\+xml/);
+  it("flags and props show Track D's and Track B's pictures when they have one, else their SVG", () => {
+    for (const size of ['tile', 'big'] as const) {
+      const own = nationalFlagUrl('dk', size);
+      if (own) expect(cosmeticImageUrl('nationalFlag.dk', { size })).toBe(own);
+      else expect(cosmeticImageUrl('nationalFlag.dk', { size })).toMatch(/^data:image\/svg\+xml/);
+    }
+    const prop = decorationArtUrl('fern', { hd: true });
+    if (prop) expect(cosmeticImageUrl('decoration.fern', { hd: true })).toBe(prop);
+    else expect(cosmeticImageUrl('decoration.fern', { hd: true })).toMatch(/^data:image\/svg\+xml/);
+  });
+
+  it('base flags draw on their pole only when asked, and sweep the Legendary glint only with motion on', () => {
+    expect(cosmeticSvg('baseFlag.ember', { pole: true })).not.toBe(cosmeticSvg('baseFlag.ember'));
+    expect(cosmeticSvg('baseFlag.ember')).toMatch(/viewBox="-2 -2 64 44"/);
+    expect(cosmeticSvg('baseFlag.wyvern')).toContain('<animateTransform');
+    expect(cosmeticSvg('baseFlag.wyvern', { animate: false })).not.toContain('<animate');
+    expect(cosmeticSvg('baseFlag.ember')).not.toContain('<animate');
+    expect(cosmeticImageUrl('baseFlag.ember', { pole: true })).not.toBe(cosmeticImageUrl('baseFlag.ember'));
   });
 });

@@ -1,143 +1,591 @@
 {
   "cosmetic": {
     "nationalFlag": {
-      "dk": {
-        "name": "Denmark"
+      "al": {
+        "name": "Albania",
+        "aliases": "Shqipëria"
       },
-      "fo": {
-        "name": "Faroe Islands"
-      },
-      "gl": {
-        "name": "Greenland"
-      },
-      "se": {
-        "name": "Sweden"
-      },
-      "no": {
-        "name": "Norway"
-      },
-      "fi": {
-        "name": "Finland"
-      },
-      "is": {
-        "name": "Iceland"
-      },
-      "gb": {
-        "name": "United Kingdom",
-        "aliases": "UK, Britain, Great Britain"
-      },
-      "gb_eng": {
-        "name": "England"
-      },
-      "gb_sct": {
-        "name": "Scotland"
-      },
-      "ie": {
-        "name": "Ireland"
-      },
-      "us": {
-        "name": "USA",
-        "aliases": "America, United States, United States of America"
-      },
-      "ca": {
-        "name": "Canada"
-      },
-      "de": {
-        "name": "Germany"
-      },
-      "fr": {
-        "name": "France"
-      },
-      "nl": {
-        "name": "Netherlands",
-        "aliases": "Holland"
-      },
-      "be": {
-        "name": "Belgium"
-      },
-      "lu": {
-        "name": "Luxembourg"
-      },
-      "ch": {
-        "name": "Switzerland"
+      "ad": {
+        "name": "Andorra"
       },
       "at": {
-        "name": "Austria"
+        "name": "Austria",
+        "aliases": "Österreich"
       },
-      "it": {
-        "name": "Italy"
+      "by": {
+        "name": "Belarus"
       },
-      "es": {
-        "name": "Spain"
+      "be": {
+        "name": "Belgium",
+        "aliases": "België, Belgique"
       },
-      "pt": {
-        "name": "Portugal"
+      "ba": {
+        "name": "Bosnia and Herzegovina",
+        "aliases": "Bosnia, Herzegovina"
       },
-      "pl": {
-        "name": "Poland"
+      "bg": {
+        "name": "Bulgaria"
+      },
+      "hr": {
+        "name": "Croatia",
+        "aliases": "Hrvatska"
+      },
+      "cy": {
+        "name": "Cyprus"
       },
       "cz": {
         "name": "Czechia",
         "aliases": "Czech Republic"
       },
-      "hu": {
-        "name": "Hungary"
-      },
-      "gr": {
-        "name": "Greece"
+      "dk": {
+        "name": "Denmark",
+        "aliases": "Danmark"
       },
       "ee": {
-        "name": "Estonia"
+        "name": "Estonia",
+        "aliases": "Eesti"
+      },
+      "fi": {
+        "name": "Finland",
+        "aliases": "Suomi"
+      },
+      "fr": {
+        "name": "France"
+      },
+      "de": {
+        "name": "Germany",
+        "aliases": "Deutschland"
+      },
+      "gr": {
+        "name": "Greece",
+        "aliases": "Hellas"
+      },
+      "hu": {
+        "name": "Hungary",
+        "aliases": "Magyarország"
+      },
+      "is": {
+        "name": "Iceland",
+        "aliases": "Ísland"
+      },
+      "ie": {
+        "name": "Ireland",
+        "aliases": "Éire, Eire"
+      },
+      "it": {
+        "name": "Italy",
+        "aliases": "Italia"
       },
       "lv": {
-        "name": "Latvia"
+        "name": "Latvia",
+        "aliases": "Latvija"
+      },
+      "li": {
+        "name": "Liechtenstein"
       },
       "lt": {
-        "name": "Lithuania"
+        "name": "Lithuania",
+        "aliases": "Lietuva"
       },
-      "ua": {
-        "name": "Ukraine"
+      "lu": {
+        "name": "Luxembourg"
+      },
+      "mt": {
+        "name": "Malta"
+      },
+      "md": {
+        "name": "Moldova"
+      },
+      "mc": {
+        "name": "Monaco"
+      },
+      "me": {
+        "name": "Montenegro"
+      },
+      "nl": {
+        "name": "Netherlands",
+        "aliases": "Holland"
+      },
+      "mk": {
+        "name": "North Macedonia",
+        "aliases": "Macedonia"
+      },
+      "no": {
+        "name": "Norway",
+        "aliases": "Norge"
+      },
+      "pl": {
+        "name": "Poland",
+        "aliases": "Polska"
+      },
+      "pt": {
+        "name": "Portugal"
       },
       "ro": {
         "name": "Romania"
       },
-      "bg": {
-        "name": "Bulgaria"
+      "ru": {
+        "name": "Russia",
+        "aliases": "Russian Federation"
       },
-      "tr": {
-        "name": "Türkiye",
-        "aliases": "Turkey"
+      "sm": {
+        "name": "San Marino"
+      },
+      "rs": {
+        "name": "Serbia",
+        "aliases": "Srbija"
+      },
+      "sk": {
+        "name": "Slovakia",
+        "aliases": "Slovak Republic"
+      },
+      "si": {
+        "name": "Slovenia",
+        "aliases": "Slovenija"
+      },
+      "es": {
+        "name": "Spain",
+        "aliases": "España"
+      },
+      "se": {
+        "name": "Sweden",
+        "aliases": "Sverige"
+      },
+      "ch": {
+        "name": "Switzerland",
+        "aliases": "Schweiz, Suisse, Svizzera"
+      },
+      "ua": {
+        "name": "Ukraine"
+      },
+      "gb": {
+        "name": "United Kingdom",
+        "aliases": "UK, Britain, Great Britain"
+      },
+      "va": {
+        "name": "Holy See",
+        "aliases": "Vatican, Vatican City"
+      },
+      "af": {
+        "name": "Afghanistan"
+      },
+      "am": {
+        "name": "Armenia"
+      },
+      "az": {
+        "name": "Azerbaijan"
+      },
+      "bh": {
+        "name": "Bahrain"
+      },
+      "bd": {
+        "name": "Bangladesh"
+      },
+      "bt": {
+        "name": "Bhutan"
+      },
+      "bn": {
+        "name": "Brunei",
+        "aliases": "Brunei Darussalam"
+      },
+      "kh": {
+        "name": "Cambodia",
+        "aliases": "Kampuchea"
+      },
+      "cn": {
+        "name": "China",
+        "aliases": "People's Republic of China, PRC"
+      },
+      "ge": {
+        "name": "Georgia",
+        "aliases": "Sakartvelo"
+      },
+      "in": {
+        "name": "India",
+        "aliases": "Bharat"
+      },
+      "id": {
+        "name": "Indonesia"
+      },
+      "ir": {
+        "name": "Iran",
+        "aliases": "Persia"
+      },
+      "iq": {
+        "name": "Iraq"
+      },
+      "il": {
+        "name": "Israel"
       },
       "jp": {
-        "name": "Japan"
+        "name": "Japan",
+        "aliases": "Nippon"
+      },
+      "jo": {
+        "name": "Jordan"
+      },
+      "kz": {
+        "name": "Kazakhstan"
+      },
+      "kw": {
+        "name": "Kuwait"
+      },
+      "kg": {
+        "name": "Kyrgyzstan",
+        "aliases": "Kyrgyz Republic"
+      },
+      "la": {
+        "name": "Laos",
+        "aliases": "Lao"
+      },
+      "lb": {
+        "name": "Lebanon"
+      },
+      "my": {
+        "name": "Malaysia"
+      },
+      "mv": {
+        "name": "Maldives"
+      },
+      "mn": {
+        "name": "Mongolia"
+      },
+      "mm": {
+        "name": "Myanmar",
+        "aliases": "Burma"
+      },
+      "np": {
+        "name": "Nepal"
+      },
+      "kp": {
+        "name": "North Korea",
+        "aliases": "Korea, DPRK"
+      },
+      "om": {
+        "name": "Oman"
+      },
+      "pk": {
+        "name": "Pakistan"
+      },
+      "ph": {
+        "name": "Philippines",
+        "aliases": "Pilipinas"
+      },
+      "qa": {
+        "name": "Qatar"
+      },
+      "sa": {
+        "name": "Saudi Arabia"
+      },
+      "sg": {
+        "name": "Singapore"
       },
       "kr": {
         "name": "South Korea",
         "aliases": "Korea, Republic of Korea"
       },
-      "in": {
-        "name": "India"
+      "lk": {
+        "name": "Sri Lanka",
+        "aliases": "Ceylon"
+      },
+      "sy": {
+        "name": "Syria"
+      },
+      "tj": {
+        "name": "Tajikistan"
       },
       "th": {
-        "name": "Thailand"
+        "name": "Thailand",
+        "aliases": "Siam"
+      },
+      "tl": {
+        "name": "Timor-Leste",
+        "aliases": "East Timor"
+      },
+      "tr": {
+        "name": "Türkiye",
+        "aliases": "Turkey"
+      },
+      "tm": {
+        "name": "Turkmenistan"
+      },
+      "ae": {
+        "name": "United Arab Emirates",
+        "aliases": "UAE, Emirates"
+      },
+      "uz": {
+        "name": "Uzbekistan"
       },
       "vn": {
-        "name": "Vietnam"
+        "name": "Vietnam",
+        "aliases": "Viet Nam"
       },
-      "id": {
-        "name": "Indonesia"
+      "ye": {
+        "name": "Yemen"
       },
-      "au": {
-        "name": "Australia"
+      "ps": {
+        "name": "Palestine",
+        "aliases": "State of Palestine"
       },
-      "nz": {
-        "name": "New Zealand"
+      "dz": {
+        "name": "Algeria"
       },
-      "br": {
-        "name": "Brazil"
+      "ao": {
+        "name": "Angola"
+      },
+      "bj": {
+        "name": "Benin"
+      },
+      "bw": {
+        "name": "Botswana"
+      },
+      "bf": {
+        "name": "Burkina Faso"
+      },
+      "bi": {
+        "name": "Burundi"
+      },
+      "cv": {
+        "name": "Cabo Verde",
+        "aliases": "Cape Verde"
+      },
+      "cm": {
+        "name": "Cameroon"
+      },
+      "cf": {
+        "name": "Central African Republic",
+        "aliases": "CAR"
+      },
+      "td": {
+        "name": "Chad"
+      },
+      "km": {
+        "name": "Comoros"
+      },
+      "cg": {
+        "name": "Congo",
+        "aliases": "Republic of the Congo, Congo-Brazzaville"
+      },
+      "cd": {
+        "name": "DR Congo",
+        "aliases": "Democratic Republic of the Congo, DRC, Congo-Kinshasa"
+      },
+      "ci": {
+        "name": "Côte d'Ivoire",
+        "aliases": "Ivory Coast"
+      },
+      "dj": {
+        "name": "Djibouti"
+      },
+      "eg": {
+        "name": "Egypt"
+      },
+      "gq": {
+        "name": "Equatorial Guinea"
+      },
+      "er": {
+        "name": "Eritrea"
+      },
+      "sz": {
+        "name": "Eswatini",
+        "aliases": "Swaziland"
+      },
+      "et": {
+        "name": "Ethiopia"
+      },
+      "ga": {
+        "name": "Gabon"
+      },
+      "gm": {
+        "name": "Gambia",
+        "aliases": "The Gambia"
+      },
+      "gh": {
+        "name": "Ghana"
+      },
+      "gn": {
+        "name": "Guinea"
+      },
+      "gw": {
+        "name": "Guinea-Bissau"
+      },
+      "ke": {
+        "name": "Kenya"
+      },
+      "ls": {
+        "name": "Lesotho"
+      },
+      "lr": {
+        "name": "Liberia"
+      },
+      "ly": {
+        "name": "Libya"
+      },
+      "mg": {
+        "name": "Madagascar"
+      },
+      "mw": {
+        "name": "Malawi"
+      },
+      "ml": {
+        "name": "Mali"
+      },
+      "mr": {
+        "name": "Mauritania"
+      },
+      "mu": {
+        "name": "Mauritius"
+      },
+      "ma": {
+        "name": "Morocco"
+      },
+      "mz": {
+        "name": "Mozambique"
+      },
+      "na": {
+        "name": "Namibia"
+      },
+      "ne": {
+        "name": "Niger"
+      },
+      "ng": {
+        "name": "Nigeria"
+      },
+      "rw": {
+        "name": "Rwanda"
+      },
+      "st": {
+        "name": "São Tomé and Príncipe",
+        "aliases": "Sao Tome"
+      },
+      "sn": {
+        "name": "Senegal"
+      },
+      "sc": {
+        "name": "Seychelles"
+      },
+      "sl": {
+        "name": "Sierra Leone"
+      },
+      "so": {
+        "name": "Somalia"
+      },
+      "za": {
+        "name": "South Africa"
+      },
+      "ss": {
+        "name": "South Sudan"
+      },
+      "sd": {
+        "name": "Sudan"
+      },
+      "tz": {
+        "name": "Tanzania"
+      },
+      "tg": {
+        "name": "Togo"
+      },
+      "tn": {
+        "name": "Tunisia"
+      },
+      "ug": {
+        "name": "Uganda"
+      },
+      "zm": {
+        "name": "Zambia"
+      },
+      "zw": {
+        "name": "Zimbabwe"
+      },
+      "ag": {
+        "name": "Antigua and Barbuda",
+        "aliases": "Antigua, Barbuda"
+      },
+      "bs": {
+        "name": "Bahamas",
+        "aliases": "The Bahamas"
+      },
+      "bb": {
+        "name": "Barbados"
+      },
+      "bz": {
+        "name": "Belize"
+      },
+      "ca": {
+        "name": "Canada"
+      },
+      "cr": {
+        "name": "Costa Rica"
+      },
+      "cu": {
+        "name": "Cuba"
+      },
+      "dm": {
+        "name": "Dominica"
+      },
+      "do": {
+        "name": "Dominican Republic"
+      },
+      "sv": {
+        "name": "El Salvador",
+        "aliases": "Salvador"
+      },
+      "gd": {
+        "name": "Grenada"
+      },
+      "gt": {
+        "name": "Guatemala"
+      },
+      "ht": {
+        "name": "Haiti"
+      },
+      "hn": {
+        "name": "Honduras"
+      },
+      "jm": {
+        "name": "Jamaica"
+      },
+      "mx": {
+        "name": "Mexico",
+        "aliases": "México"
+      },
+      "ni": {
+        "name": "Nicaragua"
+      },
+      "pa": {
+        "name": "Panama",
+        "aliases": "Panamá"
+      },
+      "kn": {
+        "name": "Saint Kitts and Nevis",
+        "aliases": "St Kitts and Nevis, St. Kitts, Nevis"
+      },
+      "lc": {
+        "name": "Saint Lucia",
+        "aliases": "St Lucia, St. Lucia"
+      },
+      "vc": {
+        "name": "Saint Vincent and the Grenadines",
+        "aliases": "St Vincent, St. Vincent, Grenadines",
+        "short": "St Vincent & Grenadines"
+      },
+      "tt": {
+        "name": "Trinidad and Tobago",
+        "aliases": "Trinidad, Tobago"
+      },
+      "us": {
+        "name": "United States",
+        "aliases": "USA, US, America, United States of America"
       },
       "ar": {
         "name": "Argentina"
+      },
+      "bo": {
+        "name": "Bolivia"
+      },
+      "br": {
+        "name": "Brazil",
+        "aliases": "Brasil"
       },
       "cl": {
         "name": "Chile"
@@ -145,17 +593,90 @@
       "co": {
         "name": "Colombia"
       },
-      "za": {
-        "name": "South Africa"
+      "ec": {
+        "name": "Ecuador"
       },
-      "ng": {
-        "name": "Nigeria"
+      "gy": {
+        "name": "Guyana"
       },
-      "gh": {
-        "name": "Ghana"
+      "py": {
+        "name": "Paraguay"
       },
-      "jm": {
-        "name": "Jamaica"
+      "pe": {
+        "name": "Peru",
+        "aliases": "Perú"
+      },
+      "sr": {
+        "name": "Suriname"
+      },
+      "uy": {
+        "name": "Uruguay"
+      },
+      "ve": {
+        "name": "Venezuela"
+      },
+      "au": {
+        "name": "Australia"
+      },
+      "fj": {
+        "name": "Fiji"
+      },
+      "ki": {
+        "name": "Kiribati"
+      },
+      "mh": {
+        "name": "Marshall Islands"
+      },
+      "fm": {
+        "name": "Micronesia",
+        "aliases": "Federated States of Micronesia"
+      },
+      "nr": {
+        "name": "Nauru"
+      },
+      "nz": {
+        "name": "New Zealand",
+        "aliases": "Aotearoa"
+      },
+      "pw": {
+        "name": "Palau"
+      },
+      "pg": {
+        "name": "Papua New Guinea",
+        "aliases": "PNG"
+      },
+      "ws": {
+        "name": "Samoa"
+      },
+      "sb": {
+        "name": "Solomon Islands"
+      },
+      "to": {
+        "name": "Tonga"
+      },
+      "tv": {
+        "name": "Tuvalu"
+      },
+      "vu": {
+        "name": "Vanuatu"
+      },
+      "fo": {
+        "name": "Faroe Islands",
+        "aliases": "Faroes, Føroyar"
+      },
+      "gl": {
+        "name": "Greenland",
+        "aliases": "Kalaallit Nunaat"
+      },
+      "gb_eng": {
+        "name": "England"
+      },
+      "gb_sct": {
+        "name": "Scotland"
+      },
+      "gb_wls": {
+        "name": "Wales",
+        "aliases": "Cymru"
       }
     },
     "flagRegion": {
@@ -181,8 +702,75 @@
         "name": "Other flags"
       }
     },
+    "baseFlag": {
+      "pennant_europe": {
+        "name": "Europe Pennant"
+      },
+      "pennant_asia": {
+        "name": "Asia Pennant"
+      },
+      "pennant_africa": {
+        "name": "Africa Pennant"
+      },
+      "pennant_north_america": {
+        "name": "North America Pennant"
+      },
+      "pennant_south_america": {
+        "name": "South America Pennant"
+      },
+      "pennant_oceania": {
+        "name": "Oceania Pennant"
+      },
+      "world_compass": {
+        "name": "World Compass"
+      }
+    },
     "flagAtlas": {
-      "title": "Flag Atlas"
+      "title": "Flag Atlas",
+      "search": "Country or code",
+      "searchLabel": "Search flags",
+      "clearSearch": "Clear search",
+      "all": "All",
+      "results": "{n} found",
+      "noResults": "No flag matches “{q}”.",
+      "noResultsHint": "Try another name or a two-letter code, like DK.",
+      "buy": "Buy · {n}",
+      "confirm": "Confirm · {n}",
+      "claim": "Claim",
+      "claimSub": "Your first flag costs no Dust",
+      "confirmClaim": "Confirm",
+      "confirmClaimSub": "Every flag after it: {n} Dust",
+      "fly": "Fly this flag",
+      "flying": "Flying",
+      "flyingToast": "{name} is flying",
+      "need": "Need {n} more",
+      "needReason": "Not enough Dust",
+      "dustHelp": "Dust comes from spare card copies, duplicate items, quests, feats and the Trophy Road.",
+      "owned": "Owned",
+      "firstFlag": "Pick your first flag: it costs no Dust.",
+      "price": "Every flag costs {n} Dust.",
+      "regionReward": "Region reward",
+      "regionRewardHow": "Own all {n} flags of {region}",
+      "rewardEarned": "Earned",
+      "rewardOwned": "{reward} earned",
+      "worldReward": "All {n} flags: {reward} and the title {title}",
+      "regionDone": "{region} complete!",
+      "worldDone": "All {n} flags!",
+      "rewardNew": "New base flag",
+      "titleNew": "New title",
+      "tapToContinue": "Tap to continue",
+      "pick": "Pick a flag to see it up close.",
+      "otherNote": "Flags outside the {n} countries. They are not part of a region reward.",
+      "detail": "Flag details",
+      "profileFlag": "Your flag",
+      "profileNone": "Pick a flag",
+      "profileAtlas": "Flag Atlas {n}/{max}"
+    }
+  },
+  "title": {
+    "world_ambassador": {
+      "name": "World Ambassador",
+      "unlock": "Own all 195 national flags in the Flag Atlas"
     }
   }
 }

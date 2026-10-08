@@ -1,24 +1,29 @@
 /**
  * Split-age backdrop (DESIGN A11 "Split-age lane", the signature visual).
  *
- * - Three parallax layers per age (sky, far silhouettes, mid-ground) plus the arena ground and
- *   weather layer, all painted once per age or arena and cached.
- * - Your half shows your age and the enemy half theirs, cross-faded over a 240 lu seam with a 30%
- *   grey haze. `setSeam(x)` sets the drift target; the seam moves toward it at <= 20 lu/s and stays
- *   within [450, 750] (the "fixed-drift seam", so the blend is never glued behind every fight).
+ * - Parallax layers per age (sky, an optional back strip, far silhouettes, mid-ground) plus the arena
+ *   ground and weather layer, all painted or loaded once per age, scene or arena and cached.
+ * - Your half shows your age and the enemy half theirs, cross-faded over a 300 lu seam with a 30%
+ *   grey haze. `setSeam(x)` sets the drift target; the seam moves toward it slowly and stays within
+ *   its range (the "fixed-drift seam", so the blend is never glued behind every fight).
  * - `wipe(side, age, ms)` sweeps that side's half to the new age from its base outward.
  *
- * - The far and mid layers and the arena ground are pre-rendered by the 3D pipeline
- *   (art/blender/world/backdrop.py: `art/backdrops/<age>/{far,mid}.webp` with `layers.json`, and
- *   `art/ground/<arena>.webp`) with the same toon light as the units. They stream in on first use;
- *   until they arrive (and in headless tests, or if a file fails) the code-painted layers are drawn,
- *   so the pre-rendered art is a pure upgrade of the same frames.
+ * Scenes (PLAN 2b, `backdrops/scenes.ts`): each half shows a scene per age (`scenes.left[age]`, a
+ * `scene.<id>` key; none = the age's classic scene). A piece of the lane carries `{ age, scene, skin }`,
+ * so a seam or an evolve wipe between two scenes cross-fades exactly as between two ages, and on an
+ * evolve the half's scene for the new age comes from the same map. A scene's art is pre-rendered by the
+ * 3D pipeline (art/blender/world/backdrop.py) with the same toon light as the units: format 2 scenes
+ * bring their own sky colours, a back strip, a props atlas for ambient motion (`sceneSprites.ts`) and
+ * light points that night skies switch on; the first five ages' classic strips are format 1. Everything
+ * streams in on first use; until it arrives (and in headless tests, or if a file fails) the code-painted
+ * layers are drawn, and the arrival cross-fades over 300 ms, so the art is a pure upgrade of the frames.
+ * An age a side has left releases its GPU textures once its wipe ends.
  *
- * Backdrop skins (A18.9.4 "Backdrops"): each half can wear a theme (`skins.left` / `skins.right`,
- * `backdrop.<id>`). A themed layer is the age's own layer texture re-graded once at bake time
- * (`backdrops/themes.ts`: palette, sky, props along the rims), so pieces carry an age and a skin, and a
- * seam between two looks cross-fades exactly like one between two ages. The theme's weather is a
- * separate particle layer over the mid-ground and under the lane (`backdropWeather.ts`).
+ * Backdrop skins (A18.9.4 "Backdrops"; the "Sky" from save v14): each half can wear a theme
+ * (`skins.left` / `skins.right`, `backdrop.<id>`). A themed layer is the layer texture re-graded once at
+ * bake time (`backdrops/themes.ts`: palette, sky, props along the rims), so pieces carry an age, a scene
+ * and a skin, and a seam between two looks cross-fades exactly like one between two ages. The theme's
+ * weather is a separate particle layer over the mid-ground and under the lane (`backdropWeather.ts`).
  *
  * Cross-fades are built from thin vertical strips cut from each layer texture (dynamic texture
  * frames) with stepped alpha. Everything comes from a few textures, so the whole backdrop batches
@@ -27,11 +32,11 @@
  * Space: the root is world space, x = 0 at the left gate and y = 0 on the ground line.
  *
  * Parallax (DESIGN A17.7): the battle camera scrolls a 2,360 lu world, and `setView(left, width)`
- * tells the backdrop what it shows. The sky, far and mid layers then scroll at 0.05, 0.25 and 0.55 of
- * the camera movement (less when a layer is too narrow for its factor at this view width, so no edge
- * ever shows), and the ground at 1.0; the ground image is extended with a mirrored copy to cover the
- * longer lane. Each layer's age split is re-cut so its seam stays at the ground seam's screen position:
- * the ages meet in one place on screen while the silhouettes drift at their depth.
+ * tells the backdrop what it shows. The sky, back, far and mid layers then scroll at 0.05, 0.12, 0.25
+ * and 0.55 of the camera movement (less when a layer is too narrow for its factor at this view width,
+ * so no edge ever shows), and the ground at 1.0; the ground image is extended with a mirrored copy to
+ * cover the longer lane. Each layer's age split is re-cut so its seam stays at the ground seam's screen
+ * position: the ages meet in one place on screen while the silhouettes drift at their depth.
  */
 import { Assets, CanvasSource, Container, Rectangle, Sprite, Texture } from 'pixi.js';
 import type { BackdropView } from '@/contracts/art';
@@ -41,26 +46,33 @@ import type { PartBaker } from '../../bake';
 import { arenaId, GROUND_FRAME, groundAmbient, MID_FRAME, paintGround, paintMid, type ArenaId } from '../../backdrops/ground';
 import { FAR_FRAME, paintFar, type AmbientSpec } from '../../backdrops/silhouettes';
 import { extraAmbient, finishLayer } from '../../backdrops/lighting';
-import { CLOUD_TINT, paintSky, SKY_FRAME, type LayerFrame } from '../../backdrops/sky';
-import { backdropId, BACKDROP_THEMES, themeGround, themeLayer, themeSky } from '../../backdrops/themes';
+import { BACK_FRAME, drawnScene, parseScene, SCENE_ART, sceneDir, sceneIdOf, type SceneData, type SceneFrame, type SceneLight } from '../../backdrops/scenes';
+import { lightAlpha, limitSprites, spriteInstances, spritePeriodMs, spritePhaseMs, type SceneSprite } from '../../backdrops/sceneSprites';
+import { CLOUD_TINT, paintSceneSky, paintSky, SKY_FRAME, type LayerFrame } from '../../backdrops/sky';
+import { backdropId, BACKDROP_THEMES, isNightSky, spaceWeather, themeGround, themeLayer, themeSky } from '../../backdrops/themes';
 import { BACKDROP_PALETTES, desaturate, mix } from '../../palette';
 import { WORLD } from '../../style';
 import { BackdropWeatherLayer } from './backdropWeather';
 import { fxSprite } from './effectView';
 
-type LayerKind = 'sky' | 'far' | 'mid';
-const LAYERS: readonly LayerKind[] = ['sky', 'far', 'mid'];
-const FRAMES: Record<LayerKind, LayerFrame> = { sky: SKY_FRAME, far: FAR_FRAME, mid: MID_FRAME };
+type LayerKind = 'sky' | 'back' | 'far' | 'mid';
+const LAYERS: readonly LayerKind[] = ['sky', 'back', 'far', 'mid'];
+const FRAMES: Record<LayerKind, LayerFrame> = { sky: SKY_FRAME, back: BACK_FRAME, far: FAR_FRAME, mid: MID_FRAME };
 const MID_LAYER_TINT = 0xdcdad6;
 /** Parallax factors of the camera movement (A17.7). */
-export const PARALLAX: Record<LayerKind | 'ground', number> = { sky: 0.05, far: 0.25, mid: 0.55, ground: 1 };
+export const PARALLAX: Record<'sky' | 'far' | 'mid' | 'ground', number> = { sky: 0.05, far: 0.25, mid: 0.55, ground: 1 };
+/** The back strip of a scene (PLAN 2b): between the sky and the far silhouettes. */
+export const BACK_PARALLAX = 0.12;
+const FACTOR: Record<LayerKind, number> = { sky: PARALLAX.sky, back: BACK_PARALLAX, far: PARALLAX.far, mid: PARALLAX.mid };
+/** How long a pre-rendered layer takes to cross-fade in over its code-painted stand-in (PLAN 2b). */
+export const ARRIVAL_FADE_MS = 300;
 
 /**
- * How tall (lu above the ground line) the silhouettes of the far and mid layers reach. When the camera
- * shows less height than that (phones show about 275 lu), the layer shrinks toward the ground line so
- * its peaks stay in view; a smaller silhouette also reads as further away.
+ * How tall (lu above the ground line) the silhouettes of the back, far and mid layers reach. When the
+ * camera shows less height than that (phones show about 275 lu), the layer shrinks toward the ground
+ * line so its peaks stay in view; a smaller silhouette also reads as further away.
  */
-export const LAYER_CONTENT_LU: Record<LayerKind, number> = { sky: 0, far: 330, mid: 250 };
+export const LAYER_CONTENT_LU: Record<LayerKind, number> = { sky: 0, back: 400, far: 330, mid: 250 };
 
 /** Where a parallax layer sits for a view: world x = `offset` + local x × `stretch`, world y = local y × `scaleY`. */
 export interface LayerPlacement {
@@ -98,10 +110,14 @@ interface Painted {
   ambient: AmbientSpec[];
 }
 
-interface LayerFile {
-  image: string;
-  pxPerLu: number;
-  ambient: AmbientSpec[];
+const NONE: Painted = { tex: Texture.EMPTY, ambient: [] };
+
+/** A props atlas frame as a texture (its source in px) with its anchor and px per lu. */
+export interface PropFrame {
+  tex: Texture;
+  ax: number;
+  ay: number;
+  ppl: number;
 }
 
 function appBaseUrl(): string {
@@ -109,33 +125,36 @@ function appBaseUrl(): string {
   return env?.BASE_URL ?? '/';
 }
 
-/**
- * Ages with pre-rendered far and mid layers (art/blender/world/backdrop.py `AGES`). The A17 ages
- * (Bronze, Industrial, Cosmic) draw their code-painted layers until the pipeline renders them, so the
- * game never requests files that do not exist.
- */
-export const PRERENDERED_BACKDROP_AGES: readonly AgeId[] = ['stone', 'medieval', 'gunpowder', 'modern', 'future'];
+/** Ages whose classic scene is pre-rendered (`backdrops/scenes.ts` SCENE_ART; every age since round 1). */
+export const PRERENDERED_BACKDROP_AGES: readonly AgeId[] = (Object.keys(SCENE_ART) as AgeId[]).filter((a) => SCENE_ART[a]?.['classic']);
 
-/** Pre-rendered layer files (art/blender/world/backdrop.py). */
-export function backdropLayerUrl(age: AgeId, file: string): string {
-  return `art/backdrops/${age}/${file}`;
+/** A pre-rendered layer file of a scene (art/blender/world/backdrop.py), relative to the base URL. */
+export function backdropLayerUrl(age: AgeId, file: string, scene = 'classic'): string {
+  return `${sceneDir(age, scene) ?? `art/backdrops/${age}/`}${file}`;
 }
 export function groundImageUrl(arena: ArenaId): string {
   return `art/ground/${arena}.webp`;
 }
 
+/** A (age, drawn scene) pair as a key. */
+export function sceneKey(age: AgeId, scene: string): string {
+  return `${age}.${scene}`;
+}
+
 /**
  * Paints and caches layer textures per age and arena (shared by every backdrop of a provider), and
- * streams in the pre-rendered far, mid and ground images, which replace the painted ones once loaded
- * (`version` counts arrivals so views can relayout).
+ * streams in the pre-rendered scenes (sky colours, back, far and mid strips, props) and grounds, which
+ * replace the painted ones once loaded (`version` counts arrivals so views can relayout).
  */
 export class BackdropTextures {
   private readonly cache = new Map<string, Painted>();
   private readonly images = new Map<string, Painted>();
+  private readonly scenes = new Map<string, SceneData>();
+  private readonly props = new Map<string, Map<string, PropFrame>>();
   private readonly requested = new Set<string>();
   private readonly canBake = typeof document !== 'undefined';
   bakeMs = 0;
-  /** Bumped every time a pre-rendered image arrives. */
+  /** Bumped every time a pre-rendered image or scene arrives. */
   version = 0;
 
   constructor(
@@ -145,28 +164,58 @@ export class BackdropTextures {
     private readonly prerendered = true,
   ) {}
 
-  /** Starts loading the pre-rendered layers of these ages and arenas (idempotent). */
-  prefetch(ages: readonly AgeId[], arenas: readonly ArenaId[] = []): void {
-    for (const a of ages) this.loadAge(a);
+  /**
+   * Starts loading the scenes of these ages (each age's classic scene, or the scene `scenes` names for
+   * it) and these arenas' grounds (idempotent). Only what a match shows is ever requested.
+   */
+  prefetch(ages: readonly AgeId[], arenas: readonly ArenaId[] = [], scenes: readonly { age: AgeId; scene: string }[] = []): void {
+    for (const a of ages) if (!scenes.some((s) => s.age === a)) this.loadScene(a, 'classic');
+    for (const s of scenes) this.loadScene(s.age, s.scene);
     for (const a of arenas) this.loadGround(a);
   }
 
-  private loadAge(age: AgeId): void {
-    const key = `age.${age}`;
-    if (!this.canBake || !this.prerendered || this.requested.has(key) || !PRERENDERED_BACKDROP_AGES.includes(age)) return;
+  /** The loaded data of a scene (null until it arrives, or without art). Starts the load. */
+  scene(age: AgeId, scene: string): SceneData | null {
+    const id = drawnScene(age, scene);
+    const d = this.scenes.get(sceneKey(age, id));
+    if (!d) this.loadScene(age, id);
+    return d ?? null;
+  }
+
+  /** A scene's props atlas frames, once loaded (null before, or without props). */
+  sceneProps(age: AgeId, scene: string): ReadonlyMap<string, PropFrame> | null {
+    return this.props.get(sceneKey(age, drawnScene(age, scene))) ?? null;
+  }
+
+  private loadScene(age: AgeId, scene: string): void {
+    const id = drawnScene(age, scene);
+    const key = sceneKey(age, id);
+    const dir = sceneDir(age, id);
+    if (!this.canBake || !this.prerendered || !dir || this.requested.has(key)) return;
     this.requested.add(key);
     void (async () => {
       try {
-        const meta = (await Assets.load(this.baseUrl + backdropLayerUrl(age, 'layers.json'))) as Partial<Record<'far' | 'mid', LayerFile>>;
-        for (const kind of ['far', 'mid'] as const) {
-          const m = meta[kind];
-          if (!m) continue;
-          const tex = await this.loadImage(backdropLayerUrl(age, m.image), m.pxPerLu);
-          this.images.set(`${kind}.${age}`, { tex, ambient: m.ambient ?? [] });
+        const json: unknown = await Assets.load(this.baseUrl + dir + 'layers.json');
+        const data = parseScene(json, age, id);
+        if (!data) throw new Error('no usable strip');
+        this.scenes.set(key, data);
+        this.version++;
+        for (const kind of ['back', 'far', 'mid'] as const) {
+          const m = data.layers[kind];
+          if (!m || (kind === 'back' && this.quality === 'lite')) continue;
+          const tex = await this.loadImage(dir + m.image, m.pxPerLu);
+          this.images.set(`${kind}.${key}`, { tex, ambient: m.ambient });
+          this.version++;
+        }
+        if (data.props && Object.keys(data.props.frames).length > 0) {
+          const atlas = (await Assets.load(this.baseUrl + dir + data.props.image)) as Texture;
+          const frames = new Map<string, PropFrame>();
+          for (const [name, f] of Object.entries(data.props.frames)) frames.set(name, propFrame(atlas, f));
+          this.props.set(key, frames);
           this.version++;
         }
       } catch (e) {
-        console.warn(`[visuals] backdrop layers for "${age}" failed to load; the painted layers are used`, e);
+        console.warn(`[visuals] backdrop scene "${key}" failed to load; the painted layers are used`, e);
       }
     })();
   }
@@ -192,19 +241,20 @@ export class BackdropTextures {
     return new Texture({ source });
   }
 
-  /** The layer texture of an age, re-graded by a backdrop skin when one is given (A18.9.4). */
-  layer(kind: LayerKind, age: AgeId, skin?: string | null): Painted {
-    const base = this.baseLayer(kind, age);
+  /** The layer texture of an age's scene, re-graded by a backdrop skin when one is given (A18.9.4). */
+  layer(kind: LayerKind, age: AgeId, skin?: string | null, scene?: string): Painted {
+    const base = this.baseLayer(kind, age, scene ?? 'classic');
     const id = backdropId(skin);
-    return id ? this.themed(kind, age, id, base) : base;
+    return id ? this.themed(kind, age, id, base, scene ?? 'classic') : base;
   }
 
   /**
    * A themed copy of a layer texture, cached per layer, age, theme and base texture (a pre-rendered
    * image that arrives later gets its own themed copy). The sky is re-painted at twice its base
-   * resolution so stars, moons and aurora stay crisp.
+   * resolution so stars, moons and aurora stay crisp; a scene with its own sky object (hint
+   * `celestial: 'own'`) keeps it, without the theme's sun or moon.
    */
-  private themed(kind: LayerKind, age: AgeId, id: string, base: Painted): Painted {
+  private themed(kind: LayerKind, age: AgeId, id: string, base: Painted, scene: string): Painted {
     const th = BACKDROP_THEMES[id];
     if (!th || !this.canBake || base.tex === Texture.EMPTY) return base;
     const src = base.tex.source;
@@ -222,8 +272,8 @@ export class BackdropTextures {
     const resource = src.resource as CanvasImageSource | undefined;
     if (resource) ctx.drawImage(resource, 0, 0, canvas.width, canvas.height);
     const f = { ...FRAMES[kind], pxPerLu: res };
-    if (kind === 'sky') themeSky(ctx, id, age, th, f);
-    else themeLayer(canvas, ctx, id, kind, age, th, f);
+    if (kind === 'sky') themeSky(ctx, id, age, th, f, { celestial: this.scenes.get(sceneKey(age, drawnScene(age, scene)))?.hints.celestial !== 'own' });
+    else themeLayer(canvas, ctx, id, kind === 'back' ? 'far' : kind, age, th, f);
     const source = new CanvasSource({ resource: canvas, resolution: 1 });
     source.resolution = res;
     const p = { tex: new Texture({ source }), ambient: base.ambient };
@@ -232,11 +282,24 @@ export class BackdropTextures {
     return p;
   }
 
-  private baseLayer(kind: LayerKind, age: AgeId): Painted {
-    if (kind !== 'sky') {
-      const img = this.images.get(`${kind}.${age}`);
+  private baseLayer(kind: LayerKind, age: AgeId, scene: string): Painted {
+    const id = drawnScene(age, scene);
+    const key = sceneKey(age, id);
+    if (kind === 'sky') {
+      const sky = this.scenes.get(key)?.sky;
+      if (!sky) this.loadScene(age, id);
+      else {
+        return this.get(`sky.${key}`, SKY_FRAME, (ctx, f) => {
+          paintSceneSky(ctx, sky, f, key.length * 7919 + 13);
+          return [];
+        });
+      }
+    } else {
+      const img = this.images.get(`${kind}.${key}`);
       if (img) return img;
-      this.loadAge(age);
+      this.loadScene(age, id);
+      // the back strip has no code-painted stand-in
+      if (kind === 'back') return NONE;
     }
     return this.get(`${kind}.${age}`, FRAMES[kind], (ctx, f, canvas) => {
       if (kind === 'sky') {
@@ -245,7 +308,7 @@ export class BackdropTextures {
       }
       const ambient = kind === 'far' ? paintFar(ctx, age, f) : paintMid(ctx, age, f);
       // light the silhouettes like the 3D art and add atmospheric depth (backdrops/lighting.ts)
-      finishLayer(canvas, ctx, kind, age, f);
+      finishLayer(canvas, ctx, kind === 'far' ? 'far' : 'mid', age, f);
       return ambient;
     });
   }
@@ -287,6 +350,31 @@ export class BackdropTextures {
     return p;
   }
 
+  /**
+   * Frees the GPU memory of every pre-rendered scene not in `keep` (scene keys `<age>.<scene>`) and drops
+   * the themed copies made from them (PLAN 2b "Memory": an age a side has left, once its wipe ends). The
+   * images stay in the browser's cache and upload again if a scene comes back.
+   */
+  release(keep: ReadonlySet<string>): number {
+    let n = 0;
+    for (const [k, p] of this.images) {
+      if (k.startsWith('ground.')) continue;
+      const scene = k.slice(k.indexOf('.') + 1);
+      if (keep.has(scene)) continue;
+      const uid = p.tex.source.uid;
+      for (const [ck, cp] of this.cache) {
+        if (ck.endsWith(`#${uid}`)) {
+          cp.tex.destroy(true);
+          this.cache.delete(ck);
+          n++;
+        }
+      }
+      p.tex.source.unload();
+      n++;
+    }
+    return n;
+  }
+
   private get(key: string, frame: LayerFrame, paint: (ctx: CanvasRenderingContext2D, f: LayerFrame, canvas: HTMLCanvasElement) => AmbientSpec[]): Painted {
     const hit = this.cache.get(key);
     if (hit) return hit;
@@ -318,7 +406,20 @@ export class BackdropTextures {
     // image sources belong to the Assets cache; drop only our lu-sized texture views
     for (const p of this.images.values()) p.tex.destroy(false);
     this.images.clear();
+    for (const frames of this.props.values()) for (const f of frames.values()) f.tex.destroy(false);
+    this.props.clear();
   }
+}
+
+function propFrame(atlas: Texture, f: SceneFrame): PropFrame {
+  const src = atlas.source;
+  const x = Math.max(0, Math.min(src.pixelWidth - 1, f.x));
+  const y = Math.max(0, Math.min(src.pixelHeight - 1, f.y));
+  const w = Math.max(1, Math.min(src.pixelWidth - x, f.w));
+  const h = Math.max(1, Math.min(src.pixelHeight - y, f.h));
+  // the atlas source stays at 1 px per px; the sprite scales by 1 / ppl into lu
+  const frame = new Rectangle(x / src.resolution, y / src.resolution, w / src.resolution, h / src.resolution);
+  return { tex: new Texture({ source: src, frame }), ax: f.ax, ay: f.ay, ppl: f.ppl / src.resolution };
 }
 
 /** Px per lu of the pre-rendered ground images (backdrop.py FRAMES.ground). */
@@ -341,6 +442,8 @@ export interface Piece {
   age: AgeId;
   /** The backdrop skin of this piece's half (`backdrop.<id>`); absent is the age's classic look. */
   skin?: string;
+  /** The scene this piece shows (a scene id with art); absent is the age's classic scene. */
+  scene?: string;
   x0: number;
   x1: number;
   alpha: number;
@@ -354,14 +457,24 @@ export interface Piece {
 interface Region {
   age: AgeId;
   skin?: string;
+  scene?: string;
   x0: number;
   x1: number;
+}
+
+/** Each half's scene per age: `scene.<id>` keys (the save's and the match look's shape). */
+export type SideScenes = { left?: Partial<Record<AgeId, string>>; right?: Partial<Record<AgeId, string>> };
+
+/** The scene a half shows in an age (an id with art, `undefined` for the classic scene). */
+function sceneFor(map: Partial<Record<AgeId, string>> | undefined, age: AgeId): { scene?: string } {
+  const id = drawnScene(age, sceneIdOf(map?.[age]));
+  return id === 'classic' ? {} : { scene: id };
 }
 
 /**
  * Splits the lane into age regions: [left, seam], [seam, right], plus an optional wipe front. A side's
  * backdrop skin (`skins`) goes with every region of its half, through a wipe too (the theme stays
- * when the age changes).
+ * when the age changes); its scene (`scenes`) is the one it equipped for each region's age.
  */
 export function ageRegions(o: {
   left: AgeId;
@@ -369,23 +482,26 @@ export function ageRegions(o: {
   seam: number;
   wipe: { side: Side; age: AgeId; front: number } | null;
   skins?: { left?: string | null; right?: string | null };
+  scenes?: SideScenes;
 }): Region[] {
   const L = WORLD.worldLeftLu - 100;
   const R = WORLD.worldRightLu + 100;
   const sl = o.skins?.left ? { skin: o.skins.left } : {};
   const sr = o.skins?.right ? { skin: o.skins.right } : {};
+  const left = (age: AgeId) => ({ age, ...sl, ...sceneFor(o.scenes?.left, age) });
+  const right = (age: AgeId) => ({ age, ...sr, ...sceneFor(o.scenes?.right, age) });
   const regions: Region[] = [
-    { age: o.left, ...sl, x0: L, x1: o.seam },
-    { age: o.right, ...sr, x0: o.seam, x1: R },
+    { ...left(o.left), x0: L, x1: o.seam },
+    { ...right(o.right), x0: o.seam, x1: R },
   ];
   const w = o.wipe;
   if (w) {
     if (w.side === 0) {
       const fx = Math.min(o.seam, L + w.front);
-      regions.splice(0, 1, { age: w.age, ...sl, x0: L, x1: fx }, { age: o.left, ...sl, x0: fx, x1: o.seam });
+      regions.splice(0, 1, { ...left(w.age), x0: L, x1: fx }, { ...left(o.left), x0: fx, x1: o.seam });
     } else {
       const fx = Math.max(o.seam, R - w.front);
-      regions.splice(1, 1, { age: o.right, ...sr, x0: o.seam, x1: fx }, { age: w.age, ...sr, x0: fx, x1: R });
+      regions.splice(1, 1, { ...right(o.right), x0: o.seam, x1: fx }, { ...right(w.age), x0: fx, x1: R });
     }
   }
   return regions.filter((r) => r.x1 - r.x0 > 0.5);
@@ -395,6 +511,7 @@ export function ageRegions(o: {
 export function composePieces(regions: readonly Region[], seam: number): Piece[] {
   const pieces: Piece[] = [];
   const widths: number[] = [];
+  const look = (r: Region) => ({ ...(r.skin ? { skin: r.skin } : {}), ...(r.scene ? { scene: r.scene } : {}) });
   for (let i = 0; i < regions.length - 1; i++) {
     const a = regions[i];
     const b = regions[i + 1];
@@ -405,7 +522,7 @@ export function composePieces(regions: readonly Region[], seam: number): Piece[]
   regions.forEach((r, i) => {
     const wl = i > 0 ? (widths[i - 1] ?? 0) / 2 : 0;
     const wr = i < widths.length ? (widths[i] ?? 0) / 2 : 0;
-    if (r.x1 - wr > r.x0 + wl) pieces.push({ age: r.age, ...(r.skin ? { skin: r.skin } : {}), x0: r.x0 + wl, x1: r.x1 - wr, alpha: 1 });
+    if (r.x1 - wr > r.x0 + wl) pieces.push({ age: r.age, ...look(r), x0: r.x0 + wl, x1: r.x1 - wr, alpha: 1 });
   });
   for (let i = 0; i < widths.length; i++) {
     const a = regions[i];
@@ -419,13 +536,11 @@ export function composePieces(regions: readonly Region[], seam: number): Piece[]
       const x1 = c - w / 2 + ((k + 1) * w) / n;
       const t = (k + 0.5) / n;
       const s = t * t * (3 - 2 * t);
-      const sa = a.skin ? { skin: a.skin } : {};
-      const sb = b.skin ? { skin: b.skin } : {};
-      if (a.age === b.age && a.skin === b.skin) {
-        pieces.push({ age: a.age, ...sa, x0, x1, alpha: 1 });
+      if (a.age === b.age && a.skin === b.skin && a.scene === b.scene) {
+        pieces.push({ age: a.age, ...look(a), x0, x1, alpha: 1 });
       } else {
-        pieces.push({ age: a.age, ...sa, x0, x1, alpha: 1 - s, under: true });
-        pieces.push({ age: b.age, ...sb, x0, x1, alpha: s });
+        pieces.push({ age: a.age, ...look(a), x0, x1, alpha: 1 - s, under: true });
+        pieces.push({ age: b.age, ...look(b), x0, x1, alpha: s });
       }
     }
   }
@@ -435,11 +550,36 @@ export function composePieces(regions: readonly Region[], seam: number): Piece[]
 interface Amb {
   spec: AmbientSpec;
   age: AgeId | null;
+  /** The scene the spec belongs to (absent: any scene of the age, e.g. the bird flocks). */
+  scene?: string;
   node: Sprite;
   t: number;
   acc: number;
   /** Flap and glide frames (birds): textures with their anchors. */
   frames?: { tex: Texture; ax: number; ay: number }[];
+}
+
+/** A scene's moving prop (PLAN 2b sprites), one Pixi sprite per group member. */
+interface PropNode {
+  sprite: SceneSprite;
+  age: AgeId;
+  scene: string;
+  phase: number;
+  nodes: Sprite[];
+  frames: ReadonlyMap<string, PropFrame>;
+  weight: number;
+  /** A path's trail emitter (the loco's smoke) and its accumulator. */
+  trail: { spec: AmbientSpec; acc: number } | null;
+}
+
+/** A night light of a scene (a warm glow while the half wears a night sky). */
+interface LightNode {
+  light: SceneLight;
+  age: AgeId;
+  scene: string;
+  node: Sprite;
+  phase: number;
+  weight: number;
 }
 
 interface Mote {
@@ -451,9 +591,52 @@ interface Mote {
   a0: number;
 }
 
+/**
+ * The texture shown per piece look on a layer and the one it is fading from: a pre-rendered image that
+ * arrives (or a sky theme re-painted on it) cross-fades over {@link ARRIVAL_FADE_MS} instead of popping.
+ */
+export class FadeTracker {
+  private readonly shown = new Map<string, { tex: Texture; from: Texture | null; t0: number; seen: number }>();
+  private frame = 0;
+
+  /** Starts a layout pass. */
+  begin(): void {
+    this.frame++;
+  }
+
+  /** The texture a look shows now and the one it fades from with the new one's weight `u` (0..1). */
+  track(key: string, tex: Texture, now: number): { from: Texture | null; u: number } {
+    let s = this.shown.get(key);
+    if (!s || s.tex !== tex) {
+      const from = s && s.tex !== Texture.EMPTY && !s.tex.destroyed ? s.tex : null;
+      s = { tex, from, t0: now, seen: this.frame };
+      this.shown.set(key, s);
+    }
+    s.seen = this.frame;
+    if (!s.from) return { from: null, u: 1 };
+    const u = Math.min(1, Math.max(0, (now - s.t0) / ARRIVAL_FADE_MS));
+    if (u >= 1 || s.from.destroyed) {
+      s.from = null;
+      return { from: null, u: 1 };
+    }
+    return { from: s.from, u };
+  }
+
+  /** Ends a pass: forgets looks no piece showed (and reports whether a fade is still running). */
+  end(): boolean {
+    let fading = false;
+    for (const [k, s] of this.shown) {
+      if (s.seen !== this.frame) this.shown.delete(k);
+      else if (s.from) fading = true;
+    }
+    return fading;
+  }
+}
+
 class StripLayer {
   readonly container = new Container();
   private readonly pool: { s: Sprite; t: Texture }[] = [];
+  private readonly fades = new FadeTracker();
 
   constructor(
     readonly kind: LayerKind,
@@ -462,44 +645,52 @@ class StripLayer {
 
   /**
    * Lays the pieces (world x) out on this layer, placed at `at` (see `placeLayer`). `skinLift` moves a
-   * themed piece down by that many lu (the sky: see `themedSkyLift`).
+   * themed piece down by that many lu (the sky: see `themedSkyLift`). Returns true while an arrival
+   * cross-fade runs (the view lays out again next frame).
    */
-  layout(pieces: readonly Piece[], at: LayerPlacement = IDENTITY_PLACEMENT, skinLift = 0): void {
+  layout(pieces: readonly Piece[], at: LayerPlacement = IDENTITY_PLACEMENT, skinLift = 0, now = 0): boolean {
     const f = FRAMES[this.kind];
     this.container.x = at.offset;
     this.container.scale.set(at.stretch, at.scaleY);
     let used = 0;
+    this.fades.begin();
     for (const p of pieces) {
-      const src = this.textures.layer(this.kind, p.age, p.skin).tex;
-      if (src === Texture.EMPTY) continue;
-      const slot = this.slot(used++);
+      const src = this.textures.layer(this.kind, p.age, p.skin, p.scene).tex;
+      const fade = this.fades.track(`${p.age}|${p.scene ?? ''}|${p.skin ?? ''}`, src, now);
+      if (src === Texture.EMPTY && !fade.from) continue;
       const x0 = Math.max(f.x0, (p.x0 - at.offset) / at.stretch);
       const x1 = Math.min(f.x0 + f.width, (p.x1 - at.offset) / at.stretch);
-      if (x1 <= x0) {
-        slot.s.visible = false;
-        continue;
-      }
-      if (slot.t.source !== src.source) slot.t.source = src.source;
-      // Frames are in logical units (lu): the canvas source's resolution is its px per lu.
-      const fx = x0 - f.x0;
-      slot.t.frame.x = fx;
-      slot.t.frame.y = 0;
-      slot.t.frame.width = Math.max(0.01, Math.min(x1 - x0, src.source.width - fx));
-      slot.t.frame.height = src.source.height;
-      slot.t.update();
-      slot.s.texture = slot.t;
-      slot.s.visible = true;
+      if (x1 <= x0) continue;
       // The sky is opaque: its lower cross-fade piece stays solid (see `Piece.under`). Silhouette
       // layers are mostly transparent, so both halves fade.
-      slot.s.alpha = this.kind === 'sky' && p.under ? 1 : p.alpha;
-      slot.s.position.set(x0, f.yTop + (p.skin ? skinLift : 0));
-      slot.s.width = x1 - x0;
-      slot.s.height = f.height;
+      const alpha = this.kind === 'sky' && p.under ? 1 : p.alpha;
+      if (fade.from) this.place(used++, fade.from, p, x0, x1, this.kind === 'sky' ? alpha : alpha * (1 - fade.u), skinLift);
+      if (src !== Texture.EMPTY) this.place(used++, src, p, x0, x1, alpha * fade.u, skinLift);
     }
     for (let i = used; i < this.pool.length; i++) {
       const s = this.pool[i];
       if (s) s.s.visible = false;
     }
+    return this.fades.end();
+  }
+
+  private place(i: number, src: Texture, p: Piece, x0: number, x1: number, alpha: number, skinLift: number): void {
+    const f = FRAMES[this.kind];
+    const slot = this.slot(i);
+    if (slot.t.source !== src.source) slot.t.source = src.source;
+    // Frames are in logical units (lu): the source's resolution is its px per lu.
+    const fx = x0 - f.x0;
+    slot.t.frame.x = fx;
+    slot.t.frame.y = 0;
+    slot.t.frame.width = Math.max(0.01, Math.min(x1 - x0, src.source.width - fx));
+    slot.t.frame.height = src.source.height;
+    slot.t.update();
+    slot.s.texture = slot.t;
+    slot.s.visible = alpha > 0.002;
+    slot.s.alpha = alpha;
+    slot.s.position.set(x0, f.yTop + (p.skin ? skinLift : 0));
+    slot.s.width = x1 - x0;
+    slot.s.height = f.height;
   }
 
   /**
@@ -613,8 +804,8 @@ class GroundSkinLayer {
 }
 
 /**
- * Seam haze alpha at `t` ∈ [0, 1] across the 240 lu seam: 0 at both edges, `WORLD.seamDesaturate` in
- * the middle, smooth in between (a hard-edged veil reads as a pillar of fog).
+ * Seam haze alpha at `t` ∈ [0, 1] across the seam: 0 at both edges, `WORLD.seamDesaturate` in the
+ * middle, smooth in between (a hard-edged veil reads as a pillar of fog).
  */
 export function hazeAlpha(t: number): number {
   if (t <= 0 || t >= 1) return 0;
@@ -666,12 +857,11 @@ export interface BackdropViewOptions {
   seed: number;
   /** Each half's backdrop skin (`backdrop.<id>`, A18.9.4; the "Sky" from save v14); left = side 0. */
   skins?: { left?: string | null; right?: string | null };
-  /**
-   * Each half's scene per age (`scene.<id>`, save v14, PLAN 2b); an age without one shows its classic
-   * scene. Passed through by C0 (2026-10-08); Track A draws them (until then every age is classic).
-   */
-  scenes?: { left?: Partial<Record<AgeId, string>>; right?: Partial<Record<AgeId, string>> };
+  /** Each half's scene per age (`scene.<id>`, save v14, PLAN 2b); an age without one shows its classic scene. */
+  scenes?: SideScenes;
 }
+
+type AmbLayer = 'sky' | 'back' | 'far' | 'mid' | 'ground';
 
 export class ProceduralBackdropView implements BackdropView {
   readonly root = new Container();
@@ -683,7 +873,9 @@ export class ProceduralBackdropView implements BackdropView {
   /** A mirrored copy that extends the ground over the 2,000 lu lane (A17.3). */
   private readonly groundMirror: Sprite;
   private texVersion = -1;
-  private readonly ambientLayers: Record<'sky' | 'far' | 'mid' | 'ground', Container>;
+  private readonly ambientLayers: Record<AmbLayer, Container>;
+  /** Night lights over each strip (additive glows, one batch per layer). */
+  private readonly lightLayers: Record<'back' | 'far' | 'mid', Container>;
   private readonly rng: CosmeticRng;
   private left: AgeId;
   private right: AgeId;
@@ -692,19 +884,31 @@ export class ProceduralBackdropView implements BackdropView {
   private seamTarget: number = WORLD.seamHomeLu;
   private wipeState: { side: Side; age: AgeId; t: number; ms: number } | null = null;
   private dirty = true;
+  private fading = false;
   private ambient: Amb[] = [];
+  private propNodes: PropNode[] = [];
+  private lightNodes: LightNode[] = [];
   private motes: Mote[] = [];
   private destroyed = false;
+  /** Render time since the view was made (ms): drives the scene sprites and the arrival fades. */
+  private clock = 0;
   /** The camera's visible range (world lu); null = no camera yet (the whole world, layers unshifted). */
   private viewLeft: number | null = null;
   private viewWidth: number = WORLD.worldWidthLu;
   /** World height (lu) the camera shows above the ground line. */
   private viewAbove = 1000;
   private placements: Partial<Record<LayerKind, LayerPlacement>> = {};
+  private regions: Region[] = [];
   /** Each half's backdrop skin key, when it has a known theme. */
   private readonly skins: { left?: string; right?: string };
+  /** Each half's scene per age. */
+  private readonly scenes: SideScenes;
   private readonly weather: BackdropWeatherLayer;
+  /** The weather each side runs (its sky theme, and whether its scene turns it into space weather). */
+  private readonly weatherKeys: [string, string] = ['', ''];
   private readonly groundSkin = new GroundSkinLayer();
+  /** The drifting clouds' own alpha (before a scene's `clouds` factor). */
+  private readonly cloudAlpha: number[] = [];
 
   constructor(private readonly o: BackdropViewOptions) {
     this.left = o.left;
@@ -712,20 +916,24 @@ export class ProceduralBackdropView implements BackdropView {
     const l = backdropId(o.skins?.left);
     const r = backdropId(o.skins?.right);
     this.skins = { ...(l ? { left: `backdrop.${l}` } : {}), ...(r ? { right: `backdrop.${r}` } : {}) };
+    this.scenes = { left: { ...(o.scenes?.left ?? {}) }, right: { ...(o.scenes?.right ?? {}) } };
     this.arena = arenaId(o.arena);
     this.rng = mulberry32(o.seed);
     this.root.label = `backdrop.${o.left}${l ? `@${l}` : ''}|${o.right}${r ? `@${r}` : ''}|ground.${this.arena}`;
     // Lite keeps the mid layer since A17: with a scrolling camera it is the layer that shows the
-    // parallax depth (A17.7); only its ambient life is dropped.
-    this.layers = LAYERS.map((k) => new StripLayer(k, o.textures));
-    this.ambientLayers = { sky: new Container(), far: new Container(), mid: new Container(), ground: new Container() };
-    const byKind = (k: LayerKind): StripLayer | undefined => this.layers.find((l) => l.kind === k);
+    // parallax depth (A17.7); it drops a scene's back strip and half its ambient life.
+    this.layers = LAYERS.filter((k) => k !== 'back' || o.quality === 'high').map((k) => new StripLayer(k, o.textures));
+    this.ambientLayers = { sky: new Container(), back: new Container(), far: new Container(), mid: new Container(), ground: new Container() };
+    this.lightLayers = { back: new Container(), far: new Container(), mid: new Container() };
+    const byKind = (k: LayerKind): StripLayer | undefined => this.layers.find((x) => x.kind === k);
     const sky = byKind('sky');
     if (sky) this.root.addChild(sky.container);
     this.root.addChild(this.clouds, this.ambientLayers.sky);
+    const back = byKind('back');
+    if (back) this.root.addChild(back.container, this.ambientLayers.back, this.lightLayers.back);
     const far = byKind('far');
     if (far) this.root.addChild(far.container);
-    this.root.addChild(this.ambientLayers.far);
+    this.root.addChild(this.ambientLayers.far, this.lightLayers.far);
     const mid = byKind('mid');
     if (mid) {
       // the mid-ground sits about 13% darker than painted, so grey and white units (knights, mechs)
@@ -733,25 +941,33 @@ export class ProceduralBackdropView implements BackdropView {
       mid.container.tint = MID_LAYER_TINT;
       this.root.addChild(mid.container);
     }
-    this.root.addChild(this.ambientLayers.mid);
+    this.root.addChild(this.ambientLayers.mid, this.lightLayers.mid);
     this.root.addChild(this.haze.container);
     // backdrop skin weather: over the mid-ground and the seam haze, under the ground and the lane
     this.weather = new BackdropWeatherLayer(o.baker, o.quality, this.rng);
-    this.weather.setTheme(0, l ? (BACKDROP_THEMES[l] ?? null) : null);
-    this.weather.setTheme(1, r ? (BACKDROP_THEMES[r] ?? null) : null);
+    this.syncWeather();
     this.root.addChild(this.weather.root);
     this.groundSprite = new Sprite(Texture.EMPTY);
     this.groundSprite.position.set(GROUND_FRAME.x0, GROUND_FRAME.yTop);
     this.groundMirror = new Sprite(Texture.EMPTY);
     this.groundMirror.position.set(GROUND_FRAME.x0 + 2 * GROUND_FRAME.width, GROUND_FRAME.yTop);
     this.groundLayer.addChild(this.groundSprite, this.groundMirror);
-    o.textures.prefetch([o.left, o.right], [this.arena]);
+    o.textures.prefetch([o.left, o.right], [this.arena], [this.sceneRef(0, o.left), this.sceneRef(1, o.right)]);
     this.syncGround();
     this.root.addChild(this.groundLayer, this.groundSkin.container, this.ambientLayers.ground);
     this.spawnClouds();
     this.rebuildAmbient();
     this.texVersion = o.textures.version;
     this.layout();
+  }
+
+  /** The drawn scene of a side in an age (`classic` when it has none or no art). */
+  private sceneOf(side: Side, age: AgeId): string {
+    return drawnScene(age, sceneIdOf((side === 0 ? this.scenes.left : this.scenes.right)?.[age]));
+  }
+
+  private sceneRef(side: Side, age: AgeId): { age: AgeId; scene: string } {
+    return { age, scene: this.sceneOf(side, age) };
   }
 
   private syncGround(): void {
@@ -768,6 +984,30 @@ export class ProceduralBackdropView implements BackdropView {
     }
   }
 
+  /**
+   * Each side's weather: its sky theme, turned into space weather while that half shows a scene with
+   * the `weather: 'space'` hint (PLAN 2b). Only a change restarts the weather.
+   */
+  private syncWeather(): void {
+    for (const side of [0, 1] as const) {
+      const key = side === 0 ? this.skins.left : this.skins.right;
+      const id = key ? key.slice('backdrop.'.length) : '';
+      const base = id ? (BACKDROP_THEMES[id] ?? null) : null;
+      const age = side === 0 ? this.left : this.right;
+      const space = base !== null && this.sceneData(age, this.sceneOf(side, age))?.hints.weather === 'space';
+      const k = `${id}|${space ? 'space' : 'ground'}`;
+      if (k === this.weatherKeys[side]) continue;
+      this.weatherKeys[side] = k;
+      this.weather.setTheme(side, base && space ? spaceWeather(base) : base);
+    }
+  }
+
+  /** Scene data from the textures (tolerates a minimal textures stand-in in tests). */
+  private sceneData(age: AgeId, scene: string): SceneData | null {
+    const t = this.o.textures as Partial<BackdropTextures>;
+    return typeof t.scene === 'function' ? t.scene.call(this.o.textures, age, scene) : null;
+  }
+
   setSeam(x: number): void {
     this.seamTarget = Math.max(WORLD.seamMinLu, Math.min(WORLD.seamMaxLu, x));
   }
@@ -776,7 +1016,7 @@ export class ProceduralBackdropView implements BackdropView {
     // finish a running wipe first
     if (this.wipeState) this.finishWipe();
     this.wipeState = { side, age, t: 0, ms: Math.max(1, ms) };
-    this.o.textures.prefetch([age]);
+    this.o.textures.prefetch([age], [], [this.sceneRef(side, age)]);
     this.rebuildAmbient();
     this.dirty = true;
   }
@@ -798,12 +1038,34 @@ export class ProceduralBackdropView implements BackdropView {
     if (this.viewLeft === null) return IDENTITY_PLACEMENT;
     const content = LAYER_CONTENT_LU[kind];
     const fit = content > 0 ? (this.viewAbove * 0.92) / content : 1;
-    return placeLayer(FRAMES[kind], PARALLAX[kind], this.viewLeft, this.viewWidth, fit);
+    return placeLayer(FRAMES[kind], FACTOR[kind], this.viewLeft, this.viewWidth, fit);
   }
 
   /** Current seam position (lu) and ages, for tests and the gallery. */
-  get state(): { seam: number; target: number; left: AgeId; right: AgeId; wiping: boolean; skins: { left?: string; right?: string }; weather: number } {
-    return { seam: this.seam, target: this.seamTarget, left: this.left, right: this.right, wiping: this.wipeState !== null, skins: { ...this.skins }, weather: this.weather.count };
+  get state(): {
+    seam: number;
+    target: number;
+    left: AgeId;
+    right: AgeId;
+    wiping: boolean;
+    skins: { left?: string; right?: string };
+    scenes: { left: string; right: string };
+    weather: number;
+    sprites: number;
+    lights: number;
+  } {
+    return {
+      seam: this.seam,
+      target: this.seamTarget,
+      left: this.left,
+      right: this.right,
+      wiping: this.wipeState !== null,
+      skins: { ...this.skins },
+      scenes: { left: this.sceneOf(0, this.left), right: this.sceneOf(1, this.right) },
+      weather: this.weather.count,
+      sprites: this.propNodes.reduce((a, p) => a + p.nodes.filter((n) => n.visible).length, 0),
+      lights: this.lightNodes.filter((l) => l.node.visible).length,
+    };
   }
 
   /** Lightning strikes since the last call (Thunderstorm skin), for the battle view's thunder. */
@@ -811,17 +1073,18 @@ export class ProceduralBackdropView implements BackdropView {
     return this.weather.drainStrikes();
   }
 
-  /** Reduce motion and Lite (duck-typed like the base views): quieter weather, no lightning. */
+  /** Reduce motion and Lite (duck-typed like the base views): quieter weather, no lightning, still props. */
   setMotion(o: { reduce: boolean; lite: boolean }): void {
     this.weather.setMotion(o);
     this.reduceMotion = o.reduce;
   }
 
-  /** Reduce motion: birds glide (no flapping) and drift at half speed (UI art audit §4). */
+  /** Reduce motion: birds glide (no flapping) and drift at half speed (UI art audit §4); scene props hold still. */
   private reduceMotion = false;
 
   update(dtMs: number): void {
     if (this.destroyed) return;
+    this.clock += dtMs;
     const maxStep = (WORLD.seamDriftLuPerSec * dtMs) / 1000;
     const d = this.seamTarget - this.seam;
     if (Math.abs(d) > 0.01) {
@@ -834,13 +1097,14 @@ export class ProceduralBackdropView implements BackdropView {
       if (this.wipeState.t >= this.wipeState.ms) this.finishWipe();
     }
     if (this.o.textures.version !== this.texVersion) {
-      // a pre-rendered layer arrived: swap it in (and its ambient life)
+      // a pre-rendered layer or scene arrived: swap it in (and its ambient life)
       this.texVersion = this.o.textures.version;
       this.syncGround();
       this.rebuildAmbient();
+      this.syncWeather();
       this.dirty = true;
     }
-    if (this.dirty) this.layout();
+    if (this.dirty || this.fading) this.layout();
     this.stepAmbient(dtMs);
     const vl = this.viewLeft ?? WORLD.worldLeftLu;
     const vw = this.viewLeft === null ? WORLD.worldWidthLu : this.viewWidth;
@@ -853,7 +1117,12 @@ export class ProceduralBackdropView implements BackdropView {
     if (w.side === 0) this.left = w.age;
     else this.right = w.age;
     this.wipeState = null;
+    // the age a side has left releases its GPU textures (PLAN 2b "Memory")
+    const keep = new Set([sceneKey(this.left, this.sceneOf(0, this.left)), sceneKey(this.right, this.sceneOf(1, this.right))]);
+    const t = this.o.textures as Partial<BackdropTextures>;
+    if (typeof t.release === 'function') t.release.call(this.o.textures, keep);
     this.rebuildAmbient();
+    this.syncWeather();
     this.dirty = true;
   }
 
@@ -862,11 +1131,14 @@ export class ProceduralBackdropView implements BackdropView {
     const w = this.wipeState;
     const half = w ? (w.side === 0 ? this.seam - (WORLD.worldLeftLu - 100) : WORLD.worldRightLu + 100 - this.seam) : 0;
     const eased = w ? 1 - Math.pow(1 - Math.min(1, w.t / w.ms), 2) : 0;
-    const regions = ageRegions({ left: this.left, right: this.right, seam: this.seam, wipe: w ? { side: w.side, age: w.age, front: half * eased } : null, skins: this.skins });
+    const regions = ageRegions({ left: this.left, right: this.right, seam: this.seam, wipe: w ? { side: w.side, age: w.age, front: half * eased } : null, skins: this.skins, scenes: this.scenes });
+    this.regions = regions;
     const pieces = composePieces(regions, this.seam);
     for (const kind of LAYERS) this.placements[kind] = this.placement(kind);
     const lift = this.viewLeft === null ? 0 : themedSkyLift(this.viewAbove);
-    for (const l of this.layers) l.layout(pieces, this.placements[l.kind], l.kind === 'sky' ? lift : 0);
+    let fading = false;
+    for (const l of this.layers) fading = l.layout(pieces, this.placements[l.kind], l.kind === 'sky' ? lift : 0, this.clock) || fading;
+    this.fading = fading;
     for (const kind of LAYERS) {
       const at = this.placements[kind] ?? IDENTITY_PLACEMENT;
       const c = this.ambientLayers[kind];
@@ -875,20 +1147,37 @@ export class ProceduralBackdropView implements BackdropView {
       if (kind === 'sky') {
         this.clouds.x = at.offset;
         this.clouds.scale.set(at.stretch, at.scaleY);
+      } else {
+        const lc = this.lightLayers[kind];
+        lc.x = at.offset;
+        lc.scale.set(at.stretch, at.scaleY);
       }
     }
-    // seam haze: a soft grey veil, 240 lu wide (A11: 30% desaturation)
+    // seam haze: a soft grey veil (A11: 30% desaturation)
     this.haze.layout(this.seam, this.left, this.right);
     // a themed half's ground, faded across the seam (review 11)
     const gl = this.skins.left ? this.o.textures.groundThemed(this.arena, this.skins.left) : null;
     const gr = this.skins.right ? this.o.textures.groundThemed(this.arena, this.skins.right) : null;
     this.groundSkin.layout(this.seam, { left: gl?.tex ?? null, right: gr?.tex ?? null });
+    const worldX = (layer: AmbLayer, x: number): number => {
+      const at = layer === 'ground' ? undefined : this.placements[layer];
+      return at ? at.offset + x * at.stretch : x;
+    };
     for (const a of this.ambient) {
       if (!a.age) continue;
-      const at = a.spec.layer === 'ground' ? undefined : this.placements[a.spec.layer];
-      const weight = regionWeight(regions, a.age, at ? at.offset + a.spec.x * at.stretch : a.spec.x);
+      const age = a.age;
+      const scene = a.scene;
+      const weight = regionWeight(regions, (r) => r.age === age && (scene === undefined || (r.scene ?? 'classic') === scene), worldX(a.spec.layer, a.spec.x));
       a.node.visible = weight > 0.02;
       a.node.alpha = (a.spec.alpha ?? 1) * weight;
+    }
+    for (const p of this.propNodes) {
+      const x = p.sprite.kind === 'loop' || p.sprite.kind === 'bob' ? p.sprite.at[0] : null;
+      // a moving group is weighted where it is in `stepAmbient`; a fixed prop here
+      p.weight = x === null ? 1 : regionWeight(regions, (r) => r.age === p.age && (r.scene ?? 'classic') === p.scene, worldX(p.sprite.layer, x));
+    }
+    for (const l of this.lightNodes) {
+      l.weight = regionWeight(regions, (r) => r.age === l.age && (r.scene ?? 'classic') === l.scene && isNightSky(r.skin), worldX(l.light.layer, l.light.x));
     }
   }
 
@@ -903,6 +1192,7 @@ export class ProceduralBackdropView implements BackdropView {
       s.position.set(SKY_FRAME.x0 + this.rng.next() * SKY_FRAME.width, -470 - depth * 200 - this.rng.next() * 50);
       s.scale.set(0.6 + depth * 1.1 + this.rng.next() * 0.3);
       s.alpha = 0.35 + depth * 0.5;
+      this.cloudAlpha.push(s.alpha);
       this.cloudSpeed.push(2 + depth * 9);
       this.clouds.addChild(s);
     }
@@ -911,37 +1201,111 @@ export class ProceduralBackdropView implements BackdropView {
   private rebuildAmbient(): void {
     for (const a of this.ambient) a.node.destroy();
     this.ambient = [];
+    for (const p of this.propNodes) for (const n of p.nodes) n.destroy();
+    this.propNodes = [];
+    for (const l of this.lightNodes) l.node.destroy();
+    this.lightNodes = [];
+    const looks = new Map<string, { age: AgeId; scene: string }>();
     const ages = new Set<AgeId>([this.left, this.right]);
-    if (this.wipeState) ages.add(this.wipeState.age);
-    for (const age of ages) {
-      for (const kind of ['far', 'mid'] as const) {
-        if (kind === 'mid' && this.o.quality === 'lite') continue;
-        for (const spec of this.o.textures.layer(kind, age).ambient) this.addAmbient(spec, age);
-      }
-      for (const spec of extraAmbient(age)) if (this.o.quality === 'high' || spec.layer !== 'mid') this.addAmbient(spec, age);
+    const add = (side: Side, age: AgeId) => {
+      const scene = this.sceneOf(side, age);
+      looks.set(sceneKey(age, scene), { age, scene });
+    };
+    add(0, this.left);
+    add(1, this.right);
+    if (this.wipeState) {
+      ages.add(this.wipeState.age);
+      add(this.wipeState.side, this.wipeState.age);
     }
+    const lite = this.o.quality === 'lite';
+    for (const { age, scene } of looks.values()) {
+      const emitters: AmbientSpec[] = [];
+      for (const kind of ['back', 'far', 'mid'] as const) {
+        if (kind === 'mid' && lite) continue;
+        if (kind === 'back' && lite) continue;
+        for (const spec of this.o.textures.layer(kind, age, null, scene).ambient) {
+          if (spec.kind === 'emit') emitters.push(spec);
+          this.addAmbient(spec, age, scene);
+        }
+      }
+      this.addSceneProps(age, scene, emitters);
+    }
+    for (const age of ages) for (const spec of extraAmbient(age)) if (this.o.quality === 'high' || spec.layer !== 'mid') this.addAmbient(spec, age);
     for (const spec of this.o.textures.ground(this.arena).ambient) {
       this.addAmbient(spec, null);
       // The mirrored ground copy gets its own ambient life (A17.3 longer lane).
       const mx = 2 * (GROUND_FRAME.x0 + GROUND_FRAME.width) - spec.x;
       if (mx <= WORLD.worldRightLu + 120) this.addAmbient({ ...spec, x: mx }, null);
     }
-    // cloud tint follows the side ages (and a side's backdrop skin)
+    // cloud tint follows the side ages (and a side's backdrop skin or scene sky); space scenes hide them
     const lt = this.skins.left ? BACKDROP_THEMES[this.skins.left.slice(9)] : undefined;
     const rt = this.skins.right ? BACKDROP_THEMES[this.skins.right.slice(9)] : undefined;
+    const ls = this.sceneData(this.left, this.sceneOf(0, this.left))?.sky ?? null;
+    const rs = this.sceneData(this.right, this.sceneOf(1, this.right))?.sky ?? null;
     this.clouds.children.forEach((c, i) => {
       if (!(c instanceof Sprite)) return;
       const leftSide = c.x < this.seam;
       const theme = leftSide ? lt : rt;
-      c.tint = theme ? theme.cloudTint : (CLOUD_TINT[leftSide ? this.left : this.right] ?? CLOUD_TINT[i % 2 ? this.left : this.right]);
+      const sky = leftSide ? ls : rs;
+      c.tint = theme ? theme.cloudTint : (sky?.cloudTint ?? CLOUD_TINT[leftSide ? this.left : this.right] ?? CLOUD_TINT[i % 2 ? this.left : this.right]);
+      c.alpha = (this.cloudAlpha[i] ?? 0.6) * (theme ? 1 : (sky?.clouds ?? 1));
     });
   }
 
-  private addAmbient(spec: AmbientSpec, age: AgeId | null): void {
+  /** A scene's moving props and night lights (PLAN 2b), within the per-half limits. */
+  private addSceneProps(age: AgeId, scene: string, emitters: AmbientSpec[]): void {
+    const data = this.sceneData(age, scene);
+    if (!data) return;
+    const t = this.o.textures as Partial<BackdropTextures>;
+    const frames = typeof t.sceneProps === 'function' ? t.sceneProps.call(this.o.textures, age, scene) : null;
+    const lite = this.o.quality === 'lite';
+    const { sprites, rateScale } = limitSprites(data.props?.sprites ?? [], emitters, this.o.quality);
+    const seed = (this.o.seed * 31 + sceneKey(age, scene).length * 7) >>> 0;
+    sprites.forEach((sp, i) => {
+      if (sp.kind === 'emit') {
+        if (sp.layer === 'back' && lite) return;
+        this.addAmbient({ ...sp.spec, rate: (sp.spec.rate ?? 1) * rateScale }, age, scene);
+        return;
+      }
+      if (!frames || (sp.layer === 'back' && lite)) return;
+      const count = sp.kind === 'path' ? sp.group.length : 1;
+      const nodes: Sprite[] = [];
+      for (let k = 0; k < count; k++) {
+        const s = new Sprite(Texture.EMPTY);
+        s.visible = false;
+        // props on the mid strip take its darker multiply, so they sit in the layer (MID_LAYER_TINT)
+        if (sp.layer === 'mid') s.tint = MID_LAYER_TINT;
+        this.ambientLayers[sp.layer].addChild(s);
+        nodes.push(s);
+      }
+      const trail = sp.kind === 'path' && sp.trail ? { spec: { ...sp.trail, kind: 'emit' as const, x: 0, y: 0, layer: sp.layer, rate: (sp.trail.rate ?? 1) * rateScale }, acc: 0 } : null;
+      this.propNodes.push({ sprite: sp, age, scene, phase: spritePhaseMs(seed, i, spritePeriodMs(sp)), nodes, frames, weight: 1, trail });
+    });
+    // the strips' emitters keep their rates, scaled down to the particle cap with the props'
+    if (rateScale < 1) this.emitScale.set(sceneKey(age, scene), rateScale);
+    else this.emitScale.delete(sceneKey(age, scene));
+    data.lights.forEach((light, i) => {
+      if (light.layer === 'back' && lite) return;
+      const node = fxSprite(this.o.baker, 'fx.p.glow');
+      node.tint = 0xffc98a;
+      node.blendMode = 'add';
+      node.scale.set((light.r * 2.4) / 10);
+      node.position.set(light.x, light.y);
+      node.visible = false;
+      this.lightLayers[light.layer].addChild(node);
+      this.lightNodes.push({ light, age, scene, node, phase: spritePhaseMs(seed + 977, i, 9000), weight: 0 });
+    });
+  }
+
+  /** Emitter rate scales per scene (the particle cap, PLAN 2b). */
+  private readonly emitScale = new Map<string, number>();
+
+  private addAmbient(spec: AmbientSpec, age: AgeId | null, scene?: string): void {
+    const sc = scene !== undefined ? { scene } : {};
     if (spec.kind === 'emit') {
       const holder = new Sprite(Texture.EMPTY);
       this.ambientLayers[spec.layer].addChild(holder);
-      this.ambient.push({ spec, age, node: holder, t: 0, acc: 0 });
+      this.ambient.push({ spec, age, ...sc, node: holder, t: 0, acc: 0 });
       return;
     }
     if (spec.liteSkip && this.o.quality === 'lite') return;
@@ -957,7 +1321,7 @@ export class ProceduralBackdropView implements BackdropView {
       f.destroy();
       return fr;
     });
-    this.ambient.push({ spec, age, node: s, t: this.rng.next() * 5000, acc: 0, ...(frames ? { frames } : {}) });
+    this.ambient.push({ spec, age, ...sc, node: s, t: this.rng.next() * 5000, acc: 0, ...(frames ? { frames } : {}) });
   }
 
   private stepAmbient(dtMs: number): void {
@@ -974,7 +1338,7 @@ export class ProceduralBackdropView implements BackdropView {
       const s = a.spec;
       switch (s.kind) {
         case 'rotate':
-          a.node.rotation += (((s.speed ?? 30) * Math.PI) / 180) * dt;
+          if (!this.reduceMotion) a.node.rotation += (((s.speed ?? 30) * Math.PI) / 180) * dt;
           break;
         case 'blink':
           a.node.alpha = (a.node.visible ? 1 : 0) * (0.25 + 0.75 * (Math.sin((a.t / (s.period ?? 1000)) * Math.PI * 2) > 0.6 ? 1 : 0));
@@ -1005,7 +1369,8 @@ export class ProceduralBackdropView implements BackdropView {
         }
         case 'emit': {
           if (a.age && !a.node.visible) break;
-          a.acc += (s.rate ?? 1) * dt * (lite ? 0.5 : 1);
+          const k = a.age && a.scene !== undefined ? (this.emitScale.get(sceneKey(a.age, a.scene)) ?? 1) : 1;
+          a.acc += (s.rate ?? 1) * k * dt * (lite ? 0.5 : 1);
           while (a.acc >= 1) {
             a.acc -= 1;
             this.emit(s, a.node.alpha);
@@ -1013,6 +1378,12 @@ export class ProceduralBackdropView implements BackdropView {
           break;
         }
       }
+    }
+    this.stepProps(dt, lite);
+    for (const l of this.lightNodes) {
+      const on = l.weight > 0.02;
+      l.node.visible = on;
+      if (on) l.node.alpha = l.weight * lightAlpha(this.clock, l.phase, this.reduceMotion);
     }
     for (let i = this.motes.length - 1; i >= 0; i--) {
       const m = this.motes[i];
@@ -1031,13 +1402,54 @@ export class ProceduralBackdropView implements BackdropView {
     }
   }
 
+  /** Moves the scene props on the render clock (still under Reduce motion), fading them across the seam. */
+  private stepProps(dt: number, lite: boolean): void {
+    const regions = this.regions;
+    for (const p of this.propNodes) {
+      const at = this.placements[p.sprite.layer];
+      const inst = spriteInstances(p.sprite, this.clock, p.phase, this.reduceMotion);
+      const moving = p.sprite.kind === 'path';
+      p.nodes.forEach((n, k) => {
+        const it = inst[k];
+        const f = it ? p.frames.get(it.frame) : undefined;
+        if (!it || !f) {
+          n.visible = false;
+          return;
+        }
+        const wx = at ? at.offset + it.x * at.stretch : it.x;
+        const w = moving ? regionWeight(regions, (r) => r.age === p.age && (r.scene ?? 'classic') === p.scene, wx) : p.weight;
+        n.visible = w > 0.02;
+        if (!n.visible) return;
+        if (n.texture !== f.tex) n.texture = f.tex;
+        n.anchor.set(f.ax, f.ay);
+        n.position.set(it.x, it.y);
+        n.scale.set((it.flip ? -1 : 1) / f.ppl, 1 / f.ppl);
+        n.rotation = it.rot;
+        n.alpha = it.alpha * w;
+      });
+      // a path's trail (the loco's smoke) follows its first member
+      const tr = p.trail;
+      const lead = p.nodes[0];
+      if (tr && lead?.visible && !this.reduceMotion) {
+        tr.acc += (tr.spec.rate ?? 1) * dt * (lite ? 0.5 : 1);
+        const flip = lead.scale.x < 0;
+        const dx = (tr.spec as AmbientSpec & { dx?: number }).dx ?? 0;
+        const dy = (tr.spec as AmbientSpec & { dy?: number }).dy ?? 0;
+        while (tr.acc >= 1) {
+          tr.acc -= 1;
+          this.emit({ ...tr.spec, x: lead.x + (flip ? -dx : dx), y: lead.y + dy }, lead.alpha);
+        }
+      }
+    }
+  }
+
   private emit(s: AmbientSpec, weight: number): void {
     const sp = fxSprite(this.o.baker, s.part);
     const x = s.x + (s.spreadX ? (this.rng.next() * 2 - 1) * s.spreadX : (this.rng.next() - 0.5) * 8);
     sp.position.set(x, s.y);
     sp.scale.set(s.scale ?? 1);
     sp.tint = s.tint ?? 0xffffff;
-    const speed = s.speed ?? 15;
+    const speed = (s.speed ?? 15) * (this.reduceMotion ? 0.6 : 1);
     const vx = s.fall ? (this.rng.next() - 0.3) * speed * 0.3 : (this.rng.next() - 0.5) * speed * 0.4 + 4;
     const vy = s.fall ? speed * (0.8 + this.rng.next() * 0.4) : -speed * (0.7 + this.rng.next() * 0.6);
     if (s.part === 'fx.p.beam') sp.rotation = Math.PI / 2 + 0.15;
@@ -1057,11 +1469,14 @@ export class ProceduralBackdropView implements BackdropView {
   }
 }
 
-/** How much of `age` shows at x (1 inside its region, 0 elsewhere; linear across a 240 lu seam). */
-function regionWeight(regions: readonly Region[], age: AgeId, x: number): number {
+/**
+ * How much of a look shows at x: 1 inside a matching region, 0 elsewhere, linear across the seam.
+ * `match` picks the regions (an age, a scene of it, a night sky).
+ */
+function regionWeight(regions: readonly Region[], match: (r: Region) => boolean, x: number): number {
   let w = 0;
   for (const r of regions) {
-    if (r.age !== age) continue;
+    if (!match(r)) continue;
     const d = Math.min(x - r.x0, r.x1 - x);
     w = Math.max(w, Math.max(0, Math.min(1, 0.5 + d / WORLD.seamBlendLu)));
   }

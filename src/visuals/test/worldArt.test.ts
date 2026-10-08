@@ -10,8 +10,9 @@ import { MANIFEST } from '../manifest';
 import { WORLD_BASE_MOUNTS_LU, WORLD_OVERRIDES } from '../manifest.world';
 import { frameIndex, WorldAtlas, worldSourceAge, type WorldMeta, type WorldSheet } from '../adapters/worldAtlas';
 
-const JSONS = import.meta.glob<SheetFile>(['/public/art/turrets/*/*.json', '/public/art/bases/*.json'], { eager: true, import: 'default' });
-const PNGS = new Set(Object.keys(import.meta.glob(['/public/art/turrets/*/*.png', '/public/art/bases/*.png'], { query: '?url', import: 'default' })));
+// base skin models (PLAN 2c) live in art/bases/skins/ (cosmetics.bases.test.ts checks their contract)
+const JSONS = import.meta.glob<SheetFile>(['/public/art/turrets/*/*.json', '/public/art/bases/*.json', '/public/art/bases/skins/*.json'], { eager: true, import: 'default' });
+const PNGS = new Set(Object.keys(import.meta.glob(['/public/art/turrets/*/*.png', '/public/art/bases/*.png', '/public/art/bases/skins/*.png'], { query: '?url', import: 'default' })));
 
 interface SheetFile {
   animations: Record<string, string[]>;
@@ -30,7 +31,7 @@ describe('world art manifest', () => {
 
   it('covers all 46 turrets (32 plus the Stone, Bronze, Medieval, Gunpowder, Modern, Future and Cosmic waves) and 8 bases, merged into the main manifest', () => {
     expect(entries.filter(([id]) => id.startsWith('turret.'))).toHaveLength(46);
-    expect(entries.filter(([id]) => id.startsWith('base.'))).toHaveLength(8);
+    expect(entries.filter(([id]) => id.startsWith('base.') && !id.includes('@'))).toHaveLength(8);
     for (const [id, def] of entries) expect(MANIFEST[id]?.source, id).toBe(def.source);
   });
 

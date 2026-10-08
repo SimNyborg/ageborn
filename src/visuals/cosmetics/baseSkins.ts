@@ -4,12 +4,14 @@
  * a trim colour on the flag poles and an ambient layer of particles (snow, embers, petals ...).
  * Tints are strong enough to tell a skin from the standard base at lane size (reviewed 2026-09-29).
  *
- * Owned by Track B (PLAN 2c: base skins as real models). The tint is the fallback until a skin's model
- * passes review; then its `BASE_SKINS` entry is deleted and the model (`base.<age>@<id>`) shows. C0
- * (2026-10-08) moved the skin's code-drawn keep and layers here from `art.ts`, which routes
- * `baseSkin.*` to this module, and added `baseSkinThumbUrl` (the pre-rendered thumbnail; null until
- * Track B's atlas is in).
+ * Owned by Track B (PLAN 2c: base skins as real models). A skin with a model (`WORLD_BASE_SKINS`,
+ * `base.<age>@<id>`, sheet `art/bases/skins/<id>.json`) shows as itself in the lane, on VS and Home;
+ * its model loads lazily, and its `BASE_SKINS` tint stays as the stand-in while the sheet streams in
+ * (and for the Customize mock-up until the thumbnails ship). C0 (2026-10-08) moved the skin's
+ * code-drawn keep and layers here from `art.ts`, which routes `baseSkin.*` to this module, and added
+ * `baseSkinThumbUrl` (the pre-rendered thumbnail; null until Track B's atlas is in).
  */
+import { WORLD_BASE_SKINS } from '../manifest.world';
 import { circle, hex, INK, poly, rect, shade, shapesToSvg, star, type Paints, type Shape } from './shapes';
 
 /** The preview team colour (side 0 blue, A11). */
@@ -39,9 +41,14 @@ export const BASE_SKINS: Readonly<Record<string, BaseSkinArt>> = {
   nebula_ark: { tint: 0xc8a4ff, trim: 0xbda8ff, particles: 'stars', particleColor: 0xffffff },
 };
 
-/** True when the visuals can draw `baseSkin.<id>` (its tint fallback today; its model once Track B ships it). */
+/** True when the visuals can draw `baseSkin.<id>` (its model, or its tint on the standard base). */
 export function hasBaseSkinArt(id: string): boolean {
-  return BASE_SKINS[id] !== undefined;
+  return BASE_SKINS[id] !== undefined || hasBaseSkinModel(id);
+}
+
+/** True when `baseSkin.<id>` has a real model (`base.<age>@<id>`, PLAN 2c), not only a tint. */
+export function hasBaseSkinModel(id: string): boolean {
+  return WORLD_BASE_SKINS[id] !== undefined;
 }
 
 /** The base skin's lane look (tint, trim, particles) for a `baseSkin.<id>` key, or null (no key, or a model without a tint). */

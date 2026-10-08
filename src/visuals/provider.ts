@@ -9,7 +9,9 @@ import type { ArtProvider, BackdropView, BaseDressingView, BaseView, EffectView,
 import type { AgeId, CardId, CosmeticKey, EffectId, Foil, Side, SideLook, SkinId, TeamPreset, VisualId } from '@/contracts/ids';
 import { parseSkinnedVisualId, skinnedVisualId } from '@/core/ids';
 import { AtlasAdapter, wantsHdSheets, type SheetLease } from './adapters/atlas';
-import { isWorldSource, WorldAtlas } from './adapters/worldAtlas';
+import { isBaseSkinSource, isWorldSource, WorldAtlas, worldSourceAge } from './adapters/worldAtlas';
+import { renderWorldPortrait } from './adapters/worldPortrait';
+import { BASE_SKINS } from './cosmetics/baseSkins';
 import { renderSpriteStrip, stripRequest } from './adapters/spriteStrip';
 import { AtlasFortView } from './fortViews/atlasFortView';
 import { fortSource, type FortKindId } from './forts';
@@ -334,21 +336,50 @@ export class VisualsArtProvider implements ArtProvider {
     if (skin && !AGES.some((a) => this.manifest[skinnedVisualId(`base.${a}`, skin)])) {
       this.once(`skin:base@${skin}`, `[visuals] no base has the skin "${skin}", drawing plain bases`);
     }
-    const r = resolveAge(o.age);
+    // A skin model (PLAN 2c) streams in lazily: it starts loading now, and until it arrives the age's
+    // standard base draws (the dressing tints it with the skin's old tint); the atlas view swaps the model
+    // in when it lands, and morphs into each later age's own skin.
+    const want = resolveAge(o.age);
+    let r = want;
+    if (want && this.isLazySkin(want.def) && (this.force === null || this.force === 'atlas')) {
+      void this.atlas.world.ensure(want.def.source);
+      if (!this.atlas.world.get(want.def.source)) r = this.resolve(`base.${o.age}`);
+    }
     const def = r?.def ?? this.missing(`base.${o.age}`);
     const key = r?.key ?? `base.${o.age}`;
     const fb = this.sheetFallback(key, r?.def, 'base');
     if (fb) {
-      // the sheet is not loaded (yet): the procedural base, which morphs through procedural entries
+      // the sheet is not loaded (yet): the procedural base, which morphs through procedural entries (a
+      // skin model without a procedural twin morphs through its age's standard base)
       const procAge = (age: AgeId): { key: string; def: VisualDef } | undefined => {
         const e = resolveAge(age);
         if (!e || e.def.kind !== 'atlas') return e;
         const proc = PROCEDURAL_MANIFEST[e.key];
-        return proc ? { key: e.key, def: proc } : undefined;
+        if (proc) return { key: e.key, def: proc };
+        const plain = this.isLazySkin(e.def) ? PROCEDURAL_MANIFEST[`base.${age}`] : undefined;
+        return plain ? { key: `base.${age}`, def: plain } : undefined;
       };
       return fb.adapter.createBase({ key, def: fb.def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++, age: o.age, skin: skinOf(o.age), resolveAge: procAge });
     }
     return this.adapterFor(key, r?.def, 'base').createBase({ key, def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++, age: o.age, skin: skinOf(o.age), resolveAge });
+  }
+
+  /** A base skin model's entry (`base.<age>@<skin>`, sheet `art/bases/skins/<skin>.json`, loaded lazily). */
+  private isLazySkin(def: VisualDef): boolean {
+    return def.kind === 'atlas' && isBaseSkinSource(def.source);
+  }
+
+  /**
+   * Starts loading the base skin models a side will show (Customize try-on, VS prefetch); resolves when
+   * they have loaded or failed. Skin ids without a model are skipped.
+   */
+  prefetchBaseSkins(skins: Partial<Record<AgeId, SkinId>>): Promise<void> {
+    const all: Promise<unknown>[] = [];
+    for (const [age, s] of Object.entries(skins) as [AgeId, SkinId | undefined][]) {
+      const def = s ? this.manifest[skinnedVisualId(`base.${age}`, s)] : undefined;
+      if (def && this.isLazySkin(def)) all.push(this.atlas.world.ensure(def.source));
+    }
+    return Promise.all(all).then(() => undefined);
   }
 
   /** Base flag, national flag, decorations and skin restyle of one side (DESIGN A18.9.4). */
@@ -426,7 +457,20 @@ export class VisualsArtProvider implements ArtProvider {
     const cacheKey = `${skinnedVisualId(visualId, o.skin)}|${o.foil ?? 'none'}|${o.size}|${o.side ?? 0}|${o.plate === false ? 'bare' : 'plate'}|${this.preset}`;
     const hit = this.portraits.get(cacheKey);
     if (hit) return hit;
-    const r = this.resolve(visualId, o.skin);
+    // A base skin still on its tint (no model yet, PLAN 2c): the age's standard base with the skin's body
+    // tint, as the lane draws it; a skin model resolves to its own sheet below (VS, Home, Customize).
+    const tint = this.baseSkinTint(visualId, o.skin);
+    if (tint !== null) {
+      const plain = this.resolve(visualId)?.def;
+      if (plain && plain.kind === 'atlas' && isWorldSource(plain.source) && !this.force) {
+        const p = renderWorldPortrait({ url: this.atlasUrl(plain.source), age: worldSourceAge(plain.source), size: o.size, foil: o.foil ?? 'none', teamColor: teamColor(o.side ?? 0, this.preset), plate: o.plate !== false, bodyTint: tint })
+          .then((u) => u ?? '')
+          .catch(() => '');
+        this.portraits.set(cacheKey, p);
+        return p;
+      }
+    }
+    const r = this.resolve(visualId, tint !== null ? undefined : o.skin);
     const def = r?.def ?? this.missing(visualId);
     const key = r?.key ?? visualId;
     const req = { key, def, size: o.size, foil: o.foil ?? 'none', side: o.side ?? 0, plate: o.plate !== false, teamPreset: this.preset } as const;
@@ -435,6 +479,12 @@ export class VisualsArtProvider implements ArtProvider {
       .catch(() => '');
     this.portraits.set(cacheKey, p);
     return p;
+  }
+
+  /** The body tint of a base skin that has no model entry yet (`base.<age>` with a tint skin), else null. */
+  private baseSkinTint(visualId: VisualId, skin: SkinId | undefined): number | null {
+    if (!skin || !visualId.startsWith('base.') || this.manifest[skinnedVisualId(visualId, skin)]) return null;
+    return BASE_SKINS[skin]?.tint ?? null;
   }
 
   /**

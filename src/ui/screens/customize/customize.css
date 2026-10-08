@@ -356,7 +356,9 @@
 .cos-mock__deco {
   position: absolute;
   bottom: 17%;
-  width: 15%;
+  /* never under the 44 px touch budget; a wider spot grows around the same centre */
+  width: max(15%, 44px);
+  margin-left: calc((15% - max(15%, 44px)) / 2);
   aspect-ratio: 48 / 64;
   padding: 0;
   border: 0;
@@ -426,6 +428,36 @@ button.cos-mock__deco.is-picked {
   border: 2px solid var(--ui-ink);
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #fff5c2, var(--ui-gold) 55%, var(--ui-gold-lo));
+}
+/* The finial by the base flag's rarity: a wooden knob, a brass ball, a steel spear tip, a gold star with a glow. */
+.cos-mock__cap--common {
+  background: radial-gradient(circle at 35% 35%, #e0b07c, #a96d3d 55%, #6b4428);
+  border-color: #3b2414;
+}
+.cos-mock__cap--rare {
+  background: radial-gradient(circle at 35% 35%, #fff5c2, #f6c23e 55%, #a46b17);
+}
+.cos-mock__cap--epic {
+  top: -17px;
+  width: 10px;
+  height: 17px;
+  margin-left: -5px;
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(90deg, #f4f7fa 0 45%, #a9b2bd 55%);
+  clip-path: polygon(50% 0, 100% 52%, 72% 100%, 28% 100%, 0 52%);
+  filter: drop-shadow(0 0 0.6px #3a3f45) drop-shadow(0 0 0.6px #3a3f45);
+}
+.cos-mock__cap--legendary {
+  top: -16px;
+  width: 18px;
+  height: 18px;
+  margin-left: -9px;
+  border: 0;
+  border-radius: 0;
+  background: radial-gradient(circle at 40% 35%, #fff6c8, #f6c23e 55%, #c98a1c);
+  clip-path: polygon(50% 0, 62% 35%, 100% 38%, 70% 60%, 80% 98%, 50% 76%, 20% 98%, 30% 60%, 0 38%, 38% 35%);
+  filter: drop-shadow(0 0 3px rgb(255 240 190 / 0.95));
 }
 .cos-mock__flag {
   position: absolute;
@@ -540,18 +572,36 @@ button.cos-mock__deco.is-picked {
   animation: none !important;
 }
 
-/* ---- item tiles -------------------------------------------------------------------------------- */
+/* ---- item cards (PLAN 2a "Item cards") -----------------------------------------------------------
+   Every collection item is a card on a rarity plate: Common chiselled slate, Rare teal steel with four
+   rivets, Epic violet enamel with corner gem studs, Legendary gold filigree with corner scrolls and a
+   slow sheen. The art sits in a recessed window, the rarity is a gem shape plus the plate (never colour
+   alone), the name wraps and never clips, and the foot band carries the state or the source chip.
+   Plates follow the art sheet (AUDIT §3.1): a lit top bevel, a hard shadow band on the lower edge and an
+   outline in the plate's own dark. */
 .cos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(98px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
   gap: 10px;
   margin-bottom: 12px;
 }
-.cos-grid--flags {
-  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
-}
 .cos-grid--quotes {
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+}
+.cos-grid--backdrops {
+  grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
+}
+@media (max-height: 460px) {
+  .cos-grid {
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: 8px;
+  }
+  .cos-grid--quotes {
+    grid-template-columns: repeat(auto-fill, minmax(184px, 1fr));
+  }
+  .cos-grid--backdrops {
+    grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  }
 }
 .cos-grid > * {
   animation: ui-enter 300ms var(--ui-ease-out) both;
@@ -562,172 +612,696 @@ button.cos-mock__deco.is-picked {
 .cos-grid > *:nth-child(5) { animation-delay: 100ms; }
 .cos-grid > *:nth-child(n + 6) { animation-delay: 125ms; }
 
-.cos-tile {
-  --rar: var(--ui-common);
+.cos-card {
+  /* the plate ramp (fill, bevel light, shadow band, outline) and the window's light */
+  --plate: #7d8896;
+  --plate-hi: #b3bcc7;
+  --plate-sh: #5a636e;
+  --plate-line: #2b3037;
+  --win-a: #f2f4f7;
+  --win-b: #c9d0d9;
+  --orn: none;
+  --orn-size: 10px;
+  --orn-at: 2px;
   position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
-  border: 3px solid var(--ui-ink);
-  border-radius: 14px;
-  background: linear-gradient(180deg, #fffdf5 0%, #efe9ff 100%);
-  box-shadow: 0 4px 0 var(--ui-ink), inset 0 5px 0 var(--rar);
-  color: var(--ui-ink);
-  overflow: hidden;
-  transition: transform 120ms var(--ui-ease-out), box-shadow 120ms;
-}
-.cos-tile--plain {
-  align-items: center;
-  padding: 10px 6px 8px;
+  min-width: 0;
+  padding: 0;
+  border: 2.5px solid var(--plate-line);
+  border-radius: 13px;
+  background:
+    linear-gradient(180deg, var(--plate-hi) 0 2px, transparent 2px),
+    linear-gradient(180deg, color-mix(in srgb, var(--plate) 88%, #fff) 0%, var(--plate) 38%);
+  box-shadow:
+    0 3px 0 var(--plate-line),
+    0 6px 12px rgb(8 6 20 / 0.3);
+  color: #fff;
   font: inherit;
   text-align: center;
   cursor: pointer;
+  transition:
+    transform 120ms var(--ui-ease-out),
+    box-shadow 120ms var(--ui-ease-out),
+    filter 120ms var(--ui-ease-out);
 }
-.cos-tile:hover {
-  transform: translateY(-2px);
+/* the corner ornaments over the plate (and the window's corners, like brackets holding it) */
+.cos-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  background-image: var(--orn), var(--orn), var(--orn), var(--orn);
+  background-repeat: no-repeat;
+  background-size: var(--orn-size) var(--orn-size);
+  background-position:
+    var(--orn-at) var(--orn-at),
+    calc(100% - var(--orn-at)) var(--orn-at),
+    var(--orn-at) calc(100% - var(--orn-at)),
+    calc(100% - var(--orn-at)) calc(100% - var(--orn-at));
+  pointer-events: none;
 }
-.cos-tile:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 var(--ui-ink), inset 0 5px 0 var(--rar);
+.cos-card--common {
+  /* chiselled slate: chisel strokes on the corners */
+  --orn-size: 11px;
+  --orn-at: 1px;
+  --orn: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 11'%3E%3Cpath d='M1.4 6.4 6.4 1.4' stroke='%23424a54' stroke-width='1.3' stroke-linecap='round'/%3E%3Cpath d='M1.6 9.4 9.4 1.6' stroke='%23c9d0d8' stroke-width='.9' stroke-linecap='round' opacity='.8'/%3E%3C/svg%3E");
 }
+.cos-card--rare {
+  --plate: #2c9aac;
+  --plate-hi: #93d9e3;
+  --plate-sh: #1d6874;
+  --plate-line: #0f3a41;
+  --win-a: #effafb;
+  --win-b: #bfe2e8;
+  --orn-size: 9px;
+  --orn-at: 2.5px;
+  --orn: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Ccircle cx='5' cy='5' r='3.7' fill='%23dff2f5' stroke='%230f3a41' stroke-width='1.1'/%3E%3Cpath d='M2 6.4a3.4 3.4 0 0 0 6 0 3.4 3.4 0 0 1-6 0z' fill='%2387aeb5'/%3E%3Ccircle cx='3.9' cy='3.8' r='1' fill='%23fff'/%3E%3C/svg%3E");
+}
+.cos-card--epic {
+  --plate: #8a52d4;
+  --plate-hi: #cfaef5;
+  --plate-sh: #5c3494;
+  --plate-line: #2c1450;
+  --win-a: #f7f1fd;
+  --win-b: #dccbf3;
+  --orn-size: 12px;
+  --orn-at: 1px;
+  --orn: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M6 .9 11.1 6 6 11.1.9 6z' fill='%23f2c14e' stroke='%23533708' stroke-width='.9' stroke-linejoin='round'/%3E%3Cpath d='M6 3 9 6 6 9 3 6z' fill='%23ff6fcf'/%3E%3Cpath d='M3 6h6L6 9z' fill='%23c43a95'/%3E%3Cpath d='M4.4 5.2 6 3.6' stroke='%23fff' stroke-width='.8' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+.cos-card--legendary {
+  --plate: #dfa42c;
+  --plate-hi: #ffeab0;
+  --plate-sh: #a46b17;
+  --plate-line: #573808;
+  --win-a: #fffaea;
+  --win-b: #f5dca0;
+  --orn-size: 16px;
+  --orn-at: 0px;
+  --orn: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.4 14C2.4 7.4 7.4 2.4 14 2.4' fill='none' stroke='%23573808' stroke-width='2.6' stroke-linecap='round'/%3E%3Cpath d='M2.4 14C2.4 7.4 7.4 2.4 14 2.4' fill='none' stroke='%23ffe39a' stroke-width='1' stroke-linecap='round'/%3E%3Cpath d='M14 2.4c1.7 0 2 2 .7 2.5-1 .4-1.7-.6-1-1.3M2.4 14c0 1.7 2 2 2.5.7.4-1-.6-1.7-1.3-1' fill='none' stroke='%23573808' stroke-width='1.2' stroke-linecap='round'/%3E%3Cpath d='M5.6 4.2 7 5.6 5.6 7 4.2 5.6z' fill='%23fff3c4' stroke='%23573808' stroke-width='.7'/%3E%3C/svg%3E");
+}
+/* Each plate's material texture (AUDIT §3.1: hand-placed strokes, no noise): chisel strokes on the
+   slate, brushed lines and a glint on the steel, a hard gloss cap on the enamel, damask scrolls in the gold. */
+.cos-card--common {
+  background:
+    linear-gradient(180deg, var(--plate-hi) 0 2px, transparent 2px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 44'%3E%3Cpath d='M5 10l5-3M30 5l6-2M18 27l4-4M35 33l5-1M8 37l3-4M39 17l2-5' stroke='%23464e58' stroke-width='1.1' stroke-linecap='round' opacity='.45'/%3E%3Cpath d='M5.8 10.8l5-3M30.8 5.8l6-2M18.8 27.8l4-4M35.8 33.8l5-1M8.8 37.8l3-4M39.8 17.8l2-5' stroke='%23d5dbe2' stroke-width='.8' stroke-linecap='round' opacity='.35'/%3E%3C/svg%3E") 0 0 / 44px 44px,
+    linear-gradient(180deg, color-mix(in srgb, var(--plate) 88%, #fff) 0%, var(--plate) 38%);
+}
+.cos-card--rare {
+  background:
+    linear-gradient(180deg, var(--plate-hi) 0 2px, transparent 2px),
+    linear-gradient(118deg, transparent 0 30%, rgb(255 255 255 / 0.2) 38%, transparent 47%),
+    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.06) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg, color-mix(in srgb, var(--plate) 86%, #fff) 0%, var(--plate) 40%);
+}
+.cos-card--epic {
+  background:
+    linear-gradient(180deg, var(--plate-hi) 0 2px, transparent 2px),
+    radial-gradient(140% 52% at 50% -6%, rgb(255 255 255 / 0.26) 0 60%, transparent 61%),
+    linear-gradient(180deg, color-mix(in srgb, var(--plate) 86%, #fff) 0%, var(--plate) 40%);
+}
+.cos-card--legendary {
+  background:
+    linear-gradient(180deg, var(--plate-hi) 0 2px, transparent 2px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Cpath d='M3 13c0-5 4-8 8-6 3 1.5 2.5 6-1 6-2.5 0-2.8-3-1-3.4M23 13c0 5-4 8-8 6-3-1.5-2.5-6 1-6 2.5 0 2.8 3 1 3.4' stroke='%23fff3c8' stroke-width='.9' fill='none' opacity='.42'/%3E%3C/svg%3E") 0 0 / 26px 26px,
+    radial-gradient(120% 60% at 50% 0%, rgb(255 248 220 / 0.35), transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb, var(--plate) 86%, #fff) 0%, var(--plate) 40%);
+}
+/* the rarity name on an owned card's foot band (the plate and gem say it too; words help recognition) */
+.cos-card__rarity {
+  color: var(--plate-hi);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 var(--plate-line);
+}
+/* The corner pieces are mirrored for the other three corners (the scrolls and chisel strokes are not symmetric). */
+.cos-card--legendary::before,
+.cos-card--common::before {
+  background-image: var(--orn), var(--orn-tr), var(--orn-bl), var(--orn-br);
+}
+.cos-card--common {
+  --orn-tr: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 11'%3E%3Cg transform='matrix(-1 0 0 1 11 0)'%3E%3Cpath d='M1.4 6.4 6.4 1.4' stroke='%23424a54' stroke-width='1.3' stroke-linecap='round'/%3E%3Cpath d='M1.6 9.4 9.4 1.6' stroke='%23c9d0d8' stroke-width='.9' stroke-linecap='round' opacity='.8'/%3E%3C/g%3E%3C/svg%3E");
+  --orn-bl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 11'%3E%3Cg transform='matrix(1 0 0 -1 0 11)'%3E%3Cpath d='M1.4 6.4 6.4 1.4' stroke='%23424a54' stroke-width='1.3' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E");
+  --orn-br: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 11'%3E%3Cg transform='matrix(-1 0 0 -1 11 11)'%3E%3Cpath d='M1.4 6.4 6.4 1.4' stroke='%23424a54' stroke-width='1.3' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E");
+}
+.cos-card--legendary {
+  --orn-tr: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cg transform='matrix(-1 0 0 1 16 0)'%3E%3Cpath d='M2.4 14C2.4 7.4 7.4 2.4 14 2.4' fill='none' stroke='%23573808' stroke-width='2.6' stroke-linecap='round'/%3E%3Cpath d='M2.4 14C2.4 7.4 7.4 2.4 14 2.4' fill='none' stroke='%23ffe39a' stroke-width='1' stroke-linecap='round'/%3E%3Cpath d='M14 2.4c1.7 0 2 2 .7 2.5-1 .4-1.7-.6-1-1.3M2.4 14c0 1.7 2 2 2.5.7.4-1-.6-1.7-1.3-1' fill='none' stroke='%23573808' stroke-width='1.2' stroke-linecap='round'/%3E%3Cpath d='M5.6 4.2 7 5.6 5.6 7 4.2 5.6z' fill='%23fff3c4' stroke='%23573808' stroke-width='.7'/%3E%3C/g%3E%3C/svg%3E");
+  --orn-bl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cg transform='matrix(1 0 0 -1 0 16)'%3E%3Cpath d='M2.4 14C2.4 7.4 7.4 2.4 14 2.4' fill='none' stroke='%23573808' stroke-width='2.6' stroke-linecap='round'/%3E%3Cpath d='M2.4 14C2.4 7.4 7.4 2.4 14 2.4' fill='none' stroke='%23ffe39a' stroke-width='1' stroke-linecap='round'/%3E%3Cpath d='M14 2.4c1.7 0 2 2 .7 2.5-1 .4-1.7-.6-1-1.3M2.4 14c0 1.7 2 2 2.5.7.4-1-.6-1.7-1.3-1' fill='none' stroke='%23573808' stroke-width='1.2' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E");
+  --orn-br: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cg transform='matrix(-1 0 0 -1 16 16)'%3E%3Cpath d='M2.4 14C2.4 7.4 7.4 2.4 14 2.4' fill='none' stroke='%23573808' stroke-width='2.6' stroke-linecap='round'/%3E%3Cpath d='M2.4 14C2.4 7.4 7.4 2.4 14 2.4' fill='none' stroke='%23ffe39a' stroke-width='1' stroke-linecap='round'/%3E%3Cpath d='M14 2.4c1.7 0 2 2 .7 2.5-1 .4-1.7-.6-1-1.3M2.4 14c0 1.7 2 2 2.5.7.4-1-.6-1.7-1.3-1' fill='none' stroke='%23573808' stroke-width='1.2' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E");
+}
+/* Not a collection item (the standard base, "No national flag", an empty spot, the starter emotes,
+   the classic skies, and the national flags, whose rarity stays hidden): a plain parchment-steel plate. */
+.cos-card--plain {
+  --plate: #8d8778;
+  --plate-hi: #c9c2b1;
+  --plate-sh: #6a6455;
+  --plate-line: #353126;
+  --win-a: #fbf8f0;
+  --win-b: #e2dac6;
+}
+/* The Legendary sheen: one sweep every 6 s (still under reduce motion). */
+.cos-card--legendary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 0 38%, rgb(255 255 255 / 0.5) 47%, rgb(255 246 214 / 0.18) 53%, transparent 60%) no-repeat;
+  background-size: 280% 100%;
+  background-position: 170% 0;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  animation: cos-sheen 6s var(--ui-ease-standard) infinite;
+}
+@keyframes cos-sheen {
+  0% {
+    background-position: 170% 0;
+  }
+  16%,
+  100% {
+    background-position: -70% 0;
+  }
+}
+
+/* the whole card is the button (an owned card equips, a locked one says how it is earned) */
 .cos-tile__hit {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
-  align-items: center;
-  gap: 2px;
+  align-items: stretch;
   width: 100%;
-  padding: 10px 6px 6px;
+  min-width: 0;
+  padding: 0;
   border: 0;
+  border-radius: 11px;
   background: none;
   color: inherit;
   font: inherit;
   text-align: center;
   cursor: pointer;
 }
-.cos-tile.is-locked .cos-tile__hit {
-  cursor: default;
+.cos-tile__hit:focus-visible,
+.cos-card.cos-tile--plain:focus-visible {
+  outline: 3px solid var(--ui-gold);
+  outline-offset: 2px;
 }
-.cos-tile__art {
+
+/* the recessed art window */
+.cos-card__window {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  margin: 5px 5px 0;
+  aspect-ratio: 4 / 3;
+  border: 2px solid var(--plate-line);
+  border-radius: 9px;
+  background: radial-gradient(115% 90% at 50% 30%, var(--win-a) 0 48%, var(--win-b) 100%);
+  box-shadow:
+    inset 0 3px 0 rgb(0 0 0 / 0.16),
+    inset 0 -2px 0 rgb(255 255 255 / 0.5);
+  overflow: hidden;
+}
+.cos-card .cos-tile__art {
   position: relative;
   display: grid;
   place-items: center;
-  width: 70px;
-  height: 58px;
+  width: 92%;
+  height: 92%;
 }
-.cos-tile--nationalFlag .cos-tile__art,
-.cos-tile--baseFlag .cos-tile__art {
-  width: 76px;
-  height: 52px;
+.cos-card .cos-tile__art > .cos-img {
+  filter: drop-shadow(0 2px 0 rgb(20 16 36 / 0.22));
 }
 .cos-tile--emote .cos-tile__art {
-  width: 52px;
-  height: 52px;
+  width: 74%;
+  height: 74%;
 }
-.cos-tile--baseSkin .cos-tile__art,
-.cos-grid--skins .cos-tile--plain .cos-tile__art {
-  width: 84px;
-  height: 72px;
+.cos-tile--decoration .cos-card__window {
+  --win-a: #f7f2e4;
+  --win-b: #dccfb0;
+  background:
+    radial-gradient(52% 14% at 50% 84%, rgb(67 61 51 / 0.32), transparent 72%),
+    radial-gradient(115% 90% at 50% 30%, var(--win-a) 0 48%, var(--win-b) 100%);
 }
 .cos-tile--decoration .cos-tile__art {
-  width: 48px;
-  height: 64px;
+  height: 96%;
 }
-.cos-tile--quote .cos-tile__art {
-  width: 26px;
-  height: 26px;
+.cos-tile--baseSkin .cos-card__window,
+.cos-grid--skins .cos-card--plain .cos-card__window {
+  background: linear-gradient(180deg, #cfe8fb 0%, #eef7ff 64%, #a8c879 64%, #86ab57 100%);
+}
+.cos-tile--baseSkin .cos-tile__art,
+.cos-grid--skins .cos-card--plain .cos-tile__art {
+  width: 100%;
+  height: 100%;
+}
+.cos-tile--backdrop .cos-card__window {
+  aspect-ratio: 16 / 9;
+}
+.cos-tile--backdrop .cos-tile__art {
+  width: 100%;
+  height: 100%;
 }
 .cos-tile__art--none {
-  width: 60px;
-  height: 40px;
-  border: 2px dashed rgba(27, 19, 48, 0.4);
+  width: 62%;
+  height: 56%;
+  border: 2px dashed rgb(53 49 38 / 0.45);
   border-radius: 8px;
 }
-.cos-tile__quote {
-  margin: 4px 2px;
-  padding: 8px 10px;
-  border: 2px solid var(--ui-ink);
-  border-radius: 12px 12px 12px 4px;
-  background: #fffbe6;
-  font-weight: 800;
-  font-size: 14px;
-  line-height: 1.2;
+
+/* the rarity gem (top left) and the state badges (top right) inside the window */
+.cos-card__gem {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  z-index: 2;
+  display: grid;
+  filter: drop-shadow(0 1px 0 rgb(0 0 0 / 0.35));
 }
-.cos-tile__name {
-  font-weight: 900;
-  font-size: 13px;
-  line-height: 1.1;
-}
-.cos-tile__rarity {
-  font-size: 11px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: color-mix(in srgb, var(--rar) 70%, var(--ui-ink));
-}
-.cos-tile.is-locked .cos-tile__art,
-.cos-tile.is-locked .cos-tile__quote {
-  filter: grayscale(0.85) brightness(0.72);
-  opacity: 0.7;
-}
+.cos-tile__on,
 .cos-tile__lock {
   position: absolute;
-  top: 8px;
-  right: 6px;
+  top: 3px;
+  right: 3px;
+  z-index: 2;
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
+  width: 20px;
+  height: 20px;
   border: 2px solid var(--ui-ink);
   border-radius: 50%;
-  background: #6b6790;
   color: #fff;
-}
-.cos-tile__how {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 0 6px 8px;
-  text-align: center;
-}
-.cos-tile__how small {
-  font-size: 12px;
-  font-weight: 800;
-  line-height: 1.15;
-  color: #4b4870;
-}
-.cos-tile.is-on {
-  background: linear-gradient(180deg, #f3fff1 0%, #c9f5c9 100%);
-  box-shadow: 0 4px 0 var(--ui-ink), inset 0 5px 0 var(--rar), 0 0 0 3px var(--ui-green-hi);
-  animation: ui-pop 280ms var(--ui-ease-back);
 }
 .cos-tile__on {
+  background: radial-gradient(circle at 35% 30%, #7fe39a, #2fae58 70%);
+  animation: ui-pop var(--ui-dur-small) var(--ui-ease-back) both;
+}
+.cos-tile__lock {
+  background: radial-gradient(circle at 35% 30%, #8a86ad, #4e4a72 70%);
+}
+
+/* the name: white with a dark edge on every plate, up to two lines (three for the longest country
+   names), never clipped */
+.cos-card .cos-tile__name {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.24em;
+  margin: 3px 5px 3px;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.12;
+  color: #fff;
+  text-shadow:
+    0 1.5px 0 var(--plate-line),
+    0 0 2px var(--plate-line),
+    0 0 1px var(--plate-line);
+  overflow-wrap: anywhere;
+}
+/* the foot band: the plate's shadow band, with the state pill or the source chip */
+.cos-card__foot {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 22px;
+  margin-top: auto;
+  padding: 2px 4px 3px;
+  border-top: 1.5px solid color-mix(in srgb, var(--plate-line) 50%, transparent);
+  border-radius: 0 0 10.5px 10.5px;
+  background: var(--plate-sh);
+}
+.cos-tile__state {
+  max-width: 100%;
+  padding: 1px 7px;
+  border: 1.5px solid #12401f;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #5fd683, #2fae58);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.3;
+  text-shadow: 0 1px 0 rgb(0 0 0 / 0.35);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: ui-pop var(--ui-dur-medium) var(--ui-ease-back);
+}
+.cos-card__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  padding: 1px 6px 1px 3px;
+  border-radius: 999px;
+  background: rgb(10 8 20 / 0.32);
+  box-shadow: inset 0 1px 0 rgb(0 0 0 / 0.25);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.cos-card__chip b {
+  font-weight: 900;
+}
+
+/* hover lifts; the press lands on pointerdown with the lip (U12, PLAN 2a: scale 0.96 plus the lip) */
+@media (hover: hover) {
+  .cos-card:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.04);
+  }
+}
+.cos-card:active,
+.cos-card:has(> .cos-tile__hit:active) {
+  transform: translateY(2px) scale(0.96);
+  box-shadow:
+    0 1px 0 var(--plate-line),
+    0 3px 6px rgb(8 6 20 / 0.25);
+  transition-duration: var(--ui-dur-press, 70ms);
+}
+/* locked: the art desaturated 70% and darker (the plate still says the rarity) */
+.cos-card.is-locked .cos-tile__art,
+.cos-card.is-locked .cos-tile__quote {
+  filter: saturate(0.3) brightness(0.76);
+}
+.cos-card.is-locked .cos-card__window {
+  background: radial-gradient(115% 90% at 50% 30%, color-mix(in srgb, var(--win-a) 80%, #6a6880) 0 48%, color-mix(in srgb, var(--win-b) 78%, #4c4a60) 100%);
+}
+/* A locked backdrop keeps its colours (a little dimmed): the sky is what tells one theme from another (review 6). */
+.cos-card.is-locked.cos-tile--backdrop .cos-tile__art {
+  filter: saturate(0.85) brightness(0.82);
+}
+/* equipped: a gold outline and the check badge */
+.cos-card.is-on {
+  box-shadow:
+    0 0 0 2.5px var(--ui-gold, #ffcf5c),
+    0 0 14px rgb(255 207 92 / 0.55),
+    0 3px 0 var(--plate-line);
+}
+/* the one tried on in the preview: a gold ring and a "Trying on" tag */
+.cos-card.is-trying {
+  box-shadow:
+    0 0 0 3px var(--ui-gold, #ffd447),
+    0 0 16px rgb(255 212 71 / 0.55),
+    0 3px 0 var(--plate-line);
+  transform: translateY(-2px);
+}
+.cos-tile__trying {
   position: absolute;
-  top: 8px;
-  right: 6px;
+  left: 50%;
+  bottom: 3px;
+  z-index: 2;
+  padding: 1px 8px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 99px;
+  background: var(--ui-gold, #ffd447);
+  color: var(--ui-ink);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  animation: ui-pop var(--ui-dur-small) var(--ui-ease-back);
+}
+
+/* Equip: the art pops 0.9 → 1.08 → 1 and Rare and up throw a ring of sparkles in their colour. */
+.cos-tile__art.is-pop {
+  animation: cos-art-pop 440ms var(--ui-ease-back) both;
+}
+@keyframes cos-art-pop {
+  0% {
+    transform: scale(0.9);
+  }
+  55% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.cos-card__spark {
+  position: absolute;
+  inset: -14px -14px 20px;
+  z-index: 6;
+  background: var(--rar);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23000'%3E%3Cpath d='M50 4Q51.5 11 58 12.5Q51.5 14 50 21Q48.5 14 42 12.5Q48.5 11 50 4Z'/%3E%3Cpath d='M86 26Q87 31 92 32Q87 33 86 38Q85 33 80 32Q85 31 86 26Z'/%3E%3Cpath d='M88 66Q89.2 72 95 73Q89.2 74 88 80Q86.8 74 81 73Q86.8 72 88 66Z'/%3E%3Cpath d='M50 82Q51 87 56 88Q51 89 50 94Q49 89 44 88Q49 87 50 82Z'/%3E%3Cpath d='M12 64Q13.2 70 19 71Q13.2 72 12 78Q10.8 72 5 71Q10.8 70 12 64Z'/%3E%3Cpath d='M14 22Q15 27 20 28Q15 29 14 34Q13 29 8 28Q13 27 14 22Z'/%3E%3Ccircle cx='70' cy='12' r='2'/%3E%3Ccircle cx='96' cy='50' r='1.8'/%3E%3Ccircle cx='28' cy='90' r='1.8'/%3E%3Ccircle cx='4' cy='46' r='2'/%3E%3C/g%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='%23000'%3E%3Cpath d='M50 4Q51.5 11 58 12.5Q51.5 14 50 21Q48.5 14 42 12.5Q48.5 11 50 4Z'/%3E%3Cpath d='M86 26Q87 31 92 32Q87 33 86 38Q85 33 80 32Q85 31 86 26Z'/%3E%3Cpath d='M88 66Q89.2 72 95 73Q89.2 74 88 80Q86.8 74 81 73Q86.8 72 88 66Z'/%3E%3Cpath d='M50 82Q51 87 56 88Q51 89 50 94Q49 89 44 88Q49 87 50 82Z'/%3E%3Cpath d='M12 64Q13.2 70 19 71Q13.2 72 12 78Q10.8 72 5 71Q10.8 70 12 64Z'/%3E%3Cpath d='M14 22Q15 27 20 28Q15 29 14 34Q13 29 8 28Q13 27 14 22Z'/%3E%3Ccircle cx='70' cy='12' r='2'/%3E%3Ccircle cx='96' cy='50' r='1.8'/%3E%3Ccircle cx='28' cy='90' r='1.8'/%3E%3Ccircle cx='4' cy='46' r='2'/%3E%3C/g%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 0 3px #fff);
+  pointer-events: none;
+  animation: cos-spark 640ms var(--ui-ease-out) both;
+}
+.cos-card__spark--legendary {
+  background: linear-gradient(135deg, #fff6c8, #ffcf3a 60%, #ff9d2a);
+}
+@keyframes cos-spark {
+  0% {
+    opacity: 0;
+    transform: scale(0.35) rotate(-12deg);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.12) rotate(14deg);
+  }
+}
+
+/* Phones (390 px tall and less): compact cards, so two and a half rows show under the tabs. */
+@media (max-height: 460px) {
+  .cos-card__window {
+    margin: 4px 4px 0;
+    aspect-ratio: 3 / 2;
+  }
+  .cos-tile--backdrop .cos-card__window {
+    aspect-ratio: 16 / 9;
+  }
+  .cos-card .cos-tile__name {
+    min-height: 1.12em;
+    margin: 3px 4px 2px;
+  }
+  .cos-card__foot {
+    min-height: 20px;
+    padding: 1px 3px 2px;
+  }
+  .cos-card .cos-tile__art {
+    width: 94%;
+    height: 94%;
+  }
+}
+
+/* Quote cards are wide: the line in the battle bubble, the name and the foot below. */
+.cos-card.cos-tile--wide .cos-tile__name {
+  min-height: 0;
+}
+
+/* ---- a locked item's info panel ------------------------------------------------------------------ */
+.cos-info {
+  display: grid;
+  grid-template-columns: minmax(120px, 42%) 1fr;
+  gap: 16px;
+  align-items: center;
+}
+.cos-info__card {
+  cursor: default;
+  padding-bottom: 5px;
+}
+.cos-info__card .cos-card__window {
+  margin-bottom: 0;
+}
+.cos-info__card:active {
+  transform: none;
+}
+.cos-info__text {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.cos-info__kind {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ui-muted);
+}
+.cos-info__kind b {
+  text-shadow: 0 1px 0 rgb(0 0 0 / 0.5);
+}
+.cos-info__how {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+.cos-info__after {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--ui-gold-hi, #ffe08a);
+  animation: ui-pop var(--ui-dur-small) var(--ui-ease-back);
+}
+.cos-info__action {
+  display: inline-flex;
+}
+
+/* ---- the Flag Atlas entry (Customize › Flags) ------------------------------------------------------ */
+.cos-atlas {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 64px;
+  margin: 0 0 10px;
+  padding: 8px 12px 8px 10px;
+  border: 2.5px solid #4a3410;
+  border-radius: 14px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgb(255 255 255 / 0.5), transparent 46%),
+    repeating-linear-gradient(135deg, rgb(120 90 40 / 0.07) 0 6px, transparent 6px 12px),
+    linear-gradient(180deg, #f6ecd3 0%, #e7d6ae 70%, #d4be8c 100%);
+  box-shadow:
+    0 3px 0 #4a3410,
+    0 6px 12px rgb(8 6 20 / 0.3),
+    inset 0 2px 0 rgb(255 255 255 / 0.6);
+  color: #3a2810;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 120ms var(--ui-ease-out),
+    box-shadow 120ms var(--ui-ease-out);
+}
+@media (hover: hover) {
+  .cos-atlas:hover {
+    transform: translateY(-2px);
+  }
+  .cos-atlas:hover .cos-atlas__go {
+    transform: translateX(3px);
+  }
+}
+.cos-atlas:active {
+  transform: translateY(2px) scale(0.98);
+  box-shadow: 0 1px 0 #4a3410;
+  transition-duration: var(--ui-dur-press, 70ms);
+}
+.cos-atlas:focus-visible {
+  outline: 3px solid var(--ui-gold);
+  outline-offset: 2px;
+}
+.cos-atlas__globe {
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--ui-ink);
+  width: 44px;
+  height: 44px;
+  border: 2px solid #4a3410;
   border-radius: 50%;
-  background: var(--ui-green);
+  background: radial-gradient(circle at 35% 30%, #fff8e2, #e8d29a 70%);
+  box-shadow: inset 0 -3px 0 rgb(120 84 30 / 0.3);
+}
+.cos-atlas__flag {
+  display: block;
+  width: 54px;
+  aspect-ratio: 64 / 44;
+  transform-origin: 0 50%;
+  filter: drop-shadow(0 2px 0 rgb(40 26 8 / 0.35));
+  animation: cos-flag-wave 2.4s ease-in-out infinite;
+}
+.cos-atlas__flag.is-none {
+  width: 0;
+}
+.cos-atlas__text {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.cos-atlas__text b {
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.cos-atlas__count {
+  font-size: 13px;
+  font-weight: 900;
+  color: #6a4a18;
+}
+.cos-atlas__first {
+  justify-self: start;
+  margin-top: 2px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #5fd683, #2fae58);
   color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  text-shadow: 0 1px 0 rgb(0 0 0 / 0.3);
 }
-.cos-tile--wide .cos-tile__hit {
-  align-items: stretch;
-  text-align: left;
+.cos-atlas__go {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 2px solid #4a3410;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffd76a, #e8a92e);
+  color: #3a2410;
+  transition: transform 160ms var(--ui-ease-out);
 }
-.cos-tile--wide .cos-tile__art {
-  position: absolute;
-  top: 8px;
-  left: 8px;
+@keyframes cos-flag-wave {
+  0%,
+  100% {
+    transform: perspective(220px) rotateY(0deg) skewY(0deg);
+  }
+  50% {
+    transform: perspective(220px) rotateY(-14deg) skewY(-2.5deg) scaleX(0.97);
+  }
 }
-.cos-tile--wide .cos-tile__quote {
-  margin-top: 26px;
+
+/* Reduce motion replaces the loops with stills (the sheen, the wave, the sparkle and the pop). */
+.ui-root[data-reduce-motion='true'] :is(.cos-atlas__flag, .cos-tile__art.is-pop, .cos-card__spark) {
+  animation: none;
 }
-.cos-tile--wide .cos-tile__name,
-.cos-tile--wide .cos-tile__rarity {
-  padding-left: 4px;
+.ui-root[data-reduce-motion='true'] .cos-card--legendary::after {
+  animation: none;
+  display: none;
+}
+.ui-root[data-reduce-motion='true'] :is(.cos-card, .cos-atlas) {
+  transition: filter 120ms;
+}
+.ui-root[data-reduce-motion='true'] :is(.cos-card:active, .cos-card:has(> .cos-tile__hit:active), .cos-atlas:active) {
+  transform: none;
+  filter: brightness(0.92);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cos-card--legendary::after {
+    animation: none;
+    display: none;
+  }
+  .cos-atlas__flag,
+  .cos-tile__art.is-pop,
+  .cos-card__spark {
+    animation: none;
+  }
 }
 
 /* ---- the emote wheel ---------------------------------------------------------------------------- */
@@ -774,33 +1348,112 @@ button.cos-mock__deco.is-picked {
   cursor: default;
 }
 
-.cos-quotes {
+/* ---- the quote wheel around your General (PLAN 2a "Quotes") ------------------------------------- */
+.cos-qwheel {
+  position: relative;
   display: grid;
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    'a b'
+    'bust bust'
+    'c d';
+  align-items: center;
+  gap: 4px 12px;
   margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.cos-quote {
-  display: block;
-  width: 100%;
-  min-height: 40px;
-  padding: 8px 12px;
+  padding: 12px 10px;
   border: 3px solid var(--ui-ink);
-  border-radius: 14px 14px 14px 4px;
-  background: #fffbe6;
-  box-shadow: 0 3px 0 var(--ui-ink);
-  color: var(--ui-ink);
-  font: inherit;
-  font-weight: 900;
-  text-align: left;
-  cursor: pointer;
-  animation: ui-enter 260ms var(--ui-ease-out) both;
+  border-radius: 18px;
+  background:
+    radial-gradient(120% 70% at 50% 0%, rgb(255 236 180 / 0.2), transparent 60%),
+    radial-gradient(60% 30% at 50% 62%, rgb(0 0 0 / 0.3), transparent 70%),
+    linear-gradient(180deg, #3d3778 0%, #2a2558 60%, #1d1a40 100%);
+  box-shadow:
+    inset 0 3px 0 rgb(255 255 255 / 0.12),
+    0 4px 0 var(--ui-ink);
 }
-.cos-quote.is-empty {
+.cos-qwheel__bust {
+  grid-area: bust;
+  justify-self: center;
+  position: relative;
+  display: grid;
+}
+.cos-qwheel__bust .ui-avatar {
+  border-radius: 50%;
+}
+.cos-qwheel__slot {
+  display: flex;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+.cos-qwheel__slot--0 {
+  grid-area: a;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+.cos-qwheel__slot--1 {
+  grid-area: b;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+.cos-qwheel__slot--2 {
+  grid-area: c;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+.cos-qwheel__slot--3 {
+  grid-area: d;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+.cos-qwheel__slot .cos-qb__body {
+  transition: transform 120ms var(--ui-ease-out);
+}
+@media (hover: hover) {
+  button.cos-qwheel__slot:hover .cos-qb__body {
+    transform: translateY(-2px);
+  }
+}
+button.cos-qwheel__slot:active .cos-qb__body {
+  transform: translateY(1px) scale(0.96);
+}
+button.cos-qwheel__slot:focus-visible {
+  outline: 3px solid var(--ui-gold);
+  outline-offset: 2px;
+  border-radius: 14px;
+}
+.cos-qb--empty .cos-qb__body {
+  min-width: 58px;
   border-style: dashed;
-  background: rgba(255, 255, 255, 0.06);
+  border-color: rgb(255 255 255 / 0.35);
+  background: rgb(255 255 255 / 0.06);
   box-shadow: none;
+  color: rgb(255 255 255 / 0.5);
+  text-align: center;
+}
+.cos-qb--empty .cos-qb__body::before,
+.cos-qb--empty .cos-qb__body::after {
+  display: none;
+}
+/* quote cards: the line in the battle bubble with your General's head */
+.cos-tile--quote .cos-card__window {
+  aspect-ratio: auto;
+  min-height: 70px;
+  padding: 8px 12px 9px 8px;
+  place-items: center start;
+}
+.cos-tile--quote .cos-tile__art {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  place-items: center start;
+}
+.cos-info__card.cos-tile--quote .cos-tile__art {
+  max-width: 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -824,54 +1477,6 @@ button.cos-mock__deco.is-picked {
 .col-cosmetics .cos-strip {
   flex: 1;
   margin: 0;
-}
-
-/* Only the chosen tile carries a state (owner request 2026-10-07: the whole owned tile is the button, no
-   Equip pill): "Equipped" or "In wheel", a flat state pill (UA-18) that pops in with the tile. */
-.cos-tile__state {
-  align-self: center;
-  max-width: calc(100% - 4px);
-  margin: 2px 0 8px;
-  padding: 2px 6px;
-  border: 1.5px solid #1f8f45;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.7);
-  color: #1f6f38;
-  font-size: 12px;
-  font-weight: 900;
-  /* one line in the narrowest tile (starter emotes, 92 px at 1280 x 720) */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  pointer-events: none;
-  animation: ui-pop var(--ui-dur-medium) var(--ui-ease-back);
-}
-.cos-tile--plain .cos-tile__state {
-  margin-bottom: 0;
-}
-.cos-tile--baseSkin .cos-tile__art {
-  border-radius: 10px;
-  background: linear-gradient(180deg, #bfe6ff 0 70%, #8fcf5a 70%);
-}
-
-/* Country search above the national flags (50 flags; the owner's own flag should be one word away). */
-.cos-search {
-  display: block;
-  width: min(100%, 280px);
-  margin: 0 0 10px;
-  padding: 7px 12px;
-  border: 3px solid var(--ui-ink);
-  border-radius: 12px;
-  background: #fffbe6;
-  box-shadow: inset 0 2px 0 rgba(27, 19, 48, 0.12);
-  color: var(--ui-ink);
-  font: inherit;
-  font-weight: 800;
-  transition: box-shadow 140ms var(--ui-ease-out);
-}
-.cos-search:focus-visible {
-  outline: none;
-  box-shadow: inset 0 2px 0 rgba(27, 19, 48, 0.12), 0 0 0 3px var(--ui-gold);
 }
 
 /* ---- battle backdrops (A18.9.4 "Backdrops") ------------------------------------------------------ */
@@ -943,86 +1548,9 @@ button.cos-mock__deco.is-picked {
 .cos-bdmock.is-still .cos-bdmock__name {
   animation: none;
 }
-.cos-grid--backdrops {
-  grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
-}
-.cos-tile--backdrop .cos-tile__art {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-  border: 2px solid var(--ui-ink);
-  border-radius: 9px;
-}
-.cos-tile--backdrop .cos-tile__hit,
-.cos-tile--backdrop.cos-tile--plain {
-  padding: 8px 8px 6px;
-}
-.cos-tile.is-locked.is-previewable .cos-tile__hit {
-  cursor: pointer;
-}
-.cos-tile--backdrop .cos-tile__on,
-.cos-tile--backdrop .cos-tile__lock {
-  top: 12px;
-  right: 12px;
-}
-/* A locked backdrop keeps its colours (a little dimmed) with the padlock: the sky is what tells one
-   theme from another (review 6). */
-.cos-tile--backdrop.is-locked .cos-tile__art {
-  filter: saturate(0.85) brightness(0.82);
-  opacity: 1;
-}
-/* The one tried on in the preview: a gold ring and a "Trying on" tag (feedback on every tap). */
-.cos-tile.is-trying {
-  box-shadow:
-    0 0 0 3px var(--ui-gold, #ffd447),
-    0 0 16px rgba(255, 212, 71, 0.55),
-    0 4px 0 var(--ui-ink),
-    inset 0 5px 0 var(--rar);
-  transform: translateY(-2px);
-  animation: ui-pop var(--ui-dur-small) var(--ui-ease-back);
-}
-.cos-tile__trying {
-  position: absolute;
-  top: 5px;
-  left: 8px;
-  padding: 1px 8px;
-  border: 2px solid var(--ui-ink);
-  border-radius: 99px;
-  background: var(--ui-gold, #ffd447);
-  color: var(--ui-ink);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  animation: ui-pop var(--ui-dur-small) var(--ui-ease-back);
-}
 @media (prefers-reduced-motion: reduce) {
   .cos-bdmock__stage,
   .cos-bdmock__name {
     animation: none;
   }
-}
-
-/* Decoration tiles (AUDIT §2.8): the prop larger on a parchment card with a contact shadow. */
-.cos-tile--decoration {
-  background:
-    radial-gradient(60% 18% at 50% 74%, rgb(67 61 51 / 0.32), transparent 70%),
-    linear-gradient(180deg, #efe9da 0%, #e8dfc8 62%, #d8ccb0 100%);
-}
-.cos-tile--decoration .cos-tile__art {
-  width: 60px;
-  height: 78px;
-  filter: drop-shadow(0 2px 0 rgb(67 61 51 / 0.35));
-}
-/* Flag tiles: a soft cloth fold over the flag picture. */
-.cos-tile--nationalFlag .cos-tile__art::after,
-.cos-tile--baseFlag .cos-tile__art::after {
-  content: '';
-  position: absolute;
-  inset: 8% 6%;
-  border-radius: 3px;
-  background: linear-gradient(90deg, rgb(255 255 255 / 0.18) 0 12%, transparent 12% 38%, rgb(0 0 0 / 0.12) 38% 52%, transparent 52% 74%, rgb(255 255 255 / 0.12) 74% 84%, transparent 84%);
-  pointer-events: none;
 }

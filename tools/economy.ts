@@ -592,6 +592,46 @@ function upgradeCostText(m: EconomyMeasures): string {
   return `${d(m.upgradeCost.maxDays)} days; L10 ${d(m.upgradeCost.topMedianDays)} / ${d(m.upgradeCost.topMaxDays)} days`;
 }
 
+/** The national flags' Dust sink (PLAN 2d, Track D): what every flag costs at the one price, and in days of Dust income. */
+export interface FlagSink {
+  price: number;
+  firstFree: boolean;
+  /** The flags of the six regions (the Atlas's 195) and every flag (with the Other flags). */
+  atlas: number;
+  all: number;
+  /** Dust for all 195 and for every flag, the first one on the house when `firstFree`. */
+  atlasDust: number;
+  allDust: number;
+}
+
+export function flagSink(content: CompiledContent): FlagSink | null {
+  const col = (asContent(content).cosmetics as Partial<Content['cosmetics']> | undefined)?.collections;
+  if (!col) return null;
+  const flags = col.items.filter((x) => x.collection === 'nationalFlag' && x.released !== false);
+  const atlas = flags.filter((x) => x.region !== 'other').length;
+  const price = col.drops.flagDust;
+  const firstFree = col.drops.firstFlagFree === true;
+  const cost = (n: number): number => Math.max(0, n - (firstFree ? 1 : 0)) * price;
+  return { price, firstFree, atlas, all: flags.length, atlasDust: cost(atlas), allDust: cost(flags.length) };
+}
+
+/**
+ * Info rows (not gated): the Dust a full set of national flags takes, and how many days of the engaged
+ * and the casual player's whole Dust income that is (PLAN 2d "Price, checked against tools/economy.ts").
+ */
+export function flagChecks(sink: FlagSink | null, engaged: EconomyMeasures, casual: EconomyMeasures | null): Check[] {
+  if (!sink) return [];
+  const days = (dust: number, perDay: number): string => (perDay > 0 ? `${fmtNum(dust / perDay, 0)} days (${fmtNum(dust / perDay / YEAR_DAYS, 1)} years)` : 'no Dust income');
+  const row = (who: string, m: EconomyMeasures): string =>
+    `${who}: ${fmtNum(m.perDay.dust, 0)} Dust/day; all ${sink.atlas}: ${days(sink.atlasDust, m.perDay.dust)}; all ${sink.all}: ${days(sink.allDust, m.perDay.dust)}`;
+  const base = `${sink.price} Dust each${sink.firstFree ? ', the first costs no Dust' : ''}: ${fmtNum(sink.atlasDust, 0)} Dust for the ${sink.atlas}, ${fmtNum(sink.allDust, 0)} with the Other flags`;
+  return [
+    infoCheck('economy.flags', 'National flags (PLAN 2d): Dust to own every flag at the one price', base),
+    infoCheck('economy.flagsEngaged', 'Dust to all flags, engaged player (all its Dust on flags)', row('engaged', engaged)),
+    ...(casual ? [infoCheck('economy.flagsCasual', `Dust to all flags, casual player (${ECONOMY_TARGETS.casualMatchesPerDay} matches a day, all its Dust on flags)`, row('casual', casual))] : []),
+  ];
+}
+
 /**
  * The War-Plan-only player (owner decision 2026-10-07: "you must save up"; the game is played for
  * years): levels only its active War Plan's cards. It must meet the Amber gate on most days from day 10,
@@ -920,7 +960,8 @@ export async function runEconomy(m: EconomyModel, content: CompiledContent = gam
     ];
     if (plan) notes.push(`The War-Plan-only player levels only its active War Plan's cards (every age) and runs ${plan.days} days.`);
     if (!questApi(meta)) notes.push('src/meta exports no claimQuest: quests were never claimed, so quest rewards are missing from every figure.');
-    return rep.finish([...economyChecks(measures), ...planRows, casualCheck, ...casualPlanCheck], { meta: 'src/meta', model: m, measures, casual, plan, casualPlan }, notes);
+    const flagRows = flagChecks(flagSink(content), measures, casual);
+    return rep.finish([...economyChecks(measures), ...planRows, casualCheck, ...casualPlanCheck, ...flagRows], { meta: 'src/meta', model: m, measures, casual, plan, casualPlan }, notes);
   } catch (e) {
     return rep.finish([{ id: 'economy.run', metric: 'Player model through Meta', target: 'runs', value: 'error', verdict: 'fail', note: String(e) }], { meta: 'src/meta', ...empty });
   }

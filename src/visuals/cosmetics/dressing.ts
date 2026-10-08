@@ -12,13 +12,21 @@
  * Motion: the flags ripple along their length (a strip mesh, fixed at the hoist) and flutter harder
  * after a hit; banners and plants sway; braziers flicker; on a collapse every prop topples and
  * fades. Reduce motion stills the ripple and the particles; Lite halves the particles.
+ *
+ * Base skin models (PLAN 2c): while the base view shows a skin's model (its duck-typed `skinModel()`),
+ * the old restyle is off (the view takes no tint on a model, and the field of particles over the whole
+ * base stops); the model's own ambient particles start from its spots instead (`ambientSpots()`,
+ * exported from Blender: petals from the rose vines, fireflies by the mushrooms ...). While the model
+ * streams in, the standard base keeps the old tint and particles. A national flag uses its lane cloth
+ * from `nationalFlagTexture` (Track D) when there is one, swapped in when its baked texture is ready.
  */
 import { Container, Graphics, Mesh, MeshGeometry, Sprite, Texture } from 'pixi.js';
 import type { BaseDressingView, BaseView } from '@/contracts/art';
 import type { AgeId, Side, SideLook } from '@/contracts/ids';
 import { mulberry32, type CosmeticRng } from '@/core/rng';
 import { baseSkinArt, drawDecoration, drawFlag, parseCosmeticKey, type FlagKind } from './art';
-import type { BaseSkinArt } from './baseSkins';
+import type { BaseSkinArt, SkinParticles } from './baseSkins';
+import { nationalFlagTexture } from './nationalFlags';
 import { DECO_GROUND, DECO_H, DECO_W, DECORATIONS, type DecorationArt } from './decorations';
 import { FLAG_H, FLAG_W } from './flags';
 import { INK } from './shapes';
@@ -63,9 +71,9 @@ function bake(key: string, w: number, h: number, draw: (ctx: CanvasRenderingCont
 /** A flag on a strip mesh that ripples from the hoist (x = 0) to the fly. */
 class FlagCloth {
   readonly root = new Container();
-  private readonly mesh: Mesh | null = null;
-  private readonly geom: MeshGeometry | null = null;
-  private readonly base: Float32Array | null = null;
+  private mesh: Mesh | null = null;
+  private geom: MeshGeometry | null = null;
+  private base: Float32Array | null = null;
   private readonly cols = 14;
   constructor(
     tex: Texture,
@@ -73,7 +81,19 @@ class FlagCloth {
     private readonly h: number,
     private readonly phase: number,
   ) {
-    if (tex === Texture.EMPTY) return;
+    if (tex !== Texture.EMPTY) this.make(tex);
+  }
+
+  /** Shows another cloth texture (a national flag's baked lane cloth arriving). */
+  setTexture(tex: Texture): void {
+    if (tex === Texture.EMPTY || this.root.destroyed) return;
+    if (this.mesh) this.mesh.texture = tex;
+    else this.make(tex);
+  }
+
+  private make(tex: Texture): void {
+    const w = this.w;
+    const h = this.h;
     const n = this.cols;
     const pos = new Float32Array(n * 2 * 2);
     const uv = new Float32Array(n * 2 * 2);
@@ -140,7 +160,29 @@ interface Mote {
   vy: number;
   life: number;
   max: number;
+  kind: SkinParticles;
 }
+
+/** A skin model's ambient emitter (`meta.ageborn.ambientLu`, PLAN 2c): base-local lu, y up. */
+interface AmbientSpot {
+  kind: string;
+  x: number;
+  y: number;
+  r: number;
+  rate: number;
+}
+
+const AMBIENT_KINDS: readonly SkinParticles[] = ['snow', 'fireflies', 'glints', 'petals', 'embers', 'dust', 'stars'];
+/** Mote colours of an ambient kind a skin's own particles do not cover (A11: pale, desaturated). */
+const AMBIENT_COLORS: Partial<Record<SkinParticles, number>> = {
+  snow: 0xffffff,
+  fireflies: 0xdcff7a,
+  glints: 0xfff2b0,
+  petals: 0xff9ab8,
+  embers: 0xffb060,
+  dust: 0xe8d4a4,
+  stars: 0xffffff,
+};
 
 export interface DressingOptions {
   age: AgeId;
@@ -163,6 +205,10 @@ export class BaseDressing implements BaseDressingView {
   private readonly rng: CosmeticRng;
   private age: AgeId;
   private skin: BaseSkinArt | null = null;
+  /** The equipped skin of the current age (`baseSkin.<id>` → id), or null. */
+  private skinId: string | null = null;
+  /** True while the base view shows that skin's model: the model's own ambient spots, no field of motes. */
+  private modelShown = false;
   private poleCap: Graphics | null = null;
   private clock = 0;
   private flutter = 0;
@@ -191,7 +237,20 @@ export class BaseDressing implements BaseDressingView {
   // Build
   // -------------------------------------------------------------------------------------------
 
-  private flagTexture(kind: FlagKind, id: string): Texture {
+  private flagTexture(kind: FlagKind, id: string, onReady?: (t: Texture) => void): Texture {
+    if (kind === 'nationalFlag') {
+      // Track D's lane cloth (baked from the accurate SVG): shown now, swapped when its bake is in
+      const lane = nationalFlagTexture(id);
+      if (lane) {
+        lane.ready.then(
+          () => {
+            if (!this.destroyed) onReady?.(nationalFlagTexture(id)?.texture ?? lane.texture);
+          },
+          () => {},
+        );
+        return lane.texture;
+      }
+    }
     const w = (FLAG_W + 4) * TEX_PX;
     const h = (FLAG_H + 4) * TEX_PX;
     return bake(`${kind}.${id}|${this.o.team}`, w, h, (ctx) => drawFlag(ctx, kind, id, { team: this.o.team }, TEX_PX), this.make);
@@ -221,10 +280,11 @@ export class BaseDressing implements BaseDressingView {
     this.pole.addChild(this.poleCap);
     let y = -top + 4;
     flags.forEach((f, i) => {
-      const tex = this.flagTexture(f.kind, f.id);
+      let cloth: FlagCloth | null = null;
+      const tex = this.flagTexture(f.kind, f.id, (t) => cloth?.setTexture(t));
       const w = (FLAG_W + 4) * f.lu;
       const h = (FLAG_H + 4) * f.lu;
-      const cloth = new FlagCloth(tex, w, h, i * 1.3 + this.o.side * 0.7);
+      cloth = new FlagCloth(tex, w, h, i * 1.3 + this.o.side * 0.7);
       // the texture has a 2-unit margin: the hoist edge sits on the pole
       cloth.root.position.set(2 - 2 * f.lu, y - 2 * f.lu);
       this.pole.addChild(cloth.root);
@@ -271,6 +331,8 @@ export class BaseDressing implements BaseDressingView {
   private applySkin(age: AgeId): void {
     const key = this.o.look.baseSkins?.[age];
     this.skin = baseSkinArt(key);
+    this.skinId = key && key.startsWith('baseSkin.') ? key.slice('baseSkin.'.length) : null;
+    this.modelShown = this.showsModel();
     const cap = this.poleCap;
     if (cap) {
       cap.clear();
@@ -337,46 +399,105 @@ export class BaseDressing implements BaseDressingView {
     if (this.collapseT >= 0) this.updateCollapse(dt);
   }
 
+  /** True when the base view shows the equipped skin's model (PLAN 2c), so the old restyle is off. */
+  private showsModel(): boolean {
+    const id = this.skinId;
+    if (!id) return false;
+    const v = this.o.base as { skinModel?: () => string | null } | undefined;
+    return v?.skinModel?.() === id;
+  }
+
+  /** The skin model's ambient spots (base-local lu, y up), when the model shows. */
+  private spots(): readonly AmbientSpot[] {
+    if (!this.modelShown) return [];
+    const v = this.o.base as { ambientSpots?: () => readonly AmbientSpot[] } | undefined;
+    return v?.ambientSpots?.() ?? [];
+  }
+
   private updateMotes(dt: number): void {
     const s = this.skin;
-    const want = !s || this.reduce ? 0 : this.lite ? 7 : 14;
-    while (this.moteList.length < want && s) this.moteList.push(this.spawnMote(s, true));
+    // the model arrived (or left with an evolve): switch between its own spots and the field of motes
+    const model = this.showsModel();
+    if (model !== this.modelShown) {
+      this.modelShown = model;
+      for (const m of this.moteList) m.g.destroy();
+      this.moteList = [];
+    }
+    const spots = this.spots();
+    const field = !this.modelShown && s !== null;
+    const want = this.reduce ? 0 : spots.length > 0 ? (this.lite ? 5 : 10) : field ? (this.lite ? 7 : 14) : 0;
+    while (this.moteList.length < want) {
+      const m = spots.length > 0 ? this.spawnAt(spots, s) : s ? this.spawnMote(s.particles, s.particleColor, true) : null;
+      if (!m) break;
+      this.moteList.push(m);
+    }
     const keep: Mote[] = [];
     for (const m of this.moteList) {
       m.life += dt;
       m.x += (m.vx * dt) / 1000;
       m.y += (m.vy * dt) / 1000;
-      if (s && s.particles === 'petals') m.x += Math.sin((m.life / 1000) * 3 + m.max) * 0.3;
+      if (m.kind === 'petals') m.x += Math.sin((m.life / 1000) * 3 + m.max) * 0.3;
+      if (m.kind === 'petals' || m.kind === 'snow') m.g.rotation = Math.sin((m.life / 1000) * 2.2 + m.max) * 0.9;
       const k = m.life / m.max;
       const fade = k < 0.15 ? k / 0.15 : k > 0.8 ? (1 - k) / 0.2 : 1;
-      m.g.position.set(m.x * this.facing, -m.y);
-      m.g.alpha = Math.max(0, fade) * (s?.particles === 'fireflies' || s?.particles === 'glints' || s?.particles === 'stars' ? 0.55 + 0.45 * Math.sin(m.life / 140) : 0.9);
-      if (m.life >= m.max || want === 0) m.g.destroy();
+      // settled on the ground: melt away
+      const ground = m.y < 1.5 && m.vy < 0 ? 0.0 : 1;
+      m.g.position.set(m.x * this.facing, -Math.max(0.5, m.y));
+      m.g.alpha = Math.max(0, fade) * ground * (m.kind === 'fireflies' || m.kind === 'glints' || m.kind === 'stars' ? 0.55 + 0.45 * Math.sin(m.life / 140) : 0.9);
+      if (m.life >= m.max || want === 0 || ground === 0) m.g.destroy();
       else keep.push(m);
     }
     this.moteList = keep;
   }
 
-  private spawnMote(s: BaseSkinArt, anywhere: boolean): Mote {
+  /** A mote of the skin model's ambient: from one of its spots (weighted by rate), within its radius. */
+  private spawnAt(spots: readonly AmbientSpot[], s: BaseSkinArt | null): Mote | null {
+    let total = 0;
+    for (const p of spots) total += Math.max(0, p.rate);
+    if (total <= 0) return null;
+    let pick = this.rng.next() * total;
+    let spot = spots[0]!;
+    for (const p of spots) {
+      pick -= Math.max(0, p.rate);
+      if (pick <= 0) {
+        spot = p;
+        break;
+      }
+    }
+    const kind = (AMBIENT_KINDS.includes(spot.kind as SkinParticles) ? spot.kind : 'glints') as SkinParticles;
+    const color = s && s.particles === kind ? s.particleColor : (AMBIENT_COLORS[kind] ?? 0xffffff);
+    const m = this.spawnMote(kind, color, false);
+    const a = this.rng.next() * Math.PI * 2;
+    const d = Math.sqrt(this.rng.next()) * spot.r;
+    m.x = spot.x + Math.cos(a) * d;
+    m.y = Math.max(2, spot.y + Math.sin(a) * d * 0.6);
+    // the model's ambient is gentler and shorter than the field of motes it replaces
+    m.vy *= 0.75;
+    m.max = 1800 + this.rng.next() * 1800;
+    return m;
+  }
+
+  private spawnMote(kind: SkinParticles, color: number, anywhere: boolean): Mote {
     const r = () => this.rng.next();
     const g = new Graphics();
-    const size = s.particles === 'dust' ? 1.6 : s.particles === 'stars' || s.particles === 'glints' ? 2 : 1.8;
-    if (s.particles === 'glints' || s.particles === 'stars') {
-      g.poly([0, -size * 2, size * 0.5, -size * 0.5, size * 2, 0, size * 0.5, size * 0.5, 0, size * 2, -size * 0.5, size * 0.5, -size * 2, 0, -size * 0.5, -size * 0.5]).fill(s.particleColor);
-    } else if (s.particles === 'petals') {
-      g.ellipse(0, 0, size * 1.4, size * 0.8).fill(s.particleColor);
+    const size = kind === 'dust' ? 1.6 : kind === 'stars' || kind === 'glints' ? 2 : 1.8;
+    if (kind === 'glints' || kind === 'stars') {
+      g.poly([0, -size * 2, size * 0.5, -size * 0.5, size * 2, 0, size * 0.5, size * 0.5, 0, size * 2, -size * 0.5, size * 0.5, -size * 2, 0, -size * 0.5, -size * 0.5]).fill(color);
+    } else if (kind === 'petals') {
+      g.ellipse(0, 0, size * 1.4, size * 0.8).fill(color);
+      g.ellipse(-size * 0.3, -size * 0.2, size * 0.6, size * 0.3).fill({ color: 0xffffff, alpha: 0.35 });
     } else {
-      g.circle(0, 0, size).fill(s.particleColor);
+      g.circle(0, 0, size).fill(color);
     }
-    if (s.particles === 'fireflies' || s.particles === 'embers' || s.particles === 'glints' || s.particles === 'stars') g.blendMode = 'add';
+    if (kind === 'fireflies' || kind === 'embers' || kind === 'glints' || kind === 'stars') g.blendMode = 'add';
     this.motes.addChild(g);
     const x = -190 + r() * 200;
-    const falling = s.particles === 'snow' || s.particles === 'petals';
-    const rising = s.particles === 'embers' || s.particles === 'stars';
+    const falling = kind === 'snow' || kind === 'petals';
+    const rising = kind === 'embers' || kind === 'stars';
     const y = anywhere ? 10 + r() * 200 : falling ? 220 : 6;
     const vy = falling ? -(14 + r() * 12) : rising ? 12 + r() * 14 : (r() - 0.5) * 8;
-    const vx = s.particles === 'dust' ? 10 + r() * 10 : (r() - 0.5) * 10;
-    return { g, x, y, vx, vy, life: 0, max: 2600 + r() * 2600 };
+    const vx = kind === 'dust' ? 10 + r() * 10 : (r() - 0.5) * 10;
+    return { g, x, y, vx, vy, life: 0, max: 2600 + r() * 2600, kind };
   }
 
   private updateCollapse(dt: number): void {

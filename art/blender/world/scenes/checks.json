@@ -1,0 +1,53 @@
+{
+ "bronze.classic": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0,
+   "mid.webp": 0.0001,
+   "thumb.webp": 0.0
+  },
+  "sizes": {
+   "back.webp": 3114,
+   "far.webp": 26750,
+   "layers.json": 2263,
+   "mid.webp": 43972,
+   "props.webp": 7024,
+   "thumb.webp": 4412
+  },
+  "total": 87535
+ },
+ "cosmic.classic": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0002,
+   "mid.webp": 0.0,
+   "thumb.webp": 0.0002
+  },
+  "sizes": {
+   "back.webp": 8694,
+   "far.webp": 19576,
+   "layers.json": 2388,
+   "mid.webp": 31482,
+   "props.webp": 6790,
+   "thumb.webp": 4360
+  },
+  "total": 73290
+ },
+ "industrial.classic": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0,
+   "mid.webp": 0.0007,
+   "thumb.webp": 0.0
+  },
+  "sizes": {
+   "back.webp": 3500,
+   "far.webp": 22492,
+   "layers.json": 2551,
+   "mid.webp": 32582,
+   "props.webp": 3726,
+   "thumb.webp": 3784
+  },
+  "total": 68635
+ }
+}

@@ -41,6 +41,20 @@ export interface WorldMeta {
   lightsLu?: { x: number; y: number; crumbleMax: number; r: number }[];
   smokeLu?: { x: number; y: number; crumbleMin: number }[];
   hornLu?: [number, number];
+  /** Base skin models (PLAN 2c): the skin id the sheet models (`base.<age>@<skin>`). */
+  skin?: string;
+  /**
+   * Base skin models: their tall joints (tower, mast, chimney, statue) that topple as one piece in the
+   * collapse, in screen lu from the gate (`collapse/profiles.ts` ToppleSpec); the age's profile otherwise.
+   */
+  topple?: { x0: number; x1: number; y0: number; dir: 1 | -1; delayMs: number; push: number; sinkLu: number }[];
+  /** Base skin models: the collapse's material family when it differs from the age's (ice, coral, neon). */
+  collapseMaterial?: 'stone' | 'iron' | 'concrete' | 'energy';
+  /** Base skin models: the rubble and dust colours of its own materials (hex strings). */
+  rubbleColors?: string[];
+  dustColor?: string;
+  /** Base skin models: where the dressing's ambient code particles start (screen lu, y up). */
+  ambientLu?: { kind: string; x: number; y: number; r: number; rate: number }[];
   clips: Record<string, WorldClipMeta>;
 }
 
@@ -72,8 +86,17 @@ export function worldSourceAge(source: string): AgeId | null {
   return (m?.[1] ?? m?.[2] ?? null) as AgeId | null;
 }
 
+/**
+ * A base skin model's sheet (PLAN 2c: `art/bases/skins/<skin>.json`). It belongs to one age's base but
+ * loads lazily, only when that skin shows (equipped by a side and its age reached, or previewed), never
+ * with its age's preload; `worldSourceAge` is null for it.
+ */
+export function isBaseSkinSource(source: string): boolean {
+  return /art\/bases\/skins\/[a-z0-9_]+\.json$/.test(source);
+}
+
 export function isWorldSource(source: string): boolean {
-  return worldSourceAge(source) !== null;
+  return worldSourceAge(source) !== null || isBaseSkinSource(source);
 }
 
 export class WorldAtlas {

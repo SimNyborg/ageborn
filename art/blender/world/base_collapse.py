@@ -350,6 +350,202 @@ def kit_module(age):
         j = rig.joint("rag", "root", (0, 0, 0), hidden=True)
         rag(rig, j)
 
+    return _kit_namespace(age, f"{age}_kit", f"{age}.collapse", build, f"base.{age}.collapse", f"{age} collapse kit")
+
+
+# -- base skin models' own kits (PLAN 2c: strong material changes; art/bases/skins/<skin>.collapse) ------
+SKIN_P = {
+    "rose_keep": dict(stone="#D0A69C", stone_lt="#DAB4AA", stone_dk="#AB857E", trim="#ECDFCF", trim_dk="#CDBBA8",
+                      wood="#7A5E44", wood_dk="#5A4634", leaf="#4C7A30", leaf_lt="#79A84C", bloom="#8E2A4A",
+                      bloom_lt="#B9476B", pink="#C9637F", pink_lt="#E790A8", slate="#6F6062"),
+    "mossy_den": dict(bark="#6A4E3A", bark_lt="#7E604A", bark_dk="#56402F", bark_dkr="#45352A", heart="#B48C62",
+                      rings="#9A764F", stone="#8C7B68", stone_lt="#A08E78", stone_dk="#76685A", moss="#6E8B3D",
+                      moss_lt="#7E9A4A", shelf="#C2A26E", shelf_rim="#E9D8B4", shelf_dk="#9A7A52", glow="#F1F0C8",
+                      glow_stem="#D9D2B0", cream="#EDE3C8"),
+}
+
+
+def rose_tuft(rig, j, c, seed=0, r=4.6):
+    """A torn-off tuft of the climbing roses: leaves round one or two blooms."""
+    from world.base_skins_kit import Roses
+    rnd = random.Random(seed)
+    ro = Roses(c["bloom"], c["bloom_lt"], "#5C1A31", c["leaf"], c["leaf_lt"], "#5C6B36")
+    for k in range(6):
+        a = 360.0 * k / 6 + rnd.uniform(-20, 20)
+        ro.leaf((math.cos(math.radians(a)) * 2.0, -1.0, math.sin(math.radians(a)) * 2.0), 6.0, a, light=k % 2 == 0)
+    ro.bloom((0.0, -3.4, 0.6), r)
+    ro.parts(rig, j)
+
+
+def kit_rose_keep(rig, c):
+    yield lambda j: block(rig, j, (12, 8, 7), c["stone"], chip=True, seed=1)
+    yield lambda j: block(rig, j, (10, 7, 6), c["stone_lt"], rot=(0, 15, 6))
+    yield lambda j: block(rig, j, (14, 7, 6), c["stone_dk"], rot=(0, -12, 0), chip=True, seed=3)
+    yield lambda j: block(rig, j, (9, 6, 6), c["trim"], rot=(10, 25, 0), chip=True, seed=4)
+    yield lambda j: beam(rig, j, 28, 6, c["wood"], c["wood_dk"], seed=5)
+    yield lambda j: rose_tuft(rig, j, c, seed=6, r=4.8)
+    yield lambda j: plate(rig, j, 14, 10, c["slate"], rot=(0, 25, 0))
+    yield lambda j: rose_tuft(rig, j, c, seed=8, r=4.0)
+
+
+def rose_keep_extras(c):
+    """Beams, a cream trim block and torn roses sticking out of the Rose Keep's rubble."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(2):
+            x = rnd.uniform(-30, 30)
+            box(g, (x, -2, 12), (16, 2.6, 2.6), p=5, rot=(0, rnd.uniform(-40, 40), rnd.uniform(-20, 20)))
+        rig.part(j, g, c["wood"])
+        g = Geo()
+        box(g, (rnd.uniform(-20, 20), -6, 9), (6, 4, 4), p=5, rot=(0, rnd.uniform(-30, 30), 0))
+        rig.part(j, g, c["trim"])
+        from world.base_skins_kit import Roses
+        ro = Roses(c["pink"], c["pink_lt"], "#86283F", c["leaf"], c["leaf_lt"], "#5C6B36")
+        for k in range(3):
+            x = rnd.uniform(-32, 32)
+            for a in (30, 150, 90):
+                ro.leaf((x, -12, 9 + rnd.uniform(0, 5)), 5.4, a + rnd.uniform(-20, 20), light=a == 90)
+            ro.bloom((x, -14, 13 + rnd.uniform(0, 4)), 4.2)
+        ro.parts(rig, j)
+    return extras
+
+
+def bark_shard(rig, j, c, w, h, seed=0, curve=0.35):
+    """A curved shard of the stump's shell: grooved bark outside, pale heartwood on the broken edges."""
+    rnd = random.Random(seed)
+    g = Geo()
+    box(g, (0, 0, 0), (w / 2, 2.6, h / 2), p=4, rot=(0, rnd.uniform(-10, 10), 0))
+    rig.part(j, g, c["heart"])
+    g = Geo()
+    box(g, (0, -1.4, 0), (w / 2 - 1.2, 2.2, h / 2 - 1.0), p=4, rot=(0, rnd.uniform(-10, 10), 0))
+    rig.part(j, g, c["bark"])
+    g = Geo()
+    for k in range(3):
+        x = -w * 0.3 + k * w * 0.3 + rnd.uniform(-1, 1)
+        g.capsule((x, -3.8, -h * 0.36), (x + rnd.uniform(-1.5, 1.5), -3.8, h * 0.36), 0.7)
+    rig.part(j, g, glow=c["bark_dkr"], outline=0)
+
+
+def stump_log(rig, j, c, length, r, seed=0):
+    """A broken log of the stump: bark round it, growth rings on the cut end, splinters on the other."""
+    rnd = random.Random(seed)
+    g = Geo().capsule((-length / 2, 0, 0), (length / 2, 0, 0), r, r * 0.92)
+    rig.part(j, g, c["bark"])
+    g = Geo()
+    cyl(g, (length / 2 - 1.0, 0, 0), (length / 2 + 0.6, 0, 0), r * 0.82, bevel=0.3)
+    rig.part(j, g, c["heart"], outline=0.5)
+    g = Geo()
+    for rr in (r * 0.3, r * 0.58):
+        cyl(g, (length / 2 + 0.5, 0, 0), (length / 2 + 0.9, 0, 0), rr, rr, bevel=0.0)
+    rig.part(j, g, glow=c["rings"], outline=0)
+    g = Geo()
+    for k in range(4):
+        a = rnd.uniform(0, 2 * math.pi)
+        g.blob((-length / 2 - rnd.uniform(1, 4), math.cos(a) * r * 0.5, math.sin(a) * r * 0.5),
+               (rnd.uniform(3, 6), r * 0.18, r * 0.18), p=2.0)
+    rig.part(j, g, c["heart"], outline=0.5)
+
+
+def shelf_chunk(rig, j, c):
+    """A broken-off shelf fungus: a tan top with a cream rim and a dark gilled underside."""
+    g = Geo().blob((0, 0, -1.6), (13, 9, 4.2), p=2.4, cuts=5)
+    g.clip((0, 0, 0), (0, 0, 1))
+    rig.part(j, g, c["shelf"])
+    g = Geo().blob((0, 0, -1.8), (14, 10, 1.9), p=2.4, cuts=5)
+    g.clip((0, 0, -0.4), (0, 0, 1))
+    rig.part(j, g, c["shelf_rim"])
+    g = Geo().blob((0, 1, -3.4), (11, 7.4, 3.0), p=2.2, cuts=5)
+    g.clip((0, 0, -1.8), (0, 0, 1))
+    rig.part(j, g, c["shelf_dk"])
+
+
+def glow_tuft(rig, j, c, seed=0):
+    """A clump of moss torn off with three glowing mushrooms in it."""
+    rnd = random.Random(seed)
+    g = Geo()
+    rock(g, (0, 0, 0), (9, 7, 4), seed=seed, jag=0.25, p=2.4)
+    rig.part(j, g, c["moss"], finish="hair")
+    st, cap = Geo(), Geo()
+    for k in range(3):
+        x = -4 + k * 4 + rnd.uniform(-1, 1)
+        h = rnd.uniform(5, 8)
+        st.capsule((x, -1, 2), (x, -1, 2 + h), 0.9, 0.7, segs=8, rings=2)
+        r = rnd.uniform(2.6, 3.6)
+        cap.lathe([(0, 0), (r, 0), (r * 0.8, r * 0.45), (0.1, r * 0.7)], (x, -1, 2 + h - 0.5), segs=12)
+    rig.part(j, st, c["glow_stem"], outline=0.4)
+    rig.part(j, cap, glow=c["glow"], outline=0.4)
+
+
+def kit_mossy_den(rig, c):
+    yield lambda j: bark_shard(rig, j, c, 22, 16, seed=1)
+    yield lambda j: stump_log(rig, j, c, 26, 5.5, seed=2)
+    yield lambda j: boulder(rig, j, (12, 10, 9), c["stone"], 3, cap=c["moss"])
+    yield lambda j: bark_shard(rig, j, c, 14, 20, seed=4)
+    yield lambda j: shelf_chunk(rig, j, c)
+    yield lambda j: glow_tuft(rig, j, c, seed=6)
+    yield lambda j: (rig.part(j, Geo().blob((0, 0, 0), (12, 2.6, 3.2), p=2.0, cuts=4, taper=(1.0, 0.15)), c["bark_lt"]))
+    yield lambda j: boulder(rig, j, (8, 7, 6), c["stone_dk"], 7)
+
+
+def mossy_den_extras(c):
+    """Broken logs, bark shards, moss and glowing mushrooms in the stump's rubble."""
+    def extras(rig, j, rnd):
+        g, ends = Geo(), Geo()
+        for k in range(2):
+            x = rnd.uniform(-30, 30)
+            a = rnd.uniform(-35, 35)
+            ca, sa = math.cos(math.radians(a)), math.sin(math.radians(a))
+            g.capsule((x - ca * 15, -2, 10 - sa * 15), (x + ca * 15, -2, 10 + sa * 15), 4.2, 3.8)
+            cyl(ends, (x + ca * 15.2, -2, 10 + sa * 15.2), (x + ca * 16.2, -2, 10 + sa * 16.2), 3.4, bevel=0.2)
+        rig.part(j, g, c["bark"])
+        rig.part(j, ends, c["heart"], outline=0.5)
+        g = Geo()
+        for k in range(3):
+            rock(g, (rnd.uniform(-34, 34), -8, 8 + rnd.uniform(0, 5)), (7, 5, 3), seed=k + 70, jag=0.3, p=2.4)
+        rig.part(j, g, c["moss"], finish="hair")
+        st, cap = Geo(), Geo()
+        for k in range(4):
+            x = rnd.uniform(-36, 36)
+            h = rnd.uniform(4, 7)
+            st.capsule((x, -12, 4), (x, -12, 4 + h), 0.8, 0.6, segs=8, rings=2)
+            cap.lathe([(0, 0), (3.0, 0), (2.4, 1.4), (0.1, 2.2)], (x, -12, 4 + h - 0.5), segs=12)
+        rig.part(j, st, c["glow_stem"], outline=0.4)
+        rig.part(j, cap, glow=c["glow"], outline=0.4)
+    return extras
+
+
+# skin -> (age, pieces, heap colour keys (back, middle, front + pebbles), what sticks out of the heaps)
+SKIN_KITS = {
+    "rose_keep": ("medieval", kit_rose_keep, ("stone", "stone_lt", "stone_dk"), rose_keep_extras),
+    "mossy_den": ("stone", kit_mossy_den, ("bark_dk", "stone", "bark_lt"), mossy_den_extras),
+}
+
+
+def skin_kit_module(skin):
+    age, kit, heap_keys, extras = SKIN_KITS[skin]
+    c = SKIN_P[skin]
+
+    def build(rig):
+        rig.joint("pieces", "root", (0, 0, 0))
+        for i, make in enumerate(kit(rig, c)):
+            j = rig.joint(f"p{i}", "pieces", (0, 0, 0), hidden=True)
+            make(j)
+        cols = [c[k] for k in heap_keys]
+        for i, (w, h) in enumerate(((150, 30), (84, 24))):
+            j = rig.joint(f"h{i}", "root", (0, 0, 0), hidden=True)
+            heap(rig, j, w, h, cols, seed=17 + i * 5, extras=extras(c))
+        j = rig.joint("rag", "root", (0, 0, 0), hidden=True)
+        rag(rig, j)
+
+    mod = _kit_namespace(age, f"{skin}_kit", f"{skin}.collapse", build, f"base.{age}@{skin}.collapse", f"{skin} collapse kit")
+    mod.EXTRA_META["skin"] = skin
+    mod.SKIN = skin
+    return mod
+
+
+def _kit_namespace(age, slug, file_slug, build, visual_id, name):
+    """The pipeline module of a collapse kit (frame names start with `slug`: `<age>_kit_` or `<skin>_kit_`)."""
+
     def clips():
         return [
             Clip("piece", PIECES, lambda f: {f"p{f}": {"show": True}}, durations=[100] * PIECES),
@@ -358,7 +554,7 @@ def kit_module(age):
         ]
 
     return SimpleNamespace(
-        SLUG=f"{age}_kit", FILE_SLUG=f"{age}.collapse", VISUAL_ID=f"base.{age}.collapse", NAME=f"{age} collapse kit",
+        SLUG=slug, FILE_SLUG=file_slug, VISUAL_ID=visual_id, NAME=name,
         # the canvas fits the wide heap; pieces and the rag sit at the anchor in its middle
         HEIGHT_LU=40, CANVAS=(300, 140), FEET=(150, 78), YAW_DEG=BASE_YAW,
         ANCHORS={"head": (0, 20), "hitCenter": (0, 0)},

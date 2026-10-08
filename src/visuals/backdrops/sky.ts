@@ -202,6 +202,135 @@ export function paintSky(ctx: Ctx2D, age: AgeId, f: LayerFrame): void {
   }
 }
 
+/** A scene's daylight sky (`scenes.ts` SceneSky): the colours and features `paintSceneSky` needs. */
+export interface SkyPaint {
+  top: number;
+  bottom: number;
+  horizon: number;
+  cloudTint: number;
+  celestial: 'sun' | 'moon' | 'none';
+  sunAt: { x: number; y: number; r: number } | null;
+  stars: number;
+  smog: number;
+  nebula: boolean;
+  clouds: number;
+}
+
+/**
+ * A format 2 scene's own sky (PLAN 2b): the same construction as the classic skies (a deeper zenith, a
+ * mid band, the horizon glow, a warm side glow round the sun with faint rays, low cel cloud banks) from
+ * the scene's colours, plus stars, nebula glows and a smog band where the scene asks for them. Scenes are
+ * authored in neutral daylight; a sky theme re-grades this layer like any other (`themes.ts`).
+ */
+export function paintSceneSky(ctx: Ctx2D, sky: SkyPaint, f: LayerFrame, seed: number): void {
+  applyFrame(ctx, f);
+  const dark = sky.celestial === 'none' && sky.stars > 0;
+  const g = ctx.createLinearGradient(0, f.yTop, 0, f.yTop + f.height);
+  g.addColorStop(0, toCss(mix(sky.top, 0x1c2030, dark ? 0.3 : 0.12)));
+  g.addColorStop(0.35, toCss(sky.top));
+  g.addColorStop(0.72, toCss(mix(sky.top, sky.bottom, 0.75)));
+  g.addColorStop(0.9, toCss(sky.bottom));
+  g.addColorStop(1, toCss(sky.horizon));
+  ctx.fillStyle = g;
+  ctx.fillRect(f.x0, f.yTop, f.width, f.height);
+  const rng = mulberry32(seed);
+  if (sky.nebula) {
+    for (const [x, y, r, c, a] of [
+      [300, -600, 380, 0x8e44c8, 0.24],
+      [1080, -540, 320, 0x3fe0b0, 0.1],
+      [760, -690, 280, 0xc070c8, 0.16],
+      [40, -430, 230, 0x7a5ac8, 0.14],
+    ] as const) {
+      const n = ctx.createRadialGradient(x, y, 10, x, y, r);
+      n.addColorStop(0, toCss(c, a));
+      n.addColorStop(0.55, toCss(c, a * 0.45));
+      n.addColorStop(1, toCss(c, 0));
+      ctx.fillStyle = n;
+      ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+  }
+  for (let i = 0; i < sky.stars; i++) {
+    const x = f.x0 + rng.next() * f.width;
+    const y = -770 + rng.next() * 640;
+    const b = rng.next();
+    ctx.fillStyle = toCss(0xf6f2ff, 0.3 + b * 0.6);
+    ctx.beginPath();
+    ctx.arc(x, y, b > 0.94 ? 2.2 : 1.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  const sun = sky.sunAt;
+  if (sun && sky.celestial !== 'none') {
+    const c = sky.celestial === 'moon' ? 0xf2f0e6 : 0xfff2d8;
+    const side = ctx.createRadialGradient(sun.x, sun.y + 200, 40, sun.x, sun.y + 200, 900);
+    side.addColorStop(0, toCss(c, sky.celestial === 'moon' ? 0.1 : 0.16));
+    side.addColorStop(1, toCss(c, 0));
+    ctx.fillStyle = side;
+    ctx.fillRect(f.x0, f.yTop, f.width, f.height);
+    if (sky.celestial === 'sun') {
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 7; i++) {
+        const a = Math.PI * 0.5 + (i - 3) * 0.2 + (i % 2) * 0.05;
+        const w = 0.035 + (i % 3) * 0.015;
+        ctx.fillStyle = toCss(c, 0.022);
+        ctx.beginPath();
+        ctx.moveTo(sun.x, sun.y);
+        ctx.lineTo(sun.x + Math.cos(a - w) * 900, sun.y + Math.sin(a - w) * 900);
+        ctx.lineTo(sun.x + Math.cos(a + w) * 900, sun.y + Math.sin(a + w) * 900);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+    const glow = ctx.createRadialGradient(sun.x, sun.y, sun.r * 0.4, sun.x, sun.y, sun.r * 5);
+    glow.addColorStop(0, toCss(c, 0.55));
+    glow.addColorStop(0.25, toCss(c, 0.18));
+    glow.addColorStop(1, toCss(c, 0));
+    ctx.fillStyle = glow;
+    ctx.fillRect(f.x0, f.yTop, f.width, f.height);
+    ctx.fillStyle = toCss(lighten(c, 0.4), 0.95);
+    ctx.beginPath();
+    ctx.arc(sun.x, sun.y, sun.r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = toCss(0xffffff, 0.55);
+    ctx.beginPath();
+    ctx.arc(sun.x - sun.r * 0.2, sun.y - sun.r * 0.2, sun.r * 0.62, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  if (sky.smog > 0) {
+    const smog = ctx.createLinearGradient(0, -420, 0, 0);
+    smog.addColorStop(0, toCss(sky.horizon, 0));
+    smog.addColorStop(0.6, toCss(mix(sky.horizon, 0x8a847c, 0.45), sky.smog * 0.7));
+    smog.addColorStop(1, toCss(mix(sky.horizon, 0x9a948a, 0.3), sky.smog));
+    ctx.fillStyle = smog;
+    ctx.fillRect(f.x0, -420, f.width, 440);
+  }
+  if (sky.clouds > 0) {
+    // low cloud banks along the horizon: lit tops, shaded bellies, low contrast
+    const lit = mix(sky.horizon, 0xffffff, 0.55);
+    const shade = mix(sky.horizon, sky.top, 0.35);
+    for (let i = 0; i < 9; i++) {
+      const cx = f.x0 + (i + 0.3 * rng.next()) * (f.width / 9);
+      const cy = -240 + rng.next() * 110;
+      const w = 90 + rng.next() * 90;
+      const puffs: [number, number, number][] = [];
+      for (let k = 0; k < 7; k++) puffs.push([cx + (k - 3) * w * 0.2 + (rng.next() - 0.5) * 10, cy - Math.sin((k / 6) * Math.PI) * w * 0.14, w * (0.2 + 0.08 * rng.next())]);
+      ctx.fillStyle = toCss(shade, 0.16 * sky.clouds);
+      for (const [x, y, r] of puffs) {
+        ctx.beginPath();
+        ctx.arc(x, y + r * 0.25, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.fillStyle = toCss(lit, 0.2 * sky.clouds);
+      for (const [x, y, r] of puffs) {
+        ctx.beginPath();
+        ctx.arc(x - r * 0.1, y - r * 0.12, r * 0.86, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+}
+
 /** Two cloud shapes shared by every age (tinted per age at runtime). */
 part('bd.cloud.a', [
   { d: join(blob([-60, 8, -52, -10, -30, -20, -8, -30, 18, -26, 38, -16, 58, -4, 62, 8], 0.9)), zone: 'white', line: 0, shade: 'auto', light: false, alpha: 0.9 },

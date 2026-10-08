@@ -31,6 +31,15 @@
  * snap, banners flutter down, lights die on their pieces, dust rolls out over a shockwave, and smoke,
  * embers and small fires linger over the stump. Seeded from match data, so replays look the same.
  *
+ * Base skin models (PLAN 2c): `sourceFor(age)` names the age's own sheet, a skin model
+ * (`art/bases/skins/<skin>.json`) where the side wears one. A model loads lazily: until it arrives the
+ * age's standard sheet draws, tinted by the dressing's `setSkinTint` (the old tint skin), and when it
+ * lands the model blooms in over the tinted base (a cross-fade with a small pop and twinkles; a plain
+ * cross-fade under Reduce motion). A model's sheet takes no tint, and brings its own collapse topple,
+ * material, rubble and dust colours and ambient spots (`meta.ageborn`, `skinModel()` and `ambientSpots()`
+ * for the dressing). An evolve into a skinned age whose model is still loading assembles the standard
+ * base of that age and swaps the model in afterwards (the build-up never waits for a skin).
+ *
  * Reduce motion (`setMotion`): no shake, no flying shards and no squash bounces (fades instead).
  * Lite: fewer shards, bands and particles. All of it is cosmetic; the sim owns every timing.
  *
@@ -46,10 +55,11 @@ import { AGES } from '../../ages';
 import type { PartBaker } from '../../bake';
 import { FX_ZONES } from '../../effects/sprites';
 import { CLIP_TIMING } from '../../style';
+import { baseSheetSource } from '../../manifest.world';
 import { partSprite, PuffList } from '../procedural/shared';
-import { clipDurations, frameIndex, setFrame, type WorldAtlas, type WorldSheet } from '../worldAtlas';
+import { clipDurations, frameIndex, isBaseSkinSource, setFrame, type WorldAtlas, type WorldSheet } from '../worldAtlas';
 import { CollapseView } from './collapse/collapseView';
-import { collapseProfile, type CollapseMaterial } from './collapse/profiles';
+import { collapseProfileFor, type CollapseMaterial } from './collapse/profiles';
 import { warmCollapse } from './collapse/warm';
 import {
   Bits,
@@ -223,6 +233,8 @@ interface Morph {
   hold: number;
   started: boolean;
   next: WorldSheet | null;
+  /** The source `next` came from (a skin model, or the age's standard sheet while the model loads). */
+  nextSource: string | null;
   power: number;
   shards: Shard[];
   bands: Band[];
@@ -257,6 +269,15 @@ interface SlotBuild {
   flyers: Flyer[];
   metal: boolean;
 }
+
+/** A skin model blooming in over the tinted standard base (ms since it started; the old body fades). */
+interface Reskin {
+  t: number;
+  ghost: Container;
+}
+
+const RESKIN_MS = 460;
+const RESKIN_REDUCE_MS = 260;
 
 export class AtlasBaseView implements BaseView {
   readonly root = new Container();
@@ -314,11 +335,17 @@ export class AtlasBaseView implements BaseView {
   private destroyed = false;
   /** A cosmetic base skin's body tint (A18.9.4), or null; the team layer keeps its colour. */
   private skinTint: number | null = null;
+  /** The sheet source drawn now (a skin model, or the age's standard sheet while the model loads). */
+  private source: string;
+  /** Sheets this view asked the world atlas for (each once). */
+  private readonly requested = new Set<string>();
+  private reskin: Reskin | null = null;
 
   constructor(private readonly o: AtlasBaseOptions) {
     const s = o.world.get(o.def.source);
     if (!s) throw new Error(`World sheet "${o.def.source}" is not loaded`);
     this.sheet = s;
+    this.source = o.def.source;
     // compile the collapse code now, while the scene loads, not on the frame the base falls
     warmCollapse();
     this.age = o.age;
@@ -370,7 +397,8 @@ export class AtlasBaseView implements BaseView {
     this.art.scale.set(k);
     const tint = this.o.teamColor;
     this.bodyPair = pair(tint);
-    if (this.skinTint !== null) this.bodyPair.base.tint = this.skinTint;
+    // a skin model is the skin itself: the old body tint is for the standard sheet only
+    if (this.skinTint !== null && !m.skin) this.bodyPair.base.tint = this.skinTint;
     this.treasuryPair = pair(tint);
     const flags = m.flags ?? [];
     this.backFlags = flags.filter((f) => f.z === 'back').map(() => pair(tint));
@@ -401,10 +429,31 @@ export class AtlasBaseView implements BaseView {
     this.glow.scale.set(this.sheet.meta.heightLu / 14);
   }
 
-  /** Duck-typed by the base dressing (A18.9.4): tints the body, never the team layer (A11). */
+  /**
+   * Duck-typed by the base dressing (A18.9.4): tints the body, never the team layer (A11). A skin model
+   * takes no tint; the tint shows only while the standard sheet stands in for a model that is loading.
+   */
   setSkinTint(tint: number | null): void {
     this.skinTint = tint;
-    this.bodyPair.base.tint = tint ?? 0xffffff;
+    this.bodyPair.base.tint = tint !== null && !this.sheet.meta.skin ? tint : 0xffffff;
+  }
+
+  /** Duck-typed for the dressing (PLAN 2c): the skin whose model shows now, or null (a standard sheet). */
+  skinModel(): string | null {
+    return this.sheet.meta.skin ?? null;
+  }
+
+  /**
+   * Duck-typed for the dressing: where a skin model's ambient code particles start (base-local lu,
+   * unmirrored, y up; the dressing mirrors them with the side). Empty for a standard sheet.
+   */
+  ambientSpots(): readonly { kind: string; x: number; y: number; r: number; rate: number }[] {
+    return this.sheet.meta.skin ? (this.sheet.meta.ambientLu ?? []) : [];
+  }
+
+  /** The sheet source drawn now (tests, the dev pages). */
+  get sheetSource(): string {
+    return this.source;
   }
 
   mountPoints(): Pt[] {
@@ -453,6 +502,10 @@ export class AtlasBaseView implements BaseView {
   ascend(ms: number): void {
     if (this.destroyed || this.collapseT >= 0) return;
     this.endAscend(false);
+    // the next age's skin model (when the side wears one) starts streaming now, so it is usually in
+    // by the beat; if not, the standard base of that age assembles and the model swaps in after
+    const next = AGES[AGES.indexOf(this.age) + 1];
+    if (next) this.request(this.o.sourceFor(next));
     const footprint = partSprite(this.o.decor, 'fx.p.glow', FX_ZONES);
     footprint.tint = ENERGY_COLORS[this.age];
     footprint.blendMode = 'add';
@@ -468,7 +521,7 @@ export class AtlasBaseView implements BaseView {
   mountBuilt(i: number): void {
     const m = this.sheet.meta.mountsLu?.[i];
     if (!m || this.destroyed) return;
-    const colors = RUBBLE_COLORS[this.age];
+    const colors = this.rubbleOf(this.age);
     const metal = AGES.indexOf(this.age) >= AGES.indexOf('industrial');
     const x = m[0] * this.facing;
     const y = -m[1];
@@ -537,6 +590,7 @@ export class AtlasBaseView implements BaseView {
       hold: 0,
       started: false,
       next: null,
+      nextSource: null,
       power: 0.78 + 0.075 * idx,
       shards: [],
       bands: [],
@@ -549,8 +603,35 @@ export class AtlasBaseView implements BaseView {
     const src = this.o.sourceFor(age);
     if (src) {
       const hit = this.o.world.get(src);
-      if (hit) m.next = hit;
-      else void this.o.world.ensure(src).then((s) => (m.next = s));
+      if (hit) {
+        m.next = hit;
+        m.nextSource = src;
+      } else {
+        this.requested.add(src);
+        void this.o.world.ensure(src).then((s) => {
+          if (s && !m.started) {
+            m.next = s;
+            m.nextSource = src;
+          }
+        });
+        // a skin model still loading never holds the beat: the age's standard sheet assembles, and
+        // the model blooms in once it lands (`checkModel`)
+        if (isBaseSkinSource(src)) {
+          const plain = baseSheetSource(age);
+          const ph = this.o.world.get(plain);
+          if (ph) {
+            m.next = ph;
+            m.nextSource = plain;
+          } else {
+            void this.o.world.ensure(plain).then((s) => {
+              if (s && !m.started && !m.next) {
+                m.next = s;
+                m.nextSource = plain;
+              }
+            });
+          }
+        }
+      }
     }
     // the next sheet is usually loaded (one age ahead); otherwise the build-up holds at its peak
     if (!m.next && src !== undefined && !this.ascending) this.ascend(MAX_HOLD_MS);
@@ -579,10 +660,12 @@ export class AtlasBaseView implements BaseView {
    * punch and the sounds on them.
    */
   collapseWith(o: { seed: number }): CollapseBeats {
-    const profile = collapseProfile(this.age);
+    // a skin model collapses as itself: its own towers, material and rubble colours (meta.ageborn)
+    const profile = collapseProfileFor(this.age, this.sheet.meta.skin ? this.sheet.meta : null);
     if (this.collapsing) return this.collapsing.beats;
     this.endAscend(false);
     this.finishMorph();
+    this.finishReskin();
     this.collapseT = 0;
     this.hornOn = false;
     this.horn.visible = false;
@@ -624,6 +707,7 @@ export class AtlasBaseView implements BaseView {
 
   update(dtMs: number): void {
     if (this.destroyed) return;
+    this.checkModel();
     this.live = true;
     this.clockMs += dtMs;
     const reduce = this.motion.reduce;
@@ -631,6 +715,11 @@ export class AtlasBaseView implements BaseView {
     let sy = 1;
     let ox = 0;
     let oy = 0;
+    if (this.reskin) {
+      const k = this.stepReskin(dtMs);
+      sx *= k.sx;
+      sy *= k.sy;
+    }
     if (this.shakeMs > 0) {
       this.shakeMs = Math.max(0, this.shakeMs - dtMs);
       const k = (this.shakeMs / 240) * this.shakeAmp * (reduce ? 0 : 1);
@@ -821,7 +910,7 @@ export class AtlasBaseView implements BaseView {
     while (a.dustAcc >= 1) {
       a.dustAcc -= 1;
       const s = partSprite(this.o.decor, this.rng.next() < 0.5 ? 'fx.p.dust' : 'fx.p.rock2', FX_ZONES);
-      s.tint = DUST_COLORS[this.age];
+      s.tint = this.dustTint();
       const h = this.sheet.meta.heightLu;
       s.position.set((x0 + w * (0.15 + this.rng.next() * 0.7)) * this.facing, -h * (0.3 + this.rng.next() * 0.55));
       this.bits.add(s, { vx: (this.rng.next() - 0.5) * 20, vy: 10, g: 520, life: 700, s0: 0.5, s1: 0.35, a0: 0.8, spin: 3 });
@@ -997,10 +1086,14 @@ export class AtlasBaseView implements BaseView {
     }
     // 2. the new sheet
     if (m.next) {
+      this.finishReskin();
       this.sheet = m.next;
       this.age = m.age;
-      const src = this.o.sourceFor(m.age);
-      if (src) this.root.label = src;
+      const src = m.nextSource ?? this.o.sourceFor(m.age);
+      if (src) {
+        this.root.label = src;
+        this.source = src;
+      }
       this.build();
     }
     this.art.visible = false;
@@ -1110,13 +1203,108 @@ export class AtlasBaseView implements BaseView {
     for (const b of m.bands) destroyPiece(b.p);
     if (!m.started && m.next) {
       // interrupted before the beat: take the new sheet at once
+      this.finishReskin();
       this.sheet = m.next;
       this.age = m.age;
+      if (m.nextSource) {
+        this.source = m.nextSource;
+        this.root.label = m.nextSource;
+      }
       this.build();
     }
     this.art.visible = true;
     this.lightLayer.visible = true;
     this.unfurlFlags(1);
+  }
+
+  // ------------------------------------------------------------------------------------------
+  // Base skin models (lazy)
+
+  /** Asks the world atlas for a sheet once (a skin model streaming in). */
+  private request(src: string | undefined): void {
+    if (!src || this.requested.has(src) || this.o.world.get(src)) return;
+    this.requested.add(src);
+    void this.o.world.ensure(src);
+  }
+
+  /**
+   * The age's own sheet (a skin model) replaces the standing-in standard sheet once it has loaded; never
+   * in the middle of an evolve, a build-up or the collapse (the morph takes the model itself).
+   */
+  private checkModel(): void {
+    if (this.morph || this.ascending || this.collapsing) return;
+    const want = this.o.sourceFor(this.age);
+    if (!want || want === this.source) return;
+    const s = this.o.world.get(want);
+    if (!s) {
+      this.request(want);
+      return;
+    }
+    const animate = this.live;
+    let ghost: Container | null = null;
+    if (animate) {
+      // the old body, flags and Treasury as they showed (tint and team layer), fading out over the model
+      ghost = new Container();
+      ghost.scale.set(this.art.scale.x, this.art.scale.y);
+      for (const c of [...this.art.children]) if (c !== this.flash) ghost.addChild(c);
+    }
+    this.sheet = s;
+    this.source = want;
+    this.root.label = want;
+    this.build();
+    if (!ghost) return;
+    this.finishReskin();
+    this.body.addChild(ghost);
+    this.reskin = { t: 0, ghost };
+    this.art.alpha = 0;
+    if (!this.motion.reduce) {
+      this.flashMs = 90;
+      const spots = this.crackSpots();
+      const n = this.motion.lite ? 3 : 6;
+      for (let i = 0; i < n && spots.length > 0; i++) {
+        const p = spots[(i * 5 + 2) % spots.length];
+        if (p) this.twinkle(p.x * this.facing, p.y, i === 0 ? 1.3 : 0.8);
+      }
+    }
+  }
+
+  /** The model blooms in: the old body fades out, the model fades in with a small pop. */
+  private stepReskin(dtMs: number): { sx: number; sy: number } {
+    const r = this.reskin;
+    if (!r) return { sx: 1, sy: 1 };
+    r.t += dtMs;
+    const reduce = this.motion.reduce;
+    const u = clamp01(r.t / (reduce ? RESKIN_REDUCE_MS : RESKIN_MS));
+    this.art.alpha = reduce ? u : easeOutCubic(clamp01(u * 1.7));
+    r.ghost.alpha = reduce ? 1 - u : 1 - easeInQuad(u);
+    if (u >= 1) {
+      this.finishReskin();
+      return { sx: 1, sy: 1 };
+    }
+    if (reduce) return { sx: 1, sy: 1 };
+    // anticipation, then a soft overshoot and settle
+    const p = u < 0.22 ? -easeOutCubic(u / 0.22) : springSettle((u - 0.22) / 0.78, 2.2, 4.4) - 1;
+    return { sx: 1 - 0.025 * p, sy: 1 + 0.045 * p };
+  }
+
+  private finishReskin(): void {
+    const r = this.reskin;
+    if (!r) return;
+    this.reskin = null;
+    r.ghost.destroy({ children: true });
+    this.art.alpha = 1;
+  }
+
+  /** Rubble tints: a skin model's own materials, else the age's. */
+  private rubbleOf(age: AgeId): readonly number[] {
+    const own = age === this.age && this.sheet.meta.skin ? (this.sheet.meta.rubbleColors ?? []).map((c) => parseInt(c.replace('#', ''), 16)).filter((c) => Number.isFinite(c)) : [];
+    return own.length > 0 ? own : RUBBLE_COLORS[age];
+  }
+
+  private dustTint(): number {
+    const d = this.sheet.meta.skin ? this.sheet.meta.dustColor : undefined;
+    const c = d ? parseInt(d.replace('#', ''), 16) : NaN;
+    return Number.isFinite(c) ? c : DUST_COLORS[this.age];
   }
 
   // ------------------------------------------------------------------------------------------
@@ -1309,7 +1497,7 @@ export class AtlasBaseView implements BaseView {
   private dust(x: number, y: number, n: number, size: number): void {
     for (let i = 0; i < n; i++) {
       const s = partSprite(this.o.decor, 'fx.p.dust', FX_ZONES);
-      s.tint = DUST_COLORS[this.age];
+      s.tint = this.dustTint();
       s.position.set(x + (this.rng.next() - 0.5) * 8, y);
       const dir = this.rng.next() < 0.5 ? -1 : 1;
       this.puffs.add(s, { vx: dir * (30 + this.rng.next() * 40), vy: -14 - this.rng.next() * 16, life: 520, s0: 0.8 * size, s1: 2 * size, a0: 0.85 });
@@ -1391,7 +1579,7 @@ export class AtlasBaseView implements BaseView {
   private debrisOf(age: AgeId, n: number, size: number): void {
     const w = this.sheet.meta.widthLu ?? 150;
     const h = this.sheet.meta.heightLu;
-    const colors = RUBBLE_COLORS[age];
+    const colors = this.rubbleOf(age);
     for (let i = 0; i < n; i++) {
       if (this.chunks.length >= MAX_CHUNKS) {
         const old = this.chunks.shift();
@@ -1420,7 +1608,7 @@ export class AtlasBaseView implements BaseView {
     const w = this.sheet.meta.widthLu ?? 150;
     for (let i = 0; i < n; i++) {
       const s = partSprite(this.o.decor, 'fx.p.cloud', FX_ZONES);
-      s.tint = DUST_COLORS[this.age];
+      s.tint = this.dustTint();
       s.position.set(-(0.15 + (i / Math.max(1, n - 1)) * 0.7) * w * this.facing, -10 - this.rng.next() * 30 * size);
       this.puffs.add(s, { vx: (this.rng.next() - 0.5) * 30, vy: -14 - this.rng.next() * 14, life: (1800 + this.rng.next() * 700) * size, s0: 2.2 * size, s1: 5.2 * size, a0: 0.8 });
     }

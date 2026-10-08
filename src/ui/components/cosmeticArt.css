@@ -153,3 +153,258 @@ img.cos-bd__img {
   border-radius: 14px;
   box-shadow: none;
 }
+
+/* ---- The battle speech bubble (PLAN 2a "Quotes"): the HUD, the Customize tiles and the wheel ----
+   A cream bubble with a lit top and a hard shadow band on its lower part (AUDIT §3.1), the tail toward
+   the speaker's General head, and the rarity on its edge. */
+.cos-qb {
+  --qb-edge: #2a1f18;
+  --qb-ring: transparent;
+  --qb-cream: #fffcf3;
+  --qb-band: #efe3c6;
+  position: relative;
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: 100%;
+  vertical-align: bottom;
+}
+.cos-qb--tail-br,
+.cos-qb--tail-tr {
+  flex-direction: row-reverse;
+}
+.cos-qb--tail-tl,
+.cos-qb--tail-tr {
+  align-items: flex-start;
+}
+.cos-qb__head {
+  flex: none;
+  display: grid;
+  width: 34px;
+  height: 34px;
+}
+.cos-qb__head .ui-avatar,
+.cos-qb__head .ui-general {
+  width: 100% !important;
+  height: 100% !important;
+  border-width: 2px;
+  border-radius: 50%;
+  box-shadow: 0 2px 0 rgb(0 0 0 / 0.35);
+}
+.cos-qb__body {
+  position: relative;
+  min-width: 0;
+  padding: 6px 11px 7px;
+  border: 2.5px solid var(--qb-edge);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff 0 2px, var(--qb-cream) 2px calc(100% - 6px), var(--qb-band) calc(100% - 6px));
+  box-shadow:
+    0 0 0 1.5px var(--qb-ring),
+    0 3px 0 var(--qb-edge);
+  color: #2a1e14;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.18;
+  text-align: left;
+}
+.cos-qb--sm .cos-qb__body {
+  padding: 4px 9px 5px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+.cos-qb__text {
+  position: relative;
+  z-index: 1;
+  display: block;
+  overflow-wrap: anywhere;
+}
+/* the tail: an outline triangle and a fill triangle, toward the speaker */
+.cos-qb__body::before,
+.cos-qb__body::after {
+  content: '';
+  position: absolute;
+  width: 13px;
+  height: 11px;
+}
+.cos-qb__body::before {
+  background: var(--qb-edge);
+}
+.cos-qb__body::after {
+  background: var(--qb-band);
+  width: 8px;
+  height: 7px;
+}
+.cos-qb--tail-bl .cos-qb__body {
+  border-bottom-left-radius: 4px;
+}
+.cos-qb--tail-bl .cos-qb__body::before {
+  left: -10px;
+  bottom: -2.5px;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+.cos-qb--tail-bl .cos-qb__body::after {
+  left: -4px;
+  bottom: 0;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+.cos-qb--tail-br .cos-qb__body {
+  border-bottom-right-radius: 4px;
+}
+.cos-qb--tail-br .cos-qb__body::before {
+  right: -10px;
+  bottom: -2.5px;
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+}
+.cos-qb--tail-br .cos-qb__body::after {
+  right: -4px;
+  bottom: 0;
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+}
+.cos-qb--tail-tl .cos-qb__body {
+  border-top-left-radius: 4px;
+}
+.cos-qb--tail-tl .cos-qb__body::before {
+  left: -10px;
+  top: -2.5px;
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+.cos-qb--tail-tl .cos-qb__body::after {
+  left: -4px;
+  top: 0;
+  background: #ffffff;
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+.cos-qb--tail-tr .cos-qb__body {
+  border-top-right-radius: 4px;
+}
+.cos-qb--tail-tr .cos-qb__body::before {
+  right: -10px;
+  top: -2.5px;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+.cos-qb--tail-tr .cos-qb__body::after {
+  right: -4px;
+  top: 0;
+  background: #ffffff;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+/* Rare: a teal edge with corner rivets */
+.cos-qb--rare {
+  --qb-edge: #2c9aac;
+  --qb-ring: #0f3a41;
+}
+.cos-qb--rare .cos-qb__orn {
+  position: absolute;
+  inset: 2px;
+  background:
+    radial-gradient(circle, #dff2f5 0 1.6px, #0f3a41 1.8px 2.5px, transparent 2.6px) 0 0 / 7px 7px no-repeat,
+    radial-gradient(circle, #dff2f5 0 1.6px, #0f3a41 1.8px 2.5px, transparent 2.6px) 100% 0 / 7px 7px no-repeat,
+    radial-gradient(circle, #dff2f5 0 1.6px, #0f3a41 1.8px 2.5px, transparent 2.6px) 0 100% / 7px 7px no-repeat,
+    radial-gradient(circle, #dff2f5 0 1.6px, #0f3a41 1.8px 2.5px, transparent 2.6px) 100% 100% / 7px 7px no-repeat;
+  pointer-events: none;
+}
+/* Epic: a violet edge with laurel sprigs at the lower corners */
+.cos-qb--epic {
+  --qb-edge: #8a52d4;
+  --qb-ring: #2c1450;
+}
+.cos-qb--epic .cos-qb__orn {
+  position: absolute;
+  left: -7px;
+  right: -7px;
+  bottom: -6px;
+  height: 14px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 14'%3E%3Cpath d='M2 12Q8 11 15 4' stroke='%233f6b26' stroke-width='1.2' fill='none'/%3E%3Cpath d='M5 10.6C4.4 8.6 5.6 7 7.6 6.6C8 8.6 6.8 10.2 5 10.6ZM9 8C8.6 6 9.8 4.6 11.8 4.2C12 6.2 10.8 7.6 9 8ZM12.6 5.2C12.4 3.2 13.6 1.8 15.6 1.6C15.6 3.6 14.4 5 12.6 5.2ZM6.4 11.6C8 10.4 10 10.6 11.2 11.8C9.6 13 7.6 12.8 6.4 11.6ZM10.2 9.2C11.8 8 13.8 8.2 15 9.4C13.4 10.6 11.4 10.4 10.2 9.2Z' fill='%237cbf50' stroke='%23263917' stroke-width='.7'/%3E%3C/svg%3E") 0 100% / 18px 14px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 14'%3E%3Cg transform='matrix(-1 0 0 1 18 0)'%3E%3Cpath d='M2 12Q8 11 15 4' stroke='%233f6b26' stroke-width='1.2' fill='none'/%3E%3Cpath d='M5 10.6C4.4 8.6 5.6 7 7.6 6.6C8 8.6 6.8 10.2 5 10.6ZM9 8C8.6 6 9.8 4.6 11.8 4.2C12 6.2 10.8 7.6 9 8ZM12.6 5.2C12.4 3.2 13.6 1.8 15.6 1.6C15.6 3.6 14.4 5 12.6 5.2ZM6.4 11.6C8 10.4 10 10.6 11.2 11.8C9.6 13 7.6 12.8 6.4 11.6ZM10.2 9.2C11.8 8 13.8 8.2 15 9.4C13.4 10.6 11.4 10.4 10.2 9.2Z' fill='%237cbf50' stroke='%23263917' stroke-width='.7'/%3E%3C/g%3E%3C/svg%3E") 100% 100% / 18px 14px no-repeat;
+  pointer-events: none;
+}
+/* Legendary: a gold scroll edge with curls at both ends, a glint, and a gold aura in battle */
+.cos-qb--legendary {
+  --qb-edge: #dfa42c;
+  --qb-ring: #573808;
+  --qb-cream: #fffaea;
+  --qb-band: #f6e3b0;
+}
+.cos-qb--legendary .cos-qb__orn {
+  position: absolute;
+  top: 50%;
+  left: -10px;
+  right: -10px;
+  height: 18px;
+  margin-top: -9px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 18'%3E%3Cpath d='M8 2C3 2 1.5 6 3.4 8.4 5 10.4 8.4 9 7.6 6.6 7 5 5 5.6 5.2 7' fill='none' stroke='%23573808' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M8 2C3 2 1.5 6 3.4 8.4 5 10.4 8.4 9 7.6 6.6 7 5 5 5.6 5.2 7' fill='none' stroke='%23f6c23e' stroke-width='1' stroke-linecap='round'/%3E%3Cpath d='M8 16C4 16 3 13 4.4 11.6' fill='none' stroke='%23573808' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M8 16C4 16 3 13 4.4 11.6' fill='none' stroke='%23f6c23e' stroke-width='.9' stroke-linecap='round'/%3E%3C/svg%3E") 0 50% / 10px 18px no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 18'%3E%3Cg transform='matrix(-1 0 0 1 10 0)'%3E%3Cpath d='M8 2C3 2 1.5 6 3.4 8.4 5 10.4 8.4 9 7.6 6.6 7 5 5 5.6 5.2 7' fill='none' stroke='%23573808' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M8 2C3 2 1.5 6 3.4 8.4 5 10.4 8.4 9 7.6 6.6 7 5 5 5.6 5.2 7' fill='none' stroke='%23f6c23e' stroke-width='1' stroke-linecap='round'/%3E%3Cpath d='M8 16C4 16 3 13 4.4 11.6' fill='none' stroke='%23573808' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M8 16C4 16 3 13 4.4 11.6' fill='none' stroke='%23f6c23e' stroke-width='.9' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E") 100% 50% / 10px 18px no-repeat;
+  pointer-events: none;
+}
+.cos-qb__glint {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  background: linear-gradient(110deg, transparent 0 40%, rgb(255 255 255 / 0.85) 50%, transparent 60%) no-repeat;
+  background-size: 300% 100%;
+  background-position: 160% 0;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  animation: cos-qb-glint 5s ease-in-out infinite;
+}
+@keyframes cos-qb-glint {
+  0% {
+    background-position: 160% 0;
+  }
+  20%,
+  100% {
+    background-position: -60% 0;
+  }
+}
+.cos-qb.is-aura .cos-qb__body {
+  box-shadow:
+    0 0 0 1.5px var(--qb-ring),
+    0 3px 0 var(--qb-edge),
+    0 0 16px 4px rgb(255 214 110 / 0.75);
+}
+/* the pop: scale 0 → 1.06 → 1 in 240 ms (PLAN 2a) */
+.cos-qb.is-pop {
+  transform-origin: 0% 100%;
+  animation: cos-qb-pop 240ms var(--ui-ease-back, ease-out) both;
+}
+.cos-qb--tail-br.is-pop,
+.cos-qb--tail-tr.is-pop {
+  transform-origin: 100% 100%;
+}
+@keyframes cos-qb-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.ui-root[data-reduce-motion='true'] .cos-qb__glint {
+  animation: none;
+  display: none;
+}
+.ui-root[data-reduce-motion='true'] .cos-qb.is-pop {
+  animation: cos-qb-fade 160ms ease-out both;
+}
+@keyframes cos-qb-fade {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cos-qb__glint {
+    animation: none;
+    display: none;
+  }
+  .cos-qb.is-pop {
+    animation: cos-qb-fade 160ms ease-out both;
+  }
+}

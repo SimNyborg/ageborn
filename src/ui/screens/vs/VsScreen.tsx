@@ -15,13 +15,14 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { Avatar, GeneralPortrait } from '../../components/Avatar';
 import { BannerArt } from '../../components/avatar/ProfileArt';
 import { AiBadge, Pill } from '../../components/Chips';
-import { BackdropLook, BaseLook, LookFlags } from '../../components/cosmeticArt';
+import { BackdropLook, LookFlags } from '../../components/cosmeticArt';
 import { formatDec, formatInt, tierNumeral } from '../../components/format';
 import { SignalIcon, TrophyIcon } from '../../components/icons';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { hudTeamColors } from '../../hud/model';
 import { PlayerChip } from '../home/online';
+import { SkinnedBase } from '../home/skinnedBase';
 import { equippedOf, owns } from '../model/cosmetics';
 import { generalOf, onlineOf, opponentName, personalityOf } from '../model/opponent';
 import { activePlan, formatAges, formatName, planAvgLevel } from '../model/plan';
@@ -181,7 +182,7 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
         </span>
         <span class="vs__ground" aria-hidden="true" />
         <span class="vs__base vs__base--me" aria-hidden="true">
-          <BaseLook age={firstAge} skin={mine(eq?.baseSkins[firstAge])} animate={false} />
+          <SkinnedBase age={firstAge} skin={mine(eq?.baseSkins[firstAge])} animate={false} />
         </span>
         <div class="vs__card vs__card--me" data-testid="vs-me">
           <span class="vs__bust">
@@ -215,7 +216,7 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
         </span>
         <span class="vs__ground" aria-hidden="true" />
         <span class="vs__base vs__base--foe" aria-hidden="true">
-          <BaseLook age={firstAge} skin={foeLook?.baseSkins?.[firstAge] ?? null} animate={false} side={1} />
+          <SkinnedBase age={firstAge} skin={foeLook?.baseSkins?.[firstAge] ?? null} animate={false} side={1} />
         </span>
         {online ? (
           // The found online player's card mirrors yours (owner decision 2026-10-07).

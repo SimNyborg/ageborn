@@ -62,7 +62,8 @@ describe('the HUD wheel', () => {
   it('holds the equipped emotes and quotes that are owned', () => {
     const s = fresh();
     const w = emoteWheelOf({ ...s, cosmetics: { ...s.cosmetics, equipped: { ...s.cosmetics.equipped, emotes: ['gg', 'emote.party'], quotes: ['quote.glhf', 'quote.honour'] } } }, content);
-    expect(w).toEqual({ emotes: ['gg'], quotes: ['quote.glhf'], quoteCooldownMs: content.cosmetics.collections.quoteCooldownMs });
+    // the player's General rides along: the HUD's quote bubble shows its head (PLAN 2a)
+    expect(w).toEqual({ emotes: ['gg'], quotes: ['quote.glhf'], quoteCooldownMs: content.cosmetics.collections.quoteCooldownMs, speaker: s.profile.avatar });
     expect(emoteWheelOf(null, content)).toBeNull();
   });
 });

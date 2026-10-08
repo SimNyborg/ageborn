@@ -24,9 +24,10 @@ import { backdropIconSvg, backdropPreviewUrl, backdropWeatherSvg } from './backd
 import { baseSkinArt, baseSkinLayerSvg, baseSkinSvg, baseSkinThumbUrl, BASE_SKINS, hasBaseSkinArt } from './baseSkins';
 import { decorationArtUrl, decorationSvg, DECO_H, DECO_W, DECORATIONS, drawDecoration, hasDecorationArt } from './decorations';
 import { EMOTES, type EmoteLayer, type EmoteMotion } from './emotes';
-import { BANNER_OUTLINE, BASE_FLAGS, FLAG_H, FLAG_W, flagFinish } from './flags';
+import { BANNER_OUTLINE, BASE_FLAGS, baseFlagTier, FLAG_GLINT, FLAG_H, FLAG_POLE_BOX, FLAG_W, flagCloth, flagFringe, flagPole, flagTrim, type FlagTier } from './flags';
+import * as nationalFlagArt from './nationalFlags';
 import { drawNationalFlag, hasNationalFlagArt, NATIONAL_FLAGS, nationalFlagSvg, nationalFlagUrl, REGION_PENNANTS } from './nationalFlags';
-import { circle, drawShapes, INK, shapesToSvg, type Ctx2D, type Paints, type Shape } from './shapes';
+import { celRamp, circle, drawShapes, hex, INK, shapesToSvg, type Ctx2D, type Paints, type Shape } from './shapes';
 
 /** `avatar` (the General's wardrobe) is drawn by the UI's avatar renderer, so the visuals have no art for it. */
 export const COSMETIC_COLLECTIONS = ['emote', 'quote', 'baseFlag', 'nationalFlag', 'baseSkin', 'decoration', 'backdrop', 'scene', 'avatar'] as const;
@@ -73,26 +74,60 @@ export function hasCosmeticArt(collection: string, id: string): boolean {
 
 export type FlagKind = 'nationalFlag' | 'baseFlag';
 
-/** A base flag's design: `flags.ts`, or one of the Flag Atlas's rewards (`nationalFlags.ts`, Track D). */
-const baseFlagShapes = (id: string): readonly Shape[] | undefined => BASE_FLAGS[id] ?? REGION_PENNANTS[id];
+/**
+ * The finish tier of a Flag Atlas reward (Track D's `REGION_PENNANT_TIER`, when it exports one): the
+ * Region Pennants are Epic-styled, World Compass Legendary (PLAN 2d).
+ */
+function pennantTier(id: string): FlagTier {
+  const tiers = (nationalFlagArt as { REGION_PENNANT_TIER?: Readonly<Record<string, FlagTier>> }).REGION_PENNANT_TIER;
+  return tiers?.[id] ?? 'epic';
+}
 
-/** The shapes and outline of a base flag, or null (national flags are drawn by `nationalFlags.ts`). */
-export function baseFlagDesign(id: string): { shapes: readonly Shape[]; outline: string } | null {
-  const shapes = baseFlagShapes(id);
-  return shapes ? { shapes, outline: BANNER_OUTLINE } : null;
+/**
+ * A base flag's design: `flags.ts` (cloth and emblem), or one of the Flag Atlas's rewards
+ * (`nationalFlags.ts`, Track D: the whole field and emblem, given our cloth finish on top).
+ */
+function baseFlagParts(id: string): { shapes: readonly Shape[]; tier: FlagTier } | undefined {
+  const own = BASE_FLAGS[id];
+  if (own) return { shapes: own, tier: baseFlagTier(id) ?? 'common' };
+  const pennant = REGION_PENNANTS[id];
+  if (!pennant) return undefined;
+  const tier = pennantTier(id);
+  return { shapes: [...pennant, ...flagCloth(tier).slice(1)], tier };
+}
+const baseFlagShapes = (id: string): readonly Shape[] | undefined => baseFlagParts(id)?.shapes;
+
+/** The shapes, outline and finish tier of a base flag, or null (national flags are drawn by `nationalFlags.ts`). */
+export function baseFlagDesign(id: string): { shapes: readonly Shape[]; outline: string; tier: FlagTier } | null {
+  const d = baseFlagParts(id);
+  return d ? { shapes: d.shapes, outline: BANNER_OUTLINE, tier: d.tier } : null;
 }
 
 let clipSeq = 0;
 
-function baseFlagSvg(id: string, p: Paints): string | null {
+/**
+ * A base flag as SVG: cloth, emblem and trim inside the swallowtail, its outline in the team colour's
+ * dark (AUDIT §3.1, never black), the fringe outside it. `pole` adds the pole and the tier's finial
+ * (the screens' tiles); `animate` sweeps the Legendary glint (off under reduce motion).
+ */
+function baseFlagSvg(id: string, p: Paints, o: { pole?: boolean; animate?: boolean } = {}): string | null {
   const d = baseFlagDesign(id);
   if (!d) return null;
   const clip = `cf${(clipSeq = (clipSeq + 1) % 1e6)}`;
+  const line = celRamp(hex(p.team), 'cloth').line;
+  const box = o.pole ? FLAG_POLE_BOX.join(' ') : `-2 -2 ${FLAG_W + 4} ${FLAG_H + 4}`;
+  const glint =
+    d.tier === 'legendary' && o.animate
+      ? `<path d="${FLAG_GLINT}" fill="#ffffff" opacity="0.4"><animateTransform attributeName="transform" type="translate" values="-8 0;86 0;86 0" keyTimes="0;0.3;1" dur="5s" repeatCount="indefinite"/></path>`
+      : '';
   return (
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 ${FLAG_W + 4} ${FLAG_H + 4}">` +
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${box}">` +
+    (o.pole ? shapesToSvg(flagPole(d.tier), p) : '') +
     `<defs><clipPath id="${clip}"><path d="${d.outline}"/></clipPath></defs>` +
-    `<g clip-path="url(#${clip})">${shapesToSvg(d.shapes, p)}${shapesToSvg(flagFinish(), p)}</g>` +
-    `<path d="${d.outline}" fill="none" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/></svg>`
+    `<g clip-path="url(#${clip})">${shapesToSvg(d.shapes, p)}${shapesToSvg(flagTrim(d.tier), p)}${glint}</g>` +
+    `<path d="${d.outline}" fill="none" stroke="${line}" stroke-width="1.6" stroke-linejoin="round" data-flag-outline=""/>` +
+    shapesToSvg(flagFringe(d.tier), p) +
+    `</svg>`
   );
 }
 
@@ -108,12 +143,13 @@ export function drawFlag(ctx: Ctx2D, kind: FlagKind, id: string, p: Paints, px: 
   ctx.save();
   ctx.clip(outline);
   drawShapes(ctx, d.shapes, p);
-  drawShapes(ctx, flagFinish(), p);
+  drawShapes(ctx, flagTrim(d.tier), p);
   ctx.restore();
-  ctx.strokeStyle = INK;
-  ctx.lineWidth = 1.8;
+  ctx.strokeStyle = celRamp(hex(p.team), 'cloth').line;
+  ctx.lineWidth = 1.6;
   ctx.lineJoin = 'round';
   ctx.stroke(outline);
+  drawShapes(ctx, flagFringe(d.tier), p);
   ctx.restore();
   return true;
 }
@@ -215,6 +251,8 @@ export interface CosmeticSvgOptions {
   hd?: boolean;
   /** National flags: a grid tile picture or the big detail view's picture. */
   size?: 'tile' | 'big';
+  /** Base flags: drawn on their pole with the rarity's finial (collection tiles). */
+  pole?: boolean;
 }
 
 /** SVG markup for a cosmetic key (`nationalFlag.dk`), or null when there is no art for it. */
@@ -230,7 +268,7 @@ export function cosmeticSvg(key: string, o: CosmeticSvgOptions = {}): string | n
     case 'nationalFlag':
       return nationalFlagSvg(k.id);
     case 'baseFlag':
-      return baseFlagSvg(k.id, p);
+      return baseFlagSvg(k.id, p, { pole: !!o.pole, animate: o.animate ?? true });
     case 'decoration':
       return decorationSvg(k.id, p);
     case 'emote':
@@ -285,7 +323,7 @@ export function cosmeticImageUrl(key: string, o: CosmeticSvgOptions = {}): strin
     const url = decorationArtUrl(key.slice('decoration.'.length), o.hd ? { hd: true } : {});
     if (url) return url;
   }
-  const ck = `${key}|${o.team ?? PREVIEW_TEAM}|${o.animate ?? true}|${o.layer ?? ''}`;
+  const ck = `${key}|${o.team ?? PREVIEW_TEAM}|${o.animate ?? true}|${o.layer ?? ''}|${o.pole ? 'p' : ''}`;
   let u = urlCache.get(ck);
   if (u === undefined) {
     const svg = cosmeticSvg(key, o);

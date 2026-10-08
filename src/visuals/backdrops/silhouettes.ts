@@ -18,7 +18,7 @@ export interface AmbientSpec {
   part: string;
   x: number;
   y: number;
-  layer: 'sky' | 'far' | 'mid' | 'ground';
+  layer: 'sky' | 'back' | 'far' | 'mid' | 'ground';
   scale?: number;
   /** Degrees per second (rotate) or lu per second (drift, emit rise). */
   speed?: number;

@@ -5,8 +5,9 @@
  * landmark behind them (a smoking volcano, an ice peak, a moated keep, a harbour with a tall ship, a
  * factory, a neon skyline, a ringed planet, a time rift).
  *
- * The bases are the real base pictures from the art provider (`BaseLook`, the ArtProvider portrait
- * `base.<age>`; the AI's in its team colour), so swapping art changes them here too; the island,
+ * The bases are the real base pictures from the art provider (`SkinnedBase`, the ArtProvider portrait
+ * `base.<age>` with the side's base skin: its model, or the standard base with the skin's tint; the AI's
+ * in its team colour), so swapping art changes them here too; the island,
  * landmark and props are code-drawn chrome like the War Path regions. Each side's frontline troops
  * (your War Plan's first units, the AI's from its plan; ArtProvider portraits) stand in the lane:
  * they breathe, the back ones taunt with a hop, and every few seconds the front pair lunges in for a
@@ -19,10 +20,10 @@ import type { ArenaId } from '@/content/types';
 import { fnv1a32, mulberry32 } from '@/core';
 import type { ComponentChildren } from 'preact';
 import { useMemo } from 'preact/hooks';
-import { BaseLook } from '../../components/cosmeticArt';
 import { usePortrait } from '../../components/kit';
 import { ink, light, shade } from '../../components/tone';
 import { Keep, Volcano } from './landmarks';
+import { SkinnedBase } from './skinnedBase';
 import { boulder, broadleaf, Cel, crystal, Grove, type KitProp, pine } from '../warPath/propKit';
 import type { RegionTheme } from '../warPath/regionArt';
 
@@ -523,10 +524,10 @@ export function Diorama(p: {
             </g>
           </svg>
           <span class="hd__base hd__base--me">
-            <BaseLook age={p.age} skin={p.mySkin} />
+            <SkinnedBase age={p.age} skin={p.mySkin} />
           </span>
           <span class="hd__base hd__base--foe" key={look === 'found' ? 'found' : 'base'}>
-            <BaseLook age={p.age} skin={p.foeSkin} side={1} />
+            <SkinnedBase age={p.age} skin={p.foeSkin} side={1} />
             {hidden ? (
               <i class="hd__unknown">
                 <b>?</b>

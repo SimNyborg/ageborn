@@ -6,17 +6,21 @@
  * be bought (A6.2).
  */
 import { ageNameKey, cosmeticCollectionKey, cosmeticNameKey, emoteNameKey, quoteTextKey, rarityNameKey } from '@/content/keys';
-import type { CosmeticCollection, CosmeticItemDef } from '@/content/types';
-import type { AgeId, BaseEmoteId, CosmeticLoadout } from '@/contracts';
+import type { CosmeticCollection, CosmeticItemDef, CosmeticSource } from '@/content/types';
+import type { AgeId, BaseEmoteId, CosmeticLoadout, Rarity } from '@/contracts';
 import type { ComponentChildren } from 'preact';
-import { useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
-import { BackdropLook, BaseLook, CosmeticImage } from '../../components/cosmeticArt';
-import { CheckIcon, DustIcon, LockIcon, RARITY_COLOR } from '../../components/icons';
+import { useConfirmSpend } from '../../components/confirm';
+import { AvatarLookView, resolveLook, type ResolvedLook } from '../../components/Avatar';
+import { BackdropLook, BaseLook, CosmeticImage, QuoteBubble, type BubbleTail } from '../../components/cosmeticArt';
+import { formatInt } from '../../components/format';
+import { CapsuleIcon, CheckIcon, ChevronIcon, CrateIcon, CrownIcon, DustIcon, FlagIcon, GlobeIcon, LockIcon, RARITY_COLOR, RarityGem, StarIcon, TrophyIcon } from '../../components/icons';
+import { Modal } from '../../components/Modal';
 import { AgePicker } from '../../components/Tabs';
 import { EmoteGlyph } from '../../hud/icons';
 import { useUi } from '../context';
-import { craftLocked, craftPrice, equippedOf, itemKey, itemsOf, ownedFirst, owns, progressOf, sourceText } from '../model/cosmetics';
+import { craftLocked, craftPrice, equippedOf, findItem, itemKey, itemsOf, ownedFirst, owns, progressOf, sourceText } from '../model/cosmetics';
 import { playLevelId } from '../model/warPath';
 import type { ActionResult, CosmeticEquipPatch } from '../services';
 
@@ -78,7 +82,95 @@ function useAct() {
   };
 }
 
-/** One collection item: art, name, rarity edge, and its state (equipped, equip, locked with source, craft). */
+/**
+ * A counter that grows each time `on` turns true while the tile is shown (not on its first render):
+ * the key that replays the equip pop and the rarity sparkle (PLAN 2a: equip feedback).
+ */
+function usePop(on: boolean): number {
+  const was = useRef(on);
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (on && !was.current) setN((x) => x + 1);
+    was.current = on;
+  }, [on]);
+  return n;
+}
+
+/** The icon of how an item is earned (PLAN 2a: capsule drum, crate, road cup, feat medal, War Path flag, Dust spark). */
+export function SourceIcon(p: { source: CosmeticSource; size?: number }) {
+  const size = p.size ?? 16;
+  const s = p.source;
+  switch (s.kind) {
+    case 'capsule':
+      return <CapsuleIcon tier="silver" size={size} />;
+    case 'capsuleTier':
+      return <CapsuleIcon tier={s.tier} size={size} />;
+    case 'crate':
+      return <CrateIcon size={size} />;
+    case 'road':
+    case 'arena':
+      return <TrophyIcon size={size} />;
+    case 'feat':
+      return <StarIcon filled size={size} />;
+    case 'warPath':
+    case 'warPathBoss':
+    case 'warPathStars':
+      return <FlagIcon size={size} />;
+    case 'title':
+    case 'codexLevel':
+      return <CrownIcon size={size} />;
+    case 'dust':
+      return <DustIcon size={size} />;
+    case 'flagRegion':
+    case 'flagsOwned':
+      return <GlobeIcon size={size} />;
+    case 'start':
+      return null;
+  }
+}
+
+/** The short label beside the source icon: a number when there is one (the Dust price, trophies, a level). */
+function sourceShort(s: CosmeticSource, price: number | null, locale: string): string | null {
+  if (price !== null) return formatInt(price, locale);
+  switch (s.kind) {
+    case 'road':
+      return formatInt(s.trophies, locale);
+    case 'codexLevel':
+      return String(s.level);
+    case 'flagsOwned':
+      return String(s.count);
+    default:
+      return null;
+  }
+}
+
+/** A locked item's source chip on its card: the source icon and its number (a Dust spark before a craft price). */
+function SourceChip(p: { item: CosmeticItemDef; price: number | null }) {
+  const { locale } = useUi();
+  const short = sourceShort(p.item.source, p.price, locale);
+  return (
+    <span class="cos-card__chip" data-tag="" aria-hidden="true">
+      <SourceIcon source={p.item.source} size={15} />
+      {p.price !== null ? <DustIcon size={13} /> : null}
+      {short !== null ? <b class="ui-num">{short}</b> : null}
+    </span>
+  );
+}
+
+/** The rarity plate class of a card (PLAN 2a: slate, teal steel, violet enamel, gold filigree). */
+export const plateClass = (rarity: Rarity): string => `cos-card cos-card--${rarity}`;
+
+/**
+ * One collection item as a card (PLAN 2a "Item cards"): a rarity plate (Common chiselled slate, Rare
+ * teal steel with rivets, Epic violet enamel with gem studs, Legendary gold filigree with scrolls and a
+ * slow sheen), the art in a recessed window, the rarity gem, and a name that wraps and never clips.
+ *
+ * - Owned: a tap equips it (owner request 2026-10-07, no Equip button); the art pops with a rarity
+ *   sparkle (Rare and up) and only the chosen card says "Equipped" (or "In wheel") with the check.
+ * - Locked: the art desaturated and darker, a lock badge and a source chip (icon and number); a tap
+ *   opens the item's info panel, which says how it is earned and crafts it with two taps (U14).
+ *   Panels with a live preview also try it on (ui-plan 4.5, MR-60).
+ */
 export function ItemTile(p: {
   item: CosmeticItemDef;
   on: boolean;
@@ -86,6 +178,8 @@ export function ItemTile(p: {
   /** Wide tiles show a quote's line. */
   wide?: boolean;
   art?: ComponentChildren;
+  /** The info panel's bigger picture (default: the item's art). */
+  bigArt?: () => ComponentChildren;
   /** The owned state labels (default "Equipped" / "Equip"). */
   onLabel?: string;
   pickLabel?: string;
@@ -94,81 +188,200 @@ export function ItemTile(p: {
   /** Shown in the preview right now without being equipped (a locked item tried on): a gold ring. */
   trying?: boolean;
 }) {
-  const { save, content, t, services, sound } = useUi();
-  const act = useAct();
+  const { save, content, t, sound } = useUi();
   const key = itemKey(p.item);
   const have = owns(save.value, content, key);
   const price = craftPrice(content, p.item, save.value);
-  const locked = craftLocked(save.value, p.item);
+  const reduce = save.value.settings.reduceMotion;
   // A tier's own set names its tier ("From Aeon Capsules. Craftable after your first.").
   const hintText = sourceText(t, p.item);
   const rarity = p.item.rarity;
+  // National flags show no rarity (PLAN 2d: one price for all; the data's rarity stays hidden)
+  const rated = p.item.collection !== 'nationalFlag';
+  const pop = usePop(p.on);
+  const [info, setInfo] = useState(false);
   return (
     <div
-      class={`cos-tile cos-tile--${p.item.collection}${p.wide ? ' cos-tile--wide' : ''}${have ? '' : ' is-locked'}${p.on ? ' is-on' : ''}${p.onPreview ? ' is-previewable' : ''}${p.trying ? ' is-trying' : ''}`}
+      class={`cos-tile ${rated ? plateClass(rarity) : 'cos-card cos-card--plain'} cos-tile--${p.item.collection}${p.wide ? ' cos-tile--wide' : ''}${have ? '' : ' is-locked'}${p.on ? ' is-on' : ''}${p.onPreview ? ' is-previewable' : ''}${p.trying ? ' is-trying' : ''}`}
       style={{ '--rar': RARITY_COLOR[rarity] }}
       data-testid={`item-${key}`}
+      data-rarity={rarity}
     >
       <button
         type="button"
         class="cos-tile__hit"
         aria-pressed={p.on || !!p.trying}
-        aria-disabled={have || p.onPreview ? undefined : 'true'}
-        aria-label={`${t(p.item.nameKey)}. ${have ? (p.on ? t('cosmetic.ui.equipped') : (p.pickLabel ?? t('cosmetic.ui.equip'))) : `${p.onPreview ? `${t('cosmetic.ui.tryOn')}. ` : ''}${hintText}`}`}
+        aria-label={`${t(p.item.nameKey)}. ${rated ? `${t(rarityNameKey(rarity))}. ` : ''}${have ? (p.on ? (p.onLabel ?? t('cosmetic.ui.equipped')) : (p.pickLabel ?? t('cosmetic.ui.equip'))) : `${p.onPreview ? `${t('cosmetic.ui.tryOn')}. ` : ''}${hintText}`}`}
+        title={have ? undefined : hintText}
         onClick={() => {
           p.onPreview?.();
-          if (have) p.onPick();
-          // a try-on of an item you do not own yet still answers the tap
-          else if (p.onPreview) sound?.('ui_toggle');
+          if (have) {
+            p.onPick();
+            return;
+          }
+          // a locked card answers the tap with how it is earned (and a try-on where there is a preview)
+          sound?.('ui_toggle');
+          if (!p.onPreview) setInfo(true);
         }}
       >
-        <span class="cos-tile__art">{p.art ?? <CosmeticImage item={key} animate={!save.value.settings.reduceMotion} />}</span>
-        {p.wide && p.item.textKey ? <span class="cos-tile__quote">“{t(p.item.textKey)}”</span> : null}
-        <span class="cos-tile__name">{t(p.item.nameKey)}</span>
-        <span class="cos-tile__rarity" data-tag="">
-          {t(rarityNameKey(rarity))}
-        </span>
-        {p.on ? (
-          <span class="cos-tile__on" aria-hidden="true">
-            <CheckIcon size={16} />
+        <span class="cos-card__window">
+          <span class={`cos-tile__art${pop ? ' is-pop' : ''}`} key={pop}>
+            {p.art ?? <CosmeticImage item={key} animate={!reduce} />}
           </span>
-        ) : null}
-        {!have ? (
-          <span class="cos-tile__lock" aria-hidden="true">
-            <LockIcon size={18} />
-          </span>
-        ) : null}
-        {p.trying ? (
-          <span class="cos-tile__trying" data-tag="" data-testid={`trying-${key}`}>
-            {t('cosmetic.ui.tryingOn')}
-          </span>
-        ) : null}
-      </button>
-      {/* Owner request 2026-10-07: no Equip button; tapping an owned tile equips it, and only the chosen
-          one says so ("Equipped" or "In wheel", with the check badge). */}
-      {have && p.on ? (
-        <span class="cos-tile__state is-on" aria-hidden="true" data-testid={`state-${key}`}>
-          {p.onLabel ?? t('cosmetic.ui.equipped')}
-        </span>
-      ) : null}
-      {!have ? (
-        <span class="cos-tile__how">
-          <small>{hintText}</small>
-          {price !== null ? (
-            <Button
-              size="sm"
-              kind="secondary"
-              testid={`craft-${key}`}
-              disabled={locked || save.value.currencies.dust < price}
-              {...(locked ? { reason: t('cosmetic.ui.reason.locked') } : {})}
-              onClick={() => act(services.craftCosmetic(key), t('cosmetic.ui.crafted'))}
-            >
-              <DustIcon size={16} /> {price}
-            </Button>
+          {rated ? (
+            <span class="cos-card__gem" aria-hidden="true">
+              <RarityGem rarity={rarity} size={16} />
+            </span>
+          ) : null}
+          {p.on ? (
+            <span class="cos-tile__on" aria-hidden="true">
+              <CheckIcon size={14} />
+            </span>
+          ) : null}
+          {!have ? (
+            <span class="cos-tile__lock" aria-hidden="true">
+              <LockIcon size={14} />
+            </span>
+          ) : null}
+          {p.trying ? (
+            <span class="cos-tile__trying" data-tag="" data-testid={`trying-${key}`}>
+              {t('cosmetic.ui.tryingOn')}
+            </span>
           ) : null}
         </span>
-      ) : null}
+        <span class="cos-tile__name" data-clip-check="">
+          {t(p.item.nameKey)}
+        </span>
+        <span class="cos-card__foot">
+          {/* Owner request 2026-10-07: no Equip button; only the chosen card says so ("Equipped" or "In wheel"). */}
+          {have && p.on ? (
+            <span class="cos-tile__state is-on" aria-hidden="true" data-testid={`state-${key}`}>
+              {p.onLabel ?? t('cosmetic.ui.equipped')}
+            </span>
+          ) : null}
+          {!have ? <SourceChip item={p.item} price={price} /> : null}
+          {have && !p.on && rated ? (
+            <span class="cos-card__rarity" data-tag="" aria-hidden="true">
+              {t(rarityNameKey(rarity))}
+            </span>
+          ) : null}
+        </span>
+      </button>
+      {pop > 0 && rated && rarity !== 'common' && !reduce ? <span class={`cos-card__spark cos-card__spark--${rarity}`} key={`s${pop}`} aria-hidden="true" /> : null}
+      {info ? <ItemInfo item={p.item} art={p.bigArt ?? (() => <CosmeticImage item={key} animate={!reduce} pole={p.item.collection === 'baseFlag'} />)} onClose={() => setInfo(false)} /> : null}
     </div>
+  );
+}
+
+/**
+ * A locked item's info panel (PLAN 2a: "a tap shows how to earn it"): the item big on its rarity plate,
+ * its rarity and collection, how it is earned, and, for drop-pool items, a two-tap craft (U14: the first
+ * tap shows the price and the Dust after, the second crafts; nothing is sold for money).
+ */
+function ItemInfo(p: { item: CosmeticItemDef; art: () => ComponentChildren; onClose: () => void }) {
+  const { save, content, t, services, locale, sound } = useUi();
+  const act = useAct();
+  const key = itemKey(p.item);
+  const price = craftPrice(content, p.item, save.value);
+  const lockedCraft = craftLocked(save.value, p.item);
+  const dust = save.value.currencies.dust;
+  const craft = useConfirmSpend({ onArm: () => sound?.('ui_toggle') });
+  const short = price !== null ? Math.max(0, price - dust) : 0;
+  const footer =
+    price !== null ? (
+      <span
+        ref={(el) => {
+          craft.ref.current = el;
+        }}
+        class="cos-info__action"
+      >
+        <Button
+          kind="progress"
+          size="m"
+          icon={<DustIcon size={20} />}
+          disabled={lockedCraft || short > 0}
+          reason={lockedCraft ? t('cosmetic.ui.reason.locked') : t('cosmetic.ui.needDust', { n: formatInt(short, locale) })}
+          testid={`craft-${key}`}
+          class={craft.armed ? 'is-armed' : ''}
+          onClick={() =>
+            craft.press(() => {
+              const r = services.craftCosmetic(key);
+              act(r, t('cosmetic.ui.crafted'));
+              if (r.ok) p.onClose();
+              return r.ok;
+            })
+          }
+        >
+          <span>{craft.armed ? t('cosmetic.ui.craftConfirm', { n: formatInt(price, locale) }) : t('cosmetic.ui.craftFor', { n: formatInt(price, locale) })}</span>
+        </Button>
+      </span>
+    ) : null;
+  return (
+    <Modal title={t(p.item.nameKey)} onClose={p.onClose} size="sm" testid="item-info" icon={<RarityGem rarity={p.item.rarity} size={24} />} footer={footer}>
+      <div class="cos-info" data-testid={`info-${key}`}>
+        <div class={`${plateClass(p.item.rarity)} cos-info__card cos-tile--${p.item.collection}`}>
+          <span class="cos-card__window">
+            <span class="cos-tile__art">{p.art()}</span>
+          </span>
+        </div>
+        <div class="cos-info__text">
+          <p class="cos-info__kind">
+            <b style={{ color: RARITY_COLOR[p.item.rarity] }}>{t(rarityNameKey(p.item.rarity))}</b> · {t(`cosmetic.ui.kind.${p.item.collection}`)}
+          </p>
+          <p class="cos-info__how" data-testid="info-source">
+            <SourceIcon source={p.item.source} size={22} />
+            <span>{sourceText(t, p.item)}</span>
+          </p>
+          {price !== null && craft.armed ? (
+            <p class="cos-info__after ui-num" data-testid="info-after">
+              <DustIcon size={16} /> {formatInt(dust, locale)} → {formatInt(dust - price, locale)}
+            </p>
+          ) : null}
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+/**
+ * A card that is not a collection item (the standard base, "No national flag", an empty spot, the
+ * starter emotes, the classic skies): the same card on a neutral plate, without a rarity gem.
+ */
+function PlainCard(p: { on: boolean; testid: string; name: string; onClick: () => void; children?: ComponentChildren; none?: boolean; extra?: string; state?: string | undefined }) {
+  const pop = usePop(p.on);
+  return (
+    <button
+      type="button"
+      class={`cos-tile cos-tile--plain cos-card cos-card--plain${p.extra ? ` ${p.extra}` : ''}${p.on ? ' is-on' : ''}`}
+      aria-pressed={p.on}
+      data-testid={p.testid}
+      onClick={p.onClick}
+    >
+      <span class="cos-card__window">
+        {p.none ? (
+          <span class="cos-tile__art cos-tile__art--none" aria-hidden="true" />
+        ) : (
+          <span class={`cos-tile__art${pop ? ' is-pop' : ''}`} key={pop}>
+            {p.children}
+          </span>
+        )}
+        {p.on ? (
+          <span class="cos-tile__on" aria-hidden="true">
+            <CheckIcon size={14} />
+          </span>
+        ) : null}
+      </span>
+      <span class="cos-tile__name" data-clip-check="">
+        {p.name}
+      </span>
+      <span class="cos-card__foot">
+        {p.state ? (
+          <span class="cos-tile__state is-on" aria-hidden="true">
+            {p.state}
+          </span>
+        ) : null}
+      </span>
+    </button>
   );
 }
 
@@ -236,7 +449,8 @@ export function BaseMock(p: { age: AgeId; look?: Partial<CosmeticLoadout>; ancho
         );
       })}
       <div class="cos-mock__pole" aria-hidden="true">
-        <span class="cos-mock__cap" />
+        {/* the finial of the base flag's rarity (PLAN 2a: a wooden knob, a brass ball, a spear tip, a star) */}
+        <span class={`cos-mock__cap cos-mock__cap--${(eq.baseFlag ? findItem(content, eq.baseFlag)?.rarity : undefined) ?? 'common'}`} key={`cap-${eq.baseFlag ?? ''}`} />
         {eq.baseFlag ? (
           <span class="cos-mock__flag cos-mock__flag--base" key={eq.baseFlag}>
             <CosmeticImage item={eq.baseFlag} />
@@ -288,17 +502,9 @@ export function BasesPanel(p: { extra?: (age: AgeId) => ComponentChildren }) {
       </div>
       <AgePicker ages={ages} value={age} onChange={setAge} compact testid="cust-age" idPrefix="cust-age" />
       <div class="cos-grid cos-grid--skins">
-        <button type="button" class={`cos-tile cos-tile--plain${cur === null ? ' is-on' : ''}`} aria-pressed={cur === null} data-testid="base-default" onClick={() => equip(null)}>
-          <span class="cos-tile__art">
-            <BaseLook age={age} skin={null} />
-          </span>
-          <span class="cos-tile__name">{t('cosmetic.ui.defaultSkin')}</span>
-          {cur === null ? (
-            <span class="cos-tile__on" aria-hidden="true">
-              <CheckIcon size={16} />
-            </span>
-          ) : null}
-        </button>
+        <PlainCard on={cur === null} testid="base-default" name={t('cosmetic.ui.defaultSkin')} onClick={() => equip(null)}>
+          <BaseLook age={age} skin={null} />
+        </PlainCard>
         {ownedFirst(save.value, content, items).map((x) => (
           <ItemTile
             key={x.id}
@@ -358,26 +564,18 @@ export function BackdropsPanel() {
       </div>
       <AgePicker ages={content.order.ages} value={age} onChange={setAge} compact testid="cust-bd-age" idPrefix="cust-bd-age" />
       <div class="cos-grid cos-grid--backdrops">
-        <button
-          type="button"
-          class={`cos-tile cos-tile--plain cos-tile--backdrop${cur === null ? ' is-on' : ''}`}
-          aria-pressed={cur === null}
-          data-testid="backdrop-classic"
+        <PlainCard
+          on={cur === null}
+          testid="backdrop-classic"
+          extra="cos-tile--backdrop"
+          name={t('cosmetic.ui.backdropClassic')}
           onClick={() => {
             setTryOn(undefined);
             if (cur !== null) act(services.equipCosmetic({ slot: 'backdrop', key: null }));
           }}
         >
-          <span class="cos-tile__art">
-            <BackdropLook skin={null} age={age} animate={false} thumb />
-          </span>
-          <span class="cos-tile__name">{t('cosmetic.ui.backdropClassic')}</span>
-          {cur === null ? (
-            <span class="cos-tile__on" aria-hidden="true">
-              <CheckIcon size={16} />
-            </span>
-          ) : null}
-        </button>
+          <BackdropLook skin={null} age={age} animate={false} thumb />
+        </PlainCard>
         {items.map((x) => (
           <ItemTile
             key={x.id}
@@ -396,6 +594,50 @@ export function BackdropsPanel() {
   );
 }
 
+/**
+ * The way into the Flag Atlas (PLAN 2d, route `flagAtlas`): a card with the flag you fly (a globe when
+ * none), "Flag Atlas" and your count of the 195. Every national flag is browsed and bought there, so
+ * this tab keeps only the flags you own. While a save owns none, its first flag costs no Dust, and the
+ * card says so without the word the copy review bans.
+ */
+function AtlasCard(p: { equipped: string | null }) {
+  const { t, services, router, sound } = useUi();
+  const atlas = services.flagAtlasProgress();
+  return (
+    <button
+      type="button"
+      class="cos-atlas"
+      data-testid="open-flag-atlas"
+      aria-label={`${t('cosmetic.ui.atlas')}. ${t('cosmetic.ui.atlasCount', { n: atlas.owned, max: atlas.total })}${atlas.price === 0 ? `. ${t('cosmetic.ui.atlasFirst')}` : ''}`}
+      onClick={() => {
+        sound?.('ui_tab');
+        router.go({ id: 'flagAtlas' });
+      }}
+    >
+      <span class="cos-atlas__globe" aria-hidden="true">
+        <GlobeIcon size={30} />
+      </span>
+      <span class={`cos-atlas__flag${p.equipped ? '' : ' is-none'}`} aria-hidden="true">
+        {p.equipped ? <CosmeticImage item={p.equipped} /> : null}
+      </span>
+      <span class="cos-atlas__text">
+        <b>{t('cosmetic.ui.atlas')}</b>
+        <span class="cos-atlas__count ui-num" data-testid="atlas-count">
+          {atlas.owned}/{atlas.total}
+        </span>
+        {atlas.price === 0 ? (
+          <span class="cos-atlas__first" data-testid="atlas-first">
+            {t('cosmetic.ui.atlasFirst')}
+          </span>
+        ) : null}
+      </span>
+      <span class="cos-atlas__go" aria-hidden="true">
+        <ChevronIcon size={22} />
+      </span>
+    </button>
+  );
+}
+
 export function FlagsPanel() {
   const { save, content, t, services } = useUi();
   const act = useAct();
@@ -403,9 +645,8 @@ export function FlagsPanel() {
   const age = useCurrentAge();
   const withUndo = useEquipWithUndo();
   const equip = (e: CosmeticEquipPatch) => act(services.equipCosmetic(e));
-  const [query, setQuery] = useState('');
-  const q = query.trim().toLocaleLowerCase();
-  const nations = ownedFirst(save.value, content, itemsOf(content, 'nationalFlag')).filter((x) => q === '' || t(x.nameKey).toLocaleLowerCase().includes(q));
+  // Only the flags you own: the Atlas is the one place to browse and buy the rest (U3: one home each).
+  const nations = itemsOf(content, 'nationalFlag').filter((x) => owns(save.value, content, itemKey(x)));
   return (
     <MockLayout testid="cust-flags" mock={<BaseMock age={age} />}>
       <div class="cos-head">
@@ -419,33 +660,10 @@ export function FlagsPanel() {
       </div>
       <div class="cos-head">
         <h3 class="cust-h">{t('cosmetic.ui.nationalFlag')}</h3>
-        <Found collection="nationalFlag" />
       </div>
-      <input
-        class="cos-search"
-        type="search"
-        value={query}
-        placeholder={t('cosmetic.ui.search')}
-        aria-label={t('cosmetic.ui.search')}
-        data-testid="national-search"
-        onInput={(e) => setQuery((e.currentTarget as HTMLInputElement).value)}
-      />
-      <div class="cos-grid cos-grid--flags">
-        <button
-          type="button"
-          class={`cos-tile cos-tile--plain${eq.nationalFlag === null ? ' is-on' : ''}`}
-          aria-pressed={eq.nationalFlag === null}
-          data-testid="national-none"
-          onClick={() => equip({ slot: 'nationalFlag', key: null })}
-        >
-          <span class="cos-tile__art cos-tile__art--none" aria-hidden="true" />
-          <span class="cos-tile__name">{t('cosmetic.ui.noNational')}</span>
-          {eq.nationalFlag === null ? (
-            <span class="cos-tile__on" aria-hidden="true">
-              <CheckIcon size={16} />
-            </span>
-          ) : null}
-        </button>
+      <AtlasCard equipped={eq.nationalFlag} />
+      <div class="cos-grid cos-grid--flags" data-testid="owned-national">
+        <PlainCard on={eq.nationalFlag === null} testid="national-none" name={t('cosmetic.ui.noNational')} none onClick={() => equip({ slot: 'nationalFlag', key: null })} />
         {nations.map((x) => (
           <ItemTile key={x.id} item={x} on={eq.nationalFlag === itemKey(x)} onPick={() => withUndo({ slot: 'nationalFlag', key: itemKey(x) }, { slot: 'nationalFlag', key: eq.nationalFlag }, t(x.nameKey))} />
         ))}
@@ -470,21 +688,7 @@ export function DecorationsPanel() {
       </div>
       <p class="cust-hint">{t('cosmetic.ui.anchors')}</p>
       <div class="cos-grid cos-grid--decos">
-        <button
-          type="button"
-          class={`cos-tile cos-tile--plain${cur === null ? ' is-on' : ''}`}
-          aria-pressed={cur === null}
-          data-testid="deco-none"
-          onClick={() => act(services.equipCosmetic({ slot: 'decoration', anchor, key: null }))}
-        >
-          <span class="cos-tile__art cos-tile__art--none" aria-hidden="true" />
-          <span class="cos-tile__name">{t('cosmetic.ui.emptySpot')}</span>
-          {cur === null ? (
-            <span class="cos-tile__on" aria-hidden="true">
-              <CheckIcon size={16} />
-            </span>
-          ) : null}
-        </button>
+        <PlainCard on={cur === null} testid="deco-none" name={t('cosmetic.ui.emptySpot')} none onClick={() => act(services.equipCosmetic({ slot: 'decoration', anchor, key: null }))} />
         {ownedFirst(save.value, content, itemsOf(content, 'decoration')).map((x) => (
           <ItemTile key={x.id} item={x} on={cur === itemKey(x)} onPick={() => withUndo({ slot: 'decoration', anchor, key: itemKey(x) }, { slot: 'decoration', anchor, key: cur }, t(x.nameKey))} />
         ))}
@@ -551,22 +755,9 @@ export function EmotesPanel() {
         {content.cosmetics.emotes.map((e) => {
           const on = eq.emotes.includes(e.id);
           return (
-            <button key={e.id} type="button" class={`cos-tile cos-tile--plain cos-tile--emote${on ? ' is-on' : ''}`} aria-pressed={on} data-testid={`item-${e.id}`} onClick={() => toggle(e.id)}>
-              <span class="cos-tile__art">
-                <EmoteGlyph emote={e.id} size={40} />
-              </span>
-              <span class="cos-tile__name">{t(emoteNameKey(e.id))}</span>
-              {on ? (
-                <span class="cos-tile__state is-on" aria-hidden="true">
-                  {t('cosmetic.ui.inWheel')}
-                </span>
-              ) : null}
-              {on ? (
-                <span class="cos-tile__on" aria-hidden="true">
-                  <CheckIcon size={16} />
-                </span>
-              ) : null}
-            </button>
+            <PlainCard key={e.id} on={on} testid={`item-${e.id}`} extra="cos-tile--emote" name={t(emoteNameKey(e.id))} state={on ? t('cosmetic.ui.inWheel') : undefined} onClick={() => toggle(e.id)}>
+              <EmoteGlyph emote={e.id} size={40} />
+            </PlainCard>
           );
         })}
       </div>
@@ -580,36 +771,58 @@ export function EmotesPanel() {
   );
 }
 
+/**
+ * The quote wheel as the battle shows it (PLAN 2a "Quotes"): your General's bust with the four lines
+ * around it in the battle bubble, each tail toward the bust; a tap on a line takes it out of the wheel,
+ * an empty slot is a dashed bubble.
+ */
+function QuoteWheel(p: { keys: readonly string[]; max: number; look: ResolvedLook; onRemove: (k: string) => void }) {
+  const { content, t } = useUi();
+  const tails: BubbleTail[] = ['br', 'bl', 'tr', 'tl'];
+  return (
+    <div class="cos-qwheel" data-testid="quote-wheel" aria-label={t('cosmetic.ui.wheel')}>
+      <span class="cos-qwheel__bust" aria-hidden="true">
+        <AvatarLookView look={p.look} size={112} crop="bust" />
+      </span>
+      {Array.from({ length: p.max }, (_, i) => p.keys[i] ?? null).map((k, i) => {
+        const tail = tails[i % tails.length]!;
+        if (!k) {
+          return (
+            <span key={`e${i}`} class={`cos-qwheel__slot cos-qwheel__slot--${i} is-empty`} aria-hidden="true">
+              <span class={`cos-qb cos-qb--sm cos-qb--tail-${tail} cos-qb--empty`}>
+                <span class="cos-qb__body">+</span>
+              </span>
+            </span>
+          );
+        }
+        const item = findItem(content, k);
+        const line = t(quoteTextKey(k.slice(6)));
+        return (
+          <button key={k} type="button" class={`cos-qwheel__slot cos-qwheel__slot--${i}`} onClick={() => p.onRemove(k)} aria-label={`${t('cosmetic.ui.remove')}: ${line}`} data-testid={`qwheel-${k}`}>
+            <QuoteBubble text={line} rarity={item?.rarity ?? 'common'} tail={tail} small pop />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export function QuotesPanel() {
   const { save, content, t, services, toasts } = useUi();
   const act = useAct();
   const eq = equippedOf(save.value, content);
   const max = content.cosmetics.collections.wheel.quotes;
+  const look = resolveLook(save.value.profile.avatar);
   const set = (keys: string[]) => act(services.equipCosmetic({ slot: 'quotes', keys }));
   const toggle = (k: string) => {
     if (eq.quotes.includes(k)) set(eq.quotes.filter((x) => x !== k));
     else if (eq.quotes.length >= max) toasts.show(t('cosmetic.ui.wheelFull'), { tone: 'bad' });
     else set([...eq.quotes, k]);
   };
+  // each tile shows its line in the battle bubble with your General's head (PLAN 2a)
+  const bubble = (x: CosmeticItemDef) => <QuoteBubble text={x.textKey ? t(x.textKey) : t(x.nameKey)} rarity={x.rarity} head={<AvatarLookView look={look} size={34} crop="head" detail="low" />} />;
   return (
-    <MockLayout
-      testid="cust-quotes"
-      mock={
-        <ol class="cos-quotes" data-testid="quote-wheel">
-          {Array.from({ length: max }, (_, i) => eq.quotes[i] ?? null).map((k, i) =>
-            k ? (
-              <li key={k}>
-                <button type="button" class="cos-quote" onClick={() => toggle(k)} aria-label={`${t('cosmetic.ui.remove')}: ${t(quoteTextKey(k.slice(6)))}`}>
-                  “{t(quoteTextKey(k.slice(6)))}”
-                </button>
-              </li>
-            ) : (
-              <li key={`e${i}`} class="cos-quote is-empty" aria-hidden="true" />
-            ),
-          )}
-        </ol>
-      }
-    >
+    <MockLayout testid="cust-quotes" mock={<QuoteWheel keys={eq.quotes} max={max} look={look} onRemove={(k) => set(eq.quotes.filter((x) => x !== k))} />}>
       <div class="cos-head">
         <h3 class="cust-h">
           {t('cosmetic.ui.wheel')} <WheelCount n={eq.quotes.length} max={max} testid="quote-count" />
@@ -618,7 +831,7 @@ export function QuotesPanel() {
       </div>
       <div class="cos-grid cos-grid--quotes">
         {ownedFirst(save.value, content, itemsOf(content, 'quote')).map((x) => (
-          <ItemTile key={x.id} item={x} wide on={eq.quotes.includes(itemKey(x))} onPick={() => toggle(itemKey(x))} onLabel={t('cosmetic.ui.inWheel')} pickLabel={t('cosmetic.ui.add')} />
+          <ItemTile key={x.id} item={x} wide on={eq.quotes.includes(itemKey(x))} onPick={() => toggle(itemKey(x))} onLabel={t('cosmetic.ui.inWheel')} pickLabel={t('cosmetic.ui.add')} art={bubble(x)} bigArt={() => bubble(x)} />
         ))}
       </div>
     </MockLayout>

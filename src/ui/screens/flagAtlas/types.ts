@@ -17,6 +17,18 @@ export interface FlagRegionInfo {
   rewardOwned: boolean;
 }
 
+/** The reward for every flag of the six regions: the World Compass base flag and the World Ambassador title. */
+export interface FlagWorldInfo {
+  /** How many flags it takes (195). */
+  count: number;
+  /** `baseFlag.world_compass`, or null. */
+  reward: string | null;
+  rewardOwned: boolean;
+  /** The title id, or null. */
+  title: string | null;
+  titleOwned: boolean;
+}
+
 /** The Atlas. */
 export interface FlagAtlasInfo {
   /** Owned flags of the six regions and their number (the "37/195"); the Other flags do not count. */
@@ -28,4 +40,6 @@ export interface FlagAtlasInfo {
   price: number;
   /** The equipped national flag (`nationalFlag.<id>`), or null. */
   equipped: string | null;
+  /** The reward for all 195 (absent in previews that do not compute it). */
+  world?: FlagWorldInfo;
 }

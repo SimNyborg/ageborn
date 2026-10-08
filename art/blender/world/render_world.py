@@ -3,6 +3,8 @@
 Usage (from the repository root, with the bpy venv):
   <venv>/bin/python art/blender/world/render_world.py --out <scratch dir> [--only base.stone,turret.rock_tosser]
       [--scale 1.5] [--no-install] [--no-previews]
+  # base skin models (world/base_skins_<age>.py, PLAN 2c), installed in public/art/bases/skins/<skin>.{png,json}
+  <venv>/bin/python art/blender/world/render_world.py --out <scratch dir> --only base.medieval@rose_keep --no-previews
 
 Every visual goes through ageborn_art.pipeline.run_unit with the unit v3 settings (the same
 shading, light, outline width and colour, pixel filter and team layer as the units): frames render
@@ -27,6 +29,22 @@ sys.path.insert(0, BLENDER)
 sys.dont_write_bytecode = True
 
 AGES = ["stone", "medieval", "gunpowder", "modern", "future"]
+# base skin models (PLAN 2c): world/base_skins_<age>.py exports SKINS for any of the eight ages
+SKIN_AGES = ["stone", "bronze", "medieval", "gunpowder", "industrial", "modern", "future", "cosmic"]
+
+
+def skin_targets():
+    """(visual id, module) of every base skin model: `base.<age>@<skin>`."""
+    out = []
+    for age in SKIN_AGES:
+        try:
+            m = importlib.import_module(f"world.base_skins_{age}")
+        except ModuleNotFoundError as e:
+            if e.name != f"world.base_skins_{age}":
+                raise
+            continue
+        out += [(mod.VISUAL_ID, mod) for mod in m.SKINS]
+    return out
 
 
 def targets():
@@ -45,13 +63,17 @@ def targets():
         except ModuleNotFoundError as e:
             if e.name != f"world.turrets_{age}":
                 raise
-    return out
+    return out + skin_targets()
 
 
 def install(mod, out_dir):
     kind = mod.EXTRA_META["kind"]
-    dest = os.path.join(REPO, "public", "art", "bases") if kind == "base" \
-        else os.path.join(REPO, "public", "art", "turrets", mod.AGE)
+    if kind == "base" and getattr(mod, "SKIN", None):
+        # a base skin model loads lazily from its own folder (art/bases/skins/<skin>.json)
+        dest = os.path.join(REPO, "public", "art", "bases", "skins")
+    else:
+        dest = os.path.join(REPO, "public", "art", "bases") if kind == "base" \
+            else os.path.join(REPO, "public", "art", "turrets", mod.AGE)
     os.makedirs(dest, exist_ok=True)
     for ext in ("png", "json"):
         shutil.copyfile(os.path.join(out_dir, f"{mod.FILE_SLUG}.{ext}"), os.path.join(dest, f"{mod.FILE_SLUG}.{ext}"))

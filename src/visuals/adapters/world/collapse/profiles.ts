@@ -254,3 +254,42 @@ export const COLLAPSE_PROFILES: Readonly<Record<AgeId, CollapseProfile>> = {
 export function collapseProfile(age: AgeId): CollapseProfile {
   return COLLAPSE_PROFILES[age] ?? COLLAPSE_PROFILES.stone;
 }
+
+/** What a base sheet may say about its own collapse (a base skin model's meta, PLAN 2c). */
+export interface CollapseMeta {
+  topple?: readonly ToppleSpec[];
+  collapseMaterial?: CollapseMaterial;
+  rubbleColors?: readonly string[];
+  dustColor?: string;
+}
+
+const hexColor = (s: string): number | null => (/^#[0-9a-f]{6}$/i.test(s) ? parseInt(s.slice(1), 16) : null);
+
+/**
+ * The collapse profile of a base sheet: the age's profile, with a skin model's own tall joints (its
+ * `topple` exported from Blender, so its towers fall from where they really stand), material and rubble
+ * and dust colours when the sheet has them.
+ */
+export function collapseProfileFor(age: AgeId, meta?: CollapseMeta | null): CollapseProfile {
+  const base = collapseProfile(age);
+  if (!meta) return base;
+  const topple = meta.topple && meta.topple.length > 0 ? meta.topple.map((t) => ({ ...t, dir: t.dir < 0 ? (-1 as const) : (1 as const) })) : null;
+  const rubble = (meta.rubbleColors ?? []).map(hexColor).filter((c): c is number => c !== null);
+  const dust = meta.dustColor ? hexColor(meta.dustColor) : null;
+  if (!topple && !meta.collapseMaterial && rubble.length === 0 && dust === null) return base;
+  return {
+    ...base,
+    material: meta.collapseMaterial ?? base.material,
+    topple: topple ?? base.topple,
+    colors: {
+      ...base.colors,
+      ...(rubble.length > 0 ? { rubble } : {}),
+      ...(dust !== null ? { dust, dust2: shadeColor(dust, 0.82) } : {}),
+    },
+  };
+}
+
+function shadeColor(c: number, k: number): number {
+  const ch = (s: number): number => Math.round(((c >> s) & 255) * k);
+  return (ch(16) << 16) | (ch(8) << 8) | ch(0);
+}

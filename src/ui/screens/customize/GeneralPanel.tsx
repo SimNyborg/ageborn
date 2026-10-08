@@ -16,7 +16,7 @@ import type { AvatarSlot, AvatarTint, CardId } from '@/contracts';
 import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { accessoryCrop, AvatarLookView, loadWearableArt, randomStarterLook, resolveLook, type AvatarCrop, type ResolvedLook } from '../../components/Avatar';
-import { BannerArt, FRAME_COLORS, TitleRibbon } from '../../components/avatar/ProfileArt';
+import { BannerArt, FRAME_COLORS, TitleRibbon, titleTier } from '../../components/avatar/ProfileArt';
 import { TINTS } from '../../components/avatar/palette';
 import { IconButton } from '../../components/Button';
 import { CardArt } from '../../components/CardTile';
@@ -147,7 +147,7 @@ export function GeneralPanel(p: { initialTab?: GeneralTab }) {
           </div>
           <div class="gen-stage__id">
             <b class="gen-stage__name">{s.profile.name}</b>
-            {s.profile.title ? <TitleRibbon text={t(titleNameKey(s.profile.title))} /> : null}
+            {s.profile.title ? <TitleRibbon text={t(titleNameKey(s.profile.title))} tier={titleTier(content.cosmetics.titles.find((x) => x.id === s.profile.title))} /> : null}
           </div>
         </div>
         {tryPart && tryItem ? (
@@ -229,9 +229,11 @@ function Tile(p: { on: boolean; locked: boolean; trying?: boolean; label: string
       aria-label={p.label}
       title={p.label}
       data-testid={p.testid}
+      data-rarity={p.rarity}
       onClick={p.onClick}
     >
       <span class="gen-tile__art">{p.children}</span>
+      {p.rarity === 'epic' || p.rarity === 'legendary' ? <span class="gen-tile__spark" aria-hidden="true" /> : null}
       {p.rarity ? (
         <span class="gen-tile__gem" aria-hidden="true">
           <RarityGem rarity={p.rarity as 'common'} size={14} />
@@ -339,7 +341,11 @@ function FrameGrid(p: { look: ResolvedLook }) {
               <span class={`gen-frame gen-frame--${f.id}`} style={{ '--frame': FRAME_COLORS[f.id] ?? FRAME_COLORS.none }}>
                 <AvatarLookView look={p.look} size={54} crop="head" ring={f.id} frameColor={FRAME_COLORS[f.id] ?? FRAME_COLORS.none} />
               </span>
-              {locked ? <small class="gen-tile__hint">{t('avatar.ui.frameLocked', { n: f.codexLevel })}</small> : null}
+              {locked ? (
+                <small class="gen-tile__hint" data-tag="" data-clip-check="">
+                  {t('avatar.ui.frameLocked', { n: f.codexLevel })}
+                </small>
+              ) : null}
             </Tile>
           );
         })}
@@ -371,7 +377,9 @@ function BannerGrid() {
               testid={`banner-${b.id}`}
             >
               <BannerArt id={b.id} width={40} />
-              <small class="gen-tile__hint">{locked ? t('avatar.ui.bannerLocked', { n: b.arena }) : name}</small>
+              <small class="gen-tile__hint" data-tag="" data-clip-check="">
+                {locked ? t('avatar.ui.bannerLocked', { n: b.arena }) : name}
+              </small>
             </Tile>
           );
         })}
@@ -404,7 +412,7 @@ function TitleGrid() {
                 if (!locked && !on) services.setProfile({ title: x.id });
               }}
             >
-              <TitleRibbon text={t(titleNameKey(x.id))} />
+              <TitleRibbon text={t(titleNameKey(x.id))} tier={titleTier(x)} />
               {on ? <CheckIcon size={16} /> : locked ? <LockIcon size={16} /> : null}
             </button>
           );

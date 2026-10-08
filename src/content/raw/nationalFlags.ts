@@ -4,14 +4,19 @@
  * - Every flag is bought with Dust at the one price `drops.flagDust` (500; a save's first flag costs
  *   nothing while `drops.firstFlagFree` is on): source `{ kind: 'dust' }`. Flags are never in a capsule
  *   or crate pool and never on the odds panel; the Atlas shows the fixed price instead.
- * - Country flags only (the 193 UN members, the Holy See and Palestine, keyed by ISO 3166-1 alpha-2;
- *   item id = lowercase code, `_` for `-`), plus the "Other flags" group (`region: 'other'`: Faroe
- *   Islands, Greenland, England, Scotland and Wales), which does not count toward the 195. No political
- *   or hate symbols. A player's flag is only ever their own pick, never inferred from location.
- * - `region` is a browsing group only ({@link FLAG_REGIONS}); the search finds every flag from any region.
- * - The 50 rows below came from `raw/cosmetics.ts` unchanged (same ids, rarities, names and art ids); C0
- *   (2026-10-08) set their source to `dust` and added their region. Owners keep them: nothing is taken
- *   away, and an unopened capsule rolled before keeps its flag.
+ * - Country flags only: the 193 UN members, the Holy See and Palestine (PLAN Appendix A), keyed by
+ *   ISO 3166-1 alpha-2 (item id = lowercase code, `_` for `-`), plus the "Other flags" group
+ *   (`region: 'other'`: Faroe Islands, Greenland, England, Scotland and Wales), which does not count
+ *   toward the 195. No territories, no partially recognised states, no political or hate symbols. A
+ *   player's flag is only ever their own pick, never inferred from location.
+ * - `region` is a browsing group only ({@link FLAG_REGIONS}; UN M49 continents, the Americas split into
+ *   North with Central America and the Caribbean, and South; Cyprus browsed under Europe). The search
+ *   finds every flag from any region.
+ * - The art is flag-icons 7.5.0 (MIT), vendored by `tools/flags/vendor.ts` from this list: one SVG and
+ *   one atlas cell per row (`public/art/flags/`).
+ * - The 50 flags of before 2026-10-08 keep their ids and rarities (a flag an unopened capsule still holds
+ *   pays its old duplicate Dust if it arrives twice); the rarity is never shown for a national flag.
+ *   Owners keep them: nothing is taken away.
  * - A new row ships with `released: false` until its art (the vendored SVG and its atlas cell) is in.
  */
 import type { CosmeticItemDef, FlagRegion, TitleDef } from '../types';
@@ -19,66 +24,72 @@ import type { CosmeticItemDef, FlagRegion, TitleDef } from '../types';
 /** The Atlas's browsing groups in chip order; `other` (the flags outside the 195) comes last and has no reward. */
 export const FLAG_REGIONS: readonly FlagRegion[] = ['europe', 'asia', 'africa', 'northAmerica', 'southAmerica', 'oceania', 'other'];
 
-export const nationalFlagItems: CosmeticItemDef[] = [
-  { id: 'dk', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.dk', nameKey: 'cosmetic.nationalFlag.dk.name', country: 'dk', region: 'europe' },
-  { id: 'fo', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.fo', nameKey: 'cosmetic.nationalFlag.fo.name', country: 'fo', region: 'other' },
-  { id: 'gl', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.gl', nameKey: 'cosmetic.nationalFlag.gl.name', country: 'gl', region: 'other' },
-  { id: 'se', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.se', nameKey: 'cosmetic.nationalFlag.se.name', country: 'se', region: 'europe' },
-  { id: 'no', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.no', nameKey: 'cosmetic.nationalFlag.no.name', country: 'no', region: 'europe' },
-  { id: 'fi', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.fi', nameKey: 'cosmetic.nationalFlag.fi.name', country: 'fi', region: 'europe' },
-  { id: 'is', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.is', nameKey: 'cosmetic.nationalFlag.is.name', country: 'is', region: 'europe' },
-  { id: 'gb', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.gb', nameKey: 'cosmetic.nationalFlag.gb.name', country: 'gb', region: 'europe' },
-  { id: 'gb_eng', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.gb_eng', nameKey: 'cosmetic.nationalFlag.gb_eng.name', country: 'gb-eng', region: 'other' },
-  { id: 'gb_sct', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.gb_sct', nameKey: 'cosmetic.nationalFlag.gb_sct.name', country: 'gb-sct', region: 'other' },
-  { id: 'ie', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.ie', nameKey: 'cosmetic.nationalFlag.ie.name', country: 'ie', region: 'europe' },
-  { id: 'us', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.us', nameKey: 'cosmetic.nationalFlag.us.name', country: 'us', region: 'northAmerica' },
-  { id: 'ca', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.ca', nameKey: 'cosmetic.nationalFlag.ca.name', country: 'ca', region: 'northAmerica' },
-  { id: 'de', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.de', nameKey: 'cosmetic.nationalFlag.de.name', country: 'de', region: 'europe' },
-  { id: 'fr', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.fr', nameKey: 'cosmetic.nationalFlag.fr.name', country: 'fr', region: 'europe' },
-  { id: 'nl', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.nl', nameKey: 'cosmetic.nationalFlag.nl.name', country: 'nl', region: 'europe' },
-  { id: 'be', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.be', nameKey: 'cosmetic.nationalFlag.be.name', country: 'be', region: 'europe' },
-  { id: 'lu', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.lu', nameKey: 'cosmetic.nationalFlag.lu.name', country: 'lu', region: 'europe' },
-  { id: 'ch', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.ch', nameKey: 'cosmetic.nationalFlag.ch.name', country: 'ch', region: 'europe' },
-  { id: 'at', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.at', nameKey: 'cosmetic.nationalFlag.at.name', country: 'at', region: 'europe' },
-  { id: 'it', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.it', nameKey: 'cosmetic.nationalFlag.it.name', country: 'it', region: 'europe' },
-  { id: 'es', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.es', nameKey: 'cosmetic.nationalFlag.es.name', country: 'es', region: 'europe' },
-  { id: 'pt', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.pt', nameKey: 'cosmetic.nationalFlag.pt.name', country: 'pt', region: 'europe' },
-  { id: 'pl', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.pl', nameKey: 'cosmetic.nationalFlag.pl.name', country: 'pl', region: 'europe' },
-  { id: 'cz', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.cz', nameKey: 'cosmetic.nationalFlag.cz.name', country: 'cz', region: 'europe' },
-  { id: 'hu', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.hu', nameKey: 'cosmetic.nationalFlag.hu.name', country: 'hu', region: 'europe' },
-  { id: 'gr', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.gr', nameKey: 'cosmetic.nationalFlag.gr.name', country: 'gr', region: 'europe' },
-  { id: 'ee', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.ee', nameKey: 'cosmetic.nationalFlag.ee.name', country: 'ee', region: 'europe' },
-  { id: 'lv', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.lv', nameKey: 'cosmetic.nationalFlag.lv.name', country: 'lv', region: 'europe' },
-  { id: 'lt', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.lt', nameKey: 'cosmetic.nationalFlag.lt.name', country: 'lt', region: 'europe' },
-  { id: 'ua', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.ua', nameKey: 'cosmetic.nationalFlag.ua.name', country: 'ua', region: 'europe' },
-  { id: 'ro', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.ro', nameKey: 'cosmetic.nationalFlag.ro.name', country: 'ro', region: 'europe' },
-  { id: 'bg', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.bg', nameKey: 'cosmetic.nationalFlag.bg.name', country: 'bg', region: 'europe' },
-  { id: 'tr', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.tr', nameKey: 'cosmetic.nationalFlag.tr.name', country: 'tr', region: 'asia' },
-  { id: 'jp', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.jp', nameKey: 'cosmetic.nationalFlag.jp.name', country: 'jp', region: 'asia' },
-  { id: 'kr', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.kr', nameKey: 'cosmetic.nationalFlag.kr.name', country: 'kr', region: 'asia' },
-  { id: 'in', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.in', nameKey: 'cosmetic.nationalFlag.in.name', country: 'in', region: 'asia' },
-  { id: 'th', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.th', nameKey: 'cosmetic.nationalFlag.th.name', country: 'th', region: 'asia' },
-  { id: 'vn', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.vn', nameKey: 'cosmetic.nationalFlag.vn.name', country: 'vn', region: 'asia' },
-  { id: 'id', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.id', nameKey: 'cosmetic.nationalFlag.id.name', country: 'id', region: 'asia' },
-  { id: 'au', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.au', nameKey: 'cosmetic.nationalFlag.au.name', country: 'au', region: 'oceania' },
-  { id: 'nz', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.nz', nameKey: 'cosmetic.nationalFlag.nz.name', country: 'nz', region: 'oceania' },
-  { id: 'br', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.br', nameKey: 'cosmetic.nationalFlag.br.name', country: 'br', region: 'southAmerica' },
-  { id: 'ar', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.ar', nameKey: 'cosmetic.nationalFlag.ar.name', country: 'ar', region: 'southAmerica' },
-  { id: 'cl', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.cl', nameKey: 'cosmetic.nationalFlag.cl.name', country: 'cl', region: 'southAmerica' },
-  { id: 'co', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.co', nameKey: 'cosmetic.nationalFlag.co.name', country: 'co', region: 'southAmerica' },
-  { id: 'za', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.za', nameKey: 'cosmetic.nationalFlag.za.name', country: 'za', region: 'africa' },
-  { id: 'ng', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.ng', nameKey: 'cosmetic.nationalFlag.ng.name', country: 'ng', region: 'africa' },
-  { id: 'gh', collection: 'nationalFlag', rarity: 'common', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.gh', nameKey: 'cosmetic.nationalFlag.gh.name', country: 'gh', region: 'africa' },
-  { id: 'jm', collection: 'nationalFlag', rarity: 'rare', source: { kind: 'dust' }, art: 'cosmetic.nationalFlag.jm', nameKey: 'cosmetic.nationalFlag.jm.name', country: 'jm', region: 'northAmerica' },
+/** The countries of each region (PLAN Appendix A, by English name), as item ids. */
+const BY_REGION: Readonly<Record<FlagRegion, string>> = {
+  europe: 'al ad at by be ba bg hr cy cz dk ee fi fr de gr hu is ie it lv li lt lu mt md mc me nl mk no pl pt ro ru sm rs sk si es se ch ua gb va',
+  asia: 'af am az bh bd bt bn kh cn ge in id ir iq il jp jo kz kw kg la lb my mv mn mm np kp om pk ph qa sa sg kr lk sy tj th tl tr tm ae uz vn ye ps',
+  africa: 'dz ao bj bw bf bi cv cm cf td km cg cd ci dj eg gq er sz et ga gm gh gn gw ke ls lr ly mg mw ml mr mu ma mz na ne ng rw st sn sc sl so za ss sd tz tg tn ug zm zw',
+  northAmerica: 'ag bs bb bz ca cr cu dm do sv gd gt ht hn jm mx ni pa kn lc vc tt us',
+  southAmerica: 'ar bo br cl co ec gy py pe sr uy ve',
+  oceania: 'au fj ki mh fm nr nz pw pg ws sb to tv vu',
+  other: 'fo gl gb_eng gb_sct gb_wls',
+};
+
+/** The flags that dropped as Rare before 2026-10-08 (kept for their old duplicate Dust; never shown). */
+const WAS_RARE = new Set('gl gb gb_sct us ca kr in au nz br za jm'.split(' '));
+
+const row = (id: string, region: FlagRegion): CosmeticItemDef => ({
+  id,
+  collection: 'nationalFlag',
+  rarity: WAS_RARE.has(id) ? 'rare' : 'common',
+  source: { kind: 'dust' },
+  art: `cosmetic.nationalFlag.${id}`,
+  nameKey: `cosmetic.nationalFlag.${id}.name`,
+  country: id.replace('_', '-'),
+  region,
+});
+
+/** Every national flag: the 195 by region, then the Other flags. */
+export const nationalFlagItems: CosmeticItemDef[] = FLAG_REGIONS.flatMap((region) => BY_REGION[region].split(' ').map((id) => row(id, region)));
+
+/** The Region Pennants (PLAN 2d): one Epic base flag per region of the 195, earned by owning all its flags (ids in snake case). */
+const PENNANTS: readonly (readonly [FlagRegion, string])[] = [
+  ['europe', 'pennant_europe'],
+  ['asia', 'pennant_asia'],
+  ['africa', 'pennant_africa'],
+  ['northAmerica', 'pennant_north_america'],
+  ['southAmerica', 'pennant_south_america'],
+  ['oceania', 'pennant_oceania'],
 ];
+
+/** All 195 flags: the World Compass base flag and the World Ambassador title (PLAN 2d). */
+export const ATLAS_FLAG_COUNT = 195;
 
 /**
  * The Atlas's rewards (PLAN 2d "Region completion rewards", earned and never sold): a Region Pennant
- * (a `baseFlag` item with source `{ kind: 'flagRegion', region }`) per completed region, and the
- * Legendary base flag World Compass (source `{ kind: 'flagsOwned', count: 195 }`). Track D adds them
- * with their art (`released: false` until it ships).
+ * (a base flag with a continent and a compass star) per completed region, granted with the purchase
+ * that completes it, and the Legendary World Compass for all 195. The Other flags have no reward.
  */
-export const flagRewardItems: CosmeticItemDef[] = [];
+export const flagRewardItems: CosmeticItemDef[] = [
+  ...PENNANTS.map(
+    ([region, id]): CosmeticItemDef => ({
+      id,
+      collection: 'baseFlag',
+      rarity: 'epic',
+      source: { kind: 'flagRegion', region },
+      art: `cosmetic.baseFlag.${id}`,
+      nameKey: `cosmetic.baseFlag.${id}.name`,
+    }),
+  ),
+  {
+    id: 'world_compass',
+    collection: 'baseFlag',
+    rarity: 'legendary',
+    source: { kind: 'flagsOwned', count: ATLAS_FLAG_COUNT },
+    art: 'cosmetic.baseFlag.world_compass',
+    nameKey: 'cosmetic.baseFlag.world_compass.name',
+  },
+];
 
-/** The Atlas's title, "World Ambassador" (unlock `{ kind: 'flagsOwned', count: 195 }`); Track D adds it. */
-export const flagTitles: TitleDef[] = [];
+/** The Atlas's title, "World Ambassador": every one of the 195 flags owned. */
+export const flagTitles: TitleDef[] = [{ id: 'world_ambassador', unlock: { kind: 'flagsOwned', count: ATLAS_FLAG_COUNT }, nameKey: 'title.world_ambassador.name' }];

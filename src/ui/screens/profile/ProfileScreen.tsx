@@ -10,7 +10,7 @@ import type { ComponentChildren } from 'preact';
 import { useState } from 'preact/hooks';
 import { avatar as avatarTables } from '@/content/raw/avatar';
 import { Avatar } from '../../components/Avatar';
-import { AvatarItemArt } from '../../components/cosmeticArt';
+import { AvatarItemArt, useCosmeticImage } from '../../components/cosmeticArt';
 import { BannerArt, FRAME_COLORS, TitleRibbon } from '../../components/avatar/ProfileArt';
 import { Button, IconButton } from '../../components/Button';
 import { CardTile } from '../../components/CardTile';
@@ -23,6 +23,7 @@ import { Modal } from '../../components/Modal';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { cardTile } from '../model/cards';
+import { findItem } from '../model/cosmetics';
 import { collectionMilestones, historyRows, profileView } from '../model/profile';
 import { isTesterProfile } from '../model/tester';
 
@@ -66,6 +67,40 @@ function NameModal(p: { name: string; onSave: (n: string) => void; onClose: () =
   );
 }
 
+/**
+ * The flag the player flies, waving on a small pole at the corner of the profile card, with the Flag
+ * Atlas count under it (PLAN 2d "Profile header"). A tap opens the Atlas on that flag; with no flag yet
+ * an empty dashed cloth invites the first pick.
+ */
+function ProfileFlag(p: { reduce: boolean }) {
+  const { t, locale, router, services, content } = useUi();
+  const art = useCosmeticImage();
+  const atlas = services.flagAtlasProgress();
+  const key = atlas.equipped;
+  const item = key ? findItem(content, key) : undefined;
+  const url = key && art ? art(key, { size: 'big' }) : null;
+  const name = item ? t(item.nameKey) : t('cosmetic.flagAtlas.profileNone');
+  const count = t('cosmetic.flagAtlas.profileAtlas', { n: formatInt(atlas.owned, locale), max: formatInt(atlas.total, locale) });
+  return (
+    <button
+      type="button"
+      class={`prof-flag${url ? '' : ' is-empty'}${p.reduce ? ' is-still' : ''}`}
+      data-testid="profile-flag"
+      data-flag={key ?? ''}
+      aria-label={`${name}, ${count}`}
+      onClick={() => router.go(key ? { id: 'flagAtlas', flag: key } : { id: 'flagAtlas' })}
+    >
+      <span class="prof-flag__pole" aria-hidden="true" />
+      <span class="prof-flag__cloth" aria-hidden="true">
+        {url ? <img src={url} alt="" draggable={false} /> : <span class="prof-flag__plus">+</span>}
+      </span>
+      <span class="prof-flag__count ui-num" aria-hidden="true">
+        {formatInt(atlas.owned, locale)}/{formatInt(atlas.total, locale)}
+      </span>
+    </button>
+  );
+}
+
 function Stat(p: { label: string; value: string; icon?: ComponentChildren; testid?: string }) {
   return (
     <div class="prof-stat" data-testid={p.testid}>
@@ -93,6 +128,7 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
       <div class="prof">
         <div class="prof-left">
           <Panel class="prof-card" tone="default">
+            <ProfileFlag reduce={s.settings.reduceMotion} />
             <div class="prof-id">
               <button
                 type="button"

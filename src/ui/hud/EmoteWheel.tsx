@@ -11,9 +11,10 @@
  */
 import './emoteWheel.css';
 import { emoteLabelKey } from '@/content/keys';
-import type { BaseEmoteId, EmoteId } from '@/contracts';
+import type { AvatarSpec, BaseEmoteId, EmoteId, Rarity } from '@/contracts';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { CosmeticImage } from '../components/cosmeticArt';
+import { Avatar } from '../components/Avatar';
+import { CosmeticImage, QuoteBubble } from '../components/cosmeticArt';
 import type { EmoteWheel, HudCtx } from './context';
 import { EmoteGlyph, SmileIcon } from './icons';
 
@@ -35,11 +36,48 @@ export function EmoteArt(p: { emote: EmoteId; size: number; t: HudCtx['t'] }) {
   );
 }
 
-/** A side's bubble over its panel. */
-export function EmoteBubble(p: { id: number; emote: EmoteId; side: 'me' | 'foe'; t: HudCtx['t'] }) {
+/** A quote's rarity from the content (Common when unknown). */
+export function quoteRarity(c: Pick<HudCtx, 'config'> | undefined, id: EmoteId): Rarity {
+  const items = (c?.config.content.cosmetics as { collections?: { items?: readonly { collection: string; id: string; rarity: Rarity }[] } } | null | undefined)?.collections?.items;
+  return items?.find((x) => `${x.collection}.${x.id}` === id)?.rarity ?? 'common';
+}
+
+/**
+ * Who says a quote (PLAN 2a: the bubble shows the speaker's General head): your own General (the app
+ * passes it with the wheel), an online player's General, and no head for a labelled AI opponent.
+ */
+function speakerOf(c: HudCtx | undefined, side: 'me' | 'foe'): AvatarSpec | undefined {
+  if (!c) return undefined;
+  if (side === 'me') return (c.wheel as { speaker?: AvatarSpec } | undefined)?.speaker;
+  return c.config.sides[c.side === 0 ? 1 : 0]?.online?.avatar;
+}
+
+/**
+ * A side's bubble over its panel. A quote shows in the battle speech bubble (PLAN 2a "Quotes") with the
+ * speaker's General head and its rarity edge; a Legendary line glows gold. `c` gives both (optional so
+ * the replay viewer and tests can show a plain bubble).
+ */
+export function EmoteBubble(p: { id: number; emote: EmoteId; side: 'me' | 'foe'; t: HudCtx['t']; c?: HudCtx }) {
   const quote = isQuote(p.emote);
+  if (quote) {
+    const rarity = quoteRarity(p.c, p.emote);
+    const speaker = speakerOf(p.c, p.side);
+    return (
+      <div key={p.id} class={`hud-bubble hud-bubble-${p.side} hud-bubble--quote`} data-testid={`hud-bubble-${p.side}`} data-rarity={rarity}>
+        <QuoteBubble
+          text={p.t(emoteLabelKey(p.emote))}
+          rarity={rarity}
+          tail={p.side === 'me' ? 'tl' : 'tr'}
+          head={speaker ? <Avatar spec={speaker} size={30} crop="head" detail="low" /> : undefined}
+          aura={rarity === 'legendary'}
+          pop
+          small
+        />
+      </div>
+    );
+  }
   return (
-    <div key={p.id} class={`hud-bubble hud-bubble-${p.side}${quote ? ' hud-bubble--quote' : ''}`} data-testid={`hud-bubble-${p.side}`}>
+    <div key={p.id} class={`hud-bubble hud-bubble-${p.side}`} data-testid={`hud-bubble-${p.side}`}>
       <EmoteArt emote={p.emote} size={34} t={p.t} />
     </div>
   );

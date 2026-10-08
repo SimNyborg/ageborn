@@ -310,8 +310,9 @@ FLAG_MS = 110
 
 
 def base_module(age, name, height, width, canvas, feet, build, crumble, flags, mounts=None, treasury_levels=3,
-                lights=(), smoke=(), horn=(-80, 250), yaw=BASE_YAW, hit_center=None, mount_depth=-40.0):
-    """A pipeline module for base.<age>.
+                lights=(), smoke=(), horn=(-80, 250), yaw=BASE_YAW, hit_center=None, mount_depth=-40.0,
+                skin=None, extra_meta=None):
+    """A pipeline module for base.<age> (or the base skin model base.<age>@<skin>).
 
     mounts: the four mount points (x, y DOWN, lu; default BASE_MOUNTS); the build models a real
     platform at each (`place()` at `mount_depth`, a number or one per mount), and the sheet exports
@@ -321,6 +322,10 @@ def base_module(age, name, height, width, canvas, feet, build, crumble, flags, m
     crumble(stage) -> pose dict for the body at stages 0-3 (joints under `body`).
     flags: list of dicts {name, crumbleMax, z} whose joints build() created under root.
     Treasury joints are `treasury1..3` under root (hidden in the body frames).
+    skin: a base skin model (PLAN 2c, world/base_skins_<age>.py): the visual is `base.<age>@<skin>`, the
+    sheet and its frame names are `<skin>` (frame names never collide with the age's own sheet in Pixi's
+    texture cache), and the meta says `skin`. extra_meta: more `meta.ageborn` keys (a skin's `topple`,
+    `collapseMaterial`, `rubbleColors`, `ambientLu`).
     """
     if mounts is None:
         mounts = [(x, -y) for x, y in BASE_MOUNTS]
@@ -354,20 +359,48 @@ def base_module(age, name, height, width, canvas, feet, build, crumble, flags, m
         return out
 
     hc = hit_center or (-width * 0.4, height * 0.45)
+    meta = {
+        "kind": "base", "age": age, "widthLu": width,
+        "mountsLu": [[mx, -my] for mx, my in mounts],
+        "flags": [{"clip": f["name"], "crumbleMax": f.get("crumbleMax", 3), "z": f.get("z", "front")} for f in flags],
+        "lightsLu": [dict(zip(("x", "y"), project(p, yaw)), crumbleMax=cm, r=r) for p, cm, r in lights],
+        "smokeLu": [dict(zip(("x", "y"), project(p, yaw)), crumbleMin=cm) for p, cm in smoke],
+        "hornLu": list(horn),
+    }
+    if skin:
+        meta["skin"] = skin
+    meta.update(extra_meta or {})
+    slug = skin or age
     return SimpleNamespace(
-        SLUG=age, FILE_SLUG=age, VISUAL_ID=f"base.{age}", NAME=name, HEIGHT_LU=height,
-        CANVAS=canvas, FEET=feet, YAW_DEG=yaw,
+        SLUG=slug, FILE_SLUG=slug, VISUAL_ID=f"base.{age}@{skin}" if skin else f"base.{age}", NAME=name,
+        HEIGHT_LU=height, CANVAS=canvas, FEET=feet, YAW_DEG=yaw,
         ANCHORS={"head": (-width / 2, height), "hitCenter": hc},
-        EXTRA_META={
-            "kind": "base", "age": age, "widthLu": width,
-            "mountsLu": [[mx, -my] for mx, my in mounts],
-            "flags": [{"clip": f["name"], "crumbleMax": f.get("crumbleMax", 3), "z": f.get("z", "front")} for f in flags],
-            "lightsLu": [dict(zip(("x", "y"), project(p, yaw)), crumbleMax=cm, r=r) for p, cm, r in lights],
-            "smokeLu": [dict(zip(("x", "y"), project(p, yaw)), crumbleMin=cm) for p, cm in smoke],
-            "hornLu": list(horn),
-        },
-        build=_build, clips=clips, AGE=age,
+        EXTRA_META=meta,
+        build=_build, clips=clips, AGE=age, SKIN=skin,
     )
+
+
+def topple_lu(x0, x1, y0, dir=1, delay_ms=0, push=1.0, sink_lu=30.0):
+    """One `meta.ageborn.topple` joint of a base skin (src/visuals/adapters/world/collapse/profiles.ts
+    ToppleSpec): the fracture cells whose centre lies in x0..x1 (screen lu from the gate, x toward the
+    lane) and at least y0 lu high fall together as one tower, mast, chimney or statue, toward the lane
+    (dir +1) or backward (-1), `delay_ms` after the break."""
+    return {"x0": round(x0, 1), "x1": round(x1, 1), "y0": round(y0, 1), "dir": 1 if dir >= 0 else -1,
+            "delayMs": int(delay_ms), "push": round(push, 2), "sinkLu": round(sink_lu, 1)}
+
+
+def screen_box(points, yaw=BASE_YAW):
+    """Screen-lu bounds (x0, x1, y0, y1) of character-space points (for topple ranges)."""
+    pp = [project(p, yaw) for p in points]
+    return (min(p[0] for p in pp), max(p[0] for p in pp), min(p[1] for p in pp), max(p[1] for p in pp))
+
+
+def ambient_lu(kind, p, r=12.0, rate=1.0, yaw=BASE_YAW):
+    """One `meta.ageborn.ambientLu` emitter of a base skin model: the dressing's code particles
+    (petals, fireflies, embers, glints, dust, snow, stars, steam) start around this point (screen lu,
+    y up) within `r` lu, `rate` relative to the skin's base rate (src/visuals/cosmetics/dressing.ts)."""
+    x, y = project(p, yaw)
+    return {"kind": kind, "x": x, "y": y, "r": round(r, 1), "rate": round(rate, 2)}
 
 
 # -- shared base details ----------------------------------------------------------------------

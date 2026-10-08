@@ -25,6 +25,56 @@
       "cosmic": {
         "name": "Crystal Moon Base"
       }
+    },
+    "scene": {
+      "glacier_valley": {
+        "name": "Glacier Valley"
+      },
+      "sabre_savanna": {
+        "name": "Sabre Savanna"
+      },
+      "aegean_harbour": {
+        "name": "Aegean Harbour"
+      },
+      "bronze_city_siege": {
+        "name": "Siege of the Bronze City"
+      },
+      "misty_moor": {
+        "name": "Misty Moor"
+      },
+      "harbour_town": {
+        "name": "Harbour Town"
+      },
+      "treasure_cove": {
+        "name": "Treasure Cove"
+      },
+      "windmill_polder": {
+        "name": "Windmill Polder"
+      },
+      "viaduct_gorge": {
+        "name": "Viaduct Gorge"
+      },
+      "zeppelin_docks": {
+        "name": "Zeppelin Docks"
+      },
+      "desert_airbase": {
+        "name": "Desert Airbase"
+      },
+      "monsoon_river": {
+        "name": "Monsoon River"
+      },
+      "skyway_metropolis": {
+        "name": "Skyway Metropolis"
+      },
+      "terraformed_gardens": {
+        "name": "Terraformed Gardens"
+      },
+      "ringed_giant": {
+        "name": "Ringed Giant"
+      },
+      "nebula_shipyard": {
+        "name": "Nebula Shipyard"
+      }
     }
   }
 }

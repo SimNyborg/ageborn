@@ -63,6 +63,8 @@ export interface BackdropTheme {
   cloudTint: number;
   /** The UI swatch and tile edge colour. */
   accent: number;
+  /** A night sky: a scene's window and lantern lights come on (PLAN 2b `lights`). */
+  night?: boolean;
 }
 
 /** Every backdrop skin, by item id (`backdrop.<id>` in the content). */
@@ -179,6 +181,7 @@ export const BACKDROP_THEMES: Readonly<Record<string, BackdropTheme>> = {
     lightning: false,
     cloudTint: 0x4a526e,
     accent: 0x6a78b0,
+    night: true,
   },
   lantern_festival: {
     skyTop: 0x28223e,
@@ -201,6 +204,7 @@ export const BACKDROP_THEMES: Readonly<Record<string, BackdropTheme>> = {
     lightning: false,
     cloudTint: 0x5a4a62,
     accent: 0xe0a060,
+    night: true,
   },
   thunderstorm: {
     skyTop: 0x394250,
@@ -268,6 +272,7 @@ export const BACKDROP_THEMES: Readonly<Record<string, BackdropTheme>> = {
     lightning: false,
     cloudTint: 0x34485a,
     accent: 0x5ad0a8,
+    night: true,
   },
   eclipse: {
     skyTop: 0x191427,
@@ -291,6 +296,7 @@ export const BACKDROP_THEMES: Readonly<Record<string, BackdropTheme>> = {
     lightning: false,
     cloudTint: 0x4a4260,
     accent: 0x9a86c8,
+    night: true,
   },
 };
 
@@ -299,6 +305,29 @@ export function backdropTheme(key: string | null | undefined): BackdropTheme | n
   if (!key) return null;
   const id = key.startsWith('backdrop.') ? key.slice(9) : key;
   return BACKDROP_THEMES[id] ?? null;
+}
+
+/** True for a night sky theme (a scene's lights come on under it). */
+export function isNightSky(key: string | null | undefined): boolean {
+  return backdropTheme(key)?.night === true;
+}
+
+/**
+ * The theme as a space scene shows it (PLAN 2b hint `weather: 'space'`): snow becomes ice motes, rain
+ * becomes rare meteor streaks without lightning, petals and leaves become sparkles; the rest stays.
+ */
+export function spaceWeather(th: BackdropTheme): BackdropTheme {
+  switch (th.weather) {
+    case 'snow':
+      return { ...th, weather: 'motes', weatherColor: 0xdcecf6, weatherRate: Math.max(3, th.weatherRate * 0.3) };
+    case 'rain':
+      return { ...th, weather: 'rain', weatherColor: 0xf2f0ff, weatherRate: 2.5, lightning: false };
+    case 'petals':
+    case 'leaves':
+      return { ...th, weather: 'sparkles', weatherColor: 0xf2e6ff, weatherRate: Math.max(3, th.weatherRate * 0.6) };
+    default:
+      return th;
+  }
 }
 
 /** The bare id of a backdrop key, or null. */
@@ -330,9 +359,10 @@ function seedFor(id: string, kind: string, age: AgeId): number {
 
 /**
  * Paints the theme over the sky layer already on `ctx` (the whole canvas is the frame `f`): the
- * theme's gradient, glow, stars, aurora and its sun or moon.
+ * theme's gradient, glow, stars, aurora and its sun or moon (`celestial: false` leaves the sun or moon
+ * out, for a scene whose own sky object stays).
  */
-export function themeSky(ctx: Ctx2D, id: string, age: AgeId, th: BackdropTheme, f: LayerFrame): void {
+export function themeSky(ctx: Ctx2D, id: string, age: AgeId, th: BackdropTheme, f: LayerFrame, o: { celestial?: boolean } = {}): void {
   const W = f.width * f.pxPerLu;
   const H = f.height * f.pxPerLu;
   const k = f.pxPerLu;
@@ -373,7 +403,8 @@ export function themeSky(ctx: Ctx2D, id: string, age: AgeId, th: BackdropTheme, 
     }
   }
   if (th.aurora) paintAurora(ctx, f, rng);
-  paintCelestial(ctx, th, f);
+  // a scene with its own big sky object (hint `celestial: 'own'`) keeps it: no theme sun or moon
+  if (o.celestial !== false) paintCelestial(ctx, th, f);
   ctx.restore();
 }
 

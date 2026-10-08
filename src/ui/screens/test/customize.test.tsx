@@ -28,9 +28,11 @@ describe('Customize: collections (A18.9.4)', () => {
   it('flags: the mock-up, "found" counts, equip an owned flag, clear the national flag', () => {
     m = cust('flags');
     expect(m.q('[data-testid="base-mock"]')).not.toBeNull();
-    // mid fixture: 2 starters + 3 owned base flags; 6 national flags
-    expect(text(m.q('[data-testid="found-baseFlag"]')!)).toContain('5/15 found');
-    expect(text(m.q('[data-testid="found-nationalFlag"]')!)).toContain('6/50 found');
+    // mid fixture: 2 starters + 3 owned base flags (the Flag Atlas's rewards join the total)
+    expect(text(m.q('[data-testid="found-baseFlag"]')!)).toMatch(/^5\/\d+ found$/);
+    // national flags count on the Atlas card: the six regions' flags you own, of all of them
+    const atlas = m.services.flagAtlasProgress();
+    expect(text(m.q('[data-testid="atlas-count"]')!)).toBe(`${atlas.owned}/${atlas.total}`);
     m.click('[data-testid="item-nationalFlag.se"] button');
     expect(calls('equipCosmetic')).toEqual([{ slot: 'nationalFlag', key: 'nationalFlag.se' }]);
     m.click('[data-testid="national-none"]');
@@ -67,36 +69,58 @@ describe('Customize: collections (A18.9.4)', () => {
     expect(m.save.value.skins.equipped).toEqual(before);
   });
 
-  it('a locked national flag says it is bought with Dust, cannot be equipped and is bought at its one price (PLAN 2d)', () => {
+  it('national flags: only the ones you own; the Flag Atlas card opens the Atlas, where every flag is bought (PLAN 2d)', () => {
     m = cust('flags');
-    const tile = m.q('[data-testid="item-nationalFlag.fr"]')!;
-    expect(tile.getAttribute('class')).toContain('is-locked');
-    expect(text(tile)).toContain('Bought with Dust');
-    // the mid fixture owns flags already: the next one costs the flag price
-    expect(text(m.q('[data-testid="craft-nationalFlag.fr"]')!)).toContain('500');
-    const dust = m.save.value.currencies.dust;
-    m.click('[data-testid="item-nationalFlag.fr"] button');
-    expect(calls('equipCosmetic')).toEqual([]);
-    m.click('[data-testid="craft-nationalFlag.fr"]');
-    expect(calls('craftCosmetic')).toEqual(['nationalFlag.fr']);
-    expect(m.save.value.cosmetics.owned).toContain('nationalFlag.fr');
-    expect(m.save.value.currencies.dust).toBe(dust - 500);
+    expect(m.q('[data-testid="item-nationalFlag.fr"]')).toBeNull();
+    const owned = m.qa('[data-testid="owned-national"] .cos-tile').map((el) => el.getAttribute('data-testid'));
+    expect(owned).toContain('item-nationalFlag.se');
+    expect(owned.every((id) => id === 'national-none' || !m!.q(`[data-testid="${id}"]`)!.getAttribute('class')!.includes('is-locked'))).toBe(true);
+    // a save that owns a flag pays the one price: no first-flag line
+    expect(m.q('[data-testid="atlas-first"]')).toBeNull();
+    m.click('[data-testid="open-flag-atlas"]');
+    expect(m.router.current.value).toMatchObject({ id: 'flagAtlas' });
   });
 
-  it('a locked capsule item says how it is earned and can be crafted', () => {
+  it("a save's first flag says it costs no Dust, never with the word the copy review bans", () => {
+    m = mount({ state: 'new', routes: [{ id: 'home' }, { id: 'customize', tab: 'flags' }] });
+    expect(m.services.flagAtlasProgress().price).toBe(0);
+    expect(text(m.q('[data-testid="atlas-first"]')!)).toBe('Your first flag costs no Dust');
+    expect(text(m.q('[data-testid="open-flag-atlas"]')!)).not.toMatch(/\bfree\b/i);
+    expect(m.q('[data-testid="open-flag-atlas"]')!.getAttribute('aria-label')).toContain('costs no Dust');
+  });
+
+  it('a locked capsule item says how it is earned and crafts with two taps (U14)', () => {
     m = cust('decorations');
     const tile = m.q('[data-testid="item-decoration.knight_helm"]')!;
     expect(tile.getAttribute('class')).toContain('is-locked');
-    expect(text(tile)).toContain('Found in Time Capsules');
+    // the card says it on its label and with a source chip; a tap opens its info panel
+    expect(m.q('[data-testid="item-decoration.knight_helm"] button')!.getAttribute('aria-label')).toContain('Found in Time Capsules');
+    m.click('[data-testid="item-decoration.knight_helm"] button');
+    expect(text(m.q('[data-testid="info-source"]')!)).toContain('Found in Time Capsules');
+    m.click('[data-testid="craft-decoration.knight_helm"]');
+    // the first tap arms: the price and the Dust after show, nothing is spent yet
+    expect(calls('craftCosmetic')).toEqual([]);
+    expect(m.q('[data-testid="info-after"]')).not.toBeNull();
     m.click('[data-testid="craft-decoration.knight_helm"]');
     expect(calls('craftCosmetic')).toEqual(['decoration.knight_helm']);
   });
 
   it('road and feat items show their source and have no craft button', () => {
     m = cust('flags');
-    expect(text(m.q('[data-testid="item-baseFlag.comet"]')!)).toContain('Trophy Road at 2000 trophies');
+    m.click('[data-testid="item-baseFlag.comet"] button');
+    expect(text(m.q('[data-testid="info-source"]')!)).toContain('Trophy Road at 2000 trophies');
     expect(m.q('[data-testid="craft-baseFlag.comet"]')).toBeNull();
-    expect(text(m.q('[data-testid="item-baseFlag.phoenix"]')!)).toContain('A hidden feat');
+    expect(m.q('[data-testid="item-baseFlag.phoenix"] button')!.getAttribute('aria-label')).toContain('A hidden feat');
+  });
+
+  it('every card shows its rarity as a plate and a gem, and its name never clips', () => {
+    m = cust('flags');
+    for (const r of ['common', 'rare', 'epic', 'legendary']) {
+      const card = m.q(`[data-testid="cust-flags"] .cos-card--${r}`);
+      expect(card, r).not.toBeNull();
+      expect(card!.querySelectorAll('.cos-card__gem').length, r).toBe(1);
+    }
+    for (const name of m.qa('[data-testid="cust-flags"] .cos-tile__name')) expect(name.getAttribute('data-clip-check')).toBe('');
   });
 
   it('decorations: pick a spot on the mock-up, then a decoration', () => {
@@ -169,13 +193,13 @@ describe('Customize: battle backdrops (A18.9.4 "Backdrops", owner request 2026-0
     m = cust('backdrops');
     const tile = '[data-testid="item-backdrop.northern_lights"]';
     expect(m.q(tile)!.getAttribute('class')).toContain('is-locked');
-    expect(text(m.q(tile)!)).toContain('Found in Wardrobe Crates');
+    expect(m.q(`${tile} button`)!.getAttribute('aria-label')).toContain('Found in Wardrobe Crates');
     m.click(`${tile} button`);
     expect(calls('equipCosmetic')).toEqual([]);
     expect(m.q('[data-testid="backdrop-look"]')!.getAttribute('data-skin')).toBe('backdrop.northern_lights');
     expect(text(m.q('[data-testid="backdrop-name"]')!)).toContain('Trying on');
     // the road one names its node
-    expect(text(m.q('[data-testid="item-backdrop.eclipse"]')!)).toContain('Trophy Road at 3500 trophies');
+    expect(m.q('[data-testid="item-backdrop.eclipse"] button')!.getAttribute('aria-label')).toContain('Trophy Road at 3500 trophies');
   });
 
   it('switches the age the preview shows', () => {

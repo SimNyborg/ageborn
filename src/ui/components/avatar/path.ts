@@ -131,6 +131,24 @@ export function scalePath(d: string, s: number, ox = 60, oy = 60): string {
   );
 }
 
+/**
+ * Maps every point of a path through `f` (a quarter turn, a flip): the four sides and corners of a frame
+ * drawn once. Arcs keep their radii (use it with quarter turns and flips of round arcs only).
+ */
+export function mapPath(d: string, f: (x: number, y: number) => [number, number], flipsSweep = false): string {
+  return write(
+    parsePath(d).map((k) => {
+      if (k.c === 'A') {
+        const [x, y] = f(k.v[5]!, k.v[6]!);
+        return { c: 'A', v: [k.v[0]!, k.v[1]!, k.v[2]!, k.v[3]!, flipsSweep ? (k.v[4]! ? 0 : 1) : k.v[4]!, x, y] };
+      }
+      const v: number[] = [];
+      for (let j = 0; j + 1 < k.v.length; j += 2) v.push(...f(k.v[j]!, k.v[j + 1]!));
+      return { c: k.c, v };
+    }),
+  );
+}
+
 /** The path plus its mirror image (both halves of a symmetric feature). */
 export function both(d: string, cx = 60): string {
   return d + mirrorPath(d, cx);

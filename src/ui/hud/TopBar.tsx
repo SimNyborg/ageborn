@@ -566,7 +566,7 @@ export function TopBar(p: {
             </span>
           </div>
         </div>
-        {myBubble ? <EmoteBubble key={myBubble.id} id={myBubble.id} emote={myBubble.emote} side="me" t={t} /> : null}
+        {myBubble ? <EmoteBubble key={myBubble.id} id={myBubble.id} emote={myBubble.emote} side="me" t={t} c={c} /> : null}
       </div>
 
       <div class="hud-center">
@@ -627,7 +627,7 @@ export function TopBar(p: {
         <FoeRings c={c} />
         <Medallion age={foeAge} team="foe" horn={m.foe.lastStandArmed} hornLabel={t('hud.lastStand')} label={t(`age.${foeAge}.name`)} />
         <FoeResearch c={c} />
-        {foeBubble ? <EmoteBubble key={foeBubble.id} id={foeBubble.id} emote={foeBubble.emote} side="foe" t={t} /> : null}
+        {foeBubble ? <EmoteBubble key={foeBubble.id} id={foeBubble.id} emote={foeBubble.emote} side="foe" t={t} c={c} /> : null}
       </div>
       <div class="hud-controls">
         {p.scouted ? <Scouted c={c} /> : null}

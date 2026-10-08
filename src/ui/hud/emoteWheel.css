@@ -95,13 +95,17 @@
   border-color: #ef5a4a;
   background: rgba(239, 90, 74, 0.25);
 }
+/* A quote draws its own battle bubble (PLAN 2a): the panel's bubble box stays out of the way. */
 .hud-bubble--quote {
-  max-width: 220px;
-  padding: 6px 10px;
-  border-radius: 14px 14px 14px 4px;
+  width: max-content;
+  max-width: min(260px, 46vw);
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  animation: none;
 }
-.hud-bubble-foe.hud-bubble--quote {
-  border-radius: 14px 14px 4px 14px;
+.hud-bubble--quote .cos-qb__text {
+  white-space: normal;
 }
 .hud-quote-text {
   display: block;

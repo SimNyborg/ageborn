@@ -489,7 +489,13 @@
       "backdropClassic": "Classic skies",
       "backdropPreview": "Your half · {age}",
       "tryingOn": "Trying on",
-      "tryOn": "Tap to try it on"
+      "tryOn": "Tap to try it on",
+      "craftFor": "Craft · {n}",
+      "craftConfirm": "Confirm · {n}",
+      "needDust": "Need {n} more Dust",
+      "atlas": "Flag Atlas",
+      "atlasCount": "{n} of {max} flags",
+      "atlasFirst": "Your first flag costs no Dust"
     },
     "hud": {
       "mute": "Mute opponent",
