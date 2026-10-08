@@ -139,12 +139,37 @@ describe('everything unlocked', () => {
     expect([...save.fortsOwned].sort()).toEqual([...t.order.forts].sort());
     expect([...save.skins.owned].sort()).toEqual([...t.order.skins].sort());
     const owned = new Set(save.cosmetics.owned);
-    for (const x of t.cosmetics.collections.items) expect(owned.has(`${x.collection}.${x.id}`)).toBe(true);
+    // every released collection item; an item whose art is not finished stays out (PLAN 2e)
+    for (const x of t.cosmetics.collections.items) expect(owned.has(`${x.collection}.${x.id}`), `${x.collection}.${x.id}`).toBe(x.released !== false);
     for (const b of t.cosmetics.banners) expect(owned.has(b.id)).toBe(true);
     expect(save.flags['power.field']).toBe(true);
     expect(save.flags['fort.slot']).toBe(true);
     for (const age of t.order.ages) expect(save.warPlans[0]!.loadouts[age].fort).not.toBeNull();
     expect(save.warPlans.length).toBe(3);
+  });
+
+  it('owns every released scene of every age, and an item held back stays out (save v14, PLAN 2e)', () => {
+    for (const age of t.order.ages) {
+      for (const x of t.cosmetics.collections.items.filter((i) => i.collection === 'scene' && i.age === age && i.released !== false)) {
+        expect(save.cosmetics.owned, `${age}: ${x.id}`).toContain(`scene.${x.id}`);
+      }
+    }
+    expect(save.cosmetics.equipped.scenes).toEqual({});
+    // a content table with one scene per age held back and one released: only the released ones are owned
+    const items = [
+      ...t.cosmetics.collections.items,
+      ...t.order.ages.flatMap((age) => [
+        { id: `test_${age}_out`, collection: 'scene' as const, rarity: 'rare' as const, source: { kind: 'capsule' as const }, art: `cosmetic.scene.test_${age}_out`, nameKey: `cosmetic.scene.test_${age}_out.name`, age, released: false },
+        { id: `test_${age}_in`, collection: 'scene' as const, rarity: 'rare' as const, source: { kind: 'capsule' as const }, art: `cosmetic.scene.test_${age}_in`, nameKey: `cosmetic.scene.test_${age}_in.name`, age },
+      ]),
+    ];
+    const withScenes = { ...t, cosmetics: { ...t.cosmetics, collections: { ...t.cosmetics.collections, items } } } as Content;
+    const s = testerSave('everything', withScenes, clockAt(NOW), 7);
+    for (const age of t.order.ages) {
+      expect(s.cosmetics.owned).toContain(`scene.test_${age}_in`);
+      expect(s.cosmetics.owned).not.toContain(`scene.test_${age}_out`);
+    }
+    expect(validateSaveDoc(s).ok).toBe(true);
   });
 
   it('has the War Path beaten, every Conquest General open, a mid arena and plenty to spend', () => {

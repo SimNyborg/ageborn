@@ -245,7 +245,8 @@ export function sideLook(s: SaveDoc, t: Content): SideLook {
 export function botLook(t: Content, seed: string): SideLook {
   const rng = seedSfc32(`look:${seed}`);
   const pick = (c: CosmeticCollection): string | null => {
-    const all = collectionItems(t, c);
+    // the Flag Atlas's rewards are earned by collecting national flags, which bots never do
+    const all = collectionItems(t, c).filter((x) => x.source.kind !== 'flagRegion' && x.source.kind !== 'flagsOwned');
     const x = all[randInt(rng, all.length)];
     return x ? cosmeticKey(x) : null;
   };
@@ -458,7 +459,7 @@ export const firstOfTierFlag = (tier: CapsuleTier): string => `capsule.first.${t
  */
 export function nationalFlagPrice(s: SaveDoc, t: Content): number {
   const d = t.cosmetics.collections.drops;
-  if (d.firstFlagFree && !s.cosmetics.owned.some((k) => cosmeticItem(t, k)?.collection === 'nationalFlag')) return 0;
+  if (d.firstFlagFree && !s.cosmetics.owned.some((k) => k.startsWith('nationalFlag.'))) return 0;
   return d.flagDust;
 }
 

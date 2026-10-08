@@ -3,12 +3,14 @@
  * items for the player, never a national flag for an AI), and the HUD wheel holds owned emotes and
  * quotes only.
  */
+import { signal } from '@preact/signals';
 import { describe, expect, it } from 'vitest';
-import type { SaveDoc } from '@/contracts';
+import type { Result, SaveDoc } from '@/contracts';
 import { FixedClock } from '@/contracts/fakes/clock';
 import { content } from '@/content';
+import { i18n } from '@/i18n';
 import { meta } from '@/meta';
-import { emoteWheelOf } from '../cosmetics';
+import { emoteWheelOf, flagServices } from '../cosmetics';
 import { generalOpponent, matchSetupFor, tutorialMatch1 } from '../matchSetup';
 
 const fresh = (): SaveDoc => meta.newSave(content, new FixedClock(Date.UTC(2026, 8, 28, 12)), 7);
@@ -42,6 +44,13 @@ describe('match looks (A18.9.4)', () => {
     expect(me.look?.baseSkins).toEqual({});
   });
 
+  it('carries the scenes (save v14) into the match config: the player owns none yet, the AI keeps the classics', () => {
+    const s = fresh();
+    const setup = matchSetupFor(s, kettle, 'skirmish', content);
+    expect(setup.config.sides[0].look?.scenes).toEqual({});
+    expect(setup.config.sides[1].look?.scenes).toEqual({});
+  });
+
   it('dresses the training match too', () => {
     const setup = tutorialMatch1(fresh(), content, 'Old Grogg');
     expect(setup.config.sides[0].look?.baseFlag).toBe('baseFlag.ember');
@@ -55,5 +64,39 @@ describe('the HUD wheel', () => {
     const w = emoteWheelOf({ ...s, cosmetics: { ...s.cosmetics, equipped: { ...s.cosmetics.equipped, emotes: ['gg', 'emote.party'], quotes: ['quote.glhf', 'quote.honour'] } } }, content);
     expect(w).toEqual({ emotes: ['gg'], quotes: ['quote.glhf'], quoteCooldownMs: content.cosmetics.collections.quoteCooldownMs });
     expect(emoteWheelOf(null, content)).toBeNull();
+  });
+});
+
+describe('the Flag Atlas services (PLAN 2d)', () => {
+  function wired(dust: number) {
+    const save = signal<SaveDoc>({ ...fresh(), currencies: { amber: 0, dust } });
+    const commits: boolean[] = [];
+    const apply = (r: Result<SaveDoc>, immediate = false) => {
+      if (!r.ok) return { ok: false as const, reason: r.reason };
+      save.value = r.value;
+      commits.push(immediate);
+      return { ok: true as const };
+    };
+    return { save, commits, svc: flagServices({ meta, content, save, i18n, apply }) };
+  }
+
+  it('buys through meta and commits at once (a Dust spend never waits for the debounce)', () => {
+    const w = wired(1000);
+    expect(w.svc.flagAtlasProgress().price).toBe(0);
+    expect(w.svc.buyNationalFlag('nationalFlag.dk')).toEqual({ ok: true });
+    expect(w.save.value.cosmetics.owned).toContain('nationalFlag.dk');
+    expect(w.commits).toEqual([true]);
+    expect(w.svc.flagAtlasProgress()).toMatchObject({ owned: 1, price: 500 });
+    expect(w.svc.buyNationalFlag('nationalFlag.br')).toEqual({ ok: true });
+    expect(w.save.value.currencies.dust).toBe(500);
+    expect(w.svc.buyNationalFlag('nationalFlag.br')).toEqual({ ok: false, reason: 'owned' });
+  });
+
+  it('searches the flags by name, alias and code, as keys', () => {
+    const w = wired(0);
+    expect(w.svc.searchFlags('holland')).toEqual(['nationalFlag.nl']);
+    expect(w.svc.searchFlags('den')).toEqual(['nationalFlag.dk']);
+    // the released flags only (Track D adds rows `released: false` until their art is in)
+    expect(w.svc.searchFlags('').length).toBe(content.cosmetics.collections.items.filter((x) => x.collection === 'nationalFlag' && x.released !== false).length);
   });
 });

@@ -23,6 +23,7 @@ export interface ViewRequest {
 
 export interface BaseRequest extends ViewRequest {
   age: AgeId;
+  /** The skin of the start age (`resolveAge` resolves every age's own, PLAN 2c). */
   skin?: string;
   /** Resolves the manifest entry of another age's base (for evolve morphs). */
   resolveAge: (age: AgeId) => { key: string; def: VisualDef } | undefined;
@@ -35,6 +36,11 @@ export interface BackdropRequest {
   ground: { key: string; def: VisualDef };
   arena: string;
   seed: number;
+  /**
+   * Each half's scene per age (`scene.<id>`, save v14, PLAN 2b); an age without one shows its classic
+   * scene. On an evolve the half wipes to the new age's scene from the same map.
+   */
+  scenes: { left: Partial<Record<AgeId, string>>; right: Partial<Record<AgeId, string>> };
 }
 
 export interface EffectRequest {

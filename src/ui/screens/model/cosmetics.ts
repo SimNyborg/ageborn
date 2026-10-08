@@ -142,7 +142,7 @@ export function craftPrice(content: Content, x: CosmeticItemDef, save?: SaveDoc)
 /** What the save's next national flag costs: 0 while it owns none and `firstFlagFree` is on, else `flagDust` (mirrors meta). */
 export function nationalFlagPrice(save: SaveDoc, content: Content): number {
   const d = content.cosmetics.collections.drops;
-  if (d.firstFlagFree && !save.cosmetics.owned.some((k) => k.startsWith('nationalFlag.') && findItem(content, k) !== undefined)) return 0;
+  if (d.firstFlagFree && !save.cosmetics.owned.some((k) => k.startsWith('nationalFlag.'))) return 0;
   return d.flagDust;
 }
 

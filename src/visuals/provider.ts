@@ -315,14 +315,18 @@ export class VisualsArtProvider implements ArtProvider {
 
   /**
    * A base skin belongs to one age's base (`base.future@crystal_spire`), but the base view lives
-   * through every evolve. So the skin is applied to whichever age has an entry for it: a Stone base
-   * created with `crystal_spire` looks plain until it morphs into the Future age, then shows the skin.
-   * Ages without an entry for the skin draw their plain base silently.
+   * through every evolve. `skins` (save v14, PLAN 2c) names the skin of each age: each age resolves its
+   * own (`base.<age>@<skins[age]>`), so the view morphs between skinned ages on an evolve. The older
+   * `skin` is applied to whichever age has an entry for it (a Stone base created with `crystal_spire`
+   * looks plain until it morphs into the Future age); `skins[age]` wins over it. An age whose skin has no
+   * model (a cosmetic skin still on its tint, drawn by the dressing) draws its plain base silently.
    */
-  createBase(o: { age: AgeId; skin?: SkinId; side: Side; teamPreset: TeamPreset }): BaseView {
+  createBase(o: { age: AgeId; skin?: SkinId; skins?: Partial<Record<AgeId, SkinId>>; side: Side; teamPreset: TeamPreset }): BaseView {
     const skin = o.skin;
+    const skinOf = (age: AgeId): SkinId | undefined => o.skins?.[age] ?? skin;
     const resolveAge = (age: AgeId): { key: string; def: VisualDef } | undefined => {
-      const skinned = skin ? skinnedVisualId(`base.${age}`, skin) : null;
+      const own = skinOf(age);
+      const skinned = own ? skinnedVisualId(`base.${age}`, own) : null;
       const def = skinned ? this.manifest[skinned] : undefined;
       if (skinned && def) return { key: skinned, def };
       return this.resolve(`base.${age}`);
@@ -342,9 +346,9 @@ export class VisualsArtProvider implements ArtProvider {
         const proc = PROCEDURAL_MANIFEST[e.key];
         return proc ? { key: e.key, def: proc } : undefined;
       };
-      return fb.adapter.createBase({ key, def: fb.def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++, age: o.age, skin, resolveAge: procAge });
+      return fb.adapter.createBase({ key, def: fb.def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++, age: o.age, skin: skinOf(o.age), resolveAge: procAge });
     }
-    return this.adapterFor(key, r?.def, 'base').createBase({ key, def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++, age: o.age, skin, resolveAge });
+    return this.adapterFor(key, r?.def, 'base').createBase({ key, def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++, age: o.age, skin: skinOf(o.age), resolveAge });
   }
 
   /** Base flag, national flag, decorations and skin restyle of one side (DESIGN A18.9.4). */
@@ -354,10 +358,18 @@ export class VisualsArtProvider implements ArtProvider {
 
   /**
    * The split-age backdrop. A half's backdrop skin (`skins.left` / `skins.right`, `backdrop.<id>`,
-   * A18.9.4) resolves through the manifest like a unit skin (`backdrop.<age>@<id>`); an unknown skin
-   * warns once and draws that half's classic sky.
+   * A18.9.4; the "Sky" from save v14) resolves through the manifest like a unit skin
+   * (`backdrop.<age>@<id>`); an unknown skin warns once and draws that half's classic sky. `scenes`
+   * (save v14, PLAN 2b): each half's scene per age, passed to the backdrop view as they are (Track A's
+   * `backdropView` draws them; an age without one shows its classic scene).
    */
-  createBackdrop(o: { left: AgeId; right: AgeId; arena: string; skins?: { left?: CosmeticKey | null; right?: CosmeticKey | null } }): BackdropView {
+  createBackdrop(o: {
+    left: AgeId;
+    right: AgeId;
+    arena: string;
+    skins?: { left?: CosmeticKey | null; right?: CosmeticKey | null };
+    scenes?: { left?: Partial<Record<AgeId, CosmeticKey>>; right?: Partial<Record<AgeId, CosmeticKey>> };
+  }): BackdropView {
     const L = this.resolve(`backdrop.${o.left}`);
     const R = this.resolve(`backdrop.${o.right}`);
     const groundKey = `ground.${arenaId(o.arena)}`;
@@ -375,6 +387,7 @@ export class VisualsArtProvider implements ArtProvider {
       ground: { key: groundKey, def: G?.def ?? this.missing(groundKey) },
       arena: o.arena,
       seed: this.nextSeed++,
+      scenes: { left: { ...(o.scenes?.left ?? {}) }, right: { ...(o.scenes?.right ?? {}) } },
     };
     return this.adapterFor(`backdrop.${o.left}`, L?.def, 'backdrop').createBackdrop(req);
   }

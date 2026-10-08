@@ -5,7 +5,8 @@
  * URL flag nothing changes.
  *
  * - **Everything unlocked**: every released card at level 9 with the copies for level 10, every power,
- *   fort, skin and cosmetic, the whole War Path beaten on Normal (3 stars), every Conquest General
+ *   fort, skin and released cosmetic (every scene of every age included), the whole War Path beaten on
+ *   Normal (3 stars), every Conquest General
  *   open, Iron Front (Arena 5, mid ladder) at 1,450 trophies with the Trophy Road claimed below that,
  *   500,000 Amber and 100,000 Dust, two capsules of each tier Clay to Aeon (a Trophy Road one that
  *   shows its tier and a Sundial one that climbs from Clay in the opening show), two Wardrobe Crates
@@ -185,7 +186,8 @@ export function everythingSave(c: CompiledContent, clock: LocalClock, seed: numb
           ...t.cosmetics.banners.map((b) => b.id),
           ...t.cosmetics.frames.map((f) => f.id),
           ...t.cosmetics.titles.map((x) => x.id),
-          ...t.cosmetics.collections.items.map((x) => `${x.collection}.${x.id}`),
+          // every released collection item: every scene of every age, every base skin and flag (PLAN 2e)
+          ...t.cosmetics.collections.items.filter((x) => x.released !== false).map((x) => `${x.collection}.${x.id}`),
         ]),
       ],
     },

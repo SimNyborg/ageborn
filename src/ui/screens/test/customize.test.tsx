@@ -67,16 +67,29 @@ describe('Customize: collections (A18.9.4)', () => {
     expect(m.save.value.skins.equipped).toEqual(before);
   });
 
-  it('a locked item says how it is earned, cannot be equipped and can be crafted when it drops from capsules', () => {
+  it('a locked national flag says it is bought with Dust, cannot be equipped and is bought at its one price (PLAN 2d)', () => {
     m = cust('flags');
     const tile = m.q('[data-testid="item-nationalFlag.fr"]')!;
     expect(tile.getAttribute('class')).toContain('is-locked');
-    expect(text(tile)).toContain('Found in Time Capsules');
+    expect(text(tile)).toContain('Bought with Dust');
+    // the mid fixture owns flags already: the next one costs the flag price
+    expect(text(m.q('[data-testid="craft-nationalFlag.fr"]')!)).toContain('500');
+    const dust = m.save.value.currencies.dust;
     m.click('[data-testid="item-nationalFlag.fr"] button');
     expect(calls('equipCosmetic')).toEqual([]);
     m.click('[data-testid="craft-nationalFlag.fr"]');
     expect(calls('craftCosmetic')).toEqual(['nationalFlag.fr']);
     expect(m.save.value.cosmetics.owned).toContain('nationalFlag.fr');
+    expect(m.save.value.currencies.dust).toBe(dust - 500);
+  });
+
+  it('a locked capsule item says how it is earned and can be crafted', () => {
+    m = cust('decorations');
+    const tile = m.q('[data-testid="item-decoration.knight_helm"]')!;
+    expect(tile.getAttribute('class')).toContain('is-locked');
+    expect(text(tile)).toContain('Found in Time Capsules');
+    m.click('[data-testid="craft-decoration.knight_helm"]');
+    expect(calls('craftCosmetic')).toEqual(['decoration.knight_helm']);
   });
 
   it('road and feat items show their source and have no craft button', () => {

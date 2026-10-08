@@ -664,8 +664,13 @@ export interface BackdropViewOptions {
   baker: PartBaker;
   quality: 'high' | 'lite';
   seed: number;
-  /** Each half's backdrop skin (`backdrop.<id>`, A18.9.4); left = side 0. */
+  /** Each half's backdrop skin (`backdrop.<id>`, A18.9.4; the "Sky" from save v14); left = side 0. */
   skins?: { left?: string | null; right?: string | null };
+  /**
+   * Each half's scene per age (`scene.<id>`, save v14, PLAN 2b); an age without one shows its classic
+   * scene. Passed through by C0 (2026-10-08); Track A draws them (until then every age is classic).
+   */
+  scenes?: { left?: Partial<Record<AgeId, string>>; right?: Partial<Record<AgeId, string>> };
 }
 
 export class ProceduralBackdropView implements BackdropView {

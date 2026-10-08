@@ -213,6 +213,7 @@ export class ProceduralAdapter implements VisualAdapter {
       quality: this.o.quality,
       seed: r.seed,
       skins: { left: r.left.skin ?? null, right: r.right.skin ?? null },
+      scenes: r.scenes,
     });
   }
 

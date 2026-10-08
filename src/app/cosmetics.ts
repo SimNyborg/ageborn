@@ -43,7 +43,8 @@ export interface FlagServicesDeps {
 export function flagServices(d: FlagServicesDeps): Pick<UiServices, 'buyNationalFlag' | 'flagAtlasProgress' | 'searchFlags'> {
   return {
     buyNationalFlag: (key) => d.apply(d.meta.buyNationalFlag(d.save.peek(), key, d.content), true),
-    flagAtlasProgress: () => d.meta.flagAtlas(d.save.peek(), d.content),
+    // a query: reading `.value` lets the screen that calls it re-render after a purchase
+    flagAtlasProgress: () => d.meta.flagAtlas(d.save.value, d.content),
     searchFlags: (query) => d.meta.searchFlags(d.content, d.i18n, query).map((x) => `${x.collection}.${x.id}`),
   };
 }

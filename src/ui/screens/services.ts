@@ -7,8 +7,8 @@
  * The dev page and tests use `createPreviewServices` (fixtures), which fakes the effects locally.
  */
 import type { AgeId, AvatarSlot, AvatarTint, CardId, FormatId, OpponentSpec, PlanIssue, ReplayDoc, SaveDoc, Settings, SkinId, WarPathDifficulty } from '@/contracts';
-import type { FlagRegion } from '@/content/types';
 import type { DailyDifficulty, MatchRequest } from '../router';
+import type { FlagAtlasInfo } from './flagAtlas/types';
 
 export type WarPlan = SaveDoc['warPlans'][number];
 
@@ -40,28 +40,8 @@ export type CosmeticEquipPatch =
   /** The avatar creator's look ("Make your General"): starter parts and owned wearables only. */
   | { slot: 'avatar'; look: Partial<Record<AvatarSlot, string>>; tints?: Partial<Record<AvatarTint, number>> };
 
-/** One Flag Atlas browsing group (PLAN 2d; mirrors meta's `FlagRegionProgress`). */
-export interface FlagRegionInfo {
-  region: FlagRegion;
-  owned: number;
-  total: number;
-  /** The region's completion reward (`baseFlag.<id>`), or null (the Other flags have none, or not released yet). */
-  reward: string | null;
-  rewardOwned: boolean;
-}
-
-/** The Flag Atlas as the screens show it (PLAN 2d; mirrors meta's `FlagAtlasProgress`). */
-export interface FlagAtlasInfo {
-  /** Owned flags of the six regions and their number (the "37/195"); the Other flags do not count. */
-  owned: number;
-  total: number;
-  /** Every browsing group in chip order, the Other flags last. */
-  regions: FlagRegionInfo[];
-  /** What the next flag costs in Dust (0 for a save's first flag while the content's `firstFlagFree` is on). */
-  price: number;
-  /** The equipped national flag (`nationalFlag.<id>`), or null. */
-  equipped: string | null;
-}
+/** The Flag Atlas's view (PLAN 2d), shaped by Track D next to its screen. */
+export type { FlagAtlasInfo, FlagRegionInfo } from './flagAtlas/types';
 
 export interface UiServices {
   // ---- queries -------------------------------------------------------------------------------

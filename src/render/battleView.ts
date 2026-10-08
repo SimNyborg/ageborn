@@ -201,6 +201,23 @@ export function collapseSeed(matchSeed: number | string, side: Side, tick: numbe
   return xmur3(`collapse|${matchSeed}|${side}|${tick}`)();
 }
 
+/**
+ * A side's base skin per age as art skin ids (save v14, PLAN 2c), the map `ArtProvider.createBase`
+ * takes: the base's troop-system skin (`skins['base.<age>']`, Crystal Spire on the Future base) or else
+ * the side's cosmetic base skin of that age (`look.baseSkins[age]`, `baseSkin.<id>` → `<id>`). Meta keeps
+ * one per age; the troop skin wins if a side ever carries both.
+ */
+export function baseSkinsOf(side: Pick<MatchConfig['sides'][number], 'skins' | 'look'>): Partial<Record<AgeId, string>> {
+  const out: Partial<Record<AgeId, string>> = {};
+  for (const [age, key] of Object.entries(side.look?.baseSkins ?? {}) as [AgeId, string | undefined][]) {
+    if (key?.startsWith('baseSkin.')) out[age] = key.slice('baseSkin.'.length);
+  }
+  for (const [target, skin] of Object.entries(side.skins)) {
+    if (target.startsWith('base.') && skin) out[target.slice('base.'.length) as AgeId] = skin;
+  }
+  return out;
+}
+
 interface ProjectileEntry {
   key: string;
   view: EffectView;
@@ -378,12 +395,14 @@ export class BattleView {
     this.markers = new MountMarkers(o.labelFactory ?? textLabelFactory, o.mountLabel);
 
     const st = this.sim.state;
-    // A18.9.4: each half wears its side's backdrop skin (bots keep the classic sky; the sim never sees it)
+    // A18.9.4: each half wears its side's backdrop skin (the Sky) and, from save v14, its scene per age
+    // (bots keep the classic sky and scenes; the sim never sees them)
     this.backdrop = o.art.createBackdrop({
       left: this.ageOf(0),
       right: this.ageOf(1),
       arena: o.arena ?? 'tar_pits',
       skins: { left: this.config.sides[0].look?.backdrop ?? null, right: this.config.sides[1].look?.backdrop ?? null },
+      scenes: { left: { ...(this.config.sides[0].look?.scenes ?? {}) }, right: { ...(this.config.sides[1].look?.scenes ?? {}) } },
     });
     this.backdrop.setSeam(this.seam);
     this.layers.backdrop.addChild(this.backdrop.root);
@@ -2312,11 +2331,10 @@ export class BattleView {
 
   private createBase(side: Side): BaseEntry {
     const age = this.ageOf(side);
-    // A base skin targets one age (`base.future@crystal_spire`, A5.8); the provider draws it on that
-    // age only, so pass it whatever age the match starts in (it shows after the evolve).
-    const skins = this.config.sides[side].skins;
-    const skin = skins[`base.${age}`] ?? Object.entries(skins).find(([target]) => target.startsWith('base.'))?.[1];
-    const view = this.art.createBase({ age, ...(skin ? { skin } : {}), side, teamPreset: this.settings.teamPreset });
+    // The base skin of every age (save v14, PLAN 2c): the base's troop-system skin (`base.future@crystal_spire`,
+    // A5.8) or else the side's cosmetic base skin of that age; the provider resolves each age's own, so the
+    // base morphs between them on an evolve (an age whose skin has no model draws its plain base).
+    const view = this.art.createBase({ age, skins: baseSkinsOf(this.config.sides[side]), side, teamPreset: this.settings.teamPreset });
     // The art contract (WP4 base views): the root sits on the gate at ground level and the art
     // mirrors itself for side 1; `mountPoints()` are already in the root's parent (world) space.
     // Mirroring the root here as well flipped side 1 back and pushed side 0 half off screen.

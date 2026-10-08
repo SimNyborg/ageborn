@@ -4,7 +4,7 @@ import { FakeAudio } from '@/contracts/fakes/audio';
 import { FakeSim, cannedBattleEvents, fakeMatchConfig } from '@/contracts/fakes/sim';
 import { Container } from 'pixi.js';
 import { describe, expect, it } from 'vitest';
-import { BattleView, collapseSeed, type BattleViewOptions } from '../battleView';
+import { BattleView, baseSkinsOf, collapseSeed, type BattleViewOptions } from '../battleView';
 import { EVOLVE_CUE_FADE_MS } from '../eventMapper';
 import type { LabelFactory } from '../feel/numbers';
 import { FixedStepClock } from '../loop';
@@ -51,6 +51,28 @@ function play(s: ReturnType<typeof setup>, extraMs = 2000): { frozenFrames: numb
   }
   return { frozenFrames };
 }
+
+describe('the side looks reach the art (save v14: scenes per age, one base skin per age)', () => {
+  it('passes each half its scenes and each base its skin per age, the troop skin over a cosmetic one', () => {
+    const base = fakeMatchConfig();
+    const config: MatchConfig = {
+      ...base,
+      sides: [
+        { ...base.sides[0], skins: { 'base.future': 'crystal_spire', bonker: 'pumpkin_head' }, look: { baseSkins: { stone: 'baseSkin.frost_cave', future: 'baseSkin.midnight_neon' }, scenes: { stone: 'scene.glacier_valley' } } },
+        { ...base.sides[1], skins: {}, look: { baseSkins: {}, scenes: {} } },
+      ],
+    };
+    const sim = new FakeSim({ config });
+    const art = new SpyArt();
+    new BattleView({ sim, art, audio: new FakeAudio(), labelFactory: labels });
+    const backdrop = art.calls.find((c) => c.method === 'createBackdrop')!.args[0] as { scenes: unknown };
+    expect(backdrop.scenes).toEqual({ left: { stone: 'scene.glacier_valley' }, right: {} });
+    const bases = art.calls.filter((c) => c.method === 'createBase').map((c) => (c.args[0] as { skins: unknown }).skins);
+    expect(bases).toEqual([{ stone: 'frost_cave', future: 'crystal_spire' }, {}]);
+    expect(baseSkinsOf({ skins: {}, look: { baseSkins: { cosmic: 'baseSkin.nebula_ark' } } })).toEqual({ cosmic: 'nebula_ark' });
+    expect(baseSkinsOf({ skins: { 'base.future': 'crystal_spire' } })).toEqual({ future: 'crystal_spire' });
+  });
+});
 
 describe('BattleView on the fake stream (C2/WP5 Phase 1)', () => {
   it('builds the scene: backdrop, both bases, then units as they spawn', () => {

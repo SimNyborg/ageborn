@@ -3,8 +3,12 @@
  * over mounts or the HP bar. Drawn in the game's cel style: a flat base colour, a shadow side, a
  * highlight and the ink outline. View box 48 x 64 with the ground at y = 62 and the foot at x = 24.
  * Braziers and some statues have a light (`glow`) the battle view animates.
+ *
+ * Owned by Track B (PLAN 2a: decorations become Blender-rendered props). C0 (2026-10-08) moved the SVG
+ * and canvas drawing here from `art.ts`, which routes `decoration.*` to this module, and added
+ * `decorationArtUrl` (the prop picture; null until Track B's props are in, and the SVG shows).
  */
-import { band, circle, ellipse, INK, line, poly, rect, ring, roundRect, star, type Shape } from './shapes';
+import { band, circle, drawShapes, ellipse, hex, INK, line, poly, rect, ring, roundRect, shapesToSvg, star, type Ctx2D, type Paints, type Shape } from './shapes';
 
 export const DECO_W = 48;
 export const DECO_H = 64;
@@ -331,3 +335,39 @@ export const DECORATIONS: Readonly<Record<string, DecorationArt>> = {
     glow: { x: 24, y: 20, r: 12, color: 0xc0a8ff },
   },
 };
+
+/** True when the visuals can draw `decoration.<id>`. */
+export function hasDecorationArt(id: string): boolean {
+  return DECORATIONS[id] !== undefined;
+}
+
+export function decorationSvg(id: string, p: Paints): string | null {
+  const d = DECORATIONS[id];
+  if (!d) return null;
+  const glow = d.glow
+    ? `<circle cx="${d.glow.x}" cy="${d.glow.y}" r="${d.glow.r}" fill="${hex(d.glow.color)}" opacity="0.28"/>`
+    : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${DECO_W} ${DECO_H}">${glow}${shapesToSvg(d.shapes, p)}</svg>`;
+}
+
+/** Draws a decoration (without its glow) at `px` pixels per unit. */
+export function drawDecoration(ctx: Ctx2D, id: string, p: Paints, px: number): boolean {
+  const d = DECORATIONS[id];
+  if (!d) return false;
+  ctx.save();
+  ctx.scale(px, px);
+  drawShapes(ctx, d.shapes, p);
+  ctx.restore();
+  return true;
+}
+
+/**
+ * The prop's picture for the screens (PLAN 2f interface 2: `hd` the Customize HD thumbnail atlas cell),
+ * or null while the Blender props are not in: the router then uses {@link decorationSvg}. Track B fills
+ * this in.
+ */
+export function decorationArtUrl(id: string, o: { hd?: boolean } = {}): string | null {
+  void id;
+  void o;
+  return null;
+}
