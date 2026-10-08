@@ -195,7 +195,7 @@ def build(rig, M):
         gate = abs(px - GATE_X) < 17 and pz < 46
         return win or gate or (px > ENG_X0 - 2 and pz > WALL_H - 18)
 
-    ashlar(rig, "body", x0 + 3, x1 - 3, 12, WALL_H - 6, fy - 0.8, [STONE, STONE_LT, STONE_MID], h=12.0, w=(16.0, 24.0),
+    ashlar(rig, "body", x0 + 3, x1 - 3, 12, WALL_H - 6, fy - 0.8, [STONE, STONE_LT, STONE_MID], h=9.0, w=(12.0, 18.0),
            seed=7, skip=skip)
     g = Geo()
     box(g, ((x0 + x1) / 2, hy, 6.0), ((x1 - x0) / 2 + 2, hd + 2, 6.0), p=6)
@@ -216,11 +216,15 @@ def build(rig, M):
                 segs=40, squash=(VAULT_ZR / (hd + 3.0), 1.0))
     g.clip((0, 0, WALL_H), (0, 0, -1))
     rig.part("body", g, COPPER, finish="metal", outline=0.4)
-    g = Geo()   # lighter verdigris plates on the vault's front slope
-    for k in range(9):
-        px = vx0 + 8 + k * (vx1 - vx0 - 16) / 8
-        g.blob((px + 3, fy - 0.2, WALL_H + 9 + (k % 3) * 2.0), (4.5, 1.0, 5.5), p=3.0, cuts=2, rot=(-62, 0, 0))
-    rig.part("body", g, VERD_LT, outline=0, highlight=False)
+    g = Geo()   # lighter verdigris streaks running down the vault's front slope (flat lines)
+    rv, rz = hd + 2.7, VAULT_ZR + 0.2
+    for k in range(10):
+        px = vx0 + 5 + k * (vx1 - vx0 - 10) / 9 + (3 if k % 2 else -2)
+        top = 74 - (k % 3) * 9
+        pts = [(px, hy - rv * math.cos(math.radians(f)), WALL_H + rz * math.sin(math.radians(f))) for f in range(top, 16, -8)]
+        for q0, q1 in zip(pts, pts[1:]):
+            g.capsule(q0, q1, 0.9, 0.7, segs=6, rings=1)
+    rig.part("body", g, glow=VERD_LT, outline=0)
     g = Geo()   # a glazed skylight along the ridge, lit from below
     box(g, ((vx0 + vx1) / 2, hy - 6, WALL_H + VAULT_ZR - 0.6), ((vx1 - vx0) / 2 - 8, 4.0, 1.4), p=4, cuts=2)
     rig.part("body", g, glow=WINDOW, outline=0)
@@ -233,8 +237,8 @@ def build(rig, M):
     g = Geo()
     box(g, ((ENG_X0 + x1) / 2, hy, eng_h / 2), ((x1 - ENG_X0) / 2, hd, eng_h / 2), p=7)
     rig.part("body", g, STONE)
-    ashlar(rig, "body", ENG_X0 + 3, x1 - 3, WALL_H - 18, eng_h - 10, fy - 0.8, [STONE, STONE_LT, STONE_MID], h=12.0,
-           w=(16.0, 22.0), seed=9)
+    ashlar(rig, "body", ENG_X0 + 3, x1 - 3, WALL_H - 18, eng_h - 21, fy - 0.8, [STONE, STONE_LT, STONE_MID], h=9.0,
+           w=(12.0, 18.0), seed=9)
     g = Geo()
     box(g, ((ENG_X0 + x1) / 2, hy, eng_h - 1.5), ((x1 - ENG_X0) / 2 + 3, hd + 3, 3.0), p=6)
     rig.part("body", g, STONE_LT)
@@ -297,6 +301,9 @@ def build(rig, M):
         g.capsule((lx, ly, WALL_H + 6), (sx + (lx - sx) * 0.55, sy + (ly - sy) * 0.55, sz - sr * 0.7), 1.8, 1.4, segs=10, rings=2)
     g.capsule((sx - 14, sy - 12, WALL_H + 18), (sx + 14, sy - 12, WALL_H + 18), 1.0, segs=8, rings=1)
     rig.part("sphere", g, IRON_DK, finish="metal", outline=0.5)
+    g = Geo().sphere((sx, sy, sz), sr + 0.5, cuts=6)   # the company's painted crown on the sphere
+    g.clip((0, 0, sz + sr * 0.5), (0, 0, -1))
+    rig.part("sphere", g, team=True)
     g = Geo().sphere((sx, sy, sz + sr + 1.2), 3.0, cuts=3)
     g.capsule((sx, sy, sz + sr - 1), (sx, sy, sz + sr + 2), 1.6)
     rig.part("sphere", g, BRASS, finish="metal", outline=0.4)
@@ -319,7 +326,7 @@ def build(rig, M):
     feet = [(kx - 20, ky - 6), (kx + 18, ky - 6), (kx - 20, ky + 26), (kx + 18, ky + 26)]
     tops = [(kx - 15, ky - 8), (kx + 13, ky - 8), (kx - 15, ky + 12), (kx + 13, ky + 12)]
     for (fx, fyy), (qx, qy) in zip(feet, tops):
-        g.capsule((fx, fyy, eng_h), (qx, qy, k0 + 1), 2.0, 1.6, segs=10, rings=2)
+        g.capsule((fx, fyy, eng_h), (qx, qy, k0 + 1), 1.7, 1.4, segs=10, rings=2)
     for k in range(3):
         za = eng_h + 4 + k * (k0 - eng_h - 6) / 3
         zb = za + (k0 - eng_h - 6) / 3
@@ -329,15 +336,16 @@ def build(rig, M):
         lb = (kx - 20 + 5 * fb, ky - 6 - 2 * fb)
         ra = (kx + 18 - 5 * fa, ky - 6 - 2 * fa)
         rb = (kx + 18 - 5 * fb, ky - 6 - 2 * fb)
-        g.capsule((la[0], la[1], za), (rb[0], rb[1], zb), 0.9, segs=6, rings=1)
-        g.capsule((ra[0], ra[1], za), (lb[0], lb[1], zb), 0.9, segs=6, rings=1)
-    rig.part("body", g, IRON_DK, finish="metal", outline=0.6)
+        g.capsule((la[0], la[1], za), (rb[0], rb[1], zb), 0.75, segs=6, rings=1)
+        g.capsule((ra[0], ra[1], za), (lb[0], lb[1], zb), 0.75, segs=6, rings=1)
+    rig.part("body", g, IRON, finish="metal", outline=0.5)
     g = Geo()
     cyl(g, (kx, ky + 2, k0), (kx, ky + 2, z3 - 3), TK_R, bevel=1.2, segs=32, squash=(1.0, 0.9))
     rig.part("body", g, COPPER)
     seams(rig, "body", kx, ky + 2, TK_R * 0.9, k0 + 2, z3 - 5, n=5, color=COPPER_DK)
     g = Geo()
-    cyl(g, (kx, ky + 2, (k0 + z3 - 3) / 2 - 4), (kx, ky + 2, (k0 + z3 - 3) / 2 + 4), TK_R + 0.7, bevel=0.5, segs=32, squash=(1.0, 0.9))
+    cyl(g, (kx, ky + 2, (k0 + z3 - 3) / 2 - 6.5), (kx, ky + 2, (k0 + z3 - 3) / 2 + 6.5), TK_R + 0.7, bevel=0.5, segs=32,
+        squash=(1.0, 0.9))
     rig.part("body", g, team=True)
     for z in (k0 + 3, z3 - 6):
         g = Geo()
@@ -373,7 +381,7 @@ def build(rig, M):
     for z in (40.0, 92.0, 150.0):
         rivet_band(rig, "body", tx, ty, tr - 1.5 * z / tower_h, z, color=COPPER_LT, band=COPPER, n=12)
     g = Geo()
-    cyl(g, (tx, ty, tower_h - 18), (tx, ty, tower_h - 6), tr - 0.6, tr + 0.4, bevel=0.6, segs=30)
+    cyl(g, (tx, ty, tower_h - 24), (tx, ty, tower_h - 6), tr - 0.6, tr + 0.6, bevel=0.6, segs=30)
     rig.part("body", g, team=True)
     g = Geo()
     cyl(g, (tx, ty, tower_h - 6), (tx, ty, tower_h), tr + 1.6, bevel=0.8, segs=30)
@@ -534,7 +542,7 @@ def crumble(stage):
     if stage >= 3:
         pose.update({"crack3": {"show": True}, "rubble3": {"show": True}, "fire2": {"show": True}, "breach": {"show": True},
                      "girder": {"show": True}, "s2top": {"hide": True}, "stump": {"show": True},
-                     "sphere": {"r": 13.0, "x": -3.0, "z": -7.0}, "leak": {"hide": True}, "needle": {"r": -120.0}})
+                     "sphere": {"r": -11.0, "x": 3.0, "z": -7.0}, "leak": {"hide": True}, "needle": {"r": -120.0}})
     return pose
 
 

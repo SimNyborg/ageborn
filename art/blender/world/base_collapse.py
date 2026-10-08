@@ -366,6 +366,9 @@ SKIN_P = {
                        coral_lt="#E8AA96", brain="#D6B061", brain_dk="#B08A44", star="#E07A4F", wood="#5E4A38",
                        wood_lt="#7E654C", wood_dk="#47382B", iron="#3C3F45", shell="#F0E2CC", shell_pink="#E7B7A2",
                        cream="#EFE6CF"),
+    "copper_foundry": dict(stone="#CFC6B2", stone_lt="#DDD5C3", stone_dk="#B3A994", verd="#4F8F7F", verd_lt="#67A594",
+                           verd_dk="#3E7366", copper="#C27A48", copper_lt="#D9935E", copper_dk="#99593A", brass="#C9A54A",
+                           iron="#5B6168", iron_dk="#454A51"),
 }
 
 
@@ -584,11 +587,54 @@ def coral_fort_extras(c):
     return extras
 
 
+def copper_pipe(rig, j, c, length=24.0, r=3.0):
+    """A torn length of copper pipe with a flange at one end and a ragged split at the other."""
+    g = Geo().capsule((-length / 2, 0, 0), (length / 2, 0, 0), r, r, segs=12, rings=2)
+    rig.part(j, g, c["copper"], finish="metal")
+    g = Geo()
+    cyl(g, (-length / 2 + 0.6, 0, 0), (-length / 2 + 2.6, 0, 0), r + 1.3, bevel=0.4, segs=14)
+    rig.part(j, g, c["copper_dk"], finish="metal", outline=0.4)
+    g = Geo()
+    cyl(g, (length / 2 + 0.2, 0, 0), (length / 2 + 0.8, 0, 0), r * 0.62, bevel=0.1, segs=12)
+    rig.part(j, g, glow="#3A2A22", outline=0)
+
+
+def kit_copper_foundry(rig, c):
+    yield lambda j: block(rig, j, (12, 8, 7), c["stone"], chip=True, seed=1)
+    yield lambda j: block(rig, j, (10, 7, 6), c["stone_lt"], rot=(0, 15, 6))
+    yield lambda j: copper_pipe(rig, j, c)
+    yield lambda j: plate(rig, j, 16, 12, c["verd"], rivet=c["copper_lt"], bend=14)
+    yield lambda j: cog(rig, j, 7.0, 8, c["brass"], c["copper_dk"])
+    yield lambda j: plate(rig, j, 14, 10, c["copper"], rivet=c["copper_dk"], rot=(0, 20, 0), bend=-12)
+    yield lambda j: ibeam(rig, j, 26, c["iron"], c["iron_dk"])
+    yield lambda j: block(rig, j, (14, 7, 6), c["stone_dk"], rot=(0, -12, 0), chip=True, seed=8)
+
+
+def copper_foundry_extras(c):
+    """Copper pipes, a bent verdigris plate and a girder sticking out of the copper works' rubble."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(2):
+            x = rnd.uniform(-30, 30)
+            a = math.radians(rnd.uniform(-35, 35))
+            g.capsule((x - math.cos(a) * 14, -2, 10 - math.sin(a) * 14), (x + math.cos(a) * 14, -2, 10 + math.sin(a) * 14), 2.6, 2.6)
+        rig.part(j, g, c["copper"], finish="metal")
+        g = Geo()
+        box(g, (rnd.uniform(-24, 24), -6, 11), (9, 1.4, 7), p=7, rot=(0, rnd.uniform(-30, 30), rnd.uniform(-20, 20)))
+        rig.part(j, g, c["verd"], finish="metal")
+        g = Geo()
+        x = rnd.uniform(-30, 30)
+        box(g, (x, -2, 12), (18, 1.6, 1.6), p=6, rot=(0, rnd.uniform(-45, 45), rnd.uniform(-20, 20)))
+        rig.part(j, g, c["iron"], finish="metal")
+    return extras
+
+
 # skin -> (age, pieces, heap colour keys (back, middle, front + pebbles), what sticks out of the heaps)
 SKIN_KITS = {
     "rose_keep": ("medieval", kit_rose_keep, ("stone", "stone_lt", "stone_dk"), rose_keep_extras),
     "mossy_den": ("stone", kit_mossy_den, ("bark_dk", "stone", "bark_lt"), mossy_den_extras),
     "coral_fort": ("gunpowder", kit_coral_fort, ("stone_dk", "stone", "stone_lt"), coral_fort_extras),
+    "copper_foundry": ("industrial", kit_copper_foundry, ("stone_dk", "stone", "stone_lt"), copper_foundry_extras),
 }
 
 
