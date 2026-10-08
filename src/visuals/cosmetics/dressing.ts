@@ -199,6 +199,8 @@ export class BaseDressing implements BaseDressingView {
   private readonly facing: 1 | -1;
   private readonly pole = new Container();
   private readonly flags: FlagCloth[] = [];
+  /** The pole flies a national flag: on the collapse it is lowered intact, never snapped over (PLAN 2d). */
+  private fliesNation = false;
   private readonly props: Prop[] = [];
   private readonly motes = new Container();
   private moteList: Mote[] = [];
@@ -267,6 +269,7 @@ export class BaseDressing implements BaseDressingView {
       if (k && k.collection === kind) flags.push({ kind, id: k.id, lu });
     }
     if (flags.length === 0) return;
+    this.fliesNation = flags.some((f) => f.kind === 'nationalFlag');
     const x = DRESSING_ANCHORS.pole * this.facing;
     const top = DRESSING_ANCHORS.poleTop;
     this.pole.position.set(x, 0);
@@ -366,7 +369,9 @@ export class BaseDressing implements BaseDressingView {
   /**
    * The base's destroyed collapse (duck-typed by the battle view): the props tremble with the base
    * through its build-up, and on the break (`breakMs` of game time from now) the pole snaps and the
-   * flags flutter down while the decorations topple.
+   * flags flutter down while the decorations topple. A pole with a national flag is lowered intact
+   * instead (it leans a little and sinks as it fades; PLAN 2d's respect note: a nation's flag is
+   * never shown snapped or torn).
    */
   collapseAt(breakMs: number): void {
     if (this.collapseT >= 0) return;
@@ -512,12 +517,20 @@ export class BaseDressing implements BaseDressingView {
       this.flutter = Math.max(this.flutter, 1.2 + 0.6 * u);
       return;
     }
-    // the break: the pole snaps over (accelerating), drops and fades; the decorations topple
+    // the break: the pole snaps over (accelerating), drops and fades; the decorations topple. A pole
+    // flying a national flag is lowered: it leans gently and sinks while it fades
     const k = Math.min(1, t / 900);
     const snap = Math.min(1, t / 420);
-    this.pole.x = x0 + (this.reduce ? 0 : 18 * k * k * this.facing);
-    this.pole.y = this.reduce ? 0 : 26 * k * k;
-    this.pole.rotation = (this.reduce ? 0.35 * snap : 1.45 * snap * snap) * this.facing;
+    if (this.fliesNation) {
+      const e = 1 - (1 - k) * (1 - k);
+      this.pole.x = x0 + (this.reduce ? 0 : 4 * e * this.facing);
+      this.pole.y = this.reduce ? 0 : 30 * e;
+      this.pole.rotation = (this.reduce ? 0.12 : 0.24) * e * this.facing;
+    } else {
+      this.pole.x = x0 + (this.reduce ? 0 : 18 * k * k * this.facing);
+      this.pole.y = this.reduce ? 0 : 26 * k * k;
+      this.pole.rotation = (this.reduce ? 0.35 * snap : 1.45 * snap * snap) * this.facing;
+    }
     this.pole.alpha = 1 - Math.max(0, (k - 0.55) / 0.45);
     this.flutter = Math.max(this.flutter, 1.6 * (1 - k));
     for (const p of this.props) {

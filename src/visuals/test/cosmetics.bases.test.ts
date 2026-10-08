@@ -11,9 +11,6 @@
  * budget; the provider resolves each age's own skin through an evolve, loads a model lazily with the tint
  * standing in, and the collapse uses the model's own topple data. Owned by Track B.
  */
-import { readFileSync, statSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { inflateSync } from 'node:zlib';
 import { Container, Texture } from 'pixi.js';
 import { describe, expect, it, vi } from 'vitest';
 import type { BaseView, VisualDef } from '@/contracts/art';
@@ -153,6 +150,23 @@ describe('base dressing (A18.9.4)', () => {
     expect(() => bare.destroy()).not.toThrow();
   });
 
+  it('lowers a pole flying a national flag intact on the collapse; a base flag alone snaps over (PLAN 2d)', () => {
+    const poleOf = (d: BaseDressing) => d.root.children.find((c) => Math.round(c.position.x) === DRESSING_ANCHORS.pole)!;
+    const lowered = new BaseDressing({ age: 'stone', side: 0, look, team: 0x2f7df6 });
+    const snapped = new BaseDressing({ age: 'stone', side: 0, look: { baseFlag: 'baseFlag.mammoth', decorations: [] }, team: 0x2f7df6 });
+    const pl = poleOf(lowered);
+    const ps = poleOf(snapped);
+    for (const d of [lowered, snapped]) {
+      d.collapse();
+      for (let i = 0; i < 5; i += 1) d.update(100);
+    }
+    expect(Math.abs(pl.rotation)).toBeLessThan(0.3);
+    expect(pl.position.y).toBeGreaterThan(10);
+    expect(Math.abs(ps.rotation)).toBeGreaterThan(1.0);
+    lowered.destroy();
+    snapped.destroy();
+  });
+
   it('honours Reduce motion: no particles', () => {
     const d = new BaseDressing({ age: 'stone', side: 0, look, team: 0x2f7df6 });
     d.setMotion({ reduce: true, lite: false });
@@ -181,26 +195,48 @@ interface SheetFile {
   meta: { image: string; scale: string; ageborn: WorldMeta & { visualId: string; skin?: string; age?: AgeId } };
 }
 
-const PUBLIC = fileURLToPath(new URL('../../../public/', import.meta.url));
-const readSheet = (source: string): SheetFile => JSON.parse(readFileSync(`${PUBLIC}${source}`, 'utf8')) as SheetFile;
+// the installed sheets, read through Vite (the source tree's tsconfig has no Node types): JSON as data,
+// PNGs as base64 data URLs
+const SHEETS = import.meta.glob<SheetFile>(['/public/art/bases/*.json', '/public/art/bases/skins/*.json'], { eager: true, import: 'default' });
+const PNG_DATA = import.meta.glob<string>(['/public/art/bases/*.png', '/public/art/bases/skins/*.png'], { eager: true, query: '?inline', import: 'default' });
+const readSheet = (source: string): SheetFile => {
+  const s = SHEETS[`/public/${source}`];
+  if (!s) throw new Error(`no sheet ${source}`);
+  return s;
+};
+const pngBytes = (path: string): Uint8Array => {
+  const url = PNG_DATA[`/public/${path}`];
+  if (!url) throw new Error(`no picture ${path}`);
+  const bin = atob(url.slice(url.indexOf(',') + 1));
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+};
+const sheetPng = (source: string, image: string): string => `${source.replace(/[^/]+$/, '')}${image}`;
+
+async function inflate(data: Uint8Array): Promise<Uint8Array> {
+  const body = new Response(data as BodyInit).body!.pipeThrough(new DecompressionStream('deflate'));
+  return new Uint8Array(await new Response(body).arrayBuffer());
+}
 
 /** A small PNG decoder for the 8-bit sheets (indexed with tRNS, or RGBA): RGBA bytes. */
-function decodePng(path: string): { w: number; h: number; px: Uint8Array } {
-  const b = readFileSync(path);
+async function decodePng(path: string): Promise<{ w: number; h: number; px: Uint8Array }> {
+  const b = pngBytes(path);
+  const dv = new DataView(b.buffer, b.byteOffset, b.byteLength);
   let o = 8;
   let w = 0;
   let h = 0;
   let type = 0;
-  let plte: Buffer | null = null;
-  let trns: Buffer | null = null;
-  const idat: Buffer[] = [];
+  let plte: Uint8Array | null = null;
+  let trns: Uint8Array | null = null;
+  const idat: Uint8Array[] = [];
   while (o < b.length) {
-    const len = b.readUInt32BE(o);
-    const kind = b.toString('ascii', o + 4, o + 8);
+    const len = dv.getUint32(o);
+    const kind = String.fromCharCode(b[o + 4]!, b[o + 5]!, b[o + 6]!, b[o + 7]!);
     const data = b.subarray(o + 8, o + 8 + len);
     if (kind === 'IHDR') {
-      w = data.readUInt32BE(0);
-      h = data.readUInt32BE(4);
+      w = dv.getUint32(o + 8);
+      h = dv.getUint32(o + 12);
       if (data[8] !== 8 || data[12] !== 0) throw new Error(`${path}: only 8-bit, non-interlaced PNGs`);
       type = data[9]!;
     } else if (kind === 'PLTE') plte = data;
@@ -210,7 +246,13 @@ function decodePng(path: string): { w: number; h: number; px: Uint8Array } {
   }
   const bpp = type === 3 ? 1 : type === 6 ? 4 : type === 2 ? 3 : 0;
   if (!bpp) throw new Error(`${path}: colour type ${type}`);
-  const raw = inflateSync(Buffer.concat(idat));
+  const all = new Uint8Array(idat.reduce((n, d) => n + d.length, 0));
+  let at = 0;
+  for (const d of idat) {
+    all.set(d, at);
+    at += d.length;
+  }
+  const raw = await inflate(all);
   const stride = w * bpp;
   const rows = new Uint8Array(stride * h);
   for (let y = 0; y < h; y++) {
@@ -256,9 +298,9 @@ function decodePng(path: string): { w: number; h: number; px: Uint8Array } {
  * A body frame's silhouette in base lu (x toward the lane, y up): its bounds, the team-pixel share (team
  * twin showing through the frame's holes) and the opaque height of a few columns.
  */
-function bodyStats(source: string, stage = 0): { x0: number; x1: number; top: number; team: number; columnTop: (xLu: number) => number } {
+async function bodyStats(source: string, stage = 0): Promise<{ x0: number; x1: number; top: number; team: number; columnTop: (xLu: number) => number }> {
   const s = readSheet(source);
-  const img = decodePng(`${PUBLIC}${source.replace(/[^/]+$/, '')}${s.meta.image}`);
+  const img = await decodePng(sheetPng(source, s.meta.image));
   const ppl = s.meta.ageborn.pxPerLu;
   const name = s.animations['body']![stage]!;
   const tname = s.animations['body_team']![stage]!;
@@ -353,12 +395,12 @@ describe('base skin models: the standard base contract (PLAN 2c)', () => {
     });
     // frame names never collide with the age's own sheet in Pixi's texture cache
     for (const names of Object.values(s.animations)) for (const n of names) expect(n.startsWith(`${skin}_`), n).toBe(true);
-    expect(statSync(`${PUBLIC}art/bases/skins/${s.meta.image}`).size, 'sheet budget 70 KB').toBeLessThanOrEqual(70 * 1024);
+    expect(pngBytes(`art/bases/skins/${s.meta.image}`).length, 'sheet budget 70 KB').toBeLessThanOrEqual(70 * 1024);
   });
 
-  it.each(MODELS)('%s: footprint and height band within 5%% of the standard base, dressing anchors clear, team share', (skin, age) => {
-    const std = bodyStats(baseSheetSource(age));
-    const own = bodyStats(baseSkinSheetSource(skin));
+  it.each(MODELS)('%s: footprint and height band within 5%% of the standard base, dressing anchors clear, team share', async (skin, age) => {
+    const std = await bodyStats(baseSheetSource(age));
+    const own = await bodyStats(baseSkinSheetSource(skin));
     const width = (st: { x0: number; x1: number }) => st.x1 - st.x0;
     expect(Math.abs(width(own) - width(std)) / width(std), 'width').toBeLessThanOrEqual(0.05);
     expect(Math.abs(own.top - std.top) / std.top, 'height band').toBeLessThanOrEqual(0.05);
@@ -368,7 +410,11 @@ describe('base skin models: the standard base contract (PLAN 2c)', () => {
       expect(own.columnTop(x), `column at ${x} lu`).toBeLessThanOrEqual(std.columnTop(x) + 4);
     }
     // large team areas: at least the standard base's team-pixel share minus 3 points
-    for (const stage of [0, 3]) expect(bodyStats(baseSkinSheetSource(skin), stage).team, `team share, crumble ${stage}`).toBeGreaterThanOrEqual(bodyStats(baseSheetSource(age), stage).team - 3);
+    for (const stage of [0, 3]) {
+      const mine = await bodyStats(baseSkinSheetSource(skin), stage);
+      const theirs = await bodyStats(baseSheetSource(age), stage);
+      expect(mine.team, `team share, crumble ${stage}`).toBeGreaterThanOrEqual(theirs.team - 3);
+    }
   });
 });
 
@@ -387,7 +433,7 @@ describe('base skin models: their own collapse kits', () => {
       expect(kit.animations['rag']).toHaveLength(1);
       expect(kit.animations['rag_team']).toHaveLength(1);
       for (const names of Object.values(kit.animations)) for (const n of names) expect(n.startsWith(`${skin}_kit_`), n).toBe(true);
-      expect(statSync(`${PUBLIC}art/bases/skins/${kit.meta.image}`).size, 'kit budget 15 KB').toBeLessThanOrEqual(15 * 1024);
+      expect(pngBytes(`art/bases/skins/${kit.meta.image}`).length, 'kit budget 15 KB').toBeLessThanOrEqual(15 * 1024);
     }
     // a model without its own kit falls back to its age's
     for (const [skin, age] of MODELS) if (!WORLD_BASE_SKIN_KITS.includes(skin)) expect(MANIFEST[`base.${age}@${skin}`]?.clips['collapse']?.ref).toBe(`art/bases/${age}.collapse.json`);

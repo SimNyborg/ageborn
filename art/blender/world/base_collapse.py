@@ -369,6 +369,9 @@ SKIN_P = {
     "copper_foundry": dict(stone="#CFC6B2", stone_lt="#DDD5C3", stone_dk="#B3A994", verd="#4F8F7F", verd_lt="#67A594",
                            verd_dk="#3E7366", copper="#C27A48", copper_lt="#D9935E", copper_dk="#99593A", brass="#C9A54A",
                            iron="#5B6168", iron_dk="#454A51"),
+    "desert_bunker": dict(sand="#CDB88A", sand_lt="#DCC9A0", sand_dk="#B39E72", adobe="#C8A27C", adobe_dk="#AE8963",
+                          bag="#C9B48A", wood="#7A5F48", wood_dk="#5E4836", tin="#B9B2A0", olive="#7C7D58", rebar="#6E5446",
+                          frond="#6E8C3E", frond_lt="#86A24C", steel="#8C949C"),
 }
 
 
@@ -629,12 +632,60 @@ def copper_foundry_extras(c):
     return extras
 
 
+def frond(rig, j, c, seed=0):
+    """A torn-off palm frond: a curved spine with paired leaflets."""
+    from world.base_skins_kit import leaf
+    g, gl = Geo(), Geo()
+    pts = [(-10 + 4 * i, 0, 3 - 0.35 * (i - 2.5) ** 2) for i in range(6)]
+    for a, b in zip(pts, pts[1:]):
+        g.capsule(a, b, 0.7, 0.55, segs=6, rings=1)
+    for i, p in enumerate(pts[1:], 1):
+        for side in (-1, 1):
+            leaf(gl if (i + side) % 2 else g, p, 6.0 - i * 0.6, 1.8, (0 if i < 3 else -20) + side * 60, tilt=-20)
+    rig.part(j, g, c["frond"], finish="hair", outline=0.4)
+    rig.part(j, gl, c["frond_lt"], finish="hair", outline=0.4)
+
+
+def kit_desert_bunker(rig, c):
+    yield lambda j: slab_rebar(rig, j, (12, 8, 6), c["sand"], c["rebar"], seed=1)
+    yield lambda j: block(rig, j, (10, 7, 6), c["adobe"], rot=(0, 15, 6), chip=True, seed=2)
+    yield lambda j: sandbag(rig, j, c["bag"], seed=3)
+    yield lambda j: plate(rig, j, 18, 9, c["tin"], rot=(0, 20, 0), bend=16)
+    yield lambda j: log(rig, j, 22, 2.4, c["wood"], c["adobe"], seed=5)
+    yield lambda j: frond(rig, j, c, seed=6)
+    yield lambda j: sandbag(rig, j, c["bag"], seed=7)
+    yield lambda j: slab_rebar(rig, j, (9, 6, 5), c["sand_dk"], c["rebar"], seed=8)
+
+
+def desert_bunker_extras(c):
+    """Rebar, a bent corrugated sheet, sandbags and a beam end sticking out of the outpost's rubble."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(3):
+            x = rnd.uniform(-30, 30)
+            g.capsule((x, -2, 8), (x + rnd.uniform(-8, 8), -4, 18 + rnd.uniform(0, 6)), 0.8)
+        rig.part(j, g, c["rebar"], finish="metal", outline=0.4)
+        g = Geo()
+        box(g, (rnd.uniform(-24, 24), -6, 11), (10, 1.2, 6), p=7, rot=(0, rnd.uniform(-30, 30), rnd.uniform(-20, 20)))
+        rig.part(j, g, c["tin"], finish="metal")
+        g = Geo()
+        for k in range(3):
+            g.blob((rnd.uniform(-36, 36), -10, 5), (5.2, 4.2, 3.0), p=2.6, rot=(0, rnd.uniform(-15, 15), rnd.uniform(-40, 40)))
+        rig.part(j, g, c["bag"], finish="hair")
+        g = Geo()
+        x = rnd.uniform(-20, 20)
+        g.capsule((x - 10, -3, 12), (x + 10, -3, 16), 2.0)
+        rig.part(j, g, c["wood"])
+    return extras
+
+
 # skin -> (age, pieces, heap colour keys (back, middle, front + pebbles), what sticks out of the heaps)
 SKIN_KITS = {
     "rose_keep": ("medieval", kit_rose_keep, ("stone", "stone_lt", "stone_dk"), rose_keep_extras),
     "mossy_den": ("stone", kit_mossy_den, ("bark_dk", "stone", "bark_lt"), mossy_den_extras),
     "coral_fort": ("gunpowder", kit_coral_fort, ("stone_dk", "stone", "stone_lt"), coral_fort_extras),
     "copper_foundry": ("industrial", kit_copper_foundry, ("stone_dk", "stone", "stone_lt"), copper_foundry_extras),
+    "desert_bunker": ("modern", kit_desert_bunker, ("sand_dk", "sand", "sand_lt"), desert_bunker_extras),
 }
 
 

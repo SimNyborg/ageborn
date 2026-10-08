@@ -25,8 +25,8 @@ import random
 from ageborn_art.geometry import Geo
 
 from world.base_skins_kit import flames, leaf
-from world.common import (BASE_YAW, ambient_lu, base_module, box, chipped_cracks, cyl, flag, platform, rock, rope,
-                          rubble, topple_lu)
+from world.common import (BASE_YAW, ambient_lu, base_module, box, chipped_cracks, cyl, flag, platform, rock, rubble,
+                          topple_lu)
 
 SAND = "#CDB88A"        # concrete rendered in sand (large areas)
 SAND_LT = "#DCC9A0"
@@ -49,6 +49,7 @@ WOOD_DK = "#5E4836"
 OLIVE = "#7C7D58"
 OLIVE_DK = "#62634A"
 STEEL = "#8C949C"
+STEEL_LT = "#A9B0B6"
 GUNMETAL = "#3A3F45"
 PALM = "#8A6E4E"
 PALM_DK = "#6E5640"
@@ -86,8 +87,10 @@ def sandbag_row(g, x0, x1, y, z, rows=2, seed=0, rot_z=0.0):
     return g
 
 
-def palm(rig, joint, base, top, fronds=7, size=26.0, seed=0, trunk_r=3.4):
-    """A palm: a ringed curving trunk and arching fronds (two greens) with a few coconuts."""
+def palm(rig, joint, base, top, fronds=7, size=26.0, seed=0, trunk_r=3.4, crown_joint=None, split_z=None):
+    """A palm: a ringed curving trunk and arching fronds (two greens) with a few coconuts. With `crown_joint`,
+    the crown and the trunk above `split_z` go on that joint (it snaps off)."""
+    cj = crown_joint or joint
     rnd = random.Random(seed)
     bx, by, bz = base
     tx, ty, tz = top
@@ -96,11 +99,18 @@ def palm(rig, joint, base, top, fronds=7, size=26.0, seed=0, trunk_r=3.4):
         t = i / 8
         bend = math.sin(t * math.pi) * 6.0
         pts.append((bx + (tx - bx) * t + bend * 0.4, by + (ty - by) * t, bz + (tz - bz) * t))
-    g = Geo()
+    lo, hi = Geo(), Geo()
+
+    def upper(z):
+        return crown_joint is not None and split_z is not None and z > split_z
+
     for i, (a, b) in enumerate(zip(pts, pts[1:])):
-        g.capsule(a, b, trunk_r * (1.15 - 0.35 * i / 8), trunk_r * (1.15 - 0.35 * (i + 1) / 8), segs=12, rings=2)
-    rig.part(joint, g, PALM)
-    g = Geo()
+        (hi if upper((a[2] + b[2]) / 2) else lo).capsule(a, b, trunk_r * (1.15 - 0.35 * i / 8), trunk_r * (1.15 - 0.35 * (i + 1) / 8),
+                                                         segs=12, rings=2)
+    rig.part(joint, lo, PALM)
+    if crown_joint is not None:
+        rig.part(cj, hi, PALM)
+    lo, hi = Geo(), Geo()
     for i in range(1, 16):
         t = i / 16
         k = int(t * 8)
@@ -108,8 +118,10 @@ def palm(rig, joint, base, top, fronds=7, size=26.0, seed=0, trunk_r=3.4):
         f = t * 8 - k
         p = tuple(a[j] + (b[j] - a[j]) * f for j in range(3))
         r = trunk_r * (1.15 - 0.35 * t) + 0.3
-        g.lathe([(r - 0.6, -0.5), (r + 0.25, 0), (r - 0.6, 0.5)], p, (p[0], p[1], p[2] + 1), segs=12)
-    rig.part(joint, g, PALM_DK, outline=0, highlight=False)
+        (hi if upper(p[2]) else lo).lathe([(r - 0.6, -0.5), (r + 0.25, 0), (r - 0.6, 0.5)], p, (p[0], p[1], p[2] + 1), segs=12)
+    rig.part(joint, lo, PALM_DK, outline=0, highlight=False)
+    if crown_joint is not None:
+        rig.part(cj, hi, PALM_DK, outline=0, highlight=False)
     gd, gl = Geo(), Geo()
     for k in range(fronds):
         ang = 360.0 * k / fronds + rnd.uniform(-12, 12)
@@ -127,14 +139,14 @@ def palm(rig, joint, base, top, fronds=7, size=26.0, seed=0, trunk_r=3.4):
             s = 1.0 - i / 7
             da = math.degrees(math.atan2(p[2] - q[2], p[0] - q[0]))
             for side in (-1, 1):
-                leaf(target, p, L * 0.2 * (0.45 + s), L * 0.06, da + side * 55, tilt=-30)
-    rig.part(joint, gd, FROND, finish="hair", outline=0.5)
-    rig.part(joint, gl, FROND_LT, finish="hair", outline=0.5)
+                leaf(target, p, L * 0.22 * (0.45 + s), L * 0.085, da + side * 55, tilt=-30)
+    rig.part(cj, gd, FROND, finish="hair", outline=0.5)
+    rig.part(cj, gl, FROND_LT, finish="hair", outline=0.5)
     g = Geo()
     for k in range(3):
         a = math.radians(120 * k + 30)
         g.sphere((tx + math.cos(a) * 2.6, ty + math.sin(a) * 2.0 - 1.5, tz - 1.0), 2.0, cuts=2)
-    rig.part(joint, g, "#6B4E34", outline=0.4)
+    rig.part(cj, g, "#6B4E34", outline=0.4)
 
 
 def dune(rig, joint, c, r, seed=0):
@@ -223,13 +235,13 @@ def hangar(rig, M):
     g = Geo()
     box(g, (hx, fy - 0.4, HG_BASE + dz / 2 - 1), (1.0, 0.8, dz / 2 - 1), p=4, cuts=2)
     rig.part("lit", g, glow="#FFD89A", outline=0)
-    g = Geo()   # a painted number roundel above the doors
-    cyl(g, (hx, fy - 0.6, HG_BASE + dz + 14), (hx, fy - 1.8, HG_BASE + dz + 14), 7.0, bevel=0.3, segs=24)
-    rig.part("body", g, CREAM, outline=0.4)
+    g = Geo()   # a louvred vent above the doors
+    box(g, (hx, fy - 0.6, HG_BASE + dz + 14), (11.0, 1.0, 5.0), p=5)
+    rig.part("body", g, OLIVE_DK, finish="metal", outline=0.4)
     g = Geo()
-    for dx in (-2.2, 2.2):
-        box(g, (hx + dx, fy - 2.0, HG_BASE + dz + 14), (1.1, 0.4, 3.6), p=4, cuts=2)
-    rig.part("body", g, GUNMETAL, outline=0, highlight=False)
+    for k in range(4):
+        box(g, (hx, fy - 1.8, HG_BASE + dz + 10.6 + k * 2.3), (9.6, 0.5, 0.5), p=4, cuts=2)
+    rig.part("body", g, OLIVE, finish="metal", outline=0)
     # lamps over the doors
     for lx in (hx - 30, hx + 30):
         lz = HG_BASE + 34
@@ -389,11 +401,11 @@ def back(rig):
     wx, wy = WTR
     g = Geo()
     for dx, dy in ((-11, -9), (11, -9), (-11, 11), (11, 11)):
-        g.capsule((wx + dx * 1.2, wy + dy * 1.2, 0), (wx + dx * 0.8, wy + dy * 0.8, 150), 1.6, 1.3, segs=8, rings=1)
+        g.capsule((wx + dx * 1.2, wy + dy * 1.2, 0), (wx + dx * 0.8, wy + dy * 0.8, 150), 1.3, 1.1, segs=8, rings=1)
     for z in range(20, 150, 26):
-        g.capsule((wx - 11, wy - 9, z), (wx + 11, wy - 9, z + 22), 0.7, segs=6, rings=1)
-        g.capsule((wx + 11, wy - 9, z), (wx - 11, wy - 9, z + 22), 0.7, segs=6, rings=1)
-    rig.part("tank", g, STEEL, finish="metal", outline=0.5)
+        g.capsule((wx - 11, wy - 9, z), (wx + 11, wy - 9, z + 22), 0.5, segs=6, rings=1)
+        g.capsule((wx + 11, wy - 9, z), (wx - 11, wy - 9, z + 22), 0.5, segs=6, rings=1)
+    rig.part("tank", g, STEEL_LT, finish="metal", outline=0.4)
     g = Geo()
     cyl(g, (wx, wy, 150), (wx, wy, 184), 16.0, bevel=1.0, segs=28)
     rig.part("tank", g, SAND_LT)
@@ -409,42 +421,37 @@ def back(rig):
     rig.part("leak", g, glow=WATER, outline=0)
     # the radio mast with a beacon and the team windsock (in tatters at 50%), bent at 25%
     mx, my = MAST
-    g = Geo()
-    for dx in (-3.2, 3.2):
-        g.capsule((mx + dx, my, 70), (mx + dx * 0.4, my, 304), 1.2, 0.8, segs=8, rings=1)
-    for z in range(80, 300, 18):
-        w = 3.2 - 1.9 * (z - 70) / 234
-        g.capsule((mx - w, my - 0.4, z), (mx + w, my - 0.4, z + 12), 0.5, segs=6, rings=1)
-    rig.part("mast", g, STEEL, finish="metal", outline=0.5)
-    g = Geo().sphere((mx, my, 308), 2.8, cuts=3)
+    g = Geo().capsule((mx, my, 60), (mx, my, 304), 1.9, 1.2, segs=10, rings=2)
+    for zz, w in ((262, 7.0), (278, 5.0)):
+        g.capsule((mx - w, my - 0.6, zz), (mx + w, my - 0.6, zz), 0.55, segs=6, rings=1)
+    for zz in (120.0, 190.0):
+        cyl(g, (mx, my, zz - 1.2), (mx, my, zz + 1.2), 2.6, bevel=0.3, segs=12)
+    rig.part("mast", g, STEEL_LT, finish="metal", outline=0.4)
+    g = Geo().sphere((mx, my, 307), 2.8, cuts=3)
     rig.part("mast", g, glow="#F2A0C8", outline=0.6, outline_hex=SIGNAL)
     g = Geo()
-    g.capsule((mx, my, 300), (mx - 6, my, 300), 0.7)
-    rig.part("mast", g, STEEL, finish="metal", outline=0.3)
+    g.capsule((mx, my, 296), (mx - 6, my, 296), 0.7)
+    rig.part("mast", g, STEEL_LT, finish="metal", outline=0.3)
     sock = Geo()
     for k in range(5):
-        t0, t1 = k / 5, (k + 1) / 5
-        r0, r1 = 4.6 - 2.4 * t0, 4.6 - 2.4 * t1
-        sock.lathe([(r0, 0), (r1, 5.4)], (mx - 7 - 5.4 * k, my, 299 - 1.6 * k), (mx - 8 - 5.4 * k, my, 299 - 1.6 * k - 0.3), segs=14)
+        r0, r1 = 6.2 - 3.0 * k / 5, 6.2 - 3.0 * (k + 1) / 5
+        sock.lathe([(r0, 0), (r1, 6.8)], (mx - 7 - 6.8 * k, my, 295 - 2.0 * k), (mx - 8 - 6.8 * k, my, 295 - 2.0 * k - 0.3), segs=16)
     rig.part("sock", sock, team=True)
     g = Geo()
     for k in (1, 3):
-        r0 = 4.6 - 2.4 * k / 5 + 0.25
-        g.lathe([(r0, 0), (r0 - 0.48, 5.4)], (mx - 7 - 5.4 * k, my, 299 - 1.6 * k), (mx - 8 - 5.4 * k, my, 299 - 1.6 * k - 0.3), segs=14)
+        r0 = 6.2 - 3.0 * k / 5 + 0.3
+        g.lathe([(r0, 0), (r0 - 0.6, 6.8)], (mx - 7 - 6.8 * k, my, 295 - 2.0 * k), (mx - 8 - 6.8 * k, my, 295 - 2.0 * k - 0.3), segs=16)
     rig.part("sock", g, CREAM, outline=0.3)
     g = Geo()
-    sock2 = [(mx - 7, 303.5), (mx - 18, 300), (mx - 14, 296), (mx - 22, 292), (mx - 9, 294.5), (mx - 7, 295)]
+    sock2 = [(mx - 7, 300.5), (mx - 22, 296), (mx - 17, 291), (mx - 27, 286), (mx - 10, 289.5), (mx - 7, 290)]
     g.slab(sock2, my, 1.0)
     rig.part("sockrag", g, team=True, outline=0.4)
-    g = Geo()
-    rope(g, [(mx, my - 1, 240), (mx - 30, my - 10, 70)], r=0.45)
-    rope(g, [(mx, my - 1, 240), (mx + 26, my - 12, 76)], r=0.45)
-    rig.part("mast", g, GUNMETAL, outline=0.2)
+
 
 
 def build(rig, M):
     for j, pos in (("mast", (MAST[0], MAST[1], 70)), ("tank", (WTR[0], WTR[1], 0)), ("bag", (M[0][0], M[0][1], M[0][2])),
-                   ("palmtop", (-169.0, 47.0, 112.0))):
+                   ("palmtop", (-152.6, 37.6, 92.0))):
         rig.joint(j, "body", pos)
     for j in ("crack1", "crack2", "crack3", "rubble1", "rubble2", "rubble3", "fire1", "fire2", "scorch", "breach", "spill",
               "leak", "sockrag", "palmstump"):
@@ -454,20 +461,21 @@ def build(rig, M):
 
     back(rig)
     # the big palm behind the hangar's left shoulder (its crown snaps at 25%)
-    palm(rig, "palmtop", (-166.0, 50.0, 0.0), (-170.0, 46.0, 160.0), fronds=8, size=23.0, seed=4)
+    palm(rig, "body", (-150.0, 40.0, 0.0), (-154.0, 36.0, 130.0), fronds=10, size=24.0, seed=4, crown_joint="palmtop",
+         split_z=92.0)
     g = Geo()
     for k, (dx, dz) in enumerate(((0, 0), (-1.5, 3), (1.4, 5))):
-        g.blob((-168.8 + dx, 47.0, 112 + dz), (2.4, 2.0, 3.4), p=2.0, cuts=3, taper=(1.0, 0.2), rot=(0, (k - 1) * 20, 0))
+        g.blob((-152.6 + dx, 37.6, 92 + dz), (2.4, 2.0, 3.4), p=2.0, cuts=3, taper=(1.0, 0.2), rot=(0, (k - 1) * 20, 0))
     rig.part("palmstump", g, PALM, outline=0.5)
     hangar(rig, M)
     watchtower(rig, M)
     pillbox_tower(rig, M)
     # dunes drifting against the hangar and the tower, sandbag walls, drums and jerrycans
-    dune(rig, "body", (-160.0, -30.0, 0.0), (18.0, 14.0, 14.0), seed=1)
+    dune(rig, "body", (-150.0, -32.0, 0.0), (16.0, 12.0, 12.0), seed=1)
     dune(rig, "body", (-72.0, -44.0, 0.0), (16.0, 10.0, 9.0), seed=2)
     dune(rig, "body", (-28.0, 14.0, 0.0), (20.0, 16.0, 16.0), seed=3)
     g = Geo()
-    sandbag_row(g, 6, 40, -58, 0, rows=3, seed=1)
+    sandbag_row(g, 11, 41, -58, 0, rows=3, seed=1)
     rig.part("body", g, BAG, finish="hair")
     g = Geo().blob((30.5, -58, 19.8), (5.2, 4.2, 3.0), p=2.6)
     rig.part("wallbag", g, BAG, finish="hair")
@@ -476,7 +484,7 @@ def build(rig, M):
         g.blob((x, y, z), (5.2, 4.2, 3.0), p=2.6, rot=(0, 0, rz))
     rig.part("spill", g, BAG, finish="hair")
     g = Geo()
-    sandbag_row(g, -168, -132, -44, 0, rows=2, seed=2)
+    sandbag_row(g, -160, -126, -44, 0, rows=2, seed=2)
     rig.part("body", g, BAG_DK, finish="hair")
     g = Geo()
     for k, x in enumerate((-90.0, -82.0)):
@@ -488,7 +496,7 @@ def build(rig, M):
             cyl(g, (x, -46 + k * 3, zz - 0.5), (x, -46 + k * 3, zz + 0.5), 4.9, bevel=0.2, segs=16)
     rig.part("body", g, GUNMETAL, finish="metal", outline=0.3)
     # a small palm by the crates at the front left
-    palm(rig, "body", (-150.0, -46.0, 0.0), (-156.0, -48.0, 62.0), fronds=6, size=18.0, seed=8, trunk_r=2.4)
+    palm(rig, "body", (-140.0, -46.0, 0.0), (-144.0, -48.0, 62.0), fronds=7, size=18.0, seed=8, trunk_r=2.4)
 
     # damage
     hx, fy, hw, L = HG
@@ -568,7 +576,7 @@ def crumble(stage):
                      "leak": {"show": True}, "banner": {"r": 6.0, "x": 1.0}})
     if stage >= 3:
         pose.update({"crack3": {"show": True}, "rubble3": {"show": True}, "breach": {"show": True}, "fire2": {"show": True},
-                     "mast": {"r": 14.0, "x": -3.0}, "tank": {"r": -6.0, "x": 2.0, "z": -5.0}, "palmtop": {"hide": True},
+                     "mast": {"r": 8.0, "x": -2.0}, "tank": {"r": -4.0, "x": 1.0, "z": -4.0}, "palmtop": {"hide": True},
                      "palmstump": {"show": True}, "banner": {"r": 24.0, "x": 3.0, "z": -3.0}})
     return pose
 

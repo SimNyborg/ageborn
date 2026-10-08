@@ -66,10 +66,11 @@ export const WORLD_BASE_SKINS: Readonly<Record<string, AgeId>> = {
   mossy_den: 'stone',
   coral_fort: 'gunpowder',
   copper_foundry: 'industrial',
+  desert_bunker: 'modern',
 };
 
 /** Skin models with their own collapse kit (`art/bases/skins/<skin>.collapse.json`); the others use their age's. */
-export const WORLD_BASE_SKIN_KITS: readonly string[] = ['rose_keep', 'mossy_den', 'coral_fort', 'copper_foundry'];
+export const WORLD_BASE_SKIN_KITS: readonly string[] = ['rose_keep', 'mossy_den', 'coral_fort', 'copper_foundry', 'desert_bunker'];
 
 export function baseSkinSheetSource(skin: string): string {
   return `art/bases/skins/${skin}.json`;
