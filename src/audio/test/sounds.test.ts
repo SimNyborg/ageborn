@@ -123,6 +123,11 @@ const A13: Record<string, string[]> = {
     'stance_charge', 'stance_hold', 'stance_fallback', 'research_done', 'alert_heavy', 'hit_armor_crack', 'brace_clank', 'thunder', 'escalate_horn', 'crumble_pulse',
     'fort_build_energy', 'camp_warp', 'levy_warp', 'trap_blast_energy',
   ],
+  /** The base collapse (A11 Bases, A12, 2026-10-08): the doom rumble, the break and the debris per material, the final thud. */
+  collapse: [
+    'base_doom_rumble', 'base_break_stone', 'base_break_iron', 'base_break_concrete', 'base_break_energy',
+    'base_debris_stone', 'base_debris_iron', 'base_debris_concrete', 'base_debris_energy', 'base_settle_thud',
+  ],
 };
 const A13_IDS = Object.values(A13).flat();
 
@@ -139,8 +144,8 @@ describe('sound manifest (A13)', () => {
     // 182 + the 16 fort sounds (A16.14.8) + the 31 of the MVP pass + the 15 of the Bronze wave + the 14 of the Stone wave
     // + the 18 of the Medieval wave + the 15 of the Gunpowder wave + the 18 of the Industrial wave + the 17 of the Modern wave
     // + the 19 of the Future wave + the 18 of the Cosmic wave
-    // + the 4 of the rarity burst (2026-10-07)
-    expect(A13_IDS).toHaveLength(367);
+    // + the 4 of the rarity burst (2026-10-07) + the 10 of the base collapse (2026-10-08)
+    expect(A13_IDS).toHaveLength(377);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 

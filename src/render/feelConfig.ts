@@ -32,8 +32,8 @@ export interface FeelRuleExt extends FeelRule {
   traumaGapMs?: number;
   /** Pixel jitter on the frozen victim during local hitstop (heavy hits: 1-2 px, A12). */
   jitterPx?: number;
-  /** View-only slow motion after the rule (base destroyed: 0.3x for 1.2 s, A12). */
-  slowMo?: { scale: number; ms: number };
+  /** View-only slow motion after the rule (base destroyed: from the break, easing back over `easeMs`, A12). */
+  slowMo?: { scale: number; ms: number; easeMs?: number };
   /** Global freeze exempt from the rolling cap (base destroyed, A12). */
   globalExempt?: boolean;
   /**
@@ -86,6 +86,21 @@ export interface FeelTuning {
    * `UnitPose.shieldBp` (B5), so the effect only marks the moment the shield lands.
    */
   shieldPopMs: number;
+  /**
+   * The destroyed base's collapse (A12): the beats used when the art does not report its own
+   * (`breakMs`, `landMs`, game ms from the end), when the debris rattle and the stinger follow the
+   * break, the camera's push zoom and punch, and each age's sound material (`base_break_<material>`).
+   */
+  baseCollapse: {
+    breakMs: number;
+    landMs: number;
+    debrisDelayMs: number;
+    stingerDelayMs: number;
+    pushZoom: number;
+    punchZoom: number;
+    punchMs: number;
+    materials: Record<string, string>;
+  };
 }
 
 /** The full render feel config: the contract plus the render-only extensions. */
@@ -125,6 +140,14 @@ export function validateFeelConfig(c: RenderFeelConfig): string[] {
   nonNeg(c.shake.maxRotDeg, 'shake.maxRotDeg');
   if (!(c.shake.noiseHz > 0)) out.push('shake.noiseHz must be > 0');
   if (!['off', 'important', 'all'].includes(c.damageNumbers)) out.push('damageNumbers must be off, important or all');
+  const bc = c.tuning.baseCollapse;
+  nonNeg(bc.breakMs, 'tuning.baseCollapse.breakMs');
+  nonNeg(bc.debrisDelayMs, 'tuning.baseCollapse.debrisDelayMs');
+  nonNeg(bc.stingerDelayMs, 'tuning.baseCollapse.stingerDelayMs');
+  nonNeg(bc.punchMs, 'tuning.baseCollapse.punchMs');
+  if (!(bc.landMs > bc.breakMs)) out.push('tuning.baseCollapse.landMs must come after breakMs');
+  if (!(bc.pushZoom >= 1 && bc.pushZoom <= 2)) out.push('tuning.baseCollapse.pushZoom must be in 1..2');
+  if (!(bc.punchZoom >= 0 && bc.punchZoom <= 0.2)) out.push('tuning.baseCollapse.punchZoom must be in 0..0.2');
   for (const [key, r] of Object.entries(c.events)) {
     nonNeg(r.hitstopGlobalMs, `${key}.hitstopGlobalMs`);
     nonNeg(r.hitstopLocalMs?.victim, `${key}.hitstopLocalMs.victim`);
@@ -141,6 +164,7 @@ export function validateFeelConfig(c: RenderFeelConfig): string[] {
       if (!(Number.isInteger(p.count) && p.count >= 0)) out.push(`${key}.particles[${p.effectId}].count must be an integer >= 0`);
     }
     if (r.slowMo && !(r.slowMo.scale > 0 && r.slowMo.scale <= 1)) out.push(`${key}.slowMo.scale must be in (0, 1]`);
+    if (r.slowMo?.easeMs !== undefined && !(r.slowMo.easeMs >= 0 && r.slowMo.easeMs <= r.slowMo.ms)) out.push(`${key}.slowMo.easeMs must be in 0..ms`);
     if (r.fxTarget !== undefined && !['anchor', 'sideUnits'].includes(r.fxTarget)) out.push(`${key}.fxTarget is unknown`);
   }
   return out;

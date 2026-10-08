@@ -83,6 +83,12 @@ const MVP_SOUND_IDS = [
   'fort_build_energy', 'camp_warp', 'levy_warp', 'trap_blast_energy',
 ];
 
+/** The base collapse (A11 Bases, A12, A13; 2026-10-08). */
+const COLLAPSE_SOUND_IDS = [
+  'base_doom_rumble', 'base_break_stone', 'base_break_iron', 'base_break_concrete', 'base_break_energy',
+  'base_debris_stone', 'base_debris_iron', 'base_debris_concrete', 'base_debris_energy', 'base_settle_thud',
+];
+
 /** Bronze wave sounds (CONTENT_PLAN 5.2). */
 const BRONZE_WAVE_SOUND_IDS = [
   'kopis_hack', 'rhomphaia_cut', 'shot_discus', 'trunk_lash', 'shot_belly_bow', 'aulos_note', 'chorus_wail', 'horse_ram',
@@ -110,6 +116,7 @@ export const A13_SOUND_IDS = new Set([
   ...MEDIEVAL_WAVE_SOUND_IDS,
   ...MVP_SOUND_IDS,
   ...FORT_SOUND_IDS,
+  ...COLLAPSE_SOUND_IDS,
   ...REWORK_POWER_SOUND_IDS,
   'ui_click', 'ui_hover', 'ui_deny', 'ui_toggle', 'ui_tab', 'ui_confirm', 'meter_pip',
   'spawn_pop', 'spawn_heavy', 'spawn_legendary', 'step_heavy', 'step_mech',

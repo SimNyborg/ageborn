@@ -2,7 +2,7 @@ import { describe, expect, expectTypeOf, it } from 'vitest';
 import type { BotController, Command, Observation, Side } from '@/contracts';
 import { createSim } from '@/sim';
 import { BotMatch, botProfile, createBot, tierParams, type AiBotController, type UtilityController } from '@/ai';
-import { cardBook } from '../book';
+import { AI_STANCE_GAP_TICKS, cardBook } from '../book';
 import { Ledger, ACTION_WINDOW_TICKS } from '../ledger';
 import { BOT_EMOTES, EmotePolicy, REPLY_GAP_TICKS } from '../emotes';
 import { seedSfc32 } from '@/core';
@@ -115,7 +115,10 @@ describe('ledger: own commands the delayed observation does not show yet', () =>
     ledger.record({ kind: 'build', mount: 1, slot: 0, card: 'rock_tosser', cost: 150000 }, 100, 101);
     expect(ledger.mountBusyUntil[1]).toBe(101 + content.ticks.turretBuild + 1);
     ledger.record({ kind: 'stance', stance: 'hold' }, 200, 201);
-    expect(ledger.stanceReadyTick).toBe(201 + content.ticks.stanceCooldown);
+    // The rules let a stance change every tick (no cooldown since 2026-10-07); a bot keeps its own
+    // 3 s gap so it never flickers between stances.
+    expect(AI_STANCE_GAP_TICKS).toBe(60);
+    expect(ledger.stanceReadyTick).toBe(201 + Math.max(AI_STANCE_GAP_TICKS, content.ticks.stanceCooldown));
     ledger.sync(observation({ tick: 205, stance: 'charge' }));
     expect(ledger.stanceEnabled).toBe(false);
     ledger.record({ kind: 'lastStand' }, 300, 301);

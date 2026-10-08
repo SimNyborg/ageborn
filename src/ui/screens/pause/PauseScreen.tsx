@@ -1,8 +1,8 @@
 /**
  * Pause (A9 #6, ui-plan 4.7 and UA-21), an overlay above the battle: the Scouted list (A3), then the
  * action bar: Resume (gold, the primary, 56 tall on phones) bottom-right, Settings beside it, and the
- * small red Retreat (after 1:00; counts as a loss, A2.10) and Quit Skirmish at the far left, well
- * away from Resume. A locked Retreat says why on tap. Escape resumes.
+ * small red Retreat (open from the start since 2026-10-07; a loss with no rewards, A2.10, A6.3) and
+ * Quit Skirmish at the far left, well away from Resume. Escape resumes.
  */
 import './pause.css';
 import type { CardId } from '@/contracts';
@@ -59,15 +59,7 @@ export function PauseScreen(p: { route: RouteOf<'pause'> }) {
           tertiary={
             <>
               {info.retreatAfterMs !== null ? (
-                <Button
-                  kind="destructive"
-                  size="s"
-                  testid="pause-retreat"
-                  disabled={!info.canRetreat}
-                  reason={t('ui.pause.retreatLocked', { time: formatClock(info.retreatAfterMs) })}
-                  icon={<FlagIcon size={20} />}
-                  onClick={() => setConfirm('retreat')}
-                >
+                <Button kind="destructive" size="s" testid="pause-retreat" icon={<FlagIcon size={20} />} onClick={() => setConfirm('retreat')}>
                   {t('ui.pause.retreat')}
                 </Button>
               ) : null}
@@ -89,11 +81,6 @@ export function PauseScreen(p: { route: RouteOf<'pause'> }) {
             </Button>
           }
         />
-        {info.retreatAfterMs !== null && !info.canRetreat ? (
-          <p class="ui-sr" data-testid="pause-retreat-locked">
-            {t('ui.pause.retreatLocked', { time: formatClock(info.retreatAfterMs) })}
-          </p>
-        ) : null}
       </div>
       {confirm === 'retreat' ? (
         <Modal

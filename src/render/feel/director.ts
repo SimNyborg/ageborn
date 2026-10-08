@@ -78,9 +78,9 @@ export class FeelDirector {
     return this.freeze.request(this.hitstopMs(ms), this.nowMs, exempt);
   }
 
-  startSlowMo(scale: number, ms: number): void {
+  startSlowMo(scale: number, ms: number, easeMs = 0): void {
     if (this.settings.reduceMotion) return;
-    this.slowMo.start(scale, ms);
+    this.slowMo.start(scale, ms, easeMs);
   }
 
   /** True when the key's gap has not elapsed yet (and records the use otherwise). */

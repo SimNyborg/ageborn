@@ -45,9 +45,9 @@ export interface PauseInfo {
   /** Opponent cards seen so far (A3 Scouted list). */
   scouted: CardId[];
   clockMs: number;
-  /** Retreat unlocks after 1:00 and counts as a loss (A2.10, C5 #19). */
+  /** Retreat is open (from the start since 2026-10-07) and counts as a loss with no rewards (A2.10, A6.3). */
   canRetreat: boolean;
-  /** When Retreat unlocks in this format (1:00), or null when the format has no Retreat (Tutorial). */
+  /** When Retreat opens in this format (0: at once), or null when the format has no Retreat (Tutorial). */
   retreatAfterMs: number | null;
 }
 
@@ -64,8 +64,6 @@ export interface ResultInfo {
   request: MatchRequest | null;
   /** At most one stopping card after the staged rewards (A15.6); the app's session counters pick it. */
   card?: ResultCard | null;
-  /** Local hour the match ended; 22:00-06:00 adds the night line and makes Home primary (A15.6). */
-  endedHour?: number;
   /** Daily Challenge: what the "Copy result" line needs (A9.1, A15.7). */
   daily?: { dateKey: string; modifier: string; difficulty: DailyDifficulty } | null;
   /** One result or loss tip (A15.12, A16.6) as an i18n key, shown in the summary row. */

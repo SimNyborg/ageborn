@@ -2,12 +2,15 @@
  * A ranked battle left by a reload or a closed tab counts as a Retreat (bug hunt 2026-10-01 #9: a
  * reload dropped a losing Ladder match with no loss, a free escape while Retreat costs trophies).
  *
- * Once a Ladder battle passes the point where Retreat opens (1:00, A2.10), the app keeps a small
- * record of it in local storage; the match's end (any outcome, including Retreat) removes it. If the
- * app boots with the record still there, the battle was left: meta applies it as a Retreat, the same
- * result the player could have chosen. Before 1:00 nothing is recorded (Retreat is not open yet, and a
- * crash in the first minute should not cost anything). Like a chosen Retreat it pays nothing (owner
- * decision 2026-10-03): it costs the loss's trophies and brings no Amber, capsule or progress.
+ * From its first tick, right after the start countdown, a Ladder battle keeps a small record of
+ * itself in local storage; the match's end (any outcome, including Retreat) removes it. If the app
+ * boots with the record still there, the battle was left: meta applies it as a Retreat, the same
+ * result the player could have chosen. There is no free window (owner decision 2026-10-07: Retreat is
+ * open at once, so a reload in the first minute is a Retreat too; until then nothing was recorded
+ * before 1:00). Like a chosen Retreat it pays nothing (owner decision 2026-10-03): it costs the loss's
+ * trophies and brings no Amber, capsule or progress. Other modes stake no trophies: a left Skirmish,
+ * Quick Battle, Daily, War Path or Conquest battle stays void (A6.3), and their Retreat is a loss with
+ * no rewards.
  */
 import type { MatchResultInput, MatchStats, OpponentSpec, SaveDoc, Side } from '@/contracts';
 import type { Services } from './services';

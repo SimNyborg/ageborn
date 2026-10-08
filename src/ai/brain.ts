@@ -287,7 +287,7 @@ const FLOAT_IDLE_TICKS = 3 * TICKS_PER_SECOND;
 const MAX_MISTAKE_BP = 9000;
 /** A saving goal's own action gets this bonus once affordable, bp of score. */
 const GOAL_BONUS = 15000;
-/** A bot keeps a stance at least this long before toggling again (on top of the 2 s cooldown). */
+/** A bot keeps a stance at least this long before toggling again (on top of its own 3 s gap, `book.ts`). */
 const STANCE_DWELL = 8 * TICKS_PER_SECOND;
 /** Pressure (bp) from which a bot below its wanted turret count wants a turret or mount. */
 const DEFENCE_PRESSURE_BP = 2500;

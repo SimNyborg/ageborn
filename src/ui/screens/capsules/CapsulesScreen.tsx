@@ -189,7 +189,6 @@ export function CapsulesScreen(_p: { route: RouteOf<'capsules'> }) {
                     >
                       <span class="caps-tile__icon">{icon(x, 44)}</span>
                       <span class="caps-tile__name">{name(x)}</span>
-                      <span class="caps-tile__source">{source(x)}</span>
                     </button>
                   </li>
                 ))}
@@ -212,11 +211,9 @@ export function CapsulesScreen(_p: { route: RouteOf<'capsules'> }) {
                 </div>
               ))}
               {clay > 0 ? (
-                <div class="caps-bank caps-bank--clay" data-testid="clay">
+                // The meter says "Clay meter 1/2" itself; its rule is the tooltip and in the info panel (2026-10-07).
+                <div class="caps-bank caps-bank--clay" data-testid="clay" title={t('ui.capsules.clayNote', { n: content.capsules.clayMeterPips })}>
                   <ClayMeter pips={clay} max={content.capsules.clayMeterPips} />
-                  <span class="caps-bank__text">
-                    <span>{t('ui.capsules.clayNote', { n: content.capsules.clayMeterPips })}</span>
-                  </span>
                 </div>
               ) : null}
             </section>

@@ -520,6 +520,7 @@ export interface FormatDef {
   overdriveMs: number | null;
   siegeMs: number | null;
   finalBellMs: number | null;
+  /** Retreat opens this long after the start (A2.10: 0 since 2026-10-07, open at once); null = no Retreat (tutorial). */
   retreatAfterMs: number | null;
   /** XP to leave each position of the window (A18.3.2: 700, 1,250, 1,350, ...; tutorial 610 / 580 / 390 / 900). */
   xpToNextOverride?: number[];
@@ -641,7 +642,7 @@ export interface EconomyRules {
    * unit's next hit is the first hit of an engagement (4,000 from A18; 2,000 before, "without attacking").
    */
   firstHitIdleMs: number;
-  /** A stance change is accepted at most once per this long (A18.4.2: 3,000). */
+  /** A stance change is accepted at most once per this long (A18.4.2: 0 since 2026-10-07, no cooldown; 3,000 before). */
   stanceCooldownMs: number;
   /** The Hold flag (A18.4.2): default p, allowed range [min, max] in lu, snap step, flag move cooldown. */
   holdFlag: { minP: number; maxP: number; snapLu: number; moveCooldownMs: number };

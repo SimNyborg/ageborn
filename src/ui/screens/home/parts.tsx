@@ -89,7 +89,7 @@ export function ProfileChip() {
   );
 }
 
-/** The Amber and Dust info panels (A15.3): what it is for, and that it can't be bought. */
+/** The Amber and Dust info panels (A15.3): what it is for (owner request 2026-10-07: no slogan line). */
 export function CurrencyInfo(p: { kind: 'amber' | 'dust'; onClose: () => void }) {
   const { t } = useUi();
   const amber = p.kind === 'amber';
@@ -102,7 +102,6 @@ export function CurrencyInfo(p: { kind: 'amber' | 'dust'; onClose: () => void })
       icon={amber ? <AmberIcon size={28} /> : <DustIcon size={28} />}
     >
       <p class="home-info__use">{t(amber ? 'ui.currency.amberUse' : 'ui.currency.dustUse')}</p>
-      <p class="home-info__kept">{t(amber ? 'ui.currency.amberInfo' : 'ui.currency.dustInfo')}</p>
     </Modal>
   );
 }
@@ -219,7 +218,7 @@ function QuestRow(p: { q: QuestView; rerollLeft: boolean }) {
 }
 
 export function QuestsPanel() {
-  const { save, content, t } = useUi();
+  const { save, content, t, toasts } = useUi();
   const qv = questViews(save.value, content);
   return (
     <Panel
@@ -228,6 +227,8 @@ export function QuestsPanel() {
       class="home-quests"
       testid="home-quests"
       labelledBy="home-quests-title"
+      // The queue rule (A15.3) is one tap away on the "i"; no caption under the list (owner request 2026-10-07).
+      actions={<IconButton kind="tertiary" icon={<InfoIcon size={22} />} label={t('ui.quest.queueInfo')} testid="quest-info" onClick={() => toasts.show(t('ui.quest.queueLine'))} />}
     >
       {qv.daily.length === 0 && !qv.weekly ? <p class="ui-muted">{t('ui.quest.none')}</p> : null}
       <ul class="home-quests__list">
@@ -236,9 +237,6 @@ export function QuestsPanel() {
         ))}
       </ul>
       <WarChestBar />
-      <p class="home-quests__hint">
-        {t('ui.quest.queueLine')} {qv.rerollLeft ? t('ui.quest.rerollHint') : t('ui.quest.rerollUsed')}
-      </p>
     </Panel>
   );
 }
@@ -265,7 +263,6 @@ export function WarChestBar() {
           </span>
         </span>
         <ProgressBar value={w.wins} max={w.of} tone="gold" thin label={label} />
-        <small class="home-chest__hint">{t('ui.home.warChestHint')}</small>
       </span>
     </div>
   );
@@ -307,7 +304,6 @@ export function CapsuleInfo(p: { onClose: () => void }) {
           </li>
         ))}
       </ul>
-      <p class="home-info__kept">{t('ui.info.kept')}</p>
       <p class="home-info__rookie">{t('ui.info.rookie')}</p>
     </Modal>
   );

@@ -41,8 +41,10 @@ describe('contentHash (B4, B3 replays)', () => {
     // (docs/decisions.md); the gated Cosmic data in the tree is included as it stands. W8 Cosmic wave (2026-10-04):
     // its released, measured numbers (docs/decisions.md). Release check (2026-10-07): Kennel Master, Squires,
     // Brigand, Commando and Rifle Grenadier re-tuned after drifting outside ±5 (docs/decisions.md). Owner
-    // decisions 2026-10-07: the Heavy damage trim, longer Long range, and the spare-copy Dust rates.
-    expect(content.hash).toBe('7af6a652');
+    // decisions 2026-10-07: the Heavy damage trim, longer Long range, and the spare-copy Dust rates. Owner
+    // requests 2026-10-07: no stance cooldown (`stanceCooldownMs` 0) and Retreat open from the start
+    // (`retreatAfterMs` 0); no sim code changed, so SIM_VERSION stays.
+    expect(content.hash).toBe('060e7fc4');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {
@@ -188,7 +190,8 @@ describe('ticks (B3: max(1, round(ms / 50)))', () => {
       ascend: 50,
       turretBuild: 20,
       turretSell: 20,
-      stanceCooldown: 60,
+      // No stance cooldown (owner decision 2026-10-07): 0 ms is the B3 minimum of one tick.
+      stanceCooldown: 1,
       retarget: 20,
       healPulse: 10,
       firstHitIdle: 80,

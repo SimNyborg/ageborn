@@ -1009,11 +1009,9 @@
   color: #e8c35a;
 }
 .hub-camp__sub {
-  overflow: hidden;
-  color: var(--ui-text-2);
-  font: 600 var(--ui-fs-caption) / var(--ui-lh-caption) var(--ui-font-text);
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  min-height: 18px;
 }
 
 .hub-slots {

@@ -105,13 +105,68 @@
   text-transform: uppercase;
   color: var(--frame);
 }
-.col-skin__on {
+/* An owned skin is one big button (owner request 2026-10-07: tap the tile to equip, no Equip pill). */
+.col-skin.is-owned {
+  padding: 0;
+  transition: transform var(--ui-dur-release) var(--ui-ease-out), box-shadow var(--ui-dur-release);
+}
+.col-skin__hit {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 4px;
+  width: 100%;
   min-height: 48px;
+  padding: 10px 8px;
+  border: 0;
+  border-radius: 13px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+.col-skin.is-owned:not(.is-on):hover {
+  transform: translateY(-2px);
+}
+.col-skin.is-owned:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ui-ink), inset 0 0 0 2px color-mix(in srgb, var(--frame) 55%, transparent);
+}
+.col-skin__hit:focus-visible {
+  outline: 3px solid var(--ui-gold);
+  outline-offset: -3px;
+}
+.col-skin.is-on {
+  background: linear-gradient(180deg, rgba(40, 92, 66, 0.95), rgba(24, 56, 42, 0.97));
+  box-shadow: 0 4px 0 var(--ui-ink), inset 0 0 0 2px color-mix(in srgb, var(--frame) 55%, transparent), 0 0 0 3px var(--ui-green-hi);
+  animation: ui-pop var(--ui-dur-medium) var(--ui-ease-back);
+}
+.col-skin__check {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 50%;
+  background: var(--ui-green);
+  color: #fff;
+  animation: ui-pop var(--ui-dur-medium) var(--ui-ease-back);
+}
+.col-skin__on {
+  align-self: center;
+  margin: -4px 0 10px;
+  padding: 2px 12px;
+  border: 2px solid var(--ui-green-hi);
+  border-radius: 999px;
+  background: rgba(10, 30, 20, 0.45);
   color: var(--ui-green-hi);
+  font-size: 13px;
   font-weight: 900;
+  animation: ui-pop var(--ui-dur-medium) var(--ui-ease-back);
 }
 .col-skin__crate {
   display: flex;

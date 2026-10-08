@@ -3,7 +3,7 @@
  * (every action goes through meta, commits and persists) and `createMetaUi` (router and controller
  * in step: VS → battle → Pause → Result → Home; docs/requests/wp9-app-wiring.md).
  */
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { FixedClock } from '@/contracts/fakes/clock';
 import type { SaveDoc } from '@/contracts';
 import { createRouter, type MatchRequest } from '@/ui/screens';
@@ -250,7 +250,6 @@ describe('createMetaUi: the meta screens and the battle in step', () => {
     expect(top.id).toBe('result');
     if (top.id !== 'result') return;
     expect(top.info.request).toEqual(req);
-    expect(top.info.endedHour).toBeTypeOf('number');
     expect(top.info.rewards.length).toBeGreaterThan(0);
     // The save moved on through meta and was persisted.
     expect(c.save.value?.matchesPlayed).toBe(4);
@@ -315,6 +314,44 @@ describe('createMetaUi: the meta screens and the battle in step', () => {
     expect(res.id).toBe('result');
     if (res.id === 'result') expect(res.result.input.outcome.winner).toBe(1);
     ui.dispose();
+  });
+
+  it('Retreat is open at once, and a Ladder battle counts as left from its first tick (owner decision 2026-10-07)', async () => {
+    const store = new Map<string, string>();
+    vi.stubGlobal('localStorage', {
+      getItem: (k: string) => store.get(k) ?? null,
+      setItem: (k: string, v: string) => void store.set(k, v),
+      removeItem: (k: string) => void store.delete(k),
+    });
+    try {
+      const { c, ui } = await app();
+      const req: MatchRequest = { mode: 'ladder', format: 'short' };
+      ui.services.beginBattle(req, ui.services.prepareMatch(req));
+      const r = c.route.value;
+      if (r.id !== 'battle') throw new Error('battle expected');
+      expect(pauseInfo(r.battle).retreatAfterMs).toBe(0);
+      // One tick in: a reload now would be applied as a Retreat at the next boot (abandon.ts).
+      r.battle.session.fastForward(1);
+      expect(store.has('ageborn.openMatch.v1')).toBe(true);
+      ui.services.retreat();
+      r.battle.session.fastForward(20);
+      for (let i = 0; i < 20 && c.route.value.id === 'battle'; i += 1) await Promise.resolve();
+      const res = c.route.value;
+      expect(res.id).toBe('result');
+      if (res.id === 'result') expect(res.result.input.outcome).toMatchObject({ winner: 1, reason: 'retreat' });
+      // The battle ended, so the record is gone.
+      expect(store.has('ageborn.openMatch.v1')).toBe(false);
+      // A Skirmish stakes no trophies: a left one stays void, nothing is recorded.
+      const sk: MatchRequest = { mode: 'skirmish', options: { generalId: 'kettle', tier: 2, format: 'short', standardLevels: false }, speed: 1 };
+      ui.services.beginBattle(sk, ui.services.prepareMatch(sk));
+      const r2 = c.route.value;
+      if (r2.id !== 'battle') throw new Error('skirmish battle expected');
+      r2.battle.session.fastForward(40);
+      expect(store.has('ageborn.openMatch.v1')).toBe(false);
+      ui.dispose();
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it('Quit from Pause returns Home without a result', async () => {

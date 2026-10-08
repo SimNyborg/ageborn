@@ -28,14 +28,16 @@ function play(id: ProxyId, seconds: number, seed = 3) {
 }
 
 describe('exploit proxies (DESIGN B12)', () => {
-  it('lists the eight B12 proxies, the A16.5 random-spam and mono-heavy proxies, the five A18.12 proxies and the H6 Long range pair', () => {
-    expect(EXPLOIT_PROXIES).toHaveLength(22);
+  it('lists the eight B12 proxies, the A16.5 random-spam and mono-heavy proxies, the five A18.12 proxies, the stance dancer and the H6 Long range pair', () => {
+    expect(EXPLOIT_PROXIES).toHaveLength(23);
     expect(EXPLOIT_PROXIES.slice(8, 10)).toEqual(['random_spam', 'mono_heavy']);
     expect(EXPLOIT_PROXIES.slice(10, 15)).toEqual(['drill_rush', 'tech_turtle', 'flag_ball', 'fallback_turtle', 'stance_toggler']);
+    // No stance cooldown (owner decision 2026-10-07): the dancer falls back in every fight and charges again at once
+    expect(EXPLOIT_PROXIES[15]).toBe('stance_dancer');
     // A2.9.12 power proxies (the wave pair, no_power and the gate sniper run in their own job set)
-    expect(EXPLOIT_PROXIES.slice(15, 20)).toEqual(['power_hoarder', 'home_turtle', 'power_spam', 'drop_spam', 'runner_reach']);
+    expect(EXPLOIT_PROXIES.slice(16, 21)).toEqual(['power_hoarder', 'home_turtle', 'power_spam', 'drop_spam', 'runner_reach']);
     // H6 Long range (A5.1): the mono row and the turtle behind it (built 2026-10-07)
-    expect(EXPLOIT_PROXIES.slice(20)).toEqual(['mono_longrange', 'longrange_turtle']);
+    expect(EXPLOIT_PROXIES.slice(21)).toEqual(['mono_longrange', 'longrange_turtle']);
     expect(isProxyId('turret_turtle')).toBe(true);
     expect(isProxyId('nope')).toBe(false);
   });
@@ -95,6 +97,15 @@ describe('exploit proxies (DESIGN B12)', () => {
     expect(back[0]).toMatchObject({ mode: 'fallback' });
     const flips = play('stance_toggler', 240).commands.filter((c) => c.side === 0 && c.t === 'stance');
     expect(flips.length).toBeGreaterThan(2);
+  });
+
+  it('the stance dancer changes stance within a second of a fight, never sends the stance it already has', () => {
+    const { commands } = play('stance_dancer', 240);
+    const moves = commands.filter((c) => c.side === 0 && c.t === 'stance');
+    expect(moves.some((c) => c.t === 'stance' && c.mode === 'fallback')).toBe(true);
+    expect(moves.some((c) => c.t === 'stance' && c.mode === 'charge')).toBe(true);
+    // two in a row never ask for the same stance (the proxy waits out its own delayed observation)
+    for (let i = 1; i < moves.length; i++) expect((moves[i] as { mode: string }).mode).not.toBe((moves[i - 1] as { mode: string }).mode);
   });
 
   it('the turtle fills four mounts and holds', () => {

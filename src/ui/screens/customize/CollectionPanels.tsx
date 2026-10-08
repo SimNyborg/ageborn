@@ -144,9 +144,11 @@ export function ItemTile(p: {
           </span>
         ) : null}
       </button>
-      {have ? (
-        <span class={`cos-tile__state${p.on ? ' is-on' : ''}`} aria-hidden="true">
-          {p.on ? (p.onLabel ?? t('cosmetic.ui.equipped')) : (p.pickLabel ?? t('cosmetic.ui.equip'))}
+      {/* Owner request 2026-10-07: no Equip button; tapping an owned tile equips it, and only the chosen
+          one says so ("Equipped" or "In wheel", with the check badge). */}
+      {have && p.on ? (
+        <span class="cos-tile__state is-on" aria-hidden="true" data-testid={`state-${key}`}>
+          {p.onLabel ?? t('cosmetic.ui.equipped')}
         </span>
       ) : null}
       {!have ? (
@@ -354,7 +356,6 @@ export function BackdropsPanel() {
         <h3 class="cust-h">{t('cosmetic.ui.backdrop')}</h3>
         <Found collection="backdrop" />
       </div>
-      <p class="cust-hint">{t('cosmetic.ui.backdropHint')}</p>
       <AgePicker ages={content.order.ages} value={age} onChange={setAge} compact testid="cust-bd-age" idPrefix="cust-bd-age" />
       <div class="cos-grid cos-grid--backdrops">
         <button
@@ -420,7 +421,6 @@ export function FlagsPanel() {
         <h3 class="cust-h">{t('cosmetic.ui.nationalFlag')}</h3>
         <Found collection="nationalFlag" />
       </div>
-      <p class="cust-hint">{t('cosmetic.ui.nationalHint')}</p>
       <input
         class="cos-search"
         type="search"
@@ -493,6 +493,16 @@ export function DecorationsPanel() {
   );
 }
 
+/** How full a wheel is, as a number beside its heading ("6/8"; owner request 2026-10-07: numbers, not hint lines). */
+function WheelCount(p: { n: number; max: number; testid: string }) {
+  const { t } = useUi();
+  return (
+    <span class={`cos-wheelcount ui-num${p.n >= p.max ? ' is-full' : ''}`} data-testid={p.testid} aria-label={t('cosmetic.ui.wheelSlots', { n: p.n, max: p.max })}>
+      {p.n}/{p.max}
+    </span>
+  );
+}
+
 /** The emote wheel preview: up to `max` slots around a hub. */
 function Wheel(p: { keys: readonly string[]; max: number; onRemove: (k: string) => void }) {
   const { save, content, t } = useUi();
@@ -531,10 +541,11 @@ export function EmotesPanel() {
   return (
     <MockLayout testid="cust-emotes" mock={<Wheel keys={eq.emotes} max={max} onRemove={(k) => set(eq.emotes.filter((x) => x !== k))} />}>
       <div class="cos-head">
-        <h3 class="cust-h">{t('cosmetic.ui.wheel')}</h3>
+        <h3 class="cust-h">
+          {t('cosmetic.ui.wheel')} <WheelCount n={eq.emotes.length} max={max} testid="emote-count" />
+        </h3>
         <Found collection="emote" />
       </div>
-      <p class="cust-hint">{t('cosmetic.ui.wheelHint', { n: eq.emotes.length, max })}</p>
       <h4 class="cos-sub">{t('cosmetic.ui.starters')}</h4>
       <div class="cos-grid cos-grid--emotes">
         {content.cosmetics.emotes.map((e) => {
@@ -545,9 +556,11 @@ export function EmotesPanel() {
                 <EmoteGlyph emote={e.id} size={40} />
               </span>
               <span class="cos-tile__name">{t(emoteNameKey(e.id))}</span>
-              <span class={`cos-tile__state${on ? ' is-on' : ''}`} aria-hidden="true">
-                {on ? t('cosmetic.ui.inWheel') : t('cosmetic.ui.add')}
-              </span>
+              {on ? (
+                <span class="cos-tile__state is-on" aria-hidden="true">
+                  {t('cosmetic.ui.inWheel')}
+                </span>
+              ) : null}
               {on ? (
                 <span class="cos-tile__on" aria-hidden="true">
                   <CheckIcon size={16} />
@@ -598,10 +611,11 @@ export function QuotesPanel() {
       }
     >
       <div class="cos-head">
-        <h3 class="cust-h">{t('cosmetic.ui.wheel')}</h3>
+        <h3 class="cust-h">
+          {t('cosmetic.ui.wheel')} <WheelCount n={eq.quotes.length} max={max} testid="quote-count" />
+        </h3>
         <Found collection="quote" />
       </div>
-      <p class="cust-hint">{t('cosmetic.ui.quoteHint', { n: eq.quotes.length, max })}</p>
       <div class="cos-grid cos-grid--quotes">
         {ownedFirst(save.value, content, itemsOf(content, 'quote')).map((x) => (
           <ItemTile key={x.id} item={x} wide on={eq.quotes.includes(itemKey(x))} onPick={() => toggle(itemKey(x))} onLabel={t('cosmetic.ui.inWheel')} pickLabel={t('cosmetic.ui.add')} />

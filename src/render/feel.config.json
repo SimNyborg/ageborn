@@ -34,7 +34,17 @@
     "telegraphMs": 1000,
     "cheerMs": 900,
     "mechExplodeOneIn": 3,
-    "shieldPopMs": 500
+    "shieldPopMs": 500,
+    "baseCollapse": {
+      "breakMs": 520,
+      "landMs": 1150,
+      "debrisDelayMs": 200,
+      "stingerDelayMs": 340,
+      "pushZoom": 1.3,
+      "punchZoom": 0.07,
+      "punchMs": 460,
+      "materials": { "stone": "stone", "bronze": "stone", "medieval": "stone", "gunpowder": "iron", "industrial": "iron", "modern": "concrete", "future": "energy", "cosmic": "energy" }
+    }
   },
   "events": {
     "hit.light": {
@@ -266,18 +276,21 @@
       "particles": [{ "effectId": "fx.last_stand_wave", "count": 1, "priority": 5 }],
       "sound": "last_stand_fire"
     },
-    "base.destroyed": {
-      "hitstopGlobalMs": 250,
+    "base.destroyed": { "trauma": 0.22, "particles": [{ "effectId": "fx.debris", "count": 6, "priority": 4 }], "sound": "base_doom_rumble" },
+    "base.destroyed.break": {
+      "hitstopGlobalMs": 130,
       "globalExempt": true,
-      "slowMo": { "scale": 0.3, "ms": 1200 },
+      "slowMo": { "scale": 0.38, "ms": 980, "easeMs": 700 },
       "trauma": 1,
-      "flashMs": 200,
-      "flashColor": 16777215,
-      "flashAlpha": 0.9,
-      "flashTarget": "screen",
-      "particles": [{ "effectId": "fx.debris", "count": 120, "priority": 5 }],
-      "sound": "base_destroyed"
+      "flashMs": 90,
+      "flashTarget": "base",
+      "particles": [{ "effectId": "fx.debris", "count": 24, "priority": 5 }],
+      "sound": "base_destroyed",
+      "duckDb": -8,
+      "duckMs": 1800
     },
+    "base.destroyed.flash": { "flashMs": 110, "flashColor": 16774368, "flashAlpha": 0.3, "flashTarget": "screen" },
+    "base.destroyed.land": { "trauma": 0.38, "sound": "base_settle_thud" },
     "unit.spawn": { "particles": [{ "effectId": "fx.dust_poof", "count": 1, "priority": 0 }], "sound": "$spawnSound" },
     "attack.melee": { "sound": "$attackSound" },
     "projectile.fire": { "sound": "$attackSound" },

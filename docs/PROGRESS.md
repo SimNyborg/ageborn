@@ -2,6 +2,24 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-08: six owner requests: less text, tap to equip, saved decks, Retreat at once, instant stances, Army by class (cloud session, not yet published)
+
+**Less text in the menus.** The Result shows its extra rewards as small pills with no "Also earned" heading, and the late-night bar is gone. Slogans such as "Earned in play. Never sold." are removed everywhere; hint lines became numbers or icons (the emote wheel says "6/8", Locked says "15/34 found", the Trophy Road row shows the reward's icon). Rules a player may want stay one tap away: the capsule odds button, the quest panel's new "i", Settings › About and For parents (which keeps its plain facts for parents).
+
+**Customize.** No more green Equip buttons: tap an item you own and it is equipped (with an Undo toast); only the chosen one says "Equipped". The same for troop skins in the Collection and on a card's page.
+
+**Saved decks.** Your three armies (A, B, C) are now a switch at the top of Army and on Home's battle plate next to Battle, open as soon as the onboarding is over. Tap a deck to play it; tap the lit one to rename it or copy another deck into it. A deck you never saved starts as a copy of the one you play. A one-time hint shows where the switch is.
+
+**Retreat at once.** Retreat no longer waits for 1:00. Reloading the page during a Ladder battle counts as a Retreat from the first second (a loss with no rewards), so there is no free reload window; other modes are unchanged (a reload there still counts for nothing).
+
+**Instant stances.** Back, Hold and Charge switch at once (no 3-second wait). The AI keeps its own 3-second gap, so the bots play exactly as before. Measured with the headless tools (400 games per length): a new "stance dancer" test player that falls back in every fight and charges again at once wins 0% with or without the old wait, and the old toggler wins less against real bots without it (Medium War 41% → 20% vs tier IV); no exploit, so no other limit was needed.
+
+**Army by class.** The cards you are not using are grouped under small headings (Infantry, Ranged, Heavy, Anti-heavy, Support, … then Turrets, Powers, Forts) with the class icon and a count; new cards come first in each group. Checked at 844x390, 844x340, 800x360 and 1280x720 with seven troop slots.
+
+**Checks (whole tree, 2026-10-08):** see the session report; typecheck clean, lint clean on these paths, unit tests and the production build pass (one unit test and one lint error come from the base-collapse work running in parallel).
+
+**What the owner should try** (once published): open Army and switch between decks A, B and C (tap the lit one to rename it); start a battle and press Retreat in the first seconds; switch Back, Hold and Charge quickly in a fight; open Customize and tap a flag or an emote to equip it.
+
 ## 2026-10-07: three owner decisions: Heavy trim, longer Long range, spare copies to Dust (cloud session, not yet published)
 
 **Heavy (a bit overpowered).** HP stays. Heavy Commons lose 2-5% damage wherever no Infantry Common of their age needs an extra hit, so Heavy still beats Infantry exactly as before; Tuskback, Woolly Rhino and Walker Mech keep theirs (one point less would flip a matchup or a balance row). Anti-heavy already wins equal-gold fights clearly (3 against 2: 69-88 in every age), so its numbers stay. The measured "Heavy share of winning armies" hardly moves: it mostly shows that the bot that is ahead can afford Heavies (a bot with no Heavy in its plan beats the normal plan 56-66%), not that Heavies win games. Details and numbers in `docs/decisions.md`.

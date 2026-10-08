@@ -1,7 +1,9 @@
 /**
  * Skin picker for one card or base (A9 #9 "skin picker per card", A9 #11 skin carousel, A5.8):
- * the default look plus every skin for the target. Owned skins equip; unowned ones show their rarity
- * and, when craftable, the Dust price (A6.6). Crate-only skins (Crystal Spire) say so.
+ * the default look plus every skin for the target. An owned skin is one button that equips on tap
+ * (owner request 2026-10-07: no Equip pill; a stamp, the tile pops, a toast with Undo), and only the
+ * equipped one says "Equipped". Unowned ones show their rarity and, when craftable, the Dust price
+ * (A6.6). Crate-only skins (Crystal Spire) say so.
  */
 import './shared.css';
 import { rarityNameKey, skinLookKey, skinNameKey } from '@/content/keys';
@@ -16,7 +18,7 @@ import { cardDef, cardGlyph, skinsFor } from '../model/cards';
 import { reasonKey } from '../model/reasons';
 
 export function SkinOptions(p: { card: CardId; compact?: boolean }) {
-  const { save, content, t, locale, services, toasts } = useUi();
+  const { save, content, t, locale, services, toasts, sound } = useUi();
   const s = save.value;
   const def = cardDef(content, p.card);
   if (!def) return null;
@@ -30,37 +32,60 @@ export function SkinOptions(p: { card: CardId; compact?: boolean }) {
         const owned = id === null || s.skins.owned.includes(id);
         const on = equipped === id;
         const price = skin && skin.craftable ? content.rarities.skins[skin.rarity].craftDust : null;
-        return (
-          <li
-            key={id ?? 'default'}
-            class={`skins__item${on ? ' is-on' : ''}${owned ? '' : ' is-locked'}`}
-            style={{ '--frame': skin ? RARITY_COLOR[skin.rarity] : '#8a86ab' }}
-            data-testid={`skin-${id ?? 'default'}`}
-          >
+        const name = id ? t(skinNameKey(id)) : t('ui.skins.default');
+        const face = (
+          <>
             <span class="skins__art">
               <CardArt card={p.card} age={def.age} glyph={cardGlyph(def)} size={p.compact ? 72 : 96} skin={id} silhouette={!owned} />
               {!owned ? (
                 <span class="skins__lock">
                   <LockIcon size={24} />
                 </span>
+              ) : on ? (
+                <span class="skins__check" aria-hidden="true">
+                  <CheckIcon size={16} />
+                </span>
               ) : null}
             </span>
-            <span class="skins__name">{id ? t(skinNameKey(id)) : t('ui.skins.default')}</span>
+            <span class="skins__name">{name}</span>
             {skin ? (
               <span class="skins__rarity" data-tag="">
                 {t(rarityNameKey(skin.rarity))}
               </span>
             ) : null}
             {skin && !p.compact ? <span class="skins__look">{t(skinLookKey(skin.id))}</span> : null}
+          </>
+        );
+        const equip = () => {
+          if (on) return;
+          services.equipSkin(p.card, id);
+          sound?.('ui_stamp');
+          toasts.show(t('cosmetic.ui.equippedName', { name }), { tone: 'good', undo: () => services.equipSkin(p.card, equipped) });
+        };
+        return (
+          <li
+            key={id ?? 'default'}
+            class={`skins__item${on ? ' is-on' : ''}${owned ? ' is-owned' : ' is-locked'}`}
+            style={{ '--frame': skin ? RARITY_COLOR[skin.rarity] : '#8a86ab' }}
+            data-testid={`skin-${id ?? 'default'}`}
+          >
+            {owned ? (
+              <button
+                type="button"
+                class="skins__hit"
+                aria-pressed={on}
+                aria-label={`${name}. ${on ? t('ui.skins.equipped') : t('ui.skins.equip')}`}
+                data-testid={`equip-${id ?? 'default'}`}
+                onClick={equip}
+              >
+                {face}
+              </button>
+            ) : (
+              face
+            )}
             {on ? (
-              <span class="skins__equipped">
-                <CheckIcon size={18} /> {t('ui.skins.equipped')}
-              </span>
-            ) : owned ? (
-              <Button size="sm" kind="progress" testid={`equip-${id ?? 'default'}`} onClick={() => services.equipSkin(p.card, id)}>
-                {t('ui.skins.equip')}
-              </Button>
-            ) : price !== null ? (
+              <span class="skins__equipped">{t('ui.skins.equipped')}</span>
+            ) : owned ? null : price !== null ? (
               <Button
                 size="sm"
                 kind="secondary"

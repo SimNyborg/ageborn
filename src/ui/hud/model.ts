@@ -320,14 +320,12 @@ export function simDenyReason(reason: string, m: HudModel, slot?: number, power?
 export const STANCES: readonly StanceMode[] = ['charge', 'hold', 'fallback'];
 
 /**
- * A press on a stance segment (A18.4.2). The sim accepts a change at most once per 3 s; a press the HUD
- * can see is too early is denied on the control (a short fill shows the wait).
+ * A press on a stance segment (A18.4.2). A stance switches at once (owner decision 2026-10-07: no
+ * cooldown); a change the sim still refuses comes back as `simDenyReason`.
  */
 export function stanceSetIntent(m: HudModel, side: Side, mode: StanceMode): HudIntent {
   if (!m.me.stanceVisible || m.phase === 'ended') return NONE;
   if (mode === m.me.stance) return NONE;
-  const wait = m.me.stanceWaitMs ?? 0;
-  if (wait > 0) return deny('stance', { key: 'hud.deny.stanceWait', params: { s: Math.max(1, Math.ceil(wait / 1000)) } });
   return cmd({ t: 'stance', side, mode }, 'stance');
 }
 
@@ -353,7 +351,6 @@ export function snapFlagP(p: number): number {
 export function flagIntent(m: HudModel, side: Side, p: number): HudIntent {
   if (!m.me.stanceVisible || m.phase === 'ended') return NONE;
   const holdP = snapFlagP(p);
-  if (m.me.stance !== 'hold' && (m.me.stanceWaitMs ?? 0) > 0) return deny('flag');
   if (m.me.stance === 'hold' && holdP === m.me.holdP) return NONE;
   return cmd({ t: 'stance', side, mode: 'hold', holdP }, 'flag');
 }

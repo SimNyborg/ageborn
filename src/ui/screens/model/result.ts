@@ -144,11 +144,6 @@ export function resultPlan(rewards: readonly RewardStep[], save: SaveDoc, conten
   return { stages, summary: list.filter((r) => !used.has(r)) };
 }
 
-/** A match that ends between 22:00 and 06:00 local time adds the night line (A15.6). */
-export function isNight(localHour: number): boolean {
-  return localHour >= 22 || localHour < 6;
-}
-
 /**
  * The Daily Challenge "Copy result" line (A9.1, A15.7): plain text with no name, for example
  * `Ageborn Daily 2026-10-03 · Glass Armies · Veteran · Won in 5:42 · Base 63%`, or for a loss
@@ -196,7 +191,7 @@ export interface ResultActions {
  * | Ladder, Quick Battle, Skirmish | Next battle | Home |
  * | ... with a capsule earned | Open capsule | Next battle, Home |
  * | Daily | Home | Copy result |
- * | Night or a stopping card (A15.6) | Home | Continue / Next battle |
+ * | A stopping card (A15.6) | Home | Continue / Next battle |
  * | Onboarding | Open capsule, else Continue (Try again after a loss) | none |
  *
  * Watch replay is the tertiary wherever a replay was kept (not in onboarding). The next battle is
@@ -207,7 +202,7 @@ export function resultActions(o: {
   outcome: 'win' | 'loss' | 'draw';
   capsule: boolean;
   daily: boolean;
-  /** Night (22:00-06:00) or a stopping card (A15.6). */
+  /** A stopping card (A15.6). */
   stop: boolean;
   replay: boolean;
   onboarding?: boolean;

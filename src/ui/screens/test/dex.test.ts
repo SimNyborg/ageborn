@@ -4,7 +4,7 @@
 import { content } from '@/content';
 import { describe, expect, it } from 'vitest';
 import { midGameSave, newPlayerSave } from '../fixtures/saves';
-import { ageSections, capsuleArenaFor, cardSourceShort } from '../model/armyAge';
+import { ageSections, availableGroups, capsuleArenaFor, cardSourceShort, POOL_GROUPS, poolGroupOf } from '../model/armyAge';
 import { cardsOfAge, isOwned } from '../model/cards';
 import { DEX_FILTER, dexOf, dexOrder } from '../model/dex';
 import { loadoutCards } from '../model/plan';
@@ -35,6 +35,34 @@ describe('Army per age: In battle, Available, Locked', () => {
     for (const id of [...sec.available, ...sec.locked]) expect(content.turrets[id]).toBeDefined();
     const home = ageSections(save, content, 'stone', new Set(), 'power', 'home');
     for (const id of [...home.available, ...home.locked]) expect(content.powers[id]?.slot).toBe('home');
+  });
+
+  it('groups Available under class headings in the fixed order, NEW cards first in each (owner request 2026-10-07)', () => {
+    const save = midGameSave(content);
+    const c = cardsOfAge(content, 'stone');
+    const owned = [...c.units, ...c.turrets, ...c.powers].filter((id) => isOwned(save, id, content));
+    // Mark the last owned card of the first group NEW: it moves to the front of its group.
+    const firstGroup = poolGroupOf(content, owned[0]!)!;
+    const inFirst = owned.filter((id) => poolGroupOf(content, id) === firstGroup);
+    const last = inFirst[inFirst.length - 1]!;
+    const withNew = { ...save, collection: { ...save.collection, [last]: { ...save.collection[last]!, isNew: true } } };
+    const groups = availableGroups(withNew, content, owned);
+    // every card once, under its own heading; headings in POOL_GROUPS order, none empty
+    expect(groups.flatMap((g) => g.cards).sort()).toEqual([...owned].sort());
+    for (const g of groups) {
+      expect(g.cards.length).toBeGreaterThan(0);
+      for (const id of g.cards) expect(poolGroupOf(content, id)).toBe(g.id);
+    }
+    const order = groups.map((g) => POOL_GROUPS.indexOf(g.id));
+    expect([...order].sort((a, b) => a - b)).toEqual(order);
+    const first = groups.find((g) => g.id === firstGroup)!;
+    expect(first.cards[0]).toBe(last);
+    // Troop classes come before the turret and power headings.
+    const kinds = groups.map((g) => g.id);
+    if (kinds.includes('turret')) expect(kinds.indexOf('turret')).toBeGreaterThan(kinds.findIndex((k) => k !== 'turret' && k !== 'power' && k !== 'fort'));
+    expect(poolGroupOf(content, c.powers[0]!)).toBe('power');
+    expect(poolGroupOf(content, c.turrets[0]!)).toBe('turret');
+    expect(poolGroupOf(content, 'not_a_card')).toBeNull();
   });
 
   it('says where a locked card comes from, honestly per arena', () => {

@@ -288,14 +288,13 @@
     },
     "ui": {
       "make": "Make your General",
-      "makeLead": "This is you on the battlefield. Change anything now or later in Customize.",
+      "makeLead": "Change it any time in Customize.",
       "done": "Done",
       "shuffle": "Shuffle",
       "undo": "Undo",
       "name": "Name",
       "general": "General",
       "look": "Your General",
-      "earned": "Earned in play. Never sold.",
       "tryingOn": "Trying on",
       "locked": "Locked",
       "equip": "Wear",
@@ -309,8 +308,7 @@
       "frameLocked": "Codex Level {n}",
       "bannerLocked": "Reach Arena {n}",
       "titleLocked": "Not earned yet",
-      "back": "Back to Profile",
-      "portraitHint": "Show your General, or one of your troops instead."
+      "back": "Back to Profile"
     }
   }
 }

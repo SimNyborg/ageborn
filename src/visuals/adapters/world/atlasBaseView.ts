@@ -24,6 +24,13 @@
  * (`mountBuilt(i)`, duck-typed): a ledge slides out of the wall and blocks fly in and set on it
  * with dust (metal plates and sparks from the Industrial Age on).
  *
+ * The destroyed collapse (`collapseWith({ seed })`, duck-typed; `collapse()` uses the view's own seed):
+ * the body trembles, sinks and leans while cracks spread along the coming fracture and dust trickles
+ * off it, then the frame breaks into textured pieces (collapse/): towers topple toward the lane and
+ * come apart in the air, the rest bursts out, everything tumbles, bounces and piles up; flag poles
+ * snap, banners flutter down, lights die on their pieces, dust rolls out over a shockwave, and smoke,
+ * embers and small fires linger over the stump. Seeded from match data, so replays look the same.
+ *
  * Reduce motion (`setMotion`): no shake, no flying shards and no squash bounces (fades instead).
  * Lite: fewer shards, bands and particles. All of it is cosmetic; the sim owns every timing.
  *
@@ -41,6 +48,9 @@ import { FX_ZONES } from '../../effects/sprites';
 import { CLIP_TIMING } from '../../style';
 import { partSprite, PuffList } from '../procedural/shared';
 import { clipDurations, frameIndex, setFrame, type WorldAtlas, type WorldSheet } from '../worldAtlas';
+import { CollapseView } from './collapse/collapseView';
+import { collapseProfile, type CollapseMaterial } from './collapse/profiles';
+import { warmCollapse } from './collapse/warm';
 import {
   Bits,
   bump,
@@ -69,6 +79,27 @@ export interface AtlasBaseOptions {
   /** The sheet source of an age's base (for morphs); undefined when that age has no sheet. */
   sourceFor: (age: AgeId) => string | undefined;
   def: VisualDef;
+  /**
+   * The collapse kit sheet of an age (3D debris and rubble heaps, manifest `clips.collapse`), loaded
+   * lazily once the base is badly damaged; undefined when that age has none (code-drawn debris).
+   */
+  collapseKitFor?: (age: AgeId) => string | undefined;
+}
+
+/** The beats of the destroyed collapse (ms of game time from its start), for the render layer's feel. */
+export interface CollapseBeats {
+  breakMs: number;
+  landMs: number;
+  settleMs: number;
+  material: CollapseMaterial;
+}
+
+/** Where a mount is during the collapse (the root's parent space), so its turret falls with it. */
+export interface MountPose {
+  x: number;
+  y: number;
+  rotation: number;
+  landed: boolean;
 }
 
 interface Pair {
@@ -277,6 +308,9 @@ export class AtlasBaseView implements BaseView {
   /** Extra light on the windows (the build-up and the flourish), 0..1.5. */
   private lightBoost = 0;
   private collapseT = -1;
+  private collapsing: CollapseView | null = null;
+  /** The light multiplier of the collapse build-up (failing power flickers, fires flare). */
+  private collapseLight = 1;
   private destroyed = false;
   /** A cosmetic base skin's body tint (A18.9.4), or null; the team layer keeps its colour. */
   private skinTint: number | null = null;
@@ -285,6 +319,8 @@ export class AtlasBaseView implements BaseView {
     const s = o.world.get(o.def.source);
     if (!s) throw new Error(`World sheet "${o.def.source}" is not loaded`);
     this.sheet = s;
+    // compile the collapse code now, while the scene loads, not on the frame the base falls
+    warmCollapse();
     this.age = o.age;
     this.facing = o.side === 0 ? 1 : -1;
     this.rng = mulberry32(o.seed);
@@ -381,9 +417,21 @@ export class AtlasBaseView implements BaseView {
   }
 
   setCrumble(stage: 0 | 1 | 2 | 3): void {
+    if (this.collapsing) return;
     if (stage > this.crumble) this.debris(4 + stage * 2);
     this.crumble = stage;
+    // the collapse kit of this age streams in once the base is badly damaged
+    if (stage >= 2) this.loadKit();
     this.show();
+  }
+
+  private loadKit(): WorldSheet | null {
+    const src = this.o.collapseKitFor?.(this.age);
+    if (!src) return null;
+    const hit = this.o.world.get(src);
+    if (hit) return hit;
+    void this.o.world.ensure(src);
+    return null;
   }
 
   setTreasury(level: number): void {
@@ -479,6 +527,7 @@ export class AtlasBaseView implements BaseView {
   }
 
   morphTo(age: AgeId, ms: number = CLIP_TIMING.baseMorphMs): void {
+    if (this.collapsing) return;
     this.finishMorph();
     const idx = Math.max(0, AGES.indexOf(age));
     const m: Morph = {
@@ -521,13 +570,56 @@ export class AtlasBaseView implements BaseView {
   }
 
   collapse(): void {
-    if (this.collapseT < 0) {
-      this.endAscend(false);
-      this.finishMorph();
-      this.collapseT = 0;
-      this.debris(16, 1.6);
-      this.billows(4);
-    }
+    this.collapseWith({ seed: this.o.seed });
+  }
+
+  /**
+   * The destroyed collapse (duck-typed by the battle view, which seeds it from the match so a replay
+   * collapses the same way). Returns its beats so the feel layer can land the hit-stop, the camera
+   * punch and the sounds on them.
+   */
+  collapseWith(o: { seed: number }): CollapseBeats {
+    const profile = collapseProfile(this.age);
+    if (this.collapsing) return this.collapsing.beats;
+    this.endAscend(false);
+    this.finishMorph();
+    this.collapseT = 0;
+    this.hornOn = false;
+    this.horn.visible = false;
+    this.glow.visible = false;
+    const m = this.sheet.meta;
+    const visibleFlags = (m.flags ?? []).filter((f) => this.crumble <= f.crumbleMax).map((f) => ({ clip: f.clip, z: f.z }));
+    const tr = this.treasury > 0 ? this.treasuryRect() : null;
+    const cv = new CollapseView({
+      sheet: this.sheet,
+      stage: this.crumble,
+      teamColor: this.o.teamColor,
+      skinTint: this.skinTint,
+      decor: this.o.decor,
+      profile,
+      seed: o.seed >>> 0,
+      motion: this.motion,
+      kit: this.loadKit(),
+      flags: visibleFlags,
+      clockMs: this.clockMs,
+      lightColor: LIGHT_COLORS[this.age],
+      lights: (m.lightsLu ?? []).filter((l) => this.crumble <= l.crumbleMax).map((l) => ({ x: l.x, y: -l.y })),
+      smokeSpots: (m.smokeLu ?? []).map((q) => ({ x: q.x, y: -q.y })),
+      treasury: tr,
+    });
+    cv.root.scale.x = this.facing;
+    this.root.addChildAt(cv.root, this.root.getChildIndex(this.body) + 1);
+    this.body.addChild(cv.cracks, cv.cracksGlow);
+    this.collapsing = cv;
+    // the live object: its landing is filled in a frame later (CollapseView.beats)
+    return cv.beats;
+  }
+
+  /** During the collapse: where mount `i` is (the root's parent space), riding its piece. */
+  mountPose(i: number): MountPose | null {
+    const p = this.collapsing?.mountPose(i);
+    if (!p) return null;
+    return { x: this.root.x + p.x * this.facing, y: this.root.y + p.y, rotation: p.rotation * this.facing, landed: p.landed };
   }
 
   update(dtMs: number): void {
@@ -562,15 +654,24 @@ export class AtlasBaseView implements BaseView {
       sy *= m.sy;
       flash = Math.max(flash, m.flash);
     }
-    if (this.collapseT >= 0) {
+    let rot = 0;
+    this.collapseLight = 1;
+    const cv = this.collapsing;
+    if (cv) {
       this.collapseT += dtMs;
-      const u = Math.min(1, this.collapseT / 1400);
-      oy += u * u * 40;
-      sy *= 1 - 0.45 * u;
-      ox += (this.rng.next() - 0.5) * 4 * (1 - u);
-      this.body.alpha = 1 - 0.55 * u;
-      this.shadow.alpha = 1 - 0.6 * u;
-      if (this.rng.next() < 0.06 * (1 - u)) this.debris(1, 1.2);
+      cv.update(dtMs);
+      if (!cv.broken) {
+        const p = cv.bodyPose();
+        ox += p.ox * this.facing;
+        oy += p.oy;
+        rot = p.rot * this.facing;
+        sx *= p.sx;
+        sy *= p.sy;
+        this.collapseLight = cv.lightFactor();
+      } else {
+        this.body.visible = false;
+        this.shadow.alpha = Math.max(0.55, this.shadow.alpha - dtMs / 900);
+      }
     }
     if (this.popMs > 0) {
       this.popMs = Math.max(0, this.popMs - dtMs);
@@ -585,21 +686,22 @@ export class AtlasBaseView implements BaseView {
     this.body.pivot.set(cx, 0);
     this.body.position.set(cx * this.facing + ox, oy);
     this.body.scale.set(this.facing * sx, sy);
+    this.body.rotation = rot;
     this.flash.visible = flash > 0.01;
     this.flash.alpha = Math.min(1, flash) * EVOLVE_FLASH_MAX;
     // lights flicker (two sines, per light phase), brighter during the build-up and the flourish
     for (const l of this.lights) {
-      const on = this.crumble <= l.crumbleMax && this.collapseT < 0;
+      const on = this.crumble <= l.crumbleMax && !this.collapsing?.broken;
       l.s.visible = on;
       if (on) {
         const f = 1 + 0.14 * Math.sin(this.clockMs / 83 + l.phase) + 0.08 * Math.sin(this.clockMs / 37 + l.phase * 2);
-        l.s.alpha = Math.min(1, l.a * f * (1 + this.lightBoost));
+        l.s.alpha = Math.min(1, l.a * f * (1 + this.lightBoost) * this.collapseLight);
         l.s.scale.y = l.s.scale.x * (0.96 + 0.06 * f);
       }
     }
     // damage smoke from the stage-2 crumble on
     const smoke = (this.sheet.meta.smokeLu ?? []).filter((s) => this.crumble >= s.crumbleMin);
-    if (smoke.length > 0 && this.collapseT < 0) {
+    if (smoke.length > 0 && !this.collapsing) {
       this.smokeAcc += (dtMs / 1000) * 1.1 * smoke.length;
       while (this.smokeAcc >= 1) {
         this.smokeAcc -= 1;
@@ -1329,6 +1431,8 @@ export class AtlasBaseView implements BaseView {
     this.endAscend(false);
     this.finishMorph();
     this.destroyed = true;
+    this.collapsing?.destroy();
+    this.collapsing = null;
     this.puffs.clear();
     this.bits.clear();
     for (const c of this.chunks) c.s.destroy();
@@ -1338,7 +1442,16 @@ export class AtlasBaseView implements BaseView {
   }
 
   /** Test and gallery hooks. */
-  get debug(): { crumble: number; treasury: number; age: string; horn: boolean; morphing: boolean; ascending: boolean; fx: number } {
+  get debug(): {
+    crumble: number;
+    treasury: number;
+    age: string;
+    horn: boolean;
+    morphing: boolean;
+    ascending: boolean;
+    fx: number;
+    collapse: { chunks: number; particles: number; broken: boolean; t: number; settled: boolean } | null;
+  } {
     return {
       crumble: this.crumble,
       treasury: this.treasury,
@@ -1347,6 +1460,12 @@ export class AtlasBaseView implements BaseView {
       morphing: this.morph !== null,
       ascending: this.ascending !== null,
       fx: this.bits.items.length + this.puffs.items.length + this.chunks.length,
+      collapse: this.collapsing?.stats ?? null,
     };
+  }
+
+  /** The running collapse (gallery, dev captures). */
+  get collapseView(): CollapseView | null {
+    return this.collapsing;
   }
 }

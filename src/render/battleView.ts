@@ -39,9 +39,9 @@ import type {
   UnitState,
   UnitView,
 } from '@/contracts';
-import { mulberry32, type CosmeticRng } from '@/core';
+import { mulberry32, xmur3, type CosmeticRng } from '@/core';
 import { reachAreaMax, type PowerReachRules } from '@/core/powerReach';
-import { ColorMatrixFilter, Graphics, type Container } from 'pixi.js';
+import { ColorMatrixFilter, Graphics, Sprite, Texture, type Container } from 'pixi.js';
 import { CAMERA, Camera, type CameraHold } from './camera';
 import { depthRows, depthZ, easeToward } from './depth';
 import { EventMapper, crumbleStage, decodeTurretSource, type UnitInfo } from './eventMapper';
@@ -156,6 +156,8 @@ interface TurretEntry {
   view: TurretView;
   selling: boolean;
   outdated: boolean;
+  /** Fell with its base's collapse and broke on landing. */
+  wrecked?: boolean;
 }
 
 interface BaseEntry {
@@ -169,6 +171,34 @@ interface BaseEntry {
   mountsLocal: Pt[];
   /** Base flag, national flag, decorations and skin (A18.9.4), when the side has a look. */
   dressing?: BaseDressingView;
+  /** The destroyed collapse: game ms since it started and its beats (A12). */
+  collapse?: { t: number; beats: CollapseBeats; fired: Set<string> };
+}
+
+/** The beats of a destroyed base's collapse (game ms from its start) and its sound material. */
+interface CollapseBeats {
+  breakMs: number;
+  landMs: number;
+  material: string;
+}
+
+/** Duck-typed collapse hooks of the world base views (WP4 atlas views; the art contract stays unchanged). */
+interface CollapseBaseView {
+  collapseWith(o: { seed: number }): { breakMs: number; landMs: number; material: string };
+  mountPose(i: number): { x: number; y: number; rotation: number; landed: boolean } | null;
+}
+
+/** Duck-typed by the base dressing: its props topple and its flag snaps on the collapse's break. */
+interface CollapseDressing {
+  collapseAt(breakMs: number): void;
+}
+
+/**
+ * The seed of a destroyed base's collapse, from match data only (the match seed, the losing side and
+ * the end tick), so a replay of the match collapses exactly the same way.
+ */
+export function collapseSeed(matchSeed: number | string, side: Side, tick: number): number {
+  return xmur3(`collapse|${matchSeed}|${side}|${tick}`)();
 }
 
 interface ProjectileEntry {
@@ -193,6 +223,15 @@ const BAR_CROWD_UNITS = 10;
 const BAR_FRONT_UNITS = 3;
 /** Display objects further than this outside the view are not drawn (A17.7 culling). */
 const CULL_LU = 150;
+/**
+ * A destroyed base's camera frame (lu above the ground): the tallest base. The towers fall sideways
+ * toward the lane, so after the break the action only gets lower. Desktop pushes in about 1.25x; a
+ * phone's shorter band eases back toward `COLLAPSE_MIN_ZOOM`.
+ */
+const COLLAPSE_FRAME_LU = 320;
+/** The camera never pulls back further than this to frame a collapse. */
+const COLLAPSE_MIN_ZOOM = 0.86;
+
 /** How long a fort's collapse and rubble stay after it falls (A16.14.8). */
 const FORT_RUBBLE_MS = 2600;
 /** At most this many minimap dots (the B16 on-screen cap). */
@@ -278,6 +317,11 @@ export class BattleView {
   private readonly preloadedAges = new Set<AgeId>();
   /** Created on the first base flash (a filter needs a GPU context). */
   private baseFlashFilter: ColorMatrixFilter | null | undefined;
+  /**
+   * Draws the base-flash filter once in the first frames (an invisible speck), so its shader compiles
+   * at the start instead of on the first base hit or, worse, on the frame a base breaks.
+   */
+  private filterWarmup: { s: Sprite; frames: number } | null = null;
   private readonly onPresetChange: ((p: GraphicsPreset) => void) | undefined;
   private feel: RenderFeelConfig;
   private settings: ViewSettings;
@@ -354,6 +398,16 @@ export class BattleView {
     this.applySettings(this.settings);
     this.resize(1280, 720);
     this.camera.setHome(this.mySide);
+    const warm = this.flashFilter();
+    if (warm) {
+      const s = new Sprite(Texture.WHITE);
+      s.width = 4;
+      s.height = 4;
+      s.alpha = 0.004;
+      s.filters = [warm];
+      this.layers.flash.addChild(s);
+      this.filterWarmup = { s, frames: 0 };
+    }
     // A view created mid-match (replay seek) picks up what is already on the field.
     for (const u of st.units) this.ensureUnit(u);
     this.syncTurrets(0);
@@ -1055,8 +1109,13 @@ export class BattleView {
     this.syncUnits(alpha, gameDt);
     this.trapViews.sync(this.sim.state, gameDt, (x) => this.nearView(x));
     this.updateFollowers();
-    this.syncTurrets(gameDt);
     this.syncBases(gameDt);
+    this.syncTurrets(gameDt);
+    this.updateCollapses(gameDt);
+    if (this.filterWarmup && ++this.filterWarmup.frames > 2) {
+      this.filterWarmup.s.destroy();
+      this.filterWarmup = null;
+    }
     this.updateProjectiles(gameDt);
     this.particles.update(gameDt);
     for (const fx of this.screenFx) {
@@ -1655,14 +1714,24 @@ export class BattleView {
         this.director.requestFreeze(a.ms, a.exempt);
         return;
       case 'slowMo':
-        this.director.startSlowMo(a.scale, a.ms);
+        this.director.startSlowMo(a.scale, a.ms, a.easeMs ?? 0);
+        return;
+      case 'cameraPunch':
+        if (!this.settings.reduceMotion) this.camera.punch(a.zoom, a.ms);
         return;
       case 'camera': {
         const at = this.anchor(a.at);
         if (a.outMs <= 0) {
-          // A base falls (A17.4): always pan (500 ms) to it, then push in and stay.
+          // A base falls (A17.4): always pan (500 ms) to it, then frame it and stay. The push is
+          // capped so the whole collapse fits the lane band (a phone's band is shorter than the base:
+          // there it eases back a little instead of cutting the toppling tower off).
           this.camera.lockOn(at.x);
-          if (!this.settings.reduceMotion) this.camera.pushTo({ x: at.x, y: at.y, zoom: a.zoom, inMs: a.inMs, holdMs: a.holdMs, outMs: a.outMs });
+          if (!this.settings.reduceMotion) {
+            const L = this.camera.layout;
+            const visible = (L.groundY - L.bandY) / Math.max(0.01, this.camera.scale);
+            const zoom = Math.max(COLLAPSE_MIN_ZOOM, Math.min(a.zoom, visible / COLLAPSE_FRAME_LU));
+            this.camera.pushTo({ x: at.x, y: at.y, zoom, inMs: a.inMs, holdMs: a.holdMs, outMs: a.outMs });
+          }
           return;
         }
         // Your evolve frames your base from anywhere (MR-80): a pan and a push, at most 3 s, ended by any
@@ -1711,8 +1780,7 @@ export class BattleView {
           b.view.hit();
           b.dressing?.hit();
         } else {
-          b.view.collapse();
-          b.dressing?.collapse();
+          this.startCollapse(b);
         }
         return;
       }
@@ -2186,6 +2254,57 @@ export class BattleView {
   // Turrets and bases
   // ------------------------------------------------------------------------------------------
 
+  /**
+   * A destroyed base (A11, A12): the art collapses with a seed from match data and reports its beats
+   * (the break, the biggest landing); the feel follows on those beats in game time, so a global freeze,
+   * slow motion or a 2x speed keeps sound, camera and pieces together. Art without the hooks collapses
+   * its own way and the tuning's default beats drive the feel.
+   */
+  private startCollapse(b: BaseEntry): void {
+    if (b.collapse) return;
+    const bc = this.feel.tuning.baseCollapse;
+    const material = bc.materials[b.age] ?? 'stone';
+    const view = b.view as BaseView & Partial<CollapseBaseView>;
+    let beats: CollapseBeats = { breakMs: bc.breakMs, landMs: bc.landMs, material };
+    if (typeof view.collapseWith === 'function') {
+      const st = this.sim.state;
+      const r = view.collapseWith({ seed: collapseSeed(this.config.seed, b.side, st.outcome?.tick ?? st.tick) });
+      // kept by reference: the art may refine its landing beat during the build-up
+      beats = r.material ? r : { ...r, material };
+    } else {
+      view.collapse();
+    }
+    b.collapse = { t: 0, beats, fired: new Set() };
+    const d = b.dressing as (BaseDressingView & Partial<CollapseDressing>) | undefined;
+    if (d && typeof d.collapseAt === 'function') d.collapseAt(beats.breakMs);
+    else d?.collapse();
+  }
+
+  /** Fires the collapse beats that are due (game time: frozen during the hit-stop, slowed by slow motion). */
+  private updateCollapses(gameDt: number): void {
+    for (const b of this.bases) {
+      const c = b.collapse;
+      if (!c) continue;
+      c.t += gameDt;
+      const due: ['break' | 'stinger' | 'land', number][] = [
+        ['break', c.beats.breakMs],
+        ['stinger', c.beats.breakMs + this.feel.tuning.baseCollapse.stingerDelayMs],
+        ['land', c.beats.landMs],
+      ];
+      for (const [beat, at] of due) {
+        if (c.fired.has(beat) || c.t < at) continue;
+        c.fired.add(beat);
+        const reduce = this.settings.reduceMotion;
+        for (const a of this.mapper.collapseBeat(beat, b.side, c.beats.material)) {
+          // Reduce motion: no hit-stop, slow motion, shake, flash or camera punch; the calm collapse
+          // keeps its dust and its sounds.
+          if (reduce && (a.a === 'freeze' || a.a === 'slowMo' || a.a === 'trauma' || a.a === 'screenFlash' || a.a === 'baseFlash' || a.a === 'cameraPunch')) continue;
+          this.exec(a);
+        }
+      }
+    }
+  }
+
   private createBase(side: Side): BaseEntry {
     const age = this.ageOf(side);
     // A base skin targets one age (`base.future@crystal_spire`, A5.8); the provider draws it on that
@@ -2343,7 +2462,22 @@ export class BattleView {
             e.view.play('sell');
           }
           const p = pts[m];
-          if (p) e.view.root.position.set(p.x, p.y);
+          const fall = this.bases[side].collapse ? (this.bases[side].view as Partial<CollapseBaseView>).mountPose?.(m) : undefined;
+          if (fall) {
+            // the turret rides its piece of the collapsing base and breaks where it lands
+            e.view.root.position.set(fall.x, fall.y);
+            e.view.root.rotation = fall.rotation;
+            if (fall.landed && !e.wrecked) {
+              e.wrecked = true;
+              e.view.play('sell');
+            }
+          } else if (p) {
+            e.view.root.position.set(p.x, p.y);
+          }
+          if (!fall && this.bases[side].collapse && !e.wrecked && this.bases[side].collapse!.t >= this.bases[side].collapse!.beats.breakMs) {
+            e.wrecked = true;
+            e.view.play('sell');
+          }
         } else if (e) {
           e.view.destroy();
           this.turrets.delete(key);

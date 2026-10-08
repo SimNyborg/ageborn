@@ -35,6 +35,7 @@ sheet. Turrets render 1.7x their authored size (capped at about 72 lu tall, `TUR
 | `turrets_<age>.py` | four turrets each (`TURRETS`) |
 | `base_<age>.py` | the base (`MODULE`): Cave Hold, Keep, Star Fort, Bunker, Spire |
 | `render_world.py` | renders, packs and installs |
+| `base_collapse.py`, `render_collapse.py` | the bases' collapse kits (debris, heaps, banner scrap) and their render and install |
 | `compose.py` | review sheets built from the atlases |
 | `backdrop.py` | pre-rendered backdrop layers per age (`public/art/backdrops/<age>/{far,mid}.webp` + `layers.json` with ambient specs) and arena grounds (`public/art/ground/<arena>.webp`) |
 
@@ -68,6 +69,31 @@ balconies, timber hoardings, bastion gun platforms, sandbag pits, hover discs) w
 top lands exactly on the point; each body frame exports `mount0..3` trackers that a unit test
 compares, and `AtlasBaseView.mountPoints()` returns `mountsLu`. `lightsLu` (torch and window glow), `smokeLu`
 (damage smoke from a crumble stage) and `hornLu` drive code motion in `AtlasBaseView`.
+
+## Collapse kits (DESIGN A11 Base collapse, B5)
+
+```sh
+# all 8 ages (a few seconds each on 2 threads), installs public/art/bases/<age>.collapse.{png,json}
+<venv>/bin/python art/blender/world/render_collapse.py --out /tmp/collapse-kits [--only stone,medieval] [--no-install]
+```
+
+A destroyed base is cut into its big tumbling pieces at runtime from its own frame
+(`src/visuals/adapters/world/collapse`), so skins and crumble stages collapse as themselves. The kit
+adds what a frame cannot: small solid debris with real shading, two rubble heaps for the ruin and a
+team-coloured banner scrap, in the age's materials (`base_collapse.py`; same look, light and
+1.23 px/lu sheet as the bases, about 15 KB per age). Frame names start with `<age>_kit_` so they
+never collide with the base sheet in Pixi's texture cache, and `meta.ageborn.kind` is
+`baseCollapseKit`.
+
+| Clip | Frames | Content |
+|---|---|---|
+| `piece` | 8 | one debris piece each, centred on the anchor (the game spins them about it) |
+| `heap` | 2 | a wide and a narrow rubble heap (the game seats the bottom edge on the ground) |
+| `rag` (+ `rag_team`) | 1 | a torn banner scrap; the team layer is tinted |
+
+The kit is the `collapse` clip of each `base.<age>` manifest entry (`baseCollapseSource`,
+`WORLD_BASE_COLLAPSE_KITS`) and loads once that base reaches crumble stage 2; code-drawn rocks stand
+in until it arrives.
 
 ## Colours
 

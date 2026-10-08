@@ -1,7 +1,7 @@
 /**
  * Stopping well (DESIGN A15.6, A15.20): the session counters, the one card a Result may show
- * (tilt, break or wrap, in that priority), the night line hour and the healthy-play signals of the
- * local event log.
+ * (tilt, break or wrap, in that priority) and the healthy-play signals of the local event log. The
+ * night line is gone (owner request 2026-10-07); late sessions are still logged, locally only.
  *
  * - **Session.** A session begins at boot, or when the tab becomes visible after at least 20 minutes
  *   hidden. The counters live here in memory and are never saved.
@@ -15,7 +15,6 @@
  *   - Wrap: once per session, on the Result of the match that claimed the Sundial's last ready capsule
  *     (A6.3; any mode but the tutorial, win or lose), or
  *     the first Result after 30 min of active play with at least 3 finished matches.
- * - **Night line.** The Result gets the local hour the match ended; 22:00-06:00 adds the line.
  * - **Healthy-play signals** (A15.20), local only: sessions over 90 min, sessions after 22:00,
  *   sessions that end right after 3 losses, and sessions that end on a wrap, tilt or break card.
  *
@@ -36,11 +35,6 @@ export const TILT_LOSSES = 3;
 export const LONG_SESSION_MS = 90 * MINUTE;
 /** A sample never adds more than this (a sleeping device or a stalled timer adds nothing). */
 const MAX_SAMPLE_MS = 5_000;
-
-/** Night line: a match that ends between 22:00 and 06:00 local time (A15.6). */
-export function isNightHour(hour: number): boolean {
-  return hour >= 22 || hour < 6;
-}
 
 export interface HealthLog {
   record(kind: string, id: string, data?: Record<string, string | number | boolean | null>): void;

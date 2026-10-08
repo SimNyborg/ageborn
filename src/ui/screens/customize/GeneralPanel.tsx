@@ -6,7 +6,7 @@
  * - Right: slot tabs (icon plus label), a colour row for tinted slots and a grid of tiles. An owned
  *   part shows on the General and equips at once (U14: Undo puts the last look back). A locked
  *   wearable shows its rarity and how it is earned; tapping it tries it on in the preview only. No
- *   price, no buy: wearables are earned in play, never sold.
+ *   price and no buy (owner request 2026-10-07: no "never sold" slogan either).
  * - The same panel opens from Profile's pencil (a cross-tab jump; Back returns to Profile, U4).
  */
 import './general.css';
@@ -155,8 +155,6 @@ export function GeneralPanel(p: { initialTab?: GeneralTab }) {
             <b>{t(tryPart.nameKey)}</b> · {t(rarityNameKey(tryItem.rarity))}
             <br />
             {sourceText(t, tryItem)}
-            <br />
-            <small>{t('avatar.ui.earned')}</small>
           </p>
         ) : (
           <p class="gen-stage__found" data-testid="gen-found">
@@ -313,7 +311,6 @@ function PartGrid(p: {
           );
         })}
       </div>
-      <p class="gen-note">{t('avatar.ui.earned')}</p>
     </div>
   );
 }
@@ -423,7 +420,6 @@ function PortraitGrid(p: { look: ResolvedLook }) {
   const units = content.order.units.filter((id) => isOwned(s, id as CardId, content)).slice(0, 60);
   return (
     <div class="gen-body">
-      <p class="gen-note gen-note--top">{t('avatar.ui.portraitHint')}</p>
       <div class="gen-grid gen-grid--head" data-testid="gen-portraits">
         <Tile on={!s.profile.avatar.portraitCard} locked={false} label={t('avatar.ui.general')} onClick={() => services.setProfile({ portraitCard: null })} testid="portrait-face">
           <AvatarLookView look={p.look} size={56} crop="head" />

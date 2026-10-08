@@ -569,6 +569,12 @@ export class AtlasAdapter implements VisualAdapter {
         const plain = this.o.entries().find((d) => d.kind === 'atlas' && d.source === `art/bases/${age}.json`);
         return plain?.source;
       },
+      // the age's collapse kit (manifest `clips.collapse`; a skin without one uses the plain base's)
+      collapseKitFor: (age) => {
+        const own = r.resolveAge(age)?.def.clips['collapse']?.ref;
+        if (own) return own;
+        return this.o.entries().find((d) => d.kind === 'atlas' && d.source === `art/bases/${age}.json`)?.clips['collapse']?.ref;
+      },
     });
   }
 

@@ -12,7 +12,7 @@ import { maxedSave, midGameSave, newPlayerSave } from '../fixtures/saves';
 import { featViews } from '../model/collection';
 import { profileView } from '../model/profile';
 import { DAILY_DIFFICULTIES, defaultDailyDifficulty, ladderWin, skillTier, supplyView, warChestView } from '../model/progress';
-import { closestProgress, dailyResultLine, isNight, resultPlan } from '../model/result';
+import { closestProgress, dailyResultLine, resultPlan } from '../model/result';
 import { PARENT_LINES } from '../settings/SettingsScreen';
 import { text } from './dom';
 import { flush, mount, type Mounted } from './harness';
@@ -78,10 +78,6 @@ describe('Result budget (A15.13)', () => {
     expect(road?.kind).not.toBe('warChest');
   });
 
-  it('the night line runs from 22:00 to 06:00', () => {
-    expect([21, 22, 23, 0, 5, 6].map(isNight)).toEqual([false, true, true, true, true, false]);
-  });
-
   it('the Daily copy line has no name and pays nothing', () => {
     const line = dailyResultLine({
       dateKey: '2026-10-03',
@@ -118,7 +114,9 @@ describe('Result screen cards (A15.6)', () => {
     m = mount({ state: 'mid', routes: route({ card: { kind: 'break' } }) });
     expect(m.q('[data-testid="result-card-break"]')).toBeNull();
     m.click('[data-testid="result-skip"]');
-    expect(text(m.q('[data-testid="result-card-break"]')!)).toContain('A good moment for a break?');
+    expect(text(m.q('[data-testid="result-card-break"]')!)).toContain('Time for a break?');
+    // Owner request 2026-10-07: no "everything you've earned is saved" line.
+    expect(text(m.q('[data-testid="result-card-break"]')!)).not.toContain('saved');
     expect(m.q('[data-testid="result-home"]')!.getAttribute('data-primary')).toBe('');
     // Keep playing only closes the card; nothing advances by itself.
     m.click('[data-testid="result-card-keep"]');
@@ -140,14 +138,16 @@ describe('Result screen cards (A15.6)', () => {
     m.click('[data-testid="result-skip"]');
     const card = text(m.q('[data-testid="result-card-wrap"]')!);
     expect(card).toContain('Wins: 3');
-    expect(card).toContain('The Sundial is empty.');
+    // Owner request 2026-10-07: the numbers only, no Sundial explanation.
+    expect(card).not.toContain('Sundial');
   });
 
-  it('a late match adds the night line and makes Home primary', () => {
-    m = mount({ state: 'mid', routes: route({ endedHour: 23 }) });
+  it('there is no night line: a late match shows the normal Result with its usual primary (owner request 2026-10-07)', () => {
+    m = mount({ state: 'mid', routes: route({}) });
     m.click('[data-testid="result-skip"]');
-    expect(text(m.q('[data-testid="result-night"]')!)).toContain("It's late.");
-    expect(m.q('[data-testid="result-home"]')!.getAttribute('data-primary')).toBe('');
+    expect(m.q('[data-testid="result-night"]')).toBeNull();
+    expect(text(m.q('[data-testid="result"]')!)).not.toContain("It's late");
+    expect(m.q('[data-testid="result-home"]')!.getAttribute('data-primary')).toBeNull();
   });
 
   it('a Daily result has a Copy result button', () => {
@@ -242,7 +242,9 @@ describe('Settings safe defaults and For parents (A15.6)', () => {
     expect(m.q('[data-testid="set-break"]')).not.toBeNull();
     expect(m.q('[data-testid="set-quick-reveal"]')).not.toBeNull();
     expect(m.q('[data-testid="set-vibrate"]')).not.toBeNull();
-    expect(text(m.q('[data-testid="about-kept"]')!)).toBe('Nothing you have earned is ever taken away.');
+    // Owner request 2026-10-07: no slogans in About (the facts stay on the For parents page).
+    expect(m.q('[data-testid="about-kept"]')).toBeNull();
+    expect(text(m.q('[data-testid="set-about"]')!)).not.toMatch(/earned by playing|for sale|taken away/i);
     m.click('[data-testid="parents"]');
     flush(() => undefined);
     expect(m.qa('[data-testid="parents-modal"] li')).toHaveLength(PARENT_LINES.length);

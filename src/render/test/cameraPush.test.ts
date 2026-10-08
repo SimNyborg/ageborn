@@ -52,3 +52,45 @@ describe('camera push', () => {
     expect(c.pushed).toBe(0);
   });
 });
+
+describe('camera punch (A12 base destroyed)', () => {
+  it('kicks in fast, springs back and settles to nothing; reduce motion skips it', () => {
+    const c = new Camera();
+    c.resize(844, 390);
+    c.setHome(1);
+    const fit = c.transform();
+    c.punch(0.07, 460);
+    c.update(70);
+    expect(c.punchScale).toBeCloseTo(1.07, 3);
+    expect(c.transform().scale).toBeCloseTo(fit.scale * 1.07, 3);
+    // the spring overshoots a little below 1 on the way back
+    let lowest = Infinity;
+    for (let t = 70; t < 460; t += 10) {
+      c.update(10);
+      lowest = Math.min(lowest, c.punchScale);
+    }
+    expect(lowest).toBeLessThan(1);
+    expect(lowest).toBeGreaterThan(0.99);
+    c.update(20);
+    expect(c.punchScale).toBe(1);
+    expect(c.transform()).toEqual(fit);
+    const calm = new Camera();
+    calm.resize(844, 390);
+    calm.reduceMotion = true;
+    calm.punch(0.07, 460);
+    calm.update(70);
+    expect(calm.punchScale).toBe(1);
+  });
+
+  it('a framing pull-back below 1x keeps the ground line where it was', () => {
+    const c = new Camera();
+    c.resize(844, 390);
+    c.setHome(1);
+    const fit = c.transform();
+    c.pushTo({ x: 2900, y: -150, zoom: 0.86, inMs: 300, holdMs: 0, outMs: 0 });
+    c.update(400);
+    const t = c.transform();
+    expect(t.scale).toBeCloseTo(fit.scale * 0.86, 3);
+    expect(t.y).toBe(c.layout.groundY);
+  });
+});

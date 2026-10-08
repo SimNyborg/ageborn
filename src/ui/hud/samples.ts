@@ -233,8 +233,8 @@ export function hudSamples(config: Readonly<MatchConfig>, side: Side = 0): HudSa
     s('councilReady', 'War Council idle with something affordable: the green dot and gold halo', {
       me: { gold: 400, research: { owned: [], current: null, progressBp: 0, leftMs: 0, ranksOpen: 1, discount: false } },
     }),
-    s('holdStance', 'Hold stance with the flag forward; stance wait running (3 s cooldown)', {
-      me: { stance: 'hold', holdP: 560, stanceWaitMs: 1800 },
+    s('holdStance', 'Hold stance with the flag forward (stances switch at once)', {
+      me: { stance: 'hold', holdP: 560 },
     }),
     s('fallback', 'Fall back stance', { me: { stance: 'fallback' } }),
     s('fast', 'Speed 2x and paused', { speed: 2, paused: true }),

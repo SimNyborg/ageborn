@@ -299,7 +299,8 @@ const FormatSchema = v.strictObject({
   overdriveMs: v.nullable(pos),
   siegeMs: v.nullable(pos),
   finalBellMs: v.nullable(pos),
-  retreatAfterMs: v.nullable(pos),
+  // 0 = Retreat open from the start (owner decision 2026-10-07); null = no Retreat (the tutorial)
+  retreatAfterMs: v.nullable(nonNeg),
   xpToNextOverride: v.optional(v.array(pos)),
   // A2.10.1 Last Base Standing: the Siege steps and the latest end
   escalation: v.optional(v.array(v.strictObject({ atMs: pos, baseDamageBp: bp, turretDamageBp: bp, crumbleBpPerSec: bp }))),
@@ -337,7 +338,8 @@ const EconomySchema = v.strictObject({
   lastStand: v.strictObject({ thresholdBp: bp, autoBp: bp, radius: pos, damagePerP: pos, knockback: nonNeg, chargeMs: pos }),
   spawnP: nonNeg, holdLine: pos, holdRetreatSpeedBp: bp, leash: nonNeg, spacingBp: bp,
   retargetMs: pos, retargetCloserLu: nonNeg, rangedSelfDefenseLu: nonNeg, firstHitIdleMs: pos,
-  stanceCooldownMs: pos, sizes: perSize(pos), knockbackResistBp: perSize(bp),
+  // 0 = no stance cooldown (owner decision 2026-10-07)
+  stanceCooldownMs: nonNeg, sizes: perSize(pos), knockbackResistBp: perSize(bp),
   holdFlag: v.strictObject({ minP: pos, maxP: pos, snapLu: pos, moveCooldownMs: pos }),
   fallbackP: pos,
   statCaps: v.strictObject({ damageBp: bp, takenBp: bp, hpBp: bp, attackSpeedBp: bp, speedBp: bp, rangeLu: nonNeg }),

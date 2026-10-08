@@ -81,20 +81,31 @@ export class GlobalFreeze {
   }
 }
 
-/** View-only slow motion (base destroyed: 0.3x for 1.2 s, A12). */
+/**
+ * View-only slow motion (base destroyed: slowed from the break, then easing back to full speed, A12;
+ * the numbers live in the feel config). `easeMs` ramps the scale back to 1 with a smoothstep over the
+ * end of the window, so time never jumps from slow to fast.
+ */
 export class SlowMotion {
   private scale = 1;
   private remaining = 0;
+  private easeMs = 0;
 
-  start(scale: number, ms: number): void {
+  start(scale: number, ms: number, easeMs = 0): void {
     if (!(ms > 0) || !(scale > 0)) return;
     this.scale = Math.min(1, scale);
     this.remaining = Math.max(this.remaining, ms);
+    this.easeMs = Math.max(0, Math.min(easeMs, ms));
   }
 
   /** The game-time multiplier right now. */
   get timeScale(): number {
-    return this.remaining > 0 ? this.scale : 1;
+    if (this.remaining <= 0) return 1;
+    if (this.easeMs > 0 && this.remaining < this.easeMs) {
+      const u = 1 - this.remaining / this.easeMs;
+      return this.scale + (1 - this.scale) * u * u * (3 - 2 * u);
+    }
+    return this.scale;
   }
 
   get active(): boolean {
@@ -103,12 +114,16 @@ export class SlowMotion {
 
   update(realDtMs: number): void {
     this.remaining = Math.max(0, this.remaining - Math.max(0, realDtMs));
-    if (this.remaining === 0) this.scale = 1;
+    if (this.remaining === 0) {
+      this.scale = 1;
+      this.easeMs = 0;
+    }
   }
 
   reset(): void {
     this.scale = 1;
     this.remaining = 0;
+    this.easeMs = 0;
   }
 }
 

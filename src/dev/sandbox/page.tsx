@@ -19,7 +19,7 @@ import type { FormatId } from '@/contracts';
 import { DEFAULT_VIEW_SETTINGS, type ViewSettings } from '@/render';
 import { useEffect, useState } from 'preact/hooks';
 import type { CardId, PowerSlot, Side } from '@/contracts';
-import { devClearLane, devPlaceFort, devPlaceTurret, devSetGold, devSetPower, devSpawn } from '@/sim/debug';
+import { devClearLane, devPlaceFort, devPlaceTurret, devSetBaseBp, devSetGold, devSetPower, devSpawn } from '@/sim/debug';
 import { SimPanel } from './simPanel';
 import { BattleStage, type ArtKind, type OpponentKind, type StageApi, type StageOptions, type StageStats } from './viewBattle';
 import { HudStates } from './viewHudStates';
@@ -153,7 +153,10 @@ function BattleTab(p: { bare?: boolean }) {
   const [source, setSource] = useState<SourceKind>(() => param('source', ['fake', 'real', 'stress'] as const, 'fake'));
   const [art, setArt] = useState<ArtKind>(() => param('art', ['fake', 'procedural'] as const, 'fake'));
   const [opponent, setOpponent] = useState<OpponentKind>(() => param('opponent', ['ai', 'autoplayer'] as const, 'ai'));
-  const [format, setFormat] = useState<FormatId>(() => param('format', ['full', 'standard', 'short', 'tutorial', 'last', 'w1.cosmic', 'w2.future'] as const, 'full'));
+  // `w1.<age>` starts both sides in one age (base collapse captures of every age)
+  const [format, setFormat] = useState<FormatId>(() =>
+    param('format', ['full', 'standard', 'short', 'tutorial', 'last', 'w2.future', ...(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'] as const).map((a) => `w1.${a}` as const)] as const, 'full'),
+  );
   const [seed, setSeed] = useState(1);
   const [autoplayMe, setAutoplayMe] = useState(() => param('autoplay', ['1', '0'] as const, '0') === '1');
   const [settings, setSettings] = useState<ViewSettings>({ ...DEFAULT_VIEW_SETTINGS });
@@ -183,6 +186,8 @@ function BattleTab(p: { bare?: boolean }) {
             for (const lo of Object.values(sim.config.sides[side].loadouts)) if (lo) (lo as { powers: { home: CardId | null; field: CardId | null } }).powers = { home, field };
           },
           pause: (on: boolean) => setPaused(on),
+          /** Sets a side's base HP in bp of its max (base collapse captures: a sliver, then one hit ends it). */
+          baseBp: (side: Side, bp: number) => devSetBaseBp(sim, side, bp),
           /** Places a fort (or trap) for a side on a pad (A16.14), for the Fort HUD checks. */
           fort: (side: Side, card: CardId, o: { pad?: number; done?: boolean } = {}) => devPlaceFort(sim, side, card, o),
         }

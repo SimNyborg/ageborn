@@ -39,6 +39,20 @@ export function baseSheetSource(age: AgeId): string {
   return `art/bases/${age}.json`;
 }
 
+/**
+ * Ages whose base has a collapse kit (art/blender/world/base_collapse.py): 3D-rendered debris pieces
+ * and rubble heaps in the age's materials, loaded lazily once that base is badly damaged. Bases without
+ * one collapse with code-drawn rubble.
+ */
+export const WORLD_BASE_COLLAPSE_KITS: readonly AgeId[] = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
+
+export function baseCollapseSource(age: AgeId): string {
+  return `art/bases/${age}.collapse.json`;
+}
+
+/** How long a destroyed base's collapse plays before its ruin only smokes (the manifest clip length). */
+export const BASE_COLLAPSE_MS = 2600;
+
 /** Turret mounts of every 3D base (screen lu from the gate: x toward the lane, y UP), bottom to top. */
 export const WORLD_BASE_MOUNTS_LU: readonly (readonly [number, number])[] = [
   [-6, 46],
@@ -84,7 +98,11 @@ export function buildWorldOverrides(): Record<string, VisualDef> {
   }
   for (const age of WORLD_BASE_SHEETS) {
     const b = BASE_PUPPETS[age];
-    if (b) out[b.id] = entry(baseSheetSource(age), b.anchors, b.heightLu);
+    if (!b) continue;
+    const e = entry(baseSheetSource(age), b.anchors, b.heightLu);
+    // the destroyed collapse: its kit sheet is a clip of the base entry (the swap point, B5)
+    if (WORLD_BASE_COLLAPSE_KITS.includes(age)) e.clips['collapse'] = { kind: 'atlas', ref: baseCollapseSource(age), durationMs: BASE_COLLAPSE_MS, loop: false };
+    out[b.id] = e;
   }
   return out;
 }

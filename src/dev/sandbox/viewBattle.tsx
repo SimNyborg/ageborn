@@ -63,6 +63,13 @@ export interface StageApi {
   audio: FakeAudio;
   /** Feeds synthetic events to the view (feel tuning); the sim is not touched. */
   inject(events: SimEvent[]): void;
+  /**
+   * Frame-exact captures (dev): `manual(true)` stops the ticker, then each `step(ms)` runs exactly one
+   * frame of `ms` (the loop and Pixi's render), so a screenshot sequence never depends on the speed of
+   * the machine.
+   */
+  manual(on: boolean): void;
+  step(ms: number): void;
   /** Recent sim events, newest last. */
   log(): readonly SimEvent[];
 }
@@ -89,7 +96,8 @@ async function loadArt(kind: ArtKind, settings: ViewSettings, preset: GraphicsPr
       const mod = load ? await load() : undefined;
       if (mod?.createArtProvider) {
         const art = mod.createArtProvider({ quality: preset, teamPreset: settings.teamPreset, dpr: Math.min(2, window.devicePixelRatio || 1) });
-        await art.preload(['stone', 'medieval', 'gunpowder', 'modern', 'future']);
+        // every age's sheets (one-age formats and base collapse captures start in any age)
+        await art.preload(['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic']);
         return { art, note: 'procedural (WP4)' };
       }
       return { art: new FakeArtProvider(), note: 'fake (visuals module not available)' };
@@ -227,12 +235,25 @@ export function BattleStage(p: {
       let world = build(art);
       worldRef.current = world;
       setHudWorld({ world, art });
+      let manualAt = 0;
       const api = (): StageApi => ({
         view: world.view,
         source: world.source,
         audio: world.audio,
         inject: (events) => world.view.onEvents(events),
         log: () => log,
+        manual: (on) => {
+          if (on) {
+            app.ticker.stop();
+            manualAt = performance.now();
+          } else {
+            app.ticker.start();
+          }
+        },
+        step: (ms) => {
+          manualAt += ms;
+          app.ticker.update(manualAt);
+        },
       });
       cbs.current.onApi?.(api());
 

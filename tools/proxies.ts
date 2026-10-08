@@ -40,7 +40,11 @@
  * 17. `flag_ball`: Hold with the flag at 800 behind a Ranged, Support and Heavy ball (Bulwark, Rally,
  *     Shield Wall), charging only at the pop cap or in Siege.
  * 18. `fallback_turtle`: Fall back, 4 turrets, Defences research (Keep Walls and Last Stand Drill are v1.1).
- * 19. `stance_toggler`: the Balanced reference player that flips Charge and Hold on every engagement.
+ * 19. `stance_toggler`: the Balanced reference player that flips Charge and Hold on every engagement
+ *     (every 0.5 s decision while its front fights, now that the sim has no stance cooldown).
+ * 19b. `stance_dancer` (owner decision 2026-10-07, no stance cooldown): the Balanced reference player
+ *     that falls back the moment its front is in a fight and charges again the moment it is not,
+ *     checked every 0.1 s (the "charge, then fall back" micro).
  *
  * Age Power proxies (A2.9.12; each plays the Balanced script unless noted):
  *
@@ -105,6 +109,7 @@ export type ProxyId =
   | 'flag_ball'
   | 'fallback_turtle'
   | 'stance_toggler'
+  | 'stance_dancer'
   | 'power_hoarder'
   | 'home_turtle'
   | 'power_spam'
@@ -154,9 +159,17 @@ export interface Strategy {
   /**
    * `hold` at `holdP` (default the 320 line), `fallback` (A18.4.2), `massThenCharge` holds until the pop
    * cap, `flagBall` holds at `holdP` and charges at the pop cap or in Siege, `toggle` flips Charge and Hold
-   * on every engagement (the stance toggler).
+   * on every engagement (the stance toggler), `dance` falls back the moment its front is in a fight and
+   * charges again the moment it is not (the stance dancer, owner decision 2026-10-07: no stance cooldown).
    */
-  stance: 'charge' | 'hold' | 'massThenCharge' | 'fallback' | 'flagBall' | 'toggle';
+  stance: 'charge' | 'hold' | 'massThenCharge' | 'fallback' | 'flagBall' | 'toggle' | 'dance';
+  /**
+   * The script's own minimum gap between two stance changes, ticks (default 60, the 3 s rhythm every
+   * proxy kept while the sim had a 3 s cooldown). The sim has none since 2026-10-07.
+   */
+  stanceGapTicks?: number;
+  /** Re-checks its stance this often, ticks, between its 0.5 s decisions (the stance dancer: 2). */
+  stanceEveryTicks?: number;
   /** Hold flag p in lu (A18.4.2: 320-800). */
   holdP?: number;
   /** `never`: stays in the first age (the `idle` proxy). */
@@ -407,7 +420,16 @@ export const STRATEGIES: Record<ProxyId, Strategy> = {
     research: ['defences.quick_loaders', 'defences.arsenal', 'troops.ranged.long_draw', 'economy.market'],
     researchFromMs: 0,
   },
-  stance_toggler: { ...BALANCED, id: 'stance_toggler', title: 'Stance toggler (flips on every engagement)', stance: 'toggle' },
+  // No stance cooldown since 2026-10-07: the toggler flips at every 0.5 s decision while its front fights.
+  stance_toggler: { ...BALANCED, id: 'stance_toggler', title: 'Stance toggler (flips on every engagement)', stance: 'toggle', stanceGapTicks: 10 },
+  stance_dancer: {
+    ...BALANCED,
+    id: 'stance_dancer',
+    title: 'Stance dancer (Fall back in every fight, Charge again at once; checked every 0.1 s)',
+    stance: 'dance',
+    stanceGapTicks: 2,
+    stanceEveryTicks: 2,
+  },
   longrange_turtle: {
     ...BALANCED,
     id: 'longrange_turtle',
@@ -501,6 +523,8 @@ export const EXPLOIT_PROXIES: readonly ProxyId[] = [
   'flag_ball',
   'fallback_turtle',
   'stance_toggler',
+  // No stance cooldown (owner decision 2026-10-07)
+  'stance_dancer',
   // A2.9.12
   'power_hoarder',
   'home_turtle',
@@ -546,7 +570,10 @@ export class ScriptedPlayer implements BotController {
   private readonly rng: Sfc32State;
   private readonly maxAgeIndex: number;
   private lastStanceTick = -1_000;
+  private lastStanceMode: StanceMode | null = null;
   private lastDecisionTick = -1;
+  /** The last observation tick whose stance was checked (decisions and `stanceEveryTicks` checks). */
+  private lastStanceCheckTick = -1;
   /** The observation lags, so recent orders are remembered to avoid repeating them. */
   private evolveIssuedTick = -1_000;
   private readonly mountBusyUntil: number[] = [0, 0, 0, 0];
@@ -599,9 +626,17 @@ export class ScriptedPlayer implements BotController {
       this.foeHomeCastTick = obs.tick;
     }
     // Decide every 0.5 s of game time, once per observation (while the delay ring fills, the same
-    // oldest observation is handed over several times).
-    if (obs.tick % TICKS_PER_DECISION !== 0 || obs.tick === this.lastDecisionTick) return [];
+    // oldest observation is handed over several times). A `stanceEveryTicks` script also re-checks its
+    // stance between decisions (the stance dancer).
+    if (obs.tick % TICKS_PER_DECISION !== 0 || obs.tick === this.lastDecisionTick) {
+      const every = this.strategy.stanceEveryTicks;
+      if (every === undefined || obs.tick % every !== 0 || obs.tick === this.lastStanceCheckTick || obs.tick === this.lastDecisionTick) return [];
+      this.lastStanceCheckTick = obs.tick;
+      const c = this.stanceCommand(obs);
+      return c ? [c] : [];
+    }
     this.lastDecisionTick = obs.tick;
+    this.lastStanceCheckTick = obs.tick;
     const st = this.strategy;
     const side = this.side;
     const econ = this.content.economy;
@@ -708,15 +743,9 @@ export class ScriptedPlayer implements BotController {
       }
     }
 
-    // Stance (A18.4.2: 3 s cooldown; the Hold flag at `holdP`).
-    const want = this.wantedStance(me.pop, obs);
-    if (obs.tick - this.lastStanceTick >= 60) {
-      const flag = want === 'hold' ? st.holdP : undefined;
-      if (want !== me.stance || (flag !== undefined && flag !== me.holdP)) {
-        out.push(flag === undefined ? { t: 'stance', side, mode: want } : { t: 'stance', side, mode: want, holdP: flag });
-        this.lastStanceTick = obs.tick;
-      }
-    }
+    // Stance (A18.4.2; the Hold flag at `holdP`).
+    const stance = this.stanceCommand(obs);
+    if (stance) out.push(stance);
 
     // Training (A2.7): fill the shared queue while gold allows, but save for the next turret or mount
     // the strategy wants unless the base is threatened.
@@ -794,20 +823,45 @@ export class ScriptedPlayer implements BotController {
   }
 
   /**
+   * The stance order for this observation, or null: the wanted stance (and Hold flag) when it differs
+   * from the current one and the script's own gap (`stanceGapTicks`, default 3 s) has passed.
+   */
+  private stanceCommand(obs: Observation): Command | null {
+    const st = this.strategy;
+    // Always ask first: `massThenCharge` and `flagBall` keep their massing state in `wantedStance`.
+    const want = this.wantedStance(obs.me.pop, obs);
+    const since = obs.tick - this.lastStanceTick;
+    if (since < (st.stanceGapTicks ?? 60)) return null;
+    // The observation lags: an order sent too recently to show yet is not sent again (the dancer).
+    if (since <= PROXY_DELAY_TICKS + 1 && want === this.lastStanceMode) return null;
+    const flag = want === 'hold' ? st.holdP : undefined;
+    if (want === obs.me.stance && (flag === undefined || flag === obs.me.holdP)) return null;
+    this.lastStanceTick = obs.tick;
+    this.lastStanceMode = want;
+    return flag === undefined ? { t: 'stance', side: this.side, mode: want } : { t: 'stance', side: this.side, mode: want, holdP: flag };
+  }
+
+  /** Whether the own front is in a fight: an enemy ground unit within 120 lu of the frontmost own ground unit. */
+  private frontFighting(obs: Observation): boolean {
+    const mine = obs.units.filter((u) => u.side === this.side && !u.air && u.hp > 0);
+    const front = mine.reduce((m, u) => Math.max(m, u.p), -1);
+    // Observation positions are in the observer's frame, enemies included (A2.1).
+    return front >= 0 && obs.units.some((u) => u.side !== this.side && u.hp > 0 && !u.air && u.p - front <= 120_000);
+  }
+
+  /**
    * `massThenCharge` and `flagBall` hold until the army is 6 pop short of the cap, push, and mass again
    * below half (`flagBall` also charges in Siege); `toggle` flips Charge and Hold whenever its front is in
-   * a fight (an enemy within 120 lu of its frontmost ground unit).
+   * a fight (an enemy within 120 lu of its frontmost ground unit); `dance` falls back while its front is
+   * in a fight and charges otherwise.
    */
   private wantedStance(pop: number, obs: Observation): StanceMode {
     const st = this.strategy.stance;
     if (st === 'toggle') {
-      const mine = obs.units.filter((u) => u.side === this.side && !u.air && u.hp > 0);
-      const front = mine.reduce((m, u) => Math.max(m, u.p), -1);
-      // Observation positions are in the observer's frame, enemies included (A2.1).
-      const fighting = front >= 0 && obs.units.some((u) => u.side !== this.side && u.hp > 0 && !u.air && u.p - front <= 120_000);
-      if (!fighting) return 'charge';
+      if (!this.frontFighting(obs)) return 'charge';
       return obs.me.stance === 'charge' ? 'hold' : 'charge';
     }
+    if (st === 'dance') return this.frontFighting(obs) ? 'fallback' : 'charge';
     if (st !== 'massThenCharge' && st !== 'flagBall') return st;
     if (st === 'flagBall' && obs.phase === 'siege') return 'charge';
     const cap = this.content.economy.popCap;

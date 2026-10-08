@@ -4,7 +4,7 @@ import { FakeAudio } from '@/contracts/fakes/audio';
 import { FakeSim, cannedBattleEvents, fakeMatchConfig } from '@/contracts/fakes/sim';
 import { Container } from 'pixi.js';
 import { describe, expect, it } from 'vitest';
-import { BattleView, type BattleViewOptions } from '../battleView';
+import { BattleView, collapseSeed, type BattleViewOptions } from '../battleView';
 import { EVOLVE_CUE_FADE_MS } from '../eventMapper';
 import type { LabelFactory } from '../feel/numbers';
 import { FixedStepClock } from '../loop';
@@ -390,5 +390,102 @@ describe('BattleView effects: art options, following and settings', () => {
     const lite = setupFx([spawn(1, 0, 'big_legend', 300_000)], { settings: { graphics: 'lite' } });
     lite.view.onEvents(lite.sim.step([]));
     expect(lite.art.played.some((p) => p.id === 'fx.legendary_aura')).toBe(false);
+  });
+});
+
+describe('a destroyed base collapses on its beats (A11, A12)', () => {
+  const END: SimEvent[] = [
+    { tick: 3, e: 'baseDamaged', side: 1, sourceId: 1, damage: 1_000_000, hp: 0, maxHp: 1_000_000 },
+    { tick: 3, e: 'matchEnded', result: { winner: 0, reason: 'baseDestroyed', tick: 3, baseHpBp: [10_000, 0] } },
+  ];
+  const BEATS = { breakMs: 400, landMs: 900, settleMs: 1800, material: 'iron' };
+
+  /** Base views with the collapse hooks of the atlas art: they record the seed and report fixed beats. */
+  class CollapseArt extends SpyArt {
+    readonly seeds: number[] = [];
+    override createBase(o: Parameters<FakeArtProvider['createBase']>[0]): ReturnType<FakeArtProvider['createBase']> {
+      const v = super.createBase(o);
+      return Object.assign(v, {
+        collapseWith: ({ seed }: { seed: number }) => {
+          this.seeds.push(seed);
+          return BEATS;
+        },
+      });
+    }
+  }
+
+  /** Plays the end at 60 fps and notes when each sound and music cue starts (real ms after the end). */
+  function runEnd(o: Partial<BattleViewOptions> = {}, speed = 1) {
+    const sim = new FakeSim({ events: END });
+    const art = new CollapseArt();
+    const audio = new FakeAudio();
+    const view = new BattleView({ sim, art, audio, labelFactory: labels, ...o });
+    view.resize(844, 390);
+    view.setSpeed(speed);
+    const at = new Map<string, number>();
+    const clock = new FixedStepClock();
+    let t = -1;
+    let frozen = 0;
+    let slowest = 1;
+    let punch = 1;
+    for (let frame = 0; frame < 300; frame++) {
+      clock.add(1000 / 60, speed, view.simFrozen);
+      while (!view.simFrozen && !sim.done && clock.consume()) view.onEvents(sim.step([]));
+      view.render(clock.alpha, 1000 / 60);
+      if (t >= 0) t += 1000 / 60;
+      else if (sim.state.outcome) t = 0;
+      if (t < 0) continue;
+      for (const c of audio.calls) {
+        const key = c.method === 'play' ? c.id : c.method === 'music.setCue' ? c.cue : null;
+        if (key !== null && !at.has(key)) at.set(key, Math.round(t));
+      }
+      // after the end the sim no longer runs, so the view's own freeze is what holds the collapse
+      if (view.director.frozen) frozen++;
+      slowest = Math.min(slowest, view.director.slowMo.timeScale);
+      punch = Math.max(punch, view.camera.punchScale);
+    }
+    return { sim, art, at, frozen, slowest, punch };
+  }
+
+  it('seeds the art from match data and fires the break, the stinger and the landing in that order', () => {
+    const r = runEnd();
+    expect(r.art.seeds).toEqual([collapseSeed(r.sim.config.seed, 1, 3)]);
+    expect(collapseSeed(r.sim.config.seed, 1, 3)).toBe(collapseSeed(r.sim.config.seed, 1, 3));
+    expect(collapseSeed(r.sim.config.seed, 0, 3)).not.toBe(collapseSeed(r.sim.config.seed, 1, 3));
+    const t = (id: string): number => r.at.get(id) ?? Number.NaN;
+    // the build-up starts with the end; nothing crashes before the break
+    expect(t('base_doom_rumble')).toBe(0);
+    expect(t('base_destroyed')).toBeGreaterThanOrEqual(BEATS.breakMs - 20);
+    expect(t('base_destroyed')).toBeLessThanOrEqual(BEATS.breakMs + 40);
+    expect(t('base_break_iron')).toBe(t('base_destroyed'));
+    expect(t('base_debris_iron')).toBeGreaterThan(t('base_break_iron'));
+    // the stinger follows the crash; the thud lands later, slowed by the slow motion
+    expect(t('stinger.victory')).toBeGreaterThan(t('base_destroyed'));
+    expect(t('base_settle_thud')).toBeGreaterThan(t('stinger.victory'));
+    expect(t('base_settle_thud')).toBeGreaterThan(BEATS.landMs);
+    // and the whole sequence fits before the Result shows (2.5 s after the end)
+    expect(t('base_settle_thud')).toBeLessThan(2500);
+    // the break's hit-stop (130 ms, exempt from the cap), slow motion and camera punch
+    expect(r.frozen).toBeGreaterThanOrEqual(7);
+    expect(r.frozen).toBeLessThanOrEqual(10);
+    expect(r.slowest).toBeCloseTo(0.38, 2);
+    expect(r.punch).toBeGreaterThan(1.05);
+  });
+
+  it('reduce motion: no hit-stop, slow motion or camera punch; the sounds and the stinger still play', () => {
+    const r = runEnd({ settings: { reduceMotion: true } });
+    expect(r.frozen).toBe(0);
+    expect(r.slowest).toBe(1);
+    expect(r.punch).toBe(1);
+    for (const id of ['base_doom_rumble', 'base_destroyed', 'base_break_iron', 'base_debris_iron', 'stinger.victory', 'base_settle_thud']) {
+      expect(r.at.has(id), id).toBe(true);
+    }
+    expect(r.at.get('base_settle_thud')).toBeLessThan(1200);
+  });
+
+  it('follows the game speed: at 2x the break comes twice as soon', () => {
+    const r = runEnd({}, 2);
+    expect(r.at.get('base_destroyed')).toBeLessThanOrEqual(BEATS.breakMs / 2 + 40);
+    expect(r.at.get('base_settle_thud')).toBeLessThan(1500);
   });
 });

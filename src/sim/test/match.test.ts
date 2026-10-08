@@ -52,7 +52,7 @@ describe('formats and phases (A2.10)', () => {
     expect(ofKind(stepN(both, 1), 'matchEnded')[0]?.result).toMatchObject({ winner: null, reason: 'bothDestroyed' });
   });
 
-  it('retreat unlocks at 1:00 and counts as a loss; never in the Tutorial', () => {
+  it('retreat unlocks at 1:00 on the frozen fixture (open at once live since 2026-10-07) and counts as a loss; never in the Tutorial', () => {
     const sim = createSim(matchConfig({ format: 'short' }));
     const st = new Stamper(sim);
     expect(ofKind(st.step({ t: 'retreat', side: 0 }), 'commandRejected')[0]?.reason).toBe('retreatLocked');
@@ -124,7 +124,7 @@ describe('commands (B3 step 1)', () => {
     expect(sim.state.sides[0].queue.map((q) => q.card)).toEqual(['pebbler', 'bonker', 'tuskback']);
   });
 
-  it('stance: 2 s cooldown on the frozen fixture (3 s live, A18.4.2); can be locked by training', () => {
+  it('stance: 2 s cooldown on the frozen fixture (none live since 2026-10-07, A18.4.2); can be locked by training', () => {
     const sim = arena();
     const st = new Stamper(sim);
     const ev = [

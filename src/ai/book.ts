@@ -168,7 +168,11 @@ export interface CardBook {
     powerReach: PowerReachRules;
     ascendTicks: number;
     turretBuildTicks: number;
-    stanceCooldownTicks: number;
+    /**
+     * The bot's own minimum gap between two stance changes, ticks ({@link AI_STANCE_GAP_TICKS}, or the
+     * content's stance cooldown when that is longer). The sim has no stance cooldown since 2026-10-07.
+     */
+    stanceGapTicks: number;
     /** Hold flag range and snap (A18.4.2), milli-lu, and its move cooldown in ticks. */
     flagMin: number;
     flagMax: number;
@@ -194,6 +198,13 @@ function firstRange(u: UnitDef): number {
   const a = u.attacks[0];
   return a ? a.range * MILLI : 0;
 }
+
+/**
+ * A bot changes stance at most once per 3 s (owner decision 2026-10-07): the sim lets players switch
+ * Back, Hold and Charge at once, so the AI rate-limits itself and never flickers between stances. The
+ * value is the old sim cooldown, so the bots play exactly as before.
+ */
+export const AI_STANCE_GAP_TICKS = 60;
 
 /** Structure row values, bp on the counter scale (5,000 = even): ×2, air over a wall, ×1, ×0.5. */
 const STRUCTURE_BREAKER_BP = 10000;
@@ -419,7 +430,7 @@ export function cardBook(content: CompiledContent): CardBook {
       powerReach: powerReachRules(e, MILLI),
       ascendTicks: content.ticks.ascend,
       turretBuildTicks: content.ticks.turretBuild,
-      stanceCooldownTicks: content.ticks.stanceCooldown,
+      stanceGapTicks: Math.max(AI_STANCE_GAP_TICKS, content.ticks.stanceCooldown),
       flagMin: e.holdFlag.minP * MILLI,
       flagMax: e.holdFlag.maxP * MILLI,
       flagSnap: Math.max(1, e.holdFlag.snapLu) * MILLI,

@@ -341,16 +341,6 @@
   outline: 3px solid var(--ui-gold);
   outline-offset: 3px;
 }
-.gen-note {
-  margin: 0;
-  color: var(--ui-muted);
-  font-size: 12px;
-  font-weight: 800;
-}
-.gen-note--top {
-  margin-bottom: 2px;
-}
-
 @media (min-width: 1000px) {
   .gen {
     grid-template-columns: minmax(260px, 44%) minmax(0, 1fr);

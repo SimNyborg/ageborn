@@ -532,12 +532,6 @@
   align-items: center;
   gap: 4px;
 }
-.home-chest__hint {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--ui-muted);
-}
-
 /* ---- info panels (A15.3) ---- */
 .home-chipBtn {
   padding: 0;
@@ -620,13 +614,6 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ui-gold-hi);
-}
-
-.home-quests__hint {
-  margin-top: 8px;
-  font-size: 12px;
-  color: var(--ui-dim);
-  font-weight: 700;
 }
 
 /* ---- capsule tray ---- */

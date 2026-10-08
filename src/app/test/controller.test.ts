@@ -77,7 +77,7 @@ describe('AppController: the first session (A8, A9 flow)', () => {
     c.next();
     const m2 = c.route.value;
     if (m2.id !== 'battle') throw new Error('match 2 should be running');
-    // Retreat (a loss) once it unlocks at 1:00 (A2.10).
+    // Retreat (a loss) a minute in; it is open from the start since 2026-10-07 (A2.10).
     m2.battle.session.fastForward(20 * 62);
     expect(m2.battle.session.status.value).toBe('running');
     m2.battle.session.issue({ t: 'retreat', side: 0 });

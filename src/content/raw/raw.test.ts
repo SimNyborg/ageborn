@@ -511,12 +511,13 @@ describe.each([
       if (c === raw) {
         // A18.3.4: windows of 3, 5 and 7 ages on the A18 clocks; thresholds by position (A18.3.2),
         // tuned from 700/1,250/1,350/1,450/1,550/1,650 by the A18 pacing run (docs/decisions.md)
+        // Retreat is open from the start (owner decision 2026-10-07; 1:00 before).
         expect(c.formats.short).toMatchObject({ kind: 'short', ages: AGES8.slice(0, 3), overdriveMs: 300000, siegeMs: 390000,
-          finalBellMs: 510000, retreatAfterMs: 60000, xpToNextOverride: [620, 1300] });
+          finalBellMs: 510000, retreatAfterMs: 0, xpToNextOverride: [620, 1300] });
         expect(c.formats.standard).toMatchObject({ kind: 'standard', ages: AGES8.slice(0, 5), overdriveMs: 480000,
-          siegeMs: 600000, finalBellMs: 750000, retreatAfterMs: 60000, xpToNextOverride: [620, 1300, 1580, 1800] });
+          siegeMs: 600000, finalBellMs: 750000, retreatAfterMs: 0, xpToNextOverride: [620, 1300, 1580, 1800] });
         expect(c.formats.full).toMatchObject({ kind: 'full', ages: AGES8.slice(0, 7), overdriveMs: 720000, siegeMs: 870000,
-          finalBellMs: 1050000, retreatAfterMs: 60000, xpToNextOverride: [620, 1300, 1580, 1800, 1850, 2000] });
+          finalBellMs: 1050000, retreatAfterMs: 0, xpToNextOverride: [620, 1300, 1580, 1800, 1850, 2000] });
         // a window may start in a later age; it never runs past the last age
         expect(c.formats['short.modern']?.ages).toEqual(['modern', 'future', 'cosmic']);
         expect(c.formats['short.future']).toBeUndefined();
@@ -533,7 +534,8 @@ describe.each([
 
     it('gold, XP, turrets, powers, phases and Last Stand (A2.3-A2.11; A18.3 on the live tables)', () => {
       // A18.3.2-A18.3.3: 5 XP/s, kill XP 70%, loss XP 50%, 8 XP per 1% of base damage, bounty 50%,
-      // Overcharge 1,650; A18.4.2 stance 3 s and freshness 4 s. The frozen fixture keeps the A17 numbers.
+      // Overcharge 1,650; A18.4.2 freshness 4 s and no stance cooldown (owner decision 2026-10-07; 3 s
+      // before). The frozen fixture keeps the A17 numbers.
       const a18 = c === raw;
       expect(c.economy).toMatchObject({
         startGold: 175, passiveGoldPerSec: 6, passiveXpPerSec: a18 ? 5 : 4, mountCosts: [0, 150, 350, 700],
@@ -554,7 +556,7 @@ describe.each([
         marchSpeedBp: 12500, frontWidth: 3,
         lastStand: { thresholdBp: 2500, autoBp: 1000, radius: 450, damagePerP: 200, knockback: 80, chargeMs: 1000 },
         spawnP: 20, holdLine: 320, holdRetreatSpeedBp: 7000, leash: 20, spacingBp: 3000, retargetMs: 1000,
-        retargetCloserLu: 60, rangedSelfDefenseLu: 30, firstHitIdleMs: a18 ? 4000 : 2000, stanceCooldownMs: a18 ? 3000 : 2000,
+        retargetCloserLu: 60, rangedSelfDefenseLu: 30, firstHitIdleMs: a18 ? 4000 : 2000, stanceCooldownMs: a18 ? 0 : 2000,
         sizes: { small: 24, medium: 32, large: 48, huge: 80 },
         knockbackResistBp: { small: 0, medium: 0, large: 5000, huge: 5000 },
         areaSecondaryBp: 5000, areaMaxTargets: 4, healLegendaryBp: 5000, legendaryPowerDamageBp: 5000,

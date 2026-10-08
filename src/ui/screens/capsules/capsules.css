@@ -192,14 +192,6 @@
   font-weight: 800;
   text-align: center;
 }
-.caps-tile__source {
-  color: var(--ui-text-3);
-  font-size: 12px;
-  line-height: 1.2;
-  font-weight: 700;
-  text-align: center;
-}
-
 /* ---- the banks ---- */
 .caps-banks {
   display: flex;
@@ -239,6 +231,12 @@
 .caps-bank--clay .ui-clay {
   flex: none;
 }
+/* The meter's own "Clay meter 1/2" is the row's label, as bold as the Supply row's. */
+.caps-bank--clay .ui-clay__text {
+  color: var(--ui-text);
+  font-size: var(--ui-fs-label);
+  font-weight: 800;
+}
 
 /* Regular screens have the height for the whole shelf. */
 @container ui-root (min-height: 481px) {
@@ -277,9 +275,6 @@
   }
   .caps-tile__icon {
     height: 40px;
-  }
-  .caps-tile__source {
-    display: none;
   }
   .caps-bank {
     padding: 6px var(--ui-s2);

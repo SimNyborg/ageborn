@@ -2,9 +2,10 @@
  * Settings (A9 #15): Master / Music / SFX / UI volume; graphics preset; reduce motion; shake;
  * hitstop; damage numbers; colourblind preset; language (EN in v1, DA in v1.1); default speed; save
  * export (code and file), import and reset; the odds overview; About (with "All opponents in this
- * version are AI.", A7.1, and "Nothing you have earned is ever taken away.", A15.3); For parents
- * (A15.6); break reminder, quick reveal and vibration (A15.6 safe defaults); credits; event log export (A8). A gentle backup reminder shows when the
- * last export is more than 5 days old (B8). Changes apply at once.
+ * version are AI.", A7.1; no slogans, owner request 2026-10-07); For parents (A15.6); break reminder,
+ * quick reveal and vibration (A15.6 safe defaults); credits; event log export (A8). A gentle backup
+ * reminder shows when the last export is more than 5 days old (B8). Changes apply at once. Toggles
+ * carry a hint only where the name alone does not say what they do.
  */
 import './settings.css';
 import type { Bus, Settings } from '@/contracts';
@@ -12,7 +13,6 @@ import { useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
 import { Pill } from '../../components/Chips';
 import { Segmented, Slider, Toggle } from '../../components/Controls';
-import { formatInt } from '../../components/format';
 import {
   CheckIcon,
   CopyIcon,
@@ -61,7 +61,7 @@ export const PARENT_LINES: readonly string[] = [
 ];
 
 export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
-  const { save, content, t, locale, router, services, toasts, now } = useUi();
+  const { save, content, t, router, services, toasts, now } = useUi();
   const s = save.value;
   const st = s.settings;
   const [dialog, setDialog] = useState<Dialog>(null);
@@ -129,7 +129,6 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
             </div>
             <Toggle
               label={t('ui.settings.reduceMotion')}
-              hint={t('ui.settings.reduceMotionHint')}
               checked={st.reduceMotion}
               onChange={(reduceMotion) => set({ reduceMotion })}
               testid="set-reduce-motion"
@@ -185,9 +184,7 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
             <ul class="set-about">
               <li data-testid="about-ai">{t('ui.ai.allAi')}</li>
               <li>{t('ui.ai.adapts')}</li>
-              <li>{t('ui.settings.noMoney')}</li>
               <li>{t('ui.settings.offline')}</li>
-              <li data-testid="about-kept">{t('ui.info.kept')}</li>
             </ul>
             <div class="set-buttons">
               {/* Settings has no primary action (bug hunt 2026-10-01 #27): For parents is a secondary like its neighbours. */}
@@ -217,14 +214,12 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
             </div>
             <Toggle
               label={t('ui.settings.autoCamera')}
-              hint={t('ui.settings.autoCameraHint')}
               checked={st.autoCamera !== false}
               onChange={(autoCamera) => set({ autoCamera })}
               testid="set-auto-camera"
             />
             <Toggle
               label={t('ui.settings.edgeScroll')}
-              hint={t('ui.settings.edgeScrollHint')}
               checked={st.edgeScroll !== false}
               onChange={(edgeScroll) => set({ edgeScroll })}
               testid="set-edge-scroll"
@@ -264,7 +259,6 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
                 ]}
               />
             </div>
-            <p class="set-note">{t('ui.settings.langSoon')}</p>
           </Panel>
 
           <Panel title={t('ui.settings.save')} icon={<DownloadIcon size={24} />} testid="set-save" labelledBy="set-save-t">
@@ -319,7 +313,6 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
         >
           <p class="set-note">{t('ui.settings.exportHelp')}</p>
           <textarea class="ui-textarea" readOnly value={code} data-testid="export-text" aria-label={t('ui.settings.exportCode')} />
-          <p class="set-note">{t('ui.settings.codeLength', { n: formatInt(code.length, locale) })}</p>
         </Modal>
       ) : null}
       {dialog === 'import' ? (

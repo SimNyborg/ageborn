@@ -30,8 +30,55 @@
   box-shadow: 0 4px 0 var(--ui-ink), inset 0 0 0 2px color-mix(in srgb, var(--frame) 60%, transparent);
   text-align: center;
 }
+/* An owned skin is one big button (owner request 2026-10-07: tap to equip, no Equip pill). */
+.skins__item.is-owned {
+  padding: 0;
+  transition: transform var(--ui-dur-release) var(--ui-ease-out), box-shadow var(--ui-dur-release);
+}
+.skins__hit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px;
+  border: 0;
+  border-radius: 13px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+.skins__hit:focus-visible {
+  outline: 3px solid var(--ui-gold);
+  outline-offset: -3px;
+}
+.skins__item.is-owned:not(.is-on):hover {
+  transform: translateY(-2px);
+}
+.skins__item.is-owned:active {
+  transform: translateY(2px);
+}
 .skins__item.is-on {
-  box-shadow: 0 4px 0 var(--ui-ink), 0 0 0 3px var(--ui-gold), 0 0 18px rgba(255, 197, 61, 0.5);
+  background: linear-gradient(180deg, rgba(40, 92, 66, 0.95), rgba(24, 56, 42, 0.97));
+  box-shadow: 0 4px 0 var(--ui-ink), 0 0 0 3px var(--ui-green-hi);
+  animation: ui-pop var(--ui-dur-medium) var(--ui-ease-back);
+}
+.skins__check {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 50%;
+  background: var(--ui-green);
+  color: #fff;
+  animation: ui-pop var(--ui-dur-medium) var(--ui-ease-back);
 }
 .skins__art {
   position: relative;
@@ -67,13 +114,16 @@
   font-weight: 700;
 }
 .skins__equipped {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  min-height: 48px;
+  align-self: center;
+  margin: -2px 0 8px;
+  padding: 2px 12px;
+  border: 2px solid var(--ui-green-hi);
+  border-radius: 999px;
+  background: rgba(10, 30, 20, 0.45);
   color: var(--ui-green-hi);
   font-weight: 900;
-  font-size: 14px;
+  font-size: 13px;
+  animation: ui-pop var(--ui-dur-medium) var(--ui-ease-back);
 }
 .skins__crateOnly {
   display: flex;
@@ -111,6 +161,10 @@
   width: 28px;
   padding: 1px;
   border-radius: 7px;
+}
+/* Compact: the reward's icon says what it is (the name is the tooltip); amounts keep their number. */
+.road-rw--compact .road-rw__name {
+  display: none;
 }
 
 /* ---- "War Plan not ready" dialog (A3 minimum to play) ---- */
@@ -156,4 +210,132 @@
 .road-rw__medal .ui-art__img {
   transform: scale(1.5);
   filter: brightness(1.3) saturate(1.25);
+}
+
+/* ---- Saved battle decks (owner request 2026-10-07): the switch in Army's header and on Home's plate ---- */
+.deck-switch {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  min-width: 0;
+}
+.deck-switch__seg {
+  flex-wrap: nowrap;
+  align-items: center;
+  min-width: 0;
+  border-color: rgba(255, 207, 92, 0.45);
+}
+.deck-switch__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  color: var(--ui-gold-hi);
+}
+.deck-switch__opt {
+  gap: 4px;
+  min-width: 52px;
+  max-width: 112px;
+  padding: 0 var(--ui-s2);
+}
+.deck-switch__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* A deck not saved yet (it starts as a copy of the deck in use) reads a little quieter. */
+.deck-switch__opt.is-new:not(.is-on) .deck-switch__name {
+  opacity: 0.72;
+}
+.deck-switch__pen {
+  display: inline-flex;
+  flex: none;
+  color: var(--ui-gold-hi);
+}
+/* Home's plate: the switch spans the plate next to Battle. The segments start from their names'
+   width and share the rest, so a renamed deck ("Legends") keeps its whole name on a phone; only names
+   too long for the plate together fall back to an ellipsis. */
+.deck-switch--plate {
+  display: flex;
+  width: 100%;
+}
+.deck-switch--plate .deck-switch__seg {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.deck-switch--plate .deck-switch__opt {
+  flex: 1 1 auto;
+  min-width: 44px;
+  max-width: none;
+  padding: 0 5px;
+}
+.deck-switch--plate .deck-switch__icon {
+  width: 24px;
+}
+/* The one-time hint (U8): a small bubble beside the switch, a note that never takes a tap. */
+.deck-hint {
+  position: absolute;
+  z-index: 30;
+  left: 0;
+  top: calc(100% + 8px);
+  min-height: 32px;
+  padding: 6px var(--ui-s3);
+  pointer-events: none;
+  border: 1px solid rgba(255, 207, 92, 0.55);
+  border-radius: var(--ui-r-sm);
+  background: var(--ui-surface-1);
+  box-shadow: var(--ui-e3);
+  color: var(--ui-text);
+  font: 700 var(--ui-fs-caption) / var(--ui-lh-caption) var(--ui-font-text);
+  white-space: nowrap;
+  animation: deck-hint-in var(--ui-dur-medium) var(--ui-ease-back) both;
+}
+.deck-hint::before {
+  content: '';
+  position: absolute;
+  left: 18px;
+  top: -6px;
+  border: 6px solid transparent;
+  border-top: 0;
+  border-bottom-color: rgba(255, 207, 92, 0.55);
+}
+.deck-hint--plate {
+  top: auto;
+  bottom: calc(100% + 8px);
+  left: auto;
+  right: 0;
+}
+.deck-hint--plate::before {
+  left: auto;
+  right: 24px;
+  top: auto;
+  bottom: -6px;
+  border-top: 6px solid rgba(255, 207, 92, 0.55);
+  border-bottom: 0;
+}
+@keyframes deck-hint-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--ui-axis) * -0.5)) scale(0.92);
+  }
+}
+/* The deck sheet: "Copy from" the other saved decks. */
+.deck-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-s2);
+  margin-top: var(--ui-s3);
+}
+.deck-copy__label {
+  color: var(--ui-text-2);
+  font-size: var(--ui-fs-caption);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.deck-copy__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-s2);
 }

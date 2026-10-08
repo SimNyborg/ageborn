@@ -63,6 +63,25 @@ describe('global freeze cap (A12 Hitstop)', () => {
     s.update(2);
     expect(s.timeScale).toBe(1);
   });
+
+  it('eases slow motion back to full speed over its end, never jumping (base destroyed, A12)', () => {
+    const s = new SlowMotion();
+    s.start(0.38, 980, 700);
+    expect(s.timeScale).toBe(0.38);
+    s.update(280);
+    expect(s.timeScale).toBeCloseTo(0.38, 6);
+    let last = s.timeScale;
+    for (let t = 0; t < 700; t += 10) {
+      s.update(10);
+      const k = s.timeScale;
+      expect(k).toBeGreaterThanOrEqual(last - 1e-9);
+      // a smoothstep: no frame-to-frame jump bigger than 2.5% of full speed
+      expect(k - last).toBeLessThan(0.025);
+      last = k;
+    }
+    expect(s.timeScale).toBe(1);
+    expect(s.active).toBe(false);
+  });
 });
 
 describe('screen shake (A12 trauma model)', () => {
@@ -365,5 +384,28 @@ describe('feel config', () => {
     const bad = JSON.parse(JSON.stringify(defaultFeelConfig)) as typeof defaultFeelConfig;
     bad.events['hit.light'] = { flashMs: -1, flashAlpha: 3 };
     expect(validateFeelConfig(bad).length).toBe(2);
+  });
+
+  it('times the base collapse from the break (A12): calm build-up, then the hit-stop, slow motion and a soft flash', () => {
+    const c = defaultFeelConfig;
+    const doom = c.events['base.destroyed']!;
+    expect(doom.hitstopGlobalMs ?? 0).toBe(0);
+    expect(doom.slowMo).toBeUndefined();
+    const brk = c.events['base.destroyed.break']!;
+    expect(brk.hitstopGlobalMs).toBe(130);
+    expect(brk.globalExempt).toBe(true);
+    expect(brk.slowMo).toEqual({ scale: 0.38, ms: 980, easeMs: 700 });
+    // the whole-screen flash stays soft (ui-plan 2.9: at most 35%)
+    expect(c.events['base.destroyed.flash']!.flashAlpha).toBeLessThanOrEqual(0.35);
+    expect(c.tuning.baseCollapse.landMs).toBeGreaterThan(c.tuning.baseCollapse.breakMs);
+    const bad = cloneFeelConfig();
+    bad.tuning.baseCollapse = { ...bad.tuning.baseCollapse, landMs: 100, pushZoom: 3, punchZoom: 0.5 };
+    bad.events['base.destroyed.break'] = { ...brk, slowMo: { scale: 0.4, ms: 500, easeMs: 900 } };
+    expect(validateFeelConfig(bad)).toEqual([
+      'tuning.baseCollapse.landMs must come after breakMs',
+      'tuning.baseCollapse.pushZoom must be in 1..2',
+      'tuning.baseCollapse.punchZoom must be in 0..0.2',
+      'base.destroyed.break.slowMo.easeMs must be in 0..ms',
+    ]);
   });
 });

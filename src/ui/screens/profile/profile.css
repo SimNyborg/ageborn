@@ -291,12 +291,6 @@
   gap: 6px;
   min-width: 0;
 }
-.prof-goals__hint {
-  margin: 0;
-  color: var(--ui-text-2);
-  font-size: 12px;
-  font-weight: 700;
-}
 .prof-goal {
   display: grid;
   grid-template-columns: 28px minmax(0, 1fr) minmax(64px, 120px) 68px;

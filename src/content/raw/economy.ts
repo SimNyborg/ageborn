@@ -41,8 +41,11 @@ export const WINDOW_CLOCKS: Readonly<Record<number, { kind: FormatKind; overdriv
   7: { kind: 'full', overdriveMs: 720000, siegeMs: 870000, finalBellMs: 1050000 },
 };
 
-/** Retreat unlocks after 1:00 in every window (A2.10). */
-const RETREAT_MS = 60000;
+/**
+ * Retreat is open from the start in every window (owner decision 2026-10-07; it unlocked at 1:00 before).
+ * A Retreat pays nothing and counts as a loss (A6.3), so leaving early is never a free escape.
+ */
+const RETREAT_MS = 0;
 
 /** One step of the Siege rope in a timed format, timed from Siege (A2.10.2). */
 export interface TimedRopeStep {
@@ -384,8 +387,10 @@ export const economy: EconomyRules = {
   rangedSelfDefenseLu: 30,
   // A18.4.2 engagement freshness: fresh after 4 s with no target (stance changes never reset it)
   firstHitIdleMs: 4000,
-  // A18.4.2 Stance: a change at most once per 3 s; the Hold flag in [320, 800], 20 lu steps, moved once per 1 s
-  stanceCooldownMs: 3000,
+  // A18.4.2 Stance: no cooldown (owner decision 2026-10-07; 3 s before), so Back, Hold and Charge switch at
+  // once (0 ms compiles to the B3 minimum of one tick); bots keep their own 3 s gap (`ai/book.ts`). The Hold
+  // flag in [320, 800], 20 lu steps, moved once per 1 s
+  stanceCooldownMs: 0,
   holdFlag: { minP: 320, maxP: 800, snapLu: 20, moveCooldownMs: 1000 },
   fallbackP: 200,
   // A18.2 rule 4 hard stacking caps (all sources summed)

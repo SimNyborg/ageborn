@@ -2172,19 +2172,6 @@
   white-space: nowrap;
 }
 
-/* The 3 s wait as a sweep that empties. */
-.hud-stance-wait {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  background: conic-gradient(rgba(8, 10, 14, 0.62) calc(var(--wait, 0) * 1turn), transparent 0);
-  transition: opacity var(--ui-dur-micro) var(--ui-ease-out);
-}
-
-.hud-stance.is-waiting .hud-stance-wait {
-  opacity: 1;
-}
-
 .hud-stance .hud-key {
   top: 2px;
   left: 2px;
@@ -4202,10 +4189,6 @@
 .hud-stance-btn .hud-stance-label {
   font-size: 12px;
   line-height: 13px;
-}
-
-.hud-stance-seg.is-waiting .hud-stance-wait {
-  opacity: 1;
 }
 
 @container hud (max-height: 499px) {

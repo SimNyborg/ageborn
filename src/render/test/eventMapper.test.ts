@@ -247,17 +247,74 @@ describe('event mapper: turrets, bases, powers', () => {
     expect(pick(fire, 'sound').map((s) => s.id)).toEqual(['last_stand_fire']);
   });
 
-  it('base destroyed: 250 ms (exempt), 0.3x slow motion for 1.2 s, trauma 1, flash 200, 120 debris, stinger', () => {
-    const out = run([ev('matchEnded', { result: { winner: 0, reason: 'baseDestroyed', tick: T, baseHpBp: [5000, 0] } })]);
+  it('base destroyed: the build-up at the end (push, rumble, a light shake), the cheer and stinger wait for the break', () => {
+    const m = mapper();
+    const out = run([ev('matchEnded', { result: { winner: 0, reason: 'baseDestroyed', tick: T, baseHpBp: [5000, 0] } })], m);
     expect(pick(out, 'base')).toEqual([{ a: 'base', side: 1, op: 'collapse' }]);
-    expect(pick(out, 'freeze')).toEqual([{ a: 'freeze', ms: 250, exempt: true }]);
-    expect(pick(out, 'slowMo')).toEqual([{ a: 'slowMo', scale: 0.3, ms: 1200 }]);
-    expect(pick(out, 'trauma')).toMatchObject([{ amount: 1 }]);
-    expect(pick(out, 'screenFlash')[0]).toMatchObject({ ms: 200 });
-    expect(pick(out, 'fx')[0]).toMatchObject({ effectId: 'fx.debris', count: 120 });
-    expect(pick(out, 'sound').map((s) => s.id)).toEqual(['base_destroyed']);
-    expect(pick(out, 'musicCue')).toEqual([{ a: 'musicCue', cue: 'stinger.victory', fadeMs: 300 }]);
-    expect(pick(out, 'cheer')).toEqual([{ a: 'cheer', side: 0 }]);
+    expect(pick(out, 'camera')).toEqual([{ a: 'camera', at: { k: 'base', side: 1, part: 'center' }, zoom: 1.3, inMs: 700, holdMs: 0, outMs: 0 }]);
+    // Anticipation only: no freeze, slow motion or flash before the base gives way.
+    expect(pick(out, 'freeze')).toEqual([]);
+    expect(pick(out, 'slowMo')).toEqual([]);
+    expect(pick(out, 'screenFlash')).toEqual([]);
+    expect(pick(out, 'trauma')).toMatchObject([{ amount: 0.22 }]);
+    expect(pick(out, 'fx')[0]).toMatchObject({ effectId: 'fx.debris', count: 6 });
+    expect(pick(out, 'sound').map((s) => s.id)).toEqual(['base_doom_rumble']);
+    expect(pick(out, 'musicCue')).toEqual([]);
+    expect(pick(out, 'cheer')).toEqual([]);
+    expect(pick(out, 'view')).toEqual([{ a: 'view', ev: { t: 'matchEnded', outcome: { winner: 0, reason: 'baseDestroyed', tick: T, baseHpBp: [5000, 0] } } }]);
+
+    // The break (A12): 130 ms exempt hit-stop, 0.38x slow motion easing back, trauma 1, a base flash and a soft
+    // warm screen flash, a camera punch, the shared crash plus the material's crash and debris, the music ducks.
+    const brk = m.collapseBeat('break', 1, 'stone');
+    expect(pick(brk, 'freeze')).toEqual([{ a: 'freeze', ms: 130, exempt: true }]);
+    expect(pick(brk, 'slowMo')).toEqual([{ a: 'slowMo', scale: 0.38, ms: 980, easeMs: 700 }]);
+    expect(pick(brk, 'trauma')).toMatchObject([{ amount: 1 }]);
+    expect(pick(brk, 'baseFlash')).toEqual([{ a: 'baseFlash', side: 1, ms: 90 }]);
+    expect(pick(brk, 'screenFlash')).toEqual([{ a: 'screenFlash', ms: 110, color: 0xfff4e0, alpha: 0.3 }]);
+    expect(pick(brk, 'screenFlash')[0]!.alpha).toBeLessThanOrEqual(0.35);
+    expect(pick(brk, 'cameraPunch')).toEqual([{ a: 'cameraPunch', zoom: 0.07, ms: 460 }]);
+    expect(pick(brk, 'fx')[0]).toMatchObject({ effectId: 'fx.debris', count: 24 });
+    expect(pick(brk, 'sound').map((s) => s.id)).toEqual(['base_destroyed', 'base_break_stone', 'base_debris_stone']);
+    expect(pick(brk, 'sound')[2]).toMatchObject({ delayMs: 200 });
+    expect(pick(brk, 'duck')).toEqual([{ a: 'duck', db: -8, ms: 1800 }]);
+    expect(pick(brk, 'cheer')).toEqual([]);
+    expect(m.collapseBeat('break', 1, 'energy').filter((a) => a.a === 'sound').map((s) => (s as { id: string }).id)).toEqual([
+      'base_destroyed',
+      'base_break_energy',
+      'base_debris_energy',
+    ]);
+
+    // The stinger beat plays the winner's cheer and the stinger once.
+    const sting = m.collapseBeat('stinger', 1, 'stone');
+    expect(pick(sting, 'cheer')).toEqual([{ a: 'cheer', side: 0 }]);
+    expect(pick(sting, 'musicCue')).toEqual([{ a: 'musicCue', cue: 'stinger.victory', fadeMs: 300 }]);
+    expect(m.collapseBeat('stinger', 1, 'stone')).toEqual([]);
+
+    // The biggest landing: a thud and a smaller shake.
+    const land = m.collapseBeat('land', 1, 'stone');
+    expect(pick(land, 'trauma')).toMatchObject([{ amount: 0.38 }]);
+    expect(pick(land, 'sound').map((s) => s.id)).toEqual(['base_settle_thud']);
+  });
+
+  it('base destroyed on your side plays the defeat stinger on the break; an end without a fallen base plays it at once', () => {
+    const m = mapper();
+    run([ev('matchEnded', { result: { winner: 1, reason: 'baseDestroyed', tick: T, baseHpBp: [0, 4000] } })], m);
+    expect(pick(m.collapseBeat('stinger', 0, 'stone'), 'musicCue')).toEqual([{ a: 'musicCue', cue: 'stinger.defeat', fadeMs: 300 }]);
+    const timeUp = run([ev('matchEnded', { result: { winner: 0, reason: 'finalBell', tick: T, baseHpBp: [6000, 3000] } })]);
+    expect(pick(timeUp, 'base')).toEqual([]);
+    expect(pick(timeUp, 'cheer')).toEqual([{ a: 'cheer', side: 0 }]);
+    expect(pick(timeUp, 'musicCue')).toEqual([{ a: 'musicCue', cue: 'stinger.victory', fadeMs: 300 }]);
+  });
+
+  it('every collapse sound the feel config can name exists (A13), for every age material', () => {
+    const bc = defaultFeelConfig.tuning.baseCollapse;
+    expect(Object.keys(bc.materials).sort()).toEqual(['bronze', 'cosmic', 'future', 'gunpowder', 'industrial', 'medieval', 'modern', 'stone']);
+    for (const mat of new Set(Object.values(bc.materials))) {
+      for (const beat of ['break', 'land'] as const) {
+        for (const s of pick(mapper().collapseBeat(beat, 1, mat), 'sound')) expect(A13_SOUND_IDS.has(s.id), s.id).toBe(true);
+      }
+    }
+    expect(bc.landMs).toBeGreaterThan(bc.breakMs);
   });
 });
 

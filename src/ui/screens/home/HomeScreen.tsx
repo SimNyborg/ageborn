@@ -40,19 +40,20 @@ import type { MatchRequest, RouteOf, TabId } from '../../router';
 import { useUi } from '../context';
 import { hudTeamColors } from '../../hud/model';
 import { equippedOf, owns } from '../model/cosmetics';
-import { battleRequest, homeMode, homeModeFlags, ladderFormat, ladderFormatFlags, quickGeneralFor, skirmishSetup, type HomeMode } from '../model/homeMode';
-import { formatAges, reachedAges } from '../model/plan';
+import { battleRequest, homeMode, homeModeFlags, ladderFormat, ladderFormatFlags, quickGeneralFor, skirmishSetup, untimed, type HomeMode } from '../model/homeMode';
+import { decksOpen, formatAges, reachedAges } from '../model/plan';
 import { arenaOf, lastDifficulty } from '../model/progress';
 import { featureOpen, firstUpgradePending, pendingUnlock, unlockFlag, type HomeUnlock } from '../model/warPath';
 import { askFullscreen } from '../shared/fullscreen';
 import { useMatchStarter } from '../shared/MatchStarter';
+import { DeckSwitch, deckHintDue } from '../shared/Decks';
 import { ModesSheet } from '../warPath/ModesSheet';
 import { TAB_ROOTS } from '../warPath/shell';
 import { ArenaScene } from './ArenaScene';
 import { Diorama, type FoeLook } from './Diorama';
 import { ArenaTitle, CampaignCard, CapsuleSlots, HubProfile, HubTopRight, pendingCurrencyCaption, TrophyBar, UnlockPointer } from './hub';
 import { JoinPanel, onlineLengths, onlineMock, OnlinePlate, OnlineVs, RoomPanel, useElapsed, type OnlineState } from './online';
-import { MatchPlate } from './plate';
+import { LAST_SEEN, MatchPlate } from './plate';
 import { FriendSoonChip, ModeSwitcher, type SwitcherMode } from './switcher';
 
 const UNLOCK_TAB: Readonly<Partial<Record<HomeUnlock, TabId>>> = { army: 'army', capsules: 'capsules', customize: 'customize', progress: 'progress' };
@@ -347,6 +348,17 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
             aside={unlock === 'modes' || unlock === 'daily'}
             // The No clock caption queues behind a currency caption already on screen (one at a time, U8).
             quiet={quiet || pendingCurrencyCaption(s) !== null}
+            // The saved decks, next to Battle (owner request 2026-10-07); their one-time hint waits
+            // until no unlock moment or caption is on screen (the No clock caption included, U8).
+            deck={
+              decksOpen(s) && !training ? (
+                <DeckSwitch
+                  variant="plate"
+                  testid="home-decks"
+                  hint={!quiet && pendingCurrencyCaption(s) === null && !(untimed(content, format) && !s.flags[LAST_SEEN]) && deckHintDue(s.flags)}
+                />
+              ) : null
+            }
           />
         )}
         <div class="wp-playRow" ref={switcherRef}>

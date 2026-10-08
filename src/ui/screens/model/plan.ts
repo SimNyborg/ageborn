@@ -11,7 +11,7 @@ import { FORT_SLOT_IN_BATTLE } from '@/core/fortPads';
 import type { WarPlan } from '../services';
 import { isOwned, levelOf } from './cards';
 import { arenaOf } from './progress';
-import { featureOpen, unlockWins } from './warPath';
+import { featureOpen, onboardingDone } from './warPath';
 
 /** A loadout slot: seven troops, two turrets, the two typed power slots, Home and Field (A2.9.1), and the Fort slot (A16.14.7). */
 export type SlotRef = { kind: 'unit'; index: number } | { kind: 'turret'; index: number } | { kind: 'power'; slot: PowerSlot } | { kind: 'fort' };
@@ -66,8 +66,26 @@ export function fortSlotOpen(save: SaveDoc, inBattle: boolean = FORT_SLOT_IN_BAT
 /** Seven troops per battle (A18.9, owner request 2026-10-07; six before). */
 export const UNIT_SLOTS = 7;
 export const TURRET_SLOTS = 2;
-/** A3: three renamable presets. */
+/** A3: three renamable presets, the saved battle decks (owner request 2026-10-07). */
 export const PRESETS = 3;
+export const DECKS = PRESETS;
+/** The default deck names, by index (meta's first plan is "A"). */
+export const DECK_NAMES: readonly string[] = ['A', 'B', 'C'];
+
+/** One deck of the switch: its index and name, and whether it has been saved yet. */
+export interface DeckView {
+  index: number;
+  name: string;
+  saved: boolean;
+}
+
+/** The three decks: the saved ones with their names, the rest under their default letter. */
+export function deckList(save: SaveDoc): DeckView[] {
+  return Array.from({ length: DECKS }, (_, index) => {
+    const w = save.warPlans[index];
+    return { index, name: w?.name?.trim() || DECK_NAMES[index]!, saved: !!w };
+  });
+}
 
 export function slotKey(s: SlotRef): string {
   return s.kind === 'power' ? `power-${s.slot}` : s.kind === 'fort' ? 'fort' : `${s.kind}-${s.index}`;
@@ -380,17 +398,13 @@ export function reachedAges(save: SaveDoc, content: Content): AgeId[] {
 }
 
 /**
- * Presets A/B/C join the Army header after the first boss (ui-plan 4.2, U8), or after as many wins in
- * any mode as the first region has levels (owner decision 2026-09-30: the War Path is optional, so the
- * Ladder alone gets there too).
+ * The saved decks (presets A/B/C) open right after the onboarding (owner request 2026-10-07; they waited
+ * for the first boss before, so nobody found them), at once for a save from before the War Path, and
+ * for any save that already holds more than one deck.
  */
-export function presetsOpen(save: SaveDoc, content: Content): boolean {
+export function decksOpen(save: SaveDoc): boolean {
   const wp = save.warPath;
-  if (!wp || wp.legacy) return true;
-  const first = content.warPath.regions[0];
-  const boss = first ? first.levels[first.levels.length - 1] : undefined;
-  if (boss && (wp.stars[boss] ?? 0) > 0) return true;
-  return !!first && unlockWins(save) >= first.levels.length;
+  return !wp || wp.legacy || onboardingDone(save) || save.warPlans.length > 1;
 }
 
 /** The age tab's status mark (ui-plan 3.6 "Age tabs"): full and valid, advisor warning, or not playable. */

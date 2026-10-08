@@ -3,7 +3,7 @@
  * healthy-play signals.
  */
 import { describe, expect, it } from 'vitest';
-import { isNightHour, MINUTE, StoppingCues, type ResultFacts } from '../stopping';
+import { MINUTE, StoppingCues, type ResultFacts } from '../stopping';
 
 function setup(o: { hour?: number } = {}) {
   let t = 1_000_000;
@@ -127,11 +127,7 @@ describe('Result cards (A15.6)', () => {
   });
 });
 
-describe('night line and healthy-play signals (A15.6, A15.20)', () => {
-  it('22:00-06:00 is night', () => {
-    expect([21, 22, 23, 0, 5, 6].map(isNightHour)).toEqual([false, true, true, true, true, false]);
-  });
-
+describe('healthy-play signals (A15.6, A15.20; the night line is gone since 2026-10-07)', () => {
   it('logs late sessions, long sessions and the card shown', () => {
     const { cues, play, log } = setup({ hour: 23 });
     expect(log.some((e) => e.id === 'sessionLate')).toBe(true);

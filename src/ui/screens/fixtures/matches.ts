@@ -211,8 +211,9 @@ export function fixturePause(which: 'early' | 'late' | 'skirmish' | 'tutorial'):
     mode: which === 'skirmish' ? 'skirmish' : which === 'tutorial' ? 'tutorial' : 'ladder',
     scouted: which === 'early' || which === 'tutorial' ? [] : ['footman', 'longbowman', 'crossbow_nest', 'pikeman', 'arrow_storm'],
     clockMs: which === 'early' ? 42000 : 187000,
-    canRetreat: which === 'late' || which === 'skirmish',
-    retreatAfterMs: which === 'tutorial' ? null : 60000,
+    // Retreat is open from the start (owner decision 2026-10-07); the training match has none.
+    canRetreat: which !== 'tutorial',
+    retreatAfterMs: which === 'tutorial' ? null : 0,
   };
 }
 

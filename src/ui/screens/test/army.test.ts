@@ -27,8 +27,9 @@ import {
   fieldSlotLockKeys,
   fieldSlotOpen,
   fitsSlot,
+  decksOpen,
+  deckList,
   normalizeLoadout,
-  presetsOpen,
   reachedAges,
   slotFromKey,
   slotKey,
@@ -143,25 +144,38 @@ describe('slots and changes', () => {
   });
 });
 
-describe('reached ages and presets (2.6, U8)', () => {
-  it('a new player has reached the ages of the Ladder format they fight in; presets wait for the first boss', () => {
+describe('reached ages and decks (2.6, U8)', () => {
+  it('a new player has reached the ages of the Ladder format they fight in; the decks open after the onboarding', () => {
     const fresh = newPlayerSave(content);
     // Owner decision 2026-09-30: after the onboarding Home's Battle is the Ladder, so the ages of its
     // lengths are reached at once; during the onboarding only the first age is. Since 2026-10-03 the
     // Long War is open from Arena 1, so a new player can fight (and so set up) all of its ages.
     expect(reachedAges(fresh, content)).toEqual(content.formats['full']!.ages);
     expect(reachedAges({ ...fresh, stats: { ...fresh.stats, wins: 1 }, tutorial: { ...fresh.tutorial, step: 2 }, warPath: { ...fresh.warPath, stars: { 'wp.stone.l01': 1 } } }, content)).toEqual(['stone']);
-    expect(presetsOpen(fresh, content)).toBe(false);
-    // The War Path is optional: enough wins anywhere (the Ladder) open the presets too.
-    expect(presetsOpen({ ...fresh, stats: { ...fresh.stats, wins: 9 } }, content)).toBe(false);
-    expect(presetsOpen({ ...fresh, stats: { ...fresh.stats, wins: 10 } }, content)).toBe(true);
+    // Owner request 2026-10-07: the saved decks open right after the onboarding (they waited for the
+    // first boss before, so nobody found them).
+    expect(decksOpen({ ...fresh, tutorial: { ...fresh.tutorial, step: 3 } })).toBe(false);
+    expect(decksOpen({ ...fresh, tutorial: { ...fresh.tutorial, step: 4 } })).toBe(true);
+  });
+
+  it('three decks: the saved ones by name, the rest under their default letter', () => {
+    const fresh = newPlayerSave(content);
+    expect(deckList(fresh).map((d) => [d.name, d.saved])).toEqual([
+      [fresh.warPlans[0]!.name || 'A', true],
+      ['B', false],
+      ['C', false],
+    ]);
+    const named = { ...fresh, warPlans: [{ ...fresh.warPlans[0]!, name: 'Rush' }, { ...fresh.warPlans[0]!, name: '  ' }] };
+    expect(deckList(named).map((d) => d.name)).toEqual(['Rush', 'B', 'C']);
+    // A save that already holds a second deck shows the switch whatever its onboarding says.
+    expect(decksOpen({ ...named, tutorial: { ...named.tutorial, step: 0 } })).toBe(true);
   });
 
   it('the War Path region and the ladder formats open ages; a legacy save has them all', () => {
     const ages = reachedAges(mid, content);
     expect(ages.slice(0, 2)).toEqual(['stone', 'bronze']);
     expect(ages.length).toBeGreaterThan(2);
-    expect(presetsOpen(mid, content)).toBe(true);
+    expect(decksOpen(mid)).toBe(true);
     const legacy = { ...mid, warPath: { ...mid.warPath, legacy: true } };
     expect(reachedAges(legacy, content)).toEqual([...content.order.ages]);
   });

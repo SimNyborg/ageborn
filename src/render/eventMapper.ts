@@ -236,6 +236,8 @@ export class EventMapper {
   private readonly slowMarks = new Map<number, number>();
   /** Per unit, the last Brace plant (ms of game time in ticks), so a Heavy's every hit does not replay it. */
   private readonly braced = new Map<number, number>();
+  /** A destroyed base's end: the cheer and the stinger, played on the collapse's stinger beat. */
+  private pendingEnd: { winner: Side | null; cue: 'stinger.victory' | 'stinger.defeat' | null } | null = null;
 
   constructor(o: MapperOptions) {
     this.content = o.content;
@@ -281,7 +283,7 @@ export class EventMapper {
       }
     }
     if (r.hitstopGlobalMs && r.hitstopGlobalMs > 0) out.push({ a: 'freeze', ms: r.hitstopGlobalMs, exempt: r.globalExempt === true });
-    if (r.slowMo) out.push({ a: 'slowMo', scale: r.slowMo.scale, ms: r.slowMo.ms });
+    if (r.slowMo) out.push({ a: 'slowMo', scale: r.slowMo.scale, ms: r.slowMo.ms, ...(r.slowMo.easeMs ? { easeMs: r.slowMo.easeMs } : {}) });
     if (r.trauma && r.trauma > 0) {
       out.push({
         a: 'trauma',
@@ -321,6 +323,35 @@ export class EventMapper {
       if (id) out.push({ a: 'sound', id, ...(gapMs ? { gap: { key: id, gapMs } } : {}) });
     }
     if (r.duckDb !== undefined && r.duckMs !== undefined && r.duckMs > 0) out.push({ a: 'duck', db: r.duckDb, ms: r.duckMs });
+  }
+
+  /**
+   * A beat of a destroyed base's collapse (A12): the view calls it at the art's beat times (game ms
+   * from the end), so the feel lands on the frame the base gives way and the frame its tower hits the
+   * ground. `break`: the hit-stop, slow motion, trauma, flashes, camera punch, the shared crash and the
+   * material's crash and debris rattle. `stinger`: the winner's cheer and the stinger (once). `land`:
+   * the final thud.
+   */
+  collapseBeat(beat: 'break' | 'stinger' | 'land', side: Side, material: string): ViewAction[] {
+    const out: ViewAction[] = [];
+    const at: Anchor = { k: 'base', side, part: 'center' };
+    const bc = this.feel.tuning.baseCollapse;
+    if (beat === 'break') {
+      this.rule('base.destroyed.break', { at, base: side, spreadLu: BASE_DEPTH_LU / 2, opts: { side } }, out);
+      this.rule('base.destroyed.flash', { at }, out);
+      out.push({ a: 'cameraPunch', zoom: bc.punchZoom, ms: bc.punchMs });
+      out.push({ a: 'sound', id: `base_break_${material}`, priority: 3 });
+      out.push({ a: 'sound', id: `base_debris_${material}`, delayMs: bc.debrisDelayMs, priority: 2 });
+      out.push({ a: 'intensity', amount: 1 });
+    } else if (beat === 'stinger') {
+      const end = this.pendingEnd;
+      this.pendingEnd = null;
+      if (end?.winner !== null && end?.winner !== undefined) out.push({ a: 'cheer', side: end.winner });
+      if (end?.cue) out.push({ a: 'musicCue', cue: end.cue, fadeMs: 300 });
+    } else {
+      this.rule('base.destroyed.land', { at, base: side }, out);
+    }
+    return out;
   }
 
   /** The bounty coins and XP sparkles flying to your HUD for a kill (A12 Unit death). */
@@ -890,19 +921,24 @@ export class EventMapper {
       case 'matchEnded': {
         const r = ev.result;
         const destroyed = r.reason === 'baseDestroyed' || r.reason === 'bothDestroyed';
+        const cue = r.winner === null ? null : r.winner === this.mySide ? 'stinger.victory' : 'stinger.defeat';
         if (destroyed) {
           const losers: Side[] = r.reason === 'bothDestroyed' || r.winner === null ? [0, 1] : [other(r.winner)];
           // A12 "a base falls": the camera pushes in on the falling base and stays there.
           const focus = losers.length === 1 ? losers[0] : null;
-          if (focus !== null && focus !== undefined) out.push({ a: 'camera', at: { k: 'base', side: focus, part: 'center' }, zoom: 1.45, inMs: 700, holdMs: 0, outMs: 0 });
+          if (focus !== null && focus !== undefined) out.push({ a: 'camera', at: { k: 'base', side: focus, part: 'center' }, zoom: tun.baseCollapse.pushZoom, inMs: 700, holdMs: 0, outMs: 0 });
           for (const s of losers) {
+            // the base starts its build-up (it trembles, cracks, sheds dust); the view times the
+            // break, the landing and their feel from the art's beats (`collapseBeat`)
             out.push({ a: 'base', side: s, op: 'collapse' });
             this.rule('base.destroyed', { at: { k: 'base', side: s, part: 'center' }, spreadLu: BASE_DEPTH_LU / 2, opts: { side: s } }, out);
           }
+          // the cheer and the stinger wait for the break, so the crash reads first
+          this.pendingEnd = { winner: r.winner, cue };
+        } else {
+          if (r.winner !== null) out.push({ a: 'cheer', side: r.winner });
+          if (cue) out.push({ a: 'musicCue', cue, fadeMs: 300 });
         }
-        if (r.winner !== null) out.push({ a: 'cheer', side: r.winner });
-        const cue = r.winner === null ? null : r.winner === this.mySide ? 'stinger.victory' : 'stinger.defeat';
-        if (cue) out.push({ a: 'musicCue', cue, fadeMs: 300 });
         out.push({ a: 'view', ev: { t: 'matchEnded', outcome: r } });
         return;
       }

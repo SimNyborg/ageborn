@@ -62,7 +62,6 @@ function NameModal(p: { name: string; onSave: (n: string) => void; onClose: () =
           }}
         />
       </label>
-      <p class="prof-hint">{t('ui.profile.nameHint')}</p>
     </Modal>
   );
 }
@@ -204,7 +203,6 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
           {milestones.length > 0 ? (
             <div class="prof-goals" data-testid="profile-milestones">
               <span class="prof-sub">{t('ui.profile.milestones')}</span>
-              <p class="prof-goals__hint">{t('ui.profile.milestonesHint')}</p>
               {milestones.map((m) => (
                 <div key={m.id} class={`prof-goal${m.done ? ' is-done' : ''}`} data-testid={`milestone-${m.id}`}>
                   <span class="prof-goal__mark" aria-hidden="true">
@@ -255,7 +253,6 @@ export function ProfileScreen(_p: { route: RouteOf<'profile'> }) {
               </li>
             ))}
           </ol>
-          <p class="prof-hint">{t('ui.ai.allAi')}</p>
         </Panel>
       </div>
       {editName ? (

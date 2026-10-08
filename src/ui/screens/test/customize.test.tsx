@@ -37,6 +37,36 @@ describe('Customize: collections (A18.9.4)', () => {
     expect(calls('equipCosmetic')[1]).toEqual({ slot: 'nationalFlag', key: null });
   });
 
+  it('no Equip button: a tap on an owned item equips it, and only the chosen one says "Equipped" (owner request 2026-10-07)', () => {
+    m = cust('flags');
+    const tiles = () => m!.qa('.cos-tile').filter((el) => (el.getAttribute('data-testid') ?? '').startsWith('item-nationalFlag.'));
+    const owned = tiles().filter((el) => !(el.getAttribute('class') ?? '').includes('is-locked'));
+    expect(owned.length).toBeGreaterThan(1);
+    for (const el of owned) expect(text(el)).not.toMatch(/\bEquip\b/);
+    m.click('[data-testid="item-nationalFlag.se"] button');
+    const said = tiles().filter((el) => text(el).includes('Equipped'));
+    expect(said.map((el) => el.getAttribute('data-testid'))).toEqual(['item-nationalFlag.se']);
+    expect(m.q('[data-testid="state-nationalFlag.se"]')).not.toBeNull();
+  });
+
+  it('troop skins: a tap on an owned skin equips it with an Undo toast; only the equipped one says so', () => {
+    m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'collection', tab: 'skins' }] });
+    const owned = m.qa('.col-skin').filter((el) => (el.getAttribute('class') ?? '').includes('is-owned'));
+    const off = owned.find((el) => !(el.getAttribute('class') ?? '').includes('is-on'))!;
+    expect(off).toBeTruthy();
+    expect(text(off)).not.toMatch(/\bEquip\b/);
+    const id = off.getAttribute('data-testid')!.slice('skin-tile-'.length);
+    expect(m.save.value.skins.owned).toContain(id);
+    m.click(`[data-testid="equip-${id}"]`);
+    expect(Object.values(m.save.value.skins.equipped)).toContain(id);
+    expect(m.q(`[data-testid="skin-on-${id}"]`)).not.toBeNull();
+    expect(m.qa('[data-testid="toast"]')).toHaveLength(1);
+    // A second tap on the equipped skin changes nothing.
+    const before = { ...m.save.value.skins.equipped };
+    m.click(`[data-testid="equip-${id}"]`);
+    expect(m.save.value.skins.equipped).toEqual(before);
+  });
+
   it('a locked item says how it is earned, cannot be equipped and can be crafted when it drops from capsules', () => {
     m = cust('flags');
     const tile = m.q('[data-testid="item-nationalFlag.fr"]')!;
@@ -77,8 +107,12 @@ describe('Customize: collections (A18.9.4)', () => {
   it('emotes: the wheel shows the equipped emotes; tapping one takes it out, a full wheel says so', () => {
     m = cust('emotes');
     expect(m.qa('[data-testid="emote-wheel"] button')).toHaveLength(8);
+    // How full the wheel is: a number beside its heading, no hint line (owner request 2026-10-07).
+    expect(text(m.q('[data-testid="emote-count"]')!)).toBe('8/8');
+    expect(m.q('[data-testid="emote-count"]')!.getAttribute('aria-label')).toBe('8 of 8 slots used');
     m.click('[data-testid="item-emote.clap"] button');
     expect(calls('equipCosmetic')[0]).toEqual({ slot: 'emotes', keys: ['laugh', 'salute', 'thumbsUp', 'gg', 'emote.heart', 'emote.bonk', 'emote.robo_dance'] });
+    expect(text(m.q('[data-testid="emote-count"]')!)).toBe('7/8');
     m.click('[data-testid="item-cry"]');
     expect(calls('equipCosmetic')[1]).toEqual({ slot: 'emotes', keys: ['laugh', 'salute', 'thumbsUp', 'gg', 'emote.heart', 'emote.bonk', 'emote.robo_dance', 'cry'] });
     m.click('[data-testid="item-angry"]');

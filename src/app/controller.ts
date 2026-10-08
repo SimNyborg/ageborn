@@ -398,13 +398,13 @@ export class AppController {
       // A8: in-battle adaptive hints only in the onboarding matches; the detectors keep running.
       hints: setup.matchNumber >= STAGES.hintsFromMatch && setup.matchNumber <= STAGES.hintsUntilMatch && (setup.mode !== 'skirmish' || save !== null),
     });
-    // A Ladder battle left by a reload counts as a Retreat (bug hunt 2026-10-01 #9, `abandon.ts`): once
-    // Retreat is open it is recorded; its end, whatever the outcome, clears the record.
-    const retreatAfter = setup.config.content.formats[setup.config.format]?.retreatAfterMs ?? null;
-    if (setup.mode === 'ladder' && retreatAfter !== null && save) {
+    // A Ladder battle left by a reload counts as a Retreat (bug hunt 2026-10-01 #9, `abandon.ts`): it is
+    // recorded on its first tick, right after the start countdown (owner decision 2026-10-07: Retreat is
+    // open at once, so there is no free first minute); its end, whatever the outcome, clears the record.
+    if (setup.mode === 'ladder' && save) {
       let marked = false;
       battle.session.onTick((_events, s) => {
-        if (marked || s.state.tick * 50 < retreatAfter || s.state.phase === 'ended') return;
+        if (marked || s.state.tick < 1 || s.state.phase === 'ended') return;
         marked = true;
         markOpenMatch({ mode: 'ladder', mySide: 0, opponent: setup.opponent, durationMs: s.state.tick * 50 });
       });

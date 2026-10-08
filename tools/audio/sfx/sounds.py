@@ -659,13 +659,8 @@ def base_crumble(v, rng):
     return mixdown(*parts, at(0, rum), at(0.1, rain))
 
 
-@sfx("base_destroyed", -17, 1, max_s=3.2, phone_gap=-6.0)
-def base_destroyed(v, rng):
-    big = explosion(rng, 1.0, 0.85)
-    coll = base_crumble(0, rng)
-    rum = rumble(rng, 2.8, 200, 0.9, 0.05) * 1.2
-    rain = debris(rng, 2.5, 90, 500, 3500, 0.9, 0.015) * 0.6
-    return mixdown(big, at(0.15, coll, 0.9), at(0.05, rum), at(0.3, rain))
+# `base_destroyed` and the rest of the destroyed collapse (the build-up rumble, the material crashes and
+# rattles, the final thud) live in sounds_collapse.py.
 
 
 # =================================================================================================
@@ -1734,3 +1729,4 @@ import sounds_modern_wave  # noqa: E402,F401
 import sounds_future_wave  # noqa: E402,F401
 import sounds_cosmic_wave  # noqa: E402,F401
 import sounds_rarity_burst  # noqa: E402,F401
+import sounds_collapse  # noqa: E402,F401

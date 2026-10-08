@@ -189,10 +189,11 @@ describe('HUD presses (A2.12, A9.2)', () => {
     expect(stanceIntent(model({ me: { stanceVisible: false } }), 0)).toEqual({ k: 'none' });
   });
 
-  it('a stance segment sends its mode; the current one does nothing; the 3 s wait denies (A18.4.2)', () => {
+  it('a stance segment sends its mode at once; the current one does nothing; no wait denies (A18.4.2, 2026-10-07)', () => {
     expect(cmdOf(stanceSetIntent(model(), 0, 'fallback'))).toEqual({ t: 'stance', side: 0, mode: 'fallback' });
     expect(stanceSetIntent(model(), 0, 'charge')).toEqual({ k: 'none' });
-    expect(stanceSetIntent(model({ me: { stanceWaitMs: 1200 } }), 0, 'hold')).toEqual({ k: 'deny', target: 'stance', reason: { key: 'hud.deny.stanceWait', params: { s: 2 } } });
+    // No stance cooldown: even a stale wait in the model never denies a switch.
+    expect(cmdOf(stanceSetIntent(model({ me: { stanceWaitMs: 1200 } }), 0, 'hold'))).toEqual({ t: 'stance', side: 0, mode: 'hold' });
     expect(stanceSetIntent(model({ phase: 'ended' }), 0, 'hold')).toEqual({ k: 'none' });
   });
 
@@ -203,9 +204,9 @@ describe('HUD presses (A2.12, A9.2)', () => {
     const hold = model({ me: { stance: 'hold', holdP: 320 } });
     expect(cmdOf(flagIntent(hold, 0, 509))).toEqual({ t: 'stance', side: 0, mode: 'hold', holdP: 500 });
     expect(flagIntent(hold, 0, 325)).toEqual({ k: 'none' });
-    // From Charge the drop also switches to Hold, unless the stance wait runs.
+    // From Charge the drop also switches to Hold, at once (no stance cooldown since 2026-10-07).
     expect(cmdOf(flagIntent(model(), 0, 400))).toEqual({ t: 'stance', side: 0, mode: 'hold', holdP: 400 });
-    expect(flagIntent(model({ me: { stanceWaitMs: 900 } }), 0, 400)).toEqual({ k: 'deny', target: 'flag' });
+    expect(cmdOf(flagIntent(model({ me: { stanceWaitMs: 900 } }), 0, 400))).toEqual({ t: 'stance', side: 0, mode: 'hold', holdP: 400 });
   });
 
   it('shows the Last Stand button only while armed or charging and when manual (A2.11, A8)', () => {

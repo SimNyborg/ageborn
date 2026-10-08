@@ -129,7 +129,8 @@ function ModeCard(p: {
   tone: "blue" | "red" | "green" | "gold";
   icon: ComponentChildren;
   title: string;
-  desc: string;
+  /** A fact the card's controls do not show (the Daily's war); no taglines (owner request 2026-10-07). */
+  desc?: string;
   locked?: string | null;
   children?: ComponentChildren;
   action: ComponentChildren;
@@ -150,7 +151,7 @@ function ModeCard(p: {
         </h2>
       </header>
       <div class="mode-card__body">
-        <p class="mode-card__desc">{p.desc}</p>
+        {p.desc ? <p class="mode-card__desc">{p.desc}</p> : null}
         {p.children}
       </div>
       <footer class="mode-card__foot">
@@ -263,8 +264,7 @@ function SkirmishSetup(p: {
           </div>
           <p class="skirmish__note" data-testid="skirmish-tier">
             <AiBadge size="sm" />{" "}
-            {t("ui.vs.tier", { tier: tierNumeral(tier) })} ·{" "}
-            {t("ui.difficulty.picked")}
+            {t("ui.vs.tier", { tier: tierNumeral(tier) })}
           </p>
           <div class="skirmish__row">
             <span class="skirmish__label">{t("ui.mode.format")}</span>
@@ -376,7 +376,6 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
           tone="green"
           icon={<QuickBattleIcon size={64} />}
           title={t("ui.mode.quick.title")}
-          desc={t("ui.mode.quick.desc")}
           locked={
             u.skirmish
               ? null
@@ -428,7 +427,6 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
           tone="blue"
           icon={<TrophyIcon size={64} />}
           title={t("ui.mode.ladder.title")}
-          desc={t("ui.mode.ladder.desc")}
           action={
             <Button
               kind="primary" primary={false}
@@ -486,7 +484,6 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
           tone="red"
           icon={<CastleIcon size={64} />}
           title={t("ui.mode.conquest.title")}
-          desc={t("ui.mode.conquest.desc")}
           locked={
             u.conquest ? null : t("ui.lock.arena", { n: u.conquestArena })
           }
@@ -517,7 +514,6 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
           tone="green"
           icon={<SkirmishIcon size={64} />}
           title={t("ui.mode.skirmish.title")}
-          desc={t("ui.mode.skirmish.desc")}
           locked={
             u.skirmish
               ? null
@@ -549,9 +545,7 @@ export function ModeSelectScreen(p: { route: RouteOf<"modeSelect"> }) {
           tone="gold"
           icon={<CalendarIcon size={64} />}
           title={t("ui.mode.daily.title")}
-          desc={t("ui.mode.daily.desc", {
-            format: t(formatNameKey(challenge.format)),
-          })}
+          desc={t(formatNameKey(challenge.format))}
           action={
             <Button
               kind="primary" primary={false}

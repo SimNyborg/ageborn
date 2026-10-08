@@ -13,10 +13,11 @@
  *   and "You own 12 of 15 Stone cards". Its head is always in view (pinned to the pool's bottom until
  *   the grid scrolls up); on phones it starts as one slim row of small silhouettes that opens the grid
  *   on a tap. Its Album button opens the Card Album at this age on Missing.
- * - **Header:** Undo (every change of this visit, one at a time), the reached ages with a status mark
+ * - **Header:** Undo (every change of this visit, one at a time), the three saved **decks** (owner
+ *   request 2026-10-07: named, renamable, "copy from" another deck, open right after the onboarding;
+ *   `shared/Decks.tsx`; the deck you look at is the deck you play), the reached ages with a status mark
  *   each (and "More ages" locked; tabs that do not fit fade under an arrow), the average level,
- *   Auto-fill, the Card Album with its count (opens at this age) and "Who beats whom". Presets A/B/C
- *   join after the first boss; the army you look at is the army you play.
+ *   Auto-fill and "Who beats whom". The Card Album is one tap away from the Locked row.
  * - The band's mark: a check only when every slot is filled and nothing is flagged, "!" with the age
  *   tab, crossed swords while slots are open; the advisor's first warning is a short amber chip.
  *
@@ -29,7 +30,8 @@
  */
 import './warplan.css';
 import { ageNameKey } from '@/content/keys';
-import type { AgeId, CardId, Loadout, PlanIssue } from '@/contracts';
+import type { Content } from '@/content/types';
+import type { AgeId, CardId, Loadout, PlanIssue, SaveDoc } from '@/contracts';
 import type { ClassGlyphId } from '@/core/cardClass';
 import { SlotGlyph } from '../../components/PowerGlyphs';
 import { MOTION_DUR } from '@/core/motion';
@@ -41,29 +43,31 @@ import { FortKindBadge, FortKindGlyph } from '../../components/FortGlyphs';
 import { beginDrag, cancelDrag, flyCard, snapshot, sparks, type FlightSource } from '../../components/drag';
 import { formatDec } from '../../components/format';
 import { haptic } from '../../components/haptics';
-import { AGE_COLOR, AgeGlyph, CardsIcon, CheckIcon, CloseIcon, CountersIcon, LockIcon, PencilIcon, RARITY_COLOR, RefreshIcon, SwordsIcon, TrophyIcon, UndoIcon } from '../../components/icons';
+import { AGE_COLOR, AgeGlyph, CardsIcon, CheckIcon, CloseIcon, CountersIcon, LockIcon, RARITY_COLOR, RefreshIcon, SwordsIcon, TrophyIcon, UndoIcon } from '../../components/icons';
 import { onGridKeyDown } from '../../components/keys';
 import { ScreenFrame } from '../../components/Layout';
-import { Modal, Sheet } from '../../components/Modal';
+import { Sheet } from '../../components/Modal';
 import { bezier, bump, ease, flip, MOTION_EASE, reducedMotion } from '../../components/motion';
 import { countDuration } from '@/core/motion';
 import { Tabs } from '../../components/Tabs';
 import type { RouteOf } from '../../router';
 import { useUi } from '../context';
-import { ageSections, cardSourceShort } from '../model/armyAge';
+import { ageSections, availableGroups, cardSourceShort, type PoolGroupId } from '../model/armyAge';
 import { cardDef, cardTile, isOwned, upgradeState } from '../model/cards';
 import { planIssueText } from '../model/match';
 import { POWER_SLOT_KEY, POWER_SLOT_LONG_KEY, POWER_WRONG_SLOT_KEY } from '../model/powerText';
 import { beatenCount } from '../model/warPath';
+import { DeckSheet, DeckSwitch, deckHintDue } from '../shared/Decks';
 import {
   AGE_SHORT_KEY,
   ageStatus,
-  albumProgress,
   ALL_SLOTS,
   assignCard,
   cardAge,
   changedSlots,
   clearSlot,
+  DECK_NAMES,
+  decksOpen,
   emptyPlan,
   equipSlot,
   fieldSlotLockKeys,
@@ -75,7 +79,6 @@ import {
   loadoutAvgLevel,
   normalizeLoadout,
   powerSlotOf,
-  presetsOpen,
   PRESETS,
   reachedAges,
   researchLines,
@@ -89,8 +92,6 @@ import {
   type SlotRef,
 } from '../model/plan';
 import type { WarPlan } from '../services';
-
-const PRESET_LABELS = ['A', 'B', 'C'] as const;
 
 /** The class icon an advisor warning points at (owner feedback 2026-09-28), if any. */
 const ISSUE_CLASS: Readonly<Record<string, ClassGlyphId>> = {
@@ -120,6 +121,20 @@ const ISSUE_SHORT: Readonly<Record<string, string>> = {
   notOwned: 'ui.armyAge.issue.notOwned',
   duplicate: 'ui.armyAge.issue.duplicate',
   badPower: 'ui.armyAge.issue.badPower',
+};
+
+/** The Available pool's headings (owner request 2026-10-07): the troop class names, then the kinds. */
+const POOL_GROUP_KEY: Readonly<Record<PoolGroupId, string>> = {
+  infantry: 'ui.class.infantry',
+  ranged: 'ui.class.ranged',
+  heavy: 'ui.class.heavy',
+  antiArmor: 'ui.class.antiArmor',
+  siege: 'ui.class.siege',
+  support: 'ui.class.support',
+  air: 'ui.class.air',
+  turret: 'ui.armyAge.poolTurrets',
+  power: 'ui.armyAge.poolPowers',
+  fort: 'ui.armyAge.poolForts',
 };
 
 const SLOT_LABEL: Record<SlotRef['kind'], string> = {
@@ -164,39 +179,6 @@ interface Fx {
     delay: number;
   }[];
   back: { card: CardId; from: FlightSource | null }[];
-}
-
-function RenameModal(p: { name: string; onSave: (name: string) => void; onClose: () => void }) {
-  const { t } = useUi();
-  const [v, setV] = useState(p.name);
-  const trimmed = v.trim();
-  return (
-    <Modal
-      title={t('ui.warplan.rename')}
-      size="sm"
-      onClose={p.onClose}
-      testid="rename-plan"
-      footer={
-        <Button kind="progress" testid="rename-save" disabled={trimmed.length === 0} onClick={() => p.onSave(trimmed)}>
-          {t('ui.common.done')}
-        </Button>
-      }
-    >
-      <label class="ui-field">
-        <span>{t('ui.warplan.planName')}</span>
-        <input
-          class="ui-input"
-          value={v}
-          maxLength={16}
-          data-autofocus=""
-          onInput={(e) => setV((e.currentTarget as HTMLInputElement).value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && trimmed.length > 0) p.onSave(trimmed);
-          }}
-        />
-      </label>
-    </Modal>
-  );
 }
 
 /**
@@ -324,13 +306,14 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   const { save, content, t, locale, router, services, toasts } = ui;
   const s = save.value;
   const ages = reachedAges(s, content);
-  const withPresets = presetsOpen(s, content);
-  const preset = withPresets ? Math.min(PRESETS - 1, s.activePlan) : s.activePlan;
+  const withDecks = decksOpen(s);
+  const preset = Math.min(PRESETS - 1, s.activePlan);
   const [age, setAgeState] = useState<AgeId>(() => p.route.age ?? currentAge(s, content, ages));
   const [sel, setSel] = useState<Selection>(null);
   const [place, setPlace] = useState<Place>({ v: 'above', h: 'center' });
-  const [sheet, setSheet] = useState<'legend' | 'advice' | 'presets' | null>(null);
-  const [renaming, setRenaming] = useState(false);
+  const [sheet, setSheet] = useState<'legend' | 'advice' | null>(null);
+  /** The deck whose sheet is open (rename, copy from), or null. */
+  const [deckSheet, setDeckSheet] = useState<number | null>(null);
   // Phones: Locked starts as one compact row (count, small silhouettes, the Album) pinned under the
   // pool, so it is visible without scrolling; a tap opens the full grid (review 1).
   const [lockedOpen, setLockedOpen] = useState(false);
@@ -354,9 +337,20 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     return () => clearTimeout(id);
   }, [fresh]);
 
+  // Another deck in use (the header switch, or Home's): its army flips in, and Undo and any selection
+  // belong to the old deck, so they clear.
+  const lastDeck = useRef(preset);
+  useEffect(() => {
+    if (lastDeck.current === preset) return;
+    lastDeck.current = preset;
+    setUndo([]);
+    setSel(null);
+    setFresh(true);
+  }, [preset]);
+
   const plan: WarPlan = s.warPlans[preset] ?? {
-    ...(s.warPlans[s.activePlan] ?? emptyPlan(content, PRESET_LABELS[preset]!)),
-    name: PRESET_LABELS[preset]!,
+    ...(s.warPlans[s.activePlan] ?? emptyPlan(content, DECK_NAMES[preset]!)),
+    name: DECK_NAMES[preset]!,
   };
   const loadout = normalizeLoadout(plan.loadouts[age] ?? emptyPlan(content, '').loadouts[age]);
   // 2.6: the average level, the advisor and Auto-fill arrive with level 3; a new player's first
@@ -382,7 +376,6 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   const selSlot = sel?.type === 'slot' ? slotFromKey(sel.key) : null;
   const selCard = sel?.type === 'card' ? sel.id : null;
   const pool = ageSections(s, content, age, inArmy, selSlot ? selSlot.kind : null, selSlot?.kind === 'power' ? selSlot.slot : null);
-  const album = albumProgress(s, content);
   const firstVisit = s.flags['ui-seen.army'] !== true;
 
   function setAge(a: AgeId) {
@@ -514,8 +507,8 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
     // first stores B as a copy of the active plan.
     for (let i = s.warPlans.length; i < preset; i++) {
       services.setWarPlan(i, {
-        ...(s.warPlans[s.activePlan] ?? emptyPlan(content, PRESET_LABELS[i]!)),
-        name: PRESET_LABELS[i]!,
+        ...(s.warPlans[s.activePlan] ?? emptyPlan(content, DECK_NAMES[i]!)),
+        name: DECK_NAMES[i]!,
       });
     }
     services.setWarPlan(preset, next);
@@ -635,19 +628,6 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
       anchor: autoRef.current,
     });
   }
-  function choosePreset(i: number) {
-    if (i === s.activePlan) return;
-    for (let k = s.warPlans.length; k <= i; k++) {
-      services.setWarPlan(k, {
-        ...(s.warPlans[s.activePlan] ?? emptyPlan(content, PRESET_LABELS[k]!)),
-        name: PRESET_LABELS[k]!,
-      });
-    }
-    services.setActivePlan(i);
-    setUndo([]);
-    setSel(null);
-  }
-
   // ---- taps -------------------------------------------------------------------------------------
 
   function tapCard(id: CardId, el: HTMLElement | null) {
@@ -1025,7 +1005,9 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
   const lines = researchLines(content, loadout);
   const campInPlan = fortOpen && loadout.fort !== null && loadout.fort !== undefined && content.forts?.[loadout.fort]?.fortKind === 'camp';
   const lead = ageIssues[0];
-  const hint = selCard ? t('ui.army.hintCard') : selSlot ? t('ui.army.hintSlot') : firstVisit ? t('ui.army.hintFirst') : null;
+  // Only a first visit gets a how-to line (owner request 2026-10-07: no repeated tip lines; glowing
+  // slots and the card's own bar say what to do while something is selected).
+  const hint = firstVisit && !sel ? t('ui.army.hintFirst') : null;
   const statusMark = (st: AgeStatus) =>
     st === 'ok' ? (
       <i class="army-age__mark is-ok" aria-hidden="true">
@@ -1065,19 +1047,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
           {t('ui.army.undo')}
         </Button>
       </span>
-      {withPresets ? (
-        <Button
-          kind="secondary"
-          size="s"
-          testid="army-presets"
-          label={`${t('ui.army.presets')}: ${plan.name}`}
-          onClick={() => setSheet('presets')}
-          class="army-preset-btn"
-        >
-          {plan.name}
-          <i class="army-caret" aria-hidden="true" />
-        </Button>
-      ) : null}
+      {withDecks ? <DeckSwitch variant="army" testid="army-decks" onEdit={(i) => setDeckSheet(i)} hint={deckHintDue(s.flags)} /> : null}
       <div class="army-ages-wrap">
         <div class={`army-ages${edges.start ? ' has-more-start' : ''}${edges.end ? ' has-more-end' : ''}`} data-testid="army-ages" ref={agesRef}>
           <Tabs
@@ -1144,18 +1114,6 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
           </Button>
         </span>
       ) : null}
-      {/* The Card Album, one tap from every age (review 2): opens at this age. */}
-      <Button
-        kind="secondary"
-        size="s"
-        icon={<CardsIcon size={18} />}
-        testid="army-album-head"
-        class="army-albumbtn"
-        label={t('ui.armyAge.album', { n: album.owned, max: album.total })}
-        onClick={() => router.go({ id: 'collection', tab: 'cards', age })}
-      >
-        <span class="ui-num">{t('ui.dex.ageCount', { n: album.owned, max: album.total })}</span>
-      </Button>
       <IconButton icon={<CountersIcon size={24} />} label={t('ui.army.counters')} onClick={() => setSheet('legend')} testid="army-legend" />
     </div>
   );
@@ -1167,7 +1125,7 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
         <section class="army-battle" data-army-col="" aria-labelledby="army-deck-title" data-testid="army-battle">
           <div
             class={`army-slots${fresh ? ' is-fresh' : ''}${fortShown ? ' has-fort' : ''}`}
-            key={age}
+            key={`${age}-${preset}`}
             data-testid="wp-board"
             // The slots share the band's room (A18.9 seven troops keep one row): see `.army-slots`.
             style={{ '--band-slots': bandGroups.reduce((n, g) => n + g.slots.length, 0), '--band-groups': bandGroups.length }}
@@ -1295,12 +1253,26 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
                     <CloseIcon size={14} />
                   </span>
                 </button>
-              ) : (
-                <small class="army-sec-sub">{t('ui.armyAge.availableHint')}</small>
-              )}
+              ) : null}
             </h3>
             {pool.available.length ? (
-              <div class="army-grid">{pool.available.map((id) => cell(id, n++, false))}</div>
+              // Grouped under small class headings, NEW cards first in each (owner request 2026-10-07).
+              <div class="army-groups" data-testid="army-groups">
+                {availableGroups(s, content, pool.available).map((g) => (
+                  <section key={g.id} class={`army-group army-group--${g.id}`} data-testid={`army-class-${g.id}`} aria-label={`${t(POOL_GROUP_KEY[g.id])}: ${g.cards.length}`}>
+                    <h4 class="army-group__head" aria-hidden="true">
+                      <ClassIcon id={g.id} size={18} />
+                      <span class="army-group__name" data-tag="">
+                        {t(POOL_GROUP_KEY[g.id])}
+                      </span>
+                      <span class="army-group__count ui-num" data-tag="">
+                        {g.cards.length}
+                      </span>
+                    </h4>
+                    <div class="army-grid">{g.cards.map((id) => cell(id, n++, false))}</div>
+                  </section>
+                ))}
+              </div>
             ) : (
               <p class="army-empty" data-testid="army-available-empty">
                 {t('ui.armyAge.availableEmpty')}
@@ -1395,71 +1367,20 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
           <CounterLegend compact />
         </Sheet>
       ) : null}
-      {sheet === 'presets' ? (
-        <Sheet title={t('ui.army.presets')} onClose={() => setSheet(null)} testid="army-presets-sheet">
-          <ul class="army-presets" data-testid="presets">
-            {PRESET_LABELS.map((label, i) => {
-              const name = s.warPlans[i]?.name ?? label;
-              const on = i === s.activePlan;
-              return (
-                <li key={label} class={`army-preset${on ? ' is-on' : ''}`}>
-                  <span class="army-preset__name">{t('ui.army.preset', { name })}</span>
-                  {on ? (
-                    <span class="army-bar__on" data-testid="plan-in-use">
-                      <CheckIcon size={16} /> {t('ui.army.presetInUse')}
-                    </span>
-                  ) : (
-                    <Button
-                      kind="progress"
-                      size="s"
-                      primary={false}
-                      testid={`preset-${i}`}
-                      label={t('ui.army.presetUse', { name })}
-                      onClick={() => choosePreset(i)}
-                    >
-                      {t('ui.army.use')}
-                    </Button>
-                  )}
-                  {on ? (
-                    <IconButton
-                      icon={<PencilIcon size={20} />}
-                      label={t('ui.warplan.rename')}
-                      testid="rename"
-                      onClick={() => {
-                        setSheet(null);
-                        setRenaming(true);
-                      }}
-                    />
-                  ) : null}
-                </li>
-              );
-            })}
-          </ul>
-        </Sheet>
-      ) : null}
-      {renaming ? (
-        <RenameModal
-          name={plan.name}
-          onClose={() => setRenaming(false)}
-          onSave={(name) => {
-            commit({ ...plan, name }, false);
-            setRenaming(false);
-          }}
-        />
-      ) : null}
+      {deckSheet !== null ? <DeckSheet index={deckSheet} onCommit={(next, record) => commit(next, record)} onClose={() => setDeckSheet(null)} /> : null}
     </ScreenFrame>
   );
 }
 
 /** The age Army opens on: the War Path's current region when reached, else the last reached age. */
-function currentAge(save: Parameters<typeof albumProgress>[0], content: Parameters<typeof albumProgress>[1], ages: readonly AgeId[]): AgeId {
+function currentAge(save: SaveDoc, content: Content, ages: readonly AgeId[]): AgeId {
   const cur = content.warPath.order.find((id) => !(save.warPath?.stars[id] ?? 0));
   const region = cur ? content.warPath.levels[cur]?.region : undefined;
   return region && ages.includes(region) ? region : ages[ages.length - 1]!;
 }
 
 /** The format the advisor checks against (the longest the player can pick, A3). */
-function formatFor(save: Parameters<typeof albumProgress>[0], content: Parameters<typeof albumProgress>[1]) {
+function formatFor(save: SaveDoc, content: Content) {
   const formats = content.arenas.list[Math.max(0, Math.min(content.arenas.list.length - 1, save.arenaIndex))]!.ladderFormats;
   return formats[formats.length - 1] ?? 'short';
 }

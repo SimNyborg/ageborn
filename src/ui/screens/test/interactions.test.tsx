@@ -162,6 +162,37 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'standard' });
   });
 
+  it('the deck switch on the plate picks the deck Battle plays, next to Battle (owner request 2026-10-07)', () => {
+    vi.useFakeTimers();
+    m = mount({ state: 'mid', shell: true });
+    const decks = m.qa('[data-testid="home-decks"] [role="radio"]');
+    expect(decks.map((el) => text(el))).toEqual(m.save.value.warPlans.map((p) => p.name));
+    expect(decks[m.save.value.activePlan]!.getAttribute('aria-checked')).toBe('true');
+    // Its one-time hint shows on Home too (no unlock moment or caption is due in this save).
+    expect(m.q('[data-testid="home-decks"] [data-testid="deck-hint"]')).not.toBeNull();
+    m.click('[data-testid="home-deck-1"]');
+    expect(m.save.value.activePlan).toBe(1);
+    expect(m.q('[data-testid="home-deck-1"]')!.getAttribute('aria-checked')).toBe('true');
+    expect(m.q('[data-testid="deck-hint"]')).toBeNull();
+    // Still one primary (U2): the switch is secondary.
+    expect(m.qa('[data-primary]')).toHaveLength(1);
+    m.click('[data-testid="play"]');
+    flush(() => vi.advanceTimersByTime(300));
+    expect(calls('prepareMatch')[0]!.args[0]).toEqual({ mode: 'ladder', format: 'short' });
+  });
+
+  it('the deck hint waits while the No clock caption is due (one caption at a time, U8)', () => {
+    const s = midGameSave(content);
+    m = mount({ save: { ...s, flags: { ...s.flags, 'ui-ladderFormat.last': true } }, shell: true });
+    expect(m.q('[data-testid="caption-last"]')).not.toBeNull();
+    expect(m.q('[data-testid="deck-hint"]')).toBeNull();
+  });
+
+  it('no deck switch on Home before the onboarding is done', () => {
+    m = mount({ save: afterMatch1() });
+    expect(m.q('[data-testid="home-decks"]')).toBeNull();
+  });
+
   it('Last Base Standing: no clock, the win chip, an info panel; Battle plays it (A2.10.1, ranked since 2026-10-03)', () => {
     vi.useFakeTimers();
     m = mount({ state: 'mid', shell: true });
@@ -228,7 +259,9 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     m = mount({ state: 'mid', shell: true });
     // One name for it everywhere: the War Path (a solo campaign).
     expect(text(m.q('[data-testid="home-campaign"]')!)).toContain('War Path');
-    expect(text(m.q('[data-testid="home-campaign"]')!)).toContain('Solo campaign vs AI');
+    // The AI label as a chip (owner request 2026-10-07); the full words stay in the card's label.
+    expect(m.q('[data-testid="home-campaign"] .ui-ai')).not.toBeNull();
+    expect(m.q('[data-testid="home-campaign"]')!.getAttribute('aria-label')).toContain('Solo campaign vs AI');
     m.click('[data-testid="home-campaign"]');
     expect(m.router.current.value.id).toBe('warPath');
     expect(m.q('[data-testid="tabbar"]')).toBeNull();
@@ -279,7 +312,7 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     expect(m.q('[data-testid="caption-last"]')).toBeNull();
     flush(() => vi.advanceTimersByTime(4100));
     expect(m.q('[data-testid="caption-amber"]')).toBeNull();
-    expect(text(m.q('[data-testid="caption-last"]')!)).toContain('at most about 25½ min');
+    expect(text(m.q('[data-testid="caption-last"]')!)).toBe('No clock: the war ends when a base falls, by about 25½ min.');
   });
 
   it('Home shows one honest friend entry: a locked chip that opens the panel on Friend Duel (owner decision 2026-10-01)', () => {
@@ -299,7 +332,10 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
   it('the Friend Duel card is visible but locked until online play works, and explains itself', () => {
     m = mount({ state: 'mid' });
     m.click('[data-testid="home-modes"]');
-    expect(text(m.q('[data-testid="mode-friend"]')!)).toContain('Arrives with online play');
+    expect(text(m.q('[data-testid="mode-friend"]')!)).toContain('Coming with online play');
+    // Owner request 2026-10-07: no helper line and no description under each mode name.
+    expect(m.q('.md-hint')).toBeNull();
+    expect(text(m.q('[data-testid="mode-ladder"]')!)).not.toContain('Climb the arenas');
     m.click('[data-testid="mode-friend"]');
     expect(text(m.q('[data-testid="mode-friend-more"]')!)).toContain('room');
     expect(m.save.value.flags['ui-homeMode.friend']).toBeUndefined();
@@ -353,10 +389,12 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     expect(text(m.q('[data-testid="unlock-campaign"]')!)).toContain('War Path: solo battles, earn cards');
   });
 
-  it('Amber and Dust info panels say they cannot be bought (A15.3)', () => {
+  it('Amber and Dust info panels say what they are for, with no slogan (A15.3, owner request 2026-10-07)', () => {
     m = mount({ state: 'mid' });
     m.click('[data-testid="home-amber"]');
-    expect(text(m.q('[data-testid="currency-info-amber"]')!)).toContain("Amber can't be bought. It has no money value.");
+    const info = text(m.q('[data-testid="currency-info-amber"]')!);
+    expect(info).toContain('Spend it on card upgrades.');
+    expect(info).not.toMatch(/bought|money|earned by playing/i);
   });
 });
 
@@ -462,6 +500,8 @@ describe('Capsules and Progress tabs (ui-plan 2.2, 4.1b, 4.6)', () => {
     ]);
     expect(text(m.q('[data-testid="home-road"]')!)).toContain('Next reward at 1,100');
     expect(text(m.q('[data-testid="home-road-next"]')!)).toBe('100Boarding Nets');
+    // Compact, the power shows as its medal (the name is its tooltip and hidden by CSS; 2026-10-07).
+    expect(m.q('[data-testid="home-road-next"] .road-rw--power')!.getAttribute('title')).toBe('Boarding Nets');
   });
 
   it('the Sundial card shows "n of 34 ready" and the next one as a clock time, never a countdown (A6.3, A15.3)', () => {
@@ -470,14 +510,15 @@ describe('Capsules and Progress tabs (ui-plan 2.2, 4.1b, 4.6)', () => {
     const next = text(m.q('[data-testid="sundial-next"]')!);
     expect(next).toMatch(/^Next one (\S+ )?at \d{1,2}[:.]\d{2}|^Next one \S+ \d{1,2}[:.]\d{2}/);
     expect(next).not.toMatch(/\d+\s*[hms]\b|:\d{2}:\d{2}/);
-    expect(text(m.q('[data-testid="sundial"]')!)).toContain('Finish any battle to claim one, win or lose.');
+    // Owner request 2026-10-07: no rule line under the count (the info panel has it).
+    expect(text(m.q('[data-testid="sundial"]')!)).not.toContain('Finish any battle');
   });
 
-  it('a full Sundial says it has stopped filling and shows no next time', () => {
+  it('a full Sundial says "Full" and shows no next time', () => {
     const mid = midGameSave(content);
     m = mount({ save: { ...mid, capsules: { ...mid.capsules, charges: 34 } }, routes: [{ id: 'capsules' }] });
     expect(text(m.q('[data-testid="sundial-status"]')!)).toBe('34 of 34 ready');
-    expect(text(m.q('[data-testid="sundial-next"]')!)).toBe('Full: it has stopped filling.');
+    expect(text(m.q('[data-testid="sundial-next"]')!)).toBe('Full');
   });
 
   it('Home shows only the Sundial glyph, with no number and no time; it opens the Capsules tab (A15.13)', () => {
@@ -524,15 +565,19 @@ describe('Capsules and Progress tabs (ui-plan 2.2, 4.1b, 4.6)', () => {
     expect(text(m.q('[data-testid="war-chest"]')!)).toContain(`War Chest 13/${content.quests.weekly.target}`);
     expect(m.qa('[data-testid^="quest-"][data-testid$="0"], [data-testid="quest-1"], [data-testid="quest-2"]').length).toBeGreaterThan(0);
     expect(m.q('[data-testid="quest-3"]')).toBeNull();
-    expect(text(m.q('[data-testid="home-quests"]')!)).toContain('Holds up to 21. When full, it stops filling.');
+    // The queue rule (A15.3) is behind the panel's "i" (owner request 2026-10-07: no caption lines).
+    expect(text(m.q('[data-testid="home-quests"]')!)).not.toContain('Up to 21');
+    m.click('[data-testid="quest-info"]');
+    expect(text(m.q('[data-testid="toast"]')!)).toBe('New quests arrive each day. Up to 21 can wait. When full, it stops filling.');
   });
 
-  it('the capsule info panel states each bank cap and that nothing earned is taken away (A15.3)', () => {
+  it('the capsule info panel states each bank cap (A15.3)', () => {
     m = mount({ state: 'mid', routes: [{ id: 'capsules' }] });
     m.click('[data-testid="odds-open"]');
     const info = text(m.q('[data-testid="capsule-info"]')!);
     expect(info).toContain('When full, it stops filling.');
-    expect(text(m.q('[data-testid="odds-modal"]')!)).toContain('Nothing you have earned is ever taken away.');
+    // Owner request 2026-10-07: no reassurance slogans; the caps and odds say what is true.
+    expect(text(m.q('[data-testid="odds-modal"]')!)).not.toContain('Nothing you have earned is ever taken away.');
   });
 });
 
@@ -717,7 +762,7 @@ describe('Result (rewards staged, each skippable)', () => {
 
   it('a Retreat says plainly that it gives no rewards; other results do not (A6.3, 2026-10-03)', () => {
     m = mount({ routes: [{ id: 'home' as const }, { id: 'result' as const, info: fixtureResult(content, 'retreat') }] });
-    expect(text(m.q('[data-testid="result-retreat-none"]')!)).toBe('You retreated, so this battle gives no rewards.');
+    expect(text(m.q('[data-testid="result-retreat-none"]')!)).toBe('Retreat: no rewards');
     expect(text(m.q('[data-testid="result-reason"]')!)).toBe('You retreated at 1:05');
     m.click('[data-testid="result-skip"]');
     expect(m.q('[data-testid="reward-amber"]')).toBeNull();
@@ -757,16 +802,18 @@ describe('Result (rewards staged, each skippable)', () => {
 });
 
 describe('Pause', () => {
-  it('Retreat is locked before 1:00', () => {
+  it('Retreat is open from the start, with no lock and no "unlocks at" line (owner decision 2026-10-07)', () => {
     m = mount({
       routes: [
         { id: 'battle', request: fixtureRequest('general'), opponent: fixtureOpponent(content, 'general') },
         { id: 'pause', info: fixturePause('early') },
       ],
     });
-    expect(m.q('[data-testid="pause-retreat"]')!.getAttribute('aria-disabled')).toBe('true');
+    expect(m.q('[data-testid="pause-retreat"]')!.getAttribute('aria-disabled')).toBeNull();
+    expect(m.q('[data-testid="pause-retreat-locked"]')).toBeNull();
+    expect(text(m.q('[data-testid="pause-actions"]')!)).not.toContain('unlocks');
     m.click('[data-testid="pause-retreat"]');
-    expect(m.q('[data-testid="retreat-confirm"]')).toBeNull();
+    expect(m.q('[data-testid="retreat-confirm"]')).not.toBeNull();
     expect(m.q('[data-testid="pause-quit"]')).toBeNull();
   });
 
@@ -789,7 +836,8 @@ describe('Pause', () => {
       ],
     });
     m.click('[data-testid="pause-retreat"]');
-    expect(text(m.q('[data-testid="retreat-confirm"]')!)).toContain('Retreating counts as a loss and gives no rewards');
+    // A15 in short form (owner request 2026-10-07: no long explanations): a loss, and no rewards.
+    expect(text(m.q('[data-testid="retreat-confirm"]')!)).toContain('Counts as a loss. No rewards.');
     m.click('[data-testid="retreat-yes"]');
     expect(calls('retreat')).toHaveLength(1);
   });
@@ -868,7 +916,7 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6; owner request 2026-09-30)', 
     const troops = stone().units.filter((u) => !!u).length;
     expect(text(m.q('[data-testid="band-unit"]')!)).toBe(`Troops ${troops}/7`);
     expect(text(free.querySelector('.army-sec-title') as FakeElement)).toMatch(/^Available · \d+$/);
-    expect(text(m.q('[data-testid="army-owned-count"]')!)).toMatch(new RegExp(`All ${albumOfAge('stone')} Stone cards found!|You own \\d+ of ${albumOfAge('stone')} Stone cards`));
+    expect(text(m.q('[data-testid="army-owned-count"]')!)).toMatch(new RegExp(`All ${albumOfAge('stone')} found|\\d+/${albumOfAge('stone')} found`));
     m.click('[data-testid="slot-unit-4"] .ui-card');
     m.click('[data-testid="remove-unit-4"]');
     expect(sectionOf('drum_shaman')).toBe('free');
@@ -887,7 +935,7 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6; owner request 2026-09-30)', 
     expect(sectionOf('mammoth_matriarch')).toBe('locked');
     expect(m.q('[data-testid="cand-mammoth_matriarch"]')!.getAttribute('class')).toContain('is-locked');
     expect(text(m.q('[data-testid="src-mammoth_matriarch"]')!)).toBe('Time Capsules');
-    expect(text(m.q('[data-testid="army-owned-count"]')!)).toMatch(new RegExp(`You own \\d+ of ${albumOfAge('stone')} Stone cards`));
+    expect(text(m.q('[data-testid="army-owned-count"]')!)).toMatch(new RegExp(`\\d+/${albumOfAge('stone')} found`));
     // A locked card says so and offers Info; it cannot be used.
     m.click('[data-testid="cand-mammoth_matriarch"]');
     expect(m.q('[data-testid="card-use"]')).toBeNull();
@@ -953,37 +1001,99 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6; owner request 2026-09-30)', 
     expect(m.q('[data-testid="army-advice-sheet"]')).not.toBeNull();
   });
 
-  it('auto-fills with one short line, and switches the army in use from the presets panel', () => {
+  it('auto-fills with one short line, and switches the army in use from the deck switch at the top', () => {
     m = army();
     m.click('[data-testid="auto-fill"]');
     expect(calls('autoFill')).toHaveLength(1);
     expect(m.save.value.warPlans[0]!.name).toBe('Rush');
     expect(m.qa('[data-testid="toast"]')).toHaveLength(1);
-    m.click('[data-testid="army-presets"]');
-    m.click('[data-testid="preset-1"]');
+    // Owner request 2026-10-07: the three decks are a switch at the top of Army, by name.
+    const decks = m.qa('[data-testid="army-decks"] [role="radio"]');
+    expect(decks.map((el) => text(el))).toEqual(m.save.value.warPlans.map((p) => p.name));
+    expect(decks[0]!.getAttribute('aria-checked')).toBe('true');
+    m.click('[data-testid="deck-1"]');
     expect(m.save.value.activePlan).toBe(1);
-    expect(m.q('[data-testid="plan-in-use"]')).not.toBeNull();
+    expect(m.q('[data-testid="deck-1"]')!.getAttribute('aria-checked')).toBe('true');
+    expect(m.q('[data-testid="deck-sheet"]')).toBeNull();
   });
 
-  it('presets are added in order: choosing C first stores B too (meta.setWarPlan)', () => {
+  it('decks are added in order: choosing C first stores B too, each a copy of the deck in use (meta.setWarPlan)', () => {
     const save = { ...midGameSave(content) };
     save.warPlans = [save.warPlans[0]!];
     m = mount({ save, routes: [{ id: 'home' }, { id: 'warPlan', age: 'stone' }] });
-    m.click('[data-testid="army-presets"]');
-    m.click('[data-testid="preset-2"]');
+    expect(m.qa('[data-testid="army-decks"] [role="radio"]').map((el) => text(el))).toEqual(['Rush', 'B', 'C']);
+    m.click('[data-testid="deck-2"]');
     expect(calls('setWarPlan:rejected')).toHaveLength(0);
     expect(m.save.value.warPlans.map((p) => p.name)).toEqual(['Rush', 'B', 'C']);
+    expect(m.save.value.warPlans[2]!.loadouts).toEqual(save.warPlans[0]!.loadouts);
     expect(m.save.value.activePlan).toBe(2);
   });
 
-  it('renames the army in use', () => {
+  it('the deck in use opens its sheet: rename it, or copy another deck into it with Undo', () => {
     m = army();
-    m.click('[data-testid="army-presets"]');
-    m.click('[data-testid="rename"]');
-    const field = m.q('[data-testid="rename-plan"] input')!;
-    flush(() => input(field, 'Blitz'));
-    m.click('[data-testid="rename-save"]');
+    m.click('[data-testid="deck-0"]');
+    expect(m.q('[data-testid="deck-sheet"]')).not.toBeNull();
+    flush(() => input(m!.q('[data-testid="deck-name"]')!, 'Blitz'));
+    m.click('[data-testid="deck-save"]');
     expect(m.save.value.warPlans[0]!.name).toBe('Blitz');
+    expect(m.q('[data-testid="deck-sheet"]')).toBeNull();
+    // Copy from: deck A takes deck B's cards and keeps its own name; Undo puts its cards back.
+    const before = m.save.value.warPlans[0]!.loadouts;
+    const other = m.save.value.warPlans[1]!;
+    m.click('[data-testid="deck-0"]');
+    expect(m.q('[data-testid="deck-copy-0"]')).toBeNull();
+    m.click('[data-testid="deck-copy-1"]');
+    expect(m.save.value.warPlans[0]!.name).toBe('Blitz');
+    expect(m.save.value.warPlans[0]!.loadouts).toEqual(other.loadouts);
+    expect(m.save.value.warPlans[0]!.loadouts.stone.units).not.toBe(other.loadouts.stone.units);
+    expect(m.qa('[data-testid="toast"]').some((el) => text(el).includes(`Copied ${other.name}`))).toBe(true);
+    m.click('[data-testid="army-undo"]');
+    expect(m.save.value.warPlans[0]!.loadouts).toEqual(before);
+  });
+
+  it('the deck switch shows a one-time hint: a tap on a deck closes it for good', () => {
+    const save = midGameSave(content);
+    expect(save.flags['ui-seen.decks']).toBeUndefined();
+    m = mount({ save, routes: [{ id: 'home' }, { id: 'warPlan', age: 'stone' }] });
+    expect(text(m.q('[data-testid="deck-hint"]')!)).toBe('New: 3 decks. Tap one to switch.');
+    m.click('[data-testid="deck-1"]');
+    expect(m.q('[data-testid="deck-hint"]')).toBeNull();
+    expect(m.save.value.flags['ui-seen.decks']).toBe(true);
+    const seen = m.save.value;
+    m.unmount();
+    m = mount({ save: seen, routes: [{ id: 'home' }, { id: 'warPlan', age: 'stone' }] });
+    expect(m.q('[data-testid="deck-hint"]')).toBeNull();
+  });
+
+  it('the deck hint counts as seen once it has shown in full (5 s), like the other first-seen captions', () => {
+    vi.useFakeTimers();
+    m = mount({ save: midGameSave(content), routes: [{ id: 'home' }, { id: 'warPlan', age: 'stone' }] });
+    expect(m.q('[data-testid="deck-hint"]')).not.toBeNull();
+    flush(() => vi.advanceTimersByTime(4900));
+    expect(m.save.value.flags['ui-seen.decks']).toBeUndefined();
+    flush(() => vi.advanceTimersByTime(200));
+    expect(m.q('[data-testid="deck-hint"]')).toBeNull();
+    expect(m.save.value.flags['ui-seen.decks']).toBe(true);
+  });
+
+  it('no deck switch before the onboarding is done', () => {
+    m = mount({ save: afterMatch1(), routes: [{ id: 'home' }, { id: 'warPlan', age: 'stone' }] });
+    expect(m.q('[data-testid="army-decks"]')).toBeNull();
+  });
+
+  it('groups Available under class headings with their counts, NEW cards first (owner request 2026-10-07)', () => {
+    m = army();
+    const groups = m.qa('[data-testid="army-groups"] section');
+    expect(groups.length).toBeGreaterThan(0);
+    let total = 0;
+    for (const g of groups) {
+      const cells = g.querySelectorAll('[data-army-cell]');
+      total += cells.length;
+      expect(text(g.querySelector('.army-group__count')!)).toBe(String(cells.length));
+      expect(g.querySelector('.ui-class-icon')).not.toBeNull();
+    }
+    expect(total).toBe(m.qa('[data-testid="army-group-free"] [data-army-cell]').length);
+    expect(text(m.q('[data-testid="army-group-free"] .army-sec-title')!)).toBe(`Available · ${total}`);
   });
 
   it('Info opens Card detail; Upgrade opens it with the upgrade already armed', () => {
@@ -1005,13 +1115,7 @@ describe('Army: the deck builder (ui-plan 4.2, 6.6; owner request 2026-09-30)', 
     expect(m.router.current.value).toEqual({ id: 'cardDetail', card: first });
   });
 
-  it('opens the Card Album at the age from the header (with its count) and from Locked (review 2)', () => {
-    m = army();
-    const head = m.q('[data-testid="army-album-head"]')!;
-    expect(text(head)).toMatch(/^\d+\/\d+$/);
-    expect(head.getAttribute('aria-label')).toMatch(/Card Album \d+\/\d+/);
-    m.click('[data-testid="army-album-head"]');
-    expect(m.router.current.value).toEqual({ id: 'collection', tab: 'cards', age: 'stone' });
+  it('opens the Card Album at the age from Locked (review 2)', () => {
     m = mount({ state: 'new', routes: [{ id: 'home' }, { id: 'warPlan', age: 'stone' }] });
     m.click('[data-testid="army-album"]');
     expect(m.router.current.value).toEqual({ id: 'collection', tab: 'cards', age: 'stone', own: 'missing' });

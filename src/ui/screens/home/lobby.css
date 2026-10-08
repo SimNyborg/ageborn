@@ -199,6 +199,13 @@
   }
 }
 
+/* The saved decks at the plate's foot (owner request 2026-10-07): the deck Battle plays, one tap away. */
+.hub-plate__foot {
+  display: flex;
+  padding-top: 6px;
+  border-top: 1px solid rgba(107, 120, 144, 0.28);
+}
+
 /* The first-seen caption above the plate (MR-28): what "No clock" means, once. */
 .hub-plate__caption.wp-caption {
   top: auto;
@@ -541,11 +548,6 @@
 /* The Modes chooser                                                                               */
 /* ---------------------------------------------------------------------------------------------- */
 
-.md-hint {
-  margin: 0 0 var(--ui-s3);
-  color: var(--ui-text-2);
-  font: 600 var(--ui-fs-caption) / var(--ui-lh-caption) var(--ui-font-text);
-}
 .md-group {
   margin: var(--ui-s3) 0 6px;
   padding-top: var(--ui-s2);

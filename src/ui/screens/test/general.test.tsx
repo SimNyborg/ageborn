@@ -1,7 +1,7 @@
 /**
  * Customize › General ("Make your General", owner request 2026-10-07, AUDIT §6): slot tabs and part
- * tiles, instant equips with Undo, try-on of locked wearables with their source and the "never sold"
- * line, the profile picture tiles (frame, banner, title), and Profile's pencil jumping here.
+ * tiles, instant equips with Undo, try-on of locked wearables with their source (no slogan, owner
+ * request 2026-10-07), the profile picture tiles (frame, banner, title), and Profile's pencil jumping here.
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import { text } from './dom';
@@ -44,8 +44,10 @@ describe('Customize › General', () => {
     expect(m.q('[data-testid="gen-trying"]')).not.toBeNull();
     const src = text(m.q('[data-testid="gen-source"]')!);
     expect(src).toContain('Wardrobe Crate');
-    expect(src).toContain('Earned in play. Never sold.');
+    // Owner request 2026-10-07: the source only, no "never sold" slogan.
+    expect(src).not.toMatch(/never sold|earned in play/i);
     expect(src).not.toMatch(/buy|price|€|\$/i);
+    expect(m.q('.gen-note')).toBeNull();
   });
 
   it('picks a banner and shows frames and titles as picture tiles', () => {

@@ -165,6 +165,10 @@ export class Camera {
   private homeSide: 0 | 1 = 0;
   private push: CameraPush | null = null;
   private pushMs = 0;
+  /** A short zoom kick on top of everything (the base's break, A12 camera punch). */
+  private punchZoom = 0;
+  private punchMs = 0;
+  private punchT = 0;
   /** The follow target centre (world x), or null for the opening view. */
   private target: number | null = null;
   private engaged = false;
@@ -533,6 +537,33 @@ export class Camera {
     if (a <= 0) this.push = null;
   }
 
+  /**
+   * A camera punch (A12 base destroyed): the view kicks in by `zoom` (0.07 = 7%) in about 70 ms and
+   * springs back over `ms`, with a small undershoot, around the push focus (else the screen centre).
+   */
+  punch(zoom: number, ms: number): void {
+    if (this.reduceMotion || !(zoom > 0) || !(ms > 0)) return;
+    this.punchZoom = zoom;
+    this.punchMs = ms;
+    this.punchT = 0;
+  }
+
+  /** The punch's zoom multiplier right now (1 = none). */
+  get punchScale(): number {
+    if (this.punchMs <= 0) return 1;
+    const t = this.punchT;
+    const rise = 70;
+    let env: number;
+    if (t < rise) {
+      const u = t / rise;
+      env = 1 - (1 - u) * (1 - u);
+    } else {
+      const u = Math.min(1, (t - rise) / Math.max(1, this.punchMs - rise));
+      env = Math.exp(-4.2 * u) * Math.cos(Math.PI * 1.35 * u);
+    }
+    return 1 + this.punchZoom * env;
+  }
+
   /** The current push amount, 0..1 (tests, dev pages). */
   get pushed(): number {
     return this.push ? pushAmount(this.push, this.pushMs) : 0;
@@ -546,6 +577,10 @@ export class Camera {
   update(dtMs: number, gameSpeed = 1): void {
     const dtRaw = Math.max(0, dtMs);
     const dt = dtRaw / 1000;
+    if (this.punchMs > 0) {
+      this.punchT += dtRaw;
+      if (this.punchT >= this.punchMs) this.punchMs = 0;
+    }
     if (this.push) {
       this.pushMs += dtRaw;
       const p = this.push;
@@ -641,11 +676,40 @@ export class Camera {
 
   /** The transform for the world container (with any camera push applied). */
   transform(): CameraTransform {
+    const t = this.pushedTransform();
+    const k = this.punchScale;
+    if (k === 1) return t;
+    // the punch scales about the push focus (the falling base), else the screen centre
+    const L = this.layout;
+    const fx = this.push ? this.push.x : (L.width / 2 - t.x) / t.scale;
+    const fy = this.push ? this.push.y : (L.bandY + L.bandH * 0.5 - t.y) / t.scale;
+    const sx = t.x + fx * t.scale;
+    const sy = t.y + fy * t.scale;
+    const scale = t.scale * k;
+    let x = sx - fx * scale;
+    const lo = L.width - WORLD_RIGHT_LU * scale;
+    const hi = -WORLD_LEFT_LU * scale;
+    if (lo <= hi) x = Math.min(hi, Math.max(lo, x));
+    return { scale, x, y: Math.min(sy - fy * scale, L.groundY) };
+  }
+
+  private pushedTransform(): CameraTransform {
     const base = this.baseTransform();
     const a = this.push ? pushAmount(this.push, this.pushMs) : 0;
     if (!this.push || a <= 0) return base;
     const p = this.push;
     const L = this.layout;
+    if (p.zoom < 1) {
+      // A framing pull-back (a destroyed base taller than a phone's band): the ground line stays put,
+      // as with the player's own zoom, and the focus slides toward the middle.
+      const sx0 = base.x + p.x * base.scale;
+      const scale0 = base.scale * (1 + (p.zoom - 1) * a);
+      let x0 = sx0 + (L.width / 2 - sx0) * a * 0.6 - p.x * scale0;
+      const lo0 = L.width - WORLD_RIGHT_LU * scale0;
+      const hi0 = -WORLD_LEFT_LU * scale0;
+      if (lo0 <= hi0) x0 = Math.min(hi0, Math.max(lo0, x0));
+      return { scale: scale0, x: x0, y: L.groundY };
+    }
     // The focus point moves toward the middle of the lane band while the world scales around it.
     const sx = base.x + p.x * base.scale;
     const sy = base.y + p.y * base.scale;

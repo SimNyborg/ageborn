@@ -1,8 +1,9 @@
 /**
  * The Modes panel (S2b, ui-plan 4.1), reworked on 2026-10-01 into the **mode switcher's chooser**
- * (spec "online-first Battle hub" 1.3): one card per row (icon, name, one plain line, the reward and a
- * check on the selected card). A tap **selects** the mode and closes the panel; it never starts a
- * match: Battle on Home plays the selected mode (MR-120: the card's icon flies into the switcher).
+ * (spec "online-first Battle hub" 1.3): one card per row (icon, name, the reward and a check on the
+ * selected card; owner request 2026-10-07: no helper line and no description under each name, those
+ * stay in the card's tooltip and label). A tap **selects** the mode and closes the panel; it never
+ * starts a match: Battle on Home plays the selected mode (MR-120: the card's icon flies into the switcher).
  *
  * - **vs AI**: Ladder (the default), Quick Battle, Daily Challenge (opens at 6 wins), Skirmish ("Set
  *   up" opens its setup; once a setup has been played the card selects it), Conquest (opens its
@@ -184,6 +185,8 @@ export function ModesSheet(p: {
           aria-pressed={c.lock ? undefined : on}
           aria-disabled={c.lock ? 'true' : undefined}
           aria-expanded={c.lock && c.more ? open : undefined}
+          aria-label={`${c.title}. ${c.lock ?? c.desc}`}
+          title={c.desc}
           class={`md-card${on ? ' is-on' : ''}${c.lock ? ' is-locked' : ''}${c.side ? ' has-side' : ''}`}
           data-testid={`mode-${c.id}`}
           onClick={(e) => tap(c, e.currentTarget)}
@@ -198,9 +201,8 @@ export function ModesSheet(p: {
           </span>
           <span class="md-card__text">
             <span class="md-card__title">{c.title}</span>
-            <span class={`md-card__desc${c.lock ? ' is-lock' : ''}`}>{c.lock ?? c.desc}</span>
+            {c.lock ? <span class="md-card__desc is-lock">{c.lock}</span> : null}
             {c.reward && !c.lock ? <span class="md-card__reward">{c.reward}</span> : null}
-            {c.lock && c.more && !open ? <span class="md-card__desc">{c.desc}</span> : null}
           </span>
           {on ? (
             <span class="md-card__check" aria-hidden="true">
@@ -241,7 +243,6 @@ export function ModesSheet(p: {
         ),
       }}
     >
-      <p class="md-hint">{t('ui.modesPanel.selectHint')}</p>
       {/* vs players leads: the game is built for 2-player online battles (owner request 2026-10-01). */}
       {(['players', 'ai'] as const).map((g) => (
         <div key={g}>

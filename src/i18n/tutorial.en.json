@@ -69,7 +69,7 @@
     "next": "Continue",
     "tapToSkip": "Tap to skip",
     "saveUnreadable": "Save could not be read. Import a backup?",
-    "abandoned": "Your last Ladder battle was left early, so it counts as a Retreat: a loss with no rewards.",
+    "abandoned": "Your last Ladder battle was left, so it counts as a Retreat.",
     "agePick": {
       "title": "Pick an age",
       "lead": "Every card in this Age Capsule comes from the age you pick.",

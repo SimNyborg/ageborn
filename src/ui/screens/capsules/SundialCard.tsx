@@ -6,11 +6,10 @@
  * - The dial: a stone face with a bronze gnomon. Its five hour marks light up as the current 5 h period
  *   runs, and the gnomon's shadow sweeps from the first mark to the last. A full Sundial lights every
  *   mark and drops the shadow.
- * - Text: "12 of 34 ready" (or "None ready yet"), "Next one at 17:40" (with the short weekday when it
- *   is not today; the weekday in the app's language), or, when full, "Full: it has stopped filling.",
- *   then the rule
- *   "Finish any battle to claim one, win or lose." While free capsules are left, their line replaces
- *   the rule.
+ * - Text: "12 of 34 ready" (or "None ready yet") and "Next one at 17:40" (with the short weekday when it
+ *   is not today; the weekday in the app's language), or, when full, "Full". No rule line (owner
+ *   request 2026-10-07: the info panel has the rule). While free capsules are left, their line is the
+ *   card's only text.
  * - Motion: the shadow eases in once over 400 ms when the card mounts; after that the card re-renders
  *   only at minute boundaries. When a capsule becomes ready while the tab is open, the ready gem pops
  *   once. Reduce motion turns both off (CSS).
@@ -151,7 +150,7 @@ export function SundialCard(p: { save: SaveDoc; content: Content; t: Translate; 
   }, [v.charges]);
   const ready = v.charges > 0;
   const status = ready ? t('ui.capsules.sundialReady', { n: formatInt(v.charges, locale), max: formatInt(v.max, locale) }) : t('ui.capsules.sundialNone');
-  // A15.3: a full bank says that it is full, not only what happens when it is.
+  // A15.3: a full bank says that it is full ("Full"; the info panel says it stops filling).
   const when = v.full || v.nextAt === null ? t('ui.capsules.sundialFull') : sundialNextLine(v.nextAt, now, t, locale);
   return (
     <section class={`sundial-card${ready ? ' is-ready' : ''}${v.full ? ' is-full' : ''}`} data-testid="sundial" aria-labelledby="sundial-title">
@@ -177,7 +176,8 @@ export function SundialCard(p: { save: SaveDoc; content: Content; t: Translate; 
             </span>
           </>
         )}
-        <small class="sundial-card__rule">{v.free > 0 ? t('ui.home.freeCapsules', { n: formatInt(v.free, locale) }) : t('ui.capsules.chargesNote')}</small>
+        {/* Owner request 2026-10-07: no rule line under the count (the info panel has the rule). */}
+        {v.free > 0 ? <small class="sundial-card__rule">{t('ui.home.freeCapsules', { n: formatInt(v.free, locale) })}</small> : null}
       </div>
     </section>
   );

@@ -14,6 +14,9 @@
  * | P6 Daily | today's challenge, AI, its tier | Recruit / Veteran / Warlord | "Today: <modifier> · Medium War" |
  * | P7 Skirmish | the set-up General, AI | the summary and Change | the reward |
  *
+ * Under the line, once the saved decks are open (right after the onboarding), the deck switch: the deck
+ * Battle plays, one tap away (owner request 2026-10-07; `shared/Decks.tsx`).
+ *
  * The online states (P8-P14) live in `online.tsx` and show only in the dev mock until they work.
  * A mode change cross-fades the plate's body (MR-120).
  */
@@ -54,7 +57,8 @@ const LEN_KEY: Readonly<Record<string, string>> = {
   last: 'ui.hub.format.last',
 };
 const DAILY_KEY: Readonly<Record<string, string>> = { recruit: 'ui.mode.daily.recruit', veteran: 'ui.mode.daily.veteran', warlord: 'ui.mode.daily.warlord' };
-const LAST_SEEN = 'ui-seen.lastBase';
+/** The No clock caption's first-seen flag (Home's deck hint waits while it is due, one caption at a time, U8). */
+export const LAST_SEEN = 'ui-seen.lastBase';
 
 /** "3 ages · up to 8½ min" or "7 ages · no clock" (one line; the win chip and the info panel say the rest). */
 export function lengthLine(content: ReturnType<typeof useUi>['content'], t: ReturnType<typeof useUi>['t'], f: FormatId): string {
@@ -82,6 +86,8 @@ export function PlateFrame(p: {
   /** Re-runs the body's cross-fade when it changes (MR-120). */
   swapKey: string;
   extra?: ComponentChildren;
+  /** The saved-deck switch at the plate's foot, next to Battle (owner request 2026-10-07). */
+  foot?: ComponentChildren;
   class?: string;
 }) {
   return (
@@ -108,6 +114,7 @@ export function PlateFrame(p: {
         </div>
         {p.choice ? <div class="hub-plate__format">{p.choice}</div> : null}
         {p.line ? p.line : null}
+        {p.foot ? <div class="hub-plate__foot">{p.foot}</div> : null}
       </div>
       {p.extra}
     </div>
@@ -255,15 +262,17 @@ export function MatchPlate(p: {
   aside?: boolean;
   /** Holds the first-seen caption (an unlock moment or a ceremony is on screen, U8). */
   quiet?: boolean;
+  /** The saved-deck switch for the plate's foot (owner request 2026-10-07), once decks are open. */
+  deck?: ComponentChildren;
 }) {
   if (p.training) return <TrainingPlate training={p.training} aside={p.aside} />;
   switch (p.mode) {
     case 'quick':
-      return <QuickPlate aside={p.aside} />;
+      return <QuickPlate aside={p.aside} deck={p.deck} />;
     case 'daily':
-      return <DailyPlate aside={p.aside} />;
+      return <DailyPlate aside={p.aside} deck={p.deck} />;
     case 'skirmish':
-      return <SkirmishPlate aside={p.aside} onChange={p.onSkirmish} />;
+      return <SkirmishPlate aside={p.aside} onChange={p.onSkirmish} deck={p.deck} />;
     default:
       return <LadderPlate {...p} />;
   }
@@ -280,7 +289,7 @@ function TrainingPlate(p: { training: 1 | 2; aside?: boolean | undefined }) {
   );
 }
 
-function LadderPlate(p: { opponent: OpponentSpec | null; format: FormatId; onFormat(f: FormatId): void; aside?: boolean | undefined; quiet?: boolean | undefined }) {
+function LadderPlate(p: { opponent: OpponentSpec | null; format: FormatId; onFormat(f: FormatId): void; aside?: boolean | undefined; quiet?: boolean | undefined; deck?: ComponentChildren }) {
   const { t, content, save, services, locale } = useUi();
   const s = save.value;
   const o = p.opponent;
@@ -340,6 +349,7 @@ function LadderPlate(p: { opponent: OpponentSpec | null; format: FormatId; onFor
       name={name}
       choice={picker ? <LengthPicker value={p.format} options={options} onChange={p.onFormat} testid="home-format" /> : null}
       line={line}
+      foot={p.deck}
       extra={
         <>
           {caption ? (
@@ -355,7 +365,7 @@ function LadderPlate(p: { opponent: OpponentSpec | null; format: FormatId; onFor
 }
 
 /** P5: the Quick Battle General for the difficulty; a stepper picks the difficulty. */
-function QuickPlate(p: { aside?: boolean | undefined }) {
+function QuickPlate(p: { aside?: boolean | undefined; deck?: ComponentChildren }) {
   const { t, content, save, services, locale } = useUi();
   const d = lastDifficulty(save.value, content);
   const order = content.generals.difficulty.order;
@@ -396,12 +406,13 @@ function QuickPlate(p: { aside?: boolean | undefined }) {
           {t('ui.hub.quickLine', { n: formatInt(content.arenas.ladder.skirmishWinAmber, locale) })}
         </span>
       }
+      foot={p.deck}
     />
   );
 }
 
 /** P6: today's Daily Challenge; Recruit / Veteran / Warlord on the plate. */
-function DailyPlate(p: { aside?: boolean | undefined }) {
+function DailyPlate(p: { aside?: boolean | undefined; deck?: ComponentChildren }) {
   const { t, content, save, services, locale } = useUi();
   const s = save.value;
   const d = dailyDifficulty(s, content);
@@ -450,12 +461,13 @@ function DailyPlate(p: { aside?: boolean | undefined }) {
             : t('ui.hub.dailyLine', { modifier: modifier ? t(modifierNameKey(modifier)) : '', format: t(formatNameKey(ch.format)) })}
         </span>
       }
+      foot={p.deck}
     />
   );
 }
 
 /** P7: the last Skirmish setup, with Change (opens the setup, S2d). */
-function SkirmishPlate(p: { aside?: boolean | undefined; onChange(): void }) {
+function SkirmishPlate(p: { aside?: boolean | undefined; onChange(): void; deck?: ComponentChildren }) {
   const { t, content, save, locale } = useUi();
   const k = skirmishSetup(save.value, content);
   if (!k) return null;
@@ -494,6 +506,7 @@ function SkirmishPlate(p: { aside?: boolean | undefined; onChange(): void }) {
             : t('ui.mode.skirmish.reward', { n: formatInt(content.arenas.ladder.skirmishWinAmber, locale) })}
         </span>
       }
+      foot={p.deck}
     />
   );
 }

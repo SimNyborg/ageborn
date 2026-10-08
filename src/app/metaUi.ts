@@ -275,7 +275,6 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
           return i >= 0 ? i : null;
         },
       );
-      const endedHour = new Date(services.clock.now()).getHours();
       const now = services.clock.now();
       const challenge = (services.content as { dailyModifiers?: { challenge?: { difficulties?: Record<DailyDifficulty, number>; resetHour?: number } } }).dailyModifiers?.challenge;
       const modifier = input.mode === 'daily' ? meta.dailyModifier(services.content, services.clock) : null;
@@ -291,7 +290,6 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
           // A9.2 / A16.6: the missing Anti-heavy card, else the wave tip after a loss where the trickle detector fired.
           ...resultTip(r.result.battle ? lossTip({ won: input.outcome.winner === input.mySide, draw: input.outcome.winner === null, trickled: r.result.battle.trickle.fired, heavyGap: r.result.battle.heavyGap.gap }) : null),
           card,
-          endedHour,
           daily:
             input.mode === 'daily'
               ? {

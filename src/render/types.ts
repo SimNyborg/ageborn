@@ -167,7 +167,10 @@ export type ViewAction =
   | { a: 'screenFlash'; ms: number; color: number; alpha: number }
   | { a: 'baseFlash'; side: Side; ms: number }
   | { a: 'freeze'; ms: number; exempt: boolean }
-  | { a: 'slowMo'; scale: number; ms: number }
+  /** View-only slow motion; `easeMs` ramps back to full speed over the end of the window. */
+  | { a: 'slowMo'; scale: number; ms: number; easeMs?: number }
+  /** A short zoom kick (the base's break, A12), springing back over `ms`. */
+  | { a: 'cameraPunch'; zoom: number; ms: number }
   /** A camera moment: push in on an anchor, hold, ease out (`outMs` 0 = hold until the end). */
   | { a: 'camera'; at: Anchor; zoom: number; inMs: number; holdMs: number; outMs: number }
   | { a: 'duck'; db: number; ms: number }

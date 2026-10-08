@@ -5,6 +5,7 @@
  */
 import type { Content } from '@/content/types';
 import type { AgeId, CardId, PowerSlot, SaveDoc } from '@/contracts';
+import { UNIT_CLASSES, unitClass, type UnitClass } from '@/core/cardClass';
 import { cardsOfAge, isOwned } from './cards';
 import { fortSlotOpen, type SlotRef } from './plan';
 
@@ -47,6 +48,44 @@ export function ageSections(
     owned: owned.length,
     total: all.length,
   };
+}
+
+/** A heading of the Available pool: a troop class (A18.9.1), or the turret, power or fort kind. */
+export type PoolGroupId = UnitClass | 'turret' | 'power' | 'fort';
+
+/** The Available pool's headings in display order: the troop classes (A2.6 order), then turrets, powers, forts. */
+export const POOL_GROUPS: readonly PoolGroupId[] = [...UNIT_CLASSES, 'turret', 'power', 'fort'];
+
+/** The heading a card goes under in the Available pool. */
+export function poolGroupOf(content: Content, id: CardId): PoolGroupId | null {
+  if (content.forts?.[id]) return 'fort';
+  const u = content.units[id];
+  if (u) return unitClass(u);
+  if (content.turrets[id]) return 'turret';
+  if (content.powers[id]) return 'power';
+  return null;
+}
+
+/**
+ * The Available cards grouped under small class headings (owner request 2026-10-07: the not-selected
+ * cards were hard to scan): Infantry, Ranged, Heavy, Anti-heavy, Siege, Support, Air, then Turrets,
+ * Powers and Forts; empty groups are left out. Within a group the NEW cards come first, the rest keep
+ * the content's order.
+ */
+export function availableGroups(save: SaveDoc, content: Content, ids: readonly CardId[]): { id: PoolGroupId; cards: CardId[] }[] {
+  const by = new Map<PoolGroupId, CardId[]>();
+  for (const id of ids) {
+    const g = poolGroupOf(content, id);
+    if (!g) continue;
+    const list = by.get(g) ?? [];
+    list.push(id);
+    by.set(g, list);
+  }
+  const isNew = (id: CardId): boolean => save.collection[id]?.isNew === true;
+  return POOL_GROUPS.filter((g) => by.has(g)).map((g) => {
+    const list = by.get(g)!;
+    return { id: g, cards: [...list.filter(isNew), ...list.filter((id) => !isNew(id))] };
+  });
 }
 
 /**

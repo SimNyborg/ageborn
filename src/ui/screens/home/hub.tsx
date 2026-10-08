@@ -19,7 +19,7 @@ import type { SaveDoc } from '@/contracts';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { Avatar } from '../../components/Avatar';
 import { Button, IconButton } from '../../components/Button';
-import { CurrencyChip } from '../../components/Chips';
+import { AiBadge, CurrencyChip } from '../../components/Chips';
 import { formatInt } from '../../components/format';
 import { CapsuleIcon, CrateIcon, GearIcon, StarIcon, TrophyIcon } from '../../components/icons';
 import { pendingCrests, pendingNameKey, visibleTier } from '../../components/capsuleLook';
@@ -259,8 +259,10 @@ export function CampaignCard() {
             <small>/{formatInt(max, locale)}</small>
           </span>
         </span>
-        <span class="hub-camp__sub" data-clip-check="">
-          {t('ui.hub.campaignSub')}
+        {/* Owner request 2026-10-07: the AI chip instead of the "Solo campaign vs AI" line (it stays
+            in the label); War Path opponents are always labelled AI. */}
+        <span class="hub-camp__sub" title={t('ui.hub.campaignSub')}>
+          <AiBadge size="sm" />
         </span>
       </span>
     </button>

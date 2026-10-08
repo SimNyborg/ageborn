@@ -28,7 +28,7 @@ export class Ledger {
   private items: Pending[] = [];
   /** Tick each mount stops building or modernising (A2.8: 1 s). */
   readonly mountBusyUntil: number[];
-  /** Earliest tick the next stance change is legal (A18.4.2: 3 s cooldown). */
+  /** Earliest tick the bot changes stance again (its own 3 s gap, `econ.stanceGapTicks`; the sim has none). */
   stanceReadyTick = 0;
   /** Earliest tick the next Hold flag move is legal (A18.4.2: 1 s). */
   flagReadyTick = 0;
@@ -61,7 +61,7 @@ export class Ledger {
         this.mountBusyUntil[action.mount] = busy;
         break;
       case 'stance':
-        this.stanceReadyTick = execTick + this.book.econ.stanceCooldownTicks;
+        this.stanceReadyTick = execTick + this.book.econ.stanceGapTicks;
         if (action.holdP !== undefined) this.flagReadyTick = execTick + this.book.econ.flagMoveTicks;
         this.stanceCheck = { execTick, stance: action.stance };
         break;

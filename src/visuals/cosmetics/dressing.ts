@@ -167,6 +167,7 @@ export class BaseDressing implements BaseDressingView {
   private clock = 0;
   private flutter = 0;
   private collapseT = -1;
+  private collapseDelay = 0;
   private reduce = false;
   private lite = false;
   private tintAt = -1;
@@ -297,7 +298,18 @@ export class BaseDressing implements BaseDressingView {
   }
 
   collapse(): void {
-    if (this.collapseT < 0) this.collapseT = 0;
+    this.collapseAt(0);
+  }
+
+  /**
+   * The base's destroyed collapse (duck-typed by the battle view): the props tremble with the base
+   * through its build-up, and on the break (`breakMs` of game time from now) the pole snaps and the
+   * flags flutter down while the decorations topple.
+   */
+  collapseAt(breakMs: number): void {
+    if (this.collapseT >= 0) return;
+    this.collapseT = 0;
+    this.collapseDelay = Math.max(0, breakMs);
   }
 
   setMotion(o: { reduce: boolean; lite: boolean }): void {
@@ -369,13 +381,28 @@ export class BaseDressing implements BaseDressingView {
 
   private updateCollapse(dt: number): void {
     this.collapseT += dt;
-    const k = Math.min(1, this.collapseT / 700);
-    const ease = k * k;
-    this.pole.rotation = ease * 1.25 * this.facing;
-    this.pole.alpha = 1 - Math.max(0, (k - 0.5) * 2);
+    const t = this.collapseT - this.collapseDelay;
+    const x0 = DRESSING_ANCHORS.pole * this.facing;
+    if (t < 0) {
+      // the build-up: the props shiver with the base and the flags whip
+      const u = 1 - -t / Math.max(1, this.collapseDelay);
+      const amp = this.reduce ? 0 : 0.6 + 1.8 * u * u;
+      this.pole.x = x0 + Math.sin(this.collapseT / 13) * amp;
+      this.flutter = Math.max(this.flutter, 1.2 + 0.6 * u);
+      return;
+    }
+    // the break: the pole snaps over (accelerating), drops and fades; the decorations topple
+    const k = Math.min(1, t / 900);
+    const snap = Math.min(1, t / 420);
+    this.pole.x = x0 + (this.reduce ? 0 : 18 * k * k * this.facing);
+    this.pole.y = this.reduce ? 0 : 26 * k * k;
+    this.pole.rotation = (this.reduce ? 0.35 * snap : 1.45 * snap * snap) * this.facing;
+    this.pole.alpha = 1 - Math.max(0, (k - 0.55) / 0.45);
+    this.flutter = Math.max(this.flutter, 1.6 * (1 - k));
     for (const p of this.props) {
-      p.root.rotation = ease * 0.9 * (p.x > 0 ? 1 : -1);
-      p.root.alpha = 1 - k;
+      const kk = Math.min(1, t / 700);
+      p.root.rotation = (this.reduce ? 0.2 : 0.9) * kk * kk * (p.x > 0 ? 1 : -1);
+      p.root.alpha = 1 - kk;
     }
     this.motes.alpha = 1 - k;
   }

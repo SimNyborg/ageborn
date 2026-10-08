@@ -24,8 +24,14 @@ import { featViews } from '../model/collection';
 import { CardDex } from './CardDex';
 import { reasonKey } from '../model/reasons';
 
+/**
+ * One skin (Customize › Troops and Bases, the album's Skins tab). Owner request 2026-10-07: no Equip
+ * button; an owned tile is the button and equips on tap (stamp, the tile pops, a toast with Undo, U10),
+ * and only the equipped skin says "Equipped" (with the check). A locked skin shows its Dust price, or
+ * "Crate only" when it cannot be crafted.
+ */
 export function SkinTile(p: { skin: SkinDef }) {
-  const { save, content, t, locale, services, toasts } = useUi();
+  const { save, content, t, locale, services, toasts, sound } = useUi();
   const s = save.value;
   const k = p.skin;
   const owned = s.skins.owned.includes(k.id);
@@ -33,8 +39,16 @@ export function SkinTile(p: { skin: SkinDef }) {
   const equipped = s.skins.equipped[k.target] === k.id;
   const price = k.craftable ? content.rarities.skins[k.rarity].craftDust : null;
   const baseAge = k.target.startsWith('base.') ? (k.target.slice(5) as AgeId) : null;
-  return (
-    <div class={`col-skin${owned ? '' : ' is-locked'}`} style={{ '--frame': RARITY_COLOR[k.rarity] }} data-testid={`skin-tile-${k.id}`}>
+  const name = t(skinNameKey(k.id));
+  const equip = () => {
+    if (!owned || equipped) return;
+    const before = s.skins.equipped[k.target] ?? null;
+    services.equipSkin(k.target, k.id);
+    sound?.('ui_stamp');
+    toasts.show(t('cosmetic.ui.equippedName', { name }), { tone: 'good', undo: () => services.equipSkin(k.target, before) });
+  };
+  const face = (
+    <>
       <span class="col-skin__art">
         <CardArt
           card={k.target}
@@ -48,25 +62,43 @@ export function SkinTile(p: { skin: SkinDef }) {
           <span class="col-skin__lock">
             <LockIcon size={26} />
           </span>
+        ) : equipped ? (
+          <span class="col-skin__check" aria-hidden="true">
+            <CheckIcon size={16} />
+          </span>
         ) : null}
       </span>
-      <span class="col-skin__name">{t(skinNameKey(k.id))}</span>
+      <span class="col-skin__name">{name}</span>
       <span class="col-skin__target">
         {target ? t(target.nameKey) : baseAge ? t('ui.skins.baseOf', { age: t(ageNameKey(baseAge)) }) : k.target}
       </span>
       <span class="col-skin__rarity" data-tag="">
         {t(rarityNameKey(k.rarity))}
       </span>
+    </>
+  );
+  return (
+    <div class={`col-skin${owned ? ' is-owned' : ' is-locked'}${equipped ? ' is-on' : ''}`} style={{ '--frame': RARITY_COLOR[k.rarity] }} data-testid={`skin-tile-${k.id}`}>
+      {owned ? (
+        <button
+          type="button"
+          class="col-skin__hit"
+          aria-pressed={equipped}
+          aria-label={`${name}. ${equipped ? t('ui.skins.equipped') : t('ui.skins.equip')}`}
+          data-testid={`equip-${k.id}`}
+          onClick={equip}
+        >
+          {face}
+        </button>
+      ) : (
+        face
+      )}
       {owned ? (
         equipped ? (
-          <span class="col-skin__on">
-            <CheckIcon size={18} /> {t('ui.skins.equipped')}
+          <span class="col-skin__on" data-testid={`skin-on-${k.id}`}>
+            {t('ui.skins.equipped')}
           </span>
-        ) : (
-          <Button size="sm" kind="progress" onClick={() => services.equipSkin(k.target, k.id)} testid={`equip-${k.id}`}>
-            {t('ui.skins.equip')}
-          </Button>
-        )
+        ) : null
       ) : price !== null ? (
         <Button
           size="sm"

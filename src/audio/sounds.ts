@@ -1269,12 +1269,66 @@ const BASE_SOUNDS = {
     noiseBurst(40, { vol: 0.45, freq: 180 * (1 + 0.08 * v), attack: 0.01, sustain: 0.4, release: 0.45, tremolo: 0.5, repeat: 0.06, lowpass: 1600 }),
     thump(0, 60, 0.45, 0.3, -0.3),
   ])),
+  // The destroyed collapse (A12, A13): the build-up's rumble, the shared crash on the break (with the
+  // material's own crash and debris rattle layered on top) and the final thud when the tower lands.
   base_destroyed: mix('match', mixVariants(3, (v) => [
     noiseBurst(0, { vol: 0.8, freq: 140, attack: 0.005, decay: 0.2, sustainVol: 0.6, release: 1.4, lowpass: 1800 }),
     at(0, { vol: 0.8, freq: 42 * (1 + 0.05 * v), attack: 0.005, release: 1.2, slide: -0.08 }),
+    noiseBurst(0, { vol: 0.5, freq: 900, release: 0.08, lowpass: 6000 }),
     noiseBurst(300, { vol: 0.45, freq: 200, attack: 0.05, sustain: 0.6, release: 0.8, tremolo: 0.5, repeat: 0.07, lowpass: 1400 }),
-    noiseBurst(500, { vol: 0.2, freq: 1500, sustain: 0.5, release: 0.5, tremolo: 0.5, repeat: 0.05, lowpass: 7000 }),
   ]), { maxVoices: 1 }),
+  base_doom_rumble: mix('match', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.55, freq: 70 * (1 + 0.05 * v), attack: 0.35, sustain: 0.15, release: 0.12, tremolo: 0.6, repeat: 0.05, lowpass: 900 }),
+    at(0, { vol: 0.45, freq: 38, attack: 0.4, sustain: 0.1, release: 0.1, slide: 0.06 }),
+    noiseBurst(220, { vol: 0.3, freq: 1200, release: 0.04, lowpass: 5000 }),
+    noiseBurst(390, { vol: 0.35, freq: 900, release: 0.05, lowpass: 5000 }),
+  ]), { maxVoices: 2 }),
+  base_break_stone: mix('match', mixVariants(3, (v) => [
+    thump(0, 55 * (1 + 0.05 * v), 0.8, 0.45),
+    noiseBurst(0, { vol: 0.7, freq: 320, decay: 0.06, sustainVol: 0.45, release: 0.7, lowpass: 2600, tremolo: 0.4, repeat: 0.05 }),
+    noiseBurst(0, { vol: 0.45, freq: 1400, release: 0.06, highpass: 700 }),
+    at(40, { vol: 0.35, freq: 190 * (1 + 0.06 * v), attack: 0.001, release: 0.12, shape: 'tri', noise: 0.6, slide: -1.5 }),
+  ]), { maxVoices: 2 }),
+  base_break_iron: mix('match', mixVariants(3, (v) => [
+    thump(0, 50 * (1 + 0.05 * v), 0.8, 0.5),
+    noiseBurst(0, { vol: 0.65, freq: 260, decay: 0.08, sustainVol: 0.5, release: 0.8, lowpass: 2200 }),
+    at(30, { vol: 0.35, freq: 660 * (1 + 0.05 * v), attack: 0.001, sustain: 0.03, release: 0.5, shape: 'sin', mod: 3.4, lowpass: 7000 }),
+    noiseBurst(60, { vol: 0.35, freq: 500, attack: 0.05, sustain: 0.2, release: 0.5, lowpass: 3000 }),
+  ]), { maxVoices: 2 }),
+  base_break_concrete: mix('match', mixVariants(3, (v) => [
+    thump(0, 46 * (1 + 0.05 * v), 0.85, 0.5),
+    noiseBurst(0, { vol: 0.7, freq: 220, decay: 0.05, sustainVol: 0.5, release: 0.8, lowpass: 2000, tremolo: 0.3, repeat: 0.06 }),
+    at(50, { vol: 0.28, freq: 1250 * (1 + 0.04 * v), attack: 0.001, release: 0.35, shape: 'sin', mod: 6, lowpass: 8000 }),
+    noiseBurst(120, { vol: 0.25, freq: 2600, release: 0.2, highpass: 1500, tremolo: 0.6, repeat: 0.03 }),
+  ]), { maxVoices: 2 }),
+  base_break_energy: mix('match', mixVariants(3, (v) => [
+    thump(0, 52 * (1 + 0.05 * v), 0.75, 0.45),
+    noiseBurst(0, { vol: 0.55, freq: 3000, release: 0.35, highpass: 2000, tremolo: 0.5, repeat: 0.02 }),
+    at(0, { vol: 0.3, freq: 880 * (1 + 0.05 * v), attack: 0.002, sustain: 0.05, release: 0.3, shape: 'square', curve: 0.6, slide: -12, lowpass: 6000 }),
+    note(60, 'E6', { vol: 0.22, attack: 0.001, release: 0.6, shape: 'tri' }),
+  ]), { maxVoices: 2 }),
+  base_debris_stone: mix('match', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.45, freq: 700 * (1 + 0.05 * v), sustain: 0.6, release: 0.5, tremolo: 0.7, repeat: 0.045, lowpass: 4200 }),
+    noiseBurst(500, { vol: 0.3, freq: 400, release: 0.3, tremolo: 0.6, repeat: 0.07, lowpass: 2600 }),
+  ]), { maxVoices: 2 }),
+  base_debris_iron: mix('match', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.4, freq: 800, sustain: 0.5, release: 0.5, tremolo: 0.7, repeat: 0.05, lowpass: 4500 }),
+    at(120, { vol: 0.25, freq: 1320 * (1 + 0.05 * v), attack: 0.001, release: 0.25, shape: 'sin', mod: 4 }),
+    at(380, { vol: 0.2, freq: 990 * (1 + 0.05 * v), attack: 0.001, release: 0.2, shape: 'sin', mod: 3 }),
+  ]), { maxVoices: 2 }),
+  base_debris_concrete: mix('match', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.45, freq: 600 * (1 + 0.05 * v), sustain: 0.55, release: 0.5, tremolo: 0.6, repeat: 0.05, lowpass: 3600 }),
+    at(260, { vol: 0.2, freq: 1700, attack: 0.001, release: 0.2, shape: 'sin', mod: 7 }),
+  ]), { maxVoices: 2 }),
+  base_debris_energy: mix('match', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.35, freq: 2400, sustain: 0.4, release: 0.5, tremolo: 0.7, repeat: 0.04, highpass: 1400 }),
+    note(100, 'B6', { vol: 0.16, attack: 0.001, release: 0.35, shape: 'tri' }),
+    note(260 + 20 * v, 'G6', { vol: 0.14, attack: 0.001, release: 0.35, shape: 'tri' }),
+  ]), { maxVoices: 2 }),
+  base_settle_thud: mix('match', mixVariants(3, (v) => [
+    thump(0, 58 * (1 + 0.06 * v), 0.75, 0.35),
+    noiseBurst(0, { vol: 0.45, freq: 240, decay: 0.04, sustainVol: 0.35, release: 0.45, lowpass: 1600 }),
+  ]), { maxVoices: 2 }),
 
   // Economy -------------------------------------------------------------------------------------------
   // The caller climbs the pitch on multi-kills (A13); the 40 ms gap is A13's coin throttle.

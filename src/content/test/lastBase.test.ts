@@ -22,7 +22,8 @@ function issues(mut: (c: Content) => void): string[] {
 describe('Last Base Standing formats (A2.10.1)', () => {
   it('is a 7-age untimed window from Stone, and from Bronze for Skirmish, with no Final Bell', () => {
     const last = content.formats['last'];
-    expect(last).toMatchObject({ kind: 'untimed', overdriveMs: 12 * M, siegeMs: 14.5 * M, finalBellMs: null, retreatAfterMs: M });
+    // Retreat is open from the start (owner decision 2026-10-07; 1:00 before).
+    expect(last).toMatchObject({ kind: 'untimed', overdriveMs: 12 * M, siegeMs: 14.5 * M, finalBellMs: null, retreatAfterMs: 0 });
     expect(last?.ages).toEqual(AGE_ORDER.slice(0, 7));
     expect(content.formats['last.bronze']?.ages).toEqual(AGE_ORDER.slice(1, 8));
     // The same XP thresholds as the Full War window it shares.

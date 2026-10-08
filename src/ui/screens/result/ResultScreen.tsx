@@ -46,12 +46,10 @@ import type { ResultCard, RouteOf } from '../../router';
 import { useUi } from '../context';
 import { cardTile } from '../model/cards';
 import { opponentName } from '../model/opponent';
-import { roadProgress } from '../model/progress';
 import {
   COUNT_UP_MS,
   dailyResultLine,
   earnedCapsule,
-  isNight,
   resultKind,
   resultPlan,
   REWARD_STEP_MS,
@@ -61,7 +59,6 @@ import {
   type ResultProgress,
   type ResultStage,
 } from '../model/result';
-import { RoadRewardView } from '../shared/RoadReward';
 import { useMatchStarter } from '../shared/MatchStarter';
 
 const BANNER_KEYS = { win: 'ui.result.victory', loss: 'ui.result.defeat', draw: 'ui.result.draw' } as const;
@@ -133,14 +130,14 @@ export function LevelBadgeView(p: {
 const OPENED_HERE = new WeakSet<object>();
 
 /** The Result's path after its capsule: what the summary's primary does and says (2.5, 4.9). */
-export function resultPathAfterCapsule(info: { input: { mode: string; outcome: { winner: 0 | 1 | null }; mySide: 0 | 1 }; daily?: unknown; card?: unknown; endedHour?: number }): ResultActionId {
+export function resultPathAfterCapsule(info: { input: { mode: string; outcome: { winner: 0 | 1 | null }; mySide: 0 | 1 }; daily?: unknown; card?: unknown }): ResultActionId {
   const outcome = info.input.outcome.winner === null ? 'draw' : info.input.outcome.winner === info.input.mySide ? 'win' : 'loss';
   const a = resultActions({
     mode: info.input.mode,
     outcome,
     capsule: true,
     daily: !!info.daily,
-    stop: !!info.card || (info.endedHour !== undefined && isNight(info.endedHour)),
+    stop: !!info.card,
     replay: false,
   });
   return a.secondary.find((x) => x === 'continue' || x === 'next' || x === 'tryAgain') ?? 'home';
@@ -548,7 +545,11 @@ function ResultTip(p: { tipKey: string; tipCard?: string; tipAge?: string }) {
   );
 }
 
-/** Everything that is not a staged step, in one row that expands on tap (A15.13). */
+/**
+ * Everything that is not a staged step (A15.13) as reward pills right under the steps (owner request
+ * 2026-10-07: no "Also earned" heading or box, just what you won: +47 Amber, a quest at 3/5). A tap on
+ * the pills lists each one with its name.
+ */
 function SummaryRow(p: { steps: RewardStep[] }) {
   const { t } = useUi();
   const [open, setOpen] = useState(false);
@@ -562,13 +563,13 @@ function SummaryRow(p: { steps: RewardStep[] }) {
         type="button"
         class="result-sum__row"
         aria-expanded={open}
+        aria-label={t('ui.result.rewards')}
         data-testid="result-summary-toggle"
         onClick={(e) => {
           e.stopPropagation();
           setOpen((v) => !v);
         }}
       >
-        <span class="result-sum__label">{t('ui.result.alsoEarned')}</span>
         <span class="result-sum__chips">
           {chips.map((r, i) => (
             <SummaryChip key={i} r={r} />
@@ -592,11 +593,13 @@ function SummaryRow(p: { steps: RewardStep[] }) {
   );
 }
 
-/** The stopping cards (A15.6): tilt, break or wrap. Never blocks input or advances by itself. */
+/**
+ * The stopping cards (A15.6): tilt, break or wrap, in a few words each (owner request 2026-10-07: no
+ * "everything is saved" lines). Never blocks input or advances by itself.
+ */
 function StopCard(p: { card: ResultCard; onNext: () => void; onDismiss: () => void }) {
-  const { t, locale, services, save, content } = useUi();
+  const { t, locale, services } = useUi();
   const c = p.card;
-  const next = c.kind === 'wrap' ? roadProgress(save.value, content).next : null;
   return (
     <div class={`result-card result-card--${c.kind}`} data-testid={`result-card-${c.kind}`} role="note">
       {c.kind === 'tilt' ? <p class="result-card__text">{t('ui.result.tilt')}</p> : null}
@@ -607,15 +610,6 @@ function StopCard(p: { card: ResultCard; onNext: () => void; onDismiss: () => vo
           <p class="result-card__text">
             {t('ui.result.wrapSummary', { wins: formatInt(c.wins, locale), losses: formatInt(c.losses, locale), cards: formatInt(c.newCards, locale) })}
           </p>
-          {c.chargesOut ? <p class="result-card__text">{t('ui.result.wrapCharges')}</p> : null}
-          {next ? (
-            <p class="result-card__next">
-              {t('ui.result.wrapNext')}{' '}
-              {next.rewards.map((r, i) => (
-                <RoadRewardView key={i} r={r} compact />
-              ))}
-            </p>
-          ) : null}
         </>
       ) : null}
       {/* Home is the action bar's primary while a card shows; the card only adds its own options. */}
@@ -682,7 +676,6 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
   const capsuleTier: CapsuleTier = earnedCap ? visibleTier(content.capsules, earnedCap) : 'silver';
   const stats = info.input.stats;
   const opp = info.input.opponent;
-  const night = info.endedHour !== undefined && isNight(info.endedHour);
   // Last Base Standing (A2.10.1): the reason line (the trophy row is a plain ranked row since 2026-10-03).
   const lastReason = lastBaseReason(info.input, content, t);
   // A Retreat gives no rewards (A6.3, owner decision 2026-10-03); the Rewards column says so plainly (A15).
@@ -700,8 +693,8 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
   const done = shown >= stages.length;
   const mvp = stats.mvpCard ? cardTile(save.value, content, stats.mvpCard, t) : null;
   const card = done && cardOpen ? (info.card ?? null) : null;
-  // A card or the night line makes Home the primary button (A15.6).
-  const homePrimary = night || !!info.card;
+  // A stopping card makes Home the primary button (A15.6).
+  const homePrimary = !!info.card;
 
   const starter = useMatchStarter();
 
@@ -870,11 +863,6 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
             ))}
           </ul>
           {done ? <SummaryRow steps={plan.summary} /> : null}
-          {done && night ? (
-            <p class="result__night" data-testid="result-night">
-              {t('ui.result.night')}
-            </p>
-          ) : null}
           {card ? <StopCard card={card} onNext={nextBattle} onDismiss={() => setCardOpen(false)} /> : null}
           {!done ? (
             <button
