@@ -53,6 +53,7 @@ import { cloneFeelConfig, defaultFeelConfig, type RenderFeelConfig } from './fee
 import { HealthBars, barWidthLu, newBar, stepBar, type BarDraw, type BarState } from './healthbars';
 import { HOLD_FLAG_FOOT_Y, HOLD_FLAG_TOP_Y, HoldFlagMarker } from './holdFlag';
 import { ageOrder, canEvolve, xpThreshold } from './hudModel';
+import { heldVisuals, nearEvolve, type ArtHoldLike } from './matchArt';
 import { BattleInput, edgeSpeed } from './input';
 import { createLayers, type BattleLayers } from './layers';
 import { LANE_LU, MILLI_LU, WORLD_LEFT_LU, WORLD_RIGHT_LU, baseCenterX, facingOf, gateX, pToX, xToP } from './layout';
@@ -267,6 +268,8 @@ const BADGE_BASE_HIT_MS = 2000;
 const BADGE_BASE_LINGER_MS = 3000;
 const BADGE_LEGENDARY_MS = 4000;
 const ALERT_BASE_GAP_MS = 10_000;
+/** How often (real ms) the held unit sheets are re-checked against the units on the field (G7, `matchArt.ts`). */
+const HOLD_SYNC_MS = 1000;
 const BADGES_PER_EDGE = 3;
 
 /** A power zone the view tracks for the camera, the minimap and the badges (game ms). */
@@ -332,6 +335,17 @@ export class BattleView {
   private readonly ages: AgeId[];
   /** Ages this view asked the art provider to load (`preloadAhead`). */
   private readonly preloadedAges = new Set<AgeId>();
+  /**
+   * The unit sheets this match draws (G7, Safari memory; `matchArt.ts`): the provider's duck-typed hold,
+   * null for providers without one (they load by age). `holdKey` is the held set last sent, `holdNear`
+   * each side's near-evolve flag at that time, `holdReady` the load of that set.
+   */
+  private readonly hold: ArtHoldLike | null;
+  private holdKey = '';
+  private holdNear: [boolean, boolean] = [false, false];
+  private holdReady: Promise<void> | null = null;
+  private holdSettled = true;
+  private holdSyncAt = 0;
   /** Each side's next age whose scene the backdrop was asked to load (`<side>.<age>`, `prefetchNextScenes`). */
   private readonly scenesAsked = new Set<string>();
   /** Created on the first base flash (a filter needs a GPU context). */
@@ -391,6 +405,7 @@ export class BattleView {
     this.director = new FeelDirector(this.feel, o.audio, this.config.seed);
     this.layers.flash.addChild(this.director.flash.root);
     this.mapper = new EventMapper({ content: this.config.content, feel: this.feel, mySide: this.mySide, rng: this.rng });
+    this.hold = (o.art as ArtProvider & { holdArt?: () => ArtHoldLike }).holdArt?.() ?? null;
     this.autoPreset = new AutoPresetMonitor(this.settings.graphics, this.isMobile);
     this.particles = new ParticlePool(o.art, this.layers.vfx, 0, this.rng);
     this.numbers = new FloatingNumbers(this.layers.text, this.feel.tuning, this.rng, o.labelFactory);
@@ -433,7 +448,39 @@ export class BattleView {
     for (const u of st.units) this.ensureUnit(u);
     this.syncTurrets(0);
     this.evolveReady = canEvolve(st, this.config, this.mySide);
+    this.syncHold(true);
     this.preloadAhead();
+  }
+
+  /**
+   * Sends the held unit sheets to the provider when the set changed (G7): each side's current age, its
+   * next age from 70% of the evolve bar, its queue and the units on the field (`matchArt.ts`). Cheap when
+   * nothing changed; `force` builds the set even when no side's evolve flag moved.
+   */
+  private syncHold(force = false): void {
+    const hold = this.hold;
+    if (!hold) return;
+    const near: [boolean, boolean] = [nearEvolve(this.sim.state, this.config, 0), nearEvolve(this.sim.state, this.config, 1)];
+    if (!force && near[0] === this.holdNear[0] && near[1] === this.holdNear[1]) return;
+    this.holdNear = near;
+    const want = heldVisuals(this.config, this.sim.state, this.ages, this.units.values());
+    const key = [...want.keys()].sort().join('|');
+    if (key === this.holdKey) return;
+    this.holdKey = key;
+    const ready = hold.set([...want.values()]);
+    this.holdReady = ready;
+    this.holdSettled = false;
+    void ready.then(() => {
+      if (this.holdReady === ready) this.holdSettled = true;
+    });
+  }
+
+  /**
+   * Resolves once the unit sheets the match holds have loaded (or failed); null when they already have
+   * (G7). The app starts a battle's clock only then, so no unit appears without its art.
+   */
+  artReady(): Promise<void> | null {
+    return this.holdSettled ? null : this.holdReady;
   }
 
   /**
@@ -1131,6 +1178,7 @@ export class BattleView {
       for (const a of actions) this.exec(a);
     }
     this.prefetchNextScenes();
+    this.syncHold();
     // A13 `evolve_ready`: one soft chime when your Evolve becomes available (there is no sim event).
     const ready = canEvolve(this.sim.state, this.config, this.mySide);
     if (ready && !this.evolveReady && !this.ended) {
@@ -1175,6 +1223,10 @@ export class BattleView {
     this.backdrop.setSeam(this.seam);
 
     this.nowMs += realDt;
+    if (this.nowMs - this.holdSyncAt >= HOLD_SYNC_MS) {
+      this.holdSyncAt = this.nowMs;
+      this.syncHold(true);
+    }
     this.updateTracks(gameDt);
     this.input?.tick();
     this.updatePowerDragEdge();
@@ -1228,9 +1280,11 @@ export class BattleView {
     switch (ev.e) {
       case 'ascendStart':
         this.prefetchNextScenes({ side: ev.side, age: ev.age });
+        this.syncHold(true);
         this.preloadAhead();
         return;
       case 'ageUp':
+        this.syncHold(true);
         this.preloadAhead();
         return;
       case 'baseDamaged': {
@@ -1539,6 +1593,8 @@ export class BattleView {
     this.director.destroy();
     this.listeners.clear();
     this.root.destroy({ children: true });
+    // after the views: a released sheet unloads only once nothing draws it (G7)
+    this.hold?.release();
   }
 
   // ------------------------------------------------------------------------------------------

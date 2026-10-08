@@ -97,7 +97,7 @@ export class SheetReleaser {
   private release(s: TextureSource): void {
     // the label is the image URL Pixi's loader set; without it a context restore could not decode it again
     if (!s.label) return;
-    let ok = false;
+    let ok: boolean;
     try {
       ok = this.hooks.upload(s);
     } catch {
