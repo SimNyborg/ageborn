@@ -69,19 +69,25 @@ export function useCosmeticImage(): CosmeticImageFn | null {
   return useContext(CosmeticArtContext);
 }
 
-/** How long a grid of national flags waits for the flag atlas before it shows the flags one by one (ms). */
-export const FLAG_ATLAS_WAIT_MS = 4000;
+/**
+ * How long a grid of national flags waits at most for the flag atlas before it shows the flags one by
+ * one (ms): only a safety net, since the atlas answers as soon as its cells are cut or it has failed.
+ * Cutting the 200 cells takes a few seconds on a slow phone, and a shorter wait then fetched every SVG.
+ */
+export const FLAG_ATLAS_WAIT_MS = 15000;
 /** The key the atlas probe asks for (any vendored flag). */
 const FLAG_ATLAS_PROBE = 'nationalFlag.dk';
 
 /**
- * True once the national flag atlas's cells are in (or the wait is over): until then a grid of flags
- * shows soft placeholders, so it never downloads every flag's SVG while the one atlas loads (review 1:
- * Customize › Flags asked for 199 SVGs on a profile that owns them all). The Flag Atlas and Customize ›
- * Flags share it. Without a provider or animation frames (tests) it is ready at once.
+ * True once the national flag atlas has answered: its cells are in (the probe gets a cell) or it failed
+ * (the probe gets the flag's SVG, which the tiles then use too). Until then a grid of flags shows soft
+ * placeholders, so it never downloads every flag's SVG while the one atlas loads (review 1: Customize ›
+ * Flags asked for 199 SVGs on a profile that owns them all). The Flag Atlas and Customize › Flags share
+ * it. Without a provider or animation frames (tests) it is ready at once.
  */
 export function useFlagAtlasReady(art: CosmeticImageFn | null): boolean {
-  const probe = (): boolean => (art?.(FLAG_ATLAS_PROBE, { size: 'tile', cached: true }) ?? '').startsWith('blob:');
+  // (`cached`: null while the atlas loads, then a cell, or the SVG once the atlas has failed)
+  const probe = (): boolean => !!art?.(FLAG_ATLAS_PROBE, { size: 'tile', cached: true });
   const [ready, setReady] = useState(() => !art || typeof requestAnimationFrame !== 'function' || probe());
   useEffect(() => {
     if (ready) return undefined;
