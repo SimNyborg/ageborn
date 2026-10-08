@@ -556,8 +556,8 @@ export interface EscalationStep {
  * further back, never so far that they stop contributing). A ground unit whose first attack reaches less
  * than `meleeRangeLu` is melee and forms the front; a ranged one (first attack ≥ `meleeRangeLu`, not air,
  * not a support follower, not a levy, not an armored vehicle without a minimum range) keeps its place
- * behind its side's frontmost melee unit: never past it, and closing up between shots when it stands more
- * than `closeUpLu` behind it. Shares in bp, distances in lu.
+ * behind its side's frontmost melee unit and never advances past it; a Long range unit also closes up to it
+ * between shots. Shares in bp, distances in lu.
  */
 export interface FormationRules {
   /** First-attack range below which a ground unit is melee and forms the front (100: the A2.7 "range ≥ 100" line). */
@@ -568,10 +568,13 @@ export interface FormationRules {
   longGapBp: number;
   /** Per-unit variation of the place, ± this share of it, fixed by the unit's id (bp), so lines never look drilled. */
   jitterBp: number;
-  /** A ranged unit with a target in range that stands more than this behind its place steps up between shots (lu; 0 = never). */
-  closeUpLu: number;
-  /** Stepping up never brings it closer to its target than this share of its first attack's range (bp; absent = 0). */
-  standOffBp?: number;
+  /**
+   * A ranked unit with a target in range that stands more than this behind its place steps up between
+   * shots (lu; 0 = never): `rangedCloseUpLu` for ranged units, `longCloseUpLu` for a first attack with a
+   * minimum range.
+   */
+  rangedCloseUpLu: number;
+  longCloseUpLu: number;
 }
 
 /**

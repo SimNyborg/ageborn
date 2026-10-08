@@ -304,6 +304,12 @@ export interface UnitRules {
   rank: number;
   /** A ranked unit's place behind its melee front before its per-unit variation, mlu (0 otherwise). */
   rankGap: number;
+  /**
+   * A ranked unit with a target in range steps up between shots once it stands more than this behind its
+   * place (mlu; 0 = never): the content's `longCloseUpLu` for a first attack with a minimum range (Long range,
+   * artillery), `rangedCloseUpLu` for the other ranked units.
+   */
+  rankCloseUp: number;
 }
 
 /** A fort card in runtime units (DESIGN A16.14): distances in mlu, times in ticks, HP and damage whole. */
@@ -546,10 +552,10 @@ export interface EconRules {
   fort: FortSimRules | null;
   /**
    * Ranks (A2.7 formation); null when the content has no `economy.formation` (the rule is off). Each unit's
-   * class and base place are in its `UnitRules` (`rank`, `rankGap`); here the per-unit variation (bp of the
-   * place) and the close-up threshold (mlu).
+   * class, base place and close-up threshold are in its `UnitRules` (`rank`, `rankGap`, `rankCloseUp`); here
+   * the per-unit variation of the place (bp of it).
    */
-  formation: { jitterBp: number; closeUp: number; standOffBp: number } | null;
+  formation: { jitterBp: number } | null;
 }
 
 export interface SimRules {
@@ -760,6 +766,7 @@ function unitRules(def: UnitDef, idx: number, content: CompiledContent, battle: 
     structureBp: 0,
     rank: RANK_NONE,
     rankGap: 0,
+    rankCloseUp: 0,
   };
   def.abilities.forEach((ab: AbilityDef, slot) => {
     switch (ab.kind) {
@@ -889,6 +896,7 @@ function rankUnit(r: UnitRules, f: FormationRules | undefined): void {
   if (r.levy || (!long && (r.tags & TAG.armored) !== 0)) return;
   r.rank = RANK_RANKED;
   r.rankGap = Math.trunc((Math.trunc(a.range / 100) * (long ? f.longGapBp : f.rangedGapBp)) / 100);
+  r.rankCloseUp = mlu(long ? f.longCloseUpLu : f.rangedCloseUpLu);
 }
 
 /** A fort card in runtime units. */
@@ -1183,7 +1191,7 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
     openGate: mlu(nonNegOr(e.openGateLu, 0)),
     fort: fortSimRules(content),
     // Off for content that predates it (old replays keep their hashes); the frozen fixture carries it from 8.0.0.
-    formation: e.formation ? { jitterBp: nonNegOr(e.formation.jitterBp, 0), closeUp: mlu(nonNegOr(e.formation.closeUpLu, 0)), standOffBp: nonNegOr(e.formation.standOffBp, 0) } : null,
+    formation: e.formation ? { jitterBp: nonNegOr(e.formation.jitterBp, 0) } : null,
   };
 }
 

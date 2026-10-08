@@ -16,10 +16,11 @@
  *   frontmost ground unit whose first attack reaches < 100 lu (`RANK_FRONT`). A ranked unit (`RANK_RANKED`:
  *   a ranged ground unit, see `rankUnit` in rules.ts) keeps its place, a share of its range (± a variation
  *   fixed by its id) behind that front: it never advances past the place (a cap: it never walks back for
- *   it), and when it has a target in range but stands more than `closeUpLu` behind the place it steps up
- *   between shots (never during a windup, and only toward a target ahead). Melee walks through its own
- *   ranks. In Hold a ranked unit forms up its gap behind the flag. Off in Fall back and for a side with no
- *   melee on the lane (an all-ranged army plays as before). One pass per side: O(n) on top of the file.
+ *   it). A Long range unit (a first attack with a minimum range; `UnitRules.rankCloseUp`) that has a target
+ *   in range but stands more than 30 lu behind its place also steps up between shots (never during a windup,
+ *   and only toward a target ahead). Melee walks through its own ranks. In Hold a ranked unit forms up its
+ *   gap behind the flag. Off in Fall back and for a side with no melee on the lane (an all-ranged army plays
+ *   as before). One pass per side: O(n) on top of the file.
  * - Stance (A18.4.2): Hold keeps units at the side's Hold flag (default 320, [320, 800]): units beyond it
  *   without a target walk back at 70% speed; units behind it do not pass it. Fall back walks units with
  *   no target back to p = 200 at full speed and holds them there. Engaged units keep fighting.
@@ -37,7 +38,7 @@
 import type { Side } from '@/contracts';
 import { BP } from '@/core';
 import { capSum, isLeaping, isStunned, statusBp } from '../damage';
-import { clampToLane, distToEnemyGate, edgeDist, isAheadOrLevel, pOf, xOf } from '../geometry';
+import { clampToLane, edgeDist, isAheadOrLevel, pOf, xOf } from '../geometry';
 import { RANK_FRONT, RANK_RANKED, type UnitRules } from '../rules';
 import { BASE_TARGET, LANE, type AttackRt, type Ctx, type UnitRt } from '../state';
 import { alive, findUnit, unitRules } from '../units';
@@ -109,17 +110,10 @@ export function movementSystem(ctx: Ctx): void {
  * retreat is unchanged, A18.4.2), or no melee unit on the lane (an all-ranged army plays as before).
  */
 function meleeFront(ctx: Ctx, ground: readonly Mover[], side: Side): number {
-  FRONT_WALKING[side] = false;
   if (!ctx.econ.formation || ctx.s.sides[side].stance === 'fallback') return -1;
-  for (const m of ground)
-    if (m.r.rank === RANK_FRONT) {
-      FRONT_WALKING[side] = m.u.mode === 'walk';
-      return m.p;
-    }
+  for (const m of ground) if (m.r.rank === RANK_FRONT) return m.p;
   return -1;
 }
-/** TEMP EXPERIMENT (remove). */
-const FRONT_WALKING: boolean[] = [false, false];
 
 /**
  * A ranked unit's gap behind its melee front (mlu): its card's place (`UnitRules.rankGap`, a share of its
@@ -143,19 +137,11 @@ function mix32(n: number): number {
   return h >>> 0;
 }
 
-/**
- * How far a closing ranked unit may step toward attack 0's target (mlu): the distance to it minus the
- * stand-off (`formation.standOffBp` of the attack's range); 0 when the target is behind the unit (it never
- * walks away from a foe behind it) or already within the stand-off.
- */
-function standOffRoom(ctx: Ctx, u: UnitRt, r: UnitRules, st: AttackRt): number {
-  const a = r.attacks[0];
-  if (!a) return 0;
-  const off = Math.trunc((Math.trunc(a.range / 100) * (ctx.econ.formation?.standOffBp ?? 0)) / 100);
-  if (st.targetId === BASE_TARGET) return distToEnemyGate(u.side, u.x, r.half) - off;
+/** Is attack 0's target ahead of (or level with) the unit, or the enemy base? A ranked unit never steps away from a foe behind it. */
+function targetAhead(ctx: Ctx, u: UnitRt, st: AttackRt): boolean {
+  if (st.targetId === BASE_TARGET) return true;
   const t = findUnit(ctx, st.targetId);
-  if (t === undefined || !isAheadOrLevel(u.side, u.x, t.x)) return 0;
-  return edgeDist(u.x, r.half, t.x, unitRules(ctx, t).half) - off;
+  return t !== undefined && isAheadOrLevel(u.side, u.x, t.x);
 }
 
 function frontFirst(a: Mover, b: Mover): number {
@@ -228,27 +214,20 @@ function computeWant(ctx: Ctx, m: Mover, allies: readonly Mover[], meleeP: numbe
   if (meleeP >= 0 && r.rank === RANK_RANKED) m.gap = rankGap(ctx, u, r);
   const st0 = u.attacks[0];
   if (st0 && (st0.impactTick !== 0 || targetInRange(ctx, u, r, 0))) {
-    // A ranked unit firing from well behind its place steps up between shots: once it stands more than
-    // `closeUp` behind it (or it was already walking up last tick) it walks on to its place. Never during a
-    // windup, and only toward a target ahead of it (it never walks away from a foe behind it).
-    const closeUp = e.formation ? e.formation.closeUp : 0;
+    // A ranked unit firing from well behind its place steps up between shots (a Long range unit, by the
+    // content's numbers: `UnitRules.rankCloseUp`): once it stands more than that behind its place (or it was
+    // already walking up last tick) it walks on to its place. Never during a windup, and only toward a
+    // target ahead of it (it never walks away from a foe behind it).
+    const closeUp = r.rankCloseUp;
     const behind = m.gap < 0 ? 0 : (hold && side.holdP < meleeP ? side.holdP : meleeP) - m.gap - m.p;
     const closing = closeUp > 0 && behind > 0 && (behind > closeUp || u.mode === 'walk');
-    // TEMP EXPERIMENT (remove): FORM_CLOSE=bot|proxy limits the close-up to one kind of seat
-    const only = (globalThis as unknown as { process?: { env: Record<string, string | undefined> } }).process?.env['FORM_CLOSE'];
-    const variant = (globalThis as unknown as { process?: { env: Record<string, string | undefined> } }).process?.env['FORM_VARIANT'];
-    const seatOk =
-      (only === undefined || (only === 'bot') === ctx.cfg.sides[u.side].isBot) &&
-      (variant === undefined || (side.stance === 'charge' && (variant === 'charge' || FRONT_WALKING[u.side] === true)));
-    const room = closing && seatOk && st0.impactTick === 0 ? standOffRoom(ctx, u, r, st0) : 0;
-    if (room <= 0) {
+    if (!closing || st0.impactTick !== 0 || !targetAhead(ctx, u, st0)) {
       m.engaged = true;
       return;
     }
     m.firing = true;
-    m.want = room;
   }
-  let want = m.firing && m.want < speed ? m.want : speed;
+  let want = speed;
   // Levies always march (A16.14.3): they ignore Hold, Fall back and the Hold flag.
   if (side.stance !== 'charge' && !r.levy) {
     // A18.4.2: Hold at the side's flag (walk back at 70% speed); Fall back to p = 200 at full speed. A ranked

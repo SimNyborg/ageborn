@@ -69,9 +69,11 @@ export interface TimedRopeStep {
  * stall (0.85 / 0.65 / 0.6%/s: 3.5 / 2.5 / 0.3%); see DESIGN A2.10.2 for the levers.
  */
 export const TIMED_ROPE: Readonly<Record<'short' | 'standard' | 'full', readonly TimedRopeStep[]>> = {
+  // Short: 0.8 / 1.4%/s since 2026-10-08 (0.6 / 1.1 before): full seven-troop decks reached the Bell in 13.5%
+  // of tier V Short mirrors (target ≤ 10%); see docs/decisions.md (ranks)
   short: [
-    { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 60 },
-    { afterSiegeMs: 45000, baseDamageBp: 30000, turretDamageBp: 3500, crumbleBpPerSec: 110 },
+    { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 80 },
+    { afterSiegeMs: 45000, baseDamageBp: 30000, turretDamageBp: 3500, crumbleBpPerSec: 140 },
   ],
   standard: [
     { afterSiegeMs: 0, baseDamageBp: 20000, turretDamageBp: 5000, crumbleBpPerSec: 55 },
@@ -371,9 +373,10 @@ export const economy: EconomyRules = {
   gateFall: { lu: 300, hpBp: 10000 },
   // A2.7 Ranks (owner request 2026-10-07: long range keeps a little behind the melee, naturally, not too far):
   // a first attack under 100 lu is melee and forms the front; a ranged unit keeps 25% of its range behind it
-  // (a Long range unit or artillery, whose first attack has a minimum range, 40%), ± 15% by unit id, and
-  // steps up between shots once it stands 30 lu behind its place (SIM_VERSION 8.0.0, docs/decisions.md)
-  formation: { meleeRangeLu: 100, rangedGapBp: 2500, longGapBp: 4000, jitterBp: 1500, closeUpLu: 30 },
+  // (a Long range unit or artillery, whose first attack has a minimum range, 40%), ± 15% by unit id; Long
+  // range also steps up between shots once it stands 30 lu behind its place (ordinary ranged never: their
+  // step-up made the flag ball win 64.5% instead of 47%; SIM_VERSION 8.0.0, docs/decisions.md)
+  formation: { meleeRangeLu: 100, rangedGapBp: 2500, longGapBp: 4000, jitterBp: 1500, rangedCloseUpLu: 0, longCloseUpLu: 30 },
   // A17.2 unit walking speed: table speed ×1.25, applied once at compile time
   marchSpeedBp: 12500,
   // A2.7 / A16.4 L4: a three-wide front

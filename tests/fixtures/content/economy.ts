@@ -176,7 +176,7 @@ export const economy: EconomyRules = {
   siege: { turretDamageBp: 5000, baseDamageBp: 20000, decayBpPerSec: 50, moveSpeedBp: 12000, gateCrowdLu: 60 },
   // A2.7 Ranks (frozen copy, SIM_VERSION 8.0.0): ranged units keep their place behind the melee front, so the
   // goldens play the formation rule (all 17 re-recorded deliberately with the bump)
-  formation: { meleeRangeLu: 100, rangedGapBp: 2500, longGapBp: 4000, jitterBp: 1500, closeUpLu: 30 },
+  formation: { meleeRangeLu: 100, rangedGapBp: 2500, longGapBp: 4000, jitterBp: 1500, rangedCloseUpLu: 0, longCloseUpLu: 30 },
   // A17.2 unit walking speed: table speed ×1.25, applied once at compile time
   marchSpeedBp: 12500,
   // A2.7 / A16.4 L4: a three-wide front

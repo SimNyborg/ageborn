@@ -180,7 +180,7 @@ describe('movement (A2.7)', () => {
 
 describe('ranks (A2.7 formation, SIM_VERSION 8.0.0)', () => {
   // The fixture's numbers: a ranged unit keeps 25% of its first attack's range behind its melee front, a
-  // unit whose first attack has a minimum range 40%, each ± 15% by unit id; it closes up past 30 lu.
+  // unit whose first attack has a minimum range 40%, each ± 15% by unit id; only the latter closes up (past 30 lu).
   const band = (rangeLu: number, shareBp: number): [number, number] => [(rangeLu * shareBp * 0.85) / 10000, (rangeLu * shareBp * 1.15) / 10000];
   const PEBBLER = band(200, 2500); // 42.5-57.5 lu
   const CANNON = band(280, 4000); // Bronze Cannon (minimum range 80): 95.2-128.8 lu
@@ -218,28 +218,32 @@ describe('ranks (A2.7 formation, SIM_VERSION 8.0.0)', () => {
     expect(unitOf(sim, cannon.id)?.mode).toBe('hold');
   });
 
-  it('firing from well behind its place, a ranged unit steps up between shots and keeps its rate of fire', () => {
-    const run = (stepUp: boolean) => {
+  it('firing from well behind its place, a Long range unit steps up between shots and keeps its rate of fire', () => {
+    // An enemy blocked by a stunned front; each shooter can hit it from where it spawns.
+    const run = (card: 'bronze_cannon' | 'pebbler', at: number, stepUp: boolean) => {
       const sim = arena();
       const front = devSpawn(sim, 0, 'tuskback', { p: 600 });
       stun(sim, front.id, 2000);
-      // An enemy blocked by the front: the Pebbler (edge distance 192) can shoot it from where it spawns.
       const foe = devSpawn(sim, 1, 'tuskback', { p: L - 648 });
       stun(sim, foe.id, 2000);
       if (!stepUp) simCtx(sim).s.sides[0].stance = 'fallback';
-      const peb = devSpawn(sim, 0, 'pebbler', { p: 420 });
-      const shots = stepN(sim, 140).filter((e) => e.e === 'attackStarted' && e.id === peb.id).length;
-      return { p: pLu(sim, peb.id), shots };
+      const u = devSpawn(sim, 0, card, { p: at });
+      const shots = stepN(sim, 300).filter((e) => e.e === 'attackStarted' && e.id === u.id).length;
+      return { p: pLu(sim, u.id), shots };
     };
-    const ranks = run(true);
+    // The Bronze Cannon (minimum range 80: the Long range share) spawns at edge distance 260 of the enemy.
+    const ranks = run('bronze_cannon', 340, true);
     // It rests at its place or up to the 30 lu close-up threshold short of it (it stops for each windup).
-    within(600 - ranks.p, [PEBBLER[0], PEBBLER[1] + 30]);
-    expect(ranks.p).toBeGreaterThan(500);
-    // The same shots as a Pebbler that never moves (Fall back keeps the old rule): it walks only between them.
-    const still = run(false);
-    expect(still.p).toBe(420);
+    within(600 - ranks.p, [CANNON[0], CANNON[1] + 30]);
+    // The same shots as one that never moves (Fall back keeps the old rule): it walks only between them.
+    const still = run('bronze_cannon', 340, false);
+    expect(still.p).toBe(340);
     expect(ranks.shots).toBe(still.shots);
     expect(ranks.shots).toBeGreaterThanOrEqual(4);
+    // An ordinary ranged unit never closes up (`rangedCloseUpLu` 0): it fires from where its range found the
+    // target (edge distance 192), behind its place, as before the ranks.
+    const peb = run('pebbler', 420, true);
+    expect(peb.p).toBe(420);
   });
 
   it('never walks back for its place, and holds while its melee front is behind it', () => {

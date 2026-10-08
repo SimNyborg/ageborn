@@ -38,12 +38,12 @@ import { SimImpl } from './createSim';
  * slot 6, so every golden keeps its hash (re-recorded for this string, A2.9.11 / F3 minor-bump policy).
  * 8.0.0 (ranks, owner request 2026-10-07: long range keeps a little behind the melee): with
  * `economy.formation` a ranged ground unit keeps its place behind its side's melee front (a share of its
- * range, ± a variation fixed by its id), never advances past it, steps up between shots when it stands
- * well behind it, forms up behind the Hold flag, and melee walks through its own ranks (A2.7 Ranks; off in
- * Fall back and without the content field). A major bump by the F3 policy: the frozen fixture carries the
- * rule, so all 17 goldens were re-recorded deliberately; 14 changed their hashes (05, 16 and 17 field no
- * ranked unit and keep theirs). Golden 14 moved to seed 1325 and 15 to seed 1508, so they still cover a
- * scaffold destroyed while it builds and every Last Base Standing step.
+ * range, ± a variation fixed by its id) and never advances past it, a Long range unit also steps up between
+ * shots when it stands well behind it, ranked units form up behind the Hold flag, and melee walks through its
+ * own ranks (A2.7 Ranks; off in Fall back and without the content field). A major bump by the F3 policy: the
+ * frozen fixture carries the rule, so all 17 goldens were re-recorded deliberately; 14 changed their hashes
+ * (05, 16 and 17 field no ranked unit and keep theirs), and 13 moved to seed 1325 so it still holds a blob
+ * at the fort contact cap.
  */
 export const SIM_VERSION = '8.0.0';
 

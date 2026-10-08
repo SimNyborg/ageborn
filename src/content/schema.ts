@@ -336,7 +336,7 @@ const EconomySchema = v.strictObject({
   gateFall: v.optional(v.strictObject({ lu: nonNeg, hpBp: bp })),
   openGateLu: v.optional(nonNeg),
   // A2.7 Ranks (formation, SIM_VERSION 8.0.0): gaps as a share of the first attack's range
-  formation: v.optional(v.strictObject({ meleeRangeLu: pos, rangedGapBp: bp, longGapBp: bp, jitterBp: bp, closeUpLu: nonNeg, standOffBp: v.optional(bp) })),
+  formation: v.optional(v.strictObject({ meleeRangeLu: pos, rangedGapBp: bp, longGapBp: bp, jitterBp: bp, rangedCloseUpLu: nonNeg, longCloseUpLu: nonNeg })),
   lastStand: v.strictObject({ thresholdBp: bp, autoBp: bp, radius: pos, damagePerP: pos, knockback: nonNeg, chargeMs: pos }),
   spawnP: nonNeg, holdLine: pos, holdRetreatSpeedBp: bp, leash: nonNeg, spacingBp: bp,
   retargetMs: pos, retargetCloserLu: nonNeg, rangedSelfDefenseLu: nonNeg, firstHitIdleMs: pos,
