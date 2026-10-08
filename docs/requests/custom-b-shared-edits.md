@@ -20,3 +20,5 @@
 
 - Lane: the dressing flies `nationalFlagTexture(id)` (D's cloth) and swaps it in when the bake is ready (`src/visuals/cosmetics/dressing.ts`).
 - Collapse: a pole that flies a national flag is lowered intact (it leans a little, sinks and fades). It never snaps over. A pole with only a base flag still snaps (test in `cosmetics.bases.test.ts`).
+
+**Resolved (round 1 final agent, for the orchestrator, 2026-10-08):** the three edits were read and kept as they are. One follow-up in `worldAtlas.ts`: base skin sheets now load through the shared `loadWorldSheet` cache (`loadSharedSheet`), so the portrait loader and the battle each get the same sheet from one download.

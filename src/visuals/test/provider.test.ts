@@ -160,6 +160,33 @@ describe('procedural unit views', () => {
   });
 });
 
+describe('the match warm-up during VS (review 1)', () => {
+  it('starts loading both sides\' base skin models and scenes of the first age, nothing of other ages', async () => {
+    const { art } = quiet();
+    const scenes: unknown[][] = [];
+    art.procedural.backdrops.prefetch = (...a: unknown[]) => void scenes.push(a);
+    const skins: unknown[] = [];
+    art.prefetchBaseSkins = (s) => {
+      skins.push(s);
+      return Promise.resolve();
+    };
+    await art.prefetchMatch({
+      age: 'medieval',
+      sides: [{ skins: { medieval: 'rose_keep', stone: 'mossy_den' }, scenes: { medieval: 'scene.misty_moor', bronze: 'scene.aegean_harbour' } }, { skins: {}, scenes: {} }],
+    });
+    expect(skins).toEqual([{ medieval: 'rose_keep' }]);
+    expect(scenes).toEqual([[['medieval'], [], [{ age: 'medieval', scene: 'misty_moor' }, { age: 'medieval', scene: 'classic' }]]]);
+  });
+
+  it('a forced placeholder tier warms no scenes', async () => {
+    const art = createArtProvider({ warn: () => {}, force: 'placeholder' });
+    const scenes: unknown[] = [];
+    art.procedural.backdrops.prefetch = (...a: unknown[]) => void scenes.push(a);
+    await art.prefetchMatch({ age: 'bronze', sides: [{}, {}] });
+    expect(scenes).toEqual([]);
+  });
+});
+
 describe('procedural turret, base, backdrop and effect views', () => {
   it('turrets run every clip, aim within limits, and show the outdated arrow', () => {
     const { art } = quiet();

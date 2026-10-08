@@ -33,3 +33,5 @@ private flagTexture(kind: FlagKind, id: string): Texture {
 - **Home diorama base pole** (PLAN 2d "Where the chosen flag shows", new, B): the same texture.
 - **Collapse:** a national flag is lowered intact with its pole, never torn (PLAN 2d licence and respect note); the torn scraps are for the base flag only.
 - **VS:** `LookFlags` shows the national flag through `CosmeticImage`; once Track C's router change (`docs/requests/custom-d-flag-pictures.md`) is in, VS shows the vendored SVG, which also warms the browser cache for the lane bake about 3 s before the battle.
+
+**Resolved (Track B, round 1, 2026-10-08):** the lane, the Home base pole and the respectful collapse use `nationalFlagTexture` (see `custom-b-shared-edits.md`).

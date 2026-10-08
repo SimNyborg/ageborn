@@ -74,6 +74,33 @@ describe('the side looks reach the art (save v14: scenes per age, one base skin 
   });
 });
 
+describe('the next age\'s scene loads before its evolve wipe (review 1)', () => {
+  it('asks the backdrop once a side\'s evolve is near (70% of its XP) and on its Ascension, once each', () => {
+    const asked: string[] = [];
+    class PrefetchArt extends SpyArt {
+      override createBackdrop(o: Parameters<FakeArtProvider['createBackdrop']>[0]) {
+        const v = super.createBackdrop(o);
+        return Object.assign(v, { prefetchAge: (side: number, age: string) => asked.push(`${side}.${age}`) });
+      }
+    }
+    const sim = new FakeSim({});
+    const view = new BattleView({ sim, art: new PrefetchArt(), audio: new FakeAudio(), labelFactory: labels });
+    const ages = sim.config.content.formats[sim.config.format]!.ages;
+    view.onEvents([]);
+    expect(asked).toEqual([]);
+    // side 0 nears its evolve: its next age's scene starts loading (and only once)
+    const st = sim.state as { sides: { xp: number; ageIndex: number }[] };
+    st.sides[0]!.xp = 10_000_000;
+    view.onEvents([]);
+    view.onEvents([]);
+    expect(asked).toEqual([`0.${ages[1]}`]);
+    // side 1's Ascension starts: its scene for the new age too (2.5 s before the wipe)
+    view.onEvents([{ e: 'ascendStart', side: 1, age: ages[1]! } as SimEvent]);
+    expect(asked).toEqual([`0.${ages[1]}`, `1.${ages[1]}`]);
+    view.destroy();
+  });
+});
+
 describe('BattleView on the fake stream (C2/WP5 Phase 1)', () => {
   it('builds the scene: backdrop, both bases, then units as they spawn', () => {
     const s = setup();

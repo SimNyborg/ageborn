@@ -5,7 +5,7 @@
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import { text } from './dom';
-import { mount, type Mounted } from './harness';
+import { flush, mount, type Mounted } from './harness';
 
 let m: Mounted | null = null;
 afterEach(() => {
@@ -139,6 +139,43 @@ describe('Customize: collections (A18.9.4)', () => {
     // already on for Stone in the fixture: nothing to do; the standard base clears it
     m.click('[data-testid="base-default"]');
     expect(calls('equipCosmetic')).toContainEqual({ slot: 'baseSkin', age: 'stone', key: null });
+  });
+
+  it('bases: the tiles, the preview and a locked skin\'s info panel show each skin\'s own model (review 1)', async () => {
+    const asked: { card: string; skin?: string }[] = [];
+    m = mount({
+      state: 'mid',
+      routes: [{ id: 'home' }, { id: 'customize', tab: 'bases' }],
+      portrait: (r) => {
+        asked.push({ card: r.card, ...(r.skin ? { skin: r.skin } : {}) });
+        return Promise.resolve(`data:image/png;base64,${btoa(`${r.card}|${r.skin ?? ''}`)}`);
+      },
+    });
+    m.click('[data-testid="age-tab-medieval"]');
+    await new Promise((r) => setTimeout(r, 0));
+    flush();
+    // the provider draws the skin's own model (or bakes a tint skin's tint): the skin goes with the base
+    expect(asked).toContainEqual({ card: 'base.medieval', skin: 'rose_keep' });
+    expect(asked).toContainEqual({ card: 'base.medieval' });
+    const keep = m.q('[data-testid="base-mock-keep"]')!;
+    expect(keep.getAttribute('data-skin')).toBe('baseSkin.rose_keep');
+    expect(keep.querySelector('img')).not.toBeNull();
+    // no tint multiplied over a picture any more (it recoloured the models)
+    expect(m.qa('.cos-base__tint')).toHaveLength(0);
+    // a locked skin's info panel shows the same model, big (not the old flat drawing)
+    m.click('[data-testid="item-baseSkin.snowy_keep"] button');
+    await new Promise((r) => setTimeout(r, 0));
+    flush();
+    expect(m.q('[data-testid="info-baseSkin.snowy_keep"] .cos-base[data-skin="baseSkin.snowy_keep"]')).not.toBeNull();
+    expect(asked).toContainEqual({ card: 'base.medieval', skin: 'snowy_keep' });
+  });
+
+  it('national flag tiles wait for the one flag atlas instead of asking every flag\'s picture (review 1)', () => {
+    m = cust('flags');
+    // no art provider in the harness: the tiles show their placeholder, never an empty image
+    const tiles = m.qa('[data-testid="owned-national"] [data-testid^="item-nationalFlag."] .cos-tile__art');
+    expect(tiles.length).toBeGreaterThan(1);
+    for (const t of tiles) expect(t.querySelector('img, .cos-img--empty')).not.toBeNull();
   });
 
   it('emotes: the wheel shows the equipped emotes; tapping one takes it out, a full wheel says so', () => {

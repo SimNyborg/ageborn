@@ -14,3 +14,5 @@ Track D added the Flag Atlas's title (PLAN 2d: "All 195 grant the Legendary base
    into `content.en.json` under `title`, and delete the `title` block from `flags.en.json` (it holds nothing else).
 
 Nothing else in these tests depends on the flags.
+
+**Resolved (orchestrator, 2026-10-08, 512b529):** both tests know the World Ambassador title and its strings moved to `content.en.json`.

@@ -13,7 +13,8 @@
  * - **Safety.** An SVG with a script, an event handler, `foreignObject`, an embedded document or an
  *   external reference is refused (the files are served from the game's origin).
  * - **Minified without a dependency:** comments, metadata and whitespace go; the root gets its 640 x 480
- *   size (so every browser can draw it into a canvas). The design itself is untouched.
+ *   size (so every browser can draw it into a canvas). The design itself is untouched, except for the
+ *   few documented corrections in {@link PATCHES} (a 4:3 crop that moved an emblem off its place).
  * - **Outputs.**
  *   - `assets-src/flags/4x3/<code>.svg` and `assets-src/flags/LICENSE-flag-icons.txt`: the vendored source.
  *   - `public/art/flags/svg/<code>.svg`: the same files, served (the big view, the lane cloth, VS, Profile).
@@ -106,6 +107,23 @@ export function unsafeSvg(svg: string): string | null {
   if (!/^<svg[\s>]/.test(svg.trim())) return 'not an SVG document';
   return null;
 }
+
+/** Replaces `from` once, or throws (a patch that no longer matches its source must be looked at). */
+function patchOnce(code: string, svg: string, from: string, to: string): string {
+  if (!svg.includes(from)) throw new Error(`patch for ${code}.svg no longer matches its source`);
+  return svg.replace(from, to);
+}
+
+/**
+ * Corrections to the vendored designs, applied after minifying; `--check` covers them like every output.
+ * - `cv` Cabo Verde: flag-icons' 4:3 crop centres the ring of ten stars, but the national flag places
+ *   it 3/8 of the length from the hoist, on the red stripe (review 1). The star path moves left by 68.6
+ *   units of its group (`scale(.94)`: 64.5 px), from x = 0.476 to 0.375 of the width; the stripes and
+ *   colours are untouched.
+ */
+export const PATCHES: Readonly<Record<string, (svg: string) => string>> = {
+  cv: (svg) => patchOnce('cv', svg, '<path fill="#ffce08" d="', '<path fill="#ffce08" transform="translate(-68.6)" d="'),
+};
 
 /** Strips comments, metadata and whitespace (no dependency) and gives the root its 640 x 480 size. */
 export function minifySvg(svg: string): string {
@@ -205,7 +223,8 @@ export async function vendor(tgzPath: string, o: { atlas?: boolean } = {}): Prom
   for (const code of flagCodes()) {
     const raw = files.get(`package/flags/4x3/${code}.svg`)?.toString('utf8');
     if (raw === undefined) throw new Error(`flag-icons has no 4x3/${code}.svg`);
-    const svg = minifySvg(raw);
+    const patch = PATCHES[code];
+    const svg = patch ? patch(minifySvg(raw)) : minifySvg(raw);
     const why = unsafeSvg(svg);
     if (why) throw new Error(`${code}.svg refused: ${why}`);
     svgs.push({ code, svg });

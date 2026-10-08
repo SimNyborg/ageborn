@@ -347,10 +347,12 @@ export class BaseDressing implements BaseDressingView {
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, w, h);
       // only the cloth inside the outline (the fringe below it stays out of the glint, as in Customize)
-      ctx.globalCompositeOperation = 'destination-in';
-      ctx.setTransform(TEX_PX, 0, 0, TEX_PX, 2 * TEX_PX, 2 * TEX_PX);
-      ctx.fill(new Path2D(BANNER_OUTLINE));
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      if (typeof Path2D === 'function') {
+        ctx.globalCompositeOperation = 'destination-in';
+        ctx.setTransform(TEX_PX, 0, 0, TEX_PX, 2 * TEX_PX, 2 * TEX_PX);
+        ctx.fill(new Path2D(BANNER_OUTLINE));
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+      }
       return true;
     }, this.make);
   }

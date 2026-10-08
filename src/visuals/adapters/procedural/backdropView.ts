@@ -38,7 +38,7 @@
  * cover the longer lane. Each layer's age split is re-cut so its seam stays at the ground seam's screen
  * position: the ages meet in one place on screen while the silhouettes drift at their depth.
  */
-import { Assets, CanvasSource, Container, Rectangle, Sprite, Texture } from 'pixi.js';
+import { CanvasSource, Container, ImageSource, Rectangle, Sprite, Texture } from 'pixi.js';
 import type { BackdropView } from '@/contracts/art';
 import type { AgeId, Side } from '@/contracts/ids';
 import { mulberry32, type CosmeticRng } from '@/core/rng';
@@ -47,6 +47,7 @@ import { arenaId, GROUND_FRAME, groundAmbient, MID_FRAME, paintGround, paintMid,
 import { FAR_FRAME, paintFar, type AmbientSpec } from '../../backdrops/silhouettes';
 import { extraAmbient, finishLayer } from '../../backdrops/lighting';
 import { BACK_FRAME, drawnScene, parseScene, SCENE_ART, sceneDir, sceneIdOf, type SceneData, type SceneFrame, type SceneLight } from '../../backdrops/scenes';
+import { sceneImage, sceneJson } from '../../backdrops/sceneFiles';
 import { lightAlpha, limitSprites, spriteInstances, spritePeriodMs, spritePhaseMs, type SceneSprite } from '../../backdrops/sceneSprites';
 import { CLOUD_TINT, paintSceneSky, paintSky, SKY_FRAME, type LayerFrame } from '../../backdrops/sky';
 import { backdropId, BACKDROP_THEMES, isNightSky, sceneGradeKey, spaceWeather, themeForScene, themeGround, themeLayer, themeSky } from '../../backdrops/themes';
@@ -195,7 +196,8 @@ export class BackdropTextures {
     this.requested.add(key);
     void (async () => {
       try {
-        const json: unknown = await Assets.load(this.baseUrl + dir + 'layers.json');
+        // (one download per file, shared with the Customize and VS stills: `sceneFiles.ts`)
+        const json: unknown = await sceneJson(this.baseUrl + dir + 'layers.json');
         const data = parseScene(json, age, id);
         if (!data) throw new Error('no usable strip');
         this.scenes.set(key, data);
@@ -218,7 +220,7 @@ export class BackdropTextures {
         const props = data.props;
         if (props && Object.keys(props.frames).length > 0) {
           jobs.push(
-            (Assets.load(this.baseUrl + dir + props.image) as Promise<Texture>).then((atlas) => {
+            this.loadImage(dir + props.image, 1).then((atlas) => {
               const frames = new Map<string, PropFrame>();
               for (const [name, f] of Object.entries(props.frames)) frames.set(name, propFrame(atlas, f));
               this.props.set(key, frames);
@@ -247,12 +249,14 @@ export class BackdropTextures {
       .catch((e: unknown) => console.warn(`[visuals] ground "${arena}" failed to load; the painted ground is used`, e));
   }
 
-  /** Loads an image as a texture measured in lu (its source resolution is its px per lu). */
+  /**
+   * Loads an image as a texture measured in lu (its source resolution is its px per lu). The image comes
+   * from the shared scene file cache (one download with the stills); the GPU source is this provider's.
+   */
   private async loadImage(path: string, pxPerLu: number): Promise<Texture> {
-    const t = (await Assets.load(this.baseUrl + path)) as Texture;
-    const source = t.source;
-    source.resolution = pxPerLu;
-    source.scaleMode = 'linear';
+    const image = await sceneImage(this.baseUrl + path);
+    // the same settings as Pixi's own image loader (premultiplied on upload), at the strip's px per lu
+    const source = new ImageSource({ resource: image, alphaMode: 'premultiply-alpha-on-upload', resolution: pxPerLu, scaleMode: 'linear', label: path });
     return new Texture({ source });
   }
 
@@ -424,10 +428,17 @@ export class BackdropTextures {
   destroy(): void {
     for (const p of this.cache.values()) if (p.tex !== Texture.EMPTY) p.tex.destroy(true);
     this.cache.clear();
-    // image sources belong to the Assets cache; drop only our lu-sized texture views
-    for (const p of this.images.values()) p.tex.destroy(false);
+    // the image sources are this provider's (the decoded images stay in the shared file cache)
+    for (const p of this.images.values()) p.tex.destroy(true);
     this.images.clear();
-    for (const frames of this.props.values()) for (const f of frames.values()) f.tex.destroy(false);
+    for (const frames of this.props.values()) {
+      const sources = new Set<Texture['source']>();
+      for (const f of frames.values()) {
+        sources.add(f.tex.source);
+        f.tex.destroy(false);
+      }
+      for (const src of sources) src.destroy();
+    }
     this.props.clear();
   }
 }

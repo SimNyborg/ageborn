@@ -36,3 +36,5 @@ Keep the `fx` layer: it is the skin's code-drawn particle layer, which still mov
 ## Later rounds (Track B)
 
 The Customize diorama mount (`render/showcase/diorama.ts`), the skin thumbnails (`layer: 'thumb'`) and the new skins come in later rounds. Nothing here blocks them.
+
+**Resolved (round 1 final agent, 2026-10-08):** done as suggested. `BaseLook` (`src/ui/components/cosmeticArt.tsx`) asks the provider for the `base.<age>` portrait with `skin` (the model's own body, or the standard base with its baked tint), keeps the `fx` layer, drops the `tint` overlay, and shows a soft pending shimmer until the model's sheet is in; `CosmeticImage` is the fallback only where no portrait provider exists. `SkinnedBase` (Home, VS) now renders `BaseLook`, and the Bases tab passes `bigArt`, so the tile, the big preview and the info panel all show the model. See `docs/decisions.md` ("Customize build round 1").

@@ -9,7 +9,7 @@ import { i18n } from '@/i18n';
 import { signal, type Signal } from '@preact/signals';
 import { render, type ComponentChildren } from 'preact';
 import { act } from 'preact/test-utils';
-import type { Translate } from '../../components/kit';
+import type { PortraitFn, Translate } from '../../components/kit';
 import { createRouter, type Route } from '../../router';
 import { FIXTURE_NOW, fixtureSave, type FixtureState } from '../fixtures/saves';
 import { createPreviewServices, type PreviewLog } from '../fixtures/services';
@@ -77,6 +77,8 @@ export function mount(
     shell?: boolean;
     /** A variant of the real content (e.g. an arena table with locked lengths); the real content by default. */
     content?: Content;
+    /** The art provider's portraits (base pictures, card art); none by default (the stylised fallbacks show). */
+    portrait?: PortraitFn;
   } = {},
 ): Mounted {
   const content = o.content ?? realContent;
@@ -87,7 +89,7 @@ export function mount(
   for (const r of routes.slice(1)) router.go(r);
   const log: PreviewLog = { calls: [] };
   const services: UiServices = { ...createPreviewServices({ save, content, router, log }), ...o.patch };
-  const env = { save, content, t: o.t ?? EN, locale: 'en', now: o.now ?? (() => FIXTURE_NOW), router, services, portrait: null };
+  const env = { save, content, t: o.t ?? EN, locale: 'en', now: o.now ?? (() => FIXTURE_NOW), router, services, portrait: o.portrait ?? null };
   const slots = { battle: (): ComponentChildren => <div data-testid="battle-slot" /> };
   act(() => {
     render(o.shell ? <ShellHost env={env} slots={slots} /> : <ScreenHost env={env} slots={slots} />, container as unknown as HTMLElement);

@@ -9,7 +9,8 @@ import type { SaveDoc } from '@/contracts';
 import { createRouter, type MatchRequest } from '@/ui/screens';
 import { signal } from '@preact/signals';
 import { AppController } from '../controller';
-import { createMetaUi, dailyDateKey, dailyDifficultyOf, pauseInfo } from '../metaUi';
+import { createMetaUi, dailyDateKey, dailyDifficultyOf, pauseInfo, warmMatchArt } from '../metaUi';
+import type { MatchSetup } from '../matchSetup';
 import { buildServices, DEFAULT_CHOICE, type Services } from '../services';
 import { createUiServices, isMetaRules, opponentOptions, type UiFlow } from '../uiServices';
 import type { MetaRules } from '@/meta';
@@ -244,6 +245,32 @@ describe('createMetaUi: the meta screens and the battle in step', () => {
     c.showTitle();
     return { c, ui, services };
   }
+
+  it('VS warms the art the battle opens with: the setup the battle is built from (review 1)', async () => {
+    const { services, meta, save } = await setup((s) => ({ ...s, cosmetics: { ...s.cosmetics, owned: [...s.cosmetics.owned, 'baseSkin.mossy_den'], equipped: { ...s.cosmetics.equipped, baseSkins: { stone: 'baseSkin.mossy_den' } } } }));
+    const c = new AppController(services, { save, autopilot: true, delay: async () => undefined, homeScreen: true });
+    const warmed: MatchSetup[] = [];
+    const ui = createMetaUi({ controller: c, services, meta, warm: (setup) => warmed.push(setup) });
+    c.showTitle();
+    const req: MatchRequest = { mode: 'ladder', format: 'short' };
+    const opponent = ui.services.prepareMatch(req);
+    ui.services.warmMatch?.(req, opponent);
+    expect(warmed).toHaveLength(1);
+    expect(warmed[0]!.config.format).toBe(opponent.format);
+    expect(warmed[0]!.config.sides[0].look?.baseSkins).toEqual({ stone: 'baseSkin.mossy_den' });
+    // the battle itself is untouched by the warm-up
+    expect(c.route.value.id).toBe('title');
+    ui.dispose();
+
+    // through the art provider: the first age of the format, each side's skins and scenes of it
+    const calls: unknown[] = [];
+    const art = { prefetchMatch: (o: unknown) => (calls.push(o), Promise.resolve()) } as unknown as Parameters<typeof warmMatchArt>[0];
+    warmMatchArt(art, warmed[0]!);
+    // (the AI General's base look has a skin per age; the provider loads only the first age's models)
+    expect(calls).toEqual([{ age: 'stone', sides: [{ skins: { stone: 'mossy_den' }, scenes: {} }, expect.objectContaining({ skins: expect.objectContaining({ stone: expect.any(String) }) })] }]);
+    // a provider without the warm-up (fakes) is fine
+    expect(() => warmMatchArt({} as Parameters<typeof warmMatchArt>[0], warmed[0]!)).not.toThrow();
+  });
 
   it('Home builds no waiting battle once onboarding is done', async () => {
     const { c, ui } = await app();

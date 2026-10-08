@@ -9,7 +9,7 @@ import { gzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import { nationalFlagItems } from '../../src/content/raw/nationalFlags';
 import { VENDORED_FLAGS } from '../../src/visuals/cosmetics/nationalFlags';
-import { flagCodes, integrityOf, licenceText, minifySvg, PINNED, unsafeSvg, untar } from './vendor';
+import { flagCodes, integrityOf, licenceText, minifySvg, PATCHES, PINNED, unsafeSvg, untar } from './vendor';
 
 const ROOT = path.resolve(import.meta.dirname, '..', '..');
 const PUB = path.join(ROOT, 'public', 'art', 'flags');
@@ -67,6 +67,18 @@ describe('the vendoring tool', () => {
     expect(flagCodes()).toEqual(nationalFlagItems.map((x) => x.country).sort());
     expect(flagCodes()).toHaveLength(200);
     expect([...VENDORED_FLAGS].sort()).toEqual(nationalFlagItems.map((x) => x.id).sort());
+  });
+
+  it('patches Cabo Verde: its star ring 3/8 of the length from the hoist, the rest untouched (review 1)', () => {
+    const src = '<svg width="640" height="480"><g transform="translate(115.7)scale(.94)"><path fill="#de3929" d="M0 0h1z"/><path fill="#ffce08" d="m131 399.2 6.6 20.4"/></g></svg>\n';
+    const out = PATCHES['cv']!(src);
+    expect(out).toContain('<path fill="#ffce08" transform="translate(-68.6)" d="m131 399.2 6.6 20.4"/>');
+    expect(out.replace(' transform="translate(-68.6)"', '')).toBe(src);
+    // the ring's centre (x 200.8 of the group, measured from the star path) lands at 3/8 of 640 px
+    expect(115.7 + 0.94 * (200.8 - 68.6)).toBeCloseTo(0.375 * 640, 0);
+    expect(() => PATCHES['cv']!('<svg/>')).toThrow(/no longer matches/);
+    // the shipped file carries it
+    expect(readFileSync(path.join(ROOT, 'public', 'art', 'flags', 'svg', 'cv.svg'), 'utf8')).toContain('transform="translate(-68.6)"');
   });
 
   it('licence: the MIT notice ships with the copies, with its source', () => {

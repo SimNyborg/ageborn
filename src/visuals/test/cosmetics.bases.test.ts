@@ -17,9 +17,9 @@ import type { BaseView, VisualDef } from '@/contracts/art';
 import type { AgeId } from '@/contracts/ids';
 import { content } from '@/content';
 import { PartBaker } from '../bake';
-import { cosmeticImageUrl, cosmeticSvg, hasCosmeticArt } from '../cosmetics/art';
+import { baseFlagDesign, cosmeticImageUrl, cosmeticSvg, hasCosmeticArt } from '../cosmetics/art';
 import { baseSkinArt, baseSkinThumbUrl, BASE_SKINS, hasBaseSkinArt, hasBaseSkinModel } from '../cosmetics/baseSkins';
-import { BaseDressing, DRESSING_ANCHORS } from '../cosmetics/dressing';
+import { BaseDressing, DRESSING_ANCHORS, GLINT_LOOP_MS, glintOffset } from '../cosmetics/dressing';
 import { MANIFEST } from '../manifest';
 import { BASE_COLLAPSE_MS, baseSheetSource, baseSkinCollapseSource, baseSkinSheetSource, WORLD_BASE_MOUNTS_LU, WORLD_BASE_SKIN_KITS, WORLD_BASE_SKINS } from '../manifest.world';
 import { createArtProvider } from '../provider';
@@ -589,5 +589,24 @@ describe('the dressing with a skin model', () => {
     const motes = d.root.children[d.root.children.length - 1]!;
     expect(motes.children.length).toBe(14);
     d.destroy();
+  });
+});
+
+describe('the Legendary base flag glints in the lane too (custom-c-lane-flag-glint)', () => {
+  it('sweeps from x -8 to 86 over the first 30% of a 5 s loop, then rests, as in Customize', () => {
+    expect(GLINT_LOOP_MS).toBe(5000);
+    expect(glintOffset(0)).toBe(-8);
+    expect(glintOffset(750)).toBeCloseTo(39, 6);
+    expect(glintOffset(1499)).toBeCloseTo(86, 0);
+    expect(glintOffset(1500)).toBeNull();
+    expect(glintOffset(4999)).toBeNull();
+    expect(glintOffset(5000)).toBe(-8);
+    // side 1 runs half a loop later, so two Legendary flags never flash together
+    expect(glintOffset(0 + GLINT_LOOP_MS / 2)).toBeNull();
+  });
+
+  it('glints the Legendary flags only: Wyvern, Phoenix and the World Compass', () => {
+    const legendary = [...content.cosmetics.collections.items.filter((x) => x.collection === 'baseFlag').map((x) => x.id)].filter((id) => baseFlagDesign(id)?.tier === 'legendary').sort();
+    expect(legendary).toEqual(['phoenix', 'world_compass', 'wyvern']);
   });
 });

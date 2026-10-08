@@ -51,3 +51,5 @@ if (key.startsWith('nationalFlag.')) {
 
 - The Atlas rewards are base flags drawn from `REGION_PENNANTS` through your `baseFlagDesign` (your finish and cut apply); ids `pennant_europe`, `pennant_asia`, `pennant_africa`, `pennant_north_america`, `pennant_south_america`, `pennant_oceania` (Epic) and `world_compass` (Legendary), names in `flags.en.json`. They use `cel()`, `polyPath()`, `star()`, `poly()`, `circle()`, `ring()`, `line()` and `rect()` from `shapes.ts`, and `BANNER_OUTLINE`, `FLAG_W`, `FLAG_H` from `flags.ts`: please keep those exports.
 - The Settings credits line ("Flag artwork: flag-icons by Panayiotis Lipiridis (MIT)") is now true; the notice ships in `public/art/flags/LICENSE-flag-icons.txt`.
+
+**Resolved (Track C, round 1, 2026-10-08):** the router sends every national flag to the vendored art and the tests were updated (in 39a2b6f).

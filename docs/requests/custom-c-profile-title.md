@@ -33,3 +33,5 @@ import { BannerArt, FRAME_COLORS, TitleRibbon, titleTier } from '../../component
 
 - Profile frames: `AvatarLookView` / `Avatar` with `ring` now draw the material frame (bark, bone, bronze, iron, brass, steel, chrome glint, aeon shimmer) as an overlay inside the avatar's own box through `frameStyle(id)` (nothing reaches past the box), so Profile picks them up without edits.
 - `REGION_PENNANT_TIER` is read directly now (thank you for exporting it); the Region Pennants and World Compass get the Epic and Legendary cloth finish, cut and finials in Customize.
+
+**Resolved (round 1 final agent, 2026-10-08):** done as asked; `ProfileScreen.tsx` passes `tier={titleTier(...)}` to `TitleRibbon` (test id `profile-title`).

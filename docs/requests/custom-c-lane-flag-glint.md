@@ -29,3 +29,5 @@ In Customize the Legendary flags (Wyvern, Phoenix, and Track D's World Compass) 
 - National flags: Track D's `nationalFlagTexture` request (`custom-d-lane-flag.md`) is separate.
 
 Nothing in Track C's files depends on this; the flags look right in the lane without it, only the Legendary sparkle is missing there.
+
+**Resolved (round 1 final agent, 2026-10-08):** item 1 is in `src/visuals/cosmetics/dressing.ts`: the `FLAG_GLINT` band swept from -8 to 86 view-box units over the first 30% of a 5 s loop (`glintOffset`), drawn as three nested bands (alpha 0.16 each, about 0.4 at the centre) on the cloth's own mesh points and clipped to the flag's silhouette (`BANNER_OUTLINE`), for `baseFlagDesign(id).tier === 'legendary'` (the Wyvern, the Phoenix and the World Compass); side 1 runs half a loop later; off under Reduce motion, Lite and once the base collapses. Item 2 needed no change.

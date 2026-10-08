@@ -41,3 +41,5 @@ Without it the dev page behaves as before (a still keeps its first answer until 
 ## 3. Still open from Track D (not Track C's files)
 
 `custom-d-content-tests.md` (the World Ambassador title in `src/content/test/meta.test.ts` and `strings.test.ts`, and moving its strings to `content.en.json`) is addressed to the owner of the shared content tests.
+
+**Resolved (round 1 final agent, 2026-10-08):** 1. `EmoteWheel.speaker?: AvatarSpec` is in `src/ui/hud/context.ts` and `EmoteWheel.tsx` reads `c.wheel?.speaker` without the cast. 2. `src/dev/screens/page.tsx` provides `CosmeticPicturesContext` with `onCosmeticPicturesChanged`. 3. Resolved in 512b529.

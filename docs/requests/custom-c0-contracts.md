@@ -31,3 +31,5 @@ Every change is additive: every caller that compiled before still compiles, and 
 - `scenes`: `meta/cosmetics.ts` (`equipCosmetic` slot `scene`, `sideLook`, `botLook`), `render/battleView.ts` (to `createBackdrop`), the provider (to the backdrop view, Track A).
 - `skins` on `createBase`: `render/battleView.ts` (`baseSkinsOf`: the troop-system skin of a base, else the side's cosmetic base skin of that age) and the provider's per-age resolution (Track B).
 - Diorama types: `ui/components/diorama.ts` (`DioramaContext`), `render/showcase/diorama.ts` (`dioramaMount`, Track B), provided in `app/ui/AppRoot.tsx`.
+
+**Resolved (round 1, 2026-10-08):** approved and landed in C0 (`85bf2a6`); every interface above is in use by the tracks.

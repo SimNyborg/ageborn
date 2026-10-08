@@ -471,6 +471,28 @@ export function FlagAtlasScreen(p: { route: RouteOf<'flagAtlas'> }) {
     }
   }, []);
 
+  // The active region chip stays in view (review 1: on phones the sheet's opening narrows the chip row and
+  // left the active chip half cut off): after a region is picked, and once the sheet has opened or closed.
+  const chipsRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const row = chipsRef.current;
+    if (!row || typeof window === 'undefined') return undefined;
+    const reveal = (): void => {
+      const chip = row.querySelector<HTMLElement>('.fa-chip.is-on');
+      if (!chip || typeof row.scrollTo !== 'function') return;
+      const fade = 32; // the row's right edge fades out over 28 px
+      const box = row.getBoundingClientRect();
+      const c = chip.getBoundingClientRect();
+      const left = c.left - box.left + row.scrollLeft;
+      const right = left + c.width;
+      const want = right > row.scrollLeft + row.clientWidth - fade ? right - row.clientWidth + fade : left < row.scrollLeft ? Math.max(0, left - 8) : null;
+      if (want !== null) row.scrollTo({ left: want, behavior: still ? 'auto' : 'smooth' });
+    };
+    // the sheet's opening animates the row's width (medium duration): measure after it settles
+    const id = setTimeout(reveal, still ? 0 : 320);
+    return () => clearTimeout(id);
+  }, [filter, !!chosen]);
+
   // Escape closes the sheet before the screen
   useEffect(() => {
     if (!selected || typeof document === 'undefined') return undefined;
@@ -608,7 +630,7 @@ export function FlagAtlasScreen(p: { route: RouteOf<'flagAtlas'> }) {
                 </button>
               ) : null}
             </label>
-            <div class="fa-chips" role="group" aria-label={t('cosmetic.flagAtlas.title')}>
+            <div class="fa-chips" ref={chipsRef} role="group" aria-label={t('cosmetic.flagAtlas.title')}>
               {(['all', ...atlas.regions.map((r) => r.region)] as RegionFilter[]).map((r) => {
                 const info = r === 'all' ? { owned: atlas.owned, total: atlas.total } : atlas.regions.find((x) => x.region === r)!;
                 const on = filter === r && !searching;

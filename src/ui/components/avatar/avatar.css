@@ -332,12 +332,15 @@
   --rb-line: #5a3a08;
   --rb-end: linear-gradient(180deg, #ffe58a, #e0a52c 60%, #b47a12);
   --rb-end-line: #5a3a08;
-  --rb-ink: #4a2a04;
+  --rb-ink: #3e2302;
   overflow: visible;
+  /* review 1: the letters sat on the damask and the dark lower band. A calm, lighter plate behind the
+     text (the damask fades out under it), the shadow band pushed down to the hem, and a light emboss. */
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M2 10c0-4 3-6 6-4.6 2.2 1.2 1.8 4.6-.8 4.6-1.8 0-2-2.2-.8-2.6M18 10c0 4-3 6-6 4.6-2.2-1.2-1.8-4.6.8-4.6 1.8 0 2 2.2.8 2.6' stroke='%23a8701a' stroke-width='.8' fill='none' opacity='.2'/%3E%3C/svg%3E") 0 0 / 20px 20px,
-    linear-gradient(180deg, #fff3c4 0 28%, #f0c454 28% 70%, #c8891c 70%);
-  text-shadow: 0 1px 0 rgb(255 240 190 / 0.7);
+    radial-gradient(58% 62% at 50% 52%, rgb(255 236 168 / 0.95) 0 55%, rgb(255 236 168 / 0) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M2 10c0-4 3-6 6-4.6 2.2 1.2 1.8 4.6-.8 4.6-1.8 0-2-2.2-.8-2.6M18 10c0 4-3 6-6 4.6-2.2-1.2-1.8-4.6.8-4.6 1.8 0 2 2.2.8 2.6' stroke='%23a8701a' stroke-width='.8' fill='none' opacity='.16'/%3E%3C/svg%3E") 0 0 / 20px 20px,
+    linear-gradient(180deg, #fff3c4 0 22%, #f3ca5e 22% 80%, #c8891c 80%);
+  text-shadow: 0 1px 0 rgb(255 246 210 / 0.9);
 }
 .av-ribbon--leaf::after {
   content: '';

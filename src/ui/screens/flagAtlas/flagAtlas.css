@@ -280,9 +280,21 @@
   margin: 0 -4px 4px;
   padding: 4px 10px;
   border-radius: var(--ui-r-md);
-  background: linear-gradient(180deg, rgba(37, 44, 57, 0.97), rgba(30, 36, 47, 0.97));
+  /* opaque (review 1: tiles scrolled under it showed through it and above it) */
+  background: linear-gradient(180deg, #252c39, #1e242f);
   border-bottom: 1px solid rgba(107, 120, 144, 0.35);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+}
+/* the strip between the grid's top edge and the stuck header: the tiles scrolled under it stay hidden */
+.fa-sec__head::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  right: -6px;
+  bottom: calc(100% - 6px);
+  height: 12px;
+  z-index: -1;
+  background: #1b2029;
 }
 .fa-sec__title {
   margin: 0;
@@ -506,22 +518,30 @@
   line-height: 13px;
   letter-spacing: -0.01em;
 }
+/* the price hangs on the flag's top-right corner like a tag (review 1: over the lower right it hid about
+   a third of the flag); that corner is where the "flying" check sits on owned flags, which have no price */
 .fa-tile__price {
   position: absolute;
-  right: calc(50% - 35px);
-  top: 40px;
+  z-index: 1;
+  right: calc(50% - 44px);
+  top: 0;
   display: inline-flex;
   align-items: center;
   gap: 1px;
-  height: 18px;
-  padding: 0 5px 0 3px;
+  height: 16px;
+  padding: 0 4px 0 2px;
   border-radius: var(--ui-r-pill);
-  background: rgba(15, 18, 24, 0.88);
+  background: rgba(15, 18, 24, 0.9);
   border: 1px solid rgba(195, 188, 174, 0.35);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
   color: var(--ui-text);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 800;
-  line-height: 16px;
+  line-height: 14px;
+}
+.fa-tile__price svg {
+  width: 12px;
+  height: 12px;
 }
 .fa-tile__check {
   position: absolute;
@@ -1069,7 +1089,7 @@
     top: 4px;
   }
   .fa-tile__price {
-    top: 37px;
+    top: 0;
   }
   .fa-tile__name {
     line-height: 13px;

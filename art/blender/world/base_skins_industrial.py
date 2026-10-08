@@ -7,6 +7,12 @@ left end, two copper smokestacks with flared crowns rise behind it, and a copper
 stilts stands on the engine house. At the lane edge a riveted verdigris pressure tower wears a giant brass
 gauge instead of a clock face. Copper pipes with flanges and brass valve wheels run between them.
 
+Colour (review 1, 2026-10-08): on the blue team the first render showed bright orange copper over about
+6% of the base (the standard Foundry 0.8%), next to the orange team's colour. The big copper surfaces (the
+two stacks, the water tank, the gate doors, two platform tops) are now weathered copper (a desaturated
+brown, saturation under 40%) streaked with verdigris; polished copper stays only as small accents (the
+stacks' flared crowns, hoops, rivet bands, ribs, pipes, window hoods and the gauge collar).
+
 Footprint, height band and the four mounts are the Foundry's (common.BASE_MOUNTS): a copper balcony at
 the pressure tower's foot, an iron deck on the engine house's roof edge, the pressure tower's top and the
 water tank's lid. Team colour: the engine house's sign band, the pressure tower's ring, the stack bands,
@@ -30,9 +36,13 @@ VERD = "#4F8F7F"        # verdigris (large areas: the vault, the pressure tower,
 VERD_LT = "#67A594"
 VERD_DK = "#3E7366"
 VERD_DKR = "#305A50"
-COPPER = "#C27A48"      # polished copper (the tank, stacks, pipes)
+COPPER = "#C27A48"      # polished copper: small accents only (hoops, rivets, ribs, pipes, crowns)
 COPPER_LT = "#D9935E"
 COPPER_DK = "#99593A"
+AGED = "#7C5E50"        # weathered copper (large areas: the stacks, the tank; HSV saturation 0.35)
+AGED_LT = "#94735F"
+AGED_DK = "#5E463C"
+PATINA = "#6E9282"      # a soft verdigris patina on the weathered copper (less contrast than VERD_LT)
 BRASS = "#C9A54A"
 BRASS_LT = "#E0C06A"
 STONE = "#CFC6B2"       # pale stone walls
@@ -128,8 +138,8 @@ def stack(rig, joint, crown_joint, s, base_z, team_z):
     x, y, r, top = s
     g = Geo()
     cyl(g, (x, y, base_z), (x, y, top - 10), r, r * 0.84, bevel=0.6, segs=22)
-    rig.part(joint, g, COPPER)
-    seams(rig, joint, x, y, r * 0.92, base_z + 4, top - 14, a0=210, a1=330, n=3, color=COPPER_DK)
+    rig.part(joint, g, AGED)
+    seams(rig, joint, x, y, r * 0.92, base_z + 4, top - 14, a0=210, a1=330, n=3, color=AGED_DK)
     g = Geo()
     for z in range(int(base_z + 30), int(top - 20), 42):
         rr = r - (r * 0.16) * (z - base_z) / (top - base_z) + 0.6
@@ -139,15 +149,16 @@ def stack(rig, joint, crown_joint, s, base_z, team_z):
     rr = r - (r * 0.16) * (team_z - base_z) / (top - base_z) + 0.7
     cyl(g, (x, y, team_z - 3.5), (x, y, team_z + 3.5), rr, bevel=0.5, segs=22)
     rig.part(joint, g, team=True)
-    g = Geo()
-    for k, (a, z0, L) in enumerate(((236, top - 16, 40), (262, top - 18, 64), (300, top - 15, 34))):
+    g = Geo()   # verdigris running down from the crown (the weathered copper's patina), a few soft runs
+    for k, (a, z0, L) in enumerate(((236, top - 16, 58), (258, top - 18, 96), (284, top - 16, 70), (306, top - 15, 40),
+                                    (270, base_z + 96, 36))):
         rr = r * 0.86
         p = (x + math.cos(math.radians(a)) * (rr + 0.3), y + math.sin(math.radians(a)) * (rr + 0.3))
-        g.capsule((p[0], p[1], z0), (p[0], p[1], z0 - L), 1.3, 0.4, segs=6, rings=1)
-    rig.part(joint, g, VERD_LT, outline=0, highlight=False)
+        g.capsule((p[0], p[1], z0), (p[0], p[1], z0 - L), 1.5, 0.45, segs=6, rings=1)
+    rig.part(joint, g, PATINA, outline=0, highlight=False)
     g = Geo().lathe([(r * 0.84 - 0.6, 0), (r * 0.84 + 0.6, 0), (r * 1.25, 7.0), (r * 1.32, 10.0), (r * 1.1, 10.4),
                      (r * 0.8, 9.0), (r * 0.7, 9.0)], (x, y, top - 10.4), segs=24)
-    rig.part(crown_joint, g, COPPER_LT, finish="metal")
+    rig.part(crown_joint, g, COPPER_LT, finish="metal")   # the polished crown: an accent
     g = Geo()
     cyl(g, (x, y, top - 1.2), (x, y, top - 0.2), r * 0.7, bevel=0.2, segs=20)
     rig.part(crown_joint, g, COAL, outline=0, highlight=False)
@@ -183,7 +194,7 @@ def build(rig, M):
         a = math.radians(-160 + 140 * k / 8)
         pts.append((S2[0] + 7.4 * math.cos(a), zt + (5.0 if k % 2 else -2.0)))
     g = Geo().slab([(S2[0] - 7.6, zt - 10.0)] + pts + [(S2[0] + 7.6, zt - 10.0)], S2[1] - 6.8, 2.6)
-    rig.part("stump", g, COPPER_DK, outline=0.5)
+    rig.part("stump", g, AGED_DK, outline=0.5)
 
     # -- the hall: pale stone walls, a verdigris barrel vault on copper ribs, the engine house -------
     g = Geo()
@@ -270,7 +281,7 @@ def build(rig, M):
     rig.part("body", g, STONE_LT)
     g = Geo()
     box(g, (GATE_X, fy - 2.0, 20.0), (12.0, 1.6, 20.0), p=6)
-    rig.part("body", g, COPPER_DK, finish="metal")
+    rig.part("body", g, AGED_DK, finish="metal")
     g = Geo()
     for gx in (GATE_X - 7, GATE_X, GATE_X + 7):
         for gz in (6.0, 14.0, 22.0, 30.0):
@@ -341,21 +352,21 @@ def build(rig, M):
     rig.part("body", g, IRON, finish="metal", outline=0.5)
     g = Geo()
     cyl(g, (kx, ky + 2, k0), (kx, ky + 2, z3 - 3), TK_R, bevel=1.2, segs=32, squash=(1.0, 0.9))
-    rig.part("body", g, COPPER)
-    seams(rig, "body", kx, ky + 2, TK_R * 0.9, k0 + 2, z3 - 5, n=5, color=COPPER_DK)
+    rig.part("body", g, AGED)
+    seams(rig, "body", kx, ky + 2, TK_R * 0.9, k0 + 2, z3 - 5, n=5, color=AGED_DK)
     g = Geo()
     cyl(g, (kx, ky + 2, (k0 + z3 - 3) / 2 - 6.5), (kx, ky + 2, (k0 + z3 - 3) / 2 + 6.5), TK_R + 0.7, bevel=0.5, segs=32,
         squash=(1.0, 0.9))
     rig.part("body", g, team=True)
-    for z in (k0 + 3, z3 - 6):
+    for z in (k0 + 3, z3 - 6):   # polished hoops: thin accents on the weathered tank
         g = Geo()
         cyl(g, (kx, ky + 2, z - 1.4), (kx, ky + 2, z + 1.4), TK_R + 0.8, bevel=0.5, segs=32, squash=(1.0, 0.9))
-        rig.part("body", g, COPPER_DK, finish="metal", outline=0.4)
+        rig.part("body", g, COPPER, finish="metal", outline=0.4)
     g = Geo()   # verdigris drips from the lid
-    for a, L in ((228, 14), (252, 22), (284, 10), (306, 18)):
+    for a, L in ((226, 16), (248, 26), (272, 18), (294, 28), (312, 14)):
         p = (kx + math.cos(math.radians(a)) * (TK_R + 0.4), ky + 2 + math.sin(math.radians(a)) * (TK_R * 0.9 + 0.4))
         g.capsule((p[0], p[1], z3 - 7), (p[0], p[1], z3 - 7 - L), 1.4, 0.5, segs=6, rings=1)
-    rig.part("body", g, VERD_LT, outline=0, highlight=False)
+    rig.part("body", g, PATINA, outline=0, highlight=False)
     g = Geo()   # the lid: an iron disc, its top exactly at the mount
     cyl(g, (kx, ky + 2, z3 - 3.4), (kx, ky + 2, z3), TK_R + 1.4, bevel=0.8, segs=32, squash=(1.0, 0.9))
     rig.part("body", g, IRON_LT, finish="metal")
@@ -422,9 +433,9 @@ def build(rig, M):
     valve_wheel(rig, "body", (tx + 8, wy - 0.6, 70.0), r=5.0)
 
     # -- turret platforms ---------------------------------------------------------------------------
-    platform(rig, "body", M[0], COPPER, IRON_DK, style="stone", r=(25, 19))
+    platform(rig, "body", M[0], AGED, IRON_DK, style="stone", r=(25, 19))
     platform(rig, "body", M[1], IRON_LT, IRON_DK, style="stone", r=(26, 19))
-    platform(rig, "body", M[2], COPPER_LT, VERD_DK, style="bastion", r=(25, 20))
+    platform(rig, "body", M[2], AGED_LT, VERD_DK, style="bastion", r=(25, 20))
     g = Geo()   # iron railing posts on the engine house deck
     for dx in (-18, -6, 6):
         g.capsule((M[1][0] + dx, M[1][1] - 14, M[1][2]), (M[1][0] + dx, M[1][1] - 14, M[1][2] + 7), 0.8)
@@ -559,7 +570,7 @@ COPPER_FOUNDRY = base_module(
         # the stacks fall toward the lane first, then the water tank on its stilts
         "topple": [topple_lu(-160, -116, 170, delay_ms=0, push=1.0, sink_lu=36),
                    topple_lu(-80, -24, 190, delay_ms=160, push=0.8, sink_lu=28)],
-        "rubbleColors": [STONE, STONE_DK, COPPER, VERD],
+        "rubbleColors": [STONE, STONE_DK, AGED, VERD],
         "dustColor": "#C9C0AC",
         "ambientLu": [ambient_lu("embers", (WINDOWS[0], -46, 58), 12, 1.0), ambient_lu("embers", (WINDOWS[2], -46, 58), 12, 1.0),
                       ambient_lu("embers", (S1[0], S1[1], S1[3] + 6), 10, 0.8), ambient_lu("steam", (-96, 14, 128), 10, 0.7),

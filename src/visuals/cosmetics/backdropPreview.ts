@@ -20,6 +20,7 @@ import { mulberry32 } from '@/core/rng';
 import { GROUND_FRAME, MID_FRAME, paintGround, paintMid } from '../backdrops/ground';
 import { finishLayer } from '../backdrops/lighting';
 import { BACK_FRAME, drawnScene, parseScene, sceneDir, type SceneData, type SceneHints, type SceneLayer } from '../backdrops/scenes';
+import { sceneImage, sceneJson } from '../backdrops/sceneFiles';
 import { FAR_FRAME, paintFar } from '../backdrops/silhouettes';
 import { paintSceneSky, paintSky, SKY_FRAME, type LayerFrame } from '../backdrops/sky';
 import { backdropId, BACKDROP_THEMES, themeForScene, themeLayer, themeSky, type BackdropTheme } from '../backdrops/themes';
@@ -79,16 +80,6 @@ function appBaseUrl(): string {
   return env?.BASE_URL ?? '/';
 }
 
-function loadImage(url: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const im = new Image();
-    im.decoding = 'async';
-    im.onload = () => resolve(im);
-    im.onerror = () => reject(new Error(`image ${url}`));
-    im.src = url;
-  });
-}
-
 /** A scene's strips for the stills: loaded (null until they arrive). Starts the download. */
 function previewScene(age: AgeId, scene: string): LoadedScene | null {
   const key = `${age}.${scene}`;
@@ -101,15 +92,16 @@ function previewScene(age: AgeId, scene: string): LoadedScene | null {
   const base = appBaseUrl() + dir;
   void (async () => {
     try {
-      const r = await fetch(base + 'layers.json');
-      if (!r.ok) throw new Error(`layers.json ${r.status}`);
-      const data = parseScene(await r.json(), age, scene);
+      // one download per file, shared with the lane's textures (`sceneFiles.ts`); the strips side by side
+      const data = parseScene(await sceneJson(base + 'layers.json'), age, scene);
       if (!data) throw new Error('no usable strip');
       const imgs: LoadedScene['imgs'] = {};
-      for (const kind of ['back', 'far', 'mid'] as const) {
-        const m = data.layers[kind];
-        if (m) imgs[kind] = await loadImage(base + m.image);
-      }
+      await Promise.all(
+        (['back', 'far', 'mid'] as const).map(async (kind) => {
+          const m = data.layers[kind];
+          if (m) imgs[kind] = await sceneImage(base + m.image);
+        }),
+      );
       loaded.set(key, { data, imgs });
       refreshStills(age, scene);
     } catch (e) {

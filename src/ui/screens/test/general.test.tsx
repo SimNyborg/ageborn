@@ -4,8 +4,9 @@
  * request 2026-10-07), the profile picture tiles (frame, banner, title), and Profile's pencil jumping here.
  */
 import { afterEach, describe, expect, it } from 'vitest';
+import { content } from '@/content';
 import { text } from './dom';
-import { mount, type Mounted } from './harness';
+import { mount, saveFor, type Mounted } from './harness';
 
 let m: Mounted | null = null;
 afterEach(() => {
@@ -58,6 +59,21 @@ describe('Customize › General', () => {
     expect(m.q('[data-testid="frame-none"]')).not.toBeNull();
     m.click('[data-testid="gen-tab-title"]');
     expect(m.q('[data-testid="title-recruit"]')).not.toBeNull();
+  });
+
+  it('Profile shows the title ribbon in the finish of how it was earned (PLAN 2a; custom-c-profile-title)', () => {
+    const feat = content.cosmetics.titles.find((x) => x.unlock.kind === 'feat')!;
+    const leaf = content.cosmetics.titles.find((x) => x.unlock.kind === 'albumComplete' || x.unlock.kind === 'collectionMaxed')!;
+    for (const [title, tier] of [
+      [feat.id, 'seal'],
+      [leaf.id, 'leaf'],
+    ] as const) {
+      const s = saveFor('mid');
+      m = mount({ save: { ...s, profile: { ...s.profile, title }, cosmetics: { ...s.cosmetics, owned: [...s.cosmetics.owned, title] } }, routes: [{ id: 'home' }, { id: 'profile' }] });
+      expect(m.q('[data-testid="profile-title"]')!.getAttribute('data-tier'), title).toBe(tier);
+      m.unmount();
+      m = null;
+    }
   });
 
   it("Profile's avatar jumps to the General tab", () => {

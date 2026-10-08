@@ -136,6 +136,19 @@ describe('the Flag Atlas screen', () => {
     expect(m.q('[data-testid="atlas-flying"]')).not.toBeNull();
   });
 
+  it('the "flying" toast never covers the detail and closes when another flag is picked (review 1)', async () => {
+    m = await atlas(withFlags(['dk', 'es'], 1240, 'nationalFlag.dk'));
+    m.click('[data-testid="flag-es"]');
+    m.click('[data-testid="atlas-fly"]');
+    const toasts = () => [...m!.qa('[data-testid="toast"]')];
+    expect(toasts()).toHaveLength(1);
+    expect(text(toasts()[0]!)).toContain('Spain');
+    // in the screen's usual toast place, not anchored over the detail's name, region and progress
+    expect(m.qa('.ui-toast.is-anchored')).toHaveLength(0);
+    m.click('[data-testid="flag-dk"]');
+    expect(toasts()).toHaveLength(0);
+  });
+
   it("the save's first flag is claimed for no Dust; too little Dust says how much more and where it comes from", async () => {
     m = await atlas(withFlags([], 100));
     expect(text(m.q('[data-testid="atlas-first"]')!)).toContain('costs no Dust');

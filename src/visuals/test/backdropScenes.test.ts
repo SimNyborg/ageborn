@@ -12,7 +12,7 @@ import { ageRegions, ARRIVAL_FADE_MS, composePieces, FadeTracker, ProceduralBack
 import { PartBaker } from '../bake';
 import { BACK_FRAME, drawnScene, parseScene, SCENE_ART, sceneDir, sceneIdOf, sceneThumbPath, type SceneData } from '../backdrops/scenes';
 import { limitSprites, lightAlpha, pathPoint, readSprites, spriteInstances, spritePhaseMs, SPRITE_LIMITS, type PathSprite, type SceneSprite } from '../backdrops/sceneSprites';
-import { BACKDROP_THEMES, isNightSky, spaceWeather, themeSky } from '../backdrops/themes';
+import { BACK_GRADE_SCALE, BACKDROP_THEMES, isNightSky, sceneGradeKey, spaceWeather, themeForScene, themeSky } from '../backdrops/themes';
 import { WORLD } from '../style';
 
 const LAYERS_JSON = import.meta.glob('/public/art/backdrops/**/layers.json', { import: 'default', eager: true }) as Record<string, unknown>;
@@ -264,6 +264,45 @@ describe('scene hints and night lights', () => {
     expect(arcs(false)).toBe(0);
   });
 
+  it('reads `skyGrade` (clamped to 0..1; absent is 1)', () => {
+    const strip = { image: 'far.webp', x0: -260, width: 1720, yTop: -560, height: 580, pxPerLu: 0.9 };
+    const hints = (h: unknown) => parseScene({ version: 2, far: strip, hints: h }, 'bronze', 'classic')?.hints;
+    expect(hints({ celestial: 'keep', weather: 'ground', skyGrade: 0.6 })?.skyGrade).toBe(0.6);
+    expect(hints({ skyGrade: 3 })?.skyGrade).toBe(1);
+    expect(hints({ skyGrade: -1 })?.skyGrade).toBe(0);
+    expect(hints({ celestial: 'own' })?.skyGrade).toBe(1);
+    expect(hints(undefined)?.skyGrade).toBe(1);
+  });
+
+  it('a scene takes a sky theme by its hints: space keeps its sky, pale scenes take light themes gently (review 1)', () => {
+    const wf = BACKDROP_THEMES['winterfall']!;
+    const night = BACKDROP_THEMES['starry_night']!;
+    // a day sky never goes over space; the strips still take a (gentler) grade
+    expect(themeForScene(wf, { weather: 'space', skyGrade: 0.35 }, 'sky')).toBeNull();
+    expect(themeForScene(wf, { weather: 'space', skyGrade: 0.35 }, 'far')!.gradeMix).toBeLessThan(wf.gradeMix * 0.5);
+    // Winterfall's near-white grade on Bronze (0.6): about two thirds; a night grade keeps almost all of it
+    const pale = themeForScene(wf, { skyGrade: 0.6 }, 'far')!;
+    expect(pale.gradeMix).toBeLessThan(wf.gradeMix * 0.7);
+    expect(pale.gradeMix).toBeGreaterThan(wf.gradeMix * 0.55);
+    expect(pale.rimAlpha).toBeLessThan(1);
+    expect(themeForScene(night, { skyGrade: 0.6 }, 'far')!.gradeMix).toBeGreaterThan(night.gradeMix * 0.9);
+    expect(themeForScene(wf, { skyGrade: 0.6 }, 'sky')!.skyMix).toBeLessThan(wf.skyMix * 0.8);
+    expect(themeForScene(night, { skyGrade: 0.6 }, 'sky')!.skyMix).toBeGreaterThan(night.skyMix * 0.9);
+    // the back strip takes half the grade; a scene without hints takes the theme as it is
+    expect(themeForScene(wf, undefined, 'back')!.gradeMix).toBeCloseTo(wf.gradeMix * BACK_GRADE_SCALE);
+    expect(themeForScene(wf, undefined, 'far')).toBe(wf);
+    expect(themeForScene(wf, { skyGrade: 1, weather: 'ground' }, 'sky')).toBe(wf);
+    expect(sceneGradeKey({ skyGrade: 0.35, weather: 'space' })).toBe('0.35s');
+    expect(sceneGradeKey(undefined)).toBe('1');
+  });
+
+  it('the shipped Bronze and Cosmic classics take a light sky gently, and Cosmic keeps its space sky', () => {
+    const hints = (age: AgeId) => parseScene(LAYERS_JSON[`/public/${sceneDir(age, 'classic')}layers.json`], age, 'classic')?.hints;
+    expect(hints('bronze')).toMatchObject({ weather: 'ground', skyGrade: 0.45 });
+    expect(hints('cosmic')).toMatchObject({ weather: 'space', celestial: 'own', skyGrade: 0.35 });
+    expect(hints('industrial')?.skyGrade).toBe(1);
+  });
+
   it('night skies are the four dark themes', () => {
     expect(['starry_night', 'lantern_festival', 'eclipse', 'northern_lights'].every((id) => isNightSky(`backdrop.${id}`))).toBe(true);
     expect(isNightSky('backdrop.winterfall')).toBe(false);
@@ -365,6 +404,40 @@ describe('scenes in the lane: seam, wipe, arrival fade, lights, release', () => 
     night.update(16);
     expect(night.state.lights).toBeGreaterThan(0);
     night.destroy();
+  });
+
+  it('Lite keeps the back strip (one sprite), never its props or lights (review 1)', () => {
+    const { t } = fakeTextures();
+    const v = new ProceduralBackdropView({ left: 'bronze', right: 'industrial', arena: 'tar_pits', textures: t, baker: new PartBaker({ pxPerLu: 1, canvasFactory: () => null }), quality: 'lite', seed: 7 });
+    const kinds = (v as unknown as { layers: { kind: string }[] }).layers.map((l) => l.kind);
+    expect(kinds).toEqual(['sky', 'back', 'far', 'mid']);
+    v.destroy();
+  });
+
+  it('prefetches the scene of a side for an age before its wipe (review 1)', () => {
+    const { t } = fakeTextures();
+    const calls: unknown[][] = [];
+    (t as unknown as { prefetch: (...a: unknown[]) => void }).prefetch = (...a: unknown[]) => calls.push(a);
+    const v = view(null, t);
+    calls.length = 0;
+    v.prefetchAge(1, 'modern');
+    expect(calls).toEqual([[['modern'], [], [{ age: 'modern', scene: 'classic' }]]]);
+    v.destroy();
+  });
+
+  it('a space scene keeps its clouds hidden under a theme (its own sky stays)', () => {
+    const { t } = fakeTextures();
+    const sceneOf = (t as unknown as { scene: (age: AgeId) => SceneData }).scene;
+    (t as unknown as { scene: (age: AgeId) => SceneData }).scene = (age: AgeId) => ({
+      ...sceneOf(age),
+      sky: { top: 0x241c3c, bottom: 0x5c4884, horizon: 0x6c5894, cloudTint: 0x6a5a8a, celestial: 'none', sunAt: null, stars: 100, smog: 0, nebula: true, clouds: 0 },
+    });
+    const v = view('backdrop.winterfall', t);
+    v.update(16);
+    const clouds = (v as unknown as { clouds: { children: { alpha: number }[] } }).clouds.children;
+    expect(clouds.length).toBeGreaterThan(0);
+    expect(clouds.every((c) => c.alpha === 0)).toBe(true);
+    v.destroy();
   });
 
   it('releases the GPU textures of the age a side left once its wipe ends', () => {
