@@ -16,7 +16,7 @@ Newest entry first. Each session appends what it finished, what is next, and any
 
 **Army by class.** The cards you are not using are grouped under small headings (Infantry, Ranged, Heavy, Anti-heavy, Support, … then Turrets, Powers, Forts) with the class icon and a count; new cards come first in each group. Checked at 844x390, 844x340, 800x360 and 1280x720 with seven troop slots.
 
-**Checks (whole tree, 2026-10-08):** see the session report; typecheck clean, lint clean on these paths, unit tests and the production build pass (one unit test and one lint error come from the base-collapse work running in parallel).
+**Checks (whole tree with the base-collapse work, 2026-10-08):** typecheck and lint clean; 6,609 unit tests pass (261 files, 2 skipped); production build OK; full e2e 293 of 293 pass (Chromium, test-results cleaned before and after, no reruns). The UI budget test caught two things on the way, both fixed: long deck names clipped on Home's plate, and Army's advisor chip showing while a card was selected.
 
 **What the owner should try** (once published): open Army and switch between decks A, B and C (tap the lit one to rename it); start a battle and press Retreat in the first seconds; switch Back, Hold and Charge quickly in a fight; open Customize and tap a flag or an emote to equip it.
 

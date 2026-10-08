@@ -1182,7 +1182,9 @@ export function WarPlanScreen(p: { route: RouteOf<'warPlan'> }) {
                   <span class="army-avg__short">{t('ui.army.avgShort', { n: formatDec(avg, 1, locale) })}</span>
                 </span>
               ) : null}
-              {hint && !(lead && !sel) ? (
+              {/* While a card or slot is selected the column stays quiet: the glowing slots and the
+                  card's own bar say what to do (it showed a how-to line before 2026-10-07). */}
+              {sel ? null : hint && !lead ? (
                 <p class="army-hint" key={hint} data-testid="army-hint">
                   {hint}
                 </p>
