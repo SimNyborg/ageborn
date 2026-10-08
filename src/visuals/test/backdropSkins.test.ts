@@ -81,6 +81,16 @@ describe('backdrop skins in the lane', () => {
     }
     // the same age and no skins on either side: one solid run, no cross-fade
     expect(composePieces(ageRegions({ left: 'stone', right: 'stone', seam, wipe: null }), seam).some((p) => p.under)).toBe(false);
+    // ... drawn as a single piece per layer (review 1, frame time: no 50 seam strips to re-cut whenever
+    // the camera moves), and the same with one sky on both halves
+    expect(composePieces(ageRegions({ left: 'stone', right: 'stone', seam, wipe: null }), seam)).toEqual([{ age: 'stone', x0: WORLD.worldLeftLu - 100, x1: WORLD.worldRightLu + 100, alpha: 1 }]);
+    const both = composePieces(ageRegions({ left: 'stone', right: 'stone', seam, wipe: null, skins: { left: 'backdrop.eclipse', right: 'backdrop.eclipse' } }), seam);
+    expect(both).toHaveLength(1);
+    expect(both[0]?.skin).toBe('backdrop.eclipse');
+    // an evolve wipe still cross-fades its edge, and the halves around it stay apart
+    const wiping = composePieces(ageRegions({ left: 'stone', right: 'stone', seam, wipe: { side: 0, age: 'bronze', front: 300 } }), seam);
+    expect(wiping.some((p) => p.under && p.age === 'bronze')).toBe(true);
+    expect(wiping.filter((p) => p.alpha === 1 && !p.under).map((p) => p.age)).toEqual(['bronze', 'stone']);
   });
 
   it('a themed sky slides down on a phone so its sun, moon or aurora sits under the HUD, never on desktop (review 4)', () => {

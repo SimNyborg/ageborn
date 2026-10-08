@@ -562,21 +562,40 @@ export function composePieces(regions: readonly Region[], seam: number): Piece[]
     const w = widths[i] ?? 0;
     if (!a || !b || w <= 0) continue;
     const c = a.x1;
+    if (a.age === b.age && a.skin === b.skin && a.scene === b.scene) {
+      // the same look on both sides of the cut: nothing to cross-fade, one solid piece
+      pieces.push({ age: a.age, ...look(a), x0: c - w / 2, x1: c + w / 2, alpha: 1 });
+      continue;
+    }
     const n = Math.max(1, Math.ceil(w / STRIP_LU));
     for (let k = 0; k < n; k++) {
       const x0 = c - w / 2 + (k * w) / n;
       const x1 = c - w / 2 + ((k + 1) * w) / n;
       const t = (k + 0.5) / n;
       const s = t * t * (3 - 2 * t);
-      if (a.age === b.age && a.skin === b.skin && a.scene === b.scene) {
-        pieces.push({ age: a.age, ...look(a), x0, x1, alpha: 1 });
-      } else {
-        pieces.push({ age: a.age, ...look(a), x0, x1, alpha: 1 - s, under: true });
-        pieces.push({ age: b.age, ...look(b), x0, x1, alpha: s });
-      }
+      pieces.push({ age: a.age, ...look(a), x0, x1, alpha: 1 - s, under: true });
+      pieces.push({ age: b.age, ...look(b), x0, x1, alpha: s });
     }
   }
-  return pieces;
+  return mergeSolid(pieces);
+}
+
+/**
+ * Joins touching solid pieces of the same look into one (review 1, frame time): with both halves in
+ * the same age, scene and sky, each layer is a single sprite instead of the two halves and 50 seam
+ * strips, which the battle re-cut on every camera move. The image is the same (one texture, alpha 1).
+ * Solid pieces stay first, the cross-fade pairs keep their order after them.
+ */
+function mergeSolid(pieces: Piece[]): Piece[] {
+  const solid = pieces.filter((p) => p.alpha === 1 && !p.under).sort((a, b) => a.x0 - b.x0);
+  const out: Piece[] = [];
+  for (const p of solid) {
+    const last = out[out.length - 1];
+    if (last && last.age === p.age && last.skin === p.skin && last.scene === p.scene && Math.abs(last.x1 - p.x0) < 1e-6) last.x1 = p.x1;
+    else out.push({ ...p });
+  }
+  for (const p of pieces) if (!(p.alpha === 1 && !p.under)) out.push(p);
+  return out;
 }
 
 interface Amb {
@@ -900,11 +919,12 @@ type AmbLayer = 'sky' | 'back' | 'far' | 'mid' | 'ground';
 export class ProceduralBackdropView implements BackdropView {
   /**
    * A render group (Pixi v8): the battle's scene graph changes almost every frame (units, effects,
-   * numbers), and without its own group the backdrop's strips, props and motes were re-collected into
-   * the frame's instructions every time. As a group they keep their own instruction set, rebuilt only
-   * when the backdrop itself changes, and the camera moves it as one transform on the GPU. Review 1
-   * (844 x 390, CPU 4x, High): the scenes' extra cost over the painted layers went from +0.7-1.1 ms to
-   * at most +0.25 ms a frame, same draw calls, same image.
+   * numbers); as its own group the backdrop keeps its instruction set, rebuilt only when the backdrop
+   * itself changes (which reused motes, `spareMotes`, keep rare), and the camera moves it as one
+   * transform. With one piece per layer for one look (`mergeSolid`) the scenes pass review 1's gate: a
+   * 60 s Standard War from Bronze at 844 x 390, CPU 4x, High, with the Blender scene on both halves
+   * costs +0.55 ms (median) and +0.37 ms (mean) a frame over the painted layers (+1 ms allowed), with
+   * the same draw calls and the same image.
    */
   readonly root = new Container({ isRenderGroup: true });
   private readonly layers: StripLayer[];
