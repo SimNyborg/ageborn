@@ -612,7 +612,8 @@
     "the_stubborn": { "name": "the Stubborn", "unlock": "Find a hidden feat" },
     "photo_finisher": { "name": "Photo Finisher", "unlock": "Find a hidden feat" },
     "stone_cold": { "name": "Stone Cold", "unlock": "Find a hidden feat" },
-    "keeper_of_ages": { "name": "Keeper of Ages", "unlock": "Find a hidden feat" }
+    "keeper_of_ages": { "name": "Keeper of Ages", "unlock": "Find a hidden feat" },
+    "world_ambassador": { "name": "World Ambassador", "unlock": "Own all 195 national flags in the Flag Atlas" }
   },
   "feat": {
     "caveman_diplomacy": { "name": "Caveman Diplomacy", "riddle": "Old bones, new tricks.", "hint": "A Stone Age unit kills a Future Age unit." },

@@ -766,11 +766,5 @@
       "profileNone": "Pick a flag",
       "profileAtlas": "Flag Atlas {n}/{max}"
     }
-  },
-  "title": {
-    "world_ambassador": {
-      "name": "World Ambassador",
-      "unlock": "Own all 195 national flags in the Flag Atlas"
-    }
   }
 }

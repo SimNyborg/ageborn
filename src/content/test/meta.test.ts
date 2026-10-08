@@ -492,7 +492,7 @@ describe('Hidden feats (A15.10)', () => {
 });
 
 describe('Cosmetics and skins (A5.8)', () => {
-  it('has banners from the arena gates, frames from Codex levels and 13 titles, 4 collection titles and 4 feat titles', () => {
+  it('has banners from the arena gates, frames from Codex levels and 13 titles, 4 collection titles, 4 feat titles and the Flag Atlas title', () => {
     expect(cosmetics.banners.map((b) => b.id)).toEqual(['tar_pit', 'frostfang', 'moat', 'harbor', 'barbed', 'neon', 'starfield', 'rift']);
     for (const b of cosmetics.banners.slice(1)) {
       expect(arenas.list[b.arena - 1]?.gateRewards).toContainEqual({ kind: 'banner', banner: b.id });
@@ -501,7 +501,7 @@ describe('Cosmetics and skins (A5.8)', () => {
     expect(cosmetics.titles.map((t) => t.id)).toEqual([
       'recruit', 'firestarter', 'evolver', 'mammoth_tamer', 'collector', 'siege_scholar', 'last_stander', 'speedrunner',
       'veteran', 'curator', 'wardens_bane', 'conqueror', 'ageborn', 'card_scout', 'archivist', 'master_smith', 'grand_curator',
-      'the_stubborn', 'photo_finisher', 'stone_cold', 'keeper_of_ages',
+      'the_stubborn', 'photo_finisher', 'stone_cold', 'keeper_of_ages', 'world_ambassador',
     ]);
     expect(cosmetics.emotes.map((e) => e.id)).toEqual(['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg']);
     expect(cosmetics.defaults).toEqual({ banner: 'tar_pit', frame: 'none', title: 'recruit' });
