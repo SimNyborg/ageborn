@@ -224,7 +224,7 @@ export const modern: RawAgeTables = {
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 124, intervalMs: 3000, windupPct: 50, range: 440, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 124, intervalMs: 2700, windupPct: 50, range: 440, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.mortar_shell' },
           dmgType: 'blast', sfx: 'shot_mortar_team', splashRadius: 35, vsBaseDamage: 50,
         },

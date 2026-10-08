@@ -2,6 +2,22 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-08: ranks on the lane, the victory moment, and a catch-up of what went live (cloud session)
+
+**Already live on `main` before this entry** (each has its own `docs/decisions.md` entry): the capsule rarity burst (Rare pop, Epic burst, Legendary explosion, only after the honest reveal); seven troop slots per age (save v13; bots get seven too); the base collapse (runtime fracture of the base art, per-age debris, layered sounds); the six small owner requests below; the Ranked online flow (search, "Player found" with a generated name, avatar and trophies, a Player chip on VS, HUD, Result and replays; the match is played against the AI, owner decision 2026-10-07 in `CLAUDE.md`); the live card showcase on Card detail and the first forced upgrade.
+
+**Ranks on the lane (owner request, SIM_VERSION 8.0.0).** Ranged troops keep a place behind their own melee front (25% of their range, about 30-68 lu for the Commons); Long range and artillery keep 40% (160-176 lu) and step up between shots when they fall too far back. Melee walks through its own ranks; Charge pushes the ranks forward, Hold forms them behind the flag. Air, support followers, levies, forts and armoured vehicles without a minimum range are not ranked. Short War Final Bell with seven-troop decks 13.4 → 5.7% (target ≤ 10%); exploits flat or better (flag ball 45 → 42%, mass splash 17 → 7%); 43 of 47 per-card rows within ±5 (38 before). All 17 goldens re-recorded on purpose. Rule and numbers in `docs/decisions.md` and DESIGN A2.7.
+
+**Victory moment (owner request).** After every match except a Retreat, your General and the opponent's meet on the Result: five winning moves (giant mallet, pie in the face, tarred and feathered, launched over the horizon with a star twinkle, dust-cloud scuffle), two gentle ones on a defeat and a stand-off on a draw. Skippable, with a reduced-motion version and its own sounds.
+
+**Small fixes.** The Repair Drone, which has no attack, now plays its gesture when it heals a nearby ally (visual only). Card detail shows the level once (the small card no longer repeats it).
+
+**Still open from the balance gates** (failing before this change too): the no-research rows (Short 45.8%, Standard 31.8%, gate ≤ 30%), few-then-evolve vs tier IV (Short 12.3%, gate ≤ 10%), and three per-card rows outside ±5 (Bolas Thrower +12.3, Wall Gunner +11.9, Bronze Cannon −16.9).
+
+**Next:** the Customize build planned in four tracks (`docs/owner-queue.md` items 18, 19/19b, 20, 21): national flags for Dust with a Flag Atlas, sharper Customize items, three backdrop scenes per age, and base skins as real models.
+
+**What the owner should try:** play a Medieval battle with archers and watch them stand behind your footmen; win a battle and watch the victory moment; lose one too.
+
 ## 2026-10-08: six owner requests: less text, tap to equip, saved decks, Retreat at once, instant stances, Army by class (cloud session, not yet published)
 
 **Less text in the menus.** The Result shows its extra rewards as small pills with no "Also earned" heading, and the late-night bar is gone. Slogans such as "Earned in play. Never sold." are removed everywhere; hint lines became numbers or icons (the emote wheel says "6/8", Locked says "15/34 found", the Trophy Road row shows the reward's icon). Rules a player may want stay one tap away: the capsule odds button, the quest panel's new "i", Settings › About and For parents (which keeps its plain facts for parents).

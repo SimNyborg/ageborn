@@ -205,13 +205,14 @@ export const medieval: RawAgeTables = {
       nameKey: 'card.greatsword_knight.name', descKey: 'card.greatsword_knight.desc', strongVs: [], weakVs: [],
     },
     {
-      // Long range (H6, A5.1; range +50-80 on 2026-10-07): an arcing arrow at the target's spot, splash r35; range 430, min 90; half to bases; ground only
+      // Long range (H6, A5.1; range +50-80 on 2026-10-07): an arcing arrow at the target's spot, splash r35; range 430, min 90; half to bases; ground only.
+      // 2.7 s (2.6 s until the ranks, 2026-10-08)
       id: 'yeoman_archer', kind: 'unit', age: 'medieval', rarity: 'rare', role: 'ranged', group: 'ranged',
       cost: 75, trainMs: 2000, pop: 3, hp: 124, speed: 60, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 62, intervalMs: 2600, windupPct: 50, range: 430, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 62, intervalMs: 2700, windupPct: 50, range: 430, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.longarrow' },
           dmgType: 'pierce', sfx: 'shot_longbow', splashRadius: 35, vsBaseDamage: 30,
         },

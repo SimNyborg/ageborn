@@ -159,13 +159,14 @@ export const bronze: RawAgeTables = {
       nameKey: 'card.thracian_raider.name', descKey: 'card.thracian_raider.desc', strongVs: [], weakVs: [],
     },
     {
-      // Trio (X0 M1): one card trains 3 slingers; stats per slinger (0.40 × Javelineer), cost and pop split evenly
+      // Trio (X0 M1): one card trains 3 slingers; stats per slinger (0.40 × Javelineer), cost and pop split evenly.
+      // 1.65 s (1.6 s until the ranks, 2026-10-08: the per-card row read +5.1)
       id: 'rhodian_slingers', kind: 'unit', age: 'bronze', rarity: 'common', role: 'ranged', group: 'ranged',
       cost: 75, trainMs: 2000, pop: 3, hp: 36, speed: 65, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 6, intervalMs: 1600, windupPct: 50, range: 180, hitsGround: true, hitsAir: true,
+          damage: 6, intervalMs: 1650, windupPct: 50, range: 180, hitsGround: true, hitsAir: true,
           projectile: { speed: 500, visualId: 'proj.rock' },
           dmgType: 'blunt', sfx: 'shot_sling',
         },

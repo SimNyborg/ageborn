@@ -172,13 +172,13 @@ export const future: RawAgeTables = {
       nameKey: 'card.hover_bike.name', descKey: 'card.hover_bike.desc', strongVs: [], weakVs: [],
     },
     {
-      // Skirmisher: twin barrels stitch light needles, 13 every 0.5 s, range 220, ground and air
+      // Skirmisher: twin barrels stitch light needles, 12 every 0.5 s (13 until the ranks, 2026-10-08), range 220, ground and air
       id: 'needle_gunner', kind: 'unit', age: 'future', rarity: 'common', role: 'ranged', group: 'ranged',
       cost: 75, trainMs: 2000, pop: 3, hp: 250, speed: 75, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 13, intervalMs: 500, windupPct: 50, range: 220, hitsGround: true, hitsAir: true,
+          damage: 12, intervalMs: 500, windupPct: 50, range: 220, hitsGround: true, hitsAir: true,
           projectile: { speed: 1800, visualId: 'proj.needle' },
           dmgType: 'laser', sfx: 'shot_needle',
         },

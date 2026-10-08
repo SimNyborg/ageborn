@@ -237,7 +237,7 @@ export const stone: RawAgeTables = {
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 39, intervalMs: 2600, windupPct: 50, range: 400, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 35, intervalMs: 2600, windupPct: 50, range: 400, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.dart' },
           dmgType: 'pierce', sfx: 'shot_atlatl', splashRadius: 35, vsBaseDamage: 17,
         },

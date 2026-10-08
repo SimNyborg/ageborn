@@ -195,7 +195,7 @@ export const industrial: RawAgeTables = {
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 24, intervalMs: 1500, windupPct: 50, range: 220, hitsGround: true, hitsAir: false,
+          damage: 22, intervalMs: 1500, windupPct: 50, range: 220, hitsGround: true, hitsAir: false,
           projectile: { speed: 450, arc: true, visualId: 'proj.bowl_bomb' },
           dmgType: 'blast', sfx: 'shot_bowl', splashRadius: 30,
         },
@@ -220,15 +220,16 @@ export const industrial: RawAgeTables = {
       nameKey: 'card.steam_tractor.name', descKey: 'card.steam_tractor.desc', strongVs: [], weakVs: [],
     },
     {
-      // Long range (H6, A5.1; range +50-80 on 2026-10-07): an arcing mortar bomb at the target's spot, splash r35; range 440, min 90; half to bases; ground only
+      // Long range (H6, A5.1; range +50-80 on 2026-10-07): an arcing mortar bomb at the target's spot, splash r35; range 440, min 90; half to bases; ground only.
+      // 96 damage, 48 to bases (118 and 60 until the ranks, 2026-10-08)
       id: 'trench_mortar', kind: 'unit', age: 'industrial', rarity: 'rare', role: 'ranged', group: 'ranged',
       cost: 75, trainMs: 2000, pop: 3, hp: 266, speed: 60, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 118, intervalMs: 3400, windupPct: 50, range: 440, minRange: 90, hitsGround: true, hitsAir: false,
+          damage: 96, intervalMs: 3400, windupPct: 50, range: 440, minRange: 90, hitsGround: true, hitsAir: false,
           projectile: { speed: 300, arc: true, visualId: 'proj.mortar_shell' },
-          dmgType: 'blast', sfx: 'shot_trench_mortar', splashRadius: 35, vsBaseDamage: 60,
+          dmgType: 'blast', sfx: 'shot_trench_mortar', splashRadius: 35, vsBaseDamage: 48,
         },
       ],
       abilities: [],

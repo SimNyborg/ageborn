@@ -43,8 +43,10 @@ describe('contentHash (B4, B3 replays)', () => {
     // Brigand, Commando and Rifle Grenadier re-tuned after drifting outside ±5 (docs/decisions.md). Owner
     // decisions 2026-10-07: the Heavy damage trim, longer Long range, and the spare-copy Dust rates. Owner
     // requests 2026-10-07: no stance cooldown (`stanceCooldownMs` 0) and Retreat open from the start
-    // (`retreatAfterMs` 0); no sim code changed, so SIM_VERSION stays.
-    expect(content.hash).toBe('060e7fc4');
+    // (`retreatAfterMs` 0); no sim code changed, so SIM_VERSION stays. Owner request 2026-10-07 (built
+    // 2026-10-08): the ranks (`economy.formation`, SIM_VERSION 8.0.0), the Short War rope 0.8 / 1.4%/s and ten
+    // cards retuned to stay within ±5 (docs/decisions.md).
+    expect(content.hash).toBe('db3a0a26');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {
@@ -53,7 +55,7 @@ describe('contentHash (B4, B3 replays)', () => {
     // invalidates every golden replay.
     // Re-baselined deliberately with the SIM_VERSION 5.0.0 golden re-record (the fixture gained forts), and
     // again with the SIM_VERSION 8.0.0 re-record (the fixture gained `economy.formation`, A2.7 Ranks).
-    const FIXTURE_HASH = 'c00a0e81';
+    const FIXTURE_HASH = 'a68a3f4a';
     const fixture = compileContent({ raw: fixtureRaw, meta: metaTables, skins: skinList, counters: counterFile });
     expect(fixture.hash).toBe(FIXTURE_HASH);
   });

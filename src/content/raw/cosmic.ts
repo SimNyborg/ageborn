@@ -192,7 +192,7 @@ export const cosmic: RawAgeTables = {
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
-          damage: 62, intervalMs: 1150, windupPct: 50, range: 240, hitsGround: true, hitsAir: false,
+          damage: 70, intervalMs: 1150, windupPct: 50, range: 240, hitsGround: true, hitsAir: false,
           projectile: { speed: 450, arc: true, visualId: 'proj.nova_orb' },
           dmgType: 'blast', sfx: 'nova_lob', splashRadius: 30,
         },

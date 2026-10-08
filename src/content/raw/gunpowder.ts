@@ -135,7 +135,7 @@ export const gunpowder: RawAgeTables = {
     {
       // Guard: the targe takes 25% less from attacks with range ≥ 100 (not powers); Blunt
       id: 'highlander', kind: 'unit', age: 'gunpowder', rarity: 'common', role: 'infantry', group: 'infantry',
-      cost: 50, trainMs: 1500, pop: 2, hp: 380, speed: 67, size: 'small',
+      cost: 50, trainMs: 1500, pop: 2, hp: 360, speed: 67, size: 'small',
       tags: ['light', 'bio', 'melee', 'ground'],
       attacks: [
         {
@@ -163,9 +163,10 @@ export const gunpowder: RawAgeTables = {
       nameKey: 'card.powder_monkey.name', descKey: 'card.powder_monkey.desc', strongVs: [], weakVs: [],
     },
     {
-      // Trio (X0 M1): one card trains 3 skirmishers; stats per skirmisher (0.40 × Fusilier), cost and pop split evenly
+      // Trio (X0 M1): one card trains 3 skirmishers; stats per skirmisher (0.40 × Fusilier), cost and pop split
+      // evenly. HP 73 (69 until the ranks, 2026-10-08: the per-card row fell to -5.7; HP 76 read +4.3, damage 20 +17)
       id: 'voltigeurs', kind: 'unit', age: 'gunpowder', rarity: 'common', role: 'ranged', group: 'ranged',
-      cost: 75, trainMs: 2000, pop: 3, hp: 69, speed: 65, size: 'small',
+      cost: 75, trainMs: 2000, pop: 3, hp: 73, speed: 65, size: 'small',
       tags: ['light', 'bio', 'ranged', 'ground'],
       attacks: [
         {
