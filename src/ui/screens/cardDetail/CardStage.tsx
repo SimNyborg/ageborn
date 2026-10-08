@@ -134,7 +134,8 @@ export function CardStage(p: CardStageProps) {
         <StageArt card={tile.id} glyph={p.glyph} skin={tile.skin} silhouette={!p.owned} age={tile.age} {...(p.fortKind ? { fortKind: p.fortKind } : {})} />
       </div>
       <div class="cd-stage__card">
-        <CardTile card={{ ...tile, isNew: false }} size="lg" showCost showName={false} tip={false} />
+        {/* The big level beside the card is the one readout (owner 2026-10-07: no duplicate copy). */}
+        <CardTile card={{ ...tile, isNew: false }} size="lg" showCost showName={false} tip={false} hideLevel={showLevel} />
         {!p.owned ? (
           <span class="cd-stage__lock">
             <LockIcon size={28} />

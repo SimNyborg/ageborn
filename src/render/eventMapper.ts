@@ -54,6 +54,10 @@ export const ANTI_HEAVY_CRACK_BP = 25000;
 const SLOW_MARK_RENEW_TICKS = 10;
 /** The Brace plant replays at most every 1.2 s per unit. */
 const BRACE_GAP_TICKS = 24;
+/** A silent healer's heal gesture (its attack clip, 0.8 s) starts at most every 1.2 s, not every 0.5 s pulse. */
+export const HEAL_GESTURE_GAP_TICKS = 24;
+/** Where the heal gesture's impact frame lands (about the Repair Drone sheet's natural 0.29 s). */
+export const HEAL_GESTURE_IMPACT_MS = 300;
 /** Semitones per Last Base Standing escalation step (Siege I-III, Crumble I-II...): the horn climbs. */
 const ESCALATION_SEMITONES: readonly number[] = [0, 0, 2, 4, 7, 9, 12, 14];
 
@@ -236,6 +240,16 @@ export class EventMapper {
   private readonly slowMarks = new Map<number, number>();
   /** Per unit, the last Brace plant (ms of game time in ticks), so a Heavy's every hit does not replay it. */
   private readonly braced = new Map<number, number>();
+  /**
+   * Healer cards with no attack of their own (the Repair Drone) and their heal radius (lu): `healed`
+   * names only the healed unit, so the nearest such healer of that side in reach plays its attack clip
+   * as the heal gesture (`healGesture`).
+   */
+  private readonly silentHealerCards = new Map<CardId, number>();
+  /** Per silent healer, the tick its last heal gesture started. */
+  private readonly healGestureAt = new Map<number, number>();
+  /** The live units of the current `map` call, when the view passes them (the heal gesture looks for healers). */
+  private liveUnits: (() => Iterable<readonly [number, UnitInfo]>) | null = null;
   /** A destroyed base's end: the cheer and the stinger, played on the collapse's stinger beat. */
   private pendingEnd: { winner: Side | null; cue: 'stinger.victory' | 'stinger.defeat' | null } | null = null;
 
@@ -244,6 +258,10 @@ export class EventMapper {
     this.feel = o.feel;
     this.mySide = o.mySide;
     this.rng = o.rng;
+    for (const def of Object.values(o.content.units)) {
+      const heal = def.attacks.length === 0 ? def.abilities.find((ab) => ab.kind === 'heal') : undefined;
+      if (heal?.kind === 'heal') this.silentHealerCards.set(def.id, heal.radius);
+    }
   }
 
   /** True when the feel config has a rule for `key` (card-specific rules fall back to their kind's). */
@@ -251,12 +269,16 @@ export class EventMapper {
     return this.feel.events[key] !== undefined;
   }
 
-  /** Maps one tick's (or several ticks') events. `unit` looks up live units by id. */
-  map(events: readonly SimEvent[], unit: (id: number) => UnitInfo | undefined): ViewAction[] {
+  /**
+   * Maps one tick's (or several ticks') events. `unit` looks up live units by id; `units` (optional,
+   * called only when needed) lists them, for effects that look for a unit no event names.
+   */
+  map(events: readonly SimEvent[], unit: (id: number) => UnitInfo | undefined, units?: () => Iterable<readonly [number, UnitInfo]>): ViewAction[] {
     const out: ViewAction[] = [];
     const diedNow = new Set<number>();
     for (const ev of events) if (ev.e === 'died') diedNow.add(ev.id);
     this.areaShown = new Set();
+    this.liveUnits = units ?? null;
     for (const ev of events) {
       const from = out.length;
       this.one(ev, unit, diedNow, out);
@@ -268,6 +290,7 @@ export class EventMapper {
         }
       }
     }
+    this.liveUnits = null;
     return out;
   }
 
@@ -530,6 +553,7 @@ export class EventMapper {
       case 'healed': {
         this.rule('heal', { at: { k: 'unit', id: ev.id, part: 'head' }, follow: true }, out);
         out.push({ a: 'number', kind: 'heal', value: ev.amount / 100, at: { k: 'unit', id: ev.id, part: 'head' }, important: false, key: `h${ev.id}` });
+        this.healGesture(ev.id, unit, out);
         return;
       }
       case 'statusApplied': {
@@ -589,6 +613,7 @@ export class EventMapper {
       case 'died': {
         const def = C.units[ev.card];
         const at: Anchor = { k: 'unit', id: ev.id, part: 'hit' };
+        this.healGestureAt.delete(ev.id);
         out.push({ a: 'unitDie', id: ev.id });
         if (def?.fort) {
           this.fortFell(ev.id, ev.card, at, out);
@@ -1025,6 +1050,36 @@ export class EventMapper {
       this.rule(key, { at, ...(onTarget ? { follow: true } : {}), opts, ...units }, out);
     }
     if (this.has('power.cue')) this.rule('power.cue', { at: { k: 'base', side: ev.side, part: 'top' }, opts: { side: ev.side } }, out);
+  }
+
+  /**
+   * The heal gesture of a healer with no attack (docs/decisions.md, animation release check 2026-10-02:
+   * the Repair Drone never played its clips): the nearest one of the healed unit's side within its heal
+   * radius plays its attack clip, at most every `HEAL_GESTURE_GAP_TICKS`. Visual only; the sim's heal is
+   * unchanged.
+   */
+  private healGesture(healedId: number, unit: (id: number) => UnitInfo | undefined, out: ViewAction[]): void {
+    if (this.silentHealerCards.size === 0 || !this.liveUnits) return;
+    const target = unit(healedId);
+    if (!target) return;
+    let best: number | null = null;
+    let bestD = Infinity;
+    for (const [id, u] of this.liveUnits()) {
+      const radius = u.side === target.side ? this.silentHealerCards.get(u.card) : undefined;
+      if (radius === undefined) continue;
+      const d = Math.abs(u.x - target.x);
+      if (d <= radius && d < bestD) {
+        best = id;
+        bestD = d;
+      }
+    }
+    if (best === null) return;
+    const last = this.healGestureAt.get(best);
+    if (last !== undefined && this.tick - last < HEAL_GESTURE_GAP_TICKS) return;
+    if (this.healGestureAt.size > 256) this.healGestureAt.clear();
+    this.healGestureAt.set(best, this.tick);
+    // the clip's own beat (the drone's emitter flares 0.29 s in): the view holds it to the impact as for any attack
+    out.push({ a: 'unitClip', id: best, clip: 'attack', impactAtMs: HEAL_GESTURE_IMPACT_MS });
   }
 
   /** Size and timing options for an ability's effect (the art sizes rings by `radius`). */

@@ -680,3 +680,51 @@ describe('A13 sound priority', () => {
     expect(pick(later, 'sound').length).toBeGreaterThan(0);
   });
 });
+
+describe('event mapper: the heal gesture of a healer with no attack (Repair Drone)', () => {
+  const HEAL_UNITS: Record<number, UnitInfo> = {
+    10: { side: 0, card: 'repair_drone', x: 400 },
+    11: { side: 0, card: 'footman', x: 520 },
+    12: { side: 0, card: 'footman', x: 700 },
+    13: { side: 1, card: 'footman', x: 450 },
+    14: { side: 0, card: 'repair_drone', x: 600 },
+  };
+  const at = (m: EventMapper, tick: number, events: SimEvent[], live: number[]): ViewAction[] => {
+    m.tick = tick;
+    const units = live.map((id) => [id, HEAL_UNITS[id]!] as const);
+    return m.map(events, (id) => HEAL_UNITS[id], () => units);
+  };
+  const healed = (id: number): SimEvent => ev('healed', { id, amount: 5000 });
+  const clips = (out: ViewAction[]) => pick(out, 'unitClip').filter((c) => c.clip === 'attack');
+  const fresh = () => new EventMapper({ content, feel: defaultFeelConfig, mySide: 0, rng: mulberry32(1) });
+  const gesture = (id: number) => [{ a: 'unitClip', id, clip: 'attack', impactAtMs: 300 }];
+
+  it('the drone has no attack of its own, so only its heals can start its clip', () => {
+    expect(content.units['repair_drone']?.attacks).toEqual([]);
+    expect(content.units['repair_drone']?.abilities.some((a) => a.kind === 'heal')).toBe(true);
+  });
+
+  it('a heal within the radius plays the nearest same-side drone attack clip, throttled to one per 1.2 s', () => {
+    const m = fresh();
+    expect(clips(at(m, 10, [healed(11)], [10, 11]))).toEqual(gesture(10));
+    // the next 0.5 s pulse falls inside the gap: no restart
+    expect(clips(at(m, 20, [healed(11)], [10, 11]))).toEqual([]);
+    expect(clips(at(m, 34, [healed(11)], [10, 11]))).toEqual(gesture(10));
+  });
+
+  it('ignores heals out of range or on the other side, and starts fresh after a drone dies', () => {
+    const m = fresh();
+    // 300 lu away (radius 160) and an enemy unit: no gesture
+    expect(clips(at(m, 10, [healed(12)], [10, 12, 13]))).toEqual([]);
+    expect(clips(at(m, 40, [healed(13)], [10, 12, 13]))).toEqual([]);
+    expect(clips(at(m, 50, [healed(11)], [10, 11]))).toEqual(gesture(10));
+    at(m, 52, [ev('died', { id: 10, side: 0, card: 'repair_drone', killerId: 13, killerCard: 'footman', killerKind: 'unit', killerSide: 1, bountyGold: 0, bountyXp: 0, x: 400_000 })], [11]);
+    expect(clips(at(m, 60, [healed(11)], [11]))).toEqual([]);
+  });
+
+  it('with two drones in range the nearer one gestures; without the live list nothing plays', () => {
+    // footman at 520: drone 14 at 600 is 80 lu away, drone 10 at 400 is 120 lu away
+    expect(clips(at(fresh(), 10, [healed(11)], [10, 14, 11]))).toEqual(gesture(14));
+    expect(clips(fresh().map([healed(11)], (id) => HEAL_UNITS[id]))).toEqual([]);
+  });
+});

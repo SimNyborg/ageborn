@@ -1081,7 +1081,7 @@ export class BattleView {
     for (const ev of evs) this.watchEvent(ev);
     if (evs.length > 0) {
       this.mapper.tick = this.sim.state.tick;
-      const actions = this.mapper.map(evs, (id) => this.lookup(id));
+      const actions = this.mapper.map(evs, (id) => this.lookup(id), () => this.liveUnitInfos());
       for (const a of actions) this.exec(a);
     }
     // A13 `evolve_ready`: one soft chime when your Evolve becomes available (there is no sim event).
@@ -1528,6 +1528,11 @@ export class BattleView {
 
   private ageOf(side: Side): AgeId {
     return this.ages[this.sim.state.sides[side].ageIndex] ?? this.ages[0] ?? 'stone';
+  }
+
+  /** The live (not dying) units as the mapper sees them; the heal gesture looks for a healer near a healed unit. */
+  private *liveUnitInfos(): Generator<readonly [number, UnitInfo]> {
+    for (const [id, e] of this.units) if (!e.dying) yield [id, { side: e.side, card: e.card, x: e.x }];
   }
 
   private lookup(id: number): UnitInfo | undefined {
