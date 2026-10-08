@@ -1,0 +1,69 @@
+/* The victory moment's stage (owner request 2026-10-07; DESIGN A9 #7, ui-plan MR-129): a little framed
+   stage in the Result's left column, in place of the recap while it plays. This part loads with the
+   Result (the slot is eager), so the frame and its sky stand at full size from the first frame while
+   the scene's module (victory.css and the player) loads. The slot has its own reduced variant (the
+   storyboard), so it opts out of the theme's reduce-motion safety net (`ui-rm-own`); its frame only
+   fades, through the motion tokens. */
+
+.result-moment {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: var(--ui-r-lg);
+  border: 2px solid rgb(255 232 170 / 0.5);
+  box-shadow:
+    var(--ui-e2),
+    0 0 0 1px rgb(0 0 0 / 0.45);
+  cursor: pointer;
+  isolation: isolate;
+  animation: vm-in var(--ui-dur-medium) var(--ui-ease-enter) both;
+  -webkit-tap-highlight-color: transparent;
+}
+.result-moment--win {
+  background:
+    radial-gradient(60% 70% at 78% 12%, rgb(255 246 214 / 0.85), transparent 70%),
+    linear-gradient(180deg, #f39a52 0%, #ffc078 38%, #ffe0a6 70%, #fff0cf 100%);
+}
+.result-moment--loss {
+  background:
+    radial-gradient(50% 60% at 80% 10%, rgb(226 234 248 / 0.55), transparent 70%),
+    linear-gradient(180deg, #4d5d82 0%, #7586aa 45%, #a8b6cf 78%, #c9d2e2 100%);
+}
+.result-moment--draw {
+  background:
+    radial-gradient(55% 65% at 78% 14%, rgb(255 250 228 / 0.7), transparent 70%),
+    linear-gradient(180deg, #78a3a4 0%, #a6c8c2 45%, #d3e5da 78%, #ebf3e8 100%);
+}
+/* Depth: a soft inner vignette over the scene. */
+.result-moment::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    inset 0 2px 0 rgb(255 255 255 / 0.35),
+    inset 0 0 26px rgb(60 30 10 / 0.28);
+}
+.result-moment.is-closing {
+  animation: vm-out var(--ui-dur-medium-out) var(--ui-ease-exit) both;
+  pointer-events: none;
+}
+@keyframes vm-in {
+  from {
+    opacity: 0;
+    transform: scale(var(--ui-screen-in));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes vm-out {
+  to {
+    opacity: 0;
+    transform: scale(var(--ui-screen-out));
+  }
+}

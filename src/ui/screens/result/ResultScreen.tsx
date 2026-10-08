@@ -11,7 +11,7 @@ import { ResultCrest, ResultHero } from './ResultCrest';
 import { ageNameKey, arenaNameKey, questNameKey, titleNameKey } from '@/content/keys';
 import type { Content, QuestDef } from '@/content/types';
 import type { AgeId, CapsuleTier, MatchResultInput, MatchStats, RewardStep } from '@/contracts';
-import { TICK_MS } from '@/core';
+import { fnv1a32, TICK_MS } from '@/core';
 import { goalMet, goalText, levelNameKey } from '../model/warPath';
 import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
@@ -62,8 +62,19 @@ import {
   type ResultStage,
 } from '../model/result';
 import { useMatchStarter } from '../shared/MatchStarter';
+import { generalLook, resolveLook } from '../../components/Avatar';
+import { hudTeamColors } from '../../hud/model';
+import { MomentSlot } from './victory/MomentSlot';
+import { lastMove, momentFlags, momentPreview, moveById, pickMove, type VictoryMoveDef } from './victory/moves';
 
 const BANNER_KEYS = { win: 'ui.result.victory', loss: 'ui.result.defeat', draw: 'ui.result.draw' } as const;
+
+/**
+ * The victory moment of each Result (owner request 2026-10-07, MR-129): picked once per match (a
+ * re-opened Result shows the same move) and played once (a return from Card detail does not replay it).
+ */
+const MOMENT_OF = new WeakMap<object, VictoryMoveDef | null>();
+const MOMENT_PLAYED = new WeakSet<object>();
 
 /**
  * The War Path level badge on the Result (4.9, 2.7 "a star stamps onto the level badge"): the level's
@@ -684,6 +695,39 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
   // A Retreat gives no rewards (A6.3, owner decision 2026-10-03); the Rewards column says so plainly (A15).
   const retreated = info.input.outcome.reason === 'retreat' && kind === 'loss';
 
+  // The victory moment (owner request 2026-10-07, MR-129): your General beats the opponent's (a win), takes
+  // a gentle pie or rain cloud (a loss) or shrugs (a draw). The move comes from the match seed and never
+  // repeats the previous match's move; a Retreat has none. It plays in the left column while the rewards
+  // stage in on the right, then the recap comes back.
+  const preview = momentPreview.value;
+  const moment = useMemo((): VictoryMoveDef | null => {
+    if (preview) return moveById(preview.move) ?? null;
+    if (retreated) return null;
+    if (MOMENT_OF.has(info)) return MOMENT_OF.get(info) ?? null;
+    const m = pickMove(kind, opp.seed, lastMove(save.peek().flags));
+    MOMENT_OF.set(info, m);
+    return m;
+  }, [info, preview]);
+  const [momentOn, setMomentOn] = useState(() => moment !== null && !MOMENT_PLAYED.has(info));
+  const [celebrated, setCelebrated] = useState(() => !momentOn);
+  useEffect(() => {
+    if (moment && !preview) services.setUiFlags(momentFlags(moment.id));
+  }, [moment]);
+  const looks = useMemo(
+    () => ({
+      me: resolveLook(save.peek().profile.avatar),
+      foe: oppOnline ? resolveLook(oppOnline.avatar) : generalLook(opp.generalId, fnv1a32(`${opp.generalId}|${opp.displayName}`)),
+    }),
+    [info],
+  );
+  const endMoment = (): void => {
+    MOMENT_PLAYED.add(info);
+    setMomentOn(false);
+    setCelebrated(true);
+  };
+  const settings = save.value.settings;
+  const foeName = oppOnline ? oppOnline.name : withoutAiPrefix(opponentName(opp, content, t));
+
   useEffect(() => {
     if (shown >= stages.length) return;
     timer.current = setTimeout(() => setShown((n) => Math.min(stages.length, n + 1)), shown === 0 ? REWARD_STEP_MS + 250 : REWARD_STEP_MS);
@@ -811,7 +855,28 @@ export function ResultScreen(p: { route: RouteOf<'result'> }) {
     <ResultLayout
       kind={kind}
       title={t(BANNER_KEYS[kind])}
-      hero={<ResultHero spec={save.value.profile.avatar} kind={kind} reduce={reduce} />}
+      hero={<ResultHero key={momentOn ? 'wait' : 'show'} spec={save.value.profile.avatar} kind={kind} reduce={reduce || MOMENT_PLAYED.has(info)} waiting={momentOn} />}
+      confetti={celebrated}
+      revealed={!momentOn && MOMENT_PLAYED.has(info)}
+      moment={
+        momentOn && moment ? (
+          <MomentSlot
+            move={moment.id}
+            kind={moment.kind}
+            seed={opp.seed}
+            me={looks.me}
+            foe={looks.foe}
+            team={hudTeamColors(settings.teamPreset, 0)}
+            hitstop={settings.hitstop}
+            shake={settings.shake}
+            lite={settings.graphics === 'lite'}
+            label={t(moment.lineKey, { foe: foeName })}
+            {...(preview?.hold ? { hold: true } : {})}
+            onCelebrate={() => setCelebrated(true)}
+            onDone={endMoment}
+          />
+        ) : null
+      }
       badge={pathLevel ? <LevelBadge level={pathLevel} rewards={info.rewards} stats={stats} won={kind === 'win'} difficulty={info.input.warPath?.difficulty ?? 'normal'} /> : null}
       vs={
         <>
@@ -1006,6 +1071,12 @@ export function ResultLayout(p: {
   badge?: ComponentChildren;
   /** Your General reacting (AUDIT #11), right of the banner. */
   hero?: ComponentChildren;
+  /** The victory moment's stage (MR-129): it stands in for the badge and the recap while it plays. */
+  moment?: ComponentChildren;
+  /** The recap and badge rise back in after the moment. */
+  revealed?: boolean;
+  /** A win's confetti (default on; the moment starts it on its celebration beat). */
+  confetti?: boolean;
 }) {
   return (
     <section
@@ -1017,9 +1088,9 @@ export function ResultLayout(p: {
       onClick={p.onTap}
     >
       <div class="result__rays" aria-hidden="true" />
-      {p.kind === 'win' ? <Confetti /> : null}
+      {p.kind === 'win' && p.confetti !== false ? <Confetti /> : null}
       <div class="result__body">
-        <div class="result__left">
+        <div class={`result__left${p.moment ? ' has-moment' : ''}${p.revealed ? ' is-revealed' : ''}`}>
           <header class={`result__banner${p.hero ? ' has-hero' : ''}`}>
             <span class="result__bannerIcon">
               <ResultCrest kind={p.kind} />
@@ -1032,6 +1103,7 @@ export function ResultLayout(p: {
             </span>
             {p.hero ?? null}
           </header>
+          {p.moment ?? null}
           {p.badge}
           {p.recap}
         </div>

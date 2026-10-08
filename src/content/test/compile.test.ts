@@ -51,8 +51,9 @@ describe('contentHash (B4, B3 replays)', () => {
     // The fixture never changes, so this value stays fixed even after a balance change updates the
     // snapshot above. It changes only if the hash algorithm or the hashed slice changes, which
     // invalidates every golden replay.
-    // Re-baselined deliberately with the SIM_VERSION 5.0.0 golden re-record (the fixture gained forts).
-    const FIXTURE_HASH = '91261668';
+    // Re-baselined deliberately with the SIM_VERSION 5.0.0 golden re-record (the fixture gained forts), and
+    // again with the SIM_VERSION 8.0.0 re-record (the fixture gained `economy.formation`, A2.7 Ranks).
+    const FIXTURE_HASH = 'c00a0e81';
     const fixture = compileContent({ raw: fixtureRaw, meta: metaTables, skins: skinList, counters: counterFile });
     expect(fixture.hash).toBe(FIXTURE_HASH);
   });

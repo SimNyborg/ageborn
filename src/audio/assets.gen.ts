@@ -35,7 +35,7 @@ export interface MusicFile {
   alt?: string;
 }
 
-export const SFX_BYTES = 3599862;
+export const SFX_BYTES = 3667900;
 export const MUSIC_BYTES = 6730878;
 
 export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
@@ -44,7 +44,7 @@ export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
   stone: { src: "audio/sfx/stone.9bce7610.ogg", bytes: 204254, seconds: 40.759, alt: "audio/sfx/stone.32e7e80b.m4a", sync: 0.02031 },
   bronze: { src: "audio/sfx/bronze.07809bb2.ogg", bytes: 241403, seconds: 48.464, alt: "audio/sfx/bronze.c620a791.m4a", sync: 0.02031 },
   medieval: { src: "audio/sfx/medieval.c5faa6d4.ogg", bytes: 239381, seconds: 47.036, alt: "audio/sfx/medieval.2ad20c60.m4a", sync: 0.02031 },
-  match: { src: "audio/sfx/match.573dab60.ogg", bytes: 731992, seconds: 144.382, alt: "audio/sfx/match.36e6f51d.m4a", sync: 0.02031 },
+  match: { src: "audio/sfx/match.16fce348.ogg", bytes: 800030, seconds: 157.738, alt: "audio/sfx/match.3a2e3d25.m4a", sync: 0.02031 },
   gunpowder: { src: "audio/sfx/gunpowder.b2f24923.ogg", bytes: 313040, seconds: 61.952, alt: "audio/sfx/gunpowder.d06c4e59.m4a", sync: 0.02031 },
   industrial: { src: "audio/sfx/industrial.2881b0b2.ogg", bytes: 324773, seconds: 63.957, alt: "audio/sfx/industrial.b67221b7.m4a", sync: 0.02031 },
   modern: { src: "audio/sfx/modern.3beebedb.ogg", bytes: 275484, seconds: 54.899, alt: "audio/sfx/modern.9f8442bc.m4a", sync: 0.02031 },
@@ -246,6 +246,23 @@ export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
   thunder: { sheet: "match", variants: [[131.282, 3.10329], [134.43529, 3.0614], [137.54669, 3.05973]] },
   escalate_horn: { sheet: "match", variants: [[140.65642, 1.5725]] },
   crumble_pulse: { sheet: "match", variants: [[142.27892, 0.699], [143.02792, 0.69425], [143.77217, 0.56029]] },
+  moment_swish: { sheet: "match", variants: [[144.38246, 0.19027]] },
+  moment_bonk: { sheet: "match", variants: [[144.62273, 0.7]] },
+  moment_dizzy: { sheet: "match", variants: [[145.37273, 0.85]] },
+  moment_splat: { sheet: "match", variants: [[146.27273, 0.5]] },
+  moment_tar: { sheet: "match", variants: [[146.82273, 0.62]] },
+  moment_poof: { sheet: "match", variants: [[147.49273, 0.4771]] },
+  moment_cluck: { sheet: "match", variants: [[148.01983, 0.58]] },
+  moment_clank: { sheet: "match", variants: [[148.64983, 0.6]] },
+  moment_fuse: { sheet: "match", variants: [[149.29983, 0.59998]] },
+  moment_boom: { sheet: "match", variants: [[149.94981, 0.9]] },
+  moment_whistle: { sheet: "match", variants: [[150.89981, 0.62]] },
+  moment_twinkle: { sheet: "match", variants: [[151.56981, 0.75]] },
+  moment_scuffle: { sheet: "match", variants: [[152.36981, 1.0]] },
+  moment_tada: { sheet: "match", variants: [[153.41981, 0.9]] },
+  moment_wahwah: { sheet: "match", variants: [[154.36981, 1.72]] },
+  moment_wind: { sheet: "match", variants: [[156.13981, 0.9]] },
+  moment_shrug: { sheet: "match", variants: [[157.08981, 0.59833]] },
   shot_musket: { sheet: "gunpowder", variants: [[0.15, 0.74296], [0.94296, 0.71083], [1.70379, 0.71544]] },
   shot_lob: { sheet: "gunpowder", variants: [[2.46923, 0.25], [2.76923, 0.25], [3.06923, 0.25]] },
   shot_cannon: { sheet: "gunpowder", variants: [[3.36923, 1.29579], [4.71502, 1.41375], [6.17877, 1.36598]] },

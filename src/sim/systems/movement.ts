@@ -12,6 +12,14 @@
  * - Symmetric resolution: both sides' moves come from pre-move positions; when two facing units both
  *   advance, each gets at most floor(gap / 2) of the gap.
  * - followSupport units stay 60 lu behind the frontmost friendly non-follower ground unit (p ≤ 200 alone).
+ * - Ranks (formation, SIM_VERSION 8.0.0; `economy.formation`, off when absent): a side's melee front is its
+ *   frontmost ground unit whose first attack reaches < 100 lu (`RANK_FRONT`). A ranked unit (`RANK_RANKED`:
+ *   a ranged ground unit, see `rankUnit` in rules.ts) keeps its place, a share of its range (± a variation
+ *   fixed by its id) behind that front: it never advances past the place (a cap: it never walks back for
+ *   it), and when it has a target in range but stands more than `closeUpLu` behind the place it steps up
+ *   between shots (never during a windup, and only toward a target ahead). Melee walks through its own
+ *   ranks. In Hold a ranked unit forms up its gap behind the flag. Off in Fall back and for a side with no
+ *   melee on the lane (an all-ranged army plays as before). One pass per side: O(n) on top of the file.
  * - Stance (A18.4.2): Hold keeps units at the side's Hold flag (default 320, [320, 800]): units beyond it
  *   without a target walk back at 70% speed; units behind it do not pass it. Fall back walks units with
  *   no target back to p = 200 at full speed and holds them there. Engaged units keep fighting.
@@ -26,12 +34,13 @@
  * formation (front rank, spacing, followSupport, the open gate test, the siege crowd). Levies always
  * march: they Charge whatever the stance (A16.14.3).
  */
+import type { Side } from '@/contracts';
 import { BP } from '@/core';
 import { capSum, isLeaping, isStunned, statusBp } from '../damage';
-import { clampToLane, edgeDist, isAheadOrLevel, pOf, xOf } from '../geometry';
-import type { UnitRules } from '../rules';
-import { LANE, type Ctx, type UnitRt } from '../state';
-import { alive, unitRules } from '../units';
+import { clampToLane, distToEnemyGate, edgeDist, isAheadOrLevel, pOf, xOf } from '../geometry';
+import { RANK_FRONT, RANK_RANKED, type UnitRules } from '../rules';
+import { BASE_TARGET, LANE, type AttackRt, type Ctx, type UnitRt } from '../state';
+import { alive, findUnit, unitRules } from '../units';
 import { targetInRange } from './targeting';
 
 interface Mover {
@@ -41,6 +50,10 @@ interface Mover {
   want: number;
   newP: number;
   engaged: boolean;
+  /** Ranks: a ranked unit's gap behind its melee front this tick (mlu), −1 when the ranks do not apply to it. */
+  gap: number;
+  /** Ranks: a ranked unit stepping up to its place between shots (it has a target in range). */
+  firing: boolean;
 }
 
 export function movementSystem(ctx: Ctx): void {
@@ -55,26 +68,27 @@ export function movementSystem(ctx: Ctx): void {
     const r = unitRules(ctx, u);
     if (u.fort) {
       // Completed forts block the enemy; scaffolds do not. Forts never move.
-      if (u.fort.done) forts[u.side].push({ u, r, p: pOf(u.x, u.side), want: 0, newP: pOf(u.x, u.side), engaged: false });
+      if (u.fort.done) forts[u.side].push({ u, r, p: pOf(u.x, u.side), want: 0, newP: pOf(u.x, u.side), engaged: false, gap: -1, firing: false });
       continue;
     }
     if (isLeaping(u)) {
       stepLeap(ctx, u, r);
       continue;
     }
-    const m: Mover = { u, r, p: pOf(u.x, u.side), want: 0, newP: 0, engaged: false };
+    const m: Mover = { u, r, p: pOf(u.x, u.side), want: 0, newP: 0, engaged: false, gap: -1, firing: false };
     all.push(m);
     if (u.air) air.push(m);
     else ground[u.side].push(m);
   }
   ground[0].sort(frontFirst);
   ground[1].sort(frontFirst);
-  for (const m of all) computeWant(ctx, m, ground[m.u.side]);
+  const fronts: [number, number] = [meleeFront(ctx, ground[0], 0), meleeFront(ctx, ground[1], 1)];
+  for (const m of all) computeWant(ctx, m, ground[m.u.side], fronts[m.u.side]);
   const open = openGates(ctx, ground);
   for (const side of [0, 1] as const) {
     const foe = side === 0 ? 1 : 0;
     const blockers = forts[foe].length > 0 ? [...ground[foe], ...forts[foe]] : ground[foe];
-    resolveGround(ctx, ground[side], blockers, open[foe]);
+    resolveGround(ctx, ground[side], blockers, open[foe], fronts[side]);
   }
   for (const m of air) m.newP = m.p + m.want;
   for (const m of all) {
@@ -85,8 +99,63 @@ export function movementSystem(ctx: Ctx): void {
     const moved = p - m.p;
     m.u.moved = moved;
     if (moved !== 0) m.u.x = xOf(p, m.u.side);
-    m.u.mode = m.engaged ? 'attack' : moved < 0 ? 'retreat' : moved > 0 ? 'walk' : 'hold';
+    m.u.mode = m.engaged ? 'attack' : moved < 0 ? 'retreat' : moved > 0 ? 'walk' : m.firing ? 'attack' : 'hold';
   }
+}
+
+/**
+ * Ranks (A2.7): the pre-move p of a side's melee front, its frontmost `RANK_FRONT` ground unit (the list is
+ * sorted front first), or −1 when the ranks are off for the side: no `economy.formation`, Fall back (its
+ * retreat is unchanged, A18.4.2), or no melee unit on the lane (an all-ranged army plays as before).
+ */
+function meleeFront(ctx: Ctx, ground: readonly Mover[], side: Side): number {
+  FRONT_WALKING[side] = false;
+  if (!ctx.econ.formation || ctx.s.sides[side].stance === 'fallback') return -1;
+  for (const m of ground)
+    if (m.r.rank === RANK_FRONT) {
+      FRONT_WALKING[side] = m.u.mode === 'walk';
+      return m.p;
+    }
+  return -1;
+}
+/** TEMP EXPERIMENT (remove). */
+const FRONT_WALKING: boolean[] = [false, false];
+
+/**
+ * A ranked unit's gap behind its melee front (mlu): its card's place (`UnitRules.rankGap`, a share of its
+ * range) ± up to `formation.jitterBp` of it, fixed by the unit's id so a line never looks drilled.
+ */
+function rankGap(ctx: Ctx, u: UnitRt, r: UnitRules): number {
+  const j = ctx.econ.formation?.jitterBp ?? 0;
+  const g = r.rankGap;
+  if (j <= 0 || g <= 0) return g;
+  const bp = (mix32(u.id) % (j * 2 + 1)) - j;
+  const out = g + Math.trunc((Math.trunc(g / 100) * bp) / 100);
+  return out > 0 ? out : 0;
+}
+
+/** A 32-bit integer mix of a unit id (deterministic, `Math.imul` only, B3), as an unsigned value. */
+function mix32(n: number): number {
+  let h = Math.imul(n ^ 0x2545f491, 0x9e3779b1);
+  h ^= h >>> 15;
+  h = Math.imul(h, 0x85ebca77);
+  h ^= h >>> 13;
+  return h >>> 0;
+}
+
+/**
+ * How far a closing ranked unit may step toward attack 0's target (mlu): the distance to it minus the
+ * stand-off (`formation.standOffBp` of the attack's range); 0 when the target is behind the unit (it never
+ * walks away from a foe behind it) or already within the stand-off.
+ */
+function standOffRoom(ctx: Ctx, u: UnitRt, r: UnitRules, st: AttackRt): number {
+  const a = r.attacks[0];
+  if (!a) return 0;
+  const off = Math.trunc((Math.trunc(a.range / 100) * (ctx.econ.formation?.standOffBp ?? 0)) / 100);
+  if (st.targetId === BASE_TARGET) return distToEnemyGate(u.side, u.x, r.half) - off;
+  const t = findUnit(ctx, st.targetId);
+  if (t === undefined || !isAheadOrLevel(u.side, u.x, t.x)) return 0;
+  return edgeDist(u.x, r.half, t.x, unitRules(ctx, t).half) - off;
 }
 
 function frontFirst(a: Mover, b: Mover): number {
@@ -142,7 +211,7 @@ export function unitSpeed(ctx: Ctx, u: UnitRt, r: UnitRules): number {
   return v;
 }
 
-function computeWant(ctx: Ctx, m: Mover, allies: readonly Mover[]): void {
+function computeWant(ctx: Ctx, m: Mover, allies: readonly Mover[], meleeP: number): void {
   const { u, r } = m;
   m.want = 0;
   m.newP = m.p;
@@ -153,18 +222,39 @@ function computeWant(ctx: Ctx, m: Mover, allies: readonly Mover[]): void {
     m.want = speed;
     return;
   }
+  const side = ctx.s.sides[u.side];
+  const hold = side.stance === 'hold';
+  // Ranks (A2.7): a ranked unit's gap and place behind its side's melee front (in Hold, behind the flag too).
+  if (meleeP >= 0 && r.rank === RANK_RANKED) m.gap = rankGap(ctx, u, r);
   const st0 = u.attacks[0];
   if (st0 && (st0.impactTick !== 0 || targetInRange(ctx, u, r, 0))) {
-    m.engaged = true;
-    return;
+    // A ranked unit firing from well behind its place steps up between shots: once it stands more than
+    // `closeUp` behind it (or it was already walking up last tick) it walks on to its place. Never during a
+    // windup, and only toward a target ahead of it (it never walks away from a foe behind it).
+    const closeUp = e.formation ? e.formation.closeUp : 0;
+    const behind = m.gap < 0 ? 0 : (hold && side.holdP < meleeP ? side.holdP : meleeP) - m.gap - m.p;
+    const closing = closeUp > 0 && behind > 0 && (behind > closeUp || u.mode === 'walk');
+    // TEMP EXPERIMENT (remove): FORM_CLOSE=bot|proxy limits the close-up to one kind of seat
+    const only = (globalThis as unknown as { process?: { env: Record<string, string | undefined> } }).process?.env['FORM_CLOSE'];
+    const variant = (globalThis as unknown as { process?: { env: Record<string, string | undefined> } }).process?.env['FORM_VARIANT'];
+    const seatOk =
+      (only === undefined || (only === 'bot') === ctx.cfg.sides[u.side].isBot) &&
+      (variant === undefined || (side.stance === 'charge' && (variant === 'charge' || FRONT_WALKING[u.side] === true)));
+    const room = closing && seatOk && st0.impactTick === 0 ? standOffRoom(ctx, u, r, st0) : 0;
+    if (room <= 0) {
+      m.engaged = true;
+      return;
+    }
+    m.firing = true;
+    m.want = room;
   }
-  let want = speed;
-  const side = ctx.s.sides[u.side];
+  let want = m.firing && m.want < speed ? m.want : speed;
   // Levies always march (A16.14.3): they ignore Hold, Fall back and the Hold flag.
   if (side.stance !== 'charge' && !r.levy) {
-    // A18.4.2: Hold at the side's flag (walk back at 70% speed); Fall back to p = 200 at full speed.
-    const hold = side.stance === 'hold';
-    const line = hold ? side.holdP : e.fallbackP;
+    // A18.4.2: Hold at the side's flag (walk back at 70% speed); Fall back to p = 200 at full speed. A ranked
+    // unit holds its own gap behind the flag (A2.7 Ranks).
+    let line = hold ? side.holdP : e.fallbackP;
+    if (hold && m.gap > 0) line = line > m.gap ? line - m.gap : 0;
     if (m.p > line) {
       const back = hold ? Math.trunc((speed * e.holdRetreatSpeedBp) / BP) : speed;
       want = -(back < m.p - line ? back : m.p - line);
@@ -185,56 +275,77 @@ function computeWant(ctx: Ctx, m: Mover, allies: readonly Mover[]): void {
   m.want = want;
 }
 
-/** Plans the ground moves of one side against the (pre-move) enemy ground units. */
-function resolveGround(ctx: Ctx, mine: Mover[], foes: readonly Mover[], foeGateOpen: boolean): void {
+/**
+ * Plans the ground moves of one side against the (pre-move) enemy ground units. `meleeP` is the side's
+ * pre-move melee front for the ranks (−1: off); once the front unit is planned its new position is used.
+ */
+function resolveGround(ctx: Ctx, mine: Mover[], foes: readonly Mover[], foeGateOpen: boolean, meleeP: number): void {
   const spacingBp = ctx.econ.spacingBp;
   const siegeCrowd = ctx.s.phase === 'siege' || foeGateOpen ? ctx.econ.siege.gateCrowd : 0;
+  const ranks = meleeP >= 0;
+  let front = -1;
   for (let i = 0; i < mine.length; i += 1) {
     const m = mine[i] as Mover;
-    const { u, r } = m;
-    if (m.want === 0) {
-      m.newP = m.p;
-      continue;
-    }
-    if (m.want < 0) {
-      // Retreat: never back into an enemy that is behind.
-      let gap = m.p;
-      for (const f of foes) {
-        if (isAheadOrLevel(u.side, u.x, f.u.x)) continue;
-        const d = edgeDist(u.x, r.half, f.u.x, f.r.half);
-        if (d < gap) gap = d;
-      }
-      m.newP = m.p + (m.want < -gap ? -gap : m.want);
-      continue;
-    }
-    // Enemy block: the nearest enemy ground unit ahead (or overlapping level), pre-move.
-    let limit = m.want;
-    for (const f of foes) {
-      if (!isAheadOrLevel(u.side, u.x, f.u.x)) continue;
-      const gap = edgeDist(u.x, r.half, f.u.x, f.r.half);
-      const allowed = f.want > 0 ? gap >> 1 : gap;
-      if (allowed < limit) limit = allowed;
-    }
-    // Ally caps, front to back with the planned positions of the allies ahead.
-    let rank = 0;
-    let nearest: Mover | null = null;
-    for (let j = 0; j < i; j += 1) {
-      const a = mine[j] as Mover;
-      const moving = a.newP !== a.p;
-      if (moving || a.r.maxRange <= r.maxRange) {
-        rank += 1;
-        nearest = a;
-      }
-    }
-    if (nearest) {
-      // The first `frontWidth` units stand side by side; in Siege the file also closes up at the enemy gate.
-      const crowd = siegeCrowd > 0 && nearest.newP + nearest.r.half >= LANE - siegeCrowd;
-      const cap = rank < ctx.econ.frontWidth || crowd ? nearest.newP : nearest.newP - Math.trunc(((r.width + nearest.r.width) * spacingBp) / BP);
-      const room = cap - m.p;
-      if (room < limit) limit = room;
-    }
-    m.newP = m.p + (limit > 0 ? limit : 0);
+    planGround(ctx, mine, i, foes, siegeCrowd, spacingBp, ranks, front >= 0 ? front : meleeP);
+    if (front < 0 && m.r.rank === RANK_FRONT) front = m.newP;
   }
+}
+
+/** One unit's planned move (see `resolveGround`); `front` is the side's melee front for the ranks. */
+function planGround(ctx: Ctx, mine: readonly Mover[], i: number, foes: readonly Mover[], siegeCrowd: number, spacingBp: number, ranks: boolean, front: number): void {
+  const m = mine[i] as Mover;
+  const { u, r } = m;
+  if (m.want === 0) {
+    m.newP = m.p;
+    return;
+  }
+  if (m.want < 0) {
+    // Retreat: never back into an enemy that is behind.
+    let gap = m.p;
+    for (const f of foes) {
+      if (isAheadOrLevel(u.side, u.x, f.u.x)) continue;
+      const d = edgeDist(u.x, r.half, f.u.x, f.r.half);
+      if (d < gap) gap = d;
+    }
+    m.newP = m.p + (m.want < -gap ? -gap : m.want);
+    return;
+  }
+  // Enemy block: the nearest enemy ground unit ahead (or overlapping level), pre-move.
+  let limit = m.want;
+  for (const f of foes) {
+    if (!isAheadOrLevel(u.side, u.x, f.u.x)) continue;
+    const gap = edgeDist(u.x, r.half, f.u.x, f.r.half);
+    const allowed = f.want > 0 ? gap >> 1 : gap;
+    if (allowed < limit) limit = allowed;
+  }
+  // Ally caps, front to back with the planned positions of the allies ahead. Ranks (A2.7): melee walks
+  // through its own ranks to reach the front, so reinforcements never queue behind the archers.
+  const throughRanks = ranks && r.rank === RANK_FRONT;
+  let rank = 0;
+  let nearest: Mover | null = null;
+  for (let j = 0; j < i; j += 1) {
+    const a = mine[j] as Mover;
+    if (throughRanks && a.r.rank === RANK_RANKED) continue;
+    const moving = a.newP !== a.p;
+    if (moving || a.r.maxRange <= r.maxRange) {
+      rank += 1;
+      nearest = a;
+    }
+  }
+  if (nearest) {
+    // The first `frontWidth` units stand side by side; in Siege the file also closes up at the enemy gate.
+    const crowd = siegeCrowd > 0 && nearest.newP + nearest.r.half >= LANE - siegeCrowd;
+    const cap = rank < ctx.econ.frontWidth || crowd ? nearest.newP : nearest.newP - Math.trunc(((r.width + nearest.r.width) * spacingBp) / BP);
+    const room = cap - m.p;
+    if (room < limit) limit = room;
+  }
+  // Ranks (A2.7): a ranked unit never advances past its place behind the melee front (a cap only: it never
+  // walks back for it).
+  if (m.gap >= 0) {
+    const room = front - m.gap - m.p;
+    if (room < limit) limit = room;
+  }
+  m.newP = m.p + (limit > 0 ? limit : 0);
 }
 
 /**

@@ -162,6 +162,21 @@ const FALLBACK_CAPPED: Partial<Record<Layer, Shape[]>> = {
   ],
 };
 
+/** A look with the first tint of every slot, for free shapes that use no tint. */
+const PLAIN_LOOK: ResolvedLook = { parts: {}, tints: { skin: 0, hair: 0, eyes: 0, cloth: 0 } };
+
+/**
+ * Free shapes (the Result's victory props, overlays and stage art) drawn with exactly the parts' own
+ * shading: the cel shadow band, the highlight sliver and the colour-matched outline. Tones resolve
+ * against `look`, so a hand takes the General's skin tone; ids carry the `§` placeholder like
+ * {@link avatarSvg}.
+ */
+export function shapesSvg(shapes: readonly Shape[], viewBox: string, look: ResolvedLook = PLAIN_LOOK, detail: 'low' | 'full' = 'full'): string {
+  const ctx: Ctx = { look, low: detail === 'low', defs: [], n: 0, faceClip: null };
+  const body = shapes.map((s) => shapeSvg(s, ctx)).join('');
+  return `<svg class="av-svg" viewBox="${viewBox}" width="100%" height="100%" aria-hidden="true" focusable="false"><defs>${ctx.defs.join('')}</defs>${body}</svg>`;
+}
+
 /** Writes the SVG for a look. Unknown part ids are skipped (a wearable whose art is still loading). */
 export function avatarSvg(look: ResolvedLook, lib: PartLibrary, o: RenderOptions): string {
   const ctx: Ctx = { look, low: o.detail === 'low', defs: [], n: 0, faceClip: null };

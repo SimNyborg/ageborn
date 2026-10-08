@@ -26,6 +26,7 @@ import { ScreenHost } from '@/ui/screens/ScreenHost';
 import { primeWarPathSeen } from '@/ui/screens/warPath/WarPathScreen';
 import { onlineMock, type OnlineMock } from '@/ui/screens/home/online';
 import { rankedPreview } from '@/ui/screens/home/ranked';
+import { momentPreview, VICTORY_MOVES, type VictoryMoveDef } from '@/ui/screens/result/victory/moves';
 import { shellTabs, TAB_ROOTS } from '@/ui/screens/warPath/shell';
 import type { SaveDoc, ShowcaseHandle, ShowcaseMount } from '@/contracts';
 import { setFortSlotPreview } from '@/ui/screens/model/plan';
@@ -175,6 +176,23 @@ const result = (r: ResultFixture): Variant => ({
   label: `Result: ${r}`,
   route: () => [{ id: 'home' }, { id: 'result', info: fixtureResult(content, r) }],
 });
+/**
+ * The Result's victory moment (owner request 2026-10-07, MR-129) with a chosen move, holding its last
+ * frame for screenshots (the frame sequences pause the Web Animations and step them).
+ */
+const moment = (m: VictoryMoveDef, fx: ResultFixture, suffix = ''): Variant => ({
+  id: `result-moment-${m.id}${suffix}`,
+  label: `Result moment: ${m.id}${suffix} (holds)`,
+  route: () => [{ id: 'home' }, { id: 'result', info: fixtureResult(content, fx) }],
+  prime: () => {
+    momentPreview.value = { move: m.id, hold: true };
+  },
+});
+const MOMENTS: Variant[] = [
+  ...VICTORY_MOVES.map((m) => moment(m, m.kind === 'win' ? 'player' : m.kind === 'loss' ? 'loss' : 'draw')),
+  // Against an AI General (Captain Kettle) instead of the ranked online player.
+  moment(VICTORY_MOVES[0]!, 'win', '-ai'),
+];
 const pause = (w: 'early' | 'late' | 'skirmish' | 'tutorial'): Variant => ({
   id: `pause-${w}`,
   label: `Pause: ${w}`,
@@ -302,6 +320,7 @@ const VARIANTS: Variant[] = [
   result('warPath'),
   result('warPathLoss'),
   result('retreat'),
+  ...MOMENTS,
   { id: 'warPlan', label: 'War Plan', route: () => [{ id: 'home' }, { id: 'warPlan' }] },
   { id: 'army', label: 'Army tab', tab: 'army', route: () => [{ id: 'warPlan' }] },
   { id: 'army-bronze', label: 'Army tab: Bronze', tab: 'army', route: () => [{ id: 'warPlan', age: 'bronze' }] },
@@ -430,6 +449,7 @@ export default function ScreensPage() {
     primeWarPathSeen(null);
     onlineMock.value = null;
     rankedPreview.value = null;
+    momentPreview.value = null;
     v.prime?.(initial);
     const save = signal(initial);
     const router = createRouter({ id: 'home' });

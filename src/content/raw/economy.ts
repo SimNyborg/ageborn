@@ -369,6 +369,11 @@ export const economy: EconomyRules = {
   // balance pass 2026-10-01; was 120): a side pushed back to its gate in the late game now bleeds, the
   // strongest single Bell lever measured (tier V Short 25 → 9%, with base HP ×0.6 and the power trim)
   gateFall: { lu: 300, hpBp: 10000 },
+  // A2.7 Ranks (owner request 2026-10-07: long range keeps a little behind the melee, naturally, not too far):
+  // a first attack under 100 lu is melee and forms the front; a ranged unit keeps 25% of its range behind it
+  // (a Long range unit or artillery, whose first attack has a minimum range, 40%), ± 15% by unit id, and
+  // steps up between shots once it stands 30 lu behind its place (SIM_VERSION 8.0.0, docs/decisions.md)
+  formation: { meleeRangeLu: 100, rangedGapBp: 2500, longGapBp: 4000, jitterBp: 1500, closeUpLu: 30 },
   // A17.2 unit walking speed: table speed ×1.25, applied once at compile time
   marchSpeedBp: 12500,
   // A2.7 / A16.4 L4: a three-wide front

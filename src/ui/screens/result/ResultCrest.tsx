@@ -65,15 +65,26 @@ export function ResultCrest(p: { kind: 'win' | 'loss' | 'draw' }) {
   );
 }
 
-/** Your General reacting to the result: neutral, then cheer, determined or wry on the banner's impact. */
-export function ResultHero(p: { spec: AvatarSpec; kind: 'win' | 'loss' | 'draw'; reduce: boolean }) {
+/**
+ * Your General reacting to the result: neutral, then cheer, determined or wry on the banner's impact.
+ * While the victory moment plays (MR-129) your General is on its stage, so this spot waits (its space
+ * kept, nothing shown) and pops in when the moment ends.
+ */
+export function ResultHero(p: { spec: AvatarSpec; kind: 'win' | 'loss' | 'draw'; reduce: boolean; waiting?: boolean }) {
   const mood = p.kind === 'win' ? 'cheer' : p.kind === 'loss' ? 'determined' : 'wry';
   const [on, setOn] = useState(p.reduce);
   useEffect(() => {
-    if (p.reduce) return undefined;
+    if (p.reduce || p.waiting) return undefined;
     const id = setTimeout(() => setOn(true), 520);
     return () => clearTimeout(id);
   }, []);
+  if (p.waiting) {
+    return (
+      <span class="result__hero is-waiting" aria-hidden="true">
+        <Avatar spec={p.spec} size={132} crop="bust" detail="low" />
+      </span>
+    );
+  }
   return (
     <span class="result__hero" data-testid="result-hero">
       <Avatar spec={p.spec} size={132} crop="bust" mood={on ? mood : 'neutral'} pop={on ? 1 : 0} />

@@ -1,0 +1,39 @@
+/* The victory moment's scene (owner request 2026-10-07; DESIGN A9 #7, ui-plan MR-129). It loads lazily
+   with the player; the stage's frame and sky are in slot.css (eager). Everything on the stage is the
+   scene's nested boxes, animated by the Web Animations the player builds (transform and opacity only).
+   Reduce motion: the player plays its storyboard. */
+
+.vm-host {
+  position: absolute;
+  inset: 0;
+}
+.vm-view {
+  position: absolute;
+}
+.vm-n {
+  position: absolute;
+  backface-visibility: hidden;
+}
+.vm-art {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.vm-art > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+/* The sun's rays turn slowly (ambient life; still under reduce motion). */
+.vm-turn > .vm-art {
+  animation: ui-spin 40s linear infinite;
+}
+.ui-root[data-reduce-motion='true'] .vm-turn > .vm-art {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .vm-turn > .vm-art {
+    animation: none;
+  }
+}

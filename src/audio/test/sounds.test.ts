@@ -128,6 +128,12 @@ const A13: Record<string, string[]> = {
     'base_doom_rumble', 'base_break_stone', 'base_break_iron', 'base_break_concrete', 'base_break_energy',
     'base_debris_stone', 'base_debris_iron', 'base_debris_concrete', 'base_debris_energy', 'base_settle_thud',
   ],
+  /** The Result's victory moments (owner request 2026-10-07, A9 #7): the cartoon slapstick of the stage. */
+  moment: [
+    'moment_swish', 'moment_bonk', 'moment_dizzy', 'moment_splat', 'moment_tar', 'moment_poof', 'moment_cluck', 'moment_clank',
+    'moment_fuse', 'moment_boom', 'moment_whistle', 'moment_twinkle', 'moment_scuffle', 'moment_tada', 'moment_wahwah',
+    'moment_wind', 'moment_shrug',
+  ],
 };
 const A13_IDS = Object.values(A13).flat();
 
@@ -145,7 +151,8 @@ describe('sound manifest (A13)', () => {
     // + the 18 of the Medieval wave + the 15 of the Gunpowder wave + the 18 of the Industrial wave + the 17 of the Modern wave
     // + the 19 of the Future wave + the 18 of the Cosmic wave
     // + the 4 of the rarity burst (2026-10-07) + the 10 of the base collapse (2026-10-08)
-    expect(A13_IDS).toHaveLength(377);
+    // + the 17 of the Result's victory moments (2026-10-08)
+    expect(A13_IDS).toHaveLength(394);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 

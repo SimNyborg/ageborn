@@ -62,17 +62,17 @@ describe('movement (A2.7)', () => {
     stun(sim, foe.id, 400);
     const pebbler = devSpawn(sim, 0, 'pebbler', { p: 300 });
     const bonker = devSpawn(sim, 0, 'bonker', { p: 250 });
-    stepN(sim, 40);
+    stepN(sim, 12);
     expect(unitOf(sim, pebbler.id)?.mode).toBe('attack');
     expect(pLu(sim, pebbler.id)).toBe(300);
     expect(pLu(sim, bonker.id)).toBeGreaterThan(300);
 
-    // A moving ally is never passed: the faster Bonker walks level with the Pebbler (front rank).
+    // A moving ally is never passed: the faster Bonker walks level with the slower Tuskback (front rank).
     const sim2 = arena();
-    const peb = devSpawn(sim2, 0, 'pebbler', { p: 100 });
+    const tusk = devSpawn(sim2, 0, 'tuskback', { p: 100 });
     const bonk = devSpawn(sim2, 0, 'bonker', { p: 90 });
     stepN(sim2, 60);
-    expect(pLu(sim2, bonk.id)).toBe(pLu(sim2, peb.id));
+    expect(pLu(sim2, bonk.id)).toBe(pLu(sim2, tusk.id));
 
     // Reach from the third position: a Spear Hunter queues behind two engaged Bonkers and still hits.
     const sim3 = arena();
@@ -175,5 +175,162 @@ describe('movement (A2.7)', () => {
     // The gyrocopter stops over the Tuskback to shoot it (range 150), the bomber flies on.
     expect(pLu(sim, bomber.id)).toBe(L - 40);
     expect(pLu(sim, gyro.id)).toBeGreaterThan(250);
+  });
+});
+
+describe('ranks (A2.7 formation, SIM_VERSION 8.0.0)', () => {
+  // The fixture's numbers: a ranged unit keeps 25% of its first attack's range behind its melee front, a
+  // unit whose first attack has a minimum range 40%, each ± 15% by unit id; it closes up past 30 lu.
+  const band = (rangeLu: number, shareBp: number): [number, number] => [(rangeLu * shareBp * 0.85) / 10000, (rangeLu * shareBp * 1.15) / 10000];
+  const PEBBLER = band(200, 2500); // 42.5-57.5 lu
+  const CANNON = band(280, 4000); // Bronze Cannon (minimum range 80): 95.2-128.8 lu
+  const within = (gap: number, [lo, hi]: [number, number]): void => {
+    expect(gap).toBeGreaterThanOrEqual(lo - 1e-9);
+    expect(gap).toBeLessThanOrEqual(hi + 1e-9);
+  };
+
+  it('a ranged unit ahead of its melee waits for it to pass, then follows at its place', () => {
+    const sim = arena();
+    const peb = devSpawn(sim, 0, 'pebbler', { p: 100 });
+    const tusk = devSpawn(sim, 0, 'tuskback', { p: 90 });
+    stepN(sim, 1);
+    // Held: its melee front is behind it (before the ranks it led the march and capped the Tuskback).
+    expect(pLu(sim, peb.id)).toBe(100);
+    expect(pLu(sim, tusk.id)).toBeGreaterThan(90);
+    stepN(sim, 120);
+    const gap = pLu(sim, tusk.id) - pLu(sim, peb.id);
+    within(gap, PEBBLER);
+    // The place is fixed by the unit's id: the same gap while they march on.
+    stepN(sim, 40);
+    expect(pLu(sim, tusk.id) - pLu(sim, peb.id)).toBeCloseTo(gap, 3);
+    expect(unitOf(sim, peb.id)?.mode).toBe('walk');
+  });
+
+  it('Long range keeps further back: a first attack with a minimum range takes the larger share', () => {
+    const sim = arena();
+    const front = devSpawn(sim, 0, 'tuskback', { p: 600 });
+    stun(sim, front.id, 2000);
+    const peb = devSpawn(sim, 0, 'pebbler', { p: 100 });
+    const cannon = devSpawn(sim, 0, 'bronze_cannon', { p: 60 });
+    stepN(sim, 300);
+    within(600 - pLu(sim, peb.id), PEBBLER);
+    within(600 - pLu(sim, cannon.id), CANNON);
+    expect(unitOf(sim, cannon.id)?.mode).toBe('hold');
+  });
+
+  it('firing from well behind its place, a ranged unit steps up between shots and keeps its rate of fire', () => {
+    const run = (stepUp: boolean) => {
+      const sim = arena();
+      const front = devSpawn(sim, 0, 'tuskback', { p: 600 });
+      stun(sim, front.id, 2000);
+      // An enemy blocked by the front: the Pebbler (edge distance 192) can shoot it from where it spawns.
+      const foe = devSpawn(sim, 1, 'tuskback', { p: L - 648 });
+      stun(sim, foe.id, 2000);
+      if (!stepUp) simCtx(sim).s.sides[0].stance = 'fallback';
+      const peb = devSpawn(sim, 0, 'pebbler', { p: 420 });
+      const shots = stepN(sim, 140).filter((e) => e.e === 'attackStarted' && e.id === peb.id).length;
+      return { p: pLu(sim, peb.id), shots };
+    };
+    const ranks = run(true);
+    // It rests at its place or up to the 30 lu close-up threshold short of it (it stops for each windup).
+    within(600 - ranks.p, [PEBBLER[0], PEBBLER[1] + 30]);
+    expect(ranks.p).toBeGreaterThan(500);
+    // The same shots as a Pebbler that never moves (Fall back keeps the old rule): it walks only between them.
+    const still = run(false);
+    expect(still.p).toBe(420);
+    expect(ranks.shots).toBe(still.shots);
+    expect(ranks.shots).toBeGreaterThanOrEqual(4);
+  });
+
+  it('never walks back for its place, and holds while its melee front is behind it', () => {
+    const sim = arena();
+    const front = devSpawn(sim, 0, 'tuskback', { p: 300 });
+    stun(sim, front.id, 2000);
+    const foe = devSpawn(sim, 1, 'tuskback', { p: L - 680 });
+    stun(sim, foe.id, 2000);
+    const fighting = devSpawn(sim, 0, 'pebbler', { p: 500 });
+    stepN(sim, 60);
+    expect(pLu(sim, fighting.id)).toBe(500);
+    expect(unitOf(sim, fighting.id)?.mode).toBe('attack');
+    // Without a target it waits where it stands instead of walking on alone.
+    const sim2 = arena();
+    const f2 = devSpawn(sim2, 0, 'tuskback', { p: 300 });
+    stun(sim2, f2.id, 2000);
+    const idle = devSpawn(sim2, 0, 'pebbler', { p: 500 });
+    stepN(sim2, 60);
+    expect(pLu(sim2, idle.id)).toBe(500);
+    expect(unitOf(sim2, idle.id)?.mode).toBe('hold');
+  });
+
+  it('melee walks through its own ranks to reach the front', () => {
+    const sim = arena();
+    const tusk = devSpawn(sim, 0, 'tuskback', { p: 300 });
+    const peb = devSpawn(sim, 0, 'pebbler', { p: 250 });
+    const bonk = devSpawn(sim, 0, 'bonker', { p: 240 });
+    stepN(sim, 100);
+    // The Pebbler walks at its place behind the Tuskback; the faster Bonker passes it and joins the front rank.
+    expect(pLu(sim, bonk.id)).toBe(pLu(sim, tusk.id));
+    expect(pLu(sim, peb.id)).toBeLessThan(pLu(sim, bonk.id));
+  });
+
+  it('Hold: ranked units form up their gap behind the flag; one beyond its line walks back to it', () => {
+    const hold = (pebP: number) => {
+      const sim = arena();
+      const st = new Stamper(sim);
+      const bonk = devSpawn(sim, 0, 'bonker', { p: 100 });
+      const peb = devSpawn(sim, 0, 'pebbler', { p: pebP });
+      st.step({ t: 'stance', side: 0, mode: 'hold' });
+      stepN(sim, 300);
+      expect(pLu(sim, bonk.id)).toBe(320);
+      expect(unitOf(sim, peb.id)?.mode).toBe('hold');
+      return 320 - pLu(sim, peb.id);
+    };
+    within(hold(60), PEBBLER);
+    within(hold(420), PEBBLER);
+  });
+
+  it('off in Fall back and for a side with no melee on the lane (an all-ranged army walks as before)', () => {
+    const sim = arena();
+    const st = new Stamper(sim);
+    devSpawn(sim, 0, 'bonker', { p: 100 });
+    const peb = devSpawn(sim, 0, 'pebbler', { p: 100 });
+    st.step({ t: 'stance', side: 0, mode: 'fallback' });
+    stepN(sim, 120);
+    expect(pLu(sim, peb.id)).toBe(200);
+    // A lone Pebbler: 65 lu/s × 1.25 = 4.062 lu per tick (truncated in milli-lu), as before the ranks.
+    const sim2 = arena();
+    const lone = devSpawn(sim2, 0, 'pebbler', { p: 20 });
+    stepN(sim2, 20);
+    expect(pLu(sim2, lone.id)).toBe(101.24);
+  });
+
+  it('air units and armored vehicles without a minimum range are outside the ranks', () => {
+    const sim = arena();
+    const front = devSpawn(sim, 0, 'tuskback', { p: 100 });
+    stun(sim, front.id, 2000);
+    const gyro = devSpawn(sim, 0, 'gyrocopter', { p: 150 });
+    const tank = devSpawn(sim, 0, 'behemoth_tank', { p: 150 });
+    const peb = devSpawn(sim, 0, 'pebbler', { p: 150 });
+    stepN(sim, 20);
+    expect(pLu(sim, gyro.id)).toBeGreaterThan(150);
+    expect(pLu(sim, tank.id)).toBeGreaterThan(150);
+    expect(pLu(sim, peb.id)).toBe(150);
+  });
+
+  it('the place varies by unit id inside ± 15%, the same on every run', () => {
+    const gapFor = (pad: number): number => {
+      const sim = arena();
+      const front = devSpawn(sim, 0, 'tuskback', { p: 600 });
+      stun(sim, front.id, 2000);
+      // Far-away enemies only to move the Pebbler's id along.
+      for (let i = 0; i < pad; i += 1) stun(sim, devSpawn(sim, 1, 'bonker', { p: 20 }).id, 2000);
+      const peb = devSpawn(sim, 0, 'pebbler', { p: 300 });
+      stepN(sim, 120);
+      return 600 - pLu(sim, peb.id);
+    };
+    const gaps = [0, 1, 2, 3, 4, 5].map(gapFor);
+    for (const g of gaps) within(g, PEBBLER);
+    expect(new Set(gaps).size).toBeGreaterThan(2);
+    expect([0, 1, 2, 3, 4, 5].map(gapFor)).toEqual(gaps);
   });
 });

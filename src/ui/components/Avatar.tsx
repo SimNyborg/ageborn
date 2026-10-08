@@ -48,6 +48,15 @@ export function loadWearableArt(): Promise<void> {
 }
 
 /**
+ * The part library as it stands: the starters, plus the wearables once their art has loaded. Reading
+ * it inside a component re-renders that component when the wearables arrive (the Result's victory
+ * moment draws both Generals from it).
+ */
+export function avatarLibrary(): PartLibrary {
+  return library.value;
+}
+
+/**
  * The crop that shows one accessory best in a creator tile: face pieces (glasses, patches, paint) on
  * the face, neck pieces (necklaces, scarves, medals) on the chest, anything larger on the bust. Reads
  * the library signal, so a tile re-crops once the wearables' art has loaded.

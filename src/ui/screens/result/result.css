@@ -914,3 +914,17 @@
     padding-block: 5px;
   }
 }
+
+/* The victory moment (MR-129, owner request 2026-10-07): its stage stands in for the level badge and the
+   recap while it plays (the rewards keep staging on the right), then they rise back in. Your General's
+   spot by the banner waits, its space kept, and pops in when the moment ends. */
+.result__left.has-moment > :is(.result-level, .result__recap) {
+  display: none;
+}
+.result__left.is-revealed > :is(.result-level, .result__recap) {
+  animation: ui-rise var(--ui-dur-medium) var(--ui-ease-enter) both;
+}
+.result__hero.is-waiting {
+  visibility: hidden;
+  animation: none;
+}

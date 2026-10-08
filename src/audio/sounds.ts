@@ -1875,6 +1875,121 @@ const MVP_SOUNDS: Record<SoundId, SoundDef> = {
 };
 
 /**
+ * The Result's victory moments (owner request 2026-10-07; DESIGN A9 #7, A13; designs in
+ * `tools/audio/sfx/sounds_victory.py`): cartoon slapstick on the Result's little stage. The recorded `match`
+ * sheet (loaded right after unlock) carries them; these ZzFX versions play while it decodes or where it
+ * cannot. Musical ones (the twinkle, the ta-da, the trombone, the shrug) keep their pitch.
+ */
+const MOMENT_SOUNDS: Record<SoundId, SoundDef> = {
+  // A swing or a throw: an airy swish with a rising zip.
+  moment_swish: mix('match', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.32, freq: 900 * (1 + 0.08 * v), attack: 0.06, sustain: 0.03, release: 0.09, slide: 5, lowpass: 5200 }),
+    at(10, { vol: 0.14, freq: 420 * (1 + 0.06 * v), attack: 0.03, sustain: 0.04, release: 0.08, slide: 14 }),
+  ])),
+  // The giant mallet: a hollow wooden bonk and a spring boing.
+  moment_bonk: mix('match', mixVariants(3, (v) => [
+    at(0, { vol: 0.55, freq: 190 * (1 + 0.06 * v), attack: 0.001, release: 0.16, shape: 'tri', slide: -2 }),
+    noiseBurst(0, { vol: 0.28, freq: 700, attack: 0.001, release: 0.05, lowpass: 3600 }),
+    at(0, { vol: 0.3, freq: 520 * (1 + 0.04 * v), attack: 0.001, release: 0.09, slide: -1 }),
+    at(40, { vol: 0.28, freq: 380 * (1 + 0.05 * v), attack: 0.005, sustain: 0.1, release: 0.45, slide: -0.6, tremolo: 0.3, repeat: 0.065 }),
+  ]), { maxVoices: 2 }),
+  // Round a dizzy head: birdies tweet, stars twinkle.
+  moment_dizzy: mix('match', mixVariants(3, (v) => [
+    at(0, { vol: 0.2, freq: 2600 * (1 + 0.04 * v), attack: 0.005, release: 0.05, slide: 30 }),
+    at(70, { vol: 0.18, freq: 3800 * (1 + 0.04 * v), attack: 0.005, release: 0.05, slide: -30 }),
+    note(50, 'C7', { vol: 0.18, attack: 0.002, release: 0.25, shape: 'tri' }),
+    at(330, { vol: 0.2, freq: 2700 * (1 + 0.04 * v), attack: 0.005, release: 0.05, slide: 30 }),
+    at(400, { vol: 0.18, freq: 3900 * (1 + 0.04 * v), attack: 0.005, release: 0.05, slide: -30 }),
+    note(460, 'G6', { vol: 0.16, attack: 0.002, release: 0.25, shape: 'tri' }),
+    at(660, { vol: 0.18, freq: 2800 * (1 + 0.04 * v), attack: 0.005, release: 0.05, slide: 30 }),
+  ]), { maxVoices: 1, gapMs: 400 }),
+  // A cream pie in the face: a wet splat, a thud, droplets.
+  moment_splat: mix('match', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.55, freq: 500 * (1 + 0.08 * v), attack: 0.002, decay: 0.05, sustainVol: 0.4, release: 0.22, lowpass: 1600, slide: -3 }),
+    at(0, { vol: 0.38, freq: 140 * (1 + 0.05 * v), attack: 0.002, release: 0.12, slide: -1.2 }),
+    noiseBurst(60, { vol: 0.16, freq: 3000, sustain: 0.12, release: 0.08, repeat: 0.03, tremolo: 0.6, highpass: 2000 }),
+  ]), { maxVoices: 2 }),
+  // Tar landing over a head: a thick glop and slow bubbles.
+  moment_tar: mix('match', mixVariants(3, (v) => [
+    at(0, { vol: 0.5, freq: 110 * (1 + 0.05 * v), attack: 0.003, release: 0.16, slide: 4 }),
+    noiseBurst(0, { vol: 0.45, freq: 260, attack: 0.003, decay: 0.06, sustainVol: 0.35, release: 0.25, lowpass: 900 }),
+    at(220, { vol: 0.24, freq: 220 * (1 + 0.05 * v), attack: 0.003, release: 0.07, slide: 8 }),
+    at(380, { vol: 0.2, freq: 180 * (1 + 0.05 * v), attack: 0.003, release: 0.07, slide: 8 }),
+  ]), { maxVoices: 2 }),
+  // A pillow bursting, a cloud clearing: a soft whump and a puff of air.
+  moment_poof: mix('match', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.45, freq: 600 * (1 + 0.06 * v), attack: 0.004, decay: 0.05, sustainVol: 0.4, release: 0.3, lowpass: 2600 }),
+    at(0, { vol: 0.32, freq: 120 * (1 + 0.05 * v), attack: 0.003, release: 0.14, slide: -1 }),
+    noiseBurst(80, { vol: 0.14, freq: 2600, sustain: 0.2, release: 0.1, repeat: 0.07, tremolo: 0.6, highpass: 1500 }),
+  ]), { maxVoices: 2 }),
+  // Buk, buk, BAWK!
+  moment_cluck: mix('match', mixVariants(3, (v) => [
+    at(0, { vol: 0.3, freq: 520 * (1 + 0.04 * v), attack: 0.004, sustain: 0.03, release: 0.04, shape: 'saw', slide: -4, lowpass: 2600 }),
+    at(130, { vol: 0.32, freq: 560 * (1 + 0.04 * v), attack: 0.004, sustain: 0.03, release: 0.04, shape: 'saw', slide: -4, lowpass: 2600 }),
+    at(280, { vol: 0.36, freq: 470 * (1 + 0.04 * v), attack: 0.006, sustain: 0.16, release: 0.1, shape: 'saw', slide: 2, deltaSlide: -0.1, lowpass: 3000 }),
+  ]), { maxVoices: 1, gapMs: 300 }),
+  // The cannon lands on the wall: an iron clank and a heavy thud.
+  moment_clank: mix('match', mixVariants(3, (v) => [
+    at(0, { vol: 0.4, freq: 330 * (1 + 0.04 * v), attack: 0.001, release: 0.5, shape: 'tri', curve: 2, tremolo: 0.2, repeat: 0.03 }),
+    at(0, { vol: 0.55, freq: 90 * (1 + 0.05 * v), attack: 0.002, release: 0.3, slide: -0.5 }),
+    noiseBurst(0, { vol: 0.28, freq: 1200, attack: 0.001, release: 0.08, lowpass: 5000 }),
+  ]), { maxVoices: 2 }),
+  // The fuse burning down: a crackling sizzle.
+  moment_fuse: fx('match', variants(3, (v) => ({ vol: 0.26, freq: 5000 * (1 + 0.06 * v), attack: 0.02, sustain: 0.5, release: 0.08, shape: 'noise', tremolo: 0.45, repeat: 0.025, highpass: 3500 })), { maxVoices: 1, gapMs: 400 }),
+  // The cannon: KA-BOOM.
+  moment_boom: mix('match', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.75, freq: 180, attack: 0.003, decay: 0.1, sustainVol: 0.5, release: 0.7, lowpass: 2600 }),
+    at(0, { vol: 0.7, freq: 55 * (1 + 0.06 * v), attack: 0.004, release: 0.6, slide: -0.2 }),
+    noiseBurst(0, { vol: 0.3, freq: 1500, attack: 0.001, release: 0.06, lowpass: 7000 }),
+  ]), { maxVoices: 1, gapMs: 300 }),
+  // Sailing off over the horizon: a slide whistle up.
+  moment_whistle: fx('match', variants(3, (v) => ({ vol: 0.3, freq: 520 * (1 + 0.04 * v), attack: 0.03, sustain: 0.5, release: 0.1, slide: 5, tremolo: 0.04, repeat: 0.06 })), { maxVoices: 1, gapMs: 300 }),
+  // The far-off star: a bright ting and a sparkle (C).
+  moment_twinkle: mix('match', mixVariants(3, (_v, k) => [
+    note(0, 'C7', { vol: 0.3, attack: 0.002, sustain: 0.04, release: 0.5, shape: 'tri' }),
+    note(30, 'E7', { vol: 0.15, attack: 0.002, release: 0.25 }),
+    note(65, 'G7', { vol: 0.13, attack: 0.002, release: 0.25 }),
+    note(100, ['C8', 'G7', 'E7'][k] as string, { vol: 0.11, attack: 0.002, release: 0.3 }),
+  ]), { ...MUSICAL, maxVoices: 1, gapMs: 300 }),
+  // The dust-cloud brawl: a flurry of thumps and pows over a dust rumble, a bonk on a bell.
+  moment_scuffle: mix('match', mixVariants(3, (v) => [
+    noiseBurst(0, { vol: 0.22, freq: 300, attack: 0.05, sustain: 0.8, release: 0.2, lowpass: 1500, tremolo: 0.5, repeat: 0.09 }),
+    ...[0, 110, 190, 320, 400, 520, 640, 760, 860, 980].map((ms, i) =>
+      i % 2 ? noiseBurst(ms, { vol: 0.36, freq: 900 * (1 + 0.05 * v), attack: 0.001, release: 0.05, lowpass: 5000 }) : at(ms, { vol: 0.45, freq: (150 + i * 9) * (1 + 0.05 * v), attack: 0.001, release: 0.09, slide: -2 }),
+    ),
+    at(560, { vol: 0.16, freq: 1250 * (1 + 0.03 * v), attack: 0.001, release: 0.4, shape: 'tri', curve: 2 }),
+  ]), { maxVoices: 1, gapMs: 400 }),
+  // The celebration: ta-DA in C.
+  moment_tada: mix('match', mixVariants(3, (_v, k) => {
+    const brass: Zz = { attack: 0.01, release: 0.12, shape: 'saw', lowpass: 3000 };
+    return [
+      note(0, 'G4', { ...brass, vol: 0.28, sustain: 0.06 }),
+      note(140, 'C5', { ...brass, vol: 0.3, sustain: 0.4, release: 0.3 }),
+      note(140, 'E5', { ...brass, vol: 0.24, sustain: 0.4, release: 0.3 }),
+      note(140, 'G5', { ...brass, vol: 0.24, sustain: 0.4, release: 0.3 }),
+      ...['C6', 'E6', 'G6', ['C7', 'E7', 'G7'][k] as string].map((n, i) => note(150 + i * 50, n, { vol: 0.11, attack: 0.002, release: 0.25, shape: 'tri' })),
+    ];
+  }), { ...MUSICAL, maxVoices: 1, gapMs: 500 }),
+  // A loss, gently: a soft sad trombone, wah-wah-wah-waaah.
+  moment_wahwah: mix('match', mixVariants(3, (_v, k) => {
+    const horn: Zz = { attack: 0.03, release: 0.08, shape: 'saw', lowpass: 1300 + 150 * k };
+    return [
+      note(0, 'Bb3', { ...horn, vol: 0.28, sustain: 0.18 }),
+      note(300, 'A3', { ...horn, vol: 0.28, sustain: 0.18 }),
+      note(600, 'Ab3', { ...horn, vol: 0.28, sustain: 0.18 }),
+      note(900, 'G3', { ...horn, vol: 0.3, sustain: 0.6, release: 0.3, tremolo: 0.25, repeat: 0.18 }),
+    ];
+  }), { ...MUSICAL, maxVoices: 1, gapMs: 1000 }),
+  // The stand-off: a lonely whistling wind.
+  moment_wind: fx('match', variants(3, (v) => ({ vol: 0.2, freq: 800 * (1 + 0.06 * v), attack: 0.4, sustain: 0.4, release: 0.5, shape: 'noise', tremolo: 0.3, repeat: 0.3, lowpass: 2400 })), { maxVoices: 1, gapMs: 600 }),
+  // A draw: a quizzical boop... bweep?
+  moment_shrug: mix('match', mixVariants(3, (_v, k) => [
+    note(0, 'G4', { vol: 0.32, attack: 0.002, release: 0.16, shape: 'tri' }),
+    note(200, 'E5', { vol: 0.28, attack: 0.01, sustain: 0.14, release: 0.1, shape: 'tri', slide: 2 + k * 0.3 }),
+  ]), { ...MUSICAL, maxVoices: 1, gapMs: 300 }),
+};
+
+/**
  * Content-wave sounds in the boot groups (the Stone and Bronze waves' attacks, turrets and powers) that skip
  * the boot ZzFX render (`docs/requests/done/audio-boot-budget.md`): the boot set was at 299.6 of its 300 ms
  * before the waves. The recorded sheets carry them; the ZzFX fallback renders on first use or when idle.
@@ -1897,7 +2012,7 @@ function withLazy(all: Record<SoundId, SoundDef>, ids: readonly SoundId[]): Reco
   return out;
 }
 
-export const sounds: Readonly<Record<SoundId, SoundDef>> = withLazy({ ...BASE_SOUNDS, ...MVP_SOUNDS }, LAZY_BOOT_SOUNDS);
+export const sounds: Readonly<Record<SoundId, SoundDef>> = withLazy({ ...BASE_SOUNDS, ...MVP_SOUNDS, ...MOMENT_SOUNDS }, LAZY_BOOT_SOUNDS);
 
 /** Every sound id in the manifest, in declaration order. */
 export const SOUND_IDS: readonly SoundId[] = Object.keys(sounds);

@@ -16,6 +16,7 @@ import type {
   DamageMod,
   DmgType,
   EconomyRules,
+  FormationRules,
   FormatId,
   FortDef,
   PowerDef,
@@ -160,6 +161,15 @@ export function battleOf(content: CompiledContent): BattleRulesLike {
   };
 }
 
+/**
+ * Ranks (A2.7 formation, SIM_VERSION 8.0.0): a unit's place in its side's formation. `RANK_FRONT` is melee
+ * (first attack < `economy.formation.meleeRangeLu`): the side's frontmost one is its melee front.
+ * `RANK_RANKED` keeps its place behind that front. `RANK_NONE` is outside the ranks.
+ */
+export const RANK_NONE = 0;
+export const RANK_FRONT = 1;
+export const RANK_RANKED = 2;
+
 /** "Heavy hit" threshold for the `hit.heavy` flag: ≥ 15% of the victim's max HP (DESIGN A12). */
 export const HEAVY_HIT_BP = 1500;
 /** Density scan step for `densest` targeting and power auto-aim (DESIGN A2.7, A2.9): 10 lu. */
@@ -285,6 +295,15 @@ export interface UnitRules {
    * Legendary, siege and artillery units. Also used for its ability impacts (death explosions, strikes).
    */
   structureBp: number;
+  /**
+   * Ranks (A2.7 formation): `RANK_FRONT`, `RANK_RANKED` or `RANK_NONE` (every unit when the content has no
+   * `economy.formation`). Air units, forts, support followers and bombers are outside the ranks; so are
+   * levies (they always march) and armored vehicles whose first attack has no minimum range (they lead
+   * with the front's armour, A2.7).
+   */
+  rank: number;
+  /** A ranked unit's place behind its melee front before its per-unit variation, mlu (0 otherwise). */
+  rankGap: number;
 }
 
 /** A fort card in runtime units (DESIGN A16.14): distances in mlu, times in ticks, HP and damage whole. */
@@ -525,6 +544,12 @@ export interface EconRules {
   openGate: number;
   /** Forts (A16.14); null when the content has no `economy.fort`. */
   fort: FortSimRules | null;
+  /**
+   * Ranks (A2.7 formation); null when the content has no `economy.formation` (the rule is off). Each unit's
+   * class and base place are in its `UnitRules` (`rank`, `rankGap`); here the per-unit variation (bp of the
+   * place) and the close-up threshold (mlu).
+   */
+  formation: { jitterBp: number; closeUp: number; standOffBp: number } | null;
 }
 
 export interface SimRules {
@@ -733,6 +758,8 @@ function unitRules(def: UnitDef, idx: number, content: CompiledContent, battle: 
     fort: null,
     levy: def.levy === true || def.summon === true,
     structureBp: 0,
+    rank: RANK_NONE,
+    rankGap: 0,
   };
   def.abilities.forEach((ab: AbilityDef, slot) => {
     switch (ab.kind) {
@@ -840,7 +867,28 @@ function unitRules(def: UnitDef, idx: number, content: CompiledContent, battle: 
     if (a.range > r.maxRange) r.maxRange = a.range;
     for (const m of a.mods) if (m.vs === 'structure' && m.bp > r.structureBp) r.structureBp = m.bp;
   }
+  rankUnit(r, (content.economy as { formation?: FormationRules }).formation);
   return r;
+}
+
+/**
+ * Ranks (A2.7 formation): sorts a unit into the melee front, the ranks behind it, or neither, and fixes a
+ * ranked unit's place as a share of its first attack's range (the Long range share when that attack has a
+ * minimum range: Long range units and artillery keep further back). Integer steps in 0.1 lu keep every
+ * intermediate value far inside ±2^31 (B3).
+ */
+function rankUnit(r: UnitRules, f: FormationRules | undefined): void {
+  const a = r.attacks[0];
+  if (!f || !a || r.air || r.follow || r.bomber || r.def.fort) return;
+  if (a.range < mlu(f.meleeRangeLu)) {
+    r.rank = RANK_FRONT;
+    return;
+  }
+  const long = a.minRange > 0;
+  // Levies always march (A16.14.3); armored vehicles without a minimum range lead like the front's armour.
+  if (r.levy || (!long && (r.tags & TAG.armored) !== 0)) return;
+  r.rank = RANK_RANKED;
+  r.rankGap = Math.trunc((Math.trunc(a.range / 100) * (long ? f.longGapBp : f.rangedGapBp)) / 100);
 }
 
 /** A fort card in runtime units. */
@@ -1134,6 +1182,8 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
     gateFall: { dist: mlu(nonNegOr(e.gateFall?.lu, 0)), hpBp: nonNegOr(e.gateFall?.hpBp, 0) },
     openGate: mlu(nonNegOr(e.openGateLu, 0)),
     fort: fortSimRules(content),
+    // Off for content that predates it (old replays keep their hashes); the frozen fixture carries it from 8.0.0.
+    formation: e.formation ? { jitterBp: nonNegOr(e.formation.jitterBp, 0), closeUp: mlu(nonNegOr(e.formation.closeUpLu, 0)), standOffBp: nonNegOr(e.formation.standOffBp, 0) } : null,
   };
 }
 

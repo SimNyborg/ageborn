@@ -27,6 +27,7 @@ import { generalOf, onlineOf, opponentName, personalityOf } from '../model/oppon
 import { activePlan, formatAges, formatName, planAvgLevel } from '../model/plan';
 import { featureOpen, levelNameKey } from '../model/warPath';
 import { minutesText } from '../model/homeMode';
+import { loadMoment } from '../result/victory/MomentSlot';
 
 /** A9 #4: the VS screen shows for 2 s. */
 export const VS_MS = 2000;
@@ -121,6 +122,8 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
 
   const [clash, setClash] = useState(false);
   useEffect(() => {
+    // The Result's victory moment loads while the battle plays, so it never waits (MR-129).
+    loadMoment().catch(() => undefined);
     const id = setTimeout(() => beginRef.current(), ms);
     const mood = setTimeout(() => setClash(true), VS_MOOD_MS);
     // The plates slide in on a whoosh and meet on a slam (audit 2026-10-01: the VS was silent). The

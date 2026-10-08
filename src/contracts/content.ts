@@ -552,6 +552,29 @@ export interface EscalationStep {
 }
 
 /**
+ * Ranks (DESIGN A2.7, owner request 2026-10-07: ranged units keep a little behind the melee, long range
+ * further back, never so far that they stop contributing). A ground unit whose first attack reaches less
+ * than `meleeRangeLu` is melee and forms the front; a ranged one (first attack ≥ `meleeRangeLu`, not air,
+ * not a support follower, not a levy, not an armored vehicle without a minimum range) keeps its place
+ * behind its side's frontmost melee unit: never past it, and closing up between shots when it stands more
+ * than `closeUpLu` behind it. Shares in bp, distances in lu.
+ */
+export interface FormationRules {
+  /** First-attack range below which a ground unit is melee and forms the front (100: the A2.7 "range ≥ 100" line). */
+  meleeRangeLu: number;
+  /** A ranged unit's place behind the melee front, as a share of its first attack's range (bp). */
+  rangedGapBp: number;
+  /** The same for a unit whose first attack has a minimum range (the Long range trait, artillery): further back (bp). */
+  longGapBp: number;
+  /** Per-unit variation of the place, ± this share of it, fixed by the unit's id (bp), so lines never look drilled. */
+  jitterBp: number;
+  /** A ranged unit with a target in range that stands more than this behind its place steps up between shots (lu; 0 = never). */
+  closeUpLu: number;
+  /** Stepping up never brings it closer to its target than this share of its first attack's range (bp; absent = 0). */
+  standOffBp?: number;
+}
+
+/**
  * All in-battle economy and rule constants (DESIGN A2.3 gold, A2.4 XP, A2.7 combat, A2.8 turrets,
  * A2.9 powers, A2.10 phases, A2.11 Last Stand). Percentages are bp; see B3 for integer units.
  */
@@ -624,6 +647,11 @@ export interface EconomyRules {
    * Missing or 0 = off.
    */
   openGateLu?: number;
+  /**
+   * Ranks (A2.7 formation, SIM_VERSION 8.0.0): ranged units keep their place behind the melee front.
+   * Missing = off (content that predates it plays as before).
+   */
+  formation?: FormationRules;
   /** Unit walking speed multiplier applied once at compile time (A17.2: 12,500 = ×1.25). */
   marchSpeedBp: number;
   /** Units per side that may fight side by side at the front before the single file starts (A2.7; A16.4 L4: 3). */

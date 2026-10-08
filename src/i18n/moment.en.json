@@ -1,0 +1,32 @@
+{
+  "moment": {
+    "move": {
+      "mallet": "Giant Mallet",
+      "pie": "Cream Pie",
+      "tarFeathers": "Tar and Feathers",
+      "launch": "Over the Horizon",
+      "scuffle": "Dust-Up",
+      "rainCloud": "Rain Cloud",
+      "piedYou": "Pie in Return",
+      "standoff": "Stand-Off"
+    },
+    "line": {
+      "mallet": "You bonk {foe} with a giant mallet",
+      "pie": "You hit {foe} with a cream pie",
+      "tarFeathers": "You cover {foe} in tar and feathers",
+      "launch": "You launch {foe} over the horizon",
+      "scuffle": "You win a dust-cloud scuffle with {foe}",
+      "rainCloud": "A little rain cloud follows you, then you shake it off",
+      "piedYou": "{foe} hits you with a cream pie",
+      "standoff": "You and {foe} shrug at a stand-off"
+    },
+    "word": {
+      "bonk": "BONK!",
+      "splat": "SPLAT!",
+      "poof": "POOF!",
+      "boom": "KA-BOOM!",
+      "pow": "POW!",
+      "bawk": "BAWK!"
+    }
+  }
+}
