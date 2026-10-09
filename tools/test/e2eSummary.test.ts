@@ -19,12 +19,12 @@ describe('e2e summary', () => {
                   file: 'hud.spec.ts',
                   line: 112,
                   tests: [
-                    { projectName: 'chromium', status: 'expected', results: [{ status: 'passed', retry: 0 }] },
+                    { projectName: 'chromium', status: 'expected', results: [{ status: 'passed', retry: 0, duration: 4000 }] },
                     {
                       projectName: 'webkit',
                       status: 'unexpected',
                       results: [
-                        { status: 'failed', retry: 0, error: { message: '\u001b[31mError: expect(received).toEqual(expected)\u001b[39m\n\nmore' } },
+                        { status: 'failed', retry: 0, duration: 30_000, error: { message: '\u001b[31mError: expect(received).toEqual(expected)\u001b[39m\n\nmore' } },
                         { status: 'failed', retry: 1, error: { message: 'Error: again' } },
                       ],
                     },
@@ -34,7 +34,7 @@ describe('e2e summary', () => {
                   title: 'stance buttons',
                   file: 'hud.spec.ts',
                   line: 210,
-                  tests: [{ projectName: 'webkit', status: 'flaky', results: [{ status: 'timedOut', retry: 0, errors: [{ message: 'Test timeout of 30000ms exceeded.' }] }, { status: 'passed', retry: 1 }] }],
+                  tests: [{ projectName: 'webkit', status: 'flaky', results: [{ status: 'timedOut', retry: 0, duration: 90_000, errors: [{ message: 'Test timeout of 30000ms exceeded.' }] }, { status: 'passed', retry: 1 }] }],
                 },
               ],
             },
@@ -44,6 +44,8 @@ describe('e2e summary', () => {
     };
     expect(summarize(report)).toEqual([
       'E2E summary: 10 passed, 1 failed, 1 flaky, 2 skipped',
+      'time [chromium]: 1 tests, 0.1 min in all, median 4.0 s, p90 4.0 s, slowest 4.0 s',
+      'time [webkit]: 2 tests, 2.0 min in all, median 90.0 s, p90 90.0 s, slowest 90.0 s',
       'FAIL  [webkit] hud.spec.ts:112 › Battle HUD › fits at 844 x 390 — Error: expect(received).toEqual(expected)',
       'FLAKY [webkit] hud.spec.ts:210 › Battle HUD › stance buttons — Test timeout of 30000ms exceeded.',
     ]);

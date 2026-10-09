@@ -5,14 +5,17 @@
  *
  *   npx tsx tools/e2eSummary.ts test-results/e2e-results.json
  *
- * Lines: `FAIL  [project] file:line › title › … — first line of the error`, then the flaky ones. Always
- * exits 0: the test step itself fails the job.
+ * Lines: the counts, the test time per project (how heavy each engine runs, G3), then `FAIL  [project]
+ * file:line › title › … — first line of the error` and the flaky ones. Always exits 0: the test step
+ * itself fails the job.
  */
 import { existsSync, readFileSync } from 'node:fs';
 
 interface JsonResult {
   status: string;
   retry: number;
+  /** ms */
+  duration?: number;
   error?: { message?: string };
   errors?: { message?: string }[];
 }
@@ -53,14 +56,18 @@ function firstLine(r: JsonResult | undefined): string {
   return line.length > 220 ? `${line.slice(0, 217)}...` : line;
 }
 
-/** The summary lines of a Playwright JSON report: a count line, then one line per failed and flaky test. */
+/** The summary lines of a Playwright JSON report: the counts, the test time per project, then one line per failed and flaky test. */
 export function summarize(report: JsonReport): string[] {
   const fail: string[] = [];
   const flaky: string[] = [];
+  /** Per project: the duration of each test's first run (ms). */
+  const times = new Map<string, number[]>();
   const walk = (s: JsonSuite, path: string[]): void => {
     const titles = s.title && !s.title.endsWith('.ts') ? [...path, s.title] : path;
     for (const spec of s.specs ?? []) {
       for (const t of spec.tests) {
+        const first = t.results.find((r) => r.retry === 0);
+        if (t.status !== 'skipped' && first?.duration !== undefined) times.set(t.projectName, [...(times.get(t.projectName) ?? []), first.duration]);
         if (t.status !== 'unexpected' && t.status !== 'flaky') continue;
         const name = `[${t.projectName}] ${spec.file}:${spec.line} › ${[...titles, spec.title].join(' › ')}`;
         if (t.status === 'unexpected') fail.push(`FAIL  ${name} — ${firstLine(t.results.find((r) => r.status !== 'passed' && r.status !== 'skipped'))}`);
@@ -72,7 +79,16 @@ export function summarize(report: JsonReport): string[] {
   for (const s of report.suites) walk(s, []);
   const st = report.stats ?? {};
   const head = `E2E summary: ${st.expected ?? 0} passed, ${st.unexpected ?? 0} failed, ${st.flaky ?? 0} flaky, ${st.skipped ?? 0} skipped`;
-  return [head, ...fail.sort(), ...flaky.sort()];
+  const sec = (ms: number): string => `${(ms / 1000).toFixed(1)} s`;
+  const perProject = [...times.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([name, ms]) => {
+      const sorted = [...ms].sort((a, b) => a - b);
+      const total = sorted.reduce((a, b) => a + b, 0);
+      const at = (q: number): number => sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * q))] ?? 0;
+      return `time [${name}]: ${sorted.length} tests, ${(total / 60_000).toFixed(1)} min in all, median ${sec(at(0.5))}, p90 ${sec(at(0.9))}, slowest ${sec(at(1))}`;
+    });
+  return [head, ...perProject, ...fail.sort(), ...flaky.sort()];
 }
 
 function main(): void {

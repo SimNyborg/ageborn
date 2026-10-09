@@ -66,6 +66,9 @@ export interface StageDeps {
   seed: number;
 }
 
+/** The provider's duck-typed sheet lease (visuals' `showcaseLease`): the walkouts' unit sheets load ahead. */
+type LeasingArt = ArtProvider & { showcaseLease?(o: { visuals: readonly { visualId: string; skin?: string | null }[] }): { release(): void } };
+
 interface Flyer {
   c: Container;
   vx: number;
@@ -337,11 +340,21 @@ export class CapsuleStage implements ShowView {
   private burstAt = { x: 0, y: 0 };
   /** Epic bolts crackle round the card for a moment after its pop. */
   private boltsUntil = -1;
+  /** The walkouts' unit sheets, held from the start of the show (G7: unit sheets load on demand). */
+  private readonly artLease: { release(): void } | null;
 
   constructor(
     readonly plan: ShowPlan,
     private readonly d: StageDeps,
   ) {
+    // Unit sheets are no longer all loaded at boot (G7, Safari memory): a card that walks out has its
+    // sheet loading now, during the climb, so it walks out in its battle art and not its fallback.
+    const walkers = plan.steps.flatMap((st) => (st.kind === 'walkout' || st.kind === 'miniWalkout' ? [st.card] : []));
+    const visuals = walkers.flatMap((c) => {
+      const info = d.catalog.card(c.card);
+      return info.view === 'unit' ? [{ visualId: info.visualId, skin: c.skin }] : [];
+    });
+    this.artLease = visuals.length > 0 ? ((d.art as LeasingArt).showcaseLease?.({ visuals }) ?? null) : null;
     const rm = d.settings.reduceMotion;
     this.rng = mulberry32(d.seed);
     this.lite = d.settings.lite === true;
@@ -3057,6 +3070,7 @@ export class CapsuleStage implements ShowView {
 
   destroy(): void {
     this.walkout?.destroy();
+    this.artLease?.release();
     // Flying halves first: they share the drums' drawing contexts.
     for (const f of this.flyers) f.c.destroy({ children: true });
     this.flyers.length = 0;
