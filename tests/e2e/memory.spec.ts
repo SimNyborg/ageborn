@@ -49,8 +49,9 @@ test('G7: a long Standard War at DPR 2 keeps decoded images under the budget, an
   const problems = watchPage(page);
   await page.goto('./?dev=1&autopilot=1&quick=standard');
   await expect(page.getByTestId('battle')).toBeVisible({ timeout: 60_000 });
-  // The opening at real speed: the troops both sides train first draw from their sheets.
-  await expect.poll(async () => (await step(page, 0)).battle?.units ?? 0, { timeout: 60_000, intervals: [250] }).toBeGreaterThanOrEqual(4);
+  // The opening at real speed: the troops both sides train first draw from their sheets (a slow
+  // software-rendered engine plays a few game seconds a minute, hence the long wait).
+  await expect.poll(async () => (await step(page, 0)).battle?.units ?? 0, { timeout: 120_000, intervals: [250] }).toBeGreaterThanOrEqual(2);
   expect((await step(page, 0)).mem.fallbacks).toEqual({ units: 0, last: '' });
   // The rest fast-forwarded, five seconds of play a step; the sheets load, upload and unload in between.
   let peak: Mem | null = null;

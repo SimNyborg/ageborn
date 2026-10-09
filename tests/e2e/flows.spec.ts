@@ -55,7 +55,8 @@ test.describe('B13 flows', () => {
       Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
       document.dispatchEvent(new Event('visibilitychange'));
     });
-    await expect(page.getByTestId('pause')).toBeVisible();
+    // the clock may still wait for the decks' unit sheets (G7); the battle starts paused once they are in
+    await expect(page.getByTestId('pause')).toBeVisible({ timeout: 30_000 });
     await page.getByTestId('resume').click();
     await expect(page.getByTestId('pause')).toHaveCount(0);
   });

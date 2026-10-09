@@ -388,7 +388,14 @@ test.describe('reduce motion replaces, never deletes (5.6)', () => {
         const cs = getComputedStyle(screen);
         out.push({ t, opacity: Number(cs.opacity), transform: cs.transform });
       }
-      for (const a of list) a.finish();
+      for (const a of list) {
+        // an endless animation cannot finish; it just plays on
+        try {
+          a.finish();
+        } catch {
+          a.play();
+        }
+      }
       return { samples: out, anims: list.length };
     });
     // reduce motion replaces the entrance: there is one

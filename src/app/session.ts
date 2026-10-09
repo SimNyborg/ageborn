@@ -198,6 +198,8 @@ export class BattleSessionImpl implements BattleSession {
   private lastFrameAt: number | null = null;
   private lastHudAt = -Infinity;
   private unsubscribeVisibility: (() => void) | null = null;
+  /** The page's visibility (null headless): a battle that starts while the tab is hidden starts paused. */
+  private readonly visibility: VisibilitySource | null;
   private readonly endListeners: ((r: MatchResultInput, replay: ReplayDoc) => void)[] = [];
   private readonly tickListeners = new Set<(events: readonly SimEvent[], sim: Sim) => void>();
   private ended: SessionResult | null = null;
@@ -234,6 +236,7 @@ export class BattleSessionImpl implements BattleSession {
     this.hud = this.hudSig;
     this.view?.setSpeed(this.speed);
     this.view?.setPaused(true);
+    this.visibility = o.visibility ?? null;
     if (o.visibility) {
       this.unsubscribeVisibility = o.visibility.subscribe((hidden) => {
         if (hidden && this.statusSig.peek() === 'running') this.pause('hidden');
@@ -259,6 +262,9 @@ export class BattleSessionImpl implements BattleSession {
     this.setStatus('running');
     this.view?.setPaused(false);
     this.platform?.gameplayStart();
+    // the tab was hidden before the clock started (the art loading in the background, G7): the visibility
+    // pause applies at once (C5 #20)
+    if (this.visibility?.hidden === true) this.pause('hidden');
     this.refreshHud(true);
   }
 

@@ -141,6 +141,61 @@ describe('unit sheets per match (G7)', () => {
     expect(a.hasSheet(other)).toBe(false);
   });
 
+  it('a sheet asked for again while it unloads loads once the unload is done (never the asset being destroyed)', async () => {
+    vi.useFakeTimers();
+    const def = MANIFEST['unit.bonker'] as VisualDef & { source: string };
+    const log: string[] = [];
+    let finish: (() => void) | null = null;
+    const art = createArtProvider({ warn: () => {} });
+    const a = new AtlasAdapter({
+      entries: () => [{ ...def, clips: { idle: def.clips['idle']! } }],
+      decor: art.procedural.baker,
+      baseUrl: '/ageborn/',
+      lazyUnits: true,
+      load: async (url) => {
+        log.push(`load ${url}`);
+        return data();
+      },
+      unload: (url) =>
+        new Promise<void>((r) => {
+          log.push(`unload ${url}`);
+          finish = () => {
+            log.push('unloaded');
+            r();
+          };
+        }),
+    });
+    const l = a.lease(def.source);
+    await l.core;
+    l.release();
+    await vi.advanceTimersByTimeAsync(LEASE_LINGER_MS + 10);
+    await settle();
+    expect(log).toEqual(['load /ageborn/art/units/stone/bonker.json', 'unload /ageborn/art/units/stone/bonker.json']);
+    // wanted again mid-unload: the load waits
+    const again = a.lease(def.source);
+    await settle();
+    expect(log).toHaveLength(2);
+    finish!();
+    await again.core;
+    expect(log).toEqual(['load /ageborn/art/units/stone/bonker.json', 'unload /ageborn/art/units/stone/bonker.json', 'unloaded', 'load /ageborn/art/units/stone/bonker.json']);
+    expect(a.hasSheet(def.source)).toBe(true);
+  });
+
+  it("a tower in the hold holds its crew's unit sheet, named in the fort sheet", async () => {
+    const art = createArtProvider({ warn: () => {}, unitSheets: 'match' });
+    const fort = MANIFEST['fort.sling_perch'];
+    expect(fort?.kind).toBe('atlas');
+    // the fort sheet as loaded (its meta names the crew); 1x here, as the provider picks for this screen
+    art.forts.register(fort!.source, { animations: {}, luPerUnit: 1, meta: { heightLu: 100, pxPerLu: 1, clips: {}, crew: { visualId: 'unit.pebbler' } } as never });
+    const leased: string[] = [];
+    vi.spyOn(art.atlas, 'lease').mockImplementation((src) => {
+      leased.push(src);
+      return { ready: Promise.resolve(), core: Promise.resolve(), hd: false, release: () => undefined };
+    });
+    await art.holdArt().set([{ visualId: 'fort.sling_perch' }]);
+    expect(leased).toEqual([MANIFEST['unit.pebbler']!.source]);
+  });
+
   it("the provider's hold keeps what a match draws: units by visual id and skin, swapped as the set changes", async () => {
     vi.useFakeTimers();
     const art = createArtProvider({ warn: () => {}, unitSheets: 'match' });

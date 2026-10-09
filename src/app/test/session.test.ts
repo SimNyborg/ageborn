@@ -106,6 +106,20 @@ describe('BattleSession loop (DESIGN B6)', () => {
     expect(visibility.listeners).toBe(0);
   });
 
+  it('a battle that starts while the tab is hidden starts paused (its art loaded in the background, G7)', () => {
+    const visibility = new FakeVisibility();
+    const { s } = fakeSession({ visibility });
+    visibility.set(true);
+    expect(s.status.value).toBe('ready');
+    s.start();
+    expect(s.status.value).toBe('paused');
+    expect(s.pauseReason).toBe('hidden');
+    visibility.set(false);
+    s.resume();
+    expect(s.status.value).toBe('running');
+    s.dispose();
+  });
+
   it('stamps human commands with sim.tick + 1 and a per-side seq, and records them', () => {
     const { s, sim } = fakeSession();
     s.issue({ t: 'train', side: 0, slot: 0 }); // before start: ignored
