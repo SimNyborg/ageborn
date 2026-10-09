@@ -366,9 +366,12 @@ export class VisualsArtProvider implements ArtProvider {
    * them, else a showcase-only copy that is unloaded a few seconds after the stage goes (`hd` asks for
    * the 2.46 px/lu copy where the battle draws the 1x one; such views come from `createUnit` with
    * `hd: true`). Turret and fort sheets are small and stay cached as in a battle; procedural visuals
-   * (troop skins, effects, projectiles) bake on first use.
+   * (troop skins, effects, projectiles) bake on first use. The card showcase draws on its own WebGL app,
+   * which can only upload from a sheet's decoded copy, so the unit sheets keep theirs while leased (G7:
+   * a battle releases it once its texture is on the app's GPU); `cpu: false` for a stage on the app's
+   * own renderer (the capsule show), where the GPU copy is enough.
    */
-  showcaseLease(o: { visuals: readonly { visualId: VisualId; skin?: SkinId | null }[]; hd?: boolean }): { ready: Promise<void>; hd: boolean; release(): void } {
+  showcaseLease(o: { visuals: readonly { visualId: VisualId; skin?: SkinId | null }[]; hd?: boolean; cpu?: boolean }): { ready: Promise<void>; hd: boolean; release(): void } {
     const leases: SheetLease[] = [];
     const waits: Promise<unknown>[] = [];
     let hd = false;
@@ -383,7 +386,7 @@ export class VisualsArtProvider implements ArtProvider {
         waits.push(this.forts.ensure(this.fortSheetUrl(def.source)));
         continue;
       }
-      const l = this.atlas.lease(def.source, { hd: o.hd === true });
+      const l = this.atlas.lease(def.source, { hd: o.hd === true, cpu: o.cpu !== false });
       leases.push(l);
       waits.push(l.ready);
       if (l.hd) hd = true;

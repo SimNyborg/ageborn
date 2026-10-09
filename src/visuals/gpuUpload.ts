@@ -12,6 +12,10 @@
  * resources; the released ones are decoded again from their URLs (the HTTP cache has them) and released
  * again once uploaded. Until then those units are invisible, which only happens after a context loss.
  *
+ * Another renderer can only upload from the CPU copy: the card showcase draws on its own WebGL app, so a
+ * sheet it leases is kept (`keep`): never released while kept, and decoded again first when it already
+ * was (2026-10-09: the forced upgrade's stage drew no Bonker after a battle at DPR 2).
+ *
  * Presentation only: nothing here reaches the sim.
  */
 import type { TextureSource } from 'pixi.js';
@@ -26,6 +30,11 @@ export interface GpuHooks {
 
 function isBitmap(r: unknown): r is ImageBitmap {
   return typeof ImageBitmap !== 'undefined' && r instanceof ImageBitmap;
+}
+
+/** A bitmap that still holds its pixels (a closed one reads 0 x 0, and uploading it draws nothing). */
+function isOpenBitmap(r: unknown): r is ImageBitmap {
+  return isBitmap(r) && r.width > 0;
 }
 
 /** Upload time one frame may spend before the rest waits for the next frame (ms). */
@@ -53,6 +62,10 @@ export class SheetReleaser {
   private readonly queue: TextureSource[] = [];
   /** Sources whose CPU copy was released, with the image URL to decode again after a context restore. */
   private readonly released = new Map<TextureSource, string>();
+  /** Sources another renderer draws (`keep`), with their keep count: never released while kept. */
+  private readonly kept = new Map<TextureSource, number>();
+  /** Released sources being decoded again (`keep`, a context restore), shared by every caller. */
+  private readonly reviving = new Map<TextureSource, Promise<void>>();
   private pumping = false;
 
   private readonly schedule: (cb: () => void) => void;
@@ -76,7 +89,7 @@ export class SheetReleaser {
 
   /** Queues a freshly loaded sheet's source: uploaded on a coming frame, then its bitmap is closed. */
   add(source: TextureSource): void {
-    if (source.destroyed || !isBitmap(source.resource) || this.queue.includes(source)) return;
+    if (source.destroyed || this.kept.has(source) || !isOpenBitmap(source.resource) || this.queue.includes(source)) return;
     this.queue.push(source);
     if (!this.pumping) {
       this.pumping = true;
@@ -89,8 +102,45 @@ export class SheetReleaser {
     const i = this.queue.indexOf(source);
     if (i >= 0) this.queue.splice(i, 1);
     this.released.delete(source);
+    this.kept.delete(source);
+    // a decode in flight for it closes its bitmap when it lands
+    this.reviving.delete(source);
     const r = source.resource;
     if (isBitmap(r)) r.close();
+  }
+
+  /**
+   * Keeps a source's decoded copy on the CPU side until the returned release runs (counted): another
+   * renderer (the card showcase's own WebGL app) uploads from it, and a closed bitmap draws nothing. A
+   * source already released is decoded again from its URL first: `ready` settles once its copy is back
+   * (or the decode failed). Once nothing keeps it, it is queued for release again.
+   */
+  keep(source: TextureSource): { ready: Promise<void>; release(): void } {
+    this.kept.set(source, (this.kept.get(source) ?? 0) + 1);
+    const i = this.queue.indexOf(source);
+    if (i >= 0) this.queue.splice(i, 1);
+    const ready = this.released.has(source) ? this.revive(source) : (this.reviving.get(source) ?? Promise.resolve());
+    let done = false;
+    return {
+      ready,
+      release: () => {
+        if (done) return;
+        done = true;
+        const n = (this.kept.get(source) ?? 1) - 1;
+        if (n > 0) {
+          this.kept.set(source, n);
+          return;
+        }
+        this.kept.delete(source);
+        // a copy still decoding queues itself once it is back
+        if (!this.reviving.has(source)) this.add(source);
+      },
+    };
+  }
+
+  /** True while something keeps the source's CPU copy (tests). */
+  isKept(source: TextureSource): boolean {
+    return this.kept.has(source);
   }
 
   /** Sources waiting for their upload, and sources whose CPU copy is released (tests, the memory hook). */
@@ -108,7 +158,7 @@ export class SheetReleaser {
     const t0 = now();
     do {
       const s = this.queue.shift();
-      if (s && !s.destroyed && isBitmap(s.resource)) this.release(s);
+      if (s && !s.destroyed && isOpenBitmap(s.resource)) this.release(s);
     } while (this.queue.length > 0 && now() - t0 < this.budgetMs);
     if (this.queue.length > 0) this.schedule(() => this.pump());
     else this.pumping = false;
@@ -116,7 +166,7 @@ export class SheetReleaser {
 
   private release(s: TextureSource): void {
     // the label is the image URL Pixi's loader set; without it a context restore could not decode it again
-    if (!s.label) return;
+    if (!s.label || this.kept.has(s)) return;
     let ok: boolean;
     try {
       ok = this.hooks.upload(s);
@@ -134,18 +184,37 @@ export class SheetReleaser {
 
   /** The GPU context came back: decodes the released sheets again and queues them for release. */
   private restore(): void {
-    for (const [s, url] of [...this.released]) {
-      this.released.delete(s);
-      void this.decode(url).then((bmp) => {
-        if (!bmp) return;
-        if (s.destroyed) {
-          bmp.close();
-          return;
-        }
-        s.resource = bmp;
-        s.update();
-        this.add(s);
-      });
-    }
+    for (const s of [...this.released.keys()]) void this.revive(s);
+  }
+
+  /**
+   * Decodes a released source again from its URL and gives it the new bitmap (Pixi re-uploads it on
+   * `update`), then queues it for release unless something keeps it. One decode per source at a time.
+   */
+  private revive(s: TextureSource): Promise<void> {
+    const pending = this.reviving.get(s);
+    if (pending) return pending;
+    const url = this.released.get(s);
+    if (url === undefined) return Promise.resolve();
+    this.released.delete(s);
+    const p: Promise<void> = this.decode(url).then((bmp) => {
+      // forgotten meanwhile (the sheet is being unloaded): the new copy is not wanted
+      const current = this.reviving.get(s) === p;
+      if (current) this.reviving.delete(s);
+      if (!bmp) {
+        // still released: a later keep or context restore tries again
+        if (current && !s.destroyed) this.released.set(s, url);
+        return;
+      }
+      if (!current || s.destroyed) {
+        bmp.close();
+        return;
+      }
+      s.resource = bmp;
+      s.update();
+      if (!this.kept.has(s)) this.add(s);
+    });
+    this.reviving.set(s, p);
+    return p;
   }
 }

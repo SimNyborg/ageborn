@@ -71,10 +71,10 @@ test.describe('B13 flows', () => {
       .poll(
         async () => {
           const skip = page.getByTestId('capsule-skip');
-          // Skip leaves when the summary comes, maybe between the look and the click: a bounded click, so
-          // it cannot wait forever (generous: a click waits for two still frames, slow in software WebGL)
-          if (await skip.isVisible()) await skip.click({ timeout: 10_000 }).catch(() => undefined);
-          else await page.getByTestId('capsule-screen').click({ timeout: 10_000 }).catch(() => undefined);
+          // Skip leaves when the summary comes, maybe between the look and the click: forced (no wait for
+          // still frames, slow in software WebGL) and bounded clicks, so none can wait forever
+          if (await skip.isVisible()) await skip.click({ force: true, timeout: 10_000 }).catch(() => undefined);
+          else await page.getByTestId('capsule-screen').click({ force: true, timeout: 10_000 }).catch(() => undefined);
           return page.getByTestId('capsule-summary').isVisible();
         },
         { timeout: 60_000, intervals: [300] },
@@ -108,10 +108,10 @@ test.describe('B13 flows', () => {
       .poll(
         async () => {
           const skip = page.getByTestId('capsule-skip');
-          // Skip leaves when the summary comes, maybe between the look and the click: a bounded click, so
-          // it cannot wait forever (generous: a click waits for two still frames, slow in software WebGL)
-          if (await skip.isVisible()) await skip.click({ timeout: 10_000 }).catch(() => undefined);
-          else await page.getByTestId('capsule-screen').click({ timeout: 10_000 }).catch(() => undefined);
+          // Skip leaves when the summary comes, maybe between the look and the click: forced (no wait for
+          // still frames, slow in software WebGL) and bounded clicks, so none can wait forever
+          if (await skip.isVisible()) await skip.click({ force: true, timeout: 10_000 }).catch(() => undefined);
+          else await page.getByTestId('capsule-screen').click({ force: true, timeout: 10_000 }).catch(() => undefined);
           return page.getByTestId('capsule-summary').isVisible();
         },
         { timeout: 60_000, intervals: [300] },

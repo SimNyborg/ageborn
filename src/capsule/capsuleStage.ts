@@ -66,8 +66,11 @@ export interface StageDeps {
   seed: number;
 }
 
-/** The provider's duck-typed sheet lease (visuals' `showcaseLease`): the walkouts' unit sheets load ahead. */
-type LeasingArt = ArtProvider & { showcaseLease?(o: { visuals: readonly { visualId: string; skin?: string | null }[] }): { release(): void } };
+/**
+ * The provider's duck-typed sheet lease (visuals' `showcaseLease`): the walkouts' unit sheets load ahead.
+ * `cpu: false`: the show draws on the app's renderer, so the sheets need no decoded copy (G7).
+ */
+type LeasingArt = ArtProvider & { showcaseLease?(o: { visuals: readonly { visualId: string; skin?: string | null }[]; cpu?: boolean }): { release(): void } };
 
 interface Flyer {
   c: Container;
@@ -354,7 +357,7 @@ export class CapsuleStage implements ShowView {
       const info = d.catalog.card(c.card);
       return info.view === 'unit' ? [{ visualId: info.visualId, skin: c.skin }] : [];
     });
-    this.artLease = visuals.length > 0 ? ((d.art as LeasingArt).showcaseLease?.({ visuals }) ?? null) : null;
+    this.artLease = visuals.length > 0 ? ((d.art as LeasingArt).showcaseLease?.({ visuals, cpu: false }) ?? null) : null;
     const rm = d.settings.reduceMotion;
     this.rng = mulberry32(d.seed);
     this.lite = d.settings.lite === true;

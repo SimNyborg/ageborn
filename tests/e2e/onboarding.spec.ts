@@ -43,21 +43,21 @@ async function expectStarterCapsule(page: Page): Promise<void> {
 async function tapShow(page: Page): Promise<void> {
   const screen = page.getByTestId('capsule-screen');
   const box = await screen.boundingBox();
-  if (box) await screen.click({ position: { x: 20, y: Math.round(box.height / 2) }, timeout: 10_000 }).catch(() => undefined);
+  if (box) await screen.click({ position: { x: 20, y: Math.round(box.height / 2) }, force: true, timeout: 10_000 }).catch(() => undefined);
 }
 
 /**
  * Skips (or taps) through the capsule show until its summary is up. Skip leaves when the summary comes,
  * which can fall between the look and the click: a click without a timeout then waited for it forever.
- * The bound is generous, since a click first waits for two still frames, and a slow engine draws a frame
- * a second (a 2 s bound cancelled every click on a loaded machine).
+ * The clicks are forced (no wait for two still frames, which a software-rendered show drew so slowly that
+ * a 2 s or even a 10 s bound cancelled them in CI's Chromium) and bounded, so a vanished Skip costs 10 s.
  */
 async function toSummary(page: Page): Promise<void> {
   await expect
     .poll(
       async () => {
         const skip = page.getByTestId('capsule-skip');
-        if (await skip.isVisible()) await skip.click({ timeout: 10_000 }).catch(() => undefined);
+        if (await skip.isVisible()) await skip.click({ force: true, timeout: 10_000 }).catch(() => undefined);
         else await tapShow(page);
         return page.getByTestId('capsule-summary').isVisible();
       },

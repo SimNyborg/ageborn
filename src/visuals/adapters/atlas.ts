@@ -519,13 +519,17 @@ export class AtlasAdapter implements VisualAdapter {
     return (this.leases.get(set)?.get(source) ?? 0) > 0 || (set.views.get(source) ?? 0) > 0 || (set === this.main && this.pinned.has(source));
   }
 
-  /** A loaded sheet's texture source joins its set (memory hook) and, with a renderer, the release queue. */
+  /**
+   * A loaded sheet's texture source joins its set (memory hook) and, with a renderer, the release queue:
+   * the battle's sheets only. A showcase-only HD copy is drawn by the showcase's own WebGL app, which
+   * needs its decoded copy, and unloads a few seconds after the stage goes.
+   */
   private adopt(set: SheetSet, source: string, d: AtlasData): void {
     const ts = d.source;
     if (!ts) return;
     set.sources.set(source, [...(set.sources.get(source) ?? []), ts]);
     trackSource(ts);
-    this.releaser?.add(ts);
+    if (set === this.main) this.releaser?.add(ts);
   }
 
   /**
@@ -638,19 +642,37 @@ export class AtlasAdapter implements VisualAdapter {
    * shared and stays; a sheet loaded only for showcases is unloaded `leaseLingerMs` after its last
    * lease ends, so browsing cards does not pile up decoded sheets. `hd` asks for the 2.46 px/lu sheet
    * where the battle draws the 1x one (a large stage on a 1x screen): such copies are showcase-only.
+   * `cpu`: a renderer other than the app's draws the sheet (the card showcase's own WebGL app), so its
+   * decoded copy is kept while leased (decoded again first if it was released: `core` and `ready` wait
+   * for that); a closed copy would draw nothing there (G7).
    */
-  lease(source: string, o: { hd?: boolean } = {}): SheetLease {
+  lease(source: string, o: { hd?: boolean; cpu?: boolean } = {}): SheetLease {
     const set = o.hd && !this.main.hd && unitSheetAge(source) ? this.hdOnly : this.main;
     const counts = this.leases.get(set) ?? new Map<string, number>();
     this.leases.set(set, counts);
     counts.set(source, (counts.get(source) ?? 0) + 1);
     this.cancelUnload(set, source);
-    const core = this.load(set, source);
+    let done = false;
+    const kept = new Map<TextureSource, { release(): void }>();
+    // keeps the CPU copies the sheet has now (core, then extras): never after the lease ended
+    const keepCopies = (): Promise<void> => {
+      const r = this.releaser;
+      if (o.cpu !== true || !r || done) return Promise.resolve();
+      const waits: Promise<void>[] = [];
+      for (const ts of set.sources.get(source) ?? []) {
+        if (kept.has(ts)) continue;
+        const k = r.keep(ts);
+        kept.set(ts, k);
+        waits.push(k.ready);
+      }
+      return Promise.all(waits).then(() => undefined);
+    };
+    const core = this.load(set, source).then(keepCopies);
     const ready = (async () => {
       await core;
       await set.extrasPending.get(source);
+      await keepCopies();
     })();
-    let done = false;
     return {
       ready,
       core,
@@ -658,6 +680,8 @@ export class AtlasAdapter implements VisualAdapter {
       release: () => {
         if (done) return;
         done = true;
+        for (const k of kept.values()) k.release();
+        kept.clear();
         const n = (counts.get(source) ?? 1) - 1;
         if (n > 0) {
           counts.set(source, n);

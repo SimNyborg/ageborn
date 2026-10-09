@@ -3,6 +3,8 @@
  * (the ImageBitmap) closed; Pixi's texture GC is turned off for it (a collected texture would re-upload
  * from the closed bitmap); a sheet that could not be uploaded keeps its copy; an unloaded sheet's bitmap
  * closes at once; after a restored GPU context the released sheets are decoded again and released again.
+ * A sheet another renderer draws (the card showcase's own WebGL app) is kept: never released while kept,
+ * decoded again first when it already was, and released again once nothing keeps it.
  */
 import { ImageSource } from 'pixi.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -160,5 +162,100 @@ describe('SheetReleaser (G7)', () => {
     f.step();
     expect((a.resource as unknown as FakeBitmap).closed).toBe(true);
     expect(r.isReleased(a)).toBe(true);
+  });
+  it('a kept sheet is never released; once nothing keeps it, it is released after all', () => {
+    const f = frames();
+    const uploaded: unknown[] = [];
+    const r = new SheetReleaser({ upload: (s) => (uploaded.push(s), true) }, { schedule: f.schedule, budgetMs: 0 });
+    const a = sheet();
+    r.add(a);
+    const k1 = r.keep(a);
+    const k2 = r.keep(a);
+    f.step();
+    expect(uploaded).toEqual([]);
+    expect((a.resource as unknown as FakeBitmap).closed).toBe(false);
+    // a load that lands while it is kept is not queued either
+    r.add(a);
+    expect(r.stats.queued).toBe(0);
+    k1.release();
+    k1.release(); // idempotent
+    expect(r.isKept(a)).toBe(true);
+    k2.release();
+    expect(r.isKept(a)).toBe(false);
+    f.step();
+    expect(uploaded).toEqual([a]);
+    expect((a.resource as unknown as FakeBitmap).closed).toBe(true);
+  });
+
+  it('keeping a released sheet decodes it again first: ready waits for the copy, two keeps share one decode', async () => {
+    const f = frames();
+    const decoded: string[] = [];
+    let land: ((b: ImageBitmap | null) => void) | null = null;
+    const r = new SheetReleaser(
+      { upload: () => true },
+      {
+        schedule: f.schedule,
+        budgetMs: 0,
+        decode: (url) => {
+          decoded.push(url);
+          return new Promise((res) => (land = res));
+        },
+      },
+    );
+    const a = sheet();
+    r.add(a);
+    f.step();
+    expect(r.isReleased(a)).toBe(true);
+    const updates: number[] = [];
+    a.on('update', () => updates.push(1));
+    const k1 = r.keep(a);
+    const k2 = r.keep(a);
+    expect(decoded).toEqual(['http://x/art/units/stone/bonker.hd.png']);
+    let ready = false;
+    void k1.ready.then(() => (ready = true));
+    await Promise.resolve();
+    expect(ready).toBe(false);
+    land!(new FakeBitmap(64, 32) as unknown as ImageBitmap);
+    await k2.ready;
+    await Promise.resolve();
+    expect(ready).toBe(true);
+    // the source has its copy again (Pixi re-uploads on update) and stays unreleased while kept
+    expect((a.resource as unknown as FakeBitmap).width).toBe(64);
+    expect(updates.length).toBeGreaterThan(0);
+    expect(r.isReleased(a)).toBe(false);
+    expect(r.stats.queued).toBe(0);
+    k1.release();
+    k2.release();
+    f.step();
+    expect(r.isReleased(a)).toBe(true);
+    expect((a.resource as unknown as FakeBitmap).closed).toBe(true);
+  });
+
+  it('a failed decode leaves the sheet released (a later keep tries again); a copy that lands after an unload is closed', async () => {
+    const f = frames();
+    const results: (FakeBitmap | null)[] = [null, new FakeBitmap(64, 32)];
+    const r = new SheetReleaser({ upload: () => true }, { schedule: f.schedule, budgetMs: 0, decode: async () => results.shift() as unknown as ImageBitmap | null });
+    const a = sheet();
+    r.add(a);
+    f.step();
+    const k = r.keep(a);
+    await k.ready;
+    expect(r.isReleased(a)).toBe(true);
+    k.release();
+    // the second try lands after the sheet was unloaded (forget): the new copy is closed, not kept
+    let land: ((b: ImageBitmap | null) => void) | null = null;
+    const r2 = new SheetReleaser({ upload: () => true }, { schedule: f.schedule, budgetMs: 0, decode: () => new Promise((res) => (land = res)) });
+    const b = sheet('http://x/b.png');
+    r2.add(b);
+    f.step();
+    const kb = r2.keep(b);
+    r2.forget(b);
+    const late = new FakeBitmap(64, 32);
+    land!(late as unknown as ImageBitmap);
+    await kb.ready;
+    expect(late.closed).toBe(true);
+    expect(b.resource).not.toBe(late);
+    kb.release();
+    expect(r2.stats).toEqual({ queued: 0, released: 0 });
   });
 });

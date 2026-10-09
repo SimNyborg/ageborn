@@ -8,9 +8,13 @@
  * `?dev=1` hook `window.__agebornDev.memory()` (`visuals/textureMemory.ts`: textures on the GPU plus the
  * decoded copies still on the CPU side). The opening plays at real speed, where no unit may appear
  * without its art (the battle's clock waits for the decks' sheets); the rest is fast-forwarded in steps.
+ *
+ * The card showcase draws on its own WebGL app, which can only upload from a sheet's decoded copy: after
+ * the onboarding's two battles at DPR 2 the forced upgrade's stage drew no Bonker (2026-10-09, its sheet's
+ * copy was released), so the second test plays them and checks that nothing uploads a closed bitmap.
  */
 import { expect, test, type Page } from '@playwright/test';
-import { watchPage, type AgebornDev } from './helpers';
+import { fastForward, watchPage, type AgebornDev } from './helpers';
 
 /** Decoded image memory a whole Standard War may hold at its peak (MB; 2,484 before G7, about 540 after). */
 const BUDGET_MB = 600;
@@ -71,5 +75,70 @@ test('G7: a long Standard War at DPR 2 keeps decoded images under the budget, an
   // the match went through several evolves (Gunpowder or later), so the budget covers them
   expect(top).toBeGreaterThanOrEqual(3);
   expect(mb(peak?.total ?? Infinity)).toBeLessThanOrEqual(BUDGET_MB);
+  expect(problems.errors).toEqual([]);
+});
+
+/** Records every WebGL upload from a closed ImageBitmap (it draws nothing; WebKit logs it as an error, Chromium as a warning). */
+function watchClosedUploads(): void {
+  const w = window as unknown as { __closedUploads: string[] };
+  w.__closedUploads = [];
+  for (const proto of [WebGLRenderingContext.prototype, WebGL2RenderingContext.prototype]) {
+    const p = proto as unknown as Record<string, (...a: unknown[]) => unknown>;
+    for (const name of ['texImage2D', 'texSubImage2D']) {
+      const orig = p[name]!;
+      p[name] = function (this: unknown, ...a: unknown[]) {
+        const src = a[a.length - 1];
+        if (typeof ImageBitmap !== 'undefined' && src instanceof ImageBitmap && src.width === 0) w.__closedUploads.push(name);
+        return orig.apply(this, a);
+      };
+    }
+  }
+}
+
+/** Skips through a capsule show to its summary, then closes it. Skip leaves with the summary, so the clicks are forced and bounded (as in the onboarding). */
+async function throughCapsule(page: Page): Promise<void> {
+  await expect(page.getByTestId('capsule-screen')).toBeVisible({ timeout: 30_000 });
+  await expect
+    .poll(
+      async () => {
+        const skip = page.getByTestId('capsule-skip');
+        if (await skip.isVisible()) await skip.click({ force: true, timeout: 10_000 }).catch(() => undefined);
+        return page.getByTestId('capsule-summary').isVisible();
+      },
+      { timeout: 120_000, intervals: [300] },
+    )
+    .toBe(true);
+  await page.getByTestId('capsule-done').click();
+}
+
+test("G7: after the onboarding's two battles at DPR 2 the forced upgrade's stage (its own WebGL app) draws from a live copy", async ({ page }) => {
+  // two fast-forwarded battles and two capsules: about a minute in Chromium, several in CI's WebKit
+  test.setTimeout(480_000);
+  await page.addInitScript(watchClosedUploads);
+  const problems = watchPage(page);
+  await page.goto('./?dev=1&autopilot=1');
+  for (const match of [1, 2]) {
+    await expect(page.getByTestId('battle')).toBeVisible({ timeout: 60_000 });
+    await expect
+      .poll(
+        async () => {
+          await fastForward(page, 2_000);
+          return page.getByTestId('result').isVisible();
+        },
+        { timeout: 180_000, intervals: [250] },
+      )
+      .toBe(true);
+    await page.getByTestId('next').click();
+    await throughCapsule(page);
+    if (match === 1) {
+      await page.getByTestId('make-general-done').click({ timeout: 30_000 });
+      await page.getByTestId('play').click({ timeout: 30_000 });
+    }
+  }
+  // the forced upgrade's card stage leases the Bonker sheet both battles drew (and released to the GPU)
+  await expect(page.getByTestId('first-upgrade-stage')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByTestId('showcase-canvas')).toBeVisible({ timeout: 30_000 });
+  await page.waitForTimeout(2_000);
+  expect(await page.evaluate(() => (window as unknown as { __closedUploads: string[] }).__closedUploads)).toEqual([]);
   expect(problems.errors).toEqual([]);
 });

@@ -3,9 +3,11 @@
  * unit sheet; a battle's lease (the provider's `holdArt`) loads one, and when the lease ends it unloads
  * after the linger, but never while a view still draws from it; a sheet a view draws before any hold has
  * it (the fallback path) is loaded without a pin and unloads once nothing holds or draws it. The provider's
- * hold resolves units with their skins and a tower's crew from its fort sheet.
+ * hold resolves units with their skins and a tower's crew from its fort sheet. A showcase lease (`cpu`:
+ * the card showcase draws on its own WebGL app) keeps the sheet's decoded copy, decoding it again when a
+ * battle had released it; a showcase-only HD copy is never released.
  */
-import { Texture } from 'pixi.js';
+import { ImageSource, Texture } from 'pixi.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { VisualDef } from '@/contracts/art';
 import { AtlasAdapter, LEASE_LINGER_MS, type AtlasData } from '../adapters/atlas';
@@ -54,7 +56,49 @@ async function settle(): Promise<void> {
   for (let i = 0; i < 8; i++) await Promise.resolve();
 }
 
-afterEach(() => vi.useRealTimers());
+afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
+
+/** A stand-in ImageBitmap (Node has none): `close()` detaches it (0 x 0), as in the browser. */
+class FakeBitmap {
+  constructor(
+    public width: number,
+    public height: number,
+  ) {}
+  close(): void {
+    this.width = 0;
+    this.height = 0;
+  }
+}
+
+/** An adapter with the app's GPU hooks: loaded sheets carry a texture source with a bitmap, uploads always work. */
+function gpuAdapter() {
+  vi.stubGlobal('ImageBitmap', FakeBitmap);
+  // a released sheet decodes again from its URL (the HTTP cache)
+  const decodes: string[] = [];
+  vi.stubGlobal('fetch', async (url: string) => (decodes.push(url), { ok: true, blob: async () => ({}) }));
+  vi.stubGlobal('createImageBitmap', async () => new FakeBitmap(64, 32));
+  const def = MANIFEST['unit.bonker'] as VisualDef & { source: string };
+  const made: ImageSource[] = [];
+  const art = createArtProvider({ warn: () => {} });
+  const a = new AtlasAdapter({
+    entries: () => [{ ...def, clips: { idle: def.clips['idle']! } }],
+    decor: art.procedural.baker,
+    baseUrl: '/ageborn/',
+    lazyUnits: true,
+    gpu: { upload: () => true },
+    load: async (url) => {
+      const source = new ImageSource({ resource: new FakeBitmap(64, 32) as unknown as ImageBitmap, label: url.replace(/\.json$/, '.webp') });
+      made.push(source);
+      return { ...data(), source };
+    },
+    unload: () => undefined,
+  });
+  const open = (i = 0): boolean => (made[i]?.resource as unknown as FakeBitmap | undefined)?.width === 64;
+  return { a, src: def.source, made, decodes, open };
+}
 
 describe('unit sheets per match (G7)', () => {
   it('with lazyUnits, preload loads the ages\' world sheets only, never a unit sheet', async () => {
@@ -226,5 +270,47 @@ describe('unit sheets per match (G7)', () => {
     // a released hold ignores later sets
     await hold.set([{ visualId: 'unit.bonker' }]);
     expect(leased.filter((s) => s === 'art/units/stone/bonker.json')).toHaveLength(1);
+  });
+  it("a showcase lease keeps the sheet's decoded copy (its own renderer uploads from it), decoding it again after a battle released it", async () => {
+    vi.useFakeTimers();
+    const { a, src, made, decodes, open } = gpuAdapter();
+    const battle = a.lease(src);
+    await battle.core;
+    await vi.advanceTimersByTimeAsync(40);
+    // the battle's sheet: on the GPU, its CPU copy closed
+    expect(made).toHaveLength(1);
+    expect(open()).toBe(false);
+    const show = a.lease(src, { cpu: true });
+    await show.ready;
+    expect(decodes).toEqual(['/ageborn/art/units/stone/bonker.webp']);
+    expect(open()).toBe(true);
+    await vi.advanceTimersByTimeAsync(100);
+    expect(open()).toBe(true);
+    // the stage goes: released again (the battle still draws it from the GPU)
+    show.release();
+    await vi.advanceTimersByTimeAsync(40);
+    expect(open()).toBe(false);
+    battle.release();
+  });
+
+  it('a showcase lease that comes first keeps its copy from the start; a showcase-only HD copy is never released', async () => {
+    vi.useFakeTimers();
+    const { a, src, made, decodes, open } = gpuAdapter();
+    const show = a.lease(src, { cpu: true });
+    await show.ready;
+    await vi.advanceTimersByTimeAsync(100);
+    expect(open()).toBe(true);
+    expect(decodes).toEqual([]);
+    show.release();
+    // the HD copy of a 1x battle (another set) keeps its copy until it unloads
+    const hd = a.lease(src, { hd: true, cpu: true });
+    await hd.ready;
+    expect(hd.hd).toBe(true);
+    await vi.advanceTimersByTimeAsync(100);
+    expect(made).toHaveLength(2);
+    expect(open(1)).toBe(true);
+    hd.release();
+    await vi.advanceTimersByTimeAsync(LEASE_LINGER_MS + 100);
+    expect(open(1)).toBe(false);
   });
 });
