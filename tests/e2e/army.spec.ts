@@ -44,6 +44,9 @@ async function centre(page: Page, selector: string): Promise<{ x: number; y: num
 }
 
 test.describe('Army deck builder', () => {
+  // `open` alone may wait 30 s for the board (the dev gallery boots slowly in CI's software-rendered WebKit,
+  // where the first test timed out in four runs and passed on retry), so a test gets twice that (G3).
+  test.describe.configure({ timeout: 60_000 });
   test('card + Use equips in 2 taps; tap-tap places into the tapped slot; Undo reverses both', async ({ page }) => {
     const problems = watchPage(page);
     await open(page);

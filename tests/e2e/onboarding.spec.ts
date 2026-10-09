@@ -43,16 +43,19 @@ async function expectStarterCapsule(page: Page): Promise<void> {
 async function tapShow(page: Page): Promise<void> {
   const screen = page.getByTestId('capsule-screen');
   const box = await screen.boundingBox();
-  await screen.click({ position: { x: 20, y: Math.round((box?.height ?? 400) / 2) } });
+  if (box) await screen.click({ position: { x: 20, y: Math.round(box.height / 2) }, timeout: 2_000 }).catch(() => undefined);
 }
 
-/** Skips (or taps) through the capsule show until its summary is up. */
+/**
+ * Skips (or taps) through the capsule show until its summary is up. Skip leaves when the summary comes,
+ * which can fall between the look and the click: a click without a timeout then waited for it forever.
+ */
 async function toSummary(page: Page): Promise<void> {
   await expect
     .poll(
       async () => {
         const skip = page.getByTestId('capsule-skip');
-        if (await skip.isVisible()) await skip.click();
+        if (await skip.isVisible()) await skip.click({ timeout: 2_000 }).catch(() => undefined);
         else await tapShow(page);
         return page.getByTestId('capsule-summary').isVisible();
       },
@@ -131,7 +134,20 @@ test.describe('first session (A8)', () => {
     await expect(page.getByTestId('first-upgrade-gain')).toHaveText('+5% HP and damage');
     await expect(page.getByTestId('first-upgrade-level')).toHaveText('Lv 2');
     await page.getByTestId('first-upgrade-continue').click();
-    await expect(page.getByTestId('first-upgrade')).toHaveCount(0);
+    // It closes once the save holds the upgrade and its flag. CI's software-rendered WebKit runs the
+    // minutes after match 2 slowly (the Result's second row took 10-12 s there, under 1 s in Chromium), so
+    // the wait is longer; if it still stays open, the failure says whether the save lost the upgrade or the
+    // flag (an app bug, like G4's stale write) or the overlay was only slow to leave.
+    await expect(page.getByTestId('first-upgrade'))
+      .toHaveCount(0, { timeout: 15_000 })
+      .catch(async (e: unknown) => {
+        const state = await page.evaluate(() => {
+          type S = { flags: Record<string, boolean>; collection: Record<string, { level: number } | undefined> };
+          const s = (window as unknown as { __agebornDev?: { controller: { save: { peek(): S | null } } } }).__agebornDev?.controller.save.peek();
+          return { flag: s?.flags['tutorial.firstUpgrade'] ?? null, bonker: s?.collection['bonker']?.level ?? null, phase: document.querySelector('[data-testid=first-upgrade]')?.getAttribute('data-phase') ?? null };
+        });
+        throw new Error(`the forced upgrade stayed open after Continue: ${JSON.stringify(state)}`, { cause: e });
+      });
 
     // Home: the onboarding is over, so the hub is the Ladder now (trophies, the Campaign card), and
     // the second win opens the Capsules tab, where the training match's Wardrobe Crate waits.

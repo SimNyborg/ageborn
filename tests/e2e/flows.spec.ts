@@ -71,8 +71,9 @@ test.describe('B13 flows', () => {
       .poll(
         async () => {
           const skip = page.getByTestId('capsule-skip');
-          if (await skip.isVisible()) await skip.click();
-          else await page.getByTestId('capsule-screen').click();
+          // Skip leaves when the summary comes, maybe between the look and the click (no endless wait)
+          if (await skip.isVisible()) await skip.click({ timeout: 2_000 }).catch(() => undefined);
+          else await page.getByTestId('capsule-screen').click({ timeout: 2_000 }).catch(() => undefined);
           return page.getByTestId('capsule-summary').isVisible();
         },
         { timeout: 60_000, intervals: [300] },
@@ -106,8 +107,9 @@ test.describe('B13 flows', () => {
       .poll(
         async () => {
           const skip = page.getByTestId('capsule-skip');
-          if (await skip.isVisible()) await skip.click();
-          else await page.getByTestId('capsule-screen').click();
+          // Skip leaves when the summary comes, maybe between the look and the click (no endless wait)
+          if (await skip.isVisible()) await skip.click({ timeout: 2_000 }).catch(() => undefined);
+          else await page.getByTestId('capsule-screen').click({ timeout: 2_000 }).catch(() => undefined);
           return page.getByTestId('capsule-summary').isVisible();
         },
         { timeout: 60_000, intervals: [300] },
