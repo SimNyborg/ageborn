@@ -6,8 +6,9 @@
  *   npx tsx tools/e2eSummary.ts test-results/e2e-results.json
  *
  * Lines: the counts, the test time per project (how heavy each engine runs, G3), then `FAIL  [project]
- * file:line › title › … — first line of the error` and the flaky ones. Always exits 0: the test step
- * itself fails the job.
+ * file:line › title › … — first line of the error`, the flaky ones, and `NOTE` for what a test measured
+ * (its `memory` and `measure` annotations: the G7 memory peak, how long a slow step took). Always exits
+ * 0: the test step itself fails the job.
  */
 import { existsSync, readFileSync } from 'node:fs';
 
@@ -18,6 +19,7 @@ interface JsonResult {
   duration?: number;
   error?: { message?: string };
   errors?: { message?: string }[];
+  annotations?: { type: string; description?: string }[];
 }
 interface JsonTest {
   projectName: string;
@@ -44,6 +46,9 @@ export interface JsonReport {
 // eslint-disable-next-line no-control-regex
 const ANSI = /\u001b\[[0-9;]*m/g;
 
+/** The annotation types a test reports a measurement under (printed as `NOTE` lines). */
+const NOTE_TYPES: ReadonlySet<string> = new Set(['memory', 'measure']);
+
 /** The first meaningful line of a result's error, without colour codes, at most 220 characters. */
 function firstLine(r: JsonResult | undefined): string {
   const msg = r?.error?.message ?? r?.errors?.find((e) => e.message)?.message ?? '';
@@ -56,10 +61,11 @@ function firstLine(r: JsonResult | undefined): string {
   return line.length > 220 ? `${line.slice(0, 217)}...` : line;
 }
 
-/** The summary lines of a Playwright JSON report: the counts, the test time per project, then one line per failed and flaky test. */
+/** The summary lines of a Playwright JSON report: the counts, the test time per project, one line per failed and flaky test, then the measurements. */
 export function summarize(report: JsonReport): string[] {
   const fail: string[] = [];
   const flaky: string[] = [];
+  const notes: string[] = [];
   /** Per project: the duration of each test's first run (ms). */
   const times = new Map<string, number[]>();
   const walk = (s: JsonSuite, path: string[]): void => {
@@ -68,8 +74,10 @@ export function summarize(report: JsonReport): string[] {
       for (const t of spec.tests) {
         const first = t.results.find((r) => r.retry === 0);
         if (t.status !== 'skipped' && first?.duration !== undefined) times.set(t.projectName, [...(times.get(t.projectName) ?? []), first.duration]);
-        if (t.status !== 'unexpected' && t.status !== 'flaky') continue;
         const name = `[${t.projectName}] ${spec.file}:${spec.line} › ${[...titles, spec.title].join(' › ')}`;
+        // what each run measured (a retry measures again)
+        for (const r of t.results) for (const a of r.annotations ?? []) if (NOTE_TYPES.has(a.type) && a.description) notes.push(`NOTE  ${name}${r.retry > 0 ? ` (retry ${r.retry})` : ''} — ${a.type}: ${a.description}`);
+        if (t.status !== 'unexpected' && t.status !== 'flaky') continue;
         if (t.status === 'unexpected') fail.push(`FAIL  ${name} — ${firstLine(t.results.find((r) => r.status !== 'passed' && r.status !== 'skipped'))}`);
         else flaky.push(`FLAKY ${name} — ${firstLine(t.results.find((r) => r.status !== 'passed'))}`);
       }
@@ -88,7 +96,7 @@ export function summarize(report: JsonReport): string[] {
       const at = (q: number): number => sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * q))] ?? 0;
       return `time [${name}]: ${sorted.length} tests, ${(total / 60_000).toFixed(1)} min in all, median ${sec(at(0.5))}, p90 ${sec(at(0.9))}, slowest ${sec(at(1))}`;
     });
-  return [head, ...perProject, ...fail.sort(), ...flaky.sort()];
+  return [head, ...perProject, ...fail.sort(), ...flaky.sort(), ...notes.sort()];
 }
 
 function main(): void {

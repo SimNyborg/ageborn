@@ -1,9 +1,9 @@
-/** The CI e2e summary (tools/e2eSummary.ts): one line per failed and flaky test, colour codes stripped. */
+/** The CI e2e summary (tools/e2eSummary.ts): one line per failed and flaky test, colour codes stripped, then what the tests measured. */
 import { describe, expect, it } from 'vitest';
 import { summarize, type JsonReport } from '../e2eSummary';
 
 describe('e2e summary', () => {
-  it('prints the counts, then one line per failure and per flaky test', () => {
+  it('prints the counts, one line per failure and per flaky test, then the memory and measure notes', () => {
     const report: JsonReport = {
       stats: { expected: 10, unexpected: 1, flaky: 1, skipped: 2 },
       suites: [
@@ -34,7 +34,22 @@ describe('e2e summary', () => {
                   title: 'stance buttons',
                   file: 'hud.spec.ts',
                   line: 210,
-                  tests: [{ projectName: 'webkit', status: 'flaky', results: [{ status: 'timedOut', retry: 0, duration: 90_000, errors: [{ message: 'Test timeout of 30000ms exceeded.' }] }, { status: 'passed', retry: 1 }] }],
+                  tests: [
+                    {
+                      projectName: 'webkit',
+                      status: 'flaky',
+                      results: [
+                        { status: 'timedOut', retry: 0, duration: 90_000, errors: [{ message: 'Test timeout of 30000ms exceeded.' }], annotations: [{ type: 'measure', description: 'took 9 s' }] },
+                        { status: 'passed', retry: 1, annotations: [{ type: 'measure', description: 'took 3 s' }] },
+                      ],
+                    },
+                  ],
+                },
+                {
+                  title: 'memory budget',
+                  file: 'hud.spec.ts',
+                  line: 300,
+                  tests: [{ projectName: 'chromium', status: 'expected', results: [{ status: 'passed', retry: 0, duration: 2000, annotations: [{ type: 'memory', description: 'peak 536 MB' }, { type: 'issue', description: 'not a measurement' }] }] }],
                 },
               ],
             },
@@ -44,10 +59,13 @@ describe('e2e summary', () => {
     };
     expect(summarize(report)).toEqual([
       'E2E summary: 10 passed, 1 failed, 1 flaky, 2 skipped',
-      'time [chromium]: 1 tests, 0.1 min in all, median 4.0 s, p90 4.0 s, slowest 4.0 s',
+      'time [chromium]: 2 tests, 0.1 min in all, median 4.0 s, p90 4.0 s, slowest 4.0 s',
       'time [webkit]: 2 tests, 2.0 min in all, median 90.0 s, p90 90.0 s, slowest 90.0 s',
       'FAIL  [webkit] hud.spec.ts:112 › Battle HUD › fits at 844 x 390 — Error: expect(received).toEqual(expected)',
       'FLAKY [webkit] hud.spec.ts:210 › Battle HUD › stance buttons — Test timeout of 30000ms exceeded.',
+      'NOTE  [chromium] hud.spec.ts:300 › Battle HUD › memory budget — memory: peak 536 MB',
+      'NOTE  [webkit] hud.spec.ts:210 › Battle HUD › stance buttons (retry 1) — measure: took 3 s',
+      'NOTE  [webkit] hud.spec.ts:210 › Battle HUD › stance buttons — measure: took 9 s',
     ]);
   });
 });

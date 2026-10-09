@@ -138,6 +138,9 @@ test.describe('B13 flows', () => {
 
   test('5. Home renders', async ({ page }) => {
     requireFlow('home');
+    // three tabs, the War Path and two page loads: a software-rendered WebKit under load needs more than
+    // the default 30 s (G3)
+    test.setTimeout(60_000);
     const problems = watchPage(page);
     await pastOnboarding(page);
     await expect(page.locator('[data-screen="home"]')).toBeVisible({ timeout: 20_000 });

@@ -83,14 +83,27 @@ test.describe('modes and replays', () => {
     await expect(plate.getByTestId('ai-badge')).toHaveCount(0);
 
     // Battle searches: the radar, the time counting up, the trophy window; Battle turns into Cancel.
+    // The search ends by itself after 2-12.5 s (`searchDelayMs`), and five separate checks took longer
+    // than that in CI's software-rendered WebKit (the player was found before Cancel, G3): one look at
+    // the searching plate, then Cancel at once, then the checks.
     await page.getByTestId('play').click();
     await expect(plate).toHaveAttribute('data-state', 'ranked-search');
-    await expect(plate).toContainText('Searching for an opponent');
-    await expect(plate.getByTestId('online-elapsed')).toBeVisible();
-    await expect(plate.getByTestId('ranked-window')).toContainText('Arena 3');
-    await expect(page.getByTestId('play')).toHaveText(/cancel/i);
+    const seen = await page.evaluate(() => {
+      const p = document.querySelector('[data-testid=home-opponent]');
+      const elapsed = p?.querySelector('[data-testid=online-elapsed]');
+      return {
+        text: p?.textContent ?? '',
+        elapsed: elapsed instanceof HTMLElement && elapsed.getClientRects().length > 0 && getComputedStyle(elapsed).visibility !== 'hidden',
+        window: p?.querySelector('[data-testid=ranked-window]')?.textContent ?? '',
+        play: document.querySelector('[data-testid=play]')?.textContent ?? '',
+      };
+    });
     // Cancel stops it at once; nothing starts.
     await page.getByTestId('play').click();
+    expect(seen.text).toContain('Searching for an opponent');
+    expect(seen.elapsed).toBe(true);
+    expect(seen.window).toContain('Arena 3');
+    expect(seen.play).toMatch(/cancel/i);
     await expect(plate).toHaveAttribute('data-state', /^ladder/);
     await expect(page.getByTestId('play')).toHaveText(/battle/i);
 
@@ -98,11 +111,20 @@ test.describe('modes and replays', () => {
     await page.getByTestId('play').click();
     await expect(plate).toHaveAttribute('data-state', 'ranked-search');
     await expect(plate.getByTestId('ranked-found')).toBeVisible({ timeout: 20_000 });
-    const name = ((await plate.getByTestId('ranked-name').textContent()) ?? '').trim();
+    // The found card holds for FOUND_HOLD_MS (1.5 s) before VS: one look at it, as above.
+    const found = await page.evaluate(() => {
+      const p = document.querySelector('[data-testid=home-opponent]');
+      const shown = (id: string): boolean => {
+        const el = p?.querySelector(`[data-testid=${id}]`);
+        return el instanceof HTMLElement && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
+      };
+      return { name: (p?.querySelector('[data-testid=ranked-name]')?.textContent ?? '').trim(), chip: shown('player-chip'), trophies: shown('ranked-trophies'), ai: p?.querySelectorAll('[data-testid=ai-badge]').length ?? -1 };
+    });
+    const name = found.name;
     expect(name.length).toBeGreaterThan(2);
-    await expect(plate.getByTestId('player-chip')).toBeVisible();
-    await expect(plate.getByTestId('ranked-trophies')).toBeVisible();
-    await expect(plate.getByTestId('ai-badge')).toHaveCount(0);
+    expect(found.chip).toBe(true);
+    expect(found.trophies).toBe(true);
+    expect(found.ai).toBe(0);
 
     // VS: the same player, the Player chip, no AI chip or "AI General".
     const foe = page.getByTestId('vs-foe');

@@ -137,6 +137,13 @@ test.describe('Customize item detail', () => {
     await patch(page, { add: ['nationalFlag.dk', 'nationalFlag.jp', 'nationalFlag.br'], national: 'nationalFlag.dk' });
     await openCustomize(page, 'flags');
     await expect(page.getByTestId('item-nationalFlag.jp')).toBeVisible();
+    // No national flag tile stays an empty placeholder. They show soft placeholders until the one flag
+    // atlas is cut into cells on the device (`useFlagAtlasReady`; the SVGs stand in after
+    // FLAG_ATLAS_WAIT_MS, 15 s), which takes seconds in a software-rendered WebKit: wait for the pictures,
+    // and say how long they took.
+    const shown = Date.now();
+    await expect(page.locator('[data-testid="owned-national"] .cos-img--empty')).toHaveCount(0, { timeout: 20_000 });
+    test.info().annotations.push({ type: 'measure', description: `national flag tiles drawn ${Date.now() - shown} ms after the panel showed` });
     const res = await page.evaluate(async () => {
       const imgs = [...document.querySelectorAll<HTMLImageElement>('#cust-panel .cos-tile--baseFlag img, [data-testid="owned-national"] img, [data-testid="base-mock"] img')];
       await Promise.all(imgs.map((i) => i.decode().catch(() => undefined)));
@@ -147,8 +154,6 @@ test.describe('Customize item detail', () => {
     expect(res.broken).toEqual([]);
     expect(res.national.length).toBeGreaterThanOrEqual(3);
     for (const src of res.national) expect(src).toMatch(/art\/flags\/(svg|atlas)|^blob:/);
-    // no national flag tile is an empty placeholder
-    await expect(page.locator('[data-testid="owned-national"] .cos-img--empty')).toHaveCount(0);
     expect(problems.failed).toEqual([]);
   });
 

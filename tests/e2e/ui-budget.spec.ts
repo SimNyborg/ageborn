@@ -8,8 +8,9 @@
  *   (an allow-list with a reason per entry);
  * - primary count: more than one visible `[data-primary]`, or none where 2.4 names a primary;
  * - pulse count: more than one visible `[data-pulse]`, sampled every 250 ms;
- * - clipping: a `[data-clip-check]` whose content overflows it, or that is shorter than one line of its
- *   text (G1: WebKit squeezed the tab bar labels to 14 px of 16 where Chromium squeezed the icons);
+ * - clipping: a `[data-clip-check]` whose content overflows it, or that is a whole pixel or more shorter
+ *   than one line of its text (G1: WebKit squeezed the tab bar labels to 14 px of 16 where Chromium
+ *   squeezed the icons);
  * - page scroll: the UI root scrolls sideways;
  * - badges: more than 2 visible ready badges on Home.
  *
@@ -282,11 +283,13 @@ async function measure(page: Page, spec: PageSpec): Promise<Violation[]> {
         const label = `"${(el.textContent ?? '').trim().slice(0, 24)}"`;
         if (el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1) v.push({ check: 'clip', detail: `${label} ${el.scrollWidth}x${el.scrollHeight} in ${el.clientWidth}x${el.clientHeight} at ${path(el)}` });
         // the layout height (`clientHeight`, so a running scale animation does not count); an inline box or
-        // a `normal` line height (font metrics) has no line to compare
+        // a `normal` line height (font metrics) has no line to compare. `clientHeight` is whole pixels:
+        // WebKit cuts the fraction off (a 12.6 px line reads 12) where Chromium rounds, so the line is
+        // floored too and only a box a whole pixel short counts (G1 was 14-15 px of 16).
         const cs = getComputedStyle(el);
         if (cs.display === 'inline' || cs.lineHeight === 'normal' || !(el.textContent ?? '').trim()) continue;
         const lh = parseFloat(cs.lineHeight);
-        if (lh > 0 && el.clientHeight + 0.5 < lh) v.push({ check: 'clip', detail: `${label} ${el.clientHeight} px tall, one line is ${lh} px, at ${path(el)}` });
+        if (lh > 0 && el.clientHeight + 0.5 < Math.floor(lh)) v.push({ check: 'clip', detail: `${label} ${el.clientHeight} px tall, one line is ${lh} px, at ${path(el)}` });
       }
       // Page scroll
       if (root.scrollWidth > root.clientWidth + 1) v.push({ check: 'scroll', detail: `root scrolls sideways: ${root.scrollWidth} > ${root.clientWidth}` });

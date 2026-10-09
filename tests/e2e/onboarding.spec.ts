@@ -23,19 +23,47 @@ async function playToResult(page: Page): Promise<void> {
     .toBe(true);
 }
 
-async function openCapsule(page: Page): Promise<void> {
-  await expect(page.getByTestId('capsule-screen')).toBeVisible({ timeout: 20_000 });
+/**
+ * The Result's rewards land one at a time (`REWARD_STEP_MS`, 900 ms each, on animation frames), the
+ * Starter Capsule second: about a second in Chromium, at times over five in CI's software-rendered
+ * WebKit (G3), so the wait is longer than the default 5 s, and the test says how long it took.
+ */
+async function expectStarterCapsule(page: Page): Promise<void> {
+  const shown = Date.now();
+  await expect(page.locator('[data-testid=result-reward][data-kind=capsule]')).toContainText('Starter Capsule', { timeout: 20_000 });
+  test.info().annotations.push({ type: 'measure', description: `the Starter Capsule row landed ${Date.now() - shown} ms after the Result showed` });
+}
+
+/**
+ * A tap on the capsule show itself, at the middle of its left edge. Not the top left corner: the Odds
+ * chip's 44 px hit area is there (it opens the odds sheet, which pauses the show, and then covered Skip:
+ * WebKit stalled a whole minute when its first look came before Skip showed), and not the centre, where
+ * the summary's cards land.
+ */
+async function tapShow(page: Page): Promise<void> {
+  const screen = page.getByTestId('capsule-screen');
+  const box = await screen.boundingBox();
+  await screen.click({ position: { x: 20, y: Math.round((box?.height ?? 400) / 2) } });
+}
+
+/** Skips (or taps) through the capsule show until its summary is up. */
+async function toSummary(page: Page): Promise<void> {
   await expect
     .poll(
       async () => {
         const skip = page.getByTestId('capsule-skip');
         if (await skip.isVisible()) await skip.click();
-        else await page.getByTestId('capsule-screen').click({ position: { x: 20, y: 20 } });
+        else await tapShow(page);
         return page.getByTestId('capsule-summary').isVisible();
       },
       { timeout: 60_000, intervals: [300] },
     )
     .toBe(true);
+}
+
+async function openCapsule(page: Page): Promise<void> {
+  await expect(page.getByTestId('capsule-screen')).toBeVisible({ timeout: 20_000 });
+  await toSummary(page);
   // A15.3: scripted capsules 1-5 are Starter Capsules on the summary too (not their tier's name).
   await expect(page.getByTestId('capsule-summary').getByRole('heading')).toHaveText('Starter Capsule');
   await page.getByTestId('capsule-done').click();
@@ -52,7 +80,7 @@ test.describe('first session (A8)', () => {
     await playToResult(page);
     await expect(page.getByTestId('result-title')).toHaveAttribute('data-outcome', 'win');
     // A15.3: the scripted capsule is labelled as a Starter Capsule; no raw ids on the Result.
-    await expect(page.locator('[data-testid=result-reward][data-kind=capsule]')).toContainText('Starter Capsule');
+    await expectStarterCapsule(page);
     await expect(page.getByTestId('result-rewards')).not.toContainText('Quest progress');
     await page.getByTestId('next').click();
     await openCapsule(page);
@@ -91,7 +119,8 @@ test.describe('first session (A8)', () => {
     await expect(page.locator('[data-screen="vs"]')).toBeVisible({ timeout: 20_000 });
     await expect(page.getByTestId('vs-foe')).toContainText('Pip');
     await playToResult(page);
-    await expect(page.locator('[data-testid=result-reward][data-kind=capsule]')).toContainText('Starter Capsule');
+    await expect(page.getByTestId('result-title')).toHaveAttribute('data-outcome', 'win');
+    await expectStarterCapsule(page);
     await page.getByTestId('next').click();
     await openCapsule(page);
 
@@ -113,17 +142,7 @@ test.describe('first session (A8)', () => {
     // The drums idle-bob (life), so the click does not wait for a still frame.
     await page.getByTestId('capsules-tab').locator('[data-testid^=crate-]').first().click({ force: true });
     await expect(page.getByTestId('capsule-screen')).toBeVisible({ timeout: 20_000 });
-    await expect
-      .poll(
-        async () => {
-          const skip = page.getByTestId('capsule-skip');
-          if (await skip.isVisible()) await skip.click();
-          else await page.getByTestId('capsule-screen').click({ position: { x: 20, y: 20 } });
-          return page.getByTestId('capsule-summary').isVisible();
-        },
-        { timeout: 60_000, intervals: [300] },
-      )
-      .toBe(true);
+    await toSummary(page);
     await page.getByTestId('capsule-done').click();
     await expect(page.getByTestId('capsule-screen')).toHaveCount(0);
 
