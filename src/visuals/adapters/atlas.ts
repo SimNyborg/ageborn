@@ -387,10 +387,12 @@ interface SheetSet {
   readonly sources: Map<string, TextureSource[]>;
   /** Atlas views drawing from each sheet right now: a sheet is never unloaded under a live view. */
   readonly views: Map<string, number>;
+  /** Unloads in flight: a new load of the same sheet waits for them (Pixi's loader would hand back the asset it is destroying). */
+  readonly unloading: Map<string, Promise<void>>;
 }
 
 function sheetSet(hd: boolean): SheetSet {
-  return { hd, sheets: new Map(), failed: new Set(), pending: new Map(), extrasPending: new Map(), urls: new Map(), sources: new Map(), views: new Map() };
+  return { hd, sheets: new Map(), failed: new Set(), pending: new Map(), extrasPending: new Map(), urls: new Map(), sources: new Map(), views: new Map(), unloading: new Map() };
 }
 
 /** Device px per lu above which the HD unit sheets are worth their download (1x sheets are 1.23 px/lu). */
@@ -561,14 +563,16 @@ export class AtlasAdapter implements VisualAdapter {
       const url = this.url(source);
       const hd = set.hd ? hdSheetUrl(url) : url;
       const from = { url: hd };
-      p = (
+      const first = (): Promise<AtlasData> =>
         hd === url
           ? load(url)
           : load(hd).catch(() => {
               from.url = url;
               return load(url);
-            })
-      )
+            });
+      // a sheet still being unloaded loads again only once that is done
+      const prior = set.unloading.get(source);
+      p = (prior ? prior.then(first) : first())
         .then((d) => {
           set.sheets.set(source, d);
           set.urls.set(source, [from.url]);
@@ -736,13 +740,18 @@ export class AtlasAdapter implements VisualAdapter {
     set.urls.delete(source);
     set.failed.delete(source);
     const unload = this.o.unload ?? ((url: string) => Assets.unload(url));
-    for (const url of urls) {
-      try {
-        await unload(url);
-      } catch (e: unknown) {
-        console.warn(`[visuals] unloading "${url}" failed`, e);
+    const done = (async () => {
+      for (const url of urls) {
+        try {
+          await unload(url);
+        } catch (e: unknown) {
+          console.warn(`[visuals] unloading "${url}" failed`, e);
+        }
       }
-    }
+    })();
+    set.unloading.set(source, done);
+    await done;
+    if (set.unloading.get(source) === done) set.unloading.delete(source);
   }
 
   /** Non-world sheet sources of the given ages (sheets outside `art/units/<age>/` count for every age). */
