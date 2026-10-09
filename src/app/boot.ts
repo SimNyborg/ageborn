@@ -135,11 +135,14 @@ export async function boot(o: BootOptions): Promise<Booted> {
     dpr: lite ? 1 : Math.min(2, o.devicePixelRatio ?? 1),
     teamPreset: settings?.teamPreset ?? 'default',
     search: o.search,
+    ...(pixi ? { gpu: pixi.gpu } : {}),
   });
   // Home does not wait for the battle art (perf audit 2026-10-01, B16 "Play button <= 5 s"): the
-  // Stone and Bronze sheets stream in behind Home and only a battle start waits for them
-  // (`artReady`). The other ages load per match, as each side nears them (render `preloadAhead`).
-  // The capsule title, the dev autopilot and `?quick=` put a battlefield on screen at once: they wait.
+  // Stone and Bronze turret, base and fort sheets stream in behind Home and only a battle start waits
+  // for them (`artReady`). Unit sheets load per match (G7, Safari memory): each battle holds its decks'
+  // sheets, the next age's ahead of an evolve (render `matchArt.ts`), and the battle's clock starts once
+  // they are in. The capsule title, the dev autopilot and `?quick=` put a battlefield on screen at once:
+  // they wait.
   const route = bootRoute(save);
   const artReady = art.preload([...BOOT_AGES]).catch((e: unknown) => o.warn?.(`[boot] art preload failed: ${String(e)}`));
   const q = new URLSearchParams(o.search);

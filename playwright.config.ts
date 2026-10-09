@@ -29,7 +29,12 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: process.env['CI'] !== undefined,
   retries: process.env['CI'] !== undefined ? 1 : 0,
-  reporter: process.env['CI'] !== undefined ? 'github' : 'list',
+  // CI: the GitHub annotations, the HTML report (with the failed tests' traces; the uploaded artifact) and a
+  // JSON report the job's last step prints one line per failure from (`tools/e2eSummary.ts`).
+  reporter:
+    process.env['CI'] !== undefined
+      ? [['github'], ['html', { open: 'never' }], ['json', { outputFile: 'test-results/e2e-results.json' }]]
+      : 'list',
   use: {
     baseURL: `http://localhost:${port}/ageborn/`,
     trace: 'retain-on-failure',

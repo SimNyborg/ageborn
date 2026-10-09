@@ -55,6 +55,12 @@ export const COUNTDOWN_STEP_MS = 700;
 /** How long "Fight!" stays after the battle has started. */
 export const COUNTDOWN_FIGHT_MS = 650;
 
+/**
+ * The longest a battle waits for its decks' unit sheets before its clock starts anyway (G7: they load
+ * per match; the VS warm-up usually has them in already). A sheet still missing then draws its fallback.
+ */
+export const ART_WAIT_MS = 15_000;
+
 export interface AppControllerOptions {
   save: SaveDoc | null;
   /** Builds the battle view (the battle screen owns the canvas). */
@@ -98,6 +104,8 @@ export class AppController {
   /** The difficulty of the last title Quick Battle, for "Play again". */
   private lastQuickDifficulty: Difficulty | undefined;
   private countdownTimer: ReturnType<typeof setTimeout> | null = null;
+  /** The battle on screen whose clock waits for its decks' unit sheets (G7), or null. */
+  private waitingForArt: BattleHandle | null = null;
 
   constructor(services: Services, o: AppControllerOptions) {
     this.services = services;
@@ -155,12 +163,51 @@ export class AppController {
     if (cue) this.services.audio.music.setCue(cue, { fadeMs: 600 });
   }
 
-  /** Starts a battle that is on screen (route and music), after the countdown when it has one. */
+  /**
+   * Starts a battle that is on screen (route and music), after the countdown when it has one. The clock
+   * (or the countdown) waits until the decks' unit sheets are in (G7), at most `ART_WAIT_MS`.
+   */
   private startBattle(battle: BattleHandle): void {
     this.routeSig.value = { id: 'battle', battle };
     this.battleMusic(battle);
-    if (this.o.countdown && !this.o.autopilot && battle.setup.mode !== 'tutorial') this.runCountdown(battle);
-    else battle.session.start();
+    const go = (): void => {
+      const r = this.routeSig.peek();
+      if (r.id !== 'battle' || r.battle !== battle) return;
+      if (this.o.countdown && !this.o.autopilot && battle.setup.mode !== 'tutorial') this.runCountdown(battle);
+      else battle.session.start();
+    };
+    const art = battle.session.artReady();
+    if (!art) {
+      go();
+      return;
+    }
+    this.waitingForArt = battle;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const timeout = new Promise<void>((resolve) => {
+      timer = setTimeout(resolve, ART_WAIT_MS);
+    });
+    void Promise.race([art, timeout]).then(() => {
+      if (timer !== null) clearTimeout(timer);
+      // the dev fast-forward may have started it already (`startNow`)
+      if (this.waitingForArt !== battle) return;
+      this.waitingForArt = null;
+      go();
+    });
+  }
+
+  /**
+   * The dev fast-forward (`?dev=1`, B13): the battle on screen starts at once, without waiting for its
+   * unit sheets (G7) or running its countdown.
+   */
+  startNow(): void {
+    const r = this.routeSig.peek();
+    if (r.id !== 'battle') return;
+    if (this.waitingForArt === r.battle) {
+      this.waitingForArt = null;
+      r.battle.session.start();
+      return;
+    }
+    this.skipCountdown();
   }
 
   /**
@@ -458,6 +505,7 @@ export class AppController {
 
   private disposeRoute(): void {
     this.clearCountdown();
+    this.waitingForArt = null;
     const r = this.routeSig.peek();
     if (r.id === 'title' || r.id === 'battle') r.battle?.dispose();
     else if (r.id === 'result') r.result.battle?.dispose();

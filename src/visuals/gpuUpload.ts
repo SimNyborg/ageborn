@@ -28,6 +28,11 @@ function isBitmap(r: unknown): r is ImageBitmap {
   return typeof ImageBitmap !== 'undefined' && r instanceof ImageBitmap;
 }
 
+/** Upload time one frame may spend before the rest waits for the next frame (ms). */
+const UPLOAD_BUDGET_MS = 6;
+
+const now = (): number => (typeof performance !== 'undefined' ? performance.now() : 0);
+
 function nextFrame(cb: () => void): void {
   if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => cb());
   else setTimeout(cb, 16);
@@ -50,11 +55,22 @@ export class SheetReleaser {
   private readonly released = new Map<TextureSource, string>();
   private pumping = false;
 
+  private readonly schedule: (cb: () => void) => void;
+  private readonly decode: (url: string) => Promise<ImageBitmap | null>;
+  private readonly budgetMs: number;
+
+  /**
+   * `schedule` runs a callback on a coming frame (default `requestAnimationFrame`), `decode` decodes an
+   * image URL after a context restore, `budgetMs` is the upload time one frame may spend (tests pass 0:
+   * one sheet per frame).
+   */
   constructor(
     private readonly hooks: GpuHooks,
-    private readonly schedule: (cb: () => void) => void = nextFrame,
-    private readonly decode: (url: string) => Promise<ImageBitmap | null> = decodeBitmap,
+    o: { schedule?: (cb: () => void) => void; decode?: (url: string) => Promise<ImageBitmap | null>; budgetMs?: number } = {},
   ) {
+    this.schedule = o.schedule ?? nextFrame;
+    this.decode = o.decode ?? decodeBitmap;
+    this.budgetMs = o.budgetMs ?? UPLOAD_BUDGET_MS;
     hooks.onRestored?.(() => this.restore());
   }
 
@@ -87,9 +103,13 @@ export class SheetReleaser {
     return this.released.has(source);
   }
 
+  /** One frame's uploads: at least one sheet, more while the frame's budget lasts (slow frames, a burst). */
   private pump(): void {
-    const s = this.queue.shift();
-    if (s && !s.destroyed && isBitmap(s.resource)) this.release(s);
+    const t0 = now();
+    do {
+      const s = this.queue.shift();
+      if (s && !s.destroyed && isBitmap(s.resource)) this.release(s);
+    } while (this.queue.length > 0 && now() - t0 < this.budgetMs);
     if (this.queue.length > 0) this.schedule(() => this.pump());
     else this.pumping = false;
   }

@@ -16,7 +16,7 @@
  */
 import { computed, effect, signal, type ReadonlySignal } from '@preact/signals';
 import type { AgeId, ArtProvider, CosmeticKey, OpponentSpec, ReplayDoc, SaveDoc, SkinId } from '@/contracts';
-import { ageOrder, baseSkinsOf } from '@/render';
+import { ageOrder, baseSkinsOf, cardVisual, sideAgeCards, type HeldVisual } from '@/render';
 import type { MetaRules } from '@/meta';
 import { isFirstWin, persist, type SaveFile } from '@/save';
 import { createRouter, createToastStore, visibleEntries, type DailyDifficulty, type ToastStore, type MatchRequest, type PauseInfo, type Router, type UiServices } from '@/ui/screens';
@@ -69,25 +69,41 @@ export interface MetaUiOptions {
   artReady?: () => Promise<void> | null;
   /**
    * VS is up: warm the art the match will open with (the app passes the art provider's prefetch;
-   * `warmMatchArt`). It gets the setup exactly as the battle will be built.
+   * `warmMatchArt`). It gets the setup exactly as the battle will be built. A returned promise (the
+   * decks' unit sheets loading, G7) keeps VS up until it settles, at most `WARM_WAIT_MS`.
    */
-  warm?: (setup: MatchSetup) => void;
+  warm?: (setup: MatchSetup) => Promise<void> | void;
 }
 
+/** The longest VS stays up for the decks' unit sheets (G7); the battle's clock waits for the rest. */
+export const WARM_WAIT_MS = 8000;
+
 /** The art provider's duck-typed match warm-up (visuals' `VisualsArtProvider.prefetchMatch`). */
-type PrefetchMatch = (o: { age: AgeId; sides: readonly { skins?: Partial<Record<AgeId, SkinId>>; scenes?: Partial<Record<AgeId, CosmeticKey>> }[] }) => Promise<void>;
+type PrefetchMatch = (o: {
+  age: AgeId;
+  sides: readonly { skins?: Partial<Record<AgeId, SkinId>>; scenes?: Partial<Record<AgeId, CosmeticKey>> }[];
+  units?: readonly HeldVisual[];
+}) => Promise<void>;
 
 /**
  * Warms a match's opening art while VS is up (review 1): the first age of its format, each side's base
- * skin model of that age (the troop-system skin wins, as in battle) and each half's scene of it. A
- * provider without `prefetchMatch` (fakes, tests) does nothing.
+ * skin model of that age (the troop-system skin wins, as in battle), each half's scene of it, and the
+ * unit sheets both decks can field in it (G7: unit sheets load per match). Resolves once they are in; a
+ * provider without `prefetchMatch` (fakes, tests) does nothing and returns null.
  */
-export function warmMatchArt(art: ArtProvider, setup: MatchSetup): void {
+export function warmMatchArt(art: ArtProvider, setup: MatchSetup): Promise<void> | null {
   const prefetch = (art as ArtProvider & { prefetchMatch?: PrefetchMatch }).prefetchMatch;
   const age = ageOrder(setup.config)[0];
-  if (typeof prefetch !== 'function' || !age) return;
+  if (typeof prefetch !== 'function' || !age) return null;
   const sides = setup.config.sides.map((sd) => ({ skins: baseSkinsOf(sd) as Partial<Record<AgeId, SkinId>>, ...(sd.look?.scenes ? { scenes: sd.look.scenes } : {}) }));
-  void prefetch.call(art, { age, sides }).catch(() => undefined);
+  const units: HeldVisual[] = [];
+  for (const side of [0, 1] as const) {
+    for (const card of sideAgeCards(setup.config, side, age)) {
+      const v = cardVisual(setup.config, side, card);
+      if (v) units.push(v);
+    }
+  }
+  return prefetch.call(art, { age, sides, units }).catch(() => undefined);
 }
 
 /** Pause overlay contents from the battle on screen (A9 #6). */
@@ -157,10 +173,13 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
 
   let pending: MatchRequest | null = null;
   // Home shows before the battle art has loaded (perf audit 2026-10-01): a match asked for meanwhile
-  // starts once it has, unless the player has left the screen that asked (VS or Home) by then.
+  // starts once it has, unless the player has left the screen that asked (VS or Home) by then. VS's
+  // warm-up of the decks' unit sheets (G7) holds the start the same way, at most `WARM_WAIT_MS`.
   let waitingForArt = false;
+  let warming: Promise<void> | null = null;
   const begin = (req: MatchRequest, opponent: OpponentSpec): void => {
-    const gate = o.artReady?.() ?? null;
+    const boot = o.artReady?.() ?? null;
+    const gate = boot && warming ? Promise.all([boot, warming]).then(() => undefined) : (boot ?? warming);
     if (!gate) {
       beginNow(req, opponent);
       return;
@@ -185,7 +204,14 @@ export function createMetaUi(o: MetaUiOptions): MetaUi {
   const warm = (req: MatchRequest, opponent: OpponentSpec): void => {
     if (!o.warm || req.mode === 'tutorial') return;
     try {
-      o.warm(setupFor(req, opponent));
+      const p = o.warm(setupFor(req, opponent));
+      if (!p) return;
+      let timer: ReturnType<typeof setTimeout> | null = null;
+      const capped: Promise<void> = Promise.race([p, new Promise<void>((resolve) => (timer = setTimeout(resolve, WARM_WAIT_MS)))]).then(() => {
+        if (timer !== null) clearTimeout(timer);
+        if (warming === capped) warming = null;
+      });
+      warming = capped;
     } catch {
       /* the battle loads its art itself */
     }

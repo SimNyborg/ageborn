@@ -142,7 +142,9 @@
   gap: 4px;
 }
 .prof-history .ui-panel__body {
+  /* the visible height: iOS Safari's 100vh is the height with its bars hidden, about 50 px more */
   max-height: calc(100vh - 170px);
+  max-height: calc(100dvh - 170px);
   overflow: auto;
 }
 .prof-matches {

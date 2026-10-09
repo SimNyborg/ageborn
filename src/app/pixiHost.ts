@@ -5,7 +5,8 @@
  * The frame scheduler runs session and replay loops on Pixi's ticker at high priority, so every
  * frame first steps the sim and updates the view, then Pixi renders once.
  */
-import { Application, UPDATE_PRIORITY, type Container } from 'pixi.js';
+import { Application, UPDATE_PRIORITY, type Container, type TextureSource } from 'pixi.js';
+import type { GpuHooks } from '@/visuals/gpuUpload';
 import type { FrameScheduler } from './session';
 
 export interface PixiHost {
@@ -15,7 +16,34 @@ export interface PixiHost {
   mount(root: Container, onResize: (w: number, h: number) => void): () => void;
   /** Sets the render resolution (the battle view lowers it in Lite, B16). */
   setResolution(r: number): void;
+  /**
+   * The renderer's texture upload for the art tier (G7, Safari memory): a loaded unit sheet goes to the
+   * GPU at once and its decoded CPU copy is released; after a lost WebGL context comes back the art
+   * decodes those sheets again.
+   */
+  readonly gpu: GpuHooks;
   destroy(): void;
+}
+
+/** `GpuHooks` over a Pixi application: `renderer.texture.initSource` (what Pixi's own prepare uses). */
+export function pixiGpuHooks(app: Application): GpuHooks {
+  const restored = new Set<() => void>();
+  // Pixi restores its context first (its listener was added at init), then the art decodes again
+  app.canvas.addEventListener('webglcontextrestored', () => {
+    for (const cb of restored) cb();
+  });
+  return {
+    upload(source: TextureSource): boolean {
+      const r = app.renderer as unknown as { context?: { isLost?: boolean }; texture: { initSource(s: TextureSource): void } };
+      if (r.context?.isLost === true) return false;
+      r.texture.initSource(source);
+      return true;
+    },
+    onRestored(cb) {
+      restored.add(cb);
+      return () => restored.delete(cb);
+    },
+  };
 }
 
 /**
@@ -69,6 +97,7 @@ export async function createPixiHost(el: HTMLElement, o: { webgpu?: boolean } = 
   return {
     app,
     scheduler: tickerScheduler(app),
+    gpu: pixiGpuHooks(app),
     mount(root, onResize) {
       app.stage.addChild(root);
       resizers.add(onResize);

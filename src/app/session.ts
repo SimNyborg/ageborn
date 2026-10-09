@@ -63,6 +63,11 @@ export interface SessionView {
   setSpeed(s: number): void;
   setPaused(p: boolean): void;
   destroy?(): void;
+  /**
+   * Resolves once the art the battle opens with has loaded (G7: the decks' unit sheets load per match);
+   * null when it already has. The controller starts the clock only then, so no unit appears without its art.
+   */
+  artReady?(): Promise<void> | null;
 }
 
 /** Builds HUD models for the player's side. `render/HudModelBuilder` satisfies it. */
@@ -243,6 +248,11 @@ export class BattleSessionImpl implements BattleSession {
   // ------------------------------------------------------------------------------------------
   // BattleSession contract
   // ------------------------------------------------------------------------------------------
+
+  /** The view's opening art (G7): a promise while it still loads, else null (see `SessionView.artReady`). */
+  artReady(): Promise<void> | null {
+    return this.view?.artReady?.() ?? null;
+  }
 
   start(): void {
     if (this.statusSig.peek() !== 'ready') return;

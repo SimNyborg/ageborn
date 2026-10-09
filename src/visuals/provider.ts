@@ -413,8 +413,18 @@ export class VisualsArtProvider implements ArtProvider {
     if (this.atlas.canDraw(what, def)) return null;
     const proc = PROCEDURAL_MANIFEST[key];
     if (!proc || proc.kind !== 'procedural') return null;
+    if (what === 'unit') {
+      this.fallbacks.units++;
+      this.fallbacks.last = key;
+    }
     return { adapter: this.procedural, def: proc };
   }
+
+  /**
+   * Units drawn with their fallback because their sheet was not in yet (G7: a battle's hold loads the
+   * decks ahead, so in play this stays 0; the dev memory hook and the e2e budget read it).
+   */
+  readonly fallbacks = { units: 0, last: '' };
 
   createTurret(o: { visualId: VisualId; skin?: SkinId; side: Side; teamPreset: TeamPreset }): TurretView {
     const r = this.resolve(o.visualId, o.skin);

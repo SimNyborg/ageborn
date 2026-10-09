@@ -40,6 +40,8 @@ async function winMatch1(page: Page): Promise<void> {
 test.describe('B13 flows', () => {
   test('2. tutorial match 1 on autopilot', async ({ page }) => {
     requireFlow('autopilot');
+    // playToResult polls for up to 90 s; software WebGL under load needs more than the default 30 s (G3).
+    test.setTimeout(120_000);
     const problems = watchPage(page);
     await winMatch1(page);
     expect(problems.errors).toEqual([]);

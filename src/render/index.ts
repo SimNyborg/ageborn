@@ -23,6 +23,8 @@ export type { UnitInfo } from './eventMapper';
 export { cloneFeelConfig, defaultFeelConfig, feelRule, validateFeelConfig } from './feelConfig';
 export type { FeelRuleExt, FeelTuning, RenderFeelConfig } from './feelConfig';
 export { HUD_HZ, HudModelBuilder, TrayUnlocks, ageOrder, buildHudModel, canEvolve, xpBarBp, xpThreshold } from './hudModel';
+export { NEAR_EVOLVE_BP, cardVisual, heldVisuals, nearEvolve, sideAgeCards } from './matchArt';
+export type { ArtHoldLike, HeldVisual } from './matchArt';
 export type { HudExtras, HudSource } from './hudModel';
 export { SCREEN_SPLIT, WORLD_WIDTH_LU, baseCenterX, gateX, pToX, screenLayout, xToP } from './layout';
 export type { ScreenLayout } from './layout';

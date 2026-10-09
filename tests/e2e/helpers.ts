@@ -39,14 +39,45 @@ export interface PageProblems {
   failed: string[];
 }
 
-/** Collects console errors, page errors and failed same-origin requests from now on. */
+/**
+ * True for WebKit's report of a request a navigation aborted on this host: "Fetch API cannot load
+ * http://localhost:4173/ageborn/art/… due to access control checks." (G2). Same-origin requests cannot
+ * fail a real CORS check; WebKit words a cancelled fetch this way, and Playwright's WebKit backend also
+ * turns it into a page error cut at its first ':' (so the text may start mid-URL).
+ */
+export function isAbortedRequestNoise(text: string, host: string): boolean {
+  return host !== '' && /due to access control checks\.?$/.test(text.trim()) && text.includes(host);
+}
+
+/** How long after the main frame's DOMContentLoaded an aborted request's report still belongs to the navigation (ms). */
+export const NAVIGATION_GRACE_MS = 1000;
+
+/**
+ * Collects console errors, page errors and failed same-origin requests from now on. The only thing it
+ * ignores is WebKit's report of a request on this page's host that a main-frame navigation aborted (a
+ * reload or `goto` while art still loads; see {@link isAbortedRequestNoise}), and only from the
+ * navigation's request until its DOMContentLoaded plus {@link NAVIGATION_GRACE_MS}. Any other console
+ * error, a deliberate `console.error` included, still counts.
+ */
 export function watchPage(page: Page): PageProblems {
   const p: PageProblems = { errors: [], failed: [] };
   const origin = (): string => new URL(page.url() === 'about:blank' ? 'http://localhost/' : page.url()).origin;
-  page.on('console', (m) => {
-    if (m.type() === 'error') p.errors.push(`console: ${m.text()}`);
+  const host = (): string => (page.url().startsWith('http') ? new URL(page.url()).host : '');
+  /** Until when (Date.now() ms) a main-frame navigation counts as under way; Infinity while its request runs. */
+  let navigatingUntil = 0;
+  page.on('request', (r) => {
+    if (r.isNavigationRequest() && r.frame() === page.mainFrame()) navigatingUntil = Infinity;
   });
-  page.on('pageerror', (e) => p.errors.push(`pageerror: ${e.message}`));
+  page.on('domcontentloaded', () => {
+    navigatingUntil = Date.now() + NAVIGATION_GRACE_MS;
+  });
+  const noise = (text: string): boolean => Date.now() < navigatingUntil && isAbortedRequestNoise(text, host());
+  page.on('console', (m) => {
+    if (m.type() === 'error' && !noise(m.text())) p.errors.push(`console: ${m.text()}`);
+  });
+  page.on('pageerror', (e) => {
+    if (!noise(e.message)) p.errors.push(`pageerror: ${e.message}`);
+  });
   page.on('requestfailed', (r) => {
     if (r.url().startsWith(origin())) p.failed.push(`${r.url()} (${r.failure()?.errorText ?? 'failed'})`);
   });
@@ -58,7 +89,8 @@ export function watchPage(page: Page): PageProblems {
 
 /** The dev hooks main.tsx exposes with `?dev=1` (B13 dev fast-forward). */
 export interface AgebornDev {
-  fastForward(ticks: number): number;
+  /** Resolves with the ticks run (it first waits for the battle's unit sheets, G7). */
+  fastForward(ticks: number): Promise<number>;
 }
 
 /** Runs the battle on screen forward by up to `ticks` sim ticks; returns the ticks actually run. */
@@ -81,11 +113,13 @@ export async function pastOnboarding(page: Page): Promise<void> {
     const c = (window as unknown as { __agebornDev: { controller: { save: { peek(): Save }; setSave(s: Save, o?: object): void; showTitle(): void } } })
       .__agebornDev.controller;
     const s = c.save.peek();
-    // The "Your army, your plan" prompt (A8, after match 3) has been seen.
+    // The "Your army, your plan" prompt (A8, after match 3) has been seen, and so has the forced upgrade
+    // (its skip would write the save itself after the next paint; G4).
     const wp = s.warPath;
     // A profile from before the War Path (save v5 migration): every Home feature open (ui-plan 2.6).
     const warPath = { ...wp, legacy: true, stars: { ...wp.stars, 'wp.stone.l01': 1, 'wp.stone.l02': 1 } };
-    c.setSave({ ...s, warPath, tutorial: { ...s.tutorial, step: 4 }, matchesPlayed: Math.max(3, s.matchesPlayed), flags: { ...s.flags, 'tutorial.warPlanPrompt': true } }, { immediate: true });
+    const flags = { ...s.flags, 'tutorial.warPlanPrompt': true, 'tutorial.firstUpgrade': true };
+    c.setSave({ ...s, warPath, tutorial: { ...s.tutorial, step: 4 }, matchesPlayed: Math.max(3, s.matchesPlayed), flags }, { immediate: true });
     c.showTitle();
   });
 }

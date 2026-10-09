@@ -8,7 +8,8 @@
  *   (an allow-list with a reason per entry);
  * - primary count: more than one visible `[data-primary]`, or none where 2.4 names a primary;
  * - pulse count: more than one visible `[data-pulse]`, sampled every 250 ms;
- * - clipping: a `[data-clip-check]` whose content overflows it;
+ * - clipping: a `[data-clip-check]` whose content overflows it, or that is shorter than one line of its
+ *   text (G1: WebKit squeezed the tab bar labels to 14 px of 16 where Chromium squeezed the icons);
  * - page scroll: the UI root scrolls sideways;
  * - badges: more than 2 visible ready badges on Home.
  *
@@ -34,6 +35,8 @@ interface PageSpec {
   home?: boolean;
   /** Click this first (for example a tab) and let it settle. */
   prepare?: (page: Page) => Promise<void>;
+  /** A longer test timeout (ms) for a heavy screen (the Album bakes a portrait per card). */
+  timeout?: number;
 }
 
 const PAGES: PageSpec[] = [
@@ -151,8 +154,10 @@ const PAGES: PageSpec[] = [
   { name: 'card-fort-camp', hash: 'screens/card-war_camp/mid/{vp}', strict: true, primary: false },
   { name: 'card-locked', hash: 'screens/card-friar/new/{vp}', strict: true, primary: false },
   // The Card Album (owner request 2026-09-30): the long Pokedex scroll, strict from its first build.
-  { name: 'collection', hash: 'screens/collection/mid/{vp}', strict: true, primary: false },
-  { name: 'collection-new', hash: 'screens/collection/new/{vp}', strict: true, primary: false },
+  // Its tiles enter staggered and each portrait is baked with a synchronous PNG encode: over the default
+  // 30 s on a slow software-rendered engine (CI WebKit), so it gets more time (G3).
+  { name: 'collection', hash: 'screens/collection/mid/{vp}', strict: true, primary: false, timeout: 90_000 },
+  { name: 'collection-new', hash: 'screens/collection/new/{vp}', strict: true, primary: false, timeout: 90_000 },
   { name: 'customize-backdrops', hash: 'screens/customize-backdrops/mid/{vp}', strict: true, primary: false },
   { name: 'customize', hash: 'screens/customize-troops/mid/{vp}', strict: false, primary: false },
   { name: 'settings', hash: 'screens/settings/mid/{vp}', strict: false, primary: false },
@@ -180,26 +185,40 @@ async function open(page: Page, hash: string, vp: string): Promise<void> {
   await settle(page);
 }
 
-/** Waits until no finite animation runs and no `[data-anim]` is present for 100 ms (1.3). */
+/**
+ * Waits until the web fonts are in and no finite animation runs (or is about to start) and no
+ * `[data-anim]` is present for 300 ms and at least 3 frames (1.3). A slow software-rendered engine
+ * draws a frame every few hundred ms, so a time-only window could pass between two frames before an
+ * entrance animation had even started (G6: buttons measured mid-scale in CI WebKit).
+ */
 async function settle(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const w = window as unknown as { __settledSince?: number; __settledFrames?: number };
+    w.__settledSince = undefined;
+    w.__settledFrames = 0;
+    return document.fonts.ready.then(() => undefined);
+  });
   await page.waitForFunction(
     () => {
-      const w = window as unknown as { __settledSince?: number };
+      const w = window as unknown as { __settledSince?: number; __settledFrames?: number };
       const busy =
         document.getAnimations().some((a) => {
           const t = a.effect?.getComputedTiming();
-          return a.playState === 'running' && t !== undefined && t.iterations !== Infinity;
+          return (a.playState === 'running' || a.pending) && t !== undefined && t.iterations !== Infinity;
         }) || document.querySelector('[data-anim]') !== null;
       const now = performance.now();
       if (busy) {
         w.__settledSince = undefined;
+        w.__settledFrames = 0;
         return false;
       }
       w.__settledSince ??= now;
-      return now - w.__settledSince >= 100;
+      w.__settledFrames = (w.__settledFrames ?? 0) + 1;
+      return now - w.__settledSince >= 300 && w.__settledFrames >= 3;
     },
     null,
-    { timeout: 20_000, polling: 50 },
+    // every frame (the test's own timeout bounds the wait)
+    { timeout: 60_000, polling: 'raf' },
   );
 }
 
@@ -256,10 +275,18 @@ async function measure(page: Page, spec: PageSpec): Promise<Violation[]> {
       // Primary count
       const primaries = [...root.querySelectorAll('[data-primary]')].filter(visible);
       if (primaries.length > 1) v.push({ check: 'primary', detail: `${primaries.length} primaries: ${primaries.map(path).join(' | ')}` });
-      // Clipping
+      // Clipping: the content overflows, or the box is shorter than one line of its text (a flex parent
+      // that squeezes it clips the text in one engine and not in another; G1)
       for (const el of root.querySelectorAll<HTMLElement>('[data-clip-check]')) {
         if (!visible(el)) continue;
-        if (el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1) v.push({ check: 'clip', detail: `"${(el.textContent ?? '').trim().slice(0, 24)}" ${el.scrollWidth}x${el.scrollHeight} in ${el.clientWidth}x${el.clientHeight} at ${path(el)}` });
+        const label = `"${(el.textContent ?? '').trim().slice(0, 24)}"`;
+        if (el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1) v.push({ check: 'clip', detail: `${label} ${el.scrollWidth}x${el.scrollHeight} in ${el.clientWidth}x${el.clientHeight} at ${path(el)}` });
+        // the layout height (`clientHeight`, so a running scale animation does not count); an inline box or
+        // a `normal` line height (font metrics) has no line to compare
+        const cs = getComputedStyle(el);
+        if (cs.display === 'inline' || cs.lineHeight === 'normal' || !(el.textContent ?? '').trim()) continue;
+        const lh = parseFloat(cs.lineHeight);
+        if (lh > 0 && el.clientHeight + 0.5 < lh) v.push({ check: 'clip', detail: `${label} ${el.clientHeight} px tall, one line is ${lh} px, at ${path(el)}` });
       }
       // Page scroll
       if (root.scrollWidth > root.clientWidth + 1) v.push({ check: 'scroll', detail: `root scrolls sideways: ${root.scrollWidth} > ${root.clientWidth}` });
@@ -296,6 +323,7 @@ for (const spec of PAGES) {
   test.describe(`budget: ${spec.name}`, () => {
     for (const vp of VIEWPORTS) {
       test(`${vp}`, async ({ page }) => {
+        if (spec.timeout) test.setTimeout(spec.timeout);
         await open(page, spec.hash, vp);
         if (spec.prepare) {
           await spec.prepare(page);
@@ -325,7 +353,8 @@ test.describe('UA-01: every Mode select picker button can be hit', () => {
             b.scrollIntoView({ block: 'nearest', inline: 'nearest' });
             const r = b.getBoundingClientRect();
             const el = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
-            out.push({ seg, text: (b.textContent ?? '').trim(), hit: !!el && (el === b || b.contains(el)), h: Math.round(r.height) });
+            // the height is the layout's (a parent's entrance scale is not the button's size; G6)
+            out.push({ seg, text: (b.textContent ?? '').trim(), hit: !!el && (el === b || b.contains(el)), h: b.offsetHeight });
           }
         }
         return out;
@@ -341,23 +370,29 @@ test.describe('reduce motion replaces, never deletes (5.6)', () => {
     await page.setViewportSize({ width: 884, height: 470 });
     await page.goto('./?dev=1#screens/settings/mid/844x390');
     await page.waitForSelector('[data-testid="ui-root"]');
-    // Switch the gallery's save to reduce motion and remount the screen.
-    const samples = await page.evaluate(async () => {
+    // Switch the gallery's save to reduce motion and replay the screen's entrance. The entrance is paused
+    // and stepped through by hand every 10 ms: a sampled clock depends on the frame rate (a slow
+    // software-rendered engine drew one frame in the whole fade; G3).
+    const { samples, anims } = await page.evaluate(() => {
       const root = document.querySelector<HTMLElement>('[data-testid="ui-root"]')!;
       root.setAttribute('data-reduce-motion', 'true');
       const screen = root.querySelector<HTMLElement>('.ui-screen')!;
       screen.style.animation = 'none';
       void screen.offsetWidth;
       screen.style.animation = '';
+      const list = screen.getAnimations();
+      for (const a of list) a.pause();
       const out: { t: number; opacity: number; transform: string }[] = [];
-      const t0 = performance.now();
-      while (performance.now() - t0 < 260) {
+      for (let t = 0; t <= 260; t += 10) {
+        for (const a of list) a.currentTime = t;
         const cs = getComputedStyle(screen);
-        out.push({ t: Math.round(performance.now() - t0), opacity: Number(cs.opacity), transform: cs.transform });
-        await new Promise((r) => requestAnimationFrame(r));
+        out.push({ t, opacity: Number(cs.opacity), transform: cs.transform });
       }
-      return out;
+      for (const a of list) a.finish();
+      return { samples: out, anims: list.length };
     });
+    // reduce motion replaces the entrance: there is one
+    expect(anims).toBeGreaterThan(0);
     const faded = samples.filter((s) => s.opacity < 0.99);
     expect(faded.length).toBeGreaterThan(0);
     // The fade lasts at least 100 ms, not a 1 ms jump.

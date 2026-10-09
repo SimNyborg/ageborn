@@ -81,17 +81,21 @@ export interface TextureMemory {
   sources: number;
   /** Per image cache: images held and their decoded bytes. */
   caches: Record<string, { images: number; bytes: number }>;
+  /** With `detail`: the largest items, `cpu` or `gpu`, by label (dev diagnostics). */
+  top?: { kind: 'cpu' | 'gpu'; label: string; bytes: number }[];
 }
 
 /** Sums the decoded image memory now. `renderer`: the app's Pixi renderer (its uploaded textures). */
-export function textureMemory(renderer?: unknown): TextureMemory {
+export function textureMemory(renderer?: unknown, o: { detail?: number } = {}): TextureMemory {
   const seen = new Set<TextureSource>();
+  const items: { kind: 'cpu' | 'gpu'; label: string; bytes: number }[] = [];
   let gpu = 0;
   const managed = (renderer as { texture?: { managedTextures?: readonly (TextureSource | null)[] } } | undefined)?.texture?.managedTextures ?? [];
   for (const s of managed) {
     if (!s || s.destroyed) continue;
     seen.add(s);
     gpu += gpuBytes(s);
+    if (o.detail) items.push({ kind: 'gpu', label: s.label || s.constructor.name, bytes: gpuBytes(s) });
   }
   // sheets and images Pixi's loader holds, uploaded or not
   const cache = (Cache as unknown as { _cache?: Map<string, unknown> })._cache;
@@ -106,7 +110,9 @@ export function textureMemory(renderer?: unknown): TextureMemory {
   for (const s of seen) {
     if (counted.has(s.resource)) continue;
     counted.add(s.resource);
-    cpu += resourceBytes(s.resource);
+    const b = resourceBytes(s.resource);
+    cpu += b;
+    if (o.detail && b > 0) items.push({ kind: 'cpu', label: s.label || s.constructor.name, bytes: b });
   }
   const caches: Record<string, { images: number; bytes: number }> = {};
   for (const [name, l] of ledgers) {
@@ -115,9 +121,11 @@ export function textureMemory(renderer?: unknown): TextureMemory {
       if (counted.has(im)) continue;
       counted.add(im);
       bytes += resourceBytes(im);
+      if (o.detail) items.push({ kind: 'cpu', label: `${name}: ${im.src.slice(-60)}`, bytes: resourceBytes(im) });
     }
     caches[name] = { images: l.size, bytes };
     cpu += bytes;
   }
-  return { cpu, gpu, total: cpu + gpu, sources: seen.size, caches };
+  const top = o.detail ? items.sort((a, b) => b.bytes - a.bytes).slice(0, o.detail) : undefined;
+  return { cpu, gpu, total: cpu + gpu, sources: seen.size, caches, ...(top ? { top } : {}) };
 }

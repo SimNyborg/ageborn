@@ -175,7 +175,7 @@ export function AppRoot(p: { ui: AppUi }) {
           download: p.ui.download,
           ...(p.ui.artReady ? { artReady: p.ui.artReady } : {}),
           // VS warms the battle's opening art: base skin models and scenes (review 1)
-          warm: (setup) => warmMatchArt(p.ui.art, setup),
+          warm: (setup) => warmMatchArt(p.ui.art, setup) ?? undefined,
           ...(shows
             ? {
                 openCapsules: (ids: string[]) => void shows.open(ids),

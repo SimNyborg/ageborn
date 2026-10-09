@@ -13,6 +13,8 @@
   color: var(--ui-text, #f7f0dc);
   user-select: none;
   -webkit-user-select: none;
+  /* iOS: no image menu on a long press (the HUD's card tip opens at 450 ms); inherited by the shell */
+  -webkit-touch-callout: none;
   /* Full-screen layers above the canvas never take pointer events themselves, or taps on the lane
      (turret mounts, pinch zoom, double tap) would never reach the game. Only panels, bubbles and
      buttons opt back in below. */

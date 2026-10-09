@@ -479,6 +479,14 @@
     line-height: 1.3;
   }
 }
+/* the visible height on iOS Safari (100vh is the height with its bars hidden, about 50 px more) */
+@supports (height: 100dvh) {
+  @media (max-height: 420px) {
+    .gen-stage {
+      --gs: clamp(96px, calc(100dvh - 252px), 140px);
+    }
+  }
+}
 /* Phone landscape (390 px and similar): the General tab fits the screen, the preview never scrolls
    away and only the part grid scrolls, so a tap on a tile never moves the page. Very short screens
    (under 370 px) keep the page scroll. */

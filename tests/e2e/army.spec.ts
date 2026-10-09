@@ -90,7 +90,10 @@ test.describe('Army deck builder', () => {
     expect(await slotCard(page, 'unit-5')).toBeNull();
   });
 
-  test('on a phone a sideways finger drag equips, a vertical swipe scrolls the pool instead', async ({ browser }) => {
+  test('on a phone a sideways finger drag equips, a vertical swipe scrolls the pool instead', async ({ browser, browserName }) => {
+    // Real finger input (the browser's touch-action and native scrolling, not synthetic DOM events) goes
+    // through the DevTools protocol, which only Chromium has; WebKit's Playwright has no touch move (G5).
+    test.skip(browserName !== 'chromium', 'real touch input needs the DevTools protocol (Chromium only)');
     const context = await browser.newContext({ hasTouch: true, isMobile: false });
     const page = await context.newPage();
     await open(page);

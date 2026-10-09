@@ -18,6 +18,7 @@
  */
 import type { ArtProvider, AudioService, Clock, CompiledContent, CreateBot, CreateSim, Meta, PlatformAdapter, SaveStore, TeamPreset } from '@/contracts';
 import { i18n as appI18n, type I18nService } from '@/i18n';
+import type { GpuHooks } from '@/visuals/gpuUpload';
 import { createPlatform } from '@/platform';
 import { EventLog, type KeyValueStore } from './eventLog';
 import { createFallbackBot } from './fallbackBot';
@@ -63,6 +64,8 @@ export interface ArtOptions {
   teamPreset?: TeamPreset;
   /** `?art=placeholder|procedural|atlas|spine` (B5). */
   search?: string;
+  /** The app's renderer (G7, Safari memory): loaded unit sheets go to the GPU and their CPU copies are released. */
+  gpu?: GpuHooks;
 }
 
 export interface SimService {
@@ -130,6 +133,9 @@ export const LOADERS: Loaders = {
           quality: o.quality ?? 'high',
           dpr: o.dpr ?? 1,
           teamPreset: o.teamPreset ?? 'default',
+          // G7 (Safari memory): unit sheets load per match, held by the battle, never all at boot
+          unitSheets: 'match',
+          ...(o.gpu ? { gpu: o.gpu } : {}),
         });
     },
     fake: async () => {

@@ -1,8 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { UtilityController } from '@/ai';
 import type { FakeAudio } from '@/contracts/fakes/audio';
 import { FixedClock } from '@/contracts/fakes/clock';
-import { AppController, QUICK_BATTLE_GENERAL } from '../controller';
+import { AppController, ART_WAIT_MS, QUICK_BATTLE_GENERAL } from '../controller';
+import type { SessionView } from '../session';
 import { difficultyTier } from '../matchSetup';
 import { buildServices, DEFAULT_CHOICE } from '../services';
 
@@ -169,4 +170,79 @@ describe('AppController: the first session (A8, A9 flow)', () => {
     if (r.id !== 'result') throw new Error('result expected');
     expect(r.result.replay.commands.some((x) => x.side === 0)).toBe(true);
   }, 60_000);
+});
+
+describe('AppController: a battle waits for its unit sheets (G7, Safari memory)', () => {
+  /** A view whose decks' sheets load until the test says so. */
+  function slowArt(): { view: () => SessionView; done: () => void } {
+    let resolve: (() => void) | null = null;
+    let loaded = false;
+    const ready = new Promise<void>((r) => (resolve = r));
+    return {
+      view: () => ({
+        onEvents: () => undefined,
+        render: () => undefined,
+        simFrozen: false,
+        setSpeed: () => undefined,
+        setPaused: () => undefined,
+        artReady: () => (loaded ? null : ready),
+      }),
+      done: () => {
+        loaded = true;
+        resolve?.();
+      },
+    };
+  }
+
+  it('the clock starts once the sheets are in, so no unit appears without its art', async () => {
+    const services = await buildServices({ choice: NO_META, clock: new FixedClock() });
+    const art = slowArt();
+    const c = new AppController(services, { save: null, autopilot: true, delay: async () => undefined, createView: art.view });
+    c.showTitle();
+    c.play();
+    const r = c.route.value;
+    if (r.id !== 'battle') throw new Error('battle expected');
+    expect(r.battle.session.status.value).toBe('ready');
+    art.done();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(r.battle.session.status.value).toBe('running');
+  });
+
+  it('the dev fast-forward starts it at once; the late art then starts nothing twice', async () => {
+    const services = await buildServices({ choice: NO_META, clock: new FixedClock() });
+    const art = slowArt();
+    const c = new AppController(services, { save: null, autopilot: true, delay: async () => undefined, createView: art.view });
+    c.showTitle();
+    c.play();
+    const r = c.route.value;
+    if (r.id !== 'battle') throw new Error('battle expected');
+    c.startNow();
+    expect(r.battle.session.status.value).toBe('running');
+    r.battle.session.pause();
+    art.done();
+    await Promise.resolve();
+    await Promise.resolve();
+    // the waiting start was dropped: the paused battle stays paused
+    expect(r.battle.session.status.value).toBe('paused');
+  });
+
+  it('starts anyway after ART_WAIT_MS (a sheet still missing then draws its fallback)', async () => {
+    vi.useFakeTimers();
+    try {
+      const services = await buildServices({ choice: NO_META, clock: new FixedClock() });
+      const art = slowArt();
+      const c = new AppController(services, { save: null, autopilot: true, delay: async () => undefined, createView: art.view });
+      c.showTitle();
+      c.play();
+      const r = c.route.value;
+      if (r.id !== 'battle') throw new Error('battle expected');
+      await vi.advanceTimersByTimeAsync(ART_WAIT_MS - 100);
+      expect(r.battle.session.status.value).toBe('ready');
+      await vi.advanceTimersByTimeAsync(200);
+      expect(r.battle.session.status.value).toBe('running');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });

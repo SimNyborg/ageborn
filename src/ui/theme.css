@@ -410,10 +410,16 @@
   background: var(--ui-bg);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+  /* iOS: a long press never opens the image menu (Save Image, Copy) on a portrait, card or flag; the
+     property is inherited, so the root covers the whole tree (text fields opt back in below) */
+  -webkit-touch-callout: none;
   user-select: none;
   touch-action: manipulation;
   line-height: 1.25;
   overscroll-behavior: none;
+}
+:where(.ui-root, .ab-root) :is(input, textarea, [contenteditable]) {
+  -webkit-touch-callout: default;
 }
 .ui-root *,
 .ui-root *::before,
@@ -1967,6 +1973,9 @@ button.ui-chip {
   position: absolute;
   inset: 0;
   z-index: 45;
+  /* the side panel slides in from past the right edge: never a sideways scroll of the screen under it
+     (a script scroll during the slide could leave the UI shifted on iOS; G6) */
+  overflow: hidden;
 }
 .ui-sheet__scrim {
   position: absolute;
@@ -2299,12 +2308,22 @@ button.ui-chip {
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
 }
 .ui-tabbar__label {
+  /* never squeezed: a full line of text in every engine (G1: WebKit took the overflow from the label) */
+  flex: none;
   font-size: 12px;
   line-height: 16px;
   font-weight: 700;
   white-space: nowrap;
   max-width: 100%;
   overflow: hidden;
+}
+/* short (<= 360 px high, iOS Safari with bars): the content fits the 52 px bar
+   (2 + 30 + 1 + 16 + 2 = 51 px; the raised Battle tab 57 of its 58) */
+@container ui-root (max-height: 360px) {
+  .ui-tabbar__tab {
+    padding-top: 2px;
+    gap: 1px;
+  }
 }
 @container ui-root (min-height: 481px) {
   .ui-tabbar__label {

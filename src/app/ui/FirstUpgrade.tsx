@@ -76,11 +76,15 @@ export function FirstUpgrade() {
     [ui, reduce],
   );
 
-  // A save that cannot take the upgrade never sees the step.
+  // A save that cannot take the upgrade never sees the step. Preact runs this after paint, so it reads the
+  // save and the step as they are now, not as this render saw them: a write in between (a purchase, a claim)
+  // must not be overwritten by a stale copy (G4).
   useEffect(() => {
-    if (phase === 'offer' && route.id === 'title' && firstUpgradeDue(save, step) && blocked !== null && save) {
-      c.setSave({ ...save, flags: { ...save.flags, [FIRST_UPGRADE_FLAG]: true } });
-    }
+    if (phase !== 'offer' || route.id !== 'title') return;
+    const now = c.save.peek();
+    if (!now || !firstUpgradeDue(now, c.step.peek())) return;
+    if ((typed ? upgradeBlocker(now, FIRST_UPGRADE_CARD, typed) : 'noMeta') === null) return;
+    c.setSave({ ...now, flags: { ...now.flags, [FIRST_UPGRADE_FLAG]: true } });
   }, [phase, route.id, save, step, blocked]);
 
   // MR-39's beats: the charge, then the impact (burst, hammer, level flip, rows), then rest.

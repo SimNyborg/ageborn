@@ -16,7 +16,7 @@ import { DevRouter, isDevMode } from '@/dev/router';
 import { BattleView, DEFAULT_VIEW_SETTINGS, detectMobile, type ViewSettings } from '@/render';
 import { textureMemory } from '@/visuals/textureMemory';
 import { boot, bootFlags, validateContentInDev } from './boot';
-import { AppController } from './controller';
+import { AppController, ART_WAIT_MS } from './controller';
 import type { KeyValueStore } from './eventLog';
 import { createPixiHost } from './pixiHost';
 import { documentVisibility, type SessionView } from './session';
@@ -118,6 +118,7 @@ async function start(root: HTMLElement): Promise<void> {
       },
       setSpeed: (s) => view.setSpeed(s),
       setPaused: (p) => view.setPaused(p),
+      artReady: () => view.artReady(),
       destroy: () => {
         detachInput();
         detach();
@@ -176,11 +177,19 @@ async function start(root: HTMLElement): Promise<void> {
   if (q.get('dev') === '1') {
     (window as Window & { __agebornDev?: unknown }).__agebornDev = {
       controller,
-      /** Runs up to `ticks` sim ticks of the battle on screen at once (B13 e2e dev fast-forward). */
-      fastForward(ticks: number): number {
+      /**
+       * Runs up to `ticks` sim ticks of the battle on screen at once (B13 e2e dev fast-forward). A battle
+       * still loading its decks' unit sheets (G7) is waited for first, as its own start would (at most
+       * `ART_WAIT_MS`), so the sheets are in before the first units appear; then the countdown is skipped.
+       */
+      async fastForward(ticks: number): Promise<number> {
         const r = controller.route.peek();
         if (r.id !== 'battle') return 0;
-        controller.skipCountdown();
+        const art = r.battle.session.artReady();
+        if (art) await Promise.race([art, new Promise<void>((resolve) => setTimeout(resolve, ART_WAIT_MS))]);
+        const now = controller.route.peek();
+        if (now.id !== 'battle' || now.battle !== r.battle) return 0;
+        controller.startNow();
         return r.battle.session.fastForward(ticks);
       },
       /** The battle view on screen (e2e camera checks: minimap snapshot, camera stats). */
@@ -193,9 +202,10 @@ async function start(root: HTMLElement): Promise<void> {
        * Decoded image memory now (G7, Safari memory): textures on the GPU, decoded copies on the CPU and
        * the unit sheets loaded (`visuals/textureMemory.ts`; the e2e memory budget reads it).
        */
-      memory(): unknown {
+      memory(o: { detail?: number } = {}): unknown {
         const sheets = (art as { atlas?: { sheetStats?: () => unknown } }).atlas?.sheetStats?.() ?? null;
-        return { ...textureMemory(pixi.app.renderer), sheets };
+        const fallbacks = (art as { fallbacks?: { units: number; last: string } }).fallbacks ?? null;
+        return { ...textureMemory(pixi.app.renderer, o), sheets, fallbacks };
       },
       /** Client (page) point of your turret mount `i` on the battle on screen, for e2e taps. */
       mountPoint(i: number): { x: number; y: number } | null {
