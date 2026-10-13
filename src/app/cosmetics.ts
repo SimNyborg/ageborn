@@ -11,10 +11,16 @@ import type { ActionResult, UiServices } from '@/ui/screens';
 
 /**
  * The player's equipped battle wheel (A18.9.4): owned emotes and quotes only; the content defaults
- * for a save without a wheel. `speaker` is the player's General, whose head the HUD's quote bubble
- * shows (PLAN 2a). Null without a save or collections (the fakes).
+ * for a save without a wheel. `speaker` is the player's General, whose head performs the starter
+ * emotes and heads the quote bubble (PLAN 2a). `foeGeneral` is the opponent's General (`opponent`, the
+ * match setup's AI General id), whose fixed look performs the opponent's emotes; an online player's own
+ * look comes with its side. Null without a save or collections (the fakes).
  */
-export function emoteWheelOf(save: SaveDoc | null | undefined, compiled: CompiledContent): { emotes: EmoteId[]; quotes: EmoteId[]; quoteCooldownMs: number; speaker: AvatarSpec } | null {
+export function emoteWheelOf(
+  save: SaveDoc | null | undefined,
+  compiled: CompiledContent,
+  opponent?: { generalId: string } | null,
+): { emotes: EmoteId[]; quotes: EmoteId[]; quoteCooldownMs: number; speaker: AvatarSpec; foeGeneral?: string } | null {
   const cos = compiled.cosmetics as Partial<Content['cosmetics']> | null | undefined;
   const col = cos?.collections;
   if (!save || !col || !cos.emotes) return null;
@@ -28,6 +34,7 @@ export function emoteWheelOf(save: SaveDoc | null | undefined, compiled: Compile
     quotes: eq.quotes.filter(ok) as EmoteId[],
     quoteCooldownMs: col.quoteCooldownMs,
     speaker: save.profile.avatar,
+    ...(opponent ? { foeGeneral: opponent.generalId } : {}),
   };
 }
 

@@ -1,4 +1,21 @@
 {
+ "bronze.aegean_harbour": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0,
+   "mid.webp": 0.0019,
+   "thumb.webp": 0.0003
+  },
+  "sizes": {
+   "back.webp": 4020,
+   "far.webp": 22390,
+   "layers.json": 2336,
+   "mid.webp": 33222,
+   "props.webp": 7738,
+   "thumb.webp": 4472
+  },
+  "total": 74178
+ },
  "bronze.classic": {
   "rule": {
    "back.webp": 0.0,
@@ -33,6 +50,57 @@
   },
   "total": 73306
  },
+ "cosmic.ringed_giant": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0002,
+   "mid.webp": 0.001,
+   "thumb.webp": 0.0
+  },
+  "sizes": {
+   "back.webp": 13268,
+   "far.webp": 17452,
+   "layers.json": 2199,
+   "mid.webp": 37096,
+   "props.webp": 3572,
+   "thumb.webp": 6166
+  },
+  "total": 79753
+ },
+ "future.skyway_metropolis": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0,
+   "mid.webp": 0.0,
+   "thumb.webp": 0.0
+  },
+  "sizes": {
+   "back.webp": 6682,
+   "far.webp": 35560,
+   "layers.json": 2044,
+   "mid.webp": 32810,
+   "props.webp": 2856,
+   "thumb.webp": 5262
+  },
+  "total": 85214
+ },
+ "gunpowder.treasure_cove": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0,
+   "mid.webp": 0.0002,
+   "thumb.webp": 0.0
+  },
+  "sizes": {
+   "back.webp": 5114,
+   "far.webp": 22498,
+   "layers.json": 2304,
+   "mid.webp": 46770,
+   "props.webp": 14160,
+   "thumb.webp": 4546
+  },
+  "total": 95392
+ },
  "industrial.classic": {
   "rule": {
    "back.webp": 0.0,
@@ -49,5 +117,73 @@
    "thumb.webp": 3784
   },
   "total": 68635
+ },
+ "industrial.viaduct_gorge": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0,
+   "mid.webp": 0.0001,
+   "thumb.webp": 0.0144
+  },
+  "sizes": {
+   "back.webp": 7342,
+   "far.webp": 32666,
+   "layers.json": 2015,
+   "mid.webp": 46770,
+   "props.webp": 4220,
+   "thumb.webp": 5684
+  },
+  "total": 98697
+ },
+ "medieval.misty_moor": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0,
+   "mid.webp": 0.0,
+   "thumb.webp": 0.0
+  },
+  "sizes": {
+   "back.webp": 3426,
+   "far.webp": 23150,
+   "layers.json": 2036,
+   "mid.webp": 31666,
+   "props.webp": 5374,
+   "thumb.webp": 3922
+  },
+  "total": 69574
+ },
+ "modern.desert_airbase": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0,
+   "mid.webp": 0.0,
+   "thumb.webp": 0.0
+  },
+  "sizes": {
+   "back.webp": 10358,
+   "far.webp": 26088,
+   "layers.json": 2740,
+   "mid.webp": 21556,
+   "props.webp": 5450,
+   "thumb.webp": 3876
+  },
+  "total": 70068
+ },
+ "stone.glacier_valley": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0,
+   "mid.webp": 0.0,
+   "thumb.webp": 0.0
+  },
+  "sizes": {
+   "back.webp": 5350,
+   "far.webp": 29374,
+   "layers.json": 2639,
+   "mid.webp": 46176,
+   "props.webp": 8632,
+   "thumb.webp": 6166
+  },
+  "total": 98337
  }
 }

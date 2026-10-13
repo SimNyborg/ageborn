@@ -23,6 +23,7 @@ import {
   cosmeticOdds,
   craftCosmetic,
   equipCosmetic,
+  markCosmeticsSeen,
   sideLook,
   syncEarnedCosmetics,
   type CosmeticEquip,
@@ -102,6 +103,8 @@ export interface MetaRules extends Meta {
   searchFlags(c: CompiledContent, i18n: FlagNames, query: string): CosmeticItemDef[];
   /** Grants the road, feat, arena and Codex Level items the save has earned. */
   syncCosmetics(s: SaveDoc, c: CompiledContent): SaveDoc;
+  /** Customize showed these collection items: their NEW pip goes (save v15 `cosmetics.fresh`); the same save when none was NEW. */
+  markCosmeticsSeen(s: SaveDoc, keys: readonly string[]): SaveDoc;
   /** "12/40 found" per collection. */
   collectionProgress(s: SaveDoc, c: CompiledContent): ReturnType<typeof collectionProgress>;
   /** The disclosed cosmetic drop tables (A15.3). */
@@ -162,6 +165,7 @@ export function createMeta(bound: CompiledContent = gameContent): MetaRules {
     flagAtlas: (s, c) => flagAtlasProgress(s, tables(c)),
     searchFlags: (c, i18n, query) => searchFlags(tables(c), i18n, query),
     syncCosmetics: (s, c) => syncEarnedCosmetics(s, tables(c)).save,
+    markCosmeticsSeen: (s, keys) => markCosmeticsSeen(s, keys),
     collectionProgress: (s, c) => collectionProgress(s, tables(c)),
     cosmeticOdds: (s, c) => cosmeticOdds(s, tables(c)),
     sideLook: (s, c) => sideLook(s, tables(c)),

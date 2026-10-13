@@ -679,6 +679,285 @@ def desert_bunker_extras(c):
     return extras
 
 
+# -- round 2: Frost Cave, Gilded Ziggurat, Snowbound Keep, Midnight Neon, Crystal Spire, Nebula Ark ----------
+SKIN_P.update({
+    "frost_cave": dict(rock="#868994", rock_lt="#989BA6", rock_dk="#71737E", ice="#CFE6F0", ice_lt="#E4F2F7", crys="#B6D9E8",
+                       crys_dk="#7FA9BF", crys_glow="#EAF7FC", snow="#F2F4F4", snow_dk="#DCE3E7", bone="#EDE3C8"),
+    "gilded_ziggurat": dict(sand="#CDBE9E", sand_lt="#E3D8BE", sand_dk="#A99A7A", gold="#E3B84E", gold_lt="#F2D58A",
+                            gold_dk="#B98F35", terra="#B66E52", wood="#8E7658", wood_dk="#5E4C3C"),
+    "snowy_keep": dict(slate="#6E7985", slate_lt="#808B98", slate_dk="#5B6571", snow="#F2F4F4", snow_dk="#DCE3E7",
+                       ice_lt="#E4F2F7", wood="#7A5E44", wood_dk="#5A4634", pine="#3F6B4A", pine_lt="#55835C", berry="#8E2A4A"),
+    "midnight_neon": dict(char="#23262E", char_lt="#363A46", char_mid="#2C303A", glass="#3B4554", glass_lt="#5A6A7E",
+                          trim="#8E97A4", magenta="#F03AA8", magenta_core="#FFD6EE", mint="#3AF0B4", mint_core="#D6FFF1"),
+    "crystal_spire": dict(crystal="#F0E8FF", crystal_mid="#D9CCF2", crystal_dk="#B8A6DE", violet="#6A5A8A", rock="#5C5468",
+                          rock_lt="#6E6680", rock_dk="#4A4356", glow="#E7DCFF"),
+    "nebula_ark": dict(hull="#30254A", hull_lt="#45376A", armor="#D2CCE6", armor_lt="#E2DEF0", seam="#1E1630", neb="#9A5FD2",
+                       neb_lt="#B98BE4", neb_edge="#D6B8FF", star="#FFFFFF", trim="#ABA3C6"),
+})
+
+
+def ice_shard(rig, j, c, L=18.0, r=4.4, seed=0, color="crys"):
+    """A broken crystal or ice shard: a faceted prism with a lit facet strip, snapped at the base."""
+    from world.base_skins_kit import crystal_prism
+    rnd = random.Random(seed)
+    g, gl = Geo(), Geo()
+    a = math.radians(rnd.uniform(-30, 30))
+    b = (-math.sin(a) * L * 0.5, 0.0, -math.cos(a) * L * 0.5)
+    t = (math.sin(a) * L * 0.5, 0.0, math.cos(a) * L * 0.5)
+    crystal_prism(g, b, t, r, twist=rnd.uniform(0, 60))
+    gl.capsule((b[0] * 0.6, -r * 0.8, b[2] * 0.6), (t[0] * 0.2, -r * 0.7, t[2] * 0.2), r * 0.2, segs=6, rings=1)
+    rig.part(j, g, c[color], finish="gloss", outline_hex=c.get(color + "_dk", c.get("crys_dk", "#7FA9BF")))
+    rig.part(j, gl, glow=c.get("crys_glow", c.get("glow", "#FFFFFF")), outline=0)
+
+
+def snow_chunk(rig, j, c, r=(10, 8, 6), seed=0):
+    """A clump of packed snow."""
+    g = Geo()
+    rock(g, (0, 0, 0), r, seed=seed, jag=0.12, p=2.2)
+    rig.part(j, g, c["snow"], finish="gloss")
+
+
+def icicle_piece(rig, j, c, L=16.0, r=2.4):
+    g = Geo().lathe([(0, 0), (r, 0), (r * 0.8, -L * 0.25), (r * 0.4, -L * 0.6), (0, -L)], (0, 0, L * 0.5), segs=8, rot=(0, 30, 0))
+    rig.part(j, g, c["ice_lt"], finish="gloss", outline=0.4)
+
+
+def kit_frost_cave(rig, c):
+    yield lambda j: ice_shard(rig, j, c, 22, 5.4, seed=1)
+    yield lambda j: boulder(rig, j, (12, 10, 9), c["rock"], 3)
+    yield lambda j: snow_chunk(rig, j, c, (11, 8, 6), seed=3)
+    yield lambda j: ice_shard(rig, j, c, 14, 4.0, seed=4)
+    yield lambda j: icicle_piece(rig, j, c)
+    yield lambda j: boulder(rig, j, (9, 8, 7), c["rock_lt"], 6)
+    yield lambda j: (rig.part(j, Geo().capsule((-11, 0, -3), (11, 0, 4), 3.0, 1.6), c["bone"]))
+    yield lambda j: snow_chunk(rig, j, c, (8, 6, 5), seed=8)
+
+
+def frost_cave_extras(c):
+    """Ice shards and snow clumps sticking out of the frozen mound's rubble."""
+    def extras(rig, j, rnd):
+        from world.base_skins_kit import crystal_prism
+        g, gl = Geo(), Geo()
+        for k in range(4):
+            x = rnd.uniform(-34, 34)
+            a = math.radians(rnd.uniform(-35, 35))
+            L = rnd.uniform(10, 18)
+            crystal_prism(g, (x, -6, 4), (x + math.sin(a) * L, -7, 4 + math.cos(a) * L), rnd.uniform(2.6, 4.0))
+            gl.capsule((x, -9, 6), (x + math.sin(a) * L * 0.5, -9.5, 6 + math.cos(a) * L * 0.5), 0.7, segs=6, rings=1)
+        rig.part(j, g, c["crys"], finish="gloss", outline_hex=c["crys_dk"])
+        rig.part(j, gl, glow=c["crys_glow"], outline=0)
+        g = Geo()
+        for k in range(3):
+            g.blob((rnd.uniform(-36, 36), -11, 4.4), (6.0, 4.4, 3.4), p=2.2, cuts=3)
+        rig.part(j, g, c["snow"], finish="gloss", outline=0.5)
+    return extras
+
+
+def gold_bit(rig, j, c, kind=0):
+    """A gold piece: a capstone pyramid, a sun ray, a coin pile."""
+    g = Geo()
+    if kind == 0:
+        g.lathe([(0, 0), (6.4, 0), (0, 10.0)], (0, 0, -4.0), segs=4, rot=(0, 20, 45))
+    elif kind == 1:
+        g.slab([(-3.0, -8.0), (3.0, -8.0), (0.0, 10.0)], 0.0, 2.4, rot=(0, 30, 0))
+    else:
+        for dx, dz in ((-3, 0), (2, 0.6), (0, 2.4), (4, 2.0), (-2, 3.4)):
+            g.blob((dx, 0, dz), (3.0, 3.0, 1.2), p=2.0)
+    rig.part(j, g, c["gold"], finish="bronze_rich", outline=0.5)
+
+
+def kit_gilded_ziggurat(rig, c):
+    yield lambda j: block(rig, j, (13, 9, 8), c["sand"], chip=True, seed=1)
+    yield lambda j: gold_bit(rig, j, c, 0)
+    yield lambda j: block(rig, j, (10, 8, 7), c["sand_lt"], rot=(0, 18, 8))
+    yield lambda j: gold_bit(rig, j, c, 1)
+    yield lambda j: block(rig, j, (9, 6, 6), c["terra"], rot=(10, 20, 0), chip=True, seed=5)
+    yield lambda j: beam(rig, j, 24, 5, c["wood"], c["wood_dk"], seed=6)
+    yield lambda j: gold_bit(rig, j, c, 2)
+    yield lambda j: block(rig, j, (16, 6, 6), c["sand_dk"], rot=(0, -10, 0), chip=True, seed=8)
+
+
+def gilded_ziggurat_extras(c):
+    """Gold capstones, sun rays and terracotta tiles in the gilded temple's rubble."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(2):
+            x = rnd.uniform(-30, 30)
+            box(g, (x, -2, 12), (16, 2.6, 2.6), p=5, rot=(0, rnd.uniform(-40, 40), rnd.uniform(-20, 20)))
+        rig.part(j, g, c["wood"])
+        g = Geo()
+        for k in range(4):
+            x = rnd.uniform(-36, 36)
+            if k % 2:
+                g.lathe([(0, 0), (4.4, 0), (0, 7.0)], (x, -10, 3.0), segs=4, rot=(0, rnd.uniform(-30, 30), 45))
+            else:
+                g.slab([(x - 2.4, 2.0), (x + 2.4, 2.0), (x + rnd.uniform(-3, 3), 12.0)], -11, 2.0)
+        rig.part(j, g, c["gold"], finish="bronze_rich", outline=0.5)
+        g = Geo()
+        for k in range(3):
+            box(g, (rnd.uniform(-34, 34), -12, 3.0), (4.0, 3.0, 1.4), p=5, rot=(0, rnd.uniform(-30, 30), rnd.uniform(0, 90)))
+        rig.part(j, g, c["terra"], outline=0.4)
+    return extras
+
+
+def kit_snowy_keep(rig, c):
+    yield lambda j: block(rig, j, (12, 8, 7), c["slate"], chip=True, seed=1)
+    yield lambda j: snow_chunk(rig, j, c, (11, 8, 6), seed=2)
+    yield lambda j: block(rig, j, (14, 7, 6), c["slate_dk"], rot=(0, -12, 0), chip=True, seed=3)
+    yield lambda j: beam(rig, j, 30, 6, c["wood"], c["wood_dk"], seed=4)
+    yield lambda j: icicle_piece(rig, j, c)
+    yield lambda j: block(rig, j, (10, 7, 6), c["slate_lt"], rot=(0, 15, 6))
+    yield lambda j: snow_chunk(rig, j, c, (8, 6, 5), seed=7)
+    yield lambda j: (rig.part(j, Geo().blob((0, 0, 0), (10, 3.0, 3.6), p=2.0, cuts=3), c["pine"], finish="hair"),
+                     rig.part(j, Geo().sphere((3, -3, 1), 1.4, cuts=2).sphere((-4, -3, -1), 1.3, cuts=2), c["berry"], finish="gloss", outline=0.3))
+
+
+def snowy_keep_extras(c):
+    """Beams, snow clumps and slate in the winter keep's rubble."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(2):
+            x = rnd.uniform(-30, 30)
+            box(g, (x, -2, 12), (16, 2.6, 2.6), p=5, rot=(0, rnd.uniform(-40, 40), rnd.uniform(-20, 20)))
+        rig.part(j, g, c["wood"])
+        g = Geo()
+        for k in range(4):
+            g.blob((rnd.uniform(-38, 38), -11, 4.6), (6.4, 4.4, 3.6), p=2.2, cuts=3)
+        rig.part(j, g, c["snow"], finish="gloss", outline=0.5)
+        g = Geo()
+        for k in range(3):
+            box(g, (rnd.uniform(-30, 30), -6, 9), (5.6, 3.6, 1.4), p=5, rot=(rnd.uniform(-30, 30), rnd.uniform(-30, 30), 0))
+        rig.part(j, g, c["slate_dk"], outline=0.4)
+    return extras
+
+
+def neon_tube(rig, j, c, color="magenta", L=22.0):
+    """A broken neon tube on a bracket: the glowing tube and its hot core, a charcoal holder."""
+    g = Geo().capsule((-L / 2, 0, -2), (L / 2, 0, 2), 1.6, segs=8, rings=2)
+    rig.part(j, g, glow=c[color], outline=0)
+    g = Geo().capsule((-L / 2, -1.2, -2), (L / 2, -1.2, 2), 0.7, segs=6, rings=1)
+    rig.part(j, g, glow=c[color + "_core"], outline=0)
+    g = Geo()
+    box(g, (-L / 2 - 1.0, 1.4, -2.2), (2.0, 1.4, 2.4), p=5)
+    rig.part(j, g, c["char_lt"], finish="metal", outline=0.4)
+
+
+def glass_shard(rig, j, c, w=12.0, h=16.0, seed=0):
+    rnd = random.Random(seed)
+    pts = [(-w / 2, -h / 2), (w / 2, -h / 2 + rnd.uniform(0, 4)), (w * 0.3, h / 2), (-w * 0.2, h * 0.3)]
+    g = Geo().slab(pts, 0, 1.2, rot=(0, rnd.uniform(-20, 20), 0))
+    rig.part(j, g, c["glass"], finish="gloss", outline=0.5)
+    g = Geo().capsule((-w * 0.2, -1.0, -h * 0.3), (w * 0.1, -1.0, h * 0.2), 0.6, segs=6, rings=1)
+    rig.part(j, g, c["glass_lt"], outline=0)
+
+
+def kit_midnight_neon(rig, c):
+    yield lambda j: plate(rig, j, 18, 12, c["char_lt"], rivet=c["trim"], bend=10)
+    yield lambda j: neon_tube(rig, j, c, "magenta")
+    yield lambda j: glass_shard(rig, j, c, seed=3)
+    yield lambda j: (block(rig, j, (11, 7, 6), c["char_mid"]),
+                     rig.part(j, box(Geo(), (0, -7.4, 0), (8, 0.6, 1.2), p=6), glow=c["mint"], outline=0))
+    yield lambda j: neon_tube(rig, j, c, "mint", L=16.0)
+    yield lambda j: glass_shard(rig, j, c, 9, 12, seed=6)
+    yield lambda j: plate(rig, j, 14, 10, c["char"], rivet=c["char_lt"], rot=(0, 20, 0))
+    yield lambda j: (rig.part(j, Geo().capsule((-11, 0, 0), (11, 0, 0), 2.2), c["trim"], finish="metal"),
+                     rig.part(j, cyl(Geo(), (8, 0, 0), (12, 0, 0), 3.2, bevel=0.4), glow=c["magenta"], outline=0))
+
+
+def midnight_neon_extras(c):
+    """Neon tubes, glass and girders in the night tower's rubble."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(2):
+            x = rnd.uniform(-30, 30)
+            box(g, (x, -2, 12), (18, 1.6, 1.6), p=6, rot=(0, rnd.uniform(-45, 45), rnd.uniform(-20, 20)))
+        rig.part(j, g, c["trim"], finish="metal")
+        for k, col in enumerate(("magenta", "mint")):
+            x = rnd.uniform(-30, 30)
+            a = math.radians(rnd.uniform(-30, 30))
+            g = Geo().capsule((x - math.cos(a) * 10, -8, 8 - math.sin(a) * 10), (x + math.cos(a) * 10, -8, 8 + math.sin(a) * 10), 1.4, segs=8, rings=2)
+            rig.part(j, g, glow=c[col], outline=0)
+        g = Geo()
+        for k in range(3):
+            x = rnd.uniform(-36, 36)
+            g.slab([(x - 3, 1), (x + 3, 1), (x + 1, 8)], -12, 0.8)
+        rig.part(j, g, c["glass_lt"], outline=0.3)
+    return extras
+
+
+def kit_crystal_spire(rig, c):
+    cc = dict(c, crys=c["crystal"], crys_dk=c["violet"], crys_glow=c["glow"], crystal_dk_dk=c["violet"])
+    yield lambda j: ice_shard(rig, j, cc, 24, 6.0, seed=1, color="crys")
+    yield lambda j: boulder(rig, j, (11, 9, 8), c["rock"], 3, jag=0.2)
+    yield lambda j: ice_shard(rig, j, dict(cc, crys=c["crystal_mid"]), 16, 4.6, seed=3, color="crys")
+    yield lambda j: ice_shard(rig, j, dict(cc, crys=c["crystal_dk"]), 12, 4.0, seed=4, color="crys")
+    yield lambda j: boulder(rig, j, (9, 8, 6), c["rock_lt"], 5, jag=0.22)
+    yield lambda j: ice_shard(rig, j, cc, 20, 5.0, seed=6, color="crys")
+    yield lambda j: (rig.part(j, cyl(Geo(), (0, 0, -3), (0, 0, 3), 11, 12, bevel=0.8, segs=6), c["crystal_mid"], finish="gloss", outline_hex=c["violet"]))
+    yield lambda j: boulder(rig, j, (7, 6, 5), c["rock_dk"], 8, jag=0.2)
+
+
+def crystal_spire_extras(c):
+    """Crystal shards standing in the outcrop's rubble."""
+    def extras(rig, j, rnd):
+        from world.base_skins_kit import crystal_prism
+        g, gl = Geo(), Geo()
+        for k in range(5):
+            x = rnd.uniform(-36, 36)
+            a = math.radians(rnd.uniform(-30, 30))
+            L = rnd.uniform(10, 20)
+            crystal_prism(g, (x, -6, 4), (x + math.sin(a) * L, -7, 4 + math.cos(a) * L), rnd.uniform(2.6, 4.4))
+            gl.capsule((x, -9.4, 6), (x + math.sin(a) * L * 0.5, -10, 6 + math.cos(a) * L * 0.5), 0.7, segs=6, rings=1)
+        rig.part(j, g, c["crystal"], finish="gloss", outline_hex=c["violet"])
+        rig.part(j, gl, glow=c["glow"], outline=0)
+    return extras
+
+
+def nebula_puff(rig, j, c, seed=0):
+    rnd = random.Random(seed)
+    g, gl, s = Geo(), Geo(), Geo()
+    for k in range(4):
+        (g if k % 2 else gl).sphere((rnd.uniform(-6, 6), rnd.uniform(-2, 2), rnd.uniform(-4, 4)), rnd.uniform(4.0, 6.4), cuts=3)
+    s.star((0, -7, 1), 2.0, 0.8, 0.6, points=4, rot=(90, 0, 0))
+    rig.part(j, g, c["neb"], finish="dust", outline=0.5, outline_hex="#4A2A78")
+    rig.part(j, gl, c["neb_lt"], finish="dust", outline=0.5, outline_hex="#4A2A78")
+    rig.part(j, s, glow=c["star"], outline=0)
+
+
+def kit_nebula_ark(rig, c):
+    yield lambda j: plate(rig, j, 18, 12, c["armor"], rivet=c["hull_lt"], bend=12)
+    yield lambda j: nebula_puff(rig, j, c, seed=2)
+    yield lambda j: plate(rig, j, 16, 10, c["hull"], rivet=c["seam"], rot=(0, 18, 0))
+    yield lambda j: (rig.part(j, Geo().lathe([(0, -10), (5, -2), (4.2, 3), (0, 11)], (0, 0, 0), segs=6, rot=(0, 15, 0)), glow=c["neb_edge"], outline=0))
+    yield lambda j: plate(rig, j, 20, 8, c["armor_lt"], bend=24)
+    yield lambda j: nebula_puff(rig, j, c, seed=6)
+    yield lambda j: (block(rig, j, (11, 7, 6), c["hull_lt"]),
+                     rig.part(j, box(Geo(), (0, -7.4, 0), (8, 0.6, 1.2), p=6), glow=c["neb_edge"], outline=0))
+    yield lambda j: block(rig, j, (9, 6, 5), c["armor"], rot=(0, 25, 10), chip=True, seed=8)
+
+
+def nebula_ark_extras(c):
+    """Hull plates, star crystals and wisps of nebula in the ark's wreck."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(2):
+            x = rnd.uniform(-30, 30)
+            box(g, (x, -2, 12), (16, 1.8, 6.0), p=7, rot=(0, rnd.uniform(-40, 40), rnd.uniform(-20, 20)))
+        rig.part(j, g, c["armor"], finish="gloss")
+        gl, s = Geo(), Geo()
+        for k in range(3):
+            x = rnd.uniform(-34, 34)
+            gl.lathe([(0, -6), (3.2, -1), (0, 8)], (x, -8, 9), segs=6, rot=(0, rnd.uniform(-25, 25), 0))
+            s.star((x + rnd.uniform(-6, 6), -13, 4 + rnd.uniform(0, 6)), 1.8, 0.7, 0.6, points=4, rot=(90, 0, 0))
+        rig.part(j, gl, glow=c["neb_edge"], outline=0)
+        rig.part(j, s, glow=c["star"], outline=0)
+        g = Geo()
+        for k in range(3):
+            g.sphere((rnd.uniform(-36, 36), -10, 6 + rnd.uniform(0, 4)), rnd.uniform(4, 6), cuts=3)
+        rig.part(j, g, c["neb"], finish="dust", outline=0.5, outline_hex="#4A2A78")
+    return extras
+
+
 # skin -> (age, pieces, heap colour keys (back, middle, front + pebbles), what sticks out of the heaps)
 SKIN_KITS = {
     "rose_keep": ("medieval", kit_rose_keep, ("stone", "stone_lt", "stone_dk"), rose_keep_extras),
@@ -686,6 +965,12 @@ SKIN_KITS = {
     "coral_fort": ("gunpowder", kit_coral_fort, ("stone_dk", "stone", "stone_lt"), coral_fort_extras),
     "copper_foundry": ("industrial", kit_copper_foundry, ("stone_dk", "stone", "stone_lt"), copper_foundry_extras),
     "desert_bunker": ("modern", kit_desert_bunker, ("sand_dk", "sand", "sand_lt"), desert_bunker_extras),
+    "frost_cave": ("stone", kit_frost_cave, ("rock_dk", "rock", "snow"), frost_cave_extras),
+    "gilded_ziggurat": ("bronze", kit_gilded_ziggurat, ("sand_dk", "sand", "sand_lt"), gilded_ziggurat_extras),
+    "snowy_keep": ("medieval", kit_snowy_keep, ("slate_dk", "slate", "snow"), snowy_keep_extras),
+    "midnight_neon": ("future", kit_midnight_neon, ("char", "char_lt", "char_mid"), midnight_neon_extras),
+    "crystal_spire": ("future", kit_crystal_spire, ("rock_dk", "rock", "rock_lt"), crystal_spire_extras),
+    "nebula_ark": ("cosmic", kit_nebula_ark, ("hull", "hull_lt", "armor"), nebula_ark_extras),
 }
 
 

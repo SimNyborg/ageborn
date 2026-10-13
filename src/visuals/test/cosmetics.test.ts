@@ -51,9 +51,9 @@ describe('cosmetic art', () => {
 
   it('animates emotes unless motion is off, and never otherwise', () => {
     const key = 'emote.supernova';
-    expect(cosmeticSvg(key)).toContain('<animateTransform');
-    expect(cosmeticSvg(key, { animate: false })).not.toContain('<animate');
-    expect(cosmeticSvg('nationalFlag.dk')).not.toContain('<animate');
+    expect(cosmeticSvg(key)).toContain('@keyframes');
+    expect(cosmeticSvg(key, { animate: false })).not.toMatch(/<style|@keyframes|<animate/);
+    expect(cosmeticSvg('nationalFlag.dk')).not.toMatch(/<animate|@keyframes/);
   });
 
   it('returns null for unknown keys and caches image URLs', () => {

@@ -38,7 +38,9 @@
  * cross-fade under Reduce motion). A model's sheet takes no tint, and brings its own collapse topple,
  * material, rubble and dust colours and ambient spots (`meta.ageborn`, `skinModel()` and `ambientSpots()`
  * for the dressing). An evolve into a skinned age whose model is still loading assembles the standard
- * base of that age and swaps the model in afterwards (the build-up never waits for a skin).
+ * base of that age and swaps the model in afterwards (the build-up never waits for a skin). A Legendary
+ * model (`meta.ageborn.aura: 'legendary'`: Crystal Spire, Nebula Ark) stands in a soft white aura that
+ * breathes slowly (still under Reduce motion), dims with the crumble stages and goes out in the collapse.
  *
  * Reduce motion (`setMotion`): no shake, no flying shards and no squash bounces (fades instead).
  * Lite: fewer shards, bands and particles. All of it is cosmetic; the sim owns every timing.
@@ -57,7 +59,7 @@ import { FX_ZONES } from '../../effects/sprites';
 import { CLIP_TIMING } from '../../style';
 import { baseSheetSource } from '../../manifest.world';
 import { partSprite, PuffList } from '../procedural/shared';
-import { clipDurations, frameIndex, isBaseSkinSource, setFrame, type WorldAtlas, type WorldSheet } from '../worldAtlas';
+import { clipDurations, frameIndex, isBaseSkinSource, setFrame, type WorldAtlas, type WorldMeta, type WorldSheet } from '../worldAtlas';
 import { CollapseView } from './collapse/collapseView';
 import { collapseProfileFor, type CollapseMaterial } from './collapse/profiles';
 import { warmCollapse } from './collapse/warm';
@@ -279,6 +281,33 @@ interface Reskin {
 const RESKIN_MS = 460;
 const RESKIN_REDUCE_MS = 260;
 
+/** The Legendary aura (PLAN 2c "white Legendary aura"): a pale lilac-white additive halo, its peak alpha. */
+const AURA_TINT = 0xf6f0ff;
+const AURA_ALPHA = 0.3;
+const AURA_PX = 64;
+let auraTex: Texture | null = null;
+
+/** The aura's soft radial falloff (a 64 px canvas, made once and shared); empty without a canvas (tests). */
+function auraTexture(): Texture {
+  if (auraTex) return auraTex;
+  if (typeof document === 'undefined') return Texture.EMPTY;
+  const c = document.createElement('canvas');
+  c.width = AURA_PX;
+  c.height = AURA_PX;
+  const ctx = c.getContext('2d');
+  if (!ctx) return Texture.EMPTY;
+  const h = AURA_PX / 2;
+  const g = ctx.createRadialGradient(h, h, 0, h, h, h);
+  g.addColorStop(0, 'rgba(255,255,255,1)');
+  g.addColorStop(0.35, 'rgba(255,255,255,0.62)');
+  g.addColorStop(0.7, 'rgba(255,255,255,0.18)');
+  g.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, AURA_PX, AURA_PX);
+  auraTex = Texture.from(c);
+  return auraTex;
+}
+
 export class AtlasBaseView implements BaseView {
   readonly root = new Container();
   private readonly body = new Container();
@@ -308,6 +337,10 @@ export class AtlasBaseView implements BaseView {
   private bodyPair: Pair;
   private treasuryPair: Pair;
   private readonly flash: Sprite;
+  /** The Legendary aura behind the body (hidden for other sheets) and its base scale for the sheet. */
+  private readonly aura: Sprite;
+  private auraOn = false;
+  private auraScale = { x: 1, y: 1 };
   private lights: { s: Container; phase: number; crumbleMax: number; a: number }[] = [];
   private crumble = 0;
   private treasury = 0;
@@ -358,6 +391,11 @@ export class AtlasBaseView implements BaseView {
     this.flash.blendMode = 'add';
     this.flash.tint = 0xfff0d8;
     this.flash.visible = false;
+    this.aura = new Sprite(auraTexture());
+    this.aura.anchor.set(0.5);
+    this.aura.blendMode = 'add';
+    this.aura.tint = AURA_TINT;
+    this.aura.visible = false;
     this.body.addChild(this.art, this.lightLayer, this.bandLayer, this.crackLayer);
     this.body.scale.x = this.facing;
     this.shardLayer.scale.x = this.facing;
@@ -377,7 +415,7 @@ export class AtlasBaseView implements BaseView {
       sh.alpha = a;
       this.shadow.addChild(sh);
     }
-    this.root.addChild(this.shadow, this.glow, this.body, this.shardLayer, this.overlay, this.chunkLayer, this.fxLayer);
+    this.root.addChild(this.shadow, this.aura, this.glow, this.body, this.shardLayer, this.overlay, this.chunkLayer, this.fxLayer);
     this.overlay.addChild(this.horn);
     this.puffs = new PuffList(this.overlay);
     this.bits = new Bits(this.fxLayer);
@@ -417,6 +455,12 @@ export class AtlasBaseView implements BaseView {
     const w = m.widthLu ?? 160;
     this.shadow.position.set(-w * 0.48 * this.facing, 3);
     this.shadow.scale.set((w * 1.25) / 36, 2.4);
+    // a Legendary model's aura: an upright ellipse a little larger than the body
+    this.auraOn = (m as WorldMeta & { aura?: string }).aura === 'legendary';
+    this.aura.visible = this.auraOn;
+    const tw = Math.max(1, this.aura.texture.width);
+    this.auraScale = { x: (w * 1.55) / tw, y: (m.heightLu * 1.3) / tw };
+    this.aura.scale.set(this.auraScale.x, this.auraScale.y);
     this.show();
   }
 
@@ -447,7 +491,7 @@ export class AtlasBaseView implements BaseView {
    * Duck-typed for the dressing: where a skin model's ambient code particles start (base-local lu,
    * unmirrored, y up; the dressing mirrors them with the side). Empty for a standard sheet.
    */
-  ambientSpots(): readonly { kind: string; x: number; y: number; r: number; rate: number }[] {
+  ambientSpots(): readonly { kind: string; x: number; y: number; r: number; rate: number; color?: string }[] {
     return this.sheet.meta.skin ? (this.sheet.meta.ambientLu ?? []) : [];
   }
 
@@ -778,6 +822,7 @@ export class AtlasBaseView implements BaseView {
     this.body.rotation = rot;
     this.flash.visible = flash > 0.01;
     this.flash.alpha = Math.min(1, flash) * EVOLVE_FLASH_MAX;
+    if (this.auraOn) this.stepAura(r, reduce);
     // lights flicker (two sines, per light phase), brighter during the build-up and the flourish
     for (const l of this.lights) {
       const on = this.crumble <= l.crumbleMax && !this.collapsing?.broken;
@@ -810,6 +855,22 @@ export class AtlasBaseView implements BaseView {
     this.puffs.update(dtMs);
     this.bits.update(dtMs);
     this.stepChunks(dtMs);
+  }
+
+  /** The Legendary aura: centred on the body, breathing (still under Reduce motion), out once the base breaks. */
+  private stepAura(r: Rect | null, reduce: boolean): void {
+    const broken = !!this.collapsing?.broken;
+    this.aura.visible = !broken;
+    if (broken) return;
+    const h = this.sheet.meta.heightLu;
+    const cx = r ? r.x + r.w / 2 : -(this.sheet.meta.widthLu ?? 160) * 0.5;
+    const cy = r ? r.y + r.h * 0.48 : -h * 0.5;
+    this.aura.position.set(cx * this.facing, cy);
+    const t = this.clockMs;
+    const breathe = reduce ? 0 : Math.sin(t / 900);
+    this.aura.alpha = AURA_ALPHA * (1 - 0.16 * this.crumble) * (1 + 0.16 * breathe) * this.collapseLight;
+    const k = reduce ? 1 : 1 + 0.025 * Math.sin(t / 1300 + 1.2);
+    this.aura.scale.set(this.auraScale.x * k, this.auraScale.y * k);
   }
 
   // ------------------------------------------------------------------------------------------

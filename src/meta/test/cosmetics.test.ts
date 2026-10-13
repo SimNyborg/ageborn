@@ -18,6 +18,9 @@ import {
   cosmeticOdds,
   craftCosmetic,
   equipCosmetic,
+  freshCosmetics,
+  grantCosmetics,
+  markCosmeticsSeen,
   nationalFlagPrice,
   ownsCosmetic,
   poolItems,
@@ -360,8 +363,10 @@ describe('the release gate (PLAN 2e)', () => {
     expect(equipCosmetic(owning, T, { slot: 'scene', age: 'stone', key: 'scene.held_capsule' })).toEqual({ ok: false, reason: 'unreleased' });
     const forced = { ...owning, cosmetics: { ...owning.cosmetics, equipped: { ...owning.cosmetics.equipped, scenes: { stone: 'scene.held_capsule' } } } };
     expect(sideLook(forced, T).scenes).toEqual({});
-    expect(collectionProgress(owning, T).scene).toEqual({ owned: 0, total: 0 });
-    expect(collectionItems(T, 'scene')).toEqual([]);
+    // the unreleased ones add nothing to what has shipped (Track A releases scenes as their art lands)
+    expect(collectionProgress(owning, T).scene).toEqual({ owned: 0, total: collectionProgress(fresh(), C).scene.total });
+    expect(collectionItems(T, 'scene')).toEqual(collectionItems(C, 'scene'));
+    for (const k of keys) expect(collectionItems(T, 'scene').map(cosmeticKey)).not.toContain(k);
   });
 });
 
@@ -457,5 +462,55 @@ describe('the Flag Atlas rewards are earned (PLAN 2d)', () => {
 
   it('AI bots never fly them (they never collect flags)', () => {
     for (let i = 0; i < 200; i += 1) expect(['baseFlag.pennant_oceania', 'baseFlag.world_compass']).not.toContain(botLook(T, `General ${i}`).baseFlag);
+  });
+});
+
+describe('NEW until seen (save v15 `cosmetics.fresh`, PLAN 2a)', () => {
+  it('an opened capsule or crate adds its new item to the list; a duplicate does not', () => {
+    const s = scripted(11, 2);
+    const g = grantCapsuleAt(s, 'win', C, T0, { tier: 'aeon' });
+    const withItem = { ...g.save, capsules: { ...g.save.capsules, pending: [{ ...g.capsule, contents: { ...g.capsule.contents, cosmetic: 'emote.clap' } }] } };
+    const opened = openCapsuleWith(withItem, g.capsule.id, C).save;
+    expect(freshCosmetics(opened)).toEqual(['emote.clap']);
+    // the same item again is a duplicate: Dust, and the list keeps it once
+    const c = grantCrateAt(opened, 'weekly', C, T0);
+    const dup = { ...c.save, capsules: { ...c.save.capsules, wardrobe: [{ ...c.crate, cosmetic: 'emote.clap' }] } };
+    expect(freshCosmetics(openCrate(dup, c.crate.id, C).save)).toEqual(['emote.clap']);
+    // a crate's new item joins after it
+    const c2 = grantCrateAt(opened, 'weekly', C, T0);
+    const key = c2.crate.cosmetic!;
+    expect(freshCosmetics(openCrate(c2.save, c2.crate.id, C).save)).toEqual(['emote.clap', key]);
+  });
+
+  it('earned items join it (a road node, the Flag Atlas); crafted and bought ones are the player\'s own pick', () => {
+    const road = col.items.find((x) => x.source.kind === 'road' && x.source.trophies === 250)!;
+    const r = M.claimRoadNode({ ...fresh(), trophies: { current: 300, best: 300, roadClaimed: [50, 100, 150, 200] } }, 250, C, clock());
+    expect(r.ok && freshCosmetics(r.value)).toContain(cosmeticKey(road));
+    const rich = { ...fresh(), currencies: { amber: 0, dust: 5000 } };
+    expect(freshCosmetics(ok(craftCosmetic(rich, C, 'emote.heart')))).toEqual([]);
+    expect(freshCosmetics(ok(craftCosmetic(rich, C, 'nationalFlag.dk')))).toEqual([]);
+  });
+
+  it('grantCosmetics adds each new key once, in arrival order, and leaves a save without changes alone', () => {
+    const g = grantCosmetics(fresh(), C, ['emote.clap', 'quote.charge', 'emote.clap', 'nope.unknown']);
+    expect(g.fresh).toEqual(['emote.clap', 'quote.charge']);
+    expect(freshCosmetics(g.save)).toEqual(['emote.clap', 'quote.charge']);
+    const again = grantCosmetics(g.save, C, ['emote.clap']);
+    expect(freshCosmetics(again.save)).toEqual(['emote.clap', 'quote.charge']);
+    const s = fresh();
+    expect(grantCosmetics(s, C, []).save).toBe(s);
+  });
+
+  it('markCosmeticsSeen takes items off the list; the same save when none of them was NEW', () => {
+    const s = grantCosmetics(fresh(), C, ['emote.clap', 'quote.charge', 'decoration.lion_statue']).save;
+    const seen = markCosmeticsSeen(s, ['quote.charge', 'emote.heart']);
+    expect(freshCosmetics(seen)).toEqual(['emote.clap', 'decoration.lion_statue']);
+    expect(markCosmeticsSeen(seen, ['emote.heart'])).toBe(seen);
+    expect(markCosmeticsSeen(seen, [])).toBe(seen);
+    const n = fresh();
+    expect(freshCosmetics(n)).toEqual([]);
+    expect(markCosmeticsSeen(n, ['emote.clap'])).toBe(n);
+    // through the meta rules
+    expect(freshCosmetics(M.markCosmeticsSeen(seen, ['emote.clap', 'decoration.lion_statue']))).toEqual([]);
   });
 });

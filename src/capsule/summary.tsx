@@ -6,13 +6,63 @@
  * ({@link summaryButtons}): the Result's own path when the capsule was opened from the Result
  * (`doneLabel`: "Continue" or "Next battle"), else "Open next (N)" while more wait, else "Done".
  * Upgrade, Open all and Done (when it is not the primary) are secondary.
+ *
+ * Found collection items (A18.9.4, PLAN 2a) land after the cards as picture tiles: the item's art on
+ * its rarity frame, its name, what it is ("Sky", "Base skin · Stone Age") and NEW, or the Dust a
+ * duplicate paid. An Epic or Legendary item gets the rarity burst once its tile has landed and shows
+ * what it is: the burst celebrates an item already on screen, rolled when the capsule was earned, and
+ * never teases it (A15.1 red line 7). The app draws the art ({@link FoundItemsContext}).
  */
-import { useEffect, useState } from 'preact/hooks';
-import type { ArtProvider, CardId, I18n, SkinId } from '@/contracts';
+import { createContext, type ComponentChildren } from 'preact';
+import { useContext, useEffect, useState } from 'preact/hooks';
+import type { ArtProvider, CardId, I18n, Rarity, SkinId } from '@/contracts';
 import css from './capsule.module.css';
 import { RARITY_COLORS, cssHex, shade } from './palette';
-import type { SummaryItem, SummaryModel } from './summaryModel';
+import { RARITY_BURST, type BurstLevel } from './rarityBurst';
+import type { FoundItem, SummaryItem, SummaryModel } from './summaryModel';
 import type { CapsuleCatalog } from './types';
+
+/** What the summary shows for a found collection item (the app fills it: the capsule layer may not import the UI, B2). */
+export interface FoundItemView {
+  /** The item's name ("Golden Dusk"). */
+  name: string;
+  /** What it is: "Sky", "Base skin · Stone Age". */
+  kind: string;
+  rarity: Rarity;
+  /** NEW: it joined the collection with this opening (save v15 `cosmetics.fresh`); else a duplicate that turned into Dust. */
+  isNew: boolean;
+  /** The Dust a duplicate paid (0 when NEW). */
+  dust: number;
+  /** A landscape picture (a sky, a scene, a base skin on its scene): the tile spans two columns. */
+  wide: boolean;
+  /** The picture: the same art as the item's Customize card. */
+  art: ComponentChildren;
+}
+
+export interface FoundItemsEnv {
+  /** The tile of a found item, or null for a key this build does not know (the tile is left out). */
+  view(key: string): FoundItemView | null;
+  /** Plays a sound (the burst's pop); absent in tests. */
+  sound?: (id: string) => void;
+}
+
+/** The app's lookup for found items; without one (tests, a renderer-less shell) no found tiles show. */
+export const FoundItemsContext = createContext<FoundItemsEnv | null>(null);
+
+/** Only Epic and Legendary found items burst (PLAN 2a); Common and Rare land like the cards. */
+export function foundBurstLevel(r: Rarity): Exclude<BurstLevel, 'rare'> | null {
+  return r === 'epic' || r === 'legendary' ? r : null;
+}
+
+/** A card's landing in the grid (`@keyframes land`), so the burst starts once the tile is in place. */
+export const FOUND_LAND_MS = 560;
+/** The beat between the landing and the burst's windup: the item is seen before it is celebrated. */
+export const FOUND_SEEN_MS = 220;
+
+/** When a found tile's burst pops, from the summary's start: its landing, the beat, then the windup. */
+export function foundBurstAt(delayMs: number, level: Exclude<BurstLevel, 'rare'>): number {
+  return delayMs + FOUND_LAND_MS + FOUND_SEEN_MS + RARITY_BURST[level].popMs;
+}
 
 export interface SummaryActions {
   onEquip?: (card: CardId) => void;
@@ -170,8 +220,91 @@ function Item(p: { item: SummaryItem; index: number; art: ArtProvider; i18n: I18
   );
 }
 
+/** Sparks, rays and embers of a found tile's burst, spread evenly (no randomness in presentation either). */
+function burstParts(level: Exclude<BurstLevel, 'rare'>): { sparks: number; rays: number; embers: number; rings: number } {
+  const b = RARITY_BURST[level];
+  return { sparks: Math.round(b.particles / 8), rays: level === 'legendary' ? 14 : 10, embers: Math.round(b.embers / 3), rings: b.rings };
+}
+
+/**
+ * The rarity burst over a found tile (A12, the capsule show's burst in the summary's scale): a short
+ * windup, then light, shockwave rings (2 Epic, 3 Legendary), rays, sparks flying out and embers lifting.
+ * Reduce motion keeps only a calm glow (the CSS).
+ */
+function FoundBurst(p: { level: Exclude<BurstLevel, 'rare'> }) {
+  const n = burstParts(p.level);
+  return (
+    <span class={`${css.burst} ${p.level === 'legendary' ? css.burstLegendary : ''}`} aria-hidden="true" data-burst={p.level}>
+      <span class={css.burstLight} />
+      <span class={css.burstRays} style={{ '--rays': n.rays } as Record<string, number>} />
+      {Array.from({ length: n.rings }, (_, i) => (
+        <span key={`r${i}`} class={css.burstRing} style={{ '--i': i } as Record<string, number>} />
+      ))}
+      {Array.from({ length: n.sparks }, (_, i) => {
+        const a = Math.round((i * 360) / n.sparks + ((i * 37) % 23) - 11);
+        const d = 58 + ((i * 53) % 46);
+        return <span key={`s${i}`} class={i % 3 === 0 ? css.burstStar : css.burstSpark} style={{ '--a': `${a}deg`, '--d': `${d}px`, '--j': `${(i % 4) * 22}ms` } as Record<string, string>} />;
+      })}
+      {Array.from({ length: n.embers }, (_, i) => (
+        <span key={`e${i}`} class={css.burstEmber} style={{ '--x': `${Math.round(((i + 0.5) / n.embers) * 100)}%`, '--j': `${(i * 97) % 700}ms` } as Record<string, string>} />
+      ))}
+    </span>
+  );
+}
+
+/** A found collection item's picture tile (see the module note). */
+function FoundTile(p: { found: FoundItem; view: FoundItemView; index: number; i18n: I18n; sound?: ((id: string) => void) | undefined }) {
+  const { view } = p;
+  const t = (k: string, o?: Record<string, string | number>) => p.i18n.t(k, o);
+  const color = RARITY_COLORS[view.rarity];
+  const delayMs = Math.min(900, p.index * 45);
+  const level = foundBurstLevel(view.rarity);
+  const at = level ? foundBurstAt(delayMs, level) : 0;
+  useEffect(() => {
+    if (!level || !p.sound) return undefined;
+    const id = setTimeout(() => p.sound?.(`rarity_burst_${level}`), at);
+    return () => clearTimeout(id);
+  }, []);
+  const style = {
+    '--rarity': cssHex(color),
+    '--rarity-dim': cssHex(shade(color, -0.55)),
+    '--delay': `${delayMs}ms`,
+    ...(level ? { '--burst-at': `${at - RARITY_BURST[level].popMs}ms`, '--pop': `${RARITY_BURST[level].popMs}ms`, '--burst-ms': `${RARITY_BURST[level].durationMs}ms` } : {}),
+  } as Record<string, string>;
+  return (
+    <div
+      class={`${css.item} ${css.found} ${view.isNew ? css.foundNew : ''} ${view.wide ? css.foundWide : ''} ${level ? css.foundBursting : ''}`}
+      style={style}
+      data-testid="capsule-found"
+      data-key={p.found.key}
+      data-rarity={view.rarity}
+      data-new={view.isNew ? 'true' : 'false'}
+      role="group"
+      aria-label={t('capsule.found.label', { name: view.name, kind: view.kind, rarity: t(`rarity.${view.rarity}.name`) })}
+    >
+      {level ? <FoundBurst level={level} /> : null}
+      <div class={css.badges}>
+        {view.isNew ? (
+          <span class={css.badge} data-tag="">
+            {t('capsule.new')}
+          </span>
+        ) : (
+          <span />
+        )}
+        <span class={css.foundGem} aria-hidden="true" />
+      </div>
+      <div class={css.foundArt}>{view.art}</div>
+      <div class={css.itemName}>{view.name}</div>
+      <div class={css.itemSub}>{view.kind}</div>
+      {!view.isNew && view.dust > 0 ? <span class={css.dust}>{t('capsule.dustPlus', { n: view.dust })}</span> : null}
+    </div>
+  );
+}
+
 export function SummaryPanel(p: { model: SummaryModel; art: ArtProvider; i18n: I18n; catalog: CapsuleCatalog; actions: SummaryActions; title: string }) {
   const { model, i18n, actions } = p;
+  const env = useContext(FoundItemsContext);
+  const found = env ? model.found.map((f) => ({ f, view: env.view(f.key) })).filter((x): x is { f: FoundItem; view: FoundItemView } => x.view !== null) : [];
   const t = (k: string, o?: Record<string, string | number>) => i18n.t(k, o);
   const pending = actions.pendingCount ?? 0;
   const stop = (e: Event) => e.stopPropagation();
@@ -196,6 +329,9 @@ export function SummaryPanel(p: { model: SummaryModel; art: ArtProvider; i18n: I
         <div class={css.grid}>
           {model.items.map((it, i) => (
             <Item key={it.key} item={it} index={i} art={p.art} i18n={i18n} catalog={p.catalog} actions={actions} />
+          ))}
+          {found.map(({ f, view }, i) => (
+            <FoundTile key={`f:${f.key}`} found={f} view={view} index={model.items.length + i} i18n={i18n} sound={env?.sound} />
           ))}
         </div>
         <div class={css.actions}>

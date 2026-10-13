@@ -115,6 +115,36 @@
   line-height: 1.15;
   white-space: normal;
 }
+/* A starter emote is the speaker's General performing it (PLAN 2a): a round head in the wheel, and in
+   the battle bubble a bigger head with the bubble's tail toward the speaker's panel. */
+.hud-wheel .hud-emote-pick.is-head {
+  overflow: hidden;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #fff8e6 0 52%, #f1dfb8 100%);
+}
+.hud-bubble--head {
+  padding: 3px 4px 2px;
+  border-radius: 18px;
+}
+.hud-bubble--head::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  width: 14px;
+  height: 9px;
+  background: #fbf6ea;
+  clip-path: polygon(0 100%, 45% 0, 100% 100%);
+  filter: drop-shadow(0 -1.5px 0 var(--hud-ink, #1b1330));
+}
+.hud-bubble-me.hud-bubble--head::before {
+  left: 14px;
+}
+.hud-bubble-foe.hud-bubble--head::before {
+  right: 14px;
+}
+.hud-bubble--head .emo-v {
+  display: block;
+}
 @media (prefers-reduced-motion: reduce) {
   .hud-wheel,
   .hud-wheel .hud-emote-pick,

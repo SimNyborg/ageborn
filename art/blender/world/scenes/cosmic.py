@@ -21,8 +21,8 @@ import random
 from ageborn_art.geometry import Geo
 
 from world.common import box, cyl, rock
-from world.scenes import kit
-from world.scenes.common import Prop, Scene, mixc, ridge
+from world.scenes import fauna, kit
+from world.scenes.common import PaintedProp, Prop, Scene, mixc, ridge, rgb01
 from world.scenes.kit import Parts
 
 PAL = dict(skyTop=0x241C3C, skyBottom=0x5C4884, light=0xE8E4FF, far=0x4A3E6E, mid=0x36305A, near=0x262040)
@@ -331,10 +331,216 @@ def props():
     return plist, sprites
 
 
+# -- Ringed Giant (round 2; Rare, Time Capsule) --------------------------------------------------------
+# An orbital outpost on a moonlet under a ringed gas giant (`celestial: 'own'`, `weather: 'space'`): the
+# giant fills a third of the sky, three times the classic's small planet, banded ochre and violet, its
+# rings crossing in front and behind; an asteroid belt beyond. Far: the moonlet's cratered ridges, the
+# station: a habitat wheel on a pylon, a docking tower, domes and solar arrays. Mid: the station deck:
+# truss struts, solar panels, a docking bay with a shuttle at its clamp, cargo pods and antenna masts.
+# Ambient: asteroids drift past, a shooting star now and then, the docked shuttle bobs at its clamp,
+# the station lights blink; windows and bay lights glow under night skies.
+# Palette (PLAN 2b): void #1E1830, planet ochre-violet #A88A9A (low saturation), star white; station
+# hulls as the classic's (white-lilac, violet bands, mint lights). Violets and ochre-violets sit outside
+# the team-hue bands; mint lights are small accents.
+RG_PAL = dict(skyTop=0x1C1830, skyBottom=0x403462, light=0xE8E4FF, far=0x4A3E6E, mid=0x36305A, near=0x262040)
+RG = dict(
+    planet=0xA88A9A, band1=0x8E7088, band2=0xC0A8AC, band3=0x7A6078, band4=0xB49488, ring=0xD4C8DC, ring2=0xA898B4, ring3=0x8C7EA0,
+    regolith=0x5E5872, regolith_dk=0x4C4660, regolith_lt=0x726C86, crater=0x443F58, hull=0xE6E4F0, hull_dk=0xB8B4CC, band=0x7460B0,
+    metal=0x9A98AC, metal_dk=0x5E5C70, panel=0x4A4A7A, panel_lt=0x6A6AA0, glass=0xD6D0EE, mint=0x3FE0B0, window=0xBFF3E0, pod=0xC8B8A4,
+    rock=0x6A6274,
+)
+RG_SKY = {"top": "#1C1630", "bottom": "#3E3262", "horizon": "#4A3C70", "cloudTint": "#5A4C80", "celestial": "none",
+          "stars": 220, "nebula": False, "clouds": 0}
+RG_FAR_E = math.radians(8.0)
+RG_MID_E = math.radians(12.0)
+RG_PLANET = (430.0, 1500.0, 250.0, 168.0)     # the giant (back): x, depth, z, radius
+RG_DOCK = (690.0, 60.0, 92.0)                # the docking clamp (mid)
+
+
+def rg_back(st, P):
+    """The ringed giant: a banded sphere, its rings tilted across it, an asteroid belt beyond."""
+    pt = Parts()
+    px, py, pz, R = RG_PLANET
+    pt.g(RG["planet"], outline=0.0).sphere((px, py, pz), R, cuts=8)
+    bands = [(-0.62, 0.1, RG["band3"]), (-0.36, 0.08, RG["band1"]), (-0.12, 0.05, RG["band2"]), (0.1, 0.09, RG["band1"]), (0.34, 0.06, RG["band4"]),
+             (0.55, 0.07, RG["band3"]), (0.76, 0.05, RG["band2"])]
+    for (lat, w, c) in bands:
+        z0, z1 = R * lat, R * (lat + w)
+        r0 = math.sqrt(max(1.0, R * R - z0 * z0)) + 0.6
+        r1 = math.sqrt(max(1.0, R * R - z1 * z1)) + 0.6
+        pt.g(c, outline=0.0).lathe([(r0 - 0.4, 0), (r0, 0), (r1, z1 - z0), (r1 - 0.4, z1 - z0)], (px, py, pz + z0), (px, py, pz + z1), segs=48)
+    # a storm spot
+    pt.g(RG["band4"], outline=0.0).blob((px - R * 0.36, py - R * 0.92, pz - R * 0.2), (R * 0.16, R * 0.06, R * 0.07), p=2.0)
+    # the rings: three annuli round the planet, tipped toward the camera and tilted a little on screen
+    tilt = (14.0, -12.0, 0.0)
+    for (r0, r1, c) in ((R * 1.3, R * 1.6, RG["ring"]), (R * 1.64, R * 1.76, RG["ring2"]), (R * 1.82, R * 1.94, RG["ring3"])):
+        kit.annulus(pt.g(c, outline=0.0), (px, py, pz), r0, r1, 1.6, rot=tilt, segs=128)
+    # the asteroid belt: small rocks along a shallow arc across the sky
+    rnd = random.Random(9)
+    ga = pt.g(mixc(RG["rock"], P["skyBottom"], 0.2), outline=0.0)
+    for k in range(46):
+        x = -240 + k * 38 + rnd.uniform(-14, 14)
+        if 760 < x < 1000:
+            continue
+        z = 330 + 40 * math.sin((x + 200) / 600) + rnd.uniform(-14, 14)
+        rock(ga, (x, py + 300, z), (rnd.uniform(3, 7),) * 2 + (rnd.uniform(2.4, 5),), seed=200 + k, jag=0.3, p=2.0, cuts=2)
+    pt.flush(st)
+
+
+def rg_far(st, P):
+    pt = Parts()
+    rnd = random.Random(81)
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    # 1. the moonlet: cratered ridges
+    ridge(st, hz(0x5A5276, 0.26), -300, 1500, -20, 150, 640, 17, lumps=9, jag=0.1, peaks=False)
+    g = pt.g(RG["regolith"], outline=0.0)
+    for x, rx, h, seed in ((-150, 260, 110, 1), (330, 240, 90, 2), (760, 280, 104, 3), (1220, 300, 118, 4)):
+        kit.hill(g, x, 340, -10, rx, 90, h, seed=seed, jag=0.06, p=2.3)
+    for k in range(14):
+        crater(pt, rnd.uniform(-240, 1440), rnd.uniform(250, 270), rnd.uniform(30, 80), rnd.uniform(10, 22), seed=k)
+    # 2. the station: a habitat wheel on a pylon, a docking tower, domes, solar arrays
+    gh, gb, gm, gmd = pt.g(RG["hull"], outline=0.5), pt.g(RG["band"], outline=0.4), pt.g(RG["metal"], finish="metal", outline=0.4), \
+        pt.g(RG["metal_dk"], outline=0.4)
+    gw = pt.g(RG["window"], glow=True)
+    wx, wy, wz = 300.0, 300.0, 196.0
+    gmd.capsule((wx, wy, 70), (wx, wy, wz - 30), 4.0, 3.0)
+    # the wheel: a torus tipped toward the camera, spokes to a hub
+    from mathutils import Euler, Vector
+    tip = (68.0, 0.0, 0.0)
+    kit.tube_ring(gh, (wx, wy, wz), 66, 7, rot=tip, segs=40)
+    kit.annulus(gb, (wx, wy, wz), 58.4, 59.6, 15.2, rot=tip, segs=64)
+    e = Euler(tuple(math.radians(v) for v in tip), "XYZ").to_matrix()
+    for k in range(6):
+        a = math.pi * 2 * k / 6
+        q = Vector((wx, wy, wz)) + e @ Vector((60 * math.cos(a), 60 * math.sin(a), 0))
+        gmd.capsule((wx, wy, wz), tuple(q), 1.8)
+    gh.sphere((wx, wy, wz), 12, cuts=4)
+    gb.lathe([(12.4, -2), (13, -2), (13, 2), (12.4, 2)], (wx, wy, wz), (wx, wy, wz + 1), segs=24)
+    for k in range(12):
+        a = math.pi * 2 * (k + 0.5) / 12
+        q = Vector((wx, wy, wz)) + e @ Vector((66 * math.cos(a), 66 * math.sin(a), 0)) + Vector((0, -7.2, 0))
+        if q.y > wy:
+            continue
+        gw.sphere(tuple(q), 2.0, cuts=2)
+        if k % 2 == 0:
+            st.light(tuple(q), 4)
+    # the docking tower with a beacon
+    tx = 620.0
+    box(gh, (tx, 310, 120), (16, 14, 60), p=6, cuts=2, taper=(1.12, 0.9))
+    for t in (0.3, 0.6, 0.9):
+        box(gb, (tx, 295.4, 64 + 120 * t), (14, 0.8, 2.2), p=4, cuts=1)
+    cyl(gh, (tx, 310, 180), (tx, 310, 190), 24, bevel=1.2, segs=28)
+    gm.capsule((tx, 310, 190), (tx, 310, 232), 1.6)
+    st.amb("blink", "bd.light", (tx, 310, 236), period=1300, tint=0xD8FFF0)
+    for k in range(3):
+        st.light((tx - 8 + k * 8, 293, 150), 4)
+    # domes
+    dome(pt, 450, 290, 64, 30)
+    dome(pt, 980, 300, 70, 36)
+    st.light((450, 256, 74), 5)
+    # solar arrays on masts
+    gp, gpl = pt.g(RG["panel"], finish="gloss", outline=0.4), pt.g(RG["panel_lt"], outline=0.0)
+    for x in (100, 820, 1160):
+        gmd.capsule((x, 300, 80), (x, 300, 150), 2.0)
+        for side in (-1, 1):
+            box(gp, (x + side * 30, 300, 150), (24, 1.0, 12), p=10, cuts=1, rot=(-20, 0, 0))
+            for k in range(3):
+                box(gpl, (x + side * 30 - 16 + k * 16, 298.6, 150), (0.5, 1.0, 12), p=4, cuts=1, rot=(-20, 0, 0))
+        st.amb("blink", "bd.light", (x, 300, 156), period=1700, tint=0xF6C6E4)
+    pt.flush(st)
+
+
+def rg_mid(st, P):
+    pt = Parts()
+    rnd = random.Random(83)
+    # the deck: a regolith bank with plates
+    g = pt.g(RG["regolith_dk"], outline=0.0)
+    for i in range(15):
+        x = -300 + i * 130
+        rock(g, (x, 80, 8), (96, 60, 38 + rnd.uniform(0, 10)), seed=i, jag=0.06, p=2.4)
+    for i in range(6):
+        crater(pt, rnd.uniform(-240, 1440), rnd.uniform(40, 60), 40, rnd.uniform(9, 15), seed=100 + i)
+    # truss struts along the deck
+    gt = pt.g(RG["metal_dk"], outline=0.4)
+    for x0 in (-240, 860):
+        for k in range(10):
+            x = x0 + k * 40
+            gt.capsule((x, 70, 40), (x, 70, 96), 1.6)
+            gt.capsule((x, 70, 96), (x + 40, 70, 96), 1.4)
+            gt.capsule((x, 70, 40), (x + 40, 70, 96), 1.0)
+        gt.capsule((x0, 70, 68), (x0 + 400, 70, 68), 1.2)
+    # solar panel arrays on the trusses
+    gp, gpl = pt.g(RG["panel"], finish="gloss", outline=0.5), pt.g(RG["panel_lt"], outline=0.0)
+    for x in (-160, 0, 140, 940, 1100, 1260):
+        box(gp, (x, 74, 110), (34, 1.0, 15), p=10, cuts=1, rot=(-24, 0, 0))
+        for k in range(4):
+            box(gpl, (x - 26 + k * 17, 72.2, 110), (0.6, 1.0, 15), p=4, cuts=1, rot=(-24, 0, 0))
+    # the docking bay (x 600-780): a hangar ring with a clamp arm; the shuttle is a prop
+    gh, gb = pt.g(RG["hull"], outline=0.5), pt.g(RG["band"], outline=0.4)
+    dx, dy, dz = RG_DOCK
+    box(gh, (dx, dy + 30, 64), (78, 22, 24), p=6, cuts=2)
+    box(pt.g(0x2E2A44, outline=0.0, highlight=False), (dx, dy + 7.4, 66), (56, 0.6, 18), p=4, cuts=1)
+    box(gb, (dx, dy + 7, 88), (76, 1.0, 2.4), p=4, cuts=1)
+    gmd = pt.g(RG["metal"], finish="metal", outline=0.4)
+    gmd.capsule((dx - 50, dy + 10, 88), (dx - 20, dy, dz - 4), 2.4)
+    for k in range(5):
+        st.light((dx - 48 + k * 24, dy + 6, 84), 4)
+    # cargo pods and an antenna mast
+    gpo = pt.g(RG["pod"], outline=0.5)
+    for (x, z) in ((460, 40), (482, 40), (470, 60)):
+        gpo.capsule((x - 8, 66, z + 8), (x + 8, 66, z + 8), 8)
+    gt.capsule((380, 66, 40), (380, 66, 150), 1.6)
+    pt.g(RG["hull"], finish="gloss", outline=0.4).lathe([(0.01, 0), (9, 1.6), (10, 3.6), (0.01, 1.8)], (381, 65, 132), (387, 60, 137), segs=16)
+    st.amb("blink", "bd.light", (380, 66, 154), period=1200, tint=0xD8FFF0)
+    habitat(pt, st, 220, 84, 40, 90, 17, windows=3)
+    habitat(pt, st, 1380, 84, 40, 100, 18, windows=3)
+    pt.flush(st)
+
+
+def _star_streak(i):
+    """A shooting star: a bright head and a tapering tail (one frame)."""
+    import numpy as np
+    w, h = 90, 12
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    t = xx / (w - 1)
+    core = np.clip(1 - np.abs(yy - h / 2 + (1 - t) * 3) / (0.6 + 2.4 * t), 0, 1) * t ** 1.6
+    head = np.clip(1 - np.sqrt((xx - (w - 4)) ** 2 + (yy - h / 2) ** 2) / 4.0, 0, 1)
+    out = np.zeros((h, w, 4), np.float32)
+    out[..., :3] = rgb01(0xF6F2FF)
+    out[..., 3] = np.clip(core * 0.9 + head, 0, 1)
+    return out
+
+
+def rg_props():
+    dx, dy, dz = RG_DOCK
+    dock = [dx, -round(dz * math.cos(RG_MID_E) + (dy - 8) * math.sin(RG_MID_E), 1)]
+    plist = [
+        Prop("shuttle", "mid", _shuttle(0), [{}], (86, 46, 10), dock[1]),
+        Prop("ast", "far", fauna.asteroid(size=1.6, seed=3), [{"a": {"r": a}} for a in (0, 45, 90, 135)], (40, 30, 30), -250),
+        Prop("astb", "far", fauna.asteroid(color="#5E5868", size=1.0, seed=7), [{"a": {"r": a}} for a in (0, 60, 120)], (28, 20, 20), -280),
+        PaintedProp("meteor", "back", _star_streak, 1, ax=0.95, ay=0.5, ppl=0.9),
+    ]
+    sprites = [
+        {"kind": "bob", "layer": "mid", "frames": ["shuttle_0"], "fps": 1, "at": dock, "amp": [0.8, 1.6], "periodS": 6, "tilt": 1.2},
+        {"kind": "path", "layer": "far", "fps": 0.6, "periodS": 70, "keys": [[0, -340, -250, 1], [70, 1560, -300, 1]],
+         "group": [{"frames": ["ast_0", "ast_1", "ast_2", "ast_3"]}]},
+        {"kind": "path", "layer": "far", "fps": 0.5, "periodS": 95, "keys": [[0, 1560, -270, 1], [95, -340, -230, 1]], "face": "fixed",
+         "group": [{"frames": ["astb_0", "astb_1", "astb_2"]}, {"frames": ["astb_1", "astb_2", "astb_0"], "dx": 60, "dy": 18}]},
+        {"kind": "path", "layer": "back", "fps": 1, "periodS": 11, "face": "fixed",
+         "keys": [[0, 760, -470, 0, 0], [0.15, 700, -450, 1, 0], [0.9, 360, -330, 1, 0], [1.1, 300, -312, 0, 0], [11, 300, -312, 0, 0]],
+         "group": [{"frames": ["meteor_0"]}]},
+    ]
+    return plist, sprites
+
+
 SCENES = {
     # the ringed planet is this sky's object: a sky theme brings its stars and colours, not a second moon
     "classic": Scene("cosmic", "classic", PAL, far, mid, back=back, sky=SKY, props=props,
                      hints={"celestial": "own", "weather": "space", "skyGrade": 0.35}, ground="deck",
                      # no air on the moon: less haze and desaturation than the A11 default (still muted)
                      look={"back": (0.26, 0.22, 0.3), "far": (0.16, 0.06, 0.14), "mid": (0.1, 0.0, 0.06)}),
+    "ringed_giant": Scene("cosmic", "ringed_giant", RG_PAL, rg_far, rg_mid, back=rg_back, sky=RG_SKY, props=rg_props,
+                          hints={"celestial": "own", "weather": "space", "skyGrade": 0.35}, ground="deck", back_fade=10.0,
+                          # space: the giant keeps its colours (little haze), the station a little more
+                          look={"back": (0.12, 0.06, 0.12), "far": (0.16, 0.06, 0.14), "mid": (0.1, 0.0, 0.06)}),
 }

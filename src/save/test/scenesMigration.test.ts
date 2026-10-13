@@ -40,7 +40,8 @@ describe('save v14: scenes per age (PLAN 2b)', () => {
     if (!m.ok) return;
     const r = validateSaveDoc(m.doc);
     expect(r.ok ? 'ok' : r.issues).toBe('ok');
-    expect(m.doc).toEqual(SAVE_FIXTURES[14]);
+    // the frozen v14 fixture is the v14 step's result (v15 then adds the NEW pip's list)
+    expect(up(v13())).toEqual(SAVE_FIXTURES[14]);
     expect(currentFixture().v).toBe(SAVE_VERSION);
   });
 

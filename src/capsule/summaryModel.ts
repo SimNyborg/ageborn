@@ -2,12 +2,14 @@
  * Reveal cards and the summary model (DESIGN A10 steps 5, 7, 8; "Open all").
  *
  * Pure data shaping: stacks become `RevealCard`s in reveal order (rarest last), several capsules
- * merge into one summary, and pity counters are turned into "within N" lines (A6.5).
+ * merge into one summary, and pity counters are turned into "within N" lines (A6.5). The collection
+ * items the capsules or the crate held (A18.9.4) become the summary's found items (PLAN 2a).
  */
 import type {
   CapsuleReveal,
   CapsuleTier,
   CardId,
+  CosmeticKey,
   Foil,
   Rarity,
   SaveDoc,
@@ -44,6 +46,19 @@ export interface RevealCard {
   firstLegendary: boolean;
   /** Indexes of the capsules this card came from. */
   sources: number[];
+  /** The crate's collection item (A18.9.4), carried from {@link crateCard} to the crate's summary. */
+  cosmetic?: CosmeticKey;
+}
+
+/**
+ * A collection item the capsules or the crate held (A18.9.4): a picture tile in the summary after the
+ * cards (PLAN 2a "Found items in the capsule and crate summary"), never part of the fan or the reveal.
+ */
+export interface FoundItem {
+  /** `<collection>.<id>` */
+  key: CosmeticKey;
+  /** Indexes of the capsules it came from (the crate: 0). */
+  sources: number[];
 }
 
 export interface SummaryItem extends RevealCard {
@@ -69,6 +84,8 @@ export interface SummaryModel {
   bestUpgrade: CardId | null;
   tiers: CapsuleTier[];
   capsuleCount: number;
+  /** The collection items the capsules or the crate held, in capsule order (one per key). */
+  found: FoundItem[];
 }
 
 function cmpReveal(a: RevealCard, b: RevealCard): number {
@@ -163,6 +180,7 @@ export function revealCards(reveals: readonly CapsuleReveal[], catalog: CapsuleC
 /** The crate's single skin as a reveal card. */
 export function crateCard(reveal: WardrobeReveal, catalog: CapsuleCatalog): RevealCard {
   const info = catalog.skin(reveal.crate.skin);
+  const cosmetic = reveal.crate.cosmetic;
   return {
     key: `s:${reveal.crate.skin}`,
     slot: 0,
@@ -176,7 +194,21 @@ export function crateCard(reveal: WardrobeReveal, catalog: CapsuleCatalog): Reve
     dust: reveal.crate.duplicateDust,
     firstLegendary: false,
     sources: [0],
+    ...(cosmetic ? { cosmetic } : {}),
   };
+}
+
+/** The collection items of the given capsules, in capsule order; the same item twice is one tile. */
+export function foundItems(reveals: readonly CapsuleReveal[]): FoundItem[] {
+  const out: FoundItem[] = [];
+  reveals.forEach((r, ci) => {
+    const key = r.capsule.contents.cosmetic;
+    if (typeof key !== 'string' || key.length === 0) return;
+    const had = out.find((f) => f.key === key);
+    if (had) had.sources.push(ci);
+    else out.push({ key, sources: [ci] });
+  });
+  return out;
 }
 
 export function isUpgradeReady(p: CardProgress | null): boolean {
@@ -233,11 +265,13 @@ export function buildSummary(
     bestUpgrade: pickBestUpgrade(items),
     tiers: reveals.map((r) => r.capsule.tier),
     capsuleCount: reveals.length,
+    found: foundItems(reveals),
   };
 }
 
 export function buildWardrobeSummary(card: RevealCard): SummaryModel {
-  const items = toItems([card], undefined);
+  const { cosmetic, ...shown } = card;
+  const items = toItems([shown], undefined);
   return {
     mode: 'wardrobe',
     items,
@@ -250,6 +284,7 @@ export function buildWardrobeSummary(card: RevealCard): SummaryModel {
     bestUpgrade: null,
     tiers: [],
     capsuleCount: 1,
+    found: cosmetic ? [{ key: cosmetic, sources: [0] }] : [],
   };
 }
 

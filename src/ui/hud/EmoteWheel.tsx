@@ -12,8 +12,10 @@
 import './emoteWheel.css';
 import { emoteLabelKey } from '@/content/keys';
 import type { AvatarSpec, BaseEmoteId, EmoteId, Rarity } from '@/contracts';
+import { fnv1a32 } from '@/core';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { Avatar } from '../components/Avatar';
+import { Avatar, generalLook, type ResolvedLook } from '../components/Avatar';
+import { EmoteHead } from '../components/avatar/EmoteHead';
 import { CosmeticImage, QuoteBubble } from '../components/cosmeticArt';
 import type { EmoteWheel, HudCtx } from './context';
 import { EmoteGlyph, SmileIcon } from './icons';
@@ -25,15 +27,53 @@ const DEFAULT_WHEEL: EmoteWheel = { emotes: STARTER_EMOTES, quotes: [], quoteCoo
 const isStarter = (e: EmoteId): e is BaseEmoteId => (STARTER_EMOTES as readonly string[]).includes(e);
 const isQuote = (e: EmoteId): boolean => e.startsWith('quote.');
 
-/** What a bubble or a wheel button shows for an emote id. */
-export function EmoteArt(p: { emote: EmoteId; size: number; t: HudCtx['t'] }) {
-  if (isStarter(p.emote)) return <EmoteGlyph emote={p.emote} size={p.size} />;
+/** Who performs a starter emote: a saved General (yours, an online player's) or a look (an AI General's). */
+export type EmoteSpeaker = { spec: AvatarSpec } | { look: ResolvedLook } | null;
+
+/**
+ * What a bubble or a wheel button shows for an emote id. A starter emote is the speaker's General
+ * performing it (PLAN 2a; the same `EmoteHead` as Customize), or the plain face where nobody is known
+ * (a replay, the dev gallery). A collected emote plays its own art; `still` (Reduce motion) shows key poses.
+ */
+export function EmoteArt(p: { emote: EmoteId; size: number; t: HudCtx['t']; speaker?: EmoteSpeaker; still?: boolean }) {
+  if (isStarter(p.emote)) {
+    const who = p.speaker ?? null;
+    if (!who) return <EmoteGlyph emote={p.emote} size={p.size} />;
+    return <EmoteHead emote={p.emote} size={p.size} still={!!p.still} {...('spec' in who ? { spec: who.spec } : { look: who.look })} />;
+  }
   if (isQuote(p.emote)) return <span class="hud-quote-text">{p.t(emoteLabelKey(p.emote))}</span>;
   return (
     <span class="hud-emote-art" style={{ width: `${p.size}px`, height: `${p.size}px` }}>
-      <CosmeticImage item={p.emote} />
+      <CosmeticImage item={p.emote} animate={!p.still} />
     </span>
   );
+}
+
+/**
+ * True when motion is off for this HUD: the Settings switch (the HUD mirrors the app root's
+ * `data-reduce-motion`) or the OS preference. Read once the element is on the page.
+ */
+function useStill(el: { current: Element | null }): boolean {
+  const [still, setStill] = useState(false);
+  useEffect(() => {
+    const host = el.current?.closest('[data-reduce-motion]');
+    const os = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setStill(os || (!!host && host.getAttribute('data-reduce-motion') !== 'false'));
+  }, []);
+  return still;
+}
+
+/**
+ * The opponent's General, whose head performs the opponent's emotes: an online player's own look, else
+ * the AI General's fixed look (`foeGeneral`, given by the app with the wheel; the seed matches
+ * `GeneralPortrait`), else nobody (the plain face).
+ */
+function foeSpeaker(c: HudCtx | undefined): EmoteSpeaker {
+  if (!c) return null;
+  const foe = c.config.sides[c.side === 0 ? 1 : 0];
+  if (foe?.online?.avatar) return { spec: foe.online.avatar };
+  const general = (c.wheel as (EmoteWheel & { foeGeneral?: string }) | undefined)?.foeGeneral;
+  return general ? { look: generalLook(general, fnv1a32(`${general}|${foe?.label ?? ''}`)) } : null;
 }
 
 /** A quote's rarity from the content (Common when unknown). */
@@ -59,6 +99,8 @@ function speakerOf(c: HudCtx | undefined, side: 'me' | 'foe'): AvatarSpec | unde
  */
 export function EmoteBubble(p: { id: number; emote: EmoteId; side: 'me' | 'foe'; t: HudCtx['t']; c?: HudCtx }) {
   const quote = isQuote(p.emote);
+  const root = useRef<HTMLDivElement>(null);
+  const still = useStill(root);
   if (quote) {
     const rarity = quoteRarity(p.c, p.emote);
     const speaker = speakerOf(p.c, p.side);
@@ -76,9 +118,12 @@ export function EmoteBubble(p: { id: number; emote: EmoteId; side: 'me' | 'foe';
       </div>
     );
   }
+  // a starter emote is the speaker's General performing it (yours, or the opponent's look)
+  const who: EmoteSpeaker = p.side === 'me' ? (p.c?.wheel?.speaker ? { spec: p.c.wheel.speaker } : null) : foeSpeaker(p.c);
+  const head = isStarter(p.emote) && who !== null;
   return (
-    <div key={p.id} class={`hud-bubble hud-bubble-${p.side}`} data-testid={`hud-bubble-${p.side}`}>
-      <EmoteArt emote={p.emote} size={34} t={p.t} />
+    <div key={p.id} ref={root} class={`hud-bubble hud-bubble-${p.side}${head ? ' hud-bubble--head' : ''}`} data-testid={`hud-bubble-${p.side}`} data-emote={p.emote}>
+      <EmoteArt emote={p.emote} size={head ? 48 : 34} t={p.t} speaker={who} still={still} />
     </div>
   );
 }
@@ -103,6 +148,9 @@ export function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
   const [muted, setMuted] = useState(() => c.view?.emotesMuted?.() ?? false);
   const off = c.readOnly || c.m.phase === 'ended';
   const root = useRef<HTMLDivElement>(null);
+  const still = useStill(root);
+  // your starter emotes are your General performing them (PLAN 2a)
+  const me: EmoteSpeaker = wheel.speaker ? { spec: wheel.speaker } : null;
   // Bug hunt 2026-10-01 #13: the picker closes on Esc (without also pausing), on any tap outside it
   // (the lane, the minimap, Pause) and when the battle pauses.
   useEffect(() => {
@@ -165,14 +213,14 @@ export function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
               <button
                 key={e}
                 role="menuitem"
-                class="hud-emote-pick"
+                class={`hud-emote-pick${isStarter(e) && me ? ' is-head' : ''}`}
                 style={{ animationDelay: `${i * 22}ms` }}
                 title={c.t(emoteLabelKey(e))}
                 aria-label={c.t(emoteLabelKey(e))}
                 data-testid={`hud-pick-${e}`}
                 onClick={() => send(e)}
               >
-                <EmoteArt emote={e} size={30} t={c.t} />
+                <EmoteArt emote={e} size={isStarter(e) && me ? 36 : 30} t={c.t} speaker={me} still={still} />
               </button>
             ))}
           </div>

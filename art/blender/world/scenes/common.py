@@ -312,6 +312,42 @@ class Prop:
         self.outline = (layer == "mid") if outline is None else outline
 
 
+class PaintedProp:
+    """A sprite drawn in 2D rather than rendered (soft fog banks, a waterfall's sheen, light shafts):
+    `paint(i)` returns frame i as an RGBA float array, already in its final colours (no layer haze is
+    added), with the anchor at (ax, ay) as a fraction of the frame and `ppl` px per lu."""
+
+    def __init__(self, name, layer, paint, n, ax=0.5, ay=0.5, ppl=None):
+        self.name = name
+        self.layer = layer
+        self.paint = paint
+        self.n = n
+        self.ax = ax
+        self.ay = ay
+        self.ppl = ppl or FRAMES[layer]["ppl"]
+
+
+def soft_blob(w_px, h_px, color, alpha=0.6, lumps=5, seed=0, edge=0.45):
+    """A soft-edged cloud shape (a fog bank or a mist puff) as an RGBA float array: a few overlapping
+    elliptic lumps with a smooth falloff, flat colour, low alpha (A11: backdrops stay soft)."""
+    rnd = random.Random(seed)
+    yy, xx = np.mgrid[0:h_px, 0:w_px].astype(np.float32)
+    a = np.zeros((h_px, w_px), np.float32)
+    for k in range(lumps):
+        cx = w_px * (0.15 + 0.7 * (k + rnd.uniform(0.2, 0.8)) / lumps)
+        cy = h_px * rnd.uniform(0.5, 0.66)
+        rx = w_px * rnd.uniform(0.16, 0.26)
+        ry = h_px * rnd.uniform(0.28, 0.42)
+        d = np.sqrt(((xx - cx) / rx) ** 2 + ((yy - cy) / ry) ** 2)
+        a = np.maximum(a, np.clip((1.0 - d) / edge, 0, 1) ** 1.6)
+    # flatter underside (fog lies on the ground)
+    a *= np.clip((h_px * 0.92 - yy) / (h_px * 0.25), 0, 1)
+    out = np.zeros((h_px, w_px, 4), np.float32)
+    out[..., :3] = rgb01(color)
+    out[..., 3] = a * alpha
+    return out
+
+
 def render_props(props, P, out_dir, log=print, looks=None):
     """Renders every prop frame, finishes it like its layer, trims and packs. Returns (atlas image,
     frames dict) or (None, {})."""
@@ -319,6 +355,12 @@ def render_props(props, P, out_dir, log=print, looks=None):
         return None, {}
     frames = []
     for pr in props:
+        if isinstance(pr, PaintedProp):
+            for i in range(pr.n):
+                im = sheet.to_image(pr.paint(i))
+                frames.append((f"{pr.name}_{i}", im, pr.ax, pr.ay, pr.ppl))
+            log(f"  prop {pr.name}: {pr.n} painted frames")
+            continue
         w, up, down = pr.box
         f = FRAMES[pr.layer]
         st = Stage(pr.layer, {"x0": -w / 2, "width": w, "yTop": -up, "height": up + down})

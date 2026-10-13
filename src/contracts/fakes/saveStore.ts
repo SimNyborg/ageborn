@@ -98,7 +98,7 @@ export function fakeSaveDoc(overrides: Partial<SaveDoc> = {}): SaveDoc {
     loadouts[age] = { ...clone(age === 'stone' ? fakeLoadouts.stone : fakeLoadouts.medieval), fort: null };
   }
   const doc: SaveDoc = {
-    v: 14,
+    v: 15,
     createdAt: FAKE_EPOCH_MS,
     profile: { name: 'Player', avatar: { seed: 1, parts: {} }, banner: 'default', frame: 'default', title: '' },
     currencies: { amber: 0, dust: 0 },
@@ -121,6 +121,8 @@ export function fakeSaveDoc(overrides: Partial<SaveDoc> = {}): SaveDoc {
         // v14: every age on its classic scene
         scenes: {},
       },
+      // v15: nothing NEW waits in Customize
+      fresh: [],
     },
     warPlans: [{ name: 'Plan 1', loadouts }],
     activePlan: 0,

@@ -7,7 +7,7 @@
       "nationalFlag": "National flags",
       "baseSkin": "Base skins",
       "decoration": "Decorations",
-      "backdrop": "Backdrops",
+      "backdrop": "Skies",
       "scene": "Scenes",
       "avatar": "General’s wardrobe"
     },
@@ -417,11 +417,11 @@
       "craft": "Craft",
       "crafted": "Crafted!",
       "new": "New",
+      "newItems": "New items to see",
       "preview": "Your base",
       "baseFlag": "Base flag",
       "nationalFlag": "National flag",
       "noNational": "No national flag",
-      "baseSkin": "Base skin for this age",
       "defaultSkin": "Standard base",
       "anchors": "Pick a spot, then a decoration",
       "anchor": {
@@ -437,7 +437,7 @@
         "nationalFlag": "National flag",
         "baseSkin": "Base skin",
         "decoration": "Decoration",
-        "backdrop": "Backdrop",
+        "backdrop": "Sky",
         "scene": "Scene",
         "avatar": "General’s wardrobe"
       },
@@ -484,9 +484,6 @@
       "collectionsTitle": "Cosmetic collections",
       "inWheel": "In wheel",
       "add": "Add",
-      "alsoFound": "Also found: {name} ({collection})",
-      "backdrop": "Battle backdrop",
-      "backdropClassic": "Classic skies",
       "backdropPreview": "Your half · {age}",
       "tryingOn": "Trying on",
       "tryOn": "Tap to try it on",
@@ -495,7 +492,16 @@
       "needDust": "Need {n} more Dust",
       "atlas": "Flag Atlas",
       "atlasCount": "{n} of {max} flags",
-      "atlasFirst": "Your first flag costs no Dust"
+      "atlasFirst": "Your first flag costs no Dust",
+      "baseSkinOf": "Base skin · {age}",
+      "damage": "Damage",
+      "damageLabel": "Damage preview: stage {n} of {max}",
+      "sceneFor": "Scene · {age}",
+      "sceneClassic": "Classic",
+      "skyAll": "Sky · all ages",
+      "skyClassic": "Classic sky",
+      "inBattle": "{name} in battle",
+      "inBattleLabel": "In battle"
     },
     "hud": {
       "mute": "Mute opponent",
@@ -503,13 +509,16 @@
     },
     "odds": {
       "title": "Cosmetic collections",
-      "capsuleLine": "Chance that a Time Capsule holds one collection item (emote, quote, flag, decoration or a piece for your General):",
+      "capsuleLine": "Chance that a Time Capsule holds one collection item:",
       "capsuleRarityLine": "Which item it is, by rarity:",
-      "crateLine": "Every Wardrobe Crate also holds one collection item:",
+      "collections": "Then one item of that rarity you do not own yet, each equally likely. The items per collection:",
+      "col": {
+        "collection": "Collection",
+        "owned": "Yours"
+      },
+      "crateLine": "Every Wardrobe Crate also holds one collection item, from these:",
       "items": "({n} items)",
-      "rules": "Items you do not own come first; a duplicate only when you own every item of that rarity, and it turns into Dust. Every Time Capsule and crate item can also be crafted with Dust.",
-      "wardrobe": "General’s wardrobe:",
-      "wardrobeLine": "{capsule} of the Time Capsule items and {crate} of the crate items are pieces for your General, with the same odds as the rest. You have {n}/{total}."
+      "rules": "Items you do not own come first; a duplicate only when you own every item of that rarity, and it turns into Dust. Every Time Capsule and crate item can also be crafted with Dust."
     },
     "avatar": {
       "hat_wool_cap": {

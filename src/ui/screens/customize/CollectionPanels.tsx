@@ -5,24 +5,28 @@
  * locked ones say how they are earned and, for drop-pool items, offer Dust crafting. Nothing here can
  * be bought (A6.2).
  */
-import { ageNameKey, cosmeticCollectionKey, cosmeticNameKey, emoteNameKey, quoteTextKey, rarityNameKey } from '@/content/keys';
+import { ageNameKey, cosmeticCollectionKey, cosmeticNameKey, emoteNameKey, quoteTextKey, rarityNameKey, sceneClassicNameKey, skinNameKey } from '@/content/keys';
 import type { CosmeticCollection, CosmeticItemDef, CosmeticSource } from '@/content/types';
-import type { AgeId, BaseEmoteId, CosmeticLoadout, Rarity } from '@/contracts';
+import type { AgeId, BaseEmoteId, Rarity, SkinDef } from '@/contracts';
 import type { ComponentChildren } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
 import { useConfirmSpend } from '../../components/confirm';
 import { AvatarLookView, resolveLook, type ResolvedLook } from '../../components/Avatar';
-import { BackdropLook, BaseLook, CosmeticImage, FlagTileImage, QuoteBubble, useCosmeticImage, useFlagAtlasReady, type BubbleTail } from '../../components/cosmeticArt';
+import { BackdropLook, BaseThumb, CosmeticImage, FlagTileImage, QuoteBubble, SceneThumb, useCosmeticImage, useFlagAtlasReady, type BubbleTail } from '../../components/cosmeticArt';
 import { formatInt } from '../../components/format';
 import { CapsuleIcon, CheckIcon, ChevronIcon, CrateIcon, CrownIcon, DustIcon, FlagIcon, GlobeIcon, LockIcon, RARITY_COLOR, RarityGem, StarIcon, TrophyIcon } from '../../components/icons';
 import { Modal } from '../../components/Modal';
 import { AgePicker } from '../../components/Tabs';
-import { EmoteGlyph } from '../../hud/icons';
 import { useUi } from '../context';
 import { craftLocked, craftPrice, equippedOf, findItem, itemKey, itemsOf, ownedFirst, owns, progressOf, sourceText } from '../model/cosmetics';
 import { playLevelId } from '../model/warPath';
 import type { ActionResult, CosmeticEquipPatch } from '../services';
+import { EmoteFace, EmoteStage, WheelEmote } from './EmotePreview';
+import { freshAge, useFresh } from './fresh';
+import { BaseMock, PreviewStage, shownBaseKey } from './PreviewStage';
+
+export { BaseMock };
 
 // ---------------------------------------------------------------------------------------------
 // Shared bits
@@ -187,10 +191,16 @@ export function ItemTile(p: {
   onPreview?: () => void;
   /** Shown in the preview right now without being equipped (a locked item tried on): a gold ring. */
   trying?: boolean;
+  /** Ownership when the item is not a collection item (a troop-system base skin: Crystal Spire). */
+  owned?: boolean;
+  /** NEW until seen (save v15 `cosmetics.fresh`): a pip on the card; by default the screen's list says. */
+  fresh?: boolean;
 }) {
   const { save, content, t, sound } = useUi();
   const key = itemKey(p.item);
-  const have = owns(save.value, content, key);
+  const have = p.owned ?? owns(save.value, content, key);
+  const freshSet = useFresh();
+  const isFresh = p.fresh ?? freshSet.has(key);
   const price = craftPrice(content, p.item, save.value);
   const reduce = save.value.settings.reduceMotion;
   // A tier's own set names its tier ("From Aeon Capsules. Craftable after your first.").
@@ -219,9 +229,10 @@ export function ItemTile(p: {
             p.onPick();
             return;
           }
-          // a locked card answers the tap with how it is earned (and a try-on where there is a preview)
+          // a locked card answers the tap with how it is earned; where there is a preview the first tap
+          // tries it on and a second tap (while it is tried on) opens how it is earned and the craft
           sound?.('ui_toggle');
-          if (!p.onPreview) setInfo(true);
+          if (!p.onPreview || p.trying) setInfo(true);
         }}
       >
         <span class="cos-card__window">
@@ -246,6 +257,11 @@ export function ItemTile(p: {
           {p.trying ? (
             <span class="cos-tile__trying" data-tag="" data-testid={`trying-${key}`}>
               {t('cosmetic.ui.tryingOn')}
+            </span>
+          ) : null}
+          {isFresh && have ? (
+            <span class="cos-tile__new" data-tag="" data-testid={`new-${key}`}>
+              {t('cosmetic.ui.new')}
             </span>
           ) : null}
         </span>
@@ -347,13 +363,13 @@ function ItemInfo(p: { item: CosmeticItemDef; art: () => ComponentChildren; onCl
  * A card that is not a collection item (the standard base, "No national flag", an empty spot, the
  * starter emotes, the classic skies): the same card on a neutral plate, without a rarity gem.
  */
-function PlainCard(p: { on: boolean; testid: string; name: string; onClick: () => void; children?: ComponentChildren; none?: boolean; extra?: string; state?: string | undefined }) {
+function PlainCard(p: { on: boolean; testid: string; name: string; onClick: () => void; children?: ComponentChildren; none?: boolean; extra?: string; state?: string | undefined; foot?: string; trying?: boolean }) {
   const pop = usePop(p.on);
   return (
     <button
       type="button"
-      class={`cos-tile cos-tile--plain cos-card cos-card--plain${p.extra ? ` ${p.extra}` : ''}${p.on ? ' is-on' : ''}`}
-      aria-pressed={p.on}
+      class={`cos-tile cos-tile--plain cos-card cos-card--plain${p.extra ? ` ${p.extra}` : ''}${p.on ? ' is-on' : ''}${p.trying ? ' is-trying' : ''}`}
+      aria-pressed={p.on || !!p.trying}
       data-testid={p.testid}
       onClick={p.onClick}
     >
@@ -379,6 +395,10 @@ function PlainCard(p: { on: boolean; testid: string; name: string; onClick: () =
           <span class="cos-tile__state is-on" aria-hidden="true">
             {p.state}
           </span>
+        ) : p.foot ? (
+          <span class="cos-card__rarity" data-tag="" aria-hidden="true">
+            {p.foot}
+          </span>
         ) : null}
       </span>
     </button>
@@ -386,94 +406,65 @@ function PlainCard(p: { on: boolean; testid: string; name: string; onClick: () =
 }
 
 // ---------------------------------------------------------------------------------------------
-// The base mock-up
+// Layout: the preview column and the list
 // ---------------------------------------------------------------------------------------------
 
-const ANCHOR_COUNT = 3;
-
 /**
- * Your base as the lane shows it (A18.9.4): the keep in the chosen age's skin, the pole with the base
- * flag and the national flag, and the three decoration spots. In the Decorations tab the spots are
- * buttons that choose where the next decoration goes.
+ * The two-column layout: the preview left (sticky while the list scrolls), the items right. On desktop
+ * the preview column is wide enough for a 16:9 stage, and `info` fills the rest of it with what the
+ * stage shows (the desktop layout pass: the column under the preview was empty).
  */
-export function BaseMock(p: { age: AgeId; look?: Partial<CosmeticLoadout>; anchor?: number; onAnchor?: (i: number) => void }) {
-  const { save, content, t, sound } = useUi();
-  const eq = { ...equippedOf(save.value, content), ...p.look };
-  const skin = eq.baseSkins[p.age] ?? null;
-  const reduce = save.value.settings.reduceMotion;
-  const decorations = Array.from({ length: ANCHOR_COUNT }, (_, i) => eq.decorations[i] ?? null);
+function MockLayout(p: { mock: ComponentChildren; info?: ComponentChildren; children: ComponentChildren; testid: string; wide?: boolean }) {
   return (
-    <figure class={`cos-mock${reduce ? ' is-still' : ''}`} data-testid="base-mock" aria-label={t('cosmetic.ui.preview')}>
-      {/* The age's own sky and far layers (your backdrop skin when one is on), as the lane shows them
-          (AUDIT #12), then a cel-shaded ground strip with a contact shadow under the keep. */}
-      <div class="cos-mock__sky" aria-hidden="true">
-        <BackdropLook skin={eq.backdrop ?? null} age={p.age} animate={false} />
+    <div class={`cos-split${p.wide ? ' cos-split--wide' : ''}`} data-testid={p.testid}>
+      <div class="cos-split__mock">
+        {p.mock}
+        {p.info ? <div class="cos-split__info">{p.info}</div> : null}
       </div>
-      <div class="cos-mock__ground" aria-hidden="true">
-        <span class="cos-mock__tufts" />
-      </div>
-      <span class="cos-mock__shadow" aria-hidden="true" />
-      {/* keyed by age and skin, so a change re-runs the entrance (the equip feedback) */}
-      <div class="cos-mock__keep" key={`${p.age}|${skin ?? ''}`} aria-hidden="true">
-        <BaseLook age={p.age} skin={skin} animate={!reduce} testid="base-mock-keep" />
-        {skin ? <span class="cos-mock__gleam" /> : null}
-      </div>
-      {decorations.map((k, i) => {
-        const inner = k ? (
-          <span class="cos-mock__deco-art" key={k}>
-            <CosmeticImage item={k} />
-          </span>
-        ) : p.onAnchor ? (
-          <span class="cos-mock__plus">+</span>
-        ) : null;
-        const cls = `cos-mock__deco cos-mock__deco--${i}${p.anchor === i ? ' is-picked' : ''}${k ? '' : ' is-empty'}`;
-        return p.onAnchor ? (
-          <button
-            key={i}
-            type="button"
-            class={cls}
-            aria-pressed={p.anchor === i}
-            aria-label={`${t(`cosmetic.ui.anchor.${i}`)}: ${k ? t(cosmeticNameKey('decoration', k.slice(11))) : t('cosmetic.ui.emptySpot')}`}
-            data-testid={`anchor-${i}`}
-            onClick={() => {
-              sound?.('ui_toggle');
-              p.onAnchor?.(i);
-            }}
-          >
-            {inner}
-          </button>
-        ) : (
-          <span key={i} class={cls} aria-hidden="true">
-            {inner}
-          </span>
-        );
-      })}
-      <div class="cos-mock__pole" aria-hidden="true">
-        {/* the finial of the base flag's rarity (PLAN 2a: a wooden knob, a brass ball, a spear tip, a star) */}
-        <span class={`cos-mock__cap cos-mock__cap--${(eq.baseFlag ? findItem(content, eq.baseFlag)?.rarity : undefined) ?? 'common'}`} key={`cap-${eq.baseFlag ?? ''}`} />
-        {eq.baseFlag ? (
-          <span class="cos-mock__flag cos-mock__flag--base" key={eq.baseFlag}>
-            <CosmeticImage item={eq.baseFlag} />
-          </span>
-        ) : null}
-        {eq.nationalFlag ? (
-          <span class="cos-mock__flag cos-mock__flag--nation" key={eq.nationalFlag}>
-            <CosmeticImage item={eq.nationalFlag} />
-          </span>
-        ) : null}
-      </div>
-      <figcaption class="cos-mock__caption">
-        {t('cosmetic.ui.preview')} · {t(ageNameKey(p.age))}
-      </figcaption>
-    </figure>
+      <div class="cos-split__list">{p.children}</div>
+    </div>
   );
 }
 
-function MockLayout(p: { mock: ComponentChildren; children: ComponentChildren; testid: string }) {
+/** One line of the preview's info card: what shows, its rarity, and whether it is equipped, tried on or how it is earned. */
+export interface StageInfoRow {
+  label: string;
+  name: string;
+  rarity?: Rarity | null;
+  state: 'equipped' | 'trying' | 'owned' | 'locked';
+  /** How a locked one is earned (its source icon and text). */
+  source?: CosmeticSource | null;
+  how?: string;
+  testid?: string;
+}
+
+/** The preview's info card (desktop and tall screens): one row per thing the stage shows. */
+function StageInfo(p: { rows: StageInfoRow[]; children?: ComponentChildren }) {
+  const { t } = useUi();
   return (
-    <div class="cos-split" data-testid={p.testid}>
-      <div class="cos-split__mock">{p.mock}</div>
-      <div class="cos-split__list">{p.children}</div>
+    <div class="cos-stinfo" data-testid="stage-info">
+      {p.rows.map((r) => (
+        <div key={r.testid ?? r.label} class={`cos-stinfo__row is-${r.state}`} data-testid={r.testid}>
+          <span class="cos-stinfo__gem" aria-hidden="true">
+            {r.rarity ? <RarityGem rarity={r.rarity} size={18} /> : <span class="cos-stinfo__dot" />}
+          </span>
+          <span class="cos-stinfo__text">
+            <small>{r.label}</small>
+            <b data-clip-check="">{r.name}</b>
+          </span>
+          {r.state === 'equipped' ? (
+            <span class="cos-stinfo__state is-on">{t('cosmetic.ui.equipped')}</span>
+          ) : r.state === 'trying' ? (
+            <span class="cos-stinfo__state is-trying">{t('cosmetic.ui.tryingOn')}</span>
+          ) : r.state === 'locked' && r.source ? (
+            <span class="cos-stinfo__how" title={r.how}>
+              <SourceIcon source={r.source} size={16} />
+              <span>{r.how}</span>
+            </span>
+          ) : null}
+        </div>
+      ))}
+      {p.children}
     </div>
   );
 }
@@ -482,114 +473,296 @@ function MockLayout(p: { mock: ComponentChildren; children: ComponentChildren; t
 // Panels
 // ---------------------------------------------------------------------------------------------
 
-export function BasesPanel(p: { extra?: (age: AgeId) => ComponentChildren }) {
-  const { save, content, t, services } = useUi();
+/** A troop-system base skin (Crystal Spire, A5.8) as a collection item, so it sits in the same grid (PLAN 2f interface 7). */
+function troopSkinItem(content: ReturnType<typeof useUi>['content'], k: SkinDef): CosmeticItemDef {
+  const age = k.target.slice('base.'.length) as AgeId;
+  const gate = content.arenas.list.find((a) => a.gateRewards.some((r) => r.kind === 'skin' && r.skin === k.id));
+  const source: CosmeticSource = gate ? { kind: 'arena', arena: gate.index } : { kind: 'crate' };
+  return { id: k.id, collection: 'baseSkin', rarity: k.rarity, source, art: k.visualId, nameKey: skinNameKey(k.id), age };
+}
+
+/** The four crumble stages the Damage toggle steps through (the model's quality, and that the mounts stay put). */
+const CRUMBLE_STEPS = [0, 1, 2, 3] as const;
+
+/**
+ * Base skins per age (PLAN 2c, 2f interface 7): the standard base, the age's skins and the troop-system
+ * skin of that base (Crystal Spire, Future) in one grid; one skin per age across both systems. The
+ * preview is the live diorama (Track B) once it is ready, with a Damage toggle that steps the model
+ * through its crumble stages; a tap on a locked skin tries it on.
+ */
+export function BasesPanel() {
+  const { save, content, t, services, toasts, sound } = useUi();
+  const s = save.value;
   const act = useAct();
   const ages = content.order.ages;
   const now = useCurrentAge();
-  const [age, setAge] = useState<AgeId>(now);
-  const eq = equippedOf(save.value, content);
-  const cur = eq.baseSkins[age] ?? null;
+  // a NEW base skin opens its age (save v15), else the age the player plays now
+  const fresh = useFresh();
+  const [age, setAge] = useState<AgeId>(() => freshAge(fresh, content, 'baseSkin') ?? now);
+  const [tryOn, setTryOn] = useState<{ age: AgeId; key: string | null } | null>(null);
+  const [crumble, setCrumble] = useState<(typeof CRUMBLE_STEPS)[number]>(0);
+  const eq = equippedOf(s, content);
+  const reduce = s.settings.reduceMotion;
+  const cur = shownBaseKey(s, eq, age);
+  const shown = tryOn && tryOn.age === age ? tryOn.key : cur;
   const items = itemsOf(content, 'baseSkin').filter((x) => x.age === age);
+  const troop = content.order.skins
+    .map((id) => content.skins[id])
+    .filter((k): k is SkinDef => !!k && k.target === `base.${age}` && k.released !== false);
+  const troopItems = troop.map((k) => troopSkinItem(content, k));
+  const ownsTroop = (id: string) => s.skins.owned.includes(id);
+  const all = [...items, ...troopItems];
+  const ownedAll = [...items.filter((x) => owns(s, content, itemKey(x))), ...troopItems.filter((x) => ownsTroop(x.id))];
+  const list = [...ownedAll, ...all.filter((x) => !ownedAll.includes(x))];
+  const isTroop = (x: CosmeticItemDef) => troopItems.includes(x);
+  // the whole set: every age's cosmetic skins plus the troop-system base skins
+  const allTroop = content.order.skins.map((id) => content.skins[id]).filter((k): k is SkinDef => !!k && k.target.startsWith('base.') && k.released !== false);
+  const setOwned = progressOf(s, content, 'baseSkin').owned + allTroop.filter((k) => ownsTroop(k.id)).length;
+  const setTotal = progressOf(s, content, 'baseSkin').total + allTroop.length;
   const withUndo = useEquipWithUndo();
-  const equip = (key: string | null, name?: string) =>
-    key === null || !name ? act(services.equipCosmetic({ slot: 'baseSkin', age, key })) : withUndo({ slot: 'baseSkin', age, key }, { slot: 'baseSkin', age, key: cur }, name);
+  const troopNow = s.skins.equipped[`base.${age}`] ?? null;
+  const equipStandard = () => {
+    setTryOn(null);
+    if (cur === null) return;
+    // both systems: the cosmetic skin and the troop skin of this base
+    if (troopNow) services.equipSkin(`base.${age}`, null);
+    if (eq.baseSkins[age]) act(services.equipCosmetic({ slot: 'baseSkin', age, key: null }));
+    else sound?.('ui_stamp');
+  };
+  const equipTroop = (x: CosmeticItemDef) => {
+    if (troopNow === x.id) return;
+    const before = { troop: troopNow, cosmetic: eq.baseSkins[age] ?? null };
+    services.equipSkin(`base.${age}`, x.id);
+    sound?.('ui_stamp');
+    toasts.show(t('cosmetic.ui.equippedName', { name: t(x.nameKey) }), {
+      tone: 'good',
+      undo: () => {
+        services.equipSkin(`base.${age}`, before.troop);
+        if (before.cosmetic) services.equipCosmetic({ slot: 'baseSkin', age, key: before.cosmetic });
+      },
+    });
+  };
+  const shownItem = shown ? (items.find((x) => itemKey(x) === shown) ?? troopItems.find((x) => `baseSkin.${x.id}` === shown)) : undefined;
+  const shownOwned = shownItem ? (isTroop(shownItem) ? ownsTroop(shownItem.id) : owns(s, content, itemKey(shownItem))) : true;
+  const info: StageInfoRow = {
+    label: t('cosmetic.ui.baseSkinOf', { age: t(ageNameKey(age)) }),
+    name: shownItem ? t(shownItem.nameKey) : t('cosmetic.ui.defaultSkin'),
+    rarity: shownItem?.rarity ?? null,
+    state: shown !== cur ? 'trying' : shownOwned ? 'equipped' : 'locked',
+    source: shownItem && !shownOwned ? shownItem.source : null,
+    how: shownItem && !shownOwned ? sourceText(t, shownItem) : '',
+    testid: 'stage-info-base',
+  };
+  const stage = (
+    <PreviewStage age={age} baseSkin={shown} crumble={crumble} caption={`${t('cosmetic.ui.preview')} · ${t(ageNameKey(age))}`} testid="base-stage" overlay={(live) =>
+      live ? (
+        <button
+          type="button"
+          class={`cos-stage__dmg is-${crumble}`}
+          data-testid="stage-damage"
+          aria-label={t('cosmetic.ui.damageLabel', { n: crumble, max: 3 })}
+          onClick={() => {
+            sound?.('ui_toggle');
+            setCrumble((c) => ((c + 1) % 4) as (typeof CRUMBLE_STEPS)[number]);
+          }}
+        >
+          <span>{t('cosmetic.ui.damage')}</span>
+          <span class="cos-stage__pips" aria-hidden="true">
+            {CRUMBLE_STEPS.slice(1).map((n) => (
+              <i key={n} class={crumble >= n ? 'is-on' : ''} />
+            ))}
+          </span>
+        </button>
+      ) : null
+    } />
+  );
   return (
-    <MockLayout testid="cust-bases" mock={<BaseMock age={age} />}>
+    <MockLayout testid="cust-bases" wide mock={stage} info={<StageInfo rows={[info]} />}>
+      <AgePicker ages={ages} value={age} onChange={(a) => { setAge(a); setCrumble(0); }} compact testid="cust-age" idPrefix="cust-age" />
       <div class="cos-head">
-        <h3 class="cust-h">{t('cosmetic.ui.baseSkin')}</h3>
-        <Found collection="baseSkin" />
+        <h3 class="cust-h">{t('cosmetic.ui.baseSkinOf', { age: t(ageNameKey(age)) })}</h3>
+        <FoundCount n={setOwned} max={setTotal} testid="found-baseSkin" />
       </div>
-      <AgePicker ages={ages} value={age} onChange={setAge} compact testid="cust-age" idPrefix="cust-age" />
-      <div class="cos-grid cos-grid--skins">
-        <PlainCard on={cur === null} testid="base-default" name={t('cosmetic.ui.defaultSkin')} onClick={() => equip(null)}>
+      <div class="cos-grid cos-grid--skins" data-testid="cust-base-skins">
+        <PlainCard on={cur === null} trying={shown === null && cur !== null} testid="base-default" name={t('cosmetic.ui.defaultSkin')} onClick={equipStandard} extra="cos-tile--baseSkin">
           {/* keyed by age: a new age's base never shows the last age's picture for a frame */}
-          <BaseLook key={age} age={age} skin={null} />
+          <BaseThumb key={age} age={age} skin={null} />
         </PlainCard>
-        {ownedFirst(save.value, content, items).map((x) => (
-          <ItemTile
-            key={x.id}
-            item={x}
-            on={cur === itemKey(x)}
-            onPick={() => equip(itemKey(x), t(x.nameKey))}
-            art={<BaseLook age={age} skin={itemKey(x)} animate={!save.value.settings.reduceMotion} />}
-            // the info panel of a locked skin shows the same model, bigger (review 1, blocker 1)
-            bigArt={() => <BaseLook age={age} skin={itemKey(x)} animate={!save.value.settings.reduceMotion} />}
-          />
-        ))}
+        {list.map((x) => {
+          const troopSkin = isTroop(x);
+          const key = troopSkin ? `baseSkin.${x.id}` : itemKey(x);
+          const have = troopSkin ? ownsTroop(x.id) : owns(s, content, key);
+          return (
+            <ItemTile
+              key={key}
+              item={x}
+              {...(troopSkin ? { owned: have } : {})}
+              on={cur === key}
+              trying={shown === key && cur !== key}
+              onPreview={() => setTryOn(have ? null : { age, key })}
+              onPick={() => {
+                if (troopSkin) equipTroop(x);
+                else if (cur !== key) withUndo({ slot: 'baseSkin', age, key }, { slot: 'baseSkin', age, key: eq.baseSkins[age] ?? null }, t(x.nameKey));
+              }}
+              art={<BaseThumb age={age} skin={key} animate={!reduce} />}
+              // the info panel of a locked skin shows the same model, bigger (review 1, blocker 1)
+              bigArt={() => <BaseThumb age={age} skin={key} animate={!reduce} />}
+            />
+          );
+        })}
       </div>
-      {p.extra ? p.extra(age) : null}
     </MockLayout>
   );
 }
 
+/** "12/40 found" with a bar, for a count the content collections alone do not give (the base skins with Crystal Spire). */
+function FoundCount(p: { n: number; max: number; testid: string }) {
+  const { t } = useUi();
+  const pct = p.max > 0 ? Math.round((p.n / p.max) * 100) : 0;
+  return (
+    <span class="cos-found" data-testid={p.testid}>
+      <span class="cos-found__text">{t('cosmetic.ui.found', { n: p.n, max: p.max })}</span>
+      <span class="cos-found__bar" aria-hidden="true">
+        <span style={{ width: `${pct}%` }} />
+      </span>
+    </span>
+  );
+}
+
 /**
- * Battle backdrops (A18.9.4 "Backdrops", owner request 2026-09-30): one skin for your half of the
- * battlefield in every age. The preview is the lane's own painting of your half with the theme's
- * weather moving over it and your base in front; the age chips switch which age it shows. Tapping any
- * tile tries it on (locked ones too: seeing what you can earn is honest and motivating); an owned one
- * is equipped at once with Undo.
+ * Backdrops per age (owner item 20, PLAN 2b, 2f interface 7): "Scene · <Age>" (the age's classic scene
+ * plus its released scenes; a tap equips for that age) and "Sky · all ages" (the ten skies plus the
+ * scene's own daylight, equipped once for every age). The preview shows the combination (the live
+ * diorama once Track B's stage is ready, the painted still until then); a tap on a locked scene or sky
+ * tries it on, an owned one is equipped at once with Undo.
  */
 export function BackdropsPanel() {
   const { save, content, t, services } = useUi();
+  const s = save.value;
   const act = useAct();
   const now = useCurrentAge();
-  const [age, setAge] = useState<AgeId>(now);
-  const eq = equippedOf(save.value, content);
-  const cur = eq.backdrop ?? null;
-  const [tryOn, setTryOn] = useState<string | null | undefined>(undefined);
-  const shown = tryOn !== undefined ? tryOn : cur;
-  const reduce = save.value.settings.reduceMotion;
-  const items = ownedFirst(save.value, content, itemsOf(content, 'backdrop'));
-  const shownItem = shown ? items.find((x) => itemKey(x) === shown) : undefined;
-  const trying = shown !== cur;
+  // a NEW scene opens its age (save v15), else the age the player plays now
+  const fresh = useFresh();
+  const [age, setAge] = useState<AgeId>(() => freshAge(fresh, content, 'scene') ?? now);
+  const eq = equippedOf(s, content);
+  const curScene = eq.scenes[age] ?? null;
+  const curSky = eq.backdrop ?? null;
+  const [tryScene, setTryScene] = useState<{ age: AgeId; key: string | null } | null>(null);
+  const [trySky, setTrySky] = useState<string | null | undefined>(undefined);
+  const shownScene = tryScene && tryScene.age === age ? tryScene.key : curScene;
+  const shownSky = trySky !== undefined ? trySky : curSky;
+  const scenes = ownedFirst(s, content, itemsOf(content, 'scene').filter((x) => x.age === age));
+  const skies = ownedFirst(s, content, itemsOf(content, 'backdrop'));
+  const sceneItem = shownScene ? findItem(content, shownScene) : undefined;
+  const skyItem = shownSky ? findItem(content, shownSky) : undefined;
   const withUndo = useEquipWithUndo();
-  const mock = (
-    <figure class={`cos-bdmock${reduce ? ' is-still' : ''}`} data-testid="backdrop-mock" aria-label={t('cosmetic.ui.backdropPreview', { age: t(ageNameKey(age)) })}>
-      <span class="cos-bdmock__stage" key={`${age}|${shown ?? ''}`}>
-        <BackdropLook skin={shown} age={age} animate={!reduce} testid="backdrop-look" />
+  const ownsKey = (k: string | null) => k === null || owns(s, content, k);
+  const scenesNow: Partial<Record<AgeId, string>> = { ...eq.scenes };
+  if (shownScene) scenesNow[age] = shownScene;
+  else delete scenesNow[age];
+  const sceneName = sceneItem ? t(sceneItem.nameKey) : t(sceneClassicNameKey(age));
+  const skyName = skyItem ? t(skyItem.nameKey) : t('cosmetic.ui.skyClassic');
+  const rows: StageInfoRow[] = [
+    {
+      label: t('cosmetic.ui.sceneFor', { age: t(ageNameKey(age)) }),
+      name: sceneName,
+      rarity: sceneItem?.rarity ?? null,
+      state: shownScene !== curScene ? 'trying' : ownsKey(shownScene) ? 'equipped' : 'locked',
+      testid: 'stage-info-scene',
+    },
+    {
+      label: t('cosmetic.ui.skyAll'),
+      name: skyName,
+      rarity: skyItem?.rarity ?? null,
+      state: shownSky !== curSky ? 'trying' : ownsKey(shownSky) ? 'equipped' : 'locked',
+      testid: 'stage-info-sky',
+    },
+  ];
+  for (const [r, x, k] of [
+    [rows[0]!, sceneItem, shownScene],
+    [rows[1]!, skyItem, shownSky],
+  ] as const) {
+    if (x && !ownsKey(k)) {
+      r.source = x.source;
+      r.how = sourceText(t, x);
+    }
+  }
+  const stage = (
+    <PreviewStage age={age} look={{ scenes: scenesNow, backdrop: shownSky }} caption={t('cosmetic.ui.backdropPreview', { age: t(ageNameKey(age)) })} testid="backdrop-mock">
+      <span class={`cos-stage__plate${shownScene !== curScene || shownSky !== curSky ? ' is-trying' : ''}`} data-testid="backdrop-name">
+        <b>{sceneName}</b>
+        <span>{skyName}</span>
+        {shownScene !== curScene || shownSky !== curSky ? <small data-tag="">{t('cosmetic.ui.tryingOn')}</small> : null}
       </span>
-      <span class="cos-bdmock__base" aria-hidden="true">
-        <BaseLook key={`${age}|${eq.baseSkins[age] ?? ''}`} age={age} skin={eq.baseSkins[age] ?? null} />
-      </span>
-      <figcaption class="cos-mock__caption">{t('cosmetic.ui.backdropPreview', { age: t(ageNameKey(age)) })}</figcaption>
-      <span class={`cos-bdmock__name${trying ? ' is-trying' : ''}`} data-testid="backdrop-name">
-        {shownItem ? t(shownItem.nameKey) : t('cosmetic.ui.backdropClassic')}
-        {trying ? <small data-tag="">{t('cosmetic.ui.tryingOn')}</small> : null}
-      </span>
-    </figure>
+    </PreviewStage>
   );
   return (
-    <MockLayout testid="cust-backdrops" mock={mock}>
-      <div class="cos-head">
-        <h3 class="cust-h">{t('cosmetic.ui.backdrop')}</h3>
-        <Found collection="backdrop" />
-      </div>
+    <MockLayout testid="cust-backdrops" wide mock={stage} info={<StageInfo rows={rows} />}>
       <AgePicker ages={content.order.ages} value={age} onChange={setAge} compact testid="cust-bd-age" idPrefix="cust-bd-age" />
-      <div class="cos-grid cos-grid--backdrops">
+      <div class="cos-head">
+        <h3 class="cust-h">{t('cosmetic.ui.sceneFor', { age: t(ageNameKey(age)) })}</h3>
+        {/* no count while no scene is out yet (each ships once its art is in) */}
+        {progressOf(s, content, 'scene').total > 0 ? <Found collection="scene" /> : null}
+      </div>
+      <div class="cos-grid cos-grid--backdrops" data-testid="scene-grid">
         <PlainCard
-          on={cur === null}
-          testid="backdrop-classic"
+          on={curScene === null}
+          trying={shownScene === null && curScene !== null}
+          testid="scene-classic"
           extra="cos-tile--backdrop"
-          name={t('cosmetic.ui.backdropClassic')}
+          name={t(sceneClassicNameKey(age))}
+          foot={t('cosmetic.ui.sceneClassic')}
           onClick={() => {
-            setTryOn(undefined);
-            if (cur !== null) act(services.equipCosmetic({ slot: 'backdrop', key: null }));
+            setTryScene(null);
+            if (curScene !== null) withUndo({ slot: 'scene', age, key: null }, { slot: 'scene', age, key: curScene }, t(sceneClassicNameKey(age)));
           }}
         >
-          <BackdropLook skin={null} age={age} animate={false} thumb />
+          <SceneThumb key={age} scene={null} age={age} />
         </PlainCard>
-        {items.map((x) => (
+        {scenes.map((x) => (
           <ItemTile
             key={x.id}
             item={x}
-            on={cur === itemKey(x)}
-            onPreview={() => setTryOn(owns(save.value, content, itemKey(x)) ? undefined : itemKey(x))}
-            trying={trying && shown === itemKey(x)}
+            on={curScene === itemKey(x)}
+            onPreview={() => setTryScene(owns(s, content, itemKey(x)) ? null : { age, key: itemKey(x) })}
+            trying={shownScene === itemKey(x) && curScene !== itemKey(x)}
             onPick={() => {
-              if (cur !== itemKey(x)) withUndo({ slot: 'backdrop', key: itemKey(x) }, { slot: 'backdrop', key: cur }, t(x.nameKey));
+              if (curScene !== itemKey(x)) withUndo({ slot: 'scene', age, key: itemKey(x) }, { slot: 'scene', age, key: curScene }, t(x.nameKey));
             }}
-            art={<BackdropLook skin={itemKey(x)} age={age} animate={false} thumb />}
+            art={<SceneThumb scene={itemKey(x)} age={age} />}
+            bigArt={() => <SceneThumb scene={itemKey(x)} age={age} />}
+          />
+        ))}
+      </div>
+      <div class="cos-head">
+        <h3 class="cust-h">{t('cosmetic.ui.skyAll')}</h3>
+        <Found collection="backdrop" />
+      </div>
+      <div class="cos-grid cos-grid--backdrops" data-testid="sky-grid">
+        <PlainCard
+          on={curSky === null}
+          trying={shownSky === null && curSky !== null}
+          testid="backdrop-classic"
+          extra="cos-tile--backdrop"
+          name={t('cosmetic.ui.skyClassic')}
+          onClick={() => {
+            setTrySky(undefined);
+            if (curSky !== null) act(services.equipCosmetic({ slot: 'backdrop', key: null }));
+          }}
+        >
+          <BackdropLook skin={null} scene={shownScene} age={age} animate={false} thumb />
+        </PlainCard>
+        {skies.map((x) => (
+          <ItemTile
+            key={x.id}
+            item={x}
+            on={curSky === itemKey(x)}
+            onPreview={() => setTrySky(owns(s, content, itemKey(x)) ? undefined : itemKey(x))}
+            trying={shownSky === itemKey(x) && curSky !== itemKey(x)}
+            onPick={() => {
+              if (curSky !== itemKey(x)) withUndo({ slot: 'backdrop', key: itemKey(x) }, { slot: 'backdrop', key: curSky }, t(x.nameKey));
+            }}
+            art={<BackdropLook skin={itemKey(x)} scene={shownScene} age={age} animate={false} thumb />}
           />
         ))}
       </div>
@@ -718,14 +891,18 @@ function WheelCount(p: { n: number; max: number; testid: string }) {
   );
 }
 
-/** The emote wheel preview: up to `max` slots around a hub. */
+/**
+ * The emote wheel preview: up to `max` slots around a hub that shows your General (the starter emotes
+ * are your General performing them; a tap on a slot takes it out).
+ */
 function Wheel(p: { keys: readonly string[]; max: number; onRemove: (k: string) => void }) {
   const { save, content, t } = useUi();
-  const reduce = save.value.settings.reduceMotion;
   const slots = Array.from({ length: p.max }, (_, i) => p.keys[i] ?? null);
   return (
     <div class="cos-wheel" data-testid="emote-wheel" aria-label={t('cosmetic.ui.wheel')}>
-      <span class="cos-wheel__hub" aria-hidden="true" />
+      <span class="cos-wheel__hub" aria-hidden="true">
+        <AvatarLookView look={resolveLook(save.value.profile.avatar)} size={72} crop="head" />
+      </span>
       {slots.map((k, i) => {
         const a = (i / p.max) * Math.PI * 2 - Math.PI / 2;
         const style = { left: `${50 + Math.cos(a) * 37}%`, top: `${50 + Math.sin(a) * 37}%` };
@@ -733,8 +910,8 @@ function Wheel(p: { keys: readonly string[]; max: number; onRemove: (k: string) 
         const starter = content.cosmetics.emotes.some((e) => e.id === k);
         const label = starter ? t(emoteNameKey(k as BaseEmoteId)) : t(cosmeticNameKey('emote', k.slice(6)));
         return (
-          <button key={k} type="button" class="cos-wheel__slot" style={style} aria-label={`${t('cosmetic.ui.remove')}: ${label}`} data-testid={`wheel-${k}`} onClick={() => p.onRemove(k)}>
-            {starter ? <EmoteGlyph emote={k as BaseEmoteId} size={34} /> : <CosmeticImage item={k} animate={!reduce} />}
+          <button key={k} type="button" class={`cos-wheel__slot${starter ? ' is-head' : ''}`} style={style} aria-label={`${t('cosmetic.ui.remove')}: ${label}`} data-testid={`wheel-${k}`} onClick={() => p.onRemove(k)}>
+            <WheelEmote emote={k} size={44} />
           </button>
         );
       })}
@@ -747,14 +924,21 @@ export function EmotesPanel() {
   const act = useAct();
   const eq = equippedOf(save.value, content);
   const max = content.cosmetics.collections.wheel.emotes;
+  // the emote the stage under the wheel plays: the last one picked, else the wheel's first
+  const [last, setLast] = useState<string | null>(null);
   const set = (keys: string[]) => act(services.equipCosmetic({ slot: 'emotes', keys }));
   const toggle = (k: string) => {
+    setLast(k);
     if (eq.emotes.includes(k)) set(eq.emotes.filter((x) => x !== k));
     else if (eq.emotes.length >= max) toasts.show(t('cosmetic.ui.wheelFull'), { tone: 'bad' });
     else set([...eq.emotes, k]);
   };
   return (
-    <MockLayout testid="cust-emotes" mock={<Wheel keys={eq.emotes} max={max} onRemove={(k) => set(eq.emotes.filter((x) => x !== k))} />}>
+    <MockLayout
+      testid="cust-emotes"
+      mock={<Wheel keys={eq.emotes} max={max} onRemove={(k) => set(eq.emotes.filter((x) => x !== k))} />}
+      info={<EmoteStage emote={last ?? eq.emotes[0] ?? null} />}
+    >
       <div class="cos-head">
         <h3 class="cust-h">
           {t('cosmetic.ui.wheel')} <WheelCount n={eq.emotes.length} max={max} testid="emote-count" />
@@ -766,8 +950,8 @@ export function EmotesPanel() {
         {content.cosmetics.emotes.map((e) => {
           const on = eq.emotes.includes(e.id);
           return (
-            <PlainCard key={e.id} on={on} testid={`item-${e.id}`} extra="cos-tile--emote" name={t(emoteNameKey(e.id))} state={on ? t('cosmetic.ui.inWheel') : undefined} onClick={() => toggle(e.id)}>
-              <EmoteGlyph emote={e.id} size={40} />
+            <PlainCard key={e.id} on={on} testid={`item-${e.id}`} extra="cos-tile--emote cos-tile--head" name={t(emoteNameKey(e.id))} state={on ? t('cosmetic.ui.inWheel') : undefined} onClick={() => toggle(e.id)}>
+              <EmoteFace emote={e.id} size={64} />
             </PlainCard>
           );
         })}
@@ -775,7 +959,14 @@ export function EmotesPanel() {
       <h4 class="cos-sub">{t('cosmetic.ui.collected')}</h4>
       <div class="cos-grid cos-grid--emotes">
         {ownedFirst(save.value, content, itemsOf(content, 'emote')).map((x) => (
-          <ItemTile key={x.id} item={x} on={eq.emotes.includes(itemKey(x))} onPick={() => toggle(itemKey(x))} onLabel={t('cosmetic.ui.inWheel')} pickLabel={t('cosmetic.ui.add')} />
+          <ItemTile
+            key={x.id}
+            item={x}
+            on={eq.emotes.includes(itemKey(x))}
+            onPick={() => toggle(itemKey(x))}
+            onLabel={t('cosmetic.ui.inWheel')}
+            pickLabel={t('cosmetic.ui.add')}
+          />
         ))}
       </div>
     </MockLayout>

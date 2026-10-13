@@ -32,18 +32,35 @@ export const CLASSIC = 'classic';
 /**
  * Pre-rendered scenes per age: scene id → layer format. Format 1 lives in `<age>/`, format 2 in
  * `<age>/<scene>/`. Bronze, Industrial and Cosmic got their first Blender layers in format 2 (round 1);
- * the other five classics keep format 1 until their re-render (round 3).
+ * the other five classics keep format 1 until their re-render (round 3). Round 2 adds the first new
+ * scene of every age (format 2).
  */
 export const SCENE_ART: Readonly<Record<AgeId, Readonly<Record<string, 1 | 2>>>> = {
-  stone: { classic: 1 },
-  bronze: { classic: 2 },
-  medieval: { classic: 1 },
-  gunpowder: { classic: 1 },
-  industrial: { classic: 2 },
-  modern: { classic: 1 },
-  future: { classic: 1 },
-  cosmic: { classic: 2 },
+  stone: { classic: 1, glacier_valley: 2 },
+  bronze: { classic: 2, aegean_harbour: 2 },
+  medieval: { classic: 1, misty_moor: 2 },
+  gunpowder: { classic: 1, treasure_cove: 2 },
+  industrial: { classic: 2, viaduct_gorge: 2 },
+  modern: { classic: 1, desert_airbase: 2 },
+  future: { classic: 1, skyway_metropolis: 2 },
+  cosmic: { classic: 2, ringed_giant: 2 },
 };
+
+/**
+ * Scenes in space (their `layers.json` hint `weather: 'space'`), mirrored here so the screens can tell at
+ * once, before any file loads: a sky theme's snow, rain and petals become ice motes, meteors and sparkles
+ * over them, in the lane and in the Customize weather preview alike. A unit test holds this table to the
+ * shipped files.
+ */
+export const SPACE_SCENES: Readonly<Partial<Record<AgeId, readonly string[]>>> = {
+  cosmic: ['classic', 'ringed_giant'],
+};
+
+/** True when the scene `scene.<id>` (or a bare id; null = the classic) shows `age` in space (weather `space`). */
+export function isSpaceScene(age: AgeId, key: string | null | undefined): boolean {
+  const id = drawnScene(age, sceneIdOf(key && !key.startsWith('scene.') ? `scene.${key}` : key));
+  return SPACE_SCENES[age]?.includes(id) ?? false;
+}
 
 /** The scene id of a `scene.<id>` key; `classic` for none, `scene.classic` or another collection's key. */
 export function sceneIdOf(key: string | null | undefined): string {

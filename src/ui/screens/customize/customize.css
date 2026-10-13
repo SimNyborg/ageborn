@@ -1481,78 +1481,451 @@ button.cos-qwheel__slot:focus-visible {
   margin: 0;
 }
 
-/* ---- battle backdrops (A18.9.4 "Backdrops") ------------------------------------------------------ */
-/* The live preview: your half of the lane as the battle paints it, the theme's weather moving over
-   it and your base in front, with the item's name as a plate; a change cross-fades in (MR-61). */
-.cos-bdmock {
+/* ---- the preview stage (PLAN 2a "Backdrop and base-skin previews") --------------------------------
+   The still picture (the base mock-up with the scene, the sky and its weather) with the live diorama
+   (Track B) over it once it draws; the name plate and the Damage toggle sit on top. */
+.cos-stage {
   position: relative;
-  margin: 0;
-  aspect-ratio: 16 / 10;
-  border: 3px solid var(--ui-ink);
-  border-radius: 18px;
-  overflow: hidden;
-  background: #2a2840;
-  box-shadow: var(--ui-shadow-drop), inset 0 3px 0 rgba(255, 255, 255, 0.35);
   isolation: isolate;
 }
-.cos-bdmock__stage {
+.cos-stage__live {
   position: absolute;
-  inset: 0;
-  animation: cos-bd-in 420ms var(--ui-ease-out) both;
-}
-@keyframes cos-bd-in {
-  from {
-    opacity: 0;
-    transform: scale(1.05);
-    filter: brightness(1.25);
-  }
-}
-.cos-bdmock__base {
-  position: absolute;
-  left: -2%;
-  bottom: 7%;
-  width: 34%;
-  height: 58%;
-  filter: drop-shadow(0 4px 0 rgba(27, 19, 48, 0.35));
+  inset: 3px;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 15px;
+  opacity: 0;
   pointer-events: none;
+  transition: opacity 320ms var(--ui-ease-out);
 }
-.cos-bdmock__base .cos-base__img {
-  object-position: 0 100%;
+.cos-stage.is-live .cos-stage__live {
+  opacity: 1;
 }
-.cos-bdmock__name {
+.cos-stage__live > canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+.cos-stage__caption {
+  z-index: 2;
+  left: 11px;
+  top: 9px;
+}
+/* the name plate: what shows (scene, then sky), gold-edged while something is tried on */
+.cos-stage__plate {
   position: absolute;
-  right: 8px;
-  bottom: 8px;
+  right: 11px;
+  bottom: 11px;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 1px;
-  max-width: 60%;
-  padding: 4px 10px;
+  max-width: 62%;
+  padding: 4px 10px 5px;
   border: 2px solid var(--ui-ink);
   border-radius: 10px;
-  background: rgba(27, 19, 48, 0.78);
+  background: rgba(27, 19, 48, 0.8);
   color: #fff;
   font-size: 14px;
   font-weight: 900;
-  line-height: 1.1;
+  line-height: 1.12;
   text-align: right;
+  box-shadow: 0 2px 0 var(--ui-ink);
   animation: ui-pop 280ms var(--ui-ease-back) both;
 }
-.cos-bdmock__name small {
+.cos-stage__plate span {
+  color: rgb(255 255 255 / 0.78);
+  font-size: 12px;
+  font-weight: 800;
+}
+.cos-stage__plate.is-trying {
+  border-color: var(--ui-gold, #ffd447);
+  box-shadow:
+    0 0 0 1px var(--ui-ink),
+    0 0 12px rgb(255 212 71 / 0.45);
+}
+/* the Damage toggle: steps the live base through its crumble stages (the mounts stay put) */
+.cos-stage__dmg {
+  position: absolute;
+  right: 11px;
+  bottom: 11px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 4px 12px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #5b4c86, #3a2f60);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: 0 3px 0 var(--ui-ink);
+  cursor: pointer;
+  animation: ui-pop 260ms var(--ui-ease-back) both;
+  transition: transform 90ms var(--ui-ease-out), box-shadow 90ms var(--ui-ease-out);
+}
+.cos-stage__dmg:active {
+  transform: translateY(2px) scale(0.96);
+  box-shadow: 0 1px 0 var(--ui-ink);
+}
+.cos-stage__dmg:focus-visible {
+  outline: 3px solid var(--ui-gold);
+  outline-offset: 2px;
+}
+.cos-stage__pips {
+  display: inline-flex;
+  gap: 3px;
+}
+.cos-stage__pips i {
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid var(--ui-ink);
+  border-radius: 2px;
+  background: rgb(255 255 255 / 0.2);
+  transform: rotate(45deg);
+}
+.cos-stage__pips i.is-on {
+  background: linear-gradient(135deg, #ffcf70, #ef6a3a);
+}
+
+/* ---- the preview column's info card (desktop layout pass: the column under the preview was empty) -- */
+.cos-split__info {
+  display: none;
+}
+.cos-stinfo {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 3px solid var(--ui-ink);
+  border-radius: 16px;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgb(255 236 180 / 0.12), transparent 60%),
+    linear-gradient(180deg, #3d3778 0%, #2a2558 100%);
+  box-shadow:
+    inset 0 3px 0 rgb(255 255 255 / 0.1),
+    0 4px 0 var(--ui-ink);
+}
+.cos-stinfo__row {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  animation: ui-fade 200ms var(--ui-ease-out) both;
+}
+.cos-stinfo__row + .cos-stinfo__row {
+  padding-top: 6px;
+  border-top: 2px solid rgb(255 255 255 / 0.08);
+}
+.cos-stinfo__gem {
+  display: grid;
+  place-items: center;
+}
+.cos-stinfo__dot {
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 50%;
+  background: #c9c2b1;
+}
+.cos-stinfo__text {
+  display: grid;
+  min-width: 0;
+  line-height: 1.15;
+}
+.cos-stinfo__text small {
+  color: var(--ui-muted);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.cos-stinfo__text b {
+  font-size: 16px;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+.cos-stinfo__state {
+  padding: 2px 10px;
+  border: 1.5px solid #12401f;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #5fd683, #2fae58);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  text-shadow: 0 1px 0 rgb(0 0 0 / 0.35);
+  white-space: nowrap;
+}
+.cos-stinfo__state.is-trying {
+  border-color: var(--ui-ink);
+  background: var(--ui-gold, #ffd447);
+  color: var(--ui-ink);
+  text-shadow: none;
+}
+.cos-stinfo__how {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 220px;
+  color: var(--ui-text);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+/* ---- the emote you picked, played big in the battle bubble (desktop) ------------------------------ */
+.cos-emostage {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 3px solid var(--ui-ink);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, transparent 0 68%, rgb(80 110 60 / 0.55) 68% 100%),
+    linear-gradient(180deg, #7fb6e6 0%, #c7e2f2 66%);
+  box-shadow:
+    inset 0 3px 0 rgb(255 255 255 / 0.35),
+    0 4px 0 var(--ui-ink);
+}
+.cos-emostage__bubble {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  border-radius: 18px;
+  background: #fbf6ea;
+  box-shadow:
+    0 0 0 2px var(--ui-ink),
+    0 5px 12px rgb(0 0 0 / 0.35);
+  animation: cos-emo-pop 300ms var(--ui-ease-back) both;
+}
+.cos-emostage__bubble::after {
+  content: '';
+  position: absolute;
+  left: 22px;
+  top: -9px;
+  width: 16px;
+  height: 12px;
+  background: #fbf6ea;
+  clip-path: polygon(0 100%, 40% 0, 100% 100%);
+  filter: drop-shadow(0 -2px 0 var(--ui-ink));
+}
+@keyframes cos-emo-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.cos-emostage__name {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 6px 10px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 10px;
+  background: rgb(27 19 48 / 0.78);
+  color: #fff;
+  line-height: 1.15;
+}
+.cos-emostage__name small {
+  color: var(--ui-gold-hi, #ffe08a);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.cos-emostage__name b {
+  font-size: 17px;
+  font-weight: 900;
+}
+.cos-emote-art {
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.cos-emote-art .cos-img {
+  width: 100%;
+  height: 100%;
+}
+/* the wheel's hub is your General */
+.cos-wheel__hub {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.cos-wheel__hub .ui-avatar {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50%;
+}
+/* a head or an emote fills its slot or window whatever the box's shape (the SVG keeps its square) */
+.cos-wheel__slot {
+  overflow: hidden;
+}
+.cos-wheel__slot > .emo-v,
+.cos-wheel__slot > .cos-emote-art {
+  position: absolute;
+  inset: 3px;
+  width: auto !important;
+  height: auto !important;
+}
+.cos-tile--head .cos-tile__art {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.cos-tile--head .cos-tile__art > .emo-v {
+  position: absolute;
+  inset: 2px 0 0;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* ---- NEW until seen (save v15) --------------------------------------------------------------------- */
+.cos-tile__new {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  z-index: 3;
+  padding: 0 7px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 99px;
+  background: linear-gradient(180deg, #ff7a6a, #e5413a);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 900;
+  line-height: 1.45;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 rgb(0 0 0 / 0.3);
+  white-space: nowrap;
+  transform: translateX(-50%);
+  animation: cos-new-in 420ms var(--ui-ease-back) both;
+}
+@keyframes cos-new-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.4);
+  }
+  70% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.12);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* the tab's dot: something NEW waits in it (a pulse that settles, then stays) */
+.cust-newdot {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--ui-ink);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffb3a8 0 22%, #ff6a5a 23% 60%, #d93a33 61%);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.35);
+  animation: cust-newdot-in 520ms var(--ui-ease-back) both, cust-newdot-pulse 1.8s ease-in-out 600ms 3;
+}
+@keyframes cust-newdot-in {
+  from {
+    transform: scale(0);
+  }
+}
+@keyframes cust-newdot-pulse {
+  50% {
+    transform: scale(1.22);
+  }
+}
+
+/* ---- the desktop layout pass: a 16:9 stage that fills a wider preview column, the info card under it */
+@media (min-width: 1000px) and (min-height: 560px) {
+  .cos-split--wide {
+    grid-template-columns: minmax(0, 50%) minmax(0, 1fr);
+    gap: 18px;
+  }
+  .cos-split--wide .cos-mock {
+    aspect-ratio: 16 / 9;
+  }
+  .cos-split__info {
+    display: block;
+    margin-top: 12px;
+  }
+  .cos-split--wide .cos-mock__keep {
+    left: 2%;
+    width: 44%;
+    height: 80%;
+  }
+  .cos-split--wide .cos-mock__shadow {
+    left: 6%;
+    width: 38%;
+  }
+  .cos-split--wide .cos-mock__deco {
+    width: max(10%, 44px);
+    margin-left: calc((10% - max(10%, 44px)) / 2);
+  }
+  .cos-split--wide .cos-mock__deco--0 {
+    left: 5%;
+  }
+  .cos-split--wide .cos-mock__deco--1 {
+    left: 17%;
+  }
+  .cos-split--wide .cos-mock__deco--2 {
+    left: 34%;
+  }
+  .cos-split--wide .cos-mock__pole {
+    left: 58%;
+  }
+}
+/* phones: the tiles say what is equipped and tried on; the plate would cover the base */
+@media (max-height: 460px) {
+  .cos-stage__plate {
+    display: none;
+  }
+}
+/* tall phones in portrait-ish layouts and tablets: the info card shows when there is height for it */
+@media (min-height: 560px) and (max-width: 999px) {
+  .cos-split__info {
+    display: block;
+    margin-top: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cos-stage__live {
+    transition: none;
+  }
+  .cos-stage__plate,
+  .cos-stage__dmg,
+  .cos-stinfo__row,
+  .cos-emostage__bubble,
+  .cos-tile__new,
+  .cust-newdot {
+    animation: none;
+  }
+}
+.ui-root[data-reduce-motion='true'] :is(.cos-stage__plate, .cos-stage__dmg, .cos-stinfo__row, .cos-emostage__bubble, .cos-tile__new, .cust-newdot) {
+  animation: none;
+}
+.cos-stage__plate small {
   color: var(--ui-gold, #ffd447);
   font-size: 11px;
   font-weight: 900;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-}
-.cos-bdmock.is-still .cos-bdmock__stage,
-.cos-bdmock.is-still .cos-bdmock__name {
-  animation: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .cos-bdmock__stage,
-  .cos-bdmock__name {
-    animation: none;
-  }
 }

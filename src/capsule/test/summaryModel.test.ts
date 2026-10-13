@@ -3,6 +3,9 @@ import type { SaveDoc } from '@/contracts';
 import { createCatalog } from '../catalog';
 import {
   buildSummary,
+  buildWardrobeSummary,
+  crateCard,
+  foundItems,
   pickBestUpgrade,
   pityLines,
   progressFromCollections,
@@ -11,8 +14,9 @@ import {
   type SummaryItem,
 } from '../summaryModel';
 import { DEFAULT_PITY_RULES } from '../types';
-import { PITY, reveal, stack, testCatalog } from './fixtures';
-import { copiesText, summaryButtons } from '../summary';
+import { crate, PITY, reveal, stack, testCatalog } from './fixtures';
+import { copiesText, FOUND_LAND_MS, FOUND_SEEN_MS, foundBurstAt, foundBurstLevel, summaryButtons } from '../summary';
+import { RARITY_BURST } from '../rarityBurst';
 
 const catalog = testCatalog();
 
@@ -136,5 +140,46 @@ describe('summary buttons (ui-plan 4.6, UA-18)', () => {
     expect(copiesText(8, 10)).toBe('8/10');
     expect(copiesText(10, 10)).toBeNull();
     expect(copiesText(5, 2)).toBeNull();
+  });
+});
+
+describe('found collection items (A18.9.4, PLAN 2a)', () => {
+  const holding = (key: string | null, tier: 'bronze' | 'gold' = 'bronze') => {
+    const r = reveal({ tier, stacks: [stack('bonker', 'common')] });
+    return { ...r, capsule: { ...r.capsule, contents: { ...r.capsule.contents, cosmetic: key } } };
+  };
+
+  it('lists the capsules\' items in capsule order, one tile per item, never in the fan', () => {
+    const reveals = [holding('backdrop.eclipse'), holding(null), holding('emote.clap', 'gold'), holding('backdrop.eclipse')];
+    const cards = revealCards(reveals, catalog);
+    expect(cards.map((c) => c.key)).toEqual(['c:bonker']);
+    const s = buildSummary(reveals, cards);
+    expect(s.found).toEqual([
+      { key: 'backdrop.eclipse', sources: [0, 3] },
+      { key: 'emote.clap', sources: [2] },
+    ]);
+    expect(foundItems([holding(''), holding(null)])).toEqual([]);
+    expect(buildSummary([reveal({ tier: 'bronze', stacks: [] })], []).found).toEqual([]);
+  });
+
+  it('carries a crate\'s item from its reveal card to its summary (the card itself stays a plain skin card)', () => {
+    const card = crateCard(crate('pumpkin_head', 'rare', { cosmetic: 'scene.glacier_valley' }), catalog);
+    expect(card.cosmetic).toBe('scene.glacier_valley');
+    const s = buildWardrobeSummary(card);
+    expect(s.found).toEqual([{ key: 'scene.glacier_valley', sources: [0] }]);
+    expect('cosmetic' in s.items[0]!).toBe(false);
+    expect(buildWardrobeSummary(crateCard(crate('pumpkin_head', 'rare'), catalog)).found).toEqual([]);
+    expect('cosmetic' in crateCard(crate('pumpkin_head', 'rare', { cosmetic: null }), catalog)).toBe(false);
+  });
+
+  it('bursts only Epic and Legendary items, after the tile has landed and been seen', () => {
+    expect(foundBurstLevel('common')).toBeNull();
+    expect(foundBurstLevel('rare')).toBeNull();
+    expect(foundBurstLevel('epic')).toBe('epic');
+    expect(foundBurstLevel('legendary')).toBe('legendary');
+    expect(foundBurstAt(90, 'epic')).toBe(90 + FOUND_LAND_MS + FOUND_SEEN_MS + RARITY_BURST.epic.popMs);
+    expect(foundBurstAt(0, 'legendary')).toBeGreaterThan(foundBurstAt(0, 'epic'));
+    // the pop never comes before the landing ends (no tease: the item is on screen first)
+    for (const lv of ['epic', 'legendary'] as const) expect(foundBurstAt(0, lv) - RARITY_BURST[lv].popMs).toBeGreaterThanOrEqual(FOUND_LAND_MS);
   });
 });

@@ -16,6 +16,9 @@
  *   the odds or the completion counts.
  * - Drops: a rolled rarity, then an unowned item of that pool and rarity; a duplicate only when all
  *   of them are owned, and a duplicate turns into Dust when it is opened.
+ * - NEW until seen (save v15): an item a capsule, a crate or an earned reward adds to `owned` joins
+ *   `cosmetics.fresh`, and its Customize card wears a NEW pip until Customize shows it
+ *   ({@link markCosmeticsSeen}). Crafted and bought items are the player's own pick and never NEW.
  * - Equipping: only owned, released items, each in its own slot; base skins and scenes only on their
  *   age, one base skin per age across both skin systems (a cosmetic base skin and the troop-system
  *   skin of that base, Crystal Spire, never both); the national flag is only ever the player's own pick
@@ -280,10 +283,38 @@ export function grantCosmetics(s: SaveDoc, t: Content, keys: readonly string[]):
   }
   if (fresh.length === 0 && dust === 0) return { save: s, fresh, dust };
   return {
-    save: { ...s, currencies: { ...s.currencies, dust: s.currencies.dust + dust }, cosmetics: { ...s.cosmetics, owned } },
+    save: { ...s, currencies: { ...s.currencies, dust: s.currencies.dust + dust }, cosmetics: withFresh({ ...s.cosmetics, owned }, t, fresh) },
     fresh,
     dust,
   };
+}
+
+/**
+ * Adds newly owned collection items to `cosmetics.fresh` (save v15), each key once, in arrival order:
+ * the NEW pip on their Customize card (the General's wardrobe pieces in Customize › General) and the
+ * NEW stamp on the capsule or crate summary's picture tile.
+ */
+function withFresh(cos: SaveDoc['cosmetics'], t: Content, keys: readonly string[]): SaveDoc['cosmetics'] {
+  const had = cos.fresh ?? [];
+  const add = keys.filter((k, i) => !!cosmeticItem(t, k) && !had.includes(k) && keys.indexOf(k) === i);
+  return add.length === 0 ? cos : { ...cos, fresh: [...had, ...add] };
+}
+
+/** The collection keys that are NEW until seen (save v15), oldest first. */
+export function freshCosmetics(s: SaveDoc): readonly string[] {
+  return s.cosmetics.fresh ?? [];
+}
+
+/**
+ * Customize showed these items: they leave `cosmetics.fresh` and their NEW pip goes (save v15). Returns
+ * the same save when none of them was NEW, so a screen can call it on every visit without a write.
+ */
+export function markCosmeticsSeen(s: SaveDoc, keys: readonly string[]): SaveDoc {
+  const had = s.cosmetics.fresh;
+  if (!had || had.length === 0 || keys.length === 0) return s;
+  const seen = new Set(keys);
+  const fresh = had.filter((k) => !seen.has(k));
+  return fresh.length === had.length ? s : { ...s, cosmetics: { ...s.cosmetics, fresh } };
 }
 
 /** Normal is the second difficulty: a boss crown of 2 or more is a clear on Normal or harder (A18.7.4). */
@@ -354,7 +385,7 @@ export function syncEarnedCosmetics(s: SaveDoc, t: Content): { save: SaveDoc; gr
   const owned = new Set(s.cosmetics.owned);
   const granted = t.cosmetics.collections.items.filter((x) => isCosmeticReleased(x) && !owned.has(cosmeticKey(x)) && earned(x, s, t)).map(cosmeticKey);
   if (granted.length === 0) return { save: s, granted };
-  return { save: { ...s, cosmetics: { ...s.cosmetics, owned: [...s.cosmetics.owned, ...granted] } }, granted };
+  return { save: { ...s, cosmetics: withFresh({ ...s.cosmetics, owned: [...s.cosmetics.owned, ...granted] }, t, granted) }, granted };
 }
 
 // ---------------------------------------------------------------------------------------------

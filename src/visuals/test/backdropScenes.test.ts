@@ -10,7 +10,9 @@ import { describe, expect, it } from 'vitest';
 import type { AgeId } from '@/contracts/ids';
 import { ageRegions, ARRIVAL_FADE_MS, composePieces, FadeTracker, ProceduralBackdropView, type BackdropTextures, type PropFrame } from '../adapters/procedural/backdropView';
 import { PartBaker } from '../bake';
-import { BACK_FRAME, drawnScene, parseScene, SCENE_ART, sceneDir, sceneIdOf, sceneThumbPath, type SceneData } from '../backdrops/scenes';
+import { content } from '@/content';
+import { BACK_FRAME, drawnScene, isSpaceScene, parseScene, SCENE_ART, sceneDir, sceneIdOf, sceneThumbPath, SPACE_SCENES, type SceneData } from '../backdrops/scenes';
+import { backdropWeatherSvg } from '../cosmetics/backdropPreview';
 import { limitSprites, lightAlpha, pathPoint, readSprites, spriteInstances, spritePhaseMs, SPRITE_LIMITS, type PathSprite, type SceneSprite } from '../backdrops/sceneSprites';
 import { BACK_GRADE_SCALE, BACKDROP_THEMES, isNightSky, sceneGradeKey, spaceWeather, themeForScene, themeSky } from '../backdrops/themes';
 import { WORLD } from '../style';
@@ -84,6 +86,71 @@ describe('scene art on disk (PLAN 2b)', () => {
   });
 });
 
+/** Round 2: the first new scene of every age (PLAN 2b "The 24 scenes"). */
+const ROUND2: readonly [AgeId, string][] = [
+  ['stone', 'glacier_valley'],
+  ['bronze', 'aegean_harbour'],
+  ['medieval', 'misty_moor'],
+  ['gunpowder', 'treasure_cove'],
+  ['industrial', 'viaduct_gorge'],
+  ['modern', 'desert_airbase'],
+  ['future', 'skyway_metropolis'],
+  ['cosmic', 'ringed_giant'],
+];
+const shipped = (age: AgeId, scene: string): SceneData | null => parseScene(LAYERS_JSON[`/public/${sceneDir(age, scene)}layers.json`], age, scene);
+
+describe('the round 2 scenes (one new scene per age)', () => {
+  it('each ships in format 2 with its sky, three strips, moving props, night lights, a tuned sky grade and a thumbnail', () => {
+    for (const [age, id] of ROUND2) {
+      expect(SCENE_ART[age]?.[id], `${age}.${id}`).toBe(2);
+      const d = shipped(age, id);
+      expect(d?.version, `${age}.${id}`).toBe(2);
+      expect(d?.sky, `${age}.${id} sky`).not.toBeNull();
+      expect(Object.keys(d?.layers ?? {}).sort(), `${age}.${id} strips`).toEqual(['back', 'far', 'mid']);
+      expect(d?.props?.sprites.filter((s) => s.kind !== 'emit').length ?? 0, `${age}.${id} moving props`).toBeGreaterThanOrEqual(2);
+      expect(d?.props?.sprites.filter((s) => s.kind !== 'emit').length ?? 0, `${age}.${id} within the per-half cap`).toBeLessThanOrEqual(6);
+      expect(d?.lights.length ?? 0, `${age}.${id} lights`).toBeGreaterThan(0);
+      expect(d?.hints.skyGrade ?? 1, `${age}.${id} skyGrade`).toBeLessThan(1);
+      expect(d?.thumb, `${age}.${id}`).toBe('thumb.webp');
+    }
+  });
+
+  it('the released scenes of the content are exactly the new scenes with art, and they are the round 2 set', () => {
+    const released = content.cosmetics.collections.items.filter((x) => x.collection === 'scene' && x.released !== false);
+    for (const age of AGES) {
+      const withArt = Object.keys(SCENE_ART[age] ?? {}).filter((id) => id !== 'classic').sort();
+      expect(released.filter((x) => x.age === age).map((x) => x.id).sort(), age).toEqual(withArt);
+    }
+    expect(released.map((x) => `${x.age}.${x.id}`).sort()).toEqual(ROUND2.map(([a, id]) => `${a}.${id}`).sort());
+  });
+
+  it('Ringed Giant brings its own sky object and space weather', () => {
+    expect(shipped('cosmic', 'ringed_giant')?.hints).toMatchObject({ celestial: 'own', weather: 'space' });
+    expect(shipped('cosmic', 'ringed_giant')?.sky).toMatchObject({ celestial: 'none' });
+  });
+
+  it('the space-scene table matches the shipped hints, and the weather preview turns snow into motes over space', () => {
+    for (const { age, scene, format } of ART) {
+      if (format !== 2) continue;
+      expect(isSpaceScene(age, `scene.${scene}`), `${age}.${scene}`).toBe(shipped(age, scene)?.hints.weather === 'space');
+    }
+    expect(SPACE_SCENES.cosmic).toEqual(expect.arrayContaining(['classic', 'ringed_giant']));
+    expect(isSpaceScene('cosmic', null)).toBe(true);
+    expect(isSpaceScene('cosmic', 'ringed_giant')).toBe(true);
+    // a Cosmic scene without art draws the classic moon base, which is in space too
+    expect(isSpaceScene('cosmic', 'scene.nebula_shipyard')).toBe(true);
+    expect(isSpaceScene('stone', 'scene.glacier_valley')).toBe(false);
+    const ground = backdropWeatherSvg('backdrop.winterfall', false) ?? '';
+    const space = backdropWeatherSvg('backdrop.winterfall', false, { space: true }) ?? '';
+    expect(ground).toContain('fill="#ffffff"');
+    expect(space).not.toContain('fill="#ffffff"');
+    expect(space).toContain('#dcecf6');
+    // a thunderstorm over space: rare streaks, no lightning flash
+    expect(backdropWeatherSvg('backdrop.thunderstorm', true)).toContain('#e2e8f4');
+    expect(backdropWeatherSvg('backdrop.thunderstorm', true, { space: true })).not.toContain('#e2e8f4');
+  });
+});
+
 describe('layer format loader (v1 and v2)', () => {
   it('reads a format 1 classic: two strips with their ambient, no sky, props or lights', () => {
     const d = parseScene(LAYERS_JSON['/public/art/backdrops/stone/layers.json'], 'stone', 'classic');
@@ -135,8 +202,10 @@ describe('layer format loader (v1 and v2)', () => {
     expect(sceneIdOf('scene.glacier_valley')).toBe('glacier_valley');
     expect(sceneIdOf(null)).toBe('classic');
     expect(sceneIdOf('backdrop.winterfall')).toBe('classic');
-    expect(drawnScene('stone', 'glacier_valley')).toBe('classic');
+    expect(drawnScene('stone', 'atlantis')).toBe('classic');
+    expect(drawnScene('stone', 'glacier_valley')).toBe('glacier_valley');
     expect(drawnScene('bronze', 'classic')).toBe('classic');
+    expect(sceneDir('stone', 'glacier_valley')).toBe('art/backdrops/stone/glacier_valley/');
     expect(sceneDir('bronze', 'classic')).toBe('art/backdrops/bronze/classic/');
     expect(sceneDir('stone', 'classic')).toBe('art/backdrops/stone/');
     expect(sceneDir('stone', 'nope')).toBeNull();

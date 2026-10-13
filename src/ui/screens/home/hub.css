@@ -36,6 +36,13 @@
 .hub-top {
   z-index: 12;
 }
+/* A currency chip's first-seen caption (MR-28) hangs below the top bar. On short screens (844 x 340, an
+   iPhone in landscape with Safari's bars) the match plate starts right under the bar, so while a caption
+   shows the bar rises over the dock (25) and the caption reads in full above the plate's corner for its
+   4 seconds, instead of half hidden under it. */
+.hub-top:has(.wp-caption) {
+  z-index: 26;
+}
 /* The game's name on the first screen: a cartoon wordmark, gold with an ink outline and a soft drop. */
 .hub-wordmark {
   align-self: center;

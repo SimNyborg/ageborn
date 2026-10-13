@@ -29,6 +29,9 @@
     "foilUnlocked": "{foil}!",
     "skinFor": "Skin for {target}",
     "baseSkinFor": "Base skin: {age}",
+    "found": {
+      "label": "Collection item: {name}, {rarity} {kind}"
+    },
     "pity": {
       "title": "Guarantees",
       "epic": "Epic within {n}",

@@ -13,8 +13,8 @@
  * after a hit; banners and plants sway; braziers flicker; on a collapse every prop topples and
  * fades. Reduce motion stills the ripple and the particles; Lite halves the particles.
  *
- * Base skin models (PLAN 2c): while the base view shows a skin's model (its duck-typed `skinModel()`),
- * the old restyle is off (the view takes no tint on a model, and the field of particles over the whole
+ * Base skin models (PLAN 2c): while the base view shows a skin's model (its duck-typed `skinModel()`;
+ * the equipped skin's, or Crystal Spire's, the troop-system skin that wins over it), the old restyle is off (the view takes no tint on a model, and the field of particles over the whole
  * base stops); the model's own ambient particles start from its spots instead (`ambientSpots()`,
  * exported from Blender: petals from the rose vines, fireflies by the mushrooms ...). While the model
  * streams in, the standard base keeps the old tint and particles. A national flag uses its lane cloth
@@ -240,16 +240,20 @@ interface Mote {
   kind: SkinParticles;
 }
 
-/** A skin model's ambient emitter (`meta.ageborn.ambientLu`, PLAN 2c): base-local lu, y up. */
+/**
+ * A skin model's ambient emitter (`meta.ageborn.ambientLu`, PLAN 2c): base-local lu, y up; `color` (a hex
+ * string) tints its motes when the model's materials want their own (Crystal Spire's lilac glints).
+ */
 interface AmbientSpot {
   kind: string;
   x: number;
   y: number;
   r: number;
   rate: number;
+  color?: string;
 }
 
-const AMBIENT_KINDS: readonly SkinParticles[] = ['snow', 'fireflies', 'glints', 'petals', 'embers', 'dust', 'stars'];
+const AMBIENT_KINDS: readonly SkinParticles[] = ['snow', 'fireflies', 'glints', 'petals', 'embers', 'dust', 'stars', 'mist', 'rain', 'smoke', 'steam'];
 /** Mote colours of an ambient kind a skin's own particles do not cover (A11: pale, desaturated). */
 const AMBIENT_COLORS: Partial<Record<SkinParticles, number>> = {
   snow: 0xffffff,
@@ -259,7 +263,18 @@ const AMBIENT_COLORS: Partial<Record<SkinParticles, number>> = {
   embers: 0xffb060,
   dust: 0xe8d4a4,
   stars: 0xffffff,
+  // round 2: frost breathing from a cave, rain drips off neon glass, chimney smoke, a foundry's steam
+  mist: 0xe6f0f4,
+  rain: 0xc4d0dc,
+  smoke: 0xdcd8d2,
+  steam: 0xf4f6f6,
 };
+/** Kinds whose soft puffs grow as they live (mist, smoke and steam) and the alpha they peak at. */
+const PUFF_ALPHA: Partial<Record<SkinParticles, number>> = { mist: 0.42, smoke: 0.5, steam: 0.46 };
+
+function hexColor(s: string | undefined): number | null {
+  return s && /^#[0-9a-f]{6}$/i.test(s) ? parseInt(s.slice(1), 16) : null;
+}
 
 export interface DressingOptions {
   age: AgeId;
@@ -286,8 +301,6 @@ export class BaseDressing implements BaseDressingView {
   private readonly rng: CosmeticRng;
   private age: AgeId;
   private skin: BaseSkinArt | null = null;
-  /** The equipped skin of the current age (`baseSkin.<id>` → id), or null. */
-  private skinId: string | null = null;
   /** True while the base view shows that skin's model: the model's own ambient spots, no field of motes. */
   private modelShown = false;
   private poleCap: Graphics | null = null;
@@ -438,7 +451,6 @@ export class BaseDressing implements BaseDressingView {
   private applySkin(age: AgeId): void {
     const key = this.o.look.baseSkins?.[age];
     this.skin = baseSkinArt(key);
-    this.skinId = key && key.startsWith('baseSkin.') ? key.slice('baseSkin.'.length) : null;
     this.modelShown = this.showsModel();
     const cap = this.poleCap;
     if (cap) {
@@ -514,12 +526,13 @@ export class BaseDressing implements BaseDressingView {
     if (this.collapseT >= 0) this.updateCollapse(dt);
   }
 
-  /** True when the base view shows the equipped skin's model (PLAN 2c), so the old restyle is off. */
+  /**
+   * True when the base view shows a skin model (PLAN 2c), so the old restyle is off: the equipped skin's
+   * model, or the troop-system skin that wins over it (Crystal Spire, which has no cosmetic key).
+   */
   private showsModel(): boolean {
-    const id = this.skinId;
-    if (!id) return false;
     const v = this.o.base as { skinModel?: () => string | null } | undefined;
-    return v?.skinModel?.() === id;
+    return (v?.skinModel?.() ?? null) !== null;
   }
 
   /** The skin model's ambient spots (base-local lu, y up), when the model shows. */
@@ -558,7 +571,14 @@ export class BaseDressing implements BaseDressingView {
       // settled on the ground: melt away
       const ground = m.y < 1.5 && m.vy < 0 ? 0.0 : 1;
       m.g.position.set(m.x * this.facing, -Math.max(0.5, m.y));
-      m.g.alpha = Math.max(0, fade) * ground * (m.kind === 'fireflies' || m.kind === 'glints' || m.kind === 'stars' ? 0.55 + 0.45 * Math.sin(m.life / 140) : 0.9);
+      const puff = PUFF_ALPHA[m.kind];
+      if (puff !== undefined) {
+        // mist and smoke swell and thin out as they drift
+        m.g.scale.set(1 + k * 1.6);
+        m.g.alpha = Math.max(0, fade) * ground * puff * (1 - k * 0.5);
+      } else {
+        m.g.alpha = Math.max(0, fade) * ground * (m.kind === 'fireflies' || m.kind === 'glints' || m.kind === 'stars' ? 0.55 + 0.45 * Math.sin(m.life / 140) : 0.9);
+      }
       if (m.life >= m.max || want === 0 || ground === 0) m.g.destroy();
       else keep.push(m);
     }
@@ -580,15 +600,15 @@ export class BaseDressing implements BaseDressingView {
       }
     }
     const kind = (AMBIENT_KINDS.includes(spot.kind as SkinParticles) ? spot.kind : 'glints') as SkinParticles;
-    const color = s && s.particles === kind ? s.particleColor : (AMBIENT_COLORS[kind] ?? 0xffffff);
+    const color = hexColor(spot.color) ?? (s && s.particles === kind ? s.particleColor : (AMBIENT_COLORS[kind] ?? 0xffffff));
     const m = this.spawnMote(kind, color, false);
     const a = this.rng.next() * Math.PI * 2;
     const d = Math.sqrt(this.rng.next()) * spot.r;
     m.x = spot.x + Math.cos(a) * d;
     m.y = Math.max(2, spot.y + Math.sin(a) * d * 0.6);
-    // the model's ambient is gentler and shorter than the field of motes it replaces
-    m.vy *= 0.75;
-    m.max = 1800 + this.rng.next() * 1800;
+    // the model's ambient is gentler and shorter than the field of motes it replaces (rain stays quick)
+    if (kind !== 'rain') m.vy *= 0.75;
+    m.max = kind === 'rain' ? 700 + this.rng.next() * 500 : 1800 + this.rng.next() * 1800;
     return m;
   }
 
@@ -601,17 +621,26 @@ export class BaseDressing implements BaseDressingView {
     } else if (kind === 'petals') {
       g.ellipse(0, 0, size * 1.4, size * 0.8).fill(color);
       g.ellipse(-size * 0.3, -size * 0.2, size * 0.6, size * 0.3).fill({ color: 0xffffff, alpha: 0.35 });
+    } else if (kind === 'rain') {
+      // a thin slanted drip streak
+      g.poly([-0.35, -3.2, 0.35, -3.2, 1.0, 3.2, 0.3, 3.2]).fill(color);
+    } else if (kind === 'mist' || kind === 'smoke' || kind === 'steam') {
+      // a soft puff: a few overlapping discs, lighter in the middle
+      g.circle(0, 0, size * 2.4).fill({ color, alpha: 0.55 });
+      g.circle(-size * 1.4, size * 0.4, size * 1.6).fill({ color, alpha: 0.55 });
+      g.circle(size * 1.3, size * 0.6, size * 1.5).fill({ color, alpha: 0.55 });
+      g.circle(0, -size * 0.4, size * 1.2).fill({ color: 0xffffff, alpha: 0.35 });
     } else {
       g.circle(0, 0, size).fill(color);
     }
     if (kind === 'fireflies' || kind === 'embers' || kind === 'glints' || kind === 'stars') g.blendMode = 'add';
     this.motes.addChild(g);
     const x = -190 + r() * 200;
-    const falling = kind === 'snow' || kind === 'petals';
-    const rising = kind === 'embers' || kind === 'stars';
+    const falling = kind === 'snow' || kind === 'petals' || kind === 'rain';
+    const rising = kind === 'embers' || kind === 'stars' || kind === 'smoke' || kind === 'steam';
     const y = anywhere ? 10 + r() * 200 : falling ? 220 : 6;
-    const vy = falling ? -(14 + r() * 12) : rising ? 12 + r() * 14 : (r() - 0.5) * 8;
-    const vx = kind === 'dust' ? 10 + r() * 10 : (r() - 0.5) * 10;
+    const vy = kind === 'rain' ? -(110 + r() * 40) : kind === 'mist' ? 2 + r() * 4 : kind === 'smoke' || kind === 'steam' ? 10 + r() * 8 : falling ? -(14 + r() * 12) : rising ? 12 + r() * 14 : (r() - 0.5) * 8;
+    const vx = kind === 'dust' || kind === 'mist' ? 10 + r() * 10 : kind === 'rain' ? -6 - r() * 4 : kind === 'smoke' || kind === 'steam' ? 4 + r() * 6 : (r() - 0.5) * 10;
     return { g, x, y, vx, vy, life: 0, max: 2600 + r() * 2600, kind };
   }
 

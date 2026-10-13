@@ -253,6 +253,12 @@ export function createUiServices(d: UiServicesDeps): UiServices {
     craftCosmetic(key) {
       return apply(meta.craftCosmetic(d.save.peek(), key, content), true);
     },
+    markCosmeticsSeen(keys) {
+      // the NEW pip (save v15): a quiet write, and none when nothing was NEW
+      const s = d.save.peek();
+      const next = meta.markCosmeticsSeen(s, keys);
+      if (next !== s) d.commit(next);
+    },
     // The Flag Atlas (PLAN 2d): buying, progress and search (`app/cosmetics.ts` over meta's flagAtlas.ts)
     ...flagServices({ meta, content, save: d.save, i18n: d.i18n ?? appI18n, apply }),
 

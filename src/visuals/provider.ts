@@ -25,6 +25,9 @@ import { AGES } from './ages';
 import { BaseDressing } from './cosmetics/dressing';
 import { teamColor } from './palette';
 import { arenaId } from './backdrops/ground';
+import { sceneImage, sceneJson } from './backdrops/sceneFiles';
+import { drawnScene, parseScene, sceneDir, sceneIdOf } from './backdrops/scenes';
+import { groundImageUrl } from './adapters/procedural/backdropView';
 import { puppetById } from './library';
 import { MANIFEST, PROCEDURAL_MANIFEST, type VisualManifest } from './manifest';
 import { STYLE } from './style';
@@ -535,6 +538,52 @@ export class VisualsArtProvider implements ArtProvider {
       setTimeout(() => hold.release(), PREFETCH_HOLD_MS);
     }
     return Promise.all(waits).then(() => undefined);
+  }
+
+  /**
+   * What the Customize diorama draws (PLAN 2c; render's `showcase/diorama.ts`, duck-typed like
+   * `showcaseLease`): the age's base (its skin model when it wears one) and two turrets, and the half's
+   * scene files (its `layers.json`, strips and props atlas) with the ground, so the live stage starts on
+   * the model and the Blender scene instead of a stand-in that swaps over the still. The scene files come
+   * from the shared file cache (one download with the Customize stills) and stream into this provider's
+   * backdrop textures, which the diorama's backdrop reads. Resolves once all of it has loaded or failed.
+   */
+  dioramaLease(o: { age: AgeId; skin?: SkinId | null; turrets: readonly VisualId[]; scene?: CosmeticKey | null; arena: string }): { ready: Promise<void>; release(): void } {
+    const lease = this.showcaseLease({ visuals: [{ visualId: `base.${o.age}`, skin: o.skin ?? null }, ...o.turrets.map((visualId) => ({ visualId }))] });
+    const waits: Promise<unknown>[] = [lease.ready];
+    if (this.force === null || this.force === 'procedural' || this.force === 'atlas') {
+      const scene = drawnScene(o.age, sceneIdOf(o.scene));
+      const arena = arenaId(o.arena);
+      this.procedural.backdrops.prefetch([o.age], [arena], [{ age: o.age, scene }]);
+      waits.push(this.sceneFiles(o.age, scene), sceneImage(this.assetUrl(groundImageUrl(arena))));
+    }
+    return {
+      ready: Promise.allSettled(waits).then(
+        // one more turn, so the backdrop textures (awaiting the same files) hold them before the stage builds
+        () => new Promise<void>((r) => setTimeout(r, 0)),
+      ),
+      release: () => lease.release(),
+    };
+  }
+
+  /** A scene's files through the shared cache: its `layers.json`, then its strips and props atlas side by side. */
+  private async sceneFiles(age: AgeId, scene: string): Promise<void> {
+    const dir = sceneDir(age, scene);
+    if (!dir) return;
+    const data = parseScene(await sceneJson(this.assetUrl(`${dir}layers.json`)), age, scene);
+    if (!data) return;
+    const files: string[] = [];
+    for (const kind of ['back', 'far', 'mid'] as const) {
+      const m = data.layers[kind];
+      if (m) files.push(m.image);
+    }
+    if (data.props && Object.keys(data.props.frames).length > 0) files.push(data.props.image);
+    await Promise.allSettled(files.map((f) => sceneImage(this.assetUrl(dir + f))));
+  }
+
+  private assetUrl(path: string): string {
+    const base = (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? '/';
+    return `${base}${path}`;
   }
 
   /** Base flag, national flag, decorations and skin restyle of one side (DESIGN A18.9.4). */

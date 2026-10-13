@@ -254,3 +254,270 @@ def hill(g, x, y, z, rx, ry, h, seed=0, jag=0.06, p=2.4):
     """A rounded hill (a lumpy half-blob below z, so its foot is hidden)."""
     rock(g, (x, y, z), (rx, ry, h), seed=seed, jag=jag, p=p, cuts=4)
     return g
+
+
+# -- round 2 kit: winter, coast, tropics, desert, city, space --------------------------------------
+class StaticRig:
+    """Lets a prop builder (`fauna.*`) draw into a strip's `Parts` as static geometry: every part is moved
+    by `offset` (scaled by `s` about the builder's origin, mirrored with `flip`) and merged into the
+    part group of its colour. Joints are ignored (the rest pose is drawn)."""
+
+    def __init__(self, pt, offset, s=1.0, flip=False):
+        self.pt = pt
+        self.offset = offset
+        self.s = s
+        self.flip = flip
+
+    def joint(self, name, parent, pos, **k):
+        return name
+
+    def part(self, joint, geo, fill=None, team=False, glow=None, outline=0.5, finish="matte", highlight=True, **k):
+        if glow:
+            g = self.pt.g(int(glow.lstrip("#"), 16), glow=True)
+        else:
+            c = int(fill.lstrip("#"), 16) if isinstance(fill, str) else fill
+            g = self.pt.g(c, finish=finish, outline=outline, highlight=highlight)
+        geo.bm.verts.ensure_lookup_table()
+        ox, oy, oz = self.offset
+        for v in geo.bm.verts:
+            x, y, z = v.co
+            v.co = ((-x if self.flip else x) * self.s + ox, y * self.s + oy, z * self.s + oz)
+        if self.flip:
+            import bmesh
+            bmesh.ops.reverse_faces(geo.bm, faces=geo.bm.faces[:])
+        _merge(g, geo)
+
+
+def _merge(g, tmp):
+    """Appends the geometry of the Geo `tmp` to `g` (and frees it)."""
+    from mathutils import Matrix
+    g._add_bm(tmp.bm, Matrix.Identity(4))
+    return g
+
+
+def snow_cap(g_snow, center, radii, seed=0, jag=0.16, p=2.3, cut=None, grow=1.035, cuts=4):
+    """Snow lying on a `rock(center, radii, seed, jag, p)`: the same lumpy shape a touch bigger, cut off
+    below `cut` (world z; default the upper 40%), so the cap follows the rock and ends in a wavy edge."""
+    from ageborn_art.geometry import Geo
+    tmp = Geo()
+    rock(tmp, center, (radii[0] * grow, radii[1] * grow, radii[2] * grow), seed=seed, jag=jag, p=p, cuts=cuts)
+    z = cut if cut is not None else center[2] + radii[2] * 0.2
+    tmp.clip((center[0], center[1], z), (0, 0, -1))
+    return _merge(g_snow, tmp)
+
+
+def annulus(g, center, r0, r1, thick, rot=(0.0, 0.0, 0.0), segs=96):
+    """A flat ring (a planet's ring, a habitat wheel's rim) as an open annulus: top, bottom, inner and
+    outer faces, no caps across its hole (a lathe would close it into a disc). Built round +z, then
+    turned by `rot` (degrees, XYZ) about its centre."""
+    from mathutils import Euler, Matrix, Vector
+    verts, faces = [], []
+    for k in range(segs):
+        a = 2 * math.pi * k / segs
+        c, s_ = math.cos(a), math.sin(a)
+        verts += [(r0 * c, r0 * s_, -thick / 2), (r1 * c, r1 * s_, -thick / 2), (r1 * c, r1 * s_, thick / 2), (r0 * c, r0 * s_, thick / 2)]
+    for k in range(segs):
+        a, b = 4 * k, 4 * ((k + 1) % segs)
+        faces += [[a + 3, a + 2, b + 2, b + 3], [a, b, b + 1, a + 1], [a + 1, b + 1, b + 2, a + 2], [a, a + 3, b + 3, b]]
+    m = Matrix.Translation(Vector(center)) @ Euler(tuple(math.radians(v) for v in rot), "XYZ").to_matrix().to_4x4()
+    g._add(verts, faces, m, smooth=True)
+    return g
+
+
+def tube_ring(g, center, R, r, rot=(0.0, 0.0, 0.0), segs=36):
+    """A torus as a ring of short capsules (a habitat wheel), turned by `rot` (degrees, XYZ)."""
+    from mathutils import Euler, Vector
+    e = Euler(tuple(math.radians(v) for v in rot), "XYZ").to_matrix()
+    pts = [Vector(center) + e @ Vector((R * math.cos(2 * math.pi * k / segs), R * math.sin(2 * math.pi * k / segs), 0)) for k in range(segs)]
+    for k in range(segs):
+        g.capsule(tuple(pts[k]), tuple(pts[(k + 1) % segs]), r, segs=10, rings=3)
+    return g
+
+
+def loft_point(rows, t, u):
+    """A point on a lofted surface (see `loft`): t along the rows (0 = nearest), u across (-1..1)."""
+    i = max(0, min(len(rows) - 2, int(math.floor(t))))
+    f = max(0.0, min(1.0, t - i))
+    a, b = rows[i], rows[i + 1]
+    cx, y, z, hw, bu = (a[k] + (b[k] - a[k]) * f for k in range(5))
+    return (cx + u * hw, y, z + bu * (1 - u * u))
+
+
+def loft(g, rows, nu=14, thick=12.0):
+    """A lofted solid (a glacier's ice, a snowfield): rows from near to far, each (cx, y, z, half width,
+    bulge); the top bulges across each row by (1 - u^2), the solid is `thick` lu deep. Normals are made
+    to point outward."""
+    import bmesh
+    from mathutils import Matrix
+    verts, faces = [], []
+    W = nu + 1
+    n = len(rows)
+    for top in (True, False):
+        for (cx, y, z, hw, bu) in rows:
+            for j in range(W):
+                u = -1 + 2 * j / nu
+                verts.append((cx + u * hw, y, z + bu * (1 - u * u) if top else z - thick))
+    B = n * W
+    for i in range(n - 1):
+        for j in range(nu):
+            a = i * W + j
+            faces.append([a, a + 1, a + W + 1, a + W])
+            faces.append([B + a + W, B + a + W + 1, B + a + 1, B + a])
+    for i in range(n - 1):
+        for j in (0, nu):
+            a = i * W + j
+            faces.append([a, a + W, B + a + W, B + a])
+    for i in (0, n - 1):
+        for j in range(nu):
+            a = i * W + j
+            faces.append([a, a + 1, B + a + 1, B + a])
+    g.bm.faces.ensure_lookup_table()
+    f0 = len(g.bm.faces)
+    g._add(verts, faces, Matrix.Identity(4), smooth=True)
+    g.bm.faces.ensure_lookup_table()
+    bmesh.ops.recalc_face_normals(g.bm, faces=list(g.bm.faces[f0:]))
+    return g
+def peak(g_rock, g_snow, x, y, z, rx, h, seed=0, snow=0.55, jag=0.16, segs=12, squash=0.55, lean=0.0):
+    """A sharp mountain peak (a lathed cone with a shoulder, lumpy) with a snow cap over its upper part:
+    the cap is the same cone a little wider above the snowline, jittered by the same noise, so it
+    follows the rock's lumps and ends in a wavy snowline. `snow` is the snowline as a share of the
+    height (1 = no snow)."""
+    rnd = random.Random(seed)
+    prof = [(0, 0), (rx, 0), (rx * 0.6, h * 0.42), (rx * rnd.uniform(0.18, 0.28), h * 0.88), (rx * 0.05, h), (0, h * 1.01)]
+    top = (x + lean * h, y, z + h)
+    yaw = rnd.uniform(0, 30)
+    for g, grow, z0 in ((g_rock, 1.0, 0.0), (g_snow, 1.045, snow)):
+        if g is None or z0 >= 1.0:
+            continue
+        g.bm.verts.ensure_lookup_table()
+        n0 = len(g.bm.verts)
+        if z0 > 0:
+            # the cap: the cone above the snowline, a touch wider
+            p2 = []
+            for (r, hz), (r2, hz2) in zip(prof, prof[1:]):
+                if hz2 < h * z0:
+                    continue
+                if hz < h * z0 <= hz2:
+                    t = (h * z0 - hz) / max(1e-6, hz2 - hz)
+                    p2.append((0, h * z0 - 0.5))
+                    p2.append(((r + (r2 - r) * t) * grow, h * z0))
+                p2.append((r2 * grow, hz2))
+            pr = p2
+        else:
+            pr = prof
+        g.lathe(pr, (x, y, z), top if lean else None, segs=segs, rot=(0, 0, 0) if lean else (0, 0, yaw), squash=(1.0, squash))
+        _jitter(g, n0, (x, y, z + h * 0.4), jag * 0.6, seed, 2.2 / max(1.0, rx * 0.5))
+    return g
+
+
+def spruce(g_green, g_snow, gt, x, y, h, r, seed=0, z=0.0, tiers=4, snow=True):
+    """A snow-laden spruce: drooping tiers of dark needles, each with a white cap over its upper part
+    (the cap is the tier's cone, a little wider and starting a third of the way up), on a short trunk."""
+    rnd = random.Random(seed)
+    gt.capsule((x, y + 1, z), (x, y + 1, z + h * 0.18), r * 0.12)
+    for k in range(tiers):
+        t = k / max(1, tiers - 1)
+        rr = r * (1.0 - 0.62 * t) * rnd.uniform(0.92, 1.06)
+        z0 = z + h * (0.12 + 0.2 * k * (4.0 / tiers))
+        th = h * (0.36 - 0.03 * k)
+        if k == tiers - 1:
+            th = (z + h) - z0
+        g_green.lathe([(0, 0), (rr, -th * 0.06), (rr * 0.5, th * 0.4), (rr * 0.07, th * 0.95), (0, th)], (x, y, z0), (x, y, z0 + th), segs=9,
+                      rot=(0, 0, rnd.uniform(0, 40)))
+        if not snow:
+            continue
+        if k == tiers - 1:
+            # the top: a white tip
+            g_snow.lathe([(0, th * 0.55), (rr * 0.36, th * 0.55), (rr * 0.1, th * 0.92), (0, th * 1.04)], (x, y - 0.3, z0), (x, y - 0.3, z0 + th),
+                         segs=9)
+            continue
+        # snow lying on the tier: a few soft lumps on its upper slope, more on the side facing the sky
+        for j in range(3):
+            a = math.radians(rnd.uniform(-170, -10))
+            u = rnd.uniform(0.28, 0.5)
+            rad = rr * (1.0 - u * 0.98) + rr * 0.04
+            g_snow.blob((x + math.cos(a) * rad, y + math.sin(a) * rad * 0.9, z0 + th * u + th * 0.04),
+                        (rr * rnd.uniform(0.3, 0.42), rr * 0.26, th * 0.1), p=2.0, rot=(0, math.degrees(math.atan2(-math.cos(a) * th, rr)) * 0.5, 0))
+    return g_green
+
+
+def hide_tent(P, x, y, z, r, h, hide=0xA88A6A, pole=0x6E5A48, dark=0x3A302A, seed=0, yaw=0.0):
+    """A hide tent: a cone of stitched hides with the poles crossing above its tip and a dark door flap."""
+    rnd = random.Random(seed)
+    gh = P.g(hide, outline=0.5)
+    gp = P.g(pole, outline=0.3)
+    gd = P.g(dark, outline=0.0, highlight=False)
+    gh.lathe([(0, 0), (r, 0), (r * 0.55, h * 0.45), (r * 0.12, h * 0.92), (0, h * 0.94)], (x, y, z), (x, y, z + h * 0.94), segs=10,
+             rot=(0, 0, yaw))
+    for k in range(4):
+        a = math.radians(yaw + 45 + k * 90 + rnd.uniform(-10, 10))
+        gp.capsule((x + math.cos(a) * r * 0.1, y + math.sin(a) * r * 0.1, z + h * 0.86),
+                   (x - math.cos(a) * r * 0.22, y - math.sin(a) * r * 0.22, z + h * 1.18), 0.7)
+    # the door: a dark triangle on the camera side
+    gd.slab([(x - r * 0.2, z + 0.4), (x + r * 0.24, z + 0.4), (x + 0.6, z + h * 0.42)], y - r * 0.8, 1.2)
+    return (x, y - r * 0.8, z + h * 0.2)
+
+
+def drying_rack(P, x, y, z, w, h, wood=0x6E5A48, hide=0xB09070, hide2=0x8C7058):
+    """Two A-frame posts with a crossbar and hides hanging from it."""
+    gw = P.g(wood, outline=0.4)
+    for sx in (-w / 2, w / 2):
+        gw.capsule((x + sx - 3, y, z), (x + sx, y, z + h), 0.9)
+        gw.capsule((x + sx + 3, y, z), (x + sx, y, z + h), 0.9)
+    gw.capsule((x - w / 2 - 2, y, z + h - 1), (x + w / 2 + 2, y, z + h - 1), 0.8)
+    for k, c in enumerate((hide, hide2, hide)):
+        hx = x - w / 2 + w * (k + 0.5) / 3
+        P.g(c, outline=0.4).blob((hx, y - 0.8, z + h - 1 - h * 0.24), (w / 7.2, 1.0, h * 0.24), p=3.0, taper=(0.75, 1.0))
+
+
+def icicles(g, x0, x1, y, z_top, length, seed=0, n=None):
+    """A row of hanging icicles under a ledge: tapered spikes of uneven length."""
+    rnd = random.Random(seed)
+    n = n or max(2, int((x1 - x0) / 3.2))
+    for i in range(n):
+        x = x0 + (x1 - x0) * (i + rnd.uniform(0.2, 0.8)) / n
+        L = length * rnd.uniform(0.35, 1.0)
+        g.lathe([(0.01, 0), (1.2 + L * 0.08, 0), (0.01, -L)], (x, y, z_top), None, segs=6)
+    return g
+
+
+def frond(g, top, a, L, w, segs=4):
+    """A palm frond from `top`: a broad leaf arching out at angle `a` (about z) and drooping, built from
+    flattened lobes along its curve, widest a third of the way out."""
+    dx, dy = math.cos(a), math.sin(a) * 0.6
+    prev = top
+    for j in range(segs):
+        t = (j + 1) / segs
+        droop = -(t ** 1.8) * L * 0.55 + t * L * 0.18
+        p = (top[0] + dx * L * t, top[1] + dy * L * t, top[2] + droop)
+        mx, my, mz = (prev[0] + p[0]) / 2, (prev[1] + p[1]) / 2, (prev[2] + p[2]) / 2
+        hx, hy, hz = p[0] - prev[0], p[1] - prev[1], p[2] - prev[2]
+        seg = math.sqrt(hx * hx + hy * hy + hz * hz)
+        elev = math.degrees(math.atan2(hz, math.hypot(hx, hy)))
+        yaw = math.degrees(math.atan2(hy, hx))
+        ww = w * (0.75 + 0.6 * math.sin(math.pi * min(1.0, (t - 0.5 / segs) * 1.3)))
+        g.blob((mx, my, mz), (seg * 0.62, ww, max(0.6, w * 0.16)), p=2.0, rot=(0, -elev, yaw))
+        prev = p
+    return g
+
+
+def palm(gf, gf2, gt, x, y, h, lean=0.25, seed=0, z=0.0, fronds=7, r=1.0):
+    """A palm: a curved, ringed trunk leaning to one side and a crown of drooping fronds (each a long
+    tapered leaf arching out and down), with a few coconuts."""
+    rnd = random.Random(seed)
+    pts = []
+    for k in range(6):
+        t = k / 5
+        pts.append((x + lean * h * t * t, y, z + h * t))
+    for (ax, ay, az), (bx, by, bz) in zip(pts, pts[1:]):
+        gt.capsule((ax, ay, az), (bx, by, bz), 2.4 * r * (1.1 - 0.3 * (az - z) / h), 2.2 * r * (1.1 - 0.3 * (bz - z) / h))
+    top = pts[-1]
+    for k in range(fronds):
+        a = 2 * math.pi * k / fronds + rnd.uniform(-0.2, 0.2)
+        L = h * rnd.uniform(0.42, 0.55) * r
+        frond(gf if k % 2 else gf2, top, a, L, L * 0.13)
+    gc = gt
+    for k in range(3):
+        a = k * 2.1
+        gc.sphere((top[0] + math.cos(a) * 2.2 * r, top[1] - 1 + math.sin(a) * 1.4, top[2] - 2.6 * r), 1.6 * r, cuts=2)
+    return top

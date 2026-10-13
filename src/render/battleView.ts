@@ -504,17 +504,23 @@ export class BattleView {
   /**
    * A side's backdrop scene for its next age starts loading once that side's evolve is near (70% of the
    * XP it needs) or its Ascension starts (`force`), so the strips are in before the evolve wipe (review 1:
-   * they were requested only when the wipe began). An age a match never nears is never downloaded (B16).
-   * Duck-typed: a backdrop without `prefetchAge` loads at the wipe as before.
+   * they were requested only when the wipe began). The side's base skin model of that age (PLAN 2c) is
+   * asked for at the same moment, so the evolve assembles the model itself rather than the standard base
+   * with the model swapping in after. An age a match never nears is never downloaded (B16). Duck-typed: a
+   * backdrop without `prefetchAge` loads at the wipe as before, a provider without `prefetchBaseSkins`
+   * leaves the model to the base view's own request at the Ascension.
    */
   private prefetchNextScenes(force?: { side: Side; age: AgeId }): void {
     const bd = this.backdrop as BackdropView & { prefetchAge?: (side: Side, age: AgeId) => void };
-    if (typeof bd.prefetchAge !== 'function') return;
+    const art = this.art as ArtProvider & { prefetchBaseSkins?: (skins: Partial<Record<AgeId, string>>) => Promise<void> };
+    if (typeof bd.prefetchAge !== 'function' && typeof art.prefetchBaseSkins !== 'function') return;
     const ask = (side: Side, age: AgeId): void => {
       const key = `${side}.${age}`;
       if (this.scenesAsked.has(key)) return;
       this.scenesAsked.add(key);
       bd.prefetchAge?.(side, age);
+      const skin = baseSkinsOf(this.config.sides[side])[age];
+      if (skin && art.prefetchBaseSkins) void art.prefetchBaseSkins({ [age]: skin }).catch(() => undefined);
     };
     if (force) ask(force.side, force.age);
     for (const side of [0, 1] as const) {

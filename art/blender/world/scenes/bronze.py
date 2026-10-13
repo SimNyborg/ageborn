@@ -18,8 +18,8 @@ import random
 
 from ageborn_art.geometry import Geo
 
-from world.common import box, rock
-from world.scenes import kit
+from world.common import box, cyl, rock
+from world.scenes import fauna, kit
 from world.scenes.common import Prop, Scene, lt, mixc, ridge
 from world.scenes.kit import Parts
 
@@ -285,7 +285,262 @@ def props():
     return plist, sprites
 
 
+# -- Aegean Harbour (round 2; Rare, Time Capsule) ----------------------------------------------------
+# A white island town stacked on a limestone headland over a teal-grey sea, a lighthouse with a fire on
+# its islet, distant islands on a hazy horizon; in front a stone quay with moored galleys, nets, amphorae
+# and cypresses. The harbour sits above the lane (a raised quay), so its water shows over the mid bank.
+# Ambient: a galley sails across (`path`), moored galleys bob, the lighthouse fire flickers and smokes,
+# gulls circle the lighthouse; town windows, quay lanterns and the lighthouse glow under night skies.
+# Palette (PLAN 2b): whitewash #E8E2D4, sea teal #7FA3A6 (low saturation: the sea's hue sits in the
+# team-blue band), terracotta toned to #A88270, limestone #C8B89C, cypress #52704E.
+AH_PAL = dict(skyTop=0x84B2CE, skyBottom=0xEEF0E8, light=0xFFF6E2, far=0xA8A49A, mid=0x8E8C78, near=0x6E7458)
+AH = dict(
+    sea=0x7FA3A6, sea_far=0x8EAEAE, sea_hi=0xC4D6D2, harbour=0x739A9C, white=0xEDE7DA, white2=0xE2DACB, terracotta=0xA88270,
+    roof_dk=0x8E6A5C, lime=0xC8B89C, lime_dk=0xA8987E, rock=0xA49680, dark=0x5E5260, door=0x6A5868, cypress=0x52704E,
+    cypress_dk=0x45603F, trunk=0x7C6A58, quay=0xC2B498, quay_dk=0xA89A80, wood=0x7A6450, net=0x6E6A5E, amphora=0xA87C64,
+    olive=0x9AA77E, dome=0x8E9EA6, bronze=0xB8863B, rope=0xB8A47E,
+)
+AH_SKY = {"top": "#84B2CE", "bottom": "#EEF0E8", "horizon": "#F4F2EA", "cloudTint": "#F8F6F0", "celestial": "sun",
+          "sunAt": [300, -510, 40], "clouds": 0.8}
+AH_FAR_E = math.radians(8.0)
+AH_MID_E = math.radians(12.0)
+AH_SEA_Z = 58.0
+AH_LIGHT = (792.0, 300.0, 196.0)      # the lighthouse's fire basket (far)
+AH_SAIL_Y = -104.0                    # the sailing galley's waterline (far, screen lu)
+AH_MOORED = ((540.0, 150.0), (900.0, 156.0))
+
+
+def _scr(p, e):
+    x, y, z = p
+    return [round(x, 1), -round(z * math.cos(e) + y * math.sin(e), 1)]
+
+
+def ah_back(st, P):
+    """Distant islands peeking over the horizon (low under the moons' place, x 820-980)."""
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    pt = Parts()
+    gi = pt.g(hz(0x9C9C98, 0.3), outline=0.0)
+    for x, rx, h, seed in ((-140, 170, 84, 1), (140, 120, 60, 2), (560, 150, 70, 3), (1180, 200, 96, 4), (1430, 130, 64, 5), (900, 70, 30, 6)):
+        rock(gi, (x, 1500, AH_SEA_Z), (rx, 60, h), seed=seed, jag=0.08, p=2.2)
+    pt.flush(st)
+
+
+def _headland_z(x):
+    """Top of the town's headland (far) at x: a broad bump from the sea up to z 186."""
+    t = max(0.0, 1.0 - ((x - 450.0) / 260.0) ** 2)
+    return AH_SEA_Z + 128.0 * t ** 0.75
+
+
+def ah_far(st, P):
+    pt = Parts()
+    rnd = random.Random(17)
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    # 1. the sea to the horizon, with pale wave crests
+    box(pt.g(AH["sea"], finish="gloss", outline=0.0), (600, 760, AH_SEA_Z - 6), (1100, 580, 6), p=6, cuts=2)
+    gw = pt.g(AH["sea_hi"], outline=0.0, highlight=False)
+    for i in range(52):
+        x = rnd.uniform(-260, 1460)
+        y = rnd.uniform(200, 1100)
+        L = rnd.uniform(8, 20) * (1.0 - (y - 200) / 1800)
+        gw.capsule((x - L, y, AH_SEA_Z + 0.4), (x + L, y, AH_SEA_Z + 0.4), 0.9, 0.9)
+    # 2. the headland: limestone ledges stepping up from the sea, each a terrace for a row of houses
+    gl, gl2 = pt.g(AH["lime"], outline=0.4), pt.g(AH["lime_dk"], outline=0.4)
+    # each row: (centre x, half width, base z) - the houses of a row stand on its ledge
+    rows = [(430, 250, AH_SEA_Z + 26), (420, 214, AH_SEA_Z + 52), (446, 176, AH_SEA_Z + 78), (468, 132, AH_SEA_Z + 104),
+            (486, 88, AH_SEA_Z + 128)]
+    for L, (cx, half, zt) in enumerate(rows):
+        y = 334 + L * 14
+        n = max(2, int(half / 80))
+        for k in range(n):
+            x = cx - half + (k + 0.5) * 2 * half / n + rnd.uniform(-8, 8)
+            zb = AH_SEA_Z - 8 if L == 0 else rows[L - 1][2]
+            rock(gl if (k + L) % 2 else gl2, (x, y, (zb + zt) / 2), (half / n + 22, 34, (zt - zb) / 2 + 3), seed=20 + L * 10 + k, jag=0.08, p=3.4)
+    for k in range(8):
+        x = 200 + k * 66
+        rock(gl2, (x, 304, AH_SEA_Z + 3), (26, 18, 12), seed=40 + k, jag=0.25)
+    # 3. the town: whitewashed cubes crowding the terraces, a few terracotta roofs, bougainvillea on the walls
+    lights = []
+    for r, (cx, half, zt) in enumerate(rows):
+        y = 304 + r * 14
+        n = max(3, int(half * 2 / 31))
+        for i in range(n):
+            x = cx - half + 14 + (i + rnd.uniform(0.3, 0.7)) * (2 * half - 28) / n
+            w, h = rnd.uniform(26, 34), rnd.uniform(18, 25) + (8 if rnd.random() < 0.2 else 0)
+            roof = AH["terracotta"] if rnd.random() < 0.2 else None
+            p = kit.cube_house(pt, x, y, zt - 2, w, h, 16, yaw=rnd.uniform(-12, 12), wall=AH["white"] if (i + r) % 3 else AH["white2"],
+                               roof=roof, dark=AH["door"], windows=1, door=rnd.random() < 0.6, seed=r * 17 + i)
+            lights.append(p)
+    for p in lights[::3]:
+        st.light(p, 4)
+    # the chapel: a white drum with a pale grey-blue dome and a bell gable, on the top
+    cx, cz = 500, AH_SEA_Z + 150
+    gwh = pt.g(AH["white"], outline=0.5)
+    rock(gl, (cx, 392, cz - 16), (60, 30, 20), seed=29, jag=0.08, p=3.4)
+    box(gwh, (cx, 382, cz + 12), (22, 15, 13), p=7, cuts=2)
+    cyl(gwh, (cx + 4, 382, cz + 25), (cx + 4, 382, cz + 34), 13, bevel=0.6, segs=24)
+    pt.g(AH["dome"], finish="gloss", outline=0.5).lathe([(13.6 * math.cos(math.pi / 2 * k / 8), 13.6 * math.sin(math.pi / 2 * k / 8)) for k in range(9)],
+                                                        (cx + 4, 382, cz + 34), (cx + 4, 382, cz + 48), segs=24)
+    pt.g(AH["white"], outline=0.4).capsule((cx + 4, 382, cz + 48), (cx + 4, 382, cz + 54), 1.0)
+    box(gwh, (cx - 28, 376, cz + 24), (8, 5, 22), p=6, cuts=2)
+    box(pt.g(AH["dark"], outline=0.0, highlight=False), (cx - 28, 370.5, cz + 34), (3.4, 0.6, 5.2), p=4, cuts=1)
+    st.light((cx - 4, 366, cz + 10), 5)
+    # cypresses and olive scrub on the headland's flanks
+    gc, gt = pt.g(AH["cypress"], outline=0.4), pt.g(AH["trunk"], outline=0.0)
+    for x, z in ((176, AH_SEA_Z + 20), (192, AH_SEA_Z + 24), (686, AH_SEA_Z + 30), (702, AH_SEA_Z + 24), (586, AH_SEA_Z + 130), (402, AH_SEA_Z + 128)):
+        kit.cypress(gc, gt, x, 372, rnd.uniform(38, 50), 5.4, seed=int(x), z=z)
+    go = pt.g(AH["olive"], outline=0.3)
+    for i in range(14):
+        x = rnd.uniform(200, 700)
+        kit.round_bush(go, x, 352, rnd.uniform(4, 7), seed=60 + i, z=_headland_z(x) - 10)
+    # 4. the lighthouse on its islet: a tapered stone tower, a gallery, the fire basket
+    lx, ly, lz = AH_LIGHT
+    rock(gl2, (lx, ly + 8, AH_SEA_Z + 10), (56, 34, 26), seed=81, jag=0.2)
+    rock(gl, (lx - 34, ly, AH_SEA_Z + 4), (26, 20, 14), seed=82, jag=0.25)
+    gt2 = pt.g(AH["white2"], outline=0.5)
+    cyl(gt2, (lx, ly, AH_SEA_Z + 24), (lx, ly, lz - 18), 13, 9, bevel=1.0, segs=20)
+    for t in (0.35, 0.7):
+        z = AH_SEA_Z + 24 + (lz - 18 - AH_SEA_Z - 24) * t
+        cyl(pt.g(AH["lime_dk"], outline=0.0), (lx, ly, z), (lx, ly, z + 3), 13 - 4 * t + 0.5, bevel=0.3, segs=20)
+    cyl(pt.g(AH["lime"], outline=0.4), (lx, ly, lz - 18), (lx, ly, lz - 14), 13, bevel=0.6, segs=20)
+    gb = pt.g(AH["bronze"], finish="bronze", outline=0.5)
+    gb.lathe([(0.2, 0), (6.5, 0.6), (9.0, 6), (9.4, 8), (0.2, 8.2)], (lx, ly, lz - 14), (lx, ly, lz - 5.8), segs=16)
+    box(pt.g(AH["dark"], outline=0.0, highlight=False), (lx, ly - 11.5, AH_SEA_Z + 40), (2.4, 0.6, 4), p=4, cuts=1)
+    st.light((lx, ly, lz + 2), 12)
+    st.amb("emit", "fx.p.smoke", (lx, ly, lz + 14), rate=0.6, speed=9, scale=1.0, tint=0xE8E4DA, alpha=0.35, life=2800)
+    # 5. a second island on the right with a small temple and houses
+    gi = pt.g(hz(AH["rock"], 0.12), outline=0.3)
+    rock(gi, (1180, 420, AH_SEA_Z + 30), (190, 50, 78), seed=91, jag=0.1, p=2.2)
+    rock(gi, (1380, 440, AH_SEA_Z + 16), (110, 40, 50), seed=92, jag=0.12, p=2.2)
+    kit.temple(pt, 1170, 430, AH_SEA_Z + 98, 70, 30, 48, 4, yaw=8, stone=AH["white"], roof=AH["terracotta"], trim=AH["lime"], dark=AH["dark"])
+    for i, x in enumerate((1080, 1104, 1250, 1276, 1300)):
+        kit.cube_house(pt, x, 420, AH_SEA_Z + 64 + (i % 2) * 8, 18, 13, 12, yaw=rnd.uniform(-12, 12), wall=AH["white"], dark=AH["door"], seed=90 + i)
+    pt.flush(st)
+
+
+def ah_mid(st, P):
+    pt = Parts()
+    rnd = random.Random(29)
+    # the harbour water behind the quay
+    box(pt.g(AH["harbour"], finish="gloss", outline=0.0), (600, 200, 36), (920, 110, 3), p=6, cuts=2)
+    gw = pt.g(AH["sea_hi"], outline=0.0, highlight=False)
+    for i in range(20):
+        x = rnd.uniform(-240, 1440)
+        y = rnd.uniform(120, 290)
+        L = rnd.uniform(10, 22)
+        gw.capsule((x - L, y, 39.4), (x + L, y, 39.4), 1.0, 1.0)
+    # the quay: a paved stone mole along the bank, its harbour edge in big blocks
+    box(pt.g(AH["quay"], outline=0.0), (600, 70, 24), (930, 40, 24), p=6, cuts=2)
+    kit.dry_wall(pt.g(AH["quay_dk"], outline=0.4), -300, 1500, 108, 34, 14, seed=5, block=16)
+    # land at both ends: rocky banks with cypresses and olives
+    gl = pt.g(AH["lime_dk"], outline=0.3)
+    for x, rx in ((-200, 140), (1360, 160)):
+        rock(gl, (x, 120, 30), (rx, 70, 44), seed=int(x) % 97, jag=0.1, p=2.4)
+    gc, gc2, gt = pt.g(AH["cypress"], outline=0.5), pt.g(AH["cypress_dk"], outline=0.5), pt.g(AH["trunk"], outline=0.4)
+    for i, (x, h) in enumerate(((-230, 150), (-206, 122), (-150, 136), (-96, 112), (60, 128), (1250, 140), (1280, 112), (1350, 152),
+                                (1420, 124))):
+        kit.cypress(gc if i % 2 else gc2, gt, x, 90 + (i % 3) * 8, h, h * 0.12, seed=800 + i, z=44)
+    go, got = pt.g(AH["olive"], outline=0.5), pt.g(AH["trunk"], outline=0.4)
+    for i, x in enumerate((-60, 1180, 1440)):
+        kit.olive(go, got, x, 96, 2.0, seed=700 + i, z=44)
+    # bollards, amphorae, crates, coiled ropes along the quay
+    gbo = pt.g(AH["dark"], outline=0.4)
+    for x in range(-200, 1480, 120):
+        cyl(gbo, (x, 92, 46), (x, 92, 54), 3.2, 3.6, bevel=0.8, segs=12)
+    ga = pt.g(AH["amphora"], outline=0.5)
+    for (x, n) in ((150, 4), (720, 3), (1050, 4)):
+        for k in range(n):
+            ax = x + k * 9 + rnd.uniform(-1, 1)
+            ga.lathe([(0.2, 0), (2.4, 0.4), (4.8, 4.6), (5.0, 8), (2.6, 13.6), (1.7, 15.2), (2.4, 16.6), (0.2, 16.8)], (ax, 70, 46), (ax, 70, 62.8),
+                     segs=12)
+    gcr = pt.g(AH["wood"], outline=0.4)
+    for x, s in ((190, 1.0), (206, 0.8), (760, 1.0), (1000, 0.9)):
+        box(gcr, (x, 76, 46 + 7 * s), (7 * s, 7 * s, 7 * s), p=5, cuts=1)
+    gr = pt.g(AH["rope"], outline=0.3)
+    for x in (400, 980):
+        gr.lathe([(2.0, -1.6), (7.2, -1.6), (7.2, 1.6), (2.0, 1.6)], (x, 74, 47.6), (x, 74, 48.6), segs=16, squash=(1.0, 0.6))
+    # fishing nets drying on poles (x 300-380)
+    gp = pt.g(AH["wood"], outline=0.4)
+    for x in (300, 340, 380):
+        gp.capsule((x, 82, 44), (x, 82, 100), 1.4)
+    gn, gn2 = pt.g(AH["net"], outline=0.3), pt.g(0x8E8672, outline=0.0, highlight=False)
+    for x0, x1 in ((300, 340), (340, 380)):
+        pts = [(x0 + (x1 - x0) * t, 96 - 14 * math.sin(math.pi * t)) for t in (0, 0.25, 0.5, 0.75, 1)]
+        for (ax, az), (bx, bz) in zip(pts, pts[1:]):
+            gn.capsule((ax, 81, az), (bx, 81, bz), 1.0)
+        for k in range(5):
+            nx = x0 + (x1 - x0) * (k + 0.5) / 5
+            nz = 96 - 14 * math.sin(math.pi * (k + 0.5) / 5)
+            gn2.capsule((nx, 80.6, nz), (nx + 1.5, 80.6, 62), 0.5)
+    # two market stalls under striped awnings (x 660-740) and a bronze statue on a plinth (x 830)
+    gaw, gaw2 = pt.g(0xD8CCB0, outline=0.5), pt.g(0xA88270, outline=0.0)
+    for x in (670, 730):
+        for dx in (-22, 22):
+            gp.capsule((x + dx, 64, 46), (x + dx, 64, 82), 1.3)
+        box(gcr, (x, 66, 54), (20, 6, 7), p=5, cuts=1)
+        gaw.blob((x, 66, 86), (27, 12, 4.4), p=3.2, rot=(-14, 0, 0))
+        for k in range(3):
+            gaw2.blob((x - 16 + k * 16, 59.6, 85), (3.4, 0.6, 3.6), p=3.0, rot=(-14, 0, 0))
+        for k in range(3):
+            ga.lathe([(0.2, 0), (2.0, 0.4), (3.8, 3.6), (4.0, 6.4), (2.0, 10.8), (0.2, 11)], (x - 10 + k * 10, 60, 62), (x - 10 + k * 10, 60, 73),
+                     segs=10)
+    box(pt.g(AH["quay_dk"], outline=0.5), (830, 76, 58), (12, 10, 12), p=6, cuts=2)
+    gst = pt.g(AH["bronze"], finish="bronze", outline=0.5)
+    gst.capsule((826, 76, 70), (826, 76, 86), 3.0, 3.6)
+    gst.capsule((834, 76, 70), (834, 76, 86), 3.0, 3.6)
+    gst.blob((830, 76, 96), (7.6, 5, 11), p=2.4)
+    gst.sphere((830, 75, 112), 5.2)
+    gst.capsule((838, 76, 102), (850, 74, 124), 2.0, 1.6)
+    gst.lathe([(0.01, 0), (2.4, 0), (0.01, 10)], (851, 74, 125), (853, 74, 135), segs=8)
+    gst.capsule((822, 76, 102), (816, 74, 88), 2.0, 1.8)
+    gst.lathe([(0.01, 0), (10, 1), (10.4, 2.4), (0.01, 3)], (814, 70, 88), (813, 64, 89), segs=16)
+    # quay lanterns on posts (lit under night skies)
+    for x in (-40, 240, 620, 980, 1300):
+        gp.capsule((x, 66, 46), (x, 66, 104), 1.2)
+        box(pt.g(AH["bronze"], finish="bronze", outline=0.4), (x, 65, 108), (3.6, 3.6, 4.4), p=4, cuts=1)
+        st.light((x, 63, 108), 7)
+    pt.flush(st)
+
+
+def _fire(rig):
+    """The lighthouse fire: four licking shapes, one hidden joint per frame (glow, no outline)."""
+    for f, (h, lean) in enumerate([(1.0, 0.0), (1.18, 1.4), (0.92, -1.2), (1.1, 0.6)]):
+        j = rig.joint(f"f{f}", "all", (0, 0, 0), hidden=True)
+        rig.part(j, Geo().blob((0, 0, 7.4 * h), (6.4, 3.8, 8.4 * h), p=2.0, taper=(1.0, 0.18), shift=(lean * 0.12, 0)), glow="#FFC77E", outline=0)
+        rig.part(j, Geo().blob((0, -1.6, 6.0 * h), (3.8, 2.4, 5.8 * h), p=2.0, taper=(1.0, 0.22), shift=(lean * 0.1, 0)), glow="#FFE7B4", outline=0)
+        rig.part(j, Geo().blob((0.5 * lean, -2.8, 3.8), (2.0, 1.4, 3.2), p=2.0, taper=(1.0, 0.3)), glow="#FFF7E2", outline=0)
+
+
+def ah_props():
+    lx, ly, lz = AH_LIGHT
+    fire = _scr((lx, ly, lz - 6), AH_FAR_E)
+    gull = fauna.bird(body="#E8E4DA", wing="#D6D2C8", belly="#F2EFE8", beak="#C8A060", span=12, size=1.0)
+    ring = [[i * 2, round(lx + 70 * math.cos(math.pi * i / 3)), round(fire[1] - 40 + 14 * math.sin(math.pi * i / 3)), 1] for i in range(7)]
+    plist = [
+        Prop("fire", "far", _fire, [{f"f{f}": {"show": True}} for f in range(4)], (20, 26, 2), fire[1], outline=False),
+        Prop("galley", "far", fauna.galley(size=1.0, oar_frame=0), [{}], (110, 50, 8), AH_SAIL_Y),
+        Prop("galleyb", "far", fauna.galley(size=1.0, oar_frame=2), [{}], (110, 50, 8), AH_SAIL_Y),
+        Prop("moor", "mid", fauna.galley(size=1.6, sail_up=False, oars=False, hull="#6E5646", hull_dk="#5A4638"), [{}], (150, 76, 8), -62),
+        Prop("moorb", "mid", fauna.galley(size=1.4, sail_up=False, oars=False, hull="#7A6250", hull_dk="#624E40", sail="#D8CCB4"), [{}],
+             (136, 68, 8), -62),
+        Prop("gull", "far", gull, [fauna.bird_pose(f) for f in range(5)], (40, 24, 24), ring[0][2]),
+    ]
+    m0 = _scr((AH_MOORED[0][0], AH_MOORED[0][1], 38.0), AH_MID_E)
+    m1 = _scr((AH_MOORED[1][0], AH_MOORED[1][1], 38.0), AH_MID_E)
+    sprites = [
+        {"kind": "loop", "layer": "far", "frames": [f"fire_{i}" for i in range(4)], "fps": 9, "at": fire},
+        {"kind": "path", "layer": "far", "fps": 1.2, "periodS": 70, "keys": [[0, -340, AH_SAIL_Y, 1], [70, 1560, AH_SAIL_Y, 1]],
+         "group": [{"frames": ["galley_0", "galleyb_0"]}]},
+        {"kind": "bob", "layer": "mid", "frames": ["moor_0"], "fps": 1, "at": m0, "amp": [0.6, 1.2], "periodS": 4.6, "tilt": 1.4},
+        {"kind": "bob", "layer": "mid", "frames": ["moorb_0"], "fps": 1, "at": m1, "amp": [0.6, 1.0], "periodS": 5.4, "tilt": 1.2},
+        {"kind": "path", "layer": "far", "fps": 6, "periodS": 12, "keys": ring,
+         "group": [{"frames": ["gull_4", "gull_4", "gull_0", "gull_1", "gull_2", "gull_3"]}, {"frames": ["gull_4", "gull_0", "gull_1", "gull_2"], "dx": -22, "dy": 8, "phase": 2}]},
+    ]
+    return plist, sprites
+
+
 SCENES = {
     "classic": Scene("bronze", "classic", PAL, far, mid, back=back, sky=SKY, props=props,
                      hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.45}, ground="earth"),
+    "aegean_harbour": Scene("bronze", "aegean_harbour", AH_PAL, ah_far, ah_mid, back=ah_back, sky=AH_SKY, props=ah_props,
+                            hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.5}, ground="earth"),
 }

@@ -15,6 +15,9 @@ import type { AgeId } from '@/contracts/ids';
 import { backdropPreviewUrl } from '../cosmetics/backdropPreview';
 import { SCENE_ART, sceneFormat, sceneThumbPath } from './scenes';
 
+/** Whether a scene shows its age in space (the Customize weather preview turns snow into ice motes there). */
+export { isSpaceScene } from './scenes';
+
 /** What a scene picture is: a tile thumbnail, or a still with a sky applied. */
 export interface ScenePictureOptions {
   /** The small picture for a collection tile. */

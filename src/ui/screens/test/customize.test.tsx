@@ -4,6 +4,8 @@
  * their source and Dust crafting, and the Collection's completion strip.
  */
 import { afterEach, describe, expect, it } from 'vitest';
+import { content as realContent } from '@/content';
+import { fixtureSave } from '../fixtures/saves';
 import { text } from './dom';
 import { flush, mount, type Mounted } from './harness';
 
@@ -162,12 +164,50 @@ describe('Customize: collections (A18.9.4)', () => {
     expect(keep.querySelector('img')).not.toBeNull();
     // no tint multiplied over a picture any more (it recoloured the models)
     expect(m.qa('.cos-base__tint')).toHaveLength(0);
-    // a locked skin's info panel shows the same model, big (not the old flat drawing)
+    // a locked skin: the first tap tries it on in the preview (round 2), the second opens its info
+    // panel, which shows the same model, big (not the old flat drawing)
+    m.click('[data-testid="item-baseSkin.snowy_keep"] button');
+    expect(m.q('[data-testid="base-mock-keep"]')!.getAttribute('data-skin')).toBe('baseSkin.snowy_keep');
+    expect(m.q('[data-testid="trying-baseSkin.snowy_keep"]')).not.toBeNull();
+    expect(calls('equipCosmetic')).toEqual([]);
     m.click('[data-testid="item-baseSkin.snowy_keep"] button');
     await new Promise((r) => setTimeout(r, 0));
     flush();
     expect(m.q('[data-testid="info-baseSkin.snowy_keep"] .cos-base[data-skin="baseSkin.snowy_keep"]')).not.toBeNull();
     expect(asked).toContainEqual({ card: 'base.medieval', skin: 'snowy_keep' });
+  });
+
+  it('bases: Crystal Spire sits in the Future grid with the base skins, one skin per age across both systems (PLAN 2f interface 7)', () => {
+    m = mount({ state: 'maxed', routes: [{ id: 'home' }, { id: 'customize', tab: 'bases' }], portrait: () => Promise.resolve('data:image/png;base64,AA==') });
+    m.click('[data-testid="cust-age"] [data-testid="age-tab-future"]');
+    const grid = m.q('[data-testid="cust-base-skins"]')!;
+    expect(grid.querySelector('[data-testid="item-baseSkin.crystal_spire"]')).not.toBeNull();
+    expect(grid.querySelector('[data-testid="item-baseSkin.midnight_neon"]')).not.toBeNull();
+    // no second grid of skin cards any more (review 1: two card styles)
+    expect(m.qa('.col-skin')).toHaveLength(0);
+    // the maxed save flies Crystal Spire on Future: its card is the equipped one, and the preview shows it
+    expect(m.q('[data-testid="item-baseSkin.crystal_spire"]')!.getAttribute('class')).toContain('is-on');
+    expect(m.q('[data-testid="base-default"]')!.getAttribute('aria-pressed')).toBe('false');
+    expect(m.q('[data-testid="base-mock-keep"]')!.getAttribute('data-skin')).toBe('baseSkin.crystal_spire');
+    expect(text(m.q('[data-testid="stage-info-base"]')!)).toContain('Crystal Spire');
+    // a cosmetic skin of the same age takes its place (meta clears the troop skin)
+    m.click('[data-testid="item-baseSkin.midnight_neon"] button');
+    expect(calls('equipCosmetic')).toContainEqual({ slot: 'baseSkin', age: 'future', key: 'baseSkin.midnight_neon' });
+    // the standard base clears both
+    m.click('[data-testid="base-default"]');
+    expect(m.save.value.skins.equipped['base.future']).toBeUndefined();
+  });
+
+  it('bases: the whole set counts Crystal Spire; a new player sees it locked, tried on with one tap', () => {
+    m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'customize', tab: 'bases' }], portrait: () => Promise.resolve('data:image/png;base64,AA==') });
+    m.click('[data-testid="cust-age"] [data-testid="age-tab-future"]');
+    expect(text(m.q('[data-testid="found-baseSkin"]')!)).toMatch(/^\d+\/\d+ found$/);
+    const tile = '[data-testid="item-baseSkin.crystal_spire"]';
+    expect(m.q(tile)!.getAttribute('class')).toContain('is-locked');
+    expect(m.q(`${tile} button`)!.getAttribute('aria-label')).toContain('Reach Arena 8');
+    m.click(`${tile} button`);
+    expect(m.q('[data-testid="base-mock-keep"]')!.getAttribute('data-skin')).toBe('baseSkin.crystal_spire');
+    expect(m.save.value.skins.equipped['base.future']).toBeUndefined();
   });
 
   it('national flag tiles wait for the one flag atlas instead of asking every flag\'s picture (review 1)', () => {
@@ -210,14 +250,16 @@ describe('Customize: collections (A18.9.4)', () => {
     expect(m.router.current.value).toMatchObject({ id: 'customize', tab: 'flags' });
   });
 });
-describe('Customize: battle backdrops (A18.9.4 "Backdrops", owner request 2026-09-30)', () => {
-  it('shows the live preview, the count and every backdrop; an owned one equips with Undo', () => {
+describe('Customize: backdrops per age (owner item 20, PLAN 2b): a scene per age and one sky for all', () => {
+  it('shows the live preview, the scene of the age and the skies; an owned sky equips with Undo', () => {
     m = cust('backdrops');
     expect(m.q('[data-testid="backdrop-mock"]')).not.toBeNull();
-    // mid fixture: 3 of the backdrops owned, none equipped (the classic skies)
-    expect(text(m.q('[data-testid="found-backdrop"]')!)).toMatch(/^3\/\d+ found$/);
+    // the age's classic scene, by its own name, and the classic sky (the scene's own daylight)
+    expect(m.q('[data-testid="scene-classic"]')!.getAttribute('aria-pressed')).toBe('true');
     expect(m.q('[data-testid="backdrop-classic"]')!.getAttribute('aria-pressed')).toBe('true');
-    expect(text(m.q('[data-testid="backdrop-name"]')!)).toBe('Classic skies');
+    expect(text(m.q('[data-testid="backdrop-name"]')!)).toContain('Classic sky');
+    // mid fixture: 3 of the skies owned, none equipped
+    expect(text(m.q('[data-testid="found-backdrop"]')!)).toMatch(/^3\/\d+ found$/);
     m.click('[data-testid="item-backdrop.winterfall"] button');
     expect(calls('equipCosmetic')).toEqual([{ slot: 'backdrop', key: 'backdrop.winterfall' }]);
     expect(m.q('[data-testid="backdrop-look"]')!.getAttribute('data-skin')).toBe('backdrop.winterfall');
@@ -226,7 +268,15 @@ describe('Customize: battle backdrops (A18.9.4 "Backdrops", owner request 2026-0
     expect(calls('equipCosmetic')[1]).toEqual({ slot: 'backdrop', key: null });
   });
 
-  it('a locked backdrop can be tried on in the preview but never equipped, and says how it is earned', () => {
+  it('names the sections "Scene · <Age>" and "Sky · all ages"; the skies are the Skies collection', () => {
+    m = cust('backdrops');
+    const heads = m.qa('.cust-h').map((el) => text(el));
+    expect(heads.some((h) => /^Scene · .+ Age/.test(h))).toBe(true);
+    expect(heads).toContain('Sky · all ages');
+    expect(text(m.q('[data-testid="found-backdrop"]')!)).toMatch(/found$/);
+  });
+
+  it('a locked sky can be tried on in the preview but never equipped, and says how it is earned', () => {
     m = cust('backdrops');
     const tile = '[data-testid="item-backdrop.northern_lights"]';
     expect(m.q(tile)!.getAttribute('class')).toContain('is-locked');
@@ -235,14 +285,104 @@ describe('Customize: battle backdrops (A18.9.4 "Backdrops", owner request 2026-0
     expect(calls('equipCosmetic')).toEqual([]);
     expect(m.q('[data-testid="backdrop-look"]')!.getAttribute('data-skin')).toBe('backdrop.northern_lights');
     expect(text(m.q('[data-testid="backdrop-name"]')!)).toContain('Trying on');
+    expect(m.q('[data-testid="stage-info-sky"]')!.getAttribute('class')).toContain('is-trying');
+    // a second tap on the one tried on opens how it is earned (and the craft)
+    m.click(`${tile} button`);
+    expect(m.q('[data-testid="info-backdrop.northern_lights"]')).not.toBeNull();
     // the road one names its node
     expect(m.q('[data-testid="item-backdrop.eclipse"] button')!.getAttribute('aria-label')).toContain('Trophy Road at 3500 trophies');
   });
 
-  it('switches the age the preview shows', () => {
+  it('switches the age the preview and the scene list show', () => {
     m = cust('backdrops');
     m.click('[data-testid="cust-bd-age"] [data-testid="age-tab-cosmic"]');
     expect(m.q('[data-testid="backdrop-look"]')!.getAttribute('data-age')).toBe('cosmic');
+    expect(text(m.q('[data-testid="scene-classic"]')!)).toContain('Crystal Moon Base');
+  });
+
+  it('lists only released scenes of the age; an owned one equips for that age only, with Undo', () => {
+    const scenes = realContent.cosmetics.collections.items.filter((x) => x.collection === 'scene');
+    // a content variant where the Stone scenes are out, the first owned
+    const released = { ...realContent, cosmetics: { ...realContent.cosmetics, collections: { ...realContent.cosmetics.collections, items: realContent.cosmetics.collections.items.map((x) => (x.collection === 'scene' && x.age === 'stone' ? { ...x, released: true } : x)) } } };
+    const stone = scenes.filter((x) => x.age === 'stone');
+    const save = fixtureSave(released, 'mid');
+    save.cosmetics.owned = [...save.cosmetics.owned, `scene.${stone[0]!.id}`];
+    m = mount({ save, content: released, routes: [{ id: 'home' }, { id: 'customize', tab: 'backdrops' }] });
+    m.click('[data-testid="cust-bd-age"] [data-testid="age-tab-stone"]');
+    const grid = m.q('[data-testid="scene-grid"]')!;
+    for (const x of stone) expect(grid.querySelector(`[data-testid="item-scene.${x.id}"]`), x.id).not.toBeNull();
+    // other ages' scenes stay out of the Stone list (and unreleased ones everywhere)
+    expect(grid.querySelectorAll('[data-testid^="item-scene."]')).toHaveLength(stone.length);
+    m.click(`[data-testid="item-scene.${stone[0]!.id}"] button`);
+    expect(calls('equipCosmetic')).toEqual([{ slot: 'scene', age: 'stone', key: `scene.${stone[0]!.id}` }]);
+    expect(m.qa('[data-testid="toast"]')).toHaveLength(1);
+    // the locked one is tried on in the preview
+    m.click(`[data-testid="item-scene.${stone[1]!.id}"] button`);
+    expect(calls('equipCosmetic')).toHaveLength(1);
+    expect(m.q('[data-testid="backdrop-look"]')!.getAttribute('data-scene')).toBe(`scene.${stone[1]!.id}`);
   });
 });
 
+describe('Customize: the desktop column and the emotes (round 2)', () => {
+  it('shows what the preview shows in an info card (the column under the preview was empty)', () => {
+    m = cust('bases');
+    expect(m.q('[data-testid="stage-info"]')).not.toBeNull();
+    expect(text(m.q('[data-testid="stage-info-base"]')!)).toMatch(/Base skin · .+ Age/);
+  });
+
+  it('draws the starter emotes as your own General performing them, the same component as the HUD', () => {
+    m = cust('emotes');
+    for (const id of ['laugh', 'salute', 'cry', 'angry', 'thumbsUp', 'gg']) {
+      const head = m.q(`[data-testid="item-${id}"] .emo-v`);
+      expect(head, id).not.toBeNull();
+      expect(head!.getAttribute('data-emote')).toBe(id);
+    }
+    // the wheel too, and the stage under it plays the one you last picked
+    expect(m.q('[data-testid="emote-wheel"] [data-testid="wheel-laugh"] .emo-v')).not.toBeNull();
+    m.click('[data-testid="item-cry"]');
+    expect(m.q('[data-testid="emote-stage"] .emo-v')!.getAttribute('data-emote')).toBe('cry');
+  });
+});
+
+describe('Customize: NEW until seen (save v15 `cosmetics.fresh`)', () => {
+  const withFresh = (...keys: string[]) => {
+    const s = fixtureSave(realContent, 'mid');
+    return { ...s, cosmetics: { ...s.cosmetics, fresh: keys } };
+  };
+  const open = (tab: string, ...keys: string[]) => mount({ save: withFresh(...keys), routes: [{ id: 'home' }, { id: 'customize', tab: tab as 'flags' }] });
+
+  it('a tab holding NEW items wears a dot; opening it marks them seen, and the cards keep their pip for this visit', () => {
+    m = open('troops', 'emote.clap', 'baseSkin.rose_keep');
+    expect(m.q('[data-testid="tab-new-emotes"]')).not.toBeNull();
+    expect(m.q('[data-testid="tab-new-bases"]')).not.toBeNull();
+    expect(m.q('[data-testid="tab-new-flags"]')).toBeNull();
+    expect(calls('markCosmeticsSeen')).toEqual([]);
+    m.click('[data-testid="tab-emotes"]');
+    expect(calls('markCosmeticsSeen')).toEqual([['emote.clap']]);
+    expect(m.save.value.cosmetics.fresh).toEqual(['baseSkin.rose_keep']);
+    expect(m.q('[data-testid="tab-new-emotes"]')).toBeNull();
+    expect(m.q('[data-testid="new-emote.clap"]')).not.toBeNull();
+    expect(m.q('[data-testid="new-emote.heart"]')).toBeNull();
+    // away and back: still NEW for this visit, and nothing more to mark
+    m.click('[data-testid="tab-flags"]');
+    m.click('[data-testid="tab-emotes"]');
+    expect(m.q('[data-testid="new-emote.clap"]')).not.toBeNull();
+    expect(calls('markCosmeticsSeen')).toHaveLength(1);
+    expect(m.q('[data-testid="tab-new-bases"]')).not.toBeNull();
+  });
+
+  it('a NEW base skin opens the Bases tab on its age', () => {
+    m = open('bases', 'baseSkin.rose_keep');
+    expect(m.q('[data-testid="base-stage"]')!.getAttribute('data-age')).toBe('medieval');
+    expect(m.q('[data-testid="new-baseSkin.rose_keep"]')).not.toBeNull();
+    expect(calls('markCosmeticsSeen')).toEqual([['baseSkin.rose_keep']]);
+  });
+
+  it('a key the save does not own or the content does not know lights no dot and is never marked', () => {
+    m = open('troops', 'emote.wow', 'emote.not_in_any_content');
+    expect(m.q('[data-testid="tab-new-emotes"]')).toBeNull();
+    m.click('[data-testid="tab-emotes"]');
+    expect(calls('markCosmeticsSeen')).toEqual([]);
+    expect(m.q('[data-testid="new-emote.wow"]')).toBeNull();
+  });
+});

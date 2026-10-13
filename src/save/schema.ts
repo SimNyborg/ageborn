@@ -206,7 +206,8 @@ export const SaveDocSchema = v.pipe(
     // Fort cards owned (A16.14.6, save v11)
     fortsOwned: v.array(id),
     skins: v.object({ owned: v.array(id), equipped: v.record(v.string(), id) }),
-    cosmetics: v.object({ owned: v.array(v.string()), equipped: CosmeticLoadoutSchema }),
+    // `fresh` (save v15): collection items not yet seen in Customize (the NEW pip)
+    cosmetics: v.object({ owned: v.array(v.string()), equipped: CosmeticLoadoutSchema, fresh: v.optional(v.array(v.string())) }),
     warPlans: v.pipe(v.array(WarPlanSchema), v.minLength(1)),
     activePlan: count,
     capsules: v.object({

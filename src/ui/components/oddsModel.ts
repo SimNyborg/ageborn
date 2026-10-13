@@ -9,7 +9,7 @@
  * empty bag means the next Win Capsule starts a fresh bag.
  */
 import { capsuleTierFor, usesAllAgesTable } from '@/content/capsuleTiers';
-import type { CapsuleTables, CosmeticCollections, Rarities } from '@/content/types';
+import type { CapsuleTables, CosmeticCollection, CosmeticCollections, Rarities } from '@/content/types';
 import type { CapsuleTier, Foil, Rarity, SaveDoc, SkinRarity } from '@/contracts';
 import { legendaryBagTiers, tierCrests } from './capsuleLook';
 
@@ -53,6 +53,21 @@ export interface TierContentsRow {
   /** Holds one item of this tier's own collection (the Aeon Collection) while the set is incomplete. */
   exclusiveItems: boolean;
 }
+
+/**
+ * One collection's share of a drop pool (PLAN 2a "odds per collection"): how many items of each rarity
+ * it puts in the pool, and how many of those the save owns. The roll picks the rarity first, then one
+ * item of that rarity the save does not own yet, each equally likely, so these counts are the odds.
+ */
+export interface PoolCollectionRow {
+  collection: CosmeticCollection;
+  items: Record<Rarity, number>;
+  owned: number;
+  total: number;
+}
+
+/** The order of the per-collection lines; national flags are bought with Dust and never in a pool. */
+export const POOL_COLLECTIONS: readonly CosmeticCollection[] = ['emote', 'quote', 'baseFlag', 'decoration', 'backdrop', 'scene', 'baseSkin', 'avatar'];
 
 /** A tier's own cosmetic set (A6.4 step 8, A18.9.4): progress and the crafting path. */
 export interface ExclusiveSetRow {
@@ -107,6 +122,9 @@ export interface OddsModel {
      * wearables (they follow the same rarity odds) and how many of all wearables the save owns.
      */
     wardrobe: { capsuleItems: number; crateItems: number; owned: number; total: number };
+    /** Each pool's items per collection and rarity (released items only; collections with none are left out). */
+    capsuleCollections: PoolCollectionRow[];
+    crateCollections: PoolCollectionRow[];
   };
 }
 
@@ -194,6 +212,12 @@ export function oddsModel(
   const nextLegendary = pity.sinceLegendary + ahead + 1;
   const pool = (kind: 'capsule' | 'crate', odds: Record<Rarity, number>) =>
     rarities.order.filter((rarity) => odds[rarity] > 0).map((rarity) => ({ rarity, bp: odds[rarity], items: released.filter((x) => x.source.kind === kind && x.rarity === rarity).length }));
+  const byCollection = (kind: 'capsule' | 'crate'): PoolCollectionRow[] =>
+    POOL_COLLECTIONS.map((collection) => {
+      const items = released.filter((x) => x.source.kind === kind && x.collection === collection);
+      const count = Object.fromEntries(rarities.order.map((r) => [r, items.filter((x) => x.rarity === r).length])) as Record<Rarity, number>;
+      return { collection, items: count, owned: items.filter((x) => owned.has(`${x.collection}.${x.id}`)).length, total: items.length };
+    }).filter((r) => r.total > 0);
   return {
     ...(collections
       ? {
@@ -207,6 +231,8 @@ export function oddsModel(
               owned: released.filter((x) => x.collection === 'avatar' && owned.has(`avatar.${x.id}`)).length,
               total: released.filter((x) => x.collection === 'avatar').length,
             },
+            capsuleCollections: byCollection('capsule'),
+            crateCollections: byCollection('crate'),
           },
         }
       : {}),

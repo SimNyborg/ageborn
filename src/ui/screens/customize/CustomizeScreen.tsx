@@ -4,8 +4,9 @@
  *
  * - Troops: every unit and turret skin (owned ones equip at once; locked ones show their rarity and
  *   the Dust price when craftable), the same tiles as the Collection's Skins tab.
- * - Bases: the base skins per age (the collection's restyles and the A5.8 base skins).
- * - Backdrops: one battle background skin for your half of the lane in every age (live preview).
+ * - Bases: the base skins per age in one grid (the collection's models and the A5.8 troop-system base
+ *   skin, Crystal Spire), with the live diorama and a Damage toggle.
+ * - Backdrops: the scene of each age and one sky for every age (PLAN 2b), with the live diorama.
  * - Flags: the base flag and the national flag (only ever the player's own pick).
  * - Decorations: three fixed spots on the base.
  * - Emotes and Quotes: the battle wheel (fixed lines only; no text chat).
@@ -13,11 +14,12 @@
  *   picture tiles ("Banner & title" moved here).
  *
  * Base tabs show a live mock-up of the base; every collection shows "12/40 found". Everything shown
- * exists in the content; nothing here can be bought (A15 red lines).
+ * exists in the content; nothing here can be bought (A15 red lines). Items that arrived from a capsule,
+ * a crate or a reward wear a NEW pip until seen, and their tab a dot (save v15, `fresh.ts`).
  */
 import './customize.css';
 import type { SkinDef } from '@/contracts';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { Pill } from '../../components/Chips';
 import { BrushIcon, CastleIcon } from '../../components/icons';
 import { ScreenFrame } from '../../components/Layout';
@@ -28,6 +30,7 @@ import { useUi } from '../context';
 import { ALL_COLLECTIONS, progressOf } from '../model/cosmetics';
 import { GeneralPanel } from './GeneralPanel';
 import { BackdropsPanel, BasesPanel, DecorationsPanel, EmotesPanel, FlagsPanel, QuotesPanel } from './CollectionPanels';
+import { FreshContext, freshKeys, TAB_COLLECTIONS } from './fresh';
 import { BackdropTabIcon, FlagsTabIcon, QuoteTabIcon, SlotIcon, SmileTabIcon, StatueTabIcon } from './icons';
 
 const isBaseSkin = (k: SkinDef): boolean => k.target.startsWith('base.');
@@ -57,27 +60,34 @@ function SkinGrid(p: { skins: SkinDef[]; testid: string }) {
 }
 
 export function CustomizeScreen(p: { route: RouteOf<'customize'> }) {
-  const { save, content, t, router } = useUi();
+  const { save, content, t, router, services } = useUi();
   const s = save.value;
   // "Banner & title" moved into General (owner request 2026-10-07); the old tab id opens General.
   const [tab, setTab] = useState<CustomizeTab>(p.route.tab === 'look' ? 'general' : (p.route.tab ?? 'general'));
+  // NEW until seen (save v15): the cards keep this visit's pips, and opening a tab marks its items seen
+  const [fresh] = useState<ReadonlySet<string>>(() => new Set(s.cosmetics.fresh ?? []));
+  useEffect(() => {
+    const keys = freshKeys(save.peek(), content, TAB_COLLECTIONS[tab] ?? []);
+    if (keys.length > 0) services.markCosmeticsSeen(keys);
+  }, [tab]);
+  const dot = (v: CustomizeTab) =>
+    freshKeys(s, content, TAB_COLLECTIONS[v] ?? []).length > 0 ? <i class="cust-newdot" role="img" aria-label={t('cosmetic.ui.newItems')} data-testid={`tab-new-${v}`} /> : undefined;
   const all = content.order.skins.map((id) => content.skins[id]!);
   const troops = all.filter((k) => !isBaseSkin(k));
-  const bases = all.filter(isBaseSkin);
   // "N/M found" over every skin and every cosmetic collection
   const skinsOwned = all.filter((k) => s.skins.owned.includes(k.id)).length;
   const cos = ALL_COLLECTIONS.map((c) => progressOf(s, content, c));
   const owned = skinsOwned + cos.reduce((n, g) => n + g.owned, 0);
   const total = all.length + cos.reduce((n, g) => n + g.total, 0);
   const tabs = [
-    { value: 'general', label: t('avatar.ui.general'), icon: <SlotIcon slot="face" size={20} />, testid: 'tab-general' },
+    { value: 'general', label: t('avatar.ui.general'), icon: <SlotIcon slot="face" size={20} />, testid: 'tab-general', badge: dot('general') },
     { value: 'troops', label: t('ui.customize.troops'), icon: <BrushIcon size={20} />, testid: 'tab-troops' },
-    { value: 'bases', label: t('ui.customize.bases'), icon: <CastleIcon size={20} />, testid: 'tab-bases' },
-    { value: 'backdrops', label: t('cosmetic.ui.tab.backdrops'), icon: <BackdropTabIcon size={20} />, testid: 'tab-backdrops' },
-    { value: 'flags', label: t('cosmetic.ui.tab.flags'), icon: <FlagsTabIcon size={20} />, testid: 'tab-flags' },
-    { value: 'decorations', label: t('cosmetic.ui.tab.decorations'), icon: <StatueTabIcon size={20} />, testid: 'tab-decorations' },
-    { value: 'emotes', label: t('ui.customize.emotes'), icon: <SmileTabIcon size={20} />, testid: 'tab-emotes' },
-    { value: 'quotes', label: t('cosmetic.ui.tab.quotes'), icon: <QuoteTabIcon size={20} />, testid: 'tab-quotes' },
+    { value: 'bases', label: t('ui.customize.bases'), icon: <CastleIcon size={20} />, testid: 'tab-bases', badge: dot('bases') },
+    { value: 'backdrops', label: t('cosmetic.ui.tab.backdrops'), icon: <BackdropTabIcon size={20} />, testid: 'tab-backdrops', badge: dot('backdrops') },
+    { value: 'flags', label: t('cosmetic.ui.tab.flags'), icon: <FlagsTabIcon size={20} />, testid: 'tab-flags', badge: dot('flags') },
+    { value: 'decorations', label: t('cosmetic.ui.tab.decorations'), icon: <StatueTabIcon size={20} />, testid: 'tab-decorations', badge: dot('decorations') },
+    { value: 'emotes', label: t('ui.customize.emotes'), icon: <SmileTabIcon size={20} />, testid: 'tab-emotes', badge: dot('emotes') },
+    { value: 'quotes', label: t('cosmetic.ui.tab.quotes'), icon: <QuoteTabIcon size={20} />, testid: 'tab-quotes', badge: dot('quotes') },
   ] as const;
   return (
     <ScreenFrame
@@ -93,30 +103,28 @@ export function CustomizeScreen(p: { route: RouteOf<'customize'> }) {
       <div class="col cust">
         {/* Every tab keeps its label (U9: icon plus label). */}
         <Tabs label={t('ui.nav.customize')} value={tab} onChange={setTab} variant="folder" idPrefix="cust" items={tabs} />
-        <div class={`col-panel cust-panel cust-panel--${tab}`} role="tabpanel" id="cust-panel" aria-labelledby={`cust-tab-${tab}`} key={tab}>
-          {tab === 'general' || tab === 'look' ? (
-            <GeneralPanel {...(p.route.tab === 'look' ? { initialTab: 'banner' as const } : {})} />
-          ) : tab === 'troops' ? (
-            <SkinGrid skins={troops} testid="cust-troops" />
-          ) : tab === 'bases' ? (
-            <BasesPanel
-              extra={(age) => {
-                const list = bases.filter((k) => k.target === `base.${age}`);
-                return list.length > 0 ? <SkinGrid skins={list} testid="cust-base-skins" /> : null;
-              }}
-            />
-          ) : tab === 'backdrops' ? (
-            <BackdropsPanel />
-          ) : tab === 'flags' ? (
-            <FlagsPanel />
-          ) : tab === 'decorations' ? (
-            <DecorationsPanel />
-          ) : tab === 'emotes' ? (
-            <EmotesPanel />
-          ) : (
-            <QuotesPanel />
-          )}
-        </div>
+        <FreshContext.Provider value={fresh}>
+          <div class={`col-panel cust-panel cust-panel--${tab}`} role="tabpanel" id="cust-panel" aria-labelledby={`cust-tab-${tab}`} key={tab}>
+            {tab === 'general' || tab === 'look' ? (
+              <GeneralPanel {...(p.route.tab === 'look' ? { initialTab: 'banner' as const } : {})} />
+            ) : tab === 'troops' ? (
+              <SkinGrid skins={troops} testid="cust-troops" />
+            ) : tab === 'bases' ? (
+              // the troop-system base skin (Crystal Spire) sits in the same grid (PLAN 2f interface 7)
+              <BasesPanel />
+            ) : tab === 'backdrops' ? (
+              <BackdropsPanel />
+            ) : tab === 'flags' ? (
+              <FlagsPanel />
+            ) : tab === 'decorations' ? (
+              <DecorationsPanel />
+            ) : tab === 'emotes' ? (
+              <EmotesPanel />
+            ) : (
+              <QuotesPanel />
+            )}
+          </div>
+        </FreshContext.Provider>
       </div>
     </ScreenFrame>
   );

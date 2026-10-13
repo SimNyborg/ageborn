@@ -304,3 +304,98 @@ def lantern(rig, joint, x, y, z, iron="#4A4E56", glow_hex="#FFD08A", core="#FFF0
     rig.part(joint, g, glow=glow_hex, outline=0)
     g = Geo().blob((x, y - 1.6, z + 0.2), (1.0, 1.0, 1.8), p=2.0)
     rig.part(joint, g, glow=core, outline=0)
+
+
+# -- ice, snow and crystal (round 2: Frost Cave, Snowbound Keep, Crystal Spire) -------------------
+def icicles(g, x0, x1, y, z, length=(6.0, 14.0), r=(1.4, 2.4), every=4.2, seed=0, skip=None):
+    """A row of icicles hanging from a ledge edge: tapered cones pointing down from (x, y, z) along
+    x0..x1 (lengths and radii vary; a long one now and then). `skip(x)` -> True leaves a gap."""
+    rnd = random.Random(seed)
+    x = x0 + rnd.uniform(0, every * 0.5)
+    while x < x1:
+        if not (skip and skip(x)):
+            L = rnd.uniform(*length) * (1.6 if rnd.random() < 0.18 else 1.0)
+            rr = rnd.uniform(*r)
+            g.lathe([(0.0, 0.0), (rr, 0.0), (rr * 0.82, -L * 0.22), (rr * 0.45, -L * 0.6), (0.0, -L)], (x, y, z + 0.6), segs=8)
+        x += every * rnd.uniform(0.7, 1.3)
+    return g
+
+
+def icicles_at(g, pts, length=(6.0, 14.0), r=(1.4, 2.4), seed=0):
+    """Icicles at given points [(x, y, z)] (curved ledges, rims)."""
+    rnd = random.Random(seed)
+    for x, y, z in pts:
+        L = rnd.uniform(*length) * (1.5 if rnd.random() < 0.2 else 1.0)
+        rr = rnd.uniform(*r)
+        g.lathe([(0.0, 0.0), (rr, 0.0), (rr * 0.82, -L * 0.22), (rr * 0.45, -L * 0.6), (0.0, -L)], (x, y, z + 0.6), segs=8)
+    return g
+
+
+def crystal_prism(g, base, tip, r, facets=6, tip_len=0.32, twist=0.0):
+    """A faceted crystal: a hexagonal (or `facets`-sided) prism from `base` toward `tip` that narrows a
+    little and ends in a pointed cap (the last `tip_len` of its length)."""
+    L = math.dist(base, tip)
+    prof = [(0.0, -1.0), (r * 0.82, -1.0), (r, 0.0), (r * 0.92, L * (1.0 - tip_len)), (0.0, L)]
+    g.lathe(prof, base, tip, segs=facets, rot=(0, 0, twist))
+    return g
+
+
+def crystal_cluster(g, gl, base, dirs, seed=0, scale=1.0):
+    """A cluster of crystals growing from `base`: `dirs` = [(azimuth deg on screen: 0 toward the lane, 90 up;
+    tilt toward (+) or away from (-) the camera deg; length; radius)]. The big faces go into `g`, a narrow
+    lighter facet strip on each (the cut face catching the light) into `gl`."""
+    rnd = random.Random(seed)
+    x, y, z = base
+    for az, tilt, L, r in dirs:
+        L *= scale
+        r *= scale
+        a = math.radians(az)
+        t = math.radians(tilt)
+        d = (math.cos(a) * math.cos(t), -math.sin(t), math.sin(a) * math.cos(t))
+        b = (x + rnd.uniform(-1.5, 1.5), y + rnd.uniform(-1.5, 1.5), z)
+        tip = (b[0] + d[0] * L, b[1] + d[1] * L, b[2] + d[2] * L)
+        tw = rnd.uniform(0, 60)
+        crystal_prism(g, b, tip, r, twist=tw)
+        # the light facet: a thin sliver along the camera-facing edge, a little proud of the prism
+        m0 = (b[0] + d[0] * L * 0.08, b[1] + d[1] * L * 0.08 - r * 0.78, b[2] + d[2] * L * 0.08)
+        m1 = (b[0] + d[0] * L * 0.62, b[1] + d[1] * L * 0.62 - r * 0.66, b[2] + d[2] * L * 0.62)
+        gl.capsule(m0, m1, r * 0.2, r * 0.12, segs=6, rings=1)
+    return g
+
+
+def snow_pillow(g, c, radii, seed=0, droop=0.0):
+    """A soft snow cushion (flat-bottomed lumpy dome) sitting at c (its base at c's z): for ledges, merlons,
+    roofs. `droop` lets one edge hang over (lu)."""
+    rnd = random.Random(seed)
+    rx, ry, rz = radii
+    g.blob((c[0], c[1], c[2]), (rx, ry, rz), p=2.3, cuts=5, taper=(1.0, 0.86))
+    g.clip((0, 0, c[2] - 0.2), (0, 0, -1))
+    for k in range(int(rx // 6) + 1):
+        px = c[0] + rnd.uniform(-rx * 0.6, rx * 0.6)
+        g.blob((px, c[1] - ry * 0.55, c[2] + rz * 0.15), (rnd.uniform(3.0, 5.5), 3.4, rnd.uniform(2.0, 3.4)), p=2.2, cuts=3)
+    if droop > 0:
+        g.blob((c[0] + rx * 0.2, c[1] - ry * 0.9, c[2] - droop * 0.4), (rx * 0.5, 2.8, droop * 0.6), p=2.2, cuts=3,
+               taper=(0.6, 1.0))
+    return g
+
+
+class Scaled:
+    """A rig stand-in that scales the geometry of every part about a pivot (character space) before it is
+    added: lets a prop authored at one size (a lion statue) be placed bigger or smaller."""
+
+    def __init__(self, rig, pivot, k):
+        self._rig = rig
+        self._pivot = pivot
+        self._k = k
+
+    def part(self, joint, geo, *a, **kw):
+        if self._k != 1.0:
+            px, py, pz = self._pivot
+            for v in geo.bm.verts:
+                v.co.x = px + (v.co.x - px) * self._k
+                v.co.y = py + (v.co.y - py) * self._k
+                v.co.z = pz + (v.co.z - pz) * self._k
+        return self._rig.part(joint, geo, *a, **kw)
+
+    def __getattr__(self, name):
+        return getattr(self._rig, name)

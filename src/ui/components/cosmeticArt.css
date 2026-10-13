@@ -141,9 +141,58 @@ img.cos-bd__img {
       0 0;
   }
 }
+/* A scene's thumbnail (SceneThumb): a static picture; a shimmer until it has loaded. */
+.cos-scene.is-pending::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 70%) -150% 0 / 200% 100% no-repeat;
+  animation: cos-bd-shimmer 1.1s linear infinite;
+}
+.cos-scene.is-pending img.cos-bd__img {
+  opacity: 0;
+}
+/* A base skin's tile (BaseThumb): Track B's thumbnail, or the model on a strip of its age's classic
+   scene, the same composition. */
+.cos-btile {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  isolation: isolate;
+}
+.cos-btile__thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 100%;
+  pointer-events: none;
+  user-select: none;
+}
+.cos-btile__scene {
+  position: absolute;
+  inset: 0;
+}
+.cos-btile__scene .cos-bd__img {
+  object-position: 30% 100%;
+}
+.cos-btile__base {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 4%;
+  top: 6%;
+  filter: drop-shadow(0 2px 0 rgba(27, 19, 48, 0.3));
+}
+.cos-btile__base .cos-base__img {
+  object-position: 50% 100%;
+}
 @media (prefers-reduced-motion: reduce) {
   img.cos-bd__img,
   .cos-bd.is-pending .cos-bd__img--empty,
+  .cos-scene.is-pending::after,
   .cos-base__img:first-child,
   .cos-base.is-pending::after {
     animation: none;

@@ -23,7 +23,7 @@ import { BACK_FRAME, drawnScene, parseScene, sceneDir, type SceneData, type Scen
 import { sceneImage, sceneJson } from '../backdrops/sceneFiles';
 import { FAR_FRAME, paintFar } from '../backdrops/silhouettes';
 import { paintSceneSky, paintSky, SKY_FRAME, type LayerFrame } from '../backdrops/sky';
-import { backdropId, BACKDROP_THEMES, themeForScene, themeLayer, themeSky, type BackdropTheme } from '../backdrops/themes';
+import { backdropId, BACKDROP_THEMES, spaceWeather, themeForScene, themeLayer, themeSky, type BackdropTheme } from '../backdrops/themes';
 import { toCss } from '../palette';
 
 /** The crop of the lane a preview shows (world lu): your base's side of the lane, sky to ground. */
@@ -384,10 +384,16 @@ function particle(th: BackdropTheme, i: number, rnd: () => number, animate: bool
 /** How many particles the preview draws per weather kind (about the lane's density at preview size). */
 const COUNT: Record<BackdropTheme['weather'], number> = { none: 0, snow: 46, rain: 60, petals: 20, leaves: 18, embers: 22, lanterns: 12, fireflies: 14, motes: 16, sparkles: 14 };
 
-/** The theme's weather over a preview (transparent SVG), or null for the classic sky. */
-export function backdropWeatherSvg(key: string | null, animate: boolean): string | null {
+/**
+ * The theme's weather over a preview (transparent SVG), or null for the classic sky. `space` (a scene in
+ * space, `backdrops/scenes.ts` `isSpaceScene`) turns it into the lane's space weather (PLAN 2b hint
+ * `weather: 'space'`): snow becomes ice motes, rain rare meteor streaks without lightning, petals and
+ * leaves sparkles, so the preview never snows over space.
+ */
+export function backdropWeatherSvg(key: string | null, animate: boolean, o: { space?: boolean } = {}): string | null {
   const id = backdropId(key);
-  const th = id ? BACKDROP_THEMES[id] : undefined;
+  const base = id ? BACKDROP_THEMES[id] : undefined;
+  const th = base && o.space ? spaceWeather(base) : base;
   if (!th || !id || th.weather === 'none') return null;
   const rng = mulberry32(id.length * 7919 + id.charCodeAt(0));
   const rnd = () => rng.next();

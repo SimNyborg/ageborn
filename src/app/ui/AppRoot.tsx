@@ -2,13 +2,12 @@
 import type { ComponentChildren } from 'preact';
 import { useEffect, useErrorBoundary, useMemo } from 'preact/hooks';
 import { asContent } from '@/content';
+import { FoundItemsContext } from '@/capsule/summary';
 import { CosmeticArtContext, CosmeticPicturesContext } from '@/ui/components/cosmeticArt';
 import { dioramaMount, showcaseMount } from '@/render';
 import { DioramaContext } from '@/ui/components/diorama';
 import { ShowcaseContext } from '@/ui/components/showcase';
-import { cosmeticImageUrl, onCosmeticPicturesChanged, parseCosmeticKey } from '@/visuals/cosmetics/art';
-import { cosmeticCollectionKey, cosmeticNameKey } from '@/content/keys';
-import { foundCosmetics } from '../capsules/capsuleFlow';
+import { cosmeticImageUrl, onCosmeticPicturesChanged } from '@/visuals/cosmetics/art';
 import { CapsuleHost } from '../capsules/CapsuleHost';
 import { CapsuleShows } from '../capsules/capsuleFlow';
 import { createMetaUi, warmMatchArt, type MetaUi } from '../metaUi';
@@ -21,6 +20,7 @@ import { isMetaRules } from '../uiServices';
 import { AgeDialog } from './AgeDialog';
 import { BattleScreen } from './BattleScreen';
 import { FirstUpgrade } from './FirstUpgrade';
+import { foundItemsEnv } from './foundItems';
 import { AppUiContext, type AppUi } from './context';
 import { MetaHost } from './MetaHost';
 import { ResultScreen } from './ResultScreen';
@@ -120,12 +120,7 @@ function Screen(p: { ui: AppUi; meta: MetaUi | null; shows: CapsuleShows | null 
             if (path !== null && choice.home) goHome();
             if (rec.kind === 'capsules' && rec.onboarding) ui.controller.finishCapsuleStep();
             else ui.services.audio.music.setCue('music.menu', { fadeMs: 600 });
-            // A18.9.4: the collection items the capsules or crate held (the show reveals cards and skins)
-            for (const key of foundCosmetics(rec)) {
-              const k = parseCosmeticKey(key);
-              if (!k) continue;
-              p.meta?.toasts.show(ui.t('cosmetic.ui.alsoFound', { name: ui.t(cosmeticNameKey(k.collection, k.id)), collection: ui.t(cosmeticCollectionKey(k.collection)) }), { tone: 'gold', ms: 4200 });
-            }
+            // A18.9.4: the collection items the capsules or crate held were picture tiles in the summary
           }}
         />
       </ShowGuard>
@@ -217,6 +212,18 @@ export function AppRoot(p: { ui: AppUi }) {
   const showcase = useMemo(() => showcaseMount(p.ui.art, { content: p.ui.services.content }), [p.ui.art, p.ui.services.content]);
   // The Customize diorama (PLAN 2a): render's mount once Track B builds it; null keeps the stills.
   const diorama = useMemo(() => dioramaMount(p.ui.art, { content: p.ui.services.content }), [p.ui.art, p.ui.services.content]);
+  // The capsule and crate summary's found collection items, as picture tiles (PLAN 2a)
+  const found = useMemo(
+    () =>
+      foundItemsEnv({
+        content: asContent(p.ui.services.content),
+        t: p.ui.t,
+        save: () => p.ui.controller.save.peek(),
+        art: p.ui.art,
+        sound: (id) => p.ui.services.audio.play(id),
+      }),
+    [p.ui],
+  );
   return (
     <AppUiContext.Provider value={p.ui}>
       {/* A18.9.4: the code-drawn cosmetic art (flags, decorations, emotes) for the screens and the HUD */}
@@ -225,16 +232,18 @@ export function AppRoot(p: { ui: AppUi }) {
         <CosmeticPicturesContext.Provider value={onCosmeticPicturesChanged}>
           <ShowcaseContext.Provider value={showcase}>
             <DioramaContext.Provider value={diorama}>
-              <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
-                <Screen ui={p.ui} meta={meta} shows={shows} />
-                {shows?.current.value ? null : <FirstUpgrade />}
-                <AgeDialog />
-                <TesterDialog />
-                <div class="ab-rotate" data-testid="rotate">
-                  <div class="ab-rotate-phone" aria-hidden="true" />
-                  <span>{p.ui.t('app.rotate')}</span>
+              <FoundItemsContext.Provider value={found}>
+                <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
+                  <Screen ui={p.ui} meta={meta} shows={shows} />
+                  {shows?.current.value ? null : <FirstUpgrade />}
+                  <AgeDialog />
+                  <TesterDialog />
+                  <div class="ab-rotate" data-testid="rotate">
+                    <div class="ab-rotate-phone" aria-hidden="true" />
+                    <span>{p.ui.t('app.rotate')}</span>
+                  </div>
                 </div>
-              </div>
+              </FoundItemsContext.Provider>
             </DioramaContext.Provider>
           </ShowcaseContext.Provider>
         </CosmeticPicturesContext.Provider>

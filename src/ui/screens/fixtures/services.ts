@@ -338,6 +338,12 @@ export function createPreviewServices(o: {
       });
       return ok;
     },
+    markCosmeticsSeen(keys) {
+      const had = save.value.cosmetics.fresh ?? [];
+      if (!keys.some((k) => had.includes(k))) return;
+      log('markCosmeticsSeen', [...keys]);
+      set((s) => ({ ...s, cosmetics: { ...s.cosmetics, fresh: (s.cosmetics.fresh ?? []).filter((k) => !keys.includes(k)) } }));
+    },
     craftCosmetic(key) {
       log('craftCosmetic', key);
       const x = findItem(content, key);

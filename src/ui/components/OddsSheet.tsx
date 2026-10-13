@@ -8,14 +8,14 @@
  * Legendary tiers carry their crests; tier colours are fills only, so every tier name is normal text
  * next to its drum.
  */
-import { capsuleTierNameKey, capsuleTierShortKey, foilNameKey, rarityNameKey } from '@/content/keys';
+import { capsuleTierNameKey, capsuleTierShortKey, cosmeticCollectionKey, foilNameKey, rarityNameKey } from '@/content/keys';
 import type { Rarity } from '@/contracts';
 import { formatInt } from './format';
 import { CapsuleIcon, CrateIcon, CrestBadge, CrestIcon, EyeIcon, RARITY_COLOR, RarityGem, TIER_COLOR } from './icons';
 import { useKit, type Translate } from './kit';
 import { LadderNotice } from './LadderNotice';
 import { ProgressBar } from './Meters';
-import { formatBp, type OddsModel, type PityRow, type TierContentsRow } from './oddsModel';
+import { formatBp, type OddsModel, type PityRow, type PoolCollectionRow, type TierContentsRow } from './oddsModel';
 
 const PITY_KEYS: Record<PityRow['id'], string> = {
   epic: 'ui.odds.pity.epic',
@@ -63,6 +63,44 @@ function tierExtras(r: TierContentsRow, m: OddsModel, t: Translate, locale: stri
   const set = r.exclusiveItems ? m.exclusive.find((x) => x.tier === r.tier) : undefined;
   if (set) out.push(t('ui.odds.aeonSet', { owned: set.owned, total: set.total, dust: formatInt(set.completeDust, locale) }));
   return out;
+}
+
+/**
+ * A drop pool's items per collection and rarity (PLAN 2a "odds per collection"): skies, scenes and base
+ * skins with the rest, never national flags (bought with Dust), and how many of each the save owns.
+ */
+function PoolTable(p: { rows: PoolCollectionRow[]; rarities: readonly Rarity[]; testid: string }) {
+  const { t } = useKit();
+  return (
+    <div class="ui-odds__tablewrap">
+      <table class="ui-odds__table" data-testid={p.testid}>
+        <thead>
+          <tr>
+            <th scope="col">{t('cosmetic.odds.col.collection')}</th>
+            {p.rarities.map((r) => (
+              <th key={r} scope="col" title={t(rarityNameKey(r))}>
+                <RarityGem rarity={r} size={16} />
+              </th>
+            ))}
+            <th scope="col">{t('cosmetic.odds.col.owned')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {p.rows.map((row) => (
+            <tr key={row.collection} data-testid={`${p.testid}-${row.collection}`}>
+              <th scope="row">{t(cosmeticCollectionKey(row.collection))}</th>
+              {p.rarities.map((r) => (
+                <td key={r}>{row.items[r]}</td>
+              ))}
+              <td>
+                {row.owned}/{row.total}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 /** `hideHonest`: the host already shows the A15.3 honesty line (the capsule show's odds panel). */
@@ -284,6 +322,14 @@ export function OddsSheet(p: { model: OddsModel; hideHonest?: boolean }) {
                   </span>
                 ))}
               </div>
+              {m.cosmetics.capsuleCollections.length > 0 ? (
+                <>
+                  <p class="ui-odds__note" data-testid="odds-cosmetics-collections-lead">
+                    {t('cosmetic.odds.collections')}
+                  </p>
+                  <PoolTable rows={m.cosmetics.capsuleCollections} rarities={m.cosmetics.capsuleRarityBp.map((r) => r.rarity)} testid="odds-capsule-collections" />
+                </>
+              ) : null}
               <p class="ui-odds__note">{t('cosmetic.odds.crateLine')}</p>
               <div class="ui-odds__chips">
                 <CrateIcon size={22} />
@@ -294,12 +340,7 @@ export function OddsSheet(p: { model: OddsModel; hideHonest?: boolean }) {
                   </span>
                 ))}
               </div>
-              {m.cosmetics.wardrobe.total > 0 ? (
-                <p class="ui-odds__note" data-testid="odds-wardrobe">
-                  <b>{t('cosmetic.odds.wardrobe')}</b>{' '}
-                  {t('cosmetic.odds.wardrobeLine', { capsule: m.cosmetics.wardrobe.capsuleItems, crate: m.cosmetics.wardrobe.crateItems, n: m.cosmetics.wardrobe.owned, total: m.cosmetics.wardrobe.total })}
-                </p>
-              ) : null}
+              {m.cosmetics.crateCollections.length > 0 ? <PoolTable rows={m.cosmetics.crateCollections} rarities={m.cosmetics.crateRarityBp.map((r) => r.rarity)} testid="odds-crate-collections" /> : null}
               <p class="ui-odds__note">{t('cosmetic.odds.rules')}</p>
             </div>
           ) : null}

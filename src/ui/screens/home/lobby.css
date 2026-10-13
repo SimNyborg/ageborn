@@ -519,6 +519,15 @@
     display: inline;
   }
 }
+/* Small phones (under 800 px wide, such as 750 x 340): the bottom row has no room for the chip between
+   the tab bar (5 x 80 px) and the switcher, and it lay over the Customize tab. It steps aside there;
+   Friend Duel stays one tap away in the Modes panel the switcher next to it opens (its card leads
+   "vs players"). From 800 px the row fits the tabs, the chip, the switcher and Battle. */
+@container ui-root (max-width: 799.98px) {
+  .hub-friend {
+    display: none;
+  }
+}
 .ui-root[data-reduce-motion='true'] .hub-friend {
   animation: none;
 }

@@ -127,6 +127,12 @@ export interface UiServices {
   /** Crafts a Time Capsule or Wardrobe Crate collection item with Dust (`meta.craftCosmetic`). */
   craftCosmetic(key: string): ActionResult;
   /**
+   * Customize showed these collection items: they leave the NEW list and their pip goes on the next
+   * visit (save v15 `cosmetics.fresh`; `meta.markCosmeticsSeen`). Quiet: no toast, no sound, and no
+   * write when none of them was NEW.
+   */
+  markCosmeticsSeen(keys: readonly string[]): void;
+  /**
    * Buys a national flag (`nationalFlag.<id>`) at its Dust price and grants what the purchase completes
    * (the Flag Atlas's region and total rewards; PLAN 2d, `meta.buyNationalFlag`). Cannot be undone: the
    * screen's two-tap confirm (U14) comes first. Reasons: unknownItem, wrongCollection, unreleased,

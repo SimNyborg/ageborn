@@ -19,8 +19,8 @@ import random
 from ageborn_art.geometry import Geo
 
 from world.common import box, cyl, rock
-from world.scenes import kit
-from world.scenes.common import Prop, Scene, dk, lt, mixc, ridge
+from world.scenes import fauna, kit
+from world.scenes.common import PaintedProp, Prop, Scene, dk, lt, mixc, ridge
 from world.scenes.kit import Parts
 
 PAL = dict(skyTop=0x96A2AA, skyBottom=0xE2D8C4, light=0xF4E8D0, far=0x8A8682, mid=0x6E6A64, near=0x54504C)
@@ -386,7 +386,269 @@ def props():
     return plist, sprites
 
 
+# -- Viaduct Gorge (round 2; Rare, Time Capsule) ------------------------------------------------------
+# A stone railway viaduct high over a pine gorge under a clear, crisp sky: grey stone where Iron Valley is
+# brick, mountains and forest where it is smoke and sheds. Back: rocky mountains with a little snow. Far:
+# the gorge's cliffs with pine forests on top, a waterfall down its back wall, the viaduct's tall piers
+# and two tiers of arches across it, a tunnel portal in the left cliff. Mid: a grassy bank with pines, a
+# signal box, a water tower, telegraph poles and boulders. Ambient: a steam train crosses every 25 s and
+# runs into the tunnel, puffing; the waterfall shimmers; a hawk circles the gorge; the signal box's
+# windows and the lamps glow under night skies.
+# Palette (PLAN 2b): grey stone #9AA0A6, pine #4F6E4A, iron #5B6168.
+VG_PAL = dict(skyTop=0x6FA0C8, skyBottom=0xE6ECEC, light=0xF6F8F4, far=0x8C949A, mid=0x6E766A, near=0x545C50)
+VG = dict(
+    stone=0x9AA0A6, stone_dk=0x80868D, stone_lt=0xB4B8BC, cliff=0x8A8C8E, cliff_dk=0x6E7074, pine=0x4F6E4A, pine_dk=0x3E5A3C,
+    pine_lt=0x5E7E56, forest=0x5C7650, forest_dk=0x4E6646, ballast=0x8E8A84, grass=0x748A5A, grass_dk=0x5E7448, iron=0x5B6168, iron_dk=0x45494F, wood=0x6A5444, brick=0x8C6C64, roof=0x5F6570,
+    water=0xD4E2E4, water2=0xB4C8CC, river=0x7E9A9C, window=0x3C3B42, cream=0xD8D0BE, mount=0x8E8C9A, snow=0xEEF0F0,
+)
+VG_SKY = {"top": "#6FA0C8", "bottom": "#E6ECEC", "horizon": "#EEF2F0", "cloudTint": "#F6F8F8", "celestial": "sun",
+          "sunAt": [300, -560, 36], "clouds": 0.8}
+VG_FAR_E = math.radians(8.0)
+VG_MID_E = math.radians(12.0)
+VG_DECK = {"y": 330.0, "z": 168.0, "x0": -300.0, "x1": 1500.0}
+VG_DECK_Y = -round((VG_DECK["z"] + 4) * math.cos(VG_FAR_E) + VG_DECK["y"] * math.sin(VG_FAR_E), 1)
+VG_TUNNEL_X = 96.0
+VG_FALL = (470.0, 420.0, 214.0, 160.0)   # the waterfall (far): x, depth, lip z, drop
+
+
+def _vg_cliff_z(x):
+    """Top of the gorge's cliffs (far): high either side, falling into the gorge between x 230 and 680."""
+    if 230 < x < 680:
+        return 0.0
+    return VG_DECK["z"] - 6
+
+
+def vg_back(st, P):
+    """Rocky mountains with a little snow (low under the moons' place, x 820-980)."""
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    pt = Parts()
+    gr, gs = pt.g(hz(VG["mount"], 0.26), outline=0.0), pt.g(hz(VG["snow"], 0.1), outline=0.0)
+    rnd = random.Random(5)
+    for i, x in enumerate((-260, -100, 60, 240, 420, 600, 760, 900, 1040, 1200, 1360, 1500)):
+        h = rnd.uniform(220, 330) if not (720 <= x <= 1000) else rnd.uniform(90, 120)
+        kit.peak(gr, gs, x, 1500 + rnd.uniform(-60, 60), -60, rnd.uniform(130, 180), h, seed=80 + i, snow=rnd.uniform(0.72, 0.84), jag=0.18)
+    pt.flush(st)
+
+
+def vg_far(st, P):
+    pt = Parts()
+    rnd = random.Random(53)
+    dz = VG_DECK["z"]
+    vy = VG_DECK["y"]
+    gp, gp2, gt = pt.g(VG["pine"], outline=0.3), pt.g(VG["pine_dk"], outline=0.3), pt.g(VG["wood"], outline=0.0)
+    gfo, gfo2 = pt.g(VG["forest"], outline=0.0), pt.g(VG["forest_dk"], outline=0.0)
+    gc, gc2 = pt.g(VG["cliff"], outline=0.4), pt.g(VG["cliff_dk"], outline=0.4)
+    # 1. the gorge behind the arches: two forested slopes meeting in a V, a cliff notch with the waterfall
+    kit.hill(gfo2, 140, 640, -20, 330, 110, 250, seed=3, jag=0.06, p=2.2)
+    kit.hill(gfo2, 800, 650, -20, 340, 110, 240, seed=4, jag=0.06, p=2.2)
+    kit.hill(gfo, 260, 560, -30, 230, 90, 190, seed=5, jag=0.06, p=2.2)
+    kit.hill(gfo, 660, 570, -30, 230, 90, 180, seed=6, jag=0.06, p=2.2)
+    fx, fy, fz, drop = VG_FALL
+    for k, (dx, z, rx, rz) in enumerate(((-44, fz - 30, 40, 34), (-36, fz - 92, 34, 40), (-40, fz - 150, 42, 30), (44, fz - 24, 38, 36),
+                                          (40, fz - 86, 36, 42), (46, fz - 146, 44, 32))):
+        rock(gc2 if k % 2 else gc, (fx + dx, fy + 10, z), (rx, 28, rz), seed=7 + k, jag=0.22, p=2.4)
+    gw, gw2 = pt.g(VG["water"], finish="gloss", outline=0.4), pt.g(VG["water2"], finish="gloss", outline=0.3)
+    for k in range(5):
+        x = fx - 14 + k * 7
+        L = drop * rnd.uniform(0.92, 1.0)
+        (gw if k % 2 == 0 else gw2).lathe([(0.01, 0), (5.6, 2), (4.8, L * 0.5), (6.0, L * 0.96), (0.01, L)], (x, fy - 16, fz), (x, fy - 16, fz - L),
+                                          segs=9)
+    for k in range(6):
+        gw.blob((fx - 24 + k * 9, fy - 22, fz - drop + 6), (8, 6, 6), p=2.0)
+    box(pt.g(VG["river"], finish="gloss", outline=0.0), (fx, fy - 70, 4), (90, 60, 3), p=5, cuts=1)
+    for i in range(120):
+        x = rnd.uniform(-200, 1100)
+        y = rnd.uniform(520, 600)
+        if abs(x - fx) < 60:
+            continue
+        # on the V's slopes: higher away from the waterfall
+        z = 30 + min(200, abs(x - fx) * 0.55) + rnd.uniform(-10, 10)
+        kit.spruce(gp if i % 3 else gp2, None, gt, x, y, rnd.uniform(26, 40), rnd.uniform(7, 10), seed=100 + i, z=z - 8, tiers=3, snow=False)
+    # 2. the near sides of the gorge: forested hills up to the deck, rocky faces toward the gap
+    for x, rx, h, seed in ((-150, 300, 236, 21), (60, 170, 206, 22), (900, 290, 196, 23), (1260, 300, 214, 24)):
+        kit.hill(gfo, x, 400, -20, rx, 80, h, seed=seed, jag=0.05, p=2.4)
+    for (x, z, rx, rz, seed) in ((196, 90, 46, 90, 31), (230, 40, 40, 50, 32), (700, 80, 44, 84, 33), (668, 36, 40, 46, 34)):
+        rock(gc if seed % 2 else gc2, (x, 350, z), (rx, 36, rz), seed=seed, jag=0.14, p=2.6)
+    for i in range(110):
+        x = rnd.uniform(-280, 1480)
+        if 180 < x < 720:
+            continue
+        hz_ = dz + 10 if (x < 180 or x > 720) else 60
+        kit.spruce(gp if i % 3 else gp2, None, gt, x, rnd.uniform(400, 470), rnd.uniform(30, 48), rnd.uniform(8, 12), seed=300 + i,
+                   z=hz_ + rnd.uniform(-8, 26), tiers=3, snow=False)
+    # 3. the viaduct: tall stone piers from the gorge floor, two tiers of arches, a parapet; the track
+    #    runs on along the hills into a tunnel portal on the left
+    gs, gs2, gl = pt.g(VG["stone"], outline=0.5), pt.g(VG["stone_dk"], outline=0.5), pt.g(VG["stone_lt"], outline=0.4)
+    vx0, vx1 = 214.0, 712.0
+    n = 6
+    span = (vx1 - vx0) / n
+    pier = span * 0.24
+    r1 = (span - pier) / 2
+    spring2 = dz - r1 - 10
+    tier = spring2 - 18
+    spring1 = tier - r1 - 6
+    for i in range(n + 1):
+        px = vx0 + i * span
+        box(gs, (px, vy, (spring1 + 0) / 2), (pier / 2 * 1.18, 9, spring1 / 2 + 1), p=6, taper=(1.25, 1.0), cuts=2)
+        box(gs2, (px, vy, (spring1 + spring2) / 2), (pier / 2, 8.6, (spring2 - spring1) / 2 + 1), p=6, cuts=2)
+        box(gl, (px, vy - 0.6, spring1 + 1.2), (pier / 2 + 1.4, 9.6, 1.6), p=5, cuts=1)
+    for i in range(n):
+        cx = vx0 + (i + 0.5) * span
+        for (sp, top) in ((spring1, tier), (spring2, dz)):
+            pts = [(cx - span / 2, top), (cx + span / 2, top), (cx + span / 2, sp), (cx + r1, sp)]
+            pts += [(cx + r1 * math.cos(math.pi * k / 14), sp + r1 * math.sin(math.pi * k / 14)) for k in range(1, 14)]
+            pts += [(cx - r1, sp), (cx - span / 2, sp)]
+            gs.slab(pts, vy, 16)
+            ring = [(cx + (r1 + 2.6) * math.cos(math.pi * k / 14), sp + (r1 + 2.6) * math.sin(math.pi * k / 14)) for k in range(15)]
+            ring += [(cx + r1 * math.cos(math.pi * k / 14), sp + r1 * math.sin(math.pi * k / 14)) for k in range(14, -1, -1)]
+            gl.slab(ring, vy - 8.4, 0.8)
+    box(gl, ((vx0 + vx1) / 2, vy - 0.6, tier - 1), ((vx1 - vx0) / 2 + 2, 9.4, 2.4), p=5, cuts=1)
+    box(gl, ((vx0 + vx1) / 2, vy - 0.6, dz + 2), ((vx1 - vx0) / 2 + 4, 10, 2.4), p=5, cuts=1)
+    box(gs2, ((vx0 + vx1) / 2, vy + 4, dz + 7.6), ((vx1 - vx0) / 2 + 2, 2.6, 3.6), p=5, cuts=1)
+    # the track bed along the line (on the hills and over the viaduct)
+    gtr = pt.g(VG["iron_dk"], outline=0.0, highlight=False)
+    box(gtr, (800, vy - 6, dz + 4.4), (700, 3.2, 0.8), p=4, cuts=1)
+    box(pt.g(VG["ballast"], outline=0.0), (800, vy - 2, dz + 1.6), (700, 8, 2.4), p=4, cuts=1)
+    # the tunnel: a rocky knoll over the line on the left, a stone portal in its face
+    tx = VG_TUNNEL_X
+    kit.hill(gfo, tx - 60, vy + 40, dz - 20, 110, 50, 84, seed=41, jag=0.08, p=2.4)
+    rock(gc2, (tx, vy + 6, dz + 30), (44, 24, 40), seed=42, jag=0.2, p=2.4)
+    rock(gc, (tx - 50, vy + 14, dz + 20), (30, 22, 30), seed=43, jag=0.22, p=2.4)
+    for i in range(10):
+        kit.spruce(gp, None, gt, tx - 120 + i * 22 + rnd.uniform(-6, 6), vy + 30, rnd.uniform(28, 40), 9, seed=600 + i, z=dz + 40 + rnd.uniform(0, 24),
+                   tiers=3, snow=False)
+    gpo = pt.g(VG["stone_lt"], outline=0.5)
+    gpo.slab([(tx - 30, dz), (tx - 22, dz), (tx - 22, dz + 22)] + [(tx + 22 * math.cos(math.pi * (10 - k) / 10), dz + 22 + 18 * math.sin(math.pi * (10 - k) / 10)) for k in range(1, 11)]
+             + [(tx + 22, dz), (tx + 30, dz), (tx + 30, dz + 50), (tx - 30, dz + 50)], vy - 12, 6)
+    pts = [(tx - 22, dz), (tx + 22, dz), (tx + 22, dz + 22)] + [(tx + 22 * math.cos(math.pi * k / 10), dz + 22 + 18 * math.sin(math.pi * k / 10)) for k in range(1, 10)] + [(tx - 22, dz + 22)]
+    pt.g(VG["window"], outline=0.0, highlight=False).slab(pts, vy - 10, 2)
+    # 4. a linesman's hut on the right, telegraph poles along the line
+    box(pt.g(VG["brick"], outline=0.5), (880, vy + 20, dz + 14), (18, 12, 14), p=6, cuts=2)
+    pt.g(VG["roof"], outline=0.5).lathe([(0, 0), (28, 0), (0.4, 14), (0, 15)], (880, vy + 22, dz + 28), (880, vy + 22, dz + 43), segs=4,
+                                        rot=(0, 0, 45), squash=(1.0, 0.5))
+    st.light((872, vy + 7, dz + 14), 5)
+    gpl = pt.g(VG["wood"], outline=0.3)
+    for x in (-180, 0, 760, 960, 1160, 1360):
+        gpl.capsule((x, vy - 14, dz), (x, vy - 14, dz + 40), 1.0)
+        gpl.capsule((x - 6, vy - 14, dz + 36), (x + 6, vy - 14, dz + 36), 0.7)
+    pt.flush(st)
+
+
+def vg_mid(st, P):
+    pt = Parts()
+    rnd = random.Random(59)
+    # the grassy bank
+    g = pt.g(VG["grass"], outline=0.0)
+    for i in range(15):
+        x = -300 + i * 130
+        rock(g, (x, 80, 8), (96, 60, 40 + rnd.uniform(0, 10)), seed=i, jag=0.05, p=2.4)
+    gg = pt.g(VG["grass_dk"], finish="hair", outline=0.3)
+    for i in range(50):
+        kit.round_bush(gg, rnd.uniform(-250, 1450), rnd.uniform(26, 44), rnd.uniform(4, 7), seed=1000 + i, z=rnd.uniform(36, 46), flat=0.6)
+    # pines in clusters
+    gp, gp2, gt = pt.g(VG["pine"], outline=0.5), pt.g(VG["pine_dk"], outline=0.5), pt.g(VG["wood"], outline=0.4)
+    for i, (x, h) in enumerate(((-220, 170), (-176, 136), (-120, 186), (-70, 126), (140, 150), (180, 120), (640, 160), (690, 130),
+                                (900, 176), (944, 140), (1110, 160), (1160, 190), (1210, 136), (1380, 170), (1430, 138))):
+        kit.spruce(gp if i % 2 else gp2, None, gt, x, 66 + (i % 3) * 8, h, h * 0.2, seed=700 + i, z=28, tiers=4, snow=False)
+    # the signal box (x 330): brick base, a timber cabin with a band of windows, a hipped slate roof
+    gb, gw = pt.g(VG["brick"], outline=0.5), pt.g(VG["cream"], outline=0.5)
+    box(gb, (330, 84, 54), (30, 18, 16), p=6, cuts=2)
+    box(gw, (330, 84, 84), (32, 19, 14), p=6, cuts=2)
+    pt.g(VG["roof"], outline=0.5).lathe([(0, 0), (50, 0), (0.4, 18), (0, 19)], (330, 86, 98), (330, 86, 117), segs=4, rot=(0, 0, 45), squash=(1.0, 0.56))
+    gwin = pt.g(VG["window"], outline=0.0, highlight=False)
+    gfr = pt.g(0x6E5A48, outline=0.0)
+    for k in range(3):
+        wx = 312 + k * 18
+        box(gfr, (wx, 64.8, 87), (7.4, 0.5, 8.4), p=4, cuts=1)
+        box(gwin, (wx, 64.2, 87), (6.0, 0.6, 7.0), p=4, cuts=1)
+        st.light((wx, 63, 87), 5)
+    box(gwin, (330, 65.6, 50), (5, 0.6, 9), p=4, cuts=1)
+    gst = pt.g(VG["wood"], outline=0.4)
+    for k in range(6):
+        box(gst, (366 + k * 4, 76, 40 + k * 7), (5, 6, 1.0), p=4, cuts=1)
+    # the semaphore signal by the box
+    gst.capsule((390, 70, 40), (390, 70, 136), 1.4)
+    box(pt.g(0xA8584A, outline=0.4), (398, 69, 128), (9, 1.0, 2.2), p=4, cuts=1, rot=(0, -30, 0))
+    # the water tower (x 520): a round iron tank on a trestle, a spout
+    gi, gid = pt.g(VG["iron"], finish="metal", outline=0.5), pt.g(VG["iron_dk"], outline=0.4)
+    for dx in (-14, 14):
+        for dy in (-8, 8):
+            gid.capsule((520 + dx, 80 + dy, 40), (520 + dx * 0.8, 80 + dy * 0.8, 100), 1.6)
+    gid.capsule((506, 72, 64), (534, 72, 88), 1.0)
+    gid.capsule((534, 72, 64), (506, 72, 88), 1.0)
+    cyl(gi, (520, 80, 100), (520, 80, 132), 22, bevel=1.2, segs=24)
+    gi.lathe([(0, 0), (23, 0), (0.4, 8), (0, 9)], (520, 80, 132), (520, 80, 141), segs=24)
+    for t in (0.3, 0.7):
+        cyl(gid, (520, 80, 100 + 32 * t), (520, 80, 101.6 + 32 * t), 22.6, bevel=0.3, segs=24)
+    gid.capsule((498, 70, 112), (486, 66, 100), 2.0, 1.6)
+    # telegraph poles with wires
+    gpo = pt.g(VG["wood"], outline=0.4)
+    xs = list(range(-240, 1500, 160))
+    for x in xs:
+        gpo.capsule((x, 50, 40), (x, 50, 150), 1.6)
+        gpo.capsule((x - 9, 50, 142), (x + 9, 50, 142), 1.0)
+    gins = pt.g(VG["cream"], outline=0.0)
+    for x in xs:
+        for dx in (-7, 7):
+            gins.sphere((x + dx, 49, 144), 1.4, cuts=2)
+    # boulders and a lamp by the box
+    gr = pt.g(VG["stone_dk"], outline=0.5)
+    for i in range(12):
+        rock(gr, (rnd.uniform(-240, 1440), rnd.uniform(34, 50), 38), (rnd.uniform(7, 12), 7, rnd.uniform(5, 8)), seed=900 + i, jag=0.2)
+    gpo.capsule((262, 60, 40), (262, 60, 100), 1.2)
+    box(pt.g(VG["cream"], outline=0.3), (268, 59, 99), (2.8, 2.4, 3.4), p=4, cuts=1)
+    st.light((268, 58, 99), 7)
+    pt.flush(st)
+
+
+def _shimmer(i):
+    """The waterfall's sheen: thin pale streaks sliding down (three frames), soft alpha."""
+    import numpy as np
+    w, h = 36, 150
+    rnd = random.Random(11)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    a = np.zeros((h, w), np.float32)
+    for k in range(7):
+        x0 = 3 + k * 5 + rnd.uniform(-1, 1)
+        y0 = (rnd.uniform(0, h) + i * h / 3) % h
+        L = rnd.uniform(26, 44)
+        dy = (yy - y0) % h
+        a = np.maximum(a, np.clip(1 - np.abs(xx - x0) / 1.4, 0, 1) * np.clip(1 - np.abs(dy - L / 2) / (L / 2), 0, 1))
+    out = np.zeros((h, w, 4), np.float32)
+    out[..., :3] = 1.0
+    out[..., 3] = a * 0.55
+    return out
+
+
+def vg_props():
+    hawk = fauna.bird(body="#6A5446", wing="#5A463A", belly="#9A8470", beak="#D8B060", span=15, size=1.2)
+    fx, fy, fz, drop = VG_FALL
+    fall = [round(fx, 1), -round((fz - drop * 0.5) * math.cos(VG_FAR_E) + (fy - 30) * math.sin(VG_FAR_E), 1)]
+    ring = [[i * 2.5, round(470 + 100 * math.cos(math.pi * i / 3)), round(-268 + 18 * math.sin(math.pi * i / 3)), 1] for i in range(7)]
+    tx = VG_TUNNEL_X
+    plist = [
+        Prop("loco", "far", fauna.steam_loco(size=1.25), [{"rod0": {"show": True}}, {"rod1": {"show": True}}], (64, 40, 3), VG_DECK_Y),
+        Prop("tender", "far", fauna.tender(size=1.25), [{}], (30, 28, 3), VG_DECK_Y),
+        Prop("coach", "far", fauna.train_car(body="#6A4A44", roof="#45494F", size=1.25, length=22), [{}], (40, 26, 3), VG_DECK_Y),
+        Prop("hawk", "far", hawk, [fauna.bird_pose(f) for f in range(5)], (50, 26, 26), ring[0][2]),
+        PaintedProp("sheen", "far", _shimmer, 3, ax=0.5, ay=0.5),
+    ]
+    sprites = [
+        {"kind": "path", "layer": "far", "fps": 8, "periodS": 25,
+         "keys": [[0, 1600, VG_DECK_Y, 1], [13.2, tx + 30, VG_DECK_Y, 1], [13.6, tx - 4, VG_DECK_Y, 0], [14, tx - 30, VG_DECK_Y, 0]],
+         "group": [{"frames": ["loco_0", "loco_1"]}, {"frames": ["tender_0"], "dx": -36}, {"frames": ["coach_0"], "dx": -68},
+                   {"frames": ["coach_0"], "dx": -100}, {"frames": ["coach_0"], "dx": -132}],
+         "trail": {"part": "fx.p.smoke", "rate": 3.0, "dx": 17, "dy": -30, "speed": 9, "scale": 1.2, "tint": 0xEEEEEA, "alpha": 0.55, "life": 2200}},
+        {"kind": "loop", "layer": "far", "frames": ["sheen_0", "sheen_1", "sheen_2"], "fps": 6, "at": fall},
+        {"kind": "path", "layer": "far", "fps": 6, "periodS": 15, "keys": ring,
+         "group": [{"frames": ["hawk_4", "hawk_4", "hawk_4", "hawk_0", "hawk_1", "hawk_2", "hawk_3"]}]},
+    ]
+    return plist, sprites
+
+
 SCENES = {
     "classic": Scene("industrial", "classic", PAL, far, mid, back=back, sky=SKY, props=props,
                      hints={"celestial": "keep", "weather": "ground"}, ground="earth"),
+    "viaduct_gorge": Scene("industrial", "viaduct_gorge", VG_PAL, vg_far, vg_mid, back=vg_back, sky=VG_SKY, props=vg_props,
+                           hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.7}, ground="earth"),
 }

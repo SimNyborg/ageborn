@@ -59,7 +59,9 @@ export const BASE_COLLAPSE_MS = 2600;
  * `base.<age>@<skin>` with the sheet `art/bases/skins/<skin>.json`, which loads lazily (only when that
  * skin shows); until it arrives the age's standard base draws with the skin's old tint
  * (`cosmetics/baseSkins.ts` `BASE_SKINS`). Same footprint, mounts, flags, Treasury and crumble stages as
- * the standard base (tests in `cosmetics.bases.test.ts`).
+ * the standard base (tests in `cosmetics.bases.test.ts`). Crystal Spire is the one troop-system skin here (the
+ * Arena 8 gate reward, `skins.ts` target `base.future`): its model replaces the old procedural puppet, which
+ * stays as the stand-in while the sheet streams in.
  */
 export const WORLD_BASE_SKINS: Readonly<Record<string, AgeId>> = {
   rose_keep: 'medieval',
@@ -67,10 +69,29 @@ export const WORLD_BASE_SKINS: Readonly<Record<string, AgeId>> = {
   coral_fort: 'gunpowder',
   copper_foundry: 'industrial',
   desert_bunker: 'modern',
+  // round 2 (2026-10-09): the other five tint skins and Crystal Spire
+  frost_cave: 'stone',
+  gilded_ziggurat: 'bronze',
+  snowy_keep: 'medieval',
+  midnight_neon: 'future',
+  crystal_spire: 'future',
+  nebula_ark: 'cosmic',
 };
 
 /** Skin models with their own collapse kit (`art/bases/skins/<skin>.collapse.json`); the others use their age's. */
-export const WORLD_BASE_SKIN_KITS: readonly string[] = ['rose_keep', 'mossy_den', 'coral_fort', 'copper_foundry', 'desert_bunker'];
+export const WORLD_BASE_SKIN_KITS: readonly string[] = [
+  'rose_keep',
+  'mossy_den',
+  'coral_fort',
+  'copper_foundry',
+  'desert_bunker',
+  'frost_cave',
+  'gilded_ziggurat',
+  'snowy_keep',
+  'midnight_neon',
+  'crystal_spire',
+  'nebula_ark',
+];
 
 export function baseSkinSheetSource(skin: string): string {
   return `art/bases/skins/${skin}.json`;

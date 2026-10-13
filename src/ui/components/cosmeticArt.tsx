@@ -202,7 +202,7 @@ function queueStill(run: () => void, urgent: boolean): StillJob {
  * A backdrop still: at once when painted before, else painted in its turn. Meanwhile a tile shows a
  * shimmer; the big preview (`keepLast`) keeps the still it showed before.
  */
-function useBackdropStill(fn: CosmeticImageFn | null, key: string, age: AgeId, thumb: boolean, keepLast: boolean): string | null {
+function useBackdropStill(fn: CosmeticImageFn | null, key: string, age: AgeId, thumb: boolean, keepLast: boolean, scene: string | null = null): string | null {
   // a re-composed still (its strips arrived) re-renders the mounted stills, which then read the final one
   const onChange = useContext(CosmeticPicturesContext);
   const [, bump] = useState(0);
@@ -213,8 +213,8 @@ function useBackdropStill(fn: CosmeticImageFn | null, key: string, age: AgeId, t
       off();
     };
   }, [onChange]);
-  const id = `${key}|${age}|${thumb ? 't' : 'p'}`;
-  const opts: CosmeticImageOptions = thumb ? { age, thumb: true } : { age };
+  const id = `${key}|${scene ?? ''}|${age}|${thumb ? 't' : 'p'}`;
+  const opts: CosmeticImageOptions = { age, ...(thumb ? { thumb: true } : {}), ...(scene ? { scene } : {}) };
   const ready = fn ? fn(key, { ...opts, cached: true }) : null;
   const [got, setGot] = useState<{ id: string; url: string | null } | null>(ready ? { id, url: ready } : null);
   const lazy = typeof requestAnimationFrame === 'function';
@@ -233,20 +233,92 @@ function useBackdropStill(fn: CosmeticImageFn | null, key: string, age: AgeId, t
 }
 
 /**
- * A battle backdrop skin as the lane paints it (A18.9.4 "Backdrops"): a still of your half of the
- * lane in `age` (the same painters and theme pass as the battle) with the theme's weather moving over
- * it. `skin` null is the age's classic sky. `thumb`: a collection tile's smaller, sky-heavy crop.
- * A still not painted yet waits its turn behind a soft shimmer (the big preview keeps its last still
- * meanwhile). Without an art provider a soft sky placeholder shows.
+ * A sky (a `backdrop` item, shown as "Skies") over a scene as the lane paints it (A18.9.4, PLAN 2b): a
+ * still of your half of the lane in `age`, in `scene` (`scene.<id>`, null for the age's classic scene),
+ * graded by the sky (`skin` null is the scene's own daylight), with the sky's weather moving over it
+ * (`weather: false` leaves it out; a space scene gets motes and sparkles, never snow). `thumb`: a
+ * collection tile's smaller, sky-heavy crop. A still not painted yet waits its turn behind a soft
+ * shimmer (the big preview keeps its last still meanwhile). Without an art provider a soft sky
+ * placeholder shows.
  */
-export function BackdropLook(p: { skin: string | null; age: AgeId; animate?: boolean; testid?: string; thumb?: boolean }) {
+export function BackdropLook(p: { skin: string | null; age: AgeId; scene?: string | null; animate?: boolean; testid?: string; thumb?: boolean; weather?: boolean }) {
   const fn = useCosmeticImage();
-  const still = useBackdropStill(fn, p.skin ?? 'backdrop.classic', p.age, !!p.thumb, !p.thumb);
-  const fx = p.skin && fn ? fn(p.skin, { layer: 'fx', animate: p.animate ?? true }) : null;
+  const scene = p.scene ?? null;
+  const still = useBackdropStill(fn, p.skin ?? 'backdrop.classic', p.age, !!p.thumb, !p.thumb, scene);
+  const fx = p.skin && fn && p.weather !== false ? fn(p.skin, { layer: 'fx', animate: p.animate ?? true, age: p.age, ...(scene ? { scene } : {}) }) : null;
   return (
-    <span class={`cos-bd${still ? '' : ' is-pending'}`} data-testid={p.testid} data-age={p.age} data-skin={p.skin ?? ''} aria-hidden="true">
-      {still ? <img class="cos-bd__img" src={still} alt="" draggable={false} key={`${p.skin ?? ''}|${p.age}`} /> : <span class="cos-bd__img cos-bd__img--empty" />}
+    <span class={`cos-bd${still ? '' : ' is-pending'}`} data-testid={p.testid} data-age={p.age} data-skin={p.skin ?? ''} data-scene={scene ?? ''} aria-hidden="true">
+      {still ? <img class="cos-bd__img" src={still} alt="" draggable={false} key={`${p.skin ?? ''}|${scene ?? ''}|${p.age}`} /> : <span class="cos-bd__img cos-bd__img--empty" />}
       {fx ? <img class="cos-bd__fx" src={fx} alt="" draggable={false} /> : null}
+    </span>
+  );
+}
+
+/**
+ * A scene's tile picture (PLAN 2b): its pre-rendered thumbnail (Track A's `thumb.webp`, the scene in its
+ * own daylight), a soft shimmer until it has loaded, and the painted still of its age's classic scene
+ * where a scene has no thumbnail yet. `scene` null is the age's classic scene.
+ */
+export function SceneThumb(p: { scene: string | null; age: AgeId; testid?: string }) {
+  const fn = useCosmeticImage();
+  const key = p.scene ?? 'scene.classic';
+  const url = fn ? fn(key, { age: p.age, thumb: true }) : null;
+  const [loaded, setLoaded] = useState<string | null>(null);
+  if (!url) return <BackdropLook skin={null} scene={p.scene} age={p.age} thumb weather={false} {...(p.testid ? { testid: p.testid } : {})} />;
+  return (
+    <span class={`cos-bd cos-scene${loaded === url ? '' : ' is-pending'}`} data-testid={p.testid} data-age={p.age} data-scene={key} aria-hidden="true">
+      <img class="cos-bd__img" src={url} alt="" draggable={false} decoding="async" key={url} onLoad={() => setLoaded(url)} />
+    </span>
+  );
+}
+
+/**
+ * A picture that may arrive later from a synchronous lookup (Track B's base-skin thumbnail atlas answers
+ * null until its one image is in): asks again every 400 ms for up to 12 s while it is null, then keeps it.
+ * Without animation frames (tests) it asks once.
+ */
+function useLatePicture(get: () => string | null, key: string): string | null {
+  const [, bump] = useState(0);
+  const now = get();
+  useEffect(() => {
+    if (now || typeof requestAnimationFrame !== 'function') return undefined;
+    const t0 = Date.now();
+    const id = setInterval(() => {
+      if (get() || Date.now() - t0 > 12_000) {
+        clearInterval(id);
+        bump((n) => n + 1);
+      }
+    }, 400);
+    return () => clearInterval(id);
+  }, [key, !!now]);
+  return now;
+}
+
+/**
+ * A base skin's tile picture (PLAN 2c): Track B's pre-rendered thumbnail (the model on a strip of its
+ * age's classic scene) once its atlas is in, else the model's portrait ({@link BaseLook}). `skin` null is
+ * the age's standard base; a troop-system skin (Crystal Spire) is `baseSkin.<skin id>` too.
+ */
+export function BaseThumb(p: { age: AgeId; skin: string | null; animate?: boolean; testid?: string }) {
+  const fn = useCosmeticImage();
+  const key = p.skin ?? `baseSkin.standard_${p.age}`;
+  const thumb = useLatePicture(() => (fn && p.skin ? fn(p.skin, { layer: 'thumb' }) : null), key);
+  if (thumb) {
+    return (
+      <span class="cos-btile cos-btile--thumb" data-testid={p.testid} data-age={p.age} data-skin={p.skin ?? ''} aria-hidden="true">
+        <img class="cos-btile__thumb" src={thumb} alt="" draggable={false} />
+      </span>
+    );
+  }
+  // the same composition as the thumbnails: the base on a strip of its age's classic scene
+  return (
+    <span class="cos-btile" data-testid={p.testid} data-age={p.age} data-skin={p.skin ?? ''} aria-hidden="true">
+      <span class="cos-btile__scene">
+        <SceneThumb scene={null} age={p.age} />
+      </span>
+      <span class="cos-btile__base">
+        <BaseLook age={p.age} skin={p.skin} {...(p.animate !== undefined ? { animate: p.animate } : {})} />
+      </span>
     </span>
   );
 }
@@ -292,6 +364,30 @@ export function QuoteBubble(p: {
       </span>
     </span>
   );
+}
+
+/**
+ * Any collection item's card picture, as its Customize card draws it (the capsule and crate summary's
+ * found tiles, PLAN 2a): a base skin's model on a strip of its age's scene, a scene's thumbnail, a sky
+ * over the classic scene of `age`, a quote's line in the battle bubble (`text`), the code-drawn rest.
+ */
+export function CosmeticTileArt(p: { item: string; age: AgeId; rarity?: 'common' | 'rare' | 'epic' | 'legendary'; text?: string; animate?: boolean }) {
+  const collection = p.item.slice(0, Math.max(0, p.item.indexOf('.')));
+  const animate = p.animate ?? true;
+  switch (collection) {
+    case 'baseSkin':
+      return <BaseThumb age={p.age} skin={p.item} animate={animate} />;
+    case 'scene':
+      return <SceneThumb scene={p.item} age={p.age} />;
+    case 'backdrop':
+      return <BackdropLook skin={p.item} scene={null} age={p.age} animate={false} thumb />;
+    case 'quote':
+      return <QuoteBubble text={p.text ?? ''} rarity={p.rarity ?? 'common'} small />;
+    case 'nationalFlag':
+      return <CosmeticImage item={p.item} size="tile" />;
+    default:
+      return <CosmeticImage item={p.item} animate={animate} />;
+  }
 }
 
 /**

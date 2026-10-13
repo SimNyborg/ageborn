@@ -17,7 +17,8 @@ import { circle, hex, INK, poly, rect, shade, shapesToSvg, star, type Paints, ty
 /** The preview team colour (side 0 blue, A11). */
 const TEAM = 0x2f7df6;
 
-export type SkinParticles = 'snow' | 'fireflies' | 'glints' | 'petals' | 'embers' | 'dust' | 'stars';
+/** Ambient particle kinds: the tint skins' fields, plus the models' own mist, rain, smoke and steam (round 2). */
+export type SkinParticles = 'snow' | 'fireflies' | 'glints' | 'petals' | 'embers' | 'dust' | 'stars' | 'mist' | 'rain' | 'smoke' | 'steam';
 
 export interface BaseSkinArt {
   /** Multiplied into the base body (never the team layer). */
@@ -37,7 +38,8 @@ export const BASE_SKINS: Readonly<Record<string, BaseSkinArt>> = {
   coral_fort: { tint: 0xffb296, trim: 0xff8a6a, particles: 'glints', particleColor: 0xffe2d2 },
   copper_foundry: { tint: 0xffa46e, trim: 0xd9824b, particles: 'embers', particleColor: 0xffa040 },
   desert_bunker: { tint: 0xeccd86, trim: 0xd9b36a, particles: 'dust', particleColor: 0xe8d4a4 },
-  midnight_neon: { tint: 0x8c92ff, trim: 0x57f0ff, particles: 'glints', particleColor: 0x57f0ff },
+  // magenta and mint, never cyan beside the team blue (PLAN 2c); the model's own glints take the mint
+  midnight_neon: { tint: 0x8c92ff, trim: 0xf03aa8, particles: 'glints', particleColor: 0x3af0b4 },
   nebula_ark: { tint: 0xc8a4ff, trim: 0xbda8ff, particles: 'stars', particleColor: 0xffffff },
 };
 

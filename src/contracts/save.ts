@@ -230,9 +230,11 @@ export interface SaveDoc {
   skins: { owned: SkinId[]; equipped: Record<string, SkinId> };
   /**
    * Banner and title ids, plus cosmetic collection keys (`<collection>.<id>`, A18.9.4) in `owned`;
-   * `equipped` is the chosen look and battle wheel (save v3).
+   * `equipped` is the chosen look and battle wheel (save v3). `fresh` (save v15) lists the collection
+   * keys that joined `owned` from a capsule, a crate or an earned reward and have not been shown in
+   * Customize yet: their cards wear a NEW pip until seen. Absent means none (a new save).
    */
-  cosmetics: { owned: string[]; equipped: CosmeticLoadout };
+  cosmetics: { owned: string[]; equipped: CosmeticLoadout; fresh?: string[] };
   /** War Plans: one loadout per age (DESIGN A3). */
   warPlans: { name: string; loadouts: Record<AgeId, Loadout> }[];
   activePlan: number;

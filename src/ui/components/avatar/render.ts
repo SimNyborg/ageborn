@@ -5,8 +5,9 @@
  * never black. Ids carry a `§` placeholder that the component swaps for a unique prefix, so the string
  * is cached per look and still safe to show many times on one page.
  */
-import type { AvatarSlot } from '@/contracts';
+import type { AvatarSlot, BaseEmoteId } from '@/contracts';
 import { mix, ramp, shade, type Material, type Ramp } from './color';
+import { EMOTE_EXTRAS, EMOTE_FACES, EMOTE_PARTS, EMOTE_VIEWBOX } from './emotes';
 import { movePath } from './path';
 import { TINTS } from './palette';
 import { LAYERS, type Layer, type PartArt, type PartLibrary, type Shape, type Tone } from './types';
@@ -28,6 +29,11 @@ export interface RenderOptions {
   motion: boolean;
   /** Only the background plate, or only the figure (two-face portraits compose them). */
   part?: 'all' | 'bg' | 'figure';
+  /**
+   * The head performing a starter emote (PLAN 2a, `emotes.ts`): the emote's face over the look, its
+   * props and effects in their motion groups, no background plate, the emote's own view of the box.
+   */
+  emote?: BaseEmoteId;
 }
 
 /** Slot order inside one layer. */
@@ -142,13 +148,14 @@ function shapeSvg(s: Shape, ctx: Ctx): string {
   return `${out}</g>`;
 }
 
-/** The part ids drawn for a look and mood, after the headwear rules. */
-function partsFor(look: ResolvedLook, mood: AvatarMood | undefined): Partial<Record<AvatarSlot, string>> {
+/** The part ids drawn for a look and mood (or emote), after the headwear rules. */
+function partsFor(look: ResolvedLook, mood: AvatarMood | undefined, emote?: BaseEmoteId): Partial<Record<AvatarSlot, string>> {
   const p = { ...look.parts };
-  if (mood && mood !== 'neutral') {
-    p.eyes = MOODS[mood].eyes;
-    p.mouth = MOODS[mood].mouth;
-    const brows = MOODS[mood].brows;
+  const face = emote ? EMOTE_FACES[emote] : mood && mood !== 'neutral' ? MOODS[mood] : null;
+  if (face) {
+    p.eyes = face.eyes;
+    p.mouth = face.mouth;
+    const brows = face.brows;
     if (brows && p.brows !== 'brows_uni' && p.brows !== 'brows_scarred') p.brows = brows;
   }
   return p;
@@ -192,9 +199,10 @@ export function shapesMarkup(shapes: readonly Shape[], prefix = '', look: Resolv
 }
 
 /** Writes the SVG for a look. Unknown part ids are skipped (a wearable whose art is still loading). */
-export function avatarSvg(look: ResolvedLook, lib: PartLibrary, o: RenderOptions): string {
+export function avatarSvg(look: ResolvedLook, library: PartLibrary, o: RenderOptions): string {
   const ctx: Ctx = { look, low: o.detail === 'low', defs: [], n: 0, faceClip: null };
-  const ids = partsFor(look, o.mood);
+  const lib = o.emote ? { ...library, ...EMOTE_PARTS } : library;
+  const ids = partsFor(look, o.mood, o.emote);
   const art: Partial<Record<AvatarSlot, PartArt>> = {};
   for (const slot of SLOT_ORDER) {
     const id = ids[slot];
@@ -243,6 +251,14 @@ export function avatarSvg(look: ResolvedLook, lib: PartLibrary, o: RenderOptions
     ctx.defs.push(
       `<radialGradient id="§aura" cx=".5" cy=".5" r=".5"><stop offset=".45" stop-color="#fff" stop-opacity=".8"/><stop offset=".75" stop-color="#fff6d8" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>`,
     );
+  }
+  if (o.emote) {
+    // the emote's motion groups (emote.css): the head with what sits on the face, the effects, the prop
+    const x = EMOTE_EXTRAS[o.emote];
+    const draw = (shapes: readonly Shape[] | undefined): string => (shapes ?? []).map((s) => shapeSvg(s, ctx)).join('');
+    const head = `<g class="emo-head">${body.join('')}<g class="emo-front">${draw(x.front)}</g></g>`;
+    const groups = `<g class="emo emo--${o.emote}">${head}<g class="emo-fx">${draw(x.fx)}</g><g class="emo-prop">${draw(x.prop)}</g></g>`;
+    return `<svg class="av-svg emo-svg" viewBox="${EMOTE_VIEWBOX}" width="100%" height="100%" aria-hidden="true" focusable="false"><defs>${ctx.defs.join('')}</defs>${groups}</svg>`;
   }
   const cls = `av-svg${o.motion ? ' av-svg--live' : ''}`;
   const part = o.part ?? 'all';

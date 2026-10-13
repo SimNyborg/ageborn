@@ -4,7 +4,7 @@ import { FixedClock } from '@/contracts/fakes/clock';
 import { LocalSaveStore, type LocalSaveStoreOptions, type Timers } from '../store.localStorage';
 import { MemoryStorage } from '../storage';
 import v1Json from './fixtures/v1.json';
-import v14Json from './fixtures/v14.json';
+import v15Json from './fixtures/v15.json';
 import capsuleLadderPreJson from './fixtures/capsule-ladder-pre.json';
 
 /** A fresh deep copy of the frozen v1 fixture (five ages; migrate it before validating). */
@@ -12,9 +12,9 @@ export function v1Fixture(): SaveDoc {
   return JSON.parse(JSON.stringify(v1Json)) as SaveDoc;
 }
 
-/** A fresh deep copy of the frozen fixture of the version this build writes (v14: scenes per age). */
+/** A fresh deep copy of the frozen fixture of the version this build writes (v15: the NEW pip's `cosmetics.fresh`). */
 export function currentFixture(): SaveDoc {
-  return JSON.parse(JSON.stringify(v14Json)) as SaveDoc;
+  return JSON.parse(JSON.stringify(v15Json)) as SaveDoc;
 }
 
 /**

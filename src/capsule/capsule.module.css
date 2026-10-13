@@ -750,6 +750,223 @@
   margin-top: 12px;
 }
 
+/* Found collection items (A18.9.4, PLAN 2a): a picture tile after the cards. It lands like a card,
+   showing the item at once; an Epic or Legendary one then bursts in its rarity colour (the item is seen
+   before it is celebrated: no tease, A15.1). Landscape art (skies, scenes, base skins) spans two columns. */
+.found {
+  /* every animation listed here, so a NEW tile keeps its staggered landing */
+  animation: land 560ms var(--ui-ease-out, ease-out) both;
+  animation-delay: var(--delay);
+}
+.foundNew {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25), 0 0 18px var(--rarity), inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+  animation:
+    land 560ms var(--ui-ease-out, ease-out) both,
+    newGlow 1.8s ease-in-out infinite;
+  animation-delay: var(--delay), calc(var(--delay) + 600ms);
+}
+/* the light sweep of a new card, once the tile has landed */
+.foundNew::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.5) 50%, transparent 65%);
+  background-size: 300% 100%;
+  background-position: 120% 0;
+  animation: sweep 900ms ease-out calc(var(--delay) + 480ms) both;
+}
+.foundWide {
+  grid-column: span 2;
+}
+.foundBursting {
+  z-index: 2;
+  animation:
+    land 560ms var(--ui-ease-out, ease-out) both,
+    foundPunch var(--burst-ms) linear both;
+  animation-delay: var(--delay), var(--burst-at);
+}
+.foundBursting.foundNew {
+  animation:
+    land 560ms var(--ui-ease-out, ease-out) both,
+    foundPunch var(--burst-ms) linear both,
+    newGlow 1.8s ease-in-out infinite;
+  animation-delay: var(--delay), var(--burst-at), calc(var(--burst-at) + var(--burst-ms));
+}
+/* The windup squashes the card, the pop blasts it out, and it slams back with a bounce (the `scale`
+   property, so it never fights the landing's transform). */
+@keyframes foundPunch {
+  0% { scale: 1; }
+  18% { scale: 0.93 1.04; }
+  32% { scale: 1.16; }
+  48% { scale: 0.97 1.02; }
+  62% { scale: 1.03 0.99; }
+  78%, 100% { scale: 1; }
+}
+.foundArt {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  border-radius: 10px;
+  overflow: hidden;
+  isolation: isolate;
+  background: radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.3)), var(--rarity-dim);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35), inset 0 3px 0 rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.foundWide .foundArt {
+  width: min(100%, 196px);
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+.foundArt > * {
+  max-width: 100%;
+  max-height: 100%;
+}
+.foundWide .foundArt > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* the rarity gem in the corner (the cards show their rarity through the frame; an item names it too) */
+.foundGem {
+  width: 14px;
+  height: 14px;
+  margin: 2px 4px 0 0;
+  transform: rotate(45deg);
+  border: 2px solid #1b1a2e;
+  border-radius: 3px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.75), var(--rarity) 45%, var(--rarity-dim));
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* The burst over the tile: light, rings, rays, sparks and embers in the rarity colour. Each piece waits
+   for the tile's own moment (`--burst-at` is the windup's start; the pop comes `--pop` later). */
+.burst {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+.burstLight {
+  position: absolute;
+  left: -110px;
+  top: -110px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0 8%, var(--rarity) 22%, transparent 64%);
+  opacity: 0;
+  mix-blend-mode: screen;
+  animation: burstLight var(--burst-ms) ease-out both;
+  animation-delay: var(--burst-at);
+}
+.burstLegendary .burstLight {
+  left: -150px;
+  top: -150px;
+  width: 300px;
+  height: 300px;
+}
+@keyframes burstLight {
+  0% { opacity: 0; transform: scale(0.2); }
+  14% { opacity: 0.45; transform: scale(0.35); }
+  24% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.25); }
+}
+.burstRays {
+  position: absolute;
+  left: -130px;
+  top: -130px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, var(--rarity) 0deg 5deg, transparent 5deg calc(360deg / var(--rays)));
+  -webkit-mask: radial-gradient(circle, transparent 0 18%, #000 30%, transparent 70%);
+  mask: radial-gradient(circle, transparent 0 18%, #000 30%, transparent 70%);
+  opacity: 0;
+  animation: burstRays var(--burst-ms) ease-out both;
+  animation-delay: var(--burst-at);
+}
+@keyframes burstRays {
+  0%, 20% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+  30% { opacity: 0.9; }
+  100% { opacity: 0; transform: scale(1.3) rotate(24deg); }
+}
+.burstRing {
+  position: absolute;
+  left: -40px;
+  top: -40px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid var(--rarity);
+  box-shadow: 0 0 12px var(--rarity), inset 0 0 8px rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  animation: burstRing calc(var(--burst-ms) * 0.8) var(--ui-ease-out, ease-out) both;
+  animation-delay: calc(var(--burst-at) + var(--pop) + var(--i) * 90ms);
+}
+@keyframes burstRing {
+  0% { opacity: 1; transform: scale(0.3); border-width: 6px; }
+  100% { opacity: 0; transform: scale(3.2); border-width: 1px; }
+}
+.burstSpark,
+.burstStar {
+  position: absolute;
+  left: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  opacity: 0;
+  animation: burstSpark calc(var(--burst-ms) * 0.75) var(--ui-ease-out, ease-out) both;
+  animation-delay: calc(var(--burst-at) + var(--pop) + var(--j));
+}
+.burstSpark {
+  border-radius: 2px;
+  background: linear-gradient(90deg, #fff, var(--rarity));
+  width: 14px;
+  height: 4px;
+  top: -2px;
+  left: -7px;
+}
+.burstStar {
+  background: #fff;
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  width: 12px;
+  height: 12px;
+  left: -6px;
+  top: -6px;
+  filter: drop-shadow(0 0 3px var(--rarity));
+}
+@keyframes burstSpark {
+  0% { opacity: 1; transform: rotate(var(--a)) translateX(10px) scale(1.2); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(var(--a)) translateX(var(--d)) scale(0.4); }
+}
+.burstEmber {
+  position: absolute;
+  left: calc(var(--x) * 1.2 - 60px);
+  top: 10px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 30%, var(--rarity) 60%, transparent 70%);
+  opacity: 0;
+  animation: burstEmber 1400ms ease-out both;
+  animation-delay: calc(var(--burst-at) + var(--pop) + 120ms + var(--j));
+}
+@keyframes burstEmber {
+  0% { opacity: 0; transform: translateY(0) scale(0.6); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-90px) translateX(8px) scale(1); }
+}
+
 @media (max-height: 460px) {
   /* Landscape phones: the summary sits beside the pity panel instead of under it. */
   .summaryWrap { padding: 8px max(8px, env(safe-area-inset-right)) 8px 236px; }
@@ -757,6 +974,8 @@
   .summaryTitle { font-size: 18px; }
   .pity { font-size: 12px; min-width: 150px; }
   .portrait { width: 56px; height: 56px; }
+  .foundArt { width: 56px; height: 56px; }
+  .foundWide .foundArt { width: min(100%, 132px); height: auto; }
   .item { gap: 3px; padding: 6px 5px; }
   .grid { grid-template-columns: repeat(auto-fit, minmax(96px, 108px)); gap: 8px; }
   .actions { margin-top: 6px; }
@@ -768,6 +987,15 @@
   .tap, .ready, .ff { animation: none; }
   .item, .summary, .badge, .ready, .itemNew::after { animation-duration: 1ms; animation-delay: 0ms; }
   .itemNew { animation: none; }
+  /* a found item's burst: only a calm glow in its rarity colour */
+  .found, .foundNew, .foundBursting, .foundNew::after { animation: none; }
+  .burstRays, .burstRing, .burstSpark, .burstStar, .burstEmber { display: none; }
+  .burstLight { animation: burstGlow 900ms ease-out both; animation-delay: 300ms; }
+}
+@keyframes burstGlow {
+  0% { opacity: 0; transform: scale(0.8); }
+  40% { opacity: 0.55; transform: scale(0.9); }
+  100% { opacity: 0; transform: scale(0.95); }
 }
 
 /* The in-game Reduce motion setting (A12) does the same as the OS preference. */
@@ -781,6 +1009,16 @@
 .screen[data-reduce-motion] .badge,
 .screen[data-reduce-motion] .itemNew::after { animation-duration: 1ms; animation-delay: 0ms; }
 .screen[data-reduce-motion] .itemNew { animation: none; }
+.screen[data-reduce-motion] .found,
+.screen[data-reduce-motion] .foundNew,
+.screen[data-reduce-motion] .foundNew::after,
+.screen[data-reduce-motion] .foundBursting { animation: none; }
+.screen[data-reduce-motion] .burstRays,
+.screen[data-reduce-motion] .burstRing,
+.screen[data-reduce-motion] .burstSpark,
+.screen[data-reduce-motion] .burstStar,
+.screen[data-reduce-motion] .burstEmber { display: none; }
+.screen[data-reduce-motion] .burstLight { animation: burstGlow 900ms ease-out both; animation-delay: 300ms; }
 
 /* A summit strike: the hammer is white-hot, so the prompt burns white too (never a tier colour). */
 .tapSummit {
