@@ -362,6 +362,28 @@ export function themeForScene(th: BackdropTheme, hints: { skyGrade?: number; wea
   return { ...th, gradeMix: th.gradeMix * k, rimAlpha: (th.rimAlpha ?? 1) * (0.45 + 0.55 * k) };
 }
 
+/**
+ * The multiply a sky theme gives a scene's moving props on one layer (review 2): the strips take the
+ * theme's grade when they are baked (`themeLayer`), but the props are separate sprites, so without this
+ * a night sky left the palm crowns, boats and herds in daylight colours. `th` is the theme as the scene
+ * wears it on that layer (`themeForScene`; null = no theme). A multiply can only darken: it follows the
+ * night and dusk grades closely and leaves a light theme's whitening to the strips.
+ */
+export function propGradeTint(th: BackdropTheme | null, layer: 'back' | 'far' | 'mid'): number {
+  if (!th) return 0xffffff;
+  const a = Math.max(0, Math.min(1, th.gradeMix * (layer === 'mid' ? th.midGradeScale : 1)));
+  // the grade's colour about where props stand (the bake fades it toward the sky's foot downwards)
+  const g = mix(th.grade, th.skyBottom, 0.15);
+  const ch = (shift: number): number => Math.round(255 * (1 - a + (a * ((g >> shift) & 255)) / 255));
+  return (ch(16) << 16) | (ch(8) << 8) | ch(0);
+}
+
+/** Two tints multiplied channel by channel. */
+export function mulTint(a: number, b: number): number {
+  const ch = (shift: number): number => Math.round((((a >> shift) & 255) * ((b >> shift) & 255)) / 255);
+  return (ch(16) << 16) | (ch(8) << 8) | ch(0);
+}
+
 /** A short cache key part for the way a scene takes themes (`themeForScene`'s inputs besides the theme). */
 export function sceneGradeKey(hints: { skyGrade?: number; weather?: 'ground' | 'space' } | null | undefined): string {
   return `${hints?.skyGrade ?? 1}${hints?.weather === 'space' ? 's' : ''}`;

@@ -9,7 +9,8 @@
  * trackers within 0.5 lu), its footprint and height band within 5% of the standard base, the dressing
  * anchors clear, at least the standard's team-pixel share minus 3 points, unique frame names and its size
  * budget; the provider resolves each age's own skin through an evolve, loads a model lazily with the tint
- * standing in, and the collapse uses the model's own topple data. Owned by Track B.
+ * standing in, and the collapse uses the model's own topple data. The thumbnail atlas holds every model in
+ * its budget; a Legendary model stands in its aura. Owned by Track B.
  */
 import { Container, Texture } from 'pixi.js';
 import { describe, expect, it, vi } from 'vitest';
@@ -60,8 +61,26 @@ describe('base skins', () => {
     expect(baseSkinArt(null)).toBeNull();
   });
 
-  it('has no pre-rendered thumbnail until the model atlas is in', () => {
+  it('has no pre-rendered thumbnail until the model atlas is in (never without a browser)', () => {
     expect(baseSkinThumbUrl('frost_cave')).toBeNull();
+    expect(baseSkinThumbUrl('no_such_skin')).toBeNull();
+  });
+
+  it('the thumbnail atlas holds one 128 px cell for every model, within its 70 KB budget', () => {
+    const atlas = THUMBS['/public/art/bases/skins/thumbs.json'];
+    expect(atlas).toBeDefined();
+    expect(atlas!.cell).toBe(128);
+    expect(Object.keys(atlas!.cells).sort()).toEqual(Object.keys(WORLD_BASE_SKINS).sort());
+    const bytes = webpBytes(`art/bases/skins/${atlas!.image}`);
+    expect(bytes.length, 'atlas budget 70 KB').toBeLessThanOrEqual(70 * 1024);
+    const size = webpSize(bytes);
+    const seen = new Set<string>();
+    for (const [skin, [c, r]] of Object.entries(atlas!.cells)) {
+      expect(seen.has(`${c},${r}`), skin).toBe(false);
+      seen.add(`${c},${r}`);
+      expect((c + 1) * atlas!.cell, skin).toBeLessThanOrEqual(size.w);
+      expect((r + 1) * atlas!.cell, skin).toBeLessThanOrEqual(size.h);
+    }
   });
 });
 
@@ -69,7 +88,8 @@ describe('the base skin of every age (createBase `skins`, save v14)', () => {
   it('each age resolves its own skin through an evolve; a skin without a model draws the plain base silently', () => {
     const warn = vi.fn();
     const art = createArtProvider({ warn, dpr: 1 });
-    // Stone wears a cosmetic skin still on its tint (no model yet), Future the troop-system Crystal Spire
+    // Stone wears a cosmetic skin whose model has not loaded (its age's standard base stands in), Future the
+    // troop-system Crystal Spire (its procedural puppet stands in for its model here, in the evolve too)
     const b = art.createBase({ age: 'stone', skins: { stone: 'frost_cave', future: 'crystal_spire' }, side: 0, teamPreset: 'default' });
     expect(b.root.label).toBe('base.stone');
     b.morphTo('future', 1800);
@@ -213,6 +233,27 @@ const pngBytes = (path: string): Uint8Array => {
   return out;
 };
 const sheetPng = (source: string, image: string): string => `${source.replace(/[^/]+$/, '')}${image}`;
+
+const THUMBS = import.meta.glob<{ image: string; cell: number; cells: Record<string, [number, number]> }>('/public/art/bases/skins/thumbs.json', { eager: true, import: 'default' });
+const WEBP_DATA = import.meta.glob<string>('/public/art/bases/skins/*.webp', { eager: true, query: '?inline', import: 'default' });
+const webpBytes = (path: string): Uint8Array => {
+  const url = WEBP_DATA[`/public/${path}`];
+  if (!url) throw new Error(`no picture ${path}`);
+  const bin = atob(url.slice(url.indexOf(',') + 1));
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+};
+/** A WebP's canvas size from its first chunk (lossy `VP8 `, lossless `VP8L` or extended `VP8X`). */
+function webpSize(b: Uint8Array): { w: number; h: number } {
+  const tag = String.fromCharCode(b[12]!, b[13]!, b[14]!, b[15]!);
+  if (tag === 'VP8X') return { w: 1 + (b[24]! | (b[25]! << 8) | (b[26]! << 16)), h: 1 + (b[27]! | (b[28]! << 8) | (b[29]! << 16)) };
+  if (tag === 'VP8L') {
+    const v = b[21]! | (b[22]! << 8) | (b[23]! << 16) | (b[24]! << 24);
+    return { w: 1 + (v & 0x3fff), h: 1 + ((v >> 14) & 0x3fff) };
+  }
+  return { w: (b[26]! | (b[27]! << 8)) & 0x3fff, h: (b[28]! | (b[29]! << 8)) & 0x3fff };
+}
 
 async function inflate(data: Uint8Array): Promise<Uint8Array> {
   const body = new Response(data as BodyInit).body!.pipeThrough(new DecompressionStream('deflate'));
@@ -359,7 +400,10 @@ describe('base skin models: the standard base contract (PLAN 2c)', () => {
     expect(MODELS.length).toBeGreaterThan(0);
     for (const [skin, age] of MODELS) {
       const item = content.cosmetics.collections.items.find((x) => x.collection === 'baseSkin' && x.id === skin);
-      expect(item?.age, skin).toBe(age);
+      // a cosmetic base skin of that age, or the troop-system skin of that age's base (Crystal Spire, A5.8)
+      const troop = content.skins[skin];
+      expect(item ? item.age : troop?.target === `base.${age}` ? age : undefined, skin).toBe(age);
+      if (!item) expect(troop?.target, skin).toBe(`base.${age}`);
       expect(hasBaseSkinModel(skin) && hasBaseSkinArt(skin), skin).toBe(true);
       const src = baseSkinSheetSource(skin);
       expect(MANIFEST[`base.${age}@${skin}`]?.source, skin).toBe(src);
@@ -579,6 +623,30 @@ describe('the dressing with a skin model', () => {
       expect(-m.position.y).toBeLessThan(215);
     }
     d.destroy();
+  });
+
+  it('a troop-system model (Crystal Spire: no cosmetic key) starts its own ambient too, in its own colour', () => {
+    const base = modelBase('crystal_spire', [{ kind: 'glints', x: -90, y: 260, r: 10, rate: 1, color: '#F4EEFF' } as never]);
+    const d = new BaseDressing({ age: 'future', side: 0, look: { baseSkins: {}, decorations: [] }, team: 0x2f7df6, base });
+    for (let i = 0; i < 4; i += 1) d.update(50);
+    const motes = d.root.children[d.root.children.length - 1]!;
+    expect(motes.children.length).toBeGreaterThan(0);
+    for (const m of motes.children) expect(m.position.x).toBeLessThan(-75);
+    d.destroy();
+  });
+
+  it('mist, smoke and steam drift as soft puffs that swell as they rise', () => {
+    for (const kind of ['mist', 'smoke', 'steam']) {
+      const base = modelBase('snowy_keep', [{ kind, x: -70, y: 290, r: 4, rate: 1 }]);
+      const d = new BaseDressing({ age: 'medieval', side: 0, look, team: 0x2f7df6, base });
+      d.update(16);
+      const motes = d.root.children[d.root.children.length - 1]!;
+      const m = motes.children[0]!;
+      const s0 = m.scale.x;
+      for (let i = 0; i < 20; i += 1) d.update(50);
+      expect(m.destroyed || m.scale.x > s0, kind).toBe(true);
+      d.destroy();
+    }
   });
 
   it('keeps the old tint and field of motes while the model is still loading', () => {
