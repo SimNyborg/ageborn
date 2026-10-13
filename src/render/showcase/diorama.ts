@@ -3,7 +3,7 @@
  * PreviewStage): a small Pixi stage with one half of the lane, the side's scene under its sky (the art
  * provider's `createBackdrop` with `scenes` and the sky as both halves' skin), its base model (`createBase`
  * with the per-age `skins`), its dressing (`createBaseDressing`: the flags on the pole, the decorations)
- * and two idle turrets of the age on mounts 1 and 3. Presentation only, like the card showcase
+ * and two idle turrets of the age on its first and third mounts. Presentation only, like the card showcase
  * (`stage.ts`): no sim runs and nothing feeds back into play.
  *
  * - **Framing.** The ground line sits where the still's ground does (83% down); about 440 lu of world
@@ -333,7 +333,6 @@ export class DioramaStage implements DioramaHandle {
   private turrets: TurretView[] = [];
   private built: DioramaLook | null = null;
   private popMs = 0;
-  private arrival = 0;
 
   constructor(
     private readonly host: HTMLElement,
@@ -569,7 +568,6 @@ export class DioramaStage implements DioramaHandle {
     });
     // the swap lands with a small pop about the base's foot (a fade under Reduce motion)
     this.popMs = pop ? POP_MS : 0;
-    this.arrival = pop ? 1 : 0;
   }
 
   private buildDressing(look: DioramaLook): void {
