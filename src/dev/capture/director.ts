@@ -28,6 +28,20 @@ export interface WorldBounds {
   right: number;
 }
 
+/**
+ * The canvas the director frames for, and the most world height (lu above the ground line) the frame
+ * may show: the backdrop's sky reaches about 780 lu up, so on a tall canvas a wide framing would show
+ * the canvas background above it. Framings are narrowed to stay under `maxAboveLu`.
+ */
+export interface DirectorView {
+  width: number;
+  height: number;
+  maxAboveLu?: number;
+}
+
+/** Sky the battle backdrop paints above the ground line (lu), less a margin. */
+export const SKY_LU = 760;
+
 export interface Framing {
   /** World x at the canvas centre (lu). */
   x: number;
@@ -113,14 +127,19 @@ export function springStep(x: number, v: number, target: number, omega: number, 
   return { x: target + (d + k * dtSec) * e, v: (v - omega * k * dtSec) * e };
 }
 
-/** Clamps a framing so the view never shows past the world's ends (the whole world when it is wider). */
-export function clampFraming(f: Framing, bounds: WorldBounds): Framing {
+/**
+ * Clamps a framing so the view never shows past the world's ends (the whole world when it is wider) or,
+ * with a `view`, above the sky.
+ */
+export function clampFraming(f: Framing, bounds: WorldBounds, view?: DirectorView): Framing {
   const span = bounds.right - bounds.left;
-  const w = Math.max(MIN_W, Math.min(span, f.w));
+  const ground = Math.max(0.05, Math.min(0.98, f.ground));
+  const skyW = view ? ((view.maxAboveLu ?? SKY_LU) * view.width) / (ground * view.height) : Infinity;
+  const w = Math.max(MIN_W, Math.min(span, skyW, f.w));
   const lo = bounds.left + w / 2;
   const hi = bounds.right - w / 2;
   const x = lo >= hi ? (bounds.left + bounds.right) / 2 : Math.min(hi, Math.max(lo, f.x));
-  return { x, w, ground: Math.max(0.05, Math.min(0.98, f.ground)) };
+  return { x, w, ground };
 }
 
 /** The world container's transform for a framing on a canvas of `width` x `height` CSS px. */
@@ -194,8 +213,9 @@ export class CameraDirector {
   constructor(
     start: Framing,
     private readonly bounds: WorldBounds,
+    private readonly view?: DirectorView,
   ) {
-    this.cur = clampFraming(start, bounds);
+    this.cur = clampFraming(start, bounds, view);
     this.from = this.cur;
     this.shot = { kind: 'look', x: this.cur.x, w: this.cur.w, how: { move: 'cut' } };
   }
@@ -222,10 +242,10 @@ export class CameraDirector {
   update(dtMs: number, scene: SceneSample): Framing {
     const dt = Math.max(0, dtMs);
     const how: Move = this.shot.how ?? { move: 'ease', ms: DEFAULT_EASE_MS };
-    let target = clampFraming(shotTarget(this.shot, scene, this.cur), this.bounds);
+    let target = clampFraming(shotTarget(this.shot, scene, this.cur), this.bounds, this.view);
     if (this.arrived && this.shot.drift) {
       this.driftW += (this.shot.drift * dt) / 1000;
-      target = clampFraming({ ...target, w: target.w + this.driftW }, this.bounds);
+      target = clampFraming({ ...target, w: target.w + this.driftW }, this.bounds, this.view);
     }
     if (!this.arrived && how.move === 'cut') {
       this.cur = target;
@@ -238,6 +258,7 @@ export class CameraDirector {
       this.cur = clampFraming(
         { x: this.from.x + (target.x - this.from.x) * k, w: Math.exp(lw), ground: this.from.ground + (target.ground - this.from.ground) * k },
         this.bounds,
+        this.view,
       );
       if (this.t >= how.ms) {
         this.cur = target;
@@ -252,7 +273,7 @@ export class CameraDirector {
       const lw = springStep(Math.log(this.cur.w), this.vel.lw, Math.log(target.w), om, s);
       const g = springStep(this.cur.ground, this.vel.g, target.ground, om, s);
       this.vel = { x: x.v, lw: lw.v, g: g.v };
-      this.cur = clampFraming({ x: x.x, w: Math.exp(lw.x), ground: g.x }, this.bounds);
+      this.cur = clampFraming({ x: x.x, w: Math.exp(lw.x), ground: g.x }, this.bounds, this.view);
       if (!this.arrived && Math.abs(target.x - this.cur.x) < 1 && Math.abs(target.w - this.cur.w) < 1) this.arrived = true;
     }
     return this.cur;

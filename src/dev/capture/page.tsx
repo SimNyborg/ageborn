@@ -20,7 +20,8 @@
  * default `capture.all`, all eight ages and no clock), `seed=`, `bots=0|1|2|left` (AI Generals on no
  * seat, side 1, both, or side 0), `level=1-10`, `deck0=` / `deck1=` (comma-separated cards), `scenes=best|game`,
  * `scene=` / `foeScene=` (a scene id per side), `sky=` (a sky id), `arena=` (a ground), `fps=`, `hud=`,
- * `bars=`, `numbers=`, `coins=`, `shake=0..1`, `bg=` (canvas colour, hex). The canvas fills the
+ * `bars=`, `numbers=`, `coins=`, `shake=0..1`, `bg=` (canvas colour, hex), `maxAbove=` (most world height
+ * above the ground a framing may show; default the backdrop's sky, about 760 lu). The canvas fills the
  * window; render at the device scale factor you want (DPR 2 picks the HD unit sheets).
  *
  * Dev pages are exempt from the i18n rule.
@@ -87,6 +88,7 @@ interface Opts extends CaptureOptions {
   shake: number;
   arena: string | null;
   bg: number;
+  maxAbove: number | null;
 }
 
 function pageOptions(search: string): Opts {
@@ -105,6 +107,7 @@ function pageOptions(search: string): Opts {
     shake: Number.isFinite(shake) && q.get('shake') !== null ? Math.max(0, Math.min(1, shake)) : 1,
     arena: q.get('arena'),
     bg: bg && /^[0-9a-f]{6}$/i.test(bg) ? parseInt(bg, 16) : 0x1b1a2e,
+    maxAbove: Number(q.get('maxAbove')) > 0 ? Number(q.get('maxAbove')) : null,
   };
 }
 
@@ -439,7 +442,8 @@ export default function CapturePage() {
       quietView(view, opts);
       prefetchScenes(view, ages);
       const mid = (baseCenterX(0) + baseCenterX(1)) / 2;
-      const director = new CameraDirector({ x: mid, w: 900, ground: 0.78 }, WORLD);
+      // narrowed so a tall canvas never shows the canvas above the backdrop's sky (`maxAbove=` overrides)
+      const director = new CameraDirector({ x: mid, w: 900, ground: 0.78 }, WORLD, { width, height, ...(opts.maxAbove ? { maxAboveLu: opts.maxAbove } : {}) });
       const aiKit = opts.bots.some(Boolean) ? await loadAiKit() : null;
       const seatFor = (side: Side): Seat => (aiKit ? aiKit(side, opts.seed + side, config.content) : new DevAutoplayer(side, opts.seed));
       const hud = opts.hud === 'minimal' ? new MinimalHud() : null;
