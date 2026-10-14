@@ -32,3 +32,10 @@ All Instagram calls go through `tools/ig.py` (token from `IG_ACCESS_TOKEN`, neve
 
 Short Danish status for the owner: what went out today, numbers, what was learned, what comes next.
 No em dashes. Never mention the owner's identity.
+
+## Incident log
+
+- 2026-10-14 18:42 UTC: every Graph API call (GET /me, /me/media, content_publishing_limit) returns
+  `OAuthException code 200 "API access blocked."`. R3 was not published and stays in queue/.
+  Waiting for the owner to check the Meta app "Ageborn Publisher" and the Instagram account.
+  Before any post, run `tools/ig.py me`; if it still fails, do not retry in a loop.
