@@ -24,9 +24,10 @@ All Instagram calls go through `tools/ig.py` (token from `IG_ACCESS_TOKEN`, neve
 ## Daily run (cron, about 08:4x Copenhagen)
 
 1. Insights for posts from the last 7 days -> `state/analytics.csv` (one row per post per day).
-2. Plan today: 3 grid Reels (owner decision 2026-10-14), jittered in 11:30-13:30, 16:00-17:30 and 19:00-21:30
-   Copenhagen, plus a Trial Reel when spare content exists. If reach per post falls more than 25% for a
-   week, tell the owner and propose going back to 2.
+2. Plan today: 2 grid Reels (owner decision 2026-10-14: start with 2), jittered in 11:30-13:30 and
+   19:00-21:30 Copenhagen, plus a Trial Reel when spare content exists. Go to 3 a day only when median
+   reach per post holds within 20% of the week before and the queue is at least 2 days ahead; tell the
+   owner when that happens.
 3. Keep at least 2 days of finished, frame-checked content in `queue/`; render what is missing.
 4. Schedule each post with `send_later` (message starts with "STUDIO POST:" and names the file).
 
