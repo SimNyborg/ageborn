@@ -39,3 +39,5 @@ No em dashes. Never mention the owner's identity.
   `OAuthException code 200 "API access blocked."`. R3 was not published and stays in queue/.
   Waiting for the owner to check the Meta app "Ageborn Publisher" and the Instagram account.
   Before any post, run `tools/ig.py me`; if it still fails, do not retry in a loop.
+- 2026-10-14 21:08 UTC: access works again (GET /me and /me/media OK). The owner checked the Meta app;
+  no alerts were shown and the cause is unknown. R3 is held for the next grid slot.
