@@ -1,0 +1,20 @@
+{
+  "_note": "One entry is used per day, in order (day number modulo the list length). 'top' and 'sub' are the two lines on the video; keep each under about 24 characters. 'caption' is the Instagram text. Hashtags are added from 'hashtags'.",
+  "hashtags": "#ageborn #indiegame #gamedev #strategygame #browsergame",
+  "posts": [
+    { "top": "One lane.", "sub": "Two armies. No retreat.", "caption": "One lane, two armies, and nowhere to hide. Real gameplay from the current Ageborn build." },
+    { "top": "Hold the line", "sub": "or lose the base", "caption": "Every unit counts when the line starts to bend. Captured straight from the game, nothing staged." },
+    { "top": "Stone to stars", "sub": "in a single war", "caption": "Ageborn armies grow through the ages in one match. Which age would you stop in?" },
+    { "top": "Build up.", "sub": "Break through.", "caption": "Build up your economy, then break through. Today's clip from the development build." },
+    { "top": "Push or defend?", "sub": "You decide.", "caption": "Charge, hold or fall back: the flag decides where your army fights. Still in development, follow the build." },
+    { "top": "Daily battle", "sub": "from the dev build", "caption": "A fresh battle from the Ageborn dev build. Same lane, new fight every day." },
+    { "top": "Old-school strategy", "sub": "New ideas.", "caption": "Old-school lane strategy with a few new ideas. Tell us which unit you'd pick first." },
+    { "top": "Who breaks first?", "sub": "Watch the lane.", "caption": "Two generals, one lane. Who breaks first? Real gameplay from Ageborn." },
+    { "top": "Evolve your army", "sub": "age by age", "caption": "Evolve to unlock a new age and a new army. Ageborn is in development, follow along." },
+    { "top": "Small army", "sub": "Big ambitions", "caption": "It starts with clubs and stones. Where it ends is up to you. Today's battle from the dev build." },
+    { "top": "Every second", "sub": "counts", "caption": "Gold in, units out, and the clock is ticking. A slice of today's Ageborn battle." },
+    { "top": "Watch it unfold", "sub": "Real gameplay", "caption": "No trailer, no edits: just the game playing out. Ageborn is still in development." },
+    { "top": "Can you hold?", "sub": "The enemy won't wait.", "caption": "The enemy won't wait for you to be ready. Would you hold or charge here?" },
+    { "top": "Ageborn", "sub": "In development", "caption": "Building Ageborn one battle at a time. Follow the build and be here early." }
+  ]
+}
