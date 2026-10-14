@@ -21,7 +21,8 @@
  * seat, side 1, both, or side 0), `level=1-10`, `deck0=` / `deck1=` (comma-separated cards), `scenes=best|game`,
  * `scene=` / `foeScene=` (a scene id per side), `sky=` (a sky id), `arena=` (a ground), `fps=`, `hud=`,
  * `bars=`, `numbers=`, `coins=`, `shake=0..1`, `bg=` (canvas colour, hex), `maxAbove=` (most world height
- * above the ground a framing may show; default the backdrop's sky, about 760 lu). The canvas fills the
+ * above the ground a framing may show; default the backdrop's sky, about 760 lu), `edge=` (lu the camera
+ * may show past each end of the world, default 0). The canvas fills the
  * window; render at the device scale factor you want (DPR 2 picks the HD unit sheets).
  *
  * Dev pages are exempt from the i18n rule.
@@ -89,6 +90,8 @@ interface Opts extends CaptureOptions {
   arena: string | null;
   bg: number;
   maxAbove: number | null;
+  /** Lu the camera may show past each world end (the art runs a little further than the battle camera shows). */
+  edge: number;
 }
 
 function pageOptions(search: string): Opts {
@@ -108,6 +111,7 @@ function pageOptions(search: string): Opts {
     arena: q.get('arena'),
     bg: bg && /^[0-9a-f]{6}$/i.test(bg) ? parseInt(bg, 16) : 0x1b1a2e,
     maxAbove: Number(q.get('maxAbove')) > 0 ? Number(q.get('maxAbove')) : null,
+    edge: Math.max(0, Math.min(200, Number(q.get('edge')) || 0)),
   };
 }
 
@@ -443,7 +447,8 @@ export default function CapturePage() {
       prefetchScenes(view, ages);
       const mid = (baseCenterX(0) + baseCenterX(1)) / 2;
       // narrowed so a tall canvas never shows the canvas above the backdrop's sky (`maxAbove=` overrides)
-      const director = new CameraDirector({ x: mid, w: 900, ground: 0.78 }, WORLD, { width, height, ...(opts.maxAbove ? { maxAboveLu: opts.maxAbove } : {}) });
+      const bounds = { left: WORLD.left - opts.edge, right: WORLD.right + opts.edge };
+      const director = new CameraDirector({ x: mid, w: 900, ground: 0.78 }, bounds, { width, height, ...(opts.maxAbove ? { maxAboveLu: opts.maxAbove } : {}) });
       const aiKit = opts.bots.some(Boolean) ? await loadAiKit() : null;
       const seatFor = (side: Side): Seat => (aiKit ? aiKit(side, opts.seed + side, config.content) : new DevAutoplayer(side, opts.seed));
       const hud = opts.hud === 'minimal' ? new MinimalHud() : null;
