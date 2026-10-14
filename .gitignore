@@ -1,0 +1,8 @@
+node_modules/
+work/
+public/
+out/
+__pycache__/
+*.pyc
+.venv/
+tts-models/
