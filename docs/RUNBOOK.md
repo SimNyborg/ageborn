@@ -10,6 +10,19 @@ git worktree add /tmp/soc origin/social-media 2>/dev/null; cd /tmp/soc
 git checkout -B social-media origin/social-media
 ```
 
+Rendering in a fresh container (about 2 min of setup; `public/`, `out/` and `node_modules/` are not in git):
+
+```
+(cd /home/user/ageborn && npm ci) & (cd /tmp/soc/studio && npm ci) & pip install -q numpy pillow; wait
+cd /tmp/soc/studio && mkdir -p public/fonts public/audio public/art/cut out/reels out/sheets work
+cp node_modules/@fontsource/barlow-condensed/files/barlow-condensed-latin-*-*.woff2 \
+   node_modules/@fontsource/inter/files/inter-latin-*-normal.woff2 public/fonts/
+for c in mammoth_matriarch lindworm star_leviathan ursa_paladin; do
+  python3 tools/cutout.py $c attack 6 2f7df6 public/art/cut/$c-attack.png; done
+nohup node scripts/server.mjs > /tmp/server.log 2>&1 &
+bash scripts/record-batch.sh r1 r5      # then: node scripts/make.mjs r1 (one render at a time)
+```
+
 All Instagram calls go through `tools/ig.py` (token from `IG_ACCESS_TOKEN`, never printed):
 `me`, `media`, `quota`, `reel PATH CAPTION_FILE [--trial] [--cover PATH]`, `insights ID`.
 

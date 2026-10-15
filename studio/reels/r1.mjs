@@ -1,6 +1,6 @@
 // R1 edit: "40 CAVEMEN vs 1 COSMIC TANK" (pillar P1 Age Clash). Hook: the matchup in three slams and
 // "WHO WINS?"; the charge and impact in slow motion; the grind as jump cuts with a live counter and the
-// tank's health bar; the tank survives on 4%; the twist: 6 Spear Hunters (anti-armour) beat it.
+// tank's health bar; the tank survives on a sliver of health; the twist: 6 Spear Hunters (anti-armour) beat it.
 import { loadClip, MUSIC, Timeline } from '../lib/edit.mjs';
 
 const tankHp = (st) => (st.watched?.[0] ? st.watched[0].hpBp / 10000 : 0);
@@ -53,13 +53,16 @@ export async function edit() {
   // the tank's health and the cavemen left, from the impact to the last caveman
   const hudFrom = sImpact.at;
   const hudTo = lastDeath + 16;
-  T.overlay('hpbar', hudFrom, hudTo - hudFrom, { label: 'Hover Tank', sub: 'Cosmic Age', side: 1, y: 300, values: T.series(sImpact, hudFrom, hudTo - hudFrom, tankHp) });
+  const hpValues = T.series(sImpact, hudFrom, hudTo - hudFrom, tankHp);
+  T.overlay('hpbar', hudFrom, hudTo - hudFrom, { label: 'Hover Tank', sub: 'Cosmic Age', side: 1, y: 300, values: hpValues });
+  // the result title quotes the exact percentage the bar shows last, so the two always agree
+  const hpLeft = Math.max(0, Math.round(hpValues[hpValues.length - 1] * 100));
   T.overlay('counter', hudFrom + 4, hudTo - hudFrom - 4, { label: 'CAVEMEN LEFT', y: 560, color: 'blue', size: 140, values: T.series(sImpact, hudFrom + 4, hudTo - hudFrom - 4, (st) => st.sides[0].units) });
   T.overlay('flash', sImpact.at, 7, { peak: 0.7 });
   for (const s of sB) T.overlay('flash', s.at, 5, { peak: 0.35 });
 
   // the result
-  T.overlay('title', lastDeath + 4, sFinal.end - lastDeath - 4, { y: 820, burst: true, stagger: 5, lines: [{ text: 'The tank wins', size: 128, fill: 'orange' }, { text: 'with 4% left', size: 84, fill: 'white', gap: 6 }] });
+  T.overlay('title', lastDeath + 4, sFinal.end - lastDeath - 4, { y: 820, burst: true, stagger: 5, lines: [{ text: 'The tank wins', size: 128, fill: 'orange' }, { text: `with ${hpLeft}% left`, size: 84, fill: 'white', gap: 6 }] });
 
   // the twist
   T.overlay('title', sSpears.at + 2, sSpears.dur - 2, { y: 460, burst: true, stagger: 5, lines: [{ text: 'But...', size: 96, fill: 'white' }, { text: '6 Spear Hunters?', size: 132, fill: 'blue', gap: 6 }] });
