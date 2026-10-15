@@ -26,7 +26,7 @@ IG_ID = "17841467187927379"
 RAW = "https://raw.githubusercontent.com/SimNyborg/ageborn/social-media/"
 TOKEN = os.environ.get("IG_ACCESS_TOKEN", "")
 INSIGHT_METRICS = ("views,reach,likes,comments,saved,shares,total_interactions,"
-                   "follows,profile_visits,ig_reels_avg_watch_time,"
+                   "ig_reels_avg_watch_time,"
                    "ig_reels_video_view_total_time")
 
 
