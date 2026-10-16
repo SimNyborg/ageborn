@@ -22,7 +22,8 @@ export function duelEdit(o) {
   // 2. mid-fight, one punch cut
   const sMid = T.add(b, 2, 32, { look: { cutIn: 'punch' } });
   // 3. the finale: the last enemy falls, the hero holds on
-  const cStart = Math.max(0, c.m('last-one') - 6);
+  // start shortly before the final blow (the last enemy can take seconds to fall), not at 'last-one'
+  const cStart = Math.max(0, c.m('last-one') - 6, c.m('last-death') - 48);
   const sFinal = T.add(c, cStart, Math.min(c.frames, c.m('last-death') + 46), { rate: 1.2, look: { cutIn: 'punch' } });
   const lastDeath = sFinal.map(c.m('last-death'));
   // 4. a short end card on the last frame
@@ -37,7 +38,7 @@ export function duelEdit(o) {
   T.overlay('vignette', 0, total, { top: 0.5, bottom: 0.72 });
   // the matchup lands on frame 0, over the action
   T.overlay('title', 0, impactAt + F(1.1), { y: 470, burst: true, stagger: 3, lines: [{ text: `1 ${o.heroName}`, size: 128, fill: o.accentFill }, { text: `vs ${o.hordeLabel}`, size: 108, fill: 'blue', gap: 4 }] });
-  T.overlay('caption', F(0.5), impactAt + F(1.6) - F(0.5), { text: 'Who wins? Guess before the end', y: 690 });
+  T.overlay('caption', F(0.5), impactAt + F(1.6) - F(0.5), { text: 'Who wins? Guess now', y: 690 });
   T.overlay('flash', impactAt, 7, { peak: 0.7 });
   T.overlay('flash', sMid.at, 5, { peak: 0.35 });
 

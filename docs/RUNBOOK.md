@@ -32,7 +32,7 @@ All Instagram calls go through `tools/ig.py` (token from `IG_ACCESS_TOKEN`, neve
 2. Make sure the file is pushed to `social-media` (raw URL must resolve).
 3. `python3 tools/ig.py reel queue/reels/<name>.mp4 queue/captions/<name>.txt --cover queue/reels/<name>-cover.jpg`
 4. Append to `state/posted.json` (id, permalink, timestamp, name, kind, pillar, hook, trial, and the test
-   fields `length_s`, `format`, `hook_type`, `experiment`; see `tools/analyze.py`).
+   fields `length_s`, `format`, `hook_type`, `experiment` from `queue/meta.json`; see `tools/analyze.py`).
 5. `git rm` the mp4, cover and caption file, commit "Studio: posted <name>", push to `social-media`.
 
 ## Daily run (cron, about 08:4x Copenhagen)
