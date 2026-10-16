@@ -93,6 +93,21 @@
       "format": "classic",
       "hook_type": "reveal",
       "experiment": "format"
+    },
+    {
+      "id": "18063470813790700",
+      "permalink": "https://www.instagram.com/reel/DeklSufGjHG/",
+      "timestamp": "2026-10-16T22:15:27+0000",
+      "name": "r9-the-biggest-capsule",
+      "kind": "reel",
+      "pillar": "P2 rarity reveal",
+      "hook": "The biggest capsule",
+      "trial": false,
+      "length_s": 17.1,
+      "format": "short-hook",
+      "hook_type": "reveal",
+      "experiment": "owner one-off: capsule satisfying",
+      "note": "posted 00:15 Copenhagen on owner request"
     }
   ]
 }
