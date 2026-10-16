@@ -14,7 +14,7 @@
  * copy was released), so the second test plays them and checks that nothing uploads a closed bitmap.
  */
 import { expect, test, type Page } from '@playwright/test';
-import { fastForward, watchPage, type AgebornDev } from './helpers';
+import { fastForward, pastOnboarding, watchPage, type AgebornDev } from './helpers';
 
 /** Decoded image memory a whole Standard War may hold at its peak (MB; 2,484 before G7, about 540 after). */
 const BUDGET_MB = 600;
@@ -47,17 +47,19 @@ const step = (page: Page, ticks: number): Promise<Step> =>
 
 test.use({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2 });
 
-test('G7: a long Standard War at DPR 2 keeps decoded images under the budget, and no unit appears without its art', async ({ page }) => {
-  // about 2 minutes in Chromium; a software-rendered WebKit in CI draws a frame every few hundred ms
-  test.setTimeout(480_000);
-  const problems = watchPage(page);
-  await page.goto('./?dev=1&autopilot=1&quick=standard');
+const mb = (n: number): number => Math.round(n / 1e6);
+
+/**
+ * Plays the Standard War on screen and returns its memory peak: the opening at real speed (no unit may
+ * appear without its art), the rest fast-forwarded five seconds of play a step while the sheets load,
+ * upload and unload in between. Checks the budget, the evolves it covered and the page's errors.
+ */
+async function warPeak(page: Page, problems: { errors: string[] }, label: string): Promise<void> {
   await expect(page.getByTestId('battle')).toBeVisible({ timeout: 60_000 });
   // The opening at real speed: the troops both sides train first draw from their sheets (a slow
   // software-rendered engine plays a few game seconds a minute, hence the long wait).
   await expect.poll(async () => (await step(page, 0)).battle?.units ?? 0, { timeout: 120_000, intervals: [250] }).toBeGreaterThanOrEqual(2);
   expect((await step(page, 0)).mem.fallbacks).toEqual({ units: 0, last: '' });
-  // The rest fast-forwarded, five seconds of play a step; the sheets load, upload and unload in between.
   let peak: Mem | null = null;
   let top = 0;
   for (let i = 0; i < 400; i++) {
@@ -68,14 +70,68 @@ test('G7: a long Standard War at DPR 2 keeps decoded images under the budget, an
     if (s.battle.phase === 'ended') break;
     await page.waitForTimeout(200);
   }
-  const mb = (n: number): number => Math.round(n / 1e6);
-  const note = `peak ${mb(peak?.total ?? 0)} MB (cpu ${mb(peak?.cpu ?? 0)}, gpu ${mb(peak?.gpu ?? 0)}), ${peak?.sheets?.loaded ?? 0} unit sheets, last age index ${top}`;
+  const note = `${label}: peak ${mb(peak?.total ?? 0)} MB (cpu ${mb(peak?.cpu ?? 0)}, gpu ${mb(peak?.gpu ?? 0)}), ${peak?.sheets?.loaded ?? 0} unit sheets, last age index ${top}`;
   test.info().annotations.push({ type: 'memory', description: note });
   console.log(`[memory] ${test.info().project.name}: ${note}`);
   // the match went through several evolves (Gunpowder or later), so the budget covers them
   expect(top).toBeGreaterThanOrEqual(3);
   expect(mb(peak?.total ?? Infinity)).toBeLessThanOrEqual(BUDGET_MB);
   expect(problems.errors).toEqual([]);
+}
+
+test('G7: a long Standard War at DPR 2 keeps decoded images under the budget, and no unit appears without its art', async ({ page }) => {
+  // about 2 minutes in Chromium; a software-rendered WebKit in CI draws a frame every few hundred ms
+  test.setTimeout(480_000);
+  const problems = watchPage(page);
+  await page.goto('./?dev=1&autopilot=1&quick=standard');
+  await warPeak(page, problems, 'Standard War');
+});
+
+const AGES = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'] as const;
+
+test('review 2: Customize browsed through every age (Bases and Backdrops, every scene and skin owned), then a Standard War, stays under the budget', async ({ page }) => {
+  // Customize kept every age's scene strips, grounds and model sheets decoded for the session: 926 MB at
+  // the war's peak before the match start let go of them (budget 600). About 3 minutes in Chromium.
+  test.setTimeout(600_000);
+  const problems = watchPage(page);
+  await pastOnboarding(page);
+  await expect(page.getByTestId('play').first()).toBeVisible({ timeout: 60_000 });
+  // every released scene and base skin owned (a new player's decks, so the war is the first test's)
+  await page.evaluate(() => {
+    type Item = { collection: string; id: string; released?: boolean };
+    type Save = { cosmetics: { owned: string[] } };
+    const c = (window as unknown as { __agebornDev: { controller: { save: { peek(): Save }; setSave(s: Save, o?: object): void; services: { content: { cosmetics: { collections: { items: Item[] } } } } } } }).__agebornDev.controller;
+    const s = c.save.peek();
+    const keys = c.services.content.cosmetics.collections.items.filter((x) => x.released !== false && (x.collection === 'scene' || x.collection === 'baseSkin')).map((x) => `${x.collection}.${x.id}`);
+    c.setSave({ ...s, cosmetics: { ...s.cosmetics, owned: [...new Set([...s.cosmetics.owned, ...keys])] } }, { immediate: true });
+  });
+  // the autopilot plays your side of the war (a boot flag)
+  await page.goto('./?dev=1&autopilot=1');
+  await expect(page.getByTestId('play').first()).toBeVisible({ timeout: 60_000 });
+  await page.getByTestId('tab-customize').first().click();
+  // each age's preview stage goes live (the diorama leases the age's base, turrets, scene and ground)
+  const live = (testid: string, age: string) =>
+    expect.poll(async () => page.evaluate(([t, a]) => document.querySelector(`[data-testid="${t}"][data-age="${a}"][data-live="true"]`) !== null, [testid, age] as const), { timeout: 45_000, intervals: [250] }).toBe(true);
+  await page.getByTestId('tab-bases').first().click();
+  for (const age of AGES) {
+    await page.getByTestId(`age-tab-${age}`).first().click();
+    const tiles = page.locator('[data-testid="cust-base-skins"] [data-testid^="item-"]');
+    await expect(tiles.first()).toBeVisible({ timeout: 30_000 });
+    await tiles.last().click();
+    await live('base-stage', age);
+  }
+  await page.getByTestId('tab-backdrops').first().click();
+  for (const age of AGES) {
+    await page.getByTestId(`age-tab-${age}`).first().click();
+    const scenes = page.locator('[data-testid="scene-grid"] [data-testid^="item-scene."]');
+    await expect(scenes.first()).toBeVisible({ timeout: 30_000 });
+    await scenes.first().click();
+    await live('backdrop-mock', age);
+  }
+  await page.getByTestId('tab-battle').first().click();
+  await expect(page.getByTestId('play').first()).toBeVisible({ timeout: 30_000 });
+  await page.evaluate(() => (window as unknown as { __agebornDev: { controller: { quickBattle(f: string): unknown } } }).__agebornDev.controller.quickBattle('standard'));
+  await warPeak(page, problems, 'Customize, then a Standard War');
 });
 
 /** Records every WebGL upload from a closed ImageBitmap (it draws nothing; WebKit logs it as an error, Chromium as a warning). */

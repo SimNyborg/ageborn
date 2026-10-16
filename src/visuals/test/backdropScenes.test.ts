@@ -557,7 +557,7 @@ describe('scenes in the lane: seam, wipe, arrival fade, lights, release', () => 
     v.destroy();
   });
 
-  it('releases the GPU textures of the age a side left once its wipe ends', () => {
+  it('lets go of the ages both sides left once a wipe ends: every scene a side still shows or will reach stays (review 2)', () => {
     const { t, released } = fakeTextures();
     const v = view(null, t);
     v.wipe(0, 'industrial', 200);
@@ -566,8 +566,23 @@ describe('scenes in the lane: seam, wipe, arrival fade, lights, release', () => 
     v.update(150);
     expect(v.state.left).toBe('industrial');
     expect(released).toHaveLength(1);
-    expect([...released[0]!]).toEqual(['industrial.classic']);
+    // Bronze (left behind by both halves) is the only age not kept
+    expect([...released[0]!].sort()).toEqual(['cosmic.classic', 'future.classic', 'industrial.classic', 'modern.classic']);
     v.destroy();
+    // a half behind the other keeps its own age and the scenes it will reach (here an equipped one)
+    const behind = fakeTextures();
+    const w = new ProceduralBackdropView({ left: 'stone', right: 'industrial', arena: 'tar_pits', textures: behind.t, baker: new PartBaker({ pxPerLu: 1, canvasFactory: () => null }), quality: 'high', seed: 7, scenes: { left: { medieval: 'scene.misty_moor' } } });
+    w.wipe(1, 'modern', 100);
+    w.update(150);
+    const keep = [...behind.released[0]!];
+    expect(keep).toContain('stone.classic');
+    expect(keep).toContain('medieval.misty_moor');
+    expect(keep).toContain('industrial.classic');
+    expect(keep).toContain('modern.classic');
+    // Medieval's classic: the left half shows its own scene there and the right half has passed it
+    expect(keep).not.toContain('medieval.classic');
+    expect(keep).toHaveLength(8);
+    w.destroy();
     expect(WORLD.seamBlendLu).toBe(300);
   });
 });
