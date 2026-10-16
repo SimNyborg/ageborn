@@ -6,10 +6,11 @@
  *
  * Owned by Track B (PLAN 2c: base skins as real models). A skin with a model (`WORLD_BASE_SKINS`,
  * `base.<age>@<id>`, sheet `art/bases/skins/<id>.json`) shows as itself in the lane, on VS and Home;
- * its model loads lazily, and its `BASE_SKINS` tint stays as the stand-in while the sheet streams in
- * (and for the Customize mock-up until the thumbnails ship). C0 (2026-10-08) moved the skin's
- * code-drawn keep and layers here from `art.ts`, which routes `baseSkin.*` to this module, and added
- * `baseSkinThumbUrl` (the pre-rendered thumbnail; null until Track B's atlas is in).
+ * its model loads lazily, and its `BASE_SKINS` tint stays as the stand-in while the sheet streams in.
+ * C0 (2026-10-08) moved the skin's code-drawn keep and layers here from `art.ts`, which routes
+ * `baseSkin.*` to this module, and added `baseSkinThumbUrl`: the model's pre-rendered thumbnail from one
+ * atlas for every model (`art/bases/skins/thumbs.webp`, art/blender/world/base_thumbs.py), loaded on the
+ * first ask.
  */
 import { WORLD_BASE_SKINS } from '../manifest.world';
 import { circle, hex, INK, poly, rect, shade, shapesToSvg, star, type Paints, type Shape } from './shapes';
@@ -177,12 +178,69 @@ export function baseSkinSvg(id: string, p: Paints): string | null {
   return shapes ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 48">${shapesToSvg(shapes, p)}</svg>` : null;
 }
 
+/** The thumbnail atlas's layout (`art/bases/skins/thumbs.json`): the cell size and each model's cell. */
+interface ThumbAtlas {
+  image: string;
+  cell: number;
+  cells: Record<string, [number, number]>;
+}
+
+/** Each model's thumbnail as an object URL (one small picture per cell), once the atlas has loaded. */
+const thumbUrls = new Map<string, string>();
+let thumbLoad: Promise<void> | null = null;
+let thumbRetryAt = 0;
+
+function loadImage(url: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const im = new Image();
+    im.decoding = 'async';
+    im.onload = () => void (typeof im.decode === 'function' ? im.decode().catch(() => undefined) : Promise.resolve()).then(() => resolve(im));
+    im.onerror = () => reject(new Error(`image ${url} failed to load`));
+    im.src = url;
+  });
+}
+
 /**
- * The skin model's pre-rendered thumbnail (PLAN 2c "Thumbnails": a cell of
- * `public/art/bases/skins/thumbs.webp` as a data URL), for the Customize tiles; null while there is none
- * (the screens then show the age's base picture with the tint, `BaseLook`). Track B fills this in.
+ * Loads the atlas once (lazily: only a screen that shows a base skin tile asks) and cuts it into one
+ * picture per model; the atlas image itself is dropped afterwards. A failure (offline) is retried 10 s
+ * later; meanwhile the tiles keep their stand-in.
+ */
+function loadThumbs(): void {
+  if (thumbLoad || typeof document === 'undefined' || typeof fetch !== 'function' || Date.now() < thumbRetryAt) return;
+  const dir = `${(import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? '/'}art/bases/skins/`;
+  thumbLoad = (async () => {
+    const res = await fetch(`${dir}thumbs.json`);
+    if (!res.ok) throw new Error(`thumbs.json: ${res.status}`);
+    const atlas = (await res.json()) as ThumbAtlas;
+    const img = await loadImage(`${dir}${atlas.image}`);
+    const n = atlas.cell;
+    const c = document.createElement('canvas');
+    c.width = n;
+    c.height = n;
+    const ctx = c.getContext('2d');
+    if (!ctx) throw new Error('no 2D canvas');
+    for (const [id, [col, row]] of Object.entries(atlas.cells)) {
+      ctx.clearRect(0, 0, n, n);
+      ctx.drawImage(img, col * n, row * n, n, n, 0, 0, n, n);
+      // WebP where the browser encodes it (Safari writes PNG): a few KB a cell
+      const blob = await new Promise<Blob | null>((r) => c.toBlob(r, 'image/webp', 0.9));
+      if (blob && !thumbUrls.has(id)) thumbUrls.set(id, URL.createObjectURL(blob));
+    }
+  })().catch(() => {
+    thumbLoad = null;
+    thumbRetryAt = Date.now() + 10_000;
+  });
+}
+
+/**
+ * The skin model's pre-rendered thumbnail (PLAN 2c "Thumbnails": the model on a strip of its age's classic
+ * scene, a cell of `art/bases/skins/thumbs.webp`), for the Customize tiles and the capsule and crate
+ * summary. The first ask starts loading the atlas; null until it is in (the tiles then show the model's
+ * portrait over the scene thumbnail, `BaseThumb`, which asks again), and for ids without a model.
  */
 export function baseSkinThumbUrl(id: string): string | null {
-  void id;
+  const hit = thumbUrls.get(id);
+  if (hit) return hit;
+  loadThumbs();
   return null;
 }

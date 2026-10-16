@@ -1554,7 +1554,7 @@ button.cos-qwheel__slot:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 40px;
+  min-height: 44px;
   padding: 4px 12px;
   border: 2px solid var(--ui-ink);
   border-radius: 999px;
@@ -1892,10 +1892,33 @@ button.cos-qwheel__slot:focus-visible {
     left: 58%;
   }
 }
-/* phones: the tiles say what is equipped and tried on; the plate would cover the base */
+/* phones: the tiles say what is equipped and tried on; the plate would cover the base. The heading beside
+   the stage names the age, so the stage's caption goes and the Damage toggle takes its corner, compact
+   and out of the base's way (still a 44 px target). The rarity word keeps to one line on narrow cards. */
 @media (max-height: 460px) {
-  .cos-stage__plate {
+  .cos-stage__plate,
+  .cos-stage .cos-mock__caption,
+  .cos-stage__caption {
     display: none;
+  }
+  .cos-stage__dmg {
+    top: 6px;
+    right: 6px;
+    bottom: auto;
+    gap: 5px;
+    padding: 2px 9px;
+    font-size: 12px;
+    box-shadow: 0 2px 0 var(--ui-ink);
+  }
+  .cos-stage__pips i {
+    width: 7px;
+    height: 7px;
+  }
+  .cos-card__rarity {
+    letter-spacing: 0;
+  }
+  .cos-card__foot {
+    padding-inline: 2px;
   }
 }
 /* tall phones in portrait-ish layouts and tablets: the info card shows when there is height for it */

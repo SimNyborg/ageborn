@@ -469,6 +469,67 @@ def thumbnail(sky, layers, ground, out_path, budget=BUDGET["thumb"]):
         q -= 4
 
 
+def _still_path_point(sp):
+    """A path sprite's Reduce-motion pose, as the game holds it (`stillPathTime`): the middle of its
+    longest visible span. Returns (x, y, dir) or None."""
+    keys = sp["keys"]
+    best, seg = 0.0, None
+    for a, b in zip(keys, keys[1:]):
+        if b[0] - a[0] > best and min(a[3], b[3]) > 0.5:
+            best, seg = b[0] - a[0], (a, b)
+    if seg is None:
+        return None
+    a, b = seg
+    return (a[1] + b[1]) / 2, (a[2] + b[2]) / 2, (1 if b[1] >= a[1] else -1)
+
+
+def with_still_props(arrays, atlas, frames, sprites, limit=6):
+    """Copies of the layer strips with the props drawn in at the pose the lane holds under Reduce motion
+    (a loop or bob on its first frame at its point, a path group in the middle of its longest visible
+    span; emitters left out), within the lane's High limit of moving sprites, so the thumbnail shows the
+    palm crowns, boats and herds the battle shows."""
+    if atlas is None or not frames:
+        return arrays
+    out = {k: v.copy() for k, v in arrays.items()}
+    moving = [s for s in sprites if s.get("kind") != "emit"][:limit]
+    for sp in moving:
+        layer = sp.get("layer")
+        if layer not in out:
+            continue
+        items = []
+        if sp["kind"] in ("loop", "bob"):
+            items.append((sp["frames"][0], sp["at"][0], sp["at"][1], False))
+        elif sp["kind"] == "path":
+            p = _still_path_point(sp)
+            if p is None:
+                continue
+            flip = sp.get("face", "motion") == "motion" and p[2] < 0
+            for m in sp["group"]:
+                dx = m.get("dx", 0)
+                items.append((m["frames"][0], p[0] + (-dx if flip else dx), p[1] + m.get("dy", 0), flip))
+        f = FRAMES[layer]
+        lppl = f["ppl"]
+        H, W = out[layer].shape[:2]
+        for name, lx, ly, flip in items:
+            fr = frames.get(name)
+            if not fr:
+                continue
+            fx, fy, fw, fh, ax, ay, ppl = fr
+            im = atlas.crop((fx, fy, fx + fw, fy + fh))
+            if flip:
+                im = im.transpose(Image.FLIP_LEFT_RIGHT)
+                ax = 1 - ax
+            sw, sh = max(1, int(round(fw * lppl / ppl))), max(1, int(round(fh * lppl / ppl)))
+            part = np.asarray(im.resize((sw, sh), Image.LANCZOS), dtype=np.float32) / 255.0
+            px0 = int(round((lx - X0) * lppl - ax * sw))
+            py0 = int(round((ly - f["yTop"]) * lppl - ay * sh))
+            x0, y0, x1, y1 = max(0, px0), max(0, py0), min(W, px0 + sw), min(H, py0 + sh)
+            if x1 <= x0 or y1 <= y0:
+                continue
+            out[layer][y0:y1, x0:x1] = sheet.over(part[y0 - py0:y1 - py0, x0 - px0:x1 - px0], out[layer][y0:y1, x0:x1])
+    return out
+
+
 NEUTRAL_GROUND = {
     "earth": dict(top=0x9C9478, path=0xA89E80, grass=0x7E8A56, face=0x6C6252),
     "deck": dict(top=0x8E8CA0, path=0x9A98AA, grass=0x6E6A88, face=0x4A4660),
@@ -601,6 +662,7 @@ def render_scene(sc, out, install=True, log=print):
     for layer in ("back", "far", "mid"):
         if layer in meta:
             doc[layer] = meta[layer]
+    atlas, frames, sprites = None, {}, []
     if sc.props:
         props, sprites = sc.props()
         atlas, frames = render_props(props, P, work, log, looks=sc.look)
@@ -614,7 +676,8 @@ def render_scene(sc, out, install=True, log=print):
         doc["lights"] = compact_lights(lights)
     doc["hints"] = sc.hints
     doc["thumb"] = "thumb.webp"
-    sizes["thumb"], _ = thumbnail(sc.sky, arrays, NEUTRAL_GROUND[sc.ground], os.path.join(work, "thumb.webp"))
+    sizes["thumb"], _ = thumbnail(sc.sky, with_still_props(arrays, atlas, frames, sprites), NEUTRAL_GROUND[sc.ground],
+                                  os.path.join(work, "thumb.webp"))
     text = json.dumps(doc, separators=(",", ":"))
     with open(os.path.join(work, "layers.json"), "w") as fh:
         fh.write(text)

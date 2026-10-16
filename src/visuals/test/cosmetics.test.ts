@@ -6,7 +6,9 @@
  */
 import { describe, expect, it } from 'vitest';
 import { content } from '@/content';
+import type { AgeId } from '@/contracts';
 import { COSMETIC_COLLECTIONS, cosmeticImageUrl, cosmeticSvg, hasCosmeticArt, parseCosmeticKey } from '../cosmetics/art';
+import { backdropWeatherSvg } from '../cosmetics/backdropPreview';
 import { decorationArtUrl } from '../cosmetics/decorations';
 import { nationalFlagUrl } from '../cosmetics/nationalFlags';
 
@@ -68,6 +70,16 @@ describe('cosmetic art', () => {
 });
 
 describe('routing (PLAN 2f interface 2)', () => {
+  it("turns a sky's weather into the lane's space weather over a space scene, never snow (Track A's table)", () => {
+    const over = (age: AgeId, scene: string | null) => cosmeticSvg('backdrop.winterfall', { layer: 'fx', age, scene, animate: false });
+    const space = backdropWeatherSvg('backdrop.winterfall', false, { space: true });
+    expect(over('stone', null)).toBe(backdropWeatherSvg('backdrop.winterfall', false));
+    expect(over('stone', 'scene.glacier_valley')).toBe(backdropWeatherSvg('backdrop.winterfall', false));
+    expect(over('cosmic', null)).toBe(space);
+    expect(over('cosmic', 'scene.ringed_giant')).toBe(space);
+    expect(space).not.toBe(over('stone', null));
+  });
+
   it('scenes and skies over scenes are pictures from Track A (none without a DOM)', () => {
     expect(cosmeticSvg('scene.classic')).toBeNull();
     expect(cosmeticImageUrl('scene.classic', { age: 'stone', thumb: true })).toBeNull();

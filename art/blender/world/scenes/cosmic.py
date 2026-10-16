@@ -353,7 +353,8 @@ RG_SKY = {"top": "#1C1630", "bottom": "#3E3262", "horizon": "#4A3C70", "cloudTin
           "stars": 220, "nebula": False, "clouds": 0}
 RG_FAR_E = math.radians(8.0)
 RG_MID_E = math.radians(12.0)
-RG_PLANET = (430.0, 1500.0, 250.0, 168.0)     # the giant (back): x, depth, z, radius
+RG_PLANET = (430.0, 1500.0, 120.0, 168.0)     # the giant (back): x, depth, z, radius (rising behind the
+                                             # moonlet, so a phone shows its banded middle under the HUD)
 RG_DOCK = (690.0, 60.0, 92.0)                # the docking clamp (mid)
 
 
@@ -382,7 +383,7 @@ def rg_back(st, P):
         x = -240 + k * 38 + rnd.uniform(-14, 14)
         if 760 < x < 1000:
             continue
-        z = 330 + 40 * math.sin((x + 200) / 600) + rnd.uniform(-14, 14)
+        z = 200 + 40 * math.sin((x + 200) / 600) + rnd.uniform(-14, 14)
         rock(ga, (x, py + 300, z), (rnd.uniform(3, 7),) * 2 + (rnd.uniform(2.4, 5),), seed=200 + k, jag=0.3, p=2.0, cuts=2)
     pt.flush(st)
 

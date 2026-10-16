@@ -18,7 +18,7 @@
  * keys return null.
  */
 import type { AgeId } from '@/contracts/ids';
-import { hasSceneArt, scenePreviewUrl } from '../backdrops/scenePreview';
+import { hasSceneArt, isSpaceScene as isSpaceSceneOf, scenePreviewUrl } from '../backdrops/scenePreview';
 import { BACKDROP_THEMES } from '../backdrops/themes';
 import { backdropIconSvg, backdropPreviewUrl, backdropWeatherSvg } from './backdropPreview';
 import { baseSkinArt, baseSkinLayerSvg, baseSkinSvg, baseSkinThumbUrl, BASE_SKINS, hasBaseSkinArt } from './baseSkins';
@@ -200,78 +200,13 @@ function emoteSvg(id: string, p: Paints, animate: boolean): string | null {
 // ---------------------------------------------------------------------------------------------
 
 /**
- * True for a scene whose hints say `weather: 'space'`: every Cosmic scene (the classic Crystal Moon Base,
- * Ringed Giant and Nebula Shipyard, PLAN 2b), so the preview never snows over space. Read from the age,
- * which holds for all 24 planned scenes; the lane reads the hint from the scene's own `layers.json`.
+ * True for a scene whose hints say `weather: 'space'` (Track A's table in `backdrops/scenes.ts`, held to
+ * the shipped `layers.json` by its test): Cosmic's classic and Ringed Giant today. Over such a scene the
+ * preview turns the sky's weather into the lane's space weather (`backdropWeatherSvg`'s `space`: snow
+ * becomes ice motes, rain rare streaks, petals and leaves sparkles), so it never snows over space.
  */
 export function isSpaceScene(age: AgeId, scene?: string | null): boolean {
-  void scene;
-  return age === 'cosmic';
-}
-
-/** A tiny seeded stream for the motes' positions (the same picture every time). */
-function seq(seed: number): () => number {
-  let s = seed >>> 0 || 1;
-  return () => {
-    s ^= s << 13;
-    s ^= s >>> 17;
-    s ^= s << 5;
-    return ((s >>> 0) % 10000) / 10000;
-  };
-}
-
-/**
- * A sky's weather as the lane shows it over a space scene (the preview's motion layer, a transparent
- * SVG over the still): snow becomes drifting ice motes, rain becomes meteor streaks, and petals, leaves,
- * embers, lanterns and fireflies become twinkling sparkles in the sky's weather colour. Null for a sky
- * without weather. `animate` off draws the same particles still (Reduce motion).
- */
-export function spaceWeatherSvg(id: string, animate: boolean): string | null {
-  const th = BACKDROP_THEMES[id];
-  if (!th || th.weather === 'none') return null;
-  const W = 240;
-  const H = 96;
-  const c = hex(th.weatherColor);
-  const rnd = seq(id.length * 7919 + id.charCodeAt(0) * 31);
-  const n = (a: number, b: number) => (a + rnd() * (b - a)).toFixed(2);
-  const parts: string[] = [];
-  if (th.weather === 'snow') {
-    for (let i = 0; i < 22; i += 1) {
-      const x = n(0, W);
-      const y = n(4, H);
-      const r = Number(n(0.9, 1.7));
-      const begin = `-${n(0, 9)}s`;
-      const drift = animate ? `<animateTransform attributeName="transform" type="translate" values="0 0;${n(-14, -6)} ${n(4, 10)};0 0" dur="${n(7, 12)}s" begin="${begin}" repeatCount="indefinite"/>` : '';
-      const tw = animate ? `<animate attributeName="opacity" values="0.25;1;0.25" dur="${n(1.6, 3.2)}s" begin="${begin}" repeatCount="indefinite"/>` : '';
-      parts.push(`<g>${drift}<path d="M${x} ${(Number(y) - r).toFixed(2)}l${(r * 0.6).toFixed(2)} ${r}l${(-r * 0.6).toFixed(2)} ${r}l${(-r * 0.6).toFixed(2)} ${-r}z" fill="#e6f4ff" opacity="0.85">${tw}</path></g>`);
-    }
-  } else if (th.weather === 'rain') {
-    for (let i = 0; i < 6; i += 1) {
-      const x = Number(n(60, W + 40));
-      const y = Number(n(-10, H * 0.45));
-      const len = Number(n(14, 26));
-      const begin = `-${n(0, 6)}s`;
-      const dur = n(2.6, 4.2);
-      const fly = animate ? `<animateTransform attributeName="transform" type="translate" values="0 0;-90 52;-90 52" keyTimes="0;0.34;1" dur="${dur}s" begin="${begin}" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;0;0" keyTimes="0;0.08;0.34;1" dur="${dur}s" begin="${begin}" repeatCount="indefinite"/>` : '';
-      parts.push(
-        `<g opacity="${animate ? 0 : 0.8}">${fly}<path d="M${x.toFixed(1)} ${y.toFixed(1)}l${(len * 0.86).toFixed(1)} ${(-len * 0.5).toFixed(1)}" stroke="${c}" stroke-width="0.9" stroke-linecap="round" opacity="0.55"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.3" fill="#ffffff"/></g>`,
-      );
-    }
-  } else {
-    for (let i = 0; i < 14; i += 1) {
-      const x = Number(n(4, W - 4));
-      const y = Number(n(4, H * 0.8));
-      const r = Number(n(1.4, 2.6));
-      const begin = `-${n(0, 4)}s`;
-      const tw = animate
-        ? `<animateTransform attributeName="transform" type="scale" values="0.3;1;0.3" dur="${n(1.8, 3.4)}s" begin="${begin}" repeatCount="indefinite" additive="sum"/>`
-        : '';
-      parts.push(
-        `<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)})"><g>${tw}<path d="M0 ${-r}Q0 0 ${r * 0.62} 0Q0 0 0 ${r}Q0 0 ${-r * 0.62} 0Q0 0 0 ${-r}Z" fill="${c}"/><circle r="${(r * 0.9).toFixed(2)}" fill="${c}" opacity="0.18"/></g></g>`,
-      );
-    }
-  }
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} 128" preserveAspectRatio="xMidYMid slice">${parts.join('')}</svg>`;
+  return isSpaceSceneOf(age, scene ?? null);
 }
 
 /** A speech bubble with three dots: the quote collection's icon (the line itself is text). */
@@ -331,7 +266,7 @@ export function cosmeticSvg(key: string, o: CosmeticSvgOptions = {}): string | n
   if (!k) return null;
   const p: Paints = { team: o.team ?? PREVIEW_TEAM };
   // a sky's weather; over a space scene its snow, rain and petals become motes, streaks and sparkles
-  if (o.layer === 'fx' && k.collection === 'backdrop') return isSpaceScene(o.age ?? 'stone', o.scene) ? spaceWeatherSvg(k.id, o.animate ?? true) : backdropWeatherSvg(key, o.animate ?? true);
+  if (o.layer === 'fx' && k.collection === 'backdrop') return backdropWeatherSvg(key, o.animate ?? true, { space: isSpaceScene(o.age ?? 'stone', o.scene) });
   // a skin model's thumbnail is a picture (cosmeticImageUrl), never SVG
   if (o.layer === 'thumb') return null;
   if (o.layer) return k.collection === 'baseSkin' ? baseSkinLayerSvg(k.id, o.layer, o.animate ?? true) : null;

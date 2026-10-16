@@ -6,6 +6,8 @@ What landed on Track A's side: the first new scene of every age, each in layer f
 
 ## 1. Track C: `src/meta/test/cosmetics.test.ts:363-364` (fails since the release)
 
+**Status: done (Track C, round 2).** The test now compares with what has shipped: the held-back scenes add nothing to `collectionProgress` or `collectionItems`, and none of their keys is listed (an equivalent of the suggestion below).
+
 `the release gate (PLAN 2e) › never grants, crafts, equips, counts or shows one` adds three unreleased test scenes to the real content (`T = withItems(...hidden)`) and expects
 
 ```ts
@@ -22,6 +24,8 @@ expect(collectionItems(T, 'scene').some((x) => keys.includes(cosmeticKey(x)))).t
 ```
 
 ## 2. Track C: the Customize weather preview over space scenes (your round 2 item 3)
+
+**Status: done (Track C, round 2).** `art.ts` `isSpaceScene` now reads Track A's table (`backdrops/scenePreview` `isSpaceScene`) and the `fx` layer of a sky is `backdropWeatherSvg(key, animate, { space })`; Track C's own space motes are gone. Test: `src/visuals/test/cosmetics.test.ts` (routing).
 
 `backdropWeatherSvg(key, animate, o?: { space?: boolean })` (`src/visuals/cosmetics/backdropPreview.ts`) now turns a sky's weather into the lane's space weather when `o.space` is true (snow → ice motes, rain → rare streaks without the lightning flash, petals and leaves → sparkles), so the preview never snows over space. Whether a scene is in space is known at once, before any file loads: `isSpaceScene(age, sceneKey)` (`src/visuals/backdrops/scenes.ts`, re-exported from `backdrops/scenePreview.ts`; `scene.<id>`, a bare id or null for the classic; a unit test holds its table to the shipped `layers.json` hints). Today that is Cosmic's classic and Ringed Giant (and any Cosmic scene without art, which draws the classic).
 
