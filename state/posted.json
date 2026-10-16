@@ -8,7 +8,11 @@
       "kind": "reel",
       "pillar": "P1 satisfying",
       "hook": "Wait for it...",
-      "trial": false
+      "trial": false,
+      "length_s": 16.0,
+      "hook_type": "satisfying",
+      "format": "classic",
+      "experiment": "baseline"
     },
     {
       "id": "18101735651368159",
@@ -19,7 +23,11 @@
       "pillar": "P2 legendary reveal",
       "hook": "A knight. On a war bear",
       "trial": false,
-      "note": "posted 23:10 Copenhagen on owner request, outside the evening window"
+      "note": "posted 23:10 Copenhagen on owner request, outside the evening window",
+      "length_s": 12.7,
+      "hook_type": "reveal",
+      "format": "classic",
+      "experiment": "baseline"
     },
     {
       "id": "18124468825915301",
@@ -29,7 +37,11 @@
       "kind": "reel",
       "pillar": "P2 choose/vote",
       "hook": "Pick one",
-      "trial": false
+      "trial": false,
+      "length_s": 17.8,
+      "hook_type": "vote",
+      "format": "classic",
+      "experiment": "baseline"
     },
     {
       "id": "18102074954378639",
@@ -39,7 +51,11 @@
       "kind": "reel",
       "pillar": "P1 age clash",
       "hook": "1 Cosmic Tank vs 40 Cavemen",
-      "trial": false
+      "trial": false,
+      "length_s": 23.7,
+      "hook_type": "matchup",
+      "format": "classic",
+      "experiment": "baseline"
     }
   ]
 }

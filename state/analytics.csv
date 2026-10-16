@@ -1,7 +1,5 @@
-date,media_id,kind,pillar,hook,voice,views,reach,likes,comments,saved,shares,follows,avg_watch_ms
-2026-10-15,17941766658366382,reel,P1,r2-most-satisfying-base-collapse,none,125,117,3,0,0,0,,3766
-2026-10-15,18101735651368159,reel,P2,r3-ursa-paladin-legendary,none,38,31,2,0,0,0,,5470
-2026-10-15e,17941766658366382,reel,P1,r2-most-satisfying-base-collapse,none,126,118,3,0,0,0,,3943
-2026-10-15e,18101735651368159,reel,P2,r3-ursa-paladin-legendary,none,83,77,2,0,0,0,,4544
-2026-10-15e,18124468825915301,reel,P2,r5-pick-one-legendary,none,18,18,2,0,0,0,,5251
-2026-10-15e,18102074954378639,reel,P1,r1-40-cavemen-vs-1-cosmic-tank,none,37,37,0,0,0,0,,2402
+snapshot_utc,media_id,name,age_h,format,hook_type,slot,length_s,trial,views,reach,likes,comments,saved,shares,avg_watch_ms,watch_pct,eng_rate,share_rate
+2026-10-16T08:15Z,17941766658366382,r2-most-satisfying-base-collapse,45.9,classic,satisfying,midday,16.0,False,126,118,3,0,0,0,4005,25.0,0.0254,0.0
+2026-10-16T08:15Z,18101735651368159,r3-ursa-paladin-legendary,35.1,classic,reveal,evening,12.7,False,86,79,2,0,0,0,4701,37.0,0.0253,0.0
+2026-10-16T08:15Z,18124468825915301,r5-pick-one-legendary,21.5,classic,vote,midday,17.8,False,21,21,2,0,0,0,5988,33.6,0.0952,0.0
+2026-10-16T08:15Z,18102074954378639,r1-40-cavemen-vs-1-cosmic-tank,14.0,classic,matchup,evening,23.7,False,118,113,2,0,0,0,3589,15.1,0.0177,0.0

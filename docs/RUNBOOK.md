@@ -31,12 +31,14 @@ All Instagram calls go through `tools/ig.py` (token from `IG_ACCESS_TOKEN`, neve
 1. `git pull` in /tmp/soc. Check `tools/ig.py media 5` so the item is not already live.
 2. Make sure the file is pushed to `social-media` (raw URL must resolve).
 3. `python3 tools/ig.py reel queue/reels/<name>.mp4 queue/captions/<name>.txt --cover queue/reels/<name>-cover.jpg`
-4. Append to `state/posted.json` (id, permalink, timestamp, name, kind, pillar, hook, trial).
+4. Append to `state/posted.json` (id, permalink, timestamp, name, kind, pillar, hook, trial, and the test
+   fields `length_s`, `format`, `hook_type`, `experiment`; see `tools/analyze.py`).
 5. `git rm` the mp4, cover and caption file, commit "Studio: posted <name>", push to `social-media`.
 
 ## Daily run (cron, about 08:4x Copenhagen)
 
-1. Insights for posts from the last 7 days -> `state/analytics.csv` (one row per post per day).
+1. `python3 tools/analyze.py` (insights snapshot for every post -> `state/analytics.csv`, plus medians per
+   test variable). Use its output for the plan and the evening status.
 2. Plan today: 2 grid Reels (owner decision 2026-10-14: start with 2), jittered in 11:30-13:30 and
    19:00-21:30 Copenhagen, plus a Trial Reel when spare content exists. Go to 3 a day only when median
    reach per post holds within 20% of the week before and the queue is at least 2 days ahead; tell the
@@ -57,3 +59,23 @@ No em dashes. Never mention the owner's identity.
   Before any post, run `tools/ig.py me`; if it still fails, do not retry in a loop.
 - 2026-10-14 21:08 UTC: access works again (GET /me and /me/media OK). The owner checked the Meta app;
   no alerts were shown and the cause is unknown. R3 is held for the next grid slot.
+
+## Testing plan (what to post to learn the most)
+
+One main variable per week; decide on medians of at least 3 grid posts per variant older than 24 h
+(`tools/analyze.py` marks groups that are too small). Main signals: watch_pct (share of the video
+watched), share_rate, eng_rate, reach. Followers per post are not available from the API, so watch
+`followers_count` per day alongside.
+
+- Week 1 (from 2026-10-16): **format**. "classic" (intro, 13-24 s) vs "short-hook" (cold open on the
+  action, 8-12 s). Baseline after 4 classic posts: watch_pct 15-37 %, the longest (24 s) lowest.
+- Week 2: **hook_type** within the winning format (matchup vs reveal vs vote vs satisfying).
+- Week 3: **slot** (midday vs evening) and length within the winner.
+- Trial Reels: same clip, a different first 2 seconds or title, to test hooks without touching the grid.
+
+## Content direction (from the first week)
+
+Open cold on the most dramatic moment (impact, explosion, reveal) with the title over the action;
+no intro shots; 8-12 s; a question on screen in the first second; short end card (1.5 s).
+`shots/duel.mjs` + `reels/duel.mjs` make "1 Legendary vs N" duels in this format: scout with
+`tools/scout.ts`, add a `shots/rN.mjs` + `reels/rN.mjs` pair, record, make, frame-check.
