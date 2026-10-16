@@ -62,6 +62,8 @@ export interface DioramaApp {
   attach(host: HTMLElement): void;
   resize(width: number, height: number): void;
   render(): void;
+  /** Drops this context's GPU copies of textures no renderer has drawn for `idleMs` (other contexts keep theirs). */
+  trim?(idleMs: number): void;
   destroy(): void;
 }
 
@@ -126,6 +128,14 @@ const POP_MS = 420;
 const FADE_MS = 360;
 /** Reduce motion: the views run this long after a change, then the loop parks on the still frame. */
 const SETTLE_MS = 900;
+/**
+ * A look the stage no longer shows (another age, a skin tried on before) gives its GPU copies back after
+ * this long, checked every `TRIM_EVERY_MS` of drawing: browsing every age keeps about one look on the GPU
+ * (Safari memory). Everything the diorama uploads keeps its decoded copy, so a look that comes back
+ * simply uploads again.
+ */
+const TRIM_IDLE_MS = 4_000;
+const TRIM_EVERY_MS = 2_000;
 const LOAD_TIMEOUT_MS = 12_000;
 /** A later change waits at most this long for its files; then it builds with what is in (fallbacks). */
 const SWAP_TIMEOUT_MS = 4_000;
@@ -322,6 +332,7 @@ export class DioramaStage implements DioramaHandle {
   private clockMs = 0;
   /** Reduce motion: frame time left before the loop parks on the still frame. */
   private settleMs = SETTLE_MS;
+  private trimAcc = 0;
 
   // scene
   private readonly world = new Container();
@@ -655,6 +666,12 @@ export class DioramaStage implements DioramaHandle {
     });
     this.stepArrival(dt, reduce);
     this.app?.render();
+    // after the frame drew (its textures were just used): let older looks' GPU copies go
+    this.trimAcc += dt;
+    if (this.trimAcc >= TRIM_EVERY_MS) {
+      this.trimAcc = 0;
+      if (this.owns()) this.app?.trim?.(TRIM_IDLE_MS);
+    }
   }
 
   /** The new base's pop (an overshoot about its foot) or, under Reduce motion, its fade-in. */
@@ -746,12 +763,6 @@ export async function createDioramaApp(size: { width: number; height: number }):
       autoDensity: true,
       autoStart: false,
       sharedTicker: false,
-      // a look the stage no longer shows (another age, a skin tried on before) leaves its GPU copies
-      // within seconds, not the default minute: browsing every age stays at about one look's textures.
-      // Safe, because everything the diorama uploads (world and scene sheets, baked canvases) keeps its
-      // decoded copy and simply uploads again if it comes back
-      gcMaxUnusedTime: 6000,
-      gcFrequency: 3000,
     });
   } catch {
     try {
@@ -771,6 +782,10 @@ export async function createDioramaApp(size: { width: number; height: number }):
   canvas.style.height = '100%';
   canvas.style.display = 'block';
   canvas.style.pointerEvents = 'none';
+  // Pixi's own GC never unloads image sources (`autoGarbageCollect` is off) and an unload would reach
+  // every context; removing a source from this renderer's managed textures frees only this context's copy
+  type Managed = { items?: Record<string, { _gcLastUsed?: number } | null>; remove?(s: unknown): void };
+  const managed = (): Managed | undefined => (app.renderer.texture as unknown as { _managedTextures?: Managed })._managedTextures;
   return {
     stage: app.stage,
     attach: (host) => {
@@ -778,6 +793,12 @@ export async function createDioramaApp(size: { width: number; height: number }):
     },
     resize: (w, h) => app.renderer.resize(w, h),
     render: () => app.render(),
+    trim: (idleMs) => {
+      const m = managed();
+      if (!m?.items || typeof m.remove !== 'function') return;
+      const now = performance.now();
+      for (const s of Object.values(m.items)) if (s && typeof s._gcLastUsed === 'number' && s._gcLastUsed >= 0 && now - s._gcLastUsed > idleMs) m.remove(s);
+    },
     destroy: () => app.destroy({ removeView: true }, { children: true, texture: false, textureSource: false }),
   };
 }
