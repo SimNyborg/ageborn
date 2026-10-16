@@ -18,6 +18,7 @@
  * keys return null.
  */
 import type { AgeId } from '@/contracts/ids';
+import { AGES } from '../ages';
 import { hasSceneArt, isSpaceScene as isSpaceSceneOf, scenePreviewUrl } from '../backdrops/scenePreview';
 import { BACKDROP_THEMES } from '../backdrops/themes';
 import { backdropIconSvg, backdropPreviewUrl, backdropWeatherSvg } from './backdropPreview';
@@ -209,6 +210,15 @@ export function isSpaceScene(age: AgeId, scene?: string | null): boolean {
   return isSpaceSceneOf(age, scene ?? null);
 }
 
+/** The age a sky's tile is shown in when `age`'s scene is in space: the nearest earlier age whose classic scene is not. */
+export function skyTileAge(age: AgeId): AgeId {
+  for (let i = AGES.indexOf(age); i >= 0; i--) {
+    const a = AGES[i];
+    if (a && !isSpaceSceneOf(a, null)) return a;
+  }
+  return age;
+}
+
 /** A speech bubble with three dots: the quote collection's icon (the line itself is text). */
 function quoteSvg(): string {
   const O = { stroke: INK, width: 1.5 };
@@ -313,9 +323,15 @@ export function cosmeticImageUrl(key: string, o: CosmeticSvgOptions = {}): strin
   // same painters the lane uses (cached per age and skin there)
   if (!o.layer && key.startsWith('backdrop.')) {
     const sky = key === 'backdrop.classic' ? null : key;
-    const still = o.scene
-      ? scenePreviewUrl(o.scene, age, { thumb: !!o.thumb, sky, cachedOnly: !!o.cached })
-      : backdropPreviewUrl(sky, age, { thumb: !!o.thumb, cachedOnly: !!o.cached });
+    // A space scene keeps its own sky under every theme, so on Cosmic the eleven sky tiles looked the same
+    // (review 2): a sky's tile shows it over the nearest earlier age with a sky of its own (its classic
+    // scene) instead. The big preview still shows the scene the player picked, as the lane will.
+    const tileAge = o.thumb && isSpaceScene(age, o.scene) ? skyTileAge(age) : null;
+    const still = tileAge
+      ? backdropPreviewUrl(sky, tileAge, { thumb: true, cachedOnly: !!o.cached })
+      : o.scene
+        ? scenePreviewUrl(o.scene, age, { thumb: !!o.thumb, sky, cachedOnly: !!o.cached })
+        : backdropPreviewUrl(sky, age, { thumb: !!o.thumb, cachedOnly: !!o.cached });
     if (still || o.cached) return still;
   }
   // A base skin model's thumbnail (Track B; null until it has one)

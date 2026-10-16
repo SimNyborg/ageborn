@@ -15,6 +15,11 @@ export interface EmoteWheel {
   quoteCooldownMs: number;
   /** Your General (the quote bubble's head, PLAN 2a); absent in replays and tests. */
   speaker?: AvatarSpec;
+  /**
+   * The opponent's AI General (`OpponentSpec.generalId`), whose fixed look performs its starter emotes;
+   * absent in replays (an online player performs with their own look, which wins).
+   */
+  foeGeneral?: string;
 }
 
 export interface HudCtx {

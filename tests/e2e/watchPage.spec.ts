@@ -1,11 +1,12 @@
 /**
  * G2 (2026-10-08): `watchPage` ignores only WebKit's report of a request on this host that a main-frame
  * navigation aborted ("… due to access control checks.", see `isAbortedRequestNoise`), and only while that
- * navigation runs. A deliberate `console.error`, the same report outside a navigation and another host's
- * report all still count, so no real error can hide behind the filter.
+ * navigation runs, plus (review 2) WebKit's report of the base64 `data:` image Pixi's capability worker
+ * fetches (`isWorkerDataUrlNoise`). A deliberate `console.error`, the same report outside a navigation and
+ * another host's report all still count, so no real error can hide behind the filter.
  */
 import { expect, test } from '@playwright/test';
-import { isAbortedRequestNoise, NAVIGATION_GRACE_MS, watchPage } from './helpers';
+import { isAbortedRequestNoise, isWorkerDataUrlNoise, NAVIGATION_GRACE_MS, watchPage } from './helpers';
 
 test('the noise filter matches only this host\'s "access control checks" reports', () => {
   const host = 'localhost:4173';
@@ -16,6 +17,17 @@ test('the noise filter matches only this host\'s "access control checks" reports
   expect(isAbortedRequestNoise('TypeError: undefined is not an object (evaluating a.b)', host)).toBe(false);
   expect(isAbortedRequestNoise('http://localhost:4173/x.json due to access control checks. And then more', host)).toBe(false);
   expect(isAbortedRequestNoise('due to access control checks.', '')).toBe(false);
+});
+
+test("the worker filter matches only WebKit's report of a base64 data: image (Pixi's capability worker)", () => {
+  const white = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=';
+  expect(isWorkerDataUrlNoise(`Fetch API cannot load ${white} due to access control checks.`)).toBe(true);
+  // Playwright's WebKit page error, cut at its first ':'
+  expect(isWorkerDataUrlNoise(`${white.slice('data:'.length)} due to access control checks.`)).toBe(true);
+  expect(isWorkerDataUrlNoise('Fetch API cannot load http://localhost:4173/ageborn/x.png due to access control checks.')).toBe(false);
+  expect(isWorkerDataUrlNoise(`Fetch API cannot load ${white} due to access control checks. http://evil`)).toBe(false);
+  expect(isWorkerDataUrlNoise('Fetch API cannot load data:text/html,<b>x</b> due to access control checks.')).toBe(false);
+  expect(isWorkerDataUrlNoise(`TypeError: ${white}`)).toBe(false);
 });
 
 test('a deliberate console.error still counts, and so does the report outside a navigation', async ({ page }) => {

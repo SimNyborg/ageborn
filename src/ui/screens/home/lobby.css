@@ -528,6 +528,36 @@
     display: none;
   }
 }
+/* The smallest phones (under 700 px wide, such as 667 x 375; review 2): the switcher lay 37 px over the
+   Customize tab. With 72 px tabs (theme.css) and a 152 px Battle the row fits the tabs, the switcher and
+   Battle with room between; the stage between the columns is about 190 px wide, so the arena's name takes
+   the label size and the trophy bar keeps its count, bar and next reward (the "Next at" line is on the
+   Trophy Road one tap away, and in the bar's label for screen readers). */
+@container ui-root (max-width: 699.98px) {
+  .ui-btn.hub-battle {
+    --minw: 152px;
+  }
+  .ui-btn.hub-battle .ui-btn__face {
+    padding: 0 var(--ui-s2);
+    font-size: var(--ui-btn-xl-fs);
+    letter-spacing: 0.03em;
+  }
+  .hub-arena {
+    gap: 5px;
+    padding: 3px var(--ui-s2) 3px 4px;
+  }
+  .hub-arena__num {
+    padding: 1px 6px;
+    letter-spacing: 0.03em;
+  }
+  .hub-arena__name {
+    font-size: 13px;
+    letter-spacing: 0.01em;
+  }
+  .hub-road__label {
+    display: none;
+  }
+}
 .ui-root[data-reduce-motion='true'] .hub-friend {
   animation: none;
 }

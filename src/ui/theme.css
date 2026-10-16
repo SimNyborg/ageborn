@@ -289,6 +289,13 @@
     --ui-tab-w: 80px;
   }
 }
+/* the smallest phones (below 700 px wide, such as 667 x 375; review 2): 72 px tabs, so Home's bottom row
+   keeps the tabs, the mode switcher and Battle side by side (lobby.css) */
+@container ui-root (max-height: 480px) and (max-width: 699.98px) {
+  :is(.ui-root, .ab-root) > * {
+    --ui-tab-w: 72px;
+  }
+}
 /* short: iOS Safari with bars, common Android (height <= 360) */
 @container ui-root (max-height: 360px) {
   :is(.ui-root, .ab-root) > * {

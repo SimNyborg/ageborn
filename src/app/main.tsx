@@ -18,7 +18,7 @@ import { textureMemory } from '@/visuals/textureMemory';
 import { boot, bootFlags, validateContentInDev } from './boot';
 import { AppController, ART_WAIT_MS } from './controller';
 import type { KeyValueStore } from './eventLog';
-import { createPixiHost } from './pixiHost';
+import { createPixiHost, releaseGpuOnPageHide } from './pixiHost';
 import { documentVisibility, type SessionView } from './session';
 import { AppRoot } from './ui/AppRoot';
 import type { AppUi } from './ui/context';
@@ -72,6 +72,12 @@ async function start(root: HTMLElement): Promise<void> {
   let artLoaded = false;
   void booted.artReady.then(() => (artLoaded = true));
   const pixi = booted.pixi!;
+  // The page's GPU memory and decoded images go with the page (a reload, a navigation), before the next
+  // page loads in the same process (review 2: WebKit as an iPhone crashed reloading after a battle).
+  releaseGpuOnPageHide(window, () => {
+    pixi.app.ticker.stop();
+    (art as { releaseAll?: () => void }).releaseAll?.();
+  });
   const views = new Map<Sim, BattleView>();
   // The view reads the settings when a battle starts, so Settings changes apply to the next battle.
   const viewSettings = (): ViewSettings => {

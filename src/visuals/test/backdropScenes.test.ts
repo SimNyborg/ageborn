@@ -97,6 +97,8 @@ const ROUND2: readonly [AgeId, string][] = [
   ['future', 'skyway_metropolis'],
   ['cosmic', 'ringed_giant'],
 ];
+/** Round 2 scenes whose art is in but which wait for round 3 (review 2): the glacier read as a dome, the airbase as sparse. */
+const HELD: readonly string[] = ['stone.glacier_valley', 'modern.desert_airbase'];
 const shipped = (age: AgeId, scene: string): SceneData | null => parseScene(LAYERS_JSON[`/public/${sceneDir(age, scene)}layers.json`], age, scene);
 
 describe('the round 2 scenes (one new scene per age)', () => {
@@ -115,13 +117,15 @@ describe('the round 2 scenes (one new scene per age)', () => {
     }
   });
 
-  it('the released scenes of the content are exactly the new scenes with art, and they are the round 2 set', () => {
+  it('the released scenes of the content are the new scenes with art but the held ones: the round 2 set', () => {
     const released = content.cosmetics.collections.items.filter((x) => x.collection === 'scene' && x.released !== false);
     for (const age of AGES) {
-      const withArt = Object.keys(SCENE_ART[age] ?? {}).filter((id) => id !== 'classic').sort();
+      const withArt = Object.keys(SCENE_ART[age] ?? {}).filter((id) => id !== 'classic' && !HELD.includes(`${age}.${id}`)).sort();
       expect(released.filter((x) => x.age === age).map((x) => x.id).sort(), age).toEqual(withArt);
     }
-    expect(released.map((x) => `${x.age}.${x.id}`).sort()).toEqual(ROUND2.map(([a, id]) => `${a}.${id}`).sort());
+    expect(released.map((x) => `${x.age}.${x.id}`).sort()).toEqual(ROUND2.map(([a, id]) => `${a}.${id}`).filter((k) => !HELD.includes(k)).sort());
+    // a held scene keeps its art (the sandbox, round 3) but no player can find or equip it
+    for (const k of HELD) expect(content.cosmetics.collections.items.find((x) => `${x.age}.${x.id}` === k)?.released, k).toBe(false);
   });
 
   it('Ringed Giant brings its own sky object and space weather', () => {
@@ -487,6 +491,18 @@ describe('scenes in the lane: seam, wipe, arrival fade, lights, release', () => 
   function view(skin: string | null, t: BackdropTextures): ProceduralBackdropView {
     return new ProceduralBackdropView({ left: 'bronze', right: 'industrial', arena: 'tar_pits', textures: t, baker: new PartBaker({ pxPerLu: 1, canvasFactory: () => null }), quality: 'high', seed: 7, skins: { left: skin, right: null } });
   }
+
+  it('a half in space asks for its themed ground without frost, drifts or leaves (review 2)', () => {
+    const { t } = fakeTextures();
+    const asked: unknown[][] = [];
+    (t as unknown as { groundThemed: (...a: unknown[]) => null }).groundThemed = (...a: unknown[]) => (asked.push(a), null);
+    // the stand-in scene has the `weather: 'space'` hint
+    const v = view('backdrop.winterfall', t);
+    v.update(16);
+    expect(asked.length).toBeGreaterThan(0);
+    expect(asked.every((a) => a[1] === 'backdrop.winterfall' && (a[2] as { space?: boolean }).space === true)).toBe(true);
+    v.destroy();
+  });
 
   it('lights come on only on a half that wears a night sky; props move on the scene', () => {
     const { t } = fakeTextures();

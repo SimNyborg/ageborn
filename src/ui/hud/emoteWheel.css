@@ -167,7 +167,9 @@
   width: 34px;
   height: 34px;
 }
-.hud.is-compact .hud-wheel .hud-emote-pick > * {
+/* the drawn emotes shrink to fit the 34 px cell; a General's head keeps its size (review 2: at 0.8 it read
+   as about 27 px, too small to see the expression) and may reach a little past the cell's edge */
+.hud.is-compact .hud-wheel .hud-emote-pick:not(.is-head) > * {
   transform: scale(0.8);
 }
 .hud.is-compact .hud-wheel-quotes {

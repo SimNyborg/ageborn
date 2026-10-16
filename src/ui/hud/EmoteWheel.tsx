@@ -72,7 +72,7 @@ function foeSpeaker(c: HudCtx | undefined): EmoteSpeaker {
   if (!c) return null;
   const foe = c.config.sides[c.side === 0 ? 1 : 0];
   if (foe?.online?.avatar) return { spec: foe.online.avatar };
-  const general = (c.wheel as (EmoteWheel & { foeGeneral?: string }) | undefined)?.foeGeneral;
+  const general = c.wheel?.foeGeneral;
   return general ? { look: generalLook(general, fnv1a32(`${general}|${foe?.label ?? ''}`)) } : null;
 }
 

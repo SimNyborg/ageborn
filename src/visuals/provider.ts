@@ -579,6 +579,18 @@ export class VisualsArtProvider implements ArtProvider {
   }
 
   /**
+   * The page is going away (review 2, `app/pixiHost.ts` `releaseGpuOnPageHide`): every decoded image the
+   * art caches hold is let go of (scene files, world sheets, the backdrop textures), so none of this page's
+   * images waits for the garbage collector while the next page loads. Duck-typed for the app.
+   */
+  releaseAll(): void {
+    this.procedural.backdrops.forget({ scenes: new Set(), ages: new Set(), grounds: new Set() });
+    forgetSceneImages(() => false);
+    this.atlas.world.forgetSkins(() => false);
+    forgetWorldSheets(() => false);
+  }
+
+  /**
    * What the Customize diorama draws (PLAN 2c; render's `showcase/diorama.ts`, duck-typed like
    * `showcaseLease`): the age's base (its skin model when it wears one) and two turrets, and the half's
    * scene files (its `layers.json`, strips and props atlas) with the ground, so the live stage starts on

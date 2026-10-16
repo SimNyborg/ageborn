@@ -1,6 +1,7 @@
 # Request (Track C, Customize round 2): the opponent's General performs the opponent's emotes
 
-Status: open (for the final agent; two small edits outside Track C's files).
+Status: done (round 2 final, 2026-10-16): `EmoteWheel.foeGeneral` in `src/ui/hud/context.ts`, `BattleScreen` passes
+`b.setup.opponent`, and `EmoteWheel.tsx` reads it without its local type. An online player's own look still wins.
 
 PLAN 2a "Emotes (6 starter)": "The opponent's emote uses their look: the AI General's fixed look or the
 generated player's look." The HUD bubble (`src/ui/hud/EmoteWheel.tsx`, Track C) already draws an online

@@ -56,6 +56,30 @@ async function sandbox(page: Page): Promise<void> {
   await page.evaluate(() => (window as unknown as { __sandboxDev: { gold(s: number, n: number): void } }).__sandboxDev.gold(0, 900));
   await expect(page.getByTestId('hud-fort')).toHaveAttribute('data-state', 'ready', { timeout: 120_000 });
   await page.evaluate(() => (window as unknown as { __sandboxDev: { clear(): void; gold(s: number, n: number): void } }).__sandboxDev.clear());
+  await hudCaughtUp(page);
+}
+
+/**
+ * Waits until the HUD has been rebuilt from the sim at least once (review 2): the sandbox rebuilds its HUD
+ * model every 1/15 s of frame time, and the keys and pads read that model. A slow, software-rendered WebKit
+ * draws a few frames a second, so a key pressed right after the lane clear read the model from before it
+ * (pads next to the foe's troops, "No clear pad") and D was refused. Three frames and 200 ms cover a rebuild
+ * at any frame rate.
+ */
+async function hudCaughtUp(page: Page): Promise<void> {
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        const t0 = performance.now();
+        let frames = 0;
+        const tick = (): void => {
+          frames += 1;
+          if (frames >= 3 && performance.now() - t0 >= 200) resolve();
+          else requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }),
+  );
 }
 
 test.describe('Battle HUD: the Fort button', () => {
@@ -107,7 +131,15 @@ test.describe('Battle HUD: the Fort button', () => {
   test('D places a fort; a press during the recharge says when it is ready', async ({ page }) => {
     await sandbox(page);
     await page.keyboard.press('d');
-    await expect(page.getByTestId('hud-fort')).toHaveAttribute('data-state', 'recharging');
+    // a refused press names its reason under the button: it is part of the failure message
+    await expect
+      .poll(async () => {
+        const state = await page.getByTestId('hud-fort').getAttribute('data-state');
+        if (state === 'recharging') return state;
+        const why = (await page.getByTestId('hud-reason-fort').textContent({ timeout: 500 }).catch(() => null)) ?? 'no reason shown';
+        return `${state ?? 'no state'}: ${why}`;
+      })
+      .toBe('recharging');
     await expect(page.getByTestId('hud-fort-secs')).toBeVisible();
     await page.getByTestId('hud-fort').click();
     await expect(page.getByTestId('hud-reason-fort')).toContainText('Ready in');

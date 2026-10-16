@@ -30,7 +30,8 @@ export function BattleScreen(p: {
   const view = ui.viewOf(s.sim);
   const save = ui.controller.save.value;
   const settings = save?.settings;
-  const wheel = emoteWheelOf(save, ui.services.content);
+  // the opponent's AI General performs its emotes (docs/requests/custom-c-foe-emote.md)
+  const wheel = emoteWheelOf(save, ui.services.content, b.setup.opponent);
   const countdown = b.countdown.value;
   const prompt = b.prompt.value;
   const togglePause = (): void => {

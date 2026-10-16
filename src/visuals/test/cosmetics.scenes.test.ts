@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { content } from '@/content';
 import { hasSceneArt, sceneIdOf, scenePreviewUrl } from '../backdrops/scenePreview';
-import { cosmeticImageUrl, hasCosmeticArt } from '../cosmetics/art';
+import { cosmeticImageUrl, hasCosmeticArt, isSpaceScene, skyTileAge } from '../cosmetics/art';
 
 const scenes = content.cosmetics.collections.items.filter((x) => x.collection === 'scene' && x.released !== false);
 
@@ -28,5 +28,15 @@ describe('scenes', () => {
       expect(cosmeticImageUrl('scene.classic', { age, sky: 'backdrop.winterfall' })).toBeNull();
     }
     expect(scenePreviewUrl('scene.not_a_scene', 'stone')).toBeNull();
+  });
+});
+
+describe('sky tiles over a space scene (review 2)', () => {
+  it('show the sky over the nearest earlier age with a sky of its own (Cosmic keeps its own sky)', () => {
+    expect(isSpaceScene('cosmic', null)).toBe(true);
+    expect(isSpaceScene('cosmic', 'scene.ringed_giant')).toBe(true);
+    expect(skyTileAge('cosmic')).toBe('future');
+    expect(isSpaceScene('future', null)).toBe(false);
+    expect(skyTileAge('stone')).toBe('stone');
   });
 });

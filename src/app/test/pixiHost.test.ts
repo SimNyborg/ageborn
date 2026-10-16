@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Application } from 'pixi.js';
-import { tickerScheduler } from '../pixiHost';
+import { releaseGpuOnPageHide, tickerScheduler } from '../pixiHost';
 
 /** A ticker that calls its listeners once per `frame()`, like Pixi's. */
 function fakeApp(): { app: Application; frame: () => void } {
@@ -35,5 +35,53 @@ describe('tickerScheduler', () => {
     s.cancel(h);
     frame();
     expect(runs).toBe(0);
+  });
+});
+
+describe('releaseGpuOnPageHide (review 2)', () => {
+  /** A window with the game canvas (WebGL 2) and the showcase's and diorama's (their screens destroy those). */
+  function fakeWindow(gameKind: 'webgl2' | 'webgl' = 'webgl2') {
+    const handlers = new Map<string, (e: unknown) => void>();
+    const lost: string[] = [];
+    let reloads = 0;
+    const canvas = (id: string, kind: 'webgl2' | 'webgl') => ({
+      id,
+      getContext: (k: string) => (k === kind ? { getExtension: (n: string) => (n === 'WEBGL_lose_context' ? { loseContext: () => lost.push(id) } : null) } : null),
+    });
+    const all = [canvas('game-canvas', gameKind), canvas('showcase-canvas', 'webgl2'), canvas('diorama-canvas', 'webgl2')];
+    const win = {
+      document: { querySelectorAll: (sel: string) => all.filter((c) => sel.includes(`"${c.id}"`)) },
+      location: { reload: () => (reloads += 1) },
+      addEventListener: (t: string, fn: (e: unknown) => void) => handlers.set(t, fn),
+      removeEventListener: (t: string) => handlers.delete(t),
+    } as unknown as Window;
+    return { win, handlers, lost, reloads: () => reloads };
+  }
+
+  it("on pagehide runs the release first (the app stops its ticker), then loses the game canvas's context", () => {
+    const f = fakeWindow();
+    const order: string[] = [];
+    releaseGpuOnPageHide(f.win, () => order.push('release'));
+    f.handlers.get('pagehide')!({ persisted: false });
+    expect(order).toEqual(['release']);
+    expect(f.lost).toEqual(['game-canvas']);
+    // a WebGL 1 context too; and a release that throws never keeps the context
+    const g = fakeWindow('webgl');
+    releaseGpuOnPageHide(g.win, () => {
+      throw new Error('boom');
+    });
+    g.handlers.get('pagehide')!({ persisted: true });
+    expect(g.lost).toEqual(['game-canvas']);
+  });
+
+  it('a page the back-forward cache brings back reloads; a normal show does not; unsubscribe removes both', () => {
+    const f = fakeWindow();
+    const off = releaseGpuOnPageHide(f.win, () => undefined);
+    f.handlers.get('pageshow')!({ persisted: false });
+    expect(f.reloads()).toBe(0);
+    f.handlers.get('pageshow')!({ persisted: true });
+    expect(f.reloads()).toBe(1);
+    off();
+    expect(f.handlers.size).toBe(0);
   });
 });

@@ -13,7 +13,6 @@
  *   skin models; the VS warm-up calls it too (every ground stays there).
  * - A battle's hold lets go of a sheet at once (a card showcase keeps its linger).
  */
-import { readFileSync } from 'node:fs';
 import { BufferImageSource, Texture } from 'pixi.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { VisualDef } from '@/contracts/art';
@@ -169,7 +168,7 @@ describe("the provider's backdrop textures", () => {
 
   it('a scene forgotten while its files are on the way keeps none of them when they land', async () => {
     useFakeImages();
-    const json = JSON.parse(readFileSync('public/art/backdrops/stone/glacier_valley/layers.json', 'utf8')) as unknown;
+    const json = import.meta.glob('/public/art/backdrops/stone/glacier_valley/layers.json', { import: 'default', eager: true })['/public/art/backdrops/stone/glacier_valley/layers.json'];
     vi.stubGlobal('fetch', async () => ({ ok: true, json: async () => json }));
     const run = async (forgetMidway: boolean): Promise<Priv> => {
       const t = new BackdropTextures('high', '/x/', true);

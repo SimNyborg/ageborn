@@ -41,4 +41,6 @@ if (o.layer === 'fx' && k.collection === 'backdrop') return backdropWeatherSvg(k
 
 ## 3. Final agent: gates to rerun
 
+**Status: done (round 2 final, 2026-10-16).** Rerun on the final tree, where six of the eight round 2 scenes ship (Glacier Valley and Desert Airbase wait for round 3, so the Rare pool grows by 6): `sim:drops --mode smoke` 17 pass, 0 fail; `sim:economy` 23 pass, 1 fail (the Focused War Plan at L7 row, open since before this build), Dust 483 a day (gate 470 ± 20%).
+
 The release changes the capsule pool (Rare +8), so `npm run sim:drops -- --mode smoke --out <scratch>` and `npm run sim:economy` (Dust a day) should be rerun on the final tree; nothing else in the rates or tables changed.

@@ -123,9 +123,10 @@ test('review 2: Customize browsed through every age (Bases and Backdrops, every 
   await page.getByTestId('tab-backdrops').first().click();
   for (const age of AGES) {
     await page.getByTestId(`age-tab-${age}`).first().click();
+    await expect(page.getByTestId('scene-classic')).toBeVisible({ timeout: 30_000 });
+    // the age's new scene where one is out (two wait for round 3), else its classic scene
     const scenes = page.locator('[data-testid="scene-grid"] [data-testid^="item-scene."]');
-    await expect(scenes.first()).toBeVisible({ timeout: 30_000 });
-    await scenes.first().click();
+    await ((await scenes.count()) > 0 ? scenes.first() : page.getByTestId('scene-classic')).click();
     await live('backdrop-mock', age);
   }
   await page.getByTestId('tab-battle').first().click();

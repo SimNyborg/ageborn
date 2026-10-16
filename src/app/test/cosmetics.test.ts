@@ -66,6 +66,13 @@ describe('the HUD wheel', () => {
     expect(w).toEqual({ emotes: ['gg'], quotes: ['quote.glhf'], quoteCooldownMs: content.cosmetics.collections.quoteCooldownMs, speaker: s.profile.avatar });
     expect(emoteWheelOf(null, content)).toBeNull();
   });
+
+  it("names the AI opponent's General, whose head performs its emotes (docs/requests/custom-c-foe-emote.md)", () => {
+    const setup = tutorialMatch1(fresh(), content, 'Old Grogg');
+    const w = emoteWheelOf(fresh(), content, setup.opponent);
+    expect(w?.foeGeneral).toBe(setup.opponent.generalId);
+    expect(emoteWheelOf(fresh(), content)).not.toHaveProperty('foeGeneral');
+  });
 });
 
 describe('the Flag Atlas services (PLAN 2d)', () => {

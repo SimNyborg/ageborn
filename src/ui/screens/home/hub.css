@@ -1040,6 +1040,16 @@
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.05);
   color: var(--ui-text);
 }
+/* Narrow phones (under 820 px wide; review 2): four 44 px slots fit the 196 px column, so the last one no
+   longer covers the trophy bar's edge. */
+@container ui-root (max-height: 480px) and (max-width: 819px) {
+  .hub-slots {
+    gap: 4px;
+  }
+  .hub-slot {
+    min-width: 44px;
+  }
+}
 .hub-slot.is-full,
 .hub-slot.is-more {
   cursor: pointer;

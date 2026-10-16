@@ -49,15 +49,30 @@ export function isAbortedRequestNoise(text: string, host: string): boolean {
   return host !== '' && /due to access control checks\.?$/.test(text.trim()) && text.includes(host);
 }
 
+/**
+ * True for WebKit's report of the 1 x 1 `data:` image Pixi's capability worker fetches to learn whether
+ * workers can decode images (pixi.js `checkImageBitmap.worker`): "Fetch API cannot load
+ * data:image/png;base64,… due to access control checks." (review 2: it made `hud.spec.ts` flaky in
+ * WebKit). WebKit refuses a `data:` fetch from a blob-URL worker and words it as a CORS failure; Pixi then
+ * decodes on the main thread. A `data:` image can never fail a real access control check, so only a base64
+ * image `data:` URL with exactly this wording matches (also cut at its first ':', as Playwright's WebKit
+ * turns it into a page error); any http(s) URL never does.
+ */
+export function isWorkerDataUrlNoise(text: string): boolean {
+  const t = text.trim();
+  return !/https?:/.test(t) && /^(?:Fetch API cannot load )?(?:data:)?image\/[a-z0-9.+-]+;base64,[A-Za-z0-9+/=]+ due to access control checks\.?$/.test(t);
+}
+
 /** How long after the main frame's DOMContentLoaded an aborted request's report still belongs to the navigation (ms). */
 export const NAVIGATION_GRACE_MS = 1000;
 
 /**
- * Collects console errors, page errors and failed same-origin requests from now on. The only thing it
- * ignores is WebKit's report of a request on this page's host that a main-frame navigation aborted (a
- * reload or `goto` while art still loads; see {@link isAbortedRequestNoise}), and only from the
- * navigation's request until its DOMContentLoaded plus {@link NAVIGATION_GRACE_MS}. Any other console
- * error, a deliberate `console.error` included, still counts.
+ * Collects console errors, page errors and failed same-origin requests from now on. It ignores only two
+ * WebKit reports: a request on this page's host that a main-frame navigation aborted (a reload or `goto`
+ * while art still loads; see {@link isAbortedRequestNoise}), only from the navigation's request until its
+ * DOMContentLoaded plus {@link NAVIGATION_GRACE_MS}; and the `data:` image Pixi's capability worker fetches
+ * ({@link isWorkerDataUrlNoise}), whenever Pixi first loads an asset. Any other console error, a
+ * deliberate `console.error` included, still counts.
  */
 export function watchPage(page: Page): PageProblems {
   const p: PageProblems = { errors: [], failed: [] };
@@ -71,7 +86,7 @@ export function watchPage(page: Page): PageProblems {
   page.on('domcontentloaded', () => {
     navigatingUntil = Date.now() + NAVIGATION_GRACE_MS;
   });
-  const noise = (text: string): boolean => Date.now() < navigatingUntil && isAbortedRequestNoise(text, host());
+  const noise = (text: string): boolean => (Date.now() < navigatingUntil && isAbortedRequestNoise(text, host())) || isWorkerDataUrlNoise(text);
   page.on('console', (m) => {
     if (m.type() === 'error' && !noise(m.text())) p.errors.push(`console: ${m.text()}`);
   });

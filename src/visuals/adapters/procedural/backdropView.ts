@@ -360,15 +360,18 @@ export class BackdropTextures {
 
   /**
    * The arena ground re-graded for a backdrop skin (review 11), cached per arena, theme and base
-   * texture like the themed layers. Null when there is nothing to bake (no DOM, unknown theme).
+   * texture like the themed layers. Null when there is nothing to bake (no DOM, unknown theme). `space`:
+   * the half shows a scene in space (hint `weather: 'space'`), where the theme grades the deck but lays no
+   * frost, drifts, petals or leaves on it (review 2: Winterfall turned the lane snowy on a moon).
    */
-  groundThemed(arena: ArenaId, skin: string): Painted | null {
+  groundThemed(arena: ArenaId, skin: string, o: { space?: boolean } = {}): Painted | null {
     const id = backdropId(skin);
-    const th = id ? BACKDROP_THEMES[id] : undefined;
+    const theme = id ? BACKDROP_THEMES[id] : undefined;
+    const th = theme && o.space ? { ...theme, rim: 'none' as const } : theme;
     const base = this.ground(arena);
     if (!id || !th || !this.canBake || base.tex === Texture.EMPTY) return null;
     const src = base.tex.source;
-    const key = `ground.${arena}@${id}#${src.uid}`;
+    const key = `ground.${arena}@${id}${o.space ? '~space' : ''}#${src.uid}`;
     const hit = this.cache.get(key);
     if (hit) return hit;
     const t0 = performance.now();
@@ -1309,8 +1312,13 @@ export class ProceduralBackdropView implements BackdropView {
     // seam haze: a soft grey veil (A11: 30% desaturation)
     this.haze.layout(this.seam, this.left, this.right);
     // a themed half's ground, faded across the seam (review 11)
-    const gl = this.skins.left ? this.o.textures.groundThemed(this.arena, this.skins.left) : null;
-    const gr = this.skins.right ? this.o.textures.groundThemed(this.arena, this.skins.right) : null;
+    // (a half in space keeps its deck free of snow and leaves; review 2)
+    const space = (side: Side): boolean => {
+      const age = side === 0 ? this.left : this.right;
+      return this.sceneData(age, this.sceneOf(side, age))?.hints.weather === 'space';
+    };
+    const gl = this.skins.left ? this.o.textures.groundThemed(this.arena, this.skins.left, { space: space(0) }) : null;
+    const gr = this.skins.right ? this.o.textures.groundThemed(this.arena, this.skins.right, { space: space(1) }) : null;
     this.groundSkin.layout(this.seam, { left: gl?.tex ?? null, right: gr?.tex ?? null });
     const worldX = (layer: AmbLayer, x: number): number => {
       const at = layer === 'ground' ? undefined : this.placements[layer];

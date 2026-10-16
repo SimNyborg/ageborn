@@ -77,6 +77,51 @@ export function tickerScheduler(app: Application): FrameScheduler {
   };
 }
 
+/**
+ * The app's one persistent canvas (`createPixiHost`). Its ticker stops first, so nothing draws on the lost
+ * context; the card showcase and the Customize diorama keep their own apps, which their screens destroy.
+ */
+const GAME_CANVAS = 'canvas[data-testid="game-canvas"]';
+
+/** Loses a canvas's WebGL context now (its textures and buffers go at once). Never creates a context. */
+function loseContext(c: HTMLCanvasElement): void {
+  try {
+    // these canvases already hold a context, so asking for the other kind returns null
+    const gl = (c.getContext('webgl2') ?? c.getContext('webgl')) as WebGLRenderingContext | null;
+    gl?.getExtension('WEBGL_lose_context')?.loseContext();
+  } catch {
+    // a lost or WebGPU context: nothing to free here
+  }
+}
+
+/**
+ * The page is going away (a reload, a navigation, the back-forward cache): the game canvas's WebGL context
+ * is lost at once, so the battle's textures leave the GPU before the next page loads in the same process
+ * (review 2: WebKit as an iPhone crashed reloading after a battle; a software WebGL keeps its textures in
+ * the page's own memory, as an iPhone shares one memory between the two). `release` runs first (the app
+ * stops its ticker and the art caches let go of their images). A page the back-forward cache brings back
+ * reloads, since its context is gone. Returns the unsubscribe.
+ */
+export function releaseGpuOnPageHide(win: Window, release: () => void): () => void {
+  const onHide = (): void => {
+    try {
+      release();
+    } catch {
+      // the page is going anyway
+    }
+    for (const c of win.document.querySelectorAll<HTMLCanvasElement>(GAME_CANVAS)) loseContext(c);
+  };
+  const onShow = (e: PageTransitionEvent): void => {
+    if (e.persisted) win.location.reload();
+  };
+  win.addEventListener('pagehide', onHide);
+  win.addEventListener('pageshow', onShow);
+  return () => {
+    win.removeEventListener('pagehide', onHide);
+    win.removeEventListener('pageshow', onShow);
+  };
+}
+
 export async function createPixiHost(el: HTMLElement, o: { webgpu?: boolean } = {}): Promise<PixiHost> {
   const app = new Application();
   await app.init({
