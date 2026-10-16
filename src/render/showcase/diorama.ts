@@ -746,6 +746,12 @@ export async function createDioramaApp(size: { width: number; height: number }):
       autoDensity: true,
       autoStart: false,
       sharedTicker: false,
+      // a look the stage no longer shows (another age, a skin tried on before) leaves its GPU copies
+      // within seconds, not the default minute: browsing every age stays at about one look's textures.
+      // Safe, because everything the diorama uploads (world and scene sheets, baked canvases) keeps its
+      // decoded copy and simply uploads again if it comes back
+      gcMaxUnusedTime: 6000,
+      gcFrequency: 3000,
     });
   } catch {
     try {
