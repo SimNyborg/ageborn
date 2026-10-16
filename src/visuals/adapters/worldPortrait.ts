@@ -59,26 +59,44 @@ function loadImage(url: string): Promise<HTMLImageElement> {
 
 /** Loads a world sheet's JSON and PNG once (a failure is retried on the next request). */
 export function loadWorldSheet(url: string): Promise<LoadedSheet | null> {
-  let p = sheets.get(url);
-  if (!p) {
-    p = (async () => {
-      try {
-        const res = await fetch(url);
-        if (!res.ok) return null;
-        const json = (await res.json()) as SheetJson;
-        const image = await loadImage(new URL(json.meta.image, new URL(url, location.href)).href);
-        ledger.set(url, image);
-        return { json, image };
-      } catch {
-        return null;
-      }
-    })();
-    void p.then((s) => {
-      if (!s) sheets.delete(url);
-    });
-    sheets.set(url, p);
-  }
+  const hit = sheets.get(url);
+  if (hit) return hit;
+  const self: { p?: Promise<LoadedSheet | null> } = {};
+  const p: Promise<LoadedSheet | null> = (async () => {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const json = (await res.json()) as SheetJson;
+      const image = await loadImage(new URL(json.meta.image, new URL(url, location.href)).href);
+      // counted while this cache keeps it (a sheet `forgetWorldSheets` dropped mid-flight is not)
+      if (sheets.get(url) === self.p) ledger.set(url, image);
+      return { json, image };
+    } catch {
+      return null;
+    }
+  })();
+  self.p = p;
+  void p.then((s) => {
+    if (!s && sheets.get(url) === p) sheets.delete(url);
+  });
+  sheets.set(url, p);
   return p;
+}
+
+/**
+ * Lets go of the world sheets `keep` does not want (review 2, Safari memory: Customize's Bases tab left
+ * every age's base and skin model sheets decoded for the session). A forgotten sheet loads again when a
+ * portrait or a model asks for it; the portraits already drawn are cached as pictures by the provider.
+ */
+export function forgetWorldSheets(keep: (url: string) => boolean): number {
+  let n = 0;
+  for (const url of [...sheets.keys()]) {
+    if (keep(url)) continue;
+    sheets.delete(url);
+    ledger.delete(url);
+    n++;
+  }
+  return n;
 }
 
 /** The frame names a portrait draws, back to front (each followed by its `_team` twin when present). */

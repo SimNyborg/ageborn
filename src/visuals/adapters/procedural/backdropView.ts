@@ -42,12 +42,13 @@ import { CanvasSource, Container, ImageSource, Rectangle, Sprite, Texture } from
 import type { BackdropView } from '@/contracts/art';
 import type { AgeId, Side } from '@/contracts/ids';
 import { mulberry32, type CosmeticRng } from '@/core/rng';
+import { AGES } from '../../ages';
 import type { PartBaker } from '../../bake';
 import { arenaId, GROUND_FRAME, groundAmbient, MID_FRAME, paintGround, paintMid, type ArenaId } from '../../backdrops/ground';
 import { FAR_FRAME, paintFar, type AmbientSpec } from '../../backdrops/silhouettes';
 import { extraAmbient, finishLayer } from '../../backdrops/lighting';
 import { BACK_FRAME, drawnScene, parseScene, SCENE_ART, sceneDir, sceneIdOf, type SceneData, type SceneFrame, type SceneLight } from '../../backdrops/scenes';
-import { sceneImage, sceneJson } from '../../backdrops/sceneFiles';
+import { forgetSceneImages, inSceneDir, sceneImage, sceneJson } from '../../backdrops/sceneFiles';
 import { lightAlpha, limitSprites, spriteInstances, spritePeriodMs, spritePhaseMs, type SceneSprite } from '../../backdrops/sceneSprites';
 import { CLOUD_TINT, paintSceneSky, paintSky, SKY_FRAME, type LayerFrame } from '../../backdrops/sky';
 import { backdropId, BACKDROP_THEMES, isNightSky, mulTint, propGradeTint, sceneGradeKey, spaceWeather, themeForScene, themeGround, themeLayer, themeSky } from '../../backdrops/themes';
@@ -152,7 +153,11 @@ export class BackdropTextures {
   private readonly images = new Map<string, Painted>();
   private readonly scenes = new Map<string, SceneData>();
   private readonly props = new Map<string, Map<string, PropFrame>>();
-  private readonly requested = new Set<string>();
+  /**
+   * Scenes and grounds asked for, each with the token of its load: a load whose token was dropped
+   * meanwhile (`forget`) keeps nothing when it lands.
+   */
+  private readonly requested = new Map<string, object>();
   private readonly canBake = typeof document !== 'undefined';
   bakeMs = 0;
   /** Bumped every time a pre-rendered image or scene arrives. */
@@ -193,11 +198,14 @@ export class BackdropTextures {
     const key = sceneKey(age, id);
     const dir = sceneDir(age, id);
     if (!this.canBake || !this.prerendered || !dir || this.requested.has(key)) return;
-    this.requested.add(key);
+    const token = {};
+    this.requested.set(key, token);
+    const live = (): boolean => this.requested.get(key) === token;
     void (async () => {
       try {
         // (one download per file, shared with the Customize and VS stills: `sceneFiles.ts`)
         const json: unknown = await sceneJson(this.baseUrl + dir + 'layers.json');
+        if (!live()) return;
         const data = parseScene(json, age, id);
         if (!data) throw new Error('no usable strip');
         this.scenes.set(key, data);
@@ -205,13 +213,15 @@ export class BackdropTextures {
         // the strips and the props atlas download side by side (review 1: one after another they took
         // about four round trips), and each one swaps in (with its cross-fade) as soon as it lands. Lite
         // keeps the back strip too (one sprite: the Bronze volcano, the Cosmic planet); it only leaves
-        // out the strip's moving props, lights and emitters.
+        // out the strip's moving props, lights and emitters. A scene forgotten while its files were on the
+        // way (a match started) keeps none of them.
         const jobs: Promise<void>[] = [];
         for (const kind of ['back', 'far', 'mid'] as const) {
           const m = data.layers[kind];
           if (!m) continue;
           jobs.push(
             this.loadImage(dir + m.image, m.pxPerLu).then((tex) => {
+              if (!live()) return;
               this.images.set(`${kind}.${key}`, { tex, ambient: m.ambient });
               this.version++;
             }),
@@ -221,6 +231,7 @@ export class BackdropTextures {
         if (props && Object.keys(props.frames).length > 0) {
           jobs.push(
             this.loadImage(dir + props.image, 1).then((atlas) => {
+              if (!live()) return;
               const frames = new Map<string, PropFrame>();
               for (const [name, f] of Object.entries(props.frames)) frames.set(name, propFrame(atlas, f));
               this.props.set(key, frames);
@@ -240,9 +251,11 @@ export class BackdropTextures {
   private loadGround(arena: ArenaId): void {
     const key = `ground.${arena}`;
     if (!this.canBake || !this.prerendered || this.requested.has(key)) return;
-    this.requested.add(key);
+    const token = {};
+    this.requested.set(key, token);
     void this.loadImage(groundImageUrl(arena), GROUND_IMAGE_PX_PER_LU)
       .then((tex) => {
+        if (this.requested.get(key) !== token) return;
         this.images.set(key, { tex, ambient: groundAmbient(arena) });
         this.version++;
       })
@@ -376,27 +389,77 @@ export class BackdropTextures {
   }
 
   /**
-   * Frees the GPU memory of every pre-rendered scene not in `keep` (scene keys `<age>.<scene>`) and drops
-   * the themed copies made from them (PLAN 2b "Memory": an age a side has left, once its wipe ends). The
-   * images stay in the browser's cache and upload again if a scene comes back.
+   * Lets go of every pre-rendered scene not in `keep` (scene keys `<age>.<scene>`) once a wipe ends (PLAN
+   * 2b "Memory", review 2: the battle passes the scenes a side still shows or will reach, so this is the
+   * ages both sides have left): see {@link forget}. The grounds stay.
    */
   release(keep: ReadonlySet<string>): number {
+    const ages = new Set<string>([...keep].map((k) => k.slice(0, k.indexOf('.'))));
+    return this.forget({ scenes: keep, ages, grounds: null });
+  }
+
+  /**
+   * Lets go of the backdrop art outside `keep` (review 2, Safari memory): the pre-rendered strips, props
+   * atlases and grounds not kept (their GPU copies, the themed copies made from them, and their decoded
+   * images in the shared scene file cache, `forgetSceneImages`), and the code-painted stand-ins of the ages
+   * and arenas not kept. A scene or ground asked for again later loads again (a load in flight when it was
+   * forgotten keeps nothing). `scenes`: scene keys `<age>.<scene>`; `ages`: the ages whose painted
+   * stand-ins stay; `grounds`: the arenas whose ground stays (null: every ground). The views that drew the
+   * dropped textures are gone when this runs (a match start, the end of a wipe); one still drawing would
+   * only upload its texture again. Returns the number of textures let go of.
+   */
+  forget(keep: { scenes: ReadonlySet<string>; ages: ReadonlySet<string>; grounds: ReadonlySet<string> | null }): number {
     let n = 0;
-    for (const [k, p] of this.images) {
-      if (k.startsWith('ground.')) continue;
-      const scene = k.slice(k.indexOf('.') + 1);
-      if (keep.has(scene)) continue;
-      const uid = p.tex.source.uid;
+    const keepGround = (arena: string): boolean => keep.grounds === null || keep.grounds.has(arena);
+    const dirs: string[] = [];
+    const grounds: string[] = [];
+    const drop = (src: Texture['source']): void => {
+      // the themed copies made from it (their keys end in the source uid)
       for (const [ck, cp] of this.cache) {
-        if (ck.endsWith(`#${uid}`)) {
-          cp.tex.destroy(true);
-          this.cache.delete(ck);
-          n++;
-        }
+        if (!ck.endsWith(`#${src.uid}`)) continue;
+        cp.tex.source.unload();
+        this.cache.delete(ck);
+        n++;
       }
-      p.tex.source.unload();
+      src.unload();
+      n++;
+    };
+    for (const [k, p] of this.images) {
+      const ground = k.startsWith('ground.') ? k.slice('ground.'.length) : null;
+      if (ground !== null ? keepGround(ground) : keep.scenes.has(k.slice(k.indexOf('.') + 1))) continue;
+      drop(p.tex.source);
+      this.images.delete(k);
+    }
+    for (const [k, frames] of this.props) {
+      if (keep.scenes.has(k)) continue;
+      const first = frames.values().next().value;
+      if (first) drop(first.tex.source);
+      this.props.delete(k);
+    }
+    for (const k of [...this.requested.keys()]) {
+      if (k.startsWith('ground.')) {
+        const arena = k.slice('ground.'.length);
+        if (keepGround(arena)) continue;
+        grounds.push(this.baseUrl + groundImageUrl(arena as ArenaId));
+      } else {
+        if (keep.scenes.has(k)) continue;
+        const dot = k.indexOf('.');
+        const dir = sceneDir(k.slice(0, dot) as AgeId, k.slice(dot + 1));
+        if (dir) dirs.push(this.baseUrl + dir);
+      }
+      this.requested.delete(k);
+    }
+    // the code-painted stand-ins (and the themed copies of them) of the ages and arenas not kept
+    for (const [k, p] of this.cache) {
+      const rest = k.slice(k.indexOf('.') + 1);
+      const id = rest.split(/[.@~#]/)[0] ?? '';
+      if (k.startsWith('ground.') ? keepGround(id) : keep.ages.has(id)) continue;
+      if (p.tex !== Texture.EMPTY) p.tex.source.unload();
+      this.cache.delete(k);
       n++;
     }
+    if (dirs.length > 0 || grounds.length > 0) forgetSceneImages((url) => !grounds.includes(url) && !dirs.some((d) => inSceneDir(url, d)));
+    if (n > 0) this.version++;
     return n;
   }
 
@@ -1202,8 +1265,13 @@ export class ProceduralBackdropView implements BackdropView {
     if (w.side === 0) this.left = w.age;
     else this.right = w.age;
     this.wipeState = null;
-    // the age a side has left releases its GPU textures (PLAN 2b "Memory")
-    const keep = new Set([sceneKey(this.left, this.sceneOf(0, this.left)), sceneKey(this.right, this.sceneOf(1, this.right))]);
+    // the ages both sides have left let go of their scenes (PLAN 2b "Memory", review 2): every scene a side
+    // still shows or will reach stays (the other side's next scene may be prefetched already)
+    const keep = new Set<string>();
+    for (const side of [0, 1] as const) {
+      const from = AGES.indexOf(side === 0 ? this.left : this.right);
+      for (const age of AGES.slice(Math.max(0, from))) keep.add(sceneKey(age, this.sceneOf(side, age)));
+    }
     const t = this.o.textures as Partial<BackdropTextures>;
     if (typeof t.release === 'function') t.release.call(this.o.textures, keep);
     this.rebuildAmbient();

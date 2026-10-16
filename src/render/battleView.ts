@@ -412,6 +412,17 @@ export class BattleView {
     this.markers = new MountMarkers(o.labelFactory ?? textLabelFactory, o.mountLabel);
 
     const st = this.sim.state;
+    // A match starts (review 2, Safari memory): the art the menus left decoded that this match does not
+    // open with goes first (Customize's scenes and models of every age); duck-typed, providers without it
+    // keep everything
+    const begin = (o.art as ArtProvider & { beginMatch?: (b: { sides: { age: AgeId; scene: string | null; skin: string | null }[]; arena: string }) => void }).beginMatch;
+    begin?.call(o.art, {
+      arena: o.arena ?? 'tar_pits',
+      sides: ([0, 1] as const).map((side) => {
+        const age = this.ageOf(side);
+        return { age, scene: this.config.sides[side].look?.scenes?.[age] ?? null, skin: baseSkinsOf(this.config.sides[side])[age] ?? null };
+      }),
+    });
     // A18.9.4: each half wears its side's backdrop skin (the Sky) and, from save v14, its scene per age
     // (bots keep the classic sky and scenes; the sim never sees them)
     this.backdrop = o.art.createBackdrop({

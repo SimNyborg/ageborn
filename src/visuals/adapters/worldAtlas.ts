@@ -152,20 +152,43 @@ export class WorldAtlas {
     }
     let p = this.pending.get(source);
     if (!p) {
-      p = this.load(this.url(source))
+      // (a load `forgetSkins` dropped while it was on the way resolves for its callers but is not kept)
+      const mine: Promise<WorldSheet | null> = this.load(this.url(source))
         .then((s) => {
-          this.sheets.set(source, s);
+          if (this.pending.get(source) === mine) this.sheets.set(source, s);
           return s;
         })
         .catch((e: unknown) => {
-          this.failed.add(source);
+          if (this.pending.get(source) === mine) this.failed.add(source);
           console.warn(`[visuals] world sheet "${source}" failed to load; the procedural art is used instead`, e);
           return null;
         })
-        .finally(() => this.pending.delete(source));
+        .finally(() => {
+          if (this.pending.get(source) === mine) this.pending.delete(source);
+        });
+      p = mine;
       this.pending.set(source, p);
     }
     return p;
+  }
+
+  /**
+   * Drops the base skin model sheets `keep` does not want (review 2, Safari memory): their decoded image
+   * belongs to the menus' loader (`loadWorldSheet`), which lets go of it at the same time, and their GPU
+   * copy is freed. A dropped model loads again when something asks for it; the age sheets (`preload`) stay.
+   */
+  forgetSkins(keep: (source: string) => boolean): number {
+    let n = 0;
+    for (const source of [...this.pending.keys()]) if (isBaseSkinSource(source) && !keep(source)) this.pending.delete(source);
+    for (const [source, sheet] of [...this.sheets]) {
+      if (!isBaseSkinSource(source) || keep(source)) continue;
+      this.sheets.delete(source);
+      const sources = new Set<Texture['source']>();
+      for (const frames of Object.values(sheet.animations)) for (const t of frames) sources.add(t.source);
+      for (const s of sources) s.unload();
+      n++;
+    }
+    return n;
   }
 
   /** Loads the world sheets of the given ages among `defs`. */

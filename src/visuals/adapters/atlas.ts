@@ -644,9 +644,10 @@ export class AtlasAdapter implements VisualAdapter {
    * where the battle draws the 1x one (a large stage on a 1x screen): such copies are showcase-only.
    * `cpu`: a renderer other than the app's draws the sheet (the card showcase's own WebGL app), so its
    * decoded copy is kept while leased (decoded again first if it was released: `core` and `ready` wait
-   * for that); a closed copy would draw nothing there (G7).
+   * for that); a closed copy would draw nothing there (G7). `linger`: how long the sheet stays after this
+   * lease, the last thing holding it, ends (default `leaseLingerMs`; a battle's hold lets go at once).
    */
-  lease(source: string, o: { hd?: boolean; cpu?: boolean } = {}): SheetLease {
+  lease(source: string, o: { hd?: boolean; cpu?: boolean; linger?: number } = {}): SheetLease {
     const set = o.hd && !this.main.hd && unitSheetAge(source) ? this.hdOnly : this.main;
     const counts = this.leases.get(set) ?? new Map<string, number>();
     this.leases.set(set, counts);
@@ -688,7 +689,7 @@ export class AtlasAdapter implements VisualAdapter {
           return;
         }
         counts.delete(source);
-        if (!this.held(set, source)) this.scheduleUnload(set, source);
+        if (!this.held(set, source)) this.scheduleUnload(set, source, o.linger);
       },
     };
   }
@@ -729,12 +730,12 @@ export class AtlasAdapter implements VisualAdapter {
     timers?.delete(source);
   }
 
-  private scheduleUnload(set: SheetSet, source: string): void {
+  private scheduleUnload(set: SheetSet, source: string, lingerMs?: number): void {
     if (this.held(set, source)) return;
     const timers = this.unloads.get(set) ?? new Map<string, ReturnType<typeof setTimeout>>();
     this.unloads.set(set, timers);
     this.cancelUnload(set, source);
-    const linger = Math.max(0, this.o.leaseLingerMs ?? LEASE_LINGER_MS);
+    const linger = Math.max(0, lingerMs ?? this.o.leaseLingerMs ?? LEASE_LINGER_MS);
     timers.set(
       source,
       setTimeout(() => {

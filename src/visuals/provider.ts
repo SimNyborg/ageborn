@@ -11,7 +11,7 @@ import { parseSkinnedVisualId, skinnedVisualId } from '@/core/ids';
 import { AtlasAdapter, wantsHdSheets, type SheetLease } from './adapters/atlas';
 import type { GpuHooks } from './gpuUpload';
 import { isBaseSkinSource, isWorldSource, WorldAtlas, worldSourceAge } from './adapters/worldAtlas';
-import { renderWorldPortrait } from './adapters/worldPortrait';
+import { forgetWorldSheets, renderWorldPortrait } from './adapters/worldPortrait';
 import { BASE_SKINS } from './cosmetics/baseSkins';
 import { renderSpriteStrip, stripRequest } from './adapters/spriteStrip';
 import { AtlasFortView } from './fortViews/atlasFortView';
@@ -25,7 +25,7 @@ import { AGES } from './ages';
 import { BaseDressing } from './cosmetics/dressing';
 import { teamColor } from './palette';
 import { arenaId } from './backdrops/ground';
-import { sceneImage, sceneJson } from './backdrops/sceneFiles';
+import { forgetSceneImages, inSceneDir, sceneImage, sceneJson } from './backdrops/sceneFiles';
 import { drawnScene, parseScene, sceneDir, sceneIdOf } from './backdrops/scenes';
 import { groundImageUrl } from './adapters/procedural/backdropView';
 import { puppetById } from './library';
@@ -323,7 +323,10 @@ export class VisualsArtProvider implements ArtProvider {
         const src = crew ? unitSource(this.resolve(crew)?.def) : null;
         if (src) want.add(src);
       }
-      for (const src of want) if (!leases.has(src)) leases.set(src, this.atlas.lease(src));
+      // a sheet the match lets go of (an age both sides left, a unit gone from the field) unloads at once,
+      // unless a view still draws it (review 2: the 4 s linger kept a passed age's sheets next to the
+      // next age's, the largest part of a late-game peak)
+      for (const src of want) if (!leases.has(src)) leases.set(src, this.atlas.lease(src, { linger: 0 }));
       for (const [src, l] of leases) {
         if (want.has(src)) continue;
         l.release();
@@ -529,6 +532,8 @@ export class VisualsArtProvider implements ArtProvider {
       const key = side.scenes?.[o.age];
       scenes.push({ age: o.age, scene: key?.startsWith('scene.') ? key.slice('scene.'.length) : 'classic' });
     }
+    // the menus' leftovers go first (the battle's own `beginMatch` names the arena; VS keeps every ground)
+    this.beginMatch({ sides: o.sides.map((s) => ({ age: o.age, scene: s.scenes?.[o.age] ?? null, skin: s.skins?.[o.age] ?? null })), arena: null });
     if (this.force === null || this.force === 'procedural' || this.force === 'atlas') this.procedural.backdrops.prefetch([o.age], [], scenes);
     const waits: Promise<unknown>[] = skins.map((s) => this.prefetchBaseSkins(s));
     if (o.units && o.units.length > 0) {
@@ -538,6 +543,39 @@ export class VisualsArtProvider implements ArtProvider {
       setTimeout(() => hold.release(), PREFETCH_HOLD_MS);
     }
     return Promise.all(waits).then(() => undefined);
+  }
+
+  /**
+   * A match starts (review 2, Safari memory): lets go of the art the menus left decoded that the match does
+   * not open with. Customize browsing every age left about 140 MB of scene strips and grounds and 40 MB of
+   * base and skin model sheets for the rest of the session, and a battle right after went over the iPhone
+   * budget. Kept: each half's scene of its opening age, the arena's ground (every ground for `arena:
+   * null`), the painted stand-ins of the opening ages and the opening age's base skin models; everything
+   * else loads again when something asks for it (an evolve's prefetch, Customize after the match). Called
+   * by the battle view before it builds its backdrop and by the VS warm-up (`prefetchMatch`); duck-typed
+   * (no contract change), idempotent.
+   */
+  beginMatch(o: { sides: readonly { age: AgeId; scene?: CosmeticKey | null; skin?: SkinId | null }[]; arena: string | null }): void {
+    const scenes = new Set<string>();
+    const ages = new Set<AgeId>();
+    const dirs: string[] = [];
+    const skins = new Set<string>();
+    for (const s of o.sides) {
+      const scene = drawnScene(s.age, sceneIdOf(s.scene ?? null));
+      scenes.add(`${s.age}.${scene}`);
+      ages.add(s.age);
+      const dir = sceneDir(s.age, scene);
+      if (dir) dirs.push(this.assetUrl(dir));
+      const def = s.skin ? this.manifest[skinnedVisualId(`base.${s.age}`, s.skin)] : undefined;
+      if (def && this.isLazySkin(def)) skins.add(def.source);
+    }
+    const arena = o.arena === null ? null : arenaId(o.arena);
+    const ground = arena === null ? null : this.assetUrl(groundImageUrl(arena));
+    this.procedural.backdrops.forget({ scenes, ages, grounds: arena === null ? null : new Set([arena]) });
+    // the stills' files too (Customize's tiles and preview), which the lane's textures never asked for
+    forgetSceneImages((url) => dirs.some((d) => inSceneDir(url, d)) || (ground === null ? url.includes('/art/ground/') : url === ground));
+    this.atlas.world.forgetSkins((source) => skins.has(source));
+    forgetWorldSheets((url) => [...skins].some((s) => url === this.atlasUrl(s)));
   }
 
   /**

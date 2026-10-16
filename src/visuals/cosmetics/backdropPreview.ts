@@ -20,7 +20,7 @@ import { mulberry32 } from '@/core/rng';
 import { GROUND_FRAME, MID_FRAME, paintGround, paintMid } from '../backdrops/ground';
 import { finishLayer } from '../backdrops/lighting';
 import { BACK_FRAME, drawnScene, parseScene, sceneDir, type SceneData, type SceneHints, type SceneLayer } from '../backdrops/scenes';
-import { sceneImage, sceneJson } from '../backdrops/sceneFiles';
+import { inSceneDir, onSceneImagesForgotten, sceneImage, sceneJson } from '../backdrops/sceneFiles';
 import { limitSprites, spriteInstances } from '../backdrops/sceneSprites';
 import { FAR_FRAME, paintFar } from '../backdrops/silhouettes';
 import { paintSceneSky, paintSky, SKY_FRAME, type LayerFrame } from '../backdrops/sky';
@@ -65,8 +65,25 @@ interface LoadedScene {
   /** The props atlas (null without props, or when it failed: the still then shows the strips only). */
   atlas: HTMLImageElement | null;
 }
-const loaded = new Map<string, LoadedScene | 'loading' | 'failed'>();
+/** A scene's strips on the way (its own token: a load forgotten meanwhile keeps nothing when it lands). */
+interface Loading {
+  readonly loading: true;
+}
+const loaded = new Map<string, LoadedScene | Loading | 'failed'>();
 const listeners = new Set<() => void>();
+
+// A match let go of the decoded scene images (review 2, `forgetSceneImages`): the stills composed from them
+// stay, and a scene asked for again loads its strips again.
+onSceneImagesForgotten((urls) => {
+  const base = appBaseUrl();
+  for (const key of [...loaded.keys()]) {
+    const dot = key.indexOf('.');
+    const dir = sceneDir(key.slice(0, dot) as AgeId, key.slice(dot + 1));
+    if (dir && [...urls].some((u) => inSceneDir(u, base + dir))) loaded.delete(key);
+  }
+  imageCache.clear();
+  themedCache.clear();
+});
 
 /**
  * Calls `cb` whenever stills got better (a scene's strips arrived and the stills served from the painted
@@ -87,11 +104,12 @@ function appBaseUrl(): string {
 function previewScene(age: AgeId, scene: string): LoadedScene | null {
   const key = `${age}.${scene}`;
   const st = loaded.get(key);
-  if (st && typeof st === 'object') return st;
+  if (st && typeof st === 'object' && !('loading' in st)) return st;
   if (st || typeof document === 'undefined' || typeof fetch !== 'function' || typeof Image === 'undefined') return null;
   const dir = sceneDir(age, scene);
   if (!dir) return null;
-  loaded.set(key, 'loading');
+  const token: Loading = { loading: true };
+  loaded.set(key, token);
   const base = appBaseUrl() + dir;
   void (async () => {
     try {
@@ -107,9 +125,11 @@ function previewScene(age: AgeId, scene: string): LoadedScene | null {
           if (m) imgs[kind] = await sceneImage(base + m.image);
         }),
       ]);
+      if (loaded.get(key) !== token) return;
       loaded.set(key, { data, imgs, atlas: atlas ?? null });
       refreshStills(age, scene);
     } catch (e) {
+      if (loaded.get(key) !== token) return;
       loaded.set(key, 'failed');
       console.warn(`[visuals] scene stills for "${key}" failed to load; the painted layers are used`, e);
     }
