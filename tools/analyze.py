@@ -58,6 +58,8 @@ def main():
     posts = json.load(open(POSTED))["posted"]
     rows = []
     for p in posts:
+        if p.get("kind", "reel") != "reel":
+            continue  # Stories have their own short-lived metrics
         d = insights(p["id"])
         if d is None:
             print(f"! no insights for {p['name']}")
