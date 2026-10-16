@@ -13,13 +13,17 @@ git checkout -B social-media origin/social-media
 Rendering in a fresh container (about 2 min of setup; `public/`, `out/` and `node_modules/` are not in git):
 
 ```
-(cd /home/user/ageborn && npm ci) & (cd /tmp/soc/studio && npm ci) & pip install -q numpy pillow; wait
+# capture from a pinned, known-good game commit (main-ipy06f is under active development again);
+# move the pin only when the orchestrator says a newer commit is published to main and green
+git -C /home/user/ageborn fetch -q origin main-ipy06f; git -C /home/user/ageborn worktree add /tmp/game-capture 1b48e80
+export AGEBORN_REPO=/tmp/game-capture
+(cd /tmp/game-capture && npm ci) & (cd /tmp/soc/studio && npm ci) & pip install -q numpy pillow; wait
 cd /tmp/soc/studio && mkdir -p public/fonts public/audio public/art/cut out/reels out/sheets work
 cp node_modules/@fontsource/barlow-condensed/files/barlow-condensed-latin-*-*.woff2 \
    node_modules/@fontsource/inter/files/inter-latin-*-normal.woff2 public/fonts/
 for c in mammoth_matriarch lindworm star_leviathan ursa_paladin; do
   python3 tools/cutout.py $c attack 6 2f7df6 public/art/cut/$c-attack.png; done
-nohup node scripts/server.mjs > /tmp/server.log 2>&1 &
+AGEBORN_REPO=/tmp/game-capture nohup node scripts/server.mjs > /tmp/server.log 2>&1 &
 bash scripts/record-batch.sh r1 r5      # then: node scripts/make.mjs r1 (one render at a time)
 ```
 
