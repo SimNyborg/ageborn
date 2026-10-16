@@ -114,9 +114,27 @@ Episode ideas, each 20-35 s:
    that sells nothing?".
 3. "Making the bear knight": the Ursa Paladin from sprite sheet to animated unit (cut-outs,
    frames side by side, then in battle).
-4. "The AI is not allowed to cheat" (A7.1 honesty rules): the bot sees what you see.
-5. "Comeback tools" (A2.11): how a losing player can still turn a match, shown in a real battle.
-6. "Capsules with no tricks" (A6.5 pity counters on screen): the capsule reveal with the counter.
+4. "Comeback tools" (A2.11): how a losing player can still turn a match, shown in a real battle.
+5. "Capsules with no tricks" (A6.5 pity counters on screen): the capsule reveal with the counter.
 
 Test plan: post 3 devlogs in week 2 as their own variant (format "devlog") against the short duels,
 first as Trial Reels if reach is a worry. Measure watch_pct and comments especially.
+
+### Devlog storytelling (owner request 2026-10-16: it must feel like the viewer helps build the game)
+
+Every devlog is one small story with a real open decision, not a feature tour:
+1. Hook (0-2 s): a problem or tension, shown, not explained. "This bear knight was broken." "I almost
+   deleted this age." Never open on a logo or a greeting.
+2. Stakes (2-8 s): why it matters to a player, in one sentence, over footage that shows it.
+3. Journey (8-25 s): what was tried, with honest before/after footage, including what did not work.
+4. Open decision (last 5 s): a real choice that is still open, as two clear options on screen
+   ("A or B? Comment below"). Never ask about something already decided.
+5. Close the loop: the next episode starts with the result ("Last time 64% of you picked B. Here it
+   is."). Only claim the community decided something if their votes really were used.
+
+Making the votes real: tally the comments on each devlog in the evening status; write the result
+to `docs/community-votes.md` and pass it to the game as a suggestion through the game repo's
+`docs/requests/` (the owner decides). Choices the studio controls fully (which unit or age gets the
+next episode, which matchup to film, a unit's nickname) can be decided by the votes directly.
+Voice: warm, curious, a bit self-deprecating, first person "I", short sentences, no hype words.
+Series label on screen: "Devlog #N" so viewers follow the thread.
