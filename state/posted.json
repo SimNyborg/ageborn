@@ -79,6 +79,20 @@
       "kind": "story",
       "hook": "Which age would you play?",
       "trial": false
+    },
+    {
+      "id": "18117290048082646",
+      "permalink": "https://www.instagram.com/reel/DekMIIQCjK_/",
+      "timestamp": "2026-10-16T18:35:38+0000",
+      "name": "r6-legendary-capsule-pull",
+      "kind": "reel",
+      "pillar": "P2 rarity reveal",
+      "hook": "Wait for the gold",
+      "trial": false,
+      "length_s": 13.6,
+      "format": "classic",
+      "hook_type": "reveal",
+      "experiment": "format"
     }
   ]
 }
