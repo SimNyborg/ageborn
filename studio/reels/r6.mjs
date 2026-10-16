@@ -32,7 +32,7 @@ export async function edit() {
   T.overlay('flash', legend + 6, 8, { color: '#ffe9a8', peak: 0.6 });
   T.overlay('title', legend + 4, at('walkout-c:ursa_paladin') + 40 - legend, { y: 330, burst: true, glow: 'rgba(245,184,46,0.8)', lines: [{ text: 'Legendary!', size: 150, fill: 'gold' }] });
   T.overlay('caption', at('walkout-c:ursa_paladin') + 44, endAt - at('walkout-c:ursa_paladin') - 44, { text: 'Ursa Paladin joins the army', y: 1500 });
-  T.overlay('endcard', endAt, endDur, { tagline: 'Every card earned in battle. Nothing for sale.', cta: 'FOLLOW FOR MORE PULLS' });
+  T.overlay('endcard', endAt, endDur, { tagline: 'One lane. Eight ages. Endless battles.', cta: 'FOLLOW FOR MORE PULLS' });
 
   T.music('music.capsule', 0, total, { from: 0, gainDb: 0, fadeIn: 0.05, fadeOut: 1.2 });
   T.mix.config = { musicDb: -8, sfxDb: 0, accentDb: -2, sidechainDb: 4, exclude: ['xp_tick', 'copy_tick'] };

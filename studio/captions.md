@@ -58,7 +58,7 @@ File: `out/reels/r5-pick-one-legendary.mp4`
 File: `out/reels/r6-legendary-capsule-pull.mp4`
 
 > Wait for the gold... ✨
-> Opening a Time Capsule in Ageborn: Common, Rare, Epic... LEGENDARY. Every card is earned in battle, nothing is for sale.
+> Opening a Time Capsule in Ageborn: Common, Rare, Epic... LEGENDARY.
 > What's the best pull you've ever had?
 >
 > #legendary #strategygame #indiegame #browsergame #gaming

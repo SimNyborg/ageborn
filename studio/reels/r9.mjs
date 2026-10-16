@@ -61,7 +61,7 @@ export async function edit() {
     T.overlay('badge', s.at + 3, s.dur - 3, { text: `LEGENDARY ${i + 1}/3`, rarity: 'legendary', y: 330, size: 60 });
     T.overlay('caption', s.at + 14, s.dur - 14, { text: LEGENDS[i][1], y: 1500 });
   });
-  T.overlay('endcard', endAt, endDur, { tagline: 'Every card earned in battle. Nothing for sale.', cta: 'FOLLOW FOR MORE PULLS' });
+  T.overlay('endcard', endAt, endDur, { tagline: 'One lane. Eight ages. Endless battles.', cta: 'FOLLOW FOR MORE PULLS' });
 
   // --- sound: the show's own cues (rising climb tones, the Aeon burst) over the capsule music ----
   T.music('music.capsule', 0, total, { from: 0, gainDb: 0, fadeIn: 0.05, fadeOut: 0.8 });

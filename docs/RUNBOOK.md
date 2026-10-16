@@ -110,12 +110,13 @@ repo's docs (DESIGN.md, decisions.md, art-style.md, design-history/), never inve
 Episode ideas, each 20-35 s:
 1. "Why every age is 1.35x stronger" (A2.2 power scale): a caveman vs a Cosmic tank, and why
    counters, not numbers, decide fights (R1 footage plus the sim's numbers).
-2. "I deleted the store" (A6.2): every card is earned, nothing sold; ask "would you trust a game
-   that sells nothing?".
+2. "Eight ages, one lane": how a single battle can climb from clubs to lasers, and the hardest
+   part of making every age feel different (art, music, units).
 3. "Making the bear knight": the Ursa Paladin from sprite sheet to animated unit (cut-outs,
    frames side by side, then in battle).
 4. "Comeback tools" (A2.11): how a losing player can still turn a match, shown in a real battle.
-5. "Capsules with no tricks" (A6.5 pity counters on screen): the capsule reveal with the counter.
+5. "Making the capsule feel amazing": the hammer strikes, the rising tones and the burst, and what
+   was tuned to make an opening satisfying.
 
 Test plan: post 3 devlogs in week 2 as their own variant (format "devlog") against the short duels,
 first as Trial Reels if reach is a worry. Measure watch_pct and comments especially.
@@ -138,3 +139,9 @@ to `docs/community-votes.md` and pass it to the game as a suggestion through the
 next episode, which matchup to film, a unit's nickname) can be decided by the votes directly.
 Voice: warm, curious, a bit self-deprecating, first person "I", short sentences, no hype words.
 Series label on screen: "Devlog #N" so viewers follow the thread.
+
+## Messaging (owner note 2026-10-16)
+
+Lead with the game itself and its development: battles, ages, units, capsules, how things were made
+and why. Do not use "nothing is for sale", "every card earned" or similar monetisation lines in
+videos, end cards or captions; they are not a selling point for this audience.
