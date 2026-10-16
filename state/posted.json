@@ -56,6 +56,20 @@
       "hook_type": "matchup",
       "format": "classic",
       "experiment": "baseline"
+    },
+    {
+      "id": "18636189517019676",
+      "permalink": "https://www.instagram.com/reel/DejTfCLleAp/",
+      "timestamp": "2026-10-16T10:20:31+0000",
+      "name": "r4-stone-age-to-cosmic-age",
+      "kind": "reel",
+      "pillar": "P1 ages",
+      "hook": "From clubs to lasers",
+      "trial": false,
+      "length_s": 20.6,
+      "format": "classic",
+      "hook_type": "evolution",
+      "experiment": "format"
     }
   ]
 }
