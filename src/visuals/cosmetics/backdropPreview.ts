@@ -21,6 +21,7 @@ import { GROUND_FRAME, MID_FRAME, paintGround, paintMid } from '../backdrops/gro
 import { finishLayer } from '../backdrops/lighting';
 import { BACK_FRAME, drawnScene, parseScene, sceneDir, type SceneData, type SceneHints, type SceneLayer } from '../backdrops/scenes';
 import { sceneImage, sceneJson } from '../backdrops/sceneFiles';
+import { limitSprites, spriteInstances } from '../backdrops/sceneSprites';
 import { FAR_FRAME, paintFar } from '../backdrops/silhouettes';
 import { paintSceneSky, paintSky, SKY_FRAME, type LayerFrame } from '../backdrops/sky';
 import { backdropId, BACKDROP_THEMES, spaceWeather, themeForScene, themeLayer, themeSky, type BackdropTheme } from '../backdrops/themes';
@@ -61,6 +62,8 @@ const urlCache = new Map<string, { url: string | null; final: boolean; age: AgeI
 interface LoadedScene {
   data: SceneData;
   imgs: Partial<Record<SceneLayer, HTMLImageElement>>;
+  /** The props atlas (null without props, or when it failed: the still then shows the strips only). */
+  atlas: HTMLImageElement | null;
 }
 const loaded = new Map<string, LoadedScene | 'loading' | 'failed'>();
 const listeners = new Set<() => void>();
@@ -96,13 +99,15 @@ function previewScene(age: AgeId, scene: string): LoadedScene | null {
       const data = parseScene(await sceneJson(base + 'layers.json'), age, scene);
       if (!data) throw new Error('no usable strip');
       const imgs: LoadedScene['imgs'] = {};
-      await Promise.all(
-        (['back', 'far', 'mid'] as const).map(async (kind) => {
+      const props = data.props && Object.keys(data.props.frames).length > 0 ? data.props : null;
+      const [atlas] = await Promise.all([
+        props ? sceneImage(base + props.image).catch(() => null) : Promise.resolve(null),
+        ...(['back', 'far', 'mid'] as const).map(async (kind) => {
           const m = data.layers[kind];
           if (m) imgs[kind] = await sceneImage(base + m.image);
         }),
-      );
-      loaded.set(key, { data, imgs });
+      ]);
+      loaded.set(key, { data, imgs, atlas: atlas ?? null });
       refreshStills(age, scene);
     } catch (e) {
       loaded.set(key, 'failed');
@@ -187,6 +192,30 @@ function paintedLayers(age: AgeId): Layers | null {
   return out;
 }
 
+/**
+ * A strip's props at the pose the lane holds them under Reduce motion, within the lane's High limit
+ * (review 2: a still without them showed Treasure Cove's palms as bare trunks), drawn into the strip
+ * before the theme grades it, as the lane grades its props.
+ */
+function drawStillProps(x: CanvasRenderingContext2D, kind: SceneLayer, props: NonNullable<SceneData['props']>, atlas: HTMLImageElement, x0: number, yTop: number): void {
+  for (const sp of limitSprites(props.sprites, [], 'high').sprites) {
+    if (sp.kind === 'emit' || sp.layer !== kind) continue;
+    for (const it of spriteInstances(sp, 0, 0, true)) {
+      const fr = props.frames[it.frame];
+      if (!fr) continue;
+      const dw = (fr.w / fr.ppl) * K;
+      const dh = (fr.h / fr.ppl) * K;
+      x.save();
+      x.globalAlpha = it.alpha;
+      x.translate((it.x - x0) * K, (it.y - yTop) * K);
+      if (it.rot) x.rotate(it.rot);
+      if (it.flip) x.scale(-1, 1);
+      x.drawImage(atlas, fr.x, fr.y, fr.w, fr.h, -fr.ax * dw, -fr.ay * dh, dw, dh);
+      x.restore();
+    }
+  }
+}
+
 /** A loaded scene's layers at preview scale: its sky (painted from its colours) and its strips, cropped. */
 function imageLayers(age: AgeId, scene: string, s: LoadedScene): Layers | null {
   const key = `${age}.${scene}`;
@@ -213,6 +242,7 @@ function imageLayers(age: AgeId, scene: string, s: LoadedScene): Layers | null {
     if (!out) return null;
     out.x.imageSmoothingQuality = 'high';
     out.x.drawImage(im, (x0 - f.x0) * m.pxPerLu, 0, (x1 - x0) * m.pxPerLu, f.height * m.pxPerLu, 0, 0, out.c.width, out.c.height);
+    if (s.atlas && s.data.props) drawStillProps(out.x, kind, s.data.props, s.atlas, x0, f.yTop);
     return { c: out.c, f: { ...frame(f), x0, width: x1 - x0 } };
   };
   const back = strip('back');

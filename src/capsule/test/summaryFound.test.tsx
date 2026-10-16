@@ -60,12 +60,13 @@ const show = (el: ComponentChildren): void => {
 const tiles = () => container.querySelectorAll('[data-testid="capsule-found"]');
 
 describe('found items in the capsule summary (PLAN 2a)', () => {
-  it('shows each item as a picture tile after the cards: name, kind, NEW or the Dust a duplicate paid', () => {
+  it('shows each item as a picture tile before the cards: name, kind, NEW or the Dust a duplicate paid', () => {
     show(<Panel keys={['backdrop.eclipse', 'emote.clap', null]} env={env([])} />);
     const grid = container.querySelector('[data-testid="capsule-summary"]')!;
     const all = grid.querySelectorAll('[data-testid="capsule-summary-item"], [data-testid="capsule-found"]');
-    // the cards first, the items after them
-    expect(all.slice(-2).map((el) => el.getAttribute('data-testid'))).toEqual(['capsule-found', 'capsule-found']);
+    // the items first (the show revealed the cards; a long Open all grid would hide them), the cards after
+    expect(all.slice(0, 2).map((el) => el.getAttribute('data-testid'))).toEqual(['capsule-found', 'capsule-found']);
+    expect(all.length).toBeGreaterThan(2);
     const [sky, clap] = tiles();
     expect(sky!.getAttribute('data-key')).toBe('backdrop.eclipse');
     expect(sky!.getAttribute('data-new')).toBe('true');
@@ -86,10 +87,9 @@ describe('found items in the capsule summary (PLAN 2a)', () => {
     expect(sky!.querySelector('[data-burst="legendary"]')).not.toBeNull();
     expect(lion!.querySelector('[data-burst="epic"]')).not.toBeNull();
     expect(clap!.querySelector('[data-burst]')).toBeNull();
-    // the Legendary sky is the 4th tile of the grid (3 cards before it): it lands, is seen, then pops
-    const cards = container.querySelectorAll('[data-testid="capsule-summary-item"]').length;
-    const at = foundBurstAt(cards * 45, 'legendary');
-    expect(at - RARITY_BURST.legendary.popMs).toBeGreaterThan(cards * 45 + 500);
+    // the Legendary sky is the grid's first tile: it lands, is seen, then pops
+    const at = foundBurstAt(0, 'legendary');
+    expect(at - RARITY_BURST.legendary.popMs).toBeGreaterThan(500);
     await act(async () => {
       await vi.advanceTimersByTimeAsync(at - 1);
     });

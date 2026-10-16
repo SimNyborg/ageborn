@@ -7,7 +7,7 @@
  * (`doneLabel`: "Continue" or "Next battle"), else "Open next (N)" while more wait, else "Done".
  * Upgrade, Open all and Done (when it is not the primary) are secondary.
  *
- * Found collection items (A18.9.4, PLAN 2a) land after the cards as picture tiles: the item's art on
+ * Found collection items (A18.9.4, PLAN 2a) land first, before the cards, as picture tiles: the item's art on
  * its rarity frame, its name, what it is ("Sky", "Base skin · Stone Age") and NEW, or the Dust a
  * duplicate paid. An Epic or Legendary item gets the rarity burst once its tile has landed and shows
  * what it is: the burst celebrates an item already on screen, rolled when the capsule was earned, and
@@ -327,11 +327,13 @@ export function SummaryPanel(p: { model: SummaryModel; art: ArtProvider; i18n: I
           </div>
         </div>
         <div class={css.grid}>
-          {model.items.map((it, i) => (
-            <Item key={it.key} item={it} index={i} art={p.art} i18n={i18n} catalog={p.catalog} actions={actions} />
-          ))}
+          {/* the found items first: the show revealed the cards, these are new on this screen (and an Open all
+              grid of 20 cards would hide them below the fold) */}
           {found.map(({ f, view }, i) => (
-            <FoundTile key={`f:${f.key}`} found={f} view={view} index={model.items.length + i} i18n={i18n} sound={env?.sound} />
+            <FoundTile key={`f:${f.key}`} found={f} view={view} index={i} i18n={i18n} sound={env?.sound} />
+          ))}
+          {model.items.map((it, i) => (
+            <Item key={it.key} item={it} index={found.length + i} art={p.art} i18n={i18n} catalog={p.catalog} actions={actions} />
           ))}
         </div>
         <div class={css.actions}>

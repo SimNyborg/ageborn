@@ -50,7 +50,7 @@ import { BACK_FRAME, drawnScene, parseScene, SCENE_ART, sceneDir, sceneIdOf, typ
 import { sceneImage, sceneJson } from '../../backdrops/sceneFiles';
 import { lightAlpha, limitSprites, spriteInstances, spritePeriodMs, spritePhaseMs, type SceneSprite } from '../../backdrops/sceneSprites';
 import { CLOUD_TINT, paintSceneSky, paintSky, SKY_FRAME, type LayerFrame } from '../../backdrops/sky';
-import { backdropId, BACKDROP_THEMES, isNightSky, sceneGradeKey, spaceWeather, themeForScene, themeGround, themeLayer, themeSky } from '../../backdrops/themes';
+import { backdropId, BACKDROP_THEMES, isNightSky, mulTint, propGradeTint, sceneGradeKey, spaceWeather, themeForScene, themeGround, themeLayer, themeSky } from '../../backdrops/themes';
 import { BACKDROP_PALETTES, desaturate, mix } from '../../palette';
 import { WORLD } from '../../style';
 import { BackdropWeatherLayer } from './backdropWeather';
@@ -621,6 +621,10 @@ interface PropNode {
   weight: number;
   /** A path's trail emitter (the loco's smoke) and its accumulator. */
   trail: { spec: AmbientSpec; acc: number } | null;
+  /** Each node's current tint, and the tint of the skin it was last worked out for (`propTint`). */
+  tints: number[];
+  tintSkin?: string;
+  tint?: number;
 }
 
 /** A night light of a scene (a warm glow while the half wears a night sky). */
@@ -1363,7 +1367,8 @@ export class ProceduralBackdropView implements BackdropView {
         nodes.push(s);
       }
       const trail = sp.kind === 'path' && sp.trail ? { spec: { ...sp.trail, kind: 'emit' as const, x: 0, y: 0, layer: sp.layer, rate: (sp.trail.rate ?? 1) * rateScale }, acc: 0 } : null;
-      this.propNodes.push({ sprite: sp, age, scene, phase: spritePhaseMs(seed, i, spritePeriodMs(sp)), nodes, frames, weight: 1, trail });
+      const tints = nodes.map(() => (sp.layer === 'mid' ? MID_LAYER_TINT : 0xffffff));
+      this.propNodes.push({ sprite: sp, age, scene, phase: spritePhaseMs(seed, i, spritePeriodMs(sp)), nodes, frames, weight: 1, trail, tints });
     });
     // the strips' emitters keep their rates, scaled down to the particle cap with the props'
     if (rateScale < 1) this.emitScale.set(sceneKey(age, scene), rateScale);
@@ -1490,6 +1495,24 @@ export class ProceduralBackdropView implements BackdropView {
     }
   }
 
+  /**
+   * A prop's tint where it stands (review 2): its layer's grade of the half's sky theme as the scene
+   * wears it (`themeForScene`, so `skyGrade` counts), times the mid strip's multiply for mid props.
+   * Worked out once per skin.
+   */
+  private propTint(p: PropNode, skin: string | undefined): number {
+    const key = skin ?? '';
+    if (p.tintSkin === key && p.tint !== undefined) return p.tint;
+    const id = backdropId(skin);
+    const theme = id ? BACKDROP_THEMES[id] : undefined;
+    const layer = p.sprite.layer;
+    const th = theme ? themeForScene(theme, this.sceneData(p.age, p.scene)?.hints, layer) : null;
+    const tint = mulTint(propGradeTint(th, layer), layer === 'mid' ? MID_LAYER_TINT : 0xffffff);
+    p.tintSkin = key;
+    p.tint = tint;
+    return tint;
+  }
+
   /** Moves the scene props on the render clock (still under Reduce motion), fading them across the seam. */
   private stepProps(dt: number, lite: boolean): void {
     const regions = this.regions;
@@ -1509,6 +1532,12 @@ export class ProceduralBackdropView implements BackdropView {
         n.visible = w > 0.02;
         if (!n.visible) return;
         if (n.texture !== f.tex) n.texture = f.tex;
+        // the sky theme of the half it stands in grades it like the strips (a night sky darkens it)
+        const tint = this.propTint(p, regionSkinAt(regions, wx, p.age, p.scene));
+        if (p.tints[k] !== tint) {
+          p.tints[k] = tint;
+          n.tint = tint;
+        }
         n.anchor.set(f.ax, f.ay);
         n.position.set(it.x, it.y);
         n.scale.set((it.flip ? -1 : 1) / f.ppl, 1 / f.ppl);
@@ -1584,4 +1613,15 @@ function regionWeight(regions: readonly Region[], match: (r: Region) => boolean,
     w = Math.max(w, Math.max(0, Math.min(1, 0.5 + d / WORLD.seamBlendLu)));
   }
   return w;
+}
+
+/** The backdrop skin over x: the region there showing this age and scene, else any region there. */
+export function regionSkinAt(regions: readonly Region[], x: number, age: AgeId, scene: string): string | undefined {
+  let any: Region | undefined;
+  for (const r of regions) {
+    if (x < r.x0 || x >= r.x1) continue;
+    if (r.age === age && (r.scene ?? 'classic') === scene) return r.skin;
+    any ??= r;
+  }
+  return any?.skin;
 }

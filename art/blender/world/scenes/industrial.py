@@ -650,5 +650,5 @@ SCENES = {
     "classic": Scene("industrial", "classic", PAL, far, mid, back=back, sky=SKY, props=props,
                      hints={"celestial": "keep", "weather": "ground"}, ground="earth"),
     "viaduct_gorge": Scene("industrial", "viaduct_gorge", VG_PAL, vg_far, vg_mid, back=vg_back, sky=VG_SKY, props=vg_props,
-                           hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.7}, ground="earth"),
+                           hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.5}, ground="earth"),
 }

@@ -8,13 +8,13 @@
 import { Texture } from 'pixi.js';
 import { describe, expect, it } from 'vitest';
 import type { AgeId } from '@/contracts/ids';
-import { ageRegions, ARRIVAL_FADE_MS, composePieces, FadeTracker, ProceduralBackdropView, type BackdropTextures, type PropFrame } from '../adapters/procedural/backdropView';
+import { ageRegions, ARRIVAL_FADE_MS, composePieces, FadeTracker, ProceduralBackdropView, regionSkinAt, type BackdropTextures, type PropFrame } from '../adapters/procedural/backdropView';
 import { PartBaker } from '../bake';
 import { content } from '@/content';
 import { BACK_FRAME, drawnScene, isSpaceScene, parseScene, SCENE_ART, sceneDir, sceneIdOf, sceneThumbPath, SPACE_SCENES, type SceneData } from '../backdrops/scenes';
 import { backdropWeatherSvg } from '../cosmetics/backdropPreview';
 import { limitSprites, lightAlpha, pathPoint, readSprites, spriteInstances, spritePhaseMs, SPRITE_LIMITS, type PathSprite, type SceneSprite } from '../backdrops/sceneSprites';
-import { BACK_GRADE_SCALE, BACKDROP_THEMES, isNightSky, sceneGradeKey, spaceWeather, themeForScene, themeSky } from '../backdrops/themes';
+import { BACK_GRADE_SCALE, BACKDROP_THEMES, isNightSky, mulTint, propGradeTint, sceneGradeKey, spaceWeather, themeForScene, themeSky } from '../backdrops/themes';
 import { WORLD } from '../style';
 
 const LAYERS_JSON = import.meta.glob('/public/art/backdrops/**/layers.json', { import: 'default', eager: true }) as Record<string, unknown>;
@@ -370,6 +370,32 @@ describe('scene hints and night lights', () => {
     expect(hints('bronze')).toMatchObject({ weather: 'ground', skyGrade: 0.45 });
     expect(hints('cosmic')).toMatchObject({ weather: 'space', celestial: 'own', skyGrade: 0.35 });
     expect(hints('industrial')?.skyGrade).toBe(1);
+  });
+
+  it('moving props take their layer grade of the half’s sky (review 2): dark under a night sky, near-white tint under Winterfall', () => {
+    const night = BACKDROP_THEMES['starry_night']!;
+    const wf = BACKDROP_THEMES['winterfall']!;
+    const ch = (c: number) => [(c >> 16) & 255, (c >> 8) & 255, c & 255];
+    expect(propGradeTint(null, 'far')).toBe(0xffffff);
+    const n = ch(propGradeTint(themeForScene(night, { skyGrade: 0.55 }, 'far'), 'far'));
+    // about half as bright, and bluer (the grade's colour)
+    expect(Math.max(...n)).toBeLessThan(170);
+    expect(n[2]!).toBeGreaterThan(n[0]!);
+    // a light theme cannot darken much (the strips do the whitening)
+    expect(Math.min(...ch(propGradeTint(themeForScene(wf, { skyGrade: 0.5 }, 'far'), 'far')))).toBeGreaterThan(235);
+    // the back strip takes half a theme's grade, so its props too; mid props take the mid scale
+    const back = Math.max(...ch(propGradeTint(themeForScene(night, undefined, 'back'), 'back')));
+    expect(back).toBeGreaterThan(Math.max(...ch(propGradeTint(night, 'far'))));
+    expect(mulTint(0xffffff, 0xdcdad6)).toBe(0xdcdad6);
+    expect(mulTint(0x808080, 0x808080)).toBe(0x404040);
+  });
+
+  it('a prop takes the skin of the region it stands in (the matching look first)', () => {
+    const regions = ageRegions({ left: 'bronze', right: 'stone', seam: 1000, wipe: null, skins: { left: 'backdrop.starry_night' }, scenes: { left: { bronze: 'scene.aegean_harbour' } } });
+    expect(regionSkinAt(regions, 400, 'bronze', 'aegean_harbour')).toBe('backdrop.starry_night');
+    expect(regionSkinAt(regions, 1400, 'stone', 'classic')).toBeUndefined();
+    // a look not in the region still reads the skin there (it is faded out anyway)
+    expect(regionSkinAt(regions, 400, 'stone', 'classic')).toBe('backdrop.starry_night');
   });
 
   it('night skies are the four dark themes', () => {

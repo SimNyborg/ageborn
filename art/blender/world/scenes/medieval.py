@@ -329,7 +329,7 @@ def mm_props():
 SCENES = {
     "classic": Scene("medieval", "classic", PAL, far, mid, sky=SKY, version=1),
     "misty_moor": Scene("medieval", "misty_moor", MM_PAL, mm_far, mm_mid, back=mm_back, sky=MM_SKY, props=mm_props,
-                        hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.6}, ground="earth",
+                        hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.5}, ground="earth",
                         # a grey day with clear air between the fog banks: a little less haze on the far moor
                         look={"far": (0.18, 0.08, 0.2)}),
 }

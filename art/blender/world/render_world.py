@@ -4,7 +4,9 @@ Usage (from the repository root, with the bpy venv):
   <venv>/bin/python art/blender/world/render_world.py --out <scratch dir> [--only base.stone,turret.rock_tosser]
       [--scale 1.5] [--no-install] [--no-previews]
   # base skin models (world/base_skins_<age>.py, PLAN 2c), installed in public/art/bases/skins/<skin>.{png,json}
-  <venv>/bin/python art/blender/world/render_world.py --out <scratch dir> --only base.medieval@rose_keep --no-previews
+  <venv>/bin/python art/blender/world/render_world.py --out <scratch dir> --only base.medieval@rose_keep --no-previews --thumbs
+  # only the base skin thumbnail atlas (world/base_thumbs.py: public/art/bases/skins/thumbs.{webp,json}; no Blender)
+  python3 art/blender/world/render_world.py --out <scratch dir> --thumbs
 
 Every visual goes through ageborn_art.pipeline.run_unit with the unit v3 settings (the same
 shading, light, outline width and colour, pixel filter and team layer as the units): frames render
@@ -92,7 +94,13 @@ def main():
     ap.add_argument("--only", default="")
     ap.add_argument("--no-install", action="store_true")
     ap.add_argument("--no-previews", action="store_true")
+    ap.add_argument("--thumbs", action="store_true", help="rebuild the base skin thumbnail atlas (after the renders, if any)")
     args = ap.parse_args()
+    if args.thumbs and not args.only:
+        # the atlas composites the installed sheets: no render, no Blender
+        from world import base_thumbs
+        base_thumbs.build(os.path.abspath(args.out))
+        return
     from ageborn_art import config, pipeline, retime
     # unit v3 look (config.UNIT_*_V3): shared outline and filter; world clips keep their timing
     retime.retime = lambda mod, clips: clips
@@ -116,6 +124,9 @@ def main():
             print("  ->", install(mod, sub), flush=True)
     with open(os.path.join(out, "stats.json"), "w") as fh:
         json.dump({"items": stats, "seconds": round(time.time() - t0, 1)}, fh, indent=1)
+    if args.thumbs and not args.no_install:
+        from world import base_thumbs
+        base_thumbs.build(out)
     print(f"done in {time.time() - t0:.1f} s -> {out}")
 
 

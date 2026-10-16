@@ -277,5 +277,5 @@ def sm_props():
 SCENES = {
     "classic": Scene("future", "classic", PAL, far, mid, sky=SKY, version=1),
     "skyway_metropolis": Scene("future", "skyway_metropolis", SM_PAL, sm_far, sm_mid, back=sm_back, sky=SM_SKY, props=sm_props,
-                               hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.55}, ground="earth"),
+                               hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.4}, ground="earth"),
 }

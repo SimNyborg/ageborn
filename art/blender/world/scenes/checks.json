@@ -4,7 +4,7 @@
    "back.webp": 0.0,
    "far.webp": 0.0,
    "mid.webp": 0.0019,
-   "thumb.webp": 0.0003
+   "thumb.webp": 0.0004
   },
   "sizes": {
    "back.webp": 4020,
@@ -12,9 +12,9 @@
    "layers.json": 2336,
    "mid.webp": 33222,
    "props.webp": 7738,
-   "thumb.webp": 4472
+   "thumb.webp": 4806
   },
-  "total": 74178
+  "total": 74512
  },
  "bronze.classic": {
   "rule": {
@@ -58,14 +58,14 @@
    "thumb.webp": 0.0
   },
   "sizes": {
-   "back.webp": 13268,
+   "back.webp": 12022,
    "far.webp": 17452,
    "layers.json": 2199,
    "mid.webp": 37096,
    "props.webp": 3572,
-   "thumb.webp": 6166
+   "thumb.webp": 5750
   },
-  "total": 79753
+  "total": 78091
  },
  "future.skyway_metropolis": {
   "rule": {
@@ -77,12 +77,12 @@
   "sizes": {
    "back.webp": 6682,
    "far.webp": 35560,
-   "layers.json": 2044,
+   "layers.json": 2043,
    "mid.webp": 32810,
    "props.webp": 2856,
-   "thumb.webp": 5262
+   "thumb.webp": 5454
   },
-  "total": 85214
+  "total": 85405
  },
  "gunpowder.treasure_cove": {
   "rule": {
@@ -97,9 +97,9 @@
    "layers.json": 2304,
    "mid.webp": 46770,
    "props.webp": 14160,
-   "thumb.webp": 4546
+   "thumb.webp": 4828
   },
-  "total": 95392
+  "total": 95674
  },
  "industrial.classic": {
   "rule": {
@@ -131,9 +131,9 @@
    "layers.json": 2015,
    "mid.webp": 46770,
    "props.webp": 4220,
-   "thumb.webp": 5684
+   "thumb.webp": 5852
   },
-  "total": 98697
+  "total": 98865
  },
  "medieval.misty_moor": {
   "rule": {
@@ -148,9 +148,9 @@
    "layers.json": 2036,
    "mid.webp": 31666,
    "props.webp": 5374,
-   "thumb.webp": 3922
+   "thumb.webp": 4008
   },
-  "total": 69574
+  "total": 69660
  },
  "modern.desert_airbase": {
   "rule": {
@@ -160,14 +160,14 @@
    "thumb.webp": 0.0
   },
   "sizes": {
-   "back.webp": 10358,
-   "far.webp": 26088,
+   "back.webp": 6514,
+   "far.webp": 21122,
    "layers.json": 2740,
    "mid.webp": 21556,
    "props.webp": 5450,
-   "thumb.webp": 3876
+   "thumb.webp": 3720
   },
-  "total": 70068
+  "total": 61102
  },
  "stone.glacier_valley": {
   "rule": {
@@ -178,12 +178,12 @@
   },
   "sizes": {
    "back.webp": 5350,
-   "far.webp": 29374,
+   "far.webp": 30266,
    "layers.json": 2639,
    "mid.webp": 46176,
    "props.webp": 8632,
-   "thumb.webp": 6166
+   "thumb.webp": 6810
   },
-  "total": 98337
+  "total": 99873
  }
 }

@@ -600,6 +600,45 @@ describe('base skin models in the lane (lazy, per age, tint stand-in)', () => {
   });
 });
 
+describe('a Legendary model stands in its aura (PLAN 2c: Crystal Spire, Nebula Ark)', () => {
+  const src = 'art/bases/skins/test_legend.json';
+  const viewOf = (meta: Partial<WorldMeta> & { aura?: string }): AtlasBaseView => {
+    const world = new WorldAtlas(() => '', async () => fakeSheet());
+    world.register(src, fakeSheet(meta as Partial<WorldMeta>));
+    return new AtlasBaseView({ age: 'future', side: 0, teamColor: 0x2f7df6, decor: new PartBaker({ pxPerLu: 1, canvasFactory: () => null }), seed: 1, world, sourceFor: () => src, def: baseDef(src) });
+  };
+  const auraOf = (v: AtlasBaseView): Container => (v as unknown as { aura: Container }).aura;
+
+  it('shows only for a Legendary model: behind the body, still under Reduce motion, dimmer as it crumbles, breathing otherwise', () => {
+    const plain = viewOf({ skin: 'test_plain' });
+    plain.update(16);
+    expect(auraOf(plain).visible).toBe(false);
+    plain.destroy();
+    const v = viewOf({ skin: 'test_legend', aura: 'legendary' });
+    v.setMotion({ reduce: true, lite: false });
+    v.update(16);
+    const a = auraOf(v);
+    expect(a.visible).toBe(true);
+    // behind the body: the root's second child, after the contact shadow
+    expect(v.root.getChildIndex(a)).toBe(1);
+    const whole = a.alpha;
+    expect(whole).toBeGreaterThan(0);
+    v.update(700);
+    expect(a.alpha).toBeCloseTo(whole, 6);
+    v.setCrumble(3);
+    v.update(16);
+    expect(a.alpha).toBeLessThan(whole);
+    v.setMotion({ reduce: false, lite: false });
+    const seen = new Set<number>();
+    for (let i = 0; i < 12; i++) {
+      v.update(200);
+      seen.add(Math.round(a.alpha * 1000));
+    }
+    expect(seen.size).toBeGreaterThan(1);
+    v.destroy();
+  });
+});
+
 describe('the dressing with a skin model', () => {
   const look = { baseSkins: { medieval: 'baseSkin.rose_keep' }, decorations: [] };
   const modelBase = (model: string | null, spots: { kind: string; x: number; y: number; r: number; rate: number }[]) => {

@@ -116,18 +116,20 @@ def _scr(p, e):
 
 
 def mesa(g_body, g_band, x, y, z, rx, h, seed=0, squash=0.6, top=0.62, g_talus=None):
-    """A flat-topped butte: fluted cliff walls (columns of rock side by side), a darker cap rock on top,
-    and a talus skirt of fallen rock round its foot."""
+    """A flat-topped butte (review 2: fluted walls read as drapes): stacked rock strata, each a little
+    narrower and shifted, thin darker bands between them, a dark cap rock, and a wide talus apron
+    flaring round its foot."""
     rnd = random.Random(seed)
     w = rx * top
-    n = max(4, int(2 * w / 20))
-    for k in range(n):
-        cx = x - w + (k + 0.5) * 2 * w / n
-        ch = h * rnd.uniform(0.9, 1.0) * (1.0 - 0.06 * abs((k + 0.5) / n - 0.5))
-        box(g_body, (cx, y + rnd.uniform(-5, 5), z + ch / 2), (w / n * 1.25, w * squash * rnd.uniform(0.82, 0.95), ch / 2), p=3.0,
-            taper=(1.1, 0.97), cuts=2)
-    box(g_band, (x, y, z + h * 0.96), (w * 1.0, w * squash * 0.94, h * 0.06 + 2), p=3.4, cuts=2)
-    rock(g_talus or g_body, (x, y + 4, z), (rx, rx * squash * 0.9, h * 0.3), seed=seed + 7, jag=0.12, p=2.2, cuts=4)
+    d = w * squash
+    z0 = z
+    for (f, band, s) in ((0.3, False, 1.0), (0.06, True, 0.985), (0.27, False, 0.965), (0.05, True, 0.95), (0.22, False, 0.935),
+                         (0.1, True, 0.925)):
+        hh = h * f
+        box(g_band if band else g_body, (x + rnd.uniform(-0.025, 0.025) * w, y + rnd.uniform(-3, 3), z0 + hh / 2),
+            (w * s * rnd.uniform(0.97, 1.0), d * s, hh / 2 + 0.8), p=5.0, cuts=2)
+        z0 += hh
+    rock(g_talus or g_body, (x, y + 4, z), (rx * 1.1, rx * squash, h * 0.3), seed=seed + 7, jag=0.12, p=2.2, cuts=4)
 
 
 def da_back(st, P):
@@ -149,6 +151,12 @@ def da_far(st, P):
     gm, gb, gt = pt.g(DA["mesa"], outline=0.3), pt.g(DA["mesa_dk"], outline=0.3), pt.g(DA["sand_dk"], outline=0.0)
     for x, rx, h, seed in ((-120, 190, 200, 11), (330, 160, 150, 12), (1080, 210, 210, 13), (1360, 150, 160, 14)):
         mesa(gm, gb, x, 640, -20, rx, h, seed=seed, squash=0.55, top=0.7, g_talus=gt)
+    # low dunes behind the field, up over the back strip's foot (review 2: the far mesas floated over a
+    # band of sky where the back strip ends)
+    gdn = pt.g(mixc(DA["sand_dk"], P["skyBottom"], 0.25), outline=0.0)
+    for i in range(12):
+        x = -300 + i * 160 + rnd.uniform(-20, 20)
+        kit.hill(gdn, x, 700, -10, rnd.uniform(140, 180), 90, rnd.uniform(102, 112), seed=40 + i, jag=0.03, p=2.6)
     gs = pt.g(DA["sand"], outline=0.0)
     for i in range(12):
         x = -300 + i * 160 + rnd.uniform(-20, 20)

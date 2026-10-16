@@ -133,8 +133,8 @@ def gv_far(st, P):
                  snow=rnd.uniform(0.48, 0.66), jag=0.2, squash=rnd.uniform(0.45, 0.65))
     # 2. the glacier: a tongue of ice lofted from the saddle between the twin peaks down to its snout,
     #    bulging across, with crevasses arcing across it and dark moraines along its edges
-    rows = [(404, 320, 156, 146, 12), (414, 390, 172, 122, 13), (400, 460, 186, 110, 12), (414, 530, 200, 88, 10),
-            (406, 600, 212, 74, 8), (418, 670, 222, 52, 5), (420, 720, 228, 26, 2)]
+    rows = [(404, 316, 128, 150, 10), (412, 390, 150, 124, 12), (400, 460, 172, 104, 11), (414, 530, 192, 84, 9),
+            (406, 600, 208, 68, 7), (418, 670, 220, 48, 5), (420, 720, 228, 26, 2)]
     kit.loft(pt.g(GV["ice"], finish="gloss", outline=0.5), rows, nu=16, thick=14)
     gc = pt.g(GV["crevasse"], outline=0.0, highlight=False)
     for j, t in enumerate((0.45, 1.15, 1.95, 2.9, 3.85)):
@@ -156,18 +156,29 @@ def gv_far(st, P):
         pts = [kit.loft_point(rows, t * 0.25, u) for t in range(0, 24)]
         for k, (p0, p1) in enumerate(zip(pts, pts[1:])):
             gm.capsule((p0[0], p0[1], p0[2] + 1.5), (p1[0], p1[1], p1[2] + 1.5), 3.4 - k * 0.08, 3.3 - k * 0.08)
-    # the snout: a cliff of seracs under the ice's front edge, blue-grey faces cut by dark fissures
+    # the snout: a low, broken ice cliff under the ice's front edge (blocks of uneven width, height and
+    # lean, review 2: an even row read as a fringe), a dark meltwater cave in its middle, fallen blocks
     gse, gse2, gst = pt.g(GV["serac"], outline=0.5), pt.g(GV["serac_dk"], outline=0.5), pt.g(GV["snow"], outline=0.4)
     gd = pt.g(GV["ice_deep"], outline=0.0, highlight=False)
-    n = 13
-    for k in range(n):
-        x = 262 + 284 * (k + 0.5) / n + rnd.uniform(-3, 3)
-        top = 156 + 10 * (1 - ((x - 404) / 146) ** 2) - rnd.uniform(0, 14)
-        hh = top - 88
-        yaw = rnd.uniform(-16, 16)
-        box(gse if k % 3 else gse2, (x, 312, 88 + hh / 2), (296 / n * 0.62, 12, hh / 2 + 2), p=3.2, cuts=2, rot=(0, rnd.uniform(-4, 4), yaw))
-        if k % 2 == 0:
-            box(gd, (x + rnd.uniform(-4, 4), 299.4, 88 + hh * 0.42), (1.9, 0.6, hh * 0.36), p=4.0, cuts=1)
+    x = 258.0
+    k = 0
+    while x < 548:
+        w = rnd.uniform(16, 34)
+        cx = x + w / 2
+        if abs(cx - 404) < 22:
+            x += 44
+            continue
+        top = 128 + 8 * (1 - ((cx - 404) / 150) ** 2) - rnd.uniform(0, 10)
+        hh = top - 90
+        box(gse if k % 3 else gse2, (cx, 312, 90 + hh / 2), (w * 0.5, 11, hh / 2 + 2), p=2.6, cuts=2,
+            rot=(0, rnd.uniform(-7, 7), rnd.uniform(-18, 18)))
+        x += w * rnd.uniform(0.82, 0.96)
+        k += 1
+    rock(gd, (404, 306, 104), (20, 4, 15), seed=31, jag=0.05, p=2.0)
+    rock(gse2, (404, 309, 126), (26, 10, 8), seed=32, jag=0.1, p=2.4)
+    for k in range(6):
+        bx = 262 + k * 52 + rnd.uniform(-10, 10)
+        rock(gse if k % 2 else gse2, (bx, 296, 92), (rnd.uniform(7, 12), 7, rnd.uniform(6, 10)), seed=380 + k, jag=0.22, p=2.2)
     for t, u, z in ((0.9, -0.4, 0), (2.2, 0.3, 0), (3.6, -0.1, 0), (1.5, 0.6, 0)):
         p_ = kit.loft_point(rows, t, u)
         st.amb("blink", "fx.p.star", (p_[0], p_[1], p_[2] + 4), period=2900, tint=0xF6FAFF, scale=0.6)
@@ -175,6 +186,12 @@ def gv_far(st, P):
     gr2, gs2 = pt.g(GV["rock"], outline=0.4), pt.g(GV["snow"], outline=0.4)
     kit.peak(gr2, gs2, 214, 330, 60, 130, 230, seed=11, snow=0.62, jag=0.2, squash=0.5)
     kit.peak(gr2, gs2, 612, 336, 60, 128, 212, seed=12, snow=0.6, jag=0.2, squash=0.5)
+    # the valley's inner spurs: dark rock walls over both edges of the ice, stepping up toward the saddle,
+    # so the glacier shows as a band of ice between rock walls, not as a free-standing dome (review 2)
+    grd = pt.g(GV["rock_dk"], outline=0.4)
+    for (x, y, z, rx, h, seed) in ((292, 452, 90, 74, 150, 15), (336, 566, 130, 58, 150, 16), (370, 664, 160, 40, 124, 17),
+                                   (520, 452, 90, 74, 146, 18), (480, 566, 130, 58, 146, 19), (448, 664, 160, 40, 120, 20)):
+        kit.peak(grd, gs2, x, y, z, rx, h, seed=seed, snow=0.72, jag=0.22, squash=0.5)
     kit.peak(gr2, gs2, 1200, 420, 40, 210, 250, seed=13, snow=0.58, jag=0.2, squash=0.55)
     kit.peak(gr2, gs2, -200, 410, 40, 170, 230, seed=14, snow=0.6, jag=0.2, squash=0.55)
     # 4. the snowy plateau the herd walks (its top at about z 92), spruces along its back
