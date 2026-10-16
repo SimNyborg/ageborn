@@ -79,3 +79,18 @@ Open cold on the most dramatic moment (impact, explosion, reveal) with the title
 no intro shots; 8-12 s; a question on screen in the first second; short end card (1.5 s).
 `shots/duel.mjs` + `reels/duel.mjs` make "1 Legendary vs N" duels in this format: scout with
 `tools/scout.ts`, add a `shots/rN.mjs` + `reels/rN.mjs` pair, record, make, frame-check.
+
+## Daily Story (owner request 2026-10-16)
+
+One Story a day, around 15:30-17:30 Copenhagen (between the two grid Reels), jittered, scheduled by the
+daily run with send_later as "STUDIO STORY: ...". Publish with `python3 tools/ig.py story <path>`, log it
+in `state/posted.json` (kind "story"), then delete the file. 1080x1920, text inside the safe zone.
+
+What the API cannot do (checked 2026-10-16): no poll, question, link or mention stickers, and no way to
+add a Story to a Highlight. So Stories must work without stickers ("reply with 1 or 2" works through DMs,
+"tap to watch" does not), and Highlights are added by the owner in the app (Stories stay in the archive).
+
+Story ideas, rotating: a 5-7 s cold-open teaser of tonight's Reel ("Tonight: 1 Hydra vs 5 Hoplites"),
+"which age would you play?" splits, a Legendary card still with its stats, a capsule reveal moment,
+a behind-the-scenes still (an unfinished unit, a new backdrop) without the owner's identity.
+Do not post `queue/stories/teaser-40-cavemen.mp4`: its "tap to watch" cannot work without a link sticker.

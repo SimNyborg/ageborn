@@ -11,6 +11,7 @@ Usage:
   ig.py reel PATH CAPTION_FILE [--trial] [--cover PATH]
                                  publish a Reel from a file on the
                                  social-media branch (must be pushed first)
+  ig.py story PATH               publish a Story (.jpg or .mp4 on the social-media branch)
   ig.py insights MEDIA_ID        insights for one post (JSON)
 """
 import json
@@ -92,6 +93,17 @@ def reel(path, caption_file, trial=False, cover=None):
     print(json.dumps(info))
 
 
+def story(path):
+    """A Story from an image (.jpg) or a video (.mp4) on the social-media branch. Stories carry no caption,
+    and the API cannot add stickers or put a Story in a Highlight."""
+    key = "video_url" if path.lower().endswith(".mp4") else "image_url"
+    container = call("POST", f"{IG_ID}/media", {"media_type": "STORIES", key: RAW + path})["id"]
+    wait_finished(container)
+    media_id = publish(container)
+    info = call("GET", media_id, {"fields": "id,permalink,timestamp,media_type"})
+    print(json.dumps(info))
+
+
 def main(argv):
     if not TOKEN:
         raise SystemExit("IG_ACCESS_TOKEN is not set")
@@ -115,6 +127,8 @@ def main(argv):
         pos = [a for i, a in enumerate(args)
                if not a.startswith("--") and (i == 0 or args[i - 1] != "--cover")]
         reel(pos[0], pos[1], trial=trial, cover=cover)
+    elif cmd == "story":
+        story(argv[2])
     elif cmd == "insights":
         print(json.dumps(call("GET", f"{argv[2]}/insights", {"metric": INSIGHT_METRICS})))
     else:
