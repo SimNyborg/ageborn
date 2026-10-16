@@ -1639,7 +1639,7 @@ button.cos-qwheel__slot:focus-visible {
 }
 .cos-stinfo__text small {
   color: var(--ui-muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -1744,7 +1744,7 @@ button.cos-qwheel__slot:focus-visible {
 }
 .cos-emostage__name small {
   color: var(--ui-gold-hi, #ffe08a);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -1807,7 +1807,7 @@ button.cos-qwheel__slot:focus-visible {
   border-radius: 99px;
   background: linear-gradient(180deg, #ff7a6a, #e5413a);
   color: #fff;
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 900;
   line-height: 1.45;
   letter-spacing: 0.06em;
