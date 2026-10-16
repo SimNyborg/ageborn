@@ -94,3 +94,25 @@ Story ideas, rotating: a 5-7 s cold-open teaser of tonight's Reel ("Tonight: 1 H
 "which age would you play?" splits, a Legendary card still with its stats, a capsule reveal moment,
 a behind-the-scenes still (an unfinished unit, a new backdrop) without the owner's identity.
 Do not post `queue/stories/teaser-40-cavemen.mp4`: its "tap to watch" cannot work without a link sticker.
+
+## Devlog pillar (owner request 2026-10-16, inspired by a devlog account the owner likes)
+
+Format: first-person developer voice ("I'm building Ageborn...", never the owner's name or identity),
+narrated with an approved Kokoro voice and word-timed captions, over real development footage, ending
+with a design question to the viewer ("Which would you pick?", "Too fast or just right?").
+Caption must include "Narration: AI voice". Every claim must be true: take the reasoning from the game
+repo's docs (DESIGN.md, decisions.md, art-style.md, design-history/), never invent decisions.
+
+Episode ideas, each 20-35 s:
+1. "Why every age is 1.35x stronger" (A2.2 power scale): a caveman vs a Cosmic tank, and why
+   counters, not numbers, decide fights (R1 footage plus the sim's numbers).
+2. "I deleted the store" (A6.2): every card is earned, nothing sold; ask "would you trust a game
+   that sells nothing?".
+3. "Making the bear knight": the Ursa Paladin from sprite sheet to animated unit (cut-outs,
+   frames side by side, then in battle).
+4. "The AI is not allowed to cheat" (A7.1 honesty rules): the bot sees what you see.
+5. "Comeback tools" (A2.11): how a losing player can still turn a match, shown in a real battle.
+6. "Capsules with no tricks" (A6.5 pity counters on screen): the capsule reveal with the counter.
+
+Test plan: post 3 devlogs in week 2 as their own variant (format "devlog") against the short duels,
+first as Trial Reels if reach is a worry. Measure watch_pct and comments especially.
