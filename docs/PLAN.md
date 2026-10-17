@@ -15,15 +15,16 @@ what we believe, how sure we are, and what we post next because of it.
   them), shares and saves (would they send it on), comments. Followers per day from `GET /me`.
 - Owner direction overrides the numbers (see Owner notes).
 
-## Beliefs (as of 2026-10-17, 8 Reels, all small numbers)
+## Beliefs (as of 2026-10-17 evening, 9 Reels, all small numbers)
 
 | # | Belief | Evidence | Status |
 |---|---|---|---|
 | B1 | Capsule openings reach the most people | R6 120 reach / 28 % watch; R9 114 reach / 37 % watch after 8.5 h (both top 3 of 8); owner sees interest | signal, strongest (n=2) |
-| B2 | Shorter Reels are watched further | 13-14 s reveals 28-37 %, 21-24 s posts 16-19 %; R9 (13 s) 37 % | signal |
+| B2 | Shorter Reels are watched further | 13-14 s reveals 28-37 %, 21-24 s posts 16-19 %; R9 (13 s) 38 %; R7 (7.6 s) 51 % after 10 h, the best so far | signal, stronger |
 | B3 | A question to the viewer gets reactions but not reach on its own | R5: 10 % engagement, reach 29 | signal |
 | B4 | Nothing gets shared yet; followers flat at 107 | 0 shares on all 8 posts | problem to solve |
-| B5 | Posting time matters | midday vs evening too close, n=2 each | unknown |
+| B5 | Posting time matters | midday vs evening too close (reach 102 vs 117, n=3 each) | unknown |
+| B6 | Reach is capped at about 100-125 per post | 7 of 9 posts land at 100-125 whatever the format; Instagram shows each post to a first test batch and does not push further | signal: we need rewatches, shares and saves to break out |
 
 ## Current mix (until the next update)
 
@@ -61,3 +62,5 @@ what we believe, how sure we are, and what we post next because of it.
   duels, the format test); next capsule Reel scheduled for 2026-10-18 to keep the every-other-day rule.
   Queued for 2026-10-18: R10 "10 capsules at once" (capsule, 18 s) and R11 "1 Land Dreadnought vs 6
   Riveters" (third short-hook duel, completes n=3 for the format test). First devlog planned for Monday.
+- 2026-10-17 evening: R7 (short duel) 51 % watch strengthens B2; new B6 (reach ceiling about 120). No change to the
+  mix yet: the format test needs R8 and R11 older than 24 h (Monday review). Still 0 shares and 0 comments.

@@ -3,3 +3,12 @@ snapshot_utc,media_id,name,age_h,format,hook_type,slot,length_s,trial,views,reac
 2026-10-16T08:15Z,18101735651368159,r3-ursa-paladin-legendary,35.1,classic,reveal,evening,12.7,False,86,79,2,0,0,0,4701,37.0,0.0253,0.0
 2026-10-16T08:15Z,18124468825915301,r5-pick-one-legendary,21.5,classic,vote,midday,17.8,False,21,21,2,0,0,0,5988,33.6,0.0952,0.0
 2026-10-16T08:15Z,18102074954378639,r1-40-cavemen-vs-1-cosmic-tank,14.0,classic,matchup,evening,23.7,False,118,113,2,0,0,0,3589,15.1,0.0177,0.0
+2026-10-17T19:54Z,17941766658366382,r2-most-satisfying-base-collapse,81.5,classic,satisfying,midday,16.0,False,126,118,3,0,0,0,4078,25.5,0.0254,0.0
+2026-10-17T19:54Z,18101735651368159,r3-ursa-paladin-legendary,70.7,classic,reveal,evening,12.7,False,87,79,2,0,0,0,4664,36.7,0.0253,0.0
+2026-10-17T19:54Z,18124468825915301,r5-pick-one-legendary,57.1,classic,vote,midday,17.8,False,31,29,3,0,0,0,6124,34.4,0.1034,0.0
+2026-10-17T19:54Z,18102074954378639,r1-40-cavemen-vs-1-cosmic-tank,49.7,classic,matchup,evening,23.7,False,124,117,3,0,0,0,3794,16.0,0.0256,0.0
+2026-10-17T19:54Z,18636189517019676,r4-stone-age-to-cosmic-age,33.6,classic,evolution,midday,20.6,False,119,102,3,0,0,0,3893,18.9,0.0294,0.0
+2026-10-17T19:54Z,18117290048082646,r6-legendary-capsule-pull,25.3,classic,reveal,evening,13.6,False,132,121,3,0,0,0,3819,28.1,0.0248,0.0
+2026-10-17T19:54Z,18063470813790700,r9-the-biggest-capsule,21.6,short-hook,reveal,evening,17.1,False,134,125,2,0,0,0,6524,38.2,0.016,0.0
+2026-10-17T19:54Z,18638116183001453,r7-1-hydra-vs-5-hoplites,9.7,short-hook,matchup,midday,7.6,False,129,104,2,0,0,0,3860,50.8,0.0192,0.0
+2026-10-17T19:54Z,18131603458701596,r8-1-ursa-paladin-vs-8-footmen,1.7,short-hook,matchup,evening,7.6,False,14,10,0,0,0,0,3296,43.4,0.0,0.0
