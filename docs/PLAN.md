@@ -15,14 +15,14 @@ what we believe, how sure we are, and what we post next because of it.
   them), shares and saves (would they send it on), comments. Followers per day from `GET /me`.
 - Owner direction overrides the numbers (see Owner notes).
 
-## Beliefs (as of 2026-10-17, 7 Reels, all small numbers)
+## Beliefs (as of 2026-10-17, 8 Reels, all small numbers)
 
 | # | Belief | Evidence | Status |
 |---|---|---|---|
-| B1 | Capsule openings reach the most people | R6 reached 118 in 4 h; owner sees interest | signal, strongest |
-| B2 | Shorter Reels are watched further | 13-14 s reveals 28-37 %, 21-24 s posts 16-19 % | signal |
+| B1 | Capsule openings reach the most people | R6 120 reach / 28 % watch; R9 114 reach / 37 % watch after 8.5 h (both top 3 of 8); owner sees interest | signal, strongest (n=2) |
+| B2 | Shorter Reels are watched further | 13-14 s reveals 28-37 %, 21-24 s posts 16-19 %; R9 (13 s) 37 % | signal |
 | B3 | A question to the viewer gets reactions but not reach on its own | R5: 10 % engagement, reach 29 | signal |
-| B4 | Nothing gets shared yet; followers flat at 107 | 0 shares on all posts | problem to solve |
+| B4 | Nothing gets shared yet; followers flat at 107 | 0 shares on all 8 posts | problem to solve |
 | B5 | Posting time matters | midday vs evening too close, n=2 each | unknown |
 
 ## Current mix (until the next update)
@@ -49,3 +49,5 @@ what we believe, how sure we are, and what we post next because of it.
 ## Change log
 
 - 2026-10-17: plan created from the first 7 Reels (B1-B5).
+- 2026-10-17: R9 (Aeon capsule) early numbers strengthen B1 and B2. Today: R7 and R8 (first short-hook
+  duels, the format test); next capsule Reel scheduled for 2026-10-18 to keep the every-other-day rule.
