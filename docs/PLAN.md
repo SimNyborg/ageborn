@@ -35,6 +35,12 @@ what we believe, how sure we are, and what we post next because of it.
 
 ## Next decisions
 
+- 2026-10-18 daily run: build a Thompson-sampling bandit into tools/analyze.py (owner question 2026-10-17).
+  Arms = content types (capsule, short duel, classic, devlog, question). Score per post = reach x watch
+  share, with a large bonus for shares and saves; Beta/normal posteriors; output a suggested mix for the
+  day that the daily run follows unless owner notes override. No multi-variable regression before
+  about 150 posts (too little data, high noise).
+
 - Mon 2026-10-19 weekly review: format (short-hook vs classic) and capsule vs other types, if n allows.
 - After 3 devlogs: do they get comments and shares? If yes, give them a fixed weekly slot.
 - If reach per post falls more than 25 % for a week: tell the owner and change course.
