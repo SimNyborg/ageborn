@@ -15,7 +15,9 @@ Rendering in a fresh container (about 2 min of setup; `public/`, `out/` and `nod
 ```
 # capture from a pinned, known-good game commit (main-ipy06f is under active development again);
 # move the pin only when the orchestrator says a newer commit is published to main and green
-git -C /home/user/ageborn fetch -q origin main-ipy06f; git -C /home/user/ageborn worktree add /tmp/game-capture 1b48e80
+# (2026-10-17: moved 1b48e80 -> 63d5865, game round 2: six new capsule backdrops, six base models,
+# the Home diorama, emotes. Never show the backdrops Glacier Valley or Desert Airbase: released: false.)
+git -C /home/user/ageborn fetch -q origin main; git -C /home/user/ageborn worktree add /tmp/game-capture 63d5865
 export AGEBORN_REPO=/tmp/game-capture
 (cd /tmp/game-capture && npm ci) & (cd /tmp/soc/studio && npm ci) & pip install -q numpy pillow; wait
 cd /tmp/soc/studio && mkdir -p public/fonts public/audio public/art/cut out/reels out/sheets work
