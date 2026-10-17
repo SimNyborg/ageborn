@@ -108,6 +108,20 @@
       "hook_type": "reveal",
       "experiment": "owner one-off: capsule satisfying",
       "note": "posted 00:15 Copenhagen on owner request"
+    },
+    {
+      "id": "18638116183001453",
+      "permalink": "https://www.instagram.com/reel/Del3p2UAOT_/",
+      "timestamp": "2026-10-17T10:15:08+0000",
+      "name": "r7-1-hydra-vs-5-hoplites",
+      "kind": "reel",
+      "pillar": "battle",
+      "hook": "1 Hydra vs 5 Hoplites",
+      "trial": false,
+      "length_s": 7.6,
+      "format": "short-hook",
+      "hook_type": "matchup",
+      "experiment": "format"
     }
   ]
 }

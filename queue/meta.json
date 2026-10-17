@@ -1,10 +1,4 @@
 {
-  "r7-1-hydra-vs-5-hoplites": {
-    "length_s": 7.6,
-    "format": "short-hook",
-    "hook_type": "matchup",
-    "experiment": "format"
-  },
   "r8-1-ursa-paladin-vs-8-footmen": {
     "length_s": 7.6,
     "format": "short-hook",
