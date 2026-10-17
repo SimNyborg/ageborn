@@ -122,6 +122,16 @@
       "format": "short-hook",
       "hook_type": "matchup",
       "experiment": "format"
+    },
+    {
+      "id": "18127633021896262",
+      "permalink": "https://www.instagram.com/stories/ageborn_game/4009982724589460014",
+      "timestamp": "2026-10-17T14:26:58+0000",
+      "name": "story-r8-who-wins",
+      "kind": "story",
+      "pillar": "battle",
+      "hook": "teaser: 1 Ursa Paladin vs 8 Footmen, reply bear or swords",
+      "trial": false
     }
   ]
 }
