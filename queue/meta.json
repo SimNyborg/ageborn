@@ -4,5 +4,17 @@
     "format": "short-hook",
     "hook_type": "matchup",
     "experiment": "format"
+  },
+  "r10-10-capsules-at-once": {
+    "length_s": 18.1,
+    "format": "classic",
+    "hook_type": "reveal",
+    "experiment": "format"
+  },
+  "r11-1-land-dreadnought-vs-6-riveters": {
+    "length_s": 7.6,
+    "format": "short-hook",
+    "hook_type": "matchup",
+    "experiment": "format"
   }
 }

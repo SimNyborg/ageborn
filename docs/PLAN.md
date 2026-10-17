@@ -38,6 +38,8 @@ what we believe, how sure we are, and what we post next because of it.
 - Mon 2026-10-19 weekly review: format (short-hook vs classic) and capsule vs other types, if n allows.
 - After 3 devlogs: do they get comments and shares? If yes, give them a fixed weekly slot.
 - If reach per post falls more than 25 % for a week: tell the owner and change course.
+- Idea for B4 (shares): a "plot twist" duel. With 7 Riveters the Land Dreadnought falls, its crew bails out
+  as two Carbineers and wins anyway. Needs its own shot (follow the crew after the hero dies).
 
 ## Owner notes (direction that overrides the numbers)
 
@@ -51,3 +53,5 @@ what we believe, how sure we are, and what we post next because of it.
 - 2026-10-17: plan created from the first 7 Reels (B1-B5).
 - 2026-10-17: R9 (Aeon capsule) early numbers strengthen B1 and B2. Today: R7 and R8 (first short-hook
   duels, the format test); next capsule Reel scheduled for 2026-10-18 to keep the every-other-day rule.
+  Queued for 2026-10-18: R10 "10 capsules at once" (capsule, 18 s) and R11 "1 Land Dreadnought vs 6
+  Riveters" (third short-hook duel, completes n=3 for the format test). First devlog planned for Monday.

@@ -6,7 +6,7 @@ import { loadClip, MUSIC, Timeline } from '../lib/edit.mjs';
 const heroHp = (st) => (st.watched?.[0] ? st.watched[0].hpBp / 10000 : 0);
 
 /**
- * o: { id, file, heroName, hordeLabel, ageName, music, accentFill, winLine, tagline }
+ * o: { id, file, heroName, heroSize?, hordeLabel, ageName, music, accentFill, winLine, tagline }
  */
 export function duelEdit(o) {
   const a = loadClip(o.id, 'a');
@@ -37,7 +37,7 @@ export function duelEdit(o) {
   // --- overlays -------------------------------------------------------------------------------
   T.overlay('vignette', 0, total, { top: 0.5, bottom: 0.72 });
   // the matchup lands on frame 0, over the action
-  T.overlay('title', 0, impactAt + F(1.1), { y: 470, burst: true, stagger: 3, lines: [{ text: `1 ${o.heroName}`, size: 128, fill: o.accentFill }, { text: `vs ${o.hordeLabel}`, size: 108, fill: 'blue', gap: 4 }] });
+  T.overlay('title', 0, impactAt + F(1.1), { y: 470, burst: true, stagger: 3, lines: [{ text: `1 ${o.heroName}`, size: o.heroSize ?? 128, fill: o.accentFill }, { text: `vs ${o.hordeLabel}`, size: 108, fill: 'blue', gap: 4 }] });
   T.overlay('caption', F(0.5), impactAt + F(1.6) - F(0.5), { text: 'Who wins? Guess now', y: 690 });
   T.overlay('flash', impactAt, 7, { peak: 0.7 });
   T.overlay('flash', sMid.at, 5, { peak: 0.35 });
