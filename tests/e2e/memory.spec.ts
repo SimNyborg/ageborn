@@ -91,8 +91,9 @@ const AGES = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern'
 
 test('review 2: Customize browsed through every age (Bases and Backdrops, every scene and skin owned), then a Standard War, stays under the budget', async ({ page }) => {
   // Customize kept every age's scene strips, grounds and model sheets decoded for the session: 926 MB at
-  // the war's peak before the match start let go of them (budget 600). About 3 minutes in Chromium.
-  test.setTimeout(600_000);
+  // the war's peak before the match start let go of them (budget 600). About 4 minutes in Chromium here;
+  // CI's machines and its software-rendered WebKit take two to three times as long.
+  test.setTimeout(1_200_000);
   const problems = watchPage(page);
   await pastOnboarding(page);
   await expect(page.getByTestId('play').first()).toBeVisible({ timeout: 60_000 });
@@ -105,9 +106,9 @@ test('review 2: Customize browsed through every age (Bases and Backdrops, every 
     const keys = c.services.content.cosmetics.collections.items.filter((x) => x.released !== false && (x.collection === 'scene' || x.collection === 'baseSkin')).map((x) => `${x.collection}.${x.id}`);
     c.setSave({ ...s, cosmetics: { ...s.cosmetics, owned: [...new Set([...s.cosmetics.owned, ...keys])] } }, { immediate: true });
   });
-  // the autopilot plays your side of the war (a boot flag)
-  await page.goto('./?dev=1&autopilot=1');
-  await expect(page.getByTestId('play').first()).toBeVisible({ timeout: 60_000 });
+  // the autopilot plays your side of the war; switched on in place, since a second page load at DPR 2
+  // crashed CI's software-rendered WebKit
+  await page.evaluate(() => (window as unknown as { __agebornDev: { controller: { setAutopilot(on: boolean): void } } }).__agebornDev.controller.setAutopilot(true));
   await page.getByTestId('tab-customize').first().click();
   // each age's preview stage goes live (the diorama leases the age's base, turrets, scene and ground)
   const live = (testid: string, age: string) =>

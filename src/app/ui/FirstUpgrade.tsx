@@ -91,13 +91,16 @@ export function FirstUpgrade() {
   useEffect(() => {
     if (phase !== 'charge' && phase !== 'impact') return undefined;
     const quick = reduce || (typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches);
+    // (each beat moves on only from its own phase: a Continue tapped just as the timer fires closes the
+    // overlay for good, where a plain `setPhase('done')` batched after it reopened it at "done"; review 2,
+    // seen in CI's slow WebKit)
     const timer = setTimeout(
       () => {
         if (phase === 'charge') {
-          setPhase('impact');
+          setPhase((p) => (p === 'charge' ? 'impact' : p));
           haptic('heavy');
           ui.services.audio.play('upgrade_slam', { priority: 1 });
-        } else setPhase('done');
+        } else setPhase((p) => (p === 'impact' ? 'done' : p));
       },
       phase === 'charge' ? (quick ? 0 : CHARGE_MS) : quick ? MOTION_DUR.beatMin : IMPACT_MS,
     );

@@ -6,7 +6,7 @@
  */
 import { render } from 'preact';
 import { act } from 'preact/test-utils';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { SaveDoc } from '@/contracts';
 import { content } from '@/content';
 import { FixedClock } from '@/contracts/fakes/clock';
@@ -72,5 +72,60 @@ describe('the forced upgrade skip (G4)', () => {
     expect(now.flags[FIRST_UPGRADE_FLAG]).toBe(true);
     expect(now.flags['test.written']).toBe(true);
     expect(now.currencies.dust).toBe(999);
+  });
+});
+
+describe('the forced upgrade Continue (review 2, a race seen in CI WebKit)', () => {
+  it('a Continue tapped just as a beat timer fires closes the overlay for good', async () => {
+    vi.useFakeTimers();
+    try {
+      const services = await buildServices({ choice: { ...DEFAULT_CHOICE, save: 'memory' }, clock: new FixedClock() });
+      const base = meta.newSave(content, { now: () => Date.UTC(2026, 9, 8, 12) }, 7);
+      const s0: SaveDoc = {
+        ...base,
+        matchesPlayed: 2,
+        tutorial: { ...base.tutorial, step: 4 },
+        currencies: { amber: 40, dust: 0 },
+        collection: { ...base.collection, bonker: { level: 1, copies: 6, isNew: false, foil: 'none' } },
+      };
+      const c = new AppController(services, { save: s0, homeScreen: true });
+      const ui: AppUi = {
+        controller: c,
+        services,
+        art: new FakeArtProvider(),
+        viewOf: () => undefined,
+        createView: () => {
+          throw new Error('no battles here');
+        },
+        scheduler: null,
+        portrait: async () => '',
+        t: (k) => k,
+      };
+      const dom = installDom();
+      container = dom.container;
+      act(() => {
+        render(
+          <AppUiContext.Provider value={ui}>
+            <FirstUpgrade />
+          </AppUiContext.Provider>,
+          container as unknown as HTMLElement,
+        );
+      });
+      const q = (id: string) => dom.container.querySelector(`[data-testid="${id}"]`) as unknown as FakeElement | null;
+      expect(q('first-upgrade')).not.toBeNull();
+      act(() => q('first-upgrade-go')!.click());
+      // the charge beat ends; the impact beat runs
+      act(() => void vi.advanceTimersByTime(2_000 - 1));
+      // Continue lands, and the impact timer fires before the overlay renders again
+      act(() => {
+        q('first-upgrade-continue')!.click();
+        vi.advanceTimersByTime(5_000);
+      });
+      act(() => void vi.advanceTimersByTime(100));
+      expect(c.save.peek()!.collection['bonker']?.level).toBe(2);
+      expect(q('first-upgrade')).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

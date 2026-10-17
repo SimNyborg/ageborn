@@ -107,9 +107,13 @@ export class AppController {
   /** The battle on screen whose clock waits for its decks' unit sheets (G7), or null. */
   private waitingForArt: BattleHandle | null = null;
 
+  /** The dev autopilot for the battles started from now on (`?dev=1&autopilot=1`, or `setAutopilot`). */
+  private autopilot: boolean;
+
   constructor(services: Services, o: AppControllerOptions) {
     this.services = services;
     this.o = o;
+    this.autopilot = o.autopilot ?? false;
     this.saveSig = signal(o.save);
     this.stepSig = signal(onboardingStep(o.save));
     this.replaysSig = signal<readonly ReplayDoc[]>(services.saveStore.loadReplays());
@@ -118,7 +122,17 @@ export class AppController {
     this.save = this.saveSig;
     this.step = this.stepSig;
     this.replays = this.replaysSig;
-    this.agePicker.auto = o.autopilot ?? false;
+    this.agePicker.auto = this.autopilot;
+  }
+
+  /**
+   * Dev only (`?dev=1`, e2e): the autopilot plays your side of the battles started from now on, as the
+   * `autopilot=1` boot flag does, without a reload (review 2: a second page load at DPR 2 crashed CI's
+   * software-rendered WebKit).
+   */
+  setAutopilot(on: boolean): void {
+    this.autopilot = on;
+    this.agePicker.auto = on;
   }
 
   private t(key: string): string {
@@ -173,7 +187,7 @@ export class AppController {
     const go = (): void => {
       const r = this.routeSig.peek();
       if (r.id !== 'battle' || r.battle !== battle) return;
-      if (this.o.countdown && !this.o.autopilot && battle.setup.mode !== 'tutorial') this.runCountdown(battle);
+      if (this.o.countdown && !this.autopilot && battle.setup.mode !== 'tutorial') this.runCountdown(battle);
       else battle.session.start();
     };
     const art = battle.session.artReady();
@@ -440,7 +454,7 @@ export class AppController {
       createView: this.o.createView,
       scheduler: this.o.scheduler ?? null,
       visibility: this.o.visibility ?? null,
-      autopilot: this.o.autopilot ?? false,
+      autopilot: this.autopilot,
       // Quick Battle is a dev route: no adaptive hints.
       // A8: in-battle adaptive hints only in the onboarding matches; the detectors keep running.
       hints: setup.matchNumber >= STAGES.hintsFromMatch && setup.matchNumber <= STAGES.hintsUntilMatch && (setup.mode !== 'skirmish' || save !== null),
