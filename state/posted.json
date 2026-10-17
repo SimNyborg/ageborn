@@ -132,6 +132,20 @@
       "pillar": "battle",
       "hook": "teaser: 1 Ursa Paladin vs 8 Footmen, reply bear or swords",
       "trial": false
+    },
+    {
+      "id": "18131603458701596",
+      "permalink": "https://www.instagram.com/reel/DemuF7VlHpf/",
+      "timestamp": "2026-10-17T18:10:51+0000",
+      "name": "r8-1-ursa-paladin-vs-8-footmen",
+      "kind": "reel",
+      "pillar": "battle",
+      "hook": "1 Ursa Paladin vs 8 Footmen",
+      "trial": false,
+      "length_s": 7.6,
+      "format": "short-hook",
+      "hook_type": "matchup",
+      "experiment": "format"
     }
   ]
 }

@@ -1,10 +1,4 @@
 {
-  "r8-1-ursa-paladin-vs-8-footmen": {
-    "length_s": 7.6,
-    "format": "short-hook",
-    "hook_type": "matchup",
-    "experiment": "format"
-  },
   "r10-10-capsules-at-once": {
     "length_s": 18.1,
     "format": "classic",
