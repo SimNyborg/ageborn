@@ -28,7 +28,10 @@ what we believe, how sure we are, and what we post next because of it.
 
 ## Current mix (until the next update)
 
-- Per day: 2 grid Reels + 1 Story.
+- Per day: 2 grid Reels + 1 Story. `python3 tools/bandit.py` (Thompson sampling over capsule, duel,
+  classic, question, devlog) suggests the arms each morning; the daily run follows it unless an owner
+  note or a running test says otherwise. 2026-10-18 posteriors: duel 45 % and capsule 33 % chance of
+  being best, devlog untested (19 %), classic 1 %, question 2 %.
 - Exploit: at least 1 capsule Reel every other day (B1), short (12-17 s), cold open on the action.
 - Explore this week: short-hook duels (R7, R8) vs classic; devlogs (narrated, a real open question at
   the end) as the bet on B4; questions built into capsule and devlog Reels instead of vote-only Reels (B3).
@@ -36,11 +39,8 @@ what we believe, how sure we are, and what we post next because of it.
 
 ## Next decisions
 
-- 2026-10-18 daily run: build a Thompson-sampling bandit into tools/analyze.py (owner question 2026-10-17).
-  Arms = content types (capsule, short duel, classic, devlog, question). Score per post = reach x watch
-  share, with a large bonus for shares and saves; Beta/normal posteriors; output a suggested mix for the
-  day that the daily run follows unless owner notes override. No multi-variable regression before
-  about 150 posts (too little data, high noise).
+- No multi-variable regression before about 150 posts (too little data, high noise); the bandit
+  (tools/bandit.py, built 2026-10-18) picks the mix until then.
 
 - Mon 2026-10-19 weekly review: format (short-hook vs classic) and capsule vs other types, if n allows.
 - After 3 devlogs: do they get comments and shares? If yes, give them a fixed weekly slot.
@@ -64,3 +64,6 @@ what we believe, how sure we are, and what we post next because of it.
   Riveters" (third short-hook duel, completes n=3 for the format test). First devlog planned for Monday.
 - 2026-10-17 evening: R7 (short duel) 51 % watch strengthens B2; new B6 (reach ceiling about 120). No change to the
   mix yet: the format test needs R8 and R11 older than 24 h (Monday review). Still 0 shares and 0 comments.
+- 2026-10-18: bandit built (owner question 2026-10-17). It ranks short duels and capsules first and wants a
+  devlog tried; classic battle Reels are dropped from the mix (4 posts, lowest score). Today R10 (capsule) +
+  R11 (duel); Monday: first devlog + a duel.
