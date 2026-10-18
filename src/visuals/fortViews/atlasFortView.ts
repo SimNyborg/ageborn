@@ -126,6 +126,11 @@ interface CrewTrack {
 }
 
 const WINDUP_MS = 200;
+/**
+ * How often (ms) a tower's crew asks for the best copy of its unit sheet: one that started on the memory
+ * governor's 1x copy moves to the HD copy once that is in (same frames; review N4).
+ */
+const CREW_RECHECK_MS = 500;
 
 export class AtlasFortView implements FortView {
   readonly root = new Container();
@@ -160,6 +165,8 @@ export class AtlasFortView implements FortView {
   private bodyRect: Rect | null = null;
   private crew: { c: Container; team: Sprite; base: Sprite; sheet: AtlasData; k: number; track: CrewTrack } | null = null;
   private crewWanted: FortSheetMeta['crew'] | null = null;
+  /** Real ms until the crew asks again for the best copy of its sheet (`crewSheet`: the 1x copy → HD). */
+  private crewCheckMs = CREW_RECHECK_MS;
   private muzzleGlow: Container | null = null;
   private lights: { s: Container; phase: number; crumbleMax: number }[] = [];
   private motion: ViewMotion = DEFAULT_MOTION;
@@ -503,6 +510,18 @@ export class AtlasFortView implements FortView {
   private crewUpdate(dt: number): void {
     const c = this.crew;
     if (!c) return;
+    this.crewCheckMs -= dt;
+    if (this.crewCheckMs <= 0 && this.crewWanted) {
+      this.crewCheckMs = CREW_RECHECK_MS;
+      // the provider holds whichever copy it hands out, so the crew always takes it (both copies of a sheet
+      // have the same clips and frames; only the texture density differs)
+      const best = this.o.crewSheet(this.crewWanted.visualId);
+      if (best && best !== c.sheet && best.animations['idle']) {
+        c.sheet = best;
+        c.k = best.luPerUnit * this.crewWanted.scale;
+        c.c.scale.set(c.k);
+      }
+    }
     const tr = c.track;
     tr.t += dt;
     if (!tr.loop && tr.t >= tr.durationMs) this.crewPlay('idle');

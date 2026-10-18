@@ -54,7 +54,7 @@ import { cloneFeelConfig, defaultFeelConfig, type RenderFeelConfig } from './fee
 import { HealthBars, barWidthLu, newBar, stepBar, type BarDraw, type BarState } from './healthbars';
 import { HOLD_FLAG_FOOT_Y, HOLD_FLAG_TOP_Y, HoldFlagMarker } from './holdFlag';
 import { ageOrder, canEvolve, xpThreshold } from './hudModel';
-import { heldVisuals, nearEvolve, RECENT_FIELD_TICKS, type ArtHoldLike } from './matchArt';
+import { heldVisuals, keptAges, nearEvolve, RECENT_FIELD_TICKS, type ArtHoldLike } from './matchArt';
 import { BattleInput, edgeSpeed } from './input';
 import { createLayers, type BattleLayers } from './layers';
 import { LANE_LU, MILLI_LU, WORLD_LEFT_LU, WORLD_RIGHT_LU, baseCenterX, facingOf, gateX, pToX, xToP } from './layout';
@@ -271,6 +271,14 @@ const BADGE_LEGENDARY_MS = 4000;
 const ALERT_BASE_GAP_MS = 10_000;
 /** How often (real ms) the held unit sheets are re-checked against the units on the field (G7, `matchArt.ts`). */
 const HOLD_SYNC_MS = 1000;
+/** A base made again from its sheet (`swapBase`) shows under the stand-in, which fades out this long (real ms). */
+export const BASE_SWAP_FADE_MS = 400;
+/**
+ * Big sheet uploads wait from an Ascension's start until this long (real ms) after its age-up (review S1: no
+ * upload of 16 MB or more within 3 s of an evolve; your camera push holds 1.4 s past the age-up). Counted from
+ * the age-up itself: on a slow device the sim runs behind real time and the Ascension lasts longer.
+ */
+export const EVOLVE_QUIET_AFTER_MS = 3500;
 const BADGES_PER_EDGE = 3;
 
 /** A power zone the view tracks for the camera, the minimap and the badges (game ms). */
@@ -349,6 +357,14 @@ export class BattleView {
   private holdSyncAt = 0;
   /** When each side's card last stood on the lane (sim tick), for the hold's ranks (`RECENT_FIELD_TICKS`). */
   private readonly fieldSeen = new Map<string, { side: Side; card: CardId; tick: number }>();
+  /**
+   * The opening bases' sheets still loading (review S2: a battle opening in a later age on a fresh page drew
+   * code bases for the whole battle): the battle's clock waits for them (`artReady`), and each base is made
+   * again from its sheet once it is in (`swapBase`). `leavingBases` fade out over the new ones.
+   */
+  private baseWaits: Promise<void>[] = [];
+  private leavingBases: { view: BaseView; dressing?: BaseDressingView; leftMs: number }[] = [];
+  private gone = false;
   /** Each side's next age whose scene the backdrop was asked to load (`<side>.<age>`, `prefetchNextScenes`). */
   private readonly scenesAsked = new Set<string>();
   /** Created on the first base flash (a filter needs a GPU context). */
@@ -439,6 +455,7 @@ export class BattleView {
     this.layers.backdrop.addChild(this.backdrop.root);
     this.layers.ground.addChild(this.shadows);
     this.bases = [this.createBase(0), this.createBase(1)];
+    this.watchBaseArt();
     this.layers.bars.addChild(this.bars.root);
     this.layers.telegraphs.addChild(this.zones.root, this.markers.root);
     this.layers.ground.addChild(this.zones.groundRoot);
@@ -498,11 +515,85 @@ export class BattleView {
   }
 
   /**
-   * Resolves once the unit sheets the match holds have loaded (or failed); null when they already have
-   * (G7). The app starts a battle's clock only then, so no unit appears without its art.
+   * Resolves once the unit sheets the match holds and the opening bases' sheets have loaded (or failed); null
+   * when they already have (G7, review S2). The app starts a battle's clock only then, so no unit appears
+   * without its art and no base is drawn by its stand-in.
    */
   artReady(): Promise<void> | null {
-    return this.holdSettled ? null : this.holdReady;
+    const units = this.holdSettled ? null : this.holdReady;
+    if (this.baseWaits.length === 0) return units;
+    return Promise.all([units, ...this.baseWaits]).then(() => undefined);
+  }
+
+  /**
+   * A base the provider drew by its stand-in because the opening age's base sheet was not in yet (a battle
+   * opening in Gunpowder or later on a fresh page: the boot loads Stone and Bronze; review S2) is made again
+   * from its sheet once that has loaded, so the battle never keeps code-drawn bases. Duck-typed: a provider
+   * without `baseSheetReady` (fakes) draws as before.
+   */
+  private watchBaseArt(): void {
+    for (const side of [0, 1] as const) this.watchBase(side, false);
+  }
+
+  /**
+   * Waits for the sheet of a side's base in its age now (`standIn`: the base is drawn by its stand-in already,
+   * so a sheet that is in swaps it at once; at the start a sheet that is in means the base drew from it).
+   */
+  private watchBase(side: Side, standIn: boolean): void {
+    const art = this.art as ArtProvider & { baseSheetReady?: (age: AgeId) => Promise<void> | null };
+    if (typeof art.baseSheetReady !== 'function') return;
+    const age = this.bases[side].age;
+    const loading = art.baseSheetReady(age);
+    if (!loading) {
+      if (standIn) this.swapBase(side, age);
+      return;
+    }
+    const wait: Promise<void> = loading.then(() => {
+      this.baseWaits = this.baseWaits.filter((w) => w !== wait);
+      this.swapBase(side, age);
+    });
+    this.baseWaits.push(wait);
+  }
+
+  /**
+   * Makes a side's base again (its sheet has loaded: `watchBase`), the new view under the old one, which fades
+   * out over `BASE_SWAP_FADE_MS` (at once with Reduce motion). A stand-in that morphed into another age
+   * meanwhile waits for that age's sheet instead; a collapsing base keeps its view, as does an ended battle.
+   */
+  private swapBase(side: Side, age: AgeId): void {
+    const old = this.bases[side];
+    if (this.gone || this.ended || old.collapse) return;
+    if (old.age !== age) {
+      this.watchBase(side, true);
+      return;
+    }
+    const fresh = this.createBase(side);
+    const layer = this.layers.structures;
+    const at = layer.getChildIndex(old.view.root);
+    if (at >= 0) layer.setChildIndex(fresh.view.root, at);
+    this.bases[side] = fresh;
+    if (this.settings.reduceMotion) {
+      old.dressing?.destroy();
+      old.view.destroy();
+      return;
+    }
+    this.leavingBases.push({ view: old.view, ...(old.dressing ? { dressing: old.dressing } : {}), leftMs: BASE_SWAP_FADE_MS });
+  }
+
+  /** The bases a swap replaced fade out (real time) and go. */
+  private fadeLeavingBases(realDt: number, gameDt: number): void {
+    if (this.leavingBases.length === 0) return;
+    for (const l of this.leavingBases) {
+      l.leftMs -= realDt;
+      l.view.update(gameDt);
+      l.dressing?.update(gameDt);
+      l.view.root.alpha = Math.max(0, l.leftMs / BASE_SWAP_FADE_MS);
+      if (l.leftMs <= 0) {
+        l.dressing?.destroy();
+        l.view.destroy();
+      }
+    }
+    this.leavingBases = this.leavingBases.filter((l) => l.leftMs > 0);
   }
 
   /**
@@ -1258,6 +1349,7 @@ export class BattleView {
     this.trapViews.sync(this.sim.state, gameDt, (x) => this.nearView(x));
     this.updateFollowers();
     this.syncBases(gameDt);
+    this.fadeLeavingBases(realDt, gameDt);
     this.syncTurrets(gameDt);
     this.updateCollapses(gameDt);
     if (this.filterWarmup && ++this.filterWarmup.frames > 2) {
@@ -1335,16 +1427,21 @@ export class BattleView {
         this.prefetchNextScenes({ side: ev.side, age: ev.age });
         this.syncHold(true);
         this.preloadAhead();
+        {
+          // an evolve (the Ascension, the age-up's Vanguard and new base, your camera push) shows a long frame
+          // most: big sheet uploads wait until a while after the age-up (review S1; the provider keeps units on
+          // a sheet's 1x copy until its HD copy is uploaded)
+          const ms = this.config.content.economy.ascendMs / Math.max(1, this.speed) + EVOLVE_QUIET_AFTER_MS;
+          (this.art as ArtProvider & { quietUploads?: (ms: number) => void }).quietUploads?.(ms);
+        }
         return;
       case 'ageUp': {
+        // the quiet window runs on from the age-up itself (`EVOLVE_QUIET_AFTER_MS`)
+        (this.art as ArtProvider & { quietUploads?: (ms: number) => void }).quietUploads?.(EVOLVE_QUIET_AFTER_MS);
         this.syncHold(true);
         this.preloadAhead();
-        // the turrets and forts of ages no side shows any more go (2026-10-18; those still standing stay)
-        const keep = ([0, 1] as const).flatMap((side) => {
-          const i = this.sim.state.sides[side].ageIndex;
-          return [this.ages[i], this.ages[i + 1]].filter((a): a is AgeId => a !== undefined);
-        });
-        (this.art as ArtProvider & { releaseAges?: (keep: readonly AgeId[]) => number }).releaseAges?.(keep);
+        // the turrets and forts of ages both sides have left go (2026-10-18; those still standing stay)
+        (this.art as ArtProvider & { releaseAges?: (keep: readonly AgeId[]) => number }).releaseAges?.(keptAges(this.ages, this.sim.state));
         return;
       }
       case 'queueChanged':
@@ -1633,8 +1730,14 @@ export class BattleView {
   }
 
   destroy(): void {
+    this.gone = true;
     this.input?.destroy();
     this.input = null;
+    for (const l of this.leavingBases) {
+      l.dressing?.destroy();
+      l.view.destroy();
+    }
+    this.leavingBases = [];
     for (const e of this.units.values()) this.destroyUnit(e);
     this.units.clear();
     this.trapViews.destroy();

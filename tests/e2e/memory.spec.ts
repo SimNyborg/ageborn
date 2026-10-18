@@ -18,6 +18,10 @@
  * held unit sheet at least on its 1x copy and gives HD by how soon a unit may be drawn, within a budget; the
  * test profile's war against an opponent at its own levels (so the war runs through the ages) must stay
  * under the same budget.
+ *
+ * Review fixes (2026-10-18): no turret and no base may be drawn by its stand-in in the whole war (an evolve
+ * once dropped the turret sheets of ages the lagging side had still to reach, and a turret keeps its stand-in
+ * for life); units and forts drawn by theirs, and the governor's copy changes and loads, are printed.
  */
 import { expect, test, type Page } from '@playwright/test';
 import { fastForward, pastOnboarding, watchPage, type AgebornDev } from './helpers';
@@ -30,11 +34,12 @@ interface Mem {
   cpu: number;
   gpu: number;
   sheets: { loaded: number; sd?: number } | null;
-  fallbacks: { units: number; last: string } | null;
+  /** Views drawn by their stand-ins: units (and the last one), turrets, bases and forts (and the last one). */
+  fallbacks: { units: number; last: string; turrets?: number; bases?: number; forts?: number; lastWorld?: string } | null;
   /** Decoded bytes by kind (unit sheets HD and 1x, baked parts, world sheets, backdrops, other). */
   kinds?: Record<string, number>;
-  /** The memory governor's plan: unit sheets planned HD and 1x. */
-  plan?: { hd: number; sd: number; plannedBytes: number } | null;
+  /** The memory governor's plan: unit sheets planned HD and 1x, copy changes and the copies it loaded. */
+  plan?: { hd: number; sd: number; plannedBytes: number; moves?: number; loads?: { hd: number; sd: number } } | null;
 }
 
 interface Step {
@@ -69,7 +74,7 @@ async function warPeak(page: Page, problems: { errors: string[] }, label: string
   // The opening at real speed: the troops both sides train first draw from their sheets (a slow
   // software-rendered engine plays a few game seconds a minute, hence the long wait).
   await expect.poll(async () => (await step(page, 0)).battle?.units ?? 0, { timeout: 120_000, intervals: [250] }).toBeGreaterThanOrEqual(2);
-  expect((await step(page, 0)).mem.fallbacks).toEqual({ units: 0, last: '' });
+  expect((await step(page, 0)).mem.fallbacks).toMatchObject({ units: 0, last: '' });
   let peak: Mem | null = null;
   let top = 0;
   let last: Mem | null = null;
@@ -84,14 +89,18 @@ async function warPeak(page: Page, problems: { errors: string[] }, label: string
   }
   const kinds = peak?.kinds ? `; ${Object.entries(peak.kinds).map(([k, v]) => `${k} ${mb(v)}`).join(', ')}` : '';
   const plan = peak?.plan ? `; planned ${peak.plan.hd} HD + ${peak.plan.sd} 1x (${mb(peak.plan.plannedBytes)} MB)` : '';
-  // units drawn with their fallback over the whole fast-forwarded war (the opening's are checked below)
-  const fallbacks = last?.fallbacks ? `; fallbacks ${last.fallbacks.units}` : '';
-  const note = `${label}: peak ${mb(peak?.total ?? 0)} MB (cpu ${mb(peak?.cpu ?? 0)}, gpu ${mb(peak?.gpu ?? 0)}), ${peak?.sheets?.loaded ?? 0} unit sheets${peak?.sheets?.sd ? ` + ${peak.sheets.sd} 1x` : ''}, last age index ${top}${kinds}${plan}${fallbacks}`;
+  // views drawn with their stand-ins over the whole fast-forwarded war (the opening's units are checked above)
+  const fb = last?.fallbacks;
+  const fallbacks = fb ? `; stand-ins: units ${fb.units}, turrets ${fb.turrets ?? 0}, bases ${fb.bases ?? 0}, forts ${fb.forts ?? 0}` : '';
+  const loads = last?.plan?.loads ? `; copy changes ${last.plan.moves ?? 0}, loads ${last.plan.loads.hd} HD + ${last.plan.loads.sd} 1x` : '';
+  const note = `${label}: peak ${mb(peak?.total ?? 0)} MB (cpu ${mb(peak?.cpu ?? 0)}, gpu ${mb(peak?.gpu ?? 0)}), ${peak?.sheets?.loaded ?? 0} unit sheets${peak?.sheets?.sd ? ` + ${peak.sheets.sd} 1x` : ''}, last age index ${top}${kinds}${plan}${fallbacks}${loads}`;
   test.info().annotations.push({ type: 'memory', description: note });
   console.log(`[memory] ${test.info().project.name}: ${note}`);
   // the match went through several evolves (Gunpowder or later), so the budget covers them
   expect(top).toBeGreaterThanOrEqual(3);
   expect(mb(peak?.total ?? Infinity)).toBeLessThanOrEqual(BUDGET_MB);
+  // a turret or a base drawn by its stand-in keeps it (a turret for life): none in the whole war
+  expect({ turrets: fb?.turrets ?? 0, bases: fb?.bases ?? 0, last: (fb?.turrets ?? 0) + (fb?.bases ?? 0) > 0 ? fb?.lastWorld : '' }).toEqual({ turrets: 0, bases: 0, last: '' });
   expect(problems.errors).toEqual([]);
 }
 

@@ -4,11 +4,12 @@
  * from the closed bitmap); a sheet that could not be uploaded keeps its copy; an unloaded sheet's bitmap
  * closes at once; after a restored GPU context the released sheets are decoded again and released again.
  * A sheet another renderer draws (the card showcase's own WebGL app) is kept: never released while kept,
- * decoded again first when it already was, and released again once nothing keeps it.
+ * decoded again first when it already was, and released again once nothing keeps it. Big uploads are spaced
+ * out and wait while the battle asks for quiet (review S1, 2026-10-18).
  */
 import { ImageSource } from 'pixi.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { SheetReleaser, type GpuHooks } from '../gpuUpload';
+import { BIG_UPLOAD_BYTES, BIG_UPLOAD_GAP_MS, SheetReleaser, type GpuHooks } from '../gpuUpload';
 
 /** A stand-in ImageBitmap (Node has none): `close()` detaches it, as in the browser (width and height 0). */
 class FakeBitmap {
@@ -257,5 +258,103 @@ describe('SheetReleaser (G7)', () => {
     expect(b.resource).not.toBe(late);
     kb.release();
     expect(r2.stats).toEqual({ queued: 0, released: 0 });
+  });
+
+  it('S1: big sheets upload at most one per gap and none in a quiet window; small ones keep going', () => {
+    const f = frames();
+    let t = 0;
+    const uploaded: string[] = [];
+    const r = new SheetReleaser({ upload: (s) => (uploaded.push(String(s.label)), true) }, { schedule: f.schedule, clock: () => t, budgetMs: 1000 });
+    const big = (n: number): ImageSource => new ImageSource({ resource: new FakeBitmap(2048, 2048) as unknown as ImageBitmap, label: `http://x/big${n}.png` });
+    expect(2048 * 2048 * 4).toBeGreaterThan(BIG_UPLOAD_BYTES);
+    r.add(big(1));
+    r.add(big(2));
+    r.add(sheet('http://x/small.png'));
+    f.step();
+    // one big sheet per gap; the small one goes past the big one that waits
+    expect(uploaded).toEqual(['http://x/big1.png', 'http://x/small.png']);
+    t += BIG_UPLOAD_GAP_MS / 2;
+    f.step();
+    expect(uploaded).toHaveLength(2);
+    t += BIG_UPLOAD_GAP_MS / 2;
+    f.step();
+    expect(uploaded).toEqual(['http://x/big1.png', 'http://x/small.png', 'http://x/big2.png']);
+    expect(f.pending()).toBe(0);
+    // your evolve: big sheets wait for the end of the quiet window, small ones do not
+    t += BIG_UPLOAD_GAP_MS;
+    r.quietFor(1000);
+    r.add(big(3));
+    r.add(sheet('http://x/small2.png'));
+    f.step();
+    expect(uploaded).toContain('http://x/small2.png');
+    expect(uploaded).not.toContain('http://x/big3.png');
+    t += 999;
+    f.step();
+    expect(uploaded).not.toContain('http://x/big3.png');
+    t += 2;
+    f.step();
+    expect(uploaded).toContain('http://x/big3.png');
+    expect(r.stats).toEqual({ queued: 0, released: 5 });
+  });
+
+  it('S1: tells when a sheet leaves the queue (uploaded, kept or skipped) and says whether one still waits', () => {
+    const f = frames();
+    let t = 0;
+    const left: string[] = [];
+    const r = new SheetReleaser({ upload: () => true }, { schedule: f.schedule, clock: () => t, budgetMs: 1000 });
+    r.onDequeued = (s) => left.push(String(s.label));
+    const big = new ImageSource({ resource: new FakeBitmap(2048, 2048) as unknown as ImageBitmap, label: 'http://x/big.png' });
+    const kept = sheet('http://x/kept.png');
+    const gone = sheet('http://x/gone.png');
+    r.quietFor(1000);
+    r.add(big);
+    r.add(kept);
+    r.add(gone);
+    expect(r.isQueued(big)).toBe(true);
+    // another renderer keeps one: out of the queue at once
+    const k = r.keep(kept);
+    expect(left).toEqual(['http://x/kept.png']);
+    gone.destroy();
+    f.step();
+    // the destroyed one is skipped; the big one waits out the quiet window
+    expect(left).toEqual(['http://x/kept.png', 'http://x/gone.png']);
+    expect(r.isQueued(big)).toBe(true);
+    t += 1001;
+    f.step();
+    expect(left).toEqual(['http://x/kept.png', 'http://x/gone.png', 'http://x/big.png']);
+    expect(r.isQueued(big)).toBe(false);
+    k.release();
+  });
+
+  it('flush uploads a queued sheet out of turn (a view draws it now), in a quiet window too, and the next big one keeps its gap', () => {
+    const f = frames();
+    let t = 0;
+    const uploaded: string[] = [];
+    const left: string[] = [];
+    const r = new SheetReleaser({ upload: (s) => (uploaded.push(String(s.label)), true) }, { schedule: f.schedule, clock: () => t, budgetMs: 1000 });
+    r.onDequeued = (s) => left.push(String(s.label));
+    const big = (n: number): ImageSource => new ImageSource({ resource: new FakeBitmap(2048, 2048) as unknown as ImageBitmap, label: `http://x/big${n}.png` });
+    const a = big(1);
+    const b = big(2);
+    r.quietFor(5000);
+    r.add(a);
+    r.add(b);
+    f.step();
+    expect(uploaded).toEqual([]);
+    r.flush(a);
+    // uploaded now, its decoded copy closed, and the atlas told
+    expect(uploaded).toEqual(['http://x/big1.png']);
+    expect((a.resource as unknown as FakeBitmap).closed).toBe(true);
+    expect(r.isReleased(a)).toBe(true);
+    expect(left).toEqual(['http://x/big1.png']);
+    // a source not queued: nothing
+    r.flush(a);
+    expect(uploaded).toHaveLength(1);
+    // the quiet window ends: the other big sheet still waits its gap after the flushed one
+    t = 5001;
+    r.quietFor(0);
+    const before = uploaded.length;
+    f.step();
+    expect(uploaded.length).toBe(before + 1);
   });
 });

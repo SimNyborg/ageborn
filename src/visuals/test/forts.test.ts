@@ -9,6 +9,7 @@ import { describe, expect, it } from 'vitest';
 import { content } from '@/content';
 import type { FortView } from '@/contracts/art';
 import { portraitStillBase } from '../adapters/atlasPortrait';
+import type { AtlasData } from '../adapters/atlas';
 import { WorldAtlas, type WorldSheet } from '../adapters/worldAtlas';
 import { AtlasFortView, fortCrumbleStage } from '../fortViews/atlasFortView';
 import { FORT_SHEETS, FORT_VISUALS, fortSheetSource, fortSource, LEVY_SCALE, LEVY_VISUALS } from '../forts';
@@ -181,6 +182,41 @@ describe('fort view (A16.14.8)', () => {
     expect(f.root.destroyed).toBe(false);
     f.destroy();
     expect(f.root.destroyed).toBe(true);
+  });
+
+  it('a tower crew on the memory governor\'s 1x copy moves to the HD copy once that is in (review N4)', () => {
+    const t = Texture.WHITE;
+    const frames = (n: number): Texture[] => Array.from({ length: n }, () => t);
+    const atlas = new WorldAtlas((s) => s, () => Promise.reject(new Error('no fetch in tests')));
+    atlas.register('art/forts/stone/watch_tower.json', {
+      animations: { body: frames(4), body_team: frames(4), scaffold: frames(1), rubble: frames(1) },
+      luPerUnit: 1,
+      meta: { heightLu: 100, pxPerLu: 1.23, clips: {}, ...({ kind: 'fort', fortKind: 'tower', material: 'wood', crew: { visualId: 'unit.pebbler', x: 0, y: 60, scale: 0.9 }, anchorsLu: { head: [0, 100], hitCenter: [0, 40] } } as object) },
+    });
+    const crewCopy = (luPerUnit: number): AtlasData => ({ luPerUnit, heightLu: 68, animations: { idle: frames(4), attack: frames(5) }, clips: { idle: { durationsMs: [100, 100, 100, 100], loop: true } } });
+    const sd = crewCopy(1);
+    const hd = crewCopy(0.5);
+    let best: AtlasData = sd;
+    const asked: string[] = [];
+    const art = createArtProvider({ dpr: 1, worldPxPerLu: 1 });
+    const v = new AtlasFortView({ def: MANIFEST['fort.palisade']!, side: 0, kind: 'tower', teamColor: 0x2f7df6, decor: art.procedural.baker, seed: 2, sheets: atlas, crewSheet: (id) => (asked.push(id), best), age: 'stone', source: 'art/forts/stone/watch_tower.json' });
+    const crew = (): { sheet: AtlasData; c: { scale: { x: number } } } | null => (v as unknown as { crew: { sheet: AtlasData; c: { scale: { x: number } } } | null }).crew;
+    const run = (ms: number): void => {
+      for (let k = 0; k < ms; k += 16) {
+        v.setPose({ x: 0, y: 0, hpBp: 10000, scaffoldBp: 10000, decayBp: 0, crumbleStage: 0, silenced: false });
+        v.update(16);
+      }
+    };
+    run(100);
+    expect(crew()?.sheet).toBe(sd);
+    expect(crew()?.c.scale.x).toBeCloseTo(0.9);
+    best = hd;
+    run(600);
+    expect(crew()?.sheet).toBe(hd);
+    // the HD copy's texture units are half a lu: the crew keeps its size on screen
+    expect(crew()?.c.scale.x).toBeCloseTo(0.45);
+    expect(asked.every((id) => id === 'unit.pebbler')).toBe(true);
+    v.destroy();
   });
 
   it('draws a stand-in while no sheet is installed', () => {

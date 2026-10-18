@@ -185,6 +185,26 @@ describe("a battle's passed ages", () => {
     expect(loads.filter((u) => u === 'art/turrets/stone/a.json')).toHaveLength(2);
   });
 
+  it('a sheet asked for again while it is being unloaded loads again only once that is done (review N2)', async () => {
+    const loads: string[] = [];
+    let unloaded: () => void = () => undefined;
+    const w = new WorldAtlas(
+      (s) => s,
+      async (url) => (loads.push(url), worldSheet().sheet),
+      () => new Promise<void>((r) => (unloaded = r)),
+    );
+    await w.ensure('art/turrets/stone/a.json');
+    expect(w.release((s) => s.includes('/stone/'))).toBe(1);
+    const again = w.ensure('art/turrets/stone/a.json');
+    await Promise.resolve();
+    await Promise.resolve();
+    // the second load waits for the unload of the first copy
+    expect(loads).toEqual(['art/turrets/stone/a.json']);
+    unloaded();
+    expect(await again).not.toBeNull();
+    expect(loads).toEqual(['art/turrets/stone/a.json', 'art/turrets/stone/a.json']);
+  });
+
   it("the provider's releaseAges keeps the given ages and the game's mode only", () => {
     const game = createArtProvider({ warn: () => {}, unitSheets: 'match' });
     const turrets = vi.spyOn(game.atlas.world, 'release');
@@ -199,6 +219,51 @@ describe("a battle's passed ages", () => {
     expect(keepF('art/forts/medieval/levy_camp.hd.json')).toBe(false);
     const gallery = createArtProvider({ warn: () => {} });
     expect(gallery.releaseAges(['stone'])).toBe(0);
+  });
+});
+
+describe('the opening bases and the stand-in counters (review S2, N7)', () => {
+  it('counts the turrets and bases drawn by their stand-ins (the e2e budget asserts them)', () => {
+    const art = createArtProvider({ warn: () => {}, unitSheets: 'match' });
+    const turret = Object.keys(MANIFEST).find((k) => k.startsWith('turret.') && MANIFEST[k]!.kind === 'atlas')!;
+    // no sheet loads in Node: both draw their procedural stand-ins
+    art.createTurret({ visualId: turret, side: 0, teamPreset: 'default' }).destroy();
+    art.createBase({ age: 'gunpowder', side: 0, teamPreset: 'default' }).destroy();
+    expect(art.fallbacks).toMatchObject({ units: 0, turrets: 1, bases: 1, forts: 0 });
+    // a turret whose sheet is in draws from it
+    const def = MANIFEST[turret]!;
+    art.atlas.world.register(def.source, worldSheet().sheet);
+    expect(art.atlas.canDraw('turret', def)).toBe(true);
+  });
+
+  it('baseSheetReady is null once the age\'s plain base sheet is in, else it loads it; VS waits for it', async () => {
+    const art = createArtProvider({ warn: () => {}, unitSheets: 'match' });
+    const src = MANIFEST['base.gunpowder']!.source;
+    expect(src).toBe('art/bases/gunpowder.json');
+    let land: (s: WorldSheet | null) => void = () => undefined;
+    // one load in flight, shared by every caller (as WorldAtlas.ensure does)
+    const loading = new Promise<WorldSheet | null>((r) => (land = r));
+    const ensured: string[] = [];
+    vi.spyOn(art.atlas.world, 'ensure').mockImplementation((s) => {
+      ensured.push(s);
+      return s === src ? loading : Promise.resolve(null);
+    });
+    const ready = art.baseSheetReady('gunpowder');
+    expect(ready).not.toBeNull();
+    expect(ensured).toEqual([src]);
+    // VS's warm-up of a match opening in Gunpowder waits for the same sheet
+    let warmed = false;
+    void art.prefetchMatch({ age: 'gunpowder', sides: [{}, {}] }).then(() => (warmed = true));
+    for (let i = 0; i < 5; i++) await Promise.resolve();
+    expect(warmed).toBe(false);
+    land(worldSheet().sheet);
+    await ready;
+    for (let i = 0; i < 5; i++) await Promise.resolve();
+    expect(warmed).toBe(true);
+    art.atlas.world.register(src, worldSheet().sheet);
+    expect(art.baseSheetReady('gunpowder')).toBeNull();
+    // a forced tier other than the sheets draws its own bases: nothing to wait for
+    expect(createArtProvider({ warn: () => {}, unitSheets: 'match', force: 'procedural' }).baseSheetReady('gunpowder')).toBeNull();
   });
 });
 
