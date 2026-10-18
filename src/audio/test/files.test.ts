@@ -124,7 +124,12 @@ describe('generated audio assets', () => {
     // variant each, two for the starters), about 330 KB; the MVP pass 31 more (about 170 KB). The content
     // waves (CONTENT_PLAN W1-W3) add about 140 KB each, all in lazily loaded age sheets: 3 MiB, raised to
     // 3.5 MiB for the W5 Industrial and W6 Modern waves (each age sheet still loads only with its age).
-    expect(sfxBytes).toBeLessThan(3.5 * 1024 * 1024);
+    // The combat sound pass (queue item 38, A7) added about 131 KB: 96 KB to the battle sheet (the ambience
+    // loop, the kill accent, material layers, falls, the clash, the landing) and 34 KB to the match sheet
+    // (the huge bodies' deaths and fall): 3.75 MiB.
+    expect(sfxBytes).toBeLessThan(3.75 * 1024 * 1024);
+    // The battle sheet loads at every unlock: keep it small (B16, A7's +150 KB budget).
+    expect(SFX_SHEETS.battle!.bytes).toBeLessThan(330 * 1024);
   });
 
   it('has an AAC copy of every file, a sync time for every sheet, and stingers in every age key', () => {

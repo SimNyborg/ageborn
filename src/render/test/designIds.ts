@@ -50,6 +50,8 @@ export const A14_EFFECT_IDS = new Set([
   // MVP pass (audit 2026-10-01): stance cues, slow and snare marks, Brace, research done, levy pennant
   'fx.stance_charge', 'fx.stance_hold', 'fx.stance_fallback', 'fx.status_slow', 'fx.status_snare', 'fx.brace_plant',
   'fx.research_done', 'fx.levy_marker',
+  // Queue item 38 Phase A (combat feel, 2026-10-18; track U's recipes, DESIGN A14.1 in the phase's final pass)
+  'fx.contact_spark', 'fx.land_dust', 'fx.clash_dust', 'fx.bits', 'fx.stuck', 'fx.ground_glow',
 ]);
 
 const AGES = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
@@ -109,7 +111,16 @@ const COSMIC_WAVE_SOUND_IDS = [
   'pw_drizzle', 'pw_pulsar',
 ];
 
+/**
+ * Queue item 38 Phase A (combat feel, 2026-10-18): the sound pass's new ids (track S, `src/audio/sounds.ts`;
+ * requests/S-to-B-sounds.md). DESIGN A13 gains a row for them in the final pass of the phase.
+ */
+const COMBAT38_SOUND_IDS = [
+  'kill_accent', 'mat_armour', 'mat_wood', 'body_fall_s', 'body_fall_m', 'body_fall_l', 'die_bio_l', 'die_mech_l', 'clash_crash', 'leap_land', 'ambience_battle',
+];
+
 export const A13_SOUND_IDS = new Set([
+  ...COMBAT38_SOUND_IDS,
   ...COSMIC_WAVE_SOUND_IDS,
   ...A17_SOUND_IDS,
   ...BRONZE_WAVE_SOUND_IDS,

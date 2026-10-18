@@ -14,7 +14,7 @@ import { mulberry32, type CosmeticRng } from '@/core/rng';
 import { ease, sampleScalar } from '../../animator';
 import type { PartBaker } from '../../bake';
 import { FX_ZONES } from '../../effects/sprites';
-import { FX_RECIPE_BY_ID, type FxRecipe, type ParticleSpec, type ProjectileRecipe, type Range, type SizeKey, type SpriteKey, type SpriteSpec } from '../../effects/recipes';
+import { FX_RECIPE_BY_ID, type CustomFx, type FxRecipe, type ParticleSpec, type ProjectileRecipe, type Range, type SizeKey, type SpriteKey, type SpriteSpec } from '../../effects/recipes';
 import { getPart } from '../../parts/registry';
 
 /** A sprite whose anchor is the part's origin (so position = the part's pivot). */
@@ -114,6 +114,8 @@ export class ProceduralEffectView implements EffectView {
   private tail: Sprite | null = null;
   private puffAcc = 0;
   private destroyed = false;
+  /** A recipe's custom player (queue item 38's combat effects), or null. */
+  private custom: CustomFx | null = null;
 
   constructor(private readonly opt: EffectViewOptions) {
     this.rng = mulberry32(opt.seed);
@@ -124,7 +126,7 @@ export class ProceduralEffectView implements EffectView {
 
   get done(): boolean {
     if (!this.started) return false;
-    const living = this.particles.length > 0 || this.subs.some((s) => !s.done) || this.falling.some((f) => !f.landed);
+    const living = this.particles.length > 0 || this.subs.some((s) => !s.done) || this.falling.some((f) => !f.landed) || (this.custom !== null && !this.custom.done);
     if (this.fly_) return this.t >= this.fly_.ms + 120 && !living;
     return this.t >= this.dur && !living;
   }
@@ -171,6 +173,25 @@ export class ProceduralEffectView implements EffectView {
       this.dur = 0;
       return;
     }
+    if (r.custom) {
+      // a custom player draws the whole effect (nested recipes play as `subs`)
+      this.dur = 0;
+      this.custom = r.custom({
+        layer: this.layer,
+        sprite: (id) => fxSprite(this.opt.baker, id),
+        rng: this.rng,
+        o: this.o,
+        teamColor: this.opt.teamColor,
+        play: (recipe, x, y, o2) => {
+          const sub = new ProceduralEffectView({ ...this.opt, recipe, seed: this.rng.nextU32() | 0, o: {} });
+          this.layer.addChild(sub.root);
+          // the outer layer already carries the play's `scale`: a nested recipe sizes itself only by `o2`
+          sub.playAt({ x, y }, { ...this.o, scale: 1, small: 0, ...(o2 ?? {}) });
+          this.subs.push(sub);
+        },
+      });
+      return;
+    }
     this.dur = r.loops && this.o['durationMs'] !== undefined ? this.o['durationMs'] : r.durationMs;
     const distance = this.o['distance'];
     const speed = this.o['speed'];
@@ -195,6 +216,8 @@ export class ProceduralEffectView implements EffectView {
   }
 
   private reset(): void {
+    this.custom?.destroy();
+    this.custom = null;
     for (const s of this.sprites) s.s.destroy();
     for (const p of this.particles) p.s.destroy();
     for (const f of this.falling) f.s.destroy();
@@ -260,6 +283,7 @@ export class ProceduralEffectView implements EffectView {
     this.stepParticles(dtMs);
     this.stepFalling();
     this.stepChain(dtMs);
+    this.custom?.update(dtMs);
     for (const s of this.subs) s.update(dtMs);
   }
 

@@ -39,7 +39,8 @@ function ev<E extends SimEvent['e']>(e: E, body: EvBody<E>): SimEvent {
 
 const UNITS: Record<number, UnitInfo> = {
   1: { side: 0, card: 'bonker', x: 500 },
-  2: { side: 1, card: 'pebbler', x: 700 },
+  // 400 HP: the default 20-damage hit is a light one (5%)
+  2: { side: 1, card: 'pebbler', x: 700, maxHp: 40_000 },
   3: { side: 1, card: 'tankette', x: 720 },
   4: { side: 1, card: 'matriarch', x: 760 },
   5: { side: 0, card: 'tuskback', x: 480 },
@@ -71,31 +72,82 @@ function died(o: Partial<Extract<SimEvent, { e: 'died' }>> = {}): SimEvent {
   });
 }
 
-describe('event mapper: A12 hits', () => {
-  it('light hit: victim flash 60 ms, 3 sparks by damage type, hit_<type>, no hitstop or trauma', () => {
+describe('event mapper: hits by tier (A12, queue item 38 A2/A3)', () => {
+  it('light hit (under 8% of max HP): flash 60 ms, one contact spark sized by its tier, hit sound, a short hit-stop on both, a light reaction', () => {
     const out = run([hit()]);
     expect(pick(out, 'unitFlash')).toEqual([{ a: 'unitFlash', id: 2, ms: 60 }]);
-    expect(pick(out, 'fx')).toMatchObject([{ effectId: 'fx.spark_blunt', count: 3 }]);
+    // the spark plays where the blow lands (the view resolves the contact), with the recipe's tier, kind and dir
+    expect(pick(out, 'fx')).toMatchObject([{ effectId: 'fx.contact_spark', count: 1, at: { k: 'unit', id: 2, part: 'hit' }, contact: { from: 1, dir: 1 }, opts: { dir: 1, tier: 0, kind: 0 } }]);
     expect(pick(out, 'sound').map((s) => s.id)).toEqual(['hit_blunt']);
-    expect(pick(out, 'unitFreeze')).toEqual([]);
+    expect(pick(out, 'unitFreeze')).toEqual([
+      { a: 'unitFreeze', id: 2, ms: 50 },
+      { a: 'unitFreeze', id: 1, ms: 35 },
+    ]);
     expect(pick(out, 'trauma')).toEqual([]);
-    expect(pick(out, 'unitClip')).toMatchObject([{ id: 2, clip: 'hit' }]);
+    expect(pick(out, 'kick')).toEqual([]);
+    expect(pick(out, 'unitClip')).toMatchObject([{ id: 2, clip: 'hit', tier: 'light', dir: 1 }]);
   });
 
-  it('heavy hit: local hitstop victim 70 / attacker 50 with jitter, trauma 0.05, flash 80, 6 sparks and dust', () => {
-    const out = run([hit({ heavy: true, dmgType: 'slash' })]);
+  it('medium hit (8-15%): flash 70 ms, a medium spark, a slightly longer hit-stop', () => {
+    const out = run([hit({ damage: 4000 })]);
+    expect(pick(out, 'unitFlash')).toEqual([{ a: 'unitFlash', id: 2, ms: 70 }]);
+    expect(pick(out, 'fx')).toMatchObject([{ effectId: 'fx.contact_spark', count: 1, opts: { tier: 1 } }]);
+    expect(pick(out, 'unitFreeze').map((f) => f.ms)).toEqual([55, 40]);
+    expect(pick(out, 'unitClip')).toMatchObject([{ tier: 'medium' }]);
+  });
+
+  it('heavy hit (15%+): a longer hit-stop by share with jitter, trauma without its own kick, a 2.5 px kick, a heavy spark, dust and a glow at the feet', () => {
+    const out = run([hit({ heavy: true, dmgType: 'slash', damage: 8000 })]);
     expect(pick(out, 'unitFreeze')).toEqual([
-      { a: 'unitFreeze', id: 2, ms: 70, jitterPx: 2 },
-      { a: 'unitFreeze', id: 1, ms: 50 },
+      { a: 'unitFreeze', id: 2, ms: 76, jitterPx: 2 },
+      { a: 'unitFreeze', id: 1, ms: 45 },
     ]);
-    expect(pick(out, 'trauma')).toMatchObject([{ amount: 0.05, dir: { x: 1, y: 0 } }]);
+    expect(pick(out, 'trauma')).toEqual([{ a: 'trauma', amount: 0.12 }]);
+    expect(pick(out, 'kick')).toEqual([{ a: 'kick', px: 2.5, dir: { x: 1, y: 0 }, at: { k: 'unit', id: 2, part: 'hit' } }]);
     expect(pick(out, 'unitFlash')).toEqual([{ a: 'unitFlash', id: 2, ms: 80 }]);
     expect(pick(out, 'fx')).toMatchObject([
-      { effectId: 'fx.spark_slash', count: 6 },
-      { effectId: 'fx.dust_poof', count: 2 },
+      { effectId: 'fx.contact_spark', count: 1, contact: { from: 1 }, opts: { kind: 1, tier: 2 } },
+      { effectId: 'fx.dust_poof', count: 2, at: { k: 'unit', id: 2, part: 'feet' } },
+      { effectId: 'fx.ground_glow', count: 1, at: { k: 'unit', id: 2, part: 'feet' } },
     ]);
     expect(pick(out, 'sound').map((s) => s.id)).toEqual(['hit_heavy']);
     expect(pick(out, 'freeze')).toEqual([]);
+    // half the victim's max HP holds it the longest (110 ms)
+    expect(pick(run([hit({ damage: 20_000 })]), 'unitFreeze')[0]?.ms).toBe(110);
+  });
+
+  it('killing blow: the strongest reaction, a 3.5 px kick, the kill accent over the hit sound, hit_heavy for a heavy share', () => {
+    const out = run([hit(), died()]);
+    expect(pick(out, 'unitClip')).toMatchObject([{ id: 2, clip: 'hit', tier: 'kill' }]);
+    expect(pick(out, 'unitFreeze').slice(0, 2)).toEqual([
+      { a: 'unitFreeze', id: 2, ms: 90, jitterPx: 2 },
+      { a: 'unitFreeze', id: 1, ms: 50 },
+    ]);
+    expect(pick(out, 'kick')[0]).toMatchObject({ px: 3.5 });
+    expect(pick(out, 'sound').map((s) => s.id).slice(0, 2)).toEqual(['hit_blunt', 'kill_accent']);
+    const big = run([hit({ damage: 8000 }), died()]);
+    expect(pick(big, 'sound')[0]?.id).toBe('hit_heavy');
+  });
+
+  it('a shot holds only the victim of a heavy hit or a kill; a light one not at all, and never the shooter', () => {
+    const light = run([hit({ sourceId: 2, targetId: 1, sourceCard: 'pebbler' })]);
+    expect(pick(light, 'unitFreeze')).toEqual([]);
+    const heavy = run([hit({ sourceId: 2, targetId: 5, sourceCard: 'pebbler', damage: 15_000 })]);
+    expect(pick(heavy, 'unitFreeze').map((f) => f.id)).toEqual([5]);
+  });
+
+  it('a material rings under the hit: armour clanks on an armoured victim, never under a laser', () => {
+    const armour = run([hit({ targetId: 5, sourceId: 2, sourceCard: 'pebbler' })]);
+    expect(pick(armour, 'sound').map((s) => s.id)).toEqual(['hit_blunt', 'mat_armour']);
+    expect(pick(armour, 'fx')[0]?.opts).toMatchObject({ kind: 4 });
+    const laser = run([hit({ targetId: 5, sourceId: 2, sourceCard: 'pebbler', dmgType: 'laser' })]);
+    expect(pick(laser, 'sound').map((s) => s.id)).toEqual(['hit_laser']);
+  });
+
+  it('a knockback becomes the view\'s eased hop over 220 ms', () => {
+    const out = run([ev('knockback', { id: 2, fromX: 700_000, toX: 730_000 })]);
+    expect(pick(out, 'unitKnock')).toEqual([{ a: 'unitKnock', id: 2, dx: 30, ms: 220 }]);
+    expect(pick(run([ev('knockback', { id: 99, fromX: 700_000, toX: 730_000 })]), 'unitKnock')).toEqual([]);
   });
 
   it('shows the effective spark at >= x1.5 and the resisted puff at <= x0.75', () => {
@@ -124,15 +176,20 @@ describe('event mapper: A12 hits', () => {
 });
 
 describe('event mapper: A12 deaths', () => {
-  it('unit death: local 50 ms, trauma 0.1, 10 dust, KO stars, die sound; coins and XP fly for player kills', () => {
+  it('unit death: falls along the killer\'s direction, local 50 ms, trauma 0.1 and a 3 px kick, dust at the feet, KO stars, die sound; coins and XP fly for player kills', () => {
     const out = run([died()]);
-    expect(pick(out, 'unitDie')).toEqual([{ a: 'unitDie', id: 2 }]);
+    // the killer stands at 500, the victim at 700: the body falls toward +x; no blow in the batch: a medium fall
+    expect(pick(out, 'unitDie')).toEqual([{ a: 'unitDie', id: 2, dir: 1, tier: 'medium', heavy: false, size: 's' }]);
     expect(pick(out, 'unitFreeze')).toEqual([{ a: 'unitFreeze', id: 2, ms: 50 }]);
-    expect(pick(out, 'trauma')).toMatchObject([{ amount: 0.1 }]);
+    expect(pick(out, 'trauma')).toEqual([{ a: 'trauma', amount: 0.1 }]);
+    expect(pick(out, 'kick')).toMatchObject([{ px: 3, dir: { x: 1, y: 0 } }]);
     expect(pick(out, 'fx')).toMatchObject([
-      { effectId: 'fx.dust_poof', count: 10 },
+      { effectId: 'fx.dust_poof', count: 2, at: { k: 'unit', id: 2, part: 'feet' } },
+      // the bits it leaves: its age's material along the fall, seeded from match data, its side's cloth
+      { effectId: 'fx.bits', count: 1, at: { k: 'unit', id: 2, part: 'feet' }, opts: { dir: 1, age: 0, count: 3, side: 1, mat: 0 } },
       { effectId: 'fx.ko_stars', count: 1 },
     ]);
+    expect(pick(out, 'fx')[1]?.opts?.['bitsSeed']).toBe(pick(run([died()]), 'fx')[1]?.opts?.['bitsSeed']);
     // The XP tick waits for the sparkles to reach the bar.
     expect(pick(out, 'sound').map((s) => s.id)).toEqual(['die_bio', 'xp_tick']);
     expect(pick(out, 'fxFly')).toMatchObject([
@@ -147,12 +204,17 @@ describe('event mapper: A12 deaths', () => {
     expect(pick(out, 'fxFly')).toEqual([]);
   });
 
-  it('heavy death: 70 ms and trauma 0.15; Legendary death freezes globally for 80 ms', () => {
+  it('heavy death: 70 ms and trauma 0.38 (about 1.7 px, visible); Legendary death: trauma 0.55 and the global 80 ms freeze', () => {
     const heavy = run([died({ id: 5, side: 0, card: 'tuskback', killerSide: 1 })]);
     expect(pick(heavy, 'unitFreeze')).toEqual([{ a: 'unitFreeze', id: 5, ms: 70 }]);
-    expect(pick(heavy, 'trauma')).toMatchObject([{ amount: 0.15 }]);
+    expect(pick(heavy, 'trauma')).toMatchObject([{ amount: 0.38 }]);
+    expect(pick(heavy, 'unitDie')).toMatchObject([{ heavy: true, size: 'm' }]);
     const leg = run([died({ id: 4, card: 'matriarch' })]);
     expect(pick(leg, 'freeze')).toEqual([{ a: 'freeze', ms: 80, exempt: false }]);
+    expect(pick(leg, 'trauma')).toMatchObject([{ amount: 0.55 }]);
+    // the killing blow's share tier picks the fall (a heavy blow throws the body back)
+    const thrown = run([hit({ damage: 8000 }), died()]);
+    expect(pick(thrown, 'unitDie')).toMatchObject([{ tier: 'heavy', dir: 1 }]);
   });
 
   it('mech death: trauma 0.12, flash 60 ms, die_mech; 1 in 3 explodes (cosmetic RNG)', () => {
@@ -161,7 +223,7 @@ describe('event mapper: A12 deaths', () => {
     const n = 600;
     for (let i = 0; i < n; i++) {
       const out = m.map([died({ id: 3, card: 'tankette' })], (id) => UNITS[id]);
-      expect(pick(out, 'trauma').map((t) => t.amount)).toEqual([0.15, 0.12]);
+      expect(pick(out, 'trauma').map((t) => t.amount)).toEqual([0.38, 0.12]);
       expect(pick(out, 'unitFlash')).toEqual([{ a: 'unitFlash', id: 3, ms: 60 }]);
       expect(pick(out, 'sound')[0]?.id).toBe('die_mech');
       if (pick(out, 'fx').some((f) => f.effectId === 'fx.explosion_s')) explosions++;
@@ -193,9 +255,10 @@ describe('event mapper: turrets, bases, powers', () => {
     expect(decodeTurretSource(-1)).toBeNull();
   });
 
-  it('base hit: trauma 0.2 at most once per 0.5 s, base flash 60 ms, 4 chunks, base_hit; crumble at 75/50/25%', () => {
+  it('base hit: trauma 0.3 (about 1 px) at most once per 0.5 s with a 3 px kick, base flash 60 ms, 4 chunks, base_hit; crumble at 75/50/25%', () => {
     const out = run([ev('baseDamaged', { side: 0, sourceId: 2, damage: 300_000, hp: 700_000, maxHp: 1_000_000 })]);
-    expect(pick(out, 'trauma')).toMatchObject([{ amount: 0.2, gap: { gapMs: 500 } }, { amount: 0.15 }]);
+    expect(pick(out, 'trauma')).toMatchObject([{ amount: 0.3, gap: { gapMs: 500 } }, { amount: 0.15 }]);
+    expect(pick(out, 'kick')).toMatchObject([{ px: 3, dir: { x: -1, y: 0 } }]);
     expect(pick(out, 'baseFlash')).toEqual([{ a: 'baseFlash', side: 0, ms: 60 }]);
     expect(pick(out, 'fx')[0]).toMatchObject({ effectId: 'fx.debris', count: 4 });
     expect(pick(out, 'sound').map((s) => s.id)).toEqual(['base_hit', 'base_crumble']);
@@ -622,7 +685,8 @@ describe('event mapper: effect presets and sizes on the real content', () => {
     const shot = fxOf(runReal([ev('turretBuilt', { side: 1, mount: 0, card: 'crossbow_nest' }), ev('turretFired', { side: 1, mount: 0, targetId: 3 })]));
     expect(shot[0]).toMatchObject({ effectId: 'fx.muzzle', opts: { side: 1, dir: -1 } });
     const spark = fxOf(runReal([hit({ targetId: 5, sourceId: 1, sourceCard: 'emp_saboteur', dmgType: 'laser', x: 520_000 })]));
-    expect(spark[0]).toMatchObject({ effectId: 'fx.scorch_laser', opts: { dir: 1 } });
+    // a plain blow's spark is the contact spark, drawn by its kind (laser 6) along the blow (queue item 38 A5)
+    expect(spark[0]).toMatchObject({ effectId: 'fx.contact_spark', opts: { dir: 1, kind: 6 } });
   });
 });
 

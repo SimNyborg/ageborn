@@ -18,13 +18,28 @@
  * from the power's data (radius, zone, width, distance, duration), so the config only picks effects.
  */
 import type { FeelConfig, FeelRule } from '@/contracts';
+import { COMBAT_DEFAULTS, type CombatTuning } from './combatFeel';
+import type { ContactTuning } from './contact';
 import raw from './feel.config.json';
 
 /** Where a rule's flash goes: the victim unit, the whole screen, the struck base, or nowhere. */
 export type FlashTarget = 'victim' | 'screen' | 'base' | 'none';
 
+/** A rule's particle; `at` puts it somewhere else on the event's unit than the rule's anchor (queue item 38). */
+export interface FeelParticle {
+  effectId: string;
+  count: number;
+  priority: number;
+  at?: 'feet' | 'hit' | 'head';
+}
+
 /** A feel rule with the render-only fields. */
 export interface FeelRuleExt extends FeelRule {
+  particles?: FeelParticle[];
+  /** Extra sound layers played with `sound` on the same frame (a kill accent, a material). */
+  sounds?: string[];
+  /** A directional screen kick (px at shake 1) along the event's direction, at most one per `kickGapMs` (A3). */
+  kickPx?: number;
   flashTarget?: FlashTarget;
   /** Peak alpha of a screen flash (0..1). */
   flashAlpha?: number;
@@ -101,6 +116,15 @@ export interface FeelTuning {
     punchMs: number;
     materials: Record<string, string>;
   };
+  /** Contact staging (queue item 38 A1, `contact.ts`): stand-off, lunge compensation and same-side spread. */
+  contact?: Partial<ContactTuning>;
+  /** Hit tiers, hit-stop, kicks, knockback, materials and deaths (queue item 38 A2-A4, `combatFeel.ts`). */
+  combat?: Partial<CombatTuning>;
+}
+
+/** The combat tuning with its defaults filled in. */
+export function combatTuning(c: RenderFeelConfig): CombatTuning {
+  return { ...COMBAT_DEFAULTS, ...(c.tuning.combat ?? {}) };
 }
 
 /** The full render feel config: the contract plus the render-only extensions. */

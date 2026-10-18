@@ -101,6 +101,8 @@ const MUSICAL: Extra = { pitchVarBp: 0 };
 const TIMED: Extra = { pitchVarBp: 0 };
 /** The caller sets the pitch on purpose: coin climbs (A13), copy-bar climbs and the falling reel (A10.1). */
 const CALLER_PITCHED: Extra = { pitchVarBp: 0 };
+/** The hits' ZzFX trim since the combat sound pass (A7): the recorded hits sit 3-4 LU over their old level. */
+const HIT_TRIM: Extra = { gainDb: 3 };
 
 // ---------------------------------------------------------------------------------------------------
 // Shared building blocks
@@ -373,7 +375,8 @@ const BASE_SOUNDS = {
   ]), { gainDb: -3 }),
 
   // Attacks -------------------------------------------------------------------------------------------
-  swing_whoosh: fx('battle', variants(5, (v) => ({ vol: 0.38, freq: 700 * (1 + 0.1 * v), attack: 0.035, sustain: 0.02, release: 0.09, shape: 'noise', slide: -2, lowpass: 3600 * (1 + 0.1 * v) }))),
+  // A7 (queue item 38): the swing sits 5 dB under its old level and the hits 3-4 dB over theirs, as in the recorded sheet.
+  swing_whoosh: fx('battle', variants(5, (v) => ({ vol: 0.38, freq: 700 * (1 + 0.1 * v), attack: 0.035, sustain: 0.02, release: 0.09, shape: 'noise', slide: -2, lowpass: 3600 * (1 + 0.1 * v) })), { gainDb: -5 }),
   shot_sling: fx('stone', variants(4, (v) => ({ vol: 0.32, freq: 1100 * (1 + 0.08 * v), attack: 0.015, release: 0.07, shape: 'noise', slide: 4, lowpass: 5600 }))),
   shot_bow: mix('medieval', mixVariants(4, (v) => [
     at(0, { vol: 0.45, freq: 200 * (1 + 0.06 * v), attack: 0.001, release: 0.16, shape: 'tri', curve: 2, slide: -0.2 }),
@@ -1196,19 +1199,19 @@ const BASE_SOUNDS = {
   hit_blunt: mix('battle', mixVariants(4, (v) => [
     at(0, { vol: 0.6, freq: 150 * (1 + 0.1 * v), attack: 0.001, release: 0.09, slide: -3 }),
     noiseBurst(0, { vol: 0.2, freq: 900, attack: 0.001, release: 0.03, lowpass: 4800 }),
-  ])),
-  hit_slash: fx('battle', variants(4, (v) => ({ vol: 0.35, freq: 3000 * (1 + 0.08 * v), attack: 0.002, release: 0.09, shape: 'noise', slide: -6, highpass: 3200 }))),
-  hit_pierce: fx('battle', variants(4, (v) => ({ vol: 0.55, freq: 1900 * (1 + 0.08 * v), attack: 0.001, release: 0.05, shape: 'tri', slide: -18, noise: 0.6 }))),
+  ]), HIT_TRIM),
+  hit_slash: fx('battle', variants(4, (v) => ({ vol: 0.35, freq: 3000 * (1 + 0.08 * v), attack: 0.002, release: 0.09, shape: 'noise', slide: -6, highpass: 3200 })), HIT_TRIM),
+  hit_pierce: fx('battle', variants(4, (v) => ({ vol: 0.55, freq: 1900 * (1 + 0.08 * v), attack: 0.001, release: 0.05, shape: 'tri', slide: -18, noise: 0.6 })), HIT_TRIM),
   hit_bullet: mix('battle', mixVariants(4, (v) => [
     noiseBurst(0, { vol: 0.35, freq: 2600 * (1 + 0.1 * v), attack: 0.001, release: 0.05, highpass: 3000 }),
     at(0, { vol: 0.12, freq: 3100 * (1 + 0.06 * v), attack: 0.001, release: 0.09, slide: -3 }),
-  ])),
-  hit_laser: fx('battle', variants(4, (v) => ({ vol: 0.3, freq: 1700 * (1 + 0.08 * v), attack: 0.002, release: 0.11, shape: 'tan', noise: 1.5, highpass: 1800 }))),
+  ]), HIT_TRIM),
+  hit_laser: fx('battle', variants(4, (v) => ({ vol: 0.3, freq: 1700 * (1 + 0.08 * v), attack: 0.002, release: 0.11, shape: 'tan', noise: 1.5, highpass: 1800 })), HIT_TRIM),
   hit_heavy: mix('battle', mixVariants(3, (v) => [
     thump(0, 95 * (1 + 0.08 * v), 0.8, 0.22, -1.4),
     noiseBurst(0, { vol: 0.4, freq: 600, attack: 0.001, decay: 0.02, sustainVol: 0.4, release: 0.16, lowpass: 3600 }),
-  ])),
-  hit_effective: fx('battle', variants(3, (v) => ({ vol: 0.5, freq: 1500 * (1 + 0.04 * v), attack: 0.001, release: 0.14, shape: 'tri', jump: 750, jumpTime: 0.025 }))),
+  ]), HIT_TRIM),
+  hit_effective: fx('battle', variants(3, (v) => ({ vol: 0.5, freq: 1500 * (1 + 0.04 * v), attack: 0.001, release: 0.14, shape: 'tri', jump: 750, jumpTime: 0.025 })), HIT_TRIM),
   explosion_s: mix('battle', mixVariants(4, (v) => [
     noiseBurst(0, { vol: 0.65, freq: 320 * (1 + 0.1 * v), attack: 0.003, decay: 0.05, sustainVol: 0.45, release: 0.32, lowpass: 4800 }),
     thump(0, 80, 0.5, 0.22),
@@ -1990,6 +1993,75 @@ const MOMENT_SOUNDS: Record<SoundId, SoundDef> = {
 };
 
 /**
+ * The combat sound pass (queue item 38 Phase A, A7; designs in `tools/audio/sfx/sounds_combat.py`): a kill
+ * accent, material layers for armoured and wooden victims, body falls in three sizes, deaths for huge bodies,
+ * the moment two lines clash, a leap's landing and the battle ambience loop (`setBattleAmbience`, service.ts).
+ * The recorded `battle` and `match` sheets carry them; these ZzFX versions play only while a sheet decodes or
+ * where none can, and stay out of the boot render (`lazy`: the boot set is at its B16 budget).
+ */
+const LAZY: Extra = { lazy: true };
+const COMBAT_SOUNDS: Record<SoundId, SoundDef> = {
+  // The killing blow: a low whump and a bright snap on top of the hit sound.
+  kill_accent: mix('battle', mixVariants(3, (v) => [
+    thump(0, 120 * (1 + 0.06 * v), 0.7, 0.22, -1.4),
+    noiseBurst(0, { vol: 0.32, freq: 1600 * (1 + 0.05 * v), release: 0.05, lowpass: 7000 }),
+    noiseBurst(20, { vol: 0.18, freq: 500, attack: 0.01, release: 0.18, lowpass: 2400 }),
+  ]), { ...LAZY, maxVoices: 3 }),
+  // Material layers under a hit: steel plate, and dry wood (shields, siege engines).
+  mat_armour: mix('battle', mixVariants(3, (v) => [
+    at(0, { vol: 0.26, freq: 1180 * (1 + 0.05 * v), attack: 0.001, release: 0.2, shape: 'tri', curve: 2, mod: 7 }),
+    at(0, { vol: 0.14, freq: 2730 * (1 + 0.05 * v), attack: 0.001, release: 0.12, shape: 'sin' }),
+    noiseBurst(0, { vol: 0.2, freq: 3600, release: 0.025, highpass: 2600 }),
+  ]), LAZY),
+  mat_wood: mix('battle', mixVariants(3, (v) => [
+    at(0, { vol: 0.4, freq: 520 * (1 + 0.06 * v), attack: 0.001, release: 0.06, shape: 'tri', slide: -3 }),
+    noiseBurst(10, { vol: 0.2, freq: 1800, sustain: 0.05, release: 0.04, tremolo: 0.6, repeat: 0.018, lowpass: 6000 }),
+  ]), LAZY),
+  // Bodies landing on A4's ground frame, by size.
+  body_fall_s: mix('battle', mixVariants(3, (v) => [
+    thump(0, 110 * (1 + 0.07 * v), 0.55, 0.16, -1.2),
+    noiseBurst(0, { vol: 0.25, freq: 700, attack: 0.004, release: 0.12, lowpass: 2600 }),
+    noiseBurst(60, { vol: 0.12, freq: 2200, sustain: 0.04, release: 0.05, tremolo: 0.6, repeat: 0.03, lowpass: 7000 }),
+  ]), LAZY),
+  body_fall_m: mix('battle', mixVariants(3, (v) => [
+    thump(0, 80 * (1 + 0.07 * v), 0.75, 0.3, -0.9),
+    noiseBurst(0, { vol: 0.35, freq: 420, attack: 0.005, decay: 0.04, sustainVol: 0.4, release: 0.25, lowpass: 1800 }),
+  ]), LAZY),
+  body_fall_l: mix('match', mixVariants(3, (v) => [
+    thump(0, 58 * (1 + 0.06 * v), 0.8, 0.55, -0.5),
+    noiseBurst(0, { vol: 0.45, freq: 220, attack: 0.006, decay: 0.08, sustainVol: 0.45, release: 0.6, lowpass: 1400 }),
+    noiseBurst(120, { vol: 0.18, freq: 900, sustain: 0.25, release: 0.25, tremolo: 0.6, repeat: 0.05, lowpass: 4200 }),
+  ]), { ...LAZY, maxVoices: 2 }),
+  // Huge bodies die big (a Legendary mammoth must not die with the infantry's grunt).
+  die_bio_l: mix('match', mixVariants(3, (v) => [
+    at(0, { vol: 0.42, freq: 120 * (1 + 0.06 * v), attack: 0.04, sustain: 0.18, release: 0.3, shape: 'saw', curve: 0.8, slide: -0.6, lowpass: 1500 }),
+    thump(260, 62 * (1 + 0.05 * v), 0.6, 0.35),
+    noiseBurst(260, { vol: 0.3, freq: 300, attack: 0.01, release: 0.35, lowpass: 1600 }),
+  ]), { ...LAZY, maxVoices: 2 }),
+  die_mech_l: mix('match', mixVariants(3, (v) => [
+    at(0, { vol: 0.32, freq: 260 * (1 + 0.06 * v), attack: 0.01, sustain: 0.2, release: 0.35, shape: 'square', curve: 0.5, slide: -0.9, crush: 0.05, lowpass: 4000 }),
+    noiseBurst(120, { vol: 0.6, freq: 200, attack: 0.004, decay: 0.08, sustainVol: 0.45, release: 0.6, lowpass: 2600 }),
+    thump(120, 50 * (1 + 0.05 * v), 0.7, 0.5, -0.4),
+  ]), { ...LAZY, maxVoices: 2 }),
+  // Two lines meet (A6): many weapons and shields at once.
+  clash_crash: mix('battle', mixVariants(3, (v) => [
+    thump(0, 90 * (1 + 0.05 * v), 0.7, 0.3, -1),
+    noiseBurst(0, { vol: 0.5, freq: 900, attack: 0.002, decay: 0.05, sustainVol: 0.4, release: 0.4, tremolo: 0.5, repeat: 0.04, lowpass: 5200 }),
+    at(10, { vol: 0.18, freq: 1500 * (1 + 0.04 * v), attack: 0.001, release: 0.3, shape: 'tri', curve: 2, mod: 9 }),
+  ]), { ...LAZY, maxVoices: 1, gapMs: 1500 }),
+  // A pounce or leap touching down.
+  leap_land: mix('battle', mixVariants(3, (v) => [
+    thump(0, 100 * (1 + 0.07 * v), 0.6, 0.18, -1.2),
+    noiseBurst(0, { vol: 0.3, freq: 600, attack: 0.003, release: 0.16, lowpass: 2600 }),
+  ]), LAZY),
+  // A distant battle under a big fight: a loop the service plays at the level the battle view sets.
+  ambience_battle: fx('battle', variants(3, (v) => ({ vol: 0.1, freq: 260 * (1 + 0.05 * v), sustain: 2.4, release: 0, shape: 'noise', tremolo: 0.3, repeat: 0.37, lowpass: 900 })), { ...TIMED, ...LAZY, maxVoices: 1 }),
+};
+
+/** The combat pass's ids (A7), for the DESIGN A13 row and the tests. */
+export const COMBAT_SOUND_IDS: readonly SoundId[] = Object.keys(COMBAT_SOUNDS);
+
+/**
  * Content-wave sounds in the boot groups (the Stone and Bronze waves' attacks, turrets and powers) that skip
  * the boot ZzFX render (`docs/requests/done/audio-boot-budget.md`): the boot set was at 299.6 of its 300 ms
  * before the waves. The recorded sheets carry them; the ZzFX fallback renders on first use or when idle.
@@ -2012,7 +2084,7 @@ function withLazy(all: Record<SoundId, SoundDef>, ids: readonly SoundId[]): Reco
   return out;
 }
 
-export const sounds: Readonly<Record<SoundId, SoundDef>> = withLazy({ ...BASE_SOUNDS, ...MVP_SOUNDS, ...MOMENT_SOUNDS }, LAZY_BOOT_SOUNDS);
+export const sounds: Readonly<Record<SoundId, SoundDef>> = withLazy({ ...BASE_SOUNDS, ...MVP_SOUNDS, ...MOMENT_SOUNDS, ...COMBAT_SOUNDS }, LAZY_BOOT_SOUNDS);
 
 /** Every sound id in the manifest, in declaration order. */
 export const SOUND_IDS: readonly SoundId[] = Object.keys(sounds);

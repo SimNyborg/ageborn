@@ -134,6 +134,11 @@ const A13: Record<string, string[]> = {
     'moment_fuse', 'moment_boom', 'moment_whistle', 'moment_twinkle', 'moment_scuffle', 'moment_tada', 'moment_wahwah',
     'moment_wind', 'moment_shrug',
   ],
+  /** The combat sound pass (queue item 38 Phase A, A7): kill accent, materials, body falls, big deaths, clash, landing, ambience. */
+  combat: [
+    'kill_accent', 'mat_armour', 'mat_wood', 'body_fall_s', 'body_fall_m', 'body_fall_l', 'die_bio_l', 'die_mech_l',
+    'clash_crash', 'leap_land', 'ambience_battle',
+  ],
 };
 const A13_IDS = Object.values(A13).flat();
 
@@ -151,8 +156,8 @@ describe('sound manifest (A13)', () => {
     // + the 18 of the Medieval wave + the 15 of the Gunpowder wave + the 18 of the Industrial wave + the 17 of the Modern wave
     // + the 19 of the Future wave + the 18 of the Cosmic wave
     // + the 4 of the rarity burst (2026-10-07) + the 10 of the base collapse (2026-10-08)
-    // + the 17 of the Result's victory moments (2026-10-08)
-    expect(A13_IDS).toHaveLength(394);
+    // + the 17 of the Result's victory moments (2026-10-08) + the 11 of the combat sound pass (2026-10-18)
+    expect(A13_IDS).toHaveLength(405);
     expect([...SOUND_IDS].sort()).toEqual([...A13_IDS].sort());
   });
 

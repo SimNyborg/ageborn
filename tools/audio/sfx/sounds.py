@@ -24,14 +24,18 @@ from kit import (
 REGISTRY: dict[str, dict] = {}
 
 
-def sfx(sid: str, target: float, variants: int = 3, hp_hz: float = 45, noisy: bool = False, max_s: float | None = None, timed: bool = False, phone_gap: float = -4.0):
+def sfx(sid: str, target: float, variants: int = 3, hp_hz: float = 45, noisy: bool = False, max_s: float | None = None, timed: bool = False, phone_gap: float = -4.0, ceiling: float = -1.5, loop: tuple[float, float] | None = None):
     """Registers a sound. `timed` keeps the exact length `max_s` from the first sample (the game syncs
     to it); `phone_gap` is how much quieter (LU) it may be on a phone speaker (350 Hz-12 kHz model)
     before the renderer adds harmonics and trims the lows: -4 for everything, -6 for big booms
-    (explosions, cannon, base, walkout), which may keep a little more weight below 300 Hz."""
+    (explosions, cannon, base, walkout), which may keep a little more weight below 300 Hz. `ceiling` is
+    the peak limit in dBFS (-1.5; the frequent combat hits use a lower one, so a single hit stays under
+    the game's master limiter, `src/audio/mixer.ts`, and gets its loudness from body, not from peaks).
+    `loop` = (start, length) in seconds of a seamless loop window inside the sound (the manifest's
+    `loop`; the game loops that window, the rest is wrap-around margin)."""
 
     def deco(fn):
-        REGISTRY[sid] = dict(fn=fn, target=target, variants=variants, hp=hp_hz, noisy=noisy, max_s=max_s, timed=timed, phone_gap=phone_gap)
+        REGISTRY[sid] = dict(fn=fn, target=target, variants=variants, hp=hp_hz, noisy=noisy, max_s=max_s, timed=timed, phone_gap=phone_gap, ceiling=ceiling, loop=loop)
         return fn
 
     return deco
@@ -159,8 +163,10 @@ def step_mech(v, rng):
 # Attacks
 
 
-@sfx("swing_whoosh", -27, 3, noisy=True)
+@sfx("swing_whoosh", -32, 3, noisy=True)
 def swing_whoosh(v, rng):
+    # The anticipation, 80 ms before the impact: 5 dB under its old level (A7, queue item 38), so the hit
+    # it announces is clearly the loudest beat of the attack.
     p = pv(v)
     return whoosh(rng, 0.17, 450 * p, 1900 * p, 1.8, 0.55) + whoosh(rng, 0.17, 250 * p, 700 * p, 1.2, 0.5) * 0.4
 
@@ -440,62 +446,84 @@ def gravity_hum(v, rng):
 
 # =================================================================================================
 # Hits and deaths
+#
+# The combat sound pass (A7, queue item 38): the impact is the loudest beat of an attack. The hits sit
+# 4-6 LU above their old levels and 10-11 LU above the swing whoosh, and each gained a body layer below
+# 200 Hz (a low punch a few ms after the crack, so the peaks do not stack). Their peak ceiling is
+# -6 dBFS, about the master limiter's threshold (-10 dBFS after the 0.7 master trim, mixer.ts), so a
+# single hit is never limited and the loudness comes from body; only stacked moments meet the limiter.
+
+HIT_CEILING = -6.0
 
 
-@sfx("hit_blunt", -26, 3)
+def hit_body(p: float, f0: float = 135, f1: float = 62, dur: float = 0.16, hp_hz: float = 55) -> np.ndarray:
+    """The weight under a hit: a saturated low punch that drops from about 135 Hz to 60 Hz."""
+    return thump(f0 * p, f1, dur, 0.02, dur * 0.32, 2.4, hp_hz=hp_hz)
+
+
+@sfx("hit_blunt", -22, 3, ceiling=HIT_CEILING)
 def hit_blunt(v, rng):
-    # A club landing: a concert tom and a rimshot crack together, a short high-passed punch under them.
+    # A club landing: a concert tom and a rimshot crack together, a short high-passed punch under them,
+    # and the weight of the blow: a low punch and a muffled floor tom.
     p = pv(v)
     tom = perc([TOM_HM, TOM_H, TOM_HM][v % 3], 118, KIT_ORCH, pitch=1.2 * p, length=0.2)
     rim = perc(SIDE_STICK, 110, KIT_STD, pitch=0.85 * p, length=0.08)
     punch = thump(190 * p, 100, 0.1, 0.012, 0.03, 2.2, hp_hz=120)
-    return mixdown(tom, at(0, rim, 0.6), at(0, crack(rng, 0.045, 800, 3200, 0.011), 0.8), at(0, knock(950 * p, 0.07, 0.016), 0.4), at(0, punch, 0.3))
+    floor = lp(perc(TOM_LF, 116, KIT_ORCH, pitch=1.0 * p, length=0.18), 1800, 2)
+    return mixdown(tom, at(0, rim, 0.6), at(0, crack(rng, 0.045, 800, 3200, 0.011), 0.8), at(0, knock(950 * p, 0.07, 0.016), 0.4), at(0, punch, 0.3), at(0.004, hit_body(p), 0.55), at(0.002, floor, 0.4))
 
 
-@sfx("hit_slash", -26, 3, noisy=True)
+@sfx("hit_slash", -22.5, 3, noisy=True, ceiling=HIT_CEILING)
 def hit_slash(v, rng):
-    # A blade cut: a stick strike, the swept slice and a short metal ring (FM partials).
+    # A blade cut: a stick strike, the swept slice and a short metal ring (FM partials), over the thud of
+    # the blow landing.
     p = pv(v)
     slice_ = dsp.sweep_bp(noise(0.09, rng), dsp.glide(3000 * p, 1100 * p, 0.09), 2.0) * env_exp(0.09, 0.03, 0.002) * 2.5
     shing = fm_bell(2100 * p, 0.14, 1.5, 1.2, 0.04, 0.02)
     stick = perc(CLAVES, 110, pitch=0.8 * p, length=0.06)
     thud = thump(160 * p, 95, 0.07, 0.01, 0.025, 1.8, hp_hz=120)
-    return mixdown(slice_, at(0, stick, 0.55), at(0, shing, 0.3), at(0.004, thud, 0.35))
+    floor = lp(perc(TOM_LF, 110, KIT_ORCH, pitch=1.1 * p, length=0.14), 1600, 2)
+    return mixdown(slice_, at(0, stick, 0.55), at(0, shing, 0.3), at(0.004, thud, 0.35), at(0.006, hit_body(p, 150, 72, 0.1, 60), 0.32), at(0.004, floor, 0.35))
 
 
-@sfx("hit_pierce", -27, 3)
+@sfx("hit_pierce", -22.5, 3, ceiling=HIT_CEILING)
 def hit_pierce(v, rng):
-    # An arrow striking home: a woodblock "thwk" with a short high hiss of feathers.
+    # An arrow or a spear striking home: a woodblock "thwk" with a short high hiss of feathers, and the
+    # thump of the shaft driving in.
     p = pv(v)
     wood = sample(GM["woodblock"], 70, 116, 0.12, 0.3, pitch=p, length=0.1)
     hiss = nburst(rng, 0.03, 3000, 8000, 0.007, 0.0003)
     thud = thump(170 * p, 100, 0.06, 0.01, 0.02, hp_hz=120)
-    return mixdown(wood, at(0, knock(820 * p, 0.06, 0.013, rng), 0.45), at(0, hiss, 0.4), at(0, thud, 0.22))
+    floor = lp(perc(TOM_L, 112, KIT_ORCH, pitch=1.15 * p, length=0.12), 1800, 2)
+    return mixdown(wood, at(0, knock(820 * p, 0.07, 0.018, rng), 0.45), at(0, hiss, 0.4), at(0, thud, 0.22), at(0.005, hit_body(p, 160, 78, 0.09, 65), 0.3), at(0.004, floor, 0.5))
 
 
-@sfx("hit_bullet", -27, 3, noisy=True)
+@sfx("hit_bullet", -23, 3, noisy=True, ceiling=HIT_CEILING)
 def hit_bullet(v, rng):
+    # A ball or a bullet striking: a sharp smack and a stick, a puff of dirt, and the dull thump of it
+    # landing in the body.
     p = pv(v)
     smack = crack(rng, 0.04, 900, 4200, 0.008)
     stick = perc(SIDE_STICK, 100, pitch=0.8 * p, length=0.05)
     dirt = debris(rng, 0.12, 200, 900, 4000, 0.05, 0.006) * 0.4
     body = thump(170 * p, 95, 0.06, 0.01, 0.02, hp_hz=120) * 0.45
-    out = mixdown(smack, at(0, stick, 0.3), at(0, knock(1100 * p, 0.05, 0.012), 0.3), at(0, body), at(0.005, dirt))
+    floor = lp(perc(TOM_L, 110, KIT_ORCH, pitch=1.3 * p, length=0.1), 2000, 2)
+    out = mixdown(smack, at(0, stick, 0.3), at(0, knock(1100 * p, 0.06, 0.016), 0.45), at(0, body), at(0.005, dirt), at(0.004, hit_body(p, 165, 80, 0.08, 70), 0.25), at(0.003, floor, 0.35))
     if v == 2:
         ric = osc(dsp.glide(1500, 950, 0.16, 0.8), "sine") * env_exp(0.16, 0.05, 0.005) * 0.09
         out = mixdown(out, at(0.02, ric))
     return out
 
 
-@sfx("hit_laser", -26, 3, noisy=True)
+@sfx("hit_laser", -22.5, 3, noisy=True, ceiling=HIT_CEILING)
 def hit_laser(v, rng):
     p = pv(v)
     sizzle = bp(noise(0.12, rng), 1500, 6000) * (0.5 + 0.5 * np.abs(osc(90, "square", 0.12))) * env_exp(0.12, 0.04, 0.001)
     zap = osc(dsp.drop(950 * p, 380 * p, 0.08, 0.02), "sine") * env_exp(0.08, 0.03, 0.001) * 0.8
-    return mixdown(zap, at(0, sizzle, 0.6))
+    return mixdown(zap, at(0, sizzle, 0.6), at(0.003, hit_body(p, 150, 75, 0.08, 65), 0.25))
 
 
-@sfx("hit_heavy", -23, 3)
+@sfx("hit_heavy", -19.5, 3, ceiling=-6.0)
 def hit_heavy(v, rng):
     # A crushing blow: a low power snare and a floor tom over a heavy punch, with crunch.
     p = pv(v)
@@ -503,16 +531,17 @@ def hit_heavy(v, rng):
     snare = perc(SNARE, 124, KIT_POWER, pitch=0.62 * p, length=0.3)
     tom = perc(TOM_LF, 120, KIT_ORCH, pitch=0.9 * p, length=0.35)
     crunch = debris(rng, 0.2, 180, 700, 3500, 0.06, 0.01)
-    return room(mixdown(body, at(0, snare, 0.6), at(0, tom, 0.5), at(0, crack(rng, 0.06, 600, 2800, 0.016), 0.6), at(0.004, crunch, 0.35)), rng, 0.3, 0.15)
+    weight = thump(105 * p, 45, 0.28, 0.03, 0.09, 2.4, hp_hz=45)
+    return room(mixdown(body, at(0, snare, 0.6), at(0, tom, 0.5), at(0, crack(rng, 0.06, 600, 2800, 0.016), 0.6), at(0.004, crunch, 0.35), at(0.006, weight, 0.55)), rng, 0.3, 0.15)
 
 
-@sfx("hit_effective", -25, 3)
+@sfx("hit_effective", -21, 3, ceiling=HIT_CEILING)
 def hit_effective(v, rng):
     p = pv(v)
     ping = mixdown(at(0, fm_bell(1568 * p, 0.3, 2.0, 1.5, 0.09, 0.03), 0.5), at(0, blip(3136 * p, 0.15, 0.03), 0.15))
     punch = thump(190 * p, 95, 0.1, 0.01, 0.03, 2.2, hp_hz=120)
     rim = perc(SIDE_STICK, 116, pitch=p, length=0.08)
-    return mixdown(punch, at(0, rim, 0.5), at(0, crack(rng, 0.04, 900, 4000, 0.009), 0.6), at(0.004, ping))
+    return mixdown(punch, at(0, rim, 0.5), at(0, crack(rng, 0.04, 900, 4000, 0.009), 0.6), at(0.004, ping), at(0.004, hit_body(p), 0.4))
 
 
 def explosion(rng, size: float, p: float = 1.0):
@@ -545,24 +574,27 @@ def explosion_l(v, rng):
     return mixdown(first, at(0.12, second))
 
 
-@sfx("die_bio", -25, 3)
+@sfx("die_bio", -24, 3)
 def die_bio(v, rng):
-    # A cartoon "hup!" grunt that starts at full level, then a tom thud and a cloth fall.
+    # A cartoon "hup!" grunt that starts at full level, then a tom thud with some weight under it and a
+    # cloth fall (the landing itself is body_fall_s/m/l on the death's ground frame, A7).
     p = pv(v)
-    voice = hp(grunt(rng, [200, 175, 225][v % 3] * p, 0.15, ["u", "o", "a"][v % 3], 1.3), 250, 2)
+    voice = hp(grunt(rng, [200, 175, 225][v % 3] * p, 0.15, ["u", "o", "a"][v % 3], 1.3), 200, 2)
     tom = perc(TOM_HM, 104, KIT_ORCH, pitch=1.3 * p, length=0.22)
     thud = thump(170 * p, 95, 0.12, 0.02, 0.04, 1.8, hp_hz=130)
-    return mixdown(crack(rng, 0.025, 1000, 3800, 0.006), at(0, voice), at(0.09, tom, 0.45), at(0.09, thud, 0.15), at(0.08, cloth(rng, 0.16), 0.7))
+    weight = thump(125 * p, 60, 0.16, 0.02, 0.05, 2.2, hp_hz=60)
+    return mixdown(crack(rng, 0.025, 1000, 3800, 0.006), at(0, voice), at(0.09, tom, 0.45), at(0.09, thud, 0.15), at(0.092, weight, 0.28), at(0.08, cloth(rng, 0.16), 0.7))
 
 
-@sfx("die_mech", -24, 3)
+@sfx("die_mech", -23, 3)
 def die_mech(v, rng):
     p = pv(v)
     clank = mixdown(bell(520 * p, 0.35, 0.9, 0.08, ((1, 1), (2.43, 0.8), (3.9, 0.5), (5.8, 0.3))) * 0.6, at(0, perc(E_SNARE, 110, KIT_POWER, pitch=1.1 * p, length=0.2), 0.5))
     pop = hp(explosion(rng, 0.0, p * 1.1), 260, 2) * 0.7
     sparks = crackle(rng, 0.35, 400, 0.12) * 0.45
     down = osc(dsp.glide(420 * p, 70 * p, 0.35, 0.7), "tri") * env_exp(0.35, 0.18, 0.005) * 0.3
-    return mixdown(clank, at(0.02, pop), at(0.03, sparks), at(0.05, lp(down, 2500)))
+    weight = thump(115 * p, 52, 0.22, 0.025, 0.07, 2.4, hp_hz=50)
+    return mixdown(clank, at(0.02, pop), at(0.03, sparks), at(0.05, lp(down, 2500)), at(0.022, weight, 0.5))
 
 
 @sfx("prop_drop", -30, 3)
@@ -1731,3 +1763,4 @@ import sounds_cosmic_wave  # noqa: E402,F401
 import sounds_rarity_burst  # noqa: E402,F401
 import sounds_collapse  # noqa: E402,F401
 import sounds_victory  # noqa: E402,F401
+import sounds_combat  # noqa: E402,F401

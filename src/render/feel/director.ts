@@ -97,6 +97,21 @@ export class FeelDirector {
     this.shake.add(amount, dir);
   }
 
+  /** When the last directional kick started (real ms). */
+  private lastKickAt = -Infinity;
+
+  /**
+   * A directional screen kick (queue item 38 A3): `px` at shake 1 along `dir`. At most one per `gapMs`: inside the gap
+   * only a stronger kick replaces the one still running (a kill and its death on one tick kick once). The Shake slider
+   * and Reduce motion scale it like the shake (`Shake.multiplier`).
+   */
+  kick(px: number, dir: { x: number; y: number }, gapMs: number): void {
+    if (!(px > 0)) return;
+    if (this.nowMs - this.lastKickAt < gapMs && px <= this.shake.kickStrength) return;
+    this.lastKickAt = this.nowMs;
+    this.shake.kick(px, dir);
+  }
+
   screenFlash(ms: number, color: number, alpha: number): void {
     this.flash.trigger(ms, color, alpha);
   }

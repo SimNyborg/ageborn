@@ -2,7 +2,8 @@ import type { AudioService } from '@/contracts';
 import { describe, expect, it } from 'vitest';
 import { SFX_SAMPLE_RATE } from '../bank';
 import { MIX_TRIM } from '../mixer';
-import { createWebAudioService, WebAudioService, type WebAudioServiceOptions } from '../service';
+import { AMBIENCE_CURVE, AMBIENCE_STOP_S, AMBIENCE_TAU_S, AMBIENCE_TRIM_DB, createWebAudioService, stackLimit, WebAudioService, type WebAudioServiceOptions } from '../service';
+import { balancePan, BURST_MAX, BURST_SOFT, BURST_STEP_DB, BURST_WINDOW_MS, STACK_JITTER_S, STACK_SPREAD } from '../voices';
 import { music as seqMusic } from '../music';
 import { BOOT_GROUPS, SOUND_IDS, sounds, type SoundDef } from '../sounds';
 import { FakeBufferSource, FakeContext, type FakeGain, FakeOscillator, FakePanner } from './fakeContext';
@@ -94,7 +95,8 @@ describe('WebAudioService', () => {
     for (const s of ctx.effectSources()) {
       expect(s.playbackRate.value).toBeGreaterThanOrEqual(0.92);
       expect(s.playbackRate.value).toBeLessThanOrEqual(1.08);
-      const g = chain(s).gain.gain.value;
+      // the ZzFX design's own trim (A7: the hits' +3 dB) comes on top of the variation
+      const g = chain(s).gain.gain.value / 10 ** ((sounds.hit_slash!.gainDb ?? 0) / 20);
       expect(g).toBeGreaterThanOrEqual(10 ** (-3 / 20) - 1e-9);
       expect(g).toBeLessThanOrEqual(10 ** (3 / 20) + 1e-9);
     }
@@ -106,10 +108,31 @@ describe('WebAudioService', () => {
     const s = ctx.effectSources()[0]!;
     // random 0.5 means no random variation.
     expect(s.playbackRate.value).toBeCloseTo(1.2, 9);
-    expect(chain(s).gain.gain.value).toBeCloseTo(10 ** (-6 / 20), 9);
+    // The balance law (A7): the panner's equal-power value and a gain so the near side stays at the level.
+    const law = balancePan(-0.5);
+    expect(chain(s).gain.gain.value).toBeCloseTo(10 ** (-6 / 20) * law.gain, 9);
     const panner = ctx.of(FakePanner)[0]!;
-    expect(panner.pan.value).toBe(-0.5);
+    expect(panner.pan.value).toBeCloseTo(law.pan, 9);
     expect(panner.outputs[0]).toBe(svc.mixer!.input('sfx'));
+  });
+
+  it('pans with a balance law: centre as loud as unpanned, the near side kept, the far side fading (A7)', () => {
+    // Channel gains of a mono source through StereoPanner (equal power) after the law's gain.
+    const channels = (pan: number): [number, number] => {
+      const { pan: p, gain } = balancePan(pan);
+      const theta = ((p + 1) * Math.PI) / 4;
+      return [gain * Math.cos(theta), gain * Math.sin(theta)];
+    };
+    for (const [l, r] of [channels(1e-9), channels(-1e-9)]) {
+      expect(l).toBeCloseTo(1, 6);
+      expect(r).toBeCloseTo(1, 6);
+    }
+    expect(channels(0.6)[0]).toBeCloseTo(0.4, 9);
+    expect(channels(0.6)[1]).toBeCloseTo(1, 9);
+    expect(channels(-0.6)[0]).toBeCloseTo(1, 9);
+    expect(channels(-0.6)[1]).toBeCloseTo(0.4, 9);
+    expect(channels(1)[0]).toBeCloseTo(0, 9);
+    expect(balancePan(Number.NaN)).toEqual(balancePan(0));
   });
 
   it('keeps musical sounds in tune', async () => {
@@ -120,26 +143,131 @@ describe('WebAudioService', () => {
 
   it('limits a sound id to 4 voices and 40 ms retriggers (A13)', async () => {
     const { svc, ctx } = await unlocked();
-    svc.play('explosion_m');
-    svc.play('explosion_m');
+    // UI sounds never stack: a second start inside the gap is dropped.
+    svc.play('ui_click');
+    svc.play('ui_click');
     expect(svc.stats.dropped.gap).toBe(1);
+    svc.play('explosion_m');
     for (let k = 0; k < 4; k++) {
       ctx.advance(0.045);
       svc.play('explosion_m');
     }
     // The fifth voice stole the oldest.
     expect(svc.stats.stolen).toBe(1);
-    const sources = ctx.effectSources();
+    const sources = ctx.effectSources().filter((s) => chain(s).next === svc.mixer!.input('sfx'));
     expect(sources[0]!.stoppedAt).not.toBeNull();
     expect(svc.stats.voices).toBe(4);
   });
 
+  it('plays two or three identical world hits on one frame as a stack: later, at another pitch, softer (A7)', async () => {
+    const { svc, ctx } = await unlocked();
+    ctx.advance(1);
+    for (let k = 0; k < 4; k++) svc.play('hit_blunt');
+    const [a, b, c, ...rest] = ctx.effectSources();
+    expect(rest).toHaveLength(0);
+    expect(svc.stats.stacked).toBe(2);
+    expect(svc.stats.dropped.gap).toBe(1);
+    // random 0.5: no per-play variation, so the spread is exactly STACK_SPREAD plus half the jitter.
+    expect(a!.startedAt).toBe(1);
+    expect(b!.startedAt).toBeCloseTo(1 + STACK_SPREAD[1]!.delayS + STACK_JITTER_S / 2, 9);
+    expect(c!.startedAt).toBeCloseTo(1 + STACK_SPREAD[2]!.delayS + STACK_JITTER_S / 2, 9);
+    expect([a, b, c].map((s) => s!.playbackRate.value)).toEqual([1, STACK_SPREAD[1]!.rate, STACK_SPREAD[2]!.rate]);
+    expect(chain(b!).gain.gain.value).toBeCloseTo(10 ** (STACK_SPREAD[1]!.gainDb / 20) * 10 ** ((sounds.hit_blunt!.gainDb ?? 0) / 20), 9);
+    expect(chain(c!).gain.gain.value).toBeCloseTo(10 ** (STACK_SPREAD[2]!.gainDb / 20) * 10 ** ((sounds.hit_blunt!.gainDb ?? 0) / 20), 9);
+    // The next frame is past the stack's window but inside the gap: dropped as before.
+    ctx.advance(0.025);
+    svc.play('hit_blunt');
+    expect(svc.stats.dropped.gap).toBe(2);
+    ctx.advance(0.02);
+    svc.play('hit_blunt');
+    expect(ctx.effectSources()).toHaveLength(4);
+  });
+
+  it('never stacks sounds that must hold their pitch, nor UI sounds', async () => {
+    const { svc, ctx } = await unlocked();
+    svc.play('rarity_epic');
+    svc.play('rarity_epic');
+    svc.play('coin_gain');
+    svc.play('coin_gain');
+    svc.play('ui_tab');
+    svc.play('ui_tab');
+    expect(ctx.effectSources()).toHaveLength(3);
+    expect(svc.stats.stacked).toBe(0);
+    expect(stackLimit(sounds.hit_slash!)).toBe(3);
+    expect(stackLimit(sounds.ui_click!)).toBe(1);
+    expect(stackLimit(sounds.evolve_riser!)).toBe(1);
+  });
+
+  it('softens a busy burst of world effects and caps it, except important cues (A7)', async () => {
+    const { svc, ctx } = await unlocked();
+    const ids = ['hit_blunt', 'hit_slash', 'hit_pierce', 'hit_bullet', 'hit_laser', 'hit_heavy', 'hit_effective', 'explosion_s', 'die_bio', 'die_mech', 'swing_whoosh', 'spawn_pop', 'base_hit'];
+    for (const id of ids) svc.play(id);
+    const sources = ctx.effectSources();
+    expect(sources).toHaveLength(BURST_MAX);
+    expect(svc.stats.dropped.burst).toBe(ids.length - BURST_MAX);
+    // Each start past BURST_SOFT is one more BURST_STEP_DB softer (the ZzFX trims on top).
+    sources.forEach((s, k) => {
+      const want = (k >= BURST_SOFT ? BURST_STEP_DB * (k - BURST_SOFT + 1) : 0) + (sounds[ids[k]!]!.gainDb ?? 0);
+      expect(20 * Math.log10(chain(s).gain.gain.value), ids[k]).toBeCloseTo(want, 6);
+    });
+    // UI sounds are not world effects; a priority-2 cue passes a full burst.
+    svc.play('ui_click');
+    svc.play('base_crumble', { priority: 2 });
+    expect(ctx.effectSources()).toHaveLength(BURST_MAX + 2);
+    // The burst ends with its window.
+    ctx.advance(BURST_WINDOW_MS / 1000 + 0.01);
+    svc.play('hit_blunt');
+    expect(20 * Math.log10(chain(ctx.effectSources().at(-1)!).gain.gain.value)).toBeCloseTo(sounds.hit_blunt!.gainDb ?? 0, 6);
+  });
+
+  it('plays the battle ambience loop at the level the battle view sets, and stops it after silence (A7)', async () => {
+    const { svc, ctx } = make();
+    svc.setBattleAmbience(1);
+    expect(svc.ambiencePlaying).toBe(false);
+    await svc.unlock();
+    svc.setBattleAmbience(0.5);
+    const loops = ctx.of(FakeBufferSource).filter((s) => s.loop);
+    expect(loops).toHaveLength(1);
+    const loop = loops[0]!;
+    // No files here: the ZzFX fallback's first variant loops whole.
+    expect(loop.loopStart).toBe(0);
+    expect(loop.loopEnd).toBeCloseTo(loop.buffer!.duration, 9);
+    const gain = loop.outputs[0] as FakeGain;
+    expect(gain.outputs[0]).toBe(svc.mixer!.input('sfx'));
+    expect(gain.gain.events.at(-1)!.value).toBeCloseTo(10 ** (AMBIENCE_TRIM_DB / 20) * 0.5 ** AMBIENCE_CURVE, 9);
+    expect(gain.gain.events.at(-1)).toMatchObject({ kind: 'target', tau: AMBIENCE_TAU_S });
+    // Updates glide on the same loop; it is not a voice and never counts against the caps.
+    svc.setBattleAmbience(0.8);
+    expect(ctx.of(FakeBufferSource).filter((s) => s.loop)).toHaveLength(1);
+    expect(gain.gain.events.at(-1)!.value).toBeCloseTo(10 ** (AMBIENCE_TRIM_DB / 20) * 0.8 ** AMBIENCE_CURVE, 9);
+    expect(svc.stats.voices).toBe(0);
+    // Level 0 fades it out; it stops once it has been silent long enough.
+    svc.setBattleAmbience(0);
+    expect(gain.gain.events.at(-1)).toMatchObject({ kind: 'target', value: 0 });
+    ctx.advance(AMBIENCE_STOP_S - 0.5);
+    svc.tick();
+    expect(svc.ambiencePlaying).toBe(true);
+    svc.setBattleAmbience(0);
+    ctx.advance(1);
+    svc.tick();
+    expect(svc.ambiencePlaying).toBe(false);
+    expect(loop.stoppedAt).not.toBeNull();
+    expect(gain.disconnected).toBe(true);
+    // A new level starts a new loop.
+    svc.setBattleAmbience(0.3);
+    expect(svc.ambiencePlaying).toBe(true);
+    svc.setBattleAmbience(Number.NaN);
+    expect(svc.battleAmbience).toBe(0);
+    svc.dispose();
+  });
+
   it('keeps the 40 ms gap for player-caused sounds too; priority wins the voice caps', async () => {
     const { svc, ctx } = await unlocked();
-    svc.play('explosion_m', { priority: 1 });
-    svc.play('explosion_m', { priority: 2 });
+    svc.play('ui_tab', { priority: 1 });
+    svc.play('ui_tab', { priority: 2 });
     expect(ctx.effectSources()).toHaveLength(1);
     expect(svc.stats.dropped.gap).toBe(1);
+    svc.play('explosion_m', { priority: 1 });
     // Player voices fill the id cap: an opponent's retrigger cannot steal one, a player's can.
     for (let k = 0; k < 3; k++) {
       ctx.advance(0.041);
@@ -150,7 +278,7 @@ describe('WebAudioService', () => {
     expect(svc.stats.dropped.idCap).toBe(1);
     svc.play('explosion_m', { priority: 1 });
     expect(svc.stats.stolen).toBe(1);
-    expect(ctx.effectSources()[0]!.stoppedAt).not.toBeNull();
+    expect(ctx.effectSources()[1]!.stoppedAt).not.toBeNull();
     expect(svc.stats.voices).toBe(4);
   });
 
@@ -217,7 +345,8 @@ describe('WebAudioService', () => {
     expect(ev.some((e) => e.kind === 'linear' && Math.abs((e.value ?? 0) - 10 ** (-6 / 20)) < 1e-9)).toBe(true);
   });
 
-  it('renders boot groups up front and the rest lazily in idle slices', () => {
+  // Renders all 405 ZzFX designs (about 4 s on a busy 4-core container), so it gets more than the default 5 s.
+  it('renders boot groups up front and the rest lazily in idle slices', { timeout: 20_000 }, () => {
     const queue: (() => void)[] = [];
     const { service, boot } = createWebAudioService({ createContext: () => null, scheduler: 'manual', idle: (t) => queue.push(t), sfxFiles: null });
     // Boot renders the boot groups except their lazy content-wave sounds (B16 budget); those join the idle queue.
@@ -294,7 +423,7 @@ describe('WebAudioService', () => {
     expect(() => svc.play('hit_blunt', { pitchBp: Number.NaN, volumeDb: Number.POSITIVE_INFINITY, pan: Number.NaN })).not.toThrow();
     const s = ctx.effectSources()[0]!;
     expect(s.playbackRate.value).toBe(1);
-    expect(chain(s).gain.gain.value).toBe(1);
+    expect(chain(s).gain.gain.value).toBeCloseTo(10 ** ((sounds.hit_blunt!.gainDb ?? 0) / 20), 12);
     expect(ctx.of(FakePanner)).toHaveLength(0);
     expect(() => {
       svc.music.setCue('music.stone', { fadeMs: Number.NaN });

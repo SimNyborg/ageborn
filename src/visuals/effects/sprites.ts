@@ -8,6 +8,8 @@
 import { part } from '../parts/registry';
 // The power rework's props and energies (registered alongside these parts).
 import './powerSprites';
+// Queue item 38: the bits a fallen soldier leaves, and the stuck arrow and javelin shafts.
+import './combatSprites';
 import { arcBand, blob, circle, ellipse, join, limb, ngon, poly, rect, rotate, rrect, star, wedge } from '../svg';
 
 /** Effect zone colours (resolved through this palette for every effect and projectile). */

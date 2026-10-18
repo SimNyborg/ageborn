@@ -132,7 +132,7 @@ describe('BattleView on the fake stream (C2/WP5 Phase 1)', () => {
     expect(art).toContain('createProjectile');
     expect(art).toContain('createTurret');
     expect(s.art.calls.filter((c) => c.method === 'createEffect').map((c) => c.args[0])).toEqual(
-      expect.arrayContaining(['fx.spark_blunt', 'fx.dust_poof', 'fx.ko_stars', 'fx.evolve_pillar', 'fx.telegraph_zone', 'fx.aurochs', 'fx.muzzle', 'fx.overdrive_frame']),
+      expect.arrayContaining(['fx.contact_spark', 'fx.dust_poof', 'fx.ko_stars', 'fx.evolve_pillar', 'fx.telegraph_zone', 'fx.aurochs', 'fx.muzzle', 'fx.overdrive_frame']),
     );
     expect(s.seen.map((e) => e.t)).toEqual(expect.arrayContaining(['ascending', 'evolved', 'emote', 'matchEnded']));
     // The retreat win cheers the winner; Vanguard footmen were spawned by the evolve.
@@ -155,7 +155,8 @@ describe('BattleView on the fake stream (C2/WP5 Phase 1)', () => {
     s.view.onEvents([{ tick: 5, e: 'attackStarted', id: 2, targetId: 1, windupTicks: 14, attackIndex: 0 }]);
     expect(played).toContainEqual({ clip: 'attack', o: { impactAtMs: 700 } });
     s.view.onEvents([cannedBattleEvents[5] as SimEvent]);
-    expect(s.art.unitViews[0]?.flashMs).toBe(60);
+    // the flash grows with the hit's tier (queue item 38 A3): 60 ms light, 70 medium, 80 heavy, 90 the kill
+    expect([60, 70, 80, 90]).toContain(s.art.unitViews[0]?.flashMs);
   });
 
   it('holds the sim during global freezes and respects the 150 ms cap', () => {

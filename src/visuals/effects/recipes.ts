@@ -13,6 +13,9 @@
  * are screen or UI cues and exempt (`exemptColorRule`, docs/decisions.md WP4).
  */
 
+import type { Container, Sprite } from 'pixi.js';
+import type { CosmeticRng } from '@/core/rng';
+import { combatFxRecipes, combatVariantRecipes } from './combat';
 import { fortFxRecipes } from './fortRecipes';
 import { mvpFxRecipes } from './mvpRecipes';
 import { powerFxRecipes } from './powerRecipes';
@@ -105,9 +108,38 @@ export interface ChainSpec {
   refreshMs: number;
 }
 
+/**
+ * What a custom effect player gets from the procedural effect view (queue item 38's combat effects, `combat.ts`):
+ * the effect's layer at the emit point (scaled by `o.scale`, mirrored by nothing: the player reads `o.dir`), baked
+ * parts, the view's seeded cosmetic RNG, the play's options, and a way to play a plain recipe inside it.
+ */
+export interface CustomFxContext {
+  readonly layer: Container;
+  /** A baked effect part, anchored at its origin (the parts of `sprites.ts` and `combatSprites.ts`). */
+  sprite(partId: string): Sprite;
+  readonly rng: CosmeticRng;
+  /** The play's options (numbers: `createEffect`'s and `playAt`'s, merged). */
+  readonly o: Readonly<Record<string, number>>;
+  teamColor(side: number): number;
+  /** Plays a plain recipe inside this effect, at layer position (x, y); `o` merges over the play's options. */
+  play(recipe: FxRecipe, x: number, y: number, o?: Record<string, number>): void;
+}
+
+/** A custom effect player: updated every frame until done, destroyed when the view restarts or goes. */
+export interface CustomFx {
+  update(dtMs: number): void;
+  readonly done: boolean;
+  destroy(): void;
+}
+
 export interface FxRecipe {
   id: string;
   durationMs: number;
+  /**
+   * A custom player instead of the recipe's sprites and particles (the combat effects pick a variant by their
+   * options, keep bits lying on the ground and cap them across the lane). `durationMs` stays the nominal length.
+   */
+  custom?: (ctx: CustomFxContext) => CustomFx;
   sprites?: readonly SpriteSpec[];
   particles?: readonly ParticleSpec[];
   fall?: FallSpec;
@@ -899,9 +931,16 @@ export const FX_RECIPES: readonly FxRecipe[] = [
   ...fortFxRecipes({ flash, ring, smoke, sparks, dust, chunks, bloom, scorch }),
   // MVP pass: stance cues, slow and snare marks, Brace, research done, levy pennant
   ...mvpFxRecipes({ flash, ring, smoke, sparks, dust, chunks, bloom, scorch }),
+  // Queue item 38: contact sparks, landing and clash dust, bits, stuck shafts, ground glow
+  ...combatFxRecipes({ flash, ring, smoke, sparks, dust, chunks, bloom, scorch }),
 ];
 
 export const FX_RECIPE_BY_ID: ReadonlyMap<string, FxRecipe> = new Map(FX_RECIPES.map((r) => [r.id, r]));
+
+/** Every concrete variant the combat effects play (`combat.ts`; the colour-rule test runs over them). */
+export function combatFxVariants(): FxRecipe[] {
+  return combatVariantRecipes({ flash, ring, smoke, sparks, dust, chunks, bloom, scorch });
+}
 
 // ---------------------------------------------------------------------------------------------
 // Projectile recipes (A14.1 proj.*)
