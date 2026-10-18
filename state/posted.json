@@ -162,6 +162,16 @@
       "hook_type": "story",
       "experiment": "devlog",
       "note": "owner request 2026-10-18"
+    },
+    {
+      "id": "18116566568087286",
+      "permalink": "https://www.instagram.com/stories/ageborn_game/4010704198354500179",
+      "timestamp": "2026-10-18T14:20:23+0000",
+      "name": "story-r11-who-wins",
+      "kind": "story",
+      "pillar": "battle",
+      "hook": "teaser: 1 Land Dreadnought vs 6 Riveters, reply machine or wrench",
+      "trial": false
     }
   ]
 }
