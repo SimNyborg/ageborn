@@ -141,13 +141,15 @@ export function LiveControls(p: { c: HudCtx; live: LiveHud; open: LiveOpen; setO
   };
   const ended = c.m.phase === 'ended' || tempo.ended;
   const tapTempo = (): void => {
-    // the catch-up's cue covers the lane meanwhile; the opponent waits too
-    if (c.readOnly || ended || live.catchUp.peek() !== null) return;
+    if (c.readOnly || ended) return;
     const pending = tempo.pending;
     // their card is up and says what to do: the press is denied without a tag behind the card (review O nit 4)
     if (pending?.by === 'foe') return c.act({ k: 'deny', target: 'tempo' });
     if (pending?.by === 'me') return refuse(c.t('hud.live.waiting', { name: live.foeName }));
     if (now < tempo.readyAt) return refuse(c.t('hud.live.cooldown', { s: secs(tempo.readyAt - now) }));
+    // while the battle catches up the opponent waits too, so there is nothing to ask for yet: the press is denied
+    // (a slow frame starts a short catch-up with no cue, and a tap then must not vanish without a reaction)
+    if (live.catchUp.peek() !== null) return c.act({ k: 'deny', target: 'tempo' });
     c.audio?.play('ui_click');
     p.setOpen(p.open === 'tempo' ? null : 'tempo');
   };
@@ -162,7 +164,7 @@ export function LiveControls(p: { c: HudCtx; live: LiveHud; open: LiveOpen; setO
       // their proposal arrived while the speeds were open: their card says it
       if (live.tempo.peek().pending?.by === 'foe') c.act({ k: 'deny', target: 'tempo' });
       else refuse(c.t('hud.live.waiting', { name: live.foeName }));
-    }
+    } else if (why === 'busy') c.act({ k: 'deny', target: 'tempo' });
   };
   // an ended proposal sounds once: agreed (a bright unlock), said no or ran out (a soft toggle)
   const lastKey = tempo.last ? `${tempo.last.by}${tempo.last.id}${tempo.last.result}` : '';

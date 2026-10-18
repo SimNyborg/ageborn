@@ -232,22 +232,36 @@ describe('live tempo control (queue item 34)', () => {
     expect(text(q('[data-testid="hud-tempo-tag"]')!)).toBe('hud.live.waiting(name=LadyWaffle)');
   });
 
-  it('does nothing while the battle catches up (its cue covers the lane; the opponent waits too)', () => {
+  it('while the battle catches up a tap is denied (the opponent waits too), never lost without a reaction', () => {
     const live = fakeLive();
     live.catchSig.value = { behindMs: 30_000, doneBp: 1000 };
     const { open, draw, c } = mountControls(live);
     tap(q('[data-testid="hud-tempo"]'));
     draw();
     expect(open.v).toBeNull();
-    expect(c.acts).toEqual([]);
+    expect(c.acts).toEqual([{ k: 'deny', target: 'tempo' }]);
     expect(q('[data-testid="hud-tempo-tag"]')).toBeNull();
-    // a pick the layer refuses as busy says nothing either
-    live.catchSig.value = null;
+    // the cooldown is yours alone: it still says when you may ask again, catch-up or not (a slow frame starts a
+    // short catch-up with no cue)
+    live.setTempo({ readyAt: live.clock + 9000 });
+    draw();
     tap(q('[data-testid="hud-tempo"]'));
     draw();
+    expect(q('[data-testid="hud-tempo-tag"]')?.getAttribute('data-tone')).toBe('deny');
+    expect(open.v).toBeNull();
+    // a pick the layer refuses as busy (the speeds were open as a catch-up began) is denied, with no tag
+    vi.advanceTimersByTime(2000);
+    live.setTempo({ readyAt: 0 });
+    live.catchSig.value = null;
+    draw();
+    tap(q('[data-testid="hud-tempo"]'));
+    draw();
+    expect(open.v).toBe('tempo');
+    c.acts.length = 0;
     live.refusal = 'busy';
     tap(q('[data-testid="hud-tempo-2"]'));
     draw();
+    expect(c.acts).toEqual([{ k: 'deny', target: 'tempo' }]);
     expect(q('[data-testid="hud-tempo-tag"]')).toBeNull();
   });
 

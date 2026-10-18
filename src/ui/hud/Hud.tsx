@@ -333,9 +333,12 @@ export function Hud(props: HudProps) {
           else p.onPause?.();
           return;
         case 'speed':
-          // nor sets its own speed: F opens the tempo proposal (not while it catches up: the opponent waits too)
+          // nor sets its own speed: F opens the tempo proposal (while it catches up the opponent waits too, so F is
+          // denied then, as a tap on the button is)
           if (p.live) {
-            if (cur.phase !== 'ended' && p.live.catchUp.peek() === null) setLiveOpen((o) => (o === 'tempo' ? null : 'tempo'));
+            if (cur.phase === 'ended') return;
+            if (p.live.catchUp.peek() === null) setLiveOpen((o) => (o === 'tempo' ? null : 'tempo'));
+            else flash('tempo');
           } else p.onSpeed?.(nextSpeed(cur.speed));
           return;
         case 'deny':
