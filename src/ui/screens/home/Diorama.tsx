@@ -30,11 +30,12 @@
 import type { AgeId, CardId, CosmeticKey, Side, SkinId, TeamPreset } from '@/contracts';
 import type { ArenaId } from '@/content/types';
 import { fnv1a32, mulberry32 } from '@/core';
+import { signal } from '@preact/signals';
 import type { ComponentChildren } from 'preact';
-import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useMemo, useRef } from 'preact/hooks';
 import { useCosmeticImage } from '../../components/cosmeticArt';
 import { SvgPennant } from '../../components/SvgPennant';
-import { usePortrait } from '../../components/kit';
+import { useKit, type PortraitFn, type PortraitRequest } from '../../components/kit';
 import { ink, light, shade } from '../../components/tone';
 import { useUi } from '../context';
 import { boxKey, troopBoxes, useHomeStage, type HomeStagePole, type HomeStageRequest, type HomeStageTroop } from './homeStage';
@@ -518,26 +519,69 @@ const BELOW_FEET_LU = 4;
 
 /** The strips' cell size (px): crisp on a large high-density screen, light on a phone. */
 const STRIP_PX = typeof window !== 'undefined' && (window.innerWidth || 0) * (window.devicePixelRatio || 1) >= 2200 ? 256 : 160;
-/** The idle clip's pace on the strip (ms a frame; the battle sheets' idle is about 115 ms a frame). */
+/** The idle clip's pace when a strip does not say its length (ms a frame; the battle sheets' idle is 115-155 ms a frame). */
 const IDLE_FRAME_MS = 115;
+/**
+ * The live island's size rule, mirrored (the UI may not import render; `render/showcase/home.ts` `MAX_TROOP_LU`
+ * and its troop `scale`, held together by a test): a troop is drawn at most this many lu tall to its head.
+ */
+export const MAX_TROOP_LU = 96;
 
-/** A strip, its frame count and where its frames' drawn pixels lie together (in one cell's px). */
+/** The live island's drawn size of a unit whose head anchor stands `headLu` above its feet (render's troop `scale`). */
+export function liveTroopScale(headLu: number): number {
+  return Math.min(1, MAX_TROOP_LU / Math.max(20, headLu));
+}
+
+/**
+ * A strip, its frame count and clip length, where its feet are and how large it stands (from the provider's
+ * strip layout), and where its frames' drawn pixels lie together (in one cell's px).
+ */
 interface IdleStrip {
   url: string;
   frames: number;
   cell: number;
+  /** The clip's length (ms); 0 plays `frames x IDLE_FRAME_MS`. */
+  ms: number;
+  /** The feet in a cell, cell px per lu and the head's height (lu); null for a strip without a layout (it is measured). */
+  feet: { x: number; y: number; pxPerLu: number; headLu: number } | null;
   x0: number;
   x1: number;
   y0: number;
   y1: number;
 }
-const strips = new Map<string, IdleStrip | null>();
 
-/** Reads a strip's frame count and the box its frames' drawn pixels fill together (once per strip). */
+/** The layout the provider answers `stripinfo:<clip>:<card>` with (visuals' `StripInfo`, a JSON data URL). */
+export interface StripLayoutInfo {
+  frames: number;
+  cell: number;
+  ms: number;
+  feet: [number, number];
+  pxPerLu: number;
+  headLu: number;
+  box: [number, number, number, number];
+}
+
+const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+
+/** Reads a strip layout from its JSON data URL; null when absent or malformed (the strip is then measured). */
+export function parseStripInfo(s: string | null | undefined): StripLayoutInfo | null {
+  const head = 'data:application/json,';
+  if (!s || !s.startsWith(head)) return null;
+  try {
+    const v = JSON.parse(decodeURIComponent(s.slice(head.length))) as Partial<StripLayoutInfo> | null;
+    if (!v || !finite(v.frames) || v.frames < 1 || !finite(v.cell) || v.cell < 8 || !finite(v.pxPerLu) || v.pxPerLu <= 0 || !finite(v.headLu)) return null;
+    if (!Array.isArray(v.feet) || v.feet.length !== 2 || !v.feet.every(finite) || !Array.isArray(v.box) || v.box.length !== 4 || !v.box.every(finite)) return null;
+    return { frames: Math.round(v.frames), cell: v.cell, ms: finite(v.ms) && v.ms > 0 ? v.ms : 0, feet: [v.feet[0]!, v.feet[1]!], pxPerLu: v.pxPerLu, headLu: v.headLu, box: [v.box[0]!, v.box[1]!, v.box[2]!, v.box[3]!] };
+  } catch {
+    return null;
+  }
+}
+
+/** Reads a strip's frame count and the box its frames' drawn pixels fill together (a strip without a layout). */
 function measureStrip(url: string, im: HTMLImageElement): IdleStrip | null {
   const cell = Math.max(1, im.naturalHeight);
   const frames = Math.max(1, Math.round(im.naturalWidth / cell));
-  const box = { url, frames, cell, x0: 0, x1: cell - 1, y0: 0, y1: cell - 1 };
+  const box = { url, frames, cell, ms: 0, feet: null, x0: 0, x1: cell - 1, y0: 0, y1: cell - 1 };
   try {
     const c = document.createElement('canvas');
     c.width = frames * cell;
@@ -566,67 +610,127 @@ function measureStrip(url: string, im: HTMLImageElement): IdleStrip | null {
   }
 }
 
-/** The strips this page has already drawn (`card|side`): on a return to Home they show at once. */
-const shown = new Set<string>();
-/** The first strips wait for the island's entrance (`hd-in`, 700 ms) and an idle moment: Home's first paint and boot never carry them. */
-const STRIP_AFTER_MS = 700;
-
-/**
- * Whether the provider's strips draw a troop's skin. Not yet (docs/requests/motion-m-skinned-strips.md): a
- * skinned troop's still is the card's own look, fitted to the card's own box (a skin drawn as the puppet has
- * other proportions, so its box would misplace the card's look), and it changes outfit when the live layer
- * takes over. Once they do, set this: the still then asks for the skin and fits it to the skinned box.
- */
-const STRIPS_DRAW_SKINS = false;
-
-/**
- * A troop's idle clip from its battle sheet as a sprite strip in its side's team colour (the provider's
- * `strip:idle:<card>`, as the War Path's bearer plays its clip), with `skin` its skin (`STRIPS_DRAW_SKINS`),
- * measured. Null while waiting or loading.
- */
-function useIdleStrip(card: CardId, side: Side, skin: SkinId | null): IdleStrip | null {
-  const key = `${card}|${side}|${skin ?? ''}`;
-  const [go, setGo] = useState(() => shown.has(key));
-  useEffect(() => {
-    if (go) return undefined;
-    let idle: number | null = null;
-    const w = typeof window !== 'undefined' ? (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (h: number) => void }) : null;
-    const timer = setTimeout(() => {
-      if (w?.requestIdleCallback) idle = w.requestIdleCallback(() => setGo(true), { timeout: 800 });
-      else setGo(true);
-    }, STRIP_AFTER_MS);
-    return () => {
-      clearTimeout(timer);
-      if (idle !== null) w?.cancelIdleCallback?.(idle);
-    };
-  }, [go]);
-  const url = usePortrait(go ? (`strip:idle:${card}` as CardId) : null, { size: STRIP_PX, plate: false, ...(side ? { side: 1 as const } : {}), ...(skin ? { skin } : {}) });
-  const [strip, setStrip] = useState<IdleStrip | null>(() => (url ? (strips.get(url) ?? null) : null));
-  useEffect(() => {
-    if (!url) {
-      setStrip(null);
-      return undefined;
-    }
-    if (strips.has(url)) {
-      shown.add(key);
-      setStrip(strips.get(url) ?? null);
-      return undefined;
-    }
-    if (typeof Image === 'undefined') return undefined;
-    let live = true;
+function measureUrl(url: string): Promise<IdleStrip | null> {
+  if (typeof Image === 'undefined') return Promise.resolve(null);
+  return new Promise((resolve) => {
     const im = new Image();
-    im.onload = () => {
-      const m = measureStrip(url, im);
-      strips.set(url, m);
-      shown.add(key);
-      if (live) setStrip(m);
-    };
+    im.onload = () => resolve(measureStrip(url, im));
+    im.onerror = () => resolve(null);
     im.src = url;
-    return () => {
-      live = false;
-    };
-  }, [url]);
-  return strip;
+  });
+}
+
+/**
+ * Whether the provider's strips draw a troop's skin: they do (docs/requests/motion-m-skinned-strips.md: its own
+ * sheet, or the skinned puppet as the lane draws it), so the still asks for the troop's skin and a skinned troop
+ * keeps its outfit when the live layer takes over.
+ */
+const STRIPS_DRAW_SKINS = true;
+
+/** The idle strips this page has loaded (null: the troop has none), by card, side, skin and cell size: a return to Home shows them at once. */
+const idleStrips = new Map<string, IdleStrip | null>();
+const idleLoads = new Map<string, Promise<IdleStrip | null>>();
+/** Counts the idle strips that came in (Diorama re-reads which of its troops are still on their way). */
+const idleSettled = signal(0);
+/**
+ * The troops shown so far (by `stripKey`): a troop whose strip comes in is placed (and its strip decoded) at
+ * opacity 0 and marked shown in the next animation frame, so its fade-in starts in a frame that is painted and runs
+ * on the compositor; marked in the same task, a long task before the next paint (Home's first work) used up the
+ * whole fade and the troop popped in at full opacity.
+ */
+const shownStrips = new Set<string>();
+const shownTick = signal(0);
+const pendingShow = new Set<string>();
+
+function showNextFrame(key: string): void {
+  if (pendingShow.has(key)) return;
+  pendingShow.add(key);
+  const go = (): void => {
+    pendingShow.delete(key);
+    shownStrips.add(key);
+    shownTick.value++;
+  };
+  if (typeof requestAnimationFrame === 'function') requestAnimationFrame(go);
+  else setTimeout(go, 0);
+}
+
+const stripKey = (card: CardId, side: Side, skin: SkinId | null): string => `${card}|${side}|${skin ?? ''}|${STRIP_PX}`;
+
+/**
+ * A troop's idle clip from its battle sheet (or its skin's drawing) as a sprite strip in its side's team colour,
+ * with its layout: the provider's `strip:idle:<card>` and `stripinfo:idle:<card>`. The provider keeps strips
+ * between visits and draws new ones off the main thread, so they are asked for at once (no wait for Home to
+ * settle): a returning player's troops stand with the island's entrance. A strip without a layout is measured.
+ */
+function loadIdleStrip(portrait: PortraitFn, card: CardId, side: Side, skin: SkinId | null): Promise<IdleStrip | null> {
+  const key = stripKey(card, side, skin);
+  const known = idleStrips.get(key);
+  if (known !== undefined) return Promise.resolve(known);
+  const busy = idleLoads.get(key);
+  if (busy) return busy;
+  const req: PortraitRequest = { card: `strip:idle:${card}` as CardId, size: STRIP_PX, plate: false, ...(side ? { side: 1 as const } : {}), ...(skin ? { skin } : {}) };
+  const job = Promise.all([portrait(req), portrait({ ...req, card: `stripinfo:idle:${card}` as CardId }).catch(() => '')])
+    .then(async ([url, info]): Promise<IdleStrip | null> => {
+      if (!url) return null;
+      const l = parseStripInfo(info);
+      if (!l) return measureUrl(url);
+      return { url, frames: l.frames, cell: l.cell, ms: l.ms, feet: { x: l.feet[0], y: l.feet[1], pxPerLu: l.pxPerLu, headLu: l.headLu }, x0: l.box[0], x1: l.box[1], y0: l.box[2], y1: l.box[3] };
+    })
+    .catch(() => null)
+    .then((s) => {
+      idleStrips.set(key, s);
+      idleLoads.delete(key);
+      idleSettled.value++;
+      return s;
+    });
+  idleLoads.set(key, job);
+  return job;
+}
+
+/**
+ * A troop's idle strip: undefined while it is on its way, null when the troop has none. Asked for in the render
+ * (idempotent; an effect would ask only after Home's first paint) and read from the page's strips on every render,
+ * re-rendering as soon as a strip comes in (`idleSettled`), so a returning player's troops (whose strips the strip
+ * worker found on the device as the visuals loaded) stand in Home's first frames, before its other first work.
+ */
+function useIdleStrip(card: CardId, side: Side, skin: SkinId | null): IdleStrip | null | undefined {
+  const { portrait } = useKit();
+  if (!portrait) return null;
+  void idleSettled.value;
+  const key = stripKey(card, side, skin);
+  const known = idleStrips.get(key);
+  if (known === undefined && !idleLoads.has(key)) void loadIdleStrip(portrait, card, side, skin);
+  return known;
+}
+
+/**
+ * Whether any of these troops is not standing yet: its strip on its way, or placed and waiting for its frame to
+ * fade in (the live island's cold start waits for them, so its long task never holds a troop back).
+ */
+function useStillPending(troops: readonly { card: CardId; side: Side; skin: SkinId | null }[]): boolean {
+  const { portrait } = useKit();
+  void idleSettled.value;
+  void shownTick.value;
+  return (
+    !!portrait &&
+    troops.some((t) => {
+      const key = stripKey(t.card, t.side, t.skin);
+      const s = idleStrips.get(key);
+      return s === undefined || (s !== null && !shownStrips.has(key));
+    })
+  );
+}
+
+/**
+ * Where a troop's strip cell goes on the island picture from the strip's own layout: its feet on the troop's
+ * spot, at the size the live layer draws it (cell px per lu, times the live island's troop scale for the unit's
+ * head height and its units per lu), so the live layer takes over in place from the very first visit.
+ */
+function feetPlacement(strip: IdleStrip, feet: NonNullable<IdleStrip['feet']>, side: Side, spot: { x: number; y: number }, feetY: number): { left: number; top: number; cell: number; feetX: number } {
+  // island units per strip px; the opponent's strip is mirrored (it faces left)
+  const per = (LIVE_ISLAND.unitsPerLu * liveTroopScale(feet.headLu)) / feet.pxPerLu;
+  const fx = side === 0 ? feet.x : strip.cell - feet.x;
+  return { left: spot.x - fx * per, top: feetY - feet.y * per, cell: strip.cell * per, feetX: fx * per };
 }
 
 /**
@@ -661,9 +765,11 @@ function stillPlacement(strip: IdleStrip, box: { front: number; back: number; to
 
 /**
  * One troop on the still island, exactly where and as large as the live layer draws it (review M S3): its
- * battle sheet's idle clip as a strip (`useIdleStrip`), fitted to the box the live island measured for the
- * card and skin (`troopBoxes`). The opponent faces left. Under Reduce motion the strip holds its first frame.
- * It fades in once its strip is in.
+ * battle sheet's idle clip (or its skin's drawing) as a strip (`useIdleStrip`), its feet on the troop's spot at
+ * the live layer's size (`feetPlacement`; a strip without a layout is fitted to the box the live island measured
+ * for the card and skin, `troopBoxes`), playing at the clip's own pace. The opponent faces left. Under Reduce
+ * motion the strip holds its first frame. It fades in (with a slight settle) from the animation frame after its strip
+ * is in (`showNextFrame`), never pops.
  */
 function StillTroop(p: { card: CardId; side: Side; slot: 0 | 1; skin?: SkinId | null; size?: string; air?: boolean }) {
   // the look the still can draw: the skin once the strips draw skins, else the card's own
@@ -675,17 +781,22 @@ function StillTroop(p: { card: CardId; side: Side; slot: 0 | 1; skin?: SkinId | 
   const feet = spot.y - (p.air ? ISLAND_ALTITUDE_LU * u : 0);
   const pct = (v: number, of: number): string => `${((v / of) * 100).toFixed(3)}%`;
   const cls = `hd__unit hd__unit--${p.side ? 'foe' : 'me'} hd__unit--s${p.slot}`;
-  if (!strip) return <span class={cls} data-card={p.card} />;
-  const at = stillPlacement(strip, box, p.size, p.side, spot, feet);
+  if (!strip) return <span class={cls} data-card={p.card} data-skin={look ?? undefined} />;
+  const key = stripKey(p.card, p.side, look);
+  void shownTick.value;
+  const shown = shownStrips.has(key);
+  if (!shown) showNextFrame(key);
+  const at = strip.feet ? feetPlacement(strip, strip.feet, p.side, spot, feet) : stillPlacement(strip, box, p.size, p.side, spot, feet);
   // the contact shadow under the feet (on the ground for a flyer), in the cell's own share
   const shadowW = (p.size === 'huge' ? 54 : p.size === 'large' ? 40 : 26) * u;
+  const ms = strip.ms > 0 ? strip.ms : strip.frames * IDLE_FRAME_MS;
   return (
-    <span class={`${cls} is-in`} data-card={p.card} style={{ left: pct(at.left, W), top: pct(at.top, H), width: pct(at.cell, W), height: pct(at.cell, H) }}>
+    <span class={`${cls} ${shown ? 'is-in' : 'is-ready'}`} data-card={p.card} data-skin={look ?? undefined} style={{ left: pct(at.left, W), top: pct(at.top, H), width: pct(at.cell, W), height: pct(at.cell, H) }}>
       <i class="hd__unitShadow" style={{ left: pct(at.feetX - shadowW / 2, at.cell), width: pct(shadowW, at.cell), top: pct(spot.y - at.top - 2.2 * u, at.cell), height: pct(4.4 * u, at.cell) }} />
       <span
         class={`ui-strip hd__unitStrip${p.side ? ' ui-strip--flip' : ''}`}
         aria-hidden="true"
-        style={{ backgroundImage: `url("${strip.url}")`, '--strip-frames': strip.frames, '--strip-ms': `${strip.frames * IDLE_FRAME_MS}ms` }}
+        style={{ backgroundImage: `url("${strip.url}")`, '--strip-frames': strip.frames, '--strip-ms': `${Math.round(ms)}ms` }}
       />
     </span>
   );
@@ -770,7 +881,10 @@ export function Diorama(p: {
   const { content } = useUi();
   // the live island's request (small; the hook sends a change only when its content changed)
   const req = p.live ? liveIslandRequest({ arena: p.arena, mine: p.mine ?? [], foe: p.foe ?? [], hidden, myFlags: p.myFlags, live: p.live }) : null;
-  const live = useHomeStage(liveHost, req, { paused: !!p.live?.paused, leaving: !!p.live?.leaving || !!p.launching });
+  // the live island's cold start (one long task) waits until the still troops are in, so they never wait behind it
+  const stills = [...(p.mine ?? []).slice(0, 2).map((card) => ({ card, side: 0 as Side, skin: STRIPS_DRAW_SKINS ? (p.live?.skins[card] ?? null) : null })), ...(p.foe ?? []).slice(0, 2).map((card) => ({ card, side: 1 as Side, skin: null }))];
+  const pending = useStillPending(stills);
+  const live = useHomeStage(liveHost, req, { paused: !!p.live?.paused, leaving: !!p.live?.leaving || !!p.launching, wait: pending });
   const top = useMemo(() => islandTop(seed), [seed]);
   const cliff = useMemo(() => cliffParts(seed), [seed]);
   const patches = useMemo(() => {

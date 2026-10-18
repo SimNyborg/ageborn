@@ -13,7 +13,7 @@ import type { GpuHooks } from './gpuUpload';
 import { isBaseSkinSource, isWorldSource, WorldAtlas, worldSourceAge } from './adapters/worldAtlas';
 import { forgetWorldSheets, renderWorldPortrait } from './adapters/worldPortrait';
 import { BASE_SKINS } from './cosmetics/baseSkins';
-import { renderSpriteStrip, stripRequest } from './adapters/spriteStrip';
+import { spriteStripArt, stripInfoUrl, stripRequest, type StripSource } from './adapters/spriteStrip';
 import { forgetPortraitStills } from './adapters/atlasPortrait';
 import { AtlasFortView } from './fortViews/atlasFortView';
 import { fortSource, type FortKindId } from './forts';
@@ -1110,9 +1110,9 @@ export class VisualsArtProvider implements ArtProvider {
    * current colourblind preset (`setTeamPreset`), like the lane.
    */
   portrait(o: { card: CardId; skin?: SkinId; foil?: Foil; size: number; side?: Side; plate?: boolean }): Promise<string> {
-    // `strip:<clip>:<card>`: a unit clip as a CSS sprite strip for the menus (adapters/spriteStrip.ts)
+    // `strip:<clip>:<card>`: a unit clip as a CSS sprite strip for the menus, `stripinfo:` its layout (adapters/spriteStrip.ts)
     const strip = stripRequest(o.card);
-    if (strip) return this.spriteStrip(strip.card, strip.clip, o.size, o.side ?? 0);
+    if (strip) return this.spriteStrip(strip.card, strip.clip, o.size, o.side ?? 0, o.skin, strip.part);
     const visualId = this.visualIdForCard(o.card);
     const cacheKey = `${skinnedVisualId(visualId, o.skin)}|${o.foil ?? 'none'}|${o.size}|${o.side ?? 0}|${o.plate === false ? 'bare' : 'plate'}|${this.preset}`;
     const hit = this.portraits.get(cacheKey);
@@ -1148,23 +1148,39 @@ export class VisualsArtProvider implements ArtProvider {
   }
 
   /**
-   * A unit clip (`idle`, `walk`) as a horizontal strip of square `size` cells for CSS `steps()`
-   * playback (UI art audit #6), cached like portraits; '' when the unit has no sprite sheet.
+   * A unit clip (`idle`, `walk`) as a horizontal strip of square `size` cells for CSS `steps()` playback (UI
+   * art audit #6), drawn with the troop's `skin` (its own sheet, or its puppet when it has none; else the
+   * card's own strip), or with `part: 'info'` the strip's layout as a JSON data URL (where its feet are and how
+   * large it stands). Cached like portraits; kept between visits and drawn off the main thread where the
+   * browser can (`adapters/spriteStrip.ts`); '' when the unit has no sprite sheet.
    */
-  spriteStrip(card: CardId, clip: string, size: number, side: Side): Promise<string> {
+  spriteStrip(card: CardId, clip: string, size: number, side: Side, skin?: SkinId, part?: 'info'): Promise<string> {
     const visualId = this.visualIdForCard(card);
-    const cacheKey = `strip|${visualId}|${clip}|${size}|${side}|${this.preset}`;
-    const hit = this.portraits.get(cacheKey);
+    const r = skin ? this.resolve(visualId, skin) : undefined;
+    const skinned = r && r.key !== visualId ? r : undefined;
+    const cacheKey = `strip|${skinned?.key ?? visualId}|${clip}|${size}|${side}|${this.preset}`;
+    const hit = this.portraits.get(part ? `${cacheKey}|${part}` : cacheKey);
     if (hit) return hit;
-    const def = this.resolve(visualId)?.def;
-    const p =
-      def && def.kind === 'atlas' && !this.force
-        ? renderSpriteStrip({ url: this.atlasUrl(def.source), clip, size, teamColor: teamColor(side, this.preset) })
-            .then((u) => u ?? '')
-            .catch(() => '')
-        : Promise.resolve('');
-    this.portraits.set(cacheKey, p);
-    return p;
+    const sources: StripSource[] = [];
+    const add = (key: string, def: VisualDef | undefined): void => {
+      if (!def || this.force) return;
+      const headLu = -def.anchors.head.y;
+      if (def.kind === 'atlas') sources.push({ kind: 'atlas', url: this.atlasUrl(def.source), heightLu: def.heightLu, headLu });
+      const puppet = def.kind === 'procedural' && key !== visualId ? puppetById(def.source) : undefined;
+      if (puppet) sources.push({ kind: 'puppet', key, puppet, def, headLu, aura: this.quality === 'high' });
+    };
+    if (skinned) add(skinned.key, skinned.def);
+    add(visualId, this.resolve(visualId)?.def);
+    const art = sources.length > 0 ? spriteStripArt({ sources, clip, size, side, preset: this.preset }) : Promise.resolve(null);
+    this.portraits.set(
+      cacheKey,
+      art.then((a) => a?.url ?? '').catch(() => ''),
+    );
+    this.portraits.set(
+      `${cacheKey}|info`,
+      art.then((a) => (a ? stripInfoUrl(a.info) : '')).catch(() => ''),
+    );
+    return this.portraits.get(part ? `${cacheKey}|${part}` : cacheKey) ?? Promise.resolve('');
   }
 
   private atlasUrl(source: string): string {

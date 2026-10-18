@@ -199,12 +199,31 @@
 }
 /* ---- the frontline troops in the lane ---- */
 /* The still troops (Diorama.tsx StillTroop): each troop's idle strip from its battle sheet, placed and sized
-   inline exactly where the live layer draws it, over the bases; the front row over the back row. The strip
-   fades in once it has loaded. */
+   inline exactly where the live layer draws it, over the bases; the front row over the back row. A troop whose
+   strip comes in after the island fades in with its shadow and settles onto its feet (never a pop); a returning
+   player's strips are kept, so they come with the island's own entrance. Reduce motion: a plain short fade. The
+   fill is `backwards` only, so the live layer's take-over (`.hd.is-live`) still hides the still afterwards. */
 .hd__unit {
   position: absolute;
   z-index: 2;
   pointer-events: none;
+}
+/* placed (and its strip decoded) a frame before it fades in, so the fade starts in a painted frame */
+.hd__unit.is-ready {
+  opacity: 0;
+}
+.hd__unit.is-in {
+  transform-origin: 50% 100%;
+  animation: hd-troop-in var(--ui-dur-large) var(--ui-ease-standard) backwards;
+}
+.hd__unit--s1.is-in {
+  animation-delay: 60ms;
+}
+@keyframes hd-troop-in {
+  from {
+    opacity: 0;
+    transform: translateY(2.5%) scale(0.97);
+  }
 }
 .hd__unit--s0 {
   z-index: 3;
@@ -219,18 +238,17 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  animation:
-    ui-strip-play var(--strip-ms) steps(var(--strip-frames)) infinite,
-    hd-troop-in var(--ui-dur-small) var(--ui-ease-standard) both;
+  animation: ui-strip-play var(--strip-ms) steps(var(--strip-frames)) infinite;
 }
-@keyframes hd-troop-in {
-  from {
-    opacity: 0;
-  }
+.ui-root[data-reduce-motion='true'] .hd__unit.is-in {
+  animation: ui-fade-in var(--ui-dur-reduced) linear backwards;
 }
 @media (prefers-reduced-motion: reduce) {
   .hd__unitStrip {
     animation: none;
+  }
+  .hd__unit.is-in {
+    animation: ui-fade-in var(--ui-dur-reduced) linear backwards;
   }
 }
 /* The still flag poles (Diorama.tsx StillPole): the lane dressing's geometry over the bases, as the live
