@@ -95,6 +95,44 @@
   border-color: #ef5a4a;
   background: rgba(239, 90, 74, 0.25);
 }
+/* A live match's quick chat (queue item 34): short slate pills under the quotes, the same gap as quotes. */
+.hud-wheel-chat {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-width: 344px;
+  padding-top: 6px;
+  border-top: 2px solid rgba(255, 255, 255, 0.12);
+}
+.hud-wheel .hud-chat-pick {
+  min-height: 36px;
+  padding: 4px 11px;
+  border: none;
+  border-radius: var(--ui-r-pill, 999px);
+  background: var(--hud-face);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 0 0 1px rgba(8, 10, 14, 0.9),
+    0 2px 0 rgba(0, 0, 0, 0.45);
+  color: var(--hud-text, #f4efe4);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  animation: hud-wheel-pop 220ms var(--ui-ease-back, ease-out) both;
+  transition: transform 100ms ease-out, filter 100ms;
+}
+.hud-wheel .hud-chat-pick:hover:not(:disabled) {
+  filter: brightness(1.18);
+}
+.hud-wheel .hud-chat-pick:active:not(:disabled) {
+  transform: scale(0.94);
+}
+.hud-wheel .hud-chat-pick:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
 /* A quote draws its own battle bubble (PLAN 2a): the panel's bubble box stays out of the way. */
 .hud-bubble--quote {
   width: max-content;
@@ -148,9 +186,13 @@
 @media (prefers-reduced-motion: reduce) {
   .hud-wheel,
   .hud-wheel .hud-emote-pick,
-  .hud-quote-pick {
+  .hud-quote-pick,
+  .hud-chat-pick {
     animation: none;
   }
+}
+.hud[data-reduce-motion='true'] :is(.hud-wheel, .hud-wheel .hud-emote-pick, .hud-quote-pick, .hud-chat-pick) {
+  animation-name: hud-live-fade;
 }
 
 /* Phones: one row of emotes, quotes in two columns, so the wheel stays above the tray */
@@ -184,4 +226,14 @@
 .hud.is-compact .hud-wheel .hud-mute {
   padding: 2px 6px;
   font-size: 11px;
+}
+.hud.is-compact .hud-wheel-chat {
+  gap: 4px;
+  max-width: 400px;
+  padding-top: 4px;
+}
+.hud.is-compact .hud-wheel .hud-chat-pick {
+  min-height: 34px;
+  padding: 3px 10px;
+  font-size: 12px;
 }

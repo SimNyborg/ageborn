@@ -459,21 +459,21 @@ button.cos-mock__deco.is-picked {
   clip-path: polygon(50% 0, 62% 35%, 100% 38%, 70% 60%, 80% 98%, 50% 76%, 20% 98%, 30% 60%, 0 38%, 38% 35%);
   filter: drop-shadow(0 0 3px rgb(255 240 190 / 0.95));
 }
+/* The flags wave as cloth like the lane's (ClothFlag, queue item 37). */
 .cos-mock__flag {
   position: absolute;
   left: 2px;
   display: block;
   transform-origin: 0 50%;
-  animation: cos-wave 2.2s ease-in-out infinite;
   filter: drop-shadow(0 2px 0 rgba(27, 19, 48, 0.3));
 }
 /* Equip feedback: a new flag is hoisted up the pole, a new decoration drops in with a bounce, a new
    base skin re-enters with a gleam sweeping across it. Keyed spans re-run these on every change. */
 .cos-mock__flag {
-  animation: cos-hoist 620ms var(--ui-ease-back) both, cos-wave 2.2s ease-in-out 620ms infinite;
+  animation: cos-hoist 620ms var(--ui-ease-back) both;
 }
 .cos-mock__flag--nation {
-  animation: cos-hoist 620ms var(--ui-ease-back) 90ms both, cos-wave 2.2s ease-in-out -0.7s infinite;
+  animation: cos-hoist 620ms var(--ui-ease-back) 90ms both;
 }
 @keyframes cos-hoist {
   0% {
@@ -540,19 +540,11 @@ button.cos-mock__deco.is-picked {
 .cos-mock__flag--nation {
   top: 38%;
   width: clamp(32px, 17cqw, 72px);
-  aspect-ratio: 64 / 44;
+  /* a national flag's picture is 4:3 */
+  aspect-ratio: 4 / 3;
 }
 .cos-mock {
   container-type: inline-size;
-}
-@keyframes cos-wave {
-  0%,
-  100% {
-    transform: perspective(240px) rotateY(0deg) skewY(0deg);
-  }
-  50% {
-    transform: perspective(240px) rotateY(-16deg) skewY(-2.5deg) scaleX(0.97);
-  }
 }
 .cos-mock__caption {
   position: absolute;
@@ -1220,13 +1212,12 @@ button.cos-mock__deco.is-picked {
   background: radial-gradient(circle at 35% 30%, #fff8e2, #e8d29a 70%);
   box-shadow: inset 0 -3px 0 rgb(120 84 30 / 0.3);
 }
+/* the national flag you fly (4:3), waving like the lane's cloth (ClothFlag, queue item 37) */
 .cos-atlas__flag {
   display: block;
   width: 54px;
-  aspect-ratio: 64 / 44;
-  transform-origin: 0 50%;
+  aspect-ratio: 4 / 3;
   filter: drop-shadow(0 2px 0 rgb(40 26 8 / 0.35));
-  animation: cos-flag-wave 2.4s ease-in-out infinite;
 }
 .cos-atlas__flag.is-none {
   width: 0;
@@ -1269,16 +1260,6 @@ button.cos-mock__deco.is-picked {
   color: #3a2410;
   transition: transform 160ms var(--ui-ease-out);
 }
-@keyframes cos-flag-wave {
-  0%,
-  100% {
-    transform: perspective(220px) rotateY(0deg) skewY(0deg);
-  }
-  50% {
-    transform: perspective(220px) rotateY(-14deg) skewY(-2.5deg) scaleX(0.97);
-  }
-}
-
 /* Reduce motion replaces the loops with stills (the sheen, the wave, the sparkle and the pop). */
 .ui-root[data-reduce-motion='true'] :is(.cos-atlas__flag, .cos-tile__art.is-pop, .cos-card__spark) {
   animation: none;

@@ -8,6 +8,9 @@
  *   quotes also wait `quoteCooldownMs` locally so a match never turns into a wall of text.
  * - Mute: one tap mutes the opponent's emotes and quotes for the rest of the match (no bubble, no
  *   sound); the Settings switch mutes every opponent.
+ * - A live (online) match (queue item 34): emotes and quotes go to the opponent through the live layer
+ *   (not the sim), a row of quick chat lines joins the wheel (a fixed list, `chat.<id>`; never free text,
+ *   with the quotes' gap), and the mute covers their chat too (the live menu has the same switch).
  */
 import './emoteWheel.css';
 import { emoteLabelKey } from '@/content/keys';
@@ -97,17 +100,34 @@ function speakerOf(c: HudCtx | undefined, side: 'me' | 'foe'): AvatarSpec | unde
  * speaker's General head and its rarity edge; a Legendary line glows gold. `c` gives both (optional so
  * the replay viewer and tests can show a plain bubble).
  */
-export function EmoteBubble(p: { id: number; emote: EmoteId; side: 'me' | 'foe'; t: HudCtx['t']; c?: HudCtx }) {
-  const quote = isQuote(p.emote);
+export function EmoteBubble(p: { id: number; emote?: EmoteId; chat?: string; side: 'me' | 'foe'; t: HudCtx['t']; c?: HudCtx }) {
   const root = useRef<HTMLDivElement>(null);
   const still = useStill(root);
-  if (quote) {
-    const rarity = quoteRarity(p.c, p.emote);
+  if (p.chat !== undefined) {
+    // a live match's quick chat line: the speech bubble with the speaker's head, like a Common quote
+    const speaker = speakerOf(p.c, p.side);
+    return (
+      <div key={p.id} class={`hud-bubble hud-bubble-${p.side} hud-bubble--quote hud-bubble--chat`} data-testid={`hud-bubble-${p.side}`} data-chat={p.chat}>
+        <QuoteBubble
+          text={p.t(`chat.${p.chat}`)}
+          rarity="common"
+          tail={p.side === 'me' ? 'tl' : 'tr'}
+          head={speaker ? <Avatar spec={speaker} size={30} crop="head" detail="low" /> : undefined}
+          pop
+          small
+        />
+      </div>
+    );
+  }
+  const emote = p.emote;
+  if (emote === undefined) return null;
+  if (isQuote(emote)) {
+    const rarity = quoteRarity(p.c, emote);
     const speaker = speakerOf(p.c, p.side);
     return (
       <div key={p.id} class={`hud-bubble hud-bubble-${p.side} hud-bubble--quote`} data-testid={`hud-bubble-${p.side}`} data-rarity={rarity}>
         <QuoteBubble
-          text={p.t(emoteLabelKey(p.emote))}
+          text={p.t(emoteLabelKey(emote))}
           rarity={rarity}
           tail={p.side === 'me' ? 'tl' : 'tr'}
           head={speaker ? <Avatar spec={speaker} size={30} crop="head" detail="low" /> : undefined}
@@ -120,10 +140,10 @@ export function EmoteBubble(p: { id: number; emote: EmoteId; side: 'me' | 'foe';
   }
   // a starter emote is the speaker's General performing it (yours, or the opponent's look)
   const who: EmoteSpeaker = p.side === 'me' ? (p.c?.wheel?.speaker ? { spec: p.c.wheel.speaker } : null) : foeSpeaker(p.c);
-  const head = isStarter(p.emote) && who !== null;
+  const head = isStarter(emote) && who !== null;
   return (
-    <div key={p.id} ref={root} class={`hud-bubble hud-bubble-${p.side}${head ? ' hud-bubble--head' : ''}`} data-testid={`hud-bubble-${p.side}`} data-emote={p.emote}>
-      <EmoteArt emote={p.emote} size={head ? 48 : 34} t={p.t} speaker={who} still={still} />
+    <div key={p.id} ref={root} class={`hud-bubble hud-bubble-${p.side}${head ? ' hud-bubble--head' : ''}`} data-testid={`hud-bubble-${p.side}`} data-emote={emote}>
+      <EmoteArt emote={emote} size={head ? 48 : 34} t={p.t} speaker={who} still={still} />
     </div>
   );
 }
@@ -145,7 +165,10 @@ export function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
   const [open, setOpen] = useState(false);
   const [cooling, startCooling] = useCooldown(c.config.content.economy.emoteCooldownMs);
   const [quoteCooling, startQuoteCooling] = useCooldown(Math.max(c.config.content.economy.emoteCooldownMs, wheel.quoteCooldownMs));
-  const [muted, setMuted] = useState(() => c.view?.emotesMuted?.() ?? false);
+  const [viewMuted, setViewMuted] = useState(() => c.view?.emotesMuted?.() ?? false);
+  // a live match keeps its own mute (it covers their quick chat too, queue item 34)
+  const live = c.live;
+  const muted = live ? live.muted.value : viewMuted;
   const off = c.readOnly || c.m.phase === 'ended';
   const root = useRef<HTMLDivElement>(null);
   const still = useStill(root);
@@ -179,12 +202,22 @@ export function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
     setOpen(false);
     startCooling();
     if (isQuote(e)) startQuoteCooling();
-    p.onEmote(e);
+    if (live) live.sendEmote(e);
+    else p.onEmote(e);
+  };
+  const say = (line: string) => {
+    setOpen(false);
+    startCooling();
+    startQuoteCooling();
+    live?.sendChat(line);
   };
   const mute = () => {
     const next = !muted;
-    setMuted(next);
-    c.view?.muteEmotes?.(next);
+    if (live) live.setMuted(next);
+    else {
+      setViewMuted(next);
+      c.view?.muteEmotes?.(next);
+    }
     c.audio?.play('ui_click');
   };
   return (
@@ -237,6 +270,23 @@ export function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
                   onClick={() => send(q)}
                 >
                   {c.t(emoteLabelKey(q))}
+                </button>
+              ))}
+            </div>
+          ) : null}
+          {live && live.quickChat.length > 0 ? (
+            <div class={`hud-wheel-chat${quoteCooling ? ' is-cooling' : ''}`} data-testid="hud-wheel-chat">
+              {live.quickChat.map((line, i) => (
+                <button
+                  key={line}
+                  role="menuitem"
+                  class="hud-chat-pick"
+                  style={{ animationDelay: `${110 + i * 25}ms` }}
+                  disabled={quoteCooling}
+                  data-testid={`hud-chat-${line}`}
+                  onClick={() => say(line)}
+                >
+                  {c.t(`chat.${line}`)}
                 </button>
               ))}
             </div>

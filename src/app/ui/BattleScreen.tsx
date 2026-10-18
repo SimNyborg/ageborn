@@ -4,9 +4,13 @@
  * on the canvas was created with the session (`AppUi.createView`). The pause card sits at the top and
  * leaves the lane uncovered and its input live, so a paused player can scout (A17.4: the camera pans
  * freely while paused).
+ *
+ * A live (online) match (queue item 34, `BattleHandle.live`) never pauses: the HUD gets the live layer,
+ * its menu (Retreat, Settings over the running battle) and the session's refused pauses (P is the HUD's
+ * own; the back button arrives as `pauseAsks`), and the opponent mute follows the Settings switch.
  */
-import { useRef } from 'preact/hooks';
-import { Hud } from '@/ui/hud';
+import { useEffect, useMemo, useRef } from 'preact/hooks';
+import { Hud, type LiveMenuActions } from '@/ui/hud';
 import type { BattleHandle } from '../battle';
 import { emoteWheelOf } from '../cosmetics';
 import { useApp } from './context';
@@ -20,6 +24,8 @@ export function BattleScreen(p: {
   battle: BattleHandle;
   /** The meta screens draw WP9's Pause overlay instead of the simple panel (Phase 2b). */
   externalPause?: boolean;
+  /** Opens Settings over the battle (a live match's menu; the meta screens wire it). */
+  onSettings?: () => void;
 }) {
   const ui = useApp();
   const root = useRef<HTMLDivElement>(null);
@@ -40,6 +46,22 @@ export function BattleScreen(p: {
     if (s.status.peek() === 'paused') s.resume();
     else s.pause();
   };
+  const live = b.live;
+  const onSettings = p.onSettings;
+  const liveMenu: LiveMenuActions | null = useMemo(
+    () => (live ? { retreat: () => s.issue({ t: 'retreat', side: 0 }), ...(onSettings ? { settings: onSettings } : {}) } : null),
+    [live, s, onSettings],
+  );
+  // Settings › Mute opponent emotes applies to a live match at once, both ways
+  const mutedSetting = settings?.mutedEmotes;
+  const firstMute = useRef(true);
+  useEffect(() => {
+    if (firstMute.current) {
+      firstMute.current = false;
+      return;
+    }
+    if (live && mutedSetting !== undefined) live.setMuted(mutedSetting);
+  }, [live, mutedSetting]);
 
   return (
     <div class="ab-layer" ref={root} data-testid="battle" data-tut={prompt?.kind === 'beat' ? prompt.target ?? '' : ''}>
@@ -57,6 +79,7 @@ export function BattleScreen(p: {
         scouted={b.setup.matchNumber >= SCOUTED_FROM_MATCH}
         callouts={b.setup.mode !== 'tutorial' && b.setup.script === null}
         {...(wheel ? { emoteWheel: wheel } : {})}
+        {...(live && liveMenu ? { live, liveMenu, menuAsks: s.pauseAsks } : {})}
         t={ui.t}
       />
       {countdown >= 0 ? (

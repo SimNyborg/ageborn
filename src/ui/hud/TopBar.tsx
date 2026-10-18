@@ -26,6 +26,8 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import type { HudCtx } from './context';
 import { EmoteBubble, EmoteButton } from './EmoteWheel';
 import { AgeGlyph, EyeIcon, HornIcon, PauseIcon, PlayIcon, RobotIcon } from './icons';
+import { LiveControls, type LiveOpen } from './Live';
+import type { LiveMenuActions } from './live';
 import { Minimap } from './Minimap';
 import { ageIds, clockView, escalationView, formatClock, frontStrip, powerFraction, ropeView, xpProgress, type ClockView, type EscalationView, type FrontLine, type RopeView } from './model';
 import { CoinIcon } from './icons';
@@ -487,13 +489,21 @@ function Crumbling(p: { t: HudCtx['t'] }) {
 export interface Bubble {
   id: number;
   side: 0 | 1;
-  emote: EmoteId;
+  /** An emote or quote (sim emotes, and a live match's emotes). */
+  emote?: EmoteId;
+  /** A live match's quick chat line (`chat.<id>`, queue item 34). */
+  chat?: string;
 }
 
 export interface Banner {
   id: number;
   side: 0 | 1;
   age: AgeId;
+}
+
+/** What a bubble says: an emote or quote, or a quick chat line. */
+function bubbleSay(b: Bubble): { emote?: EmoteId; chat?: string } {
+  return b.chat !== undefined ? { chat: b.chat } : b.emote !== undefined ? { emote: b.emote } : {};
 }
 
 export function TopBar(p: {
@@ -511,6 +521,11 @@ export function TopBar(p: {
   /** The "Scouted (n)" chip (hidden for new players, audit #11). */
   scouted: boolean;
   topRef?: (el: HTMLElement | null) => void;
+  /** A live match's open drop-down (menu or tempo) and its setter; the HUD keeps it (P, F, back). */
+  liveOpen?: LiveOpen;
+  onLiveOpen?: (o: LiveOpen) => void;
+  /** A live match's menu actions (Retreat, Settings). */
+  liveMenu?: LiveMenuActions;
 }) {
   const { c } = p;
   const { m, t } = c;
@@ -566,7 +581,7 @@ export function TopBar(p: {
             </span>
           </div>
         </div>
-        {myBubble ? <EmoteBubble key={myBubble.id} id={myBubble.id} emote={myBubble.emote} side="me" t={t} c={c} /> : null}
+        {myBubble ? <EmoteBubble key={myBubble.id} id={myBubble.id} {...bubbleSay(myBubble)} side="me" t={t} c={c} /> : null}
       </div>
 
       <div class="hud-center">
@@ -627,11 +642,14 @@ export function TopBar(p: {
         <FoeRings c={c} />
         <Medallion age={foeAge} team="foe" horn={m.foe.lastStandArmed} hornLabel={t('hud.lastStand')} label={t(`age.${foeAge}.name`)} />
         <FoeResearch c={c} />
-        {foeBubble ? <EmoteBubble key={foeBubble.id} id={foeBubble.id} emote={foeBubble.emote} side="foe" t={t} c={c} /> : null}
+        {foeBubble ? <EmoteBubble key={foeBubble.id} id={foeBubble.id} {...bubbleSay(foeBubble)} side="foe" t={t} c={c} /> : null}
       </div>
       <div class="hud-controls">
         {p.scouted ? <Scouted c={c} /> : null}
-        {p.controls ? (
+        {p.controls && c.live ? (
+          // a live match (queue item 34): a menu that never pauses and the tempo proposal
+          <LiveControls c={c} live={c.live} open={p.liveOpen ?? null} setOpen={(o) => p.onLiveOpen?.(o)} {...(p.liveMenu ? { menu: p.liveMenu } : {})} />
+        ) : p.controls ? (
           <>
             <button class="hud-round" data-testid="hud-pause" aria-label={m.paused ? t('hud.resume') : t('hud.pause')} disabled={c.readOnly} onClick={p.onPause}>
               {m.paused ? <PlayIcon size={18} /> : <PauseIcon size={18} />}

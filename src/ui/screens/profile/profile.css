@@ -451,6 +451,8 @@
   background: radial-gradient(circle at 35% 35%, #fff3d6 0 20%, #f2b52c 22%);
   box-shadow: 0 0 0 1px #2b1d10;
 }
+/* The flag is cloth waving like the lane's (ClothFlag, queue item 37): pinned at the pole, its light and
+   shade riding the folds; the ripple may reach a little past the box, so nothing clips it. */
 .prof-flag__cloth {
   grid-row: 1;
   grid-column: 2;
@@ -458,37 +460,15 @@
   display: block;
   width: 48px;
   height: 36px;
-  border-radius: 2px 4px 4px 2px;
-  overflow: hidden;
-  transform-origin: 0 50%;
-  animation: prof-flag-wave 2.6s ease-in-out infinite;
   filter: drop-shadow(2px 3px 0 rgba(0, 0, 0, 0.3));
-}
-.prof-flag__cloth img {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-.prof-flag__cloth::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0 28%, transparent 28%),
-    linear-gradient(90deg, transparent 0 30%, rgba(0, 0, 0, 0.1) 30% 40%, transparent 40% 48%, rgba(255, 255, 255, 0.09) 48% 54%, transparent 54% 66%, rgba(0, 0, 0, 0.12) 66% 79%, transparent 79%);
-  box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, 0.62);
 }
 .prof-flag.is-empty .prof-flag__cloth {
   border: 2px dashed rgba(244, 239, 228, 0.55);
+  border-radius: 2px 4px 4px 2px;
   background: rgba(244, 239, 228, 0.06);
-  animation: none;
   filter: none;
   display: grid;
   place-items: center;
-}
-.prof-flag.is-empty .prof-flag__cloth::after {
-  display: none;
 }
 .prof-flag__plus {
   color: var(--ui-text-2);
@@ -508,23 +488,6 @@
   line-height: 15px;
   font-weight: 800;
   white-space: nowrap;
-}
-@keyframes prof-flag-wave {
-  0%,
-  100% {
-    transform: perspective(160px) rotateY(0deg) skewY(0deg);
-  }
-  50% {
-    transform: perspective(160px) rotateY(-14deg) skewY(-2deg) scaleX(0.97);
-  }
-}
-.prof-flag.is-still .prof-flag__cloth {
-  animation: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .prof-flag__cloth {
-    animation: none;
-  }
 }
 @media (hover: hover) {
   .prof-flag:hover .prof-flag__count {

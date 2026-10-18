@@ -3,6 +3,7 @@ import type { AudioService, AvatarSpec, EmoteId, HudModel, MatchConfig, Side } f
 import type { Signal } from '@preact/signals';
 import type { HudViewBridge } from './bridge';
 import type { FortAim, FortCommit } from './fortAim';
+import type { LiveHud } from './live';
 import type { DenyTarget, HudIntent, HudPulse } from './model';
 import type { PortraitFn } from './usePortrait';
 
@@ -56,4 +57,9 @@ export interface HudCtx {
   fortCommit?: Signal<FortCommit | null>;
   /** Team colours of this HUD (the colourblind preset applied): banners on fort art and lane tags. */
   colors?: { me: string; foe: string };
+  /**
+   * A live (online) match (queue item 34): no pause and no speed cycle; the menu, the tempo proposal and
+   * both players' talk go through it. Absent offline.
+   */
+  live?: LiveHud;
 }

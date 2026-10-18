@@ -11,6 +11,8 @@ import { useState } from 'preact/hooks';
 import { avatar as avatarTables } from '@/content/raw/avatar';
 import { Avatar } from '../../components/Avatar';
 import { AvatarItemArt, useCosmeticImage } from '../../components/cosmeticArt';
+import { ClothFlag } from '../../components/ClothFlag';
+import { useKit } from '../../components/kit';
 import { BannerArt, FRAME_COLORS, TitleRibbon, titleTier } from '../../components/avatar/ProfileArt';
 import { Button, IconButton } from '../../components/Button';
 import { CardTile } from '../../components/CardTile';
@@ -75,6 +77,9 @@ function NameModal(p: { name: string; onSave: (n: string) => void; onClose: () =
 function ProfileFlag(p: { reduce: boolean }) {
   const { t, locale, router, services, content } = useUi();
   const art = useCosmeticImage();
+  // the game's Reduce motion or the OS's (the kit has both): the cloth rests still
+  const kit = useKit();
+  const still = p.reduce || kit.reduceMotion;
   const atlas = services.flagAtlasProgress();
   const key = atlas.equipped;
   const item = key ? findItem(content, key) : undefined;
@@ -92,7 +97,8 @@ function ProfileFlag(p: { reduce: boolean }) {
     >
       <span class="prof-flag__pole" aria-hidden="true" />
       <span class="prof-flag__cloth" aria-hidden="true">
-        {url ? <img src={url} alt="" draggable={false} /> : <span class="prof-flag__plus">+</span>}
+        {/* the flag waves like the lane's cloth (queue item 37); still under Reduce motion */}
+        {url ? <ClothFlag src={url} aspect={3 / 4} widthPx={48} still={still} outline /> : <span class="prof-flag__plus">+</span>}
       </span>
       <span class="prof-flag__count ui-num" aria-hidden="true">
         {formatInt(atlas.owned, locale)}/{formatInt(atlas.total, locale)}

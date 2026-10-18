@@ -18,6 +18,9 @@
  *   evolves show a banner on that side's XP bar, coins bump the gold counter, and power drag targeting
  *   previews the zone on the canvas.
  * - Low base HP (< 25%) pulses a red vignette every 1.2 s.
+ * - A live (online) match (`live`, queue item 34): no pause and no speed cycle. P and the back button open
+ *   a menu that never pauses, F the tempo proposal; the opponent's proposals arrive as a card (Y / N);
+ *   both players' emotes and quick chat come from the live layer; a catch-up shows its cue (`Live.tsx`).
  *
  * The HUD root must cover the same box as the battle canvas, so view-local coordinates (mount taps,
  * coin targets) are HUD-local coordinates too.
@@ -33,6 +36,8 @@ import { FlagGrip } from './HoldFlag';
 import type { FortAim, FortCommit } from './fortAim';
 import { FortLane } from './FortLane';
 import type { EmoteWheel, HudCtx, Translate } from './context';
+import { AwayNotice, CatchUpCue, TempoPrompt, type LiveOpen } from './Live';
+import type { LiveHud, LiveMenuActions } from './live';
 import { EdgeBadges } from './Minimap';
 import { MountPopover, type MountPopoverState } from './MountPopover';
 import {
@@ -117,6 +122,12 @@ export interface HudProps {
   emoteWheel?: EmoteWheel;
   /** Opens the War Council sheet at mount (the dev state gallery): null = the overview, a line key = its picks. */
   councilOpen?: string | null;
+  /** A live (online) match (queue item 34): the tempo proposal, the menu that never pauses, both players' talk. */
+  live?: LiveHud;
+  /** The live menu's actions (Retreat, Settings). */
+  liveMenu?: LiveMenuActions;
+  /** Counts the pauses a live match turned into menu requests (the back button): each one toggles the menu. */
+  menuAsks?: ReadonlySignal<number>;
 }
 
 /** Remembers that this player uses the keyboard, so the hint badges show from then on. */
@@ -271,6 +282,8 @@ export function Hud(props: HudProps) {
   const fortCommit = useMemo(() => signal<FortCommit | null>(null), []);
   const [stamp, setStamp] = useState(0);
   const [spend, setSpend] = useState<{ id: number; amount: number } | null>(null);
+  // a live match's open drop-down: the menu (P, the back button) or the tempo proposal (F)
+  const [liveOpen, setLiveOpen] = useState<LiveOpen>(null);
   const momentSeq = useRef(0);
   const momentTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const showMoment = useCallback((mo: Omit<Moment, 'id'>) => {
@@ -315,10 +328,15 @@ export function Hud(props: HudProps) {
           closeCouncil();
           return;
         case 'pause':
-          p.onPause?.();
+          // a live match never pauses: P opens its menu instead (queue item 34)
+          if (p.live) setLiveOpen((o) => (o === 'menu' ? null : 'menu'));
+          else p.onPause?.();
           return;
         case 'speed':
-          p.onSpeed?.(nextSpeed(cur.speed));
+          // nor sets its own speed: F opens the tempo proposal
+          if (p.live) {
+            if (cur.phase !== 'ended') setLiveOpen((o) => (o === 'tempo' ? null : 'tempo'));
+          } else p.onSpeed?.(nextSpeed(cur.speed));
           return;
         case 'deny':
           if (p.readOnly) return;
@@ -402,6 +420,15 @@ export function Hud(props: HudProps) {
       // A keyboard-focused button keeps its native Space / Enter.
       if ((e.key === ' ' || e.key === 'Enter') && e.target instanceof HTMLButtonElement) return;
       const { m: cur, props: p, side: me } = live.current;
+      // Y / N answer the opponent's speed proposal in a live match
+      const lv = p.live;
+      const yn = e.key.toLowerCase();
+      if (lv && (yn === 'y' || yn === 'n') && lv.tempo.peek().pending?.by === 'foe' && cur.phase !== 'ended') {
+        e.preventDefault();
+        lv.answer(yn === 'y');
+        p.audio?.play(yn === 'y' ? 'ui_confirm' : 'ui_toggle');
+        return;
+      }
       const i = keyIntent(e.key, cur, p.config, me, e.shiftKey, rearmRef.current);
       if (i.k === 'none') return;
       // Escape belongs to the screen underneath unless the Council is open.
@@ -452,8 +479,32 @@ export function Hud(props: HudProps) {
     if (m.phase === 'ended') {
       setPopover(null);
       closeCouncil();
+      setLiveOpen(null);
     }
   }, [m.phase, closeCouncil]);
+
+  // A live match: both players' emotes and quick chat come from the live layer (not the sim), and the back
+  // button's refused pause toggles the menu (queue item 34).
+  const liveHud = props.live;
+  // their proposal card sits under the top band; a moment title shown meanwhile moves below it (live.css)
+  const foeAsks = !readOnly && liveHud?.tempo.value.pending?.by === 'foe';
+  useEffect(() => {
+    if (!liveHud) return undefined;
+    return liveHud.onSay((s) => {
+      addBubble(s.chat !== undefined ? { side: s.side, chat: s.chat } : { side: s.side, ...(s.emote !== undefined ? { emote: s.emote } : {}) });
+      audio?.play('emote_pop');
+    });
+  }, [liveHud, addBubble, audio]);
+  const menuAsks = props.menuAsks;
+  useEffect(() => {
+    if (!menuAsks) return undefined;
+    let seen = menuAsks.peek();
+    return menuAsks.subscribe((n) => {
+      if (n === seen) return;
+      seen = n;
+      setLiveOpen((o) => (o === 'menu' ? null : 'menu'));
+    });
+  }, [menuAsks]);
 
   // Research completion (A18.5.7): the button bursts, a card with the badge pops above it, a stinger.
   const owned = m.me.research?.owned;
@@ -592,6 +643,7 @@ export function Hud(props: HudProps) {
     fortAim,
     fortCommit,
     colors,
+    ...(liveHud ? { live: liveHud } : {}),
   };
 
   // Reduce motion (U14): the app root carries the Settings switch; the HUD mirrors it onto its own root
@@ -649,9 +701,12 @@ export function Hud(props: HudProps) {
         hits={hits}
         front={front}
         scouted={props.scouted !== false}
+        liveOpen={liveOpen}
+        onLiveOpen={setLiveOpen}
+        {...(props.liveMenu ? { liveMenu: props.liveMenu } : {})}
       />
       {moment ? (
-        <div key={moment.id} class={`hud-moment hud-moment-${moment.kind}`} data-testid={`hud-moment-${moment.kind}`} role="status">
+        <div key={moment.id} class={`hud-moment hud-moment-${moment.kind}${foeAsks ? ' is-below-ask' : ''}`} data-testid={`hud-moment-${moment.kind}`} role="status">
           <div class="hud-moment-title">{moment.title}</div>
           {moment.sub ? <div class="hud-moment-sub">{moment.sub}</div> : null}
         </div>
@@ -710,6 +765,13 @@ export function Hud(props: HudProps) {
       <FlagGrip c={ctx} />
       {popover && !readOnly ? <MountPopover c={ctx} at={popover} onClose={closePopover} /> : null}
       <EdgeBadges c={ctx} />
+      {liveHud && !readOnly ? (
+        <>
+          <TempoPrompt c={ctx} live={liveHud} />
+          <CatchUpCue c={ctx} live={liveHud} />
+          <AwayNotice c={ctx} live={liveHud} />
+        </>
+      ) : null}
     </div>
   );
 }

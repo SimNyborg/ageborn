@@ -58,7 +58,7 @@ import { DeckSwitch, deckHintDue } from '../shared/Decks';
 import { ModesSheet } from '../warPath/ModesSheet';
 import { TAB_ROOTS } from '../warPath/shell';
 import { ArenaScene } from './ArenaScene';
-import { Diorama, type FoeLook } from './Diorama';
+import { Diorama, type DioramaLive, type FoeLook } from './Diorama';
 import { ArenaTitle, CampaignCard, CapsuleSlots, HubProfile, HubTopRight, pendingCurrencyCaption, TrophyBar, UnlockPointer } from './hub';
 import { JoinPanel, onlineLengths, onlineMock, OnlinePlate, OnlineVs, RoomPanel, useElapsed, type OnlineState } from './online';
 import { LAST_SEEN, MatchPlate } from './plate';
@@ -400,6 +400,20 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
   const quiet = !!unlock || held || !!pendingUnlock(s, content);
   const scene = useMemo(() => <ArenaScene arena={arena.id} />, [arena.id]);
   const overlay = modes || !!room || vs;
+  // The live island (queue item 37): your troops with their skins, the found player's flags; it pauses under
+  // a sheet and lets go of its WebGL context when a match starts; Reduce motion keeps the still island.
+  const live: DioramaLive = {
+    paused: covered || overlay,
+    leaving: launching,
+    reduce: kit.reduceMotion,
+    lite: s.settings.graphics === 'lite',
+    teamPreset: s.settings.teamPreset,
+    skins: s.skins.equipped,
+    foeFlags: found ? { baseFlag: found.side.look?.baseFlag ?? null, nationalFlag: found.side.look?.nationalFlag ?? null } : null,
+    // the search's opponent is fixed when it starts: their troops load meanwhile and drop in on the found beat
+    foeNext: ranked.phase === 'searching' ? frontline(ranked.opponent.side.loadouts[age]) : [],
+    ...(kit.sound ? { sound: kit.sound } : {}),
+  };
   const unavailableKey = ostate === 'noConnection' ? 'ui.online.noConnection' : ostate === 'full' ? 'ui.online.full' : 'ui.online.update';
 
   return (
@@ -425,6 +439,7 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
           foeLook={foeLook}
           launching={launching}
           myFlags={myFlags}
+          live={live}
         />
         {ladderOpen ? (
           <div class="hub-stage__caption">

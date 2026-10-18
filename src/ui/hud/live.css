@@ -1,0 +1,940 @@
+/*
+ * The live match HUD (queue item 34; `Live.tsx`): the menu that never pauses, the tempo proposal, the
+ * opponent's proposal card, the catch-up cue and the away banner. Same tokens as the rest of the HUD:
+ * slate panels with a top highlight, gold = go and the agreed speed, green = agreed, red = denied or
+ * leaving. Presses answer on pointerdown, small things overshoot (--ui-ease-back), panels decelerate, exits
+ * run about 0.7 × entrances. Reduce motion swaps movement for fades; rings, bars and counters stay.
+ */
+
+.hud-live {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  pointer-events: auto;
+}
+
+/* ---------------------------------------------------------------- the menu button and the live dot */
+
+.hud-live-dot {
+  position: absolute;
+  top: calc((var(--hud-btn-hit) - var(--hud-btn)) / 2);
+  right: calc((var(--hud-btn-hit) - var(--hud-btn)) / 2);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ff5047;
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 0 6px rgba(255, 80, 71, 0.75);
+}
+
+.hud-live-dot.is-big {
+  position: relative;
+  top: auto;
+  right: auto;
+  display: inline-block;
+  flex: none;
+  width: 10px;
+  height: 10px;
+}
+
+.hud-live-menu.is-open::before,
+.hud-tempo.is-open::before {
+  filter: brightness(1.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 0 1.5px var(--hud-gold-face),
+    0 2px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* ---------------------------------------------------------------- the tempo button */
+
+.hud-tempo .hud-tempo-label {
+  position: relative;
+  z-index: 2;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.hud-tempo.is-asking .hud-tempo-label {
+  color: var(--hud-gold);
+}
+
+.hud-tempo.is-cooling .hud-tempo-label {
+  opacity: 0.7;
+}
+
+/* The ask badge: a speech bubble on the corner says the speed is asked for, not set. */
+.hud-tempo-ask {
+  position: absolute;
+  z-index: 3;
+  top: 1px;
+  right: -1px;
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: var(--hud-panel-hi);
+  box-shadow:
+    0 0 0 1.5px var(--hud-ink),
+    0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.hud-tempo.is-asking .hud-tempo-ask {
+  background: var(--hud-gold-face);
+}
+
+/* The draining ring: gold while your proposal waits, slate while the next one cools down. */
+.hud-tempo-ring {
+  position: absolute;
+  z-index: 1;
+  inset: calc((var(--hud-btn-hit) - var(--hud-btn)) / 2 - 3px);
+  width: calc(var(--hud-btn) + 6px);
+  height: calc(var(--hud-btn) + 6px);
+  rotate: -90deg;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.hud-tempo-ring circle {
+  fill: none;
+  stroke-width: 3.2;
+}
+
+.hud-tempo-ring-track {
+  stroke: rgba(8, 10, 14, 0.7);
+}
+
+.hud-tempo-ring-fill {
+  stroke: var(--hud-gold);
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 0;
+  animation-name: hud-tempo-drain;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.hud-tempo-ring.is-slate .hud-tempo-ring-fill {
+  stroke: #8d9bb3;
+}
+
+@keyframes hud-tempo-drain {
+  to {
+    stroke-dashoffset: 100;
+  }
+}
+
+/* An agreed speed lands: the label pops gold and a ring bursts out of the button. */
+.hud-tempo-label.is-pop {
+  animation: hud-tempo-pop 560ms var(--ui-ease-back);
+}
+
+@keyframes hud-tempo-pop {
+  0% {
+    transform: scale(0.6);
+    color: #fff;
+  }
+  45% {
+    transform: scale(1.38);
+    color: var(--hud-gold);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.hud-tempo-burst {
+  position: absolute;
+  z-index: 0;
+  inset: calc((var(--hud-btn-hit) - var(--hud-btn)) / 2);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 3px var(--hud-gold),
+    0 0 14px 4px rgba(255, 212, 102, 0.6);
+  pointer-events: none;
+  animation: hud-tempo-burst 720ms var(--ui-ease-out) forwards;
+}
+
+@keyframes hud-tempo-burst {
+  from {
+    opacity: 1;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+
+/* ---------------------------------------------------------------- the tag under the controls */
+
+.hud-tempo-tag {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 2px);
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border: 1px solid var(--hud-edge);
+  border-radius: var(--ui-r-pill, 999px);
+  background: var(--hud-panel);
+  color: var(--hud-text);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow:
+    0 0 0 1px rgba(8, 10, 14, 0.85),
+    0 4px 10px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  transform-origin: 85% 0;
+  animation: hud-tag-out 2400ms linear forwards;
+}
+
+/* Phones: the tag hangs below the minimap strip, so the strip's front button stays free. */
+@container hud (max-height: 499px) {
+  .hud-tempo-tag {
+    top: calc(100% + 38px);
+  }
+}
+
+.hud-tempo-tag.is-wait {
+  animation: hud-tag-in var(--ui-dur-small) var(--ui-ease-back) both;
+  border-color: rgba(255, 212, 102, 0.45);
+}
+
+.hud-tempo-tag.is-good {
+  border-color: transparent;
+  background: linear-gradient(180deg, #4fd27c, var(--hud-green));
+  color: #08240f;
+}
+
+.hud-tempo-tag.is-bad {
+  border-color: rgba(255, 122, 107, 0.55);
+  color: #ffc2b8;
+}
+
+.hud-tempo-tag.is-dim {
+  color: var(--hud-dim);
+}
+
+.hud-tempo-tag.is-deny {
+  border-color: transparent;
+  background: var(--hud-deny);
+  color: #fff;
+  animation-duration: 1800ms;
+}
+
+.hud-tempo-secs {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  border-radius: 9px;
+  background: rgba(8, 10, 14, 0.7);
+  color: var(--hud-gold);
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Waiting: three dots, the way a person is typing. */
+.hud-tempo-dots {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.hud-tempo-dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--hud-gold);
+  animation: hud-dots 1050ms var(--ui-ease-standard) infinite;
+}
+
+.hud-tempo-dots i:nth-child(2) {
+  animation-delay: 150ms;
+}
+
+.hud-tempo-dots i:nth-child(3) {
+  animation-delay: 300ms;
+}
+
+@keyframes hud-dots {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
+@keyframes hud-tag-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.86);
+  }
+}
+
+/* An outcome: in with an overshoot, a hold, out (like the denied-press reason, MR-03). */
+@keyframes hud-tag-out {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.86);
+    animation-timing-function: var(--ui-ease-back);
+  }
+  9% {
+    opacity: 1;
+    transform: none;
+  }
+  92% {
+    opacity: 1;
+    transform: none;
+    animation-timing-function: var(--ui-ease-exit);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/* ---------------------------------------------------------------- drop-downs (menu and tempo) */
+
+.hud-live-drop {
+  position: absolute;
+  z-index: 6;
+  top: calc(100% + 6px);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 212px;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid var(--hud-edge);
+  border-radius: var(--ui-r-md, 12px);
+  background: linear-gradient(180deg, rgba(43, 51, 66, 0.97), rgba(24, 29, 39, 0.97));
+  white-space: nowrap;
+  box-shadow:
+    var(--ui-highlight),
+    0 0 0 1px rgba(8, 10, 14, 0.9),
+    var(--ui-e3);
+  transform-origin: 88% 0;
+  animation: hud-live-in var(--ui-dur-small) var(--ui-ease-back) both;
+}
+
+@keyframes hud-live-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.94);
+  }
+}
+
+@keyframes hud-live-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.hud-live-drop-title {
+  color: var(--hud-dim);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hud-live-drop-hint {
+  color: var(--hud-dim);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.hud-tempo-opts {
+  display: grid;
+  grid-template-columns: repeat(3, 58px);
+  gap: 6px;
+}
+
+.hud-tempo-opt {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  height: 52px;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  background: var(--hud-face);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 0 0 1px rgba(8, 10, 14, 0.9),
+    0 2px 0 rgba(0, 0, 0, 0.45);
+  font-size: 16px;
+  font-weight: 900;
+  transition:
+    transform var(--ui-dur-release) var(--ui-ease-back),
+    filter var(--ui-dur-release) var(--ui-ease-out);
+  animation: hud-opt-in var(--ui-dur-small) var(--ui-ease-back) both;
+}
+
+.hud-tempo-opt:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+
+.hud-tempo-opt:active:not(:disabled) {
+  transform: scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
+}
+
+.hud-tempo-opt.is-up b {
+  color: var(--hud-gold);
+}
+
+.hud-tempo-opt.is-down b {
+  color: #9fd4ff;
+}
+
+.hud-tempo-opt.is-now {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1.5px rgba(255, 212, 102, 0.55);
+  background: rgba(8, 10, 14, 0.45);
+  color: var(--hud-dim);
+}
+
+.hud-tempo-opt small {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Faster points up in gold, slower down in blue. */
+.hud-tempo-arrow {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
+
+.hud-tempo-opt.is-up .hud-tempo-arrow {
+  border-bottom: 6px solid var(--hud-gold);
+}
+
+.hud-tempo-opt.is-down .hud-tempo-arrow {
+  border-top: 6px solid #9fd4ff;
+}
+
+@keyframes hud-opt-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.9);
+  }
+}
+
+/* The menu: live header, Mute opponent (a switch), Settings, Retreat (red, asks once more). */
+.hud-live-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hud-live-sub {
+  margin-top: -3px;
+  color: var(--hud-dim);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.hud-live-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 44px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  font-size: 14px;
+  font-weight: 800;
+  text-align: left;
+  transition:
+    transform var(--ui-dur-release) var(--ui-ease-back),
+    background var(--ui-dur-release) var(--ui-ease-out);
+}
+
+.hud-live-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hud-live-item:active {
+  transform: scale(0.97);
+  transition-duration: var(--ui-dur-press);
+}
+
+.hud-live-item.is-danger {
+  color: #ff9d90;
+}
+
+.hud-live-item-text {
+  flex: 1;
+  white-space: nowrap;
+}
+
+.hud-live-menu-drop {
+  min-width: 244px;
+}
+
+.hud-live-switch {
+  position: relative;
+  flex: none;
+  width: 36px;
+  height: 22px;
+  border-radius: 11px;
+  background: #343d4f;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.55);
+  transition: background var(--ui-dur-small) var(--ui-ease-out);
+}
+
+.hud-live-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #cfd6e2;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  transition: translate var(--ui-dur-small) var(--ui-ease-back);
+}
+
+.hud-live-switch.is-on {
+  background: var(--hud-gold-face);
+}
+
+.hud-live-switch.is-on::after {
+  translate: 14px 0;
+  background: #fff;
+}
+
+.hud-live-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 212px;
+  animation: hud-live-fade var(--ui-dur-small) var(--ui-ease-out) both;
+}
+
+.hud-live-confirm-title {
+  font-size: 16px;
+}
+
+.hud-live-confirm-body {
+  color: var(--hud-dim);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.hud-live-confirm-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.hud-live-btn {
+  height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(180deg, var(--ui-secondary-light, #5d6c86), var(--ui-secondary, #46536a));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 0 0 1px rgba(8, 10, 14, 0.9),
+    0 3px 0 var(--ui-secondary-lip, #2a3242);
+  font-size: 14px;
+  font-weight: 900;
+  transition: transform var(--ui-dur-release) var(--ui-ease-back);
+}
+
+.hud-live-btn:active {
+  transform: translateY(2px) scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
+}
+
+.hud-live-btn.is-danger {
+  background: linear-gradient(180deg, #e2554a, var(--hud-deny));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 0 0 1px rgba(8, 10, 14, 0.9),
+    0 3px 0 var(--ui-destructive-lip, #8c2219);
+  color: #fff;
+}
+
+/* ---------------------------------------------------------------- their proposal */
+
+.hud-tempo-prompt {
+  position: absolute;
+  z-index: 6;
+  top: calc(var(--hud-top-h) + 44px);
+  right: max(var(--hud-edge-pad), env(safe-area-inset-right));
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 10px 6px;
+  border: 1px solid rgba(255, 212, 102, 0.5);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(46, 54, 70, 0.97), rgba(24, 29, 39, 0.97));
+  box-shadow:
+    var(--ui-highlight),
+    0 0 0 1px rgba(8, 10, 14, 0.9),
+    0 10px 24px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(242, 181, 44, 0.28);
+  overflow: hidden;
+  pointer-events: auto;
+  transform-origin: 90% 0;
+  animation: hud-tp-in var(--ui-dur-small) var(--ui-ease-back) both;
+}
+
+.hud-tempo-prompt.is-leaving {
+  pointer-events: none;
+  animation: hud-tp-out var(--ui-dur-small-out) var(--ui-ease-exit) both;
+}
+
+@keyframes hud-tp-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.9);
+  }
+  60% {
+    opacity: 1;
+  }
+}
+
+@keyframes hud-tp-out {
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.96);
+  }
+}
+
+.hud-tp-who {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #3b4659, #1c222d);
+  box-shadow:
+    0 0 0 2px var(--ui-team-foe, #e1793a),
+    0 0 0 3.5px var(--hud-ink);
+}
+
+.hud-tp-who .ui-avatar {
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.hud-tp-badge {
+  position: absolute;
+  right: -5px;
+  bottom: -4px;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--hud-gold-face);
+  color: var(--ui-ink, #1d1405);
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
+}
+
+.hud-tp-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.hud-tp-name {
+  color: var(--hud-dim);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.hud-tp-q {
+  color: var(--hud-gold);
+  font-size: 17px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.hud-tp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 44px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 900;
+  white-space: nowrap;
+  transition:
+    transform var(--ui-dur-release) var(--ui-ease-back),
+    filter var(--ui-dur-release) var(--ui-ease-out);
+}
+
+.hud-tp-btn:hover {
+  filter: brightness(1.1);
+}
+
+.hud-tp-btn:active {
+  transform: translateY(2px) scale(var(--ui-press-scale));
+  transition-duration: var(--ui-dur-press);
+}
+
+.hud-tp-btn.is-yes {
+  background: linear-gradient(180deg, var(--ui-primary-light, #ffd466), var(--ui-primary, #f2b52c));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 0 0 1px rgba(8, 10, 14, 0.9),
+    0 3px 0 var(--ui-primary-lip, #b7801a);
+  color: var(--ui-ink, #1d1405);
+}
+
+.hud-tp-btn.is-no {
+  background: linear-gradient(180deg, var(--ui-secondary-light, #5d6c86), var(--ui-secondary, #46536a));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 0 0 1px rgba(8, 10, 14, 0.9),
+    0 3px 0 var(--ui-secondary-lip, #2a3242);
+}
+
+/* The answer window drains along the bottom edge; no answer is a decline. */
+.hud-tp-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--hud-gold-face), var(--hud-gold));
+  transform-origin: 0 50%;
+  animation-name: hud-tp-drain;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes hud-tp-drain {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* ---------------------------------------------------------------- catching up, away */
+
+.hud-catchup {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  place-items: center;
+  background: rgba(8, 10, 14, 0.34);
+  pointer-events: auto;
+  animation: hud-live-fade var(--ui-dur-small) var(--ui-ease-out) both;
+}
+
+.hud-catchup.is-leaving {
+  pointer-events: none;
+  animation: hud-catchup-out 180ms var(--ui-ease-exit) both;
+}
+
+@keyframes hud-catchup-out {
+  to {
+    opacity: 0;
+  }
+}
+
+.hud-catchup-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 6px;
+  min-width: 230px;
+  padding: 12px 18px 12px 14px;
+  border: 1px solid var(--hud-edge);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(46, 54, 70, 0.97), rgba(24, 29, 39, 0.97));
+  box-shadow:
+    var(--ui-highlight),
+    0 0 0 1px rgba(8, 10, 14, 0.9),
+    var(--ui-e3);
+  animation: hud-live-in var(--ui-dur-medium) var(--ui-ease-back) both;
+}
+
+.hud-catchup-icon {
+  grid-row: span 3;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(8, 10, 14, 0.55);
+  color: var(--hud-gold);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 212, 102, 0.4);
+}
+
+.hud-catchup-icon svg {
+  animation: hud-ff 700ms var(--ui-ease-standard) infinite;
+}
+
+@keyframes hud-ff {
+  0% {
+    transform: translateX(-3px);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(2px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-3px);
+    opacity: 0.6;
+  }
+}
+
+.hud-catchup-title {
+  font-size: 16px;
+}
+
+.hud-catchup-bar {
+  display: block;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(8, 10, 14, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.hud-catchup-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--hud-gold-face), var(--hud-gold));
+  transform-origin: 0 50%;
+  transition: transform 120ms linear;
+}
+
+.hud-catchup-behind {
+  color: var(--hud-dim);
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Their proposal card and a moment title (an age, Overdrive) share the band under the top bar on phones:
+   while the card is up, the title shows below it instead of under it (on desktop 25% is already below). */
+.hud-moment {
+  transition: top var(--ui-dur-small) var(--ui-ease-out);
+}
+
+.hud-moment.is-below-ask {
+  top: max(25%, calc(var(--hud-top-h) + 126px));
+}
+
+.hud-moment-away .hud-moment-title {
+  color: #ffd2cb;
+}
+
+.hud-moment-away .hud-moment-sub {
+  background: var(--hud-deny);
+  color: #fff;
+}
+
+/* ---------------------------------------------------------------- reduce motion (U14) */
+
+.hud[data-reduce-motion='true'] :is(.hud-live-drop, .hud-tempo-opt, .hud-tempo-tag.is-wait, .hud-catchup-card, .hud-tempo-prompt) {
+  animation-name: hud-live-fade;
+}
+
+.hud[data-reduce-motion='true'] .hud-tempo-prompt.is-leaving {
+  animation-name: hud-catchup-out;
+}
+
+.hud[data-reduce-motion='true'] :is(.hud-tempo-burst, .hud-tempo-label.is-pop, .hud-catchup-icon svg) {
+  animation: none;
+}
+
+.hud[data-reduce-motion='true'] .hud-tempo-dots i {
+  animation-name: hud-dots-calm;
+}
+
+.hud[data-reduce-motion='true'] .hud-tempo-tag:not(.is-wait) {
+  animation-name: hud-moment-calm;
+}
+
+.hud[data-reduce-motion='true'] .hud-moment {
+  transition: none;
+}
+
+@keyframes hud-dots-calm {
+  0%,
+  60%,
+  100% {
+    opacity: 0.4;
+  }
+  30% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.hud-live-drop, .hud-tempo-opt, .hud-tempo-tag.is-wait, .hud-catchup-card, .hud-tempo-prompt) {
+    animation-name: hud-live-fade;
+  }
+
+  .hud-tempo-prompt.is-leaving {
+    animation-name: hud-catchup-out;
+  }
+
+  :is(.hud-tempo-burst, .hud-tempo-label.is-pop, .hud-catchup-icon svg) {
+    animation: none;
+  }
+
+  .hud-tempo-dots i {
+    animation-name: hud-dots-calm;
+  }
+
+  .hud-moment {
+    transition: none;
+  }
+}

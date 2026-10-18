@@ -1,0 +1,75 @@
+/*
+ * ClothFlag (queue item 37): a flag cut into vertical strips that wave like the lane's cloth. The cloth is a
+ * size container, so each strip shows its own slice of the picture (100cqw is the whole cloth) and overlaps
+ * its neighbour by a pixel, so no seam opens while they move. Only transforms and opacity animate.
+ */
+.ui-cloth {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  container-type: inline-size;
+  pointer-events: none;
+}
+.ui-cloth__strip {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--i) * 100cqw / var(--cloth-n));
+  width: calc(100cqw / var(--cloth-n) + 1px);
+}
+.ui-cloth__s {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.ui-cloth__img,
+.ui-cloth__dark,
+.ui-cloth__light {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-size: 100cqw 100%;
+  background-position: calc(var(--i) * -100cqw / var(--cloth-n)) 0;
+}
+.ui-cloth__img {
+  background-image: var(--cloth-img);
+}
+/* the folds' light and shade, only where the cloth is (the picture is their mask: a swallowtail stays clear) */
+.ui-cloth__dark,
+.ui-cloth__light {
+  opacity: 0;
+  -webkit-mask-image: var(--cloth-img);
+  mask-image: var(--cloth-img);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100cqw 100%;
+  mask-size: 100cqw 100%;
+  -webkit-mask-position: calc(var(--i) * -100cqw / var(--cloth-n)) 0;
+  mask-position: calc(var(--i) * -100cqw / var(--cloth-n)) 0;
+}
+.ui-cloth__dark {
+  background-color: #12081c;
+}
+.ui-cloth__light {
+  background-color: #fffbea;
+}
+/* a picture with no edge of its own (a national flag): the cloth's outline in its own dark, riding the folds */
+.ui-cloth--outline .ui-cloth__img {
+  box-shadow:
+    inset 0 1px 0 rgba(0, 0, 0, 0.6),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6);
+}
+.ui-cloth--outline .is-hoist .ui-cloth__img {
+  box-shadow:
+    inset 0 1px 0 rgba(0, 0, 0, 0.6),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+    inset 1px 0 0 rgba(0, 0, 0, 0.6);
+}
+.ui-cloth--outline .is-fly .ui-cloth__img {
+  box-shadow:
+    inset 0 1px 0 rgba(0, 0, 0, 0.6),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+    inset -2px 0 0 rgba(0, 0, 0, 0.6);
+}

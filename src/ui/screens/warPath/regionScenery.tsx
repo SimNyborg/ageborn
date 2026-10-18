@@ -12,6 +12,7 @@
 import type { AgeId } from '@/contracts';
 import type { ComponentChildren } from 'preact';
 import { ink, shade } from '../../components/tone';
+import { SvgPennant } from '../../components/SvgPennant';
 import { Cel, Contact } from './propKit';
 import type { RegionTheme } from './regionArt';
 
@@ -200,8 +201,8 @@ function Pennant(p: { x: number; y: number; color: string; h?: number }) {
     <g transform={`translate(${p.x} ${p.y})`}>
       <path d={`M0 0 V-${h}`} stroke={ink('#6b4a2e')} stroke-width="3.4" stroke-linecap="round" />
       <path d={`M0 0 V-${h}`} stroke="#8e6440" stroke-width="1.6" stroke-linecap="round" />
-      <path class="wp-flag" d={`M1 -${h} h14 l-4 4 l4 4 h-14 z`} fill={p.color} stroke={ink(p.color)} stroke-width="1.2" stroke-linejoin="round" />
-      <path class="wp-flag" d={`M1 -${h - 4.6} h10.6 l.9 1 l-.9 2 h-10.6z`} fill={shade(p.color)} />
+      {/* the pennant ripples like the lane's cloth (queue item 37) */}
+      <SvgPennant x={1} y={-h} w={14} h={8} notch={4} fill={p.color} stroke={ink(p.color)} strokeWidth={1.2} phase={(p.x % 7) * 0.9} />
     </g>
   );
 }
@@ -730,7 +731,7 @@ export function StartCamp(p: { x: number; y: number; s: number; t: RegionTheme }
       <g transform="translate(36 -4)">
         <path d="M0 0 V-58" stroke="#3b2a1e" stroke-width="3" stroke-linecap="round" />
         <circle cx="0" cy="-59" r="2.8" fill="#ffd466" stroke={INK} stroke-width="1" />
-        <path class="wp-flag" d="M1 -55 H22 L17 -47 L22 -39 H1 Z" fill="var(--ui-team-me)" stroke={INK} stroke-width="1.4" stroke-linejoin="round" />
+        <SvgPennant x={1} y={-55} w={21} h={16} notch={5} fill="var(--ui-team-me)" stroke={INK} strokeWidth={1.4} phase={0.3} />
       </g>
     </g>
   );

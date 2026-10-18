@@ -11,6 +11,11 @@
  * trophies and brings no Amber, capsule or progress. Other modes stake no trophies: a left Skirmish,
  * Quick Battle, Daily, War Path or Conquest battle stays void (A6.3), and their Retreat is a loss with
  * no rewards.
+ *
+ * A live match (Ranked, queue item 34) cannot pause, so leaving its page leaves the match: a reload, a
+ * closed tab or a navigation is this Retreat on the next boot, and a page hidden longer than
+ * `MAX_AWAY_MS` ends the match as a Retreat in the session itself (`session.ts`); a shorter absence is
+ * caught up. No exit from a live match is free, and none costs more than Retreat.
  */
 import type { MatchResultInput, MatchStats, OpponentSpec, SaveDoc, Side } from '@/contracts';
 import type { Services } from './services';

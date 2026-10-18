@@ -59,26 +59,20 @@
   gap: 8px;
   margin-top: 6px;
 }
+/* The flags wave as cloth like the lane's (ClothFlag, queue item 37); the box pops in once and holds still. */
 .cos-flags__flag {
   display: block;
   width: 64px;
   aspect-ratio: 64 / 44;
   transform-origin: 0 50%;
   filter: drop-shadow(0 3px 0 rgba(27, 19, 48, 0.35));
-  animation: cos-flag-wave 2.3s ease-in-out infinite, ui-pop 360ms var(--ui-ease-back, ease-out) both;
+  animation: ui-pop 360ms var(--ui-ease-back, ease-out) both;
 }
 .cos-flags__flag--nation {
   width: 52px;
-  animation-delay: -0.8s, 90ms;
-}
-@keyframes cos-flag-wave {
-  0%,
-  100% {
-    transform: perspective(220px) rotateY(0deg) skewY(0deg);
-  }
-  50% {
-    transform: perspective(220px) rotateY(-15deg) skewY(-2.5deg) scaleX(0.97);
-  }
+  /* a national flag's picture is 4:3 */
+  aspect-ratio: 4 / 3;
+  animation-delay: 90ms;
 }
 .cos-flags--lg .cos-flags__flag {
   width: 92px;

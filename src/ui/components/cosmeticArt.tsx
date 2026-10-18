@@ -10,6 +10,7 @@ import { createContext, type ComponentChildren } from 'preact';
 import { useContext, useEffect, useState } from 'preact/hooks';
 import { avatar as avatarTables } from '@/content/raw/avatar';
 import { AvatarLookView, type ResolvedLook } from './Avatar';
+import { ClothFlag } from './ClothFlag';
 import { useKit, usePortrait } from './kit';
 
 /**
@@ -391,8 +392,44 @@ export function CosmeticTileArt(p: { item: string; age: AgeId; rarity?: 'common'
 }
 
 /**
+ * A flag item as cloth waving like the lane's (queue item 37, {@link ClothFlag}): a base flag in the team
+ * colour (its picture keeps the swallowtail and its own edge) or a national flag (4:3, with the cloth's
+ * outline). `widthPx` is about how wide it is drawn; `still` (Reduce motion) rests it in a soft ripple.
+ * A soft placeholder without a provider.
+ */
+export function ClothItem(p: { item: string; team?: number; still?: boolean; widthPx: number; class?: string; testid?: string }) {
+  const fn = useCosmeticImage();
+  // the game's Reduce motion or the OS's (the kit has both)
+  const kit = useKit();
+  const still = !!p.still || kit.reduceMotion;
+  const nation = p.item.startsWith('nationalFlag.');
+  const url = fn ? fn(p.item, { ...(p.team !== undefined ? { team: p.team } : {}), animate: !still }) : null;
+  if (!url) return <span class={`cos-img cos-img--empty ${p.class ?? ''}`} aria-hidden="true" data-testid={p.testid} />;
+  return (
+    <ClothFlag
+      src={url}
+      aspect={nation ? 3 / 4 : 44 / 64}
+      widthPx={p.widthPx}
+      still={still}
+      outline={nation}
+      seed={clothSeed(`${p.item}|${p.team ?? 0}`)}
+      {...(p.class ? { class: p.class } : {})}
+      {...(p.testid ? { testid: p.testid } : {})}
+    />
+  );
+}
+
+/** A flag's own seed from its key and colour, so two flags on one screen never wave in step. */
+function clothSeed(s: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 0x01000193) >>> 0;
+  return h;
+}
+
+/**
  * A side's flags as a small waving pair (VS screen, profile): the base flag on the team colour and
- * the national flag when the side flies one (A18.9.4). Renders nothing when the side has neither.
+ * the national flag when the side flies one (A18.9.4), each as cloth waving like the lane's (queue item
+ * 37). Renders nothing when the side has neither.
  */
 export function LookFlags(p: { baseFlag?: string | null | undefined; nationalFlag?: string | null | undefined; team: number; testid?: string; still?: boolean; large?: boolean }) {
   if (!p.baseFlag && !p.nationalFlag) return null;
@@ -400,12 +437,12 @@ export function LookFlags(p: { baseFlag?: string | null | undefined; nationalFla
     <span class={`cos-flags${p.still ? ' is-still' : ''}${p.large ? ' cos-flags--lg' : ''}`} data-testid={p.testid}>
       {p.baseFlag ? (
         <span class="cos-flags__flag">
-          <CosmeticImage item={p.baseFlag} team={p.team} />
+          <ClothItem item={p.baseFlag} team={p.team} still={!!p.still} widthPx={p.large ? 92 : 64} />
         </span>
       ) : null}
       {p.nationalFlag ? (
         <span class="cos-flags__flag cos-flags__flag--nation">
-          <CosmeticImage item={p.nationalFlag} />
+          <ClothItem item={p.nationalFlag} still={!!p.still} widthPx={p.large ? 74 : 52} />
         </span>
       ) : null}
     </span>

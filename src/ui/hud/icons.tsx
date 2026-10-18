@@ -402,3 +402,48 @@ export function CrownIcon(p: P) {
     </Svg>
   );
 }
+
+/** The live match menu (no pause in a live match): three rounded bars. */
+export function MenuIcon(p: P) {
+  return (
+    <Svg {...p}>
+      <rect x="4" y="5" width="16" height="3.4" rx="1.7" fill="currentColor" stroke={OUT} stroke-width="1.3" />
+      <rect x="4" y="10.3" width="16" height="3.4" rx="1.7" fill="currentColor" stroke={OUT} stroke-width="1.3" />
+      <rect x="4" y="15.6" width="16" height="3.4" rx="1.7" fill="currentColor" stroke={OUT} stroke-width="1.3" />
+    </Svg>
+  );
+}
+
+/** Ask the opponent (a speed proposal): a speech bubble with three dots. */
+export function AskIcon(p: P) {
+  return (
+    <Svg {...p}>
+      <path d="M4.5 4.5h15a2.5 2.5 0 0 1 2.5 2.5v8a2.5 2.5 0 0 1-2.5 2.5H11l-5 4v-4H4.5A2.5 2.5 0 0 1 2 15V7a2.5 2.5 0 0 1 2.5-2.5z" fill="#fff6dd" stroke={OUT} stroke-width="1.8" stroke-linejoin="round" />
+      <circle cx="7.6" cy="11" r="1.7" fill={OUT} />
+      <circle cx="12" cy="11" r="1.7" fill={OUT} />
+      <circle cx="16.4" cy="11" r="1.7" fill={OUT} />
+    </Svg>
+  );
+}
+
+/** The opponent muted: a speaker with a slash. */
+export function MutedIcon(p: P) {
+  return (
+    <Svg {...p}>
+      <path d="M3.5 9h4l5-4.5v15l-5-4.5h-4z" fill="#e8eef7" stroke={OUT} stroke-width="1.5" stroke-linejoin="round" />
+      <path d="M15 9l6 6M21 9l-6 6" stroke={OUT} stroke-width="3.6" stroke-linecap="round" />
+      <path d="M15 9l6 6M21 9l-6 6" stroke="#ff8a7a" stroke-width="1.7" stroke-linecap="round" />
+    </Svg>
+  );
+}
+
+/** The opponent heard: a speaker with sound waves. */
+export function SoundIcon(p: P) {
+  return (
+    <Svg {...p}>
+      <path d="M3.5 9h4l5-4.5v15l-5-4.5h-4z" fill="#e8eef7" stroke={OUT} stroke-width="1.5" stroke-linejoin="round" />
+      <path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke={OUT} stroke-width="3.4" stroke-linecap="round" />
+      <path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="#9fe0ff" stroke-width="1.5" stroke-linecap="round" />
+    </Svg>
+  );
+}

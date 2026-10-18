@@ -29,7 +29,9 @@ export type DenyTarget =
   | 'emote'
   | 'council'
   | 'flag'
-  | 'fort';
+  | 'fort'
+  /** The live tempo button (queue item 34): a proposal refused (cooldown, one already open). */
+  | 'tempo';
 
 /**
  * Why a press was denied, as an i18n key and its params (ui-plan 4.7, MR-03, MR-67): the label pops

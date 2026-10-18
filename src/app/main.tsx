@@ -18,6 +18,7 @@ import { textureMemory } from '@/visuals/textureMemory';
 import { boot, bootFlags, validateContentInDev } from './boot';
 import { AppController, ART_WAIT_MS } from './controller';
 import type { KeyValueStore } from './eventLog';
+import { silenceable } from './live/silence';
 import { createPixiHost, releaseGpuOnPageHide } from './pixiHost';
 import { documentVisibility, type SessionView } from './session';
 import { AppRoot } from './ui/AppRoot';
@@ -100,10 +101,12 @@ async function start(root: HTMLElement): Promise<void> {
   const arena = arenas?.list?.[booted.save?.arenaIndex ?? 0]?.id ?? 'tar_pits';
 
   const createView = (sim: Sim, mySide: 0 | 1 = 0, o: { spectator?: boolean } = {}): SessionView => {
+    // a live match's catch-up runs silent (queue item 34)
+    const sound = silenceable(services.audio);
     const view = new BattleView({
       sim,
       art,
-      audio: services.audio,
+      audio: sound.audio,
       mySide,
       spectator: o.spectator === true,
       settings: viewSettings(),
@@ -118,13 +121,14 @@ async function start(root: HTMLElement): Promise<void> {
     views.set(sim, view);
     return {
       onEvents: (e) => view.onEvents(e),
-      render: (a, f) => view.render(a, f),
+      render: (a, f, c) => view.render(a, f, c),
       get simFrozen() {
         return view.simFrozen;
       },
       setSpeed: (s) => view.setSpeed(s),
       setPaused: (p) => view.setPaused(p),
       artReady: () => view.artReady(),
+      setSilent: (on) => sound.setSilent(on),
       destroy: () => {
         detachInput();
         detach();

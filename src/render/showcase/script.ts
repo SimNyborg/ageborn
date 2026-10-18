@@ -432,8 +432,8 @@ function recoverMs(a: AttackShow): number {
   return Math.min(900, Math.max(420, a.intervalMs - a.windupMs));
 }
 
-/** The beats of one attack from `from` at `target` (distance `dist` lu), starting at `t0`. */
-function attackBeats(a: AttackShow, from: number, target: number, card: CardId, dist: number, t0: number, o: { variant?: string; by?: KillerKindLike; skipStart?: boolean } = {}): { beats: Beat[]; impact: number; end: number } {
+/** The beats of one attack from `from` at `target` (distance `dist` lu), starting at `t0` (Home's island plays them too). */
+export function attackBeats(a: AttackShow, from: number, target: number, card: CardId, dist: number, t0: number, o: { variant?: string; by?: KillerKindLike; skipStart?: boolean } = {}): { beats: Beat[]; impact: number; end: number } {
   const beats: Beat[] = [];
   if (!o.skipStart) beats.push({ at: t0, k: 'attack', id: from, target, windupMs: a.windupMs, index: a.index, ...(o.variant ? { variant: o.variant } : {}) });
   const fire = t0 + a.windupMs;

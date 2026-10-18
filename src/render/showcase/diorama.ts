@@ -15,12 +15,13 @@
  *   from the caches the stills already filled) and goes live only once they are in, so the still never
  *   gives way to a stand-in. A change (an age, a tile tried on, a sky) leases the new pieces first and
  *   swaps them in when they arrive (the latest change wins); the base pops in, a new scene cross-fades.
- * - **One WebGL context.** Every stage of one `dioramaMount` draws on the same Pixi app (`SharedApp`):
- *   the newest stage takes its canvas, an older one takes it back when the newer goes, and the app
- *   outlives the last stage by a few seconds, so switching the Customize tab re-uses the context and the
- *   textures already on its GPU; then it is destroyed and its context released. World and scene sheets
- *   keep their decoded copies for exactly this (decisions "Safari and iPhone"), so a second context can
- *   upload them; unit sheets are never drawn here.
+ * - **One WebGL context.** Every stage of one `dioramaMount` draws on the same Pixi app (`SharedApp`),
+ *   and so does Home's live island (`home.ts`, through `menuStages`): the newest stage takes its canvas,
+ *   an older one takes it back when the newer goes, and the app outlives the last stage by a few seconds,
+ *   so switching between Home and the Customize tab re-uses the context and the textures already on its
+ *   GPU; then it is destroyed and its context released (at once when a match starts). World and scene
+ *   sheets keep their decoded copies for exactly this (decisions "Safari and iPhone"), so a second context
+ *   can upload them; the island's unit sheets keep theirs through its `showcaseLease`.
  * - **Paused.** No frames while the stage is hidden (`setVisible`: scrolled away, tab hidden). Reduce
  *   motion shows a still frame: the views settle for a moment after each change, then the loop parks
  *   (no weather, no flutter, no scanning turrets).
@@ -58,12 +59,14 @@ import { WORLD_LEFT_LU, WORLD_RIGHT_LU } from '../layout';
 /** The drawing surface: one transparent WebGL Pixi app, moved between the stages that use it. */
 export interface DioramaApp {
   readonly stage: Container;
-  /** Moves the canvas into `host` (a positioned element it fills). */
-  attach(host: HTMLElement): void;
+  /** Moves the canvas into `host` (a positioned element it fills); `label` names the canvas for tests (`data-testid`). */
+  attach(host: HTMLElement, label?: string): void;
   resize(width: number, height: number): void;
   render(): void;
   /** Drops this context's GPU copies of textures no renderer has drawn for `idleMs` (other contexts keep theirs). */
   trim?(idleMs: number): void;
+  /** Bytes of the textures uploaded to this context (the dev memory hook: a second context's share of the GPU). */
+  gpuBytes?(): number;
   destroy(): void;
 }
 
@@ -229,15 +232,29 @@ const dressingKey = (l: DioramaLook): string => JSON.stringify([l.dressing.baseF
 // The shared app
 
 /**
- * One WebGL context for every stage of a mount: the newest stage that wants the app draws on it (its
- * canvas moves into that stage's host), an older one takes it back when the newer is destroyed, and the
- * app is destroyed once no stage has used it for `lingerMs` (its context released with it).
+ * A stage drawing on a {@link SharedApp}: the Customize diorama, Home's live island (`home.ts`). The app
+ * tells the owner to stop drawing when a newer stage takes the canvas, and to draw again when it comes back.
+ */
+export interface SharedAppUser {
+  /** A newer stage took the canvas: stop drawing (keep the views for later). */
+  yieldApp(): void;
+  /** The newer stage went: take the canvas back and draw again. */
+  reclaimApp(): void;
+}
+
+/**
+ * One WebGL context for every stage of a mount (the Customize previews and Home's live island share it):
+ * the newest stage that wants the app draws on it (its canvas moves into that stage's host), an older one
+ * takes it back when the newer is destroyed, and the app is destroyed once no stage has used it for
+ * `lingerMs` (its context released with it), or at once when the last stage asks (a match starts).
  */
 export class SharedApp {
   private app: DioramaApp | null = null;
   private pending: Promise<DioramaApp | null> | null = null;
-  private readonly users: DioramaStage[] = [];
+  private readonly users: SharedAppUser[] = [];
   private linger: ReturnType<typeof setTimeout> | null = null;
+  /** The last stage left asking for the app to go at once (it may still be on its way). */
+  private dropNow = false;
 
   constructor(
     private readonly make: (size: { width: number; height: number }) => Promise<DioramaApp | null>,
@@ -245,11 +262,12 @@ export class SharedApp {
   ) {}
 
   /** The app for `user` (created on first use), which becomes the owner; null without one. */
-  async acquire(user: DioramaStage, size: { width: number; height: number }): Promise<DioramaApp | null> {
+  async acquire(user: SharedAppUser, size: { width: number; height: number }): Promise<DioramaApp | null> {
     if (this.linger) {
       clearTimeout(this.linger);
       this.linger = null;
     }
+    this.dropNow = false;
     if (!this.users.includes(user)) {
       const prev = this.owner();
       this.users.push(user);
@@ -260,7 +278,10 @@ export class SharedApp {
         (app) => {
           this.pending = null;
           this.app = app;
-          if (app && this.users.length === 0) this.scheduleDestroy();
+          if (app && this.users.length === 0) {
+            if (this.dropNow) this.destroyNow();
+            else this.scheduleDestroy();
+          }
           return app;
         },
         () => {
@@ -274,17 +295,24 @@ export class SharedApp {
   }
 
   /** The stage that draws now (the newest user). */
-  owner(): DioramaStage | null {
+  owner(): SharedAppUser | null {
     return this.users[this.users.length - 1] ?? null;
   }
 
-  release(user: DioramaStage): void {
+  /**
+   * `user` is done with the app. `now`: when no stage is left, the app and its context go at once instead of
+   * lingering (Home leaving for a match: the battle's textures should not meet a second context's).
+   */
+  release(user: SharedAppUser, o: { now?: boolean } = {}): void {
     const i = this.users.indexOf(user);
     if (i < 0) return;
     const wasOwner = i === this.users.length - 1;
     this.users.splice(i, 1);
     if (wasOwner) this.owner()?.reclaimApp();
-    if (this.users.length === 0) this.scheduleDestroy();
+    if (this.users.length > 0) return;
+    this.dropNow = o.now === true;
+    if (o.now) this.destroyNow();
+    else this.scheduleDestroy();
   }
 
   /** True while an app exists (tests). */
@@ -292,19 +320,33 @@ export class SharedApp {
     return this.app !== null;
   }
 
+  /** Bytes of the textures this app's renderer holds on the GPU (the dev memory hook; 0 without an app). */
+  gpuBytes(): number {
+    return this.app?.gpuBytes?.() ?? 0;
+  }
+
   private scheduleDestroy(): void {
     if (this.linger) return;
     this.linger = setTimeout(() => {
       this.linger = null;
-      if (this.users.length > 0 || !this.app) return;
-      const app = this.app;
-      this.app = null;
-      try {
-        app.destroy();
-      } catch {
-        // a lost context throws on destroy; nothing left to free then
-      }
+      if (this.users.length > 0) return;
+      this.destroyNow();
     }, this.lingerMs);
+  }
+
+  private destroyNow(): void {
+    if (this.linger) {
+      clearTimeout(this.linger);
+      this.linger = null;
+    }
+    if (!this.app) return;
+    const app = this.app;
+    this.app = null;
+    try {
+      app.destroy();
+    } catch {
+      // a lost context throws on destroy; nothing left to free then
+    }
   }
 }
 
@@ -788,7 +830,8 @@ export async function createDioramaApp(size: { width: number; height: number }):
   const managed = (): Managed | undefined => (app.renderer.texture as unknown as { _managedTextures?: Managed })._managedTextures;
   return {
     stage: app.stage,
-    attach: (host) => {
+    attach: (host, label) => {
+      canvas.setAttribute('data-testid', label ?? 'diorama-canvas');
       if (canvas.parentElement !== host) host.appendChild(canvas);
     },
     resize: (w, h) => app.renderer.resize(w, h),
@@ -799,12 +842,31 @@ export async function createDioramaApp(size: { width: number; height: number }):
       const now = performance.now();
       for (const s of Object.values(m.items)) if (s && typeof s._gcLastUsed === 'number' && s._gcLastUsed >= 0 && now - s._gcLastUsed > idleMs) m.remove(s);
     },
+    gpuBytes: () => {
+      // what this renderer uploaded (RGBA8, a third more with mipmaps), as `visuals/textureMemory.ts` counts the app's
+      const list = (app.renderer.texture as unknown as { managedTextures?: readonly ({ destroyed?: boolean; pixelWidth: number; pixelHeight: number; mipLevelCount: number } | null)[] }).managedTextures ?? [];
+      let bytes = 0;
+      for (const s of list) {
+        if (!s || s.destroyed) continue;
+        const b = Math.max(1, s.pixelWidth) * Math.max(1, s.pixelHeight) * 4;
+        bytes += s.mipLevelCount > 1 ? Math.round((b * 4) / 3) : b;
+      }
+      return bytes;
+    },
     destroy: () => app.destroy({ removeView: true }, { children: true, texture: false, textureSource: false }),
   };
 }
 
-/** The diorama mount for this art provider: every stage it mounts shares one Pixi app (see the module note). */
-export function dioramaMount(art: ArtProvider, o: DioramaDeps = {}): DioramaMount | null {
-  const shared = new SharedApp(o.createApp ?? createDioramaApp, o.lingerMs ?? LINGER_MS);
+/** The shared app every menu stage of one mount draws on (`createApp` and `lingerMs` from the deps). */
+export function sharedMenuApp(o: Pick<DioramaDeps, 'createApp' | 'lingerMs'> = {}): SharedApp {
+  return new SharedApp(o.createApp ?? createDioramaApp, o.lingerMs ?? LINGER_MS);
+}
+
+/**
+ * The diorama mount for this art provider: every stage it mounts shares one Pixi app (see the module note);
+ * `shared` hands it the app another mount draws on too (Home's live island, `menuStages`).
+ */
+export function dioramaMount(art: ArtProvider, o: DioramaDeps & { shared?: SharedApp } = {}): DioramaMount | null {
+  const shared = o.shared ?? sharedMenuApp(o);
   return (host, req) => new DioramaStage(host, req, { ...o, art, shared });
 }

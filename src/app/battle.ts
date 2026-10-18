@@ -13,6 +13,7 @@ import { createFallbackBot } from './fallbackBot';
 import type { MatchSetup } from './matchSetup';
 import type { Services } from './services';
 import { HeavyGapDetector } from './heavyGap';
+import { isLiveMatch, LiveMatch, withoutEmotes } from './live/match';
 import { TrickleDetector } from './trickle';
 import { BattleSessionImpl, type BattleSpeed, type FrameScheduler, type SessionBot, type SessionView, type VisibilitySource } from './session';
 
@@ -41,6 +42,8 @@ export interface BattleHandle {
   readonly trickle: TrickleDetector;
   /** A9.2: the enemy fielded Heavies while the player's age had no Anti-heavy card (a loss tip names it). */
   readonly heavyGap: HeavyGapDetector;
+  /** An online match's live layer (queue item 34: tempo proposals, the opponent's talk), or null offline. */
+  readonly live: LiveMatch | null;
   dispose(): void;
 }
 
@@ -101,7 +104,10 @@ function hasGenerals(content: CompiledContent): boolean {
 export function createBattle(services: Services, setup: MatchSetup, o: BattleOptions): BattleHandle {
   const content = setup.config.content;
   const sim = services.sim.createSim(setup.config);
-  const bots: SessionBot[] = [{ side: 1, controller: opponentController(services, setup, content) }];
+  // An online opponent (queue item 34): no pause, tempo by agreement; its person talks, not the AI's emotes.
+  const live = isLiveMatch(setup.config);
+  const foe = opponentController(services, setup, content);
+  const bots: SessionBot[] = [{ side: 1, controller: live ? withoutEmotes(foe) : foe }];
   if (o.autopilot) bots.push({ side: 0, controller: autopilotController(setup, content, services) });
   const log = services.eventLog;
   const director = new TutorialDirector(setup.script, {
@@ -129,7 +135,9 @@ export function createBattle(services: Services, setup: MatchSetup, o: BattleOpt
     speed: o.speed ?? o.save?.settings.defaultSpeed ?? 1,
     simVersion: services.sim.simVersion,
     foils,
+    live,
   });
+  const liveMatch = live ? new LiveMatch({ session, config: setup.config, muted: o.save?.settings.mutedEmotes === true }) : null;
   const trickle = new TrickleDetector(content, 0);
   const heavyGap = new HeavyGapDetector(setup.config, 0);
   session.onTick((events, s) => {
@@ -157,7 +165,9 @@ export function createBattle(services: Services, setup: MatchSetup, o: BattleOpt
     countdown: signal(-1),
     trickle,
     heavyGap,
+    live: liveMatch,
     dispose() {
+      liveMatch?.dispose();
       unsubscribePrompt();
       session.dispose();
     },

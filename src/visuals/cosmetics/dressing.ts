@@ -28,8 +28,8 @@ import { baseFlagDesign, baseSkinArt, drawDecoration, drawFlag, parseCosmeticKey
 import type { BaseSkinArt, SkinParticles } from './baseSkins';
 import { nationalFlagTexture } from './nationalFlags';
 import { DECO_GROUND, DECO_H, DECO_W, DECORATIONS, type DecorationArt } from './decorations';
-import { BANNER_OUTLINE, FLAG_H, FLAG_W } from './flags';
-import { INK } from './shapes';
+import { BANNER_OUTLINE, FLAG_H, FLAG_W, flagCloth, flagTrim } from './flags';
+import { celRamp, drawShapes, hex, INK, type Ctx2D } from './shapes';
 
 /** Pixels per view-box unit of the baked textures (crisp up to about 4 px per lu on screen). */
 const TEX_PX = 5;
@@ -284,6 +284,36 @@ export interface DressingOptions {
   base?: BaseView;
   seed?: number;
   canvas?: CanvasFactory;
+  /**
+   * A look with neither flag flies a plain banner on the pole instead of no pole (Home's island: the
+   * opponent's banner, grey while no opponent has been found; duck-typed through `createBaseDressing`).
+   * `color` replaces the team colour (null keeps it).
+   */
+  banner?: { color?: number | null } | null;
+}
+
+/**
+ * A plain banner: the base flags' swallowtail cloth (field, fold bands, weave, hem and sleeve) in one colour
+ * with no emblem, outlined in the cloth's own dark, laid out like a base flag's texture (a 2-unit margin).
+ */
+export function drawPlainBanner(ctx: Ctx2D, color: number, px: number): boolean {
+  if (typeof Path2D !== 'function') return false;
+  const p = { team: color };
+  ctx.save();
+  ctx.scale(px, px);
+  ctx.translate(2, 2);
+  const outline = new Path2D(BANNER_OUTLINE);
+  ctx.save();
+  ctx.clip(outline);
+  drawShapes(ctx, flagCloth('common'), p);
+  drawShapes(ctx, flagTrim('common'), p);
+  ctx.restore();
+  ctx.strokeStyle = celRamp(hex(color), 'cloth').line;
+  ctx.lineWidth = 1.6;
+  ctx.lineJoin = 'round';
+  ctx.stroke(outline);
+  ctx.restore();
+  return true;
 }
 
 export class BaseDressing implements BaseDressingView {
@@ -331,7 +361,11 @@ export class BaseDressing implements BaseDressingView {
   // Build
   // -------------------------------------------------------------------------------------------
 
-  private flagTexture(kind: FlagKind, id: string, onReady?: (t: Texture) => void): Texture {
+  private flagTexture(kind: FlagKind | 'banner', id: string, onReady?: (t: Texture) => void): Texture {
+    if (kind === 'banner') {
+      const color = this.o.banner?.color ?? this.o.team;
+      return bake(`banner.plain|${color}`, (FLAG_W + 4) * TEX_PX, (FLAG_H + 4) * TEX_PX, (ctx) => drawPlainBanner(ctx, color, TEX_PX), this.make);
+    }
     if (kind === 'nationalFlag') {
       // Track D's lane cloth (baked from the accurate SVG): shown now, swapped when its bake is in
       const lane = nationalFlagTexture(id);
@@ -372,7 +406,7 @@ export class BaseDressing implements BaseDressingView {
 
   private buildPole(): void {
     const look = this.o.look;
-    const flags: { kind: FlagKind; id: string; lu: number }[] = [];
+    const flags: { kind: FlagKind | 'banner'; id: string; lu: number }[] = [];
     for (const [kind, key, lu] of [
       ['baseFlag', look.baseFlag, BASE_FLAG_LU],
       ['nationalFlag', look.nationalFlag, NATION_FLAG_LU],
@@ -380,6 +414,8 @@ export class BaseDressing implements BaseDressingView {
       const k = key ? parseCosmeticKey(key) : null;
       if (k && k.collection === kind) flags.push({ kind, id: k.id, lu });
     }
+    // no flag of its own: a plain banner where one is asked for (Home's island), else no pole at all
+    if (flags.length === 0 && this.o.banner) flags.push({ kind: 'banner', id: 'plain', lu: BASE_FLAG_LU });
     if (flags.length === 0) return;
     this.fliesNation = flags.some((f) => f.kind === 'nationalFlag');
     const x = DRESSING_ANCHORS.pole * this.facing;
@@ -498,6 +534,14 @@ export class BaseDressing implements BaseDressingView {
   setMotion(o: { reduce: boolean; lite: boolean }): void {
     this.reduce = o.reduce;
     this.lite = o.lite;
+  }
+
+  /**
+   * Where the pole stands in the dressing's own lu (x from its root, the top above the ground), or null
+   * without one (duck-typed: Home's island sizes and places the pole on its own picture).
+   */
+  poleAnchor(): { x: number; top: number } | null {
+    return this.pole.parent ? { x: this.pole.x, top: DRESSING_ANCHORS.poleTop } : null;
   }
 
   update(dtMs: number): void {

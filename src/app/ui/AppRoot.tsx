@@ -4,9 +4,11 @@ import { useEffect, useErrorBoundary, useMemo } from 'preact/hooks';
 import { asContent } from '@/content';
 import { FoundItemsContext } from '@/capsule/summary';
 import { CosmeticArtContext, CosmeticPicturesContext } from '@/ui/components/cosmeticArt';
-import { dioramaMount, showcaseMount } from '@/render';
+import { showcaseMount } from '@/render';
+import { menuStages } from '@/render/showcase';
 import { DioramaContext } from '@/ui/components/diorama';
 import { ShowcaseContext } from '@/ui/components/showcase';
+import { HomeStageContext } from '@/ui/screens/home/homeStage';
 import { cosmeticImageUrl, onCosmeticPicturesChanged } from '@/visuals/cosmetics/art';
 import { CapsuleHost } from '../capsules/CapsuleHost';
 import { CapsuleShows } from '../capsules/capsuleFlow';
@@ -210,8 +212,13 @@ export function AppRoot(p: { ui: AppUi }) {
   // The live card showcase (owner request 2026-10-07): Card detail and the first forced upgrade play the
   // card's real battle art when the app provides a mount (docs/requests/wp11-card-showcase-wiring.md).
   const showcase = useMemo(() => showcaseMount(p.ui.art, { content: p.ui.services.content }), [p.ui.art, p.ui.services.content]);
-  // The Customize diorama (PLAN 2a): render's mount once Track B builds it; null keeps the stills.
-  const diorama = useMemo(() => dioramaMount(p.ui.art, { content: p.ui.services.content }), [p.ui.art, p.ui.services.content]);
+  // The Customize diorama (PLAN 2a) and Home's live island (queue item 37) share one Pixi app and with it one
+  // WebGL context; null mounts keep the stills.
+  const stages = useMemo(() => menuStages(p.ui.art, { content: p.ui.services.content }), [p.ui.art, p.ui.services.content]);
+  useEffect(() => {
+    // `?dev=1`: the shared context's textures for the memory checks (the app's own are in `__agebornDev.memory()`)
+    if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('dev') === '1') (window as Window & { __menuStages?: unknown }).__menuStages = stages;
+  }, [stages]);
   // The capsule and crate summary's found collection items, as picture tiles (PLAN 2a)
   const found = useMemo(
     () =>
@@ -231,19 +238,21 @@ export function AppRoot(p: { ui: AppUi }) {
         {/* a scene or sky still updates itself once its strips have streamed in (Track A) */}
         <CosmeticPicturesContext.Provider value={onCosmeticPicturesChanged}>
           <ShowcaseContext.Provider value={showcase}>
-            <DioramaContext.Provider value={diorama}>
-              <FoundItemsContext.Provider value={found}>
-                <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
-                  <Screen ui={p.ui} meta={meta} shows={shows} />
-                  {shows?.current.value ? null : <FirstUpgrade />}
-                  <AgeDialog />
-                  <TesterDialog />
-                  <div class="ab-rotate" data-testid="rotate">
-                    <div class="ab-rotate-phone" aria-hidden="true" />
-                    <span>{p.ui.t('app.rotate')}</span>
+            <DioramaContext.Provider value={stages.diorama}>
+              <HomeStageContext.Provider value={stages.home}>
+                <FoundItemsContext.Provider value={found}>
+                  <div class="ab-root" data-testid="app" {...(reduceMotion ? { 'data-reduce-motion': '' } : {})}>
+                    <Screen ui={p.ui} meta={meta} shows={shows} />
+                    {shows?.current.value ? null : <FirstUpgrade />}
+                    <AgeDialog />
+                    <TesterDialog />
+                    <div class="ab-rotate" data-testid="rotate">
+                      <div class="ab-rotate-phone" aria-hidden="true" />
+                      <span>{p.ui.t('app.rotate')}</span>
+                    </div>
                   </div>
-                </div>
-              </FoundItemsContext.Provider>
+                </FoundItemsContext.Provider>
+              </HomeStageContext.Provider>
             </DioramaContext.Provider>
           </ShowcaseContext.Provider>
         </CosmeticPicturesContext.Provider>

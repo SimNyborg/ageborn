@@ -8,6 +8,7 @@
 export { Hud, WIDE_HUD_PX } from './Hud';
 export type { HudProps } from './Hud';
 export type { HudViewBridge, HudViewEvent } from './bridge';
+export type { LiveCatchUp, LiveHud, LiveMenuActions, LiveOutcome, LiveProposal, LiveRefusal, LiveSay, LiveSpeed, LiveTempo } from './live';
 export type { Translate } from './context';
 export type { PortraitFn } from './usePortrait';
 export {

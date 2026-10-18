@@ -9,10 +9,11 @@
  * and an outline in its own dark (`tone.ts`), never black. Masonry is laid in offset courses, windows
  * have stone surrounds and sills, roofs overhang and cast a shadow on the wall under them. Coordinates
  * are the diorama's landmark space (600 × 340, the island's back edge at y 196). Decorative SVG only;
- * the flicker, flag and shimmer classes are the diorama's existing ambient motion (still under reduce
- * motion).
+ * the flicker and shimmer classes are the diorama's existing ambient motion and the pennants ripple with
+ * the lane's cloth (`SvgPennant`, queue item 37); all of it still under reduce motion.
  */
 import type { ComponentChildren } from 'preact';
+import { SvgPennant } from '../../components/SvgPennant';
 import { ink, light, shade } from '../../components/tone';
 
 let uid = 0;
@@ -150,7 +151,10 @@ function RoundTower(p: { x: number; w: number; top: number; bottom: number; roof
       <circle cx={cx} cy={apex - 1} r="2.4" fill={GOLD} stroke={ink(GOLD)} stroke-width="1" />
       <path d={`M${cx} ${apex - 2}V${apex - 18}`} stroke={ink(WOOD)} stroke-width="2.6" stroke-linecap="round" />
       <path d={`M${cx} ${apex - 2}V${apex - 18}`} stroke={WOOD} stroke-width="1.2" stroke-linecap="round" />
-      <path class="hd-flag" d={p.flip ? `M${cx} ${apex - 18}h-13l3 3.5l-3 3.5h13z` : `M${cx} ${apex - 18}h13l-3 3.5l3 3.5h-13z`} fill={p.pennant} stroke={ink(p.pennant)} stroke-width="1" stroke-linejoin="round" />
+      {/* the pennant ripples with the lane's cloth (queue item 37); a flipped tower's flies the other way */}
+      <g transform={p.flip ? `translate(${2 * cx} 0) scale(-1 1)` : undefined}>
+        <SvgPennant x={cx} y={apex - 18} w={13} h={7} notch={3} fill={p.pennant} stroke={ink(p.pennant)} strokeWidth={1} phase={(x % 9) * 0.7} />
+      </g>
     </g>
   );
 }
@@ -219,8 +223,7 @@ export function Keep() {
       <path d="M300 55V28" stroke={ink(WOOD)} stroke-width="3.6" stroke-linecap="round" />
       <path d="M300 55V28" stroke={WOOD} stroke-width="1.8" stroke-linecap="round" />
       <circle cx="300" cy="27" r="2.2" fill={GOLD} stroke={ink(GOLD)} stroke-width="1" />
-      <path class="hd-flag" d="M301 29 h20 l-5 5.5 l5 5.5 h-20 z" fill={GOLD} stroke={ink(GOLD)} stroke-width="1.2" stroke-linejoin="round" />
-      <path d="M301 35h18" stroke={shade(GOLD)} stroke-width="1.4" opacity=".7" />
+      <SvgPennant x={301} y={29} w={20} h={11} notch={5} fill={GOLD} stroke={ink(GOLD)} strokeWidth={1.2} phase={2.3} />
 
       {/* round towers flanking the wall */}
       <RoundTower x={214} w={34} top={106} bottom={200} roofH={46} grad={grad} flip pennant={BANNER} />

@@ -1,7 +1,8 @@
 /**
  * The big flag of the Flag Atlas (PLAN 2d "the big view gets a cloth wave; still under reduce motion"):
  * the vendored design (`src`, the flag's SVG from the cosmetic art function) on a pole, drawn on a canvas
- * in vertical strips that ripple from the hoist to the fly. The cloth follows the art sheet (AUDIT §3.1):
+ * in vertical strips that ripple from the hoist to the fly with the lane cloth's waves and the odd gust
+ * (`components/clothWave.ts`, queue item 37), as every flag in the game. The cloth follows the art sheet (AUDIT §3.1):
  * hard-edged fold bands that travel with the ripple (a shadow band where the cloth turns away, a light
  * band where it faces the light), a sheen from the top left, a darker hoist hem, and an outline in the
  * flag's own dark (black at 62% over its colours: fill × 0.38, never ink black), plus a cast shadow.
@@ -11,14 +12,19 @@
  * draws one still pose and the unfurl becomes a fade. The loop runs only while the canvas is on screen.
  */
 import { useEffect, useRef } from 'preact/hooks';
+import { clothLift, clothPull } from '../../components/clothWave';
 
-/** Fold bands: where the slope of the ripple passes these, a shadow or light band is drawn (cel cut). */
-const SHADE_AT = 0.42;
-const LIGHT_AT = -0.58;
-/** Ripple: waves along the cloth, speed (radians per second) and amplitude (share of the cloth height). */
-const WAVES = 1.15;
-const SPEED = 3.1;
-const AMP = 0.055;
+/**
+ * Fold bands: where the cloth's slope (cloth heights per cloth length) passes these, a shadow or light band
+ * is drawn (cel cut). The ripple is the lane's cloth wave (`components/clothWave.ts`, queue item 37): two
+ * waves from the hoist with the odd gust, the cloth pulled a little toward the pole.
+ */
+const SHADE_AT = 0.11;
+const LIGHT_AT = -0.13;
+/** The ripple's largest lift (share of the cloth height, a gust included), for the room around the cloth. */
+const AMP = 0.085;
+/** The big flag's own phase in the lane's waves. */
+const PHASE = 0.7;
 const UNFURL_MS = 760;
 
 /** easeOutBack-like overshoot for the unfurl's width (0..1 → 0..1, peaking at about 1.06). */
@@ -209,15 +215,16 @@ export function WavingFlag(p: { src: string | null; still: boolean; unfurl: numb
       const top: number[] = [];
       for (let x = 0; x <= fw; x += step) {
         const u = x / fw;
-        const ph = t * SPEED - u * WAVES * Math.PI * 2;
-        const a = L.amp * Math.pow(u, 0.85) * boost;
-        const dy = Math.sin(ph) * a;
-        const dx = L.x0 + x * open;
+        const u2 = Math.min(1, (x + step) / fw);
+        const lift = clothLift(u, t, PHASE);
+        const dy = lift * L.fh * boost;
+        // pulled a little toward the pole as it ripples (the lane cloth's pull)
+        const dx = L.x0 + (x - clothPull(u, t, PHASE) * fw) * open;
         const w = Math.min(step, fw - x) * open + 0.75;
         top.push(dx, y0 + dy);
         if (x < fw) {
           lc.drawImage(src, (x / fw) * src.width, 0, Math.max(1, (step / fw) * src.width), src.height, dx, y0 + dy, w, fh);
-          const slope = Math.cos(ph) * Math.pow(u, 0.6) * Math.min(1.4, boost);
+          const slope = u2 > u ? ((clothLift(u2, t, PHASE) - lift) / (u2 - u)) * Math.min(1.4, boost) : 0;
           if (slope > SHADE_AT || slope < LIGHT_AT) {
             lc.globalCompositeOperation = 'source-atop';
             lc.fillStyle = slope > SHADE_AT ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.12)';

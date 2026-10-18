@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
 import { useConfirmSpend } from '../../components/confirm';
 import { AvatarLookView, resolveLook, type ResolvedLook } from '../../components/Avatar';
-import { BackdropLook, BaseThumb, CosmeticImage, FlagTileImage, QuoteBubble, SceneThumb, useCosmeticImage, useFlagAtlasReady, type BubbleTail } from '../../components/cosmeticArt';
+import { BackdropLook, BaseThumb, ClothItem, CosmeticImage, FlagTileImage, QuoteBubble, SceneThumb, useCosmeticImage, useFlagAtlasReady, type BubbleTail } from '../../components/cosmeticArt';
 import { formatInt } from '../../components/format';
 import { CapsuleIcon, CheckIcon, ChevronIcon, CrateIcon, CrownIcon, DustIcon, FlagIcon, GlobeIcon, LockIcon, RARITY_COLOR, RarityGem, StarIcon, TrophyIcon } from '../../components/icons';
 import { Modal } from '../../components/Modal';
@@ -794,7 +794,8 @@ function AtlasCard(p: { equipped: string | null }) {
         <GlobeIcon size={30} />
       </span>
       <span class={`cos-atlas__flag${p.equipped ? '' : ' is-none'}`} aria-hidden="true">
-        {p.equipped ? <CosmeticImage item={p.equipped} /> : null}
+        {/* the flag you fly, waving like the lane's cloth (queue item 37) */}
+        {p.equipped ? <ClothItem item={p.equipped} widthPx={54} /> : null}
       </span>
       <span class="cos-atlas__text">
         <b>{t('cosmetic.ui.atlas')}</b>

@@ -19,7 +19,7 @@ import type { AgeId, CosmeticLoadout, DioramaHandle, DioramaRequest, SaveDoc, Si
 import { MOTION_DUR } from '@/core/motion';
 import type { ComponentChildren, RefObject } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { BackdropLook, BaseLook, CosmeticImage } from '../../components/cosmeticArt';
+import { BackdropLook, BaseLook, ClothItem, CosmeticImage } from '../../components/cosmeticArt';
 import { useDiorama } from '../../components/diorama';
 import { useUi } from '../context';
 import { equippedOf, findItem } from '../model/cosmetics';
@@ -208,12 +208,13 @@ export function BaseMock(p: { age: AgeId; look?: Partial<CosmeticLoadout>; skinK
         <span class={`cos-mock__cap cos-mock__cap--${(eq.baseFlag ? findItem(content, eq.baseFlag)?.rarity : undefined) ?? 'common'}`} key={`cap-${eq.baseFlag ?? ''}`} />
         {eq.baseFlag ? (
           <span class="cos-mock__flag cos-mock__flag--base" key={eq.baseFlag}>
-            <CosmeticImage item={eq.baseFlag} />
+            {/* the flags wave like the lane's cloth (queue item 37) */}
+            <ClothItem item={eq.baseFlag} widthPx={64} />
           </span>
         ) : null}
         {eq.nationalFlag ? (
           <span class="cos-mock__flag cos-mock__flag--nation" key={eq.nationalFlag}>
-            <CosmeticImage item={eq.nationalFlag} />
+            <ClothItem item={eq.nationalFlag} widthPx={52} />
           </span>
         ) : null}
       </div>

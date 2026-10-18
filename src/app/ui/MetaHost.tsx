@@ -68,11 +68,12 @@ export function MetaHost(p: MetaHostProps) {
     () => ({
       battle: (): ComponentChildren => {
         const r = ui.controller.route.value;
-        return r.id === 'battle' ? <BattleScreen battle={r.battle} externalPause /> : null;
+        // a live match's menu opens Settings over the running battle (queue item 34)
+        return r.id === 'battle' ? <BattleScreen battle={r.battle} externalPause onSettings={() => p.meta.router.go({ id: 'settings' }, { overlay: true })} /> : null;
       },
       ...p.slots,
     }),
-    [ui, p.slots],
+    [ui, p.slots, p.meta.router],
   );
   const { base } = visibleEntries(p.meta.router.stack.value);
   // The five tabs (ui-plan 2.2): locks, the next unlock and the ready badges follow the save.

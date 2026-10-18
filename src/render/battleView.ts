@@ -1206,10 +1206,14 @@ export class BattleView {
     this.evolveReady = ready;
   }
 
-  /** Draws one frame. `alpha` = acc / 50 from the session, `frameMs` the real frame time. */
-  render(alpha: number, frameMs: number): void {
+  /**
+   * Draws one frame. `alpha` = acc / 50 from the session, `frameMs` the real frame time. `catchUp`: a live
+   * match's catch-up step (queue item 34, `session.ts`) ages the scene by `frameMs` but is not a drawn
+   * frame, so the Auto preset does not count it.
+   */
+  render(alpha: number, frameMs: number, catchUp = false): void {
     const realDt = Math.max(0, Math.min(frameMs, 250));
-    if (this.autoPreset.frame(frameMs)) {
+    if (!catchUp && this.autoPreset.frame(frameMs)) {
       this.applySettings(this.settings);
       this.onPresetChange?.(this.autoPreset.preset);
     }

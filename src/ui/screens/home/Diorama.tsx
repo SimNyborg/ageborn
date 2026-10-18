@@ -10,20 +10,30 @@
  * `base.<age>` with the side's base skin: its model, or the standard base with the skin's tint; the AI's
  * in its team colour), so swapping art changes them here too; the island,
  * landmark and props are code-drawn chrome like the War Path regions. Each side's frontline troops
- * (your War Plan's first units, the AI's from its plan; ArtProvider portraits) stand in the lane:
- * they breathe, the back ones taunt with a hop, and every few seconds the front pair lunges in for a
- * near-clash with a spark and springs back (anticipation, stretch, recoil, settle). Ambient life
- * (the island's float, smoke, water, flags, snow, neon, motes) is CSS and stills under reduce
+ * (your War Plan's first units with their skins, the opponent's from its plan) stand in the lane.
+ *
+ * **Live island** (owner request 2026-10-16, queue item 37): when the app provides the Home stage
+ * (`homeStage.ts`), the troops play their real battle clips on a transparent Pixi layer over the island
+ * (idle breathing, weight shifts on planted feet, now and then the front pair walks in and trades blows with
+ * the battle's sparks and hit-stop, a shooter looses a shot, a cheer) and the flags wave with the lane's
+ * cloth; the layer floats with the island. It starts once Home is idle, pauses while a sheet covers Home or
+ * the island is off screen, and goes with Home. Until it draws (and for good under Reduce motion, without
+ * WebGL or a mount) the still island shows: the troops as portraits that breathe and now and then lunge in
+ * (CSS), the flags as pictures.
+ *
+ * Ambient life (the island's float, smoke, water, snow, neon, motes) is CSS and stills under reduce
  * motion. Deterministic, decorative (`aria-hidden`).
  */
-import type { AgeId, CardId, Side } from '@/contracts';
+import type { AgeId, CardId, CosmeticKey, Side, SkinId, SoundId, TeamPreset } from '@/contracts';
 import type { ArenaId } from '@/content/types';
 import { fnv1a32, mulberry32 } from '@/core';
 import type { ComponentChildren } from 'preact';
-import { useMemo } from 'preact/hooks';
+import { useMemo, useRef } from 'preact/hooks';
 import { useCosmeticImage } from '../../components/cosmeticArt';
+import { SvgPennant } from '../../components/SvgPennant';
 import { usePortrait } from '../../components/kit';
 import { ink, light, shade } from '../../components/tone';
+import { useHomeStage, type HomeStagePole, type HomeStageRequest, type HomeStageTroop } from './homeStage';
 import { Keep, Volcano } from './landmarks';
 import { SkinnedBase } from './skinnedBase';
 import { boulder, broadleaf, Cel, crystal, Grove, type KitProp, pine } from '../warPath/propKit';
@@ -61,6 +71,27 @@ export const ISLANDS: Readonly<Record<ArenaId, IslandPalette>> = {
 
 const W = 600;
 const H = 340;
+
+/**
+ * The live island's layout in the picture's units: the lane's middle and its front line, where each troop
+ * stands (the still troops' boxes: front 35% and back 24% in from each side), the flag poles (yours beside
+ * your gate, the opponent's mirrored) and how many units one lu is (troops about as tall as the still ones).
+ */
+export const LIVE_ISLAND = { width: W, height: H, center: 300, ground: 224, unitsPerLu: 0.98 } as const;
+const LIVE_SPOTS: Readonly<Record<Side, readonly [{ x: number; y: number }, { x: number; y: number }]>> = {
+  0: [
+    { x: 247.5, y: 224 },
+    { x: 181.5, y: 219 },
+  ],
+  1: [
+    { x: 352.5, y: 224 },
+    { x: 418.5, y: 219 },
+  ],
+};
+const LIVE_POLES: Readonly<Record<Side, { x: number; y: number; height: number }>> = {
+  0: { x: 170, y: 214, height: 104 },
+  1: { x: 430, y: 214, height: 104 },
+};
 
 type Rng = { next(): number };
 
@@ -189,7 +220,7 @@ function Landmark(p: { arena: ArenaId }): ComponentChildren {
             <Cel d="M284 142 Q322 156 284 188Z" fill="#f2ead2" band="M300 142H340V190H300Z" sw={1.6} />
             <Cel d="M324 116 Q350 128 324 146Z" fill="#f2ead2" band="M334 116H360V150H334Z" sw={1.6} />
             <Cel d="M324 150 Q354 162 324 188Z" fill="#f2ead2" band="M336 150H364V190H336Z" sw={1.6} />
-            <path class="hd-flag" d="M283 94 h16 l-4 4 l4 4 h-16z" fill="#b8453a" stroke={ink('#b8453a')} stroke-width="1.2" />
+            <SvgPennant x={283} y={94} w={16} h={8} notch={4} fill="#b8453a" stroke={ink('#b8453a')} strokeWidth={1.2} phase={0.5} />
           </g>
         </g>
       );
@@ -377,7 +408,7 @@ function FlagPole(p: { id: string; x: number; y: number; team: string; baseFlag:
     );
   }
   return (
-    <g transform={`translate(${p.x} ${p.y})`} data-testid="hub-flagpole">
+    <g class="hd-still" transform={`translate(${p.x} ${p.y})`} data-testid="hub-flagpole">
       <ellipse cx="0" cy="0" rx="7" ry="2" fill="#000" opacity=".3" />
       <path d={`M0 0 V-${top}`} stroke={ink('#6b4a2e')} stroke-width="4.6" stroke-linecap="round" />
       <path d={`M0 0 V-${top}`} stroke="#8e6440" stroke-width="2.4" stroke-linecap="round" />
@@ -392,7 +423,7 @@ function FlagPole(p: { id: string; x: number; y: number; team: string; baseFlag:
 /** A banner on a pole, waving (team colour), with a shaded fold and its own dark edge. */
 function Banner(p: { x: number; y: number; color: string; flip?: boolean }) {
   return (
-    <g transform={`translate(${p.x} ${p.y})${p.flip ? ' scale(-1 1)' : ''}`}>
+    <g class="hd-still" transform={`translate(${p.x} ${p.y})${p.flip ? ' scale(-1 1)' : ''}`}>
       <ellipse cx="0" cy="0" rx="7" ry="2" fill="#000" opacity=".3" />
       <path d="M0 0 V-62" stroke={ink('#6b4a2e')} stroke-width="4.6" stroke-linecap="round" />
       <path d="M0 0 V-62" stroke="#8e6440" stroke-width="2.4" stroke-linecap="round" />
@@ -457,6 +488,49 @@ function LaneUnit(p: { card: CardId; side: Side; slot: 0 | 1 }) {
  */
 export type FoeLook = 'ai' | 'unknown' | 'searching' | 'found';
 
+/** What the live island needs beyond the still picture (HomeScreen passes it; absent: the still only). */
+export interface DioramaLive {
+  /** A sheet or panel covers Home (or the launch has begun): the live island stops drawing. */
+  paused: boolean;
+  /** Home is leaving for a match: the live island lets its WebGL context go at once. */
+  leaving: boolean;
+  /** Reduce motion: the still island stays (no live layer). */
+  reduce: boolean;
+  lite: boolean;
+  teamPreset: TeamPreset;
+  /** Your troops' equipped skins, by card. */
+  skins: Readonly<Record<string, SkinId>>;
+  /** The opponent's flags once a player is found (the AI flies a plain banner). */
+  foeFlags?: { baseFlag: CosmeticKey | null; nationalFlag: CosmeticKey | null } | null;
+  /** The opponent's troops before they show (the ranked search's prepared opponent): loaded, not drawn. */
+  foeNext?: readonly CardId[];
+  sound?: (id: SoundId, o?: { pitchBp?: number; volumeDb?: number }) => void;
+}
+
+/** The live island's request for these troops and flags, or null when it should not run (Reduce motion). */
+export function liveIslandRequest(p: { arena: ArenaId; mine: readonly CardId[]; foe: readonly CardId[]; hidden: boolean; myFlags?: { baseFlag: string | null; nationalFlag: string | null } | undefined; live: DioramaLive }): HomeStageRequest | null {
+  if (p.live.reduce) return null;
+  const troops: HomeStageTroop[] = [];
+  p.mine.slice(0, 2).forEach((card, i) => troops.push({ side: 0, slot: i as 0 | 1, card, skin: p.live.skins[card] ?? null, ...LIVE_SPOTS[0][i]! }));
+  p.foe.slice(0, 2).forEach((card, i) => troops.push({ side: 1, slot: i as 0 | 1, card, skin: null, ...LIVE_SPOTS[1][i]! }));
+  const flag = (k: string | null | undefined): CosmeticKey | null => (k ? (k as CosmeticKey) : null);
+  const poles: HomeStagePole[] = [
+    { side: 0, ...LIVE_POLES[0], baseFlag: flag(p.myFlags?.baseFlag), nationalFlag: flag(p.myFlags?.nationalFlag) },
+    { side: 1, ...LIVE_POLES[1], baseFlag: p.hidden ? null : (p.live.foeFlags?.baseFlag ?? null), nationalFlag: p.hidden ? null : (p.live.foeFlags?.nationalFlag ?? null), ...(p.hidden ? { grey: true } : {}) },
+  ];
+  return {
+    troops,
+    poles,
+    island: LIVE_ISLAND,
+    teamPreset: p.live.teamPreset,
+    lite: p.live.lite,
+    seed: fnv1a32(`home:${p.arena}:${p.mine.join(',')}:${p.foe.join(',')}`),
+    // always sent (empty when none), so a cancelled search lets the preloaded sheets go
+    preload: (p.live.foeNext ?? []).slice(0, 2).map((card) => ({ card })),
+    ...(p.live.sound ? { sound: p.live.sound } : {}),
+  };
+}
+
 export function Diorama(p: {
   arena: ArenaId;
   age: AgeId;
@@ -471,11 +545,17 @@ export function Diorama(p: {
   launching?: boolean;
   /** Your equipped flags (owned keys or null): with either, your base flies the lane's flag pole instead of the plain banner. */
   myFlags?: { baseFlag: string | null; nationalFlag: string | null };
+  /** The live island's settings (absent: the still island only). */
+  live?: DioramaLive;
 }) {
   const look = p.foeLook ?? 'ai';
   const hidden = look === 'unknown' || look === 'searching';
   const pal = ISLANDS[p.arena];
   const seed = fnv1a32(`hub:${p.arena}`);
+  const liveHost = useRef<HTMLDivElement>(null);
+  // the live island's request (small; the hook sends a change only when its content changed)
+  const req = p.live ? liveIslandRequest({ arena: p.arena, mine: p.mine ?? [], foe: p.foe ?? [], hidden, myFlags: p.myFlags, live: p.live }) : null;
+  const live = useHomeStage(liveHost, req, { paused: !!p.live?.paused, leaving: !!p.live?.leaving || !!p.launching });
   const top = useMemo(() => islandTop(seed), [seed]);
   const cliff = useMemo(() => cliffParts(seed), [seed]);
   const patches = useMemo(() => {
@@ -495,8 +575,9 @@ export function Diorama(p: {
   const id = `hd-${p.arena}`;
   return (
     <div
-      class={`hd${p.launching ? ' is-launching' : ''}${(p.mine?.length ?? 0) > 0 && (p.foe?.length ?? 0) > 0 ? ' has-units' : ''} is-foe-${look}`}
+      class={`hd${p.launching ? ' is-launching' : ''}${(p.mine?.length ?? 0) > 0 && (p.foe?.length ?? 0) > 0 ? ' has-units' : ''} is-foe-${look}${live ? ' is-live' : ''}`}
       data-arena={p.arena}
+      data-live={live ? 'true' : undefined}
       aria-hidden="true"
       data-testid="hub-diorama"
     >
@@ -616,6 +697,8 @@ export function Diorama(p: {
               </i>
             ) : null}
           </span>
+          {/* the live island's Pixi layer (troops and flags), over the bases and under the search fog */}
+          {req ? <div class="hd__live" ref={liveHost} /> : null}
           {look === 'searching' ? (
             <span class="hd__fog">
               <i class="hd__fog-a" />

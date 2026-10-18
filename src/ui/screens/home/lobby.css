@@ -687,6 +687,8 @@
 }
 .hd__fog {
   position: absolute;
+  /* over the live island's layer (its grey banner fogs over with the base) */
+  z-index: 3;
   right: 0;
   bottom: 22%;
   width: 46%;
@@ -756,6 +758,7 @@
 }
 .hd__dust {
   position: absolute;
+  z-index: 3;
   right: 6%;
   bottom: 30%;
   width: 26%;

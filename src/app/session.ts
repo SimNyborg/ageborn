@@ -18,6 +18,13 @@
  *   Emotes of the other side are relayed to bots that answer them (A7.2).
  * - Pause, speed (1x / 1.5x / 2x), global freezes (`view.simFrozen`, A12) and the visibility pause
  *   (the tab is hidden) stop time. The HUD model signal updates at 15 Hz (B6 HUD).
+ * - A live match (`live`, an online opponent; owner request 2026-10-13, queue item 34) never pauses and
+ *   has no tempo of its own: a player's pause becomes a menu request (`pauseAsks`), a hidden tab does not
+ *   pause, and the speed changes only through `setAgreedSpeed` (the live layer's proposals, `live/`).
+ *   Time the page missed (a hidden tab, a suspended app: frames stop) is caught up on return: the missed
+ *   ticks run without drawing each frame, a slice per frame, with the view silent and input held
+ *   (`catchUp`); the bots keep playing through them. Away longer than `MAX_AWAY_MS` counts as leaving
+ *   the match: a Retreat, as a reload does (`abandon.ts`).
  * - When the sim reports an outcome the session stops stepping (the view keeps animating), reduces
  *   `MatchStats`, builds the `ReplayDoc` and calls the `onEnd` listeners. What happens next (meta
  *   rewards, save, replay ring) is the app flow's job (`flow.ts`).
@@ -46,7 +53,7 @@ import type {
   TimedCommand,
 } from '@/contracts';
 import { RingBuffer } from '@/core';
-import { FixedStepClock, HudModelBuilder, type HudExtras } from '@/render';
+import { FixedStepClock, HudModelBuilder, MAX_FRAME_MS, TICK_MS, type HudExtras } from '@/render';
 import { createStatsTracker, type StatsTracker } from '@/sim';
 import type { Content } from '@/content';
 import { createFeatTracker, type FeatTracker } from '@/meta';
@@ -57,7 +64,8 @@ export type BattleSpeed = 1 | 1.5 | 2;
 /** What the session needs from a battle view. `render/BattleView` satisfies it. */
 export interface SessionView {
   onEvents(events: readonly SimEvent[]): void;
-  render(alpha: number, frameMs: number): void;
+  /** `catchUp`: a live match's catch-up step, which ages the scene but is no drawn frame (not timed). */
+  render(alpha: number, frameMs: number, catchUp?: boolean): void;
   /** True during a global freeze (A12): no sim time passes. */
   readonly simFrozen: boolean;
   setSpeed(s: number): void;
@@ -68,6 +76,8 @@ export interface SessionView {
    * null when it already has. The controller starts the clock only then, so no unit appears without its art.
    */
   artReady?(): Promise<void> | null;
+  /** Mutes the view's sounds while a live match catches up (queue item 34; `live/silence.ts`). */
+  setSilent?(on: boolean): void;
 }
 
 /** Builds HUD models for the player's side. `render/HudModelBuilder` satisfies it. */
@@ -84,10 +94,12 @@ export interface FrameScheduler {
   now(): number;
 }
 
-/** Tells the session when the page is hidden (visibility pause). */
+/** Tells the session when the page is hidden (visibility pause; a live match's away time). */
 export interface VisibilitySource {
   readonly hidden: boolean;
   subscribe(cb: (hidden: boolean) => void): () => void;
+  /** The wall clock for away times (`Date.now`); without it the frame clock measures them. */
+  now?(): number;
 }
 
 /** A bot controlling one side (an AI General, the tutorial's Old Grogg, or a dev autopilot). */
@@ -120,7 +132,38 @@ export interface BattleSessionOptions {
   foils?: Partial<Record<CardId, Foil>>;
   /** Destroy the view on `dispose` (the session created it). Default true. */
   ownsView?: boolean;
+  /**
+   * A live (online) match (queue item 34): no pause, no player-set speed, no visibility pause; missed time
+   * is caught up. `isLiveMatch` (`live/match.ts`) decides it from the match config.
+   */
+  live?: boolean;
+  /**
+   * The wall clock for a live match's away time (a suspended app may stop the frame clock). Default: the
+   * visibility source's clock (`Date.now` in the browser), else the frame clock.
+   */
+  wallClock?: () => number;
 }
+
+/** A live match's catch-up in progress: how far behind it still is and how much is done. */
+export interface CatchUpState {
+  /** Game time still to run (ms). */
+  behindGameMs: number;
+  /** Real time still behind (ms, at the current speed). */
+  behindMs: number;
+  /** Of this catch-up, bp done. */
+  doneBp: number;
+}
+
+/**
+ * A live match away from the page longer than this (one absence) has been left: it ends as a Retreat (a
+ * loss with no rewards, the same as a reload, `abandon.ts`). Shorter absences are caught up; the time owed
+ * never exceeds this either.
+ */
+export const MAX_AWAY_MS = 120_000;
+/** Wall time per frame a catch-up may use, so the page stays responsive and the cue can move. */
+export const CATCH_UP_BUDGET_MS = 12;
+/** During a catch-up the view is advanced every this many ticks (its effects and corpses age with the sim). */
+const CATCH_UP_RENDER_TICKS = 5;
 
 export interface SessionResult {
   input: MatchResultInput;
@@ -141,16 +184,29 @@ export function browserScheduler(): FrameScheduler {
   };
 }
 
-/** Browser visibility source over `document.visibilityState` (app only). */
+/**
+ * Browser visibility source over `document.visibilityState` (app only). `pagehide` counts as hidden and
+ * `pageshow` as shown again (Safari freezes a page into the back-forward cache without a visibility change).
+ */
 export function documentVisibility(doc: Document = document): VisibilitySource {
+  const win = doc.defaultView;
   return {
     get hidden() {
       return doc.visibilityState === 'hidden';
     },
+    now: () => Date.now(),
     subscribe(cb) {
       const on = () => cb(doc.visibilityState === 'hidden');
+      const hide = () => cb(true);
+      const show = () => cb(doc.visibilityState === 'hidden');
       doc.addEventListener('visibilitychange', on);
-      return () => doc.removeEventListener('visibilitychange', on);
+      win?.addEventListener('pagehide', hide);
+      win?.addEventListener('pageshow', show);
+      return () => {
+        doc.removeEventListener('visibilitychange', on);
+        win?.removeEventListener('pagehide', hide);
+        win?.removeEventListener('pageshow', show);
+      };
     },
   };
 }
@@ -206,6 +262,24 @@ export class BattleSessionImpl implements BattleSession {
   private pauseReasonValue: PauseReason | null = null;
   /** Commands a bot returned for the other side; dropped (a bot may only command its own side). */
   droppedBotCommands = 0;
+  /** A live match (queue item 34): no pause, tempo only by agreement, missed time caught up. */
+  readonly live: boolean;
+  private readonly wallClock: (() => number) | null;
+  private readonly pauseAsksSig = signal(0);
+  private readonly catchUpSig = signal<CatchUpState | null>(null);
+  private readonly awaySig = signal(false);
+  private readonly frameListeners = new Set<(nowMs: number) => void>();
+  /** The frame clock when there is no scheduler (tests and headless tools): the sum of `advance` calls. */
+  private manualNow = 0;
+  /** Game time a live match still has to catch up (ms). */
+  private owedGameMs = 0;
+  /** The size of the catch-up in progress (game ms), for its progress. */
+  private owedTotalMs = 0;
+  /** Wall time the page went hidden, and the away time measured when it came back (live). */
+  private hiddenWallAt: number | null = null;
+  private awayWallMs = 0;
+  /** Frame time processed while hidden (a browser that still runs some frames in the background). */
+  private hiddenFrameMs = 0;
 
   constructor(o: BattleSessionOptions) {
     this.sim = o.sim;
@@ -218,7 +292,10 @@ export class BattleSessionImpl implements BattleSession {
     this.simVersion = o.simVersion;
     this.foils = o.foils ?? {};
     this.ownsView = o.ownsView ?? true;
-    this.speed = o.speed ?? 1;
+    this.live = o.live === true;
+    this.wallClock = o.wallClock ?? null;
+    // a live match starts at the normal speed: any other needs both players (queue item 34)
+    this.speed = this.live ? 1 : (o.speed ?? 1);
     this.hudBuilder = o.hud ?? new HudModelBuilder(this.sim, this.mySide);
     this.bots = (o.bots ?? []).map((b) => ({
       side: b.side,
@@ -239,7 +316,8 @@ export class BattleSessionImpl implements BattleSession {
     this.visibility = o.visibility ?? null;
     if (o.visibility) {
       this.unsubscribeVisibility = o.visibility.subscribe((hidden) => {
-        if (hidden && this.statusSig.peek() === 'running') this.pause('hidden');
+        if (this.live) this.noteVisibility(hidden);
+        else if (hidden && this.statusSig.peek() === 'running') this.pause('hidden');
       });
     }
     if (this.sim.state.outcome) this.finish();
@@ -262,14 +340,28 @@ export class BattleSessionImpl implements BattleSession {
     this.setStatus('running');
     this.view?.setPaused(false);
     this.platform?.gameplayStart();
-    // the tab was hidden before the clock started (the art loading in the background, G7): the visibility
-    // pause applies at once (C5 #20)
-    if (this.visibility?.hidden === true) this.pause('hidden');
+    if (this.live) {
+      // the match runs from now: time before the start (the art loading, the countdown) is never owed
+      this.lastFrameAt = this.scheduler ? this.scheduler.now() : null;
+      this.awayWallMs = 0;
+      this.hiddenFrameMs = 0;
+      this.hiddenWallAt = this.visibility?.hidden === true ? this.wall() : null;
+    } else if (this.visibility?.hidden === true) {
+      // the tab was hidden before the clock started (the art loading in the background, G7): the visibility
+      // pause applies at once (C5 #20)
+      this.pause('hidden');
+    }
     this.refreshHud(true);
   }
 
   pause(reason: PauseReason = 'player'): void {
     if (this.statusSig.peek() !== 'running') return;
+    if (this.live) {
+      // A live match never pauses (queue item 34): the player's pause (P, the back button) asks for the
+      // menu instead; a hidden tab or the system changes nothing.
+      if (reason === 'player') this.pauseAsksSig.value = this.pauseAsksSig.peek() + 1;
+      return;
+    }
     this.pauseReasonValue = reason;
     this.setStatus('paused');
     this.view?.setPaused(true);
@@ -286,16 +378,24 @@ export class BattleSessionImpl implements BattleSession {
     this.refreshHud(true);
   }
 
+  /** The player's speed button and the default speed. A live match ignores it: its tempo needs both players. */
   setSpeed(s: BattleSpeed): void {
+    if (this.live) return;
+    this.setAgreedSpeed(s);
+  }
+
+  /** Sets the speed both players agreed on (the live layer); offline it is the same as `setSpeed`. */
+  setAgreedSpeed(s: BattleSpeed): void {
     this.speed = s;
     this.view?.setSpeed(s);
     this.refreshHud(true);
   }
 
-  /** Queues a player command for the next tick. Ignored unless running, and only for `mySide`. */
+  /** Queues a player command for the next tick. Ignored unless running, and only for `mySide`; held while catching up. */
   issue(c: Command): void {
     if (this.statusSig.peek() !== 'running') return;
     if (c.side !== this.mySide) return;
+    if (this.catchingUp) return;
     this.human.push(c);
   }
 
@@ -312,7 +412,10 @@ export class BattleSessionImpl implements BattleSession {
     this.unsubscribeVisibility?.();
     this.unsubscribeVisibility = null;
     this.tickListeners.clear();
+    this.frameListeners.clear();
     this.endListeners.length = 0;
+    if (this.catchUpSig.peek()) this.view?.setSilent?.(false);
+    this.catchUpSig.value = null;
     if (this.ownsView) this.view?.destroy?.();
     this.setStatus('disposed');
   }
@@ -351,20 +454,90 @@ export class BattleSessionImpl implements BattleSession {
     return () => this.tickListeners.delete(cb);
   }
 
+  /** Called at the end of every frame with the frame clock, after the end too (the live layer's timers). */
+  onFrame(cb: (nowMs: number) => void): () => void {
+    this.frameListeners.add(cb);
+    return () => this.frameListeners.delete(cb);
+  }
+
+  /** The frame clock (ms): the scheduler's, or the sum of `advance` calls when driven by hand. */
+  now(): number {
+    return this.scheduler ? this.scheduler.now() : this.manualNow;
+  }
+
+  /** Counts the pauses a live match turned into menu requests (P, the back button); the HUD opens its menu. */
+  get pauseAsks(): ReadonlySignal<number> {
+    return this.pauseAsksSig;
+  }
+
+  /** A live match's catch-up in progress (the HUD's "catching up" cue), or null. */
+  get catchUp(): ReadonlySignal<CatchUpState | null> {
+    return this.catchUpSig;
+  }
+
+  /** True while a live match runs the ticks it missed (input is held meanwhile). */
+  get catchingUp(): boolean {
+    return this.owedGameMs >= TICK_MS;
+  }
+
+  /** True once a live match ended because the player was away longer than `MAX_AWAY_MS` (a Retreat). */
+  get awayForfeit(): ReadonlySignal<boolean> {
+    return this.awaySig;
+  }
+
+  /**
+   * A live match missed `ms` of real time (frames stopped: a hidden tab, a suspended app; or the dev hook):
+   * it is caught up over the next frames, or, after an absence longer than `MAX_AWAY_MS`, the match has
+   * been left and ends as a Retreat. Offline matches pause instead and never owe time.
+   */
+  owe(ms: number): void {
+    if (!this.live || !(ms > 0) || this.statusSig.peek() !== 'running' || this.awaySig.peek()) return;
+    if (ms > MAX_AWAY_MS) {
+      this.leaveAway();
+      return;
+    }
+    if (this.owedGameMs < TICK_MS) this.owedTotalMs = this.owedGameMs;
+    // never more than the limit behind: a device too slow to keep up drops the excess instead of piling it up
+    const add = Math.min(ms * this.speed, Math.max(0, MAX_AWAY_MS * this.speed - this.owedGameMs));
+    this.owedGameMs += add;
+    this.owedTotalMs += add;
+    if (this.owedGameMs >= TICK_MS) this.publishCatchUp();
+  }
+
   /**
    * One animation frame: adds `frameMs` of scaled game time, runs the due ticks and renders. The
-   * scheduler calls this; tests and headless tools call it directly.
+   * scheduler calls this; tests and headless tools call it directly. A live match keeps a frame longer
+   * than the 250 ms clamp (B6) as time owed and catches it up instead of dropping it.
    */
   advance(frameMs: number): void {
     const status = this.statusSig.peek();
     if (status === 'disposed') return;
+    if (!this.scheduler) this.manualNow += Math.max(0, frameMs);
     if (status === 'running') {
-      const frozen = this.view?.simFrozen ?? false;
-      this.clock.add(frameMs, this.speed, frozen);
-      while (this.statusSig.peek() === 'running' && !(this.view?.simFrozen ?? false) && this.clock.consume()) this.tick();
+      let step = frameMs;
+      if (this.live) {
+        if (this.hiddenWallAt !== null) this.hiddenFrameMs += Math.max(0, frameMs);
+        const gap = Math.max(frameMs, this.awayWallMs);
+        this.awayWallMs = 0;
+        if (gap > MAX_FRAME_MS) {
+          // the frame clock takes what it can (B6's clamp); the rest of the gap is owed
+          step = Math.min(frameMs, MAX_FRAME_MS);
+          this.owe(gap - step);
+        }
+      }
+      if (this.statusSig.peek() === 'running') {
+        const frozen = this.view?.simFrozen ?? false;
+        this.clock.add(step, this.speed, frozen);
+        while (this.statusSig.peek() === 'running' && !(this.view?.simFrozen ?? false) && this.clock.consume()) this.tick();
+        if (this.live) this.catchUpSlice();
+      }
     }
     this.view?.render(this.clock.alpha, frameMs);
     this.refreshHud(false);
+    if (this.frameListeners.size > 0) {
+      const now = this.now();
+      for (const l of [...this.frameListeners]) l(now);
+    }
   }
 
   /**
@@ -384,6 +557,83 @@ export class BattleSessionImpl implements BattleSession {
   // ------------------------------------------------------------------------------------------
   // Internals
   // ------------------------------------------------------------------------------------------
+
+  private wall(): number {
+    return this.wallClock?.() ?? this.visibility?.now?.() ?? this.now();
+  }
+
+  /**
+   * A live match's page went hidden or came back. The away time is measured on the wall clock as well as
+   * by the frame gap (a suspended app can stop the frame clock); frames a browser still ran in the
+   * background were already counted, so they are taken off.
+   */
+  private noteVisibility(hidden: boolean): void {
+    if (hidden) {
+      if (this.hiddenWallAt === null) {
+        this.hiddenWallAt = this.wall();
+        this.hiddenFrameMs = 0;
+      }
+      return;
+    }
+    if (this.hiddenWallAt === null) return;
+    const away = this.wall() - this.hiddenWallAt - this.hiddenFrameMs;
+    this.hiddenWallAt = null;
+    this.hiddenFrameMs = 0;
+    if (away > 0 && this.statusSig.peek() === 'running') this.awayWallMs = Math.max(this.awayWallMs, away);
+  }
+
+  /**
+   * Runs owed ticks for at most `CATCH_UP_BUDGET_MS` of wall time (all of them when driven by hand): the
+   * view gets every tick's events (spawns, evolves and builds stay right) but is not drawn per tick; it
+   * is advanced every few ticks so effects and corpses age with the sim, and stays silent meanwhile.
+   */
+  private catchUpSlice(): void {
+    if (this.owedGameMs < TICK_MS) {
+      // less than a tick behind: nothing to run (the remainder is dropped)
+      if (this.owedGameMs > 0 || this.catchUpSig.peek()) this.endCatchUp();
+      return;
+    }
+    const sch = this.scheduler;
+    const t0 = sch ? sch.now() : 0;
+    this.view?.setSilent?.(true);
+    let n = 0;
+    while (this.owedGameMs >= TICK_MS && this.statusSig.peek() === 'running') {
+      this.tick();
+      this.owedGameMs -= TICK_MS;
+      n += 1;
+      if (n % CATCH_UP_RENDER_TICKS === 0) this.view?.render(0, (CATCH_UP_RENDER_TICKS * TICK_MS) / this.speed, true);
+      if (sch && n % 4 === 0 && sch.now() - t0 >= CATCH_UP_BUDGET_MS) break;
+    }
+    if (this.owedGameMs < TICK_MS || this.statusSig.peek() !== 'running') this.endCatchUp();
+    else this.publishCatchUp();
+  }
+
+  private endCatchUp(): void {
+    const was = this.catchUpSig.peek() !== null || this.owedGameMs > 0;
+    this.owedGameMs = 0;
+    this.owedTotalMs = 0;
+    if (!was) return;
+    this.view?.setSilent?.(false);
+    this.catchUpSig.value = null;
+  }
+
+  private publishCatchUp(): void {
+    const total = Math.max(this.owedTotalMs, this.owedGameMs, 1);
+    const done = Math.round(((total - this.owedGameMs) * 10_000) / total);
+    this.catchUpSig.value = { behindGameMs: this.owedGameMs, behindMs: Math.round(this.owedGameMs / this.speed), doneBp: Math.max(0, Math.min(10_000, done)) };
+  }
+
+  /**
+   * Away longer than `MAX_AWAY_MS`: the player has left the live match. It ends at once as a Retreat (a
+   * loss with no rewards), the same result as a reload (`abandon.ts`) or the Retreat button.
+   */
+  private leaveAway(): void {
+    this.endCatchUp();
+    this.awaySig.value = true;
+    this.human = [{ t: 'retreat', side: this.mySide }];
+    this.tick();
+    if (!this.sim.state.outcome) this.awaySig.value = false;
+  }
 
   private extras(): HudExtras {
     return { speed: this.speed, paused: this.statusSig.peek() !== 'running', foils: this.foils };
