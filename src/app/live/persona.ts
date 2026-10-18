@@ -454,6 +454,12 @@ export class PersonaBrain {
   readonly persona: Persona;
   /** Dev and tests: overrides for the next proposals' answers. */
   force: PersonaForce | null = null;
+  /**
+   * Dev and tests: false keeps it from proposing a speed on its own (`forcePropose` still does). The e2e specs
+   * drive every proposal themselves: one of its own, from 0:25 of game time, could land in the middle of a check on
+   * a slow machine (its card closes an open menu, and one proposal is open at a time).
+   */
+  ownProposals = true;
   private readonly sayRng: Sfc32State;
   private readonly tempoRng: Sfc32State;
   private readonly thinkRng: Sfc32State;
@@ -572,6 +578,7 @@ export class PersonaBrain {
       // a greeting belongs to the opening: after an early absence the match has moved on (review O nit 1)
       if (now - this.greetAt <= GREET_LATE_MS) this.react('greet', now, { delay: 0 });
     }
+    if (!this.ownProposals) return;
     if (this.nextThinkAt === null) {
       if (ctx.tick < PROPOSE_FROM_TICK) return;
       this.nextThinkAt = now + randRange(this.thinkRng, 2000, 14_000);

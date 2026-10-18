@@ -268,6 +268,20 @@ describe('the simulated player (queue item 34)', () => {
     expect(proposers).toBeLessThan(115);
   });
 
+  it('with its own proposals off (the e2e hook) it never asks by itself, but a forced proposal still goes', () => {
+    for (let seed = 1; seed <= 60; seed += 1) {
+      const brain = new PersonaBrain(personaFor(seed, { known: KNOWN }), seed);
+      brain.ownProposals = false;
+      for (let now = 0; now <= 400_000; now += 100) {
+        const c = ctx({ tick: Math.floor(now / 50), speed: 1, tempoBusy: false });
+        brain.think(now, c);
+        expect(brain.due(now).some((m) => m.k === 'tempoPropose')).toBe(false);
+      }
+      brain.forcePropose(2, 400_100);
+      expect(brain.due(400_100).filter((m) => m.k === 'tempoPropose')).toHaveLength(1);
+    }
+  });
+
   it('replies to your emotes and chat sometimes, at most once per 20 s', () => {
     let replies = 0;
     for (let seed = 1; seed <= 100; seed += 1) {

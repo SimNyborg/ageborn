@@ -9,7 +9,7 @@
  * still island (S3), moved spots and team colours apply (N3, N4), a cold start waits while held (S7), Auto
  * drops to Lite's pace when frames run long (N2), and a start that throws leaves the still (N9).
  */
-import { Container } from 'pixi.js';
+import { Container, Graphics } from 'pixi.js';
 import { describe, expect, it, vi } from 'vitest';
 import { content } from '@/content';
 import { FakeArtProvider } from '@/contracts/fakes/art';
@@ -416,10 +416,39 @@ describe('review M fixes', () => {
     expect(boxes).toHaveLength(1);
     expect(boxes[0]!.map((b) => b.card).sort()).toEqual(['footman', 'longbowman', 'longbowman', 'squire_pair']);
     expect(boxes[0]![0]).toMatchObject({ front: 40, back: 20, top: 80 });
+    expect(boxes[0]!.every((b) => b.skin === undefined)).toBe(true);
     // a swap reports again
     stage.update({ troops: req().troops.map((t) => (t.side === 1 && t.slot === 0 ? { ...t, card: 'bonker' } : t)) });
     await settle();
     expect(boxes.length).toBe(2);
+    // a skinned troop's box says which skin it is (a skin may stand at another size than the card's own look)
+    stage.update({ troops: req().troops.map((t) => (t.side === 0 && t.slot === 0 ? { ...t, skin: 'tin_can' as SkinId } : t)) });
+    await settle();
+    expect(boxes.length).toBe(3);
+    expect(boxes[2]!.find((b) => b.card === 'footman')).toMatchObject({ skin: 'tin_can' });
+    stage.destroy();
+  });
+
+  it('measures a troop drawn without the atlas idle box (a skin drawn as the puppet) by its drawn bounds', async () => {
+    class PuppetSkinArt extends IslandArt {
+      override createUnit(o: { visualId: VisualId; skin?: SkinId; side: 0 | 1; teamPreset: TeamPreset }) {
+        const v = super.createUnit(o);
+        if (o.skin) {
+          delete (v as { extentLu?: unknown }).extentLu;
+          v.root.addChild(new Graphics().rect(-30, -90, 100, 90).fill(0xffffff));
+        }
+        return v;
+      }
+    }
+    const boxes: (readonly HomeTroopBox[])[] = [];
+    const troops = req().troops.map((t) => (t.slot === 0 ? { ...t, skin: 'tin_can' as SkinId } : t));
+    const { stage } = setup({ art: new PuppetSkinArt(), req: { troops, onBoxes: (b) => boxes.push(b) } });
+    await stage.ready;
+    const last = boxes.at(-1)!;
+    // facing right, the drawn shape (around the fake's own) reaches 70 lu ahead, 30 behind and 90 up; facing left it mirrors
+    expect(last.find((b) => b.card === 'footman')).toMatchObject({ skin: 'tin_can', front: 70, back: 30, top: 90 });
+    expect(last.find((b) => b.card === 'squire_pair')).toMatchObject({ skin: 'tin_can', front: 30, back: 70, top: 90 });
+    expect(last.find((b) => b.card === 'longbowman')).toMatchObject({ front: 40, back: 20, top: 80 });
     stage.destroy();
   });
 

@@ -76,6 +76,8 @@ export interface HomeStagePole {
  */
 export interface HomeTroopBox {
   card: CardId;
+  /** The troop's skin: a skin may be drawn another way (a skin without its own sheet is the puppet) and size. */
+  skin?: SkinId | null;
   front: number;
   back: number;
   top: number;
@@ -221,6 +223,17 @@ interface Actor {
 interface Pole {
   key: string;
   view: IslandDressing;
+}
+
+/**
+ * How far a troop's view reaches when it cannot say over its idle clip (`extentLu` is the atlas tier's; a
+ * skin without its own sheet is drawn as the puppet): its drawn bounds now, as the card showcase measures them.
+ */
+function drawnBox(a: Actor): { front: number; back: number; top: number } | null {
+  const b = a.view.root.getLocalBounds();
+  if (!(b.width > 0) || !(b.height > 0)) return null;
+  const top = -b.minY;
+  return facingOf(a.side) > 0 ? { front: b.maxX, back: -b.minX, top } : { front: -b.minX, back: b.maxX, top };
 }
 
 const troopKey = (t: HomeStageTroop): string => `${t.side}${t.slot}|${t.card}|${t.skin ?? ''}`;
@@ -825,8 +838,8 @@ export class HomeStage implements HomeStageHandle, SharedAppUser {
     if (!fn) return;
     const out: HomeTroopBox[] = [];
     for (const a of this.actors.values()) {
-      const e = a.view.extentLu?.({ clips: ['idle'] });
-      if (e) out.push({ card: a.card, front: e.front * a.scale, back: e.back * a.scale, top: e.top * a.scale });
+      const e = a.view.extentLu?.({ clips: ['idle'] }) ?? drawnBox(a);
+      if (e) out.push({ card: a.card, ...(a.skin ? { skin: a.skin } : {}), front: e.front * a.scale, back: e.back * a.scale, top: e.top * a.scale });
     }
     if (out.length === 0) return;
     try {

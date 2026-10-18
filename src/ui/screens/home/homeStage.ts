@@ -8,8 +8,8 @@
  * under Reduce motion the island keeps its still troops and flags.
  *
  * The still island draws the same troops at the same size and place (review M S3): the live layer reports
- * each troop's drawn idle box (`onBoxes`), remembered here per card (and on the device, so the next visit's
- * still matches from its first frame), and the still fits the troop's idle strip into that box.
+ * each troop's drawn idle box (`onBoxes`), remembered here per card and skin (and on the device, so the next
+ * visit's still matches from its first frame), and the still fits the troop's idle strip into that box.
  *
  * The request and handle mirror render's `HomeStageRequest` and `HomeStageHandle` (`render/showcase/home.ts`);
  * the app passes render's mount here, so the compiler holds the two shapes together.
@@ -43,6 +43,8 @@ export interface HomeStagePole {
 /** How far a troop's drawn idle pose reaches from its feet (lu on the island, at its drawn size): toward the opponent, behind, above. */
 export interface HomeTroopBox {
   card: CardId;
+  /** The troop's skin (a skin may be drawn another way and at another size than the card's own look). */
+  skin?: SkinId | null;
   front: number;
   back: number;
   top: number;
@@ -104,8 +106,13 @@ function loadBoxes(): BoxMap {
   }
 }
 
-/** The troops' drawn idle boxes the live island measured, by card (the still island fits their strips into them). */
+/** The troops' drawn idle boxes the live island measured, by `boxKey` (the still island fits their strips into them). */
 export const troopBoxes = signal<BoxMap>(loadBoxes());
+
+/** Where a troop's box is kept: its card, or its card and skin (a skinned troop may stand at another size). */
+export function boxKey(card: CardId, skin?: SkinId | null): string {
+  return skin ? `${card}@${skin}` : card;
+}
 
 /** Remembers the boxes the live island measured (for this visit's still and the next visit's first frame). */
 export function rememberBoxes(list: readonly HomeTroopBox[]): void {
@@ -115,10 +122,13 @@ export function rememberBoxes(list: readonly HomeTroopBox[]): void {
   for (const b of list) {
     if (!sane(b.front, -40, 200) || !sane(b.back, -40, 200) || !sane(b.top, 4, 260)) continue;
     const v = { front: r1(b.front), back: r1(b.back), top: r1(b.top) };
-    const old = prev[b.card];
+    const key = boxKey(b.card, b.skin);
+    const old = prev[key];
     if (old && old.front === v.front && old.back === v.back && old.top === v.top) continue;
     next ??= { ...prev };
-    next[b.card] = v;
+    // re-inserted last, so the cards seen most recently survive the trim below
+    delete next[key];
+    next[key] = v;
   }
   if (!next) return;
   // a small table: the cards seen last stay (a collection's worth at most)

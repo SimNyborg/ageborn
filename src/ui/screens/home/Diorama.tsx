@@ -37,7 +37,7 @@ import { SvgPennant } from '../../components/SvgPennant';
 import { usePortrait } from '../../components/kit';
 import { ink, light, shade } from '../../components/tone';
 import { useUi } from '../context';
-import { troopBoxes, useHomeStage, type HomeStagePole, type HomeStageRequest, type HomeStageTroop } from './homeStage';
+import { boxKey, troopBoxes, useHomeStage, type HomeStagePole, type HomeStageRequest, type HomeStageTroop } from './homeStage';
 import { Keep, Volcano } from './landmarks';
 import { SkinnedBase } from './skinnedBase';
 import { boulder, broadleaf, Cel, crystal, Grove, type KitProp, pine } from '../warPath/propKit';
@@ -572,11 +572,20 @@ const shown = new Set<string>();
 const STRIP_AFTER_MS = 700;
 
 /**
- * A troop's idle clip from its battle sheet as a sprite strip in its side's team colour (the provider's
- * `strip:idle:<card>`, as the War Path's bearer plays its clip), measured. Null while waiting or loading.
+ * Whether the provider's strips draw a troop's skin. Not yet (docs/requests/motion-m-skinned-strips.md): a
+ * skinned troop's still is the card's own look, fitted to the card's own box (a skin drawn as the puppet has
+ * other proportions, so its box would misplace the card's look), and it changes outfit when the live layer
+ * takes over. Once they do, set this: the still then asks for the skin and fits it to the skinned box.
  */
-function useIdleStrip(card: CardId, side: Side): IdleStrip | null {
-  const key = `${card}|${side}`;
+const STRIPS_DRAW_SKINS = false;
+
+/**
+ * A troop's idle clip from its battle sheet as a sprite strip in its side's team colour (the provider's
+ * `strip:idle:<card>`, as the War Path's bearer plays its clip), with `skin` its skin (`STRIPS_DRAW_SKINS`),
+ * measured. Null while waiting or loading.
+ */
+function useIdleStrip(card: CardId, side: Side, skin: SkinId | null): IdleStrip | null {
+  const key = `${card}|${side}|${skin ?? ''}`;
   const [go, setGo] = useState(() => shown.has(key));
   useEffect(() => {
     if (go) return undefined;
@@ -591,7 +600,7 @@ function useIdleStrip(card: CardId, side: Side): IdleStrip | null {
       if (idle !== null) w?.cancelIdleCallback?.(idle);
     };
   }, [go]);
-  const url = usePortrait(go ? (`strip:idle:${card}` as CardId) : null, { size: STRIP_PX, plate: false, ...(side ? { side: 1 as const } : {}) });
+  const url = usePortrait(go ? (`strip:idle:${card}` as CardId) : null, { size: STRIP_PX, plate: false, ...(side ? { side: 1 as const } : {}), ...(skin ? { skin } : {}) });
   const [strip, setStrip] = useState<IdleStrip | null>(() => (url ? (strips.get(url) ?? null) : null));
   useEffect(() => {
     if (!url) {
@@ -653,12 +662,14 @@ function stillPlacement(strip: IdleStrip, box: { front: number; back: number; to
 /**
  * One troop on the still island, exactly where and as large as the live layer draws it (review M S3): its
  * battle sheet's idle clip as a strip (`useIdleStrip`), fitted to the box the live island measured for the
- * card (`troopBoxes`). The opponent faces left. Under Reduce motion the strip holds its first frame. It fades
- * in once its strip is in.
+ * card and skin (`troopBoxes`). The opponent faces left. Under Reduce motion the strip holds its first frame.
+ * It fades in once its strip is in.
  */
-function StillTroop(p: { card: CardId; side: Side; slot: 0 | 1; size?: string; air?: boolean }) {
-  const strip = useIdleStrip(p.card, p.side);
-  const box = troopBoxes.value[p.card];
+function StillTroop(p: { card: CardId; side: Side; slot: 0 | 1; skin?: SkinId | null; size?: string; air?: boolean }) {
+  // the look the still can draw: the skin once the strips draw skins, else the card's own
+  const look = STRIPS_DRAW_SKINS ? (p.skin ?? null) : null;
+  const strip = useIdleStrip(p.card, p.side, look);
+  const box = troopBoxes.value[boxKey(p.card, look)];
   const u = LIVE_ISLAND.unitsPerLu;
   const spot = LIVE_SPOTS[p.side][p.slot];
   const feet = spot.y - (p.air ? ISLAND_ALTITUDE_LU * u : 0);
@@ -902,7 +913,7 @@ export function Diorama(p: {
             <StillPole id={`${id}-p1`} side={1} team={p.teamFoe} baseFlag={hidden ? null : (p.live?.foeFlags?.baseFlag ?? null)} nationalFlag={hidden ? null : (p.live?.foeFlags?.nationalFlag ?? null)} grey={hidden} />
           </svg>
           {(p.mine ?? []).slice(0, 2).map((c, i) => (
-            <StillTroop key={`m${i}${c}`} card={c} side={0} slot={i as 0 | 1} size={content.units[c]?.size} air={content.units[c]?.tags.includes('air') ?? false} />
+            <StillTroop key={`m${i}${c}`} card={c} side={0} slot={i as 0 | 1} skin={p.live?.skins[c] ?? null} size={content.units[c]?.size} air={content.units[c]?.tags.includes('air') ?? false} />
           ))}
           {(p.foe ?? []).slice(0, 2).map((c, i) => (
             <StillTroop key={`f${i}${c}`} card={c} side={1} slot={i as 0 | 1} size={content.units[c]?.size} air={content.units[c]?.tags.includes('air') ?? false} />

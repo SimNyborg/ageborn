@@ -53,6 +53,11 @@ export class SimulatedOpponent implements OpponentLink {
     this.brain.force = f;
   }
 
+  /** Dev and e2e: whether it proposes a speed on its own (forced proposals still go). */
+  setOwnProposals(on: boolean): void {
+    this.brain.ownProposals = on;
+  }
+
   /** Dev and e2e: it proposes `speed` now. */
   forcePropose(speed: TempoSpeed, nowMs: number): void {
     this.brain.forcePropose(speed, nowMs);
