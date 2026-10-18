@@ -55,6 +55,9 @@ what we believe, how sure we are, and what we post next because of it.
   game; drop "nothing for sale" messaging, focus on the game and its development; capsule videos
   are interesting, make them very satisfying.
 
+- 2026-10-18: devlogs are story first: fun and important game-dev problems matter more than exactly
+  what happened (keep no fake numbers as facts and no fake community decisions).
+
 ## Change log
 
 - 2026-10-17: plan created from the first 7 Reels (B1-B5).

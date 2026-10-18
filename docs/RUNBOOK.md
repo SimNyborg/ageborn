@@ -106,10 +106,13 @@ Do not post `queue/stories/teaser-40-cavemen.mp4`: its "tap to watch" cannot wor
 Format: first-person developer voice ("I'm building Ageborn...", never the owner's name or identity),
 narrated with an approved Kokoro voice and word-timed captions, over real development footage, ending
 with a design question to the viewer ("Which would you pick?", "Too fast or just right?").
-Caption must include "Narration: AI voice". Every claim must be true: take the reasoning from the game
-repo's docs (DESIGN.md, decisions.md, art-style.md, design-history/), never invent decisions.
+Caption must include "Narration: AI voice". Story first (owner note 2026-10-18): a good game-dev story
+about a fun or important development problem matters more than retelling exactly what happened. Build
+each episode on a real kind of problem (balance, readability, game feel, pacing, art, AI opponents) and
+use the game repo's docs for material, then dramatize freely. Two limits: no invented numbers presented
+as hard facts, and never claim the community decided something unless their votes were really used.
 
-Episode ideas, each 20-35 s:
+Episode ideas, each 20-35 s (each framed as a problem: "I had a problem...", "This broke my game..."):
 1. "Why every age is 1.35x stronger" (A2.2 power scale): a caveman vs a Cosmic tank, and why
    counters, not numbers, decide fights (R1 footage plus the sim's numbers).
 2. "Eight ages, one lane": how a single battle can climb from clubs to lasers, and the hardest
