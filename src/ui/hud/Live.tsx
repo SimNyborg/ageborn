@@ -4,20 +4,25 @@
  * and then the opponent must accept or decline it."
  *
  * - **Menu** (top right, where Pause sits offline; P and the back button open it too): a drop-down that
- *   never pauses, with a red live dot. Mute opponent, Settings (over the running battle) and Retreat (asks
- *   once more: a loss with no rewards).
+ *   never pauses, with a "LIVE" pill in the online mint of Home's connected dot and the Player chip (a red
+ *   dot read as an unread badge, review O nit 7). Mute opponent (this match), Settings (over the running
+ *   battle) and Retreat (asks once more: a loss with no rewards).
  * - **Tempo** (where the speed button sits offline; F too): the current speed with an ask badge. A tap
  *   drops down the three speeds; picking one sends the proposal. While it waits the button wears a
  *   draining ring and "2x?", and a tag under it says who it waits for and the seconds left; then
  *   "2x agreed" (the label pops), "<name> said no" or "No answer". Your next proposal waits a cooldown
  *   (a slate sweep; a tap says how long).
  * - **Their proposal**: a small card under the top band with their head, "2x speed?", Accept and Decline
- *   (Y / N) and a draining bar. It never blocks the battle; no answer is a decline.
+ *   (Y / N, with key badges once keys are used) and a draining bar. It never blocks the battle; no answer
+ *   is a decline. It closes an open drop-down (the HUD does), and its buttons wake 400 ms after it lands,
+ *   so a tap meant for the menu underneath never answers it by accident.
  * - **Catching up**: when a hidden tab comes back, a cue over the lane while the battle fast-forwards.
  * - **Away too long**: the banner that says the match counted as a Retreat.
  *
  * Motion follows the tokens (presses on pointerdown, small things overshoot, exits about 0.7 × entrances);
- * Reduce motion keeps fades, the rings and bars (counters stay) and drops the movement (`live.css`).
+ * Reduce motion keeps fades, the rings and bars (counters stay) and drops the movement (`live.css`). The
+ * pieces with their own reduced variant carry `ui-rm-own`, so the theme's safety net (every animation in
+ * 150 ms) never shortens a countdown or ends an outcome tag at opacity 0 (review O B1).
  */
 import './live.css';
 import { useEffect, useRef, useState } from 'preact/hooks';
@@ -38,6 +43,8 @@ export const OUTCOME_MS = 2400;
 const REFUSAL_MS = 1800;
 /** The proposal card leaves in 160 ms (0.7 × its 220 ms entrance). */
 const PROMPT_EXIT_MS = 160;
+/** Their card's buttons wake this long after it lands (a tap already on its way lands on nothing). */
+export const PROMPT_ARM_MS = 400;
 /** A catch-up shows its cue once it has run this long (a short one never flashes) and keeps it at least `CUE_MIN_MS`. */
 const CUE_DELAY_MS = 150;
 const CUE_MIN_MS = 700;
@@ -90,7 +97,7 @@ function DrainRing(p: { total: number; left: number; tone: 'gold' | 'slate' }) {
   const start = useRef({ total: Math.max(1, p.total), left: Math.max(0, p.left) });
   const s = start.current;
   return (
-    <svg class={`hud-tempo-ring is-${p.tone}`} viewBox="0 0 40 40" aria-hidden="true">
+    <svg class={`hud-tempo-ring ui-rm-own is-${p.tone}`} viewBox="0 0 40 40" aria-hidden="true">
       <circle class="hud-tempo-ring-track" cx="20" cy="20" r="17" pathLength="100" />
       <circle
         class="hud-tempo-ring-fill"
@@ -108,7 +115,7 @@ function DrainRing(p: { total: number; left: number; tone: 'gold' | 'slate' }) {
 function DrainBar(p: { total: number; left: number; class: string }) {
   const start = useRef({ total: Math.max(1, p.total), left: Math.max(0, p.left) });
   const s = start.current;
-  return <i class={p.class} style={{ animationDuration: `${s.total}ms`, animationDelay: `${-(s.total - s.left)}ms` }} aria-hidden="true" />;
+  return <i class={`${p.class} ui-rm-own`} style={{ animationDuration: `${s.total}ms`, animationDelay: `${-(s.total - s.left)}ms` }} aria-hidden="true" />;
 }
 
 /**
@@ -134,9 +141,11 @@ export function LiveControls(p: { c: HudCtx; live: LiveHud; open: LiveOpen; setO
   };
   const ended = c.m.phase === 'ended' || tempo.ended;
   const tapTempo = (): void => {
-    if (c.readOnly || ended) return;
+    // the catch-up's cue covers the lane meanwhile; the opponent waits too
+    if (c.readOnly || ended || live.catchUp.peek() !== null) return;
     const pending = tempo.pending;
-    if (pending?.by === 'foe') return refuse(c.t('hud.live.answerFirst', { name: live.foeName }));
+    // their card is up and says what to do: the press is denied without a tag behind the card (review O nit 4)
+    if (pending?.by === 'foe') return c.act({ k: 'deny', target: 'tempo' });
     if (pending?.by === 'me') return refuse(c.t('hud.live.waiting', { name: live.foeName }));
     if (now < tempo.readyAt) return refuse(c.t('hud.live.cooldown', { s: secs(tempo.readyAt - now) }));
     c.audio?.play('ui_click');
@@ -149,7 +158,11 @@ export function LiveControls(p: { c: HudCtx; live: LiveHud; open: LiveOpen; setO
       c.audio?.play('ui_confirm');
       haptic('tick');
     } else if (why === 'cooldown') refuse(c.t('hud.live.cooldown', { s: secs(tempo.readyAt - live.now()) }));
-    else if (why === 'pending') refuse(c.t('hud.live.answerFirst', { name: live.foeName }));
+    else if (why === 'pending') {
+      // their proposal arrived while the speeds were open: their card says it
+      if (live.tempo.peek().pending?.by === 'foe') c.act({ k: 'deny', target: 'tempo' });
+      else refuse(c.t('hud.live.waiting', { name: live.foeName }));
+    }
   };
   // an ended proposal sounds once: agreed (a bright unlock), said no or ran out (a soft toggle)
   const lastKey = tempo.last ? `${tempo.last.by}${tempo.last.id}${tempo.last.result}` : '';
@@ -179,7 +192,9 @@ export function LiveControls(p: { c: HudCtx; live: LiveHud; open: LiveOpen; setO
         }}
       >
         <MenuIcon size={18} />
-        <i class="hud-live-dot" aria-hidden="true" />
+        <b class="hud-live-pill" aria-hidden="true">
+          {c.t('hud.live.pill')}
+        </b>
       </button>
       <TempoButton c={c} live={live} tempo={tempo} now={now} open={p.open === 'tempo'} ended={ended} onTap={tapTempo} />
       {p.open === 'menu' ? <LiveMenu c={c} live={live} {...(p.menu ? { actions: p.menu } : {})} onClose={() => p.setOpen(null)} /> : null}
@@ -239,7 +254,7 @@ function TempoTag(p: { c: HudCtx; live: LiveHud; tempo: LiveTempo; now: number; 
   }
   if (!tag) return null;
   return (
-    <div key={tag.key} class={`hud-tempo-tag is-${tag.tone}`} role="status" aria-live="polite" data-testid="hud-tempo-tag" data-tone={tag.tone}>
+    <div key={tag.key} class={`hud-tempo-tag ui-rm-own is-${tag.tone}`} role="status" aria-live="polite" data-testid="hud-tempo-tag" data-tone={tag.tone}>
       {tag.tone === 'wait' ? (
         <span class="hud-tempo-dots" aria-hidden="true">
           <i />
@@ -260,7 +275,7 @@ function TempoTag(p: { c: HudCtx; live: LiveHud; tempo: LiveTempo; now: number; 
 function TempoMenu(p: { c: HudCtx; live: LiveHud; tempo: LiveTempo; onPick: (s: LiveSpeed) => void }) {
   const { c, tempo } = p;
   return (
-    <div class="hud-live-drop hud-tempo-menu" role="menu" aria-label={c.t('hud.live.tempoTitle')} data-testid="hud-tempo-menu">
+    <div class="hud-live-drop hud-tempo-menu ui-rm-own" role="menu" aria-label={c.t('hud.live.tempoTitle')} data-testid="hud-tempo-menu">
       <div class="hud-live-drop-title">{c.t('hud.live.tempoTitle')}</div>
       <div class="hud-tempo-opts">
         {LIVE_SPEEDS.map((s, i) => {
@@ -292,7 +307,7 @@ function LiveMenu(p: { c: HudCtx; live: LiveHud; actions?: LiveMenuActions; onCl
   const [confirm, setConfirm] = useState(false);
   const muted = live.muted.value;
   return (
-    <div class="hud-live-drop hud-live-menu-drop" role="menu" aria-label={c.t('hud.live.menuTitle')} data-testid="hud-live-menu-drop">
+    <div class="hud-live-drop hud-live-menu-drop ui-rm-own" role="menu" aria-label={c.t('hud.live.menuTitle')} data-testid="hud-live-menu-drop">
       {confirm ? (
         <div class="hud-live-confirm" data-testid="hud-live-retreat-confirm">
           <b class="hud-live-confirm-title">{c.t('hud.live.retreatAsk')}</b>
@@ -370,11 +385,16 @@ export function TempoPrompt(p: { c: HudCtx; live: LiveHud }) {
   const pending: LiveProposal | null = tempo.pending?.by === 'foe' && c.m.phase !== 'ended' ? tempo.pending : null;
   const shown = usePresence(pending, PROMPT_EXIT_MS);
   const arrived = useRef<number | null>(null);
+  // the proposal whose buttons are awake (a tap on the way to the closing menu must not answer it)
+  const [armed, setArmed] = useState<number | null>(null);
   useEffect(() => {
-    if (!pending || arrived.current === pending.id) return;
+    if (!pending || arrived.current === pending.id) return undefined;
     arrived.current = pending.id;
     c.audio?.play('ui_pop');
     haptic('tick');
+    const id = pending.id;
+    const timer = setTimeout(() => setArmed(id), PROMPT_ARM_MS);
+    return () => clearTimeout(timer);
   }, [pending?.id]);
   const pr = shown.value;
   if (!pr) return null;
@@ -382,15 +402,16 @@ export function TempoPrompt(p: { c: HudCtx; live: LiveHud }) {
   const foe = c.config.sides[c.side === 0 ? 1 : 0];
   const avatar = foe?.online?.avatar;
   const name = live.foeName;
+  const awake = armed === pr.id;
   const answer = (yes: boolean): void => {
-    if (shown.leaving) return;
+    if (shown.leaving || !awake) return;
     live.answer(yes);
     c.audio?.play(yes ? 'ui_confirm' : 'ui_toggle');
   };
   return (
     <div
       key={pr.id}
-      class={`hud-tempo-prompt${shown.leaving ? ' is-leaving' : ''}`}
+      class={`hud-tempo-prompt ui-rm-own${awake ? '' : ' is-arming'}${shown.leaving ? ' is-leaving' : ''}`}
       role="alertdialog"
       aria-label={c.t('hud.live.promptLabel', { name, s: pr.speed })}
       data-testid="hud-tempo-prompt"
@@ -409,10 +430,12 @@ export function TempoPrompt(p: { c: HudCtx; live: LiveHud }) {
       <button class="hud-tp-btn is-yes" data-testid="hud-tempo-accept" onClick={() => answer(true)}>
         <CheckIcon size={16} />
         <span>{c.t('hud.live.accept')}</span>
+        {c.keys ? <kbd class="hud-tp-key">Y</kbd> : null}
       </button>
       <button class="hud-tp-btn is-no" data-testid="hud-tempo-decline" onClick={() => answer(false)}>
         <CloseIcon size={14} />
         <span>{c.t('hud.live.decline')}</span>
+        {c.keys ? <kbd class="hud-tp-key">N</kbd> : null}
       </button>
       <DrainBar key={`bar${pr.id}`} class="hud-tp-bar" total={pr.until - pr.at} left={pr.until - now} />
     </div>
@@ -456,12 +479,13 @@ export function CatchUpCue(p: { c: HudCtx; live: LiveHud }) {
   const view = cu ?? last.current;
   const done = view ? view.doneBp / 10_000 : 1;
   return (
-    <div class={`hud-catchup${leaving || !active ? ' is-leaving' : ''}`} role="status" aria-live="polite" data-testid="hud-catchup">
+    <div class={`hud-catchup ui-rm-own${leaving || !active ? ' is-leaving' : ''}`} role="status" aria-live="polite" data-testid="hud-catchup">
       <div class="hud-catchup-card">
         <span class="hud-catchup-icon" aria-hidden="true">
           <SpeedIcon size={22} />
         </span>
         <b class="hud-catchup-title">{p.c.t('hud.live.catchingUp')}</b>
+        <span class="hud-catchup-why">{p.c.t('hud.live.catchUpWhy')}</span>
         <span class="hud-catchup-bar" aria-hidden="true">
           <i style={{ transform: `scaleX(${active ? done : 1})` }} />
         </span>
@@ -475,7 +499,7 @@ export function CatchUpCue(p: { c: HudCtx; live: LiveHud }) {
 export function AwayNotice(p: { c: HudCtx; live: LiveHud }) {
   if (!p.live.away.value) return null;
   return (
-    <div class="hud-moment hud-moment-away" data-testid="hud-away" role="status">
+    <div class="hud-moment hud-moment-away ui-rm-own" data-testid="hud-away" role="status">
       <div class="hud-moment-title">{p.c.t('hud.live.away')}</div>
       <div class="hud-moment-sub">{p.c.t('hud.live.awaySub')}</div>
     </div>

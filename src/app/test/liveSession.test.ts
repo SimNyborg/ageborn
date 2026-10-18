@@ -43,6 +43,22 @@ function liveSession(o: Partial<BattleSessionOptions> = {}) {
   return { s, view, sim };
 }
 
+/** A live session over the real sim (the fake sim's scripted match ends at tick 240), with the fallback bot. */
+function realSession(o: Partial<BattleSessionOptions> = {}) {
+  const setup = quickBattle(null, content, { generalId: 'kettle', displayName: 'AI Kettle', format: 'standard', seed: 9 });
+  const sim = createSim(setup.config);
+  const s = new BattleSessionImpl({
+    sim,
+    mode: 'ladder',
+    opponent: setup.opponent,
+    simVersion: SIM_VERSION,
+    bots: [{ side: 1, controller: createFallbackBot(profile(3), 1, 9, content) }],
+    live: true,
+    ...o,
+  });
+  return { s, sim };
+}
+
 /** A bot that counts the ticks it was asked about. */
 class CountingBot implements BotController {
   readonly snapshotDelayTicks = 0;
@@ -53,15 +69,16 @@ class CountingBot implements BotController {
   }
 }
 
-/** A scheduler whose clock moves 1 ms every time it is read (to see the per-frame budget work). */
+/** A scheduler whose clock moves `step` ms every time it is read (to see the per-frame budget work). */
 class BusyScheduler implements FrameScheduler {
   t = 0;
+  constructor(private readonly step = 1) {}
   request(): number {
     return 1;
   }
   cancel(): void {}
   now(): number {
-    this.t += 1;
+    this.t += this.step;
     return this.t;
   }
 }
@@ -129,9 +146,13 @@ describe('a live match catches up the time it missed (queue item 34)', () => {
     expect(view.silent).toEqual([true, false]);
     expect(view.renders.filter((r) => r.frameMs === 250).length).toBe(Math.floor(75 / 5));
     // those steps are flagged so the view's Auto preset does not take them for slow frames (it would drop
-    // to Lite after any absence of a few seconds); the frame's own render is not flagged
-    expect(view.catchUpRenders).toEqual(new Array<number>(15).fill(250));
+    // to Lite after any absence of a few seconds), and so is the frame's own render: it caught up (review O B2)
+    expect(view.catchUpRenders).toEqual([...new Array<number>(15).fill(250), 4000]);
     expect(view.renders.length).toBe(15 + 1);
+    // the next, ordinary frame is timed again
+    s.advance(16);
+    expect(view.catchUpRenders).toHaveLength(16);
+    expect(view.renders).toHaveLength(17);
   });
 
   it('is deterministic: one long gap or many frames reach the same tick and state', () => {
@@ -242,6 +263,116 @@ describe('a live match catches up the time it missed (queue item 34)', () => {
     // timed as frames, the same steps would have dropped the match to Lite (DPR 1, fewer effects)
     expect(run(false)).toBe('lite');
   });
+
+  it("keeps the Auto graphics through a long catch-up whose real frames take two vsyncs (review O B2)", () => {
+    const labels: LabelFactory = () => {
+      const root = new Container();
+      return { root, setText: (t) => (root.label = t), setStyle: () => {} };
+    };
+    // a phone: catch-up frames take 33 ms (the slice and the HUD on top of a normal frame), the steps between
+    // them are flagged; before the fix the frames' own renders were timed and 30 of them meant Lite for good
+    const run = (flagFrames: boolean) => {
+      const bv = new BattleView({ sim: new FakeSim(), art: new FakeArtProvider(), audio: new FakeAudio(), labelFactory: labels });
+      bv.resize(1280, 720);
+      const view = {
+        onEvents: () => undefined,
+        render: (a: number, f: number, c?: boolean) => bv.render(a, f, flagFrames ? c : c === true && f !== 33),
+        simFrozen: false,
+        setSpeed: () => undefined,
+        setPaused: () => undefined,
+      };
+      const sch = new BusyScheduler(3);
+      const { s } = realSession({ view, scheduler: sch });
+      // five seconds of smooth 60 fps frames first: the monitor's 3 s window is full, as in a running match
+      for (let i = 0; i < 300; i += 1) bv.render(0, 1000 / 60);
+      s.start();
+      s.owe(110_000);
+      let frames = 0;
+      while (s.catchingUp && frames < 400) {
+        s.advance(33);
+        frames += 1;
+      }
+      for (let i = 0; i < 30; i += 1) s.advance(1000 / 60);
+      const out = { preset: bv.preset, frames };
+      s.dispose();
+      bv.destroy();
+      return out;
+    };
+    const fixed = run(true);
+    // more than the ~31 two-vsync frames that tip a full window of 60 fps frames over the 20 ms average
+    expect(fixed.frames).toBeGreaterThanOrEqual(35);
+    expect(fixed.preset).toBe('high');
+    // the same frames timed (the old behaviour) drop the match to Lite
+    expect(run(false).preset).toBe('lite');
+  });
+
+  it('owes a suspend no visibility event reported (the wall clock jumped, the frame clock did not; review O nit 8)', () => {
+    let wall = 5_000_000;
+    const sch = new ManualScheduler();
+    const { s, sim } = realSession({ scheduler: sch, wallClock: () => wall });
+    s.start();
+    sch.frame(16);
+    wall += 16;
+    sch.frame(16);
+    wall += 16;
+    const before = sim.state.tick;
+    // a laptop asleep for 20 s: performance.now stood still, Date.now did not, and no visibilitychange came
+    wall += 20_000;
+    sch.frame(16);
+    expect(sim.state.tick - before).toBeGreaterThanOrEqual(399);
+    expect(sim.state.tick - before).toBeLessThanOrEqual(401);
+    // a small wall clock wobble (an NTP nudge, a slow frame) owes nothing extra
+    const mid = sim.state.tick;
+    wall += 900;
+    sch.frame(16);
+    expect(sim.state.tick - mid).toBeLessThanOrEqual(1);
+  });
+
+  it('uses a larger slice once the cue shows, so a long catch-up ends sooner (review O nit 9)', () => {
+    const sch = new BusyScheduler();
+    const { s, sim } = realSession({ scheduler: sch });
+    s.start();
+    s.owe(60_000);
+    const per: number[] = [];
+    for (let i = 0; i < 60 && s.catchingUp; i += 1) {
+      const t0 = sim.state.tick;
+      s.advance(16);
+      per.push(sim.state.tick - t0);
+    }
+    // the first frames run the 12 ms slice; once the catch-up has run 150 ms (the cue's delay) frames run more
+    expect(Math.max(...per)).toBeGreaterThan(per[0]! * 2);
+  });
+
+  it('still gets shorter every frame on a device so slow that its frames owe more than the slice runs', () => {
+    // each frame takes 600 ms (350 ms over B6's clamp is owed again, 7 ticks) and every clock read costs 13 ms,
+    // so the budget alone allows 4 ticks a frame and the debt would grow for ever: the slice still runs this
+    // frame's debt and 4 ticks more (CI's WebKit, the flaky hidden-tab e2e)
+    class SlowScheduler implements FrameScheduler {
+      t = 0;
+      request(): number {
+        return 1;
+      }
+      cancel(): void {}
+      now(): number {
+        this.t += 13;
+        return this.t;
+      }
+    }
+    const { s } = realSession({ scheduler: new SlowScheduler() });
+    s.start();
+    s.owe(8000);
+    let frames = 0;
+    let last = s.catchUp.value!.behindGameMs;
+    while (s.catchingUp && frames < 200) {
+      s.advance(600);
+      frames += 1;
+      const now = s.catchUp.value?.behindGameMs ?? 0;
+      expect(now).toBeLessThan(last);
+      last = now;
+    }
+    expect(s.catchingUp).toBe(false);
+    expect(frames).toBeLessThan(60);
+  });
 });
 
 describe('away too long leaves a live match (queue item 34)', () => {
@@ -281,6 +412,21 @@ describe('away too long leaves a live match (queue item 34)', () => {
     expect(s.status.value).toBe('running');
     expect(sim.state.tick).toBe(1200);
     expect(s.awayForfeit.value).toBe(false);
+  });
+
+  it('lets a Retreat through while it catches up (leaving never waits); other input stays held (review O nit 2)', () => {
+    const { s, sim } = realLive();
+    s.start();
+    s.advance(50);
+    s.owe(9000);
+    expect(s.catchingUp).toBe(true);
+    s.issue({ t: 'train', side: 0, slot: 0 });
+    s.issue({ t: 'retreat', side: 0 });
+    s.advance(16);
+    expect(s.status.value).toBe('ended');
+    expect(sim.state.outcome).toMatchObject({ winner: 1, reason: 'retreat' });
+    expect(s.commands.filter((c) => c.side === 0).map((c) => c.t)).toEqual(['retreat']);
+    expect(s.catchUp.value).toBeNull();
   });
 
   it('time owed never piles up past the limit (a device too slow to keep up drops the excess)', () => {

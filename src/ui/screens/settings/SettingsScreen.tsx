@@ -6,10 +6,15 @@
  * quick reveal and vibration (A15.6 safe defaults); credits; event log export (A8). A gentle backup
  * reminder shows when the last export is more than 5 days old (B8). Changes apply at once. Toggles
  * carry a hint only where the name alone does not say what they do.
+ *
+ * Over a live match (queue item 34; `SettingsLiveContext`): the battle runs on underneath, so a sticky
+ * "Match running · Back to battle" bar stays at the top, and Import and Reset wait until the match is over
+ * (orchestrator decision 4, review O S3). Mute opponents is the default for every match; the emote wheel and
+ * the live menu mute one opponent for that match only (decision 5, like Clash Royale).
  */
 import './settings.css';
 import type { Bus, Settings } from '@/contracts';
-import { useState } from 'preact/hooks';
+import { useContext, useState } from 'preact/hooks';
 import { Button } from '../../components/Button';
 import { Pill } from '../../components/Chips';
 import { Segmented, Slider, Toggle } from '../../components/Controls';
@@ -33,6 +38,7 @@ import type { RouteOf } from '../../router';
 import { useUi } from '../context';
 import { arenaOf } from '../model/progress';
 import { isTesterProfile } from '../model/tester';
+import { SettingsLiveContext, type SettingsLiveMatch } from './liveMatch';
 
 const BUSES: { bus: Bus; key: string }[] = [
   { bus: 'master', key: 'ui.settings.volume.master' },
@@ -60,10 +66,30 @@ export const PARENT_LINES: readonly string[] = [
   'ui.parents.kept',
 ];
 
+/** The sticky bar over Settings while a live match runs underneath (it never pauses). */
+function LiveBar(p: { live: SettingsLiveMatch; t: (key: string, params?: Record<string, string | number>) => string; onBack: () => void }) {
+  const { live, t } = p;
+  return (
+    <div class="set-live" role="status" data-testid="set-live-bar">
+      <i class="set-live__dot" aria-hidden="true" />
+      <span class="set-live__text">
+        <b>{live.running.value ? t('ui.settings.liveRunning') : t('ui.settings.liveOver')}</b>
+        <span class="set-live__sub">{t('ui.settings.liveSub', { name: live.foeName, time: live.clock.value })}</span>
+      </span>
+      <Button kind="primary" size="sm" testid="set-live-back" onClick={p.onBack}>
+        {t('ui.settings.backToBattle')}
+      </Button>
+    </div>
+  );
+}
+
 export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
   const { save, content, t, router, services, toasts, now } = useUi();
   const s = save.value;
   const st = s.settings;
+  // a live match runs under this screen: the bar, and no Import or Reset until it is over
+  const live = useContext(SettingsLiveContext);
+  const saveLock = live ? { disabled: true, reason: t('ui.settings.liveSaveReason') } : {};
   const [dialog, setDialog] = useState<Dialog>(null);
   const [code, setCode] = useState('');
   const [importText, setImportText] = useState('');
@@ -85,6 +111,7 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
   return (
     <ScreenFrame id="settings" title={t('ui.nav.settings')} onBack={() => router.back()}>
       <div class="set">
+        {live ? <LiveBar live={live} t={t} onBack={() => router.back()} /> : null}
         {needsBackup(s.lastExportAt, s.createdAt, now()) ? (
           <div class="set-backup" role="note" data-testid="backup-reminder">
             <DownloadIcon size={26} />
@@ -202,7 +229,10 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
 
           <Panel title={t('ui.settings.gameplay')} icon={<ScrollIcon size={24} />} testid="set-gameplay" labelledBy="set-gameplay-t">
             <div class="set-row">
-              <span>{t('ui.settings.defaultSpeed')}</span>
+              <span class="set-row__label">
+                {t('ui.settings.defaultSpeed')}
+                <small class="set-row__hint">{t('ui.settings.defaultSpeedHint')}</small>
+              </span>
               <Segmented
                 label={t('ui.settings.defaultSpeed')}
                 value={st.defaultSpeed}
@@ -241,6 +271,7 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
             />
             <Toggle
               label={t('ui.settings.muteEmotes')}
+              hint={t('ui.settings.muteEmotesHint')}
               checked={st.mutedEmotes}
               onChange={(mutedEmotes) => set({ mutedEmotes })}
               testid="set-mute-emotes"
@@ -271,6 +302,11 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
               </p>
             ) : null}
             <p class="set-note">{t('ui.settings.saveLocal')}</p>
+            {live ? (
+              <p class="set-note set-live-note" data-testid="set-live-note">
+                {t('ui.settings.liveSaveNote')}
+              </p>
+            ) : null}
             <div class="set-buttons">
               <Button kind="secondary" size="sm" icon={<CopyIcon size={20} />} testid="export-code" onClick={openExport}>
                 {t('ui.settings.exportCode')}
@@ -284,10 +320,10 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
               >
                 {t('ui.settings.exportFile')}
               </Button>
-              <Button kind="progress" size="sm" icon={<UploadIcon size={20} />} testid="import" onClick={() => setDialog('import')}>
+              <Button kind="progress" size="sm" icon={<UploadIcon size={20} />} testid="import" {...saveLock} onClick={() => setDialog('import')}>
                 {t('ui.settings.import')}
               </Button>
-              <Button kind="destructive" size="sm" icon={<TrashIcon size={20} />} testid="reset" onClick={() => setDialog('reset1')}>
+              <Button kind="destructive" size="sm" icon={<TrashIcon size={20} />} testid="reset" {...saveLock} onClick={() => setDialog('reset1')}>
                 {t('ui.settings.reset')}
               </Button>
             </div>

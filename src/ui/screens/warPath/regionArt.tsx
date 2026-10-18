@@ -18,7 +18,7 @@ import { fnv1a32, mulberry32 } from '@/core';
 import type { ComponentChildren } from 'preact';
 import { GroundDetail, Hills, SetPieces, Water } from './regionScenery';
 import { Cumulus, Mountains } from './skyArt';
-import { mix } from '../../components/tone';
+import { mix, shade } from '../../components/tone';
 import { SvgPennant } from '../../components/SvgPennant';
 import { bones, boulder, broadleaf, cannon, chimney, column, cottage, crates, crystal, cypress, dome, Grove, hay, type KitProp, lamp, mast, palm, pine, pylon, sandbags, shroom, tent, whiteHouse, windmill, barrels, block } from './propKit';
 
@@ -172,7 +172,7 @@ function Skyline(p: { age: AgeId; w: number; h: number; hz: number; t: RegionThe
             <path d="M-50 -96 h100 v8 h-100 z" fill="#8792a3" opacity=".6" />
             <path d="M0 -164 v-16" stroke="#3f4856" stroke-width="2.5" />
             {/* the keep's pennant ripples like the lane's cloth (queue item 37) */}
-            <SvgPennant x={1} y={-180} w={16} h={10} notch={4} fill={t.accent} phase={1.1} />
+            <SvgPennant x={1} y={-180} w={16} h={10} notch={4} fill={t.accent} fold={shade(t.accent)} phase={1.1} />
           </g>,
         );
         break;

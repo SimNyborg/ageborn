@@ -202,7 +202,7 @@ function Pennant(p: { x: number; y: number; color: string; h?: number }) {
       <path d={`M0 0 V-${h}`} stroke={ink('#6b4a2e')} stroke-width="3.4" stroke-linecap="round" />
       <path d={`M0 0 V-${h}`} stroke="#8e6440" stroke-width="1.6" stroke-linecap="round" />
       {/* the pennant ripples like the lane's cloth (queue item 37) */}
-      <SvgPennant x={1} y={-h} w={14} h={8} notch={4} fill={p.color} stroke={ink(p.color)} strokeWidth={1.2} phase={(p.x % 7) * 0.9} />
+      <SvgPennant x={1} y={-h} w={14} h={8} notch={4} fill={p.color} stroke={ink(p.color)} strokeWidth={1.2} fold={shade(p.color)} phase={(p.x % 7) * 0.9} />
     </g>
   );
 }
@@ -731,7 +731,7 @@ export function StartCamp(p: { x: number; y: number; s: number; t: RegionTheme }
       <g transform="translate(36 -4)">
         <path d="M0 0 V-58" stroke="#3b2a1e" stroke-width="3" stroke-linecap="round" />
         <circle cx="0" cy="-59" r="2.8" fill="#ffd466" stroke={INK} stroke-width="1" />
-        <SvgPennant x={1} y={-55} w={21} h={16} notch={5} fill="var(--ui-team-me)" stroke={INK} strokeWidth={1.4} phase={0.3} />
+        <SvgPennant x={1} y={-55} w={21} h={16} notch={5} fill="var(--ui-team-me)" stroke={INK} strokeWidth={1.4} fold="rgba(0, 0, 0, 0.22)" phase={0.3} />
       </g>
     </g>
   );

@@ -78,10 +78,12 @@ export function tickerScheduler(app: Application): FrameScheduler {
 }
 
 /**
- * The app's one persistent canvas (`createPixiHost`). Its ticker stops first, so nothing draws on the lost
- * context; the card showcase and the Customize diorama keep their own apps, which their screens destroy.
+ * The app's one persistent canvas (`createPixiHost`; its ticker stops first, so nothing draws on the lost
+ * context) and the menus' second context: Home's live island and the Customize diorama share one app, the
+ * card showcase has its own (review M S5: Home is the likeliest screen at a reload; their stages stop
+ * drawing when their context is lost).
  */
-const GAME_CANVAS = 'canvas[data-testid="game-canvas"]';
+const GAME_CANVAS = ['game-canvas', 'home-stage-canvas', 'diorama-canvas', 'showcase-canvas'].map((id) => `canvas[data-testid="${id}"]`).join(', ');
 
 /** Loses a canvas's WebGL context now (its textures and buffers go at once). Never creates a context. */
 function loseContext(c: HTMLCanvasElement): void {

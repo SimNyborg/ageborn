@@ -12,9 +12,10 @@ import type { MatchConfig } from '@/contracts';
 import { fakeMatchConfig } from '@/contracts/fakes/sim';
 import { installDom, text, type FakeElement } from '../../screens/test/dom';
 import type { HudCtx } from '../context';
-import { AwayNotice, CatchUpCue, LiveControls, TempoPrompt, type LiveOpen } from '../Live';
+import { AwayNotice, CatchUpCue, LiveControls, PROMPT_ARM_MS, TempoPrompt, type LiveOpen } from '../Live';
 import type { LiveCatchUp, LiveHud, LiveRefusal, LiveSay, LiveSpeed, LiveTempo } from '../live';
 import { sampleHudModel } from '../samples';
+import { wheelChat } from '../EmoteWheel';
 
 interface FakeLive extends LiveHud {
   proposals: LiveSpeed[];
@@ -193,7 +194,7 @@ describe('live tempo control (queue item 34)', () => {
     expect(q('[data-testid="hud-tempo-tag"]')).toBeNull();
   });
 
-  it('a tap during the cooldown or while their card is open says why and opens nothing', () => {
+  it('a tap during the cooldown says why; while their card is open it is denied without a tag behind the card', () => {
     const live = fakeLive();
     live.setTempo({ readyAt: 22_000 });
     const { open, draw, c } = mountControls(live);
@@ -210,7 +211,13 @@ describe('live tempo control (queue item 34)', () => {
     draw();
     tap(q('[data-testid="hud-tempo"]'));
     draw();
-    expect(text(q('[data-testid="hud-tempo-tag"]')!)).toBe('hud.live.answerFirst(name=LadyWaffle)');
+    // the card says what to do; a tag would hang behind it on phones (review O nit 4)
+    expect(c.acts).toEqual([
+      { k: 'deny', target: 'tempo' },
+      { k: 'deny', target: 'tempo' },
+    ]);
+    expect(q('[data-testid="hud-tempo-tag"]')).toBeNull();
+    expect(open.v).toBeNull();
   });
 
   it('a pick the live layer refuses says why', () => {
@@ -222,7 +229,55 @@ describe('live tempo control (queue item 34)', () => {
     tap(q('[data-testid="hud-tempo-1.5"]'));
     draw();
     expect(open.v).toBeNull();
-    expect(text(q('[data-testid="hud-tempo-tag"]')!)).toBe('hud.live.answerFirst(name=LadyWaffle)');
+    expect(text(q('[data-testid="hud-tempo-tag"]')!)).toBe('hud.live.waiting(name=LadyWaffle)');
+  });
+
+  it('does nothing while the battle catches up (its cue covers the lane; the opponent waits too)', () => {
+    const live = fakeLive();
+    live.catchSig.value = { behindMs: 30_000, doneBp: 1000 };
+    const { open, draw, c } = mountControls(live);
+    tap(q('[data-testid="hud-tempo"]'));
+    draw();
+    expect(open.v).toBeNull();
+    expect(c.acts).toEqual([]);
+    expect(q('[data-testid="hud-tempo-tag"]')).toBeNull();
+    // a pick the layer refuses as busy says nothing either
+    live.catchSig.value = null;
+    tap(q('[data-testid="hud-tempo"]'));
+    draw();
+    live.refusal = 'busy';
+    tap(q('[data-testid="hud-tempo-2"]'));
+    draw();
+    expect(q('[data-testid="hud-tempo-tag"]')).toBeNull();
+  });
+
+  it('the menu button carries a LIVE label, not a red dot (review O nit 7)', () => {
+    const live = fakeLive();
+    mountControls(live);
+    const btn = q('[data-testid="hud-live-menu"]')!;
+    expect(text(btn)).toBe('hud.live.pill');
+    expect(btn.querySelector('.hud-live-pill')).not.toBeNull();
+  });
+
+  it('the pieces with their own Reduce motion variant opt out of the theme net (review O B1)', () => {
+    const live = fakeLive();
+    live.setTempo({ pending: { id: 1, by: 'me', speed: 2, at: 9000, until: 17_000 } });
+    const { open, draw } = mountControls(live);
+    // the gold ring and the waiting tag keep their 8 s and their fade
+    expect(q('.hud-tempo-ring.ui-rm-own')).not.toBeNull();
+    expect(q('.hud-tempo-tag.ui-rm-own')).not.toBeNull();
+    open.v = 'menu';
+    draw();
+    expect(q('.hud-live-menu-drop.ui-rm-own')).not.toBeNull();
+  });
+});
+
+describe('quick chat in the wheel (queue item 34, review O S4)', () => {
+  it('leaves out a line that an equipped quote already says, and only then', () => {
+    const all = ['glhf', 'nice', 'wow', 'oops', 'thanks', 'wp', 'gg'];
+    expect(wheelChat(all, ['quote.glhf', 'quote.well_played', 'quote.nice_move', 'quote.so_close'])).toEqual(['nice', 'wow', 'oops', 'thanks', 'gg']);
+    expect(wheelChat(all, ['quote.glhf'])).toEqual(['nice', 'wow', 'oops', 'thanks', 'wp', 'gg']);
+    expect(wheelChat(all, [])).toEqual(all);
   });
 });
 
@@ -279,6 +334,18 @@ describe('their proposal, the catch-up and the away banner (queue item 34)', () 
     expect(card.getAttribute('data-speed')).toBe('1.5');
     expect(text(card)).toContain('hud.live.speedQ(s=1.5)');
     expect(c.sounds).toContain('ui_pop');
+    // it owns its Reduce motion fade, and the drain bar keeps its 8 s (review O B1)
+    expect(q('.hud-tempo-prompt.ui-rm-own')).not.toBeNull();
+    expect(q('.hud-tp-bar.ui-rm-own')).not.toBeNull();
+    // its buttons wake 400 ms after it lands: a tap meant for the closing menu answers nothing (review O S2)
+    expect(q('.hud-tempo-prompt.is-arming')).not.toBeNull();
+    tap(q('[data-testid="hud-tempo-accept"]'));
+    expect(live.answers).toEqual([]);
+    act(() => {
+      vi.advanceTimersByTime(PROMPT_ARM_MS);
+    });
+    draw();
+    expect(q('.hud-tempo-prompt.is-arming')).toBeNull();
     tap(q('[data-testid="hud-tempo-accept"]'));
     expect(live.answers).toEqual([true]);
     live.setTempo({ pending: null });
@@ -292,8 +359,22 @@ describe('their proposal, the catch-up and the away banner (queue item 34)', () 
     expect(q('[data-testid="hud-tempo-prompt"]')).toBeNull();
     live.setTempo({ pending: { id: 10, by: 'foe', speed: 2, at: 9000, until: 17_000 } });
     draw();
+    act(() => {
+      vi.advanceTimersByTime(PROMPT_ARM_MS);
+    });
+    draw();
     tap(q('[data-testid="hud-tempo-decline"]'));
     expect(live.answers).toEqual([true, false]);
+  });
+
+  it('shows Y and N on its buttons once the player uses keys (review O nit 6)', () => {
+    const live = fakeLive();
+    live.setTempo({ pending: { id: 3, by: 'foe', speed: 2, at: 9000, until: 17_000 } });
+    act(() => {
+      render(<TempoPrompt c={ctx(live, { keys: true })} live={live} />, container as unknown as Element);
+    });
+    expect(text(q('[data-testid="hud-tempo-accept"]')!)).toBe('hud.live.acceptY');
+    expect(text(q('[data-testid="hud-tempo-decline"]')!)).toBe('hud.live.declineN');
   });
 
   it('your own open proposal shows no card', () => {
@@ -322,6 +403,9 @@ describe('their proposal, the catch-up and the away banner (queue item 34)', () 
     draw();
     const cue = q('[data-testid="hud-catchup"]')!;
     expect(text(cue)).toContain('hud.live.catchingUp');
+    // why it fast-forwards (review O nit 9), and it owns its Reduce motion fade (B1)
+    expect(text(cue)).toContain('hud.live.catchUpWhy');
+    expect(q('.hud-catchup.ui-rm-own')).not.toBeNull();
     expect(text(cue)).toContain('hud.live.behind(time=0:42)');
     live.catchSig.value = null;
     draw();
@@ -345,6 +429,8 @@ describe('their proposal, the catch-up and the away banner (queue item 34)', () 
       render(<AwayNotice c={c} live={live} />, container as unknown as Element);
     });
     expect(text(q('[data-testid="hud-away"]')!)).toBe('hud.live.awayhud.live.awaySub');
+    // it fades in and holds under Reduce motion too (the theme net used to end it at opacity 0 at once, B1)
+    expect(q('.hud-moment.ui-rm-own')).not.toBeNull();
   });
 });
 

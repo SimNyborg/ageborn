@@ -13,7 +13,7 @@ Full detail, numbers and the motion catalogue: `docs/ui-plan.md` (Part 1 rules U
 **Words and disclosure**
 7. Reveal gradually: show only what the player can use now, on Home, inside screens and in the HUD. One new Home thing per level, with a short unlock ceremony. Locked things say how they unlock.
 8. Plain words: buttons are verbs; every invented term has an icon, a first-seen caption and an info panel; a blocked button says what is missing. All strings through i18n, with room for +30% Danish.
-9. Honest and labelled: bots are labelled AI everywhere, except Ranked from Home (owner decision 2026-10-07: until online play exists its search finds a generated player with the Player chip, and the match is played against the bot; Settings › About and For parents keep "All opponents are AI"); A15.3 copy; no timers, countdowns, backlog counts or "last chance"; nothing can be bought.
+9. Honest and labelled: bots are labelled AI everywhere, except Ranked from Home (owner decision 2026-10-07: until online play exists its search finds a generated player with the Player chip, and the match is played against the bot; since 2026-10-13 that player also sends preset emotes and quick chat and negotiates the speed through a persona outside the sim, never free text and never mocking; Settings › About and For parents keep "All opponents are AI"); A15.3 copy; no timers, countdowns, backlog counts or "last chance"; nothing can be bought.
 
 **Colour and components**
 10. Gold = go, green = spend or progress (and valid drop), slate = neutral, red = destructive or denied. Rarity, team and capsule-tier colours only on their own objects, always with their shape cue (gem, side and label, pips).

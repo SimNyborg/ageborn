@@ -67,6 +67,13 @@ export interface DioramaApp {
   trim?(idleMs: number): void;
   /** Bytes of the textures uploaded to this context (the dev memory hook: a second context's share of the GPU). */
   gpuBytes?(): number;
+  /**
+   * Sends the textures `root` draws to this context's GPU now (a view that shows soon: its first frame then
+   * has nothing left to upload). Nothing while the context is lost.
+   */
+  upload?(root: Container): void;
+  /** Calls `lost` when the context is lost and `restored` once it is back; returns the unsubscribe. */
+  onContext?(lost: () => void, restored: () => void): () => void;
   destroy(): void;
 }
 
@@ -240,6 +247,10 @@ export interface SharedAppUser {
   yieldApp(): void;
   /** The newer stage went: take the canvas back and draw again. */
   reclaimApp(): void;
+  /** The context was lost (iOS drops a background tab's, a page hide lets it go): stop drawing, show the still. */
+  contextLost?(): void;
+  /** The context is back (its textures upload again from their decoded copies): draw again. */
+  contextRestored?(): void;
 }
 
 /**
@@ -255,6 +266,9 @@ export class SharedApp {
   private linger: ReturnType<typeof setTimeout> | null = null;
   /** The last stage left asking for the app to go at once (it may still be on its way). */
   private dropNow = false;
+  /** The app's context is lost (until it is restored or the app goes). */
+  private lostCtx = false;
+  private unwatch: (() => void) | null = null;
 
   constructor(
     private readonly make: (size: { width: number; height: number }) => Promise<DioramaApp | null>,
@@ -278,6 +292,7 @@ export class SharedApp {
         (app) => {
           this.pending = null;
           this.app = app;
+          if (app) this.watch(app);
           if (app && this.users.length === 0) {
             if (this.dropNow) this.destroyNow();
             else this.scheduleDestroy();
@@ -315,9 +330,31 @@ export class SharedApp {
     else this.scheduleDestroy();
   }
 
-  /** True while an app exists (tests). */
+  /** True while an app exists (a stage that starts now draws at once: no WebGL start-up to wait for). */
   get alive(): boolean {
     return this.app !== null;
+  }
+
+  /** True while the app's context is lost. */
+  get lost(): boolean {
+    return this.lostCtx;
+  }
+
+  /** Lets every stage on the app know when its context goes and comes back. */
+  private watch(app: DioramaApp): void {
+    this.unwatch?.();
+    this.lostCtx = false;
+    this.unwatch =
+      app.onContext?.(
+        () => {
+          this.lostCtx = true;
+          for (const u of [...this.users]) u.contextLost?.();
+        },
+        () => {
+          this.lostCtx = false;
+          for (const u of [...this.users]) u.contextRestored?.();
+        },
+      ) ?? null;
   }
 
   /** Bytes of the textures this app's renderer holds on the GPU (the dev memory hook; 0 without an app). */
@@ -342,6 +379,9 @@ export class SharedApp {
     if (!this.app) return;
     const app = this.app;
     this.app = null;
+    this.unwatch?.();
+    this.unwatch = null;
+    this.lostCtx = false;
     try {
       app.destroy();
     } catch {
@@ -834,7 +874,11 @@ export async function createDioramaApp(size: { width: number; height: number }):
       canvas.setAttribute('data-testid', label ?? 'diorama-canvas');
       if (canvas.parentElement !== host) host.appendChild(canvas);
     },
-    resize: (w, h) => app.renderer.resize(w, h),
+    // the same size again (a stage taking the canvas back) would only clear and re-allocate its buffer
+    resize: (w, h) => {
+      if (Math.round(app.screen.width) === Math.round(w) && Math.round(app.screen.height) === Math.round(h)) return;
+      app.renderer.resize(w, h);
+    },
     render: () => app.render(),
     trim: (idleMs) => {
       const m = managed();
@@ -852,6 +896,36 @@ export async function createDioramaApp(size: { width: number; height: number }):
         bytes += s.mipLevelCount > 1 ? Math.round((b * 4) / 3) : b;
       }
       return bytes;
+    },
+    upload: (root) => {
+      // what Pixi's own prepare does: each texture source the subtree draws goes to this context once
+      const r = app.renderer as unknown as { context?: { isLost?: boolean }; texture?: { initSource?(s: unknown): void } };
+      const init = r.texture?.initSource?.bind(r.texture);
+      if (!init || r.context?.isLost === true) return;
+      const seen = new Set<unknown>();
+      const visit = (c: Container): void => {
+        const src = (c as Container & { texture?: { source?: { destroyed?: boolean } } }).texture?.source;
+        if (src && !src.destroyed && !seen.has(src)) {
+          seen.add(src);
+          try {
+            init(src);
+          } catch {
+            // an empty or unloaded source uploads on its first draw instead
+          }
+        }
+        for (const ch of c.children) visit(ch);
+      };
+      visit(root);
+    },
+    onContext: (lost, restored) => {
+      // Pixi's own listeners (added at init) run first: on a loss it keeps the canvas restorable, on the
+      // restore it re-creates its GPU resources before the stages draw again
+      canvas.addEventListener('webglcontextlost', lost);
+      canvas.addEventListener('webglcontextrestored', restored);
+      return () => {
+        canvas.removeEventListener('webglcontextlost', lost);
+        canvas.removeEventListener('webglcontextrestored', restored);
+      };
     },
     destroy: () => app.destroy({ removeView: true }, { children: true, texture: false, textureSource: false }),
   };

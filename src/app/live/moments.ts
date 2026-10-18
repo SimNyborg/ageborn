@@ -1,8 +1,8 @@
 /**
  * The moments of a match a player notices and might react to (queue item 34: "emotes and short quick-chat
  * lines that react to the match: a big hit, a comeback, a low base, GG"), read from what both players see:
- * the two base bars, the ages and the end. Pure and deterministic (ticks, integer basis points), so the
- * simulated opponent reacts the same way to the same match.
+ * the two base bars, the ages, the phase banners (Overdrive, the Siege) and the end. Pure and deterministic
+ * (ticks, integer basis points), so the simulated opponent reacts the same way to the same match.
  *
  * Sides are absolute: a moment names the side it is about (whose base was hit or is low, who came back,
  * who evolved, who won).
@@ -10,13 +10,15 @@
 import type { Side } from '@/contracts';
 import type { MatchGlance } from './protocol';
 
-export type MomentKind = 'bigHit' | 'low' | 'comeback' | 'evolve' | 'stalemate' | 'end';
+export type MomentKind = 'bigHit' | 'low' | 'comeback' | 'evolve' | 'stalemate' | 'phase' | 'end';
 
 export interface Moment {
   kind: MomentKind;
-  /** bigHit, low: whose base; comeback: who came back; evolve: who evolved; end: the winner (null: a draw); stalemate: null. */
+  /** bigHit, low: whose base; comeback: who came back; evolve: who evolved; end: the winner (null: a draw); stalemate, phase: null. */
   side: Side | null;
   tick: number;
+  /** phase: the phase the match entered (both players see its banner: "Overdrive!", "Siege"). */
+  phase?: 'overdrive' | 'siege';
 }
 
 export interface MomentRules {
@@ -67,6 +69,7 @@ export class MomentDetector {
   /** Each side's worst lead so far (its HP minus the other's, bp). */
   private readonly worstLead: [number, number] = [0, 0];
   private age: [number, number] | null = null;
+  private phase: MatchGlance['phase'] | null = null;
   private lastHp: [number, number] | null = null;
   private lastChangeTick = 0;
   private stalemateReadyAt = 0;
@@ -112,6 +115,9 @@ export class MomentDetector {
       for (const side of [0, 1] as const) if (g.ageIndex[side] > this.age[side]) out.push({ kind: 'evolve', side, tick: t });
     }
     this.age = [g.ageIndex[0], g.ageIndex[1]];
+    // the match entering Overdrive or the Siege: a public moment (its banner shows on both screens)
+    if (this.phase !== null && g.phase !== this.phase && (g.phase === 'overdrive' || g.phase === 'siege')) out.push({ kind: 'phase', side: null, tick: t, phase: g.phase });
+    this.phase = g.phase;
     if (!this.lastHp || g.hpBp[0] < this.lastHp[0] || g.hpBp[1] < this.lastHp[1]) this.lastChangeTick = t;
     this.lastHp = [g.hpBp[0], g.hpBp[1]];
     if (t >= r.stalemateFromTick && t - this.lastChangeTick >= r.stalemateTicks && t >= this.stalemateReadyAt) {

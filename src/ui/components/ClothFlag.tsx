@@ -1,10 +1,13 @@
 /**
  * A DOM flag that waves like the lane's cloth (queue item 37; `clothWave.ts`): the picture is cut into
  * vertical strips pinned at the hoist, each strip lifts, shears, is pulled toward the pole and droops as the
- * lane's waves travel to the free edge, with light and shade following the folds and the odd gust. The
- * motion is a set of Web Animations sampled once (transforms and opacity only), so the browser plays it on
- * its compositor with no work per frame on the page; it pauses off screen. Reduce motion (`still`) shows one
- * resting pose, gently rippled, with no motion.
+ * lane's waves travel to the free edge, and a band turning away from the light darkens, with the odd gust.
+ *
+ * Cheap (review M S8): the motion is a set of CSS keyframes written once per page for each strip count and
+ * cloth shape and shared by every flag (transforms and opacity only, played on the compositor); a flag adds
+ * only two animated layers per strip (about one strip per 10 px) and no keyframes of its own. It holds its
+ * resting pose through the screen's entrance and starts once the page is idle, from that same pose; it
+ * pauses off screen. Reduce motion (`still`) keeps the resting pose, gently rippled, with no motion.
  *
  * `src` is the flag picture (a base flag with its margin and swallowtail, a national flag's 4:3 picture);
  * `outline` draws the cloth's edge in its own dark (a national flag's picture has none). The box sizes the
@@ -12,11 +15,12 @@
  * Decorative (`aria-hidden`).
  */
 import { useEffect, useMemo, useRef } from 'preact/hooks';
-import { clothSeedOf, CLOTH_LOOP_MS, poseTransform, stripCount, stripKeyframes, stripPose } from './clothWave';
+import { clothKeyframeNames, clothKeyframesCss, clothSeedOf, CLOTH_LOOP_MS, poseTransform, stripCount, stripPose } from './clothWave';
 import './clothFlag.css';
 
-/** A still flag's pose: a moment of the loop where the cloth rests in a soft ripple. */
-const STILL_T = 0.9;
+/** How long the cloth holds still after it mounts (the screen's entrance plays first), ms; then when idle. */
+const START_AFTER_MS = 700;
+const IDLE_WAIT_MS = 900;
 
 function absolute(src: string): string {
   if (/^(data:|blob:|https?:)/.test(src) || typeof document === 'undefined') return src;
@@ -27,6 +31,39 @@ function absolute(src: string): string {
   }
 }
 
+/** The page's shared cloth keyframes: one `<style>` element, a cut written the first time a flag needs it. */
+const written = new Set<string>();
+function ensureKeyframes(n: number, aspect: number): boolean {
+  if (typeof document === 'undefined' || !document.head) return false;
+  const key = `${n}|${Math.round(aspect * 100)}`;
+  if (written.has(key)) return true;
+  let el = document.getElementById('ui-cloth-keyframes');
+  if (!el) {
+    el = document.createElement('style');
+    el.id = 'ui-cloth-keyframes';
+    document.head.appendChild(el);
+  }
+  el.appendChild(document.createTextNode(clothKeyframesCss(n, Math.round(aspect * 100) / 100)));
+  written.add(key);
+  return true;
+}
+
+type IdleHandle = { cancel(): void };
+function afterEntrance(cb: () => void): IdleHandle {
+  let idle: number | null = null;
+  const w = typeof window !== 'undefined' ? (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (h: number) => void }) : null;
+  const timer = setTimeout(() => {
+    if (w?.requestIdleCallback) idle = w.requestIdleCallback(cb, { timeout: IDLE_WAIT_MS });
+    else cb();
+  }, START_AFTER_MS);
+  return {
+    cancel: () => {
+      clearTimeout(timer);
+      if (idle !== null) w?.cancelIdleCallback?.(idle);
+    },
+  };
+}
+
 export function ClothFlag(p: {
   src: string | null;
   /** The cloth's height over its length (the picture's), for the shear; default the base flags' 44 / 64. */
@@ -35,62 +72,63 @@ export function ClothFlag(p: {
   widthPx?: number;
   still?: boolean;
   outline?: boolean;
-  /** The flag's own seed (its phase and start in the loop); default from its picture. */
+  /** The flag's own seed (where in the loop it starts); default from its picture. */
   seed?: number;
   class?: string;
   testid?: string;
 }) {
   const root = useRef<HTMLSpanElement>(null);
   const n = stripCount(p.widthPx ?? 64);
-  const aspect = p.aspect ?? 44 / 64;
+  const aspect = Math.round((p.aspect ?? 44 / 64) * 100) / 100;
   const src = useMemo(() => (p.src ? absolute(p.src) : null), [p.src]);
   const own = useMemo(() => hashOf(src ?? ''), [src]);
   const seed = p.seed ?? own;
   useEffect(() => {
     const el = root.current;
     if (!el || !src) return undefined;
-    const { phase, offsetMs } = clothSeedOf(seed);
+    const { offsetMs } = clothSeedOf(seed);
     const strips = Array.from(el.querySelectorAll<HTMLElement>('.ui-cloth__s'));
-    const darks = Array.from(el.querySelectorAll<HTMLElement>('.ui-cloth__dark'));
-    const lights = Array.from(el.querySelectorAll<HTMLElement>('.ui-cloth__light'));
-    // Reduce motion, or a browser without Web Animations: one resting pose
-    if (p.still || typeof el.animate !== 'function') {
+    const shades = Array.from(el.querySelectorAll<HTMLElement>('.ui-cloth__dark'));
+    // the resting pose: where in the loop this flag starts (Reduce motion keeps it; the motion starts from it)
+    const rest = (): void => {
       strips.forEach((s, i) => {
-        const pose = stripPose(i, n, STILL_T, aspect, phase);
+        const pose = stripPose(i, n, offsetMs / 1000, aspect);
+        s.style.animation = '';
         s.style.transform = poseTransform(pose);
-        const d = darks[i];
-        const l = lights[i];
-        if (d) d.style.opacity = String(pose.dark);
-        if (l) l.style.opacity = String(pose.light);
-      });
-      return undefined;
-    }
-    const anims: Animation[] = [];
-    const timing: KeyframeAnimationOptions = { duration: CLOTH_LOOP_MS, iterations: Infinity, delay: -offsetMs, easing: 'linear' };
-    strips.forEach((s, i) => {
-      s.style.transform = '';
-      const k = stripKeyframes(i, n, aspect, phase);
-      anims.push(s.animate(k.transform, timing));
-      const d = darks[i];
-      const l = lights[i];
-      if (d) anims.push(d.animate(k.dark, timing));
-      if (l) anims.push(l.animate(k.light, timing));
-    });
-    // off screen: paused (the browser skips hidden tabs by itself)
-    let io: IntersectionObserver | null = null;
-    if (typeof IntersectionObserver === 'function') {
-      io = new IntersectionObserver((es) => {
-        const on = es.some((e) => e.isIntersecting);
-        for (const a of anims) {
-          if (on && a.playState === 'paused') a.play();
-          else if (!on && a.playState === 'running') a.pause();
+        const d = shades[i];
+        if (d) {
+          d.style.animation = '';
+          d.style.opacity = String(Math.round(pose.dark * 1000) / 1000);
         }
       });
-      io.observe(el);
-    }
+    };
+    rest();
+    if (p.still) return undefined;
+    let io: IntersectionObserver | null = null;
+    const start = (): void => {
+      if (!ensureKeyframes(n, aspect)) return;
+      const timing = `${CLOTH_LOOP_MS}ms linear -${offsetMs}ms infinite`;
+      strips.forEach((s, i) => {
+        const names = clothKeyframeNames(i, n, aspect);
+        s.style.transform = '';
+        s.style.animation = `${names.motion} ${timing}`;
+        const d = shades[i];
+        if (d) {
+          d.style.opacity = '';
+          d.style.animation = `${names.shade} ${timing}`;
+        }
+      });
+      // off screen: paused (the browser skips hidden tabs by itself)
+      if (typeof IntersectionObserver === 'function') {
+        io = new IntersectionObserver((es) => el.classList.toggle('is-paused', !es.some((e) => e.isIntersecting)));
+        io.observe(el);
+      }
+    };
+    const wait = afterEntrance(start);
     return () => {
+      wait.cancel();
       io?.disconnect();
-      for (const a of anims) a.cancel();
+      el.classList.remove('is-paused');
     };
   }, [src, p.still, n, aspect, seed]);
   return (
@@ -107,7 +145,6 @@ export function ClothFlag(p: {
           <span class="ui-cloth__s">
             <span class="ui-cloth__img" />
             <i class="ui-cloth__dark" />
-            <i class="ui-cloth__light" />
           </span>
         </span>
       ))}

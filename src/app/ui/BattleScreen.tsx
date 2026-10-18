@@ -7,7 +7,10 @@
  *
  * A live (online) match (queue item 34, `BattleHandle.live`) never pauses: the HUD gets the live layer,
  * its menu (Retreat, Settings over the running battle) and the session's refused pauses (P is the HUD's
- * own; the back button arrives as `pauseAsks`), and the opponent mute follows the Settings switch.
+ * own; the back button arrives as `pauseAsks`). The opponent mute is per match (the wheel and the live
+ * menu, like Clash Royale); Settings › Mute opponents is the default every match starts with, and turning
+ * it on or off meanwhile applies to the running match too (orchestrator decision 5). While Settings covers
+ * a live battle (`covered`) the HUD's keys rest, so Y, N, F or a card key never act on a hidden battle.
  */
 import { useEffect, useMemo, useRef } from 'preact/hooks';
 import { Hud, type LiveMenuActions } from '@/ui/hud';
@@ -26,6 +29,8 @@ export function BattleScreen(p: {
   externalPause?: boolean;
   /** Opens Settings over the battle (a live match's menu; the meta screens wire it). */
   onSettings?: () => void;
+  /** Another screen (Settings) covers the battle; a live battle runs on underneath and its HUD keys rest. */
+  covered?: boolean;
 }) {
   const ui = useApp();
   const root = useRef<HTMLDivElement>(null);
@@ -52,7 +57,7 @@ export function BattleScreen(p: {
     () => (live ? { retreat: () => s.issue({ t: 'retreat', side: 0 }), ...(onSettings ? { settings: onSettings } : {}) } : null),
     [live, s, onSettings],
   );
-  // Settings › Mute opponent emotes applies to a live match at once, both ways
+  // Settings › Mute opponents (the default for every match) applies to the running live match when changed
   const mutedSetting = settings?.mutedEmotes;
   const firstMute = useRef(true);
   useEffect(() => {
@@ -80,6 +85,7 @@ export function BattleScreen(p: {
         callouts={b.setup.mode !== 'tutorial' && b.setup.script === null}
         {...(wheel ? { emoteWheel: wheel } : {})}
         {...(live && liveMenu ? { live, liveMenu, menuAsks: s.pauseAsks } : {})}
+        {...(live && p.covered ? { keyboard: false } : {})}
         t={ui.t}
       />
       {countdown >= 0 ? (

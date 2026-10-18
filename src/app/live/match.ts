@@ -62,7 +62,7 @@ export interface LiveMatchOptions {
   config: Readonly<MatchConfig>;
   /** The opponent's end; default the simulated player of this match's seed. */
   link?: OpponentLink;
-  /** The opponent's emotes and chat start muted (Settings › Mute opponent emotes). */
+  /** The opponent's emotes and chat start muted (Settings › Mute opponents, the default for every match). */
   muted?: boolean;
 }
 
@@ -128,6 +128,8 @@ export class LiveMatch implements LiveHud {
   }
 
   propose(speed: LiveSpeed): LiveRefusal | null {
+    // while the battle catches up the opponent's side waits too: a proposal now would run out unseen (review O nit 2)
+    if (this.session.catchingUp) return 'busy';
     const fx = this.step({ k: 'propose', speed, now: this.now() });
     for (const f of fx) if (f.k === 'refused') return f.why;
     return null;
@@ -191,8 +193,9 @@ export class LiveMatch implements LiveHud {
   private frame(now: number): void {
     if (this.disposed) return;
     this.step({ k: 'tick', now });
-    // the opponent waits while the battle catches up (nothing pops up over the cue); its timers resume after
-    if (this.session.catchingUp) return;
+    // the opponent waits while the battle catches up (nothing pops up over the cue); its timers resume after.
+    // A match left by being away too long ends in silence: you were not there for its GG (review O nit 5).
+    if (this.session.catchingUp || this.session.awayForfeit.peek()) return;
     this.link.update(now, { speed: this.state.speed, tempoBusy: this.state.pending !== null });
   }
 

@@ -14,10 +14,12 @@ import { AppController } from '../controller';
 import { isLiveMatch, LiveMatch, withoutEmotes } from '../live/match';
 import type { LinkContext, LiveMessage, OpponentLink } from '../live/protocol';
 import { PROPOSAL_WINDOW_MS, SAY_GAP_MS } from '../live/protocol';
-import { generalOpponent } from '../matchSetup';
+import { content } from '@/content';
+import { createSim, SIM_VERSION } from '@/sim';
+import { generalOpponent, quickBattle } from '../matchSetup';
 import { createMetaUi } from '../metaUi';
 import { buildServices, DEFAULT_CHOICE } from '../services';
-import { BattleSessionImpl } from '../session';
+import { BattleSessionImpl, MAX_AWAY_MS } from '../session';
 import { isMetaRules } from '../uiServices';
 
 const opponent: OpponentSpec = generalOpponent(fakeContent, { generalId: 'pip', displayName: 'AI Pip', tier: 0, level: 1, format: 'short', seed: 1 });
@@ -193,6 +195,39 @@ describe('the live match layer (queue item 34)', () => {
     expect(s.status.value).toBe('ended');
     expect(lm.tempo.value).toMatchObject({ pending: null, ended: true });
     expect(lm.propose(2)).toBe('ended');
+  });
+
+  it('refuses a proposal while the battle catches up (the opponent waits too), and takes it after (review O nit 2)', () => {
+    const link = new TestLink();
+    const { s, lm } = live({ link });
+    s.owe(5000);
+    expect(s.catchingUp).toBe(true);
+    expect(lm.propose(2)).toBe('busy');
+    expect(link.sent).toEqual([]);
+    expect(lm.tempo.value.pending).toBeNull();
+    // driven by hand, the whole catch-up runs in the next frame
+    s.advance(16);
+    expect(s.catchingUp).toBe(false);
+    expect(lm.propose(2)).toBeNull();
+    expect(link.sent).toEqual([{ k: 'tempoPropose', id: 1, speed: 2 }]);
+  });
+
+  it('a match left by being away too long ends in silence: the opponent says nothing more (review O nit 5)', () => {
+    const setup = quickBattle(null, content, { generalId: 'kettle', displayName: 'AI Kettle', format: 'short', seed: 9 });
+    const sim = createSim(setup.config);
+    const s = new BattleSessionImpl({ sim, mode: 'ladder', opponent: setup.opponent, simVersion: SIM_VERSION, live: true });
+    const link = new TestLink();
+    const lm = new LiveMatch({ session: s, config: onlineConfig(setup.config as MatchConfig), link });
+    s.start();
+    s.advance(50);
+    const before = link.updates.length;
+    expect(before).toBeGreaterThan(0);
+    s.advance(MAX_AWAY_MS + 1000);
+    expect(s.awayForfeit.value).toBe(true);
+    s.advance(16);
+    s.advance(16);
+    expect(link.updates.length).toBe(before);
+    lm.dispose();
   });
 
   it('dispose lets go of the link and the listeners', () => {

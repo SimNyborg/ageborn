@@ -176,6 +176,10 @@ describe('Home: the Battle hub (owner decision 2026-09-30, ui-plan 2.3)', () => 
     m = mount({ state: 'mid', shell: true });
     m.click('[data-testid="play"]');
     expect(m.q('[data-testid="home-opponent"]')!.getAttribute('data-state')).toBe('ranked-search');
+    // the same press landing twice (a tap held up by a long task) is never a Cancel (review M S7)
+    m.click('[data-testid="play"]');
+    expect(m.q('[data-testid="home-opponent"]')!.getAttribute('data-state')).toBe('ranked-search');
+    flush(() => vi.advanceTimersByTime(700));
     m.click('[data-testid="play"]');
     expect(m.q('[data-testid="home-opponent"]')!.getAttribute('data-state')).toBe('ladder');
     expect(text(m.q('[data-testid="play"]')!)).toBe('Battle');

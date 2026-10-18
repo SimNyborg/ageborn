@@ -658,7 +658,7 @@
       "gameplay": "Gameplay",
       "defaultSpeed": "Default speed",
       "vibrate": "Vibration",
-      "muteEmotes": "Mute opponent emotes",
+      "muteEmotes": "Mute opponents in every match",
       "language": "Language",
       "langEn": "English",
       "langDa": "Dansk",
@@ -698,7 +698,15 @@
       "edgeScroll": "Edge scroll",
       "quickReveal": "Quick reveal",
       "quickRevealHint": "Capsules skip to the burst",
-      "parents": "For parents"
+      "parents": "For parents",
+      "muteEmotesHint": "To mute just one, use the emote wheel in battle",
+      "defaultSpeedHint": "Live matches always start at 1x",
+      "liveRunning": "Match running",
+      "liveOver": "Match over",
+      "liveSub": "{name} · {time}",
+      "backToBattle": "Back to battle",
+      "liveSaveNote": "Import and Reset wait until the match is over.",
+      "liveSaveReason": "After the match"
     },
     "info": {
       "title": "Odds and how capsules work",
@@ -714,7 +722,7 @@
     },
     "parents": {
       "noMoney": "Nothing in Ageborn can be bought, and it shows no ads.",
-      "noChat": "There is no chat. Players cannot contact each other. All opponents are AI.",
+      "noChat": "There is no typed chat, only preset emotes and short lines such as “Good game!”. Players cannot contact each other. All opponents are AI.",
       "noData": "No data leaves this device. Progress is saved in this browser.",
       "capsules": "Each capsule is decided when it is earned, and its odds are shown.",
       "breaks": "A break reminder appears after 60 minutes of play. You can switch it off or on here.",

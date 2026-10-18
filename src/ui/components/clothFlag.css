@@ -1,7 +1,8 @@
 /*
  * ClothFlag (queue item 37): a flag cut into vertical strips that wave like the lane's cloth. The cloth is a
  * size container, so each strip shows its own slice of the picture (100cqw is the whole cloth) and overlaps
- * its neighbour by a pixel, so no seam opens while they move. Only transforms and opacity animate.
+ * its neighbour by a pixel, so no seam opens while they move. Only transforms and opacity animate, on the
+ * page's shared keyframes (clothWave.ts); off screen the cloth pauses.
  */
 .ui-cloth {
   position: relative;
@@ -24,9 +25,11 @@
   transform-origin: 0 0;
   will-change: transform;
 }
+.ui-cloth.is-paused :is(.ui-cloth__s, .ui-cloth__dark) {
+  animation-play-state: paused;
+}
 .ui-cloth__img,
-.ui-cloth__dark,
-.ui-cloth__light {
+.ui-cloth__dark {
   position: absolute;
   inset: 0;
   background-repeat: no-repeat;
@@ -36,9 +39,8 @@
 .ui-cloth__img {
   background-image: var(--cloth-img);
 }
-/* the folds' light and shade, only where the cloth is (the picture is their mask: a swallowtail stays clear) */
-.ui-cloth__dark,
-.ui-cloth__light {
+/* the folds' shade, only where the cloth is (the picture is its mask: a swallowtail stays clear) */
+.ui-cloth__dark {
   opacity: 0;
   -webkit-mask-image: var(--cloth-img);
   mask-image: var(--cloth-img);
@@ -51,9 +53,6 @@
 }
 .ui-cloth__dark {
   background-color: #12081c;
-}
-.ui-cloth__light {
-  background-color: #fffbea;
 }
 /* a picture with no edge of its own (a national flag): the cloth's outline in its own dark, riding the folds */
 .ui-cloth--outline .ui-cloth__img {

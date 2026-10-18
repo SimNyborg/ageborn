@@ -5,11 +5,14 @@
  * `../metaUi.ts`.
  */
 import type { ComponentChildren } from 'preact';
+import { computed } from '@preact/signals';
 import { useEffect, useMemo } from 'preact/hooks';
 import { asContent } from '@/content';
+import { clockView } from '@/ui/hud';
 import { bindHistory, LEAVE_AGAIN_KEY } from '@/ui/history';
 import { handleBack, ScreenHost, shellTabs, TAB_ROOTS, visibleEntries, type ScreenSlots, type ShellConfig, type UiEnv } from '@/ui/screens';
 import { MakeGeneral, MAKE_GENERAL_FLAG, useMakeGeneralHold } from '@/ui/screens/customize/MakeGeneral';
+import { SettingsLiveContext, type SettingsLiveMatch } from '@/ui/screens/settings/liveMatch';
 import type { MetaUi } from '../metaUi';
 import { makeGeneralDue } from '../onboarding';
 import { BattleScreen } from './BattleScreen';
@@ -68,8 +71,9 @@ export function MetaHost(p: MetaHostProps) {
     () => ({
       battle: (): ComponentChildren => {
         const r = ui.controller.route.value;
-        // a live match's menu opens Settings over the running battle (queue item 34)
-        return r.id === 'battle' ? <BattleScreen battle={r.battle} externalPause onSettings={() => p.meta.router.go({ id: 'settings' }, { overlay: true })} /> : null;
+        // a live match's menu opens Settings over the running battle (queue item 34); its HUD keys rest while covered
+        const covered = p.meta.router.current.value.id !== 'battle';
+        return r.id === 'battle' ? <BattleScreen battle={r.battle} externalPause covered={covered} onSettings={() => p.meta.router.go({ id: 'settings' }, { overlay: true })} /> : null;
       },
       ...p.slots,
     }),
@@ -81,6 +85,14 @@ export function MetaHost(p: MetaHostProps) {
   const shell: ShellConfig = useMemo(() => ({ tabs: shellTabs(save, env.content), roots: TAB_ROOTS }), [save, env.content]);
   const route = ui.controller.route.value;
   const behind = route.id === 'result' && !!route.result.battle;
+  // Settings over a live match says it runs on (queue item 34, orchestrator decision 4): the bar and the lock
+  const liveBattle = route.id === 'battle' && route.battle.live ? route.battle : null;
+  const settingsLive = useMemo<SettingsLiveMatch | null>(() => {
+    const lm = liveBattle?.live;
+    if (!liveBattle || !lm) return null;
+    const s = liveBattle.session;
+    return { foeName: lm.foeName, clock: computed(() => clockView(s.hud.value).text), running: computed(() => s.status.value === 'running') };
+  }, [liveBattle]);
   // "Make your General" (owner request 2026-10-07): once, on Home after the first capsule's summary.
   const top = p.meta.router.current.value;
   const generalDue = top.id === 'home' && route.id !== 'battle' && makeGeneralDue(save, MAKE_GENERAL_FLAG);
@@ -88,7 +100,9 @@ export function MetaHost(p: MetaHostProps) {
   const general = generalDue ? <MakeGeneral /> : null;
   return (
     <div class="ab-meta" data-testid="meta-ui" data-base={base.route.id} {...(behind ? { 'data-behind': '' } : {})}>
-      <ScreenHost env={env} slots={slots} shell={shell} overlay={general} />
+      <SettingsLiveContext.Provider value={settingsLive}>
+        <ScreenHost env={env} slots={slots} shell={shell} overlay={general} />
+      </SettingsLiveContext.Provider>
     </div>
   );
 }

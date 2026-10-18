@@ -40,7 +40,8 @@ export interface LiveTempo {
   ended: boolean;
 }
 
-export type LiveRefusal = 'pending' | 'cooldown' | 'same' | 'ended';
+/** Why a proposal cannot go now; `busy`: the battle is catching up (its cue covers the lane). */
+export type LiveRefusal = 'pending' | 'cooldown' | 'same' | 'ended' | 'busy';
 
 /** One emote or quick chat line from a player. */
 export interface LiveSay {

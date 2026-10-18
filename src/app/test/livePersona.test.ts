@@ -297,6 +297,117 @@ describe('the simulated player (queue item 34)', () => {
     expect(late).toBe(0);
   });
 
+  it('is never mean: no laugh or sleepy face at your misfortune, from any temperament (review O S1)', () => {
+    let cocky = 0;
+    for (let seed = 1; seed <= 500; seed += 1) {
+      const persona = personaFor(seed, { trophies: 2600, known: KNOWN });
+      if (persona.temperament === 'cocky') cocky += 1;
+      const brain = new PersonaBrain(persona, seed);
+      // your base low, your cry, anger and oops (chat and quote), your slower speed (often declined) and its
+      // win; none of its own good moments, so any laugh would be at you
+      const said = drive(brain, {
+        to: 200_000,
+        step: 100,
+        moments: [
+          [30_000, { kind: 'low', side: 0, tick: 600 }],
+          [190_000, { kind: 'end', side: 1, tick: 3800 }],
+        ],
+        heard: [
+          [50_000, { k: 'emote', emote: 'cry' }],
+          [75_000, { k: 'emote', emote: 'angry' }],
+          [100_000, { k: 'chat', line: 'oops' }],
+          [125_000, { k: 'emote', emote: 'quote.oops_mine' }],
+          [150_000, { k: 'tempoPropose', id: 1, speed: 1 }],
+        ],
+        ctx: (now) => ctx({ speed: 2, tempoBusy: true, hpBp: [2000, 9000], tick: Math.floor(now / 50) + 1, ended: now >= 190_000 }),
+      });
+      // and its own proposal, which you decline (forced, so every persona has one)
+      const brain2 = new PersonaBrain(persona, seed);
+      brain2.forcePropose(2, 0);
+      const declined = drive(brain2, { from: 0, to: 9000, step: 100, heard: [[2000, { k: 'tempoAnswer', id: 1, accept: false }]], ctx: () => ctx({ tick: 400, tempoBusy: true }) });
+      for (const s of [...social(said), ...social(declined)]) {
+        expect(s.msg.k === 'emote' && (s.msg.emote === 'laugh' || s.msg.emote === 'emote.sleepy')).toBe(false);
+      }
+    }
+    expect(cocky).toBeGreaterThan(40);
+  });
+
+  it('laughs at most once a match, only for its own good moments, in every temperament (review O S1)', () => {
+    let cockyLaughs = 0;
+    for (const t of TEMPERAMENTS) {
+      for (let k = 0; k < 25; k += 1) {
+        const { persona, seed } = personaOf(t, 1 + k * 37);
+        const brain = new PersonaBrain(persona, seed);
+        // a flood of its own good moments: big hits on your base and its comebacks
+        const moments: [number, Moment][] = [];
+        for (let at = 5000; at < 400_000; at += 9000) moments.push([at, at % 2 === 0 ? { kind: 'bigHit', side: 0, tick: at / 50 } : { kind: 'comeback', side: 1, tick: at / 50 }]);
+        const laughs = social(drive(brain, { to: 410_000, step: 100, moments, ctx: (now) => ctx({ tick: Math.floor(now / 50) + 1, tempoBusy: true }) })).filter(
+          (s) => s.msg.k === 'emote' && s.msg.emote === 'laugh',
+        ).length;
+        expect(laughs).toBeLessThanOrEqual(1);
+        if (t === 'cocky') cockyLaughs += laughs;
+      }
+    }
+    // cocky still enjoys its own big moments
+    expect(cockyLaughs).toBeGreaterThan(5);
+  });
+
+  it('drops a greeting that would come long after the opening: you were away at the start (review O nit 1)', () => {
+    let late = 0;
+    let onTime = 0;
+    const c = (now: number): PersonaContext => ctx({ tick: Math.floor(now / 50) + 1, tempoBusy: true });
+    for (let seed = 1; seed <= 300; seed += 1) {
+      const persona = personaFor(seed, { known: KNOWN });
+      // away from 1 s to 61 s: nothing runs meanwhile (the live layer holds the link during a catch-up)
+      const brain = new PersonaBrain(persona, seed);
+      drive(brain, { to: 1000, step: 50, ctx: c });
+      late += social(drive(brain, { from: 61_000, to: 75_000, step: 50, ctx: c })).length;
+      onTime += social(drive(new PersonaBrain(persona, seed), { to: 8000, step: 50, ctx: c })).length > 0 ? 1 : 0;
+    }
+    expect(late).toBe(0);
+    expect(onTime).toBeGreaterThan(100);
+  });
+
+  it('notices your evolve, Overdrive and the Siege now and then (friendly and sporting most; review O nit 11)', () => {
+    const count = (t: Temperament, m: Moment): number => {
+      let n = 0;
+      for (let k = 0; k < 60; k += 1) {
+        const { persona, seed } = personaOf(t, 1 + k * 31);
+        const brain = new PersonaBrain(persona, seed);
+        const c = (): PersonaContext => ctx({ tempoBusy: true });
+        // past its greeting first
+        drive(brain, { to: 20_000, step: 100, ctx: c });
+        n += social(drive(brain, { from: 40_000, to: 46_000, step: 100, moments: [[40_000, m]], ctx: c })).length;
+      }
+      return n;
+    };
+    const evolve: Moment = { kind: 'evolve', side: 0, tick: 800 };
+    expect(count('friendly', evolve)).toBeGreaterThan(5);
+    expect(count('sporting', evolve)).toBeGreaterThan(5);
+    expect(count('quiet', evolve)).toBeLessThan(count('friendly', evolve));
+    const siege: Moment = { kind: 'phase', side: null, tick: 4000, phase: 'siege' };
+    expect(count('friendly', siege) + count('sporting', siege)).toBeGreaterThan(5);
+    expect(count('quiet', siege)).toBe(0);
+  });
+
+  it('answers your quote by what it says: no "Nice!" or laugh to "That was close!", your greeting with its own (review O nit 10)', () => {
+    let glhfBack = 0;
+    for (let seed = 1; seed <= 400; seed += 1) {
+      const persona = personaFor(seed, { trophies: 900, known: KNOWN });
+      const c = (): PersonaContext => ctx({ tick: 2000, tempoBusy: true });
+      const close = new PersonaBrain(persona, seed);
+      drive(close, { to: 20_000, step: 100, ctx: c });
+      for (const s of social(drive(close, { from: 30_000, to: 40_000, step: 100, heard: [[30_000, { k: 'emote', emote: 'quote.so_close' }]], ctx: c }))) {
+        expect(s.msg).not.toEqual({ k: 'chat', line: 'nice' });
+        expect(s.msg).not.toEqual({ k: 'emote', emote: 'laugh' });
+      }
+      const hi = new PersonaBrain(persona, seed);
+      const said = social(drive(hi, { to: 6000, step: 100, heard: [[100, { k: 'emote', emote: 'quote.glhf' }]], ctx: () => ctx({ tick: 2, tempoBusy: true }) }));
+      if (said.some((s) => s.msg.k === 'chat' && s.msg.line === 'glhf')) glhfBack += 1;
+    }
+    expect(glhfBack).toBeGreaterThan(60);
+  });
+
   it('the dev overrides force its answer and its proposal', () => {
     const { persona, seed } = personaOf('quiet');
     const brain = new PersonaBrain(persona, seed);

@@ -223,7 +223,7 @@ export function Keep() {
       <path d="M300 55V28" stroke={ink(WOOD)} stroke-width="3.6" stroke-linecap="round" />
       <path d="M300 55V28" stroke={WOOD} stroke-width="1.8" stroke-linecap="round" />
       <circle cx="300" cy="27" r="2.2" fill={GOLD} stroke={ink(GOLD)} stroke-width="1" />
-      <SvgPennant x={301} y={29} w={20} h={11} notch={5} fill={GOLD} stroke={ink(GOLD)} strokeWidth={1.2} phase={2.3} />
+      <SvgPennant x={301} y={29} w={20} h={11} notch={5} fill={GOLD} stroke={ink(GOLD)} strokeWidth={1.2} fold={shade(GOLD)} phase={2.3} />
 
       {/* round towers flanking the wall */}
       <RoundTower x={214} w={34} top={106} bottom={200} roofH={46} grad={grad} flip pennant={BANNER} />

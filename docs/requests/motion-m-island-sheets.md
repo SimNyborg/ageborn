@@ -1,5 +1,10 @@
 # Request to the visuals owner: a 1x sheet lease for small menu stages
 
+> **Deferred 2026-10-18, see review M** (`The request docs/requests/motion-m-island-sheets.md (1x lease): not now`):
+> the menu context goes at once when a match starts, so the war's memory peak is unchanged, and Home's live
+> island (about 117 MB at DPR 2) is far below the 600 MB budget. Revisit if Home's memory shows up on a real
+> iPhone (tab reloads on Home); review M lists how to do it then.
+
 From: Track M (queue item 37, Home's live island), 2026-10-17.
 
 ## Why

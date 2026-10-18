@@ -15,29 +15,38 @@
   pointer-events: auto;
 }
 
-/* ---------------------------------------------------------------- the menu button and the live dot */
+/* ---------------------------------------------------------------- the menu button and the LIVE pill */
 
-.hud-live-dot {
+/* "LIVE" on the menu button in the online mint of Home's connected dot and the Player chip (lobby.css): a
+   label, not a badge (red means denied in this game, and a dot reads as NEW; review O nit 7). It hangs on
+   the button's lower edge, clear of the icon, and never moves. */
+.hud-live-pill {
   position: absolute;
-  top: calc((var(--hud-btn-hit) - var(--hud-btn)) / 2);
-  right: calc((var(--hud-btn-hit) - var(--hud-btn)) / 2);
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #ff5047;
-  box-shadow:
-    0 0 0 1.5px var(--hud-ink),
-    0 0 6px rgba(255, 80, 71, 0.75);
+  z-index: 2;
+  left: 50%;
+  bottom: calc((var(--hud-btn-hit) - var(--hud-btn)) / 2 - 6px);
+  translate: -50% 0;
+  padding: 0 4px;
+  border-radius: 6px;
+  background: #8fe3b0;
+  color: var(--ui-ink, #1d1405);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 14px;
+  letter-spacing: 0.06em;
+  box-shadow: 0 0 0 1.5px var(--hud-ink);
+  pointer-events: none;
 }
 
-.hud-live-dot.is-big {
-  position: relative;
-  top: auto;
-  right: auto;
+/* The menu's own header: the connected dot of the online rows. */
+.hud-live-dot {
   display: inline-block;
   flex: none;
   width: 10px;
   height: 10px;
+  border-radius: 50%;
+  background: #3fc27a;
+  box-shadow: 0 0 0 2px rgba(63, 194, 122, 0.3);
 }
 
 .hud-live-menu.is-open::before,
@@ -623,6 +632,12 @@
   animation: hud-tp-out var(--ui-dur-small-out) var(--ui-ease-exit) both;
 }
 
+/* Its first 400 ms (`PROMPT_ARM_MS`): it closed the menu a finger may be on its way to, so taps pass through
+   to the lane until it has landed. Y and N answer at once. */
+.hud-tempo-prompt.is-arming {
+  pointer-events: none;
+}
+
 @keyframes hud-tp-in {
   0% {
     opacity: 0;
@@ -736,6 +751,20 @@
     0 3px 0 var(--ui-secondary-lip, #2a3242);
 }
 
+/* Y / N: the HUD's key badge (`.hud-key`), inline after the label once the player uses keys. */
+.hud-tp-key {
+  min-width: 17px;
+  margin-left: 2px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 5px;
+  background: rgba(8, 10, 14, 0.85);
+  color: var(--hud-text);
+  font: 800 11px/15px ui-monospace, Menlo, Consolas, monospace;
+  text-align: center;
+}
+
 /* The answer window drains along the bottom edge; no answer is a decline. */
 .hud-tp-bar {
   position: absolute;
@@ -802,7 +831,7 @@
 }
 
 .hud-catchup-icon {
-  grid-row: span 3;
+  grid-row: span 4;
   display: grid;
   place-items: center;
   width: 42px;
@@ -834,6 +863,15 @@
 
 .hud-catchup-title {
   font-size: 16px;
+}
+
+/* Why it fast-forwards: the match never paused (review O nit 9). */
+.hud-catchup-why {
+  margin-top: -4px;
+  color: var(--hud-dim);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .hud-catchup-bar {
@@ -882,8 +920,16 @@
 
 /* ---------------------------------------------------------------- reduce motion (U14) */
 
+/* These pieces carry `ui-rm-own` (Live.tsx), so the theme's safety net (every animation once in 150 ms) leaves
+   them to the rules below: entrances fade, outcome tags fade in, hold and fade out over their full time, the
+   gold ring and the card's bar drain over the whole 8 s, presses glow instead of shrinking (review O B1). */
 .hud[data-reduce-motion='true'] :is(.hud-live-drop, .hud-tempo-opt, .hud-tempo-tag.is-wait, .hud-catchup-card, .hud-tempo-prompt) {
   animation-name: hud-live-fade;
+}
+
+.hud[data-reduce-motion='true'] .hud-live-item:active {
+  transform: none;
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .hud[data-reduce-motion='true'] .hud-tempo-prompt.is-leaving {
@@ -932,6 +978,15 @@
 
   .hud-tempo-dots i {
     animation-name: hud-dots-calm;
+  }
+
+  .hud-tempo-tag:not(.is-wait) {
+    animation-name: hud-moment-calm;
+  }
+
+  .hud-live-item:active {
+    transform: none;
+    background: rgba(255, 255, 255, 0.16);
   }
 
   .hud-moment {

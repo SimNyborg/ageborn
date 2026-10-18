@@ -1,11 +1,12 @@
 /**
  * The lane's cloth wave for DOM flags (queue item 37, `clothWave.ts`) and the War Path's small pennants
  * (`SvgPennant.tsx`): the cloth is pinned at the hoist and moves most at the fly, its waves travel from the
- * hoist outward, the loop closes without a seam, a gust swells the ripple once a loop, light and shade follow
- * the folds, and every flag waves on its own phase.
+ * hoist outward, the loop closes without a seam, a gust swells the ripple once a loop, a band turning away
+ * from the light darkens softly, every flag starts at its own point of the loop, and the keyframes are shared
+ * CSS rules at about 10 samples a second (review M S8).
  */
 import { describe, expect, it } from 'vitest';
-import { clothLift, clothPull, clothSeedOf, CLOTH_LOOP_MS, gustAt, stripCount, stripKeyframes, stripPose } from '../clothWave';
+import { clothKeyframeNames, clothKeyframesCss, clothLift, clothPull, clothSeedOf, CLOTH_LOOP_MS, gustAt, stripCount, stripKeyframes, stripPose } from '../clothWave';
 import { pennantPath } from '../SvgPennant';
 
 const LOOP_S = CLOTH_LOOP_MS / 1000;
@@ -45,11 +46,27 @@ describe('the cloth', () => {
     for (const u of [0.3, 0.7, 1]) {
       for (const t of [0, 1.3, 7.1]) expect(clothLift(u, t + LOOP_S, 1.1)).toBeCloseTo(clothLift(u, t, 1.1), 9);
     }
-    const k = stripKeyframes(3, 8, 0.69, 2.2);
-    expect(k.transform.length).toBe(LOOP_S * 30 + 1);
+    const k = stripKeyframes(3, 8, 0.69);
+    expect(k.transform.length).toBe(LOOP_S * 10 + 1);
     expect(k.transform.at(-1)).toEqual(k.transform[0]);
     expect(k.dark.at(-1)).toEqual(k.dark[0]);
-    expect(k.light.at(-1)).toEqual(k.light[0]);
+  });
+
+  it('writes shared keyframes per cut: one motion and one shade rule per strip, starting and ending on the same pose', () => {
+    const css = clothKeyframesCss(6, 0.69);
+    for (let i = 0; i < 6; i++) {
+      const { motion, shade } = clothKeyframeNames(i, 6, 0.69);
+      expect(css).toContain(`@keyframes ${motion}{0%{transform:`);
+      expect(css).toContain(`@keyframes ${shade}{0%{opacity:`);
+      const rule = css.split('\n').find((l) => l.startsWith(`@keyframes ${motion}{`))!;
+      const first = /^@keyframes [^{]+\{0%\{transform:([^}]+)\}/.exec(rule)![1];
+      expect(rule.endsWith(`100%{transform:${first}}}`)).toBe(true);
+    }
+    // the same cut always writes the same text, and another cut other names
+    expect(clothKeyframesCss(6, 0.69)).toBe(css);
+    expect(clothKeyframeNames(0, 6, 0.75).motion).not.toBe(clothKeyframeNames(0, 6, 0.69).motion);
+    // light enough to share: a 6-strip cut is a few dozen kB of rules, written once per page
+    expect(css.length).toBeLessThan(64_000);
   });
 
   it('a gust swells the ripple about two seconds once a loop, smoothly', () => {
@@ -62,44 +79,37 @@ describe('the cloth', () => {
     for (let k = 1; k < g.length; k++) expect(Math.abs(g[k]! - g[k - 1]!)).toBeLessThan(0.05);
   });
 
-  it('light and shade follow the folds: a band turning down darkens, one turning up brightens', () => {
+  it('shade follows the folds, softly: only a band turning down (away from the light) darkens, never past 14%', () => {
     let darkSeen = 0;
-    let lightSeen = 0;
     for (const t of times.filter((_, k) => k % 6 === 0)) {
       for (let i = 0; i < 8; i++) {
-        const p = stripPose(i, 8, t, 0.69, 0.4);
-        const down = clothLift((i + 1) / 8, t, 0.4) - clothLift(i / 8, t, 0.4);
-        expect(p.dark > 0 && p.light > 0).toBe(false);
+        const p = stripPose(i, 8, t, 0.69);
+        const down = clothLift((i + 1) / 8, t, 0) - clothLift(i / 8, t, 0);
         if (p.dark > 0) expect(down).toBeGreaterThan(0);
-        if (p.light > 0) expect(down).toBeLessThan(0);
-        expect(p.dark).toBeLessThanOrEqual(0.2);
-        expect(p.light).toBeLessThanOrEqual(0.13);
+        expect(p.dark).toBeLessThanOrEqual(0.14);
         if (p.dark > 0) darkSeen += 1;
-        if (p.light > 0) lightSeen += 1;
       }
     }
     expect(darkSeen).toBeGreaterThan(0);
-    expect(lightSeen).toBeGreaterThan(0);
   });
 
-  it('every flag waves on its own phase and from its own point of the loop', () => {
-    const seen = new Set<string>();
+  it('every flag starts from its own point of the loop', () => {
+    const seen = new Set<number>();
     for (let s = 0; s < 40; s++) {
-      const { phase, offsetMs } = clothSeedOf(s * 7919);
-      expect(phase).toBeGreaterThanOrEqual(0);
-      expect(phase).toBeLessThan(2 * Math.PI);
+      const { offsetMs } = clothSeedOf(s * 7919);
       expect(offsetMs).toBeGreaterThanOrEqual(0);
       expect(offsetMs).toBeLessThan(CLOTH_LOOP_MS);
-      seen.add(`${phase.toFixed(3)}|${offsetMs}`);
+      seen.add(offsetMs);
     }
     expect(seen.size).toBe(40);
     expect(clothSeedOf(12345)).toEqual(clothSeedOf(12345));
   });
 
-  it('cuts a flag into strips of about 8 px, 5 to 12 of them', () => {
+  it('cuts a flag into strips of about 10 px, 5 to 10 of them', () => {
     expect(stripCount(20)).toBe(5);
-    expect(stripCount(64)).toBe(8);
-    expect(stripCount(400)).toBe(12);
+    expect(stripCount(64)).toBe(6);
+    expect(stripCount(92)).toBe(9);
+    expect(stripCount(400)).toBe(10);
   });
 });
 

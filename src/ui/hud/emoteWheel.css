@@ -81,6 +81,7 @@
 }
 .hud-wheel .hud-mute {
   justify-self: stretch;
+  min-height: 36px;
   padding: 4px 8px;
   border: 2px solid rgba(255, 255, 255, 0.18);
   border-radius: 8px;
@@ -95,11 +96,13 @@
   border-color: #ef5a4a;
   background: rgba(239, 90, 74, 0.25);
 }
-/* A live match's quick chat (queue item 34): short slate pills under the quotes, the same gap as quotes. */
+/* A live match's quick chat (queue item 34): short slate pills under the quotes, the same gap as quotes; the
+   lines an equipped quote already says are left out (EmoteWheel.tsx), so on phones the row is one line, 8 px
+   apart, and the wheel fits above the tray at 340 px high (review O S4). */
 .hud-wheel-chat {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 8px;
   max-width: 344px;
   padding-top: 6px;
   border-top: 2px solid rgba(255, 255, 255, 0.12);
@@ -224,11 +227,12 @@
   white-space: normal;
 }
 .hud.is-compact .hud-wheel .hud-mute {
+  min-height: 32px;
   padding: 2px 6px;
-  font-size: 11px;
+  font-size: 12px;
 }
 .hud.is-compact .hud-wheel-chat {
-  gap: 4px;
+  gap: 8px;
   max-width: 400px;
   padding-top: 4px;
 }

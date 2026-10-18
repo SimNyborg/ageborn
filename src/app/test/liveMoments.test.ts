@@ -25,6 +25,17 @@ function feed(d: MomentDetector, frames: MatchGlance[]): Moment[] {
 }
 
 describe('moments (queue item 34)', () => {
+  it('the match entering Overdrive or the Siege is a public moment, once per change (review O nit 11)', () => {
+    const d = new MomentDetector();
+    const at = (tick: number, phase: MatchGlance['phase']): MatchGlance => ({ ...g(tick, [10_000, 10_000]), phase });
+    expect(feed(d, [at(1, 'regulation'), at(2, 'regulation')])).toEqual([]);
+    expect(feed(d, [at(3, 'overdrive')])).toEqual([{ kind: 'phase', side: null, tick: 3, phase: 'overdrive' }]);
+    expect(feed(d, [at(4, 'overdrive'), at(5, 'overdrive')])).toEqual([]);
+    expect(feed(d, [at(6, 'siege')])).toEqual([{ kind: 'phase', side: null, tick: 6, phase: 'siege' }]);
+    // a match that starts in a phase (a later join, a format without regulation) is no moment
+    expect(new MomentDetector().push(at(1, 'overdrive'))).toEqual([]);
+  });
+
   it('a big hit: a base losing 6% within 5 s, once per side per 15 s', () => {
     const d = new MomentDetector();
     const out = feed(d, [g(1, [10_000, 10_000]), g(40, [10_000, 9700]), g(80, [10_000, 9390])]);
@@ -109,5 +120,6 @@ describe('moments (queue item 34)', () => {
       expect(moments.length / minutes).toBeLessThan(4);
     }
     expect(counts.every((n) => n >= 2)).toBe(true);
-  });
+    // three real AI wars: about 2.5 s alone, more under a full parallel run
+  }, 30_000);
 });

@@ -162,8 +162,22 @@ export interface CatchUpState {
 export const MAX_AWAY_MS = 120_000;
 /** Wall time per frame a catch-up may use, so the page stays responsive and the cue can move. */
 export const CATCH_UP_BUDGET_MS = 12;
+/**
+ * Once a catch-up has run `CATCH_UP_CUE_AFTER_MS` (the HUD then shows its "Catching up" cue over the lane
+ * and input is held anyway), each frame may use this much: a long catch-up ends sooner on a slow phone
+ * (review O nit 9) and the cue still moves at about 20 fps.
+ */
+export const CATCH_UP_CUE_BUDGET_MS = 40;
+export const CATCH_UP_CUE_AFTER_MS = 150;
 /** During a catch-up the view is advanced every this many ticks (its effects and corpses age with the sim). */
 const CATCH_UP_RENDER_TICKS = 5;
+/** The HUD refreshes at about 5 Hz while a catch-up runs (the cue dims it; the battle jumps seconds a frame). */
+const CATCH_UP_HUD_INTERVAL_MS = 200;
+/**
+ * A live frame whose wall-clock gap exceeds its frame-clock gap by more than this was a suspend the page
+ * did not report (a sleeping laptop stops `performance.now`, not `Date.now`): the gap is owed like a hidden tab's.
+ */
+export const SUSPEND_GAP_MS = 1000;
 
 export interface SessionResult {
   input: MatchResultInput;
@@ -280,6 +294,10 @@ export class BattleSessionImpl implements BattleSession {
   private awayWallMs = 0;
   /** Frame time processed while hidden (a browser that still runs some frames in the background). */
   private hiddenFrameMs = 0;
+  /** The wall clock at the last live frame (null before the start): a gap the frame clock missed is a suspend. */
+  private lastWallAt: number | null = null;
+  /** When the catch-up in progress began (frame clock), for its larger budget once the cue shows. */
+  private catchUpStartedAt: number | null = null;
 
   constructor(o: BattleSessionOptions) {
     this.sim = o.sim;
@@ -346,6 +364,7 @@ export class BattleSessionImpl implements BattleSession {
       this.awayWallMs = 0;
       this.hiddenFrameMs = 0;
       this.hiddenWallAt = this.visibility?.hidden === true ? this.wall() : null;
+      this.lastWallAt = this.wall();
     } else if (this.visibility?.hidden === true) {
       // the tab was hidden before the clock started (the art loading in the background, G7): the visibility
       // pause applies at once (C5 #20)
@@ -391,11 +410,14 @@ export class BattleSessionImpl implements BattleSession {
     this.refreshHud(true);
   }
 
-  /** Queues a player command for the next tick. Ignored unless running, and only for `mySide`; held while catching up. */
+  /**
+   * Queues a player command for the next tick. Ignored unless running, and only for `mySide`; held while
+   * catching up, except a Retreat (leaving never waits, review O nit 2: it lands on the next caught-up tick).
+   */
   issue(c: Command): void {
     if (this.statusSig.peek() !== 'running') return;
     if (c.side !== this.mySide) return;
-    if (this.catchingUp) return;
+    if (this.catchingUp && c.t !== 'retreat') return;
     this.human.push(c);
   }
 
@@ -513,26 +535,43 @@ export class BattleSessionImpl implements BattleSession {
     const status = this.statusSig.peek();
     if (status === 'disposed') return;
     if (!this.scheduler) this.manualNow += Math.max(0, frameMs);
+    // A live frame that catches up time (its gap was owed, or a catch-up slice ran in it) is slow by design:
+    // its own render is flagged too, so the view's Auto graphics never take a catch-up for a slow device
+    // and drop the rest of the match to Lite (review O B2).
+    let catchUpFrame = false;
     if (status === 'running') {
       let step = frameMs;
+      let owedNow = 0;
+      const wasCatchingUp = this.catchingUp;
       if (this.live) {
         if (this.hiddenWallAt !== null) this.hiddenFrameMs += Math.max(0, frameMs);
-        const gap = Math.max(frameMs, this.awayWallMs);
+        let gap = Math.max(frameMs, this.awayWallMs);
         this.awayWallMs = 0;
+        // a suspend no visibility event reported (a laptop asleep): the wall clock moved on, the frame clock did
+        // not, so the match would have paused for free (review O nit 8); hidden time is measured on return instead
+        const wall = this.wall();
+        if (this.lastWallAt !== null && this.hiddenWallAt === null) {
+          const wallGap = wall - this.lastWallAt;
+          if (wallGap - frameMs > SUSPEND_GAP_MS) gap = Math.max(gap, wallGap);
+        }
+        this.lastWallAt = wall;
         if (gap > MAX_FRAME_MS) {
           // the frame clock takes what it can (B6's clamp); the rest of the gap is owed
           step = Math.min(frameMs, MAX_FRAME_MS);
+          const before = this.owedGameMs;
           this.owe(gap - step);
+          owedNow = Math.max(0, this.owedGameMs - before);
+          catchUpFrame = true;
         }
       }
       if (this.statusSig.peek() === 'running') {
         const frozen = this.view?.simFrozen ?? false;
         this.clock.add(step, this.speed, frozen);
         while (this.statusSig.peek() === 'running' && !(this.view?.simFrozen ?? false) && this.clock.consume()) this.tick();
-        if (this.live) this.catchUpSlice();
+        if (this.live && this.catchUpSlice(wasCatchingUp ? owedNow : 0) > 0) catchUpFrame = true;
       }
     }
-    this.view?.render(this.clock.alpha, frameMs);
+    this.view?.render(this.clock.alpha, frameMs, catchUpFrame);
     this.refreshHud(false);
     if (this.frameListeners.size > 0) {
       const now = this.now();
@@ -583,18 +622,27 @@ export class BattleSessionImpl implements BattleSession {
   }
 
   /**
-   * Runs owed ticks for at most `CATCH_UP_BUDGET_MS` of wall time (all of them when driven by hand): the
-   * view gets every tick's events (spawns, evolves and builds stay right) but is not drawn per tick; it
-   * is advanced every few ticks so effects and corpses age with the sim, and stays silent meanwhile.
+   * Runs owed ticks for at most `CATCH_UP_BUDGET_MS` of wall time (all of them when driven by hand), or
+   * `CATCH_UP_CUE_BUDGET_MS` once the catch-up has run long enough for the HUD's cue to show: the view
+   * gets every tick's events (spawns, evolves and builds stay right) but is not drawn per tick; it is
+   * advanced every few ticks so effects and corpses age with the sim, and stays silent meanwhile.
+   *
+   * `addedGameMs`: game time this frame added to a catch-up already running (a frame slower than B6's clamp
+   * owes its excess). The slice always runs those ticks and 4 more, so on a slow device a catch-up still gets
+   * shorter every frame instead of owing as much as it runs (CI's WebKit, review O's flaky e2e).
+   * Returns the ticks run.
    */
-  private catchUpSlice(): void {
+  private catchUpSlice(addedGameMs = 0): number {
     if (this.owedGameMs < TICK_MS) {
       // less than a tick behind: nothing to run (the remainder is dropped)
       if (this.owedGameMs > 0 || this.catchUpSig.peek()) this.endCatchUp();
-      return;
+      return 0;
     }
     const sch = this.scheduler;
     const t0 = sch ? sch.now() : 0;
+    if (this.catchUpStartedAt === null) this.catchUpStartedAt = t0;
+    const budget = t0 - this.catchUpStartedAt >= CATCH_UP_CUE_AFTER_MS ? CATCH_UP_CUE_BUDGET_MS : CATCH_UP_BUDGET_MS;
+    const minTicks = Math.min(60, Math.ceil(addedGameMs / TICK_MS)) + 4;
     this.view?.setSilent?.(true);
     let n = 0;
     while (this.owedGameMs >= TICK_MS && this.statusSig.peek() === 'running') {
@@ -602,16 +650,18 @@ export class BattleSessionImpl implements BattleSession {
       this.owedGameMs -= TICK_MS;
       n += 1;
       if (n % CATCH_UP_RENDER_TICKS === 0) this.view?.render(0, (CATCH_UP_RENDER_TICKS * TICK_MS) / this.speed, true);
-      if (sch && n % 4 === 0 && sch.now() - t0 >= CATCH_UP_BUDGET_MS) break;
+      if (sch && n >= minTicks && n % 4 === 0 && sch.now() - t0 >= budget) break;
     }
     if (this.owedGameMs < TICK_MS || this.statusSig.peek() !== 'running') this.endCatchUp();
     else this.publishCatchUp();
+    return n;
   }
 
   private endCatchUp(): void {
     const was = this.catchUpSig.peek() !== null || this.owedGameMs > 0;
     this.owedGameMs = 0;
     this.owedTotalMs = 0;
+    this.catchUpStartedAt = null;
     if (!was) return;
     this.view?.setSilent?.(false);
     this.catchUpSig.value = null;
@@ -708,7 +758,9 @@ export class BattleSessionImpl implements BattleSession {
   private refreshHud(force: boolean): void {
     if (this.statusSig.peek() === 'disposed') return;
     const now = this.scheduler?.now() ?? 0;
-    if (!force && this.scheduler && now - this.lastHudAt < HUD_INTERVAL_MS - HUD_SLACK_MS) return;
+    // a catch-up jumps the battle seconds a frame under the dimming cue: a few refreshes a second do (nit 9)
+    const interval = this.catchingUp ? CATCH_UP_HUD_INTERVAL_MS : HUD_INTERVAL_MS - HUD_SLACK_MS;
+    if (!force && this.scheduler && now - this.lastHudAt < interval) return;
     this.lastHudAt = now;
     this.hudSig.value = this.hudBuilder.build(this.extras());
   }

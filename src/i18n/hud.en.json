@@ -334,7 +334,6 @@
       "youDeclined": "You said no",
       "missed": "Missed: {s}x",
       "cooldown": "Ask again in {s} s",
-      "answerFirst": "Answer {name} first",
       "asks": "{name} asks",
       "speedQ": "{s}x speed?",
       "accept": "Accept",
@@ -343,7 +342,9 @@
       "catchingUp": "Catching up",
       "behind": "{time} behind",
       "away": "Away too long",
-      "awaySub": "Counts as a Retreat"
+      "awaySub": "Counts as a Retreat",
+      "pill": "LIVE",
+      "catchUpWhy": "The match ran on while you were away"
     }
   }
 }

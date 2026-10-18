@@ -38,8 +38,8 @@ describe('tickerScheduler', () => {
   });
 });
 
-describe('releaseGpuOnPageHide (review 2)', () => {
-  /** A window with the game canvas (WebGL 2) and the showcase's and diorama's (their screens destroy those). */
+describe('releaseGpuOnPageHide (review 2, review M S5)', () => {
+  /** A window with the game canvas (WebGL 2), the menus' (Home's island, the diorama), the showcase's and a stranger's. */
   function fakeWindow(gameKind: 'webgl2' | 'webgl' = 'webgl2') {
     const handlers = new Map<string, (e: unknown) => void>();
     const lost: string[] = [];
@@ -48,7 +48,7 @@ describe('releaseGpuOnPageHide (review 2)', () => {
       id,
       getContext: (k: string) => (k === kind ? { getExtension: (n: string) => (n === 'WEBGL_lose_context' ? { loseContext: () => lost.push(id) } : null) } : null),
     });
-    const all = [canvas('game-canvas', gameKind), canvas('showcase-canvas', 'webgl2'), canvas('diorama-canvas', 'webgl2')];
+    const all = [canvas('game-canvas', gameKind), canvas('home-stage-canvas', 'webgl2'), canvas('showcase-canvas', 'webgl2'), canvas('diorama-canvas', 'webgl2'), canvas('somebody-else', 'webgl2')];
     const win = {
       document: { querySelectorAll: (sel: string) => all.filter((c) => sel.includes(`"${c.id}"`)) },
       location: { reload: () => (reloads += 1) },
@@ -58,20 +58,20 @@ describe('releaseGpuOnPageHide (review 2)', () => {
     return { win, handlers, lost, reloads: () => reloads };
   }
 
-  it("on pagehide runs the release first (the app stops its ticker), then loses the game canvas's context", () => {
+  it("on pagehide runs the release first (the app stops its ticker), then loses the game canvas's and the menus' contexts", () => {
     const f = fakeWindow();
     const order: string[] = [];
     releaseGpuOnPageHide(f.win, () => order.push('release'));
     f.handlers.get('pagehide')!({ persisted: false });
     expect(order).toEqual(['release']);
-    expect(f.lost).toEqual(['game-canvas']);
+    expect(f.lost).toEqual(['game-canvas', 'home-stage-canvas', 'showcase-canvas', 'diorama-canvas']);
     // a WebGL 1 context too; and a release that throws never keeps the context
     const g = fakeWindow('webgl');
     releaseGpuOnPageHide(g.win, () => {
       throw new Error('boom');
     });
     g.handlers.get('pagehide')!({ persisted: true });
-    expect(g.lost).toEqual(['game-canvas']);
+    expect(g.lost).toContain('game-canvas');
   });
 
   it('a page the back-forward cache brings back reloads; a normal show does not; unsubscribe removes both', () => {

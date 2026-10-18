@@ -1,7 +1,7 @@
 /**
  * The arena diorama at the centre of the Battle hub (owner decision 2026-09-30; ui-plan 2.3): the
  * player's arena as a floating island in the A11 cartoon look, with the lane across it, your base on
- * the left (team colour; with the lane's flag pole carrying your base flag and national flag, `FlagPole`)
+ * the left (team colour; with the lane's flag pole carrying your base flag and national flag, `StillPole`)
  * and the AI's base on the right, each with its banner, and the arena's own
  * landmark behind them (a smoking volcano, an ice peak, a moated keep, a harbour with a tall ship, a
  * factory, a neon skyline, a ringed planet, a time rift).
@@ -14,26 +14,30 @@
  *
  * **Live island** (owner request 2026-10-16, queue item 37): when the app provides the Home stage
  * (`homeStage.ts`), the troops play their real battle clips on a transparent Pixi layer over the island
- * (idle breathing, weight shifts on planted feet, now and then the front pair walks in and trades blows with
- * the battle's sparks and hit-stop, a shooter looses a shot, a cheer) and the flags wave with the lane's
- * cloth; the layer floats with the island. It starts once Home is idle, pauses while a sheet covers Home or
- * the island is off screen, and goes with Home. Until it draws (and for good under Reduce motion, without
- * WebGL or a mount) the still island shows: the troops as portraits that breathe and now and then lunge in
- * (CSS), the flags as pictures.
+ * (idle breathing on the real idle clip, a cheer now and then, and every so often one of the front pair
+ * marches up to the other and they trade blows with the battle's sparks and hit-stop, or a shooter looses a
+ * shot) and the flags wave with the lane's cloth; the layer floats with the island. It starts once Home is
+ * idle (at once on a return while the menus' app is still up), pauses while a sheet covers Home or the
+ * island is off screen, and goes with Home. Until it draws (and for good under Reduce motion, without WebGL
+ * or a mount, and while its context is lost) the still island shows the same scene at the same size and
+ * place (review M S3): each troop's idle strip from its battle sheet, fitted to the box the live layer
+ * measured for it (`troopBoxes`), and the flag poles drawn on the lane dressing's own geometry, so the live
+ * layer takes over without a jump.
  *
  * Ambient life (the island's float, smoke, water, snow, neon, motes) is CSS and stills under reduce
  * motion. Deterministic, decorative (`aria-hidden`).
  */
-import type { AgeId, CardId, CosmeticKey, Side, SkinId, SoundId, TeamPreset } from '@/contracts';
+import type { AgeId, CardId, CosmeticKey, Side, SkinId, TeamPreset } from '@/contracts';
 import type { ArenaId } from '@/content/types';
 import { fnv1a32, mulberry32 } from '@/core';
 import type { ComponentChildren } from 'preact';
-import { useMemo, useRef } from 'preact/hooks';
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { useCosmeticImage } from '../../components/cosmeticArt';
 import { SvgPennant } from '../../components/SvgPennant';
 import { usePortrait } from '../../components/kit';
 import { ink, light, shade } from '../../components/tone';
-import { useHomeStage, type HomeStagePole, type HomeStageRequest, type HomeStageTroop } from './homeStage';
+import { useUi } from '../context';
+import { troopBoxes, useHomeStage, type HomeStagePole, type HomeStageRequest, type HomeStageTroop } from './homeStage';
 import { Keep, Volcano } from './landmarks';
 import { SkinnedBase } from './skinnedBase';
 import { boulder, broadleaf, Cel, crystal, Grove, type KitProp, pine } from '../warPath/propKit';
@@ -73,18 +77,19 @@ const W = 600;
 const H = 340;
 
 /**
- * The live island's layout in the picture's units: the lane's middle and its front line, where each troop
- * stands (the still troops' boxes: front 35% and back 24% in from each side), the flag poles (yours beside
- * your gate, the opponent's mirrored) and how many units one lu is (troops about as tall as the still ones).
+ * The island's layout in the picture's units, shared by the live layer and the still island: the lane's
+ * middle and its front line, where each troop stands, the flag poles (yours beside your gate, the opponent's
+ * mirrored) and how many units one lu is (troops about as tall as the old portraits). The front pair stands
+ * far enough apart that a duel's walker takes at least one full stride before the blows (review M S1).
  */
 export const LIVE_ISLAND = { width: W, height: H, center: 300, ground: 224, unitsPerLu: 0.98 } as const;
-const LIVE_SPOTS: Readonly<Record<Side, readonly [{ x: number; y: number }, { x: number; y: number }]>> = {
+export const LIVE_SPOTS: Readonly<Record<Side, readonly [{ x: number; y: number }, { x: number; y: number }]>> = {
   0: [
-    { x: 247.5, y: 224 },
+    { x: 240, y: 224 },
     { x: 181.5, y: 219 },
   ],
   1: [
-    { x: 352.5, y: 224 },
+    { x: 360, y: 224 },
     { x: 418.5, y: 219 },
   ],
 };
@@ -92,6 +97,19 @@ const LIVE_POLES: Readonly<Record<Side, { x: number; y: number; height: number }
   0: { x: 170, y: 214, height: 104 },
   1: { x: 430, y: 214, height: 104 },
 };
+/** Flyers hover this high over their spot (lu; render's `ISLAND_ALTITUDE`, mirrored: the UI may not import render). */
+const ISLAND_ALTITUDE_LU = 42;
+/** The opponent's banner while no player has been found (render's `GREY`). */
+const GREY_BANNER = '#7a8294';
+/**
+ * The lane dressing's pole (`visuals/cosmetics/dressing.ts` `buildPole`), in the dressing's own lu: 176 lu
+ * tall, the base flag's texture 0.9 lu per view-box unit, the national flag's 0.75, each 60 x 40 units of
+ * cloth inside a 2-unit margin, the first 4 lu under the top and the next 6 lu under the one above. The
+ * still pole draws the same, scaled to the live pole's height, so the live one replaces it in place.
+ */
+const LANE_POLE = { top: 176, base: 0.9, nation: 0.75, w: 60, h: 40 } as const;
+const POLE_INK = '#1b1330';
+const BANNER_OUTLINE = 'M0 0H60L51 20L60 40H0Z';
 
 type Rng = { next(): number };
 
@@ -347,93 +365,118 @@ function Props(p: { pal: IslandPalette; seed: number; arena: ArenaId }) {
 }
 
 /**
- * Your base's flag pole as the lane flies it beside the gate (A18.9.4; PLAN 2d "Where the chosen flag
- * shows"; `visuals/cosmetics/dressing.ts` `buildPole`): the equipped base flag on top in your team colour,
- * the national flag under it (its 4:3 picture with the lane cloth's finish: fold bands, a sheen, a darker
- * hem and an outline in the flag's own dark), each waving from the hoist. A flag without a picture (no art
- * provider) shows the neutral parchment cloth the lane shows while a flag loads.
+ * The plain banner the lane flies on a pole with no flag of its own (`dressing.ts` `drawPlainBanner`: the base
+ * flags' swallowtail cloth in one colour, its fold bands, stitched hem, light and shadow bands and the hoist
+ * sleeve, outlined in its own dark), in the cloth's 60 x 40 units at (`x`, `y`), `s` units per cloth unit.
  */
-function FlagPole(p: { id: string; x: number; y: number; team: string; baseFlag: string | null; nationalFlag: string | null }) {
-  const fn = useCosmeticImage();
-  const team = Number.parseInt(p.team.replace('#', ''), 16);
-  const base = p.baseFlag && fn ? fn(p.baseFlag, { team: Number.isFinite(team) ? team : 0x2f7df6, animate: false }) : null;
-  const nation = p.nationalFlag && fn ? fn(p.nationalFlag) : null;
-  // sizes in island units: a little larger than the lane's proportions so a flag reads on a phone, and
-  // the pole tall enough that both flags fly above the frontline troops standing in front of it
-  const top = 104;
-  const bw = 27;
-  const bh = (bw * 44) / 64;
-  const nh = 15.6;
-  const nw = (nh * 4) / 3;
-  let y = -top + 3;
-  const flags: ComponentChildren[] = [];
-  if (p.baseFlag) {
-    // the base flag's picture has a 2-unit margin round its 60 x 40 cloth: the hoist edge sits on the pole
-    const m = (bw * 2) / 64;
-    flags.push(
-      <g key="base" class="hd-banner" data-flag={p.baseFlag}>
-        {base ? (
-          <image href={base} x={(1.4 - m).toFixed(2)} y={(y - m).toFixed(2)} width={bw.toFixed(2)} height={bh.toFixed(2)} preserveAspectRatio="none" />
-        ) : (
-          <rect x="1.4" y={y.toFixed(2)} width={(bw - 2 * m).toFixed(2)} height={(bh - 2 * m).toFixed(2)} rx="1.2" fill="#e8dfc8" stroke="rgba(0,0,0,.45)" stroke-width="1" />
-        )}
-      </g>,
-    );
-    y += bh - 2 * m + 2.6;
-  }
-  if (p.nationalFlag) {
-    const clip = `${p.id}-nation`;
-    const x0 = 1.4;
-    flags.push(
-      <g key="nation" class="hd-banner" style={{ animationDelay: '-0.45s' }} data-flag={p.nationalFlag}>
-        <clipPath id={clip}>
-          <rect x={x0} y={y.toFixed(2)} width={nw.toFixed(2)} height={nh.toFixed(2)} rx="1" />
-        </clipPath>
-        <g clip-path={`url(#${clip})`}>
-          {nation ? (
-            <image href={nation} x={x0} y={y.toFixed(2)} width={nw.toFixed(2)} height={nh.toFixed(2)} preserveAspectRatio="none" />
-          ) : (
-            <rect x={x0} y={y.toFixed(2)} width={nw.toFixed(2)} height={nh.toFixed(2)} fill="#e8dfc8" />
-          )}
-          {/* the lane cloth's finish (nationalFlags.ts clothFinish) */}
-          <rect x={(x0 + nw * 0.29).toFixed(2)} y={y.toFixed(2)} width={(nw * 0.1).toFixed(2)} height={nh.toFixed(2)} fill="#000" opacity=".09" />
-          <rect x={(x0 + nw * 0.47).toFixed(2)} y={y.toFixed(2)} width={(nw * 0.06).toFixed(2)} height={nh.toFixed(2)} fill="#fff" opacity=".09" />
-          <rect x={(x0 + nw * 0.66).toFixed(2)} y={y.toFixed(2)} width={(nw * 0.13).toFixed(2)} height={nh.toFixed(2)} fill="#000" opacity=".11" />
-          <path d={`M${x0} ${y.toFixed(2)} h${(nw * 0.42).toFixed(2)} L${x0} ${(y + nh * 0.58).toFixed(2)}Z`} fill="#fff" opacity=".14" />
-          <rect x={x0} y={y.toFixed(2)} width=".5" height={nh.toFixed(2)} fill="#000" opacity=".16" />
-          <rect x={x0} y={(y + nh - 1).toFixed(2)} width={nw.toFixed(2)} height="1" fill="#000" opacity=".08" />
-        </g>
-        <rect x={x0 + 0.5} y={(y + 0.5).toFixed(2)} width={(nw - 1).toFixed(2)} height={(nh - 1).toFixed(2)} rx=".7" fill="none" stroke="#000" stroke-opacity=".62" stroke-width="1" />
-      </g>,
-    );
-  }
+function PlainBanner(p: { id: string; x: number; y: number; s: number; color: string }) {
+  const dark = shade(p.color);
+  const lite = light(p.color);
   return (
-    <g class="hd-still" transform={`translate(${p.x} ${p.y})`} data-testid="hub-flagpole">
-      <ellipse cx="0" cy="0" rx="7" ry="2" fill="#000" opacity=".3" />
-      <path d={`M0 0 V-${top}`} stroke={ink('#6b4a2e')} stroke-width="4.6" stroke-linecap="round" />
-      <path d={`M0 0 V-${top}`} stroke="#8e6440" stroke-width="2.4" stroke-linecap="round" />
-      <path d={`M-.5 -3 V-${top - 3}`} stroke="#fff" stroke-width=".7" stroke-linecap="round" opacity=".35" />
-      <circle cx="0" cy={-top - 1} r="3.2" fill="#e8b23a" stroke={ink('#e8b23a')} stroke-width="1.2" />
-      <circle cx="-1" cy={-top - 2} r="1" fill="#fff" opacity=".7" />
-      {flags}
+    <g transform={`translate(${p.x} ${p.y}) scale(${p.s})`}>
+      <clipPath id={p.id}>
+        <path d={BANNER_OUTLINE} />
+      </clipPath>
+      <g clip-path={`url(#${p.id})`}>
+        <path d={BANNER_OUTLINE} fill={p.color} />
+        <path d="M15.6 0C17.4 10 15.2 28 17.4 40H22.6C20.4 28 22.6 10 20.6 0Z" fill={dark} opacity=".26" />
+        <path d="M24.6 0C25.8 12 24.2 26 25.8 40H28C26.4 26 28 12 26.8 0Z" fill={lite} opacity=".3" />
+        <path d="M37.6 0C39.4 11 37.2 27 39.4 40H45.4C43.2 27 45.4 11 43.6 0Z" fill={dark} opacity=".24" />
+        <path d="M6.4 2.2H56.6L48.6 20L56.6 37.8H6.4" fill="none" stroke={lite} stroke-width=".55" stroke-dasharray="1.6 1.1" opacity=".85" />
+        <path d="M0 0H60L59.1 2H0Z" fill={lite} opacity=".45" />
+        <path d={`${BANNER_OUTLINE}M0 -3.2H60L51 16.8L60 36.8H0Z`} fill={dark} fill-rule="evenodd" opacity=".42" />
+        <path d="M0 0H5.6V40H0Z" fill={dark} />
+        <path d="M0 0H1.6V40H0Z" fill="#fff" opacity=".22" />
+        <path d="M4.4 0H5.6V40H4.4Z" fill="#000" opacity=".22" />
+      </g>
+      <path d={BANNER_OUTLINE} fill="none" stroke={ink(p.color)} stroke-width="1.6" stroke-linejoin="round" />
     </g>
   );
 }
 
-/** A banner on a pole, waving (team colour), with a shaded fold and its own dark edge. */
-function Banner(p: { x: number; y: number; color: string; flip?: boolean }) {
+/**
+ * A national flag as the lane's cloth shows it (`nationalFlags.ts` `drawCloth`): the 4:3 design at the
+ * field's full height from the hoist, rounded, with the lane cloth's finish (fold bands, a sheen from the top
+ * left, a darker hoist hem and lower edge) and an outline inside the edge in the flag's own dark. A flag
+ * without a picture shows the neutral parchment cloth the lane shows while one loads.
+ */
+function NationCloth(p: { id: string; x: number; y: number; s: number; src: string | null }) {
+  const w = ((LANE_POLE.h * 4) / 3) * p.s;
+  const h = LANE_POLE.h * p.s;
+  const r = 2.4 * p.s;
+  const x = p.x;
+  const y = p.y;
   return (
-    <g class="hd-still" transform={`translate(${p.x} ${p.y})${p.flip ? ' scale(-1 1)' : ''}`}>
-      <ellipse cx="0" cy="0" rx="7" ry="2" fill="#000" opacity=".3" />
-      <path d="M0 0 V-62" stroke={ink('#6b4a2e')} stroke-width="4.6" stroke-linecap="round" />
-      <path d="M0 0 V-62" stroke="#8e6440" stroke-width="2.4" stroke-linecap="round" />
-      <circle cx="0" cy="-63" r="3.2" fill="#e8b23a" stroke={ink('#e8b23a')} stroke-width="1.2" />
-      <g class="hd-banner">
-        <path d="M1 -58 H24 Q27 -50 24 -42 L18 -34 L12 -40 L1 -34 Z" fill={p.color} />
-        <path d="M14 -58 H24 Q27 -50 24 -42 L18 -34 L15 -37 Q18 -47 14 -58Z" fill={shade(p.color)} />
-        <path d="M2.4 -56.6 H12 V-54 H2.4Z" fill={light(p.color)} />
-        <path d="M1 -58 H24 Q27 -50 24 -42 L18 -34 L12 -40 L1 -34 Z" fill="none" stroke={ink(p.color)} stroke-width="1.5" stroke-linejoin="round" />
+    <g>
+      <clipPath id={p.id}>
+        <rect x={x} y={y} width={w} height={h} rx={r} />
+      </clipPath>
+      <g clip-path={`url(#${p.id})`}>
+        {p.src ? <image href={p.src} x={x} y={y} width={w} height={h} preserveAspectRatio="none" /> : <rect x={x} y={y} width={w} height={h} fill="#e8dfc8" />}
+        <rect x={x + w * 0.29} y={y} width={w * 0.1} height={h} fill="#000" opacity=".09" />
+        <rect x={x + w * 0.47} y={y} width={w * 0.06} height={h} fill="#fff" opacity=".09" />
+        <rect x={x + w * 0.66} y={y} width={w * 0.13} height={h} fill="#000" opacity=".11" />
+        <path d={`M${x} ${y}h${w * 0.42}L${x} ${y + h * 0.58}Z`} fill="#fff" opacity=".14" />
+        <rect x={x} y={y} width={1.3 * p.s} height={h} fill="#000" opacity=".16" />
+        <rect x={x} y={y + h - 2.6 * p.s} width={w} height={2.6 * p.s} fill="#000" opacity=".08" />
+        <rect x={x} y={y} width={w} height={h} rx={r} fill="none" stroke="#000" stroke-opacity=".62" stroke-width={2.6 * p.s} />
       </g>
+    </g>
+  );
+}
+
+/**
+ * A side's flag pole as the lane flies it beside the gate (A18.9.4; PLAN 2d "Where the chosen flag shows";
+ * `visuals/cosmetics/dressing.ts` `buildPole`), drawn on the dressing's own geometry and scaled to the live
+ * pole's height, so the live island's cloth flags take over in place (review M S3): the base flag on top in
+ * the side's team colour, the national flag under it, or a plain banner when the side flies neither (the
+ * opponent's in grey while no player has been found). The still flags hang still: the live layer brings the
+ * lane's wind, and Reduce motion keeps them still anyway.
+ */
+function StillPole(p: { id: string; side: Side; team: string; baseFlag: string | null; nationalFlag: string | null; grey?: boolean }) {
+  const fn = useCosmeticImage();
+  const at = LIVE_POLES[p.side];
+  const k = at.height / LANE_POLE.top;
+  const team = Number.parseInt(p.team.replace('#', ''), 16);
+  const kinds: ('base' | 'nation' | 'banner')[] = [];
+  if (p.baseFlag) kinds.push('base');
+  if (p.nationalFlag) kinds.push('nation');
+  if (kinds.length === 0) kinds.push('banner');
+  const flags: ComponentChildren[] = [];
+  let y = -LANE_POLE.top + 4;
+  for (const kind of kinds) {
+    const s = kind === 'nation' ? LANE_POLE.nation : LANE_POLE.base;
+    // the cloth's corner (its texture has a 2-unit margin, and the hoist edge sits on the pole)
+    const cx = 2;
+    if (kind === 'base') {
+      const url = fn ? fn(p.baseFlag!, { team: Number.isFinite(team) ? team : 0x2f7df6, animate: false }) : null;
+      flags.push(
+        <g key="base" data-flag={p.baseFlag}>
+          {url ? (
+            <image href={url} x={cx - 2 * s} y={y - 2 * s} width={(LANE_POLE.w + 4) * s} height={(LANE_POLE.h + 4) * s} preserveAspectRatio="none" />
+          ) : (
+            <rect x={cx} y={y} width={LANE_POLE.w * s} height={LANE_POLE.h * s} rx="2" fill="#e8dfc8" stroke="rgba(0,0,0,.45)" stroke-width="1.4" />
+          )}
+        </g>,
+      );
+    } else if (kind === 'nation') {
+      flags.push(
+        <g key="nation" data-flag={p.nationalFlag}>
+          <NationCloth id={`${p.id}-nation`} x={cx} y={y} s={s} src={fn ? fn(p.nationalFlag!) : null} />
+        </g>,
+      );
+    } else flags.push(<PlainBanner key="banner" id={`${p.id}-banner`} x={cx} y={y} s={s} color={p.grey ? GREY_BANNER : p.team} />);
+    y += LANE_POLE.h * s + 6;
+  }
+  const top = LANE_POLE.top;
+  return (
+    <g class="hd-still" transform={`translate(${at.x} ${at.y}) scale(${k.toFixed(4)})`} data-testid={p.side === 0 ? 'hub-flagpole' : 'hub-flagpole-foe'}>
+      <rect x="-7" y="-6" width="14" height="7" rx="2" fill="#6e6258" stroke={POLE_INK} stroke-width="1.6" />
+      <rect x="-2" y={-top} width="4" height={top - 5} fill="#8a6a45" stroke={POLE_INK} stroke-width="1.4" />
+      <rect x="-1.2" y={-top + 3} width="1" height={top - 10} fill="#fff" opacity=".35" />
+      <circle cx="0" cy={-top} r="4.2" fill="#ffcf3a" stroke={POLE_INK} stroke-width="1.4" />
+      <circle cx="-1.2" cy={-top - 1.2} r="1.2" fill="#fff" opacity=".7" />
+      {flags}
     </g>
   );
 }
@@ -464,19 +507,175 @@ function EdgeStones(p: { pal: IslandPalette; seed: number }) {
   return <g>{out}</g>;
 }
 
+/** A troop's drawn idle box before the live island has measured its card (a typical soldier; bigger units bigger). */
+function defaultBox(size: string | undefined): { front: number; back: number; top: number } {
+  if (size === 'huge') return { front: 66, back: 52, top: 94 };
+  if (size === 'large') return { front: 58, back: 38, top: 88 };
+  return { front: 44, back: 21, top: 78 };
+}
+/** How far a sheet's frames typically reach below the feet (lu): only used before a card's box is known. */
+const BELOW_FEET_LU = 4;
+
+/** The strips' cell size (px): crisp on a large high-density screen, light on a phone. */
+const STRIP_PX = typeof window !== 'undefined' && (window.innerWidth || 0) * (window.devicePixelRatio || 1) >= 2200 ? 256 : 160;
+/** The idle clip's pace on the strip (ms a frame; the battle sheets' idle is about 115 ms a frame). */
+const IDLE_FRAME_MS = 115;
+
+/** A strip, its frame count and where its frames' drawn pixels lie together (in one cell's px). */
+interface IdleStrip {
+  url: string;
+  frames: number;
+  cell: number;
+  x0: number;
+  x1: number;
+  y0: number;
+  y1: number;
+}
+const strips = new Map<string, IdleStrip | null>();
+
+/** Reads a strip's frame count and the box its frames' drawn pixels fill together (once per strip). */
+function measureStrip(url: string, im: HTMLImageElement): IdleStrip | null {
+  const cell = Math.max(1, im.naturalHeight);
+  const frames = Math.max(1, Math.round(im.naturalWidth / cell));
+  const box = { url, frames, cell, x0: 0, x1: cell - 1, y0: 0, y1: cell - 1 };
+  try {
+    const c = document.createElement('canvas');
+    c.width = frames * cell;
+    c.height = cell;
+    const g = c.getContext('2d', { willReadFrequently: true });
+    if (!g) return box;
+    g.drawImage(im, 0, 0);
+    const d = g.getImageData(0, 0, c.width, cell).data;
+    let x0 = cell;
+    let x1 = -1;
+    let y0 = cell;
+    let y1 = -1;
+    for (let y = 0; y < cell; y++) {
+      for (let x = 0; x < c.width; x++) {
+        if (d[(y * c.width + x) * 4 + 3]! < 8) continue;
+        const cx = x % cell;
+        if (cx < x0) x0 = cx;
+        if (cx > x1) x1 = cx;
+        if (y < y0) y0 = y;
+        if (y > y1) y1 = y;
+      }
+    }
+    return x1 >= x0 && y1 >= y0 ? { ...box, x0, x1: x1 + 1, y0, y1: y1 + 1 } : box;
+  } catch {
+    return box;
+  }
+}
+
+/** The strips this page has already drawn (`card|side`): on a return to Home they show at once. */
+const shown = new Set<string>();
+/** The first strips wait for the island's entrance (`hd-in`, 700 ms) and an idle moment: Home's first paint and boot never carry them. */
+const STRIP_AFTER_MS = 700;
+
 /**
- * One troop in the lane: an ArtProvider portrait (transparent, the side's team colour) in three
- * layers, so the motions stack: the act (lunge or taunt hop), the body (breathing squash and
- * stretch from the feet) and the picture (mirrored for the AI, who faces left).
+ * A troop's idle clip from its battle sheet as a sprite strip in its side's team colour (the provider's
+ * `strip:idle:<card>`, as the War Path's bearer plays its clip), measured. Null while waiting or loading.
  */
-function LaneUnit(p: { card: CardId; side: Side; slot: 0 | 1 }) {
-  const url = usePortrait(p.card, { size: 256, plate: false, ...(p.side ? { side: 1 as const } : {}) });
+function useIdleStrip(card: CardId, side: Side): IdleStrip | null {
+  const key = `${card}|${side}`;
+  const [go, setGo] = useState(() => shown.has(key));
+  useEffect(() => {
+    if (go) return undefined;
+    let idle: number | null = null;
+    const w = typeof window !== 'undefined' ? (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (h: number) => void }) : null;
+    const timer = setTimeout(() => {
+      if (w?.requestIdleCallback) idle = w.requestIdleCallback(() => setGo(true), { timeout: 800 });
+      else setGo(true);
+    }, STRIP_AFTER_MS);
+    return () => {
+      clearTimeout(timer);
+      if (idle !== null) w?.cancelIdleCallback?.(idle);
+    };
+  }, [go]);
+  const url = usePortrait(go ? (`strip:idle:${card}` as CardId) : null, { size: STRIP_PX, plate: false, ...(side ? { side: 1 as const } : {}) });
+  const [strip, setStrip] = useState<IdleStrip | null>(() => (url ? (strips.get(url) ?? null) : null));
+  useEffect(() => {
+    if (!url) {
+      setStrip(null);
+      return undefined;
+    }
+    if (strips.has(url)) {
+      shown.add(key);
+      setStrip(strips.get(url) ?? null);
+      return undefined;
+    }
+    if (typeof Image === 'undefined') return undefined;
+    let live = true;
+    const im = new Image();
+    im.onload = () => {
+      const m = measureStrip(url, im);
+      strips.set(url, m);
+      shown.add(key);
+      if (live) setStrip(m);
+    };
+    im.src = url;
+    return () => {
+      live = false;
+    };
+  }, [url]);
+  return strip;
+}
+
+/**
+ * Where a troop's strip cell goes on the island picture so its frames land exactly on the live layer's
+ * (review M S3): the live island's box for the card (how far the idle pose reaches toward the opponent,
+ * behind and above the feet, in island lu at the drawn size) against where the strip's pixels lie; the
+ * horizontal reach fixes the scale and the top fixes the feet. Before a card's box is known: a typical
+ * soldier's height, its feet just above the frames' lowest pixels.
+ */
+function stillPlacement(strip: IdleStrip, box: { front: number; back: number; top: number } | undefined, size: string | undefined, side: Side, spot: { x: number; y: number }, feetY: number): { left: number; top: number; cell: number; feetX: number } {
+  const u = LIVE_ISLAND.unitsPerLu;
+  const w = Math.max(1, strip.x1 - strip.x0);
+  const h = Math.max(1, strip.y1 - strip.y0);
+  let k: number;
+  let ax: number;
+  let ay: number;
+  if (box && box.front + box.back > 1) {
+    k = w / (box.front + box.back);
+    ax = strip.x0 + box.back * k;
+    ay = strip.y0 + box.top * k;
+  } else {
+    const d = defaultBox(size);
+    k = h / (d.top + BELOW_FEET_LU);
+    ax = strip.x0 + (w * d.back) / (d.front + d.back);
+    ay = strip.y1 - BELOW_FEET_LU * k;
+  }
+  // island units per strip px; the opponent's strip is mirrored (it faces left)
+  const per = u / k;
+  const anchorX = side === 0 ? ax : strip.cell - ax;
+  return { left: spot.x - anchorX * per, top: feetY - ay * per, cell: strip.cell * per, feetX: anchorX * per };
+}
+
+/**
+ * One troop on the still island, exactly where and as large as the live layer draws it (review M S3): its
+ * battle sheet's idle clip as a strip (`useIdleStrip`), fitted to the box the live island measured for the
+ * card (`troopBoxes`). The opponent faces left. Under Reduce motion the strip holds its first frame. It fades
+ * in once its strip is in.
+ */
+function StillTroop(p: { card: CardId; side: Side; slot: 0 | 1; size?: string; air?: boolean }) {
+  const strip = useIdleStrip(p.card, p.side);
+  const box = troopBoxes.value[p.card];
+  const u = LIVE_ISLAND.unitsPerLu;
+  const spot = LIVE_SPOTS[p.side][p.slot];
+  const feet = spot.y - (p.air ? ISLAND_ALTITUDE_LU * u : 0);
+  const pct = (v: number, of: number): string => `${((v / of) * 100).toFixed(3)}%`;
+  const cls = `hd__unit hd__unit--${p.side ? 'foe' : 'me'} hd__unit--s${p.slot}`;
+  if (!strip) return <span class={cls} data-card={p.card} />;
+  const at = stillPlacement(strip, box, p.size, p.side, spot, feet);
+  // the contact shadow under the feet (on the ground for a flyer), in the cell's own share
+  const shadowW = (p.size === 'huge' ? 54 : p.size === 'large' ? 40 : 26) * u;
   return (
-    <span class={`hd__unit hd__unit--${p.side ? 'foe' : 'me'} hd__unit--s${p.slot}`} data-card={p.card}>
-      <i class="hd__unitShadow" />
-      <span class="hd__unitAct">
-        <span class="hd__unitBody">{url ? <img class="hd__unitImg" src={url} alt="" draggable={false} /> : <i class="hd__unitGhost" />}</span>
-      </span>
+    <span class={`${cls} is-in`} data-card={p.card} style={{ left: pct(at.left, W), top: pct(at.top, H), width: pct(at.cell, W), height: pct(at.cell, H) }}>
+      <i class="hd__unitShadow" style={{ left: pct(at.feetX - shadowW / 2, at.cell), width: pct(shadowW, at.cell), top: pct(spot.y - at.top - 2.2 * u, at.cell), height: pct(4.4 * u, at.cell) }} />
+      <span
+        class={`ui-strip hd__unitStrip${p.side ? ' ui-strip--flip' : ''}`}
+        aria-hidden="true"
+        style={{ backgroundImage: `url("${strip.url}")`, '--strip-frames': strip.frames, '--strip-ms': `${strip.frames * IDLE_FRAME_MS}ms` }}
+      />
     </span>
   );
 }
@@ -504,7 +703,10 @@ export interface DioramaLive {
   foeFlags?: { baseFlag: CosmeticKey | null; nationalFlag: CosmeticKey | null } | null;
   /** The opponent's troops before they show (the ranked search's prepared opponent): loaded, not drawn. */
   foeNext?: readonly CardId[];
-  sound?: (id: SoundId, o?: { pitchBp?: number; volumeDb?: number }) => void;
+  /** Graphics on Auto: the island takes Lite's pace once frames run long (the battle's Auto rule). */
+  auto?: boolean;
+  /** A ranked search or a launch is under way: a cold start of the live island waits until it is over. */
+  hold?: boolean;
 }
 
 /** The live island's request for these troops and flags, or null when it should not run (Reduce motion). */
@@ -524,10 +726,11 @@ export function liveIslandRequest(p: { arena: ArenaId; mine: readonly CardId[]; 
     island: LIVE_ISLAND,
     teamPreset: p.live.teamPreset,
     lite: p.live.lite,
+    ...(p.live.auto ? { auto: true } : {}),
     seed: fnv1a32(`home:${p.arena}:${p.mine.join(',')}:${p.foe.join(',')}`),
     // always sent (empty when none), so a cancelled search lets the preloaded sheets go
     preload: (p.live.foeNext ?? []).slice(0, 2).map((card) => ({ card })),
-    ...(p.live.sound ? { sound: p.live.sound } : {}),
+    hold: p.live.hold === true,
   };
 }
 
@@ -553,6 +756,7 @@ export function Diorama(p: {
   const pal = ISLANDS[p.arena];
   const seed = fnv1a32(`hub:${p.arena}`);
   const liveHost = useRef<HTMLDivElement>(null);
+  const { content } = useUi();
   // the live island's request (small; the hook sends a change only when its content changed)
   const req = p.live ? liveIslandRequest({ arena: p.arena, mine: p.mine ?? [], foe: p.foe ?? [], hidden, myFlags: p.myFlags, live: p.live }) : null;
   const live = useHomeStage(liveHost, req, { paused: !!p.live?.paused, leaving: !!p.live?.leaving || !!p.launching });
@@ -673,12 +877,6 @@ export function Diorama(p: {
             <path d="M96 214 Q300 206 504 214" stroke={pal.laneLit} stroke-width="4" stroke-dasharray="14 12" stroke-linecap="round" fill="none" opacity=".6" />
             <EdgeStones pal={pal} seed={seed} />
             <Props pal={pal} seed={seed} arena={p.arena} />
-            {p.myFlags && (p.myFlags.baseFlag || p.myFlags.nationalFlag) ? (
-              <FlagPole id={id} x={170} y={214} team={p.teamMe} baseFlag={p.myFlags.baseFlag} nationalFlag={p.myFlags.nationalFlag} />
-            ) : (
-              <Banner x={176} y={214} color={p.teamMe} />
-            )}
-            <Banner x={424} y={214} color={hidden ? '#7a8294' : p.teamFoe} flip />
             {/* the clash point at the lane's middle */}
             <g class="hd-clash" transform="translate(300 206)">
               <circle r="22" fill={pal.glow} opacity=".22" />
@@ -697,6 +895,18 @@ export function Diorama(p: {
               </i>
             ) : null}
           </span>
+          {/* the still flag poles and troops, where and as large as the live layer draws them (over the bases,
+              as the live layer is); they step aside while it draws */}
+          <svg class="hd__poles" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet">
+            <StillPole id={`${id}-p0`} side={0} team={p.teamMe} baseFlag={p.myFlags?.baseFlag ?? null} nationalFlag={p.myFlags?.nationalFlag ?? null} />
+            <StillPole id={`${id}-p1`} side={1} team={p.teamFoe} baseFlag={hidden ? null : (p.live?.foeFlags?.baseFlag ?? null)} nationalFlag={hidden ? null : (p.live?.foeFlags?.nationalFlag ?? null)} grey={hidden} />
+          </svg>
+          {(p.mine ?? []).slice(0, 2).map((c, i) => (
+            <StillTroop key={`m${i}${c}`} card={c} side={0} slot={i as 0 | 1} size={content.units[c]?.size} air={content.units[c]?.tags.includes('air') ?? false} />
+          ))}
+          {(p.foe ?? []).slice(0, 2).map((c, i) => (
+            <StillTroop key={`f${i}${c}`} card={c} side={1} slot={i as 0 | 1} size={content.units[c]?.size} air={content.units[c]?.tags.includes('air') ?? false} />
+          ))}
           {/* the live island's Pixi layer (troops and flags), over the bases and under the search fog */}
           {req ? <div class="hd__live" ref={liveHost} /> : null}
           {look === 'searching' ? (
@@ -707,13 +917,6 @@ export function Diorama(p: {
             </span>
           ) : null}
           {look === 'found' ? <i class="hd__dust" /> : null}
-          {(p.mine ?? []).slice(0, 2).map((c, i) => (
-            <LaneUnit key={`m${i}${c}`} card={c} side={0} slot={i as 0 | 1} />
-          ))}
-          {(p.foe ?? []).slice(0, 2).map((c, i) => (
-            <LaneUnit key={`f${i}${c}`} card={c} side={1} slot={i as 0 | 1} />
-          ))}
-          <i class="hd__clash" />
           <i class="hd__spark hd__spark--1" />
           <i class="hd__spark hd__spark--2" />
           <i class="hd__spark hd__spark--3" />

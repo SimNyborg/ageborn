@@ -10,7 +10,10 @@
  *   sound); the Settings switch mutes every opponent.
  * - A live (online) match (queue item 34): emotes and quotes go to the opponent through the live layer
  *   (not the sim), a row of quick chat lines joins the wheel (a fixed list, `chat.<id>`; never free text,
- *   with the quotes' gap), and the mute covers their chat too (the live menu has the same switch).
+ *   with the quotes' gap), and the mute covers their chat too (the live menu has the same switch, both for
+ *   this match only). A chat line that says what an equipped quote says ("Good luck!" next to "Good luck,
+ *   have fun!") is left out, so the wheel never shows a line twice (review O S4). Their speed proposal closes
+ *   the wheel, as it closes the live menu: its card would sit on top of it.
  */
 import './emoteWheel.css';
 import { emoteLabelKey } from '@/content/keys';
@@ -29,6 +32,17 @@ const DEFAULT_WHEEL: EmoteWheel = { emotes: STARTER_EMOTES, quotes: [], quoteCoo
 
 const isStarter = (e: EmoteId): e is BaseEmoteId => (STARTER_EMOTES as readonly string[]).includes(e);
 const isQuote = (e: EmoteId): boolean => e.startsWith('quote.');
+
+/** Quick chat lines that say what a starter quote says: shown only when that quote is not equipped. */
+export const CHAT_QUOTE_TWIN: Readonly<Record<string, EmoteId>> = { glhf: 'quote.glhf', wp: 'quote.well_played' };
+
+/** The quick chat lines the wheel shows next to these quotes (a line and its twin quote never both). */
+export function wheelChat(lines: readonly string[], quotes: readonly EmoteId[]): string[] {
+  return lines.filter((id) => {
+    const twin = CHAT_QUOTE_TWIN[id];
+    return twin === undefined || !quotes.includes(twin);
+  });
+}
 
 /** Who performs a starter emote: a saved General (yours, an online player's) or a look (an AI General's). */
 export type EmoteSpeaker = { spec: AvatarSpec } | { look: ResolvedLook } | null;
@@ -198,6 +212,12 @@ export function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
   useEffect(() => {
     if (c.m.paused) setOpen(false);
   }, [c.m.paused]);
+  // their speed proposal's card would cover the open wheel: it closes, as the live menu does (review O S2)
+  const foeAsks = live?.tempo.value.pending?.by === 'foe';
+  useEffect(() => {
+    if (foeAsks) setOpen(false);
+  }, [foeAsks]);
+  const chat = live ? wheelChat(live.quickChat, wheel.quotes) : [];
   const send = (e: EmoteId) => {
     setOpen(false);
     startCooling();
@@ -239,7 +259,7 @@ export function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
       >
         <SmileIcon size={18} />
       </button>
-      {open && !off ? (
+      {open && !off && !foeAsks ? (
         <div class="hud-emote-picker hud-wheel" role="menu" data-testid="hud-emote-picker">
           <div class="hud-wheel-emotes">
             {wheel.emotes.map((e, i) => (
@@ -274,9 +294,9 @@ export function EmoteButton(p: { c: HudCtx; onEmote: (e: EmoteId) => void }) {
               ))}
             </div>
           ) : null}
-          {live && live.quickChat.length > 0 ? (
+          {chat.length > 0 ? (
             <div class={`hud-wheel-chat${quoteCooling ? ' is-cooling' : ''}`} data-testid="hud-wheel-chat">
-              {live.quickChat.map((line, i) => (
+              {chat.map((line, i) => (
                 <button
                   key={line}
                   role="menuitem"

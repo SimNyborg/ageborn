@@ -1771,7 +1771,7 @@ A 365-day economy sim (B12) MUST confirm these figures within ±20%, gating on t
   - "AI General" on the VS screen
   - "Plays by the same rules as you" on the bot profile card
   - "AI" in match history
-  - Settings > About: "All opponents in this version are AI." (kept with the online preview, as is For parents: "There is no chat. Players cannot contact each other. All opponents are AI.")
+  - Settings > About: "All opponents in this version are AI." (kept with the online preview, as is For parents: "There is no typed chat, only preset emotes and short lines such as “Good game!”. Players cannot contact each other. All opponents are AI.")
   - Help text: "Your first 20 opponents make extra mistakes while you learn. After that, opponent difficulty adapts to your recent results." (A15.3)
   - VS screen in the first 20 matches of a save: "Rookie AI: makes extra mistakes while you learn", through `OpponentSpec.disclosures` (built 2026-09-28: only in the onboarding matches, `arenas.ladder.newPlayer.matches` 2, and never when the player picked a difficulty)
   - Difficulty and War Path: the node and the VS screen show the resulting tier ("AI · Rook · Tier IX"); every War Path boss is labelled "AI General" (A18.6, A18.7.6)
@@ -1783,7 +1783,7 @@ A 365-day economy sim (B12) MUST confirm these figures within ±20%, gating on t
   - **The same identity everywhere.** VS (the Player chip, no AI chip, no "AI General", no personality line, not skippable: 2.6 s, "Get ready"), the HUD nameplate, the Result ("vs <name>" with the Player chip), the match history and the replay viewer. It is stored in the match setup and the replay (`SideConfig.online`).
   - **Presentation only.** The match is played against the bot matchmaking picked (A6.8, unchanged): the same General or Commander, tier, War Plan, levels and seed, so difficulty, rewards and trophies do not change. `OpponentSpec.isAI` and `side.isBot` stay true for the rules that read them (fort and power filters, A16.14.6), and the sim and the bot are untouched.
   - **Live** (owner request 2026-10-13): the match has no pause and no tempo of its own (A2.12) and runs on while the page is hidden (A6.3). The found player talks through a persona outside the sim (`app/live/persona.ts`, seeded by the match): a temperament (friendly, sporting, quiet or cocky) with its own chattiness and answer times, the six starter faces, the quick chat every player has (a fixed list, never free text) and a few collected quotes and emotes plausible for its trophies. It reacts to big hits, low bases, comebacks, a stalemate and the end, replies to the player's emotes and chat sometimes, answers speed proposals after a human delay (sometimes no, sometimes no answer, less patient when nagged) and proposes a speed now and then. Never spammy (one message at a time, a minimum gap, caps per minute and per match, GG excepted); the wheel and the menu mute it. The AI's own emotes stay out of the match.
-  - **The facts stay.** Settings › About ("All opponents in this version are AI.") and For parents ("There is no chat. Players cannot contact each other. All opponents are AI.").
+  - **The facts stay.** Settings › About ("All opponents in this version are AI.") and For parents ("There is no typed chat, only preset emotes and short lines such as “Good game!”. Players cannot contact each other. All opponents are AI.").
   - **Later.** When real online play ships, real players replace the simulated ones in the same UI (the same `OnlinePlayer` shape), and the AI-fill rules of A18.10 apply.
 
 ### A7.2 Decision model (utility AI)
@@ -2592,7 +2592,7 @@ Without a later build, v1's long tail is the Daily Challenge, the War Chest, the
    | Quest panel | Behind the panel's "i" (a toast; 2026-10-07, no caption under the list): "New quests arrive each day. Up to 21 can wait. When full, it stops filling." |
    | For parents | "Taking a break never takes away anything your child has earned." (2026-10-07: removed from the odds panel and Settings; the parents page keeps its plain facts, including "Nothing in Ageborn can be bought, and it shows no ads.") |
    | Echo of You (Skirmish) | "AI · Echo of You: an AI playing your War Plan" |
-   | Ranked (Home's Battle; owner decision 2026-10-07, A7.1) | Switcher "Ranked · Online"; idle plate "Opponent · ● Online", "A player"; "Searching", "Searching for an opponent…"; "Opponent found!"; the Player chip; VS footer "Get ready"; Modes panel "Climb the arenas against players online." The facts stay: Settings › About "All opponents in this version are AI." and For parents "There is no chat. Players cannot contact each other. All opponents are AI." |
+   | Ranked (Home's Battle; owner decision 2026-10-07, A7.1) | Switcher "Ranked · Online"; idle plate "Opponent · ● Online", "A player"; "Searching", "Searching for an opponent…"; "Opponent found!"; the Player chip; VS footer "Get ready"; Modes panel "Climb the arenas against players online." The facts stay: Settings › About "All opponents in this version are AI." and For parents "There is no typed chat, only preset emotes and short lines such as “Good game!”. Players cannot contact each other. All opponents are AI." |
 
 3. "Nothing expires" appears only where it is literally true: owned items, currencies, pending capsules and crates, War Chest progress and found feats.
 4. **Forbidden copy:** "Nothing is lost while you're away" and "Everything waits for you" (both false once a bank is full), "we missed you", "last chance", and any countdown to a reward. The Sundial's "Next one at 17:40" on the Capsules tab is a clock time, not a countdown: it does not tick, has no seconds and never appears on Home, the Result or in a notification.
@@ -2709,7 +2709,7 @@ It replaces the weekly quest "Win 15 battles", whose Monday behaviour A6.7 never
 **For parents** (a Settings page, strings only):
 
 - "Nothing in Ageborn can be bought, and it shows no ads." (A later build with portal ads changes this line.)
-- "There is no chat. Players cannot contact each other. All opponents are AI."
+- "There is no typed chat, only preset emotes and short lines such as “Good game!”. Players cannot contact each other. All opponents are AI."
 - "No data leaves this device. Progress is saved in this browser."
 - "Capsules are earned by playing. Each one is decided when it is earned, and its odds are shown."
 - "A break reminder appears after 60 minutes of play. You can switch it off or on here."

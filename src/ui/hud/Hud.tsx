@@ -333,9 +333,9 @@ export function Hud(props: HudProps) {
           else p.onPause?.();
           return;
         case 'speed':
-          // nor sets its own speed: F opens the tempo proposal
+          // nor sets its own speed: F opens the tempo proposal (not while it catches up: the opponent waits too)
           if (p.live) {
-            if (cur.phase !== 'ended') setLiveOpen((o) => (o === 'tempo' ? null : 'tempo'));
+            if (cur.phase !== 'ended' && p.live.catchUp.peek() === null) setLiveOpen((o) => (o === 'tempo' ? null : 'tempo'));
           } else p.onSpeed?.(nextSpeed(cur.speed));
           return;
         case 'deny':
@@ -488,13 +488,30 @@ export function Hud(props: HudProps) {
   const liveHud = props.live;
   // their proposal card sits under the top band; a moment title shown meanwhile moves below it (live.css)
   const foeAsks = !readOnly && liveHud?.tempo.value.pending?.by === 'foe';
+  // ... and it closes an open drop-down (the menu, the speeds) instead of covering it (review O S2)
+  useEffect(() => {
+    if (foeAsks) setLiveOpen(null);
+  }, [foeAsks]);
+  // HUD sounds wait while a live match catches up (the view's own sounds are silenced the same way): a power
+  // that came ready or a research that finished during the fast-forward makes no noise (review O nit 3)
+  const hudAudio = useMemo<Pick<AudioService, 'play'> | undefined>(
+    () =>
+      audio && liveHud
+        ? {
+            play: (id, o) => {
+              if (liveHud.catchUp.peek() === null) audio.play(id, o);
+            },
+          }
+        : audio,
+    [audio, liveHud],
+  );
   useEffect(() => {
     if (!liveHud) return undefined;
     return liveHud.onSay((s) => {
       addBubble(s.chat !== undefined ? { side: s.side, chat: s.chat } : { side: s.side, ...(s.emote !== undefined ? { emote: s.emote } : {}) });
-      audio?.play('emote_pop');
+      hudAudio?.play('emote_pop');
     });
-  }, [liveHud, addBubble, audio]);
+  }, [liveHud, addBubble, hudAudio]);
   const menuAsks = props.menuAsks;
   useEffect(() => {
     if (!menuAsks) return undefined;
@@ -516,13 +533,13 @@ export function Hud(props: HudProps) {
       if (id && !readOnly) {
         setBurst((b) => b + 1);
         setDone({ id: n, pick: id });
-        audio?.play('level_up');
+        hudAudio?.play('level_up');
         if (doneTimer.current) clearTimeout(doneTimer.current);
         doneTimer.current = setTimeout(() => setDone(null), DONE_MS);
       }
     }
     ownedCount.current = n;
-  }, [owned?.length, readOnly, audio]);
+  }, [owned?.length, readOnly, hudAudio]);
   useEffect(
     () => () => {
       if (doneTimer.current) clearTimeout(doneTimer.current);
@@ -633,7 +650,7 @@ export function Hud(props: HudProps) {
     pulse,
     portrait: props.portrait,
     view,
-    audio,
+    audio: hudAudio,
     compact,
     ...(props.emoteWheel ? { wheel: props.emoteWheel } : {}),
     readOnly,
@@ -701,12 +718,15 @@ export function Hud(props: HudProps) {
         hits={hits}
         front={front}
         scouted={props.scouted !== false}
-        liveOpen={liveOpen}
+        // the render that shows their card already hides an open drop-down (the effect above then clears it)
+        liveOpen={foeAsks ? null : liveOpen}
         onLiveOpen={setLiveOpen}
         {...(props.liveMenu ? { liveMenu: props.liveMenu } : {})}
       />
       {moment ? (
-        <div key={moment.id} class={`hud-moment hud-moment-${moment.kind}${foeAsks ? ' is-below-ask' : ''}`} data-testid={`hud-moment-${moment.kind}`} role="status">
+        // `ui-rm-own`: its own Reduce motion fade (hud.css) instead of the theme's 150 ms net, which ended it at
+        // opacity 0 at once (review O B1, since 2026-09-29)
+        <div key={moment.id} class={`hud-moment ui-rm-own hud-moment-${moment.kind}${foeAsks ? ' is-below-ask' : ''}`} data-testid={`hud-moment-${moment.kind}`} role="status">
           <div class="hud-moment-title">{moment.title}</div>
           {moment.sub ? <div class="hud-moment-sub">{moment.sub}</div> : null}
         </div>

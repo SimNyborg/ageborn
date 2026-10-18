@@ -316,6 +316,13 @@
   pointer-events: auto;
 }
 
+/* The side panels, with their emote and chat bubbles, stay above the minimap that hangs under the band (z 3),
+   also while a base hit kicks a panel: the kick's transform makes the panel a stacking context, which used to
+   drop its bubble under the minimap's buttons on narrow phones (review O S5). */
+.hud-side {
+  z-index: 4;
+}
+
 .hud-me {
   flex: none;
   width: var(--hud-me-w);
@@ -4090,6 +4097,15 @@
   animation: hud-moment-calm 2400ms linear forwards;
 }
 
+/* The blocked callout keeps its 4.2 s read time in the calm fade too, an escalation step its 1.2 s. */
+.hud[data-reduce-motion='true'] .hud-moment-blocked {
+  animation-duration: 4200ms;
+}
+
+.hud[data-reduce-motion='true'] .hud-moment-escalate {
+  animation-duration: 1200ms;
+}
+
 .hud[data-reduce-motion='true'] .hud-reason {
   animation-name: hud-moment-calm;
 }
@@ -4127,6 +4143,10 @@
 
   .hud-moment {
     animation: hud-moment-calm 2400ms linear forwards;
+  }
+
+  .hud-moment-blocked {
+    animation-duration: 4200ms;
   }
 
   .hud-reason {

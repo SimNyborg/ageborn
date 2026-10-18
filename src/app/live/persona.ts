@@ -13,7 +13,12 @@
  * and now and then proposes a speed itself.
  *
  * Never spammy: one message queued at a time, a minimum gap, a cap per minute and per match (GG is the
- * one exception), and a reaction that comes too late for its moment is dropped instead of sent.
+ * one exception), and a reaction that comes too late for its moment is dropped instead of sent. A greeting
+ * that would come long after the opening (you were away) is dropped too.
+ *
+ * Never mean (orchestrator decision 2026-10-18, review O S1): even the cocky temperament is confident, not
+ * mocking. Nobody laughs or yawns at your misfortune (your low base, your cry or oops, a declined proposal,
+ * your loss); a laugh is only ever for its own good moment (its big hit, its comeback), at most one a match.
  *
  * Pure and deterministic: seeded sfc32 streams (`persona:<seed>` and three sub-streams), integer chances
  * in basis points and times from the caller's clock. The same match and the same inputs at the same times
@@ -76,6 +81,11 @@ type Intent =
   | 'comebackSelf'
   | 'comebackFoe'
   | 'evolveSelf'
+  /** Your evolve (public: both players see the age change). */
+  | 'evolveFoe'
+  /** The match enters Overdrive, or the Siege (both players see the banner). */
+  | 'overdrive'
+  | 'siege'
   | 'bored'
   | 'ggWin'
   | 'ggLoss'
@@ -91,29 +101,37 @@ const CHANCE: Readonly<Record<Intent, Readonly<Record<Temperament, number>>>> = 
   ouch: { friendly: 2500, sporting: 1500, quiet: 800, cocky: 4500 },
   gloat: { friendly: 1800, sporting: 600, quiet: 400, cocky: 5500 },
   lowSelf: { friendly: 3000, sporting: 2500, quiet: 1000, cocky: 3000 },
-  lowFoe: { friendly: 600, sporting: 0, quiet: 0, cocky: 4000 },
+  // your base in trouble is never something to celebrate at (not even for cocky)
+  lowFoe: { friendly: 600, sporting: 0, quiet: 0, cocky: 0 },
   comebackSelf: { friendly: 3000, sporting: 2500, quiet: 800, cocky: 6000 },
   comebackFoe: { friendly: 4000, sporting: 5000, quiet: 1000, cocky: 3000 },
   evolveSelf: { friendly: 1200, sporting: 600, quiet: 0, cocky: 2500 },
+  evolveFoe: { friendly: 3000, sporting: 3000, quiet: 300, cocky: 800 },
+  overdrive: { friendly: 1200, sporting: 900, quiet: 0, cocky: 900 },
+  siege: { friendly: 1500, sporting: 1500, quiet: 0, cocky: 900 },
   bored: { friendly: 1500, sporting: 800, quiet: 500, cocky: 3500 },
   ggWin: { friendly: 8500, sporting: 9500, quiet: 4500, cocky: 5500 },
   ggLoss: { friendly: 8500, sporting: 9500, quiet: 4500, cocky: 4000 },
   ggDraw: { friendly: 8000, sporting: 9000, quiet: 4000, cocky: 5000 },
   tempoYes: { friendly: 2500, sporting: 1500, quiet: 300, cocky: 2000 },
-  tempoNo: { friendly: 1200, sporting: 800, quiet: 0, cocky: 2500 },
-  declined: { friendly: 1500, sporting: 800, quiet: 0, cocky: 2500 },
+  // after it said no to your speed it says nothing more (cocky used to laugh)
+  tempoNo: { friendly: 1200, sporting: 800, quiet: 0, cocky: 0 },
+  declined: { friendly: 1500, sporting: 800, quiet: 0, cocky: 1500 },
 };
 
 /** A line: `chat:<id>` is quick chat, anything else an emote id (starter face, `quote.*`, `emote.*`). */
 type Line = readonly [weight: number, say: string];
 
-/** What it says for each intent, by temperament (weights). Lines it does not own are left out. */
+/**
+ * What it says for each intent, by temperament (weights). Lines it does not own are left out. `laugh` only
+ * appears for its own good moments (gloat, comebackSelf) and is held to one a match (`MAX_LAUGHS`).
+ */
 const LINES: Readonly<Record<Intent, Readonly<Record<Temperament, readonly Line[]>>>> = {
   greet: {
     friendly: [[4, 'chat:glhf'], [3, 'quote.glhf'], [1, 'thumbsUp'], [1, 'salute'], [1, 'emote.heart']],
     sporting: [[3, 'salute'], [2, 'chat:glhf'], [2, 'quote.glhf']],
     quiet: [[1, 'thumbsUp'], [1, 'chat:glhf']],
-    cocky: [[2, 'laugh'], [1, 'chat:glhf'], [2, 'emote.cool_shades']],
+    cocky: [[2, 'emote.cool_shades'], [1, 'chat:glhf'], [1, 'thumbsUp']],
   },
   praise: {
     friendly: [[3, 'chat:nice'], [3, 'chat:wow'], [2, 'quote.nice_move'], [1, 'thumbsUp'], [2, 'emote.wow'], [1, 'emote.clap']],
@@ -143,7 +161,7 @@ const LINES: Readonly<Record<Intent, Readonly<Record<Temperament, readonly Line[
     friendly: [[1, 'thumbsUp']],
     sporting: [],
     quiet: [],
-    cocky: [[3, 'laugh'], [1, 'emote.cool_shades'], [1, 'emote.sleepy']],
+    cocky: [],
   },
   comebackSelf: {
     friendly: [[2, 'thumbsUp'], [1, 'quote.plot_twist']],
@@ -161,19 +179,38 @@ const LINES: Readonly<Record<Intent, Readonly<Record<Temperament, readonly Line[
     friendly: [[2, 'quote.next_age'], [1, 'thumbsUp'], [1, 'quote.time_flies']],
     sporting: [[1, 'thumbsUp']],
     quiet: [],
-    cocky: [[1, 'laugh'], [1, 'quote.next_age'], [1, 'emote.cool_shades']],
+    cocky: [[2, 'emote.cool_shades'], [1, 'quote.next_age']],
+  },
+  evolveFoe: {
+    friendly: [[2, 'chat:nice'], [2, 'chat:wow'], [1, 'thumbsUp'], [1, 'emote.wow']],
+    sporting: [[2, 'salute'], [1, 'quote.nice_move'], [1, 'emote.clap'], [1, 'thumbsUp']],
+    quiet: [[1, 'thumbsUp']],
+    cocky: [[1, 'chat:nice'], [1, 'thumbsUp']],
+  },
+  overdrive: {
+    friendly: [[2, 'chat:wow'], [1, 'quote.one_more_wave']],
+    sporting: [[1, 'quote.one_more_wave'], [1, 'thumbsUp']],
+    quiet: [],
+    cocky: [[1, 'emote.cool_shades']],
+  },
+  siege: {
+    friendly: [[1, 'quote.epic_battle'], [1, 'quote.hold_the_line'], [1, 'chat:wow']],
+    sporting: [[2, 'quote.hold_the_line'], [1, 'quote.epic_battle'], [1, 'salute']],
+    quiet: [],
+    cocky: [[1, 'quote.one_more_wave'], [1, 'emote.cool_shades']],
   },
   bored: {
     friendly: [[2, 'emote.thinking'], [1, 'quote.thinking']],
     sporting: [[1, 'quote.thinking']],
     quiet: [[1, 'emote.sleepy']],
-    cocky: [[3, 'emote.sleepy'], [1, 'quote.thinking']],
+    cocky: [[2, 'emote.sleepy'], [1, 'quote.thinking'], [1, 'emote.thinking']],
   },
+  // its win is your loss: a GG, never a laugh
   ggWin: {
     friendly: [[4, 'chat:gg'], [3, 'gg'], [2, 'quote.gg_wp'], [1, 'emote.heart']],
     sporting: [[3, 'chat:wp'], [2, 'quote.well_played'], [2, 'gg'], [2, 'salute'], [1, 'quote.respect']],
     quiet: [[2, 'chat:gg'], [1, 'gg']],
-    cocky: [[3, 'laugh'], [2, 'gg'], [1, 'emote.party'], [1, 'chat:gg']],
+    cocky: [[3, 'gg'], [2, 'chat:gg'], [1, 'emote.party'], [1, 'quote.gg_wp']],
   },
   ggLoss: {
     friendly: [[3, 'chat:gg'], [3, 'chat:wp'], [2, 'gg'], [1, 'emote.clap']],
@@ -191,21 +228,95 @@ const LINES: Readonly<Record<Intent, Readonly<Record<Temperament, readonly Line[
     friendly: [[2, 'thumbsUp']],
     sporting: [[1, 'thumbsUp']],
     quiet: [[1, 'thumbsUp']],
-    cocky: [[1, 'laugh'], [1, 'emote.cool_shades']],
+    cocky: [[1, 'thumbsUp'], [1, 'emote.cool_shades']],
   },
   tempoNo: {
     friendly: [[1, 'emote.thinking'], [1, 'quote.thinking']],
     sporting: [[1, 'emote.thinking']],
     quiet: [],
-    cocky: [[2, 'laugh']],
+    cocky: [],
   },
+  // you said no to its speed: fine by it
   declined: {
     friendly: [[1, 'chat:oops'], [1, 'thumbsUp']],
     sporting: [[1, 'thumbsUp']],
     quiet: [],
-    cocky: [[2, 'laugh'], [1, 'emote.sleepy']],
+    cocky: [[1, 'thumbsUp']],
   },
 };
+
+/** At most this many laughs a match, for every temperament (orchestrator decision 2026-10-18). */
+const MAX_LAUGHS = 1;
+
+const isLaugh = (m: LiveMessage): boolean => m.k === 'emote' && m.emote === 'laugh';
+
+/** What your quote or collected emote is, for a fitting reply (no "Nice!" to "That was close!"). */
+type Mood = 'greet' | 'praise' | 'wow' | 'sorry' | 'gg' | 'think' | 'cry' | 'heart' | 'cool' | 'joke';
+
+const MOOD_OF: Readonly<Record<string, Mood>> = {
+  'quote.glhf': 'greet',
+  'quote.well_played': 'praise',
+  'quote.nice_move': 'praise',
+  'quote.respect': 'praise',
+  'quote.honour': 'praise',
+  'quote.knightly': 'praise',
+  'quote.legendary': 'praise',
+  'quote.bold_strategy': 'praise',
+  'quote.nice_flag': 'praise',
+  'quote.so_close': 'wow',
+  'quote.did_not_see': 'wow',
+  'quote.plot_twist': 'wow',
+  'quote.comeback': 'wow',
+  'quote.epic_battle': 'wow',
+  'quote.history': 'wow',
+  'quote.oops_mine': 'sorry',
+  'quote.gg_wp': 'gg',
+  'quote.beep_boop': 'gg',
+  'quote.over_and_out': 'gg',
+  'quote.rematch': 'gg',
+  'quote.thinking': 'think',
+  'quote.hold_the_line': 'cry',
+  'quote.charge': 'cry',
+  'quote.one_more_wave': 'cry',
+  'quote.full_steam': 'cry',
+  'quote.powder_dry': 'cry',
+  'quote.fashionably_late': 'cry',
+  'emote.heart': 'heart',
+  'emote.clap': 'praise',
+  'emote.wow': 'wow',
+  'emote.thinking': 'think',
+  'emote.oops': 'sorry',
+  'emote.sleepy': 'think',
+  'emote.cool_shades': 'cool',
+  'emote.party': 'cool',
+};
+
+/** Its reply to your quote or collected emote, by what it says (the other quotes are jokes of the ages). */
+function moodReply(mood: Mood, temper: Temperament): readonly Line[] {
+  const cocky = temper === 'cocky';
+  switch (mood) {
+    case 'greet':
+      return cocky ? [[1, 'chat:glhf'], [1, 'emote.cool_shades']] : [[3, 'chat:glhf'], [1, 'thumbsUp'], [1, 'salute']];
+    case 'praise':
+      return cocky ? [[2, 'chat:thanks'], [1, 'emote.cool_shades']] : [[3, 'chat:thanks'], [2, 'thumbsUp'], [1, 'salute']];
+    case 'wow':
+      return cocky ? [[1, 'chat:wow'], [1, 'emote.cool_shades']] : [[2, 'thumbsUp'], [1, 'chat:wow']];
+    case 'sorry':
+      return [[1, 'thumbsUp']];
+    case 'gg':
+      return [[2, 'gg'], [1, 'chat:gg']];
+    case 'think':
+      return [[1, 'emote.thinking'], [1, 'thumbsUp']];
+    case 'cry':
+      return temper === 'sporting' ? [[1, 'salute'], [1, 'quote.hold_the_line']] : cocky ? [[1, 'emote.cool_shades'], [1, 'thumbsUp']] : [[2, 'thumbsUp'], [1, 'chat:wow']];
+    case 'heart':
+      return [[2, 'emote.heart'], [1, 'thumbsUp']];
+    case 'cool':
+      return cocky ? [[1, 'emote.cool_shades']] : [[1, 'thumbsUp']];
+    case 'joke':
+      return cocky ? [[1, 'emote.cool_shades'], [1, 'thumbsUp']] : [[2, 'thumbsUp'], [1, 'salute']];
+  }
+}
 
 /** The four quotes every player starts with (A18.9.4, source `start`). */
 const STARTER_QUOTES: readonly EmoteId[] = ['quote.glhf', 'quote.well_played', 'quote.nice_move', 'quote.so_close'];
@@ -232,6 +343,7 @@ const EXTRA_QUOTES: readonly Collectible[] = [
   { id: 'quote.one_more_wave', trophies: 900 },
   { id: 'quote.time_flies', trophies: 1500 },
   { id: 'quote.comeback', rareBp: 1500 },
+  { id: 'quote.epic_battle', rareBp: 2500 },
 ];
 
 const EXTRA_EMOTES: readonly Collectible[] = [
@@ -322,6 +434,8 @@ export interface PersonaForce {
 }
 
 const REPLY_GAP_MS = 20_000;
+/** A greeting more than this late (ms past its time: you were away at the start) is dropped, not sent. */
+const GREET_LATE_MS = 15_000;
 /** GG comes this soon after the end (ms): the Result shows 2.5 s after it. */
 const GG_MS: readonly [number, number] = [450, 1700];
 const MINUTE_MS = 60_000;
@@ -363,6 +477,8 @@ export class PersonaBrain {
   private nextThinkAt: number | null = null;
   private declinedByYou = 0;
   private ended = false;
+  /** Laughs sent this match (at most `MAX_LAUGHS`). */
+  private laughs = 0;
 
   constructor(persona: Persona, seed: number, o: { windowMs?: number } = {}) {
     this.persona = persona;
@@ -400,7 +516,10 @@ export class PersonaBrain {
         this.react(m.side === SELF ? 'comebackSelf' : 'comebackFoe', now);
         return;
       case 'evolve':
-        if (m.side === SELF) this.react('evolveSelf', now);
+        this.react(m.side === SELF ? 'evolveSelf' : 'evolveFoe', now);
+        return;
+      case 'phase':
+        this.react(m.phase === 'siege' ? 'siege' : 'overdrive', now);
         return;
       case 'stalemate':
         this.bored = true;
@@ -450,7 +569,8 @@ export class PersonaBrain {
     if (this.greetAt === null && ctx.tick > 0) this.greetAt = now + randRange(this.thinkRng, 1200, 5200);
     if (!this.greeted && this.greetAt !== null && now >= this.greetAt) {
       this.greeted = true;
-      this.react('greet', now, { delay: 0 });
+      // a greeting belongs to the opening: after an early absence the match has moved on (review O nit 1)
+      if (now - this.greetAt <= GREET_LATE_MS) this.react('greet', now, { delay: 0 });
     }
     if (this.nextThinkAt === null) {
       if (ctx.tick < PROPOSE_FROM_TICK) return;
@@ -510,6 +630,7 @@ export class PersonaBrain {
       this.sent += 1;
       this.lastSaidAt = now;
       this.sentAt.push(now);
+      if (isLaugh(q.msg)) this.laughs += 1;
     }
     this.queue = keep;
     while (this.sentAt.length > 0 && this.sentAt[0]! <= now - MINUTE_MS) this.sentAt.shift();
@@ -562,10 +683,12 @@ export class PersonaBrain {
   private onYourEmote(e: EmoteId, now: number, ctx: PersonaContext): void {
     if (!this.canReply(now)) return;
     const temper = this.persona.temperament;
+    const mood = MOOD_OF[e];
     let lines: readonly Line[];
     switch (e) {
+      // your laugh, cry or anger gets a friendly face back, never a laugh (it laughs only at its own good moments)
       case 'laugh':
-        lines = temper === 'cocky' ? [[3, 'laugh']] : temper === 'sporting' ? [[1, 'thumbsUp']] : [[2, 'laugh'], [1, 'thumbsUp']];
+        lines = temper === 'cocky' ? [[1, 'emote.cool_shades'], [1, 'thumbsUp']] : [[1, 'thumbsUp']];
         break;
       case 'thumbsUp':
       case 'salute':
@@ -573,16 +696,23 @@ export class PersonaBrain {
         break;
       case 'cry':
       case 'angry':
-        lines = temper === 'cocky' ? [[2, 'laugh']] : [[1, 'thumbsUp'], [1, 'salute']];
+        lines = [[1, 'thumbsUp'], [1, 'salute']];
         break;
       case 'gg':
         lines = [[2, 'gg'], [1, 'chat:gg']];
         break;
       default:
-        lines = temper === 'cocky' ? [[1, 'laugh']] : [[1, 'thumbsUp'], [1, 'chat:nice']];
+        // your quote or collected emote, answered by what it says
+        lines = moodReply(mood ?? (e.startsWith('quote.') ? 'joke' : 'cool'), temper);
     }
-    // an early friendly face doubles as the greeting
-    if (!this.greeted && ctx.tick < 400 && (e === 'salute' || e === 'thumbsUp')) this.greeted = true;
+    if (mood === 'greet') {
+      // your "Good luck, have fun!" is answered like the quick chat one: its greeting back, or thanks once it greeted
+      if (this.greeted) lines = [[2, 'chat:thanks'], [1, 'thumbsUp']];
+      this.greeted = true;
+    } else if (!this.greeted && ctx.tick < 400 && (e === 'salute' || e === 'thumbsUp')) {
+      // an early friendly face doubles as the greeting
+      this.greeted = true;
+    }
     this.reply(lines, now);
   }
 
@@ -598,23 +728,23 @@ export class PersonaBrain {
       case 'glhf': {
         const greeted = this.greeted;
         this.greeted = true;
-        const lines: readonly Line[] = greeted ? [[2, 'chat:thanks'], [1, 'thumbsUp']] : temper === 'cocky' ? [[1, 'laugh'], [1, 'chat:glhf']] : [[3, 'chat:glhf'], [1, 'thumbsUp'], [1, 'salute']];
-        this.reply(lines, now);
+        this.reply(greeted ? [[2, 'chat:thanks'], [1, 'thumbsUp']] : moodReply('greet', temper), now);
         return;
       }
       case 'nice':
       case 'wow':
       case 'wp':
-        this.reply(temper === 'cocky' ? [[2, 'laugh'], [1, 'chat:thanks'], [1, 'emote.cool_shades']] : [[3, 'chat:thanks'], [2, 'thumbsUp'], [1, 'salute']], now);
+        this.reply(moodReply('praise', temper), now);
         return;
       case 'oops':
-        this.reply(temper === 'cocky' ? [[2, 'laugh']] : [[1, 'thumbsUp']], now);
+        // your slip is never funny to it
+        this.reply(moodReply('sorry', temper), now);
         return;
       case 'thanks':
         this.reply([[1, 'thumbsUp']], now, 4000);
         return;
       case 'gg':
-        this.reply(temper === 'cocky' ? [[1, 'laugh']] : [[1, 'gg'], [1, 'chat:gg']], now);
+        this.reply(moodReply('gg', temper), now);
         return;
     }
   }
@@ -644,7 +774,9 @@ export class PersonaBrain {
   }
 
   private choose(lines: readonly Line[]): LiveMessage | null {
-    const usable = lines.filter(([, s]) => s.startsWith('chat:') || this.owned.has(s));
+    // one laugh a match at most (a queued one counts): after it, the other lines carry the moment
+    const laughOk = this.laughs < MAX_LAUGHS && !this.queue.some((q) => isLaugh(q.msg));
+    const usable = lines.filter(([, s]) => (s.startsWith('chat:') || this.owned.has(s)) && (laughOk || s !== 'laugh'));
     if (usable.length === 0) return null;
     const i = pickWeighted(
       this.sayRng,

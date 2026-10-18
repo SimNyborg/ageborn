@@ -1026,12 +1026,7 @@
     transform: rotate(16deg);
   }
 }
-.wp-flag {
-  transform-box: fill-box;
-  transform-origin: 0 50%;
-  animation: wp-flag 1300ms ease-in-out infinite;
-}
-.ui-root[data-reduce-motion='true'] .wp-map :is(.wp-cloud, .wp-smoke__puff, .wp-blades > g, .wp-twinkle, .wp-blink, .wp-flicker, .wp-bob, .wp-beam, .wp-flag, .wp-bearer__body, .wp-bearer__flag, .wp-node__ring) {
+.ui-root[data-reduce-motion='true'] .wp-map :is(.wp-cloud, .wp-smoke__puff, .wp-blades > g, .wp-twinkle, .wp-blink, .wp-flicker, .wp-bob, .wp-beam, .wp-bearer__body, .wp-bearer__flag, .wp-node__ring) {
   animation: none !important;
 }
 .ui-root[data-reduce-motion='true'] .wp-node__ring {

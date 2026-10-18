@@ -198,155 +198,57 @@
   transform: scaleX(-1);
 }
 /* ---- the frontline troops in the lane ---- */
+/* The still troops (Diorama.tsx StillTroop): each troop's idle strip from its battle sheet, placed and sized
+   inline exactly where the live layer draws it, over the bases; the front row over the back row. The strip
+   fades in once it has loaded. */
 .hd__unit {
-  --dir: 1;
   position: absolute;
   z-index: 2;
-  bottom: 33%;
-  width: 12.5%;
-  aspect-ratio: 1;
   pointer-events: none;
 }
-.hd__unit--me.hd__unit--s0 {
-  left: 35%;
+.hd__unit--s0 {
   z-index: 3;
-}
-.hd__unit--me.hd__unit--s1 {
-  left: 24%;
-  bottom: 34.5%;
-}
-.hd__unit--foe {
-  --dir: -1;
-}
-.hd__unit--foe.hd__unit--s0 {
-  right: 35%;
-  z-index: 3;
-}
-.hd__unit--foe.hd__unit--s1 {
-  right: 24%;
-  bottom: 34.5%;
 }
 .hd__unitShadow {
   position: absolute;
-  left: 16%;
-  right: 16%;
-  bottom: 4%;
-  height: 12%;
   border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.2) 60%, transparent 72%);
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.18) 58%, transparent 72%);
 }
-.hd__unitAct,
-.hd__unitBody {
-  position: absolute;
-  inset: 0;
-  transform-origin: 50% 92%;
-}
-.hd__unitImg {
+.hd__unitStrip {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: 50% 100%;
-  filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.4));
-  /* A card portrait may be framed as a bust: its lower edge fades into the lane's dust. */
-  -webkit-mask-image: linear-gradient(180deg, #000 80%, transparent 98%);
-  mask-image: linear-gradient(180deg, #000 80%, transparent 98%);
+  animation:
+    ui-strip-play var(--strip-ms) steps(var(--strip-frames)) infinite,
+    hd-troop-in var(--ui-dur-small) var(--ui-ease-standard) both;
 }
-.hd__unit--foe .hd__unitImg {
-  transform: scaleX(-1);
-}
-.hd__unitGhost {
-  position: absolute;
-  left: 30%;
-  right: 30%;
-  top: 20%;
-  bottom: 10%;
-  border-radius: 40% 40% 20% 20%;
-  background: rgba(255, 255, 255, 0.12);
-}
-/* Idle: breathing squash and stretch from the feet, each troop on its own beat. */
-.hd__unitBody {
-  animation: hd-breathe 1500ms ease-in-out infinite alternate;
-}
-.hd__unit--s1 .hd__unitBody {
-  animation-duration: 1300ms;
-  animation-delay: -500ms;
-}
-.hd__unit--foe .hd__unitBody {
-  animation-delay: -700ms;
-}
-@keyframes hd-breathe {
+@keyframes hd-troop-in {
   from {
-    transform: scale(1.02, 0.97);
-  }
-  to {
-    transform: scale(0.98, 1.035) translateY(-1%);
+    opacity: 0;
   }
 }
-/* The front pair's near-clash (every 6.4 s): hold, lean back (anticipation), lunge with a stretch,
-   meet the spark, recoil and settle with a small overshoot. The two sides mirror each other. */
-.hd__unit--s0 .hd__unitAct {
-  animation: hd-lunge 6400ms var(--ui-ease-standard) 1200ms infinite;
-}
-@keyframes hd-lunge {
-  0%,
-  58% {
-    transform: none;
-  }
-  64% {
-    transform: translateX(calc(var(--dir) * -9%)) rotate(calc(var(--dir) * -7deg)) scale(1.04, 0.94);
-  }
-  69% {
-    transform: translateX(calc(var(--dir) * 34%)) rotate(calc(var(--dir) * 8deg)) scale(0.94, 1.06);
-  }
-  72% {
-    transform: translateX(calc(var(--dir) * 30%)) rotate(calc(var(--dir) * 3deg)) scale(1.06, 0.95);
-  }
-  80% {
-    transform: translateX(calc(var(--dir) * -6%)) rotate(calc(var(--dir) * -3deg));
-  }
-  87% {
-    transform: translateX(calc(var(--dir) * 2%));
-  }
-  93%,
-  100% {
-    transform: none;
+@media (prefers-reduced-motion: reduce) {
+  .hd__unitStrip {
+    animation: none;
   }
 }
-/* The back troops taunt: a crouch, a hop with a stretch, a squashed landing. */
-.hd__unit--s1 .hd__unitAct {
-  animation: hd-taunt 6400ms ease-in-out 1200ms infinite;
-}
-.hd__unit--foe.hd__unit--s1 .hd__unitAct {
-  animation-delay: -2000ms;
-}
-@keyframes hd-taunt {
-  0%,
-  18% {
-    transform: none;
-  }
-  22% {
-    transform: scale(1.08, 0.9);
-  }
-  28% {
-    transform: translateY(-16%) scale(0.94, 1.08);
-  }
-  31% {
-    transform: translateY(-19%) rotate(calc(var(--dir) * 6deg));
-  }
-  36% {
-    transform: scale(1.1, 0.88);
-  }
-  41%,
-  100% {
-    transform: none;
-  }
+/* The still flag poles (Diorama.tsx StillPole): the lane dressing's geometry over the bases, as the live
+   layer draws its poles. */
+.hd__poles {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
 }
 /* ---- the live island (queue item 37): the troops' real clips and the lane's cloth flags on a Pixi layer ---- */
 /* The layer floats with the island (it sits in .hd__bob), over the bases and under the search fog. It fades
-   in over the still troops and flags, which step aside (and stop their CSS loops) while it draws; if it ever
-   stops, they are back at once. */
+   in over the still troops and flags, which match it in size and place (review M S3) and stay fully opaque
+   under it until the fade is done, so the hand-over never dips; if it ever stops (a lost context), they are
+   back at once. */
 .hd__live {
   position: absolute;
   inset: 0;
@@ -358,51 +260,12 @@
 .hd.is-live .hd__live {
   opacity: 1;
 }
-.hd__unit,
-.hd-still {
-  transition: opacity var(--ui-dur-small) var(--ui-ease-standard);
-}
-.hd.is-live :is(.hd__unit, .hd__clash, .hd-still) {
+.hd.is-live :is(.hd__unit, .hd-still) {
   opacity: 0;
+  transition: opacity 0s linear var(--ui-dur-small);
 }
-.hd.is-live :is(.hd__unitAct, .hd__unitBody, .hd__clash, .hd-still .hd-banner) {
-  animation: none;
-}
-
-/* The spark where the front pair meets, on the lunge's beat. */
-.hd__clash {
-  position: absolute;
-  z-index: 4;
-  left: 50%;
-  bottom: 41%;
-  width: 9%;
-  aspect-ratio: 1;
-  margin-left: -4.5%;
-  border-radius: 50%;
-  background: radial-gradient(circle, #fff 0 14%, #ffe39a 26%, rgba(255, 180, 60, 0.55) 46%, rgba(255, 160, 40, 0) 70%);
-  opacity: 0;
-  pointer-events: none;
-}
-.hd.has-units .hd__clash {
-  animation: hd-clash-spark 6400ms ease-out 1200ms infinite;
-}
-@keyframes hd-clash-spark {
-  0%,
-  68% {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-  70% {
-    opacity: 1;
-    transform: scale(1.15) rotate(20deg);
-  }
-  78% {
-    opacity: 0;
-    transform: scale(1.7) rotate(45deg);
-  }
-  100% {
-    opacity: 0;
-  }
+.hd.is-live .hd__unitStrip {
+  animation-play-state: paused;
 }
 /* With troops in the lane the crossed-swords marker would sit between them: it only flares on launch. */
 .hd.has-units .hd-clash {
@@ -411,6 +274,7 @@
 .hd.has-units.is-launching .hd-clash {
   opacity: 1;
 }
+
 /* The launch (MR-15): the island leans in and the clash flares, then VS. */
 .hd.is-launching .hd__float {
   transform: translateX(-50%) scale(1.08);
@@ -476,13 +340,6 @@
   transform-box: fill-box;
   transform-origin: center;
   animation: wp-puff 4200ms linear infinite;
-}
-/* the still island's pole flags (until the live layer draws them, or for good without it); the landmarks'
-   pennants ripple with the lane's cloth (SvgPennant) */
-.hd-banner {
-  transform-box: fill-box;
-  transform-origin: 0 50%;
-  animation: wp-flag 1300ms ease-in-out infinite;
 }
 .hd-sway {
   transform-box: fill-box;
@@ -1254,7 +1111,7 @@
 }
 
 /* ---- reduce motion: ambient loops still; entrances become fades (U14) ---- */
-.ui-root[data-reduce-motion='true'] .hub :is(.hd__bob, .hd__unitAct, .hd__unitBody, .hd__clash, .hd__art, .hd__base, .hd__base img, .hd-clash, .hd__spark, .hd-smoke__puff, .hd-banner, .hd-sway, .hd-shimmer, .hd-ship, .hd-glow, .hd-bubble, .hd-snow circle, .hd-neon, .hd-blink, .hd-twinkle, .hd-orbit, .hd-rift, .hd-windows rect, .hd-chunk, .hd-root, .hd-win, .home-scene__rays, .hub-slot__drum, .hub-camp__node, .hub-camp__flag::after, .hub-road__shine, .home-scene__layer, .home-scene__motes i) {
+.ui-root[data-reduce-motion='true'] .hub :is(.hd__bob, .hd__unitStrip, .hd__art, .hd__base, .hd__base img, .hd-clash, .hd__spark, .hd-smoke__puff, .hd-sway, .hd-shimmer, .hd-ship, .hd-glow, .hd-bubble, .hd-snow circle, .hd-neon, .hd-blink, .hd-twinkle, .hd-orbit, .hd-rift, .hd-windows rect, .hd-chunk, .hd-root, .hd-win, .home-scene__rays, .hub-slot__drum, .hub-camp__node, .hub-camp__flag::after, .hub-road__shine, .home-scene__layer, .home-scene__motes i) {
   animation: none !important;
 }
 .ui-root[data-reduce-motion='true'] .hub :is(.hd__float, .hub-camp, .hub-slots, .hub-stage__caption, .hub-plate) {

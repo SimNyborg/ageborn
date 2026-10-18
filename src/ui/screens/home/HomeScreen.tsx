@@ -68,6 +68,19 @@ import { FriendSoonChip, ModeSwitcher, type SwitcherMode } from './switcher';
 /** The ranked Ladder's search (owner decision 2026-10-07): the prepared match it reveals, and its phase. */
 type Ranked = { phase: 'idle' } | { phase: Exclude<RankedPhase, 'idle'>; req: MatchRequest; opponent: OpponentSpec; frozen?: boolean; elapsedMs?: number };
 
+/**
+ * A Cancel this soon after the search began is the same press landing twice (a tap held up by a long task
+ * arrives together with the next one), never a decision: Battle ignores it (review M S7). Esc and back
+ * still cancel at once.
+ */
+const CANCEL_GRACE_MS = 600;
+
+/** Now on the page clock events are stamped with (`Event.timeStamp`). */
+const pageNow = (): number => (typeof performance !== 'undefined' ? performance.now() : 0);
+
+/** An event's own time on the page clock (an engine that stamps events in epoch ms: the time it is handled). */
+const stampOf = (e: { timeStamp?: number }): number => (typeof e.timeStamp === 'number' && e.timeStamp > 0 && e.timeStamp < 1e11 ? e.timeStamp : pageNow());
+
 const UNLOCK_TAB: Readonly<Partial<Record<HomeUnlock, TabId>>> = { army: 'army', capsules: 'capsules', customize: 'customize', progress: 'progress' };
 
 /** The onboarding match Battle starts while it is due (A8): step 0 is match 1, step 2 is match 2. */
@@ -123,6 +136,8 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
   rankedRef.current = ranked;
   const rankedBusy = ranked.phase !== 'idle';
   const rankedElapsed = useElapsed(ranked.phase === 'searching' && !ranked.frozen, ranked.phase === 'idle' ? 0 : (ranked.elapsedMs ?? 0));
+  /** When the search began, on the page clock (the starting tap's own time stamp). */
+  const searchAt = useRef(Number.NEGATIVE_INFINITY);
   const leaving = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => {
     if (leaving.current) clearTimeout(leaving.current);
@@ -255,10 +270,11 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
    * Battle on the ranked Ladder: the War Plan is checked and the match prepared now (the opponent is
    * fixed by the match seed), then the plate searches until it "finds" that opponent.
    */
-  function startSearch() {
+  function startSearch(at: number = pageNow()) {
     const req: MatchRequest = { mode: 'ladder', format: ladderFormat(s, content), online: true };
     const opponent = starter.prepare(req);
     if (!opponent) return;
+    searchAt.current = at;
     setUnlock(null);
     askFullscreen();
     kit.sound?.('ui_click');
@@ -330,7 +346,8 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
     if (again) startSearch();
   }, []);
 
-  function battle() {
+  /** Battle (or Cancel while searching); `at` is the press's own time stamp on the page clock. */
+  function battle(at: number = pageNow()) {
     if (onlineMode) {
       if (onlineMode === 'friend') {
         setRoom('host');
@@ -344,9 +361,10 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
       return;
     }
     if (rankedOn) {
-      if (ranked.phase === 'searching') cancelSearch();
-      else if (ranked.phase === 'found') toVs();
-      else startSearch();
+      if (ranked.phase === 'searching') {
+        if (at - searchAt.current >= CANCEL_GRACE_MS) cancelSearch();
+      } else if (ranked.phase === 'found') toVs();
+      else startSearch(at);
       return;
     }
     launch(training ? { mode: 'tutorial', match: training } : battleRequest(s, content, s.settings.defaultSpeed));
@@ -367,7 +385,7 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
       const tag = (e.target as HTMLElement | null)?.tagName ?? '';
       if (/^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test(tag)) return;
       e.preventDefault();
-      battle();
+      battle(stampOf(e));
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
@@ -401,18 +419,21 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
   const scene = useMemo(() => <ArenaScene arena={arena.id} />, [arena.id]);
   const overlay = modes || !!room || vs;
   // The live island (queue item 37): your troops with their skins, the found player's flags; it pauses under
-  // a sheet and lets go of its WebGL context when a match starts; Reduce motion keeps the still island.
+  // a sheet and lets go of its WebGL context when a match starts; Reduce motion keeps the still island. It is
+  // silent (orchestrator decision 2026-10-18), and a cold start waits while a search or a launch runs.
   const live: DioramaLive = {
     paused: covered || overlay,
     leaving: launching,
     reduce: kit.reduceMotion,
     lite: s.settings.graphics === 'lite',
+    auto: s.settings.graphics === 'auto',
+    hold: rankedBusy || searching || launching,
     teamPreset: s.settings.teamPreset,
     skins: s.skins.equipped,
     foeFlags: found ? { baseFlag: found.side.look?.baseFlag ?? null, nationalFlag: found.side.look?.nationalFlag ?? null } : null,
-    // the search's opponent is fixed when it starts: their troops load meanwhile and drop in on the found beat
+    // the search's opponent is fixed when it starts: their troops load and stand by meanwhile and drop in on
+    // the found beat
     foeNext: ranked.phase === 'searching' ? frontline(ranked.opponent.side.loadouts[age]) : [],
-    ...(kit.sound ? { sound: kit.sound } : {}),
   };
   const unavailableKey = ostate === 'noConnection' ? 'ui.online.noConnection' : ostate === 'full' ? 'ui.online.full' : 'ui.online.update';
 
@@ -552,7 +573,7 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
             icon={cancel ? null : <SwordsIcon size={36} hero />}
             onClick={(e) => {
               e.stopPropagation();
-              battle();
+              battle(stampOf(e));
             }}
           >
             {battleLabel}
