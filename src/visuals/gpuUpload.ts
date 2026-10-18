@@ -16,6 +16,15 @@
  * sheet it leases is kept (`keep`): never released while kept, and decoded again first when it already
  * was (2026-10-09: the forced upgrade's stage drew no Bonker after a battle at DPR 2).
  *
+ * Big uploads are spaced out (review S1, 2026-10-18): uploading a 17-66 MB sheet takes tens of ms of main
+ * thread (37-68 ms on a software-rendered desktop, plausibly as much on an iPhone, where WebKit copies the
+ * bitmap to its GPU process), and a big collection's evolve queued five or more of them in a row. A sheet over
+ * `BIG_UPLOAD_BYTES` goes at most every `BIG_UPLOAD_GAP_MS`, and none while the battle asks for quiet
+ * (`quietFor`: an evolve, from its Ascension until a while after its age-up); small ones keep going every frame.
+ * A sheet a view starts to draw before its turn goes at once (`flush`): Pixi would upload it on that frame
+ * anyway, and so its decoded copy does not stay next to the GPU copy. Waiting never leaves a unit without its
+ * picture.
+ *
  * Presentation only: nothing here reaches the sim.
  */
 import type { TextureSource } from 'pixi.js';
@@ -40,7 +49,18 @@ function isOpenBitmap(r: unknown): r is ImageBitmap {
 /** Upload time one frame may spend before the rest waits for the next frame (ms). */
 const UPLOAD_BUDGET_MS = 6;
 
+/** A sheet whose decoded copy is larger than this (bytes; a 2,048 x 1,024 sheet) is a big upload. */
+export const BIG_UPLOAD_BYTES = 8_400_000;
+
+/** At most one big upload this often (ms). */
+export const BIG_UPLOAD_GAP_MS = 250;
+
 const now = (): number => (typeof performance !== 'undefined' ? performance.now() : 0);
+
+/** Decoded bytes of a texture source (RGBA). */
+function sourceBytes(s: TextureSource): number {
+  return Math.max(0, (s.pixelWidth || 0) * (s.pixelHeight || 0) * 4);
+}
 
 function nextFrame(cb: () => void): void {
   if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => cb());
@@ -67,24 +87,45 @@ export class SheetReleaser {
   /** Released sources being decoded again (`keep`, a context restore), shared by every caller. */
   private readonly reviving = new Map<TextureSource, Promise<void>>();
   private pumping = false;
+  /** No big upload before this time (the gap after the last one), nor before `quietUntil` (`quietFor`). */
+  private nextBigAt = -Infinity;
+  private quietUntil = -Infinity;
 
   private readonly schedule: (cb: () => void) => void;
   private readonly decode: (url: string) => Promise<ImageBitmap | null>;
   private readonly budgetMs: number;
+  private readonly clock: () => number;
+  private readonly bigBytes: number;
+  private readonly bigGapMs: number;
+  /** Told when a source leaves the queue (uploaded, kept, forgotten or skipped): the atlas then lets units draw it. */
+  onDequeued: ((source: TextureSource) => void) | null = null;
 
   /**
    * `schedule` runs a callback on a coming frame (default `requestAnimationFrame`), `decode` decodes an
    * image URL after a context restore, `budgetMs` is the upload time one frame may spend (tests pass 0:
-   * one sheet per frame).
+   * one sheet per frame), `clock` the time in ms (default `performance.now`), `bigBytes` and `bigGapMs` what
+   * counts as a big upload and how far apart big uploads go.
    */
   constructor(
     private readonly hooks: GpuHooks,
-    o: { schedule?: (cb: () => void) => void; decode?: (url: string) => Promise<ImageBitmap | null>; budgetMs?: number } = {},
+    o: { schedule?: (cb: () => void) => void; decode?: (url: string) => Promise<ImageBitmap | null>; budgetMs?: number; clock?: () => number; bigBytes?: number; bigGapMs?: number } = {},
   ) {
     this.schedule = o.schedule ?? nextFrame;
     this.decode = o.decode ?? decodeBitmap;
     this.budgetMs = o.budgetMs ?? UPLOAD_BUDGET_MS;
+    this.clock = o.clock ?? now;
+    this.bigBytes = o.bigBytes ?? BIG_UPLOAD_BYTES;
+    this.bigGapMs = o.bigGapMs ?? BIG_UPLOAD_GAP_MS;
     hooks.onRestored?.(() => this.restore());
+  }
+
+  /**
+   * Holds big uploads for the next `ms` (the battle's evolve moment: the camera push and the new base, where a
+   * long frame shows most); small ones go on. A sheet a view draws meanwhile is uploaded by Pixi itself.
+   */
+  quietFor(ms: number): void {
+    if (!(ms > 0)) return;
+    this.quietUntil = Math.max(this.quietUntil, this.clock() + ms);
   }
 
   /** Queues a freshly loaded sheet's source: uploaded on a coming frame, then its bitmap is closed. */
@@ -95,6 +136,29 @@ export class SheetReleaser {
       this.pumping = true;
       this.schedule(() => this.pump());
     }
+  }
+
+  /** True while a source waits for its upload (big sheets wait their turn and any quiet window). */
+  isQueued(source: TextureSource): boolean {
+    return this.queue.includes(source);
+  }
+
+  /**
+   * Uploads a queued source now, out of turn (past the gap and any quiet window): a view draws it from this frame
+   * on, and Pixi would upload it on that draw anyway. Through here its decoded copy is closed at once instead of
+   * staying next to the GPU copy until its turn (2026-10-18: in a fast-forwarded war that held both copies of
+   * the sheets drawn in a quiet window). Nothing when it is not queued.
+   */
+  flush(source: TextureSource): void {
+    const i = this.queue.indexOf(source);
+    if (i < 0) return;
+    this.queue.splice(i, 1);
+    if (!source.destroyed && isOpenBitmap(source.resource)) {
+      // the next big upload keeps its distance from this one
+      if (sourceBytes(source) > this.bigBytes) this.nextBigAt = Math.max(this.nextBigAt, this.clock() + this.bigGapMs);
+      this.release(source);
+    }
+    this.onDequeued?.(source);
   }
 
   /** Forgets a source (it is being unloaded): drops it from the queue and closes its bitmap now. */
@@ -118,7 +182,10 @@ export class SheetReleaser {
   keep(source: TextureSource): { ready: Promise<void>; release(): void } {
     this.kept.set(source, (this.kept.get(source) ?? 0) + 1);
     const i = this.queue.indexOf(source);
-    if (i >= 0) this.queue.splice(i, 1);
+    if (i >= 0) {
+      this.queue.splice(i, 1);
+      this.onDequeued?.(source);
+    }
     const ready = this.released.has(source) ? this.revive(source) : (this.reviving.get(source) ?? Promise.resolve());
     let done = false;
     return {
@@ -153,13 +220,34 @@ export class SheetReleaser {
     return this.released.has(source);
   }
 
-  /** One frame's uploads: at least one sheet, more while the frame's budget lasts (slow frames, a burst). */
+  /**
+   * One frame's uploads, in queue order, while the frame's budget lasts (at least one): a big sheet only when
+   * the gap since the last big one has passed and no quiet window holds it, and then no other big one this
+   * frame; small sheets go past a big one that waits.
+   */
   private pump(): void {
-    const t0 = now();
-    do {
-      const s = this.queue.shift();
-      if (s && !s.destroyed && isOpenBitmap(s.resource)) this.release(s);
-    } while (this.queue.length > 0 && now() - t0 < this.budgetMs);
+    const t0 = this.clock();
+    for (let i = 0; i < this.queue.length; ) {
+      const s = this.queue[i] as TextureSource;
+      if (s.destroyed || !isOpenBitmap(s.resource)) {
+        this.queue.splice(i, 1);
+        this.onDequeued?.(s);
+        continue;
+      }
+      const big = sourceBytes(s) > this.bigBytes;
+      if (big) {
+        const at = this.clock();
+        if (at < this.nextBigAt || at < this.quietUntil) {
+          i++;
+          continue;
+        }
+        this.nextBigAt = at + this.bigGapMs;
+      }
+      this.queue.splice(i, 1);
+      this.release(s);
+      this.onDequeued?.(s);
+      if (this.clock() - t0 >= this.budgetMs) break;
+    }
     if (this.queue.length > 0) this.schedule(() => this.pump());
     else this.pumping = false;
   }

@@ -3,7 +3,9 @@
  * go live on one canvas (the menus' shared WebGL app) and the still troops step aside; a ranked search keeps
  * that canvas (the found player's troops join it), and the match start lets the menus' context go at once
  * (nothing of it left on the VS screen). A lost context shows the still island until it is back (review M
- * S6). Reduce motion keeps the still island: no live layer, no canvas.
+ * S6). Reduce motion keeps the still island: no live layer, no canvas. The still troops' strips are kept on the
+ * device, so a return shows them with the island and before the live layer, without drawing them again; a
+ * skinned troop wears its skin in the still island (queue item 37 open items 1 and 2).
  */
 import { expect, test, type Page } from '@playwright/test';
 import { pastOnboarding } from './helpers';
@@ -72,6 +74,79 @@ test('a lost context shows the still island, and the island comes back once the 
   await expect.poll(() => page.locator('.hd__unit').first().evaluate((e) => getComputedStyle(e).opacity)).toBe('1');
   await page.evaluate(() => (window as unknown as { __loseExt: { restoreContext(): void } }).__loseExt.restoreContext());
   await expect(island).toHaveAttribute('data-live', 'true', { timeout: 10_000 });
+});
+
+type StillTimes = { island?: number; troops?: number; live?: number };
+const allIn = (page: Page) =>
+  page.evaluate(() => {
+    const units = document.querySelectorAll('[data-testid="hub-diorama"] .hd__unit');
+    return units.length > 0 && document.querySelectorAll('[data-testid="hub-diorama"] .hd__unit.is-in').length === units.length;
+  });
+const keptStrips = (page: Page) => page.evaluate(async () => (await (await caches.open('ageborn-strips-v1')).keys()).length);
+
+test('a return finds the still troops kept on the device: they stand with the island, before the live layer', async ({ page }) => {
+  await pastOnboarding(page);
+  await expect.poll(() => allIn(page), { timeout: 30_000 }).toBe(true);
+  const troops = await page.locator('[data-testid="hub-diorama"] .hd__unit').count();
+  // each strip is kept (the island's troops, the Home card's bearer)
+  await expect.poll(() => keptStrips(page), { timeout: 15_000 }).toBeGreaterThanOrEqual(troops);
+  const kept = await keptStrips(page);
+  // a returning player opens the app: the still troops come right with the island and before the live layer
+  await page.addInitScript(() => {
+    const w = window as unknown as { __still?: StillTimes };
+    const s: StillTimes = {};
+    w.__still = s;
+    const tick = (): void => {
+      const t = performance.now();
+      const d = document.querySelector('[data-testid="hub-diorama"]');
+      if (d && s.island === undefined) s.island = t;
+      const n = d ? d.querySelectorAll('.hd__unit').length : 0;
+      if (d && n > 0 && s.troops === undefined && d.querySelectorAll('.hd__unit.is-in').length === n) s.troops = t;
+      if (d?.getAttribute('data-live') === 'true' && s.live === undefined) s.live = t;
+      if (s.troops === undefined || s.live === undefined) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+  await page.goto('./');
+  const times = (await (
+    await page.waitForFunction(
+      () => {
+        const s = (window as unknown as { __still?: StillTimes }).__still;
+        return s && s.troops !== undefined && s.live !== undefined ? s : false;
+      },
+      null,
+      { timeout: 60_000, polling: 250 },
+    )
+  ).jsonValue()) as Required<StillTimes>;
+  expect(times.troops).toBeLessThanOrEqual(times.live);
+  expect(times.troops - times.island).toBeLessThan(3000);
+  // found, not drawn again: nothing new was kept
+  expect(await keptStrips(page)).toBe(kept);
+});
+
+test("a skinned troop wears its skin in the still island (no change of outfit when the live layer takes over)", async ({ page }) => {
+  await pastOnboarding(page);
+  await expect.poll(() => allIn(page), { timeout: 30_000 }).toBe(true);
+  const first = page.locator('[data-testid="hub-diorama"] .hd__unit--me.hd__unit--s0');
+  const card = await first.getAttribute('data-card');
+  const SKINS: Record<string, string> = { footman: 'tin_can', longbowman: 'greenwood_archer', pebbler: 'snowball_pebbler', bonker: 'pumpkin_head', sabertooth: 'fossil_sabertooth', hoplite: 'marble_hoplite' };
+  const skin = card ? SKINS[card] : undefined;
+  test.skip(!skin, `no skin listed for ${card}`);
+  const plain = await first.locator('.hd__unitStrip').evaluate((e) => getComputedStyle(e).backgroundImage);
+  await page.evaluate(
+    ({ card, skin }) => {
+      type Save = { skins: { owned: string[]; equipped: Record<string, string> } };
+      const c = (window as unknown as { __agebornDev: { controller: { save: { peek(): Save }; setSave(s: Save, o?: object): void } } }).__agebornDev.controller;
+      const s = c.save.peek();
+      c.setSave({ ...s, skins: { owned: [...new Set([...s.skins.owned, skin])], equipped: { ...s.skins.equipped, [card]: skin } } }, { immediate: true });
+    },
+    { card: card!, skin: skin! },
+  );
+  await expect(first).toHaveAttribute('data-skin', skin!, { timeout: 10_000 });
+  await expect(first).toHaveClass(/is-in/, { timeout: 20_000 });
+  const skinned = await first.locator('.hd__unitStrip').evaluate((e) => getComputedStyle(e).backgroundImage);
+  expect(skinned).toMatch(/^url\("data:image\/png/);
+  expect(skinned).not.toBe(plain);
 });
 
 test('Reduce motion keeps the still island: no live layer and no canvas', async ({ page }) => {

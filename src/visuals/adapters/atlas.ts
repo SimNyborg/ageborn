@@ -98,6 +98,9 @@ function isFortSource(source: string): boolean {
 }
 import type { BackdropRequest, BaseRequest, EffectRequest, PortraitRequest, ViewKind, ViewRequest, VisualAdapter } from './types';
 
+/** The performance clock (ms), 0 where there is none. */
+const nowMs = (): number => (typeof performance !== 'undefined' ? performance.now() : 0);
+
 /** What the adapter needs from a loaded sheet (a Pixi Spritesheet, or a fake in tests). */
 export interface AtlasData {
   animations: Readonly<Record<string, readonly Texture[]>>;
@@ -453,6 +456,7 @@ export class AtlasAdapter implements VisualAdapter {
 
   constructor(private readonly o: AtlasOptions) {
     this.releaser = o.gpu ? new SheetReleaser(o.gpu) : null;
+    if (this.releaser) this.releaser.onDequeued = (ts) => this.uploaded(ts);
     this.world = new WorldAtlas((s) => this.url(s));
     this.main = sheetSet(o.hd === true);
     this.hdOnly = sheetSet(true);
@@ -544,7 +548,40 @@ export class AtlasAdapter implements VisualAdapter {
     if (!ts) return;
     set.sources.set(source, [...(set.sources.get(source) ?? []), ts]);
     trackSource(ts);
+    if (set === this.main) this.mainSourceOf.set(ts, source);
     if (set === this.main || set === this.sd) this.releaser?.add(ts);
+  }
+
+  /** The battle set's texture sources by their sheet (`uploaded`). */
+  private readonly mainSourceOf = new WeakMap<TextureSource, string>();
+
+  /**
+   * Told when a battle sheet's HD copy is on the GPU (the provider switches the units on its 1x copy then,
+   * `VisualsArtProvider.settle`).
+   */
+  onHdUploaded: ((source: string) => void) | null = null;
+
+  /**
+   * A texture source left the releaser's queue: its sheet's HD copy may be all on the GPU now. The provider hears
+   * of it after the current task's work (a view being made can flush its sheet, `retainView`).
+   */
+  private uploaded(ts: TextureSource): void {
+    const source = this.mainSourceOf.get(ts);
+    if (source === undefined || !this.main.hd) return;
+    queueMicrotask(() => {
+      if (this.hdOnGpu(source)) this.onHdUploaded?.(source);
+    });
+  }
+
+  /**
+   * True when none of a battle sheet's HD textures (core and extras) still waits in the upload queue (review
+   * S1): until then units keep drawing its 1x copy where there is one, so no draw uploads a big sheet early and
+   * the releaser alone decides when it goes (spaced out, and never in an evolve's quiet window).
+   */
+  hdOnGpu(source: string): boolean {
+    const r = this.releaser;
+    if (!r) return true;
+    return (this.main.sources.get(source) ?? []).every((ts) => !r.isQueued(ts));
   }
 
   /**
@@ -555,6 +592,10 @@ export class AtlasAdapter implements VisualAdapter {
   private retainView(set: SheetSet, source: string): () => void {
     set.views.set(source, (set.views.get(source) ?? 0) + 1);
     this.cancelUnload(set, source);
+    // a view draws the sheet from this frame on: a core texture still waiting for its upload goes now (Pixi would
+    // upload it on the draw anyway; through the releaser its decoded copy is let go of at once)
+    const core = set === this.main || set === this.sd ? set.sources.get(source)?.[0] : undefined;
+    if (core && this.releaser?.isQueued(core)) this.releaser.flush(core);
     let done = false;
     return () => {
       if (done) return;
@@ -563,9 +604,29 @@ export class AtlasAdapter implements VisualAdapter {
       if (n > 0) set.views.set(source, n);
       else {
         set.views.delete(source);
+        if (set === this.main) this.lastDrawn.set(source, nowMs());
         if (!this.held(set, source)) this.scheduleUnload(set, source);
       }
     };
+  }
+
+  /** When the battle set's last view of each source went (`hdDrawnAt`, the memory governor's hysteresis). */
+  private readonly lastDrawn = new Map<string, number>();
+
+  /**
+   * The last time (performance clock, ms) battle views drew the HD copy of a source: now while they do, else
+   * when the last of them went; -Infinity when none ever did (or on a 1x screen). The memory governor keeps a
+   * sheet in HD for a while after its last unit left the lane (`sheetBudget.ts` `HD_HOLD_MS`).
+   */
+  hdDrawnAt(source: string): number {
+    if (!this.main.hd) return -Infinity;
+    if ((this.main.views.get(source) ?? 0) > 0) return nowMs();
+    return this.lastDrawn.get(source) ?? -Infinity;
+  }
+
+  /** True while the battle set's (HD on an HD screen) load of a source is in flight. */
+  hdLoading(source: string): boolean {
+    return this.main.hd && this.main.pending.has(source);
   }
 
   /**
@@ -743,6 +804,11 @@ export class AtlasAdapter implements VisualAdapter {
     };
   }
 
+  /** Holds the big GPU uploads of loaded sheets for `ms` (the battle's evolve moment; `SheetReleaser.quietFor`). */
+  quietUploads(ms: number): void {
+    this.releaser?.quietFor(ms);
+  }
+
   /** True when the showcase's HD copy of a source is loaded (tests). */
   hasHdCopy(source: string): boolean {
     return this.hdOnly.sheets.has(source);
@@ -765,15 +831,17 @@ export class AtlasAdapter implements VisualAdapter {
   }
 
   /**
-   * The memory governor raised a sheet back to HD (`sheetBudget.ts`): once the HD copy has loaded, every live
-   * view drawing the 1x copy switches to it (same frames and timing; the swap is not visible but for the
-   * sharper picture), so the 1x copy can unload. A view playing an attack variant whose HD extras are still
-   * on the way stays on its 1x copy until a later call. Returns how many views switched.
+   * The memory governor raised a sheet back to HD (`sheetBudget.ts`): once the HD copy has loaded with its
+   * extras sheet (attack variants B, C and the alt), every live view drawing the 1x copy switches to it (same
+   * frames and timing; the swap is not visible but for the sharper picture), so the 1x copy can unload. Until
+   * the HD extras are in, the views stay on their 1x copy, which has every variant (review N1: the guard looked
+   * at the core load, so swapped views fought with attack A only until the extras merged). A view whose
+   * playing clip the HD copy lacks (its extras failed) stays as well. Returns how many views switched.
    */
   upgradeViews(source: string): number {
     const hd = this.main.sheets.get(source);
     const views = this.sdViews.get(source);
-    if (!hd || !this.main.hd || !views || views.size === 0 || this.main.pending.has(source)) return 0;
+    if (!hd || !this.main.hd || !views || views.size === 0 || this.main.extrasPending.has(source) || !this.hdOnGpu(source)) return 0;
     let n = 0;
     for (const v of [...views]) {
       const release = this.retainView(this.main, source);
@@ -930,6 +998,8 @@ export class AtlasAdapter implements VisualAdapter {
   private drawSet(source: string): SheetSet | null {
     const main = this.main.sheets.has(source);
     const sd = this.sd.sheets.has(source);
+    // an HD copy still waiting for its upload is not drawn while the 1x copy can be (`hdOnGpu`)
+    if (main && sd && !this.hdOnGpu(source)) return this.sd;
     if (main && sd) {
       // views alone do not count here: they are what keeps a demoted HD copy alive
       const mainLeased = (this.leases.get(this.main)?.get(source) ?? 0) > 0 || this.pinned.has(source);

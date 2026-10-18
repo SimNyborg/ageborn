@@ -226,8 +226,10 @@ describe('music engine', () => {
 
     // A file stinger plays once, the battle file fades out, and the engine goes quiet at the end.
     engine.setCue('stinger.defeat', 300);
-    expect(main!.stoppedAt).not.toBeNull();
+    // the battle file plays on until the stinger's file is in, then fades out under it
+    expect(main!.stoppedAt).toBeNull();
     await new Promise((r) => setTimeout(r, 0));
+    expect(main!.stoppedAt).not.toBeNull();
     const stinger = fileSources()[2]!;
     expect(stinger.loop).toBe(false);
     run(ctx, engine, 1.5);

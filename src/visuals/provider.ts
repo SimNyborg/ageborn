@@ -8,12 +8,12 @@
 import type { ArtProvider, BackdropView, BaseDressingView, BaseView, EffectView, FortView, TurretView, UnitView, VisualDef } from '@/contracts/art';
 import type { AgeId, CardId, CosmeticKey, EffectId, Foil, Side, SideLook, SkinId, TeamPreset, VisualId } from '@/contracts/ids';
 import { parseSkinnedVisualId, skinnedVisualId } from '@/core/ids';
-import { AtlasAdapter, wantsHdSheets, type SheetLease } from './adapters/atlas';
+import { AtlasAdapter, wantsHdSheets, type AtlasData, type SheetLease } from './adapters/atlas';
 import type { GpuHooks } from './gpuUpload';
 import { isBaseSkinSource, isWorldSource, WorldAtlas, worldSourceAge } from './adapters/worldAtlas';
 import { forgetWorldSheets, renderWorldPortrait } from './adapters/worldPortrait';
 import { BASE_SKINS } from './cosmetics/baseSkins';
-import { renderSpriteStrip, stripRequest } from './adapters/spriteStrip';
+import { spriteStripArt, stripInfoUrl, stripRequest, type StripSource } from './adapters/spriteStrip';
 import { forgetPortraitStills } from './adapters/atlasPortrait';
 import { AtlasFortView } from './fortViews/atlasFortView';
 import { fortSource, type FortKindId } from './forts';
@@ -31,7 +31,7 @@ import { drawnScene, parseScene, sceneDir, sceneIdOf } from './backdrops/scenes'
 import { groundImageUrl } from './adapters/procedural/backdropView';
 import { puppetById } from './library';
 import { MANIFEST, PROCEDURAL_MANIFEST, type VisualManifest } from './manifest';
-import { planSheetDensities, plannedBytes, SHEET_RANK, UNIT_SHEET_BUDGET_BYTES, unitSheetBytes, UNKNOWN_SHEET_BYTES, type SheetDensity, type SheetWant } from './sheetBudget';
+import { DEMOTE_CONFIRM_MS, HD_HOLD_MS, holdBackNewHd, planSheetDensities, plannedBytes, SHEET_RANK, UNIT_SHEET_BUDGET_BYTES, unitSheetBytes, UNKNOWN_SHEET_BYTES, type SheetDensity, type SheetWant } from './sheetBudget';
 import { SKIN_PUPPETS } from './skins';
 import { STYLE } from './style';
 
@@ -74,6 +74,20 @@ export interface HeldVisual {
    * next age's); the memory governor gives HD by it. Default: the current age's deck.
    */
   priority?: number;
+  /**
+   * Nothing draws it before it is held again without this (the next age's deck before its side's Ascension): the
+   * governor loads it only where its HD copy fits, else not yet (`sheetBudget.ts` `optional`).
+   */
+  optional?: boolean;
+  /**
+   * Its side is leaving its age (or has left it): on its 1x copy it stays there (`sheetBudget.ts` `noRaise`).
+   */
+  noRaise?: boolean;
+  /**
+   * Nothing draws it for a while yet (the next age's deck during its side's hand-over): its load may wait while the
+   * governor frees memory (`sheetBudget.ts` `canWait`).
+   */
+  canWait?: boolean;
 }
 
 /**
@@ -87,8 +101,29 @@ export interface ArtHold {
   release(): void;
 }
 
+/**
+ * What a hold wants of a unit sheet: its best rank, whether it may go without a copy (`HeldVisual.optional`), wait
+ * for one (`canWait`; an optional sheet can) and whether it stays on its 1x copy (`noRaise`); each only when every
+ * holder of the sheet says so.
+ */
+interface HoldWant {
+  rank: number;
+  optional: boolean;
+  canWait: boolean;
+  noRaise: boolean;
+}
+
+/** Two wants of one sheet as one (best rank; optional, canWait and noRaise only when both are). */
+function mergeWant(had: HoldWant | undefined, w: HoldWant): HoldWant {
+  if (!had) return w;
+  return { rank: Math.min(had.rank, w.rank), optional: had.optional && w.optional, canWait: had.canWait && w.canWait, noRaise: had.noRaise && w.noRaise };
+}
+
 /** How long VS's warm-up keeps a match's opening sheets (the battle's own hold takes over long before). */
 export const PREFETCH_HOLD_MS = 30_000;
+
+/** While new HD loads wait for copies a plan is leaving (`holdBackNewHd`), the governor plans again this often (ms) at least. */
+const HOLD_BACK_RECHECK_MS = 500;
 
 /**
  * Atlas bake scale for a screen (px per lu at DPR 1): the battle camera's world scale (DESIGN A17.7:
@@ -159,6 +194,8 @@ export class VisualsArtProvider implements ArtProvider {
       lazyUnits: o.unitSheets === 'match',
       ...(o.gpu ? { gpu: o.gpu } : {}),
     });
+    // a raised sheet's views switch to HD once its HD copy is on the GPU (`settle`)
+    this.atlas.onHdUploaded = (source) => this.settle(source);
     this.adapters = { placeholder: this.placeholder, procedural: this.procedural, atlas: this.atlas, spine: new SpineAdapter() };
     this.fortHd = this.quality !== 'lite' && wantsHdSheets(world, o.hdDpr ?? rawDpr);
     const base = (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? '/';
@@ -299,10 +336,17 @@ export class VisualsArtProvider implements ArtProvider {
     const src = def.kind === 'atlas' && fortSource(def.source) ? def.source : null;
     const age = src ? (fortSource(src)?.age ?? null) : null;
     // the tower crew's unit sheet stays while this fort draws it (G7: never unloaded under a live view), and
-    // so does the fort's own sheet (a battle lets go of a passed age's forts, `releaseAges`)
-    let crewHeld: (() => void) | null = null;
+    // so does the fort's own sheet (a battle lets go of a passed age's forts, `releaseAges`). The crew draws
+    // the best copy in: one that started on the governor's 1x copy moves to HD once that is in, and lets go
+    // of its 1x copy (review N4).
+    let crew: { sheet: AtlasData; release: () => void } | null = null;
     const url = src && (this.force === null || this.force === 'atlas') ? this.fortSheetUrl(src) : null;
     const fortHeld = url ? this.forts.retain(url) : null;
+    // a fort placed before its sheet is in draws a code stand-in until it lands (counted for the e2e budget)
+    if (url && !this.forts.get(url)) {
+      this.fallbacks.forts++;
+      this.fallbacks.lastWorld = url;
+    }
     return new AtlasFortView({
       def,
       side: o.side,
@@ -316,11 +360,16 @@ export class VisualsArtProvider implements ArtProvider {
       crewSheet: (visualId) => {
         const c = this.resolve(visualId)?.def;
         const sheet = c && c.kind === 'atlas' ? this.atlas.sheetFor(c.source) : undefined;
-        if (sheet && c && !crewHeld) crewHeld = this.atlas.holdSheet(c.source);
-        return sheet;
+        if (sheet && c && crew?.sheet !== sheet) {
+          const prev = crew;
+          crew = { sheet, release: this.atlas.holdSheet(c.source) };
+          prev?.release();
+        }
+        return sheet ?? crew?.sheet;
       },
       onDestroy: () => {
-        crewHeld?.();
+        crew?.release();
+        crew = null;
         fortHeld?.();
       },
     });
@@ -328,7 +377,8 @@ export class VisualsArtProvider implements ArtProvider {
 
   /**
    * A battle's ages moved on (an evolve, 2026-10-18; duck-typed for the battle view): lets go of the turret
-   * and fort sheets of every age outside `keep` (each side's current and next age) that no live view draws,
+   * and fort sheets of every age outside `keep` (every age from the lagging side's current one on: only ages
+   * both sides have left go, review B1; render's `keptAges`) that no live view draws,
    * so a Long War does not keep every age's turrets and forts decoded. Bases stay (an evolving base still
    * draws its old age while it morphs; they are small). An age asked for again loads again. Returns how many
    * sheets went.
@@ -353,14 +403,14 @@ export class VisualsArtProvider implements ArtProvider {
    * `sheetBudget`. A skin drawn by the procedural tier bakes its parts when a hold first asks for it.
    */
   holdArt(): ArtHold {
-    const wants = new Map<string, number>();
+    const wants = new Map<string, HoldWant>();
     let live = true;
     let last: readonly HeldVisual[] = [];
     const sheetsOn = this.force === null || this.force === 'atlas';
     const unitSource = (def: VisualDef | undefined): string | null =>
       def && def.kind === 'atlas' && !isWorldSource(def.source) && !fortSource(def.source) ? def.source : null;
-    const want = (src: string, rank: number): void => {
-      wants.set(src, Math.min(wants.get(src) ?? Infinity, rank));
+    const want = (src: string, rank: number, v: HeldVisual): void => {
+      wants.set(src, mergeWant(wants.get(src), { rank, optional: v.optional === true, canWait: v.optional === true || v.canWait === true, noRaise: v.noRaise === true }));
     };
     const set = (visuals: readonly HeldVisual[]): Promise<void> => {
       if (!live) return Promise.resolve();
@@ -376,7 +426,7 @@ export class VisualsArtProvider implements ArtProvider {
         if (!def || def.kind !== 'atlas') continue;
         const unit = unitSource(def);
         if (unit) {
-          want(unit, rank);
+          want(unit, rank, v);
           continue;
         }
         if (!fortSource(def.source)) continue;
@@ -394,7 +444,7 @@ export class VisualsArtProvider implements ArtProvider {
         }
         const crew = (sheet.meta as { crew?: { visualId?: string } }).crew?.visualId;
         const src = crew ? unitSource(this.resolve(crew)?.def) : null;
-        if (src) want(src, rank);
+        if (src) want(src, rank, v);
       }
       this.holdWants.add(wants);
       // a sheet the match lets go of (an age both sides left, a unit gone from the field) unloads at once,
@@ -402,8 +452,9 @@ export class VisualsArtProvider implements ArtProvider {
       // next age's, the largest part of a late-game peak)
       this.replan();
       for (const src of wants.keys()) {
-        if (this.atlas.canDrawSource(src)) continue;
-        const l = this.plan.get(src) === 'sd' ? this.sdLeases.get(src) : this.hdLeases.get(src);
+        const d = this.plan.get(src);
+        if (d === 'none' || this.atlas.canDrawSource(src)) continue;
+        const l = d === 'sd' ? this.sdLeases.get(src) : this.hdLeases.get(src);
         if (l) waits.push(l.core);
       }
       return Promise.all(waits).then(
@@ -419,13 +470,17 @@ export class VisualsArtProvider implements ArtProvider {
         wants.clear();
         this.holdWants.delete(wants);
         this.replan();
+        if (this.holdWants.size === 0 && this.recheck) {
+          clearTimeout(this.recheck.timer);
+          this.recheck = null;
+        }
       },
     };
   }
 
-  /** Every live hold's unit sheets (source → best rank), merged into one plan by `replan`. */
-  private readonly holdWants = new Set<Map<string, number>>();
-  /** The governor's plan: each held unit sheet's copy (HD or 1x). */
+  /** Every live hold's unit sheets (source → best rank, optional, canWait, noRaise), merged into one plan by `replan`. */
+  private readonly holdWants = new Set<Map<string, HoldWant>>();
+  /** The governor's plan: each held unit sheet's copy (HD, 1x, or none yet for an optional sheet). */
   private plan = new Map<string, SheetDensity>();
   /** The leases behind the plan: HD copies (the battle's set) and, on an HD screen, 1x copies. */
   private readonly hdLeases = new Map<string, SheetLease>();
@@ -435,19 +490,33 @@ export class VisualsArtProvider implements ArtProvider {
    * HD screen; a 1x screen has one copy of each sheet.
    */
   sheetBudget = UNIT_SHEET_BUDGET_BYTES;
-  /** The last plan, for the dev memory hook: sheets planned HD and 1x and the planned bytes. */
-  private planStats = { hd: 0, sd: 0, bytes: 0, moves: 0 };
+  /**
+   * The last plan, for the dev memory hook: sheets planned HD and 1x, the planned bytes, how many times a sheet
+   * changed copy (`moves`) and how many copies the plan loaded (`loads`, HD and 1x; review N6: every move is a
+   * load and an upload, and so is every sheet that comes in).
+   */
+  private planStats = { hd: 0, sd: 0, none: 0, bytes: 0, moves: 0, loadsHd: 0, loadsSd: 0 };
+  /** The performance clock (ms) of the governor's hysteresis and step-down debounce; tests replace it. */
+  clock: () => number = () => (typeof performance !== 'undefined' ? performance.now() : 0);
+  /** When each planned sheet last got HD (raised with its HD copy in, or its HD copy landed; `HD_HOLD_MS`). */
+  private readonly hdAt = new Map<string, number>();
+  /** When the plan first wanted each sheet now in HD at 1x (the step down waits `DEMOTE_CONFIRM_MS`). */
+  private readonly demoteSince = new Map<string, number>();
+  /** A later re-plan: a step down to confirm, or a hysteresis that runs out while a sheet waits for HD. */
+  private recheck: { at: number; timer: ReturnType<typeof setTimeout> } | null = null;
 
   /**
    * The governor's plan now (the dev memory hook, tests): sheets planned HD and 1x, planned bytes, the budget,
-   * and how many times a sheet changed copy since the provider was made (`moves`).
+   * how many times a sheet changed copy since the provider was made (`moves`) and how many copies it loaded.
    */
-  sheetPlan(): { hd: number; sd: number; plannedBytes: number; budgetBytes: number; hdScreen: boolean; moves: number; sdSources: string[] } {
+  sheetPlan(): { hd: number; sd: number; none: number; plannedBytes: number; budgetBytes: number; hdScreen: boolean; moves: number; loads: { hd: number; sd: number }; sdSources: string[] } {
     return {
       hd: this.planStats.hd,
       sd: this.planStats.sd,
+      none: this.planStats.none,
       plannedBytes: this.planStats.bytes,
       moves: this.planStats.moves,
+      loads: { hd: this.planStats.loadsHd, sd: this.planStats.loadsSd },
       budgetBytes: this.sheetBudget,
       hdScreen: this.atlas.hdScreen,
       sdSources: [...this.plan].filter(([, d]) => d === 'sd').map(([s]) => s).sort(),
@@ -458,25 +527,93 @@ export class VisualsArtProvider implements ArtProvider {
    * Plans every held unit sheet's copy over all live holds (`sheetBudget.ts`) and leases accordingly. A sheet
    * moving between copies keeps the copy it has until the other can draw (`settle`), so no unit ever goes
    * without its art; a sheet no hold wants is let go of (it unloads once no view draws it).
+   *
+   * Copy changes cost loads and GPU uploads, so they are damped (review S1): an HD load in flight finishes, an
+   * HD copy that landed or was drawn within `HD_HOLD_MS` keeps HD while the budget allows, and a step down
+   * (to 1x, or to no copy for an optional sheet) happens only when a plan `DEMOTE_CONFIRM_MS` after the first one
+   * that wanted it still does (a re-plan is scheduled for it). An optional sheet without room for HD gets no
+   * copy, so the next age never loads 1x first and HD a moment later.
    */
   private replan(): void {
-    const merged = new Map<string, number>();
-    for (const w of this.holdWants) for (const [s, r] of w) merged.set(s, Math.min(merged.get(s) ?? Infinity, r));
-    const list: SheetWant[] = [];
-    for (const [source, rank] of merged) {
-      const b = unitSheetBytes(source) ?? UNKNOWN_SHEET_BYTES;
-      list.push({ source, rank, hdBytes: b.hd, sdBytes: b.sd, hdResident: this.atlas.hasSheet(source), hdDrawn: this.atlas.hdDrawn(source), sdResident: this.atlas.hasSdSheet(source) });
+    const now = this.clock();
+    const merged = new Map<string, HoldWant>();
+    for (const w of this.holdWants) {
+      for (const [s, h] of w) {
+        const had = merged.get(s);
+        merged.set(s, mergeWant(had, h));
+      }
     }
-    const plan: Map<string, SheetDensity> = this.atlas.hdScreen ? planSheetDensities(list, this.sheetBudget) : new Map(list.map((w) => [w.source, 'hd' as const]));
+    const list: SheetWant[] = [];
+    const lastHd = new Map<string, number>();
+    for (const [source, { rank, optional, canWait, noRaise }] of merged) {
+      const b = unitSheetBytes(source) ?? UNKNOWN_SHEET_BYTES;
+      const hdResident = this.atlas.hasSheet(source);
+      const last = Math.max(this.hdAt.get(source) ?? -Infinity, this.atlas.hdDrawnAt(source));
+      lastHd.set(source, last);
+      list.push({
+        source,
+        rank,
+        hdBytes: b.hd,
+        sdBytes: b.sd,
+        hdResident,
+        hdDrawn: this.atlas.hdDrawn(source),
+        // an HD load the plan started finishes: dropping it mid-way still decodes and uploads it
+        hdKeep: this.hdLeases.has(source) && this.atlas.hdLoading(source),
+        hdRecent: hdResident && now - last < HD_HOLD_MS,
+        sdResident: this.atlas.hasSdSheet(source),
+        ...(optional ? { optional: true } : {}),
+        ...(canWait ? { canWait: true } : {}),
+        ...(noRaise ? { noRaise: true } : {}),
+      });
+    }
+    let plan: Map<string, SheetDensity>;
+    let recheckAt = Infinity;
+    if (!this.atlas.hdScreen) plan = new Map(list.map((w) => [w.source, 'hd' as const]));
+    else {
+      plan = planSheetDensities(list, this.sheetBudget);
+      // a sheet back at HD in this plan forgets an earlier step down
+      for (const w of list) if (!this.hdLeases.has(w.source) || plan.get(w.source) === 'hd') this.demoteSince.delete(w.source);
+      // a step down from HD waits for a plan DEMOTE_CONFIRM_MS later that still wants it; keeping a sheet in HD
+      // meanwhile may push another HD sheet down, which then waits as well
+      for (let pass = 0; pass <= list.length; pass++) {
+        let kept = false;
+        for (const w of list) {
+          if (w.hdKeep || plan.get(w.source) === 'hd' || !this.hdLeases.has(w.source)) continue;
+          const since = this.demoteSince.get(w.source) ?? now;
+          this.demoteSince.set(w.source, since);
+          if (now - since >= DEMOTE_CONFIRM_MS) continue;
+          w.hdKeep = true;
+          kept = true;
+          recheckAt = Math.min(recheckAt, since + DEMOTE_CONFIRM_MS);
+        }
+        if (!kept) break;
+        plan = planSheetDensities(list, this.sheetBudget);
+      }
+      // a sheet left at 1x (or none) while a recent HD copy holds the room is planned again when that ends
+      if ([...plan.values()].some((d) => d !== 'hd')) {
+        for (const w of list) if (w.hdRecent && plan.get(w.source) === 'hd') recheckAt = Math.min(recheckAt, (lastHd.get(w.source) ?? now) + HD_HOLD_MS);
+      }
+      // new HD copies wait while copies the plan is leaving still take their memory (an HD copy goes only once its
+      // 1x copy is in); a plan once those have gone lets them in (`settle` plans again then)
+      const settling = [...this.demoteSince.keys()].some((s) => this.hdLeases.has(s));
+      const isNew = (s: string, d: 'hd' | 'sd'): boolean => !(d === 'hd' ? this.hdLeases : this.sdLeases).has(s);
+      if (holdBackNewHd(list, plan, this.sheetBudget, isNew, settling).length > 0) recheckAt = Math.min(recheckAt, now + HOLD_BACK_RECHECK_MS);
+    }
+    for (const s of [...this.demoteSince.keys()]) if (!merged.has(s)) this.demoteSince.delete(s);
     for (const [source, d] of plan) {
       const was = this.plan.get(source);
       if (was && was !== d) this.planStats.moves++;
     }
     this.plan = plan;
     let hd = 0;
-    for (const d of plan.values()) if (d === 'hd') hd++;
-    this.planStats = { hd, sd: plan.size - hd, bytes: plannedBytes(list, plan), moves: this.planStats.moves };
+    let none = 0;
+    for (const d of plan.values()) {
+      if (d === 'hd') hd++;
+      else if (d === 'none') none++;
+    }
+    this.planStats = { ...this.planStats, hd, sd: plan.size - hd - none, none, bytes: plannedBytes(list, plan) };
     for (const [source, d] of plan) {
+      if (d === 'none') continue;
       const leases = d === 'hd' ? this.hdLeases : this.sdLeases;
       if (leases.has(source)) {
         this.settle(source);
@@ -484,37 +621,73 @@ export class VisualsArtProvider implements ArtProvider {
       }
       const l = this.atlas.lease(source, d === 'hd' ? { linger: 0 } : { linger: 0, density: 'sd' });
       leases.set(source, l);
+      if (d === 'hd') {
+        this.planStats.loadsHd++;
+        // raised to HD with its HD copy already in (kept by views): it got HD now
+        if (this.atlas.hasSheet(source)) this.hdAt.set(source, now);
+      } else this.planStats.loadsSd++;
       // settles once the core sheet can draw (a view playing an attack variant whose extras are still on the
       // way keeps its 1x copy until a later settle); HD again once its extras are in
-      void l.core.then(() => this.settle(source));
+      void l.core.then(() => {
+        if (d === 'hd' && this.hdLeases.get(source) === l && this.atlas.hasSheet(source)) this.hdAt.set(source, this.clock());
+        this.settle(source);
+      });
       if (d === 'hd') void l.ready.then(() => this.settle(source));
     }
+    // a sheet no hold wants, or an optional one planned without a copy, lets go of its leases (it unloads once no
+    // view draws it)
     for (const leases of [this.hdLeases, this.sdLeases]) {
       for (const [source, l] of [...leases]) {
-        if (plan.has(source)) continue;
+        const d = plan.get(source);
+        if (d !== undefined && d !== 'none') continue;
         l.release();
         leases.delete(source);
       }
     }
+    for (const s of [...this.hdAt.keys()]) if (!plan.has(s)) this.hdAt.delete(s);
+    this.scheduleRecheck(recheckAt);
+  }
+
+  /** Re-plans at `at` (performance ms) unless a re-plan is due sooner; nothing when no hold is live. */
+  private scheduleRecheck(at: number): void {
+    if (!Number.isFinite(at) || this.holdWants.size === 0) return;
+    if (this.recheck && this.recheck.at <= at) return;
+    if (this.recheck) clearTimeout(this.recheck.timer);
+    const timer = setTimeout(
+      () => {
+        if (this.recheck?.timer !== timer) return;
+        this.recheck = null;
+        this.replan();
+      },
+      Math.max(0, at - this.clock()) + 1,
+    );
+    this.recheck = { at, timer };
   }
 
   /**
    * A sheet's planned copy can draw: the other copy's lease ends. Raised to HD, the views on its 1x copy
-   * switch over first (`AtlasAdapter.upgradeViews`); lowered to 1x, the HD copy stays while views draw it.
-   * A copy that failed to load keeps the other one.
+   * switch over first (`AtlasAdapter.upgradeViews`), once the HD copy is on the GPU (review S1: the releaser
+   * spaces big uploads out and holds them through an evolve; units stay on the 1x copy meanwhile, so no draw
+   * uploads it early); lowered to 1x, the HD copy stays while views draw it. A copy that failed to load keeps
+   * the other one. A copy let go of plans again soon, for the HD loads waiting for its memory.
    */
   private settle(source: string): void {
     const d = this.plan.get(source);
     const hd = this.hdLeases.get(source);
     const sd = this.sdLeases.get(source);
-    if (d === 'hd' && hd && this.atlas.hasSheet(source)) {
+    if (d === 'hd' && hd && this.atlas.hasSheet(source) && (!sd || this.atlas.hdOnGpu(source))) {
       // (also views left on a 1x copy whose lease already ended)
       this.atlas.upgradeViews(source);
-      sd?.release();
-      this.sdLeases.delete(source);
+      if (sd) {
+        sd.release();
+        this.sdLeases.delete(source);
+        // the memory it held may let a waiting HD load in (`holdBackNewHd`)
+        this.scheduleRecheck(this.clock());
+      }
     } else if (d === 'sd' && sd && hd && this.atlas.hasSdSheet(source)) {
       hd.release();
       this.hdLeases.delete(source);
+      this.scheduleRecheck(this.clock());
     }
   }
 
@@ -609,15 +782,20 @@ export class VisualsArtProvider implements ArtProvider {
     if (what === 'unit') {
       this.fallbacks.units++;
       this.fallbacks.last = key;
+    } else if (what === 'turret' || what === 'base') {
+      this.fallbacks[what === 'turret' ? 'turrets' : 'bases']++;
+      this.fallbacks.lastWorld = key;
     }
     return { adapter: this.procedural, def: proc };
   }
 
   /**
-   * Units drawn with their fallback because their sheet was not in yet (G7: a battle's hold loads the
-   * decks ahead, so in play this stays 0; the dev memory hook and the e2e budget read it).
+   * Views drawn with their stand-in because their sheet was not in yet: units (G7: a battle's hold loads the
+   * decks ahead, so in play this stays 0), turrets (a turret keeps its stand-in for its whole life; review B1),
+   * bases (made again from the sheet once it is in, review S2) and forts (a fort swaps its sheet in when it
+   * lands). The dev memory hook and the e2e budget read them.
    */
-  readonly fallbacks = { units: 0, last: '' };
+  readonly fallbacks = { units: 0, last: '', turrets: 0, bases: 0, forts: 0, lastWorld: '' };
 
   createTurret(o: { visualId: VisualId; skin?: SkinId; side: Side; teamPreset: TeamPreset }): TurretView {
     const r = this.resolve(o.visualId, o.skin);
@@ -696,10 +874,38 @@ export class VisualsArtProvider implements ArtProvider {
   }
 
   /**
+   * The plain base sheet of an age, for a battle opening in it (review S2, duck-typed for the battle view and
+   * VS): null when it is in (or the sheets are not drawn: a forced tier, no sheet), else a promise that settles
+   * once it has loaded or failed. A base made before its sheet is in is drawn by its procedural stand-in, and
+   * the boot loads Stone and Bronze only: a War Path window opening in Gunpowder or later showed code bases
+   * for the whole battle. VS waits for it (`prefetchMatch`), and the battle view makes its bases again once it
+   * is in.
+   */
+  baseSheetReady(age: AgeId): Promise<void> | null {
+    if (this.force !== null && this.force !== 'atlas') return null;
+    const def = this.resolve(`base.${age}`)?.def;
+    if (!def || def.kind !== 'atlas' || !isWorldSource(def.source) || this.atlas.world.get(def.source)) return null;
+    return this.atlas.world.ensure(def.source).then(
+      () => undefined,
+      () => undefined,
+    );
+  }
+
+  /**
+   * Holds the big GPU uploads of newly loaded unit sheets for `ms` (the battle view at your evolve, whose camera
+   * push and new base show a long frame most; review S1). Duck-typed; small uploads go on, and a sheet a view
+   * draws meanwhile is uploaded by Pixi on that frame anyway.
+   */
+  quietUploads(ms: number): void {
+    this.atlas.quietUploads(ms);
+  }
+
+  /**
    * Warms what a match opening in `age` shows, while VS is up (PLAN 2b/2c "prefetched during VS"; review
    * 1): each side's base skin model of that age and each half's scene of it (the classic when it has
    * none), so the battle's first frame shows the models and the Blender scenery instead of the tint and
-   * the painted layers swapping over. Duck-typed for the app (no contract change); resolves once the skin
+   * the painted layers swapping over; and the age's plain base sheet (review S2: the boot loads Stone and
+   * Bronze only). Duck-typed for the app (no contract change); resolves once the base sheet and the skin
    * models are in (the scenes stream into the backdrop textures the battle's backdrop reads).
    */
   prefetchMatch(o: {
@@ -720,6 +926,8 @@ export class VisualsArtProvider implements ArtProvider {
     this.beginMatch({ sides: o.sides.map((s) => ({ age: o.age, scene: s.scenes?.[o.age] ?? null, skin: s.skins?.[o.age] ?? null })), arena: null });
     if (this.force === null || this.force === 'procedural' || this.force === 'atlas') this.procedural.backdrops.prefetch([o.age], [], scenes);
     const waits: Promise<unknown>[] = skins.map((s) => this.prefetchBaseSkins(s));
+    const base = this.baseSheetReady(o.age);
+    if (base) waits.push(base);
     if (o.units && o.units.length > 0) {
       // the battle's own hold takes the same sheets over when it starts; this one lets go a while later
       const hold = this.holdArt();
@@ -773,6 +981,10 @@ export class VisualsArtProvider implements ArtProvider {
    * this (its ticker stopped, its WebGL contexts are lost); a page the back-forward cache restores reloads.
    */
   releaseAll(): void {
+    if (this.recheck) {
+      clearTimeout(this.recheck.timer);
+      this.recheck = null;
+    }
     this.procedural.backdrops.forget({ scenes: new Set(), ages: new Set(), grounds: new Set() });
     forgetSceneImages(() => false);
     this.atlas.world.forgetSkins(() => false);
@@ -898,9 +1110,9 @@ export class VisualsArtProvider implements ArtProvider {
    * current colourblind preset (`setTeamPreset`), like the lane.
    */
   portrait(o: { card: CardId; skin?: SkinId; foil?: Foil; size: number; side?: Side; plate?: boolean }): Promise<string> {
-    // `strip:<clip>:<card>`: a unit clip as a CSS sprite strip for the menus (adapters/spriteStrip.ts)
+    // `strip:<clip>:<card>`: a unit clip as a CSS sprite strip for the menus, `stripinfo:` its layout (adapters/spriteStrip.ts)
     const strip = stripRequest(o.card);
-    if (strip) return this.spriteStrip(strip.card, strip.clip, o.size, o.side ?? 0);
+    if (strip) return this.spriteStrip(strip.card, strip.clip, o.size, o.side ?? 0, o.skin, strip.part);
     const visualId = this.visualIdForCard(o.card);
     const cacheKey = `${skinnedVisualId(visualId, o.skin)}|${o.foil ?? 'none'}|${o.size}|${o.side ?? 0}|${o.plate === false ? 'bare' : 'plate'}|${this.preset}`;
     const hit = this.portraits.get(cacheKey);
@@ -936,23 +1148,39 @@ export class VisualsArtProvider implements ArtProvider {
   }
 
   /**
-   * A unit clip (`idle`, `walk`) as a horizontal strip of square `size` cells for CSS `steps()`
-   * playback (UI art audit #6), cached like portraits; '' when the unit has no sprite sheet.
+   * A unit clip (`idle`, `walk`) as a horizontal strip of square `size` cells for CSS `steps()` playback (UI
+   * art audit #6), drawn with the troop's `skin` (its own sheet, or its puppet when it has none; else the
+   * card's own strip), or with `part: 'info'` the strip's layout as a JSON data URL (where its feet are and how
+   * large it stands). Cached like portraits; kept between visits and drawn off the main thread where the
+   * browser can (`adapters/spriteStrip.ts`); '' when the unit has no sprite sheet.
    */
-  spriteStrip(card: CardId, clip: string, size: number, side: Side): Promise<string> {
+  spriteStrip(card: CardId, clip: string, size: number, side: Side, skin?: SkinId, part?: 'info'): Promise<string> {
     const visualId = this.visualIdForCard(card);
-    const cacheKey = `strip|${visualId}|${clip}|${size}|${side}|${this.preset}`;
-    const hit = this.portraits.get(cacheKey);
+    const r = skin ? this.resolve(visualId, skin) : undefined;
+    const skinned = r && r.key !== visualId ? r : undefined;
+    const cacheKey = `strip|${skinned?.key ?? visualId}|${clip}|${size}|${side}|${this.preset}`;
+    const hit = this.portraits.get(part ? `${cacheKey}|${part}` : cacheKey);
     if (hit) return hit;
-    const def = this.resolve(visualId)?.def;
-    const p =
-      def && def.kind === 'atlas' && !this.force
-        ? renderSpriteStrip({ url: this.atlasUrl(def.source), clip, size, teamColor: teamColor(side, this.preset) })
-            .then((u) => u ?? '')
-            .catch(() => '')
-        : Promise.resolve('');
-    this.portraits.set(cacheKey, p);
-    return p;
+    const sources: StripSource[] = [];
+    const add = (key: string, def: VisualDef | undefined): void => {
+      if (!def || this.force) return;
+      const headLu = -def.anchors.head.y;
+      if (def.kind === 'atlas') sources.push({ kind: 'atlas', url: this.atlasUrl(def.source), heightLu: def.heightLu, headLu });
+      const puppet = def.kind === 'procedural' && key !== visualId ? puppetById(def.source) : undefined;
+      if (puppet) sources.push({ kind: 'puppet', key, puppet, def, headLu, aura: this.quality === 'high' });
+    };
+    if (skinned) add(skinned.key, skinned.def);
+    add(visualId, this.resolve(visualId)?.def);
+    const art = sources.length > 0 ? spriteStripArt({ sources, clip, size, side, preset: this.preset }) : Promise.resolve(null);
+    this.portraits.set(
+      cacheKey,
+      art.then((a) => a?.url ?? '').catch(() => ''),
+    );
+    this.portraits.set(
+      `${cacheKey}|info`,
+      art.then((a) => (a ? stripInfoUrl(a.info) : '')).catch(() => ''),
+    );
+    return this.portraits.get(part ? `${cacheKey}|${part}` : cacheKey) ?? Promise.resolve('');
   }
 
   private atlasUrl(source: string): string {

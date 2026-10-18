@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { MUSIC_FILES, SFX_FILES, SFX_SHEETS } from '../assets.gen';
 import { altSource, assetUrl, detectSync, SfxFileBank, sourceOrder, type SfxFiles } from '../files';
 import { AGE_CUES, fileMusic, MUSIC_CUES, music as seqMusic, type MusicDef } from '../music';
-import { FALLBACK_AFTER_S, MusicEngine, type FilePlayer } from '../musicEngine';
-import { WebAudioService, type WebAudioServiceOptions } from '../service';
+import { FALLBACK_AFTER_S, HANDOFF_MAX_S, MusicEngine, type FilePlayer } from '../musicEngine';
+import { PREPARE_DUCK_MS, SFX_SHEET_IDLE_MS, WebAudioService, type WebAudioServiceOptions } from '../service';
 import { SOUND_GROUPS, SOUND_IDS, sounds } from '../sounds';
 import { FakeBuffer, FakeBufferSource, FakeContext, FakeOscillator } from './fakeContext';
 
@@ -298,6 +298,73 @@ describe('WebAudioService with sound files', () => {
   });
 });
 
+describe('decoded audio memory (2026-10-18)', () => {
+  const fileCue = (src: string, prefetch: string[] = []): MusicDef => ({ kind: 'file', src, loopStart: 0.3, loopLength: 50, role: 'battle', prefetch }) as MusicDef;
+
+  it('fetches the next age ahead without decoding it, decodes it from those bytes when the evolve begins, and lets go of the old age', async () => {
+    const m: Record<string, MusicDef> = { ...seqMusic, 'music.stone': fileCue('audio/music/stone.ogg', ['music.bronze']), 'music.bronze': fileCue('audio/music/bronze.ogg', ['music.medieval']), 'music.medieval': fileCue('audio/music/medieval.ogg') };
+    const { svc, ctx, fetched } = fileService({ music: m, sfxFiles: null });
+    let decodes = 0;
+    ctx.decodeAudioData = (_d: ArrayBuffer) => (decodes++, Promise.resolve(new FakeBuffer(2, 48000 * 51, 48000)));
+    await svc.unlock();
+    svc.music.setCue('music.stone');
+    for (let k = 0; k < 3; k++) await tick();
+    // Stone decoded; Bronze only fetched
+    expect(fetched).toEqual(['audio/music/stone.ogg', 'audio/music/bronze.ogg']);
+    expect(decodes).toBe(1);
+    // a power's short duck changes nothing; the Ascension's long duck decodes Bronze from the bytes in hand
+    svc.music.duck(-3, 800);
+    await tick();
+    expect(decodes).toBe(1);
+    svc.music.duck(-8, PREPARE_DUCK_MS + 500);
+    for (let k = 0; k < 3; k++) await tick();
+    expect(decodes).toBe(2);
+    expect(fetched.filter((f) => f.includes('bronze'))).toHaveLength(1);
+    // the fanfare: Bronze takes over with its file at once, Medieval is fetched, and Stone goes once faded
+    svc.music.setCue('music.bronze', { fadeMs: 150 });
+    for (let k = 0; k < 3; k++) await tick();
+    expect(svc.engine!.playing.at(-1)).toMatchObject({ cue: 'music.bronze', source: 'file' });
+    expect(fetched).toContain('audio/music/medieval.ogg');
+    expect(decodes).toBe(2);
+    for (let k = 0; k < 20; k++) {
+      ctx.advance(0.05);
+      svc.tick();
+    }
+    const decoded = (svc as unknown as { fileLoads: Map<string, unknown> }).fileLoads;
+    expect([...decoded.keys()]).toEqual(['audio/music/bronze.ogg']);
+  });
+
+  it('lets go of an age effect sheet nothing played from for a minute, never the kept ones; asked again, it loads again', async () => {
+    let now = 0;
+    const files: SfxFiles = { sheets: { ...FILES.sheets, gunpowder: { src: 'audio/sfx/gp.ogg', bytes: 1, seconds: 2 } }, entries: { ...FILES.entries, hit_slash: { sheet: 'gunpowder', variants: [[0.05, 0.1]] } } };
+    const { svc, ctx, fetched } = fileService({ sfxFiles: files, now: () => now });
+    await svc.unlock();
+    for (let k = 0; k < 3; k++) await tick();
+    svc.play('hit_slash');
+    for (let k = 0; k < 3; k++) await tick();
+    expect(svc.sheetStates()).toMatchObject({ ui: 'ready', battle: 'ready', gunpowder: 'ready' });
+    // played from now and then, it stays
+    now += SFX_SHEET_IDLE_MS / 2;
+    svc.play('hit_slash');
+    svc.tick();
+    now += SFX_SHEET_IDLE_MS / 2 + 10;
+    svc.tick();
+    expect(svc.sheetStates().gunpowder).toBe('ready');
+    // a minute without a sound from it: let go of (the UI and battle sheets stay)
+    now += SFX_SHEET_IDLE_MS;
+    svc.tick();
+    expect(svc.sheetStates()).toMatchObject({ ui: 'ready', battle: 'ready', gunpowder: 'idle' });
+    expect([...(svc as unknown as { fileLoads: Map<string, unknown> }).fileLoads.keys()]).not.toContain('audio/sfx/gp.ogg');
+    // asked again: the synthesized fallback plays while the sheet loads again
+    ctx.advance(1);
+    svc.play('hit_slash');
+    expect(ctx.effectSources().at(-1)!.duration).toBeNull();
+    for (let k = 0; k < 3; k++) await tick();
+    expect(fetched.filter((f) => f === 'audio/sfx/gp.ogg')).toHaveLength(2);
+    expect(svc.sheetStates().gunpowder).toBe('ready');
+  });
+});
+
 describe('music files', () => {
   function engineWith(manifest: Record<string, MusicDef>, loader: (src: string) => Promise<AudioBuffer>) {
     const ctx = new FakeContext();
@@ -378,6 +445,8 @@ describe('music files', () => {
     await tick();
     ctx.advance(5);
     engine.setCue('music.medieval', 600);
+    // the playing Stone file hands over once the Medieval file is in
+    await tick();
     const curves = ctx.nodes.flatMap((n) => ((n as unknown as { gain?: { events: { kind: string; value?: number; duration?: number }[] } }).gain?.events ?? []).filter((e) => e.kind === 'curve'));
     // Stone faded in, Stone fades out, Medieval fades in: three 0.6 s curves, one of them to silence.
     expect(curves.filter((e) => Math.abs((e.duration ?? 0) - 0.6) < 1e-9)).toHaveLength(3);
@@ -434,5 +503,86 @@ describe('music files', () => {
     engine.setCue('music.gunpowder', 0);
     expect(released).toContain('stone.ogg');
     expect(released).not.toContain('siege.ogg');
+  });
+
+  it('a cue replacing a playing file waits for its own file: the old one plays on (no fallback), then both cross at one moment', async () => {
+    let land: (b: AudioBuffer) => void = () => undefined;
+    const fallback = (seqMusic['music.medieval'] as unknown as { score: never }).score;
+    const m = { 'music.stone': loopDef('stone.ogg', { layers: {} }), 'music.medieval': loopDef('medieval.ogg', { layers: {}, fallback } as Partial<MusicDef>) };
+    let ctxRef: FakeContext | null = null;
+    const { ctx, engine } = engineWith(m, (src) => (src === 'medieval.ogg' ? new Promise((r) => (land = r)) : Promise.resolve(buf(ctxRef!, 50.6))));
+    ctxRef = ctx;
+    engine.setCue('music.stone', 0);
+    await tick();
+    const stone = ctx.of(FakeBufferSource).find((s) => s.buffer?.length === Math.round(48000 * 50.6))!;
+    ctx.advance(10);
+    engine.setCue('music.medieval', 150);
+    for (let k = 0; k < 40; k++) {
+      ctx.advance(0.025);
+      engine.update();
+    }
+    // a second later Stone still plays at full level and no synthesized fallback started
+    expect(stone.stoppedAt).toBeNull();
+    expect(ctx.of(FakeOscillator)).toHaveLength(0);
+    expect(engine.playing.map((p) => p.cue)).toEqual(['music.stone', 'music.medieval']);
+    land(buf(ctx, 50.6));
+    await tick();
+    expect(stone.stoppedAt).not.toBeNull();
+    const players = (engine as unknown as { players: FilePlayer[] }).players;
+    const medieval = players.at(-1)!;
+    // the new player lets go of the old one once its file started (its loop is freed with it)
+    expect((medieval as unknown as { phaseFrom: unknown; replaces: unknown }).phaseFrom).toBeNull();
+    expect((medieval as unknown as { replaces: unknown }).replaces).toBeNull();
+    for (let k = 0; k < 20; k++) {
+      ctx.advance(0.05);
+      engine.update();
+    }
+    expect(players.length === 1 || (engine as unknown as { players: FilePlayer[] }).players.length === 1).toBe(true);
+    const gone = players[0] as unknown as { sources: unknown[] };
+    expect(gone.sources).toEqual([]);
+  });
+
+  it(`past ${HANDOFF_MAX_S} s without its file the replaced cue fades out and the fallback plays`, async () => {
+    const fallback = (seqMusic['music.medieval'] as unknown as { score: never }).score;
+    const m = { 'music.stone': loopDef('stone.ogg', { layers: {} }), 'music.medieval': loopDef('medieval.ogg', { layers: {}, fallback } as Partial<MusicDef>) };
+    let ctxRef: FakeContext | null = null;
+    const { ctx, engine } = engineWith(m, (src) => (src === 'medieval.ogg' ? new Promise<AudioBuffer>(() => undefined) : Promise.resolve(buf(ctxRef!, 50.6))));
+    ctxRef = ctx;
+    engine.setCue('music.stone', 0);
+    await tick();
+    const stone = ctx.of(FakeBufferSource).find((s) => s.buffer?.length === Math.round(48000 * 50.6))!;
+    engine.setCue('music.medieval', 150);
+    for (let t = 0; t < HANDOFF_MAX_S + 0.5; t += 0.025) {
+      ctx.advance(0.025);
+      engine.update();
+    }
+    expect(stone.stoppedAt).not.toBeNull();
+    expect(engine.playing.at(-1)).toMatchObject({ cue: 'music.medieval', source: 'fallback' });
+  });
+
+  it('decodes the next age when told it is coming (prepare), and only then', async () => {
+    const decoded: string[] = [];
+    const fetched: string[] = [];
+    const m: Record<string, MusicDef> = {
+      'music.stone': loopDef('stone.ogg', { prefetch: ['music.medieval', 'stinger.victory'] } as Partial<MusicDef>),
+      'music.medieval': loopDef('medieval.ogg'),
+      'stinger.victory': { kind: 'file', src: 'victory.ogg', role: 'stinger' },
+    };
+    const ctx = new FakeContext();
+    ctx.state = 'running';
+    const engine = new MusicEngine(ctx as unknown as BaseAudioContext, ctx.createGain() as unknown as AudioNode, {
+      manifest: m,
+      warn: () => undefined,
+      loadFile: (src) => (decoded.push(src), Promise.resolve(buf(ctx, 50.6))),
+      prefetchFile: (src) => (fetched.push(src), Promise.resolve()),
+    });
+    engine.setCue('music.stone', 0);
+    expect(decoded).toEqual(['stone.ogg', 'siege.ogg']);
+    // the shared stem is decoded already; the rest of what comes is fetched
+    expect(fetched).toEqual(['medieval.ogg', 'victory.ogg']);
+    engine.prepareNext();
+    expect(decoded).toEqual(['stone.ogg', 'siege.ogg', 'medieval.ogg']);
+    // a stinger is never prepared ahead (it decodes in a moment when the battle ends)
+    expect(decoded).not.toContain('victory.ogg');
   });
 });

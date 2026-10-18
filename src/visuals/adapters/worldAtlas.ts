@@ -127,10 +127,20 @@ export class WorldAtlas {
   private readonly failed = new Set<string>();
   /** Live views drawing each sheet (turrets, forts): `release` never takes a sheet from under one. */
   private readonly views = new Map<string, number>();
+  /**
+   * Unloads in flight (`release`): a new load of the same sheet waits for them, since Pixi's loader would hand
+   * back the asset it is destroying (review N2; the unit sheets' `AtlasAdapter` does the same).
+   */
+  private readonly unloading = new Map<string, Promise<void>>();
 
+  /**
+   * `load` loads a sheet (tests pass a fake), `unload` lets go of a released sheet's URL (default Pixi's
+   * `Assets.unload` for Pixi's loader, nothing for another loader).
+   */
   constructor(
     private readonly url: (source: string) => string,
     private readonly load: WorldLoader = loadWithAssets,
+    private readonly unload: ((url: string) => Promise<void> | void) | null = load === loadWithAssets ? (u) => Assets.unload(u) : null,
   ) {}
 
   get(source: string): WorldSheet | undefined {
@@ -154,8 +164,11 @@ export class WorldAtlas {
     }
     let p = this.pending.get(source);
     if (!p) {
-      // (a load `forgetSkins` dropped while it was on the way resolves for its callers but is not kept)
-      const mine: Promise<WorldSheet | null> = this.load(this.url(source))
+      // (a load `forgetSkins` dropped while it was on the way resolves for its callers but is not kept; a sheet
+      // still being unloaded loads again only once that is done)
+      const prior = this.unloading.get(source);
+      const url = this.url(source);
+      const mine: Promise<WorldSheet | null> = (prior ? prior.then(() => this.load(url)) : this.load(url))
         .then((s) => {
           if (this.pending.get(source) === mine) this.sheets.set(source, s);
           return s;
@@ -223,9 +236,16 @@ export class WorldAtlas {
       this.sheets.delete(source);
       this.failed.delete(source);
       n++;
-      if (this.load === loadWithAssets) {
+      const unload = this.unload;
+      if (unload) {
         const url = this.url(source);
-        void Promise.resolve(Assets.unload(url)).catch((e: unknown) => console.warn(`[visuals] unloading "${url}" failed`, e));
+        const done: Promise<void> = Promise.resolve()
+          .then(() => unload(url))
+          .catch((e: unknown) => console.warn(`[visuals] unloading "${url}" failed`, e))
+          .then(() => {
+            if (this.unloading.get(source) === done) this.unloading.delete(source);
+          });
+        this.unloading.set(source, done);
       }
     }
     return n;

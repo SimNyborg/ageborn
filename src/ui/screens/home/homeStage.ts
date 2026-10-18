@@ -165,6 +165,13 @@ function whenIdle(cb: () => void, timeoutMs: number): IdleHandle {
  */
 export const LIVE_AFTER_MS = MOTION_DUR.large + 500;
 const IDLE_WAIT_MS = 1500;
+/**
+ * A cold start also waits while the still troops are on their way (`wait`; their strips are drawn off the main
+ * thread on a first visit), at most this long after Home appears: the start-up's long task would otherwise hold
+ * them back and leave the island empty for seconds (queue item 37, open item 1).
+ */
+export const STILL_WAIT_MS = 4000;
+const STILL_POLL_MS = 100;
 /** The app's "rotate your phone" cover (`app.css` `.ab-rotate`): the island under it pauses (review M N8). */
 const ROTATE_QUERY = '(orientation: portrait) and (max-width: 700px)';
 
@@ -172,10 +179,11 @@ const ROTATE_QUERY = '(orientation: portrait) and (max-width: 700px)';
  * Mounts the injected live island into `host` once Home has settled (null `req` or no mount: never; Reduce
  * motion passes null) and keeps it in step with `req`. Drawing pauses while `paused` (a sheet or panel over
  * Home), while the island is off screen, under the rotate cover and while the tab is hidden. `leaving` marks a
- * match start: the stage then lets go of its WebGL context at once instead of lingering. Returns true while
- * the live island draws (false again while its context is lost: the still shows).
+ * match start: the stage then lets go of its WebGL context at once instead of lingering. `wait` (the still
+ * troops are on their way) holds a cold start back, at most `STILL_WAIT_MS`. Returns true while the live
+ * island draws (false again while its context is lost: the still shows).
  */
-export function useHomeStage(host: RefObject<HTMLElement>, req: HomeStageRequest | null, o: { paused: boolean; leaving: boolean }): boolean {
+export function useHomeStage(host: RefObject<HTMLElement>, req: HomeStageRequest | null, o: { paused: boolean; leaving: boolean; wait?: boolean }): boolean {
   const mount = useContext(HomeStageContext);
   const [live, setLive] = useState(false);
   const handle = useRef<HomeStageHandle | null>(null);
@@ -183,6 +191,8 @@ export function useHomeStage(host: RefObject<HTMLElement>, req: HomeStageRequest
   latest.current = req;
   const leaving = useRef(o.leaving);
   leaving.current = o.leaving;
+  const waiting = useRef(o.wait === true);
+  waiting.current = o.wait === true;
   const seen = useRef({ box: true, page: true, upright: false, paused: o.paused });
   /** Re-applies the visibility (box on screen, tab shown, landscape, not paused) to the live island. */
   const applyRef = useRef<(() => void) | null>(null);
@@ -237,16 +247,29 @@ export function useHomeStage(host: RefObject<HTMLElement>, req: HomeStageRequest
     };
     // warm (the shared app is up: no WebGL start-up, the sheets are likely still in): at once (review M S3)
     const warm = mount.warm?.() === true;
+    const since = Date.now();
+    let poll: ReturnType<typeof setTimeout> | null = null;
+    // cold: after Home's entrance, once the still troops are in (or `STILL_WAIT_MS` passed), when idle
+    const cold = (): void => {
+      poll = null;
+      if (!alive) return;
+      if (waiting.current && Date.now() - since < STILL_WAIT_MS) {
+        poll = setTimeout(cold, STILL_POLL_MS);
+        return;
+      }
+      idle = whenIdle(start, IDLE_WAIT_MS);
+    };
     const timer = setTimeout(
       () => {
         if (warm) start();
-        else idle = whenIdle(start, IDLE_WAIT_MS);
+        else cold();
       },
       warm ? 0 : LIVE_AFTER_MS,
     );
     return () => {
       alive = false;
       clearTimeout(timer);
+      if (poll) clearTimeout(poll);
       idle?.cancel();
       io?.disconnect();
       if (typeof document !== 'undefined') document.removeEventListener('visibilitychange', onPage);
