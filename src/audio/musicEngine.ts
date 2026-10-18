@@ -17,8 +17,16 @@
  * - Composed file cues (`FilePlayer`) are recorded in their age's evolve key, so they ignore
  *   `transpose`; an evolve between two file loops of the same length continues at the same point of
  *   the loop. Their fallback score (while loading, or where the file cannot be decoded) follows the
- *   transposition like any score. The engine prefetches each cue's `prefetch` files and releases
- *   files that neither the playing cues nor the upcoming ones need.
+ *   transposition like any score.
+ * - Decoded music is large (a 96.6 s stereo loop is 37 MB of float samples at 48 kHz) and iOS counts it
+ *   against the tab (2026-10-18 memory round). So only the files of the cues playing are decoded: the
+ *   engine fetches the compressed files of each cue's `prefetch` cues (about 0.6 MB a loop, `prefetchFile`),
+ *   decodes the next cue when told it is coming (`prepare`, `prepareNext`: the evolve's Ascension), and
+ *   releases a decoded file as soon as no playing cue needs it. A cue that replaces a playing file cue waits
+ *   for its own file before the crossfade (`FilePlayer` `replaces`): the old file plays on meanwhile, so a
+ *   late decode moves the switch by a moment instead of dropping to the synthesized fallback. Each new
+ *   player keeps the player it replaced only until its file starts (the loop position; review 2026-10-18:
+ *   the chain kept every age's decoded loop of a war alive, 224 MB by Industrial).
  */
 import type { MusicCueId, MusicLayer } from '@/contracts';
 import { INSTRUMENTS, playNote } from './instruments';
@@ -47,6 +55,13 @@ export interface MusicEngineOptions {
   loadFile?: (src: string) => Promise<AudioBuffer>;
   /** Lets go of a loaded file nothing needs any more (the loader may drop its decoded copy). */
   releaseFile?: (src: string) => void;
+  /**
+   * Fetches a file an upcoming cue will need without decoding it (its compressed bytes are small; decoded,
+   * a loop is 37 MB). Without it the engine decodes upcoming files ahead (`loadFile`).
+   */
+  prefetchFile?: (src: string) => Promise<unknown>;
+  /** Lets go of a fetched file no upcoming cue needs any more (its compressed bytes). */
+  forgetFile?: (src: string) => void;
   /** Level of each cue's fallback score, for file cues that fall back (dB, default 0). */
   fallbackGainDb?: Readonly<Record<MusicCueId, number>>;
   warn?: (msg: string) => void;
@@ -58,7 +73,8 @@ interface Player {
   /** Schedules ahead; returns false once the player has finished and can be dropped. */
   update(now: number): boolean;
   setLayer(l: MusicLayer, v: number): void;
-  fadeOut(ms: number): void;
+  /** Fades out over `ms` from `at` (context time; default now). */
+  fadeOut(ms: number, at?: number): void;
   readonly fading: boolean;
   dispose(): void;
 }
@@ -201,8 +217,8 @@ export class SeqPlayer implements Player {
     }
   }
 
-  fadeOut(ms: number): void {
-    const now = this.ctx.currentTime;
+  fadeOut(ms: number, at?: number): void {
+    const now = Math.max(this.ctx.currentTime, at ?? 0);
     const end = now + Math.max(0, ms) / 1000;
     if (this.stopAt !== null && this.stopAt <= end) return;
     this.stopAt = Math.max(fadeParamOut(this.fade.gain, now, Math.max(0, ms)), now + 0.005);
@@ -214,6 +230,12 @@ export class SeqPlayer implements Player {
     for (const e of this.layerNodes.values()) e.node.disconnect();
   }
 }
+
+/**
+ * The longest a cue waits for its file before it takes over from the file cue it replaces anyway (seconds):
+ * the replaced cue then fades out and the new one's fallback score plays until its file is in.
+ */
+export const HANDOFF_MAX_S = 2;
 
 /** How long a file cue may take to load before its synthesized fallback starts, in seconds. */
 export const FALLBACK_AFTER_S = 0.35;
@@ -256,14 +278,19 @@ function mod(x: number, m: number): number {
  * - Loops play their loop window (`loopStart`, `loopLength`); stems loop their own window, aligned
  *   to the main loop's position, so the layers stay on the beat.
  * - `phaseAt` (from the cue being replaced) starts the file at the same point in the loop, so an
- *   evolve continues the melody in the next age's arrangement.
+ *   evolve continues the melody in the next age's arrangement. It is let go of once the file starts, so
+ *   a player never keeps the one before it (and its decoded loop) alive.
+ * - `replaces` (a file cue playing its file): this cue stays silent and the old one plays on until this
+ *   file is in; then the old one fades out over `fadeMs` as this one fades in, on the same moment. Past
+ *   `HANDOFF_MAX_S`, or when this file cannot be decoded, the old one fades out anyway and the fallback
+ *   takes over.
  * - While the file loads (after `FALLBACK_AFTER_S`) or if it cannot be decoded, the `fallback` score
  *   plays; once the file is ready it fades in over `FILE_FADE_IN_S` and the score fades out.
  */
 export class FilePlayer implements Player {
   private readonly fade: GainNode;
   private readonly fileGain: GainNode;
-  private readonly sources: AudioBufferSourceNode[] = [];
+  private sources: AudioBufferSourceNode[] = [];
   private readonly layerGains = new Map<MusicLayer, GainNode>();
   private stopAt: number | null = null;
   private ended = false;
@@ -274,6 +301,10 @@ export class FilePlayer implements Player {
   private loadFailed = false;
   private startedAt: number | null = null;
   private startPos = 0;
+  /** The loop position to start from (the replaced cue's), until the file starts. */
+  private phaseFrom: ((t: number) => number) | null;
+  /** The playing file cue this one takes over from once its file is in (null: none, or done). */
+  private replaces: Player | null;
   readonly loopLength: number | null;
   /** The transposition the cue started in (picks the stinger's key). */
   readonly transpose: number;
@@ -286,11 +317,14 @@ export class FilePlayer implements Player {
     private readonly def: FileDef,
     private readonly state: MusicState,
     load: (src: string) => Promise<AudioBuffer>,
-    private readonly o: { fadeMs: number; lookahead: number; phaseAt?: (t: number) => number; fallbackGainDb?: number },
+    private readonly o: { fadeMs: number; lookahead: number; phaseAt?: (t: number) => number; fallbackGainDb?: number; replaces?: Player | null },
   ) {
     this.createdAt = ctx.currentTime;
     this.transpose = state.transpose;
-    this.fade = fadeNode(ctx, dest, def.gainDb ?? 0, ctx.currentTime, o.fadeMs);
+    this.phaseFrom = o.phaseAt ?? null;
+    this.replaces = o.replaces ?? null;
+    // a cue that takes over from a playing file fades in when its own file is in (`takeOver`)
+    this.fade = this.replaces ? fadeNode(ctx, dest, -Infinity, ctx.currentTime, 0) : fadeNode(ctx, dest, def.gainDb ?? 0, ctx.currentTime, o.fadeMs);
     this.fileGain = ctx.createGain();
     this.fileGain.connect(this.fade);
     const stems = fileStems(def, state.transpose);
@@ -302,6 +336,28 @@ export class FilePlayer implements Player {
         if (!this.def.fallback) this.ended = true;
       },
     );
+  }
+
+  /** True while this cue waits for its file to take over from the one it replaces. */
+  get handingOff(): boolean {
+    return this.replaces !== null;
+  }
+
+  /**
+   * Takes over from the replaced cue at `at`: it fades out over `fadeMs` while this one fades in over the
+   * same time (equal power, as every crossfade here).
+   */
+  private takeOver(at: number): void {
+    const old = this.replaces;
+    if (!old) return;
+    this.replaces = null;
+    const g = this.fade.gain;
+    const target = 10 ** ((this.def.gainDb ?? 0) / 20);
+    const ms = Math.max(0, this.o.fadeMs);
+    holdParam(g, at);
+    if (ms > 0) equalPowerRamp(g, 0, target, at + 0.002, ms / 1000);
+    else g.setValueAtTime(target, at);
+    if (!old.fading) old.fadeOut(ms, at);
   }
 
   get fading(): boolean {
@@ -324,7 +380,10 @@ export class FilePlayer implements Player {
     this.loaded = true;
     const ctx = this.ctx;
     const at = ctx.currentTime + 0.03;
-    const phase = this.loopLength !== null && this.o.phaseAt ? mod(this.o.phaseAt(at), this.loopLength) : 0;
+    const phase = this.loopLength !== null && this.phaseFrom ? mod(this.phaseFrom(at), this.loopLength) : 0;
+    // the replaced cue (and with it its decoded loop) is not needed any more
+    this.phaseFrom = null;
+    this.takeOver(at);
     if (this.fallback) {
       const g = this.fileGain.gain;
       g.value = 0;
@@ -371,11 +430,14 @@ export class FilePlayer implements Player {
 
   update(now: number): boolean {
     if (this.stopAt !== null && now >= this.stopAt) return false;
-    if (!this.loaded && !this.fallback && this.def.fallback && (this.loadFailed || now - this.createdAt >= FALLBACK_AFTER_S)) this.startFallback(now);
+    // the file is late (or failed): the replaced cue fades out now and the fallback takes over
+    if (this.replaces && !this.loaded && (this.loadFailed || now - this.createdAt >= HANDOFF_MAX_S)) this.takeOver(now + 0.01);
+    if (!this.replaces && !this.loaded && !this.fallback && this.def.fallback && (this.loadFailed || now - this.createdAt >= FALLBACK_AFTER_S)) this.startFallback(now);
     if (this.fallback) {
       const alive = this.fallback.update(now);
       if (!alive && !this.loaded) return false;
     }
+    if (this.ended && this.replaces) this.takeOver(now + 0.01);
     return !this.ended;
   }
 
@@ -388,15 +450,20 @@ export class FilePlayer implements Player {
     g.gain.setTargetAtTime(v, now, LAYER_GLIDE_S);
   }
 
-  fadeOut(ms: number): void {
-    const now = this.ctx.currentTime;
+  fadeOut(ms: number, at?: number): void {
+    const now = Math.max(this.ctx.currentTime, at ?? 0);
+    // faded before it took over: it never played, and the cue it was to replace is faded by the engine
+    this.replaces = null;
+    this.phaseFrom = null;
     this.stopAt = fadeParamOut(this.fade.gain, now, Math.max(5, ms));
     for (const s of this.sources) s.stop(this.stopAt + 0.05);
-    this.fallback?.fadeOut(ms);
+    this.fallback?.fadeOut(ms, at);
   }
 
   dispose(): void {
     this.disposed = true;
+    this.replaces = null;
+    this.phaseFrom = null;
     for (const s of this.sources) {
       try {
         s.stop();
@@ -405,6 +472,8 @@ export class FilePlayer implements Player {
       }
       s.disconnect();
     }
+    // the decoded buffers go with the sources (nothing may keep a disposed player's loop alive)
+    this.sources = [];
     this.fallback?.dispose();
     this.fade.disconnect();
     this.fileGain.disconnect();
@@ -421,8 +490,12 @@ export class MusicEngine {
   private readonly manifest: Readonly<Record<MusicCueId, MusicDef>>;
   private readonly lookahead: number;
   private readonly warned = new Set<string>();
-  /** Files loaded for current or upcoming cues (see `manageFiles`). */
+  /** Files decoded for the cues playing or prepared (see `manageFiles`). */
   private readonly requested = new Set<string>();
+  /** Files fetched (not decoded) for the upcoming cues (see `manageFiles`). */
+  private readonly fetched = new Set<string>();
+  /** A cue decoded ahead because it is about to play (`prepare`), with the key it was decoded in. */
+  private prepared: { cue: MusicCueId; transpose: number } | null = null;
   /** The manifest entry of the cue last set (to refresh the prefetch when the key changes). */
   private lastDef: MusicDef | null = null;
 
@@ -475,7 +548,10 @@ export class MusicEngine {
       startTime = old.seq.nextTime;
       startStep = old.seq.step;
     }
-    for (const p of this.players) if (!p.fading) p.fadeOut(fade);
+    // a file cue replacing a file cue that plays its file takes over once its own file is in (the old one
+    // plays on meanwhile; `FilePlayer` `replaces`); everything else fades out now
+    const handoff = def.kind === 'file' && old instanceof FilePlayer && old.source === 'file' && !old.handingOff ? old : null;
+    for (const p of this.players) if (!p.fading && p !== handoff) p.fadeOut(fade);
 
     let phaseAt: ((t: number) => number) | undefined;
     if (def.kind === 'file' && def.role === 'battle' && old instanceof FilePlayer && old.role === 'battle' && old.loopLength !== null && def.loopLength !== undefined && Math.abs(old.loopLength - def.loopLength) < 1e-3) {
@@ -503,46 +579,92 @@ export class MusicEngine {
         lookahead: this.lookahead,
         ...(phaseAt ? { phaseAt } : {}),
         ...(fallbackGainDb !== undefined ? { fallbackGainDb } : {}),
+        ...(handoff ? { replaces: handoff } : {}),
       });
     }
     this.players.push(player);
     this.cue = cue;
     this.lastRole = def.role;
     this.lastDef = def;
+    // what was prepared is playing now (or not wanted any more)
+    this.prepared = null;
     this.manageFiles(def);
     this.update();
     return true;
   }
 
   /**
-   * Starts loading the files the next cues will need (`prefetch`) and lets go of files no cue needs
-   * any more, so only the current and the next arrangements stay decoded.
+   * Decodes a cue's files ahead, in the key now (a cue about to play: the next age's loop when an evolve's
+   * Ascension starts), so it starts on time with its file. They stay decoded until a cue is set.
    */
-  private manageFiles(def: MusicDef): void {
+  prepare(cue: MusicCueId): void {
+    const def = Object.hasOwn(this.manifest, cue) ? this.manifest[cue] : undefined;
+    const load = this.o.loadFile;
+    if (!def || def.kind !== 'file' || !load) return;
+    this.prepared = { cue, transpose: this.state.transpose };
+    for (const s of fileStems(def, this.state.transpose)) {
+      if (this.requested.has(s.src)) continue;
+      this.requested.add(s.src);
+      void load(s.src).catch(() => undefined);
+    }
+  }
+
+  /** Decodes the next battle cue of the one playing (its first `prefetch` battle cue: the next age). */
+  prepareNext(): void {
+    const def = this.cue !== null ? this.manifest[this.cue] : undefined;
+    if (!def || def.kind !== 'file' || def.role !== 'battle') return;
+    const next = (def.prefetch ?? []).find((c) => this.manifest[c]?.role === 'battle');
+    if (next) this.prepare(next);
+  }
+
+  /**
+   * Keeps decoded the files of the cues playing (fading ones too) and of a prepared cue, fetches (or, without
+   * `prefetchFile`, decodes) the files of the cues the current one names as coming (`prefetch`), and lets go
+   * of everything else: a decoded loop goes as soon as no playing cue needs it.
+   */
+  private manageFiles(def: MusicDef | null): void {
     const load = this.o.loadFile;
     if (!load) return;
-    const keep = new Set<string>();
+    const decoded = new Set<string>();
     const key = this.state.transpose;
-    for (const s of fileStems(def, key)) keep.add(s.src);
+    if (def && this.cue !== null) for (const s of fileStems(def, key)) decoded.add(s.src);
     for (const p of this.players) {
       const d = this.manifest[p.cue];
-      if (d) for (const s of fileStems(d, p instanceof FilePlayer ? p.transpose : key)) keep.add(s.src);
+      if (d) for (const s of fileStems(d, p instanceof FilePlayer ? p.transpose : key)) decoded.add(s.src);
     }
-    if (def.kind === 'file') {
+    if (this.prepared) {
+      const d = this.manifest[this.prepared.cue];
+      if (d) for (const s of fileStems(d, this.prepared.transpose)) decoded.add(s.src);
+    }
+    const upcoming = new Set<string>();
+    if (def && def.kind === 'file' && this.cue !== null) {
       for (const next of def.prefetch ?? []) {
         const d = Object.hasOwn(this.manifest, next) ? this.manifest[next] : undefined;
-        if (!d) continue;
-        for (const s of fileStems(d, key)) {
-          keep.add(s.src);
-          if (!this.requested.has(s.src)) void load(s.src).catch(() => undefined);
-        }
+        if (d) for (const s of fileStems(d, key)) if (!decoded.has(s.src)) upcoming.add(s.src);
       }
     }
-    for (const s of keep) this.requested.add(s);
+    const fetch = this.o.prefetchFile;
+    for (const src of upcoming) {
+      if (fetch) {
+        if (!this.fetched.has(src)) void fetch(src).catch(() => undefined);
+        this.fetched.add(src);
+      } else {
+        // no separate fetch: the upcoming files are decoded ahead
+        if (!this.requested.has(src)) void load(src).catch(() => undefined);
+        decoded.add(src);
+      }
+    }
+    for (const s of decoded) this.requested.add(s);
     for (const src of [...this.requested]) {
-      if (keep.has(src)) continue;
+      if (decoded.has(src)) continue;
       this.requested.delete(src);
       this.o.releaseFile?.(src);
+    }
+    for (const src of [...this.fetched]) {
+      if (upcoming.has(src)) continue;
+      this.fetched.delete(src);
+      // a file decoded meanwhile keeps its bytes with its decoded copy until that goes
+      if (!this.requested.has(src)) this.o.forgetFile?.(src);
     }
   }
 
@@ -568,26 +690,33 @@ export class MusicEngine {
     for (const p of this.players) if (!p.fading) p.fadeOut(fadeMs);
     this.cue = null;
     this.lastRole = null;
+    this.prepared = null;
   }
 
-  /** Schedules ahead for every player and drops finished ones. Call every ~25 ms. */
+  /** Schedules ahead for every player and drops finished ones (and their decoded files). Call every ~25 ms. */
   update(): void {
     const now = this.ctx.currentTime;
     const keep: Player[] = [];
+    let dropped = false;
     for (const p of this.players) {
       if (p.update(now)) keep.push(p);
       else {
         p.dispose();
+        dropped = true;
         if (p.cue === this.cue && !p.fading) this.cue = null;
       }
     }
     this.players = keep;
+    // a cue that faded out lets go of its decoded files now, not at the next cue
+    if (dropped) this.manageFiles(this.cue !== null ? this.lastDef : null);
   }
 
   dispose(): void {
     for (const p of this.players) p.dispose();
     this.players = [];
     this.cue = null;
+    this.prepared = null;
+    this.manageFiles(null);
   }
 
   private resetBattleState(): void {

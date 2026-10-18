@@ -21,6 +21,12 @@
  *   the defaults instead of throwing inside the caller's frame.
  * - `music.duck(db, ms)` lowers the music bus by |db| for `ms` (A13: 6 dB during powers, evolves and
  *   walkouts); `music.transpose(semitones)` sets the total key change (see `musicEngine.ts`).
+ * - Decoded audio is float samples, 37 MB for a 96.6 s stereo loop and 30 MB for the 158 s match sheet at
+ *   48 kHz, and iOS counts it against the tab (memory round 2026-10-18). Music decodes only the cues that
+ *   play: upcoming cues are fetched compressed (`prefetchFile`, about 0.6 MB a loop) and decoded when they
+ *   start, or ahead when the battle's evolve begins (the Ascension's long duck, `PREPARE_DUCK_MS`). Effect
+ *   sheets of an age nothing has played for `SFX_SHEET_IDLE_MS` are let go of (they load again if asked): a
+ *   Long War kept every age's sheet decoded.
  */
 import type { AudioService, Bus, MusicCueId, MusicLayer, SoundId } from '@/contracts';
 import { SoundBank, type RenderStats } from './bank';
@@ -67,8 +73,25 @@ export interface WebAudioServiceOptions {
   gestureTarget?: EventTarget | null;
   /** Loads a file sound or cue (default fetch + decodeAudioData). */
   fetchFile?: (src: string) => Promise<ArrayBuffer>;
+  /** The clock (ms) of the effect sheets' idle release (default `performance.now`). */
+  now?: () => number;
   warn?: (msg: string) => void;
 }
+
+/**
+ * A music duck at least this long is the evolve's Ascension (the riser's duck lasts `ascendMs`, 2.5 s; power
+ * and moment ducks last 0.8-1.8 s): the next age's loop is decoded then, so it starts on the fanfare.
+ */
+export const PREPARE_DUCK_MS = 2000;
+
+/** An age's effect sheet nothing has played from for this long (ms) is let go of; it loads again if asked. */
+export const SFX_SHEET_IDLE_MS = 60_000;
+
+/** How often (ms) the idle effect sheets are looked for. */
+const SFX_IDLE_CHECK_MS = 5000;
+
+/** Effect sheets never let go of: the UI, the shared battle sounds and the match's. */
+const KEPT_SHEETS: readonly string[] = ['ui', 'battle', 'match'];
 
 interface VoiceHandle {
   src: AudioBufferSourceNode;
@@ -125,7 +148,12 @@ export class WebAudioService implements AudioService {
   private readonly random: () => number;
   private readonly voices: VoicePolicy<VoiceHandle>;
   private readonly buffers = new Map<SoundId, AudioBuffer[]>();
+  /** Decoded files (music and effect sheets) by manifest source. */
   private readonly fileLoads = new Map<string, Promise<AudioBuffer>>();
+  /** Fetched, not yet decoded files (upcoming music, `prefetchFile`), by manifest source: compressed bytes. */
+  private readonly fetchedFiles = new Map<string, Promise<ArrayBuffer>>();
+  private lastIdleCheck = 0;
+  private readonly now: () => number;
   private readonly lastVariant = new Map<SoundId, number>();
   private readonly volumes: Record<Bus, number> = { master: 1, music: 1, sfx: 1, ui: 1 };
   private readonly warned = new Set<string>();
@@ -144,15 +172,21 @@ export class WebAudioService implements AudioService {
     this.soundDefs = o.sounds ?? defaultSounds;
     this.musicDefs = o.music ?? fileMusic;
     this.random = o.random ?? Math.random;
+    this.now = o.now ?? defaultNow;
     this.voices = new VoicePolicy<VoiceHandle>(o.maxVoices ?? DEFAULT_MAX_TOTAL_VOICES);
     this.bank = new SoundBank(this.soundDefs, o.sampleRate !== undefined ? { sampleRate: o.sampleRate } : {});
     const files = o.sfxFiles === undefined ? defaultSfxFiles : o.sfxFiles;
     this.files = files
-      ? new SfxFileBank(files, (src) => this.loadFile(src), (msg) => {
-          this.warnOnce(msg);
-          // Files are out: render the ZzFX fallback ahead of use after all.
-          if (this.lazyWanted !== undefined) this.renderLazily(this.lazyWanted ?? undefined);
-        })
+      ? new SfxFileBank(
+          files,
+          (src) => this.loadFile(src),
+          (msg) => {
+            this.warnOnce(msg);
+            // Files are out: render the ZzFX fallback ahead of use after all.
+            if (this.lazyWanted !== undefined) this.renderLazily(this.lazyWanted ?? undefined);
+          },
+          this.now,
+        )
       : null;
   }
 
@@ -250,6 +284,8 @@ export class WebAudioService implements AudioService {
       manifest: this.musicDefs,
       loadFile: (src) => this.loadFile(src),
       releaseFile: (src) => this.fileLoads.delete(src),
+      prefetchFile: (src) => this.prefetchFile(src),
+      forgetFile: (src) => this.fetchedFiles.delete(src),
       fallbackGainDb,
       ...(this.o.warn ? { warn: this.o.warn } : {}),
     });
@@ -271,9 +307,32 @@ export class WebAudioService implements AudioService {
     if (this.o.scheduler !== 'manual') this.timer = setInterval(() => this.tick(), SCHEDULER_MS);
   }
 
-  /** Runs the music scheduler once (the interval does this every 25 ms). */
+  /** Runs the music scheduler once (the interval does this every 25 ms), and now and then the sheets' idle release. */
   tick(): void {
     if (this.engine && this.ctx && isRunning(this.ctx)) this.engine.update();
+    const now = this.now();
+    if (now - this.lastIdleCheck >= SFX_IDLE_CHECK_MS) {
+      this.lastIdleCheck = now;
+      this.releaseIdleSheets(now);
+    }
+  }
+
+  /**
+   * Lets go of the effect sheets nothing has played from for `SFX_SHEET_IDLE_MS`, but for the UI, battle and
+   * match sheets and those of the music now (an age and the next; Stone and Bronze outside a battle, where the
+   * next one starts). A voice playing from a released sheet plays on; a sound asked for again loads it again.
+   */
+  private releaseIdleSheets(now: number): string[] {
+    const files = this.files;
+    if (!files || files.failed) return [];
+    const cue = this.engine ? this.engine.cue : null;
+    const keep = new Set<string>([...KEPT_SHEETS, ...(cue !== null && SHEETS_FOR_CUE[cue] ? SHEETS_FOR_CUE[cue] : ['stone', 'bronze'])]);
+    const gone = files.releaseIdle(keep, SFX_SHEET_IDLE_MS, now);
+    for (const sheet of gone) {
+      const src = files.files.sheets[sheet]?.src;
+      if (src) this.fileLoads.delete(src);
+    }
+    return gone;
   }
 
   // ------------------------------------------------------------------------------------------------
@@ -441,11 +500,15 @@ export class WebAudioService implements AudioService {
     let p = this.fileLoads.get(src);
     if (!p) {
       const fetchFile = this.o.fetchFile ?? defaultFetch;
-      // The Ogg Opus file, then its AAC copy (AAC first where Opus is not supported).
+      // The Ogg Opus file, then its AAC copy (AAC first where Opus is not supported); the first one's bytes
+      // may be in already (`prefetchFile`; decoding takes them over, so they are not kept twice).
       const order = sourceOrder(src);
+      const ahead = this.fetchedFiles.get(src);
+      this.fetchedFiles.delete(src);
       const attempt = (k: number): Promise<AudioBuffer> => {
         const s = order[k] as string;
-        const next = fetchFile(s).then((data) => ctx.decodeAudioData(data));
+        const bytes = k === 0 && ahead ? ahead.catch(() => fetchFile(s)) : fetchFile(s);
+        const next = bytes.then((data) => ctx.decodeAudioData(data));
         return k + 1 < order.length ? next.catch(() => attempt(k + 1)) : next;
       };
       p = attempt(0);
@@ -455,6 +518,22 @@ export class WebAudioService implements AudioService {
         if (this.fileLoads.get(src) === p) this.fileLoads.delete(src);
       });
     }
+    return p;
+  }
+
+  /**
+   * Fetches a file an upcoming cue needs without decoding it (its compressed bytes, kept until it is decoded
+   * or no cue needs it); nothing when it is decoded or fetched already. A failed fetch is forgotten.
+   */
+  private prefetchFile(src: string): Promise<unknown> {
+    if (this.fileLoads.has(src) || this.fetchedFiles.has(src)) return Promise.resolve();
+    const fetchFile = this.o.fetchFile ?? defaultFetch;
+    const first = sourceOrder(src)[0] ?? src;
+    const p = fetchFile(first);
+    this.fetchedFiles.set(src, p);
+    p.catch(() => {
+      if (this.fetchedFiles.get(src) === p) this.fetchedFiles.delete(src);
+    });
     return p;
   }
 
@@ -504,6 +583,9 @@ export class WebAudioService implements AudioService {
     duck: (db, ms) => {
       if (!Number.isFinite(db) || !Number.isFinite(ms)) return;
       this.mixer?.duckMusic(db, ms);
+      // the evolve's Ascension ducks the music for its whole length: the next age's loop decodes now, so it
+      // takes over on the fanfare with its file (an earlier decode would hold two loops for the whole age)
+      if (ms >= PREPARE_DUCK_MS) this.engine?.prepareNext();
     },
     stop: (fadeMs) => {
       this.pendingCue = null;

@@ -111,6 +111,8 @@ export class SfxFileBank {
   private readonly clipCache = new Map<SoundId, Clip[]>();
   /** Per sheet: seconds to add to every manifest offset (a decoder's start delay, see `detectSync`). */
   private readonly shift = new Map<string, number>();
+  /** Per decoded sheet: when a sound last played from it, or it loaded (`releaseIdle`). */
+  private readonly lastUsed = new Map<string, number>();
   /** Set when a sheet could not be fetched or decoded (the format is not supported, or offline). */
   failed = false;
 
@@ -118,6 +120,7 @@ export class SfxFileBank {
     readonly files: SfxFiles,
     private readonly load: (src: string) => Promise<AudioBuffer>,
     private readonly onError: (msg: string) => void = () => undefined,
+    private readonly now: () => number = () => (typeof performance !== 'undefined' ? performance.now() : 0),
   ) {}
 
   /** The sheet (sound group) a sound id lives in, if it has a file. */
@@ -142,9 +145,12 @@ export class SfxFileBank {
     this.state.set(sheet, 'loading');
     const p = this.load(file.src).then(
       (buffer) => {
+        // let go of while it loaded (`releaseIdle` only takes decoded sheets, so this is a fresh load's)
+        if (this.loads.get(sheet) !== p) return false;
         this.decoded.set(sheet, buffer);
         this.shift.set(sheet, syncShift(file, buffer));
         this.state.set(sheet, 'ready');
+        this.lastUsed.set(sheet, this.now());
         return true;
       },
       (err: unknown) => {
@@ -158,20 +164,45 @@ export class SfxFileBank {
     return p;
   }
 
+  /**
+   * Lets go of the decoded sheets outside `keep` that no sound has played from for `idleMs` (memory round
+   * 2026-10-18: a Long War kept every age's sheet decoded, about 125 MB at 48 kHz). A released sheet is
+   * `idle` again: its sounds play the synthesized fallback while it loads again on their first use, and a
+   * voice already playing from it plays on. Returns the sheets let go of.
+   */
+  releaseIdle(keep: ReadonlySet<string>, idleMs: number, now: number = this.now()): string[] {
+    const gone: string[] = [];
+    for (const [sheet, at] of [...this.lastUsed]) {
+      if (keep.has(sheet) || now - at < idleMs || !this.decoded.has(sheet)) continue;
+      this.decoded.delete(sheet);
+      this.loads.delete(sheet);
+      this.shift.delete(sheet);
+      this.lastUsed.delete(sheet);
+      this.state.set(sheet, 'idle');
+      for (const [id, entry] of Object.entries(this.files.entries)) if (entry.sheet === sheet) this.clipCache.delete(id);
+      gone.push(sheet);
+    }
+    return gone;
+  }
+
   /** Loads the sheet of a sound id in the background (no-op when loaded, loading or failed). */
   request(id: SoundId): void {
     const sheet = this.sheetOf(id);
     if (sheet !== undefined && this.sheetState(sheet) === 'idle') void this.loadSheet(sheet);
   }
 
-  /** The clips of a sound once its sheet is decoded; undefined before that. */
+  /** The clips of a sound once its sheet is decoded; undefined before that. Marks the sheet used. */
   clips(id: SoundId): Clip[] | undefined {
-    const cached = this.clipCache.get(id);
-    if (cached) return cached;
     const entry = Object.hasOwn(this.files.entries, id) ? this.files.entries[id] : undefined;
     if (!entry) return undefined;
+    const cached = this.clipCache.get(id);
+    if (cached) {
+      this.lastUsed.set(entry.sheet, this.now());
+      return cached;
+    }
     const buffer = this.decoded.get(entry.sheet);
     if (!buffer) return undefined;
+    this.lastUsed.set(entry.sheet, this.now());
     const shift = this.shift.get(entry.sheet) ?? 0;
     const clips = entry.variants.map(([offset, duration]) => {
       const start = Math.min(Math.max(0, offset + shift), buffer.duration);
