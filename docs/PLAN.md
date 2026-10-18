@@ -70,3 +70,7 @@ what we believe, how sure we are, and what we post next because of it.
 - 2026-10-18: bandit built (owner question 2026-10-17). It ranks short duels and capsules first and wants a
   devlog tried; classic battle Reels are dropped from the mix (4 posts, lowest score). Today R10 (capsule) +
   R11 (duel); Monday: first devlog + a duel.
+- 2026-10-18 evening: devlog #2 (33 s) reached 108 in 8.5 h with 20 % watch, i.e. about 6.6 s watched on
+  average: the most seconds of any post (short duels about 3-4 s, R9 about 5 s). Watch % favours short videos,
+  so compare average seconds watched too. Reach ceiling (B6) holds: every post 105-130. Still 0 comments,
+  0 shares, 0 saves; followers 107.
