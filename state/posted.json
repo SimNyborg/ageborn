@@ -172,6 +172,21 @@
       "pillar": "battle",
       "hook": "teaser: 1 Land Dreadnought vs 6 Riveters, reply machine or wrench",
       "trial": false
+    },
+    {
+      "id": "18118555460094963",
+      "permalink": "https://www.instagram.com/reel/DepWEZxAUA6/",
+      "timestamp": "2026-10-18T18:38:37+0000",
+      "name": "r11-1-land-dreadnought-vs-6-riveters",
+      "kind": "reel",
+      "pillar": "battle",
+      "arm": "duel",
+      "hook": "1 Land Dreadnought vs 6 Riveters",
+      "trial": false,
+      "length_s": 7.6,
+      "format": "short-hook",
+      "hook_type": "matchup",
+      "experiment": "format"
     }
   ]
 }
