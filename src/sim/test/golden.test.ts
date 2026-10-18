@@ -4,7 +4,8 @@
  * 15-last-base plays Last Base Standing (A2.10.1) on the fixture plus a `last` format (`fixtureLast`,
  * its own content hash); SIM_VERSION 6.0.0 re-recorded 01-14 with identical hashes. SIM_VERSION 8.0.0 (A2.7
  * Ranks: the frozen fixture gained `economy.formation`) re-recorded all 17 deliberately (see replay.ts for
- * which hashes changed); 13 moved to a seed that still reaches the contact cap.
+ * which hashes changed); 13 moved to a seed that still reaches the contact cap. SIM_VERSION 9.0.0 (A9a, the
+ * de-phased first swing) re-recorded all 17; 14 and 15 moved to seeds that still cover their cases.
  *
  * Re-record after an intended rule change (and bump SIM_VERSION in replay.ts):
  *   UPDATE_GOLDEN=1 npx vitest run src/sim/test/golden.test.ts
@@ -223,11 +224,12 @@ const SCENARIOS: Scenario[] = [
   },
   {
     // SIM_VERSION 5.1.0: the same directors with Sudden Siege: a scaffold destroyed before it completes
-    // (built into a wave), Heavies breaking forts, decay and the Siege switch.
+    // (built into a wave), Heavies breaking forts, decay and the Siege switch. Seed 1371 since SIM_VERSION
+    // 9.0.0 (1311 before): with the A9a de-phase the old seed's wave no longer broke a scaffold.
     name: '14-forts-scaffold',
     cfg: () =>
       matchConfig({
-        seed: 1311,
+        seed: 1371,
         format: 'short',
         modifiers: ['sudden_siege', 'gold_rush', 'fast_forward'],
         sides: [
@@ -241,12 +243,14 @@ const SCENARIOS: Scenario[] = [
   {
     // SIM_VERSION 6.0.0 (A2.10.1 Last Base Standing): a Hold-at-home turtle against a Charge rush with no
     // Final Bell: every Siege step, base and turret damage by step, the Crumble rope on the side whose half
-    // holds the fight (the turtle alone), Crumble II, and the war ends when a base falls.
+    // holds the fight (the turtle alone), Crumble II, and the war ends when a base falls. Seed 1519 since
+    // SIM_VERSION 9.0.0 (1502 before): with the A9a de-phase the turtle won on the old seed, so the rope
+    // pulled on the rush's base instead.
     name: '15-last-base',
     content: fixtureLast,
     cfg: () =>
       matchConfig({
-        seed: 1502,
+        seed: 1519,
         format: 'last',
         content: fixtureLast,
         sides: [sideConfig(fixtureLast), sideConfig(fixtureLast, { isBot: true, label: 'AI Golden' })],
