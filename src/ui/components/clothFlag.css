@@ -12,10 +12,26 @@
   container-type: inline-size;
   pointer-events: none;
 }
+/*
+ * The strips' box: the cloth's width (a few px more at the fly, for its outline) and a quarter of its height
+ * more above and below, so the ripple (at most about a sixth of the height, in a gust) stays inside it. Its
+ * containment bounds the moving layers: a screen whose other animations need the main thread (a holo foil,
+ * an avatar's blink) then no longer pays for the cloth in every frame (review M S8: about half the cloth's
+ * running cost on VS and four fifths on Profile, Chromium at 4x).
+ */
+.ui-cloth__box {
+  position: absolute;
+  top: -25%;
+  bottom: -25%;
+  left: 0;
+  right: -4px;
+  contain: strict;
+}
 .ui-cloth__strip {
   position: absolute;
-  top: 0;
-  bottom: 0;
+  /* the cloth's own height inside the taller box: a quarter of the cloth is a sixth of the box */
+  top: 16.6667%;
+  bottom: 16.6667%;
   left: calc(var(--i) * 100cqw / var(--cloth-n));
   width: calc(100cqw / var(--cloth-n) + 1px);
 }

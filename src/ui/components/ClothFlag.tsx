@@ -5,9 +5,11 @@
  *
  * Cheap (review M S8): the motion is a set of CSS keyframes written once per page for each strip count and
  * cloth shape and shared by every flag (transforms and opacity only, played on the compositor); a flag adds
- * only two animated layers per strip (about one strip per 10 px) and no keyframes of its own. It holds its
- * resting pose through the screen's entrance and starts once the page is idle, from that same pose; it
- * pauses off screen. Reduce motion (`still`) keeps the resting pose, gently rippled, with no motion.
+ * only two animated layers per strip (about one strip per 10 px) and no keyframes of its own, inside a
+ * contained box (`ui-cloth__box`) that bounds them, so other main-thread animations on the screen do not pay
+ * for the cloth in every frame. It holds its resting pose through the screen's entrance and starts once the
+ * page is idle, from that same pose; it pauses off screen. Reduce motion (`still`) keeps the resting pose,
+ * gently rippled, with no motion.
  *
  * `src` is the flag picture (a base flag with its margin and swallowtail, a national flag's 4:3 picture);
  * `outline` draws the cloth's edge in its own dark (a national flag's picture has none). The box sizes the
@@ -140,14 +142,16 @@ export function ClothFlag(p: {
       data-testid={p.testid}
       data-strips={n}
     >
-      {Array.from({ length: n }, (_, i) => (
-        <span key={i} class={`ui-cloth__strip${i === 0 ? ' is-hoist' : ''}${i === n - 1 ? ' is-fly' : ''}`} style={{ '--i': i }}>
-          <span class="ui-cloth__s">
-            <span class="ui-cloth__img" />
-            <i class="ui-cloth__dark" />
+      <span class="ui-cloth__box">
+        {Array.from({ length: n }, (_, i) => (
+          <span key={i} class={`ui-cloth__strip${i === 0 ? ' is-hoist' : ''}${i === n - 1 ? ' is-fly' : ''}`} style={{ '--i': i }}>
+            <span class="ui-cloth__s">
+              <span class="ui-cloth__img" />
+              <i class="ui-cloth__dark" />
+            </span>
           </span>
-        </span>
-      ))}
+        ))}
+      </span>
     </span>
   );
 }
