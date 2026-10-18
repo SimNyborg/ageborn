@@ -146,6 +146,22 @@
       "format": "short-hook",
       "hook_type": "matchup",
       "experiment": "format"
+    },
+    {
+      "id": "18135368173679604",
+      "permalink": "https://www.instagram.com/reel/DeokdHrCTCJ/",
+      "timestamp": "2026-10-18T11:25:05+0000",
+      "name": "dv2-devlog-2-making-a-capsule-feel-good",
+      "kind": "reel",
+      "pillar": "devlog",
+      "arm": "devlog",
+      "hook": "Opening a capsule felt boring, here's how I fixed it",
+      "trial": false,
+      "length_s": 33.2,
+      "format": "devlog",
+      "hook_type": "story",
+      "experiment": "devlog",
+      "note": "owner request 2026-10-18"
     }
   ]
 }
