@@ -43,6 +43,8 @@ export interface ProceduralOptions {
 
 /** Budget slice for idle-time baking (ms). */
 const SLICE_MS = 8;
+/** An age's preload fills the big atlas pages (one upload at the end), whatever else bakes meanwhile. */
+const BULK = { bulk: true } as const;
 /** Ages baked synchronously at boot: the first two ages (DESIGN B5, B16; A17.13 "Stone and Bronze"). */
 export const BOOT_AGES: readonly AgeId[] = ['stone', 'bronze'];
 const SHARED_SPRITES = [
@@ -109,7 +111,7 @@ export class ProceduralAdapter implements VisualAdapter {
   async preload(ages: AgeId[]): Promise<void> {
     const todo = ages.filter((a) => !this.bakedAges.has(a));
     if (todo.length === 0) return;
-    await this.baker.bulk(() => this.preloadNow(todo));
+    await this.preloadNow(todo);
     // After the boot ages, single parts (an effect seen for the first time) bake to small pages.
     if (BOOT_AGES.every((a) => this.bakedAges.has(a))) this.baker.seal();
   }
@@ -124,7 +126,7 @@ export class ProceduralAdapter implements VisualAdapter {
     const lazy = todo.filter((a) => !BOOT_AGES.includes(a));
     if (boot.length) {
       const s0 = now();
-      for (const e of this.bakeListFor(boot)) this.baker.get(e.part, e.puppet.palette, e.tone);
+      for (const e of this.bakeListFor(boot)) this.baker.get(e.part, e.puppet.palette, e.tone, BULK);
       this.bakeSprites();
       cpu += now() - s0;
     }
@@ -136,7 +138,7 @@ export class ProceduralAdapter implements VisualAdapter {
       const sliceStart = now();
       while (i < list.length && now() - sliceStart < SLICE_MS) {
         const e = list[i++];
-        if (e) this.baker.get(e.part, e.palette, e.tone);
+        if (e) this.baker.get(e.part, e.palette, e.tone, BULK);
       }
       cpu += now() - sliceStart;
       if (i < list.length) await idle();
@@ -146,11 +148,56 @@ export class ProceduralAdapter implements VisualAdapter {
     this.preloadMs.push({ ages: todo, ms: cpu, wallMs: now() - t0, parts: this.baker.stats.parts - before });
   }
 
+  /** Puppets `prebake` has baked or is baking, with the bake's promise. */
+  private readonly prebaked = new Map<string, Promise<void>>();
+
+  /**
+   * Bakes these puppets' parts now, in idle-time slices (the game's skins, when a match or a stage first
+   * holds them; their age's `preload` skips them, see the provider's `bakePuppet`). Once per puppet; resolves
+   * when their parts are baked and uploaded. Unknown ids are skipped.
+   */
+  prebake(ids: readonly string[]): Promise<void> {
+    const waits: Promise<void>[] = [];
+    const list: { part: PartDef; palette: PuppetDef['palette']; tone: number }[] = [];
+    const fresh: string[] = [];
+    for (const id of ids) {
+      const had = this.prebaked.get(id);
+      if (had) {
+        waits.push(had);
+        continue;
+      }
+      const p = puppetById(id);
+      if (!p) continue;
+      fresh.push(id);
+      for (const s of p.slots) {
+        const part = getPart(s.part);
+        if (part) list.push({ part, palette: p.palette, tone: s.tone === 'back' ? STYLE.backTonePct : 0 });
+      }
+    }
+    if (fresh.length > 0) {
+      const run = (async () => {
+        let i = 0;
+        while (i < list.length) {
+          const sliceStart = now();
+          while (i < list.length && now() - sliceStart < SLICE_MS) {
+            const e = list[i++];
+            if (e) this.baker.get(e.part, e.palette, e.tone);
+          }
+          if (i < list.length) await idle();
+        }
+        this.baker.flush();
+      })();
+      for (const id of fresh) this.prebaked.set(id, run);
+      waits.push(run);
+    }
+    return Promise.all(waits).then(() => undefined);
+  }
+
   /** Shared sprites every battle needs (rings, glyphs, trims, common particles). */
   private bakeSprites(): void {
     for (const id of SHARED_SPRITES) {
       const p = getPart(id);
-      if (p) this.baker.get(p, SHARED_SPRITE_ZONES);
+      if (p) this.baker.get(p, SHARED_SPRITE_ZONES, 0, BULK);
     }
   }
 

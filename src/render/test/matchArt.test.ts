@@ -2,7 +2,10 @@
  * G7 (Safari memory): the unit sheets a battle holds. Per side its current age's deck with everything it
  * can field (summons, dismounting riders, a camp's levy, paradrops), its next age's from 70% of the evolve
  * bar or an Ascension (with the age's Vanguard), its queue and the units on the field; the battle view sends
- * that set to the provider's hold, again when it changes, and lets go when it is destroyed.
+ * that set to the provider's hold, again when it changes, and lets go when it is destroyed. Each visual
+ * carries how soon it may be drawn (2026-10-18, the provider's memory governor plans HD by it): the lane,
+ * then what appears within seconds (queues, what units on the lane bring on, an Ascension's Vanguard and
+ * conversions, paradrops and levies), then the current age's deck, then the next age's.
  */
 import type { AgeId, CardId, Loadout, MatchConfig, SideConfig } from '@/contracts';
 import { content } from '@/content';
@@ -12,7 +15,7 @@ import { createSim } from '@/sim';
 import { describe, expect, it } from 'vitest';
 import { BattleView } from '../battleView';
 import { ageOrder, xpThreshold } from '../hudModel';
-import { cardVisual, heldVisuals, nearEvolve, sideAgeCards, type HeldVisual } from '../matchArt';
+import { cardVisual, heldVisuals, HOLD_RANK, nearEvolve, sideAgeCards, type HeldVisual } from '../matchArt';
 
 const units = Object.values(content.units);
 const summoner = units.find((u) => !u.hidden && u.abilities.some((a) => a.kind === 'summon'));
@@ -130,5 +133,82 @@ describe('heldVisuals (G7)', () => {
     expect(sets[1]).toEqual(expect.arrayContaining(bronze));
     view.destroy();
     expect(released).toBe(1);
+  });
+
+  it('ranks each visual by how soon it may be drawn: the lane, then within seconds, the deck, the next age', () => {
+    const cfg = config();
+    const sim = createSim(cfg);
+    const ages = ageOrder(cfg);
+    const st = sim.state as unknown as { sides: { xp: number; ascendUntil: number; queue: { card: CardId; group: string }[] }[]; tick: number };
+    const rankOf = (m: Map<string, HeldVisual>, visualId: string): number | undefined => [...m.values()].find((v) => v.visualId === visualId)?.priority;
+    const deck = (cfg.sides[0].loadouts.stone?.units ?? []).filter((c): c is CardId => c !== null);
+    const [a, b, c] = deck.map((id) => content.units[id]!);
+    expect(a && b && c).toBeTruthy();
+    st.sides[0]!.queue.push({ card: b!.id, group: b!.group } as never);
+    let held = heldVisuals(cfg, sim.state, ages, [{ side: 0, card: a!.id }]);
+    expect(rankOf(held, a!.visualId)).toBe(HOLD_RANK.field);
+    expect(rankOf(held, b!.visualId)).toBe(HOLD_RANK.soon);
+    expect(rankOf(held, c!.visualId)).toBe(HOLD_RANK.deck);
+    // near the evolve the next age comes in last; in the Ascension its Vanguard and the queue's conversion move up
+    const need = xpThreshold(cfg, 0)!;
+    st.sides[0]!.xp = need * 1000;
+    const bronze = (cfg.sides[0].loadouts.bronze?.units ?? []).filter((x): x is CardId => x !== null).map((x) => content.units[x]!);
+    held = heldVisuals(cfg, sim.state, ages, []);
+    for (const u of bronze) expect(rankOf(held, u.visualId)).toBe(HOLD_RANK.next);
+    st.sides[0]!.ascendUntil = st.tick + 50;
+    held = heldVisuals(cfg, sim.state, ages, []);
+    const vanguard = units.find((u) => u.age === 'bronze' && u.group === 'infantry' && u.rarity === 'common' && !u.hidden)!;
+    expect(rankOf(held, vanguard.visualId)).toBe(HOLD_RANK.soon);
+    const converted = bronze.find((u) => u.group === b!.group);
+    if (converted) expect(rankOf(held, converted.visualId)).toBe(HOLD_RANK.soon);
+  });
+
+  it('a unit on the lane holds what it brings on, also once its side has left its age', () => {
+    expect(summoner).toBeTruthy();
+    const summoned = summoner!.abilities.find((x) => x.kind === 'summon');
+    const card = summoned?.kind === 'summon' ? summoned.card : '';
+    const cfg = config();
+    const sim = createSim(cfg);
+    const ages = ageOrder(cfg);
+    // a summoner of an age no deck holds, still on the lane
+    const held = heldVisuals(cfg, sim.state, ages, [{ side: 1, card: summoner!.id }]);
+    const visual = content.units[card]!.visualId;
+    expect([...held.values()].find((v) => v.visualId === visual)?.priority).toBe(HOLD_RANK.soon);
+  });
+
+  it('the battle view sends the set again when a rank moves (a card queued) and the provider sees the ranks', () => {
+    const cfg = config();
+    const sim = createSim(cfg);
+    const sets: HeldVisual[][] = [];
+    const art = Object.assign(new FakeArtProvider(), {
+      holdArt: () => ({
+        set: (v: readonly HeldVisual[]) => {
+          sets.push([...v]);
+          return Promise.resolve();
+        },
+        release: () => undefined,
+      }),
+    });
+    const view = new BattleView({ sim, art, audio: new FakeAudio() });
+    expect(sets).toHaveLength(1);
+    const card = (cfg.sides[0].loadouts.stone?.units ?? []).find((x): x is CardId => x !== null)!;
+    (sim.state as unknown as { sides: { queue: { card: CardId; group: string }[] }[] }).sides[0]!.queue.push({ card, group: content.units[card]!.group } as never);
+    view.onEvents([{ e: 'queueChanged', side: 0, tick: 1 } as never]);
+    expect(sets).toHaveLength(2);
+    expect(sets[1]!.find((v) => v.visualId === content.units[card]!.visualId)?.priority).toBe(HOLD_RANK.soon);
+    view.destroy();
+  });
+
+  it('a deck card that stood on the lane lately ranks as soon to appear; a card of an age its side left gains nothing', () => {
+    const cfg = config();
+    const sim = createSim(cfg);
+    const ages = ageOrder(cfg);
+    const card = (cfg.sides[0].loadouts.stone?.units ?? []).find((x): x is CardId => x !== null)!;
+    const old = units.find((u) => u.age === 'cosmic' && !u.hidden)!;
+    const rankOf = (m: Map<string, HeldVisual>, visualId: string): number | undefined => [...m.values()].find((v) => v.visualId === visualId)?.priority;
+    expect(rankOf(heldVisuals(cfg, sim.state, ages, []), content.units[card]!.visualId)).toBe(HOLD_RANK.deck);
+    const held = heldVisuals(cfg, sim.state, ages, [], [{ side: 0, card }, { side: 1, card: old.id }]);
+    expect(rankOf(held, content.units[card]!.visualId)).toBe(HOLD_RANK.soon);
+    expect(rankOf(held, old.visualId)).toBeUndefined();
   });
 });

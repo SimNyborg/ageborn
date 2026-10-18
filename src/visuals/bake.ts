@@ -96,7 +96,6 @@ export class PartBaker {
   private readonly runtimePageSize: number;
   /** Bulk bakes (boot, an age's preload) fill the big pages; after `seal()` single bakes use small ones. */
   private sealed = false;
-  private bulkDepth = 0;
   private readonly makeCanvas: (w: number, h: number) => HTMLCanvasElement | OffscreenCanvas | null;
   readonly enabled: boolean;
 
@@ -123,13 +122,18 @@ export class PartBaker {
     return this.cache.has(PartBaker.key(part, palette, tone));
   }
 
-  /** The baked textures of a part (baked now if needed). */
-  get(part: PartDef, palette: Palette, tone = 0): BakedPart {
+  /**
+   * The baked textures of a part (baked now if needed). `bulk` (an age's preload): it goes to the big pages
+   * even after `seal()`. Only the bake that asks for it: a part another view bakes meanwhile (an evolve's
+   * backdrop wipe while the next age preloads) takes a small page (2026-10-18: a global bulk flag gave one
+   * 173 px windmill sail a 2,048 px page of its own, 34 MB at DPR 2).
+   */
+  get(part: PartDef, palette: Palette, tone = 0, o: { bulk?: boolean } = {}): BakedPart {
     const key = PartBaker.key(part, palette, tone);
     const hit = this.cache.get(key);
     if (hit) return hit;
     const t0 = typeof performance !== 'undefined' ? performance.now() : 0;
-    const baked = this.bake(part, palette, tone);
+    const baked = this.bake(part, palette, tone, o.bulk === true);
     if (typeof performance !== 'undefined') this.stats.ms += performance.now() - t0;
     this.cache.set(key, baked);
     this.stats.parts++;
@@ -138,21 +142,12 @@ export class PartBaker {
 
   /**
    * Ends the boot bake: from now on a part baked on its own (an effect seen for the first time) goes
-   * to a small page, so its upload stays small. `bulk()` bakes still fill the big pages.
+   * to a small page, so its upload stays small. Bakes asked for as `bulk` still fill the big pages.
    */
   seal(): void {
     this.sealed = true;
   }
 
-  /** Runs a bulk bake (an age's preload): its parts go to the big pages and upload once at the end. */
-  async bulk<T>(run: () => Promise<T> | T): Promise<T> {
-    this.bulkDepth++;
-    try {
-      return await run();
-    } finally {
-      this.bulkDepth--;
-    }
-  }
 
   /** Uploads pages that changed since the last flush. */
   flush(): void {
@@ -169,13 +164,24 @@ export class PartBaker {
     return this.pages.map((p) => p.canvas);
   }
 
+  /**
+   * The page is going away (the provider's `releaseAll`): empties every atlas page's canvas, so its pixels go
+   * at once instead of with the garbage collector. Nothing draws from the pages afterwards.
+   */
+  releaseCanvases(): void {
+    for (const p of this.pages) {
+      p.canvas.width = 0;
+      p.canvas.height = 0;
+    }
+  }
+
   destroy(): void {
     for (const p of this.pages) p.source.destroy();
     this.pages.length = 0;
     this.cache.clear();
   }
 
-  private bake(part: PartDef, palette: Palette, tone: number): BakedPart {
+  private bake(part: PartDef, palette: Palette, tone: number, bulk: boolean): BakedPart {
     const b = partBounds(part);
     const s = this.o.pxPerLu;
     const origin = { x: b.minX - PAD / s, y: b.minY - PAD / s };
@@ -188,7 +194,7 @@ export class PartBaker {
     const hasTeam = split.team.length > 0;
     const hasBanner = split.team.some((l) => l.banner);
     const draw = (group: LayerGroup, stripes = false): Texture => {
-      const slot = this.alloc(w, h);
+      const slot = this.alloc(w, h, bulk);
       if (!slot) return Texture.EMPTY;
       const { page, x, y } = slot;
       const t = new CanvasTarget(page.ctx, [s, 0, 0, s, x + PAD - b.minX * s, y + PAD - b.minY * s]);
@@ -210,9 +216,9 @@ export class PartBaker {
     return baked;
   }
 
-  private alloc(w: number, h: number): { page: Page; x: number; y: number } | null {
+  private alloc(w: number, h: number, bulk: boolean): { page: Page; x: number; y: number } | null {
     if (w > this.pageSize || h > this.pageSize) return null;
-    const runtime = this.sealed && this.bulkDepth === 0;
+    const runtime = this.sealed && !bulk;
     // a runtime part too big for a small page gets a page of its own size class
     let want = this.pageSize;
     if (runtime) {
@@ -252,7 +258,8 @@ export class PartBaker {
     if (!ctx) return null;
     // Create at resolution 1 (keeps the canvas size exact), then set the bake scale so texture
     // sizes read in lu.
-    const source = new CanvasSource({ resource: canvas, resolution: 1 });
+    // labelled for the dev memory hook (`textureMemory.ts` `memoryKind`)
+    const source = new CanvasSource({ resource: canvas, resolution: 1, label: `bake page ${size}${runtime ? ' runtime' : ''}` });
     source.resolution = this.o.pxPerLu;
     const page: Page = { canvas, ctx, source, x: 0, y: 0, shelfH: 0, dirty: false, size, runtime };
     this.pages.push(page);

@@ -70,6 +70,19 @@ export function trackSource(s: TextureSource): void {
   s.once('destroy', () => tracked.delete(s));
 }
 
+/** What a decoded image is, by its label (the memory hook's `kinds`; review M, 2026-10-18). */
+export type MemoryKind = 'unitHd' | 'unitSd' | 'bake' | 'world' | 'backdrop' | 'other';
+
+/** The kind of a texture source or cached image by its label (an image URL, or a name such as `bake page`). */
+export function memoryKind(label: string): MemoryKind {
+  if (/art\/units\/[^?#]*\.hd\.(png|webp)/.test(label)) return 'unitHd';
+  if (/art\/units\//.test(label)) return 'unitSd';
+  if (label.startsWith('bake page')) return 'bake';
+  if (/art\/(turrets|bases|forts)\//.test(label)) return 'world';
+  if (/art\/(backdrops|ground)\/|^backdrop/.test(label)) return 'backdrop';
+  return 'other';
+}
+
 export interface TextureMemory {
   /** Decoded copies on the CPU side, bytes. */
   cpu: number;
@@ -83,19 +96,22 @@ export interface TextureMemory {
   caches: Record<string, { images: number; bytes: number }>;
   /** With `detail`: the largest items, `cpu` or `gpu`, by label (dev diagnostics). */
   top?: { kind: 'cpu' | 'gpu'; label: string; bytes: number }[];
+  /** With `kinds`: bytes (CPU and GPU together) by what the images are ({@link memoryKind}). */
+  kinds?: Record<MemoryKind, number>;
 }
 
 /** Sums the decoded image memory now. `renderer`: the app's Pixi renderer (its uploaded textures). */
-export function textureMemory(renderer?: unknown, o: { detail?: number } = {}): TextureMemory {
+export function textureMemory(renderer?: unknown, o: { detail?: number; kinds?: boolean } = {}): TextureMemory {
   const seen = new Set<TextureSource>();
   const items: { kind: 'cpu' | 'gpu'; label: string; bytes: number }[] = [];
+  const list = (o.detail ?? 0) > 0 || o.kinds === true;
   let gpu = 0;
   const managed = (renderer as { texture?: { managedTextures?: readonly (TextureSource | null)[] } } | undefined)?.texture?.managedTextures ?? [];
   for (const s of managed) {
     if (!s || s.destroyed) continue;
     seen.add(s);
     gpu += gpuBytes(s);
-    if (o.detail) items.push({ kind: 'gpu', label: s.label || s.constructor.name, bytes: gpuBytes(s) });
+    if (list) items.push({ kind: 'gpu', label: s.label || s.constructor.name, bytes: gpuBytes(s) });
   }
   // sheets and images Pixi's loader holds, uploaded or not
   const cache = (Cache as unknown as { _cache?: Map<string, unknown> })._cache;
@@ -112,7 +128,7 @@ export function textureMemory(renderer?: unknown, o: { detail?: number } = {}): 
     counted.add(s.resource);
     const b = resourceBytes(s.resource);
     cpu += b;
-    if (o.detail && b > 0) items.push({ kind: 'cpu', label: s.label || s.constructor.name, bytes: b });
+    if (list && b > 0) items.push({ kind: 'cpu', label: s.label || s.constructor.name, bytes: b });
   }
   const caches: Record<string, { images: number; bytes: number }> = {};
   for (const [name, l] of ledgers) {
@@ -121,11 +137,16 @@ export function textureMemory(renderer?: unknown, o: { detail?: number } = {}): 
       if (counted.has(im)) continue;
       counted.add(im);
       bytes += resourceBytes(im);
-      if (o.detail) items.push({ kind: 'cpu', label: `${name}: ${im.src.slice(-60)}`, bytes: resourceBytes(im) });
+      if (list) items.push({ kind: 'cpu', label: `${name}: ${im.src}`, bytes: resourceBytes(im) });
     }
     caches[name] = { images: l.size, bytes };
     cpu += bytes;
   }
+  let kinds: Record<MemoryKind, number> | undefined;
+  if (o.kinds) {
+    kinds = { unitHd: 0, unitSd: 0, bake: 0, world: 0, backdrop: 0, other: 0 };
+    for (const it of items) kinds[memoryKind(it.label.replace(/^[A-Za-z]+: /, ''))] += it.bytes;
+  }
   const top = o.detail ? items.sort((a, b) => b.bytes - a.bytes).slice(0, o.detail) : undefined;
-  return { cpu, gpu, total: cpu + gpu, sources: seen.size, caches, ...(top ? { top } : {}) };
+  return { cpu, gpu, total: cpu + gpu, sources: seen.size, caches, ...(top ? { top } : {}), ...(kinds ? { kinds } : {}) };
 }

@@ -12,6 +12,12 @@
  * The card showcase draws on its own WebGL app, which can only upload from a sheet's decoded copy: after
  * the onboarding's two battles at DPR 2 the forced upgrade's stage drew no Bonker (2026-10-09, its sheet's
  * copy was released), so the second test plays them and checks that nothing uploads a closed bitmap.
+ *
+ * Round 3 (2026-10-18): with every card owned (the test profile) both War Plans are full of the largest
+ * units and a Standard War peaked at 645-718 MB. The memory governor (`visuals/sheetBudget.ts`) keeps every
+ * held unit sheet at least on its 1x copy and gives HD by how soon a unit may be drawn, within a budget; the
+ * test profile's war against an opponent at its own levels (so the war runs through the ages) must stay
+ * under the same budget.
  */
 import { expect, test, type Page } from '@playwright/test';
 import { fastForward, pastOnboarding, watchPage, type AgebornDev } from './helpers';
@@ -23,8 +29,12 @@ interface Mem {
   total: number;
   cpu: number;
   gpu: number;
-  sheets: { loaded: number } | null;
+  sheets: { loaded: number; sd?: number } | null;
   fallbacks: { units: number; last: string } | null;
+  /** Decoded bytes by kind (unit sheets HD and 1x, baked parts, world sheets, backdrops, other). */
+  kinds?: Record<string, number>;
+  /** The memory governor's plan: unit sheets planned HD and 1x. */
+  plan?: { hd: number; sd: number; plannedBytes: number } | null;
 }
 
 interface Step {
@@ -62,15 +72,21 @@ async function warPeak(page: Page, problems: { errors: string[] }, label: string
   expect((await step(page, 0)).mem.fallbacks).toEqual({ units: 0, last: '' });
   let peak: Mem | null = null;
   let top = 0;
+  let last: Mem | null = null;
   for (let i = 0; i < 400; i++) {
     const s = await step(page, 100);
     if (!s.battle) break;
+    last = s.mem;
     top = Math.max(top, ...s.battle.ages);
     if (!peak || s.mem.total > peak.total) peak = s.mem;
     if (s.battle.phase === 'ended') break;
     await page.waitForTimeout(200);
   }
-  const note = `${label}: peak ${mb(peak?.total ?? 0)} MB (cpu ${mb(peak?.cpu ?? 0)}, gpu ${mb(peak?.gpu ?? 0)}), ${peak?.sheets?.loaded ?? 0} unit sheets, last age index ${top}`;
+  const kinds = peak?.kinds ? `; ${Object.entries(peak.kinds).map(([k, v]) => `${k} ${mb(v)}`).join(', ')}` : '';
+  const plan = peak?.plan ? `; planned ${peak.plan.hd} HD + ${peak.plan.sd} 1x (${mb(peak.plan.plannedBytes)} MB)` : '';
+  // units drawn with their fallback over the whole fast-forwarded war (the opening's are checked below)
+  const fallbacks = last?.fallbacks ? `; fallbacks ${last.fallbacks.units}` : '';
+  const note = `${label}: peak ${mb(peak?.total ?? 0)} MB (cpu ${mb(peak?.cpu ?? 0)}, gpu ${mb(peak?.gpu ?? 0)}), ${peak?.sheets?.loaded ?? 0} unit sheets${peak?.sheets?.sd ? ` + ${peak.sheets.sd} 1x` : ''}, last age index ${top}${kinds}${plan}${fallbacks}`;
   test.info().annotations.push({ type: 'memory', description: note });
   console.log(`[memory] ${test.info().project.name}: ${note}`);
   // the match went through several evolves (Gunpowder or later), so the budget covers them
@@ -85,6 +101,51 @@ test('G7: a long Standard War at DPR 2 keeps decoded images under the budget, an
   const problems = watchPage(page);
   await page.goto('./?dev=1&autopilot=1&quick=standard');
   await warPeak(page, problems, 'Standard War');
+});
+
+test('round 3: the test profile (every card owned) plays a Standard War at DPR 2 under the budget', async ({ browser, baseURL }) => {
+  // About 1.5 minutes in Chromium here (the war runs to its later ages); CI's machines and its
+  // software-rendered WebKit take two to three times as long.
+  test.setTimeout(1_200_000);
+  // The profile is made in a page of its own at DPR 1: the dialog reloads the page, and a second page load
+  // at DPR 2 crashed CI's software-rendered WebKit. The war then plays in a fresh page that loads once.
+  const setup = await browser.newContext({ viewport: { width: 1280, height: 720 }, ...(baseURL ? { baseURL } : {}) });
+  const first = await setup.newPage();
+  await first.goto('./?tester=1');
+  const dialog = first.getByTestId('tester-dialog');
+  await expect(dialog).toBeVisible({ timeout: 60_000 });
+  await dialog.getByTestId('tester-everything').click();
+  await Promise.all([first.waitForURL((u) => !u.search.includes('tester'), { timeout: 60_000 }), dialog.getByTestId('tester-confirm').click()]);
+  await expect(first.getByTestId('play').first()).toBeVisible({ timeout: 60_000 });
+  const storageState = await setup.storageState();
+  await setup.close();
+
+  const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2, storageState, ...(baseURL ? { baseURL } : {}) });
+  try {
+    const page = await context.newPage();
+    const problems = watchPage(page);
+    // `autopilot=1`: the boot waits for its art (the opening ages' base and turret sheets) and the autopilot
+    // plays your side; past the onboarding, the page opens on Home
+    await page.goto('./?dev=1&autopilot=1');
+    await page.waitForFunction(() => (window as unknown as { __agebornDev?: unknown }).__agebornDev !== undefined, null, { timeout: 60_000 });
+    // a Standard War against Kettle's War Plan at Legendary (tier X) and the profile's own card levels (at
+    // level 1 the AI loses before the later ages, which hold the largest units)
+    const started = await page.evaluate(() => {
+      type Side = { loadouts: Record<string, { units: (string | null)[] } | undefined>; levels: Record<string, number> };
+      type Setup = { config: { sides: Side[] } };
+      type Ctl = { save: { peek(): { flags: Record<string, boolean> } | null }; quickBattle(f: string, d?: string): { setup: Setup }; startSetup(s: Setup): unknown };
+      const c = (window as unknown as { __agebornDev: { controller: Ctl } }).__agebornDev.controller;
+      if (c.save.peek()?.flags['tester.profile'] !== true) return 'no test profile';
+      const setup = c.quickBattle('standard', 'legendary').setup;
+      const [me, foe] = setup.config.sides as [Side, Side];
+      c.startSetup({ ...setup, config: { ...setup.config, sides: [me, { ...foe, levels: { ...foe.levels, ...me.levels } }] } });
+      return 'ok';
+    });
+    expect(started).toBe('ok');
+    await warPeak(page, problems, 'Test profile, Standard War');
+  } finally {
+    await context.close();
+  }
 });
 
 const AGES = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'] as const;

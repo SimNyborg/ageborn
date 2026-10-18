@@ -210,12 +210,15 @@ async function start(root: HTMLElement): Promise<void> {
       },
       /**
        * Decoded image memory now (G7, Safari memory): textures on the GPU, decoded copies on the CPU and
-       * the unit sheets loaded (`visuals/textureMemory.ts`; the e2e memory budget reads it).
+       * the unit sheets loaded (`visuals/textureMemory.ts`; the e2e memory budget reads it), the memory
+       * governor's plan (`plan`: unit sheets planned HD and 1x, planned bytes, the budget; `sheetBudget.ts`)
+       * and the decoded bytes by kind (`kinds`: unit sheets HD and 1x, baked parts, world sheets, backdrops).
        */
       memory(o: { detail?: number } = {}): unknown {
         const sheets = (art as { atlas?: { sheetStats?: () => unknown } }).atlas?.sheetStats?.() ?? null;
         const fallbacks = (art as { fallbacks?: { units: number; last: string } }).fallbacks ?? null;
-        return { ...textureMemory(pixi.app.renderer, o), sheets, fallbacks };
+        const plan = (art as { sheetPlan?: () => unknown }).sheetPlan?.() ?? null;
+        return { ...textureMemory(pixi.app.renderer, { ...o, kinds: true }), sheets, fallbacks, plan };
       },
       /** Client (page) point of your turret mount `i` on the battle on screen, for e2e taps. */
       mountPoint(i: number): { x: number; y: number } | null {

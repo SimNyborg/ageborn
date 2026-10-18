@@ -38,6 +38,7 @@ import type {
   UnitPose,
   UnitState,
   UnitView,
+  VisualId,
 } from '@/contracts';
 import { mulberry32, xmur3, type CosmeticRng } from '@/core';
 import { reachAreaMax, type PowerReachRules } from '@/core/powerReach';
@@ -53,7 +54,7 @@ import { cloneFeelConfig, defaultFeelConfig, type RenderFeelConfig } from './fee
 import { HealthBars, barWidthLu, newBar, stepBar, type BarDraw, type BarState } from './healthbars';
 import { HOLD_FLAG_FOOT_Y, HOLD_FLAG_TOP_Y, HoldFlagMarker } from './holdFlag';
 import { ageOrder, canEvolve, xpThreshold } from './hudModel';
-import { heldVisuals, nearEvolve, type ArtHoldLike } from './matchArt';
+import { heldVisuals, nearEvolve, RECENT_FIELD_TICKS, type ArtHoldLike } from './matchArt';
 import { BattleInput, edgeSpeed } from './input';
 import { createLayers, type BattleLayers } from './layers';
 import { LANE_LU, MILLI_LU, WORLD_LEFT_LU, WORLD_RIGHT_LU, baseCenterX, facingOf, gateX, pToX, xToP } from './layout';
@@ -346,6 +347,8 @@ export class BattleView {
   private holdReady: Promise<void> | null = null;
   private holdSettled = true;
   private holdSyncAt = 0;
+  /** When each side's card last stood on the lane (sim tick), for the hold's ranks (`RECENT_FIELD_TICKS`). */
+  private readonly fieldSeen = new Map<string, { side: Side; card: CardId; tick: number }>();
   /** Each side's next age whose scene the backdrop was asked to load (`<side>.<age>`, `prefetchNextScenes`). */
   private readonly scenesAsked = new Set<string>();
   /** Created on the first base flash (a filter needs a GPU context). */
@@ -474,8 +477,16 @@ export class BattleView {
     const near: [boolean, boolean] = [nearEvolve(this.sim.state, this.config, 0), nearEvolve(this.sim.state, this.config, 1)];
     if (!force && near[0] === this.holdNear[0] && near[1] === this.holdNear[1]) return;
     this.holdNear = near;
-    const want = heldVisuals(this.config, this.sim.state, this.ages, this.units.values());
-    const key = [...want.keys()].sort().join('|');
+    const tick = this.sim.state.tick;
+    for (const u of this.units.values()) this.fieldSeen.set(`${u.side}:${u.card}`, { side: u.side, card: u.card, tick });
+    const recent: { side: Side; card: CardId }[] = [];
+    for (const [k, v] of this.fieldSeen) {
+      if (tick - v.tick > RECENT_FIELD_TICKS) this.fieldSeen.delete(k);
+      else recent.push(v);
+    }
+    const want = heldVisuals(this.config, this.sim.state, this.ages, this.units.values(), recent);
+    // a visual whose rank moved (queued, on the lane, gone) is sent again: the provider plans HD by rank
+    const key = [...want].map(([k, v]) => `${k}:${v.priority ?? ''}`).sort().join('|');
     if (key === this.holdKey) return;
     this.holdKey = key;
     const ready = hold.set([...want.values()]);
@@ -509,7 +520,28 @@ export class BattleView {
         }
       }
     }
-    if (want.length > 0) void Promise.resolve(this.art.preload(want)).catch(() => undefined);
+    if (want.length === 0) return;
+    // of the turrets only the decks' (2026-10-18, iPhone memory); a provider without it loads every turret
+    const match = (this.art as ArtProvider & { preloadMatch?: (o: { ages: AgeId[]; turrets: { visualId: VisualId; skin?: string | null }[] }) => Promise<void> }).preloadMatch;
+    const p = match ? match.call(this.art, { ages: want, turrets: this.deckTurrets(want) }) : this.art.preload(want);
+    void Promise.resolve(p).catch(() => undefined);
+  }
+
+  /** The turrets both sides' decks can build in these ages (visual and skin), for `preloadAhead`. */
+  private deckTurrets(ages: readonly AgeId[]): { visualId: VisualId; skin?: string | null }[] {
+    const out = new Map<string, { visualId: VisualId; skin?: string | null }>();
+    for (const side of [0, 1] as const) {
+      const cfg = this.config.sides[side];
+      for (const age of ages) {
+        for (const card of cfg.loadouts[age]?.turrets ?? []) {
+          const visualId = card ? this.config.content.turrets[card]?.visualId : undefined;
+          if (!card || !visualId) continue;
+          const skin = cfg.skins[card] ?? null;
+          out.set(`${visualId}@${skin ?? ''}`, skin ? { visualId, skin } : { visualId });
+        }
+      }
+    }
+    return [...out.values()];
   }
 
   /**
@@ -1304,9 +1336,21 @@ export class BattleView {
         this.syncHold(true);
         this.preloadAhead();
         return;
-      case 'ageUp':
+      case 'ageUp': {
         this.syncHold(true);
         this.preloadAhead();
+        // the turrets and forts of ages no side shows any more go (2026-10-18; those still standing stay)
+        const keep = ([0, 1] as const).flatMap((side) => {
+          const i = this.sim.state.sides[side].ageIndex;
+          return [this.ages[i], this.ages[i + 1]].filter((a): a is AgeId => a !== undefined);
+        });
+        (this.art as ArtProvider & { releaseAges?: (keep: readonly AgeId[]) => number }).releaseAges?.(keep);
+        return;
+      }
+      case 'queueChanged':
+      case 'queueConverted':
+        // a queued card's HD sheet loads while it trains (the provider's memory governor ranks the queue high)
+        this.syncHold(true);
         return;
       case 'baseDamaged': {
         if (ev.sourceId === null) return; // Siege decay is not an attack

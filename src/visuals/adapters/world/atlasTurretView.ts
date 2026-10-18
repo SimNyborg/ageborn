@@ -35,6 +35,8 @@ export interface AtlasTurretOptions {
   side: Side;
   teamColor: number;
   seed: number;
+  /** Runs once when the view is destroyed (the world atlas counts the views on a sheet, 2026-10-18). */
+  onDestroy?: () => void;
 }
 
 type Mode = 'idle' | 'fire' | 'build' | 'sell' | 'modernise';
@@ -502,6 +504,7 @@ export class AtlasTurretView implements TurretView {
     this.puffs.clear();
     this.bits.clear();
     this.root.destroy({ children: true });
+    this.o.onDestroy?.();
   }
 
   /** Test and gallery hooks. */

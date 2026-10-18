@@ -312,7 +312,7 @@ export class BackdropTextures {
     const f = { ...FRAMES[kind], pxPerLu: res };
     if (kind === 'sky') themeSky(ctx, id, age, th, f, { celestial: hints?.celestial !== 'own' });
     else themeLayer(canvas, ctx, id, kind === 'back' ? 'far' : kind, age, th, f);
-    const source = new CanvasSource({ resource: canvas, resolution: 1 });
+    const source = new CanvasSource({ resource: canvas, resolution: 1, label: `backdrop themed ${key}` });
     source.resolution = res;
     const p = { tex: new Texture({ source }), ambient: base.ambient };
     this.cache.set(key, p);
@@ -383,7 +383,7 @@ export class BackdropTextures {
     const resource = src.resource as CanvasImageSource | undefined;
     if (resource) ctx.drawImage(resource, 0, 0, canvas.width, canvas.height);
     themeGround(canvas, ctx, id, th, { ...GROUND_FRAME, pxPerLu: src.resolution });
-    const source = new CanvasSource({ resource: canvas, resolution: 1 });
+    const source = new CanvasSource({ resource: canvas, resolution: 1, label: `backdrop ground ${key}` });
     source.resolution = src.resolution;
     const p = { tex: new Texture({ source }), ambient: [] };
     this.cache.set(key, p);
@@ -483,7 +483,7 @@ export class BackdropTextures {
     const ctx = canvas.getContext('2d');
     let ambient: AmbientSpec[] = [];
     if (ctx) ambient = paint(ctx, f, canvas);
-    const source = new CanvasSource({ resource: canvas, resolution: 1 });
+    const source = new CanvasSource({ resource: canvas, resolution: 1, label: `backdrop painted ${key}` });
     source.resolution = res;
     const p = { tex: new Texture({ source }), ambient };
     this.cache.set(key, p);

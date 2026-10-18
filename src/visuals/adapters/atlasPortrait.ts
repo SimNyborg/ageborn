@@ -27,26 +27,90 @@ export function portraitStillBase(source: string): string | null {
   return slug !== undefined && !UNITS_WITHOUT_STILLS.has(slug) ? `art/portraits/${slug}` : null;
 }
 
-const images = new Map<string, Promise<HTMLImageElement>>();
+/**
+ * Decoded stills kept for the next portrait (least recently used first out). The finished portraits are
+ * cached as data URLs by the provider, so a still is only needed while one is drawn; the cache used to keep
+ * every still for the session (2026-10-18: 64 stills, 17 MB, through a war; every card's two, 87 MB, after
+ * the collection). An evicted still loads again from the HTTP cache when another portrait needs it.
+ */
+export const PORTRAIT_STILLS_KEPT = 24;
+
+/**
+ * Loads by URL and keeps at most `max` results, the least recently used going first; `kept` and `dropped`
+ * follow what it holds (the memory ledger). A load evicted before it finished still resolves for its callers
+ * but is not kept; a failed load is forgotten, so a later call tries again.
+ */
+export class LruLoads<T> {
+  private readonly items = new Map<string, Promise<T>>();
+  constructor(
+    private readonly max: number,
+    private readonly load: (url: string) => Promise<T>,
+    private readonly hooks: { kept?(url: string, value: T): void; dropped?(url: string): void } = {},
+  ) {}
+
+  get(url: string): Promise<T> {
+    const hit = this.items.get(url);
+    if (hit) {
+      // most recently used last
+      this.items.delete(url);
+      this.items.set(url, hit);
+      return hit;
+    }
+    const mine: Promise<T> = this.load(url).then((v) => {
+      if (this.items.get(url) === mine) this.hooks.kept?.(url, v);
+      return v;
+    });
+    mine.catch(() => {
+      if (this.items.get(url) === mine) this.items.delete(url);
+    });
+    this.items.set(url, mine);
+    while (this.items.size > this.max) {
+      const oldest = this.items.keys().next().value as string;
+      this.items.delete(oldest);
+      this.hooks.dropped?.(oldest);
+    }
+    return mine;
+  }
+
+  has(url: string): boolean {
+    return this.items.has(url);
+  }
+
+  /** Forgets everything it holds (loads in flight still resolve for their callers). */
+  clear(): void {
+    for (const url of [...this.items.keys()]) {
+      this.items.delete(url);
+      this.hooks.dropped?.(url);
+    }
+  }
+
+  get size(): number {
+    return this.items.size;
+  }
+}
+
 /** The decoded portrait stills this cache holds (the memory hook, `textureMemory.ts`). */
 const ledger = imageLedger('portraitStills');
 
-function loadImage(url: string): Promise<HTMLImageElement> {
-  let p = images.get(url);
-  if (!p) {
-    p = new Promise((resolve, reject) => {
+const stills = new LruLoads<HTMLImageElement>(
+  PORTRAIT_STILLS_KEPT,
+  (url) =>
+    new Promise((resolve, reject) => {
       const im = new Image();
-      im.onload = () => {
-        ledger.set(url, im);
-        resolve(im);
-      };
+      im.onload = () => resolve(im);
       im.onerror = () => reject(new Error(`portrait still "${url}" failed`));
       im.src = url;
-    });
-    p.catch(() => images.delete(url));
-    images.set(url, p);
-  }
-  return p;
+    }),
+  { kept: (url, im) => ledger.set(url, im), dropped: (url) => ledger.delete(url) },
+);
+
+function loadImage(url: string): Promise<HTMLImageElement> {
+  return stills.get(url);
+}
+
+/** Lets go of every cached still (the page is going away: the provider's `releaseAll`). */
+export function forgetPortraitStills(): void {
+  stills.clear();
 }
 
 const css = (c: number): string => `#${c.toString(16).padStart(6, '0')}`;

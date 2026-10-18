@@ -125,6 +125,8 @@ export class WorldAtlas {
   private readonly sheets = new Map<string, WorldSheet>();
   private readonly pending = new Map<string, Promise<WorldSheet | null>>();
   private readonly failed = new Set<string>();
+  /** Live views drawing each sheet (turrets, forts): `release` never takes a sheet from under one. */
+  private readonly views = new Map<string, number>();
 
   constructor(
     private readonly url: (source: string) => string,
@@ -191,12 +193,62 @@ export class WorldAtlas {
     return n;
   }
 
-  /** Loads the world sheets of the given ages among `defs`. */
-  async preload(ages: readonly AgeId[], defs: readonly VisualDef[]): Promise<void> {
+  /** Counts a view drawing a sheet until the returned release runs (idempotent). */
+  retain(source: string): () => void {
+    this.views.set(source, (this.views.get(source) ?? 0) + 1);
+    let done = false;
+    return () => {
+      if (done) return;
+      done = true;
+      const n = (this.views.get(source) ?? 1) - 1;
+      if (n > 0) this.views.set(source, n);
+      else this.views.delete(source);
+    };
+  }
+
+  /** Live views on a sheet (tests). */
+  viewCount(source: string): number {
+    return this.views.get(source) ?? 0;
+  }
+
+  /**
+   * Lets go of the loaded sheets `drop` names that no live view draws (a battle's passed ages, 2026-10-18):
+   * their textures and decoded copies go (Pixi's `Assets.unload`); a sheet asked for again loads again. Base
+   * skin models are left to `forgetSkins`, loads in flight to finish. Returns how many sheets went.
+   */
+  release(drop: (source: string) => boolean): number {
+    let n = 0;
+    for (const source of [...this.sheets.keys()]) {
+      if (isBaseSkinSource(source) || (this.views.get(source) ?? 0) > 0 || !drop(source)) continue;
+      this.sheets.delete(source);
+      this.failed.delete(source);
+      n++;
+      if (this.load === loadWithAssets) {
+        const url = this.url(source);
+        void Promise.resolve(Assets.unload(url)).catch((e: unknown) => console.warn(`[visuals] unloading "${url}" failed`, e));
+      }
+    }
+    return n;
+  }
+
+  /**
+   * The page is going away (the provider's `releaseAll`): closes the decoded bitmap behind every loaded sheet,
+   * so none waits for the garbage collector while the next page loads. Nothing draws from them afterwards.
+   */
+  releaseDecoded(): void {
+    for (const sheet of this.sheets.values()) {
+      const seen = new Set<Texture['source']>();
+      for (const frames of Object.values(sheet.animations)) for (const t of frames) seen.add(t.source);
+      for (const s of seen) if (typeof ImageBitmap !== 'undefined' && s.resource instanceof ImageBitmap) s.resource.close();
+    }
+  }
+
+  /** Loads the world sheets of the given ages among `defs` (only those `want` accepts, when given). */
+  async preload(ages: readonly AgeId[], defs: readonly VisualDef[], want?: (source: string) => boolean): Promise<void> {
     const set = new Set(ages);
     const todo = [...new Set(defs.filter((d) => d.kind === 'atlas' && isWorldSource(d.source)).map((d) => d.source))].filter((s) => {
       const a = worldSourceAge(s);
-      return a !== null && set.has(a);
+      return a !== null && set.has(a) && (want?.(s) ?? true);
     });
     await Promise.all(todo.map((s) => this.ensure(s)));
   }

@@ -430,6 +430,13 @@ export class AtlasAdapter implements VisualAdapter {
   private readonly main: SheetSet;
   /** Showcase-only HD copies, used while the battle draws the 1x sheets (`lease` with `hd`). */
   private readonly hdOnly: SheetSet;
+  /**
+   * 1x copies the battle draws on an HD screen while the memory governor keeps a sheet off HD (`lease` with
+   * `density: 'sd'`, `sheetBudget.ts`); empty on a 1x screen, where `main` is the 1x set.
+   */
+  private readonly sd: SheetSet;
+  /** Live unit views drawing a 1x copy (`sd`), per source: they switch to HD once it has loaded (`upgradeViews`). */
+  private readonly sdViews = new Map<string, Set<AtlasUnitView>>();
   private readonly sheets: Map<string, AtlasData>;
   private readonly failed: Set<string>;
   private readonly pending: Map<string, Promise<void>>;
@@ -449,6 +456,7 @@ export class AtlasAdapter implements VisualAdapter {
     this.world = new WorldAtlas((s) => this.url(s));
     this.main = sheetSet(o.hd === true);
     this.hdOnly = sheetSet(true);
+    this.sd = sheetSet(false);
     this.sheets = this.main.sheets;
     this.failed = this.main.failed;
     this.pending = this.main.pending;
@@ -480,12 +488,19 @@ export class AtlasAdapter implements VisualAdapter {
     // units with a sheet also get a rendered card still (falls back to the procedural portrait)
     if (what === 'portrait') return portraitStillBase(def.source) !== null;
     if (!this.sheets.has(def.source)) {
+      // the governor's 1x copy draws the unit as well (`sheetBudget.ts`)
+      if (what === 'unit' && this.sd.sheets.has(def.source)) return true;
       // a unit whose sheet is not in yet (a battle's hold loads the decks ahead; this is the last resort):
       // load it now, draw the fallback meanwhile. Not pinned: a battle's hold or a view keeps it.
       if (what === 'unit' && unitSheetAge(def.source)) this.loadLoose(def.source);
       return false;
     }
     return what === 'unit' || what === 'effect' || what === 'projectile';
+  }
+
+  /** True when the battle's views of this unit sheet are HD (an HD screen; the governor's 1x set is not). */
+  get hdScreen(): boolean {
+    return this.main.hd;
   }
 
   /**
@@ -521,15 +536,15 @@ export class AtlasAdapter implements VisualAdapter {
 
   /**
    * A loaded sheet's texture source joins its set (memory hook) and, with a renderer, the release queue:
-   * the battle's sheets only. A showcase-only HD copy is drawn by the showcase's own WebGL app, which
-   * needs its decoded copy, and unloads a few seconds after the stage goes.
+   * the battle's sheets only (HD and the governor's 1x copies). A showcase-only HD copy is drawn by the
+   * showcase's own WebGL app, which needs its decoded copy, and unloads a few seconds after the stage goes.
    */
   private adopt(set: SheetSet, source: string, d: AtlasData): void {
     const ts = d.source;
     if (!ts) return;
     set.sources.set(source, [...(set.sources.get(source) ?? []), ts]);
     trackSource(ts);
-    if (set === this.main) this.releaser?.add(ts);
+    if (set === this.main || set === this.sd) this.releaser?.add(ts);
   }
 
   /**
@@ -553,9 +568,12 @@ export class AtlasAdapter implements VisualAdapter {
     };
   }
 
-  /** Keeps a battle-set sheet for a non-unit drawer (a fort's crew) until the returned release runs. */
+  /**
+   * Keeps a battle-set sheet for a non-unit drawer (a fort's crew) until the returned release runs: the copy
+   * it draws (`sheetFor`), HD or the governor's 1x one.
+   */
   holdSheet(source: string): () => void {
-    return this.retainView(this.main, source);
+    return this.retainView(!this.main.sheets.has(source) && this.sd.sheets.has(source) ? this.sd : this.main, source);
   }
 
   /** Loads a sheet into a set (once): the HD sheet where the set wants it, else (or on failure) the 1x one. */
@@ -646,9 +664,11 @@ export class AtlasAdapter implements VisualAdapter {
    * decoded copy is kept while leased (decoded again first if it was released: `core` and `ready` wait
    * for that); a closed copy would draw nothing there (G7). `linger`: how long the sheet stays after this
    * lease, the last thing holding it, ends (default `leaseLingerMs`; a battle's hold lets go at once).
+   * `density: 'sd'` (the memory governor, `sheetBudget.ts`): the 1x copy on an HD screen, which the battle
+   * draws while no HD copy is held (the same as the default on a 1x screen).
    */
-  lease(source: string, o: { hd?: boolean; cpu?: boolean; linger?: number } = {}): SheetLease {
-    const set = o.hd && !this.main.hd && unitSheetAge(source) ? this.hdOnly : this.main;
+  lease(source: string, o: { hd?: boolean; cpu?: boolean; linger?: number; density?: 'hd' | 'sd' } = {}): SheetLease {
+    const set = o.density === 'sd' && this.main.hd && unitSheetAge(source) ? this.sd : o.hd && !this.main.hd && unitSheetAge(source) ? this.hdOnly : this.main;
     const counts = this.leases.get(set) ?? new Map<string, number>();
     this.leases.set(set, counts);
     counts.set(source, (counts.get(source) ?? 0) + 1);
@@ -694,32 +714,74 @@ export class AtlasAdapter implements VisualAdapter {
     };
   }
 
-  /** Live showcase leases on a source (tests, the dev overlay). */
-  leaseCount(source: string, o: { hd?: boolean } = {}): number {
-    const set = o.hd && !this.main.hd ? this.hdOnly : this.main;
+  /** Live showcase leases on a source (tests, the dev overlay); `density: 'sd'` counts the governor's 1x leases. */
+  leaseCount(source: string, o: { hd?: boolean; density?: 'hd' | 'sd' } = {}): number {
+    const set = o.density === 'sd' && this.main.hd ? this.sd : o.hd && !this.main.hd ? this.hdOnly : this.main;
     return this.leases.get(set)?.get(source) ?? 0;
   }
 
   /**
-   * Unit sheets loaded now (the memory hook): the battle's set, the showcase's HD copies, loads in flight,
-   * sheets with live views, and the release queue (uploads waiting, CPU copies released).
+   * Unit sheets loaded now (the memory hook): the battle's set (`loaded`, HD on an HD screen), the governor's
+   * 1x copies on an HD screen (`sd`), the showcase's HD copies, loads in flight, sheets with live views, live
+   * views drawing a 1x copy, and the release queue (uploads waiting, CPU copies released).
    */
-  sheetStats(): { loaded: number; hdCopies: number; pending: number; viewed: number; queued: number; released: number; sources: string[] } {
+  sheetStats(): { loaded: number; sd: number; hdCopies: number; pending: number; viewed: number; sdViews: number; queued: number; released: number; sources: string[]; sdSources: string[] } {
     const r = this.releaser?.stats ?? { queued: 0, released: 0 };
+    let sdViews = 0;
+    for (const v of this.sdViews.values()) sdViews += v.size;
     return {
       loaded: this.main.sheets.size,
+      sd: this.sd.sheets.size,
       hdCopies: this.hdOnly.sheets.size,
-      pending: this.main.pending.size + this.hdOnly.pending.size,
-      viewed: this.main.views.size + this.hdOnly.views.size,
+      pending: this.main.pending.size + this.hdOnly.pending.size + this.sd.pending.size,
+      viewed: this.main.views.size + this.hdOnly.views.size + this.sd.views.size,
+      sdViews,
       queued: r.queued,
       released: r.released,
       sources: [...this.main.sheets.keys()].sort(),
+      sdSources: [...this.sd.sheets.keys()].sort(),
     };
   }
 
   /** True when the showcase's HD copy of a source is loaded (tests). */
   hasHdCopy(source: string): boolean {
     return this.hdOnly.sheets.has(source);
+  }
+
+  /** True when the governor's 1x copy of a source is loaded (an HD screen; tests, the provider). */
+  hasSdSheet(source: string): boolean {
+    return this.sd.sheets.has(source);
+  }
+
+  /** True when live battle views draw the battle's copy of a source (on an HD screen, its HD copy). */
+  hdDrawn(source: string): boolean {
+    return this.main.hd && (this.main.views.get(source) ?? 0) > 0;
+  }
+
+
+  /** True when the battle can draw the unit sheet now: its battle copy or the governor's 1x copy is loaded. */
+  canDrawSource(source: string): boolean {
+    return this.main.sheets.has(source) || this.sd.sheets.has(source);
+  }
+
+  /**
+   * The memory governor raised a sheet back to HD (`sheetBudget.ts`): once the HD copy has loaded, every live
+   * view drawing the 1x copy switches to it (same frames and timing; the swap is not visible but for the
+   * sharper picture), so the 1x copy can unload. A view playing an attack variant whose HD extras are still
+   * on the way stays on its 1x copy until a later call. Returns how many views switched.
+   */
+  upgradeViews(source: string): number {
+    const hd = this.main.sheets.get(source);
+    const views = this.sdViews.get(source);
+    if (!hd || !this.main.hd || !views || views.size === 0 || this.main.pending.has(source)) return 0;
+    let n = 0;
+    for (const v of [...views]) {
+      const release = this.retainView(this.main, source);
+      // the view's old release (its 1x copy's count, and this registry) runs inside the swap
+      if (v.swapSheet(hd, release)) n++;
+      else release();
+    }
+    return n;
   }
 
   private cancelUnload(set: SheetSet, source: string): void {
@@ -779,6 +841,22 @@ export class AtlasAdapter implements VisualAdapter {
     if (set.unloading.get(source) === done) set.unloading.delete(source);
   }
 
+  /**
+   * The page is going away (`VisualsArtProvider.releaseAll`): closes every decoded copy the unit sheet sets
+   * still hold (sheets waiting for their upload, showcase copies), so they do not wait for the garbage
+   * collector while the next page loads. Nothing draws from them afterwards.
+   */
+  releaseDecoded(): void {
+    for (const set of [this.main, this.sd, this.hdOnly]) {
+      for (const sources of set.sources.values()) {
+        for (const ts of sources) {
+          if (this.releaser) this.releaser.forget(ts);
+          else if (typeof ImageBitmap !== 'undefined' && ts.resource instanceof ImageBitmap) ts.resource.close();
+        }
+      }
+    }
+  }
+
   /** Non-world sheet sources of the given ages (sheets outside `art/units/<age>/` count for every age). */
   private unitSources(ages: readonly AgeId[]): string[] {
     const set = new Set(ages);
@@ -792,10 +870,12 @@ export class AtlasAdapter implements VisualAdapter {
   /**
    * Loads the sheets of `ages`. Unit sheets of the blocking ages (Stone, where every match starts)
    * and sheets without an age are awaited; the other ages stream in the background so the boot
-   * download stays small (B16). `unitSheetsReady` waits for all of them.
+   * download stays small (B16). `unitSheetsReady` waits for all of them. `turrets` (a match, 2026-10-18):
+   * of the turret sheets only these (the decks'), not every turret of the ages; the bases all the same.
    */
-  async preload(ages: AgeId[]): Promise<void> {
-    const world = this.world.preload(ages, this.o.entries());
+  async preload(ages: AgeId[], o: { turrets?: readonly string[] } = {}): Promise<void> {
+    const turrets = o.turrets ? new Set(o.turrets) : null;
+    const world = this.world.preload(ages, this.o.entries(), turrets ? (s) => !/art\/turrets\//.test(s) || turrets.has(s) : undefined);
     // per match (G7): a battle's hold loads its decks' unit sheets (`lazyUnits`)
     if (this.o.lazyUnits) {
       await world;
@@ -821,7 +901,7 @@ export class AtlasAdapter implements VisualAdapter {
    * age's Ranged Common sheet this way (A16.14.8).
    */
   sheetFor(source: string): AtlasData | undefined {
-    const s = this.sheets.get(source);
+    const s = this.sheets.get(source) ?? this.sd.sheets.get(source);
     if (!s) this.loadLoose(source);
     return s;
   }
@@ -842,17 +922,50 @@ export class AtlasAdapter implements VisualAdapter {
     return def.kind === 'atlas' && this.hdOnly.sheets.has(def.source);
   }
 
+  /**
+   * The set a new battle view of a unit sheet draws from: the battle's copy, unless the memory governor holds
+   * only the 1x copy (`lease` with `density: 'sd'`) and that has loaded, so an HD copy kept alive by its last
+   * views is not handed to new ones and goes once they do. Null when neither copy is in.
+   */
+  private drawSet(source: string): SheetSet | null {
+    const main = this.main.sheets.has(source);
+    const sd = this.sd.sheets.has(source);
+    if (main && sd) {
+      // views alone do not count here: they are what keeps a demoted HD copy alive
+      const mainLeased = (this.leases.get(this.main)?.get(source) ?? 0) > 0 || this.pinned.has(source);
+      const sdLeased = (this.leases.get(this.sd)?.get(source) ?? 0) > 0;
+      return mainLeased || !sdLeased ? this.main : this.sd;
+    }
+    return main ? this.main : sd ? this.sd : null;
+  }
+
   createUnit(r: ViewRequest): UnitView {
-    const hd = r.hd ? this.hdOnly.sheets.get(r.def.source) : undefined;
-    const sheet = hd ?? this.sheet(r.def);
-    const release = this.retainView(hd ? this.hdOnly : this.main, r.def.source);
-    return new AtlasUnitView(r.def, sheet, this.o.decor, r.side, teamColor(r.side, r.teamPreset), {
+    const src = r.def.source;
+    const hd = r.hd ? this.hdOnly.sheets.get(src) : undefined;
+    const set = hd ? this.hdOnly : (this.drawSet(src) ?? this.main);
+    const sheet = hd ?? set.sheets.get(src) ?? this.sheet(r.def);
+    const retained = this.retainView(set, src);
+    let release = retained;
+    let view: AtlasUnitView | null = null;
+    if (set === this.sd) {
+      // a 1x view switches to HD once the governor raises its sheet again (`upgradeViews`)
+      const views = this.sdViews.get(src) ?? new Set<AtlasUnitView>();
+      this.sdViews.set(src, views);
+      release = () => {
+        if (view) views.delete(view);
+        if (views.size === 0 && this.sdViews.get(src) === views) this.sdViews.delete(src);
+        retained();
+      };
+    }
+    view = new AtlasUnitView(r.def, sheet, this.o.decor, r.side, teamColor(r.side, r.teamPreset), {
       seed: r.seed,
       gait: sheet.gait ?? inferGait(r.key, r.def),
       style: this.o.motionStyle ?? 'cartoon',
       ...(this.o.quality ? { quality: this.o.quality } : {}),
       onDestroy: release,
     });
+    if (set === this.sd) this.sdViews.get(src)?.add(view);
+    return view;
   }
 
   createProjectile(r: EffectRequest): EffectView {
@@ -866,7 +979,9 @@ export class AtlasAdapter implements VisualAdapter {
   createTurret(r: ViewRequest): TurretView {
     const sheet = this.world.get(r.def.source);
     if (!sheet) throw new Error(`Atlas turret sheet "${r.def.source}" is not loaded (${r.key})`);
-    return new AtlasTurretView({ def: r.def, sheet, decor: this.o.decor, side: r.side, teamColor: teamColor(r.side, r.teamPreset), seed: r.seed });
+    // the sheet stays while this view draws it (a battle lets go of a passed age's turrets, `WorldAtlas.release`)
+    const onDestroy = this.world.retain(r.def.source);
+    return new AtlasTurretView({ def: r.def, sheet, decor: this.o.decor, side: r.side, teamColor: teamColor(r.side, r.teamPreset), seed: r.seed, onDestroy });
   }
 
   createBase(r: BaseRequest): BaseView {
@@ -1088,9 +1203,9 @@ class AtlasUnitView implements UnitView {
   /** A rider shot that started during a body attack (clock ms of its impact): it may still play `attack_alt` (review N2). */
   private pendingAlt: number | null = null;
   /** Sprite scale: the sheet's density, times `heightLu / sheet heightLu` for an entry drawn smaller (levies). */
-  private readonly k: number;
+  private k: number;
   /** `k` over the sheet density: lu in the sheet -> lu on screen (1 except for levies). */
-  private readonly hk: number;
+  private hk: number;
   private readonly shadow: Container | null = null;
   private readonly shadowScaleX: number = 1;
   private readonly gait: UnitGait | null;
@@ -1130,7 +1245,7 @@ class AtlasUnitView implements UnitView {
   private sinkDust = false;
   private destroyed = false;
   /** The adapter's view count on this sheet (G7); runs once on destroy. */
-  private readonly onDestroy: (() => void) | null;
+  private onDestroy: (() => void) | null;
   // ANIM_SPEC R1-R8 state
   private unitId = 0;
   private attackPlays = 0;
@@ -1161,7 +1276,7 @@ class AtlasUnitView implements UnitView {
 
   constructor(
     private readonly def: VisualDef,
-    private readonly sheet: AtlasData,
+    private sheet: AtlasData,
     private readonly decor: PartBaker,
     side: Side,
     private readonly team: number,
@@ -1759,8 +1874,50 @@ class AtlasUnitView implements UnitView {
     this.place(ox, sx, sy);
   }
 
+  /** The last `place` offset and squash, so a sheet swap can re-place the body at once (`swapSheet`). */
+  private placedOx = 0;
+  private placedSx = 1;
+  private placedSy = 1;
+
+  /**
+   * Draws from another density of the same sheet from now on (the memory governor raising a unit from its 1x
+   * copy to HD, `sheetBudget.ts`). Both copies come from one render with the same frames, clips and timing,
+   * so the playing tracks keep their place and only the textures and the sprite scale change. False (and
+   * nothing changes) when the new copy lacks a clip a playing track uses (its extras failed). `onDestroy`
+   * replaces the view's release; the old one runs now.
+   */
+  swapSheet(sheet: AtlasData, onDestroy: () => void): boolean {
+    if (this.destroyed || sheet === this.sheet) return false;
+    const tracks = [this.base, this.action, this.shownTrack].filter((t): t is Track => t !== null);
+    for (const t of tracks) if ((sheet.animations[t.anim]?.length ?? 0) !== t.frames.length) return false;
+    for (const t of tracks) {
+      t.frames = sheet.animations[t.anim] ?? t.frames;
+      t.team = sheet.animations[`${t.anim}_team`] ?? null;
+    }
+    this.sheet = sheet;
+    const hk = sheet.heightLu && this.def.heightLu > 0 ? this.def.heightLu / sheet.heightLu : 1;
+    this.k = sheet.luPerUnit * (Math.abs(hk - 1) > 0.02 ? hk : 1);
+    this.hk = this.k / (sheet.luPerUnit || 1);
+    // the walk cross-dissolve's ghost still shows a frame of the old copy
+    this.ghostT = -1;
+    for (const g of [this.ghostBase, this.ghostTeam]) {
+      setFrame(g, Texture.EMPTY);
+      g.visible = false;
+    }
+    // the new textures and scale show at once, also on a paused battle that runs no update
+    this.show(0);
+    this.place(this.placedOx, this.placedSx, this.placedSy);
+    const old = this.onDestroy;
+    this.onDestroy = onDestroy;
+    old?.();
+    return true;
+  }
+
   /** Puts the body: offsets, the R2 frame lock, rotation about the feet (flyers: the hit centre), scale. */
   private place(ox: number, sx: number, sy: number): void {
+    this.placedOx = ox;
+    this.placedSx = sx;
+    this.placedSy = sy;
     const r = this.rot;
     // flyers pitch about their middle, everything else leans from the feet
     const cx = hovers(this.gait) ? this.anchors.hitCenter.x * this.facing : 0;
