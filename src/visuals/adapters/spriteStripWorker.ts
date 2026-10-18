@@ -150,15 +150,13 @@ async function run(j: StripJob): Promise<StripReply> {
 
 // A fresh worker's first 2D drawing sets its canvas up, which took about 1 s while Home's island started (the page's
 // other canvases and GPU work at the same moment): the main thread starts the worker as the visuals load, and this
-// pays that set-up then, before any strip waits for it. It runs after the jobs already queued have started their
-// fetches (30-40 ms at 4x CPU that a kept strip, which is never drawn, need not wait for).
-setTimeout(() => {
-  try {
-    new OffscreenCanvas(1, 1).getContext('2d', CPU_2D)?.fillRect(0, 0, 1, 1);
-  } catch {
-    // no OffscreenCanvas 2D: a strip job answers `unsupported`
-  }
-}, 0);
+// pays that set-up at once, before the page's heavy start and before any strip waits for it (5-40 ms then at 4x CPU;
+// run 50 ms later, it took a second on a first visit).
+try {
+  new OffscreenCanvas(1, 1).getContext('2d', CPU_2D)?.fillRect(0, 0, 1, 1);
+} catch {
+  // no OffscreenCanvas 2D: a strip job answers `unsupported`
+}
 
 scope.onmessage = (e) => {
   const j = e.data;
