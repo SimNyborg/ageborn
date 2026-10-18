@@ -171,6 +171,8 @@ export class LiveMatch implements LiveHud {
     answers: (f: PersonaForce | null): void => this.simulated?.forceAnswers(f),
     /** The simulated opponent proposes `speed` now. */
     propose: (speed: TempoSpeed): void => this.simulated?.forcePropose(speed, this.now()),
+    /** Whether the simulated opponent proposes a speed on its own (false: only `propose` makes it; e2e). */
+    ownProposals: (on: boolean): void => this.simulated?.setOwnProposals(on),
     /** The simulated opponent says this now. */
     say: (msg: Extract<LiveMessage, { k: 'emote' | 'chat' }>): void => this.simulated?.forceSay(msg, this.now()),
     /** As if the page had been hidden for `ms`: the battle catches up (or, past the limit, is left). */

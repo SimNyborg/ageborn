@@ -130,11 +130,21 @@ function onBattle<T>(page: Page, fn: string, arg?: unknown): Promise<T> {
   );
 }
 
-/** Home's Battle (Ranked): the search finds a player, VS, then the battle runs. */
+/**
+ * Home's Battle (Ranked): the search finds a player, VS, then the battle runs. The specs make every proposal of
+ * the opponent's themselves (`dev.propose`): one of its own (from 0:25 of game time, which a slow machine reaches
+ * mid-test) would close an open menu or block a proposal of yours in the middle of a check.
+ */
 async function rankedBattle(page: Page): Promise<void> {
   await page.getByTestId('play').click();
   await expect(page.getByTestId('battle')).toBeVisible({ timeout: 60_000 });
   await expect.poll(() => onBattle<string>(page, 'return b ? b.session.status.peek() : "none"'), { timeout: 60_000 }).toBe('running');
+  await onBattle(page, 'b.live && b.live.dev.ownProposals(false)');
+}
+
+/** Two frames and a task in the page: what a screen just drawn set up after paint (its effects) has run. */
+function afterPaint(page: Page): Promise<unknown> {
+  return page.evaluate(() => new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(done, 0)))));
 }
 
 test.describe('live matches (queue item 34)', () => {
@@ -153,6 +163,8 @@ test.describe('live matches (queue item 34)', () => {
     await expect(page.getByTestId('hud-live-menu-drop')).toBeVisible();
     await expect(page.getByTestId('pause')).toHaveCount(0);
     expect(await onBattle<string>(page, 'return b.session.status.peek()')).toBe('running');
+    // Escape closes it (its dismiss listens from the frame after it shows)
+    await afterPaint(page);
     await page.keyboard.press('Escape');
     await expect(page.getByTestId('hud-live-menu-drop')).toHaveCount(0);
 

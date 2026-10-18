@@ -16,7 +16,6 @@ type W = { __menuStages?: MenuStages };
 
 // read in the page: `alive` is a getter on the shared app, which a serialized copy would not carry (review M B1)
 const sharedAlive = (page: Page) => page.evaluate(() => (window as unknown as W).__menuStages?.shared.alive ?? null);
-const actorCount = (page: Page) => page.evaluate(() => (window as unknown as W).__menuStages?.lastHome?.debug().actors.length ?? -1);
 
 test('the island goes live on one canvas, keeps it through a ranked search and lets the context go at the match', async ({ page }) => {
   await pastOnboarding(page);
@@ -27,15 +26,27 @@ test('the island goes live on one canvas, keeps it through a ranked search and l
   expect(await sharedAlive(page)).toBe(true);
   // the still troops step aside for the live ones
   await expect.poll(() => page.locator('.hd__unit').first().evaluate((e) => getComputedStyle(e).opacity)).toBe('0');
-  const first = await canvas.elementHandle();
+  await page.evaluate(() => {
+    (window as unknown as { __firstCanvas?: Element | null }).__firstCanvas = document.querySelector('canvas[data-testid="home-stage-canvas"]');
+  });
 
-  // the ranked Ladder (Home's default mode): search, found, VS
-  await page.getByTestId('play').first().click();
-  await expect(page.locator('.hub.is-found')).toHaveCount(1, { timeout: 20_000 });
+  // the ranked Ladder (Home's default mode): search, found, VS. The found beat lasts 1.5 s before VS lets the menus'
+  // context go, so its checks run in the page, in the frames it shows (a slow WebKit spends seconds on each step):
   // the same canvas (never a second stage or context), and the found player's troops on it
-  expect(await first!.evaluate((c) => c.isConnected)).toBe(true);
-  await expect(canvas).toHaveCount(1);
-  await expect.poll(() => actorCount(page)).toBe(4);
+  const found = page.waitForFunction(
+    () => {
+      if (!document.querySelector('.hub.is-found')) return false;
+      const w = window as unknown as W & { __firstCanvas?: Element | null };
+      const canvases = document.querySelectorAll('canvas[data-testid="home-stage-canvas"]');
+      const actors = w.__menuStages?.lastHome?.debug().actors.length ?? -1;
+      return actors === 4 ? { canvases: canvases.length, same: canvases[0] === w.__firstCanvas } : false;
+    },
+    null,
+    { polling: 'raf', timeout: 30_000 },
+  );
+  found.catch(() => undefined);
+  await page.getByTestId('play').first().click();
+  expect(await (await found).jsonValue()).toEqual({ canvases: 1, same: true });
 
   await page.getByTestId('vs-me').first().waitFor({ timeout: 20_000 });
   await expect(page.getByTestId('home-stage-canvas')).toHaveCount(0);
