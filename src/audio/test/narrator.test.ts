@@ -4,10 +4,10 @@
  * file skipped quietly so the subtitle shows as before.
  */
 import { describe, expect, it } from 'vitest';
-import { DECODED_KEEP, DEFAULT_MAX_DELAY_MS, DUCK_EVERY_MS, DUCK_SLICE_MS, NARRATOR_DUCK_DB, Narrator, RETRY_AFTER_MS, type NarratorEvent, type NarratorOptions, type VoiceFile } from '../narrator';
+import { DECODED_KEEP, DEFAULT_MAX_DELAY_MS, DUCK_EVERY_MS, DUCK_SLICE_MAX_MS, DUCK_SLICE_MS, NARRATOR_DUCK_DB, Narrator, RETRY_AFTER_MS, type NarratorEvent, type NarratorOptions, type VoiceFile } from '../narrator';
 import { PREPARE_DUCK_MS } from '../service';
 import { VOICE_LINES } from '../voice.gen';
-import { type FakeBuffer, FakeBufferSource, FakeContext, type FakeGain } from './fakeContext';
+import { FakeBuffer, FakeBufferSource, FakeContext, type FakeGain } from './fakeContext';
 
 const file = (id: string, seconds = 1): VoiceFile => ({ src: `audio/voice/${id}.aaaa.ogg`, alt: `audio/voice/${id}.bbbb.m4a`, seconds, bytes: 100, altBytes: 150, text: id, hash: 'h' });
 
@@ -126,6 +126,7 @@ describe('Narrator', () => {
     expect(DUCK_SLICE_MS).toBeGreaterThan(DUCK_EVERY_MS);
     // a slice must never read as the evolve's Ascension duck, which decodes the next age's music
     expect(DUCK_SLICE_MS).toBeLessThan(PREPARE_DUCK_MS);
+    expect(DUCK_SLICE_MAX_MS).toBeLessThan(PREPARE_DUCK_MS);
     r.timers.tick();
     r.timers.tick();
     expect(r.ducks).toHaveLength(3);
@@ -133,6 +134,38 @@ describe('Narrator', () => {
     expect(r.timers.live.size).toBe(0);
     r.timers.tick();
     expect(r.ducks).toHaveLength(3);
+  });
+
+  it('a late renewal (timers lag on a busy main thread) lengthens the slices, never past the line', async () => {
+    const r = rig();
+    const sr = r.ctx.sampleRate;
+    r.ctx.decodeAudioData = () => Promise.resolve(new FakeBuffer(1, 3 * sr, sr));
+    await r.n.say('a');
+    const step = (lateMs: number, audioS: number): number => {
+      r.clock.t += DUCK_EVERY_MS + lateMs;
+      r.ctx.advance(audioS);
+      r.timers.tick();
+      return r.ducks.at(-1)![1];
+    };
+    expect(r.ducks).toEqual([[NARRATOR_DUCK_DB, DUCK_SLICE_MS]]);
+    // on time: the short slice (a cut lets the music back up soon)
+    expect(step(0, 0.25)).toBe(DUCK_SLICE_MS);
+    // 400 ms late: the slice grows by twice that; renewals on time shorten it again slowly
+    expect(step(400, 0.65)).toBe(DUCK_SLICE_MS + 800);
+    const eased = step(0, 0.25);
+    expect(eased).toBeLessThan(DUCK_SLICE_MS + 800);
+    expect(eased).toBeGreaterThan(DUCK_SLICE_MS);
+    // never longer than the cap
+    expect(step(1250, 0.05)).toBe(DUCK_SLICE_MAX_MS);
+    // and never past the line's end (3 s) plus a short tail
+    expect(step(0, 1.7)).toBeCloseTo(250, 3);
+    r.ctx.advance(0.2);
+    expect(r.n.current).toBeNull();
+    // the next line starts with the longer slice, back to the short one after a run of renewals on time
+    await r.n.say('b');
+    expect(r.ducks.at(-1)![1]).toBeGreaterThan(DUCK_SLICE_MS);
+    for (let k = 0; k < 9; k++) step(0, 0.25);
+    expect(r.ducks.at(-1)![1]).toBe(DUCK_SLICE_MS);
   });
 
   it('a new line cuts the one playing (a short fade, the source stopped) and only one plays', async () => {

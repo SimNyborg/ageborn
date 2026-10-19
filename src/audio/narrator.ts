@@ -7,7 +7,8 @@
  * - One line at a time: a new line cuts the one playing (a short fade), and `stop` ends it. The narrator never
  *   takes input; the app stops a line when its step is done, skipped or left, so a tap is never held up.
  * - While a line plays the music ducks through the existing duck (`AudioService.music.duck`, A13's 6 dB),
- *   renewed in short slices, so a line cut short lets the music back up within half a second.
+ *   renewed in short slices that end with the line, so a line cut short lets the music back up within about
+ *   half a second; when timers lag on a busy main thread the slices grow, so the duck holds there too.
  * - Files load only when asked: `prefetch` fetches and decodes the next line or two; `say` loads a line that is
  *   not in yet and plays it if it arrives in time (`maxDelayMs`), else gives up quietly.
  * - Each line is a mono Ogg Opus file with an AAC copy (AAC first where Ogg Opus is not supported, else the
@@ -57,9 +58,21 @@ export type NarratorEvent =
 
 /** How far the music ducks while the narrator speaks (dB; A13's duck depth). */
 export const NARRATOR_DUCK_DB = 6;
-/** Each duck slice (ms), renewed every `DUCK_EVERY_MS` while a line plays. */
+/** Each duck slice (ms), renewed every `DUCK_EVERY_MS` while a line plays; no slice runs past the line's end. */
 export const DUCK_SLICE_MS = 600;
 export const DUCK_EVERY_MS = 250;
+/**
+ * A renewal that comes late (timers lag while the main thread is busy, as in a capsule show on a slow device)
+ * lengthens the slices by twice its lateness, up to this (ms; under the service's `PREPARE_DUCK_MS`), so the
+ * duck holds instead of pumping. Later lines keep the longer slice; each renewal on time shortens it by
+ * `DUCK_EASE_MS` again.
+ */
+export const DUCK_SLICE_MAX_MS = 1500;
+const DUCK_EASE_MS = 100;
+/** Lateness (ms) that is ordinary timer jitter. */
+const DUCK_JITTER_MS = 50;
+/** The duck lasts this long past the line's last sound (ms), then releases. */
+const DUCK_TAIL_MS = 150;
 /** A line that is not ready this long after `say` is dropped (its moment has passed). */
 export const DEFAULT_MAX_DELAY_MS = 2500;
 /** Decoded lines kept (a 2 s line is about 0.4 MB decoded). */
@@ -134,6 +147,8 @@ export class Narrator {
   private readonly now: () => number;
   private readonly timers: NarratorTimers;
   private readonly warned = new Set<string>();
+  /** The duck slice now (ms): `DUCK_SLICE_MS`, longer after late renewals (`DUCK_SLICE_MAX_MS`). */
+  private slice = DUCK_SLICE_MS;
   /** Every file request made (tests, the dev log): line id and source. */
   readonly requests: { id: string; src: string }[] = [];
 
@@ -227,7 +242,16 @@ export class Narrator {
     } catch {
       return false;
     }
-    const duck = (): void => this.o.host.duck(NARRATOR_DUCK_DB, DUCK_SLICE_MS);
+    const ends = t + buffer.duration;
+    let last = this.now();
+    const duck = (): void => {
+      const at = this.now();
+      const late = at - last - DUCK_EVERY_MS;
+      last = at;
+      this.slice = late > DUCK_JITTER_MS ? Math.min(DUCK_SLICE_MAX_MS, Math.max(this.slice, DUCK_SLICE_MS + 2 * late)) : Math.max(DUCK_SLICE_MS, this.slice - DUCK_EASE_MS);
+      const left = (ends - ctx.currentTime) * 1000 + DUCK_TAIL_MS;
+      if (left > 0) this.o.host.duck(NARRATOR_DUCK_DB, Math.min(this.slice, left));
+    };
     duck();
     const p: Playing = { id, ctx, src, gain, duckTimer: this.timers.every(duck, DUCK_EVERY_MS) };
     this.playing = p;
