@@ -13,6 +13,7 @@ The output is:
 | Music | `public/audio/music/<cue>.<hash>.ogg` | Ogg Opus, stereo 48 kbps (battle, menu, capsule), 56 kbps (stingers); layer stems mono 40 kbps |
 | AAC copies | `public/audio/*/<name>.<hash>.m4a` | AAC-LC: music 56 kbps stereo, sheets 48 kbps mono, stems 40 kbps mono (for browsers without Ogg Opus; B16 music budget) |
 | Runtime manifest | `src/audio/assets.gen.ts` | generated: sheets (with `alt` and `sync`), per-id variant offsets, music files (with `alt`) and loop windows |
+| Narrator lines | `public/audio/voice/<key>.<hash>.ogg` and `.m4a`, manifest `src/audio/voice.gen.ts` | one mono Ogg Opus (64 kbps) and AAC (48 kbps) file per line, rendered with Kokoro (see "Narrator voice") |
 
 The game (`src/audio/files.ts`, `service.ts`, `musicEngine.ts`) plays these files through Web Audio
 with the existing buses, ducking and voice limits. Browsers that cannot play Ogg Opus get the AAC copy
@@ -175,6 +176,46 @@ their `layer.intensity.<age>` stems and the `.k7`-`.k9` stingers). A plain `buil
 2. Add an `@sfx("<id>", target, variants)` design in `sfx/sounds.py`.
 3. `render_all.sh sfx`, check `analyze.py sfx`, listen on the soundboard.
 4. `npm test` checks that every id has a file and every variant lies inside its sheet.
+
+## Narrator voice (queue item 39)
+
+The narrator reads the tutorial's lines and a few first-time moments aloud in the voice the owner chose
+("Lewis", docs/owner-queue.md item 39). The lines are rendered offline with **Kokoro v1.0** (int8 ONNX,
+Apache 2.0, through `kokoro-onnx` 0.6.1) and shipped as small files; nothing runs at play time.
+
+| File | Does |
+|---|---|
+| `voice/lines.json` | The line list as data: i18n keys (`each` renders one line per filling of a placeholder, e.g. the Anti-heavy hint per card) |
+| `voice/list-lines.ts` | Prints the lines with their English text from `src/i18n/*.en.json` (`npx tsx tools/audio/voice/list-lines.ts`) |
+| `voice/render.py` | Renders, masters and encodes every line and writes `src/audio/voice.gen.ts` |
+
+- **Recipe.** Style 0.7 × `bm_lewis` + 0.3 × `am_onyx`, en-gb, speed 0.88, then item 39's ffmpeg chain
+  unchanged (pitch down 4.5 % at the same tempo, +2.5 dB at 130 Hz, +1.5 dB at 3.2 kHz, 3:1 compression, two
+  early echoes, single-pass loudnorm to -16 LUFS / -1.5 dBTP). Each line runs through the chain behind the
+  same primer (the first approved sample line), so the loudness stage has settled as it had in the approved
+  samples, and is cut out at its onset: every line lands at about -16 LUFS. The model files are checked by
+  SHA-256.
+- **Output.** `public/audio/voice/<key>.<hash>.ogg` (mono Ogg Opus, 64 kbps: at 32-48 kbps Opus loses 2-3 dB of the voice's presence at 3-9 kHz) and `.m4a` (AAC-LC, 48 kbps),
+  encoded by `build.py`'s `encode` like every other file; the manifest lists each line's files, length,
+  sizes, English text and input hash.
+- **Re-running.** A line whose text and recipe are unchanged (same hash) and whose files exist is kept, so a
+  re-run reproduces the same files; a changed string re-renders only its line and its old files are deleted.
+  The render is deterministic as well (Kokoro on one CPU thread, ffmpeg bit-exact): `--force` writes the same
+  bytes. `--check` lists stale lines without rendering (no model needed); `npm test` also fails while a line's
+  text differs from its string.
+- **At play time** (`src/audio/narrator.ts`, `src/app/narration`): a line plays only while its string still
+  reads the rendered text in the current language, so a new string or the Danish pass shows its subtitle
+  silently until it is rendered (Danish needs a TTS with Danish voices).
+
+```sh
+python3 -m venv /tmp/kokoro && /tmp/kokoro/bin/pip install kokoro-onnx==0.6.1 soundfile
+# kokoro-v1.0.int8.onnx and voices-v1.0.bin from the kokoro-onnx releases, in one folder:
+KOKORO_MODELS=/path/to/models /tmp/kokoro/bin/python tools/audio/voice/render.py
+/tmp/kokoro/bin/python tools/audio/voice/render.py --check
+```
+
+Add a line: put its i18n key in `lines.json`, render, and have the screen call the narrator (`voice` in the
+UI env, or the app's `narration`).
 
 ## Browser support
 

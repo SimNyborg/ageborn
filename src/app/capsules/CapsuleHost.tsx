@@ -22,8 +22,13 @@ import './capsuleHost.css';
 import type { Narration } from '../narration';
 import type { CapsuleShows, ShowRecord } from './capsuleFlow';
 
-/** The first Legendary's line starts this long after the walkout's flare: as the silhouette grows, before the drop. */
-export const FIRST_LEGENDARY_DELAY_MS = 600;
+/**
+ * The first Legendary's line starts this long after the walkout's bass drop (A10 step 6: at 4.0 s the unit bursts
+ * into colour), over its signature move, and ends before the name banner slams down at 7.8 s. Mixed offline at the
+ * game's gains it sits 6.7 dB over everything else there; during the flare's fanfare (0.7-3.3 s) it would only
+ * match it.
+ */
+export const FIRST_LEGENDARY_DELAY_MS = 800;
 
 /** True when no Legendary card was owned before this show (the ones it reveals as NEW are new). */
 export function firstLegendaryEver(save: SaveDoc, content: CompiledContent, record: ShowRecord): boolean {
@@ -91,12 +96,14 @@ export function CapsuleHost(p: CapsuleHostProps) {
   );
   const done = () => p.onDone(p.shows.done() ?? r);
   // The narrator (queue item 39): "Tap to crack it!" while a Starter Capsule asks for the tap (once a show), and
-  // the moment of a player's first Legendary as its walkout's silhouette grows. Both stop with the show.
+  // the moment of a player's first Legendary after its walkout's drop. Both stop with the show.
   const narration = p.narration;
   const scripted = r.kind === 'capsules' && r.reveals.length > 0 && r.reveals.every((x) => x.capsule.scriptIndex !== null);
   const voice = useRef<{ tap: (() => void) | null; tapSaid: boolean; legendary: () => void }>({ tap: null, tapSaid: false, legendary: () => undefined });
   useEffect(() => {
     if (scripted) narration?.prefetch(['capsule.tapStarter']);
+    if (firstLegendaryEver(p.save, p.content, r) && r.kind === 'capsules' && r.reveals.some((x) => x.capsule.contents.stacks.some((s) => s.rarity === 'legendary' && s.isNew)))
+      narration?.prefetch(['narrator.firstLegendary']);
     const v = voice.current;
     return () => {
       v.tap?.();
@@ -114,7 +121,7 @@ export function CapsuleHost(p: CapsuleHostProps) {
     }
   };
   const onCue = (cue: Cue, step: ShowStep): void => {
-    if (!narration || cue.sound !== 'rarity_legendary' || step.kind !== 'walkout' || !step.first) return;
+    if (!narration || cue.sound !== 'walkout_bass' || step.kind !== 'walkout' || !step.first) return;
     if (firstLegendaryEver(p.save, p.content, r)) voice.current.legendary = narration.moment('firstLegendary', FIRST_LEGENDARY_DELAY_MS);
   };
   const plan = p.save.warPlans[p.save.activePlan];

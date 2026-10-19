@@ -14,6 +14,8 @@ import { i18n } from '@/i18n';
 import { content } from '@/content';
 import { ADAPTIVE_HINTS, MATCH1, MATCH2, type MatchScript, type TutorialPrompt } from '@/tutorial';
 import type { BattleHandle } from '../battle';
+import { firstLegendaryEver } from '../capsules/CapsuleHost';
+import type { ShowRecord } from '../capsules/capsuleFlow';
 import type { AppRoute } from '../controller';
 import { createNarration, mayNarrate } from '../narration';
 import * as directorModule from '../narration/director';
@@ -147,15 +149,16 @@ describe('the tutorial prompt', () => {
     const t = battle();
     r.d.attach(t.b);
     await flush();
-    expect(r.fetched).toEqual([VOICE_LINES['en']!['tutorial.m1.sendBonker']!.src, VOICE_LINES['en']!['tutorial.m1.killsEarnGold']!.src]);
+    const src = (k: string): string => VOICE_LINES['en']![k]!.src;
+    // the first two prompts' lines, and the first match's two moments (its first evolve, its first win)
+    expect(r.fetched).toEqual([src('tutorial.m1.sendBonker'), src('tutorial.m1.killsEarnGold'), src('narrator.firstEvolve'), src('narrator.firstVictory')]);
     // the next two after it: "Kills earn gold" (in already) and the Pebbler's line
     t.show('m1.sendBonker', 'tutorial.m1.sendBonker');
     await flush();
-    expect(r.fetched).toHaveLength(3);
-    expect(r.fetched[2]).toBe(VOICE_LINES['en']!['tutorial.m1.pebbler']!.src);
+    expect(r.fetched.slice(4)).toEqual([src('tutorial.m1.pebbler')]);
     t.show('m1.killsEarnGold', 'tutorial.m1.killsEarnGold');
     await flush();
-    expect(r.fetched).toEqual([...r.fetched.slice(0, 3), VOICE_LINES['en']!['tutorial.m1.buildTurret']!.src]);
+    expect(r.fetched.slice(4)).toEqual([src('tutorial.m1.pebbler'), src('tutorial.m1.buildTurret')]);
   });
 
   it('plays the prompt’s line; the next prompt cuts it; a prompt that goes stops it; each prompt speaks once a match', async () => {
@@ -422,5 +425,22 @@ describe('the eager stub', () => {
     await flush();
     expect(s.loads()).toBe(0);
     s.n.dispose();
+  });
+});
+
+describe('the first Legendary', () => {
+  const legendaries = Object.values(content.units).filter((u) => u.rarity === 'legendary').map((u) => u.id);
+  const record = (cards: { card: string; isNew: boolean }[]) =>
+    ({ kind: 'capsules', reveals: [{ capsule: { contents: { stacks: cards.map((c) => ({ ...c, rarity: 'legendary', copies: 1, foil: 'none', dust: 0 })) } } }] }) as unknown as ShowRecord;
+  const owning = (ids: string[]): SaveDoc => ({ ...fakeSaveDoc(), collection: Object.fromEntries(ids.map((id) => [id, { level: 1, copies: 1, isNew: false, foil: 'none' as const }])) });
+
+  it('is a player’s first when the show’s NEW Legendary is the only one owned', () => {
+    const [a, b] = legendaries as [string, string];
+    expect(firstLegendaryEver(owning(['bonker', a]), content, record([{ card: a, isNew: true }]))).toBe(true);
+    // another Legendary was owned before: not the first
+    expect(firstLegendaryEver(owning([a, b]), content, record([{ card: a, isNew: true }]))).toBe(false);
+    // a copy of one already owned is not the first either
+    expect(firstLegendaryEver(owning([a]), content, record([{ card: a, isNew: false }]))).toBe(false);
+    expect(firstLegendaryEver(owning([a]), content, { kind: 'wardrobe' } as unknown as ShowRecord)).toBe(false);
   });
 });

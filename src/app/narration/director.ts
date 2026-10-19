@@ -304,6 +304,8 @@ export class NarrationDirector {
     let stopMoment: () => void = noop;
     const save = this.o.controller.save.peek();
     if (b.setup.mode === 'tutorial' && b.setup.matchNumber === 1 && (save?.matchesPlayed ?? 0) === 0 && this.momentDue('firstEvolve')) {
+      // this match's moments: the first evolve, and the first win on its Result
+      this.prefetch([momentKey('firstEvolve'), ...(this.momentDue('firstVictory') ? [momentKey('firstVictory')] : [])]);
       offTick = b.session.onTick((events) => {
         if (!events.some((e) => e.e === 'ageUp' && e.side === b.session.mySide)) return;
         offTick?.();

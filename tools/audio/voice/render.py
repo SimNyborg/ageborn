@@ -79,7 +79,10 @@ GAP_S = 0.9
 LEAD_S = 0.025
 TAIL_S = 0.12
 FADE_S = 0.012
-OPUS_KBPS = 32
+# Measured on the voice (same lines, codec minus master, 1/3-octave bands): Ogg Opus at 32-48 kbps loses 2-3 dB
+# at 3-9 kHz, the presence the recipe adds; at 64 kbps it is within 0.1 dB everywhere. AAC-LC is within 0.3 dB
+# at 48 kbps. A line is 1-4 s, so the rate costs little.
+OPUS_KBPS = 64
 AAC_KBPS = 48
 # Everything above that shapes a file: part of every line's hash, so changing any of it re-renders.
 RECIPE = {
