@@ -43,3 +43,13 @@ Music from the game (`public/audio/music/music.<age>.*.m4a`) at volume 0.14 with
 ## Captions
 
 `Kokoro.create_timed(...)` returns word timings; burn in word-timed captions (muted viewers). (Owner decision 2026-10-19: no AI-voice line in captions.) Formerly: "Narration: AI voice".
+
+
+## ElevenLabs (connected 2026-10-19, owner)
+
+The ElevenLabs connector (voice and speech only) is connected to the studio session. Not used yet: the owner
+wants a test first. Generations spend the owner's ElevenLabs credits, so never retry a generation call.
+Candidate narrators from the library (warm, male, English): Oliver - Warm British Narrator
+(lo1O1Dz1Tu4FWVEPaxuT), Jordie - Warm & Natural (U977vpWUjb8YL0J1JaFF), Steve - Warm, Expressive, British
+(33aGKIlf0SKhTTaSWPVO), Tommy - Warm, Confident American (VIiLJvDGvCXzIeKOBZUN). Check the plan's terms
+(attribution and commercial use) before the first published video.
