@@ -7,9 +7,9 @@
  * else over the canvas (AppRoot). The result was saved before this mounts (`capsuleFlow.ts`).
  */
 import type { Application } from 'pixi.js';
-import { useEffect, useMemo, useRef } from 'preact/hooks';
+import { useEffect, useMemo } from 'preact/hooks';
 import type { CardId, CompiledContent, SaveDoc, SkinId } from '@/contracts';
-import { CapsuleScreen, WardrobeScreen, createCatalog, type Cue, type RunnerState, type ShowSettings, type ShowStep } from '@/capsule';
+import { CapsuleScreen, WardrobeScreen, createCatalog, type ShowSettings } from '@/capsule';
 import { asContent } from '@/content';
 import { OddsSheet } from '@/ui/components/OddsSheet';
 import { oddsModel } from '@/ui/components/oddsModel';
@@ -21,21 +21,6 @@ import '@/ui/theme.css';
 import './capsuleHost.css';
 import type { Narration } from '../narration';
 import type { CapsuleShows, ShowRecord } from './capsuleFlow';
-
-/**
- * The first Legendary's line starts this long after the walkout's bass drop (A10 step 6: at 4.0 s the unit bursts
- * into colour), over its signature move, and ends before the name banner slams down at 7.8 s. Mixed offline at the
- * game's gains it sits 6.7 dB over everything else there; during the flare's fanfare (0.7-3.3 s) it would only
- * match it.
- */
-export const FIRST_LEGENDARY_DELAY_MS = 800;
-
-/** True when no Legendary card was owned before this show (the ones it reveals as NEW are new). */
-export function firstLegendaryEver(save: SaveDoc, content: CompiledContent, record: ShowRecord): boolean {
-  if (record.kind !== 'capsules') return false;
-  const fresh = new Set(record.reveals.flatMap((r) => r.capsule.contents.stacks.filter((x) => x.rarity === 'legendary' && x.isNew).map((x) => x.card)));
-  return Object.keys(save.collection).every((card) => content.units[card]?.rarity !== 'legendary' || fresh.has(card));
-}
 
 export interface CapsuleHostProps {
   shows: CapsuleShows;
@@ -95,35 +80,9 @@ export function CapsuleHost(p: CapsuleHostProps) {
     </UiKitContext.Provider>
   );
   const done = () => p.onDone(p.shows.done() ?? r);
-  // The narrator (queue item 39): "Tap to crack it!" while a Starter Capsule asks for the tap (once a show), and
-  // the moment of a player's first Legendary after its walkout's drop. Both stop with the show.
-  const narration = p.narration;
-  const scripted = r.kind === 'capsules' && r.reveals.length > 0 && r.reveals.every((x) => x.capsule.scriptIndex !== null);
-  const voice = useRef<{ tap: (() => void) | null; tapSaid: boolean; legendary: () => void }>({ tap: null, tapSaid: false, legendary: () => undefined });
-  useEffect(() => {
-    if (scripted) narration?.prefetch(['capsule.tapStarter']);
-    if (firstLegendaryEver(p.save, p.content, r) && r.kind === 'capsules' && r.reveals.some((x) => x.capsule.contents.stacks.some((s) => s.rarity === 'legendary' && s.isNew)))
-      narration?.prefetch(['narrator.firstLegendary']);
-    const v = voice.current;
-    return () => {
-      v.tap?.();
-      v.legendary();
-    };
-  }, []);
-  const onState = (s: RunnerState): void => {
-    const v = voice.current;
-    if (s.prompt === 'tap' && scripted && narration && !v.tapSaid) {
-      v.tapSaid = true;
-      v.tap = narration.voice('capsule.tapStarter');
-    } else if (s.prompt !== 'tap' && v.tap) {
-      v.tap();
-      v.tap = null;
-    }
-  };
-  const onCue = (cue: Cue, step: ShowStep): void => {
-    if (!narration || cue.sound !== 'walkout_bass' || step.kind !== 'walkout' || !step.first) return;
-    if (firstLegendaryEver(p.save, p.content, r)) voice.current.legendary = narration.moment('firstLegendary', FIRST_LEGENDARY_DELAY_MS);
-  };
+  // The narrator (queue item 39) hears the show's states and cues (the guided tap, a first Legendary); it stops with the show.
+  const voice = useMemo(() => p.narration?.capsule(r, p.save) ?? null, [r]);
+  useEffect(() => () => voice?.end(), [voice]);
   const plan = p.save.warPlans[p.save.activePlan];
   const isEquipped = (card: CardId) =>
     !!plan && Object.values(plan.loadouts).some((l) => l.units.includes(card) || l.turrets.includes(card) || l.powers.home === card || l.powers.field === card);
@@ -144,7 +103,7 @@ export function CapsuleHost(p: CapsuleHostProps) {
     pityRules: c.capsules.pity,
     settings: showSettings(p.save),
     oddsSheet,
-    ...(narration ? { onState, onCue } : {}),
+    ...(voice ? { onState: voice.state, onCue: voice.cue } : {}),
     isEquipped,
     equippedNote,
     upgradesTaught: taught,

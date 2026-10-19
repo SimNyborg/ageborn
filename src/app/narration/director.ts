@@ -15,11 +15,14 @@
  *   subtitle while it plays.
  */
 import { effect } from '@preact/signals';
+import type { CompiledContent, SaveDoc } from '@/contracts';
+import type { Cue, RunnerState, ShowStep } from '@/capsule';
 import { Narrator, type NarratorEvent, type NarratorHost, type VoiceOut } from '@/audio/narrator';
 import { VOICE_LINES, type VoiceFile } from '@/audio/voice.gen';
 import { voiceLineId } from '@/audio/voiceLine';
 import type { TutorialPrompt } from '@/tutorial';
 import type { BattleHandle } from '../battle';
+import type { ShowRecord } from '../capsules/capsuleFlow';
 import type { AppController } from '../controller';
 import type { Services } from '../services';
 import './narration.css';
@@ -37,6 +40,27 @@ export const FIRST_EVOLVE_DELAY_MS = 1100;
 export const PROMPT_MAX_DELAY_MS = 3000;
 /** The pause between the lines of one `voiceAll`. */
 export const SEQUENCE_GAP_MS = 250;
+/**
+ * The first Legendary's line starts this long after the walkout's bass drop (A10 step 6: at 4.0 s the unit bursts
+ * into colour), over its signature move, and ends before the name banner slams down at 7.8 s. Mixed offline at the
+ * game's gains it sits 6.7 dB over everything else there; during the flare's fanfare (0.7-3.3 s) it would only
+ * match it.
+ */
+export const FIRST_LEGENDARY_DELAY_MS = 800;
+
+/** A capsule show's narration (`NarrationDirector.capsule`). */
+export interface CapsuleVoice {
+  state(s: RunnerState): void;
+  cue(cue: Cue, step: ShowStep): void;
+  end(): void;
+}
+
+/** True when no Legendary card was owned before this show (the ones it reveals as NEW are new). */
+export function firstLegendaryEver(save: SaveDoc, content: CompiledContent, record: ShowRecord): boolean {
+  if (record.kind !== 'capsules') return false;
+  const fresh = new Set(record.reveals.flatMap((r) => r.capsule.contents.stacks.filter((x) => x.rarity === 'legendary' && x.isNew).map((x) => x.card)));
+  return Object.keys(save.collection).every((card) => content.units[card]?.rarity !== 'legendary' || fresh.has(card));
+}
 /** Lines fetched after each onboarding match, for the steps that follow it (capsule, General, upgrade, Home). */
 export const AFTER_MATCH: Readonly<Record<number, readonly string[]>> = {
   1: ['narrator.firstVictory', 'capsule.tapStarter', 'avatar.ui.make', 'warPath.ui.unlock.army'],
@@ -53,7 +77,7 @@ export interface NarrationLogEntry {
 }
 
 export interface DirectorOptions {
-  services: Pick<Services, 'audio' | 'i18n'>;
+  services: Pick<Services, 'audio' | 'i18n' | 'content'>;
   controller: Pick<AppController, 'save' | 'route' | 'setSave'>;
   /** The narrator's host (default: the audio service's voice bus and duck). */
   host?: NarratorHost;
@@ -259,6 +283,39 @@ export class NarrationDirector {
     return () => {
       clearTimeout(timer);
       if (started) this.narrator.stop(line);
+    };
+  }
+
+  /**
+   * A capsule show: "Tap to crack it!" while a Starter Capsule (scripted, capsules 1-5) asks for the tap (once a
+   * show, stopped by the tap), and a player's first Legendary after its walkout's drop. `end` stops both.
+   */
+  capsule(record: ShowRecord, save: SaveDoc): CapsuleVoice {
+    const scripted = record.kind === 'capsules' && record.reveals.length > 0 && record.reveals.every((x) => x.capsule.scriptIndex !== null);
+    const first = firstLegendaryEver(save, this.o.services.content, record);
+    const hasNewLegendary = record.kind === 'capsules' && record.reveals.some((x) => x.capsule.contents.stacks.some((s) => s.rarity === 'legendary' && s.isNew));
+    this.prefetch([...(scripted ? ['capsule.tapStarter'] : []), ...(first && hasNewLegendary && this.momentDue('firstLegendary') ? [momentKey('firstLegendary')] : [])]);
+    let tap: (() => void) | null = null;
+    let tapSaid = false;
+    let legendary: () => void = noop;
+    return {
+      state: (s) => {
+        if (s.prompt === 'tap' && scripted && !tapSaid) {
+          tapSaid = true;
+          tap = this.voice('capsule.tapStarter');
+        } else if (s.prompt !== 'tap' && tap) {
+          tap();
+          tap = null;
+        }
+      },
+      cue: (cue, step) => {
+        if (cue.sound === 'walkout_bass' && step.kind === 'walkout' && step.first && first) legendary = this.moment('firstLegendary', FIRST_LEGENDARY_DELAY_MS);
+      },
+      end: () => {
+        tap?.();
+        tap = null;
+        legendary();
+      },
     };
   }
 

@@ -14,12 +14,12 @@ import { i18n } from '@/i18n';
 import { content } from '@/content';
 import { ADAPTIVE_HINTS, MATCH1, MATCH2, type MatchScript, type TutorialPrompt } from '@/tutorial';
 import type { BattleHandle } from '../battle';
-import { firstLegendaryEver } from '../capsules/CapsuleHost';
+import type { RunnerState, ShowStep } from '@/capsule';
 import type { ShowRecord } from '../capsules/capsuleFlow';
 import type { AppRoute } from '../controller';
 import { createNarration, mayNarrate } from '../narration';
 import * as directorModule from '../narration/director';
-import { AFTER_MATCH, FIRST_EVOLVE_DELAY_MS, momentFlag, NarrationDirector, PROMPT_MAX_DELAY_MS, type CaptionView } from '../narration/director';
+import { AFTER_MATCH, FIRST_EVOLVE_DELAY_MS, FIRST_LEGENDARY_DELAY_MS, firstLegendaryEver, momentFlag, NarrationDirector, PROMPT_MAX_DELAY_MS, type CaptionView } from '../narration/director';
 import type { SessionStatus } from '../session';
 
 interface Rig {
@@ -55,7 +55,7 @@ function rig(save: SaveDoc = fakeSaveDoc(), o: { i18n?: typeof i18n } = {}): Rig
   const fetched: string[] = [];
   const c = controllerFor(save);
   const d = new NarrationDirector({
-    services: { audio: {} as AudioService, i18n: o.i18n ?? i18n },
+    services: { audio: {} as AudioService, i18n: o.i18n ?? i18n, content },
     controller: c,
     host: { voiceOut: () => ({ ctx: ctx.asAudioContext(), input: bus as unknown as AudioNode }), duck: (db) => ducks.push(db) },
     fetchFile: (src) => {
@@ -369,7 +369,7 @@ describe('the eager stub', () => {
     const c = controllerFor(save);
     let loads = 0;
     const n = createNarration({
-      services: { audio: {} as AudioService, i18n },
+      services: { audio: {} as AudioService, i18n, content },
       controller: c,
       load: () => {
         loads += 1;
@@ -442,5 +442,57 @@ describe('the first Legendary', () => {
     // a copy of one already owned is not the first either
     expect(firstLegendaryEver(owning([a]), content, record([{ card: a, isNew: false }]))).toBe(false);
     expect(firstLegendaryEver(owning([a]), content, { kind: 'wardrobe' } as unknown as ShowRecord)).toBe(false);
+  });
+
+  it('a show says its first Legendary after the walkout’s drop, and its end cancels a line still to come', async () => {
+    const [a] = legendaries as [string];
+    const r = rig(owning([a]));
+    const walkout = { kind: 'walkout', first: true } as unknown as ShowStep;
+    const show = r.d.capsule(record([{ card: a, isNew: true }]), owning([a]));
+    await flush();
+    expect(r.fetched).toContain(VOICE_LINES['en']!['narrator.firstLegendary']!.src);
+    show.cue({ atMs: 700, sound: 'rarity_legendary' }, walkout);
+    show.cue({ atMs: 4000, sound: 'walkout_bass' }, walkout);
+    vi.advanceTimersByTime(FIRST_LEGENDARY_DELAY_MS + 10);
+    await flush();
+    expect(r.d.narrator.current).toBe('en/narrator.firstLegendary');
+    expect(r.captions).toEqual(['show:screen:A Legendary joins your army!']);
+    show.end();
+    expect(r.d.narrator.current).toBeNull();
+    // a second show: the flag is set, nothing more
+    const again = r.d.capsule(record([{ card: a, isNew: true }]), owning([a]));
+    again.cue({ atMs: 4000, sound: 'walkout_bass' }, walkout);
+    vi.advanceTimersByTime(FIRST_LEGENDARY_DELAY_MS + 10);
+    await flush();
+    expect(r.d.narrator.current).toBeNull();
+    // ended before the line's time: nothing plays
+    const fresh = rig(owning([a]));
+    const early = fresh.d.capsule(record([{ card: a, isNew: true }]), owning([a]));
+    early.cue({ atMs: 4000, sound: 'walkout_bass' }, walkout);
+    early.end();
+    vi.advanceTimersByTime(FIRST_LEGENDARY_DELAY_MS + 10);
+    await flush();
+    expect(fresh.d.narrator.current).toBeNull();
+  });
+
+  it('a Starter Capsule says "Tap to crack it!" while it asks for the tap, once; the tap stops it', async () => {
+    const r = rig();
+    const scripted = { kind: 'capsules', reveals: [{ capsule: { scriptIndex: 1, contents: { stacks: [] } } }] } as unknown as ShowRecord;
+    const show = r.d.capsule(scripted, fakeSaveDoc());
+    const st = (prompt: 'tap' | null) => ({ index: 1, kind: 'strike', phase: 'run', prompt, canSkip: false, canFastForward: false, holding: false, opened: false }) as RunnerState;
+    show.state(st(null));
+    show.state(st('tap'));
+    await flush();
+    expect(r.d.narrator.current).toBe('en/capsule.tapStarter');
+    show.state(st(null));
+    expect(r.d.narrator.current).toBeNull();
+    show.state(st('tap'));
+    await flush();
+    expect(r.d.narrator.current).toBeNull();
+    // a capsule that is not a Starter Capsule asks "Tap on the beat!", which has no line
+    const plain = r.d.capsule({ kind: 'capsules', reveals: [{ capsule: { scriptIndex: null, contents: { stacks: [] } } }] } as unknown as ShowRecord, fakeSaveDoc());
+    plain.state(st('tap'));
+    await flush();
+    expect(r.d.narrator.current).toBeNull();
   });
 });

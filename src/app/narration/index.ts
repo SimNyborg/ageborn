@@ -5,13 +5,15 @@
  * is fetched before a line is about to play. With Settings › Narrator off nothing loads.
  */
 import { effect } from '@preact/signals';
+import type { SaveDoc } from '@/contracts';
 import { STAGES } from '@/tutorial';
 import type { BattleHandle } from '../battle';
+import type { ShowRecord } from '../capsules/capsuleFlow';
 import type { AppController } from '../controller';
 import type { Services } from '../services';
-import type { MomentId, NarrationDirector, NarrationLogEntry } from './director';
+import type { CapsuleVoice, MomentId, NarrationDirector, NarrationLogEntry } from './director';
 
-export type { MomentId, NarrationLogEntry };
+export type { CapsuleVoice, MomentId, NarrationLogEntry };
 
 export interface Narration {
   /** Reads an on-screen string aloud (an i18n key; placeholder values are i18n keys); returns its stop. */
@@ -22,6 +24,8 @@ export interface Narration {
   moment(id: MomentId, delayMs?: number): () => void;
   /** Fetches lines a coming step will say. */
   prefetch(keys: readonly string[]): void;
+  /** A capsule show's narration: the runner's states and cues go in; `end` when the show goes. */
+  capsule(record: ShowRecord, save: SaveDoc): CapsuleVoice;
   /** The director's event log (dev, e2e), or null before it loaded. */
   log(): readonly NarrationLogEntry[] | null;
   dispose(): void;
@@ -30,7 +34,7 @@ export interface Narration {
 type DirectorModule = typeof import('./director');
 
 export interface NarrationOptions {
-  services: Pick<Services, 'audio' | 'i18n'>;
+  services: Pick<Services, 'audio' | 'i18n' | 'content'>;
   controller: Pick<AppController, 'save' | 'route' | 'setSave'>;
   /** Loads the director (default the lazy chunk; tests pass the module). */
   load?: () => Promise<DirectorModule>;
@@ -113,6 +117,23 @@ export function createNarration(o: NarrationOptions): Narration {
         d.prefetch(keys);
         return () => undefined;
       });
+    },
+    capsule: (record, save) => {
+      // the show's events reach the director once it is in (it loads as the show starts)
+      let real: CapsuleVoice | null = null;
+      let ended = false;
+      if (on())
+        void get().then((d) => {
+          if (d && !ended) real = d.capsule(record, save);
+        });
+      return {
+        state: (s) => real?.state(s),
+        cue: (c, step) => real?.cue(c, step),
+        end: () => {
+          ended = true;
+          real?.end();
+        },
+      };
     },
     log: () => director?.log() ?? null,
     dispose: () => {
