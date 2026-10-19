@@ -202,6 +202,16 @@
       "format": "classic",
       "hook_type": "reveal",
       "experiment": "format"
+    },
+    {
+      "id": "18219712006357441",
+      "permalink": "https://www.instagram.com/stories/ageborn_game/4011427626044448821",
+      "timestamp": "2026-10-19T14:17:48+0000",
+      "name": "story-dv1-tonight",
+      "kind": "story",
+      "pillar": "devlog",
+      "hook": "teaser: Devlog #1 tonight, vote A or B",
+      "trial": false
     }
   ]
 }
