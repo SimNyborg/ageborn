@@ -1,0 +1,125 @@
+/**
+ * The narrator's place in the app (queue item 39): the small, eager part. It decides when a line can be due (a
+ * tutorial or early match, the first win, a line a screen shows) and only then loads the director, the narrator
+ * and the voice manifest (`./director.ts`, one lazy chunk), so the first load keeps its size and no voice file
+ * is fetched before a line is about to play. With Settings › Narrator off nothing loads.
+ */
+import { effect } from '@preact/signals';
+import { STAGES } from '@/tutorial';
+import type { BattleHandle } from '../battle';
+import type { AppController } from '../controller';
+import type { Services } from '../services';
+import type { MomentId, NarrationDirector, NarrationLogEntry } from './director';
+
+export type { MomentId, NarrationLogEntry };
+
+export interface Narration {
+  /** Reads an on-screen string aloud (an i18n key; placeholder values are i18n keys); returns its stop. */
+  voice(key: string, vars?: Readonly<Record<string, string>>): () => void;
+  /** Lines in a row, each after the one before ends; one stop ends them. */
+  voiceAll(keys: readonly string[]): () => void;
+  /** A first-time moment: once per profile, `delayMs` from now, with a subtitle; returns its stop. */
+  moment(id: MomentId, delayMs?: number): () => void;
+  /** Fetches lines a coming step will say. */
+  prefetch(keys: readonly string[]): void;
+  /** The director's event log (dev, e2e), or null before it loaded. */
+  log(): readonly NarrationLogEntry[] | null;
+  dispose(): void;
+}
+
+type DirectorModule = typeof import('./director');
+
+export interface NarrationOptions {
+  services: Pick<Services, 'audio' | 'i18n'>;
+  controller: Pick<AppController, 'save' | 'route' | 'setSave'>;
+  /** Loads the director (default the lazy chunk; tests pass the module). */
+  load?: () => Promise<DirectorModule>;
+}
+
+/** Battles a line can come in: the onboarding matches and the hint matches (A8), never a live one. */
+export function mayNarrate(b: Pick<BattleHandle, 'live' | 'setup'>): boolean {
+  return b.live === null && (b.setup.script !== null || b.setup.matchNumber <= STAGES.hintsUntilMatch);
+}
+
+export function createNarration(o: NarrationOptions): Narration {
+  let director: NarrationDirector | null = null;
+  let loading: Promise<NarrationDirector | null> | null = null;
+  let disposed = false;
+  const on = (): boolean => o.controller.save.peek()?.settings.narrator !== false;
+  const get = (): Promise<NarrationDirector | null> => {
+    if (director) return Promise.resolve(director);
+    loading ??= (o.load ?? (() => import('./director')))().then(
+      (m) => (disposed ? null : (director = m.createDirector({ services: o.services, controller: o.controller }))),
+      (e: unknown) => {
+        // offline before the chunk was fetched: the subtitles show as always; a later step tries again
+        loading = null;
+        console.warn('[narrator] not available', e);
+        return null;
+      },
+    );
+    return loading;
+  };
+  /** Runs `start` once the director is in; the stop works before and after. */
+  const later = (start: (d: NarrationDirector) => () => void): (() => void) => {
+    if (!on()) return () => undefined;
+    let stop: (() => void) | null = null;
+    let cancelled = false;
+    void get().then((d) => {
+      if (d && !cancelled) stop = start(d);
+    });
+    return () => {
+      cancelled = true;
+      stop?.();
+    };
+  };
+
+  let attached: BattleHandle | null = null;
+  let resultSeen: unknown = null;
+  const stopRoute = effect(() => {
+    const r = o.controller.route.value;
+    const battle = r.id === 'battle' ? r.battle : null;
+    if (battle !== attached) {
+      if (attached) director?.detach(attached);
+      attached = battle;
+      const b = battle;
+      if (b && mayNarrate(b) && on())
+        void get().then((d) => {
+          if (d && attached === b) d.attach(b);
+        });
+    }
+    if (r.id === 'result' && r.result !== resultSeen) {
+      resultSeen = r.result;
+      const s = o.controller.save.peek();
+      const input = r.result.input;
+      const won = input.outcome.winner === input.mySide;
+      // the first win (in practice the training match, War Path level 1): one moment, ever
+      if (won && s && s.stats.wins === 1 && s.flags['narrator.firstVictory'] !== true) later((d) => d.moment('firstVictory', 700));
+      // the steps after an onboarding match (its capsule, Make your General, the forced upgrade) speak next
+      const match = r.result.setup.mode === 'tutorial' ? r.result.setup.matchNumber : 0;
+      if (match > 0)
+        later((d) => {
+          d.afterMatch(match);
+          return () => undefined;
+        });
+    }
+  });
+
+  return {
+    voice: (key, vars) => later((d) => d.voice(key, vars)),
+    voiceAll: (keys) => later((d) => d.voiceAll(keys)),
+    moment: (id, delayMs = 0) => later((d) => d.moment(id, delayMs)),
+    prefetch: (keys) => {
+      later((d) => {
+        d.prefetch(keys);
+        return () => undefined;
+      });
+    },
+    log: () => director?.log() ?? null,
+    dispose: () => {
+      disposed = true;
+      stopRoute();
+      director?.dispose();
+      director = null;
+    },
+  };
+}

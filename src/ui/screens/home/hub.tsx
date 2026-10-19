@@ -346,7 +346,10 @@ export const UNLOCK_TARGET: Readonly<Record<HomeUnlock, string>> = {
  * `data-unlock-avoid` (the trophy bar and the arena ribbon): it lifts above them.
  */
 export function UnlockPointer(p: { feature: HomeUnlock; also?: HomeUnlock | null; onOpen(): void; onDone(): void }) {
-  const { t } = useUi();
+  const { t, voice } = useUi();
+  // The narrator reads the line while it shows (queue item 39); it stops when the pointer folds away.
+  const lineKey = p.also ? 'warPath.ui.unlock.ladderCampaign' : `warPath.ui.unlock.${p.feature}`;
+  useEffect(() => voice?.(lineKey), [lineKey, voice]);
   const [rect, setRect] = useState<DOMRect | null>(null);
   const [alsoRect, setAlsoRect] = useState<DOMRect | null>(null);
   const [host, setHost] = useState<DOMRect | null>(null);
@@ -441,7 +444,7 @@ export function UnlockPointer(p: { feature: HomeUnlock; also?: HomeUnlock | null
             <span class="wp-unlock__new" data-tag="">
               {t('warPath.ui.unlock.new')}
             </span>
-            <span class="wp-unlock__text">{p.also ? t('warPath.ui.unlock.ladderCampaign') : t(`warPath.ui.unlock.${p.feature}`)}</span>
+            <span class="wp-unlock__text">{t(lineKey)}</span>
             <Button kind="secondary" size="s" testid="unlock-open" onClick={p.onOpen}>
               {t('warPath.ui.unlock.open')}
             </Button>

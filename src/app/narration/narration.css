@@ -1,0 +1,110 @@
+/*
+ * The narrator's subtitle for a first-time moment (queue item 39): the line it speaks, shown while it speaks,
+ * as a film subtitle in the lower middle of the screen. It never takes input. Loaded with the narrator's lazy
+ * chunk. A sound wave beside the words pulses while the voice speaks (still under Reduce motion).
+ */
+.nar-caption {
+  position: absolute;
+  left: 50%;
+  bottom: max(16px, 9%);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(640px, calc(100% - 32px));
+  padding: 9px 22px 10px 16px;
+  border: 1px solid rgba(255, 228, 160, 0.28);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(28, 20, 38, 0.82), rgba(12, 9, 20, 0.86));
+  box-shadow:
+    0 1px 0 rgba(255, 240, 200, 0.12) inset,
+    0 10px 28px rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: #fff3d6;
+  font-family: var(--ui-font-display, 'Barlow Condensed', system-ui, sans-serif);
+  font-size: clamp(17px, 2.5vw, 25px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 10px);
+  transition:
+    opacity 160ms ease-in,
+    transform 160ms ease-in;
+}
+
+.nar-caption.is-on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition:
+    opacity 240ms var(--ui-ease-out, ease-out),
+    transform 240ms var(--ui-ease-out, ease-out);
+}
+
+/* In battle it sits above the card tray (24% of the height, A9.2), clear of the lane's centre. */
+.nar-caption[data-place='battle'] {
+  bottom: calc(26% + 10px);
+}
+
+.nar-caption__wave {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+}
+
+.nar-caption__wave i {
+  display: block;
+  width: 3px;
+  height: 100%;
+  border-radius: 2px;
+  background: #f2b52c;
+  transform-origin: 50% 50%;
+  animation: nar-wave 900ms ease-in-out infinite;
+}
+
+.nar-caption__wave i:nth-child(1) {
+  height: 55%;
+  animation-delay: -300ms;
+}
+
+.nar-caption__wave i:nth-child(3) {
+  height: 70%;
+  animation-delay: -600ms;
+}
+
+@keyframes nar-wave {
+  0%,
+  100% {
+    transform: scaleY(0.45);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+[data-reduce-motion] .nar-caption,
+[data-reduce-motion] .nar-caption.is-on {
+  transform: translate(-50%, 0);
+}
+
+[data-reduce-motion] .nar-caption__wave i {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nar-caption,
+  .nar-caption.is-on {
+    transform: translate(-50%, 0);
+  }
+  .nar-caption__wave i {
+    animation: none;
+  }
+}

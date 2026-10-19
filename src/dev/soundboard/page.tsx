@@ -64,7 +64,7 @@ const GROUP_TITLES: Record<SoundGroup, string> = {
   capsule: 'Capsules (lazy)',
 };
 
-const BUSES: Bus[] = ['master', 'music', 'sfx', 'ui'];
+const BUSES: Bus[] = ['master', 'music', 'sfx', 'ui', 'voice'];
 const LAYERS: MusicLayer[] = ['intensity', 'overdrive', 'siege'];
 
 interface Results {
@@ -110,7 +110,7 @@ export default function Soundboard() {
   const [busy, setBusy] = useState<string | null>(null);
   const [evolves, setEvolves] = useState(0);
   const [layers, setLayers] = useState<Record<MusicLayer, number>>({ intensity: 0, overdrive: 0, siege: 0 });
-  const [volumes, setVolumes] = useState<Record<Bus, number>>({ master: 1, music: 1, sfx: 1, ui: 1 });
+  const [volumes, setVolumes] = useState<Record<Bus, number>>({ master: 1, music: 1, sfx: 1, ui: 1, voice: 1 });
   const peakHold = useRef({ peak: 0, clips: 0 });
   const results = useRef<Results>({
     boot: built.boot,

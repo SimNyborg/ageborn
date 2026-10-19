@@ -53,10 +53,11 @@ export const SAVE_FILE_EXTENSION = '.ageborn';
 
 /**
  * Default player settings (DESIGN A9 #15, A12, A13, B6). Volumes and shake are 0-1 sliders; damage
- * numbers default to "Important" (A12); speed 1x (A2.12).
+ * numbers default to "Important" (A12); speed 1x (A2.12); the narrator on at full voice volume (queue
+ * item 39; the master volume still scales it).
  */
 export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
-  volume: Object.freeze({ master: 1, music: 1, sfx: 1, ui: 1 }),
+  volume: Object.freeze({ master: 1, music: 1, sfx: 1, ui: 1, voice: 1 }),
   graphics: 'auto',
   reduceMotion: false,
   shake: 1,
@@ -69,6 +70,7 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
   mutedEmotes: false,
   breakReminder: true,
   quickReveal: false,
+  narrator: true,
 }) as Readonly<Settings>;
 
 /** A fresh, mutable copy of the default settings (for a new profile or before any save exists). */

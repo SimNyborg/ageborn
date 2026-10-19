@@ -6,6 +6,7 @@ import type { ArtProvider, CardId, Foil, Sim } from '@/contracts';
 import type { BattleView } from '@/render';
 import type { AppController } from '../controller';
 import type { KeyValueStore } from '../eventLog';
+import type { Narration } from '../narration';
 import type { Services } from '../services';
 import type { FrameScheduler, SessionView } from '../session';
 
@@ -33,6 +34,8 @@ export interface AppUi {
    * started from the meta screens waits for it (perf audit 2026-10-01: Home no longer waits for battle art).
    */
   artReady?: () => Promise<void> | null;
+  /** The narrator (queue item 39): reads on-screen lines aloud and plays first-time moments; absent in tests. */
+  narration?: Narration;
 }
 
 export const AppUiContext = createContext<AppUi | null>(null);

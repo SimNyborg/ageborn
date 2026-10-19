@@ -34,9 +34,12 @@ describe('save v15: the NEW pip list', () => {
     const r = validateSaveDoc(m.doc);
     expect(r.ok ? 'ok' : r.issues).toBe('ok');
     const doc = m.doc as SaveDoc;
-    // the frozen fixture: a capsule's emote not yet seen in Customize (it is owned)
-    expect({ ...doc, cosmetics: { ...doc.cosmetics, fresh: ['emote.clap'] } }).toEqual(SAVE_FIXTURES[15]);
+    // the frozen fixture is the v15 step's result with a capsule's emote not yet seen in Customize (it is
+    // owned); v16 then adds the narrator's volume
+    const step = up(v14());
+    expect({ ...step, cosmetics: { ...step.cosmetics, fresh: ['emote.clap'] } }).toEqual(SAVE_FIXTURES[15]);
     expect(doc.cosmetics.owned).toContain('emote.clap');
+    expect(doc.cosmetics.fresh).toEqual([]);
     expect(currentFixture().v).toBe(SAVE_VERSION);
   });
 

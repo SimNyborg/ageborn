@@ -19,6 +19,7 @@ import { boot, bootFlags, validateContentInDev } from './boot';
 import { AppController, ART_WAIT_MS } from './controller';
 import type { KeyValueStore } from './eventLog';
 import { silenceable } from './live/silence';
+import { createNarration } from './narration';
 import { createPixiHost, releaseGpuOnPageHide } from './pixiHost';
 import { documentVisibility, type SessionView } from './session';
 import { AppRoot } from './ui/AppRoot';
@@ -147,9 +148,12 @@ async function start(root: HTMLElement): Promise<void> {
     countdown: true,
     homeScreen: true,
   });
+  // The narrator (queue item 39): its code and voice files load only when a line is about to play.
+  const narration = createNarration({ services, controller });
   const ui: AppUi = {
     controller,
     services,
+    narration,
     art,
     viewOf: (sim) => views.get(sim),
     createView,
@@ -187,6 +191,8 @@ async function start(root: HTMLElement): Promise<void> {
   if (q.get('dev') === '1') {
     (window as Window & { __agebornDev?: unknown }).__agebornDev = {
       controller,
+      /** The narrator's event log (queue item 39): prompts, lines started, ended, cut or skipped, with times. */
+      narration: { log: () => narration.log() },
       /**
        * Runs up to `ticks` sim ticks of the battle on screen at once (B13 e2e dev fast-forward). A battle
        * still loading its decks' unit sheets (G7) is waited for first, as its own start would (at most

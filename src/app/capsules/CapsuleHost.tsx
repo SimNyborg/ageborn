@@ -7,9 +7,9 @@
  * else over the canvas (AppRoot). The result was saved before this mounts (`capsuleFlow.ts`).
  */
 import type { Application } from 'pixi.js';
-import { useMemo } from 'preact/hooks';
+import { useEffect, useMemo, useRef } from 'preact/hooks';
 import type { CardId, CompiledContent, SaveDoc, SkinId } from '@/contracts';
-import { CapsuleScreen, WardrobeScreen, createCatalog, type ShowSettings } from '@/capsule';
+import { CapsuleScreen, WardrobeScreen, createCatalog, type Cue, type RunnerState, type ShowSettings, type ShowStep } from '@/capsule';
 import { asContent } from '@/content';
 import { OddsSheet } from '@/ui/components/OddsSheet';
 import { oddsModel } from '@/ui/components/oddsModel';
@@ -19,7 +19,18 @@ import { upgradesTaught } from '@/ui/screens/model/warPath';
 import type { ArtProvider, AudioService } from '@/contracts';
 import '@/ui/theme.css';
 import './capsuleHost.css';
+import type { Narration } from '../narration';
 import type { CapsuleShows, ShowRecord } from './capsuleFlow';
+
+/** The first Legendary's line starts this long after the walkout's flare: as the silhouette grows, before the drop. */
+export const FIRST_LEGENDARY_DELAY_MS = 600;
+
+/** True when no Legendary card was owned before this show (the ones it reveals as NEW are new). */
+export function firstLegendaryEver(save: SaveDoc, content: CompiledContent, record: ShowRecord): boolean {
+  if (record.kind !== 'capsules') return false;
+  const fresh = new Set(record.reveals.flatMap((r) => r.capsule.contents.stacks.filter((x) => x.rarity === 'legendary' && x.isNew).map((x) => x.card)));
+  return Object.keys(save.collection).every((card) => content.units[card]?.rarity !== 'legendary' || fresh.has(card));
+}
 
 export interface CapsuleHostProps {
   shows: CapsuleShows;
@@ -48,6 +59,8 @@ export interface CapsuleHostProps {
   altLabel?: string;
   /** Runs before the show closes; the host then closes it like Done. */
   onAlt?: () => void;
+  /** The narrator (queue item 39): the onboarding capsule's guided tap and the first Legendary's moment. */
+  narration?: Narration;
 }
 
 /** The show's settings from the save; `lite` is the Lite graphics preset (A10 step 4: half the particles, static starfield and sheen). */
@@ -77,6 +90,33 @@ export function CapsuleHost(p: CapsuleHostProps) {
     </UiKitContext.Provider>
   );
   const done = () => p.onDone(p.shows.done() ?? r);
+  // The narrator (queue item 39): "Tap to crack it!" while a Starter Capsule asks for the tap (once a show), and
+  // the moment of a player's first Legendary as its walkout's silhouette grows. Both stop with the show.
+  const narration = p.narration;
+  const scripted = r.kind === 'capsules' && r.reveals.length > 0 && r.reveals.every((x) => x.capsule.scriptIndex !== null);
+  const voice = useRef<{ tap: (() => void) | null; tapSaid: boolean; legendary: () => void }>({ tap: null, tapSaid: false, legendary: () => undefined });
+  useEffect(() => {
+    if (scripted) narration?.prefetch(['capsule.tapStarter']);
+    const v = voice.current;
+    return () => {
+      v.tap?.();
+      v.legendary();
+    };
+  }, []);
+  const onState = (s: RunnerState): void => {
+    const v = voice.current;
+    if (s.prompt === 'tap' && scripted && narration && !v.tapSaid) {
+      v.tapSaid = true;
+      v.tap = narration.voice('capsule.tapStarter');
+    } else if (s.prompt !== 'tap' && v.tap) {
+      v.tap();
+      v.tap = null;
+    }
+  };
+  const onCue = (cue: Cue, step: ShowStep): void => {
+    if (!narration || cue.sound !== 'rarity_legendary' || step.kind !== 'walkout' || !step.first) return;
+    if (firstLegendaryEver(p.save, p.content, r)) voice.current.legendary = narration.moment('firstLegendary', FIRST_LEGENDARY_DELAY_MS);
+  };
   const plan = p.save.warPlans[p.save.activePlan];
   const isEquipped = (card: CardId) =>
     !!plan && Object.values(plan.loadouts).some((l) => l.units.includes(card) || l.turrets.includes(card) || l.powers.home === card || l.powers.field === card);
@@ -97,6 +137,7 @@ export function CapsuleHost(p: CapsuleHostProps) {
     pityRules: c.capsules.pity,
     settings: showSettings(p.save),
     oddsSheet,
+    ...(narration ? { onState, onCue } : {}),
     isEquipped,
     equippedNote,
     upgradesTaught: taught,

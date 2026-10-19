@@ -3,26 +3,36 @@
  *
  * ```
  * sfx bus ───────────────┐
- * ui bus ────────────────┼─> master ─> limiter ─> safety clipper ─> [meter] ─> destination
+ * ui bus ────────────────┤
+ * voice bus ─────────────┼─> master ─> limiter ─> safety clipper ─> [meter] ─> destination
  * music bus ─> duck ─────┘
  * ```
  *
  * - Bus volumes come from Settings (0..1) on a square-law taper, times a fixed mix trim per bus.
  * - The limiter is a fast, hard-knee compressor; the safety clipper after it is a soft-knee wave shaper
  *   whose output can never reach full scale, so 40 simultaneous hits cannot clip (C2/WP6 DoD).
- * - Ducking lowers the music bus (A13: 6 dB during powers, evolves and walkouts), merging overlapping
- *   requests into the deepest and longest one.
+ * - Ducking lowers the music bus (A13: 6 dB during powers, evolves and walkouts, and while the narrator
+ *   speaks), merging overlapping requests into the deepest and longest one.
+ * - The voice bus carries the narrator (queue item 39, `narrator.ts`); it is never ducked itself.
  *
  * Works on any BaseAudioContext, so the dev soundboard can render it offline to measure peaks.
  */
 import type { Bus } from '@/contracts';
 
 /**
+ * The narrator's trim (queue item 39). Its lines are mastered to -16 LUFS (true peak -1.5 dBFS,
+ * `tools/audio/voice`); this places them at about -25 LUFS after the master trim: around the level of the
+ * game's UI clicks and effects at full volume, about 10 LU over the battle music before the duck, and with
+ * their peaks just under the limiter's threshold, so a line alone is never compressed.
+ */
+export const VOICE_TRIM = 0.5;
+
+/**
  * Fixed mix trim per bus (linear), applied on top of the player's volume setting. The master trim
  * sits before the limiter and offsets the limiter's automatic make-up gain, so a single sound plays at
  * about the level it was designed at.
  */
-export const MIX_TRIM: Readonly<Record<Bus, number>> = { master: 0.7, music: 0.55, sfx: 1.0, ui: 0.8 };
+export const MIX_TRIM: Readonly<Record<Bus, number>> = { master: 0.7, music: 0.55, sfx: 1.0, ui: 0.8, voice: VOICE_TRIM };
 
 /**
  * Master limiter: a hard-knee 20:1 compressor with zero attack (the browser's compressor looks ahead a
@@ -108,7 +118,7 @@ export class Mixer {
   readonly preClip: GainNode;
   readonly clipper: WaveShaperNode;
   readonly meter: AnalyserNode | null;
-  private readonly volume: Record<Bus, number> = { master: 1, music: 1, sfx: 1, ui: 1 };
+  private readonly volume: Record<Bus, number> = { master: 1, music: 1, sfx: 1, ui: 1, voice: 1 };
   private duck: DuckState | null = null;
 
   constructor(
@@ -125,6 +135,7 @@ export class Mixer {
       music: gain(MIX_TRIM.music),
       sfx: gain(MIX_TRIM.sfx),
       ui: gain(MIX_TRIM.ui),
+      voice: gain(MIX_TRIM.voice),
     };
     this.duckGain = gain(1);
     this.limiter = ctx.createDynamicsCompressor();
@@ -142,6 +153,7 @@ export class Mixer {
     this.duckGain.connect(this.bus.master);
     this.bus.sfx.connect(this.bus.master);
     this.bus.ui.connect(this.bus.master);
+    this.bus.voice.connect(this.bus.master);
     this.bus.master.connect(this.limiter);
     this.limiter.connect(this.preClip);
     this.preClip.connect(this.clipper);

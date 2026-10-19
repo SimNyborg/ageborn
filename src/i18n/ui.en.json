@@ -637,8 +637,11 @@
         "master": "Master",
         "music": "Music",
         "sfx": "Effects",
-        "ui": "Menus"
+        "ui": "Menus",
+        "voice": "Voice"
       },
+      "narrator": "Narrator",
+      "narratorHint": "Reads tips and big moments aloud",
       "graphics": "Graphics",
       "preset": "Quality",
       "presetAuto": "Auto",
@@ -690,6 +693,7 @@
       "credits": "Credits",
       "creditsGame": "Ageborn: design, code and art made for this game.",
       "creditsSound": "Sound effects made with ZzFX by Frank Force (MIT).",
+      "creditsVoice": "Narrator voice made with the Kokoro speech model by hexgrad (Apache 2.0).",
       "creditsFlags": "Flag artwork: flag-icons by Panayiotis Lipiridis (MIT).",
       "creditsTech": "Built with PixiJS, Preact and Vite.",
       "breakReminder": "Break reminder",

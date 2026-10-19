@@ -1,5 +1,6 @@
 /**
- * Settings (A9 #15): Master / Music / SFX / UI volume; graphics preset; reduce motion; shake;
+ * Settings (A9 #15): Master / Music / SFX / UI volume, the narrator and its Voice volume (queue item 39);
+ * graphics preset; reduce motion; shake;
  * hitstop; damage numbers; colourblind preset; language (EN in v1, DA in v1.1); default speed; save
  * export (code and file), import and reset; the odds overview; About (with "All opponents in this
  * version are AI.", A7.1; no slogans, owner request 2026-10-07); For parents (A15.6); break reminder,
@@ -46,6 +47,9 @@ const BUSES: { bus: Bus; key: string }[] = [
   { bus: 'sfx', key: 'ui.settings.volume.sfx' },
   { bus: 'ui', key: 'ui.settings.volume.ui' },
 ];
+
+/** The narrator's own bus (queue item 39): its slider shows while the narrator is on. */
+const VOICE: { bus: Bus; key: string } = { bus: 'voice', key: 'ui.settings.volume.voice' };
 
 /** B8: remind to back up when the last export is older than this. */
 export const BACKUP_REMINDER_MS = 5 * 24 * 3600 * 1000;
@@ -94,6 +98,20 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
   const [code, setCode] = useState('');
   const [importText, setImportText] = useState('');
   const set = (patch: Partial<Settings>) => services.updateSettings(patch);
+  const narrator = st.narrator !== false;
+  const volumeSlider = (b: { bus: Bus; key: string }) => (
+    <Slider
+      key={b.bus}
+      label={t(b.key)}
+      value={Math.round(st.volume[b.bus] * 100)}
+      min={0}
+      max={100}
+      step={5}
+      format={(v) => t('ui.profile.percent', { n: v })}
+      onChange={(v) => set({ volume: { ...st.volume, [b.bus]: v / 100 } })}
+      testid={`vol-${b.bus}`}
+    />
+  );
   const openExport = () => {
     setCode(services.exportCode());
     setDialog('export');
@@ -123,19 +141,15 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
         ) : null}
         <div class="set-grid">
           <Panel title={t('ui.settings.audio')} icon={<SpeakerIcon size={24} />} testid="set-audio" labelledBy="set-audio-t">
-            {BUSES.map((b) => (
-              <Slider
-                key={b.bus}
-                label={t(b.key)}
-                value={Math.round(st.volume[b.bus] * 100)}
-                min={0}
-                max={100}
-                step={5}
-                format={(v) => t('ui.profile.percent', { n: v })}
-                onChange={(v) => set({ volume: { ...st.volume, [b.bus]: v / 100 } })}
-                testid={`vol-${b.bus}`}
-              />
-            ))}
+            {BUSES.map(volumeSlider)}
+            <Toggle
+              label={t('ui.settings.narrator')}
+              hint={t('ui.settings.narratorHint')}
+              checked={narrator}
+              onChange={(on) => set({ narrator: on })}
+              testid="set-narrator"
+            />
+            {narrator ? volumeSlider(VOICE) : null}
           </Panel>
 
           <Panel title={t('ui.settings.graphics')} icon={<InfoIcon size={24} />} testid="set-graphics" labelledBy="set-graphics-t">
@@ -460,6 +474,7 @@ export function SettingsScreen(_p: { route: RouteOf<'settings'> }) {
           <ul class="set-about">
             <li>{t('ui.settings.creditsGame')}</li>
             <li>{t('ui.settings.creditsSound')}</li>
+            <li data-testid="credits-voice">{t('ui.settings.creditsVoice')}</li>
             <li>{t('ui.settings.creditsFlags')}</li>
             <li>{t('ui.settings.creditsTech')}</li>
           </ul>

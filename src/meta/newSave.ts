@@ -28,7 +28,7 @@ import { starterPlan } from './warplan';
 /** Default settings of a new profile (A9 #15). */
 export function defaultSettings(): Settings {
   return {
-    volume: { master: 1, music: 1, sfx: 1, ui: 1 },
+    volume: { master: 1, music: 1, sfx: 1, ui: 1, voice: 1 },
     graphics: 'auto',
     reduceMotion: false,
     shake: 1,
@@ -41,6 +41,7 @@ export function defaultSettings(): Settings {
     mutedEmotes: false,
     breakReminder: true,
     quickReveal: false,
+    narrator: true,
   };
 }
 
