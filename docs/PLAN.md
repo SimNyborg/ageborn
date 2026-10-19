@@ -39,6 +39,12 @@ what we believe, how sure we are, and what we post next because of it.
 
 ## Next decisions
 
+- Experiment queued (owner idea 2026-10-19): "indie dev asks for help". 15-20 s, narrated, first person
+  ("I'm one person making this game..."), cold open on a big battle moment, fast cuts across ages, ending on
+  a personal ask to send it to one friend who would play it. Avoid the explicit "like, comment, share" list
+  (engagement bait is demoted by Meta) and the "just tap share" trick (only sent shares count). Measure
+  share rate and skip rate against the other arms. Make on 2026-10-20, post by 2026-10-21.
+
 - Week 2 (from 2026-10-19, see docs/weekly-2026-10-19.md): test shareability; 3 devlogs; first shares or
   saves and one post above 200 reach are the success signals.
 
