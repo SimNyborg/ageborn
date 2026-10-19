@@ -192,8 +192,7 @@ export class Narrator {
     if (!this.on) return this.skip(id, 'off');
     const out = this.o.host.voiceOut();
     if (!out || out.ctx.state !== 'running') return this.skip(id, 'locked');
-    this.start(id, buffer, out);
-    return true;
+    return this.start(id, buffer, out) || this.skip(id, 'locked');
   }
 
   /** Ends the line playing (only if it is `id`, when given) and drops a `say` still loading. */
@@ -210,16 +209,24 @@ export class Narrator {
     this.fetched.clear();
   }
 
-  private start(id: string, buffer: AudioBuffer, out: VoiceOut): void {
+  /** Starts a line on the voice bus; false when the context refuses (it closed meanwhile). */
+  private start(id: string, buffer: AudioBuffer, out: VoiceOut): boolean {
     const { ctx, input } = out;
-    const src = ctx.createBufferSource();
-    src.buffer = buffer;
-    const gain = ctx.createGain();
+    let src: AudioBufferSourceNode;
+    let gain: GainNode;
     const t = ctx.currentTime;
-    gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(1, t + FADE_IN_S);
-    src.connect(gain);
-    gain.connect(input);
+    try {
+      src = ctx.createBufferSource();
+      src.buffer = buffer;
+      gain = ctx.createGain();
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(1, t + FADE_IN_S);
+      src.connect(gain);
+      gain.connect(input);
+      src.start(t);
+    } catch {
+      return false;
+    }
     const duck = (): void => this.o.host.duck(NARRATOR_DUCK_DB, DUCK_SLICE_MS);
     duck();
     const p: Playing = { id, ctx, src, gain, duckTimer: this.timers.every(duck, DUCK_EVERY_MS) };
@@ -231,8 +238,8 @@ export class Narrator {
       this.playing = null;
       this.emit({ kind: 'end', id, cut: false });
     };
-    src.start(t);
     this.emit({ kind: 'start', id, seconds: buffer.duration });
+    return true;
   }
 
   /** Fades the line playing out (no click) and forgets it; its duck slices stop, so the music comes back up. */
@@ -243,8 +250,15 @@ export class Narrator {
     this.timers.clear(p.duckTimer);
     try {
       const t = p.ctx.currentTime;
-      p.gain.gain.cancelScheduledValues(t);
-      p.gain.gain.setTargetAtTime(0, t, CUT_TAU_S);
+      // hold the level it has now (a cut during the fade-in must not jump), then fade it out
+      const g = p.gain.gain as AudioParam & { cancelAndHoldAtTime?: (when: number) => AudioParam };
+      if (typeof g.cancelAndHoldAtTime === 'function') g.cancelAndHoldAtTime(t);
+      else {
+        const v = g.value;
+        g.cancelScheduledValues(t);
+        g.setValueAtTime(v, t);
+      }
+      g.setTargetAtTime(0, t, CUT_TAU_S);
       p.src.stop(t + CUT_STOP_S);
     } catch {
       // already stopped

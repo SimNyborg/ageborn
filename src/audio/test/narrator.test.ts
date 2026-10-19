@@ -5,6 +5,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { DECODED_KEEP, DEFAULT_MAX_DELAY_MS, DUCK_EVERY_MS, DUCK_SLICE_MS, NARRATOR_DUCK_DB, Narrator, RETRY_AFTER_MS, type NarratorEvent, type NarratorOptions, type VoiceFile } from '../narrator';
+import { PREPARE_DUCK_MS } from '../service';
 import { VOICE_LINES } from '../voice.gen';
 import { type FakeBuffer, FakeBufferSource, FakeContext, type FakeGain } from './fakeContext';
 
@@ -123,6 +124,8 @@ describe('Narrator', () => {
     await r.n.say('a');
     expect(r.ducks).toEqual([[NARRATOR_DUCK_DB, DUCK_SLICE_MS]]);
     expect(DUCK_SLICE_MS).toBeGreaterThan(DUCK_EVERY_MS);
+    // a slice must never read as the evolve's Ascension duck, which decodes the next age's music
+    expect(DUCK_SLICE_MS).toBeLessThan(PREPARE_DUCK_MS);
     r.timers.tick();
     r.timers.tick();
     expect(r.ducks).toHaveLength(3);
@@ -272,6 +275,27 @@ describe('Narrator', () => {
     expect(r.events).toContainEqual({ kind: 'skip', id: 'a', reason: 'locked' });
     r.ctx.state = 'running';
     expect(await r.n.say('a')).toBe(true);
+  });
+
+  it('a context that refuses to start the line skips it without throwing, and a cut in the fade-in holds its level', async () => {
+    const r = rig();
+    const make = r.ctx.createBufferSource.bind(r.ctx);
+    r.ctx.createBufferSource = () => {
+      const src = make();
+      src.start = () => {
+        throw new Error('InvalidStateError');
+      };
+      return src;
+    };
+    await expect(r.n.say('a')).resolves.toBe(false);
+    expect(r.events).toContainEqual({ kind: 'skip', id: 'a', reason: 'locked' });
+    expect(r.n.current).toBeNull();
+    expect(r.timers.live.size).toBe(0);
+    const ok = rig();
+    await ok.n.say('a');
+    ok.n.stop();
+    const gain = sources(ok.ctx)[0]!.outputs[0] as FakeGain;
+    expect(gain.gain.events.map((e) => e.kind)).toEqual(['set', 'linear', 'hold', 'target']);
   });
 
   it('keeps bytes fetched before the context exists and decodes them when the line is asked for', async () => {
