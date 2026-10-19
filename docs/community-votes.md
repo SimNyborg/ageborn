@@ -7,4 +7,5 @@ Real votes from comments on devlog questions. Tallied in the evening status.
 - A: 1 Mammoth vs 12 cavemen
 - B: the landship whose crew bails out
 - Tally: open (counted each evening; the winner is filmed next)
+- 2026-10-19 21:55: A 0, B 0 (no comments yet)
 

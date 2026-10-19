@@ -79,3 +79,8 @@ what we believe, how sure we are, and what we post next because of it.
 - 2026-10-19 weekly review: short-hook is the default for battles (watch 40 % vs 27 %, same reach); classic
   dropped; bandit now scores watch share and seconds watched together (devlogs were under-scored); week 2
   tests shareability. Queue for 2026-10-20: R12 and R13 (duels).
+- 2026-10-19 evening: first save ever (devlog #2) and followers 108 (+1). R11 (short duel) 139 reach, a new high.
+  R10 (10 capsules, 18 s, a day after the capsule devlog) only 21 reach after 9.6 h, far below the usual
+  ~100 by then: possibly a repeat-content penalty (third capsule-opening video in 4 days, same footage style).
+  Watch it tomorrow; if it stays low, space capsule videos further apart and vary them more. Devlogs hold
+  the most seconds (7.1-7.4 s). Vote on devlog #1: no comments yet.
