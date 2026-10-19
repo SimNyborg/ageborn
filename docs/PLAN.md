@@ -20,7 +20,7 @@ what we believe, how sure we are, and what we post next because of it.
 | # | Belief | Evidence | Status |
 |---|---|---|---|
 | B1 | Capsule openings reach the most people | R6 120 reach / 28 % watch; R9 114 reach / 37 % watch after 8.5 h (both top 3 of 8); owner sees interest | signal, strongest (n=2) |
-| B2 | Shorter Reels are watched further | 13-14 s reveals 28-37 %, 21-24 s posts 16-19 %; R9 (13 s) 38 %; R7 (7.6 s) 51 % after 10 h, the best so far | signal, stronger |
+| B2 | Shorter Reels are watched further | 13-14 s reveals 28-37 %, 21-24 s posts 16-19 %; R9 (13 s) 38 %; R7 (7.6 s) 51 % after 10 h, the best so far | confirmed for watch share (n=3 vs 6, 40 % vs 27 %), not for reach |
 | B3 | A question to the viewer gets reactions but not reach on its own | R5: 10 % engagement, reach 29 | signal |
 | B4 | Nothing gets shared yet; followers flat at 107 | 0 shares on all 8 posts | problem to solve |
 | B5 | Posting time matters | midday vs evening too close (reach 102 vs 117, n=3 each) | unknown |
@@ -39,10 +39,12 @@ what we believe, how sure we are, and what we post next because of it.
 
 ## Next decisions
 
+- Week 2 (from 2026-10-19, see docs/weekly-2026-10-19.md): test shareability; 3 devlogs; first shares or
+  saves and one post above 200 reach are the success signals.
+
 - No multi-variable regression before about 150 posts (too little data, high noise); the bandit
   (tools/bandit.py, built 2026-10-18) picks the mix until then.
 
-- Mon 2026-10-19 weekly review: format (short-hook vs classic) and capsule vs other types, if n allows.
 - After 3 devlogs: do they get comments and shares? If yes, give them a fixed weekly slot.
 - If reach per post falls more than 25 % for a week: tell the owner and change course.
 - Idea for B4 (shares): a "plot twist" duel. With 7 Riveters the Land Dreadnought falls, its crew bails out
@@ -74,3 +76,6 @@ what we believe, how sure we are, and what we post next because of it.
   average: the most seconds of any post (short duels about 3-4 s, R9 about 5 s). Watch % favours short videos,
   so compare average seconds watched too. Reach ceiling (B6) holds: every post 105-130. Still 0 comments,
   0 shares, 0 saves; followers 107.
+- 2026-10-19 weekly review: short-hook is the default for battles (watch 40 % vs 27 %, same reach); classic
+  dropped; bandit now scores watch share and seconds watched together (devlogs were under-scored); week 2
+  tests shareability. Queue for 2026-10-20: R12 and R13 (duels).

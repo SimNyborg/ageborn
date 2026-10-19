@@ -9,8 +9,9 @@ Arms (content types): capsule, duel (short-hook matchup), classic (other battle 
 question (vote-only Reels) and devlog. A post's arm is its "arm" field in posted.json, or derived
 from its name, pillar, format and hook_type.
 
-Score per post: reach/100 * watch share  +  10 * (shares + saves) / reach
-  reach/100 * watch share ~ how many people-equivalents watched the whole video (about 0.2-0.6 now);
+Score per post: reach/100 * hold  +  10 * (shares + saves) / reach
+  hold = the mean of the watch share and the seconds watched / 10 (capped at 1), so short videos are not
+  favoured just for being short and long ones not just for being long (weekly review 2026-10-19);
   the bonus makes one share or save per 100 reached worth about as much as that whole term, because
   shares and saves are what breaks the reach ceiling (PLAN B6).
 
@@ -60,8 +61,10 @@ def latest_rows():
 def score(r):
     reach = float(r["reach"] or 0)
     watch = float(r["watch_pct"] or 0) / 100
+    secs = min(float(r["avg_watch_ms"] or 0) / 1000 / 10, 1.0)
+    hold = (watch + secs) / 2
     acts = float(r["shares"] or 0) + float(r["saved"] or 0)
-    return reach / 100 * watch + (10 * acts / reach if reach else 0)
+    return reach / 100 * hold + (10 * acts / reach if reach else 0)
 
 
 def main():
