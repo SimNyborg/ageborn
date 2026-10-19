@@ -119,15 +119,22 @@ export function createNarration(o: NarrationOptions): Narration {
       });
     },
     capsule: (record, save) => {
-      // the show's events reach the director once it is in (it loads as the show starts)
+      // the show's events reach the director once it is in (it loads as the show starts); the latest state is
+      // passed on then, so a tap prompt already up is still heard
       let real: CapsuleVoice | null = null;
       let ended = false;
+      let last: Parameters<CapsuleVoice['state']>[0] | null = null;
       if (on())
         void get().then((d) => {
-          if (d && !ended) real = d.capsule(record, save);
+          if (!d || ended) return;
+          real = d.capsule(record, save);
+          if (last) real.state(last);
         });
       return {
-        state: (s) => real?.state(s),
+        state: (s) => {
+          last = s;
+          real?.state(s);
+        },
         cue: (c, step) => real?.cue(c, step),
         end: () => {
           ended = true;

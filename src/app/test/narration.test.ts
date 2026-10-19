@@ -496,3 +496,20 @@ describe('the first Legendary', () => {
     expect(r.d.narrator.current).toBeNull();
   });
 });
+
+describe('the stub and a capsule show', () => {
+  it('passes on the latest show state once the director is in (a tap prompt already up is heard)', async () => {
+    const c = controllerFor();
+    let release: (m: typeof directorModule) => void = () => undefined;
+    const n = createNarration({ services: { audio: {} as AudioService, i18n, content }, controller: c, load: () => new Promise((res) => (release = res)) });
+    const scripted = { kind: 'capsules', reveals: [{ capsule: { scriptIndex: 1, contents: { stacks: [] } } }] } as unknown as ShowRecord;
+    const show = n.capsule(scripted, fakeSaveDoc());
+    show.state({ index: 1, kind: 'strike', phase: 'run', prompt: 'tap', canSkip: false, canFastForward: false, holding: false, opened: false } as RunnerState);
+    expect(n.log()).toBeNull();
+    release(directorModule);
+    await flush();
+    expect(n.log()?.some((e) => e.kind === 'voice' && e.id === 'capsule.tapStarter')).toBe(true);
+    show.end();
+    n.dispose();
+  });
+});
