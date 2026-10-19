@@ -195,9 +195,9 @@ Apache 2.0, through `kokoro-onnx` 0.6.1) and shipped as small files; nothing run
   same primer (the first approved sample line), so the loudness stage has settled as it had in the approved
   samples, and is cut out at its onset: every line lands at about -16 LUFS. The model files are checked by
   SHA-256.
-- **Output.** `public/audio/voice/<key>.<hash>.ogg` (mono Ogg Opus, 64 kbps: at 32-48 kbps Opus loses 2-3 dB of the voice's presence at 3-9 kHz) and `.m4a` (AAC-LC, 48 kbps),
-  encoded by `build.py`'s `encode` like every other file; the manifest lists each line's files, length,
-  sizes, English text and input hash.
+- **Output.** `public/audio/voice/<key>.<hash>.ogg` (mono Ogg Opus, 64 kbps: at 32-48 kbps Opus loses 2-3 dB
+  of the voice's presence at 3-9 kHz) and `.m4a` (AAC-LC, 48 kbps), encoded by `build.py`'s `encode` like
+  every other file; the manifest lists each line's files, length, sizes, English text and input hash.
 - **Re-running.** A line whose text and recipe are unchanged (same hash) and whose files exist is kept, so a
   re-run reproduces the same files; a changed string re-renders only its line and its old files are deleted.
   The render is deterministic as well (Kokoro on one CPU thread, ffmpeg bit-exact): `--force` writes the same
