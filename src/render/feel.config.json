@@ -56,7 +56,22 @@
       "contactSpark": { "effectId": "fx.contact_spark" },
       "stuck": { "arrow": ["proj.arrow", "proj.arrow_arc", "proj.bolt", "proj.scorpion_bolt"], "javelin": ["proj.javelin", "proj.harpoon"] },
       "bits": { "s": 3, "m": 4, "l": 5 },
-      "death": { "lieMs": 2000, "fadeMs": 600, "slideLu": { "light": 10, "medium": 16, "heavy": 24 }, "heavySlideShare": 0.55, "slideMs": 380, "lingerMs": 4000 }
+      "death": { "lieMs": 2000, "fadeMs": 600, "slideLu": { "light": 10, "medium": 16, "heavy": 24 }, "heavySlideShare": 0.55, "slideMs": 380, "lingerMs": 4000 },
+      "leap": { "baseLu": 0, "share": 0.28, "minLu": 14, "maxLu": 40, "leapCards": ["alpine_climber"], "blinkCards": ["warp_stalker"] }
+    },
+    "clash": {
+      "apartMs": 3000,
+      "windowMs": 1500,
+      "gapMs": 8000,
+      "nearLu": 140,
+      "minPerSide": 2,
+      "trauma": 0.4,
+      "punchZoom": 0.03,
+      "punchMs": 300,
+      "freezeMs": 70,
+      "intensity": 0.35,
+      "width": { "baseLu": 60, "perUnitLu": 14, "minLu": 100, "maxLu": 220 },
+      "lean": { "minViewLu": 1050, "minPerSide": 3, "zoom": 1.08, "inMs": 500, "holdMs": 1600, "outMs": 900 }
     },
     "baseCollapse": {
       "breakMs": 520,
@@ -137,6 +152,7 @@
     },
     "death.legendary": {
       "hitstopGlobalMs": 80,
+      "simSlowMo": { "scale": 0.4, "ms": 750, "easeMs": 400 },
       "trauma": 0.55,
       "kickPx": 4,
       "particles": [
@@ -149,6 +165,11 @@
     "death.land.s": { "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 1 }], "sound": "body_fall_s" },
     "death.land.m": { "trauma": 0.12, "kickPx": 2, "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 2 }], "sound": "body_fall_m" },
     "death.land.l": { "trauma": 0.3, "kickPx": 3.5, "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 3 }], "sound": "body_fall_l" },
+    "leap.land": { "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 2 }], "sound": "leap_land" },
+    "knock.land.s": { "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 1 }] },
+    "knock.land.m": { "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 2 }], "sound": "leap_land", "soundVolumeDb": -6 },
+    "knock.land.l": { "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 2 }], "sound": "leap_land", "soundVolumeDb": -6 },
+    "clash": { "kickPx": 3, "particles": [{ "effectId": "fx.clash_dust", "count": 1, "priority": 3 }], "sound": "clash_crash" },
     "death.mech": { "trauma": 0.12, "flashMs": 60, "flashTarget": "victim" },
     "death.mech.explode": {
       "particles": [{ "effectId": "fx.explosion_s", "count": 1, "priority": 3 }],

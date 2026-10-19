@@ -148,6 +148,28 @@ export interface CombatTuning {
   stuck?: { arrow: readonly string[]; javelin: readonly string[] };
   /** A4: how many bits a fallen body leaves by its size class (`fx.bits` `count`). */
   bits?: Readonly<Record<BodySize, number>>;
+  /**
+   * A8: the hop of a pounce (U's `airborne`): its height `baseLu + share x distance`, clamped (track U's tuning: a long
+   * leap clears the heads of the line it jumps); cards whose hop is the higher, rounder `leap`; cards that blink instead
+   * of hopping (their own effect shows the jump).
+   */
+  leap?: LeapRules;
+}
+
+export interface LeapRules {
+  baseLu: number;
+  share: number;
+  minLu: number;
+  maxLu: number;
+  leapCards: readonly string[];
+  blinkCards: readonly string[];
+}
+
+export const LEAP_DEFAULTS: LeapRules = { baseLu: 0, share: 0.28, minLu: 14, maxLu: 40, leapCards: [], blinkCards: [] };
+
+/** A pounce's hop height (lu) over `distanceLu`. */
+export function leapLift(distanceLu: number, r: LeapRules = LEAP_DEFAULTS): number {
+  return Math.max(r.minLu, Math.min(r.maxLu, r.baseLu + r.share * Math.abs(distanceLu)));
 }
 
 export const COMBAT_DEFAULTS: CombatTuning = {

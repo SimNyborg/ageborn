@@ -26,6 +26,9 @@ function testContent(): CompiledContent {
     ...fakeContent.units,
     tankette: { ...base, id: 'tankette', group: 'heavy', tags: ['armored', 'mech', 'ground'], sfx: { spawn: 'spawn_heavy', die: 'die_mech' } },
     matriarch: { ...base, id: 'matriarch', group: 'legendary', rarity: 'legendary', sfx: { spawn: 'spawn_legendary', die: 'die_bio' } },
+    // queue item 38 A8: a pouncer, and one whose pounce is a blink
+    sabertooth: { ...(fakeContent.units['bonker'] as UnitDef), id: 'sabertooth', group: 'epic', size: 'medium', abilities: [{ kind: 'pounce', searchRange: 150, cooldownMs: 10000, leapMs: 500, firstBiteBp: 20000 }] },
+    warp_stalker: { ...(fakeContent.units['bonker'] as UnitDef), id: 'warp_stalker', group: 'epic', abilities: [{ kind: 'pounce', searchRange: 200, cooldownMs: 10000, leapMs: 400, firstBiteBp: 20000 }] },
   };
   return { ...fakeContent, units };
 }
@@ -790,5 +793,90 @@ describe('event mapper: the heal gesture of a healer with no attack (Repair Dron
     // footman at 520: drone 14 at 600 is 80 lu away, drone 10 at 400 is 120 lu away
     expect(clips(at(fresh(), 10, [healed(11)], [10, 14, 11]))).toEqual(gesture(14));
     expect(clips(fresh().map([healed(11)], (id) => HEAL_UNITS[id]))).toEqual([]);
+  });
+});
+
+describe('queue item 38 A6: the clash moment', () => {
+  const all = () => Object.entries(UNITS).map(([id, u]) => [Number(id), u] as const);
+  const unit = (id: number) => UNITS[id];
+
+  it('answers the first melee blow with both lines near: crash, dust along the line, a kick, the view part and intensity', () => {
+    const out = mapper().map([hit()], unit, all);
+    // the pair's middle (500 and 700); two units a side within 140 lu of it
+    expect(pick(out, 'clash')).toEqual([{ a: 'clash', x: 600, freezeMs: 70, lean: false, trauma: 0.4, punchZoom: 0.03, punchMs: 300 }]);
+    const dust = pick(out, 'fx').find((f) => f.effectId === 'fx.clash_dust');
+    expect(dust).toMatchObject({ at: { k: 'world', x: 600, y: 0 }, count: 1, opts: { widthLu: 116 } });
+    // the player's own blow: the crash has the player's priority and pans by the contact line
+    expect(pick(out, 'sound').find((s) => s.id === 'clash_crash')).toMatchObject({ x: 600, priority: 1 });
+    expect(pick(out, 'kick')).toContainEqual(expect.objectContaining({ px: 3, dir: { x: 0, y: 1 } }));
+    expect(pick(out, 'intensity').map((i) => i.amount)).toContain(0.35);
+  });
+
+  it('plays once per contact, never for a ranged blow, and needs both lines', () => {
+    const m = mapper();
+    m.map([hit()], unit, all);
+    m.tick = T + 4;
+    expect(pick(m.map([hit()], unit, all), 'clash')).toEqual([]);
+    const ranged = mapper().map([hit({ targetId: 1, sourceId: 2, sourceCard: 'pebbler', x: 500_000 })], unit, all);
+    expect(pick(ranged, 'clash')).toEqual([]);
+    const two = { 1: UNITS[1]!, 2: UNITS[2]! };
+    const lone = mapper().map([hit()], (id) => two[id as 1 | 2], () => Object.entries(two).map(([id, u]) => [Number(id), u] as const));
+    expect(pick(lone, 'clash')).toEqual([]);
+  });
+
+  it('meets the same clashes on a replay: the moment follows the sim clock', () => {
+    const once = (): number[] => {
+      const m = mapper();
+      const at: number[] = [];
+      for (let t = 0; t < 400; t += 20) {
+        m.tick = t;
+        // blows every second, with a 4 s lull every 10 s
+        if (t % 200 >= 120) continue;
+        if (pick(m.map([hit({ tick: t })], unit, all), 'clash').length > 0) at.push(t);
+      }
+      return at;
+    };
+    expect(once()).toEqual([0, 200]);
+    expect(once()).toEqual(once());
+  });
+});
+
+describe('queue item 38 A8: pounces and the Legendary slow motion', () => {
+  const POUNCERS: Record<number, UnitInfo> = { 6: { side: 0, card: 'sabertooth', x: 400 }, 7: { side: 0, card: 'warp_stalker', x: 400 } };
+
+  it('a pounce hops: its ability clip holds the strike to the touch-down, the view draws the leap', () => {
+    const out = mapper().map([ev('abilityUsed', { id: 6, ability: 'pounce', x: 560_000 })], (id) => POUNCERS[id]);
+    expect(pick(out, 'unitClip')).toEqual([{ a: 'unitClip', id: 6, clip: 'ability', impactAtMs: 500 }]);
+    expect(pick(out, 'unitLeap')).toEqual([{ a: 'unitLeap', id: 6, dx: 160, ms: 500, kind: 'pounce' }]);
+  });
+
+  it('a blink keeps its own look and no hop', () => {
+    const out = mapper().map([ev('abilityUsed', { id: 7, ability: 'pounce', x: 560_000 })], (id) => POUNCERS[id]);
+    expect(pick(out, 'unitClip')).toEqual([{ a: 'unitClip', id: 7, clip: 'ability' }]);
+    expect(pick(out, 'unitLeap')).toEqual([]);
+  });
+
+  it('a Legendary falls with a slow-motion beat (the view grants it only offline) and its big death voice', () => {
+    const leg = run([died({ id: 4, card: 'matriarch' })]);
+    expect(pick(leg, 'simSlowMo')).toEqual([{ a: 'simSlowMo', scale: 0.4, ms: 750, easeMs: 400 }]);
+    expect(pick(leg, 'sound')[0]).toMatchObject({ id: 'die_bio_l', x: 760 });
+    expect(pick(run([died()]), 'simSlowMo')).toEqual([]);
+  });
+});
+
+describe('queue item 38 A7: sound hooks', () => {
+  it('heavy bodies die with a deeper grunt, small ones as recorded', () => {
+    const heavy = pick(run([died({ id: 5, side: 0, card: 'tuskback', killerSide: 1 })]), 'sound')[0];
+    expect(heavy).toMatchObject({ id: 'die_bio', pitchBp: 9000 });
+    const mech = pick(run([died({ id: 3, card: 'tankette' })]), 'sound')[0];
+    expect(mech).toMatchObject({ id: 'die_mech', pitchBp: 9000 });
+    expect(pick(run([died()]), 'sound')[0]?.pitchBp).toBeUndefined();
+  });
+
+  it('world sounds carry their x; a power\'s hits pan but never fade', () => {
+    expect(pick(run([hit()]), 'sound')[0]).toMatchObject({ id: 'hit_blunt', x: 700 });
+    expect(pick(run([hit()]), 'sound')[0]?.noFade).toBeUndefined();
+    const power = pick(run([hit({ sourceKind: 'power', sourceId: 0, sourceCard: 'rockslide', castId: 3 })]), 'sound')[0];
+    expect(power).toMatchObject({ x: 700, noFade: true });
   });
 });

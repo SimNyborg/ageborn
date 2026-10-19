@@ -109,6 +109,8 @@ async function start(root: HTMLElement): Promise<void> {
       audio: sound.audio,
       mySide,
       spectator: o.spectator === true,
+      // the session and the replay player scale their clock by `simTimeScale` (a Legendary's fall, never live)
+      timeScaleHost: true,
       settings: viewSettings(),
       isMobile,
       arena,
@@ -124,6 +126,9 @@ async function start(root: HTMLElement): Promise<void> {
       render: (a, f, c) => view.render(a, f, c),
       get simFrozen() {
         return view.simFrozen;
+      },
+      get simTimeScale() {
+        return view.simTimeScale;
       },
       setSpeed: (s) => view.setSpeed(s),
       setPaused: (p) => view.setPaused(p),

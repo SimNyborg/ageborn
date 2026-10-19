@@ -8,9 +8,10 @@
  * it executes the actions, so the mapper output does not depend on them.
  */
 import type { AbilityDef, AttackDef, CardId, CompiledContent, DmgType, EffectId, PowerDef, SimEvent, Side, SoundId, UnitDef } from '@/contracts';
-import type { CosmeticRng } from '@/core';
-import { bitsMat, blowTier, bodySizeOf, heavyBody, hitTier, hitstopFor, matchSeed, materialOf, shareBp, SIZE_CODE, sparkKind, STUCK_KIND_CODE, TIER_CODE } from './combatFeel';
-import { combatTuning, feelRule, type FeelRuleExt, type RenderFeelConfig } from './feelConfig';
+import { msToTicks, ticksToMs, type CosmeticRng } from '@/core';
+import { ClashDetector, clashWidth, countNear, type ClashUnit } from './clash';
+import { bitsMat, blowTier, bodySizeOf, heavyBody, hitTier, hitstopFor, LEAP_DEFAULTS, matchSeed, materialOf, shareBp, SIZE_CODE, sparkKind, STUCK_KIND_CODE, TIER_CODE } from './combatFeel';
+import { clashRules, combatTuning, feelRule, type FeelRuleExt, type RenderFeelConfig } from './feelConfig';
 import { BASE_DEPTH_LU, LANE_LU, MILLI_LU, gateX } from './layout';
 import { BACKDROP_WIPE_MS } from './seam';
 import type { Anchor, ViewAction } from './types';
@@ -119,6 +120,21 @@ export function dieSoundFor(def: UnitDef | undefined): SoundId {
   return def?.tags.includes('mech') ? 'die_mech' : 'die_bio';
 }
 
+/** Pitch of the deeper death grunt of a heavy body (queue item 38 A7, track S's levels). */
+export const HEAVY_DIE_PITCH_BP = 9000;
+
+/**
+ * A body's death voice by its weight (queue item 38 A7): Legendaries and huge bodies die with the big voice
+ * (`die_bio_l`, `die_mech_l`), other heavy bodies with the usual one pitched down; a card's own sound stays its own.
+ */
+export function dieVoiceOf(def: UnitDef | undefined): { id: SoundId; pitchBp?: number } {
+  const id = dieSoundFor(def);
+  if (id !== 'die_bio' && id !== 'die_mech') return { id };
+  const size = bodySizeOf(def);
+  if (size === 'l') return { id: `${id}_l` };
+  return size === 'm' ? { id, pitchBp: HEAVY_DIE_PITCH_BP } : { id };
+}
+
 /** The attack at `index`: the unit's own attacks, then rider attacks (B15 `UnitState.attacks`). */
 export function attackOf(def: UnitDef | undefined, index: number): AttackDef | undefined {
   if (!def) return undefined;
@@ -189,6 +205,10 @@ interface RuleTarget {
   maxUnits?: number;
   /** World x of the event's source (lu): its sounds pan by it (queue item 38 step 7). */
   x?: number;
+  /** With `x`: the sounds pan but never fade off view (a power's hits, A13). */
+  noFade?: boolean;
+  /** Pitches for the rule's sounds by their placeholder (`$dieSound`: a heavy body's deeper grunt). */
+  pitchBp?: Readonly<Record<string, number>>;
   /** The blow's contact (A5): the rule's particles at the anchor unit play where the blow lands on it. */
   contact?: { from?: number; dir?: 1 | -1 };
 }
@@ -283,6 +303,8 @@ export class EventMapper {
   private pendingEnd: { winner: Side | null; cue: 'stinger.victory' | 'stinger.defeat' | null } | null = null;
   /** The last hit on each unit in the batch being mapped (a death's direction and tier, queue item 38 A4). */
   private readonly lastBlow = new Map<number, Extract<SimEvent, { e: 'hit' }>>();
+  /** Two lines meeting (queue item 38 A6): follows the melee blows on the sim's clock. */
+  private readonly clash = new ClashDetector();
 
   constructor(o: MapperOptions) {
     this.content = o.content;
@@ -343,6 +365,7 @@ export class EventMapper {
     }
     if (r.hitstopGlobalMs && r.hitstopGlobalMs > 0) out.push({ a: 'freeze', ms: r.hitstopGlobalMs, exempt: r.globalExempt === true });
     if (r.slowMo) out.push({ a: 'slowMo', scale: r.slowMo.scale, ms: r.slowMo.ms, ...(r.slowMo.easeMs ? { easeMs: r.slowMo.easeMs } : {}) });
+    if (r.simSlowMo) out.push({ a: 'simSlowMo', scale: r.simSlowMo.scale, ms: r.simSlowMo.ms, ...(r.simSlowMo.easeMs ? { easeMs: r.simSlowMo.easeMs } : {}) });
     if (r.trauma && r.trauma > 0) {
       out.push({
         a: 'trauma',
@@ -384,7 +407,17 @@ export class EventMapper {
     for (const s of r.sound ? [r.sound, ...(r.sounds ?? [])] : (r.sounds ?? [])) {
       const id = resolve(s, t.subs);
       const gapMs = id ? this.feel.tuning.soundGapMs[id] : undefined;
-      if (id) out.push({ a: 'sound', id, ...(gapMs ? { gap: { key: id, gapMs } } : {}), ...(t.x !== undefined ? { x: t.x } : {}) });
+      const pitch = t.pitchBp?.[s];
+      if (id) {
+        out.push({
+          a: 'sound',
+          id,
+          ...(gapMs ? { gap: { key: id, gapMs } } : {}),
+          ...(t.x !== undefined ? { x: t.x, ...(t.noFade ? { noFade: true } : {}) } : {}),
+          ...(pitch !== undefined ? { pitchBp: pitch } : {}),
+          ...(r.soundVolumeDb ? { volumeDb: r.soundVolumeDb } : {}),
+        });
+      }
     }
     if (r.duckDb !== undefined && r.duckMs !== undefined && r.duckMs > 0) out.push({ a: 'duck', db: r.duckDb, ms: r.duckMs });
   }
@@ -576,6 +609,8 @@ export class EventMapper {
           this.fieldHits.add(k);
         }
         const ruleKey = this.has(`hit.${tier}`) ? `hit.${tier}` : ev.heavy ? 'hit.heavy' : 'hit.light';
+        // a power's hits pan with the rest but are never faded off view (A13: power impacts keep their level)
+        const byPower = ev.sourceKind === 'power' || ev.sourceKind === 'lastStand';
         this.rule(ruleKey, {
           at,
           victim: ev.targetId,
@@ -585,6 +620,7 @@ export class EventMapper {
           subs,
           spreadLu: 6,
           x,
+          ...(byPower ? { noFade: true } : {}),
           ...(contact ? { contact } : {}),
         }, out);
         if (victim) {
@@ -601,6 +637,9 @@ export class EventMapper {
           const visual = src && !killed && !vDef?.fort ? projectileOfHit(aDef, ev.dmgType) : null;
           const kind = visual && ct.stuck ? (ct.stuck.arrow.includes(visual) ? STUCK_KIND_CODE.arrow : ct.stuck.javelin.includes(visual) ? STUCK_KIND_CODE.javelin : null) : null;
           if (kind !== null) this.rule('hit.stuck', { at, follow: true, opts: { kind, dir: dirX }, ...(contact ? { contact } : {}) }, out);
+          // A6: the first melee blows after the fronts were apart, with both lines near, are the clash (after the
+          // blow's own hit-stop, which the clash's longer hold extends)
+          if (melee && src && !vDef?.fort && !aDef?.fort) this.clashBlow((src.x + victim.x) / 2, out);
         }
         // A power may land its own piece on each unit it touches (`power.fx.<id>.hit`: Pebble Hail's
         // pebbles drop on the 8 units it screens anywhere on the lane, X0 `lane` reach).
@@ -680,9 +719,17 @@ export class EventMapper {
         return;
       }
       case 'abilityUsed': {
-        out.push({ a: 'unitClip', id: ev.id, clip: 'ability' });
         const at: Anchor = ev.ability === 'callStrike' || ev.ability === 'pounce' ? { k: 'world', x: ev.x / MILLI_LU, y: 0 } : { k: 'unit', id: ev.id, part: 'hit' };
         const u = unit(ev.id);
+        // A8: a pounce hops (take-off, arc, landing) over the sim's straight leap; its ability clip (the attack for
+        // the pouncers) holds its strike to the touch-down, the bite. A blink (the Warp Stalker) keeps its own look.
+        const leap = ev.ability === 'pounce' && u ? { ...LEAP_DEFAULTS, ...(combatTuning(this.feel).leap ?? {}) } : null;
+        const ab = leap && u ? C.units[u.card]?.abilities.find((a) => a.kind === 'pounce') : undefined;
+        if (u && leap && ab?.kind === 'pounce' && !leap.blinkCards.includes(u.card)) {
+          const ms = ticksToMs(msToTicks(ab.leapMs));
+          out.push({ a: 'unitClip', id: ev.id, clip: 'ability', impactAtMs: ms });
+          out.push({ a: 'unitLeap', id: ev.id, dx: ev.x / MILLI_LU - u.x, ms, kind: leap.leapCards.includes(u.card) ? 'leap' : 'pounce' });
+        } else out.push({ a: 'unitClip', id: ev.id, clip: 'ability' });
         // A card's own look wins over the ability kind's (A17.12: the Starwarden's beacon ring, the
         // Bronze Colossus's Molten Heart stomp, the Warp Stalker's blink).
         const own = u ? `ability.${ev.ability}.${u.card}` : '';
@@ -727,7 +774,18 @@ export class EventMapper {
           side: ev.side,
           mat: bitsMat(def, ct.materials),
         };
-        this.rule(key, { at, victim: ev.id, ...(killer !== undefined ? { attacker: killer } : {}), subs: { dieSound: dieSoundFor(def) }, dir: { x: dieDir, y: 0 }, x: vx, opts: bits }, out);
+        // the death voice by weight (A7): Legendaries and huge bodies the big one, other heavy bodies a deeper grunt
+        const voice = dieVoiceOf(def);
+        this.rule(key, {
+          at,
+          victim: ev.id,
+          ...(killer !== undefined ? { attacker: killer } : {}),
+          subs: { dieSound: voice.id },
+          ...(voice.pitchBp !== undefined ? { pitchBp: { $dieSound: voice.pitchBp } } : {}),
+          dir: { x: dieDir, y: 0 },
+          x: vx,
+          opts: bits,
+        }, out);
         if (def?.tags.includes('mech')) {
           this.rule('death.mech', { at, victim: ev.id }, out);
           const oneIn = Math.max(1, Math.round(tun.mechExplodeOneIn));
@@ -1184,6 +1242,27 @@ export class EventMapper {
     this.healGestureAt.set(best, this.tick);
     // the clip's own beat (the drone's emitter flares 0.29 s in): the view holds it to the impact as for any attack
     out.push({ a: 'unitClip', id: best, clip: 'attack', impactAtMs: HEAL_GESTURE_IMPACT_MS });
+  }
+
+  /**
+   * A6: a melee blow between two units at world x (the middle of the pair). The first blows of a new contact, with
+   * both lines near, are the clash moment: the `clash` rule (crash, dust curtain along the line, kick), and the
+   * view's part (shake, a 3% camera punch, a short hit-stop on the engaged units, the wide-screen lean-in), plus a
+   * lift of the music's intensity. At most once per `gapMs`, on the sim's clock (a replay meets the same clashes).
+   */
+  private clashBlow(x: number, out: ViewAction[]): void {
+    const r = clashRules(this.feel);
+    const near = this.clash.blow(ticksToMs(this.tick), () => {
+      const live = this.liveUnits;
+      if (!live) return [0, 0];
+      const units: ClashUnit[] = [];
+      for (const [, u] of live()) units.push({ side: u.side, x: u.x, fort: !!this.content.units[u.card]?.fort });
+      return countNear(units, x, r.nearLu);
+    }, r);
+    if (!near) return;
+    this.rule('clash', { at: { k: 'world', x, y: 0 }, dir: { x: 0, y: 1 }, x, opts: { widthLu: clashWidth(near, r) } }, out);
+    out.push({ a: 'clash', x, freezeMs: r.freezeMs, lean: near[0] >= r.lean.minPerSide && near[1] >= r.lean.minPerSide, trauma: r.trauma, punchZoom: r.punchZoom, punchMs: r.punchMs });
+    if (r.intensity > 0) out.push({ a: 'intensity', amount: r.intensity });
   }
 
   /** Size and timing options for an ability's effect (the art sizes rings by `radius`). */

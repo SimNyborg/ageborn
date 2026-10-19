@@ -102,13 +102,14 @@ export function contactSparkRecipe(k: FxKit, kind: number, tier: number, lite: b
       sprites.push(star(0.55 * s, 60, energy ? 0xeafff6 : 0xffffff), k.ring(0.8 * s, 140, tint, 0.9));
       // the splinters spray back out the way the shot came in
       particles.push({ ...k.sparks(n(4), [130 * s * v, 230 * s * v], 'fx.p.spark', [-212, -148]), tint });
-      if (big && !energy) particles.push({ ...k.chunks(n(1), 'fx.p.chunkWood'), speed: [80 * v, 150 * v], angle: [-200, -140], scale: [0.55, 0.5], life: [380, 560], spin });
+      if (big && !energy) particles.push({ ...k.chunks(n(1), 'fx.p.splinter'), speed: [80 * v, 150 * v], angle: [-200, -140], scale: [0.8, 0.7], life: [300, 460], spin });
       break;
     }
     case 'bullet': {
       if (glow) sprites.push(k.bloom(0.55 * s, 100, 0xfff1d2, 0.5));
       sprites.push(star(0.5 * s, 50, 0xffffff));
-      particles.push({ ...k.sparks(n(4), [150 * s * v, 260 * s * v], 'fx.p.spark', [-218, -142]) }, { ...k.dust(n(2), 0.5 * s), angle: [-160, -100], speed: [30 * v, 70 * v] });
+      // one small puff (machine-gun fire lands ten of these a second on one body)
+      particles.push({ ...k.sparks(n(4), [150 * s * v, 260 * s * v], 'fx.p.spark', [-218, -142]) }, { ...k.dust(n(1), 0.5 * s), angle: [-160, -100], speed: [30 * v, 70 * v] });
       break;
     }
     case 'metal': {
@@ -122,11 +123,10 @@ export function contactSparkRecipe(k: FxKit, kind: number, tier: number, lite: b
       break;
     }
     case 'wood': {
+      // a thock: a short pale star and ring, a few thin splinters flicking off (no dust: under a volley the puffs
+      // piled up into smoke at chest height, P/U/look/u12_wood_close.jpg)
       sprites.push(star(0.6 * s, 65, 0xfff1d2), k.ring(0.95 * s, 160, 0xf4ecdc, 0.7));
-      particles.push(
-        { ...k.chunks(n(3), 'fx.p.chunkWood'), speed: [70 * s * v, 140 * s * v], angle: [-120, -20], gravity: 760, scale: [0.7, 0.6], life: [360, 560], spin },
-        { ...k.dust(n(2), 0.6 * s), angle: [-150, -30], speed: [30 * v, 80 * v] },
-      );
+      particles.push({ ...k.chunks(n(2), 'fx.p.splinter'), speed: [80 * s * v, 150 * s * v], angle: [-130, -30], gravity: 820, scale: [0.85, 0.75], life: [260, 420], spin: reduce ? [0, 0] : [-560, 560] });
       break;
     }
     default: {
@@ -134,7 +134,7 @@ export function contactSparkRecipe(k: FxKit, kind: number, tier: number, lite: b
       const blast = name === 'blast';
       if (glow) sprites.push(k.bloom(1.0 * s, 150, blast ? 0xffe2c4 : 0xfff0d8, 0.5));
       sprites.push(star(0.9 * s, 75, blast ? 0xfff1d2 : 0xfff6e2), k.ring(1.3 * s, 190, 0xfff6e2, 0.75));
-      particles.push({ ...k.dust(n(3), 0.75 * s), angle: [-165, -15], speed: [40 * s * v, 100 * s * v] });
+      particles.push({ ...k.dust(n(2), 0.7 * s), angle: [-165, -15], speed: [40 * s * v, 100 * s * v] });
       if (big) {
         particles.push(
           { sprite: 'fx.p.star', count: n(2), life: [220, 340], speed: [70 * s * v, 120 * s * v], angle: [-150, -30], scale: [0.6 * s, 0.3 * s], alpha: [1, 0], spin },
@@ -199,8 +199,9 @@ export function clashDustRecipe(k: FxKit, widthLu: number, lite: boolean, reduce
       { ...k.ring(w / 12, 360, 0xfff6e2, 0.18), delay: 60 },
     ],
     particles: [
-      // the curtain: puffs rising along the whole contact line
-      { ...k.dust(n(per), 1.15), box: [half, 2], angle: [-125, -55], speed: [25 * v, 80 * v], gravity: -14, drag: 1.6, life: [520, 900] },
+      // the curtain: puffs kicked up along the whole contact line, hugging the legs (a curtain that rose to the
+      // chest hid the blows of the clash it marks, P/U/look/u12_wood_close2.jpg)
+      { ...k.dust(n(per), 1.05), box: [half, 2], angle: [-122, -58], speed: [20 * v, 55 * v], gravity: -5, drag: 2.2, life: [420, 720] },
       // and rolling out at both ends along the ground
       { ...k.dust(n(per * 0.4), 1), box: [half * 0.6, 1], angle: [-178, -165], speed: [60 * v, 130 * v], drag: 2.6, life: [420, 700] },
       { ...k.dust(n(per * 0.4), 1), box: [half * 0.6, 1], angle: [-15, -2], speed: [60 * v, 130 * v], drag: 2.6, life: [420, 700] },
@@ -377,9 +378,10 @@ function whenIdle(fn: () => void): void {
 }
 
 /**
- * Bakes an age's bits ahead of its first death, one part per idle callback (the atlas unit view calls it when it is
- * made). The bits' parts bake on first use otherwise, on the death frame itself: about 1 ms a part with the CPU
- * throttled 4x, plus the first runtime page's canvas (about 6 ms) on the battle's first death. Once per age and baker.
+ * Bakes an age's bits ahead of its first death, one part per idle callback (the atlas unit view calls it on its first
+ * hit, so only battles bake them). The bits' parts bake on first use otherwise, on the death frame itself: about 1 ms
+ * a part with the CPU throttled 4x, plus the first runtime page's canvas (about 6 ms) on the battle's first death.
+ * Once per age and baker.
  */
 export function warmBits(baker: PartBaker, age: number): void {
   if (!baker.enabled) return;
@@ -610,6 +612,7 @@ export function combatVariantRecipes(k: FxKit): FxRecipe[] {
 export const COMBAT_PARTS: readonly string[] = [
   'fx.p.stuckArrow',
   'fx.p.stuckJavelin',
+  'fx.p.splinter',
   ...new Set([...Object.values(BIT_KITS).flatMap((kit) => [kit.head.part, ...kit.rest.map((b) => b.part)]), ...MECH_KIT.map((b) => b.part), ...BEAST_KIT.map((b) => b.part)]),
 ];
 

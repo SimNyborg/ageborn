@@ -48,6 +48,38 @@ describe('contact stand-off (A1)', () => {
     expect(r.comp.get(1)).toBe(CONTACT_DEFAULTS.compMutual);
   });
 
+  it('lets a second attacker follow a victim that stepped back from its own duel (a spear on a busy foe)', () => {
+    const v = unit({ id: 1, side: 1, x: 1000, target: 2 });
+    const a1 = unit({ id: 2, side: 0, x: 963, target: 1 });
+    // the spear stands far back: past the plain 12 lu forward clamp once its victim has stepped back
+    const a2 = unit({ id: 3, side: 0, x: 890, target: 1, reach: SPEAR });
+    const r = stage([v, a1, a2]);
+    expect(r.offset.get(1) ?? 0).toBeGreaterThan(10);
+    expect(r.offset.get(3) ?? 0).toBeGreaterThan(CONTACT_DEFAULTS.maxForwardLu);
+    const d = depthOf(r, a2, v);
+    expect(d).toBeGreaterThanOrEqual(CONTACT_DEFAULTS.depthMin - 1e-6);
+    expect(d).toBeLessThanOrEqual(CONTACT_DEFAULTS.depthMax + 1e-6);
+  });
+
+  it('meets a mismatched mirror pair where the short weapon still lands (a sword against a short flail)', () => {
+    // the shipped Footman and Flailman (U's reach): windows that never meet, at the sim's 32.5 lu
+    const SWORD: Reach = { tipLu: 67.3, lungeLu: 14.4, frontLu: 40, backLu: 20, torsoFrontLu: 16.8, torsoBackLu: 16 };
+    const FLAIL: Reach = { tipLu: 35.1, lungeLu: 13.2, frontLu: 30, backLu: 20, torsoFrontLu: 18, torsoBackLu: 17 };
+    const a = unit({ id: 1, side: 0, x: 961.3, target: 2, impactTick: 20, reach: SWORD });
+    const b = unit({ id: 2, side: 1, x: 993.8, target: 1, impactTick: 20, reach: FLAIL });
+    const r = stage([a, b]);
+    const gap = drawnGap(r, a, b);
+    const left = (l: number): number => l * (1 - CONTACT_DEFAULTS.compMutual);
+    // the torsos clear each other (with what is left of both lunges)
+    expect(gap).toBeGreaterThanOrEqual(16.8 + 18 + left(14.4) + left(13.2) - 1e-6);
+    // the heads' extra room of a mirror exchange is not taken past the flail's reach (it was 76 lu)
+    expect(gap).toBeLessThan(60);
+    // the sword lands inside the flailman's torso (front surface to back surface), not through it
+    const sword = 67.3 - CONTACT_DEFAULTS.compMutual * 14.4;
+    expect(sword - (gap - 18 - left(13.2))).toBeGreaterThan(0);
+    expect(sword - (gap - 18 - left(13.2))).toBeLessThan(18 + 17);
+  });
+
   it('keeps room for both heads in a mirror exchange (both swings land on one tick), with a larger clamp', () => {
     // the shipped Bonker's attack A (U's reach table): a deep crouch whose head leads the torso
     const BONKER: Reach = { tipLu: 67.2, lungeLu: 12.7, frontLu: 60.2, backLu: 19.5, torsoFrontLu: 25.1 };

@@ -145,6 +145,23 @@ export type ViewAction =
   | { a: 'unitKnock'; id: number; dx: number; ms: number }
   /** A directional screen kick (A3) along `dir`, if `at` is in view; the director keeps one per about 120 ms. */
   | { a: 'kick'; px: number; dir: Pt; at: Anchor }
+  /**
+   * A pounce or leap (A8): the sim carries the unit `dx` lu in a straight line over `ms`; the view draws the hop (its
+   * take-off, arc and landing, U's `airborne`) and the landing dust and sound on touch-down.
+   */
+  | { a: 'unitLeap'; id: number; dx: number; ms: number; kind: 'pounce' | 'leap' }
+  /**
+   * The clash moment (A6) at world x. When it is in view: its shake (`trauma`) and camera punch, a short hit-stop on
+   * the engaged units near it (not those in their wind-up) and, with `lean`, the wide-screen lean-in toward the
+   * fight. Its crash, dust and kick come as their own actions (the `clash` feel rule).
+   */
+  | { a: 'clash'; x: number; freezeMs: number; lean: boolean; trauma: number; punchZoom: number; punchMs: number }
+  /**
+   * Slow motion of the whole match (A8, a Legendary's fall): game time and the match clock run at `scale` for `ms`
+   * (real time), easing back over `easeMs`. Only where the host scales its clock by the view's `simTimeScale`
+   * (offline matches and replays); never in a live match, never with Reduce motion.
+   */
+  | { a: 'simSlowMo'; scale: number; ms: number; easeMs?: number }
   | { a: 'unitFlash'; id: number; ms: number; color?: number }
   | { a: 'unitFreeze'; id: number; ms: number; jitterPx?: number }
   /** A fort's own moment (A16.14.8): `place`, `build`, `spawn` (a camp's door), `hit`, `attack`. */
@@ -202,6 +219,8 @@ export type ViewAction =
       volumeDb?: number;
       /** World x of the source (queue item 38 step 7): the view pans it by its screen x and fades it off view (A13). */
       x?: number;
+      /** With `x`: pan only, never faded off view (a power's hits, A13 "power impacts are never faded"). */
+      noFade?: boolean;
     }
   | { a: 'trauma'; amount: number; dir?: Pt; gap?: Gap }
   | { a: 'screenFlash'; ms: number; color: number; alpha: number }

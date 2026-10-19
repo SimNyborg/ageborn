@@ -1474,8 +1474,6 @@ class AtlasUnitView implements UnitView {
     this.base = track(sheet, def, 'idle', { loop: true });
     if (this.base) this.base.t = this.rng.next() * this.base.durationMs; // crowds do not breathe in step
     this.show(0);
-    // A4: the bits this unit's age leaves when it falls bake in idle time now, not on its death frame
-    warmBits(decor, Math.max(0, FX_AGES.indexOf(unitSheetAge(def.source) ?? 'stone')));
   }
 
   /**
@@ -1656,6 +1654,11 @@ class AtlasUnitView implements UnitView {
    */
   react(tier: HitTier, dir: 1 | -1): void {
     if (this.destroyed || this.frozenPose) return;
+    if (!this.reacted) {
+      // A4: the first hit in a battle bakes the bits this age's fallen leave, in idle time, so no death frame bakes
+      // a part (menus, which never hit, bake none)
+      warmBits(this.decor, Math.max(0, FX_AGES.indexOf(unitSheetAge(this.def.source) ?? 'stone')));
+    }
     this.reacted = true;
     // a flash earlier this frame started the old flinch and squash: the reaction replaces them
     this.flinchT = -1;
@@ -1691,6 +1694,9 @@ class AtlasUnitView implements UnitView {
       if (hasHit) this.startInsert(hitAnim);
       return;
     }
+    // under sustained blows (three Bonkers on one Rhino) the running hit clip plays on and the recoil answers each
+    // blow; only a nearly finished one restarts, so an idle victim never locks on the clip's first frames
+    if (a && a.name === 'hit' && a.t < HIT_INSERT_GAP_MS) return;
     this.insertT = -1;
     this.play('hit');
   }

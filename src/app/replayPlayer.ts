@@ -145,7 +145,7 @@ export class ReplayPlayer {
   advance(frameMs: number): void {
     if (this.disposed || !this.simValue) return;
     if (this.statusSig.peek() === 'playing') {
-      this.clock.add(frameMs, this.speedSig.peek(), this.view?.simFrozen ?? false);
+      this.clock.add(frameMs, this.speedSig.peek() * (this.view?.simTimeScale ?? 1), this.view?.simFrozen ?? false);
       while (this.statusSig.peek() === 'playing' && !(this.view?.simFrozen ?? false) && this.clock.consume()) this.tick();
     }
     this.view?.render(this.clock.alpha, frameMs);

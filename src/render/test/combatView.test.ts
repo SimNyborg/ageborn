@@ -1,4 +1,4 @@
-import type { MatchConfig, SimEvent, SimState, UnitState } from '@/contracts';
+import type { MatchConfig, SimEvent, SimState, UnitDef, UnitState } from '@/contracts';
 import { FakeArtProvider } from '@/contracts/fakes/art';
 import { FakeAudio } from '@/contracts/fakes/audio';
 import { fakeMatchConfig } from '@/contracts/fakes/sim';
@@ -26,6 +26,7 @@ interface Spy {
   comps: number[];
   reacts: { tier: HitTier; dir: 1 | -1 }[];
   lifts: { ms: number; liftLu: number; kind: string; tumble: boolean }[];
+  lands: (() => void)[];
   deaths: { dir: 1 | -1; tier: HitTier; heavy: boolean; lieMs: number; fadeMs: number; onLand?: () => void }[];
   marks: boolean[];
   finished: boolean;
@@ -39,13 +40,16 @@ class CombatArt extends FakeArtProvider {
   }
   override createUnit(o: Parameters<FakeArtProvider['createUnit']>[0]): FakeUnit {
     const v = super.createUnit(o) as FakeUnit & Spy & CombatView & { setGroundMarks?(on: boolean): void };
-    Object.assign(v, { offsets: [], comps: [], reacts: [], lifts: [], deaths: [], marks: [], finished: false });
+    Object.assign(v, { offsets: [], comps: [], reacts: [], lifts: [], lands: [], deaths: [], marks: [], finished: false });
     if (this.hooks) {
       v.reach = () => CLUB;
       v.setOffsetX = (lu: number) => void v.offsets.push(lu);
       v.setLungeComp = (s: number) => void v.comps.push(s);
       v.react = (tier, dir) => void v.reacts.push({ tier, dir });
-      v.airborne = (a) => void v.lifts.push({ ms: a.ms, liftLu: a.liftLu, kind: a.kind, tumble: a.tumble });
+      v.airborne = (a) => {
+        v.lifts.push({ ms: a.ms, liftLu: a.liftLu, kind: a.kind, tumble: a.tumble });
+        if (a.onLand) v.lands.push(a.onLand);
+      };
       v.dieWith = (d) => void v.deaths.push(d);
       v.setGroundMarks = (on: boolean) => void v.marks.push(on);
     }
@@ -62,8 +66,28 @@ function unitState(id: number, side: 0 | 1, card: string, x: number, o: Partial<
   };
 }
 
-function setup(hooks = true, o: { reduceMotion?: boolean } = {}) {
-  const config: MatchConfig = fakeMatchConfig();
+/** An audio fake with track S's duck-typed ambience hook. */
+class AmbienceAudio extends FakeAudio {
+  readonly levels: number[] = [];
+  setBattleAmbience(level: number): void {
+    this.levels.push(level);
+  }
+}
+
+/** The fake content plus a pouncer and a Legendary (queue item 38 A8). */
+function withCards(config: MatchConfig): MatchConfig {
+  const units = config.content.units;
+  const bonker = units['bonker'] as UnitDef;
+  const extra: Record<string, UnitDef> = {
+    sabertooth: { ...bonker, id: 'sabertooth', group: 'epic', size: 'medium', abilities: [{ kind: 'pounce', searchRange: 150, cooldownMs: 10000, leapMs: 500, firstBiteBp: 20000 }] },
+    matriarch: { ...bonker, id: 'matriarch', group: 'legendary', rarity: 'legendary', size: 'huge' },
+  };
+  return { ...config, content: { ...config.content, units: { ...units, ...extra } } };
+}
+
+function setup(hooks = true, o: { reduceMotion?: boolean; timeScaleHost?: boolean; live?: boolean; audio?: FakeAudio; width?: number; height?: number } = {}) {
+  let config: MatchConfig = withCards(fakeMatchConfig());
+  if (o.live) config = { ...config, sides: [config.sides[0], { ...config.sides[1], online: { name: 'Mira', avatar: 'a1', trophies: 1200 } }] as unknown as MatchConfig['sides'] };
   const state = {
     tick: 10, phase: 'regulation', sides: [], units: [], projectiles: [], casts: [], traps: [], rng: [1, 2, 3, 4], nextId: 1, outcome: null, hashes: [],
   } as unknown as SimState;
@@ -71,9 +95,9 @@ function setup(hooks = true, o: { reduceMotion?: boolean } = {}) {
   const st = state as unknown as { sides: unknown[] };
   st.sides = [0, 1].map(() => ({ ageIndex: 0, gold: 0, xp: 0, baseHp: 1_000_000, baseMaxHp: 1_000_000, turrets: [null, null, null, null], mountsOwned: 1, treasury: 0, lastStand: 'idle', stance: 'charge', holdP: 0, queue: [], pop: 0, research: { owned: [], cur: -1, startTick: 0, endTick: 0, paid: 0 }, powerPpm: [0, 0], ascendUntil: 0 }));
   const art = new CombatArt(hooks);
-  const audio = new FakeAudio();
-  const view = new BattleView({ sim: { state, config }, art, audio, labelFactory: labels, settings: { reduceMotion: o.reduceMotion === true } });
-  view.resize(1280, 720);
+  const audio = o.audio ?? new FakeAudio();
+  const view = new BattleView({ sim: { state, config }, art, audio, labelFactory: labels, settings: { reduceMotion: o.reduceMotion === true }, timeScaleHost: o.timeScaleHost === true });
+  view.resize(o.width ?? 1280, o.height ?? 720);
   view.setPaused(false);
   return { state, art, audio, view };
 }
@@ -221,5 +245,137 @@ describe('A3 kicks and the combat recipes\' motion flags', () => {
     };
     s.view.onEvents([hitEv()]);
     expect(seen.some((o) => o['reduce'] === 1)).toBe(true);
+  });
+});
+
+function diedEv(id: number, card: string, x: number, side: 0 | 1 = 1): SimEvent {
+  return { e: 'died', tick: 10, id, side, card, killerId: 1, killerCard: 'bonker', killerKind: 'unit', killerSide: side === 1 ? 0 : 1, bountyGold: 0, bountyXp: 0, x: x * 1000 } as SimEvent;
+}
+
+describe('A6 the clash moment in the view', () => {
+  it('shakes, punches and holds the engaged units near it, except one in its wind-up', () => {
+    const s = setup();
+    const { a, b, va, vb } = duel(s, 2);
+    // the second line stands close behind each fighter
+    s.state.units.push(unitState(3, 0, 'bonker', 440), unitState(4, 1, 'bonker', 560));
+    for (let i = 0; i < 20; i++) s.view.render(1, 1000 / 60);
+    // a has struck; b is winding up its own swing
+    a.attacks[0]!.impactTick = 0;
+    b.attacks[0]!.impactTick = s.state.tick + 4;
+    s.view.onEvents([hitEv()]);
+    // the attacker holds for the clash (70 ms, over its 35 ms hit-stop); the victim keeps only its hit-stop
+    expect(va.frozenMs).toBe(70);
+    expect(vb.frozenMs).toBe(50);
+    expect(s.art.views[2]!.frozenMs).toBe(0);
+    expect(s.view.director.shake.trauma).toBeGreaterThanOrEqual(0.4);
+    expect(s.audio.played()).toContain('clash_crash');
+    s.view.render(1, 1000 / 60);
+    expect(s.view.camera.punchScale).toBeGreaterThan(1);
+    // the second blow of the same contact is no clash
+    s.state.tick = 14;
+    s.audio.clear();
+    s.view.onEvents([hitEv({ tick: 14 })]);
+    expect(s.audio.played()).not.toContain('clash_crash');
+  });
+});
+
+describe('A8 in the view: pounces, homing shots, the Legendary slow motion', () => {
+  it('draws a pounce as a hop and lands it with dust and the thump', () => {
+    const s = setup();
+    s.state.units.push(unitState(1, 0, 'sabertooth', 400), unitState(2, 1, 'bonker', 600));
+    for (let i = 0; i < 4; i++) s.view.render(1, 1000 / 60);
+    s.view.onEvents([{ e: 'abilityUsed', tick: 10, id: 1, ability: 'pounce', x: 560_000 } as SimEvent]);
+    const v = s.art.views[0]!;
+    // a 160 lu leap: 0.28 x 160 lu, held to the 40 lu cap (it clears the heads of the line it jumps)
+    expect(v.lifts).toEqual([{ ms: 500, liftLu: 40, kind: 'pounce', tumble: false }]);
+    v.lands[0]?.();
+    expect(s.audio.played()).toContain('leap_land');
+  });
+
+  it('homes a shot to its target as drawn: it lands where the walking target is', () => {
+    const s = setup();
+    const target = unitState(2, 1, 'bonker', 600);
+    s.state.units.push(unitState(1, 0, 'pebbler', 300), target);
+    s.view.render(1, 16);
+    s.view.onEvents([{ e: 'projectileFired', tick: 10, pid: 9, from: 1, targetId: 2, toX: 600_000, travelTicks: 10, visualId: 'proj.rock' } as SimEvent]);
+    const shot = s.view.layers.projectiles.children.at(-1)!;
+    const from = shot.x;
+    // the target walks 2 lu a tick toward the shooter while the shot flies (10 ticks)
+    for (let t = 0; t < 10; t++) {
+      target.prevX = target.x;
+      target.x -= 2000;
+      s.state.tick++;
+      for (let f = 0; f < 3; f++) s.view.render((f + 1) / 3, 50 / 3);
+    }
+    expect(shot.x - from).toBeCloseTo(-20, 0);
+  });
+
+  it('slows the whole match for a beat when a Legendary falls, only for a host that scales its clock', () => {
+    const fall = (o: Parameters<typeof setup>[1]): number => {
+      const s = setup(true, o);
+      s.state.units.push(unitState(1, 0, 'bonker', 480), unitState(2, 1, 'matriarch', 517));
+      s.view.render(1, 16);
+      s.view.onEvents([diedEv(2, 'matriarch', 517)]);
+      return s.view.simTimeScale;
+    };
+    expect(fall({ timeScaleHost: true })).toBeCloseTo(0.4, 5);
+    expect(fall({})).toBe(1);
+    expect(fall({ timeScaleHost: true, live: true })).toBe(1);
+    expect(fall({ timeScaleHost: true, reduceMotion: true })).toBe(1);
+    // the beat passes: back to full speed within about a second
+    const s = setup(true, { timeScaleHost: true });
+    s.state.units.push(unitState(1, 0, 'bonker', 480), unitState(2, 1, 'matriarch', 517));
+    s.view.render(1, 16);
+    s.view.onEvents([diedEv(2, 'matriarch', 517)]);
+    for (let i = 0; i < 70; i++) s.view.render(1, 1000 / 60);
+    expect(s.view.simTimeScale).toBe(1);
+  });
+});
+
+describe('A7 sound hooks in the view', () => {
+  it('pans a world sound by its screen position (up to 0.6) and fades it past the view, at most 12 dB', () => {
+    const s = setup();
+    duel(s, 2);
+    s.audio.clear();
+    s.view.onEvents([hitEv()]);
+    const near = s.audio.calls.find((c) => c.method === 'play' && c.id === 'hit_blunt');
+    const sx = s.view.camera.worldToScreen(517, 0).x;
+    const want = Math.round(Math.max(-1, Math.min(1, (sx - 640) / 640)) * 0.6 * 100) / 100;
+    expect(near && near.method === 'play' ? (near.o?.pan ?? 0) : NaN).toBeCloseTo(want, 2);
+    expect(near && near.method === 'play' ? near.o?.volumeDb : NaN).toBeUndefined();
+    s.audio.clear();
+    s.view.onEvents([hitEv({ targetId: 99, sourceId: 0, sourceKind: 'unit', x: 2_300_000 })]);
+    const far = s.audio.calls.find((c) => c.method === 'play' && c.id === 'hit_blunt');
+    expect(far && far.method === 'play' ? far.o : null).toMatchObject({ pan: 0.6, volumeDb: -12 });
+  });
+
+  it('keeps the battle ambience at the share of engaged units, and quiet while paused and after the battle', () => {
+    const audio = new AmbienceAudio();
+    const s = setup(true, { audio });
+    duel(s, 30);
+    expect(audio.levels.at(-1)).toBeCloseTo(2 / 12, 2);
+    s.view.setPaused(true);
+    for (let i = 0; i < 20; i++) s.view.render(1, 1000 / 60);
+    expect(audio.levels.at(-1)).toBe(0);
+    s.view.setPaused(false);
+    for (let i = 0; i < 20; i++) s.view.render(1, 1000 / 60);
+    expect(audio.levels.at(-1)).toBeGreaterThan(0);
+    s.view.destroy();
+    expect(audio.levels.at(-1)).toBe(0);
+  });
+});
+
+describe('A3 global freezes and live matches', () => {
+  it('a Legendary death freezes the match clock offline, never in a live match', () => {
+    const offline = setup();
+    offline.state.units.push(unitState(1, 0, 'bonker', 480), unitState(2, 1, 'matriarch', 517));
+    offline.view.render(1, 16);
+    offline.view.onEvents([diedEv(2, 'matriarch', 517)]);
+    expect(offline.view.simFrozen).toBe(true);
+    const live = setup(true, { live: true });
+    live.state.units.push(unitState(1, 0, 'bonker', 480), unitState(2, 1, 'matriarch', 517));
+    live.view.render(1, 16);
+    live.view.onEvents([diedEv(2, 'matriarch', 517)]);
+    expect(live.view.simFrozen).toBe(false);
   });
 });

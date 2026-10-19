@@ -658,4 +658,20 @@ describe('hit-pose inserts under sustained fire (A2)', () => {
     expect(hitFrames).toBeGreaterThan(5);
     expect(walkFrames).toBeGreaterThan(hitFrames);
   });
+
+  it('an idle victim under blows every 100 ms plays its hit clip through instead of locking on its first frame', () => {
+    const s = fixture();
+    const v = view(s) as unknown as Reacting;
+    v.setPose(pose(0));
+    v.play('idle', { loop: true });
+    v.update(16);
+    const second = s.animations['hit']?.[1];
+    let reached = false;
+    for (let t = 0; t < 600; t += 20) {
+      if (t % 100 === 0) v.react('light', -1);
+      v.update(20);
+      if (frameShown(v) === second) reached = true;
+    }
+    expect(reached).toBe(true);
+  });
 });

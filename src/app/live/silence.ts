@@ -14,7 +14,18 @@ export interface Silenceable {
 
 export function silenceable(inner: AudioService): Silenceable {
   let silent = false;
-  const audio: AudioService = {
+  // the battle ambience (queue item 38 A7, duck-typed on the web audio service): forwarded, held at 0 while silent
+  const ambience = (inner as { setBattleAmbience?: (level: number) => void }).setBattleAmbience?.bind(inner);
+  let level = 0;
+  const audio: AudioService & { setBattleAmbience?: (level: number) => void } = {
+    ...(ambience
+      ? {
+          setBattleAmbience: (l: number) => {
+            level = l;
+            ambience(silent ? 0 : l);
+          },
+        }
+      : {}),
     unlock: () => inner.unlock(),
     play: (id, o) => {
       if (!silent) inner.play(id, o);
@@ -34,6 +45,7 @@ export function silenceable(inner: AudioService): Silenceable {
     audio,
     setSilent(on) {
       silent = on;
+      ambience?.(on ? 0 : level);
     },
     get silent() {
       return silent;

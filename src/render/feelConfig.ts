@@ -18,6 +18,7 @@
  * from the power's data (radius, zone, width, distance, duration), so the config only picks effects.
  */
 import type { FeelConfig, FeelRule } from '@/contracts';
+import { CLASH_DEFAULTS, type ClashRules } from './clash';
 import { COMBAT_DEFAULTS, type CombatTuning } from './combatFeel';
 import type { ContactTuning } from './contact';
 import raw from './feel.config.json';
@@ -38,6 +39,8 @@ export interface FeelRuleExt extends FeelRule {
   particles?: FeelParticle[];
   /** Extra sound layers played with `sound` on the same frame (a kill accent, a material). */
   sounds?: string[];
+  /** The rule's sounds play this much softer or louder (dB; a knocked-back body's landing, queue item 38 A7). */
+  soundVolumeDb?: number;
   /** A directional screen kick (px at shake 1) along the event's direction, at most one per `kickGapMs` (A3). */
   kickPx?: number;
   flashTarget?: FlashTarget;
@@ -49,6 +52,11 @@ export interface FeelRuleExt extends FeelRule {
   jitterPx?: number;
   /** View-only slow motion after the rule (base destroyed: from the break, easing back over `easeMs`, A12). */
   slowMo?: { scale: number; ms: number; easeMs?: number };
+  /**
+   * Slow motion of the whole match, sim clock included (queue item 38 A8: a Legendary's fall), where the host scales
+   * its clock by the view's `simTimeScale` (offline matches and replays); never live, never with Reduce motion.
+   */
+  simSlowMo?: { scale: number; ms: number; easeMs?: number };
   /** Global freeze exempt from the rolling cap (base destroyed, A12). */
   globalExempt?: boolean;
   /**
@@ -120,11 +128,18 @@ export interface FeelTuning {
   contact?: Partial<ContactTuning>;
   /** Hit tiers, hit-stop, kicks, knockback, materials and deaths (queue item 38 A2-A4, `combatFeel.ts`). */
   combat?: Partial<CombatTuning>;
+  /** The clash moment and the wide-screen lean-in (queue item 38 A6, `clash.ts`). */
+  clash?: Partial<ClashRules>;
 }
 
 /** The combat tuning with its defaults filled in. */
 export function combatTuning(c: RenderFeelConfig): CombatTuning {
   return { ...COMBAT_DEFAULTS, ...(c.tuning.combat ?? {}) };
+}
+
+/** The clash rules with their defaults filled in. */
+export function clashRules(c: RenderFeelConfig): ClashRules {
+  return { ...CLASH_DEFAULTS, ...(c.tuning.clash ?? {}) };
 }
 
 /** The full render feel config: the contract plus the render-only extensions. */
@@ -189,6 +204,10 @@ export function validateFeelConfig(c: RenderFeelConfig): string[] {
     }
     if (r.slowMo && !(r.slowMo.scale > 0 && r.slowMo.scale <= 1)) out.push(`${key}.slowMo.scale must be in (0, 1]`);
     if (r.slowMo?.easeMs !== undefined && !(r.slowMo.easeMs >= 0 && r.slowMo.easeMs <= r.slowMo.ms)) out.push(`${key}.slowMo.easeMs must be in 0..ms`);
+    if (r.simSlowMo && !(r.simSlowMo.scale >= 0.25 && r.simSlowMo.scale <= 1)) out.push(`${key}.simSlowMo.scale must be in [0.25, 1]`);
+    if (r.simSlowMo && !(r.simSlowMo.ms > 0 && r.simSlowMo.ms <= 1500)) out.push(`${key}.simSlowMo.ms must be in (0, 1500]`);
+    if (r.simSlowMo?.easeMs !== undefined && !(r.simSlowMo.easeMs >= 0 && r.simSlowMo.easeMs <= r.simSlowMo.ms)) out.push(`${key}.simSlowMo.easeMs must be in 0..ms`);
+    nonNeg(r.kickPx, `${key}.kickPx`);
     if (r.fxTarget !== undefined && !['anchor', 'sideUnits'].includes(r.fxTarget)) out.push(`${key}.fxTarget is unknown`);
   }
   return out;

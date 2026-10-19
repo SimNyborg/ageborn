@@ -91,6 +91,12 @@ part('fx.bit.fur', [
 ]);
 
 // ---------------------------------------------------------------------------------------------
+// Contact sparks: a thin pale sliver of fresh wood (a shield or a haft splitting), lighter than the dark chunk of
+// the fort debris so a burst of them reads as splinters, not dirt. An `fx.p.` part: baked with the boot particles.
+
+part('fx.p.splinter', [{ d: poly([-5.2, -0.5, 3.4, -1.1, 5.6, 0, 3.4, 0.9, -5.2, 0.6]), zone: '#D6BA8E', line: 0.8 }]);
+
+// ---------------------------------------------------------------------------------------------
 // Stuck shafts: the head is buried at the origin, the shaft runs back along -x
 
 part('fx.p.stuckArrow', [

@@ -68,6 +68,8 @@ export interface SessionView {
   render(alpha: number, frameMs: number, catchUp?: boolean): void;
   /** True during a global freeze (A12): no sim time passes. */
   readonly simFrozen: boolean;
+  /** The match clock's factor for a slow-motion beat (queue item 38 A8, a Legendary's fall); ignored in a live match. */
+  readonly simTimeScale?: number;
   setSpeed(s: number): void;
   setPaused(p: boolean): void;
   destroy?(): void;
@@ -566,7 +568,7 @@ export class BattleSessionImpl implements BattleSession {
       }
       if (this.statusSig.peek() === 'running') {
         const frozen = this.view?.simFrozen ?? false;
-        this.clock.add(step, this.speed, frozen);
+        this.clock.add(step, this.live ? this.speed : this.speed * (this.view?.simTimeScale ?? 1), frozen);
         while (this.statusSig.peek() === 'running' && !(this.view?.simFrozen ?? false) && this.clock.consume()) this.tick();
         if (this.live && this.catchUpSlice(wasCatchingUp ? owedNow : 0) > 0) catchUpFrame = true;
       }

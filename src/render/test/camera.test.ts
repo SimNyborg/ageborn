@@ -232,3 +232,57 @@ describe('spectator follow (A17.4, replays)', () => {
     expect(spectatorFocus({ left: null, right: null })).toBeNull();
   });
 });
+
+describe('the clash lean-in (queue item 38 A6)', () => {
+  const desktop = (): Camera => {
+    const c = new Camera();
+    c.resize(1280, 720);
+    c.setHome(0);
+    return c;
+  };
+  const push = { x: 900, y: -36, zoom: 1.08, inMs: 500, holdMs: 1600, outMs: 900 };
+
+  it('leans in while the camera follows, and lets go after its 3 s', () => {
+    const c = desktop();
+    expect(c.lean(push)).toBe(true);
+    run(c, 600);
+    expect(c.isLeaning).toBe(true);
+    expect(c.transform().scale).toBeGreaterThan(c.scale * 1.07);
+    run(c, 2500);
+    expect(c.isLeaning).toBe(false);
+    expect(c.transform().scale).toBeCloseTo(c.scale, 5);
+  });
+
+  it('never starts while the player works the camera, during a moment, or with Reduce motion', () => {
+    const dragged = desktop();
+    dragged.dragStart();
+    expect(dragged.lean(push)).toBe(false);
+    const manual = desktop();
+    manual.wheel(40);
+    expect(manual.lean(push)).toBe(false);
+    const held = desktop();
+    held.hold('powerDrag', true);
+    expect(held.lean(push)).toBe(false);
+    const moment = desktop();
+    expect(moment.frameMoment(400, { x: 400, y: -60, zoom: 1.2, inMs: 400, holdMs: 1000, outMs: 500 })).toBe(true);
+    expect(moment.lean(push)).toBe(false);
+    const calm = desktop();
+    calm.reduceMotion = true;
+    expect(calm.lean(push)).toBe(false);
+  });
+
+  it('eases out at once on any camera input', () => {
+    const c = desktop();
+    c.lean(push);
+    run(c, 800);
+    const leaned = c.transform().scale;
+    c.wheel(30);
+    // the lean is over, but it eases out from where it was (no snap)
+    expect(c.isLeaning).toBe(false);
+    expect(c.transform().scale).toBeCloseTo(leaned, 5);
+    run(c, 150);
+    expect(c.transform().scale).toBeLessThan(leaned);
+    run(c, 300);
+    expect(c.transform().scale).toBeCloseTo(c.scale, 5);
+  });
+});
