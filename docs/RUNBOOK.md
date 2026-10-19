@@ -106,7 +106,7 @@ Do not post `queue/stories/teaser-40-cavemen.mp4`: its "tap to watch" cannot wor
 Format: first-person developer voice ("I'm building Ageborn...", never the owner's name or identity),
 narrated with an approved Kokoro voice and word-timed captions, over real development footage, ending
 with a design question to the viewer ("Which would you pick?", "Too fast or just right?").
-Caption must include "Narration: AI voice". Story first (owner note 2026-10-18): a good game-dev story
+No AI-voice line in captions (owner decision 2026-10-19: it takes focus from the message). Story first (owner note 2026-10-18): a good game-dev story
 about a fun or important development problem matters more than retelling exactly what happened. Build
 each episode on a real kind of problem (balance, readability, game feel, pacing, art, AI opponents) and
 use the game repo's docs for material, then dramatize freely. Two limits: no invented numbers presented

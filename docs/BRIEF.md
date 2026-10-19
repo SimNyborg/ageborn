@@ -19,6 +19,7 @@ Simon, Danish, not a developer. Talk to him in Danish, short and plain, without 
 1. **Separation:** never mention the owner's name, identity, private profiles or GitHub in any content, caption, comment or message, and never contact anyone he knows.
 2. **No growth hacks:** never follow or unfollow accounts, never buy engagement, no engagement pods, and no automation outside the official API.
 3. **AI disclosure:** photorealistic AI video and realistic AI voices must be disclosed (Meta's rules; the EU AI Act for deepfakes). The API has no field for Meta's AI label, so add a short disclosure to the caption, for example "Narration: AI voice". The game's own renders need no disclosure.
+   Owner decision 2026-10-19: do not write an AI-voice disclosure in captions; keep the focus on the message.
 4. **Music:** no copyrighted or trending songs baked into videos. Use the game's own music and sound effects, or later AI music from a plan that grants commercial rights.
 5. **Quotes:** only public-domain historical figures in public-domain translations (for example Sun Tzu, tr. Lionel Giles 1910; Marcus Aurelius, tr. George Long 1862). Check every attribution, quote no living people, and never imitate a real person's voice.
 6. **Names:** never use the name "Age of War" anywhere, hashtags included. Never name or show other games.

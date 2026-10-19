@@ -42,4 +42,4 @@ Music from the game (`public/audio/music/music.<age>.*.m4a`) at volume 0.14 with
 
 ## Captions
 
-`Kokoro.create_timed(...)` returns word timings; burn in word-timed captions (muted viewers). Disclose in the post caption: "Narration: AI voice".
+`Kokoro.create_timed(...)` returns word timings; burn in word-timed captions (muted viewers). (Owner decision 2026-10-19: no AI-voice line in captions.) Formerly: "Narration: AI voice".
