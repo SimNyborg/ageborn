@@ -187,6 +187,21 @@
       "format": "short-hook",
       "hook_type": "matchup",
       "experiment": "format"
+    },
+    {
+      "id": "18440245735177644",
+      "permalink": "https://www.instagram.com/reel/DerBpKtghOD/",
+      "timestamp": "2026-10-19T10:18:41+0000",
+      "name": "r10-10-capsules-at-once",
+      "kind": "reel",
+      "pillar": "P2 rarity reveal",
+      "arm": "capsule",
+      "hook": "Opening 10 capsules at once",
+      "trial": false,
+      "length_s": 18.1,
+      "format": "classic",
+      "hook_type": "reveal",
+      "experiment": "format"
     }
   ]
 }
