@@ -39,6 +39,10 @@ what we believe, how sure we are, and what we post next because of it.
 
 ## Next decisions
 
+- 2026-10-20 morning run: check whether the ElevenLabs connector and the two plugins (Social Media Skills,
+  instagram) are visible (ToolSearch "elevenlabs", ListPlugins). If yes, confirm to the owner (no voice yet; check
+  ElevenLabs terms: free-plan attribution and commercial use). If no, plan moving the routines to a new session.
+
 - Experiment queued (owner idea 2026-10-19): "indie dev asks for help". 15-20 s, narrated, first person
   ("I'm one person making this game..."), cold open on a big battle moment, fast cuts across ages, ending on
   a personal ask to send it to one friend who would play it. Avoid the explicit "like, comment, share" list
