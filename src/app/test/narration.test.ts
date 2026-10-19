@@ -19,7 +19,7 @@ import type { ShowRecord } from '../capsules/capsuleFlow';
 import type { AppRoute } from '../controller';
 import { createNarration, mayNarrate } from '../narration';
 import * as directorModule from '../narration/director';
-import { AFTER_MATCH, FIRST_EVOLVE_DELAY_MS, FIRST_LEGENDARY_DELAY_MS, firstLegendaryEver, momentFlag, NarrationDirector, PROMPT_MAX_DELAY_MS, type CaptionView } from '../narration/director';
+import { AFTER_MATCH, captionPlace, FIRST_EVOLVE_DELAY_MS, FIRST_LEGENDARY_DELAY_MS, firstLegendaryEver, momentFlag, NarrationDirector, PROMPT_MAX_DELAY_MS, type CaptionView } from '../narration/director';
 import type { SessionStatus } from '../session';
 
 interface Rig {
@@ -302,6 +302,12 @@ describe('moments', () => {
     vi.advanceTimersByTime(FIRST_EVOLVE_DELAY_MS + 10);
     await flush();
     expect(veteran.d.narrator.current).toBeNull();
+  });
+
+  it('a subtitle goes above the tray in battle, into the action bar on a Result, bottom centre elsewhere', () => {
+    expect(captionPlace('battle')).toBe('battle');
+    expect(captionPlace('result')).toBe('result');
+    expect(captionPlace('title')).toBe('screen');
   });
 
   it('a moment cancelled before its time, or switched off, says nothing and keeps its flag unset', async () => {

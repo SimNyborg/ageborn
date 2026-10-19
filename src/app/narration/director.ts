@@ -90,8 +90,16 @@ export interface DirectorOptions {
 
 /** Shows a moment's subtitle while its line plays. */
 export interface CaptionView {
-  show(text: string, place: 'battle' | 'screen'): void;
+  /** `battle`: above the card tray; `result`: in the Result's action bar, left of its primary; `screen`: bottom centre. */
+  show(text: string, place: CaptionPlace): void;
   hide(): void;
+}
+
+export type CaptionPlace = 'battle' | 'result' | 'screen';
+
+/** Where a moment's subtitle goes on the screen showing now. */
+export function captionPlace(route: string): CaptionPlace {
+  return route === 'battle' ? 'battle' : route === 'result' ? 'result' : 'screen';
 }
 
 /**
@@ -408,7 +416,7 @@ export class NarrationDirector {
         const s = this.o.controller.save.peek();
         if (s) this.o.controller.setSave({ ...s, flags: { ...s.flags, [momentFlag(m)]: true } });
         const text = allLinesCache()[e.id]?.text;
-        if (text) this.caption.show(text, this.o.controller.route.peek().id === 'battle' ? 'battle' : 'screen');
+        if (text) this.caption.show(text, captionPlace(this.o.controller.route.peek().id));
       }
     } else if (e.kind === 'end') {
       this.record('end', e.id, `${e.cut ? 'cut' : 'ended'}, ducks ${this.ducks}`);

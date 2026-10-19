@@ -1,7 +1,8 @@
 /*
  * The narrator's subtitle for a first-time moment (queue item 39): the line it speaks, shown while it speaks,
- * as a film subtitle in the lower middle of the screen. It never takes input. Loaded with the narrator's lazy
- * chunk. A sound wave beside the words pulses while the voice speaks (still under Reduce motion).
+ * as a film subtitle in the lower middle of the screen (above the tray in battle, in a Result's action bar left
+ * of its primary). It never takes input. Loaded with the narrator's lazy chunk. A sound wave beside the words
+ * pulses while the voice speaks (still under Reduce motion).
  */
 .nar-caption {
   position: absolute;
@@ -52,6 +53,18 @@
   bottom: calc(26% + 10px);
 }
 
+/* On a Result it sits in the action bar, left of the primary (always bottom-right, U1), level with it. */
+.nar-caption[data-place='result'] {
+  left: calc(16px + env(safe-area-inset-left, 0px));
+  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(10px, 3.3vh, 28px));
+  max-width: min(560px, calc(100% - 300px));
+  transform: translate(0, 10px);
+}
+
+.nar-caption[data-place='result'].is-on {
+  transform: translate(0, 0);
+}
+
 .nar-caption__wave {
   display: inline-flex;
   flex: none;
@@ -95,6 +108,10 @@
   transform: translate(-50%, 0);
 }
 
+[data-reduce-motion] .nar-caption[data-place='result'] {
+  transform: none;
+}
+
 [data-reduce-motion] .nar-caption__wave i {
   animation: none;
 }
@@ -103,6 +120,9 @@
   .nar-caption,
   .nar-caption.is-on {
     transform: translate(-50%, 0);
+  }
+  .nar-caption[data-place='result'] {
+    transform: none;
   }
   .nar-caption__wave i {
     animation: none;
