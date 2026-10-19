@@ -1,11 +1,4 @@
 {
-  "dv1-devlog-1-the-cosmic-age-was-too-strong": {
-    "length_s": 40.3,
-    "format": "devlog",
-    "hook_type": "story",
-    "experiment": "devlog",
-    "arm": "devlog"
-  },
   "r12-1-chrono-titan-vs-8-pulse-troopers": {
     "length_s": 7.6,
     "format": "short-hook",

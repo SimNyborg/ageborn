@@ -212,6 +212,25 @@
       "pillar": "devlog",
       "hook": "teaser: Devlog #1 tonight, vote A or B",
       "trial": false
+    },
+    {
+      "id": "18095312954431508",
+      "permalink": "https://www.instagram.com/reel/Der4JmTkfEf/",
+      "timestamp": "2026-10-19T18:14:54+0000",
+      "name": "dv1-devlog-1-the-cosmic-age-was-too-strong",
+      "kind": "reel",
+      "pillar": "devlog",
+      "hook": "I had a problem: the Cosmic Age was too strong",
+      "trial": false,
+      "vote": {
+        "A": "Mammoth vs 12 cavemen",
+        "B": "landship crew bails out"
+      },
+      "length_s": 40.3,
+      "format": "devlog",
+      "hook_type": "story",
+      "experiment": "devlog",
+      "arm": "devlog"
     }
   ]
 }
