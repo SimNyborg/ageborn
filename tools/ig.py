@@ -26,7 +26,7 @@ API = "https://graph.instagram.com/v24.0"
 IG_ID = "17841467187927379"
 RAW = "https://raw.githubusercontent.com/SimNyborg/ageborn/social-media/"
 TOKEN = os.environ.get("IG_ACCESS_TOKEN", "")
-INSIGHT_METRICS = ("views,reach,likes,comments,saved,shares,total_interactions,"
+INSIGHT_METRICS = ("views,reach,reels_skip_rate,likes,comments,saved,shares,total_interactions,"
                    "ig_reels_avg_watch_time,"
                    "ig_reels_video_view_total_time")
 

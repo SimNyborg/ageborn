@@ -81,6 +81,10 @@ watched), share_rate, eng_rate, reach. Followers per post are not available from
 
 ## Content direction (from the first week)
 
+The first 3 seconds decide reach: Instagram ranks Reels by skip rate (viewers gone within 3 s), then share,
+like, save, repost and comment rates per view (owner note 2026-10-19). Every Reel must earn its first 3 s:
+movement and a clear question or problem in frame 0, no slow build-up. `tools/analyze.py` shows skip%.
+
 Open cold on the most dramatic moment (impact, explosion, reveal) with the title over the action;
 no intro shots; 8-12 s; a question on screen in the first second; short end card (1.5 s).
 `shots/duel.mjs` + `reels/duel.mjs` make "1 Legendary vs N" duels in this format: scout with

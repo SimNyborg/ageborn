@@ -10,8 +10,9 @@ question (vote-only Reels) and devlog. A post's arm is its "arm" field in posted
 from its name, pillar, format and hook_type.
 
 Score per post: reach/100 * hold  +  10 * (shares + saves) / reach
-  hold = the mean of the watch share and the seconds watched / 10 (capped at 1), so short videos are not
-  favoured just for being short and long ones not just for being long (weekly review 2026-10-19);
+  hold = the mean of the watch share, the seconds watched / 10 (capped at 1) and the share of viewers who
+  did not skip in the first 3 s (reels_skip_rate, which the Instagram app lists first; owner note
+  2026-10-19), so short videos are not favoured just for being short nor long ones for being long;
   the bonus makes one share or save per 100 reached worth about as much as that whole term, because
   shares and saves are what breaks the reach ceiling (PLAN B6).
 
@@ -62,7 +63,10 @@ def score(r):
     reach = float(r["reach"] or 0)
     watch = float(r["watch_pct"] or 0) / 100
     secs = min(float(r["avg_watch_ms"] or 0) / 1000 / 10, 1.0)
-    hold = (watch + secs) / 2
+    skip = r.get("skip_pct") or ""
+    stay = 1 - float(skip) / 100 if skip != "" else None
+    parts = [watch, secs] + ([stay] if stay is not None else [])
+    hold = sum(parts) / len(parts)
     acts = float(r["shares"] or 0) + float(r["saved"] or 0)
     return reach / 100 * hold + (10 * acts / reach if reach else 0)
 

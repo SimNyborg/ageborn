@@ -86,3 +86,6 @@ what we believe, how sure we are, and what we post next because of it.
   ~100 by then: possibly a repeat-content penalty (third capsule-opening video in 4 days, same footage style).
   Watch it tomorrow; if it stays low, space capsule videos further apart and vary them more. Devlogs hold
   the most seconds (7.1-7.4 s). Vote on devlog #1: no comments yet.
+- 2026-10-19 late: skip rate (first 3 s) now measured. 52-85 % skip on every post; best R9 52 % (cold open
+  on the hammer hit) and devlog #1 31 % early; classic 78 %. The first 3 seconds are the main lever: the bandit
+  now scores skip too, and every new Reel opens on motion plus a question or problem in frame 0.

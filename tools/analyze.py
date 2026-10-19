@@ -32,7 +32,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 POSTED = os.path.join(ROOT, "state", "posted.json")
 CSV = os.path.join(ROOT, "state", "analytics.csv")
 FIELDS = ["snapshot_utc", "media_id", "name", "age_h", "format", "hook_type", "slot", "length_s",
-          "trial", "views", "reach", "likes", "comments", "saved", "shares", "avg_watch_ms",
+          "trial", "views", "reach", "skip_pct", "likes", "comments", "saved", "shares", "avg_watch_ms",
           "watch_pct", "eng_rate", "share_rate"]
 GROUP_BY = ["format", "hook_type", "slot", "pillar"]
 MIN_AGE_H = 24
@@ -74,16 +74,16 @@ def main():
             "format": p.get("format", "?"), "hook_type": p.get("hook_type", "?"),
             "slot": p.get("slot") or slot_of(p["timestamp"]), "length_s": length or "",
             "trial": p.get("trial", False), "pillar": p.get("pillar", "?"),
-            "views": d.get("views"), "reach": reach, "likes": d.get("likes"), "comments": d.get("comments"),
+            "views": d.get("views"), "reach": reach, "skip_pct": d.get("reels_skip_rate", ""), "likes": d.get("likes"), "comments": d.get("comments"),
             "saved": d.get("saved"), "shares": d.get("shares"), "avg_watch_ms": d.get("ig_reels_avg_watch_time"),
             "watch_pct": round(d.get("ig_reels_avg_watch_time", 0) / 10 / length, 1) if length else "",
             "eng_rate": round(acts / reach, 4) if reach else 0,
             "share_rate": round((d.get("shares") or 0) / reach, 4) if reach else 0,
         })
 
-    print(f"{'post':38} {'age_h':>6} {'reach':>6} {'watch%':>7} {'eng':>6} {'share':>6}  format/hook")
+    print(f"{'post':38} {'age_h':>6} {'reach':>6} {'skip%':>6} {'watch%':>7} {'eng':>6} {'share':>6}  format/hook")
     for r in sorted(rows, key=lambda r: r["age_h"], reverse=True):
-        print(f"{r['name'][:38]:38} {r['age_h']:>6} {r['reach']:>6} {str(r['watch_pct']):>7} "
+        print(f"{r['name'][:38]:38} {r['age_h']:>6} {r['reach']:>6} {str(r['skip_pct']):>6} {str(r['watch_pct']):>7} "
               f"{r['eng_rate']:>6} {r['share_rate']:>6}  {r['format']}/{r['hook_type']}")
 
     mature = [r for r in rows if r["age_h"] >= MIN_AGE_H and not r["trial"]]
@@ -99,7 +99,7 @@ def main():
         for g, rs in sorted(groups.items()):
             med = lambda f: statistics.median([x[f] for x in rs if x[f] != ""]) if any(x[f] != "" for x in rs) else "-"
             flag = "" if len(rs) >= MIN_N else "  (too few to decide)"
-            print(f"    {g:14} n={len(rs)}  reach {med('reach')}  watch% {med('watch_pct')}  "
+            print(f"    {g:14} n={len(rs)}  reach {med('reach')}  skip% {med('skip_pct')}  watch% {med('watch_pct')}  "
                   f"eng {med('eng_rate')}  share {med('share_rate')}{flag}")
 
     if save and rows:
