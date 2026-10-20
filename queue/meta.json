@@ -1,1 +1,9 @@
-{}
+{
+  "ia1-im-making-a-game-on-my-own": {
+    "length_s": 24.6,
+    "format": "devlog",
+    "hook_type": "ask",
+    "experiment": "indie-ask",
+    "arm": "ask"
+  }
+}

@@ -6,7 +6,7 @@ state/posted.json, scores every grid Reel, and draws the arms for today's slots 
 posterior. Deterministic: the random draw is seeded with the date, so a rerun gives the same answer.
 
 Arms (content types): capsule, duel (short-hook matchup), classic (other battle formats),
-question (vote-only Reels) and devlog. A post's arm is its "arm" field in posted.json, or derived
+question (vote-only Reels), devlog and ask (the indie-dev ask to send it to a friend). A post's arm is its "arm" field in posted.json, or derived
 from its name, pillar, format and hook_type.
 
 Score per post: reach/100 * hold  +  10 * (shares + saves) / reach
@@ -33,7 +33,7 @@ from datetime import date
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CSV = os.path.join(ROOT, "state", "analytics.csv")
 POSTED = os.path.join(ROOT, "state", "posted.json")
-ARMS = ["capsule", "duel", "classic", "question", "devlog"]
+ARMS = ["capsule", "duel", "classic", "question", "devlog", "ask"]
 MIN_AGE_H = 12
 DRAWS = 4000
 

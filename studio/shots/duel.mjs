@@ -18,7 +18,7 @@ async function skipUntil(s, pred, maxMs = 120_000) {
  * The horde is side 0 (left), the hero side 1 (right), placed as in the scouted clash.
  */
 export async function recordDuel({ open, out }, spec) {
-  const s = await open({ ...TALL, query: `left=${spec.age}&right=${spec.age}&seed=${spec.seed ?? 1}&bg=${spec.bg}&numbers=important` });
+  const s = await open({ ...TALL, query: `left=${spec.age}&right=${spec.age}&seed=${spec.seed ?? 1}&bg=${spec.bg}&numbers=important${['stone', 'modern'].includes(spec.age) ? '&scenes=game' : ''}` });
   await s.army(0, spec.horde, spec.n, 780, spec.gap ?? -8);
   const [hero] = await s.army(1, spec.hero, 1, 790, 0);
   await s.issue({ t: 'stance', side: 0, mode: 'hold', holdP: 800 });
