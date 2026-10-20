@@ -1,9 +1,1 @@
-{
-  "r13-1-behemoth-tank-vs-8-riflemen": {
-    "length_s": 7.6,
-    "format": "short-hook",
-    "hook_type": "matchup",
-    "experiment": "format",
-    "arm": "duel"
-  }
-}
+{}

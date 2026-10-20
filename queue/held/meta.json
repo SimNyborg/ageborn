@@ -1,0 +1,10 @@
+{
+  "r13-1-behemoth-tank-vs-8-riflemen": {
+    "length_s": 7.6,
+    "format": "short-hook",
+    "hook_type": "matchup",
+    "experiment": "format",
+    "arm": "duel",
+    "held": "2026-10-20: shows the Desert Airbase backdrop (never show). Re-record at pin 63d5865 or with scenes=game."
+  }
+}

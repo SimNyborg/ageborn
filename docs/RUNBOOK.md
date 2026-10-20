@@ -17,6 +17,10 @@ Rendering in a fresh container (about 2 min of setup; `public/`, `out/` and `nod
 # move the pin only when the orchestrator says a newer commit is published to main and green
 # (2026-10-17: moved 1b48e80 -> 63d5865, game round 2: six new capsule backdrops, six base models,
 # the Home diorama, emotes. Never show the backdrops Glacier Valley or Desert Airbase: released: false.)
+# 2026-10-20: at 1b48e80 the capture's default `scenes=best` dresses Stone in Glacier Valley and Modern in
+# Desert Airbase. R1, R4, R5 and devlog #1 went out with Glacier Valley; R13 was held. Until /tmp/game-capture
+# is at 63d5865, add `&scenes=game` to every capture query, and frame-check every Stone or Modern shot
+# against public/art/backdrops/{stone/glacier_valley,modern/desert_airbase}/thumb.webp before it is queued.
 git -C /home/user/ageborn fetch -q origin main; git -C /home/user/ageborn worktree add /tmp/game-capture 63d5865
 export AGEBORN_REPO=/tmp/game-capture
 (cd /tmp/game-capture && npm ci) & (cd /tmp/soc/studio && npm ci) & pip install -q numpy pillow; wait
