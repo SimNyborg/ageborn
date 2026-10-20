@@ -235,7 +235,6 @@
     {
       "name": "r12-1-chrono-titan-vs-8-pulse-troopers",
       "kind": "reel",
-      "media_id": "18098221055108100",
       "permalink": "https://www.instagram.com/reel/DetncheAgwr/",
       "timestamp": "2026-10-20T10:27:34+0000",
       "slot": "midday",
@@ -246,7 +245,8 @@
       "format": "short-hook",
       "hook_type": "matchup",
       "experiment": "format",
-      "arm": "duel"
+      "arm": "duel",
+      "id": "18098221055108100"
     }
   ]
 }

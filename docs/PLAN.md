@@ -99,3 +99,10 @@ what we believe, how sure we are, and what we post next because of it.
 - 2026-10-19 late: skip rate (first 3 s) now measured. 52-85 % skip on every post; best R9 52 % (cold open
   on the hammer hit) and devlog #1 31 % early; classic 78 %. The first 3 seconds are the main lever: the bandit
   now scores skip too, and every new Reel opens on motion plus a question or problem in frame 0.
+- 2026-10-20 evening: R10 (10 capsules) stayed at 39 reach after 34 h, while R12 (duel) reached 110 in 9.5 h and
+  devlog #1 148 (a new high). R10 is the third capsule-opening video in four days: treat repeats as penalised and
+  keep capsule Reels at least 3 days apart and visibly different (new hook, new framing). The bandit now gives
+  devlogs 76 % chance of being best (2 posts, both top scores); devlogs get more slots this week. R13 was held
+  back: it showed the Desert Airbase backdrop (never show); R1, R4, R5 and devlog #1 show Glacier Valley
+  (told the owner). No Story today (two worker restarts). Queue for 2026-10-21: the indie-dev ask (explore)
+  and a new duel; still 0 shares, 0 comments; followers 110 (+3 since Sunday).
