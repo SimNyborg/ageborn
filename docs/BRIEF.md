@@ -17,7 +17,10 @@ Simon, Danish, not a developer. Talk to him in Danish, short and plain, without 
 ## Hard rules
 
 1. **Separation:** never mention the owner's name, identity, private profiles or GitHub in any content, caption, comment or message, and never contact anyone he knows.
-2. **No growth hacks:** never follow or unfollow accounts, never buy engagement, no engagement pods, and no automation outside the official API.
+2. **Growth tactics:** removed by the owner on 2026-10-20 (was: no follow/unfollow, no bought engagement, no pods, no automation outside the official API).
+   What still limits it in practice: the official API cannot follow accounts or start DMs (replies only, within 24 h of the other person's message),
+   and automating the app outside the API breaks Instagram's terms and risks a block of the account (docs/research-growth.md). Weigh that risk
+   for each tactic and put risky ones to the owner first.
 3. **AI disclosure:** photorealistic AI video and realistic AI voices must be disclosed (Meta's rules; the EU AI Act for deepfakes). The API has no field for Meta's AI label, so add a short disclosure to the caption, for example "Narration: AI voice". The game's own renders need no disclosure.
    Owner decision 2026-10-19: do not write an AI-voice disclosure in captions; keep the focus on the message.
 4. **Music:** no copyrighted or trending songs baked into videos. Use the game's own music and sound effects, or later AI music from a plan that grants commercial rights.
