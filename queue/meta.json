@@ -1,11 +1,4 @@
 {
-  "r12-1-chrono-titan-vs-8-pulse-troopers": {
-    "length_s": 7.6,
-    "format": "short-hook",
-    "hook_type": "matchup",
-    "experiment": "format",
-    "arm": "duel"
-  },
   "r13-1-behemoth-tank-vs-8-riflemen": {
     "length_s": 7.6,
     "format": "short-hook",
