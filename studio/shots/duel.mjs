@@ -17,7 +17,7 @@ async function skipUntil(s, pred, maxMs = 120_000) {
  * spec: { age, bg, seed, hero, horde, n, gap }
  * The horde is side 0 (left), the hero side 1 (right), placed as in the scouted clash.
  */
-export async function recordDuel({ open, out }, spec) {
+export async function recordDuel({ open, out }, spec, { finale } = {}) {
   const s = await open({ ...TALL, query: `left=${spec.age}&right=${spec.age}&seed=${spec.seed ?? 1}&bg=${spec.bg}&numbers=important${['stone', 'modern'].includes(spec.age) ? '&scenes=game' : ''}` });
   await s.army(0, spec.horde, spec.n, 780, spec.gap ?? -8);
   const [hero] = await s.army(1, spec.hero, 1, 790, 0);
@@ -51,7 +51,12 @@ export async function recordDuel({ open, out }, spec) {
   await s.frames(36);
   await s.endClip();
 
-  // c: the finale
+  // c: the finale (a shot can pass its own, e.g. shots/dv3.mjs)
+  if (finale) {
+    await finale(s, out, hero);
+    await s.close();
+    return;
+  }
   await skipUntil(s, (st) => st.sides[0].units <= 2);
   await s.camera({ kind: 'track', id: hero, w: 460, lead: 0.12, ground: 0.75, how: { move: 'cut' } });
   await s.startClip(`${out}/c.mp4`, { part: 'finale' });
