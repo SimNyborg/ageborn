@@ -247,6 +247,22 @@
       "experiment": "format",
       "arm": "duel",
       "id": "18098221055108100"
+    },
+    {
+      "name": "ia1-im-making-a-game-on-my-own",
+      "kind": "reel",
+      "id": "18138591829726738",
+      "permalink": "https://www.instagram.com/reel/DewK8QigGNU/",
+      "timestamp": "2026-10-21T10:16:04+0000",
+      "slot": "midday",
+      "pillar": "devlog",
+      "hook": "I'm making a game on my own: send it to one friend",
+      "trial": false,
+      "length_s": 24.6,
+      "format": "devlog",
+      "hook_type": "ask",
+      "experiment": "indie-ask",
+      "arm": "ask"
     }
   ]
 }
