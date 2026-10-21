@@ -15,33 +15,33 @@ what we believe, how sure we are, and what we post next because of it.
   them), shares and saves (would they send it on), comments. Followers per day from `GET /me`.
 - Owner direction overrides the numbers (see Owner notes).
 
-## Beliefs (as of 2026-10-17 evening, 9 Reels, all small numbers)
+## Beliefs (as of 2026-10-21 morning, 14 Reels, all small numbers)
 
 | # | Belief | Evidence | Status |
 |---|---|---|---|
-| B1 | Capsule openings reach the most people | R6 120 reach / 28 % watch; R9 114 reach / 37 % watch after 8.5 h (both top 3 of 8); owner sees interest | signal, strongest (n=2) |
-| B2 | Shorter Reels are watched further | 13-14 s reveals 28-37 %, 21-24 s posts 16-19 %; R9 (13 s) 38 %; R7 (7.6 s) 51 % after 10 h, the best so far | confirmed for watch share (n=3 vs 6, 40 % vs 27 %), not for reach |
-| B3 | A question to the viewer gets reactions but not reach on its own | R5: 10 % engagement, reach 29 | signal |
-| B4 | Nothing gets shared yet; followers flat at 107 | 0 shares on all 8 posts | problem to solve |
-| B5 | Posting time matters | midday vs evening too close (reach 102 vs 117, n=3 each) | unknown |
-| B6 | Reach is capped at about 100-125 per post | 7 of 9 posts land at 100-125 whatever the format; Instagram shows each post to a first test batch and does not push further | signal: we need rewatches, shares and saves to break out |
+| B1 | Capsule openings reach the most people | R6 124, R9 133, but R10 only 45 (third capsule video in 4 days) | weakened: works when spaced out and varied; repeats are penalised |
+| B2 | Shorter Reels are watched further | short duels 39-53 % vs classic 16-37 % | confirmed for watch share (n=5 vs 6), not for reach |
+| B3 | A question to the viewer gets reactions but not reach on its own | R5: highest engagement, reach 32 | signal |
+| B4 | Nothing gets shared yet | 0 shares on all 14 posts; 1 save (devlog #2) | problem to solve (week-2 test) |
+| B5 | Posting time matters | evening 120 vs midday 110 median reach | unknown |
+| B6 | Reach is capped at about 110-160 per post | devlog #1 162 and R11 147 are the highs; nothing breaks out | signal |
+| B7 | Devlogs score best overall | DV1 162 reach, lowest skip of the battle-free posts, most seconds watched; bandit 68 % best (n=2) | signal, strongest |
+| B8 | Followers grow on devlog days | 107 flat all week, then 109, 110, 116 after the two devlogs | signal (n small) |
 
 ## Current mix (until the next update)
 
-- Per day: 2 grid Reels + 1 Story. `python3 tools/bandit.py` (Thompson sampling over capsule, duel,
-  classic, question, devlog) suggests the arms each morning; the daily run follows it unless an owner
-  note or a running test says otherwise. 2026-10-18 posteriors: duel 45 % and capsule 33 % chance of
-  being best, devlog untested (19 %), classic 1 %, question 2 %.
-- Exploit: at least 1 capsule Reel every other day (B1), short (12-17 s), cold open on the action.
-- Explore this week: short-hook duels (R7, R8) vs classic; devlogs (narrated, a real open question at
-  the end) as the bet on B4; questions built into capsule and devlog Reels instead of vote-only Reels (B3).
-- Stories: teasers and "which would you pick" frames from the day's Reels.
+- Per day: 2 grid Reels + 1 Story. The bandit (tools/bandit.py, now with the "ask" arm) picks the arms each morning.
+- Exploit: devlogs (narrated, story first, an open question) get one slot most days; short duels are the steady
+  second slot.
+- Explore: the indie-dev ask (IA1, 2026-10-21) and plot-twist content (DV3) for shares; capsules at most every
+  third day and visibly different from the last one.
+- Stories: teasers of the evening Reel.
 
 ## Next decisions
 
-- 2026-10-20 morning run: check whether the ElevenLabs connector and the two plugins (Social Media Skills,
-  instagram) are visible (ToolSearch "elevenlabs", ListPlugins). If yes, confirm to the owner (no voice yet; check
-  ElevenLabs terms: free-plan attribution and commercial use). If no, plan moving the routines to a new session.
+- Voice: the owner prefers the ElevenLabs voice "Steve"; the free tier is blocked from this cloud session and its
+  terms forbid commercial use without attribution, so it needs the Starter plan (owner's decision, asked 2026-10-19).
+  Kokoro bm_george until then. A connector "Social media studio" is half set up (owner told 2026-10-20).
 
 - Experiment queued (owner idea 2026-10-19): "indie dev asks for help". 15-20 s, narrated, first person
   ("I'm one person making this game..."), cold open on a big battle moment, fast cuts across ages, ending on
@@ -71,6 +71,9 @@ what we believe, how sure we are, and what we post next because of it.
   what happened (keep no fake numbers as facts and no fake community decisions).
 
 - 2026-10-19: no AI-voice line in captions; keep captions about the game and fewer precautions in general.
+
+- 2026-10-20: the no-growth-hacks rule is removed (docs/BRIEF.md rule 2); the API still cannot follow or cold-DM,
+  and risky tactics go to the owner first.
 
 ## Change log
 
@@ -106,3 +109,7 @@ what we believe, how sure we are, and what we post next because of it.
   back: it showed the Desert Airbase backdrop (never show); R1, R4, R5 and devlog #1 show Glacier Valley
   (told the owner). No Story today (two worker restarts). Queue for 2026-10-21: the indie-dev ask (explore)
   and a new duel; still 0 shares, 0 comments; followers 110 (+3 since Sunday).
+
+- 2026-10-21: beliefs table rewritten (B1 weakened by R10's repeat penalty, B2 confirmed for watch share, new B7
+  devlogs best and B8 followers grow on devlog days: 107 to 116). Today IA1 (indie ask) and R13 (re-recorded);
+  for 2026-10-22 devlog #3 "the plot twist" (the landship's crew bails out and wins, option B of devlog #1).
