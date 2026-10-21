@@ -273,6 +273,22 @@
       "pillar": "battle",
       "hook": "teaser: 1 Behemoth Tank vs 8 Riflemen, reply tank or riflemen",
       "trial": false
+    },
+    {
+      "name": "r13-1-behemoth-tank-vs-8-riflemen",
+      "kind": "reel",
+      "id": "18120650473976959",
+      "permalink": "https://www.instagram.com/reel/DexEgoUAJI6/",
+      "timestamp": "2026-10-21T18:39:07+0000",
+      "slot": "evening",
+      "pillar": "battle",
+      "hook": "1 Behemoth Tank vs 8 Riflemen",
+      "trial": false,
+      "length_s": 7.6,
+      "format": "short-hook",
+      "hook_type": "matchup",
+      "experiment": "format",
+      "arm": "duel"
     }
   ]
 }
