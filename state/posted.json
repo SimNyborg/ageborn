@@ -263,6 +263,16 @@
       "hook_type": "ask",
       "experiment": "indie-ask",
       "arm": "ask"
+    },
+    {
+      "id": "18115814384039678",
+      "permalink": "https://www.instagram.com/stories/ageborn_game/4012888135772705637",
+      "timestamp": "2026-10-21T14:39:30+0000",
+      "name": "story-r13-who-wins",
+      "kind": "story",
+      "pillar": "battle",
+      "hook": "teaser: 1 Behemoth Tank vs 8 Riflemen, reply tank or riflemen",
+      "trial": false
     }
   ]
 }
