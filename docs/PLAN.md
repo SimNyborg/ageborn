@@ -22,7 +22,7 @@ what we believe, how sure we are, and what we post next because of it.
 | B1 | Capsule openings reach the most people | R6 124, R9 133, but R10 only 45 (third capsule video in 4 days) | weakened: works when spaced out and varied; repeats are penalised |
 | B2 | Shorter Reels are watched further | short duels 39-53 % vs classic 16-37 % | confirmed for watch share (n=5 vs 6), not for reach |
 | B3 | A question to the viewer gets reactions but not reach on its own | R5: highest engagement, reach 32 | signal |
-| B4 | Nothing gets shared yet | 0 shares on all 14 posts; 1 save (devlog #2) | problem to solve (week-2 test) |
+| B4 | Shares are starting | first shares 2026-10-21/22: 7 posts with 1 share each (R8, R10, R11, R12, DV1, DV2, IA1); still under 1 per 100 reached | open: week-2 test continues |
 | B5 | Posting time matters | evening 120 vs midday 110 median reach | unknown |
 | B6 | Reach is capped at about 110-160 per post | devlog #1 162 and R11 147 are the highs; nothing breaks out | signal |
 | B7 | Devlogs score best overall | DV1 162 reach, lowest skip of the battle-free posts, most seconds watched; bandit 68 % best (n=2) | signal, strongest |
@@ -113,3 +113,7 @@ what we believe, how sure we are, and what we post next because of it.
 - 2026-10-21: beliefs table rewritten (B1 weakened by R10's repeat penalty, B2 confirmed for watch share, new B7
   devlogs best and B8 followers grow on devlog days: 107 to 116). Today IA1 (indie ask) and R13 (re-recorded);
   for 2026-10-22 devlog #3 "the plot twist" (the landship's crew bails out and wins, option B of devlog #1).
+- 2026-10-22: first shares (one each on 7 posts) and followers 119 (+12 in 3 days). IA1 (indie ask) 152 reach in 21 h,
+  but watch 16 % and skip 71 %: the ask reaches like a devlog but holds poorly; its single share is not yet a signal.
+  Duels steady (R12 139, R13 129). No change to the mix: devlog DV3 today, duel R14 tonight; 2026-10-23 a devlog
+  and a duel again. The evening status of 2026-10-21 was lost to a worker restart.
