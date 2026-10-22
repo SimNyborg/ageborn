@@ -53,7 +53,7 @@ export async function edit() {
   // --- overlays -------------------------------------------------------------------------------
   T.overlay('vignette', 0, total, { top: 0.5, bottom: 0.72 });
   T.overlay('badge', 4, at('l1') - 4, { text: 'DEVLOG #4', y: 210, color: '#ffd466', size: 52 });
-  T.overlay('title', 0, win0, { y: 470, burst: true, stagger: 4, lines: [{ text: 'One hit', size: 130, fill: 'white' }, { text: 'from losing', size: 110, fill: 'orange', gap: 4 }] });
+  T.overlay('title', 0, win0, { y: 590, burst: true, stagger: 4, lines: [{ text: 'One hit', size: 130, fill: 'white' }, { text: 'from losing', size: 110, fill: 'orange', gap: 4 }] });
   T.overlay('hpbar', 0, win0 + 10, { label: 'Grand Marshal', sub: 'Gunpowder Age', side: 1, y: 300, values: T.series(s0, 0, win0 + 10, heroHp) });
   T.overlay('flash', win0, 7, { peak: 0.6 });
   T.overlay('title', s1.at + 2, at('l2') - s1.at - 2, { y: 470, burst: true, stagger: 4, lines: [{ text: 'Not an', size: 120, fill: 'white' }, { text: 'accident', size: 140, fill: 'gold', gap: 4 }] });

@@ -1,0 +1,4 @@
+Devlog #4: close fights are no accident ⚔️🧪
+Every duel I post ends on a sliver of health. That's on purpose: before I film a fight, I run it in the game's simulator with more and fewer enemies until it's as close as it gets. Which unit should I put to the test next? Name one below 👇
+
+#gamedev #indiedev #indiegame #strategygame #devlog
