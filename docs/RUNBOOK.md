@@ -85,6 +85,9 @@ watched), share_rate, eng_rate, reach. Followers per post are not available from
 
 ## Content direction (from the first week)
 
+Owner direction 2026-10-22: the account is an indie developer's channel. Every Reel shows a development question
+or the game getting better (before/after, a fix, a balance test, a new feature), told in first person. See PLAN.
+
 The first 3 seconds decide reach: Instagram ranks Reels by skip rate (viewers gone within 3 s), then share,
 like, save, repost and comment rates per view (owner note 2026-10-19). Every Reel must earn its first 3 s:
 movement and a clear question or problem in frame 0, no slow build-up. `tools/analyze.py` shows skip%.

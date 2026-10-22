@@ -28,14 +28,16 @@ what we believe, how sure we are, and what we post next because of it.
 | B7 | Devlogs score best overall | DV1 162 reach, lowest skip of the battle-free posts, most seconds watched; bandit 68 % best (n=2) | signal, strongest |
 | B8 | Followers grow on devlog days | 107 flat all week, then 109, 110, 116 after the two devlogs | signal (n small) |
 
-## Current mix (until the next update)
+## Current mix (until the next update; owner note 2026-10-22 sets the direction)
 
-- Per day: 2 grid Reels + 1 Story. The bandit (tools/bandit.py, now with the "ask" arm) picks the arms each morning.
-- Exploit: devlogs (narrated, story first, an open question) get one slot most days; short duels are the steady
-  second slot.
-- Explore: the indie-dev ask (IA1, 2026-10-21) and plot-twist content (DV3) for shares; capsules at most every
-  third day and visibly different from the last one.
-- Stories: teasers of the evening Reel.
+- Per day: 2 grid Reels + 1 Story, both Reels from the indie-dev angle: devlogs (a real development problem, story
+  first, an open question) and "the game improves" before/after pieces. The bandit still scores the arms, but the
+  owner's direction decides the mix; at most one plain duel every other day, captioned as a balance test.
+- Before/after series ("Ageborn is getting better"): film the same scene at an older capture pin and a newer one.
+  Material now: item 37 natural motion outside battle and item 34 live Ranked matches (both released on the game's
+  main branch after 63d5865), round 2's new base models and Home diorama (63d5865). Coming: item 38, more dramatic
+  combat animations; film "before" now, "after" when it ships.
+- Stories: behind-the-scenes stills and "what should I fix next?" questions.
 
 ## Next decisions
 
@@ -71,6 +73,10 @@ what we believe, how sure we are, and what we post next because of it.
   what happened (keep no fake numbers as facts and no fake community decisions).
 
 - 2026-10-19: no AI-voice line in captions; keep captions about the game and fewer precautions in general.
+
+- 2026-10-22: the account's direction is now the indie game developer angle: viewers get insight into real
+  development questions and see the game improve over time (before/after). Battle-only Reels become the
+  exception; when a duel goes out, frame it as development (a balance test, a new unit, a fix).
 
 - 2026-10-20: the no-growth-hacks rule is removed (docs/BRIEF.md rule 2); the API still cannot follow or cold-DM,
   and risky tactics go to the owner first.
@@ -122,3 +128,5 @@ what we believe, how sure we are, and what we post next because of it.
   lowest skip of any devlog. Seven posts now show comments_count > 0, but /comments returns an empty list for all
   of them (probably comments the API may not read, e.g. from private or restricted accounts); check permissions.
   Instagram checkpoint at 18:43 UTC blocked the API for about an hour; R14 went out 72 min late. No mix change.
+- 2026-10-22 late: owner direction: indie-dev angle first (insight into development, the game improving). Mix rewritten;
+  before/after series planned around game items 34, 37 and 38. R15 (a plain duel) recaptioned as a balance test.
