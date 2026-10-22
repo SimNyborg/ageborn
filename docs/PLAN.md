@@ -117,3 +117,8 @@ what we believe, how sure we are, and what we post next because of it.
   but watch 16 % and skip 71 %: the ask reaches like a devlog but holds poorly; its single share is not yet a signal.
   Duels steady (R12 139, R13 129). No change to the mix: devlog DV3 today, duel R14 tonight; 2026-10-23 a devlog
   and a duel again. The evening status of 2026-10-21 was lost to a worker restart.
+- 2026-10-22 evening: best day so far. Followers 120 to 133 (+13), and every post gained reach and engagement today
+  (older posts too: DV1 183, IA1 176, R11 163, R13 162). DV3 (plot twist) 150 reach in 10 h with 59 % skip, the
+  lowest skip of any devlog. Seven posts now show comments_count > 0, but /comments returns an empty list for all
+  of them (probably comments the API may not read, e.g. from private or restricted accounts); check permissions.
+  Instagram checkpoint at 18:43 UTC blocked the API for about an hour; R14 went out 72 min late. No mix change.

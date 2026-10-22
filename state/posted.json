@@ -315,6 +315,23 @@
       "pillar": "battle",
       "hook": "teaser: 1 Grand Marshal vs 8 Highlanders, reply marshal or highlanders",
       "trial": false
+    },
+    {
+      "name": "r14-1-grand-marshal-vs-8-highlanders",
+      "kind": "reel",
+      "id": "17878073154635516",
+      "permalink": "https://www.instagram.com/reel/DezyG35ikUn/",
+      "timestamp": "2026-10-22T19:56:07+0000",
+      "slot": "evening",
+      "pillar": "battle",
+      "hook": "1 Grand Marshal vs 8 Highlanders",
+      "trial": false,
+      "note": "posted 72 min late after an Instagram checkpoint",
+      "length_s": 7.6,
+      "format": "short-hook",
+      "hook_type": "matchup",
+      "experiment": "format",
+      "arm": "duel"
     }
   ]
 }
