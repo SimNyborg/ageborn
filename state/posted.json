@@ -305,6 +305,16 @@
       "hook_type": "story",
       "experiment": "devlog",
       "arm": "devlog"
+    },
+    {
+      "id": "18037034966661721",
+      "permalink": "https://www.instagram.com/stories/ageborn_game/4013612132042101175",
+      "timestamp": "2026-10-22T14:37:57+0000",
+      "name": "story-r14-who-wins",
+      "kind": "story",
+      "pillar": "battle",
+      "hook": "teaser: 1 Grand Marshal vs 8 Highlanders, reply marshal or highlanders",
+      "trial": false
     }
   ]
 }
