@@ -1,11 +1,4 @@
 {
-  "dv3-devlog-3-the-plot-twist": {
-    "length_s": 32.7,
-    "format": "devlog",
-    "hook_type": "story",
-    "experiment": "devlog",
-    "arm": "devlog"
-  },
   "r14-1-grand-marshal-vs-8-highlanders": {
     "length_s": 7.6,
     "format": "short-hook",

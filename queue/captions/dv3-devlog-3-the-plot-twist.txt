@@ -1,4 +1,0 @@
-Devlog #3: the plot twist 🚂💥
-My biggest units had a problem: the moment they died, the fight was over. So now, when the steam landship falls, its crew bails out and keeps fighting. Should every big unit get a second life? Yes or no? 👇
-
-#gamedev #indiedev #indiegame #strategygame #devlog
