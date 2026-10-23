@@ -353,7 +353,7 @@ describe('review fixes (2026-10-18)', () => {
     expect(handingOver(sim.state, cfg, 1)).toBe(false);
   });
 
-  it('S1: a side leaving its age keeps the cards of that age (and of ages it left) on their 1x copy; the other side\'s same card does not', () => {
+  it('S1: a side leaving its age keeps the cards of that age (and of ages it left) on their 1x copy, but for those on the lane (review 2 S-b); the other side\'s same card does not', () => {
     const plain = units.filter((u) => u.age === 'stone' && !u.hidden && u.abilities.every((ab) => ab.kind !== 'summon' && ab.kind !== 'riders')).slice(0, 3);
     const stone = loadout('stone', { units: [...plain.map((u) => u.id), null, null, null, null] });
     const base = config({ side0: { stone, bronze: loadout('bronze'), medieval: loadout('medieval') } });
@@ -364,24 +364,41 @@ describe('review fixes (2026-10-18)', () => {
     const ages = ageOrder(cfg);
     const st = sim.state as unknown as { sides: { xp: number; ageIndex: number }[] };
     const noRaiseOf = (m: Map<string, HeldVisual>, visualId: string): boolean | undefined => [...m.values()].find((v) => v.visualId === visualId)?.noRaise;
+    const leavingOf = (m: Map<string, HeldVisual>, visualId: string): boolean | undefined => [...m.values()].find((v) => v.visualId === visualId)?.leaving;
     const [a, b] = plain;
     const bronze = deckOf(cfg, 'bronze').map((id) => content.units[id]!);
     let held = heldVisuals(cfg, sim.state, ages, [{ side: 0, card: a!.id }]);
     expect(noRaiseOf(held, a!.visualId)).toBeUndefined();
+    expect(leavingOf(held, a!.visualId)).toBeUndefined();
     st.sides[0]!.xp = Math.ceil(xpThreshold(cfg, 0)! * 1000 * 0.8);
     held = heldVisuals(cfg, sim.state, ages, [{ side: 0, card: a!.id }]);
-    // on the lane and in the deck: both stay on a 1x copy they have; the next age does not
-    expect(noRaiseOf(held, a!.visualId)).toBe(true);
+    // in the deck (or queued, or fielded lately) it stays on a 1x copy it has; on the lane it is raised like any
+    // unit there (it may stand through the evolve's camera push: review 2 S-b), in the governor's room for units of
+    // an age being left (`leaving`); the next age does not stay and is not leaving
+    expect(noRaiseOf(held, a!.visualId)).toBeUndefined();
+    expect(leavingOf(held, a!.visualId)).toBe(true);
     expect(noRaiseOf(held, b!.visualId)).toBe(true);
-    for (const u of bronze) expect(noRaiseOf(held, u.visualId)).toBeUndefined();
-    // the other side, not leaving Stone, fields the same card: no noRaise
+    expect(leavingOf(held, b!.visualId)).toBe(true);
+    for (const u of bronze) {
+      expect(noRaiseOf(held, u.visualId)).toBeUndefined();
+      expect(leavingOf(held, u.visualId)).toBeUndefined();
+    }
+    // queued (and fielded lately) but not on the lane: it stays
+    const st2 = sim.state as unknown as { sides: { queue: { card: CardId; group: string }[] }[] };
+    st2.sides[0]!.queue.push({ card: b!.id, group: b!.group } as never);
+    held = heldVisuals(cfg, sim.state, ages, [{ side: 0, card: a!.id }], [{ side: 0, card: b!.id }]);
+    expect(noRaiseOf(held, b!.visualId)).toBe(true);
+    st2.sides[0]!.queue.length = 0;
+    // the other side, not leaving Stone, fields the same card: neither noRaise nor leaving
     const both = heldVisuals(cfg, sim.state, ages, [{ side: 0, card: a!.id }, { side: 1, card: a!.id }]);
     expect(noRaiseOf(both, a!.visualId)).toBeUndefined();
-    // a unit of an age its side has left
+    expect(leavingOf(both, a!.visualId)).toBeUndefined();
+    // a unit of an age its side has left: it stays on a 1x copy it has, and is leaving
     st.sides[0]!.xp = 0;
     st.sides[0]!.ageIndex = 1;
     held = heldVisuals(cfg, sim.state, ages, [{ side: 0, card: b!.id }]);
     expect(noRaiseOf(held, b!.visualId)).toBe(true);
+    expect(leavingOf(held, b!.visualId)).toBe(true);
   });
 
   it('S1: every evolve holds the big sheet uploads from its Ascension until a while after its age-up, at the game speed', () => {
@@ -410,11 +427,13 @@ describe('review fixes (2026-10-18)', () => {
     let land: () => void = () => undefined;
     const loading = new Promise<void>((r) => (land = r));
     const asked: AgeId[] = [];
-    const art = Object.assign(new FakeArtProvider(), { baseSheetReady: (age: AgeId) => (asked.push(age), loading) });
+    const replaced: unknown[] = [];
+    const art = Object.assign(new FakeArtProvider(), { baseSheetReady: (age: AgeId) => (asked.push(age), loading), replacedStandIn: (v: unknown) => replaced.push(v) });
     const view = new BattleView({ sim, art, audio: new FakeAudio() });
     expect(asked).toEqual(['stone', 'stone']);
     const bases = (): { view: { root: { destroyed: boolean; alpha: number } } }[] => (view as unknown as { bases: { view: { root: { destroyed: boolean; alpha: number } } }[] }).bases;
     const first = bases().map((b) => b.view);
+    expect(replaced).toEqual([]);
     const ready = view.artReady();
     expect(ready).not.toBeNull();
     let done = false;
@@ -427,7 +446,8 @@ describe('review fixes (2026-10-18)', () => {
     expect(art.calls.filter((c) => c.method === 'createBase')).toHaveLength(4);
     const second = bases().map((b) => b.view);
     expect(second[0]).not.toBe(first[0]);
-    // the stand-ins fade out over the new bases, then go
+    // the stand-ins fade out over the new bases, then go; the provider hears they no longer stand in (review 2 S-c)
+    expect(replaced).toEqual(first);
     expect(first[0]!.root.destroyed).toBe(false);
     view.render(1, 200);
     expect(first[0]!.root.alpha).toBeCloseTo(1 - 200 / BASE_SWAP_FADE_MS, 1);
@@ -458,6 +478,78 @@ describe('review fixes (2026-10-18)', () => {
     expect(now.age).toBe('bronze');
     expect(asked).toContain('bronze');
     view.destroy();
+  });
+
+  it('review 2 S-c: a turret drawn by its stand-in is made again from its sheet once that is in, at its mount, under the fading stand-in', async () => {
+    const cfg = config();
+    const sim = createSim(cfg);
+    const card = Object.keys(content.turrets).find((id) => content.turrets[id]!.age === 'stone')!;
+    const st = sim.state as unknown as { sides: { turrets: unknown[] }[] };
+    st.sides[1]!.turrets[0] = { card, age: 'stone', level: 1, state: 'active', readyTick: 0, attack: { targetId: 0, impactTick: 0, nextAttackTick: 0, lastAttackTick: 0 } };
+    let land: () => void = () => undefined;
+    const loading = new Promise<void>((r) => (land = r));
+    let landed = false;
+    const asked: string[] = [];
+    const replaced: unknown[] = [];
+    const art = Object.assign(new FakeArtProvider(), {
+      baseSheetReady: (): Promise<void> | null => null,
+      turretSheetReady: (o: { visualId: string }): Promise<void> | null => (asked.push(o.visualId), landed ? null : loading),
+      replacedStandIn: (v: unknown) => replaced.push(v),
+    });
+    const view = new BattleView({ sim, art, audio: new FakeAudio() });
+    const entry = (): { view: { root: { destroyed: boolean; alpha: number; x: number; y: number; scale: { x: number }; parent: unknown } }; outdated: boolean } =>
+      (view as unknown as { turrets: Map<string, never> }).turrets.get('1:0')!;
+    const first = entry().view;
+    expect(asked).toEqual([content.turrets[card]!.visualId]);
+    expect(art.calls.filter((c) => c.method === 'createTurret')).toHaveLength(1);
+    landed = true;
+    land();
+    await loading;
+    await Promise.resolve();
+    const second = entry().view;
+    expect(second).not.toBe(first);
+    expect(art.calls.filter((c) => c.method === 'createTurret')).toHaveLength(2);
+    // the provider hears the stand-in no longer stands in (its live count drops as the fade starts)
+    expect(replaced).toEqual([first]);
+    // the same mount and facing; the new view goes under the stand-in, which fades out, then goes
+    expect([second.root.x, second.root.y, second.root.scale.x]).toEqual([first.root.x, first.root.y, first.root.scale.x]);
+    const layer = second.root.parent as { children: unknown[] };
+    expect(layer.children.indexOf(second.root)).toBeLessThan(layer.children.indexOf(first.root));
+    view.render(1, 200);
+    expect(first.root.alpha).toBeCloseTo(1 - 200 / BASE_SWAP_FADE_MS, 1);
+    expect(first.root.destroyed).toBe(false);
+    view.render(1, 250);
+    expect(first.root.destroyed).toBe(true);
+    expect(second.root.destroyed).toBe(false);
+    view.destroy();
+  });
+
+  it('review 2 S-c: a turret whose sheet failed keeps its stand-in; one sold meanwhile is not made again', async () => {
+    const cfg = config();
+    const sim = createSim(cfg);
+    const card = Object.keys(content.turrets).find((id) => content.turrets[id]!.age === 'stone')!;
+    const st = sim.state as unknown as { sides: { turrets: unknown[] }[] };
+    st.sides[0]!.turrets[0] = { card, age: 'stone', level: 1, state: 'active', readyTick: 0, attack: { targetId: 0, impactTick: 0, nextAttackTick: 0, lastAttackTick: 0 } };
+    // the sheet failed: it settles, but is still not in
+    const art = Object.assign(new FakeArtProvider(), { baseSheetReady: (): Promise<void> | null => null, turretSheetReady: (): Promise<void> | null => Promise.resolve() });
+    const view = new BattleView({ sim, art, audio: new FakeAudio() });
+    for (let i = 0; i < 5; i++) await Promise.resolve();
+    expect(art.calls.filter((c) => c.method === 'createTurret')).toHaveLength(1);
+    view.destroy();
+    // in: but the turret is being sold, so it keeps its view
+    let land: () => void = () => undefined;
+    const loading = new Promise<void>((r) => (land = r));
+    let landed = false;
+    const art2 = Object.assign(new FakeArtProvider(), { baseSheetReady: (): Promise<void> | null => null, turretSheetReady: (): Promise<void> | null => (landed ? null : loading) });
+    const sim2 = createSim(cfg);
+    (sim2.state as unknown as { sides: { turrets: unknown[] }[] }).sides[0]!.turrets[0] = { card, age: 'stone', level: 1, state: 'selling', readyTick: 0, attack: { targetId: 0, impactTick: 0, nextAttackTick: 0, lastAttackTick: 0 } };
+    const v2 = new BattleView({ sim: sim2, art: art2, audio: new FakeAudio() });
+    landed = true;
+    land();
+    await loading;
+    await Promise.resolve();
+    expect(art2.calls.filter((c) => c.method === 'createTurret')).toHaveLength(1);
+    v2.destroy();
   });
 
   it('S2: with Reduce motion the stand-in base goes at once; a base already in asks for nothing', async () => {

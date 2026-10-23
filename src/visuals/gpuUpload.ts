@@ -19,7 +19,7 @@
  * Big uploads are spaced out (review S1, 2026-10-18): uploading a 17-66 MB sheet takes tens of ms of main
  * thread (37-68 ms on a software-rendered desktop, plausibly as much on an iPhone, where WebKit copies the
  * bitmap to its GPU process), and a big collection's evolve queued five or more of them in a row. A sheet over
- * `BIG_UPLOAD_BYTES` goes at most every `BIG_UPLOAD_GAP_MS`, and none while the battle asks for quiet
+ * `BIG_UPLOAD_BYTES` goes at most every `BIG_UPLOAD_GAP_MS` (750 ms), and none while the battle asks for quiet
  * (`quietFor`: an evolve, from its Ascension until a while after its age-up); small ones keep going every frame.
  * A sheet a view starts to draw before its turn goes at once (`flush`): Pixi would upload it on that frame
  * anyway, and so its decoded copy does not stay next to the GPU copy. Waiting never leaves a unit without its
@@ -52,8 +52,13 @@ const UPLOAD_BUDGET_MS = 6;
 /** A sheet whose decoded copy is larger than this (bytes; a 2,048 x 1,024 sheet) is a big upload. */
 export const BIG_UPLOAD_BYTES = 8_400_000;
 
-/** At most one big upload this often (ms). */
-export const BIG_UPLOAD_GAP_MS = 250;
+/**
+ * At most one big upload this often (ms). Review 2 N-c (2026-10-19): at 250 ms a side's hand-over still sent four
+ * big sheets (116 MB) up within 3 s, mid-fight; the hand-over leaves 5-20 s before the evolve, enough for its
+ * sheets at this pace. The cost: a big sheet behind others waits up to this long per sheet ahead of it, keeping
+ * its decoded copy meanwhile, and its units draw the 1x copy (or, with none, have it uploaded at once).
+ */
+export const BIG_UPLOAD_GAP_MS = 750;
 
 const now = (): number => (typeof performance !== 'undefined' ? performance.now() : 0);
 

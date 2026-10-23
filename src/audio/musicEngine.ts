@@ -308,6 +308,8 @@ export class FilePlayer implements Player {
   readonly loopLength: number | null;
   /** The transposition the cue started in (picks the stinger's key). */
   readonly transpose: number;
+  /** The options the player uses later (never the replaced cue or its phase: `phaseFrom` and `replaces` let go of those). */
+  private readonly o: { fadeMs: number; lookahead: number; fallbackGainDb?: number };
 
   constructor(
     readonly ctx: BaseAudioContext,
@@ -317,12 +319,16 @@ export class FilePlayer implements Player {
     private readonly def: FileDef,
     private readonly state: MusicState,
     load: (src: string) => Promise<AudioBuffer>,
-    private readonly o: { fadeMs: number; lookahead: number; phaseAt?: (t: number) => number; fallbackGainDb?: number; replaces?: Player | null },
+    o: { fadeMs: number; lookahead: number; phaseAt?: (t: number) => number; fallbackGainDb?: number; replaces?: Player | null },
   ) {
+    // review 2 N-a: kept whole as a field, the options still held the replaced player (and through its `phaseAt`
+    // closure the one before it), a chain of disposed players for the session
+    const { phaseAt, replaces, ...keep } = o;
+    this.o = keep;
     this.createdAt = ctx.currentTime;
     this.transpose = state.transpose;
-    this.phaseFrom = o.phaseAt ?? null;
-    this.replaces = o.replaces ?? null;
+    this.phaseFrom = phaseAt ?? null;
+    this.replaces = replaces ?? null;
     // a cue that takes over from a playing file fades in when its own file is in (`takeOver`)
     this.fade = this.replaces ? fadeNode(ctx, dest, -Infinity, ctx.currentTime, 0) : fadeNode(ctx, dest, def.gainDb ?? 0, ctx.currentTime, o.fadeMs);
     this.fileGain = ctx.createGain();

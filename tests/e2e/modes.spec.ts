@@ -85,7 +85,16 @@ test.describe('modes and replays', () => {
     // Battle searches: the radar, the time counting up, the trophy window; Battle turns into Cancel.
     // The search ends by itself after 2-12.5 s (`searchDelayMs`), and five separate checks took longer
     // than that in CI's software-rendered WebKit (the player was found before Cancel, G3): one look at
-    // the searching plate, then Cancel at once, then the checks.
+    // the searching plate, then Cancel (once past its grace, below), then the checks. Even so, Battle to Cancel once took over 2 s
+    // there: the player was found, Home left for VS under the Cancel tap ("<html> intercepts pointer
+    // events", then the button was detached; review 2, 2026-10-19). So this first search runs its longest
+    // (12.5 s): `Math.random` answers 0.999 until Cancel (on Home only the search delay and the sound
+    // variations draw it; the match never does), and the second search below is random again.
+    await page.evaluate(() => {
+      const w = window as unknown as { __random?: () => number };
+      w.__random = Math.random;
+      Math.random = () => 0.999;
+    });
     await page.getByTestId('play').click();
     await expect(plate).toHaveAttribute('data-state', 'ranked-search');
     const seen = await page.evaluate(() => {
@@ -98,8 +107,15 @@ test.describe('modes and replays', () => {
         play: document.querySelector('[data-testid=play]')?.textContent ?? '',
       };
     });
-    // Cancel stops it at once; nothing starts.
+    // Cancel stops it at once; nothing starts. A Cancel within 600 ms of the press is that press landing twice and
+    // is ignored (`CANCEL_GRACE_MS`, review M S7), and in a fast Chromium the steps above took 596-694 ms (a
+    // probe, 2026-10-19): Cancel waits that out.
+    await page.waitForTimeout(700);
     await page.getByTestId('play').click();
+    await page.evaluate(() => {
+      const w = window as unknown as { __random?: () => number };
+      if (w.__random) Math.random = w.__random;
+    });
     expect(seen.text).toContain('Searching for an opponent');
     expect(seen.elapsed).toBe(true);
     expect(seen.window).toContain('Arena 3');
