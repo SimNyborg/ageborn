@@ -1,11 +1,4 @@
 {
-  "r15-1-bronze-colossus-vs-13-hoplites": {
-    "length_s": 7.6,
-    "format": "short-hook",
-    "hook_type": "matchup",
-    "experiment": "format",
-    "arm": "duel"
-  },
   "ba1-my-home-screen-comes-alive": {
     "length_s": 33.0,
     "format": "devlog",

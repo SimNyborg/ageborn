@@ -358,6 +358,22 @@
       "pillar": "devlog",
       "hook": "behind the scenes: home screen before/after, full story tomorrow",
       "trial": false
+    },
+    {
+      "name": "r15-1-bronze-colossus-vs-13-hoplites",
+      "kind": "reel",
+      "id": "17993457357111247",
+      "permalink": "https://www.instagram.com/reel/De2M7_HCHHf/",
+      "timestamp": "2026-10-23T18:29:01+0000",
+      "slot": "evening",
+      "pillar": "battle",
+      "hook": "1 Bronze Colossus vs 13 Hoplites",
+      "trial": false,
+      "length_s": 7.6,
+      "format": "short-hook",
+      "hook_type": "matchup",
+      "experiment": "format",
+      "arm": "duel"
     }
   ]
 }
