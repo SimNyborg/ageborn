@@ -477,6 +477,19 @@ export class AtlasAdapter implements VisualAdapter {
   /** Live showcase leases per set and source, and the delayed unloads of their last release. */
   private readonly leases = new Map<SheetSet, Map<string, number>>();
   private readonly unloads = new Map<SheetSet, Map<string, ReturnType<typeof setTimeout>>>();
+  /**
+   * The sets that hold or are loading each sheet file (review 2 B, 2026-10-19). Pixi's loader keeps one asset per
+   * URL, so two sets that load the same file draw the same textures: an HD sheet whose file failed falls back to its
+   * 1x file, which the governor's 1x copy (or, on a 1x screen, the battle's own copy) loads too, and an HD extras
+   * sheet falls back to the plain one. Unloading the file for one set destroyed the textures under the other set's
+   * views, and the next frame threw inside Pixi's ticker: the battle froze. A set letting go of a file another set
+   * holds or loads now drops only its own references (`dropUrl`).
+   */
+  private readonly urlHolders = new Map<string, Set<SheetSet>>();
+  /** Sheet files loaded and not unloaded since, with the texture sources they gave (one with Pixi's loader). */
+  private readonly urlLoaded = new Map<string, Set<TextureSource>>();
+  /** Unloads of sheet files in flight: a new load of the same URL waits for them (Pixi would hand back the asset it is destroying). */
+  private readonly urlUnloads = new Map<string, Promise<void>>();
 
   /** Turret and base sheets (3D world art), loaded per age. */
   readonly world: WorldAtlas;
@@ -659,6 +672,15 @@ export class AtlasAdapter implements VisualAdapter {
   }
 
   /**
+   * True when the battle's copy of a unit sheet on an HD screen is its 1x file: the HD file failed to load (a
+   * network drop, a decode failure) and the plain one stood in. That copy costs what the 1x copy costs, and the
+   * governor's 1x copy would be the same file (review 2 B: the governor plans it so, `VisualsArtProvider.replan`).
+   */
+  hdFellBack(source: string): boolean {
+    return this.main.hd && this.main.urls.get(source)?.[0] === this.url(source);
+  }
+
+  /**
    * Keeps a battle-set sheet for a non-unit drawer (a fort's crew) until the returned release runs: the copy
    * it draws (`sheetFor`), HD or the governor's 1x one.
    */
@@ -666,21 +688,78 @@ export class AtlasAdapter implements VisualAdapter {
     return this.retainView(!this.main.sheets.has(source) && this.sd.sheets.has(source) ? this.sd : this.main, source);
   }
 
+  /**
+   * Loads one sheet file for a set, which holds its URL from now on (until `dropUrl`), once any unload of that URL
+   * in flight is done.
+   */
+  private loadFile(set: SheetSet, url: string): Promise<AtlasData> {
+    const load = this.o.load ?? loadWithAssets;
+    const holders = this.urlHolders.get(url) ?? new Set<SheetSet>();
+    holders.add(set);
+    this.urlHolders.set(url, holders);
+    const prior = this.urlUnloads.get(url);
+    return (prior ? prior.then(() => load(url)) : load(url)).then(
+      (d) => {
+        const got = this.urlLoaded.get(url) ?? new Set<TextureSource>();
+        if (d.source) got.add(d.source);
+        this.urlLoaded.set(url, got);
+        return d;
+      },
+      (e: unknown) => {
+        void this.dropUrl(set, url);
+        throw e;
+      },
+    );
+  }
+
+  /**
+   * A set lets go of a sheet file. While another set holds or loads it, only this set's hold goes; the last one
+   * closes the file's decoded copies at once and unloads the URL (resolves once that is done). A file that never
+   * loaded has nothing to unload.
+   */
+  private dropUrl(set: SheetSet, url: string): Promise<void> {
+    const holders = this.urlHolders.get(url);
+    if (holders) {
+      holders.delete(set);
+      if (holders.size > 0) return Promise.resolve();
+      this.urlHolders.delete(url);
+    }
+    const sources = this.urlLoaded.get(url);
+    if (!sources) return Promise.resolve();
+    this.urlLoaded.delete(url);
+    for (const ts of sources) {
+      if (this.releaser) this.releaser.forget(ts);
+      else if (typeof ImageBitmap !== 'undefined' && ts.resource instanceof ImageBitmap) ts.resource.close();
+    }
+    const unload = this.o.unload ?? ((u: string) => Assets.unload(u));
+    const done: Promise<void> = (async () => {
+      try {
+        await unload(url);
+      } catch (e: unknown) {
+        console.warn(`[visuals] unloading "${url}" failed`, e);
+      }
+    })().then(() => {
+      if (this.urlUnloads.get(url) === done) this.urlUnloads.delete(url);
+    });
+    this.urlUnloads.set(url, done);
+    return done;
+  }
+
   /** Loads a sheet into a set (once): the HD sheet where the set wants it, else (or on failure) the 1x one. */
   private load(set: SheetSet, source: string): Promise<void> {
     if (set.sheets.has(source) || set.failed.has(source)) return Promise.resolve();
     let p = set.pending.get(source);
     if (!p) {
-      const load = this.o.load ?? loadWithAssets;
       const url = this.url(source);
       const hd = set.hd ? hdSheetUrl(url) : url;
       const from = { url: hd };
+      // (an HD file that fails falls back to the 1x file, which another set may hold too: `urlHolders`)
       const first = (): Promise<AtlasData> =>
         hd === url
-          ? load(url)
-          : load(hd).catch(() => {
+          ? this.loadFile(set, url)
+          : this.loadFile(set, hd).catch(() => {
               from.url = url;
-              return load(url);
+              return this.loadFile(set, url);
             });
       // a sheet still being unloaded loads again only once that is done
       const prior = set.unloading.get(source);
@@ -715,16 +794,16 @@ export class AtlasAdapter implements VisualAdapter {
     if (!def) return;
     const missing = EXTRA_CLIPS.filter((c) => def.clips[c] && !core.animations[def.clips[c]?.ref ?? c]);
     if (missing.length === 0) return;
-    const load = this.o.load ?? loadWithAssets;
     const xUrl = extrasSheetUrl(coreUrl);
     const plainX = extrasSheetUrl(this.url(source));
     const got = { url: xUrl };
+    // (an HD extras file that fails falls back to the plain one, which another set may hold too: `urlHolders`)
     const p = (
       xUrl === plainX
-        ? load(xUrl)
-        : load(xUrl).catch(() => {
+        ? this.loadFile(set, xUrl)
+        : this.loadFile(set, xUrl).catch(() => {
             got.url = plainX;
-            return load(plainX);
+            return this.loadFile(set, plainX);
           })
     )
       .then((x) => {
@@ -906,7 +985,8 @@ export class AtlasAdapter implements VisualAdapter {
 
   /**
    * Drops a sheet (its core and extras URLs) unless a lease, a live view or a pin wants it by now. Its
-   * decoded CPU copies are closed at once (an ImageBitmap otherwise waits for the JS garbage collector).
+   * decoded CPU copies are closed at once (an ImageBitmap otherwise waits for the JS garbage collector). A file
+   * another set holds or loads too stays loaded for that set: only this set's references go (`dropUrl`).
    */
   private async unloadNow(set: SheetSet, source: string): Promise<void> {
     if (this.held(set, source)) return;
@@ -915,24 +995,11 @@ export class AtlasAdapter implements VisualAdapter {
     await set.extrasPending.get(source);
     if (this.held(set, source)) return;
     const urls = set.urls.get(source) ?? [];
-    for (const ts of set.sources.get(source) ?? []) {
-      if (this.releaser) this.releaser.forget(ts);
-      else if (typeof ImageBitmap !== 'undefined' && ts.resource instanceof ImageBitmap) ts.resource.close();
-    }
     set.sources.delete(source);
     set.sheets.delete(source);
     set.urls.delete(source);
     set.failed.delete(source);
-    const unload = this.o.unload ?? ((url: string) => Assets.unload(url));
-    const done = (async () => {
-      for (const url of urls) {
-        try {
-          await unload(url);
-        } catch (e: unknown) {
-          console.warn(`[visuals] unloading "${url}" failed`, e);
-        }
-      }
-    })();
+    const done = Promise.all(urls.map((url) => this.dropUrl(set, url))).then(() => undefined);
     set.unloading.set(source, done);
     await done;
     if (set.unloading.get(source) === done) set.unloading.delete(source);

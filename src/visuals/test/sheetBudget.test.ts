@@ -8,7 +8,7 @@
  */
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { holdBackNewHd, planSheetDensities, plannedBytes, settlingBytes, SHEET_RANK, UNIT_SHEET_BUDGET_BYTES, unitSheetBytes, type SheetDensity, type SheetWant } from '../sheetBudget';
+import { holdBackNewHd, leavingRoom, planSheetDensities, plannedBytes, settlingBytes, SHEET_RANK, UNIT_SHEET_BUDGET_BYTES, unitSheetBytes, type SheetDensity, type SheetWant } from '../sheetBudget';
 import { UNIT_SHEET_PIXELS } from '../unitSheetPixels.gen';
 
 const MB = 1_000_000;
@@ -80,14 +80,50 @@ describe('planSheetDensities', () => {
     expect(Object.fromEntries(planSheetDensities(wants, 90 * MB))).toEqual({ loading: 'hd', queue: 'sd' });
   });
 
-  it('a recent HD copy keeps HD before better ranks get any, within the budget only and up to the deck rank', () => {
+  it('a recent HD copy keeps HD before better ranks get any, but for the lane, within the budget only and up to the deck rank', () => {
     const recent = (rank: number) => want('recent', rank, 40, { hdResident: true, hdRecent: true });
-    // the lane's sheet would take the room by rank; the recent copy keeps it (one fits)
-    expect(Object.fromEntries(planSheetDensities([recent(SHEET_RANK.deck), want('lane', SHEET_RANK.field, 40)], 60 * MB))).toEqual({ recent: 'hd', lane: 'sd' });
+    // the queue's sheet would take the room by rank; the recent copy keeps it (one fits)
+    expect(Object.fromEntries(planSheetDensities([recent(SHEET_RANK.deck), want('queue', SHEET_RANK.soon, 40)], 60 * MB))).toEqual({ recent: 'hd', queue: 'sd' });
+    // the lane comes first (review 2 S-b): units drawing a 1x copy there get HD before the recent copy keeps it
+    expect(Object.fromEntries(planSheetDensities([recent(SHEET_RANK.deck), want('lane', SHEET_RANK.field, 40, { sdResident: true })], 60 * MB))).toEqual({ recent: 'sd', lane: 'hd' });
+    // a lane sheet of an age its side has left (noRaise) on its 1x copy still stays there
+    expect(Object.fromEntries(planSheetDensities([recent(SHEET_RANK.deck), want('lane', SHEET_RANK.field, 40, { sdResident: true, noRaise: true })], 60 * MB))).toEqual({ recent: 'hd', lane: 'sd' });
     // never over the budget: a recent copy that does not fit steps down
     expect(Object.fromEntries(planSheetDensities([recent(SHEET_RANK.deck), want('lane', SHEET_RANK.field, 40, { hdDrawn: true, hdResident: true })], 60 * MB))).toEqual({ recent: 'sd', lane: 'hd' });
     // the next age's rank keeps no hysteresis (a side handing over lets its current deck go)
     expect(Object.fromEntries(planSheetDensities([recent(SHEET_RANK.next), want('lane', SHEET_RANK.field, 40)], 60 * MB))).toEqual({ recent: 'sd', lane: 'hd' });
+  });
+
+  it('review 2 S-b: a unit of an age its side is leaving that walks out on its 1x copy takes its HD copy in the leaving room above the budget; nothing steps down, the rest keeps the whole budget', () => {
+    const recent = want('recent', SHEET_RANK.deck, 40, { hdResident: true, hdRecent: true });
+    const deck = want('deck', SHEET_RANK.deck, 16);
+    const room = { leavingAllowance: 24 * MB };
+    const plan = (wants: SheetWant[], o: { leavingAllowance?: number } = room): Record<string, SheetDensity> => Object.fromEntries(planSheetDensities(wants, 60 * MB, o));
+    // the room is above the budget, not kept free under it: the rest plans with the whole budget
+    expect(plan([recent, deck])).toEqual({ recent: 'hd', deck: 'hd' });
+    // walking out on its 1x copy (10 MB HD; its 1x copy stays until HD is in): HD at once, and nothing steps down
+    const lane = want('lane', SHEET_RANK.field, 10, { sdResident: true, leaving: true });
+    const raised = planSheetDensities([recent, deck, lane], 60 * MB, room);
+    expect(Object.fromEntries(raised)).toEqual({ recent: 'hd', deck: 'hd', lane: 'hd' });
+    expect(leavingRoom([recent, deck, lane], raised, 24 * MB)).toBe(10 * MB);
+    expect(settlingBytes([recent, deck, lane], raised)).toBeLessThanOrEqual(60 * MB + leavingRoom([recent, deck, lane], raised, 24 * MB));
+    // once its HD copy is in and drawn, the room covers what it holds over its 1x copy: still nothing steps down
+    const drawn = want('lane', SHEET_RANK.field, 10, { hdResident: true, hdDrawn: true, leaving: true });
+    const later = planSheetDensities([recent, deck, drawn], 60 * MB, room);
+    expect(Object.fromEntries(later)).toEqual({ recent: 'hd', deck: 'hd', lane: 'hd' });
+    expect(leavingRoom([recent, deck, drawn], later, 24 * MB)).toBe(7.5 * MB);
+    expect(plannedBytes([recent, deck, drawn], later)).toBe(66 * MB);
+    // without the room, or for a unit not of a leaving age, the lane still comes first and the deck steps down
+    expect(plan([recent, deck, lane], {})).toEqual({ recent: 'hd', deck: 'sd', lane: 'hd' });
+    expect(plan([recent, deck, want('lane', SHEET_RANK.field, 10, { sdResident: true })])).toEqual({ recent: 'hd', deck: 'sd', lane: 'hd' });
+    // a leaving card not on the lane (queued) takes no room: in a budget where the lane's would fit, it does not
+    expect(Object.fromEntries(planSheetDensities([recent, want('lane', SHEET_RANK.field, 10, { sdResident: true, leaving: true })], 50 * MB, room))).toEqual({ recent: 'hd', lane: 'hd' });
+    expect(Object.fromEntries(planSheetDensities([recent, want('lane', SHEET_RANK.soon, 10, { sdResident: true, leaving: true })], 50 * MB, room))).toEqual({ recent: 'hd', lane: 'sd' });
+    // the room is bounded: a larger leaving sheet takes the rest from the others
+    const big = want('lane', SHEET_RANK.field, 40, { sdResident: true, leaving: true });
+    const bounded = planSheetDensities([recent, deck, big], 60 * MB, room);
+    expect(Object.fromEntries(bounded)).toEqual({ recent: 'sd', deck: 'hd', lane: 'hd' });
+    expect(leavingRoom([recent, deck, big], bounded, 24 * MB)).toBe(24 * MB);
   });
 
   it('S1: an optional sheet (the next deck before the hand-over) gets HD where it fits, else no copy; a 1x copy in or a kept HD copy stays', () => {

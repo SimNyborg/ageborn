@@ -18,8 +18,9 @@
  *   OffscreenCanvas, so neither waits for the main thread nor adds to its work. Where the browser has no
  *   OffscreenCanvas (Safari before 16.4) or the worker fails, the main thread looks up, and draws in idle time
  *   after Home's entrance.
- * - The sheet strips shown last (`RECENT_KEY`, a few small entries) are looked up again at boot, so a returning
- *   player's Home finds its troops ready.
+ * - The strips shown last (`RECENT_KEY`, a few small entries) are looked up again at boot (sheet strips through the
+ *   worker, a skin puppet's kept strip in the store), so a returning player's Home finds its troops ready, skins
+ *   included.
  *
  * Skins (docs/requests/motion-m-skinned-strips.md): a troop's skin with its own sheet draws that sheet's strip;
  * a skin drawn as the procedural puppet (no sheet) draws the skinned puppet's idle clip as the lane draws it
@@ -490,6 +491,7 @@ function defaults(): StripDeps {
 export function setStripDeps(d: Partial<StripDeps> | null): void {
   pageDeps = null;
   jobs.clear();
+  bootPuppets.clear();
   recent = null;
   if (recentWrite) clearTimeout(recentWrite);
   recentWrite = null;
@@ -521,9 +523,13 @@ async function sheetStrip(src: SheetSource, clip: string, size: number, color: n
   return off ?? sheetStripHere(job, d);
 }
 
+/** A puppet strip's slot (what it draws) and version (from what: the build, the head height, the aura). */
+function puppetKey(p: { key: string; headLu: number; aura: boolean }, clip: string, size: number, color: number, striped: boolean): { slot: string; version: string } {
+  return { slot: `${clip}|${Math.round(size)}|${hex6(color)}${striped ? 's' : ''}|${p.key}`, version: `p1|${PUPPET_BUILD}|${p.headLu}|${p.aura ? 'a' : ''}` };
+}
+
 async function puppetStrip(src: PuppetSource, clip: string, size: number, color: number, striped: boolean, d: StripDeps): Promise<StripArt | null> {
-  const slot = `${clip}|${Math.round(size)}|${hex6(color)}${striped ? 's' : ''}|${src.key}`;
-  const version = `p1|${PUPPET_BUILD}|${src.headLu}|${src.aura ? 'a' : ''}`;
+  const { slot, version } = puppetKey(src, clip, size, color, striped);
   const kept = d.keepPuppets ? await d.store?.get(slot, version) : null;
   if (kept) return kept;
   await d.mainSlot();
@@ -537,6 +543,12 @@ async function puppetStrip(src: PuppetSource, clip: string, size: number, color:
 
 /** Strips being drawn or drawn this page, by what they draw (the provider caches its answers too). */
 const jobs = new Map<string, Promise<StripArt | null>>();
+/**
+ * Kept puppet strips looked up at boot (`warmRecentStrips`), by job id: the request for one takes that lookup's
+ * answer first, so a returning player's skinned troop is ready when Home first renders, like a plain one (review
+ * 2 N-b: its own lookup started with Home's render and landed after Home's first long task).
+ */
+const bootPuppets = new Map<string, Promise<StripArt | null>>();
 
 export interface StripRequestArgs {
   sources: readonly StripSource[];
@@ -563,7 +575,11 @@ export function spriteStripArt(o: StripRequestArgs & { deps?: StripDeps }): Prom
   const d = o.deps ?? defaults();
   const color = teamColor(o.side, o.preset);
   const striped = teamStripes(o.side, o.preset);
+  const early = o.deps ? undefined : bootPuppets.get(id);
+  if (early) bootPuppets.delete(id);
   const job = (async (): Promise<StripArt | null> => {
+    const found = early ? await early : null;
+    if (found) return found;
     for (const s of o.sources) {
       try {
         const art = s.kind === 'atlas' ? await sheetStrip(s, o.clip, o.size, color, d) : await puppetStrip(s, o.clip, o.size, color, striped, d);
@@ -579,7 +595,7 @@ export function spriteStripArt(o: StripRequestArgs & { deps?: StripDeps }): Prom
     void job.then((a) => {
       if (!a) {
         if (jobs.get(id) === job) jobs.delete(id);
-      } else if (o.sources.every((s) => s.kind === 'atlas')) remember(id, o);
+      } else remember(id, o);
     });
   }
   return job;
@@ -588,11 +604,16 @@ export function spriteStripArt(o: StripRequestArgs & { deps?: StripDeps }): Prom
 // ---------------------------------------------------------------------------------------------
 // Ready at boot: the sheet strips shown last are looked up again as soon as the visuals load
 
-/** The last few sheet strips asked for (small JSON: what to look up at boot; the strips are in the Cache API). */
+/** The last few strips asked for (small JSON: what to look up at boot; the strips are in the Cache API). */
 export const RECENT_KEY = 'ageborn.strips.recent';
 const RECENT_MAX = 10;
 
-type Recent = { id: string } & StripRequestArgs;
+/**
+ * A strip asked for lately: its sheet sources, and for a skin drawn as a puppet the puppet's key, head height and
+ * aura (what its kept strip is keyed by; its drawing needs the provider's puppet, so only the kept strip is looked
+ * up at boot).
+ */
+type Recent = { id: string; puppet?: { key: string; headLu: number; aura: boolean } } & StripRequestArgs;
 
 function storage(): Storage | null {
   try {
@@ -607,21 +628,40 @@ function readRecent(): Recent[] {
     const raw = storage()?.getItem(RECENT_KEY);
     const v = raw ? (JSON.parse(raw) as unknown) : null;
     if (!Array.isArray(v)) return [];
-    return v.filter((r): r is Recent => !!r && typeof r === 'object' && typeof (r as Recent).id === 'string' && Array.isArray((r as Recent).sources) && (r as Recent).sources.every((s) => s && s.kind === 'atlas' && typeof s.url === 'string' && typeof s.headLu === 'number'));
+    const puppetOk = (p: Recent['puppet']): boolean => p === undefined || (!!p && typeof p.key === 'string' && typeof p.headLu === 'number' && typeof p.aura === 'boolean');
+    return v.filter(
+      (r): r is Recent =>
+        !!r &&
+        typeof r === 'object' &&
+        typeof (r as Recent).id === 'string' &&
+        Array.isArray((r as Recent).sources) &&
+        (r as Recent).sources.every((s) => s && s.kind === 'atlas' && typeof s.url === 'string' && typeof s.headLu === 'number') &&
+        puppetOk((r as Recent).puppet),
+    );
   } catch {
     return [];
   }
+}
+
+/** The job id a remembered strip had (its puppet first, then its sheets). */
+function recentId(r: Recent): string {
+  return jobId({ ...r, sources: r.puppet ? [{ kind: 'puppet', key: r.puppet.key } as PuppetSource, ...r.sources] : r.sources });
 }
 
 let recent: Recent[] | null = null;
 let recentWrite: ReturnType<typeof setTimeout> | null = null;
 
 function remember(id: string, o: StripRequestArgs): void {
+  const [first, ...rest] = o.sources;
+  // a skin drawn as a puppet comes first (then the card's own sheet); anything else must be all sheets
+  const puppet = first?.kind === 'puppet' ? { key: first.key, headLu: first.headLu, aura: first.aura } : undefined;
+  const sheets = (puppet ? rest : o.sources).filter((s): s is SheetSource => s.kind === 'atlas');
+  if (sheets.length !== (puppet ? rest : o.sources).length) return;
   recent ??= readRecent();
   const prev = recent.findIndex((r) => r.id === id);
   if (prev >= 0 && prev === recent.length - 1) return;
   if (prev >= 0) recent.splice(prev, 1);
-  recent.push({ id, sources: o.sources, clip: o.clip, size: o.size, side: o.side, preset: o.preset });
+  recent.push({ id, sources: sheets, clip: o.clip, size: o.size, side: o.side, preset: o.preset, ...(puppet ? { puppet } : {}) });
   recent = recent.slice(-RECENT_MAX);
   if (recentWrite) return;
   recentWrite = setTimeout(() => {
@@ -635,25 +675,40 @@ function remember(id: string, o: StripRequestArgs): void {
 }
 
 /**
- * Starts the strip worker, and looks up the sheet strips shown last with it, so Home finds them ready (only where
- * the strip worker runs: the main-thread lookup would add to the boot's own work). Runs once when the visuals
- * load; returns how many strips it looks up.
+ * Starts the strip worker, and looks up the strips shown last, so Home finds them ready: sheet strips with the
+ * worker (only where it runs: the main-thread lookup fetches the sheet, which would add to the boot's own work), and
+ * the kept strips of skins drawn as puppets (one Cache API read each, no sheet to fetch; review 2 N-b). Runs once
+ * when the visuals load; returns how many strips it looks up.
  */
 export function warmRecentStrips(): number {
   const d = defaults();
-  if (!d.worker) return 0;
-  // set the worker up now, while nothing waits for it (also on a first visit, with nothing kept yet)
-  d.worker.warm();
-  if (!d.keep) return 0;
   const list = readRecent();
   recent = list;
+  let n = 0;
+  if (d.store && d.keepPuppets) {
+    const store = d.store;
+    for (const r of list) {
+      if (!r.puppet || jobs.has(r.id) || bootPuppets.has(r.id) || recentId(r) !== r.id) continue;
+      const { slot, version } = puppetKey(r.puppet, r.clip, r.size, teamColor(r.side, r.preset), teamStripes(r.side, r.preset));
+      bootPuppets.set(
+        r.id,
+        store.get(slot, version).catch(() => null),
+      );
+      n++;
+    }
+  }
+  if (!d.worker) return n;
+  // set the worker up now, while nothing waits for it (also on a first visit, with nothing kept yet)
+  d.worker.warm();
+  if (!d.keep) return n;
   for (const r of list) {
-    if (jobs.has(r.id)) continue;
+    if (r.puppet || jobs.has(r.id)) continue;
     const args: StripRequestArgs = { sources: r.sources, clip: r.clip, size: r.size, side: r.side, preset: r.preset };
     if (jobId(args) !== r.id) continue;
     void spriteStripArt(args);
+    n++;
   }
-  return list.length;
+  return n;
 }
 
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {

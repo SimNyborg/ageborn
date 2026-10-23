@@ -136,6 +136,20 @@ describe('the still troops', () => {
     expect(liveTroopScale(BIG.headLu)).toBeCloseTo(MAX_TROOP_LU / 160, 6);
   });
 
+  it('a provider that throws when asked (a sandboxed frame where reading `caches` throws) leaves Home rendered, without strips (review 2 S-a)', async () => {
+    const throwing = (o: PortraitRequest): Promise<string> => {
+      if (o.card.startsWith('strip')) throw new Error('SecurityError: the operation is insecure');
+      return Promise.resolve('');
+    };
+    await act(() => render(<Home env={envFor()} portrait={throwing} mine={['t7_a', 't7_b'] as CardId[]} foe={['t7_c'] as CardId[]} live={live()} />, container as unknown as Element));
+    await flush();
+    await frame();
+    // the island and its troops' places are there; no troop has a strip, and none is waited for
+    expect(container.querySelector('.hd')).not.toBeNull();
+    expect(container.querySelectorAll('.hd__unit')).toHaveLength(3);
+    expect(container.querySelectorAll('.hd__unit.is-in')).toHaveLength(0);
+  });
+
   it('a troop with no strip stays empty and is not waited for', async () => {
     const f = fakePortraits();
     const empty = async (o: PortraitRequest): Promise<string> => (o.card.endsWith(':t2_none') ? '' : f.portrait(o));

@@ -669,7 +669,16 @@ function loadIdleStrip(portrait: PortraitFn, card: CardId, side: Side, skin: Ski
   const busy = idleLoads.get(key);
   if (busy) return busy;
   const req: PortraitRequest = { card: `strip:idle:${card}` as CardId, size: STRIP_PX, plate: false, ...(side ? { side: 1 as const } : {}), ...(skin ? { skin } : {}) };
-  const job = Promise.all([portrait(req), portrait({ ...req, card: `stripinfo:idle:${card}` as CardId }).catch(() => '')])
+  // asked for during the render: a provider that throws at once is a troop without a strip, never a failed render
+  // (review 2 S-a: reading `caches` threw in a sandboxed frame, and Home never mounted)
+  const ask = (r: PortraitRequest): Promise<string> => {
+    try {
+      return portrait(r);
+    } catch (e: unknown) {
+      return Promise.reject(e);
+    }
+  };
+  const job = Promise.all([ask(req), ask({ ...req, card: `stripinfo:idle:${card}` as CardId }).catch(() => '')])
     .then(async ([url, info]): Promise<IdleStrip | null> => {
       if (!url) return null;
       const l = parseStripInfo(info);
@@ -691,7 +700,9 @@ function loadIdleStrip(portrait: PortraitFn, card: CardId, side: Side, skin: Ski
  * A troop's idle strip: undefined while it is on its way, null when the troop has none. Asked for in the render
  * (idempotent; an effect would ask only after Home's first paint) and read from the page's strips on every render,
  * re-rendering as soon as a strip comes in (`idleSettled`), so a returning player's troops (whose strips the strip
- * worker found on the device as the visuals loaded) stand in Home's first frames, before its other first work.
+ * worker found on the device as the visuals loaded) stand in Home's first frames, before its other first work (the
+ * strict review 2 measured them in the first frame at 844 x 390, and about 0.5 s after it at 1280 x 720 on a busy
+ * machine).
  */
 function useIdleStrip(card: CardId, side: Side, skin: SkinId | null): IdleStrip | null | undefined {
   const { portrait } = useKit();

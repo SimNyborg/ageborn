@@ -223,17 +223,48 @@ describe("a battle's passed ages", () => {
 });
 
 describe('the opening bases and the stand-in counters (review S2, N7)', () => {
-  it('counts the turrets and bases drawn by their stand-ins (the e2e budget asserts them)', () => {
+  it('counts the turrets and bases drawn by their stand-ins, and those still alive (the e2e budget asserts them)', () => {
     const art = createArtProvider({ warn: () => {}, unitSheets: 'match' });
     const turret = Object.keys(MANIFEST).find((k) => k.startsWith('turret.') && MANIFEST[k]!.kind === 'atlas')!;
     // no sheet loads in Node: both draw their procedural stand-ins
-    art.createTurret({ visualId: turret, side: 0, teamPreset: 'default' }).destroy();
-    art.createBase({ age: 'gunpowder', side: 0, teamPreset: 'default' }).destroy();
-    expect(art.fallbacks).toMatchObject({ units: 0, turrets: 1, bases: 1, forts: 0 });
-    // a turret whose sheet is in draws from it
+    const t = art.createTurret({ visualId: turret, side: 0, teamPreset: 'default' });
+    const b = art.createBase({ age: 'gunpowder', side: 0, teamPreset: 'default' });
+    expect(art.fallbacks).toMatchObject({ units: 0, turrets: 1, bases: 1, forts: 0, turretsNow: 1, basesNow: 1 });
+    // a stand-in the battle replaced by its sheet's view (review 2 S-c) no longer counts while it fades out, nor
+    // when it goes; only the made count stays
+    art.replacedStandIn(t);
+    expect(art.fallbacks).toMatchObject({ turrets: 1, bases: 1, turretsNow: 0, basesNow: 1 });
+    t.destroy();
+    t.destroy();
+    b.destroy();
+    art.replacedStandIn(b);
+    expect(art.fallbacks).toMatchObject({ turrets: 1, bases: 1, turretsNow: 0, basesNow: 0 });
+    // a turret whose sheet is in draws from it, and counts nowhere
     const def = MANIFEST[turret]!;
     art.atlas.world.register(def.source, worldSheet().sheet);
     expect(art.atlas.canDraw('turret', def)).toBe(true);
+    art.createTurret({ visualId: turret, side: 0, teamPreset: 'default' }).destroy();
+    expect(art.fallbacks).toMatchObject({ turrets: 1, turretsNow: 0 });
+  });
+
+  it('turretSheetReady is null once the turret\'s sheet is in, else it loads it (review 2 S-c)', async () => {
+    const art = createArtProvider({ warn: () => {}, unitSheets: 'match' });
+    const turret = Object.keys(MANIFEST).find((k) => k.startsWith('turret.') && MANIFEST[k]!.kind === 'atlas')!;
+    const src = MANIFEST[turret]!.source;
+    let land: (s: WorldSheet | null) => void = () => undefined;
+    const loading = new Promise<WorldSheet | null>((r) => (land = r));
+    const ensured: string[] = [];
+    vi.spyOn(art.atlas.world, 'ensure').mockImplementation((s) => (ensured.push(s), s === src ? loading : Promise.resolve(null)));
+    const ready = art.turretSheetReady({ visualId: turret });
+    expect(ready).not.toBeNull();
+    expect(ensured).toEqual([src]);
+    land(worldSheet().sheet);
+    await ready;
+    art.atlas.world.register(src, worldSheet().sheet);
+    expect(art.turretSheetReady({ visualId: turret })).toBeNull();
+    // a forced tier draws its own turrets, and a unit or unknown visual has no turret sheet to wait for
+    expect(createArtProvider({ warn: () => {}, unitSheets: 'match', force: 'procedural' }).turretSheetReady({ visualId: turret })).toBeNull();
+    expect(art.turretSheetReady({ visualId: 'unit.bonker' })).toBeNull();
   });
 
   it('baseSheetReady is null once the age\'s plain base sheet is in, else it loads it; VS waits for it', async () => {

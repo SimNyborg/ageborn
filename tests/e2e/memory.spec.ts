@@ -19,9 +19,12 @@
  * test profile's war against an opponent at its own levels (so the war runs through the ages) must stay
  * under the same budget.
  *
- * Review fixes (2026-10-18): no turret and no base may be drawn by its stand-in in the whole war (an evolve
- * once dropped the turret sheets of ages the lagging side had still to reach, and a turret keeps its stand-in
- * for life); units and forts drawn by theirs, and the governor's copy changes and loads, are printed.
+ * Review fixes (2026-10-18): no turret and no base may be drawn by its stand-in (an evolve once dropped the
+ * turret sheets of ages the lagging side had still to reach); units and forts drawn by theirs, and the governor's
+ * copy changes and loads, are printed. Review 2 S-c (2026-10-19): a turret or base made before its sheet was in
+ * is made again from it once it lands, so the check counts what is still drawn by a stand-in at the end of the
+ * war (how many were made at all is printed); CI's slow WebKit could build a turret just after an evolve in a
+ * fast-forward, before the age's turret sheets landed.
  */
 import { expect, test, type Page } from '@playwright/test';
 import { fastForward, pastOnboarding, watchPage, type AgebornDev } from './helpers';
@@ -34,8 +37,11 @@ interface Mem {
   cpu: number;
   gpu: number;
   sheets: { loaded: number; sd?: number } | null;
-  /** Views drawn by their stand-ins: units (and the last one), turrets, bases and forts (and the last one). */
-  fallbacks: { units: number; last: string; turrets?: number; bases?: number; forts?: number; lastWorld?: string } | null;
+  /**
+   * Views drawn by their stand-ins as they were made: units (and the last one), turrets, bases and forts (and the
+   * last one); `turretsNow` and `basesNow`: the turret and base stand-ins alive now.
+   */
+  fallbacks: { units: number; last: string; turrets?: number; bases?: number; forts?: number; lastWorld?: string; turretsNow?: number; basesNow?: number } | null;
   /** Decoded bytes by kind (unit sheets HD and 1x, baked parts, world sheets, backdrops, other). */
   kinds?: Record<string, number>;
   /** The memory governor's plan: unit sheets planned HD and 1x, copy changes and the copies it loaded. */
@@ -43,22 +49,26 @@ interface Mem {
 }
 
 interface Step {
-  /** Both sides' age index, the match phase and the units on the field; null once the battle has left. */
-  battle: { ages: number[]; phase: string; units: number } | null;
+  /** Both sides' age index, the match phase, the units on the field and the sim tick; null once the battle has left. */
+  battle: { ages: number[]; phase: string; units: number; tick: number } | null;
   mem: Mem;
 }
 
 /** Runs the battle on screen `ticks` sim ticks ahead (0: none) and reads its state and the memory, in one round trip. */
 const step = (page: Page, ticks: number): Promise<Step> =>
   page.evaluate(async (n) => {
-    type St = { sides: { ageIndex: number }[]; phase: string; units: unknown[] };
+    type St = { sides: { ageIndex: number }[]; phase: string; units: unknown[]; tick: number };
     type Dev = AgebornDev & { memory(): Mem; controller: { route: { peek(): { id: string; battle?: { session: { sim: { state: St } } } } } } };
     const dev = (window as unknown as { __agebornDev: Dev }).__agebornDev;
     if (n > 0) await dev.fastForward(n);
     const r = dev.controller.route.peek();
     const st = r.id === 'battle' && r.battle ? r.battle.session.sim.state : null;
-    return { battle: st ? { ages: st.sides.map((s) => s.ageIndex), phase: st.phase, units: st.units.length } : null, mem: dev.memory() };
+    return { battle: st ? { ages: st.sides.map((s) => s.ageIndex), phase: st.phase, units: st.units.length, tick: st.tick } : null, mem: dev.memory() };
   }, ticks);
+
+/** One line on how far a war got (a page lost mid-war says it in its error). */
+const progress = (s: Step | null): string =>
+  s?.battle ? `tick ${s.battle.tick}, ages ${s.battle.ages.join('/')}, ${s.battle.units} units, ${mb(s.mem.total)} MB${s.mem.plan ? ` (${s.mem.plan.hd} HD + ${s.mem.plan.sd} 1x planned)` : ''}` : 'no battle step yet';
 
 test.use({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2 });
 
@@ -78,20 +88,34 @@ async function warPeak(page: Page, problems: { errors: string[] }, label: string
   let peak: Mem | null = null;
   let top = 0;
   let last: Mem | null = null;
-  for (let i = 0; i < 400; i++) {
-    const s = await step(page, 100);
-    if (!s.battle) break;
-    last = s.mem;
-    top = Math.max(top, ...s.battle.ages);
-    if (!peak || s.mem.total > peak.total) peak = s.mem;
-    if (s.battle.phase === 'ended') break;
-    await page.waitForTimeout(200);
+  // CI's software-rendered WebKit has lost its page in the middle of these wars now and then (the Customize case on
+  // 2dbc183: "Target crashed"; round 3 on a4f7816: "Target page, context or browser has been closed", both passed on
+  // retry): a lost page says how far the war got and which way it went, for the next run's log
+  let seen: Step | null = null;
+  const lost: string[] = [];
+  // (a browser that goes away closes its pages too)
+  page.on('crash', () => lost.push(`the page crashed after ${progress(seen)}`));
+  page.on('close', () => lost.push(`the page closed after ${progress(seen)}`));
+  try {
+    for (let i = 0; i < 400; i++) {
+      const s = await step(page, 100);
+      if (!s.battle) break;
+      seen = s;
+      last = s.mem;
+      top = Math.max(top, ...s.battle.ages);
+      if (!peak || s.mem.total > peak.total) peak = s.mem;
+      if (s.battle.phase === 'ended') break;
+      await page.waitForTimeout(200);
+    }
+  } catch (e) {
+    throw new Error(`${label}: the war stopped at ${progress(seen)} (peak so far ${mb(peak?.total ?? 0)} MB); ${lost.join('; ') || 'no crash or close event'}: ${e instanceof Error ? e.message : String(e)}`, { cause: e });
   }
   const kinds = peak?.kinds ? `; ${Object.entries(peak.kinds).map(([k, v]) => `${k} ${mb(v)}`).join(', ')}` : '';
   const plan = peak?.plan ? `; planned ${peak.plan.hd} HD + ${peak.plan.sd} 1x (${mb(peak.plan.plannedBytes)} MB)` : '';
-  // views drawn with their stand-ins over the whole fast-forwarded war (the opening's units are checked above)
+  // views drawn with their stand-ins over the whole fast-forwarded war (the opening's units are checked above), and
+  // the turrets and bases still drawn by theirs at its end
   const fb = last?.fallbacks;
-  const fallbacks = fb ? `; stand-ins: units ${fb.units}, turrets ${fb.turrets ?? 0}, bases ${fb.bases ?? 0}, forts ${fb.forts ?? 0}` : '';
+  const fallbacks = fb ? `; stand-ins: units ${fb.units}, turrets ${fb.turrets ?? 0} (${fb.turretsNow ?? 0} at the end), bases ${fb.bases ?? 0} (${fb.basesNow ?? 0} at the end), forts ${fb.forts ?? 0}` : '';
   const loads = last?.plan?.loads ? `; copy changes ${last.plan.moves ?? 0}, loads ${last.plan.loads.hd} HD + ${last.plan.loads.sd} 1x` : '';
   const note = `${label}: peak ${mb(peak?.total ?? 0)} MB (cpu ${mb(peak?.cpu ?? 0)}, gpu ${mb(peak?.gpu ?? 0)}), ${peak?.sheets?.loaded ?? 0} unit sheets${peak?.sheets?.sd ? ` + ${peak.sheets.sd} 1x` : ''}, last age index ${top}${kinds}${plan}${fallbacks}${loads}`;
   test.info().annotations.push({ type: 'memory', description: note });
@@ -99,8 +123,10 @@ async function warPeak(page: Page, problems: { errors: string[] }, label: string
   // the match went through several evolves (Gunpowder or later), so the budget covers them
   expect(top).toBeGreaterThanOrEqual(3);
   expect(mb(peak?.total ?? Infinity)).toBeLessThanOrEqual(BUDGET_MB);
-  // a turret or a base drawn by its stand-in keeps it (a turret for life): none in the whole war
-  expect({ turrets: fb?.turrets ?? 0, bases: fb?.bases ?? 0, last: (fb?.turrets ?? 0) + (fb?.bases ?? 0) > 0 ? fb?.lastWorld : '' }).toEqual({ turrets: 0, bases: 0, last: '' });
+  // no turret and no base is still drawn by its stand-in at the end (one made before its sheet was in is made again
+  // from it once it lands; one still standing in now would have kept it)
+  const still = { turrets: fb?.turretsNow ?? 0, bases: fb?.basesNow ?? 0 };
+  expect({ ...still, last: still.turrets + still.bases > 0 ? fb?.lastWorld : '' }).toEqual({ turrets: 0, bases: 0, last: '' });
   expect(problems.errors).toEqual([]);
 }
 

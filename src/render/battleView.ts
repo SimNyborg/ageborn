@@ -33,6 +33,7 @@ import type {
   Side,
   SimEvent,
   SimState,
+  SkinId,
   TurretView,
   UnitDef,
   UnitPose,
@@ -363,6 +364,8 @@ export class BattleView {
   private readonly units = new Map<number, UnitEntry>();
   private readonly turrets = new Map<string, TurretEntry>();
   private leavingTurrets: { view: TurretView; leftMs: number }[] = [];
+  /** Stand-in turrets a view made from the sheet replaced (`swapTurret`), fading out over it (real ms left). */
+  private fadingTurrets: { view: TurretView; leftMs: number }[] = [];
   private readonly projectiles = new Map<number, ProjectileEntry>();
   private readonly projectilePool = new Map<string, EffectView[]>();
   private readonly bases: [BaseEntry, BaseEntry];
@@ -561,8 +564,9 @@ export class BattleView {
       else recent.push(v);
     }
     const want = heldVisuals(this.config, this.sim.state, this.ages, this.units.values(), recent);
-    // a visual whose rank moved (queued, on the lane, gone) is sent again: the provider plans HD by rank
-    const key = [...want].map(([k, v]) => `${k}:${v.priority ?? ''}`).sort().join('|');
+    // a visual whose rank moved (queued, on the lane, gone) is sent again: the provider plans HD by rank; and one
+    // whose side started or finished leaving its age (`noRaise`, `leaving`; a unit on the lane keeps its rank then)
+    const key = [...want].map(([k, v]) => `${k}:${v.priority ?? ''}${v.noRaise ? 'r' : ''}${v.leaving ? 'l' : ''}`).sort().join('|');
     if (key === this.holdKey) return;
     this.holdKey = key;
     const ready = hold.set([...want.values()]);
@@ -631,6 +635,7 @@ export class BattleView {
     const at = layer.getChildIndex(old.view.root);
     if (at >= 0) layer.setChildIndex(fresh.view.root, at);
     this.bases[side] = fresh;
+    this.replacedStandIn(old.view);
     if (this.settings.reduceMotion) {
       old.dressing?.destroy();
       old.view.destroy();
@@ -639,8 +644,62 @@ export class BattleView {
     this.leavingBases.push({ view: old.view, ...(old.dressing ? { dressing: old.dressing } : {}), leftMs: BASE_SWAP_FADE_MS });
   }
 
-  /** The bases a swap replaced fade out (real time) and go. */
+  /**
+   * A turret the provider drew by its stand-in because its world sheet was not in yet is made again from its sheet
+   * once that has loaded, as the bases are (`watchBase`; review 2 S-c: a fast-forward, or a slow device, can build
+   * a turret just after an evolve, before the age's turret sheets land, and it kept its stand-in for life). A sheet
+   * that failed leaves the stand-in. Duck-typed: a provider without `turretSheetReady` (fakes) draws as before.
+   */
+  private watchTurret(e: TurretEntry, o: { visualId: VisualId; skin?: SkinId }): void {
+    const art = this.art as ArtProvider & { turretSheetReady?: (o: { visualId: VisualId; skin?: SkinId }) => Promise<void> | null };
+    if (typeof art.turretSheetReady !== 'function') return;
+    const loading = art.turretSheetReady(o);
+    if (!loading) return;
+    void loading.then(() => {
+      if (art.turretSheetReady?.(o) === null) this.swapTurret(e, o);
+    });
+  }
+
+  /**
+   * Makes a turret again from its sheet (`watchTurret`): the new view goes under the stand-in at the same mount,
+   * pose and outdated mark, and the stand-in fades out over `BASE_SWAP_FADE_MS` (at once with Reduce motion). A
+   * turret sold, wrecked or replaced meanwhile keeps its view, as does an ended battle.
+   */
+  private swapTurret(e: TurretEntry, o: { visualId: VisualId; skin?: SkinId }): void {
+    if (this.gone || this.ended || e.selling || e.wrecked || this.turrets.get(`${e.side}:${e.mount}`) !== e) return;
+    const old = e.view;
+    const fresh = this.art.createTurret({ ...o, side: e.side, teamPreset: this.settings.teamPreset });
+    fresh.root.position.copyFrom(old.root.position);
+    fresh.root.rotation = old.root.rotation;
+    fresh.root.scale.x = old.root.scale.x;
+    const layer = this.layers.structures;
+    const at = layer.children.indexOf(old.root);
+    if (at >= 0) layer.addChildAt(fresh.root, at);
+    else layer.addChild(fresh.root);
+    withMotion(fresh, this.viewMotion());
+    if (e.outdated) fresh.setOutdated(true);
+    e.view = fresh;
+    this.replacedStandIn(old);
+    if (this.settings.reduceMotion) old.destroy();
+    else this.fadingTurrets.push({ view: old, leftMs: BASE_SWAP_FADE_MS });
+  }
+
+  /** Tells the provider a stand-in now fades out over its sheet's view (its live stand-in count; duck-typed). */
+  private replacedStandIn(view: TurretView | BaseView): void {
+    (this.art as ArtProvider & { replacedStandIn?: (v: TurretView | BaseView) => void }).replacedStandIn?.(view);
+  }
+
+  /** The bases (and stand-in turrets) a swap replaced fade out (real time) and go. */
   private fadeLeavingBases(realDt: number, gameDt: number): void {
+    if (this.fadingTurrets.length > 0) {
+      for (const l of this.fadingTurrets) {
+        l.leftMs -= realDt;
+        l.view.update(gameDt);
+        l.view.root.alpha = Math.max(0, l.leftMs / BASE_SWAP_FADE_MS);
+        if (l.leftMs <= 0) l.view.destroy();
+      }
+      this.fadingTurrets = this.fadingTurrets.filter((l) => l.leftMs > 0);
+    }
     if (this.leavingBases.length === 0) return;
     for (const l of this.leavingBases) {
       l.leftMs -= realDt;
@@ -1831,6 +1890,8 @@ export class BattleView {
     this.turrets.clear();
     for (const l of this.leavingTurrets) l.view.destroy();
     this.leavingTurrets = [];
+    for (const l of this.fadingTurrets) l.view.destroy();
+    this.fadingTurrets = [];
     for (const p of this.projectiles.values()) p.view.destroy();
     this.projectiles.clear();
     for (const list of this.projectilePool.values()) for (const v of list) v.destroy();
@@ -3201,7 +3262,8 @@ export class BattleView {
     }
     const def = this.config.content.turrets[card];
     const skin = this.config.sides[side].skins[card];
-    const view = this.art.createTurret({ visualId: def?.visualId ?? `turret.${card}`, ...(skin ? { skin } : {}), side, teamPreset: this.settings.teamPreset });
+    const look = { visualId: def?.visualId ?? `turret.${card}`, ...(skin ? { skin } : {}) };
+    const view = this.art.createTurret({ ...look, side, teamPreset: this.settings.teamPreset });
     const p = this.mountPoints(side)[mount] ?? { x: baseCenterX(side), y: -80 };
     view.root.position.set(p.x, p.y);
     view.root.scale.x = side === 1 ? -1 : 1;
@@ -3210,6 +3272,7 @@ export class BattleView {
     const e: TurretEntry = { side, mount, card, view, selling: false, outdated: false };
     this.turrets.set(key, e);
     this.mapper.setTurretCard(side, mount, card);
+    this.watchTurret(e, look);
     return e;
   }
 
