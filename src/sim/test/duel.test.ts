@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { runDuel } from '../duel';
-import { fixture } from './helpers';
+import { fixture, fixtureInPhase } from './helpers';
 
 describe('runDuel (counter matrix harness)', () => {
-  it('mirror duels are exactly even', () => {
+  it('mirror duels are exactly even in phase (the harness is symmetric)', () => {
+    // With the A9a de-phase on, a mirror is decided by who lands first; the matrix runs every pair both
+    // ways and keeps its diagonal at 50% (content/counters/matrix.ts).
     for (const card of ['bonker', 'pebbler', 'tuskback', 'photon_knight']) {
-      const r = runDuel(fixture, card, card, 3, 3);
+      const r = runDuel(fixtureInPhase, card, card, 3, 3);
       expect(r.hpLeftBp[0], card).toBe(r.hpLeftBp[1]);
     }
   });

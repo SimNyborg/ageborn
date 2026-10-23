@@ -45,8 +45,9 @@ describe('contentHash (B4, B3 replays)', () => {
     // requests 2026-10-07: no stance cooldown (`stanceCooldownMs` 0) and Retreat open from the start
     // (`retreatAfterMs` 0); no sim code changed, so SIM_VERSION stays. Owner request 2026-10-07 (built
     // 2026-10-08): the ranks (`economy.formation`, SIM_VERSION 8.0.0), the Short War rope 0.8 / 1.4%/s and ten
-    // cards retuned to stay within ±5 (docs/decisions.md).
-    expect(content.hash).toBe('db3a0a26');
+    // cards retuned to stay within ±5 (docs/decisions.md). Queue item 38 (2026-10-23): with the combat levers
+    // (SIM_VERSION 9.0.0 and 10.0.0, no content change) the Clockwork Tinker winds up a soldier every 7 s (8 s).
+    expect(content.hash).toBe('7261ed9b');
   });
 
   it('compiles the frozen fixture tables to a stable hash (golden replays use it, B13)', () => {

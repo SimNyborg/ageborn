@@ -44,8 +44,21 @@ import { SimImpl } from './createSim';
  * frozen fixture carries the rule, so all 17 goldens were re-recorded deliberately; 14 changed their hashes
  * (05, 16 and 17 field no ranked unit and keep theirs), and 13 moved to seed 1325 so it still holds a blob
  * at the fort contact cap.
+ * 9.0.0 (A9a, queue item 38, 2026-10-18: de-phase the metronome; A2.7 Attack cycle): the first swing of a
+ * fresh engagement (attack 0 had no target in range and no windup the tick before) waits 0 or
+ * `battle.dephaseTicks` (default 3, the sim's own: no content field) extra ticks on its windup and its interval,
+ * by a hash of the unit id and the tick; a unit whose target's pending swing on it would land closer than that
+ * takes the wait that keeps the two impacts 3 ticks apart, so equal-range, equal-interval pairs no longer land
+ * on one tick (mirror exchanges, double KOs). No RNG draw and no new state field. A major bump: every golden
+ * changed its hash (all 17 re-recorded); 14 moved to seed 1371 and 15 to seed 1519 so they still cover a
+ * scaffold destroyed before it completes and the Crumble rope on the turtle's side.
+ * 10.0.0 (A9b first half, queue item 38, 2026-10-18: retarget whiffs; A2.7 Attack cycle): a melee swing whose target
+ * died before the impact picks afresh among the targets in range and lands on its own impact tick, instead of
+ * whiffing (`battle.retargetWhiffs`, default on; a target alive but out of reach still whiffs). No RNG draw, no new
+ * state field. A major bump: every golden changed its hash (all 17 re-recorded); 12, 13 and 14 moved to seeds 1213,
+ * 1363 and 1407 so the fort goldens still cover every listed fort case.
  */
-export const SIM_VERSION = '8.0.0';
+export const SIM_VERSION = '10.0.0';
 
 /** Thrown when a replay was recorded on different content (B3: "from an older version"). */
 export class ReplayContentMismatchError extends Error {

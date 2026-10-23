@@ -3,10 +3,12 @@
  *
  * 1. When a target is valid (in range) and `tick ≥ nextAttack`, the attack starts:
  *    impactTick = tick + round(interval × windupPct), nextAttack = tick + interval, where
- *    interval = round(baseTicks × 10,000 / (10,000 + attackSpeedBp)) is fixed at the start.
+ *    interval = round(baseTicks × 10,000 / (10,000 + attackSpeedBp)) is fixed at the start. The first swing
+ *    of a fresh engagement adds a wait of 0 or 3 ticks to both (A9a de-phase, SIM_VERSION 9.0.0).
  * 2. At impactTick, if the target is still valid (alive, hittable, within range + leash), a melee attack
  *    schedules its impact and a ranged attack spawns a projectile.
- * 3. Otherwise the attack whiffs; the cooldown stays spent.
+ * 3. Otherwise the attack whiffs; the cooldown stays spent. A melee swing whose target died picks afresh among
+ *    the targets in range first (A9b retarget whiffs, SIM_VERSION 10.0.0).
  * Only attack 0 stops movement; secondary attacks (riders, the Behemoth MG) fire whenever they have a target.
  */
 import { BP, randRange, roundDiv } from '@/core';
@@ -18,7 +20,7 @@ import { BASE_TARGET, other, type AttackRt, type Ctx, type UnitRt } from '../sta
 import { alive, findUnit, unitRules } from '../units';
 import { pickContacts, towerFire } from './forts';
 import { fireProjectile } from './projectiles';
-import { targetInRange, targetValidForImpact, updateTarget } from './targeting';
+import { repickForImpact, targetInRange, targetValidForImpact, updateTarget } from './targeting';
 
 export function combatSystem(ctx: Ctx): void {
   // A16.14.2: the fort contact set is re-picked every tick before any attack starts.
@@ -73,6 +75,45 @@ function firstHitBonus(ctx: Ctx, u: UnitRt, r: UnitRules): { bp: number; kb: num
   return { bp, kb };
 }
 
+/** A 32-bit integer mix of a unit id and a tick (deterministic, `Math.imul` only, B3), unsigned. */
+function phaseHash(id: number, tick: number): number {
+  let h = Math.imul(id ^ 0x5bd1e995, 0x9e3779b1) ^ Math.imul(tick + 0x632be5ab, 0x85ebca77);
+  h ^= h >>> 15;
+  h = Math.imul(h, 0xc2b2ae35);
+  h ^= h >>> 13;
+  return h >>> 0;
+}
+
+/**
+ * A9a, de-phase the metronome (A2.7 Attack cycle, queue item 38, SIM_VERSION 9.0.0). Equal-range pairs walk
+ * into range on one tick and most cards of a kind share one interval, so the two would otherwise swing and
+ * land together for the whole fight (mirror exchanges, double KOs). The first swing of a fresh engagement
+ * waits 0 or `max` extra ticks, picked by a hash of the unit id and the tick (no RNG draw). When the
+ * target's own pending swing on this unit would land fewer than `max` ticks from this one, the unit takes
+ * the nearest wait (0 to `max`) that keeps the two impacts `max` apart, or else the one that keeps them
+ * furthest apart: a duel lands its blows `max` ticks apart, whoever is first.
+ */
+function firstSwingWait(ctx: Ctx, u: UnitRt, st: AttackRt, impact: number, max: number): number {
+  const d = (phaseHash(u.id, ctx.tick) & 1) === 1 ? max : 0;
+  if (st.targetId <= 0) return d;
+  const ts = findUnit(ctx, st.targetId)?.attacks[0];
+  if (!ts || ts.targetId !== u.id || ts.impactTick === 0) return d;
+  const gap = (k: number): number => Math.abs(impact + k - ts.impactTick);
+  if (gap(d) >= max) return d;
+  // The cost of a wait: its distance from the drawn one when it keeps the impacts apart, else how close it
+  // leaves them (any wait that keeps them apart beats every one that does not); ties keep the shorter wait.
+  let best = d;
+  let bestCost = Number.MAX_SAFE_INTEGER;
+  for (let k = 0; k <= max; k += 1) {
+    const cost = gap(k) >= max ? Math.abs(k - d) : max * 4 - gap(k);
+    if (cost < bestCost) {
+      bestCost = cost;
+      best = k;
+    }
+  }
+  return best;
+}
+
 function startAttack(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number, a: AttackRules, st: AttackRt): void {
   const tick = ctx.tick;
   const speedBp = unitAttackSpeedBp(ctx, u);
@@ -80,7 +121,16 @@ function startAttack(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number, a: AttackRul
   // A snare (A2.9.6) slows attacks too: attack speed × (1 − s), after the A18.2 caps.
   const snare = statusBp(u, 'snare');
   if (snare > 0) interval = Math.max(1, roundDiv(interval * BP, BP - (snare >= BP ? BP - 1 : snare)));
-  const windup = roundDiv(interval * a.windupPct, 100);
+  let windup = roundDiv(interval * a.windupPct, 100);
+  // A9a: the first swing of a fresh engagement (attack 0 had no target in range and no windup last tick) waits
+  // 0 or `dephaseTicks` more (`firstSwingWait`), on the windup and the interval alike: the clip's held extreme
+  // absorbs it (B5: the view scales the clip to `windupTicks`) and the swings after it keep the unit's rate.
+  const wait = ctx.econ.dephaseTicks;
+  if (wait > 0 && ai === 0 && u.lastEngagedTick < tick - 1) {
+    const d = firstSwingWait(ctx, u, st, tick + windup, wait);
+    windup += d;
+    interval += d;
+  }
   // A18.4.2: the first hit of an engagement is the first attack after 4 s with no target in range.
   st.firstHit = ai === 0 && tick - u.lastEngagedTick >= ctx.econ.freshTicks && hasFirstHit(ctx, u, r);
   st.lastAttackTick = tick;
@@ -92,7 +142,9 @@ function startAttack(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number, a: AttackRul
 
 /** The windup ends: deliver the attack or whiff. */
 function resolveWindup(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number, a: AttackRules, st: AttackRt): void {
-  const valid = targetValidForImpact(ctx, u, r, ai);
+  let valid = targetValidForImpact(ctx, u, r, ai);
+  // A9b: a melee swing whose target died before the impact lands on a fresh pick in range instead of the air.
+  if (!valid && ctx.econ.retargetWhiffs && repickForImpact(ctx, u, r, ai)) valid = targetValidForImpact(ctx, u, r, ai);
   const firstHit = st.firstHit;
   const bite = st.bite;
   st.impactTick = 0;
