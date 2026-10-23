@@ -196,11 +196,23 @@ export function drawStrip(ctx: StripCtx, tmp: StripCtx, image: CanvasImageSource
 }
 
 /**
- * A short fingerprint of the strip renderer: this module's two drawing functions as the build wrote them
- * (part of every kept strip's key, so a release that changes how strips are drawn never shows an old one).
+ * What the two drawing functions draw with besides their own text: the cell's fill and foot line (the build
+ * inlines them, or refers to them by name) and the helpers they call, as this build wrote them (review 2 N-e: the
+ * functions' text alone missed a change of `FILL`, `FOOT`, `round2` or `css`).
+ */
+export function drawParts(): string {
+  return `${round2.toString()}\n${css.toString()}\nfill ${FILL} foot ${FOOT}`;
+}
+
+/**
+ * A short fingerprint of the strip renderer: this module's two drawing functions, the helpers they call and the
+ * constants they draw with, as the build wrote them (part of every kept strip's key, so a release that changes
+ * how strips are drawn never shows an old one).
  */
 export function stripRendererTag(): string {
-  return `${stripLayout.toString().length}.${drawStrip.toString().length}.${fnv(stripLayout.toString() + drawStrip.toString())}`;
+  const fns = stripLayout.toString() + drawStrip.toString();
+  const parts = drawParts();
+  return `${fns.length}.${parts.length}.${fnv(`${fns}\n${parts}`)}`;
 }
 
 /** 32-bit FNV-1a of a string (a fingerprint, not security). */

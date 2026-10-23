@@ -15,19 +15,43 @@
 import { expect, test, type Page } from '@playwright/test';
 import { fastForward, pastOnboarding, requireFlow, watchPage } from './helpers';
 
-/** Fast-forwards the battle on screen until the result screen shows. */
+/**
+ * How long `playToResult` fast-forwards before it gives up (ms). In Chromium at 4x CPU the Short War of 6a takes
+ * about 22 s to its result: 5 fast-forwards of up to 2,000 ticks (9,880 in all), 3 of which first wait for the
+ * battle's new sheets (5 s; the dev fast-forward awaits a hold's sheets for up to 15 s, as a battle's start does),
+ * and the result 2.5 s after the end (probe 2026-10-23). CI's software-rendered WebKit, two tests at a time, once
+ * needed more than the 90 s this was (2026-10-20, `[webkit]` 6a, passed on retry; also on 2026-10-18).
+ */
+const RESULT_WAIT_MS = 180_000;
+
+/** Fast-forwards the battle on screen until the result screen shows; a miss says how far the battle got. */
 async function playToResult(page: Page): Promise<void> {
   await expect(page.getByTestId('battle')).toBeVisible({ timeout: 30_000 });
-  await expect
-    .poll(
-      async () => {
-        const ran = await fastForward(page, 2_000);
-        expect(ran, 'window.__agebornDev.fastForward is missing (?dev=1)').toBeGreaterThanOrEqual(0);
-        return page.getByTestId('result').isVisible();
-      },
-      { timeout: 90_000, intervals: [250] },
-    )
-    .toBe(true);
+  const run = { calls: 0, ticks: 0, idle: 0, since: Date.now() };
+  try {
+    await expect
+      .poll(
+        async () => {
+          const ran = await fastForward(page, 2_000);
+          expect(ran, 'window.__agebornDev.fastForward is missing (?dev=1)').toBeGreaterThanOrEqual(0);
+          run.calls += 1;
+          run.ticks += ran;
+          if (ran === 0) run.idle += 1;
+          return page.getByTestId('result').isVisible();
+        },
+        { timeout: RESULT_WAIT_MS, intervals: [250] },
+      )
+      .toBe(true);
+  } catch (e) {
+    const where = await page
+      .evaluate(() => {
+        const r = (window as unknown as { __agebornDev?: { controller: { route: { peek(): { id: string; battle?: { session: { sim: { state: { tick: number; phase: string } } } } } } } } }).__agebornDev?.controller.route.peek();
+        const st = r?.battle?.session.sim.state;
+        return r ? `${r.id}${st ? ` at tick ${st.tick} (${st.phase})` : ''}` : 'no dev hook';
+      })
+      .catch((err: unknown) => `page unreadable (${String(err)})`);
+    throw new Error(`no result screen after ${Math.round((Date.now() - run.since) / 1000)} s: ${run.calls} fast-forwards ran ${run.ticks} ticks (${run.idle} ran none); route ${where}`, { cause: e });
+  }
 }
 
 /** Plays onboarding match 1 on the dev autopilot and returns at its result screen. */
@@ -40,8 +64,8 @@ async function winMatch1(page: Page): Promise<void> {
 test.describe('B13 flows', () => {
   test('2. tutorial match 1 on autopilot', async ({ page }) => {
     requireFlow('autopilot');
-    // playToResult polls for up to 90 s; software WebGL under load needs more than the default 30 s (G3).
-    test.setTimeout(120_000);
+    // playToResult polls for up to RESULT_WAIT_MS; software WebGL under load needs more than the default 30 s (G3).
+    test.setTimeout(RESULT_WAIT_MS + 60_000);
     const problems = watchPage(page);
     await winMatch1(page);
     expect(problems.errors).toEqual([]);
@@ -63,7 +87,7 @@ test.describe('B13 flows', () => {
 
   test('3. capsule 1 opens', async ({ page }) => {
     requireFlow('capsule');
-    test.setTimeout(180_000);
+    test.setTimeout(RESULT_WAIT_MS + 120_000);
     await winMatch1(page);
     await page.getByTestId('next').click();
     await expect(page.getByTestId('capsule-screen')).toBeVisible({ timeout: 20_000 });
@@ -85,7 +109,7 @@ test.describe('B13 flows', () => {
 
   test('3b. capsule 1: honest copy, odds panel, and a reload mid-animation keeps the result (A15.3, C5 #5, #29)', async ({ page }) => {
     requireFlow('capsule');
-    test.setTimeout(180_000);
+    test.setTimeout(RESULT_WAIT_MS + 120_000);
     const problems = watchPage(page);
     await winMatch1(page);
     await page.getByTestId('next').click();
@@ -127,8 +151,8 @@ test.describe('B13 flows', () => {
 
   test('4. reload keeps state', async ({ page }) => {
     requireFlow('reload');
-    // Winning match 1 takes about 25-30 s under software WebGL; leave room for a loaded machine.
-    test.setTimeout(90_000);
+    // Winning match 1 takes about 25-30 s under software WebGL; leave room for a loaded machine (RESULT_WAIT_MS).
+    test.setTimeout(RESULT_WAIT_MS + 60_000);
     await winMatch1(page);
     const before = await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('ageborn.save.')).length);
     expect(before).toBeGreaterThan(0);
@@ -170,8 +194,8 @@ test.describe('B13 flows', () => {
 
   test('6a. a Quick Battle (Short War vs AI) starts and ends via dev fast-forward', async ({ page }) => {
     requireFlow('quickBattle');
-    // playToResult polls for up to 90 s; software WebGL under load needs more than the default 30 s.
-    test.setTimeout(120_000);
+    // playToResult polls for up to RESULT_WAIT_MS; software WebGL under load needs more than the default 30 s.
+    test.setTimeout(RESULT_WAIT_MS + 60_000);
     const problems = watchPage(page);
     await page.goto('./?dev=1&autopilot=1&quick=short');
     await playToResult(page);
@@ -184,7 +208,7 @@ test.describe('B13 flows', () => {
 
   test('6. a Skirmish starts and ends via dev fast-forward', async ({ page }) => {
     requireFlow('skirmish');
-    test.setTimeout(180_000);
+    test.setTimeout(RESULT_WAIT_MS + 120_000);
     await pastOnboarding(page);
     await expect(page.locator('[data-screen="home"]')).toBeVisible({ timeout: 20_000 });
     // Home's Modes panel, then "All options" for the full Mode select (ui-plan 4.1).

@@ -12,7 +12,7 @@ import { MANIFEST } from '../manifest';
 import { createArtProvider } from '../provider';
 import { SKIN_PUPPETS } from '../skins';
 import { RECENT_KEY, mainSlots, puppetStripLayout, setStripDeps, spriteStripArt, stripInfoUrl, stripRequest, stripWorker, warmRecentStrips, type StripArt, type StripDeps, type StripSource } from '../adapters/spriteStrip';
-import { drawStrip, stripLayout, stripRendererTag, type StripCtx, type StripInfo, type StripSheet } from '../adapters/spriteStripDraw';
+import { drawParts, drawStrip, stripLayout, stripRendererTag, type StripCtx, type StripInfo, type StripSheet } from '../adapters/spriteStripDraw';
 import { cacheStripStore, fingerprint, KEEP_MAX, sheetSlot, sheetVersion } from '../adapters/spriteStripKeep';
 import type { StripJob, StripReply } from '../adapters/spriteStripWorker';
 
@@ -123,9 +123,15 @@ describe('drawing a strip', () => {
     expect(calls.filter((c) => c.startsWith('main.draw sheet'))).toHaveLength(6);
   });
 
-  it("fingerprints the renderer by its drawing code (a release that changes it never meets an old strip)", () => {
+  it("fingerprints the renderer by its drawing code, helpers and constants (a release that changes it never meets an old strip)", () => {
     expect(stripRendererTag()).toMatch(/^\d+\.\d+\.[0-9a-z]+$/);
     expect(stripRendererTag()).toBe(stripRendererTag());
+    // review 2 N-e: the cell's fill and foot line and the helpers the drawing calls are part of it
+    const parts = drawParts();
+    expect(parts).toContain('fill 0.96 foot 0.02');
+    expect(parts).toContain('Math.round(');
+    expect(parts).toContain('padStart(6');
+    expect(stripRendererTag().split('.')[1]).toBe(String(parts.length));
   });
 });
 
@@ -204,6 +210,30 @@ describe('keeping strips', () => {
       expect(await blocked.get('t', 'v')).toBeNull();
       (globalThis as { caches?: unknown }).caches = undefined;
       expect(cacheStripStore('https://x.test/')).toBeNull();
+    });
+
+    it('is null where reading `caches` throws (a sandboxed frame), and a strip request still answers instead of throwing (review 2 S-a)', async () => {
+      Object.defineProperty(globalThis, 'caches', {
+        configurable: true,
+        get: () => {
+          throw new Error('SecurityError: the operation is insecure');
+        },
+      });
+      try {
+        expect(cacheStripStore('https://x.test/')).toBeNull();
+        // the page's own strip deps are made without a store (Home asks for strips during its render: a throw here
+        // left Home blank); no worker and no sheet fetch in tests, so the strip is simply missing
+        setStripDeps(null);
+        const art = createArtProvider({ warn: () => {} });
+        let strip: Promise<string> | null = null;
+        expect(() => {
+          strip = art.portrait({ card: 'strip:idle:footman', size: 160 });
+        }).not.toThrow();
+        expect(await strip).toBe('');
+      } finally {
+        Object.defineProperty(globalThis, 'caches', { configurable: true, writable: true, value: undefined });
+        setStripDeps(null);
+      }
     });
   });
 });
@@ -515,23 +545,39 @@ describe('strips ready at boot', () => {
     (globalThis as { localStorage?: unknown }).localStorage = real;
   });
 
-  it('remembers the sheet strips asked for (not skins drawn as puppets) and looks them up again at boot', async () => {
+  it("remembers the strips asked for and looks them up again at boot: sheets through the worker, a skin puppet's kept strip in the store (review 2 N-b)", async () => {
     const d = deps({ keep: 'https://x.test/' });
     setStripDeps(d);
     await spriteStripArt({ sources: [sheet()], clip: 'idle', size: 160, side: 0, preset: 'default' });
     await spriteStripArt({ sources: [tinCan(), sheet()], clip: 'idle', size: 160, side: 0, preset: 'default' });
     await vi.advanceTimersByTimeAsync(1100);
-    const saved = JSON.parse(data.get(RECENT_KEY) ?? '[]') as { id: string }[];
-    expect(saved.map((r) => r.id)).toEqual(['/ageborn/art/units/medieval/footman.json|idle|160|2f7df6']);
-    // the next page load
-    const next = deps({ keep: 'https://x.test/' });
+    const saved = JSON.parse(data.get(RECENT_KEY) ?? '[]') as { id: string; puppet?: unknown; sources: unknown[] }[];
+    expect(saved.map((r) => r.id)).toEqual(['/ageborn/art/units/medieval/footman.json|idle|160|2f7df6', 'unit.footman@tin_can>/ageborn/art/units/medieval/footman.json|idle|160|2f7df6']);
+    // of the skin's puppet only what its kept strip is keyed by (the puppet itself is the provider's)
+    const head = -(MANIFEST['unit.footman@tin_can'] as VisualDef).anchors.head.y;
+    expect(saved[1]!.puppet).toEqual({ key: 'unit.footman@tin_can', headLu: head, aura: true });
+    expect(saved[1]!.sources).toEqual([sheet()]);
+    // the next page load: the skin's kept strip is one store read, the sheet's goes through the worker
+    const PUPPET_ART: StripArt = { url: 'data:image/png;base64,BBBB', info: INFO };
+    const store = { get: vi.fn(async (slot: string, _version: string) => (slot.endsWith('|unit.footman@tin_can') ? PUPPET_ART : null)), put: vi.fn(async () => undefined) };
+    const next = deps({ keep: 'https://x.test/', store });
     setStripDeps(next);
-    expect(warmRecentStrips()).toBe(1);
+    expect(warmRecentStrips()).toBe(2);
     expect(next.worker.warm).toHaveBeenCalledTimes(1);
     expect(next.worker).toHaveBeenCalledTimes(1);
-    // Home's request finds the job already under way
+    expect(store.get.mock.calls.map((c) => c[0])).toEqual(['idle|160|2f7df6|unit.footman@tin_can']);
+    // Home's requests find both under way: nothing is drawn, no second worker job or store read
     await spriteStripArt({ sources: [sheet()], clip: 'idle', size: 160, side: 0, preset: 'default' });
+    expect(await spriteStripArt({ sources: [tinCan(), sheet()], clip: 'idle', size: 160, side: 0, preset: 'default' })).toEqual(PUPPET_ART);
     expect(next.worker).toHaveBeenCalledTimes(1);
+    expect(next.mainSlot).not.toHaveBeenCalled();
+    expect(store.get).toHaveBeenCalledTimes(1);
+    // a skin whose strip is not kept (a new build) is drawn as before
+    const empty = deps({ keep: 'https://x.test/', store: { get: vi.fn(async () => null), put: vi.fn(async () => undefined) } });
+    setStripDeps(empty);
+    warmRecentStrips();
+    expect(await spriteStripArt({ sources: [tinCan(), sheet()], clip: 'idle', size: 160, side: 0, preset: 'default' })).toEqual(ART);
+    expect(empty.mainSlot).toHaveBeenCalledTimes(1);
   });
 
   it('only warms the worker when nothing can be kept, and does nothing without a worker', () => {

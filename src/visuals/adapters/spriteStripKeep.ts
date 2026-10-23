@@ -81,11 +81,18 @@ function slotOf(url: string): string {
 
 /**
  * The Cache API store under the app's `base` URL (the entries are never fetched; Safari has it too). Null
- * without the Cache API; a private window or blocked storage makes every read miss and every write a no-op.
+ * without the Cache API, or where reading it throws (review 2 S-a: a sandboxed iframe without
+ * `allow-same-origin` throws a SecurityError on `caches`, which blanked Home); a private window or blocked
+ * storage makes every read miss and every write a no-op.
  */
 export function cacheStripStore<I>(base: string, o: { name?: string; max?: number } = {}): StripStore<I> | null {
-  const c = (globalThis as { caches?: CacheStorage }).caches;
-  if (!c || typeof c.open !== 'function') return null;
+  let c: CacheStorage | undefined;
+  try {
+    c = (globalThis as { caches?: CacheStorage }).caches;
+    if (!c || typeof c.open !== 'function') return null;
+  } catch {
+    return null;
+  }
   const max = o.max ?? KEEP_MAX;
   let opened: Promise<Cache | null> | null = null;
   const open = (): Promise<Cache | null> => {

@@ -530,9 +530,11 @@ describe('music files', () => {
     expect(stone.stoppedAt).not.toBeNull();
     const players = (engine as unknown as { players: FilePlayer[] }).players;
     const medieval = players.at(-1)!;
-    // the new player lets go of the old one once its file started (its loop is freed with it)
+    // the new player lets go of the old one once its file started (its loop is freed with it), and the options it
+    // keeps hold neither the old player nor its phase (review 2 N-a)
     expect((medieval as unknown as { phaseFrom: unknown; replaces: unknown }).phaseFrom).toBeNull();
     expect((medieval as unknown as { replaces: unknown }).replaces).toBeNull();
+    expect(Object.keys((medieval as unknown as { o: object }).o).sort()).toEqual(['fadeMs', 'lookahead']);
     for (let k = 0; k < 20; k++) {
       ctx.advance(0.05);
       engine.update();
