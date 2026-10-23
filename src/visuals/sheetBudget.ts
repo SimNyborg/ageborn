@@ -36,13 +36,15 @@
  * copy stays there: its units are about to be gone, and an HD load for them would be one more load and upload
  * near the evolve.
  *
- * Cards of an age their side is leaving or has left are `leaving` (review 2 S-b, 2026-10-23). A card stepped down
- * at its side's hand-over and trained once more walks out on its 1x copy and may stand through the evolve's
- * camera push, so on the lane it is raised at once; there its HD copy (and that of every unit of such an age on
- * the lane) may take up to `LEAVING_LANE_BYTES` above the budget (`leavingAllowance`). Without that room the raise
- * stepped one of the next deck's fresh copies down, which then loaded twice more (its 1x copy before the evolve,
- * its HD copy after it); keeping room free under the budget instead left more of every next deck on its 1x copy
- * at each hand-over. The units it covers are gone within a minute of their side's age-up.
+ * A card stepped down at its side's hand-over and trained once more walks out on its 1x copy and may stand through
+ * the evolve's camera push, so on the lane it is raised at once (review 2 S-b, 2026-10-23). Such a raise is
+ * `leaving` (the provider flags a lane sheet of an age its side is leaving or has left that it raises from its 1x
+ * copy, or from no copy, for as long as its units stand on the lane): its HD copy may take up to
+ * `LEAVING_LANE_BYTES` above the budget (`leavingAllowance`). Without that room the raise stepped one of the next
+ * deck's fresh copies down, which then loaded twice more (its 1x copy before the evolve, its HD copy after it);
+ * keeping room free under the budget instead left more of every next deck on its 1x copy at each hand-over, and
+ * giving the room to every HD copy of a leaving age on the lane kept it in use at every hand-over (a Medium War's
+ * planned peak 342 MB against 317). The units it covers are gone within a minute of their side's age-up.
  *
  * Pure and deterministic; presentation only: the sim never sees any of this.
  */
@@ -72,12 +74,12 @@ export const DEMOTE_CONFIRM_MS = 1_000;
 export const UNIT_SHEET_BUDGET_BYTES = 320_000_000;
 
 /**
- * Room above the budget for the HD copies of units on the lane of an age their side is leaving or has left
- * (bytes; `SheetWant.leaving`, the provider's plans, `planSheetDensities`' `leavingAllowance`; review 2 S-b). What
- * their HD copies take over their 1x copies counts here first, so a unit that walks out on its 1x copy (a card
- * stepped down at its side's hand-over, then trained once more) gets its HD copy at once without stepping another
- * copy down, and the rest of the plan keeps the whole budget. About two typical units' HD copies; for the few
- * moments a war has such units on the lane.
+ * Room above the budget for the HD copies of units on the lane of an age their side is leaving or has left, raised
+ * from their 1x copy (bytes; `SheetWant.leaving`, the provider's plans, `planSheetDensities`' `leavingAllowance`;
+ * review 2 S-b). What such a raise takes counts here first, so a unit that walks out on its 1x copy (a card stepped
+ * down at its side's hand-over, then trained once more) gets its HD copy at once without stepping another copy down,
+ * and the rest of the plan keeps the whole budget. About two typical units' HD copies; for the few moments a war
+ * has such units on the lane. A raise beyond it counts against the budget, as any lane sheet's.
  */
 export const LEAVING_LANE_BYTES = 24_000_000;
 
@@ -125,9 +127,10 @@ export interface SheetWant {
    */
   noRaise?: boolean;
   /**
-   * Its units belong to an age their side is leaving or has left (every holder says so): on the lane, what its HD
-   * copy takes over its 1x copy counts against the leaving units' room above the budget first
-   * ({@link LEAVING_LANE_BYTES}; review 2 S-b).
+   * Its units belong to an age their side is leaving or has left (every holder says so) and it is raised to HD from
+   * its 1x copy, or from no copy (the provider says so for as long as its units stand on the lane): on the lane,
+   * what its HD copy takes counts against the leaving units' room above the budget first ({@link LEAVING_LANE_BYTES};
+   * review 2 S-b).
    */
   leaving?: boolean;
   /**
@@ -204,8 +207,8 @@ function goingLane(w: SheetWant): boolean {
 }
 
 /**
- * The room above the budget a plan's leaving lane sheets take (bytes, at most `allowance`): what their HD copies
- * take over their 1x copies ({@link LEAVING_LANE_BYTES}). The provider holds new loads back against the budget plus
+ * The room above the budget a plan's leaving lane sheets take (bytes, at most `allowance`): what their planned HD
+ * copies add to the plan ({@link LEAVING_LANE_BYTES}). The provider holds new loads back against the budget plus
  * this (`holdBackNewHd`).
  */
 export function leavingRoom(wants: readonly SheetWant[], plan: ReadonlyMap<string, SheetDensity>, allowance: number): number {
@@ -232,7 +235,7 @@ export function planSheetDensities(wants: readonly SheetWant[], budgetBytes: num
     plan.set(w.source, pinned(w) ? 'hd' : mayGoWithout(w) ? 'none' : 'sd');
     total += pinned(w) ? w.hdBytes : mayGoWithout(w) ? 0 : w.sdBytes;
   }
-  // the leaving units' HD copies on the lane take the room above the budget first (review 2 S-b)
+  // the leaving units' HD copies raised on the lane take the room above the budget first (review 2 S-b)
   const allowance = Math.max(0, o.leavingAllowance ?? 0);
   let going = 0;
   for (const w of list) if (goingLane(w) && pinned(w)) going += extraOf(w);

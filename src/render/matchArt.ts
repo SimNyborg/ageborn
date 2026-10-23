@@ -55,8 +55,9 @@ export interface HeldVisual {
   noRaise?: boolean;
   /**
    * Every hold of it is a card of an age its side is leaving (handing over from) or has left, whatever its rank:
-   * on the lane its HD copy takes the governor's room for leaving units above the budget first (visuals'
-   * `sheetBudget.ts` `LEAVING_LANE_BYTES`; review 2 S-b), so raising such a unit steps no other copy down.
+   * on the lane, raised from its 1x copy, its HD copy takes the governor's room for leaving units above the budget
+   * first (visuals' `sheetBudget.ts` `LEAVING_LANE_BYTES`; review 2 S-b), so raising such a unit steps no other copy
+   * down.
    */
   leaving?: boolean;
 }

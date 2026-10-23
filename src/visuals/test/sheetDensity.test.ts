@@ -806,6 +806,20 @@ describe('the provider plans every hold\'s sheets together (memory governor)', (
     hold.release();
   });
 
+  it('review 2 S-b: an HD copy of a leaving age that the lane drew all along takes no room above the budget: the room waits for a raise', async () => {
+    // the Bonker's HD copy and the Mammoth's HD copy miss the budget by a byte
+    const { art, log, finish } = governed(bytes(bonker).hd + bytes(mammoth).hd - 1);
+    const hold = art.holdArt();
+    void hold.set([{ visualId: 'unit.bonker', priority: SHEET_RANK.field }]);
+    await finish(`hd ${bonker}`);
+    vi.spyOn(art.atlas, 'hdDrawn').mockImplementation((src) => src === bonker);
+    // its side hands over with the Bonker on the lane in HD: the next deck's Mammoth gets its 1x copy, within the budget
+    void hold.set([{ visualId: 'unit.bonker', priority: SHEET_RANK.field, leaving: true }, { visualId: 'unit.mammoth_matriarch', priority: SHEET_RANK.deck }]);
+    expect(log).toEqual([`lease hd ${bonker}`, `lease sd ${mammoth}`]);
+    expect(art.sheetPlan().plannedBytes).toBeLessThanOrEqual(art.sheetBudget);
+    hold.release();
+  });
+
   it('review 2 S-b: a unit not of a leaving age gets no room above the budget: the lane comes first, once the lowest copy has stepped down', async () => {
     const { art, log, finish, tick } = governed(bytes(mammoth).hd + bytes(bonker).sd + 1);
     const hold = art.holdArt();

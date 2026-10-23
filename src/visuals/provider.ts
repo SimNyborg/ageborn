@@ -84,8 +84,8 @@ export interface HeldVisual {
    */
   noRaise?: boolean;
   /**
-   * Its units belong to an age their side is leaving or has left: on the lane its HD copy takes the leaving units'
-   * room above the budget first (`sheetBudget.ts` `leaving`, review 2 S-b).
+   * Its units belong to an age their side is leaving or has left: on the lane, raised from its 1x copy, its HD copy
+   * takes the leaving units' room above the budget first (`sheetBudget.ts` `leaving`, review 2 S-b).
    */
   leaving?: boolean;
   /**
@@ -497,11 +497,17 @@ export class VisualsArtProvider implements ArtProvider {
    */
   sheetBudget = UNIT_SHEET_BUDGET_BYTES;
   /**
-   * Room above `sheetBudget` for the HD copies of units on the lane of an age their side is leaving or has left
-   * (`LEAVING_LANE_BYTES`, review 2 S-b): such a unit that walks out on its 1x copy gets its HD copy at once, without
-   * another copy stepping down.
+   * Room above `sheetBudget` for the HD copies of units on the lane of an age their side is leaving or has left,
+   * raised from their 1x copy (`LEAVING_LANE_BYTES`, review 2 S-b): such a unit that walks out on its 1x copy gets
+   * its HD copy at once, without another copy stepping down.
    */
   leavingAllowance = LEAVING_LANE_BYTES;
+  /**
+   * Lane sheets of a leaving age the plan raised from their 1x copy (or from no copy): they keep the leaving room
+   * while their units stand on the lane (`SheetWant.leaving`). An HD copy the lane drew all along counts against the
+   * budget as before, so the room is there when such a raise comes and costs memory only then.
+   */
+  private readonly leaveRaised = new Set<string>();
   /**
    * The last plan, for the dev memory hook: sheets planned HD and 1x, the planned bytes, how many times a sheet
    * changed copy (`moves`) and how many copies the plan loaded (`loads`, HD and 1x; review N6: every move is a
@@ -555,13 +561,22 @@ export class VisualsArtProvider implements ArtProvider {
         merged.set(s, mergeWant(had, h));
       }
     }
+    // a raised lane sheet keeps the leaving room only while its units of a leaving age stand on the lane
+    for (const s of [...this.leaveRaised]) {
+      const h = merged.get(s);
+      if (!h || !h.leaving || h.rank !== SHEET_RANK.field) this.leaveRaised.delete(s);
+    }
     const list: SheetWant[] = [];
     const lastHd = new Map<string, number>();
     for (const [source, { rank, optional, canWait, noRaise, leaving }] of merged) {
       const b = unitSheetBytes(source) ?? UNKNOWN_SHEET_BYTES;
       const hdResident = this.atlas.hasSheet(source);
+      const hdDrawn = this.atlas.hdDrawn(source);
       const last = Math.max(this.hdAt.get(source) ?? -Infinity, this.atlas.hdDrawnAt(source));
       lastHd.set(source, last);
+      // the leaving room goes to a lane sheet of a leaving age raised from its 1x copy (or from no copy), not to an
+      // HD copy the lane drew all along (review 2 S-b)
+      const raise = leaving && rank === SHEET_RANK.field && (this.leaveRaised.has(source) || (!this.hdLeases.has(source) && !hdResident && !hdDrawn));
       list.push({
         source,
         rank,
@@ -570,7 +585,7 @@ export class VisualsArtProvider implements ArtProvider {
         hdBytes: this.atlas.hdFellBack(source) ? b.sd : b.hd,
         sdBytes: b.sd,
         hdResident,
-        hdDrawn: this.atlas.hdDrawn(source),
+        hdDrawn,
         // an HD load the plan started finishes: dropping it mid-way still decodes and uploads it
         hdKeep: this.hdLeases.has(source) && this.atlas.hdLoading(source),
         hdRecent: hdResident && now - last < HD_HOLD_MS,
@@ -578,7 +593,7 @@ export class VisualsArtProvider implements ArtProvider {
         ...(optional ? { optional: true } : {}),
         ...(canWait ? { canWait: true } : {}),
         ...(noRaise ? { noRaise: true } : {}),
-        ...(leaving ? { leaving: true } : {}),
+        ...(raise ? { leaving: true } : {}),
       });
     }
     let plan: Map<string, SheetDensity>;
@@ -615,6 +630,12 @@ export class VisualsArtProvider implements ArtProvider {
       // (against the budget plus the room the leaving units' HD copies take above it)
       const room = this.sheetBudget + leavingRoom(list, plan, this.leavingAllowance);
       if (holdBackNewHd(list, plan, room, isNew, settling).length > 0) recheckAt = Math.min(recheckAt, now + HOLD_BACK_RECHECK_MS);
+      // a leaving lane sheet raised by this plan keeps the room until its units leave the lane
+      for (const w of list) {
+        if (!w.leaving) continue;
+        if (plan.get(w.source) === 'hd') this.leaveRaised.add(w.source);
+        else this.leaveRaised.delete(w.source);
+      }
     }
     for (const s of [...this.demoteSince.keys()]) if (!merged.has(s)) this.demoteSince.delete(s);
     for (const [source, d] of plan) {
