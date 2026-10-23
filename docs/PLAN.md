@@ -130,3 +130,8 @@ what we believe, how sure we are, and what we post next because of it.
   Instagram checkpoint at 18:43 UTC blocked the API for about an hour; R14 went out 72 min late. No mix change.
 - 2026-10-22 late: owner direction: indie-dev angle first (insight into development, the game improving). Mix rewritten;
   before/after series planned around game items 34, 37 and 38. R15 (a plain duel) recaptioned as a balance test.
+- 2026-10-23 evening: DV3 (plot twist) keeps growing: 296 reach, a new high and the first post past the ~150 ceiling,
+  with the lowest skip of any post (55.5 %). DV4 139 reach in 10 h but only 15 % watch: the "simulator" explanation
+  holds attention less than a story with a twist. R15 114 reach in 1.4 h (fast start). Followers 137. 29 comments in
+  total, still not readable through the API. Lesson for the indie-dev angle: lead with a surprise or a visible
+  problem (DV3, BA1), not an explanation. Queue 2026-10-24: BA1 (before/after) and DV5 (item 38 before).
