@@ -7,7 +7,8 @@
  *    of a fresh engagement adds a wait of 0 or 3 ticks to both (A9a de-phase, SIM_VERSION 9.0.0).
  * 2. At impactTick, if the target is still valid (alive, hittable, within range + leash), a melee attack
  *    schedules its impact and a ranged attack spawns a projectile.
- * 3. Otherwise the attack whiffs; the cooldown stays spent.
+ * 3. Otherwise the attack whiffs; the cooldown stays spent. A melee swing whose target died picks afresh among
+ *    the targets in range first (A9b retarget whiffs, SIM_VERSION 10.0.0).
  * Only attack 0 stops movement; secondary attacks (riders, the Behemoth MG) fire whenever they have a target.
  */
 import { BP, randRange, roundDiv } from '@/core';
@@ -19,7 +20,7 @@ import { BASE_TARGET, other, type AttackRt, type Ctx, type UnitRt } from '../sta
 import { alive, findUnit, unitRules } from '../units';
 import { pickContacts, towerFire } from './forts';
 import { fireProjectile } from './projectiles';
-import { targetInRange, targetValidForImpact, updateTarget } from './targeting';
+import { repickForImpact, targetInRange, targetValidForImpact, updateTarget } from './targeting';
 
 export function combatSystem(ctx: Ctx): void {
   // A16.14.2: the fort contact set is re-picked every tick before any attack starts.
@@ -141,7 +142,9 @@ function startAttack(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number, a: AttackRul
 
 /** The windup ends: deliver the attack or whiff. */
 function resolveWindup(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number, a: AttackRules, st: AttackRt): void {
-  const valid = targetValidForImpact(ctx, u, r, ai);
+  let valid = targetValidForImpact(ctx, u, r, ai);
+  // A9b: a melee swing whose target died before the impact lands on a fresh pick in range instead of the air.
+  if (!valid && ctx.econ.retargetWhiffs && repickForImpact(ctx, u, r, ai)) valid = targetValidForImpact(ctx, u, r, ai);
   const firstHit = st.firstHit;
   const bite = st.bite;
   st.impactTick = 0;

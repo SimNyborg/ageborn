@@ -52,8 +52,13 @@ import { SimImpl } from './createSim';
  * on one tick (mirror exchanges, double KOs). No RNG draw and no new state field. A major bump: every golden
  * changed its hash (all 17 re-recorded); 14 moved to seed 1371 and 15 to seed 1519 so they still cover a
  * scaffold destroyed before it completes and the Crumble rope on the turtle's side.
+ * 10.0.0 (A9b first half, queue item 38, 2026-10-18: retarget whiffs; A2.7 Attack cycle): a melee swing whose target
+ * died before the impact picks afresh among the targets in range and lands on its own impact tick, instead of
+ * whiffing (`battle.retargetWhiffs`, default on; a target alive but out of reach still whiffs). No RNG draw, no new
+ * state field. A major bump: every golden changed its hash (all 17 re-recorded); 12, 13 and 14 moved to seeds 1213,
+ * 1363 and 1407 so the fort goldens still cover every listed fort case.
  */
-export const SIM_VERSION = '9.0.0';
+export const SIM_VERSION = '10.0.0';
 
 /** Thrown when a replay was recorded on different content (B3: "from an older version"). */
 export class ReplayContentMismatchError extends Error {

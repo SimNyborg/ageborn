@@ -88,6 +88,11 @@ export interface BattleRulesLike {
    * fresh engagement waits 0 or this many extra ticks (0 = off). The default is the switch; content may set it.
    */
   dephaseTicks: number;
+  /**
+   * A9b, retarget whiffs (A2.7 Attack cycle, queue item 38, SIM_VERSION 10.0.0): a melee swing whose target died
+   * before the impact lands on a fresh pick in range (1 = on, 0 = off).
+   */
+  retargetWhiffs: number;
 }
 
 /** DESIGN values, used for content without a `battle` table (the contract fakes) and for missing fields. */
@@ -102,6 +107,7 @@ export const DEFAULT_BATTLE: Readonly<BattleRulesLike> = {
   stampedeFallbackP: 200,
   // 150 ms: a duel lands its blows 150 ms apart instead of on one tick
   dephaseTicks: 3,
+  retargetWhiffs: 1,
 };
 
 const isNum = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
@@ -166,6 +172,7 @@ export function battleOf(content: CompiledContent): BattleRulesLike {
     siegeDecayStepMs: n('siegeDecayStepMs'),
     stampedeFallbackP: n('stampedeFallbackP'),
     dephaseTicks: n('dephaseTicks'),
+    retargetWhiffs: n('retargetWhiffs'),
   };
 }
 
@@ -566,6 +573,8 @@ export interface EconRules {
   formation: { jitterBp: number } | null;
   /** A9a (A2.7 Attack cycle): the extra wait of a fresh engagement's first swing, 0 or this many ticks; 0 = off. */
   dephaseTicks: number;
+  /** A9b (A2.7 Attack cycle): a melee swing whose target died before the impact retargets. */
+  retargetWhiffs: boolean;
 }
 
 export interface SimRules {
@@ -1203,6 +1212,7 @@ function econRules(content: CompiledContent, battle: BattleRulesLike): EconRules
     // Off for content that predates it (old replays keep their hashes); the frozen fixture carries it from 8.0.0.
     formation: e.formation ? { jitterBp: nonNegOr(e.formation.jitterBp, 0) } : null,
     dephaseTicks: nonNegOr(battle.dephaseTicks, 0),
+    retargetWhiffs: nonNegOr(battle.retargetWhiffs, 0) > 0,
   };
 }
 

@@ -1,14 +1,15 @@
 /**
  * The combat levers of queue item 38 (DESIGN A2.7 Attack cycle): A9a de-phases the first swing of every
- * engagement, so equal-range, equal-interval pairs stop swinging and landing on one tick (SIM_VERSION 9.0.0).
- * The switch is the sim's own default (`DEFAULT_BATTLE.dephaseTicks`), read from `content.battle` like the
- * other battle numbers, so a content patch can turn it off (`dephaseTicks: 0`).
+ * engagement, so equal-range, equal-interval pairs stop swinging and landing on one tick (SIM_VERSION 9.0.0);
+ * A9b's first half lets a melee swing whose target died land on another enemy in reach (SIM_VERSION 10.0.0).
+ * The switches are the sim's own defaults (`DEFAULT_BATTLE.dephaseTicks`, `retargetWhiffs`), read from
+ * `content.battle` like the other battle numbers, so a content patch can turn a lever off (0).
  */
 import { describe, expect, it } from 'vitest';
 import type { CompiledContent, SimEvent } from '@/contracts';
-import { devSpawn, simCtx, stepN, unitById } from '../debug';
+import { devMove, devSpawn, simCtx, stepN, unitById } from '../debug';
 import { DEFAULT_BATTLE } from '../rules';
-import { arena, fixtureInPhase, L, ofKind, stun } from './helpers';
+import { arena, fixtureInPhase, fixtureWith, L, ofKind, stun } from './helpers';
 
 const D = DEFAULT_BATTLE.dephaseTicks;
 
@@ -155,5 +156,47 @@ describe('A9a: the first swing of an engagement is de-phased (queue item 38)', (
     expect(ofKind(ev, 'hit').filter((h) => h.sourceId === struck)).toHaveLength(0);
     expect(ofKind(ev, 'hit').filter((h) => h.sourceId === striker).map((h) => h.damage)).toEqual([8400]);
     expect(unitById(sim, struck ?? 0)?.attacks[0]?.impactTick).toBe(0);
+  });
+});
+
+describe('A9b retarget whiffs: a melee swing whose target died lands on another enemy in reach (queue item 38)', () => {
+  /** A Bonker swinging at the first of two stunned foes in reach; `before` runs right after the swing starts. */
+  function swingAtFallen(content: CompiledContent | undefined, before: (sim: ReturnType<typeof arena>, first: number) => void) {
+    const sim = arena(content ? { content } : {});
+    const b1 = devSpawn(sim, 1, 'bonker', { p: L - 52 }).id;
+    const b2 = devSpawn(sim, 1, 'bonker', { p: L - 52 }).id;
+    stun(sim, b1, 1000);
+    stun(sim, b2, 1000);
+    const a = devSpawn(sim, 0, 'bonker', { p: 20 }).id;
+    const start = ofKind(stepN(sim, 1), 'attackStarted').find((e) => e.id === a);
+    if (!start) throw new Error('the Bonker did not swing');
+    expect(start.targetId).toBe(b1);
+    before(sim, b1);
+    const ev = stepN(sim, start.windupTicks);
+    return { hits: ofKind(ev, 'hit').filter((h) => h.sourceId === a), impact: start.tick + start.windupTicks, b2 };
+  }
+  const fell = (sim: ReturnType<typeof arena>, id: number): void => {
+    const u = simCtx(sim).s.units.find((x) => x.id === id);
+    if (u) u.hp = 0;
+  };
+
+  it('is on by default', () => {
+    expect(DEFAULT_BATTLE.retargetWhiffs).toBe(1);
+  });
+
+  it('the swing lands on the other enemy in reach, on its own impact tick', () => {
+    const { hits, impact, b2 } = swingAtFallen(undefined, fell);
+    expect(hits).toHaveLength(1);
+    expect(hits[0]?.targetId).toBe(b2);
+    expect(hits[0]?.tick).toBe(impact);
+  });
+
+  it('off (retargetWhiffs 0): that swing whiffs, as before', () => {
+    expect(swingAtFallen(fixtureWith({ retargetWhiffs: 0 }), fell).hits).toHaveLength(0);
+  });
+
+  it('a swing whose target is alive but out of reach still whiffs', () => {
+    const { hits } = swingAtFallen(undefined, (sim, id) => devMove(sim, id, L - 400));
+    expect(hits).toHaveLength(0);
   });
 });
