@@ -332,6 +332,22 @@
       "hook_type": "matchup",
       "experiment": "format",
       "arm": "duel"
+    },
+    {
+      "name": "dv4-devlog-4-close-fights-are-no-accident",
+      "kind": "reel",
+      "id": "18016692638746656",
+      "permalink": "https://www.instagram.com/reel/De1VC_Eghtq/",
+      "timestamp": "2026-10-23T10:20:37+0000",
+      "slot": "midday",
+      "pillar": "devlog",
+      "hook": "Devlog #4: close fights are no accident",
+      "trial": false,
+      "length_s": 33.0,
+      "format": "devlog",
+      "hook_type": "story",
+      "experiment": "devlog",
+      "arm": "devlog"
     }
   ]
 }

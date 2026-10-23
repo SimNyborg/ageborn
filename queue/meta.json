@@ -6,13 +6,6 @@
     "experiment": "format",
     "arm": "duel"
   },
-  "dv4-devlog-4-close-fights-are-no-accident": {
-    "length_s": 33.0,
-    "format": "devlog",
-    "hook_type": "story",
-    "experiment": "devlog",
-    "arm": "devlog"
-  },
   "ba1-my-home-screen-comes-alive": {
     "length_s": 33.0,
     "format": "devlog",
