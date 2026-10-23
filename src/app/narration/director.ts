@@ -25,7 +25,7 @@ import type { TutorialPrompt } from '@/tutorial';
 import type { BattleHandle } from '../battle';
 import type { ShowRecord } from '../capsules/capsuleFlow';
 import type { AppController } from '../controller';
-import { documentVisibility, type VisibilitySource } from '../session';
+import type { VisibilitySource } from '../session';
 import type { Services } from '../services';
 import './narration.css';
 
@@ -93,7 +93,10 @@ export interface DirectorOptions {
   now?: () => number;
   /** The moment subtitle (default `domCaption()`, an element in the app root; tests record the calls). */
   caption?: CaptionView;
-  /** The page's visibility (default the document's; null: none, as in tests): hiding it stops the line. */
+  /**
+   * The page's visibility (the stub passes the document's; none in tests): hiding it stops the line. Passed in,
+   * not imported, so this lazy chunk shares no module with the entry (a shared one would split the boot chunks).
+   */
   visibility?: Pick<VisibilitySource, 'subscribe'> | null;
 }
 
@@ -214,9 +217,8 @@ export class NarrationDirector {
     // A hidden page (another tab, the phone locked) stops the line at once, so it does not play on when the page
     // comes back: a battle pauses there anyway, and a menu's line has had its moment. No fade: the audio context
     // is being suspended, and a fade would finish audibly on the return.
-    const visibility = o.visibility === undefined ? (typeof document !== 'undefined' ? documentVisibility(document) : null) : o.visibility;
     this.stopVisibility =
-      visibility?.subscribe((hidden) => {
+      o.visibility?.subscribe((hidden) => {
         if (!hidden) return;
         const id = this.narrator.current;
         if (id) this.record('stop', id, 'hidden');

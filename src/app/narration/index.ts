@@ -10,6 +10,7 @@ import { STAGES } from '@/tutorial';
 import type { BattleHandle } from '../battle';
 import type { ShowRecord } from '../capsules/capsuleFlow';
 import type { AppController } from '../controller';
+import { documentVisibility } from '../session';
 import type { Services } from '../services';
 import type { CapsuleVoice, MomentId, NarrationDirector, NarrationLogEntry } from './director';
 
@@ -53,7 +54,8 @@ export function createNarration(o: NarrationOptions): Narration {
   const get = (): Promise<NarrationDirector | null> => {
     if (director) return Promise.resolve(director);
     loading ??= (o.load ?? (() => import('./director')))().then(
-      (m) => (disposed ? null : (director = m.createDirector({ services: o.services, controller: o.controller }))),
+      // the page's visibility comes from here (the entry has it), so a hidden page stops the line
+      (m) => (disposed ? null : (director = m.createDirector({ services: o.services, controller: o.controller, visibility: typeof document !== 'undefined' ? documentVisibility(document) : null }))),
       (e: unknown) => {
         // offline before the chunk was fetched: the subtitles show as always; a later step tries again
         loading = null;
