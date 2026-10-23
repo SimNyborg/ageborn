@@ -130,6 +130,39 @@ const stripView = (page: Page, at: string) =>
     return out;
   }, at);
 
+/** Whether this browser's Cache API takes entries shaped like the strip store's, small and strip-sized. */
+const putProbe = (page: Page) =>
+  page.evaluate(async () => {
+    const out: Record<string, unknown> = { secure: window.isSecureContext, caches: typeof caches, offscreen: typeof OffscreenCanvas };
+    try {
+      const est = await navigator.storage?.estimate?.();
+      out.estimate = est ? { usage: est.usage, quota: est.quota } : null;
+      out.persisted = (await navigator.storage?.persisted?.()) ?? null;
+    } catch (e) {
+      out.estimate = String(e);
+    }
+    const put = async (bytes: number): Promise<string> => {
+      try {
+        const c = await caches.open('ageborn-strips-probe');
+        const url = new URL(`__strips/probe-${bytes}/v1`, document.baseURI).href;
+        const body = `data:image/png;base64,${'A'.repeat(bytes)}`;
+        await c.put(url, new Response(body, { headers: { 'content-type': 'text/plain', 'x-strip-info': JSON.stringify({ frames: 6, cell: [160, 160] }) } }));
+        const back = await c.match(url);
+        return back ? `ok ${(await back.text()).length}` : 'put but not found';
+      } catch (e) {
+        return `error ${String(e)}`;
+      }
+    };
+    out.small = await put(100);
+    out.strip = await put(250_000);
+    try {
+      await caches.delete('ageborn-strips-probe');
+    } catch {
+      // the probe's cache stays if delete throws; the next run reuses it
+    }
+    return out;
+  });
+
 test('a return finds the still troops kept on the device: they stand with the island, before the live layer', async ({ page, browserName, playwright, launchOptions, headless, viewport, baseURL, deviceScaleFactor, userAgent, isMobile, hasTouch }, testInfo) => {
   // Playwright's WebKit contexts are ephemeral, like a private window: CI's WebKit found the store empty after the
   // return (4 of 4 attempts, review 2 A). A normal Safari window keeps its site data, so in WebKit the test runs in a
@@ -144,7 +177,14 @@ test('a return finds the still troops kept on the device: they stand with the is
     await expect.poll(() => allIn(p), { timeout: 30_000 }).toBe(true);
     const troops = await p.locator('[data-testid="hub-diorama"] .hd__unit').count();
     // each strip is kept (the island's troops, the Home card's bearer)
-    await expect.poll(() => keptStrips(p), { timeout: 15_000 }).toBeGreaterThanOrEqual(troops);
+    try {
+      await expect.poll(() => keptStrips(p), { timeout: 15_000 }).toBeGreaterThanOrEqual(troops);
+    } catch (e) {
+      // CI's WebKit kept nothing even on a first visit (2026-10-23): say why in the failure itself, since the job log
+      // is the only other channel
+      const why = JSON.stringify({ browser: browserName, troops, view: await stripView(p, 'first visit, nothing kept'), probe: await putProbe(p) });
+      throw new Error(`no strips kept after a first visit: ${why}\n${String(e)}`, { cause: e });
+    }
     const kept = await keptStrips(p);
     const first = await stripView(p, 'first visit');
     // a returning player opens the app: the still troops come right with the island and before the live layer
