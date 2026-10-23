@@ -245,19 +245,103 @@ describe('Narrator', () => {
     expect(r.fetched).toHaveLength(2);
   });
 
-  it('keeps a bounded number of decoded lines', async () => {
+  it('lets go of a line once it is heard (ended or cut); one asked again is fetched again', async () => {
     const r = rig();
-    const ids = Object.keys(FILES);
-    for (const id of ids) {
+    // every line heard and cut, one after the other: none stays decoded (the review's S2 had 8 left, 3.5 MB)
+    for (const id of Object.keys(FILES)) {
       await r.n.say(id);
       r.n.stop();
     }
+    expect(r.n.held).toEqual([]);
+    // a line that ends by itself goes too
+    await r.n.say('a');
+    expect(r.n.held).toEqual(['a']);
+    r.ctx.advance(1.01);
+    expect(r.n.current).toBeNull();
+    expect(r.n.held).toEqual([]);
     r.fetched.length = 0;
-    await r.n.say(ids[ids.length - 1]!);
-    expect(r.fetched).toEqual([]);
-    await r.n.say(ids[0]!);
-    expect(r.fetched).toEqual([`audio/voice/${ids[0]}.aaaa.ogg`]);
-    expect(ids.length).toBeGreaterThan(DECODED_KEEP);
+    expect(await r.n.say('a')).toBe(true);
+    expect(r.fetched).toEqual(['audio/voice/a.aaaa.ogg']);
+    // asked again while it plays: it restarts from the buffer it has (no second fetch)
+    expect(await r.n.say('a')).toBe(true);
+    expect(r.fetched).toHaveLength(1);
+    expect(r.n.held).toEqual(['a']);
+  });
+
+  it('keeps at most DECODED_KEEP lines decoded ahead, the newest; the line playing is never dropped', async () => {
+    const r = rig();
+    await r.n.say('a');
+    r.n.prefetch(['b', 'c', 'd', 'e', 'f']);
+    await flush();
+    expect(DECODED_KEEP).toBe(4);
+    // 'a' plays on; of the lines decoded ahead the oldest went
+    expect(r.n.held).toEqual(['a', 'd', 'e', 'f']);
+    expect(r.n.current).toBe('a');
+  });
+
+  it('release lets go of the lines decoded ahead (a step is over), but not the one playing', async () => {
+    const r = rig();
+    r.n.prefetch(['b', 'c']);
+    await flush();
+    await r.n.say('a');
+    r.n.release();
+    expect(r.n.held).toEqual(['a']);
+    expect(r.n.current).toBe('a');
+    // a line still loading when the step ended keeps nothing; a say waiting for it still plays it
+    const d = rig({ deferred: true });
+    d.n.prefetch(['b']);
+    const said = d.n.say('c');
+    d.n.release();
+    await d.release();
+    expect(await said).toBe(true);
+    expect(d.n.current).toBe('c');
+    expect(d.n.held).toEqual(['c']);
+  });
+
+  it('switching the narrator off lets go of every line, decoded or only fetched', async () => {
+    const r = rig();
+    r.n.prefetch(['b', 'c']);
+    await flush();
+    await r.n.say('a');
+    r.n.enabled = false;
+    expect(r.n.current).toBeNull();
+    expect(r.n.held).toEqual([]);
+    // bytes fetched before the context existed go too: on again, the line is fetched again
+    let out: { ctx: AudioContext; input: AudioNode } | null = null;
+    const ctx = new FakeContext();
+    ctx.state = 'running';
+    const fetched: string[] = [];
+    const n = new Narrator({
+      host: { voiceOut: () => out, duck: () => undefined },
+      files: FILES,
+      fetchFile: (src) => (fetched.push(src), Promise.resolve(new ArrayBuffer(8))),
+      opus: () => true,
+      timers: new ManualTimers(),
+      warn: () => undefined,
+    });
+    n.prefetch(['a']);
+    await flush();
+    n.enabled = false;
+    n.enabled = true;
+    out = { ctx: ctx.asAudioContext(), input: ctx.createGain() as unknown as AudioNode };
+    expect(await n.say('a')).toBe(true);
+    expect(fetched).toEqual(['audio/voice/a.aaaa.ogg', 'audio/voice/a.aaaa.ogg']);
+  });
+
+  it('stop without a fade ends the line at once (a hidden page), with no tail left to play on its return', async () => {
+    const r = rig();
+    await r.n.say('a');
+    r.ctx.advance(0.3);
+    r.n.stop(undefined, { fade: false });
+    const [src] = sources(r.ctx);
+    expect(src!.stoppedAt).toBeCloseTo(r.ctx.currentTime, 6);
+    const gain = src!.outputs[0] as FakeGain;
+    expect(gain.gain.events.slice(-2)).toEqual([
+      { kind: 'cancel', time: r.ctx.currentTime },
+      { kind: 'set', value: 0, time: r.ctx.currentTime },
+    ]);
+    expect(r.events.at(-1)).toEqual({ kind: 'end', id: 'a', cut: true });
+    expect(r.n.held).toEqual([]);
   });
 
   it('loads the AAC copy first where Ogg Opus does not play, and falls back to the other file', async () => {

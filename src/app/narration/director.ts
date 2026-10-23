@@ -8,11 +8,12 @@
  * - The tutorial prompt (`BattleHandle.prompt`, both onboarding matches and the hints of matches 2-5): a new
  *   prompt's line cuts the one before; a prompt that goes (done, skipped, timed out, tapped away), a pause, the
  *   end or leaving the battle stops it. Each prompt is voiced once a match (the stall guard re-arms; its line
- *   does not). The script's next one or two lines are fetched ahead.
+ *   does not). The script's next one or two lines are fetched ahead, and let go when the battle is left.
  * - A line a screen asks for (`voice`): it plays while the screen shows it; the screen's stop ends it.
+ * - A hidden page stops the line playing; it does not come back with the page.
  * - Live (online) matches are never narrated.
  * - Moments play once per profile (`flags['narrator.<id>']`, set when the line starts) and show the line as a
- *   subtitle while it plays.
+ *   subtitle while it plays. The first evolve's stops with a pause or the end like a prompt's.
  */
 import { effect } from '@preact/signals';
 import type { CompiledContent, SaveDoc } from '@/contracts';
@@ -24,6 +25,7 @@ import type { TutorialPrompt } from '@/tutorial';
 import type { BattleHandle } from '../battle';
 import type { ShowRecord } from '../capsules/capsuleFlow';
 import type { AppController } from '../controller';
+import { documentVisibility, type VisibilitySource } from '../session';
 import type { Services } from '../services';
 import './narration.css';
 
@@ -40,6 +42,11 @@ export const FIRST_EVOLVE_DELAY_MS = 1100;
 export const PROMPT_MAX_DELAY_MS = 3000;
 /** The pause between the lines of one `voiceAll`. */
 export const SEQUENCE_GAP_MS = 250;
+/**
+ * A `voiceAll` line skipped for these reasons is passed over (its file failed or came late, audio not running
+ * yet): the next line follows. A cut, a newer line (`replaced`) or Narrator off ends the row.
+ */
+const ROW_GOES_ON: ReadonlySet<string> = new Set(['failed', 'late', 'missing', 'locked']);
 /**
  * The first Legendary's line starts this long after the walkout's bass drop (A10 step 6: at 4.0 s the unit bursts
  * into colour), over its signature move, and ends before the name banner slams down at 7.8 s. Mixed offline at the
@@ -86,6 +93,8 @@ export interface DirectorOptions {
   now?: () => number;
   /** The moment subtitle (default `domCaption()`, an element in the app root; tests record the calls). */
   caption?: CaptionView;
+  /** The page's visibility (default the document's; null: none, as in tests): hiding it stops the line. */
+  visibility?: Pick<VisibilitySource, 'subscribe'> | null;
 }
 
 /** Shows a moment's subtitle while its line plays. */
@@ -175,6 +184,7 @@ export class NarrationDirector {
   private readonly now: () => number;
   private readonly stopSettings: () => void;
   private readonly unsubscribe: () => void;
+  private readonly stopVisibility: () => void;
   /** The moment line playing (its subtitle shows), by line id. */
   private moments = new Map<string, MomentId>();
   private ducks = 0;
@@ -201,6 +211,17 @@ export class NarrationDirector {
     this.stopSettings = effect(() => {
       this.narrator.enabled = o.controller.save.value?.settings.narrator !== false;
     });
+    // A hidden page (another tab, the phone locked) stops the line at once, so it does not play on when the page
+    // comes back: a battle pauses there anyway, and a menu's line has had its moment. No fade: the audio context
+    // is being suspended, and a fade would finish audibly on the return.
+    const visibility = o.visibility === undefined ? (typeof document !== 'undefined' ? documentVisibility(document) : null) : o.visibility;
+    this.stopVisibility =
+      visibility?.subscribe((hidden) => {
+        if (!hidden) return;
+        const id = this.narrator.current;
+        if (id) this.record('stop', id, 'hidden');
+        this.narrator.stop(undefined, { fade: false });
+      }) ?? noop;
   }
 
   /** The event log (dev page, e2e checks), oldest first. */
@@ -243,7 +264,10 @@ export class NarrationDirector {
     };
   }
 
-  /** Lines in a row, each after the one before ends; the stop ends the sequence. */
+  /**
+   * Lines in a row, each after the one before ends (or could not play: a failed or late file does not hold up
+   * the rest); a cut or a newer line ends the row, and so does the stop.
+   */
   voiceAll(keys: readonly string[]): () => void {
     const ids = keys.map((k) => this.lineId(k)).filter((x): x is string => x !== null);
     this.record('voice', keys.join(' + '), ids.length === keys.length ? undefined : `${keys.length - ids.length} not voiced`);
@@ -253,7 +277,12 @@ export class NarrationDirector {
     let stopped = false;
     let timer: ReturnType<typeof setTimeout> | null = null;
     const off = this.narrator.subscribe((e) => {
-      if (stopped || e.kind !== 'end' || e.id !== ids[k] || e.cut) return;
+      if (stopped || e.id !== ids[k] || e.kind === 'start') return;
+      if ((e.kind === 'end' && e.cut) || (e.kind === 'skip' && !ROW_GOES_ON.has(e.reason))) {
+        stopped = true;
+        off();
+        return;
+      }
       k += 1;
       if (k < ids.length) timer = setTimeout(() => void this.narrator.say(ids[k]!, { maxDelayMs: PROMPT_MAX_DELAY_MS }), SEQUENCE_GAP_MS);
       else off();
@@ -360,13 +389,17 @@ export class NarrationDirector {
       );
     };
     const offPrompt = b.prompt.subscribe(onPrompt);
-    // A pause (the button, a hidden tab) or the end stops the line; nothing plays over the pause menu.
-    const offStatus = b.session.status.subscribe((s) => {
-      if (s === 'paused' || s === 'ended') stopLine(s);
-    });
     // The first evolve (A8 match 1, ~0:56): a moment over the new age's banner, once per profile.
     let offTick: (() => void) | null = null;
     let stopMoment: () => void = noop;
+    // A pause (the button, a hidden tab) or the end stops the line and the moment (said or still to come);
+    // nothing plays over the pause menu or the end banner.
+    const offStatus = b.session.status.subscribe((s) => {
+      if (s !== 'paused' && s !== 'ended') return;
+      stopLine(s);
+      stopMoment();
+      stopMoment = noop;
+    });
     const save = this.o.controller.save.peek();
     if (b.setup.mode === 'tutorial' && b.setup.matchNumber === 1 && (save?.matchesPlayed ?? 0) === 0 && this.momentDue('firstEvolve')) {
       // this match's moments: the first evolve, and the first win on its Result
@@ -387,16 +420,20 @@ export class NarrationDirector {
     });
   }
 
-  /** The battle is no longer on screen. */
+  /** The battle is no longer on screen: its line stops, and the lines fetched ahead for it are let go. */
   detach(b: BattleHandle): void {
-    this.battles.get(b)?.();
+    const off = this.battles.get(b);
+    if (!off) return;
+    off();
     this.battles.delete(b);
+    this.narrator.release();
   }
 
   dispose(): void {
     for (const off of this.battles.values()) off();
     this.battles.clear();
     this.stopSettings();
+    this.stopVisibility();
     this.unsubscribe();
     this.narrator.dispose();
     this.caption.hide();

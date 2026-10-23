@@ -11,6 +11,9 @@
  *   half a second; when timers lag on a busy main thread the slices grow, so the duck holds there too.
  * - Files load only when asked: `prefetch` fetches and decodes the next line or two; `say` loads a line that is
  *   not in yet and plays it if it arrives in time (`maxDelayMs`), else gives up quietly.
+ * - Decoded lines are let go once heard: a line that ends or is cut is dropped, so only the lines decoded ahead
+ *   for the next step or two stay (at most `DECODED_KEEP`); `release` drops those too when a step is over, and
+ *   switching the narrator off drops everything. A line asked for again is fetched again (the HTTP cache has it).
  * - Each line is a mono Ogg Opus file with an AAC copy (AAC first where Ogg Opus is not supported, else the
  *   retry). A line whose files are missing or do not decode is skipped: its subtitle shows as always.
  * - A line starts only while the context runs (after the first gesture's unlock, with the page visible); the
@@ -75,8 +78,11 @@ const DUCK_JITTER_MS = 50;
 const DUCK_TAIL_MS = 150;
 /** A line that is not ready this long after `say` is dropped (its moment has passed). */
 export const DEFAULT_MAX_DELAY_MS = 2500;
-/** Decoded lines kept (a 2 s line is about 0.4 MB decoded). */
-export const DECODED_KEEP = 8;
+/**
+ * Lines decoded ahead and not heard yet that are kept (a 2 s line is about 0.4 MB decoded at 48 kHz): a battle
+ * asks for its next two prompts' lines and its two moments, a step's screens for theirs; older ones go first.
+ */
+export const DECODED_KEEP = 4;
 /** A line whose files failed is not tried again for this long (ms). */
 export const RETRY_AFTER_MS = 20_000;
 /** Fade in and the fade a cut line gets (seconds). */
@@ -142,6 +148,8 @@ export class Narrator {
   /** Fetched, not yet decoded (prefetched before the context existed). */
   private readonly fetched = new Map<string, Promise<ArrayBuffer>>();
   private readonly failedAt = new Map<string, number>();
+  /** Bumped by `release`, Narrator off and `dispose`: a load started before keeps nothing (a waiting `say` still gets it). */
+  private epoch = 0;
   private readonly listeners = new Set<(e: NarratorEvent) => void>();
   private readonly fetchFile: (src: string) => Promise<ArrayBuffer>;
   private readonly now: () => number;
@@ -162,9 +170,17 @@ export class Narrator {
     return this.on;
   }
 
+  /** Off stops the line playing and lets go of every line fetched or decoded. */
   set enabled(v: boolean) {
     this.on = v;
-    if (!v) this.stop();
+    if (v) return;
+    this.stop();
+    this.release();
+  }
+
+  /** The decoded lines held now (tests and the dev log): the line playing and those decoded ahead. */
+  get held(): readonly string[] {
+    return [...this.decoded.keys()];
   }
 
   /** The line playing now, or null. */
@@ -181,10 +197,17 @@ export class Narrator {
     return () => this.listeners.delete(cb);
   }
 
-  /** Fetches and decodes lines about to be needed (nothing for lines in, loading or unknown). */
+  /**
+   * Fetches and decodes lines about to be needed (nothing for lines loading or unknown). A line held already
+   * counts as asked for now, so the lines asked for last (needed soonest) are the ones kept.
+   */
   prefetch(ids: readonly string[]): void {
     if (!this.on) return;
-    for (const id of ids) if (this.has(id) && !this.decoded.has(id) && !this.loading.has(id) && !this.recentlyFailed(id)) void this.load(id);
+    for (const id of ids) {
+      const held = this.decoded.get(id);
+      if (held) this.keep(id, held);
+      else if (this.has(id) && !this.loading.has(id) && !this.recentlyFailed(id)) void this.load(id);
+    }
   }
 
   /**
@@ -193,13 +216,15 @@ export class Narrator {
    */
   async say(id: string, o: { maxDelayMs?: number } = {}): Promise<boolean> {
     const token = ++this.token;
+    // taken before the cut, which lets go of the line playing (it may be this one, asked again)
+    const ready = this.decoded.get(id);
     if (this.playing) this.cut();
     if (!this.on) return this.skip(id, 'off');
     if (!this.has(id)) return this.skip(id, 'missing');
     if (this.recentlyFailed(id)) return this.skip(id, 'failed');
     this.wanted = { id, token };
     const asked = this.now();
-    const buffer = this.decoded.get(id) ?? (await this.load(id));
+    const buffer = ready ?? this.decoded.get(id) ?? (await this.load(id));
     if (this.wanted?.token !== token) return this.skip(id, 'replaced');
     this.wanted = null;
     if (!buffer) return this.skip(id, 'failed');
@@ -210,16 +235,28 @@ export class Narrator {
     return this.start(id, buffer, out) || this.skip(id, 'locked');
   }
 
-  /** Ends the line playing (only if it is `id`, when given) and drops a `say` still loading. */
-  stop(id?: string): void {
+  /**
+   * Ends the line playing (only if it is `id`, when given) and drops a `say` still loading. `fade: false` ends it
+   * at once instead of a short fade (a hidden page: its context is being suspended, and a fade would finish
+   * audibly when the page comes back).
+   */
+  stop(id?: string, o: { fade?: boolean } = {}): void {
     if (id !== undefined && this.playing?.id !== id && this.wanted?.id !== id) return;
     this.wanted = null;
-    if (this.playing && (id === undefined || this.playing.id === id)) this.cut();
+    if (this.playing && (id === undefined || this.playing.id === id)) this.cut(o.fade !== false);
+  }
+
+  /** Lets go of every line fetched or decoded ahead (a step is over); the line playing plays on. */
+  release(): void {
+    this.epoch += 1;
+    for (const id of [...this.decoded.keys()]) if (id !== this.playing?.id) this.decoded.delete(id);
+    this.fetched.clear();
   }
 
   dispose(): void {
     this.stop();
     this.listeners.clear();
+    this.epoch += 1;
     this.decoded.clear();
     this.fetched.clear();
   }
@@ -255,35 +292,49 @@ export class Narrator {
     duck();
     const p: Playing = { id, ctx, src, gain, duckTimer: this.timers.every(duck, DUCK_EVERY_MS) };
     this.playing = p;
+    // held while it plays (a line asked again restarts from it), let go when it ends or is cut
+    this.keep(id, buffer);
     src.onended = () => {
       gain.disconnect();
       if (this.playing !== p) return;
       this.timers.clear(p.duckTimer);
       this.playing = null;
+      // heard: let it go
+      this.decoded.delete(id);
       this.emit({ kind: 'end', id, cut: false });
     };
     this.emit({ kind: 'start', id, seconds: buffer.duration });
     return true;
   }
 
-  /** Fades the line playing out (no click) and forgets it; its duck slices stop, so the music comes back up. */
-  private cut(): void {
+  /**
+   * Fades the line playing out (no click), or ends it at once without `fade`, and forgets it (its decoded
+   * buffer too); its duck slices stop, so the music comes back up.
+   */
+  private cut(fade = true): void {
     const p = this.playing;
     if (!p) return;
     this.playing = null;
     this.timers.clear(p.duckTimer);
+    this.decoded.delete(p.id);
     try {
       const t = p.ctx.currentTime;
-      // hold the level it has now (a cut during the fade-in must not jump), then fade it out
       const g = p.gain.gain as AudioParam & { cancelAndHoldAtTime?: (when: number) => AudioParam };
-      if (typeof g.cancelAndHoldAtTime === 'function') g.cancelAndHoldAtTime(t);
-      else {
-        const v = g.value;
+      if (!fade) {
         g.cancelScheduledValues(t);
-        g.setValueAtTime(v, t);
+        g.setValueAtTime(0, t);
+        p.src.stop(t);
+      } else {
+        // hold the level it has now (a cut during the fade-in must not jump), then fade it out
+        if (typeof g.cancelAndHoldAtTime === 'function') g.cancelAndHoldAtTime(t);
+        else {
+          const v = g.value;
+          g.cancelScheduledValues(t);
+          g.setValueAtTime(v, t);
+        }
+        g.setTargetAtTime(0, t, CUT_TAU_S);
+        p.src.stop(t + CUT_STOP_S);
       }
-      g.setTargetAtTime(0, t, CUT_TAU_S);
-      p.src.stop(t + CUT_STOP_S);
     } catch {
       // already stopped
     }
@@ -303,6 +354,7 @@ export class Narrator {
     if (known) return known;
     const file = this.o.files[id];
     if (!file) return Promise.resolve(null);
+    const epoch = this.epoch;
     const opus = this.o.opus ?? opusPlays;
     const order = opus() ? [file.src, file.alt] : [file.alt, file.src];
     const attempt = async (k: number): Promise<AudioBuffer> => {
@@ -314,8 +366,8 @@ export class Narrator {
       const bytes = await (early ?? this.fetchFile(src));
       const out = this.o.host.voiceOut();
       if (!out) {
-        // no context to decode with yet: keep the bytes for the `say` that needs them
-        this.fetched.set(id, Promise.resolve(bytes));
+        // no context to decode with yet: keep the bytes for the `say` that needs them (unless let go meanwhile)
+        if (epoch === this.epoch) this.fetched.set(id, Promise.resolve(bytes));
         throw new Error('audio is locked');
       }
       return out.ctx.decodeAudioData(bytes);
@@ -327,7 +379,8 @@ export class Narrator {
       })
       .then(
         (buffer) => {
-          this.keep(id, buffer);
+          // let go of meanwhile (a step ended, Narrator off): a `say` waiting for it still gets it
+          if (epoch === this.epoch) this.keep(id, buffer);
           return buffer;
         },
         (e: unknown) => {
@@ -345,13 +398,13 @@ export class Narrator {
     return p;
   }
 
+  /** Holds a decoded line (the newest); past `DECODED_KEEP` the oldest go, never the line playing. */
   private keep(id: string, buffer: AudioBuffer): void {
     this.decoded.delete(id);
     this.decoded.set(id, buffer);
-    while (this.decoded.size > DECODED_KEEP) {
-      const oldest = this.decoded.keys().next().value as string;
-      if (oldest === this.playing?.id) break;
-      this.decoded.delete(oldest);
+    for (const old of [...this.decoded.keys()]) {
+      if (this.decoded.size <= DECODED_KEEP) break;
+      if (old !== id && old !== this.playing?.id) this.decoded.delete(old);
     }
   }
 

@@ -8,7 +8,7 @@ import { signal, type Signal } from '@preact/signals';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AudioService, SaveDoc, SimEvent } from '@/contracts';
 import { fakeSaveDoc } from '@/contracts/fakes/saveStore';
-import { FakeContext } from '@/audio/test/fakeContext';
+import { FakeBufferSource, FakeContext } from '@/audio/test/fakeContext';
 import { VOICE_LINES } from '@/audio/voice.gen';
 import { i18n } from '@/i18n';
 import { content } from '@/content';
@@ -19,7 +19,7 @@ import type { ShowRecord } from '../capsules/capsuleFlow';
 import type { AppRoute } from '../controller';
 import { createNarration, mayNarrate } from '../narration';
 import * as directorModule from '../narration/director';
-import { AFTER_MATCH, captionPlace, FIRST_EVOLVE_DELAY_MS, FIRST_LEGENDARY_DELAY_MS, firstLegendaryEver, momentFlag, NarrationDirector, PROMPT_MAX_DELAY_MS, type CaptionView } from '../narration/director';
+import { AFTER_MATCH, captionPlace, FIRST_EVOLVE_DELAY_MS, FIRST_LEGENDARY_DELAY_MS, firstLegendaryEver, momentFlag, NarrationDirector, PROMPT_MAX_DELAY_MS, SEQUENCE_GAP_MS, type CaptionView, type DirectorOptions } from '../narration/director';
 import type { SessionStatus } from '../session';
 
 interface Rig {
@@ -46,25 +46,45 @@ function captionRecorder(captions: string[]): CaptionView {
   return { show: (text, place) => captions.push(`show:${place}:${text}`), hide: () => captions.push('hide') };
 }
 
-function rig(save: SaveDoc = fakeSaveDoc(), o: { i18n?: typeof i18n } = {}): Rig {
+/** A page visibility the test flips (`hide`, `show`). */
+function pageVisibility() {
+  const subs = new Set<(hidden: boolean) => void>();
+  return {
+    subscribe: (cb: (hidden: boolean) => void) => (subs.add(cb), () => void subs.delete(cb)),
+    hide: () => subs.forEach((cb) => cb(true)),
+    show: () => subs.forEach((cb) => cb(false)),
+  };
+}
+
+function rig(save: SaveDoc = fakeSaveDoc(), o: { i18n?: typeof i18n; visibility?: DirectorOptions['visibility']; failing?: (src: string) => boolean; controller?: ReturnType<typeof controllerFor> } = {}): Rig {
   const ctx = new FakeContext();
   ctx.state = 'running';
   const bus = ctx.createGain();
   const ducks: number[] = [];
   const captions: string[] = [];
   const fetched: string[] = [];
-  const c = controllerFor(save);
-  const d = new NarrationDirector({
-    services: { audio: {} as AudioService, i18n: o.i18n ?? i18n, content },
-    controller: c,
-    host: { voiceOut: () => ({ ctx: ctx.asAudioContext(), input: bus as unknown as AudioNode }), duck: (db) => ducks.push(db) },
-    fetchFile: (src) => {
-      fetched.push(src);
-      return Promise.resolve(new ArrayBuffer(8));
-    },
-    caption: captionRecorder(captions),
-  });
+  const c = o.controller ?? controllerFor(save);
+  const d = new NarrationDirector(directorOptions(c, { ctx, bus, ducks, captions, fetched, ...(o.failing ? { failing: o.failing } : {}) }, o));
   return { d, ctx, ducks, save: c.save, route: c.route, captions, fetched };
+}
+
+/** The director's options over a fake audio context (shared by `rig` and the stub tests that load it). */
+function directorOptions(
+  controller: DirectorOptions['controller'],
+  a: { ctx: FakeContext; bus: unknown; ducks: number[]; captions: string[]; fetched: string[]; failing?: (src: string) => boolean },
+  o: { i18n?: typeof i18n; visibility?: DirectorOptions['visibility'] } = {},
+): DirectorOptions {
+  return {
+    services: { audio: {} as AudioService, i18n: o.i18n ?? i18n, content },
+    controller,
+    host: { voiceOut: () => ({ ctx: a.ctx.asAudioContext(), input: a.bus as AudioNode }), duck: (db) => a.ducks.push(db) },
+    fetchFile: (src) => {
+      a.fetched.push(src);
+      return a.failing?.(src) ? Promise.reject(new Error('HTTP 404')) : Promise.resolve(new ArrayBuffer(8));
+    },
+    caption: captionRecorder(a.captions),
+    visibility: o.visibility ?? null,
+  };
 }
 
 function battle(o: { mode?: string; matchNumber?: number; script?: MatchScript | null; live?: boolean } = {}) {
@@ -214,6 +234,20 @@ describe('the tutorial prompt', () => {
     expect(r.d.narrator.current).toBeNull();
   });
 
+  it('leaving the battle lets go of the lines fetched ahead for it (nothing decoded stays behind)', async () => {
+    const r = rig();
+    const t = battle();
+    r.d.attach(t.b);
+    await flush();
+    t.show('m1.sendBonker', 'tutorial.m1.sendBonker');
+    await flush();
+    // the line playing and the ones decoded ahead (the next prompts, the first win)
+    expect(r.d.narrator.held.length).toBeGreaterThan(1);
+    r.d.detach(t.b);
+    expect(r.d.narrator.current).toBeNull();
+    expect(r.d.narrator.held).toEqual([]);
+  });
+
   it('voices a hint with its card (one line per Anti-heavy card)', async () => {
     const r = rig();
     const t = battle({ mode: 'ladder', matchNumber: 3, script: null });
@@ -304,6 +338,41 @@ describe('moments', () => {
     expect(veteran.d.narrator.current).toBeNull();
   });
 
+  it('a pause or the end stops the first evolve’s line and its subtitle; nothing plays over the pause menu', async () => {
+    for (const s of ['paused', 'ended'] as const) {
+      const r = rig();
+      const t = battle();
+      t.status.value = 'running';
+      r.route.value = { id: 'battle', battle: t.b };
+      r.d.attach(t.b);
+      t.tick([{ e: 'ageUp', side: 0, age: 'medieval' } as SimEvent]);
+      vi.advanceTimersByTime(FIRST_EVOLVE_DELAY_MS + 10);
+      await flush();
+      expect(r.d.narrator.current).toBe('en/narrator.firstEvolve');
+      t.status.value = s;
+      expect(r.d.narrator.current, s).toBeNull();
+      expect(r.captions, s).toEqual(['show:battle:A new age dawns!', 'hide']);
+      // it does not come back with the battle
+      t.status.value = 'running';
+      vi.advanceTimersByTime(FIRST_EVOLVE_DELAY_MS + 10);
+      await flush();
+      expect(r.d.narrator.current, s).toBeNull();
+    }
+    // a pause before its time cancels it
+    const early = rig();
+    const t = battle();
+    t.status.value = 'running';
+    early.d.attach(t.b);
+    t.tick([{ e: 'ageUp', side: 0, age: 'medieval' } as SimEvent]);
+    vi.advanceTimersByTime(FIRST_EVOLVE_DELAY_MS / 2);
+    t.status.value = 'paused';
+    t.status.value = 'running';
+    vi.advanceTimersByTime(FIRST_EVOLVE_DELAY_MS);
+    await flush();
+    expect(early.d.narrator.current).toBeNull();
+    expect(early.captions).toEqual([]);
+  });
+
   it('a subtitle goes above the tray in battle, into the action bar on a Result, bottom centre elsewhere', () => {
     expect(captionPlace('battle')).toBe('battle');
     expect(captionPlace('result')).toBe('result');
@@ -345,6 +414,50 @@ describe('screens and settings', () => {
     stopAll();
     expect(r.d.narrator.current).toBeNull();
     expect(r.d.voice('ui.settings.audio')()).toBeUndefined();
+  });
+
+  it('voiceAll: a line that cannot play (its file failed) does not hold up the next one; a cut ends the row', async () => {
+    const r = rig(fakeSaveDoc(), { failing: (src) => src.includes('tutorial.upgrade.title') });
+    r.d.voiceAll(['tutorial.upgrade.title', 'tutorial.upgrade.gain']);
+    await flush();
+    vi.advanceTimersByTime(SEQUENCE_GAP_MS + 10);
+    await flush();
+    // the title was skipped: "+5% HP and damage" is still read
+    expect(r.d.narrator.current).toBe('en/tutorial.upgrade.gain');
+    expect(kinds(r.d)).toEqual(['skip:tutorial.upgrade.title', 'start:tutorial.upgrade.gain']);
+    // cut (a hidden page, another line): the row is over, its next line never comes
+    const c = rig();
+    c.d.voiceAll(['tutorial.upgrade.title', 'tutorial.upgrade.gain']);
+    await flush();
+    c.d.narrator.stop();
+    c.ctx.advance(3);
+    vi.advanceTimersByTime(SEQUENCE_GAP_MS + 10);
+    await flush();
+    expect(c.d.narrator.current).toBeNull();
+    expect(kinds(c.d)).toEqual(['start:tutorial.upgrade.title', 'end:tutorial.upgrade.title cut']);
+  });
+
+  it('a hidden page stops the line at once (no fade), and it does not play on when the page comes back', async () => {
+    const page = pageVisibility();
+    const r = rig(fakeSaveDoc(), { visibility: page });
+    r.d.voice('warPath.ui.unlock.army');
+    await flush();
+    expect(r.d.narrator.current).toBe('en/warPath.ui.unlock.army');
+    r.ctx.advance(0.4);
+    page.hide();
+    expect(r.d.narrator.current).toBeNull();
+    expect(r.d.log().at(-2)).toMatchObject({ kind: 'stop', id: 'en/warPath.ui.unlock.army', detail: 'hidden' });
+    const src = r.ctx.of(FakeBufferSource).find((s) => s.startedAt !== null && s.buffer && s.buffer.length > 1);
+    expect(src?.stoppedAt).toBeCloseTo(r.ctx.currentTime, 6);
+    page.show();
+    await flush();
+    expect(r.d.narrator.current).toBeNull();
+    // a line still loading when the page hides never starts
+    r.d.voice('avatar.ui.make');
+    page.hide();
+    await flush();
+    expect(r.d.narrator.current).toBeNull();
+    r.d.dispose();
   });
 
   it('Settings › Narrator off stops the line at once and silences the rest', async () => {
@@ -421,6 +534,83 @@ describe('the eager stub', () => {
     expect(veteran.n.log()?.some((e) => e.kind === 'moment') ?? false).toBe(false);
     s.n.dispose();
     veteran.n.dispose();
+  });
+
+  /** The stub over a director that can play (a fake audio context), and that director once it loaded. */
+  function playingStub(save: SaveDoc) {
+    const c = controllerFor(save);
+    const a = { ctx: new FakeContext(), bus: null as unknown, ducks: [] as number[], captions: [] as string[], fetched: [] as string[] };
+    a.ctx.state = 'running';
+    a.bus = a.ctx.createGain();
+    let director: NarrationDirector | null = null;
+    const n = createNarration({
+      services: { audio: {} as AudioService, i18n, content },
+      controller: c,
+      load: () => Promise.resolve({ ...directorModule, createDirector: (o: DirectorOptions) => (director = directorModule.createDirector({ ...o, ...directorOptions(c, a) })) }),
+    });
+    return { n, c, captions: a.captions, current: () => director?.narrator.current ?? null };
+  }
+  const resultRoute = (n: number) => ({ id: 'result', result: { setup: { mode: 'tutorial', matchNumber: n }, input: { outcome: { winner: 0 }, mySide: 0 } } }) as unknown as AppRoute;
+  const firstWin = (): SaveDoc => ({ ...fakeSaveDoc(), stats: { ...fakeSaveDoc().stats, wins: 1 } });
+
+  it('the first win’s moment belongs to its Result: leaving it stops the line, or cancels it before it starts', async () => {
+    const s = playingStub(firstWin());
+    const won = resultRoute(1);
+    s.c.route.value = won;
+    await flush();
+    vi.advanceTimersByTime(710);
+    await flush();
+    expect(s.current()).toBe('en/narrator.firstVictory');
+    expect(s.captions).toEqual(['show:result:Victory! The first of many.']);
+    // the same Result shown again (a new route object) does not stop it
+    s.c.route.value = { ...(won as Extract<AppRoute, { id: 'result' }>) };
+    expect(s.current()).toBe('en/narrator.firstVictory');
+    // Next: the capsule show opens over Home, and the line stops with its subtitle
+    s.c.route.value = { id: 'title', battle: null };
+    expect(s.current()).toBeNull();
+    expect(s.captions).toEqual(['show:result:Victory! The first of many.', 'hide']);
+    s.n.dispose();
+    // left before its time (Next at once): it never starts, and stays due (its flag unset)
+    const quick = playingStub(firstWin());
+    quick.c.route.value = resultRoute(1);
+    await flush();
+    vi.advanceTimersByTime(100);
+    quick.c.route.value = { id: 'title', battle: null };
+    vi.advanceTimersByTime(700);
+    await flush();
+    expect(quick.current()).toBeNull();
+    expect(quick.captions).toEqual([]);
+    expect(quick.c.save.value!.flags[momentFlag('firstVictory')]).toBeUndefined();
+    quick.n.dispose();
+  });
+
+  /** Node's collector, switched on from here (this file runs in Node; the app's tsconfig has no Node types). */
+  async function collector(): Promise<() => void> {
+    const builtin = (name: string): Promise<unknown> => import(/* @vite-ignore */ `node:${name}`);
+    const v8 = (await builtin('v8')) as { setFlagsFromString(flags: string): void };
+    const vm = (await builtin('vm')) as { runInNewContext(code: string): unknown };
+    v8.setFlagsFromString('--expose-gc');
+    return vm.runInNewContext('gc') as () => void;
+  }
+
+  it('keeps no Result once the player has left it, so its finished battle can be collected', async () => {
+    vi.useRealTimers();
+    const gc = await collector();
+    const s = stub(firstWin());
+    // made in a function, so nothing here keeps it
+    const ref = ((): WeakRef<object> => {
+      const route = resultRoute(1);
+      s.c.route.value = route;
+      return new WeakRef((route as Extract<AppRoute, { id: 'result' }>).result);
+    })();
+    await new Promise((res) => setTimeout(res, 0));
+    s.c.route.value = { id: 'title', battle: null };
+    for (let k = 0; k < 3 && ref.deref(); k++) {
+      await new Promise((res) => setTimeout(res, 0));
+      gc();
+    }
+    expect(ref.deref()).toBeUndefined();
+    s.n.dispose();
   });
 
   it('with the narrator off a screen’s line loads nothing', async () => {

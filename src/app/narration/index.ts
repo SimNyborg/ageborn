@@ -20,8 +20,8 @@ export interface Narration {
   voice(key: string, vars?: Readonly<Record<string, string>>): () => void;
   /** Lines in a row, each after the one before ends; one stop ends them. */
   voiceAll(keys: readonly string[]): () => void;
-  /** A first-time moment: once per profile, `delayMs` from now, with a subtitle; returns its stop. */
-  moment(id: MomentId, delayMs?: number): () => void;
+  /** A first-time moment: once per profile, `delayMs` from now while `when` holds, with a subtitle; returns its stop. */
+  moment(id: MomentId, delayMs?: number, when?: () => boolean): () => void;
   /** Fetches lines a coming step will say. */
   prefetch(keys: readonly string[]): void;
   /** A capsule show's narration: the runner's states and cues go in; `end` when the show goes. */
@@ -78,7 +78,17 @@ export function createNarration(o: NarrationOptions): Narration {
   };
 
   let attached: BattleHandle | null = null;
-  let resultSeen: unknown = null;
+  // The Results already handled, held weakly: a Result holds its finished battle (the session, the sim), which
+  // must be let go once the player leaves it.
+  const resultsSeen = new WeakSet<object>();
+  // The first win's moment belongs to its Result (held weakly too): it starts only while that Result shows,
+  // and leaving it (Next, Home) stops the line or cancels it.
+  const victoryOn = new WeakSet<object>();
+  let stopVictory: (() => void) | null = null;
+  const onVictoryResult = (): boolean => {
+    const r = o.controller.route.peek();
+    return r.id === 'result' && victoryOn.has(r.result);
+  };
   const stopRoute = effect(() => {
     const r = o.controller.route.value;
     const battle = r.id === 'battle' ? r.battle : null;
@@ -91,13 +101,20 @@ export function createNarration(o: NarrationOptions): Narration {
           if (d && attached === b) d.attach(b);
         });
     }
-    if (r.id === 'result' && r.result !== resultSeen) {
-      resultSeen = r.result;
+    if (stopVictory && !onVictoryResult()) {
+      stopVictory();
+      stopVictory = null;
+    }
+    if (r.id === 'result' && !resultsSeen.has(r.result)) {
+      resultsSeen.add(r.result);
       const s = o.controller.save.peek();
       const input = r.result.input;
       const won = input.outcome.winner === input.mySide;
       // the first win (in practice the training match, War Path level 1): one moment, ever
-      if (won && s && s.stats.wins === 1 && s.flags['narrator.firstVictory'] !== true) later((d) => d.moment('firstVictory', 700));
+      if (won && s && s.stats.wins === 1 && s.flags['narrator.firstVictory'] !== true) {
+        victoryOn.add(r.result);
+        stopVictory = later((d) => d.moment('firstVictory', 700, onVictoryResult));
+      }
       // the steps after an onboarding match (its capsule, Make your General, the forced upgrade) speak next
       const match = r.result.setup.mode === 'tutorial' ? r.result.setup.matchNumber : 0;
       if (match > 0)
@@ -111,7 +128,7 @@ export function createNarration(o: NarrationOptions): Narration {
   return {
     voice: (key, vars) => later((d) => d.voice(key, vars)),
     voiceAll: (keys) => later((d) => d.voiceAll(keys)),
-    moment: (id, delayMs = 0) => later((d) => d.moment(id, delayMs)),
+    moment: (id, delayMs = 0, when) => later((d) => d.moment(id, delayMs, when)),
     prefetch: (keys) => {
       later((d) => {
         d.prefetch(keys);
