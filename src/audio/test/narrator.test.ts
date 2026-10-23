@@ -364,7 +364,7 @@ describe('Narrator', () => {
     // a copy that was not turned down plays at 1
     await aac.n.say('b');
     expect((sources(aac.ctx)[1]!.outputs[0] as FakeGain).gain.last).toBe(1);
-    // the Ogg file of the same line plays at 1, and so does the AAC copy as the Ogg file's retry... turned up
+    // the Ogg file of the same line plays at 1; the AAC copy, when it is the Ogg file's retry, is turned up too
     const ogg = rig({ files });
     await ogg.n.say('a');
     expect((sources(ogg.ctx)[0]!.outputs[0] as FakeGain).gain.last).toBe(1);
