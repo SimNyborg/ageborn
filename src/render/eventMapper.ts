@@ -608,7 +608,10 @@ export class EventMapper {
           if (this.fieldHits.size > 512) this.fieldHits = new Set();
           this.fieldHits.add(k);
         }
-        const ruleKey = this.has(`hit.${tier}`) ? `hit.${tier}` : ev.heavy ? 'hit.heavy' : 'hit.light';
+        const tierKey = this.has(`hit.${tier}`) ? `hit.${tier}` : ev.heavy ? 'hit.heavy' : 'hit.light';
+        // a shot (a unit's, a turret's) or a power's hit may look different from a blow of the same tier:
+        // `hit.heavy.ranged` raises no dust at the victim's feet (that dust is the feet skidding under a heavy blow)
+        const ruleKey = !melee && this.has(`${tierKey}.ranged`) ? `${tierKey}.ranged` : tierKey;
         // a power's hits pan with the rest but are never faded off view (A13: power impacts keep their level)
         const byPower = ev.sourceKind === 'power' || ev.sourceKind === 'lastStand';
         this.rule(ruleKey, {

@@ -139,6 +139,16 @@ describe('event mapper: hits by tier (A12, queue item 38 A2/A3)', () => {
     expect(pick(heavy, 'unitFreeze').map((f) => f.id)).toEqual([5]);
   });
 
+  it('a heavy shot raises no dust at the victim\'s feet (`hit.heavy.ranged`): only a heavy blow skids the feet', () => {
+    const shot = run([hit({ sourceId: 2, targetId: 5, sourceCard: 'pebbler', damage: 15_000 })]);
+    expect(pick(shot, 'fx').map((f) => f.effectId)).toEqual(['fx.contact_spark', 'fx.ground_glow']);
+    expect(pick(shot, 'sound')[0]?.id).toBe('hit_heavy');
+    expect(pick(shot, 'kick')).toHaveLength(1);
+    // a heavy melee blow keeps its dust
+    const blow = run([hit({ damage: 15_000 })]);
+    expect(pick(blow, 'fx').map((f) => f.effectId)).toEqual(['fx.contact_spark', 'fx.dust_poof', 'fx.ground_glow']);
+  });
+
   it('a material rings under the hit: armour clanks on an armoured victim, never under a laser', () => {
     const armour = run([hit({ targetId: 5, sourceId: 2, sourceCard: 'pebbler' })]);
     expect(pick(armour, 'sound').map((s) => s.id)).toEqual(['hit_blunt', 'mat_armour']);

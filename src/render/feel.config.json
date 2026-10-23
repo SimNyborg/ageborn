@@ -110,6 +110,18 @@
       ],
       "sound": "hit_heavy"
     },
+    "hit.heavy.ranged": {
+      "jitterPx": 2,
+      "trauma": 0.12,
+      "kickPx": 2.5,
+      "flashMs": 80,
+      "flashTarget": "victim",
+      "particles": [
+        { "effectId": "$spark", "count": 1, "priority": 2 },
+        { "effectId": "fx.ground_glow", "count": 1, "priority": 1, "at": "feet" }
+      ],
+      "sound": "hit_heavy"
+    },
     "hit.kill": {
       "jitterPx": 2,
       "kickPx": 3.5,
