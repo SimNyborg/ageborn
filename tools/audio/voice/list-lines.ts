@@ -6,6 +6,8 @@
  * reads it (`src/i18n/index.ts`: files in name order, nested keys joined with dots, the first file wins a
  * duplicate, `{name}` placeholders filled), so the i18n key stays the source of truth and a changed string
  * re-renders its line. `each` renders one line per filling of a placeholder whose values are i18n keys.
+ * `respell` (whole words) gives the text Kokoro says where its reading of a name is wrong: such a line gets a
+ * `spoken` text beside its `text`, which stays the string the subtitle shows.
  */
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -31,7 +33,16 @@ export interface VoiceLine {
   vars?: Record<string, string>;
   /** The English text the line says (what the subtitle shows). */
   text: string;
+  /** What Kokoro is given to say, when a respelled name makes it differ from `text`. */
+  spoken?: string;
   where: string;
+}
+
+/** The line list file: its language, the respellings for speech (word → how to spell it for Kokoro), the lines. */
+export interface LineFile {
+  lang: string;
+  respell?: Record<string, string>;
+  lines: LineSpec[];
 }
 
 /** The expansions `each` may name: lists of i18n keys from the game content. */
@@ -65,12 +76,19 @@ function fill(template: string, params: Record<string, string>): string {
   return template.replace(/\{(\w+)\}/g, (m, name: string) => params[name] ?? m);
 }
 
-export function readSpecs(file: string = path.join(HERE, 'lines.json')): { lang: string; lines: LineSpec[] } {
-  return JSON.parse(readFileSync(file, 'utf8')) as { lang: string; lines: LineSpec[] };
+export function readSpecs(file: string = path.join(HERE, 'lines.json')): LineFile {
+  return JSON.parse(readFileSync(file, 'utf8')) as LineFile;
+}
+
+/** The text with each respelled word (whole words, case as written) replaced by its spelling for speech. */
+export function respelled(text: string, respell: Readonly<Record<string, string>>): string {
+  let out = text;
+  for (const [word, say] of Object.entries(respell)) out = out.replace(new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'g'), say);
+  return out;
 }
 
 /** Every line to render, in list order (an `each` line once per value). Throws on an unknown key. */
-export function listLines(specs: readonly LineSpec[] = readSpecs().lines, strings: Record<string, string> = englishStrings()): VoiceLine[] {
+export function listLines(specs: readonly LineSpec[] = readSpecs().lines, strings: Record<string, string> = englishStrings(), respell: Readonly<Record<string, string>> = {}): VoiceLine[] {
   const out: VoiceLine[] = [];
   const seen = new Set<string>();
   const text = (key: string): string => {
@@ -94,7 +112,8 @@ export function listLines(specs: readonly LineSpec[] = readSpecs().lines, string
       const id = voiceLineId(spec.key, names.length ? vars : null);
       if (seen.has(id)) throw new Error(`voice lines: "${id}" is listed twice`);
       seen.add(id);
-      out.push({ id, key: spec.key, ...(names.length ? { vars } : {}), text: said, where: spec.where ?? '' });
+      const spoken = respelled(said, respell);
+      out.push({ id, key: spec.key, ...(names.length ? { vars } : {}), text: said, ...(spoken !== said ? { spoken } : {}), where: spec.where ?? '' });
     }
   }
   return out;
@@ -102,5 +121,5 @@ export function listLines(specs: readonly LineSpec[] = readSpecs().lines, string
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const specs = readSpecs();
-  process.stdout.write(JSON.stringify({ lang: specs.lang, lines: listLines(specs.lines) }));
+  process.stdout.write(JSON.stringify({ lang: specs.lang, lines: listLines(specs.lines, englishStrings(), specs.respell ?? {}) }));
 }

@@ -92,7 +92,7 @@ function targetRect(root: HTMLElement, target: PromptTarget | null, view: Battle
     return { x: r.left - box.left, y: r.top - box.top, w: r.width, h: r.height };
   }
   const mount = target === 'mount0' ? 0 : target === 'mount1' ? 1 : target === 'mountBuy' ? mountsOwned : -1;
-  // The mount's popover is open: point at its first build option (the Rock Tosser in match 1).
+  // The mount's popover is open: point at its first build option (the Rock Thrower in match 1).
   if (mount >= 0 && target !== 'mountBuy') {
     const option = root.querySelector<HTMLElement>('[data-testid="hud-pop-build-0"]');
     if (option) {

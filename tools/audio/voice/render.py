@@ -13,17 +13,24 @@ The voice is the one the owner chose on 2026-10-18 (docs/owner-queue.md item 39,
    the chain exactly as it is, gives each line the level the approved lines had (-16.0 to -16.5 LUFS),
    and keeps each line independent of the others (one changed string re-renders one line).
 3. Encoded like the game's other audio (tools/audio/build.py `encode`): mono Ogg Opus plus an AAC-LC
-   copy for browsers without Ogg Opus, content-hashed names in public/audio/voice/.
+   copy for browsers without Ogg Opus, content-hashed names in public/audio/voice/. The AAC encoder
+   overshoots (up to +3 dB at 48 kbps on these lines), so an AAC copy whose decoded true peak would pass
+   -1 dBTP is encoded from a turned-down master instead; the manifest records that gain (`altGain`) and
+   the narrator turns the copy back up, so it plays as loud as the Ogg file.
 4. `src/audio/voice.gen.ts` lists every line: its files, length, sizes, the English text it says and a
-   hash of everything the render depends on. A line whose hash and files are unchanged is kept as it is,
-   so re-running on unchanged text reproduces the same files (the render itself is deterministic too:
-   Kokoro on the CPU, ffmpeg with bit-exact flags; `--force` re-renders everything to prove it).
+   hash of everything the render depends on. A line whose hash and files are unchanged (and whose AAC copy
+   decodes under the cap) is kept as it is, so re-running on unchanged text reproduces the same files (the
+   render itself is deterministic too: Kokoro on the CPU, ffmpeg with bit-exact flags; `--force`
+   re-renders everything to prove it).
 
-The lines are data: `lines.json` (i18n keys), read in English by `list-lines.ts`.
+The lines are data: `lines.json` (i18n keys), read in English by `list-lines.ts`. Its `respell` map changes
+only what Kokoro is given to say, for a name its en-gb reading gets wrong ("Grenadier" stressed on the first
+syllable, "Phalangite" with a hard g); the subtitle keeps the real spelling, and the phonemes Kokoro is fed
+for such a line are printed so the reading can be checked.
 
 Usage (see tools/audio/README.md, "Narrator voice"):
 
-    python3 -m venv /tmp/kokoro && /tmp/kokoro/bin/pip install kokoro-onnx==0.6.1 soundfile
+    python3 -m venv /tmp/kokoro && /tmp/kokoro/bin/pip install kokoro-onnx==0.6.1 soundfile scipy
     KOKORO_MODELS=/path/with/kokoro-v1.0.int8.onnx+voices-v1.0.bin /tmp/kokoro/bin/python tools/audio/voice/render.py
     ... --check     exit 1 if a line is missing or stale (no rendering, no model needed)
     ... --force     render every line again
@@ -50,6 +57,7 @@ OUT = ROOT / "public" / "audio" / "voice"
 GEN = ROOT / "src" / "audio" / "voice.gen.ts"
 sys.path.insert(0, str(HERE.parent))
 from build import encode  # noqa: E402  (the game's encoder: Ogg Opus + AAC, bit-exact, hashed names)
+from lib.loud import true_peak_db  # noqa: E402  (the pipeline's 4x oversampled true-peak meter)
 
 MODEL_FILE = "kokoro-v1.0.int8.onnx"
 VOICES_FILE = "voices-v1.0.bin"
@@ -84,6 +92,13 @@ FADE_S = 0.012
 # at 48 kbps. A line is 1-4 s, so the rate costs little.
 OPUS_KBPS = 64
 AAC_KBPS = 48
+# An AAC copy's true peak, decoded, stays at or under this (dBTP), so no decoder that stops at full scale clips
+# it. A copy over it is encoded again from the master turned down, in steps, until it decodes at or under
+# AAC_AIM_DB (room for another decoder's rounding); its gain goes in the manifest (`altGain`, dB) and the
+# narrator undoes it. These are checked on the files themselves (a kept line whose AAC copy decodes over the
+# cap is rendered again), not hashed, so changing them redoes only the lines they concern.
+AAC_PEAK_DB = -1.0
+AAC_AIM_DB = -1.2
 # Everything above that shapes a file: part of every line's hash, so changing any of it re-renders.
 RECIPE = {
     "pipeline": 1,
@@ -106,7 +121,10 @@ def list_lines() -> dict:
 
 
 def line_hash(line: dict, lang: str) -> str:
-    blob = json.dumps({"recipe": RECIPE, "lang": lang, "text": line["text"]}, sort_keys=True, separators=(",", ":"))
+    # The text Kokoro says counts only where a respelling makes it differ from the subtitle's, so adding a
+    # respelling re-renders just the lines it changes.
+    spoken = {"spoken": line["spoken"]} if line.get("spoken") else {}
+    blob = json.dumps({"recipe": RECIPE, "lang": lang, "text": line["text"], **spoken}, sort_keys=True, separators=(",", ":"))
     return hashlib.sha1(blob.encode()).hexdigest()[:16]
 
 
@@ -148,6 +166,10 @@ class Voice:
         assert sr == KOKORO_SR
         return np.asarray(s, dtype=np.float32)
 
+    def phonemes(self, text: str) -> str:
+        """The phonemes Kokoro is fed for `text` (its own espeak-ng tokenizer, as `create` calls it)."""
+        return self.k.tokenizer.phonemize(text, LANG)
+
 
 def master(voice: Voice, raw: np.ndarray, tmp: Path) -> np.ndarray:
     """The item 39 chain over primer + gap + line + gap; returns the line, cut at its onset (48 kHz mono)."""
@@ -184,6 +206,38 @@ def loudness(wav: Path) -> tuple[float, float]:
     return float(i), float(p)
 
 
+def decoded_peak(path: Path) -> float:
+    """A file's true peak (dBTP) once decoded: ffmpeg's decoder to float (no clipping), the 4x meter."""
+    with tempfile.TemporaryDirectory() as t:
+        wav = Path(t) / "decoded.wav"
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(path), "-c:a", "pcm_f32le", str(wav)], check=True)
+        y, _ = sf.read(str(wav), dtype="float64")
+    return true_peak_db(y)
+
+
+def encode_line(wav: Path, x: np.ndarray, tmp: Path, name: str) -> tuple[str, int, str, float]:
+    """`encode` into OUT; an AAC copy that decodes over AAC_PEAK_DB is encoded again from the master turned
+    down until it decodes at or under AAC_AIM_DB. Returns the Ogg file and size, the AAC file and its gain (dB)."""
+    fname, size, aac = encode(wav, OUT, name, OPUS_KBPS, mono=True, aac_kbps=AAC_KBPS)
+    assert aac is not None
+    peak = decoded_peak(OUT / aac)
+    if peak <= AAC_PEAK_DB:
+        return fname, size, aac, 0.0
+    gain = 0.0
+    for step in range(8):
+        # down by the excess and a little more; rounded first, so the gain recorded is the gain applied
+        gain = round(gain - (peak - AAC_AIM_DB) - 0.05, 2)
+        sf.write(str(tmp / "aac.wav"), (x * 10 ** (gain / 20)).astype(np.float32), SR, subtype="FLOAT")
+        _, _, capped = encode(tmp / "aac.wav", tmp / f"aac{step}", name, OPUS_KBPS, mono=True, aac_kbps=AAC_KBPS)
+        assert capped is not None
+        peak = decoded_peak(tmp / f"aac{step}" / capped)
+        if peak <= AAC_AIM_DB:
+            (OUT / aac).unlink(missing_ok=True)
+            (OUT / capped).write_bytes((tmp / f"aac{step}" / capped).read_bytes())
+            return fname, size, capped, gain
+    raise SystemExit(f"{name}: the AAC copy still decodes at {peak:.2f} dBTP after {gain} dB")
+
+
 def write_manifest(lang: str, entries: dict) -> None:
     ogg = sum(e["bytes"] for e in entries.values())
     aac = sum(e["altBytes"] for e in entries.values())
@@ -200,7 +254,8 @@ def write_manifest(lang: str, entries: dict) -> None:
                 " * Per language, per line id (`voiceLineId`): the Ogg Opus file and its AAC copy (`alt`), paths relative to",
                 " * the site base; the length in seconds; the sizes; the text the line says (the app voices a line only",
                 " * while its string still reads this, so a changed string or another language shows its subtitle silently",
-                " * until it is rendered again); and the hash of the render's inputs.",
+                " * until it is rendered again); the hash of the render's inputs; and, for an AAC copy encoded turned down",
+                " * so its decoded peaks stay under -1 dBTP, that gain (`altGain`, dB), which the narrator undoes.",
                 " */",
                 "",
                 "export interface VoiceFile {",
@@ -211,6 +266,7 @@ def write_manifest(lang: str, entries: dict) -> None:
                 "  altBytes: number;",
                 "  text: string;",
                 "  hash: string;",
+                "  altGain?: number;",
                 "}",
                 "",
                 f"export const VOICE_RECIPE = {json.dumps(RECIPE_LINE)};",
@@ -241,15 +297,25 @@ def main(argv: list[str] | None = None) -> int:
     old = read_manifest().get(lang, {})
     only = {s for s in args.only.split(",") if s}
 
-    def fresh(line: dict) -> bool:
+    def stale(line: dict) -> str | None:
+        """Why a line must be rendered (again), or None when it is up to date."""
         e = old.get(line["id"])
-        return bool(e) and e["hash"] == line_hash(line, lang) and (ROOT / "public" / e["src"]).exists() and (ROOT / "public" / e["alt"]).exists()
+        if not e:
+            return "new"
+        if e["hash"] != line_hash(line, lang):
+            return "text or recipe changed"
+        alt = ROOT / "public" / e["alt"]
+        if not (ROOT / "public" / e["src"]).exists() or not alt.exists():
+            return "files missing"
+        peak = decoded_peak(alt)
+        return f"AAC copy decodes at {peak:+.2f} dBTP, over {AAC_PEAK_DB}" if peak > AAC_PEAK_DB else None
 
-    todo = [ln for ln in lines if args.force or ln["id"] in only or not fresh(ln)]
+    why = {ln["id"]: "forced" if args.force else "asked" if ln["id"] in only else stale(ln) for ln in lines}
+    todo = [ln for ln in lines if why[ln["id"]]]
     gone = sorted(set(old) - {ln["id"] for ln in lines})
     if args.check:
         for ln in todo:
-            print(f"stale: {ln['id']} ({ln['text']})")
+            print(f"stale: {ln['id']} ({ln['text']}): {why[ln['id']]}")
         for i in gone:
             print(f"unlisted: {i}")
         print(f"{len(lines) - len(todo)} of {len(lines)} lines up to date")
@@ -266,13 +332,13 @@ def main(argv: list[str] | None = None) -> int:
                 if not args.models:
                     raise SystemExit("set KOKORO_MODELS (or --models) to the folder with the Kokoro v1.0 model files")
                 voice = Voice(Path(args.models))
-            x = master(voice, voice.say(ln["text"]), tmp)
+            said = ln.get("spoken") or ln["text"]
+            x = master(voice, voice.say(said), tmp)
             wav = tmp / "line.wav"
             sf.write(str(wav), x, SR, subtype="FLOAT")
             lufs, tp = loudness(wav)
             OUT.mkdir(parents=True, exist_ok=True)
-            fname, size, aac = encode(wav, OUT, slug(ln), OPUS_KBPS, mono=True, aac_kbps=AAC_KBPS)
-            assert aac is not None
+            fname, size, aac, gain = encode_line(wav, x, tmp, slug(ln))
             entries[ln["id"]] = {
                 "src": f"audio/voice/{fname}",
                 "alt": f"audio/voice/{aac}",
@@ -281,9 +347,13 @@ def main(argv: list[str] | None = None) -> int:
                 "altBytes": (OUT / aac).stat().st_size,
                 "text": ln["text"],
                 "hash": line_hash(ln, lang),
+                **({"altGain": gain} if gain else {}),
             }
             flag = "!" if not (-17.0 <= lufs <= -15.5) or tp > -1.0 else " "
-            print(f"{flag} {ln['id']}: {len(x) / SR:.2f} s, {lufs:.1f} LUFS, TP {tp:.1f} dBFS, {size / 1024:.1f} + {entries[ln['id']]['altBytes'] / 1024:.1f} KB  \"{ln['text']}\"", flush=True)
+            capped = f", AAC {gain:+.2f} dB" if gain else ""
+            print(f"{flag} {ln['id']}: {len(x) / SR:.2f} s, {lufs:.1f} LUFS, TP {tp:.1f} dBFS{capped}, {size / 1024:.1f} + {entries[ln['id']]['altBytes'] / 1024:.1f} KB  \"{ln['text']}\" ({why[ln['id']]})", flush=True)
+            if said != ln["text"]:
+                print(f"    spoken as \"{said}\": {voice.phonemes(said)}", flush=True)
             # Written after every line, so a run cut short keeps what it rendered (the next run skips those).
             write_manifest(lang, {i: entries.get(i, old.get(i)) for i in (x["id"] for x in lines) if i in entries or i in old})
     keep = {Path(e["src"]).name for e in entries.values()} | {Path(e["alt"]).name for e in entries.values()}

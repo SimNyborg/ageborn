@@ -185,7 +185,7 @@ Apache 2.0, through `kokoro-onnx` 0.6.1) and shipped as small files; nothing run
 
 | File | Does |
 |---|---|
-| `voice/lines.json` | The line list as data: i18n keys (`each` renders one line per filling of a placeholder, e.g. the Anti-heavy hint per card) |
+| `voice/lines.json` | The line list as data: i18n keys (`each` renders one line per filling of a placeholder, e.g. the Anti-heavy hint per card), and `respell`: how to spell a name for the voice where Kokoro reads it wrong |
 | `voice/list-lines.ts` | Prints the lines with their English text from `src/i18n/*.en.json` (`npx tsx tools/audio/voice/list-lines.ts`) |
 | `voice/render.py` | Renders, masters and encodes every line and writes `src/audio/voice.gen.ts` |
 
@@ -195,20 +195,29 @@ Apache 2.0, through `kokoro-onnx` 0.6.1) and shipped as small files; nothing run
   same primer (the first approved sample line), so the loudness stage has settled as it had in the approved
   samples, and is cut out at its onset: every line lands at about -16 LUFS. The model files are checked by
   SHA-256.
+- **Pronunciation.** Kokoro reads through espeak-ng (en-gb), which gets a few names wrong ("Grenadier"
+  stressed on the first syllable, "Phalangite" with a hard g). `respell` in `lines.json` changes, whole word,
+  only what the voice is given ("Grenadeer", "Falanjite"); the subtitle and the manifest keep the real
+  spelling. The render prints the phonemes Kokoro is fed for such a line, so the reading can be checked.
 - **Output.** `public/audio/voice/<key>.<hash>.ogg` (mono Ogg Opus, 64 kbps: at 32-48 kbps Opus loses 2-3 dB
   of the voice's presence at 3-9 kHz) and `.m4a` (AAC-LC, 48 kbps), encoded by `build.py`'s `encode` like
   every other file; the manifest lists each line's files, length, sizes, English text and input hash.
-- **Re-running.** A line whose text and recipe are unchanged (same hash) and whose files exist is kept, so a
-  re-run reproduces the same files; a changed string re-renders only its line and its old files are deleted.
-  The render is deterministic as well (Kokoro on one CPU thread, ffmpeg bit-exact): `--force` writes the same
-  bytes. `--check` lists stale lines without rendering (no model needed); `npm test` also fails while a line's
-  text differs from its string.
+- **AAC peaks.** The AAC encoder overshoots (up to +3 dB at 48 kbps), so an AAC copy whose decoded true peak
+  would pass -1 dBTP is encoded again from the master turned down until it decodes at -1.2 dBTP or under. The
+  manifest records that gain (`altGain`, dB) and the narrator turns the copy back up, so it plays within
+  0.2 dB of its Ogg file and no decoder that stops at full scale clips it.
+- **Re-running.** A line whose text and recipe are unchanged (same hash), whose files exist and whose AAC
+  copy decodes under the cap is kept, so a re-run reproduces the same files; a changed string re-renders only
+  its line and its old files are deleted. A respelling counts in the hash only where it changes a line. The
+  render is deterministic as well (Kokoro on one CPU thread, ffmpeg bit-exact): `--force` writes the same
+  bytes. `--check` lists stale lines and why, without rendering (no model needed); `npm test` also fails while
+  a line's text differs from its string.
 - **At play time** (`src/audio/narrator.ts`, `src/app/narration`): a line plays only while its string still
   reads the rendered text in the current language, so a new string or the Danish pass shows its subtitle
   silently until it is rendered (Danish needs a TTS with Danish voices).
 
 ```sh
-python3 -m venv /tmp/kokoro && /tmp/kokoro/bin/pip install kokoro-onnx==0.6.1 soundfile
+python3 -m venv /tmp/kokoro && /tmp/kokoro/bin/pip install kokoro-onnx==0.6.1 soundfile scipy
 # kokoro-v1.0.int8.onnx and voices-v1.0.bin from the kokoro-onnx releases, in one folder:
 KOKORO_MODELS=/path/to/models /tmp/kokoro/bin/python tools/audio/voice/render.py
 /tmp/kokoro/bin/python tools/audio/voice/render.py --check

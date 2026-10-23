@@ -74,7 +74,7 @@ describe('match 1 retiming run (A8)', () => {
     }
   });
 
-  it('keeps the A8 order: kill, Pebbler, Rock Tosser, evolve, Arrow Storm, later ages', () => {
+  it('keeps the A8 order: kill, Pebbler, Rock Thrower, evolve, Arrow Storm, later ages', () => {
     const t = MATCH1_TIMING;
     const order = [t.firstKill, t.evolveReady, t.medieval, t.arrowStormReady, t.gunpowder, t.modern, t.future, t.groggFalls];
     expect(order).toEqual([...order].sort((a, b) => a - b));

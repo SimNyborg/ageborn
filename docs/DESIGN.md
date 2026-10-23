@@ -971,7 +971,7 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 
 | Slug | Turret | Rar | Cost | Damage / interval | Range | Hits | Notes |
 |---|---|---|---|---|---|---|---|
-| rock_tosser | Rock Tosser | C | 150 | 30 / 1.5 s | 360 | G+A | Single target, arc |
+| rock_tosser | Rock Thrower | C | 150 | 30 / 1.5 s | 360 | G+A | Single target, arc |
 | angry_beehive | Angry Beehive | C | 175 | 5 / 0.2 s | 220 | G+A | Bee stream, high chip DPS, short range. Our comic signature turret |
 | log_roller | Log Roller | R | 250 | 45 / 4.0 s | 300 | G | Rolls a log that hits ground enemies within 300 lu of your gate, nearest to the gate first; max 6 targets |
 | grumpy_toad | Grumpy Toad | E | 250 | 60 / 5.0 s | 420 | G | Tongue grabs the nearest enemy ranged or support ground unit in range, else the second-frontmost small or medium ground enemy, and drags it 120 lu toward your gate. The drag stops at the enemy's frontmost ground unit and short of your nearest ground unit |
@@ -1910,8 +1910,8 @@ On-screen text is at most 8 words. No menu, name prompt or account screen appear
 | 0:03 | Match 1 (Tutorial format, Stone to Future) vs Old Grogg (AI, Training match: no clock, his base at 90%). Tray: Bonker only; the gold counter pulses when affordable. Grogg sends Training Dummies | "Tap to send a Bonker" |
 | ~0:17 | First kill; "+30" flies to the gold counter | "Kills earn gold" |
 | 0:20 | Pebbler card slides in (script `unlockSlot`) | "Pebblers shoot over friends" |
-| 0:40 | Grogg sends a Tuskback; the script grants 150 gold and the empty mount pulses | "Build a Rock Tosser" |
-| ~0:37 / ~0:39 (Anti-heavy, build phase H3, reworked after review 2026-09-30) | As Grogg's Tuskback walks on (0:37) the Spear Hunter card slides in with its "Beats Heavy" chip and the script grants its price, 100 gold (`unlockSlot` + `grantGold`). After the Rock Tosser beat the hand points at the card while the Tuskback is within 500 lu of the player's front (on screen with the follow camera; trigger `foeHeavy`), and the beat ends when the Spear Hunter walks on, not when it is queued (done `spawned`, 20 s timeout). Grogg's Tuskbacks are level 10 (+45%, `MATCH1_GROGG_LEVELS`): the first fights the Bonkers camped at his gate until ~0:51; a second walks on at ~0:59 as the Spear Hunter reaches the gate, and the Spear Hunter kills it (~1:07). Retimed: Medieval 0:57, Gunpowder 1:27, Modern 1:46, Future 2:19, Grogg falls 2:25 | "Spear Hunters beat Heavies" |
+| 0:40 | Grogg sends a Tuskback; the script grants 150 gold and the empty mount pulses | "Build a Rock Thrower" |
+| ~0:37 / ~0:39 (Anti-heavy, build phase H3, reworked after review 2026-09-30) | As Grogg's Tuskback walks on (0:37) the Spear Hunter card slides in with its "Beats Heavy" chip and the script grants its price, 100 gold (`unlockSlot` + `grantGold`). After the Rock Thrower beat the hand points at the card while the Tuskback is within 500 lu of the player's front (on screen with the follow camera; trigger `foeHeavy`), and the beat ends when the Spear Hunter walks on, not when it is queued (done `spawned`, 20 s timeout). Grogg's Tuskbacks are level 10 (+45%, `MATCH1_GROGG_LEVELS`): the first fights the Bonkers camped at his gate until ~0:51; a second walks on at ~0:59 as the Spear Hunter reaches the gate, and the Spear Hunter kills it (~1:07). Retimed: Medieval 0:57, Gunpowder 1:27, Modern 1:46, Future 2:19, Grogg falls 2:25 | "Spear Hunters beat Heavies" |
 | ~0:50 | Tutorial XP (built: 680) fills; Evolve glows steadily on the XP bar | "Evolve!" |
 | ~0:55 | Full Ascension show; 2 Vanguard Footmen march out; tray flips to Footman and Longbowman; Grogg stays in the Stone Age for comedy | none |
 | ~1:20 | Arrow Storm ready; an animated hand drags it onto enemies | "Drag the arrows onto them" |

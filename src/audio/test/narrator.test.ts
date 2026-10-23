@@ -356,6 +356,23 @@ describe('Narrator', () => {
     expect(undecodable.fetched).toEqual(['audio/voice/a.aaaa.ogg', 'audio/voice/a.bbbb.m4a']);
   });
 
+  it('turns an AAC copy encoded turned down (altGain) back up, so it plays as loud as the Ogg file', async () => {
+    const files = { a: { ...file('a'), altGain: -2.85 }, b: file('b') };
+    const aac = rig({ opus: () => false, files });
+    await aac.n.say('a');
+    expect((sources(aac.ctx)[0]!.outputs[0] as FakeGain).gain.last).toBeCloseTo(10 ** (2.85 / 20), 6);
+    // a copy that was not turned down plays at 1
+    await aac.n.say('b');
+    expect((sources(aac.ctx)[1]!.outputs[0] as FakeGain).gain.last).toBe(1);
+    // the Ogg file of the same line plays at 1, and so does the AAC copy as the Ogg file's retry... turned up
+    const ogg = rig({ files });
+    await ogg.n.say('a');
+    expect((sources(ogg.ctx)[0]!.outputs[0] as FakeGain).gain.last).toBe(1);
+    const retry = rig({ files, failing: (src) => src.endsWith('.ogg') });
+    await retry.n.say('a');
+    expect((sources(retry.ctx)[0]!.outputs[0] as FakeGain).gain.last).toBeCloseTo(10 ** (2.85 / 20), 6);
+  });
+
   it('a line whose files are missing or broken is skipped without throwing, and not retried at once', async () => {
     const warns: string[] = [];
     const r = rig({ failing: () => true, warn: (m) => warns.push(m) });

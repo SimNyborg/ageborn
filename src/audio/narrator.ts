@@ -15,7 +15,9 @@
  *   for the next step or two stay (at most `DECODED_KEEP`); `release` drops those too when a step is over, and
  *   switching the narrator off drops everything. A line asked for again is fetched again (the HTTP cache has it).
  * - Each line is a mono Ogg Opus file with an AAC copy (AAC first where Ogg Opus is not supported, else the
- *   retry). A line whose files are missing or do not decode is skipped: its subtitle shows as always.
+ *   retry). A line whose files are missing or do not decode is skipped: its subtitle shows as always. An AAC
+ *   copy encoded turned down (`VoiceFile.altGain`, so its decoded peaks stay under -1 dBTP) is turned back up
+ *   here, so it plays as loud as the Ogg file.
  * - A line starts only while the context runs (after the first gesture's unlock, with the page visible); the
  *   master volume and mute apply through the master bus, and the voice bus has its own volume (Settings).
  */
@@ -148,6 +150,8 @@ export class Narrator {
   /** Fetched, not yet decoded (prefetched before the context existed). */
   private readonly fetched = new Map<string, Promise<ArrayBuffer>>();
   private readonly failedAt = new Map<string, number>();
+  /** The gain a line plays at: 1, or the undoing of its AAC copy's `altGain` when that copy is the one decoded. */
+  private readonly level = new Map<string, number>();
   /** Bumped by `release`, Narrator off and `dispose`: a load started before keeps nothing (a waiting `say` still gets it). */
   private epoch = 0;
   private readonly listeners = new Set<(e: NarratorEvent) => void>();
@@ -272,7 +276,7 @@ export class Narrator {
       src.buffer = buffer;
       gain = ctx.createGain();
       gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(1, t + FADE_IN_S);
+      gain.gain.linearRampToValueAtTime(this.level.get(id) ?? 1, t + FADE_IN_S);
       src.connect(gain);
       gain.connect(input);
       src.start(t);
@@ -370,7 +374,9 @@ export class Narrator {
         if (epoch === this.epoch) this.fetched.set(id, Promise.resolve(bytes));
         throw new Error('audio is locked');
       }
-      return out.ctx.decodeAudioData(bytes);
+      const buffer = await out.ctx.decodeAudioData(bytes);
+      this.level.set(id, src === file.alt && file.altGain ? 10 ** (-file.altGain / 20) : 1);
+      return buffer;
     };
     const p = attempt(0)
       .catch((e: unknown) => {

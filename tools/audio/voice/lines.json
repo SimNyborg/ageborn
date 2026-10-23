@@ -1,6 +1,7 @@
 {
-  "$comment": "The narrator's line list (queue item 39): i18n keys, read in English from src/i18n/*.en.json, so a changed string re-renders its line. `each` renders one line per value of a {placeholder}: `antiArmorNames` is every released, visible Anti-heavy unit's name key. `where` says where the line shows. Render with tools/audio/voice/render.py (tools/audio/README.md).",
+  "$comment": "The narrator's line list (queue item 39): i18n keys, read in English from src/i18n/*.en.json, so a changed string re-renders its line. `each` renders one line per value of a {placeholder}: `antiArmorNames` is every released, visible Anti-heavy unit's name key. `where` says where the line shows. Render with tools/audio/voice/render.py (tools/audio/README.md). `respell` changes only what Kokoro is given to say, word for word, for a name its en-gb reading gets wrong (render.py prints the phonemes it is fed); the subtitle and the manifest's text keep the real spelling.",
   "lang": "en",
+  "respell": { "Grenadier": "Grenadeer", "Phalangite": "Falanjite" },
   "lines": [
     { "key": "tutorial.m1.sendBonker", "where": "match 1: the first beat" },
     { "key": "tutorial.m1.killsEarnGold", "where": "match 1: the first kill" },
