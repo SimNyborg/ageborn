@@ -20,7 +20,9 @@
  * ({@link HANDOVER_BP}): the next deck ranks as the deck and gets a copy well before the evolve (HD where it
  * fits), waiting without one only while the governor frees memory (`canWait`: nothing draws it before the
  * age-up), current cards nobody fielded lately rank last, and a card of the age it is leaving that is on its 1x
- * copy stays there (`noRaise`: no HD load for a unit about to be gone; review S1).
+ * copy stays there (`noRaise`: no HD load for a unit about to be gone; review S1), unless it stands on the lane,
+ * where it may be seen through the evolve's camera push (review 2 S-b): it is raised in the governor's room for
+ * the units of ages being left (`leaving`), so no other copy steps down for it.
  */
 import type { AgeId, CardId, MatchConfig, Side, SimState, SkinId, VisualId } from '@/contracts';
 import { TICKS_PER_SECOND } from '@/core';
@@ -47,9 +49,16 @@ export interface HeldVisual {
   canWait?: boolean;
   /**
    * Its side is leaving its age (handing over to the next one) or has left it: on its 1x copy it stays there,
-   * so a card fielded once more before the evolve does not load its HD copy again (review S1).
+   * so a card queued once more before the evolve does not load its HD copy again (review S1). A unit of the age
+   * being left that stands on the lane is not held so (review 2 S-b).
    */
   noRaise?: boolean;
+  /**
+   * Every hold of it is a card of an age its side is leaving (handing over from) or has left, whatever its rank:
+   * on the lane its HD copy takes the governor's room for leaving units above the budget first (visuals'
+   * `sheetBudget.ts` `LEAVING_LANE_BYTES`; review 2 S-b), so raising such a unit steps no other copy down.
+   */
+  leaving?: boolean;
 }
 
 /**
@@ -209,8 +218,9 @@ export function cardVisual(config: Readonly<MatchConfig>, side: Side, card: Card
  * on the lane lately ({@link RECENT_FIELD_TICKS}). Before its hand-over a side's next age is held as optional
  * (its Vanguard, which the age-up spawns, is not), and until its Ascension as `canWait`; a side handing over
  * to its next age ({@link handingOver}) ranks that age's deck as the deck and its current deck last, but for
- * what is on the lane, queued or fielded lately, and marks the cards of the age it leaves (and of ages it has
- * left) `noRaise`. Keyed `visualId@skin`, so the caller can tell when the set changed.
+ * what is on the lane, queued or fielded lately, and marks the cards of the age it leaves (but for those on the
+ * lane) and of ages it has left `noRaise`, and all of them `leaving`. Keyed `visualId@skin`, so the caller can tell
+ * when the set changed.
  */
 export function heldVisuals(
   config: Readonly<MatchConfig>,
@@ -222,24 +232,30 @@ export function heldVisuals(
   const content = config.content;
   const out = new Map<string, HeldVisual>();
   const handover: [boolean, boolean] = [false, false];
-  // a card of the age its side is handing over from, or of an age the side has left
-  const leaving = (side: Side, card: CardId): boolean => {
+  // a card of an age the side has left (`left`), or of the age it is handing over from
+  const going = (side: Side, card: CardId): { left: boolean; handing: boolean } => {
     const age = content.units[card]?.age;
     const i = age ? ages.indexOf(age) : -1;
     const at = state.sides[side].ageIndex;
-    return i >= 0 && (i < at || (i === at && handover[side]));
+    return { left: i >= 0 && i < at, handing: i >= 0 && i === at && handover[side] };
   };
-  // a visual held twice keeps its best rank, and is optional (canWait, noRaise) only when every hold of it is
+  // a visual held twice keeps its best rank, and is optional (canWait, noRaise, leaving) only when every hold of it
+  // is; a card of the age being left stays on a 1x copy (noRaise) unless it stands on the lane: a unit there on its
+  // 1x copy is raised like any other, since it may stand through the evolve's camera push (review 2 S-b: two units
+  // stayed 1x for 13 s); one HD load each, in the governor's room for leaving units (`leaving`), and the releaser
+  // holds its upload in a quiet window
   const add = (side: Side, card: CardId, rank: number, optional = false, canWait = false): void => {
     const v = cardVisual(config, side, card);
     if (!v) return;
     const key = `${v.visualId}@${v.skin ?? ''}`;
     const had = out.get(key);
+    const g = going(side, card);
     const opt = optional && (!had || had.optional === true);
     const wait = (optional || canWait) && (!had || had.optional === true || had.canWait === true);
-    const stay = leaving(side, card) && (!had || had.noRaise === true);
+    const stay = (g.left || (g.handing && rank !== HOLD_RANK.field)) && (!had || had.noRaise === true);
+    const away = (g.left || g.handing) && (!had || had.leaving === true);
     const best = had ? Math.min(had.priority ?? HOLD_RANK.deck, rank) : rank;
-    out.set(key, { ...v, priority: best, ...(opt ? { optional: true } : {}), ...(wait && !opt ? { canWait: true } : {}), ...(stay ? { noRaise: true } : {}) });
+    out.set(key, { ...v, priority: best, ...(opt ? { optional: true } : {}), ...(wait && !opt ? { canWait: true } : {}), ...(stay ? { noRaise: true } : {}), ...(away ? { leaving: true } : {}) });
   };
   // what a unit brings on (followed through), held as soon as the unit trains or stands on the lane
   const followUps = (side: Side, card: CardId, seen = new Set<CardId>()): void => {

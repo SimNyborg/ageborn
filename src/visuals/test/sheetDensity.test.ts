@@ -13,7 +13,7 @@ import type { VisualDef } from '@/contracts/art';
 import { AtlasAdapter, LEASE_LINGER_MS, type AtlasData, type SheetLease } from '../adapters/atlas';
 import { MANIFEST } from '../manifest';
 import { createArtProvider } from '../provider';
-import { DEMOTE_CONFIRM_MS, HD_HOLD_MS, SHEET_RANK, unitSheetBytes } from '../sheetBudget';
+import { DEMOTE_CONFIRM_MS, HD_HOLD_MS, LEAVING_LANE_BYTES, SHEET_RANK, unitSheetBytes } from '../sheetBudget';
 
 afterEach(() => {
   vi.useRealTimers();
@@ -319,6 +319,205 @@ describe('two copies of a unit sheet on an HD screen (memory governor)', () => {
 });
 
 /**
+ * A loader like Pixi's `Assets`: one asset per URL (every set that loads a file gets the same textures) until the
+ * URL is unloaded, which destroys its texture source (its style goes; a sprite still drawing it throws in Pixi's
+ * renderer, which stopped the battle's ticker: review 2 B). `fail` names the files that do not load; `hold` makes
+ * an unload wait until the test lets it finish.
+ */
+function pixiLikeLoader(fail: (url: string) => boolean) {
+  const cache = new Map<string, AtlasData>();
+  const loads: string[] = [];
+  const unloads: string[] = [];
+  let hold: Promise<void> | null = null;
+  // (like `loadWithAssets`, every load gets its own wrapper around the one asset's textures)
+  const wrap = (d: AtlasData): AtlasData => ({ ...d, animations: { ...d.animations }, clips: { ...d.clips } });
+  const load = async (url: string): Promise<AtlasData> => {
+    if (fail(url)) throw new Error(`404 ${url}`);
+    const hit = cache.get(url);
+    if (hit) return wrap(hit);
+    loads.push(url);
+    const hd = url.includes('.hd.');
+    const source = new ImageSource({ resource: { width: 64, height: 64 } as unknown as ImageBitmap, label: url });
+    const tex = (n: number): Texture[] => Array.from({ length: n }, () => new Texture({ source }));
+    const base = data(hd);
+    const d: AtlasData = url.includes('.x.')
+      ? { luPerUnit: hd ? 0.5 : 1, animations: { attack_b: tex(6) }, clips: {}, source }
+      : { ...base, animations: Object.fromEntries(Object.entries(base.animations).map(([k, v]) => [k, tex(v.length)])), source };
+    cache.set(url, d);
+    return wrap(d);
+  };
+  const unload = async (url: string): Promise<void> => {
+    unloads.push(url);
+    if (hold) await hold;
+    const d = cache.get(url);
+    cache.delete(url);
+    d?.source?.destroy();
+  };
+  return {
+    load,
+    unload,
+    loads,
+    unloads,
+    /** The texture source the loader holds for a URL now. */
+    source: (url: string) => cache.get(url)?.source ?? null,
+    holdUnloads: () => {
+      let let_ = (): void => undefined;
+      hold = new Promise<void>((r) => (let_ = r));
+      return () => {
+        hold = null;
+        let_();
+      };
+    },
+  };
+}
+
+/** True while a texture source can still be drawn (not destroyed, its style there). */
+const drawable = (s: ImageSource | null | undefined): boolean => !!s && !s.destroyed && s.style !== null;
+
+describe('review 2 B: a sheet file two sets share stays loaded while either holds it', () => {
+  const bonker = MANIFEST['unit.bonker'] as VisualDef & { source: string };
+  const plain = '/ageborn/art/units/stone/bonker.json';
+  const plainX = '/ageborn/art/units/stone/bonker.x.json';
+
+  function adapter(o: { hd: boolean; fail: (url: string) => boolean; extras?: boolean }) {
+    const def = (o.extras ? { ...bonker, clips: { ...bonker.clips, attack_b: { kind: 'atlas', ref: 'attack_b', durationMs: 600, loop: false } } } : { ...bonker, clips: { idle: bonker.clips['idle']! } }) as VisualDef & { source: string };
+    const art = createArtProvider({ warn: () => {} });
+    const f = pixiLikeLoader(o.fail);
+    const a = new AtlasAdapter({ entries: () => [def], decor: art.procedural.baker, baseUrl: '/ageborn/', hd: o.hd, lazyUnits: true, load: f.load, unload: f.unload });
+    return { a, def, src: def.source, f };
+  }
+
+  it('an HD file that fails: the battle copy is the 1x file the 1x copy loads too; letting either go keeps the other drawable, the last one unloads it', async () => {
+    vi.useFakeTimers();
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const { a, def, src, f } = adapter({ hd: true, fail: (u) => u.includes('.hd.') });
+    // the governor raises the sheet: its HD file fails and the 1x file stands in as the battle copy
+    const hd = a.lease(src, { linger: 0 });
+    await hd.ready;
+    expect(a.hasSheet(src)).toBe(true);
+    expect(a.hdFellBack(src)).toBe(true);
+    const onLane = view(a, def);
+    // the governor steps it down: the 1x copy is the same file (Pixi's loader hands both sets one asset)
+    const sd = a.lease(src, { linger: 0, density: 'sd' });
+    await sd.ready;
+    expect(a.hasSdSheet(src)).toBe(true);
+    expect(f.loads).toEqual([plain]);
+    const shared = f.source(plain);
+    expect(drawable(shared)).toBe(true);
+    // the HD lease ends and the battle copy's last view goes: the battle copy unloads, the 1x copy keeps the file
+    hd.release();
+    onLane.destroy();
+    await vi.advanceTimersByTimeAsync(LEASE_LINGER_MS + 10);
+    await settle();
+    expect(a.hasSheet(src)).toBe(false);
+    expect(f.unloads).toEqual([]);
+    expect(drawable(shared)).toBe(true);
+    const walker = view(a, def);
+    walker.play('walk');
+    walker.update(100);
+    // raised again, the views move to the battle copy (the same file), and the 1x copy goes: the battle copy keeps it
+    const hd2 = a.lease(src, { linger: 0 });
+    await hd2.ready;
+    expect(a.upgradeViews(src)).toBe(1);
+    sd.release();
+    await vi.advanceTimersByTimeAsync(10);
+    await settle();
+    expect(a.hasSdSheet(src)).toBe(false);
+    expect(f.unloads).toEqual([]);
+    expect(drawable(shared)).toBe(true);
+    walker.update(100);
+    // the last holder lets go: now the file unloads
+    walker.destroy();
+    hd2.release();
+    await vi.advanceTimersByTimeAsync(10);
+    await settle();
+    expect(f.unloads).toEqual([plain]);
+    expect(drawable(shared)).toBe(false);
+    warn.mockRestore();
+  });
+
+  it('an HD extras file that fails: the plain extras file both copies hold stays until the last one lets go', async () => {
+    vi.useFakeTimers();
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const { a, src, f } = adapter({ hd: true, extras: true, fail: (u) => u.includes('.x.hd.') });
+    const hd = a.lease(src, { linger: 0 });
+    await hd.ready;
+    const sd = a.lease(src, { linger: 0, density: 'sd' });
+    await sd.ready;
+    expect(f.loads.sort()).toEqual(['/ageborn/art/units/stone/bonker.hd.json', plain, plainX].sort());
+    const extras = f.source(plainX);
+    // the 1x copy goes: its own core file unloads, the extras file the battle copy holds too stays
+    sd.release();
+    await vi.advanceTimersByTimeAsync(10);
+    await settle();
+    expect(f.unloads).toEqual([plain]);
+    expect(drawable(extras)).toBe(true);
+    hd.release();
+    await vi.advanceTimersByTimeAsync(10);
+    await settle();
+    expect(f.unloads.sort()).toEqual([plain, '/ageborn/art/units/stone/bonker.hd.json', plainX].sort());
+    expect(drawable(extras)).toBe(false);
+    warn.mockRestore();
+  });
+
+  it('on a 1x screen, a showcase HD copy whose file fails is the battle\'s own file: closing the showcase keeps it', async () => {
+    vi.useFakeTimers();
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const { a, def, src, f } = adapter({ hd: false, fail: (u) => u.includes('.hd.') });
+    const game = a.lease(src, { linger: 0 });
+    await game.ready;
+    const v = view(a, def);
+    const show = a.lease(src, { hd: true, linger: 0 });
+    await show.ready;
+    expect(show.hd).toBe(true);
+    expect(a.hasHdCopy(src)).toBe(true);
+    expect(f.loads).toEqual([plain]);
+    show.release();
+    await vi.advanceTimersByTimeAsync(10);
+    await settle();
+    expect(a.hasHdCopy(src)).toBe(false);
+    expect(f.unloads).toEqual([]);
+    expect(drawable(f.source(plain))).toBe(true);
+    v.update(100);
+    v.destroy();
+    game.release();
+    await vi.advanceTimersByTimeAsync(LEASE_LINGER_MS + 10);
+    await settle();
+    expect(f.unloads).toEqual([plain]);
+    warn.mockRestore();
+  });
+
+  it('a load of a file whose unload is in flight waits for it, and gets a fresh copy (never the one being destroyed)', async () => {
+    vi.useFakeTimers();
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const { a, src, f } = adapter({ hd: true, fail: (u) => u.includes('.hd.') });
+    const sd = a.lease(src, { linger: 0, density: 'sd' });
+    await sd.ready;
+    const old = f.source(plain);
+    const finish = f.holdUnloads();
+    sd.release();
+    await vi.advanceTimersByTimeAsync(10);
+    await settle();
+    expect(f.unloads).toEqual([plain]);
+    // the battle wants the sheet back while that unload runs: its HD file fails, and its 1x file waits for the unload
+    const hd = a.lease(src, { linger: 0 });
+    await vi.advanceTimersByTimeAsync(10);
+    await settle();
+    expect(a.hasSheet(src)).toBe(false);
+    expect(f.loads).toEqual([plain]);
+    finish();
+    await hd.ready;
+    expect(a.hasSheet(src)).toBe(true);
+    expect(f.loads).toEqual([plain, plain]);
+    expect(drawable(old)).toBe(false);
+    expect(f.source(plain)).not.toBe(old);
+    expect(drawable(f.source(plain))).toBe(true);
+    hd.release();
+    warn.mockRestore();
+  });
+});
+
+/**
  * A provider on an HD screen whose atlas leases are recorded (and resolve when the test says), with a clock the
  * test moves (`tick`, which also runs the governor's re-plans; fake timers).
  */
@@ -575,6 +774,73 @@ describe('the provider plans every hold\'s sheets together (memory governor)', (
     await tick(10);
     // its HD load starts, never a 1x copy first
     expect(log.filter((l) => l.includes(bonker))).toEqual([`lease hd ${bonker}`]);
+    hold.release();
+  });
+
+  it('review 2 S-b: a unit of an age its side is leaving that walks out on its 1x copy gets HD at once in the room above the budget, and no other copy steps down, also once units draw it', async () => {
+    expect(createArtProvider({ warn: () => {}, unitSheets: 'match' }).leavingAllowance).toBe(LEAVING_LANE_BYTES);
+    const bonkerX = bytes(bonker);
+    expect(bonkerX.hd).toBeLessThanOrEqual(LEAVING_LANE_BYTES);
+    // the budget holds the Mammoth's HD copy and the Bonker's 1x copy, no more
+    const { art, log, finish, tick } = governed(bytes(mammoth).hd + bonkerX.sd + 1);
+    const hold = art.holdArt();
+    // a hand-over: the next deck's Mammoth gets its HD copy; the current deck's Bonker (stepped down) its 1x copy
+    void hold.set([{ visualId: 'unit.mammoth_matriarch', priority: SHEET_RANK.deck }, { visualId: 'unit.bonker', priority: SHEET_RANK.next, noRaise: true, leaving: true }]);
+    expect(log).toEqual([`lease hd ${mammoth}`, `lease sd ${bonker}`]);
+    await finish(`hd ${mammoth}`);
+    await finish(`sd ${bonker}`);
+    // the Bonker is trained once more and walks out on its 1x copy: its HD copy loads at once, in the leaving room
+    void hold.set([{ visualId: 'unit.mammoth_matriarch', priority: SHEET_RANK.deck }, { visualId: 'unit.bonker', priority: SHEET_RANK.field, leaving: true }]);
+    expect(log).toContain(`lease hd ${bonker}`);
+    await tick(DEMOTE_CONFIRM_MS * 3);
+    // the next deck's fresh copy keeps HD: nothing steps down for the lane
+    expect(log).not.toContain(`lease sd ${mammoth}`);
+    expect(log).not.toContain(`release hd ${mammoth}`);
+    // its HD copy lands and units draw it; after the Mammoth's hysteresis too, nothing steps down
+    vi.spyOn(art.atlas, 'hdDrawn').mockImplementation((src) => src === bonker);
+    await finish(`hd ${bonker}`);
+    await tick(HD_HOLD_MS + DEMOTE_CONFIRM_MS * 3);
+    expect(log).not.toContain(`lease sd ${mammoth}`);
+    expect(log).not.toContain(`release hd ${mammoth}`);
+    expect(art.sheetPlan().plannedBytes).toBeLessThanOrEqual(art.sheetBudget + LEAVING_LANE_BYTES);
+    hold.release();
+  });
+
+  it('review 2 S-b: a unit not of a leaving age gets no room above the budget: the lane comes first, once the lowest copy has stepped down', async () => {
+    const { art, log, finish, tick } = governed(bytes(mammoth).hd + bytes(bonker).sd + 1);
+    const hold = art.holdArt();
+    void hold.set([{ visualId: 'unit.mammoth_matriarch', priority: SHEET_RANK.soon }, { visualId: 'unit.bonker', priority: SHEET_RANK.deck }]);
+    expect(log).toEqual([`lease hd ${mammoth}`, `lease sd ${bonker}`]);
+    await finish(`hd ${mammoth}`);
+    await finish(`sd ${bonker}`);
+    void hold.set([{ visualId: 'unit.mammoth_matriarch', priority: SHEET_RANK.deck }, { visualId: 'unit.bonker', priority: SHEET_RANK.field }]);
+    // the Mammoth's step down waits for its confirmation, and the Bonker's HD load for the memory it frees
+    expect(log).not.toContain(`lease hd ${bonker}`);
+    await tick(DEMOTE_CONFIRM_MS + 10);
+    expect(log).toContain(`lease sd ${mammoth}`);
+    expect(log).not.toContain(`lease hd ${bonker}`);
+    await finish(`sd ${mammoth}`);
+    await tick(10);
+    expect(log).toContain(`lease hd ${bonker}`);
+    expect(art.sheetPlan().plannedBytes).toBeLessThanOrEqual(art.sheetBudget);
+    hold.release();
+  });
+
+  it('review 2 B: a sheet whose HD file failed is planned at its 1x cost (it is the 1x file): no step down, no second copy', async () => {
+    const { art, log, finish, tick } = governed(1e12);
+    const hold = art.holdArt();
+    void hold.set([{ visualId: 'unit.mammoth_matriarch', priority: SHEET_RANK.deck }]);
+    await finish(`hd ${mammoth}`);
+    // its HD file failed: the battle copy is the 1x file
+    vi.spyOn(art.atlas, 'hdFellBack').mockImplementation((src) => src === mammoth);
+    await tick(HD_HOLD_MS);
+    // room for the two 1x copies only: the Mammoth's "HD" copy fits at its 1x cost, so it keeps it
+    art.sheetBudget = bytes(mammoth).sd + bytes(bonker).sd + 1;
+    void hold.set([{ visualId: 'unit.mammoth_matriarch', priority: SHEET_RANK.deck }, { visualId: 'unit.bonker', priority: SHEET_RANK.deck }]);
+    await tick(DEMOTE_CONFIRM_MS + 10);
+    expect(log).not.toContain(`lease sd ${mammoth}`);
+    expect(log).toContain(`lease sd ${bonker}`);
+    expect(art.sheetPlan().sdSources).toEqual([bonker]);
     hold.release();
   });
 

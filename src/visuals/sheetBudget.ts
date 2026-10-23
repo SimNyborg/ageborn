@@ -27,13 +27,22 @@
  * Every copy change costs a load and a GPU upload (tens of ms on an iPhone for a big sheet), so a sheet does
  * not change copy for every small change of rank (review S1, 2026-10-18): an HD copy whose load is in flight
  * or whose step down to 1x is not confirmed yet stays (`hdKeep`, counted like a drawn copy), and an HD copy
- * that got HD or was drawn within `HD_HOLD_MS` keeps it before any other sheet gets HD, as long as the plan
- * stays within the budget (`hdRecent`). The provider confirms a step down to 1x only when a plan
- * `DEMOTE_CONFIRM_MS` later still wants it. A sheet held as optional (the next age's deck before its side's
- * Ascension) loads only where its HD copy fits and otherwise has no copy (`none`): it cannot be drawn before a
- * hold asks for it again, so it never loads 1x first and HD a moment later. A sheet held `noRaise` (its side is
- * leaving its age) that is on its 1x copy stays there: its units are about to be gone, and an HD load for them
- * would be one more load and upload near the evolve.
+ * that got HD or was drawn within `HD_HOLD_MS` keeps it before any other sheet but the lane's gets HD, as long as
+ * the plan stays within the budget (`hdRecent`; review 2 S-b: the lane comes first). The provider confirms a step
+ * down to 1x only when a plan `DEMOTE_CONFIRM_MS` later still wants it. A sheet held as optional (the next age's
+ * deck before its side's Ascension) loads only where its HD copy fits and otherwise has no copy (`none`): it
+ * cannot be drawn before a hold asks for it again, so it never loads 1x first and HD a moment later. A sheet held
+ * `noRaise` (its side has left its age, or is leaving it and no unit of it stands on the lane) that is on its 1x
+ * copy stays there: its units are about to be gone, and an HD load for them would be one more load and upload
+ * near the evolve.
+ *
+ * Cards of an age their side is leaving or has left are `leaving` (review 2 S-b, 2026-10-23). A card stepped down
+ * at its side's hand-over and trained once more walks out on its 1x copy and may stand through the evolve's
+ * camera push, so on the lane it is raised at once; there its HD copy (and that of every unit of such an age on
+ * the lane) may take up to `LEAVING_LANE_BYTES` above the budget (`leavingAllowance`). Without that room the raise
+ * stepped one of the next deck's fresh copies down, which then loaded twice more (its 1x copy before the evolve,
+ * its HD copy after it); keeping room free under the budget instead left more of every next deck on its 1x copy
+ * at each hand-over. The units it covers are gone within a minute of their side's age-up.
  *
  * Pure and deterministic; presentation only: the sim never sees any of this.
  */
@@ -57,9 +66,20 @@ export const DEMOTE_CONFIRM_MS = 1_000;
 /**
  * Decoded unit sheet memory a battle may plan with, HD and 1x copies together (bytes). The rest of a war's
  * decoded images (the baked parts, turret, base and fort sheets, the backdrop scenes) stays under about
- * 150 MB, so a war keeps under 560 MB, a margin under the 600 MB budget (`tests/e2e/memory.spec.ts`).
+ * 150 MB, so a war keeps under 560 MB, a margin under the 600 MB budget (`tests/e2e/memory.spec.ts`), also with
+ * the leaving units' room above it (`LEAVING_LANE_BYTES`).
  */
 export const UNIT_SHEET_BUDGET_BYTES = 320_000_000;
+
+/**
+ * Room above the budget for the HD copies of units on the lane of an age their side is leaving or has left
+ * (bytes; `SheetWant.leaving`, the provider's plans, `planSheetDensities`' `leavingAllowance`; review 2 S-b). What
+ * their HD copies take over their 1x copies counts here first, so a unit that walks out on its 1x copy (a card
+ * stepped down at its side's hand-over, then trained once more) gets its HD copy at once without stepping another
+ * copy down, and the rest of the plan keeps the whole budget. About two typical units' HD copies; for the few
+ * moments a war has such units on the lane.
+ */
+export const LEAVING_LANE_BYTES = 24_000_000;
 
 /** One sheet a battle holds. */
 export interface SheetWant {
@@ -84,9 +104,9 @@ export interface SheetWant {
    */
   hdKeep?: boolean;
   /**
-   * Its HD copy is in memory and loaded, or was drawn, within `HD_HOLD_MS`: it keeps HD before any other sheet
-   * gets it while the plan stays within the budget. Only up to the deck rank: a side handing over to its next
-   * age ranks its current deck `next`, and that lets go.
+   * Its HD copy is in memory and loaded, or was drawn, within `HD_HOLD_MS`: it keeps HD before any other sheet but
+   * the lane's gets it while the plan stays within the budget. Only up to the deck rank: a side handing over to its
+   * next age ranks its current deck `next`, and that lets go.
    */
   hdRecent?: boolean;
   /**
@@ -104,6 +124,12 @@ export interface SheetWant {
    * room there is (no HD load for units about to be gone).
    */
   noRaise?: boolean;
+  /**
+   * Its units belong to an age their side is leaving or has left (every holder says so): on the lane, what its HD
+   * copy takes over its 1x copy counts against the leaving units' room above the budget first
+   * ({@link LEAVING_LANE_BYTES}; review 2 S-b).
+   */
+  leaving?: boolean;
   /**
    * Nothing draws it for a while yet (the next age's deck during its side's hand-over): while copies the plan is
    * leaving still take their memory, its load waits without a copy (`holdBackNewHd`) rather than loading 1x first.
@@ -141,16 +167,8 @@ function staysSd(w: SheetWant): boolean {
   return w.noRaise === true && w.sdResident === true && w.hdResident !== true && !pinned(w);
 }
 
-/**
- * The density of every wanted sheet: an HD copy units on the lane draw (or one kept, `hdKeep`) keeps HD, every
- * other sheet starts at 1x (an optional one at no copy); then recent HD copies (`hdRecent`, up to the deck
- * rank) keep HD while the total stays within `budgetBytes`, and the rest gets HD by priority within it. A rank
- * whose sheet did not fit still lets its smaller sheets in, but no lower rank gets HD after it. An optional
- * sheet left without HD is `none`; a `noRaise` sheet on its 1x copy stays at 1x (and blocks nothing).
- * Duplicate sources count once, at their best rank (pinned or recent if any of them is, optional and noRaise
- * only if all of them are).
- */
-export function planSheetDensities(wants: readonly SheetWant[], budgetBytes: number): Map<string, SheetDensity> {
+/** Wanted sheets once each, at their best rank (pinned or recent if any want is; optional, noRaise and leaving only if all are), by priority. */
+function mergedWants(wants: readonly SheetWant[]): SheetWant[] {
   const best = new Map<string, SheetWant>();
   for (const w of wants) {
     const had = best.get(w.source);
@@ -164,22 +182,76 @@ export function planSheetDensities(wants: readonly SheetWant[], budgetBytes: num
     merged.hdRecent = w.hdRecent === true || had.hdRecent === true;
     merged.optional = w.optional === true && had.optional === true;
     merged.noRaise = w.noRaise === true && had.noRaise === true;
+    merged.leaving = w.leaving === true && had.leaving === true;
     best.set(w.source, merged);
   }
-  const list = [...best.values()].sort(byPriority);
+  return [...best.values()].sort(byPriority);
+}
+
+/**
+ * What a sheet planned HD takes over a plan that keeps it at 1x (or without a copy): a 1x copy in memory stays
+ * until the HD copy has loaded (unless that is in memory too), and a sheet with no copy yet takes its whole HD
+ * copy; a pinned HD copy takes what it holds over its 1x copy.
+ */
+function extraOf(w: SheetWant): number {
+  if (pinned(w)) return Math.max(0, w.hdBytes - w.sdBytes);
+  return mayGoWithout(w) || (w.sdResident && !w.hdResident) ? w.hdBytes : Math.max(0, w.hdBytes - w.sdBytes);
+}
+
+/** True when a sheet's HD copy counts against the leaving units' room: units of an age their side leaves stand on the lane. */
+function goingLane(w: SheetWant): boolean {
+  return w.leaving === true && w.rank === SHEET_RANK.field;
+}
+
+/**
+ * The room above the budget a plan's leaving lane sheets take (bytes, at most `allowance`): what their HD copies
+ * take over their 1x copies ({@link LEAVING_LANE_BYTES}). The provider holds new loads back against the budget plus
+ * this (`holdBackNewHd`).
+ */
+export function leavingRoom(wants: readonly SheetWant[], plan: ReadonlyMap<string, SheetDensity>, allowance: number): number {
+  let taken = 0;
+  for (const w of mergedWants(wants)) if (goingLane(w) && plan.get(w.source) === 'hd') taken += extraOf(w);
+  return Math.min(Math.max(0, allowance), taken);
+}
+
+/**
+ * The density of every wanted sheet: an HD copy units on the lane draw (or one kept, `hdKeep`) keeps HD, every
+ * other sheet starts at 1x (an optional one at no copy); then the lane's sheets get HD, then recent HD copies
+ * (`hdRecent`, up to the deck rank) keep HD and the rest gets HD by priority, all within `budgetBytes` plus the room
+ * the leaving lane sheets take above it (`leaving`, up to `leavingAllowance`, {@link LEAVING_LANE_BYTES}; default 0).
+ * A rank whose sheet did not fit still lets its smaller sheets in, but no lower rank gets HD after it. An optional
+ * sheet left without HD is `none`; a `noRaise` sheet on its 1x copy stays at 1x (and blocks nothing). Duplicate
+ * sources count once, at their best rank (pinned or recent if any of them is; optional, noRaise and leaving only
+ * if all of them are).
+ */
+export function planSheetDensities(wants: readonly SheetWant[], budgetBytes: number, o: { leavingAllowance?: number } = {}): Map<string, SheetDensity> {
+  const list = mergedWants(wants);
   const plan = new Map<string, SheetDensity>();
   let total = 0;
   for (const w of list) {
     plan.set(w.source, pinned(w) ? 'hd' : mayGoWithout(w) ? 'none' : 'sd');
     total += pinned(w) ? w.hdBytes : mayGoWithout(w) ? 0 : w.sdBytes;
   }
-  // a 1x copy in memory stays until the HD copy has loaded (unless that is in memory too); a sheet with no
-  // copy yet takes its whole HD copy
-  const extraOf = (w: SheetWant): number => (mayGoWithout(w) || (w.sdResident && !w.hdResident) ? w.hdBytes : Math.max(0, w.hdBytes - w.sdBytes));
+  // the leaving units' HD copies on the lane take the room above the budget first (review 2 S-b)
+  const allowance = Math.max(0, o.leavingAllowance ?? 0);
+  let going = 0;
+  for (const w of list) if (goingLane(w) && pinned(w)) going += extraOf(w);
+  // the lane comes first (review 2 S-b): a sheet units draw on the lane gets HD before a recent copy of a lower rank
+  // keeps it; in a hand-over the next deck's fresh HD copies held the room while two units on the lane stayed on
+  // their 1x copy through the evolve's camera push
   for (const w of list) {
-    if (pinned(w) || w.hdRecent !== true || w.rank > SHEET_RANK.deck || staysSd(w)) continue;
+    if (w.rank !== SHEET_RANK.field || plan.get(w.source) === 'hd' || staysSd(w)) continue;
     const extra = extraOf(w);
-    if (total + extra > budgetBytes) continue;
+    if (total + extra > budgetBytes + Math.min(allowance, going + (goingLane(w) ? extra : 0))) continue;
+    plan.set(w.source, 'hd');
+    total += extra;
+    if (goingLane(w)) going += extra;
+  }
+  const limit = budgetBytes + Math.min(allowance, going);
+  for (const w of list) {
+    if (pinned(w) || plan.get(w.source) === 'hd' || w.hdRecent !== true || w.rank > SHEET_RANK.deck || staysSd(w)) continue;
+    const extra = extraOf(w);
+    if (total + extra > limit) continue;
     plan.set(w.source, 'hd');
     total += extra;
   }
@@ -188,7 +260,7 @@ export function planSheetDensities(wants: readonly SheetWant[], budgetBytes: num
     if (plan.get(w.source) === 'hd' || staysSd(w)) continue;
     if (w.rank > blocked) break;
     const extra = extraOf(w);
-    if (total + extra <= budgetBytes) {
+    if (total + extra <= limit) {
       plan.set(w.source, 'hd');
       total += extra;
     } else blocked = w.rank;

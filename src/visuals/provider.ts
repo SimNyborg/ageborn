@@ -31,7 +31,7 @@ import { drawnScene, parseScene, sceneDir, sceneIdOf } from './backdrops/scenes'
 import { groundImageUrl } from './adapters/procedural/backdropView';
 import { puppetById } from './library';
 import { MANIFEST, PROCEDURAL_MANIFEST, type VisualManifest } from './manifest';
-import { DEMOTE_CONFIRM_MS, HD_HOLD_MS, holdBackNewHd, planSheetDensities, plannedBytes, SHEET_RANK, UNIT_SHEET_BUDGET_BYTES, unitSheetBytes, UNKNOWN_SHEET_BYTES, type SheetDensity, type SheetWant } from './sheetBudget';
+import { DEMOTE_CONFIRM_MS, HD_HOLD_MS, holdBackNewHd, LEAVING_LANE_BYTES, leavingRoom, planSheetDensities, plannedBytes, SHEET_RANK, UNIT_SHEET_BUDGET_BYTES, unitSheetBytes, UNKNOWN_SHEET_BYTES, type SheetDensity, type SheetWant } from './sheetBudget';
 import { SKIN_PUPPETS } from './skins';
 import { STYLE } from './style';
 
@@ -84,6 +84,11 @@ export interface HeldVisual {
    */
   noRaise?: boolean;
   /**
+   * Its units belong to an age their side is leaving or has left: on the lane its HD copy takes the leaving units'
+   * room above the budget first (`sheetBudget.ts` `leaving`, review 2 S-b).
+   */
+  leaving?: boolean;
+  /**
    * Nothing draws it for a while yet (the next age's deck during its side's hand-over): its load may wait while the
    * governor frees memory (`sheetBudget.ts` `canWait`).
    */
@@ -103,20 +108,21 @@ export interface ArtHold {
 
 /**
  * What a hold wants of a unit sheet: its best rank, whether it may go without a copy (`HeldVisual.optional`), wait
- * for one (`canWait`; an optional sheet can) and whether it stays on its 1x copy (`noRaise`); each only when every
- * holder of the sheet says so.
+ * for one (`canWait`; an optional sheet can), whether it stays on its 1x copy (`noRaise`) and whether its units are
+ * of an age their side is leaving (`leaving`); each only when every holder of the sheet says so.
  */
 interface HoldWant {
   rank: number;
   optional: boolean;
   canWait: boolean;
   noRaise: boolean;
+  leaving: boolean;
 }
 
-/** Two wants of one sheet as one (best rank; optional, canWait and noRaise only when both are). */
+/** Two wants of one sheet as one (best rank; optional, canWait, noRaise and leaving only when both are). */
 function mergeWant(had: HoldWant | undefined, w: HoldWant): HoldWant {
   if (!had) return w;
-  return { rank: Math.min(had.rank, w.rank), optional: had.optional && w.optional, canWait: had.canWait && w.canWait, noRaise: had.noRaise && w.noRaise };
+  return { rank: Math.min(had.rank, w.rank), optional: had.optional && w.optional, canWait: had.canWait && w.canWait, noRaise: had.noRaise && w.noRaise, leaving: had.leaving && w.leaving };
 }
 
 /** How long VS's warm-up keeps a match's opening sheets (the battle's own hold takes over long before). */
@@ -410,7 +416,7 @@ export class VisualsArtProvider implements ArtProvider {
     const unitSource = (def: VisualDef | undefined): string | null =>
       def && def.kind === 'atlas' && !isWorldSource(def.source) && !fortSource(def.source) ? def.source : null;
     const want = (src: string, rank: number, v: HeldVisual): void => {
-      wants.set(src, mergeWant(wants.get(src), { rank, optional: v.optional === true, canWait: v.optional === true || v.canWait === true, noRaise: v.noRaise === true }));
+      wants.set(src, mergeWant(wants.get(src), { rank, optional: v.optional === true, canWait: v.optional === true || v.canWait === true, noRaise: v.noRaise === true, leaving: v.leaving === true }));
     };
     const set = (visuals: readonly HeldVisual[]): Promise<void> => {
       if (!live) return Promise.resolve();
@@ -491,6 +497,12 @@ export class VisualsArtProvider implements ArtProvider {
    */
   sheetBudget = UNIT_SHEET_BUDGET_BYTES;
   /**
+   * Room above `sheetBudget` for the HD copies of units on the lane of an age their side is leaving or has left
+   * (`LEAVING_LANE_BYTES`, review 2 S-b): such a unit that walks out on its 1x copy gets its HD copy at once, without
+   * another copy stepping down.
+   */
+  leavingAllowance = LEAVING_LANE_BYTES;
+  /**
    * The last plan, for the dev memory hook: sheets planned HD and 1x, the planned bytes, how many times a sheet
    * changed copy (`moves`) and how many copies the plan loaded (`loads`, HD and 1x; review N6: every move is a
    * load and an upload, and so is every sheet that comes in).
@@ -545,7 +557,7 @@ export class VisualsArtProvider implements ArtProvider {
     }
     const list: SheetWant[] = [];
     const lastHd = new Map<string, number>();
-    for (const [source, { rank, optional, canWait, noRaise }] of merged) {
+    for (const [source, { rank, optional, canWait, noRaise, leaving }] of merged) {
       const b = unitSheetBytes(source) ?? UNKNOWN_SHEET_BYTES;
       const hdResident = this.atlas.hasSheet(source);
       const last = Math.max(this.hdAt.get(source) ?? -Infinity, this.atlas.hdDrawnAt(source));
@@ -553,7 +565,9 @@ export class VisualsArtProvider implements ArtProvider {
       list.push({
         source,
         rank,
-        hdBytes: b.hd,
+        // an "HD" copy whose HD file failed is the 1x file: it costs a 1x copy, and stepping it down frees nothing
+        // (review 2 B)
+        hdBytes: this.atlas.hdFellBack(source) ? b.sd : b.hd,
         sdBytes: b.sd,
         hdResident,
         hdDrawn: this.atlas.hdDrawn(source),
@@ -564,13 +578,14 @@ export class VisualsArtProvider implements ArtProvider {
         ...(optional ? { optional: true } : {}),
         ...(canWait ? { canWait: true } : {}),
         ...(noRaise ? { noRaise: true } : {}),
+        ...(leaving ? { leaving: true } : {}),
       });
     }
     let plan: Map<string, SheetDensity>;
     let recheckAt = Infinity;
     if (!this.atlas.hdScreen) plan = new Map(list.map((w) => [w.source, 'hd' as const]));
     else {
-      plan = planSheetDensities(list, this.sheetBudget);
+      plan = planSheetDensities(list, this.sheetBudget, { leavingAllowance: this.leavingAllowance });
       // a sheet back at HD in this plan forgets an earlier step down
       for (const w of list) if (!this.hdLeases.has(w.source) || plan.get(w.source) === 'hd') this.demoteSince.delete(w.source);
       // a step down from HD waits for a plan DEMOTE_CONFIRM_MS later that still wants it; keeping a sheet in HD
@@ -587,7 +602,7 @@ export class VisualsArtProvider implements ArtProvider {
           recheckAt = Math.min(recheckAt, since + DEMOTE_CONFIRM_MS);
         }
         if (!kept) break;
-        plan = planSheetDensities(list, this.sheetBudget);
+        plan = planSheetDensities(list, this.sheetBudget, { leavingAllowance: this.leavingAllowance });
       }
       // a sheet left at 1x (or none) while a recent HD copy holds the room is planned again when that ends
       if ([...plan.values()].some((d) => d !== 'hd')) {
@@ -597,7 +612,9 @@ export class VisualsArtProvider implements ArtProvider {
       // 1x copy is in); a plan once those have gone lets them in (`settle` plans again then)
       const settling = [...this.demoteSince.keys()].some((s) => this.hdLeases.has(s));
       const isNew = (s: string, d: 'hd' | 'sd'): boolean => !(d === 'hd' ? this.hdLeases : this.sdLeases).has(s);
-      if (holdBackNewHd(list, plan, this.sheetBudget, isNew, settling).length > 0) recheckAt = Math.min(recheckAt, now + HOLD_BACK_RECHECK_MS);
+      // (against the budget plus the room the leaving units' HD copies take above it)
+      const room = this.sheetBudget + leavingRoom(list, plan, this.leavingAllowance);
+      if (holdBackNewHd(list, plan, room, isNew, settling).length > 0) recheckAt = Math.min(recheckAt, now + HOLD_BACK_RECHECK_MS);
     }
     for (const s of [...this.demoteSince.keys()]) if (!merged.has(s)) this.demoteSince.delete(s);
     for (const [source, d] of plan) {
@@ -790,20 +807,67 @@ export class VisualsArtProvider implements ArtProvider {
   }
 
   /**
-   * Views drawn with their stand-in because their sheet was not in yet: units (G7: a battle's hold loads the
-   * decks ahead, so in play this stays 0), turrets (a turret keeps its stand-in for its whole life; review B1),
-   * bases (made again from the sheet once it is in, review S2) and forts (a fort swaps its sheet in when it
-   * lands). The dev memory hook and the e2e budget read them.
+   * Views drawn with their stand-in because their sheet was not in yet, counted as they are made: units (G7: a
+   * battle's hold loads the decks ahead, so in play this stays 0), turrets and bases (the battle view makes both
+   * again from their sheets once those are in: review S2, review 2 S-c) and forts (a fort swaps its sheet in when
+   * it lands). `turretsNow` and `basesNow` count the turret and base stand-ins still drawn now: one the battle
+   * replaced by its sheet's view no longer counts while it fades out (`replacedStandIn`), nor one destroyed. The
+   * dev memory hook and the e2e budget read them.
    */
-  readonly fallbacks = { units: 0, last: '', turrets: 0, bases: 0, forts: 0, lastWorld: '' };
+  readonly fallbacks = { units: 0, last: '', turrets: 0, bases: 0, forts: 0, lastWorld: '', turretsNow: 0, basesNow: 0 };
+
+  /** Each live turret or base stand-in's way out of `fallbacks.turretsNow` / `basesNow` (once: replaced or destroyed). */
+  private readonly standIns = new WeakMap<object, () => void>();
+
+  /** Counts a turret or base stand-in in `fallbacks` until it is replaced or destroyed. */
+  private liveStandIn<V extends TurretView | BaseView>(view: V, now: 'turretsNow' | 'basesNow'): V {
+    this.fallbacks[now]++;
+    let gone = false;
+    const leave = (): void => {
+      if (gone) return;
+      gone = true;
+      this.fallbacks[now]--;
+    };
+    this.standIns.set(view, leave);
+    const destroy = view.destroy.bind(view);
+    view.destroy = () => {
+      leave();
+      destroy();
+    };
+    return view;
+  }
+
+  /**
+   * The battle view made a turret or base again from its sheet (review 2 S-c; duck-typed): the stand-in it replaced
+   * fades out over the new view, and from now on it no longer counts as drawn by its stand-in.
+   */
+  replacedStandIn(view: TurretView | BaseView): void {
+    this.standIns.get(view)?.();
+  }
 
   createTurret(o: { visualId: VisualId; skin?: SkinId; side: Side; teamPreset: TeamPreset }): TurretView {
     const r = this.resolve(o.visualId, o.skin);
     const def = r?.def ?? this.missing(o.visualId);
     const key = r?.key ?? o.visualId;
     const fb = this.sheetFallback(key, r?.def, 'turret');
-    if (fb) return fb.adapter.createTurret({ key, def: fb.def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++ });
+    if (fb) return this.liveStandIn(fb.adapter.createTurret({ key, def: fb.def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++ }), 'turretsNow');
     return this.adapterFor(key, r?.def, 'turret').createTurret({ key, def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++ });
+  }
+
+  /**
+   * A turret's world sheet (review 2 S-c, duck-typed for the battle view): null when it is in (or the sheets are
+   * not drawn: a forced tier, a turret drawn by another tier), else a promise that settles once it has loaded or
+   * failed. A turret made before its sheet is in is drawn by its stand-in; the battle view makes it again once the
+   * sheet is in, as it does the bases (`baseSheetReady`).
+   */
+  turretSheetReady(o: { visualId: VisualId; skin?: SkinId }): Promise<void> | null {
+    if (this.force !== null && this.force !== 'atlas') return null;
+    const def = this.resolve(o.visualId, o.skin)?.def;
+    if (!def || def.kind !== 'atlas' || !isWorldSource(def.source) || this.atlas.world.get(def.source)) return null;
+    return this.atlas.world.ensure(def.source).then(
+      () => undefined,
+      () => undefined,
+    );
   }
 
   /**
@@ -850,7 +914,7 @@ export class VisualsArtProvider implements ArtProvider {
         const plain = this.isLazySkin(e.def) ? PROCEDURAL_MANIFEST[`base.${age}`] : undefined;
         return plain ? { key: `base.${age}`, def: plain } : undefined;
       };
-      return fb.adapter.createBase({ key, def: fb.def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++, age: o.age, skin: skinOf(o.age), resolveAge: procAge });
+      return this.liveStandIn(fb.adapter.createBase({ key, def: fb.def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++, age: o.age, skin: skinOf(o.age), resolveAge: procAge }), 'basesNow');
     }
     return this.adapterFor(key, r?.def, 'base').createBase({ key, def, side: o.side, teamPreset: o.teamPreset, seed: this.nextSeed++, age: o.age, skin: skinOf(o.age), resolveAge });
   }
