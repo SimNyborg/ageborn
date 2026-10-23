@@ -4,9 +4,11 @@
  * that canvas (the found player's troops join it), and the match start lets the menus' context go at once
  * (nothing of it left on the VS screen). A lost context shows the still island until it is back (review M
  * S6). Reduce motion keeps the still island: no live layer, no canvas. The still troops' strips are kept on the
- * device, so a return shows them with the island and before the live layer, without drawing them again; a
- * skinned troop wears its skin in the still island (queue item 37 open items 1 and 2).
+ * device, so a return shows them with the island and before the live layer, without drawing them again (in WebKit
+ * in a persistent context, since Playwright's WebKit contexts are ephemeral; review 2 A); a skinned troop wears its
+ * skin in the still island (queue item 37 open items 1 and 2).
  */
+import { rmSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { pastOnboarding } from './helpers';
 
@@ -84,44 +86,113 @@ const allIn = (page: Page) =>
   });
 const keptStrips = (page: Page) => page.evaluate(async () => (await (await caches.open('ageborn-strips-v1')).keys()).length);
 
-test('a return finds the still troops kept on the device: they stand with the island, before the live layer', async ({ page }) => {
-  await pastOnboarding(page);
-  await expect.poll(() => allIn(page), { timeout: 30_000 }).toBe(true);
-  const troops = await page.locator('[data-testid="hub-diorama"] .hd__unit').count();
-  // each strip is kept (the island's troops, the Home card's bearer)
-  await expect.poll(() => keptStrips(page), { timeout: 15_000 }).toBeGreaterThanOrEqual(troops);
-  const kept = await keptStrips(page);
-  // a returning player opens the app: the still troops come right with the island and before the live layer
-  await page.addInitScript(() => {
-    const w = window as unknown as { __still?: StillTimes };
-    const s: StillTimes = {};
-    w.__still = s;
-    const tick = (): void => {
-      const t = performance.now();
-      const d = document.querySelector('[data-testid="hub-diorama"]');
-      if (d && s.island === undefined) s.island = t;
-      const n = d ? d.querySelectorAll('.hd__unit').length : 0;
-      if (d && n > 0 && s.troops === undefined && d.querySelectorAll('.hd__unit.is-in').length === n) s.troops = t;
-      if (d?.getAttribute('data-live') === 'true' && s.live === undefined) s.live = t;
-      if (s.troops === undefined || s.live === undefined) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  });
-  await page.goto('./');
-  const times = (await (
-    await page.waitForFunction(
-      () => {
-        const s = (window as unknown as { __still?: StillTimes }).__still;
-        return s && s.troops !== undefined && s.live !== undefined ? s : false;
-      },
-      null,
-      { timeout: 60_000, polling: 250 },
-    )
-  ).jsonValue()) as Required<StillTimes>;
-  expect(times.troops).toBeLessThanOrEqual(times.live);
-  expect(times.troops - times.island).toBeLessThan(3000);
-  // found, not drawn again: nothing new was kept
-  expect(await keptStrips(page)).toBe(kept);
+/**
+ * What the strip store holds as the page and as a worker of the page see it (the strip worker keeps strips from a
+ * worker): the Cache Storage names, the store's entries and their slots, whether the browser draws in workers, and
+ * whether the site's storage is persisted. Logged with the return test, so a CI run says where kept strips went
+ * (review 2 A).
+ */
+const stripView = (page: Page, at: string) =>
+  page.evaluate(async (at) => {
+    const out = { at, names: [] as string[] | string, entries: -1, slots: [] as string[], worker: null as unknown, offscreen: typeof OffscreenCanvas === 'function', persisted: null as boolean | null };
+    try {
+      out.names = await caches.keys();
+      const keys = await (await caches.open('ageborn-strips-v1')).keys();
+      out.entries = keys.length;
+      out.slots = keys.slice(0, 12).map((r) => decodeURIComponent(r.url.split('/__strips/')[1]?.split('/')[0] ?? '?').replace(/\/[^|]*\/art\/units\//, ''));
+    } catch (e) {
+      out.names = String(e);
+    }
+    try {
+      out.persisted = (await navigator.storage?.persisted?.()) ?? null;
+    } catch {
+      // no StorageManager here
+    }
+    try {
+      const src = "onmessage=async()=>{try{const n=await caches.keys();const k=await (await caches.open('ageborn-strips-v1')).keys();postMessage({names:n,entries:k.length})}catch(e){postMessage(String(e))}}";
+      const w = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
+      out.worker = await new Promise((resolve) => {
+        const t = setTimeout(() => resolve('no answer in 3 s'), 3000);
+        w.onmessage = (e) => {
+          clearTimeout(t);
+          resolve(e.data);
+        };
+        w.onerror = (e) => {
+          clearTimeout(t);
+          resolve(`worker error: ${e.message}`);
+        };
+        w.postMessage(0);
+      });
+      w.terminate();
+    } catch (e) {
+      out.worker = String(e);
+    }
+    return out;
+  }, at);
+
+test('a return finds the still troops kept on the device: they stand with the island, before the live layer', async ({ page, browserName, playwright, launchOptions, headless, viewport, baseURL, deviceScaleFactor, userAgent, isMobile, hasTouch }, testInfo) => {
+  // Playwright's WebKit contexts are ephemeral, like a private window: CI's WebKit found the store empty after the
+  // return (4 of 4 attempts, review 2 A). A normal Safari window keeps its site data, so in WebKit the test runs in a
+  // persistent context (a profile folder of its own), which still proves the store works on Safari. Chromium's own
+  // context keeps Cache Storage across a navigation: it runs in the test's page, as before.
+  const profile = testInfo.outputPath('profile');
+  const persistent =
+    browserName === 'webkit' ? await playwright[browserName].launchPersistentContext(profile, { ...launchOptions, headless, viewport, baseURL, deviceScaleFactor, userAgent, isMobile, hasTouch }) : null;
+  try {
+    const p = persistent ? (persistent.pages()[0] ?? (await persistent.newPage())) : page;
+    await pastOnboarding(p);
+    await expect.poll(() => allIn(p), { timeout: 30_000 }).toBe(true);
+    const troops = await p.locator('[data-testid="hub-diorama"] .hd__unit').count();
+    // each strip is kept (the island's troops, the Home card's bearer)
+    await expect.poll(() => keptStrips(p), { timeout: 15_000 }).toBeGreaterThanOrEqual(troops);
+    const kept = await keptStrips(p);
+    const first = await stripView(p, 'first visit');
+    // a returning player opens the app: the still troops come right with the island and before the live layer
+    await p.addInitScript(() => {
+      const w = window as unknown as { __still?: StillTimes };
+      const s: StillTimes = {};
+      w.__still = s;
+      const tick = (): void => {
+        const t = performance.now();
+        const d = document.querySelector('[data-testid="hub-diorama"]');
+        if (d && s.island === undefined) s.island = t;
+        const n = d ? d.querySelectorAll('.hd__unit').length : 0;
+        if (d && n > 0 && s.troops === undefined && d.querySelectorAll('.hd__unit.is-in').length === n) s.troops = t;
+        if (d?.getAttribute('data-live') === 'true' && s.live === undefined) s.live = t;
+        if (s.troops === undefined || s.live === undefined) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    await p.goto('./');
+    const times = (await (
+      await p.waitForFunction(
+        () => {
+          const s = (window as unknown as { __still?: StillTimes }).__still;
+          return s && s.troops !== undefined && s.live !== undefined ? s : false;
+        },
+        null,
+        { timeout: 60_000, polling: 250 },
+      )
+    ).jsonValue()) as Required<StillTimes>;
+    expect(times.troops).toBeLessThanOrEqual(times.live);
+    expect(times.troops - times.island).toBeLessThan(3000);
+    const now = await keptStrips(p);
+    // the store right after the return and a few seconds later (writes of strips drawn again would land by then)
+    const back = await stripView(p, 'return');
+    await p.waitForTimeout(3000);
+    const later = await stripView(p, 'return + 3 s');
+    const log = JSON.stringify({ browser: browserName, persistent: persistent !== null, troops, kept, now, times, first, back, later });
+    testInfo.annotations.push({ type: 'strip store', description: log });
+    console.log(`[strips] ${log}`);
+    // found, not drawn again: nothing new was kept
+    expect(now, `kept strips after the return: ${log}`).toBe(kept);
+  } finally {
+    if (persistent) {
+      await persistent.close();
+      // the profile holds the page's HTTP cache too (every sheet it fetched)
+      rmSync(profile, { recursive: true, force: true });
+    }
+  }
 });
 
 test("a skinned troop wears its skin in the still island (no change of outfit when the live layer takes over)", async ({ page }) => {
