@@ -1,0 +1,35 @@
+{
+ "lead": 0.15,
+ "lines": [
+  {
+   "key": "l0",
+   "text": "My home screen had a problem. The troops moved... like cardboard cutouts.",
+   "gap": 0.35
+  },
+  {
+   "key": "l1",
+   "text": "And the flags? Stiff as a plank.",
+   "gap": 0.45
+  },
+  {
+   "key": "l2",
+   "text": "So I swapped them for the real battle troops. Same animations as in the fight. And real cloth on the flags.",
+   "gap": 0.35
+  },
+  {
+   "key": "l3",
+   "text": "My first try? They twitched like they'd had ten coffees.",
+   "gap": 0.35
+  },
+  {
+   "key": "l4",
+   "text": "Now they just stand and breathe, like real soldiers waiting for the fight.",
+   "gap": 0.4
+  },
+  {
+   "key": "l5",
+   "text": "What should I bring to life next?",
+   "gap": 0.3
+  }
+ ]
+}

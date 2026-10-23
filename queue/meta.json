@@ -12,5 +12,12 @@
     "hook_type": "story",
     "experiment": "devlog",
     "arm": "devlog"
+  },
+  "ba1-my-home-screen-comes-alive": {
+    "length_s": 33.0,
+    "format": "devlog",
+    "hook_type": "before-after",
+    "experiment": "indie-angle",
+    "arm": "devlog"
   }
 }
