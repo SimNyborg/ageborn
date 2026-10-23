@@ -12,5 +12,12 @@
     "hook_type": "before-after",
     "experiment": "indie-angle",
     "arm": "devlog"
+  },
+  "dv5-devlog-5-why-my-battles-look-flat": {
+    "length_s": 35.0,
+    "format": "devlog",
+    "hook_type": "story",
+    "experiment": "indie-angle",
+    "arm": "devlog"
   }
 }

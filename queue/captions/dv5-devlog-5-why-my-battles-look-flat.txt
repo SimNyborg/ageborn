@@ -1,0 +1,4 @@
+Devlog #5: why my battles look flat ⚔️🔍
+Honest moment: the fights in Ageborn don't look as good as they should. So I'm going through them frame by frame. Does the hit land? Does anyone flinch? Is there a wind-up? Does a fall feel heavy? Next comes the fix, and I'll show you the before and after. What makes a hit feel good to you? 👇
+
+#gamedev #indiedev #indiegame #devlog #gameanimation
