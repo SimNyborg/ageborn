@@ -348,6 +348,16 @@
       "hook_type": "story",
       "experiment": "devlog",
       "arm": "devlog"
+    },
+    {
+      "id": "18119426129515995",
+      "permalink": "https://www.instagram.com/stories/ageborn_game/4014339051264985256",
+      "timestamp": "2026-10-23T14:42:17+0000",
+      "name": "story-ba1-teaser",
+      "kind": "story",
+      "pillar": "devlog",
+      "hook": "behind the scenes: home screen before/after, full story tomorrow",
+      "trial": false
     }
   ]
 }
