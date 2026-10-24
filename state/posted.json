@@ -374,6 +374,22 @@
       "hook_type": "matchup",
       "experiment": "format",
       "arm": "duel"
+    },
+    {
+      "name": "ba1-my-home-screen-comes-alive",
+      "kind": "reel",
+      "id": "18165941875505044",
+      "permalink": "https://www.instagram.com/reel/De35OjdlUyB/",
+      "timestamp": "2026-10-24T10:15:14+0000",
+      "slot": "midday",
+      "pillar": "devlog",
+      "hook": "Ageborn gets better #1: home screen before/after",
+      "trial": false,
+      "length_s": 33.0,
+      "format": "devlog",
+      "hook_type": "before-after",
+      "experiment": "indie-angle",
+      "arm": "devlog"
     }
   ]
 }
