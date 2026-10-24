@@ -400,6 +400,22 @@
       "pillar": "devlog",
       "hook": "teaser: devlog #5 tonight, what makes a hit feel good",
       "trial": false
+    },
+    {
+      "name": "dv5-devlog-5-why-my-battles-look-flat",
+      "kind": "reel",
+      "id": "17913891237519971",
+      "permalink": "https://www.instagram.com/reel/De4yPBRAhc6/",
+      "timestamp": "2026-10-24T18:33:28+0000",
+      "slot": "evening",
+      "pillar": "devlog",
+      "hook": "Devlog #5: why my battles look flat (item 38 before)",
+      "trial": false,
+      "length_s": 35.0,
+      "format": "devlog",
+      "hook_type": "story",
+      "experiment": "indie-angle",
+      "arm": "devlog"
     }
   ]
 }
