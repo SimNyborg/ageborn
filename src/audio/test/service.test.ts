@@ -1,7 +1,7 @@
 import type { AudioService } from '@/contracts';
 import { describe, expect, it } from 'vitest';
 import { SFX_SAMPLE_RATE } from '../bank';
-import { MIX_TRIM } from '../mixer';
+import { BATTLE_SFX_TRIM_DB, MIX_TRIM } from '../mixer';
 import { AMBIENCE_CURVE, AMBIENCE_STOP_S, AMBIENCE_TAU_S, AMBIENCE_TRIM_DB, createWebAudioService, stackLimit, WebAudioService, type WebAudioServiceOptions } from '../service';
 import { balancePan, BURST_MAX, BURST_SOFT, BURST_STEP_DB, BURST_WINDOW_MS, STACK_JITTER_S, STACK_SPREAD } from '../voices';
 import { music as seqMusic } from '../music';
@@ -79,9 +79,20 @@ describe('WebAudioService', () => {
     const [hit, click] = ctx.effectSources();
     expect(hit!.buffer!.sampleRate).toBe(SFX_SAMPLE_RATE);
     expect(hit!.startedAt).toBe(ctx.currentTime);
-    expect(chain(hit!).next).toBe(svc.mixer!.input('sfx'));
+    // a battle effect enters the sfx bus through the battle trim (review A, N12)
+    expect(chain(hit!).next).toBe(svc.mixer!.battleInput());
     expect(chain(click!).next).toBe(svc.mixer!.input('ui'));
     expect(svc.stats.started).toBe(2);
+  });
+
+  it('trims the battle\'s effects by BATTLE_SFX_TRIM_DB before the sfx bus; the capsule show keeps its level (review A, N12)', async () => {
+    const { svc, ctx } = await unlocked();
+    const m = svc.mixer!;
+    expect(m.battleSfx.gain.value).toBeCloseTo(10 ** (BATTLE_SFX_TRIM_DB / 20), 9);
+    expect((m.battleSfx as unknown as FakeGain).outputs[0]).toBe(m.input('sfx'));
+    svc.play('cap_thud');
+    const cap = ctx.effectSources().at(-1)!;
+    expect(chain(cap).next).toBe(m.input('sfx'));
   });
 
   it('varies pitch within ±8% and volume within ±3 dB per play', async () => {
@@ -113,7 +124,7 @@ describe('WebAudioService', () => {
     expect(chain(s).gain.gain.value).toBeCloseTo(10 ** (-6 / 20) * law.gain, 9);
     const panner = ctx.of(FakePanner)[0]!;
     expect(panner.pan.value).toBeCloseTo(law.pan, 9);
-    expect(panner.outputs[0]).toBe(svc.mixer!.input('sfx'));
+    expect(panner.outputs[0]).toBe(svc.mixer!.battleInput());
   });
 
   it('pans with a balance law: centre as loud as unpanned, the near side kept, the far side fading (A7)', () => {
@@ -154,7 +165,7 @@ describe('WebAudioService', () => {
     }
     // The fifth voice stole the oldest.
     expect(svc.stats.stolen).toBe(1);
-    const sources = ctx.effectSources().filter((s) => chain(s).next === svc.mixer!.input('sfx'));
+    const sources = ctx.effectSources().filter((s) => chain(s).next === svc.mixer!.battleInput());
     expect(sources[0]!.stoppedAt).not.toBeNull();
     expect(svc.stats.voices).toBe(4);
   });
@@ -233,7 +244,7 @@ describe('WebAudioService', () => {
     expect(loop.loopStart).toBe(0);
     expect(loop.loopEnd).toBeCloseTo(loop.buffer!.duration, 9);
     const gain = loop.outputs[0] as FakeGain;
-    expect(gain.outputs[0]).toBe(svc.mixer!.input('sfx'));
+    expect(gain.outputs[0]).toBe(svc.mixer!.battleInput());
     expect(gain.gain.events.at(-1)!.value).toBeCloseTo(10 ** (AMBIENCE_TRIM_DB / 20) * 0.5 ** AMBIENCE_CURVE, 9);
     expect(gain.gain.events.at(-1)).toMatchObject({ kind: 'target', tau: AMBIENCE_TAU_S });
     // Updates glide on the same loop; it is not a voice and never counts against the caps.

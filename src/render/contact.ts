@@ -74,6 +74,11 @@ export interface StageBody {
   back: number;
   torsoFront?: number;
   torsoBack?: number;
+  /**
+   * The frame in front of the torso is the body's own head, tusks or prow (a beast, a mount, a cart), not a weapon
+   * held out in front (a greatsword, a pike): only then does a large body's surface reach toward its frame's front.
+   */
+  headLead?: boolean;
 }
 
 export interface ContactTuning {
@@ -224,9 +229,9 @@ function bodyOf(u: StageUnit, t: ContactTuning): { front: number; back: number }
  * Where a unit's body begins in front of its feet (lu): the torso (the team-colour layer at idle) when the
  * sheet gives it, never less than `torsoShare` of the collision width and never past the frame's front (the
  * frame includes a held weapon, which is no target; a horse's barding is, which the torso covers). A large or huge
- * body's head or prow is body too (a Tuskback's head and tusks reach 55 lu past its shoulder): its surface lies
- * `headShare` of the way out to the frame's front, so a blow lands there instead of the attacker's head standing
- * inside it (review A, S6).
+ * beast's, mount's or cart's head or prow is body too (`StageBody.headLead`; a Tuskback's head and tusks reach 55 lu
+ * past its shoulder): its surface lies `headShare` of the way out to the frame's front, so a blow lands there instead
+ * of the attacker's head standing inside it (review A, S6). A large biped's frame front is its weapon, so not there.
  */
 function surfaceOf(u: StageUnit, t: ContactTuning): number {
   const frame = bodyOf(u, t).front;
@@ -234,7 +239,8 @@ function surfaceOf(u: StageUnit, t: ContactTuning): number {
   const least = u.sizeLu * t.torsoShare;
   const v = torso !== undefined && torso > 0 ? torso : u.sizeLu * 0.6;
   const s = clamp(v, least, Math.max(least, frame));
-  return u.sizeLu >= LARGE_SIZE_LU && !u.fort ? s + t.headShare * Math.max(0, frame - s) : s;
+  // a large biped's frame front is the weapon it holds out (a greatsword knight's blade): its surface stays the torso
+  return u.sizeLu >= LARGE_SIZE_LU && !u.fort && u.body?.headLead === true ? s + t.headShare * Math.max(0, frame - s) : s;
 }
 
 /**
@@ -471,11 +477,19 @@ function stageApproach(
       done.add(a.id);
       done.add(b.id);
       const c = Math.max(contactSep(a, b), contactSep(b, a));
+      // the most both clamps can take: a pair further apart than its easing window for that stand-off needs none yet
+      // (most walking units on a long lane: skip the windows)
+      const cap = t.maxBackLu * (bulkOf(a, t) + bulkOf(b, t));
+      if (s >= c + p * cap) continue;
       const wa = window(a, b, t.compMutual, t);
       const wb = window(b, a, t.compMutual, t);
       const body = bodyGap(a, b, t.compMutual, t.compMutual, true, t);
-      const fine = c >= wa.lo && c <= wa.hi && c >= wb.lo && c <= wb.hi && c >= body;
-      const need = eased(s, c, fine ? 0 : jointSeparation(wa, wb, body, body) - c);
+      // inside the contact distance (the sim parks them this tick, often a few lu short of `c`) the duel's own
+      // correction at the separation they have, so the duel starts on the stand-off the approach left (no step back)
+      const at = Math.min(s, c);
+      const fine = at >= wa.lo && at <= wa.hi && at >= wb.lo && at <= wb.hi && at >= body;
+      const full = Math.min(cap, fine ? 0 : jointSeparation(wa, wb, body, body) - at);
+      const need = s <= c ? Math.max(0, full) : eased(s, c, full);
       if (need <= 0) continue;
       const [ha, hb] = splitNeed(need, bulkOf(a, t), bulkOf(b, t), t.maxBackLu, t.maxForwardLu);
       contact.set(a.id, backOffset(a.side, ha, t, t.maxBackLu * bulkOf(a, t), 0));
@@ -488,12 +502,15 @@ function stageApproach(
     // walking up to a foe that fights or faces someone else: the one-sided stand-off against where it is drawn
     done.add(a.id);
     const c = contactSep(a, b);
-    const sc = c + Math.max(0, (contact.get(b.id) ?? 0) * facing(a.side));
+    if (s >= c + p * t.maxBackLu * bulkOf(a, t)) continue;
+    // the separation at contact against where the foe is drawn (inside `c`: the one it has, as the engaged solve sees it)
+    const sc = Math.min(s, c) + (contact.get(b.id) ?? 0) * facing(a.side);
     const w = window(a, b, t.compSingle, t);
     const body = bodyGap(a, b, t.compSingle, 0, false, t);
     let backC = 0;
     if (sc < Math.max(w.lo, Math.min(body, w.hi)) || sc > w.hi) backC = Math.max(w.ideal, Math.min(body, w.hi)) - sc;
-    const back = eased(s, c, Math.min(backC, t.maxBackLu * bulkOf(a, t)));
+    const capped = Math.min(backC, t.maxBackLu * bulkOf(a, t));
+    const back = s <= c ? Math.max(0, capped) : eased(s, c, capped);
     if (back <= 0) continue;
     contact.set(a.id, backOffset(a.side, back, t, t.maxBackLu * bulkOf(a, t), 0));
     approach.add(a.id);
@@ -630,20 +647,34 @@ export function stageRows(
   const py: number[] = [];
   const pid: number[] = [];
   const pside: Side[] = [];
+  // the placed units by x in buckets as wide as the furthest check (a foe 96 lu off), so a check looks at three
+  // buckets instead of every placed unit (the answer is the same: it only skips units too far away to count)
+  const buckets = new Map<number, number[]>();
+  const bucketOf = (x: number): number => Math.floor(x / ROW_NEAR_FOE_LU);
   const drawnX = (u: StageUnit): number => u.x + (contact.get(u.id) ?? 0);
   /** No placed unit (but `ex1`, `ex2`) near x in a row within `ROW_SAME_LU` of y: own side 46 lu, foes 96 lu. */
   const free = (x: number, y: number, side: Side, ex1: number, ex2 = ex1): boolean => {
-    for (let i = 0; i < px.length; i++) {
-      const id = pid[i] as number;
-      if (id === ex1 || id === ex2) continue;
-      if (Math.abs((py[i] as number) - y) >= ROW_SAME_LU) continue;
-      if (Math.abs((px[i] as number) - x) < (pside[i] === side ? ROW_NEAR_LU : ROW_NEAR_FOE_LU)) return false;
+    const b = bucketOf(x);
+    for (let k = b - 1; k <= b + 1; k++) {
+      const list = buckets.get(k);
+      if (!list) continue;
+      for (const i of list) {
+        const id = pid[i] as number;
+        if (id === ex1 || id === ex2) continue;
+        if (Math.abs((py[i] as number) - y) >= ROW_SAME_LU) continue;
+        if (Math.abs((px[i] as number) - x) < (pside[i] === side ? ROW_NEAR_LU : ROW_NEAR_FOE_LU)) return false;
+      }
     }
     return true;
   };
   const put = (u: StageUnit, y: number): void => {
     out.set(u.id, y);
-    px.push(drawnX(u));
+    const x = drawnX(u);
+    const k = bucketOf(x);
+    const list = buckets.get(k);
+    if (list) list.push(px.length);
+    else buckets.set(k, [px.length]);
+    px.push(x);
     py.push(y);
     pid.push(u.id);
     pside.push(u.side);

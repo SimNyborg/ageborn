@@ -220,6 +220,30 @@ describe('the atlas view as a CombatView (A1)', () => {
     expect(v.reach('attack')).toBe(r);
   });
 
+  it('between swings it answers for the variant the next attack will play, so the approach stages for it (review A, S1)', () => {
+    const base = fixture();
+    const a = base.clips['attack'] as unknown as Record<string, unknown> & { anchorsLu: { clubHead: number[][] } };
+    // attack_b: the same frames, but its club lands 60 lu out at its impact step (attack's 44)
+    const s = {
+      ...base,
+      animations: { ...base.animations, attack_b: base.animations['attack'] ?? [], attack_b_team: base.animations['attack_team'] ?? [] },
+      clips: { ...base.clips, attack_b: { ...a, anchorsLu: { clubHead: a.anchorsLu.clubHead.map((p, i) => (i === 4 ? [60, 20] : p)) } } },
+    } as unknown as ReturnType<typeof fixture>;
+    const v = view(s) as unknown as Combat & { setIdentity(o: { id: number; seed: number }): void };
+    // id 1: the cycle [attack, attack_b] starts at attack_b
+    v.setIdentity({ id: 1, seed: 3 });
+    v.setPose(pose(0));
+    expect(v.reach()?.tipLu).toBe(60);
+    v.play('attack', { impactAtMs: 240 });
+    v.update(100);
+    // while it swings: the variant playing
+    expect(v.reach()?.tipLu).toBe(60);
+    // the swing over: the next one, plain attack
+    v.update(1000);
+    expect(v.reach()?.tipLu).toBe(44);
+    expect(v.reach('attack_b')?.tipLu).toBe(60);
+  });
+
   it('setOffsetX moves the whole figure (ring and shadow too) outside the frame lock', () => {
     const v = view(fixture()) as unknown as Combat;
     v.setPose(pose(100));

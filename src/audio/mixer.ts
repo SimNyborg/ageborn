@@ -31,6 +31,14 @@ export const MIX_TRIM: Readonly<Record<Bus, number>> = { master: 0.7, music: 0.5
  */
 export const LIMITER = { threshold: -10, knee: 0, ratio: 20, attack: 0, release: 0.15 } as const;
 
+/**
+ * The battle's sound effects (every sfx group but the capsule show) pass this fixed trim (dB) before the sfx bus
+ * (queue item 38, review A N12): the louder hits of the combat pass made the limiter work over 3 dB in 12% of a real
+ * battle (3% before); 1.5 dB less brings that back to about the old share. Hits and swings move together, so the hits
+ * keep their 9-10 LU over the swings; the capsule show keeps its own level.
+ */
+export const BATTLE_SFX_TRIM_DB = -1.5;
+
 /** Safety clipper: linear up to `knee`, then a tanh knee that approaches `ceiling` at 2× full scale. */
 export const CLIPPER = { knee: 0.8, ceiling: 0.98, points: 4097 } as const;
 
@@ -103,6 +111,8 @@ export function holdParam(p: AudioParam, when: number): void {
 
 export class Mixer {
   readonly bus: Readonly<Record<Bus, GainNode>>;
+  /** The battle's effects enter the sfx bus through this trim (`BATTLE_SFX_TRIM_DB`; `battleInput`). */
+  readonly battleSfx: GainNode;
   readonly duckGain: GainNode;
   readonly limiter: DynamicsCompressorNode;
   readonly preClip: GainNode;
@@ -126,6 +136,7 @@ export class Mixer {
       sfx: gain(MIX_TRIM.sfx),
       ui: gain(MIX_TRIM.ui),
     };
+    this.battleSfx = gain(10 ** (BATTLE_SFX_TRIM_DB / 20));
     this.duckGain = gain(1);
     this.limiter = ctx.createDynamicsCompressor();
     this.limiter.threshold.value = LIMITER.threshold;
@@ -140,6 +151,7 @@ export class Mixer {
 
     this.bus.music.connect(this.duckGain);
     this.duckGain.connect(this.bus.master);
+    this.battleSfx.connect(this.bus.sfx);
     this.bus.sfx.connect(this.bus.master);
     this.bus.ui.connect(this.bus.master);
     this.bus.master.connect(this.limiter);
@@ -160,6 +172,11 @@ export class Mixer {
   /** The node effects and music connect to for a bus. */
   input(bus: Bus): GainNode {
     return this.bus[bus];
+  }
+
+  /** The node the battle's sound effects connect to: the sfx bus behind the battle trim (review A, N12). */
+  battleInput(): GainNode {
+    return this.battleSfx;
   }
 
   /** Sets a bus volume from Settings (0..1) with a short ramp. */

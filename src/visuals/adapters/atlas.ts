@@ -1685,13 +1685,14 @@ class AtlasUnitView implements UnitView {
   /**
    * A1 (duck-typed, `CombatView`): the reach of an attack clip at its impact frame, facing +x, in lu from the
    * feet (the tip tracker the sheet writes per frame, the body's lunge from the team-colour layer, the idle
-   * extents; see `computeReach`). `clip` defaults to the attack playing, else the main one; a variant whose
-   * extras sheet has not loaded answers for the main attack (the one that plays). Null without an attack clip.
+   * extents; see `computeReach`). `clip` defaults to the attack playing, else the variant the next attack will
+   * play (so a unit walking into a fight stages for the swing it will show, review A S1); a variant whose extras
+   * sheet has not loaded answers for the main attack (the one that plays). Null without an attack clip.
    */
   reach(clip?: string): Reach | null {
     if (this.destroyed) return null;
     const main = this.def.clips['attack']?.ref ?? 'attack';
-    const want = clip ?? (this.action && isAttackAnim(this.action.anim) ? this.action.anim : undefined);
+    const want = clip ?? (this.action && isAttackAnim(this.action.anim) ? this.action.anim : this.nextVariant());
     let anim = want === undefined || want === 'attack' ? main : want;
     if (!(this.sheet.animations[anim]?.length ?? 0)) anim = main;
     if (!(this.sheet.animations[anim]?.length ?? 0)) return null;
@@ -2093,6 +2094,12 @@ class AtlasUnitView implements UnitView {
   private pickVariant(): string {
     const cycle = attackCycle((a) => (this.sheet.animations[a]?.length ?? 0) > 0);
     return pickAttackVariant(cycle, this.unitId, this.attackPlays++);
+  }
+
+  /** The variant the next attack will play: `pickVariant`'s choice, without counting it as a play. */
+  private nextVariant(): string {
+    const cycle = attackCycle((a) => (this.sheet.animations[a]?.length ?? 0) > 0);
+    return pickAttackVariant(cycle, this.unitId, this.attackPlays);
   }
 
   /** The asked variant when it has loaded (it still counts as a play of the cycle), else the cycle's next. */

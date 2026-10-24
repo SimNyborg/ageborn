@@ -268,6 +268,19 @@ describe('feel director kicks (queue item 38 A3, review A S5)', () => {
     expect(kickX(d)).toBeCloseTo(1, 6);
   });
 
+  it('a kick no stronger than the last waits out the whole gap, even after the last one has decayed (a brawl: one per gap)', () => {
+    const d = new FeelDirector(cloneFeelConfig(), new FakeAudio());
+    d.kick(2.5, { x: 1, y: 0 }, 280, 250);
+    // the kick decays over 140 ms; at 200 ms nothing is left of it, but the gap still holds
+    d.update(200, 200);
+    expect(kickX(d)).toBeCloseTo(0, 6);
+    d.kick(2.5, { x: 1, y: 0 }, 280, 250);
+    expect(kickX(d)).toBeCloseTo(0, 6);
+    d.update(90, 90);
+    d.kick(2.5, { x: 1, y: 0 }, 280, 250);
+    expect(kickX(d)).toBeCloseTo(2.5, 6);
+  });
+
   it('never turns the screen the other way within the flip window, however strong; a vertical kick is no flip', () => {
     const d = new FeelDirector(cloneFeelConfig(), new FakeAudio());
     d.kick(2.5, { x: 1, y: 0 }, 280, 250);

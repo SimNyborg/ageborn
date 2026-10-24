@@ -174,8 +174,11 @@ interface UnitEntry {
   impactTick: number;
   /** A2: a sim knockback drawn over `ms` (the jump `dx` lu, the tick it happened, game ms since). */
   kb: { tick: number; dx: number; t: number; ms: number } | null;
-  /** A4: the slide of a falling body along the killing blow (lu, signed world x) and its time. */
-  slide: { t: number; ms: number; lu: number } | null;
+  /**
+   * A4: the slide of a falling body along the killing blow (lu, signed world x) and its time; it also settles `dy` lu
+   * back in depth from the row `y0` it fell in (review A, N7: the winner walking on passes in front of the body).
+   */
+  slide: { t: number; ms: number; lu: number; y0: number; dy: number } | null;
   /** A4: the view runs the death itself (`dieWith`: fall, landing, lying, fade); the entry ends when it is finished. */
   dieWith: boolean;
   /** A1: its staging input, updated in place every frame. */
@@ -2114,7 +2117,7 @@ export class BattleView {
           const lu = (d.slideLu[tier] ?? d.slideLu.medium) * (heavy ? d.heavySlideShare : 1);
           e.dieWith = true;
           e.dieLeftMs = d.lingerMs;
-          e.slide = { t: 0, ms: d.slideMs, lu: lu * a.dir };
+          e.slide = { t: 0, ms: d.slideMs, lu: lu * a.dir, y0: e.y, dy: e.air ? 0 : -LYING_BACK_LU };
           cv.setGroundMarks?.(false);
           const size = a.size ?? bodySizeOf(e.def);
           cv.dieWith({ dir: a.dir, tier, heavy, lieMs: d.lieMs, fadeMs: d.fadeMs, onLand: () => this.bodyLanded(e.id, size, a.dir ?? 1) });
@@ -2823,8 +2826,9 @@ export class BattleView {
       else if (e.stageMode === 'approach') springOffset(e.stage, target, STAGE_APPROACH_HALF_LIFE_MS, gameDt, STAGE_MAX_SPEED);
       else if (e.stageMode === 'release') {
         // S1: the stand-off of a fight that ended stays while the unit stands (its follow-through plays on the spot),
-        // then eases out at no more than the unit's own walking speed as it walks on (its walk retimes to match)
-        if (e.gait.walking) springOffset(e.stage, target, STAGE_RELEASE_HALF_LIFE_MS, gameDt, Math.min(STAGE_MAX_SPEED, e.refSpeed));
+        // then eases out at half the unit's own walking speed as it walks on, so it walks on at no more than 1.5x its
+        // pace for a moment (its walk retimes to match) instead of dashing back to its sim x
+        if (e.gait.walking) springOffset(e.stage, target, STAGE_RELEASE_HALF_LIFE_MS, gameDt, Math.min(STAGE_MAX_SPEED, e.refSpeed * STAGE_RELEASE_SPEED_SHARE));
         else e.stage.v = 0;
       } else springOffset(e.stage, target, STAGE_RELEASE_HALF_LIFE_MS, gameDt, STAGE_MAX_SPEED);
       const comp = r.comp.get(e.id) ?? 0;
@@ -2852,7 +2856,9 @@ export class BattleView {
     const sl = e.slide;
     if (sl) {
       sl.t = Math.min(sl.ms, sl.t + gameDt);
-      off += sl.lu * easeOut3(sl.t / sl.ms);
+      const k = easeOut3(sl.t / sl.ms);
+      off += sl.lu * k;
+      if (sl.dy !== 0) e.y = sl.y0 + sl.dy * k;
     }
     e.drawX = e.x + off;
   }
@@ -2887,10 +2893,16 @@ export class BattleView {
       su.target = target;
       su.reach = e.reach;
       su.body = e.body ?? null;
-      // S1: a melee unit walking up to a foe stages on its approach (the sim parks it at its range from the foe)
+      // S1: a melee unit walking up to a foe stages on its approach (the sim parks it at its range from the foe), for
+      // the swing its view will show next (the attack variants reach differently), so the duel starts on that stand-off
       const range = e.melee && !e.air ? e.def?.attacks[0]?.range : undefined;
-      if (range !== undefined && u.mode !== 'attack') su.rangeLu = range;
-      else delete su.rangeLu;
+      if (range !== undefined && u.mode !== 'attack') {
+        su.rangeLu = range;
+        if (ask && e.reach !== null) {
+          const next = readReach(e.view);
+          if (next) su.reach = e.reach = next;
+        }
+      } else delete su.rangeLu;
       if (e.impactTick > 0) su.impactTick = e.impactTick;
       else delete su.impactTick;
       input.push(su);
@@ -3459,24 +3471,34 @@ function readReach(view: UnitView): Reach | null {
 
 /** A unit's idle extents (lu from the feet: its frame and, from `reach()`, its torso) from its view, or null. */
 function readBody(view: UnitView): StageBody | null {
-  const v = view as UnitView & CombatView & ExtentView;
+  const v = view as UnitView & CombatView & ExtentView & { motionInfo?: () => { gait: string | null } };
   const r = v.reach?.();
   if (r && r.frontLu > 0 && r.backLu > 0) {
+    // S6: a beast's, a mount's or a cart's frame front is its own head or prow; a biped's is the weapon it holds out
+    const headLead = HEAD_LEAD_GAITS.has(v.motionInfo?.().gait ?? '');
     return {
       front: r.frontLu,
       back: r.backLu,
       ...(r.torsoFrontLu !== undefined ? { torsoFront: r.torsoFrontLu } : {}),
       ...(r.torsoBackLu !== undefined ? { torsoBack: r.torsoBackLu } : {}),
+      ...(headLead ? { headLead } : {}),
     };
   }
   const ext = v.extentLu?.({ clips: ['idle'] });
   return ext && ext.front > 0 && ext.back > 0 ? { front: ext.front, back: ext.back } : null;
 }
 
+/** Walk body types whose frame in front of the torso is body, not a weapon: beasts, mounts and carts (S6). */
+const HEAD_LEAD_GAITS: ReadonlySet<string> = new Set(['quad', 'rider', 'wheeled']);
 /** Engaged units sort this much (lu of depth) in front of idle ones at the same row (A1). */
 const ENGAGED_Z_LU = 5;
 /** A falling or lying body sorts this much (lu of depth) behind the living (review A, N7). */
 const LYING_Z_LU = 8;
+/**
+ * And it settles this far back in depth as it falls (lu, over its slide), so a winner walking on in the duel's row
+ * passes in front of the body instead of standing in it (review A, N7).
+ */
+const LYING_BACK_LU = 8;
 /** Spring half-lives of the drawn offset (ms of game time): easing into contact, and out of it (A1). */
 const STAGE_ENGAGE_HALF_LIFE_MS = 90;
 const STAGE_RELEASE_HALF_LIFE_MS = 75;
@@ -3484,6 +3506,8 @@ const STAGE_RELEASE_HALF_LIFE_MS = 75;
 const STAGE_APPROACH_HALF_LIFE_MS = 12;
 /** The drawn offset never moves faster than this (lu/s): a target swap eases instead of snapping. */
 const STAGE_MAX_SPEED = 170;
+/** S1: a stand-off is released at this share of the unit's walking speed while it walks on. */
+const STAGE_RELEASE_SPEED_SHARE = 0.5;
 /** A released stand-off counts as eased out once this close to its target (lu). */
 const STAGE_RELEASED_LU = 0.5;
 

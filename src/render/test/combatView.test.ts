@@ -142,7 +142,7 @@ describe('A1 contact staging in the battle view', () => {
     expect(vb.lastPose?.x).toBeCloseTo(517, 5);
   });
 
-  it('releases the stand-off when the foe falls: held while the winner stands, then at no more than its walking speed (review A, S1)', () => {
+  it('releases the stand-off when the foe falls: held while the winner stands, then at half its walking speed at most (review A, S1)', () => {
     const s = setup();
     const { a, b, va } = duel(s);
     const held = va.offsets.at(-1) ?? 0;
@@ -165,8 +165,9 @@ describe('A1 contact staging in the battle view', () => {
       }
     }
     expect(Math.abs(seen.at(-1) ?? 99)).toBeLessThan(1.5);
-    // never faster than the walk itself (87.5 lu/s: 1.46 lu a frame)
-    for (let i = 1; i < seen.length; i++) expect(Math.abs((seen[i] as number) - (seen[i - 1] as number))).toBeLessThanOrEqual((87.5 * 50) / 3 / 1000 + 1e-6);
+    // never faster than half the walk itself (87.5 / 2 lu/s: 0.73 lu a frame), so the winner walks on at 1.5x its pace
+    // at most while it catches up with its sim x (its walk clip retimes to the drawn speed)
+    for (let i = 1; i < seen.length; i++) expect(Math.abs((seen[i] as number) - (seen[i - 1] as number))).toBeLessThanOrEqual((87.5 * 0.5 * 50) / 3 / 1000 + 1e-6);
   });
 
   it('takes the stand-off on the approach: two walking into each other stand at it when the sim stops them (review A, S1)', () => {
@@ -307,8 +308,10 @@ describe('A4 deaths with weight', () => {
     for (let i = 0; i < 30; i++) s.view.render(1, 1000 / 60);
     // a heavy blow throws a light body about 24 lu along the blow
     expect(drawn() - before).toBeGreaterThan(18);
-    // the fallen body sorts behind the living near its row: the winner walking on passes in front of it (review A, N7)
+    // the fallen body sorts behind the living near its row and settles 8 lu back in depth as it falls: the winner
+    // walking on in the duel's row passes in front of it instead of standing in it (review A, N7)
     expect(vb.root.zIndex).toBeLessThan(s.art.views[0]!.root.zIndex);
+    expect((vb.lastPose?.y ?? 0) - (s.art.views[0]!.lastPose?.y ?? 0)).toBeCloseTo(-8, 1);
     vb.deaths[0]?.onLand?.();
     expect(s.audio.played()).toContain('body_fall_s');
     vb.finished = true;

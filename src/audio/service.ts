@@ -457,7 +457,8 @@ export class WebAudioService implements AudioService {
       gain.connect(p);
       last = p;
     }
-    last.connect(mixer.input(def.bus));
+    // the battle's effects pass the battle trim (N12); the capsule show and the UI keep their own levels
+    last.connect(def.bus === 'sfx' && def.group !== 'capsule' ? mixer.battleInput() : mixer.input(def.bus));
     const handle: VoiceHandle = { src, gain };
     src.onended = () => {
       this.voices.ended(handle);
@@ -506,7 +507,7 @@ export class WebAudioService implements AudioService {
       const gain = ctx.createGain();
       gain.gain.value = 0;
       src.connect(gain);
-      gain.connect(mixer.input('sfx'));
+      gain.connect(mixer.battleInput());
       src.start(now, loop.start);
       this.ambience = { src, gain, silentSince: null };
     }

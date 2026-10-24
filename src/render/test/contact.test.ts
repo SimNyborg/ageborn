@@ -272,9 +272,9 @@ describe('rows avoid neighbours (A1)', () => {
 
 describe('big bodies (review A, S6)', () => {
   // the Tuskback, the Bonker and the Woolly Rhino of the review's stone_heavy film (sheet extents in lu)
-  const tusk = (): StageUnit => ({ id: 1, side: 0, x: 924.7, air: false, sizeLu: 48, target: 2, reach: { tipLu: 92, lungeLu: 12.8, frontLu: 80.5, backLu: 45.1, torsoFrontLu: 25.8, torsoBackLu: 40.9 }, body: { front: 80.5, back: 45.1, torsoFront: 25.8, torsoBack: 40.9 } });
+  const tusk = (): StageUnit => ({ id: 1, side: 0, x: 924.7, air: false, sizeLu: 48, target: 2, reach: { tipLu: 92, lungeLu: 12.8, frontLu: 80.5, backLu: 45.1, torsoFrontLu: 25.8, torsoBackLu: 40.9 }, body: { front: 80.5, back: 45.1, torsoFront: 25.8, torsoBack: 40.9, headLead: true } });
   const bonk = (): StageUnit => ({ id: 2, side: 1, x: 973.1, air: false, sizeLu: 24, target: 1, reach: { tipLu: 67.2, lungeLu: 12.7, frontLu: 60.2, backLu: 19.5, torsoFrontLu: 25.1, torsoBackLu: 18.9 }, body: { front: 60.2, back: 19.5, torsoFront: 25.1, torsoBack: 18.9 } });
-  const rhino = (o: Partial<StageUnit> = {}): StageUnit => ({ id: 3, side: 1, x: 977.5, air: false, sizeLu: 48, target: 1, reach: { tipLu: 85.7, lungeLu: 14.2, frontLu: 83.7, backLu: 46.7, torsoFrontLu: 32.9, torsoBackLu: 43 }, body: { front: 83.7, back: 46.7, torsoFront: 32.9, torsoBack: 43 }, ...o });
+  const rhino = (o: Partial<StageUnit> = {}): StageUnit => ({ id: 3, side: 1, x: 977.5, air: false, sizeLu: 48, target: 1, reach: { tipLu: 85.7, lungeLu: 14.2, frontLu: 83.7, backLu: 46.7, torsoFrontLu: 32.9, torsoBackLu: 43 }, body: { front: 83.7, back: 46.7, torsoFront: 32.9, torsoBack: 43, headLead: true }, ...o });
   const drawn = (r: ReturnType<typeof stage>, u: StageUnit): number => u.x + (r.offset.get(u.id) ?? 0);
 
   it('a Rhino striking past its Bonker lands its horn in the Tuskback\'s head, not its shoulder: the beasts no longer stand inside each other', () => {
@@ -301,6 +301,20 @@ describe('big bodies (review A, S6)', () => {
     const small = (id: number): StageUnit => unit({ id, side: 0, x: 900 });
     const s = stage([small(1), small(2), small(3), small(4)]);
     for (const id of [1, 2, 3, 4]) expect(Math.abs(s.offset.get(id) ?? 0)).toBeLessThanOrEqual(CONTACT_DEFAULTS.spreadMaxLu + 1e-6);
+  });
+
+  it('a large biped\'s frame front is the blade it holds out: its surface stays its torso, so a pike still reaches its body', () => {
+    // the Greatsword Knight of the clash film (large, a heavy biped): its idle frame reaches 57 lu out with the blade,
+    // its torso 19 lu; a Pikeman (reach 70) strikes it one-sided while the knight fights someone else
+    const knight = (headLead: boolean): StageUnit => ({ id: 2, side: 1, x: 1000, air: false, sizeLu: 48, target: null, reach: { tipLu: 96.3, lungeLu: 14, frontLu: 56.9, backLu: 30, torsoFrontLu: 18.7, torsoBackLu: 20 }, body: { front: 56.9, back: 30, torsoFront: 18.7, torsoBack: 20, ...(headLead ? { headLead } : {}) } });
+    const pike = (): StageUnit => ({ id: 1, side: 0, x: 1000 - 104, air: false, sizeLu: 32, target: 2, reach: { tipLu: 101.3, lungeLu: 15, frontLu: 54.5, backLu: 20, torsoFrontLu: 20, torsoBackLu: 18 }, body: { front: 54.5, back: 20, torsoFront: 20, torsoBack: 18 } });
+    const biped = stage([pike(), knight(false)]);
+    const beast = stage([pike(), knight(true)]);
+    // treated as a beast's head, the blade would hold the pike further off
+    expect(Math.abs(biped.offset.get(1) ?? 0)).toBeLessThan(Math.abs(beast.offset.get(1) ?? 0));
+    // as a biped, the pike's tip lands past the knight's torso front, inside its body
+    const tip = 896 + (biped.offset.get(1) ?? 0) + 101.3 - 0.25 * 15;
+    expect(tip).toBeGreaterThan(1000 + (biped.offset.get(2) ?? 0) - 18.7);
   });
 
   it('a duel the small member\'s clamp cannot settle is finished by the big member\'s larger clamp', () => {
@@ -347,6 +361,19 @@ describe('the approach (review A, S1)', () => {
     expect(gapAt(42) - gapAt(40)).toBeLessThan(0.1);
   });
 
+  it('a pair the sim parks a few lu short of the contact distance is drawn on the duel\'s own stand-off: no step back when it engages', () => {
+    // the sim stops a closing pair on the first tick within reach: anywhere from about 31 to 40 lu for two Bonkers
+    for (const s of [39, 36.9, 33]) {
+      const a = unit({ id: 1, side: 0, x: 1000 - s / 2, target: 2 });
+      const b = unit({ id: 2, side: 1, x: 1000 + s / 2, target: 1 });
+      const r = stage([a, b]);
+      const engaged = s + Math.abs(r.offset.get(1) ?? 0) + Math.abs(r.offset.get(2) ?? 0);
+      expect(gapAt(s)).toBeCloseTo(engaged, 6);
+      // and the drawn pair stands still over that last closing (it never steps back)
+      expect(gapAt(s)).toBeCloseTo(gapAt(40), 6);
+    }
+  });
+
   it('shares a duel row on the way in, marks the pair as approaching (not engaged), and leaves ranged units and fliers alone', () => {
     const a = walker({ id: 1, side: 0, x: 960 });
     const b = walker({ id: 2, side: 1, x: 1030 });
@@ -372,9 +399,11 @@ describe('the approach (review A, S1)', () => {
     const r = stage([ally, foe, late]);
     expect(r.approach.has(3)).toBe(true);
     expect(r.offset.get(3) ?? 0).toBeLessThan(0);
-    // and once it is engaged too, its stand-off is about the one it arrived at
-    const at = stage([ally, foe, walker({ id: 3, side: 0, x: 980 })]);
-    const engaged = stage([ally, foe, unit({ id: 3, side: 0, x: 980, target: 2 })]);
-    expect(Math.abs((at.contact.get(3) ?? 0) - (engaged.contact.get(3) ?? 0))).toBeLessThan(3);
+    // and once it is engaged too, its stand-off is the one it arrived at (at contact, or parked a little short of it)
+    for (const x of [980, 983]) {
+      const at = stage([ally, foe, walker({ id: 3, side: 0, x })]);
+      const engaged = stage([ally, foe, unit({ id: 3, side: 0, x, target: 2 })]);
+      expect(at.contact.get(3) ?? 0).toBeCloseTo(engaged.contact.get(3) ?? 0, 6);
+    }
   });
 });
