@@ -135,3 +135,8 @@ what we believe, how sure we are, and what we post next because of it.
   holds attention less than a story with a twist. R15 114 reach in 1.4 h (fast start). Followers 137. 29 comments in
   total, still not readable through the API. Lesson for the indie-dev angle: lead with a surprise or a visible
   problem (DV3, BA1), not an explanation. Queue 2026-10-24: BA1 (before/after) and DV5 (item 38 before).
+- 2026-10-24 evening: BA1 (before/after) 121 reach in 10 h with 41.8 % watch, the best watch share of any long
+  post (33 s; devlogs usually 15-30 %): the before/after format holds viewers. DV5 105 reach in 1.3 h with 53 %
+  skip, the lowest early skip so far. DV3 299. Followers 139. DV6 ("a broken Legendary") is held: the owner declined
+  its scheduling; three options put to the owner (drop it, soften it, or post as is). Nothing goes out at
+  midday 2026-10-25 until he answers. Note: Copenhagen moves to winter time (UTC+1) on 2026-10-25.
