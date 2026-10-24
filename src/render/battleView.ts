@@ -439,7 +439,6 @@ export class BattleView {
   private input: BattleInput | null = null;
   private inputEl: HTMLElement | null = null;
   private hudAnchors: { gold: Pt | null; xp: Pt | null } = { gold: null, xp: null };
-  private liveIds = new Set<number>();
   /** A1: the depth rows of the last staged frame (rows are sticky) and the sim units by id this frame. */
   private stageRows = new Map<number, number>();
   /** The staging's input, rebuilt in place every frame. */
@@ -2675,7 +2674,7 @@ export class BattleView {
     if (fort) e.y = FORT_ROW_LU;
     else {
       const input = this.stageInput(false);
-      input.push({ id, side, x, air, fort: false, sizeLu, target: null, reach: null, body: null });
+      input.push({ id, side, x, air, fort: false, sizeLu, target: null, reach: null, body: null, impactTick: undefined, rangeLu: undefined });
       e.y = stage(input, this.stageRows, this.feel.tuning.contact ?? CONTACT_DEFAULTS).row.get(id) ?? 0;
       this.stageRows.set(id, e.y);
     }
@@ -2713,13 +2712,10 @@ export class BattleView {
 
   private syncUnits(alpha: number, gameDt: number): void {
     const st = this.sim.state;
-    this.liveIds.clear();
     this.simById.clear();
-    // the whole field first: a unit created below (`ensureUnit`) takes its first row among all of it (review A, N5)
-    for (const u of st.units) {
-      this.liveIds.add(u.id);
-      this.simById.set(u.id, u);
-    }
+    // the whole field first: a unit created below (`ensureUnit`) takes its first row among all of it (review A, N5);
+    // the map also says which units live this frame
+    for (const u of st.units) this.simById.set(u.id, u);
     for (const u of st.units) {
       const e = this.ensureUnit(u);
       if (e.dying) continue;
@@ -2767,7 +2763,7 @@ export class BattleView {
     const rows = this.stageUnits(gameDt);
     const rowStep = (this.feel.tuning.rowEaseLuPerSec * gameDt) / 1000;
     for (const e of [...this.units.values()]) {
-      if (!e.dying && !this.liveIds.has(e.id)) {
+      if (!e.dying && !this.simById.has(e.id)) {
         // Removed without a death event (for example a replay seek): drop it quietly.
         this.destroyUnit(e);
         this.units.delete(e.id);
@@ -2872,7 +2868,7 @@ export class BattleView {
     const input = this.stageBuf;
     input.length = 0;
     for (const e of this.units.values()) {
-      if (e.dying || !this.liveIds.has(e.id)) continue;
+      if (e.dying) continue;
       const u = this.simById.get(e.id);
       // a pouncer in its leap flies over the line (A8): no stand-off, no spread until it lands
       if (!u || u.mode === 'leap') continue;
@@ -2887,7 +2883,9 @@ export class BattleView {
       // stays a mirror exchange between its swings (no breathing in and out)
       const it = u.attacks[0]?.impactTick ?? 0;
       if (it > 0) e.impactTick = it;
-      const su = (e.su ??= { id: e.id, side: e.side, x: e.x, air: e.air, fort: !!e.fort, sizeLu: e.sizeLu, target: null, reach: null, body: null });
+      // every field present from the start and never deleted (an object that loses a field turns slow in V8, and the
+      // staging reads these objects many times a frame)
+      const su = (e.su ??= { id: e.id, side: e.side, x: e.x, air: e.air, fort: !!e.fort, sizeLu: e.sizeLu, target: null, reach: null, body: null, impactTick: undefined, rangeLu: undefined });
       su.x = e.x;
       su.air = e.air;
       su.target = target;
@@ -2902,9 +2900,8 @@ export class BattleView {
           const next = readReach(e.view);
           if (next) su.reach = e.reach = next;
         }
-      } else delete su.rangeLu;
-      if (e.impactTick > 0) su.impactTick = e.impactTick;
-      else delete su.impactTick;
+      } else su.rangeLu = undefined;
+      su.impactTick = e.impactTick > 0 ? e.impactTick : undefined;
       input.push(su);
     }
     return input;

@@ -51,7 +51,7 @@ import {
   ALT_ATTACK,
   ALT_LATE_MIN_MS,
   ATTACK_VARIANTS,
-  attackCycle,
+  attackCycleOf,
   attackTimeline,
   CROSS_HOLD_MS,
   crossHoldAlpha,
@@ -1350,6 +1350,9 @@ const AIR_STRETCH = 0.12;
 const DEATH_THROW_TILT_RAD = (7 * Math.PI) / 180;
 const LAND_SQUASH_DEPTH: Readonly<Record<UnitMass, number>> = { light: 0.16, medium: 0.12, heavy: 0.08 };
 
+/** `stepAir`'s answer for a unit on the ground (shared: it runs every frame for every unit, read only). */
+const AIR_NONE: { readonly rot: number; readonly y: number; readonly stretch: number } = Object.freeze({ rot: 0, y: 0, stretch: 0 });
+
 class AtlasUnitView implements UnitView {
   readonly root = new Container();
   readonly anchors: Anchors;
@@ -1384,6 +1387,9 @@ class AtlasUnitView implements UnitView {
   private hk: number;
   private readonly shadow: Container | null = null;
   private readonly shadowScaleX: number = 1;
+  /** The lift share and death fade the contact shadow was last set for (`place`; NaN: not yet). */
+  private shadowLift = Number.NaN;
+  private shadowFade = Number.NaN;
   private readonly gait: UnitGait | null;
   private readonly style: AtlasMotionStyle;
   private lite: boolean;
@@ -1696,7 +1702,8 @@ class AtlasUnitView implements UnitView {
     let anim = want === undefined || want === 'attack' ? main : want;
     if (!(this.sheet.animations[anim]?.length ?? 0)) anim = main;
     if (!(this.sheet.animations[anim]?.length ?? 0)) return null;
-    if (this.reachCache.has(anim)) return this.reachCache.get(anim) ?? null;
+    const hit = this.reachCache.get(anim);
+    if (hit !== undefined) return hit;
     const r = computeReach(this.sheet, anim, this.def.clips['idle']?.ref ?? 'idle', this.impactAtOf(anim), this.k, this.hk);
     this.reachCache.set(anim, r);
     return r;
@@ -2092,14 +2099,12 @@ class AtlasUnitView implements UnitView {
   }
 
   private pickVariant(): string {
-    const cycle = attackCycle((a) => (this.sheet.animations[a]?.length ?? 0) > 0);
-    return pickAttackVariant(cycle, this.unitId, this.attackPlays++);
+    return pickAttackVariant(attackCycleOf(this.sheet.animations), this.unitId, this.attackPlays++);
   }
 
-  /** The variant the next attack will play: `pickVariant`'s choice, without counting it as a play. */
+  /** The variant the next attack will play: `pickVariant`'s choice, without counting it as a play (no allocation). */
   private nextVariant(): string {
-    const cycle = attackCycle((a) => (this.sheet.animations[a]?.length ?? 0) > 0);
-    return pickAttackVariant(cycle, this.unitId, this.attackPlays);
+    return pickAttackVariant(attackCycleOf(this.sheet.animations), this.unitId, this.attackPlays);
   }
 
   /** The asked variant when it has loaded (it still counts as a play of the cycle), else the cycle's next. */
@@ -2391,14 +2396,14 @@ class AtlasUnitView implements UnitView {
   private stepAir(dtMs: number): { rot: number; y: number; stretch: number } {
     this.tumbling = false;
     const a = this.air;
-    if (!a) return { rot: 0, y: 0, stretch: 0 };
+    if (!a) return AIR_NONE;
     a.t += dtMs;
     if (a.t >= a.ms) {
       this.air = null;
       // the landing squash counts from the touch-down inside this frame
       this.landT = a.t - a.ms;
       a.onLand?.();
-      return { rot: 0, y: 0, stretch: 0 };
+      return AIR_NONE;
     }
     const s = airShape(a.kind, a.t / a.ms, a.tumble);
     const k = this.reduceMotion ? 0.5 : 1;
@@ -2476,8 +2481,14 @@ class AtlasUnitView implements UnitView {
       // the contact shadow stays on the ground under a lifted body, smaller and lighter
       if (!hovers(this.gait)) {
         const s = 1 - Math.min(0.45, Math.max(0, -this.airY) / 50);
-        this.shadow.scale.set(this.shadowScaleX * s, 0.9 * s);
-        this.shadow.alpha = 0.72 * (0.55 + 0.45 * s) * (this.death?.alpha ?? 1);
+        const fade = this.death?.alpha ?? 1;
+        // only when the lift or the fade moved (every frame for every unit otherwise)
+        if (s !== this.shadowLift || fade !== this.shadowFade) {
+          this.shadowLift = s;
+          this.shadowFade = fade;
+          this.shadow.scale.set(this.shadowScaleX * s, 0.9 * s);
+          this.shadow.alpha = 0.72 * (0.55 + 0.45 * s) * fade;
+        }
       }
     }
   }
@@ -2628,12 +2639,14 @@ class AtlasUnitView implements UnitView {
     // review M4: a switch between the walk (carry pose) and the guard cross-dissolves. A8: an attack cuts straight
     // into its first key (a dissolve turned the anticipation of every first swing into a double exposure)
     const prev = this.shownTrack;
-    const cutIn = isAttackAnim(tr.anim) || tr.name === 'attack' || tr.name === 'ability';
-    if (prev && prev !== tr && prev.anim !== tr.anim && (prev.anim === 'walk' || tr.anim === 'walk') && !cutIn && !this.dead && this.baseSprite.texture !== Texture.EMPTY) {
+    // (only a track change can start or cut a dissolve: the attack test runs then, not every frame)
+    const changed = prev !== tr;
+    const cutIn = changed && (isAttackAnim(tr.anim) || tr.name === 'attack' || tr.name === 'ability');
+    if (prev && changed && prev.anim !== tr.anim && (prev.anim === 'walk' || tr.anim === 'walk') && !cutIn && !this.dead && this.baseSprite.texture !== Texture.EMPTY) {
       setFrame(this.ghostBase, this.baseSprite.texture);
       setFrame(this.ghostTeam, this.teamSprite.texture);
       this.ghostT = 0;
-    } else if (cutIn && prev !== tr) this.ghostT = -1;
+    } else if (cutIn) this.ghostT = -1;
     else if (this.ghostT >= 0) this.ghostT += dtMs;
     this.shownTrack = tr;
     if (this.ghostT >= CROSS_HOLD_MS || this.dead) this.ghostT = -1;

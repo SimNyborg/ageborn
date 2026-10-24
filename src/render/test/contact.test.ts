@@ -407,3 +407,39 @@ describe('the approach (review A, S1)', () => {
     }
   });
 });
+
+describe('working memory (PERF-A)', () => {
+  /** A busy field: `n` units a side, the first eight pairs in duels near the middle, the rest walking in. */
+  function field(n: number, shift = 0): StageUnit[] {
+    const out: StageUnit[] = [];
+    let id = 1;
+    const duels = Math.min(8, n);
+    for (const side of [0, 1] as const) {
+      for (let i = 0; i < n; i++) {
+        const front = i < duels;
+        const x = side === 0 ? (front ? 960 - i * 9 : 700 - i * 13 + shift) : front ? 1000 + i * 9 : 1300 + i * 13 - shift;
+        out.push(unit({ id: id++, side, x, sizeLu: i % 7 === 3 ? 48 : 24, ...(front ? {} : { rangeLu: 16 }) }));
+      }
+    }
+    for (let i = 0; i < duels; i++) {
+      (out[i] as StageUnit).target = (out[n + i] as StageUnit).id;
+      (out[n + i] as StageUnit).target = (out[i] as StageUnit).id;
+    }
+    return out;
+  }
+  const snapshot = (r: ReturnType<typeof stage>): string =>
+    JSON.stringify({ offset: [...r.offset], contact: [...r.contact], row: [...r.row], engaged: [...r.engaged], comp: [...r.comp], pairs: r.pairs, approach: [...r.approach] });
+
+  it('stages a frame after a much larger one (its arrays grown, the long lines sorted another way) exactly as before it', () => {
+    const small = field(12);
+    const first = snapshot(stage(small, null));
+    // 260 units: more than the 128 the working memory starts with, and lines longer than the 96 the insertion sort takes
+    const big = field(130, 20);
+    const once = snapshot(stage(big, null));
+    expect(snapshot(stage(big, null))).toBe(once);
+    expect(snapshot(stage(small, null))).toBe(first);
+    // the rows of the last frame still make rows sticky
+    const r1 = stage(small, null);
+    expect(snapshot(stage(small, r1.row))).toBe(snapshot(stage(small, r1.row)));
+  });
+});

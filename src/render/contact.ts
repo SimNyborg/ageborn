@@ -19,8 +19,11 @@
  *   front units interleave between the two sides instead of mirroring, back ranks spread over five rows.
  *   Rows are sticky: a unit keeps its row while that row stays free, so the front does not reshuffle.
  *
- * Pure and cheap (O(n log n) a frame): the battle view feeds it every frame and eases the result
- * (`springOffset`). Nothing here reaches the sim; the minimap and power zones keep the sim x.
+ * Deterministic and cheap (O(n log n) a frame): the battle view feeds it every frame and eases the result
+ * (`springOffset`). Nothing here reaches the sim; the minimap and power zones keep the sim x. Its working memory
+ * (typed arrays by a unit's index in the input, `Scratch`) is kept between frames, so a frame allocates little
+ * beyond its result (PERF-A, 2026-10-24: about 2.2x less time than the first version, the same answers); the
+ * answer depends only on the arguments, but `stage` is not re-entrant.
  */
 import type { Side } from '@/contracts';
 import { LANE_LU } from './layout';
@@ -307,215 +310,429 @@ function backOffset(side: Side, back: number, t: ContactTuning, maxBack = t.maxB
 }
 
 /**
+ * The staging's working memory (perf, PERF-A 2026-10-24): per unit, by its index in `stage`'s input, typed arrays kept
+ * between frames and grown when a frame has more units, so a frame allocates little beyond its result. The result's
+ * maps and sets are built at the end in the order the entries were first made. Not re-entrant: nothing in `stage` calls
+ * back out.
+ */
+interface Scratch {
+  cap: number;
+  /** Contact offset (lu) and whether one was set. */
+  cOff: Float64Array;
+  cHas: Uint8Array;
+  /** Lunge compensation and whether one was set. */
+  comp: Float64Array;
+  compHas: Uint8Array;
+  eng: Uint8Array;
+  appr: Uint8Array;
+  /** Depth row and whether one was set. */
+  row: Float64Array;
+  rowHas: Uint8Array;
+  /** Same-side spread (lu, world x; 0 for none). */
+  spr: Float64Array;
+  /** An attacker's target (index), -1 for none; attackers and the duel members done. */
+  tgt: Int32Array;
+  isAtt: Uint8Array;
+  done: Uint8Array;
+  /** The approach: the nearest foe ahead (index, -1 for none) and the units it has handled. */
+  foe: Int32Array;
+  adone: Uint8Array;
+  /** A free victim's step back (from the last pass) and the step back asked in this pass. */
+  vBack: Float64Array;
+  vBackHas: Uint8Array;
+  want: Float64Array;
+  wantHas: Uint8Array;
+  /** First-insertion orders of the result's maps and sets, and of a pass's asked step backs. */
+  cOrd: Int32Array;
+  compOrd: Int32Array;
+  engOrd: Int32Array;
+  apprOrd: Int32Array;
+  rowOrd: Int32Array;
+  wantOrd: Int32Array;
+  /** Index lists: attackers (by id), one-sided attackers, each side's line (x ascending) and single file. */
+  att: Int32Array;
+  single: Int32Array;
+  line0: Int32Array;
+  line1: Int32Array;
+  file0: Int32Array;
+  file1: Int32Array;
+  /** Rows: the crowd at a gate (unit and row), air units, the rest by importance (unit and rank), placed units. */
+  crowdIx: Int32Array;
+  crowdY: Float64Array;
+  air: Int32Array;
+  rest: Int32Array;
+  restRank: Int32Array;
+  px: Float64Array;
+  py: Float64Array;
+  pix: Int32Array;
+  pside: Uint8Array;
+}
+
+function makeScratch(cap: number): Scratch {
+  const f = (): Float64Array => new Float64Array(cap);
+  const i = (): Int32Array => new Int32Array(cap);
+  const u = (): Uint8Array => new Uint8Array(cap);
+  return {
+    cap,
+    cOff: f(), cHas: u(), comp: f(), compHas: u(), eng: u(), appr: u(), row: f(), rowHas: u(), spr: f(),
+    tgt: i(), isAtt: u(), done: u(), foe: i(), adone: u(), vBack: f(), vBackHas: u(), want: f(), wantHas: u(),
+    cOrd: i(), compOrd: i(), engOrd: i(), apprOrd: i(), rowOrd: i(), wantOrd: i(),
+    att: i(), single: i(), line0: i(), line1: i(), file0: i(), file1: i(),
+    crowdIx: i(), crowdY: f(), air: i(), rest: i(), restRank: i(), px: f(), py: f(), pix: i(), pside: u(),
+  };
+}
+
+let scratch = makeScratch(128);
+/** Unit id to its index in this frame's input (kept between frames). */
+const indexOf = new Map<number, number>();
+/** The placed units of the rows by x bucket (kept between frames; the lists are emptied each frame). */
+const rowBuckets = new Map<number, number[]>();
+
+/** Sorts `n` unit indices by sim x ascending, ties by id: the order of `(a, b) => a.x - b.x || a.id - b.id`. */
+function sortByX(ix: Int32Array, n: number, units: readonly StageUnit[]): void {
+  if (n > 96) {
+    // a long line: the library sort (an insertion sort is quadratic)
+    const tmp = Array.from(ix.subarray(0, n));
+    tmp.sort((a, b) => (units[a] as StageUnit).x - (units[b] as StageUnit).x || (units[a] as StageUnit).id - (units[b] as StageUnit).id);
+    ix.set(tmp);
+    return;
+  }
+  for (let i = 1; i < n; i++) {
+    const k = ix[i] as number;
+    const u = units[k] as StageUnit;
+    const x = u.x;
+    const id = u.id;
+    let j = i - 1;
+    while (j >= 0) {
+      const w = units[ix[j] as number] as StageUnit;
+      if (w.x > x || (w.x === x && w.id > id)) {
+        ix[j + 1] = ix[j] as number;
+        j--;
+      } else break;
+    }
+    ix[j + 1] = k;
+  }
+}
+
+/** Sorts `n` unit indices by id ascending (attackers, air units: a few). */
+function sortById(ix: Int32Array, n: number, units: readonly StageUnit[]): void {
+  for (let i = 1; i < n; i++) {
+    const k = ix[i] as number;
+    const id = (units[k] as StageUnit).id;
+    let j = i - 1;
+    while (j >= 0 && (units[ix[j] as number] as StageUnit).id > id) {
+      ix[j + 1] = ix[j] as number;
+      j--;
+    }
+    ix[j + 1] = k;
+  }
+}
+
+/**
  * The staging of one frame. `prevRows` (the rows of the last frame) makes rows sticky; pass the result's
  * `row` map back in.
  */
 export function stage(units: readonly StageUnit[], prevRows: ReadonlyMap<number, number> | null = null, tuning: Partial<ContactTuning> = {}): StageResult {
   const t: ContactTuning = { ...CONTACT_DEFAULTS, ...tuning };
-  const byId = new Map<number, StageUnit>();
-  for (const u of units) byId.set(u.id, u);
-  const contact = new Map<number, number>();
-  const comp = new Map<number, number>();
-  const engaged = new Set<number>();
+  const n = units.length;
+  if (scratch.cap < n) scratch = makeScratch(Math.max(n, scratch.cap * 2));
+  const s = scratch;
+  indexOf.clear();
+  for (let i = 0; i < n; i++) {
+    indexOf.set((units[i] as StageUnit).id, i);
+    s.cHas[i] = 0;
+    s.compHas[i] = 0;
+    s.eng[i] = 0;
+    s.appr[i] = 0;
+    s.rowHas[i] = 0;
+    s.spr[i] = 0;
+    s.tgt[i] = -1;
+    s.isAtt[i] = 0;
+    s.done[i] = 0;
+    s.foe[i] = -1;
+    s.adone[i] = 0;
+    s.vBackHas[i] = 0;
+    s.wantHas[i] = 0;
+  }
+  let nC = 0;
+  let nComp = 0;
+  let nEng = 0;
+  let nAppr = 0;
+  const setContact = (i: number, v: number): void => {
+    if (s.cHas[i] === 0) {
+      s.cHas[i] = 1;
+      s.cOrd[nC++] = i;
+    }
+    s.cOff[i] = v;
+  };
+  const setComp = (i: number, v: number): void => {
+    if (s.compHas[i] === 0) {
+      s.compHas[i] = 1;
+      s.compOrd[nComp++] = i;
+    }
+    s.comp[i] = v;
+  };
+  const engage = (i: number): void => {
+    if (s.eng[i] === 0) {
+      s.eng[i] = 1;
+      s.engOrd[nEng++] = i;
+    }
+  };
+  const contactOf = (i: number): number => (s.cHas[i] === 1 ? (s.cOff[i] as number) : 0);
   const pairs: StagePair[] = [];
 
   // the attackers that can be staged: ground, a living ground target of the other side ahead of them, a reach
-  const attackers: StageUnit[] = [];
-  for (const u of units) {
+  let nAtt = 0;
+  for (let i = 0; i < n; i++) {
+    const u = units[i] as StageUnit;
     if (u.air || u.fort || u.target === null || !u.reach) continue;
-    const v = byId.get(u.target);
-    if (!v || v.air || v.side === u.side) continue;
+    const vi = indexOf.get(u.target);
+    if (vi === undefined) continue;
+    const v = units[vi] as StageUnit;
+    if (v.air || v.side === u.side) continue;
     if ((v.x - u.x) * facing(u.side) <= 0) continue;
-    attackers.push(u);
+    s.tgt[i] = vi;
+    s.att[nAtt++] = i;
   }
-  attackers.sort((a, b) => a.id - b.id);
-  const isAttacker = new Set(attackers.map((u) => u.id));
+  sortById(s.att, nAtt, units);
+  for (let k = 0; k < nAtt; k++) s.isAtt[s.att[k] as number] = 1;
 
   // 1. mutual duels split their correction
-  const done = new Set<number>();
-  for (const a of attackers) {
-    if (done.has(a.id)) continue;
-    const b = byId.get(a.target as number) as StageUnit;
-    if (b.target !== a.id || !isAttacker.has(b.id) || b.fort) continue;
-    done.add(a.id);
-    done.add(b.id);
+  for (let k = 0; k < nAtt; k++) {
+    const ai = s.att[k] as number;
+    if (s.done[ai] === 1) continue;
+    const bi = s.tgt[ai] as number;
+    const a = units[ai] as StageUnit;
+    const b = units[bi] as StageUnit;
+    if (b.target !== a.id || s.isAtt[bi] === 0 || b.fort) continue;
+    s.done[ai] = 1;
+    s.done[bi] = 1;
     pairs.push({ a: Math.min(a.id, b.id), b: Math.max(a.id, b.id) });
-    const s = (b.x - a.x) * facing(a.side);
+    const sep = (b.x - a.x) * facing(a.side);
     const wa = window(a, b, t.compMutual, t);
     const wb = window(b, a, t.compMutual, t);
     const mirror = mirrored(a, b);
     const body = bodyGap(a, b, t.compMutual, t.compMutual, true, t);
     const lead = mirror ? bodyGap(a, b, t.compMutual, t.compMutual, true, t, t.mirrorLead) : body;
     // inside both windows already (and the bodies clear): no correction
-    const fine = s >= wa.lo && s <= wa.hi && s >= wb.lo && s <= wb.hi && s >= Math.max(body, Math.min(lead, Math.min(wa.hi, wb.hi)));
-    const need = fine ? 0 : jointSeparation(wa, wb, body, lead) - s;
+    const fine = sep >= wa.lo && sep <= wa.hi && sep >= wb.lo && sep <= wb.hi && sep >= Math.max(body, Math.min(lead, Math.min(wa.hi, wb.hi)));
+    const need = fine ? 0 : jointSeparation(wa, wb, body, lead) - sep;
     // each takes half within its own clamp (a big body's is larger, S6); what one cannot take, the other may
     const maxBack = mirror ? Math.max(t.maxBackLu, t.mirrorMaxBackLu) : t.maxBackLu;
     const [ha, hb] = splitNeed(need, bulkOf(a, t), bulkOf(b, t), maxBack, t.maxForwardLu);
-    contact.set(a.id, backOffset(a.side, ha, t, maxBack * bulkOf(a, t), t.maxForwardLu * bulkOf(a, t)));
-    contact.set(b.id, backOffset(b.side, hb, t, maxBack * bulkOf(b, t), t.maxForwardLu * bulkOf(b, t)));
-    comp.set(a.id, t.compMutual);
-    comp.set(b.id, t.compMutual);
-    engaged.add(a.id);
-    engaged.add(b.id);
+    setContact(ai, backOffset(a.side, ha, t, maxBack * bulkOf(a, t), t.maxForwardLu * bulkOf(a, t)));
+    setContact(bi, backOffset(b.side, hb, t, maxBack * bulkOf(b, t), t.maxForwardLu * bulkOf(b, t)));
+    setComp(ai, t.compMutual);
+    setComp(bi, t.compMutual);
+    engage(ai);
+    engage(bi);
   }
 
   // 2. one-sided attackers move against where their victim is drawn; a victim that fights nobody (it walks,
   //    stands, shoots) takes what the attacker's clamp leaves over. Two passes settle chains and shared victims.
-  const single = attackers.filter((a) => !done.has(a.id));
-  const victimBack = new Map<number, number>();
+  let nSingle = 0;
+  for (let k = 0; k < nAtt; k++) {
+    const ai = s.att[k] as number;
+    if (s.done[ai] === 0) s.single[nSingle++] = ai;
+  }
   for (let pass = 0; pass < 2; pass++) {
-    const wantVictim = new Map<number, number>();
-    for (const a of single) {
-      const v = byId.get(a.target as number) as StageUnit;
-      const vx = v.x + (contact.get(v.id) ?? 0);
+    let nWant = 0;
+    for (let q = 0; q < nSingle; q++) {
+      const ai = s.single[q] as number;
+      const vi = s.tgt[ai] as number;
+      const a = units[ai] as StageUnit;
+      const v = units[vi] as StageUnit;
+      const vc = contactOf(vi);
+      const vx = v.x + vc;
       // separation from the attacker's sim x (its own offset is what we solve for)
-      const s = (vx - a.x) * facing(a.side);
+      const sep = (vx - a.x) * facing(a.side);
       const w = window(a, v, t.compSingle, t);
       const body = bodyGap(a, v, t.compSingle, 0, false, t);
       let back = 0;
-      if (s < Math.max(w.lo, Math.min(body, w.hi)) || s > w.hi) back = Math.max(w.ideal, Math.min(body, w.hi)) - s;
+      if (sep < Math.max(w.lo, Math.min(body, w.hi)) || sep > w.hi) back = Math.max(w.ideal, Math.min(body, w.hi)) - sep;
       // a victim that stepped back from its own duel is followed that much further (a second spear on a busy mammoth)
-      const follow = Math.max(0, (contact.get(v.id) ?? 0) * facing(a.side));
+      const follow = Math.max(0, vc * facing(a.side));
       const k = bulkOf(a, t);
       const took = clamp(back, -(t.maxForwardLu * k + follow), t.maxBackLu * k);
-      contact.set(a.id, backOffset(a.side, took, t, t.maxBackLu * k, t.maxForwardLu * k + follow));
-      comp.set(a.id, t.compSingle);
-      engaged.add(a.id);
-      engaged.add(v.id);
-      const free = !isAttacker.has(v.id) && !v.fort;
+      setContact(ai, backOffset(a.side, took, t, t.maxBackLu * k, t.maxForwardLu * k + follow));
+      setComp(ai, t.compSingle);
+      engage(ai);
+      engage(vi);
+      const free = s.isAtt[vi] === 0 && !v.fort;
       if (free && took < back) {
         // the victim steps back (along the attacker's facing: away from it) by the rest, the largest asked
-        const prev = victimBack.get(v.id) ?? 0;
-        wantVictim.set(v.id, Math.max(wantVictim.get(v.id) ?? 0, prev + (back - took)));
+        const prev = s.vBackHas[vi] === 1 ? (s.vBack[vi] as number) : 0;
+        const asked = s.wantHas[vi] === 1 ? (s.want[vi] as number) : 0;
+        if (s.wantHas[vi] === 0) {
+          s.wantHas[vi] = 1;
+          s.wantOrd[nWant++] = vi;
+        }
+        s.want[vi] = Math.max(asked, prev + (back - took));
       }
     }
-    for (const [id, back] of wantVictim) {
-      const v = byId.get(id) as StageUnit;
+    for (let q = 0; q < nWant; q++) {
+      const vi = s.wantOrd[q] as number;
+      const v = units[vi] as StageUnit;
+      s.wantHas[vi] = 0;
       const k = bulkOf(v, t);
-      const b = clamp(back, 0, t.maxBackLu * k);
-      victimBack.set(id, b);
-      contact.set(id, backOffset(v.side, b, t, t.maxBackLu * k, t.maxForwardLu * k));
+      const b = clamp(s.want[vi] as number, 0, t.maxBackLu * k);
+      s.vBack[vi] = b;
+      s.vBackHas[vi] = 1;
+      setContact(vi, backOffset(v.side, b, t, t.maxBackLu * k, t.maxForwardLu * k));
     }
+  }
+
+  // each side's ground units and forts by sim x (the approach's lines), and from them each side's ground units in the
+  // sim's single file, p descending then id (the rows' ranks and the spread's order): one sort per side a frame
+  let n0 = 0;
+  let n1 = 0;
+  for (let i = 0; i < n; i++) {
+    const u = units[i] as StageUnit;
+    if (u.air) continue;
+    if (u.side === 0) s.line0[n0++] = i;
+    else s.line1[n1++] = i;
+  }
+  sortByX(s.line0, n0, units);
+  sortByX(s.line1, n1, units);
+  // side 1 faces -x: its line is already its file; side 0's file is its line reversed, keeping units at one x in id order
+  let nf1 = 0;
+  for (let k = 0; k < n1; k++) {
+    const i = s.line1[k] as number;
+    if (!(units[i] as StageUnit).fort) s.file1[nf1++] = i;
+  }
+  let nf0 = 0;
+  let hiK = n0 - 1;
+  while (hiK >= 0) {
+    const x = (units[s.line0[hiK] as number] as StageUnit).x;
+    let loK = hiK;
+    while (loK > 0 && (units[s.line0[loK - 1] as number] as StageUnit).x === x) loK--;
+    for (let k = loK; k <= hiK; k++) {
+      const i = s.line0[k] as number;
+      if (!(units[i] as StageUnit).fort) s.file0[nf0++] = i;
+    }
+    hiK = loK - 1;
   }
 
   // 2b. the approach (S1): a melee unit walking up to the nearest foe ahead takes the stand-off it will need at contact
   //     before it gets there; a pair walking into each other shares its duel row already
-  const { approach, approachPairs } = stageApproach(units, engaged, contact, t);
-
-  // 3. rows (from the duels, the approaching duels and engagements), then the same-side spread with those rows
-  const row = stageRows(units, approachPairs.length > 0 ? [...pairs, ...approachPairs] : pairs, engaged, contact, prevRows);
-  const spread = spreadSides(units, contact, row, engaged, t);
-
-  const offset = new Map<number, number>();
-  for (const u of units) {
-    if (u.air || u.fort) continue;
-    const o = (contact.get(u.id) ?? 0) + (spread.get(u.id) ?? 0);
-    const max = t.maxTotalLu * bulkOf(u, t);
-    if (o !== 0) offset.set(u.id, clamp(o, -max, max));
-  }
-  return { offset, contact, row, engaged, comp, pairs, approach };
-}
-
-/** Where the sim will park `a` against `v` (lu, centre to centre): its melee range plus both half widths (A2.7). */
-function contactSep(a: StageUnit, v: StageUnit): number {
-  return (a.rangeLu ?? 0) + (a.sizeLu + v.sizeLu) / 2;
-}
-
-/**
- * The approach (S1). Every melee unit not yet engaged that walks toward the nearest foe ahead of it (a ground unit or
- * a fort of the other side, by sim x) eases in the stand-off it will need when the sim parks it at contact: `need x
- * u^p`, `u` running 0..1 over the last `p x need` lu of the closing (`approachPower` = p). A pair walking into each other
- * takes the duel solution (its windows, bodies and clamps, split as a duel); a unit walking up to a foe that fights or
- * faces someone else takes the one-sided solution against where that foe is drawn. Never toward the foe (no pull).
- */
-function stageApproach(
-  units: readonly StageUnit[],
-  engaged: ReadonlySet<number>,
-  contact: Map<number, number>,
-  t: ContactTuning,
-): { approach: Set<number>; approachPairs: StagePair[] } {
-  const approach = new Set<number>();
   const approachPairs: StagePair[] = [];
-  // each side's ground units and forts by sim x, for the nearest foe ahead (O(n log n))
-  const lines: [StageUnit[], StageUnit[]] = [[], []];
-  for (const u of units) if (!u.air) lines[u.side].push(u);
-  for (const l of lines) l.sort((a, b) => a.x - b.x || a.id - b.id);
-  const foeAhead = (u: StageUnit): StageUnit | null => {
-    const foes = lines[u.side === 0 ? 1 : 0];
+  for (let i = 0; i < n; i++) {
+    const u = units[i] as StageUnit;
+    if (u.air || u.fort || !u.reach || u.rangeLu === undefined || u.target !== null || s.eng[i] === 1) continue;
     // first foe with x > u.x (facing +x), or last with x < u.x (facing -x)
+    const foes = u.side === 0 ? s.line1 : s.line0;
+    const nf = u.side === 0 ? n1 : n0;
     let lo = 0;
-    let hi = foes.length;
+    let hi = nf;
     while (lo < hi) {
       const mid = (lo + hi) >> 1;
-      if ((foes[mid] as StageUnit).x <= u.x) lo = mid + 1;
+      if ((units[foes[mid] as number] as StageUnit).x <= u.x) lo = mid + 1;
       else hi = mid;
     }
-    return facing(u.side) === 1 ? (foes[lo] ?? null) : (foes[lo - 1] ?? null);
-  };
-  const foeOf = new Map<number, StageUnit>();
-  for (const u of units) {
-    if (u.air || u.fort || !u.reach || u.rangeLu === undefined || u.target !== null || engaged.has(u.id)) continue;
-    const foe = foeAhead(u);
-    if (foe && (foe.x - u.x) * facing(u.side) > 0) foeOf.set(u.id, foe);
+    const fi = facing(u.side) === 1 ? (lo < nf ? (foes[lo] as number) : -1) : lo > 0 ? (foes[lo - 1] as number) : -1;
+    if (fi >= 0 && ((units[fi] as StageUnit).x - u.x) * facing(u.side) > 0) s.foe[i] = fi;
   }
   const p = Math.max(1, t.approachPower);
-  /** The eased share of `need` at sim separation `s` for a contact at `c`. */
-  const eased = (s: number, c: number, need: number): number => {
+  /** The eased share of `need` at sim separation `sep` for a contact at `c`. */
+  const eased = (sep: number, c: number, need: number): number => {
     if (!(need > 0)) return 0;
     const span = p * need;
-    return need * clamp((c + span - s) / span, 0, 1) ** p;
+    return need * clamp((c + span - sep) / span, 0, 1) ** p;
   };
-  const done = new Set<number>();
-  for (const u of units) {
-    const b = foeOf.get(u.id);
-    if (!b || done.has(u.id)) continue;
-    const a = u;
-    const s = (b.x - a.x) * facing(a.side);
-    if (foeOf.get(b.id) === a) {
+  const approach = (i: number): void => {
+    if (s.appr[i] === 0) {
+      s.appr[i] = 1;
+      s.apprOrd[nAppr++] = i;
+    }
+  };
+  for (let i = 0; i < n; i++) {
+    const bi = s.foe[i] as number;
+    if (bi < 0 || s.adone[i] === 1) continue;
+    const a = units[i] as StageUnit;
+    const b = units[bi] as StageUnit;
+    const sep = (b.x - a.x) * facing(a.side);
+    if (s.foe[bi] === i) {
       // two walking into each other: the duel they will fight, at the separation where the first of them stops
-      done.add(a.id);
-      done.add(b.id);
+      s.adone[i] = 1;
+      s.adone[bi] = 1;
       const c = Math.max(contactSep(a, b), contactSep(b, a));
       // the most both clamps can take: a pair further apart than its easing window for that stand-off needs none yet
       // (most walking units on a long lane: skip the windows)
       const cap = t.maxBackLu * (bulkOf(a, t) + bulkOf(b, t));
-      if (s >= c + p * cap) continue;
+      if (sep >= c + p * cap) continue;
       const wa = window(a, b, t.compMutual, t);
       const wb = window(b, a, t.compMutual, t);
       const body = bodyGap(a, b, t.compMutual, t.compMutual, true, t);
       // inside the contact distance (the sim parks them this tick, often a few lu short of `c`) the duel's own
       // correction at the separation they have, so the duel starts on the stand-off the approach left (no step back)
-      const at = Math.min(s, c);
+      const at = Math.min(sep, c);
       const fine = at >= wa.lo && at <= wa.hi && at >= wb.lo && at <= wb.hi && at >= body;
       const full = Math.min(cap, fine ? 0 : jointSeparation(wa, wb, body, body) - at);
-      const need = s <= c ? Math.max(0, full) : eased(s, c, full);
+      const need = sep <= c ? Math.max(0, full) : eased(sep, c, full);
       if (need <= 0) continue;
       const [ha, hb] = splitNeed(need, bulkOf(a, t), bulkOf(b, t), t.maxBackLu, t.maxForwardLu);
-      contact.set(a.id, backOffset(a.side, ha, t, t.maxBackLu * bulkOf(a, t), 0));
-      contact.set(b.id, backOffset(b.side, hb, t, t.maxBackLu * bulkOf(b, t), 0));
-      approach.add(a.id);
-      approach.add(b.id);
+      setContact(i, backOffset(a.side, ha, t, t.maxBackLu * bulkOf(a, t), 0));
+      setContact(bi, backOffset(b.side, hb, t, t.maxBackLu * bulkOf(b, t), 0));
+      approach(i);
+      approach(bi);
       approachPairs.push({ a: Math.min(a.id, b.id), b: Math.max(a.id, b.id) });
       continue;
     }
     // walking up to a foe that fights or faces someone else: the one-sided stand-off against where it is drawn
-    done.add(a.id);
+    s.adone[i] = 1;
     const c = contactSep(a, b);
-    if (s >= c + p * t.maxBackLu * bulkOf(a, t)) continue;
+    if (sep >= c + p * t.maxBackLu * bulkOf(a, t)) continue;
     // the separation at contact against where the foe is drawn (inside `c`: the one it has, as the engaged solve sees it)
-    const sc = Math.min(s, c) + (contact.get(b.id) ?? 0) * facing(a.side);
+    const sc = Math.min(sep, c) + contactOf(bi) * facing(a.side);
     const w = window(a, b, t.compSingle, t);
     const body = bodyGap(a, b, t.compSingle, 0, false, t);
     let backC = 0;
     if (sc < Math.max(w.lo, Math.min(body, w.hi)) || sc > w.hi) backC = Math.max(w.ideal, Math.min(body, w.hi)) - sc;
     const capped = Math.min(backC, t.maxBackLu * bulkOf(a, t));
-    const back = s <= c ? Math.max(0, capped) : eased(s, c, capped);
+    const back = sep <= c ? Math.max(0, capped) : eased(sep, c, capped);
     if (back <= 0) continue;
-    contact.set(a.id, backOffset(a.side, back, t, t.maxBackLu * bulkOf(a, t), 0));
-    approach.add(a.id);
+    setContact(i, backOffset(a.side, back, t, t.maxBackLu * bulkOf(a, t), 0));
+    approach(i);
   }
-  return { approach, approachPairs };
+
+  // 3. rows (from the duels, the approaching duels and engagements), then the same-side spread with those rows
+  const nRow = stageRows(units, approachPairs.length > 0 ? [...pairs, ...approachPairs] : pairs, prevRows, s, n, nf0, nf1);
+  spreadSides(units, s, t, s.file0, nf0, 0);
+  spreadSides(units, s, t, s.file1, nf1, 1);
+
+  const offset = new Map<number, number>();
+  for (let i = 0; i < n; i++) {
+    const u = units[i] as StageUnit;
+    if (u.air || u.fort) continue;
+    const o = contactOf(i) + (s.spr[i] as number);
+    const max = t.maxTotalLu * bulkOf(u, t);
+    if (o !== 0) offset.set(u.id, clamp(o, -max, max));
+  }
+  const contact = new Map<number, number>();
+  for (let q = 0; q < nC; q++) {
+    const i = s.cOrd[q] as number;
+    contact.set((units[i] as StageUnit).id, s.cOff[i] as number);
+  }
+  const comp = new Map<number, number>();
+  for (let q = 0; q < nComp; q++) {
+    const i = s.compOrd[q] as number;
+    comp.set((units[i] as StageUnit).id, s.comp[i] as number);
+  }
+  const engaged = new Set<number>();
+  for (let q = 0; q < nEng; q++) engaged.add((units[s.engOrd[q] as number] as StageUnit).id);
+  const approachSet = new Set<number>();
+  for (let q = 0; q < nAppr; q++) approachSet.add((units[s.apprOrd[q] as number] as StageUnit).id);
+  const row = new Map<number, number>();
+  for (let q = 0; q < nRow; q++) {
+    const i = s.rowOrd[q] as number;
+    row.set((units[i] as StageUnit).id, s.row[i] as number);
+  }
+  return { offset, contact, row, engaged, comp, pairs, approach: approachSet };
+}
+
+/** Where the sim will park `a` against `v` (lu, centre to centre): its melee range plus both half widths (A2.7). */
+function contactSep(a: StageUnit, v: StageUnit): number {
+  return (a.rangeLu ?? 0) + (a.sizeLu + v.sizeLu) / 2;
 }
 
 /**
@@ -538,180 +755,231 @@ function splitNeed(need: number, bulkA: number, bulkB: number, maxBack: number, 
 /** Pairs further apart than this in sim x (lu) never need spreading (bigger than any least gap). */
 const SPREAD_WINDOW_LU = 70;
 
-/**
- * The same-side spread (lu per unit, world x). Per side, in the sim's single-file order (p descending, then
- * id), every pair close enough to matter is pushed apart to its least gap: `spreadShare` of the two bodies'
- * mean width, less the further apart their depth rows are. A unit in contact hardly moves; a free unit ahead
- * steps forward a little and the unit behind makes room. A free unit never passes the unit ahead of it in the
- * sim's order (it would stand between duelists); two units in contact in rows far apart may overlap in x
- * (a pike poking over a club). Capped at `spreadMaxLu` per unit, times the bigger body's bulk (S6).
- */
-function spreadSides(units: readonly StageUnit[], contact: ReadonlyMap<number, number>, row: ReadonlyMap<number, number>, engaged: ReadonlySet<number>, t: ContactTuning): Map<number, number> {
-  const out = new Map<number, number>();
-  for (const side of [0, 1] as const) {
-    const f = facing(side);
-    const list = units.filter((u) => u.side === side && !u.air && !u.fort);
-    const n = list.length;
-    if (n < 2) continue;
-    list.sort((a, b) => f * (b.x - a.x) || a.id - b.id);
-    // per unit, in that order (arrays, not maps: this runs every frame for every unit): its sim position along the
-    // facing (larger is nearer the enemy), its drawn position with the contact offset, its body width, its row and
-    // whether it is in contact; `sp` is the spread being solved
-    const xf = new Float64Array(n);
-    const pos = new Float64Array(n);
-    const wid = new Float64Array(n);
-    const rw = new Float64Array(n);
-    const eng = new Uint8Array(n);
-    const sp = new Float64Array(n);
-    const bk = new Float64Array(n);
-    for (let i = 0; i < n; i++) {
-      const u = list[i] as StageUnit;
-      xf[i] = u.x * f;
-      pos[i] = (u.x + (contact.get(u.id) ?? 0)) * f;
-      const b = bodyOf(u, t);
-      // the idle frame includes a held weapon; the body itself is never wider than its collision width allows
-      wid[i] = Math.min(b.front + b.back, u.sizeLu * t.bodyShare);
-      rw[i] = row.get(u.id) ?? 0;
-      eng[i] = engaged.has(u.id) ? 1 : 0;
-      bk[i] = bulkOf(u, t);
-    }
-    for (let iter = 0; iter < 4; iter++) {
-      let moved = false;
-      for (let i = 0; i < n; i++) {
-        for (let j = i + 1; j < n; j++) {
-          if ((xf[i] as number) - (xf[j] as number) > SPREAD_WINDOW_LU) break;
-          const dy = Math.abs((rw[i] as number) - (rw[j] as number));
-          // a row apart parts a small pair, never two beasts 130 lu long (S6): the depth that needs no gap grows with bulk
-          const big = Math.max(bk[i] as number, bk[j] as number);
-          const rowK = Math.max(0, 1 - dy / (t.spreadRowLu * big));
-          const ei = eng[i] === 1;
-          const ej = eng[j] === 1;
-          // a free unit stays behind the one ahead of it; engaged units in rows far apart may cross
-          const floor = ei && ej && rowK < 0.5 ? -Infinity : 0;
-          const need = Math.max(floor, t.spreadShare * (((wid[i] as number) + (wid[j] as number)) / 2) * rowK);
-          const sa = sp[i] as number;
-          const sb = sp[j] as number;
-          const gap = (pos[i] as number) + sa - ((pos[j] as number) + sb);
-          if (gap >= need - 0.01) continue;
-          const d = need - gap;
-          // a free unit ahead steps forward a little, the one behind steps back; contact holds its place. The cap grows
-          // with the bigger of the two bodies (S6: a Bonker beside a Rhino may step further than beside a Bonker)
-          const fa = ei ? 0 : 0.5;
-          const fb = ej ? 0.35 : 1;
-          const sum = fa + fb;
-          const cap = t.spreadMaxLu * big;
-          const na = clamp(sa + (d * fa) / sum, -cap, cap);
-          const nb = clamp(sb - (d * fb) / sum, -cap, cap);
-          if (Math.abs(na - sa) + Math.abs(nb - sb) > 0.01) moved = true;
-          sp[i] = na;
-          sp[j] = nb;
-        }
-      }
-      if (!moved) break;
-    }
-    // the order rule holds even where the cap stopped the spread: a free unit behind never draws ahead
-    for (let i = 1; i < n; i++) {
-      if (eng[i] === 1) continue;
-      let ahead = Infinity;
-      for (let k = i - 1; k >= 0; k--) {
-        if ((xf[k] as number) - (xf[i] as number) > SPREAD_WINDOW_LU) break;
-        ahead = Math.min(ahead, (pos[k] as number) + (sp[k] as number));
-      }
-      const over = (pos[i] as number) + (sp[i] as number) - ahead;
-      if (over > 0) sp[i] = (sp[i] as number) - over;
-    }
-    for (let i = 0; i < n; i++) {
-      const s = sp[i] as number;
-      if (Math.abs(s) > 0.01) out.set((list[i] as StageUnit).id, s * f);
-    }
+/** The spread's per-unit arrays, kept between frames and grown when a side has more units (no allocation a frame). */
+let spreadArrays = { xf: new Float64Array(64), pos: new Float64Array(64), wid: new Float64Array(64), rw: new Float64Array(64), eng: new Uint8Array(64), sp: new Float64Array(64), bk: new Float64Array(64) };
+function spreadScratch(n: number): typeof spreadArrays {
+  if (spreadArrays.xf.length < n) {
+    const m = Math.max(n, spreadArrays.xf.length * 2);
+    spreadArrays = { xf: new Float64Array(m), pos: new Float64Array(m), wid: new Float64Array(m), rw: new Float64Array(m), eng: new Uint8Array(m), sp: new Float64Array(m), bk: new Float64Array(m) };
   }
-  return out;
+  return spreadArrays;
+}
+
+/** The spread's pair list (unit indices and what each pair needs), kept between frames, grown to hold `n` pairs. */
+let pairArrays = { pi: new Int32Array(256), pj: new Int32Array(256), need: new Float64Array(256), fa: new Float64Array(256), fb: new Float64Array(256), cap: new Float64Array(256) };
+function spreadPairs(n: number): typeof pairArrays {
+  if (pairArrays.pi.length < n) {
+    const m = Math.max(n, pairArrays.pi.length * 2);
+    const old = pairArrays;
+    pairArrays = { pi: new Int32Array(m), pj: new Int32Array(m), need: new Float64Array(m), fa: new Float64Array(m), fb: new Float64Array(m), cap: new Float64Array(m) };
+    // keep what was already written this frame
+    pairArrays.pi.set(old.pi);
+    pairArrays.pj.set(old.pj);
+    pairArrays.need.set(old.need);
+    pairArrays.fa.set(old.fa);
+    pairArrays.fb.set(old.fb);
+    pairArrays.cap.set(old.cap);
+  }
+  return pairArrays;
 }
 
 /**
- * Depth rows (lu) for every unit (A2.1 Depth, rebuilt for A1). Air units fly at their altitude; the siege
- * crowd at the enemy gate keeps its seven rows; a duel shares a row; the other front units pick the first
- * row of their side's preference that no unit near them uses (their last row first, so rows are sticky);
- * the back ranks spread over five rows by rank.
+ * The same-side spread of one side (lu per unit, world x, into `s.spr`). In the sim's single-file order (p descending,
+ * then id: `file`, `n` units), every pair close enough to matter is pushed apart to its least gap: `spreadShare` of the
+ * two bodies' mean width, less the further apart their depth rows are. A unit in contact hardly moves; a free unit ahead
+ * steps forward a little and the unit behind makes room. A free unit never passes the unit ahead of it in the sim's
+ * order (it would stand between duelists); two units in contact in rows far apart may overlap in x (a pike poking over a
+ * club). Capped at `spreadMaxLu` per unit, times the bigger body's bulk (S6).
  */
-export function stageRows(
+function spreadSides(units: readonly StageUnit[], s: Scratch, t: ContactTuning, file: Int32Array, n: number, side: Side): void {
+  const f = facing(side);
+  if (n < 2) return;
+  // per unit, in that order (arrays, not maps: this runs every frame for every unit): its sim position along the
+  // facing (larger is nearer the enemy), its drawn position with the contact offset, its body width, its row and
+  // whether it is in contact; `sp` is the spread being solved (scratch arrays kept between frames, `sp` zeroed)
+  const { xf, pos, wid, rw, eng, sp, bk } = spreadScratch(n);
+  for (let i = 0; i < n; i++) {
+    const ui = file[i] as number;
+    const u = units[ui] as StageUnit;
+    xf[i] = u.x * f;
+    pos[i] = (u.x + (s.cHas[ui] === 1 ? (s.cOff[ui] as number) : 0)) * f;
+    const b = bodyOf(u, t);
+    // the idle frame includes a held weapon; the body itself is never wider than its collision width allows
+    wid[i] = Math.min(b.front + b.back, u.sizeLu * t.bodyShare);
+    rw[i] = s.rowHas[ui] === 1 ? (s.row[ui] as number) : 0;
+    eng[i] = s.eng[ui] as number;
+    bk[i] = bulkOf(u, t);
+    sp[i] = 0;
+  }
+  // the pairs close enough to matter, in order (i, then j), with what each needs: none of it changes over the passes
+  // below, so it is worked out once (the same arithmetic as per pass before, so the same numbers)
+  let m = 0;
+  let pr = spreadPairs(n);
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      if ((xf[i] as number) - (xf[j] as number) > SPREAD_WINDOW_LU) break;
+      const dy = Math.abs((rw[i] as number) - (rw[j] as number));
+      // a row apart parts a small pair, never two beasts 130 lu long (S6): the depth that needs no gap grows with bulk
+      const big = Math.max(bk[i] as number, bk[j] as number);
+      const rowK = Math.max(0, 1 - dy / (t.spreadRowLu * big));
+      const ei = eng[i] === 1;
+      const ej = eng[j] === 1;
+      // a free unit stays behind the one ahead of it; engaged units in rows far apart may cross
+      const floor = ei && ej && rowK < 0.5 ? -Infinity : 0;
+      if (m === pr.pi.length) pr = spreadPairs(m + 1);
+      pr.pi[m] = i;
+      pr.pj[m] = j;
+      pr.need[m] = Math.max(floor, t.spreadShare * (((wid[i] as number) + (wid[j] as number)) / 2) * rowK);
+      // a free unit ahead steps forward a little, the one behind steps back; contact holds its place. The cap grows
+      // with the bigger of the two bodies (S6: a Bonker beside a Rhino may step further than beside a Bonker)
+      pr.fa[m] = ei ? 0 : 0.5;
+      pr.fb[m] = ej ? 0.35 : 1;
+      pr.cap[m] = t.spreadMaxLu * big;
+      m++;
+    }
+  }
+  const { pi, pj, need: pneed, fa: pfa, fb: pfb, cap: pcap } = pr;
+  for (let iter = 0; iter < 4; iter++) {
+    let moved = false;
+    for (let q = 0; q < m; q++) {
+      const i = pi[q] as number;
+      const j = pj[q] as number;
+      const need = pneed[q] as number;
+      const sa = sp[i] as number;
+      const sb = sp[j] as number;
+      const gap = (pos[i] as number) + sa - ((pos[j] as number) + sb);
+      if (gap >= need - 0.01) continue;
+      const d = need - gap;
+      const fa = pfa[q] as number;
+      const fb = pfb[q] as number;
+      const sum = fa + fb;
+      const cap = pcap[q] as number;
+      const na = clamp(sa + (d * fa) / sum, -cap, cap);
+      const nb = clamp(sb - (d * fb) / sum, -cap, cap);
+      if (Math.abs(na - sa) + Math.abs(nb - sb) > 0.01) moved = true;
+      sp[i] = na;
+      sp[j] = nb;
+    }
+    if (!moved) break;
+  }
+  // the order rule holds even where the cap stopped the spread: a free unit behind never draws ahead
+  for (let i = 1; i < n; i++) {
+    if (eng[i] === 1) continue;
+    let ahead = Infinity;
+    for (let k = i - 1; k >= 0; k--) {
+      if ((xf[k] as number) - (xf[i] as number) > SPREAD_WINDOW_LU) break;
+      ahead = Math.min(ahead, (pos[k] as number) + (sp[k] as number));
+    }
+    const over = (pos[i] as number) + (sp[i] as number) - ahead;
+    if (over > 0) sp[i] = (sp[i] as number) - over;
+  }
+  for (let i = 0; i < n; i++) {
+    const v = sp[i] as number;
+    if (Math.abs(v) > 0.01) s.spr[file[i] as number] = v * f;
+  }
+}
+
+/**
+ * Depth rows (lu) for every unit (A2.1 Depth, rebuilt for A1), into `s.row` (first-set order in `s.rowOrd`; returns
+ * how many). Air units fly at their altitude; the siege crowd at the enemy gate keeps its seven rows; a duel shares a
+ * row; the other front units pick the first row of their side's preference that no unit near them uses (their last row
+ * first, so rows are sticky); the back ranks spread over five rows by rank. `pairs` are by unit id.
+ */
+function stageRows(
   units: readonly StageUnit[],
   pairs: readonly StagePair[],
-  engaged: ReadonlySet<number>,
-  contact: ReadonlyMap<number, number>,
   prevRows: ReadonlyMap<number, number> | null,
-): Map<number, number> {
-  const out = new Map<number, number>();
-  // the units placed so far (parallel arrays: this runs every frame for every unit, without allocations per check)
-  const px: number[] = [];
-  const py: number[] = [];
-  const pid: number[] = [];
-  const pside: Side[] = [];
+  s: Scratch,
+  n: number,
+  nf0: number,
+  nf1: number,
+): number {
+  let nRow = 0;
+  let nPlaced = 0;
+  const setRow = (i: number, y: number): void => {
+    if (s.rowHas[i] === 0) {
+      s.rowHas[i] = 1;
+      s.rowOrd[nRow++] = i;
+    }
+    s.row[i] = y;
+  };
   // the placed units by x in buckets as wide as the furthest check (a foe 96 lu off), so a check looks at three
   // buckets instead of every placed unit (the answer is the same: it only skips units too far away to count)
-  const buckets = new Map<number, number[]>();
-  const bucketOf = (x: number): number => Math.floor(x / ROW_NEAR_FOE_LU);
-  const drawnX = (u: StageUnit): number => u.x + (contact.get(u.id) ?? 0);
-  /** No placed unit (but `ex1`, `ex2`) near x in a row within `ROW_SAME_LU` of y: own side 46 lu, foes 96 lu. */
+  for (const list of rowBuckets.values()) list.length = 0;
+  const drawnX = (i: number): number => (units[i] as StageUnit).x + (s.cHas[i] === 1 ? (s.cOff[i] as number) : 0);
+  /** No placed unit (but units `ex1`, `ex2`) near x in a row within `ROW_SAME_LU` of y: own side 46 lu, foes 96 lu. */
   const free = (x: number, y: number, side: Side, ex1: number, ex2 = ex1): boolean => {
-    const b = bucketOf(x);
+    const b = Math.floor(x / ROW_NEAR_FOE_LU);
     for (let k = b - 1; k <= b + 1; k++) {
-      const list = buckets.get(k);
+      const list = rowBuckets.get(k);
       if (!list) continue;
-      for (const i of list) {
-        const id = pid[i] as number;
-        if (id === ex1 || id === ex2) continue;
-        if (Math.abs((py[i] as number) - y) >= ROW_SAME_LU) continue;
-        if (Math.abs((px[i] as number) - x) < (pside[i] === side ? ROW_NEAR_LU : ROW_NEAR_FOE_LU)) return false;
+      for (let q = 0; q < list.length; q++) {
+        const pl = list[q] as number;
+        const ui = s.pix[pl] as number;
+        if (ui === ex1 || ui === ex2) continue;
+        if (Math.abs((s.py[pl] as number) - y) >= ROW_SAME_LU) continue;
+        if (Math.abs((s.px[pl] as number) - x) < (s.pside[pl] === side ? ROW_NEAR_LU : ROW_NEAR_FOE_LU)) return false;
       }
     }
     return true;
   };
-  const put = (u: StageUnit, y: number): void => {
-    out.set(u.id, y);
-    const x = drawnX(u);
-    const k = bucketOf(x);
-    const list = buckets.get(k);
-    if (list) list.push(px.length);
-    else buckets.set(k, [px.length]);
-    px.push(x);
-    py.push(y);
-    pid.push(u.id);
-    pside.push(u.side);
+  const put = (i: number, y: number): void => {
+    setRow(i, y);
+    const x = drawnX(i);
+    const k = Math.floor(x / ROW_NEAR_FOE_LU);
+    let list = rowBuckets.get(k);
+    if (!list) {
+      list = [];
+      rowBuckets.set(k, list);
+    }
+    list.push(nPlaced);
+    s.px[nPlaced] = x;
+    s.py[nPlaced] = y;
+    s.pix[nPlaced] = i;
+    s.pside[nPlaced] = (units[i] as StageUnit).side;
+    nPlaced++;
   };
-  const byId = new Map(units.map((u) => [u.id, u]));
 
-  // ranks in each side's single file (p descending, then id), as the sim orders them
-  const rank = new Map<number, number>();
-  const crowd = new Map<number, number>();
+  // ranks in each side's single file (p descending, then id), as the sim orders them: a unit's index in its file
+  let nCrowd = 0;
   for (const side of [0, 1] as const) {
-    const f = facing(side);
-    const ground = units.filter((u) => u.side === side && !u.air && !u.fort).sort((a, b) => f * (b.x - a.x) || a.id - b.id);
+    const file = side === 0 ? s.file0 : s.file1;
+    const nf = side === 0 ? nf0 : nf1;
     let k = 0;
-    ground.forEach((u, r) => {
-      rank.set(u.id, r);
+    for (let r = 0; r < nf; r++) {
+      const i = file[r] as number;
+      const u = units[i] as StageUnit;
       const p = side === 0 ? u.x : LANE_LU - u.x;
-      if (r >= 3 && p >= LANE_LU - CROWD_ZONE_LU) crowd.set(u.id, crowdRowOf(k++));
-    });
-    const air = units.filter((u) => u.side === side && u.air).sort((a, b) => a.id - b.id);
-    air.forEach((u, r) => out.set(u.id, AIR_ROW_LU + (r % 2 === 0 ? 0 : -14)));
+      if (r >= 3 && p >= LANE_LU - CROWD_ZONE_LU) {
+        s.crowdIx[nCrowd] = i;
+        s.crowdY[nCrowd] = crowdRowOf(k++);
+        nCrowd++;
+      }
+    }
+    let nAir = 0;
+    for (let i = 0; i < n; i++) {
+      const u = units[i] as StageUnit;
+      if (u.side === side && u.air) s.air[nAir++] = i;
+    }
+    sortById(s.air, nAir, units);
+    for (let r = 0; r < nAir; r++) setRow(s.air[r] as number, AIR_ROW_LU + (r % 2 === 0 ? 0 : -14));
   }
-  for (const [id, y] of crowd) {
-    const u = byId.get(id);
-    if (u) put(u, y);
-  }
+  for (let q = 0; q < nCrowd; q++) put(s.crowdIx[q] as number, s.crowdY[q] as number);
 
   // duels: sticky, else the first duel row free near them
-  const duels = [...pairs].sort((p, q) => p.a - q.a);
+  const duels = [...pairs].sort((pa, pb) => pa.a - pb.a);
   for (const d of duels) {
-    const a = byId.get(d.a);
-    const b = byId.get(d.b);
-    if (!a || !b || out.has(a.id) || out.has(b.id)) continue;
-    const x = (drawnX(a) + drawnX(b)) / 2;
-    const prev = prevRows?.get(a.id) === prevRows?.get(b.id) ? prevRows?.get(a.id) : undefined;
+    const ai = indexOf.get(d.a);
+    const bi = indexOf.get(d.b);
+    if (ai === undefined || bi === undefined || s.rowHas[ai] === 1 || s.rowHas[bi] === 1) continue;
+    const a = units[ai] as StageUnit;
+    const b = units[bi] as StageUnit;
+    const x = (drawnX(ai) + drawnX(bi)) / 2;
+    const prevA = prevRows?.get(a.id);
+    const prev = prevA === prevRows?.get(b.id) ? prevA : undefined;
     // a duel row must be free of both sides' units (either side's member checks its own side's distance); its last
     // row first (sticky), then the duel rows in order
-    const ok = (r: number): boolean => free(x, r, a.side, a.id, b.id) && free(x, r, b.side, a.id, b.id);
+    const ok = (r: number): boolean => free(x, r, a.side, ai, bi) && free(x, r, b.side, ai, bi);
     let y = 0;
     if (prev !== undefined && (DUEL_ROWS as readonly number[]).includes(prev) && ok(prev)) y = prev;
     else {
@@ -722,56 +990,80 @@ export function stageRows(
         }
       }
     }
-    put(a, y);
-    put(b, y);
+    put(ai, y);
+    put(bi, y);
   }
 
-  // the other units near a front, by importance: engaged first, then by rank
-  const rest = units
-    .filter((u) => !u.air && !u.fort && !out.has(u.id))
-    .sort((a, b) => Number(engaged.has(b.id)) - Number(engaged.has(a.id)) || (rank.get(a.id) ?? 0) - (rank.get(b.id) ?? 0) || a.id - b.id);
-  for (const u of rest) {
-    const r = rank.get(u.id) ?? 0;
-    const x = drawnX(u);
+  // the other units near a front, by importance: engaged first, then by rank, then by id. Taken from the files without
+  // a sort: a rank holds at most one unit of each side
+  let nRest = 0;
+  const ranks = Math.max(nf0, nf1);
+  for (let pass = 0; pass < 2; pass++) {
+    const wantEngaged = pass === 0 ? 1 : 0;
+    for (let r = 0; r < ranks; r++) {
+      let a = r < nf0 ? (s.file0[r] as number) : -1;
+      let b = r < nf1 ? (s.file1[r] as number) : -1;
+      if (a >= 0 && b >= 0 && (units[b] as StageUnit).id < (units[a] as StageUnit).id) {
+        const tmp = a;
+        a = b;
+        b = tmp;
+      }
+      if (a >= 0 && s.rowHas[a] === 0 && s.eng[a] === wantEngaged) {
+        s.rest[nRest] = a;
+        s.restRank[nRest] = r;
+        nRest++;
+      }
+      if (b >= 0 && s.rowHas[b] === 0 && s.eng[b] === wantEngaged) {
+        s.rest[nRest] = b;
+        s.restRank[nRest] = r;
+        nRest++;
+      }
+    }
+  }
+  for (let q = 0; q < nRest; q++) {
+    const i = s.rest[q] as number;
+    const r = s.restRank[q] as number;
+    const u = units[i] as StageUnit;
+    const x = drawnX(i);
     const prev = prevRows?.get(u.id);
-    if (r >= FRONT_RANKS && !engaged.has(u.id)) {
+    if (r >= FRONT_RANKS && s.eng[i] === 0) {
       // a back rank's own row by rank, unless a neighbour holds it (then its last row, then the pattern's next free
       // row from its own on)
       const pattern = BACK_ROWS5[u.side];
       const k = r % pattern.length;
       const own = pattern[k] ?? 0;
       let y = own;
-      if (!free(x, own, u.side, u.id)) {
-        if (prev !== undefined && prev !== own && pattern.includes(prev) && free(x, prev, u.side, u.id)) y = prev;
+      if (!free(x, own, u.side, i)) {
+        if (prev !== undefined && prev !== own && pattern.includes(prev) && free(x, prev, u.side, i)) y = prev;
         else {
-          for (let i = 1; i < pattern.length; i++) {
-            const c = pattern[(k + i) % pattern.length] as number;
-            if (free(x, c, u.side, u.id)) {
+          for (let pi = 1; pi < pattern.length; pi++) {
+            const c = pattern[(k + pi) % pattern.length] as number;
+            if (free(x, c, u.side, i)) {
               y = c;
               break;
             }
           }
         }
       }
-      put(u, y);
+      put(i, y);
       continue;
     }
     // a front unit: its last row (sticky), else its side's preferred rows in order, else one by rank
     const pref = FRONT_ROWS[u.side];
     let y: number | undefined;
-    if (prev !== undefined && pref.includes(prev) && free(x, prev, u.side, u.id)) y = prev;
+    if (prev !== undefined && pref.includes(prev) && free(x, prev, u.side, i)) y = prev;
     else {
       for (const c of pref) {
-        if (free(x, c, u.side, u.id)) {
+        if (free(x, c, u.side, i)) {
           y = c;
           break;
         }
       }
     }
-    put(u, y ?? pref[r % pref.length] ?? 0);
+    put(i, y ?? pref[r % pref.length] ?? 0);
   }
-  for (const u of units) if (u.fort && !out.has(u.id)) out.set(u.id, 0);
-  return out;
+  for (let i = 0; i < n; i++) if ((units[i] as StageUnit).fort && s.rowHas[i] === 0) setRow(i, 0);
+  return nRow;
 }
 
 /** The k-th crowd row at the enemy gate (as `depth.ts`). */
