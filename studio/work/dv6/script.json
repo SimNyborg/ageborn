@@ -1,0 +1,8 @@
+{"lead": 0.15, "lines": [
+ {"key": "l0", "text": "I think I found a broken Legendary.", "gap": 0.35},
+ {"key": "l1", "text": "The Star Leviathan. A space whale that sings shockwaves. It costs three hundred and fifty.", "gap": 0.35},
+ {"key": "l2", "text": "Against three basic soldiers, it barely survives.", "gap": 0.4},
+ {"key": "l3", "text": "Add just one more... and it falls. Four soldiers. Two hundred gold.", "gap": 0.4},
+ {"key": "l4", "text": "Every other Legendary I tested beats six to thirteen of them. So is this a bug? Or is it meant to stand behind a front line?", "gap": 0.4},
+ {"key": "l5", "text": "Buff it, or leave it? You tell me.", "gap": 0.3}
+]}

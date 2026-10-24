@@ -16,12 +16,12 @@ async function skipUntil(s, pred, maxMs = 120_000) {
 }
 
 async function heroFalls(s, out) {
-  await skipUntil(s, (st) => st.sides[0].units <= 3);
+  // starts right after the mid snapshot (3 Legionnaires left), while the Leviathan still stands
   const fight = (w, how) => s.camera({ kind: 'fight', wMin: w, wMax: w + 60, margin: 120, ground: 0.75, how });
   await fight(460, { move: 'cut' });
   await s.startClip(`${out}/c.mp4`, { part: 'falls' });
   s.mark('last-stand');
-  await s.until((st) => st.sides[1].units !== 1, 900);
+  await s.until((st) => !st.watched?.[0] || st.watched[0].hpBp <= 0, 900);
   s.mark('hero-death');
   await s.timeScale(0.35, 150);
   await s.frames(50);
@@ -34,5 +34,5 @@ async function heroFalls(s, out) {
 export async function record(ctx) {
   for (const d of ['w3', 'l4']) mkdirSync(`${ctx.out}/${d}`, { recursive: true });
   if (ctx.only !== 'l4') await recordDuel({ ...ctx, out: `${ctx.out}/w3` }, { ...BASE, n: 3 });
-  if (ctx.only !== 'w3') await recordDuel({ ...ctx, out: `${ctx.out}/l4` }, { ...BASE, n: 4 }, { finale: heroFalls });
+  if (ctx.only !== 'w3') await recordDuel({ ...ctx, out: `${ctx.out}/l4` }, { ...BASE, n: 4, midAt: 3 }, { finale: heroFalls });
 }

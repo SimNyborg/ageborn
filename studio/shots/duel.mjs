@@ -43,7 +43,7 @@ export async function recordDuel({ open, out }, spec, { finale } = {}) {
   await s.endClip();
 
   // b: mid-fight
-  const half = Math.ceil(spec.n / 2);
+  const half = spec.midAt ?? Math.ceil(spec.n / 2);
   await skipUntil(s, (st) => st.sides[0].units <= half);
   await s.camera({ kind: 'fight', wMin: 460, wMax: 520, margin: 110, ground: 0.75, how: { move: 'cut' }, drift: -10 });
   await s.startClip(`${out}/b.mp4`, { part: 'mid' });

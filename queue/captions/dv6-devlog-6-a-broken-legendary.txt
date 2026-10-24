@@ -1,0 +1,4 @@
+Devlog #6: I think I found a broken Legendary 🐋💥
+The Star Leviathan costs 350. Against 3 basic soldiers it barely survives. Against 4 (cost 200) it falls. Every other Legendary I tested this week beats 6 to 13 of them. Bug, or is it meant to stand behind a front line? Buff it or leave it? 👇
+
+#gamedev #indiedev #indiegame #devlog #gamebalance
