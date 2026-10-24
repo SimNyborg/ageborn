@@ -4,7 +4,11 @@
  */
 import type { MusicCueId, SoundId } from './ids';
 
-export type Bus = 'master' | 'music' | 'sfx' | 'ui';
+/**
+ * Mixer buses (A13). `voice` is the narrator (queue item 39, owner request 2026-10-18): its own volume
+ * setting, under the master like the others, never ducked itself (it ducks the music while it speaks).
+ */
+export type Bus = 'master' | 'music' | 'sfx' | 'ui' | 'voice';
 
 /** Adaptive music layers (DESIGN A14.3, A13). */
 export type MusicLayer = 'intensity' | 'overdrive' | 'siege';

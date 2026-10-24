@@ -221,7 +221,7 @@ type TurretRow = [string, string, string, number, number, number, number, Hits];
 
 const TURRETS: Record<AgeId, TurretRow[]> = {
   stone: [
-    ['rock_tosser', 'Rock Tosser', 'C', 150, 30, 15, 360, 'GA'],
+    ['rock_tosser', 'Rock Thrower', 'C', 150, 30, 15, 360, 'GA'],
     ['angry_beehive', 'Angry Beehive', 'C', 175, 5, 2, 220, 'GA'],
     ['log_roller', 'Log Roller', 'R', 250, 45, 40, 300, 'G'],
     ['grumpy_toad', 'Grumpy Toad', 'E', 250, 60, 50, 420, 'G'],

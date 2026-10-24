@@ -150,7 +150,7 @@
     "mech_bay": { "name": "Mech Bay", "desc": "A camp on a pad that builds a Mini Mech, a small armored walker, every 16 s (one at a time)." },
     "mini_mech": { "name": "Mini Mech", "desc": "A small armored walker built by a Mech Bay. It always marches." },
     "training_dummy": { "name": "Training Dummy", "desc": "A straw target for practice. It barely fights back." },
-    "rock_tosser": { "name": "Rock Tosser", "desc": "Lobs a boulder at a single target. Hits ground and air." },
+    "rock_tosser": { "name": "Rock Thrower", "desc": "Lobs a boulder at a single target. Hits ground and air." },
     "angry_beehive": { "name": "Angry Beehive", "desc": "Releases a steady stream of angry bees: short range, lots of little stings. Hits ground and air." },
     "log_roller": { "name": "Log Roller", "desc": "Rolls a log along the ground near your gate, hitting up to 6 enemies, nearest first." },
     "grumpy_toad": { "name": "Grumpy Toad", "desc": "Grabs an enemy ranged or support unit with its tongue and drags it toward your gate." },

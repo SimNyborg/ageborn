@@ -241,7 +241,7 @@ describe('turret mounts (A2.8, A2.12)', () => {
     const menu = mountMenu(m, config, 0, 0);
     expect(menu.status).toBe('occupied');
     expect(menu.outdated).toBe(true);
-    // Medieval Crossbow Nest 150 − 50% of Rock Tosser 150 = 75.
+    // Medieval Crossbow Nest 150 − 50% of Rock Thrower 150 = 75.
     expect(menu.modernise).toEqual([{ slot: 0, card: 'crossbow_nest', cost: 75, affordable: true }]);
     expect(menu.sellRefund).toBe(75);
     expect(cmdOf(moderniseIntent(m, 0, 0, menu.modernise[0]!))).toEqual({ t: 'replaceTurret', side: 0, mount: 0, slot: 0 });

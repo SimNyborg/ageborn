@@ -110,6 +110,15 @@ export function FirstUpgrade() {
   const open = due && !!save && !!typed && isMetaRules(meta) && !(phase === 'offer' && blocked !== null);
   // Home under it drops its primary and pulse and holds its ceremonies until this closes (U1, U13).
   useBlockingOverlay(open);
+  // The narrator (queue item 39) reads the step: the offer's title and its gain, then the new level. A tap on
+  // Upgrade or Continue moves the phase on, which stops the line.
+  const narration = ui.narration;
+  useEffect(() => {
+    if (!open || !narration) return undefined;
+    if (phase === 'offer') return narration.voiceAll(['tutorial.upgrade.title', 'tutorial.upgrade.gain']);
+    if (phase === 'done') return narration.voice('tutorial.upgrade.done');
+    return undefined;
+  }, [open, phase, narration]);
   if (!open || !save || !typed || !isMetaRules(meta)) return null;
   const def = cardDef(typed, FIRST_UPGRADE_CARD);
   const tile = cardTile(save, typed, FIRST_UPGRADE_CARD, ui.t);

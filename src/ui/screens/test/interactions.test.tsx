@@ -1390,6 +1390,24 @@ describe('Trophy Road, Conquest, Profile, Settings', () => {
     expect(m.q('[data-testid="set-language"] [aria-checked="false"]')!.hasAttribute('disabled')).toBe(true);
   });
 
+  it('switches the narrator and sets its Voice volume; the credits name its voice model (queue item 39)', () => {
+    m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'settings' }] });
+    expect(m.q('[data-testid="set-narrator"]')!.getAttribute('aria-checked')).toBe('true');
+    flush(() => input(m!.q('[data-testid="vol-voice"] input')!, '60'));
+    expect(m.save.value.settings.volume.voice).toBeCloseTo(0.6, 5);
+    expect(m.save.value.settings.volume.music).toBe(1);
+    m.click('[data-testid="set-narrator"]');
+    expect(m.save.value.settings.narrator).toBe(false);
+    // the Voice slider shows only while the narrator is on; its level is kept
+    expect(m.q('[data-testid="vol-voice"]')).toBeNull();
+    m.click('[data-testid="set-narrator"]');
+    expect(m.save.value.settings.narrator).toBe(true);
+    expect(String(m.q('[data-testid="vol-voice"] input')!.value)).toBe('60');
+    m.click('[data-testid="credits"]');
+    expect(text(m.q('[data-testid="credits-voice"]')!)).toContain('Kokoro');
+    expect(text(m.q('[data-testid="credits-voice"]')!)).toContain('Apache 2.0');
+  });
+
   it('shows the backup reminder and exports a code that imports again', () => {
     m = mount({ state: 'mid', routes: [{ id: 'home' }, { id: 'settings' }] });
     expect(m.q('[data-testid="backup-reminder"]')).not.toBeNull();

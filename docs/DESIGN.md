@@ -971,7 +971,7 @@ Table key: C/R/E/L = rarity; S/M/L/H = size; Hits: G = ground, A = air; "Blunt" 
 
 | Slug | Turret | Rar | Cost | Damage / interval | Range | Hits | Notes |
 |---|---|---|---|---|---|---|---|
-| rock_tosser | Rock Tosser | C | 150 | 30 / 1.5 s | 360 | G+A | Single target, arc |
+| rock_tosser | Rock Thrower | C | 150 | 30 / 1.5 s | 360 | G+A | Single target, arc |
 | angry_beehive | Angry Beehive | C | 175 | 5 / 0.2 s | 220 | G+A | Bee stream, high chip DPS, short range. Our comic signature turret |
 | log_roller | Log Roller | R | 250 | 45 / 4.0 s | 300 | G | Rolls a log that hits ground enemies within 300 lu of your gate, nearest to the gate first; max 6 targets |
 | grumpy_toad | Grumpy Toad | E | 250 | 60 / 5.0 s | 420 | G | Tongue grabs the nearest enemy ranged or support ground unit in range, else the second-frontmost small or medium ground enemy, and drags it 120 lu toward your gate. The drag stops at the enemy's frontmost ground unit and short of your nearest ground unit |
@@ -1910,8 +1910,8 @@ On-screen text is at most 8 words. No menu, name prompt or account screen appear
 | 0:03 | Match 1 (Tutorial format, Stone to Future) vs Old Grogg (AI, Training match: no clock, his base at 90%). Tray: Bonker only; the gold counter pulses when affordable. Grogg sends Training Dummies | "Tap to send a Bonker" |
 | ~0:17 | First kill; "+30" flies to the gold counter | "Kills earn gold" |
 | 0:20 | Pebbler card slides in (script `unlockSlot`) | "Pebblers shoot over friends" |
-| 0:40 | Grogg sends a Tuskback; the script grants 150 gold and the empty mount pulses | "Build a Rock Tosser" |
-| ~0:37 / ~0:39 (Anti-heavy, build phase H3, reworked after review 2026-09-30) | As Grogg's Tuskback walks on (0:37) the Spear Hunter card slides in with its "Beats Heavy" chip and the script grants its price, 100 gold (`unlockSlot` + `grantGold`). After the Rock Tosser beat the hand points at the card while the Tuskback is within 500 lu of the player's front (on screen with the follow camera; trigger `foeHeavy`), and the beat ends when the Spear Hunter walks on, not when it is queued (done `spawned`, 20 s timeout). Grogg's Tuskbacks are level 10 (+45%, `MATCH1_GROGG_LEVELS`): the first fights the Bonkers camped at his gate until ~0:51; a second walks on at ~0:59 as the Spear Hunter reaches the gate, and the Spear Hunter kills it (~1:07). Retimed: Medieval 0:57, Gunpowder 1:27, Modern 1:46, Future 2:19, Grogg falls 2:25 | "Spear Hunters beat Heavies" |
+| 0:40 | Grogg sends a Tuskback; the script grants 150 gold and the empty mount pulses | "Build a Rock Thrower" |
+| ~0:37 / ~0:39 (Anti-heavy, build phase H3, reworked after review 2026-09-30) | As Grogg's Tuskback walks on (0:37) the Spear Hunter card slides in with its "Beats Heavy" chip and the script grants its price, 100 gold (`unlockSlot` + `grantGold`). After the Rock Thrower beat the hand points at the card while the Tuskback is within 500 lu of the player's front (on screen with the follow camera; trigger `foeHeavy`), and the beat ends when the Spear Hunter walks on, not when it is queued (done `spawned`, 20 s timeout). Grogg's Tuskbacks are level 10 (+45%, `MATCH1_GROGG_LEVELS`): the first fights the Bonkers camped at his gate until ~0:51; a second walks on at ~0:59 as the Spear Hunter reaches the gate, and the Spear Hunter kills it (~1:07). Retimed: Medieval 0:57, Gunpowder 1:27, Modern 1:46, Future 2:19, Grogg falls 2:25 | "Spear Hunters beat Heavies" |
 | ~0:50 | Tutorial XP (built: 680) fills; Evolve glows steadily on the XP bar | "Evolve!" |
 | ~0:55 | Full Ascension show; 2 Vanguard Footmen march out; tray flips to Footman and Longbowman; Grogg stays in the Stone Age for comedy | none |
 | ~1:20 | Arrow Storm ready; an animated hand drags it onto enemies | "Drag the arrows onto them" |
@@ -1996,7 +1996,7 @@ Create room (Friend Duel, M2) ─> Room (code, Share, length, Ready) ─> VS ─
 | 12 | Trophy Road | Vertical path, arena gates, claimable nodes |
 | 13 | Profile | A6.1, including "Highest AI tier beaten" (A15.9), plus match history with replay buttons |
 | 14 | Replay viewer | Play/pause, 1x/2x/4x, restart, side toggle for which HUD to show (seek arrives in v1.1) |
-| 15 | Settings | Master/Music/SFX/UI volume; graphics preset (Auto/High/Lite); reduce motion; shake slider; hitstop on/off; damage numbers (Off/Important/All); colourblind preset (Default, Blue/Yellow, High contrast); language (EN in v1; DA in v1.1); default speed; vibration (default Off); break reminder (On at 60 min by default, or Off); quick reveal (default Off); save export/import/reset; odds overview; About; For parents (A15.6); credits; export event log |
+| 15 | Settings | Master/Music/SFX/UI volume, and Voice while the narrator is on; Narrator on/off (default On: reads the tutorial's lines and a few first-time moments aloud, the text stays on screen; queue item 39); graphics preset (Auto/High/Lite); reduce motion; shake slider; hitstop on/off; damage numbers (Off/Important/All); colourblind preset (Default, Blue/Yellow, High contrast); language (EN in v1; DA in v1.1); default speed; vibration (default Off); break reminder (On at 60 min by default, or Off); quick reveal (default Off); save export/import/reset; odds overview; About; For parents (A15.6); credits (they name the narrator's voice model, Kokoro, Apache 2.0); export event log |
 | 16 | Dev (`?dev=1`) | Art gallery, soundboard, feel tuner, spawn sandbox, time scale, replay debugger, capsule test bench, bot-vs-bot viewer |
 | 17 | Conquest | The 9 Generals drawn as a vertical ladder ordered by tier, each with its AI badge, stars, rewards and milestones (A6.10); the player's portrait sits just above the highest General beaten in Conquest (A15.9). Replaced by the War Path (A18.7.10) |
 | 18 | War Path (A18.7; a sub-screen of Home since 2026-09-30) | A scrolling saga map with parallax (far skyline, ground, near silhouettes), one themed region per age with 10 levels (2 side nodes each later): hills, water (a lake, a shore with boats, a river), two landmark set pieces per region, props, lanterns along the road, clouds and birds, all animated and still under reduce motion. Node kinds: battle (disc), elite (Hard shield with crossed swords), treasure (a chest on the node; a named card), story (a scroll; the level teaches something) and boss (the General's portrait in its lair). Beaten nodes show stars and crowns; the current node has a marker, rings and the banner-bearer; a new node bursts free of its padlock and drops in (MR-41). Back top-left; the next level under a big Play button; the Level preview has the difficulty picker; boss nodes show their disclosures; "New region" marks on inserted ages |
@@ -2302,11 +2302,12 @@ All SFX are ZzFX definitions (3-5 variants each) pre-rendered to AudioBuffers at
 
 **Mixer:**
 
-- Buses: master, music, sfx, ui.
+- Buses: master, music, sfx, ui, voice (the narrator, queue item 39: its own volume under the master, trim 0.5; never ducked itself).
 - At most 4 voices per sound ID and a 40 ms minimum retrigger gap.
 - Pitch ±8% and volume ±3 dB per play.
 - Sounds caused by the player get priority.
-- Music ducks 6 dB during powers, evolves and walkouts.
+- Music ducks 6 dB during powers, evolves and walkouts, and while the narrator speaks (renewed in short slices that end with the line, so a line cut short lets the music back up within about half a second).
+- **Narrator (queue item 39, built 2026-10-18).** Pre-rendered lines in the voice the owner chose ("Lewis": Kokoro, `tools/audio/voice`), one at a time; a tap, the step's end, the next prompt, a pause, the match's end, leaving the screen, Narrator off or a hidden page stops the line, and it never takes input. Live (Ranked) matches are never narrated. Three moments play once per profile with a subtitle: the first evolve, the first win, the first Legendary.
 - The AudioContext is created or resumed on the first user gesture (iOS).
 - `navigator.vibrate` fires on climbs and Legendaries (mobile, toggle, default Off; A15.6).
 - **Panning and off-view fading (A17.7, not built yet).** World sounds pan by screen position (StereoPanner, pan = clamped offset from the screen centre × 0.6) and fade outside the view: −1 dB per 50 lu beyond the view edge, down to −12 dB. UI sounds, alerts, the player's own evolve, power impacts and hits on the own base are never faded.
@@ -6514,6 +6515,7 @@ Global freezes set `freeze` for their duration, within the A12 cap.
 - The music manifest `src/audio/music.ts` maps `MusicCueId → { kind: 'seq', score } | { kind: 'file', src, layers }`.
 - Buffers pre-render at boot for UI, Stone and Medieval (< 300 ms budget); the rest render lazily.
 - Tests run against a `FakeAudioService` that records calls.
+- **The narrator (queue item 39).** `src/audio/narrator.ts` plays the lines listed in the generated `src/audio/voice.gen.ts` (made by `tools/audio/voice/render.py` from `lines.json`, i18n keys) on the voice bus. `src/app/narration/index.ts` is an eager stub (about 1 KB) that decides when a line can be due; only then does it load `director.ts`, the narrator, the manifest and the subtitle CSS as one lazy chunk (about 9 KB gzip). A line's files are fetched only when it is due (the next one or two ahead); a heard line's decoded buffer is let go (at most 4 decoded ahead); Narrator off drops everything. Each line is a mono Ogg Opus file (64 kbps) with an AAC-LC copy (48 kbps, `altGain` undone at playback): 55 lines, 1.0 MB + 0.8 MB, of which a browser fetches one copy of the lines it plays.
 
 ## B8. Save system
 
@@ -6537,10 +6539,11 @@ Global freezes set `freeze` for their duration, within the A12 cap.
   - Quota errors are caught and shown to the player.
 - **Capsule rolls** use a meta RNG stream stored in the save (`rng.capsule`, sfc32 state). The result is written before any animation.
 - **Local clocks** drive daily timers (reset 04:00), limited by the bank caps (Daily rewards 7, quest queue 21; A15.4). The Sundial (5 h, holds 34; A6.3) runs on epoch time.
-- **Settings defaults** (A15.6): `breakReminder` true, `quickReveal` false, `vibrate` false. The same defaults apply to every player; there is no separate minor-safe mode.
+- **Settings defaults** (A15.6): `breakReminder` true, `quickReveal` false, `vibrate` false; `narrator` true and `volume.voice` 1 (queue item 39). The same defaults apply to every player; there is no separate minor-safe mode.
 - **Schema version.** Every A15.18 shape change lands before the Checkpoint C push, so SaveDoc stays at version 1 with no migration. After that push, every shape change needs a migration.
 - **Capsule ladder migration (2026-09-29, A6.4).** The next version after the newest one when it lands (re-read `src/save/migrations` first). `up`: (1) `capsules.bag` maps index 4 → 6, then sorts; `bagSize` = 100 if the bag is not empty, else 0; (2) pending capsules with tier `aeon` become `gold` (and `startTier` `aeon` → `gold`) with `contents.dust` + 100, nothing re-rolled; (3) sets `flags['capsule.legacySkillAeon']`, and meta's next `tickTimers` grants one new Aeon per skill source already claimed (Trophy Road 4,000, Conquest 27 stars, the War Path Cosmic boss) and deletes the flag; (4) sets `flags['notice.capsuleLadder']` when `pity.opened` > 5, a pending old Aeon was relabelled or a legacy Aeon is due. Tests: a named fixture outside the `fixtures/v*.json` glob (`capsule-ladder-pre.json`) plus the usual frozen `vN.json` (details: `docs/requests/capsule-tiers-wp8.md`).
 - **Sundial migration (2026-09-30, A6.3; save v10).** No shape change. `capsules.charges` becomes the ready Sundial capsules one-for-one and `capsules.dailyBank` the Supply allowance left (it never grows again). `up` sets `flags['notice.sundial']` for a save with `matchesPlayed` > 0, and `flags['sundial.restart']` for a save at or above the old cap of 28: the old rule never moved `chargesUpdatedAt` while full, so without it the first tick would count every 5 h since the bank filled and turn 28 into up to 34. Meta's next `tickTimers` sets `chargesUpdatedAt` to that moment and deletes the flag. A Clay meter already at 2 pips becomes its Clay capsule at the same tick (rolling needs the content).
+- **Narrator migration (2026-10-18, queue item 39; save v16).** Additive and idempotent: `settings.volume.voice` 1 (the default every bus starts at; the master still scales it) and `settings.narrator` true for an older save; a valid value already there is kept, and a broken `settings` is left to the schema's defaults. Fixture `src/save/test/fixtures/v16.json`.
 
 ## B9. Meta services (pure TS)
 
@@ -6960,7 +6963,7 @@ export interface ArtProvider {
 
 ```ts
 // audio.ts
-export type Bus = 'master' | 'music' | 'sfx' | 'ui';
+export type Bus = 'master' | 'music' | 'sfx' | 'ui' | 'voice';   // 'voice': the narrator (queue item 39, B15.2)
 export type MusicLayer = 'intensity' | 'overdrive' | 'siege';
 export interface AudioService { unlock(): Promise<void>;
   play(id: SoundId, o?: { pitchBp?: number; volumeDb?: number; pan?: number; priority?: number }): void;
@@ -7008,7 +7011,8 @@ export interface I18n { readonly locale: Locale; setLocale(l: Locale): void;
 export interface AvatarSpec { seed: number; parts: Record<string, number>; portraitCard?: CardId }
 export interface Settings { volume: Record<Bus, number>; graphics: 'auto' | 'high' | 'lite'; reduceMotion: boolean;
   shake: number; hitstop: boolean; damageNumbers: 'off' | 'important' | 'all'; teamPreset: TeamPreset; locale: Locale;
-  defaultSpeed: 1 | 1.5 | 2; vibrate: boolean; mutedEmotes: boolean }
+  defaultSpeed: 1 | 1.5 | 2; vibrate: boolean; mutedEmotes: boolean;
+  narrator?: boolean }   // + B15.1 #6 and A17.4's optional fields; narrator: B15.2 (default true)
 export interface ProfileStats { matches: number; wins: number; losses: number; draws: number; winsByTier: number[];
   lossesByTier: number[]; trainedByCard: Record<CardId, number>; fastestWinMs: number | null; futureReached: number }
 export interface QuestSlot { id: string; progress: number; claimed: boolean }
@@ -7125,6 +7129,17 @@ The code above is the frozen Phase 0 contract. At the start of Phase 2b the inte
 - `Meta.tickTimers`: charges, the Supply allowance, the Daily reward bank and the quest queue at 04:00; it never resets the War Chest.
 
 The same Phase 2b batch carries the pending `MatchStats.ageTimesMs` and `Observation.foe.lastEmote` requests. A16 adds no contract change in v1; its only possible sim field is `EconomyRules.siege.unitDamageTakenBp?`, if lever L5 is adopted (A16.23). Later contract changes are listed in A15.18 and A16.23.
+
+### B15.2 Narrator amendment (queue item 39, 2026-10-18)
+
+The owner's request for a narrator voice (queue item 39) came with an approved contract and save change, made by the narrator's builder with the fakes, the defaults and the v16 save fixture in the same change. Both are additions, so code already written still compiles.
+
+| # | Contract | Change | For |
+|---|---|---|---|
+| 1 | `Bus` (`audio.ts`) | + `'voice'`: the narrator's bus, under the master, never ducked itself; `Settings.volume` gains `voice` with it | A13, B7 |
+| 2 | `Settings` (`save.ts`) | + `narrator?: boolean`, default true: Settings › Narrator | A9 #15 |
+
+Save v16 writes both into older saves (B8).
 
 ## B16. Performance budget
 

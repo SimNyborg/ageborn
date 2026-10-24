@@ -34,7 +34,7 @@ describe('TutorialDirector: the Spear Hunter beat waits for the Heavy', () => {
 });
 
 describe('TutorialDirector: match 1 beats in A8 order', () => {
-  it('walks Bonker → kill → Pebbler → Rock Tosser → Spear Hunter → Evolve → Arrow Storm → stance → Future', () => {
+  it('walks Bonker → kill → Pebbler → Rock Thrower → Spear Hunter → Evolve → Arrow Storm → stance → Future', () => {
     const { h, d, log } = match1();
     h.advance();
     d.update(h.input());

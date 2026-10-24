@@ -2,6 +2,29 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-23: the narrator reads the tutorial aloud (item 39), with the strict review's fixes (cloud session, branch `voice`)
+
+**What a player sees and hears.**
+
+- A deep, warm narrator voice ("Lewis", the voice the owner chose) reads the tutorial's tips aloud as they appear: both first matches, the hints in matches 2-5, the capsule's "Tap to crack it!", Make your General, the first upgrade and each new feature on Home. The text stays on screen as before.
+- Three big moments are said once per profile, with a subtitle: "A new age dawns!" at the first evolve, "Victory! The first of many." on the first win and "A Legendary joins your army!" at the first Legendary.
+- A line stops at once when you tap, when its step ends, when you pause, when the match ends, when you leave the screen or switch to another tab or app; it never holds up a tap. The music dips while it speaks. Ranked (live) matches are never narrated.
+- Settings › Sound: **Narrator** on or off (on by default) and the **Voice** volume (shown while it is on). The credits name the voice model (Kokoro, Apache 2.0).
+- "Grenadier" and "Phalangite" are now said right, and the Stone turret is called the **Rock Thrower** (it was "Rock Tosser", which is an insult in British English).
+
+**How the owner can hear it** (once this branch is on GitHub Pages):
+
+1. On the phone or the PC, open https://simnyborg.github.io/ageborn/ in a private window (Safari: a Private tab; Chrome: an Incognito window), so the game starts as a new player. Turn the sound up.
+2. Tap **Play**. The first battle starts and the narrator says "Tap to send a Bonker". Each new tip is read aloud as it appears.
+3. Keep playing: at the first evolve you hear "A new age dawns!", and on the win "Victory! The first of many."
+4. To turn the voice off or down: the gear (Settings) › Sound › **Narrator**, or the **Voice** slider.
+
+Your normal profile has finished the tutorial, so it only hears the narrator again after Settings › Reset progress, which deletes that profile's progress; the private window leaves it alone.
+
+**Done.** Built 2026-10-18 (commits 18e6e29..38bf467) and fixed after the strict review 2026-10-23 (18d78ab, c9ea696, ba5235a, 16dc9a9, 183c949, this entry; main-ipy06f merged in at 05934eb); what, why and the numbers are in `docs/decisions.md` ("a narrator voice for the tutorial"). Checks on the tree merged with main: typecheck and eslint clean; vitest 2,832 passed (audio, app, save, meta, UI, tutorial, content, integrity); the tutorial, Settings and HUD e2e specs 28 of 28 in Chromium; first load 1328.8 KB, +1.7 KB on main (accepted, see decisions).
+
+**Next / open.** A Danish voice (needs a speech model with Danish voices); story beats, new ages and defeats are not voiced yet; a listen on a real iPhone.
+
 ## 2026-10-23: iPhone memory: big collections stay within the budget, music takes half the memory, Home's troops stand right away on a return (cloud session, branch `mem-budget`, PR #7; paused by the owner 2026-10-19 to 2026-10-23)
 
 **What a player sees.**

@@ -38,11 +38,11 @@ describe('boot (DESIGN B11)', () => {
   it('applies the saved settings and routes a finished onboarding Home', async () => {
     const audio = new FakeAudio();
     const save = fakeSaveDoc({ tutorial: { step: 4, hintsShown: {} } });
-    save.settings.volume = { master: 0.5, music: 0.2, sfx: 1, ui: 0.8 };
+    save.settings.volume = { master: 0.5, music: 0.2, sfx: 1, ui: 0.8, voice: 0.6 };
     const s = await services({ audio, saveStore: new InMemorySaveStore(save) });
     const b = await boot({ search: '', services: s, idle: () => undefined });
     expect(b.route).toBe('home');
-    expect(audio.busVolume).toEqual({ master: 0.5, music: 0.2, sfx: 1, ui: 0.8 });
+    expect(audio.busVolume).toEqual({ master: 0.5, music: 0.2, sfx: 1, ui: 0.8, voice: 0.6 });
   });
 
   it('creates and stores a new save on first launch once meta is wired', async () => {

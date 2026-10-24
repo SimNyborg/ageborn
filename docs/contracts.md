@@ -21,7 +21,7 @@ Rules:
 | `observation.ts` | `Observation` | WP2 (`sim.observe`) | ai (WP3) through the delayed ring in the session | A7.1, B10 |
 | `bot.ts` | `BotProfile`, `BotController`, `CreateBot` | WP3 (`src/ai`) | session (WP11), tools (WP12), dev bot viewer | A7, B10 |
 | `art.ts` | `ArtProvider`, `UnitView`, `TurretView`, `BaseView`, `BackdropView`, `EffectView`, `VisualDef`, `UnitPose` | WP4 (`src/visuals`) | render (WP5), capsule (WP10), ui portraits via app injection | B5, A11 |
-| `audio.ts` | `AudioService`, `Bus`, `MusicLayer` | WP6 (`src/audio`, `WebAudioService`) | render (WP5), capsule (WP10), app (WP11) | B7, A13 |
+| `audio.ts` | `AudioService`, `Bus` (master, music, sfx, ui and, since queue item 39, voice: the narrator's), `MusicLayer` | WP6 (`src/audio`, `WebAudioService`) | render (WP5), capsule (WP10), app (WP11), the narrator (`src/audio/narrator.ts`, `src/app/narration`) | B7, A13, B15.2 |
 | `hud.ts` | `HudModel`, `HudCard`, `CardState` | WP5 (`render/hudModel.ts`) | ui/hud (WP5), session signal (WP11) | A9.2, B6 |
 | `feel.ts` | `FeelConfig`, `FeelRule` | WP5 (`render/feel.config.json`, feel layer) | render event mapper, dev feel page | A12, B6 |
 | `i18n.ts` | `I18n`, `Locale` | WP0 (`src/i18n/index.ts`) | ui, capsule, tutorial | B4 Strings |
@@ -46,3 +46,9 @@ Test and dev helpers so every WP can build against the contracts before the real
 The fake content uses table units (lu, ms, whole HP) and is for wiring tests only, never balance. The fake sim's events use the B3 integer units (milli-lu, centi-HP, milli-gold).
 
 `src/contracts/contracts.test.ts` checks that every contract module loads with no runtime exports and exercises each fake.
+
+## Changes after Phase 0
+
+Approved changes, each with its fakes and save fixture in the same change and an entry in `docs/decisions.md`:
+
+- 2026-10-18, queue item 39 (the narrator; approved with the item): `Bus` gains `'voice'` (so `Settings.volume` has a voice volume) and `Settings` gains `narrator?: boolean` (default true); `fakes/audio.ts` and `fakes/saveStore.ts` changed with it, and save v16 fills both into older saves (DESIGN B15.2, B8).

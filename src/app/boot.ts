@@ -68,7 +68,7 @@ export function bootFlags(search: string): BootFlags {
   return { autopilot: q.get('dev') === '1' && q.get('autopilot') === '1' };
 }
 
-const BUSES: readonly Bus[] = ['master', 'music', 'sfx', 'ui'];
+const BUSES: readonly Bus[] = ['master', 'music', 'sfx', 'ui', 'voice'];
 
 /** B11 step 2: language and volumes. The graphics settings reach the view when a battle starts. */
 export function applySettings(services: Pick<Services, 'i18n' | 'audio'>, settings: Settings | undefined): void {

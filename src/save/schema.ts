@@ -96,6 +96,8 @@ export const SettingsSchema = v.fallback(
         music: v.fallback(unit01, d.volume.music),
         sfx: v.fallback(unit01, d.volume.sfx),
         ui: v.fallback(unit01, d.volume.ui),
+        // save v16 (queue item 39): the narrator's own bus; an older doc gets the default
+        voice: v.fallback(unit01, d.volume.voice),
       }),
       () => ({ ...d.volume }),
     ),
@@ -114,6 +116,8 @@ export const SettingsSchema = v.fallback(
     // A17.4 camera settings (optional; missing means On), so a stored choice survives a load
     autoCamera: v.optional(v.fallback(v.boolean(), true)),
     edgeScroll: v.optional(v.fallback(v.boolean(), true)),
+    // The narrator voice (queue item 39; optional, missing means On)
+    narrator: v.optional(v.fallback(v.boolean(), true)),
   }),
   defaultSettings,
 );

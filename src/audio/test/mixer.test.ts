@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { renderDef } from '../bank';
 import { CLIPPER, LIMITER, mergeDuck, MIX_TRIM, Mixer, softClip, softClipCurve, volumeGain } from '../mixer';
 import { sounds } from '../sounds';
-import { FakeCompressor, FakeContext, type FakeGain, FakeShaper } from './fakeContext';
+import { FakeCompressor, FakeContext, type FakeGain, type FakeNode, FakeShaper } from './fakeContext';
 
 describe('mixer math', () => {
   it('maps the 0..1 settings slider on a square law and clamps it', () => {
@@ -112,6 +112,21 @@ describe('Mixer graph', () => {
     expect(ramps[0]!.value).toBeCloseTo(10 ** (-6 / 20), 6);
     expect(ramps[ramps.length - 1]).toMatchObject({ value: 1 });
     expect(ramps[ramps.length - 1]!.time).toBeGreaterThan(6.5);
+  });
+
+  it('routes the narrator voice bus into the master, past the music duck, with its own volume (queue item 39)', () => {
+    const ctx = new FakeContext();
+    const m = new Mixer(ctx as unknown as BaseAudioContext);
+    const voice = m.input('voice') as unknown as FakeNode;
+    expect(voice.outputs).toEqual([m.bus.master]);
+    expect(voice.outputs).not.toContain(m.duckGain);
+    expect(m.bus.voice.gain.value).toBe(MIX_TRIM.voice);
+    m.setVolume('voice', 0.5);
+    expect((m.bus.voice.gain as unknown as { last: number }).last).toBeCloseTo(MIX_TRIM.voice * 0.25, 9);
+    expect(m.getVolume('voice')).toBe(0.5);
+    // a duck lowers the music only
+    m.duckMusic(-6, 1000);
+    expect((m.bus.voice.gain as unknown as { last: number }).last).toBeCloseTo(MIX_TRIM.voice * 0.25, 9);
   });
 
   it('adds a meter when asked', () => {

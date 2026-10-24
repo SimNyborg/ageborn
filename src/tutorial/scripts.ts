@@ -147,7 +147,7 @@ const TUSKBACK = 1 as const;
  * follows the A8 draft: Medieval at ~0:57, Gunpowder ~1:24, Modern ~1:43, Future ~2:06 and Grogg
  * falls at ~2:10 (A17's longer lane with faster walking and the three-wide front end it about 35 s
  * before A8's 3:00, and base HP 8,000 × P, MVP balance pass 2026-10-01, another 14 s). Grogg sends three dummies before his Tuskback,
- * so the four Stone lessons (Bonker, first kill, Pebbler, Rock Tosser) come before the first evolve.
+ * so the four Stone lessons (Bonker, first kill, Pebbler, Rock Thrower) come before the first evolve.
  */
 function groggSends(): GroggSend[] {
   const sends: GroggSend[] = [
@@ -184,13 +184,13 @@ function groggGrants(content: CompiledContent, groggUnits: readonly (CardId | nu
  * its beat could show).
  */
 export const MATCH1_PEBBLER_TICK = sec(24);
-/** 150 gold for the Rock Tosser when Grogg's Tuskback walks on, 0:38 [0:40]. */
+/** 150 gold for the Rock Thrower when Grogg's Tuskback walks on, 0:38 [0:40]. */
 export const MATCH1_TURRET_GRANT_TICK = sec(38);
 export const MATCH1_TURRET_GRANT = 150;
 /**
  * The Anti-heavy beat (A8, owner feedback 2026-09-29): as Grogg's Tuskback walks on (~0:37), the
  * Spear Hunter card slides in with its "Beats Heavy" chip and the script grants its price, so the
- * prompt (after the Rock Tosser beat, while the Tuskback is in view) can always be followed at once.
+ * prompt (after the Rock Thrower beat, while the Tuskback is in view) can always be followed at once.
  * Review 2026-09-30: without the gold the prompt showed with 7 gold and timed out before the card was
  * affordable, and the Tuskback died before the queued Spear Hunter walked on.
  */

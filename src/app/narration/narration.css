@@ -1,0 +1,137 @@
+/*
+ * The narrator's subtitle for a first-time moment (queue item 39): the line it speaks, shown while it speaks,
+ * as a film subtitle in the lower middle of the screen (above the tray in battle, in a Result's action bar left
+ * of its primary). It never takes input. Loaded with the narrator's lazy chunk. A sound wave beside the words
+ * pulses while the voice speaks (still under Reduce motion). Colours, type, spacing and motion are the theme's
+ * tokens (ui-principles 11 and 17): it rises in like a small UI entrance and leaves in about 0.7 of that.
+ */
+.nar-caption {
+  /* one pulse of the wave: three medium beats, one per bar */
+  --nar-wave-beat: var(--ui-dur-medium);
+  position: absolute;
+  left: 50%;
+  bottom: max(var(--ui-s4), 9%);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: var(--ui-s3);
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(640px, calc(100% - 2 * var(--ui-gutter)));
+  padding: var(--ui-s2) var(--ui-s5) var(--ui-s2) var(--ui-s4);
+  border: 1px solid color-mix(in srgb, var(--ui-primary-light) 28%, transparent);
+  border-radius: var(--ui-r-lg);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ui-surface-1) 86%, transparent), color-mix(in srgb, var(--ui-bg) 90%, transparent));
+  box-shadow: var(--ui-highlight), var(--ui-e3);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: var(--ui-text);
+  font-family: var(--ui-font-display);
+  font-size: clamp(var(--ui-fs-title-s), 2.5vw, var(--ui-fs-title));
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, var(--ui-s2));
+  transition:
+    opacity var(--ui-dur-small-out) var(--ui-ease-exit),
+    transform var(--ui-dur-small-out) var(--ui-ease-exit);
+}
+
+.nar-caption.is-on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  transition:
+    opacity var(--ui-dur-small) var(--ui-ease-enter),
+    transform var(--ui-dur-small) var(--ui-ease-enter);
+}
+
+/* In battle it sits above the card tray (24% of the height, A9.2), clear of the lane's centre. */
+.nar-caption[data-place='battle'] {
+  bottom: calc(26% + var(--ui-s2));
+}
+
+/*
+ * On a Result it sits in the action bar, left of the primary (always bottom-right, U1, a size-l button),
+ * centred on the bar's height like the primary: its own height is one line plus its padding and border.
+ */
+.nar-caption[data-place='result'] {
+  left: calc(var(--ui-gutter) + var(--ui-safe-l));
+  bottom: calc(var(--ui-safe-b) + (var(--ui-actionbar-h) - 1.2em - 2 * var(--ui-s2) - 2px) / 2);
+  max-width: min(560px, calc(100% - var(--ui-btn-l-w) - 4 * var(--ui-margin)));
+  transform: translate(0, var(--ui-s2));
+}
+
+.nar-caption[data-place='result'].is-on {
+  transform: translate(0, 0);
+}
+
+.nar-caption__wave {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+}
+
+.nar-caption__wave i {
+  display: block;
+  width: 3px;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--ui-primary);
+  transform-origin: 50% 50%;
+  animation: nar-wave calc(3 * var(--nar-wave-beat)) ease-in-out infinite;
+}
+
+.nar-caption__wave i:nth-child(1) {
+  height: 55%;
+  animation-delay: calc(-1 * var(--nar-wave-beat));
+}
+
+.nar-caption__wave i:nth-child(3) {
+  height: 70%;
+  animation-delay: calc(-2 * var(--nar-wave-beat));
+}
+
+@keyframes nar-wave {
+  0%,
+  100% {
+    transform: scaleY(0.45);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+/* Reduce motion: it fades in and out where it stands (the reduced fade), and the wave holds still. */
+[data-reduce-motion] .nar-caption,
+[data-reduce-motion] .nar-caption.is-on {
+  transform: translate(-50%, 0);
+  transition: opacity var(--ui-dur-reduced) var(--ui-ease-standard);
+}
+
+[data-reduce-motion] .nar-caption[data-place='result'] {
+  transform: none;
+}
+
+[data-reduce-motion] .nar-caption__wave i {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nar-caption,
+  .nar-caption.is-on {
+    transform: translate(-50%, 0);
+    transition: opacity var(--ui-dur-reduced) var(--ui-ease-standard);
+  }
+  .nar-caption[data-place='result'] {
+    transform: none;
+  }
+  .nar-caption__wave i {
+    animation: none;
+  }
+}

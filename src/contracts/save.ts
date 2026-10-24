@@ -51,6 +51,11 @@ export interface Settings {
   autoCamera?: boolean;
   /** A17.4 edge scroll on desktop (fine pointer only); default true when missing. */
   edgeScroll?: boolean;
+  /**
+   * The narrator voice (queue item 39): reads the tutorial's lines and a few first-time moments aloud; the
+   * text stays on screen either way. Default true when missing; its loudness is `volume.voice` (save v16).
+   */
+  narrator?: boolean;
 }
 
 /** Profile statistics (DESIGN A6.1). */

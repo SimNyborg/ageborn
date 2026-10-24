@@ -88,6 +88,7 @@ function Screen(p: { ui: AppUi; meta: MetaUi | null; shows: CapsuleShows | null 
           content={content}
           save={save}
           t={ui.t}
+          {...(ui.narration ? { narration: ui.narration } : {})}
           allowMore={!onboarding}
           {...(doneLabel ? { doneLabel } : {})}
           {...(altLabel

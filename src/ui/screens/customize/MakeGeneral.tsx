@@ -40,7 +40,9 @@ export function useMakeGeneralHold(active: boolean): void {
 }
 
 export function MakeGeneral(p: { onDone?: () => void }) {
-  const { save, t, services, sound } = useUi();
+  const { save, t, services, sound, voice } = useUi();
+  // The narrator reads the sheet's title once it opens (queue item 39); Done or closing stops it.
+  useEffect(() => voice?.('avatar.ui.make'), [voice]);
   const s = save.value;
   const [look, setLook] = useState<ResolvedLook>(() => randomStarterLook(s.profile.avatar.seed));
   const [name, setName] = useState(s.profile.name);

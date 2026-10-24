@@ -7,7 +7,7 @@
  * else over the canvas (AppRoot). The result was saved before this mounts (`capsuleFlow.ts`).
  */
 import type { Application } from 'pixi.js';
-import { useMemo } from 'preact/hooks';
+import { useEffect, useMemo } from 'preact/hooks';
 import type { CardId, CompiledContent, SaveDoc, SkinId } from '@/contracts';
 import { CapsuleScreen, WardrobeScreen, createCatalog, type ShowSettings } from '@/capsule';
 import { asContent } from '@/content';
@@ -19,6 +19,7 @@ import { upgradesTaught } from '@/ui/screens/model/warPath';
 import type { ArtProvider, AudioService } from '@/contracts';
 import '@/ui/theme.css';
 import './capsuleHost.css';
+import type { Narration } from '../narration';
 import type { CapsuleShows, ShowRecord } from './capsuleFlow';
 
 export interface CapsuleHostProps {
@@ -48,6 +49,8 @@ export interface CapsuleHostProps {
   altLabel?: string;
   /** Runs before the show closes; the host then closes it like Done. */
   onAlt?: () => void;
+  /** The narrator (queue item 39): the onboarding capsule's guided tap and the first Legendary's moment. */
+  narration?: Narration;
 }
 
 /** The show's settings from the save; `lite` is the Lite graphics preset (A10 step 4: half the particles, static starfield and sheen). */
@@ -77,6 +80,9 @@ export function CapsuleHost(p: CapsuleHostProps) {
     </UiKitContext.Provider>
   );
   const done = () => p.onDone(p.shows.done() ?? r);
+  // The narrator (queue item 39) hears the show's states and cues (the guided tap, a first Legendary); it stops with the show.
+  const voice = useMemo(() => p.narration?.capsule(r, p.save) ?? null, [r]);
+  useEffect(() => () => voice?.end(), [voice]);
   const plan = p.save.warPlans[p.save.activePlan];
   const isEquipped = (card: CardId) =>
     !!plan && Object.values(plan.loadouts).some((l) => l.units.includes(card) || l.turrets.includes(card) || l.powers.home === card || l.powers.field === card);
@@ -97,6 +103,7 @@ export function CapsuleHost(p: CapsuleHostProps) {
     pityRules: c.capsules.pity,
     settings: showSettings(p.save),
     oddsSheet,
+    ...(voice ? { onState: voice.state, onCue: voice.cue } : {}),
     isEquipped,
     equippedNote,
     upgradesTaught: taught,

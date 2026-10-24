@@ -183,6 +183,17 @@ describe('WebAudioService', () => {
     expect(svc.getBusVolume('ui')).toBe(1);
   });
 
+  it('hands the narrator its voice bus once unlock has made the context (queue item 39)', async () => {
+    const { svc } = make();
+    svc.setBusVolume('voice', 0.5);
+    expect(svc.voiceOut()).toBeNull();
+    await svc.unlock();
+    const out = svc.voiceOut();
+    expect(out?.input).toBe(svc.mixer!.input('voice'));
+    expect(out?.ctx).toBe(svc.ctx);
+    expect((svc.mixer!.bus.voice.gain as unknown as { last: number }).last).toBeCloseTo(MIX_TRIM.voice * 0.25, 9);
+  });
+
   it('remembers the music cue, layers and key asked for before unlock', async () => {
     const { svc, ctx } = make();
     svc.music.setCue('music.medieval', { fadeMs: 0 });

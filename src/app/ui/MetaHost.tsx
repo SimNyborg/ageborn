@@ -47,6 +47,8 @@ export function MetaHost(p: MetaHostProps) {
       toasts: p.meta.toasts,
       // UI sounds (ui-plan 5.4): press, deny, tab, toggle, sheet.
       sound: (id: string, o?: { pitchBp?: number }) => ui.services.audio.play(UI_SOUND_FALLBACK[id] ?? id, o),
+      // the narrator reads the coached lines a screen shows (queue item 39)
+      ...(ui.narration ? { voice: ui.narration.voice } : {}),
     }),
     [p.meta, ui],
   );

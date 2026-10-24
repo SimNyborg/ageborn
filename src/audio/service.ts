@@ -155,7 +155,7 @@ export class WebAudioService implements AudioService {
   private lastIdleCheck = 0;
   private readonly now: () => number;
   private readonly lastVariant = new Map<SoundId, number>();
-  private readonly volumes: Record<Bus, number> = { master: 1, music: 1, sfx: 1, ui: 1 };
+  private readonly volumes: Record<Bus, number> = { master: 1, music: 1, sfx: 1, ui: 1, voice: 1 };
   private readonly warned = new Set<string>();
   /** Music requests made before the context exists. */
   private pendingCue: { cue: MusicCueId; fadeMs: number } | null = null;
@@ -547,6 +547,14 @@ export class WebAudioService implements AudioService {
 
   getBusVolume(bus: Bus): number {
     return this.volumes[bus];
+  }
+
+  /**
+   * The narrator's way out (queue item 39, `narrator.ts`, loaded lazily): the context and the voice bus once
+   * the first gesture has created them, else null. The narrator starts a line only while the context runs.
+   */
+  voiceOut(): { ctx: AudioContext; input: AudioNode } | null {
+    return this.ctx && this.mixer ? { ctx: this.ctx, input: this.mixer.input('voice') } : null;
   }
 
   readonly music: AudioService['music'] = {

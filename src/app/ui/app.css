@@ -648,7 +648,7 @@
   animation: ab-drag 1.8s ease-in-out infinite;
 }
 
-/* The tutorial's turret step: the first build option in the mount popover is the Rock Tosser. */
+/* The tutorial's turret step: the first build option in the mount popover is the Rock Thrower. */
 [data-tut^='mount'] [data-testid='hud-pop-build-0'] {
   border-color: var(--ui-gold, #ffc53d);
   box-shadow: 0 0 0 3px #ffc53d88, 0 0 18px #ffc53dcc;

@@ -18,7 +18,7 @@ export type FakeAudioCall =
 export class FakeAudio implements AudioService {
   readonly calls: FakeAudioCall[] = [];
   unlocked = false;
-  readonly busVolume: Record<Bus, number> = { master: 1, music: 1, sfx: 1, ui: 1 };
+  readonly busVolume: Record<Bus, number> = { master: 1, music: 1, sfx: 1, ui: 1, voice: 1 };
   cue: MusicCueId | null = null;
 
   async unlock(): Promise<void> {

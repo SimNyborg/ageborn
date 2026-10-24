@@ -183,7 +183,7 @@ describe('turrets (A2.8)', () => {
     const fired = ofKind(ev, 'turretFired');
     expect(fired[0]?.tick).toBe(21);
     expect(fired[0]?.targetId).toBe(near);
-    // Rock Tosser costs 150 of the 175 start gold
+    // Rock Thrower costs 150 of the 175 start gold
     expect(sim.state.sides[0].gold).toBeLessThan(175000);
   });
 

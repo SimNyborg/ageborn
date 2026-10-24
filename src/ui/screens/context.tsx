@@ -28,6 +28,12 @@ export interface UiEnv {
   toasts: ToastStore;
   /** Optional UI sound hook (ui-plan 5.4): the app passes the audio service's `play`. */
   sound?: (id: string, o?: { pitchBp?: number }) => void;
+  /**
+   * Optional narrator hook (queue item 39): reads an on-screen string aloud (an i18n key; placeholder values
+   * are i18n keys) when the narrator is on and the line is voiced, and returns a function that stops it. A
+   * screen calls it when the line appears and the stop when it goes.
+   */
+  voice?: (key: string, vars?: Readonly<Record<string, string>>) => () => void;
 }
 
 export const UiEnvContext = createContext<UiEnv | null>(null);
