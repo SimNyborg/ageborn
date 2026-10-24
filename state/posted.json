@@ -390,6 +390,16 @@
       "hook_type": "before-after",
       "experiment": "indie-angle",
       "arm": "devlog"
+    },
+    {
+      "id": "18101008019452091",
+      "permalink": "https://www.instagram.com/stories/ageborn_game/4015061549555211606",
+      "timestamp": "2026-10-24T14:37:40+0000",
+      "name": "story-dv5-tonight",
+      "kind": "story",
+      "pillar": "devlog",
+      "hook": "teaser: devlog #5 tonight, what makes a hit feel good",
+      "trial": false
     }
   ]
 }
