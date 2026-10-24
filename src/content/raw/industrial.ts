@@ -272,7 +272,8 @@ export const industrial: RawAgeTables = {
       nameKey: 'card.bandmaster.name', descKey: 'card.bandmaster.desc', strongVs: [], weakVs: [],
     },
     {
-      // Summoner (X0 M3): winds up a Clockwork Soldier every 8 s, at most 3; whacks with a big wind-up key; followSupport
+      // Summoner (X0 M3): winds up a Clockwork Soldier every 7 s (8 s until the combat levers, 2026-10-23: the per-card
+      // row read -10.3), at most 3; whacks with a big wind-up key; followSupport
       id: 'clockwork_tinker', kind: 'unit', age: 'industrial', rarity: 'rare', role: 'support', group: 'support',
       cost: 110, trainMs: 3000, pop: 4, hp: 275, speed: 65, size: 'small',
       tags: ['light', 'bio', 'support', 'melee', 'ground'],
@@ -283,7 +284,7 @@ export const industrial: RawAgeTables = {
         },
       ],
       abilities: [
-        { kind: 'summon', card: 'clockwork_soldier', firstMs: 2000, everyMs: 8000, maxAlive: 3 },
+        { kind: 'summon', card: 'clockwork_soldier', firstMs: 2000, everyMs: 7000, maxAlive: 3 },
         { kind: 'followSupport', behindFront: 60, soloMaxP: 200 },
       ],
       visualId: 'unit.clockwork_tinker', sfx: { spawn: 'spawn_pop', die: 'die_bio' },

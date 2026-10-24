@@ -2,11 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { applyStatus, makeImpact, unitDamage } from '../damage';
 import { devPlaceTurret, devSpawn, simCtx, stepN, unitById } from '../debug';
 import { BASE_TARGET } from '../state';
-import { arena, L, ofKind, pLu, stun, unitOf } from './helpers';
+import { arena, fixtureInPhase, L, ofKind, pLu, stun, unitOf } from './helpers';
 
 describe('attack cycle (A2.7)', () => {
+  // The attack cycle itself, with the A9a de-phase off (its first-swing wait: combatLevers.test.ts).
   it('melee: 40% windup, impact on the impact tick, then the interval', () => {
-    const sim = arena();
+    const sim = arena({ content: fixtureInPhase });
     const foe = devSpawn(sim, 1, 'tuskback', { p: L - 60 });
     stun(sim, foe.id, 1000);
     const b = devSpawn(sim, 0, 'bonker', { p: 20 });
@@ -34,7 +35,7 @@ describe('attack cycle (A2.7)', () => {
   });
 
   it('ranged: projectile travel = ceil(distance / speed / 0.05), homing', () => {
-    const sim = arena();
+    const sim = arena({ content: fixtureInPhase });
     const foe = devSpawn(sim, 1, 'tuskback', { p: L - 300 });
     stun(sim, foe.id, 1000);
     devSpawn(sim, 0, 'pebbler', { p: 100 });
@@ -123,7 +124,8 @@ describe('attack cycle (A2.7)', () => {
   });
 
   it('two-phase impacts: units that kill each other on the same tick both die', () => {
-    const sim = arena();
+    // in phase (A9a off): the two swing on one tick
+    const sim = arena({ content: fixtureInPhase });
     const a = devSpawn(sim, 0, 'bonker', { p: L / 2 - 12 });
     const b = devSpawn(sim, 1, 'bonker', { p: L / 2 - 12 });
     const ctx = simCtx(sim);
@@ -329,7 +331,8 @@ describe('damage pipeline (A2.7)', () => {
   });
 
   it('knockback: large units resist 50%, and it cancels a pending windup', () => {
-    const sim = arena();
+    // in phase (A9a off): both gore on one tick (with the de-phase the first to land wins: combatLevers.test.ts)
+    const sim = arena({ content: fixtureInPhase });
     const t = devSpawn(sim, 1, 'tuskback', { p: L - 150 });
     const k = devSpawn(sim, 0, 'tuskback', { p: 100 });
     const ev = stepN(sim, 30);

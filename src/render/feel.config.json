@@ -35,6 +35,50 @@
     "cheerMs": 900,
     "mechExplodeOneIn": 3,
     "shieldPopMs": 500,
+    "combat": {
+      "tiers": { "mediumBp": 800, "heavyBp": 1500 },
+      "hitstop": {
+        "melee": { "light": [35, 50], "medium": [40, 55], "heavy": [45, 70], "kill": [50, 90] },
+        "ranged": { "light": [0, 0], "medium": [0, 0], "heavy": [0, 60], "kill": [0, 80] },
+        "shareFromBp": 1500,
+        "shareToBp": 5000,
+        "shareMaxMs": 110
+      },
+      "kickGapMs": 280,
+      "kickFlipMs": 250,
+      "knockMs": 220,
+      "knockLift": { "share": 0.3, "minLu": 6, "maxLu": 14 },
+      "materials": {
+        "metalTags": ["armored", "mech"],
+        "woodCards": ["hide_shield", "footman", "battering_ram", "wooden_horse", "siege_belfry", "war_chariot"],
+        "metalCards": ["hoplite", "phalangite", "shield_bearer", "iron_mantlet"],
+        "beastCards": ["tuskback", "sabertooth", "mammoth_matriarch", "hunting_wolves", "cave_pup", "woolly_rhino", "cave_bear", "elk_chieftain", "war_elephant", "hydra", "minotaur", "war_hound", "lindworm", "swarm_matron", "swarmling", "moonlings", "star_leviathan"]
+      },
+      "contactSpark": { "effectId": "fx.contact_spark" },
+      "stuck": {
+        "arrow": ["proj.arrow", "proj.arrow_arc", "proj.longarrow", "proj.bolt", "proj.scorpion_bolt"],
+        "javelin": ["proj.javelin", "proj.harpoon", "proj.dart", "proj.spear_bolt"],
+        "quill": ["proj.quill"],
+        "needle": ["proj.needle"]
+      },
+      "bits": { "s": 3, "m": 4, "l": 5 },
+      "death": { "lieMs": 2000, "fadeMs": 600, "slideLu": { "light": 10, "medium": 16, "heavy": 24 }, "heavySlideShare": 0.55, "slideMs": 380, "lingerMs": 4000 },
+      "leap": { "baseLu": 0, "share": 0.28, "minLu": 14, "maxLu": 40, "leapCards": ["alpine_climber"], "blinkCards": ["warp_stalker"] }
+    },
+    "clash": {
+      "apartMs": 3000,
+      "windowMs": 1500,
+      "gapMs": 8000,
+      "nearLu": 140,
+      "minPerSide": 2,
+      "trauma": 0.4,
+      "punchZoom": 0.03,
+      "punchMs": 300,
+      "freezeMs": 70,
+      "intensity": 0.35,
+      "width": { "baseLu": 60, "perUnitLu": 14, "minLu": 100, "maxLu": 220 },
+      "lean": { "minViewLu": 1050, "minPerSide": 3, "zoom": 1.08, "inMs": 500, "holdMs": 1600, "outMs": 900 }
+    },
     "baseCollapse": {
       "breakMs": 520,
       "landMs": 1150,
@@ -50,50 +94,100 @@
     "hit.light": {
       "flashMs": 60,
       "flashTarget": "victim",
-      "particles": [{ "effectId": "$spark", "count": 3, "priority": 1 }],
+      "particles": [{ "effectId": "$spark", "count": 1, "priority": 1 }],
+      "sound": "$hitSound"
+    },
+    "hit.medium": {
+      "flashMs": 70,
+      "flashTarget": "victim",
+      "particles": [{ "effectId": "$spark", "count": 1, "priority": 1 }],
       "sound": "$hitSound"
     },
     "hit.heavy": {
-      "hitstopLocalMs": { "victim": 70, "attacker": 50 },
       "jitterPx": 2,
-      "trauma": 0.05,
+      "trauma": 0.12,
+      "kickPx": 2.5,
       "flashMs": 80,
       "flashTarget": "victim",
       "particles": [
-        { "effectId": "$spark", "count": 6, "priority": 2 },
-        { "effectId": "fx.dust_poof", "count": 2, "priority": 1 }
+        { "effectId": "$spark", "count": 1, "priority": 2 },
+        { "effectId": "fx.dust_poof", "count": 2, "priority": 1, "at": "feet" },
+        { "effectId": "fx.ground_glow", "count": 1, "priority": 1, "at": "feet" }
       ],
       "sound": "hit_heavy"
     },
+    "hit.heavy.ranged": {
+      "jitterPx": 2,
+      "trauma": 0.12,
+      "kickPx": 2.5,
+      "flashMs": 80,
+      "flashTarget": "victim",
+      "particles": [
+        { "effectId": "$spark", "count": 1, "priority": 2 },
+        { "effectId": "fx.ground_glow", "count": 1, "priority": 1, "at": "feet" }
+      ],
+      "sound": "hit_heavy"
+    },
+    "hit.kill": {
+      "jitterPx": 2,
+      "kickPx": 3.5,
+      "flashMs": 90,
+      "flashTarget": "victim",
+      "particles": [
+        { "effectId": "$spark", "count": 1, "priority": 2 },
+        { "effectId": "fx.ground_glow", "count": 1, "priority": 1, "at": "feet" }
+      ],
+      "sound": "$killSound",
+      "sounds": ["kill_accent"]
+    },
+    "hit.material.metal": { "sound": "mat_armour" },
+    "hit.material.wood": { "sound": "mat_wood" },
+    "hit.stuck": { "particles": [{ "effectId": "fx.stuck", "count": 1, "priority": 0 }] },
+    "shot.gun": { "particles": [{ "effectId": "fx.ground_glow", "count": 1, "priority": 0 }] },
     "hit.splash": { "particles": [{ "effectId": "fx.splash_ring", "count": 1, "priority": 2 }] },
     "hit.pull": { "particles": [{ "effectId": "fx.gravity_swirl", "count": 1, "priority": 3 }] },
     "death.unit": {
       "hitstopLocalMs": { "victim": 50, "attacker": 0 },
       "trauma": 0.1,
+      "kickPx": 3,
       "particles": [
-        { "effectId": "fx.dust_poof", "count": 10, "priority": 2 },
+        { "effectId": "fx.dust_poof", "count": 2, "priority": 2, "at": "feet" },
+        { "effectId": "fx.bits", "count": 1, "priority": 2, "at": "feet" },
         { "effectId": "fx.ko_stars", "count": 1, "priority": 3 }
       ],
       "sound": "$dieSound"
     },
     "death.heavy": {
       "hitstopLocalMs": { "victim": 70, "attacker": 0 },
-      "trauma": 0.15,
+      "trauma": 0.38,
+      "kickPx": 4,
       "particles": [
-        { "effectId": "fx.dust_poof", "count": 10, "priority": 2 },
+        { "effectId": "fx.dust_poof", "count": 2, "priority": 2, "at": "feet" },
+        { "effectId": "fx.bits", "count": 1, "priority": 2, "at": "feet" },
         { "effectId": "fx.ko_stars", "count": 1, "priority": 3 }
       ],
       "sound": "$dieSound"
     },
     "death.legendary": {
       "hitstopGlobalMs": 80,
-      "trauma": 0.15,
+      "simSlowMo": { "scale": 0.4, "ms": 750, "easeMs": 400 },
+      "trauma": 0.55,
+      "kickPx": 4,
       "particles": [
-        { "effectId": "fx.dust_poof", "count": 10, "priority": 3 },
+        { "effectId": "fx.dust_poof", "count": 2, "priority": 3, "at": "feet" },
+        { "effectId": "fx.bits", "count": 1, "priority": 2, "at": "feet" },
         { "effectId": "fx.ko_stars", "count": 1, "priority": 4 }
       ],
       "sound": "$dieSound"
     },
+    "death.land.s": { "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 1 }], "sound": "body_fall_s" },
+    "death.land.m": { "trauma": 0.12, "kickPx": 2, "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 2 }], "sound": "body_fall_m" },
+    "death.land.l": { "trauma": 0.3, "kickPx": 3.5, "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 3 }], "sound": "body_fall_l" },
+    "leap.land": { "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 2 }], "sound": "leap_land" },
+    "knock.land.s": { "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 1 }] },
+    "knock.land.m": { "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 2 }], "sound": "leap_land", "soundVolumeDb": -6 },
+    "knock.land.l": { "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 2 }], "sound": "leap_land", "soundVolumeDb": -6 },
+    "clash": { "kickPx": 3, "particles": [{ "effectId": "fx.clash_ring", "count": 1, "priority": 3 }, { "effectId": "fx.clash_dust", "count": 1, "priority": 3 }], "sound": "clash_crash" },
     "death.mech": { "trauma": 0.12, "flashMs": 60, "flashTarget": "victim" },
     "death.mech.explode": {
       "particles": [{ "effectId": "fx.explosion_s", "count": 1, "priority": 3 }],
@@ -114,8 +208,9 @@
     "mount.buy": { "particles": [{ "effectId": "fx.dust_poof", "count": 2, "priority": 1 }], "sound": "slot_buy" },
     "treasury.up": { "sound": "treasury_up" },
     "base.hit": {
-      "trauma": 0.2,
+      "trauma": 0.3,
       "traumaGapMs": 500,
+      "kickPx": 3,
       "flashMs": 60,
       "flashTarget": "base",
       "particles": [{ "effectId": "fx.debris", "count": 4, "priority": 1 }],

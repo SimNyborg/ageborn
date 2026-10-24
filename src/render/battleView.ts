@@ -45,13 +45,16 @@ import { mulberry32, xmur3, type CosmeticRng } from '@/core';
 import { reachAreaMax, type PowerReachRules } from '@/core/powerReach';
 import { ColorMatrixFilter, Graphics, Sprite, Texture, type Container } from 'pixi.js';
 import { CAMERA, Camera, type CameraHold } from './camera';
-import { depthRows, depthZ, easeToward } from './depth';
+import { bodySizeOf, LEAP_DEFAULTS, leapLift, SIZE_CODE, type BodySize, type HitTier } from './combatFeel';
+import { CONTACT_DEFAULTS, springOffset, stage, type OffsetState, type Reach, type StageBody, type StageUnit } from './contact';
+import { depthZ, easeToward } from './depth';
 import { EventMapper, crumbleStage, decodeTurretSource, type UnitInfo } from './eventMapper';
 import { newGait, stepGait, tickVelocity, walkDurationForSpeed, type GaitState } from './gait';
 import { FeelDirector } from './feel/director';
+import { SlowMotion } from './feel/hitstop';
 import { FloatingNumbers, type LabelFactory } from './feel/numbers';
 import { ParticlePool, type ParticleHandle } from './feel/particlePool';
-import { cloneFeelConfig, defaultFeelConfig, type RenderFeelConfig } from './feelConfig';
+import { clashRules, cloneFeelConfig, combatTuning, defaultFeelConfig, type RenderFeelConfig } from './feelConfig';
 import { HealthBars, barWidthLu, newBar, stepBar, type BarDraw, type BarState } from './healthbars';
 import { HOLD_FLAG_FOOT_Y, HOLD_FLAG_TOP_Y, HoldFlagMarker } from './holdFlag';
 import { ageOrder, canEvolve, xpThreshold } from './hudModel';
@@ -105,6 +108,11 @@ export interface BattleViewOptions {
   mountLabel?: (cost: number) => string;
   /** Replays: auto-follow the midpoint of both fronts with no bias toward `mySide` (A17.4). */
   spectator?: boolean;
+  /**
+   * The host scales its match clock by `simTimeScale` (queue item 38 A8: offline sessions and replays), so the view
+   * may slow the whole match for a beat (a Legendary's fall). Without it, or in a live match, nothing is slowed.
+   */
+  timeScaleHost?: boolean;
 }
 
 type LoopClip = 'walk' | 'idle';
@@ -140,6 +148,41 @@ interface UnitEntry {
   oneShotLeftMs: number;
   aura: EffectView | null;
   pose: UnitPose;
+  /** A1 contact staging: the eased offset (contact stand-off and same-side spread, world lu) and its velocity. */
+  stage: OffsetState;
+  /** What is drawn: the interpolated sim x plus every presentation offset (A1, A2 knockback, A4 slide). */
+  drawX: number;
+  /** In melee contact this frame (an attacker with a stand-off, or its victim): drawn in front of idle units. */
+  engaged: boolean;
+  /**
+   * How its staging offset eases (review A, S1): `engaged` into a stand-off, `approach` while it walks up to a foe (fast,
+   * the target is already smooth), `release` once a stand-off ended (held while the unit stands, then at most its own
+   * walking speed), `free` otherwise (the same-side spread).
+   */
+  stageMode: 'free' | 'approach' | 'engaged' | 'release';
+  /** Attack 0 is melee (staged); the reach of the attack playing or the main one, null while unknown. */
+  melee: boolean;
+  reach: Reach | null;
+  /** The body's idle extents (lu), null when unknown, undefined before the first ask. */
+  body: StageBody | null | undefined;
+  /** Frames to wait before asking a view without data again (a sheet still loading). */
+  reachRetry: number;
+  /** The last offset and lunge compensation sent to a view with the A1 hooks. */
+  offSent: number;
+  compSent: number;
+  /** The tick its last melee swing landed or will land (the sim clears it after the blow): mirror exchanges (A1). */
+  impactTick: number;
+  /** A2: a sim knockback drawn over `ms` (the jump `dx` lu, the tick it happened, game ms since). */
+  kb: { tick: number; dx: number; t: number; ms: number } | null;
+  /**
+   * A4: the slide of a falling body along the killing blow (lu, signed world x) and its time; it also settles `dy` lu
+   * back in depth from the row `y0` it fell in (review A, N7: the winner walking on passes in front of the body).
+   */
+  slide: { t: number; ms: number; lu: number; y0: number; dy: number } | null;
+  /** A4: the view runs the death itself (`dieWith`: fall, landing, lying, fade); the entry ends when it is finished. */
+  dieWith: boolean;
+  /** A1: its staging input, updated in place every frame. */
+  su?: StageUnit;
   /** Walls, towers and camps (A16.14.8): the fort view and the tick the view first saw it (scaffold start). */
   fort?: FortUnitView;
   fortStart?: number;
@@ -224,6 +267,11 @@ export function baseSkinsOf(side: Pick<MatchConfig['sides'][number], 'skins' | '
 interface ProjectileEntry {
   key: string;
   view: EffectView;
+  /**
+   * A8: the shot homes to its target as drawn: `t` of `ms` flown, the target and where it was drawn at the shot
+   * (its drawn x and row), and the correction last added to the view's root.
+   */
+  home?: { t: number; ms: number; target: number; x0: number; y0: number; ax: number; ay: number };
 }
 
 /** A particle that moves with a unit (status effects, buffs) and ends when the unit dies. */
@@ -391,7 +439,22 @@ export class BattleView {
   private input: BattleInput | null = null;
   private inputEl: HTMLElement | null = null;
   private hudAnchors: { gold: Pt | null; xp: Pt | null } = { gold: null, xp: null };
-  private liveIds = new Set<number>();
+  /** A1: the depth rows of the last staged frame (rows are sticky) and the sim units by id this frame. */
+  private stageRows = new Map<number, number>();
+  /** The staging's input, rebuilt in place every frame. */
+  private readonly stageBuf: StageUnit[] = [];
+  private readonly simById = new Map<number, Readonly<UnitState>>();
+  /**
+   * A8: slow motion of the whole match (a Legendary's fall), game time and the host's match clock together; only
+   * with a `timeScaleHost` and never in a live match (`live`: the opponent is shown as an online player).
+   */
+  private readonly simSlow = new SlowMotion();
+  private readonly timeScaleHost: boolean;
+  private readonly live: boolean;
+  private readonly audio: AudioService;
+  /** The battle ambience level last sent (A7, `setBattleAmbience`) and when (real ms). */
+  private ambienceSent = 0;
+  private ambienceAt = -Infinity;
   private frameGameDt = 0;
   private followers: Follower[] = [];
   /** Your Evolve was available after the last step (the chime plays on the rising edge, A13). */
@@ -415,6 +478,10 @@ export class BattleView {
     this.art = o.art;
     this.mySide = o.mySide ?? 0;
     this.spectator = o.spectator === true;
+    this.timeScaleHost = o.timeScaleHost === true;
+    // a live match (queue item 34: the opponent shown as an online player, `live/match.ts`): nothing may slow its clock
+    this.live = !this.spectator && !!this.config.sides[this.mySide === 0 ? 1 : 0]?.online;
+    this.audio = o.audio;
     this.feel = o.feel ?? cloneFeelConfig(defaultFeelConfig);
     this.settings = { ...DEFAULT_VIEW_SETTINGS, ...o.settings };
     this.isMobile = o.isMobile ?? false;
@@ -429,7 +496,7 @@ export class BattleView {
     this.mapper = new EventMapper({ content: this.config.content, feel: this.feel, mySide: this.mySide, rng: this.rng });
     this.hold = (o.art as ArtProvider & { holdArt?: () => ArtHoldLike }).holdArt?.() ?? null;
     this.autoPreset = new AutoPresetMonitor(this.settings.graphics, this.isMobile);
-    this.particles = new ParticlePool(o.art, this.layers.vfx, 0, this.rng);
+    this.particles = new ParticlePool(o.art, this.layers.vfx, 0, this.rng, { layer: this.layers.ground, ids: GROUND_FX });
     this.numbers = new FloatingNumbers(this.layers.text, this.feel.tuning, this.rng, o.labelFactory);
     this.markers = new MountMarkers(o.labelFactory ?? textLabelFactory, o.mountLabel);
 
@@ -732,6 +799,15 @@ export class BattleView {
   /** True while a global freeze runs: the session must not add time to its sim accumulator (A12). */
   get simFrozen(): boolean {
     return this.director.frozen && !this.ended;
+  }
+
+  /**
+   * The match clock's speed factor right now (queue item 38 A8): below 1 for a short beat when a Legendary falls, in
+   * a host that scales its clock by it (`timeScaleHost`: offline sessions and replays), else always 1. Never below 1
+   * in a live match or with Reduce motion.
+   */
+  get simTimeScale(): number {
+    return this.timeScaleHost && !this.live ? this.simSlow.timeScale : 1;
   }
 
   /** The preset in use right now (Auto may have dropped to Lite). */
@@ -1352,7 +1428,7 @@ export class BattleView {
       capped
         ? pt.eligible.flatMap((id, i) => {
             const u = this.units.get(id);
-            return u && !u.dying ? [{ x: u.x, y: u.y, size: u.sizeLu, n: i + 1, covered: pt.covered.has(id) }] : [];
+            return u && !u.dying ? [{ x: u.drawX, y: u.y, size: u.sizeLu, n: i + 1, covered: pt.covered.has(id) }] : [];
           })
         : [],
       this.mountPoints(this.mySide),
@@ -1361,9 +1437,10 @@ export class BattleView {
     this.zones.setLock(pt.lock === null ? null : (this.targetAt(pt.lock)[0] ?? null));
   }
 
+  /** A ghost's target ring sits on the unit as drawn (A1); which units it covers is the sim's (the zone keeps sim x). */
   private targetAt(id: number): GhostTarget[] {
     const u = this.units.get(id);
-    return u && !u.dying ? [{ x: u.x, y: u.y, size: u.sizeLu }] : [];
+    return u && !u.dying ? [{ x: u.drawX, y: u.y, size: u.sizeLu }] : [];
   }
 
   /** Call after every `sim.step` with that tick's events. */
@@ -1400,9 +1477,11 @@ export class BattleView {
       this.onPresetChange?.(this.autoPreset.preset);
     }
     const frozen = this.director.frozen;
-    const gameDt = this.paused || frozen ? 0 : realDt * this.speed * this.director.slowMo.timeScale;
+    // the match slow motion (A8) runs the view's game time at the rate the host runs the sim (`simTimeScale`)
+    const gameDt = this.paused || frozen ? 0 : realDt * this.speed * this.director.slowMo.timeScale * this.simTimeScale;
     this.frameGameDt = gameDt;
     this.director.update(this.paused ? 0 : realDt, gameDt);
+    if (!this.paused && !frozen) this.simSlow.update(realDt);
 
     this.syncUnits(alpha, gameDt);
     this.trapViews.sync(this.sim.state, gameDt, (x) => this.nearView(x));
@@ -1427,6 +1506,7 @@ export class BattleView {
     this.backdrop.setSeam(this.seam);
 
     this.nowMs += realDt;
+    if (!catchUp) this.updateAmbience();
     if (this.nowMs - this.holdSyncAt >= HOLD_SYNC_MS) {
       this.holdSyncAt = this.nowMs;
       this.syncHold(true);
@@ -1639,7 +1719,7 @@ export class BattleView {
     const lo = this.viewL - CULL_LU;
     const hi = this.viewR + CULL_LU;
     for (const e of this.units.values()) {
-      const on = e.x >= lo && e.x <= hi;
+      const on = e.drawX >= lo && e.drawX <= hi;
       e.view.root.visible = on;
       if (e.aura) e.aura.root.visible = on;
     }
@@ -1755,6 +1835,18 @@ export class BattleView {
     };
   }
 
+  /**
+   * The staging of every unit this frame (dev pages and the contact check, queue item 38): the interpolated
+   * sim x, the drawn x, the depth row, contact state and the reach the staging used. Cheap; reads only.
+   */
+  stagingDebug(): { id: number; side: Side; card: CardId; simX: number; drawX: number; y: number; engaged: boolean; dying: boolean; comp: number; reach: Reach | null; body: StageBody | null; facing: 1 | -1 }[] {
+    const out: ReturnType<BattleView['stagingDebug']> = [];
+    for (const e of this.units.values()) {
+      out.push({ id: e.id, side: e.side, card: e.card, simX: e.x, drawX: e.drawX, y: e.y, engaged: e.engaged, dying: e.dying, comp: e.compSent, reach: e.reach, body: e.body ?? null, facing: facingOf(e.side) });
+    }
+    return out;
+  }
+
   /** Counters for the dev pages. */
   stats(): {
     units: number;
@@ -1790,6 +1882,8 @@ export class BattleView {
 
   destroy(): void {
     this.gone = true;
+    // the battle ambience goes quiet with the battle (A7)
+    if (this.ambienceSent > 0 || this.ambienceAt > -Infinity) (this.audio as AudioService & { setBattleAmbience?: (level: number) => void }).setBattleAmbience?.(0);
     this.input?.destroy();
     this.input = null;
     for (const l of this.leavingBases) {
@@ -1872,9 +1966,10 @@ export class BattleView {
 
   private lookup(id: number): UnitInfo | undefined {
     const e = this.units.get(id);
-    if (e) return { side: e.side, card: e.card, x: e.x };
-    const u = this.sim.state.units.find((v) => v.id === id);
-    return u ? { side: u.side, card: u.card, x: u.x / MILLI_LU } : undefined;
+    // the sim's max HP for the hit tiers (A3); units spawned this tick are not in this frame's map yet
+    const u = this.simById.get(id) ?? this.sim.state.units.find((v) => v.id === id);
+    if (e) return { side: e.side, card: e.card, x: e.x, ...(u ? { maxHp: u.maxHp } : {}) };
+    return u ? { side: u.side, card: u.card, x: u.x / MILLI_LU, maxHp: u.maxHp } : undefined;
   }
 
   /** World points of a side's four mounts (cached from the base view: world space, see createBase). */
@@ -1892,11 +1987,12 @@ export class BattleView {
           const u = this.sim.state.units.find((v) => v.id === a.id);
           return { x: u ? u.x / MILLI_LU : SEAM_START_LU, y: -30 };
         }
+        // everything that anchors on a unit follows its drawn body (A1), not its sim x
         const an = e.view.anchors;
         const f = facingOf(e.side);
-        if (a.part === 'feet') return { x: e.x, y: e.y };
-        if (a.part === 'head') return { x: e.x + an.head.x * f, y: e.y + an.head.y - 6 };
-        return { x: e.x + an.hitCenter.x * f, y: e.y + an.hitCenter.y };
+        if (a.part === 'feet') return { x: e.drawX, y: e.y };
+        if (a.part === 'head') return { x: e.drawX + an.head.x * f, y: e.y + an.head.y - 6 };
+        return { x: e.drawX + an.hitCenter.x * f, y: e.y + an.hitCenter.y };
       }
       case 'base': {
         const cx = baseCenterX(a.side);
@@ -1910,6 +2006,42 @@ export class BattleView {
         return p ?? { x: baseCenterX(a.side), y: -80 };
       }
     }
+  }
+
+  /**
+   * Where a blow lands on victim `v` (A5): the attacker's impact-frame tip (its reach, less the lunge taken back)
+   * clamped into the front half of the victim's drawn body, at the tip's height (clamped to the body); for a shot,
+   * or an attacker without a reach, the victim's surface facing the blow at its hit centre's height. `dir` is the
+   * blow's world direction.
+   */
+  private contactAt(id: number, c: { from?: number; dir?: 1 | -1 }): Pt {
+    const v = this.units.get(id);
+    return v ? this.contactPoint(v, c.from, c.dir) : this.anchor({ k: 'unit', id, part: 'hit' });
+  }
+
+  private contactPoint(v: UnitEntry, from: number | undefined, dir: 1 | -1 | undefined): Pt {
+    const an = v.view.anchors;
+    const fv = facingOf(v.side);
+    const att = from !== undefined ? this.units.get(from) : undefined;
+    const d: 1 | -1 = dir ?? (att ? (v.drawX >= att.drawX ? 1 : -1) : fv === 1 ? -1 : 1);
+    // the victim's extent toward the blow's source: its torso front when it faces the blow, else its back
+    const b = v.body;
+    const facesBlow = -d === fv;
+    const extent = facesBlow ? (b?.torsoFront ?? (b ? b.front * 0.6 : v.sizeLu * 0.6)) : (b?.torsoBack ?? (b ? b.back : v.sizeLu * 0.6));
+    const near = v.drawX - d * Math.max(4, Math.min(extent, v.sizeLu));
+    const height = Math.max(10, -an.head.y);
+    let x = near;
+    let y = v.y + an.hitCenter.y;
+    const r = att?.melee ? att.reach : null;
+    if (att && r) {
+      const tip = att.drawX + facingOf(att.side) * (r.tipLu - att.compSent * Math.max(0, r.lungeLu));
+      // from the near surface to the centre line, along the blow
+      const lo = Math.min(near, v.drawX);
+      const hi = Math.max(near, v.drawX);
+      x = Math.max(lo, Math.min(hi, tip));
+      if (r.tipYLu !== undefined) y = v.y - Math.max(0.18 * height, Math.min(0.8 * height, r.tipYLu));
+    }
+    return { x, y };
   }
 
   private emit(ev: ViewEvent): void {
@@ -1930,7 +2062,16 @@ export class BattleView {
       case 'unitClip': {
         const e = this.units.get(a.id);
         if (!e || e.dying) return;
-        if (a.clip === 'hit' && e.oneShotLeftMs > 0) return; // never cut an attack or spawn short
+        if (a.clip === 'hit') {
+          // A2: every hit shows on the victim: an additive reaction on top of whatever plays (attack, walk, idle),
+          // scaled by its tier; the view decides whether to insert a hit pose or play the hit clip
+          const cv = e.view as CombatView;
+          if (a.tier && typeof cv.react === 'function') {
+            cv.react(a.tier, a.dir ?? (e.side === 0 ? -1 : 1));
+            return;
+          }
+          if (e.oneShotLeftMs > 0) return; // views without `react`: never cut an attack or spawn short
+        }
         if (a.clip === 'attack' && (a.attackIndex ?? 0) >= 1) {
           // R3: a second attacker never restarts the body clip; the view plays `attack_alt` or an accent
           (e.view as GaitView).playAlt?.(a.impactAtMs !== undefined ? { impactAtMs: a.impactAtMs } : {});
@@ -1939,6 +2080,15 @@ export class BattleView {
         if (a.clip === 'attack') {
           e.view.play('attack', a.impactAtMs !== undefined ? { impactAtMs: a.impactAtMs } : undefined);
           e.oneShotLeftMs = (a.impactAtMs ?? 0) + ONE_SHOT_MS.attackRecover;
+          // A1: the variant now playing sets the stand-off (its tip and its lunge)
+          if (e.melee) {
+            const r = readReach(e.view);
+            if (r) e.reach = r;
+          }
+        } else if (a.impactAtMs !== undefined) {
+          // A8: a pounce's ability clip holds its strike to the touch-down (the attack clip for the pouncers)
+          e.view.play(a.clip, { impactAtMs: a.impactAtMs });
+          e.oneShotLeftMs = a.impactAtMs + ONE_SHOT_MS.attackRecover;
         } else {
           e.view.play(a.clip);
           e.oneShotLeftMs = a.clip === 'spawn' ? ONE_SHOT_MS.spawn : a.clip === 'hit' ? ONE_SHOT_MS.hit : a.clip === 'stun' ? ONE_SHOT_MS.stun : ONE_SHOT_MS.ability;
@@ -1950,14 +2100,81 @@ export class BattleView {
         const e = this.units.get(a.id);
         if (!e || e.dying) return;
         e.dying = true;
+        e.loopClip = null;
+        e.bar.shown = false;
+        // a knockback still in flight finishes its travel under the falling body (it used to pop by what was left of the
+        // jump, up to about 20 lu, review A N2); the hop's arc lands on its own
+        this.dropAura(e);
+        const cv = e.view as UnitView & CombatView & ExtentView;
+        if (!e.fort && a.dir !== undefined && typeof cv.dieWith === 'function') {
+          // A4: a death with weight: the body falls along the killing blow and slides 10-25 lu with it (lighter
+          // bodies and heavier blows further), lands with dust and a thud by its size, lies about 2 s and fades;
+          // the ring, glyph and bar go at once
+          const d = combatTuning(this.feel).death;
+          const heavy = a.heavy === true;
+          const tier = a.tier ?? 'medium';
+          const lu = (d.slideLu[tier] ?? d.slideLu.medium) * (heavy ? d.heavySlideShare : 1);
+          e.dieWith = true;
+          e.dieLeftMs = d.lingerMs;
+          e.slide = { t: 0, ms: d.slideMs, lu: lu * a.dir, y0: e.y, dy: e.air ? 0 : -LYING_BACK_LU };
+          cv.setGroundMarks?.(false);
+          const size = a.size ?? bodySizeOf(e.def);
+          cv.dieWith({ dir: a.dir, tier, heavy, lieMs: d.lieMs, fadeMs: d.fadeMs, onLand: () => this.bodyLanded(e.id, size, a.dir ?? 1) });
+          return;
+        }
         // a fort's rubble lingers a moment after the collapse (A16.14.8)
         e.dieLeftMs = e.fort ? FORT_RUBBLE_MS : this.feel.tuning.deathLingerMs;
         e.view.play('die');
-        e.loopClip = null;
-        e.bar.shown = false;
-        this.dropAura(e);
         return;
       }
+      case 'unitKnock': {
+        const e = this.units.get(a.id);
+        if (!e || e.dying || e.fort) return;
+        // A2: the sim moved the unit in one tick; the view draws the jump over `ms` on an ease-out with a hop.
+        // A view with `airborne` lets its frame lock go for the hop, so the offset carries the body; without it
+        // only a jump the lock lets go of anyway (over 16 lu) is smoothed, as the lock already eases a small one
+        const cv = e.view as CombatView;
+        const k = combatTuning(this.feel).knockLift;
+        const lift = Math.max(k.minLu, Math.min(k.maxLu, Math.abs(a.dx) * k.share));
+        if (typeof cv.airborne === 'function') {
+          e.kb = { tick: this.sim.state.tick, dx: a.dx, t: 0, ms: a.ms };
+          const size = bodySizeOf(e.def);
+          const dir: 1 | -1 = a.dx < 0 ? -1 : 1;
+          cv.airborne({ ms: a.ms, liftLu: lift, kind: 'knockback', tumble: size === 's' && Math.abs(a.dx) >= 20, onLand: () => this.landed(e.id, `knock.land.${size}`, dir) });
+        } else if (Math.abs(a.dx) > KNOCK_LOCK_LU) {
+          e.kb = { tick: this.sim.state.tick, dx: a.dx, t: 0, ms: a.ms };
+        }
+        return;
+      }
+      case 'kick': {
+        // A3: a directional kick only for what the player can see
+        const at = this.anchor(a.at);
+        if (!this.camera.inView(at.x, 10)) return;
+        const ct = combatTuning(this.feel);
+        this.director.kick(a.px, a.dir, ct.kickGapMs, ct.kickFlipMs ?? 0);
+        return;
+      }
+      case 'unitLeap': {
+        // A8: the sim leaps in a straight line; the view draws the hop (U's `airborne`: take-off crouch, arc, landing
+        // squash; its frame lock lets go, so the sim x carries the body) and lands it with dust and a thump
+        const e = this.units.get(a.id);
+        if (!e || e.dying || e.fort) return;
+        const cv = e.view as CombatView;
+        if (typeof cv.airborne !== 'function') return;
+        const leap = { ...LEAP_DEFAULTS, ...(combatTuning(this.feel).leap ?? {}) };
+        const dir: 1 | -1 = a.dx < 0 ? -1 : 1;
+        cv.airborne({ ms: a.ms, liftLu: leapLift(a.dx, leap), kind: a.kind, tumble: false, onLand: () => this.landed(e.id, 'leap.land', dir) });
+        return;
+      }
+      case 'clash':
+        this.clashAt(a);
+        return;
+      case 'simSlowMo':
+        // A8: the whole match slows for a beat only where the host's clock follows (offline, replays), never in a
+        // live match (queue item 34: nothing may slow the shared clock), never with Reduce motion
+        if (!this.timeScaleHost || this.live || this.settings.reduceMotion) return;
+        this.simSlow.start(a.scale, a.ms, a.easeMs ?? 0);
+        return;
       case 'unitFlash':
         this.units.get(a.id)?.view.flash(a.ms, a.color);
         return;
@@ -1971,6 +2188,10 @@ export class BattleView {
         const e = this.units.get(a.id);
         const ms = this.director.hitstopMs(a.ms);
         if (!e || ms <= 0) return;
+        // the timing contract (B5, A12 checklist 3): a unit whose own swing is still winding up is never held, or
+        // its impact frame would land after the sim's hit (and after its sound and spark); it reacts without the
+        // hold, and its own hit-stop at its impact holds the real impact frame (review A, B1)
+        if (this.swingPending(a.id)) return;
         e.view.freeze(ms);
         if (a.jitterPx) {
           e.jitterLeftMs = ms;
@@ -1990,16 +2211,24 @@ export class BattleView {
         this.fireProjectile(a);
         return;
       case 'fx': {
-        const at = this.anchor(a.at);
+        // A5: a blow's effects play where it lands on the victim's drawn body
+        const at = a.contact && a.at.k === 'unit' ? this.contactAt(a.at.id, a.contact) : this.anchor(a.at);
         // Off-screen particles are not emitted (A17.7); zones and strikes still show when they matter.
         if (!this.nearView(at.x) && a.at.k !== 'base' && a.opts?.['durationMs'] === undefined) return;
         const handles: ParticleHandle[] = [];
+        // the combat recipes read Lite and Reduce motion from their options (the effect cannot see the settings);
+        // a fallen unit's bits start from its body's height (track U's `fx.bits` `heightLu`)
+        const motion = this.fxMotion();
+        const tall = a.effectId === 'fx.bits' && a.at.k === 'unit' ? this.units.get(a.at.id) : undefined;
+        const height = tall ? { heightLu: Math.max(20, -tall.view.anchors.head.y) } : null;
+        const opts = a.opts || motion || height ? { ...(a.opts ?? {}), ...(motion ?? {}), ...(height ?? {}) } : undefined;
         this.particles.emit(a.effectId, a.count, a.priority, at, {
           ...(a.spreadLu !== undefined ? { spreadLu: a.spreadLu } : {}),
-          ...(a.opts ? { opts: a.opts } : {}),
+          ...(opts ? { opts } : {}),
           out: handles,
         });
-        if (a.follow && a.at.k === 'unit') this.follow(handles, a.at.id, a.at.part ?? 'hit', at);
+        // a contact point (A5: an arrow stuck where it hit) follows the body at its offset from the anchor
+        if (a.follow && a.at.k === 'unit') this.follow(handles, a.at.id, a.at.part ?? 'hit', a.contact ? this.anchor(a.at) : at);
         return;
       }
       case 'fxUnits': {
@@ -2029,16 +2258,21 @@ export class BattleView {
         }
         return;
       }
-      case 'sound':
+      case 'sound': {
+        // A13 (A17.7): a world sound pans by its screen position and fades off view
+        const place = a.x !== undefined ? this.soundPlace(a.x, a.noFade === true) : null;
+        const db = (a.volumeDb ?? 0) + (place?.db ?? 0);
         this.director.sound(a.id, {
           ...(a.delayMs !== undefined ? { delayMs: a.delayMs } : {}),
           ...(a.gap ? { gap: a.gap } : {}),
           ...(a.climb ? { climb: a.climb } : {}),
           ...(a.priority !== undefined ? { priority: a.priority } : {}),
           ...(a.pitchBp !== undefined ? { pitchBp: a.pitchBp } : {}),
-          ...(a.volumeDb !== undefined ? { volumeDb: a.volumeDb } : {}),
+          ...(a.volumeDb !== undefined || db !== 0 ? { volumeDb: db } : {}),
+          ...(place && place.pan !== 0 ? { pan: place.pan } : {}),
         });
         return;
+      }
       case 'trauma':
         this.director.addTrauma(a.amount, a.dir, a.gap);
         return;
@@ -2051,6 +2285,9 @@ export class BattleView {
         return;
       }
       case 'freeze':
+        // a global freeze stops the match clock (`simFrozen`): never in a live match (queue item 34, item 38 A3),
+        // whose clock both players share; its local hit-stops still play
+        if (this.live) return;
         this.director.requestFreeze(a.ms, a.exempt);
         return;
       case 'slowMo':
@@ -2188,6 +2425,119 @@ export class BattleView {
     }
   }
 
+  /** The Lite and Reduce motion flags the combat recipes read from their options (track U), or null for neither. */
+  private fxMotion(): { lite?: number; reduce?: number } | null {
+    const lite = this.preset === 'lite';
+    const reduce = this.settings.reduceMotion;
+    if (!lite && !reduce) return null;
+    return { ...(lite ? { lite: 1 } : {}), ...(reduce ? { reduce: 1 } : {}) };
+  }
+
+  /**
+   * A4: a falling body touched the ground (U's `dieWith` `onLand`): the landing beat of its size from the feel
+   * config (`death.land.s` / `.m` / `.l`: dust, the thud, a kick for heavy bodies), at its drawn feet.
+   */
+  private bodyLanded(id: number, size: BodySize, dir: 1 | -1): void {
+    const e = this.units.get(id);
+    if (!e || this.gone) return;
+    const out: ViewAction[] = [];
+    this.mapper.rule(`death.land.${size}`, { at: { k: 'unit', id, part: 'feet' }, dir: { x: dir, y: 0.35 }, x: e.drawX, opts: { dir, size: SIZE_CODE[size] } }, out);
+    this.execOwn(out, e.side);
+  }
+
+  /**
+   * A2, A8: a hop touched down (U's `airborne` `onLand`): the landing beat `key` at its drawn feet (`leap.land`: a
+   * pounce's dust and thump; `knock.land.<size>`: a knocked-back body's dust, and its thump for heavy bodies).
+   */
+  private landed(id: number, key: string, dir: 1 | -1): void {
+    const e = this.units.get(id);
+    if (!e || this.gone || e.dying) return;
+    const out: ViewAction[] = [];
+    this.mapper.rule(key, { at: { k: 'unit', id, part: 'feet' }, x: e.drawX, opts: { dir, size: SIZE_CODE[bodySizeOf(e.def)] } }, out);
+    this.execOwn(out, e.side);
+  }
+
+  /** Runs a view-made beat's actions; its sounds take the player's priority when the unit is theirs (A13, as the mapper does). */
+  private execOwn(out: ViewAction[], side: Side): void {
+    for (const a of out) this.exec(a.a === 'sound' && a.priority === undefined && side === this.mySide ? { ...a, priority: 1 } : a);
+  }
+
+  /**
+   * A6: the clash moment's part on screen, when the player can see it: the shake and the camera punch, a short hit-stop
+   * on the engaged units near the contact (a unit in its wind-up keeps its swing on the sim's beat), and on wide screens
+   * the lean-in toward the fight.
+   */
+  private clashAt(a: Extract<ViewAction, { a: 'clash' }>): void {
+    if (!this.camera.inView(a.x, CLASH_VIEW_MARGIN_LU)) return;
+    if (a.trauma > 0) this.director.addTrauma(a.trauma);
+    if (a.punchZoom > 0 && !this.settings.reduceMotion) this.camera.punch(a.punchZoom, a.punchMs);
+    const ms = this.director.hitstopMs(a.freezeMs);
+    if (ms > 0) {
+      for (const e of this.units.values()) {
+        if (!e.engaged || e.dying || Math.abs(e.drawX - a.x) > CLASH_FREEZE_LU || this.swingPending(e.id)) continue;
+        e.view.freeze(ms);
+      }
+    }
+    if (a.lean) this.leanIn(a.x);
+  }
+
+  /**
+   * True while a living unit's attack 0 winds up in the sim (its impact tick still ahead): a hit-stop then would carry
+   * its impact frame past the sim's impact tick (the timing contract), so no local freeze holds it. A unit the blow
+   * killed keeps its hold (its swing never lands; the sim leaves the dead unit's last impact tick as it was).
+   */
+  private swingPending(id: number): boolean {
+    const st = this.sim.state;
+    const u = this.simById.get(id) ?? st.units.find((v) => v.id === id);
+    return u !== undefined && u.hp > 0 && (u.attacks[0]?.impactTick ?? 0) > st.tick;
+  }
+
+  /**
+   * A6: on a wide screen the camera leans in a little toward a big fight (about 1.08x for 3 s), by MR-80's rules: only
+   * while it follows (never while the player works it: a drag, a held pointer or power, Manual input), ended by any
+   * camera input, and never with Reduce motion (`Camera.lean`).
+   */
+  private leanIn(x: number): void {
+    const lean = clashRules(this.feel).lean;
+    if (this.settings.reduceMotion || this.camera.viewLu < lean.minViewLu) return;
+    this.camera.lean({ x, y: CLASH_LEAN_FOCUS_Y, zoom: lean.zoom, inMs: lean.inMs, holdMs: lean.holdMs, outMs: lean.outMs });
+  }
+
+  /**
+   * A13 (A17.7): where a world sound at x sits: its pan by its screen position (±`SOUND_PAN_EDGE` at the screen edges)
+   * and its fade beyond the view (1 dB per 50 lu past the edge, at most 12 dB; `noFade`: none).
+   */
+  private soundPlace(x: number, noFade: boolean): { pan: number; db: number } {
+    const L = this.camera.layout;
+    const half = Math.max(1, L.width / 2);
+    const sx = this.camera.worldToScreen(x, 0).x;
+    const pan = Math.max(-1, Math.min(1, (sx - half) / half)) * SOUND_PAN_EDGE;
+    let db = 0;
+    if (!noFade) {
+      const r = this.camera.viewRange();
+      const beyond = Math.max(0, r.left - x, x - r.right);
+      db = -Math.min(SOUND_FADE_MAX_DB, beyond / SOUND_FADE_LU_PER_DB);
+    }
+    return { pan: Math.round(pan * 100) / 100, db: Math.round(db * 10) / 10 };
+  }
+
+  /**
+   * A7: the battle ambience bed follows the fight (track S's `setBattleAmbience`, duck-typed on the audio service):
+   * about every 250 ms the engaged units' share (12 or more: full), 0 while paused, once the match ended and at
+   * teardown. Sent every time, not only on change: a level sent before the audio unlocks is dropped.
+   */
+  private updateAmbience(): void {
+    const amb = this.audio as AudioService & { setBattleAmbience?: (level: number) => void };
+    if (typeof amb.setBattleAmbience !== 'function' || this.nowMs - this.ambienceAt < AMBIENCE_EVERY_MS) return;
+    this.ambienceAt = this.nowMs;
+    let n = 0;
+    // nothing before the battle has run (the title screen's battlefield) or while it is paused or over
+    if (this.started && !this.paused && !this.ended) for (const e of this.units.values()) if (e.engaged && !e.dying) n++;
+    const level = Math.round(Math.min(1, n / AMBIENCE_FULL_UNITS) * 100) / 100;
+    this.ambienceSent = level;
+    amb.setBattleAmbience(level);
+  }
+
   private hudTarget(to: 'gold' | 'xp'): Pt {
     const L = this.camera.layout;
     const set = to === 'gold' ? this.hudAnchors.gold : this.hudAnchors.xp;
@@ -2283,6 +2633,21 @@ export class BattleView {
       loopClip: null,
       oneShotLeftMs: 0,
       aura: null,
+      stage: { x: 0, v: 0 },
+      drawX: x,
+      engaged: false,
+      stageMode: 'free',
+      // A1: only a melee attack 0 (it stops the unit, A2.7) is staged against its target
+      melee: !fort && !!def?.attacks[0] && def.attacks[0].projectile === undefined,
+      reach: null,
+      body: undefined,
+      reachRetry: 0,
+      offSent: 0,
+      compSent: 0,
+      impactTick: 0,
+      kb: null,
+      slide: null,
+      dieWith: false,
       pose: {
         x,
         y: 0,
@@ -2304,8 +2669,15 @@ export class BattleView {
       (view as GaitView).setIdentity?.({ id, seed: (id ^ this.config.seed) >>> 0 });
       withMotion(view, this.viewMotion());
     }
-    const rows = depthRows([...this.units.values(), e].filter((v) => !v.dying && !v.fort).map((v) => ({ id: v.id, side: v.side, x: v.x, air: v.air })));
-    e.y = fort ? FORT_ROW_LU : (rows.get(id) ?? 0);
+    // it starts on the row the staging gives it among the units on the field (A1; refined every frame), kept as its
+    // sticky row so the next frame's staging does not move it at once (review A, N5)
+    if (fort) e.y = FORT_ROW_LU;
+    else {
+      const input = this.stageInput(false);
+      input.push({ id, side, x, air, fort: false, sizeLu, target: null, reach: null, body: null, impactTick: undefined, rangeLu: undefined });
+      e.y = stage(input, this.stageRows, this.feel.tuning.contact ?? CONTACT_DEFAULTS).row.get(id) ?? 0;
+      this.stageRows.set(id, e.y);
+    }
     this.layers.units.addChild(view.root);
     if ((def?.group === 'legendary' || (skin && this.config.content.skins[skin]?.rarity === 'legendary')) && PRESETS[this.preset].legendaryAuras) {
       // A white glow around the whole figure: centred on the hit centre, sized by the figure's height.
@@ -2324,7 +2696,7 @@ export class BattleView {
   private placeAura(e: UnitEntry): void {
     if (!e.aura) return;
     const c = e.view.anchors.hitCenter;
-    e.aura.root.position.set(e.x + c.x * facingOf(e.side), e.y + c.y);
+    e.aura.root.position.set(e.drawX + c.x * facingOf(e.side), e.y + c.y);
   }
 
   private dropAura(e: UnitEntry): void {
@@ -2340,14 +2712,22 @@ export class BattleView {
 
   private syncUnits(alpha: number, gameDt: number): void {
     const st = this.sim.state;
-    this.liveIds.clear();
+    this.simById.clear();
+    // the whole field first: a unit created below (`ensureUnit`) takes its first row among all of it (review A, N5);
+    // the map also says which units live this frame
+    for (const u of st.units) this.simById.set(u.id, u);
     for (const u of st.units) {
-      this.liveIds.add(u.id);
       const e = this.ensureUnit(u);
       if (e.dying) continue;
       e.x = (u.prevX + (u.x - u.prevX) * Math.min(1, Math.max(0, alpha))) / MILLI_LU;
-      // R1: the walk follows the measured velocity (toward the enemy; negative walks back), smoothed
-      stepGait(e.gait, u.mode === 'attack' ? 0 : tickVelocity(u.x, u.prevX, facingOf(u.side), MILLI_LU), e.refSpeed, gameDt);
+      // A2: during the knockback's own tick the unit is taken at its new sim x at once; the knockback's eased
+      // offset then draws it from where it stood (`placeDrawn`), so the jump never shows as a one-tick slide
+      if (e.kb && e.kb.tick === st.tick) e.x = u.x / MILLI_LU;
+      // R1: the walk follows the measured velocity (toward the enemy; negative walks back), smoothed. S1: the velocity
+      // as drawn (the sim's plus the staging offset's), so a walk that slows into its stand-off or speeds up out of one
+      // keeps its feet planted
+      const drawnV = tickVelocity(u.x, u.prevX, facingOf(u.side), MILLI_LU) + facingOf(u.side) * e.stage.v;
+      stepGait(e.gait, u.mode === 'attack' ? 0 : drawnV, e.refSpeed, gameDt);
       if (!e.fort) (e.view as GaitView).setGait?.({ speedLuPerS: e.gait.v });
       e.stunned = false;
       e.frozen = false;
@@ -2380,12 +2760,10 @@ export class BattleView {
       }
       stepBar(e.bar, hpBp, e.shieldBp, gameDt, this.feel.tuning.ghostHoldMs, this.feel.tuning.ghostDrainMs);
     }
-    const rows = depthRows(
-      [...this.units.values()].filter((e) => !e.dying && !e.fort && this.liveIds.has(e.id)).map((e) => ({ id: e.id, side: e.side, x: e.x, air: e.air })),
-    );
+    const rows = this.stageUnits(gameDt);
     const rowStep = (this.feel.tuning.rowEaseLuPerSec * gameDt) / 1000;
     for (const e of [...this.units.values()]) {
-      if (!e.dying && !this.liveIds.has(e.id)) {
+      if (!e.dying && !this.simById.has(e.id)) {
         // Removed without a death event (for example a replay seek): drop it quietly.
         this.destroyUnit(e);
         this.units.delete(e.id);
@@ -2393,7 +2771,9 @@ export class BattleView {
       }
       if (e.dying) {
         e.dieLeftMs -= gameDt;
-        if (e.dieLeftMs <= 0) {
+        // a view running its own death (A4 `dieWith`) says when the body has faded; the linger is the backstop
+        const faded = e.dieWith && (e.view as UnitView & ExtentView).finished === true;
+        if (e.dieLeftMs <= 0 || faded) {
           this.destroyUnit(e);
           this.units.delete(e.id);
           continue;
@@ -2404,6 +2784,7 @@ export class BattleView {
         this.updateLoopClip(e, gameDt);
       }
       if (e.jitterLeftMs > 0) e.jitterLeftMs -= gameDt;
+      this.placeDrawn(e, gameDt);
       this.writePose(e);
       e.view.update(gameDt);
       // R8: a Legendary's footfalls shake the camera a little (inside the A12 caps)
@@ -2419,6 +2800,126 @@ export class BattleView {
         }
       }
     }
+  }
+
+  /**
+   * A1 contact staging (`contact.ts`): where every unit is drawn this frame. Each melee attacker's target
+   * comes from the sim (attack 0 in `attack` mode on a living unit), each unit's reach and body from its
+   * view; the solver's offsets are eased (a spring: 90 ms half-life into contact, 75 ms out of it, at most
+   * 170 lu/s) in game time, so a hit-stop, a pause or slow motion hold them too. Returns the target depth
+   * rows. View-only: nothing reaches the sim, and the minimap and power zones keep the sim x.
+   */
+  private stageUnits(gameDt: number): Map<number, number> {
+    const r = stage(this.stageInput(true), this.stageRows, this.feel.tuning.contact ?? CONTACT_DEFAULTS);
+    this.stageRows = r.row;
+    for (const e of this.units.values()) {
+      // a falling body stays where it was drawn (its slide along the blow is A4's)
+      if (e.dying) continue;
+      e.engaged = r.engaged.has(e.id);
+      const target = r.offset.get(e.id) ?? 0;
+      e.stageMode = stageModeOf(e.stageMode, e.engaged, r.approach.has(e.id), e.stage.x, target);
+      if (e.stageMode === 'engaged') springOffset(e.stage, target, STAGE_ENGAGE_HALF_LIFE_MS, gameDt, STAGE_MAX_SPEED);
+      else if (e.stageMode === 'approach') springOffset(e.stage, target, STAGE_APPROACH_HALF_LIFE_MS, gameDt, STAGE_MAX_SPEED);
+      else if (e.stageMode === 'release') {
+        // S1: the stand-off of a fight that ended stays while the unit stands (its follow-through plays on the spot),
+        // then eases out at half the unit's own walking speed as it walks on, so it walks on at no more than 1.5x its
+        // pace for a moment (its walk retimes to match) instead of dashing back to its sim x
+        if (e.gait.walking) springOffset(e.stage, target, STAGE_RELEASE_HALF_LIFE_MS, gameDt, Math.min(STAGE_MAX_SPEED, e.refSpeed * STAGE_RELEASE_SPEED_SHARE));
+        else e.stage.v = 0;
+      } else springOffset(e.stage, target, STAGE_RELEASE_HALF_LIFE_MS, gameDt, STAGE_MAX_SPEED);
+      const comp = r.comp.get(e.id) ?? 0;
+      if (Math.abs(comp - e.compSent) > 1e-3) {
+        e.compSent = comp;
+        (e.view as CombatView).setLungeComp?.(comp);
+      }
+    }
+    return r.row;
+  }
+
+  /**
+   * What is drawn (A1, A2, A4): the interpolated sim x, plus the eased staging offset, minus what is left of a
+   * knockback's jump (an ease-out over `knockMs`, so the unit lands where the sim put it about 170 ms later), plus
+   * a falling body's slide along the killing blow.
+   */
+  private placeDrawn(e: UnitEntry, gameDt: number): void {
+    let off = e.stage.x;
+    const kb = e.kb;
+    if (kb) {
+      kb.t += gameDt;
+      if (kb.t >= kb.ms) e.kb = null;
+      else off -= kb.dx * (1 - easeOut3(kb.t / kb.ms));
+    }
+    const sl = e.slide;
+    if (sl) {
+      sl.t = Math.min(sl.ms, sl.t + gameDt);
+      const k = easeOut3(sl.t / sl.ms);
+      off += sl.lu * k;
+      if (sl.dy !== 0) e.y = sl.y0 + sl.dy * k;
+    }
+    e.drawX = e.x + off;
+  }
+
+  /**
+   * The staging's view of the field: every living unit at its interpolated sim x, each melee attacker with its
+   * target (attack 0 in `attack` mode on a living unit, as the sim has it). `ask`: refresh reaches and bodies.
+   */
+  private stageInput(ask: boolean): StageUnit[] {
+    // reused every frame (the staging keeps nothing but its rows between frames): no allocation per unit
+    const input = this.stageBuf;
+    input.length = 0;
+    for (const e of this.units.values()) {
+      if (e.dying) continue;
+      const u = this.simById.get(e.id);
+      // a pouncer in its leap flies over the line (A8): no stand-off, no spread until it lands
+      if (!u || u.mode === 'leap') continue;
+      if (ask) this.refreshReach(e);
+      let target: number | null = null;
+      if (e.melee && !e.air && u.mode === 'attack') {
+        const tid = u.attacks[0]?.targetId ?? -1;
+        const t = tid > 0 ? this.units.get(tid) : undefined;
+        if (t && !t.dying && (this.simById.get(tid)?.hp ?? 0) > 0) target = tid;
+      }
+      // the sim clears a swing's impact tick once it lands; the view keeps the last one, so a pair in lockstep
+      // stays a mirror exchange between its swings (no breathing in and out)
+      const it = u.attacks[0]?.impactTick ?? 0;
+      if (it > 0) e.impactTick = it;
+      // every field present from the start and never deleted (an object that loses a field turns slow in V8, and the
+      // staging reads these objects many times a frame)
+      const su = (e.su ??= { id: e.id, side: e.side, x: e.x, air: e.air, fort: !!e.fort, sizeLu: e.sizeLu, target: null, reach: null, body: null, impactTick: undefined, rangeLu: undefined });
+      su.x = e.x;
+      su.air = e.air;
+      su.target = target;
+      su.reach = e.reach;
+      su.body = e.body ?? null;
+      // S1: a melee unit walking up to a foe stages on its approach (the sim parks it at its range from the foe), for
+      // the swing its view will show next (the attack variants reach differently), so the duel starts on that stand-off
+      const range = e.melee && !e.air ? e.def?.attacks[0]?.range : undefined;
+      if (range !== undefined && u.mode !== 'attack') {
+        su.rangeLu = range;
+        if (ask && e.reach !== null) {
+          const next = readReach(e.view);
+          if (next) su.reach = e.reach = next;
+        }
+      } else su.rangeLu = undefined;
+      su.impactTick = e.impactTick > 0 ? e.impactTick : undefined;
+      input.push(su);
+    }
+    return input;
+  }
+
+  /** Asks a view for its reach and body until its sheet answers (every `REACH_RETRY_FRAMES` while it loads). */
+  private refreshReach(e: UnitEntry): void {
+    if (e.fort) return;
+    const wantBody = e.body === undefined || e.body === null;
+    const wantReach = e.melee && e.reach === null;
+    if (!wantBody && !wantReach) return;
+    if (e.reachRetry > 0) {
+      e.reachRetry--;
+      return;
+    }
+    if (wantBody) e.body = readBody(e.view);
+    if (wantReach) e.reach = readReach(e.view);
+    if (e.body === null || (e.melee && e.reach === null)) e.reachRetry = REACH_RETRY_FRAMES;
   }
 
   private updateLoopClip(e: UnitEntry, gameDt: number): void {
@@ -2453,7 +2954,19 @@ export class BattleView {
   private writePose(e: UnitEntry): void {
     const p = e.pose;
     const jitter = e.jitterLeftMs > 0 ? ((this.rng.next() * 2 - 1) * e.jitterPx) / Math.max(0.0001, this.camera.scale) : 0;
-    p.x = e.x + jitter;
+    // A1: a view with the hook keeps its root on the sim x (the R2 frame lock plants the feet against it) and
+    // adds the presentation offset after the lock; any other view simply draws at the drawn x
+    const off = e.drawX - e.x;
+    const cv = e.view as CombatView;
+    if (typeof cv.setOffsetX === 'function') {
+      p.x = e.x + jitter;
+      if (Math.abs(off - e.offSent) > 1e-3) {
+        e.offSent = off;
+        cv.setOffsetX(off);
+      }
+    } else {
+      p.x = e.drawX + jitter;
+    }
     p.y = e.y;
     p.hpBp = e.bar.hpBp;
     p.shieldBp = e.shieldBp;
@@ -2461,8 +2974,11 @@ export class BattleView {
     p.frozen = e.frozen;
     p.alpha = e.dying ? Math.min(1, e.dieLeftMs / 300) : 1;
     e.view.setPose(p);
-    // forts stand behind every unit row, so the troops at a wall read in front of it
-    e.view.root.zIndex = e.fort ? FORT_Z + (e.id % 1000) : depthZ(e.y, e.air, e.id);
+    // forts stand behind every unit row, so the troops at a wall read in front of it; a unit in melee contact
+    // draws in front of idle units in (nearly) the same row (A1); a fallen body behind the living near its row, so
+    // the winner walking on passes in front of it instead of standing in it (review A, N7)
+    const zBias = e.dying ? -LYING_Z_LU : e.engaged ? ENGAGED_Z_LU : 0;
+    e.view.root.zIndex = e.fort ? FORT_Z + (e.id % 1000) : depthZ(e.y + zBias, e.air, e.id);
   }
 
   private frontInputs(): { side: Side; x: number; air: boolean }[] {
@@ -2483,7 +2999,7 @@ export class BattleView {
       const recent = e.bar.holdMs > 0 || e.bar.ghostBp > e.bar.hpBp || e.shieldBp > 0;
       if (crowd && !recent && !front.has(e.id)) continue;
       draws.push({
-        x: e.x,
+        x: e.drawX,
         y: e.y + e.view.anchors.head.y - 12,
         widthLu: barWidthLu(e.sizeLu),
         bar: e.bar,
@@ -2510,19 +3026,21 @@ export class BattleView {
     g.clear();
     if (!g.visible) return;
     for (const e of this.units.values()) {
-      if (!e.view.root.visible || e.fort) continue;
+      // a body lying after `dieWith` keeps the view's own contact shadow; its ring went at death (A4)
+      if (!e.view.root.visible || e.fort || (e.dying && e.dieWith)) continue;
       const a = e.dying ? 0.2 * Math.min(1, e.dieLeftMs / 300) : 0.24;
       const w = e.sizeLu * 0.62 + 6;
+      const x = e.drawX;
       if (e.air) {
-        g.ellipse(e.x, 4, w * 0.7, 4).fill({ color: 0x000000, alpha: a * 0.5 });
+        g.ellipse(x, 4, w * 0.7, 4).fill({ color: 0x000000, alpha: a * 0.5 });
         continue;
       }
       // A team-coloured ground disc under every unit, so the two armies read apart in a crowd.
       const team = teamColor(this.settings.teamPreset, e.side);
       const fade = e.dying ? Math.min(1, e.dieLeftMs / 300) : 1;
-      g.ellipse(e.x, e.y + 1, w * 1.08, 7).fill({ color: team, alpha: 0.34 * fade });
-      g.ellipse(e.x, e.y + 1, w * 1.08, 7).stroke({ color: team, width: 1.6, alpha: 0.7 * fade });
-      g.ellipse(e.x, e.y + 1, w * 0.8, 4.5).fill({ color: 0x000000, alpha: a });
+      g.ellipse(x, e.y + 1, w * 1.08, 7).fill({ color: team, alpha: 0.34 * fade });
+      g.ellipse(x, e.y + 1, w * 1.08, 7).stroke({ color: team, width: 1.6, alpha: 0.7 * fade });
+      g.ellipse(x, e.y + 1, w * 0.8, 4.5).fill({ color: 0x000000, alpha: a });
     }
   }
 
@@ -2533,13 +3051,18 @@ export class BattleView {
   private fireProjectile(a: Extract<ViewAction, { a: 'projectile' }>): void {
     const from = this.projectileOrigin(a.from, a.side, a.attackIndex ?? 0);
     let toY = -30;
+    let toX = a.toX;
     if (a.targetId > 0) {
       const t = this.units.get(a.targetId);
-      if (t) toY = t.y + t.view.anchors.hitCenter.y;
+      if (t) {
+        toY = t.y + t.view.anchors.hitCenter.y;
+        // the shot flies to the body as drawn (A1): the sim's aim point plus the target's drawn offset
+        toX += t.drawX - t.x;
+      }
     } else if (a.targetId === -1 && a.side !== null) {
       toY = -44;
     }
-    const to = { x: a.toX, y: toY };
+    const to = { x: toX, y: toY };
     if (a.visualId.startsWith('fx.')) {
       this.particles.emit(a.visualId, 1, 2, from, { opts: { toX: to.x, toY: to.y, ms: a.travelMs, side: a.side ?? 0 } });
       return;
@@ -2552,7 +3075,9 @@ export class BattleView {
     this.layers.projectiles.addChild(view.root);
     const old = this.projectiles.get(a.pid);
     if (old) this.releaseProjectile(old);
-    this.projectiles.set(a.pid, { key, view });
+    // A8: the shot homes to its target as drawn (a walking target, its staging, a knockback), see `updateProjectiles`
+    const t = a.targetId > 0 ? this.units.get(a.targetId) : undefined;
+    this.projectiles.set(a.pid, { key, view, ...(t ? { home: { t: 0, ms: Math.max(1, a.travelMs), target: a.targetId, x0: t.drawX, y0: t.y, ax: 0, ay: 0 } } : {}) });
   }
 
   private projectileOrigin(from: number, side: Side | null, attackIndex = 0): Pt {
@@ -2561,7 +3086,7 @@ export class BattleView {
       if (e) {
         // R4: the playing variant's impact-frame muzzle (or the rider / MG anchor); the static anchor otherwise
         const m = (e.view as GaitView).muzzleNow?.(attackIndex) ?? e.view.anchors.muzzle;
-        return { x: e.x + m.x * facingOf(e.side), y: e.y + m.y };
+        return { x: e.drawX + m.x * facingOf(e.side), y: e.y + m.y };
       }
     }
     const turret = decodeTurretSource(from);
@@ -2572,9 +3097,31 @@ export class BattleView {
     return { x: side === null ? SEAM_START_LU : gateX(side), y: -40 };
   }
 
+  /**
+   * Flies the shots. A8: a shot at a unit homes to it as drawn: the view flies its own path from the muzzle to where
+   * the target was drawn at the shot, and the root takes the target's drawn move since then, in proportion to the
+   * flight (none at the muzzle, all of it at the impact), so the shot lands on the body the sim's hit lands on.
+   */
   private updateProjectiles(gameDt: number): void {
     for (const [pid, p] of this.projectiles) {
+      const h = p.home;
+      // views that place their root every update overwrite it; the others keep it: take last frame's share off first
+      if (h) {
+        p.view.root.x -= h.ax;
+        p.view.root.y -= h.ay;
+      }
       p.view.update(gameDt);
+      if (h) {
+        h.t += gameDt;
+        const t = this.units.get(h.target);
+        if (t) {
+          const k = Math.min(1, h.t / h.ms);
+          h.ax = (t.drawX - h.x0) * k;
+          h.ay = (t.y - h.y0) * k;
+        }
+        p.view.root.x += h.ax;
+        p.view.root.y += h.ay;
+      }
       if (p.view.done) {
         this.releaseProjectile(p);
         this.projectiles.delete(pid);
@@ -2751,7 +3298,7 @@ export class BattleView {
         const e = this.turrets.get(key);
         if (!e) return;
         const t = a.targetId !== undefined ? this.units.get(a.targetId) : undefined;
-        if (t) e.view.aimAt(t.x);
+        if (t) e.view.aimAt(t.drawX);
         e.view.play('fire');
         return;
       }
@@ -2873,6 +3420,130 @@ interface GaitView {
   playAlt?(o: { impactAtMs?: number }): void;
   muzzleNow?(attackIndex?: number): Pt | null;
   drainFootfalls?(): number;
+}
+
+export type { HitTier } from './combatFeel';
+
+/**
+ * Optional combat hooks of the atlas unit view (queue item 38 INTERFACE, track U; duck-typed like
+ * `GaitView`, so procedural views, forts and a sheet still loading keep working without them). Every call
+ * goes through `?.`.
+ */
+export interface CombatView {
+  /** A1: an attack clip's reach at its impact frame, facing +x, lu from the feet; null until the sheet is in. */
+  reach?(clip?: string): Reach | null;
+  /** A1: a world-x offset added after the R2 frame lock (stand-off, spread, knockback smoothing, a dying slide). */
+  setOffsetX?(lu: number): void;
+  /** A1: the share 0..1 of the clip's authored lunge taken back during each impact window. */
+  setLungeComp?(share: number): void;
+  /** A2: an additive hit reaction on top of whatever plays; `dir` is the world direction of the push. */
+  react?(tier: HitTier, dir: 1 | -1): void;
+  /** A2/A8: a lift arc of the body over `ms` (x is the battle view's); `onLand` fires on touch-down. */
+  airborne?(o: { ms: number; liftLu: number; kind: 'knockback' | 'pounce' | 'leap'; tumble: boolean; onLand?: () => void }): void;
+  /** A4: a death with weight: the fall along `dir`, a landing beat, then the body lies `lieMs` and fades over `fadeMs`. */
+  dieWith?(o: { dir: 1 | -1; tier: HitTier; heavy: boolean; lieMs: number; fadeMs: number; onLand?: () => void }): void;
+}
+
+/** Older duck-typed atlas hooks the staging falls back on while `reach()` is missing (the card showcase uses them). */
+interface ExtentView {
+  impactReachLu?(): number | null;
+  extentLu?(o?: { clips?: readonly string[] }): { front: number; back: number; top: number } | null;
+  setGroundMarks?(on: boolean): void;
+  readonly finished?: boolean;
+}
+
+/**
+ * The reach of a unit's melee attack (A1): the view's own `reach()` (the sheet's tip tracker and measured
+ * lunge), else the impact frame's front extent and the idle frame's extents (no lunge known), else null.
+ */
+function readReach(view: UnitView): Reach | null {
+  const v = view as UnitView & CombatView & ExtentView;
+  const r = v.reach?.();
+  if (r && Number.isFinite(r.tipLu)) return r;
+  const tip = v.impactReachLu?.();
+  const ext = v.extentLu?.({ clips: ['idle'] });
+  if (tip === null || tip === undefined || !ext) return null;
+  return { tipLu: tip, lungeLu: 0, frontLu: ext.front, backLu: ext.back };
+}
+
+/** A unit's idle extents (lu from the feet: its frame and, from `reach()`, its torso) from its view, or null. */
+function readBody(view: UnitView): StageBody | null {
+  const v = view as UnitView & CombatView & ExtentView & { motionInfo?: () => { gait: string | null } };
+  const r = v.reach?.();
+  if (r && r.frontLu > 0 && r.backLu > 0) {
+    // S6: a beast's, a mount's or a cart's frame front is its own head or prow; a biped's is the weapon it holds out
+    const headLead = HEAD_LEAD_GAITS.has(v.motionInfo?.().gait ?? '');
+    return {
+      front: r.frontLu,
+      back: r.backLu,
+      ...(r.torsoFrontLu !== undefined ? { torsoFront: r.torsoFrontLu } : {}),
+      ...(r.torsoBackLu !== undefined ? { torsoBack: r.torsoBackLu } : {}),
+      ...(headLead ? { headLead } : {}),
+    };
+  }
+  const ext = v.extentLu?.({ clips: ['idle'] });
+  return ext && ext.front > 0 && ext.back > 0 ? { front: ext.front, back: ext.back } : null;
+}
+
+/** Walk body types whose frame in front of the torso is body, not a weapon: beasts, mounts and carts (S6). */
+const HEAD_LEAD_GAITS: ReadonlySet<string> = new Set(['quad', 'rider', 'wheeled']);
+/** Engaged units sort this much (lu of depth) in front of idle ones at the same row (A1). */
+const ENGAGED_Z_LU = 5;
+/** A falling or lying body sorts this much (lu of depth) behind the living (review A, N7). */
+const LYING_Z_LU = 8;
+/**
+ * And it settles this far back in depth as it falls (lu, over its slide), so a winner walking on in the duel's row
+ * passes in front of the body instead of standing in it (review A, N7).
+ */
+const LYING_BACK_LU = 8;
+/** Spring half-lives of the drawn offset (ms of game time): easing into contact, and out of it (A1). */
+const STAGE_ENGAGE_HALF_LIFE_MS = 90;
+const STAGE_RELEASE_HALF_LIFE_MS = 75;
+/** S1: the approach's target is already smooth (it follows the closing), so its spring only filters it (ms). */
+const STAGE_APPROACH_HALF_LIFE_MS = 12;
+/** The drawn offset never moves faster than this (lu/s): a target swap eases instead of snapping. */
+const STAGE_MAX_SPEED = 170;
+/** S1: a stand-off is released at this share of the unit's walking speed while it walks on. */
+const STAGE_RELEASE_SPEED_SHARE = 0.5;
+/** A released stand-off counts as eased out once this close to its target (lu). */
+const STAGE_RELEASED_LU = 0.5;
+
+/**
+ * How a unit's staging offset eases this frame (S1): engaged and approach as the staging says; a unit that just left a
+ * stand-off or an approach releases it (held while it stands, then at its walking speed) until it is eased out; else
+ * free (the spread).
+ */
+export function stageModeOf(prev: UnitEntry['stageMode'], engaged: boolean, approach: boolean, offset: number, target: number): UnitEntry['stageMode'] {
+  if (engaged) return 'engaged';
+  if (approach) return 'approach';
+  const settled = Math.abs(offset - target) < STAGE_RELEASED_LU;
+  if (prev === 'engaged' || prev === 'approach') return settled ? 'free' : 'release';
+  if (prev === 'release') return settled ? 'free' : 'release';
+  return 'free';
+}
+/** Frames between asks for the reach of a view whose sheet is not in yet. */
+const REACH_RETRY_FRAMES = 10;
+/** Effects that lie on the ground (A4, A5): drawn under the units, in the ground decals. */
+const GROUND_FX: ReadonlySet<string> = new Set(['fx.bits', 'fx.ground_glow', 'fx.clash_ring']);
+/** A knockback the R2 frame lock lets go of at once (its `FRAME_LOCK_MAX_LU`, lu): views without `airborne`. */
+const KNOCK_LOCK_LU = 16;
+/** A6: a clash plays its screen part when it is this close to the view (lu); engaged units this near it hold a moment. */
+const CLASH_VIEW_MARGIN_LU = 40;
+const CLASH_FREEZE_LU = 150;
+/** A6: the lean-in's focus height (lu above the ground: the fighters' chests). */
+const CLASH_LEAN_FOCUS_Y = -36;
+/** A13 (A17.7): world sounds pan up to this at the screen edges, and fade 1 dB per 50 lu past the view, at most 12 dB. */
+export const SOUND_PAN_EDGE = 0.6;
+const SOUND_FADE_LU_PER_DB = 50;
+const SOUND_FADE_MAX_DB = 12;
+/** A7: how often the battle ambience level is sent (real ms) and how many engaged units make it full. */
+const AMBIENCE_EVERY_MS = 250;
+const AMBIENCE_FULL_UNITS = 12;
+
+/** Ease-out cubic (0..1): fast start, soft landing (knockback travel, the dying slide). */
+function easeOut3(t: number): number {
+  const c = t <= 0 ? 0 : t >= 1 ? 1 : t;
+  return 1 - (1 - c) * (1 - c) * (1 - c);
 }
 
 /** Optional motion hooks of the world views (WP4 atlas views; the art contract stays unchanged). */

@@ -176,6 +176,21 @@ export function attackCycle(has: (anim: string) => boolean): string[] {
   return ['attack'];
 }
 
+const CYCLE_A: readonly string[] = ['attack'];
+const CYCLE_AB: readonly string[] = ['attack', 'attack_b'];
+const CYCLE_AC: readonly string[] = ['attack', 'attack_c'];
+const CYCLE_ABC: readonly string[] = ['attack', 'attack_b', 'attack', 'attack_c'];
+
+/**
+ * `attackCycle` for a sheet's loaded animations, as shared read-only arrays: no allocation, since the battle view asks a
+ * unit walking into a fight for the reach of its next variant every frame (queue item 38 A1).
+ */
+export function attackCycleOf(animations: Readonly<Record<string, readonly unknown[] | undefined>>): readonly string[] {
+  const b = (animations['attack_b']?.length ?? 0) > 0;
+  const c = (animations['attack_c']?.length ?? 0) > 0;
+  return b && c ? CYCLE_ABC : b ? CYCLE_AB : c ? CYCLE_AC : CYCLE_A;
+}
+
 /**
  * The variant for a unit's `plays`-th attack: the cycle starts at `unitId mod length` and moves on
  * with the view's own count of attack plays. It depends only on the event stream (replays and

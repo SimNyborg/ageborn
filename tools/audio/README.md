@@ -50,8 +50,9 @@ press "Render every id and cue offline" (decodes and measures every file) and cl
 | `music/render_music.py` | Renders each instrument to its own stem, balances, mixes, adds reverb, masters and cuts seamless loops |
 | `sfx/kit.py` | Effect building blocks: transients, pitched thumps, bells, plucks, whooshes, debris, crackle, GM layers |
 | `sfx/sounds.py` | Every sound id of DESIGN A13/A14 as a layered design, with its loudness target and variant count |
+| `sfx/sounds_combat.py` | The combat sound pass (queue item 38, A7): kill accent, material layers, body falls, huge bodies' deaths, the clash, the leap landing and the battle ambience loop |
 | `sfx/render_sfx.py` | Renders, cleans up, normalises and limits every variant |
-| `build.py` | Packs the sprite sheets, encodes everything to Ogg Opus, writes `src/audio/assets.gen.ts`, deletes stale files |
+| `build.py` | Packs the sprite sheets, encodes everything to Ogg Opus, writes `src/audio/assets.gen.ts`, deletes stale files; an input it encoded before with the same settings is not encoded again (`.cache/encoded/`), so a rebuild after one changed sheet takes under a minute |
 | `analyze.py` | The numerical listening test (below) |
 | `list-sounds.ts` | Prints the sound ids and groups from `src/audio/sounds.ts` for `build.py` |
 
@@ -125,9 +126,19 @@ press "Render every id and cue offline" (decodes and measures every file) and cl
 - Frequent sounds (hits, spawns, deaths, shots, steps, coins, ticks) have 3 variants; the service adds
   the A13 pitch ±8% and volume ±3 dB spread on top.
 - **Loudness targets** (loudest 200 ms window, LUFS): UI ticks -31 to -34, UI clicks -25 to -29,
-  combat hits -26/-27, heavy hit -23, shots -21 to -28, spawns -26/-23, explosions -21/-19/-17, powers
-  -19 to -21, fanfares and jingles -16 to -21. They sit close to the old ZzFX levels, so the mix
-  balance tuned in the game still holds, but they are now consistent inside each category.
+  combat hits -22/-23 (since the combat pass, A7; heavy hit -19.5), the swing whoosh -32, shots -21 to
+  -28, spawns -26/-23, explosions -21/-19/-17, powers -19 to -21, fanfares and jingles -16 to -21.
+- **The impact is the loudest beat of an attack** (A7, queue item 38): the hits sit about 10 LU over the
+  swing whoosh that announces them and carry a body layer below 200 Hz (`hit_body`, a low punch a few ms
+  after the crack so the peaks do not stack). Their peak ceiling is -6 dBFS (`sfx(..., ceiling=)`;
+  everything else -1.5), about the master limiter's threshold (`src/audio/mixer.ts`: -10 dBFS after the
+  0.7 master trim), so a single hit is barely limited and gets its loudness from body; stacked moments
+  meet the limiter. The combat layers: `kill_accent` -24, `mat_armour`/`mat_wood` -28 (6 dB under a hit),
+  `body_fall_s/m/l` -27/-24/-21, `die_bio_l`/`die_mech_l` -21/-20, `clash_crash` -19, `leap_land` -26.
+- **Loops in a sheet.** `sfx(..., loop=(start, length))` marks a seamless window inside a sound (the
+  battle ambience: its events sit on a circle, it is rendered three times with its reverb and the middle
+  copy is cut with 0.25 s of wrap-around margin on both sides); `build.py` writes it to the manifest as
+  `loop`, and `WebAudioService.setBattleAmbience` loops that window of the decoded sheet.
 - **Phone speakers.** The renderer measures every variant through a phone-speaker model (4th-order
   band pass 350 Hz-12 kHz). When it loses more than 4 LU against full range (6 for explosions, cannon,
   base and walkout), it adds saturated upper harmonics of the lows and then lowers the lows in 3 dB
@@ -141,8 +152,8 @@ press "Render every id and cue offline" (decodes and measures every file) and cl
   fanfares play the motif in the key of the age they lead to.
 - **Mix.** Battle music plays 12 dB under its master (`FILE_GAIN_DB` in `src/audio/music.ts`) through
   the music bus (0.55); effects play through the effects bus at 1.0. A single `hit_blunt` (loudest
-  200 ms) then sits about 7 LU above the battle music's median momentary loudness (5.7-7.4 LU on the
-  phone model).
+  200 ms) then sits about 11 LU above the battle music's median momentary loudness (about 7 LU before
+  the combat pass), and the battle ambience at full level about 4 LU under the music.
 
 ## The numerical listening test
 

@@ -96,6 +96,24 @@ export class Shake {
     }
   }
 
+  /**
+   * A directional kick of `px` (at shake 1) along the unit vector `dir`, decaying over `kickDecayMs` (queue item 38
+   * A3: the kick channel for big hits and kills, independent of trauma, whose squared curve hides small amounts).
+   */
+  kick(px: number, dir: { x: number; y: number }): void {
+    if (!(px > 0)) return;
+    const len = Math.hypot(dir.x, dir.y) || 1;
+    this.kickX = (dir.x / len) * px;
+    this.kickY = (dir.y / len) * px;
+    this.kickLeft = this.kickDecayMs;
+  }
+
+  /** What is left of the current kick (px at shake 1). */
+  get kickStrength(): number {
+    if (this.kickDecayMs <= 0 || this.kickLeft <= 0) return 0;
+    return Math.hypot(this.kickX, this.kickY) * (this.kickLeft / this.kickDecayMs);
+  }
+
   update(dtMs: number): void {
     const dt = Math.max(0, dtMs);
     this.timeSec += dt / 1000;

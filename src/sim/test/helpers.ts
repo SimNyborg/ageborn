@@ -34,6 +34,19 @@ import { compileForSim } from '../shim';
 export const fixture: CompiledContent = compileForSim(fixtureRaw);
 
 /**
+ * The frozen fixture with some of its battle numbers replaced (the sim reads `content.battle` structurally,
+ * `rules.ts` `battleOf`): for example `{ dephaseTicks: 0 }` turns the A9a de-phase off, so a test of another
+ * rule can keep its exact timing.
+ */
+export function fixtureWith(battle: Readonly<Record<string, number>>): CompiledContent {
+  const c = fixture as CompiledContent & { battle?: Record<string, unknown> };
+  return { ...c, battle: { ...(c.battle ?? {}), ...battle } } as CompiledContent;
+}
+
+/** The fixture with the A9a de-phase off (A2.7 Attack cycle as before SIM_VERSION 9.0.0). */
+export const fixtureInPhase: CompiledContent = fixtureWith({ dephaseTicks: 0 });
+
+/**
  * Last Base Standing on the frozen fixture (A2.10.1): the shared `tests/fixtures/lastBase.ts` (also
  * replayed by the cross-engine determinism spec), compiled by the sim's shim.
  */

@@ -437,6 +437,41 @@ describe('atlas unit view: walk (R1, R2, R8)', () => {
     }
   });
 
+  it('plants its feet where it is drawn: a battle-view offset easing in during a walk never slides the body inside a frame step (review A, S1)', () => {
+    const s = sheet();
+    const v = view('unit.bonker', s) as unknown as Gaited & { setOffsetX(lu: number): void };
+    let x = 0;
+    let off = 0;
+    v.setPose(pose(x));
+    // the sim walks it at 60 lu/s while the stand-off eases in at 30 lu/s against it: drawn at 30 lu/s, and the
+    // battle view retimes the walk to the drawn speed
+    v.setGait({ speedLuPerS: 30 });
+    v.play('walk', { loop: true });
+    v.update(10);
+    let tex = shown(v);
+    let held = v.root.x + body(v).x;
+    let steps = 0;
+    for (let k = 0; k < 80; k++) {
+      x += 0.6;
+      off -= 0.3;
+      v.setPose(pose(x));
+      v.setOffsetX(off);
+      v.update(10);
+      const w = v.root.x + body(v).x;
+      if (shown(v) === tex) expect(w).toBeCloseTo(held, 6);
+      else {
+        expect(w).toBeGreaterThanOrEqual(held - 1e-6);
+        held = w;
+        tex = shown(v);
+        steps++;
+      }
+    }
+    expect(steps).toBeGreaterThan(3);
+    // over the walk the body went the drawn distance (30 lu/s for 0.8 s), not the sim's
+    expect(held).toBeGreaterThan(16);
+    expect(held).toBeLessThan(26);
+  });
+
   it('starts and ends the lock without a pop (review M3)', () => {
     const s = sheet();
     const v = view('unit.bonker', s) as unknown as Gaited;

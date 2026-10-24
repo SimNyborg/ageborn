@@ -101,6 +101,8 @@ describe('area rule (A2.6): primary 100%, others 50%, at most 4 unless the card 
     const adm = devSpawn(sim, 0, 'balloon_admiral', { p: 600 });
     const u = unitById(sim, adm.id);
     if (u) u.hp = 1;
+    // it hovers over the clump until the shot lands (the shot's first-swing wait, A9a, is 0 or 3 ticks)
+    stun(sim, adm.id, 40);
     const foe = devSpawn(sim, 1, 'pebbler', { p: L - 800 });
     stun(sim, foe.id, 1);
     const ev = stepN(sim, 40);

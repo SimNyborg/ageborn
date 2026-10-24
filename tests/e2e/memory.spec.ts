@@ -135,7 +135,38 @@ test('G7: a long Standard War at DPR 2 keeps decoded images under the budget, an
   test.setTimeout(480_000);
   const problems = watchPage(page);
   await page.goto('./?dev=1&autopilot=1&quick=standard');
-  await warPeak(page, problems, 'Standard War');
+  await page.waitForFunction(() => (window as unknown as { __agebornDev?: unknown }).__agebornDev !== undefined, null, { timeout: 60_000 });
+  // A mirror, so the war runs through the evolves whatever the balance (queue item 38's combat levers turned the first
+  // Quick Battle into an early loss in Medieval): the opponent plays the autopilot's own brain (the Balanced General,
+  // tier V) with the player's War Plan and levels, on the controller's first Quick Battle seed. Headless on 10.0.0 this
+  // war reaches Industrial (tick 8,050) and ends at tick 13,091; mirrors on five other seeds all reached Industrial too.
+  // The e2e specs that replay a fixed battle and must be re-checked after any sim change: memory (both wars), camera,
+  // flows, modes and onboarding.
+  const started = await page.evaluate(() => {
+    type Side = { loadouts: unknown; levels: Record<string, number> };
+    type Setup = { config: { seed: number; sides: Side[] }; opponent: { tier: number; seed: number }; brain: unknown };
+    type Ctl = {
+      quickBattle(f: string): { setup: Setup };
+      startSetup(s: Setup): unknown;
+      services: { content: { generals?: { list?: Record<string, { weights?: Record<string, number> }> } } };
+    };
+    const c = (window as unknown as { __agebornDev: { controller: Ctl } }).__agebornDev.controller;
+    const weights = c.services.content.generals?.list?.['echo']?.weights;
+    if (!weights) return 'no Balanced General';
+    const setup = c.quickBattle('standard').setup;
+    const [me, foe] = setup.config.sides as [Side, Side];
+    const seed = 7936;
+    c.startSetup({
+      ...setup,
+      config: { ...setup.config, seed, sides: [me, { ...foe, loadouts: me.loadouts, levels: me.levels }] },
+      opponent: { ...setup.opponent, tier: 5, seed },
+      // the autopilot's profile (`botProfile(content, { generalId: 'echo', tier: 5 })`; no openings: its personality's)
+      brain: { kind: 'general', profile: { generalId: 'echo', tier: 5, mistakeBonusBp: 0, weights: { ...weights }, openings: [] } },
+    });
+    return 'ok';
+  });
+  expect(started).toBe('ok');
+  await warPeak(page, problems, 'Standard War (mirror)');
 });
 
 test('round 3: the test profile (every card owned) plays a Standard War at DPR 2 under the budget', async ({ browser, baseURL }) => {

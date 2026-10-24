@@ -21,7 +21,9 @@
  *   500 ms pan and the push, at most 3 s of focus, then the camera returns (follow picks the fight
  *   up again, or a Manual camera eases back to where it was). It is skipped while the player works
  *   the camera (a drag, or Manual input in the last 2 s). Any camera input ends it at once.
- * - **Reduce motion:** no momentum, no rubber band, 150 ms eases and a 200 ms spring half-life.
+ * - **Lean-in** (queue item 38 A6): on wide screens a big clash leans the camera in a little (about 1.08x for 3 s),
+ *   only while it follows on its own and nothing else frames; any camera input eases it out at once.
+ * - **Reduce motion:** no momentum, no rubber band, no lean-in, 150 ms eases and a 200 ms spring half-life.
  *
  * Zoom keeps the ground line where it is, so units grow upward and stay in the lane band.
  */
@@ -66,6 +68,9 @@ export const CAMERA = {
   reduceMotionEaseMs: 150,
   reduceMotionHalfLifeMs: 200,
 } as const;
+
+/** A lean-in that camera input ends eases out this fast (ms, queue item 38 A6). */
+export const LEAN_RELEASE_MS = 300;
 
 /** The lane's middle: where the camera sits when the whole world fits. */
 export const WORLD_MID_LU = WORLD_LEFT_LU + WORLD_WIDTH_LU / 2;
@@ -123,6 +128,20 @@ export function pushAmount(p: CameraPush, ms: number): number {
   if (ms < p.inMs + p.holdMs || p.outMs <= 0) return 1;
   const out = (ms - p.inMs - p.holdMs) / Math.max(1, p.outMs);
   return out >= 1 ? 0 : 1 - easeInOut(out);
+}
+
+/** Where (0..1) in a push's ease-out it shows the amount `a`: the inverse of `1 - easeInOut` (bisection). */
+export function outPhaseFor(a: number): number {
+  if (a >= 1) return 0;
+  if (a <= 0) return 1;
+  let lo = 0;
+  let hi = 1;
+  for (let i = 0; i < 24; i++) {
+    const mid = (lo + hi) / 2;
+    if (1 - easeInOut(mid) > a) lo = mid;
+    else hi = mid;
+  }
+  return (lo + hi) / 2;
 }
 
 /** ω of a critically damped spring whose error halves in `halfLifeMs` (e^(-ωh)(1 + ωh) = 1/2). */
@@ -299,8 +318,11 @@ export class Camera {
   }
 
   hold(key: CameraHold, on: boolean): void {
-    // A power drag, a minimap press or a lane press ends a moment at once (MR-80).
-    if (on && key !== 'popover' && key !== 'tutorial') this.endMoment();
+    // A power drag, a minimap press or a lane press ends a moment (and a lean-in) at once (MR-80).
+    if (on && key !== 'popover' && key !== 'tutorial') {
+      this.endMoment();
+      this.endLean();
+    }
     if (on) this.holds.add(key);
     else this.holds.delete(key);
   }
@@ -315,6 +337,7 @@ export class Camera {
 
   private manual(): void {
     this.endMoment();
+    this.endLean();
     this.mode = 'manual';
     this.idleMs = 0;
     this.engaged = false;
@@ -521,19 +544,49 @@ export class Camera {
   // Pushes (A12 moments)
   // ------------------------------------------------------------------------------------------
 
-  /** Starts a camera moment (evolve push-in, base destroyed). A new push replaces the current one. */
+  /** Starts a camera moment (evolve push-in, base destroyed). A new push replaces the current one (a lean-in too). */
   pushTo(p: CameraPush): void {
     this.push = p;
     this.pushMs = 0;
+    this.leaning = false;
+  }
+
+  /** A lean-in is running (queue item 38 A6). */
+  private leaning = false;
+
+  /**
+   * A gentle lean-in toward a big fight (queue item 38 A6, wide screens): a small push (about 1.08x) for a few
+   * seconds, by MR-80's rules: only while the camera follows on its own (never while the player works it: a drag, a
+   * held pointer or power, Manual input, an ease under way; never during a moment or another push, never locked),
+   * never with Reduce motion. Any camera input eases it out at once (`LEAN_RELEASE_MS`). Returns true when it starts.
+   */
+  lean(p: CameraPush): boolean {
+    if (this.reduceMotion || this.locked || this.dragging || this.mode !== 'follow' || this.ease || this.holds.size > 0 || this.moment || this.push) return false;
+    this.pushTo(p);
+    this.leaning = true;
+    return true;
+  }
+
+  /** True while a lean-in shows (tests, the view). */
+  get isLeaning(): boolean {
+    return this.leaning && this.push !== null;
+  }
+
+  /** Camera input ends a lean-in: it eases out from where it is. */
+  private endLean(): void {
+    if (!this.leaning) return;
+    this.leaning = false;
+    this.release(LEAN_RELEASE_MS);
   }
 
   /** Ends a held push (eases out over `outMs`, or 500 ms). */
   release(outMs = 500): void {
     if (!this.push) return;
     const a = pushAmount(this.push, this.pushMs);
-    // Restart as an out-only push from the current amount.
+    // Restart as an out-only push from the current amount (at the point of its ease-out that shows `a`; never at 0 ms,
+    // which reads as a push not started yet).
     this.push = { ...this.push, inMs: 0, holdMs: 0, outMs };
-    this.pushMs = (1 - a) * outMs;
+    this.pushMs = Math.max(0.001, outPhaseFor(a) * outMs);
     if (a <= 0) this.push = null;
   }
 
@@ -586,6 +639,7 @@ export class Camera {
       const p = this.push;
       if (p.outMs > 0 && this.pushMs >= p.inMs + p.holdMs + p.outMs) this.push = null;
     }
+    if (!this.push) this.leaning = false;
     if (this.moment) {
       const mo = this.moment;
       mo.t += dtRaw;

@@ -1,5 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { dbToGain, pickVariant, rollVariation, VoicePolicy, type Voice } from '../voices';
+import {
+  BURST_EXEMPT_PRIORITY,
+  BURST_MAX,
+  BURST_SOFT,
+  BURST_STEP_DB,
+  BURST_WINDOW_MS,
+  dbToGain,
+  pickVariant,
+  rollVariation,
+  STACK_SPREAD,
+  STACK_WINDOW_MS,
+  VoicePolicy,
+  type Voice,
+} from '../voices';
 
 const LIMITS = { maxVoices: 4, gapMs: 40 };
 
@@ -101,6 +114,75 @@ describe('voice policy (A13 Mixer)', () => {
     let played = 0;
     for (let k = 0; k < 40; k++) if (start(p, ids[k % ids.length]!, 0, 2.0)) played++;
     expect(played).toBe(8);
+  });
+});
+
+describe('stacks and bursts (A7, queue item 38)', () => {
+  const WORLD = { maxVoices: 4, gapMs: 40, stack: 3, burst: true };
+
+  /** Admits and records like the service; returns the admission. */
+  function play(p: VoicePolicy<number>, id: string, at: number, priority = 0, limits = WORLD) {
+    const a = p.admit(id, priority, at, limits);
+    if (!a.ok) return a;
+    for (const v of a.steal) p.ended(v.handle);
+    const delay = STACK_SPREAD[a.stack]!.delayS;
+    p.started({ id, priority, start: at + delay, end: at + delay + 0.3, handle: Math.random() }, a.stack, limits.burst ?? false, at);
+    return a;
+  }
+
+  it('lets up to three starts of one id in one frame play as a stack, then keeps the gap', () => {
+    const p = new VoicePolicy<number>();
+    expect(play(p, 'hit_slash', 1.0)).toMatchObject({ ok: true, stack: 0 });
+    expect(play(p, 'hit_slash', 1.0)).toMatchObject({ ok: true, stack: 1 });
+    expect(play(p, 'hit_slash', 1.003)).toMatchObject({ ok: true, stack: 2 });
+    expect(play(p, 'hit_slash', 1.003)).toEqual({ ok: false, reason: 'gap' });
+    // Past the frame's window the 40 ms gap still holds, from the stack's first start.
+    expect(play(p, 'hit_slash', 1.0 + (STACK_WINDOW_MS + 1) / 1000)).toEqual({ ok: false, reason: 'gap' });
+    expect(play(p, 'hit_slash', 1.041)).toMatchObject({ ok: true, stack: 0 });
+    // Without a stack limit (UI sounds, musical ones) nothing changes.
+    const q = new VoicePolicy<number>();
+    expect(play(q, 'ui_click', 1, 0, { maxVoices: 4, gapMs: 40, stack: 1, burst: false })).toMatchObject({ ok: true, stack: 0 });
+    expect(play(q, 'ui_click', 1, 0, { maxVoices: 4, gapMs: 40, stack: 1, burst: false })).toEqual({ ok: false, reason: 'gap' });
+  });
+
+  it('still obeys the voice caps inside a stack', () => {
+    const p = new VoicePolicy<number>(2);
+    play(p, 'x', 0, 1);
+    play(p, 'y', 0.001, 1);
+    expect(play(p, 'x', 0.002, 0)).toEqual({ ok: false, reason: 'totalCap' });
+  });
+
+  it('softens a burst past BURST_SOFT and caps it at BURST_MAX, but lets important cues through', () => {
+    const p = new VoicePolicy<number>();
+    const trims: number[] = [];
+    for (let k = 0; k < BURST_MAX + 3; k++) {
+      const a = play(p, `id${k}`, 2.0);
+      trims.push(a.ok ? a.burstDb : Number.NaN);
+    }
+    expect(trims.slice(0, BURST_SOFT)).toEqual(Array(BURST_SOFT).fill(0));
+    expect(trims[BURST_SOFT]).toBe(BURST_STEP_DB);
+    expect(trims[BURST_MAX - 1]).toBe(BURST_STEP_DB * (BURST_MAX - BURST_SOFT));
+    expect(trims.slice(BURST_MAX).every(Number.isNaN)).toBe(true);
+    expect(play(p, 'late', 2.0)).toEqual({ ok: false, reason: 'burst' });
+    expect(play(p, 'crash', 2.0, BURST_EXEMPT_PRIORITY)).toMatchObject({ ok: true });
+    // Starts that are not world effects neither count nor obey it.
+    expect(play(p, 'ui', 2.0, 10, { maxVoices: 4, gapMs: 40, stack: 1, burst: false })).toMatchObject({ ok: true, burstDb: 0 });
+    // A new window starts a new burst.
+    expect(play(p, 'next', 2.0 + (BURST_WINDOW_MS + 1) / 1000)).toMatchObject({ ok: true, burstDb: 0 });
+  });
+
+  it('keeps a 30-hit clash on one frame to a bounded, softened set of voices', () => {
+    const p = new VoicePolicy<number>();
+    const ids = ['hit_blunt', 'hit_slash', 'hit_pierce', 'hit_heavy', 'mat_armour', 'kill_accent'];
+    const played: { stack: number; burstDb: number }[] = [];
+    for (let k = 0; k < 30; k++) {
+      const a = play(p, ids[k % ids.length]!, 3.0);
+      if (a.ok) played.push({ stack: a.stack, burstDb: a.burstDb });
+    }
+    expect(played.length).toBe(BURST_MAX);
+    // The summed power stays within about 8 dB of a single hit (stack trims and burst softening).
+    const power = played.reduce((s, v) => s + 10 ** ((STACK_SPREAD[v.stack]!.gainDb + v.burstDb) / 10), 0);
+    expect(10 * Math.log10(power)).toBeLessThan(8.5);
   });
 });
 

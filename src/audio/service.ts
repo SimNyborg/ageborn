@@ -17,8 +17,15 @@
  * - `play` goes through the voice policy (`voices.ts`): 4 voices per id, an absolute 40 ms retrigger
  *   gap, a global cap, priority for the caps (higher wins; pass a higher `priority` for sounds the
  *   player caused), a random variant, pitch ±8% and volume ±3 dB. `pitchBp` scales the rate (10000 =
- *   as is), `volumeDb` adds gain and `pan` (-1..1) places the sound. Non-finite numbers fall back to
- *   the defaults instead of throwing inside the caller's frame.
+ *   as is), `volumeDb` adds gain and `pan` (-1..1) places the sound with a balance law (`balancePan`:
+ *   a panned sound at the centre is as loud as an unpanned one). Non-finite numbers fall back to the
+ *   defaults instead of throwing inside the caller's frame.
+ * - Two or three identical world effects on the same frame play as a stack (queue item 38, A7): the
+ *   extra blows start 11-27 ms later at another pitch, a little softer; a busy burst of world effects is
+ *   softened and capped (`voices.ts`), so a clash stays a crash, not noise.
+ * - `setBattleAmbience(level)` (duck-typed, not in the contract; the battle view calls it about every
+ *   250 ms) plays the battle ambience loop from the battle sheet at a smoothed level, starts it on the
+ *   first level above 0 and stops it once it has been silent for a few seconds.
  * - `music.duck(db, ms)` lowers the music bus by |db| for `ms` (A13: 6 dB during powers, evolves and
  *   walkouts); `music.transpose(semitones)` sets the total key change (see `musicEngine.ts`).
  * - Decoded audio is float samples, 37 MB for a 96.6 s stereo loop and 30 MB for the 158 s match sheet at
@@ -31,7 +38,7 @@
 import type { AudioService, Bus, MusicCueId, MusicLayer, SoundId } from '@/contracts';
 import { SoundBank, type RenderStats } from './bank';
 import { assetUrl, sfxFiles as defaultSfxFiles, SfxFileBank, sourceOrder, type Clip, type SfxFiles, type SheetState } from './files';
-import { Mixer } from './mixer';
+import { holdParam, Mixer } from './mixer';
 import { continuesBattle, fileMusic, music as seqMusic, type MusicDef } from './music';
 import { MUSIC_LAYERS, MusicEngine } from './musicEngine';
 import {
@@ -46,7 +53,18 @@ import {
   type SoundGroup,
 } from './sounds';
 import { createAudioContext, isRunning, keepAlive, unlockContext } from './unlock';
-import { dbToGain, DEFAULT_MAX_TOTAL_VOICES, pickVariant, rollVariation, UI_PRIORITY_BONUS, VoicePolicy } from './voices';
+import {
+  balancePan,
+  dbToGain,
+  DEFAULT_MAX_TOTAL_VOICES,
+  pickVariant,
+  rollVariation,
+  STACK_JITTER_S,
+  STACK_MAX,
+  STACK_SPREAD,
+  UI_PRIORITY_BONUS,
+  VoicePolicy,
+} from './voices';
 
 export type PlayOptions = Parameters<AudioService['play']>[1];
 
@@ -93,9 +111,40 @@ const SFX_IDLE_CHECK_MS = 5000;
 /** Effect sheets never let go of: the UI, the shared battle sounds and the match's. */
 const KEPT_SHEETS: readonly string[] = ['ui', 'battle', 'match'];
 
+/** The battle ambience loop's sound id (a loop window in the battle sheet, `SfxFileEntry.loop`). */
+export const AMBIENCE_ID = 'ambience_battle';
+/**
+ * Its level at `setBattleAmbience(1)`, relative to the rendered loop (dB): the loop is -38.5 LUFS, so a full
+ * fight's bed sits about 4 LU under the battle music and 15 LU under a single hit.
+ */
+export const AMBIENCE_TRIM_DB = 1;
+/** The level curve: gain = level ** AMBIENCE_CURVE (linear: half the fight -6 dB, a third -10 dB). */
+export const AMBIENCE_CURVE = 1;
+/** Smoothing time constant of the ambience level (s): the 250 ms updates glide, a battle's end fades. */
+export const AMBIENCE_TAU_S = 0.6;
+/** The loop stops after this long at level 0 (s), by then about 40 dB down. */
+export const AMBIENCE_STOP_S = 3;
+
 interface VoiceHandle {
   src: AudioBufferSourceNode;
   gain: GainNode;
+}
+
+interface AmbienceVoice {
+  src: AudioBufferSourceNode;
+  gain: GainNode;
+  /** Audio time the level went to 0, or null while it is above 0. */
+  silentSince: number | null;
+}
+
+/**
+ * How many identical starts of a sound one frame may stack (A7): world effects that vary their pitch,
+ * three; UI sounds and sounds that must hold their pitch (musical, timed, caller-pitched) never stack.
+ */
+export function stackLimit(def: SoundDef): number {
+  if (def.bus !== 'sfx') return 1;
+  if ((def.pitchVarBp ?? DEFAULT_PITCH_VAR_BP) === 0) return 1;
+  return Math.min(STACK_MAX, def.maxVoices ?? DEFAULT_MAX_VOICES);
 }
 
 /** Sheets to load for a music cue: the age now playing and the next one (DESIGN B7 lazy loading). */
@@ -116,8 +165,10 @@ const BOOT_SHEETS: readonly string[] = ['ui', 'battle', 'stone', 'bronze', 'matc
 
 export interface ServiceStats {
   started: number;
-  dropped: { gap: number; idCap: number; totalCap: number; locked: number; unknown: number; loading: number };
+  dropped: { gap: number; idCap: number; totalCap: number; burst: number; locked: number; unknown: number; loading: number };
   stolen: number;
+  /** Starts that played as an extra blow of a same-frame stack (A7). */
+  stacked: number;
   voices: number;
 }
 
@@ -141,7 +192,7 @@ export class WebAudioService implements AudioService {
   ctx: AudioContext | null = null;
   mixer: Mixer | null = null;
   engine: MusicEngine | null = null;
-  readonly stats: ServiceStats = { started: 0, dropped: { gap: 0, idCap: 0, totalCap: 0, locked: 0, unknown: 0, loading: 0 }, stolen: 0, voices: 0 };
+  readonly stats: ServiceStats = { started: 0, dropped: { gap: 0, idCap: 0, totalCap: 0, burst: 0, locked: 0, unknown: 0, loading: 0 }, stolen: 0, stacked: 0, voices: 0 };
 
   private readonly soundDefs: Readonly<Record<SoundId, SoundDef>>;
   private readonly musicDefs: Readonly<Record<MusicCueId, MusicDef>>;
@@ -155,6 +206,11 @@ export class WebAudioService implements AudioService {
   private lastIdleCheck = 0;
   private readonly now: () => number;
   private readonly lastVariant = new Map<SoundId, number>();
+  /** Per id, the playback rate of its latest stack's first voice (the extra blows spread from it). */
+  private readonly stackRate = new Map<SoundId, number>();
+  /** The battle ambience: the level asked for (0..1) and the loop playing, if any. */
+  private ambienceLevel = 0;
+  private ambience: AmbienceVoice | null = null;
   private readonly volumes: Record<Bus, number> = { master: 1, music: 1, sfx: 1, ui: 1, voice: 1 };
   private readonly warned = new Set<string>();
   /** Music requests made before the context exists. */
@@ -310,6 +366,7 @@ export class WebAudioService implements AudioService {
   /** Runs the music scheduler once (the interval does this every 25 ms), and now and then the sheets' idle release. */
   tick(): void {
     if (this.engine && this.ctx && isRunning(this.ctx)) this.engine.update();
+    this.stopSilentAmbience();
     const now = this.now();
     if (now - this.lastIdleCheck >= SFX_IDLE_CHECK_MS) {
       this.lastIdleCheck = now;
@@ -359,7 +416,8 @@ export class WebAudioService implements AudioService {
     const clips = found.clips;
     const now = ctx.currentTime;
     const priority = (o?.priority ?? 0) + (def.bus === 'ui' ? UI_PRIORITY_BONUS : 0);
-    const verdict = this.voices.admit(id, priority, now, { maxVoices: def.maxVoices ?? DEFAULT_MAX_VOICES, gapMs: def.gapMs ?? DEFAULT_GAP_MS });
+    const burst = def.bus === 'sfx';
+    const verdict = this.voices.admit(id, priority, now, { maxVoices: def.maxVoices ?? DEFAULT_MAX_VOICES, gapMs: def.gapMs ?? DEFAULT_GAP_MS, stack: stackLimit(def), burst });
     if (!verdict.ok) {
       this.stats.dropped[verdict.reason]++;
       return;
@@ -375,35 +433,133 @@ export class WebAudioService implements AudioService {
     const clip = clips[k] as Clip;
     const vary = rollVariation(this.random, def.pitchVarBp ?? DEFAULT_PITCH_VAR_BP, def.volVarDb ?? DEFAULT_VOL_VAR_DB);
     // A non-finite option would make the AudioParam setters throw inside the caller's frame.
-    const rate = Math.max(0.25, Math.min(4, vary.rate * (finite(o?.pitchBp, 10000) / 10000)));
+    const asked = finite(o?.pitchBp, 10000) / 10000;
+    // An extra blow of a stack: a few ms after the first, at a pitch spread from the first one's, softer.
+    const spread = STACK_SPREAD[verdict.stack] ?? (STACK_SPREAD[0] as (typeof STACK_SPREAD)[number]);
+    const first = verdict.stack > 0 ? this.stackRate.get(id) : undefined;
+    const rate = Math.max(0.25, Math.min(4, first !== undefined ? first * spread.rate : vary.rate * asked));
+    if (verdict.stack === 0) this.stackRate.set(id, rate);
+    const delay = verdict.stack > 0 ? spread.delayS + this.random() * STACK_JITTER_S : 0;
+    const panned = finite(o?.pan, 0) !== 0 && typeof ctx.createStereoPanner === 'function' ? balancePan(finite(o?.pan, 0)) : null;
     // Files are mastered to their level; the manifest trim belongs to the ZzFX designs.
-    const gainDb = (found.file ? 0 : (def.gainDb ?? 0)) + vary.gainDb + finite(o?.volumeDb, 0);
+    const gainDb = (found.file ? 0 : (def.gainDb ?? 0)) + vary.gainDb + finite(o?.volumeDb, 0) + spread.gainDb + verdict.burstDb;
 
     const src = ctx.createBufferSource();
     src.buffer = clip.buffer;
     src.playbackRate.value = rate;
     const gain = ctx.createGain();
-    gain.gain.value = dbToGain(gainDb);
+    gain.gain.value = dbToGain(gainDb) * (panned ? panned.gain : 1);
     src.connect(gain);
     let last: AudioNode = gain;
-    const pan = finite(o?.pan, 0);
-    if (pan !== 0 && typeof ctx.createStereoPanner === 'function') {
+    if (panned) {
       const p = ctx.createStereoPanner();
-      p.pan.value = Math.max(-1, Math.min(1, pan));
+      p.pan.value = panned.pan;
       gain.connect(p);
       last = p;
     }
-    last.connect(mixer.input(def.bus));
+    // the battle's effects pass the battle trim (N12); the capsule show and the UI keep their own levels
+    last.connect(def.bus === 'sfx' && def.group !== 'capsule' ? mixer.battleInput() : mixer.input(def.bus));
     const handle: VoiceHandle = { src, gain };
     src.onended = () => {
       this.voices.ended(handle);
       last.disconnect();
       gain.disconnect();
     };
-    startClip(src, now, clip);
-    this.voices.started({ id, priority, start: now, end: now + clip.duration / rate, handle });
+    startClip(src, now + delay, clip);
+    this.voices.started({ id, priority, start: now + delay, end: now + delay + clip.duration / rate, handle }, verdict.stack, burst, now);
     this.stats.started++;
+    if (verdict.stack > 0) this.stats.stacked++;
     this.stats.voices = this.voices.count(now);
+  }
+
+  // ------------------------------------------------------------------------------------------------
+  // The battle ambience (A7)
+
+  /**
+   * Sets the battle ambience's level (0..1, from the number of engaged units; the battle view calls this
+   * about every 250 ms, and with 0 when the battle ends or pauses). Duck-typed: not part of the contract.
+   * The loop starts on the first level above 0 once the battle sheet is decoded, glides to each new level
+   * and stops a few seconds after the level went to 0. Before unlock it only remembers the level.
+   */
+  setBattleAmbience(level: number): void {
+    const v = Math.min(1, Math.max(0, finite(level, 0)));
+    this.ambienceLevel = v;
+    const ctx = this.ctx;
+    const mixer = this.mixer;
+    if (!ctx || !mixer || !isRunning(ctx)) return;
+    const now = ctx.currentTime;
+    if (v <= 0) {
+      const a = this.ambience;
+      if (a && a.silentSince === null) {
+        a.silentSince = now;
+        holdAndGlide(a.gain.gain, 0, now);
+      }
+      return;
+    }
+    if (!this.ambience) {
+      const loop = this.ambienceLoop();
+      if (!loop) return;
+      const src = ctx.createBufferSource();
+      src.buffer = loop.buffer;
+      src.loop = true;
+      src.loopStart = loop.start;
+      src.loopEnd = loop.end;
+      const gain = ctx.createGain();
+      gain.gain.value = 0;
+      src.connect(gain);
+      gain.connect(mixer.battleInput());
+      src.start(now, loop.start);
+      this.ambience = { src, gain, silentSince: null };
+    }
+    const a = this.ambience;
+    a.silentSince = null;
+    holdAndGlide(a.gain.gain, dbToGain(AMBIENCE_TRIM_DB) * v ** AMBIENCE_CURVE, now);
+  }
+
+  /** The level last asked for (dev pages and tests). */
+  get battleAmbience(): number {
+    return this.ambienceLevel;
+  }
+
+  /** True while the ambience loop is playing (or fading out). */
+  get ambiencePlaying(): boolean {
+    return this.ambience !== null;
+  }
+
+  /**
+   * The loop to play: the battle sheet's seamless window once the sheet is decoded (asking for it
+   * otherwise), or, without files, the ZzFX fallback's first variant whole.
+   */
+  private ambienceLoop(): { buffer: AudioBuffer; start: number; end: number } | null {
+    const files = this.files;
+    if (files && !files.failed && files.has(AMBIENCE_ID)) {
+      const clip = files.clips(AMBIENCE_ID)?.[0];
+      if (!clip) {
+        files.request(AMBIENCE_ID);
+        return null;
+      }
+      const win = files.files.entries[AMBIENCE_ID]?.loop;
+      const start = clip.offset + (win ? win[0] : 0);
+      const end = Math.min(clip.offset + clip.duration, win ? start + win[1] : clip.offset + clip.duration);
+      return end - start > 0.5 ? { buffer: clip.buffer, start, end } : null;
+    }
+    const buffer = this.buffersFor(AMBIENCE_ID)?.[0];
+    return buffer ? { buffer, start: 0, end: buffer.duration } : null;
+  }
+
+  /** Stops the ambience loop once it has been silent for `AMBIENCE_STOP_S` (from `tick`). */
+  private stopSilentAmbience(): void {
+    const a = this.ambience;
+    const ctx = this.ctx;
+    if (!a || a.silentSince === null || !ctx || ctx.currentTime - a.silentSince < AMBIENCE_STOP_S) return;
+    this.ambience = null;
+    try {
+      a.src.stop();
+    } catch {
+      // already stopped
+    }
+    a.src.disconnect();
+    a.gain.disconnect();
   }
 
   /**
@@ -621,6 +777,14 @@ export class WebAudioService implements AudioService {
   dispose(): void {
     if (this.timer !== null) clearInterval(this.timer);
     this.timer = null;
+    if (this.ambience) {
+      try {
+        this.ambience.src.stop();
+      } catch {
+        // already stopped
+      }
+      this.ambience = null;
+    }
     this.stopKeepAlive?.();
     this.engine?.dispose();
     this.mixer?.dispose();
@@ -638,6 +802,12 @@ function defaultFetch(src: string): Promise<ArrayBuffer> {
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     return r.arrayBuffer();
   });
+}
+
+/** Glides a gain toward `target` from `now` with the ambience's time constant (no zipper, no click). */
+function holdAndGlide(p: AudioParam, target: number, now: number): void {
+  holdParam(p, now);
+  p.setTargetAtTime(target, now, AMBIENCE_TAU_S);
 }
 
 /** Starts a source on a clip: the whole buffer, or a slice of a sprite sheet. */

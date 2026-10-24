@@ -50,6 +50,11 @@ export class ParticlePool {
     private readonly layer: Container,
     public cap: number,
     private readonly rng: CosmeticRng,
+    /**
+     * Effects that lie on the ground (queue item 38: a fallen helmet, a glow under an impact) draw in this layer,
+     * under the units walking past them; they share the one cap.
+     */
+    private readonly ground: { layer: Container; ids: ReadonlySet<EffectId> } | null = null,
   ) {}
 
   get liveCount(): number {
@@ -122,7 +127,7 @@ export class ParticlePool {
 
   private add(view: EffectView, effectId: EffectId, priority: number): number {
     const seq = this.seq++;
-    this.layer.addChild(view.root);
+    (this.ground?.ids.has(effectId) ? this.ground.layer : this.layer).addChild(view.root);
     this.live.push({ view, effectId, priority, seq });
     this.liveSeq.set(view, seq);
     return seq;

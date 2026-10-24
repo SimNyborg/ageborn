@@ -26,6 +26,8 @@ Changes since 1.3: 2026-10-17, owner request "online/live matches: no pause, no 
 
 Changes since 1.3: 2026-10-18, owner request "the troops on the front page and the flags must move naturally, like in the game" (2026-10-16, queue item 37; built, presentation only): **Home's island is live**: its frontline troops play their real battle sprite sheets with the battle's hit feel (idle, the odd cheer, now and then a duel or a volley; silent), and its pole flags fly on the lane's cloth, on a layer over the SVG island that shares the menus' one WebGL context, loads after Home is idle, takes over from a still island drawn at the same spots and sizes, pauses when hidden or covered and is released at a match start; Reduce motion keeps the still island (ui-plan MR-112). **DOM flags** (VS, Profile, Customize) use one cloth wave matched to the lane's, and small SVG pennants (War Path, Home's landmarks) ripple on the same waves. Reasons and numbers in `docs/decisions.md` ("Owner request 2026-10-16: troops and flags move naturally outside battle").
 
+Changes since 1.3: 2026-10-24, owner request "more dramatic, believable combat" (queue item 38 Phase A; built, mostly presentation): **melee contact** (engaged pairs stand apart with the weapon reaching into the victim, from the approach on; big bodies keep their room; A11), **every hit shows and weighs** (hit tiers, `react()` on the victim, a hit-stop on every melee blow that never delays a swing, a kick channel apart from the trauma shake; A11, A12), **deaths with weight** (the body falls along the killing blow, lands, lies 2 s and fades; seeded bits stay 5 s; no blood; A11, A12), **the clash** (the first blows of two lines meeting: a crash, a dust curtain and ground rings, a punch and, on wide screens, a lean-in; A12), **a Legendary's fall in slow motion** offline only, and **no global freeze or slow motion in a live match** (A12), **the sound mix** (the impact is the loudest beat, new combat sounds, stacks instead of dropped duplicates, panning and off-view fading built; A13, A17.7), new effect ids (A14.1), and two **combat levers in the sim**: the de-phased first swing and the retargeted melee whiff (A2.7 Attack cycle, `SIM_VERSION` 10.0.0), with the Clockwork Tinker retuned to a soldier every 7 s (A5.1). A11's header now names the cartoon style that ships. Reasons and numbers in `docs/decisions.md` ("Queue item 38 Phase A: more dramatic, believable combat").
+
 The document has four parts plus an appendix:
 
 - **Part A:** game design. It ends with A15 (engagement and long-term progression), A16 (strategic depth, variety and long-term play, with the ranked wishlist after v1 in A16.24), A17 (a longer lane and eight ages) and A18 (harder, longer, deeper). Where A18 and an older section differ, A18 wins; the older text is updated and points to it. A rule marked "A18" takes effect in the build with its A18.13 phase; until then the build follows the older rule, which is kept beside it.
@@ -357,8 +359,9 @@ Edge distance between two entities = |xA − xB| − (wA + wB)/2, minimum 0. All
    - `impactTick = tick + windup`, where windup = round(interval × windupPct).
    - Melee windupPct 40%, ranged 50%, turrets 0%.
    - `nextAttack = tick + interval`, where interval = round(baseTicks × 10,000 / (10,000 + attackSpeedBp)), fixed at attack start.
+   - **De-phase (queue item 38 A9a, `SIM_VERSION` 9.0.0).** The first swing of a fresh engagement (attack 0 had no target in range and no windup the tick before) waits 0 or 3 extra ticks (150 ms, `battle.dephaseTicks`) on its windup and its interval, by an integer hash of the unit id and the tick; when the target's pending swing on the unit would land fewer than 3 ticks from it, the unit takes the wait that keeps the two impacts 3 ticks apart. Later swings keep the unit's rate. So equal-range, equal-interval pairs no longer land on one tick (mirror exchanges and double KOs); the view scales the clip to the longer windup.
 2. At impactTick, if the target is still valid, melee damage is scheduled as an impact, or a ranged or turret attack spawns a projectile.
-3. Otherwise the attack whiffs and the cooldown is still spent.
+3. Otherwise the attack whiffs and the cooldown is still spent. **Retarget (queue item 38 A9b, `SIM_VERSION` 10.0.0):** a melee swing whose target died before its impact first picks afresh among the targets in range and lands on its own impact tick (`battle.retargetWhiffs`), so its `hit` can name another target than its `attackStarted`; a target alive but out of reach still whiffs.
 
 Only the first attack (index 0) stops movement. Secondary attacks (riders, the Behemoth MG) fire whenever they have a target.
 
@@ -1051,7 +1054,7 @@ Powers (A5.7): Rocket Volley (Field lane volley, War Path L3 / Road 3,300; 80 on
 | trench_mortar | Trench Mortar | R | Ranged (Long range, H6) | 75 | 266 | 96 splash r35 / 3.4 s (118 until 2026-10-08; 2.6 s until 2026-10-07) | 440 (min 90; 370 until 2026-10-07) | 60 | S | G | Arc 300 lu/s (`proj.mortar_shell`); half damage to bases (48; 60 until 2026-10-08) |
 | steam_driller | Steam Driller | R | Anti-heavy | 100 | 490 | 50 / 1.2 s | 40 | 70 | M | G | Melee Anti-heavy mods; priority armored; Brace |
 | bandmaster | Bandmaster | R | Support | 110 | 390 | 36 / 1.2 s | 150 | 65 | S | G+A | Aura: allies within 160 lu deal 20% more; followSupport |
-| clockwork_tinker | Clockwork Tinker | R | Support | 110 | 275 | 17 / 1.2 s | 40 | 65 | S | G | Summoner (M3): a Clockwork Soldier (168 HP, 16 / 1.0 s) every 8 s, at most 3; followSupport |
+| clockwork_tinker | Clockwork Tinker | R | Support | 110 | 275 | 17 / 1.2 s | 40 | 65 | S | G | Summoner (M3): a Clockwork Soldier (168 HP, 16 / 1.0 s) every 7 s (8 s until queue item 38's retune, 2026-10-23), at most 3; followSupport |
 | armoured_car | Armoured Car | E | Siege | 200 | 1,400 | 18 / 0.3 s | 150 | 55 | L | G+A | Armored mech; turret machine gun |
 | alpine_climber | Alpine Climber | E | Skirmisher | 200 | 980 | 80 / 0.9 s | 16 | 85 | M | G | Pounce: swings to the back line within 180 lu (12 s cooldown), first strike ×2 |
 | spark_scientist | Spark Scientist | E | Support | 200 | 1,200 | 55 / 1.2 s, chain 2 (hop 70) | 170 | 60 | S | G+A | Every 12 s stuns enemies within 120 lu for 1.0 s (Legendaries 0.5 s; M5, not the clock freeze) |
@@ -2096,14 +2099,14 @@ Rules:
 
 ## A11. Art direction and animation (code-drawn now, swappable later)
 
-**Direction: ultra-realistic (owner decision 2026-09-28; A18.9.5).** The target look has realistic proportions and anatomy, physically based materials, realistic lighting and weighty, natural motion. It replaces the chunky cartoon cutout style below for every unit, turret, base and backdrop. The restyle runs age by age, Stone first, and new ages wait until Stone ships in the new style with a measured hours figure (A18.8.3). The readability rules in this section still apply at in-game size: a clear silhouette, team colour on large parts, an outline or rim light, the colour rule, the scale bands and the clip contract. No blood stays. Everything goes through the ArtProvider and the manifest, so the restyle never changes balance.
+**Direction: the cartoon style ships (owner decision 2026-09-30; `art/blender/README.md`).** The ultra-realistic restyle decided on 2026-09-28 (A18.9.5) was tried and rejected by the owner; it is parked, and new art aims at the chunky cartoon style below, raised with the cartoon kit v2 (`art/blender/README.md`). The readability rules in this section apply at in-game size: a clear silhouette, team colour on large parts, an outline or rim light, the colour rule, the scale bands and the clip contract. No blood. Everything goes through the ArtProvider and the manifest, so art never changes balance. (Corrected 2026-10-24 with queue item 38; this paragraph said "ultra-realistic" until then. Older mentions of the realistic restyle in A13, A18.8.3 and A18.9.5 describe the parked plan.)
 
-**Style of the built art (until the restyle): chunky cartoon cutout.**
+**Style of the built art: chunky cartoon cutout.**
 
 - Flat fills, two-tone cel shading (shadow = fill darkened 18%) and one highlight shape per part.
 - Outlines 3 px at 720p (about 3.7 lu) in the fill colour darkened 45% (not black).
 - Rounded shapes, heads about a third of body height, short legs, oversized weapons that read the role (bow = ranged, big shield = heavy, polearm = reach).
-- No blood: units pop into dust, KO stars and coins.
+- No blood: a fallen unit lies a moment and fades, with dust, KO stars, coins and the bits it drops (helmet, weapon, shield, cloth; A12).
 
 **Scale, authored in lu with one world scale:** infantry ~68 lu tall, heavies 100-120 lu, Legendaries 170-220 lu. Since A17 the world scale follows the device class (A17.7): infantry is about 62 px on an 844 × 390 phone and on a 1280 × 720 laptop, and 93 px at 1920 × 1080. Visual width stays within 1.4× the collision width.
 
@@ -2170,10 +2173,10 @@ Bronze, Industrial and Cosmic palettes are in A17.12 (on units the Cosmic cloth 
 | spawn | Scale 0 → 1.15 → 1 over 180 ms (ease-out-back) plus dust puff |
 | idle | 1.2 s breathing bob of 2 px, blink, weapon twirl every 6-10 s |
 | walk | Legs ±25°, 3 px bob, 0.5 s cycle at 80 lu/s scaled by speed; vehicles bounce and treads scroll |
-| attack | Wind-up with squash 0.9/1.1 (60% of windup), strike at `impactAt`, short recovery |
-| hit | 80 ms white flash, 4 px recoil along the hit direction |
+| attack | Wind-up with squash 0.9/1.1 (60% of windup), strike at `impactAt`, short recovery. As built on the atlas tier (queue item 38): an attack cuts straight into its first key (no cross-fade), and the recovery after each impact varies 85-115% per unit and swing by an integer hash of the unit id and its attack count; the impact frame never moves |
+| hit | White flash by tier (60-90 ms, A12). Atlas tier (queue item 38): every hit shows on the victim through `react(tier, dir)`, an additive push, a tilt about the feet with the head snapping back and a squash, by tier and body mass (from 3 lu and 4.5° for a light hit on a light body to 13 lu and 15° for a kill), on the animation clock so the hit-stop holds the contact first; an idle victim plays the hit clip, a walking or recovering one a 72 ms hit-pose insert (at most one per 240 ms), one in a wind-up or impact hold only recoils. Reduce motion: 0.6×. (The procedural tier keeps its 4 px recoil) |
 | stun | Dizzy stars (clock ripple when `frozen`) |
-| die | Fling and spin along the knockback direction, dust poof, coins; hat, helmet or weapon drops and stays 6 s (pool of 40) |
+| die | Atlas tier (queue item 38, built): the body falls along the killing blow (`dieWith`): a light or medium body under a heavy blow is thrown up along the fall (its die clip at 1.15× speed), others crumple (0.92×), heavy bodies go down slower (0.85×) with no bounce; it slides 10, 16 or 24 lu by size over 380 ms and lands on the die clip's first step at or after 280 ms (landing dust and `body_fall_s/m/l`), lies 2 s, then sinks and fades over 0.6 s as one image (its layers are cached into one texture, so they never show through each other). KO stars; seeded bits (helmet, weapon, shield, cloth in the team colour dulled 30%; machines and beasts their own kits; 3, 4 or 5 by size) stay 5 s, at most 40 on the field. No blood. The procedural tier keeps its fling, poof and prop drop (6 s, pool of 40) |
 | victory | Cheer hop, raised weapon |
 | ability | Card-specific |
 
@@ -2194,6 +2197,16 @@ Bronze, Industrial and Cosmic palettes are in A17.12 (on units the Cosmic cloth 
 - EMP ring: EMP Saboteur
 - Time Stop pose with a clock-face shockwave: Chrono Titan
 
+**Melee contact (queue item 38, built 2026-10-23; view only).** The sim decides who hits whom and when; the view only places the drawn figures so that a blow reads as a blow (`render/contact.ts`, the atlas view's `reach()` and `setOffsetX`):
+
+- **Stand-off.** While a melee unit attacks a unit, its drawn x is offset along its facing so that its weapon tip at the impact frame (from the sheet's per-frame tip anchors; the frame's front extent as the fallback) lands 10-80% of the way into the victim's body (ideal 35%) while the torsos stay apart; a mirror exchange also leaves room for the heads, and a large or huge beast's, mount's or cart's surface reaches halfway from its torso to its frame's front (a head, tusks, a prow; a large biped's frame front is its weapon, so its torso stays its surface). A duel splits the correction. Each unit's share is clamped (about −12 to +22 lu for an infantry-sized body, up to 2.5× that for big bodies, so two big beasts can stand apart).
+- **Approach and release.** A melee ground unit walking into contact eases in the stand-off it will need over its last steps (for the attack variant its next swing will play), and inside the contact distance takes the duel's own stand-off, so it never walks into its foe and slides back. After the fight the offset is held while the unit stands and released at half its walking speed while it walks on.
+- **Lunge compensation.** During the impact window part of the clip's authored lunge is taken back, so two blows cross weapons instead of merging bodies.
+- **Rows.** A duel shares one depth row, different duels take different rows, front ranks interleave, engaged units draw in front of idle ones, and a lying body draws behind the living. Same-side neighbours keep at least 0.55 of a body apart (capped at 20 lu, more for big bodies) over five back rows.
+- **Gait.** The walk cycle follows the drawn velocity, the stand-off included, so the feet match the ground.
+- Everything that anchors on a unit (sparks, numbers, bars, projectile ends) uses the drawn x; the minimap, camera follow and power zones keep the sim x.
+- **Lift arcs.** A knockback is a hop (30% of its distance, 6-14 lu) with a backward tilt, and it ends a wind-up still short of its impact, as the sim cancels it; a pounce or leap takes off stretched and lands nose first with landing dust. Reduce motion: half lift, no tumble.
+
 **Turret clips:** build drop-in, idle scan, aim rotation toward the target, fire recoil (120 ms squash plus a 1-frame muzzle flash), modernise (old turret sinks, new one drops in), sell poof, outdated arrow glow.
 
 **Base clips:** ambient idle (torches, flags, lights), hit shake with debris, crumble stages, evolve morph (1.8 s: squash, light pillar, rebuild), Last Stand horn and volley, destroyed collapse (below).
@@ -2213,20 +2226,29 @@ All values live in `src/render/feel.config.json` and can be tuned live from the 
 **Hitstop:**
 
 - Local hitstop is view-only (the clips of attacker and victim pause; the sim continues).
-- Global freezes pause the session's sim accumulator in offline modes; this never changes the outcome. Online later, they become view-only.
+- **Hit tiers (queue item 38, built).** A hit's tier is its share of the victim's max HP: light under 8%, medium 8-15%, heavy 15% or more, and kill. The tier picks the flash, the victim's `react()` (A11), the spark size, the hit-stop, the kick and the trauma (table below).
+- **Every melee blow holds** attacker and victim a moment by its tier (attacker / victim: light 35 / 50 ms, medium 40 / 55, heavy 45 / 70, kill 50 / 90; a heavy hit's or a kill's victim hold grows to 110 ms at a 50% share); a ranged hit holds only the victim of a heavy hit (60 ms) or a kill (80 ms). **A hold never delays a swing:** a unit whose own next swing is already under way (its pending impact lies after the current tick) is not frozen, by a blow or by the clash, so every impact frame stays on its sim tick (checklist 3; review A, B1).
+- Global freezes pause the session's sim accumulator in offline modes and replays; this never changes the outcome. **A live match** (an online opponent, real or simulated: Ranked's found player, `SideConfig.online`) runs no global freeze and no slow motion, because nothing may stop its shared clock (A2.12, item 34); the evolve, power, Legendary and base-break holds are dropped there (decisions.md, queue item 38).
 - Only these events freeze globally: Legendary death, power impact, your own evolve, Last Stand and base destroyed.
 - Global freezes total at most 150 ms per rolling 3 s (base destroyed is exempt).
+- **Legendary slow motion (offline only).** A Legendary's death slows the match to 0.4× for 750 ms, easing back over 400 ms, where the host scales its clock by the view's `simTimeScale` (offline sessions and replays; never live, never with Reduce motion).
 
 **Screen shake (trauma model):**
 
 - shake = trauma²; linear decay 1.2/s; Perlin noise at 18 Hz with separate seeds for x, y and rotation.
-- Max offset 12 px, max rotation 2.5°, plus a small directional kick along the attack vector.
+- Max offset 12 px, max rotation 2.5°.
+- **Kicks are their own channel** (queue item 38): a rule's `kickPx` pushes the screen along the blow and decays over 140 ms, scaled by the Shake slider (none with Reduce motion), because the squared trauma curve hides anything under about 0.3. At most one kick per 280 ms unless a stronger one arrives, and a kick in the opposite direction within 250 ms of the last is dropped, so a brawl never flips the screen back and forth. A small unit's kill or death kicks only when it is the player's own kill; Heavy, Epic and Legendary deaths always kick.
 
 | Event | Hitstop | Trauma | Flash | Particles | Sound |
 |---|---|---|---|---|---|
-| Light hit | none | 0 | Victim 60 ms | 3 sparks by damage type (effective spark or resisted puff when modified) | `hit_*` (4 variants), `hit_effective` |
-| Heavy hit (≥ 15% victim max HP) | Local: victim 70 ms, attacker 50 ms, 1-2 px jitter | +0.05 | 80 ms | 6 sparks and dust | `hit_heavy` (3 variants) |
-| Unit death | Local 50 ms (Heavy and Epic 70 ms); Legendary death: global 80 ms | +0.1 (Heavy +0.15) | none | 10 dust, KO stars, 1-4 coins flying to the gold counter (player kills only) | `die_bio` / `die_mech` |
+| Light hit (< 8% of the victim's max HP; queue item 38 tiers) | Melee: attacker 35 ms, victim 50 ms (local); ranged none | 0 | Victim 60 ms | One contact spark by damage type and tier where the blow lands (`fx.contact_spark`; an effective spark or a resisted puff when modified); an arrow, bolt, javelin, quill or needle sticks in the body for 1.2-1.9 s (`fx.stuck`, also a turret's) | `hit_*` (4 variants), `hit_effective`; `mat_armour` or `mat_wood` under a hit on a metal or wooden victim |
+| Medium hit (8-15%) | Melee: attacker 40 ms, victim 55 ms | 0 | 70 ms | as a light hit, larger spark | as a light hit |
+| Heavy hit (≥ 15%) | Melee: attacker 45 ms, victim 70 ms rising to 110 ms at a 50% share, 2 px jitter; ranged: victim 60 ms | +0.12, kick 2.5 px | 80 ms | Spark, 2 dust at the feet (not under a shot: that dust reads as the feet skidding under a blow), a ground glow | `hit_heavy` (3 variants) |
+| Killing blow | Melee: attacker 50 ms, victim 90 ms rising to 110 ms; ranged: victim 80 ms | kick 3.5 px (a Heavy, Epic or Legendary victim, or the player's own kill) | 90 ms | Spark, ground glow | the hit, `kill_accent` on top |
+| Unit death | Local 50 ms (Heavy and Epic 70 ms); Legendary death: global 80 ms and 0.4× slow motion for 750 ms (offline only, above) | +0.1, kick 3 px for the player's own kill only (Heavy and Epic +0.38, Legendary +0.55, kick 4 px) | none | The body falls along the killing blow and lands (A11 die), lies 2 s, then sinks and fades over 0.6 s; 2 dust, KO stars, seeded bits (3-5 by size, 5 s, at most 40), 1-4 coins flying to the gold counter (player kills only). No blood | `die_bio` / `die_mech` (huge bodies `die_bio_l` / `die_mech_l`) |
+| Body lands (a death's ground beat) | none | Medium bodies +0.12 and kick 2 px, large +0.3 and kick 3.5 px | none | `fx.land_dust` | `body_fall_s` / `body_fall_m` / `body_fall_l` |
+| Knockback or leap lands | none | 0 | none | `fx.land_dust` | `leap_land` (a knockback's 6 dB softer) |
+| Clash (queue item 38: the first melee blows after the fronts were 3 s apart, 2+ units a side within 140 lu inside 1.5 s; at most once per 8 s) | Local 70 ms on the engaged units near it (never one whose swing is under way) | For a clash in view: +0.4, kick 3 px, a 3% camera punch over 300 ms; on screens showing 1,050 lu or more with 3+ a side, a 1.08× lean-in toward the clash (500 ms in, 1.6 s hold, 900 ms out; never while the player works the camera, never with Reduce motion) | none | `fx.clash_ring` (rings on the ground, in the ground layer under the units) and `fx.clash_dust` (a dust curtain along the line, 100-220 lu wide by the units near) | `clash_crash`; the music's intensity rises by 0.35 |
 | Mech death | as above; 1 in 3 explodes (cosmetic RNG) | +0.12 | 60 ms | explosion ring | `explosion_s` |
 | Turret shot | none | 0 | Muzzle, 1 frame | 3 smoke | per turret (A14.2) |
 | Base hit | none | +0.2 (max once per 0.5 s) | Base 60 ms | 4 chunks | `base_hit` (3 variants) |
@@ -2246,10 +2268,12 @@ All values live in `src/render/feel.config.json` and can be tuned live from the 
 **Other feel rules:**
 
 - **Damage numbers.** Default "Important": powers, base damage chunks and your own turret kills, spread 20-40 px apart. "All" shows every hit. Gold popups always show.
-- **Reduce motion preset:** shake ×0, hitstop ×0.5, softer flashes, no slow motion. A destroyed base has no hit-stop, slow motion, shake, flash, camera push or punch: it subsides calmly in dust, with its sounds.
+- **Reduce motion preset:** shake ×0 (kicks included), hitstop ×0.5, softer flashes, no slow motion, no camera punch or lean-in; a hit's `react()` at 0.6× (never hidden), lift arcs at half height without a tumble. A destroyed base has no hit-stop, slow motion, shake, flash, camera push or punch: it subsides calmly in dust, with its sounds. **Graphics Lite** draws about half the combat pieces (sparks, dust, bits; one clash ring instead of two) and keeps every rule above.
+- **Seeded presentation.** Every random choice in the combat presentation (bits, spark jitter, the recovery variation) comes from match data (unit id, tick, attack count), never `Math.random`, so a replay looks the same.
 - **Particles:** pooled; caps of 600 on mobile and 1,500 on desktop; the lowest-priority emitters drop first.
 - **VFX list** (IDs in A14.1):
-  - hit sparks by damage type (blunt dust, slash arc, pierce spark, bullet spark, laser scorch, blast)
+  - hit sparks by damage type (blunt dust, slash arc, pierce spark, bullet spark, laser scorch, blast); since queue item 38 a plain blow shows the contact spark (8 kinds × 4 tiers) where it lands
+  - combat details (queue item 38): stuck arrows, bolts, javelins, quills and needles, landing dust, the clash's ground rings and dust curtain, death bits, a ground glow under heavy hits and kills
   - muzzle flashes
   - projectile trails (bright core, team-tinted tail)
   - splash rings
@@ -2263,14 +2287,15 @@ All values live in `src/render/feel.config.json` and can be tuned live from the 
 
 1. Spawn pop and dust.
 2. Walk cycle matches speed (no foot sliding beyond 3 px).
-3. Attack impact frame lands on the sim impact tick (±1 frame).
-4. Hit flash on the victim.
-5. Death fling and poof.
+3. Attack impact frame lands on the sim impact tick (±1 frame); no hit-stop, clash hold or other freeze may push it later (checked by filming battles frame by frame and comparing every melee hit's frame with its tick).
+4. Hit flash and a visible reaction on the victim on every hit (atlas tier: `react()` by tier).
+5. Death falls along the killing blow, lands, lies and fades (atlas tier; the procedural tier: fling and poof). No blood.
 6. Correct SFX with variation.
 7. Readable at 32 px height.
 8. Team colour visible on both teams and both colourblind presets; the colour rule passes.
 9. Skin keeps its silhouette.
 10. No effect lasts longer than its gameplay meaning.
+11. Melee contact (A11): engaged pairs stand apart with the weapon reaching into the victim at the impact frame, walk into contact without overlapping and sliding back, and walk on after a fight without skating.
 
 ## A13. Audio: SFX and music
 
@@ -2285,6 +2310,7 @@ All SFX are ZzFX definitions (3-5 variants each) pre-rendered to AudioBuffers at
 | Turrets and bases | `turret_build`, `turret_sell`, `turret_upgrade`, `slot_buy`, `base_hit`, `base_crumble`, `base_destroyed` (the shared crash at the break: a deep boom, a crack and a crash) |
 | Base collapse (2026-10-08, built; in the match sheet, rendered by tools/audio/sfx/sounds_collapse.py) | `base_doom_rumble` (the build-up's swelling rumble with stress creaks), `base_break_stone`, `base_break_iron`, `base_break_concrete`, `base_break_energy` (the material's crash layered on `base_destroyed`), `base_debris_stone`, `base_debris_iron`, `base_debris_concrete`, `base_debris_energy` (the rattle and tinkle of the falling pieces, 200 ms later), `base_settle_thud` (the biggest piece lands). The age picks the material: Stone, Bronze, Medieval stone; Gunpowder, Industrial iron; Modern concrete; Future, Cosmic energy |
 | Victory moment (2026-10-08, built; the Result's cartoon, A9 #7; in the match sheet, rendered by tools/audio/sfx/sounds_victory.py, one recorded variant each to stay inside the sfx size budget; the ZzFX fallbacks have three) | `moment_swish` (a swing or a throw), `moment_bonk` (the giant mallet: a hollow wooden bonk and a spring boing), `moment_dizzy` (birdies and stars round a dizzy head), `moment_splat` (a cream pie), `moment_tar` (a thick glop of tar), `moment_poof` (a pillow bursting, a dust cloud clearing), `moment_cluck` (buk, buk, BAWK), `moment_clank` (the cannon landing), `moment_fuse` (a crackling fuse), `moment_boom` (KA-BOOM), `moment_whistle` (a slide whistle over the horizon), `moment_twinkle` (the far-off star), `moment_scuffle` (a flurry of thumps and pows over a dust rumble), `moment_tada` (the celebration, in C), `moment_wahwah` (a loss, gently: a soft sad trombone), `moment_wind` (the stand-off's lonely wind), `moment_shrug` (a draw: a quizzical boop) |
+| Combat pass (queue item 38 Phase A, 2026-10-18, built; in the battle sheet unless marked match, rendered by tools/audio/sfx/sounds_combat.py) | `kill_accent` (the killing blow, on top of its hit), `mat_armour`, `mat_wood` (under a hit on a metal or wooden victim), `body_fall_s`, `body_fall_m`, `body_fall_l` (match) (a body landing, by size), `die_bio_l`, `die_mech_l` (match) (huge bodies' deaths), `clash_crash` (two lines meet), `leap_land` (a pounce, leap or knockback touching down), `ambience_battle` (a seamless 10.5 s loop under the fight; the battle view sets its level from the number of engaged units, `setBattleAmbience`) |
 | Economy | `coin_gain` (pitch climbs on multi-kills; throttled to 1 per 40 ms), `xp_tick`, `treasury_up` |
 | Evolve | `evolve_ready` (single soft chime), `evolve_riser`, `evolve_fanfare_stone/bronze/medieval/gunpowder/industrial/modern/future/cosmic`, `evolve_enemy` |
 | Powers | `power_ready`, `power_telegraph`, `pw_stampede`, `pw_meteor`, `pw_arrows`, `pw_decree`, `pw_smoke`, `pw_broadside`, `pw_paratroop`, `pw_bomber`, `pw_lance`, `pw_nanite`, `pw_wave`, `pw_aegis`, `pw_iron_horse`, `pw_zeppelin`, `pw_starfall`, `pw_warp`; the power rework (A5.7; rendered by the audio tools): `pw_rockslide`, `pw_tar`, `pw_huntcry`, `pw_spear`, `pw_bolts`, `pw_gaze`, `pw_chariots`, `pw_apollo`, `pw_caltrops`, `pw_oil`, `pw_knights`, `pw_undermine`, `pw_volley`, `pw_nets`, `pw_horse_art`, `pw_sharpshooter`, `pw_gunline`, `pw_wire`, `pw_railgun`, `pw_hospital`, `pw_strafe`, `pw_flak`, `pw_tanks`, `pw_sniper`, `pw_pdg`, `pw_stasis`, `pw_drones`, `pw_emp`, `pw_singularity`, `pw_flare`, `pw_comet`, `pw_ion`, and the power cues `power_cast` (a cast committed, MR-70b), `power_lock` (a strike's telegraph) and `turret_jammed` (a mount silenced by Suppress) |
@@ -2303,16 +2329,18 @@ All SFX are ZzFX definitions (3-5 variants each) pre-rendered to AudioBuffers at
 **Mixer:**
 
 - Buses: master, music, sfx, ui, voice (the narrator, queue item 39: its own volume under the master, trim 0.5; never ducked itself).
-- At most 4 voices per sound ID and a 40 ms minimum retrigger gap.
+- At most 4 voices per sound ID and a 40 ms minimum retrigger gap, except that two or three starts of one world sound in the same frame play as a stack (11-27 ms apart, spread pitch, 2.5 and 4 dB softer) instead of collapsing into one; world sounds starting within 60 ms soften 1 dB each past the 5th and are dropped past the 11th (priority 2 and up excepted) (queue item 38, built).
+- **The impact is the loudest beat of an attack** (queue item 38): the hits sit about 9-10 LU over the swing whoosh (`swing_whoosh` −5 dB; hits +3 to +5 LU with a body layer under 200 Hz and a −6 dBFS peak ceiling).
+- **Battle trim** (queue item 38, review A N12): the battle's effects (every sfx group but the capsule show, the battle ambience included) pass a fixed −1.5 dB trim before the sfx bus (`BATTLE_SFX_TRIM_DB`, `Mixer.battleInput`), because the louder hits made the master limiter work over 3 dB in 12% of a real battle (3% before; 5% with the trim); hits and swings move together, so the hits keep their lead.
 - Pitch ±8% and volume ±3 dB per play.
 - Sounds caused by the player get priority.
 - Music ducks 6 dB during powers, evolves and walkouts, and while the narrator speaks (renewed in short slices that end with the line, so a line cut short lets the music back up within about half a second).
 - **Narrator (queue item 39, built 2026-10-18).** Pre-rendered lines in the voice the owner chose ("Lewis": Kokoro, `tools/audio/voice`), one at a time; a tap, the step's end, the next prompt, a pause, the match's end, leaving the screen, Narrator off or a hidden page stops the line, and it never takes input. Live (Ranked) matches are never narrated. Three moments play once per profile with a subtitle: the first evolve, the first win, the first Legendary.
 - The AudioContext is created or resumed on the first user gesture (iOS).
 - `navigator.vibrate` fires on climbs and Legendaries (mobile, toggle, default Off; A15.6).
-- **Panning and off-view fading (A17.7, not built yet).** World sounds pan by screen position (StereoPanner, pan = clamped offset from the screen centre × 0.6) and fade outside the view: −1 dB per 50 lu beyond the view edge, down to −12 dB. UI sounds, alerts, the player's own evolve, power impacts and hits on the own base are never faded.
+- **Panning and off-view fading (A17.7; built 2026-10-23 with queue item 38).** World sounds pan by screen position (StereoPanner, pan = clamped offset from the screen centre × 0.6, through a balance law that keeps a panned sound at its centred level) and fade outside the view: −1 dB per 50 lu beyond the view edge, down to −12 dB. As built, the battle view places every sound with a world position: swings, shots, hits, deaths, landings and the clash; a power's hits pan but never fade; sounds without a world position (UI sounds, alerts, the evolve, base hits) play centred at full level, so UI sounds, alerts, the player's own evolve, power impacts and hits on the own base are never faded.
 - **Boot groups (A17.13, built).** UI, battle, Stone and Bronze render at boot; the other ages' ZzFX fallbacks render right after, and music cues stream one age ahead.
-- **Planned sounds (A18).** Built in the MVP pass (the row above): the War Council's open, pick stamp and completion stinger, a cue per stance, and the War Path's node, star and region sounds. Still planned: a quiet loop under lingering field powers, and more variants for the War Path powers (one each today). The realistic restyle (A11) may move sounds toward recorded, less chiptune timbres through the manifest; ids stay.
+- **Planned sounds (A18).** Built in the MVP pass (the row above): the War Council's open, pick stamp and completion stinger, a cue per stance, and the War Path's node, star and region sounds. Still planned: a quiet loop under lingering field powers, and more variants for the War Path powers (one each today). The parked realistic restyle (A11) would have moved sounds toward recorded, less chiptune timbres through the manifest; ids stay either way.
 
 **Music:**
 
@@ -2355,6 +2383,7 @@ All SFX are ZzFX definitions (3-5 variants each) pre-rendered to AudioBuffers at
 - **Status and ability effects:** `fx.heal_glyph`, `fx.shield_bubble`, `fx.mark_reticle`, `fx.gravity_swirl`, `fx.smoke_cloud`, `fx.emp_ring`, `fx.time_ripple`, `fx.roar_ring`, `fx.call_marker`, `fx.dizzy`, `fx.legendary_aura`, `fx.stomp_ring`, `fx.fuse_spark`, `fx.beacon_ring`, `fx.blink`.
 - **Power effects:** `fx.telegraph_zone`, `fx.aurochs`, `fx.meteor`, `fx.arrow_rain`, `fx.decree_glow`, `fx.cannonball_rain`, `fx.plane_bomber`, `fx.parachute`, `fx.orbital_beam`, `fx.nanite_swarm`, `fx.tidal_wave`, `fx.aegis_glow`, `fx.iron_horse`, `fx.zeppelin`, `fx.star_shard_rain`, `fx.warp_portal`. The power rework (A5.7): `fx.rockslide`, `fx.sticky_tar`, `fx.hunt_cry`, `fx.spear_throw`, `fx.lightning_bolt`, `fx.medusa_gaze`, `fx.chariot_rush`, `fx.golden_arrow`, `fx.caltrops`, `fx.boiling_oil`, `fx.knights_charge`, `fx.undermine`, `fx.volley_fire`, `fx.boarding_nets`, `fx.horse_artillery`, `fx.sharpshot`, `fx.gun_line`, `fx.barbed_wire`, `fx.railway_shell`, `fx.field_hospital`, `fx.strafing_run`, `fx.flak_burst`, `fx.tank_rush`, `fx.sniper_trace`, `fx.point_defense`, `fx.stasis_dome`, `fx.drone_swarm`, `fx.emp_blackout`, `fx.singularity`, `fx.solar_flare`, `fx.comet_run`, `fx.ion_cannon`; the shared `fx.field_zone`, `fx.target_lock`, `fx.turret_jammed`, `fx.power_cast_cue`; their parts `fx.tele_shadow`, `fx.tele_rumble`, `fx.tele_glint`, `fx.tele_gather`, `fx.tele_rally`, `fx.tele_sap`, `fx.tele_charge`, `fx.tele_flak` (telegraph decorations), `fx.storm_cloud`, `fx.dirt_blast`, `fx.plasma_pop`, `fx.drone_cloud` and `fx.jammed_rubble`. The reach band and target pip ids are still planned in A14.4.
 - **Match effects:** `fx.evolve_pillar`, `fx.last_stand_wave`, `fx.overdrive_frame`, `fx.siege_vignette`.
+- **Combat effects (queue item 38 Phase A, built 2026-10-23; `src/visuals/effects/combat.ts`, played through the procedural effect view's `custom` hook):** `fx.contact_spark` (8 kinds × 4 tiers, where a plain blow lands), `fx.land_dust` (a body, a leap or a knockback landing, by size), `fx.clash_dust` (the clash's dust curtain along the line), `fx.clash_ring` (the clash's rings on the ground), `fx.bits` (a fallen unit's seeded bits: helmet, weapon, shield, cloth; machines and beasts their own kits; 5 s, at most 40 on the field), `fx.stuck` (an arrow, javelin, quill or needle stuck in the victim: every arrow-like projectile of a unit or a turret, `proj.arrow`, `proj.arrow_arc`, `proj.longarrow`, `proj.bolt` and `proj.scorpion_bolt` as arrows, `proj.javelin`, `proj.harpoon`, `proj.dart` and `proj.spear_bolt` as javelins, `proj.quill`, `proj.needle`; the lists are data in the feel config, under tuning, combat, stuck), `fx.ground_glow` (under a heavy hit or a kill). `fx.bits`, `fx.ground_glow` and `fx.clash_ring` draw in the ground layer, under the units. Baked parts (procedural, no download, not manifest entries): the fx.p parts (sparks, flashes, glows, embers, rocks, splinters, stars and the four stuck shafts: arrow, javelin, quill and needle) and the fx.bit parts (helmets by age, plates, shards, cloth, fur, bone, cogs, casings and more).
 - **MVP pass effects (2026-10-01, built):** `fx.stance_charge`, `fx.stance_hold`, `fx.stance_fallback` (on a side's 8 frontmost units, 6 for the enemy), `fx.status_slow` and `fx.status_snare` (on the unit for as long as the status lasts), `fx.brace_plant`, `fx.research_done` (Defences, Economy and Command picks, at the base), `fx.levy_marker` (a team pennant over every levy).
 - **Stone wave effects (X0, 2026-10-03, built):** `fx.pebble_hail` (pebbles drop on each unit Pebble Hail screens, from the `power.fx.<id>.hit` rule) with its `fx.pebble_pop` landing, and `fx.tangle_vines` (a root bed and thorny tendrils for the field's 4 s).
 - **Medieval wave effects (X0, 2026-10-03, built):** `fx.longbow_volley` (long arrows drop on each unit the volley screens, from the `power.fx.<id>.hit` rule) with its `fx.arrow_thud` landing, `fx.great_bell` (rings of sound and notes over the stun zone), the instant attacks `fx.lindworm_breath` (green marsh fire) and `fx.grapple_hook` (rope and hook), and the projectiles `proj.longarrow`, `proj.note`, `proj.vial` and `proj.spear_bolt`.
@@ -4997,7 +5026,7 @@ The phone value 290 lu is the world height the lane band shows: 232 lu above the
 - **Parallax.** The backdrop's 3 layers scroll at 0.05 (sky), 0.25 (silhouettes) and 0.55 (mid-ground) of the camera movement, the ground at 1.0. Each layer is built wide enough for its factor (V + (2,360 − V) × factor). Scrolling now shows the depth the layers were built for.
 - **Sprite sharpness.** Unit sheets are rendered at 1.23 px per lu. At s × DPR up to 2.7 on desktop they would be upscaled about 2×. WP4 renders a sharper tier at 1.8 px per lu, loaded when s × DPR > 1.6, and streams sheets per age as each side reaches it (A17.17, size risk).
 
-**Sound (A13 addition).** World sounds pan by screen position (StereoPanner, pan = clamped offset from the screen centre × 0.6) and fade outside the view: −1 dB per 50 lu beyond the view edge, down to −12 dB. UI sounds, alerts, the player's own evolve, power impacts and hits on the own base are never faded.
+**Sound (A13 addition; built 2026-10-23 with queue item 38).** World sounds pan by screen position (StereoPanner, pan = clamped offset from the screen centre × 0.6, a balance law keeping the centred level) and fade outside the view: −1 dB per 50 lu beyond the view edge, down to −12 dB. UI sounds, alerts, the player's own evolve, power impacts and hits on the own base are never faded (a power's hits pan without fading; the rest carry no world position and play centred). The battle view places the sounds (`soundPlace` in `render/battleView.ts`); the audio service applies pan and level.
 
 ### A17.8 Eight ages: power scale, XP and formats
 
@@ -5422,7 +5451,7 @@ Camera, minimap, indicators, culling and sound panning are view rules only. They
 
 **Recommended order.** Step 1 first, with the existing 5 ages, so the owner can feel the long lane before any art money is spent on new ages.
 
-**Status (2026-09-28).** Step 1 built (`SIM_VERSION` 2.0.0; lane, march, forced march, three-wide front, siege crowd, camera, minimap, badges, culling, parallax, settings). Step 2 built (`SIM_VERSION` 2.1.0, then 2.2.0 with the falling gate; save v2). Step 3: the 21 unit, 12 turret and 3 base sheets and the backdrops, effects, sounds and music of the three ages are registered. Not done yet: sound panning and off-view fading (A17.7), the sharper 1.8 px/lu sheet tier, and step 4 (balance).
+**Status (2026-09-28).** Step 1 built (`SIM_VERSION` 2.0.0; lane, march, forced march, three-wide front, siege crowd, camera, minimap, badges, culling, parallax, settings). Step 2 built (`SIM_VERSION` 2.1.0, then 2.2.0 with the falling gate; save v2). Step 3: the 21 unit, 12 turret and 3 base sheets and the backdrops, effects, sounds and music of the three ages are registered. Not done yet: sound panning and off-view fading (A17.7; built 2026-10-23 with queue item 38), the sharper 1.8 px/lu sheet tier, and step 4 (balance).
 
 | Step | What | Work packages and main files | Golden replays | Size |
 |---|---|---|---|---|
@@ -6408,7 +6437,7 @@ Meta gets time only through an injected `Clock`.
 - **Replays:** `ReplayDoc` (B15): `{ v: 1, simVersion, contentHash, seed, format, sides, modifiers, training, commands, result, finalHash, hashes }`, about 5-20 KB.
   - Verification re-simulates and compares `finalHash`.
   - A replay whose `contentHash` differs from the current build is shown as "from an older version" and cannot be played. From A18 (owner decision D8) this is stated plainly: replays from an older build keep their result card, are labelled "Recorded on an older build" and no longer play; replays never promise to survive balance work.
-  - **Versions.** `SIM_VERSION` 2.0.0 (A17 lane), 2.1.0 (ranged first-hit bonus), 2.2.0 (the falling gate). A18 phase 2 bundles every sim-visible contract change into one bump, `SIM_VERSION` 3.0.0, with one golden re-record (A18.11). Later bumps are listed in `src/sim/replay.ts`; the latest, 8.0.0 (2026-10-08), is the ranks (A2.7): a major bump, every golden re-recorded on the fixture with `economy.formation` (14 of 17 changed their hashes; the three that field no ranked unit kept theirs).
+  - **Versions.** `SIM_VERSION` 2.0.0 (A17 lane), 2.1.0 (ranged first-hit bonus), 2.2.0 (the falling gate). A18 phase 2 bundles every sim-visible contract change into one bump, `SIM_VERSION` 3.0.0, with one golden re-record (A18.11). Later bumps are listed in `src/sim/replay.ts`; 8.0.0 (2026-10-08) is the ranks (A2.7): a major bump, every golden re-recorded on the fixture with `economy.formation` (14 of 17 changed their hashes; the three that field no ranked unit kept theirs). The latest, 9.0.0 and 10.0.0 (queue item 38, merged 2026-10-23), are the combat levers (A2.7 Attack cycle): the de-phased first swing and the retargeted melee whiff, two major bumps with every golden re-recorded each time; the Clockwork Tinker retune that came with them changed the content hash (db3a0a26 → 7261ed9b), so older replays show their result card only.
 - **Single-player resume (A18.7.9, v1.1).** Single-player matches save seed, config and command log every 10 s and on page hide; "Resume battle" re-simulates the log to the saved tick. Never in PvP.
 - **Match stats.** `sim/stats.ts` (WP2) is a pure reducer over `SimEvent`s that produces `MatchStats`, including MVP card, quest counters and power hit counts.
 - **Performance:** a full headless Full War in ≤ 500 ms on desktop Node (A17; ≤ 850 ms for A18's 21,000-tick Full War, measured only at gates); average `step()` ≤ 0.5 ms on a mid-range phone.

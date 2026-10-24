@@ -65,10 +65,28 @@ def detect_sync(x: np.ndarray) -> float:
     return float(np.argmax(head > 0.1 * peak)) / SR
 
 
+ENCODED = CACHE / "encoded"
+
+
 def encode(wav: Path, out_dir: Path, name: str, kbps: int, mono: bool, aac_kbps: int | None = None) -> tuple[str, int, str | None]:
     """Encodes to Ogg Opus (and, with `aac_kbps`, to AAC-LC .m4a). Returns the Ogg file name, its size
-    and the .m4a file name."""
+    and the .m4a file name. An input already encoded with the same settings whose files are still in
+    `out_dir` is not encoded again (the encodes are bit-exact, so this only saves time): a run that
+    changed one sheet re-encodes that sheet only."""
     out_dir.mkdir(parents=True, exist_ok=True)
+    key = hashlib.sha1(wav.read_bytes() + f"|{name}|{kbps}|{mono}|{aac_kbps}".encode()).hexdigest()
+    memo = ENCODED / f"{key}.json"
+    if memo.exists():
+        m = json.loads(memo.read_text())
+        if (out_dir / m["ogg"]).exists() and (m["m4a"] is None or (out_dir / m["m4a"]).exists()):
+            return m["ogg"], m["bytes"], m["m4a"]
+    fname, size, aac_name = _encode(wav, out_dir, name, kbps, mono, aac_kbps)
+    ENCODED.mkdir(parents=True, exist_ok=True)
+    memo.write_text(json.dumps({"ogg": fname, "bytes": size, "m4a": aac_name}))
+    return fname, size, aac_name
+
+
+def _encode(wav: Path, out_dir: Path, name: str, kbps: int, mono: bool, aac_kbps: int | None) -> tuple[str, int, str | None]:
     with tempfile.TemporaryDirectory() as tmp:
         tmp_out = Path(tmp) / "x.ogg"
         cmd = ["ffmpeg", "-v", "error", "-y", "-i", str(wav)]
@@ -120,6 +138,8 @@ def build_sfx(groups: list[str], sounds: dict) -> tuple[dict, dict, int]:
                 chunks += [x, gap]
                 pos += len(x) + len(gap)
             entries[sid] = {"sheet": g, "variants": spans}
+            if idx[sid].get("loop"):
+                entries[sid]["loop"] = idx[sid]["loop"]
         with tempfile.TemporaryDirectory() as tmp:
             wav = Path(tmp) / f"{g}.wav"
             sf.write(str(wav), np.concatenate(chunks).astype(np.float32), SR, subtype="FLOAT")
@@ -174,7 +194,8 @@ def write_manifest(sheets: dict, entries: dict, music: dict, sfx_bytes: int, mus
         " * - `SFX_SHEETS`: one Ogg Opus sprite sheet per sound group, paths relative to the site base;",
         " *   `alt` is the same sheet as AAC (.m4a) and `sync` the time (s) where the sync burst at the",
         " *   start of the sheet is detected, so a decoder's start delay can be measured and undone.",
-        " * - `SFX_FILES`: per sound id, its sheet and each variant's [offset, duration] in seconds.",
+        " * - `SFX_FILES`: per sound id, its sheet and each variant's [offset, duration] in seconds; a loop",
+        " *   (the battle ambience) also has `loop`: [start, length] of its seamless window inside the clip.",
         " * - `MUSIC_FILES`: per music cue, stinger and layer stem, the file and, for loops, the loop",
         " *   window (`loopStart`, `loopLength` in seconds; any window of that length inside the file",
         " *   loops seamlessly); `alt` is the AAC (.m4a) copy. `stinger.<name>.k<n>` are the stingers",
@@ -193,6 +214,8 @@ def write_manifest(sheets: dict, entries: dict, music: dict, sfx_bytes: int, mus
         "  sheet: string;",
         "  /** [offset, duration] in seconds per variant. */",
         "  variants: readonly (readonly [number, number])[];",
+        "  /** A loop's seamless window, [start, length] in seconds from the clip's start (the rest is margin). */",
+        "  loop?: readonly [number, number];",
         "}",
         "",
         "export interface MusicFile {",
@@ -215,7 +238,8 @@ def write_manifest(sheets: dict, entries: dict, music: dict, sfx_bytes: int, mus
     lines += ["};", "", "export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {"]
     for sid, e in entries.items():
         spans = ", ".join(f"[{a}, {b}]" for a, b in e["variants"])
-        lines.append(f"  {sid}: {{ sheet: {json.dumps(e['sheet'])}, variants: [{spans}] }},")
+        loop = f", loop: [{e['loop'][0]}, {e['loop'][1]}]" if e.get("loop") else ""
+        lines.append(f"  {sid}: {{ sheet: {json.dumps(e['sheet'])}, variants: [{spans}]{loop} }},")
     lines += ["};", "", "export const MUSIC_FILES: Readonly<Record<string, MusicFile>> = {"]
     for cue, m in music.items():
         extra = ""

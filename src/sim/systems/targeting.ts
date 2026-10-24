@@ -9,6 +9,9 @@
  * leaves range plus the 20 lu leash or becomes unhittable, and re-check every 1.0 s, switching to a
  * candidate of a better class or one at least 60 lu closer. Ranged units switch at once to an enemy
  * within 30 lu (self-defence). Turrets measure from their own gate and pick afresh for every shot.
+ *
+ * A9b (queue item 38, SIM_VERSION 10.0.0), retarget whiffs (`battle.retargetWhiffs`): a melee swing whose target
+ * died before the impact picks afresh among the targets in range (`repickForImpact`) instead of hitting the air.
  */
 import type { Side, TargetPriority } from '@/contracts';
 // Forts (A16.14.2 targeting): an attack with compiled range < 100 treats forts like units (candidates
@@ -253,6 +256,23 @@ export function updateTarget(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): voi
       st.targetId = best.id;
     }
   }
+}
+
+/**
+ * A9b, retarget whiffs: a melee swing whose target died before the impact picks afresh among the targets in range,
+ * as a unit with no target would; true when it found one. A target that is alive but out of reach or unhittable
+ * keeps the whiff.
+ */
+export function repickForImpact(ctx: Ctx, u: UnitRt, r: UnitRules, ai: number): boolean {
+  const a = r.attacks[ai];
+  const st = u.attacks[ai];
+  if (!a || !st || !a.melee || st.targetId <= 0) return false;
+  const t = findUnit(ctx, st.targetId);
+  if (t && alive(t)) return false;
+  const id = freshPick(ctx, u, r, a, ai, rangeOf(ctx, u, a));
+  if (id === NO_TARGET) return false;
+  st.targetId = id;
+  return true;
 }
 
 /** Is the (valid) target of attack `ai` within attack range right now? */

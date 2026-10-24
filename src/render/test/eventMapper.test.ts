@@ -26,6 +26,9 @@ function testContent(): CompiledContent {
     ...fakeContent.units,
     tankette: { ...base, id: 'tankette', group: 'heavy', tags: ['armored', 'mech', 'ground'], sfx: { spawn: 'spawn_heavy', die: 'die_mech' } },
     matriarch: { ...base, id: 'matriarch', group: 'legendary', rarity: 'legendary', sfx: { spawn: 'spawn_legendary', die: 'die_bio' } },
+    // queue item 38 A8: a pouncer, and one whose pounce is a blink
+    sabertooth: { ...(fakeContent.units['bonker'] as UnitDef), id: 'sabertooth', group: 'epic', size: 'medium', abilities: [{ kind: 'pounce', searchRange: 150, cooldownMs: 10000, leapMs: 500, firstBiteBp: 20000 }] },
+    warp_stalker: { ...(fakeContent.units['bonker'] as UnitDef), id: 'warp_stalker', group: 'epic', abilities: [{ kind: 'pounce', searchRange: 200, cooldownMs: 10000, leapMs: 400, firstBiteBp: 20000 }] },
   };
   return { ...fakeContent, units };
 }
@@ -39,7 +42,8 @@ function ev<E extends SimEvent['e']>(e: E, body: EvBody<E>): SimEvent {
 
 const UNITS: Record<number, UnitInfo> = {
   1: { side: 0, card: 'bonker', x: 500 },
-  2: { side: 1, card: 'pebbler', x: 700 },
+  // 400 HP: the default 20-damage hit is a light one (5%)
+  2: { side: 1, card: 'pebbler', x: 700, maxHp: 40_000 },
   3: { side: 1, card: 'tankette', x: 720 },
   4: { side: 1, card: 'matriarch', x: 760 },
   5: { side: 0, card: 'tuskback', x: 480 },
@@ -71,31 +75,92 @@ function died(o: Partial<Extract<SimEvent, { e: 'died' }>> = {}): SimEvent {
   });
 }
 
-describe('event mapper: A12 hits', () => {
-  it('light hit: victim flash 60 ms, 3 sparks by damage type, hit_<type>, no hitstop or trauma', () => {
+describe('event mapper: hits by tier (A12, queue item 38 A2/A3)', () => {
+  it('light hit (under 8% of max HP): flash 60 ms, one contact spark sized by its tier, hit sound, a short hit-stop on both, a light reaction', () => {
     const out = run([hit()]);
     expect(pick(out, 'unitFlash')).toEqual([{ a: 'unitFlash', id: 2, ms: 60 }]);
-    expect(pick(out, 'fx')).toMatchObject([{ effectId: 'fx.spark_blunt', count: 3 }]);
+    // the spark plays where the blow lands (the view resolves the contact), with the recipe's tier, kind and dir
+    expect(pick(out, 'fx')).toMatchObject([{ effectId: 'fx.contact_spark', count: 1, at: { k: 'unit', id: 2, part: 'hit' }, contact: { from: 1, dir: 1 }, opts: { dir: 1, tier: 0, kind: 0 } }]);
     expect(pick(out, 'sound').map((s) => s.id)).toEqual(['hit_blunt']);
-    expect(pick(out, 'unitFreeze')).toEqual([]);
+    expect(pick(out, 'unitFreeze')).toEqual([
+      { a: 'unitFreeze', id: 2, ms: 50 },
+      { a: 'unitFreeze', id: 1, ms: 35 },
+    ]);
     expect(pick(out, 'trauma')).toEqual([]);
-    expect(pick(out, 'unitClip')).toMatchObject([{ id: 2, clip: 'hit' }]);
+    expect(pick(out, 'kick')).toEqual([]);
+    expect(pick(out, 'unitClip')).toMatchObject([{ id: 2, clip: 'hit', tier: 'light', dir: 1 }]);
   });
 
-  it('heavy hit: local hitstop victim 70 / attacker 50 with jitter, trauma 0.05, flash 80, 6 sparks and dust', () => {
-    const out = run([hit({ heavy: true, dmgType: 'slash' })]);
+  it('medium hit (8-15%): flash 70 ms, a medium spark, a slightly longer hit-stop', () => {
+    const out = run([hit({ damage: 4000 })]);
+    expect(pick(out, 'unitFlash')).toEqual([{ a: 'unitFlash', id: 2, ms: 70 }]);
+    expect(pick(out, 'fx')).toMatchObject([{ effectId: 'fx.contact_spark', count: 1, opts: { tier: 1 } }]);
+    expect(pick(out, 'unitFreeze').map((f) => f.ms)).toEqual([55, 40]);
+    expect(pick(out, 'unitClip')).toMatchObject([{ tier: 'medium' }]);
+  });
+
+  it('heavy hit (15%+): a longer hit-stop by share with jitter, trauma without its own kick, a 2.5 px kick, a heavy spark, dust and a glow at the feet', () => {
+    const out = run([hit({ heavy: true, dmgType: 'slash', damage: 8000 })]);
     expect(pick(out, 'unitFreeze')).toEqual([
-      { a: 'unitFreeze', id: 2, ms: 70, jitterPx: 2 },
-      { a: 'unitFreeze', id: 1, ms: 50 },
+      { a: 'unitFreeze', id: 2, ms: 76, jitterPx: 2 },
+      { a: 'unitFreeze', id: 1, ms: 45 },
     ]);
-    expect(pick(out, 'trauma')).toMatchObject([{ amount: 0.05, dir: { x: 1, y: 0 } }]);
+    expect(pick(out, 'trauma')).toEqual([{ a: 'trauma', amount: 0.12 }]);
+    expect(pick(out, 'kick')).toEqual([{ a: 'kick', px: 2.5, dir: { x: 1, y: 0 }, at: { k: 'unit', id: 2, part: 'hit' } }]);
     expect(pick(out, 'unitFlash')).toEqual([{ a: 'unitFlash', id: 2, ms: 80 }]);
     expect(pick(out, 'fx')).toMatchObject([
-      { effectId: 'fx.spark_slash', count: 6 },
-      { effectId: 'fx.dust_poof', count: 2 },
+      { effectId: 'fx.contact_spark', count: 1, contact: { from: 1 }, opts: { kind: 1, tier: 2 } },
+      { effectId: 'fx.dust_poof', count: 2, at: { k: 'unit', id: 2, part: 'feet' } },
+      { effectId: 'fx.ground_glow', count: 1, at: { k: 'unit', id: 2, part: 'feet' } },
     ]);
     expect(pick(out, 'sound').map((s) => s.id)).toEqual(['hit_heavy']);
     expect(pick(out, 'freeze')).toEqual([]);
+    // half the victim's max HP holds it the longest (110 ms)
+    expect(pick(run([hit({ damage: 20_000 })]), 'unitFreeze')[0]?.ms).toBe(110);
+  });
+
+  it('killing blow: the strongest reaction, a 3.5 px kick, the kill accent over the hit sound, hit_heavy for a heavy share', () => {
+    const out = run([hit(), died()]);
+    expect(pick(out, 'unitClip')).toMatchObject([{ id: 2, clip: 'hit', tier: 'kill' }]);
+    expect(pick(out, 'unitFreeze').slice(0, 2)).toEqual([
+      { a: 'unitFreeze', id: 2, ms: 90, jitterPx: 2 },
+      { a: 'unitFreeze', id: 1, ms: 50 },
+    ]);
+    expect(pick(out, 'kick')[0]).toMatchObject({ px: 3.5 });
+    expect(pick(out, 'sound').map((s) => s.id).slice(0, 2)).toEqual(['hit_blunt', 'kill_accent']);
+    const big = run([hit({ damage: 8000 }), died()]);
+    expect(pick(big, 'sound')[0]?.id).toBe('hit_heavy');
+  });
+
+  it('a shot holds only the victim of a heavy hit or a kill; a light one not at all, and never the shooter', () => {
+    const light = run([hit({ sourceId: 2, targetId: 1, sourceCard: 'pebbler' })]);
+    expect(pick(light, 'unitFreeze')).toEqual([]);
+    const heavy = run([hit({ sourceId: 2, targetId: 5, sourceCard: 'pebbler', damage: 15_000 })]);
+    expect(pick(heavy, 'unitFreeze').map((f) => f.id)).toEqual([5]);
+  });
+
+  it('a heavy shot raises no dust at the victim\'s feet (`hit.heavy.ranged`): only a heavy blow skids the feet', () => {
+    const shot = run([hit({ sourceId: 2, targetId: 5, sourceCard: 'pebbler', damage: 15_000 })]);
+    expect(pick(shot, 'fx').map((f) => f.effectId)).toEqual(['fx.contact_spark', 'fx.ground_glow']);
+    expect(pick(shot, 'sound')[0]?.id).toBe('hit_heavy');
+    expect(pick(shot, 'kick')).toHaveLength(1);
+    // a heavy melee blow keeps its dust
+    const blow = run([hit({ damage: 15_000 })]);
+    expect(pick(blow, 'fx').map((f) => f.effectId)).toEqual(['fx.contact_spark', 'fx.dust_poof', 'fx.ground_glow']);
+  });
+
+  it('a material rings under the hit: armour clanks on an armoured victim, never under a laser', () => {
+    const armour = run([hit({ targetId: 5, sourceId: 2, sourceCard: 'pebbler' })]);
+    expect(pick(armour, 'sound').map((s) => s.id)).toEqual(['hit_blunt', 'mat_armour']);
+    expect(pick(armour, 'fx')[0]?.opts).toMatchObject({ kind: 4 });
+    const laser = run([hit({ targetId: 5, sourceId: 2, sourceCard: 'pebbler', dmgType: 'laser' })]);
+    expect(pick(laser, 'sound').map((s) => s.id)).toEqual(['hit_laser']);
+  });
+
+  it('a knockback becomes the view\'s eased hop over 220 ms', () => {
+    const out = run([ev('knockback', { id: 2, fromX: 700_000, toX: 730_000 })]);
+    expect(pick(out, 'unitKnock')).toEqual([{ a: 'unitKnock', id: 2, dx: 30, ms: 220 }]);
+    expect(pick(run([ev('knockback', { id: 99, fromX: 700_000, toX: 730_000 })]), 'unitKnock')).toEqual([]);
   });
 
   it('shows the effective spark at >= x1.5 and the resisted puff at <= x0.75', () => {
@@ -124,15 +189,20 @@ describe('event mapper: A12 hits', () => {
 });
 
 describe('event mapper: A12 deaths', () => {
-  it('unit death: local 50 ms, trauma 0.1, 10 dust, KO stars, die sound; coins and XP fly for player kills', () => {
+  it('unit death: falls along the killer\'s direction, local 50 ms, trauma 0.1 and a 3 px kick, dust at the feet, KO stars, die sound; coins and XP fly for player kills', () => {
     const out = run([died()]);
-    expect(pick(out, 'unitDie')).toEqual([{ a: 'unitDie', id: 2 }]);
+    // the killer stands at 500, the victim at 700: the body falls toward +x; no blow in the batch: a medium fall
+    expect(pick(out, 'unitDie')).toEqual([{ a: 'unitDie', id: 2, dir: 1, tier: 'medium', heavy: false, size: 's' }]);
     expect(pick(out, 'unitFreeze')).toEqual([{ a: 'unitFreeze', id: 2, ms: 50 }]);
-    expect(pick(out, 'trauma')).toMatchObject([{ amount: 0.1 }]);
+    expect(pick(out, 'trauma')).toEqual([{ a: 'trauma', amount: 0.1 }]);
+    expect(pick(out, 'kick')).toMatchObject([{ px: 3, dir: { x: 1, y: 0 } }]);
     expect(pick(out, 'fx')).toMatchObject([
-      { effectId: 'fx.dust_poof', count: 10 },
+      { effectId: 'fx.dust_poof', count: 2, at: { k: 'unit', id: 2, part: 'feet' } },
+      // the bits it leaves: its age's material along the fall, seeded from match data, its side's cloth
+      { effectId: 'fx.bits', count: 1, at: { k: 'unit', id: 2, part: 'feet' }, opts: { dir: 1, age: 0, count: 3, side: 1, mat: 0 } },
       { effectId: 'fx.ko_stars', count: 1 },
     ]);
+    expect(pick(out, 'fx')[1]?.opts?.['bitsSeed']).toBe(pick(run([died()]), 'fx')[1]?.opts?.['bitsSeed']);
     // The XP tick waits for the sparkles to reach the bar.
     expect(pick(out, 'sound').map((s) => s.id)).toEqual(['die_bio', 'xp_tick']);
     expect(pick(out, 'fxFly')).toMatchObject([
@@ -142,17 +212,39 @@ describe('event mapper: A12 deaths', () => {
     expect(pick(out, 'freeze')).toEqual([]);
   });
 
+  it('a small unit\'s kill kicks the screen only when it is the player\'s own; a Heavy, Epic or Legendary always (review A, S5)', () => {
+    expect(pick(run([hit(), died()]), 'kick').length).toBeGreaterThan(0);
+    const lost = run([
+      hit({ targetId: 1, sourceId: 2, sourceCard: 'pebbler', x: 500_000 }),
+      died({ id: 1, side: 0, card: 'bonker', killerId: 2, killerCard: 'pebbler', killerSide: 1, x: 500_000 }),
+    ]);
+    expect(pick(lost, 'kick')).toEqual([]);
+    // the shake's trauma and everything else of the death still play
+    expect(pick(lost, 'trauma')).toEqual([{ a: 'trauma', amount: 0.1 }]);
+    expect(pick(lost, 'unitDie')).toHaveLength(1);
+    const heavy = run([
+      hit({ targetId: 5, sourceId: 2, sourceCard: 'pebbler', x: 480_000 }),
+      died({ id: 5, side: 0, card: 'tuskback', killerId: 2, killerCard: 'pebbler', killerSide: 1, x: 480_000 }),
+    ]);
+    expect(pick(heavy, 'kick').length).toBeGreaterThan(0);
+  });
+
   it('no coins for enemy kills of your units', () => {
     const out = run([died({ id: 1, side: 0, card: 'bonker', killerId: 2, killerSide: 1 })]);
     expect(pick(out, 'fxFly')).toEqual([]);
   });
 
-  it('heavy death: 70 ms and trauma 0.15; Legendary death freezes globally for 80 ms', () => {
+  it('heavy death: 70 ms and trauma 0.38 (about 1.7 px, visible); Legendary death: trauma 0.55 and the global 80 ms freeze', () => {
     const heavy = run([died({ id: 5, side: 0, card: 'tuskback', killerSide: 1 })]);
     expect(pick(heavy, 'unitFreeze')).toEqual([{ a: 'unitFreeze', id: 5, ms: 70 }]);
-    expect(pick(heavy, 'trauma')).toMatchObject([{ amount: 0.15 }]);
+    expect(pick(heavy, 'trauma')).toMatchObject([{ amount: 0.38 }]);
+    expect(pick(heavy, 'unitDie')).toMatchObject([{ heavy: true, size: 'm' }]);
     const leg = run([died({ id: 4, card: 'matriarch' })]);
     expect(pick(leg, 'freeze')).toEqual([{ a: 'freeze', ms: 80, exempt: false }]);
+    expect(pick(leg, 'trauma')).toMatchObject([{ amount: 0.55 }]);
+    // the killing blow's share tier picks the fall (a heavy blow throws the body back)
+    const thrown = run([hit({ damage: 8000 }), died()]);
+    expect(pick(thrown, 'unitDie')).toMatchObject([{ tier: 'heavy', dir: 1 }]);
   });
 
   it('mech death: trauma 0.12, flash 60 ms, die_mech; 1 in 3 explodes (cosmetic RNG)', () => {
@@ -161,7 +253,7 @@ describe('event mapper: A12 deaths', () => {
     const n = 600;
     for (let i = 0; i < n; i++) {
       const out = m.map([died({ id: 3, card: 'tankette' })], (id) => UNITS[id]);
-      expect(pick(out, 'trauma').map((t) => t.amount)).toEqual([0.15, 0.12]);
+      expect(pick(out, 'trauma').map((t) => t.amount)).toEqual([0.38, 0.12]);
       expect(pick(out, 'unitFlash')).toEqual([{ a: 'unitFlash', id: 3, ms: 60 }]);
       expect(pick(out, 'sound')[0]?.id).toBe('die_mech');
       if (pick(out, 'fx').some((f) => f.effectId === 'fx.explosion_s')) explosions++;
@@ -193,9 +285,10 @@ describe('event mapper: turrets, bases, powers', () => {
     expect(decodeTurretSource(-1)).toBeNull();
   });
 
-  it('base hit: trauma 0.2 at most once per 0.5 s, base flash 60 ms, 4 chunks, base_hit; crumble at 75/50/25%', () => {
+  it('base hit: trauma 0.3 (about 1 px) at most once per 0.5 s with a 3 px kick, base flash 60 ms, 4 chunks, base_hit; crumble at 75/50/25%', () => {
     const out = run([ev('baseDamaged', { side: 0, sourceId: 2, damage: 300_000, hp: 700_000, maxHp: 1_000_000 })]);
-    expect(pick(out, 'trauma')).toMatchObject([{ amount: 0.2, gap: { gapMs: 500 } }, { amount: 0.15 }]);
+    expect(pick(out, 'trauma')).toMatchObject([{ amount: 0.3, gap: { gapMs: 500 } }, { amount: 0.15 }]);
+    expect(pick(out, 'kick')).toMatchObject([{ px: 3, dir: { x: -1, y: 0 } }]);
     expect(pick(out, 'baseFlash')).toEqual([{ a: 'baseFlash', side: 0, ms: 60 }]);
     expect(pick(out, 'fx')[0]).toMatchObject({ effectId: 'fx.debris', count: 4 });
     expect(pick(out, 'sound').map((s) => s.id)).toEqual(['base_hit', 'base_crumble']);
@@ -462,8 +555,8 @@ describe('event mapper: coverage', () => {
   it('attack clips are time-scaled so the impact lands on the sim impact tick (B5)', () => {
     const out = run([ev('attackStarted', { id: 1, targetId: 2, windupTicks: 8, attackIndex: 0 })]);
     expect(pick(out, 'unitClip')).toEqual([{ a: 'unitClip', id: 1, clip: 'attack', impactAtMs: 400 }]);
-    // Melee swing sound lands just before the impact.
-    expect(pick(out, 'sound')).toEqual([{ a: 'sound', id: 'swing_whoosh', delayMs: 320, priority: 1 }]);
+    // Melee swing sound lands just before the impact, placed at its unit (pan and fade like its hit; review A, S2)
+    expect(pick(out, 'sound')).toEqual([{ a: 'sound', id: 'swing_whoosh', delayMs: 320, x: 500, priority: 1 }]);
   });
 
   it('a second attacker carries its attackIndex, so the view never restarts the body for it (ANIM_SPEC R3)', () => {
@@ -622,7 +715,8 @@ describe('event mapper: effect presets and sizes on the real content', () => {
     const shot = fxOf(runReal([ev('turretBuilt', { side: 1, mount: 0, card: 'crossbow_nest' }), ev('turretFired', { side: 1, mount: 0, targetId: 3 })]));
     expect(shot[0]).toMatchObject({ effectId: 'fx.muzzle', opts: { side: 1, dir: -1 } });
     const spark = fxOf(runReal([hit({ targetId: 5, sourceId: 1, sourceCard: 'emp_saboteur', dmgType: 'laser', x: 520_000 })]));
-    expect(spark[0]).toMatchObject({ effectId: 'fx.scorch_laser', opts: { dir: 1 } });
+    // a plain blow's spark is the contact spark, drawn by its kind (laser 6) along the blow (queue item 38 A5)
+    expect(spark[0]).toMatchObject({ effectId: 'fx.contact_spark', opts: { dir: 1, kind: 6 } });
   });
 });
 
@@ -726,5 +820,159 @@ describe('event mapper: the heal gesture of a healer with no attack (Repair Dron
     // footman at 520: drone 14 at 600 is 80 lu away, drone 10 at 400 is 120 lu away
     expect(clips(at(fresh(), 10, [healed(11)], [10, 14, 11]))).toEqual(gesture(14));
     expect(clips(fresh().map([healed(11)], (id) => HEAL_UNITS[id]))).toEqual([]);
+  });
+});
+
+describe('queue item 38 A6: the clash moment', () => {
+  const all = () => Object.entries(UNITS).map(([id, u]) => [Number(id), u] as const);
+  const unit = (id: number) => UNITS[id];
+
+  it('answers the first melee blow with both lines near: crash, dust along the line, a kick, the view part and intensity', () => {
+    const out = mapper().map([hit()], unit, all);
+    // the pair's middle (500 and 700); two units a side within 140 lu of it
+    expect(pick(out, 'clash')).toEqual([{ a: 'clash', x: 600, freezeMs: 70, lean: false, trauma: 0.4, punchZoom: 0.03, punchMs: 300 }]);
+    const dust = pick(out, 'fx').find((f) => f.effectId === 'fx.clash_dust');
+    expect(dust).toMatchObject({ at: { k: 'world', x: 600, y: 0 }, count: 1, opts: { widthLu: 116 } });
+    // its flat rings are a separate effect (the view draws it on the ground, under the units; review A, S4)
+    const ring = pick(out, 'fx').find((f) => f.effectId === 'fx.clash_ring');
+    expect(ring).toMatchObject({ at: { k: 'world', x: 600, y: 0 }, count: 1, opts: { widthLu: 116 } });
+    // the player's own blow: the crash has the player's priority and pans by the contact line
+    expect(pick(out, 'sound').find((s) => s.id === 'clash_crash')).toMatchObject({ x: 600, priority: 1 });
+    expect(pick(out, 'kick')).toContainEqual(expect.objectContaining({ px: 3, dir: { x: 0, y: 1 } }));
+    expect(pick(out, 'intensity').map((i) => i.amount)).toContain(0.35);
+  });
+
+  it('plays once per contact, never for a ranged blow, and needs both lines', () => {
+    const m = mapper();
+    m.map([hit()], unit, all);
+    m.tick = T + 4;
+    expect(pick(m.map([hit()], unit, all), 'clash')).toEqual([]);
+    const ranged = mapper().map([hit({ targetId: 1, sourceId: 2, sourceCard: 'pebbler', x: 500_000 })], unit, all);
+    expect(pick(ranged, 'clash')).toEqual([]);
+    const two = { 1: UNITS[1]!, 2: UNITS[2]! };
+    const lone = mapper().map([hit()], (id) => two[id as 1 | 2], () => Object.entries(two).map(([id, u]) => [Number(id), u] as const));
+    expect(pick(lone, 'clash')).toEqual([]);
+  });
+
+  it('meets the same clashes on a replay: the moment follows the sim clock', () => {
+    const once = (): number[] => {
+      const m = mapper();
+      const at: number[] = [];
+      for (let t = 0; t < 400; t += 20) {
+        m.tick = t;
+        // blows every second, with a 4 s lull every 10 s
+        if (t % 200 >= 120) continue;
+        if (pick(m.map([hit({ tick: t })], unit, all), 'clash').length > 0) at.push(t);
+      }
+      return at;
+    };
+    expect(once()).toEqual([0, 200]);
+    expect(once()).toEqual(once());
+  });
+});
+
+describe('queue item 38 A8: pounces and the Legendary slow motion', () => {
+  const POUNCERS: Record<number, UnitInfo> = { 6: { side: 0, card: 'sabertooth', x: 400 }, 7: { side: 0, card: 'warp_stalker', x: 400 } };
+
+  it('a pounce hops: its ability clip holds the strike to the touch-down, the view draws the leap', () => {
+    const out = mapper().map([ev('abilityUsed', { id: 6, ability: 'pounce', x: 560_000 })], (id) => POUNCERS[id]);
+    expect(pick(out, 'unitClip')).toEqual([{ a: 'unitClip', id: 6, clip: 'ability', impactAtMs: 500 }]);
+    expect(pick(out, 'unitLeap')).toEqual([{ a: 'unitLeap', id: 6, dx: 160, ms: 500, kind: 'pounce' }]);
+  });
+
+  it('a blink keeps its own look and no hop', () => {
+    const out = mapper().map([ev('abilityUsed', { id: 7, ability: 'pounce', x: 560_000 })], (id) => POUNCERS[id]);
+    expect(pick(out, 'unitClip')).toEqual([{ a: 'unitClip', id: 7, clip: 'ability' }]);
+    expect(pick(out, 'unitLeap')).toEqual([]);
+  });
+
+  it('a Legendary falls with a slow-motion beat (the view grants it only offline) and its big death voice', () => {
+    const leg = run([died({ id: 4, card: 'matriarch' })]);
+    expect(pick(leg, 'simSlowMo')).toEqual([{ a: 'simSlowMo', scale: 0.4, ms: 750, easeMs: 400 }]);
+    expect(pick(leg, 'sound')[0]).toMatchObject({ id: 'die_bio_l', x: 760 });
+    expect(pick(run([died()]), 'simSlowMo')).toEqual([]);
+  });
+});
+
+describe('queue item 38 A7: sound hooks', () => {
+  it('heavy bodies die with a deeper grunt, small ones as recorded', () => {
+    const heavy = pick(run([died({ id: 5, side: 0, card: 'tuskback', killerSide: 1 })]), 'sound')[0];
+    expect(heavy).toMatchObject({ id: 'die_bio', pitchBp: 9000 });
+    const mech = pick(run([died({ id: 3, card: 'tankette' })]), 'sound')[0];
+    expect(mech).toMatchObject({ id: 'die_mech', pitchBp: 9000 });
+    expect(pick(run([died()]), 'sound')[0]?.pitchBp).toBeUndefined();
+  });
+
+  it('world sounds carry their x; a power\'s hits pan but never fade', () => {
+    expect(pick(run([hit()]), 'sound')[0]).toMatchObject({ id: 'hit_blunt', x: 700 });
+    expect(pick(run([hit()]), 'sound')[0]?.noFade).toBeUndefined();
+    const power = pick(run([hit({ sourceKind: 'power', sourceId: 0, sourceCard: 'rockslide', castId: 3 })]), 'sound')[0];
+    expect(power).toMatchObject({ x: 700, noFade: true });
+  });
+});
+
+describe('A5 stuck shafts: every arrow-like projectile sticks (review A, S3)', () => {
+  /** Every projectile visual the content shoots that is not a shaft: stones, shot, shells, orbs, beams, nets, notes. */
+  const NOT_SHAFTS = new Set([
+    'proj.antimatter', 'proj.arc_shell', 'proj.bee', 'proj.bolas', 'proj.bomb', 'proj.boulder', 'proj.bowl_bomb', 'proj.bullet',
+    'proj.cannonball', 'proj.chainshot', 'proj.discus', 'proj.flak', 'proj.flare', 'proj.frost', 'proj.goose', 'proj.grapeshot',
+    'proj.gravity_orb', 'proj.herb', 'proj.ion', 'proj.lob', 'proj.log', 'proj.mini_star', 'proj.moon_pellet', 'proj.mortar_shell',
+    'proj.musket', 'proj.net', 'proj.note', 'proj.nova_orb', 'proj.plasma', 'proj.plasma_mortar', 'proj.rifle_grenade', 'proj.rivet',
+    'proj.rock', 'proj.rocket', 'proj.sage_orb', 'proj.shard', 'proj.shell', 'proj.star_shard', 'proj.starburst', 'proj.swarm_glob',
+    'proj.twin_laser', 'proj.vial',
+  ]);
+  const stuck = defaultFeelConfig.tuning.combat?.stuck ?? {};
+  const shot = (p: unknown): string | null => (p && typeof p === 'object' && 'visualId' in p ? String((p as { visualId: string }).visualId) : null);
+
+  it('classifies every projectile visual of the units and turrets: a stuck kind, or not a shaft', () => {
+    const visuals = new Set<string>();
+    for (const u of Object.values(content.units)) for (const a of u.attacks) if (shot(a.projectile)) visuals.add(shot(a.projectile) as string);
+    for (const t of Object.values(content.turrets)) if (shot(t.attack.projectile)) visuals.add(shot(t.attack.projectile) as string);
+    const sticks = new Set(Object.values(stuck).flat());
+    for (const v of visuals) expect(sticks.has(v) !== NOT_SHAFTS.has(v), `${v}: list it as a stuck kind or as not a shaft (exactly one)`).toBe(true);
+    for (const v of sticks) expect(visuals.has(v), `${v} is shot by no unit or turret`).toBe(true);
+    // the shafts the review found missing
+    expect(stuck.arrow).toEqual(expect.arrayContaining(['proj.longarrow']));
+    expect(stuck.javelin).toEqual(expect.arrayContaining(['proj.dart', 'proj.spear_bolt']));
+  });
+
+  const REAL: Record<number, UnitInfo> = {
+    1: { side: 0, card: 'yeoman_archer', x: 500 },
+    2: { side: 0, card: 'atlatl_thrower', x: 500 },
+    3: { side: 0, card: 'needle_gunner', x: 500 },
+    4: { side: 0, card: 'pebbler', x: 500 },
+    9: { side: 1, card: 'footman', x: 700, maxHp: 1_000_000 },
+  };
+  const real = (): EventMapper => new EventMapper({ content, feel: defaultFeelConfig, mySide: 0, rng: mulberry32(1) });
+  const stuckOf = (out: ViewAction[]) => pick(out, 'fx').filter((f) => f.effectId === 'fx.stuck').map((f) => f.opts?.['kind']);
+  const shotBy = (id: number, card: string): SimEvent => hit({ targetId: 9, sourceId: id, sourceCard: card, dmgType: content.units[card]?.attacks[0]?.dmgType ?? 'pierce' });
+
+  it('the Yeoman Archer\'s long arrow, the Atlatl dart and the Needle Gunner\'s flechette stick by kind; a stone does not', () => {
+    const run1 = (ev1: SimEvent) => stuckOf(real().map([ev1], (id) => REAL[id]));
+    expect(run1(shotBy(1, 'yeoman_archer'))).toEqual([0]);
+    expect(run1(shotBy(2, 'atlatl_thrower'))).toEqual([1]);
+    expect(run1(shotBy(3, 'needle_gunner'))).toEqual([3]);
+    expect(run1(shotBy(4, 'pebbler'))).toEqual([]);
+  });
+
+  it('a turret\'s bolt, spear bolt and quill stick too (a turret shot names no unit)', () => {
+    const turretHit = (card: string, mount: number): number[] => {
+      const m = real();
+      const src = -10 - (1 * 4 + mount);
+      const out = m.map(
+        [ev('turretBuilt', { side: 1, mount, card }), hit({ targetId: 1, sourceId: src, sourceCard: card, sourceKind: 'turret', dmgType: content.turrets[card]?.attack.dmgType ?? 'pierce', x: 500_000 })],
+        (id) => (id === 1 ? { side: 0, card: 'footman', x: 500, maxHp: 1_000_000 } : undefined),
+      );
+      return stuckOf(out) as number[];
+    };
+    expect(turretHit('crossbow_nest', 0)).toEqual([0]);
+    expect(turretHit('springald', 1)).toEqual([1]);
+    expect(turretHit('quill_porcupine', 2)).toEqual([2]);
+    expect(turretHit('rock_tosser', 3)).toEqual([]);
+  });
+
+  it('nothing sticks in a body the shot killed (it falls)', () => {
+    const out = real().map([shotBy(1, 'yeoman_archer'), died({ id: 9, card: 'footman', killerId: 1, killerCard: 'yeoman_archer' })], (id) => REAL[id]);
+    expect(stuckOf(out)).toEqual([]);
   });
 });

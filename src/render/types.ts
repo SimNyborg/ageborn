@@ -3,6 +3,7 @@
  * (what the battle view tells the HUD).
  */
 import type { AgeId, CardId, ClipName, Command, EffectId, EmoteId, MatchOutcome, MusicCueId, MusicLayer, PowerSlot, Pt, Side, SoundId, TeamPreset, VisualId } from '@/contracts';
+import type { BodySize, HitTier } from './combatFeel';
 import type { GraphicsSetting } from './presets';
 
 /** The player settings the battle view reads (a subset of `Settings`, DESIGN A9 Settings, A12). */
@@ -129,9 +130,38 @@ export interface Gap {
 /** A primitive view action produced by the event mapper and executed by the battle view. */
 export type ViewAction =
   | { a: 'unitSpawn'; id: number; side: Side; card: CardId; x: number; summoned: boolean; level: number }
-  /** `attackIndex` >= 1 is a second attacker (riders, sponsons, an MG): it never restarts the body clip (ANIM_SPEC R3). */
-  | { a: 'unitClip'; id: number; clip: ClipName; impactAtMs?: number; attackIndex?: number }
-  | { a: 'unitDie'; id: number }
+  /**
+   * `attackIndex` >= 1 is a second attacker (riders, sponsons, an MG): it never restarts the body clip (ANIM_SPEC R3).
+   * A `hit` carries its tier and the world direction of the push (queue item 38 A2): views with `react()` react on
+   * every hit; the others play the hit clip as before.
+   */
+  | { a: 'unitClip'; id: number; clip: ClipName; impactAtMs?: number; attackIndex?: number; tier?: HitTier; dir?: 1 | -1 }
+  /**
+   * A death (A4): `dir` the world direction of the killing blow, `tier` its share tier (U's `dieWith` throws a heavy
+   * blow back and crumples a lighter one), `heavy` a heavy body, `size` its body class (dust and the fall sound).
+   */
+  | { a: 'unitDie'; id: number; dir?: 1 | -1; tier?: Exclude<HitTier, 'kill'>; heavy?: boolean; size?: BodySize }
+  /** A sim knockback (A2): the drawn x follows the sim's jump of `dx` lu over `ms` instead of in one tick, with a hop. */
+  | { a: 'unitKnock'; id: number; dx: number; ms: number }
+  /** A directional screen kick (A3) along `dir`, if `at` is in view; the director keeps one per about 120 ms. */
+  | { a: 'kick'; px: number; dir: Pt; at: Anchor }
+  /**
+   * A pounce or leap (A8): the sim carries the unit `dx` lu in a straight line over `ms`; the view draws the hop (its
+   * take-off, arc and landing, U's `airborne`) and the landing dust and sound on touch-down.
+   */
+  | { a: 'unitLeap'; id: number; dx: number; ms: number; kind: 'pounce' | 'leap' }
+  /**
+   * The clash moment (A6) at world x. When it is in view: its shake (`trauma`) and camera punch, a short hit-stop on
+   * the engaged units near it (not those in their wind-up) and, with `lean`, the wide-screen lean-in toward the
+   * fight. Its crash, dust and kick come as their own actions (the `clash` feel rule).
+   */
+  | { a: 'clash'; x: number; freezeMs: number; lean: boolean; trauma: number; punchZoom: number; punchMs: number }
+  /**
+   * Slow motion of the whole match (A8, a Legendary's fall): game time and the match clock run at `scale` for `ms`
+   * (real time), easing back over `easeMs`. Only where the host scales its clock by the view's `simTimeScale`
+   * (offline matches and replays); never in a live match, never with Reduce motion.
+   */
+  | { a: 'simSlowMo'; scale: number; ms: number; easeMs?: number }
   | { a: 'unitFlash'; id: number; ms: number; color?: number }
   | { a: 'unitFreeze'; id: number; ms: number; jitterPx?: number }
   /** A fort's own moment (A16.14.8): `place`, `build`, `spawn` (a camp's door), `hit`, `attack`. */
@@ -157,12 +187,41 @@ export type ViewAction =
    * dir, radius, zone, width, height, distance, speed, durationMs, ...). `follow` keeps the effect on
    * its unit while the unit lives and ends it when the unit dies (A12 checklist 10).
    */
-  | { a: 'fx'; effectId: EffectId; at: Anchor; count: number; priority: number; spreadLu?: number; opts?: Record<string, number>; follow?: boolean }
+  | {
+      a: 'fx';
+      effectId: EffectId;
+      at: Anchor;
+      count: number;
+      priority: number;
+      spreadLu?: number;
+      opts?: Record<string, number>;
+      follow?: boolean;
+      /**
+       * Queue item 38 A5: the effect plays where the blow lands on the unit `at` names: the attacker `from`'s weapon
+       * tip clamped into the victim's drawn body, or the victim's surface facing the blow (`dir`, its world direction).
+       * Views that do not stage contact use `at` (the hit centre).
+       */
+      contact?: { from?: number; dir?: 1 | -1 };
+    }
   /** One effect on every live unit of `side`, following each unit (Royal Decree, Nanite Surge). */
   /** An effect on every visible unit of a side; `roles` limits it to units of those roles (a research shimmer). */
   | { a: 'fxUnits'; effectId: EffectId; side: Side; priority: number; opts?: Record<string, number>; roles?: readonly string[]; /** Only the side's `max` frontmost units (a capped buff, A2.9.6). */ max?: number }
   | { a: 'fxFly'; effectId: EffectId; from: Anchor; to: 'gold' | 'xp'; count: number; priority: number }
-  | { a: 'sound'; id: SoundId; delayMs?: number; gap?: Gap; climb?: string; priority?: number; /** 10000 = as recorded (a caller-pitched sound). */ pitchBp?: number; volumeDb?: number }
+  | {
+      a: 'sound';
+      id: SoundId;
+      delayMs?: number;
+      gap?: Gap;
+      climb?: string;
+      priority?: number;
+      /** 10000 = as recorded (a caller-pitched sound). */
+      pitchBp?: number;
+      volumeDb?: number;
+      /** World x of the source (queue item 38 step 7): the view pans it by its screen x and fades it off view (A13). */
+      x?: number;
+      /** With `x`: pan only, never faded off view (a power's hits, A13 "power impacts are never faded"). */
+      noFade?: boolean;
+    }
   | { a: 'trauma'; amount: number; dir?: Pt; gap?: Gap }
   | { a: 'screenFlash'; ms: number; color: number; alpha: number }
   | { a: 'baseFlash'; side: Side; ms: number }

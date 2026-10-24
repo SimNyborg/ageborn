@@ -251,6 +251,53 @@ describe('feel director sounds', () => {
   });
 });
 
+describe('feel director kicks (queue item 38 A3, review A S5)', () => {
+  const kickX = (d: FeelDirector): number => d.shake.offset().x;
+
+  it('one kick per gap: inside it only a stronger kick in the same direction replaces the running one', () => {
+    const d = new FeelDirector(cloneFeelConfig(), new FakeAudio());
+    d.kick(2.5, { x: 1, y: 0 }, 280, 250);
+    expect(kickX(d)).toBeCloseTo(2.5, 6);
+    d.kick(2, { x: 1, y: 0 }, 280, 250);
+    expect(kickX(d)).toBeCloseTo(2.5, 6);
+    d.kick(3.5, { x: 1, y: 0 }, 280, 250);
+    expect(kickX(d)).toBeCloseTo(3.5, 6);
+    // past the gap any kick plays
+    d.update(300, 300);
+    d.kick(1, { x: 1, y: 0 }, 280, 250);
+    expect(kickX(d)).toBeCloseTo(1, 6);
+  });
+
+  it('a kick no stronger than the last waits out the whole gap, even after the last one has decayed (a brawl: one per gap)', () => {
+    const d = new FeelDirector(cloneFeelConfig(), new FakeAudio());
+    d.kick(2.5, { x: 1, y: 0 }, 280, 250);
+    // the kick decays over 140 ms; at 200 ms nothing is left of it, but the gap still holds
+    d.update(200, 200);
+    expect(kickX(d)).toBeCloseTo(0, 6);
+    d.kick(2.5, { x: 1, y: 0 }, 280, 250);
+    expect(kickX(d)).toBeCloseTo(0, 6);
+    d.update(90, 90);
+    d.kick(2.5, { x: 1, y: 0 }, 280, 250);
+    expect(kickX(d)).toBeCloseTo(2.5, 6);
+  });
+
+  it('never turns the screen the other way within the flip window, however strong; a vertical kick is no flip', () => {
+    const d = new FeelDirector(cloneFeelConfig(), new FakeAudio());
+    d.kick(2.5, { x: 1, y: 0 }, 280, 250);
+    d.update(120, 120);
+    d.kick(4, { x: -1, y: 0 }, 280, 250);
+    expect(kickX(d)).toBeGreaterThan(0);
+    d.update(140, 140);
+    // past the window (and the gap): the opposite kick plays
+    d.kick(3, { x: -1, y: 0 }, 280, 250);
+    expect(kickX(d)).toBeCloseTo(-3, 6);
+    // the clash's vertical kick is not a flip
+    d.update(50, 50);
+    d.kick(4, { x: 0, y: 1 }, 280, 250);
+    expect(d.shake.offset().y).toBeCloseTo(4, 6);
+  });
+});
+
 describe('damage numbers (A12)', () => {
   const plain: LabelFactory = () => {
     const root = new Container();

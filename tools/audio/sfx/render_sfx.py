@@ -100,10 +100,11 @@ def finish(x: np.ndarray, spec: dict) -> np.ndarray:
         x = dsp.trim(x, floor_db=-58, tail_fade=0.03)
         if spec["max_s"] and len(x) > dsp.n_of(spec["max_s"]):
             x = dsp.fade(x[: dsp.n_of(spec["max_s"])], 0, min(0.25, spec["max_s"] / 5))
+    ceiling = spec.get("ceiling", CEILING_DB)
     for k in range(4):
         lvl = loud.max_window_lufs(x, SR)
         x = x * dsp.db(spec["target"] - lvl)
-        x = dsp.limit(x, CEILING_DB, lookahead=0.002, release=0.05)
+        x = dsp.limit(x, ceiling, lookahead=0.002, release=0.05)
         # Trimming and limiting can move the phone gap a little: check the finished sound again.
         if k < 2 and phone_gap(x) < spec["phone_gap"] - 0.2:
             x = phone_enhance(x, spec["phone_gap"] + 0.3)
@@ -119,7 +120,10 @@ def render_one(sid: str) -> dict:
         x = finish(spec["fn"](v, rng), spec)
         sf.write(str(OUT / f"{sid}.{v}.wav"), x.astype(np.float32), SR, subtype="FLOAT")
         out.append(round(len(x) / SR, 3))
-    return {"id": sid, "variants": spec["variants"], "target": spec["target"], "noisy": spec["noisy"], "phone_gap": spec["phone_gap"], "seconds": out}
+    info = {"id": sid, "variants": spec["variants"], "target": spec["target"], "noisy": spec["noisy"], "phone_gap": spec["phone_gap"], "seconds": out}
+    if spec.get("loop"):
+        info["loop"] = [round(float(spec["loop"][0]), 5), round(float(spec["loop"][1]), 5)]
+    return info
 
 
 def main(ids: list[str] | None = None) -> dict:

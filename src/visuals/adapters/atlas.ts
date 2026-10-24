@@ -30,6 +30,7 @@ import type { Anchors, BackdropView, BaseView, ClipName, ClipRef, EffectView, Tu
 import type { AgeId, Pt, RoleGroup, Side } from '@/contracts/ids';
 import { clipU } from '../animator';
 import type { PartBaker } from '../bake';
+import { FX_AGES, warmBits } from '../effects/combat';
 import { FX_ZONES } from '../effects/sprites';
 import { teamColor, TRIM_COLORS } from '../palette';
 import { mulberry32, type CosmeticRng } from '@/core/rng';
@@ -50,7 +51,7 @@ import {
   ALT_ATTACK,
   ALT_LATE_MIN_MS,
   ATTACK_VARIANTS,
-  attackCycle,
+  attackCycleOf,
   attackTimeline,
   CROSS_HOLD_MS,
   crossHoldAlpha,
@@ -91,6 +92,32 @@ import {
   type TimelineSeg,
   type UnitGait,
 } from './atlasMotion';
+import {
+  airShape,
+  clipImpactStep,
+  compFromStep,
+  computeReach,
+  deathFade,
+  deathGroundMs,
+  deathLanding,
+  deathStyle,
+  HIT_INSERT_GAP_MS,
+  HIT_INSERT_MS,
+  jitterRecovery,
+  idleBody,
+  landSquash,
+  LAND_SQUASH_MS,
+  lungeCompLu,
+  lungeCurve,
+  REACTION,
+  REACT_REDUCE,
+  reactionShape,
+  recoveryScale,
+  type AirKind,
+  type DeathStyle,
+  type HitTier,
+  type Reach,
+} from './atlasCombat';
 
 /** Fort sheets (`art/forts/<age>/<slug>.json`, A16.14.8) are not unit sheets. */
 function isFortSource(source: string): boolean {
@@ -148,6 +175,8 @@ export interface AtlasClipMeta {
   /** Die only: shared effects to spawn (the death hand-off) and when the body disappears. */
   fx?: readonly { id: string; atMs: number; offsetLu?: readonly [number, number]; scale?: number; loops?: number }[];
   hideUnitAtMs?: number;
+  /** Die only (optional, a later art pass): when the body meets the ground (ms); else `deathGroundMs` estimates it. */
+  groundAtMs?: number;
 }
 
 /** The `meta.ageborn` block written by the art pipeline. */
@@ -1310,6 +1339,19 @@ const FOOTFALL_MIN_HEIGHT_LU = 95;
 const MOVING_SHARE = 0.3;
 /** Natural speed assumed for sheets without one (flyers) when judging "moving". */
 const FALLBACK_NATURAL_LU_PER_S = 60;
+/** A1: how fast the lunge compensation follows a clip switch (ms; within an attack it follows the steps exactly). */
+const LUNGE_COMP_EASE_MS = 45;
+/** A2: a knockback's backward tilt at its peak (degrees) by mass, and a pounce or leap's pitch. */
+const KNOCK_TILT_DEG: Readonly<Record<UnitMass, number>> = { light: 14, medium: 9, heavy: 5 };
+const POUNCE_PITCH_DEG = 10;
+/** A2/A8: the take-off stretch (share) and the landing squash depth by mass. */
+const AIR_STRETCH = 0.12;
+/** A4: a thrown body leans along the throw by up to this (radians) on its way to the ground. */
+const DEATH_THROW_TILT_RAD = (7 * Math.PI) / 180;
+const LAND_SQUASH_DEPTH: Readonly<Record<UnitMass, number>> = { light: 0.16, medium: 0.12, heavy: 0.08 };
+
+/** `stepAir`'s answer for a unit on the ground (shared: it runs every frame for every unit, read only). */
+const AIR_NONE: { readonly rot: number; readonly y: number; readonly stretch: number } = Object.freeze({ rot: 0, y: 0, stretch: 0 });
 
 class AtlasUnitView implements UnitView {
   readonly root = new Container();
@@ -1345,6 +1387,9 @@ class AtlasUnitView implements UnitView {
   private hk: number;
   private readonly shadow: Container | null = null;
   private readonly shadowScaleX: number = 1;
+  /** The lift share and death fade the contact shadow was last set for (`place`; NaN: not yet). */
+  private shadowLift = Number.NaN;
+  private shadowFade = Number.NaN;
   private readonly gait: UnitGait | null;
   private readonly style: AtlasMotionStyle;
   private lite: boolean;
@@ -1410,6 +1455,38 @@ class AtlasUnitView implements UnitView {
   private offY = 0;
   private rot = 0;
   private pop = 1;
+  // Queue item 38 (combat staging, `CombatView` in atlasCombat.ts)
+  /** A1: the battle view's presentation offset along world x (lu), added after the R2 frame lock. */
+  private offsetX = 0;
+  /** A1: share of an attack's authored lunge taken back on its strike and recovery steps, and the offset now (lu). */
+  private lungeShare = 0;
+  private compLu = 0;
+  private compTrack: Track | null = null;
+  /**
+   * A1: reach and lunge per attack clip, read once from the loaded sheet. Both densities of a sheet (1x and HD)
+   * have the same geometry in texture units (`meta.scale` follows the density), so a swap keeps them.
+   */
+  private reachCache = new Map<string, Reach | null>();
+  private lungeCache = new Map<string, { curve: number[]; from: number }>();
+  /** A2: once `react()` has run, `flash()` only flashes (the reaction owns the recoil; views without it keep the flinch). */
+  private reacted = false;
+  /** A2: the additive recoil (animation ms, paused by a hitstop), or null. `dir` is the world push direction. */
+  private rx: { t: number; ms: number; dir: 1 | -1; push: number; tilt: number; squash: number } | null = null;
+  /** A2: the hit-pose insert over a walk or a cut recovery (animation ms; -1 when none) and the clip it draws. */
+  private insertT = -1;
+  private insertAnim = 'hit';
+  private insertAt = -Infinity;
+  /** A2/A8: the lift arc (game ms, never paused by a hitstop: the battle view moves x on the same clock), the landing squash. */
+  private air: { t: number; ms: number; lift: number; kind: AirKind; tumble: boolean; onLand?: () => void } | null = null;
+  private landT = -1;
+  /** The extra rotation (radians, world) of the reaction and the lift arc, and whether it turns about the hit centre (a tumble). */
+  private extraRot = 0;
+  private tumbling = false;
+  /**
+   * A4: the weighted death (`dieWith`), or null on the old path (`play('die')`: the cartoon poof hides the body).
+   * Times are the die track's (animation ms); `sq` and `alpha` persist through a hitstop like the other offsets.
+   */
+  private death: { dir: 1 | -1; style: DeathStyle; landAt: number; lieMs: number; fadeMs: number; onLand?: () => void; landed: boolean; sinkDust: boolean; sq: number; alpha: number; cached: boolean } | null = null;
 
   constructor(
     private readonly def: VisualDef,
@@ -1611,9 +1688,260 @@ class AtlasUnitView implements UnitView {
     this.actionMuzzle = this.muzzleOf(t);
   }
 
+  /**
+   * A1 (duck-typed, `CombatView`): the reach of an attack clip at its impact frame, facing +x, in lu from the
+   * feet (the tip tracker the sheet writes per frame, the body's lunge from the team-colour layer, the idle
+   * extents; see `computeReach`). `clip` defaults to the attack playing, else the variant the next attack will
+   * play (so a unit walking into a fight stages for the swing it will show, review A S1); a variant whose extras
+   * sheet has not loaded answers for the main attack (the one that plays). Null without an attack clip.
+   */
+  reach(clip?: string): Reach | null {
+    if (this.destroyed) return null;
+    const main = this.def.clips['attack']?.ref ?? 'attack';
+    const want = clip ?? (this.action && isAttackAnim(this.action.anim) ? this.action.anim : this.nextVariant());
+    let anim = want === undefined || want === 'attack' ? main : want;
+    if (!(this.sheet.animations[anim]?.length ?? 0)) anim = main;
+    if (!(this.sheet.animations[anim]?.length ?? 0)) return null;
+    const hit = this.reachCache.get(anim);
+    if (hit !== undefined) return hit;
+    const r = computeReach(this.sheet, anim, this.def.clips['idle']?.ref ?? 'idle', this.impactAtOf(anim), this.k, this.hk);
+    this.reachCache.set(anim, r);
+    return r;
+  }
+
+  /** A1 (duck-typed): a presentation offset along world x (lu) on top of the pose, outside the R2 frame lock. */
+  setOffsetX(lu: number): void {
+    this.offsetX = Number.isFinite(lu) ? lu : 0;
+    if (!this.destroyed) this.root.x = this.rootX + this.offsetX;
+  }
+
+  /** A1 (duck-typed): the share 0..1 of each attack's authored lunge taken back on its strike and recovery. */
+  setLungeComp(share: number): void {
+    this.lungeShare = Number.isFinite(share) ? Math.max(0, Math.min(1, share)) : 0;
+  }
+
+  /**
+   * A2 (duck-typed): an additive hit reaction on top of whatever plays: a push along `dir` (world), a tilt about the
+   * feet with the head snapping back, a squash, all by `tier` and the unit's mass (`REACTION`). The pose: the full hit
+   * clip when idle; a short hit-pose insert while walking (the walk runs on underneath); a recovery after the impact
+   * hold is cut short and bridged by the insert; a wind-up and its impact hold always show (the recoil only). A hit
+   * during a reaction restarts it at the stronger of the two. A frozen (time-stopped) unit does not react.
+   */
+  react(tier: HitTier, dir: 1 | -1): void {
+    if (this.destroyed || this.frozenPose) return;
+    if (!this.reacted) {
+      // A4: the first hit in a battle bakes the bits this age's fallen leave, in idle time, so no death frame bakes
+      // a part (menus, which never hit, bake none)
+      warmBits(this.decor, Math.max(0, FX_AGES.indexOf(unitSheetAge(this.def.source) ?? 'stone')));
+    }
+    this.reacted = true;
+    // a flash earlier this frame started the old flinch and squash: the reaction replaces them
+    this.flinchT = -1;
+    this.squashT = -1;
+    if (this.dead) return;
+    const m = (REACTION[tier] ?? REACTION.light)[this.mass()];
+    const k = this.reduceMotion ? REACT_REDUCE : 1;
+    const cur = this.rx;
+    const left = cur ? Math.max(0, 1 - cur.t / cur.ms) : 0;
+    const keep = (fresh: number, old: number | undefined): number => Math.max(fresh, (old ?? 0) * left);
+    this.rx = {
+      t: 0,
+      ms: m.ms,
+      dir: dir < 0 ? -1 : 1,
+      push: keep(m.pushLu * k, cur?.push),
+      tilt: keep(((m.tiltDeg * Math.PI) / 180) * k, cur?.tilt),
+      squash: keep(m.squash * k, cur?.squash),
+    };
+    if (this.stunned) return;
+    const hitAnim = this.def.clips['hit']?.ref ?? 'hit';
+    const hasHit = (this.sheet.animations[hitAnim]?.length ?? 0) >= 2;
+    const a = this.action;
+    if (a && (isAttackAnim(a.anim) || a.name === 'attack' || a.name === 'ability')) {
+      if (a.t < a.releaseMs) return;
+      // the recovery gives way to the hit: the attack ends here and the hit pose bridges to the idle
+      this.action = null;
+      this.actionMuzzle = null;
+      if (hasHit) this.startInsert(hitAnim);
+      return;
+    }
+    if (a && (a.name === 'spawn' || a.hold)) return;
+    if (this.isMoving() || (a && a.name !== 'hit')) {
+      if (hasHit) this.startInsert(hitAnim);
+      return;
+    }
+    // under sustained blows (three Bonkers on one Rhino) the running hit clip plays on and the recoil answers each
+    // blow; only a nearly finished one restarts, so an idle victim never locks on the clip's first frames
+    if (a && a.name === 'hit' && a.t < HIT_INSERT_GAP_MS) return;
+    this.insertT = -1;
+    this.play('hit');
+  }
+
+  /**
+   * A2/A8 (duck-typed): a lift arc of the body over `ms` (the battle view moves x): a sim knockback (a hop with a
+   * backward tilt; with `tumble`, a backflip about the hit centre), or a pounce or leap (a stretched take-off nose up,
+   * the nose dipping toward the landing). The R2 frame lock lets go for the arc and re-plants on landing, where the
+   * body squashes and `onLand` fires. Reduce motion: half the lift and tilt, no tumble. A new arc replaces one in flight.
+   * A knockback also ends the swing the sim cancelled with it (`cancelSwing`).
+   */
+  airborne(o: { ms: number; liftLu: number; kind: AirKind; tumble: boolean; onLand?: () => void }): void {
+    if (this.destroyed) return;
+    const reduce = this.reduceMotion;
+    if (o.kind === 'knockback') this.cancelSwing();
+    this.air = {
+      t: 0,
+      ms: Math.max(60, Number.isFinite(o.ms) ? o.ms : 220),
+      lift: Math.max(0, Number.isFinite(o.liftLu) ? o.liftLu : 0) * (reduce ? 0.5 : 1),
+      kind: o.kind,
+      tumble: o.tumble && !reduce && !hovers(this.gait),
+      ...(o.onLand ? { onLand: o.onLand } : {}),
+    };
+  }
+
+  /**
+   * A sim knockback cancels every pending swing of the unit (A2.7; `airborne` with `kind: 'knockback'` is called on
+   * exactly that event): an attack still short of its impact frame ends, and the hop shows the hit pose instead, so
+   * no impact frame lands on nothing (review A, S7). A blow already landed keeps its follow-through. The riders' and
+   * gunners' pending shots went with it (their accents never fire).
+   */
+  private cancelSwing(): void {
+    if (this.dead) return;
+    this.accents = [];
+    this.pendingAlt = null;
+    const a = this.action;
+    if (!a || !isAttackAnim(a.anim) || a.t >= (a.impactAtMs ?? a.releaseMs)) return;
+    this.action = null;
+    this.actionMuzzle = null;
+    const hit = track(this.sheet, this.def, 'hit', { loop: false });
+    if (hit && hit.frames.length >= 2) this.action = hit;
+  }
+
+  /**
+   * A4 (duck-typed): death with weight. The die clip plays (a thrown body a little faster, a heavy one slower); a light
+   * or medium body under a heavy blow is thrown up along the fall before it lands, everything else crumples; on the
+   * ground frame (`deathGroundMs`) the body squashes, bounces a little (heavy bodies thud instead) and `onLand` fires;
+   * then it lies `lieMs` and sinks and fades over `fadeMs`, and `finished` turns true. Ring, glyph and trim go at
+   * once; the contact shadow stays under the body and fades with it. The x travel is the battle view's
+   * (`setOffsetX`). The KO stars of the sheet's hand-off still pop; its poof, which hid the body, does not. Reduce
+   * motion: no throw, no bounce, half the squash. `play('die')` keeps the old cartoon path.
+   */
+  dieWith(o: { dir: 1 | -1; tier: HitTier; heavy: boolean; lieMs: number; fadeMs: number; onLand?: () => void }): void {
+    if (this.destroyed || this.dead) return;
+    this.play('die');
+    const tr = this.action;
+    if (!this.dead || !tr) return;
+    const style = deathStyle(o.tier, o.heavy, this.mass(), this.reduceMotion);
+    const authored = tr.steps.reduce((a, b) => a + b, 0);
+    tr.durationMs = Math.max(1, authored / style.speed);
+    const landAt = deathGroundMs(tr.steps, this.sheet.clips[tr.anim]?.groundAtMs) / style.speed;
+    this.deathFx = this.deathFx.filter((f) => f.id === 'fx.ko_stars').map((f) => ({ ...f, atMs: f.atMs / style.speed }));
+    this.hideAtMs = -1;
+    this.death = {
+      dir: o.dir < 0 ? -1 : 1,
+      style,
+      landAt,
+      lieMs: Math.max(0, Number.isFinite(o.lieMs) ? o.lieMs : 0),
+      fadeMs: Math.max(1, Number.isFinite(o.fadeMs) ? o.fadeMs : 300),
+      ...(o.onLand ? { onLand: o.onLand } : {}),
+      landed: false,
+      sinkDust: false,
+      sq: 0,
+      alpha: 1,
+      cached: false,
+    };
+    this.setGroundMarks(false);
+  }
+
+  /** A4: the weighted death at track time `t`: lift and lean of a throw, the landing beat, then lie, sink and fade. */
+  private stepDeath(t: number): { y: number; rot: number } {
+    const d = this.death;
+    if (!d) return { y: 0, rot: 0 };
+    if (!d.landed && t >= d.landAt) {
+      d.landed = true;
+      d.onLand?.();
+    }
+    let y = 0;
+    let rot = 0;
+    d.sq = 0;
+    if (t < d.landAt) {
+      const u = d.landAt > 0 ? t / d.landAt : 1;
+      if (d.style.fling) {
+        y = -d.style.liftLu * 4 * u * (1 - u);
+        rot = d.dir * DEATH_THROW_TILT_RAD * Math.sin(u * Math.PI);
+      }
+    } else {
+      const since = t - d.landAt;
+      const land = deathLanding(since);
+      d.sq = land.squash * d.style.squash;
+      y = -d.style.bounceLu * land.bounce;
+      const fade = deathFade(since, d.lieMs, d.fadeMs);
+      d.alpha = fade.alpha;
+      // the fading body is one picture, not see-through layers (legs, harness and team colour showed through each
+      // other, review A N10): its lying pose no longer changes, so it fades as a texture of itself (one small texture a
+      // fading body, at the sheet's own density, returned when the view goes)
+      if (fade.alpha < 1 && !d.cached) {
+        d.cached = true;
+        this.body.cacheAsTexture({ resolution: 1 });
+      }
+      y += DEATH_SINK_LU * fade.sink;
+      if (fade.sink > 0 && !d.sinkDust) {
+        d.sinkDust = true;
+        if (!this.lite && !this.reduceMotion) this.dustPoof(0, -2, 0.45 * Math.max(1, this.def.heightLu / 68));
+      }
+    }
+    const a = (this.def.filters?.alpha ?? 1) * d.alpha;
+    this.body.alpha = a;
+    this.overlay.alpha = d.alpha;
+    // (the contact shadow fades with it in `place`)
+    return { y, rot };
+  }
+
+  private startInsert(anim: string): void {
+    // under sustained fire the walk still shows between hit poses (the recoil answers every hit)
+    if (this.clockMs - this.insertAt < HIT_INSERT_GAP_MS) return;
+    this.insertAnim = anim;
+    this.insertT = 0;
+    this.insertAt = this.clockMs;
+  }
+
+  /** The impact point of an attack clip (A shares the manifest's; a variant may carry its own, ANIM_SPEC 2.0). */
+  private impactAtOf(anim: string): number | null {
+    const main = this.def.clips['attack']?.ref ?? 'attack';
+    if (anim === main) return this.def.events.attack.impactAt;
+    return this.sheet.clips[anim]?.impactAt ?? this.def.events.attack.impactAt;
+  }
+
+  /** The per-step lunge of an attack clip (texture units) and the step its compensation starts on. */
+  private lungeData(anim: string): { curve: number[]; from: number } | null {
+    const hit = this.lungeCache.get(anim);
+    if (hit) return hit;
+    const frames = this.sheet.animations[anim];
+    if (!frames || frames.length === 0) return null;
+    const idle = idleBody(this.sheet, this.def.clips['idle']?.ref ?? 'idle') ?? idleBody(this.sheet, anim);
+    if (!idle) return null;
+    const meta = this.sheet.clips[anim];
+    const d = { curve: lungeCurve(this.sheet, anim, idle), from: compFromStep(meta, clipImpactStep(meta, frames.length, this.impactAtOf(anim))) };
+    this.lungeCache.set(anim, d);
+    return d;
+  }
+
+  /** A1: the lunge compensation of the step on screen; a clip switch eases it instead of popping. */
+  private updateLungeComp(tr: Track, step: number, dtMs: number): void {
+    let target = 0;
+    if (this.lungeShare > 0 && !this.dead && isAttackAnim(tr.anim)) {
+      const d = this.lungeData(tr.anim);
+      if (d) target = lungeCompLu(d.curve, step, d.from, this.lungeShare, this.k);
+    }
+    if (tr === this.compTrack) {
+      this.compLu = target;
+      return;
+    }
+    this.compLu = Math.abs(target - this.compLu) < 0.05 ? target : easeExp(this.compLu, target, dtMs, LUNGE_COMP_EASE_MS);
+    if (Math.abs(target - this.compLu) < 0.05) this.compTrack = tr;
+  }
+
   setPose(p: UnitPose): void {
     if (this.destroyed) return;
-    this.root.position.set(p.x, p.y);
+    this.root.position.set(p.x + this.offsetX, p.y);
     this.rootX = p.x;
     this.poseFacing = p.facing;
     if (this.turnT < 0 && this.drawnFacing() !== this.facing) this.applyFacing(this.drawnFacing());
@@ -1693,6 +2021,11 @@ class AtlasUnitView implements UnitView {
     // a one-shot never loops, whatever the clip it falls back to (review B1)
     const t = track(this.sheet, this.def, clip, loops ? { loop: true, ...opts } : { ...opts, loop: false }, anim);
     if (!t) return;
+    // A8: the recovery after the impact at a per-unit, per-swing speed (the impact step and its hold unchanged)
+    if (clip === 'attack' && t.timeline && t.impactStep !== null) {
+      t.timeline = jitterRecovery(t.timeline, t.impactStep, recoveryScale(this.unitId, this.attackPlays));
+      t.durationMs = Math.max(1, t.timeline.reduce((a, seg) => a + seg.ms, 0));
+    }
     if (clip === 'spawn') this.startSpawn();
     if (clip === 'attack' || clip === 'ability') this.setTurned(false, true);
     // a body attack takes over from the riders' attack_alt: their throw still shows as the accent
@@ -1766,8 +2099,12 @@ class AtlasUnitView implements UnitView {
   }
 
   private pickVariant(): string {
-    const cycle = attackCycle((a) => (this.sheet.animations[a]?.length ?? 0) > 0);
-    return pickAttackVariant(cycle, this.unitId, this.attackPlays++);
+    return pickAttackVariant(attackCycleOf(this.sheet.animations), this.unitId, this.attackPlays++);
+  }
+
+  /** The variant the next attack will play: `pickVariant`'s choice, without counting it as a play (no allocation). */
+  private nextVariant(): string {
+    return pickAttackVariant(attackCycleOf(this.sheet.animations), this.unitId, this.attackPlays);
   }
 
   /** The asked variant when it has loaded (it still counts as a play of the cycle), else the cycle's next. */
@@ -1850,6 +2187,7 @@ class AtlasUnitView implements UnitView {
 
   private die(): void {
     this.dead = true;
+    this.insertT = -1;
     this.showStars(false);
     if (this.bubble) this.bubble.visible = false;
     const meta = this.sheet.clips['die'];
@@ -1870,8 +2208,8 @@ class AtlasUnitView implements UnitView {
     this.flashDur = Math.max(1, ms);
     this.flashSprite.tint = color;
     // A victim flash is a hit: the body flinches back by its mass (MR-103) and, in the cartoon
-    // style, squashes for a beat (R6).
-    if (!this.dead) {
+    // style, squashes for a beat (R6). A view the battle drives with `react()` takes its recoil from there.
+    if (!this.dead && !this.reacted) {
       this.flinchT = 0;
       if (this.style === 'cartoon') this.squashT = 0;
     }
@@ -1939,6 +2277,15 @@ class AtlasUnitView implements UnitView {
         this.squashT += animDt;
         if (this.squashT >= 210) this.squashT = -1;
       }
+      // A2: the reaction and the hit-pose insert run on the animation clock (a hitstop holds the moment of contact)
+      if (this.rx) {
+        this.rx.t += animDt;
+        if (this.rx.t >= this.rx.ms) this.rx = null;
+      }
+      if (this.insertT >= 0) {
+        this.insertT += animDt;
+        if (this.insertT >= HIT_INSERT_MS[0] + HIT_INSERT_MS[1]) this.insertT = -1;
+      }
       // R8: lean against acceleration (ground) or pitch with it (flyers), at most 3 degrees, eased
       const v = this.gaitV ?? 0;
       const accel = ((v - this.prevGaitV) * 1000) / animDt;
@@ -1970,7 +2317,12 @@ class AtlasUnitView implements UnitView {
         this.hop += animDt;
         oy -= Math.abs(Math.sin((this.hop / 700) * Math.PI)) * 8;
       }
-      if (this.dead && this.action) {
+      if (this.dead && this.action && this.death) {
+        this.deathHandoff(this.action.t);
+        const dw = this.stepDeath(this.action.t);
+        oy += dw.y;
+        rot += dw.rot;
+      } else if (this.dead && this.action) {
         this.deathHandoff(this.action.t);
         if (this.style === 'realistic') {
           // MR-105: the body lies, then sinks a little as the render fades it out.
@@ -1987,8 +2339,37 @@ class AtlasUnitView implements UnitView {
       sx = s.sx;
       sy = s.sy;
     }
+    // A4: the landing beat of a weighted death flattens the body toward the ground
+    if (this.death && this.death.sq !== 0) {
+      sx *= 1 + 0.8 * this.death.sq;
+      sy *= 1 - this.death.sq;
+    }
     // the flinch pushes the body back, away from what it faces
     if (this.flinchT >= 0) ox -= this.facing * flinchOffset(this.mass(), this.flinchT);
+    // A2: the additive recoil (push along the blow, the head snapping back about the feet, the squash)
+    let xr = 0;
+    if (this.rx) {
+      const s = reactionShape(this.rx.t / this.rx.ms);
+      ox += this.rx.dir * this.rx.push * s.push;
+      xr += this.rx.dir * this.rx.tilt * s.tilt;
+      const q = this.rx.squash * s.squash;
+      sx *= 1 + 0.8 * q;
+      sy *= 1 - q;
+    }
+    // A2/A8: the lift arc and the landing squash, on the game clock
+    if (this.landT >= 0) this.landT += dtMs;
+    const air = this.stepAir(dtMs);
+    xr += air.rot;
+    this.airY = air.y;
+    sy *= 1 + air.stretch;
+    sx *= 1 - 0.7 * air.stretch;
+    if (this.landT >= LAND_SQUASH_MS) this.landT = -1;
+    if (this.landT >= 0) {
+      const q = landSquash(this.landT) * LAND_SQUASH_DEPTH[this.mass()] * (this.reduceMotion ? 0.5 : 1);
+      sx *= 1 + 0.8 * q;
+      sy *= 1 - q;
+    }
+    this.extraRot = xr;
     if (this.flashMs > 0) {
       // full for 60%, then fades (same curve as the procedural tier)
       this.flashMs = Math.max(0, this.flashMs - dtMs);
@@ -2010,6 +2391,31 @@ class AtlasUnitView implements UnitView {
     this.show(dtMs);
     this.place(ox, sx, sy);
   }
+
+  /** The lift arc this frame: the world rotation it adds, its height (lu, + is down) and its stretch; fires `onLand`. */
+  private stepAir(dtMs: number): { rot: number; y: number; stretch: number } {
+    this.tumbling = false;
+    const a = this.air;
+    if (!a) return AIR_NONE;
+    a.t += dtMs;
+    if (a.t >= a.ms) {
+      this.air = null;
+      // the landing squash counts from the touch-down inside this frame
+      this.landT = a.t - a.ms;
+      a.onLand?.();
+      return AIR_NONE;
+    }
+    const s = airShape(a.kind, a.t / a.ms, a.tumble);
+    const k = this.reduceMotion ? 0.5 : 1;
+    const tilt = (((a.kind === 'knockback' ? KNOCK_TILT_DEG[this.mass()] : POUNCE_PITCH_DEG) * Math.PI) / 180) * k;
+    // a knockback throws the unit toward its back; a pounce leans along its facing (backTilt < 0 dips the nose)
+    const back = -this.facing;
+    this.tumbling = a.tumble;
+    return { rot: back * (s.backTilt * tilt + s.spin * Math.PI * 2), y: -a.lift * s.lift, stretch: s.stretch * AIR_STRETCH * k };
+  }
+
+  /** The lift arc's height this frame (lu, + is down). */
+  private airY = 0;
 
   /** The last `place` offset and squash, so a sheet swap can re-place the body at once (`swapSheet`). */
   private placedOx = 0;
@@ -2055,18 +2461,36 @@ class AtlasUnitView implements UnitView {
     this.placedOx = ox;
     this.placedSx = sx;
     this.placedSy = sy;
-    const r = this.rot;
-    // flyers pitch about their middle, everything else leans from the feet
-    const cx = hovers(this.gait) ? this.anchors.hitCenter.x * this.facing : 0;
-    const cy = hovers(this.gait) ? this.anchors.hitCenter.y : 0;
+    // the clip's lean and tilt, plus the hit reaction and the lift arc (world radians)
+    const r = this.rot + this.extraRot;
+    // flyers pitch and a tumbling body turns about the middle; everything else leans from the feet
+    const mid = hovers(this.gait) || this.tumbling;
+    const cx = mid ? this.anchors.hitCenter.x * this.facing : 0;
+    const cy = mid ? this.anchors.hitCenter.y : 0;
     const cos = Math.cos(r);
     const sin = Math.sin(r);
+    // A1: the lunge compensation steps the whole figure back along its facing (feet and shadow with it)
+    const comp = -this.facing * this.compLu;
     this.body.rotation = r;
-    this.body.x = ox + this.lockShift + (cx - (cx * cos - cy * sin));
-    this.body.y = this.offY + (cy - (cx * sin + cy * cos));
+    this.body.x = ox + this.lockShift + comp + (cx - (cx * cos - cy * sin));
+    this.body.y = this.offY + this.airY + (cy - (cx * sin + cy * cos));
     const turn = this.turnT >= 0 ? turnScale(this.turnT) : 1;
     this.body.scale.set(this.k * this.facing * sx * this.pop * turn, this.k * sy * this.pop);
-    if (this.shadow) this.shadow.x = this.lockShift;
+    if (this.shadow) {
+      this.shadow.x = this.lockShift + comp;
+      // the contact shadow stays on the ground under a lifted body, smaller and lighter
+      if (!hovers(this.gait)) {
+        const s = 1 - Math.min(0.45, Math.max(0, -this.airY) / 50);
+        const fade = this.death?.alpha ?? 1;
+        // only when the lift or the fade moved (every frame for every unit otherwise)
+        if (s !== this.shadowLift || fade !== this.shadowFade) {
+          this.shadowLift = s;
+          this.shadowFade = fade;
+          this.shadow.scale.set(this.shadowScaleX * s, 0.9 * s);
+          this.shadow.alpha = 0.72 * (0.55 + 0.45 * s) * fade;
+        }
+      }
+    }
   }
 
   /** Second-attacker accents due now: a throw puff at the rider, or a muzzle flash at the MG (R3). */
@@ -2105,6 +2529,8 @@ class AtlasUnitView implements UnitView {
       if (fx.id === 'fx.ko_stars') this.koStars(x, y, k, fx.loops ?? 1);
       else this.dustPoof(x, y, k);
     }
+    // A4: the weighted death lies and fades instead of hiding (stepDeath)
+    if (this.death) return;
     const dur = this.action?.durationMs ?? 0;
     if (this.style === 'cartoon') {
       // R6: the KO pose hands off to the poof and the stars; the body ends at `hideUnitAtMs` (no lie, sink or fade)
@@ -2210,13 +2636,18 @@ class AtlasUnitView implements UnitView {
     if (!tr) return;
     const i = stepOf(tr);
     const tex = tr.frames[i] ?? Texture.EMPTY;
-    // review M4: a switch between the walk (carry pose) and another clip (guard, attack) cross-dissolves
+    // review M4: a switch between the walk (carry pose) and the guard cross-dissolves. A8: an attack cuts straight
+    // into its first key (a dissolve turned the anticipation of every first swing into a double exposure)
     const prev = this.shownTrack;
-    if (prev && prev !== tr && prev.anim !== tr.anim && (prev.anim === 'walk' || tr.anim === 'walk') && !this.dead && this.baseSprite.texture !== Texture.EMPTY) {
+    // (only a track change can start or cut a dissolve: the attack test runs then, not every frame)
+    const changed = prev !== tr;
+    const cutIn = changed && (isAttackAnim(tr.anim) || tr.name === 'attack' || tr.name === 'ability');
+    if (prev && changed && prev.anim !== tr.anim && (prev.anim === 'walk' || tr.anim === 'walk') && !cutIn && !this.dead && this.baseSprite.texture !== Texture.EMPTY) {
       setFrame(this.ghostBase, this.baseSprite.texture);
       setFrame(this.ghostTeam, this.teamSprite.texture);
       this.ghostT = 0;
-    } else if (this.ghostT >= 0) this.ghostT += dtMs;
+    } else if (cutIn) this.ghostT = -1;
+    else if (this.ghostT >= 0) this.ghostT += dtMs;
     this.shownTrack = tr;
     if (this.ghostT >= CROSS_HOLD_MS || this.dead) this.ghostT = -1;
     const ghost = this.ghostT >= 0;
@@ -2227,31 +2658,41 @@ class AtlasUnitView implements UnitView {
       this.ghostBase.alpha = a;
       this.ghostTeam.alpha = a;
     }
-    setFrame(this.baseSprite, tex);
-    setFrame(this.flashSprite, tex);
-    setFrame(this.teamSprite, tr.team?.[i] ?? Texture.EMPTY);
+    // A2: a hit-pose insert shows over the walk or a cut recovery (the track keeps its time underneath)
+    const ins = this.insertT >= 0 && !this.dead ? this.sheet.animations[this.insertAnim] : undefined;
+    const insStep = this.insertT < HIT_INSERT_MS[0] ? 0 : 1;
+    const shownTex = ins && ins.length >= 2 ? (ins[insStep] ?? tex) : tex;
+    setFrame(this.baseSprite, shownTex);
+    setFrame(this.flashSprite, shownTex);
+    setFrame(this.teamSprite, (ins && ins.length >= 2 ? this.sheet.animations[`${this.insertAnim}_team`]?.[insStep] : tr.team?.[i]) ?? Texture.EMPTY);
+    this.updateLungeComp(tr, i, dtMs);
     const walking = tr === this.base && tr.name === 'walk' && tr.anim === 'walk' && !this.dead;
     // R2: legged units hold their body where it stood when the frame began, so the planted foot stays put.
     // `lockShift` = the frame lock (0 at a frame start, then -v x dt) + `lockLag`, the offset carried in
-    // from a clip that held the body still (review M1/M3: no jump at a walk start or end).
-    const legged = plantsFeet(this.gait) && this.gaitV !== null && !this.frozenPose && !this.dead;
+    // from a clip that held the body still (review M1/M3: no jump at a walk start or end). A lift arc
+    // (`airborne`) has no planted feet: the lock lets go and re-plants on landing.
+    const legged = plantsFeet(this.gait) && this.gaitV !== null && !this.frozenPose && !this.dead && !this.air;
     const rootMoved = Math.abs(this.rootX - this.lastRootX) > 1e-3;
     this.lastRootX = this.rootX;
     if (walking && legged) {
+      // the walk plants its feet against where the unit is drawn (the sim x plus the battle view's offset), so a walk
+      // that slows into its stand-off or out of one never skates (review A, S1; the battle view retimes the walk to the
+      // drawn speed through `setGait`)
+      const drawnRoot = this.rootX + this.offsetX;
       if (this.lockStep < 0) {
         // the walk starts from where the body is drawn; the carried offset melts away while walking
         this.lockLag = this.lockShift;
-        this.lockX = this.rootX;
+        this.lockX = drawnRoot;
         this.lockStep = i;
       } else if (i !== this.lockStep) {
         const { sinceMs } = loopStepAt(tr.steps, tr.durationMs, tr.t, this.walkDir);
-        this.lockX = this.rootX + frameLockOffset(this.poseFacing * (this.gaitV ?? 0), sinceMs);
+        this.lockX = drawnRoot + frameLockOffset(this.poseFacing * (this.gaitV ?? 0), sinceMs);
         this.lockStep = i;
       }
       this.lockLag = Math.abs(this.lockLag) < 0.05 ? 0 : easeExp(this.lockLag, 0, dtMs, FRAME_LOCK_CATCH_UP_TAU_MS);
-      let off = this.lockX - this.rootX;
+      let off = this.lockX - drawnRoot;
       if (Math.abs(off) > FRAME_LOCK_MAX_LU) {
-        this.lockX = this.rootX;
+        this.lockX = drawnRoot;
         off = 0;
       }
       this.lockShift = off + this.lockLag;
@@ -2287,6 +2728,7 @@ class AtlasUnitView implements UnitView {
   /** True once the die clip has played out (cartoon: hidden and the poof spent; realistic: lain and faded). */
   get finished(): boolean {
     if (!this.dead || this.action === null) return false;
+    if (this.death) return this.action.t >= this.death.landAt + this.death.lieMs + this.death.fadeMs;
     if (this.style === 'cartoon') return this.action.t >= Math.max(this.hideAtMs, this.action.durationMs) + 500;
     return this.action.t >= this.action.durationMs + DEATH_LIE_MS + DEATH_FADE_MS;
   }

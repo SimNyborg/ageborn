@@ -5,7 +5,8 @@
  * - `SFX_SHEETS`: one Ogg Opus sprite sheet per sound group, paths relative to the site base;
  *   `alt` is the same sheet as AAC (.m4a) and `sync` the time (s) where the sync burst at the
  *   start of the sheet is detected, so a decoder's start delay can be measured and undone.
- * - `SFX_FILES`: per sound id, its sheet and each variant's [offset, duration] in seconds.
+ * - `SFX_FILES`: per sound id, its sheet and each variant's [offset, duration] in seconds; a loop
+ *   (the battle ambience) also has `loop`: [start, length] of its seamless window inside the clip.
  * - `MUSIC_FILES`: per music cue, stinger and layer stem, the file and, for loops, the loop
  *   window (`loopStart`, `loopLength` in seconds; any window of that length inside the file
  *   loops seamlessly); `alt` is the AAC (.m4a) copy. `stinger.<name>.k<n>` are the stingers
@@ -24,6 +25,8 @@ export interface SfxFileEntry {
   sheet: string;
   /** [offset, duration] in seconds per variant. */
   variants: readonly (readonly [number, number])[];
+  /** A loop's seamless window, [start, length] in seconds from the clip's start (the rest is margin). */
+  loop?: readonly [number, number];
 }
 
 export interface MusicFile {
@@ -35,16 +38,16 @@ export interface MusicFile {
   alt?: string;
 }
 
-export const SFX_BYTES = 3667900;
+export const SFX_BYTES = 3803118;
 export const MUSIC_BYTES = 6730878;
 
 export const SFX_SHEETS: Readonly<Record<string, SfxSheetFile>> = {
   ui: { src: "audio/sfx/ui.40bf754e.ogg", bytes: 146453, seconds: 29.01, alt: "audio/sfx/ui.d47ded06.m4a", sync: 0.02031 },
-  battle: { src: "audio/sfx/battle.e60e5e80.ogg", bytes: 210181, seconds: 41.708, alt: "audio/sfx/battle.130edf05.m4a", sync: 0.02031 },
+  battle: { src: "audio/sfx/battle.282ec87e.ogg", bytes: 309004, seconds: 60.981, alt: "audio/sfx/battle.cc79ef52.m4a", sync: 0.02031 },
   stone: { src: "audio/sfx/stone.9bce7610.ogg", bytes: 204254, seconds: 40.759, alt: "audio/sfx/stone.32e7e80b.m4a", sync: 0.02031 },
   bronze: { src: "audio/sfx/bronze.07809bb2.ogg", bytes: 241403, seconds: 48.464, alt: "audio/sfx/bronze.c620a791.m4a", sync: 0.02031 },
   medieval: { src: "audio/sfx/medieval.c5faa6d4.ogg", bytes: 239381, seconds: 47.036, alt: "audio/sfx/medieval.2ad20c60.m4a", sync: 0.02031 },
-  match: { src: "audio/sfx/match.16fce348.ogg", bytes: 800030, seconds: 157.738, alt: "audio/sfx/match.3a2e3d25.m4a", sync: 0.02031 },
+  match: { src: "audio/sfx/match.c625e9a3.ogg", bytes: 836425, seconds: 165.018, alt: "audio/sfx/match.344f3240.m4a", sync: 0.02031 },
   gunpowder: { src: "audio/sfx/gunpowder.b2f24923.ogg", bytes: 313040, seconds: 61.952, alt: "audio/sfx/gunpowder.d06c4e59.m4a", sync: 0.02031 },
   industrial: { src: "audio/sfx/industrial.2881b0b2.ogg", bytes: 324773, seconds: 63.957, alt: "audio/sfx/industrial.b67221b7.m4a", sync: 0.02031 },
   modern: { src: "audio/sfx/modern.3beebedb.ogg", bytes: 275484, seconds: 54.899, alt: "audio/sfx/modern.9f8442bc.m4a", sync: 0.02031 },
@@ -84,31 +87,39 @@ export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
   step_heavy: { sheet: "battle", variants: [[2.70821, 0.25], [3.00821, 0.25], [3.30821, 0.25]] },
   swing_whoosh: { sheet: "battle", variants: [[3.60821, 0.1659], [3.8241, 0.16723], [4.04133, 0.16485]] },
   hit_blunt: { sheet: "battle", variants: [[4.25619, 0.2], [4.50619, 0.2], [4.75619, 0.2]] },
-  hit_slash: { sheet: "battle", variants: [[5.00619, 0.14], [5.19619, 0.14], [5.38619, 0.14]] },
-  hit_pierce: { sheet: "battle", variants: [[5.57619, 0.1], [5.72619, 0.1], [5.87619, 0.1]] },
-  hit_bullet: { sheet: "battle", variants: [[6.02619, 0.125], [6.20119, 0.1016], [6.35279, 0.18]] },
-  hit_laser: { sheet: "battle", variants: [[6.58279, 0.12], [6.75279, 0.12], [6.92279, 0.12]] },
-  hit_heavy: { sheet: "battle", variants: [[7.09279, 0.422], [7.56479, 0.45215], [8.06694, 0.45319]] },
-  hit_effective: { sheet: "battle", variants: [[8.57013, 0.304], [8.92413, 0.304], [9.27812, 0.304]] },
-  explosion_s: { sheet: "battle", variants: [[9.63213, 0.79785], [10.47998, 0.77148], [11.30146, 0.72208]] },
-  explosion_m: { sheet: "battle", variants: [[12.07354, 1.174], [13.29754, 1.20533], [14.55288, 1.15977]] },
-  die_bio: { sheet: "battle", variants: [[15.76265, 0.31], [16.12265, 0.31], [16.48265, 0.31]] },
-  die_mech: { sheet: "battle", variants: [[16.84265, 0.74194], [17.63458, 0.76148], [18.44606, 0.73217]] },
-  prop_drop: { sheet: "battle", variants: [[19.22823, 0.233], [19.51123, 0.233], [19.79423, 0.233]] },
-  heal_tick: { sheet: "battle", variants: [[20.07723, 0.35], [20.47723, 0.35], [20.87723, 0.35]] },
-  shield_up: { sheet: "battle", variants: [[21.27723, 0.6], [21.92723, 0.6], [22.57723, 0.6]] },
-  turret_build: { sheet: "battle", variants: [[23.22723, 0.8], [24.07723, 0.8], [24.92723, 0.8]] },
-  turret_sell: { sheet: "battle", variants: [[25.77723, 0.58], [26.40723, 0.58], [27.03723, 0.58]] },
-  turret_upgrade: { sheet: "battle", variants: [[27.66723, 0.68542], [28.40265, 0.68708]] },
-  slot_buy: { sheet: "battle", variants: [[29.13973, 0.45], [29.63973, 0.45]] },
-  base_hit: { sheet: "battle", variants: [[30.13973, 0.52569], [30.71542, 0.53038], [31.29579, 0.52054]] },
-  alert_base: { sheet: "battle", variants: [[31.86633, 1.31], [33.22633, 1.31]] },
-  coin_gain: { sheet: "battle", variants: [[34.58633, 0.68004], [35.31638, 0.67437], [36.04075, 0.65885]] },
-  xp_tick: { sheet: "battle", variants: [[36.7496, 0.07], [36.8696, 0.07], [36.9896, 0.07]] },
-  evolve_ready: { sheet: "battle", variants: [[37.1096, 1.22865]] },
-  power_ready: { sheet: "battle", variants: [[38.38825, 0.77958]] },
-  power_telegraph: { sheet: "battle", variants: [[39.21783, 1.0], [40.26783, 1.0]] },
-  emote_pop: { sheet: "battle", variants: [[41.31783, 0.08], [41.44783, 0.08], [41.57783, 0.08]] },
+  hit_slash: { sheet: "battle", variants: [[5.00619, 0.144], [5.20019, 0.144], [5.39419, 0.144]] },
+  hit_pierce: { sheet: "battle", variants: [[5.58819, 0.124], [5.76219, 0.124], [5.93619, 0.124]] },
+  hit_bullet: { sheet: "battle", variants: [[6.11019, 0.125], [6.28519, 0.125], [6.46019, 0.18]] },
+  hit_laser: { sheet: "battle", variants: [[6.69019, 0.12], [6.86019, 0.12], [7.03019, 0.12]] },
+  hit_heavy: { sheet: "battle", variants: [[7.20019, 0.4161], [7.66629, 0.42523], [8.14152, 0.43198]] },
+  hit_effective: { sheet: "battle", variants: [[8.6235, 0.304], [8.9775, 0.304], [9.3315, 0.304]] },
+  explosion_s: { sheet: "battle", variants: [[9.6855, 0.79785], [10.53335, 0.77148], [11.35483, 0.72208]] },
+  explosion_m: { sheet: "battle", variants: [[12.12692, 1.174], [13.35092, 1.20533], [14.60625, 1.15977]] },
+  die_bio: { sheet: "battle", variants: [[15.81602, 0.31], [16.17602, 0.31], [16.53602, 0.31]] },
+  die_mech: { sheet: "battle", variants: [[16.89602, 0.74196], [17.68798, 0.76144], [18.49942, 0.72304]] },
+  prop_drop: { sheet: "battle", variants: [[19.27246, 0.233], [19.55546, 0.233], [19.83846, 0.233]] },
+  heal_tick: { sheet: "battle", variants: [[20.12146, 0.35], [20.52146, 0.35], [20.92146, 0.35]] },
+  shield_up: { sheet: "battle", variants: [[21.32146, 0.6], [21.97146, 0.6], [22.62146, 0.6]] },
+  turret_build: { sheet: "battle", variants: [[23.27146, 0.8], [24.12146, 0.8], [24.97146, 0.8]] },
+  turret_sell: { sheet: "battle", variants: [[25.82146, 0.58], [26.45146, 0.58], [27.08146, 0.58]] },
+  turret_upgrade: { sheet: "battle", variants: [[27.71146, 0.68542], [28.44687, 0.68708]] },
+  slot_buy: { sheet: "battle", variants: [[29.18396, 0.45], [29.68396, 0.45]] },
+  base_hit: { sheet: "battle", variants: [[30.18396, 0.52569], [30.75965, 0.53038], [31.34002, 0.52054]] },
+  alert_base: { sheet: "battle", variants: [[31.91056, 1.31], [33.27056, 1.31]] },
+  coin_gain: { sheet: "battle", variants: [[34.63056, 0.68004], [35.3606, 0.67437], [36.08498, 0.65885]] },
+  xp_tick: { sheet: "battle", variants: [[36.79383, 0.07], [36.91383, 0.07], [37.03383, 0.07]] },
+  evolve_ready: { sheet: "battle", variants: [[37.15383, 1.22865]] },
+  power_ready: { sheet: "battle", variants: [[38.43248, 0.77958]] },
+  power_telegraph: { sheet: "battle", variants: [[39.26206, 1.0], [40.31206, 1.0]] },
+  emote_pop: { sheet: "battle", variants: [[41.36206, 0.08], [41.49206, 0.08], [41.62206, 0.08]] },
+  kill_accent: { sheet: "battle", variants: [[41.75206, 0.36054], [42.1626, 0.35475], [42.56735, 0.39265]] },
+  mat_armour: { sheet: "battle", variants: [[43.01, 0.304], [43.364, 0.304], [43.718, 0.304]] },
+  mat_wood: { sheet: "battle", variants: [[44.072, 0.168], [44.29, 0.168], [44.508, 0.168]] },
+  body_fall_s: { sheet: "battle", variants: [[44.726, 0.27052], [45.04652, 0.2701], [45.36662, 0.28271]] },
+  body_fall_m: { sheet: "battle", variants: [[45.69933, 0.47381], [46.22315, 0.4735], [46.74665, 0.47577]] },
+  clash_crash: { sheet: "battle", variants: [[47.27242, 0.82848], [48.1509, 0.82971]] },
+  leap_land: { sheet: "battle", variants: [[49.0306, 0.25], [49.3306, 0.25], [49.6306, 0.25]] },
+  ambience_battle: { sheet: "battle", variants: [[49.9306, 11.0]], loop: [0.25, 10.5] },
   shot_sling: { sheet: "stone", variants: [[0.15, 0.13], [0.33, 0.13], [0.51, 0.13]] },
   shot_catapult: { sheet: "stone", variants: [[0.69, 0.58048], [1.32048, 0.57002], [1.9405, 0.58377]] },
   bee_buzz: { sheet: "stone", variants: [[2.57427, 0.4], [3.02427, 0.4], [3.47427, 0.4]] },
@@ -263,6 +274,9 @@ export const SFX_FILES: Readonly<Record<string, SfxFileEntry>> = {
   moment_wahwah: { sheet: "match", variants: [[154.36981, 1.72]] },
   moment_wind: { sheet: "match", variants: [[156.13981, 0.9]] },
   moment_shrug: { sheet: "match", variants: [[157.08981, 0.59833]] },
+  body_fall_l: { sheet: "match", variants: [[157.73815, 1.09096], [158.8791, 1.12715]] },
+  die_bio_l: { sheet: "match", variants: [[160.05625, 0.81317], [160.91942, 0.80946]] },
+  die_mech_l: { sheet: "match", variants: [[161.77887, 1.5484], [163.37727, 1.59104]] },
   shot_musket: { sheet: "gunpowder", variants: [[0.15, 0.74296], [0.94296, 0.71083], [1.70379, 0.71544]] },
   shot_lob: { sheet: "gunpowder", variants: [[2.46923, 0.25], [2.76923, 0.25], [3.06923, 0.25]] },
   shot_cannon: { sheet: "gunpowder", variants: [[3.36923, 1.29579], [4.71502, 1.41375], [6.17877, 1.36598]] },

@@ -8,8 +8,10 @@
  * it executes the actions, so the mapper output does not depend on them.
  */
 import type { AbilityDef, AttackDef, CardId, CompiledContent, DmgType, EffectId, PowerDef, SimEvent, Side, SoundId, UnitDef } from '@/contracts';
-import type { CosmeticRng } from '@/core';
-import { feelRule, type FeelRuleExt, type RenderFeelConfig } from './feelConfig';
+import { msToTicks, ticksToMs, type CosmeticRng } from '@/core';
+import { ClashDetector, clashWidth, countNear, type ClashUnit } from './clash';
+import { bitsMat, blowTier, bodySizeOf, heavyBody, hitTier, hitstopFor, LEAP_DEFAULTS, matchSeed, materialOf, shareBp, SIZE_CODE, sparkKind, stuckKindOf, TIER_CODE } from './combatFeel';
+import { clashRules, combatTuning, feelRule, type FeelRuleExt, type RenderFeelConfig } from './feelConfig';
 import { BASE_DEPTH_LU, LANE_LU, MILLI_LU, gateX } from './layout';
 import { BACKDROP_WIPE_MS } from './seam';
 import type { Anchor, ViewAction } from './types';
@@ -21,6 +23,33 @@ export interface UnitInfo {
   card: CardId;
   /** World x in lu. */
   x: number;
+  /** Max HP (centi-HP, as the sim's `UnitState.maxHp`) for the hit tiers; absent: the card's base HP. */
+  maxHp?: number;
+}
+
+/** The attack behind a hit of `dmg` from this card (riders' attacks count), else its first attack. */
+function attackForHit(def: UnitDef | undefined, dmg: DmgType): AttackDef | undefined {
+  if (!def) return undefined;
+  const all: AttackDef[] = [...def.attacks];
+  for (const a of def.abilities) if (a.kind === 'riders') all.push(a.attack);
+  return all.find((a) => a.dmgType === dmg) ?? all[0];
+}
+
+/** Is the attack behind a hit of `dmg` from this card a melee one (no projectile)? */
+export function meleeHit(def: UnitDef | undefined, dmg: DmgType): boolean {
+  const atk = attackForHit(def, dmg);
+  return !!atk && atk.projectile === undefined;
+}
+
+/** The projectile visual of the attack behind a hit (an arrow, a javelin), or null. */
+/** A Heavy, Epic or Legendary: its fall is a moment worth a screen kick whoever made it (review A, S5). */
+function bigGroup(def: UnitDef | undefined): boolean {
+  return def?.group === 'heavy' || def?.group === 'epic' || def?.group === 'legendary';
+}
+
+function projectileOfHit(def: UnitDef | undefined, dmg: DmgType): string | null {
+  const p = attackForHit(def, dmg)?.projectile;
+  return p && 'visualId' in p ? p.visualId : null;
 }
 
 /** Turret source ids (WP2 convention, docs/decisions.md WP2 "source ids"): -10 - (side × 4 + mount). */
@@ -96,6 +125,21 @@ export function dieSoundFor(def: UnitDef | undefined): SoundId {
   return def?.tags.includes('mech') ? 'die_mech' : 'die_bio';
 }
 
+/** Pitch of the deeper death grunt of a heavy body (queue item 38 A7, track S's levels). */
+export const HEAVY_DIE_PITCH_BP = 9000;
+
+/**
+ * A body's death voice by its weight (queue item 38 A7): Legendaries and huge bodies die with the big voice
+ * (`die_bio_l`, `die_mech_l`), other heavy bodies with the usual one pitched down; a card's own sound stays its own.
+ */
+export function dieVoiceOf(def: UnitDef | undefined): { id: SoundId; pitchBp?: number } {
+  const id = dieSoundFor(def);
+  if (id !== 'die_bio' && id !== 'die_mech') return { id };
+  const size = bodySizeOf(def);
+  if (size === 'l') return { id: `${id}_l` };
+  return size === 'm' ? { id, pitchBp: HEAVY_DIE_PITCH_BP } : { id };
+}
+
 /** The attack at `index`: the unit's own attacks, then rider attacks (B15 `UnitState.attacks`). */
 export function attackOf(def: UnitDef | undefined, index: number): AttackDef | undefined {
   if (!def) return undefined;
@@ -136,6 +180,8 @@ export function coinCount(bountyMilliGold: number): number {
 interface Subs {
   spark?: EffectId;
   hitSound?: SoundId;
+  /** The killing blow's own sound: `hit_heavy` for a heavy share, else the hit sound (queue item 38 A3). */
+  killSound?: SoundId;
   attackSound?: SoundId;
   dieSound?: SoundId;
   spawnSound?: SoundId;
@@ -162,6 +208,19 @@ interface RuleTarget {
   side?: Side;
   /** With `side`: only that side's `maxUnits` frontmost units (a capped buff). */
   maxUnits?: number;
+  /** World x of the event's source (lu): its sounds pan by it (queue item 38 step 7). */
+  x?: number;
+  /** With `x`: the sounds pan but never fade off view (a power's hits, A13). */
+  noFade?: boolean;
+  /** Pitches for the rule's sounds by their placeholder (`$dieSound`: a heavy body's deeper grunt). */
+  pitchBp?: Readonly<Record<string, number>>;
+  /** The blow's contact (A5): the rule's particles at the anchor unit play where the blow lands on it. */
+  contact?: { from?: number; dir?: 1 | -1 };
+  /**
+   * False: the rule plays without its screen kick (review A, S5: a small unit's kill or death kicks only when it is the
+   * player's own kill; a big fight's dozens of kills otherwise jitter the screen).
+   */
+  kick?: boolean;
 }
 
 /** A field's damage numbers merge across its 0.5 s pulses into one running total per unit. */
@@ -252,6 +311,10 @@ export class EventMapper {
   private liveUnits: (() => Iterable<readonly [number, UnitInfo]>) | null = null;
   /** A destroyed base's end: the cheer and the stinger, played on the collapse's stinger beat. */
   private pendingEnd: { winner: Side | null; cue: 'stinger.victory' | 'stinger.defeat' | null } | null = null;
+  /** The last hit on each unit in the batch being mapped (a death's direction and tier, queue item 38 A4). */
+  private readonly lastBlow = new Map<number, Extract<SimEvent, { e: 'hit' }>>();
+  /** Two lines meeting (queue item 38 A6): follows the melee blows on the sim's clock. */
+  private readonly clash = new ClashDetector();
 
   constructor(o: MapperOptions) {
     this.content = o.content;
@@ -276,7 +339,12 @@ export class EventMapper {
   map(events: readonly SimEvent[], unit: (id: number) => UnitInfo | undefined, units?: () => Iterable<readonly [number, UnitInfo]>): ViewAction[] {
     const out: ViewAction[] = [];
     const diedNow = new Set<number>();
-    for (const ev of events) if (ev.e === 'died') diedNow.add(ev.id);
+    this.lastBlow.clear();
+    for (const ev of events) {
+      if (ev.e === 'died') diedNow.add(ev.id);
+      // the last blow on each unit in this batch: a death reads its direction and tier from it (A4)
+      else if (ev.e === 'hit') this.lastBlow.set(ev.targetId, ev);
+    }
     this.areaShown = new Set();
     this.liveUnits = units ?? null;
     for (const ev of events) {
@@ -307,14 +375,17 @@ export class EventMapper {
     }
     if (r.hitstopGlobalMs && r.hitstopGlobalMs > 0) out.push({ a: 'freeze', ms: r.hitstopGlobalMs, exempt: r.globalExempt === true });
     if (r.slowMo) out.push({ a: 'slowMo', scale: r.slowMo.scale, ms: r.slowMo.ms, ...(r.slowMo.easeMs ? { easeMs: r.slowMo.easeMs } : {}) });
+    if (r.simSlowMo) out.push({ a: 'simSlowMo', scale: r.simSlowMo.scale, ms: r.simSlowMo.ms, ...(r.simSlowMo.easeMs ? { easeMs: r.simSlowMo.easeMs } : {}) });
     if (r.trauma && r.trauma > 0) {
       out.push({
         a: 'trauma',
         amount: r.trauma,
-        ...(t.dir ? { dir: t.dir } : {}),
+        // a rule with its own kick (A3's channel) does not kick again through the trauma
+        ...(t.dir && !r.kickPx ? { dir: t.dir } : {}),
         ...(r.traumaGapMs ? { gap: { key: `${key}:${t.gapKey ?? ''}`, gapMs: r.traumaGapMs } } : {}),
       });
     }
+    if (r.kickPx && r.kickPx > 0 && t.dir && t.kick !== false) out.push({ a: 'kick', px: r.kickPx, dir: t.dir, at: t.at });
     if (r.flashMs && r.flashMs > 0) {
       const target = r.flashTarget ?? (t.victim !== undefined ? 'victim' : 'screen');
       if (target === 'victim' && t.victim !== undefined) out.push({ a: 'unitFlash', id: t.victim, ms: r.flashMs, ...(r.flashColor !== undefined ? { color: r.flashColor } : {}) });
@@ -329,21 +400,34 @@ export class EventMapper {
         out.push({ a: 'fxUnits', effectId: id, side: t.side, priority: p.priority, ...(t.opts ? { opts: t.opts } : {}), ...(t.maxUnits ? { max: t.maxUnits } : {}) });
         continue;
       }
+      // a particle may sit elsewhere on the event's unit (a ground glow at the feet of a blow's contact point)
+      const at: Anchor = p.at && t.at.k === 'unit' ? { k: 'unit', id: t.at.id, part: p.at } : t.at;
       out.push({
         a: 'fx',
         effectId: id,
-        at: t.at,
+        at,
         count,
         priority: p.priority,
         ...(t.spreadLu !== undefined ? { spreadLu: t.spreadLu } : count > 1 ? { spreadLu: 10 } : {}),
         ...(t.opts ? { opts: t.opts } : {}),
         ...(t.follow ? { follow: true } : {}),
+        ...(t.contact && !p.at ? { contact: t.contact } : {}),
       });
     }
-    if (r.sound) {
-      const id = resolve(r.sound, t.subs);
+    for (const s of r.sound ? [r.sound, ...(r.sounds ?? [])] : (r.sounds ?? [])) {
+      const id = resolve(s, t.subs);
       const gapMs = id ? this.feel.tuning.soundGapMs[id] : undefined;
-      if (id) out.push({ a: 'sound', id, ...(gapMs ? { gap: { key: id, gapMs } } : {}) });
+      const pitch = t.pitchBp?.[s];
+      if (id) {
+        out.push({
+          a: 'sound',
+          id,
+          ...(gapMs ? { gap: { key: id, gapMs } } : {}),
+          ...(t.x !== undefined ? { x: t.x, ...(t.noFade ? { noFade: true } : {}) } : {}),
+          ...(pitch !== undefined ? { pitchBp: pitch } : {}),
+          ...(r.soundVolumeDb ? { volumeDb: r.soundVolumeDb } : {}),
+        });
+      }
     }
     if (r.duckDb !== undefined && r.duckMs !== undefined && r.duckMs > 0) out.push({ a: 'duck', db: r.duckDb, ms: r.duckMs });
   }
@@ -446,10 +530,10 @@ export class EventMapper {
         const u = unit(ev.id);
         const atk = attackOf(u ? C.units[u.card] : undefined, ev.attackIndex);
         if (atk && !atk.projectile) {
-          // Melee: the swing sound lands just before the impact frame.
+          // Melee: the swing sound lands just before the impact frame, placed (pan, fade off view) like its hit
           const r = feelRule(this.feel, 'attack.melee');
           const id = r.sound ? resolve(r.sound, { attackSound: atk.sfx }) : null;
-          if (id) out.push({ a: 'sound', id, delayMs: Math.max(0, windupMs - 80) });
+          if (id) out.push({ a: 'sound', id, delayMs: Math.max(0, windupMs - 80), ...(u ? { x: u.x } : {}) });
         }
         return;
       }
@@ -460,6 +544,7 @@ export class EventMapper {
         let arc = false;
         let sound: SoundId | undefined;
         let attackIndex = 0;
+        let gun = false;
         if (turret) {
           const tDef = C.turrets[this.turretOn(turret.side, turret.mount) ?? ''];
           const p = tDef?.attack.projectile;
@@ -470,6 +555,7 @@ export class EventMapper {
           const p = atk?.projectile;
           arc = p !== undefined && 'arc' in p && p.arc === true;
           sound = atk?.sfx;
+          gun = atk?.dmgType === 'bullet';
           if (def && atk) attackIndex = def.attacks.indexOf(atk) >= 0 ? def.attacks.indexOf(atk) : 1;
         }
         out.push({
@@ -484,20 +570,39 @@ export class EventMapper {
           arc,
           ...(attackIndex > 0 ? { attackIndex } : {}),
         });
-        if (sound) this.rule('projectile.fire', { at: { k: 'unit', id: ev.from, part: 'hit' }, subs: { attackSound: sound } }, out);
+        if (sound) this.rule('projectile.fire', { at: { k: 'unit', id: ev.from, part: 'hit' }, subs: { attackSound: sound }, ...(src ? { x: src.x } : {}) }, out);
+        // A5: a gunshot's muzzle flash lights the ground under the shooter for a moment
+        if (src && gun) this.rule('shot.gun', { at: { k: 'unit', id: ev.from, part: 'feet' }, opts: { size: 0, dir: dirOf(src.side) } }, out);
         return;
       }
       case 'hit': {
         const victim = unit(ev.targetId);
         const x = ev.x / MILLI_LU;
-        const at: Anchor = victim ? { k: 'unit', id: ev.targetId, part: 'hit' } : { k: 'world', x, y: -30 };
         const src = ev.sourceId > 0 ? unit(ev.sourceId) : undefined;
         const turret = decodeTurretSource(ev.sourceId);
         const fromX = src ? src.x : turret ? gateX(turret.side) : undefined;
-        const dir = fromX !== undefined ? { x: Math.sign(x - fromX) || 1, y: 0 } : undefined;
+        // the world direction of the push: away from the source, else (powers) back from the victim's facing
+        const dirX: 1 | -1 = fromX !== undefined ? (x - fromX < 0 ? -1 : 1) : victim ? (dirOf(victim.side) === 1 ? -1 : 1) : 1;
+        const dir = fromX !== undefined || victim ? { x: dirX, y: 0 } : undefined;
         const vDef = victim ? C.units[victim.card] : undefined;
+        const aDef = src ? C.units[src.card] : undefined;
+        // queue item 38 A2/A3: the hit's tier from its share of the victim's max HP (or the killing blow); a melee
+        // blow lands at its contact point (the attacker's tip in the victim's drawn body, A5)
+        const ct = combatTuning(this.feel);
+        const maxHp = victim?.maxHp ?? (vDef ? vDef.hp * 100 : 0);
+        const share = shareBp(ev.damage, maxHp);
+        const killed = diedNow.has(ev.targetId);
+        const tier = hitTier(ev.damage, maxHp, killed, ct.tiers);
+        const melee = ev.sourceKind === 'unit' && src !== undefined && meleeHit(aDef, ev.dmgType);
+        const material = vDef && !vDef.fort ? materialOf(vDef, ct.materials) : null;
+        const at: Anchor = victim ? { k: 'unit', id: ev.targetId, part: 'hit' } : { k: 'world', x, y: -30 };
+        const contact = victim ? { ...(src ? { from: ev.sourceId } : {}), dir: dirX } : undefined;
         // A fort answers in its own material (A16.14.8: wood, stone, metal, energy)
-        const subs: Subs = { spark: sparkFor(ev.dmgType, ev.modBp), hitSound: vDef?.fort && ev.modBp < EFFECTIVE_BP ? fortHitSound(victim?.card ?? '') : hitSoundFor(ev.dmgType, ev.modBp) };
+        const hitSound = vDef?.fort && ev.modBp < EFFECTIVE_BP ? fortHitSound(victim?.card ?? '') : hitSoundFor(ev.dmgType, ev.modBp);
+        // a plain blow shows the contact spark (A5); an effective or resisted one keeps its counter spark (A11)
+        const countered = ev.modBp >= EFFECTIVE_BP || ev.modBp <= RESISTED_BP;
+        const spark = !countered && ct.contactSpark && !vDef?.fort ? ct.contactSpark.effectId : sparkFor(ev.dmgType, ev.modBp);
+        const subs: Subs = { spark, hitSound, killSound: share >= ct.tiers.heavyBp && !vDef?.fort ? 'hit_heavy' : hitSound };
         // A trap's victim alone freezes for 60 ms (A16.14.8: the snap)
         if (this.traps.has(ev.sourceId) && victim) out.push({ a: 'unitFreeze', id: ev.targetId, ms: 60 });
         // A field's pulses (A2.9.7, every 0.5 s) hit the same units again and again: the first pulse
@@ -513,15 +618,46 @@ export class EventMapper {
           if (this.fieldHits.size > 512) this.fieldHits = new Set();
           this.fieldHits.add(k);
         }
-        this.rule(ev.heavy ? 'hit.heavy' : 'hit.light', {
+        const tierKey = this.has(`hit.${tier}`) ? `hit.${tier}` : ev.heavy ? 'hit.heavy' : 'hit.light';
+        // a shot (a unit's, a turret's) or a power's hit may look different from a blow of the same tier:
+        // `hit.heavy.ranged` raises no dust at the victim's feet (that dust is the feet skidding under a heavy blow)
+        const ruleKey = !melee && this.has(`${tierKey}.ranged`) ? `${tierKey}.ranged` : tierKey;
+        // a power's hits pan with the rest but are never faded off view (A13: power impacts keep their level)
+        const byPower = ev.sourceKind === 'power' || ev.sourceKind === 'lastStand';
+        // a killing blow kicks the screen for a Heavy, Epic or Legendary, or for the player's own kill (review A, S5)
+        const kick = tier !== 'kill' || bigGroup(vDef) || actingSide(ev, unit) === this.mySide;
+        this.rule(ruleKey, {
           at,
           victim: ev.targetId,
-          ...(ev.sourceId > 0 ? { attacker: ev.sourceId } : {}),
-          ...(dir ? { dir, opts: { dir: dir.x } } : {}),
+          ...(melee ? { attacker: ev.sourceId } : {}),
+          ...(dir ? { dir } : {}),
+          ...(kick ? {} : { kick: false }),
+          opts: { dir: dirX, tier: TIER_CODE[tier], kind: sparkKind(ev.dmgType, material), size: SIZE_CODE[bodySizeOf(vDef)] },
           subs,
           spreadLu: 6,
+          x,
+          ...(byPower ? { noFade: true } : {}),
+          ...(contact ? { contact } : {}),
         }, out);
-        if (victim) out.push({ a: 'unitClip', id: ev.targetId, clip: 'hit' });
+        if (victim) {
+          // the hit-stop by tier (A3): every melee blow holds attacker and victim a moment, heavy hits and kills
+          // longer by their share; a ranged hit holds only the victim of a heavy hit or a kill
+          const hs = hitstopFor(tier, melee, share, ct.hitstop);
+          const jitter = feelRule(this.feel, ruleKey).jitterPx;
+          if (hs.victim > 0) out.push({ a: 'unitFreeze', id: ev.targetId, ms: hs.victim, ...(jitter ? { jitterPx: jitter } : {}) });
+          if (melee && hs.attacker > 0) out.push({ a: 'unitFreeze', id: ev.sourceId, ms: hs.attacker });
+          // the victim's material rings under the hit (armour clanks, wood thocks), never for lasers and blasts
+          if (material && ev.dmgType !== 'laser' && ev.dmgType !== 'blast') this.rule(`hit.material.${material}`, { at, x, opts: { dir: dirX, tier: TIER_CODE[tier] }, ...(contact ? { contact } : {}) }, out);
+          out.push({ a: 'unitClip', id: ev.targetId, clip: 'hit', tier, dir: dirX });
+          // A5: an arrow, a bolt, a javelin, a quill or a needle (a unit's or a turret's) sticks where it hit for a
+          // moment and moves with the body (not in a falling one)
+          const visual = killed || vDef?.fort ? null : src ? projectileOfHit(aDef, ev.dmgType) : turret ? this.turretShot(turret.side, turret.mount) : null;
+          const kind = stuckKindOf(visual, ct.stuck);
+          if (kind !== null) this.rule('hit.stuck', { at, follow: true, opts: { kind, dir: dirX }, ...(contact ? { contact } : {}) }, out);
+          // A6: the first melee blows after the fronts were apart, with both lines near, are the clash (after the
+          // blow's own hit-stop, which the clash's longer hold extends)
+          if (melee && src && !vDef?.fort && !aDef?.fort) this.clashBlow((src.x + victim.x) / 2, out);
+        }
         // A power may land its own piece on each unit it touches (`power.fx.<id>.hit`: Pebble Hail's
         // pebbles drop on the 8 units it screens anywhere on the lane, X0 `lane` reach).
         if (cast !== undefined && this.has(`power.fx.${cast.power}.hit`)) {
@@ -531,7 +667,6 @@ export class EventMapper {
         // Anti-heavy (×3 vs Heavy): an armour plate cracks open on top of the counter hit
         if (vDef?.role === 'heavy' && ev.modBp >= ANTI_HEAVY_CRACK_BP) out.push({ a: 'sound', id: 'hit_armor_crack', gap: { key: 'hit_armor_crack', gapMs: 90 } });
         // Brace: a Heavy runs into a braced unit, which plants its feet (no knockback, A16 Heavy counter)
-        const aDef = src ? C.units[src.card] : undefined;
         if (victim && aDef?.role === 'heavy' && vDef?.abilities.some((ab) => ab.kind === 'brace')) {
           const last = this.braced.get(ev.targetId);
           if (last === undefined || this.tick - last >= BRACE_GAP_TICKS) {
@@ -594,12 +729,24 @@ export class EventMapper {
         }
         return;
       }
-      case 'knockback':
+      case 'knockback': {
+        // A2: the view draws the sim's one-tick jump as a hop over `knockMs` (it lands where the sim put it)
+        const dx = (ev.toX - ev.fromX) / MILLI_LU;
+        if (Math.abs(dx) >= 0.5 && unit(ev.id)) out.push({ a: 'unitKnock', id: ev.id, dx, ms: combatTuning(this.feel).knockMs });
         return;
+      }
       case 'abilityUsed': {
-        out.push({ a: 'unitClip', id: ev.id, clip: 'ability' });
         const at: Anchor = ev.ability === 'callStrike' || ev.ability === 'pounce' ? { k: 'world', x: ev.x / MILLI_LU, y: 0 } : { k: 'unit', id: ev.id, part: 'hit' };
         const u = unit(ev.id);
+        // A8: a pounce hops (take-off, arc, landing) over the sim's straight leap; its ability clip (the attack for
+        // the pouncers) holds its strike to the touch-down, the bite. A blink (the Warp Stalker) keeps its own look.
+        const leap = ev.ability === 'pounce' && u ? { ...LEAP_DEFAULTS, ...(combatTuning(this.feel).leap ?? {}) } : null;
+        const ab = leap && u ? C.units[u.card]?.abilities.find((a) => a.kind === 'pounce') : undefined;
+        if (u && leap && ab?.kind === 'pounce' && !leap.blinkCards.includes(u.card)) {
+          const ms = ticksToMs(msToTicks(ab.leapMs));
+          out.push({ a: 'unitClip', id: ev.id, clip: 'ability', impactAtMs: ms });
+          out.push({ a: 'unitLeap', id: ev.id, dx: ev.x / MILLI_LU - u.x, ms, kind: leap.leapCards.includes(u.card) ? 'leap' : 'pounce' });
+        } else out.push({ a: 'unitClip', id: ev.id, clip: 'ability' });
         // A card's own look wins over the ability kind's (A17.12: the Starwarden's beacon ring, the
         // Bronze Colossus's Molten Heart stomp, the Warp Stalker's blink).
         const own = u ? `ability.${ev.ability}.${u.card}` : '';
@@ -614,7 +761,18 @@ export class EventMapper {
         const def = C.units[ev.card];
         const at: Anchor = { k: 'unit', id: ev.id, part: 'hit' };
         this.healGestureAt.delete(ev.id);
-        out.push({ a: 'unitDie', id: ev.id });
+        // A4: the body falls along the killing blow (its direction and its share tier) and lands by its weight
+        const ct = combatTuning(this.feel);
+        const v = unit(ev.id);
+        const vx = v?.x ?? ev.x / MILLI_LU;
+        const blow = this.lastBlow.get(ev.id);
+        const kid = ev.killerId !== null && ev.killerId > 0 ? ev.killerId : (blow && blow.sourceId > 0 ? blow.sourceId : undefined);
+        const kt = decodeTurretSource(ev.killerId ?? blow?.sourceId ?? 0);
+        const kx = kid !== undefined ? unit(kid)?.x : kt ? gateX(kt.side) : undefined;
+        const dieDir: 1 | -1 = kx !== undefined ? (vx - kx < 0 ? -1 : 1) : dirOf(ev.side) === 1 ? -1 : 1;
+        const maxHp = v?.maxHp ?? (def ? def.hp * 100 : 0);
+        const tier = blow ? blowTier(blow.damage, maxHp, ct.tiers) : 'medium';
+        out.push(def?.fort ? { a: 'unitDie', id: ev.id } : { a: 'unitDie', id: ev.id, dir: dieDir, tier, heavy: heavyBody(def), size: bodySizeOf(def) });
         if (def?.fort) {
           this.fortFell(ev.id, ev.card, at, out);
           this.coins(ev, at, out);
@@ -623,7 +781,30 @@ export class EventMapper {
         const g = def?.group;
         const key = g === 'legendary' ? 'death.legendary' : g === 'heavy' || g === 'epic' ? 'death.heavy' : 'death.unit';
         const killer = ev.killerId !== null && ev.killerId > 0 ? ev.killerId : undefined;
-        this.rule(key, { at, victim: ev.id, ...(killer !== undefined ? { attacker: killer } : {}), subs: { dieSound: dieSoundFor(def) } }, out);
+        // the bits it leaves (A4, `fx.bits`): its age's material, along the fall, seeded from match data
+        const size = bodySizeOf(def);
+        const bits = {
+          dir: dieDir,
+          age: def ? (C.ages[def.age]?.index ?? 0) : 0,
+          count: ct.bits?.[size] ?? 3,
+          bitsSeed: matchSeed(ev.id, ev.tick, 38),
+          side: ev.side,
+          mat: bitsMat(def, ct.materials),
+        };
+        // the death voice by weight (A7): Legendaries and huge bodies the big one, other heavy bodies a deeper grunt
+        const voice = dieVoiceOf(def);
+        this.rule(key, {
+          at,
+          victim: ev.id,
+          ...(killer !== undefined ? { attacker: killer } : {}),
+          // a small unit's death kicks the screen only when it is the player's own kill (review A, S5)
+          ...(key === 'death.unit' && ev.killerSide !== this.mySide ? { kick: false } : {}),
+          subs: { dieSound: voice.id },
+          ...(voice.pitchBp !== undefined ? { pitchBp: { $dieSound: voice.pitchBp } } : {}),
+          dir: { x: dieDir, y: 0 },
+          x: vx,
+          opts: bits,
+        }, out);
         if (def?.tags.includes('mech')) {
           this.rule('death.mech', { at, victim: ev.id }, out);
           const oneIn = Math.max(1, Math.round(tun.mechExplodeOneIn));
@@ -1082,6 +1263,27 @@ export class EventMapper {
     out.push({ a: 'unitClip', id: best, clip: 'attack', impactAtMs: HEAL_GESTURE_IMPACT_MS });
   }
 
+  /**
+   * A6: a melee blow between two units at world x (the middle of the pair). The first blows of a new contact, with
+   * both lines near, are the clash moment: the `clash` rule (crash, dust curtain along the line, kick), and the
+   * view's part (shake, a 3% camera punch, a short hit-stop on the engaged units, the wide-screen lean-in), plus a
+   * lift of the music's intensity. At most once per `gapMs`, on the sim's clock (a replay meets the same clashes).
+   */
+  private clashBlow(x: number, out: ViewAction[]): void {
+    const r = clashRules(this.feel);
+    const near = this.clash.blow(ticksToMs(this.tick), () => {
+      const live = this.liveUnits;
+      if (!live) return [0, 0];
+      const units: ClashUnit[] = [];
+      for (const [, u] of live()) units.push({ side: u.side, x: u.x, fort: !!this.content.units[u.card]?.fort });
+      return countNear(units, x, r.nearLu);
+    }, r);
+    if (!near) return;
+    this.rule('clash', { at: { k: 'world', x, y: 0 }, dir: { x: 0, y: 1 }, x, opts: { widthLu: clashWidth(near, r) } }, out);
+    out.push({ a: 'clash', x, freezeMs: r.freezeMs, lean: near[0] >= r.lean.minPerSide && near[1] >= r.lean.minPerSide, trauma: r.trauma, punchZoom: r.punchZoom, punchMs: r.punchMs });
+    if (r.intensity > 0) out.push({ a: 'intensity', amount: r.intensity });
+  }
+
   /** Size and timing options for an ability's effect (the art sizes rings by `radius`). */
   private abilityOpts(u: UnitInfo | undefined, kind: AbilityDef['kind']): Record<string, number> | undefined {
     const def = u ? this.content.units[u.card] : undefined;
@@ -1162,5 +1364,11 @@ export class EventMapper {
 
   private turretOn(side: Side, mount: number): CardId | undefined {
     return this.turretCards.get(`${side}:${mount}`);
+  }
+
+  /** The projectile visual a turret on that mount shoots (its bolt, spear or quill may stick, A5), or null. */
+  private turretShot(side: Side, mount: number): string | null {
+    const p = this.content.turrets[this.turretOn(side, mount) ?? '']?.attack.projectile;
+    return p && 'visualId' in p ? p.visualId : null;
   }
 }
