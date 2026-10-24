@@ -1,7 +1,7 @@
 /**
  * Sprite parts of the combat effects (queue item 38, Phase A4/A5): the "bits" a fallen soldier leaves on the
  * ground for a few seconds (a helmet or hat, a weapon shard, a cloth scrap, a pebble, per age material), and the
- * arrow and javelin shafts that stick in a body.
+ * arrow, javelin, quill and needle shafts that stick in a body.
  *
  * Drawn like the other effect parts (cel shading, one highlight, outlines in the fill darkened), centred on their
  * origin, upright as they would lie. Colours follow the colour rule (A11): the ages' muted materials, saturated
@@ -106,4 +106,14 @@ part('fx.p.stuckArrow', [
 part('fx.p.stuckJavelin', [
   { d: limb(-24, 0, 1, 0, 0, 0.9), zone: 'wood', line: 1 },
   { d: rrect(-12, -1.3, 4.4, 2.6, 0.9), zone: 'rope', line: 0, shade: false, light: false },
+]);
+/** The Quill Porcupine's quill (review A, S3): a pale spine, banded dark at its free end, like `proj.quill`. */
+part('fx.p.stuckQuill', [
+  { d: limb(-11, 0, 0.8, 0, 0, 0.4), zone: 'bone', line: 0.8 },
+  { d: limb(-11, 0, 0.85, -8, 0, 0.75), zone: 'dark', line: 0, shade: false, light: false },
+]);
+/** The Needle Gunner's flechette (review A, S3): a mint glow round a white core, like `proj.needle`, no fletching. */
+part('fx.p.stuckNeedle', [
+  { d: poly([-11, -0.5, -1, -1, 1, 0, -1, 1, -11, 0.5]), zone: 'mint', line: 0, alpha: 0.6, shade: false, light: false },
+  { d: poly([-8, -0.6, -1, -0.7, 0.6, 0, -1, 0.7, -8, 0.6]), zone: 'white', line: 0.6, shade: false, light: false },
 ]);

@@ -456,14 +456,32 @@ describe('bots place forts in real matches, under the player rules (A16.14.7)', 
       { side: 1 as Side, controller: createBot(balanced(7), 1, 2, content) },
     ];
     let placed = 0;
+    // the stretch (ticks) the forcing side could have placed and did not: the recharge done, no fort of its up (one at a
+    // time, `maxAlive` 1), the wall's price in its gold and room under the pop cap, in regulation
+    let idle = 0;
+    let longestIdle = 0;
     const r = runHeadless(sim, seats, {
       onEvents: (ev) => {
-        for (const e of ev) if (e.e === 'fortPlaced' && e.side === 0) placed += 1;
+        let now = false;
+        for (const e of ev) {
+          if (e.e !== 'fortPlaced' || e.side !== 0) continue;
+          placed += 1;
+          now = true;
+        }
+        const st = sim.state;
+        const me = st.sides[0];
+        const wall = content.forts[fortOf(AGES[me.ageIndex] ?? 'stone', 'wall')];
+        const up = st.units.some((u) => u.side === 0 && u.fort !== undefined && u.hp > 0);
+        const could = !now && wall !== undefined && st.phase === 'regulation' && !up && me.fortReadyTick <= st.tick && me.gold >= wall.cost * MILLI && me.pop + wall.pop <= content.economy.popCap;
+        idle = could ? idle + 1 : 0;
+        longestIdle = Math.max(longestIdle, idle);
       },
     });
-    // One fort up at a time (`maxAlive` 1): a wall that is never broken stands about 2:45 before it has
-    // decayed, so a Short War holds at least 3 placements (MVP balance pass: the seed's flow changed).
-    expect(placed).toBeGreaterThanOrEqual(3);
+    // The property the rows rely on, not a count: it places, and whenever it could place again it does within a few
+    // of its decisions (one every 17 ticks on a 10-tick-old view), never sitting 5 s on a placeable fort. (A count of
+    // "3 in a Short War" held only while this seed's war ran long enough; queue item 38's combat levers shortened it.)
+    expect(placed).toBeGreaterThanOrEqual(1);
+    expect(longestIdle).toBeLessThan(100);
     // Only the recharge, caps or a wave walking onto the pad during the reaction delay may reject it.
     for (const x of r.rejected.filter((q) => q.t === 'fort')) expect(['fortPadEnemy', 'noGold', 'popFull', 'fortMax', 'fortSiege']).toContain(x.reason);
   });

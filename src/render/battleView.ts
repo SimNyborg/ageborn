@@ -154,6 +154,12 @@ interface UnitEntry {
   drawX: number;
   /** In melee contact this frame (an attacker with a stand-off, or its victim): drawn in front of idle units. */
   engaged: boolean;
+  /**
+   * How its staging offset eases (review A, S1): `engaged` into a stand-off, `approach` while it walks up to a foe (fast,
+   * the target is already smooth), `release` once a stand-off ended (held while the unit stands, then at most its own
+   * walking speed), `free` otherwise (the same-side spread).
+   */
+  stageMode: 'free' | 'approach' | 'engaged' | 'release';
   /** Attack 0 is melee (staged); the reach of the attack playing or the main one, null while unknown. */
   melee: boolean;
   reach: Reach | null;
@@ -2094,7 +2100,8 @@ export class BattleView {
         e.dying = true;
         e.loopClip = null;
         e.bar.shown = false;
-        e.kb = null;
+        // a knockback still in flight finishes its travel under the falling body (it used to pop by what was left of the
+        // jump, up to about 20 lu, review A N2); the hop's arc lands on its own
         this.dropAura(e);
         const cv = e.view as UnitView & CombatView & ExtentView;
         if (!e.fort && a.dir !== undefined && typeof cv.dieWith === 'function') {
@@ -2141,7 +2148,8 @@ export class BattleView {
         // A3: a directional kick only for what the player can see
         const at = this.anchor(a.at);
         if (!this.camera.inView(at.x, 10)) return;
-        this.director.kick(a.px, a.dir, combatTuning(this.feel).kickGapMs);
+        const ct = combatTuning(this.feel);
+        this.director.kick(a.px, a.dir, ct.kickGapMs, ct.kickFlipMs ?? 0);
         return;
       }
       case 'unitLeap': {
@@ -2178,6 +2186,10 @@ export class BattleView {
         const e = this.units.get(a.id);
         const ms = this.director.hitstopMs(a.ms);
         if (!e || ms <= 0) return;
+        // the timing contract (B5, A12 checklist 3): a unit whose own swing is still winding up is never held, or
+        // its impact frame would land after the sim's hit (and after its sound and spark); it reacts without the
+        // hold, and its own hit-stop at its impact holds the real impact frame (review A, B1)
+        if (this.swingPending(a.id)) return;
         e.view.freeze(ms);
         if (a.jitterPx) {
           e.jitterLeftMs = ms;
@@ -2459,15 +2471,23 @@ export class BattleView {
     if (a.punchZoom > 0 && !this.settings.reduceMotion) this.camera.punch(a.punchZoom, a.punchMs);
     const ms = this.director.hitstopMs(a.freezeMs);
     if (ms > 0) {
-      const st = this.sim.state;
-      const winding = new Set<number>();
-      for (const u of st.units) if ((u.attacks[0]?.impactTick ?? 0) > st.tick) winding.add(u.id);
       for (const e of this.units.values()) {
-        if (!e.engaged || e.dying || winding.has(e.id) || Math.abs(e.drawX - a.x) > CLASH_FREEZE_LU) continue;
+        if (!e.engaged || e.dying || Math.abs(e.drawX - a.x) > CLASH_FREEZE_LU || this.swingPending(e.id)) continue;
         e.view.freeze(ms);
       }
     }
     if (a.lean) this.leanIn(a.x);
+  }
+
+  /**
+   * True while a living unit's attack 0 winds up in the sim (its impact tick still ahead): a hit-stop then would carry
+   * its impact frame past the sim's impact tick (the timing contract), so no local freeze holds it. A unit the blow
+   * killed keeps its hold (its swing never lands; the sim leaves the dead unit's last impact tick as it was).
+   */
+  private swingPending(id: number): boolean {
+    const st = this.sim.state;
+    const u = this.simById.get(id) ?? st.units.find((v) => v.id === id);
+    return u !== undefined && u.hp > 0 && (u.attacks[0]?.impactTick ?? 0) > st.tick;
   }
 
   /**
@@ -2614,6 +2634,7 @@ export class BattleView {
       stage: { x: 0, v: 0 },
       drawX: x,
       engaged: false,
+      stageMode: 'free',
       // A1: only a melee attack 0 (it stops the unit, A2.7) is staged against its target
       melee: !fort && !!def?.attacks[0] && def.attacks[0].projectile === undefined,
       reach: null,
@@ -2646,12 +2667,14 @@ export class BattleView {
       (view as GaitView).setIdentity?.({ id, seed: (id ^ this.config.seed) >>> 0 });
       withMotion(view, this.viewMotion());
     }
-    // it starts on the row the staging gives it among the units on the field (A1; refined every frame)
+    // it starts on the row the staging gives it among the units on the field (A1; refined every frame), kept as its
+    // sticky row so the next frame's staging does not move it at once (review A, N5)
     if (fort) e.y = FORT_ROW_LU;
     else {
       const input = this.stageInput(false);
       input.push({ id, side, x, air, fort: false, sizeLu, target: null, reach: null, body: null });
       e.y = stage(input, this.stageRows, this.feel.tuning.contact ?? CONTACT_DEFAULTS).row.get(id) ?? 0;
+      this.stageRows.set(id, e.y);
     }
     this.layers.units.addChild(view.root);
     if ((def?.group === 'legendary' || (skin && this.config.content.skins[skin]?.rarity === 'legendary')) && PRESETS[this.preset].legendaryAuras) {
@@ -2689,17 +2712,23 @@ export class BattleView {
     const st = this.sim.state;
     this.liveIds.clear();
     this.simById.clear();
+    // the whole field first: a unit created below (`ensureUnit`) takes its first row among all of it (review A, N5)
     for (const u of st.units) {
       this.liveIds.add(u.id);
       this.simById.set(u.id, u);
+    }
+    for (const u of st.units) {
       const e = this.ensureUnit(u);
       if (e.dying) continue;
       e.x = (u.prevX + (u.x - u.prevX) * Math.min(1, Math.max(0, alpha))) / MILLI_LU;
       // A2: during the knockback's own tick the unit is taken at its new sim x at once; the knockback's eased
       // offset then draws it from where it stood (`placeDrawn`), so the jump never shows as a one-tick slide
       if (e.kb && e.kb.tick === st.tick) e.x = u.x / MILLI_LU;
-      // R1: the walk follows the measured velocity (toward the enemy; negative walks back), smoothed
-      stepGait(e.gait, u.mode === 'attack' ? 0 : tickVelocity(u.x, u.prevX, facingOf(u.side), MILLI_LU), e.refSpeed, gameDt);
+      // R1: the walk follows the measured velocity (toward the enemy; negative walks back), smoothed. S1: the velocity
+      // as drawn (the sim's plus the staging offset's), so a walk that slows into its stand-off or speeds up out of one
+      // keeps its feet planted
+      const drawnV = tickVelocity(u.x, u.prevX, facingOf(u.side), MILLI_LU) + facingOf(u.side) * e.stage.v;
+      stepGait(e.gait, u.mode === 'attack' ? 0 : drawnV, e.refSpeed, gameDt);
       if (!e.fort) (e.view as GaitView).setGait?.({ speedLuPerS: e.gait.v });
       e.stunned = false;
       e.frozen = false;
@@ -2788,7 +2817,16 @@ export class BattleView {
       // a falling body stays where it was drawn (its slide along the blow is A4's)
       if (e.dying) continue;
       e.engaged = r.engaged.has(e.id);
-      springOffset(e.stage, r.offset.get(e.id) ?? 0, e.engaged ? STAGE_ENGAGE_HALF_LIFE_MS : STAGE_RELEASE_HALF_LIFE_MS, gameDt, STAGE_MAX_SPEED);
+      const target = r.offset.get(e.id) ?? 0;
+      e.stageMode = stageModeOf(e.stageMode, e.engaged, r.approach.has(e.id), e.stage.x, target);
+      if (e.stageMode === 'engaged') springOffset(e.stage, target, STAGE_ENGAGE_HALF_LIFE_MS, gameDt, STAGE_MAX_SPEED);
+      else if (e.stageMode === 'approach') springOffset(e.stage, target, STAGE_APPROACH_HALF_LIFE_MS, gameDt, STAGE_MAX_SPEED);
+      else if (e.stageMode === 'release') {
+        // S1: the stand-off of a fight that ended stays while the unit stands (its follow-through plays on the spot),
+        // then eases out at no more than the unit's own walking speed as it walks on (its walk retimes to match)
+        if (e.gait.walking) springOffset(e.stage, target, STAGE_RELEASE_HALF_LIFE_MS, gameDt, Math.min(STAGE_MAX_SPEED, e.refSpeed));
+        else e.stage.v = 0;
+      } else springOffset(e.stage, target, STAGE_RELEASE_HALF_LIFE_MS, gameDt, STAGE_MAX_SPEED);
       const comp = r.comp.get(e.id) ?? 0;
       if (Math.abs(comp - e.compSent) > 1e-3) {
         e.compSent = comp;
@@ -2849,6 +2887,10 @@ export class BattleView {
       su.target = target;
       su.reach = e.reach;
       su.body = e.body ?? null;
+      // S1: a melee unit walking up to a foe stages on its approach (the sim parks it at its range from the foe)
+      const range = e.melee && !e.air ? e.def?.attacks[0]?.range : undefined;
+      if (range !== undefined && u.mode !== 'attack') su.rangeLu = range;
+      else delete su.rangeLu;
       if (e.impactTick > 0) su.impactTick = e.impactTick;
       else delete su.impactTick;
       input.push(su);
@@ -2924,8 +2966,10 @@ export class BattleView {
     p.alpha = e.dying ? Math.min(1, e.dieLeftMs / 300) : 1;
     e.view.setPose(p);
     // forts stand behind every unit row, so the troops at a wall read in front of it; a unit in melee contact
-    // draws in front of idle units in (nearly) the same row (A1)
-    e.view.root.zIndex = e.fort ? FORT_Z + (e.id % 1000) : depthZ(e.y + (e.engaged && !e.dying ? ENGAGED_Z_LU : 0), e.air, e.id);
+    // draws in front of idle units in (nearly) the same row (A1); a fallen body behind the living near its row, so
+    // the winner walking on passes in front of it instead of standing in it (review A, N7)
+    const zBias = e.dying ? -LYING_Z_LU : e.engaged ? ENGAGED_Z_LU : 0;
+    e.view.root.zIndex = e.fort ? FORT_Z + (e.id % 1000) : depthZ(e.y + zBias, e.air, e.id);
   }
 
   private frontInputs(): { side: Side; x: number; air: boolean }[] {
@@ -3431,15 +3475,35 @@ function readBody(view: UnitView): StageBody | null {
 
 /** Engaged units sort this much (lu of depth) in front of idle ones at the same row (A1). */
 const ENGAGED_Z_LU = 5;
+/** A falling or lying body sorts this much (lu of depth) behind the living (review A, N7). */
+const LYING_Z_LU = 8;
 /** Spring half-lives of the drawn offset (ms of game time): easing into contact, and out of it (A1). */
 const STAGE_ENGAGE_HALF_LIFE_MS = 90;
 const STAGE_RELEASE_HALF_LIFE_MS = 75;
+/** S1: the approach's target is already smooth (it follows the closing), so its spring only filters it (ms). */
+const STAGE_APPROACH_HALF_LIFE_MS = 12;
 /** The drawn offset never moves faster than this (lu/s): a target swap eases instead of snapping. */
 const STAGE_MAX_SPEED = 170;
+/** A released stand-off counts as eased out once this close to its target (lu). */
+const STAGE_RELEASED_LU = 0.5;
+
+/**
+ * How a unit's staging offset eases this frame (S1): engaged and approach as the staging says; a unit that just left a
+ * stand-off or an approach releases it (held while it stands, then at its walking speed) until it is eased out; else
+ * free (the spread).
+ */
+export function stageModeOf(prev: UnitEntry['stageMode'], engaged: boolean, approach: boolean, offset: number, target: number): UnitEntry['stageMode'] {
+  if (engaged) return 'engaged';
+  if (approach) return 'approach';
+  const settled = Math.abs(offset - target) < STAGE_RELEASED_LU;
+  if (prev === 'engaged' || prev === 'approach') return settled ? 'free' : 'release';
+  if (prev === 'release') return settled ? 'free' : 'release';
+  return 'free';
+}
 /** Frames between asks for the reach of a view whose sheet is not in yet. */
 const REACH_RETRY_FRAMES = 10;
 /** Effects that lie on the ground (A4, A5): drawn under the units, in the ground decals. */
-const GROUND_FX: ReadonlySet<string> = new Set(['fx.bits', 'fx.ground_glow']);
+const GROUND_FX: ReadonlySet<string> = new Set(['fx.bits', 'fx.ground_glow', 'fx.clash_ring']);
 /** A knockback the R2 frame lock lets go of at once (its `FRAME_LOCK_MAX_LU`, lu): views without `airborne`. */
 const KNOCK_LOCK_LU = 16;
 /** A6: a clash plays its screen part when it is this close to the view (lu); engaged units this near it hold a moment. */

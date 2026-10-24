@@ -269,3 +269,112 @@ describe('rows avoid neighbours (A1)', () => {
     for (const [a, b] of [[3, 4], [4, 5], [3, 5]] as const) expect(Math.abs((r.row.get(a) ?? 0) - (r.row.get(b) ?? 0))).toBeGreaterThanOrEqual(9);
   });
 });
+
+describe('big bodies (review A, S6)', () => {
+  // the Tuskback, the Bonker and the Woolly Rhino of the review's stone_heavy film (sheet extents in lu)
+  const tusk = (): StageUnit => ({ id: 1, side: 0, x: 924.7, air: false, sizeLu: 48, target: 2, reach: { tipLu: 92, lungeLu: 12.8, frontLu: 80.5, backLu: 45.1, torsoFrontLu: 25.8, torsoBackLu: 40.9 }, body: { front: 80.5, back: 45.1, torsoFront: 25.8, torsoBack: 40.9 } });
+  const bonk = (): StageUnit => ({ id: 2, side: 1, x: 973.1, air: false, sizeLu: 24, target: 1, reach: { tipLu: 67.2, lungeLu: 12.7, frontLu: 60.2, backLu: 19.5, torsoFrontLu: 25.1, torsoBackLu: 18.9 }, body: { front: 60.2, back: 19.5, torsoFront: 25.1, torsoBack: 18.9 } });
+  const rhino = (o: Partial<StageUnit> = {}): StageUnit => ({ id: 3, side: 1, x: 977.5, air: false, sizeLu: 48, target: 1, reach: { tipLu: 85.7, lungeLu: 14.2, frontLu: 83.7, backLu: 46.7, torsoFrontLu: 32.9, torsoBackLu: 43 }, body: { front: 83.7, back: 46.7, torsoFront: 32.9, torsoBack: 43 }, ...o });
+  const drawn = (r: ReturnType<typeof stage>, u: StageUnit): number => u.x + (r.offset.get(u.id) ?? 0);
+
+  it('a Rhino striking past its Bonker lands its horn in the Tuskback\'s head, not its shoulder: the beasts no longer stand inside each other', () => {
+    const before = stage([tusk(), bonk(), rhino()], null, { bulkMax: 1, headShare: 0 });
+    const after = stage([tusk(), bonk(), rhino()]);
+    const overlap = (r: ReturnType<typeof stage>): number => drawn(r, tusk()) + 80.5 - (drawn(r, rhino()) - 83.7);
+    expect(overlap(before)).toBeGreaterThan(55);
+    expect(overlap(after)).toBeLessThan(42);
+    // the Rhino's torso clears the Tuskback's tusk tips; its horn still reaches the Tuskback's head
+    expect(drawn(after, rhino()) - 32.9).toBeGreaterThan(drawn(after, tusk()) + 80.5);
+    const horn = drawn(after, rhino()) - 85.7 + 0.25 * 14.2;
+    expect(horn).toBeLessThan(drawn(after, tusk()) + 80.5);
+    expect(horn).toBeGreaterThan(drawn(after, tusk()) + 25.8);
+    // and a big body may be drawn further than a small one's 22 lu (here the Tuskback, 28 lu back)
+    expect(drawn(after, tusk()) - 924.7).toBeLessThan(-22);
+  });
+
+  it('two large beasts side by side part twice as far as before (their rows a step apart barely part bodies 130 lu long); infantry keep the small cap', () => {
+    const big = (id: number, x: number): StageUnit => rhino({ id, side: 0, x, target: null });
+    const gapOf = (r: ReturnType<typeof stage>): number => Math.abs(drawn(r, big(1, 900)) - drawn(r, big(2, 900)));
+    const before = gapOf(stage([big(1, 900), big(2, 900)], null, { bulkMax: 1, headShare: 0 }));
+    const after = gapOf(stage([big(1, 900), big(2, 900)]));
+    expect(after).toBeGreaterThan(Math.max(20, 1.8 * before));
+    const small = (id: number): StageUnit => unit({ id, side: 0, x: 900 });
+    const s = stage([small(1), small(2), small(3), small(4)]);
+    for (const id of [1, 2, 3, 4]) expect(Math.abs(s.offset.get(id) ?? 0)).toBeLessThanOrEqual(CONTACT_DEFAULTS.spreadMaxLu + 1e-6);
+  });
+
+  it('a duel the small member\'s clamp cannot settle is finished by the big member\'s larger clamp', () => {
+    const a = tusk();
+    const b = bonk();
+    b.x = a.x + 40;
+    const r = stage([a, b]);
+    expect(r.offset.get(2) ?? 0).toBeLessThanOrEqual(CONTACT_DEFAULTS.maxBackLu + 1e-6);
+    expect(Math.abs(r.offset.get(1) ?? 0)).toBeGreaterThan(CONTACT_DEFAULTS.maxBackLu);
+  });
+});
+
+describe('the approach (review A, S1)', () => {
+  const walker = (o: Partial<StageUnit> & Pick<StageUnit, 'id' | 'side' | 'x'>): StageUnit => unit({ rangeLu: 16, ...o });
+  /** The drawn gap of two Bonkers walking into each other, at sim separation `s` (contact at 16 + 24 = 40 lu). */
+  const gapAt = (s: number): number => {
+    const a = walker({ id: 1, side: 0, x: 1000 - s / 2 });
+    const b = walker({ id: 2, side: 1, x: 1000 + s / 2 });
+    const r = stage([a, b]);
+    return s + Math.abs(r.offset.get(1) ?? 0) + Math.abs(r.offset.get(2) ?? 0);
+  };
+
+  it('eases two walking into each other to the stand-off the duel needs at contact: nothing far away, monotone, slowing to a stop', () => {
+    const engagedGap = (() => {
+      const a = unit({ id: 1, side: 0, x: 980, target: 2 });
+      const b = unit({ id: 2, side: 1, x: 1020, target: 1 });
+      const r = stage([a, b]);
+      return 40 + Math.abs(r.offset.get(1) ?? 0) + Math.abs(r.offset.get(2) ?? 0);
+    })();
+    expect(gapAt(400)).toBeCloseTo(400, 6);
+    expect(gapAt(40)).toBeCloseTo(engagedGap, 6);
+    let prev = Infinity;
+    let prevStep = Infinity;
+    for (let s = 300; s >= 40; s -= 2) {
+      const g = gapAt(s);
+      expect(g).toBeLessThanOrEqual(prev + 1e-9);
+      if (prev !== Infinity && s < 120) {
+        // the drawn closing per 2 lu of sim closing shrinks toward 0 at contact
+        expect(prev - g).toBeLessThanOrEqual(prevStep + 1e-6);
+        prevStep = prev - g;
+      }
+      prev = g;
+    }
+    expect(gapAt(42) - gapAt(40)).toBeLessThan(0.1);
+  });
+
+  it('shares a duel row on the way in, marks the pair as approaching (not engaged), and leaves ranged units and fliers alone', () => {
+    const a = walker({ id: 1, side: 0, x: 960 });
+    const b = walker({ id: 2, side: 1, x: 1030 });
+    const r = stage([a, b]);
+    expect(r.approach).toEqual(new Set([1, 2]));
+    expect(r.engaged.size).toBe(0);
+    expect(r.pairs).toEqual([]);
+    expect(r.row.get(1)).toBe(r.row.get(2));
+    const archer = unit({ id: 3, side: 0, x: 960 });
+    const foe = walker({ id: 4, side: 1, x: 1030 });
+    const q = stage([archer, foe]);
+    // the archer has no melee range: it is not staged; the foe walking up to it is (one-sided)
+    expect(q.approach).toEqual(new Set([4]));
+    expect(q.offset.get(3) ?? 0).toBe(0);
+    const flier = walker({ id: 5, side: 0, x: 960, air: true });
+    expect(stage([flier, walker({ id: 6, side: 1, x: 1030 })]).approach.has(5)).toBe(false);
+  });
+
+  it('a unit walking up to a foe that is already in a duel takes the one-sided stand-off against where that foe is drawn', () => {
+    const ally = unit({ id: 1, side: 0, x: 980, target: 2 });
+    const foe = unit({ id: 2, side: 1, x: 1020, target: 1 });
+    const late = walker({ id: 3, side: 0, x: 950 });
+    const r = stage([ally, foe, late]);
+    expect(r.approach.has(3)).toBe(true);
+    expect(r.offset.get(3) ?? 0).toBeLessThan(0);
+    // and once it is engaged too, its stand-off is about the one it arrived at
+    const at = stage([ally, foe, walker({ id: 3, side: 0, x: 980 })]);
+    const engaged = stage([ally, foe, unit({ id: 3, side: 0, x: 980, target: 2 })]);
+    expect(Math.abs((at.contact.get(3) ?? 0) - (engaged.contact.get(3) ?? 0))).toBeLessThan(3);
+  });
+});

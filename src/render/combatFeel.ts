@@ -14,8 +14,18 @@ export type HitTier = 'light' | 'medium' | 'heavy' | 'kill';
 export const TIER_CODE: Readonly<Record<HitTier, number>> = { light: 0, medium: 1, heavy: 2, kill: 3 };
 /** `fx.contact_spark` `kind`: the damage type, or the victim's material when it has one. */
 export const SPARK_KIND_CODE = { blunt: 0, slash: 1, pierce: 2, bullet: 3, metal: 4, wood: 5, laser: 6, blast: 7 } as const;
-/** `fx.stuck` `kind`. */
-export const STUCK_KIND_CODE = { arrow: 0, javelin: 1 } as const;
+/** `fx.stuck` `kind`: a fletched arrow or bolt, a javelin-length shaft, a porcupine's quill, an energy needle. */
+export const STUCK_KIND_CODE = { arrow: 0, javelin: 1, quill: 2, needle: 3 } as const;
+export type StuckKind = keyof typeof STUCK_KIND_CODE;
+/** Projectile visual ids that stick in what they hit, by `fx.stuck` kind (`tuning.combat.stuck`). */
+export type StuckRules = Readonly<Partial<Record<StuckKind, readonly string[]>>>;
+
+/** The `fx.stuck` kind code of a projectile visual, or null when it does not stick (a stone, a bullet, a shell). */
+export function stuckKindOf(visualId: string | null | undefined, rules: StuckRules | undefined): number | null {
+  if (!visualId || !rules) return null;
+  for (const kind of Object.keys(STUCK_KIND_CODE) as StuckKind[]) if (rules[kind]?.includes(visualId)) return STUCK_KIND_CODE[kind];
+  return null;
+}
 /** `fx.land_dust` and `fx.ground_glow` `size`. */
 export const SIZE_CODE = { s: 0, m: 1, l: 2 } as const;
 
@@ -136,6 +146,8 @@ export interface CombatTuning {
   hitstop: HitstopRules;
   /** One directional kick per this many ms (the strongest of a burst wins). */
   kickGapMs: number;
+  /** No kick turns the screen the other way within this many ms of the last (review A, S5). */
+  kickFlipMs?: number;
   /** A sim knockback's drawn travel (ms, ease-out) and its hop height (lu) by distance: share of |dx|, clamped. */
   knockMs: number;
   knockLift: { share: number; minLu: number; maxLu: number };
@@ -144,8 +156,8 @@ export interface CombatTuning {
   death: { lieMs: number; fadeMs: number; slideLu: Readonly<Record<Exclude<HitTier, 'kill'>, number>>; heavySlideShare: number; slideMs: number; lingerMs: number };
   /** A5: the spark a plain blow shows at its contact point (an effective or resisted hit keeps its counter spark). */
   contactSpark?: { effectId: string };
-  /** A5: projectiles that stick in what they hit (`fx.stuck` kinds) by their visual id. */
-  stuck?: { arrow: readonly string[]; javelin: readonly string[] };
+  /** A5: projectiles that stick in what they hit (`fx.stuck` kinds) by their visual id, a unit's or a turret's. */
+  stuck?: StuckRules;
   /** A4: how many bits a fallen body leaves by its size class (`fx.bits` `count`). */
   bits?: Readonly<Record<BodySize, number>>;
   /**
@@ -175,7 +187,8 @@ export function leapLift(distanceLu: number, r: LeapRules = LEAP_DEFAULTS): numb
 export const COMBAT_DEFAULTS: CombatTuning = {
   tiers: TIER_DEFAULTS,
   hitstop: HITSTOP_DEFAULTS,
-  kickGapMs: 120,
+  kickGapMs: 280,
+  kickFlipMs: 250,
   knockMs: 220,
   knockLift: { share: 0.3, minLu: 6, maxLu: 14 },
   materials: { metalTags: ['armored', 'mech'], woodCards: [] },

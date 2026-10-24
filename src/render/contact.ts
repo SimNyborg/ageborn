@@ -61,6 +61,11 @@ export interface StageUnit {
   body: StageBody | null;
   /** The sim tick its current (or last) melee swing lands on: two duelists landing together is a mirror exchange. */
   impactTick?: number;
+  /**
+   * Its melee attack's range (lu; attack 0, A2.7): with it a melee unit walking up to a foe takes its stand-off on the
+   * approach (review A, S1), as the sim will stop it at `rangeLu` plus both half widths from the foe.
+   */
+  rangeLu?: number;
 }
 
 /** A unit's idle extents (lu from the feet): the frame (held weapons included) and the torso when known. */
@@ -103,6 +108,20 @@ export interface ContactTuning {
   mirrorMaxBackLu: number;
   /** The total offset of a unit never exceeds this (lu). */
   maxTotalLu: number;
+  /**
+   * Big bodies (review A, S6): every clamp above and the spread cap grow with the collision width over a small unit's
+   * (24 lu), up to `bulkMax` times, so two beasts 80 lu long can part; and a blow on a large or huge body may land in
+   * its head or prow, `headShare` of the way from its torso front to its frame's front, instead of reaching past it.
+   */
+  bulkMax: number;
+  headShare: number;
+  /**
+   * The approach (review A, S1): a melee unit walking up to a foe takes its stand-off before contact, as
+   * `need x u^approachPower` of the stand-off it will need there, where `u` runs 0..1 over the last
+   * `approachPower x need` lu of the closing. The drawn closing then slows smoothly to a stop exactly at contact
+   * (its speed falls as 1 - u^(power-1)), so no pair walks into each other and steps back during its wind-up.
+   */
+  approachPower: number;
 }
 
 export const CONTACT_DEFAULTS: ContactTuning = {
@@ -122,7 +141,20 @@ export const CONTACT_DEFAULTS: ContactTuning = {
   mirrorLead: 0.8,
   mirrorMaxBackLu: 26,
   maxTotalLu: 34,
+  bulkMax: 2.5,
+  headShare: 0.5,
+  approachPower: 3,
 };
+
+/** A small unit's collision width (A2.7): the clamps of bigger bodies grow from it (`bulkOf`). */
+const SMALL_SIZE_LU = 24;
+/** Large (48 lu) and huge (80 lu) bodies: their head or prow counts as body for a blow (`surfaceOf`). */
+const LARGE_SIZE_LU = 48;
+
+/** How many times a small unit's clamps a body gets (1 for infantry, 2 for a large beast, at most `bulkMax`). */
+function bulkOf(u: StageUnit, t: ContactTuning): number {
+  return clamp(u.sizeLu / SMALL_SIZE_LU, 1, Math.max(1, t.bulkMax));
+}
 
 /** Duels take these rows (lu, positive toward the viewer), nearest the lane's middle first. */
 export const DUEL_ROWS = [0, -16, 16, -28, 26] as const;
@@ -173,6 +205,8 @@ export interface StageResult {
   comp: Map<number, number>;
   /** Mutual duels (lower id first). */
   pairs: StagePair[];
+  /** Units walking up to a foe whose stand-off already eases in (S1); not engaged yet. */
+  approach: Set<number>;
 }
 
 const facing = (side: Side): 1 | -1 => (side === 0 ? 1 : -1);
@@ -189,14 +223,18 @@ function bodyOf(u: StageUnit, t: ContactTuning): { front: number; back: number }
 /**
  * Where a unit's body begins in front of its feet (lu): the torso (the team-colour layer at idle) when the
  * sheet gives it, never less than `torsoShare` of the collision width and never past the frame's front (the
- * frame includes a held weapon, which is no target; a horse's barding is, which the torso covers).
+ * frame includes a held weapon, which is no target; a horse's barding is, which the torso covers). A large or huge
+ * body's head or prow is body too (a Tuskback's head and tusks reach 55 lu past its shoulder): its surface lies
+ * `headShare` of the way out to the frame's front, so a blow lands there instead of the attacker's head standing
+ * inside it (review A, S6).
  */
 function surfaceOf(u: StageUnit, t: ContactTuning): number {
   const frame = bodyOf(u, t).front;
   const torso = u.body?.torsoFront ?? u.reach?.torsoFrontLu;
   const least = u.sizeLu * t.torsoShare;
   const v = torso !== undefined && torso > 0 ? torso : u.sizeLu * 0.6;
-  return clamp(v, least, Math.max(least, frame));
+  const s = clamp(v, least, Math.max(least, frame));
+  return u.sizeLu >= LARGE_SIZE_LU && !u.fort ? s + t.headShare * Math.max(0, frame - s) : s;
 }
 
 /**
@@ -305,10 +343,11 @@ export function stage(units: readonly StageUnit[], prevRows: ReadonlyMap<number,
     // inside both windows already (and the bodies clear): no correction
     const fine = s >= wa.lo && s <= wa.hi && s >= wb.lo && s <= wb.hi && s >= Math.max(body, Math.min(lead, Math.min(wa.hi, wb.hi)));
     const need = fine ? 0 : jointSeparation(wa, wb, body, lead) - s;
-    // each takes half (both share the clamp, so a clamped half is clamped on both)
+    // each takes half within its own clamp (a big body's is larger, S6); what one cannot take, the other may
     const maxBack = mirror ? Math.max(t.maxBackLu, t.mirrorMaxBackLu) : t.maxBackLu;
-    contact.set(a.id, backOffset(a.side, need / 2, t, maxBack));
-    contact.set(b.id, backOffset(b.side, need / 2, t, maxBack));
+    const [ha, hb] = splitNeed(need, bulkOf(a, t), bulkOf(b, t), maxBack, t.maxForwardLu);
+    contact.set(a.id, backOffset(a.side, ha, t, maxBack * bulkOf(a, t), t.maxForwardLu * bulkOf(a, t)));
+    contact.set(b.id, backOffset(b.side, hb, t, maxBack * bulkOf(b, t), t.maxForwardLu * bulkOf(b, t)));
     comp.set(a.id, t.compMutual);
     comp.set(b.id, t.compMutual);
     engaged.add(a.id);
@@ -332,8 +371,9 @@ export function stage(units: readonly StageUnit[], prevRows: ReadonlyMap<number,
       if (s < Math.max(w.lo, Math.min(body, w.hi)) || s > w.hi) back = Math.max(w.ideal, Math.min(body, w.hi)) - s;
       // a victim that stepped back from its own duel is followed that much further (a second spear on a busy mammoth)
       const follow = Math.max(0, (contact.get(v.id) ?? 0) * facing(a.side));
-      const took = clamp(back, -(t.maxForwardLu + follow), t.maxBackLu);
-      contact.set(a.id, backOffset(a.side, took, t, t.maxBackLu, t.maxForwardLu + follow));
+      const k = bulkOf(a, t);
+      const took = clamp(back, -(t.maxForwardLu * k + follow), t.maxBackLu * k);
+      contact.set(a.id, backOffset(a.side, took, t, t.maxBackLu * k, t.maxForwardLu * k + follow));
       comp.set(a.id, t.compSingle);
       engaged.add(a.id);
       engaged.add(v.id);
@@ -346,23 +386,136 @@ export function stage(units: readonly StageUnit[], prevRows: ReadonlyMap<number,
     }
     for (const [id, back] of wantVictim) {
       const v = byId.get(id) as StageUnit;
-      const b = clamp(back, 0, t.maxBackLu);
+      const k = bulkOf(v, t);
+      const b = clamp(back, 0, t.maxBackLu * k);
       victimBack.set(id, b);
-      contact.set(id, backOffset(v.side, b, t));
+      contact.set(id, backOffset(v.side, b, t, t.maxBackLu * k, t.maxForwardLu * k));
     }
   }
 
-  // 3. rows (from the duels and engagements), then the same-side spread with those rows
-  const row = stageRows(units, pairs, engaged, contact, prevRows);
+  // 2b. the approach (S1): a melee unit walking up to the nearest foe ahead takes the stand-off it will need at contact
+  //     before it gets there; a pair walking into each other shares its duel row already
+  const { approach, approachPairs } = stageApproach(units, engaged, contact, t);
+
+  // 3. rows (from the duels, the approaching duels and engagements), then the same-side spread with those rows
+  const row = stageRows(units, approachPairs.length > 0 ? [...pairs, ...approachPairs] : pairs, engaged, contact, prevRows);
   const spread = spreadSides(units, contact, row, engaged, t);
 
   const offset = new Map<number, number>();
   for (const u of units) {
     if (u.air || u.fort) continue;
     const o = (contact.get(u.id) ?? 0) + (spread.get(u.id) ?? 0);
-    if (o !== 0) offset.set(u.id, clamp(o, -t.maxTotalLu, t.maxTotalLu));
+    const max = t.maxTotalLu * bulkOf(u, t);
+    if (o !== 0) offset.set(u.id, clamp(o, -max, max));
   }
-  return { offset, contact, row, engaged, comp, pairs };
+  return { offset, contact, row, engaged, comp, pairs, approach };
+}
+
+/** Where the sim will park `a` against `v` (lu, centre to centre): its melee range plus both half widths (A2.7). */
+function contactSep(a: StageUnit, v: StageUnit): number {
+  return (a.rangeLu ?? 0) + (a.sizeLu + v.sizeLu) / 2;
+}
+
+/**
+ * The approach (S1). Every melee unit not yet engaged that walks toward the nearest foe ahead of it (a ground unit or
+ * a fort of the other side, by sim x) eases in the stand-off it will need when the sim parks it at contact: `need x
+ * u^p`, `u` running 0..1 over the last `p x need` lu of the closing (`approachPower` = p). A pair walking into each other
+ * takes the duel solution (its windows, bodies and clamps, split as a duel); a unit walking up to a foe that fights or
+ * faces someone else takes the one-sided solution against where that foe is drawn. Never toward the foe (no pull).
+ */
+function stageApproach(
+  units: readonly StageUnit[],
+  engaged: ReadonlySet<number>,
+  contact: Map<number, number>,
+  t: ContactTuning,
+): { approach: Set<number>; approachPairs: StagePair[] } {
+  const approach = new Set<number>();
+  const approachPairs: StagePair[] = [];
+  // each side's ground units and forts by sim x, for the nearest foe ahead (O(n log n))
+  const lines: [StageUnit[], StageUnit[]] = [[], []];
+  for (const u of units) if (!u.air) lines[u.side].push(u);
+  for (const l of lines) l.sort((a, b) => a.x - b.x || a.id - b.id);
+  const foeAhead = (u: StageUnit): StageUnit | null => {
+    const foes = lines[u.side === 0 ? 1 : 0];
+    // first foe with x > u.x (facing +x), or last with x < u.x (facing -x)
+    let lo = 0;
+    let hi = foes.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if ((foes[mid] as StageUnit).x <= u.x) lo = mid + 1;
+      else hi = mid;
+    }
+    return facing(u.side) === 1 ? (foes[lo] ?? null) : (foes[lo - 1] ?? null);
+  };
+  const foeOf = new Map<number, StageUnit>();
+  for (const u of units) {
+    if (u.air || u.fort || !u.reach || u.rangeLu === undefined || u.target !== null || engaged.has(u.id)) continue;
+    const foe = foeAhead(u);
+    if (foe && (foe.x - u.x) * facing(u.side) > 0) foeOf.set(u.id, foe);
+  }
+  const p = Math.max(1, t.approachPower);
+  /** The eased share of `need` at sim separation `s` for a contact at `c`. */
+  const eased = (s: number, c: number, need: number): number => {
+    if (!(need > 0)) return 0;
+    const span = p * need;
+    return need * clamp((c + span - s) / span, 0, 1) ** p;
+  };
+  const done = new Set<number>();
+  for (const u of units) {
+    const b = foeOf.get(u.id);
+    if (!b || done.has(u.id)) continue;
+    const a = u;
+    const s = (b.x - a.x) * facing(a.side);
+    if (foeOf.get(b.id) === a) {
+      // two walking into each other: the duel they will fight, at the separation where the first of them stops
+      done.add(a.id);
+      done.add(b.id);
+      const c = Math.max(contactSep(a, b), contactSep(b, a));
+      const wa = window(a, b, t.compMutual, t);
+      const wb = window(b, a, t.compMutual, t);
+      const body = bodyGap(a, b, t.compMutual, t.compMutual, true, t);
+      const fine = c >= wa.lo && c <= wa.hi && c >= wb.lo && c <= wb.hi && c >= body;
+      const need = eased(s, c, fine ? 0 : jointSeparation(wa, wb, body, body) - c);
+      if (need <= 0) continue;
+      const [ha, hb] = splitNeed(need, bulkOf(a, t), bulkOf(b, t), t.maxBackLu, t.maxForwardLu);
+      contact.set(a.id, backOffset(a.side, ha, t, t.maxBackLu * bulkOf(a, t), 0));
+      contact.set(b.id, backOffset(b.side, hb, t, t.maxBackLu * bulkOf(b, t), 0));
+      approach.add(a.id);
+      approach.add(b.id);
+      approachPairs.push({ a: Math.min(a.id, b.id), b: Math.max(a.id, b.id) });
+      continue;
+    }
+    // walking up to a foe that fights or faces someone else: the one-sided stand-off against where it is drawn
+    done.add(a.id);
+    const c = contactSep(a, b);
+    const sc = c + Math.max(0, (contact.get(b.id) ?? 0) * facing(a.side));
+    const w = window(a, b, t.compSingle, t);
+    const body = bodyGap(a, b, t.compSingle, 0, false, t);
+    let backC = 0;
+    if (sc < Math.max(w.lo, Math.min(body, w.hi)) || sc > w.hi) backC = Math.max(w.ideal, Math.min(body, w.hi)) - sc;
+    const back = eased(s, c, Math.min(backC, t.maxBackLu * bulkOf(a, t)));
+    if (back <= 0) continue;
+    contact.set(a.id, backOffset(a.side, back, t, t.maxBackLu * bulkOf(a, t), 0));
+    approach.add(a.id);
+  }
+  return { approach, approachPairs };
+}
+
+/**
+ * A duel's correction `need` (lu, positive apart) split between its two members: half each, each within its own clamp
+ * (`maxBack` / `maxForward` times its bulk, S6); what one member's clamp leaves over, the other takes within its own.
+ */
+function splitNeed(need: number, bulkA: number, bulkB: number, maxBack: number, maxForward: number): [number, number] {
+  const lim = (k: number): number => (need >= 0 ? maxBack : maxForward) * k;
+  const la = lim(bulkA);
+  const lb = lim(bulkB);
+  const half = Math.abs(need) / 2;
+  let a = Math.min(half, la);
+  let b = Math.min(half, lb);
+  a = Math.min(la, a + (half - b));
+  b = Math.min(lb, b + (half - Math.min(half, la)));
+  const sgn = need >= 0 ? 1 : -1;
+  return [a * sgn, b * sgn];
 }
 
 /** Pairs further apart than this in sim x (lu) never need spreading (bigger than any least gap). */
@@ -374,7 +527,7 @@ const SPREAD_WINDOW_LU = 70;
  * mean width, less the further apart their depth rows are. A unit in contact hardly moves; a free unit ahead
  * steps forward a little and the unit behind makes room. A free unit never passes the unit ahead of it in the
  * sim's order (it would stand between duelists); two units in contact in rows far apart may overlap in x
- * (a pike poking over a club). Capped at `spreadMaxLu` per unit.
+ * (a pike poking over a club). Capped at `spreadMaxLu` per unit, times the bigger body's bulk (S6).
  */
 function spreadSides(units: readonly StageUnit[], contact: ReadonlyMap<number, number>, row: ReadonlyMap<number, number>, engaged: ReadonlySet<number>, t: ContactTuning): Map<number, number> {
   const out = new Map<number, number>();
@@ -393,6 +546,7 @@ function spreadSides(units: readonly StageUnit[], contact: ReadonlyMap<number, n
     const rw = new Float64Array(n);
     const eng = new Uint8Array(n);
     const sp = new Float64Array(n);
+    const bk = new Float64Array(n);
     for (let i = 0; i < n; i++) {
       const u = list[i] as StageUnit;
       xf[i] = u.x * f;
@@ -402,6 +556,7 @@ function spreadSides(units: readonly StageUnit[], contact: ReadonlyMap<number, n
       wid[i] = Math.min(b.front + b.back, u.sizeLu * t.bodyShare);
       rw[i] = row.get(u.id) ?? 0;
       eng[i] = engaged.has(u.id) ? 1 : 0;
+      bk[i] = bulkOf(u, t);
     }
     for (let iter = 0; iter < 4; iter++) {
       let moved = false;
@@ -409,7 +564,9 @@ function spreadSides(units: readonly StageUnit[], contact: ReadonlyMap<number, n
         for (let j = i + 1; j < n; j++) {
           if ((xf[i] as number) - (xf[j] as number) > SPREAD_WINDOW_LU) break;
           const dy = Math.abs((rw[i] as number) - (rw[j] as number));
-          const rowK = Math.max(0, 1 - dy / t.spreadRowLu);
+          // a row apart parts a small pair, never two beasts 130 lu long (S6): the depth that needs no gap grows with bulk
+          const big = Math.max(bk[i] as number, bk[j] as number);
+          const rowK = Math.max(0, 1 - dy / (t.spreadRowLu * big));
           const ei = eng[i] === 1;
           const ej = eng[j] === 1;
           // a free unit stays behind the one ahead of it; engaged units in rows far apart may cross
@@ -420,12 +577,14 @@ function spreadSides(units: readonly StageUnit[], contact: ReadonlyMap<number, n
           const gap = (pos[i] as number) + sa - ((pos[j] as number) + sb);
           if (gap >= need - 0.01) continue;
           const d = need - gap;
-          // a free unit ahead steps forward a little, the one behind steps back; contact holds its place
+          // a free unit ahead steps forward a little, the one behind steps back; contact holds its place. The cap grows
+          // with the bigger of the two bodies (S6: a Bonker beside a Rhino may step further than beside a Bonker)
           const fa = ei ? 0 : 0.5;
           const fb = ej ? 0.35 : 1;
           const sum = fa + fb;
-          const na = clamp(sa + (d * fa) / sum, -t.spreadMaxLu, t.spreadMaxLu);
-          const nb = clamp(sb - (d * fb) / sum, -t.spreadMaxLu, t.spreadMaxLu);
+          const cap = t.spreadMaxLu * big;
+          const na = clamp(sa + (d * fa) / sum, -cap, cap);
+          const nb = clamp(sb - (d * fb) / sum, -cap, cap);
           if (Math.abs(na - sa) + Math.abs(nb - sb) > 0.01) moved = true;
           sp[i] = na;
           sp[j] = nb;

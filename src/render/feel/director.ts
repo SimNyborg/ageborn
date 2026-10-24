@@ -97,18 +97,25 @@ export class FeelDirector {
     this.shake.add(amount, dir);
   }
 
-  /** When the last directional kick started (real ms). */
+  /** When the last directional kick started (real ms), and its horizontal direction (0: vertical). */
   private lastKickAt = -Infinity;
+  private lastKickX = 0;
 
   /**
    * A directional screen kick (queue item 38 A3): `px` at shake 1 along `dir`. At most one per `gapMs`: inside the gap
-   * only a stronger kick replaces the one still running (a kill and its death on one tick kick once). The Shake slider
-   * and Reduce motion scale it like the shake (`Shake.multiplier`).
+   * only a stronger kick replaces the one still running (a kill and its death on one tick kick once). Inside `flipMs`
+   * of the last kick none turns the screen the other way, however strong (review A, S5: left-right flips in a big
+   * fight read as jitter); a vertical kick (the clash) never counts as a flip. The Shake slider and Reduce motion scale
+   * it like the shake (`Shake.multiplier`).
    */
-  kick(px: number, dir: { x: number; y: number }, gapMs: number): void {
+  kick(px: number, dir: { x: number; y: number }, gapMs: number, flipMs = 0): void {
     if (!(px > 0)) return;
-    if (this.nowMs - this.lastKickAt < gapMs && px <= this.shake.kickStrength) return;
+    const since = this.nowMs - this.lastKickAt;
+    const sx = Math.abs(dir.x) > 1e-6 ? Math.sign(dir.x) : 0;
+    if (since < flipMs && sx !== 0 && this.lastKickX !== 0 && sx !== this.lastKickX) return;
+    if (since < gapMs && px <= this.shake.kickStrength) return;
     this.lastKickAt = this.nowMs;
+    this.lastKickX = sx;
     this.shake.kick(px, dir);
   }
 

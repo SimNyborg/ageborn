@@ -142,16 +142,89 @@ describe('A1 contact staging in the battle view', () => {
     expect(vb.lastPose?.x).toBeCloseTo(517, 5);
   });
 
-  it('eases the stand-off out when the fight ends (within about 200 ms)', () => {
+  it('releases the stand-off when the foe falls: held while the winner stands, then at no more than its walking speed (review A, S1)', () => {
     const s = setup();
-    const { a, b, va, vb } = duel(s);
-    for (const u of [a, b]) {
-      u.mode = 'walk';
-      u.attacks[0]!.targetId = -1;
+    const { a, b, va } = duel(s);
+    const held = va.offsets.at(-1) ?? 0;
+    expect(held).toBeLessThan(-10);
+    // b falls; a stands a moment (its follow-through), then the sim walks it on at its march speed (87.5 lu/s)
+    s.state.units.splice(s.state.units.indexOf(b), 1);
+    s.view.onEvents([diedEv(2, 'bonker', 517)]);
+    a.mode = 'walk';
+    a.attacks[0]!.targetId = -1;
+    for (let i = 0; i < 12; i++) s.view.render(1, 1000 / 60);
+    expect(va.offsets.at(-1) ?? 0).toBeCloseTo(held, 0);
+    const seen: number[] = [];
+    for (let tick = 0; tick < 24; tick++) {
+      a.prevX = a.x;
+      a.x += 4375;
+      s.state.tick++;
+      for (let f = 0; f < 3; f++) {
+        s.view.render((f + 1) / 3, 50 / 3);
+        seen.push(va.offsets.at(-1) ?? 0);
+      }
     }
-    for (let i = 0; i < 14; i++) s.view.render(1, 1000 / 60);
-    expect(Math.abs(va.offsets.at(-1) ?? 0)).toBeLessThan(1.5);
-    expect(Math.abs(vb.offsets.at(-1) ?? 0)).toBeLessThan(1.5);
+    expect(Math.abs(seen.at(-1) ?? 99)).toBeLessThan(1.5);
+    // never faster than the walk itself (87.5 lu/s: 1.46 lu a frame)
+    for (let i = 1; i < seen.length; i++) expect(Math.abs((seen[i] as number) - (seen[i - 1] as number))).toBeLessThanOrEqual((87.5 * 50) / 3 / 1000 + 1e-6);
+  });
+
+  it('takes the stand-off on the approach: two walking into each other stand at it when the sim stops them (review A, S1)', () => {
+    const s = setup();
+    const a = unitState(1, 0, 'bonker', 300);
+    const b = unitState(2, 1, 'bonker', 640);
+    s.state.units.push(a, b);
+    const gaps: number[] = [];
+    // both walk in at 87.5 lu/s (4.375 lu a tick) until the sim parks them 40 lu apart (range 16 + 12 + 12)
+    let sep = 340;
+    while (sep > 40) {
+      const step = Math.min(4.375, (sep - 40) / 2);
+      a.prevX = a.x;
+      b.prevX = b.x;
+      a.x += step * 1000;
+      b.x -= step * 1000;
+      sep -= 2 * step;
+      s.state.tick++;
+      for (let f = 0; f < 3; f++) s.view.render((f + 1) / 3, 50 / 3);
+      gaps.push((b.x - a.x) / 1000 + (s.art.views[1]?.offsets.at(-1) ?? 0) - (s.art.views[0]?.offsets.at(-1) ?? 0));
+    }
+    const atContact = gaps.at(-1) ?? 0;
+    // the sim engages them: the stand-off they now get is the one they arrived at (no step back in the wind-up)
+    a.mode = 'attack';
+    b.mode = 'attack';
+    a.attacks[0]!.targetId = 2;
+    b.attacks[0]!.targetId = 1;
+    a.prevX = a.x;
+    b.prevX = b.x;
+    for (let i = 0; i < 30; i++) s.view.render(1, 1000 / 60);
+    const engaged = (b.x - a.x) / 1000 + (s.art.views[1]?.offsets.at(-1) ?? 0) - (s.art.views[0]?.offsets.at(-1) ?? 0);
+    expect(atContact).toBeGreaterThan(70);
+    expect(Math.abs(engaged - atContact)).toBeLessThan(4);
+    // the drawn gap closed without turning back (under 1 lu, the spring's lag at the stop), slowing into the stop
+    for (let i = 1; i < gaps.length; i++) expect(gaps[i] as number).toBeLessThanOrEqual((gaps[i - 1] as number) + 1);
+    const late = (gaps.at(-3) as number) - (gaps.at(-2) as number);
+    const early = (gaps[10] as number) - (gaps[11] as number);
+    expect(late).toBeLessThan(early * 0.35);
+    // the pair walked into its duel row already
+    expect(s.art.views[0]?.lastPose?.y).toBeCloseTo(s.art.views[1]?.lastPose?.y ?? NaN, 0);
+  });
+});
+
+describe('rows of a unit that appears (review A, N5)', () => {
+  it('a unit the view meets mid-field takes its first row among the whole field and keeps it on the next frames', () => {
+    const s = setup();
+    s.state.units.push(unitState(1, 0, 'bonker', 500), unitState(2, 0, 'bonker', 504), unitState(3, 0, 'bonker', 508));
+    for (let i = 0; i < 10; i++) s.view.render(1, 1000 / 60);
+    // a summon appears first in the sim's list, in the middle of the three, with no spawn event (a replay seek)
+    s.state.units.unshift(unitState(4, 0, 'bonker', 502));
+    s.view.render(1, 1000 / 60);
+    const v = s.art.views[3]!;
+    const first = v.lastPose?.y ?? NaN;
+    for (let i = 0; i < 10; i++) s.view.render(1, 1000 / 60);
+    expect(v.lastPose?.y).toBeCloseTo(first, 6);
+    // and not on a row a neighbour holds
+    const ys = s.art.views.slice(0, 3).map((w) => w.lastPose?.y);
+    expect(ys).not.toContain(first);
   });
 });
 
@@ -193,6 +266,29 @@ describe('A2 reactions and knockback', () => {
     const later = (vb.lastPose?.x ?? 0) + (vb.offsets.at(-1) ?? 0);
     expect(later - before).toBeGreaterThan(15);
   });
+
+  it('a unit killed in its knockback hop finishes the travel as it falls: no pop by what was left of the jump (review A, N2)', () => {
+    const s = setup();
+    const { b, vb } = duel(s);
+    const drawn = (): number => (vb.lastPose?.x ?? 0) + (vb.offsets.at(-1) ?? 0);
+    b.prevX = b.x;
+    b.x += 30_000;
+    s.state.tick = 11;
+    s.view.onEvents([{ e: 'knockback', tick: 11, id: 2, fromX: 517_000, toX: 547_000 } as SimEvent]);
+    for (let i = 0; i < 3; i++) s.view.render(1, 1000 / 60);
+    // killed 50 ms into the 220 ms hop
+    b.hp = 0;
+    b.mode = 'dying';
+    s.view.onEvents([hitEv({ damage: 40_000, x: 547_000 }), diedEv(2, 'bonker', 547)]);
+    // the hop's fast first part and the fall's slide move it up to about 7 lu a frame; the old pop was the rest of the
+    // jump (here 14 lu) on top, in one frame
+    let last = drawn();
+    for (let i = 0; i < 20; i++) {
+      s.view.render(1, 1000 / 60);
+      expect(Math.abs(drawn() - last)).toBeLessThan(9);
+      last = drawn();
+    }
+  });
 });
 
 describe('A4 deaths with weight', () => {
@@ -211,6 +307,8 @@ describe('A4 deaths with weight', () => {
     for (let i = 0; i < 30; i++) s.view.render(1, 1000 / 60);
     // a heavy blow throws a light body about 24 lu along the blow
     expect(drawn() - before).toBeGreaterThan(18);
+    // the fallen body sorts behind the living near its row: the winner walking on passes in front of it (review A, N7)
+    expect(vb.root.zIndex).toBeLessThan(s.art.views[0]!.root.zIndex);
     vb.deaths[0]?.onLand?.();
     expect(s.audio.played()).toContain('body_fall_s');
     vb.finished = true;
@@ -263,19 +361,73 @@ describe('A6 the clash moment in the view', () => {
     a.attacks[0]!.impactTick = 0;
     b.attacks[0]!.impactTick = s.state.tick + 4;
     s.view.onEvents([hitEv()]);
-    // the attacker holds for the clash (70 ms, over its 35 ms hit-stop); the victim keeps only its hit-stop
+    // the attacker holds for the clash (70 ms, over its 35 ms hit-stop); the victim in its wind-up is never held (its
+    // swing stays on the sim's beat, the timing contract)
     expect(va.frozenMs).toBe(70);
-    expect(vb.frozenMs).toBe(50);
+    expect(vb.frozenMs).toBe(0);
     expect(s.art.views[2]!.frozenMs).toBe(0);
     expect(s.view.director.shake.trauma).toBeGreaterThanOrEqual(0.4);
     expect(s.audio.played()).toContain('clash_crash');
     s.view.render(1, 1000 / 60);
     expect(s.view.camera.punchScale).toBeGreaterThan(1);
+    // the dust's flat rings lie on the ground, under the units' legs; the puffs rise in front (review A, S4)
+    const inLayer = (c: Container, label: string): boolean => c.children.some((ch) => ch.label === label);
+    expect(inLayer(s.view.layers.ground, 'fx.clash_ring')).toBe(true);
+    expect(inLayer(s.view.layers.vfx, 'fx.clash_ring')).toBe(false);
+    expect(inLayer(s.view.layers.vfx, 'fx.clash_dust')).toBe(true);
     // the second blow of the same contact is no clash
     s.state.tick = 14;
     s.audio.clear();
     s.view.onEvents([hitEv({ tick: 14 })]);
     expect(s.audio.played()).not.toContain('clash_crash');
+  });
+});
+
+describe('the timing contract: a hit-stop never holds a swing still winding up (review A, B1)', () => {
+  it('holds a victim between its swings, never one whose own swing is pending; the attacker holds its impact', () => {
+    const s = setup();
+    const { a, b, va, vb } = duel(s, 2);
+    // a lands its blow; b is 3 ticks short of its own impact (the de-phased reply)
+    a.attacks[0]!.impactTick = 0;
+    b.attacks[0]!.impactTick = s.state.tick + 3;
+    s.view.onEvents([hitEv()]);
+    expect(vb.reacts).toHaveLength(1);
+    expect(vb.frozenMs).toBe(0);
+    expect(va.frozenMs).toBe(35);
+    // three ticks later b's reply lands on a, which is between its swings: a is held as the victim, b at its impact
+    for (let i = 0; i < 9; i++) s.view.render(1, 1000 / 60);
+    s.state.tick += 3;
+    b.attacks[0]!.impactTick = 0;
+    a.attacks[0]!.impactTick = s.state.tick + 17;
+    s.view.onEvents([hitEv({ tick: s.state.tick, targetId: 1, sourceId: 2, x: 480_000 })]);
+    expect(va.frozenMs).toBe(0);
+    a.attacks[0]!.impactTick = 0;
+    s.view.onEvents([hitEv({ tick: s.state.tick, targetId: 1, sourceId: 2, x: 480_000 })]);
+    expect(va.frozenMs).toBe(50);
+    expect(vb.frozenMs).toBe(35);
+  });
+
+  it('keeps the hold of a victim the blow killed (its swing never lands) and of a death in a wind-up', () => {
+    const s = setup();
+    const { b, vb } = duel(s, 2);
+    b.attacks[0]!.impactTick = s.state.tick + 3;
+    b.hp = 0;
+    b.mode = 'dying';
+    s.view.onEvents([hitEv({ damage: 40_000 }), diedEv(2, 'bonker', 517)]);
+    // the kill's hit-stop (90 ms) holds the falling body: no swing of its will ever land
+    expect(vb.frozenMs).toBeGreaterThanOrEqual(50);
+  });
+
+  it('protects every pending swing, a shot\'s release too: a heavy power hit holds nothing while it winds up', () => {
+    const s = setup();
+    const { b, vb } = duel(s, 2);
+    b.attacks[0]!.impactTick = s.state.tick + 2;
+    s.view.onEvents([hitEv({ sourceKind: 'power', sourceId: 0, damage: 8000 })]);
+    expect(vb.reacts.at(-1)?.tier).toBe('heavy');
+    expect(vb.frozenMs).toBe(0);
+    b.attacks[0]!.impactTick = 0;
+    s.view.onEvents([hitEv({ sourceKind: 'power', sourceId: 0, damage: 8000 })]);
+    expect(vb.frozenMs).toBeGreaterThan(55);
   });
 });
 
@@ -347,6 +499,21 @@ describe('A7 sound hooks in the view', () => {
     s.view.onEvents([hitEv({ targetId: 99, sourceId: 0, sourceKind: 'unit', x: 2_300_000 })]);
     const far = s.audio.calls.find((c) => c.method === 'play' && c.id === 'hit_blunt');
     expect(far && far.method === 'play' ? far.o : null).toMatchObject({ pan: 0.6, volumeDb: -12 });
+  });
+
+  it('places a melee swing like its blow: off screen the anticipation is never louder than the impact (review A, S2)', () => {
+    const s = setup();
+    s.state.units.push(unitState(1, 0, 'bonker', 2300), unitState(2, 1, 'bonker', 2337));
+    s.view.render(1, 16);
+    s.audio.clear();
+    s.view.onEvents([{ e: 'attackStarted', tick: 10, id: 1, targetId: 2, windupTicks: 8, attackIndex: 0 } as SimEvent, hitEv({ x: 2_337_000 })]);
+    // the swing sounds 80 ms before its impact (a delayed play)
+    for (let i = 0; i < 30; i++) s.view.render(1, 1000 / 60);
+    const play = (id: string) => s.audio.calls.find((c) => c.method === 'play' && c.id === id);
+    const swing = play('swing_whoosh');
+    const blow = play('hit_blunt');
+    expect(swing && swing.method === 'play' ? swing.o : null).toMatchObject({ pan: 0.6, volumeDb: -12 });
+    expect(blow && blow.method === 'play' ? blow.o : null).toMatchObject({ pan: 0.6, volumeDb: -12 });
   });
 
   it('keeps the battle ambience at the share of engaged units, and quiet while paused and after the battle', () => {

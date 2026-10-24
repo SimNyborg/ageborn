@@ -1480,7 +1480,7 @@ class AtlasUnitView implements UnitView {
    * A4: the weighted death (`dieWith`), or null on the old path (`play('die')`: the cartoon poof hides the body).
    * Times are the die track's (animation ms); `sq` and `alpha` persist through a hitstop like the other offsets.
    */
-  private death: { dir: 1 | -1; style: DeathStyle; landAt: number; lieMs: number; fadeMs: number; onLand?: () => void; landed: boolean; sinkDust: boolean; sq: number; alpha: number } | null = null;
+  private death: { dir: 1 | -1; style: DeathStyle; landAt: number; lieMs: number; fadeMs: number; onLand?: () => void; landed: boolean; sinkDust: boolean; sq: number; alpha: number; cached: boolean } | null = null;
 
   constructor(
     private readonly def: VisualDef,
@@ -1773,10 +1773,12 @@ class AtlasUnitView implements UnitView {
    * backward tilt; with `tumble`, a backflip about the hit centre), or a pounce or leap (a stretched take-off nose up,
    * the nose dipping toward the landing). The R2 frame lock lets go for the arc and re-plants on landing, where the
    * body squashes and `onLand` fires. Reduce motion: half the lift and tilt, no tumble. A new arc replaces one in flight.
+   * A knockback also ends the swing the sim cancelled with it (`cancelSwing`).
    */
   airborne(o: { ms: number; liftLu: number; kind: AirKind; tumble: boolean; onLand?: () => void }): void {
     if (this.destroyed) return;
     const reduce = this.reduceMotion;
+    if (o.kind === 'knockback') this.cancelSwing();
     this.air = {
       t: 0,
       ms: Math.max(60, Number.isFinite(o.ms) ? o.ms : 220),
@@ -1785,6 +1787,24 @@ class AtlasUnitView implements UnitView {
       tumble: o.tumble && !reduce && !hovers(this.gait),
       ...(o.onLand ? { onLand: o.onLand } : {}),
     };
+  }
+
+  /**
+   * A sim knockback cancels every pending swing of the unit (A2.7; `airborne` with `kind: 'knockback'` is called on
+   * exactly that event): an attack still short of its impact frame ends, and the hop shows the hit pose instead, so
+   * no impact frame lands on nothing (review A, S7). A blow already landed keeps its follow-through. The riders' and
+   * gunners' pending shots went with it (their accents never fire).
+   */
+  private cancelSwing(): void {
+    if (this.dead) return;
+    this.accents = [];
+    this.pendingAlt = null;
+    const a = this.action;
+    if (!a || !isAttackAnim(a.anim) || a.t >= (a.impactAtMs ?? a.releaseMs)) return;
+    this.action = null;
+    this.actionMuzzle = null;
+    const hit = track(this.sheet, this.def, 'hit', { loop: false });
+    if (hit && hit.frames.length >= 2) this.action = hit;
   }
 
   /**
@@ -1818,6 +1838,7 @@ class AtlasUnitView implements UnitView {
       sinkDust: false,
       sq: 0,
       alpha: 1,
+      cached: false,
     };
     this.setGroundMarks(false);
   }
@@ -1846,6 +1867,13 @@ class AtlasUnitView implements UnitView {
       y = -d.style.bounceLu * land.bounce;
       const fade = deathFade(since, d.lieMs, d.fadeMs);
       d.alpha = fade.alpha;
+      // the fading body is one picture, not see-through layers (legs, harness and team colour showed through each
+      // other, review A N10): its lying pose no longer changes, so it fades as a texture of itself (one small texture a
+      // fading body, at the sheet's own density, returned when the view goes)
+      if (fade.alpha < 1 && !d.cached) {
+        d.cached = true;
+        this.body.cacheAsTexture({ resolution: 1 });
+      }
       y += DEATH_SINK_LU * fade.sink;
       if (fade.sink > 0 && !d.sinkDust) {
         d.sinkDust = true;
@@ -2627,20 +2655,24 @@ class AtlasUnitView implements UnitView {
     const rootMoved = Math.abs(this.rootX - this.lastRootX) > 1e-3;
     this.lastRootX = this.rootX;
     if (walking && legged) {
+      // the walk plants its feet against where the unit is drawn (the sim x plus the battle view's offset), so a walk
+      // that slows into its stand-off or out of one never skates (review A, S1; the battle view retimes the walk to the
+      // drawn speed through `setGait`)
+      const drawnRoot = this.rootX + this.offsetX;
       if (this.lockStep < 0) {
         // the walk starts from where the body is drawn; the carried offset melts away while walking
         this.lockLag = this.lockShift;
-        this.lockX = this.rootX;
+        this.lockX = drawnRoot;
         this.lockStep = i;
       } else if (i !== this.lockStep) {
         const { sinceMs } = loopStepAt(tr.steps, tr.durationMs, tr.t, this.walkDir);
-        this.lockX = this.rootX + frameLockOffset(this.poseFacing * (this.gaitV ?? 0), sinceMs);
+        this.lockX = drawnRoot + frameLockOffset(this.poseFacing * (this.gaitV ?? 0), sinceMs);
         this.lockStep = i;
       }
       this.lockLag = Math.abs(this.lockLag) < 0.05 ? 0 : easeExp(this.lockLag, 0, dtMs, FRAME_LOCK_CATCH_UP_TAU_MS);
-      let off = this.lockX - this.rootX;
+      let off = this.lockX - drawnRoot;
       if (Math.abs(off) > FRAME_LOCK_MAX_LU) {
-        this.lockX = this.rootX;
+        this.lockX = drawnRoot;
         off = 0;
       }
       this.lockShift = off + this.lockLag;

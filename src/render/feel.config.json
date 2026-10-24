@@ -44,7 +44,8 @@
         "shareToBp": 5000,
         "shareMaxMs": 110
       },
-      "kickGapMs": 120,
+      "kickGapMs": 280,
+      "kickFlipMs": 250,
       "knockMs": 220,
       "knockLift": { "share": 0.3, "minLu": 6, "maxLu": 14 },
       "materials": {
@@ -54,7 +55,12 @@
         "beastCards": ["tuskback", "sabertooth", "mammoth_matriarch", "hunting_wolves", "cave_pup", "woolly_rhino", "cave_bear", "elk_chieftain", "war_elephant", "hydra", "minotaur", "war_hound", "lindworm", "swarm_matron", "swarmling", "moonlings", "star_leviathan"]
       },
       "contactSpark": { "effectId": "fx.contact_spark" },
-      "stuck": { "arrow": ["proj.arrow", "proj.arrow_arc", "proj.bolt", "proj.scorpion_bolt"], "javelin": ["proj.javelin", "proj.harpoon"] },
+      "stuck": {
+        "arrow": ["proj.arrow", "proj.arrow_arc", "proj.longarrow", "proj.bolt", "proj.scorpion_bolt"],
+        "javelin": ["proj.javelin", "proj.harpoon", "proj.dart", "proj.spear_bolt"],
+        "quill": ["proj.quill"],
+        "needle": ["proj.needle"]
+      },
       "bits": { "s": 3, "m": 4, "l": 5 },
       "death": { "lieMs": 2000, "fadeMs": 600, "slideLu": { "light": 10, "medium": 16, "heavy": 24 }, "heavySlideShare": 0.55, "slideMs": 380, "lingerMs": 4000 },
       "leap": { "baseLu": 0, "share": 0.28, "minLu": 14, "maxLu": 40, "leapCards": ["alpine_climber"], "blinkCards": ["warp_stalker"] }
@@ -181,7 +187,7 @@
     "knock.land.s": { "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 1 }] },
     "knock.land.m": { "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 2 }], "sound": "leap_land", "soundVolumeDb": -6 },
     "knock.land.l": { "particles": [{ "effectId": "fx.land_dust", "count": 1, "priority": 2 }], "sound": "leap_land", "soundVolumeDb": -6 },
-    "clash": { "kickPx": 3, "particles": [{ "effectId": "fx.clash_dust", "count": 1, "priority": 3 }], "sound": "clash_crash" },
+    "clash": { "kickPx": 3, "particles": [{ "effectId": "fx.clash_ring", "count": 1, "priority": 3 }, { "effectId": "fx.clash_dust", "count": 1, "priority": 3 }], "sound": "clash_crash" },
     "death.mech": { "trauma": 0.12, "flashMs": 60, "flashTarget": "victim" },
     "death.mech.explode": {
       "particles": [{ "effectId": "fx.explosion_s", "count": 1, "priority": 3 }],

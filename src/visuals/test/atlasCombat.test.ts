@@ -461,6 +461,45 @@ describe('airborne() on the atlas view (A2, A8)', () => {
     expect(body(v).y).toBeCloseTo(0, 6);
   });
 
+  it('a knockback ends a swing short of its impact frame (the sim cancelled it): the hop shows the hit pose, never the impact frame (review A, S7)', () => {
+    const s = fixture();
+    const v = view(s) as unknown as Reacting;
+    v.setPose(pose(0));
+    v.play('idle', { loop: true });
+    v.play('attack', { impactAtMs: 240 });
+    v.update(10);
+    v.update(110);
+    expect(s.animations['attack']).toContain(frameShown(v));
+    v.react('medium', -1);
+    v.airborne({ ms: 220, liftLu: 9, kind: 'knockback', tumble: false });
+    v.update(10);
+    expect(s.animations['hit']).toContain(frameShown(v));
+    for (let t = 0; t < 600; t += 10) {
+      v.update(10);
+      expect(s.animations['attack']).not.toContain(frameShown(v));
+    }
+  });
+
+  it('a knockback after the impact frame keeps the follow-through; a pounce never cancels its strike', () => {
+    const s = fixture();
+    const v = view(s) as unknown as Reacting;
+    v.setPose(pose(0));
+    v.play('attack', { impactAtMs: 240 });
+    v.update(10);
+    v.update(250);
+    v.airborne({ ms: 220, liftLu: 9, kind: 'knockback', tumble: false });
+    v.update(10);
+    expect(s.animations['attack']).toContain(frameShown(v));
+    const w = view(s) as unknown as Reacting;
+    w.setPose(pose(0));
+    w.play('attack', { impactAtMs: 240 });
+    w.update(10);
+    w.update(100);
+    w.airborne({ ms: 300, liftLu: 20, kind: 'pounce', tumble: false });
+    w.update(10);
+    expect(s.animations['attack']).toContain(frameShown(w));
+  });
+
   it('a tumble turns a full backflip about the hit centre; Reduce motion never tumbles', () => {
     const v = view(fixture()) as unknown as Reacting;
     v.setPose(pose(0));
@@ -546,10 +585,13 @@ describe('dieWith() on the atlas view (A4)', () => {
     v.update(1500);
     expect(body(v).visible).toBe(true);
     expect(body(v).alpha).toBe(1);
+    expect(body(v).isCachedAsTexture).toBe(false);
     expect(v.finished).toBe(false);
     v.update(800);
     expect(body(v).alpha).toBeLessThan(1);
     expect(body(v).alpha).toBeGreaterThan(0);
+    // it fades as one picture of itself, not as see-through layers (review A, N10)
+    expect(body(v).isCachedAsTexture).toBe(true);
     v.update(400);
     expect(body(v).alpha).toBe(0);
     expect(v.finished).toBe(true);

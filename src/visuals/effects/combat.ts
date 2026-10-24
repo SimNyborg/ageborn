@@ -5,12 +5,13 @@
  * - `fx.contact_spark` `{ tier, kind, dir }` at the contact point: sized by the hit's tier, drawn by its kind (a
  *   blunt impact star with dust, a slash arc, pierce and bullet sparks spraying back, a metal clang, wood splinters).
  * - `fx.land_dust` `{ size, dir }` on the ground: a flat ring and dust skating out, most of it along `dir`.
- * - `fx.clash_dust` `{ widthLu }` on the ground: a dust curtain along a contact line.
+ * - `fx.clash_dust` `{ widthLu }` on the ground: a dust curtain along a contact line; `fx.clash_ring` `{ widthLu }` its
+ *   flat dust rings, which the battle view draws in the ground layer under the units (review A, S4).
  * - `fx.bits` `{ age, dir, count, seed | bitsSeed, side?, heightLu?, mat? }` at a fallen unit's feet: a helmet or hat,
  *   a weapon shard, a cloth scrap in the team colour, a pebble, in the age's material; tossed, bouncing, lying
  *   `BITS_LIE_MS`, then fading; at most `MAX_BITS` on the field (the oldest go first).
- * - `fx.stuck` `{ kind, dir }` at the contact point (the battle view makes it follow the unit): an arrow or javelin
- *   shaft that quivers, stays 1.5-1.9 s and fades.
+ * - `fx.stuck` `{ kind, dir }` at the contact point (the battle view makes it follow the unit): an arrow (or bolt),
+ *   a javelin-length shaft, a porcupine's quill or an energy needle that quivers, stays 1.2-1.9 s and fades.
  * - `fx.ground_glow` `{ size, color }` on the ground: a short additive glow under an impact or a muzzle flash.
  *
  * Every effect reads `lite: 1` (Graphics Lite: about half the pieces) and `reduce: 1` (Reduce motion: no spin, no
@@ -34,7 +35,7 @@ import { FX_ZONES } from './sprites';
 
 export const FX_TIERS = ['light', 'medium', 'heavy', 'kill'] as const;
 export const FX_CONTACT_KINDS = ['blunt', 'slash', 'pierce', 'bullet', 'metal', 'wood', 'laser', 'blast'] as const;
-export const FX_STUCK_KINDS = ['arrow', 'javelin'] as const;
+export const FX_STUCK_KINDS = ['arrow', 'javelin', 'quill', 'needle'] as const;
 export const FX_SIZES = ['s', 'm', 'l'] as const;
 export const FX_AGES = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'] as const;
 /** `mat` of `fx.bits`: what the fallen unit is made of (a beast drops no helmet, a machine drops plates and cogs). */
@@ -56,8 +57,11 @@ const NOTHING: CustomFx = { update: () => {}, done: true, destroy: () => {} };
 // ---------------------------------------------------------------------------------------------
 // fx.contact_spark
 
-/** The whole spark's size by tier (light, medium, heavy, kill). */
-export const SPARK_TIER_SCALE: readonly number[] = [0.8, 1, 1.3, 1.6];
+/**
+ * The whole spark's size by tier (light, medium, heavy, kill). Light and medium were 0.8 and 1: at game scale they hid
+ * in the sheets' own painted impact dust (review A, N8), so they are about 20% larger; heavy and kill barely changed.
+ */
+export const SPARK_TIER_SCALE: readonly number[] = [0.95, 1.2, 1.4, 1.65];
 /** Particle counts by tier, before Lite halves them. */
 const SPARK_TIER_COUNT: readonly number[] = [1, 1.3, 1.7, 2.1];
 
@@ -185,6 +189,20 @@ export function landDustRecipe(k: FxKit, size: number, lite: boolean, reduce: bo
 /** The clash curtain's width is quantized to this (lu) for the recipe cache. */
 const CLASH_WIDTH_STEP = 10;
 
+/** The clash's flat dust rings on the ground (`fx.clash_ring`; the battle view draws them under the units, review A S4). */
+export function clashRingRecipe(k: FxKit, widthLu: number, lite: boolean, reduce: boolean): FxRecipe {
+  const w = Math.max(30, Math.min(400, Math.round(widthLu / CLASH_WIDTH_STEP) * CLASH_WIDTH_STEP));
+  return {
+    id: `fx.clash_ring/${w}${lite ? '/lite' : ''}${reduce ? '/reduce' : ''}`,
+    durationMs: 480,
+    sprites: [
+      { ...k.ring(w / 9, 420, 0xf4ecdc, 0.16) },
+      ...(lite ? [] : [{ ...k.ring(w / 12, 360, 0xfff6e2, 0.18), delay: 60 }]),
+    ],
+  };
+}
+
+/** The clash's dust curtain (`fx.clash_dust`): puffs along the contact line and rolling out at its ends, pebbles. */
 export function clashDustRecipe(k: FxKit, widthLu: number, lite: boolean, reduce: boolean): FxRecipe {
   const w = Math.max(30, Math.min(400, Math.round(widthLu / CLASH_WIDTH_STEP) * CLASH_WIDTH_STEP));
   const n = (base: number): number => Math.max(1, Math.round(base * (lite ? 0.5 : 1)));
@@ -194,10 +212,7 @@ export function clashDustRecipe(k: FxKit, widthLu: number, lite: boolean, reduce
   return {
     id: `fx.clash_dust/${w}${lite ? '/lite' : ''}${reduce ? '/reduce' : ''}`,
     durationMs: 1000,
-    sprites: [
-      { ...k.ring(w / 9, 420, 0xf4ecdc, 0.16) },
-      { ...k.ring(w / 12, 360, 0xfff6e2, 0.18), delay: 60 },
-    ],
+    sprites: [],
     particles: [
       // the curtain: puffs kicked up along the whole contact line, hugging the legs (a curtain that rose to the
       // chest hid the blows of the clash it marks, P/U/look/u12_wood_close2.jpg)
@@ -256,8 +271,10 @@ class GlowFx implements CustomFx {
   }
 }
 
-/** How long a stuck arrow and javelin stay (ms, the last `STUCK_FADE_MS` fading) and how far they point down. */
-export const STUCK_MS: readonly number[] = [1500, 1900];
+/** How long a stuck arrow, javelin, quill and needle stay (ms, the last `STUCK_FADE_MS` fading) and how far they point down. */
+export const STUCK_MS: readonly number[] = [1500, 1900, 1500, 1200];
+/** The part each stuck kind draws (`FX_STUCK_KINDS` order). */
+const STUCK_PARTS: readonly string[] = ['fx.p.stuckArrow', 'fx.p.stuckJavelin', 'fx.p.stuckQuill', 'fx.p.stuckNeedle'];
 export const STUCK_FADE_MS = 300;
 const STUCK_DOWN_RAD = (18 * Math.PI) / 180;
 const STUCK_QUIVER_RAD = (9 * Math.PI) / 180;
@@ -275,7 +292,7 @@ class StuckFx implements CustomFx {
     this.dir = (ctx.o['dir'] ?? 1) < 0 ? -1 : 1;
     this.life = STUCK_MS[kind] ?? 1500;
     this.quiver = !flag(ctx.o, 'reduce');
-    this.s = ctx.sprite(kind === 1 ? 'fx.p.stuckJavelin' : 'fx.p.stuckArrow');
+    this.s = ctx.sprite(STUCK_PARTS[kind] ?? 'fx.p.stuckArrow');
     // the shaft runs back from the buried head (at the contact point) against the blow, angled as it came down
     this.s.scale.set(this.dir, 1);
     ctx.layer.addChild(this.s);
@@ -602,7 +619,7 @@ export function combatVariantRecipes(k: FxKit): FxRecipe[] {
     for (const reduce of [false, true]) {
       for (let kind = 0; kind < FX_CONTACT_KINDS.length; kind++) for (let tier = 0; tier < FX_TIERS.length; tier++) out.push(contactSparkRecipe(k, kind, tier, lite, reduce));
       for (let size = 0; size < FX_SIZES.length; size++) out.push(landDustRecipe(k, size, lite, reduce));
-      out.push(clashDustRecipe(k, 160, lite, reduce));
+      out.push(clashDustRecipe(k, 160, lite, reduce), clashRingRecipe(k, 160, lite, reduce));
     }
   }
   return out;
@@ -610,20 +627,20 @@ export function combatVariantRecipes(k: FxKit): FxRecipe[] {
 
 /** The parts a custom player draws itself (the colour-rule test rasterises them). */
 export const COMBAT_PARTS: readonly string[] = [
-  'fx.p.stuckArrow',
-  'fx.p.stuckJavelin',
+  ...STUCK_PARTS,
   'fx.p.splinter',
   ...new Set([...Object.values(BIT_KITS).flatMap((kit) => [kit.head.part, ...kit.rest.map((b) => b.part)]), ...MECH_KIT.map((b) => b.part), ...BEAST_KIT.map((b) => b.part)]),
 ];
 
 /**
- * The six combat recipes. Each is one complete effect sized by its options (`tier`, `size`, `count`, `widthLu`), so a
+ * The seven combat recipes. Each is one complete effect sized by its options (`tier`, `size`, `count`, `widthLu`), so a
  * multi-count emit (the feel rules' `count`, made for the small legacy sparks) draws it once: `maxInstances: 1`.
  */
 export function combatFxRecipes(k: FxKit): FxRecipe[] {
   const sparks = new Map<string, FxRecipe>();
   const lands = new Map<string, FxRecipe>();
   const clashes = new Map<string, FxRecipe>();
+  const rings = new Map<string, FxRecipe>();
   const cached = (m: Map<string, FxRecipe>, key: string, make: () => FxRecipe): FxRecipe => {
     let r = m.get(key);
     if (!r) {
@@ -667,6 +684,18 @@ export function combatFxRecipes(k: FxKit): FxRecipe[] {
         const lite = flag(ctx.o, 'lite');
         const reduce = flag(ctx.o, 'reduce');
         ctx.play(cached(clashes, `${w}|${lite}|${reduce}`, () => clashDustRecipe(k, w, lite, reduce)), 0, 0);
+        return NOTHING;
+      },
+    },
+    {
+      id: 'fx.clash_ring',
+      durationMs: 480,
+      maxInstances: 1,
+      custom: (ctx) => {
+        const w = Math.max(30, Math.min(400, Math.round((ctx.o['widthLu'] ?? 120) / CLASH_WIDTH_STEP) * CLASH_WIDTH_STEP));
+        const lite = flag(ctx.o, 'lite');
+        const reduce = flag(ctx.o, 'reduce');
+        ctx.play(cached(rings, `${w}|${lite}|${reduce}`, () => clashRingRecipe(k, w, lite, reduce)), 0, 0);
         return NOTHING;
       },
     },

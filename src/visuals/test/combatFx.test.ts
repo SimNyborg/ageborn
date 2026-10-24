@@ -14,8 +14,11 @@ import {
   bitKinds,
   bitPartsFor,
   BIT_KITS,
+  clashDustRecipe,
+  clashRingRecipe,
   COMBAT_PARTS,
   FX_CONTACT_KINDS,
+  FX_STUCK_KINDS,
   FX_TIERS,
   GLOW_MS,
   liveBits,
@@ -122,6 +125,19 @@ describe('fx.land_dust and fx.clash_dust (A4, A6)', () => {
     expect(count('fx.clash_dust', { widthLu: 300 })).toBeGreaterThan(count('fx.clash_dust', { widthLu: 60 }));
     expect(runOut(play('fx.land_dust', { size: 1, dir: -1 }))).toBeLessThan(1500);
     expect(runOut(play('fx.clash_dust', { widthLu: 200 }))).toBeLessThan(2000);
+  });
+
+  it('the clash\'s flat rings are their own short effect (the view lays it on the ground); the curtain has none (review A, S4)', () => {
+    const k = { flash: () => ({}), ring: (s: number) => ({ sprite: 'ring', s }), smoke: () => ({}), sparks: () => ({}), dust: () => ({}), chunks: () => ({}), bloom: () => ({}), scorch: () => ({}) } as unknown as Parameters<typeof clashRingRecipe>[0];
+    expect(clashRingRecipe(k, 200, false, false).sprites).toHaveLength(2);
+    expect(clashRingRecipe(k, 200, true, false).sprites).toHaveLength(1);
+    expect(clashRingRecipe(k, 200, false, false).particles ?? []).toHaveLength(0);
+    expect(clashDustRecipe(k, 200, false, false).sprites ?? []).toHaveLength(0);
+    expect(MANIFEST['fx.clash_ring']).toBeDefined();
+    const e = play('fx.clash_ring', { widthLu: 200 });
+    e.update(16);
+    expect(sprites(e.root).length).toBeGreaterThan(0);
+    expect(runOut(e)).toBeLessThan(800);
   });
 });
 
@@ -230,6 +246,24 @@ describe('fx.stuck and fx.ground_glow (A5)', () => {
     expect((sprites(layer(l))[0] as Sprite).rotation).toBeLessThan(-0.2);
     expect(runOut(r, 50)).toBeGreaterThanOrEqual((STUCK_MS[0] ?? 0) - 450);
     expect(runOut(l, 50)).toBeGreaterThanOrEqual((STUCK_MS[1] ?? 0) - 450);
+  });
+
+  it('every stuck kind (arrow, javelin, quill, needle) draws its own shaft and fades out in its time (review A, S3)', () => {
+    for (let kind = 0; kind < FX_STUCK_KINDS.length; kind++) {
+      const e = play('fx.stuck', { kind, dir: 1 });
+      e.update(16);
+      expect(sprites(layer(e)), FX_STUCK_KINDS[kind]).toHaveLength(1);
+      const left = runOut(e, 50);
+      expect(left, FX_STUCK_KINDS[kind]).toBeGreaterThanOrEqual((STUCK_MS[kind] ?? 0) - 450);
+      expect(left, FX_STUCK_KINDS[kind]).toBeLessThanOrEqual((STUCK_MS[kind] ?? 0) + 100);
+    }
+    expect(STUCK_MS).toHaveLength(FX_STUCK_KINDS.length);
+    // each kind its own part (the colour rule rasterises them with COMBAT_PARTS)
+    const parts = ['fx.p.stuckArrow', 'fx.p.stuckJavelin', 'fx.p.stuckQuill', 'fx.p.stuckNeedle'];
+    for (const p of parts) {
+      expect(getPart(p), p).toBeDefined();
+      expect(COMBAT_PARTS).toContain(p);
+    }
   });
 
   it('the ground glow takes the asked colour, lies flat and is short', () => {

@@ -52,6 +52,8 @@ export const A14_EFFECT_IDS = new Set([
   'fx.research_done', 'fx.levy_marker',
   // Queue item 38 Phase A (combat feel, 2026-10-18; track U's recipes, DESIGN A14.1 in the phase's final pass)
   'fx.contact_spark', 'fx.land_dust', 'fx.clash_dust', 'fx.bits', 'fx.stuck', 'fx.ground_glow',
+  // review A, S4: the clash's rings in the ground layer
+  'fx.clash_ring',
 ]);
 
 const AGES = ['stone', 'bronze', 'medieval', 'gunpowder', 'industrial', 'modern', 'future', 'cosmic'];
