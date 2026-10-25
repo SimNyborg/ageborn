@@ -1,6 +1,6 @@
 # Track B → app owner (orchestrator): warm both sides' decoration props during VS (round 3, 2026-10-25)
 
-Status: **open** (one line in a file Track B does not own; the game works without it).
+Status: **done** (orchestrator, 2026-10-25): `warmMatchArt` passes each side's `look.decorations` and its `PrefetchMatch` type has the field; `src/app/test/metaUi.test.ts` checks a new player's defaults reach the warm-up.
 
 ## Why
 

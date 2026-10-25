@@ -16,6 +16,7 @@ import {
   type OpponentFixture,
   type ResultFixture,
 } from '../fixtures/matches';
+import { homeModeFlags, skirmishSetupFlags } from '../model/homeMode';
 import { SCREEN_COMPONENTS } from '../ScreenHost';
 import { text, textNodes } from './dom';
 import { mount, PSEUDO, RAW_KEY, saveFor, type HarnessState, type Mounted } from './harness';
@@ -327,5 +328,18 @@ describe('VS disclosures (A7.1, A6.3, A7.4)', () => {
     expect(text(m.q('[data-testid="vs-plan-level"]')!)).toBe('Plan Lv 7.0');
     expect(text(m.q('[data-testid="vs-ai-level"]')!)).toBe('Lv 7');
     expect(m.q('[data-testid="vs-standard"]')).not.toBeNull();
+  });
+});
+
+describe("Home's island wears your base as the battle does (round 3)", () => {
+  it('the troop-system skin (Crystal Spire on Future) shows on Home, as in battle, Customize and VS', () => {
+    const base = saveFor('maxed');
+    expect(base.skins.equipped['base.future']).toBe('crystal_spire');
+    // a Skirmish over the full window (Stone to Future) puts the island in Future
+    const flags = { ...base.flags, ...homeModeFlags('skirmish'), ...skirmishSetupFlags(base, { generalId: content.generals.order[0]!, format: 'full', standardLevels: false }) };
+    m = mount({ state: 'maxed', routes: [{ id: 'home' }], save: { ...base, flags }, portrait: () => Promise.resolve('data:image/png;base64,AA==') });
+    const mine = m.q('.hd__base--me [data-skin]')!;
+    expect(mine.getAttribute('data-age')).toBe('future');
+    expect(mine.getAttribute('data-skin')).toBe('baseSkin.crystal_spire');
   });
 });

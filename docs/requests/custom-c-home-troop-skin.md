@@ -1,6 +1,6 @@
 # Track C → Home's owner (or the round-3 final): Home's base should wear the troop-system base skin (round 3, 2026-10-25)
 
-Status: **open** (not in Track C's paths; small).
+Status: **done** (orchestrator, 2026-10-25): Home resolves the age's skin as the battle does, the owned troop skin first (`baseSkin.<skin id>`), then the cosmetic one; `src/ui/screens/test/screens.test.tsx` checks Crystal Spire on Home's island in a Future window.
 
 ## What is wrong
 

@@ -269,12 +269,24 @@ describe('createMetaUi: the meta screens and the battle in step', () => {
     expect(c.route.value.id).toBe('title');
     ui.dispose();
 
-    // through the art provider: the first age of the format, each side's skins and scenes of it
+    // through the art provider: the first age of the format, each side's skins and scenes of it, and its
+    // decorations (round 3: the props load while VS is up, so they are there on the first frame)
     const calls: unknown[] = [];
     const art = { prefetchMatch: (o: unknown) => (calls.push(o), Promise.resolve()) } as unknown as Parameters<typeof warmMatchArt>[0];
     warmMatchArt(art, warmed[0]!);
     // (the AI General's base look has a skin per age; the provider loads only the first age's models)
-    expect(calls).toEqual([{ age: 'stone', sides: [{ skins: { stone: 'mossy_den' }, scenes: {} }, expect.objectContaining({ skins: expect.objectContaining({ stone: expect.any(String) }) })], units: expect.any(Array) }]);
+    expect(calls).toEqual([
+      {
+        age: 'stone',
+        sides: [
+          { skins: { stone: 'mossy_den' }, scenes: {}, decorations: warmed[0]!.config.sides[0].look?.decorations },
+          expect.objectContaining({ skins: expect.objectContaining({ stone: expect.any(String) }) }),
+        ],
+        units: expect.any(Array),
+      },
+    ]);
+    // a new player's base has the default props (the fire bowl and the fern)
+    expect(warmed[0]!.config.sides[0].look?.decorations).toEqual(['decoration.fire_bowl', null, 'decoration.fern']);
     // G7: and the unit sheets of both decks' opening troops, so the battle never waits on one VS could load
     const held = (calls[0] as { units: { visualId: string }[] }).units.map((u) => u.visualId);
     for (const side of [0, 1] as const) {

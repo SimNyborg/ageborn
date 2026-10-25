@@ -81,21 +81,27 @@ export const WARM_WAIT_MS = 8000;
 /** The art provider's duck-typed match warm-up (visuals' `VisualsArtProvider.prefetchMatch`). */
 type PrefetchMatch = (o: {
   age: AgeId;
-  sides: readonly { skins?: Partial<Record<AgeId, SkinId>>; scenes?: Partial<Record<AgeId, CosmeticKey>> }[];
+  sides: readonly { skins?: Partial<Record<AgeId, SkinId>>; scenes?: Partial<Record<AgeId, CosmeticKey>>; decorations?: readonly (CosmeticKey | null)[] }[];
   units?: readonly HeldVisual[];
 }) => Promise<void>;
 
 /**
  * Warms a match's opening art while VS is up (review 1): the first age of its format, each side's base
- * skin model of that age (the troop-system skin wins, as in battle), each half's scene of it, and the
- * unit sheets both decks can field in it (G7: unit sheets load per match). Resolves once they are in; a
- * provider without `prefetchMatch` (fakes, tests) does nothing and returns null.
+ * skin model of that age (the troop-system skin wins, as in battle), each half's scene of it, both sides'
+ * decoration props (round 3, docs/requests/custom-b-prefetch-decorations.md: so a found player's props are
+ * there on the first frame instead of fading in over their SVG stand-ins), and the unit sheets both decks
+ * can field in it (G7: unit sheets load per match). Resolves once they are in; a provider without
+ * `prefetchMatch` (fakes, tests) does nothing and returns null.
  */
 export function warmMatchArt(art: ArtProvider, setup: MatchSetup): Promise<void> | null {
   const prefetch = (art as ArtProvider & { prefetchMatch?: PrefetchMatch }).prefetchMatch;
   const age = ageOrder(setup.config)[0];
   if (typeof prefetch !== 'function' || !age) return null;
-  const sides = setup.config.sides.map((sd) => ({ skins: baseSkinsOf(sd) as Partial<Record<AgeId, SkinId>>, ...(sd.look?.scenes ? { scenes: sd.look.scenes } : {}) }));
+  const sides = setup.config.sides.map((sd) => ({
+    skins: baseSkinsOf(sd) as Partial<Record<AgeId, SkinId>>,
+    ...(sd.look?.scenes ? { scenes: sd.look.scenes } : {}),
+    ...(sd.look?.decorations ? { decorations: sd.look.decorations } : {}),
+  }));
   const units: HeldVisual[] = [];
   for (const side of [0, 1] as const) {
     for (const card of sideAgeCards(setup.config, side, age)) {

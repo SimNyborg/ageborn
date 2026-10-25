@@ -183,8 +183,12 @@ export function HomeScreen(_p: { route: RouteOf<'home'> }) {
           : format;
   const age = dioramaAge(formatAges(content, playFormat), reachedAges(s, content)) ?? content.order.ages[0]!;
   const eq = content.cosmetics.collections ? equippedOf(s, content) : null;
+  // The age's base skin as the battle resolves it (render/battleView.ts `baseSkinsOf`, Customize's
+  // `shownBaseKey`): the troop-system skin first (Crystal Spire, as `baseSkin.<skin id>`), then the
+  // cosmetic one (round 3, docs/requests/custom-c-home-troop-skin.md).
+  const troopSkin = s.skins.equipped[`base.${age}`];
   const skin = eq?.baseSkins?.[age] ?? null;
-  const mySkin = skin && owns(s, content, skin) ? skin : null;
+  const mySkin = troopSkin && s.skins.owned.includes(troopSkin) ? `baseSkin.${troopSkin}` : skin && owns(s, content, skin) ? skin : null;
   // your base flies your equipped base flag and national flag on the lane's pole (PLAN 2d)
   const myFlag = (k: string | null | undefined): string | null => (k && owns(s, content, k) ? k : null);
   const myFlags = { baseFlag: myFlag(eq?.baseFlag), nationalFlag: myFlag(eq?.nationalFlag) };
