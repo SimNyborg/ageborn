@@ -228,6 +228,14 @@ export const UNIT_WEIGHT: Readonly<
 export const DEATH_LIE_MS = 600;
 export const DEATH_FADE_MS = 300;
 const DEATH_SINK_LU = 3;
+/**
+ * A fading body is one picture of itself (review A, N10), but each picture costs a render pass, a texture and a render
+ * group. So the bodies past this many at once, a fade the frames would show in fewer than `PICTURE_FADE_MIN_FRAMES`
+ * steps (a slow device, a catch-up, a dev fast-forward) and Graphics Lite fade as layers: in software-rendered WebKit
+ * the pictures of a fast-forwarded war's many bodies made each step 77% slower (2026-10-25, the memory spec's war).
+ */
+const MAX_PICTURE_FADES = 4;
+const PICTURE_FADE_MIN_FRAMES = 8;
 
 /** The mass class of a unit from its role and height. */
 export function unitMass(group: RoleGroup | null, heightLu: number): UnitMass {
@@ -1354,6 +1362,15 @@ const LAND_SQUASH_DEPTH: Readonly<Record<UnitMass, number>> = { light: 0.16, med
 const AIR_NONE: { readonly rot: number; readonly y: number; readonly stretch: number } = Object.freeze({ rot: 0, y: 0, stretch: 0 });
 
 class AtlasUnitView implements UnitView {
+  /** The views whose fading body is drawn as one picture now, across views (`MAX_PICTURE_FADES`). */
+  private static readonly pictureFades = new Set<AtlasUnitView>();
+
+  /** Whether one more fading body may be drawn as a picture; views that finished their fade or went free their place. */
+  private static pictureFadeFree(): boolean {
+    for (const v of AtlasUnitView.pictureFades) if (v.destroyed || v.root.destroyed || v.finished) AtlasUnitView.pictureFades.delete(v);
+    return AtlasUnitView.pictureFades.size < MAX_PICTURE_FADES;
+  }
+
   readonly root = new Container();
   readonly anchors: Anchors;
   private readonly body = new Container();
@@ -1486,7 +1503,9 @@ class AtlasUnitView implements UnitView {
    * A4: the weighted death (`dieWith`), or null on the old path (`play('die')`: the cartoon poof hides the body).
    * Times are the die track's (animation ms); `sq` and `alpha` persist through a hitstop like the other offsets.
    */
-  private death: { dir: 1 | -1; style: DeathStyle; landAt: number; lieMs: number; fadeMs: number; onLand?: () => void; landed: boolean; sinkDust: boolean; sq: number; alpha: number; cached: boolean } | null = null;
+  private death: { dir: 1 | -1; style: DeathStyle; landAt: number; lieMs: number; fadeMs: number; onLand?: () => void; landed: boolean; sinkDust: boolean; sq: number; alpha: number; cached: boolean; layered: boolean } | null = null;
+  /** The game time of the frame being drawn (ms), for the fade's picture-or-layers choice. */
+  private frameDt = 0;
 
   constructor(
     private readonly def: VisualDef,
@@ -1847,6 +1866,7 @@ class AtlasUnitView implements UnitView {
       sq: 0,
       alpha: 1,
       cached: false,
+      layered: false,
     };
     this.setGroundMarks(false);
   }
@@ -1877,10 +1897,14 @@ class AtlasUnitView implements UnitView {
       d.alpha = fade.alpha;
       // the fading body is one picture, not see-through layers (legs, harness and team colour showed through each
       // other, review A N10): its lying pose no longer changes, so it fades as a texture of itself (one small texture a
-      // fading body, at the sheet's own density, returned when the view goes)
-      if (fade.alpha < 1 && !d.cached) {
-        d.cached = true;
-        this.body.cacheAsTexture({ resolution: 1 });
+      // fading body, at the sheet's own density, returned when the view goes). Chosen once, when the fade starts: a
+      // fade shown in a few steps, Lite and the bodies past the cap fade as layers (`MAX_PICTURE_FADES`).
+      if (fade.alpha < 1 && !d.cached && !d.layered) {
+        if (!this.lite && this.frameDt * PICTURE_FADE_MIN_FRAMES <= d.fadeMs && AtlasUnitView.pictureFadeFree()) {
+          d.cached = true;
+          AtlasUnitView.pictureFades.add(this);
+          this.body.cacheAsTexture({ resolution: 1 });
+        } else d.layered = true;
       }
       y += DEATH_SINK_LU * fade.sink;
       if (fade.sink > 0 && !d.sinkDust) {
@@ -2222,6 +2246,7 @@ class AtlasUnitView implements UnitView {
   update(dtMs: number): void {
     if (this.destroyed) return;
     this.clockMs += dtMs;
+    this.frameDt = dtMs;
     let animDt = dtMs;
     // Code motion on top of the frames: x = hitstop jitter + flinch (+ the R2 frame lock), y = spawn,
     // hop, hover, sink; rotation = lean, tilt, the legacy walk sway; scale = spawn pop and hit squash.
@@ -2741,6 +2766,7 @@ class AtlasUnitView implements UnitView {
   destroy(): void {
     if (this.destroyed) return;
     this.destroyed = true;
+    AtlasUnitView.pictureFades.delete(this);
     this.root.destroy({ children: true });
     this.onDestroy?.();
   }

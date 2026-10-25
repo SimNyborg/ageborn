@@ -191,11 +191,11 @@ describe('reach on the shipped sheets (A1)', () => {
 // ---------------------------------------------------------------------------------------------
 // The view
 
-function view(s: AtlasData, side: 0 | 1 = 0): UnitView & Record<string, unknown> {
+function view(s: AtlasData, side: 0 | 1 = 0, quality?: 'high' | 'lite'): UnitView & Record<string, unknown> {
   const def = MANIFEST['unit.bonker'];
   if (!def) throw new Error('bonker');
   const art = createArtProvider({ warn: () => {} });
-  const a = new AtlasAdapter({ entries: () => [def], decor: art.procedural.baker });
+  const a = new AtlasAdapter({ entries: () => [def], decor: art.procedural.baker, ...(quality ? { quality } : {}) });
   const d: VisualDef = { ...def, heightLu: 68, events: { attack: { impactAt: 0.48 } } };
   a.register(def.source, { ...s, heightLu: 68 });
   return a.createUnit({ key: 'unit.bonker', def: d, side, teamPreset: 'default', seed: 9 }) as UnitView & Record<string, unknown>;
@@ -611,12 +611,13 @@ describe('dieWith() on the atlas view (A4)', () => {
     expect(body(v).alpha).toBe(1);
     expect(body(v).isCachedAsTexture).toBe(false);
     expect(v.finished).toBe(false);
-    v.update(800);
+    // into the fade at 60 frames a second
+    for (let i = 0; i < 40; i++) v.update(16);
     expect(body(v).alpha).toBeLessThan(1);
     expect(body(v).alpha).toBeGreaterThan(0);
     // it fades as one picture of itself, not as see-through layers (review A, N10)
     expect(body(v).isCachedAsTexture).toBe(true);
-    v.update(400);
+    v.update(500);
     expect(body(v).alpha).toBe(0);
     expect(v.finished).toBe(true);
     v.update(1000);
@@ -647,6 +648,53 @@ describe('dieWith() on the atlas view (A4)', () => {
     // the ground at 280 / 0.92 ms, then 100 ms of lying, then half of the 100 ms fade
     v.update(280 / 0.92 + 150 - 16);
     expect(shadow.alpha).toBeCloseTo(0.36, 2);
+  });
+
+  it('a fade the frames would show in a few steps (a slow device, a catch-up, a fast-forward) fades as layers, and stays so', () => {
+    const { v } = dying();
+    v.dieWith({ dir: -1, tier: 'medium', heavy: false, lieMs: 2000, fadeMs: 600 });
+    v.update(16);
+    // landed and lying, just short of the fade (the ground at 280 / 0.92 ms, then 2 s)
+    v.update(2200);
+    expect(body(v).alpha).toBe(1);
+    // a 150 ms frame into the fade: the frames would show its 600 ms in four steps
+    v.update(150);
+    expect(body(v).alpha).toBeLessThan(1);
+    expect(body(v).isCachedAsTexture).toBe(false);
+    for (let i = 0; i < 10; i++) v.update(16);
+    expect(body(v).isCachedAsTexture).toBe(false);
+    v.destroy();
+  });
+
+  it('Graphics Lite fades as layers', () => {
+    const v = view(fixture(), 0, 'lite') as unknown as Dying;
+    v.setPose(pose(0));
+    v.play('idle', { loop: true });
+    v.update(16);
+    v.dieWith({ dir: -1, tier: 'medium', heavy: false, lieMs: 100, fadeMs: 600 });
+    for (let i = 0; i < 40; i++) v.update(16);
+    expect(body(v).alpha).toBeLessThan(1);
+    expect(body(v).isCachedAsTexture).toBe(false);
+    v.destroy();
+  });
+
+  it('at most four bodies fade as pictures at once; a view that goes frees its place', () => {
+    const fading = (): Dying => {
+      const { v } = dying();
+      v.dieWith({ dir: -1, tier: 'medium', heavy: false, lieMs: 100, fadeMs: 600 });
+      return v;
+    };
+    // five bodies into their fade together at 60 frames a second (the ground at 280 / 0.92 ms, then 100 ms)
+    const vs = Array.from({ length: 5 }, fading);
+    for (let i = 0; i < 40; i++) for (const v of vs) v.update(16);
+    expect(vs.map((v) => body(v).alpha < 1)).toEqual([true, true, true, true, true]);
+    expect(vs.map((v) => body(v).isCachedAsTexture)).toEqual([true, true, true, true, false]);
+    // one goes: the next body to start its fade gets the place
+    vs[0]!.destroy();
+    const next = fading();
+    for (let i = 0; i < 40; i++) next.update(16);
+    expect(body(next).isCachedAsTexture).toBe(true);
+    for (const v of [...vs.slice(1), next]) v.destroy();
   });
 
   it('play("die") keeps the old cartoon path: the poof and the body hidden at the clip end', () => {

@@ -131,8 +131,9 @@ async function warPeak(page: Page, problems: { errors: string[] }, label: string
 }
 
 test('G7: a long Standard War at DPR 2 keeps decoded images under the budget, and no unit appears without its art', async ({ page }) => {
-  // about 2 minutes in Chromium; a software-rendered WebKit in CI draws a frame every few hundred ms
-  test.setTimeout(480_000);
+  // About 3 minutes in Chromium here (the mirror war below runs to tick 13,091, longer than the war it replaced); CI's
+  // machines and its software-rendered WebKit take two to four times as long, so it has the other wars' 20 minutes.
+  test.setTimeout(1_200_000);
   const problems = watchPage(page);
   await page.goto('./?dev=1&autopilot=1&quick=standard');
   await page.waitForFunction(() => (window as unknown as { __agebornDev?: unknown }).__agebornDev !== undefined, null, { timeout: 60_000 });
