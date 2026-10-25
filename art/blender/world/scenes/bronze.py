@@ -12,6 +12,19 @@ small accent; olive and scrub greens kept under 40% saturation (A11 colour rule 
 
 Layout note: the arena ground covers everything below screen y = -40 lu, so mid-ground objects stand on
 a bank whose visible top is at -50..-75 lu; their feet may hide behind the grass verge.
+
+"Siege of the Bronze City" (format 2, round 3; Epic, Trophy Road 2,300): a walled city under siege on a
+dusty plain. Back: a far ridge and low hills. Far: the city on its terraced tell: a battered mud-brick
+wall with towers and merlons, the great gate with its lion relief and bronze-studded doors ajar, houses
+packed on the terraces, the citadel with its columned palace, smoke columns from the burning quarters, a
+scaling ladder; the giant wooden horse on its wheeled platform before the walls (the signature); the
+besiegers' far tents. Mid: the siege camp: ridge and cone tents, the command pavilion with its striped
+valance and standard, shield racks, spear stacks, amphorae, a parked chariot, camp fires. Ambient:
+banners on the gate towers, a war chariot races along the bank every 45 s, crows, smoke; the gate,
+towers, windows and camp fires glow under night skies.
+
+Palette (PLAN 2b): mud brick #B89C78, canvas #DCD2BC, bronze #A88A5A as a small accent (the PLAN's
+#B8863B desaturated).
 """
 import math
 import random
@@ -538,9 +551,375 @@ def ah_props():
     return plist, sprites
 
 
+# -- Siege of the Bronze City (round 3; Epic, Trophy Road 2,300) -------------------------------------
+SB_PAL = dict(skyTop=0xA8B0B0, skyBottom=0xEEDDBC, light=0xFFEFCC, far=0xB0A084, mid=0x9C8E6A, near=0x7E7254)
+SB = dict(
+    brick=0xB89C78, brick_dk=0x9C8262, brick_lt=0xCCB492, stone=0xB4A68C, stone_dk=0x968A72, plain=0xC2B080, plain_dk=0xA8966A,
+    dust=0xD2C29A, canvas=0xDCD2BC, canvas_dk=0xC0B49A, wood=0x8A7258, wood_dk=0x6E5A46, bronze=0xA88A5A, shield=0xB4A27E,
+    dark=0x3E3630, roof=0x9A7E62, scrub=0x8E8E62, scrub_dk=0x76784E, olive=0x8E9870, red=0x8A5048, ember=0x5A4038, bone=0xE6DCC6,
+    white=0xE2D8C2, brick_deep=0x866C50, cypress=0x5E6A4A, smoke=0x7E766E, smoke_lt=0x9A928A, smoke_dk=0x6A625C, char=0x4E4640,
+    fire=0xC88A4A, hide=0xA89070,
+)
+SB_SKY = {"top": "#A8B0B0", "bottom": "#EEDDBC", "horizon": "#F2E4C8", "cloudTint": "#F6EEDC", "celestial": "sun",
+          "sunAt": [240, -520, 44], "clouds": 0.5, "smog": 0.16}
+SB_FAR_E = math.radians(8.0)
+SB_MID_E = math.radians(12.0)
+SB_GROUND = 40.0                       # the plain's level (far)
+SB_WALL = (330.0, 790.0, 470.0, 58.0)  # the city's front wall: x0, x1, y, height (far)
+SB_GATE = 540.0                        # the gate's centre (far)
+SB_HORSE = (200.0, 432.0)              # the wooden horse (far): x, y (it stands taller than the walls)
+SB_CHARIOT_Y = -48.0                   # the chariot's track along the bank (mid, screen lu)
+
+
+def sb_back(st, P):
+    """A dusty plain to low brown hills and a far blue ridge (lowest under the moons' place)."""
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    ridge(st, hz(SB["stone_dk"], 0.5), -300, 1500, -40, 150, 1500, 13, lumps=9, jag=0.08, peaks=True)
+    ridge(st, hz(SB["plain_dk"], 0.42), -300, 1500, -40, 100, 1320, 17, lumps=12, jag=0.05, peaks=False)
+
+
+def _sb_tower(pt, g, gtop, x, y, z, w, d, h, yaw=0.0):
+    """A battered mud-brick tower with a parapet of merlons and a dark window slit. Returns its top centre."""
+    box(g, (x, y, z + h / 2), (w / 2, d / 2, h / 2), p=8, cuts=2, rot=(0, 0, yaw), taper=(1.0, 0.86))
+    box(gtop, (x, y, z + h + 1.2), (w * 0.47, d * 0.47, 1.6), p=8, cuts=1, rot=(0, 0, yaw))
+    for k in range(4):
+        t = (k + 0.5) / 4
+        box(gtop, (x - w * 0.43 + w * 0.86 * t, y - d * 0.42, z + h + 4.4), (w * 0.07, 1.6, 2.2), p=8, cuts=1, rot=(0, 0, yaw))
+    pt.g(SB["dark"], outline=0.0, highlight=False).slab([(x - 1.4, z + h * 0.62), (x + 1.4, z + h * 0.62), (x + 1.4, z + h * 0.78), (x - 1.4, z + h * 0.78)],
+                                                          y - d * 0.43 - 0.4, 0.8)
+    return (x, y, z + h + 6)
+
+
+def _smoke_plume(pt, x, y, z, H, lean, seed=0):
+    """A smoke column painted into the strip: puffs that widen and lighten as they rise and lean with the
+    wind (the moving smoke is an emitter at its foot)."""
+    rnd = random.Random(seed)
+    gs = [pt.g(SB["smoke_dk"], outline=0.15), pt.g(SB["smoke"], outline=0.12), pt.g(SB["smoke_lt"], outline=0.1)]
+    n = 18
+    for k in range(n):
+        t = k / (n - 1)
+        r = 4.5 + 16.0 * t ** 1.1
+        cx = x + lean * H * t ** 1.6
+        cz = z + H * t
+        g = gs[min(2, int(t * 3))]
+        for j in range(3):
+            a = rnd.uniform(0, 2 * math.pi)
+            g.blob((cx + math.cos(a) * r * 0.55, y + j * 2.5, cz + math.sin(a) * r * 0.35), (r * rnd.uniform(0.55, 0.85), r * 0.5, r * rnd.uniform(0.5, 0.7)),
+                   p=2.0, cuts=3)
+
+
+def _siege_tower(pt, x, y, z, h):
+    """A siege tower on six wheels: a tapering timber frame clad in hides, a fighting platform with a parapet,
+    its drawbridge half lowered toward the wall."""
+    gw, gw2 = pt.g(SB["wood_dk"], outline=0.5), pt.g(SB["wood"], outline=0.4)
+    gh, gh2 = pt.g(SB["hide"], outline=0.4), pt.g(SB["canvas_dk"], outline=0.3)
+    box(gw, (x, y, z + h * 0.48), (15, 13, h * 0.48), p=8, cuts=2, taper=(1.0, 0.8))
+    for k in range(4):
+        zz = z + 10 + k * h * 0.21
+        (gh if k % 2 else gh2).slab([(x - 14 + k * 0.7, zz), (x + 14 - k * 0.7, zz), (x + 13.4 - k * 0.7, zz + h * 0.18), (x - 13.4 + k * 0.7, zz + h * 0.18)],
+                                    y - 13.6 + k * 0.6, 1.0)
+        gw2.capsule((x - 14 + k * 0.7, y - 14.4 + k * 0.6, zz), (x + 14 - k * 0.7, y - 14.4 + k * 0.6, zz), 0.8)
+    for sx in (-1, 1):
+        gw2.capsule((x + sx * 15, y - 13.5, z), (x + sx * 12, y - 11.5, z + h * 0.96), 1.1)
+    box(gw2, (x, y, z + h * 0.97), (14, 12, 1.4), p=8, cuts=1)
+    for k in range(5):
+        box(gw, (x - 11 + k * 5.5, y - 10.5, z + h + 2.6), (1.6, 1.0, 2.4), p=8, cuts=1)
+    gw2.slab([(x - 9, z + h * 0.9), (x + 9, z + h * 0.9), (x + 9, z + h * 0.9 + 26), (x - 9, z + h * 0.9 + 26)], y + 14, 1.4, rot=(-34, 0, 0),
+             origin=(x, y + 13, z + h * 0.9))
+    gdk = pt.g(SB["dark"], outline=0.3)
+    for sx in (-10, 0, 10):
+        cyl(gdk, (x + sx, y - 14, z + 4.4), (x + sx, y - 16, z + 4.4), 4.4, bevel=0.5, segs=12)
+
+
+def sb_far(st, P):
+    pt = Parts()
+    rnd = random.Random(97)
+    zg = SB_GROUND
+    # 1. the dusty plain (golden swells) and the low tell the city stands on
+    g, g2 = pt.g(SB["plain"], outline=0.0), pt.g(SB["plain_dk"], outline=0.0)
+    for i in range(12):
+        x = -300 + i * 160 + rnd.uniform(-20, 20)
+        kit.hill(g if i % 2 else g2, x, 620, -10, rnd.uniform(150, 190), 90, rnd.uniform(58, 68), seed=10 + i, jag=0.03, p=2.6)
+    for i in range(14):
+        x = -300 + i * 130 + rnd.uniform(-20, 20)
+        kit.hill(g2 if i % 2 else g, x, 360, -10, rnd.uniform(110, 150), 80, zg + 6 + rnd.uniform(-2, 2), seed=40 + i, jag=0.03, p=2.8)
+    # the tell: three terraces of packed earth and retaining walls stepping up behind the front wall
+    gt, gt2 = pt.g(SB["brick_dk"], outline=0.3), pt.g(SB["plain_dk"], outline=0.2)
+    terraces = ((480, 640, 250, 70, 40, 90), (530, 650, 200, 60, 90, 112), (590, 652, 140, 46, 112, 128))   # y0, y1, half width, -, z0, z1
+    for (y0, y1, hw, _, z0, z1) in terraces:
+        box(gt, (560, (y0 + y1) / 2, (z0 + z1) / 2), (hw, (y1 - y0) / 2, (z1 - z0) / 2), p=8, cuts=2, taper=(1.0, 0.97))
+        box(gt2, (560, (y0 + y1) / 2, z1 + 0.6), (hw - 2, (y1 - y0) / 2 - 2, 0.8), p=8, cuts=1)
+    # 2. the city inside: flat-roofed mud-brick houses packed on the terraces, the citadel and its palace on top
+    gh, gh2, gh3 = pt.g(SB["brick"], outline=0.4), pt.g(SB["white"], outline=0.4), pt.g(SB["brick_deep"], outline=0.4)
+    gh4 = pt.g(SB["brick_lt"], outline=0.4)
+    gd = pt.g(SB["dark"], outline=0.0, highlight=False)
+    gaw, gpar = pt.g(SB["canvas_dk"], outline=0.3), pt.g(SB["brick_dk"], outline=0.3)
+    wins = []
+    k = 0
+    for (y0, y1, hw, _, z0, z1) in terraces[:2]:
+        for row in range(2):
+            yy = y0 + 10 + row * (y1 - y0 - 30) / 1.5
+            x = 560 - hw + 12
+            while x < 560 + hw - 12:
+                w, d, h = rnd.uniform(14, 24), rnd.uniform(12, 16), rnd.uniform(12, 20)
+                if abs(x - 560) > 70 or row == 0 or z0 > 70:
+                    hx_ = x + w / 2
+                    box((gh2, gh, gh3, gh2, gh4)[k % 5], (hx_, yy, z1 + h / 2), (w / 2, d / 2, h / 2), p=8, cuts=1, rot=(0, 0, rnd.uniform(-4, 4)))
+                    # a dark door or window pair on the camera face, a roof parapet, now and then an awning
+                    fy = yy - d / 2 - 0.5
+                    if k % 2 == 0:
+                        gd.slab([(hx_ - 1.6, z1), (hx_ + 1.6, z1), (hx_ + 1.6, z1 + h * 0.5), (hx_ - 1.6, z1 + h * 0.5)], fy, 0.8)
+                    for wx in ((-w * 0.25, w * 0.25) if w > 18 else (0.0,)):
+                        gd.slab([(hx_ + wx - 1.2, z1 + h * 0.62), (hx_ + wx + 1.2, z1 + h * 0.62), (hx_ + wx + 1.2, z1 + h * 0.8), (hx_ + wx - 1.2, z1 + h * 0.8)],
+                                fy, 0.8)
+                    box(gpar, (hx_, yy, z1 + h + 0.8), (w / 2 + 0.4, d / 2 + 0.4, 0.9), p=8, cuts=1)
+                    if k % 5 == 2:
+                        gaw.slab([(hx_ - w * 0.3, z1 + h * 0.58), (hx_ + w * 0.3, z1 + h * 0.58), (hx_ + w * 0.34, z1 + h * 0.46), (hx_ - w * 0.34, z1 + h * 0.46)],
+                                 fy - 2.4, 4.0)
+                    if k % 8 == 0:
+                        wins.append((hx_, yy - d / 2 - 2, z1 + h * 0.55))
+                    k += 1
+                x += w + rnd.uniform(1, 4)
+    gcy, gtk = pt.g(SB["cypress"], outline=0.3), pt.g(SB["wood_dk"], outline=0.0)
+    for (x, y, z, h) in ((372, 520, 90, 30), (388, 526, 90, 24), (476, 560, 112, 28), (664, 556, 112, 30), (742, 518, 90, 26), (756, 524, 90, 32)):
+        kit.cypress(gcy, gtk, x, y, h, h * 0.17, seed=int(x), z=z)
+    cx, cy, cz = 560.0, 640.0, 128.0
+    gs, gs2 = pt.g(SB["stone"], outline=0.5), pt.g(SB["stone_dk"], outline=0.4)
+    box(gs2, (cx, cy, cz + 6), (86, 30, 8), p=8, cuts=2, taper=(1.0, 0.95))
+    box(gs, (cx, cy + 6, cz + 30), (44, 18, 18), p=8, cuts=2)
+    gr = pt.g(SB["roof"], outline=0.4)
+    gr.slab([(cx - 50, cz + 47), (cx + 50, cz + 47), (cx, cz + 62)], cy + 6, 40)
+    gcol = pt.g(SB["brick_lt"], outline=0.3)
+    for k in range(6):
+        cyl(gcol, (cx - 30 + k * 12, cy - 16, cz + 12), (cx - 30 + k * 12, cy - 16, cz + 46), 2.2, 2.6, bevel=0.4, segs=10)
+    box(gs, (cx, cy - 16, cz + 47.5), (40, 4, 2.0), p=8, cuts=1)
+    wins.append((cx, cy - 20, cz + 30))
+    box(gs2, (cx + 90, cy + 4, cz + 26), (12, 12, 26), p=8, cuts=2, taper=(1.0, 0.9))
+    for k in range(3):
+        box(gs, (cx + 84 + k * 6, cy - 7, cz + 55), (2.0, 1.6, 2.4), p=8, cuts=1)
+    # smoke columns rising from the burning quarters (the siege): charred houses with a small fire glow, a
+    # painted plume leaning with the wind, and the moving smoke at its foot
+    gch, gfi = pt.g(SB["char"], outline=0.3), pt.g(SB["fire"], glow=True)
+    for (x, y, z, H, lean) in ((452, 548, 112, 150, 0.42), (704, 540, 112, 128, 0.5)):
+        for dx in (-9, 8):
+            box(gch, (x + dx, y, z + 7), (7, 6, 7), p=8, cuts=1, rot=(0, 0, dx))
+        gfi.blob((x, y - 6.4, z + 9), (4.6, 0.8, 2.6), p=2.4, cuts=2)
+        st.light((x, y - 8, z + 10), 4)
+        _smoke_plume(pt, x, y + 4, z + 12, H, lean, seed=int(x))
+        st.amb("emit", "fx.p.smoke", (x, y - 4, z + 16), rate=0.9, speed=14, scale=1.8, tint=0x5E5650, alpha=0.6, life=4200)
+    # 3. the front wall (battered mud brick on a stone footing) with its towers and the great gate
+    x0, x1, wy, wh = SB_WALL
+    gw, gw2, gtp = pt.g(SB["brick"], outline=0.6), pt.g(SB["stone"], outline=0.5), pt.g(SB["brick_lt"], outline=0.4)
+    gcs = pt.g(SB["brick_dk"], outline=0.0, highlight=False)
+    for (ax, bx) in ((x0, SB_GATE - 30), (SB_GATE + 30, x1)):
+        L = bx - ax
+        box(gw, ((ax + bx) / 2, wy, zg + wh / 2), (L / 2, 8, wh / 2), p=8, cuts=2, taper=(1.0, 0.9))
+        box(gw2, ((ax + bx) / 2, wy, zg + 6), (L / 2 + 1, 9.5, 6), p=8, cuts=1)
+        for zz in (zg + 22, zg + 40):
+            box(gcs, ((ax + bx) / 2, wy - 7.6 + (zz - zg) * 0.05, zz), (L / 2 - 1, 0.6, 0.7), p=6, cuts=1)
+        n = int(L / 8)
+        for k in range(n):
+            box(gtp, (ax + 4 + k * L / n, wy - 6, zg + wh + 2.4), (2.4, 1.6, 2.6), p=8, cuts=1)
+        for k in range(int(L / 26)):
+            sx_ = ax + 13 + k * 26
+            gd.slab([(sx_ - 0.9, zg + wh - 12), (sx_ + 0.9, zg + wh - 12), (sx_ + 0.9, zg + wh - 5), (sx_ - 0.9, zg + wh - 5)], wy - 8.4, 0.6)
+    tops = []
+    for x in (x0, 420, 650, 730, x1):
+        tops.append(_sb_tower(pt, gw, gtp, x, wy - 2, zg, 28, 24, wh + 18))
+    gate_tops = [_sb_tower(pt, gw, gtp, SB_GATE + sx, wy - 4, zg, 34, 28, wh + 30) for sx in (-30, 30)]
+    # the gateway: a dark opening under a great lintel with the lion relief above it, bronze-studded doors ajar
+    gd.slab([(SB_GATE - 14, zg), (SB_GATE + 14, zg), (SB_GATE + 12, zg + 40), (SB_GATE - 12, zg + 40)], wy - 9, 1.0)
+    box(gw2, (SB_GATE, wy - 9, zg + 43), (18, 2.4, 3.2), p=8, cuts=1)
+    pt.g(SB["brick_lt"], outline=0.3).slab([(SB_GATE - 12, zg + 46.5), (SB_GATE + 12, zg + 46.5), (SB_GATE, zg + 60)], wy - 9.4, 1.2)
+    gdoor = pt.g(SB["wood_dk"], outline=0.3)
+    gdoor.slab([(SB_GATE - 12, zg), (SB_GATE - 4, zg), (SB_GATE - 5, zg + 38), (SB_GATE - 12, zg + 38)], wy - 10.6, 1.2, rot=(0, 0, -24),
+               origin=(SB_GATE - 12, wy - 10, 0))
+    gbz = pt.g(SB["bronze"], outline=0.0, highlight=False)
+    for k in range(4):
+        gbz.sphere((SB_GATE - 9.6, wy - 13.2, zg + 8 + k * 8), 0.9)
+    st.light((SB_GATE, wy - 14, zg + 20), 6)
+    for t in gate_tops:
+        st.light((t[0], t[1] - 12, t[2] - 4), 3)
+    for w in wins[:4]:
+        st.light(w, 3)
+    # side walls receding to the back corners
+    for (ax, bx, by) in ((x0, 270, 630), (x1, 850, 630)):
+        L = math.hypot(bx - ax, by - wy)
+        ang = math.degrees(math.atan2(by - wy, bx - ax))
+        box(gw, ((ax + bx) / 2, (wy + by) / 2, zg + wh / 2 + 6), (L / 2, 7, wh / 2 + 6), p=8, cuts=2, rot=(0, 0, ang), taper=(1.0, 0.9))
+        _sb_tower(pt, gw, gtp, bx, by, zg + 8, 24, 22, wh + 12)
+    # a scaling ladder against the wall and a siege tower rolled up to it (the siege)
+    gl = pt.g(SB["wood"], outline=0.3)
+    for sx in (-4, 4):
+        gl.capsule((380 + sx, wy - 30, zg), (380 + sx, wy - 10, zg + wh + 2), 0.9)
+    for k in range(9):
+        z = zg + 6 + k * 6
+        t = (z - zg) / (wh + 2)
+        gl.capsule((376, wy - 30 + 20 * t, z), (384, wy - 30 + 20 * t, z), 0.6)
+    _siege_tower(pt, 690.0, wy - 34, zg, 104.0)
+    # 4. the wooden horse (the signature) on the plain before the gate, and the besiegers' far tents
+    hx, hy = SB_HORSE
+    fauna.wooden_horse(size=1.5)(kit.StaticRig(pt, (hx, hy, zg)))
+    gc, gc2 = pt.g(SB["canvas"], outline=0.3), pt.g(SB["canvas_dk"], outline=0.2)
+    for k in range(18):
+        x = rnd.choice((rnd.uniform(-260, 160), rnd.uniform(900, 1460)))
+        y = rnd.uniform(400, 440)
+        w = rnd.uniform(9, 14)
+        (gc if k % 2 else gc2).slab([(x - w, zg), (x + w, zg), (x, zg + w * 0.9)], y, w * 1.4)
+    # olive groves in rows on the plain either side of the city
+    golv, gtk2 = pt.g(mixc(SB["olive"], SB["cypress"], 0.35), outline=0.3), pt.g(SB["wood_dk"], outline=0.0)
+    for (gx0, gx1, gy) in ((-250, 120, 500), (-230, 140, 540), (880, 1300, 500), (900, 1320, 540)):
+        for k in range(int((gx1 - gx0) / 22)):
+            ox = gx0 + k * 22 + rnd.uniform(-3, 3)
+            kit.round_bush(golv, ox, gy + rnd.uniform(-3, 3), rnd.uniform(6, 8), seed=900 + k + int(gx0), z=zg + 3, flat=0.8)
+            gtk2.capsule((ox, gy, zg - 1), (ox, gy, zg + 4), 0.9)
+    # olive and scrub on the plain
+    gsc, gol = pt.g(SB["scrub"], outline=0.0), pt.g(SB["olive"], outline=0.3)
+    for i in range(30):
+        kit.round_bush(gsc, rnd.uniform(-260, 1460), rnd.uniform(380, 460), rnd.uniform(3, 6), seed=300 + i, z=zg - 2)
+    for i in range(10):
+        x = rnd.choice((rnd.uniform(-240, 200), rnd.uniform(880, 1440)))
+        kit.round_bush(gol, x, rnd.uniform(440, 520), rnd.uniform(8, 12), seed=360 + i, z=zg + 4)
+    pt.flush(st)
+    return gate_tops
+
+
+def _ridge_tent(g, gdark, gpole, x, y, z, w, d, h, yaw):
+    """A ridge tent seen three-quarter: a canvas prism turned `yaw` degrees, so one sloped side and the gable
+    end with its dark door flap face the camera; poles stand above both ends of the ridge. Returns the door
+    point (for a night light)."""
+    kit.gable_roof(g, x, y, z, w, d, h, oh=0.0, yaw=yaw, along_x=False)
+    gdark.slab([(x - w * 0.15, z), (x + w * 0.15, z), (x, z + h * 0.62)], y - d / 2 - 0.4, 0.6, rot=(0, 0, yaw), origin=(x, y, 0))
+    s, c = math.sin(math.radians(yaw)), math.cos(math.radians(yaw))
+    for e in (-1, 1):
+        px, py = x - e * d / 2 * s, y + e * d / 2 * c
+        gpole.capsule((px, py, z + h - 2), (px, py, z + h + 6), 0.8)
+    return (x + d / 2 * s, y - d / 2 * c - 2, z + h * 0.25)
+
+
+def _shield_rack(pt, x, y, z, n=4):
+    """A wooden rack of round shields (pale hide faces with a small bronze boss) and a few leaning spears."""
+    gw, gs, gb = pt.g(SB["wood_dk"], outline=0.4), pt.g(SB["shield"], outline=0.5), pt.g(SB["bronze"], outline=0.2)
+    gw.capsule((x - n * 7, y, z + 10), (x + n * 7, y, z + 10), 0.9)
+    for sx in (-n * 7, n * 7):
+        gw.capsule((x + sx, y, z), (x + sx, y, z + 12), 0.9)
+    for k in range(n):
+        sx = x - (n - 1) * 7 + k * 14
+        gs.lathe([(0.01, 0), (6.2, 0), (6.4, 1.0), (0.01, 1.6)], (sx, y - 1.5, z + 9), (sx, y - 3.1, z + 9), segs=18)
+        gb.sphere((sx, y - 3.4, z + 9), 1.2)
+    for k in range(3):
+        gw.capsule((x + n * 7 + 3 + k * 2.4, y + 2, z), (x + n * 7 + 1 + k * 2.4, y + 2, z + 30), 0.4)
+
+
+def sb_mid(st, P):
+    pt = Parts()
+    rnd = random.Random(101)
+    # the bank: dusty grass with trampled earth
+    g, g2 = pt.g(SB["plain"], outline=0.0), pt.g(SB["dust"], outline=0.0)
+    for i in range(15):
+        x = -300 + i * 130
+        rock(g if i % 2 else g2, (x, 80, 8), (96, 60, 40 + rnd.uniform(0, 10)), seed=i, jag=0.05, p=2.4)
+    # the siege camp: ridge tents seen three-quarter in loose rows (canvas, hide), the command pavilion
+    gc, gc2, gcd = pt.g(SB["canvas"], outline=0.5), pt.g(SB["canvas_dk"], outline=0.5), pt.g(SB["dark"], outline=0.0, highlight=False)
+    gch = pt.g(SB["hide"], outline=0.5)
+    lights = []
+    for k, (x, y, w, d, h, yaw) in enumerate(((-170, 112, 40, 64, 40, 32), (-70, 126, 34, 56, 34, -28), (60, 116, 42, 66, 42, 30), (170, 96, 30, 46, 30, -34),
+                                             (250, 128, 36, 58, 36, 26), (420, 110, 40, 64, 40, -30), (540, 96, 30, 48, 30, 34), (630, 120, 36, 58, 36, 28),
+                                             (790, 126, 34, 56, 34, -26), (880, 98, 30, 46, 30, 30), (1140, 112, 40, 64, 40, -30), (1240, 96, 30, 46, 30, 32),
+                                             (1310, 124, 36, 58, 36, -28))):
+        g = (gc, gc2, gch)[k % 3]
+        door = _ridge_tent(g, gcd, pt.g(SB["wood_dk"], outline=0.3), x, y, 40, w, d, h, yaw)
+        if k % 4 == 0:
+            lights.append(door)
+    # the command pavilion (x 990): canvas walls under a big gable, a striped valance, its standard on a tall pole
+    tx, ty = 990.0, 110.0
+    box(gc2, (tx, ty, 40 + 20), (52, 34, 20), p=8, cuts=2)
+    kit.gable_roof(gc, tx, ty, 80, 112, 76, 40, oh=3.0, along_x=False)
+    gst = pt.g(SB["red"], outline=0.3)
+    for k in range(11):
+        gst.slab([(tx - 54 + k * 10, 80), (tx - 49 + k * 10, 80), (tx - 49 + k * 10, 73), (tx - 54 + k * 10, 73)], ty - 41.4, 0.6)
+    gcd.slab([(tx - 11, 40), (tx + 11, 40), (tx + 8, 70), (tx - 8, 70)], ty - 34.8, 0.8)
+    lights.append((tx, ty - 38, 56))
+    pt.g(SB["wood_dk"], outline=0.3).capsule((tx + 64, ty - 14, 40), (tx + 64, ty - 14, 170), 1.2)
+    # a battering ram in its shed (x 340): six wheels, a hide-covered gable roof, the bronze-capped ram log
+    rx_, ry_, yaw_ = 340.0, 100.0, -32.0
+    sn, cs = math.sin(math.radians(yaw_)), math.cos(math.radians(yaw_))
+    at = lambda lx, ly, z: (rx_ + lx * cs - ly * sn, ry_ + lx * sn + ly * cs, z)  # noqa: E731
+    gwr, gdk = pt.g(SB["wood_dk"], outline=0.5), pt.g(SB["dark"], outline=0.4)
+    for ly in (-22, 0, 22):
+        for lx in (-15, 15):
+            a_, b_ = at(lx, ly, 45), at(lx * 1.13, ly, 45)
+            cyl(gdk, a_, b_, 5.0, bevel=0.5, segs=12)
+    box(gwr, (rx_, ry_, 52), (14, 30, 2.4), p=6, cuts=1, rot=(0, 0, yaw_))
+    for ly in (-26, 26):
+        for lx in (-12, 12):
+            gwr.capsule(at(lx, ly, 52), at(lx, ly, 70), 1.1)
+    kit.gable_roof(pt.g(SB["hide"], outline=0.5), rx_, ry_, 70, 34, 60, 20, oh=2.0, yaw=yaw_, along_x=False)
+    gwr.capsule(at(0, -40, 61), at(0, 28, 61), 3.4)
+    pt.g(SB["bronze"], outline=0.4).lathe([(0.01, 0), (4.6, 0), (4.0, 5), (0.01, 7)], at(0, -40, 61), at(0, -47, 61), segs=12)
+    # shield racks, spear stacks, amphorae, a parked chariot
+    for (x, y) in ((-20, 70), (616, 74), (700, 72), (1380, 70)):
+        _shield_rack(pt, x, y, 40)
+    gw = pt.g(SB["wood"], outline=0.3)
+    for (x, y) in ((200, 66), (560, 62), (1060, 64)):
+        for k in range(6):
+            a = 2 * math.pi * k / 6
+            gw.capsule((x + math.cos(a) * 6, y + math.sin(a) * 3, 40), (x, y, 78), 0.45)
+    gam = pt.g(SB["brick_lt"], outline=0.4)
+    for (x, y) in ((300, 60), (312, 64), (306, 52), (860, 58), (872, 62)):
+        gam.lathe([(0.01, 0), (2.6, 0.6), (4.6, 5), (4.0, 11), (1.6, 14), (1.8, 17), (0.01, 17.4)], (x, y, 40), (x, y, 57.4), segs=12)
+    fauna.chariot(size=1.6)(kit.StaticRig(pt, (480, 70, 38), flip=True))
+    # camp fires in stone rings (lit at night), their smoke
+    gst2, gem = pt.g(SB["stone_dk"], outline=0.4), pt.g(SB["ember"], outline=0.3)
+    for (x, y) in ((110, 58), (760, 60), (1180, 56)):
+        for k in range(8):
+            a = 2 * math.pi * k / 8
+            rock(gst2, (x + math.cos(a) * 9, y + math.sin(a) * 4, 41), (3.2, 2.6, 2.4), seed=int(x) + k, jag=0.15)
+        gem.capsule((x - 6, y, 42), (x + 6, y + 1, 43), 1.5)
+        st.light((x, y, 48), 8)
+        st.amb("emit", "bd.puff", (x, y, 62), rate=0.5, speed=8, scale=0.9, tint=0xE6DED0, alpha=0.32, life=2800, drift=5)
+    for l in lights[:3]:
+        st.light(l, 4)
+    # scrub and stones
+    gsc = pt.g(SB["scrub_dk"], outline=0.5)
+    for i in range(14):
+        kit.round_bush(gsc, rnd.uniform(-240, 1440), rnd.uniform(40, 70), rnd.uniform(6, 10), seed=1300 + i, z=40, flat=0.6)
+    pt.flush(st)
+
+
+def sb_props():
+    gate = SB_GATE
+    tops = [(gate - 30, SB_WALL[2] - 4, SB_GROUND + SB_WALL[3] + 36), (gate + 30, SB_WALL[2] - 4, SB_GROUND + SB_WALL[3] + 36)]
+    fa = _scr(tops[0], SB_FAR_E)
+    fb = _scr(tops[1], SB_FAR_E)
+    crow = fauna.bird(body="#3E3834", wing="#2E2A28", beak="#8A7A6A", span=12, size=0.9)
+    ring = [[i * 2, round(560 + 110 * math.cos(math.pi * i / 3)), round(-232 + 14 * math.sin(math.pi * i / 3)), 1] for i in range(7)]
+    plist = [
+        Prop("ban", "far", fauna.flag_frames(colour="#8A5048", stripe="#D8CCB2", length=16, width=10, pole=22, tail=True),
+             [{f"f{f}": {"show": True}} for f in range(4)], (24, 36, 2), fa[1]),
+        Prop("char", "mid", fauna.chariot(size=1.5), [dict(fauna.walk4_pose(f, swing=30, bob=1.2, head=3.0), wh={"r": -30 * f}) for f in range(4)],
+             (80, 60, 3), SB_CHARIOT_Y),
+        Prop("crow", "far", crow, [fauna.bird_pose(f) for f in range(5)], (36, 20, 20), ring[0][2]),
+    ]
+    sprites = [
+        {"kind": "loop", "layer": "far", "frames": [f"ban_{i}" for i in range(4)], "fps": 5, "at": fa},
+        {"kind": "loop", "layer": "far", "frames": [f"ban_{i}" for i in (2, 3, 0, 1)], "fps": 5, "at": fb},
+        # the signature: a chariot races along the bank every 45 s
+        {"kind": "path", "layer": "mid", "fps": 10, "periodS": 45,
+         "keys": [[0, -360, SB_CHARIOT_Y, 0], [1, -320, SB_CHARIOT_Y, 1], [13, 1500, SB_CHARIOT_Y, 1], [14, 1560, SB_CHARIOT_Y, 0], [45, 1560, SB_CHARIOT_Y, 0]],
+         "group": [{"frames": [f"char_{i}" for i in range(4)]}]},
+        {"kind": "path", "layer": "far", "fps": 6, "periodS": 14, "keys": ring,
+         "group": [{"frames": ["crow_4", "crow_4", "crow_0", "crow_1", "crow_2", "crow_3"]}, {"frames": ["crow_4", "crow_0", "crow_1", "crow_2"], "dx": -24, "dy": 8, "phase": 2}]},
+    ]
+    return plist, sprites
+
+
 SCENES = {
     "classic": Scene("bronze", "classic", PAL, far, mid, back=back, sky=SKY, props=props,
                      hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.45}, ground="earth"),
     "aegean_harbour": Scene("bronze", "aegean_harbour", AH_PAL, ah_far, ah_mid, back=ah_back, sky=AH_SKY, props=ah_props,
                             hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.5}, ground="earth"),
+    "bronze_city_siege": Scene("bronze", "bronze_city_siege", SB_PAL, sb_far, sb_mid, back=sb_back, sky=SB_SKY, props=sb_props,
+                               hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.45}, ground="earth",
+                               look={"far": (0.2, 0.1, 0.22)}),
 }

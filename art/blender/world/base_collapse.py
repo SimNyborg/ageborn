@@ -1037,6 +1037,694 @@ def mammoth_bone_lodge_extras(c):
     return extras
 
 
+
+SKIN_P["acropolis_temple"] = dict(marble="#E8E2D4", marble_lt="#F4F0E6", marble_sh="#D3CBB9", marble_dk="#B8AF9E",
+                                  rock="#B7AD97", rock_lt="#C9C0AC", rock_dk="#9C9281", verd="#4F8F7F", verd_dk="#3E6F64",
+                                  bronze="#B8863B")
+
+
+def column_drum(rig, j, c, r=5.0, h=10.0, tilt=0.0):
+    """A fallen drum of a fluted marble column: a short cylinder with flute grooves round it, a chipped top."""
+    g = Geo()
+    g.lathe([(0.0, 0.0), (r, 0.0), (r, h), (0.0, h)], (0, 0, -h / 2), (0, 0, h / 2), segs=20, rot=(tilt, 0, 0))
+    rig.part(j, g, c["marble"], finish="gloss")
+    f = Geo()
+    for k in range(10):
+        a = 2 * math.pi * k / 10
+        f.capsule((math.cos(a) * (r - 0.3), math.sin(a) * (r - 0.3), -h / 2 + 0.8), (math.cos(a) * (r - 0.3), math.sin(a) * (r - 0.3), h / 2 - 0.8),
+                  0.42, segs=6, rings=1)
+    if tilt:
+        from mathutils import Matrix
+        m = Matrix.Rotation(math.radians(tilt), 4, "X")
+        for v in f.bm.verts:
+            v.co = m @ v.co
+    rig.part(j, f, c["marble_sh"], outline=0, highlight=False)
+
+
+def doric_capital(rig, j, c):
+    """A broken-off Doric capital: the echinus under its square abacus, a stub of shaft."""
+    g = Geo()
+    g.lathe([(0.0, -3.0), (4.2, -3.0), (4.3, 0.0), (6.6, 2.6), (6.8, 3.2), (0.0, 3.2)], (0, 0, 0), (0, 0, 1), segs=20, rot=(14, 0, 0))
+    rig.part(j, g, c["marble"], finish="gloss")
+    g = Geo()
+    box(g, (0, 0.8, 4.4), (7.6, 7.6, 1.2), p=8, cuts=2, rot=(14, 0, 0))
+    rig.part(j, g, c["marble_lt"])
+
+
+def bronze_shield(rig, j, c, r=6.0):
+    """A hoplite shield knocked off the wall: a verdigris dome, a bronze rim and boss, lying tilted."""
+    g = Geo().blob((0, 0, 0), (r * 0.86, r * 0.86, 1.6), p=2.0, cuts=4, rot=(24, 0, 0))
+    rig.part(j, g, c["verd"], finish="metal", outline=0.4)
+    g = Geo().lathe([(r * 0.84, -0.9), (r, -0.5), (r, 0.5), (r * 0.84, 0.9)], (0, 0, 0), (0, 0, 1), segs=24, rot=(24, 0, 0))
+    rig.part(j, g, c["bronze"], finish="bronze", outline=0.4)
+    g = Geo().sphere((0, -0.6, 1.6), r * 0.2, cuts=3)
+    rig.part(j, g, c["bronze"], finish="bronze", outline=0.3)
+
+
+def triglyph_block(rig, j, c):
+    """A block of the frieze: marble with a dark verdigris triglyph on its face."""
+    g = Geo()
+    box(g, (0, 0, 0), (9.0, 5.0, 6.0), p=6, rot=(0, 12, 0))
+    g.clip((6.0, 0, 3.0), (0.7, 0.1, 0.7))
+    rig.part(j, g, c["marble"])
+    g = Geo()
+    box(g, (-1.0, -5.2, 0.0), (2.6, 0.6, 4.6), p=6, cuts=2, rot=(0, 12, 0))
+    rig.part(j, g, c["verd_dk"], outline=0.3)
+
+
+def kit_acropolis_temple(rig, c):
+    yield lambda j: column_drum(rig, j, c, r=5.0, h=11.0, tilt=80.0)
+    yield lambda j: block(rig, j, (12, 8, 7), c["marble"], chip=True, seed=2)
+    yield lambda j: bronze_shield(rig, j, c)
+    yield lambda j: doric_capital(rig, j, c)
+    yield lambda j: block(rig, j, (10, 8, 7), c["rock"], rot=(0, 16, 8), chip=True, seed=5)
+    yield lambda j: triglyph_block(rig, j, c)
+    yield lambda j: column_drum(rig, j, c, r=4.6, h=9.0, tilt=90.0)
+    yield lambda j: block(rig, j, (14, 6, 6), c["marble_sh"], rot=(0, -10, 0), chip=True, seed=8)
+
+
+def acropolis_temple_extras(c):
+    """Column drums, a shield and marble blocks sticking out of the temple's limestone heaps."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(2):
+            x = rnd.uniform(-30, 30)
+            g.lathe([(0.0, 0.0), (4.6, 0.0), (4.6, 10.0), (0.0, 10.0)], (x, -6, 6.0), segs=18, rot=(90, 0, rnd.uniform(-40, 40)))
+        rig.part(j, g, c["marble"], finish="gloss")
+        g = Geo()
+        for k in range(3):
+            box(g, (rnd.uniform(-34, 34), -10, 4.0), (5.0, 3.6, 3.0), p=6, rot=(0, rnd.uniform(-30, 30), rnd.uniform(0, 60)))
+        rig.part(j, g, c["marble_lt"], outline=0.5)
+        x = rnd.uniform(-20, 20)
+        g = Geo().blob((x, -12, 6.0), (5.0, 1.4, 5.0), p=2.0, cuts=3, rot=(0, 0, rnd.uniform(-30, 30)))
+        rig.part(j, g, c["verd"], finish="metal", outline=0.4)
+        g = Geo().lathe([(4.2, -0.6), (5.6, -0.3), (5.6, 0.3), (4.2, 0.6)], (x, -12, 6.0), (x, -13, 6.0), segs=20)
+        rig.part(j, g, c["bronze"], finish="bronze", outline=0.4)
+    return extras
+
+
+
+SKIN_P["windmill_redoubt"] = dict(brick="#82594F", brick_lt="#937062", brick_dk="#6C4B42", brick_dkr="#5E3B2F", cream="#EFE6CF",
+                                  cream_sh="#D9CFB6", wood="#7A5E44", wood_dk="#5A4535", wood_lt="#937458", pink="#C9A0A8",
+                                  lav="#A99BC1", leaf="#6F8A5A")
+
+
+def brick_chunk(rig, j, c, r=(9.0, 6.0, 5.0), color="brick", seed=0):
+    """A chunk of brickwork: a block with two mortar courses across it and a knocked-off corner."""
+    block(rig, j, r, c[color], rot=(0, 12, 6), chip=True, seed=seed)
+    g = Geo()
+    for z in (-r[2] * 0.3, r[2] * 0.35):
+        g.capsule((-r[0] * 0.8, -r[1] - 0.2, z), (r[0] * 0.6, -r[1] - 0.2, z + 0.6), 0.35, segs=4, rings=1)
+    rig.part(j, g, c["brick_dkr"], outline=0, highlight=False)
+
+
+def sail_piece(rig, j, c):
+    """A snapped piece of a sail: a length of the whip with lattice bars and a torn scrap of team canvas."""
+    g = Geo().capsule((-14.0, 0, -2.0), (14.0, 0, 3.0), 1.3, 1.0, segs=8, rings=1)
+    rig.part(j, g, c["wood_dk"], outline=0.4)
+    g = Geo()
+    for k in range(5):
+        x = -11.0 + k * 5.5
+        g.capsule((x, -0.8, -1.4 + k * 0.9), (x + 1.0, -0.8, 9.0 + k * 0.9), 0.55, segs=6, rings=1)
+    g.capsule((-11.0, -0.8, 8.6), (11.0, -0.8, 12.2), 0.6, segs=6, rings=1)
+    rig.part(j, g, c["wood_lt"], outline=0.3)
+    g = Geo().slab([(-10.0, 1.0), (6.0, 4.0), (8.0, 10.0), (1.0, 8.0), (-4.0, 11.0), (-10.0, 8.0)], -1.2, 0.8)
+    rig.part(j, g, team=True, outline=0.4)
+
+
+def coping_block(rig, j, c):
+    """A cream coping stone off the parapet."""
+    block(rig, j, (11.0, 5.0, 2.6), c["cream"], rot=(0, -14, 10), chip=True, seed=3)
+
+
+def kit_windmill_redoubt(rig, c):
+    yield lambda j: brick_chunk(rig, j, c, seed=1)
+    yield lambda j: sail_piece(rig, j, c)
+    yield lambda j: brick_chunk(rig, j, c, (11.0, 7.0, 6.0), color="brick_dk", seed=2)
+    yield lambda j: coping_block(rig, j, c)
+    yield lambda j: beam(rig, j, 22, 4.4, c["wood"], c["wood_dk"], seed=5)
+    yield lambda j: brick_chunk(rig, j, c, (8.0, 5.0, 4.0), color="brick_lt", seed=6)
+    yield lambda j: block(rig, j, (7.0, 4.0, 3.0), c["cream_sh"], rot=(10, 20, 0), chip=True, seed=7)
+    yield lambda j: brick_chunk(rig, j, c, (13.0, 6.0, 5.0), seed=8)
+
+
+def windmill_redoubt_extras(c):
+    """Sail laths, a beam and spilled flowers in the redoubt's brick heaps."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(3):
+            x = rnd.uniform(-30, 30)
+            g.capsule((x - 10, -6, 6 + rnd.uniform(0, 4)), (x + 10, -8, 12 + rnd.uniform(0, 6)), 0.9, segs=6, rings=1)
+        rig.part(j, g, c["wood_lt"], outline=0.4)
+        g = Geo()
+        x = rnd.uniform(-24, 24)
+        g.capsule((x - 14, -4, 9), (x + 12, -6, 15), 2.2, 1.8, segs=8, rings=1)
+        rig.part(j, g, c["wood_dk"], outline=0.5)
+        lf, b1, b2 = Geo(), Geo(), Geo()
+        for k in range(5):
+            x = rnd.uniform(-34, 34)
+            lf.blob((x, -12, 3.0), (2.4, 1.8, 1.6), p=2.2, cuts=2)
+            (b1 if k % 2 else b2).sphere((x + 0.8, -13.4, 4.2), 1.3, cuts=2)
+        rig.part(j, lf, c["leaf"], finish="hair")
+        rig.part(j, b1, c["pink"], outline=0.3)
+        rig.part(j, b2, c["lav"], outline=0.3)
+    return extras
+
+
+
+SKIN_P["rail_depot"] = dict(brick="#8A6A63", brick_lt="#9C7C74", brick_dk="#735852", brick_dkr="#624B46", iron="#5B6168",
+                            iron_lt="#767D86", iron_dk="#454A51", armor="#4C5158", coal="#2B2A2E", red="#8E3A34", slate="#403F45")
+
+
+def loco_wheel(rig, j, c, r=8.0):
+    """A locomotive wheel knocked loose: an iron tyre, red spokes and centre, lying tilted."""
+    g = Geo().lathe([(r - 1.4, -1.0), (r, -0.8), (r, 0.8), (r - 1.4, 1.0)], (0, 0, 0), (0, 1, 0), segs=24, rot=(0, 0, 0))
+    rig.part(j, g, c["iron_dk"], finish="metal", outline=0.5)
+    g = Geo()
+    for k in range(8):
+        a = 2 * math.pi * k / 8
+        g.capsule((math.cos(a) * r * 0.25, -0.4, math.sin(a) * r * 0.25), (math.cos(a) * (r - 1.2), -0.4, math.sin(a) * (r - 1.2)), 0.5, segs=4, rings=1)
+    g.sphere((0, -0.4, 0), r * 0.28, cuts=2)
+    rig.part(j, g, c["red"], outline=0.3)
+
+
+def rail_piece(rig, j, c):
+    """A bent length of rail on a broken sleeper."""
+    g = Geo()
+    box(g, (0, 0, -1.6), (8.0, 3.0, 1.2), p=5, rot=(0, 8, 20))
+    rig.part(j, g, "#5E4E40")
+    g = Geo()
+    for i in range(5):
+        x = -14.0 + i * 7.0
+        g.capsule((x, 0, 0.8 + 0.06 * x * x / 7.0), (x + 7.0, 0, 0.8 + 0.06 * (x + 7.0) ** 2 / 7.0), 0.9, segs=6, rings=1)
+    rig.part(j, g, c["iron_lt"], finish="metal", outline=0.4)
+
+
+def kit_rail_depot(rig, c):
+    yield lambda j: plate(rig, j, 18, 12, c["armor"], rivet=c["iron_lt"], rot=(0, 18, 8), bend=10)
+    yield lambda j: loco_wheel(rig, j, c)
+    yield lambda j: block(rig, j, (10, 7, 6), c["brick"], chip=True, seed=2)
+    yield lambda j: rail_piece(rig, j, c)
+    yield lambda j: boulder(rig, j, (6, 5, 4), c["coal"], seed=4, jag=0.25)
+    yield lambda j: plate(rig, j, 14, 10, c["iron"], rivet=c["iron_lt"], rot=(10, -14, 0), bend=-8)
+    yield lambda j: block(rig, j, (12, 6, 5), c["brick_dk"], rot=(0, 14, 6), chip=True, seed=7)
+    yield lambda j: ibeam(rig, j, 22, c["iron"], c["iron_dk"])
+
+
+def rail_depot_extras(c):
+    """Bent rails, an armour plate and coal sticking out of the depot's heaps."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(2):
+            x = rnd.uniform(-30, 30)
+            g.capsule((x - 14, -6, 6 + rnd.uniform(0, 4)), (x + 14, -8, 12 + rnd.uniform(0, 6)), 1.0, segs=6, rings=1)
+        rig.part(j, g, c["iron_lt"], finish="metal", outline=0.4)
+        g = Geo()
+        x = rnd.uniform(-20, 20)
+        box(g, (x, -8, 9.0), (9.0, 1.4, 7.0), p=5, rot=(0, rnd.uniform(-30, 30), rnd.uniform(-20, 20)))
+        rig.part(j, g, c["armor"], finish="metal", outline=0.5)
+        g = Geo()
+        for k in range(6):
+            g.blob((rnd.uniform(-36, 36), -12, 2.6), (2.6, 2.2, 2.0), p=2.6, cuts=2)
+        rig.part(j, g, c["coal"], outline=0.4)
+    return extras
+
+
+SKIN_P["jungle_outpost"] = dict(conc="#A29F96", conc_lt="#B6B3A9", conc_dk="#86837B", conc_dkr="#74716A", rebar="#6E5446",
+                                leaf="#4F7A4A", leaf_lt="#64905A", leaf_dk="#3E6239", bamboo="#B5A770", bamboo_dk="#8E8456",
+                                moss="#6E8B3D")
+
+
+def bamboo_bundle(rig, j, c):
+    """A few snapped bamboo poles lying crossed, their nodes darker."""
+    g, n = Geo(), Geo()
+    for k, (a, L) in enumerate(((10.0, 26.0), (-14.0, 22.0), (4.0, 18.0))):
+        ar = math.radians(a)
+        p0 = (-L / 2 * math.cos(ar), -k * 2.0, -L / 2 * math.sin(ar) + k * 1.4)
+        p1 = (L / 2 * math.cos(ar), -k * 2.0, L / 2 * math.sin(ar) + k * 1.4)
+        g.capsule(p0, p1, 1.6, 1.4, segs=8, rings=1)
+        for t in (0.3, 0.65):
+            cc = tuple(u + (v - u) * t for u, v in zip(p0, p1))
+            n.sphere(cc, 1.8, cuts=1)
+    rig.part(j, g, c["bamboo"], outline=0.45)
+    rig.part(j, n, c["bamboo_dk"], outline=0)
+
+
+def leaf_tuft(rig, j, c, seed=0):
+    """A torn-off tuft of jungle leaves."""
+    from world.base_skins_kit import leaf
+    rnd = random.Random(seed)
+    a_, b_ = Geo(), Geo()
+    for i in range(5):
+        leaf(a_ if i % 2 else b_, (0, -0.6 * i, 0), 11.0 + rnd.uniform(-2, 2), 5.6, 30.0 + i * 30.0, tilt=rnd.uniform(-20, 20))
+    rig.part(j, a_, c["leaf"], finish="hair")
+    rig.part(j, b_, c["leaf_lt"], finish="hair")
+
+
+def kit_jungle_outpost(rig, c):
+    yield lambda j: slab_rebar(rig, j, (11, 7, 6), c["conc"], c["rebar"], seed=1)
+    yield lambda j: bamboo_bundle(rig, j, c)
+    yield lambda j: block(rig, j, (10, 8, 7), c["conc_dk"], chip=True, seed=3)
+    yield lambda j: leaf_tuft(rig, j, c, seed=4)
+    yield lambda j: slab_rebar(rig, j, (13, 6, 5), c["conc_lt"], c["rebar"], seed=5)
+    yield lambda j: block(rig, j, (8, 6, 5), c["conc"], rot=(10, 20, 0), chip=True, seed=6)
+    yield lambda j: leaf_tuft(rig, j, c, seed=7)
+    yield lambda j: block(rig, j, (12, 6, 6), c["conc_dkr"], rot=(0, -10, 0), chip=True, seed=8)
+
+
+def jungle_outpost_extras(c):
+    """Rebar, bamboo and torn leaves sticking out of the outpost's concrete heaps."""
+    def extras(rig, j, rnd):
+        from world.base_skins_kit import leaf
+        g = Geo()
+        for k in range(3):
+            x = rnd.uniform(-32, 32)
+            g.capsule((x, -6, 6), (x + rnd.uniform(-8, 8), -8, 16 + rnd.uniform(0, 6)), 0.8, segs=6, rings=1)
+        rig.part(j, g, c["rebar"], finish="metal", outline=0.4)
+        g = Geo()
+        for k in range(2):
+            x = rnd.uniform(-26, 26)
+            g.capsule((x - 12, -10, 4 + k * 3), (x + 12, -10, 8 + k * 3), 1.4, segs=8, rings=1)
+        rig.part(j, g, c["bamboo"], outline=0.45)
+        a_ = Geo()
+        for k in range(4):
+            leaf(a_, (rnd.uniform(-34, 34), -12, 2.0), 9.0, 4.6, rnd.uniform(30, 150))
+        rig.part(j, a_, c["leaf"], finish="hair")
+    return extras
+
+
+
+SKIN_P["bio_dome_arcology"] = dict(white="#D8DCE1", white_lt="#E6E9EC", white_dk="#B4BAC2", glass="#A3B9B6", glass_lt="#C3D3D0",
+                                   leaf="#5C8E4C", leaf_lt="#74A45E", trunk="#6A5644", soil="#6E5B47", mint="#3AF0B4")
+
+
+def glass_shard(rig, j, c, w=10.0, h=8.0, seed=0):
+    """A shard of a dome pane: a thin grey-teal triangle in a broken white frame."""
+    rnd = random.Random(seed)
+    pts = [(-w / 2, -h / 2), (w / 2, -h / 2 + rnd.uniform(-1, 2)), (rnd.uniform(-1, 2), h / 2)]
+    g = Geo().slab(pts, 0, 0.8, rot=(0, rnd.uniform(-20, 20), 0))
+    rig.part(j, g, c["glass"], finish="gloss", outline=0.4)
+    f = Geo()
+    f.capsule((pts[0][0], -0.6, pts[0][1]), (pts[1][0], -0.6, pts[1][1]), 0.8, segs=6, rings=1)
+    rig.part(j, f, c["white_lt"], outline=0.3)
+
+
+def potted_tree(rig, j, c):
+    """A small tree torn out with its soil ball."""
+    g = Geo().blob((0, 0, -3.0), (5.0, 4.0, 3.4), p=2.2, cuts=3)
+    rig.part(j, g, c["soil"])
+    g = Geo().capsule((0, 0, -1.0), (2.0, 0, 8.0), 1.2, 0.9, segs=8, rings=1)
+    rig.part(j, g, c["trunk"], outline=0.4)
+    g = Geo()
+    for dx, dz, r in ((-3.0, 10.0, 4.6), (3.0, 11.0, 4.8), (0.0, 14.0, 5.0)):
+        g.blob((dx, 0, dz), (r, r * 0.8, r * 0.75), p=2.2, cuts=3)
+    rig.part(j, g, c["leaf"], finish="hair")
+
+
+def kit_bio_dome_arcology(rig, c):
+    yield lambda j: block(rig, j, (11, 7, 5), c["white"], chip=True, seed=1)
+    yield lambda j: glass_shard(rig, j, c, seed=2)
+    yield lambda j: potted_tree(rig, j, c)
+    yield lambda j: block(rig, j, (9, 6, 6), c["white_dk"], rot=(10, 20, 0), chip=True, seed=4)
+    yield lambda j: glass_shard(rig, j, c, 12.0, 9.0, seed=5)
+    yield lambda j: crystal(rig, j, 10, 2.4, c["mint"], c["white_lt"], tilt=30)
+    yield lambda j: block(rig, j, (13, 5, 5), c["white_lt"], rot=(0, -10, 0), chip=True, seed=7)
+    yield lambda j: glass_shard(rig, j, c, 8.0, 7.0, seed=8)
+
+
+def bio_dome_arcology_extras(c):
+    """Frame struts, glass and greenery sticking out of the arcology's heaps."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(4):
+            x = rnd.uniform(-32, 32)
+            g.capsule((x - 10, -6, 6 + rnd.uniform(0, 4)), (x + 10, -8, 12 + rnd.uniform(0, 6)), 0.9, segs=6, rings=1)
+        rig.part(j, g, c["white_lt"], outline=0.4)
+        g = Geo()
+        for k in range(3):
+            x = rnd.uniform(-30, 30)
+            g.slab([(x - 5, 4), (x + 5, 5), (x, 13)], -10, 0.7)
+        rig.part(j, g, c["glass"], finish="gloss", outline=0.4)
+        g = Geo()
+        for k in range(3):
+            g.blob((rnd.uniform(-34, 34), -12, 4.0), (4.0, 3.0, 3.0), p=2.2, cuts=3)
+        rig.part(j, g, c["leaf"], finish="hair")
+    return extras
+
+
+SKIN_P["asteroid_citadel"] = dict(rock="#6A6470", rock_lt="#7C7683", rock_dk="#56505C", white="#D2CCE6", white_lt="#E2DEF0",
+                                  mint="#3FE0B0", mint_core="#D9FFF2", hull="#3A2D56")
+
+
+def kit_asteroid_citadel(rig, c):
+    yield lambda j: boulder(rig, j, (12, 10, 8), c["rock"], 1, jag=0.2)
+    yield lambda j: crystal(rig, j, 14, 3.0, c["mint"], c["mint_core"], tilt=24)
+    yield lambda j: block(rig, j, (10, 7, 5), c["white"], chip=True, seed=3)
+    yield lambda j: boulder(rig, j, (9, 8, 6), c["rock_dk"], 4, jag=0.22)
+    yield lambda j: plate(rig, j, 14, 10, c["white_lt"], rivet=c["rock_dk"], rot=(10, 16, 0), bend=10)
+    yield lambda j: boulder(rig, j, (7, 6, 5), c["rock_lt"], 6, jag=0.2)
+    yield lambda j: crystal(rig, j, 9, 2.2, c["mint"], c["mint_core"], tilt=-30)
+    yield lambda j: block(rig, j, (12, 6, 5), c["white"], rot=(0, -12, 6), chip=True, seed=8)
+
+
+def asteroid_citadel_extras(c):
+    """Rock, crystal and white panels sticking out of the citadel's heaps."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(3):
+            x = rnd.uniform(-30, 30)
+            box(g, (x, -8, 8.0), (7.0, 1.4, 5.0), p=5, rot=(0, rnd.uniform(-30, 30), rnd.uniform(-20, 20)))
+        rig.part(j, g, c["white"], outline=0.5)
+        g = Geo()
+        for k in range(3):
+            x = rnd.uniform(-30, 30)
+            g.lathe([(0.0, -1.0), (2.0, -1.0), (2.4, 0.0), (2.0, 7.0), (0.0, 10.0)], (x, -10, 3.0), (x + rnd.uniform(-4, 4), -12, 13.0), segs=6)
+        rig.part(j, g, glow=c["mint"], outline=0.5, outline_hex="#1F8F70")
+    return extras
+
+
+SKIN_P["galleon_bastion"] = dict(wood="#4A3B2E", wood_lt="#5E4C3C", wood_dk="#3A2E24", deck="#7A6652", gold="#D6B04A",
+                                 canvas="#E6DCC4", rope="#8A7A5E", iron="#3C3F45", sand="#CDB98E", sand_dk="#B4A07A", sand_lt="#DCCBA2")
+
+
+def kit_galleon_bastion(rig, c):
+    yield lambda j: beam(rig, j, 26, 5, c["wood_lt"], c["wood_dk"], seed=1)
+    yield lambda j: plate(rig, j, 16, 9, c["wood"], rivet=c["gold"], rot=(0, 14, 10), bend=6)
+    yield lambda j: log(rig, j, 18, 2.6, c["wood_lt"], c["deck"], seed=3)
+    yield lambda j: (rig.part(j, Geo().capsule((-10, 0, 0), (10, 0, 2), 2.2, 1.8), c["iron"], finish="metal"))
+    yield lambda j: beam(rig, j, 20, 4, c["deck"], c["wood_dk"], rot=(0, 12, 0), seed=5)
+    yield lambda j: rag(rig, j)
+    yield lambda j: block(rig, j, (9, 6, 5), c["wood"], rot=(10, 20, 0), chip=True, seed=7)
+    yield lambda j: (rig.part(j, Geo().lathe([(2.0, 0.0), (6.0, 0.0), (6.0, 2.4), (2.0, 2.4)], (0, 0, -1), (0, 0, 1.4), segs=16), c["rope"], finish="hair"))
+
+
+def galleon_bastion_extras(c):
+    """Planks, a spar and torn canvas sticking out of the wreck's sand heaps."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(3):
+            x = rnd.uniform(-30, 30)
+            box(g, (x, -6, 8.0), (12.0, 1.4, 2.0), p=5, rot=(0, rnd.uniform(-30, 30), rnd.uniform(-20, 20)))
+        rig.part(j, g, c["wood_lt"], outline=0.5)
+        g = Geo()
+        x = rnd.uniform(-20, 20)
+        g.capsule((x - 16, -4, 6), (x + 14, -6, 16), 2.0, 1.6, segs=8, rings=1)
+        rig.part(j, g, c["wood_dk"], outline=0.5)
+        g = Geo()
+        for k in range(2):
+            x = rnd.uniform(-30, 30)
+            g.slab([(x - 7, 12), (x + 6, 14), (x + 8, 5), (x - 2, 2), (x - 8, 6)], -12, 1.0)
+        rig.part(j, g, c["canvas"], outline=0.5)
+    return extras
+
+
+SKIN_P["arctic_radar_station"] = dict(conc="#A8ACB0", conc_lt="#BCC0C4", conc_dk="#8D9196", conc_dkr="#787C82", snow="#F2F4F4",
+                                      snow_dk="#DCE3E7", ice="#CFE6F0", ice_lt="#E4F2F7", crys="#B6D9E8", crys_dk="#7FA9BF",
+                                      crys_glow="#EAF7FC", rebar="#6E5446", steel="#8C949C")
+
+
+def kit_arctic_radar_station(rig, c):
+    yield lambda j: slab_rebar(rig, j, (11, 7, 6), c["conc"], c["rebar"], seed=1)
+    yield lambda j: snow_chunk(rig, j, c, (10, 7, 5), seed=2)
+    yield lambda j: ice_shard(rig, j, c, 16, 4.0, seed=3, color="ice")
+    yield lambda j: block(rig, j, (10, 8, 7), c["conc_dk"], chip=True, seed=4)
+    yield lambda j: plate(rig, j, 14, 10, c["steel"], rivet=c["conc_dkr"], rot=(10, 16, 0), bend=12)
+    yield lambda j: snow_chunk(rig, j, c, (8, 6, 4), seed=6)
+    yield lambda j: icicle_piece(rig, j, c)
+    yield lambda j: block(rig, j, (12, 6, 6), c["conc_lt"], rot=(0, -10, 0), chip=True, seed=8)
+
+
+def arctic_radar_station_extras(c):
+    """Rebar, snow and ice sticking out of the station's heaps."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(3):
+            x = rnd.uniform(-32, 32)
+            g.capsule((x, -6, 6), (x + rnd.uniform(-8, 8), -8, 16 + rnd.uniform(0, 6)), 0.8, segs=6, rings=1)
+        rig.part(j, g, c["rebar"], finish="metal", outline=0.4)
+        g = Geo()
+        for k in range(4):
+            g.blob((rnd.uniform(-34, 34), -10, 6.0), (5.0, 4.0, 3.0), p=2.4, cuts=3)
+        rig.part(j, g, c["snow"])
+    return extras
+
+
+SKIN_P["clocktower_works"] = dict(brick="#8A6A63", brick_lt="#9C7C74", brick_dk="#735852", brick_dkr="#624B46", stone="#C3BCAC",
+                                  stone_dk="#A69F90", slate="#403F45", slate_lt="#56555C", iron="#5B6168", iron_lt="#767D86",
+                                  iron_dk="#454A51", brass="#B8A776", brass_dk="#9A8A62", dial="#FBF5E2")
+
+
+def dial_piece(rig, j, c, r=12.0):
+    """A broken wedge of the clock face: cream enamel with two hour marks, a brass rim along its arc."""
+    pts = [(0.0, 0.0)] + [(r * math.cos(math.radians(a)), r * math.sin(math.radians(a))) for a in range(20, 101, 16)]
+    g = Geo().slab([(x - r * 0.3, z - r * 0.4) for x, z in pts], 0.0, 1.6)
+    rig.part(j, g, c["dial"], finish="gloss", outline=0.5)
+    g = Geo()
+    arc = [(r * math.cos(math.radians(a)) - r * 0.3, -0.6, r * math.sin(math.radians(a)) - r * 0.4) for a in range(20, 101, 10)]
+    for a_, b_ in zip(arc, arc[1:]):
+        g.capsule(a_, b_, 1.1, segs=6, rings=1)
+    rig.part(j, g, c["brass"], finish="metal", outline=0.4)
+    g = Geo()
+    for a in (40.0, 70.0):
+        u, w = math.cos(math.radians(a)), math.sin(math.radians(a))
+        g.capsule((u * (r - 2.0) - r * 0.3, -1.0, w * (r - 2.0) - r * 0.4), (u * (r - 5.0) - r * 0.3, -1.0, w * (r - 5.0) - r * 0.4), 0.6, segs=4, rings=1)
+    rig.part(j, g, c["iron_dk"], finish="metal", outline=0)
+
+
+def clock_hand(rig, j, c):
+    """The fallen minute hand: a long tapered iron hand with its counterweight, a little bent."""
+    g = Geo()
+    g.capsule((-6.0, 0.0, -1.0), (8.0, 0.0, 0.4), 1.3, 1.0, segs=6, rings=1)
+    g.capsule((8.0, 0.0, 0.4), (17.0, 0.0, 2.4), 1.0, 0.5, segs=6, rings=1)
+    g.blob((-7.0, 0.0, -1.2), (2.2, 0.8, 2.2), p=2.0, cuts=2)
+    rig.part(j, g, c["iron_dk"], finish="metal", outline=0.5)
+
+
+def slate_tiles(rig, j, c):
+    """A few slate tiles from the spire, lying overlapped."""
+    g = Geo()
+    for k in range(3):
+        box(g, (-5.0 + k * 5.0, -k * 1.2, k * 1.0), (5.0, 3.6, 0.7), p=6, cuts=2, rot=(8 - k * 6, 14 * (k - 1), 10 * k))
+    rig.part(j, g, c["slate_lt"], outline=0.4)
+
+
+def kit_clocktower_works(rig, c):
+    yield lambda j: brick_chunk(rig, j, c, seed=1)
+    yield lambda j: cog(rig, j, 7, 10, c["brass"], c["iron_dk"])
+    yield lambda j: dial_piece(rig, j, c)
+    yield lambda j: brick_chunk(rig, j, c, (11.0, 7.0, 6.0), color="brick_dk", seed=3)
+    yield lambda j: clock_hand(rig, j, c)
+    yield lambda j: ibeam(rig, j, 22, c["iron"], c["iron_dk"])
+    yield lambda j: slate_tiles(rig, j, c)
+    yield lambda j: block(rig, j, (10.0, 5.0, 4.0), c["stone"], rot=(0, 14, 8), chip=True, seed=8)
+
+
+def clocktower_works_extras(c):
+    """Gears, an iron band, glass and bricks sticking out of the works' brick heaps."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        x = rnd.uniform(-26, 26)
+        cyl(g, (x, -6, 7.0), (x, -9, 7.0), 6.0, bevel=0.4, segs=20)
+        for k in range(9):
+            a = 2 * math.pi * k / 9
+            box(g, (x + math.cos(a) * 7.0, -7.5, 7.0 + math.sin(a) * 7.0), (1.2, 1.4, 1.0), p=4, cuts=1, rot=(0, -math.degrees(a), 0))
+        rig.part(j, g, c["brass"], finish="metal", outline=0.45)
+        g = Geo()
+        for k in range(2):
+            x = rnd.uniform(-30, 30)
+            g.capsule((x - 12, -6, 6 + rnd.uniform(0, 4)), (x + 12, -8, 12 + rnd.uniform(0, 6)), 1.0, segs=6, rings=1)
+        rig.part(j, g, c["iron"], finish="metal", outline=0.4)
+        g = Geo()
+        for k in range(4):
+            box(g, (rnd.uniform(-34, 34), -11, 3.0), (3.6, 2.0, 1.8), p=6, rot=(0, rnd.uniform(-30, 30), rnd.uniform(0, 60)))
+        rig.part(j, g, c["brick_lt"], outline=0.45)
+    return extras
+
+
+SKIN_P["colossus_lighthouse"] = dict(sand="#CDBE9E", sand_lt="#DCCFB2", sand_dk="#B0A282", sea="#9AA0A6", sea_lt="#AEB3B8",
+                                     sea_dk="#80868C", bronze="#B8863B", bronze_dk="#8E6A35", verd="#4F8F7F", verd_lt="#67A594",
+                                     glass="#3E4448", wood="#7A5E44")
+
+
+def guardian_helm(rig, j, c):
+    """The guardian's crested helm knocked off: a bronze dome with a cheek guard and a verdigris crest."""
+    g = Geo().blob((0, 0, 0), (6.0, 5.6, 5.0), p=2.4, cuts=3, rot=(0, 18, 0))
+    rig.part(j, g, c["bronze"], finish="bronze", outline=0.5)
+    g = Geo().blob((4.6, -1.2, -2.6), (1.6, 4.0, 3.0), p=2.0, cuts=2, rot=(0, 18, 0))
+    rig.part(j, g, c["bronze_dk"], finish="bronze", outline=0.4)
+    g = Geo()
+    pts = [(4.0, 0.0, 4.0), (0.6, 0.0, 7.4), (-4.4, 0.0, 7.6), (-8.6, 0.0, 3.6)]
+    for i, (a_, b_) in enumerate(zip(pts, pts[1:])):
+        g.capsule(a_, b_, 2.4 - i * 0.4, 2.0 - i * 0.4, segs=8, rings=1)
+    rig.part(j, g, c["verd_lt"], finish="metal", outline=0.5)
+
+
+def torch_arm(rig, j, c):
+    """A bronze forearm still gripping the torch, its cup cold and dark."""
+    g = Geo()
+    g.capsule((-10.0, 0.0, -2.0), (2.0, 0.0, 1.0), 2.2, 1.9, segs=8, rings=1)
+    g.blob((3.4, 0.0, 1.4), (2.4, 2.2, 2.2), p=2.2, cuts=2)
+    rig.part(j, g, c["bronze"], finish="bronze", outline=0.5)
+    g = Geo()
+    g.capsule((3.4, 0.0, 1.4), (12.0, 0.0, 5.0), 1.2, 1.4, segs=8, rings=1)
+    g.lathe([(0.0, 0.0), (1.8, 0.0), (4.2, 3.0), (4.4, 3.8), (0.0, 3.0)], (12.0, 0.0, 4.6), (15.0, 0.0, 6.0), segs=16)
+    rig.part(j, g, c["bronze_dk"], finish="bronze", outline=0.5)
+
+
+def lantern_shard(rig, j, c):
+    """A piece of the lantern room: dark glass panes between bronze mullions."""
+    g = Geo().slab([(-7.0, -6.0), (7.0, -5.0), (6.0, 7.0), (-1.0, 9.0), (-6.0, 6.0)], 0.0, 1.0)
+    rig.part(j, g, c["glass"], finish="gloss", outline=0.4)
+    g = Geo()
+    for x in (-3.0, 3.0):
+        g.capsule((x, -0.8, -6.0), (x * 0.8, -0.8, 8.0), 0.8, segs=4, rings=1)
+    rig.part(j, g, c["bronze_dk"], finish="metal", outline=0.3)
+
+
+def kit_colossus_lighthouse(rig, c):
+    yield lambda j: block(rig, j, (12, 8, 7), c["sand"], chip=True, seed=1)
+    yield lambda j: guardian_helm(rig, j, c)
+    yield lambda j: block(rig, j, (11, 8, 7), c["sea"], rot=(0, 16, 8), chip=True, seed=3)
+    yield lambda j: torch_arm(rig, j, c)
+    yield lambda j: bronze_shield(rig, j, c, r=6.4)
+    yield lambda j: block(rig, j, (10, 7, 6), c["sand_lt"], rot=(10, 20, 0), chip=True, seed=6)
+    yield lambda j: lantern_shard(rig, j, c)
+    yield lambda j: block(rig, j, (14, 6, 6), c["sea_dk"], rot=(0, -10, 0), chip=True, seed=8)
+
+
+def colossus_lighthouse_extras(c):
+    """Bronze scraps, a spar and sandstone blocks in the harbour's sea-stone heaps."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(3):
+            box(g, (rnd.uniform(-34, 34), -10, 4.0), (5.0, 3.6, 3.0), p=6, rot=(0, rnd.uniform(-30, 30), rnd.uniform(0, 60)))
+        rig.part(j, g, c["sand_lt"], outline=0.5)
+        g = Geo()
+        x = rnd.uniform(-20, 20)
+        g.blob((x, -12, 6.0), (5.4, 1.6, 4.0), p=2.0, cuts=3, rot=(0, rnd.uniform(-30, 30), rnd.uniform(-30, 30)))
+        rig.part(j, g, c["bronze"], finish="bronze", outline=0.45)
+        g = Geo()
+        x = rnd.uniform(-24, 24)
+        g.capsule((x - 14, -4, 8), (x + 12, -6, 14), 1.6, 1.3, segs=8, rings=1)
+        rig.part(j, g, c["wood"], outline=0.45)
+    return extras
+
+
+SKIN_P["solar_sail_ark"] = dict(white="#DCD8E6", white_lt="#E9E6F0", white_dk="#B6B0C6", void="#2E2446", void_lt="#45376A",
+                                sail="#EEE4C6", sail_dk="#D6C9A4", rib="#CDB27C", rib_dk="#A08C5C", sun="#FFE9AE", mint="#3FE0B0")
+
+
+def sail_scrap(rig, j, c, seed=0):
+    """A torn piece of solar sail: champagne film on a snapped gold rib, a ragged edge."""
+    rnd = random.Random(seed)
+    pts = [(-12.0, -2.0), (10.0, -4.0), (13.0, 3.0)] + [(13.0 - k * 5.0, 8.0 + rnd.uniform(-2.5, 2.5)) for k in range(1, 6)]
+    g = Geo().slab(pts, 0.0, 1.0)
+    rig.part(j, g, c["sail"], finish="gloss", outline=0.45)
+    g = Geo().capsule((-13.0, -1.2, -2.6), (14.0, -1.2, -4.4), 1.2, 1.0, segs=8, rings=1)
+    rig.part(j, g, c["rib"], finish="metal", outline=0.4)
+
+
+def hull_plate(rig, j, c, w=16.0, h=11.0, bend=10.0, color="white"):
+    """A curved plate of the white hull with a gold trim edge."""
+    plate(rig, j, w, h, c[color], rot=(0, 12, 6), bend=bend)
+    g = Geo().capsule((-w / 2, -1.8, h / 2 - 0.4), (w / 2, -1.8, h / 2 - 1.6), 0.9, segs=6, rings=1)
+    rig.part(j, g, c["rib"], finish="metal", outline=0.3)
+
+
+def light_cell(rig, j, c):
+    """A spilled light cell: a white canister with a warm glowing window."""
+    g = Geo()
+    cyl(g, (0, 0, -5.0), (0, 0, 5.0), 3.6, bevel=0.6, segs=16, squash=(1.0, 1.0))
+    rig.part(j, g, c["white_dk"], finish="gloss")
+    g = Geo()
+    cyl(g, (0, -3.0, -3.0), (0, -3.0, 3.0), 1.4, bevel=0.3, segs=12)
+    rig.part(j, g, glow=c["sun"], outline=0)
+
+
+def kit_solar_sail_ark(rig, c):
+    yield lambda j: hull_plate(rig, j, c)
+    yield lambda j: sail_scrap(rig, j, c, seed=2)
+    yield lambda j: plate(rig, j, 12, 9, c["void_lt"], rivet=c["rib"], rot=(10, -14, 0), bend=-8)
+    yield lambda j: light_cell(rig, j, c)
+    yield lambda j: (rig.part(j, Geo().capsule((-12, 0, -1), (12, 0, 2), 1.4, 1.1, segs=8, rings=1), c["rib"], finish="metal", outline=0.4))
+    yield lambda j: hull_plate(rig, j, c, 12.0, 9.0, -8.0, color="white_lt")
+    yield lambda j: sail_scrap(rig, j, c, seed=7)
+    yield lambda j: crystal(rig, j, 14, 4.0, c["mint"], "#D8FFF0", tilt=30)
+
+
+def solar_sail_ark_extras(c):
+    """Sail film, gold ribs and white plates sticking out of the ark's heaps."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(2):
+            x = rnd.uniform(-28, 28)
+            g.slab([(x - 9, 6), (x + 8, 9), (x + 10, 16), (x + 1, 19), (x - 8, 14)], -10 - k * 2, 0.9)
+        rig.part(j, g, c["sail"], finish="gloss", outline=0.45)
+        g = Geo()
+        for k in range(3):
+            x = rnd.uniform(-32, 32)
+            g.capsule((x - 11, -6, 6 + rnd.uniform(0, 4)), (x + 11, -8, 11 + rnd.uniform(0, 6)), 1.0, segs=6, rings=1)
+        rig.part(j, g, c["rib"], finish="metal", outline=0.4)
+        g = Geo()
+        for k in range(3):
+            box(g, (rnd.uniform(-34, 34), -10, 4.0), (5.0, 1.4, 3.6), p=6, rot=(0, rnd.uniform(-30, 30), rnd.uniform(0, 60)))
+        rig.part(j, g, c["white"], finish="gloss", outline=0.45)
+    return extras
+
+
+SKIN_P["wyrm_coil_keep"] = dict(slate="#7E8792", slate_lt="#8F98A2", slate_mid="#868F99", slate_dk="#69727D", slate_dkr="#59616B",
+                                trim="#B9BEC4", gold="#D4A437", green="#4F7A4A", green_dk="#3E6239", horn="#E8DFC8",
+                                wood="#7A5E44", wood_dk="#5A4634")
+
+
+def scale_plate(rig, j, c):
+    """A shed dragon scale: a big green leaf-shaped plate with a darker ridge."""
+    pts = [(math.cos(math.radians(a)) * (7.0 if 0 < a < 180 else 5.0), math.sin(math.radians(a)) * 6.0 + (2.0 if 0 < a < 180 else 0.0))
+           for a in range(0, 360, 24)]
+    g = Geo().slab(pts, 0.0, 1.6)
+    rig.part(j, g, c["green"], outline=0.5)
+    g = Geo().capsule((0.0, -1.0, -5.0), (0.0, -1.0, 7.0), 0.8, segs=6, rings=1)
+    rig.part(j, g, c["green_dk"], outline=0, highlight=False)
+
+
+def coin_spill(rig, j, c):
+    """A spill of the hoard's gold coins."""
+    g = Geo()
+    for k, (x, y, z) in enumerate(((-4, 0, 0), (2, -1, 0.6), (6, 1, 0), (-1, 2, 1.2), (3, 3, 0.4))):
+        cyl(g, (x, y, z), (x, y - 0.4, z + 0.8), 2.4, bevel=0.2, segs=12)
+    rig.part(j, g, c["gold"], finish="metal", outline=0.35)
+
+
+def kit_wyrm_coil_keep(rig, c):
+    yield lambda j: block(rig, j, (11, 7, 6), c["slate"], chip=True, seed=1)
+    yield lambda j: scale_plate(rig, j, c)
+    yield lambda j: block(rig, j, (10, 8, 7), c["slate_dk"], rot=(0, 16, 8), chip=True, seed=3)
+    yield lambda j: coin_spill(rig, j, c)
+    yield lambda j: block(rig, j, (8, 5, 4), c["trim"], rot=(10, 20, 0), chip=True, seed=5)
+    yield lambda j: beam(rig, j, 22, 4.4, c["wood"], c["wood_dk"], seed=6)
+    yield lambda j: block(rig, j, (12, 6, 6), c["slate_lt"], rot=(0, -10, 0), chip=True, seed=7)
+    yield lambda j: scale_plate(rig, j, c)
+
+
+def wyrm_coil_keep_extras(c):
+    """Slate blocks, a shed scale and spilled gold in the keep's heaps."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(3):
+            box(g, (rnd.uniform(-34, 34), -10, 4.0), (5.0, 3.6, 3.0), p=6, rot=(0, rnd.uniform(-30, 30), rnd.uniform(0, 60)))
+        rig.part(j, g, c["trim"], outline=0.5)
+        g = Geo()
+        x = rnd.uniform(-24, 24)
+        g.blob((x, -12, 6.0), (5.0, 1.4, 4.4), p=2.0, cuts=3, rot=(0, rnd.uniform(-30, 30), rnd.uniform(-30, 30)))
+        rig.part(j, g, c["green"], outline=0.45)
+        g = Geo()
+        for k in range(4):
+            xx = rnd.uniform(-30, 30)
+            cyl(g, (xx, -12, 2.0), (xx, -12.4, 2.6), 1.8, bevel=0.2, segs=10)
+        rig.part(j, g, c["gold"], finish="metal", outline=0.35)
+    return extras
+
+
 # skin -> (age, pieces, heap colour keys (back, middle, front + pebbles), what sticks out of the heaps)
 SKIN_KITS = {
     "rose_keep": ("medieval", kit_rose_keep, ("stone", "stone_lt", "stone_dk"), rose_keep_extras),
@@ -1051,6 +1739,18 @@ SKIN_KITS = {
     "crystal_spire": ("future", kit_crystal_spire, ("rock_dk", "rock", "rock_lt"), crystal_spire_extras),
     "nebula_ark": ("cosmic", kit_nebula_ark, ("hull", "hull_lt", "armor"), nebula_ark_extras),
     "mammoth_bone_lodge": ("stone", kit_mammoth_bone_lodge, ("earth_dk", "earth", "bone_dk"), mammoth_bone_lodge_extras),
+    "acropolis_temple": ("bronze", kit_acropolis_temple, ("rock_dk", "rock", "marble_sh"), acropolis_temple_extras),
+    "windmill_redoubt": ("gunpowder", kit_windmill_redoubt, ("brick_dkr", "brick", "brick_lt"), windmill_redoubt_extras),
+    "rail_depot": ("industrial", kit_rail_depot, ("brick_dkr", "brick", "iron"), rail_depot_extras),
+    "jungle_outpost": ("modern", kit_jungle_outpost, ("conc_dkr", "conc", "conc_lt"), jungle_outpost_extras),
+    "bio_dome_arcology": ("future", kit_bio_dome_arcology, ("white_dk", "white", "white_lt"), bio_dome_arcology_extras),
+    "asteroid_citadel": ("cosmic", kit_asteroid_citadel, ("rock_dk", "rock", "rock_lt"), asteroid_citadel_extras),
+    "galleon_bastion": ("gunpowder", kit_galleon_bastion, ("sand_dk", "sand", "sand_lt"), galleon_bastion_extras),
+    "arctic_radar_station": ("modern", kit_arctic_radar_station, ("conc_dkr", "conc", "snow"), arctic_radar_station_extras),
+    "clocktower_works": ("industrial", kit_clocktower_works, ("brick_dkr", "brick", "brick_lt"), clocktower_works_extras),
+    "colossus_lighthouse": ("bronze", kit_colossus_lighthouse, ("sea_dk", "sand", "sand_lt"), colossus_lighthouse_extras),
+    "solar_sail_ark": ("cosmic", kit_solar_sail_ark, ("void_lt", "white_dk", "white"), solar_sail_ark_extras),
+    "wyrm_coil_keep": ("medieval", kit_wyrm_coil_keep, ("slate_dkr", "slate", "slate_lt"), wyrm_coil_keep_extras),
 }
 
 

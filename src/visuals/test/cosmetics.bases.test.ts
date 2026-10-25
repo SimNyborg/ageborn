@@ -19,7 +19,7 @@ import type { AgeId } from '@/contracts/ids';
 import { content } from '@/content';
 import { PartBaker } from '../bake';
 import { baseFlagDesign, cosmeticImageUrl, cosmeticSvg, hasCosmeticArt } from '../cosmetics/art';
-import { baseSkinArt, baseSkinThumbUrl, BASE_SKINS, hasBaseSkinArt, hasBaseSkinModel } from '../cosmetics/baseSkins';
+import { baseSkinArt, baseSkinAuraSpot, baseSkinThumbUrl, BASE_SKINS, hasBaseSkinArt, hasBaseSkinModel } from '../cosmetics/baseSkins';
 import { BaseDressing, DRESSING_ANCHORS, GLINT_LOOP_MS, glintOffset } from '../cosmetics/dressing';
 import { MANIFEST } from '../manifest';
 import { BASE_COLLAPSE_MS, baseSheetSource, baseSkinCollapseSource, baseSkinSheetSource, WORLD_BASE_MOUNTS_LU, WORLD_BASE_SKIN_AURA, WORLD_BASE_SKIN_KITS, WORLD_BASE_SKIN_PROPS, WORLD_BASE_SKINS } from '../manifest.world';
@@ -27,7 +27,7 @@ import { createArtProvider } from '../provider';
 import { AtlasBaseView } from '../adapters/world/atlasBaseView';
 import { collapseProfile, collapseProfileFor } from '../adapters/world/collapse/profiles';
 import { isBaseSkinSource, isWorldSource, WorldAtlas, worldSourceAge, type WorldMeta, type WorldSheet } from '../adapters/worldAtlas';
-import { worldPortraitFrames } from '../adapters/worldPortrait';
+import { basePortraitSpot, worldPortraitFrames } from '../adapters/worldPortrait';
 
 const FROST = BASE_SKINS.frost_cave!.tint;
 const ROSE = BASE_SKINS.rose_keep!.tint;
@@ -601,12 +601,12 @@ describe('base skin models in the lane (lazy, per age, tint stand-in)', () => {
   });
 });
 
-describe('a Legendary model stands in its aura (PLAN 2c: Crystal Spire, Nebula Ark)', () => {
+describe('a Legendary model stands in its aura (PLAN 2c: Crystal Spire, Nebula Ark, Colossus Lighthouse)', () => {
   const src = 'art/bases/skins/test_legend.json';
-  const viewOf = (meta: Partial<WorldMeta> & { aura?: string }): AtlasBaseView => {
+  const viewOf = (meta: Partial<WorldMeta>, side: 0 | 1 = 0): AtlasBaseView => {
     const world = new WorldAtlas(() => '', async () => fakeSheet());
-    world.register(src, fakeSheet(meta as Partial<WorldMeta>));
-    return new AtlasBaseView({ age: 'future', side: 0, teamColor: 0x2f7df6, decor: new PartBaker({ pxPerLu: 1, canvasFactory: () => null }), seed: 1, world, sourceFor: () => src, def: baseDef(src) });
+    world.register(src, fakeSheet(meta));
+    return new AtlasBaseView({ age: 'future', side, teamColor: 0x2f7df6, decor: new PartBaker({ pxPerLu: 1, canvasFactory: () => null }), seed: 1, world, sourceFor: () => src, def: baseDef(src) });
   };
   const auraOf = (v: AtlasBaseView): Container => (v as unknown as { aura: Container }).aura;
 
@@ -639,8 +639,53 @@ describe('a Legendary model stands in its aura (PLAN 2c: Crystal Spire, Nebula A
     v.destroy();
   });
 
+  it("wears a placed aura round its spot (`auraLu`: Colossus Lighthouse's torch): round, mirrored for side 1, flickering", () => {
+    for (const side of [0, 1] as const) {
+      const v = viewOf({ skin: 'test_torch', aura: 'legendary', auraLu: { x: -110, y: 320, r: 46 } }, side);
+      v.setMotion({ reduce: true, lite: false });
+      v.update(16);
+      const a = auraOf(v);
+      expect(a.visible).toBe(true);
+      expect(a.position.x).toBeCloseTo(side === 0 ? -110 : 110, 6);
+      expect(a.position.y).toBeCloseTo(-320, 6);
+      // a round halo (the body aura is an upright ellipse)
+      expect(a.scale.x).toBeCloseTo(a.scale.y, 6);
+      const still = a.alpha;
+      v.update(500);
+      expect(a.alpha).toBeCloseTo(still, 6);
+      v.setMotion({ reduce: false, lite: false });
+      const seen = new Set<number>();
+      for (let i = 0; i < 10; i++) {
+        v.update(60);
+        seen.add(Math.round(a.alpha * 1000));
+      }
+      expect(seen.size).toBeGreaterThan(3);
+      v.destroy();
+    }
+    // the sheets: a placed aura sits on a Legendary aura's model, over the base; the screens' spot in the base
+    // picture (baseSkinAuraSpot) is measured from it and the portrait's framing; no spot for the others
+    for (const [skin] of MODELS) {
+      const sheet = readSheet(baseSkinSheetSource(skin));
+      const m = sheet.meta.ageborn;
+      if (!m.auraLu) {
+        expect(baseSkinAuraSpot(skin), skin).toBeNull();
+        continue;
+      }
+      const want = basePortraitSpot(sheet, m.auraLu)!;
+      const spot = baseSkinAuraSpot(skin)!;
+      expect(spot, skin).not.toBeNull();
+      for (const k of ['x', 'y', 'r'] as const) expect(Math.abs(spot[k] - want[k]), `${skin} ${k} (${want[k].toFixed(3)})`).toBeLessThanOrEqual(0.005);
+      expect(m.aura, skin).toBe('legendary');
+      expect(m.auraLu.x).toBeGreaterThan(-200);
+      expect(m.auraLu.x).toBeLessThan(20);
+      expect(m.auraLu.y).toBeGreaterThan(0);
+      expect(m.auraLu.y).toBeLessThan(360);
+      expect(m.auraLu.r).toBeGreaterThan(10);
+    }
+  });
+
   it('lists exactly the models whose sheets wear the aura, for the screens (WORLD_BASE_SKIN_AURA)', () => {
-    const worn = MODELS.filter(([skin]) => (readSheet(baseSkinSheetSource(skin)).meta.ageborn as WorldMeta & { aura?: string }).aura === 'legendary').map(([skin]) => skin);
+    const worn = MODELS.filter(([skin]) => readSheet(baseSkinSheetSource(skin)).meta.ageborn.aura === 'legendary').map(([skin]) => skin);
     expect([...WORLD_BASE_SKIN_AURA].sort()).toEqual(worn.sort());
     // Legendary skins only
     for (const skin of WORLD_BASE_SKIN_AURA) {
@@ -843,16 +888,19 @@ describe('the dressing with a skin model', () => {
     d.destroy();
   });
 
-  it('mist, smoke and steam drift as soft puffs that swell as they rise', () => {
-    for (const kind of ['mist', 'smoke', 'steam']) {
+  it('mist, smoke, steam and smoke rings drift as soft puffs that swell as they rise', () => {
+    for (const kind of ['mist', 'smoke', 'steam', 'rings']) {
       const base = modelBase('snowy_keep', [{ kind, x: -70, y: 290, r: 4, rate: 1 }]);
       const d = new BaseDressing({ age: 'medieval', side: 0, look, team: 0x2f7df6, base });
       d.update(16);
       const motes = d.root.children[d.root.children.length - 1]!;
       const m = motes.children[0]!;
       const s0 = m.scale.x;
+      const y0 = -m.position.y;
       for (let i = 0; i < 20; i += 1) d.update(50);
       expect(m.destroyed || m.scale.x > s0, kind).toBe(true);
+      // smoke rings (the Wyrm-Coil Keep's dragon) rise from the nostrils
+      if (kind === 'rings' && !m.destroyed) expect(-m.position.y, kind).toBeGreaterThan(y0);
       d.destroy();
     }
   });

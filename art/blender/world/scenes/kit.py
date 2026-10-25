@@ -1267,34 +1267,295 @@ def hover_disc(P, x, y, z, r, white=0xE4E6EE, dark=0x3A3E48, glow=0x3AF0B4, outl
     return (x, y, z)
 
 
-def butte(g_body, g_bands, g_talus, x, y, z, rx, ry, h, seed=0, bands=((0.22, 0.3), (0.48, 0.55), (0.72, 0.8)), g_gully=None, g_cap=None):
-    """A desert butte (round 3, review 2: stacked boxes read as pancakes): one steep-sided, flat-topped rock
-    with darker strata lying on its cliffs (grown copies of the same rock clipped to height bands, so the
-    layers follow the faces), dark gullies down the camera face, a cap rock, and a wide talus slope of
-    scree round its foot. `bands` are (from, to) fractions of the height; `g_bands` one Geo per band."""
+# the cliff profile of a butte, bottom to top: (height share, inset): vertical cliffs of hard rock with
+# receding soft beds between them (the ledges that show its strata), the cap rock standing out under the top
+_BUTTE_PROFILE = ((0.0, 1.0), (0.3, 0.985), (0.34, 0.952), (0.6, 0.94), (0.645, 0.905), (0.86, 0.895), (0.875, 0.935), (1.0, 0.92))
+
+
+def _butte_plan(rx, ry, seed):
+    """The irregular plan of a butte: 19 corners round a lobed ellipse (two smooth waves and a jitter), so its
+    cliffs jut out in buttresses and fall back in bays."""
     rnd = random.Random(seed)
-    rock(g_body, (x, y, z + h * 0.5), (rx, ry, h * 0.52), seed=seed, jag=0.07, p=3.8, cuts=4)
+    n = 19
+    p1, p2 = rnd.uniform(0, 6.28), rnd.uniform(0, 6.28)
+    pts = []
+    for i in range(n):
+        a = 2 * math.pi * (i + rnd.uniform(-0.3, 0.3)) / n
+        k = 1.0 + 0.12 * math.sin(2 * a + p1) + 0.07 * math.sin(3 * a + p2) + rnd.uniform(-0.07, 0.05)
+        pts.append((math.cos(a) * rx * k, math.sin(a) * ry * k))
+    return pts
+
+
+def _prism(g, x, y, z, plan, levels, cap=True):
+    """A faceted column: the `plan` polygon (corners relative to x, y) at each (z, scale) level, side faces
+    flat (crisp corners), the top closed."""
+    from mathutils import Matrix
+    n = len(plan)
+    verts, faces = [], []
+    for zz, s in levels:
+        verts += [(x + px * s, y + py * s, zz) for px, py in plan]
+    for k in range(len(levels) - 1):
+        for i in range(n):
+            j = (i + 1) % n
+            a, b = k * n + i, k * n + j
+            faces.append([a, b, b + n, a + n])
+    if cap:
+        faces.append([(len(levels) - 1) * n + i for i in range(n)])
+        faces.append([i for i in range(n - 1, -1, -1)])
+    g._add(verts, faces, Matrix.Identity(4), smooth=False)
+    return g
+
+
+def butte(g_body, g_bands, g_talus, x, y, z, rx, ry, h, seed=0, bands=((0.22, 0.3), (0.48, 0.55), (0.72, 0.8)), g_gully=None, g_cap=None,
+          tier=0.0):
+    """A desert butte (round 3, review 2: stacked boxes read as pancakes; rounded rocks then read as loaves
+    and lathed columns as barrels): a flat-topped column of rock on an irregular plan with crisp corners,
+    near-vertical cliffs stepping back at soft beds (ledges), darker strata on its faces (bands of the same
+    column a touch proud of it), a cap rock standing out under the top, dark gullies down the camera faces,
+    and a tall talus cone of scree flaring round its lower half with fallen boulders. `bands` are (from, to)
+    fractions of the height; `g_bands` one Geo per band; `tier` (a share of the height) stands a smaller,
+    off-centre upper tier on the top, so the skyline steps."""
+    rnd = random.Random(seed)
+    plan = _butte_plan(rx, ry, seed)
+
+    def inset(f):
+        for (f0, s0), (f1, s1) in zip(_BUTTE_PROFILE, _BUTTE_PROFILE[1:]):
+            if f0 <= f <= f1:
+                return s0 + (s1 - s0) * (f - f0) / max(1e-6, f1 - f0)
+        return _BUTTE_PROFILE[-1][1]
+
+    _prism(g_body, x, y, z, plan, [(z + f * h, s) for f, s in _BUTTE_PROFILE])
     for k, (f0, f1) in enumerate(bands):
-        tmp = Geo()
-        rock(tmp, (x, y, z + h * 0.5), (rx * 1.012, ry * 1.012, h * 0.52 * 1.004), seed=seed, jag=0.07, p=3.8, cuts=4)
-        tmp.clip((x, y, z + h * f0), (0.0, 0.0, -1.0))
-        tmp.clip((x, y, z + h * f1), (0.0, 0.0, 1.0))
-        _merge(g_bands[k % len(g_bands)], tmp)
+        _prism(g_bands[k % len(g_bands)], x, y, z, plan, [(z + f0 * h, inset(f0) * 1.012), (z + f1 * h, inset(f1) * 1.012)], cap=True)
     if g_cap is not None:
-        tmp = Geo()
-        rock(tmp, (x, y, z + h * 0.5), (rx * 1.02, ry * 1.02, h * 0.52 * 1.006), seed=seed, jag=0.07, p=3.8, cuts=4)
-        tmp.clip((x, y, z + h * 0.9), (0.0, 0.0, -1.0))
-        _merge(g_cap, tmp)
+        _prism(g_cap, x, y, z, plan, [(z + 0.875 * h, 0.935 * 1.01), (z + h + 0.4, 0.92 * 1.01)])
+    if tier > 0:
+        sub = [(px * 0.5 + rx * 0.18, py * 0.6) for px, py in _butte_plan(rx, ry, seed + 3)]
+        th = h * tier
+        _prism(g_body, x, y, z + h, sub, [(z + h - 1, 1.0), (z + h + th * 0.86, 0.95), (z + h + th * 0.88, 0.99), (z + h + th, 0.97)])
+        if g_cap is not None:
+            _prism(g_cap, x, y, z + h, sub, [(z + h + th * 0.88, 0.995), (z + h + th + 0.4, 0.975)])
     if g_gully is not None:
-        for k in range(max(2, int(rx / 22))):
-            gx = x + rnd.uniform(-0.7, 0.7) * rx
-            u = (gx - x) / rx
-            fy = y - ry * max(0.2, (1 - abs(u) ** 3.8)) ** (1 / 3.8) - 0.6
-            top = z + h * rnd.uniform(0.62, 0.92)
-            g_gully.capsule((gx, fy, top), (gx + rnd.uniform(-3, 3), fy - 1, z + h * 0.16), rnd.uniform(1.2, 2.2), 0.6)
-    # the talus: a scree apron flaring from the cliff foot, boulders fallen onto it
-    rock(g_talus, (x, y - ry * 0.05, z), (rx * 1.28, ry * 1.2, h * 0.3), seed=seed + 7, jag=0.1, p=2.1, cuts=4)
+        front = [i for i, (px, py) in enumerate(plan) if py < -0.35 * ry]
+        for i in rnd.sample(front, min(len(front), max(2, int(rx / 26)))):
+            j = (i + 1) % len(plan)
+            t = rnd.uniform(0.3, 0.7)
+            px, py = (plan[i][0] + (plan[j][0] - plan[i][0]) * t, plan[i][1] + (plan[j][1] - plan[i][1]) * t)
+            f_top = rnd.uniform(0.62, 0.84)
+            g_gully.capsule((x + px * inset(f_top), y + py * inset(f_top) - 0.8, z + h * f_top),
+                            (x + px * 0.99, y + py * 0.99 - 0.8, z + h * 0.36), rnd.uniform(1.2, 2.0), 0.6)
+    # the talus: a scree cone flaring round the lower half of the cliffs, boulders fallen onto it
+    n0 = len(g_talus.bm.verts)
+    g_talus.lathe([(0.01, 0.0), (rx * 1.5, 0.0), (rx * 1.24, h * 0.12), (rx * 1.06, h * 0.29), (rx * 0.97, h * 0.44), (0.01, h * 0.45)],
+                  (x, y, z), (x, y, z + h), segs=26, squash=(1.0, ry / rx * 1.04))
+    _jitter(g_talus, n0, (x, y, z), 0.08, seed + 7, 2.2 / max(1.0, min(rx, ry)))
     for k in range(int(rx / 9)):
         a = rnd.uniform(math.pi * 1.05, math.pi * 1.95)
-        bx, by = x + math.cos(a) * rx * rnd.uniform(1.0, 1.3), y + math.sin(a) * ry * rnd.uniform(1.0, 1.2)
-        rock(g_body, (bx, by, z + h * 0.05), (rnd.uniform(3, 7), rnd.uniform(3, 6), rnd.uniform(2.5, 5)), seed=seed + 30 + k, jag=0.25, p=2.2, cuts=2)
+        r = rnd.uniform(1.05, 1.4)
+        bx, by = x + math.cos(a) * rx * r, y + math.sin(a) * ry * r
+        bz = z + h * max(0.0, 0.42 - (r - 1.0) * 1.05)
+        rock(g_body, (bx, by, bz), (rnd.uniform(3, 7), rnd.uniform(3, 6), rnd.uniform(2.5, 5)), seed=seed + 30 + k, jag=0.25, p=2.2, cuts=2)
+
+
+def sweep(g, pts, radii, squash=1.0, segs=14):
+    """A tube along a path in the side (XZ) plane (a natural arch, a thick bough): `pts` the path points,
+    `radii` the radius at each, an elliptic section whose depth (y) axis is scaled by `squash`; both ends
+    capped. Returns the index of the first vertex added (for `_jitter`)."""
+    from mathutils import Matrix, Vector
+    g.bm.verts.ensure_lookup_table()
+    n0 = len(g.bm.verts)
+    n = len(pts)
+    verts, faces = [], []
+    Y = Vector((0.0, 1.0, 0.0))
+    for i, (p, r) in enumerate(zip(pts, radii)):
+        a, b = Vector(pts[max(0, i - 1)]), Vector(pts[min(n - 1, i + 1)])
+        t = (b - a).normalized()
+        nrm = t.cross(Y).normalized()
+        for k in range(segs):
+            th = 2 * math.pi * k / segs
+            q = Vector(p) + nrm * (r * math.cos(th)) + Y * (r * squash * math.sin(th))
+            verts.append(tuple(q))
+    for i in range(n - 1):
+        for k in range(segs):
+            j = (k + 1) % segs
+            faces.append([i * segs + k, i * segs + j, (i + 1) * segs + j, (i + 1) * segs + k])
+    faces.append([k for k in range(segs - 1, -1, -1)])
+    faces.append([(n - 1) * segs + k for k in range(segs)])
+    g._add(verts, faces, Matrix.Identity(4), smooth=True)
+    g.bm.faces.ensure_lookup_table()
+    import bmesh
+    bmesh.ops.recalc_face_normals(g.bm, faces=list(g.bm.faces[-(len(faces)):]))
+    return n0
+
+
+def acacia(gb, ga, ga2, x, y, z, h, seed=0, spread=1.0):
+    """A flat-topped umbrella thorn tree: a leaning trunk forking into three limbs that fan up and out, and
+    a wide flat crown in two or three overlapping layers (the lower and outer ones darker)."""
+    rnd = random.Random(seed)
+    lean = rnd.uniform(-0.08, 0.08) * h
+    fork = (x + lean, y, z + h * 0.48)
+    gb.capsule((x, y, z), fork, max(0.8, h * 0.035), max(0.6, h * 0.026))
+    tops = []
+    for k, a in enumerate((-0.9, 0.05, 0.85)):
+        dx = a * h * 0.36 * spread + rnd.uniform(-0.04, 0.04) * h
+        top = (fork[0] + dx, y + rnd.uniform(-2, 2), z + h * rnd.uniform(0.8, 0.9))
+        gb.capsule(fork, top, max(0.5, h * 0.022), max(0.4, h * 0.014))
+        tops.append(top)
+    w = h * 0.58 * spread
+    ga2.blob((fork[0], y, z + h * 0.86), (w, h * 0.26, h * 0.075), p=2.2, cuts=3)
+    for k, top in enumerate(tops):
+        (ga if k != 1 else ga2).blob((top[0], top[1], top[2] + h * 0.05), (w * rnd.uniform(0.45, 0.6), h * 0.22, h * 0.07), p=2.2, cuts=3)
+    ga.blob((fork[0] + rnd.uniform(-0.1, 0.1) * h, y - 1, z + h * 0.97), (w * 0.62, h * 0.2, h * 0.06), p=2.2, cuts=3)
+
+
+def baobab(gb, ga, x, y, z, h, seed=0):
+    """A baobab: a fat bottle trunk, stubby crooked boughs radiating from its top, small sparse crowns."""
+    rnd = random.Random(seed)
+    r0 = h * 0.2
+    gb.lathe([(0.01, 0), (r0 * 1.1, 0), (r0 * 1.16, h * 0.18), (r0 * 1.0, h * 0.45), (r0 * 0.78, h * 0.68), (r0 * 0.5, h * 0.78), (0.01, h * 0.8)],
+             (x, y, z), (x, y, z + h), segs=16)
+    for k in range(7):
+        a = math.pi * (0.12 + 0.76 * k / 6) + rnd.uniform(-0.1, 0.1)
+        L = h * rnd.uniform(0.22, 0.34)
+        p0 = (x + math.cos(a) * r0 * 0.4, y + rnd.uniform(-2, 2), z + h * 0.76)
+        p1 = (p0[0] + math.cos(a) * L, p0[1] + rnd.uniform(-3, 3), p0[2] + math.sin(a) * L * 0.8)
+        gb.capsule(p0, p1, h * 0.04, h * 0.022)
+        ga.blob((p1[0], p1[1], p1[2] + h * 0.03), (h * 0.1, h * 0.08, h * 0.05), p=2.2, cuts=2)
+
+
+def kopje(g, g2, x, y, z, r, h, seed=0, n=9):
+    """A kopje: a heap of rounded granite boulders, wide at the foot and stacked to a crest."""
+    rnd = random.Random(seed)
+    for k in range(n):
+        t = k / max(1, n - 1)
+        rr = r * (0.55 - 0.3 * t) * rnd.uniform(0.85, 1.15)
+        bx = x + rnd.uniform(-1, 1) * r * (0.75 - 0.5 * t)
+        bz = z + h * t * 0.78 + rr * 0.45
+        rock(g if k % 3 else g2, (bx, y + rnd.uniform(-0.3, 0.3) * r * 0.5, bz), (rr * 1.15, rr * 0.8, rr * 0.82), seed=seed * 31 + k, jag=0.1, p=2.2, cuts=3)
+
+
+def termite_mound(g, g2, x, y, z, h, seed=0):
+    """A termite mound: a lumpy spire of baked earth with two or three lower side spires and fins."""
+    rnd = random.Random(seed)
+    g.bm.verts.ensure_lookup_table()
+    n0 = len(g.bm.verts)
+    g.lathe([(0.01, 0), (h * 0.34, 0), (h * 0.25, h * 0.3), (h * 0.17, h * 0.62), (h * 0.07, h * 0.94), (0.01, h)], (x, y, z), (x, y, z + h), segs=12)
+    _jitter(g, n0, (x, y, z + h * 0.5), 0.12, seed, 2.4 / max(1.0, h * 0.4))
+    for k in range(rnd.randint(2, 3)):
+        sx = x + rnd.choice((-1, 1)) * h * rnd.uniform(0.16, 0.26)
+        sh = h * rnd.uniform(0.4, 0.62)
+        g2.lathe([(0.01, 0), (sh * 0.3, 0), (sh * 0.2, sh * 0.5), (sh * 0.07, sh * 0.92), (0.01, sh)], (sx, y + rnd.uniform(-2, 2), z), (sx, y, z + sh), segs=10)
+
+
+def windmill_hub(x, y, z, h, r):
+    """Where a `windmill_tower`'s sails turn: in front of its cap (the anchor for the sails prop)."""
+    return (x, y - r * 0.86, z + h + r * 0.2)
+
+
+def windmill_tower(P, x, y, z, h, r, body=0x8E8270, body_dk=0x766A5A, cap=0x5E5450, trim=0xE6DECC, dark=0x3E3834, octagon=True,
+                   gallery=True, base=None, outline=0.5):
+    """A tower (smock) mill: on an optional brick `base`, a strongly tapering body (eight-sided, or round), a
+    stage gallery round its middle, a door and small windows on the camera face, a boat-shaped cap turned to
+    the wind. The sails are a prop (`fauna.windmill_sails`, at `windmill_hub`). Returns the hub point and a
+    window point (for a night light)."""
+    gb, gd, gc = P.g(body, outline=outline), P.g(dark, outline=0.0, highlight=False), P.g(cap, outline=outline)
+    segs = 8 if octagon else 18
+    zb = z
+    if base is not None:
+        zb = z + h * 0.22
+        P.g(base, outline=outline).lathe([(0.01, 0), (r * 1.04, 0), (r, h * 0.22), (0.01, h * 0.22)], (x, y, z), (x, y, zb), segs=segs, rot=(0, 0, 22.5))
+    gb.lathe([(0.01, 0), (r * 0.98, 0), (r * 0.9, (z + h - zb) * 0.12), (r * 0.5, z + h - zb), (0.01, z + h - zb)], (x, y, zb), (x, y, z + h), segs=segs,
+             rot=(0, 0, 22.5))
+    if gallery:
+        gg = P.g(body_dk, outline=0.3)
+        zg = z + h * 0.3
+        cyl(gg, (x, y, zg), (x, y, zg + 1.6), r * 1.2, bevel=0.3, segs=16)
+        for k in range(10):
+            a = math.pi * (1.05 + 0.9 * k / 9)
+            gg.capsule((x + math.cos(a) * r * 1.18, y + math.sin(a) * r * 1.18, zg + 1.6), (x + math.cos(a) * r * 1.18, y + math.sin(a) * r * 1.18, zg + 6), 0.3)
+    gd.slab([(x - r * 0.2, z), (x + r * 0.2, z), (x + r * 0.2, z + h * 0.15), (x - r * 0.2, z + h * 0.15)], y - r * 1.0, 0.8)
+    win = None
+    for f in (0.5, 0.74):
+        rr = r * (0.98 - 0.48 * f)
+        zz = z + h * f
+        gd.slab([(x - rr * 0.14, zz), (x + rr * 0.14, zz), (x + rr * 0.14, zz + h * 0.06), (x - rr * 0.14, zz + h * 0.06)], y - rr * 0.97, 0.8)
+        win = win or (x, y - rr - 1, zz + h * 0.03)
+    gc.blob((x, y + r * 0.06, z + h + r * 0.22), (r * 0.58, r * 0.7, r * 0.3), p=2.4, taper=(1.0, 0.7))
+    hub = windmill_hub(x, y, z, h, r)
+    P.g(trim, outline=0.3).capsule((x, y - r * 0.4, hub[2]), (hub[0], hub[1] + 0.6, hub[2]), r * 0.12)
+    return hub, win
+
+
+def stepped_gable_house(P, x, y, z, w, h, steps=4, brick=0x9A6A58, brick_dk=0x7E5648, trim=0xE6DECC, dark=0x3E3834, d=None, yaw=0.0,
+                        hoist=True, outline=0.5):
+    """A Hanseatic town house or warehouse facing the camera: a tall brick front with a crow-stepped gable,
+    pale string courses, rows of dark windows (a loading door stack in the middle with a hoist beam), a deep
+    body behind. Returns a window point (for a night light)."""
+    gb, gb2, gt, gd = P.g(brick, outline=outline), P.g(brick_dk, outline=0.3), P.g(trim, outline=0.0), P.g(dark, outline=0.0, highlight=False)
+    d = d or w * 1.2
+    box(gb2, (x, y + d / 2, z + h / 2), (w * 0.48, d / 2, h / 2), p=8, cuts=1, rot=(0, 0, yaw))
+    sw, sh = w / (2 * steps + 1), h * 0.11       # one step of the gable: in, then up (mirrored on the left)
+    right = [p_ for k in range(steps) for p_ in ((x + w / 2 - (k + 1) * sw, z + h + k * sh), (x + w / 2 - (k + 1) * sw, z + h + (k + 1) * sh))]
+    left = [p_ for k in range(steps - 1, -1, -1) for p_ in ((x - w / 2 + (k + 1) * sw, z + h + (k + 1) * sh), (x - w / 2 + (k + 1) * sw, z + h + k * sh))]
+    gb.slab([(x - w / 2, z), (x + w / 2, z), (x + w / 2, z + h)] + right + left + [(x - w / 2, z + h)], y, 3.0, rot=(0, 0, yaw), origin=(x, y, 0))
+    for zz in (z + h * 0.34, z + h * 0.68):
+        gt.slab([(x - w / 2, zz), (x + w / 2, zz), (x + w / 2, zz + 0.9), (x - w / 2, zz + 0.9)], y - 1.7, 0.4, rot=(0, 0, yaw), origin=(x, y, 0))
+    cols = max(2, int(w / 7))
+    win = None
+    for row in range(3):
+        zz = z + h * (0.1 + row * 0.3)
+        for c in range(cols):
+            cx = x - w / 2 + w * (c + 0.5) / cols
+            if hoist and c == cols // 2:
+                gd.slab([(cx - 1.8, zz), (cx + 1.8, zz), (cx + 1.8, zz + h * 0.2), (cx - 1.8, zz + h * 0.2)], y - 1.8, 0.4, rot=(0, 0, yaw), origin=(x, y, 0))
+                continue
+            gd.slab([(cx - 1.2, zz + h * 0.04), (cx + 1.2, zz + h * 0.04), (cx + 1.2, zz + h * 0.17), (cx - 1.2, zz + h * 0.17)], y - 1.8, 0.4,
+                    rot=(0, 0, yaw), origin=(x, y, 0))
+            win = win or (cx, y - 3, zz + h * 0.1)
+    if hoist:
+        gt2 = P.g(brick_dk, outline=0.2)
+        gt2.capsule((x, y - 1, z + h + steps * sh * 0.7), (x, y - 6, z + h + steps * sh * 0.7), 0.6)
+    return win
+
+
+def church(P, x, y, z, nave_w, nave_h, tower_h, stone=0xC8BCA8, stone_dk=0xA89C88, roof=0x6B7682, spire=0x57616D, dark=0x3E3834, yaw=0.0,
+           outline=0.5):
+    """A church: a long nave with a steep roof, a square west tower with belfry openings, and a tall slender
+    spire (four-sided). Returns the spire's tip and a window point."""
+    gs, gs2, gr, gp, gd = P.g(stone, outline=outline), P.g(stone_dk, outline=0.3), P.g(roof, outline=0.4), P.g(spire, outline=0.4), P.g(dark, outline=0.0, highlight=False)
+    box(gs2, (x + nave_w * 0.6, y + 6, z + nave_h / 2), (nave_w / 2, 9, nave_h / 2), p=8, cuts=1, rot=(0, 0, yaw))
+    gable_roof(gr, x + nave_w * 0.6, y + 6, z + nave_h, nave_w, 18, nave_h * 0.7, yaw=yaw)
+    tw = nave_h * 0.62
+    box(gs, (x, y, z + tower_h / 2), (tw / 2, tw / 2, tower_h / 2), p=8, cuts=2, rot=(0, 0, yaw))
+    for zz in (z + tower_h * 0.4, z + tower_h * 0.8):
+        gd.slab([(x - tw * 0.14, zz), (x + tw * 0.14, zz), (x + tw * 0.14, zz + tower_h * 0.1), (x - tw * 0.14, zz + tower_h * 0.1)], y - tw / 2 - 0.5, 0.6)
+    sh = tower_h * 1.15
+    gp.lathe([(0.01, 0), (tw * 0.74, 0), (tw * 0.5, sh * 0.08), (0.4, sh), (0.01, sh * 1.01)], (x, y, z + tower_h), (x, y, z + tower_h + sh), segs=4, rot=(0, 0, 45 + yaw))
+    for k in range(3):
+        gd.slab([(x + nave_w * 0.25 + k * nave_w * 0.25 - 1.4, z + nave_h * 0.3), (x + nave_w * 0.25 + k * nave_w * 0.25 + 1.4, z + nave_h * 0.3),
+                 (x + nave_w * 0.25 + k * nave_w * 0.25 + 1.4, z + nave_h * 0.75), (x + nave_w * 0.25 + k * nave_w * 0.25 - 1.4, z + nave_h * 0.75)], y - 3.4, 0.6)
+    return (x, y, z + tower_h + sh), (x + nave_w * 0.5, y - 5, z + nave_h * 0.5)
+
+
+def stone_lighthouse(P, st, x, y, z, h, stone=0xD6CCB8, band=0x8E6A5A, stone_dk=0xA89C88, glass=0x8EA4A4, dark=0x3E3834, outline=0.4):
+    """A stone lighthouse: a tapering round tower with two bands, a gallery, the lantern room and a dark cap,
+    small windows; its lamp and a window light at night. Returns the lamp point."""
+    gs, gb = P.g(stone, outline=outline), P.g(band, outline=0.3)
+    r0, r1 = h * 0.12, h * 0.085
+    cyl(gs, (x, y, z), (x, y, z + h), r0, r1, bevel=0.6, segs=18)
+    for f in (0.33, 0.68):
+        zb = z + h * f
+        rr = r0 + (r1 - r0) * f + 0.25
+        cyl(gb, (x, y, zb), (x, y, zb + h * 0.08), rr, rr - (r0 - r1) * 0.08, bevel=0.2, segs=18)
+    cyl(P.g(stone_dk, outline=0.3), (x, y, z + h - 1), (x, y, z + h + 2.4), r1 * 1.35, bevel=0.3, segs=18)
+    cyl(P.g(glass, finish="gloss", outline=0.3), (x, y, z + h + 2.4), (x, y, z + h + h * 0.13), r1 * 0.75, bevel=0.2, segs=14)
+    P.g(dark, outline=0.3).lathe([(0.01, 0), (r1 * 0.95, 0), (r1 * 0.8, h * 0.03), (r1 * 0.3, h * 0.08), (0.01, h * 0.1)], (x, y, z + h + h * 0.13),
+                                 (x, y, z + h + h * 0.23), segs=14)
+    gd = P.g(dark, outline=0.0, highlight=False)
+    for f in (0.18, 0.5, 0.82):
+        rr = r0 + (r1 - r0) * f
+        box(gd, (x, y - rr + 0.3, z + h * f), (1.1, 0.5, 2.2), p=4, cuts=1)
+    lamp = (x, y - r1 * 0.5, z + h + h * 0.08)
+    st.light(lamp, 6)
+    st.light((x, y - r0, z + h * 0.5), 3)
+    return lamp

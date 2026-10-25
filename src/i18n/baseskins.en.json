@@ -33,6 +33,42 @@
       },
       "mammoth_bone_lodge": {
         "name": "Mammoth Bone Lodge"
+      },
+      "acropolis_temple": {
+        "name": "Acropolis Temple"
+      },
+      "windmill_redoubt": {
+        "name": "Windmill Redoubt"
+      },
+      "rail_depot": {
+        "name": "Rail Depot"
+      },
+      "jungle_outpost": {
+        "name": "Jungle Outpost"
+      },
+      "bio_dome_arcology": {
+        "name": "Bio-Dome Arcology"
+      },
+      "asteroid_citadel": {
+        "name": "Asteroid Citadel"
+      },
+      "galleon_bastion": {
+        "name": "Galleon Bastion"
+      },
+      "arctic_radar_station": {
+        "name": "Arctic Radar Station"
+      },
+      "clocktower_works": {
+        "name": "Clocktower Works"
+      },
+      "colossus_lighthouse": {
+        "name": "Colossus Lighthouse"
+      },
+      "solar_sail_ark": {
+        "name": "Solar Sail Ark"
+      },
+      "wyrm_coil_keep": {
+        "name": "Wyrm-Coil Keep"
       }
     }
   }

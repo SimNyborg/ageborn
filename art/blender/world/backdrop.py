@@ -6,9 +6,11 @@ rendered with the same toon shader and light as the units and bases:
   far  - distant silhouettes, hazed toward the scene's horizon colour;
   mid  - the mid-ground, lightly hazed, with the 2D outline;
   props - sprites for ambient motion (loops, walkers, bobbing craft) packed into one atlas;
-plus light points for night skies and a 320 x 180 thumbnail (format 2, PLAN 2b "Layer format v2").
-The first five ages still ship their format 1 classic (`<age>/{far,mid}.webp` + `layers.json`) until
-their round 3 re-render. Per arena, the ground (`scenes/grounds.py`, unchanged).
+plus light points for night skies and a 320 x 180 thumbnail (layer format 2, PLAN 2b "Layer format v2";
+round 3 re-rendered the first five ages' format 1 classics and retired format 1). Per arena, the ground
+(`scenes/grounds.py`). Scene modules build with the shared helpers in `scenes/kit.py` (terrain, buildings,
+trees, the loft and the butte), `scenes/fauna.py` (animals, vehicles, ships and their poses) and
+`scenes/common.py` (the stage, render, finish, props atlas, thumbnail and layers.json writer).
 
 Layers keep DESIGN A11's low contrast: colours are desaturated and mixed toward the scene's horizon
 colour after rendering. Geometry is authored in lane lu (x = 0 at the left gate, z up, y depth away from
@@ -16,8 +18,11 @@ the camera); the camera looks along +y, tilted down a little.
 
 Outputs:
   public/art/backdrops/<age>/<scene>/{layers.json, back.webp, far.webp, mid.webp, props.webp, thumb.webp}
-  public/art/backdrops/<age>/{far,mid}.webp + layers.json (format 1 classics)
+    (the classic in `<age>/classic/`)
   public/art/ground/<arena>.webp
+After an install, `python3 art/blender/world/scenes/sizes.py --write` re-checks every installed scene
+against the PLAN 2b budgets and the A11 colour rule and records them in `scenes/checks.json` (a unit
+test compares the shipped files with it).
 
 Usage: <venv>/bin/python art/blender/world/backdrop.py --out <scratch> [--only bronze,industrial.classic,tar_pits]
        [--no-install]
@@ -35,7 +40,7 @@ sys.path.insert(0, BLENDER)
 sys.dont_write_bytecode = True
 
 from world import scenes  # noqa: E402
-from world.scenes.common import render_scene, thumb_from_installed  # noqa: E402
+from world.scenes.common import render_scene  # noqa: E402
 from world.scenes.grounds import ARENAS, render_ground  # noqa: E402
 
 
@@ -48,19 +53,11 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--only", default="")
     ap.add_argument("--no-install", action="store_true")
-    ap.add_argument("--thumbs", action="store_true", help="only the format 1 classics' thumbnails, from their installed strips")
     args = ap.parse_args()
     only = [s for s in args.only.split(",") if s]
     out = os.path.abspath(args.out)
     os.makedirs(out, exist_ok=True)
     report = []
-    if args.thumbs:
-        for age in scenes.AGES:
-            for sid, sc in scenes.load(age).items():
-                if sc.version == 1 and sc.sky and wanted(only, age, sid):
-                    report.append({"scene": sc.key, "thumb": thumb_from_installed(sc, out, install=not args.no_install)})
-        print(json.dumps(report))
-        return
     for age in scenes.AGES:
         for sid, sc in scenes.load(age).items():
             if not wanted(only, age, sid):

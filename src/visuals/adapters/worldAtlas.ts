@@ -56,6 +56,13 @@ export interface WorldMeta {
   dustColor?: string;
   /** Base skin models: where the dressing's ambient code particles start (screen lu, y up). */
   ambientLu?: { kind: string; x: number; y: number; r: number; rate: number }[];
+  /** Legendary base skin models (PLAN 2c): the white aura the model stands in. */
+  aura?: 'legendary';
+  /**
+   * Legendary base skin models whose aura shines round one spot instead of the body (Colossus Lighthouse's
+   * raised torch): its centre (screen lu from the gate, y up) and radius (lu).
+   */
+  auraLu?: { x: number; y: number; r: number };
   /**
    * Base prop loops (round 3; art/blender/world/common.py `prop_loop`: Windmill Redoubt's sails, Arctic Radar's
    * dish, Crystal Spire's orbiting shards): each an N-frame loop clip over the body (and its `_team` twin), the

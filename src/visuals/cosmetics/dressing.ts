@@ -332,7 +332,7 @@ interface AmbientSpot {
   color?: string;
 }
 
-const AMBIENT_KINDS: readonly SkinParticles[] = ['snow', 'fireflies', 'glints', 'petals', 'embers', 'dust', 'stars', 'mist', 'rain', 'smoke', 'steam'];
+const AMBIENT_KINDS: readonly SkinParticles[] = ['snow', 'fireflies', 'glints', 'petals', 'embers', 'dust', 'stars', 'mist', 'rain', 'smoke', 'steam', 'birds', 'rings'];
 /** Mote colours of an ambient kind a skin's own particles do not cover (A11: pale, desaturated). */
 const AMBIENT_COLORS: Partial<Record<SkinParticles, number>> = {
   snow: 0xffffff,
@@ -347,9 +347,12 @@ const AMBIENT_COLORS: Partial<Record<SkinParticles, number>> = {
   rain: 0xc4d0dc,
   smoke: 0xdcd8d2,
   steam: 0xf4f6f6,
+  // round 3: a small dark bird (gulls pass their own white), a pale smoke ring
+  birds: 0x3e4044,
+  rings: 0xe4e2dc,
 };
-/** Kinds whose soft puffs grow as they live (mist, smoke and steam) and the alpha they peak at. */
-const PUFF_ALPHA: Partial<Record<SkinParticles, number>> = { mist: 0.42, smoke: 0.5, steam: 0.46 };
+/** Kinds whose soft puffs grow as they live (mist, smoke, steam and smoke rings) and the alpha they peak at. */
+const PUFF_ALPHA: Partial<Record<SkinParticles, number>> = { mist: 0.42, smoke: 0.5, steam: 0.46, rings: 0.8 };
 
 function hexColor(s: string | undefined): number | null {
   return s && /^#[0-9a-f]{6}$/i.test(s) ? parseInt(s.slice(1), 16) : null;
@@ -985,6 +988,12 @@ export class BaseDressing implements BaseDressingView {
       m.y += (m.vy * dt) / 1000;
       if (m.kind === 'petals') m.x += Math.sin((m.life / 1000) * 3 + m.max) * 0.3;
       if (m.kind === 'petals' || m.kind === 'snow') m.g.rotation = Math.sin((m.life / 1000) * 2.2 + m.max) * 0.9;
+      if (m.kind === 'birds') {
+        // a glide with a gentle bob; the wings beat (the V flattens and lifts) in short bursts
+        m.y += Math.sin(m.life / 420 + m.max) * 0.04;
+        const beat = Math.sin(m.life / 1000 * 1.3 + m.max) > 0.2 ? Math.abs(Math.sin(m.life / 95 + m.max)) : 0.35;
+        m.g.scale.y = 0.45 + 0.8 * beat;
+      }
       const k = m.life / m.max;
       const fade = k < 0.15 ? k / 0.15 : k > 0.8 ? (1 - k) / 0.2 : 1;
       // settled on the ground: melt away
@@ -996,7 +1005,8 @@ export class BaseDressing implements BaseDressingView {
         m.g.scale.set(1 + k * 1.6);
         m.g.alpha = Math.max(0, fade) * ground * puff * (1 - k * 0.5);
       } else {
-        m.g.alpha = Math.max(0, fade) * ground * (m.kind === 'fireflies' || m.kind === 'glints' || m.kind === 'stars' ? 0.55 + 0.45 * Math.sin(m.life / 140) : 0.9);
+        const twinkle = m.kind === 'fireflies' || m.kind === 'glints' || m.kind === 'stars';
+        m.g.alpha = Math.max(0, fade) * ground * (twinkle ? 0.55 + 0.45 * Math.sin(m.life / 140) : m.kind === 'birds' ? 0.85 : 0.9);
       }
       if (m.life >= m.max || want === 0 || ground === 0) m.g.destroy();
       else keep.push(m);
@@ -1025,9 +1035,10 @@ export class BaseDressing implements BaseDressingView {
     const d = Math.sqrt(this.rng.next()) * spot.r;
     m.x = spot.x + Math.cos(a) * d;
     m.y = Math.max(2, spot.y + Math.sin(a) * d * 0.6);
-    // the model's ambient is gentler and shorter than the field of motes it replaces (rain stays quick)
+    // the model's ambient is gentler and shorter than the field of motes it replaces (rain stays quick; a bird
+    // takes its time to glide past)
     if (kind !== 'rain') m.vy *= 0.75;
-    m.max = kind === 'rain' ? 700 + this.rng.next() * 500 : 1800 + this.rng.next() * 1800;
+    m.max = kind === 'rain' ? 700 + this.rng.next() * 500 : kind === 'birds' ? 3600 + this.rng.next() * 2000 : 1800 + this.rng.next() * 1800;
     return m;
   }
 
@@ -1043,6 +1054,13 @@ export class BaseDressing implements BaseDressingView {
     } else if (kind === 'rain') {
       // a thin slanted drip streak
       g.poly([-0.35, -3.2, 0.35, -3.2, 1.0, 3.2, 0.3, 3.2]).fill(color);
+    } else if (kind === 'birds') {
+      // a small gliding bird: two arched wings (a soft "m" stroke)
+      g.moveTo(-3.4, 0.6).quadraticCurveTo(-1.7, -1.9, 0, 0).quadraticCurveTo(1.7, -1.9, 3.4, 0.6).stroke({ width: 1.1, color, cap: 'round', join: 'round' });
+    } else if (kind === 'rings') {
+      // a smoke ring: a soft ellipse outline (a thicker pale band under a thin bright one), seen a little from above
+      g.ellipse(0, 0, 3.0, 1.5).stroke({ width: 1.6, color, alpha: 0.55 });
+      g.ellipse(0, -0.3, 3.0, 1.3).stroke({ width: 0.7, color: 0xffffff, alpha: 0.6 });
     } else if (kind === 'mist' || kind === 'smoke' || kind === 'steam') {
       // a soft puff: a few overlapping discs, lighter in the middle
       g.circle(0, 0, size * 2.4).fill({ color, alpha: 0.55 });
@@ -1056,10 +1074,10 @@ export class BaseDressing implements BaseDressingView {
     this.motes.addChild(g);
     const x = -190 + r() * 200;
     const falling = kind === 'snow' || kind === 'petals' || kind === 'rain';
-    const rising = kind === 'embers' || kind === 'stars' || kind === 'smoke' || kind === 'steam';
+    const rising = kind === 'embers' || kind === 'stars' || kind === 'smoke' || kind === 'steam' || kind === 'rings';
     const y = anywhere ? 10 + r() * 200 : falling ? 220 : 6;
-    const vy = kind === 'rain' ? -(110 + r() * 40) : kind === 'mist' ? 2 + r() * 4 : kind === 'smoke' || kind === 'steam' ? 10 + r() * 8 : falling ? -(14 + r() * 12) : rising ? 12 + r() * 14 : (r() - 0.5) * 8;
-    const vx = kind === 'dust' || kind === 'mist' ? 10 + r() * 10 : kind === 'rain' ? -6 - r() * 4 : kind === 'smoke' || kind === 'steam' ? 4 + r() * 6 : (r() - 0.5) * 10;
+    const vy = kind === 'rain' ? -(110 + r() * 40) : kind === 'mist' ? 2 + r() * 4 : kind === 'smoke' || kind === 'steam' ? 10 + r() * 8 : kind === 'rings' ? 6 + r() * 3 : kind === 'birds' ? (r() - 0.5) * 3 : falling ? -(14 + r() * 12) : rising ? 12 + r() * 14 : (r() - 0.5) * 8;
+    const vx = kind === 'dust' || kind === 'mist' ? 10 + r() * 10 : kind === 'rain' ? -6 - r() * 4 : kind === 'smoke' || kind === 'steam' ? 4 + r() * 6 : kind === 'rings' ? 3 + r() * 3 : kind === 'birds' ? (r() < 0.5 ? -1 : 1) * (16 + r() * 10) : (r() - 0.5) * 10;
     return { g, x, y, vx, vy, life: 0, max: 2600 + r() * 2600, kind };
   }
 

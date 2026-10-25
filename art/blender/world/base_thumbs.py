@@ -13,7 +13,7 @@ after any skin install (`render_world.py --thumbs`, or this file directly).
   scene thumbnail as `object-fit: cover` at 30% 100%, the base portrait fitted 8% in from the sides, 6%
   from the top and 4% from the bottom), so a tile does not jump when its thumbnail arrives. A soft
   contact shadow grounds the base, and a Legendary model (`meta.ageborn.aura`) stands in its white aura
-  as it does in the lane.
+  as it does in the lane (round its spot when the sheet places it, `auraLu`: Colossus Lighthouse's torch).
 - **Budget**: the atlas holds all 24 models in at most 70 KB (about 3 KB a cell).
 
 Usage: python3 art/blender/world/base_thumbs.py [--out <scratch dir for a 2x preview>]
@@ -106,6 +106,9 @@ def base_layer(skin):
             ts = t["spriteSourceSize"]
             canvas.alpha_composite(multiply(frame_image(sheet, t), TEAM), (ts["x"], ts["y"]))
         canvas.alpha_composite(frame_image(sheet, f), (s["x"], s["y"]))
+    body = frames[anims["body"][0]]
+    # where the feet are in the trimmed layer (px), for a placed aura
+    meta = dict(meta, _feet=(body["anchor"]["x"] * src["w"] - int(x0), body["anchor"]["y"] * src["h"] - int(y0)))
     return canvas.crop((int(x0), int(y0), int(x1), int(y1))), meta
 
 
@@ -150,7 +153,13 @@ def cell(skin):
     bw, bh = max(1, round(w * k)), max(1, round(h * k))
     feet = S * 0.96 - port * 0.02
     x, y = round(S / 2 - bw / 2), round(feet - bh)
-    if meta.get("aura") == "legendary":
+    if meta.get("aura") == "legendary" and meta.get("auraLu"):
+        # a placed aura (Colossus Lighthouse's torch): round, where the sheet says
+        a, ppl = meta["auraLu"], meta["pxPerLu"]
+        fx, fy = meta["_feet"]
+        cx, cy = x + (fx + a["x"] * ppl) * k, y + (fy - a["y"] * ppl) * k
+        out.alpha_composite(aura((S, S), cx, cy, a["r"] * ppl * k, a["r"] * ppl * k, 170))
+    elif meta.get("aura") == "legendary":
         out.alpha_composite(aura((S, S), S / 2, y + bh * 0.48, bw * 0.8, bh * 0.66, 150))
     out.alpha_composite(soft_ellipse((S, S), (S / 2 - bw * 0.56, feet - S * 0.035, S / 2 + bw * 0.56, feet + S * 0.03), INK, 110, S * 0.012))
     base = resize_rgba(layer, (bw, bh))
@@ -187,8 +196,9 @@ def build(out_dir=None):
     while True:
         buf = io.BytesIO()
         atlas.save(buf, "WEBP", quality=q, method=6)
-        # the budget is for all 24 models: keep this many cells' share of it
-        if buf.tell() <= BUDGET * max(len(ids), 1) / 24 + 4096 or q <= 60:
+        # the budget is for all 24 models: keep this many cells' share of it (a partial set gets a little slack;
+        # the full set keeps the whole budget)
+        if buf.tell() <= BUDGET * max(len(ids), 1) / 24 + (4096 if len(ids) < 24 else 0) or q <= 60:
             break
         q -= 4
     with open(os.path.join(SKINS_DIR, "thumbs.webp"), "wb") as fh:

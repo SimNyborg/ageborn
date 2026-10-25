@@ -13,7 +13,7 @@ const skins = content.cosmetics.collections.items.filter((x) => x.collection ===
  * PLAN 2e: "Every age has at least 3 released base skins once B is done; a test flips from 'warn' to
  * 'fail' at B's release." Track B sets this to true with the release that completes the set.
  */
-const BASE_SKIN_SET_RELEASED = false;
+const BASE_SKIN_SET_RELEASED = true;
 
 describe('base skins', () => {
   it('come from raw/baseSkins.ts, each on one age, named', () => {
@@ -36,7 +36,10 @@ describe('base skins', () => {
   it('has a base skin in every age, and three released ones once the set ships', () => {
     const short: string[] = [];
     for (const age of content.order.ages) {
-      const n = skins.filter((x) => x.age === age && x.released !== false).length;
+      // a troop-system skin of the age's base counts too (Crystal Spire on the Future base: PLAN 2c, one equip
+      // per age across both systems)
+      const troop = Object.values(content.skins).filter((x) => x.target === `base.${age}` && x.released !== false).length;
+      const n = skins.filter((x) => x.age === age && x.released !== false).length + troop;
       expect(n, age).toBeGreaterThanOrEqual(1);
       if (BASE_SKIN_SET_RELEASED) expect(n, age).toBeGreaterThanOrEqual(3);
       else if (n < 3) short.push(`${age} ${n}`);

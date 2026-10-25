@@ -16,6 +16,23 @@
   },
   "total": 74512
  },
+ "bronze.bronze_city_siege": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0001,
+   "mid.webp": 0.0003,
+   "thumb.webp": 0.0001
+  },
+  "sizes": {
+   "back.webp": 4044,
+   "far.webp": 32420,
+   "layers.json": 2316,
+   "mid.webp": 32794,
+   "props.webp": 11018,
+   "thumb.webp": 5184
+  },
+  "total": 87776
+ },
  "bronze.classic": {
   "rule": {
    "back.webp": 0.0,
@@ -49,6 +66,23 @@
    "thumb.webp": 4360
   },
   "total": 73306
+ },
+ "cosmic.nebula_shipyard": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0001,
+   "mid.webp": 0.0007,
+   "thumb.webp": 0.0005
+  },
+  "sizes": {
+   "back.webp": 7016,
+   "far.webp": 38808,
+   "layers.json": 2484,
+   "mid.webp": 29856,
+   "props.webp": 4744,
+   "thumb.webp": 5724
+  },
+  "total": 88632
  },
  "cosmic.ringed_giant": {
   "rule": {
@@ -101,6 +135,23 @@
   },
   "total": 85405
  },
+ "future.terraformed_gardens": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0,
+   "mid.webp": 0.0,
+   "thumb.webp": 0.0
+  },
+  "sizes": {
+   "back.webp": 3842,
+   "far.webp": 29900,
+   "layers.json": 1953,
+   "mid.webp": 46296,
+   "props.webp": 3552,
+   "thumb.webp": 4224
+  },
+  "total": 89767
+ },
  "gunpowder.classic": {
   "rule": {
    "back.webp": 0.0,
@@ -134,6 +185,23 @@
    "thumb.webp": 4828
   },
   "total": 95674
+ },
+ "gunpowder.windmill_polder": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0,
+   "mid.webp": 0.0002,
+   "thumb.webp": 0.0001
+  },
+  "sizes": {
+   "back.webp": 2546,
+   "far.webp": 31592,
+   "layers.json": 2169,
+   "mid.webp": 28624,
+   "props.webp": 13238,
+   "thumb.webp": 4508
+  },
+  "total": 82677
  },
  "industrial.classic": {
   "rule": {
@@ -169,6 +237,23 @@
   },
   "total": 98865
  },
+ "industrial.zeppelin_docks": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0,
+   "mid.webp": 0.0,
+   "thumb.webp": 0.0
+  },
+  "sizes": {
+   "back.webp": 4544,
+   "far.webp": 32974,
+   "layers.json": 1823,
+   "mid.webp": 28624,
+   "props.webp": 2808,
+   "thumb.webp": 4814
+  },
+  "total": 75587
+ },
  "medieval.classic": {
   "rule": {
    "back.webp": 0.0,
@@ -185,6 +270,23 @@
    "thumb.webp": 4436
   },
   "total": 99069
+ },
+ "medieval.harbour_town": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0,
+   "mid.webp": 0.0,
+   "thumb.webp": 0.0
+  },
+  "sizes": {
+   "back.webp": 3230,
+   "far.webp": 21548,
+   "layers.json": 2248,
+   "mid.webp": 39826,
+   "props.webp": 13532,
+   "thumb.webp": 4038
+  },
+  "total": 84422
  },
  "medieval.misty_moor": {
   "rule": {
@@ -228,14 +330,31 @@
    "thumb.webp": 0.0
   },
   "sizes": {
-   "back.webp": 6514,
-   "far.webp": 21122,
-   "layers.json": 2740,
-   "mid.webp": 21556,
-   "props.webp": 5450,
-   "thumb.webp": 3720
+   "back.webp": 5926,
+   "far.webp": 23634,
+   "layers.json": 2669,
+   "mid.webp": 46228,
+   "props.webp": 5494,
+   "thumb.webp": 4774
   },
-  "total": 61102
+  "total": 88725
+ },
+ "modern.monsoon_river": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0,
+   "mid.webp": 0.0,
+   "thumb.webp": 0.0
+  },
+  "sizes": {
+   "back.webp": 4056,
+   "far.webp": 35992,
+   "layers.json": 2110,
+   "mid.webp": 47534,
+   "props.webp": 5940,
+   "thumb.webp": 6526
+  },
+  "total": 102158
  },
  "stone.classic": {
   "rule": {
@@ -262,13 +381,30 @@
    "thumb.webp": 0.0
   },
   "sizes": {
-   "back.webp": 5350,
-   "far.webp": 30266,
-   "layers.json": 2639,
-   "mid.webp": 46176,
-   "props.webp": 8632,
-   "thumb.webp": 6810
+   "back.webp": 4952,
+   "far.webp": 34250,
+   "layers.json": 2472,
+   "mid.webp": 46288,
+   "props.webp": 8704,
+   "thumb.webp": 6702
   },
-  "total": 99873
+  "total": 103368
+ },
+ "stone.sabre_savanna": {
+  "rule": {
+   "back.webp": 0.0,
+   "far.webp": 0.0,
+   "mid.webp": 0.0107,
+   "thumb.webp": 0.0007
+  },
+  "sizes": {
+   "back.webp": 4392,
+   "far.webp": 23132,
+   "layers.json": 3001,
+   "mid.webp": 45044,
+   "props.webp": 13770,
+   "thumb.webp": 4654
+  },
+  "total": 93993
  }
 }

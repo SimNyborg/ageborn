@@ -1,5 +1,15 @@
-"""Medieval scenes. Classic (format 1, until its round 3 re-render): green hills crowned by a castle,
-round trees, cottages and a fence (moved here unchanged from backdrop.py).
+"""Medieval scenes.
+
+Classic "Castle Hills" (format 2, round 3): an English-style hill country in early summer under a pale
+sky. Back: distant rolling downs, blue-green in the haze, woods along their crests. Far: rear downs in a
+patchwork of fields with hedgerows and copses; the castle on its green hill left of centre (curtain
+wall, towers and keep, its outer wall with a gate tower and the road winding up through it), the village
+on its hill on the right (a church with a tall spire, timber cottages with smoke), sheep on the side
+hills, poplars along a brook. Mid: a meadow bank with the mill pond (reeds, lily pads, a jetty and its
+lantern), the watermill with its turning wheel, the timber-framed farm (house, barn, haystacks, fence),
+oaks and hedgerows, an orchard and a well. Ambient: the castle's pennants, the mill wheel, swans on the
+pond, a horse and cart along the bank, crows, chimney smoke; windows, the jetty lantern and the farm
+lamp glow under night skies.
 
 "Misty Moor" (format 2, round 2; Rare, Time Capsule): heather moorland under a grey-silver sky. Back: low
 rolling moor ridges. Far: a ruined abbey on a rise (a roofless nave of pointed arches the hills show
@@ -10,6 +20,17 @@ tower, the abbey bell swings; the bothy's window and the lantern at the circle g
 
 Palette (PLAN 2b): heather mauve #8A7A88, moss #6A8650 (kept above 81 degrees of hue), grey stone
 #9AA0A6; gorse flowers are a small accent.
+
+"Harbour Town" (format 2, round 3; Epic, Wardrobe Crate): a timber-framed Hanseatic port in fresh sea
+air. Back: the far side of the bay. Far: the harbour and the open sea; the town on its slope:
+stepped-gable brick warehouses on the waterfront, roofs climbing behind, the church with its tall spire;
+the mole curving out to the harbour mouth with its stone lighthouse; cogs at anchor and rowing boats; a
+far island. Mid: the quay: timber-framed houses with smoking chimneys, the harbour crane with its
+treadwheel, barrels, crates and nets, lanterns, the windmill on a grassy rise, a fishmonger's stall and
+boats drawn up. Ambient: the windmill's sails turn, two cogs bob in the harbour, gulls, chimney smoke;
+windows, lanterns, the lighthouse and the church glow under night skies.
+
+Palette (PLAN 2b): parchment #E8DFC8, timber #6A4E3A, wine #8E2A4A as small accents.
 """
 import math
 import random
@@ -673,6 +694,206 @@ def mm_props():
     return plist, sprites
 
 
+# -- Harbour Town (round 3; Epic, Wardrobe Crate) -----------------------------------------------------
+HT_PAL = dict(skyTop=0x8FAEC4, skyBottom=0xE6EAE6, light=0xFAF6EC, far=0x9A9C98, mid=0x84826E, near=0x625E50)
+HT = dict(
+    plaster=0xE8DFC8, plaster_dk=0xD2C8B0, timber=0x6A4E3A, brick=0x9A6A58, brick_dk=0x7E5648, brick_lt=0xAE806C, roof=0x7A5E52,
+    slate=0x6B7682, slate_dk=0x57616D, stone=0xC2B8A4, stone_dk=0xA29884, cobble=0xAEA492, sea=0x8EA8A8, foam=0xD6DEDA,
+    wine=0x8E2A4A, dark=0x3E3834, wood=0x7A6450, wood_dk=0x5E4C3E, sail=0xE2D8C4, grass=0x8A946A, grass_dk=0x727C56, hill=0x8E9878,
+    net=0x6E6A5E, lamp=0x4A4440,
+)
+HT_SKY = {"top": "#8FAEC4", "bottom": "#E6EAE6", "horizon": "#EEF0EC", "cloudTint": "#F6F7F4", "celestial": "sun",
+          "sunAt": [260, -540, 40], "clouds": 0.8}
+HT_FAR_E = math.radians(8.0)
+HT_MID_E = math.radians(12.0)
+HT_SEA_Z = 50.0
+HT_MILL = (780.0, 124.0, 52.0, 120.0, 26.0)    # the windmill (mid): x, y, foot z, tower height, radius
+HT_COGS = ((640.0, 330.0), (1150.0, 380.0))      # the bobbing cogs (far): x, y on the water
+HT_LIGHT = (790.0, 404.0)                        # the lighthouse at the end of the mole (far)
+
+
+def ht_back(st, P):
+    """The far side of the bay: low hazy headlands and a far spire (lowest under the moons' place)."""
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    pt = Parts()
+    g, g2 = pt.g(hz(HT["hill"], 0.42), outline=0.0), pt.g(hz(HT["grass_dk"], 0.4), outline=0.0)
+    for x, rx, h, seed in ((-180, 230, 76, 1), (150, 200, 58, 2), (460, 180, 40, 3), (1180, 240, 80, 4), (1450, 180, 62, 5), (720, 120, 28, 6)):
+        kit.hill(g if seed % 2 else g2, x, 1500, HT_SEA_Z - 4, rx, 60, h, seed=seed, jag=0.04, p=2.4)
+    pt.g(hz(HT["slate"], 0.4), outline=0.0).lathe([(0.01, 0), (5, 0), (0.3, 40), (0.01, 41)], (1240, 1500, HT_SEA_Z + 60), (1240, 1500, HT_SEA_Z + 101), segs=4)
+    pt.flush(st)
+
+
+def ht_far(st, P):
+    pt = Parts()
+    rnd = random.Random(113)
+    sz = HT_SEA_Z
+    # 1. the harbour and the open sea, grey-teal (low saturation, A11), pale crests
+    box(pt.g(HT["sea"], finish="gloss", outline=0.0), (600, 860, sz - 6), (1100, 600, 6), p=6, cuts=2)
+    gw = pt.g(HT["foam"], outline=0.0, highlight=False)
+    for i in range(90):
+        x = rnd.uniform(-260, 1460)
+        y = rnd.uniform(330, 1300)
+        gw.blob((x, y, sz + 0.2), (rnd.uniform(6, 14), 1.0, 0.25), p=2.4, cuts=1)
+    # 2. the town on its slope (left): the shore, stepped-gable warehouses on the waterfront, timber houses
+    # and roofs climbing behind them, the church with its tall spire
+    gl, gl2 = pt.g(HT["hill"], outline=0.0), pt.g(HT["grass"], outline=0.0)
+    for i, (x, rx, h) in enumerate(((-200, 220, 96), (80, 220, 110), (360, 200, 100), (560, 120, 70))):
+        kit.hill(gl if i % 2 else gl2, x, 560, sz - 10, rx, 120, h, seed=20 + i, jag=0.03, p=2.4)
+    box(pt.g(HT["stone_dk"], outline=0.3), (170, 432, sz + 2), (430, 14, 5), p=6, cuts=1)
+    wins = []
+    xs = [-236 + k * 42 for k in range(22) if -236 + k * 42 < 520]
+    cols = ((HT["brick"], HT["brick_dk"]), (HT["brick_lt"], HT["brick"]), (HT["plaster_dk"], HT["stone_dk"]))
+    for k, x in enumerate(xs):
+        w = rnd.uniform(34, 40)
+        h = rnd.uniform(44, 60)
+        b, bd = cols[k % 3]
+        win = kit.stepped_gable_house(pt, x, 440 + (k % 2) * 4, sz + 6, w, h, steps=3 + (k % 2), brick=b, brick_dk=bd, trim=HT["plaster"],
+                                      dark=HT["dark"], hoist=k % 3 != 2, outline=0.4)
+        if k % 4 == 1 and win:
+            wins.append(win)
+    for k in range(30):
+        x = rnd.uniform(-240, 520)
+        y = rnd.uniform(470, 540)
+        z = sz + 22 + (y - 470) * 0.55 + rnd.uniform(-3, 3)
+        w, d, h = rnd.uniform(22, 32), rnd.uniform(14, 18), rnd.uniform(16, 24)
+        box(pt.g((HT["plaster"], HT["plaster_dk"], HT["brick_lt"])[k % 3], outline=0.3), (x, y, z + h / 2), (w / 2, d / 2, h / 2), p=8, cuts=1)
+        kit.gable_roof(pt.g(HT["roof"] if k % 2 else HT["slate"], outline=0.3), x, y, z + h, w, d, h * 0.6)
+        if k % 6 == 0:
+            st.amb("emit", "bd.puff", (x + w * 0.3, y, z + h * 1.6), rate=0.25, speed=6, scale=0.6, tint=0xE6E4DE, alpha=0.3, life=3000, drift=6)
+    _, cwin = kit.church(pt, 250, 530, sz + 80, 100, 44, 74, stone=HT["stone"], stone_dk=HT["stone_dk"], roof=HT["slate"], spire=HT["slate_dk"], dark=HT["dark"])
+    wins.append(cwin)
+    # 3. the harbour mole: a stone breakwater curving out to the harbour mouth, the lighthouse at its end, a
+    # crane and bollards on it
+    gm, gm2 = pt.g(HT["stone"], outline=0.4), pt.g(HT["stone_dk"], outline=0.3)
+    pts = [(520 + 270 * math.sin(t * math.pi / 2), 440 - 40 * t) for t in [k / 10 for k in range(11)]]
+    for (ax, ay), (bx, by) in zip(pts, pts[1:]):
+        L = math.hypot(bx - ax, by - ay)
+        ang = math.degrees(math.atan2(by - ay, bx - ax))
+        box(gm, ((ax + bx) / 2, (ay + by) / 2, sz + 3), (L / 2 + 1, 9, 6), p=8, cuts=1, rot=(0, 0, ang))
+        box(gm2, ((ax + bx) / 2, (ay + by) / 2 - 8, sz - 1), (L / 2 + 1, 2, 3), p=6, cuts=1, rot=(0, 0, ang))
+    lx, ly = HT_LIGHT
+    rock(gm2, (lx, ly, sz), (22, 16, 8), seed=31, jag=0.2)
+    kit.stone_lighthouse(pt, st, lx, ly, sz + 6, 74, stone=HT["plaster"], band=HT["wine"], stone_dk=HT["stone_dk"], glass=0x9AAAA6, dark=HT["dark"])
+    # 4. two cogs at anchor inside the mole (the bobbing ones are props), rowing boats
+    fauna.cog(size=0.9, sail_set=False)(kit.StaticRig(pt, (420, 404, sz - 2)))
+    fauna.cog(size=0.75, sail_set=False, hull="#6A5646")(kit.StaticRig(pt, (160, 410, sz - 2), flip=True))
+    gb = pt.g(HT["wood_dk"], outline=0.3)
+    for (x, y) in ((300, 396), (560, 400), (40, 398)):
+        gb.blob((x, y, sz + 0.8), (7, 2.4, 1.6), p=2.4, taper=(0.8, 1.0))
+    # 5. the right: the open sea, a far island with cliffs (low under the moons' place)
+    gi, gi2 = pt.g(HT["hill"], outline=0.2), pt.g(HT["stone_dk"], outline=0.2)
+    for (x, y, rx, h, seed) in ((1240, 700, 150, 46, 40), (1400, 640, 90, 30, 41)):
+        kit.hill(gi, x, y, sz - 10, rx, 60, h + 10, seed=seed, jag=0.05, p=2.2)
+        rock(gi2, (x - rx * 0.4, y - 30, sz + 8), (rx * 0.3, 14, 16), seed=seed + 5, jag=0.2)
+    for w in wins[:5]:
+        st.light(w, 3)
+    pt.flush(st)
+
+
+def _crane(pt, st, x, y, z, wood, wood_dk, rope):
+    """A medieval harbour crane: a timber tower with a pitched roof, its long jib over the quay edge and the
+    great treadwheel on its side; a bale hangs from the jib. Returns the wheel's centre (static)."""
+    gw, gd = pt.g(wood, outline=0.5), pt.g(wood_dk, outline=0.4)
+    box(gw, (x, y, z + 30), (12, 12, 30), p=8, cuts=2, taper=(1.0, 0.86))
+    kit.gable_roof(gd, x, y, z + 60, 26, 26, 14)
+    gd.capsule((x + 8, y - 6, z + 54), (x + 58, y - 30, z + 64), 1.8, 1.2)
+    gd.capsule((x + 6, y - 6, z + 40), (x + 30, y - 18, z + 58), 1.2)
+    pt.g(rope, outline=0.0).capsule((x + 56, y - 29, z + 63), (x + 56, y - 29, z + 34), 0.3)
+    pt.g(HT["sail"], outline=0.4).blob((x + 56, y - 29, z + 30), (6, 5, 4.5), p=2.6)
+    wc = (x - 18, y - 2, z + 22)
+    fauna.cyl_ring(gd, wc, 20, 3.2, 3.0, axis_to=(wc[0] - 1, wc[1], wc[2]), segs=32)
+    for k in range(8):
+        a = math.pi * k / 4
+        gw.capsule(wc, (wc[0], wc[1] + math.cos(a) * 18, wc[2] + math.sin(a) * 18), 0.7)
+    return wc
+
+
+def ht_mid(st, P):
+    pt = Parts()
+    rnd = random.Random(127)
+    # the quay: a cobbled bank behind a dressed stone edge (the harbour lies behind, in the far strip)
+    g = pt.g(HT["cobble"], outline=0.0)
+    for i in range(15):
+        rock(g, (-300 + i * 130, 84, 8), (96, 60, 40 + rnd.uniform(0, 6)), seed=i, jag=0.04, p=2.6)
+    gq, gq2 = pt.g(HT["stone"], outline=0.4), pt.g(HT["stone_dk"], outline=0.3)
+    box(gq, (600, 40, 44), (980, 5, 4), p=8, cuts=2)
+    for k in range(40):
+        gq2.slab([(-300 + k * 48, 40.2), (-299 + k * 48, 40.2), (-299 + k * 48, 47.8), (-300 + k * 48, 47.8)], 34.6, 0.4)
+    # 1. timber-framed houses along the quay (x -260..560), some with lit windows and smoking chimneys
+    wins = []
+    plasters = (HT["plaster"], 0xE2D4B4, HT["plaster"], 0xD8D6C6, 0xE0D0C6, HT["plaster"], 0xE2D4B4, 0xD8D6C6)
+    for k, (x, w, h1, h2, rh, roof) in enumerate(((-230, 64, 30, 26, 28, HT["roof"]), (-158, 56, 36, 30, 32, HT["slate"]), (-84, 66, 28, 24, 24, HT["roof"]),
+                                                  (-6, 60, 38, 30, 34, HT["slate"]), (76, 68, 30, 26, 26, HT["roof"]), (156, 58, 34, 28, 30, HT["slate"]),
+                                                  (420, 62, 32, 28, 30, HT["roof"]), (500, 56, 28, 24, 26, HT["slate"]))):
+        win, chim = kit.timber_house(pt, x, 110, 44, w, 30, h1, h2, rh, plaster=plasters[k], timber=HT["timber"], roof=roof, base=HT["stone_dk"],
+                                     dark=HT["dark"], jetty=1.6, chimney=HT["brick"] if k % 3 == 0 else None, seed=70 + k, along_x=k % 2 == 0)
+        if k % 2 == 0:
+            wins.append(win)
+        if chim:
+            st.amb("emit", "bd.puff", chim, rate=0.5, speed=9, scale=0.9, tint=0xE4E2DC, alpha=0.38, life=2800, drift=6)
+    # 2. the harbour crane (x 640) with its treadwheel; barrels, crates, sacks and nets on the quay
+    _crane(pt, st, 610, 80, 44, HT["wood"], HT["wood_dk"], HT["dark"])
+    gbr, gcr = pt.g(HT["wood"], finish="matte", outline=0.4), pt.g(HT["wood_dk"], outline=0.4)
+    for (x, y, z) in ((268, 60, 44), (282, 62, 44), (275, 60, 58), (690, 58, 44), (704, 60, 44)):
+        cyl(gbr, (x, y, z), (x, y, z + 13), 6.0, bevel=0.8, segs=14)
+    for (x, s_) in ((310, 1.0), (326, 0.8), (880, 0.9)):
+        box(gcr, (x, 64, 44 + 9 * s_), (9 * s_, 9 * s_, 9 * s_), p=5, cuts=1)
+    gn = pt.g(HT["net"], outline=0.2)
+    for k in range(3):
+        gn.capsule((350 + k * 26, 70, 44), (350 + k * 26, 70, 80), 0.7)
+    gn.slab([(350, 78), (402, 78), (398, 56), (354, 56)], 70.6, 0.4)
+    # lanterns on posts along the quay (lit at night)
+    gla = pt.g(HT["lamp"], outline=0.3)
+    for x in (-120, 230, 540, 900):
+        gla.capsule((x, 46, 44), (x, 46, 86), 0.9)
+        box(gla, (x, 46, 89), (2.6, 2.6, 3.2), p=5, cuts=1)
+        st.light((x, 43, 89), 5)
+    # 3. the windmill (x 1010) on a grassy rise at the quay's end (its sails turn: a prop)
+    mx, my, mz, mh, mr = HT_MILL
+    gr2 = pt.g(HT["grass"], outline=0.0)
+    rock(gr2, (mx, my + 10, 30), (90, 50, 26), seed=50, jag=0.06, p=2.4)
+    _, mwin = kit.windmill_tower(pt, mx, my, mz, mh, mr, body=HT["plaster_dk"], body_dk=HT["stone_dk"], cap=HT["slate_dk"], trim=HT["plaster"],
+                                   dark=HT["dark"], octagon=False)
+    wins.append(mwin)
+    # 4. a fishmonger's stall and boats drawn up on the right, a few gulls' perches
+    box(pt.g(HT["wood"], outline=0.4), (1160, 70, 54), (26, 12, 10), p=6, cuts=1)
+    pt.g(HT["wine"], outline=0.3).slab([(1130, 70), (1190, 70), (1196, 62), (1124, 62)], 56, 22)
+    gboat = pt.g(HT["wood_dk"], outline=0.5)
+    for (x, s_) in ((1290, 1.0), (1370, 0.85)):
+        gboat.blob((x, 60, 46), (22 * s_, 7 * s_, 6 * s_), p=2.4, taper=(0.7, 1.0))
+    for w in wins[:4]:
+        st.light(w, 4)
+    pt.flush(st)
+
+
+def ht_props():
+    mx, my, mz, mh, mr = HT_MILL
+    hub = _scr_m(kit.windmill_hub(mx, my, mz, mh, mr), HT_MID_E)
+    cogs = [_scr_m((x, y, HT_SEA_Z - 2), HT_FAR_E) for (x, y) in HT_COGS]
+    gull = fauna.bird(body="#E8E4DA", wing="#D6D2C8", belly="#F2EFE8", beak="#C8A060", span=12, size=1.0)
+    ring = [[i * 2, round(560 + 90 * math.cos(math.pi * i / 3)), round(-228 + 14 * math.sin(math.pi * i / 3)), 1] for i in range(7)]
+    plist = [
+        Prop("sails", "mid", fauna.windmill_sails(sail="#E6DECC", frame="#5E4C3E", length=46, width=9), [{"s": {"r": -22.5 * f}} for f in range(4)],
+             (110, 56, 56), hub[1]),
+        Prop("cog", "far", fauna.cog(size=1.0), [{}], (60, 60, 3), cogs[0][1]),
+        Prop("cogb", "far", fauna.cog(size=0.8, hull="#6A5646", stripe="#5E6A72"), [{}], (50, 50, 3), cogs[1][1]),
+        Prop("gull", "far", gull, [fauna.bird_pose(f) for f in range(5)], (40, 24, 24), ring[0][2]),
+    ]
+    sprites = [
+        {"kind": "loop", "layer": "mid", "frames": [f"sails_{i}" for i in range(4)], "fps": 3, "at": hub},
+        {"kind": "bob", "layer": "far", "frames": ["cog_0"], "at": cogs[0], "amp": [0.4, 1.0], "periodS": 4.8, "tilt": 1.6},
+        {"kind": "bob", "layer": "far", "frames": ["cogb_0"], "at": cogs[1], "amp": [0.4, 0.9], "periodS": 5.6, "tilt": 1.4},
+        {"kind": "path", "layer": "far", "fps": 6, "periodS": 13, "keys": ring,
+         "group": [{"frames": ["gull_4", "gull_4", "gull_0", "gull_1", "gull_2", "gull_3"]}, {"frames": ["gull_4", "gull_0", "gull_1", "gull_2"], "dx": -22, "dy": 8, "phase": 2}]},
+    ]
+    return plist, sprites
+
+
+def _scr_m(p, e):
+    x, y, z = p
+    return [round(x, 1), -round(z * math.cos(e) + y * math.sin(e), 1)]
+
+
 SCENES = {
     "classic": Scene("medieval", "classic", CH_PAL, ch_far, ch_mid, back=ch_back, sky=CH_SKY, props=ch_props,
                      hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.5}, ground="earth",
@@ -682,4 +903,7 @@ SCENES = {
                         hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.5}, ground="earth",
                         # a grey day with clear air between the fog banks: a little less haze on the far moor
                         look={"far": (0.18, 0.08, 0.2)}),
+    "harbour_town": Scene("medieval", "harbour_town", HT_PAL, ht_far, ht_mid, back=ht_back, sky=HT_SKY, props=ht_props,
+                          hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.5}, ground="earth",
+                          look={"far": (0.18, 0.08, 0.2)}),
 }

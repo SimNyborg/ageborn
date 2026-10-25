@@ -32,6 +32,8 @@ interface SheetFrame {
   rotated?: boolean;
   spriteSourceSize: FrameRect;
   sourceSize: { w: number; h: number };
+  /** The feet in the frame's source space (fractions). */
+  anchor?: { x: number; y: number };
 }
 
 interface SheetJson {
@@ -40,8 +42,9 @@ interface SheetJson {
   meta: {
     image: string;
     ageborn?: {
-      kind?: 'turret' | 'base';
+      kind?: string;
       age?: AgeId;
+      pxPerLu?: number;
       flags?: { clip: string; z: 'front' | 'back' }[];
       /** Base prop loops (round 3): drawn at the step they hold under Reduce motion, where crumble 0 shows them. */
       props?: { clip: string; z: 'front' | 'back'; crumbleMin: number; holdFrame: number }[];
@@ -137,6 +140,43 @@ export function worldPortraitFrames(json: Pick<SheetJson, 'animations' | 'meta'>
 
 const css = (c: number): string => `#${c.toString(16).padStart(6, '0')}`;
 
+/** The union of a portrait's drawn frames in the sheet's shared source space (px). */
+function drawnBounds(json: Pick<SheetJson, 'animations' | 'meta' | 'frames'>): { x0: number; y0: number; x1: number; y1: number } | null {
+  let x0 = Infinity;
+  let y0 = Infinity;
+  let x1 = -Infinity;
+  let y1 = -Infinity;
+  for (const n of worldPortraitFrames(json)) {
+    const s = json.frames[n]?.spriteSourceSize;
+    if (!s) continue;
+    x0 = Math.min(x0, s.x);
+    y0 = Math.min(y0, s.y);
+    x1 = Math.max(x1, s.x + s.w);
+    y1 = Math.max(y1, s.y + s.h);
+  }
+  return x0 < x1 && y0 < y1 ? { x0, y0, x1, y1 } : null;
+}
+
+/**
+ * Where a point of a base sheet (screen lu from the feet, y up, with a radius in lu) lands in its menu picture (the
+ * base portrait, plate off, standing on the square's bottom edge): centre and radius as fractions of the square's
+ * side. The screens place a Legendary model's aura with it (Colossus Lighthouse's torch, `baseSkinAuraSpot`).
+ */
+export function basePortraitSpot(json: Pick<SheetJson, 'animations' | 'meta' | 'frames'>, lu: { x: number; y: number; r: number }): { x: number; y: number; r: number } | null {
+  const b = drawnBounds(json);
+  const body = json.animations['body']?.[0];
+  const f = body ? json.frames[body] : undefined;
+  const ppl = json.meta.ageborn?.pxPerLu;
+  if (!b || !f?.anchor || !ppl) return null;
+  const inner = 0.96;
+  const k = Math.min(inner / (b.x1 - b.x0), inner / (b.y1 - b.y0));
+  const ox = 0.5 - ((b.x0 + b.x1) / 2) * k;
+  const oy = 1 - 0.02 - b.y1 * k;
+  const sx = f.anchor.x * f.sourceSize.w + lu.x * ppl;
+  const sy = f.anchor.y * f.sourceSize.h - lu.y * ppl;
+  return { x: ox + sx * k, y: oy + sy * k, r: lu.r * ppl * k };
+}
+
 export interface WorldPortraitOptions {
   /** Absolute or base-relative URL of the sheet JSON. */
   url: string;
@@ -163,17 +203,9 @@ export async function renderWorldPortrait(o: WorldPortraitOptions): Promise<stri
   const frames = names.map((n) => ({ base: sheet.json.frames[n], team: sheet.json.frames[`${n}_team`], body: n === body })).filter((f): f is { base: SheetFrame; team: SheetFrame | undefined; body: boolean } => f.base !== undefined);
   if (frames.length === 0) return null;
   // union of the drawn frames in the shared source space
-  let x0 = Infinity;
-  let y0 = Infinity;
-  let x1 = -Infinity;
-  let y1 = -Infinity;
-  for (const f of frames) {
-    const s = f.base.spriteSourceSize;
-    x0 = Math.min(x0, s.x);
-    y0 = Math.min(y0, s.y);
-    x1 = Math.max(x1, s.x + s.w);
-    y1 = Math.max(y1, s.y + s.h);
-  }
+  const bounds = drawnBounds(sheet.json);
+  if (!bounds) return null;
+  const { x0, y0, x1, y1 } = bounds;
   const { size } = o;
   const c = document.createElement('canvas');
   c.width = size;

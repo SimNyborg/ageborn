@@ -107,10 +107,33 @@ const ROUND2: readonly [AgeId, string][] = [
   ['future', 'skyway_metropolis'],
   ['cosmic', 'ringed_giant'],
 ];
-/** Round 2 scenes whose art is in but which wait for round 3 (review 2): the glacier read as a dome, the airbase as sparse. */
-const HELD: readonly string[] = ['stone.glacier_valley', 'modern.desert_airbase'];
+/** Scenes whose art is in but which wait (held, unreleased). Round 2 held Glacier Valley (the glacier read as a dome)
+ *  and Desert Airbase (sparse, pancake mesas) for review 2; round 3 reworked and released both. */
+const HELD: readonly string[] = [
+  // round 3 (R3b): the Epic scenes in review, released one by one
+  'stone.sabre_savanna',
+  'bronze.bronze_city_siege',
+  'medieval.harbour_town',
+  'gunpowder.windmill_polder',
+  'industrial.zeppelin_docks',
+  'modern.monsoon_river',
+  'future.terraformed_gardens',
+  'cosmic.nebula_shipyard',
+];
 /** Round 3: the five format 1 classics re-rendered in format 2 (PLAN 2b), in their order. */
 const ROUND3_CLASSICS: readonly AgeId[] = ['stone', 'medieval', 'gunpowder', 'modern', 'future'];
+/** Round 3 (R3b): the second new scene of every age, the Epic ones (PLAN 2b "The 24 scenes"), as their art lands. */
+const ROUND3_EPICS: readonly [AgeId, string][] = [
+  ['stone', 'sabre_savanna'],
+  ['bronze', 'bronze_city_siege'],
+  ['medieval', 'harbour_town'],
+  ['gunpowder', 'windmill_polder'],
+  ['industrial', 'zeppelin_docks'],
+  ['modern', 'monsoon_river'],
+  ['future', 'terraformed_gardens'],
+  ['cosmic', 'nebula_shipyard'],
+];
+const EPICS_WITH_ART = ROUND3_EPICS.filter(([age, id]) => SCENE_ART[age]?.[id] === 2);
 const shipped = (age: AgeId, scene: string): SceneData | null => parseScene(LAYERS_JSON[`/public/${sceneDir(age, scene)}layers.json`], age, scene);
 
 describe('the round 2 scenes (one new scene per age)', () => {
@@ -129,13 +152,13 @@ describe('the round 2 scenes (one new scene per age)', () => {
     }
   });
 
-  it('the released scenes of the content are the new scenes with art but the held ones: the round 2 set', () => {
+  it('the released scenes of the content are the new scenes with art but the held ones: the round 2 set and the Epics with art', () => {
     const released = content.cosmetics.collections.items.filter((x) => x.collection === 'scene' && x.released !== false);
     for (const age of AGES) {
       const withArt = Object.keys(SCENE_ART[age] ?? {}).filter((id) => id !== 'classic' && !HELD.includes(`${age}.${id}`)).sort();
       expect(released.filter((x) => x.age === age).map((x) => x.id).sort(), age).toEqual(withArt);
     }
-    expect(released.map((x) => `${x.age}.${x.id}`).sort()).toEqual(ROUND2.map(([a, id]) => `${a}.${id}`).filter((k) => !HELD.includes(k)).sort());
+    expect(released.map((x) => `${x.age}.${x.id}`).sort()).toEqual([...ROUND2, ...EPICS_WITH_ART].map(([a, id]) => `${a}.${id}`).filter((k) => !HELD.includes(k)).sort());
     // a held scene keeps its art (the sandbox, round 3) but no player can find or equip it
     for (const k of HELD) expect(content.cosmetics.collections.items.find((x) => `${x.age}.${x.id}` === k)?.released, k).toBe(false);
   });
@@ -156,6 +179,21 @@ describe('the round 2 scenes (one new scene per age)', () => {
     }
     // Smoke Mountain's plume trails off with the wind (sideways, under the phone HUD's top band)
     expect(shipped('stone', 'classic')?.layers.far?.ambient.some((a) => a.kind === 'emit' && (a.drift ?? 0) > 4)).toBe(true);
+  });
+
+  it('the round 3 Epic scenes with art are richer than the Rare ones: format 2, sky, three strips, 3-6 moving props, night lights', () => {
+    for (const [age, id] of EPICS_WITH_ART) {
+      const d = shipped(age, id);
+      expect(d?.version, `${age}.${id}`).toBe(2);
+      expect(d?.sky, `${age}.${id} sky`).not.toBeNull();
+      expect(Object.keys(d?.layers ?? {}).sort(), `${age}.${id} strips`).toEqual(['back', 'far', 'mid']);
+      const moving = d?.props?.sprites.filter((s) => s.kind !== 'emit').length ?? 0;
+      expect(moving, `${age}.${id} moving props`).toBeGreaterThanOrEqual(3);
+      expect(moving, `${age}.${id} within the per-half cap`).toBeLessThanOrEqual(6);
+      expect(d?.lights.length ?? 0, `${age}.${id} lights`).toBeGreaterThanOrEqual(3);
+      expect(d?.hints.skyGrade ?? 1, `${age}.${id} skyGrade`).toBeLessThan(1);
+      expect(d?.thumb, `${age}.${id}`).toBe('thumb.webp');
+    }
   });
 
   it('Ringed Giant brings its own sky object and space weather', () => {

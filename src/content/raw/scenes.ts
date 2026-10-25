@@ -18,9 +18,9 @@ import type { CosmeticItemDef } from '../types';
 export const sceneItems: CosmeticItemDef[] = [
   // Two scenes per age (PLAN 2b "The 24 scenes"); each ships (released) once its art is in and has passed
   // review: the first new scene of every age in round 2, the second in round 3. Glacier Valley and Desert
-  // Airbase have their art but wait for round 3 (review 2: the glacier read as a striped dome, the airbase
-  // as sparse with stacked mesas next to the other new scenes).
-  { id: 'glacier_valley', collection: 'scene', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.scene.glacier_valley', nameKey: 'cosmetic.scene.glacier_valley.name', age: 'stone', released: false },
+  // Airbase waited for round 3 (review 2: the glacier read as a striped dome, the airbase as sparse with
+  // stacked mesas next to the other new scenes) and shipped there after their rework.
+  { id: 'glacier_valley', collection: 'scene', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.scene.glacier_valley', nameKey: 'cosmetic.scene.glacier_valley.name', age: 'stone', released: true },
   { id: 'sabre_savanna', collection: 'scene', rarity: 'epic', source: { kind: 'crate' }, art: 'cosmetic.scene.sabre_savanna', nameKey: 'cosmetic.scene.sabre_savanna.name', age: 'stone', released: false },
   { id: 'aegean_harbour', collection: 'scene', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.scene.aegean_harbour', nameKey: 'cosmetic.scene.aegean_harbour.name', age: 'bronze', released: true },
   { id: 'bronze_city_siege', collection: 'scene', rarity: 'epic', source: { kind: 'road', trophies: 2300 }, art: 'cosmetic.scene.bronze_city_siege', nameKey: 'cosmetic.scene.bronze_city_siege.name', age: 'bronze', released: false },
@@ -30,7 +30,7 @@ export const sceneItems: CosmeticItemDef[] = [
   { id: 'windmill_polder', collection: 'scene', rarity: 'epic', source: { kind: 'capsule' }, art: 'cosmetic.scene.windmill_polder', nameKey: 'cosmetic.scene.windmill_polder.name', age: 'gunpowder', released: false },
   { id: 'viaduct_gorge', collection: 'scene', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.scene.viaduct_gorge', nameKey: 'cosmetic.scene.viaduct_gorge.name', age: 'industrial', released: true },
   { id: 'zeppelin_docks', collection: 'scene', rarity: 'epic', source: { kind: 'road', trophies: 3300 }, art: 'cosmetic.scene.zeppelin_docks', nameKey: 'cosmetic.scene.zeppelin_docks.name', age: 'industrial', released: false },
-  { id: 'desert_airbase', collection: 'scene', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.scene.desert_airbase', nameKey: 'cosmetic.scene.desert_airbase.name', age: 'modern', released: false },
+  { id: 'desert_airbase', collection: 'scene', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.scene.desert_airbase', nameKey: 'cosmetic.scene.desert_airbase.name', age: 'modern', released: true },
   { id: 'monsoon_river', collection: 'scene', rarity: 'epic', source: { kind: 'crate' }, art: 'cosmetic.scene.monsoon_river', nameKey: 'cosmetic.scene.monsoon_river.name', age: 'modern', released: false },
   { id: 'skyway_metropolis', collection: 'scene', rarity: 'rare', source: { kind: 'capsule' }, art: 'cosmetic.scene.skyway_metropolis', nameKey: 'cosmetic.scene.skyway_metropolis.name', age: 'future', released: true },
   { id: 'terraformed_gardens', collection: 'scene', rarity: 'epic', source: { kind: 'capsule' }, art: 'cosmetic.scene.terraformed_gardens', nameKey: 'cosmetic.scene.terraformed_gardens.name', age: 'future', released: false },

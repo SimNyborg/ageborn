@@ -732,3 +732,253 @@ def dust_devil(i, w=46, h=150, color=(0.86, 0.78, 0.62)):
     out[..., 0], out[..., 1], out[..., 2] = color
     out[..., 3] = np.clip(a * 0.62, 0, 1)
     return out
+
+
+def chariot(coat="#8A6A50", coat_dk="#6E543E", mane="#3A2E28", wood="#8A7258", wood_dk="#6A5644", bronze="#A88A5A", skin="#C89A7A",
+            tunic="#D8CCB2", tunic2="#9A8A72", crest="#7A3A3A", size=1.0):
+    """A Bronze Age war chariot racing right: a pair of horses side by side (four legs each, on the shared
+    walk joints so `walk4_pose` gallops both), a light car with a curved front screen and a six-spoked
+    wheel on its own joint (`wh`), the driver with the reins and a spearman in a crested helmet behind him."""
+    def build(rig):
+        s = size
+        for leg, (x, y) in {"lf": (10.0, -3.0), "lb": (-7.0, -3.0), "rf": (10.0, 3.0), "rb": (-7.0, 3.0)}.items():
+            rig.joint(leg, "all", (x * s, y * s, 15 * s))
+            for dy, c in ((-4.2, coat), (4.2, coat_dk)):
+                rig.part(leg, Geo().capsule((x * s, (y + dy) * s, 1.0 * s), (x * s, (y + dy) * s, 15.5 * s), 1.2 * s, 1.9 * s), c if y < 0 else coat_dk,
+                         outline=0.5)
+        rig.joint("body", "all", (0, 0, 16 * s))
+        for dy, c in ((4.6, coat_dk), (-4.6, coat)):
+            rig.part("body", Geo().blob((1.5 * s, dy * s, 19.5 * s), (12 * s, 4.0 * s, 5.0 * s), p=2.3), c, outline=0.6)
+            rig.part("body", Geo().capsule((-10.5 * s, dy * s, 22 * s), (-13.5 * s, dy * s, 13 * s), 1.2 * s, 0.8 * s), mane, outline=0.3)
+        rig.joint("head", "body", (11 * s, 0, 24 * s))
+        for dy, c in ((4.6, coat_dk), (-4.6, coat)):
+            rig.part("head", Geo().capsule((10 * s, dy * s, 23 * s), (15.5 * s, dy * s, 31 * s), 3.0 * s, 2.2 * s), c, outline=0.5)
+            rig.part("head", Geo().capsule((9.4 * s, dy * s, 26 * s), (14.6 * s, dy * s, 33.6 * s), 0.9 * s, 0.7 * s), mane, outline=0.3)
+            rig.part("head", Geo().blob((18.6 * s, dy * s, 30 * s), (4.4 * s, 2.0 * s, 2.0 * s), p=2.2, rot=(0, 36, 0), taper=(1.0, 0.7)), c, outline=0.5)
+            rig.part("head", Geo().blob((14.4 * s, dy * s, 36.0 * s), (1.2 * s, 0.5 * s, 2.0 * s), p=2.0), crest, outline=0.2)
+        # the pole and the yoke, the car (a curved screen on a floor), the reins
+        g = Geo()
+        g.capsule((12 * s, 0, 23 * s), (-22 * s, 0, 13 * s), 0.7 * s)
+        g.capsule((10 * s, -6 * s, 24 * s), (10 * s, 6 * s, 24 * s), 0.8 * s)
+        rig.part("all", g, wood_dk, outline=0.3)
+        rig.part("all", box_geo((-27 * s, 0, 12.5 * s), (6.5 * s, 5.4 * s, 1.0 * s)), wood_dk, outline=0.4)
+        rig.part("all", Geo().lathe([(0.01, 0), (6.4 * s, 0), (6.6 * s, 7.6 * s), (0.01, 8.2 * s)], (-26 * s, 0, 13 * s), (-26 * s, 0, 22 * s), segs=16,
+                                    squash=(1.0, 0.9)), wood, outline=0.5)
+        rig.part("all", Geo().capsule((-21 * s, -5 * s, 20.6 * s), (-21 * s, 5 * s, 20.6 * s), 0.7 * s), bronze, outline=0.2)
+        # the driver (front) and the spearman (back)
+        for (x, c, tall) in ((-23.0, tunic, 0.0), (-29.5, tunic2, 1.6)):
+            rig.part("all", Geo().lathe([(0.2, 0), (2.8 * s, 0), (2.5 * s, 6 * s), (2.0 * s, 9 * s), (0.2, 9.6 * s)], (x * s, -0.6 * s, 20 * s),
+                                        (x * s, -0.6 * s, 30 * s), segs=12), c, outline=0.5)
+            rig.part("all", Geo().blob((x * s + 0.3 * s, -0.8 * s, (31.6 + tall * 0.2) * s), (1.9 * s, 1.8 * s, 2.0 * s), p=2.0), skin, outline=0.4)
+            rig.part("all", Geo().blob((x * s, -0.8 * s, (32.8 + tall * 0.2) * s), (2.1 * s, 2.0 * s, 1.3 * s), p=2.2), bronze, outline=0.3)
+        rig.part("all", Geo().blob((-29.5 * s, -0.8 * s, 35.4 * s), (2.6 * s, 0.6 * s, 1.0 * s), p=2.2), crest, outline=0.2)
+        rig.part("all", Geo().capsule((-31 * s, -2.8 * s, 24 * s), (-27 * s, -2.8 * s, 46 * s), 0.3 * s), wood_dk, outline=0.0)
+        rig.part("all", Geo().blob((-26.8 * s, -2.8 * s, 47.6 * s), (0.6 * s, 0.3 * s, 1.8 * s), p=2.2), bronze, outline=0.0)
+        rig.part("all", Geo().capsule((-21 * s, -3.0 * s, 26 * s), (13 * s, -3.0 * s, 25 * s), 0.22 * s), "#3A302A", outline=0.0)
+        # the near wheel: rim, hub and six spokes on its joint
+        rig.joint("wh", "all", (-26 * s, -6.6 * s, 7.6 * s))
+        w = Geo()
+        cyl_ring(w, (-26 * s, -6.6 * s, 7.6 * s), 7.4 * s, 1.4 * s, 1.3 * s, axis_to=(-26 * s, -7.6 * s, 7.6 * s), segs=28)
+        rig.part("wh", w, wood_dk, outline=0.4)
+        sp = Geo()
+        for k in range(6):
+            a = math.pi * k / 3
+            sp.capsule((-26 * s, -6.6 * s, 7.6 * s), (-26 * s + math.cos(a) * 6.4 * s, -6.6 * s, 7.6 * s + math.sin(a) * 6.4 * s), 0.45 * s)
+        rig.part("wh", sp, wood, outline=0.2)
+        rig.part("wh", Geo().sphere((-26 * s, -7.2 * s, 7.6 * s), 1.3 * s), bronze, outline=0.2)
+    return build
+
+
+def wooden_horse(wood="#8A7258", wood_dk="#6E5A46", wood_lt="#A08A70", iron="#5A5450", size=1.0):
+    """The giant wooden horse (Siege of the Bronze City): a plank body on four post legs, a tall neck and
+    a blocky head with a ridged mane and ears, a rope tail, plank seams and bands, standing on a wheeled
+    platform; facing right. Static (drawn with `kit.StaticRig`)."""
+    def build(rig):
+        s = size
+        # the platform and its wheels
+        rig.part("all", box_geo((0, 0, 7 * s), (34 * s, 14 * s, 3.0 * s)), wood_dk, outline=0.6)
+        for x in (-24, 24):
+            for y in (-14.5, 14.5):
+                w = Geo()
+                cyl_ring(w, (x * s, y * s, 6 * s), 6 * s, 2.4 * s, 6 * s * 0.98, axis_to=(x * s, (y - 1) * s, 6 * s), segs=20)
+                rig.part("all", w, wood if y < 0 else wood_dk, outline=0.5)
+                rig.part("all", Geo().sphere((x * s, (y - 1.3) * s, 6 * s), 1.4 * s), iron, outline=0.2)
+        # the legs: square posts with knees
+        for (x, y) in ((-20, -7), (-20, 7), (20, -7), (20, 7)):
+            c = wood if y < 0 else wood_dk
+            rig.part("all", box_geo((x * s, y * s, 26 * s), (3.4 * s, 3.4 * s, 16 * s)), c, outline=0.5)
+            rig.part("all", box_geo((x * s, y * s, 26 * s), (4.0 * s, 4.0 * s, 1.4 * s)), wood_dk, outline=0.3)
+        # the body: a long plank barrel, seams and iron bands
+        rig.part("all", Geo().blob((0, 0, 52 * s), (31 * s, 11 * s, 12 * s), p=3.0), wood, outline=0.7)
+        seams = Geo()
+        for k in range(5):
+            z = (44 + k * 4.2) * s
+            seams.capsule((-28 * s, -10.6 * s, z), (28 * s, -10.6 * s, z), 0.35 * s)
+        rig.part("all", seams, wood_dk, outline=0.0)
+        bands = Geo()
+        for x in (-16, 0, 16):
+            bands.blob((x * s, 0, 52 * s), (1.4 * s, 11.6 * s, 12.6 * s), p=3.0)
+        rig.part("all", bands, iron, outline=0.3)
+        # the neck and the head
+        rig.part("all", Geo().blob((27 * s, 0, 72 * s), (9 * s, 8 * s, 20 * s), p=3.0, rot=(0, 28, 0)), wood, outline=0.6)
+        rig.part("all", Geo().blob((38 * s, 0, 92 * s), (13 * s, 7 * s, 7 * s), p=3.2, rot=(0, 26, 0), taper=(1.0, 0.8)), wood_lt, outline=0.6)
+        rig.part("all", box_geo((43 * s, -7.2 * s, 93 * s), (1.6 * s, 0.4 * s, 1.6 * s)), "#2E2622", outline=0.0)
+        for dy in (-3.5, 3.5):
+            rig.part("all", Geo().blob((31 * s, dy * s, 101 * s), (1.6 * s, 1.2 * s, 4.2 * s), p=2.2, rot=(0, -10, 0)), wood_dk, outline=0.3)
+        mane = Geo()
+        for k in range(7):
+            t = k / 6
+            mane.blob(((18 + 12 * t) * s, 0, (62 + 34 * t) * s), (2.2 * s, 1.6 * s, 3.4 * s), p=2.4, rot=(0, -40, 0))
+        rig.part("all", mane, wood_dk, outline=0.3)
+        rig.part("all", Geo().capsule((-31 * s, 0, 56 * s), (-38 * s, 0, 34 * s), 2.0 * s, 1.0 * s), wood_dk, outline=0.4)
+    return build
+
+
+def windmill_sails(sail="#E6DECC", frame="#6A5644", hub="#4A3E36", length=34.0, width=7.0, cloth=True):
+    """A windmill's four sails on a hub, facing the camera: lattice stocks with cloth panels (or bare lattice
+    with `cloth=False`), on joint `s`; frames turn it a quarter of its 90-degree symmetry each
+    (`[{"s": {"r": -22.5 * f}} for f in range(4)]`)."""
+    def build(rig):
+        rig.joint("s", "all", (0, 0, 0))
+        st = Geo()
+        cl = Geo()
+        for k in range(4):
+            a = math.pi / 2 * k + math.pi / 4
+            ca, sa = math.cos(a), math.sin(a)
+            st.capsule((0, -1.0, 0), (ca * length, -1.0, sa * length), 0.9, 0.6)
+            px, pz = -sa, ca          # across the stock
+            for j in range(6):
+                t = 0.22 + j * 0.15
+                st.capsule((ca * length * t, -1.4, sa * length * t), (ca * length * t + px * width, -1.4, sa * length * t + pz * width), 0.35)
+            st.capsule((ca * length * 0.2 + px * width, -1.4, sa * length * 0.2 + pz * width), (ca * length + px * width, -1.4, sa * length + pz * width), 0.4)
+            if cloth:
+                cl.slab([(ca * length * 0.22 + px * 0.6, sa * length * 0.22 + pz * 0.6), (ca * length * 0.98 + px * 0.6, sa * length * 0.98 + pz * 0.6),
+                         (ca * length * 0.98 + px * width * 0.92, sa * length * 0.98 + pz * width * 0.92),
+                         (ca * length * 0.22 + px * width * 0.92, sa * length * 0.22 + pz * width * 0.92)], -0.8, 0.5)
+        rig.part("s", st, frame, outline=0.3)
+        if cloth:
+            rig.part("s", cl, sail, outline=0.3)
+        rig.part("s", Geo().sphere((0, -2.0, 0), 2.6), hub, outline=0.3)
+    return build
+
+
+def cog(hull="#5E4A3C", hull_lt="#7A6450", castle="#6A5646", sail="#E2D8C4", stripe="#8E2A4A", flag="#8E2A4A", size=1.0, sail_set=True):
+    """A medieval cog facing right: a deep round-bellied hull with clinker strakes, high castles at the stern
+    and the bow, one mast with a square sail (a wine stripe across it) and a long pennant at the top; with
+    `sail_set=False` the sail is furled on its yard (moored)."""
+    def build(rig):
+        s = size
+        rig.part("all", Geo().blob((0, 0, 7 * s), (26 * s, 7.5 * s, 7 * s), p=2.6, taper=(0.8, 1.0)), hull, outline=0.6)
+        strakes = Geo()
+        for k in range(3):
+            strakes.capsule((-24 * s, -7.0 * s, (6 + k * 2.6) * s), (24 * s, -7.0 * s, (6 + k * 2.6) * s), 0.35 * s)
+        rig.part("all", strakes, hull_lt, outline=0.0)
+        rig.part("all", box_geo((-20 * s, 0, 17 * s), (7 * s, 7 * s, 4 * s)), castle, outline=0.5)
+        rig.part("all", box_geo((20 * s, 0, 16 * s), (5.5 * s, 6.5 * s, 3.2 * s)), castle, outline=0.5)
+        rig.part("all", Geo().capsule((0, 0, 12 * s), (0, 0, 52 * s), 0.9 * s, 0.7 * s), castle, outline=0.4)
+        if sail_set:
+            rig.part("all", Geo().blob((1.2 * s, -1.0 * s, 33 * s), (13 * s, 1.6 * s, 15 * s), p=3.2), sail, outline=0.5)
+            rig.part("all", box_geo((1.6 * s, -2.6 * s, 33 * s), (13.2 * s, 0.4 * s, 2.0 * s)), stripe, outline=0.0)
+            rig.part("all", Geo().capsule((-14 * s, -1.0 * s, 48 * s), (16 * s, -1.0 * s, 48 * s), 0.6 * s), castle, outline=0.3)
+        else:
+            rig.part("all", Geo().capsule((-13 * s, -1.0 * s, 44 * s), (14 * s, -1.0 * s, 44 * s), 1.6 * s, 1.4 * s), sail, outline=0.4)
+        rig.part("all", Geo().slab([(0, 52 * s), (12 * s, 50.6 * s), (0, 49 * s)], 0, 0.6 * s), flag, outline=0.2)
+    return build
+
+
+def barge(hull="#3E4448", stripe="#D8CCB2", cabin="#5E6A5E", roof="#3A3634", cargo="#8A7E66", window="#2E2A28", size=1.0):
+    """A canal barge gliding right: a long low dark hull with a pale rubbing strake, a tarpaulined cargo hold,
+    a deckhouse at the stern with two windows and a stovepipe, a tiller, a lowered mast along the hold."""
+    def build(rig):
+        s = size
+        rig.part("all", Geo().blob((0, 0, 3.6 * s), (40 * s, 7.0 * s, 3.8 * s), p=4.0, taper=(0.86, 1.0)), hull, outline=0.6)
+        rig.part("all", box_geo((0, -6.9 * s, 6.2 * s), (39 * s, 0.5 * s, 0.7 * s)), stripe, outline=0.0)
+        rig.part("all", Geo().blob((4 * s, 0, 9 * s), (24 * s, 5.8 * s, 3.4 * s), p=2.6), cargo, outline=0.5)
+        rig.part("all", box_geo((-28 * s, 0, 11 * s), (7 * s, 5.6 * s, 4.6 * s)), cabin, outline=0.5)
+        rig.part("all", box_geo((-28 * s, 0, 16 * s), (8 * s, 6.2 * s, 0.9 * s)), roof, outline=0.3)
+        for x in (-31, -25):
+            rig.part("all", box_geo((x * s, -5.8 * s, 11.6 * s), (1.6 * s, 0.3 * s, 1.6 * s)), window, outline=0.0)
+        rig.part("all", Geo().capsule((-24 * s, 0, 17 * s), (-24 * s, 0, 22 * s), 0.6 * s), roof, outline=0.2)
+        rig.part("all", Geo().capsule((-38 * s, 0, 8 * s), (-44 * s, 0, 11 * s), 0.5 * s), roof, outline=0.2)
+        rig.part("all", Geo().capsule((-18 * s, 1.0 * s, 13 * s), (30 * s, 1.0 * s, 12 * s), 0.7 * s), "#6A5644", outline=0.2)
+    return build
+
+
+def airship(envelope="#D8D0BE", envelope_dk="#BEB6A2", fin="#9A9284", gondola="#5B6168", window="#2E3036", trim="#8A6A63", size=1.0):
+    """A rigid airship facing right: a long cigar envelope with ring seams and a darker belly, four cruciform
+    tail fins, a control gondola under the bow with a window band, two engine cars with propeller discs."""
+    def build(rig):
+        s = size
+        L = 70 * s
+        prof = [(0.01, 0), (5 * s, 0.02 * L), (10 * s, 0.08 * L), (12.5 * s, 0.2 * L), (13 * s, 0.45 * L), (12 * s, 0.7 * L), (8.5 * s, 0.88 * L),
+                (3 * s, 0.98 * L), (0.01, L)]
+        rig.part("all", Geo().lathe(prof, (-L * 0.45, 0, 0), (L * 0.55, 0, 0), segs=24), envelope, outline=0.6)
+        rig.part("all", Geo().lathe([(r * 1.004, z) for r, z in prof[2:7]], (-L * 0.45, 0, -1.4 * s), (L * 0.55, 0, -1.4 * s), segs=24).clip(
+            (0, 0, -4 * s), (0, 0, 1)), envelope_dk, outline=0.0)
+        seams = Geo()
+        for k in range(1, 8):
+            x = -L * 0.45 + L * (0.08 + k * 0.11)
+            t = (x + L * 0.45) / L
+            r = max(3 * s, 13 * s * (1 - (2 * t - 1) ** 4) ** 0.5)
+            seams.blob((x, 0, 0), (0.5 * s, r * 1.01, r * 1.01), p=2.0, cuts=3)
+        rig.part("all", seams, envelope_dk, outline=0.0)
+        fins = Geo()
+        fins.slab([(-L * 0.4, 0), (-L * 0.24, 0), (-L * 0.36, 11 * s), (-L * 0.45, 11 * s)], 0, 1.2 * s)
+        fins.slab([(-L * 0.4, 0), (-L * 0.24, 0), (-L * 0.36, -11 * s), (-L * 0.45, -11 * s)], 0, 1.2 * s)
+        fins.blob((-L * 0.36, 0, 0), (6 * s, 11 * s, 0.8 * s), p=3.0, cuts=2)
+        rig.part("all", fins, fin, outline=0.5)
+        rig.part("all", Geo().blob((L * 0.22, 0, -14 * s), (8 * s, 3.0 * s, 2.6 * s), p=3.0), gondola, outline=0.5)
+        rig.part("all", box_geo((L * 0.22, -3.0 * s, -13.6 * s), (6.4 * s, 0.3 * s, 0.9 * s)), window, outline=0.0)
+        for x in (-L * 0.06, -L * 0.2):
+            rig.part("all", Geo().blob((x, -9 * s, -10 * s), (3.6 * s, 2.0 * s, 1.8 * s), p=2.6), gondola, outline=0.4)
+            rig.part("all", Geo().blob((x - 4.2 * s, -9 * s, -10 * s), (0.4 * s, 3.2 * s, 3.2 * s), p=2.0), "#8A8C90", outline=0.2)
+        rig.part("all", Geo().capsule((L * 0.1, 0, 12.8 * s), (L * 0.34, 0, 12.0 * s), 0.6 * s), trim, outline=0.0)
+    return build
+
+
+def patrol_boat(hull="#5E665E", hull_dk="#4A524C", cabin="#7A8270", roof="#4A4E48", window="#2E3236", flag="#5E6A72", size=1.0):
+    """A river patrol boat running right: a low sharp-bowed hull, a wheelhouse with a window band and a
+    canvas awning aft, a mast with a small flag, a wake line at the bow."""
+    def build(rig):
+        s = size
+        rig.part("all", Geo().blob((0, 0, 3 * s), (26 * s, 6 * s, 3.2 * s), p=3.0, taper=(0.9, 1.0), shift=(0.0, 0.0)), hull, outline=0.6)
+        rig.part("all", box_geo((0, -5.8 * s, 4.6 * s), (25 * s, 0.4 * s, 0.6 * s)), hull_dk, outline=0.0)
+        rig.part("all", box_geo((-2 * s, 0, 9 * s), (7 * s, 4.6 * s, 3.4 * s)), cabin, outline=0.5)
+        rig.part("all", box_geo((-2 * s, -4.7 * s, 10 * s), (6 * s, 0.3 * s, 1.0 * s)), window, outline=0.0)
+        rig.part("all", box_geo((-2 * s, 0, 12.8 * s), (8 * s, 5.2 * s, 0.6 * s)), roof, outline=0.3)
+        rig.part("all", Geo().blob((-16 * s, 0, 9 * s), (7 * s, 5 * s, 1.0 * s), p=3.0), "#B8B09A", outline=0.3)
+        for x in (-22, -10):
+            rig.part("all", Geo().capsule((x * s, -4.6 * s, 5 * s), (x * s, -4.6 * s, 9 * s), 0.3 * s), roof, outline=0.0)
+        rig.part("all", Geo().capsule((2 * s, 0, 13 * s), (2 * s, 0, 24 * s), 0.4 * s), roof, outline=0.2)
+        rig.part("all", Geo().slab([(2 * s, 24 * s), (8 * s, 22.6 * s), (2 * s, 21 * s)], 0, 0.4 * s), flag, outline=0.2)
+        rig.part("all", Geo().blob((27 * s, -2 * s, 0.6 * s), (5 * s, 3 * s, 0.4 * s), p=2.2), "#D8DCD4", outline=0.0)
+    return build
+
+
+def turbine_rotor(blade="#EEF0EA", hub="#D8DCD6", length=30.0):
+    """A wind turbine's three-bladed rotor facing the camera on joint `s`; frames turn it a quarter of its
+    120-degree symmetry each (`[{"s": {"r": -30 * f}} for f in range(4)]`)."""
+    def build(rig):
+        rig.joint("s", "all", (0, 0, 0))
+        g = Geo()
+        for k in range(3):
+            a = math.radians(90 + 120 * k)
+            ca, sa = math.cos(a), math.sin(a)
+            g.slab([(ca * 2 - sa * 1.6, sa * 2 + ca * 1.6), (ca * length * 0.3 - sa * 2.4, sa * length * 0.3 + ca * 2.4),
+                    (ca * length, sa * length), (ca * length * 0.3 + sa * 0.8, sa * length * 0.3 - ca * 0.8), (ca * 2 + sa * 1.2, sa * 2 - ca * 1.2)], -1.0, 0.8)
+        rig.part("s", g, blade, outline=0.3)
+        rig.part("s", Geo().blob((0, -1.8, 0), (2.4, 3.0, 2.4), p=2.2), hub, outline=0.3)
+    return build
+
+
+def drone(body="#E6E8E4", rotor="#8A8E8C", light="#8ED8B8", size=1.0):
+    """A small pollinator drone: a rounded body with a glowing mint eye, four rotor discs on arms."""
+    def build(rig):
+        s = size
+        rig.part("all", Geo().blob((0, 0, 0), (3.2 * s, 2.4 * s, 1.8 * s), p=2.4), body, outline=0.4)
+        rig.part("all", Geo().sphere((2.4 * s, -1.6 * s, -0.2 * s), 0.9 * s), glow=light, outline=0)
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                rig.part("all", Geo().capsule((0, 0, 0.4 * s), (sx * 4.4 * s, sy * 3.0 * s, 1.0 * s), 0.35 * s), rotor, outline=0.2)
+                rig.part("all", Geo().blob((sx * 4.4 * s, sy * 3.0 * s, 1.3 * s), (2.0 * s, 2.0 * s, 0.25 * s), p=2.0), rotor, outline=0.2)
+    return build

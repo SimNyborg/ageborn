@@ -40,8 +40,8 @@ import math
 from ageborn_art.geometry import Geo
 
 from world.base_skins_kit import Roses, ashlar, flames, icicles, icicles_at, lancet, lantern, ring_blocks, rose_window
-from world.common import (BASE_YAW, ambient_lu, base_module, box, chipped_cracks, cyl, flag, platform, rubble, window,
-                          topple_lu)
+from world.common import (BASE_YAW, ambient_lu, base_module, box, chipped_cracks, crenels, cyl, flag, platform, prop_loop,
+                          rubble, topple_lu, window)
 
 ROSE = "#D0A69C"       # rose sandstone (large areas)
 ROSE_LT = "#DAB4AA"
@@ -1049,4 +1049,595 @@ SNOWY_KEEP = base_module(
     },
 )
 
-SKINS = [ROSE_KEEP, SNOWY_KEEP]
+# ---------------------------------------------------------------------------------------------------
+# Wyrm-Coil Keep (round 3; Legendary, Trophy Road 4,800): a slate keep with a sleeping green dragon (our own design)
+# coiled round it. Its head rests on its forepaws on the keep's front-left parapet, eyes shut, swept ivory horns, two
+# little fangs over its lip, looking out over the lane; the neck comes down the keep's front-left corner into the upper
+# coil, which crosses the front between the corner balcony's turret and the bartizan; the body wraps behind the keep
+# and comes round again as the lower coil, under the corner balcony's mount, with a folded bat wing on it; the tail
+# comes down the keep's foot, drapes over a small corbelled balcony's rail and curls round a hoard of gold on the
+# ground (glints) to a leaf-shaped spade. The scales are dragon green in cel bands (scale rings, a cream belly, dark
+# dorsal spines). The keep: blue-grey slate ashlar with pale dressed stone, a team banner with a dragon-eye roundel
+# between the coils, a round corner turret and the round gate tower under team cone roofs, a lit balcony door. The
+# dragon never lies over a mount: the coils pass between the turret boxes.
+# The dragon is a prop over the body (one static frame, cut where the keep stands in front of the coils), so the
+# sheet stores it once for all four crumble stages; the head breathes (the `breath` loop: it rises and settles over
+# 2.4 s); smoke rings drift up from its nostrils (code ambient `rings`), glints on the hoard.
+#
+# Crumble: 75% cracks, the turret's gold finial and two gate-tower merlons lost, rubble; 50% a burning breach in the
+# keep's foot, the gate hoarding broken and burning, the banner torn, a dark window, soot; 25% the breach torn wide, the
+# turret roof and the gate tower's cone knocked askew, the turret roof burning, the banner hanging by a corner. The
+# dragon sleeps through it all.
+
+WY_SLATE = "#7E8792"          # blue-grey slate (large areas: light enough for the dark green dragon to stand out)
+WY_SLATE_LT = "#8F98A2"
+WY_SLATE_MID = "#868F99"
+WY_SLATE_DK = "#69727D"
+WY_SLATE_DKR = "#59616B"
+WY_TRIM = "#B9BEC4"           # pale dressed stone (copings, quoins, the balcony)
+WY_TRIM_DK = "#9DA3AA"
+WY_CRACK = "#3E444C"
+WY_CHIP = "#A9B0B8"
+WY_SOOT = "#4E5056"
+DR_GREEN = "#4F7A4A"          # dragon green
+DR_GREEN_LT = "#6A9660"
+DR_GREEN_DK = "#3E6239"
+DR_GREEN_DKR = "#304D2C"
+DR_BELLY = "#CBC78E"
+DR_BELLY_DK = "#ADA972"
+DR_MEMB = "#98AC6A"           # the wing membrane: pale olive (lighter than the scales, so the bones show)
+DR_MEMB_DK = "#7F955A"
+DR_HORN = "#E8DFC8"
+DR_HORN_DK = "#C2B694"
+DR_LID = "#26331F"
+WKX, WKY, WKW, WKD, WKH = -106.0, 22.0, 46.0, 46.0, 250.0   # the keep (narrower than the Keep's: the coils wrap it)
+WFY = WKY - WKD                                            # its front face (y -24)
+WSX, WSY = WKX - 32.0, WKY + 26.0                          # the round corner turret (back left)
+DR_Y = WFY - 13.5                                          # the coils' axis in front of the face
+DR_K = 1.25                                                # the head's scale
+DR_HS = (-134.0, -34.0, 281.0)                             # the head's skull centre (on the parapet, facing the lane, +x)
+DR_PIVOT = (DR_HS[0] - 6.0 * DR_K, DR_HS[1], DR_HS[2] - 9.0 * DR_K)   # the jaw's back: the head breathes about it
+DR_BREATH = [(0.0, 0.0), (0.3, 1.1), (0.6, 2.2), (0.8, 3.0)]   # (rise lu, snout-up turn deg) per step: the jaw stays on the paw
+DR_BALC = (-82.0, 48.0)                                    # the small balcony the tail drapes over (x, floor z)
+DR_HOARD = (-106.0, -66.0)                                 # the gold on the ground the tail curls round
+DR_PATH = [
+    # the neck, from inside the skull down the keep's front-left corner into the upper coil
+    ((-147.0, -34.0, 277.0), 8.5), ((-155.0, -38.0, 263.0), 9.5), ((-158.0, -41.0, 247.0), 10.5), ((-155.0, DR_Y - 1.0, 233.0), 11.5),
+    # the upper coil across the front, round the front-right corner
+    ((-142.0, DR_Y, 227.0), 13.0), ((-122.0, DR_Y, 225.0), 13.0), ((-102.0, DR_Y, 223.0), 13.0), ((-84.0, DR_Y, 221.0), 12.5),
+    ((-67.0, DR_Y, 218.0), 12.0), ((-53.0, -21.0, 213.0), 11.5), ((-49.0, 10.0, 205.0), 11.5),
+    # behind the keep (hidden), coming down
+    ((-52.0, 46.0, 188.0), 12.0), ((-74.0, 78.0, 162.0), 12.5), ((-110.0, 86.0, 134.0), 12.5), ((-146.0, 78.0, 112.0), 12.5),
+    # round the front-left corner low and the lower coil across the front
+    ((-162.0, 30.0, 100.0), 12.0), ((-166.0, 4.0, 96.0), 12.0), ((-164.0, -18.0, 95.0), 12.0), ((-152.0, DR_Y, 96.0), 12.5),
+    ((-136.0, DR_Y, 98.0), 12.5), ((-120.0, DR_Y, 98.0), 12.0), ((-104.0, DR_Y, 96.0), 11.0), ((-91.0, DR_Y - 2.0, 90.0), 10.0),
+    # the tail: down the keep's foot, over the little balcony's rail, curling round the hoard to the spade
+    ((-84.0, -42.0, 80.0), 8.6), ((-81.0, -40.0, 67.0), 7.6), ((-79.0, -47.0, 56.0), 6.8), ((-80.0, -51.0, 42.0), 6.0),
+    ((-85.0, -52.0, 28.0), 5.2), ((-93.0, -52.0, 15.0), 4.6), ((-106.0, -52.0, 8.0), 4.0), ((-121.0, -55.0, 6.0), 3.4),
+    ((-130.0, -65.0, 6.0), 2.9), ((-127.0, -76.0, 7.0), 2.4),     # behind the gold, round its left side, the spade in front
+]
+
+
+def dr_spline(ctrl, sub=4):
+    """Catmull-Rom through the control points (radius linear between them)."""
+    out = []
+    n = len(ctrl)
+    for i in range(n - 1):
+        p0, p1, p2, p3 = ctrl[max(0, i - 1)][0], ctrl[i][0], ctrl[i + 1][0], ctrl[min(n - 1, i + 2)][0]
+        r1, r2 = ctrl[i][1], ctrl[i + 1][1]
+        for k in range(sub):
+            t = k / sub
+            t2, t3 = t * t, t * t * t
+            out.append((tuple(0.5 * (2 * p1[j] + (p2[j] - p0[j]) * t + (2 * p0[j] - 5 * p1[j] + 4 * p2[j] - p3[j]) * t2
+                                     + (3 * p1[j] - p0[j] - 3 * p2[j] + p3[j]) * t3) for j in range(3)), r1 + (r2 - r1) * t))
+    out.append(ctrl[-1])
+    return out
+
+
+def _unit(v):
+    L = math.sqrt(sum(c * c for c in v)) or 1.0
+    return tuple(c / L for c in v)
+
+
+def _perp(v, t):
+    """v with its component along the unit tangent t removed, normalised."""
+    d = sum(a * b for a, b in zip(v, t))
+    return _unit(tuple(a - d * b for a, b in zip(v, t)))
+
+
+def dr_body(rig, joint, path):
+    """The dragon's body along the spline: the green tube, a cream belly band, darker scale rings and dorsal spines
+    (bands and spines only where the camera can see them: in front of the keep)."""
+    tube, belly, rings, bplates, spines, tips = Geo(), Geo(), Geo(), Geo(), Geo(), Geo()
+    for (a, ra), (b, rb) in zip(path, path[1:]):
+        tube.capsule(a, b, ra, rb, segs=14, rings=2)
+    for i in range(1, len(path) - 1):
+        p, r = path[i]
+        t = _unit(tuple(path[i + 1][0][j] - path[i - 1][0][j] for j in range(3)))
+        seen = p[1] < WFY + 8.0 or p[0] > WKX + WKW + 6.0 or p[0] < WKX - WKW - 6.0
+        if not seen:
+            continue
+        d = _perp((0.0, -1.0, -0.9), t)
+        bc = tuple(p[j] + d[j] * r * 0.5 for j in range(3))
+        q, rq = path[i + 1]
+        tq = _unit(tuple(path[min(len(path) - 1, i + 2)][0][j] - path[i][0][j] for j in range(3)))
+        dq = _perp((0.0, -1.0, -0.9), tq)
+        bq = tuple(q[j] + dq[j] * rq * 0.5 for j in range(3))
+        belly.capsule(bc, bq, r * 0.62, rq * 0.62, segs=10, rings=1)
+        if i % 2 == 0:
+            rings.lathe([(r + 0.15, -0.55), (r + 0.55, 0.0), (r + 0.15, 0.55)], p, tuple(p[j] + t[j] for j in range(3)), segs=18)
+            bplates.lathe([(r * 0.62 + 0.15, -0.5), (r * 0.62 + 0.5, 0.0), (r * 0.62 + 0.15, 0.5)], bc, tuple(bc[j] + t[j] for j in range(3)), segs=14)
+        if i % 3 == 1 and r > 3.5:
+            n = _perp((-0.2, 0.45, 1.0), t)
+            base = tuple(p[j] + n[j] * (r - 1.2) for j in range(3))
+            h = 3.0 + r * 0.42
+            top = tuple(base[j] + n[j] * h - t[j] * h * 0.35 for j in range(3))
+            spines.lathe([(0.0, 0.0), (r * 0.24 + 0.6, 0.1), (0.0, 1.0)], base, top, segs=8)
+            tips.sphere(top, 0.6, cuts=1)
+    rig.part(joint, tube, DR_GREEN, outline=0.6)
+    rig.part(joint, belly, DR_BELLY, outline=0.4)
+    rig.part(joint, rings, DR_GREEN_DK, outline=0, highlight=False)
+    rig.part(joint, bplates, DR_BELLY_DK, outline=0, highlight=False)
+    rig.part(joint, spines, DR_GREEN_DKR, outline=0.45)
+    rig.part(joint, tips, DR_GREEN_DKR, outline=0)
+
+
+def dr_spade(rig, joint, tip, prev):
+    """The leaf-shaped spade at the tail's tip, pointing on along the tail."""
+    t = _unit(tuple(tip[j] - prev[j] for j in range(3)))
+    ang = math.degrees(math.atan2(t[2], t[0]))
+    L, W = 13.0, 7.0
+    pts = []
+    for k in range(13):
+        u = k / 12.0
+        w = W * math.sin(math.pi * u) ** 0.8 * (1.0 - 0.35 * u)
+        pts.append((u * L, w))
+    pts += [(u, -w) for u, w in reversed(pts[1:-1])]
+    ca, sa = math.cos(math.radians(ang)), math.sin(math.radians(ang))
+    poly = [(tip[0] + u * ca - w * sa, tip[2] + u * sa + w * ca) for u, w in pts]
+    g = Geo().slab(poly, tip[1] - 0.6, 2.4)
+    rig.part(joint, g, DR_GREEN_DK, outline=0.5)
+    g = Geo().capsule(tip, (tip[0] + L * 0.85 * ca, tip[1] - 1.9, tip[2] + L * 0.85 * sa), 0.8, segs=6, rings=1)
+    rig.part(joint, g, DR_GREEN_LT, outline=0, highlight=False)
+
+
+def dr_wing(rig, joint):
+    """The folded bat wing raised off the lower coil's left part: the arm straight up to the wrist (an ivory thumb
+    claw), four long fingers fanned out to the left and down, the pale olive membrane between them (darker toward the
+    arm) with deep scallops between the finger tips: a fan with radiating bones, so it never reads as a fir tree."""
+    sh, wr = (-128.0, -46.0, 108.0), (-136.0, -45.0, 166.0)
+    fingers = [(-166.0, -42.0, 154.0), (-169.0, -42.0, 131.0), (-161.0, -43.0, 113.0), (-145.0, -44.0, 106.0)]
+    y = -43.5
+
+    def scallop(a, b, k=0.26, n=6):
+        out = []
+        for i in range(1, n):
+            u = i / n
+            x = a[0] + (b[0] - a[0]) * u
+            z = a[2] + (b[2] - a[2]) * u
+            nx, nz = -(b[2] - a[2]), b[0] - a[0]
+            L = math.hypot(nx, nz) or 1.0
+            s = k * math.sin(math.pi * u) * math.hypot(b[0] - a[0], b[2] - a[2])
+            out.append((x + nx / L * s, z + nz / L * s))
+        return out
+
+    def towards(p, q, t):
+        return (p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t, p[2] + (q[2] - p[2]) * t)
+
+    edge = [(wr[0], wr[2])]
+    tips = fingers + [sh]
+    for i, f in enumerate(tips):
+        edge.append((f[0], f[2]))
+        if i + 1 < len(tips):
+            edge += scallop(f, tips[i + 1], 0.26 if i + 1 < len(fingers) else 0.14)
+    m = Geo().slab(edge, y, 1.6)
+    rig.part(joint, m, DR_MEMB, outline=0.55, outline_hex=DR_GREEN_DKR)
+    # the inner membrane, darker toward the arm (a soft fold line where it meets the pale outer panels)
+    inner = [(wr[0], wr[2])] + [(q[0], q[2]) for q in (towards(wr, f, 0.52) for f in fingers)] + [(sh[0] - 2.0, sh[2] + 6.0)]
+    m = Geo().slab(inner, y - 0.9, 0.6)
+    rig.part(joint, m, DR_MEMB_DK, outline=0, highlight=False)
+    g = Geo()
+    g.capsule(sh, wr, 3.2, 2.5, segs=10, rings=1)
+    for f in fingers:
+        g.capsule((wr[0], y - 1.4, wr[2]), (f[0], y - 1.4, f[2]), 1.7, 0.8, segs=8, rings=1)
+    g.sphere(wr, 3.0, cuts=2)
+    rig.part(joint, g, DR_GREEN_DK, outline=0.5)
+    g = Geo().lathe([(0.0, 0.0), (1.6, 0.2), (0.0, 1.0)], (wr[0], wr[1] - 1.0, wr[2] + 1.0), (wr[0] + 2.5, wr[1] - 1.0, wr[2] + 8.0), segs=8)
+    for f in fingers[:2]:
+        g.lathe([(0.0, 0.0), (0.9, 0.2), (0.0, 1.0)], (f[0], y - 1.6, f[2]), (f[0] - 2.4, y - 1.6, f[2] - 1.6), segs=6)
+    rig.part(joint, g, DR_HORN, outline=0.4)
+
+
+def dr_head(rig, joint):
+    """The sleeping head (facing the lane): a round skull, a broad snout with an upturned nose, a cream lower jaw resting
+    on the paws, a closed eye under a heavy brow, swept ivory horns, a frill of spines, two little fangs."""
+    hx, hy, hz = DR_HS
+    K = DR_K
+
+    def P(dx, dy, dz):
+        return (hx + dx * K, hy + dy * K, hz + dz * K)
+
+    def R(*r):
+        return tuple(v * K for v in r)
+
+    g = Geo()
+    g.blob(P(0.0, 0.0, 0.0), R(12.0, 10.0, 9.4), p=2.3, cuts=3)
+    g.blob(P(12.5, -0.5, -2.6), R(11.0, 8.4, 6.6), p=2.2, cuts=3, taper=(1.0, 0.9))
+    g.blob(P(22.0, -0.5, -1.8), R(5.6, 6.8, 5.4), p=2.2, cuts=3)
+    rig.part(joint, g, DR_GREEN, outline=0.6)
+    g = Geo().blob(P(9.0, -0.2, -8.6), R(13.6, 8.0, 3.8), p=2.2, cuts=3, taper=(1.0, 0.85))
+    rig.part(joint, g, DR_BELLY, outline=0.5)
+    g = Geo()
+    for k in range(4):
+        c0, c1 = P(3.0 + k * 5.0, -0.2, -9.4), P(4.0 + k * 5.0, -0.2, -9.4)
+        g.lathe([((3.6 + k * 0.2) * K, -0.4), ((4.0 + k * 0.2) * K, 0.0), ((3.6 + k * 0.2) * K, 0.4)], c0, c1, segs=14)
+    rig.part(joint, g, DR_BELLY_DK, outline=0, highlight=False)
+    # the mouth line, the nostrils
+    g = Geo()
+    pts = [P(2.0, -8.4, -5.6), P(10.0, -8.0, -6.4), P(18.0, -7.2, -6.0), P(24.0, -5.8, -5.0)]
+    for a_, b_ in zip(pts, pts[1:]):
+        g.capsule(a_, b_, 0.55 * K, segs=4, rings=1)
+    g.blob(P(26.4, -3.8, 0.6), R(1.5, 1.2, 1.1), p=2.0, cuts=2)
+    g.blob(P(26.4, 2.6, 0.6), R(1.5, 1.2, 1.1), p=2.0, cuts=2)
+    rig.part(joint, g, DR_LID, outline=0, highlight=False)
+    # the closed eye: a lid bulge with a curved lid line and lashes, a heavy brow above
+    g = Geo().blob(P(3.0, -8.6, 3.0), R(4.8, 2.4, 3.2), p=2.2, cuts=2)
+    rig.part(joint, g, DR_GREEN_LT, outline=0.4)
+    g = Geo()
+    lid = [P(-1.6 + 9.2 * u, -10.6, 2.6 - 1.5 * math.sin(math.pi * u)) for u in (0.0, 0.2, 0.4, 0.6, 0.8, 1.0)]
+    for a_, b_ in zip(lid, lid[1:]):
+        g.capsule(a_, b_, 0.6 * K, segs=4, rings=1)
+    for i in (3, 4, 5):
+        q = lid[i]
+        g.capsule(q, (q[0] + 0.8 * K, q[1] - 0.3 * K, q[2] - 1.6 * K), 0.35 * K, segs=4, rings=1)
+    rig.part(joint, g, DR_LID, outline=0, highlight=False)
+    g = Geo().blob(P(2.0, -6.8, 7.4), R(6.4, 3.4, 2.2), p=2.2, cuts=2, rot=(0, -8, 0))
+    rig.part(joint, g, DR_GREEN_DK, outline=0.4)
+    # swept horns (ivory, darker tips), the frill and the spines down the back of the head
+    hg, ht = Geo(), Geo()
+    for sgn in (-1.0, 1.0):
+        pts = [P(-4.0, sgn * 5.6, 7.0), P(-12.0, sgn * 6.6, 12.4), P(-20.0, sgn * 7.2, 14.6), P(-27.0, sgn * 7.6, 13.4)]
+        rad = [3.0 * K, 2.4 * K, 1.6 * K, 0.6 * K]
+        for i in range(3):
+            hg.capsule(pts[i], pts[i + 1], rad[i], rad[i + 1], segs=10, rings=1)
+        ht.capsule(pts[2], pts[3], rad[2] + 0.1, rad[3] + 0.1, segs=10, rings=1)
+    rig.part(joint, hg, DR_HORN, outline=0.5)
+    rig.part(joint, ht, DR_HORN_DK, outline=0.3)
+    g = Geo()
+    for dz, L in ((3.0, 9.0), (-1.0, 11.0), (-5.0, 8.0)):
+        base = P(-7.0, -7.6, dz)
+        g.lathe([(0.0, 0.0), (1.8 * K, 0.1), (0.0, 1.0)], base, (base[0] - L * K, base[1] + 1.0 * K, base[2] + (dz * 0.4 - 1.0) * K), segs=8)
+    for k in range(3):
+        base = P(-4.0 - k * 5.0, 0.0, 9.0 - k * 1.6)
+        g.lathe([(0.0, 0.0), (2.0 * K, 0.1), (0.0, 1.0)], base, (base[0] - 3.0 * K, base[1], base[2] + (5.0 - k) * K), segs=8)
+    rig.part(joint, g, DR_GREEN_DKR, outline=0.45)
+    # two little fangs over the lip
+    g = Geo()
+    for dx in (15.0, 21.0):
+        g.lathe([(0.0, 0.0), (1.1 * K, 0.1), (0.0, 1.0)], P(dx, -7.0, -7.0), P(dx + 0.3, -7.4, -4.2), segs=8)
+    rig.part(joint, g, DR_HORN, outline=0.3)
+
+
+def dr_paws(rig, joint):
+    """The forepaws over the parapet: one under the chin, one stretched out along the merlons (three ivory claws each)."""
+    legs = [((-150.0, -40.0, 262.0), (-142.0, -46.0, 262.0), (-124.0, -38.0, 268.5)), ((-152.0, -32.0, 260.0), (-134.0, -30.0, 262.0), (-108.0, -33.0, 267.5))]
+    g, c = Geo(), Geo()
+    for sh, el, paw in legs:
+        g.capsule(sh, el, 5.4, 4.4, segs=12, rings=1)
+        g.capsule(el, paw, 4.4, 3.6, segs=12, rings=1)
+        g.blob((paw[0] + 1.5, paw[1], paw[2]), (6.6, 5.0, 3.4), p=2.2, cuts=2)
+        for k in (-1, 0, 1):
+            base = (paw[0] + 6.6, paw[1] + k * 2.6 - 0.6, paw[2] - 0.6)
+            c.lathe([(0.0, 0.0), (1.1, 0.1), (0.0, 1.0)], base, (base[0] + 3.6, base[1] - 0.4, base[2] - 1.6), segs=8)
+    rig.part(joint, g, DR_GREEN, outline=0.55)
+    rig.part(joint, c, DR_HORN, outline=0.35)
+
+
+def dr_breath_pose(f):
+    dz, r = DR_BREATH[f]
+    return {"head": {"z": dz, "r": r}}
+
+
+def build_wyrm(rig, M):
+    for j, pos in (("troof", (WSX, WSY, WKH + 33)), ("tfinial", (WSX, WSY, WKH + 82)), ("merlon", (WKX - 10, WFY, WKH)),
+                   ("tmerlon", (TX, TY, TH + 4)), ("cone", (TX - 2, TY + 6, TH + 6)), ("banner", (WKX - 6, WFY - 3.0, 210)),
+                   ("rail", (M[0][0], M[0][1], M[0][2]))):
+        rig.joint(j, "body", pos)
+    for j in ("crack1", "crack2", "crack3", "rubble1", "rubble2", "rubble3", "dark", "fire1", "fire2", "scorch", "breach", "breach2", "tear"):
+        rig.joint(j, "body", (0, 0, 0), hidden=True)
+    rig.joint("win", "body", (0, 0, 0))
+
+    # -- the keep: slate core and ashlar, plinth, string course, cornice, quoins, the crenellated top -----------------
+    g = Geo()
+    box(g, (WKX, WKY, WKH / 2), (WKW, WKD, WKH / 2), p=10)
+    rig.part("body", g, WY_SLATE_DK)
+    ashlar(rig, "body", WKX - WKW + 2, WKX + WKW - 2, 18, WKH - 12, WFY - 0.6, [WY_SLATE, WY_SLATE_LT, WY_SLATE_MID], h=12.0, w=(16.0, 24.0), seed=5)
+    g = Geo()
+    for z in range(24, int(WKH) - 8, 12):
+        box(g, (WKX + WKW + 0.6, WKY + 2, z), (0.8, WKD - 4, 0.7), p=4, cuts=2)
+    rig.part("body", g, WY_SLATE_DKR, outline=0)
+    g = Geo()
+    box(g, (WKX, WKY - 2, 9), (WKW + 5, WKD + 4, 9), p=6, taper=(1.0, 0.96))
+    rig.part("body", g, WY_SLATE_DKR)
+    g = Geo()
+    box(g, (WKX, WKY - 1, 150), (WKW + 2.5, WKD + 2.5, 3.0), p=6)
+    box(g, (WKX, WKY - 1, WKH - 2), (WKW + 3.5, WKD + 3.5, 3.4), p=6)
+    rig.part("body", g, WY_TRIM_DK, outline=0.6)
+    g = Geo()
+    for i, z in enumerate(range(24, int(WKH) - 10, 14)):
+        long = i % 2 == 0
+        for sx in (-1, 1):
+            box(g, (WKX + sx * (WKW - (7.0 if long else 4.5)), WFY - 1.2, z + 6), (7.0 if long else 4.5, 2.0, 5.6), p=5, cuts=2)
+    rig.part("body", g, WY_TRIM, outline=0.5)
+    g = Geo()
+    box(g, (WKX, WKY - 1, WKH + 1), (WKW + 4.5, WKD + 4.5, 4.0), p=6)
+    rig.part("body", g, WY_SLATE)
+    g = Geo()
+    crenels(g, WKX - WKW - 4.0, WKX + WKW - 18.0, WFY - 3.0, WKH + 4, 9, 9.6, 12, 7)
+    crenels(g, WKX - WKW - 4.0, WKX + WKW + 4.0, WKY + WKD + 2.0, WKH + 4, 9, 9.6, 12, 7)
+    rig.part("body", g, WY_SLATE_LT)
+    g = Geo()
+    box(g, (WKX - 10, WFY - 3.0, WKH + 10), (4.8, 3.5, 6.0), p=5)
+    rig.part("merlon", g, WY_SLATE_LT)
+
+    # -- the round corner turret (back left) under a team cone with a gold finial -----------------------------------
+    g = Geo()
+    cyl(g, (WSX, WSY, WKH - 10), (WSX, WSY, WKH + 32), 15.0, bevel=0.8, segs=22)
+    rig.part("body", g, WY_SLATE)
+    g = Geo()
+    cyl(g, (WSX, WSY, WKH + 28), (WSX, WSY, WKH + 34), 17.4, bevel=0.8, segs=22)
+    rig.part("body", g, WY_TRIM_DK, outline=0.6)
+    lancet(rig, "body", WSX + 4.0, WSY - 15.6, WKH + 16.0, 5.0, 11.0, frame=WY_SLATE_DKR, mullion=False)
+    g = Geo().lathe([(0, 0), (21.0, 0), (19.5, 3.0), (0.6, 46.0), (0, 48.0)], (WSX, WSY, WKH + 33.0), (WSX, WSY, WKH + 81.0), segs=22)
+    rig.part("troof", g, team=True)
+    g = Geo().lathe([(19.6, -1.2), (20.4, 0.0), (19.6, 1.2)], (WSX, WSY, WKH + 34.5), (WSX, WSY, WKH + 35.5), segs=22)
+    rig.part("troof", g, WY_SLATE_DKR, outline=0)
+    g = Geo()
+    cyl(g, (WSX, WSY, WKH + 80.0), (WSX, WSY, WKH + 83.0), 1.8, bevel=0.3)
+    g.sphere((WSX, WSY, WKH + 85.0), 2.6, cuts=3)
+    rig.part("tfinial", g, GOLD, finish="metal", outline=0.5)
+
+    # -- the small corbelled balcony low on the keep's front (the tail drapes over its rail) and its lit door ----------
+    bx, bz = DR_BALC
+    lancet(rig, "body", bx, WFY - 1.2, bz + 13.0, 9.0, 21.0, frame=WY_TRIM_DK, mullion=False)
+    g = Geo()
+    box(g, (bx, WFY - 8.0, bz - 1.4), (15.0, 8.0, 2.4), p=6)
+    rig.part("body", g, WY_TRIM)
+    g = Geo()
+    for k in range(3):
+        box(g, (bx - 10.0 + k * 10.0, WFY - 5.0, bz - 9.0), (3.0, 5.0, 5.0), p=4, cuts=2, taper=(0.5, 1.0))
+    rig.part("body", g, WY_TRIM_DK, outline=0.5)
+    g = Geo()
+    for k in range(6):
+        x = bx - 13.0 + k * 5.2
+        g.capsule((x, WFY - 14.6, bz + 1.0), (x, WFY - 14.6, bz + 9.0), 1.0, 0.8, segs=6, rings=1)
+    for sx in (-1.0, 1.0):
+        g.capsule((bx + sx * 14.6, WFY - 3.0, bz + 1.0), (bx + sx * 14.6, WFY - 3.0, bz + 9.0), 1.0, 0.8, segs=6, rings=1)
+        g.capsule((bx + sx * 15.0, WFY - 15.0, bz + 10.4), (bx + sx * 15.0, WFY - 1.0, bz + 10.4), 1.5, segs=8, rings=1)
+    g.capsule((bx - 15.0, WFY - 15.0, bz + 10.4), (bx + 15.0, WFY - 15.0, bz + 10.4), 1.5, segs=8, rings=1)
+    rig.part("body", g, WY_TRIM, outline=0.45)
+
+    # -- the team banner between the coils, a dragon-eye roundel on it ----------------------------------------------
+    cx = WKX - 6.0
+    ban = Geo().slab([(cx - 12, 210), (cx + 12, 210), (cx + 12, 136), (cx, 126), (cx - 12, 136)], WFY - 3.0, 1.6)
+    rig.part("banner", ban, team=True)
+    g = Geo().capsule((cx - 14, WFY - 3.8, 211), (cx + 14, WFY - 3.8, 211), 1.4)
+    g.sphere((cx - 15, WFY - 3.8, 211), 2.0, cuts=2).sphere((cx + 15, WFY - 3.8, 211), 2.0, cuts=2)
+    rig.part("body", g, GOLD, finish="metal", outline=0.5)
+    g = Geo().slab([(cx + 8.0 * math.cos(math.radians(a)), 176.0 + 8.0 * math.sin(math.radians(a))) for a in range(0, 360, 20)], WFY - 4.0, 0.8)
+    rig.part("banner", g, PARCH, outline=0.35)
+    g = Geo().slab([(cx + 2.4 * math.cos(math.radians(a)), 176.0 + 6.2 * math.sin(math.radians(a))) for a in range(0, 360, 24)], WFY - 4.6, 0.6)
+    rig.part("banner", g, DR_GREEN_DK, outline=0, highlight=False)
+    g = Geo().slab([(cx + 12, 192), (cx + 5, 182), (cx + 12, 172)], WFY - 5.0, 1.0)   # a rip (50%)
+    rig.part("tear", g, WY_SLATE_DK, outline=0, highlight=False)
+
+    # windows: a lit lancet right of the banner (dark at 50%), a slit under the lower coil
+    lancet(rig, "dark", WKX + 14.0, WFY - 2.2, 172.0, 8.4, 19.4, glow_hex="#2A2D33", frame=WY_TRIM_DK, mullion=False)
+    lancet(rig, "win", WKX + 14.0, WFY - 1.2, 172.0, 8.0, 19.0, frame=WY_TRIM_DK, sill=WY_TRIM_DK)
+    lancet(rig, "body", WKX - 26.0, WFY - 1.2, 50.0, 4.4, 14.0, frame=WY_TRIM_DK, mullion=False)
+
+    # -- the round gate tower: slate courses, plinth, cornice, merlons, the team cone, the gate ----------------------
+    g = Geo()
+    cyl(g, (TX, TY, 0), (TX, TY, TH), TR, TR - 2, bevel=1.0, segs=32)
+    rig.part("body", g, WY_SLATE_DK)
+    ring_blocks(rig, "body", TX, TY, TR, 10.0, TH - 8, [WY_SLATE_LT, WY_SLATE, WY_SLATE_MID])
+    g = Geo()
+    cyl(g, (TX, TY, 0), (TX, TY, 12), TR + 3, TR + 1.5, bevel=1.0, segs=32)
+    rig.part("body", g, WY_SLATE_DKR)
+    g = Geo()
+    cyl(g, (TX, TY, TH - 8), (TX, TY, TH + 4), TR + 3, bevel=1.0, segs=32)
+    cyl(g, (TX, TY, 92), (TX, TY, 95), TR + 1.6, bevel=0.6, segs=32)
+    rig.part("body", g, WY_TRIM_DK, outline=0.6)
+    g, gm = Geo(), Geo()
+    for i in range(10):
+        a = math.pi * 2 * i / 10
+        box(gm if i in (6, 7) else g, (TX + (TR + 1.5) * math.cos(a), TY + (TR + 1.5) * math.sin(a), TH + 9), (4, 4, 5), p=5)
+    rig.part("body", g, WY_SLATE_LT)
+    rig.part("tmerlon", gm, WY_SLATE_LT)
+    g = Geo().lathe([(0, 0), (TR - 2, 0), (TR - 4, 3), (0.6, 52), (0, 54)], (TX - 2, TY + 6, TH + 6), (TX - 2, TY + 6, TH + 60), segs=24)
+    rig.part("cone", g, team=True)
+    g = Geo().lathe([(TR - 1.6, -1.2), (TR - 1.0, 0), (TR - 1.6, 1.2)], (TX - 2, TY + 6, TH + 7.5), (TX - 2, TY + 6, TH + 8.5), segs=24)
+    rig.part("cone", g, WY_SLATE_DKR, outline=0)
+    lancet(rig, "body", TX + 3, TY - TR - 0.2, 132, 6.5, 15.0, frame=WY_TRIM_DK, mullion=False)
+    lancet(rig, "body", TX + 6, TY - TR + 0.6, 66, 6.0, 13.0, frame=WY_TRIM_DK, mullion=False)
+    g = Geo().slab([(GX - 11, 0), (GX + 11, 0), (GX + 11, 22)] + [(GX + 11 * math.cos(a), 22 + 11 * math.sin(a)) for a in
+                                                               [math.pi * k / 8 for k in range(1, 8)]] + [(GX - 11, 22)], TY - TR - 0.6, 3.0)
+    rig.part("body", g, WOOD)
+    g = Geo()
+    for z in (7, 18, 27):
+        box(g, (GX, TY - TR - 2.6, z), (10.5, 0.8, 1.4), p=4, cuts=2)
+    rig.part("body", g, IRON, finish="metal", outline=0.4)
+    g = Geo()
+    for a in [math.pi * k / 10 for k in range(0, 11)]:
+        box(g, (GX + 14 * math.cos(a), TY - TR - 1.6, 22 + 14 * math.sin(a)), (2.6, 1.6, 2.6), p=4, cuts=2)
+    rig.part("body", g, WY_TRIM, outline=0.5)
+    lantern(rig, "body", TX + 10.0, TY - TR - 3.5, 36.0, arm=-6.0)
+
+    # -- the turret platforms --------------------------------------------------------------------------------
+    platform(rig, "body", M[0], WOOD, WOOD_DK, style="wood", r=(25, 16))
+    g = Geo()
+    x, y, z = M[0]
+    g.capsule((x - 26, y - 13, z - 4), (x - 26, y + 10, z - 4), 1.2)
+    rig.part("rail", g, WOOD_DK, outline=0.5)
+    platform(rig, "body", M[1], WY_TRIM, WY_SLATE_DKR, style="stone", r=(25, 19))
+    platform(rig, "body", M[2], WOOD, WOOD_DK, style="wood", r=(26, 18))
+    platform(rig, "body", M[3], WY_TRIM, WY_SLATE_DKR, style="stone", r=(25, 19))
+
+    # -- the dragon's hoard on the ground, the tail curled round it (gold, a goblet, a wine gem) ------------------------
+    hx_, hy_ = DR_HOARD
+    g = Geo()
+    g.blob((hx_, hy_ + 2.0, 2.0), (15.0, 9.0, 12.0), p=2.2, cuts=3, taper=(1.0, 0.55))     # a heap, taller than the tail behind it
+    g.blob((hx_ + 12.0, hy_ + 1.0, 1.8), (7.0, 5.0, 4.4), p=2.4, cuts=2)
+    rig.part("body", g, GOLD, finish="metal", outline=0.5)
+    # an open chest spilling coins at the heap's right
+    g = Geo()
+    box(g, (hx_ + 17.0, hy_ - 1.0, 5.0), (6.0, 4.4, 5.0), p=5)
+    rig.part("body", g, WOOD)
+    g = Geo()
+    box(g, (hx_ + 17.0, hy_ + 3.6, 12.6), (6.2, 1.2, 4.4), p=5, rot=(-24, 0, 0))
+    rig.part("body", g, WOOD_DK)
+    g = Geo().blob((hx_ + 17.0, hy_ - 1.0, 10.0), (5.4, 3.8, 2.4), p=2.2, cuts=2)
+    rig.part("body", g, "#E6BE5A", finish="metal", outline=0.35)
+    g = Geo()
+    for dx, dy, dz in ((-10, -6, 5.0), (-4, -8.4, 7.2), (3, -8.0, 6.8), (9, -6.4, 4.6), (-14, -3, 2.6), (12, -5.4, 2.2),
+                       (24, -5.6, 1.0), (0, -6.0, 10.6), (-6, -4.0, 12.2)):
+        cyl(g, (hx_ + dx, hy_ + 2.0 + dy, dz), (hx_ + dx, hy_ + 1.4 + dy, dz + 0.5), 2.2, bevel=0.2, segs=12)
+    for dx, n in ((-19.0, 3), (27.0, 2)):        # two little stacks of coins
+        for k in range(n):
+            cyl(g, (hx_ + dx, hy_ - 2.0, k * 1.3), (hx_ + dx, hy_ - 2.0, k * 1.3 + 1.1), 2.6, bevel=0.2, segs=14)
+    rig.part("body", g, "#E6BE5A", finish="metal", outline=0.35)
+    g = Geo().lathe([(0.0, 0.0), (3.0, 0.0), (1.0, 1.4), (0.9, 6.0), (3.4, 8.0), (3.8, 11.0), (0.0, 10.0)], (hx_ - 11.0, hy_ + 5.0, 3.0),
+                    (hx_ - 11.0, hy_ + 5.0, 14.0), segs=16)
+    rig.part("body", g, GOLD, finish="metal", outline=0.45)
+    g = Geo().blob((hx_ + 4.0, hy_ - 5.4, 9.6), (2.6, 2.2, 2.6), p=2.0, cuts=2)
+    rig.part("body", g, "#8E2A4A", finish="gloss", outline=0.35)
+
+    # -- the dragon (the `dragon` prop: a static frame over the body, cut where the keep stands in front) -------------
+    rig.joint("dragon", "root", (WKX, DR_Y, 160.0))
+    path = dr_spline(DR_PATH, sub=4)
+    dr_body(rig, "dragon", path)
+    dr_spade(rig, "dragon", DR_PATH[-1][0], DR_PATH[-2][0])
+    dr_wing(rig, "dragon")
+    # the head and the forepaws (the `breath` prop: the head rises and settles)
+    rig.joint("head", "root", DR_PIVOT)
+    dr_head(rig, "head")
+    rig.joint("paws", "root", (-130.0, -36.0, 266.0))
+    dr_paws(rig, "paws")
+
+    # -- damage ---------------------------------------------------------------------------------------------
+    flames(rig, "fire1", [(M[0][0] - 10, M[0][1] - 14, M[0][2] - 4, 1.0), (M[0][0] + 12, M[0][1] - 12, M[0][2] - 6, 0.75)])
+    flames(rig, "fire2", [(WSX - 2, WSY - 14, WKH + 44, 1.2), (WKX - 30, WFY - 8, 40, 0.9)])
+    bx0, bz0 = WKX - 30.0, 50.0
+    pts = [(bx0 - 13, bz0 - 10), (bx0 - 4, bz0 - 15), (bx0 + 8, bz0 - 12), (bx0 + 14, bz0 - 2), (bx0 + 10, bz0 + 9), (bx0 + 1, bz0 + 14),
+           (bx0 - 9, bz0 + 11), (bx0 - 15, bz0 + 1)]
+    g = Geo().slab(pts, WFY - 2.4, 1.2)
+    rig.part("breach", g, "#24272C", outline=0, highlight=False)
+    g = Geo()
+    for x, z, r in ((bx0 - 14, bz0 - 10, 3.6), (bx0 + 13, bz0 - 10, 3.0), (bx0 + 14, bz0 + 7, 2.8), (bx0 - 13, bz0 + 10, 3.0)):
+        g.blob((x, WFY - 3.0, z), (r, 2.6, r * 0.8), p=2.6)
+    rig.part("breach", g, WY_SLATE_LT, outline=0.5)
+    flames(rig, "breach", [(bx0, WFY - 6.0, bz0 - 10.0, 0.85)])
+    pts = [(bx0 - 19, bz0 - 15), (bx0 - 6, bz0 - 22), (bx0 + 10, bz0 - 18), (bx0 + 20, bz0 - 4), (bx0 + 15, bz0 + 13), (bx0 + 2, bz0 + 21),
+           (bx0 - 12, bz0 + 17), (bx0 - 21, bz0 + 2)]
+    g = Geo().slab(pts, WFY - 2.0, 1.0)
+    rig.part("breach2", g, "#24272C", outline=0, highlight=False)
+    g = Geo()
+    g.capsule((bx0 - 14, WFY - 3.4, bz0 - 6), (bx0 + 12, WFY - 3.4, bz0 + 8), 1.6)
+    g.capsule((bx0 - 8, WFY - 3.4, bz0 + 12), (bx0 + 14, WFY - 3.4, bz0 - 4), 1.4)
+    rig.part("breach2", g, WOOD_DK, outline=0.4)
+    g = Geo()
+    for x, z, rx, rz in ((bx0, bz0 + 24, 7.0, 12.0), (bx0 + 10, bz0 + 18, 5.0, 8.0)):
+        g.blob((x, WFY - 2.6, z), (rx, 1.8, rz), p=2.2, taper=(1.0, 0.35))
+    for a, z, rx, rz in ((262, M[0][2] + 20, 7.5, 13.0), (300, M[0][2] + 14, 5.5, 9.0)):
+        x, y = TX + (TR + 0.8) * math.cos(math.radians(a)), TY + (TR + 0.8) * math.sin(math.radians(a))
+        g.blob((x, y, z), (rx, 2.4, rz), p=2.2, taper=(1.0, 0.35), rot=(0, 0, a + 90))
+    rig.part("scorch", g, WY_SOOT, outline=0, highlight=False)
+    chipped_cracks(rig, "crack1", [[(WKX - 34, WFY - 2, 200), (WKX - 28, WFY - 2, 190), (WKX - 34, WFY - 2, 180)],
+                                   [(WKX - 4, WFY - 2, 70), (WKX + 2, WFY - 2, 60), (WKX - 4, WFY - 2, 48)]], WY_CRACK, WY_CHIP)
+    chipped_cracks(rig, "crack2", [[(WKX + 26, WFY - 2, 196), (WKX + 32, WFY - 2, 186), (WKX + 26, WFY - 2, 176)],
+                                   [(TX - 8, TY - TR - 1, 54), (TX - 3, TY - TR - 1, 44)]], WY_CRACK, WY_CHIP)
+    chipped_cracks(rig, "crack3", [[(WKX - 20, WFY - 2, 128), (WKX - 14, WFY - 2, 118), (WKX - 20, WFY - 2, 108)],
+                                   [(WKX + 30, WFY - 2, 140), (WKX + 36, WFY - 2, 130)]], WY_CRACK, WY_CHIP)
+    rubble(rig, "rubble1", [(-164, -42), (-140, -52)], WY_SLATE_DK, seed=3)
+    rubble(rig, "rubble2", [(18, -46), (-52, -58)], WY_SLATE_DK, seed=13)
+    rubble(rig, "rubble3", [(-166, -60), (-142, -66), (-44, -62), (22, -56)], WY_SLATE_DK, seed=23, size=1.2)
+
+    flag(rig, "root", "flagA", (TX - 2, TY + 6, TH + 84), length=30, height=16, pole=TH + 58)
+    flag(rig, "root", "flagB", (WSX, WSY, WKH + 112), length=26, height=14, pole=WKH + 86)
+
+    # -- Treasury: grain sacks (1), a treasure chest (2), a cart of gold (3), on the left (the dragon has the middle) ----
+    g = Geo()
+    for x, y in ((-168, -48), (-160, -54), (-164, -40)):
+        g.blob((x, y, 9), (7, 6, 9), p=2.4, taper=(1.0, 0.7))
+        g.blob((x, y, 18.5), (2.8, 2.6, 1.6), p=2.0)
+    rig.part("treasury1", g, SACK)
+    g = Geo()
+    box(g, (-146, -62, 7), (10, 7, 7), p=5)
+    rig.part("treasury2", g, WOOD)
+    g = Geo()
+    g.blob((-146, -62, 14), (10, 7, 4.5), p=3.0)
+    g.clip((0, 0, 14), (0, 0, -1))
+    rig.part("treasury2", g, WINE)
+    g = Geo()
+    box(g, (-146, -69.5, 8), (2.4, 0.8, 3), p=4, cuts=2)
+    for dx in (-8, 8):
+        box(g, (dx - 146, -69.3, 9), (1.2, 0.6, 7), p=4, cuts=2)
+    rig.part("treasury2", g, GOLD, finish="metal", outline=0.4)
+    g = Geo()
+    for dx, dz in ((-4, 18), (3, 19), (0, 21), (6, 17), (-7, 17)):
+        g.blob((-146 + dx, -62, dz), (3.0, 3.0, 1.4), p=2.0)
+    rig.part("treasury2", g, GOLD, finish="metal", outline=0.5)
+    g = Geo()
+    box(g, (-158, -78, 13), (15, 8, 5), p=6)
+    rig.part("treasury3", g, WOOD)
+    for dx in (-9, 9):
+        g = Geo().lathe([(0, -1.2), (7, -1.2), (7, 1.2), (0, 1.2)], (-158 + dx, -87, 7), (-158 + dx, -88, 7), segs=16)
+        rig.part("treasury3", g, WOOD_DK)
+    g = Geo()
+    for dx, dz in ((-8, 20), (-2, 22), (4, 21), (9, 19), (0, 25), (-5, 18), (7, 17)):
+        g.blob((-158 + dx, -78, dz), (3.8, 3.8, 1.6), p=2.0)
+    rig.part("treasury3", g, GOLD, finish="metal", outline=0.5)
+
+
+def crumble_wyrm(stage):
+    pose = {}
+    if stage >= 1:
+        pose.update({"crack1": {"show": True}, "tfinial": {"hide": True}, "rubble1": {"show": True}, "tmerlon": {"hide": True},
+                     "merlon": {"hide": True}})
+    if stage >= 2:
+        pose.update({"crack2": {"show": True}, "rubble2": {"show": True}, "rail": {"r": -18.0, "z": -3.0}, "dark": {"show": True},
+                     "win": {"hide": True}, "fire1": {"show": True}, "scorch": {"show": True}, "tear": {"show": True},
+                     "banner": {"r": 5.0}, "breach": {"show": True}})
+    if stage >= 3:
+        pose.update({"crack3": {"show": True}, "rubble3": {"show": True}, "fire2": {"show": True}, "breach": {"hide": True},
+                     "breach2": {"show": True}, "troof": {"r": 15.0, "x": -6.0, "z": -10.0}, "tfinial": {"hide": True},
+                     "cone": {"r": -14.0, "x": 4.0, "z": -6.0}, "banner": {"r": 28.0, "x": 1.0, "z": -2.0}})
+    return pose
+
+
+WYRM_COIL_KEEP = base_module(
+    "medieval", "Wyrm-Coil Keep", height=330, width=180, canvas=(460, 820), feet=(350, 770),
+    build=build_wyrm, crumble=crumble_wyrm, mount_depth=DEPTHS, skin="wyrm_coil_keep",
+    flags=[{"name": "flagA", "crumbleMax": 2}, {"name": "flagB", "crumbleMax": 3, "phase": 1.7, "z": "back"}],
+    lights=[((TX + 10.0, TY - TR - 6.0, 38.0), 3, 18), ((DR_BALC[0], WFY - 3.0, DR_BALC[1] + 13.0), 2, 16), ((WKX + 14.0, WFY - 2.0, 172.0), 1, 16),
+            ((DR_HOARD[0], DR_HOARD[1] - 4.0, 6.0), 3, 14)],
+    smoke=[((WKX, 0, WKH + 6), 2), ((TX, TY, TH + 10), 3), ((WKX - 30, WFY, 60), 2)],
+    horn=(-100, 360), yaw=BASE_YAW,
+    props=[prop_loop("dragon", ["dragon"], 1, lambda f: {}, ms=1000, crumble=(0, 3), z="front", hold=0,
+                     anchor=(WKX, DR_Y, 160.0), occlude=["body"], sequence=[0, 0, 0, 0]),
+           prop_loop("breath", ["head", "paws"], len(DR_BREATH), dr_breath_pose, ms=300, crumble=(0, 3), z="front", hold=0,
+                     anchor=DR_HS, sequence=[0, 1, 2, 3, 3, 2, 1, 0])],
+    extra_meta={
+        "collapseMaterial": "stone",
+        # the keep with its turret falls toward the lane first, the gate tower a beat later (the dragon fades away)
+        "topple": [topple_lu(-176, -60, 150, delay_ms=0, push=1.0, sink_lu=40),
+                   topple_lu(-60, 12, 120, delay_ms=140, push=0.85, sink_lu=26)],
+        "rubbleColors": [WY_SLATE, WY_SLATE_DK, WY_TRIM, DR_GREEN],
+        "dustColor": "#C4C8CE",
+        "ambientLu": [ambient_lu("rings", (DR_HS[0] + 27.0 * DR_K, DR_HS[1] - 2.0, DR_HS[2] + 4.0), 2, 0.5, color="#E4E2DC"),
+                      ambient_lu("glints", (DR_HOARD[0], DR_HOARD[1], 6.0), 10, 0.8, color="#FFF2C0"),
+                      ambient_lu("smoke", (WSX, WSY, WKH + 90), 6, 0.3)],
+    },
+)
+
+SKINS = [ROSE_KEEP, SNOWY_KEEP, WYRM_COIL_KEEP]

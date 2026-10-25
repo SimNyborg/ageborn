@@ -776,4 +776,417 @@ CRYSTAL_SPIRE = base_module(
     },
 )
 
-SKINS = [MIDNIGHT_NEON, CRYSTAL_SPIRE]
+
+
+# ---------------------------------------------------------------------------------------------------
+# Bio-Dome Arcology (round 3; Rare, Time Capsule): a tower of stacked glass bio-domes with trees inside. A white
+# plinth with vertical gardens and the gate; four domes of falling size on terrace rings round a white core, each a
+# geodesic frame of white struts over grey-teal back panes (low saturation, never blue), a glazed cap, trees and
+# shrubs growing inside; a mast over the top dome with two small wind turbines (the `turbines` prop loop: three
+# blades, six steps of 20 degrees, an exact loop) and a beacon. The mounts are the age's hovering discs on struts.
+# Team colour: the terrace edge bands, two light panels on the plinth, the gate door and the flags. Code ambient:
+# leaf motes, glints on the glass.
+#
+# Crumble: 75% cracked panes, the beacon out, rubble; 50% a plasma breach in the plinth, a dome's frame broken
+# with a pane shattered, soot; 25% the third dome smashed and askew, the mast bent (the turbines gone), a fire
+# among the trees, a ragged breach.
+
+BD_WHITE = "#D8DCE1"
+BD_WHITE_LT = "#E6E9EC"
+BD_WHITE_DK = "#B4BAC2"
+BD_GLASS = "#A3B9B6"          # grey-teal back panes, low saturation
+BD_GLASS_LT = "#C3D3D0"
+BD_GLASS_DK = "#869E9A"
+BD_LEAF = "#5C8E4C"
+BD_LEAF_LT = "#74A45E"
+BD_LEAF_DK = "#46713C"
+BD_TRUNK = "#6A5644"
+BD_GREENWALL = "#5F8A4E"
+BD_SOIL = "#6E5B47"
+BD_MINT = "#3AF0B4"
+BD_MINT_CORE = "#D6FFF1"
+BD_CRACK = "#2A2E36"
+BD_DEPTHS = [-40, -24, -40, -24]
+BD_AX = (-88.0, 18.0)
+# terrace rings and domes: (ring radius, ring z0, ring z1, dome radius, dome height)
+BD_TIERS = [(66.0, 30.0, 36.0, 58.0, 50.0), (52.0, 86.0, 92.0, 45.0, 40.0), (40.0, 132.0, 138.0, 33.0, 30.0), (28.0, 168.0, 173.0, 22.0, 20.0)]
+BD_MAST0, BD_MAST1 = 193.0, 318.0
+BD_TURBINES = [(-104.0, 6.0, 246.0), (-72.0, 6.0, 278.0)]
+BD_BLADE_R = 12.0
+BD_TURB_FRAMES, BD_TURB_MS = 6, 90
+
+
+def bd_tree(g_trunk, g_dk, g_md, g_lt, x, y, z, k=1.0, seed=0):
+    """A small tree inside a dome: a trunk and a round three-blob crown."""
+    rnd = random.Random(seed)
+    g_trunk.capsule((x, y, z), (x + rnd.uniform(-1, 1), y, z + 10.0 * k), 1.4 * k, 1.0 * k, segs=8, rings=1)
+    for dx, dz, r in ((-4.0, 12.0, 6.0), (4.0, 13.0, 6.4), (0.0, 18.0, 6.8)):
+        c = (x + dx * k, y, z + dz * k)
+        g_dk.blob((c[0] + 0.6, c[1] + 1.6, c[2] - 1.4 * k), (r * k * 1.05, r * k * 0.85, r * k * 0.8), p=2.2, cuts=3)
+        g_md.blob(c, (r * k, r * k * 0.8, r * k * 0.75), p=2.2, cuts=3)
+        g_lt.blob((c[0] - r * 0.3 * k, c[1] - r * 0.5 * k, c[2] + r * 0.3 * k), (r * 0.45 * k, r * 0.3 * k, r * 0.32 * k), p=2.2, cuts=2)
+
+
+def bd_dome(rig, joint, c, r, h, seed=0, trees=3):
+    """One bio-dome: a geodesic frame of white struts, grey-teal panes over its back half seen from inside, a glazed
+    cap, a couple of front reflections, and trees on its floor."""
+    cx, cy, z0 = c
+
+    def P(a, t, rr=r):
+        el = t * math.pi / 2
+        return (cx + rr * math.cos(el) * math.cos(a), cy + rr * math.cos(el) * math.sin(a) * 0.9, z0 + h * math.sin(el))
+    # the back panes: the far half of a thin shell (its inside faces the camera)
+    shell = Geo()
+    prof = [(0.0, 0.0)] + [((r - 1.4) * math.cos(t * math.pi / 2), (h - 1.4) * math.sin(t * math.pi / 2)) for t in (i / 10 for i in range(11))]
+    shell.lathe(prof, (cx, cy, z0), (cx, cy, z0 + h), segs=40, squash=(1.0, 0.9))
+    shell.clip((cx, cy + 2.0, z0), (0, -1, 0))
+    rig.part(joint, shell, BD_GLASS, finish="gloss", outline=0)
+    # trees and shrubs on the floor (before the frame, so the frame reads in front of them)
+    tr, dk, md, lt = Geo(), Geo(), Geo(), Geo()
+    rnd = random.Random(seed)
+    for i in range(trees):
+        x = cx - r * 0.55 + r * 1.1 * (i + 0.5) / trees + rnd.uniform(-2, 2)
+        k = (0.9 + 0.35 * rnd.random()) * min(1.3, h / 36.0)
+        bd_tree(tr, dk, md, lt, x, cy + rnd.uniform(-2, 8), z0, k=k, seed=seed * 7 + i)
+    # a row of round shrubs along the front of the floor, so the dome reads green from its rim up
+    nb = max(3, int(r / 9))
+    for i in range(nb):
+        a = math.radians(200 + 140 * (i + 0.5) / nb)
+        bx_, by_ = cx + r * 0.72 * math.cos(a), cy + r * 0.72 * 0.9 * math.sin(a)
+        rr_ = (3.6 + 1.6 * rnd.random()) * min(1.2, h / 36.0)
+        dk.blob((bx_ + 0.5, by_ + 1.2, z0 + rr_ * 0.6), (rr_ * 1.15, rr_ * 0.9, rr_ * 0.8), p=2.2, cuts=3)
+        md.blob((bx_, by_, z0 + rr_ * 0.75), (rr_, rr_ * 0.8, rr_ * 0.75), p=2.2, cuts=3)
+        lt.blob((bx_ - rr_ * 0.3, by_ - rr_ * 0.5, z0 + rr_), (rr_ * 0.42, rr_ * 0.3, rr_ * 0.3), p=2.2, cuts=2)
+    rig.part(joint, tr, BD_TRUNK, outline=0.4)
+    rig.part(joint, dk, BD_LEAF_DK, finish="hair")
+    rig.part(joint, md, BD_LEAF, finish="hair")
+    rig.part(joint, lt, BD_LEAF_LT, finish="hair", outline=0.3)
+    # the frame: meridians and parallels, a base ring
+    fr = Geo()
+    nm = 12
+    for i in range(nm):
+        a = 2 * math.pi * i / nm + seed * 0.1
+        pts = [P(a, k / 8) for k in range(8)] + [(cx, cy, z0 + h)]
+        for p0, p1 in zip(pts, pts[1:]):
+            fr.capsule(p0, p1, 0.85, segs=6, rings=1)
+    for t in (0.33, 0.62):
+        pts = [P(2 * math.pi * i / 48, t) for i in range(49)]
+        for p0, p1 in zip(pts, pts[1:]):
+            fr.capsule(p0, p1, 0.75, segs=6, rings=1)
+    pts = [P(2 * math.pi * i / 48, 0.0) for i in range(49)]
+    for p0, p1 in zip(pts, pts[1:]):
+        fr.capsule(p0, p1, 1.3, segs=6, rings=1)
+    rig.part(joint, fr, BD_WHITE_LT, finish="gloss", outline=0.35)
+    # the glazed cap and two reflections on the front glass
+    cap = Geo()
+    prof = [((r + 0.3) * math.cos(t * math.pi / 2), (h + 0.3) * math.sin(t * math.pi / 2)) for t in (0.8 + 0.2 * i / 4 for i in range(5))]
+    prof = [(prof[0][0] - 1.2, prof[0][1])] + prof
+    cap.lathe(prof, (cx, cy, z0), (cx, cy, z0 + h + 0.3), segs=40, squash=(1.0, 0.9))
+    rig.part(joint, cap, BD_GLASS_LT, finish="gloss", outline=0.3)
+    gl = Geo()
+    for a0, a1, t in ((-2.25, -1.85, 0.5), (-2.05, -1.8, 0.28)):
+        pts = [P(a0 + (a1 - a0) * i / 6, t + 0.12 * math.sin(math.pi * i / 6), r + 0.6) for i in range(7)]
+        for p0, p1 in zip(pts, pts[1:]):
+            gl.capsule(p0, p1, 0.7, segs=4, rings=1)
+    rig.part(joint, gl, "#F4FBFA", outline=0, highlight=False)
+
+
+def bd_ring(rig, joint, r, z0, z1, team_band=True):
+    """A terrace ring round the core: a white disc with a team band round its edge and a soil bed on it."""
+    cx, cy = BD_AX
+    g = Geo()
+    cyl(g, (cx, cy, z0), (cx, cy, z1), r, bevel=0.8, segs=48, squash=(1.0, 0.9))
+    rig.part(joint, g, BD_WHITE)
+    if team_band:
+        g = Geo()
+        g.lathe([(r - 0.2, 0.0), (r + 0.5, 0.4), (r + 0.5, (z1 - z0) * 0.55), (r - 0.2, (z1 - z0) * 0.6)], (cx, cy, z0 + (z1 - z0) * 0.2),
+                (cx, cy, z1), segs=48, squash=(1.0, 0.9))
+        rig.part(joint, g, team=True, outline=0.3)
+    g = Geo()
+    cyl(g, (cx, cy, z1 - 0.6), (cx, cy, z1 + 0.6), r - 6.0, bevel=0.4, segs=40, squash=(1.0, 0.9))
+    rig.part(joint, g, BD_SOIL)
+
+
+def bd_greenwall(rig, joint, x0, x1, y, z0, z1, seed=0):
+    """A vertical garden panel: a green mat with leaf tufts in two greens."""
+    rnd = random.Random(seed)
+    g = Geo()
+    box(g, ((x0 + x1) / 2, y, (z0 + z1) / 2), ((x1 - x0) / 2, 1.0, (z1 - z0) / 2), p=6, cuts=2)
+    rig.part(joint, g, BD_GREENWALL, finish="hair")
+    a_, b_ = Geo(), Geo()
+    nx, nz = max(2, int((x1 - x0) / 5)), max(2, int((z1 - z0) / 5))
+    for i in range(nx):
+        for k in range(nz):
+            if rnd.random() < 0.6:
+                (a_ if (i + k) % 2 else b_).blob((x0 + (i + 0.5) * (x1 - x0) / nx + rnd.uniform(-1, 1), y - 1.2,
+                                                  z0 + (k + 0.5) * (z1 - z0) / nz + rnd.uniform(-1, 1)), (2.2, 1.0, 1.8), p=2.2, cuts=2)
+    rig.part(joint, a_, BD_LEAF_LT, finish="hair", outline=0.3)
+    rig.part(joint, b_, BD_LEAF_DK, finish="hair", outline=0.3)
+
+
+def bd_turbine_geo(hub):
+    """A small wind turbine's rotor at hub (facing the camera): three slim white blades and a nose."""
+    hx, hy, hz = hub
+    g = Geo()
+    for k in range(3):
+        a = math.radians(90.0 + 120.0 * k)
+        g.blob((hx + math.cos(a) * BD_BLADE_R * 0.55, hy - 1.4, hz + math.sin(a) * BD_BLADE_R * 0.55), (BD_BLADE_R * 0.5, 0.5, 1.6), p=2.0, cuts=3,
+               rot=(0, -math.degrees(a), 0), taper=(1.0, 1.0))
+    n = Geo().blob((hx, hy - 2.4, hz), (1.8, 2.6, 1.8), p=2.0, cuts=3)
+    return g, n
+
+
+def bd_turbines_pose(f):
+    return {f"turbine{i}": {"r": 20.0 * f * (1 if i == 0 else -1)} for i in range(len(BD_TURBINES))}
+
+
+def build_biodome(rig, M):
+    for j in ("crack1", "crack2", "crack3", "rubble1", "rubble2", "rubble3", "breachP", "shatter", "soot", "domeFire", "beaconOff",
+              "mastBent", "dome3Broken"):
+        rig.joint(j, "body", (0, 0, 0), hidden=True)
+    rig.joint("beacon", "body", (BD_AX[0], BD_AX[1], BD_MAST1))
+    rig.joint("dome3", "body", (BD_AX[0], BD_AX[1], BD_TIERS[2][2]))
+    rig.joint("mast", "body", (BD_AX[0], BD_AX[1], BD_MAST0))
+    rig.joint("banner", "body", (-127.0, -36.0, 32.0))
+    rig.joint("tear", "banner", (0, 0, 0), hidden=True)
+    cx, cy = BD_AX
+
+    # -- the plinth: white, chamfered, vertical gardens, two team light panels, the gate ----------------------
+    g = Geo()
+    box(g, (-70.0, 10.0, 15.0), (82.0, 38.0, 15.0), p=8)
+    rig.part("body", g, BD_WHITE_DK)
+    g = Geo()
+    box(g, (-70.0, 9.4, 28.6), (82.6, 38.6, 1.6), p=6)
+    rig.part("body", g, BD_WHITE_LT)
+    for x0, x1 in ((-148.0, -134.0), (-104.0, -78.0), (-50.0, -30.0)):
+        bd_greenwall(rig, "body", x0, x1, -28.6, 4.0, 25.0, seed=int(-x0))
+    x = -64.0
+    g = Geo()
+    box(g, (x, -28.8, 15.0), (4.6, 0.8, 10.0), p=6, cuts=2)
+    rig.part("body", g, team=True, outline=0.4)
+    g = Geo()
+    box(g, (x, -29.2, 15.0), (5.6, 0.6, 11.0), p=6, cuts=2)
+    g.clip((x, -29.2, 15.0), (0, 1, 0))
+    rig.part("body", g, BD_WHITE, outline=0.3)
+    # a team banner hanging from the first terrace's front edge (torn at 50%, gone at 25%)
+    g = Geo().slab([(-127.0, 32.0), (-113.0, 32.0), (-113.0, 10.0), (-120.0, 4.0), (-127.0, 10.0)], -36.0, 1.2)
+    rig.part("banner", g, team=True, outline=0.45)
+    g = Geo().capsule((-129.0, -36.8, 32.6), (-111.0, -36.8, 32.6), 1.2, segs=6, rings=1)
+    rig.part("banner", g, BD_WHITE_LT, finish="metal", outline=0.35)
+    g = Geo()
+    for k in range(5):
+        a = math.radians(90 + 72 * k)
+        g.blob((-120.0 + math.cos(a) * 2.6, -37.0, 20.0 + math.sin(a) * 2.6), (1.8, 0.4, 1.2), p=2.0, cuts=2, rot=(0, -math.degrees(a), 0))
+    rig.part("banner", g, BD_LEAF_LT, outline=0.25)
+    g = Geo().slab([(-113.0, 24.0), (-118.0, 18.0), (-113.0, 12.0)], -37.4, 0.8)
+    rig.part("tear", g, BD_WHITE_DK, outline=0, highlight=False)
+    gx = -6.0
+    pts = [(gx - 8.0, 0.0), (gx + 8.0, 0.0), (gx + 8.0, 16.0)]
+    for i in range(1, 6):
+        a = math.pi * i / 6
+        pts.append((gx + 8.0 * math.cos(a), 16.0 + 8.0 * math.sin(a)))
+    pts.append((gx - 8.0, 16.0))
+    g = Geo().slab([(x + (1.4 if x > gx else -1.4), z + (1.4 if z > 8 else 0.0)) for x, z in pts], -28.6, 1.0)
+    rig.part("body", g, glow=BD_MINT, outline=0)
+    g = Geo().slab(pts, -29.2, 1.0)
+    rig.part("body", g, team=True, outline=0.4)
+    g = Geo()
+    box(g, (gx, -29.8, 12.0), (0.4, 0.4, 11.0), p=4, cuts=1)
+    rig.part("body", g, BD_WHITE_DK, outline=0)
+
+    # -- the core: a white column with mint light strips and green walls between the domes --------------------
+    g = Geo()
+    cyl(g, (cx, cy, 30.0), (cx, cy, BD_MAST0), 10.0, 8.0, bevel=0.6, segs=24)
+    rig.part("body", g, BD_WHITE)
+    g = Geo()
+    for z0_, z1_ in ((40.0, 80.0), (96.0, 126.0), (142.0, 162.0)):
+        box(g, (cx, cy - 9.6, (z0_ + z1_) / 2), (1.2, 0.6, (z1_ - z0_) / 2), p=5, cuts=2)
+    rig.part("body", g, glow=BD_MINT, outline=0)
+
+    # -- the terraces and domes (the third is smashed at 25%) ---------------------------------------------
+    for i, (rr, z0_, z1_, dr, dh) in enumerate(BD_TIERS):
+        j = "dome3" if i == 2 else "body"
+        bd_ring(rig, j, rr, z0_, z1_)
+        bd_dome(rig, j, (cx, cy, z1_), dr, dh, seed=11 + i, trees=4 - min(i, 2))
+    g = Geo()
+    for k in range(7):
+        a = math.radians(200 + k * 20)
+        p0 = (cx + 34.0 * math.cos(a), cy + 30.0 * math.sin(a), BD_TIERS[2][2] + 6.0)
+        g.capsule(p0, (p0[0] + 3.0, p0[1] - 2.0, p0[2] + 10.0 + (k % 3) * 4.0), 0.8, segs=4, rings=1)
+    rig.part("dome3Broken", g, BD_WHITE_LT, outline=0.35)
+    g = Geo()
+    for k in range(5):
+        a = math.radians(210 + k * 28)
+        g.slab([(cx + 30.0 * math.cos(a) - 3.0, BD_TIERS[2][2] + 4.0), (cx + 30.0 * math.cos(a) + 3.0, BD_TIERS[2][2] + 3.0),
+                (cx + 30.0 * math.cos(a) + 1.0, BD_TIERS[2][2] + 8.0)], cy + 30.0 * math.sin(a) * 0.9 - 1.0, 0.6)
+    rig.part("dome3Broken", g, BD_GLASS_LT, outline=0.3)
+
+    # -- the mast over the top dome: a white mast, turbine arms, a beacon (dark at 75%) ------------------------
+    g = Geo()
+    cyl(g, (cx, cy, BD_MAST0), (cx, cy, BD_MAST1), 3.0, 1.6, bevel=0.4, segs=16)
+    rig.part("mast", g, BD_WHITE_LT, finish="metal")
+    g = Geo()
+    for hx, hy, hz in BD_TURBINES:
+        g.capsule((cx, cy, hz - 2.0), (hx, hy + 4.0, hz), 1.1, 0.9, segs=6, rings=1)
+        g.capsule((hx, hy + 6.0, hz), (hx, hy - 0.6, hz), 1.6, 1.2, segs=8, rings=1)
+    rig.part("mast", g, BD_WHITE_DK, finish="metal", outline=0.4)
+    g = Geo().sphere((cx, cy - 1.0, BD_MAST1 + 2.0), 2.6, cuts=2)
+    rig.part("beacon", g, glow=BD_MINT, outline=0)
+    g = Geo().sphere((cx, cy - 1.0, BD_MAST1 + 2.0), 2.6, cuts=2)
+    rig.part("beaconOff", g, BD_WHITE_DK, outline=0.4)
+    g = Geo()
+    g.capsule((cx, cy, BD_MAST0), (cx - 8.0, cy, BD_MAST0 + 36.0), 2.6, 2.0, segs=8, rings=1)
+    g.capsule((cx - 8.0, cy, BD_MAST0 + 36.0), (cx - 30.0, cy - 4.0, BD_MAST0 + 46.0), 2.0, 1.4, segs=8, rings=1)
+    rig.part("mastBent", g, BD_WHITE_LT, finish="metal", outline=0.4)
+    for i, hub in enumerate(BD_TURBINES):
+        rig.joint(f"turbine{i}", "root", (hub[0], hub[1], hub[2]))
+        blades, nose = bd_turbine_geo(hub)
+        rig.part(f"turbine{i}", blades, BD_WHITE_LT, outline=0.35)
+        rig.part(f"turbine{i}", nose, BD_WHITE_DK, finish="metal", outline=0.3)
+
+    # -- the hovering disc mounts with struts back into the arcology ------------------------------------------
+    for i, (x, y, z) in enumerate(M):
+        anchor = (x - 4.0, y + 12.0, 2.0) if i == 0 else (cx + 18.0, cy - 20.0, z - 22.0)
+        platform(rig, "body", (x, y, z), BD_WHITE_LT, BD_WHITE_DK, style="disc", r=(24, 18), t=5, depth_to=anchor, accent=BD_MINT)
+
+    # -- damage ---------------------------------------------------------------------------------------
+    chipped_cracks(rig, "crack1", [[(-140.0, -29.0, 24.0), (-136.0, -29.0, 14.0)], [(-60.0, -29.0, 26.0), (-56.0, -29.0, 16.0)]], BD_CRACK, BD_WHITE_LT,
+                   w=1.6)
+    def on_dome(i, a, t, out=0.9):
+        rr, z0_, z1_, dr, dh = BD_TIERS[i]
+        el = t * math.pi / 2
+        return (cx + (dr + out) * math.cos(el) * math.cos(a), cy + (dr + out) * math.cos(el) * math.sin(a) * 0.9, z1_ + (dh + out) * math.sin(el))
+
+    def crack_lines(joint, i, lines):
+        dark, chip = Geo(), Geo()
+        for line in lines:
+            pts = [on_dome(i, a, t, 1.1) for a, t in line]
+            for a_, b_ in zip(pts, pts[1:]):
+                dark.capsule(a_, b_, 0.75, segs=4, rings=1)
+            pts = [on_dome(i, a + 0.03, t - 0.02, 0.9) for a, t in line]
+            for a_, b_ in zip(pts, pts[1:]):
+                chip.capsule(a_, b_, 0.6, segs=4, rings=1)
+        rig.part(joint, chip, "#EEF6F4", outline=0, highlight=False)
+        rig.part(joint, dark, BD_CRACK, outline=0, highlight=False)
+
+    crack_lines("crack1", 0, [[(-2.15, 0.18), (-2.02, 0.3), (-2.14, 0.42), (-2.04, 0.56)], [(-2.02, 0.3), (-1.86, 0.36)]])
+    crack_lines("crack1", 1, [[(-1.1, 0.2), (-1.22, 0.34), (-1.08, 0.48)]])
+    crack_lines("crack2", 1, [[(-1.95, 0.22), (-1.82, 0.36), (-1.96, 0.5)], [(-1.82, 0.36), (-1.66, 0.3)]])
+    crack_lines("crack3", 0, [[(-1.05, 0.15), (-1.18, 0.28), (-1.04, 0.4), (-1.16, 0.52)]])
+    # 50%: a shattered pane in the big dome: a dark jagged hole with glass shards round it and a broken strut
+    hc = on_dome(0, -1.78, 0.36, 1.2)
+    rnd = random.Random(61)
+    hole = [(hc[0] + math.cos(2 * math.pi * k / 11) * (8.0 if k % 2 else 5.2) * (0.85 + 0.3 * rnd.random()),
+             hc[2] + math.sin(2 * math.pi * k / 11) * (7.0 if k % 2 else 4.6) * (0.85 + 0.3 * rnd.random())) for k in range(11)]
+    rig.part("shatter", Geo().slab(hole, hc[1] - 0.4, 1.0), "#23292B", outline=0.5, outline_hex="#1A1E20")
+    g = Geo()
+    for k in range(0, 11, 2):
+        px_, pz_ = hole[k]
+        g.slab([(px_ - 2.2, pz_ - 1.2), (px_ + 2.2, pz_ - 0.6), (px_ + 0.4, pz_ + 2.6)], hc[1] - 1.2, 0.5)
+    rig.part("shatter", g, BD_GLASS_LT, outline=0.3)
+    g = Geo().capsule((hc[0] - 3.0, hc[1] - 1.6, hc[2] + 6.0), (hc[0] + 2.0, hc[1] - 2.4, hc[2] - 3.0), 0.9, segs=6, rings=1)
+    rig.part("shatter", g, BD_WHITE_LT, outline=0.35)
+    flames(rig, "shatter", [(hc[0], hc[1] - 3.0, hc[2] - 6.0, 0.6)], out="#C77BF0", body="#E7B8FF", core="#FFF2FF")
+    chipped_cracks(rig, "crack2", [[(-100.0, -29.0, 26.0), (-96.0, -29.0, 14.0)]], BD_CRACK, BD_WHITE_LT, w=1.6)
+    chipped_cracks(rig, "crack3", [[(-30.0, -29.0, 26.0), (-26.0, -29.0, 12.0)]], BD_CRACK, BD_WHITE_LT, w=1.6)
+    bd_breach(rig, "breachP", -90.0, -28.6, 14.0, 22.0, 18.0, seed=51)
+    flames(rig, "breachP", [(-90.0, -34.0, 6.0, 0.8)], out="#C77BF0", body="#E7B8FF", core="#FFF2FF")
+    flames(rig, "domeFire", [(cx - 10.0, cy + 6.0, BD_TIERS[1][2] + 4.0, 0.7), (cx + 16.0, cy + 10.0, BD_TIERS[0][2] + 4.0, 0.6)])
+    # 25%: a big ragged hole in the smashed third dome
+    hc3 = on_dome(2, -1.6, 0.4, 1.0)
+    hole3 = [(hc3[0] + math.cos(2 * math.pi * k / 12) * (11.0 if k % 2 else 7.0), hc3[2] + math.sin(2 * math.pi * k / 12) * (8.0 if k % 2 else 5.0))
+             for k in range(12)]
+    rig.part("dome3Broken", Geo().slab(hole3, hc3[1] - 0.4, 1.0), "#23292B", outline=0.5, outline_hex="#1A1E20")
+    g = Geo()
+    g.slab([(-90.0 + 8.0 * math.cos(k * 0.9) * (1.0 if k % 2 else 0.7), 30.0 + 7.0 * math.sin(k * 0.9) * (1.0 if k % 2 else 0.7)) for k in range(7)],
+           -29.2, 0.6)
+    rig.part("soot", g, "#3A3E44", outline=0, highlight=False)
+    rubble(rig, "rubble1", [(-150.0, -48.0), (-126.0, -52.0)], BD_WHITE_DK, seed=131)
+    rubble(rig, "rubble2", [(-70.0, -52.0), (-30.0, -56.0)], BD_WHITE, seed=137)
+    rubble(rig, "rubble3", [(-158.0, -56.0), (-104.0, -60.0), (-10.0, -58.0)], BD_WHITE_DK, seed=143, size=1.2)
+
+    flag(rig, "root", "flagA", (cx - 22.0, cy + 6.0, BD_MAST1 + 18.0), length=30, height=16, pole=BD_MAST1 - 40.0, pole_color=BD_WHITE_DK,
+         finial=BD_MINT)
+    flag(rig, "root", "flagB", (-150.0, 34.0, 140.0), length=24, height=14, pole=30.0, pole_color=BD_WHITE_DK, finial=BD_MINT)
+
+    # -- Treasury: seed pods (1), a crate of fruit (2), a glowing seed vault cube (3) --------------------------
+    g = Geo()
+    for i, (x, y) in enumerate(((-160.0, -54.0), (-151.0, -58.0), (-155.0, -50.0))):
+        g.blob((x, y, 5.0), (4.0, 3.4, 5.0), p=2.2, cuts=3)
+    rig.part("treasury1", g, BD_WHITE_LT)
+    g = Geo()
+    for i, (x, y) in enumerate(((-160.0, -54.0), (-151.0, -58.0), (-155.0, -50.0))):
+        g.blob((x, y - 2.6, 6.0), (1.6, 0.8, 2.6), p=2.0, cuts=2)
+    rig.part("treasury1", g, glow=BD_MINT, outline=0)
+    g = Geo()
+    box(g, (-128.0, -56.0, 5.0), (8.0, 5.0, 5.0), p=6)
+    rig.part("treasury2", g, BD_WHITE_DK)
+    g = Geo()
+    for i in range(7):
+        g.sphere((-133.0 + (i % 4) * 3.2, -57.0 + (i // 4) * 2.4, 11.0 + (i % 2)), 1.9, cuts=2)
+    rig.part("treasury2", g, "#C9D36A", outline=0.3)
+    g = Geo()
+    box(g, (-100.0, -58.0, 8.0), (7.0, 7.0, 7.0), p=6)
+    rig.part("treasury3", g, BD_WHITE)
+    g = Geo()
+    box(g, (-100.0, -65.2, 8.0), (4.6, 0.4, 4.6), p=5, cuts=2)
+    rig.part("treasury3", g, glow=BD_MINT_CORE, outline=0)
+
+
+def bd_breach(rig, joint, x, y, z, w, h, seed=0):
+    """A blown hole in the white plinth: a dark jagged opening, sparking wires, broken panel edges."""
+    rnd = random.Random(seed)
+    n = 14
+    pts, inner = [], []
+    for i in range(n):
+        a = 2 * math.pi * i / n
+        k = 0.72 + 0.28 * rnd.random()
+        pts.append((x + math.cos(a) * w / 2 * k, z + math.sin(a) * h / 2 * k))
+        inner.append((x + math.cos(a) * w / 2 * k * 0.72, z + math.sin(a) * h / 2 * k * 0.66 - h * 0.08))
+    rig.part(joint, Geo().slab(pts, y - 2.4, 1.6), "#4A505A", outline=0.6, outline_hex="#22262C")
+    rig.part(joint, Geo().slab(inner, y - 3.4, 1.0), "#22262C", outline=0)
+    g = Geo()
+    for i in range(0, n, 3):
+        px_, pz_ = pts[i]
+        box(g, (px_, y - 3.0, pz_), (2.6 + 1.6 * rnd.random(), 1.4, 1.6 + 1.0 * rnd.random()), p=5, cuts=2)
+    rig.part(joint, g, BD_WHITE_LT, outline=0.5)
+
+
+def crumble_biodome(stage):
+    pose = {}
+    if stage >= 1:
+        pose.update({"crack1": {"show": True}, "rubble1": {"show": True}, "beacon": {"hide": True}, "beaconOff": {"show": True}})
+    if stage >= 2:
+        pose.update({"crack2": {"show": True}, "rubble2": {"show": True}, "breachP": {"show": True}, "shatter": {"show": True},
+                     "soot": {"show": True}, "banner": {"r": 8.0, "sz": 0.7}, "tear": {"show": True}})
+    if stage >= 3:
+        pose.update({"crack3": {"show": True}, "rubble3": {"show": True}, "domeFire": {"show": True}, "dome3Broken": {"show": True},
+                     "dome3": {"r": 12.0, "x": -5.0, "z": -6.0}, "mast": {"hide": True}, "beaconOff": {"hide": True}, "mastBent": {"show": True},
+                     "banner": {"hide": True}, "tear": {"hide": True}})
+    return pose
+
+
+BIO_DOME_ARCOLOGY = base_module(
+    "future", "Bio-Dome Arcology", height=330, width=180, canvas=(470, 740), feet=(360, 690),
+    build=build_biodome, crumble=crumble_biodome, mount_depth=BD_DEPTHS, skin="bio_dome_arcology",
+    flags=[{"name": "flagA", "crumbleMax": 2}, {"name": "flagB", "crumbleMax": 3, "phase": 1.7, "z": "back"}],
+    lights=[((-6.0, -31.0, 16.0), 3, 16), ((BD_AX[0], BD_AX[1] - 2.0, BD_MAST1 + 2.0), 0, 14)],
+    smoke=[((-90.0, -30.0, 30.0), 2), ((BD_AX[0], BD_AX[1], 150.0), 3), ((BD_AX[0], BD_AX[1], 100.0), 3)],
+    horn=(-90, 340), yaw=BASE_YAW,
+    props=[prop_loop("turbines", [f"turbine{i}" for i in range(len(BD_TURBINES))], BD_TURB_FRAMES, bd_turbines_pose, ms=BD_TURB_MS,
+                     crumble=(0, 2), z="front", hold=0, anchor=(BD_AX[0], BD_AX[1], 262.0), outline=(1.4, 0.55, 0.5))],
+    extra_meta={
+        "collapseMaterial": "energy",
+        # the top domes and the mast fall toward the lane first, then the lower dome
+        "topple": [topple_lu(-130, -40, 150, delay_ms=0, push=1.0, sink_lu=30),
+                   topple_lu(-150, -26, 70, delay_ms=170, push=0.7, sink_lu=24)],
+        "rubbleColors": [BD_WHITE, BD_WHITE_DK, BD_GLASS, BD_LEAF],
+        "dustColor": "#D9DEE3",
+        "ambientLu": [ambient_lu("petals", (BD_AX[0], BD_AX[1] - 30.0, 60.0), 36, 0.6, color="#86B46E"),
+                      ambient_lu("petals", (BD_AX[0], BD_AX[1] - 24.0, 120.0), 26, 0.4, color="#9CC77E"),
+                      ambient_lu("glints", (BD_AX[0] - 30.0, BD_AX[1] - 40.0, 70.0), 24, 0.5, color="#F4FBFA"),
+                      ambient_lu("glints", (BD_AX[0] + 10.0, BD_AX[1] - 30.0, 150.0), 16, 0.4, color="#F4FBFA")],
+    },
+)
+
+SKINS = [MIDNIGHT_NEON, CRYSTAL_SPIRE, BIO_DOME_ARCOLOGY]

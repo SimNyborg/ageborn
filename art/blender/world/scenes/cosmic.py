@@ -14,6 +14,10 @@ colours stay outside the team-hue bands (violets at hue 258-300, mint at 162; A1
 Hints: `weather: 'space'` (a sky theme's snow, rain and petals become ice motes, meteors and sparkles) and
 `celestial: 'own'` (the planet is this sky's object: a sky theme brings its colours and stars, no sun or
 moon). Less haze than the A11 default (`look`): there is no air on the moon; the colour rule still holds.
+
+"Nebula Shipyard" (format 2, round 3; Epic, Wardrobe Crate; a set with Nebula Ark): a star-ark under
+construction in an orbital drydock, the same space hints as the classic; its description is at its
+constants.
 """
 import math
 import random
@@ -537,6 +541,355 @@ def rg_props():
     return plist, sprites
 
 
+# -- Nebula Shipyard (round 3; Epic, Wardrobe Crate; a set with Nebula Ark) ---------------------------
+# A star-ark under construction in an orbital drydock (`celestial: 'own'`, `weather: 'space'`). Back: a
+# nebula cloud of violet and mint glows. Far: the drydock's lattice cradle with the half-built ark inside
+# (its bow plated and lit, its stern bare ribs on the keel), gantry cranes along the top girder, docking
+# lights. Mid: the yard deck: gantries, cargo pods, welding rigs throwing sparks, a landing pad with its
+# lights. Ambient: welding sparks, a crane arm swings, cargo pods drift past, docking lights blink; the
+# ark's windows, the pad and the gantry lamps glow under night skies.
+# Palette (PLAN 2b): void #1E1830, nebula violet #8E44C8, mint #3FE0B0 (both outside the team-hue bands),
+# hulls white-lilac with violet bands as the classic's.
+NS_PAL = dict(skyTop=0x1E1830, skyBottom=0x48366E, light=0xE8E4FF, far=0x4A3E6E, mid=0x36305A, near=0x262040)
+NS = dict(
+    hull=0xACA6C4, hull_dk=0x8A84A4, band=0x7460B0, frame=0x6A6880, frame_dk=0x4E4C62, deck=0x5A5672, deck_dk=0x46425C, rib=0x7C7896,
+    nebula=0x8E44C8, nebula_dk=0x5E3A8E, mint=0x3FE0B0, mint_lt=0x9CF0D4, window=0xBFF3E0, pod=0xC8B8A4, pod_dk=0xA8988A, metal=0x9A98AC,
+    rock=0x4E4864, glass=0xD6D0EE, lamp=0xF2F0FF,
+)
+NS_SKY = {"top": "#1E1830", "bottom": "#48366E", "horizon": "#56427C", "cloudTint": "#5E4C86", "celestial": "none",
+          "stars": 200, "nebula": True, "clouds": 0}
+NS_FAR_E = math.radians(8.0)
+NS_MID_E = math.radians(12.0)
+NS_DOCK = (150.0, 790.0, 600.0, 30.0, 270.0)   # the drydock: x0, x1, depth, foot z, top girder z (far)
+NS_ARK = (170.0, 770.0, 600.0, 132.0, 64.0)    # the ark: stern x, bow x, depth, axis z, radius (far)
+NS_SEAM = 0.46                                 # where the plating ends (a share of the ark's length from the stern)
+NS_HOOP_YAW = 22.0                             # the bare hoops turn this much toward the camera (they read as a cage)
+NS_CRANE = (480.0, 600.0, 282.0)               # the swinging crane arm's pivot (far)
+NS_POD_Y = -250.0                              # the drifting cargo pods' height (far, screen lu)
+
+
+def ns_back(st, P):
+    """The nebula: a wide drift of soft violet glows with bright knots, stars between."""
+    pt = Parts()
+    rnd = random.Random(19)
+    # soft bands close to the sky's colour (their edges melt into it), brighter knots in their hearts
+    gvs = [pt.g(mixc(NS["nebula"], P["skyBottom"], t), glow=True) for t in (0.82, 0.72, 0.62)]
+    for layer, (n, sz, zoff) in enumerate(((30, (70, 120, 24, 44), 0), (22, (40, 80, 14, 30), 6), (12, (20, 40, 8, 16), 12))):
+        for k in range(n):
+            x = rnd.uniform(-260, 1460)
+            if 760 < x < 1000:
+                continue
+            z = 160 + 70 * math.sin((x + 300) / 340) + rnd.uniform(-24, 24) + zoff
+            gvs[layer].blob((x, 1500 - layer * 20, z), (rnd.uniform(sz[0], sz[1]), 24, rnd.uniform(sz[2], sz[3])), p=2.0, cuts=3)
+    gs = pt.g(0xF2F0FF, glow=True)
+    for k in range(40):
+        gs.sphere((rnd.uniform(-260, 1460), 1440, rnd.uniform(80, 330)), rnd.uniform(1.0, 2.2), cuts=2)
+    pt.flush(st)
+
+
+def _ark_radius(x):
+    """The ark hull's radius at x (far): full at the seam, a long ogive to the bow, tapering toward the stern."""
+    sx, bx, _, _, R = NS_ARK
+    mid_x = sx + (bx - sx) * NS_SEAM
+    if x >= mid_x:
+        t = min(1.0, (x - mid_x) / (bx - mid_x))
+        return R * max(0.0, 1 - t ** 2.4) ** 0.5
+    t = min(1.0, (mid_x - x) / (mid_x - sx))
+    return R * (1 - 0.34 * t ** 1.5)
+
+
+def _hoop_point(x, a):
+    """A point on the bare hoop at x, at angle `a` round it (radians: 0 the far side, pi/2 the top, pi the near
+    side), with the hoops' turn toward the camera."""
+    _, _, ay, az, _ = NS_ARK
+    r = _ark_radius(x)
+    s, c = math.sin(math.radians(NS_HOOP_YAW)), math.cos(math.radians(NS_HOOP_YAW))
+    return (x - r * math.cos(a) * s, ay + r * math.cos(a) * c, az + r * math.sin(a))
+
+
+def ns_far(st, P):
+    pt = Parts()
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    # 1. the moonlet's rim beyond the yard, low and dark; the yard's floor plate the dock stands on, with
+    # panel seams and a row of mint lights
+    ridge(st, hz(0x5A5276, 0.26), -300, 1500, -20, 110, 660, 21, lumps=9, jag=0.08, peaks=False)
+    x0, x1, dy, fz, gz = NS_DOCK
+    gfl, gfl2 = pt.g(hz(NS["deck"], 0.1), outline=0.3), pt.g(hz(NS["deck_dk"], 0.1), outline=0.2)
+    box(gfl, (600, 540, fz - 14), (1100, 120, 14), p=8, cuts=2)
+    for k in range(17):
+        box(gfl2, (-300 + k * 112, 452, fz + 0.4), (1.2, 30, 0.5), p=6, cuts=1)
+    gle = pt.g(NS["mint"], glow=True)
+    for k in range(36):
+        gle.sphere((-290 + k * 50, 470, fz + 0.6), 1.1, cuts=2)
+    # a plate shop left of the dock (lit windows) and fuel spheres to its right
+    gsh, gsh2 = pt.g(hz(NS["hull_dk"], 0.1), outline=0.4), pt.g(hz(NS["frame_dk"], 0.1), outline=0.3)
+    box(gsh, (10, 520, fz + 26), (64, 30, 26), p=8, cuts=2)
+    for k in range(4):
+        gsh2.slab([(-50 + k * 32, fz + 52), (-26 + k * 32, fz + 52), (-26 + k * 32, fz + 62)], 506, 22)
+    gwin = pt.g(NS["window"], glow=True)
+    for k in range(9):
+        gwin.blob((-44 + k * 12, 489.4, fz + 34), (3.2, 0.5, 2.2), p=4, cuts=1)
+    st.light((10, 486, fz + 34), 4)
+    gfs = pt.g(hz(NS["metal"], 0.12), finish="metal", outline=0.4)
+    for (x, r) in ((880, 22), (936, 17)):
+        gfs.sphere((x, 520, fz + 12 + r), r, cuts=4)
+        for sx in (-0.6, 0.6):
+            gsh2.capsule((x + sx * r, 510, fz), (x + sx * r * 0.7, 512, fz + 14 + r * 0.5), 1.2)
+    # 2. the drydock: lattice columns and a top girder, cross braces, docking lights along the girder
+    gf, gf2 = pt.g(NS["frame"], outline=0.4), pt.g(NS["frame_dk"], outline=0.3)
+    cols = [x0 + (x1 - x0) * k / 5 for k in range(6)]
+    for x in cols:
+        for sy in (-30, 30):
+            box(gf, (x, dy + sy, (fz + gz) / 2), (3.4, 3.4, (gz - fz) / 2), p=8, cuts=1)
+        for k in range(6):
+            z0 = fz + (gz - fz) * k / 6
+            z1 = fz + (gz - fz) * (k + 1) / 6
+            gf2.capsule((x - 3, dy - 30, z0), (x + 3, dy - 30, z1), 0.7)
+    for sy in (-30, 30):
+        box(gf, ((x0 + x1) / 2, dy + sy, gz), ((x1 - x0) / 2 + 8, 4, 4), p=8, cuts=1)
+        box(gf2, ((x0 + x1) / 2, dy + sy, fz + 30), ((x1 - x0) / 2 + 4, 3, 2.4), p=8, cuts=1)
+    for a, b in zip(cols, cols[1:]):
+        gf2.capsule((a, dy - 30, gz - 4), (b, dy - 30, fz + 32), 0.8)
+        gf2.capsule((a, dy - 30, fz + 32), (b, dy - 30, gz - 4), 0.8)
+    gl = pt.g(NS["mint"], glow=True)
+    for k in range(12):
+        x = x0 + (x1 - x0) * k / 11
+        gl.sphere((x, dy - 35, gz - 4), 1.6, cuts=2)
+    for k in range(4):
+        st.amb("blink", "bd.light", (x0 + (x1 - x0) * (k + 0.5) / 4, dy - 35, gz - 4), "far", period=1300 + k * 230, tint=0x9CF0D4)
+    # 3. the half-built ark (the signature). The bow is plated: a lilac-grey hull with plate seams and two
+    # violet bands, rows of lit windows, a dorsal spine with the bridge tower, cradle struts under it. The
+    # stern is bare: hoops on the keel (turned a little toward the camera, so they read as a cage) with
+    # stringers along them and two engine rings at the stern; plates hang from the cranes; welding sparks
+    # fly along the seam.
+    sx, bx, ay, az, R = NS_ARK
+    mid_x = sx + (bx - sx) * NS_SEAM
+    L = bx - mid_x
+    rad = _ark_radius
+    gh, ghd, gb = pt.g(NS["hull"], finish="gloss", outline=0.5), pt.g(NS["hull_dk"], outline=0.3), pt.g(NS["band"], outline=0.3)
+    gw = pt.g(NS["window"], glow=True)
+    n = 18
+    gh.lathe([(0.01, 0)] + [(max(0.01, rad(mid_x + L * k / n)), L * k / n) for k in range(n + 1)], (mid_x, ay, az), (bx, ay, az), segs=36)
+    for k in range(1, 9):                     # plate seams
+        xx = mid_x + k * 30
+        if xx > bx - 44:
+            break
+        rr = rad(xx) + 0.35
+        ghd.lathe([(rr - 0.8, 0), (rr, 0), (rr, 1.1), (rr - 0.8, 1.1)], (xx, ay, az), (xx + 1.1, ay, az), segs=36)
+    for xx in (mid_x + 0.26 * L, mid_x + 0.31 * L):     # the violet bands
+        rr = rad(xx) + 0.6
+        gb.lathe([(rr - 1.0, 0), (rr, 0), (rr, 5.0), (rr - 1.0, 5.0)], (xx, ay, az), (xx + 5.0, ay, az), segs=36)
+    wins = []
+    for row, phi in enumerate((0.34, -0.2)):
+        k = 0
+        xx = mid_x + 14
+        while xx < bx - 56:
+            rr = rad(xx)
+            if (k * 7 + row * 3) % 5 and not (mid_x + 0.24 * L < xx < mid_x + 0.34 * L):
+                p_ = (xx, ay - rr * math.cos(phi) - 0.3, az + rr * math.sin(phi))
+                gw.blob(p_, (1.8, 0.7, 1.2), p=3, cuts=2)
+                if row == 0 and k % 7 == 3:
+                    wins.append((p_[0], p_[1] - 2, p_[2]))
+            xx += 11
+            k += 1
+    # the dorsal spine along the crown and the bridge tower on it
+    spine = [(mid_x + 6 + k * 0.045 * L, az + rad(mid_x + 6 + k * 0.045 * L)) for k in range(15)]
+    ghd.slab([(x_, z_ + 5.0) for x_, z_ in spine] + [(x_, z_ - 6.0) for x_, z_ in reversed(spine)], ay, 16)
+    tx_ = mid_x + 0.5 * L
+    tz_ = az + rad(tx_) + 4
+    box(gh, (tx_, ay, tz_ + 7), (18, 9, 7), p=8, cuts=1)
+    box(ghd, (tx_ + 2, ay, tz_ + 18), (11, 7, 4.5), p=8, cuts=1)
+    gw.blob((tx_ + 2, ay - 7.2, tz_ + 18.5), (8.5, 0.6, 1.4), p=4, cuts=1)
+    pt.g(NS["frame_dk"], outline=0.2).capsule((tx_ - 6, ay, tz_ + 22), (tx_ - 6, ay, tz_ + 44), 0.6)
+    st.amb("blink", "bd.light", (tx_ - 6, ay - 1, tz_ + 45), "far", period=1100, tint=0x9CF0D4)
+    st.light((tx_ + 2, ay - 9, tz_ + 18), 3)
+    # cradle struts from the dock floor to the plated keel
+    gcr = pt.g(NS["frame_dk"], outline=0.4)
+    for xx in (mid_x + 24, mid_x + 0.36 * L, mid_x + 0.66 * L):
+        zb = az - rad(xx) + 3
+        for dx in (-12, 12):
+            gcr.capsule((xx + dx, ay - 22, fz), (xx, ay - 14, zb), 1.6)
+    # the bare stern: hoops, stringers, the keel, two engine rings
+    gr, gk = pt.g(NS["rib"], outline=0.3), pt.g(NS["frame_dk"], outline=0.4)
+    hoops = [sx + 8 + k * (mid_x - 2 - sx - 8) / 9 for k in range(10)]
+    for xx in hoops:
+        r = rad(xx)
+        kit.annulus(gr, (xx, ay, az), r - 3.0, r, 2.6, rot=(0, 90, NS_HOOP_YAW), segs=44)
+    for a_deg, rr in ((90, 1.7), (145, 1.0), (195, 1.0), (240, 1.1), (270, 2.8), (35, 0.8), (320, 0.8)):
+        a = math.radians(a_deg)
+        pts = [_hoop_point(xx, a) for xx in hoops] + [_hoop_point(mid_x + 3, a)]
+        for p_, q_ in zip(pts, pts[1:]):
+            gk.capsule(p_, q_, rr)
+    for dz in (0.44, -0.44):
+        c_ = (sx - 6, ay, az + R * dz)
+        kit.annulus(gk, c_, R * 0.2, R * 0.3, 4.0, rot=(0, 90, NS_HOOP_YAW), segs=32)
+        gk.capsule((sx - 6, ay, az + R * dz), (hoops[0], ay, az + R * dz * 0.7), 1.6)
+    # plates being fitted on the bare hoops next to the seam (darker, not yet painted)
+    for (xx, a_deg) in ((hoops[-1] - 4, 160), (hoops[-2] - 4, 150), (hoops[-1] - 6, 205)):
+        p_ = _hoop_point(xx, math.radians(a_deg))
+        ghd.blob((p_[0], p_[1] - 1.0, p_[2]), (13, 1.6, 9), p=5, cuts=2, rot=(a_deg - 180, 0, NS_HOOP_YAW * 0.5))
+    for (xx, a_deg) in ((mid_x - 2, 165), (mid_x - 2, 212), (hoops[-3], 172)):
+        p_ = _hoop_point(xx, math.radians(a_deg))
+        st.amb("emit", "fx.p.spark", (p_[0], p_[1] - 3, p_[2]), rate=2.4, speed=26, scale=0.6, tint=0xFFF2C8, alpha=0.95, life=500)
+        st.light((p_[0], p_[1] - 5, p_[2]), 3)
+    for w in wins[:3]:
+        st.light(w, 3)
+    # 4. gantry cranes along the top girder (the swinging arm is a prop), hanging cables and plates
+    gpl = pt.g(NS["hull_dk"], outline=0.4)
+    for x in (300.0, 640.0, 740.0):
+        box(gf, (x, dy, gz + 10), (8, 34, 6), p=8, cuts=1)
+        gf2.capsule((x, dy - 20, gz + 6), (x, dy - 20, az + R + 32), 0.4)
+        box(gpl, (x, dy - 20, az + R + 24), (13, 1.2, 8), p=6, cuts=1)
+    box(gf, (NS_CRANE[0], NS_CRANE[1], NS_CRANE[2] - 6), (6, 30, 5), p=8, cuts=1)
+    # 5. distant hulls and beacons beyond the yard (right of the moons' place)
+    gd, gd2 = pt.g(hz(NS["hull_dk"], 0.25), outline=0.2), pt.g(hz(NS["band"], 0.3), outline=0.0)
+    for (x, y, z, L, r) in ((1150, 720, 180, 150, 13), (1330, 760, 236, 104, 9)):
+        gd.blob((x, y, z), (L / 2, r * 1.2, r), p=3.2, taper=(1.0, 0.6))
+        gd.blob((x - L * 0.25, y - 2, z + r * 0.9), (L * 0.12, r * 0.8, r * 0.5), p=3.0)
+        gd2.blob((x + L * 0.1, y - r * 1.1, z), (L * 0.3, 0.6, r * 0.25), p=3.0)
+        pt.g(NS["mint_lt"], glow=True).blob((x - L / 2 - 2, y, z), (3, r * 0.6, r * 0.5), p=2.0)
+        st.amb("blink", "bd.light", (x + L / 2, y - r, z), "far", period=1700, tint=0xF6C6E4)
+    pt.flush(st)
+
+
+def _welding_rig(pt, st, x, y, z, flip=1):
+    """A welding rig on the deck: a jointed robot arm on a turret base, its torch throwing sparks."""
+    gm, gm2 = pt.g(NS["metal"], outline=0.5), pt.g(NS["frame_dk"], outline=0.4)
+    cyl(gm2, (x, y, z), (x, y, z + 6), 8, bevel=0.6, segs=16)
+    gm.capsule((x, y, z + 6), (x + flip * 10, y, z + 30), 2.6, 2.0)
+    gm.capsule((x + flip * 10, y, z + 30), (x + flip * 28, y, z + 22), 2.0, 1.4)
+    gm2.sphere((x + flip * 10, y, z + 30), 3.0)
+    tip = (x + flip * 31, y, z + 20)
+    pt.g(NS["mint_lt"], glow=True).sphere(tip, 1.2)
+    st.amb("emit", "fx.p.spark", tip, rate=3.0, speed=22, scale=0.55, tint=0xFFF2C8, alpha=0.95, life=450)
+    st.light(tip, 3)
+
+
+def ns_mid(st, P):
+    pt = Parts()
+    # the yard deck: one plated floor with panel seams and a darker front edge, a mint edge strip
+    gd, gd2 = pt.g(NS["deck"], outline=0.4), pt.g(NS["deck_dk"], outline=0.3)
+    box(gd, (600, 84, 32), (1100, 50, 8), p=8, cuts=2)
+    box(gd2, (600, 35, 30), (1100, 2.4, 10), p=6, cuts=1)
+    for i in range(15):
+        box(gd2, (-300 + i * 130, 84, 40.2), (1.0, 48, 0.4), p=6, cuts=1)
+    pt.g(NS["mint"], glow=True).blob((600, 32.4, 38.4), (1100, 0.6, 0.5), p=6, cuts=1)
+    # a hull ring on its cradle (x 290), being welded: a section of the next ark, turned like the bare hoops
+    rx_, ry_, rr_ = 290.0, 104.0, 36.0
+    kit.annulus(pt.g(NS["hull_dk"], outline=0.5), (rx_, ry_, 44 + rr_), rr_ - 6.5, rr_, 13.0, rot=(0, 90, 24), segs=56)
+    kit.annulus(pt.g(NS["band"], outline=0.3), (rx_, ry_, 44 + rr_), rr_ - 0.6, rr_ + 0.8, 4.0, rot=(0, 90, 24), segs=56)
+    gcr = pt.g(NS["frame_dk"], outline=0.4)
+    box(gcr, (rx_, ry_, 42), (30, 16, 2.4), p=6, cuts=1)
+    for sx in (-1, 1):
+        box(gcr, (rx_ + sx * 14, ry_, 48), (6, 12, 6), p=6, cuts=1, rot=(0, sx * 18, 0))
+    # floodlight masts with lamp heads (lit at night)
+    gfm, glamp = pt.g(NS["frame_dk"], outline=0.4), pt.g(NS["lamp"], glow=True)
+    for x in (150.0, 860.0):
+        gfm.capsule((x, 120, 40), (x, 120, 150), 1.4, 1.0)
+        box(gfm, (x, 120, 152), (9, 3, 2.4), p=6, cuts=1)
+        for sx in (-5, 0, 5):
+            glamp.blob((x + sx, 116.6, 152), (1.8, 0.6, 1.4), p=3, cuts=1)
+        st.light((x, 112, 148), 6)
+    # 1. gantries: walkways on legs with railings and lamps (lit at night)
+    gf, gf2 = pt.g(NS["frame"], outline=0.5), pt.g(NS["frame_dk"], outline=0.4)
+    for (x0, x1, h) in ((-240, 60, 90), (880, 1200, 96)):
+        box(gf, ((x0 + x1) / 2, 110, 40 + h), ((x1 - x0) / 2, 9, 2.4), p=8, cuts=1)
+        for x in range(int(x0), int(x1) + 1, 60):
+            gf2.capsule((x, 104, 40), (x, 104, 40 + h), 1.6)
+            gf2.capsule((x, 116, 40), (x, 116, 40 + h), 1.6)
+        for k in range(int((x1 - x0) / 20) + 1):
+            gf2.capsule((x0 + k * 20, 101, 40 + h + 2), (x0 + k * 20, 101, 40 + h + 10), 0.4)
+        gf2.capsule((x0, 101, 40 + h + 10), (x1, 101, 40 + h + 10), 0.5)
+        st.light(((x0 + x1) / 2, 98, 40 + h - 4), 5)
+    # 2. cargo pods stacked by the gantries, cargo racks
+    gp, gp2 = pt.g(NS["pod"], outline=0.5), pt.g(NS["pod_dk"], outline=0.4)
+    for k, (x, y, z) in enumerate(((120, 70, 40), (150, 74, 40), (135, 72, 56), (1260, 70, 40), (1290, 74, 40), (330, 64, 40))):
+        (gp if k % 2 else gp2).capsule((x - 10, y, z + 7), (x + 10, y, z + 7), 7, 7)
+        pt.g(NS["band"], outline=0.2).blob((x, y - 6.6, z + 7), (2.4, 0.6, 6.8), p=3)
+    # 3. welding rigs at the deck edge
+    for (x, f) in ((346, -1), (652, 1), (1000, 1)):
+        _welding_rig(pt, st, x, 60, 40, f)
+    # 4. a low goliath crane straddling a stack of hull plates (x 430-630; kept under the ark's keel line):
+    # lattice legs, the top beam, its trolley lowering a plate
+    gpc, gpc2 = pt.g(NS["frame"], outline=0.5), pt.g(NS["frame_dk"], outline=0.4)
+    cx0, cx1, cy0, ch = 430.0, 630.0, 112.0, 76.0
+    for x in (cx0, cx1):
+        for dy in (-12, 12):
+            gpc.capsule((x - 8, cy0 + dy, 40), (x, cy0 + dy, 40 + ch), 2.0, 1.6)
+            gpc.capsule((x + 8, cy0 + dy, 40), (x, cy0 + dy, 40 + ch), 2.0, 1.6)
+        for k in range(3):
+            z0, z1 = 48 + k * 22, 66 + k * 22
+            gpc2.capsule((x - 7 + k * 1.8, cy0 - 12, z0), (x + 6 - k * 1.8, cy0 - 12, z1), 0.6)
+        box(gpc2, (x, cy0, 44), (12, 16, 4), p=6, cuts=1)
+    box(gpc, ((cx0 + cx1) / 2, cy0, 40 + ch + 5), ((cx1 - cx0) / 2 + 12, 15, 5), p=8, cuts=1)
+    for k in range(9):
+        x = cx0 + (cx1 - cx0) * k / 8
+        gpc2.capsule((x, cy0 - 15.4, 40 + ch + 1), (x + (cx1 - cx0) / 16, cy0 - 15.4, 40 + ch + 9), 0.5)
+    tx = cx0 + (cx1 - cx0) * 0.62
+    box(pt.g(NS["hull_dk"], outline=0.4), (tx, cy0, 40 + ch - 2), (10, 12, 4), p=6, cuts=1)
+    gpc2.capsule((tx, cy0 - 2, 40 + ch - 6), (tx, cy0 - 2, 84), 0.5)
+    box(pt.g(NS["hull"], outline=0.5), (tx, cy0 - 2, 76), (18, 1.6, 8), p=6, cuts=1)
+    pt.g(NS["mint"], glow=True).sphere((tx - 8, cy0 - 13, 40 + ch - 2), 1.3, cuts=2)
+    gst_, gst2_ = pt.g(NS["hull_dk"], outline=0.5), pt.g(NS["hull"], outline=0.5)
+    for k in range(5):
+        box(gst_ if k % 2 else gst2_, ((cx0 + cx1) / 2 - 20, cy0 - 4, 42 + k * 3.4), (26 - k * 1.2, 12, 1.6), p=6, cuts=1)
+    # 5. the landing pad (x 700-820): a ring of lights, a yard shuttle parked on it, beacon masts
+    gpad = pt.g(NS["deck_dk"], outline=0.4)
+    px_ = 762.0
+    cyl(gpad, (px_, 96, 40), (px_, 96, 43), 46, bevel=0.5, segs=32, squash=(1.0, 0.4))
+    glw = pt.g(NS["mint"], glow=True)
+    for k in range(10):
+        a = math.pi * (1.0 + k / 9)
+        glw.sphere((px_ + math.cos(a) * 44, 96 + math.sin(a) * 18, 44), 1.4, cuts=2)
+    st.light((px_, 80, 46), 6)
+    _shuttle(0)(kit.StaticRig(pt, (px_ + 4, 96, 43)))
+    for x in (px_ - 64, px_ + 64):
+        pt.g(NS["metal"], outline=0.4).capsule((x, 110, 40), (x, 110, 120), 1.0)
+        st.amb("blink", "bd.light", (x, 110, 122), "mid", period=1500, tint=0x9CF0D4)
+    pt.flush(st)
+
+
+def _crane_arm(rig):
+    """A gantry crane's arm swinging over the ark: a lattice boom on its pivot, a cable with a hull plate."""
+    rig.joint("a", "all", (0, 0, 0))
+    g = Geo()
+    g.capsule((0, 0, 0), (-70, 0, 6), 2.2, 1.4)
+    for k in range(7):
+        g.capsule((-k * 10, 0, 0.6), (-k * 10 - 10, 0, 4), 0.5)
+    rig.part("a", g, "#6A6880", outline=0.3)
+    rig.part("a", Geo().capsule((-66, 0, 5), (-66, 0, -34), 0.35), "#4E4C62", outline=0.0)
+    rig.part("a", Geo().blob((-66, 0, -38), (12, 1.4, 7), p=6, cuts=1), "#A8A2BE", outline=0.4)
+
+
+def ns_props():
+    cx, cy, cz = NS_CRANE
+    crane = scr((cx, cy, cz), NS_FAR_E)
+    plist = [
+        Prop("arm", "far", _crane_arm, [{"a": {"rz": a}} for a in (-14, -6, 4, 14)], (160, 20, 50), crane[1]),
+        Prop("pod", "far", _pod_build, [{}], (30, 14, 14), NS_POD_Y),
+        Prop("shut", "mid", _shuttle(1), [{}], (70, 30, 8), -170),
+    ]
+    sprites = [
+        # the signature: a crane arm swings slowly over the half-built ark
+        {"kind": "loop", "layer": "far", "frames": ["arm_0", "arm_1", "arm_2", "arm_3"], "fps": 0.8, "pingpong": True, "at": crane},
+        # cargo pods drift past the yard on a tow line
+        {"kind": "path", "layer": "far", "fps": 1, "periodS": 90, "keys": [[0, 1560, NS_POD_Y, 1], [90, -360, NS_POD_Y + 16, 1]],
+         "group": [{"frames": ["pod_0"]}, {"frames": ["pod_0"], "dx": 34, "dy": -3}, {"frames": ["pod_0"], "dx": 68, "dy": -5}]},
+        # a yard shuttle crosses high over the deck
+        {"kind": "path", "layer": "mid", "fps": 1, "periodS": 60, "keys": [[0, -360, -170, 0], [2, -300, -170, 1], [24, 1500, -190, 1], [26, 1560, -190, 0],
+                                                                          [60, 1560, -190, 0]],
+         "group": [{"frames": ["shut_0"]}]},
+    ]
+    return plist, sprites
+
+
+def _pod_build(rig):
+    """A cargo pod on the tow line: a rounded canister with a violet band and a mint marker light."""
+    rig.part("all", Geo().capsule((-9, 0, 0), (9, 0, 0), 6, 6), "#C8B8A4", outline=0.4)
+    rig.part("all", Geo().blob((0, -5.8, 0), (2.4, 0.6, 5.6), p=3), "#7460B0", outline=0.2)
+    rig.part("all", Geo().sphere((9.5, -2, 3), 1.0), glow="#9CF0D4", outline=0)
+
+
 SCENES = {
     # the ringed planet is this sky's object: a sky theme brings its stars and colours, not a second moon
     "classic": Scene("cosmic", "classic", PAL, far, mid, back=back, sky=SKY, props=props,
@@ -547,4 +900,7 @@ SCENES = {
                           hints={"celestial": "own", "weather": "space", "skyGrade": 0.35}, ground="deck", back_fade=10.0,
                           # space: the giant keeps its colours (little haze), the station a little more
                           look={"back": (0.12, 0.06, 0.12), "far": (0.16, 0.06, 0.14), "mid": (0.1, 0.0, 0.06)}),
+    "nebula_shipyard": Scene("cosmic", "nebula_shipyard", NS_PAL, ns_far, ns_mid, back=ns_back, sky=NS_SKY, props=ns_props,
+                             hints={"celestial": "own", "weather": "space", "skyGrade": 0.35}, ground="deck", back_fade=10.0,
+                             look={"back": (0.1, 0.04, 0.1), "far": (0.16, 0.06, 0.14), "mid": (0.1, 0.0, 0.06)}),
 }

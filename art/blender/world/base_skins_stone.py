@@ -1068,18 +1068,20 @@ FROST_CAVE = base_module(
 )
 
 # ---------------------------------------------------------------------------------------------------
-# Mammoth Bone Lodge (round 3; Epic, Wardrobe Crate): a domed lodge tower of mammoth bone. A ring of great
-# mammoth skulls is its foundation; three tiers of hide walls rise on curved tusk ribs lashed with rawhide,
-# the middle tier's panels team-coloured; a hide dome closes it under a bone smoke ring crowned by a totem
-# skull whose tusks curl up into the sky, smoke drifting from the hole behind it. The door is an arch of two
-# great tusks over a team curtain lit from the fire inside, bone torches either side; a drying rack of hides
-# and fish stands at the back, and a string of bone chimes swings under the second platform (a `prop` loop).
-# The mounts are rawhide-lashed log decks: on a stack of two skulls by the gate, on tusk brackets from the lower
-# wall, on a long tusk cantilever toward the lane and on the dome's shoulder. Team colour: the middle tier's
-# hide panels, the door curtain, a painted hide on the lower wall and the flags.
+# Mammoth Bone Lodge (round 3; Epic, Wardrobe Crate): a domed lodge tower of mammoth bone. Courses of great
+# mammoth skulls (domed crowns, tusk stubs) form the lower wall; the middle tier is hide on curved tusk ribs,
+# its panels team-coloured; a hide dome closes it under two arching tusks and a bone smoke ring crowned by a
+# totem skull whose tusks curl up into the sky, smoke drifting from the hole behind it. The door is an arch of
+# two great tusks over a team curtain lit from the fire inside, bone torches either side; a drying rack of hides
+# and fish stands at the back, and four strings of bone chimes hang from a rib under the eave, swinging in front
+# of the team hide left of the door (the `chimes` prop loop). The mounts are rawhide-lashed log decks: on a stack of two
+# skulls by the gate, on tusk brackets from the lower wall, on a long tusk cantilever toward the lane and on the
+# dome's shoulder. Team colour: the middle tier's hide panels, the door curtain, a painted hide on the lower wall
+# and the flags.
 #
-# Crumble: 75% cracks in the skulls and a tusk rib snapped off the lower wall, bone and earth rubble; 50% a team
-# panel burnt through with fire, soot, the drying rack burning, a torch out; 25% a ragged breach in the lower
+# Crumble: 75% cracks in the skulls and a loose patch of skulls fallen out of the wall, bone and earth rubble; 50% a
+# team panel burnt through with fire (its chimes gone with it), soot, the drying rack burning, a torch out; 25% a
+# ragged breach in the lower
 # wall with fire, the dome and its totem knocked askew, fire on the dome. Treasury: a basket of berries and
 # meat (1), a pile of furs (2), tusks and ochre stones (3).
 
@@ -1105,6 +1107,11 @@ BL_SQ = 0.9
 # the tiers: (radius at the bottom, radius at the top, z0, z1)
 BL_TIERS = [(78.0, 70.0, 22.0, 134.0), (60.0, 52.0, 128.0, 210.0), (52.0, 4.0, 206.0, 262.0)]
 BL_DOOR = -90.0                # the door's angle (straight at the camera)
+# the bone chimes: four strings hung from a rib bone under the dome's eave, in front of the team hide left of the
+# door (clear of the turrets, whose pennants and arms cover the hide right of the door); they burn with it at 50%
+CHIME_A = (-119.0, -112.5, -106.0, -99.5)
+CHIME_Z, CHIME_OUT = 203.0, 9.5
+CHIME_FRAMES, CHIME_MS = 6, 170
 
 
 def bl_r(z):
@@ -1362,10 +1369,11 @@ def build_bone_lodge(rig, M):
     rig.part("body", g, BL_ROPE, finish="hair", outline=0.5)
 
     # team hide panels stretched between great tusks round the middle tier (one burns at 50%), laced at the edges
-    g = Geo()
+    # (each panel in its own geometry: bl_panel's sector cut would also cut away a panel built before it)
     for a0, a1 in ((-172, -132), (-88, -48), (-46, -8)):
+        g = Geo()
         bl_panel(g, a0 + 2, a1 - 2, 138, 202)
-    rig.part("body", g, team=True)
+        rig.part("body", g, team=True)
     g = Geo()
     bl_panel(g, -130, -92, 138, 202)
     rig.part("panelB", g, team=True)
@@ -1373,6 +1381,19 @@ def build_bone_lodge(rig, M):
     for a in (-172, -131, -90, -47, -6):
         tusk_rib(g, a, 128, 210, out=3.2, bow=3.0, r0=4.0, r1=2.8)
     rig.part("body", g, BL_BONE_LT, finish="gloss")
+    # the chimes' rib bone, lashed under the eave on two pegs (the strings swing in the `chimes` prop loop); it
+    # burns away with the hide behind it
+    g = Geo()
+    pts = [bl_at(a, CHIME_Z, CHIME_OUT) for a in (-123.0, -116.0, -109.0, -102.0, -95.5)]
+    for p0, p1 in zip(pts, pts[1:]):
+        g.capsule(p0, p1, 1.8, segs=10, rings=2)
+    for a in (-121.0, -97.5):
+        g.capsule(bl_at(a, CHIME_Z + 1.5, -1.0), bl_at(a, CHIME_Z, CHIME_OUT), 1.5, segs=8, rings=1)
+    rig.part("panelB", g, BL_BONE, outline=0.6)
+    g = Geo()
+    for a in (-121.0, -97.5):
+        g.blob(bl_at(a, CHIME_Z, CHIME_OUT), (2.4, 2.4, 2.8), p=2.2, cuts=2)
+    rig.part("panelB", g, BL_ROPE, finish="hair", outline=0.4)
     # a painted team hide on the lower wall beside the door, on two bone rods
     hx, hy, _ = bl_at(-150, 80, 5.0)
     g = Geo().slab([(hx - 13, 104), (hx + 13, 106), (hx + 16, 82), (hx + 9, 62), (hx, 56), (hx - 10, 62), (hx - 15, 82)], hy, 2.0)
@@ -1478,7 +1499,7 @@ def build_bone_lodge(rig, M):
     rig.part("body", g, BL_ROPE, finish="hair", outline=0.4)
 
     # damage: cracks on skulls and bones; a burnt team panel; a breach; soot; rubble; fires
-    chipped_cracks(rig, "crack1", [[bl_at(-60, 196, 3.0), bl_at(-54, 184, 3.0), bl_at(-60, 172, 3.0)],
+    chipped_cracks(rig, "crack1", [[bl_at(-59, 90, 15.5), bl_at(-55, 84, 16.5), bl_at(-58, 76, 15.5)],
                                    [bl_at(-152, 26, 18.0), bl_at(-148, 18, 18.0)]], BL_CRACK, BL_BONE_LT, w=1.8)
     chipped_cracks(rig, "crack2", [[bl_at(-28, 120, 4.0), bl_at(-22, 108, 4.0), bl_at(-28, 96, 4.0)],
                                    [bl_at(-30, 26, 18.0), bl_at(-26, 18, 18.0)]], BL_CRACK, BL_BONE_LT, w=1.8)
@@ -1553,25 +1574,38 @@ def crumble_bone_lodge(stage):
     return pose
 
 
+# each string: the cord's length to its bone, the bone's length, the pendant (ochre tooth or red bead)
+CHIME_STRINGS = [(6.0, 11.0, BL_OCHRE), (9.5, 9.0, BL_RED), (5.0, 12.0, BL_RED), (8.5, 9.5, BL_OCHRE)]
+CHIME_AMP = (11.0, 14.0, 10.0, 13.0)
+
+
 def chimes_pose(f):
-    """The bone chimes under the second deck swing (a ping-pong of four steps)."""
-    a = (-1.0, -0.35, 0.35, 1.0)[f]
-    return {f"chime{i}": {"r": a * (9.0 + 3.0 * i)} for i in range(4)}
+    """The bone chimes swing in the wind: each string a pendulum about its knot (one full swing over the six
+    steps), each a little behind the one before it, so they knock together rather than move as one."""
+    return {f"chime{i}": {"r": CHIME_AMP[i] * math.sin(2.0 * math.pi * f / CHIME_FRAMES - 0.7 * i)} for i in range(4)}
 
 
 def build_bone_lodge_with_chimes(rig, M):
     build_bone_lodge(rig, M)
-    mx, my, mz = M[1]
-    for i in range(4):
-        x = mx - 12 + i * 7.5
-        top = (x, my - 12, mz - 8)
-        rig.joint(f"chime{i}", "root", top)
-        L = 14.0 + (i % 2) * 5.0
-        g = Geo().capsule(top, (x, my - 12, mz - 8 - L), 0.5, segs=6, rings=1)
-        rig.part(f"chime{i}", g, BL_ROPE, outline=0.3)
-        g = Geo().capsule((x - 1.2, my - 12, mz - 8 - L - 1), (x + 1.2, my - 12, mz - 8 - L - 8), 1.5, 1.1, segs=8, rings=2)
-        g.sphere((x - 1.2, my - 12, mz - 8 - L - 1), 1.9, cuts=2)
-        rig.part(f"chime{i}", g, BL_BONE)
+    for i, a in enumerate(CHIME_A):
+        x, y, z = bl_at(a, CHIME_Z - 1.8, CHIME_OUT)
+        rig.joint(f"chime{i}", "root", (x, y, z))
+        cord_l, bone_l, bead = CHIME_STRINGS[i]
+        b0, b1 = z - cord_l, z - cord_l - bone_l
+        # the cord runs on through the bone to the pendant below it
+        g = Geo().capsule((x, y, z), (x, y, b1 - 3.0), 0.75, segs=6, rings=1)
+        rig.part(f"chime{i}", g, BL_WOOD_DK, outline=0.3, highlight=False)
+        # a cartoon leg bone (two knuckles at each end), hung upright
+        g = Geo().capsule((x, y, b0 - 1.6), (x, y, b1 + 1.6), 1.45, segs=10, rings=2)
+        for zz in (b0, b1):
+            for s in (-1, 1):
+                g.sphere((x + s * 1.35, y, zz), 1.95, cuts=2)
+        rig.part(f"chime{i}", g, BL_BONE_LT, outline=0.55)
+        if bead == BL_OCHRE:
+            g = Geo().blob((x, y, b1 - 6.2), (1.5, 1.3, 3.2), p=2.0, taper=(1.0, 0.35))
+        else:
+            g = Geo().blob((x, y, b1 - 4.8), (1.9, 1.9, 1.9), p=2.2, cuts=2)
+        rig.part(f"chime{i}", g, bead, outline=0.45)
 
 
 MAMMOTH_BONE_LODGE = base_module(
@@ -1581,8 +1615,8 @@ MAMMOTH_BONE_LODGE = base_module(
     lights=[((BL_CX, BL_CY - 74, 14), 3, 28), ((BL_CX - 32, BL_CY - 78, 52), 3, 18), ((BL_CX + 32, BL_CY - 78, 52), 1, 18)],
     smoke=[((BL_CX, BL_CY, 270), 2), ((BL_CX - 40, -30, 150), 3), ((BL_CX + 24, -50, 60), 3)],
     horn=(-96, 316), yaw=BASE_YAW,
-    props=[prop_loop("chimes", [f"chime{i}" for i in range(4)], 4, chimes_pose, ms=170, crumble=(0, 2), z="front", hold=1,
-                     anchor=(-48.0, -36.0, 100.0), sequence=[0, 1, 2, 3, 2, 1])],
+    props=[prop_loop("chimes", [f"chime{i}" for i in range(4)], CHIME_FRAMES, chimes_pose, ms=CHIME_MS, crumble=(0, 1),
+                     z="front", hold=1, anchor=bl_at(-109.0, CHIME_Z - 16.0, CHIME_OUT), outline="none")],
     extra_meta={
         "collapseMaterial": "stone",
         # the dome with its totem falls toward the lane, the middle tier a beat later

@@ -19,7 +19,22 @@ import { circle, hex, INK, poly, rect, shade, shapesToSvg, star, type Paints, ty
 const TEAM = 0x2f7df6;
 
 /** Ambient particle kinds: the tint skins' fields, plus the models' own mist, rain, smoke and steam (round 2). */
-export type SkinParticles = 'snow' | 'fireflies' | 'glints' | 'petals' | 'embers' | 'dust' | 'stars' | 'mist' | 'rain' | 'smoke' | 'steam';
+export type SkinParticles =
+  | 'snow'
+  | 'fireflies'
+  | 'glints'
+  | 'petals'
+  | 'embers'
+  | 'dust'
+  | 'stars'
+  | 'mist'
+  | 'rain'
+  | 'smoke'
+  | 'steam'
+  // round 3: birds gliding past a skin model (the Jungle Outpost's birds, the harbour skins' gulls) and smoke
+  // rings puffed by a sleeping dragon (the Wyrm-Coil Keep)
+  | 'birds'
+  | 'rings';
 
 export interface BaseSkinArt {
   /** Multiplied into the base body (never the team layer). */
@@ -52,6 +67,21 @@ export function hasBaseSkinArt(id: string): boolean {
 /** True when `baseSkin.<id>` has a real model (`base.<age>@<id>`, PLAN 2c), not only a tint. */
 export function hasBaseSkinModel(id: string): boolean {
   return WORLD_BASE_SKINS[id] !== undefined;
+}
+
+/**
+ * Where a Legendary model's white aura shines in its base picture when it is not round the whole body (Colossus
+ * Lighthouse's raised torch): centre and radius as fractions of the square picture's side (the base portrait, plate
+ * off, standing on the bottom edge; side 0: the screens mirror x for side 1). Measured from the sheet's
+ * `meta.ageborn.auraLu` and the portrait's framing (`basePortraitSpot`; a test holds the two equal). Null for every
+ * other skin: the screens keep the upright ellipse about the body.
+ */
+const AURA_SPOTS: Readonly<Record<string, { x: number; y: number; r: number }>> = {
+  colossus_lighthouse: { x: 0.446, y: 0.045, r: 0.134 },
+};
+
+export function baseSkinAuraSpot(id: string): { x: number; y: number; r: number } | null {
+  return AURA_SPOTS[id] ?? null;
 }
 
 /** The base skin's lane look (tint, trim, particles) for a `baseSkin.<id>` key, or null (no key, or a model without a tint). */

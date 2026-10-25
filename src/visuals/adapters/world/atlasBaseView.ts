@@ -40,7 +40,9 @@
  * for the dressing). An evolve into a skinned age whose model is still loading assembles the standard
  * base of that age and swaps the model in afterwards (the build-up never waits for a skin). A Legendary
  * model (`meta.ageborn.aura: 'legendary'`: Crystal Spire, Nebula Ark) stands in a soft white aura that
- * breathes slowly (still under Reduce motion), dims with the crumble stages and goes out in the collapse.
+ * breathes slowly (still under Reduce motion), dims with the crumble stages and goes out in the collapse;
+ * a model whose meta places it (`auraLu`: Colossus Lighthouse's raised torch) wears it there as a round
+ * halo that flickers with the fire instead.
  *
  * Prop loops (round 3, the base contract's generic `prop` clip, `meta.ageborn.props`): an N-frame loop over the
  * body (Windmill Redoubt's sails, Arctic Radar's dish, Crystal Spire's orbiting shards, Nebula Ark's nebula), in
@@ -64,7 +66,7 @@ import { FX_ZONES } from '../../effects/sprites';
 import { CLIP_TIMING } from '../../style';
 import { baseSheetSource } from '../../manifest.world';
 import { partSprite, PuffList } from '../procedural/shared';
-import { clipDurations, frameIndex, isBaseSkinSource, setFrame, type WorldAtlas, type WorldMeta, type WorldSheet } from '../worldAtlas';
+import { clipDurations, frameIndex, isBaseSkinSource, setFrame, type WorldAtlas, type WorldSheet } from '../worldAtlas';
 import { CollapseView } from './collapse/collapseView';
 import { collapseProfileFor, type CollapseMaterial } from './collapse/profiles';
 import { warmCollapse } from './collapse/warm';
@@ -352,6 +354,8 @@ export class AtlasBaseView implements BaseView {
   private readonly aura: Sprite;
   private auraOn = false;
   private auraScale = { x: 1, y: 1 };
+  /** Where the aura shines when the sheet places it (`meta.ageborn.auraLu`, screen lu from the gate, y up). */
+  private auraAt: { x: number; y: number; r: number } | null = null;
   private lights: { s: Container; phase: number; crumbleMax: number; a: number }[] = [];
   private crumble = 0;
   private treasury = 0;
@@ -486,11 +490,13 @@ export class AtlasBaseView implements BaseView {
     const w = m.widthLu ?? 160;
     this.shadow.position.set(-w * 0.48 * this.facing, 3);
     this.shadow.scale.set((w * 1.25) / 36, 2.4);
-    // a Legendary model's aura: an upright ellipse a little larger than the body
-    this.auraOn = (m as WorldMeta & { aura?: string }).aura === 'legendary';
+    // a Legendary model's aura: an upright ellipse a little larger than the body, or a round halo where the
+    // sheet places it (Colossus Lighthouse's torch)
+    this.auraOn = m.aura === 'legendary';
     this.aura.visible = this.auraOn;
     const tw = Math.max(1, this.aura.texture.width);
-    this.auraScale = { x: (w * 1.55) / tw, y: (m.heightLu * 1.3) / tw };
+    this.auraAt = this.auraOn && m.auraLu ? m.auraLu : null;
+    this.auraScale = this.auraAt ? { x: (this.auraAt.r * 2) / tw, y: (this.auraAt.r * 2) / tw } : { x: (w * 1.55) / tw, y: (m.heightLu * 1.3) / tw };
     this.aura.scale.set(this.auraScale.x, this.auraScale.y);
     this.show();
   }
@@ -894,17 +900,25 @@ export class AtlasBaseView implements BaseView {
     this.stepChunks(dtMs);
   }
 
-  /** The Legendary aura: centred on the body, breathing (still under Reduce motion), out once the base breaks. */
+  /**
+   * The Legendary aura: centred on the body (or round the spot the sheet names), breathing (still under Reduce
+   * motion; a placed halo flickers with its fire instead), out once the base breaks.
+   */
   private stepAura(r: Rect | null, reduce: boolean): void {
     const broken = !!this.collapsing?.broken;
     this.aura.visible = !broken;
     if (broken) return;
-    const h = this.sheet.meta.heightLu;
-    const cx = r ? r.x + r.w / 2 : -(this.sheet.meta.widthLu ?? 160) * 0.5;
-    const cy = r ? r.y + r.h * 0.48 : -h * 0.5;
-    this.aura.position.set(cx * this.facing, cy);
+    const at = this.auraAt;
+    if (at) {
+      this.aura.position.set(at.x * this.facing, -at.y);
+    } else {
+      const h = this.sheet.meta.heightLu;
+      const cx = r ? r.x + r.w / 2 : -(this.sheet.meta.widthLu ?? 160) * 0.5;
+      const cy = r ? r.y + r.h * 0.48 : -h * 0.5;
+      this.aura.position.set(cx * this.facing, cy);
+    }
     const t = this.clockMs;
-    const breathe = reduce ? 0 : Math.sin(t / 900);
+    const breathe = reduce ? 0 : at ? 0.62 * Math.sin(t / 230) + 0.38 * Math.sin(t / 97 + 1.3) : Math.sin(t / 900);
     this.aura.alpha = AURA_ALPHA * (1 - 0.16 * this.crumble) * (1 + 0.16 * breathe) * this.collapseLight;
     const k = reduce ? 1 : 1 + 0.025 * Math.sin(t / 1300 + 1.2);
     this.aura.scale.set(this.auraScale.x * k, this.auraScale.y * k);

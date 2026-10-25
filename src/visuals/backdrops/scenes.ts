@@ -31,17 +31,18 @@ export const CLASSIC = 'classic';
 /**
  * Pre-rendered scenes per age: scene id → layer format (2, in `<age>/<scene>/`). Bronze, Industrial and
  * Cosmic got their first Blender layers in round 1, round 2 added the first new scene of every age, and
- * round 3 re-rendered the other five classics (format 1 is gone).
+ * round 3 re-rendered the other five classics (format 1 is gone) and added the second, Epic scene of
+ * every age (held until reviewed: the content's `released` flag decides who can own one).
  */
 export const SCENE_ART: Readonly<Record<AgeId, Readonly<Record<string, 2>>>> = {
-  stone: { classic: 2, glacier_valley: 2 },
-  bronze: { classic: 2, aegean_harbour: 2 },
-  medieval: { classic: 2, misty_moor: 2 },
-  gunpowder: { classic: 2, treasure_cove: 2 },
-  industrial: { classic: 2, viaduct_gorge: 2 },
-  modern: { classic: 2, desert_airbase: 2 },
-  future: { classic: 2, skyway_metropolis: 2 },
-  cosmic: { classic: 2, ringed_giant: 2 },
+  stone: { classic: 2, glacier_valley: 2, sabre_savanna: 2 },
+  bronze: { classic: 2, aegean_harbour: 2, bronze_city_siege: 2 },
+  medieval: { classic: 2, misty_moor: 2, harbour_town: 2 },
+  gunpowder: { classic: 2, treasure_cove: 2, windmill_polder: 2 },
+  industrial: { classic: 2, viaduct_gorge: 2, zeppelin_docks: 2 },
+  modern: { classic: 2, desert_airbase: 2, monsoon_river: 2 },
+  future: { classic: 2, skyway_metropolis: 2, terraformed_gardens: 2 },
+  cosmic: { classic: 2, ringed_giant: 2, nebula_shipyard: 2 },
 };
 
 /**
@@ -51,7 +52,7 @@ export const SCENE_ART: Readonly<Record<AgeId, Readonly<Record<string, 2>>>> = {
  * shipped files.
  */
 export const SPACE_SCENES: Readonly<Partial<Record<AgeId, readonly string[]>>> = {
-  cosmic: ['classic', 'ringed_giant'],
+  cosmic: ['classic', 'ringed_giant', 'nebula_shipyard'],
 };
 
 /** True when the scene `scene.<id>` (or a bare id; null = the classic) shows `age` in space (weather `space`). */

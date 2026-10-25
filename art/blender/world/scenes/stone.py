@@ -23,13 +23,26 @@ rock island, a crevassed icefall, then the blue-grey tongue with crevasse arcs b
 medial moraine trailing from the rock island, lateral moraines, rock walls either side, and a broken
 serac snout with a meltwater cave; a frozen waterfall on a cliff, snowy spruce slopes, a terminal
 moraine; a mammoth herd walks the valley floor. Mid: a snow bank with snow-laden spruces, ice boulders,
-a bone-and-hide hunters' camp (tents, a drying rack, a mammoth-tusk arch, a fire) and an ice-cave
-mouth. Ambient: 3 mammoths walking (`path`, 90 s), an eagle circling, ice glints, camp smoke and the
+a bone-and-hide hunters' camp (tents, a drying rack, a mammoth-tusk arch, a fire) and an ice cave in
+a rock crag. Ambient: 3 mammoths walking (`path`, 90 s), an eagle circling, ice glints, camp smoke and the
 fire; the camp's fire and tents glow under night skies.
 
 Palette (PLAN 2b): ice #BCD3DC (desaturated), snow #EEF1F1, cold rock #8A8C96, hide #A88A6A. Ice blues
 sit in the team-blue band (182-254 degrees), so they stay under 40% saturation (A11 colour rule); the
 fire is a small accent.
+
+"Sabre Savanna" (format 2, round 3; Epic, Wardrobe Crate): golden grassland under a warm haze. Back: a
+long table plateau with a broken escarpment. Far: a sandstone mesa with a natural arch (a tube swept
+along the arc, strata across it) and a sandstone fin beside it, granite kopjes, a baobab, termite
+mounds, flat-topped acacias in twos and threes, a herd of giant deer far off, a hunters' camp at the
+arch's foot. Mid: a golden grass bank with tall clumps, the watering hole with reeds, a dead tree and
+bones, big flat-topped acacias, a termite mound, the sabre-tooth's kopje, a hunters' rest (a lean-to, a
+drying rack, an ember pit), giant deer grazing. Ambient: the sabre-tooth's tail flicks on its rock, a
+grass clump sways, a giant deer walks the bank, vultures circle, a dust devil crosses the plain every 40
+s (the signature), the water shimmers; the camps' fires glow under night skies.
+
+Palette (PLAN 2b): dry grass #C9B37A, sandstone #A8826A (the PLAN's #B07A5A desaturated under 40% for
+the colour rule), acacia green #6E8A44.
 """
 import math
 import random
@@ -563,12 +576,13 @@ def gv_far(st, P):
     gfw, gfw2 = pt.g(0xDCE8EE, finish="gloss", outline=0.5), pt.g(0xC4D8E2, finish="gloss", outline=0.4)
     for k in range(5):
         x = 814 + k * 8
-        L = 178 - abs(k - 2) * 20
+        L = 206 - abs(k - 2) * 20
         prof = [(0.01, 0)] + [(5.2 + 1.8 * math.sin(t * 7 + k), t * L) for t in (0.04, 0.2, 0.36, 0.52, 0.68, 0.84)] + [(1.6, L), (0.01, L + 2)]
         (gfw if k % 2 == 0 else gfw2).lathe(prof, (x, 292, 282), (x, 292, 282 - L - 2), segs=9)
     kit.icicles(gfw2, 790, 812, 294, 276, 56, seed=7)
     kit.icicles(gfw2, 850, 872, 294, 272, 50, seed=8)
-    gfw.lathe([(0.01, 0), (44, 0), (44, 3.4), (0.01, 4.4)], (830, 282, 94), (830, 282, 98.4), segs=24, squash=(1.0, 0.36))
+    # the frozen pool at the cascade's foot, on the valley floor (round 3: it hovered above the snow)
+    gfw.lathe([(0.01, 0), (44, 0), (44, 3.4), (0.01, 4.4)], (830, 282, 66), (830, 282, 70.4), segs=24, squash=(1.0, 0.36))
     st.amb("blink", "fx.p.star", (830, 290, 200), period=2900, tint=0xF6FAFF, scale=0.6)
     pt.flush(st)
 
@@ -623,18 +637,21 @@ def gv_mid(st, P):
     st.light((fx_, fy, fz + 8), 10)
     st.amb("emit", "fx.p.smoke", (fx_, fy, fz + 30), rate=0.7, speed=10, scale=1.0, tint=0xE8EAEC, alpha=0.38, life=2800)
     st.amb("emit", "fx.p.smoke", (268, 70, 34 + 80), rate=0.35, speed=8, scale=0.8, tint=0xE8EAEC, alpha=0.3, life=2600)
-    # the ice-cave mouth (x 820): a lumpy ice mound under a snow cap, a dark mouth fringed with icicles
-    gm = pt.g(GV["ice"], finish="gloss", outline=0.5)
-    rock(gm, (826, 96, 44), (80, 44, 62), seed=61, jag=0.1, p=2.2)
-    rock(gm, (770, 86, 40), (38, 32, 38), seed=62, jag=0.12, p=2.2)
-    rock(pt.g(GV["serac"], outline=0.5), (880, 84, 38), (30, 28, 30), seed=63, jag=0.14, p=2.2)
-    kit.snow_cap(pt.g(GV["snow"], outline=0.4), (826, 96, 44), (80, 44, 62), seed=61, jag=0.1, p=2.2, cut=84)
-    kit.snow_cap(pt.g(GV["snow"], outline=0.4), (770, 86, 40), (38, 32, 38), seed=62, jag=0.12, p=2.2, cut=62)
+    # the ice cave (x 820; round 3: the old glossy ice mound with its round door read as an igloo): a low
+    # jagged rock crag with snow on its ledges, a dark irregular cave mouth at its foot fringed with icicles,
+    # and blue ice blocks fallen by it
+    gcr, gcr2, gsc = pt.g(GV["rock"], outline=0.5), pt.g(GV["rock_dk"], outline=0.5), pt.g(GV["snow"], outline=0.4)
+    for c, r, sd, cut in (((826, 96, 44), (78, 44, 60), 61, 82), ((768, 88, 40), (36, 32, 40), 62, 62), ((884, 86, 38), (30, 28, 34), 63, 56)):
+        rock(gcr2 if sd == 62 else gcr, c, r, seed=sd, jag=0.2, p=2.0)
+        kit.snow_cap(gsc, c, r, seed=sd, jag=0.2, p=2.0, cut=cut)
     gcv = pt.g(GV["cave"], outline=0.0, highlight=False)
-    gcv.slab([(790, 38), (862, 38), (862, 52)] + [(826 + 36 * math.cos(math.pi * k / 12), 52 + 30 * math.sin(math.pi * k / 12)) for k in range(1, 12)]
-             + [(790, 52)], 50, 1.2)
-    kit.icicles(pt.g(0xDCE8EE, finish="gloss", outline=0.3), 794, 858, 48, 84, 16, seed=5)
-    st.light((826, 46, 58), 7)
+    mouth = [(-32, 0), (30, 0), (28, 10), (22, 19), (13, 25), (2, 27), (-9, 25), (-19, 20), (-28, 11)]
+    gcv.slab([(826 + mx, 38 + mz) for mx, mz in mouth], 48, 1.2)
+    kit.icicles(pt.g(0xDCE8EE, finish="gloss", outline=0.3), 806, 848, 47, 64, 12, seed=5)
+    gib = pt.g(GV["serac"], finish="gloss", outline=0.5)
+    for k, (x, sz) in enumerate(((774, 9), (790, 6), (872, 8))):
+        box(gib, (x, 40, 34 + sz * 0.8), (sz, sz * 0.8, sz), p=4.0, cuts=2, rot=(0, rnd.uniform(-16, 16), rnd.uniform(-30, 30)))
+    st.light((826, 46, 52), 7)
     pt.flush(st)
 
 
@@ -676,6 +693,7 @@ SS = dict(
     grass=0xC9B37A, grass_dk=0xAE9A62, grass_lt=0xD8C690, straw=0xC2AC72, sand=0xD2C29C, sandstone=0xA8826A, sandstone_dk=0x8E6C58,
     sandstone_lt=0xBC9A80, rock=0x9A8670, rock_dk=0x7E6C5A, acacia=0x6E8A44, acacia_dk=0x5A7438, bark=0x6A5646, termite=0xB0906C,
     termite_dk=0x96785A, water=0x9AB0AC, water_hi=0xC8D6D2, mud=0x8E7A5E, hide=0xA88A6A, bone=0xE6DCC6, ember=0x5A4038,
+    bark_lt=0x8E7C6A,
 )
 SS_SKY = {"top": "#A8B8C4", "bottom": "#F0E2C4", "horizon": "#F6E8CC", "cloudTint": "#FAF2E2", "celestial": "sun",
           "sunAt": [300, -520, 44], "clouds": 0.5, "smog": 0.14}
@@ -689,39 +707,44 @@ SS_DEER_Y = -46.0                    # the giant deer's walk along the bank (mid
 
 
 def ss_back(st, P):
-    """A long table plateau along the horizon with a broken escarpment, hazed warm (lowest under the
-    moons' place)."""
+    """A long table plateau along the horizon with a broken escarpment and a lone butte, hazed warm (lowest
+    under the moons' place, x 720-1000)."""
     hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
     pt = Parts()
     g, g2, gt = pt.g(hz(SS["sandstone"], 0.42), outline=0.0), pt.g(hz(SS["sandstone_dk"], 0.4), outline=0.0), pt.g(hz(SS["grass_dk"], 0.4), outline=0.0)
-    for k, (x, rx, h) in enumerate(((-200, 200, 110), (160, 180, 90), (560, 170, 70), (900, 120, 40), (1200, 210, 104), (1450, 160, 90))):
-        kit.butte(g if k % 2 else g2, [g2 if k % 2 else g], gt, x, 1500, -40, rx, 60, h, seed=80 + k, bands=((0.45, 0.55),))
+    for k, (x, rx, h) in enumerate(((-230, 230, 210), (120, 210, 196), (430, 170, 176), (650, 90, 150), (880, 110, 84), (1130, 240, 206), (1430, 190, 190))):
+        kit.butte(g if k % 2 else g2, [g2 if k % 2 else g], gt, x, 1500, -40, rx, 70, h, seed=80 + k, bands=((0.42, 0.5), (0.7, 0.75)))
     pt.flush(st)
 
 
 def _arch(pt, x, y, z):
-    """The natural arch on its mesa: a stepped sandstone base, two weathered legs and a thick span with
-    a jagged top, strata bands across it, a few tufts on the top. Returns the span's top point."""
-    gs, gs2, gs3 = pt.g(SS["sandstone"], outline=0.4), pt.g(SS["sandstone_dk"], outline=0.4), pt.g(SS["sandstone_lt"], outline=0.0)
-    kit.butte(gs, [gs2, gs3], pt.g(SS["sand"], outline=0.0), x, y + 10, z, 150, 70, 64, seed=21, bands=((0.3, 0.4), (0.62, 0.7)))
-    zt = z + 62
-    # the legs and the span: blobs along an arc, thicker at the feet
-    for k in range(17):
-        a = math.pi * k / 16
-        ax, az = x - 64 * math.cos(a), zt + 76 * math.sin(a)
-        r = 18 - 8 * math.sin(a)
-        rock(gs if k % 2 else gs2, (ax, y - 6, az), (r * 1.15, 18, r), seed=200 + k, jag=0.18, p=2.4, cuts=3)
-    for k in range(6):
-        a = math.pi * (k + 0.5) / 6
-        rock(gs, (x - 64 * math.cos(a), y - 6, zt + 90 * math.sin(a) + 6), (14, 16, 8), seed=230 + k, jag=0.24, p=2.2, cuts=2)
-    gb = pt.g(SS["sandstone_lt"], outline=0.0, highlight=False)
-    for k in range(12):
-        a = math.pi * (k + 0.5) / 12
-        gb.blob((x - 64 * math.cos(a), y - 22, zt + 76 * math.sin(a) + 2), (6, 1.0, 1.6), p=2.2, rot=(0, -math.degrees(a) + 90, 0), cuts=2)
+    """The natural arch (the signature) on its mesa: two thick weathered legs and a span thinning toward the
+    top (a tube swept along the arc, lumpy), strata bands lying across it, a sandstone fin beside it, tufts on
+    the mesa. `z` is the mesa's foot. Returns the span's top point."""
+    gs, gs2, gs3 = pt.g(SS["sandstone"], outline=0.5), pt.g(SS["sandstone_dk"], outline=0.4), pt.g(SS["sandstone_lt"], outline=0.0)
+    kit.butte(gs, [gs2, gs3], pt.g(SS["sand"], outline=0.2), x, y + 14, z, 150, 66, 60, seed=21, bands=((0.3, 0.38), (0.62, 0.68)))
+    zt = z + 58
+    pts, radii = [], []
+    for k in range(25):
+        s = k / 24
+        a = math.pi * s
+        pts.append((x - 92 * math.cos(a) + 6 * math.sin(2 * a), y - 6, zt + 104 * math.sin(a) ** 0.78))
+        radii.append(12.5 + 15 * (1 - math.sin(a)) ** 1.25 + (3 if s > 0.5 else 0) * (1 - math.sin(a)))
+    from world.common import _jitter
+    n0 = kit.sweep(gs, pts, radii, squash=1.3, segs=16)
+    _jitter(gs, n0, (x, y - 6, zt + 50), 0.1, 77, 0.09)
+    for k, (f0, f1) in enumerate(((0.18, 0.26), (0.5, 0.56), (0.8, 0.86))):
+        tmp = Geo()
+        n1 = kit.sweep(tmp, pts, [r * 1.04 for r in radii], squash=1.3, segs=16)
+        _jitter(tmp, n1, (x, y - 6, zt + 50), 0.1, 77, 0.09)
+        tmp.clip((x, y, zt + 104 * f0), (0.0, 0.0, -1.0))
+        tmp.clip((x, y, zt + 104 * f1), (0.0, 0.0, 1.0))
+        kit._merge(gs2 if k % 2 else gs3, tmp)
+    kit.butte(gs2, [gs3], pt.g(SS["sand"], outline=0.2), x + 136, y + 18, zt - 4, 26, 13, 78, seed=24, bands=((0.4, 0.46),), tier=0.12)
     gtu = pt.g(SS["grass_dk"], outline=0.3)
-    for k in range(5):
-        kit.round_bush(gtu, x - 30 + k * 15, y - 4, 4.6, seed=260 + k, z=zt + 96, flat=0.7)
-    return (x, y, zt + 100)
+    for k in range(7):
+        kit.round_bush(gtu, x - 120 + k * 36 + (k % 2) * 6, y - 30, 4.4, seed=260 + k, z=zt + 1, flat=0.7)
+    return (x, y, zt + 112)
 
 
 def ss_far(st, P):
@@ -738,37 +761,29 @@ def ss_far(st, P):
     # 2. the arch (the signature) on its mesa
     ax, ay, az = SS_ARCH
     _arch(pt, ax, ay, az)
-    # 3. termite mounds: tall lumpy spires of baked earth
+    # 3. kopjes (granite boulder heaps) on the right and left, a baobab, termite mounds
+    gk, gk2 = pt.g(SS["rock"], outline=0.4), pt.g(SS["rock_dk"], outline=0.4)
+    for k, (x, y, r, h) in enumerate(((1150, 470, 70, 58), (1240, 500, 46, 40), (-120, 480, 64, 52))):
+        kit.kopje(gk, gk2, x, y, 40, r, h, seed=70 + k)
+    gbb, gba = pt.g(SS["bark_lt"], outline=0.4), pt.g(SS["acacia_dk"], outline=0.3)
+    kit.baobab(gbb, gba, 1030, 430, 36, 64, seed=5)
     gt, gt2 = pt.g(SS["termite"], outline=0.3), pt.g(SS["termite_dk"], outline=0.3)
-    for k, (x, y, h) in enumerate(((180, 380, 40), (214, 392, 26), (720, 372, 46), (760, 384, 30), (1050, 390, 38), (1300, 376, 44), (-120, 386, 34))):
-        z = 34
-        (gt if k % 2 else gt2).lathe([(0.01, 0), (h * 0.32, 0), (h * 0.24, h * 0.3), (h * 0.18, h * 0.62), (h * 0.08, h * 0.92), (0.01, h)], (x, y, z), (x, y, z + h), segs=12)
-        for j in range(3):
-            rock(gt2, (x + rnd.uniform(-4, 4), y - 2, z + h * rnd.uniform(0.3, 0.7)), (h * 0.12, h * 0.1, h * 0.12), seed=300 + k * 3 + j, jag=0.3, p=2.0, cuts=2)
-    # 4. flat-topped acacias across the plain, a few far grazers
-    ga, ga2, gb = pt.g(SS["acacia"], outline=0.3), pt.g(SS["acacia_dk"], outline=0.3), pt.g(SS["bark"], outline=0.0)
-    for k in range(16):
-        x = rnd.uniform(-250, 1450)
-        if 330 < x < 620:
-            continue
-        y = rnd.uniform(380, 520)
-        h = rnd.uniform(22, 34)
-        z = 34 if y < 450 else 50
-        gb.capsule((x, y, z), (x + rnd.uniform(-2, 2), y, z + h * 0.7), 1.0, 0.7)
-        gb.capsule((x, y, z + h * 0.5), (x - h * 0.2, y, z + h * 0.8), 0.6)
-        gb.capsule((x, y, z + h * 0.5), (x + h * 0.22, y, z + h * 0.82), 0.6)
-        (ga if k % 2 else ga2).blob((x, y, z + h * 0.88), (h * 0.62, h * 0.3, h * 0.13), p=2.2, cuts=3)
-    gd = pt.g(SS["hide"], outline=0.0)
-    for k in range(12):
-        x = rnd.uniform(-200, 1400)
-        if 360 < x < 600:
-            continue
-        gd.blob((x, 420, 46), (4.2, 2.0, 2.6), p=2.2)
+    for k, (x, y, h) in enumerate(((180, 380, 44), (220, 394, 28), (740, 372, 52), (1320, 376, 46), (-60, 386, 36), (860, 400, 30))):
+        kit.termite_mound(gt if k % 2 else gt2, gt2, x, y, 34, h, seed=300 + k)
+    # 4. flat-topped acacias across the plain, in twos and threes, and a far herd of grazers
+    ga, ga2, gb = pt.g(SS["acacia"], outline=0.3), pt.g(SS["acacia_dk"], outline=0.3), pt.g(SS["bark"], outline=0.2)
+    for k, (x, y, h) in enumerate(((-230, 400, 40), (-190, 420, 30), (40, 410, 46), (80, 440, 32), (250, 470, 34), (660, 420, 44), (700, 446, 30),
+                                   (930, 400, 50), (980, 420, 34), (1360, 420, 42), (1420, 446, 30), (800, 520, 26), (1100, 540, 24), (120, 530, 22))):
+        z = 34 if y < 450 else 48
+        kit.acacia(gb, ga, ga2, x, y, z, h, seed=400 + k)
+    for k in range(9):
+        x = 800 + k * 26 + rnd.uniform(-8, 8)
+        fauna.giant_deer(size=0.42)(kit.StaticRig(pt, (x, 440 + rnd.uniform(-10, 10), 44), flip=k % 3 == 0))
     # 5. a hunters' camp at the arch's foot: two hide tents and a fire (lit at night)
-    for k, (dx, r, h) in enumerate(((-110, 9.0, 20.0), (-90, 7.0, 16.0))):
+    for k, (dx, r, h) in enumerate(((-118, 10.0, 22.0), (-96, 8.0, 18.0))):
         kit.hide_tent(pt, ax + dx, 352, 34, r, h, hide=SS["hide"], seed=50 + k)
-    st.light((ax - 100, 344, 38), 5)
-    st.amb("emit", "bd.puff", (ax - 100, 344, 50), rate=0.3, speed=6, scale=0.7, tint=0xE8E2D6, alpha=0.3, life=3200, drift=5)
+    st.light((ax - 104, 344, 38), 5)
+    st.amb("emit", "bd.puff", (ax - 104, 344, 50), rate=0.3, speed=6, scale=0.7, tint=0xE8E2D6, alpha=0.3, life=3200, drift=5)
     pt.flush(st)
 
 
@@ -782,46 +797,72 @@ def ss_mid(st, P):
         x = -300 + i * 130
         low = abs(x - px) < prx + 30
         rock(g if i % 2 else g2, (x, 80, 8), (96, 60, (30 if low else 40) + rnd.uniform(0, 10)), seed=i, jag=0.05, p=2.4)
-    # tall grass clumps all along (two of them sway: props)
-    gg, gg2 = pt.g(SS["straw"], finish="hair", outline=0.4), pt.g(SS["grass_dk"], finish="hair", outline=0.4)
-    for i in range(46):
+    # golden grass tussocks all along: a full base of grass with blades fanning out of it (one more sways: a prop)
+    gg, gg2, gg3 = pt.g(SS["straw"], finish="hair", outline=0.4), pt.g(SS["grass_dk"], finish="hair", outline=0.4), pt.g(SS["grass_lt"], finish="hair", outline=0.4)
+    gtb = pt.g(SS["grass"], finish="hair", outline=0.4)
+    for i in range(52):
         x = rnd.uniform(-250, 1450)
-        if abs(x - px) < prx - 10:
+        if abs(x - px) < prx - 10 or abs(x - SS_CAT[0]) < 34:
             continue
-        cx, cz = x, rnd.uniform(38, 46)
-        for j in range(5):
-            a = -0.5 + j * 0.25 + rnd.uniform(-0.08, 0.08)
-            L = rnd.uniform(16, 26)
-            (gg if (i + j) % 2 else gg2).capsule((cx, rnd.uniform(30, 50), cz), (cx + math.sin(a) * L, rnd.uniform(30, 50), cz + math.cos(a) * L), 0.9, 0.3)
-    # 1. the watering hole (x 220-460, low: the arch stands behind it at the game's camera): grey-teal
-    # water in a muddy rim, reeds, bones at the edge
-    pt.g(SS["mud"], outline=0.3).blob((px, py, pz - 0.6), (prx + 10, pry + 6, 1.6), p=2.4, cuts=3)
+        cx, cy, cz = x, rnd.uniform(34, 56), rnd.uniform(38, 44)
+        k_ = rnd.uniform(0.8, 1.2)
+        gtb.blob((cx, cy, cz + 2), (9 * k_, 5, 5 * k_), p=2.2, cuts=3, taper=(1.0, 0.7))
+        for j in range(9):
+            a = -0.75 + j * 0.19 + rnd.uniform(-0.06, 0.06)
+            L = rnd.uniform(16, 28) * k_
+            (gg3, gg, gg3, gg2)[(i + j) % 4].capsule((cx + math.sin(a) * 4, cy + rnd.uniform(-2, 2), cz + 3), (cx + math.sin(a) * L, cy + rnd.uniform(-3, 3), cz + math.cos(a) * L),
+                                                      1.4, 0.35)
+    # 1. the watering hole (x 220-460, low: the arch stands behind it at the game's camera): grey-teal water in
+    # a muddy rim, reeds, a dead tree standing in the shallows, bones at the edge; it shimmers (blinks)
+    pt.g(SS["mud"], outline=0.3).blob((px, py, pz - 0.6), (prx + 12, pry + 7, 1.6), p=2.4, cuts=3)
     pt.g(SS["water"], finish="gloss", outline=0.3).blob((px, py, pz), (prx, pry, 1.6), p=2.6, cuts=3)
     gwh = pt.g(SS["water_hi"], outline=0.0, highlight=False)
-    for k in range(5):
+    for k in range(6):
         gwh.blob((px + rnd.uniform(-0.7, 0.7) * prx, py - pry * rnd.uniform(0.1, 0.6), pz + 1.7), (rnd.uniform(10, 20), 1.2, 0.3), p=2.4, cuts=2)
+    for k, (dx, dy) in enumerate(((-0.4, -0.5), (0.2, -0.3), (0.55, -0.6))):
+        st.amb("blink", "fx.p.star", (px + dx * prx, py + dy * pry, pz + 3), period=2300 + k * 400, tint=0xFFF6E0, scale=0.5)
+    gre = pt.g(SS["acacia_dk"], finish="hair", outline=0.3)
+    for k in range(9):
+        rx_ = px + (-1 if k % 2 else 1) * prx * rnd.uniform(0.75, 0.98)
+        for j in range(4):
+            gre.capsule((rx_ + j * 1.6, py - pry * 0.3, pz), (rx_ + j * 1.6 + rnd.uniform(-3, 3), py - pry * 0.3, pz + rnd.uniform(12, 20)), 0.6, 0.25)
+    gbd = pt.g(SS["bark_lt"], outline=0.4)
+    sx, sz = px + prx * 0.35, pz
+    gbd.capsule((sx, py, sz), (sx + 3, py, sz + 46), 2.6, 1.6)
+    gbd.capsule((sx + 2, py, sz + 28), (sx - 16, py, sz + 44), 1.4, 0.8)
+    gbd.capsule((sx + 3, py, sz + 38), (sx + 18, py, sz + 52), 1.2, 0.7)
     gbo = pt.g(SS["bone"], outline=0.3)
     gbo.capsule((px + prx * 0.7, py - pry * 0.9, pz + 1), (px + prx * 0.7 + 12, py - pry * 0.9 - 2, pz + 2), 1.2)
     gbo.sphere((px + prx * 0.7 + 14, py - pry * 0.9 - 2, pz + 3), 2.6)
-    # 2. flat-topped acacias, big (the lane's frame) and one fallen trunk
+    # 2. flat-topped acacias, big (the lane's frame), a fallen trunk, a termite mound
     ga, ga2, gb = pt.g(SS["acacia"], outline=0.5), pt.g(SS["acacia_dk"], outline=0.5), pt.g(SS["bark"], outline=0.4)
     for k, (x, y, h) in enumerate(((-180, 110, 140), (90, 120, 120), (560, 124, 130), (980, 116, 150), (1300, 120, 126))):
-        z = 34
-        gb.capsule((x, y, z), (x + 4, y, z + h * 0.6), 4.6, 3.2)
-        for side in (-1, 1):
-            gb.capsule((x + 4, y, z + h * 0.6), (x + side * h * 0.32, y, z + h * 0.86), 2.4, 1.4)
-            gb.capsule((x + side * h * 0.12, y, z + h * 0.72), (x + side * h * 0.18, y + 4, z + h * 0.9), 1.6, 1.0)
-        for j, (dx, w) in enumerate(((-0.3, 0.42), (0.28, 0.4), (0.0, 0.5))):
-            (ga if (k + j) % 2 else ga2).blob((x + dx * h, y, z + h * (0.92 if j < 2 else 0.98)), (h * w, h * 0.2, h * 0.09), p=2.2, cuts=3)
+        kit.acacia(gb, ga, ga2, x, y, 34, h, seed=500 + k)
     gb.capsule((1100, 60, 40), (1160, 66, 43), 4.0, 3.2)
-    # 3. the sabre-tooth's rock (x 700) (the cat itself is a prop: its tail flicks)
+    kit.termite_mound(pt.g(SS["termite"], outline=0.5), pt.g(SS["termite_dk"], outline=0.5), 1220, 96, 34, 70, seed=7)
+    # 3. the sabre-tooth's kopje (x 700): stacked granite boulders (the cat on top is a prop: its tail flicks)
     cx, cy, cz = SS_CAT
     grk, grk2 = pt.g(SS["rock"], outline=0.5), pt.g(SS["rock_dk"], outline=0.5)
-    rock(grk, (cx, cy, 40 + (cz - 40) / 2), (36, 22, (cz - 40) / 2 + 2), seed=91, jag=0.12, p=3.0)
-    rock(grk2, (cx - 30, cy - 6, 50), (18, 14, 12), seed=92, jag=0.18, p=2.4)
-    rock(grk2, (cx + 32, cy - 4, 46), (14, 12, 8), seed=93, jag=0.18, p=2.4)
+    rock(grk, (cx, cy, 40 + (cz - 40) / 2), (36, 22, (cz - 40) / 2 + 2), seed=91, jag=0.1, p=2.6)
+    rock(grk2, (cx - 34, cy - 6, 52), (20, 16, 14), seed=92, jag=0.12, p=2.2)
+    rock(grk2, (cx + 34, cy - 4, 48), (16, 13, 10), seed=93, jag=0.12, p=2.2)
+    rock(grk, (cx + 18, cy - 12, 44), (12, 10, 7), seed=94, jag=0.14, p=2.2)
     st.light((cx - 14.6 * 1.6, cy - 6, cz + 14.4 * 1.6), 1.6)
-    # a boulder and dry bushes elsewhere
+    # 4. a hunters' rest on the right (x 1000): a lean-to of hides, a drying rack, an ember pit (lit at night)
+    kit.hide_tent(pt, 1040, 70, 36, 22, 44, hide=SS["hide"], seed=8, yaw=20)
+    kit.drying_rack(pt, 930, 76, 36, 40, 44)
+    gst = pt.g(SS["rock_dk"], outline=0.4)
+    for k in range(7):
+        a = 2 * math.pi * k / 7
+        rock(gst, (990 + math.cos(a) * 9, 56 + math.sin(a) * 4, 40), (3.4, 2.8, 2.4), seed=110 + k, jag=0.15)
+    pt.g(SS["ember"], outline=0.3).capsule((983, 56, 41), (997, 57, 42), 1.6)
+    st.light((990, 56, 46), 8)
+    st.light((1040, 50, 50), 5)
+    st.amb("emit", "bd.puff", (990, 56, 60), rate=0.5, speed=8, scale=0.8, tint=0xE8E2D6, alpha=0.32, life=2800, drift=6)
+    # two giant deer grazing by the water (a third walks the bank: a prop)
+    for k, (x, fl) in enumerate(((150, False), (500, True))):
+        fauna.giant_deer(size=1.3)(kit.StaticRig(pt, (x, 64, 40), flip=fl))
+    # dry bushes elsewhere
     gbu = pt.g(SS["grass_dk"], outline=0.5)
     for i in range(12):
         x = rnd.uniform(-240, 1440)
@@ -832,19 +873,21 @@ def ss_mid(st, P):
 
 
 def _grass_sway(f):
-    return {"g": {"r": (-6, -2, 6, 2)[f]}}
+    return {"g": {"r": (-6, 0, 6)[f]}}
 
 
 def _grass_clump(rig):
     """A tall grass clump bending in the wind on its joint."""
     rig.joint("g", "all", (0, 0, 0))
     rnd = random.Random(5)
-    g, g2 = Geo(), Geo()
-    for j in range(9):
-        a = -0.6 + j * 0.15 + rnd.uniform(-0.06, 0.06)
-        L = rnd.uniform(22, 34)
-        (g if j % 2 else g2).capsule((rnd.uniform(-3, 3), rnd.uniform(-2, 2), 0), (math.sin(a) * L, rnd.uniform(-2, 2), math.cos(a) * L), 1.0, 0.3)
-    rig.part("g", g, "#C2AC72", finish="hair", outline=0.4)
+    g, g2, gb = Geo(), Geo(), Geo()
+    gb.blob((0, 0, 3), (11, 5, 6), p=2.2, cuts=3, taper=(1.0, 0.7))
+    for j in range(11):
+        a = -0.8 + j * 0.16 + rnd.uniform(-0.06, 0.06)
+        L = rnd.uniform(24, 34)
+        (g if j % 3 else g2).capsule((math.sin(a) * 5, rnd.uniform(-2, 2), 4), (math.sin(a) * L, rnd.uniform(-2, 2), math.cos(a) * L), 1.5, 0.4)
+    rig.part("g", gb, "#C9B37A", finish="hair", outline=0.4)
+    rig.part("g", g, "#D8C690", finish="hair", outline=0.4)
     rig.part("g", g2, "#AE9A62", finish="hair", outline=0.4)
 
 
@@ -854,18 +897,16 @@ def ss_props():
     vulture = fauna.bird(body="#4E4440", wing="#3E3632", belly="#6E625A", beak="#C8B090", span=17, size=1.1)
     ring = [[i * 3, round(700 + 100 * math.cos(math.pi * i / 3)), round(-252 + 16 * math.sin(math.pi * i / 3)), 1] for i in range(7)]
     g1 = _scr((150, 44, 40), SS_MID_E)
-    g2 = _scr((860, 50, 40), SS_MID_E)
     plist = [
-        Prop("cat", "mid", fauna.sabretooth(size=1.6), [{"tail": {"r": a}} for a in (0, 14, 26, 10)], (70, 40, 4), cat[1]),
-        Prop("grass", "mid", _grass_clump, [_grass_sway(f) for f in range(4)], (60, 40, 3), g1[1]),
-        Prop("deer", "mid", fauna.giant_deer(size=1.4), [fauna.walk4_pose(f, swing=14, bob=0.5, head=2.0) for f in range(4)], (80, 64, 3), SS_DEER_Y),
+        Prop("cat", "mid", fauna.sabretooth(size=1.45), [{"tail": {"r": a}} for a in (0, 14, 26, 10)], (64, 36, 4), cat[1]),
+        Prop("grass", "mid", _grass_clump, [_grass_sway(f) for f in range(3)], (60, 40, 3), g1[1]),
+        Prop("deer", "mid", fauna.giant_deer(size=1.15), [fauna.walk4_pose(f, swing=14, bob=0.5, head=2.0) for f in range(4)], (70, 56, 3), SS_DEER_Y),
         Prop("vulture", "far", vulture, [fauna.bird_pose(f) for f in range(5)], (50, 26, 26), ring[0][2]),
-        PaintedProp("devil", "far", lambda i: fauna.dust_devil(i), 4, ax=0.5, ay=1.0, ppl=0.9),
+        PaintedProp("devil", "far", lambda i: fauna.dust_devil(i, w=36, h=126), 4, ax=0.5, ay=1.0, ppl=0.9),
     ]
     sprites = [
-        {"kind": "loop", "layer": "mid", "frames": ["cat_0", "cat_0", "cat_1", "cat_2", "cat_3", "cat_1", "cat_0", "cat_0"], "fps": 4, "at": cat},
-        {"kind": "loop", "layer": "mid", "frames": [f"grass_{i}" for i in range(4)], "fps": 3, "pingpong": True, "at": g1},
-        {"kind": "loop", "layer": "mid", "frames": [f"grass_{i}" for i in (2, 3, 0, 1)], "fps": 3, "pingpong": True, "at": g2},
+        {"kind": "loop", "layer": "mid", "frames": ["cat_0", "cat_0", "cat_1", "cat_2", "cat_3", "cat_1"], "fps": 3, "at": cat},
+        {"kind": "loop", "layer": "mid", "frames": [f"grass_{i}" for i in range(3)], "fps": 3, "pingpong": True, "at": g1},
         {"kind": "path", "layer": "mid", "fps": 3, "periodS": 120,
          "keys": [[0, 1560, SS_DEER_Y, 0], [4, 1520, SS_DEER_Y, 1], [100, 820, SS_DEER_Y, 1], [104, 790, SS_DEER_Y, 0], [120, 790, SS_DEER_Y, 0]],
          "group": [{"frames": [f"deer_{i}" for i in range(4)]}]},

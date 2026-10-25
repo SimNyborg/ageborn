@@ -439,7 +439,7 @@ def screen_box(points, yaw=BASE_YAW):
 
 def ambient_lu(kind, p, r=12.0, rate=1.0, yaw=BASE_YAW, color=None):
     """One `meta.ageborn.ambientLu` emitter of a base skin model: the dressing's code particles
-    (petals, fireflies, embers, glints, dust, snow, stars, mist, rain, smoke, steam) start around this
+    (petals, fireflies, embers, glints, dust, snow, stars, mist, rain, smoke, steam, birds) start around this
     point (screen lu, y up) within `r` lu, `rate` relative to the skin's base rate
     (src/visuals/cosmetics/dressing.ts). `color` ("#RRGGBB", optional) tints the motes when the model's
     materials want their own (ice-white glints on Frost Cave, lilac ones on Crystal Spire)."""

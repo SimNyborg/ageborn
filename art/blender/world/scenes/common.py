@@ -260,7 +260,8 @@ def save_webp(arr, path, alpha=True, q=86):
 
 
 def save_webp_budget(arr, path, budget, q=86, q_min=60, alpha_q=None):
-    """Saves at the highest quality (steps of 4) that fits `budget` bytes; returns (size, q)."""
+    """Saves at the highest quality (steps of 4) that fits `budget` bytes; past `q_min` it lowers the alpha
+    quality (the soft edges of a props atlas cost the most) before giving up; returns (size, q)."""
     im = Image.fromarray((np.clip(arr, 0, 1) * 255 + 0.5).astype(np.uint8), "RGBA")
     size = 0
     while True:
@@ -269,9 +270,19 @@ def save_webp_budget(arr, path, budget, q=86, q_min=60, alpha_q=None):
             kw["alpha_quality"] = alpha_q
         im.save(path, "WEBP", **kw)
         size = os.path.getsize(path)
-        if size <= budget or q <= q_min:
+        if size <= budget:
             return size, q
+        if q <= q_min:
+            break
         q -= 4
+    for aq in (80, 60, 40):
+        if alpha_q is not None and aq >= alpha_q:
+            continue
+        im.save(path, "WEBP", quality=q, method=6, alpha_quality=aq)
+        size = os.path.getsize(path)
+        if size <= budget:
+            break
+    return size, q
 
 
 # -- the colour rule (PLAN 2b, DESIGN A11) ---------------------------------------------------------
@@ -543,9 +554,9 @@ class Scene:
     sunAt [x, y, r], stars, smog, night); `far`, `mid`, `back`: builders `fn(st, P)`; `props()`:
     returns (list of Prop, list of sprite specs); `hints`: celestial keep|own, weather ground|space, and
     skyGrade 0..1 (how strongly a light sky theme may grade the scene; pale or dark scenes take less).
-    `version=1` writes the first five ages' classic format (two strips, no sky, props or thumb)."""
+    Every scene writes layer format 2 (round 3 retired format 1, the first five ages' old classics)."""
 
-    def __init__(self, age, sid, pal, far, mid, back=None, sky=None, props=None, hints=None, version=2,
+    def __init__(self, age, sid, pal, far, mid, back=None, sky=None, props=None, hints=None,
                  ground="earth", back_fade=26.0, look=None):
         self.age = age
         self.sid = sid
@@ -556,7 +567,6 @@ class Scene:
         self.sky = sky
         self.props = props
         self.hints = hints or {"celestial": "keep", "weather": "ground"}
-        self.version = version
         self.ground = ground
         self.back_fade = back_fade
         self.look = look or {}
@@ -666,25 +676,10 @@ def render_scene(sc, out, install=True, log=print):
             arr = fade_bottom(arr, layer, sc.back_fade)
         arrays[layer] = arr
         dst = os.path.join(work, f"{layer}.webp")
-        if sc.version == 1:
-            sizes[layer] = save_webp(arr, dst, alpha=True, q=88)
-        else:
-            sizes[layer], q = save_webp_budget(arr, dst, BUDGET[layer], q=88)
-            log(f"[{tag}.{layer}] {sizes[layer] / 1024:.1f} KB (q{q}), {len(st.ambient)} ambient, {len(st.lights)} lights")
-        meta[layer] = layer_meta(layer, f"{layer}.webp", st.ambient if sc.version == 1 else compact_ambient(st.ambient))
+        sizes[layer], q = save_webp_budget(arr, dst, BUDGET[layer], q=88)
+        log(f"[{tag}.{layer}] {sizes[layer] / 1024:.1f} KB (q{q}), {len(st.ambient)} ambient, {len(st.lights)} lights")
+        meta[layer] = layer_meta(layer, f"{layer}.webp", compact_ambient(st.ambient))
         lights += st.lights
-    if sc.version == 1:
-        with open(os.path.join(work, "layers.json"), "w") as fh:
-            json.dump(meta, fh, separators=(",", ":"))
-        if sc.sky:
-            sizes["thumb"], _ = thumbnail(sc.sky, arrays, NEUTRAL_GROUND[sc.ground], os.path.join(work, "thumb.webp"))
-        if install:
-            dest = os.path.join(REPO, "public", "art", "backdrops", sc.age)
-            os.makedirs(dest, exist_ok=True)
-            names = ["far.webp", "mid.webp", "layers.json"] + (["thumb.webp"] if sc.sky else [])
-            for name in names:
-                shutil.copyfile(os.path.join(work, name), os.path.join(dest, name))
-        return {"scene": tag, "version": 1, "sizes": sizes}
     doc = {"version": 2, "age": sc.age, "scene": sc.sid, "sky": sc.sky}
     for layer in ("back", "far", "mid"):
         if layer in meta:
@@ -719,14 +714,3 @@ def render_scene(sc, out, install=True, log=print):
             if name.endswith(".webp") or name == "layers.json":
                 shutil.copyfile(os.path.join(work, name), os.path.join(dest, name))
     return {"scene": tag, "version": 2, "sizes": sizes, "total": total, "rule": rule}
-
-
-def thumb_from_installed(sc, out, install=True, log=print):
-    """A format 1 classic's thumbnail from its installed strips (no render)."""
-    src = os.path.join(REPO, "public", "art", "backdrops", sc.age)
-    arrays = {layer: np.asarray(Image.open(os.path.join(src, f"{layer}.webp")).convert("RGBA"), dtype=np.float32) / 255.0
-              for layer in ("far", "mid")}
-    dst = os.path.join(src, "thumb.webp") if install else os.path.join(out, f"{sc.age}_thumb.webp")
-    size, _ = thumbnail(sc.sky, arrays, NEUTRAL_GROUND[sc.ground], dst)
-    log(f"[{sc.key}.thumb] {size} bytes")
-    return size

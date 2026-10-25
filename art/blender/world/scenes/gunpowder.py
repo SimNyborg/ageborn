@@ -1,5 +1,14 @@
-"""Gunpowder scenes. Classic (format 1, until its round 3 re-render): a coast with sailing ships,
-windmills and a cottage (moved here unchanged from backdrop.py).
+"""Gunpowder scenes.
+
+Classic "Star Fort Coast" (format 2, round 3): a green coast on a bright day. Back: the far coast across
+the water, low hazy downs on the horizon. Far: a grey-teal sea; the cream star fort with its bastions,
+ravelin, cannon, church spire and flag on a green headland above cliffs, surf and a quay with boats;
+green clifftops over a sandy bay on the left; the lighthouse on its rock among the right cliffs; a
+frigate at anchor and two fishing boats. Mid: dunes and coastal fields (crop rows, stooks, sheep, a
+stone wall), the coastal battery with gabions and a cannon, the powder magazine with its kegs, poplars,
+the cottage with green shutters and a smoking chimney, nets drying and a boat pulled up. Ambient: the
+flag, two frigates under sail beyond the fort, a sloop bobbing, gulls, chimney smoke; the fort's
+windows, the lighthouse, the battery, the magazine and the cottage glow under night skies.
 
 "Treasure Cove" (format 2, round 2; Rare, Time Capsule): a palm cove under a tropical haze. Back: green
 volcanic islands on the horizon. Far: a turquoise sea, a ruined jungle fort on a green headland (bastion
@@ -12,6 +21,17 @@ the fort; the campfire, the bridge lantern and the sloop's stern lamp glow under
 Palette (PLAN 2b): jungle #4F7A4A, sand #D8C8A0, wood #6A4E3A. The sea is a turquoise at about hue 170
 degrees, outside the team-hue bands, so it may be clearer than the Aegean's teal-grey; gold coins and
 parrots are small accents.
+
+"Windmill Polder" (format 2, round 3; Epic, Time Capsule; a set with Windmill Redoubt): flat canal
+country under a big open sky. Back: a faint far tree line. Far: the polder in long strips of grass and
+muted bulb rows between ditches, a tree line with two far spires on the horizon, a town of stepped
+gables along a canal with its great brick church, three smock mills on brick bases along the dyke,
+thatched farms. Mid: the dyke with bulb rows and a fence, the canal (grey-teal), the white drawbridge
+with its gallows (the signature), the near windmill on its dyke, a thatched farmhouse with green
+shutters, pollard willows, cows. Ambient: four windmills turning, a barge gliding along the canal, the
+drawbridge rising every 30 s; windows, the mills and the bridge lamps glow under night skies.
+
+Palette (PLAN 2b): polder green #7A8E5A, brick #8A5A48, cream #EFE6CF; bulb colours muted.
 """
 import math
 import random
@@ -554,6 +574,258 @@ def tc_props():
     return plist, sprites
 
 
+# -- Windmill Polder (round 3; Epic, Time Capsule; a set with Windmill Redoubt) ------------------------
+WP_PAL = dict(skyTop=0x86AECC, skyBottom=0xE8ECE6, light=0xFFF8EA, far=0x8E9A80, mid=0x7E8C5E, near=0x5E6A48)
+WP = dict(
+    green=0x7A8E5A, green_dk=0x66784A, green_lt=0x92A270, brick=0x8A5A48, brick_dk=0x704838, brick_lt=0xA07060, cream=0xEFE6CF,
+    cream_dk=0xD8CCB2, thatch=0x6E6450, thatch_dk=0x5A5242, water=0x8EA6A6, water_hi=0xC8D4D0, slate=0x5E6670, roof=0x8E5E4E,
+    dark=0x3A3634, wood=0x6E5A46, white=0xE8E4D8, rose=0xB88A8A, mauve=0x9A8AA0, butter=0xD8CC98, willow=0x8A9A6A, willow_dk=0x72825A,
+    trunk=0x6A5A4A, cow=0xE6E2D8, cow_dk=0x3E3A38,
+)
+WP_SKY = {"top": "#86AECC", "bottom": "#E8ECE6", "horizon": "#F0F2EC", "cloudTint": "#FAFBF8", "celestial": "sun",
+          "sunAt": [220, -540, 40], "clouds": 1.0}
+WP_FAR_E = math.radians(8.0)
+WP_MID_E = math.radians(12.0)
+WP_LAND_Z = 40.0
+WP_MILLS = ((110.0, 470.0, 78.0, 22.0), (290.0, 500.0, 70.0, 20.0), (1180.0, 480.0, 76.0, 21.0))   # far mills: x, y, height, radius
+WP_BIG_MILL = (360.0, 128.0, 40.0, 112.0, 32.0)   # the near mill (mid): x, y, foot z, height, radius
+WP_CANAL_Y = 112.0                                # the canal along the mid strip (its centre, depth)
+WP_BRIDGE = 640.0                                 # the drawbridge over the canal (mid x)
+WP_BARGE_Y = -66.0                                # the barge's waterline (mid, screen lu)
+
+
+def wp_back(st, P):
+    """The flat horizon: a faint far line of trees at the strip's foot (big sky; the horizon's trees and
+    spires stand on the far strip)."""
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    pt = Parts()
+    g, g2 = pt.g(hz(WP["willow_dk"], 0.46), outline=0.0), pt.g(hz(WP["green_dk"], 0.44), outline=0.0)
+    rnd = random.Random(3)
+    for i in range(46):
+        x = -300 + i * 40 + rnd.uniform(-10, 10)
+        if 800 < x < 1000:
+            continue
+        kit.round_bush(g if i % 3 else g2, x, 1500, rnd.uniform(14, 24), seed=i, z=-40 + 66, flat=0.7)
+    pt.flush(st)
+
+
+def wp_far(st, P):
+    pt = Parts()
+    rnd = random.Random(131)
+    zl = WP_LAND_Z
+    # 1. the flat polder: long fields in strips (grass, and bulb fields in muted rows), ditches between them
+    gl = pt.g(WP["green"], outline=0.0)
+    box(gl, (600, 700, zl - 20), (1100, 420, 20), p=6, cuts=2)
+    gw = pt.g(WP["water"], finish="gloss", outline=0.0)
+    cols = (WP["green_lt"], WP["green_dk"], WP["rose"], WP["green"], WP["butter"], WP["green_lt"], WP["mauve"], WP["cream_dk"], WP["green_dk"])
+    y = 300.0
+    k = 0
+    while y < 700:
+        d = rnd.uniform(28, 46)
+        x0 = -300.0
+        while x0 < 1500:
+            L = rnd.uniform(160, 340)
+            c = cols[(k * 3 + int(x0 / 100)) % len(cols)]
+            box(pt.g(c, outline=0.0), (x0 + L / 2, y + d / 2, zl + 0.6), (L / 2 - 1.5, d / 2 - 2, 0.6), p=6, cuts=1)
+            if c in (WP["rose"], WP["butter"], WP["mauve"]):
+                gr = pt.g(mixc(c, WP["green_dk"], 0.35), outline=0.0, highlight=False)
+                for j in range(int(d / 6)):
+                    gr.capsule((x0 + 2, y + 3 + j * 6, zl + 1.3), (x0 + L - 2, y + 3 + j * 6, zl + 1.3), 0.6)
+            x0 += L
+        box(gw, (600, y + d, zl + 0.2), (1100, 1.8, 0.5), p=6, cuts=1)
+        y += d
+        k += 1
+    # the horizon: farmsteads in tree clumps (round crowns, rows of poplars, a roof) with low hedges and open
+    # gaps between them, two far village spires
+    gtl, gtl2 = pt.g(mixc(WP["willow_dk"], P["skyBottom"], 0.18), outline=0.0), pt.g(mixc(WP["green_dk"], P["skyBottom"], 0.18), outline=0.0)
+    gtl3 = pt.g(mixc(WP["willow"], P["skyBottom"], 0.2), outline=0.0)
+    grf = pt.g(mixc(WP["roof"], P["skyBottom"], 0.3), outline=0.0)
+    x = -300.0
+    j = 0
+    while x < 1500:
+        kind = (j * 5 + 2) % 7
+        if kind in (0, 3):          # a gap with a low hedge
+            L = rnd.uniform(50, 90)
+            for k in range(int(L / 9)):
+                kit.round_bush(gtl2, x + k * 9 + rnd.uniform(-2, 2), 1096 + rnd.uniform(-6, 6), rnd.uniform(3.6, 5.2), seed=1100 + j * 20 + k, z=zl - 3, flat=0.5)
+        elif kind == 5:             # a row of poplars
+            L = rnd.uniform(60, 110)
+            for k in range(int(L / 9)):
+                h = rnd.uniform(26, 36)
+                (gtl if k % 2 else gtl3).blob((x + k * 9, 1086 + rnd.uniform(-4, 4), zl + h * 0.5), (3.6, 3.2, h * 0.5), p=2.0, cuts=3)
+        else:                       # a farmstead clump: round crowns of mixed sizes, now and then a roof
+            L = rnd.uniform(70, 130)
+            n = int(L / 12)
+            for k in range(n):
+                kit.round_bush((gtl, gtl2, gtl3)[k % 3], x + k * 12 + rnd.uniform(-4, 4), 1090 + rnd.uniform(-14, 14), rnd.uniform(8, 15),
+                               seed=1100 + j * 20 + k, z=zl - 3, flat=0.62)
+            if j % 2 == 0:
+                rx = x + L * rnd.uniform(0.3, 0.6)
+                kit.gable_roof(grf, rx, 1080, zl, 26, 16, 14)
+        x += L + rnd.uniform(4, 16)
+        j += 1
+    gsp = pt.g(mixc(WP["slate"], P["skyBottom"], 0.3), outline=0.0)
+    for x in (180, 1250):
+        box(gsp, (x, 1080, zl + 16), (5, 5, 16), p=8, cuts=1)
+        gsp.lathe([(0.01, 0), (5, 0), (0.3, 24), (0.01, 25)], (x, 1080, zl + 32), (x, 1080, zl + 57), segs=4)
+    # 2. the town (x 380-720): stepped-gable houses along a canal, the great brick church tower
+    wins = []
+    for k, x in enumerate([392 + j * 30 for j in range(11)]):
+        b, bd = ((WP["brick"], WP["brick_dk"]), (WP["brick_lt"], WP["brick"]), (WP["cream_dk"], WP["cream_dk"]))[k % 3]
+        win = kit.stepped_gable_house(pt, x, 470 + (k % 3) * 3, zl, 26, rnd.uniform(26, 36), steps=3 + k % 2, brick=b, brick_dk=bd, trim=WP["cream"],
+                                      dark=WP["dark"], hoist=k % 2 == 0, outline=0.4)
+        if k % 3 == 0 and win:
+            wins.append(win)
+    _, cwin = kit.church(pt, 560, 540, zl, 90, 40, 76, stone=WP["brick"], stone_dk=WP["brick_dk"], roof=WP["slate"], spire=WP["slate"], dark=WP["dark"])
+    wins.append(cwin)
+    box(gw, (560, 456, zl + 0.3), (200, 5, 0.6), p=6, cuts=1)
+    gtr, gtr2, gtt = pt.g(WP["willow"], outline=0.3), pt.g(WP["willow_dk"], outline=0.3), pt.g(WP["trunk"], outline=0.0)
+    for k in range(14):
+        x = 360 + k * 28 + rnd.uniform(-6, 6)
+        kit.round_bush(gtr if k % 2 else gtr2, x, 452, rnd.uniform(7, 10), seed=600 + k, z=zl + 6, flat=0.85)
+        gtt.capsule((x, 452, zl), (x, 452, zl + 8), 0.8)
+    # 3. the windmills along the dyke (their sails turn: props); farms with tall thatched roofs, tree rows
+    for (x, y, h, r) in WP_MILLS:
+        rock(pt.g(WP["green_dk"], outline=0.0), (x, y + 6, zl), (r * 3.2, r * 2, 8), seed=int(x), jag=0.05, p=2.4)
+        kit.windmill_tower(pt, x, y, zl + 6, h, r, body=WP["thatch"], body_dk=WP["thatch_dk"], cap=WP["thatch_dk"], trim=WP["white"], dark=WP["dark"],
+                           base=WP["brick"])
+    for k, (x, y) in enumerate(((-120, 420), (820, 430), (1360, 440), (60, 600), (1020, 610))):
+        box(pt.g(WP["brick"], outline=0.3), (x, y, zl + 7), (16, 12, 7), p=8, cuts=1)
+        kit.gable_roof(pt.g(WP["thatch"], outline=0.3), x, y, zl + 14, 34, 26, 20)
+        if k < 3:
+            st.light((x - 6, y - 13, zl + 6), 3)
+    for k in range(40):
+        x = rnd.choice((rnd.uniform(-260, 360), rnd.uniform(740, 1460)))
+        y = rnd.choice((410, 470, 560, 640))
+        kit.round_bush(gtr if k % 2 else gtr2, x, y, rnd.uniform(6, 9), seed=700 + k, z=zl + 4, flat=0.9)
+    for w in wins[:4]:
+        st.light(w, 3)
+    pt.flush(st)
+
+
+def _farmhouse(pt, st, x, y, z, s=1.0):
+    """A Dutch farmhouse: a brick front with white window frames and green shutters under a huge steep
+    thatched roof, a barn door. Returns a window point."""
+    box(pt.g(WP["brick"], outline=0.5), (x, y, z + 10 * s), (30 * s, 20 * s, 10 * s), p=8, cuts=2)
+    kit.gable_roof(pt.g(WP["thatch"], outline=0.5), x, y, z + 20 * s, 62 * s, 42 * s, 38 * s, along_x=False)
+    gw, gsh, gd = pt.g(WP["white"], outline=0.2), pt.g(WP["green_dk"], outline=0.2), pt.g(WP["dark"], outline=0.0, highlight=False)
+    for k in range(3):
+        wx = x - 18 * s + k * 18 * s
+        gw.slab([(wx - 4 * s, z + 5 * s), (wx + 4 * s, z + 5 * s), (wx + 4 * s, z + 14 * s), (wx - 4 * s, z + 14 * s)], y - 20.4 * s, 0.6)
+        gd.slab([(wx - 3 * s, z + 6 * s), (wx + 3 * s, z + 6 * s), (wx + 3 * s, z + 13 * s), (wx - 3 * s, z + 13 * s)], y - 21 * s, 0.4)
+        for sx in (-1, 1):
+            gsh.slab([(wx + sx * 4 * s, z + 5 * s), (wx + sx * 7 * s, z + 5 * s), (wx + sx * 7 * s, z + 14 * s), (wx + sx * 4 * s, z + 14 * s)], y - 20.6 * s, 0.5)
+    return (x, y - 22 * s, z + 10 * s)
+
+
+def wp_mid(st, P):
+    pt = Parts()
+    rnd = random.Random(137)
+    cy = WP_CANAL_Y
+    # the dyke in front (grass), the canal behind it (grey-teal, low saturation), the far bank
+    g, g2 = pt.g(WP["green"], outline=0.0), pt.g(WP["green_lt"], outline=0.0)
+    for i in range(15):
+        rock(g if i % 2 else g2, (-300 + i * 130, 62, 8), (96, 40, 32 + rnd.uniform(0, 4)), seed=i, jag=0.04, p=2.6)
+    pt.g(WP["water"], finish="gloss", outline=0.0).blob((600, cy, 39.6), (1100, 40, 1.4), p=6, cuts=2)
+    gwh = pt.g(WP["water_hi"], outline=0.0, highlight=False)
+    for k in range(26):
+        gwh.blob((rnd.uniform(-260, 1460), cy + rnd.uniform(-18, 10), 40.1), (rnd.uniform(8, 18), 1.0, 0.25), p=2.4, cuts=1)
+    rock(pt.g(WP["green_dk"], outline=0.0), (600, cy + 40, 20), (1100, 18, 24), seed=40, jag=0.03, p=3.0)
+    # bulb field rows on the dyke's slope, muted (rose, cream, mauve, butter), fences
+    for k, (x0, x1, c) in enumerate(((-260, -40, WP["rose"]), (-20, 120, WP["butter"]), (420, 580, WP["mauve"]), (760, 1000, WP["rose"]), (1020, 1200, WP["butter"]),
+                                     (1220, 1460, WP["cream_dk"]))):
+        gfl, gfl2 = pt.g(c, outline=0.0), pt.g(mixc(c, WP["green_dk"], 0.45), outline=0.0)
+        for j in range(4):
+            (gfl if j % 2 == 0 else gfl2).capsule((x0, 50 + j * 7, 43 + j * 0.6), (x1, 50 + j * 7, 43 + j * 0.6), 2.2, 2.2)
+    gfe = pt.g(WP["wood"], outline=0.2)
+    for x in range(-250, 1460, 26):
+        if 560 < x < 720:
+            continue
+        gfe.capsule((x, 82, 40), (x, 82, 50), 0.6)
+    # 1. the drawbridge (x 600, the signature): white timber piers and gallows over the canal; its two leaves
+    # are a prop (they rise every 30 s), the lamps on the gallows glow at night
+    bx = WP_BRIDGE
+    gwt = pt.g(WP["white"], outline=0.5)
+    for sx in (-34, 34):
+        box(pt.g(WP["brick_dk"], outline=0.4), (bx + sx, cy, 34), (6, 26, 8), p=8, cuts=1)
+        for sy in (-14, 14):
+            gwt.capsule((bx + sx, cy + sy, 40), (bx + sx, cy + sy, 98), 1.6)
+        gwt.capsule((bx + sx, cy - 16, 96), (bx + sx, cy + 16, 96), 1.4)
+        gwt.capsule((bx + sx, cy, 96), (bx + sx * 0.25, cy, 100), 1.2)
+        st.light((bx + sx, cy - 16, 92), 4)
+    gwt.capsule((bx - 34, cy, 100), (bx + 34, cy, 100), 1.6)
+    box(gwt, (bx - 70, cy, 44), (30, 18, 2.4), p=6, cuts=1)
+    box(gwt, (bx + 70, cy, 44), (30, 18, 2.4), p=6, cuts=1)
+    for sx in (-1, 1):
+        for k in range(6):
+            gwt.capsule((bx + sx * (44 + k * 9), cy - 17, 46), (bx + sx * (44 + k * 9), cy - 17, 54), 0.6)
+        gwt.capsule((bx + sx * 40, cy - 17, 54), (bx + sx * 96, cy - 17, 54), 0.6)
+    # 2. the near windmill on its dyke (x 930) and the farmhouse beside it (x 1120), pollard willows
+    mx, my, mz, mh, mr = WP_BIG_MILL
+    rock(pt.g(WP["green_dk"], outline=0.0), (mx, my + 8, 20), (70, 40, 30), seed=51, jag=0.05, p=2.4)
+    _, mwin = kit.windmill_tower(pt, mx, my, mz + 8, mh, mr, body=WP["thatch"], body_dk=WP["thatch_dk"], cap=WP["thatch_dk"], trim=WP["white"],
+                                   dark=WP["dark"], base=WP["brick"])
+    st.light(mwin, 4)
+    fwin = _farmhouse(pt, st, 150, 120, 40, 1.0)
+    st.light(fwin, 5)
+    gwl, gwl2, gtt = pt.g(WP["willow"], outline=0.4), pt.g(WP["willow_dk"], outline=0.4), pt.g(WP["trunk"], outline=0.4)
+    for k, x in enumerate((-200, -120, 40, 250, 470, 800, 900, 1100, 1300, 1400)):
+        h = rnd.uniform(36, 48)
+        gtt.capsule((x, 92, 40), (x, 92, 40 + h * 0.6), 4.0, 3.2)
+        (gwl if k % 2 else gwl2).blob((x, 92, 40 + h * 0.8), (h * 0.34, h * 0.28, h * 0.3), p=2.2, cuts=3)
+    # cows grazing on the dyke (black and white, small)
+    gcw, gck = pt.g(WP["cow"], outline=0.4), pt.g(WP["cow_dk"], outline=0.3)
+    for k, (x, fl) in enumerate(((-60, 1), (260, -1), (480, 1), (1060, -1))):
+        gcw.blob((x, 60, 50), (9, 4, 5), p=2.4)
+        gck.blob((x - 2 * fl, 57.5, 51.5), (4, 1.4, 3), p=2.2)
+        gck.blob((x + 10 * fl, 60, 52), (3, 2.4, 2.6), p=2.2)
+        for lx in (-6, 6):
+            gck.capsule((x + lx, 60, 45), (x + lx, 60, 41), 1.0)
+    pt.flush(st)
+
+
+def _bridge_leaf(rig, length=62.0):
+    """One leaf of the drawbridge, hinged at its pier (the joint), the deck and its railing, white; frames
+    lift it (`l` rotates about the hinge)."""
+    rig.joint("l", "all", (0, 0, 0))
+    g = Geo()
+    g.blob((length / 2, 0, 0), (length / 2, 16, 1.4), p=6, cuts=1)
+    for k in range(5):
+        g.capsule((k * length / 4, -16, 1), (k * length / 4, -16, 8), 0.5)
+    g.capsule((0, -16, 8), (length, -16, 8), 0.5)
+    rig.part("l", g, "#E8E4D8", outline=0.4)
+    rig.part("l", Geo().capsule((length * 0.9, 0, 1), (length * 0.9, 0, 30), 0.4), "#3A3634", outline=0.0)
+
+
+def wp_props():
+    bx = WP_BRIDGE
+    cy = WP_CANAL_Y
+    mills = [_scr(kit.windmill_hub(x, y, WP_LAND_Z + 6, h, r), WP_FAR_E) for (x, y, h, r) in WP_MILLS]
+    mx, my, mz, mh, mr = WP_BIG_MILL
+    big = _scr(kit.windmill_hub(mx, my, mz + 8, mh, mr), WP_MID_E)
+    hinge_l = _scr((bx - 30, cy - 18, 46), WP_MID_E)
+    plist = [
+        Prop("sail", "far", fauna.windmill_sails(sail="#E8E4D8", frame="#5A4E44", length=26, width=5.4), [{"s": {"r": -22.5 * f}} for f in range(4)],
+             (60, 30, 30), mills[0][1]),
+        Prop("bigsail", "mid", fauna.windmill_sails(sail="#E8E4D8", frame="#5A4E44", length=42, width=8.4), [{"s": {"r": -22.5 * f}} for f in range(4)],
+             (96, 48, 48), big[1]),
+        Prop("leaf", "mid", _bridge_leaf, [{"l": {"r": a}} for a in (0, 24, 48, 72)], (140, 80, 6), hinge_l[1]),
+        Prop("barge", "mid", fauna.barge(size=1.0), [{}], (90, 40, 3), WP_BARGE_Y),
+    ]
+    up = ["leaf_0"] * 22 + ["leaf_1", "leaf_2", "leaf_3", "leaf_3", "leaf_3", "leaf_3", "leaf_3", "leaf_2", "leaf_2", "leaf_1"]
+    sprites = [
+        {"kind": "loop", "layer": "far", "frames": [f"sail_{i}" for i in range(4)], "fps": 3, "at": mills[0]},
+        {"kind": "loop", "layer": "far", "frames": [f"sail_{i}" for i in (1, 2, 3, 0)], "fps": 2.6, "at": mills[1]},
+        {"kind": "loop", "layer": "far", "frames": [f"sail_{i}" for i in (2, 3, 0, 1)], "fps": 3.4, "at": mills[2]},
+        {"kind": "loop", "layer": "mid", "frames": [f"bigsail_{i}" for i in range(4)], "fps": 2.4, "at": big},
+        # the signature: the drawbridge rises every 30 s (its leaf turns about the hinge on the left pier), as
+        # the barge glides along the canal under it
+        {"kind": "loop", "layer": "mid", "frames": up, "fps": 32 / 30, "at": hinge_l},
+        {"kind": "path", "layer": "mid", "fps": 1, "periodS": 60, "keys": [[0, -360, WP_BARGE_Y, 1], [60, 1560, WP_BARGE_Y, 1]], "group": [{"frames": ["barge_0"]}]},
+    ]
+    return plist, sprites
+
+
 SCENES = {
     "classic": Scene("gunpowder", "classic", SF_PAL, sf_far, sf_mid, back=sf_back, sky=SF_SKY, props=sf_props,
                      # a pale coast: light skies grade it gently (Winterfall washed the fort out at 0.5)
@@ -562,4 +834,7 @@ SCENES = {
                      look={"far": (0.18, 0.08, 0.16)}),
     "treasure_cove": Scene("gunpowder", "treasure_cove", TC_PAL, tc_far, tc_mid, back=tc_back, sky=TC_SKY, props=tc_props,
                            hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.55}, ground="earth"),
+    "windmill_polder": Scene("gunpowder", "windmill_polder", WP_PAL, wp_far, wp_mid, back=wp_back, sky=WP_SKY, props=wp_props,
+                             hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.5}, ground="earth",
+                             look={"far": (0.18, 0.08, 0.18)}),
 }

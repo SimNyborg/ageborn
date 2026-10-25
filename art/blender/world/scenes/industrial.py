@@ -12,6 +12,17 @@ only as a small accent (A11 colour rule).
 
 Layout note: the arena ground covers everything below screen y = -40 lu, so mid-ground objects stand on
 a bank whose visible top is at -50..-75 lu.
+
+"Zeppelin Docks" (format 2, round 3; Epic, Trophy Road 3,300): an airship field under a bright sky with
+drifting clouds. Back: hills with a far town and its chimneys. Far: two great vaulted hangars, a great
+airship held low on the field by its ground lines, the lattice mooring mast with its cone head (the
+signature), gas holders, a boiler house with a smoking chimney, fuel tanks and huts. Mid: the field's
+edge: the ground crew's huts, cable winches with drums of mooring line, searchlight towers, fuel tanks,
+gas cylinder racks, crates, a windsock pole. Ambient: the airship moored at the mast sways, a second
+airship drifts across high over the field, gulls, smoke; hangar lamps, hut windows and the searchlights
+glow under night skies.
+
+Palette (PLAN 2b): iron #5B6168, canvas #D8D0BE, brick #8A6A63.
 """
 import math
 import random
@@ -646,9 +657,305 @@ def vg_props():
     return plist, sprites
 
 
+# -- Zeppelin Docks (round 3; Epic, Trophy Road 3,300) ------------------------------------------------
+ZD_PAL = dict(skyTop=0x7EA6C8, skyBottom=0xE6E8E2, light=0xFAF6EC, far=0x8E9294, mid=0x787A6C, near=0x5A5C52)
+ZD = dict(
+    iron=0x5B6168, iron_dk=0x45494F, canvas=0xD8D0BE, canvas_dk=0xBEB6A2, brick=0x8A6A63, brick_dk=0x745650, brick_lt=0x9E8078,
+    glass=0x8E9C9E, grass=0x86906A, grass_dk=0x70795A, cinder=0x8A8478, hill=0x8E9478, wood=0x6E5A48, wood_dk=0x584838, dark=0x34363A,
+    roof=0x6A6E74, tank=0xB8B4A8, lamp=0x4A4C50, cream=0xD8D0BE,
+)
+ZD_SKY = {"top": "#7EA6C8", "bottom": "#E6E8E2", "horizon": "#EEF0EA", "cloudTint": "#FAFBF8", "celestial": "sun",
+          "sunAt": [240, -540, 40], "clouds": 1.0, "smog": 0.1}
+ZD_FAR_E = math.radians(8.0)
+ZD_MID_E = math.radians(12.0)
+ZD_FIELD_Z = 40.0
+ZD_MAST = (690.0, 460.0, 176.0)       # the mooring mast (far): x, y, height
+ZD_DRIFT_Y = -300.0                   # the drifting airship's height (far, screen lu)
+
+
+def zd_back(st, P):
+    """Low hills on the horizon with a far town and its chimneys, hazed (lowest under the moons' place)."""
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    pt = Parts()
+    g, g2 = pt.g(hz(ZD["hill"], 0.42), outline=0.0), pt.g(hz(ZD["grass_dk"], 0.42), outline=0.0)
+    for x, rx, h, seed in ((-180, 220, 190, 1), (160, 200, 170, 2), (480, 200, 150, 3), (1180, 240, 186, 4), (1450, 170, 170, 5), (740, 110, 110, 6)):
+        kit.hill(g if seed % 2 else g2, x, 1500, -40, rx, 70, h, seed=seed, jag=0.04, p=2.4)
+    gt = pt.g(hz(ZD["brick_dk"], 0.44), outline=0.0)
+    rnd = random.Random(5)
+    for k in range(16):
+        x = 1050 + k * 26 + rnd.uniform(-6, 6)
+        box(gt, (x, 1440, 120 + 6), (9, 6, rnd.uniform(6, 12)), p=8, cuts=1)
+    for x in (1100, 1230, 1330):
+        cyl(gt, (x, 1440, 120), (x, 1440, 120 + rnd.uniform(46, 60)), 3.0, 2.2, bevel=0.3, segs=10)
+    pt.flush(st)
+
+
+def _vault_hangar(pt, st, x, y, z, span, h, L, door=True):
+    """A great airship hangar: a parabolic barrel vault of iron-framed sheeting `L` deep, brick end walls,
+    the front end a giant open arch (the dark hall inside), iron ribs over the vault and a glazed band along
+    its crown. Returns the door's lamp point."""
+    gr, gr2 = pt.g(ZD["roof"], finish="metal", outline=0.6), pt.g(ZD["iron_dk"], outline=0.3)
+    gb, gd = pt.g(ZD["brick"], outline=0.5), pt.g(ZD["dark"], outline=0.0, highlight=False)
+    prof = [(x + span / 2 * math.cos(math.pi * k / 18), z + h * math.sin(math.pi * k / 18) ** 0.8) for k in range(19)]
+    gr.slab(prof, y + L / 2, L)
+    for k in range(7):
+        yy = y + 4 + k * (L - 8) / 6
+        pts = [(x + (span / 2 + 0.8) * math.cos(math.pi * j / 18), z + (h + 0.8) * math.sin(math.pi * j / 18) ** 0.8) for j in range(19)]
+        for (ax, az), (bx, bz) in zip(pts, pts[1:]):
+            gr2.capsule((ax, yy, az), (bx, yy, bz), 0.9)
+    pt.g(ZD["glass"], finish="gloss", outline=0.2).blob((x, y + L / 2, z + h + 0.4), (span * 0.12, L / 2 - 2, 2.0), p=4, cuts=2)
+    ring = [(x + (span / 2 + 3) * math.cos(math.pi * k / 18), z + (h + 3) * math.sin(math.pi * k / 18) ** 0.8) for k in range(19)]
+    ring += [(x + span / 2 * math.cos(math.pi * k / 18), z + h * math.sin(math.pi * k / 18) ** 0.8) for k in range(18, -1, -1)]
+    gb.slab(ring, y - 1.2, 3.0)
+    if door:
+        gd.slab([(x + span * 0.43 * math.cos(math.pi * k / 18), z + h * 0.9 * math.sin(math.pi * k / 18) ** 0.8) for k in range(19)], y - 1.6, 1.2)
+    box(gb, (x - span / 2 - 4, y + 2, z + 8), (5, 6, 8), p=8, cuts=1)
+    box(gb, (x + span / 2 + 4, y + 2, z + 8), (5, 6, 8), p=8, cuts=1)
+    return (x, y - 4, z + h * 0.92)
+
+
+def zd_far(st, P):
+    pt = Parts()
+    rnd = random.Random(139)
+    fz = ZD_FIELD_Z
+    # 1. the airfield: grass in long mown bands, a cinder track
+    g, g2 = pt.g(ZD["grass"], outline=0.0), pt.g(ZD["grass_dk"], outline=0.0)
+    for i in range(12):
+        x = -300 + i * 160 + rnd.uniform(-20, 20)
+        kit.hill(g if i % 2 else g2, x, 640, -10, rnd.uniform(150, 190), 110, fz + 14 + rnd.uniform(-2, 2), seed=10 + i, jag=0.02, p=3.0)
+    for i in range(14):
+        x = -300 + i * 130 + rnd.uniform(-20, 20)
+        kit.hill(g2 if i % 2 else g, x, 360, -10, rnd.uniform(110, 150), 90, fz + 2 + rnd.uniform(-1, 1), seed=40 + i, jag=0.02, p=3.0)
+    box(pt.g(ZD["cinder"], outline=0.0), (600, 420, fz + 1.2), (1100, 6, 0.8), p=6, cuts=1)
+    # 2. the two great hangars (left), an airship's nose showing in the first one's door
+    lamps = [_vault_hangar(pt, st, 40, 540, fz, 190, 140, 320), _vault_hangar(pt, st, 290, 580, fz, 170, 126, 300)]
+    # (it points out at the camera: a round nose cone with its battens and rings, in the hall's shade)
+    gn, gn2 = pt.g(mixc(ZD["canvas_dk"], ZD["dark"], 0.16), outline=0.4), pt.g(mixc(ZD["iron"], ZD["dark"], 0.3), outline=0.0)
+    ncx, ncy, ncz, nR, nL = 40.0, 548.0, fz + 60, 50.0, 32.0
+    gn.lathe([(max(0.01, nR * (1 - (k / 10) ** 2) ** 0.5), nL * k / 10) for k in range(11)], (ncx, ncy, ncz), (ncx, ncy - nL, ncz), segs=32)
+    for t in (0.3, 0.55, 0.78):
+        r = nR * (1 - t ** 2) ** 0.5 + 1.4
+        gn2.lathe([(0.01, 0), (r, 0), (r, 1.0), (0.01, 1.0)], (ncx, ncy - nL * t, ncz), (ncx, ncy - nL * t - 1.0, ncz), segs=32)
+    for j in range(8):
+        a = math.pi * 2 * j / 8 + 0.2
+        pts = [(ncx + math.cos(a) * nR * (1 - t ** 2) ** 0.5, ncy - nL * t - 0.6, ncz + math.sin(a) * nR * (1 - t ** 2) ** 0.5) for t in (0.2, 0.5, 0.75, 0.93)]
+        for p_, q_ in zip(pts, pts[1:]):
+            gn2.capsule(p_, q_, 0.8)
+    gn2.sphere((ncx, ncy - nL - 0.4, ncz), 3.0)
+    # a great airship on the field before the hangars, held low by its ground lines
+    fauna.airship(size=2.2)(kit.StaticRig(pt, (170, 430, fz + 50)))
+    gln = pt.g(ZD["dark"], outline=0.0)
+    for k in range(6):
+        x = 100 + k * 30
+        gln.capsule((x, 424, fz), (x + 8, 428, fz + 30), 0.3)
+    # 3. the mooring mast (the signature): a tall lattice tower with its cone head and platform (the moored
+    # airship sways at it: a prop), a winch house at its foot
+    mx, my, mh = ZD_MAST
+    gi = pt.g(ZD["iron_dk"], outline=0.3)
+    kit.lattice_mast(gi, mx, my, fz, mh, base=18, segs=14)
+    cyl(pt.g(ZD["iron"], outline=0.4), (mx, my, fz + mh - 6), (mx, my, fz + mh - 2), 8, bevel=0.4, segs=14)
+    pt.g(ZD["iron"], outline=0.4).lathe([(0.01, 0), (4, 0), (1.2, 10), (0.01, 11)], (mx, my, fz + mh - 2), (mx, my, fz + mh + 9), segs=12)
+    box(pt.g(ZD["brick"], outline=0.4), (mx + 22, my + 4, fz + 8), (12, 10, 8), p=8, cuts=1)
+    kit.gable_roof(pt.g(ZD["roof"], outline=0.3), mx + 22, my + 4, fz + 16, 26, 22, 8)
+    st.light((mx, my - 6, fz + mh - 4), 4)
+    # a second, shorter mast farther out on the field with a smaller airship moored nose-on to it (static)
+    m2x, m2y, m2h = 1010.0, 520.0, 120.0
+    kit.lattice_mast(gi, m2x, m2y, fz, m2h, base=13, segs=10)
+    cyl(pt.g(ZD["iron"], outline=0.4), (m2x, m2y, fz + m2h - 5), (m2x, m2y, fz + m2h - 1), 6, bevel=0.4, segs=12)
+    fauna.airship(size=1.25, envelope="#D2CABA")(kit.StaticRig(pt, (m2x - 50, m2y - 2, fz + m2h - 6)))
+    st.light((m2x, m2y - 5, fz + m2h - 3), 3)
+    # a row of workshops along the field's far edge (brick, sawtooth roofs)
+    gws, gws2 = pt.g(mixc(ZD["brick"], ZD["hill"], 0.2), outline=0.3), pt.g(mixc(ZD["roof"], ZD["hill"], 0.2), outline=0.2)
+    for k in range(9):
+        x = 640 + k * 62
+        box(gws, (x, 720, fz + 12), (28, 16, 12), p=8, cuts=1)
+        for j in range(3):
+            gws2.slab([(x - 28 + j * 18.7, fz + 24), (x - 9.3 + j * 18.7, fz + 24), (x - 9.3 + j * 18.7, fz + 33)], 720, 30)
+    # 4. gas holders between the hangars and the mast (the gas works that fill the airships), a rail siding
+    # with tank wagons in front of them, a boiler house with its chimney far right, huts
+    for (x, y, r, h, f) in ((468, 640, 44, 96, 0.72), (574, 664, 36, 80, 0.5), (1210, 600, 40, 84, 0.6)):
+        _gas_holder_zd(pt, x, y, fz, r, h, f)
+    grl, gwg, gwg2 = pt.g(ZD["iron_dk"], outline=0.0), pt.g(ZD["tank"], finish="metal", outline=0.4), pt.g(ZD["iron_dk"], outline=0.3)
+    for dy in (-3, 3):
+        grl.capsule((360, 486 + dy, fz + 0.6), (660, 486 + dy, fz + 0.6), 0.5)
+    for k in range(4):
+        x = 400 + k * 44
+        box(gwg2, (x, 486, fz + 4), (18, 5, 1.6), p=6, cuts=1)
+        cyl(gwg, (x - 16, 486, fz + 11), (x + 16, 486, fz + 11), 6.2, bevel=0.8, segs=16)
+        cyl(gwg2, (x, 486, fz + 16), (x, 486, fz + 19), 1.6, bevel=0.3, segs=8)
+        for sx in (-11, 11):
+            cyl(gwg2, (x + sx, 480, fz + 2.6), (x + sx, 479, fz + 2.6), 2.6, bevel=0.3, segs=10)
+    box(pt.g(ZD["iron"], outline=0.4), (588, 486, fz + 12), (16, 6, 9), p=8, cuts=1)
+    box(pt.g(ZD["iron_dk"], outline=0.4), (578, 486, fz + 24), (6, 6, 4), p=8, cuts=1)
+    cyl(pt.g(ZD["dark"], outline=0.3), (598, 486, fz + 20), (598, 486, fz + 30), 2.2, 2.8, bevel=0.3, segs=10)
+    box(pt.g(ZD["brick"], outline=0.4), (1340, 500, fz + 16), (34, 18, 16), p=8, cuts=2)
+    kit.gable_roof(pt.g(ZD["roof"], outline=0.3), 1340, 500, fz + 32, 72, 40, 14)
+    cyl(pt.g(ZD["brick_dk"], outline=0.4), (1370, 508, fz), (1370, 508, fz + 96), 5.0, 3.4, bevel=0.5, segs=12)
+    st.amb("emit", "bd.puff", (1370, 508, fz + 104), rate=0.6, speed=10, scale=1.1, tint=0xE2E0DA, alpha=0.4, life=3600, drift=7)
+    gh = pt.g(ZD["wood"], outline=0.3)
+    for k, x in enumerate((-200, -150, 880, 960, 1440)):
+        box(gh, (x, 440, fz + 7), (14, 9, 7), p=8, cuts=1)
+        kit.gable_roof(pt.g(ZD["roof"], outline=0.2), x, 440, fz + 14, 30, 20, 6)
+        if k in (0, 2):
+            st.light((x - 4, 430, fz + 6), 3)
+    for l in lamps:
+        st.light(l, 5)
+    pt.flush(st)
+
+
+def _gas_holder_zd(pt, x, y, z, r, h, fill):
+    gi, gdr = pt.g(ZD["iron_dk"], outline=0.3), pt.g(ZD["iron"], finish="metal", outline=0.5)
+    cyl(gdr, (x, y, z), (x, y, z + h * fill), r * 0.94, bevel=1.0, segs=28)
+    gdr.lathe([(0, 0), (r * 0.94, 0), (r * 0.6, r * 0.12), (0, r * 0.16)], (x, y, z + h * fill), (x, y, z + h * fill + r * 0.16), segs=28)
+    for k in range(10):
+        a = math.pi * 2 * k / 10 + 0.2
+        px, py = x + math.cos(a) * r, y + math.sin(a) * r * 0.9
+        if py > y + r * 0.45:
+            continue
+        gi.capsule((px, py, z), (px, py, z + h), 1.5)
+    for t in (0.33, 0.66, 1.0):
+        gi.lathe([(r - 1.2, -1.2), (r + 0.4, -1.2), (r + 0.4, 1.2), (r - 1.2, 1.2)], (x, y, z + h * t - 1), (x, y, z + h * t + 1), segs=32)
+
+
+def _searchlight_tower(pt, st, x, y, z, h):
+    """A lattice searchlight tower with a platform and the lamp drum (lit at night)."""
+    gi = pt.g(ZD["iron_dk"], outline=0.4)
+    kit.lattice_mast(gi, x, y, z, h, base=5, segs=7)
+    box(pt.g(ZD["iron"], outline=0.4), (x, y, z + h), (7, 7, 1.2), p=6, cuts=1)
+    lamp = (x + 2, y - 4, z + h + 5)
+    cyl(pt.g(ZD["lamp"], outline=0.4), (x - 2, y, z + h + 5), (x + 4, y - 3, z + h + 6), 3.4, bevel=0.4, segs=12)
+    st.light(lamp, 6)
+    return lamp
+
+
+def zd_mid(st, P):
+    pt = Parts()
+    rnd = random.Random(149)
+    # the field's edge: grass and a cinder apron
+    g, g2 = pt.g(ZD["grass"], outline=0.0), pt.g(ZD["grass_dk"], outline=0.0)
+    for i in range(15):
+        rock(g if i % 2 else g2, (-300 + i * 130, 80, 8), (96, 60, 40 + rnd.uniform(0, 8)), seed=i, jag=0.05, p=2.4)
+    pt.g(ZD["cinder"], outline=0.0).blob((600, 60, 41), (900, 20, 1.2), p=4, cuts=2)
+    # 1. the ground crew's huts (timber with corrugated roofs), lit windows
+    for k, (x, w) in enumerate(((-180, 54), (-90, 40), (420, 50), (1100, 56), (1200, 44))):
+        box(pt.g(ZD["wood"], outline=0.5), (x, 110, 40 + 14), (w / 2, 16, 14), p=8, cuts=2)
+        kit.gable_roof(pt.g(ZD["roof"], finish="metal", outline=0.5), x, 110, 68, w + 4, 34, 12)
+        gd = pt.g(ZD["dark"], outline=0.0, highlight=False)
+        for j in range(2):
+            gd.slab([(x - w * 0.3 + j * w * 0.5 - 3, 50), (x - w * 0.3 + j * w * 0.5 + 3, 50), (x - w * 0.3 + j * w * 0.5 + 3, 58),
+                     (x - w * 0.3 + j * w * 0.5 - 3, 58)], 93.6, 0.6)
+        if k % 2 == 0:
+            st.light((x - w * 0.3, 92, 54), 4)
+    # 2. cable winches: drums of mooring line on iron frames
+    gi, gw = pt.g(ZD["iron_dk"], outline=0.4), pt.g(ZD["iron"], finish="metal", outline=0.4)
+    for (x, y) in ((160, 70), (620, 66), (900, 72)):
+        for sx in (-8, 8):
+            gi.capsule((x + sx, y, 40), (x + sx, y, 56), 1.2)
+        cyl(gw, (x - 7, y, 54), (x + 7, y, 54), 6.0, bevel=0.6, segs=16)
+        pt.g(ZD["dark"], outline=0.0).capsule((x - 7, y - 6.2, 54), (x + 7, y - 6.2, 54), 1.2)
+    # 3. searchlight towers (lit at night), fuel tanks, gas cylinder racks, crates
+    for (x, h) in ((40, 110), (760, 120), (1320, 106)):
+        _searchlight_tower(pt, st, x, 96, 40, h)
+    gt = pt.g(ZD["tank"], finish="metal", outline=0.5)
+    for (x, r) in ((290, 16), (320, 14)):
+        cyl(gt, (x, 94, 40), (x, 94, 40 + r * 2.2), r, bevel=1.2, segs=20)
+    gcy = pt.g(ZD["iron"], finish="metal", outline=0.3)
+    for k in range(8):
+        cyl(gcy, (980 + k * 5, 70, 40), (980 + k * 5, 70, 58), 2.0, bevel=0.4, segs=10)
+    gcr = pt.g(ZD["wood_dk"], outline=0.4)
+    for (x, s_) in ((520, 1.0), (536, 0.8), (1040, 0.9)):
+        box(gcr, (x, 64, 40 + 9 * s_), (9 * s_, 9 * s_, 9 * s_), p=5, cuts=1)
+    # a windsock on its pole (static, streaming right)
+    pt.g(ZD["iron_dk"], outline=0.3).capsule((1430, 70, 40), (1430, 70, 130), 1.0)
+    gso, gso2 = pt.g(ZD["canvas"], outline=0.4), pt.g(ZD["brick_lt"], outline=0.4)
+    for k in range(4):
+        r0, r1 = 5.0 - k * 0.9, 4.1 - k * 0.9
+        (gso if k % 2 else gso2).lathe([(r0, 0), (r1, 7.5)], (1431 + k * 7.5, 70, 126 - k * 1.2), (1431 + (k + 1) * 7.5, 70, 126 - (k + 1) * 1.2), segs=14)
+    # 4. the field's fence along the bank (posts and two wires, a gate gap), a ground crew lorry with its
+    # winch drum, barrels and sandbag ballast, gas lamps (lit at night)
+    gfp, gfw = pt.g(ZD["wood_dk"], outline=0.3), pt.g(ZD["iron_dk"], outline=0.0, highlight=False)
+    xs = [x for x in range(-280, 1481, 30) if not 560 < x < 680]
+    for x in xs:
+        gfp.capsule((x, 48, 40), (x, 48, 52), 0.8)
+    for a, b in zip(xs, xs[1:]):
+        if b - a > 30:
+            continue
+        for zz in (46, 50.5):
+            gfw.capsule((a, 47.4, zz), (b, 47.4, zz), 0.3)
+    lx, ly = 530.0, 92.0
+    gl1, gl2, gl3 = pt.g(ZD["brick_dk"], outline=0.5), pt.g(ZD["iron"], finish="metal", outline=0.4), pt.g(ZD["dark"], outline=0.3)
+    box(gl1, (lx + 26, ly, 40 + 14), (9, 10, 9), p=8, cuts=1)
+    box(gl3, (lx + 30, ly - 10.4, 40 + 17), (4, 0.6, 3), p=6, cuts=1)
+    box(gl2, (lx - 4, ly, 40 + 7), (22, 11, 2.4), p=6, cuts=1)
+    cyl(gl2, (lx - 12, ly - 8, 40 + 15), (lx - 12, ly + 8, 40 + 15), 6.4, bevel=0.6, segs=16)
+    gl3.capsule((lx - 12, ly - 8.6, 40 + 15), (lx - 12, ly + 8.6, 40 + 15), 2.0)
+    for sx in (-16, 6, 26):
+        cyl(gl3, (lx + sx, ly - 11, 40 + 4.4), (lx + sx, ly - 13, 40 + 4.4), 4.4, bevel=0.5, segs=12)
+    gbr, gsb = pt.g(ZD["iron"], finish="metal", outline=0.4), pt.g(ZD["canvas_dk"], outline=0.4)
+    for (x, y) in ((220, 74), (232, 78), (226, 70), (860, 72), (872, 76)):
+        cyl(gbr, (x, y, 40), (x, y, 50), 4.0, bevel=0.6, segs=12)
+    for k in range(7):
+        gsb.blob((470 + (k % 4) * 9 + (k // 4) * 4.5, 66, 42 + (k // 4) * 4.4), (5, 3.4, 2.4), p=2.6, cuts=2)
+    for x in (-40, 360, 980):
+        gfp.capsule((x, 60, 40), (x, 60, 92), 0.9)
+        box(pt.g(ZD["lamp"], outline=0.3), (x, 60, 95), (2.6, 2.6, 3.4), p=4, cuts=1)
+        st.light((x, 57, 95), 4)
+    pt.flush(st)
+
+
+def zd_props():
+    mx, my, mh = ZD_MAST
+    moored = scr((mx - 2, my - 2, ZD_FIELD_Z + mh - 6), ZD_FAR_E)
+    gull = fauna.bird(body="#E8E4DA", wing="#D6D2C8", belly="#F2EFE8", beak="#C8A060", span=12, size=0.9)
+    ring = [[i * 2, round(980 + 90 * math.cos(math.pi * i / 3)), round(-200 + 14 * math.sin(math.pi * i / 3)), 1] for i in range(7)]
+    plist = [
+        Prop("moored", "far", _moored_airship, [{}], (240, 50, 40), moored[1]),
+        Prop("ship", "far", fauna.airship(size=0.8, envelope="#D2CABA"), [{}], (120, 40, 30), ZD_DRIFT_Y),
+        Prop("gull", "far", gull, [fauna.bird_pose(f) for f in range(5)], (40, 24, 24), ring[0][2]),
+    ]
+    sprites = [
+        # the signature: the airship moored nose-on to the mast sways on its mooring
+        {"kind": "bob", "layer": "far", "frames": ["moored_0"], "at": moored, "amp": [1.6, 2.4], "periodS": 9, "tilt": 1.6},
+        # a second airship drifts across high over the field
+        {"kind": "path", "layer": "far", "fps": 1, "periodS": 150, "keys": [[0, -400, ZD_DRIFT_Y, 1], [150, 1600, ZD_DRIFT_Y - 20, 1]],
+         "group": [{"frames": ["ship_0"]}]},
+        {"kind": "path", "layer": "far", "fps": 6, "periodS": 13, "keys": ring,
+         "group": [{"frames": ["gull_4", "gull_4", "gull_0", "gull_1", "gull_2", "gull_3"]}, {"frames": ["gull_4", "gull_0", "gull_1", "gull_2"], "dx": -22, "dy": 8, "phase": 2}]},
+    ]
+    return plist, sprites
+
+
+def _moored_airship(rig):
+    """The moored airship, its nose at the anchor (the mast's head), the envelope streaming back to the left."""
+    fauna.airship(size=1.6)(_Shift(rig, (-62.0, 0.0, -2.0)))
+
+
+class _Shift:
+    """Moves every part a builder adds by an offset (the airship's nose to the prop's anchor)."""
+
+    def __init__(self, rig, off):
+        self.rig = rig
+        self.off = off
+
+    def joint(self, *a, **k):
+        return self.rig.joint(*a, **k)
+
+    def part(self, joint, geo, *a, **k):
+        geo.bm.verts.ensure_lookup_table()
+        ox, oy, oz = self.off
+        for v in geo.bm.verts:
+            v.co.x += ox
+            v.co.y += oy
+            v.co.z += oz
+        return self.rig.part(joint, geo, *a, **k)
+
+
 SCENES = {
     "classic": Scene("industrial", "classic", PAL, far, mid, back=back, sky=SKY, props=props,
                      hints={"celestial": "keep", "weather": "ground"}, ground="earth"),
     "viaduct_gorge": Scene("industrial", "viaduct_gorge", VG_PAL, vg_far, vg_mid, back=vg_back, sky=VG_SKY, props=vg_props,
                            hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.5}, ground="earth"),
+    "zeppelin_docks": Scene("industrial", "zeppelin_docks", ZD_PAL, zd_far, zd_mid, back=zd_back, sky=ZD_SKY, props=zd_props,
+                            hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.5}, ground="earth",
+                            look={"far": (0.18, 0.08, 0.18)}),
 }

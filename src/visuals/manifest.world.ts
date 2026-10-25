@@ -78,6 +78,20 @@ export const WORLD_BASE_SKINS: Readonly<Record<string, AgeId>> = {
   nebula_ark: 'cosmic',
   // round 3 (2026-10-25): the new models, wave 1
   mammoth_bone_lodge: 'stone',
+  acropolis_temple: 'bronze',
+  windmill_redoubt: 'gunpowder',
+  rail_depot: 'industrial',
+  jungle_outpost: 'modern',
+  // wave 2
+  bio_dome_arcology: 'future',
+  asteroid_citadel: 'cosmic',
+  galleon_bastion: 'gunpowder',
+  arctic_radar_station: 'modern',
+  // wave 3
+  clocktower_works: 'industrial',
+  colossus_lighthouse: 'bronze',
+  solar_sail_ark: 'cosmic',
+  wyrm_coil_keep: 'medieval',
 };
 
 /** Skin models with their own collapse kit (`art/bases/skins/<skin>.collapse.json`); the others use their age's. */
@@ -94,22 +108,39 @@ export const WORLD_BASE_SKIN_KITS: readonly string[] = [
   'crystal_spire',
   'nebula_ark',
   'mammoth_bone_lodge',
+  'acropolis_temple',
+  'windmill_redoubt',
+  'rail_depot',
+  'jungle_outpost',
+  'bio_dome_arcology',
+  'asteroid_citadel',
+  'galleon_bastion',
+  'arctic_radar_station',
+  'clocktower_works',
+  'colossus_lighthouse',
+  'solar_sail_ark',
+  'wyrm_coil_keep',
 ];
 
 /**
  * Skin models that stand in the white Legendary aura (PLAN 2c, A12 "white idle aura on Legendary units and
  * Legendary skins"). In battle the sheet's own `meta.ageborn.aura: 'legendary'` turns it on (a test holds the
  * sheets and this list equal); the screens' base pictures (Customize, VS, Home) read the list to draw the same
- * soft halo under the model (`docs/requests/custom-b-diorama-anchors.md`). Colossus Lighthouse (round 3b, its
- * aura on the torch) joins once its model is released.
+ * soft halo under the model (`docs/requests/custom-b-diorama-anchors.md`). Colossus Lighthouse (round 3b) wears it
+ * round its raised torch, not round the body (the sheet's `meta.ageborn.auraLu`; `baseSkinAuraSpot` for the screens).
  */
-export const WORLD_BASE_SKIN_AURA: readonly string[] = ['crystal_spire', 'nebula_ark'];
+export const WORLD_BASE_SKIN_AURA: readonly string[] = ['crystal_spire', 'nebula_ark', 'colossus_lighthouse'];
 
 /**
  * Base skin models with prop loops (round 3; the base contract's generic `prop` clip, art/blender/world/common.py
  * `prop_loop`): skin → each loop's clip and its length (ms). They are the `prop.<clip>` clips of the skin's
  * manifest entry (the swap point, B5); the base view plays them from the sheet's `meta.ageborn.props` (a test
- * holds the two equal): Crystal Spire's shards orbit its tip, Nebula Ark's nebula flows up its two ribbons.
+ * holds the two equal): Crystal Spire's shards orbit its tip, Nebula Ark's nebula flows up its two ribbons, the
+ * Bone Lodge's chimes swing, the Acropolis tripods flicker, the Windmill Redoubt's sails turn, the Jungle Outpost's
+ * waterfall runs, the Bio-Dome's turbines spin, the Asteroid Citadel's rocks orbit, the Galleon's sails flutter, the
+ * Arctic Radar's dish sweeps, the Clocktower's minute hand ticks round with its gears, the Colossus's torch burns, light
+ * sweeps the Solar Sail Ark's sails while its arrays blink, and the Wyrm-Coil Keep's dragon (one still frame over the
+ * body, so the sheet stores it once) breathes.
  */
 export const WORLD_BASE_SKIN_PROPS: Readonly<Record<string, readonly { clip: string; loopMs: number }[]>> = {
   crystal_spire: [{ clip: 'shards', loopMs: 1560 }],
@@ -119,6 +150,33 @@ export const WORLD_BASE_SKIN_PROPS: Readonly<Record<string, readonly { clip: str
   ],
   // round 3: the new models' moving parts
   mammoth_bone_lodge: [{ clip: 'chimes', loopMs: 1020 }],
+  acropolis_temple: [
+    { clip: 'flamesL', loopMs: 440 },
+    { clip: 'flamesR', loopMs: 440 },
+  ],
+  windmill_redoubt: [{ clip: 'sails', loopMs: 1260 }],
+  rail_depot: [{ clip: 'signal', loopMs: 1520 }],
+  jungle_outpost: [{ clip: 'water', loopMs: 600 }],
+  bio_dome_arcology: [{ clip: 'turbines', loopMs: 540 }],
+  asteroid_citadel: [{ clip: 'rocks', loopMs: 1680 }],
+  galleon_bastion: [{ clip: 'flutter', loopMs: 900 }],
+  arctic_radar_station: [
+    { clip: 'dish', loopMs: 1920 },
+    { clip: 'beacon', loopMs: 1040 },
+  ],
+  clocktower_works: [
+    { clip: 'hands', loopMs: 7200 },
+    { clip: 'gears', loopMs: 7200 },
+  ],
+  colossus_lighthouse: [{ clip: 'torch', loopMs: 540 }],
+  solar_sail_ark: [
+    { clip: 'shimmer', loopMs: 2800 },
+    { clip: 'blink', loopMs: 1520 },
+  ],
+  wyrm_coil_keep: [
+    { clip: 'dragon', loopMs: 4000 },
+    { clip: 'breath', loopMs: 2400 },
+  ],
 };
 
 export function baseSkinSheetSource(skin: string): string {
