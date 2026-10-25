@@ -374,3 +374,22 @@
     margin-bottom: -18px;
   }
 }
+/* Short landscape phones (item 43; Chrome's address bar showing, about 762 x 277): below 300 px the stage has no
+   room for the 72 px capsule on its pedestal, and the source line slid under Odds and Open. The capsule and its
+   pedestal shrink with the height instead (the capsule plus pedestal is about 1.45 capsules tall; 195 px is the
+   header, the tab bar, the stage's padding, its name, source and actions). */
+@container ui-root (max-height: 299px) {
+  .caps-stage {
+    --caps-d: clamp(36px, calc((100cqh - 195px) / 1.45), 72px);
+  }
+  .caps-stage__drum svg {
+    width: var(--caps-d);
+    height: var(--caps-d);
+  }
+  .caps-pedestal {
+    width: calc(var(--caps-d) * 1.53);
+  }
+  .caps-stage__float .caps-stage__drum {
+    margin-bottom: calc(var(--caps-d) * -0.25);
+  }
+}

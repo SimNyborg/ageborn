@@ -368,6 +368,38 @@ test.describe('UA-01: every Mode select picker button can be hit', () => {
   }
 });
 
+/**
+ * Item 43 (owner report 2026-10-25): on a short landscape phone (Chrome's address bar showing, about 762 x 277)
+ * Home's match plate, which stands on the screen's bottom, reached up over the top bar's currencies and settings.
+ * In every plate state it must end under the bar's chips on its side, down to 250 px of height (hub.css packs it
+ * tighter below 340 px).
+ */
+test.describe("item 43: Home's match plate stays under the top bar on short phones", () => {
+  const PLATES = ['home', 'home-last', 'home-quick', 'home-daily', 'home-skirmish', 'home-search', 'home-found'] as const;
+  for (const vp of ['745x250', '762x277', '800x300'] as const) {
+    for (const variant of PLATES) {
+      test(`${variant} ${vp}`, async ({ page }) => {
+        await open(page, `screens/${variant}/mid/{vp}`, vp);
+        // in px from the UI root's top (the dev page frames it under its toolbar)
+        const r = await page.evaluate(() => {
+          const root = document.querySelector('[data-testid="ui-root"]')!;
+          const y0 = root.getBoundingClientRect().top;
+          const plate = root.querySelector('[data-testid="home-opponent"]')!.getBoundingClientRect();
+          let bar = 0;
+          for (const e of root.querySelectorAll('.hub-top [data-testid]')) {
+            const b = e.getBoundingClientRect();
+            if (b.width < 8 || b.height < 8 || b.right <= plate.left || b.left >= plate.right || e.closest('.wp-caption')) continue;
+            bar = Math.max(bar, b.bottom - y0);
+          }
+          return { top: Math.round(plate.top - y0), bar: Math.round(bar) };
+        });
+        expect(r.bar, 'the top bar has chips over the plate').toBeGreaterThan(0);
+        expect(r.top, `the plate's top (${r.top}) must be under the top bar's chips (${r.bar})`).toBeGreaterThanOrEqual(r.bar + 2);
+      });
+    }
+  }
+});
+
 test.describe('reduce motion replaces, never deletes (5.6)', () => {
   test('a screen entrance is a 150 ms fade, with no scale change', async ({ page }) => {
     await page.setViewportSize({ width: 884, height: 470 });

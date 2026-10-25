@@ -1095,6 +1095,167 @@
 .hub-plate .ui-seg__opt {
   min-height: 44px;
 }
+/* Short landscape phones (item 43, owner report 2026-10-25: an Android phone in Chrome with its address bar
+   showing, about 762 x 277 CSS px). The dock stands on the screen's bottom and the plate is 200-220 px tall, so
+   below 340 px of height the plate reached up over the top bar's currencies and settings. Below 340 px it packs
+   tighter, in steps, so it always ends under the bar (measured down to 245 px in every plate state; ui-budget.spec
+   guards 250 px and up): smaller gaps, a 34 px opponent portrait (the 44 px one scaled, so the radar, the found
+   slam and every General keep their art), one-line names and 34 px rows; below 300 px a 30 px portrait and 30 px
+   rows; below 270 px the line under the choice goes (the VS screen says the same). Every control stays, the AI chip
+   too, and Battle keeps its size. The plate's own buttons take a size down through the button tokens. `.hub`
+   raises these over the state rules in lobby.css and ranked.css, whichever loads last. */
+@container ui-root (max-height: 339px) {
+  .hub .hub-dock {
+    gap: 6px;
+  }
+  .hub .hub-plate {
+    --ui-btn-icon-hit: 34px;
+    --ui-btn-icon-vis: 32px;
+    --ui-btn-s-hit: 36px;
+    --ui-btn-s-vis: 32px;
+    gap: 4px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+  .hub .hub-plate__body {
+    gap: 4px;
+  }
+  .hub .hub-plate__who {
+    min-height: 36px;
+  }
+  .hub .hub-plate__portrait {
+    margin: 0 -10px -10px 0;
+    transform: scale(0.773);
+    transform-origin: 0 0;
+  }
+  /* The AI chip keeps its size under the scaled portrait. */
+  .hub .hub-plate__ai {
+    transform: translateX(-50%) scale(1.1);
+  }
+  .hub .hub-plate__name {
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
+  /* "Searching for an opponent…" keeps its two lines (one below 270 px); its tip takes one (none below 300 px). */
+  .hub .hub-plate[data-state='ranked-search'] .hub-plate__name {
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+  .hub .hub-plate[data-state='ranked-search'] .hub-plate__tip {
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
+  .hub .hub-plate__player {
+    flex-wrap: nowrap;
+  }
+  .hub .hub-plate__tag {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hub .hub-plate .ui-seg__opt {
+    min-height: 34px;
+  }
+  /* No clock is named in plain words: the glyph over it would leave the selected underline across the label. */
+  .hub .hub-len__opt.is-last .hub-len__glyph {
+    display: none;
+  }
+  .hub .hub-len__lbl {
+    font-size: var(--ui-fs-caption);
+  }
+  .hub .hub-plate__chip {
+    min-height: 34px;
+  }
+  .hub .hub-sum {
+    min-height: 40px;
+  }
+  .hub .hub-plate[data-state] .hub-plate__desc,
+  .hub .hub-plate[data-state] .hub-plate__line {
+    min-height: 24px;
+  }
+  .hub .hub-plate[data-state] .hub-plate__info.ui-iconbtn {
+    margin-top: -5px;
+    margin-bottom: -5px;
+  }
+  .hub .hub-plate__foot {
+    padding-top: 4px;
+  }
+  /* The No clock caption (MR-28) points at the length picker from the left, over the island, instead of
+     standing above the plate on the top bar's chips. */
+  .hub .hub-plate__caption.wp-caption {
+    top: 40px;
+    bottom: auto;
+    right: calc(100% + 10px);
+    width: 220px;
+  }
+  .hub .hub-plate__caption.wp-caption::before {
+    top: 14px;
+    bottom: auto;
+    right: -6px;
+    border: 6px solid transparent;
+    border-right: 0;
+    border-left-color: var(--ui-surface-1);
+  }
+}
+@container ui-root (max-height: 299px) {
+  .hub .hub-plate {
+    --ui-btn-icon-hit: 30px;
+    --ui-btn-icon-vis: 28px;
+    --ui-btn-s-hit: 32px;
+    --ui-btn-s-vis: 28px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  .hub .hub-plate__who {
+    min-height: 30px;
+  }
+  .hub .hub-plate__portrait {
+    margin: 0 -14px -14px 0;
+    transform: scale(0.682);
+  }
+  .hub .hub-plate__ai {
+    transform: translateX(-50%) scale(1.15);
+  }
+  .hub .hub-plate .ui-seg__opt {
+    min-height: 30px;
+  }
+  .hub .hub-plate__chip {
+    min-height: 30px;
+  }
+  .hub .hub-sum {
+    min-height: 36px;
+  }
+  .hub .hub-plate__desc {
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
+  .hub .hub-plate__desc.has-win > span:first-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .hub .hub-plate[data-state] .hub-plate__desc,
+  .hub .hub-plate[data-state] .hub-plate__line {
+    min-height: 20px;
+  }
+  .hub .hub-plate[data-state='ranked-search'] .hub-plate__tip {
+    display: none;
+  }
+  .hub .hub-plate__caption.wp-caption {
+    top: 30px;
+  }
+}
+@container ui-root (max-height: 269px) {
+  .hub .hub-plate .hub-plate__desc,
+  .hub .hub-plate .hub-plate__line {
+    display: none;
+  }
+  .hub .hub-plate[data-state='ranked-search'] .hub-plate__name {
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
+}
 .ui-btn.hub-battle .ui-btn__face {
   font-size: calc(var(--ui-btn-xl-fs) + 4px);
   letter-spacing: 0.06em;
