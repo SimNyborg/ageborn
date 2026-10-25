@@ -416,6 +416,16 @@
       "hook_type": "story",
       "experiment": "indie-angle",
       "arm": "devlog"
+    },
+    {
+      "id": "18109737185350526",
+      "permalink": "https://www.instagram.com/stories/ageborn_game/4015815688132972482",
+      "timestamp": "2026-10-25T15:36:00+0000",
+      "name": "story-ba2-teaser",
+      "kind": "story",
+      "pillar": "devlog",
+      "hook": "behind the scenes: battlefields before/after, full video tonight",
+      "trial": false
     }
   ]
 }
