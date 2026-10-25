@@ -24,13 +24,15 @@ async function playToResult(page: Page): Promise<void> {
 }
 
 /**
- * The Result's rewards land one at a time (`REWARD_STEP_MS`, 900 ms each, on animation frames), the
- * Starter Capsule second: about a second in Chromium, at times over five in CI's software-rendered
- * WebKit (G3), so the wait is longer than the default 5 s, and the test says how long it took.
+ * The Result's rewards land one at a time (`REWARD_STEP_MS` apart, on animation frames), the Starter
+ * Capsule second: about a second in Chromium, 3-10 s in CI's software-rendered WebKit (G3), and twice over
+ * 20 s on 2026-10-25. A software-rendered WebKit can spend seconds in one frame's draw calls after a battle
+ * (WebKitGTK here, under load: frames of 3-13 s in `drawElements`, before queue item 38 too), and each reward
+ * waits for a frame, so the wait is a minute; the test says how long it took.
  */
 async function expectStarterCapsule(page: Page): Promise<void> {
   const shown = Date.now();
-  await expect(page.locator('[data-testid=result-reward][data-kind=capsule]')).toContainText('Starter Capsule', { timeout: 20_000 });
+  await expect(page.locator('[data-testid=result-reward][data-kind=capsule]')).toContainText('Starter Capsule', { timeout: 60_000 });
   test.info().annotations.push({ type: 'measure', description: `the Starter Capsule row landed ${Date.now() - shown} ms after the Result showed` });
 }
 
@@ -78,7 +80,8 @@ async function openCapsule(page: Page): Promise<void> {
 test.describe('first session (A8)', () => {
   test('Battle → match 1 → capsule 1 → the hub (Army) → match 2 → capsule 2 → forced upgrade → the Ladder hub (Capsules, crate, Campaign)', async ({ page }) => {
     requireFlow('home');
-    test.setTimeout(420_000);
+    // 5.7 min in CI's WebKit on 2026-10-24, so the two longer reward waits (above) get room
+    test.setTimeout(600_000);
     const problems = watchPage(page);
     // A fresh profile: one tap on Play starts match 1 (the dev autopilot plays it).
     await page.goto('./?dev=1&autopilot=1');
