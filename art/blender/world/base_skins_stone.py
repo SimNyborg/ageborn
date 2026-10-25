@@ -1133,44 +1133,64 @@ def bl_place(g, c, a_deg):
     return g
 
 
-def mammoth_skull(rig, joint, c, a_deg, k=1.0, tusks="stub", paint=False, seed=0):
-    """A great mammoth skull facing a_deg: the high domed cranium, the brow, deep eye sockets and nasal hole,
-    the tusk sockets and tusks (stubs, or long tusks curling up and out)."""
+def skull_geo(geos, c, a_deg, k=1.0, tusks="stub", paint=False):
+    """A great mammoth skull facing a_deg into shared geometry (`geos`: bone, dk, hole, tusk, ochre): the high
+    domed cranium, the brow, deep eye sockets and nasal hole, the tusk sockets and tusks (stubs, or long tusks
+    curling up and out)."""
     bone, dk, hole, tusk, ochre = Geo(), Geo(), Geo(), Geo(), Geo()
     bone.blob((-3.0 * k, 0.0, 4.0 * k), (13.0 * k, 15.0 * k, 16.0 * k), p=2.3, taper=(1.0, 0.86))
     bone.blob((6.0 * k, 0.0, -6.0 * k), (9.0 * k, 12.0 * k, 9.0 * k), p=2.4)
     dk.capsule((10.0 * k, -10.0 * k, 4.0 * k), (10.0 * k, 10.0 * k, 4.0 * k), 3.4 * k, segs=10, rings=2)
-    for s in (-1, 1):
-        hole.blob((11.6 * k, s * 7.0 * k, 0.5 * k), (2.8 * k, 3.2 * k, 3.0 * k), p=2.0)
-        dk.lathe([(0.1, 0), (4.4 * k, 1.0 * k), (4.0 * k, 6.0 * k), (3.2 * k, 7.0 * k)], (10.0 * k, s * 6.0 * k, -9.0 * k),
-                 (15.0 * k, s * 7.0 * k, -14.0 * k), segs=12)
+    for sgn in (-1, 1):
+        hole.blob((11.6 * k, sgn * 7.0 * k, 0.5 * k), (2.8 * k, 3.2 * k, 3.0 * k), p=2.0)
+        dk.lathe([(0.1, 0), (4.4 * k, 1.0 * k), (4.0 * k, 6.0 * k), (3.2 * k, 7.0 * k)], (10.0 * k, sgn * 6.0 * k, -9.0 * k),
+                 (15.0 * k, sgn * 7.0 * k, -14.0 * k), segs=12)
     hole.blob((14.2 * k, 0.0, -5.0 * k), (1.8 * k, 3.4 * k, 4.6 * k), p=2.0)
     if tusks == "stub":
-        for s in (-1, 1):
-            tusk.capsule((14.0 * k, s * 7.0 * k, -13.0 * k), (19.0 * k, s * 8.5 * k, -17.0 * k), 2.9 * k, 2.3 * k, segs=10, rings=2)
+        for sgn in (-1, 1):
+            tusk.capsule((14.0 * k, sgn * 7.0 * k, -13.0 * k), (19.0 * k, sgn * 8.5 * k, -17.0 * k), 2.9 * k, 2.3 * k, segs=10, rings=2)
     elif tusks == "long":
-        for s in (-1, 1):
+        for sgn in (-1, 1):
             pts = []
             for i in range(9):
                 t = i / 8.0
                 ang = math.radians(-60 + 230 * t)
                 rr = 22.0 * k
-                pts.append((14.0 * k + rr * 0.9 * math.cos(ang) * (1 - 0.25 * t), s * (7.0 * k + 13.0 * k * t),
+                pts.append((14.0 * k + rr * 0.9 * math.cos(ang) * (1 - 0.25 * t), sgn * (7.0 * k + 13.0 * k * t),
                             -14.0 * k + rr * (math.sin(ang) + 0.87)))
             for i, (a, b) in enumerate(zip(pts, pts[1:])):
                 tusk.capsule(a, b, (3.6 - 2.4 * i / 8.0) * k, (3.6 - 2.4 * (i + 1) / 8.0) * k, segs=10, rings=2)
     if paint:
         ochre.blob((9.5 * k, 0.0, 10.0 * k), (2.2 * k, 9.0 * k, 1.6 * k), p=2.2)
         ochre.blob((8.4 * k, 0.0, 14.0 * k), (1.8 * k, 6.0 * k, 1.3 * k), p=2.2)
-    for geo in (bone, dk, hole, tusk, ochre):
+    for name, geo in (("bone", bone), ("dk", dk), ("hole", hole), ("tusk", tusk), ("ochre", ochre)):
         bl_place(geo, c, a_deg)
-    rig.part(joint, bone, BL_BONE)
-    rig.part(joint, dk, BL_BONE_DK)
-    rig.part(joint, hole, BL_SOCKET, outline=0, highlight=False)
-    if tusks in ("stub", "long"):
-        rig.part(joint, tusk, BL_BONE_LT, finish="gloss")
-    if paint:
-        rig.part(joint, ochre, BL_RED, outline=0, highlight=False)
+        geos.setdefault(name, []).append(geo)
+
+
+def attach_skulls(rig, joint, geos, bone=None):
+    """Attaches the skulls gathered by `skull_geo` to a joint, one part per material."""
+    def merged(lst):
+        g = Geo()
+        for src in lst:
+            src.bm.verts.ensure_lookup_table()
+            g._add_bm(src.bm, __import__("mathutils").Matrix.Identity(4))
+        return g
+    if geos.get("bone"):
+        rig.part(joint, merged(geos["bone"]), bone or BL_BONE)
+        rig.part(joint, merged(geos["dk"]), BL_BONE_DK)
+        rig.part(joint, merged(geos["hole"]), BL_SOCKET, outline=0, highlight=False)
+    if any(len(g.bm.verts) for g in geos.get("tusk", [])):
+        rig.part(joint, merged(geos["tusk"]), BL_BONE_LT, finish="gloss")
+    if any(len(g.bm.verts) for g in geos.get("ochre", [])):
+        rig.part(joint, merged(geos["ochre"]), BL_RED, outline=0, highlight=False)
+
+
+def mammoth_skull(rig, joint, c, a_deg, k=1.0, tusks="stub", paint=False, seed=0):
+    """One great mammoth skull on a joint (see `skull_geo`)."""
+    geos = {}
+    skull_geo(geos, c, a_deg, k, tusks, paint)
+    attach_skulls(rig, joint, geos)
 
 
 def tusk_rib(g, a_deg, z0, z1, out=1.6, bow=3.0, r0=3.2, r1=2.2, n=9):
