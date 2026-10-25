@@ -25,4 +25,6 @@ export const baseSkinItems: CosmeticItemDef[] = [
   { id: 'desert_bunker', collection: 'baseSkin', rarity: 'rare', source: { kind: 'crate' }, art: 'cosmetic.baseSkin.desert_bunker', nameKey: 'cosmetic.baseSkin.desert_bunker.name', age: 'modern' },
   { id: 'midnight_neon', collection: 'baseSkin', rarity: 'epic', source: { kind: 'crate' }, art: 'cosmetic.baseSkin.midnight_neon', nameKey: 'cosmetic.baseSkin.midnight_neon.name', age: 'future' },
   { id: 'nebula_ark', collection: 'baseSkin', rarity: 'legendary', source: { kind: 'crate' }, art: 'cosmetic.baseSkin.nebula_ark', nameKey: 'cosmetic.baseSkin.nebula_ark.name', age: 'cosmic' },
+  // round 3 (PLAN 2c, 2e): the 13 new models, each `released: false` until its model passes review
+  { id: 'mammoth_bone_lodge', collection: 'baseSkin', rarity: 'epic', source: { kind: 'crate' }, art: 'cosmetic.baseSkin.mammoth_bone_lodge', nameKey: 'cosmetic.baseSkin.mammoth_bone_lodge.name', age: 'stone', released: false },
 ];

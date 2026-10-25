@@ -76,6 +76,8 @@ export const WORLD_BASE_SKINS: Readonly<Record<string, AgeId>> = {
   midnight_neon: 'future',
   crystal_spire: 'future',
   nebula_ark: 'cosmic',
+  // round 3 (2026-10-25): the new models, wave 1
+  mammoth_bone_lodge: 'stone',
 };
 
 /** Skin models with their own collapse kit (`art/bases/skins/<skin>.collapse.json`); the others use their age's. */
@@ -91,6 +93,7 @@ export const WORLD_BASE_SKIN_KITS: readonly string[] = [
   'midnight_neon',
   'crystal_spire',
   'nebula_ark',
+  'mammoth_bone_lodge',
 ];
 
 /**
@@ -114,6 +117,8 @@ export const WORLD_BASE_SKIN_PROPS: Readonly<Record<string, readonly { clip: str
     { clip: 'nebulaA', loopMs: 1560 },
     { clip: 'nebulaB', loopMs: 1560 },
   ],
+  // round 3: the new models' moving parts
+  mammoth_bone_lodge: [{ clip: 'chimes', loopMs: 1020 }],
 };
 
 export function baseSkinSheetSource(skin: string): string {

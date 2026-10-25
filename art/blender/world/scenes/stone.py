@@ -454,8 +454,7 @@ def gv_far(st, P):
     # a rock island (nunatak) in the basin and the medial moraine it trails down the ice to the snout
     gm, gm2 = pt.g(GV["rock_dk"], outline=0.3), pt.g(GV["rock"], outline=0.3)
     nt = kit.loft_point(rows, 7.7, 0.05)
-    rock(gm, (nt[0], nt[1], nt[2] + 2), (12, 8, 13), seed=77, jag=0.3, p=2.0)
-    kit.snow_cap(gsn, (nt[0], nt[1], nt[2] + 2), (12, 8, 13), seed=77, jag=0.3, p=2.0, cut=nt[2] + 11)
+    kit.peak(gm, gsn, nt[0], nt[1] + 2, nt[2] - 6, 15, 30, seed=77, snow=0.62, jag=0.24, squash=0.6)
     mpts = [kit.loft_point(rows, 7.5 - k * 7.35 / 30, 0.05) for k in range(31)]
     for k, (a, b) in enumerate(zip(mpts, mpts[1:])):
         gm2.capsule((a[0], a[1] - 0.8, a[2] + 0.9), (b[0], b[1] - 0.8, b[2] + 0.9), 1.6 + 2.6 * k / 30, 1.65 + 2.6 * k / 30)
@@ -509,25 +508,26 @@ def gv_far(st, P):
     for t, u in ((0.9, -0.42), (2.4, 0.36), (4.6, -0.24), (1.6, 0.62)):
         p_ = kit.loft_point(rows, t, u)
         st.amb("blink", "fx.p.star", (p_[0], p_[1], p_[2] + 4), period=2900, tint=0xF6FAFF, scale=0.6)
-    # 4. the valley's rock walls either side of the ice: a long dark rock ridge along each edge (a loft that
-    # follows the glacier's bend), its crest broken by crags with snow on their tops, rising toward the
-    # basin; and the outer shoulders (the glacier runs between them like a river of ice)
+    # 4. the valley's rock walls either side of the ice: a long rock ridge along each edge (a loft that
+    # follows the glacier's bend and climbs into its horn), a few dark crags on its crest, snow-filled
+    # gullies down its inner face; and the outer shoulders (the glacier runs between them like a river of ice)
     gr2, gs2 = pt.g(GV["rock"], outline=0.4), pt.g(GV["snow"], outline=0.4)
     grd = pt.g(GV["rock_dk"], outline=0.4)
     for side in (-1, 1):
         wrows = [(cx + side * (hw + 30), y + 4, z + 2 + 10 * (k / nr), 28, 20 + 14 * (k / nr)) for k, (cx, y, z, hw, bu) in enumerate(rows)]
         hx_, hy_ = (228, 724) if side < 0 else (598, 740)
         wrows.append((hx_ - side * 6, hy_ + 10, 262, 22, 12))   # the ridge climbs into its horn
-        kit.loft(grd, wrows, nu=10, thick=40)
-        for k in range(8):
-            t = 0.3 + k * 1.1 + rnd.uniform(-0.2, 0.2)
-            p_ = kit.loft_point(wrows, t, rnd.uniform(-0.3, 0.2))
-            rx, rz = rnd.uniform(14, 20) + k * 0.6, rnd.uniform(8, 12) + k * 0.5
-            c = (p_[0], p_[1] + 2, p_[2] - rz * 0.5)
-            sd = 700 + k + (side > 0) * 20
-            rock(gr2 if k % 2 else grd, c, (rx, 14, rz), seed=sd, jag=0.3, p=2.0)
-            if k % 2 == 1:
-                kit.snow_cap(gs2, c, (rx, 14, rz), seed=sd, jag=0.3, p=2.0, cut=c[2] + rz * 0.45)
+        kit.loft(gr2, wrows, nu=10, thick=40)
+        for k, t in enumerate((1.3 + (side > 0) * 0.9, 4.1 + (side > 0) * 0.5, 6.9 - (side > 0) * 0.6)):
+            p_ = kit.loft_point(wrows, t, 0.1 * side)
+            rx, h = 16 + k * 3, 30 + k * 7
+            kit.peak(grd, gs2, p_[0], p_[1] + 4, p_[2] - h * 0.5, rx, h, seed=700 + k + (side > 0) * 20, snow=0.7, jag=0.24, squash=0.6)
+        gsg = pt.g(mixc(GV["snow"], GV["rock"], 0.12), outline=0.0, highlight=False)
+        for k in range(7):
+            t = 0.6 + k * 1.15 + rnd.uniform(-0.2, 0.2)
+            pts = [kit.loft_point(wrows, t - q * 0.09, -side * (0.05 + q * 0.16)) for q in range(6)]
+            for q, (a, b) in enumerate(zip(pts, pts[1:])):
+                gsg.capsule((a[0], a[1] - 1, a[2] + 0.6), (b[0], b[1] - 1, b[2] + 0.6), 2.2 - q * 0.25, 2.0 - q * 0.25)
     kit.peak(gr2, gs2, 214, 360, 40, 120, 190, seed=11, snow=0.62, jag=0.2, squash=0.5)
     kit.peak(gr2, gs2, 612, 366, 40, 118, 176, seed=12, snow=0.6, jag=0.2, squash=0.5)
     kit.peak(gr2, gs2, 1200, 420, 40, 210, 250, seed=13, snow=0.58, jag=0.2, squash=0.55)

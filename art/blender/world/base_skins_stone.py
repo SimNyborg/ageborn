@@ -1138,17 +1138,19 @@ def skull_geo(geos, c, a_deg, k=1.0, tusks="stub", paint=False):
     domed cranium, the brow, deep eye sockets and nasal hole, the tusk sockets and tusks (stubs, or long tusks
     curling up and out)."""
     bone, dk, hole, tusk, ochre = Geo(), Geo(), Geo(), Geo(), Geo()
-    bone.blob((-3.0 * k, 0.0, 4.0 * k), (13.0 * k, 15.0 * k, 16.0 * k), p=2.3, taper=(1.0, 0.86))
-    bone.blob((6.0 * k, 0.0, -6.0 * k), (9.0 * k, 12.0 * k, 9.0 * k), p=2.4)
-    dk.capsule((10.0 * k, -10.0 * k, 4.0 * k), (10.0 * k, 10.0 * k, 4.0 * k), 3.4 * k, segs=10, rings=2)
+    # a mammoth's skull, not a man's: a tall domed crown, one big nasal opening high in the forehead, small eye
+    # sockets far out at the sides, and two heavy tusk sheaths reaching down and forward
+    bone.blob((-3.0 * k, 0.0, 5.0 * k), (13.0 * k, 15.0 * k, 17.0 * k), p=2.3, taper=(1.0, 0.82))
+    bone.blob((5.0 * k, 0.0, -5.0 * k), (9.0 * k, 12.5 * k, 9.0 * k), p=2.4)
+    dk.capsule((9.5 * k, -11.0 * k, 9.0 * k), (9.5 * k, 11.0 * k, 9.0 * k), 2.6 * k, segs=10, rings=2)
+    hole.blob((12.2 * k, 0.0, 3.0 * k), (1.8 * k, 4.6 * k, 5.6 * k), p=2.0)
     for sgn in (-1, 1):
-        hole.blob((11.6 * k, sgn * 7.0 * k, 0.5 * k), (2.8 * k, 3.2 * k, 3.0 * k), p=2.0)
-        dk.lathe([(0.1, 0), (4.4 * k, 1.0 * k), (4.0 * k, 6.0 * k), (3.2 * k, 7.0 * k)], (10.0 * k, sgn * 6.0 * k, -9.0 * k),
-                 (15.0 * k, sgn * 7.0 * k, -14.0 * k), segs=12)
-    hole.blob((14.2 * k, 0.0, -5.0 * k), (1.8 * k, 3.4 * k, 4.6 * k), p=2.0)
+        hole.blob((7.0 * k, sgn * 12.4 * k, -1.0 * k), (2.0 * k, 1.6 * k, 2.2 * k), p=2.0)
+        dk.lathe([(0.1, 0), (5.0 * k, 1.0 * k), (4.6 * k, 7.0 * k), (3.8 * k, 8.0 * k)], (9.0 * k, sgn * 5.5 * k, -8.0 * k),
+                 (14.0 * k, sgn * 7.0 * k, -16.0 * k), segs=12)
     if tusks == "stub":
         for sgn in (-1, 1):
-            tusk.capsule((14.0 * k, sgn * 7.0 * k, -13.0 * k), (19.0 * k, sgn * 8.5 * k, -17.0 * k), 2.9 * k, 2.3 * k, segs=10, rings=2)
+            tusk.capsule((13.6 * k, sgn * 7.0 * k, -15.0 * k), (18.0 * k, sgn * 8.6 * k, -20.0 * k), 3.2 * k, 2.6 * k, segs=10, rings=2)
     elif tusks == "long":
         for sgn in (-1, 1):
             pts = []
@@ -1332,7 +1334,7 @@ def build_bone_lodge(rig, M):
 
     # the lower wall: courses of great mammoth skulls stacked in a staggered bond, packed with earth (three
     # beside the door fall out at 75%)
-    courses = [(18.0, 1.0, 26.0, 0.0), (46.0, 0.86, 22.0, 11.0), (72.0, 0.8, 20.0, 0.0), (97.0, 0.74, 19.0, 9.5), (120.0, 0.68, 18.0, 0.0)]
+    courses = [(20.0, 1.05, 30.0, 0.0), (52.0, 0.95, 27.0, 13.5), (82.0, 0.88, 25.0, 0.0), (110.0, 0.8, 23.0, 11.5)]
     wall, loose = {}, {}
     n = 0
     for ci, (z, k, step, off) in enumerate(courses):
@@ -1340,8 +1342,8 @@ def build_bone_lodge(rig, M):
         while a <= 0.5:
             near_door = abs(a - BL_DOOR) < 21 and z < 66
             if not near_door:
-                into = loose if (-136 <= a <= -112 and 40 <= z <= 100) else wall
-                skull_geo(into, bl_at(a, z, 6.0 * k), a, k=k, tusks="stub" if (ci == 0 and a > -150) else "none", paint=(n % 4 == 1))
+                into = loose if (-140 <= a <= -110 and 40 <= z <= 100) else wall
+                skull_geo(into, bl_at(a, z, 6.0 * k), a, k=k, tusks="stub" if a > -150 else "none", paint=(n % 4 == 1))
                 n += 1
             a += step
         # the back of the course, sparser (only its silhouette shows)
