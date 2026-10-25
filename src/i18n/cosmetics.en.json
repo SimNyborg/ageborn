@@ -422,6 +422,7 @@
       "baseFlag": "Base flag",
       "nationalFlag": "National flag",
       "noNational": "No national flag",
+      "noBaseFlag": "No base flag",
       "defaultSkin": "Standard base",
       "anchors": "Pick a spot, then a decoration",
       "anchor": {

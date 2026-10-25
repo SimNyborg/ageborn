@@ -388,7 +388,7 @@ def render_props(props, P, out_dir, log=print, looks=None):
     # each frame as [x, y, w, h, ax, ay, ppl]: px in the atlas, the anchor as a fraction, px per lu
     meta = {}
     for (name, crop, ax, ay, ppl), (x, y) in zip(frames, pos):
-        meta[name] = [x, y, crop.size[0], crop.size[1], round(ax, 3), round(ay, 3), ppl]
+        meta[name] = [x, y, crop.size[0], crop.size[1], _num(float(ax)), _num(float(ay)), _num(float(ppl))]
     return atlas, meta
 
 
@@ -587,13 +587,40 @@ def compact_ambient(specs):
     return out
 
 
+def _num(v):
+    """A number as short as the files allow: integral floats as ints, the rest to 2 decimals."""
+    if isinstance(v, float):
+        r = round(v, 2)
+        return int(r) if r == int(r) else r
+    return v
+
+
+def frame_range(names):
+    """A run of frames `a_0, a_1, ... a_n` as the range string "a_0-n" (the loader expands it); anything
+    else stays a list."""
+    import re
+    if len(names) >= 3:
+        m = [re.fullmatch(r"(.*_)(\d+)", n) for n in names]
+        if all(m) and len({x.group(1) for x in m}) == 1:
+            idx = [int(x.group(2)) for x in m]
+            if idx == list(range(idx[0], idx[0] + len(idx))):
+                return f"{m[0].group(1)}{idx[0]}-{idx[-1]}"
+    return names
+
+
 def compact_sprites(sprites):
-    """Path group members without zero offsets or phases (the loader's defaults)."""
+    """Path group members without zero offsets or phases (the loader's defaults), frame runs as ranges,
+    numbers rounded."""
     out = []
     for s in sprites:
-        s = dict(s)
+        s = {k: (frame_range(v) if k == "frames" else v) for k, v in s.items()}
         if "group" in s:
-            s["group"] = [{k: v for k, v in m.items() if not (k in ("dx", "dy", "phase") and v == 0)} for m in s["group"]]
+            s["group"] = [{k: (frame_range(v) if k == "frames" else _num(v)) for k, v in m.items() if not (k in ("dx", "dy", "phase") and v == 0)}
+                          for m in s["group"]]
+        if "keys" in s:
+            s["keys"] = [[_num(v) for v in k] for k in s["keys"]]
+        if "at" in s:
+            s["at"] = [_num(v) for v in s["at"]]
         out.append(s)
     return out
 
@@ -612,7 +639,7 @@ def compact_lights(lights):
 
 def layer_meta(layer, image, ambient):
     f = FRAMES[layer]
-    return {"image": image, "x0": X0, "width": WIDTH, "yTop": f["yTop"], "height": f["height"], "pxPerLu": f["ppl"],
+    return {"image": image, "x0": _num(X0), "width": _num(WIDTH), "yTop": _num(f["yTop"]), "height": _num(f["height"]), "pxPerLu": _num(f["ppl"]),
             "ambient": ambient}
 
 

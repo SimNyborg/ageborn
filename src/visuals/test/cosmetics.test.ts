@@ -7,7 +7,8 @@
 import { describe, expect, it } from 'vitest';
 import { content } from '@/content';
 import type { AgeId } from '@/contracts';
-import { COSMETIC_COLLECTIONS, cosmeticImageUrl, cosmeticSvg, hasCosmeticArt, parseCosmeticKey } from '../cosmetics/art';
+import { COSMETIC_COLLECTIONS, cosmeticImageUrl, cosmeticSvg, hasBaseSkinAura, hasCosmeticArt, parseCosmeticKey } from '../cosmetics/art';
+import { WORLD_BASE_SKIN_AURA } from '../manifest.world';
 import { backdropWeatherSvg } from '../cosmetics/backdropPreview';
 import { decorationArtUrl } from '../cosmetics/decorations';
 import { nationalFlagUrl } from '../cosmetics/nationalFlags';
@@ -88,6 +89,23 @@ describe('routing (PLAN 2f interface 2)', () => {
     expect(cosmeticImageUrl('backdrop.winterfall', { age: 'stone', scene: 'scene.nowhere', cached: true })).toBeNull();
     expect(cosmeticImageUrl('backdrop.winterfall', { age: 'stone', scene: 'scene.nowhere' })).toMatch(/^data:image\/svg\+xml/);
     expect(hasCosmeticArt('scene', 'classic')).toBe(true);
+  });
+
+  it("the Legendary aura is a picture for exactly the models that wear it in battle (Track B's list)", () => {
+    expect(WORLD_BASE_SKIN_AURA).toEqual(expect.arrayContaining(['crystal_spire', 'nebula_ark']));
+    for (const id of WORLD_BASE_SKIN_AURA) {
+      const svg = cosmeticSvg(`baseSkin.${id}`, { layer: 'aura' });
+      expect(svg, id).toMatch(/^<svg[^>]*preserveAspectRatio="none"[\s\S]*<radialGradient/);
+      expect(balanced(svg!)).toBe(true);
+      expect(cosmeticImageUrl(`baseSkin.${id}`, { layer: 'aura' }), id).toMatch(/^data:image\/svg\+xml/);
+      expect(hasBaseSkinAura(id)).toBe(true);
+    }
+    // every other skin, and every other collection, has none
+    for (const x of content.cosmetics.collections.items.filter((i) => i.collection === 'baseSkin' && !WORLD_BASE_SKIN_AURA.includes(i.id))) {
+      expect(cosmeticImageUrl(`baseSkin.${x.id}`, { layer: 'aura' }), x.id).toBeNull();
+    }
+    expect(cosmeticImageUrl('baseFlag.ember', { layer: 'aura' })).toBeNull();
+    expect(cosmeticImageUrl('decoration.fern', { layer: 'aura' })).toBeNull();
   });
 
   it('a base skin model thumbnail comes from Track B (none yet), never as SVG', () => {

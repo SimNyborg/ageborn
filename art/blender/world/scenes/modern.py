@@ -18,77 +18,230 @@ import random
 from ageborn_art.geometry import Geo
 
 from world.scenes import fauna, kit
-from world.scenes.common import Prop, Scene, box, cyl, dk, ground_band, lt, mixc, ridge, rock
+from world.scenes.common import Prop, Scene, box, cyl, mixc, rock
 from world.scenes.kit import Parts
 
-PAL = dict(skyTop=0x98a8b6, skyBottom=0xe6dcc4, far=0x8a8f9a, mid=0x6c7264, near=0x565c4a, light=0xf2ead2)
-
-# the sky the game paints for this classic (sky.ts paintSky), for its thumbnail
-SKY = {"top": "#98A8B6", "bottom": "#E6DCC4", "horizon": "#EBE2CA", "celestial": "sun", "sunAt": [420, -600, 38]}
-
-
-def far(st, P):
-    back = mixc(P["far"], P["skyBottom"], 0.35)
-    ridge(st, back, -300, 1500, 0, 130, 460, 31, lumps=10, jag=0.1)
-    rnd = random.Random(5)
-    x = -280
-    i = 0
-    gb, gb2, gw = Geo(), Geo(), Geo()
-    while x < 1480:
-        w = rnd.uniform(40, 80)
-        h = rnd.uniform(90, 290)
-        d = rnd.uniform(60, 220)
-        (gb if i % 2 else gb2).blob((x + w / 2, d, h / 2), (w / 2 - 2, 22, h / 2), p=8, cuts=2)
-        # lit window rows: thin slabs, a few per building
-        for wz in range(int(20), int(h - 14), 22):
-            if rnd.random() < 0.55:
-                gw.blob((x + w / 2, d - 23, wz), (w / 2 - 8, 1, 2.2), p=6, cuts=1)
-        if i % 5 == 2:
-            cyl(gb, (x + w / 2, d, h), (x + w / 2, d, h + 50), 5, 4, bevel=0.5, segs=10)
-            st.amb("emit", "fx.p.smoke", (x + w / 2, d, h + 54), "far", rate=0.9, speed=12, scale=2.2, tint=lt(P["far"], 0.4), alpha=0.5)
-        if i % 7 == 4:
-            gb.capsule((x + 10, d, h), (x + 10, d, h + 120), 2.4)
-            gb.capsule((x + 10, d, h + 118), (x + 90, d, h + 118), 2.0)
-            st.amb("blink", "bd.light", (x + 10, d, h + 124), "far", period=1400, tint=0xF2D6D6)
-        x += w + rnd.uniform(-6, 10)
-        i += 1
-    st.part(gb2, P["far"], outline=0.0)
-    st.part(gb, dk(P["far"], 0.07), outline=0.0)
-    st.part(gw, lt(P["far"], 0.28), outline=0.0, highlight=False)
+# -- City Skyline (the classic, round 3) -------------------------------------------------------------
+CS_PAL = dict(skyTop=0x94A8BC, skyBottom=0xE4E0D6, light=0xF6F0E2, far=0x8E929A, mid=0x76786C, near=0x5A5C52)
+CS = dict(
+    stone=0xBDB8AA, stone_dk=0xA09C90, tan=0xB8A67A, tan_dk=0x9C8C66, grey=0x9C9890, grey_dk=0x7E7A74, cream=0xD6CFBE,
+    glass=0x5A5E66, roof=0x6E7076, brick=0x8E6A5E, brick_dk=0x765A50, olive=0x62664A, olive_dk=0x4E5240, khaki=0xB8A67A,
+    gunmetal=0x3A3F45, signal=0xB0306A, water=0x9AA6A8, water_hi=0xC4CCCC, quay=0xA8A498, quay_dk=0x8A867C, grass=0x7E8A62,
+    grass_dk=0x68744E, tree=0x5E7050, tree_dk=0x4E5E44, asphalt=0x6A6A6C, rail=0x4A4642, sleeper=0x6A5A4C, wood=0x7A6450,
+    steel=0x8A8E94, dark=0x3A3E44, hill=0x8A9478, patina=0x7E9A86,
+)
+CS_SKY = {"top": "#94A8BC", "bottom": "#E4E0D6", "horizon": "#ECE8DE", "cloudTint": "#F2F0EA", "celestial": "sun",
+          "sunAt": [200, -560, 36], "clouds": 0.8}
+CS_FAR_E = math.radians(8.0)
+CS_MID_E = math.radians(12.0)
+CS_RIVER_Z = 40.0                 # the river (lifted, like Treasure Cove's sea, so it shows over the mid strip)
+CS_BANK_Z = 54.0                  # the city's bank
+CS_BRIDGE = (860.0, 1460.0, 470.0, 70.0, 66.0)   # x0, x1, y, deck z, tower height (far)
+CS_MAST = (160.0, 690.0)          # the radio mast (far): x, y
+CS_TRAIN_Y = -40.0                # the freight line along the bank (mid, screen lu)
+CS_PIGEONS = (300.0, -190.0)      # the pigeons' ring (mid, screen lu)
 
 
-def mid(st, P):
-    ground_band(st, P["mid"])
-    rnd = random.Random(8)
-    ga, gb, gw = Geo(), Geo(), Geo()
-    for i in range(9):
-        x = -180 + i * 200
-        h = rnd.uniform(90, 130)
-        g = ga if i % 2 else gb
-        g.blob((x + 48, 40, h / 2), (46, 20, h / 2), p=6, cuts=2)
-        # broken top
-        rock(g, (x + 70, 40, h), (22, 18, 16), seed=i, jag=0.3, p=2.0)
-        for k in range(3):
-            gw.blob((x + 18 + k * 28, 19, h * 0.55), (7, 1, 8), p=5, cuts=1)
-    ruin = mixc(P["near"], 0x9A968C, 0.55)
-    st.part(ga, ruin, outline=0.5)
-    st.part(gb, dk(ruin, 0.08), outline=0.5)
-    st.part(gw, dk(ruin, 0.4), outline=0.0, highlight=False)
-    g, gwire = Geo(), Geo()
-    poles = list(range(-220, 1480, 170))
+def cs_back(st, P):
+    """Low blue-grey hills beyond the city (lowest under the moons' place)."""
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    pt = Parts()
+    g, g2 = pt.g(hz(CS["hill"], 0.4), outline=0.0), pt.g(hz(CS["grass_dk"], 0.42), outline=0.0)
+    for x, rx, h, seed in ((-160, 220, 120, 1), (180, 200, 96, 2), (520, 220, 80, 3), (1180, 240, 116, 4), (1460, 180, 96, 5), (880, 140, 50, 6)):
+        kit.hill(g if seed % 2 else g2, x, 1500, CS_BANK_Z - 20, rx, 80, h, seed=seed, jag=0.04, p=2.4)
+    pt.flush(st)
+
+
+def cs_far(st, P):
+    pt = Parts()
+    rnd = random.Random(61)
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    # 1. the river across the frame, opening into a bay on the right under the bridge
+    box(pt.g(CS["water"], finish="gloss", outline=0.0), (600, 780, CS_RIVER_Z - 4), (1100, 500, 4), p=6, cuts=2)
+    gwh = pt.g(CS["water_hi"], outline=0.0, highlight=False)
+    for i in range(40):
+        x = rnd.uniform(-260, 1460)
+        y = rnd.uniform(420, 560) if x < 860 else rnd.uniform(420, 1000)
+        L = rnd.uniform(10, 26)
+        gwh.capsule((x - L, y, CS_RIVER_Z + 0.4), (x + L, y, CS_RIVER_Z + 0.4), 0.8, 0.8)
+    # 2. the far bank: a stone quay wall, then the city ground; the right headland where the bridge lands
+    box(pt.g(CS["quay"], outline=0.3), (300, 566, CS_RIVER_Z + (CS_BANK_Z - CS_RIVER_Z) / 2), (580, 6, (CS_BANK_Z - CS_RIVER_Z) / 2 + 2), p=6, cuts=2)
+    box(pt.g(CS["quay_dk"], outline=0.0), (300, 559.4, CS_RIVER_Z + 3), (580, 0.6, 1.4), p=4, cuts=1)
+    box(pt.g(CS["grey_dk"], outline=0.0), (300, 760, CS_BANK_Z - 6), (580, 190, 6), p=6, cuts=1)
+    gh, gh2 = pt.g(CS["grass"], outline=0.0), pt.g(CS["grass_dk"], outline=0.0)
+    kit.hill(gh, 1400, 600, CS_RIVER_Z - 6, 170, 110, 76, seed=31, jag=0.05, p=2.4)
+    kit.hill(gh2, 1250, 760, CS_RIVER_Z - 6, 150, 90, 60, seed=32, jag=0.05, p=2.4)
+    rock(pt.g(CS["quay_dk"], outline=0.3), (860, 520, CS_RIVER_Z + 6), (30, 30, 14), seed=33, jag=0.1, p=3.0)
+    # 3. the skyline: rows of towers from the back (hazier) to the quay, the Art Deco spire tower the landmark
+    lights = []
+    rows = (
+        # (y, haze, [(x, w, d, h, tiers, crown, wall), ...]): wide blocks and towers of different heights and crowns
+        (840, 0.34, [(-210, 46, 26, 56, 2, "flat", "grey"), (-110, 30, 22, 88, 3, "mast", "stone"), (60, 54, 26, 50, 1, "flat", "tan"), (250, 34, 24, 96, 3, "flat", "stone"),
+                     (560, 30, 22, 100, 3, "mast", "tan"), (700, 50, 26, 60, 2, "flat", "grey"), (1060, 44, 24, 46, 1, "flat", "stone"), (1180, 30, 22, 66, 2, "flat", "tan")]),
+        (720, 0.2, [(-170, 36, 26, 66, 2, "flat", "tan"), (-40, 56, 30, 44, 1, "flat", "stone"), (120, 34, 24, 74, 3, "flat", "grey"), (300, 64, 34, 40, 2, "dome", "cream"),
+                    (650, 40, 28, 86, 3, "mast", "stone"), (780, 52, 30, 40, 1, "flat", "tan")]),
+        (630, 0.06, [(-230, 52, 28, 30, 1, "flat", "brick"), (-120, 40, 26, 40, 2, "flat", "stone"), (10, 46, 26, 34, 1, "flat", "tan"), (200, 50, 28, 30, 1, "flat", "brick"),
+                     (580, 44, 28, 38, 2, "flat", "stone"), (730, 56, 30, 26, 1, "flat", "brick")]),
+    )
+    walls = {"grey": (CS["grey"], CS["grey_dk"]), "stone": (CS["stone"], CS["stone_dk"]), "tan": (CS["tan"], CS["tan_dk"]), "cream": (CS["cream"], CS["stone"]),
+             "brick": (CS["brick"], CS["brick_dk"])}
+    for y, haze, towers in rows:
+        for k, (x, w, d, h, tiers, crown, wall) in enumerate(towers):
+            wl, wd = walls[wall]
+            roof = CS["patina"] if (k + y) % 3 == 0 and wall != "brick" else CS["roof"]
+            top, ls = kit.setback_tower(pt, x + rnd.uniform(-6, 6), y + rnd.uniform(-8, 8), CS_BANK_Z, w, d, h, wall=hz(wl, haze), wall_dk=hz(wd, haze),
+                                        win=hz(mixc(CS["glass"], wl, 0.25), haze * 0.8), trim=hz(CS["cream"], haze), yaw=rnd.choice((-14, -8, 8, 14)), tiers=tiers,
+                                        crown=crown, roof=hz(roof, haze), seed=200 + k + y, outline=0.3 if haze > 0.1 else 0.4)
+            if haze < 0.25:
+                lights += ls[:1]
+    # the city's fabric between the towers: rows of lower blocks along the quay and behind it (a continuous
+    # base for the skyline, no sky showing between the towers' feet)
+    fill = ((610, 0.04, 14, 30, ("brick", "stone", "tan")), (680, 0.12, 22, 46, ("stone", "grey", "tan", "brick")), (770, 0.24, 26, 56, ("grey", "stone", "tan")))
+    for y, haze, hmin, hmax, kinds in fill:
+        x = -255.0
+        k = 0
+        while x < 830:
+            w = rnd.uniform(26, 44)
+            wl, wd = walls[kinds[k % len(kinds)]]
+            kit.setback_tower(pt, x + w / 2, y + rnd.uniform(-6, 6), CS_BANK_Z - 2, w, 20, rnd.uniform(hmin, hmax), wall=hz(wl, haze), wall_dk=hz(wd, haze),
+                              win=hz(mixc(CS["glass"], wl, 0.3), haze * 0.8), trim=hz(CS["cream"], haze), yaw=rnd.choice((-8, 0, 8)), tiers=1, crown="flat",
+                              roof=hz(CS["roof"], haze), seed=900 + k + y, outline=0.3, rows=4.0)
+            x += w + rnd.uniform(-4, 2)
+            k += 1
+    # the landmark: an Art Deco tower with a stepped crown and a needle spire
+    top, ls = kit.setback_tower(pt, 430, 660, CS_BANK_Z, 40, 30, 80, wall=CS["cream"], wall_dk=CS["stone"], win=CS["glass"], trim=CS["stone_dk"], yaw=-10,
+                                tiers=3, crown="spire", roof=CS["roof"], seed=7, outline=0.4, rows=4.2)
+    lights += ls
+    # 4. the radio mast on its block, its warning light blinking (a scene light at night too)
+    mx, my = CS_MAST
+    box(pt.g(CS["grey"], outline=0.3), (mx, my, CS_BANK_Z + 14), (16, 12, 14), p=7, cuts=2, rot=(0, 0, 10))
+    tip = kit.lattice_mast(pt.g(CS["gunmetal"], outline=0.0), mx, my, CS_BANK_Z + 28, 92, base=7.0)
+    st.amb("blink", "bd.light", (tip[0], tip[1], tip[2] + 1), "far", period=1600, tint=0xF06A9A)
+    # 5. a factory chimney by the water, smoking
+    cyl(pt.g(CS["brick"], outline=0.4), (-20, 600, CS_BANK_Z), (-20, 600, CS_BANK_Z + 66), 5.6, 4.4, bevel=0.5, segs=14)
+    cyl(pt.g(CS["dark"], outline=0.2), (-20, 600, CS_BANK_Z + 62), (-20, 600, CS_BANK_Z + 66), 4.8, bevel=0.2, segs=14)
+    st.amb("emit", "bd.puff", (-20, 600, CS_BANK_Z + 70), rate=0.6, speed=8, scale=1.2, tint=0xD8D6D0, alpha=0.42, life=4200, drift=6)
+    # 6. the suspension bridge over the bay's mouth, its lamps lit at night
+    bx0, bx1, by, bz, bh = CS_BRIDGE
+    tops = kit.suspension_bridge(pt, bx0, bx1, by, bz, bh, steel=CS["olive"], steel_dk=CS["olive_dk"], deck=CS["grey_dk"], cable=CS["olive_dk"])
+    for tx, ty, tz in tops:
+        st.light((tx, ty - 5, tz + 2), 3)
+    for k in range(3):
+        st.light((bx0 + (bx1 - bx0) * (0.3 + 0.2 * k), by - 5, bz + 6), 3)
+    # trees along the far quay and on the headland
+    gt, gt2, gtr = pt.g(CS["tree"], outline=0.3), pt.g(CS["tree_dk"], outline=0.3), pt.g(CS["wood"], outline=0.0)
+    for k in range(16):
+        x = -250 + k * 68 + rnd.uniform(-10, 10)
+        if 800 < x:
+            continue
+        kit.broadleaf(gt if k % 2 else gt2, gtr, x, 580, rnd.uniform(14, 18), rnd.uniform(6, 7.5), seed=600 + k, z=CS_BANK_Z - 1)
+    for k in range(10):
+        x = rnd.uniform(1260, 1460)
+        kit.broadleaf(gt if k % 2 else gt2, gtr, x, 560 + rnd.uniform(0, 60), rnd.uniform(14, 20), rnd.uniform(6, 8), seed=700 + k, z=CS_RIVER_Z + 50)
+    for p_ in lights[:8]:
+        st.light(p_, 3)
+    pt.flush(st)
+
+
+def cs_mid(st, P):
+    pt = Parts()
+    rnd = random.Random(67)
+    # the near bank: a paved quay with a grass verge
+    g, ga = pt.g(CS["grass"], outline=0.0), pt.g(CS["quay"], outline=0.0)
+    for i in range(15):
+        x = -300 + i * 130
+        rock(g, (x, 80, 8), (96, 60, 40 + rnd.uniform(0, 8)), seed=i, jag=0.04, p=2.6)
+    box(ga, (600, 120, 45), (900, 18, 3), p=6, cuts=2)
+    box(pt.g(CS["quay_dk"], outline=0.4), (600, 104, 41), (900, 2.4, 6), p=5, cuts=1)
+    # a railing with lamp posts along the river (the lamps glow at night)
+    gst = pt.g(CS["gunmetal"], outline=0.3)
+    for k, x in enumerate((-180, 60, 520, 760, 1000, 1240)):
+        gst.capsule((x, 112, 48), (x, 112, 92), 0.9, 0.7)
+        gst.capsule((x, 112, 92), (x + 6, 112, 94), 0.6)
+        pt.g(CS["cream"], outline=0.3).sphere((x + 6.6, 111, 92.6), 1.8)
+        if k in (1, 2, 4):
+            st.light((x + 6.6, 109, 92), 4)
+    # 1. warehouses with water towers on their roofs (x -260..170, 590-930)
+    for k, (x, y, w, h, saw, yaw) in enumerate(((-190, 90, 120, 50, 3, -8), (80, 96, 110, 44, 0, 10), (680, 92, 140, 54, 4, -10), (880, 100, 100, 40, 0, 8))):
+        win = kit.warehouse(pt, x, y, 40, w, 34, h, brick=CS["brick"] if k % 2 == 0 else CS["tan_dk"], brick_dk=CS["brick_dk"] if k % 2 == 0 else CS["olive_dk"],
+                            roof=CS["roof"], win=CS["dark"], trim=CS["khaki"], yaw=yaw, saw=saw, seed=10 + k)
+        if k in (0, 2):
+            st.light(win, 4)
+    kit.water_tower(pt, -160, 96, 90 + 8, 46, 9, wood=CS["wood"], roof=CS["roof"], steel=CS["gunmetal"])
+    kit.water_tower(pt, 110, 102, 84 + 2, 40, 8, wood=CS["wood"], roof=CS["roof"], steel=CS["gunmetal"])
+    kit.water_tower(pt, 720, 98, 94 + 8, 50, 10, wood=CS["wood"], roof=CS["roof"], steel=CS["gunmetal"])
+    st.amb("emit", "bd.puff", (650, 86, 104), rate=0.4, speed=9, scale=0.8, tint=0xE2E0DA, alpha=0.36, life=2600, drift=5)
+    # 2. the freight siding (x 180-560: low; the landmark tower stands behind it at the game's camera):
+    # rails, standing wagons, buffers
+    grl, gsl = pt.g(CS["rail"], outline=0.0), pt.g(CS["sleeper"], outline=0.0)
+    for y in (56, 62):
+        grl.capsule((-260, y, 40.6), (1460, y, 40.6), 0.5)
+    for x in range(-260, 1460, 6):
+        box(gsl, (x, 59, 40.2), (1.0, 5.0, 0.4), p=4, cuts=1)
+    for k, x in enumerate((230, 262, 294, 470)):
+        fauna.train_car(body="#7E6A5E" if k % 2 else "#62664A", roof="#4E4A46", window="#3E3A40", size=1.0, length=28)(kit.StaticRig(pt, (x, 74, 40), s=1.0))
+    # 3. telegraph poles with sagging wires along the line
+    gp, gwr = pt.g(CS["wood"], outline=0.4), pt.g(CS["dark"], outline=0.0, highlight=False)
+    poles = list(range(-240, 1480, 120))
     for x in poles:
-        g.capsule((x, -10, 0), (x, -10, 150), 2.6)
-        g.capsule((x - 14, -10, 140), (x + 14, -10, 140), 1.8)
+        gp.capsule((x, 44, 38), (x, 44, 100), 1.0, 0.8)
+        gp.capsule((x - 7, 44, 96), (x + 7, 44, 96), 0.6)
     for a, b in zip(poles, poles[1:]):
-        pts = [(a + (b - a) * t / 8, -10, 140 - 24 * math.sin(math.pi * t / 8)) for t in range(9)]
-        for p, q in zip(pts, pts[1:]):
-            gwire.capsule(p, q, 0.7)
-    st.part(g, dk(P["mid"], 0.25), outline=0.3)
-    st.part(gwire, dk(P["mid"], 0.35), outline=0.0, highlight=False)
-    g = Geo()
-    for i in range(30):
-        g.blob((-250 + i * 60, -20, 5), (13, 7, 5), p=2.6)
-    st.part(g, mixc(P["near"], P["light"], 0.3), outline=0.4, finish="hair")
+        for dz in (95.6,):
+            pts = [(a + (b - a) * t / 8, 43.4, dz - 6 * math.sin(math.pi * t / 8)) for t in range(9)]
+            for p0, p1 in zip(pts, pts[1:]):
+                gwr.capsule(p0, p1, 0.2)
+    # 4. a crane on the quay, crates and a parked truck (x 1040-1300)
+    gc = pt.g(CS["olive"], outline=0.4)
+    for dx in (-8, 8):
+        gc.capsule((1110 + dx, 104, 46), (1110 + dx * 0.4, 104, 120), 1.4, 1.0)
+    gc.capsule((1100, 104, 120), (1180, 104, 128), 1.2)
+    gc.capsule((1096, 104, 120), (1080, 104, 112), 1.0)
+    box(gc, (1110, 104, 122), (8, 5, 5), p=6, cuts=1)
+    pt.g(CS["dark"], outline=0.0).capsule((1172, 104, 127), (1172, 104, 96), 0.25)
+    gcr = pt.g(CS["wood"], outline=0.4)
+    for k, (x, z) in enumerate(((1160, 40), (1176, 40), (1168, 52), (1200, 40))):
+        box(gcr, (x, 90, z + 6), (7, 7, 6), p=5, cuts=1)
+    fauna.truck(body="#7E8064", cab="#62664A", tank="#8A8C74", size=1.6)(kit.StaticRig(pt, (1260, 70, 40), flip=True))
+    # trees and a few bushes
+    gt, gt2, gtr = pt.g(CS["tree"], outline=0.5), pt.g(CS["tree_dk"], outline=0.5), pt.g(CS["wood"], outline=0.4)
+    for k, (x, y, h, r) in enumerate(((-250, 130, 110, 32), (580, 128, 100, 30), (1000, 132, 120, 34), (1380, 128, 116, 34))):
+        kit.broadleaf(gt if k % 2 else gt2, gtr, x, y, h, r, seed=900 + k, z=40)
+    pt.flush(st)
+
+
+def cs_props():
+    bx0, bx1, by, bz, bh = CS_BRIDGE
+    deck = _scr((0, by - 4, bz + 1.2), CS_FAR_E)[1]
+    river = _scr((0, 500, CS_RIVER_Z), CS_FAR_E)[1]
+    px_, py_ = CS_PIGEONS
+    ring = [[i * 2, round(px_ + 70 * math.cos(math.pi * i / 3)), round(py_ + 14 * math.sin(math.pi * i / 3)), 1] for i in range(7)]
+    pigeon = fauna.bird(body="#8A8C94", wing="#6E7078", beak="#C8A060", span=10, size=0.8)
+    plist = [
+        Prop("car", "far", fauna.car(size=0.9), [{}], (20, 10, 2), deck),
+        Prop("bus", "far", fauna.bus(size=0.8), [{}], (26, 12, 2), deck),
+        Prop("car2", "far", fauna.car(body="#B8A67A", roof="#E2DCCC", size=0.9), [{}], (20, 10, 2), deck),
+        Prop("tug", "far", fauna.tug(size=1.0), [{}], (40, 26, 3), river),
+        Prop("loco", "mid", fauna.diesel_loco(size=1.3), [{}], (44, 20, 3), CS_TRAIN_Y),
+        Prop("wagon", "mid", fauna.train_car(body="#7E6A5E", roof="#4E4A46", window="#3E3A40", size=1.3, length=26), [{}], (40, 20, 3), CS_TRAIN_Y),
+        Prop("pigeon", "mid", pigeon, [fauna.bird_pose(f) for f in range(5)], (34, 20, 20), ring[0][2]),
+    ]
+    sprites = [
+        # traffic over the bridge: three vehicles 38 lu apart, out of the city and over the bay
+        {"kind": "path", "layer": "far", "fps": 1, "periodS": 50,
+         "keys": [[0, bx0 - 10, deck, 0], [3, bx0 + 20, deck, 1], [44, bx1 - 30, deck, 1], [47, bx1, deck, 0], [50, bx1, deck, 0]],
+         "group": [{"frames": ["car_0"]}, {"frames": ["bus_0"], "dx": -40}, {"frames": ["car2_0"], "dx": -76}]},
+        # the tug works up the river under the bridge (clear of the far bank's towers: their feet are behind the quay)
+        {"kind": "path", "layer": "far", "fps": 1, "periodS": 160,
+         "keys": [[0, 1300, river, 0], [8, 1270, river, 1], [140, 820, river, 1], [148, 790, river, 0], [160, 790, river, 0]], "group": [{"frames": ["tug_0"]}]},
+        # a freight train along the bank every minute
+        {"kind": "path", "layer": "mid", "fps": 1, "periodS": 60,
+         "keys": [[0, -360, CS_TRAIN_Y, 1], [26, 1580, CS_TRAIN_Y, 1], [60, 1580, CS_TRAIN_Y, 1]],
+         "group": [{"frames": ["loco_0"]}, {"frames": ["wagon_0"], "dx": -44}, {"frames": ["wagon_0"], "dx": -82}, {"frames": ["wagon_0"], "dx": -120}]},
+        {"kind": "path", "layer": "mid", "fps": 6, "periodS": 12, "keys": ring,
+         "group": [{"frames": ["pigeon_4", "pigeon_0", "pigeon_1", "pigeon_2", "pigeon_3"]}, {"frames": ["pigeon_0", "pigeon_1", "pigeon_2", "pigeon_3", "pigeon_4"], "dx": -22, "dy": 8, "phase": 2}]},
+    ]
+    return plist, sprites
 
 
 # -- Desert Airbase (round 2) ------------------------------------------------------------------------
@@ -97,7 +250,7 @@ DA = dict(
     sand=0xCDB88A, sand_dk=0xB8A276, sand_lt=0xDCCAA0, mesa=0xAE8C6E, mesa_dk=0x8E7058, khaki=0xB8A67A, khaki_dk=0x9C8C64,
     gun=0x3A3F45, metal=0x9A9886, metal_dk=0x7E7C6E, concrete=0xB4AE9C, concrete_dk=0x9C9684, mark=0xE6E0D0, white=0xDCD6C6,
     glass=0x5A6A6E, olive=0x7E8064, olive_dk=0x686C54, scrub=0x8A8A68, scrub_dk=0x707256, wood=0x7A6450, drum=0x6E6A52,
-    red=0xA05E50, tank=0xC8C2B0,
+    red=0xA05E50, tank=0xC8C2B0, strata=0x9A7C62, strata_lt=0xC4A684, cap=0x7E6450, gully=0x7A6250,
 )
 DA_SKY = {"top": "#9CB8C8", "bottom": "#F2E6CC", "horizon": "#F6ECD6", "cloudTint": "#FAF4E8", "celestial": "sun",
           "sunAt": [260, -540, 44], "clouds": 0.45, "smog": 0.12}
@@ -136,10 +289,10 @@ def da_back(st, P):
     """Mesas on the horizon (low under the moons' place, x 820-980)."""
     hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
     pt = Parts()
-    gm, gb, gt = pt.g(hz(DA["mesa"], 0.3), outline=0.0), pt.g(hz(DA["mesa_dk"], 0.3), outline=0.0), pt.g(hz(DA["sand_dk"], 0.3), outline=0.0)
-    for x, rx, h, seed in ((-180, 190, 150, 1), (80, 140, 110, 2), (380, 220, 170, 3), (640, 130, 100, 4), (900, 100, 40, 5), (1150, 210, 160, 6),
-                           (1420, 160, 120, 7)):
-        mesa(gm, gb, x, 1500, -60, rx, h + 60, seed=seed, top=0.7, g_talus=gt)
+    gm, gb, gt = pt.g(hz(DA["mesa"], 0.32), outline=0.0), pt.g(hz(DA["strata"], 0.32), outline=0.0), pt.g(hz(DA["sand_dk"], 0.3), outline=0.0)
+    for x, rx, h, seed in ((-180, 150, 150, 1), (80, 110, 110, 2), (380, 170, 170, 3), (640, 100, 100, 4), (900, 80, 40, 5), (1150, 160, 160, 6),
+                           (1420, 120, 120, 7)):
+        kit.butte(gm, [gb], gt, x, 1500, -60, rx, rx * 0.5, h + 60, seed=seed, bands=((0.3, 0.38), (0.6, 0.66)))
     pt.flush(st)
 
 
@@ -148,9 +301,12 @@ def da_far(st, P):
     rnd = random.Random(61)
     fz = DA_FIELD_Z
     # 1. mesas behind the field and the rise it stands on
-    gm, gb, gt = pt.g(DA["mesa"], outline=0.3), pt.g(DA["mesa_dk"], outline=0.3), pt.g(DA["sand_dk"], outline=0.0)
-    for x, rx, h, seed in ((-120, 190, 200, 11), (330, 160, 150, 12), (1080, 210, 210, 13), (1360, 150, 160, 14)):
-        mesa(gm, gb, x, 640, -20, rx, h, seed=seed, squash=0.55, top=0.7, g_talus=gt)
+    gm, gt = pt.g(DA["mesa"], outline=0.3), pt.g(DA["sand_dk"], outline=0.0)
+    gbs = [pt.g(DA["strata"], outline=0.0), pt.g(DA["strata_lt"], outline=0.0), pt.g(DA["mesa_dk"], outline=0.0)]
+    gcap, ggul = pt.g(DA["cap"], outline=0.3), pt.g(DA["gully"], outline=0.0, highlight=False)
+    for x, rx, h, seed in ((-120, 150, 200, 11), (330, 126, 150, 12), (1080, 168, 210, 13), (1360, 120, 160, 14)):
+        kit.butte(gm, gbs, gt, x, 640, -20, rx, rx * 0.5, h, seed=seed, g_gully=ggul, g_cap=gcap,
+                  bands=((0.18, 0.26), (0.34, 0.38), (0.5, 0.6), (0.7, 0.74)))
     # low dunes behind the field, up over the back strip's foot (review 2: the far mesas floated over a
     # band of sky where the back strip ends)
     gdn = pt.g(mixc(DA["sand_dk"], P["skyBottom"], 0.25), outline=0.0)
@@ -279,8 +435,35 @@ def da_mid(st, P):
     gr = pt.g(DA["mesa_dk"], outline=0.5)
     for i in range(10):
         rock(gr, (rnd.uniform(-240, 1440), rnd.uniform(34, 50), 38), (rnd.uniform(7, 12), 7, rnd.uniform(5, 8)), seed=900 + i, jag=0.2)
-    st.amb("emit", "fx.p.smoke", (300, 40, 46), rate=0.35, speed=4, scale=2.2, tint=0xE6D8B8, alpha=0.22, life=4200)
-    st.amb("emit", "fx.p.smoke", (1000, 40, 46), rate=0.35, speed=4, scale=2.2, tint=0xE6D8B8, alpha=0.22, life=4200)
+    # round 3 (review 2: sparse): a big hangar on the right with a transport nosing out of its open door,
+    # a second fuel truck and a jeep, a water tower, a perimeter fence along the back
+    hx, hy, hr, hl = 1140.0, 124.0, 50.0, 64.0
+    gmet, gmet2, gd = pt.g(DA["metal"], finish="metal", outline=0.5), pt.g(DA["metal_dk"], outline=0.3), pt.g(DA["gun"], outline=0.0, highlight=False)
+    tmp = Geo()
+    cyl(tmp, (hx, hy + hl / 2, 38), (hx, hy - hl / 2, 38), hr, bevel=1.4, segs=32)
+    tmp.clip((hx, hy, 38), (0, 0, -1))
+    kit._merge(gmet, tmp)
+    for k in range(6):
+        yy = hy - hl / 2 + (k + 0.5) * hl / 6
+        ring = Geo()
+        cyl(ring, (hx, yy - 0.9, 38), (hx, yy + 0.9, 38), hr + 0.6, bevel=0.2, segs=32)
+        ring.clip((hx, yy, 38), (0, 0, -1))
+        kit._merge(gmet2, ring)
+    door = [(hx + hr * 0.82 * math.cos(math.pi * k / 14), 38 + hr * 0.82 * math.sin(math.pi * k / 14)) for k in range(15)]
+    gd.slab(door, hy - hl / 2 - 0.8, 1.2)
+    st.light((hx, hy - hl / 2 - 2, 38 + hr * 0.9), 6)
+    fauna.prop_plane(body="#8A8C7A", wing="#7A7C6C", size=1.7)(kit.StaticRig(pt, (hx - 6, hy - hl / 2 - 16, 37), flip=True))
+    fauna.truck(size=1.6)(kit.StaticRig(pt, (1330, 70, 38)))
+    fauna.jeep(size=1.8)(kit.StaticRig(pt, (560, 56, 38)))
+    kit.water_tower(pt, -170, 110, 40, 92, 13, wood=DA["metal"], wood_dk=DA["metal_dk"], roof=DA["gun"], steel=DA["gun"])
+    gfe = pt.g(DA["gun"], outline=0.0)
+    for x in range(-250, 1460, 22):
+        gfe.capsule((x, 132, 38), (x, 132, 62), 0.6)
+    for zz in (48, 56, 61):
+        gfe.capsule((-250, 132, zz), (1460, 132, zz), 0.25)
+    # dust drifting across the sand (pale puffs, blown along)
+    for x in (300, 760, 1000):
+        st.amb("emit", "bd.puff", (x, 40, 46), rate=0.35, speed=3, scale=2.4, tint=0xE8DCC0, alpha=0.24, life=5200, drift=14)
     pt.flush(st)
 
 
@@ -338,7 +521,9 @@ def da_props():
 
 
 SCENES = {
-    "classic": Scene("modern", "classic", PAL, far, mid, sky=SKY, version=1),
+    "classic": Scene("modern", "classic", CS_PAL, cs_far, cs_mid, back=cs_back, sky=CS_SKY, props=cs_props,
+                     hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.5}, ground="earth",
+                     look={"far": (0.2, 0.09, 0.2)}),
     "desert_airbase": Scene("modern", "desert_airbase", DA_PAL, da_far, da_mid, back=da_back, sky=DA_SKY, props=da_props,
                             hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.5}, ground="earth"),
 }

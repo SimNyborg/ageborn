@@ -7,7 +7,8 @@
  * A portrait composites the sheet's resting frames in the sheet's shared source space (every frame of
  * a world sheet has the same `sourceSize` and anchor), each one over its grey `_team` twin tinted in
  * the side's colour (the lane's "tint-underlay" rule):
- * - bases: the back flag, the body at crumble stage 0, then the front flag;
+ * - bases: the back props and flag, the body at crumble stage 0, then the front props and flag (a prop loop,
+ *   round 3, at the step it holds under Reduce motion);
  * - turrets: the mount, then the head at rest (`idle_00`).
  *
  * The union of the drawn frames is fitted into the square, standing on its bottom edge (bases, no
@@ -36,7 +37,16 @@ interface SheetFrame {
 interface SheetJson {
   frames: Record<string, SheetFrame>;
   animations: Record<string, string[]>;
-  meta: { image: string; ageborn?: { kind?: 'turret' | 'base'; age?: AgeId; flags?: { clip: string; z: 'front' | 'back' }[] } };
+  meta: {
+    image: string;
+    ageborn?: {
+      kind?: 'turret' | 'base';
+      age?: AgeId;
+      flags?: { clip: string; z: 'front' | 'back' }[];
+      /** Base prop loops (round 3): drawn at the step they hold under Reduce motion, where crumble 0 shows them. */
+      props?: { clip: string; z: 'front' | 'back'; crumbleMin: number; holdFrame: number }[];
+    };
+  };
 }
 
 interface LoadedSheet {
@@ -112,8 +122,15 @@ export function worldPortraitFrames(json: Pick<SheetJson, 'animations' | 'meta'>
     return out;
   }
   const flags = json.meta.ageborn?.flags ?? [];
+  const props = (json.meta.ageborn?.props ?? []).filter((p) => p.crumbleMin <= 0);
+  const held = (p: { clip: string; holdFrame: number }): string | null => {
+    const a = json.animations[p.clip];
+    return a && a.length > 0 ? (a[Math.min(a.length - 1, Math.max(0, p.holdFrame))] ?? null) : null;
+  };
+  for (const p of props) if (p.z === 'back') push(held(p));
   for (const f of flags) if (f.z === 'back') push(first(f.clip));
   push(first('body'));
+  for (const p of props) if (p.z !== 'back') push(held(p));
   for (const f of flags) if (f.z !== 'back') push(first(f.clip));
   return out;
 }

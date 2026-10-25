@@ -34,6 +34,8 @@ export interface AmbientSpec {
   fall?: boolean;
   /** Emitters: particle life (ms). */
   life?: number;
+  /** Emitters: the wind, a horizontal drift of the rising motes (lu per second; 4 when absent). A volcano's plume trails off sideways instead of rising into the HUD's top band on phones. */
+  drift?: number;
   /** Drift: animation frames (part ids): five flap frames then a glide pose (birds, UI art audit #5). */
   frames?: readonly string[];
   /** Dropped under the Lite preset (half the flocks). */
@@ -336,6 +338,12 @@ part('bd.windmill.sails', [
   { d: circle(0, 0, 4), zone: 'white', line: 0, shade: false, light: false },
 ]);
 part('bd.bird', [{ d: join(blob([-8, 0, -4, -3, 0, 0, 4, -3, 8, 0, 4, -1.2, 0, 1.4, -4, -1.2], 0.6)), zone: 'white', line: 0, shade: false, light: false }]);
+/**
+ * A pale smoke puff for the scenes' emitters (round 3): `fx.p.smoke`'s shape in white with its cel shade,
+ * so the emitter's tint sets the grey exactly (`fx.p.smoke` is a dark grey; tinted, it reads as soot over
+ * a painted plume). Volcano plumes, camp smoke and steam.
+ */
+part('bd.puff', [{ d: join(circle(0, 0, 6), circle(5, -2, 4.6), circle(-5, -1.4, 4.4), circle(0.8, -5, 4.8)), zone: 'white', line: 0, alpha: 0.9 }]);
 
 /** Bird frames (UI art audit #5): body, head, beak, tail and wings; five flap frames and a glide pose. The far wing is lighter (alpha) so a tinted silhouette still reads two-tone. */
 part('bd.bird.f0', [{ d: 'M0.00 -0.57 Q1.61 -6.32 5.29 -7.24 Q4.14 -3.33 3.45 -0.35 Z', zone: 'white', line: 0, alpha: 0.55, shade: false, light: false }, { d: join('M-7.36 0.35 L-12.42 -1.72 L-11.27 0.80 L-12.42 3.33 L-7.36 1.50 Z', 'M8.74 -0.23 L11.73 0.46 L8.74 1.26 Z', 'M-8.28 0.80 Q-3.68 -2.19 2.99 -1.04 Q6.21 -1.49 8.51 -0.35 Q9.66 0.46 8.51 1.38 Q5.52 2.99 0.92 2.76 Q-4.37 2.76 -8.28 0.80 Z'), zone: 'white', line: 0, shade: false, light: false }, { d: 'M-1.38 -0.11 Q-0.23 -7.24 3.91 -9.08 Q3.22 -4.49 2.99 0.11 Z', zone: 'white', line: 0, alpha: 0.9, shade: false, light: false }]);

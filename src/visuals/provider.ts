@@ -23,7 +23,8 @@ import { ProceduralAdapter } from './adapters/procedural';
 import { SpineAdapter } from './adapters/spine';
 import type { ViewKind, VisualAdapter, VisualKind } from './adapters/types';
 import { AGES } from './ages';
-import { BaseDressing } from './cosmetics/dressing';
+import { BaseDressing, type DecorationProps } from './cosmetics/dressing';
+import { decorationSheetSource, WORLD_DECORATIONS } from './manifest.world';
 import { teamColor } from './palette';
 import { arenaId } from './backdrops/ground';
 import { forgetSceneImages, inSceneDir, sceneImage, sceneJson } from './backdrops/sceneFiles';
@@ -995,7 +996,8 @@ export class VisualsArtProvider implements ArtProvider {
    */
   prefetchMatch(o: {
     age: AgeId;
-    sides: readonly { skins?: Partial<Record<AgeId, SkinId>>; scenes?: Partial<Record<AgeId, CosmeticKey>> }[];
+    /** Each side's base skins and scenes per age, and (round 3) its equipped decorations: their props load too. */
+    sides: readonly { skins?: Partial<Record<AgeId, SkinId>>; scenes?: Partial<Record<AgeId, CosmeticKey>>; decorations?: readonly (CosmeticKey | null)[] }[];
     /** The units both decks can field in the opening age (G7): held for {@link PREFETCH_HOLD_MS}. */
     units?: readonly HeldVisual[];
   }): Promise<void> {
@@ -1013,6 +1015,8 @@ export class VisualsArtProvider implements ArtProvider {
     const waits: Promise<unknown>[] = skins.map((s) => this.prefetchBaseSkins(s));
     const base = this.baseSheetReady(o.age);
     if (base) waits.push(base);
+    // both sides' decoration props (round 3: three a side), so the first battle frame shows them, not the SVG
+    waits.push(this.prefetchDecorations(o.sides.flatMap((s) => s.decorations ?? [])));
     if (o.units && o.units.length > 0) {
       // the battle's own hold takes the same sheets over when it starts; this one lets go a while later
       const hold = this.holdArt();
@@ -1052,7 +1056,33 @@ export class VisualsArtProvider implements ArtProvider {
     // the stills' files too (Customize's tiles and preview), which the lane's textures never asked for
     forgetSceneImages((url) => dirs.some((d) => inSceneDir(url, d)) || (ground === null ? url.includes('/art/ground/') : url === ground));
     this.atlas.world.forgetSkins((source) => skins.has(source));
-    forgetWorldSheets((url) => [...skins].some((s) => url === this.atlasUrl(s)));
+    // decoration props stay (round 3: a few KB each, all 24 under 2 MB decoded; VS warmed this match's), so
+    // their decoded copies stay counted by the menus' loader too
+    forgetWorldSheets((url) => [...skins].some((s) => url === this.atlasUrl(s)) || /\/art\/cosmetics\/decorations\/[a-z0-9_]+\.json$/.test(url));
+  }
+
+  /**
+   * The decoration prop sheets for the dressings (round 3, PLAN 2a): through the world atlas, which keeps a
+   * loaded prop for the session; null with a forced tier other than the sheets (the SVG bakes stay).
+   */
+  private decorationProps(): DecorationProps | null {
+    if (this.force !== null && this.force !== 'atlas') return null;
+    this.decoProps ??= {
+      has: (id) => WORLD_DECORATIONS.includes(id),
+      get: (id) => this.atlas.world.get(decorationSheetSource(id)),
+      ensure: (id) => this.atlas.world.ensure(decorationSheetSource(id)),
+    };
+    return this.decoProps;
+  }
+
+  private decoProps: DecorationProps | null = null;
+
+  /** Starts loading the props of these decorations (`decoration.<id>` keys; others and nulls skipped); resolves when in or failed. */
+  private prefetchDecorations(keys: readonly (CosmeticKey | null | undefined)[]): Promise<void> {
+    const props = this.decorationProps();
+    if (!props) return Promise.resolve();
+    const ids = new Set(keys.filter((k): k is CosmeticKey => !!k && k.startsWith('decoration.')).map((k) => k.slice('decoration.'.length)));
+    return Promise.all([...ids].filter((id) => props.has(id)).map((id) => props.ensure(id))).then(() => undefined);
   }
 
   /**
@@ -1089,9 +1119,10 @@ export class VisualsArtProvider implements ArtProvider {
    * from the shared file cache (one download with the Customize stills) and stream into this provider's
    * backdrop textures, which the diorama's backdrop reads. Resolves once all of it has loaded or failed.
    */
-  dioramaLease(o: { age: AgeId; skin?: SkinId | null; turrets: readonly VisualId[]; scene?: CosmeticKey | null; arena: string }): { ready: Promise<void>; release(): void } {
+  dioramaLease(o: { age: AgeId; skin?: SkinId | null; turrets: readonly VisualId[]; scene?: CosmeticKey | null; arena: string; decorations?: readonly (CosmeticKey | null)[] }): { ready: Promise<void>; release(): void } {
     const lease = this.showcaseLease({ visuals: [{ visualId: `base.${o.age}`, skin: o.skin ?? null }, ...o.turrets.map((visualId) => ({ visualId }))] });
-    const waits: Promise<unknown>[] = [lease.ready];
+    // the side's decoration props too (round 3), so the stage shows them from its first frame
+    const waits: Promise<unknown>[] = [lease.ready, this.prefetchDecorations(o.decorations ?? [])];
     if (this.force === null || this.force === 'procedural' || this.force === 'atlas') {
       const scene = drawnScene(o.age, sceneIdOf(o.scene));
       const arena = arenaId(o.arena);
@@ -1129,7 +1160,8 @@ export class VisualsArtProvider implements ArtProvider {
 
   /** Base flag, national flag, decorations and skin restyle of one side (DESIGN A18.9.4). */
   createBaseDressing(o: { age: AgeId; side: Side; look: SideLook; teamPreset: TeamPreset; base?: BaseView }): BaseDressingView {
-    return new BaseDressing({ ...o, team: teamColor(o.side, o.teamPreset), seed: this.nextSeed++ });
+    // round 3: the equipped decorations as Blender props (the SVG bakes stand in until each arrives)
+    return new BaseDressing({ ...o, team: teamColor(o.side, o.teamPreset), seed: this.nextSeed++, props: this.decorationProps() });
   }
 
   /**

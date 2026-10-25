@@ -18,61 +18,195 @@ import random
 from ageborn_art.geometry import Geo
 
 from world.scenes import fauna, kit
-from world.scenes.common import Prop, Scene, box, cyl, dk, ground_band, lt, mixc, ridge, rock
+from world.scenes.common import Prop, Scene, box, cyl, mixc, rock
 from world.scenes.kit import Parts
 
-PAL = dict(skyTop=0x2c2e50, skyBottom=0x9a7aa8, far=0x524e78, mid=0x3e3e60, near=0x2c2e46, light=0xd8f3ea)
-
-# the sky the game paints for this classic (sky.ts paintSky), for its thumbnail
-SKY = {"top": "#2C2E50", "bottom": "#9A7AA8", "horizon": "#B6B0C6", "celestial": "sun", "sunAt": [860, -560, 30], "night": True}
-
-
-def far(st, P):
-    back = mixc(P["far"], P["skyBottom"], 0.3)
-    ridge(st, back, -300, 1500, 0, 120, 460, 41, lumps=10, jag=0.1)
-    # the ring arch
-    g = Geo()
-    for k in range(40):
-        a0, a1 = math.pi * k / 40, math.pi * (k + 1) / 40
-        g.capsule((700 + 200 * math.cos(a0), 300, 300 * math.sin(a0)), (700 + 200 * math.cos(a1), 300, 300 * math.sin(a1)), 9)
-    st.part(g, lt(P["far"], 0.12), outline=0.0, finish="gloss")
-    gt, gs = Geo(), Geo()
-    for sx, h, w in ((60, 400, 34), (180, 300, 26), (470, 440, 40), (960, 380, 36), (1130, 470, 44), (1300, 320, 30)):
-        gt.lathe([(0, 0), (w, 0), (w * 0.55, h * 0.6), (w * 0.35, h), (0, h + 40)], (sx, 160, 0), (sx, 160, h + 40), segs=6)
-        gs.blob((sx, 160 - w * 0.5, h * 0.55), (2.4, 2, h * 0.4), p=4, cuts=2)
-        st.amb("blink", "bd.light", (sx, 160, h + 44), "far", period=900 + (sx % 7) * 120, tint=0xF6C6E4)
-    st.part(gt, P["far"], outline=0.0, finish="gloss")
-    st.part(gs, None, glow="#8FD8C4")
-    g = Geo()
-    g.blob((620, 120, 270), (64, 20, 12), p=2.4)
-    g.blob((870, 120, 336), (50, 20, 11), p=2.4)
-    st.part(g, lt(P["far"], 0.15), outline=0.0, finish="gloss")
-    st.amb("drift", "bd.skycar", (200, 0, 300), "sky", speed=60, tint=0xD8F3EA)
-    st.amb("drift", "bd.skycar", (900, 0, 360), "sky", speed=-45, tint=0xF6D8EC, scale=0.7)
+# -- Spire City (the classic, round 3) ---------------------------------------------------------------
+SC_PAL = dict(skyTop=0x5C5E8E, skyBottom=0xC9B6CF, light=0xF2ECF4, far=0x8A84A0, mid=0x6E6A86, near=0x4E4C64)
+SC = dict(
+    white=0xE4E6EE, white2=0xCDD0DA, white3=0xB8BCC8, char=0x23262E, char2=0x3A3E48, char3=0x4E5260, glass=0x8A9CA4, glass_dk=0x5E6E78,
+    mint=0x3AF0B4, magenta=0xF03AA8, lilac=0x9A8AB0, lilac_dk=0x7A6E94, plaza=0xA8A4B4, plaza_dk=0x8A8698, tree=0x5E7A66, tree_dk=0x4C6656,
+    trunk=0x5A5260, water=0x9AAAB4, glass_lt=0xAEC2CA,
+)
+SC_SKY = {"top": "#5C5E8E", "bottom": "#C9B6CF", "horizon": "#E2D2DC", "cloudTint": "#E8DCE8", "celestial": "sun",
+          "sunAt": [240, -520, 34], "clouds": 0.6}
+SC_FAR_E = math.radians(8.0)
+SC_MID_E = math.radians(12.0)
+SC_ARCH = (400.0, 880.0, 520.0, 30.0, 178.0)   # x0, x1, y, foot z, apex z (far)
+SC_DISCS = ((230.0, 430.0, 118.0, 18.0), (980.0, 470.0, 104.0, 15.0))   # the two moving hover platforms (far): x, y, z, r
+SC_RAIL = (90.0, 64.0)                         # the monorail beam: top z, depth (mid)
 
 
-def mid(st, P):
-    ground_band(st, P["mid"])
-    for x, r in ((80, 70), (520, 90), (1050, 80)):
-        g = Geo()
-        prof = [(0, 0)] + [(r * math.cos(math.pi / 2 * k / 8), r * 0.7 * math.sin(math.pi / 2 * k / 8)) for k in range(9)]
-        g.lathe(prof, (x, 60, 0), (x, 60, r * 0.7), segs=28)
-        st.part(g, P["near"], outline=0.5, finish="gloss")
-        g = Geo()
-        cyl(g, (x, 60, r * 0.25 - 1.5), (x, 60, r * 0.25 + 1.5), r * 0.93 + 1, bevel=0.3, segs=28)
-        st.part(g, None, glow="#7FD8BE")
-        st.amb("blink", "bd.light", (x, 60, r * 0.7 + 4), "mid", period=1300, tint=0xD8FFF0)
-    g, gl = Geo(), Geo()
-    for i in range(12):
-        x = -230 + i * 145
-        g.capsule((x, 20, 0), (x, 20, 150), 4)
-        box(g, (x, 20, 152), (18, 6, 4), p=5)
-        gl.blob((x, 15, 80), (1.6, 1, 60), p=3, cuts=1)
-    st.part(g, dk(P["near"], 0.1), outline=0.4, finish="metal")
-    st.part(gl, None, glow="#C9A4C0")
-    g = Geo()
-    box(g, (600, 0, 34), (900, 6, 4), p=6)
-    st.part(g, dk(P["mid"], 0.1), outline=0.3, finish="metal")
+def sc_back(st, P):
+    """A giant arcology in the haze: a stepped, terraced megastructure on the right, low towers elsewhere
+    (lowest under the moons' place)."""
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    pt = Parts()
+    ga, ga2 = pt.g(hz(SC["lilac_dk"], 0.4), outline=0.0), pt.g(hz(SC["lilac"], 0.36), outline=0.0)
+    for k in range(6):
+        w = 330 - k * 48
+        box(ga if k % 2 else ga2, (1230, 1500, 20 + k * 30 + 15), (w, 60, 15), p=5, cuts=2, taper=(1.0, 0.94))
+    pt.g(hz(SC["white3"], 0.4), outline=0.0).lathe([(0.01, 0), (16, 0), (6, 60), (0.01, 90)], (1230, 1500, 200), (1230, 1500, 290), segs=12)
+    for x, w, h in ((-200, 60, 120), (-80, 46, 160), (60, 70, 90), (300, 50, 130), (560, 60, 100), (700, 40, 70), (940, 50, 54)):
+        box(ga2, (x, 1500, h / 2), (w / 2, 40, h / 2), p=5, cuts=2, taper=(1.0, 0.8))
+    pt.flush(st)
+
+
+def sc_far(st, P):
+    pt = Parts()
+    rnd = random.Random(71)
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    # 1. the city floor: a terrace of lilac-grey decks, a calm canal with a glowing edge
+    box(pt.g(SC["plaza_dk"], outline=0.0), (600, 600, 12), (1100, 260, 12), p=6, cuts=2)
+    box(pt.g(SC["water"], finish="gloss", outline=0.0), (600, 360, 18), (1100, 22, 2), p=6, cuts=2)
+    box(pt.g(SC["mint"], glow=True), (600, 337.6, 20.6), (1100, 0.5, 0.4), p=4, cuts=1)
+    # 2. rows of lower towers and domes behind and between the spires
+    lights = []
+    for row, (y, haze) in enumerate(((760, 0.3), (640, 0.16), (520, 0.06))):
+        x = -250.0
+        while x < 1460:
+            w = rnd.uniform(30, 54)
+            h = rnd.uniform(30, 70) * (1.2 if row == 0 else 1.0)
+            if 830 < x < 990:
+                h *= 0.6
+            dark = rnd.random() < 0.35
+            c = SC["char2"] if dark else rnd.choice((SC["white2"], SC["white3"], SC["lilac"]))
+            g = pt.g(hz(c, haze), finish="gloss" if dark else "matte", outline=0.3)
+            yaw = rnd.choice((-10, 0, 10))
+            box(g, (x + w / 2, y, 24 + h / 2), (w / 2, 16, h / 2), p=9, cuts=2, rot=(0, 0, yaw))
+            if rnd.random() < 0.6:
+                box(g, (x + w / 2, y, 24 + h + h * 0.15), (w * 0.34, 11, h * 0.15), p=9, cuts=2, rot=(0, 0, yaw))
+            gl = pt.g(hz(SC["mint"] if rnd.random() < 0.6 else SC["magenta"], haze * 0.6), glow=True)
+            for k in range(int(h / 18)):
+                fx, fy = kit._at(x + w / 2, y, 0, -16.4, yaw)
+                box(gl, (fx, fy, 30 + k * 18), (w * 0.34, 0.4, 0.45), p=4, cuts=1, rot=(0, 0, yaw))
+            if row == 2 and rnd.random() < 0.4:
+                lights.append((x + w / 2, y - 17, 24 + h * 0.6))
+            if rnd.random() < 0.25:
+                pt.g(hz(SC["white"], haze), finish="gloss", outline=0.3).lathe(
+                    [(0.01, 0), (w * 0.4, 0), (w * 0.36, w * 0.16), (w * 0.2, w * 0.3), (0.01, w * 0.34)], (x + w / 2, y, 24 + h), (x + w / 2, y, 24 + h + w * 0.34), segs=16)
+            x += w + rnd.uniform(4, 16)
+    # 3. the sky arch (the signature) over the heart of the city
+    ax0, ax1, ay, az0, aapex = SC_ARCH
+    top = kit.sky_arch(pt, ax0, ax1, ay, az0, aapex, thick=6.5, white=SC["white"], glow=SC["mint"])
+    st.amb("blink", "bd.light", (top[0], top[1], top[2] + 8), "far", period=2200, tint=0xF6C6E4)
+    # 4. the spires, tallest in the middle; beacons blink on their tips
+    for k, (x, y, h, r) in enumerate(((60, 470, 150, 15), (180, 500, 186, 18), (330, 440, 140, 14), (560, 480, 170, 17), (740, 460, 150, 15), (1080, 470, 176, 17),
+                                      (1220, 500, 134, 13), (1360, 470, 160, 16))):
+        tip = kit.spire(pt, x, y, 24, h, r, white=SC["white"], white2=SC["white2"], dark=SC["char2"], glow=SC["mint"] if k % 3 else SC["magenta"], seed=10 + k)
+        st.amb("blink", "bd.light", (tip[0], tip[1], tip[2] + 3), "far", period=900 + k * 170, tint=0xF6C6E4 if k % 2 else 0xD8FFF0)
+        lights.append((x, y - r * 0.9, 24 + h * 0.3))
+    # sky bridges between neighbouring spires
+    gb = pt.g(SC["white2"], finish="gloss", outline=0.3)
+    gbl = pt.g(SC["mint"], glow=True)
+    for (xa, xb, z) in ((60, 180, 120), (180, 330, 96), (1080, 1220, 110), (1220, 1360, 90)):
+        gb.capsule((xa, 470, z), (xb, 470, z), 3.4)
+        gbl.capsule((xa, 466.4, z - 0.6), (xb, 466.4, z - 0.6), 0.5)
+    # 5. still hover platforms over the canal (two more move: props)
+    for (x, y, z, r) in ((660, 420, 70, 12), (1290, 430, 90, 11), (-120, 440, 96, 12)):
+        kit.hover_disc(pt, x, y, z, r, white=SC["white"], dark=SC["char2"], glow=SC["mint"])
+    for p_ in lights[:9]:
+        st.light(p_, 3)
+    pt.flush(st)
+
+
+def sc_mid(st, P):
+    pt = Parts()
+    rnd = random.Random(73)
+    # the plaza deck: pale lilac stone, a dark edge with a light strip, planters
+    g = pt.g(SC["plaza"], outline=0.0)
+    for i in range(15):
+        x = -300 + i * 130
+        rock(g, (x, 80, 8), (96, 60, 40 + rnd.uniform(0, 6)), seed=i, jag=0.03, p=3.0)
+    box(pt.g(SC["char2"], outline=0.3), (600, 112, 46), (900, 6, 3), p=6, cuts=1)
+    box(pt.g(SC["mint"], glow=True), (600, 105.6, 46.4), (900, 0.4, 0.5), p=4, cuts=1)
+    gt, gt2, gtr = pt.g(SC["tree"], outline=0.5), pt.g(SC["tree_dk"], outline=0.5), pt.g(SC["trunk"], outline=0.4)
+    gpl = pt.g(SC["white3"], outline=0.5)
+    for k, x in enumerate((-200, 40, 520, 980, 1230)):
+        cyl(gpl, (x, 70, 38), (x, 70, 50), 12, 10, bevel=0.6, segs=16)
+        kit.broadleaf(gt if k % 2 else gt2, gtr, x, 70, 64, 20, seed=500 + k, z=48)
+    # 1. the monorail beam on its pylons (white Y-pylons with light strips)
+    rz, ry = SC_RAIL
+    gw, gw2 = pt.g(SC["white"], finish="gloss", outline=0.5), pt.g(SC["white2"], outline=0.5)
+    box(gw, (600, ry, rz - 2.6), (900, 3.6, 2.6), p=6, cuts=2)
+    box(pt.g(SC["mint"], glow=True), (600, ry - 3.8, rz - 3.6), (900, 0.4, 0.45), p=4, cuts=1)
+    for x in range(-240, 1460, 170):
+        gw2.capsule((x, ry, 40), (x, ry, rz - 14), 3.8, 2.8)
+        gw2.capsule((x, ry, rz - 14), (x - 8, ry, rz - 5), 2.0)
+        gw2.capsule((x, ry, rz - 14), (x + 8, ry, rz - 5), 2.0)
+        box(pt.g(SC["magenta"] if (x // 170) % 3 == 0 else SC["mint"], glow=True), (x, ry - 3.6, rz - 30), (0.5, 0.4, 10), p=4, cuts=1)
+    # 2. glass domes with glowing rings (x 220-480 kept low: the arch stands behind at the game's camera)
+    for k, (x, r) in enumerate(((300, 46), (430, 34), (860, 52))):
+        gd = pt.g(SC["glass_lt"], finish="gloss", outline=0.5)
+        gd.lathe([(0.01, 0), (r, 0)] + [(r * math.cos(math.pi / 2 * j / 8), r * 0.72 * math.sin(math.pi / 2 * j / 8)) for j in range(1, 9)], (x, 84, 40), (x, 84, 40 + r * 0.72),
+                 segs=28)
+        cyl(pt.g(SC["white2"], outline=0.4), (x, 84, 39), (x, 84, 44), r + 1.6, bevel=0.4, segs=28)
+        cyl(pt.g(SC["mint"], glow=True), (x, 84, 44), (x, 84, 45), r + 1.2, bevel=0.1, segs=28)
+        gd2 = pt.g(SC["white"], outline=0.0)
+        for j in range(7):
+            a = math.pi * (j + 0.5) / 7
+            pts = [(x + math.cos(a) * r * math.cos(math.pi / 2 * t / 6), 84 - math.sin(a) * r * math.cos(math.pi / 2 * t / 6) - 0.6,
+                    40 + r * 0.72 * math.sin(math.pi / 2 * t / 6) + 0.4) for t in range(7)]
+            for p0, p1 in zip(pts, pts[1:]):
+                gd2.capsule(p0, p1, 0.7)
+        st.light((x, 84 - r * 0.9, 40 + r * 0.3), 5)
+    # 3. the transit station (x 620-760): a curved canopy on slim columns, a platform, glowing panels
+    box(pt.g(SC["char2"], outline=0.5), (690, 92, 40 + 3), (70, 18, 3), p=6, cuts=1)
+    for x in (630, 670, 710, 750):
+        gw2.capsule((x, 80, 46), (x, 80, 92), 1.6)
+    vault = Geo()
+    vault.capsule((628, 88, 70), (752, 88, 70), 22, 22)
+    vault.clip((690, 88, 70), (0, 0, -1))
+    kit._merge(pt.g(SC["glass_lt"], finish="gloss", outline=0.5), vault)
+    grb = pt.g(SC["white"], outline=0.3)
+    for x in range(632, 752, 15):
+        for t in range(8):
+            a0, a1 = math.pi * t / 8, math.pi * (t + 1) / 8
+            grb.capsule((x, 88 - 22.4 * math.cos(a0), 70 + 22.4 * math.sin(a0)), (x, 88 - 22.4 * math.cos(a1), 70 + 22.4 * math.sin(a1)), 0.8)
+    for k, x in enumerate((644, 692, 736)):
+        box(pt.g(SC["magenta"] if k == 1 else SC["mint"], glow=True), (x, 76.6, 70), (7, 0.4, 4.4), p=4, cuts=1)
+    st.light((692, 74, 70), 5)
+    # 4. a slim tower block and lamps on the right; holo pillars on the left
+    box(pt.g(SC["char3"], finish="gloss", outline=0.5), (1120, 104, 40 + 50), (26, 14, 50), p=5, cuts=2, taper=(1.0, 0.86))
+    for k in range(5):
+        box(pt.g(SC["mint"], glow=True), (1120, 89.4, 52 + k * 18), (18, 0.4, 0.6), p=4, cuts=1)
+    st.light((1120, 88, 80), 4)
+    gl = pt.g(SC["char2"], outline=0.4)
+    for k, x in enumerate((-120, 120, 940, 1340)):
+        gl.capsule((x, 50, 40), (x, 50, 84), 1.0)
+        pt.g(SC["mint"] if k % 2 else SC["magenta"], glow=True).sphere((x, 49, 86), 2.2)
+    pt.flush(st)
+
+
+def sc_props():
+    rz, ry = SC_RAIL
+    rail = _scr((0, ry - 2, rz + 0.5), SC_MID_E)[1]
+    discs = [_scr((x, y, z), SC_FAR_E) for (x, y, z, r) in SC_DISCS]
+    ax0, ax1, ay, az0, aapex = SC_ARCH
+
+    def disc(r):
+        def build(rig):
+            rig.part("all", Geo().lathe([(0.01, 0), (r * 0.5, 0), (r, r * 0.12), (r * 1.02, r * 0.2), (r * 0.9, r * 0.26), (0.01, r * 0.26)], (0, 0, 0), (0, 0, r * 0.26), segs=24),
+                     "#E4E6EE", finish="gloss", outline=0.4)
+            rig.part("all", Geo().lathe([(0.01, 0), (r * 0.36, 0), (r * 0.3, r * 0.14), (0.01, r * 0.2)], (0, 0, r * 0.26), (0, 0, r * 0.46), segs=16), "#3A3E48",
+                     outline=0.3)
+            rig.part("all", Geo().blob((0, 0, 0.4), (r * 0.42, r * 0.36, 0.8), p=2.0, cuts=2), glow="#9CF0D4", outline=0)
+        return build
+    plist = [
+        Prop("disc", "far", disc(SC_DISCS[0][3]), [{}], (2 * SC_DISCS[0][3] + 6, 12, 3), discs[0][1]),
+        Prop("disc2", "far", disc(SC_DISCS[1][3]), [{}], (2 * SC_DISCS[1][3] + 6, 10, 3), discs[1][1]),
+        Prop("mono", "mid", fauna.monorail_car(size=1.0, length=34), [{}], (40, 16, 3), rail),
+        Prop("monoc", "mid", fauna.monorail_car(size=1.0, length=30, nose=False), [{}], (36, 16, 3), rail),
+    ]
+    sprites = [
+        {"kind": "bob", "layer": "far", "frames": ["disc_0"], "at": discs[0], "amp": [3.0, 2.6], "periodS": 7, "tilt": 1.2},
+        {"kind": "bob", "layer": "far", "frames": ["disc2_0"], "at": discs[1], "amp": [2.0, 2.2], "periodS": 9, "tilt": 1.0},
+        {"kind": "path", "layer": "mid", "fps": 1, "periodS": 40,
+         "keys": [[0, -380, rail, 1], [18, 1600, rail, 1], [40, 1600, rail, 1]],
+         "group": [{"frames": ["mono_0"]}, {"frames": ["monoc_0"], "dx": -34}, {"frames": ["monoc_0"], "dx": -66}]},
+    ]
+    del ax0, ax1, ay, az0, aapex
+    return plist, sprites
 
 
 # -- Skyway Metropolis (round 2) -----------------------------------------------------------------------
@@ -275,7 +409,9 @@ def sm_props():
 
 
 SCENES = {
-    "classic": Scene("future", "classic", PAL, far, mid, sky=SKY, version=1),
+    "classic": Scene("future", "classic", SC_PAL, sc_far, sc_mid, back=sc_back, sky=SC_SKY, props=sc_props,
+                     hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.5}, ground="deck",
+                     look={"far": (0.18, 0.09, 0.2)}),
     "skyway_metropolis": Scene("future", "skyway_metropolis", SM_PAL, sm_far, sm_mid, back=sm_back, sky=SM_SKY, props=sm_props,
                                hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.4}, ground="earth"),
 }

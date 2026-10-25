@@ -12,7 +12,7 @@
  * standing in, and the collapse uses the model's own topple data. The thumbnail atlas holds every model in
  * its budget; a Legendary model stands in its aura. Owned by Track B.
  */
-import { Container, Texture } from 'pixi.js';
+import { Container, Rectangle, Texture } from 'pixi.js';
 import { describe, expect, it, vi } from 'vitest';
 import type { BaseView, VisualDef } from '@/contracts/art';
 import type { AgeId } from '@/contracts/ids';
@@ -22,11 +22,12 @@ import { baseFlagDesign, cosmeticImageUrl, cosmeticSvg, hasCosmeticArt } from '.
 import { baseSkinArt, baseSkinThumbUrl, BASE_SKINS, hasBaseSkinArt, hasBaseSkinModel } from '../cosmetics/baseSkins';
 import { BaseDressing, DRESSING_ANCHORS, GLINT_LOOP_MS, glintOffset } from '../cosmetics/dressing';
 import { MANIFEST } from '../manifest';
-import { BASE_COLLAPSE_MS, baseSheetSource, baseSkinCollapseSource, baseSkinSheetSource, WORLD_BASE_MOUNTS_LU, WORLD_BASE_SKIN_KITS, WORLD_BASE_SKINS } from '../manifest.world';
+import { BASE_COLLAPSE_MS, baseSheetSource, baseSkinCollapseSource, baseSkinSheetSource, WORLD_BASE_MOUNTS_LU, WORLD_BASE_SKIN_AURA, WORLD_BASE_SKIN_KITS, WORLD_BASE_SKIN_PROPS, WORLD_BASE_SKINS } from '../manifest.world';
 import { createArtProvider } from '../provider';
 import { AtlasBaseView } from '../adapters/world/atlasBaseView';
 import { collapseProfile, collapseProfileFor } from '../adapters/world/collapse/profiles';
 import { isBaseSkinSource, isWorldSource, WorldAtlas, worldSourceAge, type WorldMeta, type WorldSheet } from '../adapters/worldAtlas';
+import { worldPortraitFrames } from '../adapters/worldPortrait';
 
 const FROST = BASE_SKINS.frost_cave!.tint;
 const ROSE = BASE_SKINS.rose_keep!.tint;
@@ -636,6 +637,174 @@ describe('a Legendary model stands in its aura (PLAN 2c: Crystal Spire, Nebula A
     }
     expect(seen.size).toBeGreaterThan(1);
     v.destroy();
+  });
+
+  it('lists exactly the models whose sheets wear the aura, for the screens (WORLD_BASE_SKIN_AURA)', () => {
+    const worn = MODELS.filter(([skin]) => (readSheet(baseSkinSheetSource(skin)).meta.ageborn as WorldMeta & { aura?: string }).aura === 'legendary').map(([skin]) => skin);
+    expect([...WORLD_BASE_SKIN_AURA].sort()).toEqual(worn.sort());
+    // Legendary skins only
+    for (const skin of WORLD_BASE_SKIN_AURA) {
+      const item = content.cosmetics.collections.items.find((x) => x.collection === 'baseSkin' && x.id === skin);
+      const troop = (content.skins as Readonly<Record<string, { rarity: string } | undefined>>)[skin];
+      expect(item?.rarity ?? troop?.rarity, skin).toBe('legendary');
+    }
+  });
+});
+
+describe('prop loops: the base contract\'s generic `prop` clip (round 3)', () => {
+  it('lists each model\'s loops in the manifest as clips, equal to its sheet\'s props, within the contract', () => {
+    const withProps = MODELS.filter(([skin]) => (readSheet(baseSkinSheetSource(skin)).meta.ageborn.props ?? []).length > 0).map(([skin]) => skin);
+    expect(withProps.sort()).toEqual(Object.keys(WORLD_BASE_SKIN_PROPS).sort());
+    // the round-2 leftovers: Crystal Spire's shards orbit, Nebula Ark's nebula swirls
+    expect(WORLD_BASE_SKIN_PROPS['crystal_spire']?.length).toBeGreaterThan(0);
+    expect(WORLD_BASE_SKIN_PROPS['nebula_ark']?.length).toBeGreaterThan(0);
+    for (const [skin, loops] of Object.entries(WORLD_BASE_SKIN_PROPS)) {
+      const age = WORLD_BASE_SKINS[skin]!;
+      const s = readSheet(baseSkinSheetSource(skin));
+      const props = s.meta.ageborn.props ?? [];
+      expect(props.map((q) => q.clip), skin).toEqual(loops.map((l) => l.clip));
+      props.forEach((q, i) => {
+        const frames = s.animations[q.clip] ?? [];
+        expect(frames.length, q.clip).toBeGreaterThanOrEqual(4);
+        // a team twin for every step (an empty 1 x 1 frame where the loop has no team parts)
+        expect(s.animations[`${q.clip}_team`]?.length, q.clip).toBe(frames.length);
+        const clip = s.meta.ageborn.clips[q.clip]!;
+        expect(clip.loop, q.clip).toBe(true);
+        expect((clip.durationsMs ?? []).reduce((a, b) => a + b, 0), q.clip).toBe(loops[i]!.loopMs);
+        expect(0 <= q.crumbleMin && q.crumbleMin <= q.crumbleMax && q.crumbleMax <= 3, q.clip).toBe(true);
+        expect(q.holdFrame >= 0 && q.holdFrame < frames.length, q.clip).toBe(true);
+        expect(['front', 'back']).toContain(q.z);
+        // its anchor stands over the base (within the footprint, below the top band)
+        expect(q.anchorLu[0], q.clip).toBeGreaterThan(-200);
+        expect(q.anchorLu[0], q.clip).toBeLessThan(20);
+        expect(q.anchorLu[1], q.clip).toBeGreaterThan(0);
+        expect(q.anchorLu[1], q.clip).toBeLessThan(360);
+        expect(MANIFEST[`base.${age}@${skin}`]?.clips[`prop.${q.clip}`], q.clip).toEqual({ kind: 'atlas', ref: q.clip, durationMs: loops[i]!.loopMs, loop: true });
+      });
+    }
+  });
+
+  const loopTex = (): Texture => new Texture({ orig: new Rectangle(0, 0, 30, 30), defaultAnchor: { x: 0.5, y: 0.9 } });
+  const src = 'art/bases/skins/test_props.json';
+  const propSheet = (): WorldSheet => {
+    const s = fakeSheet({
+      skin: 'test_props',
+      props: [
+        { clip: 'spin', crumbleMin: 0, crumbleMax: 2, z: 'front', holdFrame: 2, anchorLu: [-90, 300] },
+        { clip: 'sway', crumbleMin: 1, crumbleMax: 3, z: 'back', holdFrame: 0, anchorLu: [-120, 100], alpha: 0.9 },
+      ],
+      clips: { spin: { durationsMs: [100, 100, 100, 100], loop: true }, sway: { durationsMs: [150, 150, 150, 150], loop: true } },
+    });
+    const four = (): Texture[] => [loopTex(), loopTex(), loopTex(), loopTex()];
+    return { ...s, animations: { ...s.animations, spin: four(), spin_team: four(), sway: four(), sway_team: four() } };
+  };
+  interface PropPair {
+    c: Container;
+    base: { texture: Texture };
+  }
+  const viewOf = (sheet: WorldSheet, seed = 3): AtlasBaseView => {
+    const world = new WorldAtlas(() => '', async () => fakeSheet());
+    world.register(src, sheet);
+    return new AtlasBaseView({ age: 'future', side: 0, teamColor: 0x2f7df6, decor: new PartBaker({ pxPerLu: 1, canvasFactory: () => null }), seed, world, sourceFor: () => src, def: baseDef(src) });
+  };
+  const pairsOf = (v: AtlasBaseView) => v as unknown as { backProps: PropPair[]; frontProps: PropPair[]; bodyPair: PropPair };
+
+  it('plays each loop by the view\'s clock from a seeded phase, in its crumble range, held under Reduce motion', () => {
+    const sheet = propSheet();
+    const v = viewOf(sheet);
+    v.update(16);
+    const { backProps, frontProps, bodyPair } = pairsOf(v);
+    expect(backProps).toHaveLength(1);
+    expect(frontProps).toHaveLength(1);
+    // back loops behind the body, front loops over it; a loop's opacity from its meta
+    const art = bodyPair.c.parent!;
+    expect(art.getChildIndex(backProps[0]!.c)).toBeLessThan(art.getChildIndex(bodyPair.c));
+    expect(art.getChildIndex(frontProps[0]!.c)).toBeGreaterThan(art.getChildIndex(bodyPair.c));
+    expect(backProps[0]!.c.alpha).toBeCloseTo(0.9, 6);
+    // crumble 0: the spin shows, the sway (stages 1-3) does not
+    expect(frontProps[0]!.c.visible).toBe(true);
+    expect(backProps[0]!.c.visible).toBe(false);
+    const seen = new Set<Texture>();
+    for (let i = 0; i < 8; i++) {
+      v.update(100);
+      seen.add(frontProps[0]!.base.texture);
+    }
+    expect(seen.size).toBe(4);
+    // Reduce motion holds the rest step
+    v.setMotion({ reduce: true, lite: false });
+    v.update(100);
+    expect(frontProps[0]!.base.texture).toBe(sheet.animations['spin']![2]);
+    v.update(250);
+    expect(frontProps[0]!.base.texture).toBe(sheet.animations['spin']![2]);
+    // stage 3: the spin is gone, the sway shows
+    v.setCrumble(3);
+    v.update(16);
+    expect(frontProps[0]!.c.visible).toBe(false);
+    expect(backProps[0]!.c.visible).toBe(true);
+    v.destroy();
+    // the phase comes from the view's seed: bases with other seeds turn out of step
+    const steps = new Set<Texture>();
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+      const w = viewOf(sheet, seed);
+      w.update(16);
+      steps.add(pairsOf(w).frontProps[0]!.base.texture);
+      w.destroy();
+    }
+    expect(steps.size).toBeGreaterThan(1);
+  });
+
+  it('carries the loops showing into the collapse: they ride their pieces down and fade', () => {
+    const v = viewOf(propSheet());
+    v.setCrumble(1);
+    v.update(16);
+    v.collapseWith({ seed: 5 });
+    const cv = v.collapseView!;
+    const pieces = (cv as unknown as { propPieces: { c: Container }[] }).propPieces;
+    let t = 0;
+    while (!cv.broken && t < 4000) {
+      v.update(16);
+      t += 16;
+    }
+    expect(cv.broken).toBe(true);
+    v.update(16);
+    // both loops (crumble 1 shows the spin and the sway) are drawn by the collapse now
+    expect(pieces).toHaveLength(2);
+    expect(pieces.every((q) => q.c.visible && q.c.alpha > 0)).toBe(true);
+    for (let i = 0; i < 90; i++) v.update(16);
+    expect(pieces.every((q) => !q.c.visible || q.c.alpha === 0)).toBe(true);
+    v.destroy();
+  });
+
+  it('draws the loops at their rest step in the menu portraits, back ones behind the back flag', () => {
+    const json = {
+      animations: { body: ['b_00'], flagA: ['fa_00'], flagB: ['fb_00'], spin: ['s_00', 's_01', 's_02'], back: ['k_00', 'k_01'], late: ['l_00'] },
+      meta: {
+        image: 'x.png',
+        ageborn: {
+          kind: 'base' as const,
+          flags: [{ clip: 'flagA', z: 'front' as const }, { clip: 'flagB', z: 'back' as const }],
+          props: [
+            { clip: 'spin', z: 'front' as const, crumbleMin: 0, holdFrame: 1 },
+            { clip: 'back', z: 'back' as const, crumbleMin: 0, holdFrame: 0 },
+            { clip: 'late', z: 'front' as const, crumbleMin: 2, holdFrame: 0 },
+          ],
+        },
+      },
+    };
+    expect(worldPortraitFrames(json)).toEqual(['k_00', 'fb_00', 'b_00', 's_01', 'fa_00']);
+  });
+
+  it('gives Crystal Spire\'s and Nebula Ark\'s menu pictures their own life (glints, sparks, wisps), still under Reduce motion', () => {
+    for (const id of ['crystal_spire', 'nebula_ark']) {
+      const live = cosmeticSvg(`baseSkin.${id}`, { layer: 'fx' })!;
+      expect(live, id).toMatch(/^<svg/);
+      expect(live, id).toContain('<animateMotion');
+      const still = cosmeticSvg(`baseSkin.${id}`, { layer: 'fx', animate: false })!;
+      expect(still, id).not.toContain('<animate');
+      expect(still.length, id).toBeGreaterThan(100);
+    }
+    // the tint swatch stays the stand-in's own
+    expect(cosmeticSvg('baseSkin.crystal_spire', { layer: 'tint' })).toBeNull();
   });
 });
 

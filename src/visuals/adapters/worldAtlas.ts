@@ -30,7 +30,7 @@ export interface WorldClipMeta {
 
 export interface WorldMeta {
   visualId?: string;
-  kind?: 'turret' | 'base';
+  kind?: 'turret' | 'base' | 'decoration';
   age?: AgeId;
   heightLu: number;
   widthLu?: number;
@@ -56,6 +56,25 @@ export interface WorldMeta {
   dustColor?: string;
   /** Base skin models: where the dressing's ambient code particles start (screen lu, y up). */
   ambientLu?: { kind: string; x: number; y: number; r: number; rate: number }[];
+  /**
+   * Base prop loops (round 3; art/blender/world/common.py `prop_loop`: Windmill Redoubt's sails, Arctic Radar's
+   * dish, Crystal Spire's orbiting shards): each an N-frame loop clip over the body (and its `_team` twin), the
+   * crumble stages it shows in, drawn in front of or behind the body, the step it holds under Reduce motion, its
+   * anchor (screen lu from the gate, y up: where it rides in the collapse) and its opacity.
+   */
+  props?: { clip: string; crumbleMin: number; crumbleMax: number; z: 'front' | 'back'; holdFrame: number; anchorLu: [number, number]; alpha?: number }[];
+  /** Decoration props (round 3): the decoration id. */
+  id?: string;
+  /** Decoration props: what the code adds over the sheet (plants sway, fire flickers, plasma pulses, crystals glint). */
+  motion?: 'sway' | 'flicker' | 'pulse' | 'glint' | null;
+  /** Decoration props: the light the code animates (screen lu from the foot, y up; a `#RRGGBB` colour). */
+  glowLu?: { x: number; y: number; r: number; color: string };
+  /** Decoration props: where glints flash (screen lu from the foot, y up). */
+  glintsLu?: { x: number; y: number; r: number }[];
+  /** Decoration props: the half width of the contact shadow under the prop (lu). */
+  shadowLu?: number;
+  /** Decoration props: false when the prop keeps its look on side 1 (banners fly with the lane's one wind). */
+  mirror?: boolean;
   clips: Record<string, WorldClipMeta>;
 }
 
@@ -73,7 +92,7 @@ interface SheetJson {
 export type WorldLoader = (url: string) => Promise<WorldSheet>;
 
 async function loadWithAssets(url: string): Promise<WorldSheet> {
-  if (isBaseSkinSource(url)) return loadSharedSheet(url);
+  if (isBaseSkinSource(url) || isDecorationSource(url)) return loadSharedSheet(url);
   const sheet = (await Assets.load(url)) as Spritesheet;
   return worldSheetOf(sheet, url);
 }
@@ -117,8 +136,18 @@ export function isBaseSkinSource(source: string): boolean {
   return /art\/bases\/skins\/[a-z0-9_]+\.json$/.test(source);
 }
 
+/**
+ * A base decoration's prop sheet (round 3: `art/cosmetics/decorations/<id>.json`, a few KB). It loads lazily,
+ * only when a side shows that decoration (the lane's dressing, the Customize stage), through the same shared
+ * loader as the skin models; it belongs to no age (`worldSourceAge` is null) and is never preloaded. The
+ * atlas keeps a loaded prop for the session (a battle shows at most six; all 24 decode to under 2 MB).
+ */
+export function isDecorationSource(source: string): boolean {
+  return /art\/cosmetics\/decorations\/[a-z0-9_]+\.json$/.test(source) && !source.endsWith('/thumbs.json');
+}
+
 export function isWorldSource(source: string): boolean {
-  return worldSourceAge(source) !== null || isBaseSkinSource(source);
+  return worldSourceAge(source) !== null || isBaseSkinSource(source) || isDecorationSource(source);
 }
 
 export class WorldAtlas {

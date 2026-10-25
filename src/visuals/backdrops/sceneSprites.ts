@@ -97,11 +97,26 @@ const num = (v: unknown, d: number): number => (typeof v === 'number' && Number.
 const pt = (v: unknown): [number, number] | null => (Array.isArray(v) && v.length >= 2 ? [num(v[0], 0), num(v[1], 0)] : null);
 const layerOf = (v: unknown): SpriteLayer | null => (v === 'back' || v === 'far' || v === 'mid' ? v : null);
 
+/**
+ * A frame list as a file writes it: an array of frame names, or a run of numbered frames as one range
+ * string (`"hunt_0-3"` is `hunt_0` … `hunt_3`; compact files, round 3). Null for anything else.
+ */
+export function frameList(v: unknown): unknown[] | null {
+  if (Array.isArray(v)) return v;
+  if (typeof v !== 'string') return null;
+  const m = /^(.*_)(\d+)-(\d+)$/.exec(v);
+  if (!m) return [v];
+  const a = Number(m[2]);
+  const b = Number(m[3]);
+  return b >= a && b - a < 64 ? Array.from({ length: b - a + 1 }, (_, i) => `${m[1]}${a + i}`) : null;
+}
+
 /** Reads the `sprites` list of a `layers.json`; sprites naming frames the atlas lacks are dropped. */
 export function readSprites(v: unknown, frames: Readonly<Record<string, unknown>>): SceneSprite[] {
   if (!Array.isArray(v)) return [];
-  const known = (list: unknown): string[] | null => {
-    if (!Array.isArray(list) || list.length === 0) return null;
+  const known = (value: unknown): string[] | null => {
+    const list = frameList(value);
+    if (!list || list.length === 0) return null;
     const out = list.filter((f): f is string => typeof f === 'string');
     return out.length === list.length && out.every((f) => f in frames) ? out : null;
   };

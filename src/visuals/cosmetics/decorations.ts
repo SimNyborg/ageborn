@@ -7,7 +7,12 @@
  * Owned by Track B (PLAN 2a: decorations become Blender-rendered props). C0 (2026-10-08) moved the SVG
  * and canvas drawing here from `art.ts`, which routes `decoration.*` to this module, and added
  * `decorationArtUrl` (the prop picture; null until Track B's props are in, and the SVG shows).
+ *
+ * Round 3: the props are in (`art/blender/world/decorations.py`, `WORLD_DECORATIONS`). The lane draws them
+ * from their own sheets (`dressing.ts`), with these SVG bakes as the stand-in while a prop streams in; the
+ * screens show each prop's cell of one HD atlas (`decorationArtUrl`), loaded when a screen first asks.
  */
+import { DECORATION_THUMBS_SOURCE, WORLD_DECORATIONS } from '../manifest.world';
 import { band, circle, drawShapes, ellipse, hex, INK, line, poly, rect, ring, roundRect, shapesToSvg, star, type Ctx2D, type Paints, type Shape } from './shapes';
 
 export const DECO_W = 48;
@@ -361,13 +366,104 @@ export function drawDecoration(ctx: Ctx2D, id: string, p: Paints, px: number): b
   return true;
 }
 
+// -------------------------------------------------------------------------------------------------
+// The Blender props' pictures for the screens (round 3)
+
+/** The HD thumbnail atlas's layout (`art/cosmetics/decorations/thumbs.json`): each prop's rect, 2.46 px/lu. */
+interface PropThumbs {
+  image: string;
+  pxPerLu: number;
+  cells: Record<string, [number, number, number, number]>;
+}
+
+/** Each prop's picture as an object URL (cut from the atlas once it has loaded). */
+const artUrls = new Map<string, string>();
+let artLoad: Promise<boolean> | null = null;
+let artRetryAt = 0;
+const artWatchers = new Set<() => void>();
+
+function loadImage(url: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const im = new Image();
+    im.decoding = 'async';
+    im.onload = () => void (typeof im.decode === 'function' ? im.decode().catch(() => undefined) : Promise.resolve()).then(() => resolve(im));
+    im.onerror = () => reject(new Error(`image ${url} failed to load`));
+    im.src = url;
+  });
+}
+
 /**
- * The prop's picture for the screens (PLAN 2f interface 2: `hd` the Customize HD thumbnail atlas cell),
- * or null while the Blender props are not in: the router then uses {@link decorationSvg}. Track B fills
- * this in.
+ * Loads the props' HD atlas once (lazily: only a screen showing a decoration asks) and cuts it into one
+ * picture per prop, trimmed to the prop (so a tile fits it to its art window); the atlas image is dropped
+ * afterwards and only the small encoded pictures stay. A failure (offline) is retried 10 s later; meanwhile
+ * the screens keep the SVG. Resolves true once the pictures are in.
+ */
+function loadArt(): Promise<boolean> {
+  if (artLoad) return artLoad;
+  if (typeof document === 'undefined' || typeof fetch !== 'function' || Date.now() < artRetryAt) return Promise.resolve(false);
+  const base = (import.meta as unknown as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? '/';
+  const json = `${base}${DECORATION_THUMBS_SOURCE}`;
+  const dir = json.slice(0, json.lastIndexOf('/') + 1);
+  artLoad = (async () => {
+    const res = await fetch(json);
+    if (!res.ok) throw new Error(`decoration thumbs: ${res.status}`);
+    const atlas = (await res.json()) as PropThumbs;
+    const img = await loadImage(`${dir}${atlas.image}`);
+    const c = document.createElement('canvas');
+    const ctx = c.getContext('2d');
+    if (!ctx) throw new Error('no 2D canvas');
+    for (const [id, [x, y, w, h]] of Object.entries(atlas.cells)) {
+      c.width = w;
+      c.height = h;
+      ctx.clearRect(0, 0, w, h);
+      ctx.drawImage(img, x, y, w, h, 0, 0, w, h);
+      // WebP where the browser encodes it (Safari writes PNG): a few KB a prop
+      const blob = await new Promise<Blob | null>((r) => c.toBlob(r, 'image/webp', 0.92));
+      if (blob && !artUrls.has(id)) artUrls.set(id, URL.createObjectURL(blob));
+    }
+    for (const cb of [...artWatchers]) {
+      try {
+        cb();
+      } catch {
+        // a screen's own failure never stops the others
+      }
+    }
+    return true;
+  })().catch(() => {
+    artLoad = null;
+    artRetryAt = Date.now() + 10_000;
+    return false;
+  });
+  return artLoad;
+}
+
+/**
+ * The prop's picture for the screens (PLAN 2f interface 2): its cell of the HD thumbnail atlas (2.46 px/lu,
+ * the prop at rest with its team parts in side 0's blue, trimmed), for the Customize tiles, the info panel and
+ * the still base mock-up; `hd` asks for exactly that (it is the screens' only prop picture). The first ask
+ * starts loading the atlas; null until it is in (the router then uses {@link decorationSvg}) and for ids
+ * without a prop. `onDecorationArt` tells when the pictures arrive.
  */
 export function decorationArtUrl(id: string, o: { hd?: boolean } = {}): string | null {
-  void id;
   void o;
+  const hit = artUrls.get(id);
+  if (hit) return hit;
+  if (WORLD_DECORATIONS.includes(id)) void loadArt();
   return null;
+}
+
+/** Starts loading the props' pictures (a screen about to show decorations); resolves true once they are in. */
+export function decorationArtReady(): Promise<boolean> {
+  return WORLD_DECORATIONS.length > 0 ? loadArt() : Promise.resolve(false);
+}
+
+/** Calls `cb` once the props' pictures have arrived (a screen showing the SVG asks again); returns the unsubscribe. */
+export function onDecorationArt(cb: () => void): () => void {
+  artWatchers.add(cb);
+  return () => void artWatchers.delete(cb);
+}
+
+/** True when `decoration.<id>` is a Blender prop in the lane (its sheet; `WORLD_DECORATIONS`). */
+export function hasDecorationProp(id: string): boolean {
+  return WORLD_DECORATIONS.includes(id);
 }

@@ -840,8 +840,23 @@ button.cos-mock__deco.is-picked {
     radial-gradient(52% 14% at 50% 84%, rgb(67 61 51 / 0.32), transparent 72%),
     radial-gradient(115% 90% at 50% 30%, var(--win-a) 0 48%, var(--win-b) 100%);
 }
+/* A decoration's Blender prop (round 3, Track B's HD atlas) fills the window, contained: a fixed box in the
+   window (percentage heights do not resolve in its auto-sized grid row, so a tall prop overflowed and was
+   cut), its feet on the window's floor shadow (about 88% down) with a little headroom. */
 .cos-tile--decoration .cos-tile__art {
-  height: 96%;
+  position: absolute;
+  inset: 5% 6% 11%;
+  display: block;
+  width: auto;
+  height: auto;
+}
+/* (pinned to the box: in a grid's auto row a percentage height falls back to the picture's own aspect) */
+.cos-tile--decoration .cos-tile__art > .cos-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-position: 50% 100%;
 }
 .cos-tile--baseSkin .cos-card__window,
 .cos-grid--skins .cos-card--plain .cos-card__window {
@@ -1288,9 +1303,14 @@ button.cos-mock__deco.is-picked {
 }
 
 /* ---- the emote wheel ---------------------------------------------------------------------------- */
+/* The wheel fits above the tab bar at every size (review 2: its bottom slot sat under the bar at 844 x 390):
+   at most the column, 250 px, or the screen's height less the chrome over and under it (the header, the
+   folder tabs and the panel's padding, about 116 px, and the tab bar, 52-56 px, plus room for the slots'
+   lip), never under 170 px, where its eight 44 px slots still sit apart. */
 .cos-wheel {
   position: relative;
-  width: min(100%, 250px);
+  width: min(100%, 250px, max(170px, calc(100vh - 180px)));
+  width: min(100%, 250px, max(170px, calc(100dvh - 180px)));
   aspect-ratio: 1;
   margin: 4px auto;
   border: 3px solid var(--ui-ink);
@@ -1307,7 +1327,8 @@ button.cos-mock__deco.is-picked {
 }
 .cos-wheel__slot {
   position: absolute;
-  width: 21%;
+  /* every slot stays a 44 px target on a small wheel */
+  width: max(21%, 44px);
   aspect-ratio: 1;
   translate: -50% -50%;
   display: grid;
@@ -1526,51 +1547,383 @@ button.cos-qwheel__slot:focus-visible {
     0 0 0 1px var(--ui-ink),
     0 0 12px rgb(255 212 71 / 0.45);
 }
-/* the Damage toggle: steps the live base through its crumble stages (the mounts stay put) */
-.cos-stage__dmg {
+/* ---- the Damage toggle (round 3): an icon with four pips in the live stage's top corner -------------
+   A keep that cracks with the stage over four pips (the first is the whole base), 44 px, over the sky
+   and clear of the base at every phone size. The press sinks onto the lip on pointerdown (MR-01); a step
+   up replays the hit (a squash, a kick and a settle) and pops the new pip; the repair pops the keep back. */
+.cos-dmg {
   position: absolute;
-  right: 11px;
-  bottom: 11px;
+  top: 8px;
+  right: 8px;
   z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 4px 12px;
+  display: grid;
+  grid-template-areas:
+    'icon'
+    'pips';
+  grid-template-rows: 26px 8px;
+  justify-items: center;
+  align-content: center;
+  row-gap: 1px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   border: 2px solid var(--ui-ink);
-  border-radius: 999px;
-  background: linear-gradient(180deg, #5b4c86, #3a2f60);
+  border-radius: 12px;
+  background:
+    radial-gradient(70% 55% at 50% 34%, rgb(255 255 255 / 0.14), transparent 72%),
+    linear-gradient(180deg, #5b4c86, #3a2f60);
   color: #fff;
   font: inherit;
-  font-size: 13px;
-  font-weight: 900;
-  box-shadow: 0 3px 0 var(--ui-ink);
+  box-shadow:
+    inset 0 2px 0 rgb(255 255 255 / 0.16),
+    0 3px 0 var(--ui-ink);
   cursor: pointer;
-  animation: ui-pop 260ms var(--ui-ease-back) both;
-  transition: transform 90ms var(--ui-ease-out), box-shadow 90ms var(--ui-ease-out);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  animation: ui-pop var(--ui-dur-medium) var(--ui-ease-back) both;
+  transition:
+    transform var(--ui-dur-press) var(--ui-ease-standard),
+    box-shadow var(--ui-dur-press) var(--ui-ease-standard),
+    filter var(--ui-dur-press) var(--ui-ease-standard);
 }
-.cos-stage__dmg:active {
-  transform: translateY(2px) scale(0.96);
-  box-shadow: 0 1px 0 var(--ui-ink);
+/* damaged: the toggle is on (aria-pressed), its face warms and an ember rim glows */
+.cos-dmg[aria-pressed='true'] {
+  background:
+    radial-gradient(70% 55% at 50% 34%, rgb(255 214 150 / 0.16), transparent 72%),
+    linear-gradient(180deg, #6e4c78, #432a52);
+  box-shadow:
+    inset 0 2px 0 rgb(255 255 255 / 0.16),
+    0 0 0 2px rgb(255 150 70 / 0.5),
+    0 0 12px rgb(255 138 43 / 0.45),
+    0 3px 0 var(--ui-ink);
 }
-.cos-stage__dmg:focus-visible {
+.cos-dmg[data-pressed],
+.cos-dmg:active {
+  transform: translateY(2px) scale(0.94);
+  filter: brightness(0.9);
+  box-shadow:
+    inset 0 2px 0 rgb(0 0 0 / 0.2),
+    0 1px 0 var(--ui-ink);
+}
+.cos-dmg:focus-visible {
   outline: 3px solid var(--ui-gold);
   outline-offset: 2px;
 }
-.cos-stage__pips {
-  display: inline-flex;
-  gap: 3px;
+.cos-dmg__icon {
+  grid-area: icon;
+  display: block;
+  width: 26px;
+  height: 26px;
+  transform-origin: 50% 88%;
 }
-.cos-stage__pips i {
-  width: 9px;
-  height: 9px;
+.cos-dmg__svg {
+  display: block;
+}
+.cos-dmg.is-hit .cos-dmg__icon {
+  animation: cos-dmg-hit var(--ui-dur-large) var(--ui-ease-out) both;
+}
+.cos-dmg.is-repair .cos-dmg__icon {
+  animation: cos-dmg-repair var(--ui-dur-large) var(--ui-ease-back) both;
+}
+@keyframes cos-dmg-hit {
+  0% {
+    transform: none;
+  }
+  16% {
+    transform: translate(1px, 1px) scale(1.18, 0.8) rotate(-9deg);
+  }
+  40% {
+    transform: translate(-1px, -2px) scale(0.9, 1.12) rotate(6deg);
+  }
+  66% {
+    transform: scale(1.04, 0.97) rotate(-2deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes cos-dmg-repair {
+  0% {
+    transform: scale(0.72);
+    opacity: 0.4;
+  }
+  62% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+  }
+}
+.cos-dmg__pips {
+  grid-area: pips;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.cos-dmg__pips i {
+  display: block;
+  width: 6px;
+  height: 6px;
   border: 1.5px solid var(--ui-ink);
-  border-radius: 2px;
-  background: rgb(255 255 255 / 0.2);
+  border-radius: 1.5px;
+  background: rgb(255 255 255 / 0.16);
   transform: rotate(45deg);
+  transition: background-color var(--ui-dur-micro) var(--ui-ease-standard);
 }
-.cos-stage__pips i.is-on {
-  background: linear-gradient(135deg, #ffcf70, #ef6a3a);
+.cos-dmg__pips i.is-on[data-pip='0'] {
+  background: #e3e7ec;
+}
+.cos-dmg__pips i.is-on[data-pip='1'] {
+  background: #ffcf70;
+}
+.cos-dmg__pips i.is-on[data-pip='2'] {
+  background: #ff9a3a;
+}
+.cos-dmg__pips i.is-on[data-pip='3'] {
+  background: #f0583a;
+}
+.cos-dmg__pips i.is-now {
+  box-shadow: 0 0 5px rgb(255 220 140 / 0.95);
+}
+.cos-dmg.is-hit .cos-dmg__pips i.is-now {
+  animation: cos-dmg-pip var(--ui-dur-medium) var(--ui-ease-back) var(--ui-dur-press) both;
+}
+@keyframes cos-dmg-pip {
+  0% {
+    transform: rotate(45deg) scale(0.2);
+  }
+  60% {
+    transform: rotate(45deg) scale(1.5);
+  }
+  100% {
+    transform: rotate(45deg) scale(1);
+  }
+}
+/* the word shows where the stage is large (desktop): icon plus label (U9) */
+.cos-dmg__label {
+  display: none;
+}
+@media (min-width: 1000px) and (min-height: 560px) {
+  .cos-dmg {
+    top: 12px;
+    right: 12px;
+    grid-template-areas:
+      'icon label'
+      'pips label';
+    grid-template-columns: 40px auto;
+    column-gap: 6px;
+    width: auto;
+    height: 50px;
+    padding: 0 14px 0 6px;
+    border-radius: 14px;
+  }
+  .cos-dmg__label {
+    display: block;
+    grid-area: label;
+    align-self: center;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    text-shadow: 0 1px 0 rgb(0 0 0 / 0.35);
+  }
+}
+/* Reduce motion: no squash, kick or pop; the keep and the pips cross-fade to the new stage (U14) */
+.ui-root[data-reduce-motion='true'] .cos-dmg.is-hit .cos-dmg__icon,
+.ui-root[data-reduce-motion='true'] .cos-dmg.is-repair .cos-dmg__icon {
+  animation: ui-fade var(--ui-dur-reduced) linear both;
+}
+.ui-root[data-reduce-motion='true'] .cos-dmg[data-pressed],
+.ui-root[data-reduce-motion='true'] .cos-dmg:active {
+  transform: none;
+  filter: brightness(0.82);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cos-dmg.is-hit .cos-dmg__icon,
+  .cos-dmg.is-repair .cos-dmg__icon {
+    animation: ui-fade var(--ui-dur-reduced) linear both;
+  }
+  .cos-dmg[data-pressed],
+  .cos-dmg:active {
+    transform: none;
+    filter: brightness(0.82);
+  }
+}
+
+/* ---- the live stage's marks (round 3, item 5): the decoration spots and the pole over Track B's stage --
+   Laid in the host's coordinates (the canvas's box, inset 3 px like `.cos-stage__live`). Each spot is a
+   44 px target that leaves its prop visible: a thin ring when it holds a prop, dashed with a "+" when it
+   is empty, gold when picked. Every prop's footprint is marked on the ground, and a target lifted to the
+   upper row (a small stage) has a dashed leader down to its prop. The pole gets a dashed gold mark. */
+.cos-marks {
+  position: absolute;
+  inset: 3px;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: 15px;
+  pointer-events: none;
+}
+.cos-marks__lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.cos-marks__foot {
+  fill: rgb(255 255 255 / 0.3);
+  stroke: rgb(27 19 48 / 0.55);
+  stroke-width: 1;
+}
+.cos-marks__leader {
+  stroke: rgb(255 255 255 / 0.85);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+  stroke-linecap: round;
+}
+.is-picked > .cos-marks__foot {
+  fill: rgb(255 212 71 / 0.75);
+  stroke: var(--ui-ink);
+}
+.is-picked > .cos-marks__leader {
+  stroke: var(--ui-gold);
+}
+.cos-spot {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 2px solid rgb(255 255 255 / 0.62);
+  border-radius: 12px;
+  background: rgb(27 19 48 / 0.06);
+  box-shadow:
+    0 0 0 1px rgb(27 19 48 / 0.45),
+    inset 0 0 0 1px rgb(27 19 48 / 0.3);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  animation: ui-pop var(--ui-dur-medium) var(--ui-ease-back) both;
+  transition:
+    transform var(--ui-dur-press) var(--ui-ease-standard),
+    border-color var(--ui-dur-micro) var(--ui-ease-standard),
+    background-color var(--ui-dur-micro) var(--ui-ease-standard);
+}
+.cos-spot.is-empty {
+  border-style: dashed;
+  border-color: rgb(255 255 255 / 0.9);
+  background: rgb(27 19 48 / 0.3);
+}
+/* a callout (above the props): an opaque plate with what the spot holds */
+.cos-spot.is-raised {
+  background: rgb(27 19 48 / 0.72);
+  border-color: rgb(255 255 255 / 0.78);
+}
+.cos-spot.is-raised.is-empty {
+  background: rgb(27 19 48 / 0.6);
+}
+.cos-spot.is-raised.is-picked {
+  background: rgb(58 44 20 / 0.82);
+}
+.cos-spot__art {
+  display: block;
+  width: 82%;
+  height: 82%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 1px 0 rgb(0 0 0 / 0.4));
+}
+.cos-spot__plus {
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 1px 0 rgb(0 0 0 / 0.5);
+}
+.cos-spot.is-picked {
+  border: 3px solid var(--ui-gold);
+  background: rgb(255 229 138 / 0.16);
+  box-shadow:
+    0 0 0 1px var(--ui-ink),
+    0 0 12px rgb(255 212 71 / 0.75);
+}
+.cos-spot.is-picked.is-empty {
+  background: rgb(255 229 138 / 0.3);
+}
+.cos-spot[data-pressed],
+.cos-spot:active {
+  transform: scale(0.92);
+}
+.cos-spot:focus-visible {
+  outline: 3px solid var(--ui-gold);
+  outline-offset: 2px;
+}
+@media (hover: hover) {
+  .cos-spot:hover {
+    border-color: #fff;
+    background-color: rgb(255 255 255 / 0.14);
+  }
+}
+/* the pole and its flags, marked on the Flags tab; it pings when a flag changes */
+.cos-polemark {
+  position: absolute;
+  border: 2px dashed var(--ui-gold);
+  border-radius: 10px;
+  box-shadow:
+    0 0 0 1px rgb(27 19 48 / 0.45),
+    0 0 10px rgb(255 212 71 / 0.45),
+    inset 0 0 10px rgb(255 212 71 / 0.25);
+  animation: cos-pole-ping var(--ui-dur-large) var(--ui-ease-out) both;
+}
+@keyframes cos-pole-ping {
+  0% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+  }
+}
+/* the still's pole mark (until the stage is live, and under Reduce motion) */
+.cos-mock__polemark {
+  position: absolute;
+  left: -8px;
+  top: -14px;
+  width: 64px;
+  bottom: -6px;
+  border: 2px dashed var(--ui-gold);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgb(255 212 71 / 0.4);
+  pointer-events: none;
+}
+.ui-root[data-reduce-motion='true'] :is(.cos-spot, .cos-polemark) {
+  animation: ui-fade var(--ui-dur-reduced) linear both;
+}
+.ui-root[data-reduce-motion='true'] .cos-spot[data-pressed],
+.ui-root[data-reduce-motion='true'] .cos-spot:active {
+  transform: none;
+  filter: brightness(0.85);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cos-spot,
+  .cos-polemark {
+    animation: ui-fade var(--ui-dur-reduced) linear both;
+  }
+  .cos-spot[data-pressed],
+  .cos-spot:active {
+    transform: none;
+    filter: brightness(0.85);
+  }
+}
+/* the info card's picked spot (the Decorations tab on desktop) */
+.cos-stinfo__row.is-picked {
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 2px rgb(255 212 71 / 0.75);
+  background: rgb(255 229 138 / 0.08);
 }
 
 /* ---- the preview column's info card (desktop layout pass: the column under the preview was empty) -- */
@@ -1882,18 +2235,9 @@ button.cos-qwheel__slot:focus-visible {
   .cos-stage__caption {
     display: none;
   }
-  .cos-stage__dmg {
+  .cos-dmg {
     top: 6px;
     right: 6px;
-    bottom: auto;
-    gap: 5px;
-    padding: 2px 9px;
-    font-size: 12px;
-    box-shadow: 0 2px 0 var(--ui-ink);
-  }
-  .cos-stage__pips i {
-    width: 7px;
-    height: 7px;
   }
   .cos-card__rarity {
     letter-spacing: 0;
@@ -1915,7 +2259,9 @@ button.cos-qwheel__slot:focus-visible {
     transition: none;
   }
   .cos-stage__plate,
-  .cos-stage__dmg,
+  .cos-dmg,
+  .cos-dmg__icon,
+  .cos-dmg__pips i,
   .cos-stinfo__row,
   .cos-emostage__bubble,
   .cos-tile__new,
@@ -1923,7 +2269,7 @@ button.cos-qwheel__slot:focus-visible {
     animation: none;
   }
 }
-.ui-root[data-reduce-motion='true'] :is(.cos-stage__plate, .cos-stage__dmg, .cos-stinfo__row, .cos-emostage__bubble, .cos-tile__new, .cust-newdot) {
+.ui-root[data-reduce-motion='true'] :is(.cos-stage__plate, .cos-dmg, .cos-dmg__icon, .cos-dmg__pips i, .cos-stinfo__row, .cos-emostage__bubble, .cos-tile__new, .cust-newdot) {
   animation: none;
 }
 .cos-stage__plate small {

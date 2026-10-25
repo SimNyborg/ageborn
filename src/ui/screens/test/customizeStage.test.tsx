@@ -15,11 +15,13 @@ import { DioramaContext } from '../../components/diorama';
 import { createToastStore } from '../../components/Toasts';
 import { createRouter } from '../../router';
 import { UiEnvContext, type UiEnv } from '../context';
+import { CRUMBLE_STAGES, DamageToggle, type CrumbleStage } from '../customize/DamageToggle';
 import { PreviewStage, stageBaseSkins } from '../customize/PreviewStage';
+import { packRow, SPOT_TARGET_PX, spotTargets, type StageBox } from '../customize/spots';
 import { FIXTURE_NOW, fixtureSave } from '../fixtures/saves';
 import { createPreviewServices } from '../fixtures/services';
 import { equippedOf } from '../model/cosmetics';
-import { installDom, type FakeElement } from './dom';
+import { FakeEvent, installDom, type FakeElement } from './dom';
 import { EN } from './harness';
 
 interface FakeStage extends DioramaHandle {
@@ -219,6 +221,63 @@ describe('Customize preview stage (PLAN 2a)', () => {
   });
 });
 
+describe('the Damage toggle (round 3: an icon with four pips)', () => {
+  function Toggle(p: { env: UiEnv; crumble: CrumbleStage; onStep: (n: CrumbleStage) => void }): ComponentChildren {
+    return (
+      <UiEnvContext.Provider value={p.env}>
+        <DamageToggle crumble={p.crumble} onStep={p.onStep} />
+      </UiEnvContext.Provider>
+    );
+  }
+  const btn = (): FakeElement => container.querySelector('[data-testid="stage-damage"]')!;
+  const lit = (): number[] =>
+    container
+      .querySelectorAll('[data-pip]')
+      .filter((i) => (i.getAttribute('class') ?? '').split(/\s+/).includes('is-on'))
+      .map((i) => Number(i.getAttribute('data-pip')));
+
+  it('shows the stage as lit pips (the first is the whole base), the keep of that stage and the label', () => {
+    const env = envFor();
+    for (const c of CRUMBLE_STAGES) {
+      show(<Toggle env={env} crumble={c} onStep={() => undefined} />);
+      expect(lit()).toEqual(CRUMBLE_STAGES.filter((n) => n <= c));
+      expect(container.querySelectorAll('[data-pip]')).toHaveLength(4);
+      expect(container.querySelector('svg')!.getAttribute('data-stage')).toBe(String(c));
+      // "on" while the base shows damage; the label says the stage (the icon has no words on phones)
+      expect(btn().getAttribute('aria-pressed')).toBe(c > 0 ? 'true' : 'false');
+      expect(btn().getAttribute('aria-label')).toBe(EN('cosmetic.ui.damageLabel', { n: c, max: 3 }));
+    }
+  });
+
+  it('steps 0, 1, 2, 3 and back to 0: a step up is the base crumbling, the repair a soft toggle', () => {
+    const sound = vi.fn();
+    const env = { ...envFor(), sound };
+    let c: CrumbleStage = 0;
+    const seen: CrumbleStage[] = [];
+    const step = (n: CrumbleStage): void => {
+      seen.push(n);
+      c = n;
+    };
+    for (let i = 0; i < 4; i++) {
+      show(<Toggle env={env} crumble={c} onStep={step} />);
+      act(() => btn().click());
+    }
+    expect(seen).toEqual([1, 2, 3, 0]);
+    expect(sound.mock.calls.map((x) => x[0])).toEqual(['base_crumble', 'base_crumble', 'base_crumble', 'ui_toggle']);
+    // each tap replays its beat: the last one was the repair
+    show(<Toggle env={env} crumble={c} onStep={step} />);
+    expect(btn().className).toContain('is-repair');
+  });
+
+  it('lands the press on pointerdown and lets go on pointerup', () => {
+    show(<Toggle env={envFor()} crumble={0} onStep={() => undefined} />);
+    act(() => void btn().dispatchEvent(new FakeEvent('pointerdown')));
+    expect(btn().getAttribute('data-pressed')).toBe('');
+    act(() => void btn().dispatchEvent(new FakeEvent('pointerup')));
+    expect(btn().getAttribute('data-pressed')).toBeNull();
+  });
+});
+
 describe('stageBaseSkins (one base skin per age, as the battle resolves it)', () => {
   const base = fixtureSave(content, 'mid');
   const look = { ...equippedOf(base, content), baseSkins: { stone: 'baseSkin.frost_cave', future: 'baseSkin.midnight_neon' } } as CosmeticLoadout;
@@ -233,5 +292,176 @@ describe('stageBaseSkins (one base skin per age, as the battle resolves it)', ()
     expect(stageBaseSkins(base, look, content.order.ages, { age: 'medieval', key: 'baseSkin.rose_keep' })).toEqual({ stone: 'frost_cave', medieval: 'rose_keep', future: 'midnight_neon' });
     expect(stageBaseSkins(base, look, content.order.ages, { age: 'stone', key: null })).toEqual({ future: 'midnight_neon' });
     expect(stageBaseSkins(base, look, content.order.ages, { age: 'future', key: 'skin.crystal_spire' })).toEqual({ stone: 'frost_cave', future: 'crystal_spire' });
+  });
+});
+
+/**
+ * Track B's spot boxes as `dioramaAnchors(width, height, 0)` gives them (ground at 83% of the height,
+ * 440 lu above it, at least 520 lu across; spots at gate - 150, - 104 and + 20 lu, 50 x 66 lu; the gate
+ * 228 lu from the stage's left edge; the pole box 34-102 lu from the gate's... up to 186 lu).
+ */
+function anchorsFor(width: number, height: number): StageBox[] {
+  const ground = height * 0.83;
+  const scale = Math.min(ground / 440, width / 520);
+  const spot = (lu: number): StageBox => ({ x: (228 + lu - 25) * scale, y: ground - 66 * scale, w: 50 * scale, h: 66 * scale });
+  return [spot(-150), spot(-104), spot(20), { x: (228 + 34) * scale, y: ground - 186 * scale, w: 68 * scale, h: 186 * scale }];
+}
+
+describe('the decoration spots over the live stage (round 3, spots.ts)', () => {
+  const sizes: [number, number][] = [
+    [238, 160], // 844 x 390 and 844 x 340
+    [208, 139], // 750 x 340
+    [188, 126], // 667 x 375
+    [589, 326], // 1280 x 720
+    [1200, 640], // a roomy stage
+  ];
+  for (const [w, h] of sizes) {
+    it(`every target is at least 44 px, inside a ${w} x ${h} stage and apart from the others`, () => {
+      const ts = spotTargets(anchorsFor(w, h).slice(0, 3), w, h);
+      expect(ts).toHaveLength(3);
+      for (const t of ts) {
+        expect(Math.min(t.w, t.h)).toBeGreaterThanOrEqual(SPOT_TARGET_PX);
+        expect(t.x).toBeGreaterThanOrEqual(0);
+        expect(t.y).toBeGreaterThanOrEqual(0);
+        expect(t.x + t.w).toBeLessThanOrEqual(w + 0.5);
+        expect(t.y + t.h).toBeLessThanOrEqual(h + 0.5);
+      }
+      for (let i = 0; i < 3; i++)
+        for (let j = i + 1; j < 3; j++) {
+          const a = ts[i]!;
+          const b = ts[j]!;
+          const apart = a.x + a.w <= b.x + 0.5 || b.x + b.w <= a.x + 0.5 || a.y + a.h <= b.y + 0.5 || b.y + b.h <= a.y + 0.5;
+          expect(apart, `${i} and ${j}`).toBe(true);
+        }
+    });
+
+    it(`on a ${w} x ${h} stage a target on the ground covers its own prop and no other; the rest are callouts with a leader`, () => {
+      const spots = anchorsFor(w, h).slice(0, 3);
+      const ts = spotTargets(spots, w, h);
+      ts.forEach((t, i) => {
+        if (t.raised) {
+          expect(t.leader).toBe(true);
+          // above the props, with room for the leader
+          expect(t.y + t.h).toBeLessThanOrEqual(Math.min(...spots.map((s) => s.y)) + 0.5);
+          return;
+        }
+        const s = spots[i]!;
+        expect(t.x).toBeLessThanOrEqual(s.x + 0.5);
+        expect(t.x + t.w).toBeGreaterThanOrEqual(s.x + s.w - 0.5);
+        spots.forEach((o, j) => {
+          if (j !== i) expect(o.x + o.w <= t.x + 0.5 || o.x >= t.x + t.w - 0.5, `${i} covers prop ${j}`).toBe(true);
+        });
+        // the footprint marks the prop where it stands
+        expect(t.footX).toBeCloseTo(s.x + s.w / 2, 0);
+      });
+    });
+  }
+
+  it("the back spots are callouts (Track B's boxes overlap: 50 lu wide, 46 lu apart); spots far apart all sit on their props", () => {
+    for (const [w, h] of sizes) expect(spotTargets(anchorsFor(w, h).slice(0, 3), w, h).map((t) => t.raised), `${w} x ${h}`).toEqual([true, true, false]);
+    const roomy: StageBox[] = [0, 1, 2].map((i) => ({ x: 40 + i * 150, y: 300, w: 30, h: 40 }));
+    const ts = spotTargets(roomy, 600, 400);
+    expect(ts.map((t) => t.raised)).toEqual([false, false, false]);
+    expect(ts.every((t) => !t.leader)).toBe(true);
+  });
+
+  it('packs a row with the least movement, inside its ends', () => {
+    expect(packRow([{ c: 50, w: 44 }], 0, 200)).toEqual([50]);
+    expect(packRow([{ c: 10, w: 44 }], 0, 200)).toEqual([22]);
+    const [a, b] = packRow([{ c: 100, w: 44 }, { c: 110, w: 44 }], 0, 300, 4);
+    expect(b! - a!).toBeCloseTo(48, 1);
+    expect((a! + b!) / 2).toBeCloseTo(105, 1);
+  });
+});
+
+describe('Flags and Decorations on the live stage (round 3)', () => {
+  function anchoredMount(w = 238, h = 160): { mount: DioramaMount; stages: (FakeStage & { move(): void })[] } {
+    const base = fakeMount();
+    const stages: (FakeStage & { move(): void })[] = [];
+    const mount: DioramaMount = (host, req) => {
+      const st = base.mount(host, req) as FakeStage;
+      let boxes = anchorsFor(w, h);
+      const watchers = new Set<() => void>();
+      const ext = Object.assign(st, {
+        anchorsPx: () => boxes,
+        onAnchorsChange: (cb: () => void) => {
+          watchers.add(cb);
+          return () => void watchers.delete(cb);
+        },
+        move: () => {
+          boxes = anchorsFor(w * 2, h * 2);
+          for (const cb of watchers) cb();
+        },
+      });
+      stages.push(ext);
+      return ext;
+    };
+    return { mount, stages };
+  }
+  function Spots(p: { env: UiEnv; mount: DioramaMount | null; picked: number; onPick: (i: number) => void; still?: boolean }): ComponentChildren {
+    return (
+      <UiEnvContext.Provider value={p.env}>
+        <DioramaContext.Provider value={p.mount}>
+          <PreviewStage testid="stage" age="stone" spots={{ picked: p.picked, onPick: p.onPick }} {...(p.still ? { stillOnly: true } : {})} />
+        </DioramaContext.Provider>
+      </UiEnvContext.Provider>
+    );
+  }
+
+  it("the still's spots until the stage is live, then targets at Track B's anchors (the same buttons, never both)", async () => {
+    const env = envFor();
+    const { mount, stages } = anchoredMount();
+    const picks: number[] = [];
+    show(<Spots env={env} mount={mount} picked={1} onPick={(i) => picks.push(i)} />);
+    expect(container.querySelectorAll('[data-testid="anchor-0"]')).toHaveLength(1);
+    expect(container.querySelector('.cos-mock [data-testid="anchor-0"]')).not.toBeNull();
+    await enter();
+    await goLive(stages[0]!);
+    expect(container.querySelector('[data-testid="stage-spots"]')).not.toBeNull();
+    for (const i of [0, 1, 2]) expect(container.querySelectorAll(`[data-testid="anchor-${i}"]`), `anchor-${i}`).toHaveLength(1);
+    expect(container.querySelector('.cos-mock [data-testid="anchor-0"]')).toBeNull();
+    // the picked spot says so; a tap picks another
+    expect(container.querySelector('[data-testid="anchor-1"]')!.getAttribute('aria-pressed')).toBe('true');
+    act(() => container.querySelector('[data-testid="anchor-2"]')!.click());
+    expect(picks).toEqual([2]);
+  });
+
+  it('moves the targets when the stage resizes (onAnchorsChange)', async () => {
+    const { mount, stages } = anchoredMount();
+    show(<Spots env={envFor()} mount={mount} picked={0} onPick={() => undefined} />);
+    await enter();
+    await goLive(stages[0]!);
+    // (the fake DOM has no layout, so read the footprints, which come straight from the anchors)
+    const foot = (): string | null => container.querySelectorAll('.cos-marks__foot')[2]?.getAttribute('cx') ?? null;
+    const before = foot();
+    expect(before).not.toBeNull();
+    act(() => stages[0]!.move());
+    expect(foot()).not.toBe(before);
+  });
+
+  it('Reduce motion keeps the still (and its spots): no live stage is mounted', async () => {
+    const { mount, stages } = anchoredMount();
+    show(<Spots env={envFor()} mount={mount} picked={0} onPick={() => undefined} still />);
+    await enter();
+    expect(stages).toHaveLength(0);
+    expect(container.querySelector('.cos-mock [data-testid="anchor-0"]')).not.toBeNull();
+  });
+
+  it('the Flags tab marks the pole: on the still, then on the live stage at its anchor', async () => {
+    const env = envFor();
+    const { mount, stages } = anchoredMount();
+    const Flags = (p: { k: string }): ComponentChildren => (
+      <UiEnvContext.Provider value={env}>
+        <DioramaContext.Provider value={mount}>
+          <PreviewStage testid="stage" age="stone" pole poleKey={p.k} />
+        </DioramaContext.Provider>
+      </UiEnvContext.Provider>
+    );
+    show(<Flags k="a" />);
+    expect(container.querySelector('[data-testid="still-pole"]')).not.toBeNull();
+    await enter();
+    await goLive(stages[0]!);
+    expect(container.querySelector('[data-testid="still-pole"]')).toBeNull();
+    expect(container.querySelector('[data-testid="stage-pole"]')).not.toBeNull();
   });
 });

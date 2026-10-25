@@ -19,10 +19,12 @@ glowing core seen through the facets; shards float round its tip. The mounts are
 import math
 import random
 
+from mathutils import Matrix, Vector
+
 from ageborn_art.geometry import Geo
 
 from world.base_skins_kit import crystal_cluster, crystal_prism, flames
-from world.common import (BASE_YAW, ambient_lu, base_module, box, chipped_cracks, cyl, flag, platform, rubble,
+from world.common import (BASE_YAW, ambient_lu, base_module, box, chipped_cracks, cyl, flag, platform, prop_loop, rubble,
                           topple_lu)
 
 CHARCOAL = "#23262E"
@@ -491,8 +493,74 @@ def crystal_slab(rig, joint, m, r=(24.0, 18.0), t=6.0, seed=0):
     rig.part(joint, g, glow=GLOW_V, outline=0)
 
 
+# The orbiting shards (round 3, PLAN 2c "Shard orbit (`prop` loop)"): SHARD_N identical crystals evenly spaced
+# on a tilted ring round the top of the great crystal, under its tip. The ring sits between the turret mounts
+# (over the second turret's head, under the top platform) and low enough to stay below the battle HUD on a phone;
+# the loop turns it by one spacing (SHARD_FRAMES steps), so the last frame flows into the first. Each shard
+# keeps its face to the ring (it turns with its angle), so a shard's look depends only on where it is on it.
+SHARD_N = 6
+SHARD_STEP = 360.0 / SHARD_N
+SHARD_FRAMES = 12
+SHARD_MS = 130
+SHARD_A0 = -100.0
+SHARD_C = (CS[0] - 4, CS[1], 196.0)
+SHARD_R = 43.0
+SHARD_FILL = "#B39BEA"   # a deeper lilac than the spire, so the shards read against it (accent-sized, A11)
+
+
+def shard_at(a_deg):
+    """The centre of a shard at ring angle a (character space): a tilted ellipse (deeper than it is wide in y,
+    as the spire's footprint), highest on the lane side, where it passes over the second turret's head."""
+    a = math.radians(a_deg)
+    cx, cy, cz = SHARD_C
+    return (cx + SHARD_R * math.cos(a), cy + SHARD_R * 0.7 * math.sin(a), cz + 9.0 * math.cos(a))
+
+
+def _placed(g, c, a_deg):
+    """Moves geometry built at the origin for ring angle 0 to ring angle a: turned about the vertical by a
+    and set at c. The loop's pose turns and moves the shard's joint the same way, so frame by frame each
+    shard is exactly the shape the next one has at the start (the loop closes without a jump)."""
+    m = Matrix.Translation(Vector(c)) @ Matrix.Rotation(math.radians(a_deg), 4, "Z")
+    for v in g.bm.verts:
+        v.co = m @ v.co
+    return g
+
+
+def shard_geo(rig, joint, c, a_deg):
+    """One orbiting shard at centre c for ring angle a. Built at angle 0 (outward +x, travelling +y): a slender
+    crystal leaning into its travel, a lit strip on its outward facet (it catches the light as the shard swings
+    to the front) and a glowing core spark; soft interior lines, so a small shard stays clean at lane size."""
+    lean = math.radians(22.0)
+    L = 23.0
+    uy, uz = math.sin(lean), math.cos(lean)
+    g, gt, gl, gc = Geo(), Geo(), Geo(), Geo()
+    crystal_prism(g, (0.0, -uy * L * 0.5, -uz * L * 0.5), (0.0, uy * L * 0.5, uz * L * 0.5), 4.6, tip_len=0.38)
+    # the point lit from within (it reads as crystal, not stone, against the pale spire)
+    crystal_prism(gt, (0.0, uy * L * 0.12, uz * L * 0.12), (0.0, uy * L * 0.53, uz * L * 0.53), 3.2, tip_len=0.6)
+    gl.capsule((3.9, -uy * 7.0, -uz * 7.0), (3.4, uy * 4.0, uz * 4.0), 1.1, 0.7, segs=6, rings=1)
+    gc.sphere((0.8, 0.0, -1.6), 1.7, cuts=2)
+    for geo in (g, gt, gl, gc):
+        _placed(geo, c, a_deg)
+    rig.part(joint, g, SHARD_FILL, finish="gloss", outline=0.6, outline_hex=VIOLET)
+    rig.part(joint, gt, glow=GLOW_V, outline=0)
+    rig.part(joint, gl, glow=GLOW_V, outline=0)
+    rig.part(joint, gc, glow=CORE_GLOW, outline=0)
+
+
+def shard_pose(f):
+    """Frame f of the orbit: every shard moved SHARD_STEP / SHARD_FRAMES further round the ring (and turned
+    with it)."""
+    d = SHARD_STEP * f / SHARD_FRAMES
+    pose = {}
+    for k in range(SHARD_N):
+        a = SHARD_A0 + k * SHARD_STEP
+        p0, p1 = shard_at(a), shard_at(a + d)
+        pose[f"shard{k}"] = {"x": p1[0] - p0[0], "y": p1[1] - p0[1], "z": p1[2] - p0[2], "rz": d}
+    return pose
+
+
 def build_crystal(rig, M):
-    for j, pos in (("tip", (CS[0], CS[1], 236)), ("shards", (CS[0], CS[1], 280)), ("sideL", (CS[0] - 46, CS[1] - 6, 60)),
+    for j, pos in (("tip", (CS[0], CS[1], 236)), ("sideL", (CS[0] - 46, CS[1] - 6, 60)),
                    ("sideR", (CS[0] + 40, CS[1] - 10, 40)), ("strut", (0, 0, 0))):
         rig.joint(j, "body", pos)
     for j in ("crack1", "crack2", "crack3", "rubble1", "rubble2", "rubble3", "dim", "fire1", "scorch", "breach", "fire2", "stump",
@@ -563,22 +631,12 @@ def build_crystal(rig, M):
             g.capsule(a, b, 1.2, 0.8, segs=6, rings=1)
     rig.part("body", g, glow="#B9A2EE", outline=0)
 
-    # floating shards round the tip (static; the glints play over them)
-    g, gl = Geo(), Geo()
-    rnd = random.Random(21)
-    for k in range(9):
-        a = math.radians(-175 + k * 40 + rnd.uniform(-8, 8))
-        rr = 38.0 + rnd.uniform(-4, 6)
-        z = 258 + math.sin(a * 2.0) * 16 + rnd.uniform(-6, 6)
-        x, y = CS[0] - 4 + math.cos(a) * rr, CS[1] + math.sin(a) * rr * 0.7
-        if y > CS[1] + 8:
-            continue
-        L = rnd.uniform(16, 24)
-        tilt = rnd.uniform(-35, 35)
-        crystal_prism(g, (x, y, z - L * 0.5), (x + math.sin(math.radians(tilt)) * L, y, z + L * 0.5), rnd.uniform(4.0, 5.6))
-        gl.capsule((x - 0.8, y - 3.6, z - L * 0.3), (x - 0.2, y - 3.6, z + L * 0.2), 0.9, segs=6, rings=1)
-    rig.part("shards", g, CRYSTAL, finish="gloss", outline_hex=VIOLET)
-    rig.part("shards", gl, glow=GLOW_V, outline=0)
+    # the crystal shards orbiting the tip: a `prop` loop (round 3), one joint per shard under root
+    for k in range(SHARD_N):
+        a = SHARD_A0 + k * SHARD_STEP
+        c = shard_at(a)
+        rig.joint(f"shard{k}", "root", c)
+        shard_geo(rig, f"shard{k}", c, a)
 
     # the gate: a crystal arch over a glowing team portal at the foot
     g = Geo()
@@ -683,10 +741,9 @@ def crumble_crystal(stage):
         pose.update({"crack1": {"show": True}, "sideL": {"hide": True}, "rubble1": {"show": True}, "sparks1": {"show": True}})
     if stage >= 2:
         pose.update({"crack2": {"show": True}, "rubble2": {"show": True}, "fire1": {"show": True}, "scorch": {"show": True},
-                     "dim": {"show": True}, "sparks1": {"hide": True}, "tip": {"r": 10.0, "x": -4.0, "z": -5.0},
-                     "shards": {"z": -14.0, "r": 6.0}})
+                     "dim": {"show": True}, "sparks1": {"hide": True}, "tip": {"r": 10.0, "x": -4.0, "z": -5.0}})
     if stage >= 3:
-        pose.update({"crack3": {"show": True}, "rubble3": {"show": True}, "tip": {"hide": True}, "shards": {"hide": True},
+        pose.update({"crack3": {"show": True}, "rubble3": {"show": True}, "tip": {"hide": True},
                      "breach": {"show": True}, "fire2": {"show": True}, "stump": {"show": True}, "tipfallen": {"show": True},
                      "sideR": {"r": -12.0, "x": 4.0, "z": -4.0}})
     return pose
@@ -695,6 +752,10 @@ def crumble_crystal(stage):
 CRYSTAL_SPIRE = base_module(
     "future", "Crystal Spire", height=330, width=180, canvas=(470, 740), feet=(360, 690),
     build=build_crystal, crumble=crumble_crystal, mount_depth=DEPTHS, skin="crystal_spire",
+    # the shards orbit the tip (round 3): drawn over the body, cut away where the crystal stands in front of them;
+    # gone with the tip at 25%
+    props=[prop_loop("shards", [f"shard{k}" for k in range(SHARD_N)], SHARD_FRAMES, shard_pose, ms=SHARD_MS, crumble=(0, 2),
+                     z="front", hold=0, anchor=SHARD_C, occlude=["body"], outline=(2.0, 0.6, 0.56))],
     flags=[{"name": "flagA", "crumbleMax": 2}, {"name": "flagB", "crumbleMax": 3, "phase": 1.7, "z": "back"}],
     lights=[((-30, -44, 30), 3, 30), ((CS[0] - 2, CS[1] - 36, 120), 2, 30), ((CS[0] - 4, CS[1] - 22, 280), 2, 24),
             ((CS[0] - 44, CS[1] - 30, 90), 0, 20), ((CS[0] + 40, CS[1] - 30, 70), 2, 20)],

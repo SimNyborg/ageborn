@@ -309,9 +309,28 @@ def turret_module(slug, name, age, height, canvas, feet, pivot, muzzle, build, i
 FLAG_MS = 110
 
 
+def prop_loop(name, joints, frames, pose, ms=120, crumble=(0, 3), z="front", hold=0, anchor=(0.0, 0.0, 0.0),
+              occlude=(), sequence=None, alpha=1.0, outline=None):
+    """One generic `prop` loop of a base (round 3; PLAN 2c: Windmill Redoubt's sails, Arctic Radar's dish,
+    Crystal Spire's orbiting shards), for `base_module(props=[...])`.
+
+    name: the clip; joints: the joints build() made under root that hold it (shown only in its clip);
+    frames: N unique frames, pose(f) -> the pose dict of frame f (joint offsets and turns, e.g. one joint per
+    orbiting shard moved along its path); ms: per-step duration(s); sequence: playback order (a ping-pong);
+    crumble: (min, max) stages it shows in; z: drawn in front of or behind the body; hold: the step shown
+    under Reduce motion; anchor: character-space point (exported as screen lu): where it rides in the
+    collapse; occlude: joints rendered as a holdout in its frames (an invisible cut-out), so a loop that
+    wraps round the body is hidden where the body stands in front of it; alpha: the runtime draws it at
+    this opacity (a translucent nebula); outline: its own outer-outline spec (pipeline form; "none" for no outer
+    line, as for light), else the base's."""
+    return {"name": name, "joints": list(joints), "frames": frames, "pose": pose, "ms": ms, "crumble": tuple(crumble),
+            "z": z, "hold": hold, "anchor": tuple(anchor), "occlude": list(occlude), "sequence": sequence, "alpha": alpha,
+            "outline": outline}
+
+
 def base_module(age, name, height, width, canvas, feet, build, crumble, flags, mounts=None, treasury_levels=3,
                 lights=(), smoke=(), horn=(-80, 250), yaw=BASE_YAW, hit_center=None, mount_depth=-40.0,
-                skin=None, extra_meta=None):
+                skin=None, extra_meta=None, props=()):
     """A pipeline module for base.<age> (or the base skin model base.<age>@<skin>).
 
     mounts: the four mount points (x, y DOWN, lu; default BASE_MOUNTS); the build models a real
@@ -326,12 +345,19 @@ def base_module(age, name, height, width, canvas, feet, build, crumble, flags, m
     sheet and its frame names are `<skin>` (frame names never collide with the age's own sheet in Pixi's
     texture cache), and the meta says `skin`. extra_meta: more `meta.ageborn` keys (a skin's `topple`,
     `collapseMaterial`, `rubbleColors`, `ambientLu`).
+    props: generic prop loops (`prop_loop(...)`, round 3): each an N-frame loop clip over the body at its
+    anchor, with its own crumble range, a `_team` twin where it has team parts and a z order; the meta lists
+    them under `props` and the game plays them by render time from a seeded phase (a held pose under Reduce
+    motion; src/visuals/adapters/world/atlasBaseView.ts). A prop's joints must sit under root, not body.
     """
     if mounts is None:
         mounts = [(x, -y) for x, y in BASE_MOUNTS]
     depths = list(mount_depth) if isinstance(mount_depth, (list, tuple)) else [mount_depth] * len(mounts)
     M = [place(mx, my, d, yaw) for (mx, my), d in zip(mounts, depths)]
     flag_names = [f["name"] for f in flags]
+    props = list(props or ())
+    prop_joints = [j for p in props for j in p["joints"]]
+    hide_all_props = {j: {"hide": True} for j in prop_joints}
 
     def _build(rig):
         rig.joint("body", "root", (0, 0, 0))
@@ -344,18 +370,28 @@ def base_module(age, name, height, width, canvas, feet, build, crumble, flags, m
     hide_all_flags = {n: {"hide": True} for n in flag_names}
     hide_treasury = {f"treasury{i}": {"hide": True} for i in range(1, treasury_levels + 1)}
 
+    def prop_pose(p, f):
+        own = set(p["joints"])
+        others = {j: {"hide": True} for j in prop_joints if j not in own}
+        occ = {j: {"holdout": True} for j in p["occlude"]}
+        body = {} if "body" in occ else {"body": {"hide": True}}
+        return merge(body, occ, hide_treasury, hide_all_flags, others, p["pose"](f))
+
     def clips():
-        out = [Clip("body", 4, lambda f: merge(hide_all_flags, hide_treasury, crumble(f)), durations=[1000] * 4)]
+        out = [Clip("body", 4, lambda f: merge(hide_all_flags, hide_treasury, hide_all_props, crumble(f)), durations=[1000] * 4)]
         for fl in flags:
             n = fl["name"]
             others = {o: {"hide": True} for o in flag_names if o != n}
             out.append(Clip(n, 4, lambda f, n=n, others=others, ph=fl.get("phase", 0.0): merge(
-                {"body": {"hide": True}}, hide_treasury, others, flag_wave(n, f, phase=ph)),
+                {"body": {"hide": True}}, hide_treasury, others, hide_all_props, flag_wave(n, f, phase=ph)),
                 loop=True, durations=FLAG_MS))
         out.append(Clip("treasury", treasury_levels, lambda f: merge(
-            {"body": {"hide": True}}, hide_all_flags,
+            {"body": {"hide": True}}, hide_all_flags, hide_all_props,
             {f"treasury{i}": {"hide": i > f + 1} for i in range(1, treasury_levels + 1)}),
             durations=[1000] * treasury_levels))
+        for p in props:
+            out.append(Clip(p["name"], p["frames"], lambda f, p=p: prop_pose(p, f), loop=True, sequence=p["sequence"],
+                            durations=p["ms"]))
         return out
 
     hc = hit_center or (-width * 0.4, height * 0.45)
@@ -367,6 +403,10 @@ def base_module(age, name, height, width, canvas, feet, build, crumble, flags, m
         "smokeLu": [dict(zip(("x", "y"), project(p, yaw)), crumbleMin=cm) for p, cm in smoke],
         "hornLu": list(horn),
     }
+    if props:
+        meta["props"] = [{"clip": p["name"], "crumbleMin": p["crumble"][0], "crumbleMax": p["crumble"][1], "z": p["z"],
+                          "holdFrame": p["hold"], "anchorLu": list(project(p["anchor"], yaw)),
+                          **({"alpha": p["alpha"]} if p["alpha"] != 1.0 else {})} for p in props]
     if skin:
         meta["skin"] = skin
     meta.update(extra_meta or {})
@@ -377,6 +417,8 @@ def base_module(age, name, height, width, canvas, feet, build, crumble, flags, m
         ANCHORS={"head": (-width / 2, height), "hitCenter": hc},
         EXTRA_META=meta,
         build=_build, clips=clips, AGE=age, SKIN=skin,
+        CLIP_OUTLINES={p["name"]: (None if p["outline"] == "none" else p["outline"]) for p in props if p.get("outline")},
+        OCCLUDED_CLIPS=[p["name"] for p in props if p["occlude"]],
     )
 
 

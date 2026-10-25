@@ -22,6 +22,7 @@ import { useKit, usePortrait } from './kit';
  * | `scene.<id>` | `{ age, sky? }` | a still of the scene with the sky (`backdrop.<id>` or null) applied |
  * | `backdrop.<id>` (`backdrop.classic` = none) | `{ age, scene? }` | the sky over the scene (the classic without one) |
  * | `baseSkin.<id>` | `{ layer: 'thumb' }` | the model's pre-rendered thumbnail (null until it has one) |
+ * | `baseSkin.<id>` | `{ layer: 'aura' }` | the Legendary halo under the model (null for a skin without one) |
  * | `decoration.<id>` | `{ hd? }` | the prop |
  * | `nationalFlag.<id>` | `{ size?: 'tile' \| 'big', cached? }` | a grid's atlas cell, or the big flag (the default) |
  * | `baseFlag.*`, `emote.*`, `quote.*` | `{ team?, animate? }` | the code-drawn art |
@@ -33,9 +34,9 @@ export interface CosmeticImageOptions {
   animate?: boolean;
   /**
    * A base skin's tint swatch or particle layer (`fx`, drawn over the real base picture, {@link BaseLook});
-   * `thumb`: the base skin model's pre-rendered thumbnail.
+   * `thumb`: the base skin model's pre-rendered thumbnail; `aura`: the Legendary halo drawn under it.
    */
-  layer?: 'tint' | 'fx' | 'thumb';
+  layer?: 'tint' | 'fx' | 'thumb' | 'aura';
   /** Backdrops and scenes: the age whose half of the lane the still shows ({@link BackdropLook}). */
   age?: AgeId;
   /** Backdrops and scenes: the small still for a collection tile. */
@@ -141,9 +142,26 @@ const ITEM_LOOK: ResolvedLook = {
 export function CosmeticImage(p: { item: string; class?: string; team?: number; animate?: boolean; testid?: string; pole?: boolean; size?: 'tile' | 'big' }) {
   const fn = useCosmeticImage();
   if (p.item.startsWith('avatar.')) return <AvatarItemArt item={p.item} {...(p.class ? { class: p.class } : {})} {...(p.testid ? { testid: p.testid } : {})} />;
+  if (p.item.startsWith('decoration.')) return <DecorationImage {...p} />;
   const url = fn ? fn(p.item, { ...(p.team !== undefined ? { team: p.team } : {}), ...(p.animate !== undefined ? { animate: p.animate } : {}), ...(p.pole ? { pole: true } : {}), ...(p.size ? { size: p.size } : {}) }) : null;
   if (!url) return <span class={`cos-img cos-img--empty ${p.class ?? ''}`} aria-hidden="true" data-testid={p.testid} />;
   return <img class={`cos-img ${p.class ?? ''}`} src={url} alt="" aria-hidden="true" draggable={false} data-testid={p.testid} />;
+}
+
+/**
+ * A decoration's picture (round 3): Track B's HD prop (the Blender render, trimmed, so it fills the art
+ * window) once the props' atlas is in, the code-drawn SVG until then. The first ask starts the atlas; when
+ * it lands (`CosmeticPicturesContext`) the prop fades in over where the SVG was, never a pop.
+ */
+function DecorationImage(p: { item: string; class?: string; team?: number; testid?: string }) {
+  const fn = useCosmeticImage();
+  const onChange = useContext(CosmeticPicturesContext);
+  const [, bump] = useState(0);
+  useEffect(() => (onChange ? onChange(() => bump((n) => n + 1)) : undefined), [onChange]);
+  const url = fn ? fn(p.item, { hd: true, ...(p.team !== undefined ? { team: p.team } : {}) }) : null;
+  if (!url) return <span class={`cos-img cos-img--empty ${p.class ?? ''}`} aria-hidden="true" data-testid={p.testid} />;
+  const prop = !url.startsWith('data:image/svg');
+  return <img key={url} class={`cos-img${prop ? ' cos-img--prop' : ''} ${p.class ?? ''}`} src={url} alt="" aria-hidden="true" draggable={false} data-testid={p.testid} data-prop={prop ? 'hd' : 'svg'} />;
 }
 
 /**
@@ -155,6 +173,11 @@ export function CosmeticImage(p: { item: string; class?: string; team?: number; 
  * it. While the portrait renders, the slot stays empty (never the wrong base for a frame); without a
  * portrait provider (tests, some dev pages) the skin's code-drawn keep stands in. `side: 1` flies the
  * opponent's team colour on the base's banners and trims.
+ *
+ * A model that wears the Legendary aura in battle (Track B's list through the router: Crystal Spire,
+ * Nebula Ark) stands in the same soft white halo here, under the body and its fx layer: an upright
+ * ellipse about the body as the lane sizes it, breathing slowly while `animate` is on (still under
+ * Reduce motion), with no layout change (round 3).
  */
 export function BaseLook(p: { age: AgeId; skin: string | null; animate?: boolean; testid?: string; side?: Side }) {
   const fn = useCosmeticImage();
@@ -162,10 +185,14 @@ export function BaseLook(p: { age: AgeId; skin: string | null; animate?: boolean
   const skinId = p.skin && p.skin.startsWith('baseSkin.') ? p.skin.slice('baseSkin.'.length) : null;
   const body = usePortrait(`base.${p.age}` as CardId, { size: 256, plate: false, skin: skinId, ...(p.side ? { side: p.side } : {}) });
   if (!portrait) return <CosmeticImage item={p.skin ?? 'baseSkin.default'} {...(p.testid ? { testid: p.testid } : {})} />;
-  const fx = body && p.skin && fn ? fn(p.skin, { layer: 'fx', animate: p.animate ?? true }) : null;
+  const animate = p.animate ?? true;
+  const fx = body && p.skin && fn ? fn(p.skin, { layer: 'fx', animate }) : null;
+  // a span with the picture as its background, so no screen's `img` rules (Home's island) restyle it
+  const aura = body && p.skin && fn ? fn(p.skin, { layer: 'aura' }) : null;
   return (
-    <span class={`cos-base${body ? '' : ' is-pending'}`} data-testid={p.testid} data-age={p.age} data-skin={p.skin ?? ''} aria-hidden="true">
-      {body ? <img class="cos-base__img" src={body} alt="" draggable={false} /> : null}
+    <span class={`cos-base${body ? '' : ' is-pending'}${aura ? ' has-aura' : ''}`} data-testid={p.testid} data-age={p.age} data-skin={p.skin ?? ''} aria-hidden="true">
+      {aura ? <span class={`cos-base__aura${animate ? ' is-live' : ''}`} style={{ backgroundImage: `url("${aura}")` }} data-testid={p.testid ? `${p.testid}-aura` : undefined} /> : null}
+      {body ? <img class="cos-base__img cos-base__body" src={body} alt="" draggable={false} /> : null}
       {fx ? <img class="cos-base__img cos-base__fx" src={fx} alt="" draggable={false} /> : null}
     </span>
   );
@@ -276,13 +303,13 @@ export function SceneThumb(p: { scene: string | null; age: AgeId; testid?: strin
 /**
  * A picture that may arrive later from a synchronous lookup (Track B's base-skin thumbnail atlas answers
  * null until its one image is in): asks again every 400 ms for up to 12 s while it is null, then keeps it.
- * Without animation frames (tests) it asks once.
+ * Without animation frames (tests) it asks once; with `on` false it never asks.
  */
-function useLatePicture(get: () => string | null, key: string): string | null {
+function useLatePicture(get: () => string | null, key: string, on = true): string | null {
   const [, bump] = useState(0);
-  const now = get();
+  const now = on ? get() : null;
   useEffect(() => {
-    if (now || typeof requestAnimationFrame !== 'function') return undefined;
+    if (!on || now || typeof requestAnimationFrame !== 'function') return undefined;
     const t0 = Date.now();
     const id = setInterval(() => {
       if (get() || Date.now() - t0 > 12_000) {
@@ -291,19 +318,22 @@ function useLatePicture(get: () => string | null, key: string): string | null {
       }
     }, 400);
     return () => clearInterval(id);
-  }, [key, !!now]);
+  }, [key, !!now, on]);
   return now;
 }
 
 /**
  * A base skin's tile picture (PLAN 2c): Track B's pre-rendered thumbnail (the model on a strip of its
  * age's classic scene) once its atlas is in, else the model's portrait ({@link BaseLook}). `skin` null is
- * the age's standard base; a troop-system skin (Crystal Spire) is `baseSkin.<skin id>` too.
+ * the age's standard base; a troop-system skin (Crystal Spire) is `baseSkin.<skin id>` too. A model with
+ * the Legendary aura always takes the portrait on the scene strip, so its halo stands under the model
+ * (a flat thumbnail cell could only lay it over the model).
  */
 export function BaseThumb(p: { age: AgeId; skin: string | null; animate?: boolean; testid?: string }) {
   const fn = useCosmeticImage();
   const key = p.skin ?? `baseSkin.standard_${p.age}`;
-  const thumb = useLatePicture(() => (fn && p.skin ? fn(p.skin, { layer: 'thumb' }) : null), key);
+  const aura = !!(fn && p.skin && fn(p.skin, { layer: 'aura' }));
+  const thumb = useLatePicture(() => (fn && p.skin ? fn(p.skin, { layer: 'thumb' }) : null), key, !aura);
   if (thumb) {
     return (
       <span class="cos-btile cos-btile--thumb" data-testid={p.testid} data-age={p.age} data-skin={p.skin ?? ''} aria-hidden="true">

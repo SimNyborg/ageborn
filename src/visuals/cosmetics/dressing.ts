@@ -13,6 +13,16 @@
  * after a hit; banners and plants sway; braziers flicker; on a collapse every prop topples and
  * fades. Reduce motion stills the ripple and the particles; Lite halves the particles.
  *
+ * Decoration props (round 3, PLAN 2a "Decorations"): the 24 decorations are Blender props on the base
+ * pipeline (`art/cosmetics/decorations/<id>.json`, `WORLD_DECORATIONS`). The dressing asks the provider's
+ * prop loader (`props`) for the equipped ones only and draws each one's SVG bake until its prop arrives, then
+ * cross-fades (never a pop); a prop already in (VS warmed it) shows at once. A prop stands on a soft contact
+ * shadow, over its grey `_team` twin tinted in the side's colour, and mirrors for side 1 (banners keep the
+ * lane's one wind). Its `loop` clip (a banner's cloth, a brazier's flame, the plasma swirl) plays by render
+ * time from a seeded phase and holds its first frame under Reduce motion; the code adds what the sheet's meta
+ * asks for: plants sway, fire and lamps flicker their light (and fire sends up a few embers, half on Lite),
+ * the plasma brazier pulses, crystals and the star glint.
+ *
  * Base skin models (PLAN 2c): while the base view shows a skin's model (its duck-typed `skinModel()`;
  * the equipped skin's, or Crystal Spire's, the troop-system skin that wins over it), the old restyle is off (the view takes no tint on a model, and the field of particles over the whole
  * base stops); the model's own ambient particles start from its spots instead (`ambientSpots()`,
@@ -24,6 +34,7 @@ import { Container, Graphics, Mesh, MeshGeometry, Sprite, Texture } from 'pixi.j
 import type { BaseDressingView, BaseView } from '@/contracts/art';
 import type { AgeId, Side, SideLook } from '@/contracts/ids';
 import { mulberry32, type CosmeticRng } from '@/core/rng';
+import { clipDurations, setFrame, type WorldMeta, type WorldSheet } from '../adapters/worldAtlas';
 import { baseFlagDesign, baseSkinArt, drawDecoration, drawFlag, parseCosmeticKey, type FlagKind } from './art';
 import type { BaseSkinArt, SkinParticles } from './baseSkins';
 import { nationalFlagTexture } from './nationalFlags';
@@ -66,6 +77,16 @@ function bake(key: string, w: number, h: number, draw: (ctx: CanvasRenderingCont
   tex.source.scaleMode = 'linear';
   texCache.set(key, tex);
   return tex;
+}
+
+/** The step of a looping clip at time t (ms), its total known (`frameIndex` without re-summing every frame). */
+function loopStep(durations: readonly number[], total: number, t: number): number {
+  let at = ((t % total) + total) % total;
+  for (let i = 0; i < durations.length; i++) {
+    at -= durations[i] ?? 0;
+    if (at < 0) return i;
+  }
+  return durations.length - 1;
 }
 
 /**
@@ -221,13 +242,71 @@ class FlagCloth {
   }
 }
 
+/**
+ * The decoration prop sheets (round 3), duck-typed by the provider: `get` a prop already loaded, `ensure` loads
+ * it (resolves null when it failed or props are off for this provider). Absent: the SVG bakes stay.
+ */
+export interface DecorationProps {
+  has(id: string): boolean;
+  get(id: string): WorldSheet | undefined;
+  ensure(id: string): Promise<WorldSheet | null>;
+}
+
+/** How long the SVG bake cross-fades into its arriving prop (ms). */
+export const PROP_FADE_MS = 280;
+
+/** A decoration's Blender prop, built from its sheet (see the module note). */
+interface PropModel {
+  root: Container;
+  meta: WorldMeta;
+  loop: { team: Sprite | null; body: Sprite; frames: readonly Texture[]; teamFrames: readonly Texture[] | null; durations: number[]; total: number } | null;
+  /** Glint sparks (the crystal flower, the star): their resting scale and when each flashes next (ms of the dressing's clock). */
+  glints: { g: Sprite; k: number; next: number; t: number }[];
+  /** The light point embers rise from (fire), in the prop's own lu, y up, and its pooled embers (never added or removed while it shows). */
+  ember: { x: number; y: number } | null;
+  embers: Ember[];
+  /** Embers in flight now (the pool is skipped while none flies and none is due). */
+  live: number;
+  emberAt: number;
+}
+
 interface Prop {
   root: Container;
+  id: string;
   art: DecorationArt;
-  glow: Graphics | null;
+  /** The SVG bake: shown until the prop arrives, then cross-faded out and dropped. */
+  svg: Container | null;
+  model: PropModel | null;
+  /** ms into the cross-fade from the SVG to the prop; -1 when none runs. */
+  fade: number;
+  glow: Sprite | null;
+  /** The glow's resting scale (the plasma brazier's pulse scales it). */
+  glowScale: number;
   phase: number;
   x: number;
 }
+
+interface Ember {
+  g: Sprite;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  /** ms lived; -1 while the slot waits for its next spark. */
+  life: number;
+  max: number;
+}
+
+/** Embers a fire keeps in its pool (High; Lite uses half). */
+const EMBERS = 6;
+/**
+ * The props' light, embers and glints are plain sprites over three small textures baked once (a soft radial
+ * glow, a soft dot, a four-point spark), tinted and scaled per prop: they batch with the props' frames and cost
+ * no per-object geometry (frame time: three props a side match the SVG bakes; WebKit note in the module doc).
+ */
+const GLOW_PX = 64;
+const EMBER_PX = 16;
+const SPARK_PX = 32;
 
 interface Mote {
   g: Graphics;
@@ -290,6 +369,8 @@ export interface DressingOptions {
    * `color` replaces the team colour (null keeps it).
    */
   banner?: { color?: number | null } | null;
+  /** The decoration prop sheets (round 3); absent or null: the SVG bakes stay. */
+  props?: DecorationProps | null;
 }
 
 /**
@@ -457,31 +538,217 @@ export class BaseDressing implements BaseDressingView {
       if (!k || k.collection !== 'decoration') return;
       const art = DECORATIONS[k.id];
       if (!art) return;
-      const tex = bake(`decoration.${k.id}|${this.o.team}`, DECO_W * TEX_PX, DECO_H * TEX_PX, (ctx) => drawDecoration(ctx, k.id, { team: this.o.team }, TEX_PX), this.make);
       const root = new Container();
+      root.label = `decoration.${k.id}`;
       const x = ax * this.facing;
       root.position.set(x, 0);
-      let glow: Graphics | null = null;
-      if (art.glow) {
-        glow = new Graphics();
-        for (const [r, a] of [
-          [1, 0.18],
-          [0.62, 0.22],
-          [0.32, 0.3],
-        ] as const) {
-          glow.circle(0, 0, art.glow.r * DECO_LU * r).fill({ color: art.glow.color, alpha: a });
-        }
-        glow.blendMode = 'add';
-        glow.position.set((art.glow.x - DECO_W / 2) * DECO_LU, (art.glow.y - DECO_GROUND) * DECO_LU);
-      }
-      const sprite = new Sprite(tex);
-      sprite.scale.set(DECO_LU / TEX_PX);
-      sprite.position.set((-DECO_W / 2) * DECO_LU, -DECO_GROUND * DECO_LU);
-      root.addChild(sprite);
-      if (glow) root.addChild(glow);
       this.root.addChild(root);
-      this.props.push({ root, art, glow, phase: this.rng.next() * 6.28, x });
+      const prop: Prop = { root, id: k.id, art, svg: null, model: null, fade: -1, glow: null, glowScale: 1, phase: this.rng.next() * 6.28, x };
+      this.props.push(prop);
+      const props = this.o.props;
+      const sheet = props?.has(k.id) ? props.get(k.id) : undefined;
+      if (sheet) {
+        // the prop is in already (VS warmed it): no SVG at all
+        this.showModel(prop, sheet, false);
+        return;
+      }
+      this.showSvg(prop);
+      if (props?.has(k.id)) {
+        props.ensure(k.id).then(
+          (s) => {
+            if (s && !this.destroyed && !root.destroyed && this.props.includes(prop)) this.showModel(prop, s, true);
+          },
+          () => {},
+        );
+      }
     });
+  }
+
+  /** The decoration's SVG bake (its glow from the SVG art): the stand-in until its prop arrives. */
+  private showSvg(p: Prop): void {
+    const tex = bake(`decoration.${p.id}|${this.o.team}`, DECO_W * TEX_PX, DECO_H * TEX_PX, (ctx) => drawDecoration(ctx, p.id, { team: this.o.team }, TEX_PX), this.make);
+    const svg = new Container();
+    const sprite = new Sprite(tex);
+    sprite.scale.set(DECO_LU / TEX_PX);
+    sprite.position.set((-DECO_W / 2) * DECO_LU, -DECO_GROUND * DECO_LU);
+    svg.addChild(sprite);
+    p.root.addChild(svg);
+    p.svg = svg;
+    if (p.art.glow) this.setGlow(p, (p.art.glow.x - DECO_W / 2) * DECO_LU, (DECO_GROUND - p.art.glow.y) * DECO_LU, p.art.glow.r * DECO_LU, p.art.glow.color);
+  }
+
+  /** A soft glow (an additive radial sprite) at x, y (lu, y up from the foot) with radius r, replacing any earlier one. */
+  private setGlow(p: Prop, x: number, y: number, r: number, color: number): void {
+    p.glow?.destroy();
+    const glow = new Sprite(this.fxTexture('glow'));
+    glow.anchor.set(0.5);
+    glow.tint = color;
+    glow.blendMode = 'add';
+    glow.position.set(x, -y);
+    p.glowScale = (2 * r) / GLOW_PX;
+    glow.scale.set(p.glowScale);
+    p.root.addChild(glow);
+    p.glow = glow;
+  }
+
+  /**
+   * The props' three shared light textures, baked once: `glow` a soft white radial light (its centre about as
+   * bright as the round-2 glow's three stacked discs), `ember` a soft dot, `spark` a white four-point star.
+   */
+  private fxTexture(kind: 'glow' | 'ember' | 'spark'): Texture {
+    if (kind === 'glow') {
+      return bake('decoration.fx.glow', GLOW_PX, GLOW_PX, (ctx) => {
+        const h = GLOW_PX / 2;
+        const g = ctx.createRadialGradient(h, h, 0, h, h, h);
+        g.addColorStop(0, 'rgba(255,255,255,0.7)');
+        g.addColorStop(0.32, 'rgba(255,255,255,0.6)');
+        g.addColorStop(0.62, 'rgba(255,255,255,0.34)');
+        g.addColorStop(0.85, 'rgba(255,255,255,0.12)');
+        g.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, GLOW_PX, GLOW_PX);
+        return true;
+      }, this.make);
+    }
+    if (kind === 'ember') {
+      return bake('decoration.fx.ember', EMBER_PX, EMBER_PX, (ctx) => {
+        const h = EMBER_PX / 2;
+        const g = ctx.createRadialGradient(h, h, 0, h, h, h);
+        g.addColorStop(0, 'rgba(255,255,255,1)');
+        g.addColorStop(0.45, 'rgba(255,255,255,0.9)');
+        g.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, EMBER_PX, EMBER_PX);
+        return true;
+      }, this.make);
+    }
+    return bake('decoration.fx.spark', SPARK_PX, SPARK_PX, (ctx) => {
+      const h = SPARK_PX / 2;
+      const r = h - 1;
+      const q = r * 0.2;
+      ctx.beginPath();
+      ctx.moveTo(h, h - r);
+      ctx.lineTo(h + q, h - q);
+      ctx.lineTo(h + r, h);
+      ctx.lineTo(h + q, h + q);
+      ctx.lineTo(h, h + r);
+      ctx.lineTo(h - q, h + q);
+      ctx.lineTo(h - r, h);
+      ctx.lineTo(h - q, h - q);
+      ctx.closePath();
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      return true;
+    }, this.make);
+  }
+
+  /**
+   * Builds the decoration's Blender prop from its sheet: a contact shadow, the body over its tinted team twin,
+   * the loop's first frame over its twin, its light and glints from the meta. `fade`: cross-fade from the SVG
+   * (the prop arrived while the SVG showed); otherwise it shows at once.
+   */
+  private showModel(p: Prop, sheet: WorldSheet, fade: boolean): void {
+    if (p.model) return;
+    const meta = sheet.meta;
+    const k = sheet.luPerUnit;
+    const mirror = meta.mirror === false ? 1 : this.facing;
+    const root = new Container();
+    root.label = `decoration.${p.id}.prop`;
+    // the contact shadow grounds it (a soft ellipse, wider than deep)
+    const half = meta.shadowLu ?? 16;
+    const sh = new Sprite(this.shadowTexture());
+    sh.anchor.set(0.5);
+    sh.scale.set((half * 2) / 64, (half * 0.5) / 16);
+    sh.position.set(0, 0.6);
+    root.addChild(sh);
+    const art = new Container();
+    art.scale.set(mirror, 1);
+    root.addChild(art);
+    const sprite = (tex: Texture | undefined, team: boolean): Sprite => {
+      const s = new Sprite();
+      setFrame(s, tex);
+      s.scale.set(k);
+      if (team) s.tint = this.o.team;
+      art.addChild(s);
+      return s;
+    };
+    const bodyTeam = sheet.animations['body_team']?.[0];
+    if (bodyTeam && bodyTeam.width > 1) sprite(bodyTeam, true);
+    sprite(sheet.animations['body']?.[0], false);
+    let loop: PropModel['loop'] = null;
+    const frames = sheet.animations['loop'];
+    if (frames && frames.length > 0) {
+      const teamFrames = sheet.animations['loop_team'] ?? null;
+      const hasTeam = !!teamFrames && teamFrames.some((t) => t.width > 1);
+      const team = hasTeam ? sprite(teamFrames![0], true) : null;
+      const body = sprite(frames[0], false);
+      const durations = clipDurations(sheet, 'loop', 120);
+      loop = { team, body, frames, teamFrames: hasTeam ? teamFrames : null, durations, total: durations.reduce((a, b) => a + b, 0) };
+    }
+    const glints: PropModel['glints'] = [];
+    for (const g of meta.glintsLu ?? []) {
+      // a four-point spark spanning 4 r (as the round-2 polygon did)
+      const s = new Sprite(this.fxTexture('spark'));
+      s.anchor.set(0.5);
+      s.blendMode = 'add';
+      s.visible = false;
+      s.position.set(g.x * mirror, -g.y);
+      glints.push({ g: s, k: (4 * Math.max(1.5, g.r)) / SPARK_PX, next: this.clock + 600 + this.rng.next() * 2400, t: -1 });
+    }
+    const gl = meta.glowLu;
+    const color = gl ? (/^#[0-9a-f]{6}$/i.test(gl.color) ? parseInt(gl.color.slice(1), 16) : 0xffa040) : 0;
+    p.root.addChildAt(root, 0);
+    if (gl) this.setGlow(p, gl.x * mirror, gl.y, gl.r, color);
+    else {
+      p.glow?.destroy();
+      p.glow = null;
+    }
+    for (const s of glints) p.root.addChild(s.g);
+    const ember = meta.motion === 'flicker' && loop && gl ? { x: gl.x * mirror, y: gl.y } : null;
+    const embers: Ember[] = [];
+    if (ember) {
+      const tex = this.fxTexture('ember');
+      for (let i = 0; i < EMBERS; i++) {
+        const g = new Sprite(tex);
+        g.anchor.set(0.5);
+        // a soft dot whose bright core is about 0.9-1.5 lu across
+        g.scale.set(((0.9 + this.rng.next() * 0.6) * 2.4) / EMBER_PX);
+        g.tint = i % 2 ? 0xffc47a : 0xff9a4d;
+        g.blendMode = 'add';
+        g.visible = false;
+        p.root.addChild(g);
+        embers.push({ g, x: 0, y: 0, vx: 0, vy: 0, life: -1, max: 1 });
+      }
+    }
+    p.model = { root, meta, loop, glints, ember, embers, live: 0, emberAt: this.clock + this.rng.next() * 600 };
+    if (fade && p.svg) {
+      p.fade = 0;
+      root.alpha = 0;
+    } else {
+      p.svg?.destroy({ children: true });
+      p.svg = null;
+      p.fade = -1;
+    }
+  }
+
+  private shadowTex: Texture | null = null;
+
+  /** A soft dark ellipse (64 x 16 px), shared by the props' contact shadows. */
+  private shadowTexture(): Texture {
+    this.shadowTex ??= bake('decoration.shadow', 64, 16, (ctx) => {
+      // a circle drawn in a space squashed to a quarter of its height: the ellipse fills the 64 x 16 px
+      ctx.save();
+      ctx.scale(1, 0.25);
+      const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+      g.addColorStop(0, 'rgba(28,20,14,0.42)');
+      g.addColorStop(0.55, 'rgba(28,20,14,0.24)');
+      g.addColorStop(1, 'rgba(28,20,14,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 64, 64);
+      ctx.restore();
+      return true;
+    }, this.make);
+    return this.shadowTex;
   }
 
   private applySkin(age: AgeId): void {
@@ -562,13 +829,121 @@ export class BaseDressing implements BaseDressingView {
       const on = !this.reduce && !this.lite && this.collapseT < 0;
       this.glintCloth.sweep(on ? glintOffset(this.clock + this.o.side * (GLINT_LOOP_MS / 2)) : null, t, amp);
     }
-    for (const p of this.props) {
-      if (p.art.sway && !this.reduce) p.root.skew.x = Math.sin(t * 1.7 + p.phase) * 0.045;
-      if (p.glow) p.glow.alpha = this.reduce ? 0.85 : 0.75 + 0.18 * Math.sin(t * 9 + p.phase) + 0.08 * Math.sin(t * 23 + p.phase * 2);
-    }
+    for (const p of this.props) this.updateProp(p, dt, t);
     this.updateMotes(dt);
     if (this.collapseT >= 0) this.updateCollapse(dt);
   }
+
+  /** One decoration: its cross-fade, the loop frame, its light, sway, glints and embers (see the module note). */
+  private updateProp(p: Prop, dt: number, t: number): void {
+    const m = p.model;
+    if (p.fade >= 0 && m) {
+      p.fade += dt;
+      const u = Math.min(1, p.fade / PROP_FADE_MS);
+      const e = u * u * (3 - 2 * u);
+      m.root.alpha = e;
+      if (p.svg) p.svg.alpha = 1 - e;
+      if (u >= 1) {
+        p.svg?.destroy({ children: true });
+        p.svg = null;
+        p.fade = -1;
+      }
+    }
+    const motion = m ? (m.meta.motion ?? null) : p.art.sway ? 'sway' : p.art.glow ? 'flicker' : null;
+    // plants sway from their foot (a banner's prop sways in its cloth loop instead)
+    if (motion === 'sway') p.root.skew.x = this.reduce ? 0 : Math.sin(t * 1.7 + p.phase) * 0.045;
+    const l = m?.loop;
+    if (l) {
+      const i = this.reduce || l.total <= 0 ? 0 : loopStep(l.durations, l.total, this.clock + p.phase * 997);
+      setFrame(l.body, l.frames[i]);
+      if (l.team && l.teamFrames) setFrame(l.team, l.teamFrames[i]);
+    }
+    if (p.glow) {
+      if (motion === 'pulse') {
+        // the plasma brazier: a slow swell of light (a still glow under Reduce motion)
+        const s = this.reduce ? 0 : Math.sin(t * 3.6 + p.phase);
+        p.glow.alpha = this.reduce ? 0.8 : 0.7 + 0.22 * s;
+        p.glow.scale.set(p.glowScale * (1 + 0.12 * s));
+      } else if (motion === 'flicker' || !m) {
+        p.glow.alpha = this.reduce ? 0.85 : 0.75 + 0.18 * Math.sin(t * 9 + p.phase) + 0.08 * Math.sin(t * 23 + p.phase * 2);
+      } else {
+        // a steady light (glass eyes, the star): a slow breath
+        p.glow.alpha = this.reduce ? 0.8 : 0.74 + 0.1 * Math.sin(t * 1.7 + p.phase);
+      }
+    }
+    if (!m) return;
+    for (let i = 0; i < m.glints.length; i++) this.stepGlint(m.glints[i]!, dt);
+    // fire sends up a few embers from its pool (half on Lite; none under Reduce motion or once the base falls)
+    if (m.ember) this.stepEmbers(m, dt);
+  }
+
+  private stepEmbers(m: PropModel, dt: number): void {
+    const at = m.ember!;
+    const cap = this.lite ? EMBERS / 2 : EMBERS;
+    const spawn = !this.reduce && this.collapseT < 0 && this.clock >= m.emberAt;
+    if (m.live === 0 && !spawn) return;
+    let spawned = false;
+    let live = 0;
+    const rng = this.rng;
+    for (let i = 0; i < m.embers.length; i++) {
+      const e = m.embers[i]!;
+      if (e.life < 0) {
+        if (!spawn || spawned || i >= cap) continue;
+        e.x = at.x + (rng.next() - 0.5) * 6;
+        e.y = at.y + rng.next() * 4;
+        e.vx = (rng.next() - 0.5) * 8;
+        e.vy = 16 + rng.next() * 12;
+        e.max = 800 + rng.next() * 700;
+        e.life = 0;
+        spawned = true;
+      }
+      e.life += dt;
+      if (e.life >= e.max || this.reduce) {
+        e.life = -1;
+        e.g.visible = false;
+        continue;
+      }
+      live++;
+      e.x += (e.vx * dt) / 1000 + Math.sin(e.life / 160 + e.max) * 0.08;
+      e.y += (e.vy * dt) / 1000;
+      const k = e.life / e.max;
+      e.g.visible = true;
+      e.g.position.set(e.x, -e.y);
+      e.g.alpha = (k < 0.15 ? k / 0.15 : 1 - (k - 0.15) / 0.85) * 0.9;
+    }
+    m.live = live;
+    if (spawned) m.emberAt = this.clock + (this.lite ? 760 : 380) * (0.7 + this.rng.next() * 0.6);
+  }
+
+  /** A glint: a white four-point spark that flashes for 420 ms every few seconds (never under Reduce motion). */
+  private stepGlint(g: PropModel['glints'][number], dt: number): void {
+    if (this.reduce || this.collapseT >= 0) {
+      g.g.visible = false;
+      g.t = -1;
+      return;
+    }
+    if (g.t < 0) {
+      if (this.clock < g.next) {
+        g.g.visible = false;
+        return;
+      }
+      g.t = 0;
+    }
+    g.t += dt;
+    const u = g.t / 420;
+    if (u >= 1) {
+      g.t = -1;
+      g.next = this.clock + 1800 + this.rng.next() * 2800;
+      g.g.visible = false;
+      return;
+    }
+    const s = Math.sin(u * Math.PI);
+    g.g.visible = true;
+    g.g.alpha = s;
+    g.g.scale.set(g.k * (0.35 + 0.85 * s));
+    g.g.rotation = u * 0.9;
+  }
+
 
   /**
    * True when the base view shows a skin model (PLAN 2c), so the old restyle is off: the equipped skin's

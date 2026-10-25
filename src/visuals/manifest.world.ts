@@ -93,6 +93,29 @@ export const WORLD_BASE_SKIN_KITS: readonly string[] = [
   'nebula_ark',
 ];
 
+/**
+ * Skin models that stand in the white Legendary aura (PLAN 2c, A12 "white idle aura on Legendary units and
+ * Legendary skins"). In battle the sheet's own `meta.ageborn.aura: 'legendary'` turns it on (a test holds the
+ * sheets and this list equal); the screens' base pictures (Customize, VS, Home) read the list to draw the same
+ * soft halo under the model (`docs/requests/custom-b-diorama-anchors.md`). Colossus Lighthouse (round 3b, its
+ * aura on the torch) joins once its model is released.
+ */
+export const WORLD_BASE_SKIN_AURA: readonly string[] = ['crystal_spire', 'nebula_ark'];
+
+/**
+ * Base skin models with prop loops (round 3; the base contract's generic `prop` clip, art/blender/world/common.py
+ * `prop_loop`): skin → each loop's clip and its length (ms). They are the `prop.<clip>` clips of the skin's
+ * manifest entry (the swap point, B5); the base view plays them from the sheet's `meta.ageborn.props` (a test
+ * holds the two equal): Crystal Spire's shards orbit its tip, Nebula Ark's nebula flows up its two ribbons.
+ */
+export const WORLD_BASE_SKIN_PROPS: Readonly<Record<string, readonly { clip: string; loopMs: number }[]>> = {
+  crystal_spire: [{ clip: 'shards', loopMs: 1560 }],
+  nebula_ark: [
+    { clip: 'nebulaA', loopMs: 1560 },
+    { clip: 'nebulaB', loopMs: 1560 },
+  ],
+};
+
 export function baseSkinSheetSource(skin: string): string {
   return `art/bases/skins/${skin}.json`;
 }
@@ -100,6 +123,46 @@ export function baseSkinSheetSource(skin: string): string {
 export function baseSkinCollapseSource(skin: string): string {
   return `art/bases/skins/${skin}.collapse.json`;
 }
+
+/**
+ * Base decorations rendered as Blender props (PLAN 2a "Decorations", round 3; art/blender/world/decorations.py):
+ * the decoration ids that have a prop sheet `art/cosmetics/decorations/<id>.json` (1.23 px/lu, the base
+ * pipeline's light and outline). The lane's dressing loads only the equipped props (three a side) and draws the
+ * SVG bake until a prop arrives, then cross-fades; ids not listed keep their SVG. The screens' pictures come from
+ * one HD atlas (`DECORATION_THUMBS_SOURCE`, 2.46 px/lu), loaded when a screen first asks.
+ */
+export const WORLD_DECORATIONS: readonly string[] = [
+  'stone_idol',
+  'lion_statue',
+  'knight_statue',
+  'owl_statue',
+  'astro_statue',
+  'hide_banner',
+  'royal_standard',
+  'regiment_colors',
+  'neon_banner',
+  'fire_bowl',
+  'iron_brazier',
+  'gas_lamp',
+  'plasma_brazier',
+  'mammoth_tusks',
+  'knight_helm',
+  'golden_cup',
+  'star_trophy',
+  'shield_rack',
+  'fern',
+  'olive_tree',
+  'topiary',
+  'potted_cactus',
+  'bonsai',
+  'crystal_flower',
+];
+
+export function decorationSheetSource(id: string): string {
+  return `art/cosmetics/decorations/${id}.json`;
+}
+
+export const DECORATION_THUMBS_SOURCE = 'art/cosmetics/decorations/thumbs.json';
 
 /** Turret mounts of every 3D base (screen lu from the gate: x toward the lane, y UP), bottom to top. */
 export const WORLD_BASE_MOUNTS_LU: readonly (readonly [number, number])[] = [
@@ -159,6 +222,8 @@ export function buildWorldOverrides(): Record<string, VisualDef> {
     const e = entry(baseSkinSheetSource(skin), b.anchors, b.heightLu);
     const kit = WORLD_BASE_SKIN_KITS.includes(skin) ? baseSkinCollapseSource(skin) : WORLD_BASE_COLLAPSE_KITS.includes(age) ? baseCollapseSource(age) : null;
     if (kit) e.clips['collapse'] = { kind: 'atlas', ref: kit, durationMs: BASE_COLLAPSE_MS, loop: false };
+    // its prop loops, as clips of the same sheet
+    for (const pr of WORLD_BASE_SKIN_PROPS[skin] ?? []) e.clips[`prop.${pr.clip}`] = { kind: 'atlas', ref: pr.clip, durationMs: pr.loopMs, loop: true };
     out[`${b.id}@${skin}`] = e;
   }
   return out;

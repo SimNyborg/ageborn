@@ -8,6 +8,7 @@
  * | `scene.<id>` (`{ age, thumb }` or `{ age, sky }`) | `backdrops/scenePreview.ts` | Track A |
  * | `backdrop.<id>` (`{ age, scene? }`; `layer: 'fx'` the weather) | `scenePreview.ts`, `backdropPreview.ts` | Track A |
  * | `baseSkin.<id>` (`layer: 'tint' \| 'fx' \| 'thumb'`) | `baseSkins.ts` | Track B |
+ * | `baseSkin.<id>` (`layer: 'aura'`: the Legendary halo, from B's `WORLD_BASE_SKIN_AURA`) | here | Track C |
  * | `decoration.<id>` (`{ hd? }`) | `decorations.ts` | Track B |
  * | `nationalFlag.<id>` (`{ size?: 'tile' \| 'big', cached? }`, default big) | `nationalFlags.ts` | Track D |
  * | `baseFlag.<id>`, `emote.<id>`, `quote.<id>` | `flags.ts` (and `nationalFlags.ts REGION_PENNANTS`), `emotes.ts`, here | Track C |
@@ -21,9 +22,10 @@ import type { AgeId } from '@/contracts/ids';
 import { AGES } from '../ages';
 import { hasSceneArt, isSpaceScene as isSpaceSceneOf, scenePreviewUrl } from '../backdrops/scenePreview';
 import { BACKDROP_THEMES } from '../backdrops/themes';
-import { backdropIconSvg, backdropPreviewUrl, backdropWeatherSvg } from './backdropPreview';
+import { WORLD_BASE_SKIN_AURA } from '../manifest.world';
+import { backdropIconSvg, backdropPreviewUrl, backdropWeatherSvg, onBackdropPicturesChanged } from './backdropPreview';
 import { baseSkinArt, baseSkinLayerSvg, baseSkinSvg, baseSkinThumbUrl, BASE_SKINS, hasBaseSkinArt } from './baseSkins';
-import { decorationArtUrl, decorationSvg, DECO_H, DECO_W, DECORATIONS, drawDecoration, hasDecorationArt } from './decorations';
+import { decorationArtUrl, decorationSvg, DECO_H, DECO_W, DECORATIONS, drawDecoration, hasDecorationArt, onDecorationArt } from './decorations';
 import { EMOTE_BOX, EMOTE_MOTIONS, EMOTES, type EmoteLayer, type EmoteMotion } from './emotes';
 import { BANNER_OUTLINE, BASE_FLAGS, baseFlagTier, FLAG_GLINT, FLAG_H, FLAG_POLE_BOX, FLAG_W, flagCloth, flagFringe, flagPole, flagTrim, type FlagTier } from './flags';
 import { drawNationalFlag, hasNationalFlagArt, NATIONAL_FLAGS, nationalFlagSvg, nationalFlagSvgUrl, nationalFlagUrl, REGION_PENNANT_TIER, REGION_PENNANTS } from './nationalFlags';
@@ -219,6 +221,32 @@ export function skyTileAge(age: AgeId): AgeId {
   return age;
 }
 
+// ---------------------------------------------------------------------------------------------
+// The Legendary aura under a base picture (round 3)
+// ---------------------------------------------------------------------------------------------
+
+/**
+ * True for a base skin model that stands in the white Legendary aura (Track B's `WORLD_BASE_SKIN_AURA`,
+ * held equal to the sheets' own `meta.ageborn.aura` that the battle reads): Crystal Spire and Nebula Ark
+ * today, Colossus Lighthouse once its model ships.
+ */
+export function hasBaseSkinAura(id: string): boolean {
+  return WORLD_BASE_SKIN_AURA.includes(id);
+}
+
+/**
+ * The aura as the lane draws it (`adapters/world/atlasBaseView.ts`): a pale lilac-white radial halo,
+ * strongest in the middle and gone at its rim, which the screens stretch to an upright ellipse about the
+ * body (1.55 times its width, 1.3 times its height) under the base picture (`BaseLook`), so the model and
+ * its fx layer stand in front of it. The overall strength and the slow breathing are the screen's.
+ */
+const AURA_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none">' +
+  '<defs><radialGradient id="a" cx="50" cy="50" r="50" gradientUnits="userSpaceOnUse">' +
+  '<stop offset="0" stop-color="#f6f0ff"/><stop offset="0.35" stop-color="#f6f0ff" stop-opacity="0.62"/>' +
+  '<stop offset="0.7" stop-color="#f6f0ff" stop-opacity="0.18"/><stop offset="1" stop-color="#f6f0ff" stop-opacity="0"/>' +
+  '</radialGradient></defs><rect width="100" height="100" fill="url(#a)"/></svg>';
+
 /** A speech bubble with three dots: the quote collection's icon (the line itself is text). */
 function quoteSvg(): string {
   const O = { stroke: INK, width: 1.5 };
@@ -241,10 +269,11 @@ export interface CosmeticSvgOptions {
    * A base skin's layers for drawing it over the real base art (the Customize mock-up and tiles):
    * `tint` is a flat swatch of the body tint, to multiply over the base picture as the lane does;
    * `fx` is the ambient particle layer on a clear background (also a backdrop's weather); `thumb` is
-   * the skin model's pre-rendered thumbnail (a picture: {@link cosmeticImageUrl} only). Null for other
+   * the skin model's pre-rendered thumbnail (a picture: {@link cosmeticImageUrl} only); `aura` is the
+   * Legendary halo drawn under the base picture, null for a skin without one. Null for other
    * collections.
    */
-  layer?: 'tint' | 'fx' | 'thumb';
+  layer?: 'tint' | 'fx' | 'thumb' | 'aura';
   /**
    * Backdrops and scenes (A18.9.4, PLAN 2b): the age whose half of the lane the preview shows (default
    * Stone). Without `layer` a backdrop or a scene is a painted still of that half (a picture, see
@@ -279,6 +308,8 @@ export function cosmeticSvg(key: string, o: CosmeticSvgOptions = {}): string | n
   if (o.layer === 'fx' && k.collection === 'backdrop') return backdropWeatherSvg(key, o.animate ?? true, { space: isSpaceScene(o.age ?? 'stone', o.scene) });
   // a skin model's thumbnail is a picture (cosmeticImageUrl), never SVG
   if (o.layer === 'thumb') return null;
+  // the Legendary halo under a base picture: only the models that wear it in battle
+  if (o.layer === 'aura') return k.collection === 'baseSkin' && hasBaseSkinAura(k.id) ? AURA_SVG : null;
   if (o.layer) return k.collection === 'baseSkin' ? baseSkinLayerSvg(k.id, o.layer, o.animate ?? true) : null;
   switch (k.collection) {
     case 'nationalFlag':
@@ -364,8 +395,16 @@ export function cosmeticImageUrl(key: string, o: CosmeticSvgOptions = {}): strin
 export { baseSkinArt, drawDecoration, DECORATIONS, DECO_W, DECO_H, EMOTES, NATIONAL_FLAGS, BASE_FLAGS, BASE_SKINS, FLAG_W, FLAG_H };
 
 /**
- * Calls `cb` whenever a picture asked for with `cached: true` got better (Track A re-composes a scene or
- * sky still once its Blender strips have streamed in); returns the unsubscribe. The app hands it to the
- * screens through `CosmeticPicturesContext`, so a still shown before its strips arrived updates itself.
+ * Calls `cb` whenever a picture the screens showed got better: Track A re-composed a scene or sky still
+ * once its Blender strips streamed in (asked with `cached: true`), or Track B's prop pictures arrived (the
+ * decorations' HD atlas, round 3: a tile drawn before it showed the SVG). Returns the unsubscribe. The app
+ * hands it to the screens through `CosmeticPicturesContext`, so a picture shown early updates itself.
  */
-export { onBackdropPicturesChanged as onCosmeticPicturesChanged } from './backdropPreview';
+export function onCosmeticPicturesChanged(cb: () => void): () => void {
+  const offStills = onBackdropPicturesChanged(cb);
+  const offProps = onDecorationArt(cb);
+  return () => {
+    offStills();
+    offProps();
+  };
+}

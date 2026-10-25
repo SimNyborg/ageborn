@@ -4,7 +4,10 @@
  * collection item and the motion (flag ripple, flutter on hit, the evolve re-skin, the collapse).
  *
  * `?dev=1#cosmetics` plays live. Automation drives `window.__cosmetics`: `reset({ age, zoom })`,
- * `look(side, look)`, `evolve()`, `hit(side)`, `collapse(side)` and `step(ms)`.
+ * `look(side, look)`, `evolve()`, `hit(side)`, `collapse(side)` and `step(ms)`; round 3 adds `manual(on)` (the
+ * live ticker stops, so `step` alone moves time: frame-exact bursts), `propsShown()` (how many decoration props
+ * have arrived and replaced their SVG bake), `motion({ reduce, lite })` and `lineup(on)` (every decoration in a
+ * row before the left base, for the parity review at game scale).
  */
 import { Application, Container } from 'pixi.js';
 import { useEffect, useRef, useState } from 'preact/hooks';
@@ -42,6 +45,10 @@ interface Bench {
   hit(side: 0 | 1): void;
   collapse(side: 0 | 1): void;
   step(ms: number): void;
+  manual(on: boolean): void;
+  propsShown(): { shown: number; wanted: number };
+  motion(m: { reduce: boolean; lite: boolean }): void;
+  lineup(on: boolean): Promise<void>;
   ready: boolean;
 }
 
@@ -58,6 +65,9 @@ export default function CosmeticsBench() {
     let disposed = false;
     let art: VisualsArtProvider | null = null;
     let opts = { age: 'stone' as AgeId, zoom: 1 };
+    let manual = false;
+    let lineup = false;
+    let motionOpts = { reduce: false, lite: false };
     const looks: [SideLook, SideLook] = [PLAYER, FOE];
     let scene: { bases: BaseView[]; dressings: BaseDressingView[]; update(dt: number): void; destroy(): void } | null = null;
 
@@ -80,7 +90,7 @@ export default function CosmeticsBench() {
       root.addChild(backdrop.root);
       const bases: BaseView[] = [];
       const dressings: BaseDressingView[] = [];
-      for (const side of [0, 1] as const) {
+      for (const side of lineup ? [] : ([0, 1] as const)) {
         const base = a.createBase({ age: opts.age, side, teamPreset: 'default' });
         base.root.position.set(side === 0 ? 0 : lane, 0);
         root.addChild(base.root);
@@ -88,6 +98,19 @@ export default function CosmeticsBench() {
         bases.push(base);
         dressings.push(d);
       }
+      if (lineup) {
+        // every decoration in a row along the lane before the left base, 48 lu apart (each in its own dressing's
+        // third spot, on a hidden stand-in for a base)
+        const ids = content.cosmetics.collections.items.filter((x) => x.collection === 'decoration').map((x) => x.id);
+        ids.forEach((id, i) => {
+          const stand = new Container();
+          stand.position.set(-150 + i * 50 - 20, 0);
+          root.addChild(stand);
+          const d = a.createBaseDressing({ age: opts.age, side: 0, look: { baseFlag: null, nationalFlag: null, decorations: [null, null, `decoration.${id}`] }, teamPreset: 'default', base: { root: stand } as unknown as BaseView });
+          dressings.push(d);
+        });
+      }
+      for (const d of dressings) (d as BaseDressingView & { setMotion?(m: { reduce: boolean; lite: boolean }): void }).setMotion?.(motionOpts);
       scene = {
         bases,
         dressings,
@@ -137,6 +160,31 @@ export default function CosmeticsBench() {
         for (let t = 0; t < ms; t += 16) scene?.update(Math.min(16, ms - t));
         app.render();
       },
+      manual(on) {
+        manual = on;
+      },
+      propsShown() {
+        let shown = 0;
+        let wanted = 0;
+        const walk = (c: Container): void => {
+          for (const k of c.children) {
+            if (/^decoration\.[a-z_]+$/.test(k.label ?? '')) {
+              wanted++;
+              if ((k as Container).children.some((x) => x.label?.endsWith('.prop'))) shown++;
+            } else walk(k as Container);
+          }
+        };
+        for (const d of scene?.dressings ?? []) walk(d.root);
+        return { shown, wanted };
+      },
+      motion(m) {
+        motionOpts = m;
+        for (const d of scene?.dressings ?? []) (d as BaseDressingView & { setMotion?(x: { reduce: boolean; lite: boolean }): void }).setMotion?.(m);
+      },
+      async lineup(on) {
+        lineup = on;
+        await build();
+      },
     };
     bench.current = b;
     (window as unknown as { __cosmetics: Bench }).__cosmetics = b;
@@ -146,7 +194,9 @@ export default function CosmeticsBench() {
       if (disposed) return;
       el.appendChild(app.canvas);
       await build();
-      app.ticker.add((tk) => scene?.update(tk.deltaMS));
+      app.ticker.add((tk) => {
+        if (!manual) scene?.update(tk.deltaMS);
+      });
       b.ready = true;
     })();
     return () => {

@@ -12,9 +12,9 @@
  * `scene.<id>` key; none = the age's classic scene). A piece of the lane carries `{ age, scene, skin }`,
  * so a seam or an evolve wipe between two scenes cross-fades exactly as between two ages, and on an
  * evolve the half's scene for the new age comes from the same map. A scene's art is pre-rendered by the
- * 3D pipeline (art/blender/world/backdrop.py) with the same toon light as the units: format 2 scenes
- * bring their own sky colours, a back strip, a props atlas for ambient motion (`sceneSprites.ts`) and
- * light points that night skies switch on; the first five ages' classic strips are format 1. Everything
+ * 3D pipeline (art/blender/world/backdrop.py) with the same toon light as the units: every scene (layer
+ * format 2) brings its own sky colours, a back strip, a props atlas for ambient motion (`sceneSprites.ts`)
+ * and light points that night skies switch on. Everything
  * streams in on first use; until it arrives (and in headless tests, or if a file fails) the code-painted
  * layers are drawn, and the arrival cross-fades over 300 ms, so the art is a pure upgrade of the frames.
  * An age a side has left releases its GPU textures once its wipe ends.
@@ -47,11 +47,11 @@ import type { PartBaker } from '../../bake';
 import { arenaId, GROUND_FRAME, groundAmbient, MID_FRAME, paintGround, paintMid, type ArenaId } from '../../backdrops/ground';
 import { FAR_FRAME, paintFar, type AmbientSpec } from '../../backdrops/silhouettes';
 import { extraAmbient, finishLayer } from '../../backdrops/lighting';
-import { BACK_FRAME, drawnScene, parseScene, SCENE_ART, sceneDir, sceneIdOf, type SceneData, type SceneFrame, type SceneLight } from '../../backdrops/scenes';
+import { BACK_FRAME, drawnScene, parseScene, propStands, SCENE_ART, sceneDir, sceneIdOf, type SceneData, type SceneFrame, type SceneLight } from '../../backdrops/scenes';
 import { forgetSceneImages, inSceneDir, sceneImage, sceneJson } from '../../backdrops/sceneFiles';
 import { lightAlpha, limitSprites, spriteInstances, spritePeriodMs, spritePhaseMs, type SceneSprite } from '../../backdrops/sceneSprites';
 import { CLOUD_TINT, paintSceneSky, paintSky, SKY_FRAME, type LayerFrame } from '../../backdrops/sky';
-import { backdropId, BACKDROP_THEMES, isNightSky, mulTint, propGradeTint, sceneGradeKey, spaceWeather, themeForScene, themeGround, themeLayer, themeSky } from '../../backdrops/themes';
+import { backdropId, BACKDROP_THEMES, isNightSky, moteGradeTint, mulTint, propGradeTint, sceneGradeKey, spaceWeather, themeForScene, themeGround, themeLayer, themeProps, themeSky, type BackdropTheme, type PropGradeRect } from '../../backdrops/themes';
 import { BACKDROP_PALETTES, desaturate, mix } from '../../palette';
 import { WORLD } from '../../style';
 import { BackdropWeatherLayer } from './backdropWeather';
@@ -191,6 +191,58 @@ export class BackdropTextures {
   /** A scene's props atlas frames, once loaded (null before, or without props). */
   sceneProps(age: AgeId, scene: string): ReadonlyMap<string, PropFrame> | null {
     return this.props.get(sceneKey(age, drawnScene(age, scene))) ?? null;
+  }
+
+  /**
+   * A scene's props atlas re-graded for a backdrop skin like its strips (review 2 leftover, round 3):
+   * each frame takes its layer's grade at the height its sprite stands (`propStands`, `themeProps`), so the
+   * props follow light skies as well as dark ones. Cached per scene, theme and atlas like the themed strips
+   * (the atlas source uid last, so `forget` lets go of it with the atlas). The plain frames without a skin
+   * the scene takes, or without a DOM; null before the atlas arrives.
+   */
+  scenePropsThemed(age: AgeId, scene: string, skin: string | null | undefined): ReadonlyMap<string, PropFrame> | null {
+    const key = sceneKey(age, drawnScene(age, scene));
+    const base = this.props.get(key) ?? null;
+    const id = backdropId(skin);
+    const theme = id ? BACKDROP_THEMES[id] : undefined;
+    const data = this.scenes.get(key);
+    const atlas = base?.values().next().value?.tex.source;
+    if (!base || !theme || !data?.props || !atlas || !this.canBake) return base;
+    const ck = `props.${key}@${id}~${sceneGradeKey(data.hints)}#${atlas.uid}`;
+    const hit = this.themedProps.get(ck);
+    if (hit && this.cache.has(ck)) return hit;
+    const rects = propGradeRects(data, theme);
+    if (rects.length === 0) return base;
+    const t0 = performance.now();
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(atlas.pixelWidth));
+    canvas.height = Math.max(1, Math.round(atlas.pixelHeight));
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return base;
+    const resource = atlas.resource as CanvasImageSource | undefined;
+    if (resource) ctx.drawImage(resource, 0, 0, canvas.width, canvas.height);
+    themeProps(ctx, rects);
+    const source = new CanvasSource({ resource: canvas, resolution: 1, label: `backdrop themed ${ck}` });
+    source.resolution = atlas.resolution;
+    const tex = new Texture({ source });
+    const frames = new Map<string, PropFrame>();
+    for (const [name, f] of Object.entries(data.props.frames)) frames.set(name, propFrame(tex, f));
+    this.cache.set(ck, { tex, ambient: [] });
+    this.themedProps.set(ck, frames);
+    this.bakeMs += performance.now() - t0;
+    return frames;
+  }
+
+  /** The frames of the re-graded props atlases (`scenePropsThemed`), keyed like their atlas in `cache`. */
+  private readonly themedProps = new Map<string, Map<string, PropFrame>>();
+
+  /** Lets go of the re-graded props frames whose atlas left `cache` (the textures are views of it). */
+  private pruneThemedProps(): void {
+    for (const [k, frames] of this.themedProps) {
+      if (this.cache.has(k)) continue;
+      for (const f of frames.values()) f.tex.destroy(false);
+      this.themedProps.delete(k);
+    }
   }
 
   private loadScene(age: AgeId, scene: string): void {
@@ -461,6 +513,7 @@ export class BackdropTextures {
       this.cache.delete(k);
       n++;
     }
+    this.pruneThemedProps();
     if (dirs.length > 0 || grounds.length > 0) forgetSceneImages((url) => !grounds.includes(url) && !dirs.some((d) => inSceneDir(url, d)));
     if (n > 0) this.version++;
     return n;
@@ -494,6 +547,7 @@ export class BackdropTextures {
   destroy(): void {
     for (const p of this.cache.values()) if (p.tex !== Texture.EMPTY) p.tex.destroy(true);
     this.cache.clear();
+    this.pruneThemedProps();
     // the image sources are this provider's (the decoded images stay in the shared file cache)
     for (const p of this.images.values()) p.tex.destroy(true);
     this.images.clear();
@@ -507,6 +561,22 @@ export class BackdropTextures {
     }
     this.props.clear();
   }
+}
+
+/**
+ * The props atlas frames of a scene to re-grade for a sky theme (`themeProps`): each frame's rect with the
+ * theme as the scene wears it on the frame's layer (`themeForScene`: `skyGrade`, the back strip's half
+ * grade) and the height its sprite stands at (`propStands`).
+ */
+export function propGradeRects(data: SceneData, theme: BackdropTheme): PropGradeRect[] {
+  const rects: PropGradeRect[] = [];
+  if (!data.props) return rects;
+  for (const [name, at] of propStands(data.props)) {
+    const f = data.props.frames[name];
+    const th = themeForScene(theme, data.hints, at.layer);
+    if (f && th) rects.push({ x: f.x, y: f.y, w: f.w, h: f.h, kind: at.layer === 'mid' ? 'mid' : 'far', th, v: at.v });
+  }
+  return rects;
 }
 
 function propFrame(atlas: Texture, f: SceneFrame): PropFrame {
@@ -674,6 +744,8 @@ interface Amb {
   acc: number;
   /** Flap and glide frames (birds): textures with their anchors. */
   frames?: { tex: Texture; ax: number; ay: number }[];
+  /** An emitter's puff tint under the sky of the half it rises in (`moteGradeTint`; absent: its own tint). */
+  grade?: number;
 }
 
 /** A scene's moving prop (PLAN 2b sprites), one Pixi sprite per group member. */
@@ -687,10 +759,11 @@ interface PropNode {
   weight: number;
   /** A path's trail emitter (the loco's smoke) and its accumulator. */
   trail: { spec: AmbientSpec; acc: number } | null;
-  /** Each node's current tint, and the tint of the skin it was last worked out for (`propTint`). */
+  /** Each node's current tint, and the frames and tint of the skin they were last worked out for (`propLook`). */
   tints: number[];
   tintSkin?: string;
   tint?: number;
+  looks?: ReadonlyMap<string, PropFrame>;
 }
 
 /** A night light of a scene (a warm glow while the half wears a night sky). */
@@ -1328,9 +1401,14 @@ export class ProceduralBackdropView implements BackdropView {
       if (!a.age) continue;
       const age = a.age;
       const scene = a.scene;
-      const weight = regionWeight(regions, (r) => r.age === age && (scene === undefined || (r.scene ?? 'classic') === scene), worldX(a.spec.layer, a.spec.x));
+      const wx = worldX(a.spec.layer, a.spec.x);
+      const weight = regionWeight(regions, (r) => r.age === age && (scene === undefined || (r.scene ?? 'classic') === scene), wx);
       a.node.visible = weight > 0.02;
       a.node.alpha = (a.spec.alpha ?? 1) * weight;
+      // a scene's emitter: its puffs take the sky of the half they rise in, like the strip under them
+      if (a.spec.kind === 'emit' && scene !== undefined && a.spec.layer !== 'sky' && a.spec.layer !== 'ground') {
+        a.grade = this.moteTint(a.spec.tint ?? 0xffffff, a.spec.layer, age, scene, regionSkinAt(regions, wx, age, scene));
+      }
     }
     for (const p of this.propNodes) {
       const x = p.sprite.kind === 'loop' || p.sprite.kind === 'bob' ? p.sprite.at[0] : null;
@@ -1538,7 +1616,7 @@ export class ProceduralBackdropView implements BackdropView {
           a.acc += (s.rate ?? 1) * k * dt * (lite ? 0.5 : 1);
           while (a.acc >= 1) {
             a.acc -= 1;
-            this.emit(s, a.node.alpha);
+            this.emit(s, a.node.alpha, a.grade);
           }
           break;
         }
@@ -1572,21 +1650,42 @@ export class ProceduralBackdropView implements BackdropView {
   }
 
   /**
-   * A prop's tint where it stands (review 2): its layer's grade of the half's sky theme as the scene
-   * wears it (`themeForScene`, so `skyGrade` counts), times the mid strip's multiply for mid props.
-   * Worked out once per skin.
+   * A prop's frames and tint where it stands: the props atlas re-graded for the half's sky theme like its
+   * strips (`scenePropsThemed`, round 3: light skies as well as dark ones), times the mid strip's multiply
+   * for mid props. Without a re-graded atlas (no DOM) the theme's grade as a multiply (review 2,
+   * `propGradeTint`: it can only darken). Worked out once per skin.
    */
-  private propTint(p: PropNode, skin: string | undefined): number {
+  private propLook(p: PropNode, skin: string | undefined): { frames: ReadonlyMap<string, PropFrame>; tint: number } {
     const key = skin ?? '';
-    if (p.tintSkin === key && p.tint !== undefined) return p.tint;
+    if (p.tintSkin === key && p.tint !== undefined && p.looks) return { frames: p.looks, tint: p.tint };
     const id = backdropId(skin);
     const theme = id ? BACKDROP_THEMES[id] : undefined;
     const layer = p.sprite.layer;
-    const th = theme ? themeForScene(theme, this.sceneData(p.age, p.scene)?.hints, layer) : null;
+    const t = this.o.textures as Partial<BackdropTextures>;
+    const themed = theme && typeof t.scenePropsThemed === 'function' ? t.scenePropsThemed.call(this.o.textures, p.age, p.scene, skin) : null;
+    const graded = themed !== null && themed !== p.frames;
+    const th = theme && !graded ? themeForScene(theme, this.sceneData(p.age, p.scene)?.hints, layer) : null;
     const tint = mulTint(propGradeTint(th, layer), layer === 'mid' ? MID_LAYER_TINT : 0xffffff);
     p.tintSkin = key;
     p.tint = tint;
-    return tint;
+    p.looks = graded ? themed : p.frames;
+    return { frames: p.looks, tint };
+  }
+
+  /** Puff tints per emitter tint, layer, scene and skin (`moteGradeTint`), worked out once each. */
+  private readonly moteTints = new Map<string, number>();
+
+  private moteTint(tint: number, layer: 'back' | 'far' | 'mid', age: AgeId, scene: string, skin: string | undefined): number {
+    const id = backdropId(skin);
+    if (!id) return tint;
+    const key = `${tint}|${layer}|${age}.${scene}|${id}`;
+    let t = this.moteTints.get(key);
+    if (t === undefined) {
+      const theme = BACKDROP_THEMES[id];
+      t = theme ? moteGradeTint(tint, themeForScene(theme, this.sceneData(age, scene)?.hints, layer), layer) : tint;
+      this.moteTints.set(key, t);
+    }
+    return t;
   }
 
   /** Moves the scene props on the render clock (still under Reduce motion), fading them across the seam. */
@@ -1598,8 +1697,7 @@ export class ProceduralBackdropView implements BackdropView {
       const moving = p.sprite.kind === 'path';
       p.nodes.forEach((n, k) => {
         const it = inst[k];
-        const f = it ? p.frames.get(it.frame) : undefined;
-        if (!it || !f) {
+        if (!it || !p.frames.has(it.frame)) {
           n.visible = false;
           return;
         }
@@ -1607,9 +1705,15 @@ export class ProceduralBackdropView implements BackdropView {
         const w = moving ? regionWeight(regions, (r) => r.age === p.age && (r.scene ?? 'classic') === p.scene, wx) : p.weight;
         n.visible = w > 0.02;
         if (!n.visible) return;
+        // the sky theme of the half it stands in grades it like the strips (a night sky darkens it,
+        // Winterfall pales it)
+        const { frames, tint } = this.propLook(p, regionSkinAt(regions, wx, p.age, p.scene));
+        const f = frames.get(it.frame) ?? p.frames.get(it.frame);
+        if (!f) {
+          n.visible = false;
+          return;
+        }
         if (n.texture !== f.tex) n.texture = f.tex;
-        // the sky theme of the half it stands in grades it like the strips (a night sky darkens it)
-        const tint = this.propTint(p, regionSkinAt(regions, wx, p.age, p.scene));
         if (p.tints[k] !== tint) {
           p.tints[k] = tint;
           n.tint = tint;
@@ -1628,15 +1732,17 @@ export class ProceduralBackdropView implements BackdropView {
         const flip = lead.scale.x < 0;
         const dx = (tr.spec as AmbientSpec & { dx?: number }).dx ?? 0;
         const dy = (tr.spec as AmbientSpec & { dy?: number }).dy ?? 0;
+        // its puffs take the sky the lead stands in (the skin its tint was last worked out for)
+        const grade = this.moteTint(tr.spec.tint ?? 0xffffff, p.sprite.layer, p.age, p.scene, p.tintSkin || undefined);
         while (tr.acc >= 1) {
           tr.acc -= 1;
-          this.emit({ ...tr.spec, x: lead.x + (flip ? -dx : dx), y: lead.y + dy }, lead.alpha);
+          this.emit({ ...tr.spec, x: lead.x + (flip ? -dx : dx), y: lead.y + dy }, lead.alpha, grade);
         }
       }
     }
   }
 
-  private emit(s: AmbientSpec, weight: number): void {
+  private emit(s: AmbientSpec, weight: number, tint?: number): void {
     const key = `${s.layer}|${s.part}`;
     // a spare of the same kind is already in its layer (`spareMotes`); only a new one joins it
     let sp = this.spareMotes.get(key)?.pop();
@@ -1647,10 +1753,10 @@ export class ProceduralBackdropView implements BackdropView {
     const x = s.x + (s.spreadX ? (this.rng.next() * 2 - 1) * s.spreadX : (this.rng.next() - 0.5) * 8);
     sp.position.set(x, s.y);
     sp.scale.set(s.scale ?? 1);
-    sp.tint = s.tint ?? 0xffffff;
+    sp.tint = tint ?? s.tint ?? 0xffffff;
     sp.alpha = 0;
     const speed = (s.speed ?? 15) * (this.reduceMotion ? 0.6 : 1);
-    const vx = s.fall ? (this.rng.next() - 0.3) * speed * 0.3 : (this.rng.next() - 0.5) * speed * 0.4 + 4;
+    const vx = s.fall ? (this.rng.next() - 0.3) * speed * 0.3 : (this.rng.next() - 0.5) * speed * 0.4 + (s.drift !== undefined ? s.drift * (this.reduceMotion ? 0.6 : 1) : 4);
     const vy = s.fall ? speed * (0.8 + this.rng.next() * 0.4) : -speed * (0.7 + this.rng.next() * 0.6);
     sp.rotation = s.part === 'fx.p.beam' ? Math.PI / 2 + 0.15 : 0;
     this.motes.push({ s: sp, key, vx, vy, life: s.life ?? 2600, age: 0, a0: (s.alpha ?? 1) * (weight || 1) });

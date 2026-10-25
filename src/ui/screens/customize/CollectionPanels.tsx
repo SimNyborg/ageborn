@@ -22,6 +22,7 @@ import { useUi } from '../context';
 import { craftLocked, craftPrice, equippedOf, findItem, itemKey, itemsOf, ownedFirst, owns, progressOf, sourceText } from '../model/cosmetics';
 import { playLevelId } from '../model/warPath';
 import type { ActionResult, CosmeticEquipPatch } from '../services';
+import { DamageToggle, type CrumbleStage } from './DamageToggle';
 import { EmoteFace, EmoteStage, WheelEmote } from './EmotePreview';
 import { freshAge, useFresh } from './fresh';
 import { BaseMock, PreviewStage, shownBaseKey } from './PreviewStage';
@@ -436,6 +437,8 @@ export interface StageInfoRow {
   source?: CosmeticSource | null;
   how?: string;
   testid?: string;
+  /** The row of the spot picked on the stage (the Decorations tab). */
+  picked?: boolean;
 }
 
 /** The preview's info card (desktop and tall screens): one row per thing the stage shows. */
@@ -444,7 +447,7 @@ function StageInfo(p: { rows: StageInfoRow[]; children?: ComponentChildren }) {
   return (
     <div class="cos-stinfo" data-testid="stage-info">
       {p.rows.map((r) => (
-        <div key={r.testid ?? r.label} class={`cos-stinfo__row is-${r.state}`} data-testid={r.testid}>
+        <div key={r.testid ?? r.label} class={`cos-stinfo__row is-${r.state}${r.picked ? ' is-picked' : ''}`} data-testid={r.testid}>
           <span class="cos-stinfo__gem" aria-hidden="true">
             {r.rarity ? <RarityGem rarity={r.rarity} size={18} /> : <span class="cos-stinfo__dot" />}
           </span>
@@ -481,9 +484,6 @@ function troopSkinItem(content: ReturnType<typeof useUi>['content'], k: SkinDef)
   return { id: k.id, collection: 'baseSkin', rarity: k.rarity, source, art: k.visualId, nameKey: skinNameKey(k.id), age };
 }
 
-/** The four crumble stages the Damage toggle steps through (the model's quality, and that the mounts stay put). */
-const CRUMBLE_STEPS = [0, 1, 2, 3] as const;
-
 /**
  * Base skins per age (PLAN 2c, 2f interface 7): the standard base, the age's skins and the troop-system
  * skin of that base (Crystal Spire, Future) in one grid; one skin per age across both systems. The
@@ -500,7 +500,7 @@ export function BasesPanel() {
   const fresh = useFresh();
   const [age, setAge] = useState<AgeId>(() => freshAge(fresh, content, 'baseSkin') ?? now);
   const [tryOn, setTryOn] = useState<{ age: AgeId; key: string | null } | null>(null);
-  const [crumble, setCrumble] = useState<(typeof CRUMBLE_STEPS)[number]>(0);
+  const [crumble, setCrumble] = useState<CrumbleStage>(0);
   const eq = equippedOf(s, content);
   const reduce = s.settings.reduceMotion;
   const cur = shownBaseKey(s, eq, age);
@@ -554,27 +554,15 @@ export function BasesPanel() {
     testid: 'stage-info-base',
   };
   const stage = (
-    <PreviewStage age={age} baseSkin={shown} crumble={crumble} caption={`${t('cosmetic.ui.preview')} · ${t(ageNameKey(age))}`} testid="base-stage" overlay={(live) =>
-      live ? (
-        <button
-          type="button"
-          class={`cos-stage__dmg is-${crumble}`}
-          data-testid="stage-damage"
-          aria-label={t('cosmetic.ui.damageLabel', { n: crumble, max: 3 })}
-          onClick={() => {
-            sound?.('ui_toggle');
-            setCrumble((c) => ((c + 1) % 4) as (typeof CRUMBLE_STEPS)[number]);
-          }}
-        >
-          <span>{t('cosmetic.ui.damage')}</span>
-          <span class="cos-stage__pips" aria-hidden="true">
-            {CRUMBLE_STEPS.slice(1).map((n) => (
-              <i key={n} class={crumble >= n ? 'is-on' : ''} />
-            ))}
-          </span>
-        </button>
-      ) : null
-    } />
+    <PreviewStage
+      age={age}
+      baseSkin={shown}
+      crumble={crumble}
+      caption={`${t('cosmetic.ui.preview')} · ${t(ageNameKey(age))}`}
+      testid="base-stage"
+      // only the live base crumbles: the toggle comes with the live stage (round 3: an icon with four pips)
+      overlay={(live) => (live ? <DamageToggle crumble={crumble} onStep={setCrumble} /> : null)}
+    />
   );
   return (
     <MockLayout testid="cust-bases" wide mock={stage} info={<StageInfo rows={[info]} />}>
@@ -826,8 +814,25 @@ export function FlagsPanel() {
   const nations = itemsOf(content, 'nationalFlag').filter((x) => owns(save.value, content, itemKey(x)));
   // their tiles wait for the one flag atlas instead of downloading every flag's SVG (review 1)
   const atlasReady = useFlagAtlasReady(useCosmeticImage());
+  const baseFlag = eq.baseFlag ? findItem(content, eq.baseFlag) : undefined;
+  const nation = eq.nationalFlag ? findItem(content, eq.nationalFlag) : undefined;
+  const rows: StageInfoRow[] = [
+    { label: t('cosmetic.ui.baseFlag'), name: baseFlag ? t(baseFlag.nameKey) : t('cosmetic.ui.noBaseFlag'), rarity: baseFlag?.rarity ?? null, state: baseFlag ? 'equipped' : 'owned', testid: 'stage-info-baseFlag' },
+    { label: t('cosmetic.ui.nationalFlag'), name: nation ? t(nation.nameKey) : t('cosmetic.ui.noNational'), state: nation ? 'equipped' : 'owned', testid: 'stage-info-nation' },
+  ];
+  // the live stage: your base flying the flags as in battle, the pole marked; it pings when a flag changes
+  const stage = (
+    <PreviewStage
+      age={age}
+      pole
+      poleKey={`${eq.baseFlag ?? ''}|${eq.nationalFlag ?? ''}`}
+      stillOnly={save.value.settings.reduceMotion}
+      caption={`${t('cosmetic.ui.preview')} · ${t(ageNameKey(age))}`}
+      testid="flag-stage"
+    />
+  );
   return (
-    <MockLayout testid="cust-flags" mock={<BaseMock age={age} />}>
+    <MockLayout testid="cust-flags" wide mock={stage} info={<StageInfo rows={rows} />}>
       <div class="cos-head">
         <h3 class="cust-h">{t('cosmetic.ui.baseFlag')}</h3>
         <Found collection="baseFlag" />
@@ -865,8 +870,24 @@ export function DecorationsPanel() {
   const cur = eq.decorations[anchor] ?? null;
   const age = useCurrentAge();
   const withUndo = useEquipWithUndo();
+  // one row per spot on the desktop info card, the picked one marked
+  const rows: StageInfoRow[] = [0, 1, 2].map((i) => {
+    const k = eq.decorations[i] ?? null;
+    const x = k ? findItem(content, k) : undefined;
+    return { label: t(`cosmetic.ui.anchor.${i}`), name: x ? t(x.nameKey) : t('cosmetic.ui.emptySpot'), rarity: x?.rarity ?? null, state: 'owned', picked: i === anchor, testid: `stage-info-spot-${i}` };
+  });
+  // the live stage: your base with its Blender decorations as in battle, the three spots as tap targets
+  const stage = (
+    <PreviewStage
+      age={age}
+      spots={{ picked: anchor, onPick: setAnchor }}
+      stillOnly={save.value.settings.reduceMotion}
+      caption={`${t('cosmetic.ui.preview')} · ${t(ageNameKey(age))}`}
+      testid="deco-stage"
+    />
+  );
   return (
-    <MockLayout testid="cust-decorations" mock={<BaseMock age={age} anchor={anchor} onAnchor={setAnchor} />}>
+    <MockLayout testid="cust-decorations" wide mock={stage} info={<StageInfo rows={rows} />}>
       <div class="cos-head">
         <h3 class="cust-h">{t(`cosmetic.ui.anchor.${anchor}`)}</h3>
         <Found collection="decoration" />

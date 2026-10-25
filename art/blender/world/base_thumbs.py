@@ -7,8 +7,8 @@ Pure PIL, no Blender: it reads the installed skin sheets and the classic scenes'
 after any skin install (`render_world.py --thumbs`, or this file directly).
 
 - **The base** is drawn the way the menus' portraits draw it (src/visuals/adapters/worldPortrait.ts):
-  the back flag, the body at crumble 0 and the front flag, each over its grey `_team` twin multiplied by
-  side 0's blue (the lane's "tint-underlay" rule).
+  the back props and flag, the body at crumble 0, the front props and flag (a prop loop at its held step),
+  each over its grey `_team` twin multiplied by side 0's blue (the lane's "tint-underlay" rule).
 - **The composition** matches the tiles' stand-in (src/ui/components/cosmeticArt.tsx `BaseThumb`: the
   scene thumbnail as `object-fit: cover` at 30% 100%, the base portrait fitted 8% in from the sides, 6%
   from the top and 4% from the bottom), so a tile does not jump when its thumbnail arrives. A soft
@@ -82,8 +82,13 @@ def base_layer(skin):
     meta = data["meta"]["ageborn"]
     anims, frames = data["animations"], data["frames"]
     flags = meta.get("flags", [])
-    names = [anims[f["clip"]][0] for f in flags if f.get("z") == "back" and anims.get(f["clip"])]
+    # prop loops (round 3) at the step they hold under Reduce motion, as the portraits draw them
+    props = [p for p in meta.get("props", []) if p.get("crumbleMin", 0) == 0 and anims.get(p["clip"])]
+    held = lambda p: anims[p["clip"]][min(len(anims[p["clip"]]) - 1, max(0, p.get("holdFrame", 0)))]
+    names = [held(p) for p in props if p.get("z") == "back"]
+    names += [anims[f["clip"]][0] for f in flags if f.get("z") == "back" and anims.get(f["clip"])]
     names.append(anims["body"][0])
+    names += [held(p) for p in props if p.get("z") != "back"]
     names += [anims[f["clip"]][0] for f in flags if f.get("z") != "back" and anims.get(f["clip"])]
     src = frames[names[0]]["sourceSize"]
     canvas = Image.new("RGBA", (src["w"], src["h"]), (0, 0, 0, 0))
@@ -197,7 +202,91 @@ def build(out_dir=None):
     return len(buf.getvalue())
 
 
+# -- the decorations' HD thumbnail atlas (round 3, PLAN 2a "Decorations") ------------------------------
+DECO_DIR = os.path.join(REPO, "public", "art", "cosmetics", "decorations")
+DECO_BUDGET = 90 * 1024
+DECO_PAD = 3
+
+
+def deco_layer(path):
+    """A prop's resting picture from its HD sheet: the body and the loop's first frame (a banner's cloth, a
+    brazier's flame), each over its grey `_team` twin multiplied by side 0's blue, trimmed to its pixels."""
+    with open(path) as fh:
+        data = json.load(fh)
+    sheet = Image.open(os.path.join(os.path.dirname(path), data["meta"]["image"])).convert("RGBA")
+    anims, frames = data["animations"], data["frames"]
+    names = [anims["body"][0]] + ([anims["loop"][0]] if anims.get("loop") else [])
+    src = frames[names[0]]["sourceSize"]
+    canvas = Image.new("RGBA", (src["w"], src["h"]), (0, 0, 0, 0))
+    for n in names:
+        f = frames[n]
+        t = frames.get(f"{n}_team")
+        if t and t["frame"]["w"] > 1:
+            ts = t["spriteSourceSize"]
+            canvas.alpha_composite(multiply(frame_image(sheet, t), TEAM), (ts["x"], ts["y"]))
+        s = f["spriteSourceSize"]
+        canvas.alpha_composite(frame_image(sheet, f), (s["x"], s["y"]))
+    box = canvas.getbbox()
+    return canvas.crop(box), data["meta"]["ageborn"]
+
+
+def build_decorations(out_dir):
+    """Packs every prop's resting picture (from the HD sheets the renders left in `<out_dir>/decorations`) at
+    2.46 px/lu into `public/art/cosmetics/decorations/thumbs.{webp,json}`: shelf-packed, each prop's rect in
+    the JSON (src/visuals/cosmetics/decorations.ts `decorationArtUrl` cuts one picture per prop)."""
+    src = os.path.join(out_dir, "decorations")
+    ids = sorted(n[:-8] for n in os.listdir(src) if n.endswith(".hd.json"))
+    if not ids:
+        raise SystemExit(f"no HD decoration sheets in {src}")
+    pics = {}
+    ppl = None
+    for i in ids:
+        pics[i], meta = deco_layer(os.path.join(src, f"{i}.hd.json"))
+        ppl = meta.get("pxPerLu", ppl)
+    # shelf-pack, tallest first, in rows at most `width` wide
+    order = sorted(ids, key=lambda k: (-pics[k].height, k))
+    width = 1024
+    x = y = row_h = 0
+    rects = {}
+    for k in order:
+        w, h = pics[k].size
+        if x + w + DECO_PAD > width:
+            x, y = 0, y + row_h + DECO_PAD
+            row_h = 0
+        rects[k] = [x, y, w, h]
+        x += w + DECO_PAD
+        row_h = max(row_h, h)
+    W = max(r[0] + r[2] for r in rects.values())
+    H = y + row_h
+    atlas = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    for k, (rx, ry, w, h) in rects.items():
+        atlas.alpha_composite(pics[k], (rx, ry))
+    q = 90
+    while True:
+        buf = io.BytesIO()
+        atlas.save(buf, "WEBP", quality=q, alpha_quality=90, method=6)
+        if buf.tell() <= DECO_BUDGET * len(ids) / 24 or q <= 60:
+            break
+        q -= 4
+    os.makedirs(DECO_DIR, exist_ok=True)
+    with open(os.path.join(DECO_DIR, "thumbs.webp"), "wb") as fh:
+        fh.write(buf.getvalue())
+    with open(os.path.join(DECO_DIR, "thumbs.json"), "w") as fh:
+        json.dump({"image": "thumbs.webp", "pxPerLu": ppl, "cells": {k: rects[k] for k in ids}}, fh, separators=(",", ":"))
+    # a review copy on a mid grey, every prop at its true scale
+    prev = Image.new("RGBA", atlas.size, (150, 156, 160, 255))
+    prev.alpha_composite(atlas)
+    prev.convert("RGB").save(os.path.join(out_dir, "deco-thumbs-preview.png"))
+    print(f"decoration thumbs: {len(ids)} props, {W}x{H}, {len(buf.getvalue())} B (quality {q}) -> {DECO_DIR}/thumbs.webp")
+    return len(buf.getvalue())
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="")
-    build(ap.parse_args().out or None)
+    ap.add_argument("--decorations", default="", help="the render --out dir holding decorations/<id>.hd.json")
+    a = ap.parse_args()
+    if a.decorations:
+        build_decorations(a.decorations)
+    else:
+        build(a.out or None)

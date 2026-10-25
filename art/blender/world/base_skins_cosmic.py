@@ -22,7 +22,7 @@ from mathutils import Matrix, Vector
 from ageborn_art import rigs_cosmic as K
 from ageborn_art.geometry import Geo
 
-from world.common import BASE_YAW, ambient_lu, base_module, box, chipped_cracks, cyl, flag, platform, rubble, topple_lu
+from world.common import BASE_YAW, ambient_lu, base_module, box, chipped_cracks, cyl, flag, platform, prop_loop, rubble, topple_lu
 
 HULL = "#30254A"          # the void hull (a touch deeper than the Star Ark's)
 HULL_LT = "#45376A"
@@ -148,6 +148,108 @@ def nebula_ribbon(rig, joint, a0, turns, z0, z1, out, wmax, color, seed=0):
         w = widths[i]
         s.star((x + rnd.uniform(-2, 2), y - 2.0, z + rnd.uniform(-w * 0.3, w * 0.3)), rnd.uniform(1.6, 2.6), 0.7, 0.6, points=4, rot=(90, 0, 0))
     rig.part(joint, s, glow=STARS, outline=0)
+
+
+# The swirling nebula (round 3, PLAN 2c "a swirling nebula loop"): glowing knots of nebula flow up both
+# ribbons, round the hull from the cradle to the prow, swelling in where a ribbon starts and thinning out where
+# it ends. Each ribbon's knots are identical and evenly spaced along it; the loop moves them one spacing
+# (NEB_FRAMES steps), so its last frame flows into the first. Drawn over the hull and cut away where the hull
+# stands in front (the back half of each turn), a touch translucent.
+NEB_FRAMES = 12
+NEB_MS = 130
+# the ribbons as nebula_ribbon draws them: (joint, start angle, turns, z0, z1, out, width), and the knots'
+# spacing along each (degrees of its turn)
+NEB_RIBBONS = [("ribA", 150.0, 1.25, Z0 + 18, Z0 + 196, 7.0, 21.0), ("ribB", -30.0, 1.0, Z0 + 40, Z0 + 214, 9.0, 16.0)]
+KNOT_DEG = 80.0
+KNOT_T0, KNOT_T1, KNOT_FADE = 0.03, 0.97, 0.12
+
+
+def knot_step(ring):
+    """The knots' spacing along ribbon `ring` in its helix parameter t (0 at the cradle, 1 at the prow)."""
+    return KNOT_DEG / (360.0 * NEB_RIBBONS[ring][2])
+
+
+def knot_count(ring):
+    return int(math.ceil((KNOT_T1 - KNOT_T0) / knot_step(ring))) + 1
+
+
+def knot_at(ring, t):
+    """A knot's centre on ribbon `ring` at parameter t (just outside the ribbon's face) and the helix angle there."""
+    _, a0, turns, z0, z1, out, w = NEB_RIBBONS[ring]
+    a = a0 + 360.0 * turns * t
+    z = z0 + (z1 - z0) * t
+    return on_hull(a, z, out + 2.0 * math.sin(t * math.pi) + 2.6), a
+
+
+def knot_size(t):
+    """1 along the ribbon, easing to 0 over its first and last KNOT_FADE (a knot swells in and thins out)."""
+    def ease(u):
+        u = max(0.0, min(1.0, u))
+        return u * u * (3 - 2 * u)
+    return ease((t - KNOT_T0) / KNOT_FADE) * ease((KNOT_T1 - t) / KNOT_FADE)
+
+
+def _placed(g, c, a_deg):
+    """Geometry built at the origin for helix angle 0, turned about the vertical by a and set at c (the loop's
+    pose turns and moves its joint the same way, so the loop closes without a jump)."""
+    m = Matrix.Translation(Vector(c)) @ Matrix.Rotation(math.radians(a_deg), 4, "Z")
+    for v in g.bm.verts:
+        v.co = m @ v.co
+    return g
+
+
+def knot_geo(rig, joint, c, a_deg, ring):
+    """One streak of nebula light, built at helix angle 0 (outward +x, the ribbon running along +y and
+    climbing): a bright head and a tail that tapers and cools back along the ribbon's curve (unshaded light, no
+    lines), two star specks riding it."""
+    _, a0, turns, z0, z1, out, w = NEB_RIBBONS[ring]
+    r = radius_at((z0 + z1) / 2) + out + 2.6
+    h = (z1 - z0) / (turns * 2 * math.pi)
+    climb = math.degrees(math.atan2(h, r))
+    k = w / 21.0
+    L = math.hypot(r, h)
+
+    def at(s):
+        """The local point s lu behind the head along the helix, and the yaw of the helix there (deg)."""
+        th = -s / L
+        return (r * math.cos(th) - r, r * math.sin(th), h * th), math.degrees(th)
+
+    head, mid, tail, st = Geo(), Geo(), Geo(), Geo()
+    head.blob((0.0, 0.0, 0.0), (1.8, 7.0, 5.6 * k), p=2.2, rot=(climb, 0, 0))
+    for i in range(5):
+        u = (i + 1) / 5.0
+        pt, yaw = at(7.0 * (i + 1))
+        (mid if i < 2 else tail).blob(pt, (1.5, 6.8, (5.2 - 3.4 * u) * k), p=2.2, rot=(climb, 0, yaw))
+    p1, _ = at(-3.0)
+    st.sphere((p1[0] + 0.8, p1[1], p1[2] + 1.6 * k), 1.0, cuts=2)
+    p2, _ = at(14.0)
+    st.sphere((p2[0] + 0.8, p2[1], p2[2] - 1.2 * k), 0.9, cuts=2)
+    for geo in (head, mid, tail, st):
+        _placed(geo, c, a_deg)
+    rig.part(joint, tail, glow="#C29BF0", outline=0)
+    rig.part(joint, mid, glow="#E2CCFF", outline=0)
+    rig.part(joint, head, glow="#FBF7FF", outline=0)
+    rig.part(joint, st, glow=STARS, outline=0)
+
+
+def knot_pose(ring):
+    """The pose function of ribbon `ring`'s knots: frame f moves each one f / NEB_FRAMES of a spacing on."""
+    step = knot_step(ring)
+
+    def pose(f):
+        out = {}
+        d = step * f / NEB_FRAMES
+        for i in range(knot_count(ring)):
+            t0 = KNOT_T0 - step + i * step
+            (p0, a0), (p1, a1) = knot_at(ring, t0), knot_at(ring, t0 + d)
+            s = knot_size(t0 + d)
+            out[f"knot{ring}_{i}"] = {"x": p1[0] - p0[0], "y": p1[1] - p0[1], "z": p1[2] - p0[2], "rz": a1 - a0, "s": max(0.0, s)}
+        return out
+    return pose
+
+
+def knot_joints(ring):
+    return [f"knot{ring}_{i}" for i in range(knot_count(ring))]
 
 
 def build(rig, M):
@@ -277,6 +379,13 @@ def build(rig, M):
         rig.part(joint, gd, NEB, finish="dust", outline=0.6, outline_hex="#4A2A78")
         rig.part(joint, gl, NEB_LT, finish="dust", outline=0.6, outline_hex="#4A2A78")
         rig.part(joint, st, glow=STARS, outline=0)
+
+    # the swirling nebula: knots flowing up the ribbons (`prop` loops, round 3), one joint each under root
+    for ring in range(len(NEB_RIBBONS)):
+        for i in range(knot_count(ring)):
+            c, a = knot_at(ring, KNOT_T0 - knot_step(ring) + i * knot_step(ring))
+            rig.joint(f"knot{ring}_{i}", "root", c)
+            knot_geo(rig, f"knot{ring}_{i}", c, a, ring)
 
     # swept fins with star specks (the back fin is lost at 75%), team tips
     g = Geo().slab([(SP[0] - 46, 22), (SP[0] - 84, 6), (SP[0] - 70, 60), (SP[0] - 50, 128)], SP[1] + 2, 6)
@@ -434,6 +543,12 @@ def crumble(stage):
 NEBULA_ARK = base_module(
     "cosmic", "Nebula Ark", height=330, width=180, canvas=(470, 740), feet=(360, 690),
     build=build, crumble=crumble, mount_depth=DEPTHS, skin="nebula_ark",
+    # the nebula flows up its two ribbons (round 3): over the body, cut away behind the hull, a touch
+    # translucent; each ribbon's knots go with it (the first ribbon is torn away at 75%, the second at 25%)
+    props=[prop_loop("nebulaA", knot_joints(0), NEB_FRAMES, knot_pose(0), ms=NEB_MS, crumble=(0, 0), z="front", hold=0,
+                     anchor=(SP[0], SP[1], Z0 + 100), occlude=["body"], alpha=0.94, outline="none"),
+           prop_loop("nebulaB", knot_joints(1), NEB_FRAMES, knot_pose(1), ms=NEB_MS, crumble=(0, 2), z="front", hold=0,
+                     anchor=(SP[0], SP[1], Z0 + 130), occlude=["body"], alpha=0.94, outline="none")],
     flags=[{"name": "flagA", "crumbleMax": 2}, {"name": "flagB", "crumbleMax": 3, "phase": 1.7, "z": "back"}],
     lights=[((-40, -46, 30), 3, 30), ((SP[0], SP[1] - 44, Z0 + 107), 1, 34), ((SP[0], SP[1] - 26, 204), 1, 20),
             ((SP[0], SP[1] - 20, Z0 + 281), 2, 22), ((SP[0], SP[1] - 30, 4), 3, 34)],

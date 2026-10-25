@@ -17,64 +17,411 @@ import random
 from ageborn_art.geometry import Geo
 
 from world.scenes import fauna, kit
-from world.scenes.common import PaintedProp, Prop, Scene, box, castle, cyl, dk, ground_band, mixc, ridge, rock, round_tree, soft_blob
+from world.scenes.common import PaintedProp, Prop, Scene, box, cyl, dk, hx, mixc, ridge, rock, soft_blob
 from world.scenes.kit import Parts
 
-PAL = dict(skyTop=0x92b6d6, skyBottom=0xeee6d0, far=0x97a1b3, mid=0x78886c, near=0x5a6e4e, light=0xfff4dc)
+# -- Castle Hills (the classic, round 3) -------------------------------------------------------------
+CH_PAL = dict(skyTop=0x8FB4D8, skyBottom=0xEAE6D6, light=0xFFF4DC, far=0x8E9A86, mid=0x7A8C62, near=0x5C7048)
+CH = dict(
+    meadow=0x88A266, meadow_dk=0x6E8A56, meadow_lt=0x9EB07A, field_gold=0xC2B27A, field_tan=0xAE9E72, field_brown=0x9A8466,
+    hedge=0x55704A, hedge_dk=0x47603F, oak=0x5E7A4C, oak_dk=0x4E6840, oak_lt=0x6E8A58, trunk=0x5A4A3E, poplar=0x5A7650,
+    stone=0xBDB4A2, stone_dk=0x9E9584, stone_lt=0xCFC6B4, rock=0x8E887C, slate=0x6B7682, slate_dk=0x57616D, dark=0x46404A,
+    wine=0x8E2A4A, gold=0xD4A437, plaster=0xE8DFC8, timber=0x5E4A3E, thatch=0xB09A6C, thatch_dk=0x98845C, brick=0x8E7268,
+    road=0xC4B898, water=0x9AB2B8, water_hi=0xC8D8DA, reed=0x7E8A5A, reed_dk=0x66724A, lily=0x6E8A5A, wood=0x6E5A48,
+    wood_dk=0x55463A, hay=0xC2B07A, hay_dk=0xA8955E, wool=0xEAE6DC, flower=0xE8DFC8,
+)
+CH_SKY = {"top": "#8FB4D8", "bottom": "#EAE6D6", "horizon": "#F2EEDE", "cloudTint": "#F6F4EE", "celestial": "sun",
+          "sunAt": [180, -560, 40], "clouds": 0.9}
+CH_FAR_E = math.radians(8.0)
+CH_MID_E = math.radians(12.0)
+CH_CASTLE = (460.0, 400.0, 90.0)      # the castle's centre and base height (far)
+CH_HILL = (460.0, 404.0, -10.0, 230.0, 92.0, 102.0)   # its hill: x, y, z, rx, ry, h
+CH_WHEEL = (482.0, 74.0, 40.0, 17.0)  # the mill wheel: x, y, foot z, radius (mid)
+CH_CART_Y = -50.0                     # the cart's lane along the bank (mid, screen lu)
+CH_POND = (340.0, 84.0, 41.0, 128.0, 34.0)  # the mill pond: x, y, surface z, rx, ry (mid)
 
-# the sky the game paints for this classic (sky.ts paintSky), for its thumbnail
-SKY = {"top": "#92B6D6", "bottom": "#EEE6D0", "horizon": "#F6ECD5", "celestial": "sun", "sunAt": [250, -560, 40]}
+
+def _hill_top(x, hx, hz, rx, h, p=2.4):
+    """The crest height of a `kit.hill` at x (its superellipse top, without the jag)."""
+    u = abs(x - hx) / rx
+    return hz + h * max(0.0, 1.0 - u ** p) ** (1.0 / p) if u < 1 else hz
 
 
-def far(st, P):
-    back = mixc(P["far"], P["skyBottom"], 0.35)
-    ridge(st, back, -300, 1500, -10, 200, 420, 11, lumps=9, jag=0.12)
-    ridge(st, P["far"], -300, 1500, 10, 100, 140, 12, lumps=9, jag=0.08, peaks=False)
-    # castle on its hill
+def _front_y(x, z, hx, hy, hz, rx, ry, h, p=2.4):
+    """The y of a hill's camera-facing surface at (x, z), or None off the hill."""
+    t = 1.0 - abs((x - hx) / rx) ** p - abs((z - hz) / h) ** p
+    return hy - ry * t ** (1.0 / p) if t > 0 else None
+
+
+def _hedge_line(g, pts, r, rnd, gap=0.0):
+    """A hedgerow: round bushes close together along a polyline of (x, y, z) points."""
+    for (ax, ay, az), (bx, by, bz) in zip(pts, pts[1:]):
+        n = max(1, int(math.hypot(bx - ax, bz - az) / (r * 1.25)))
+        for k in range(n):
+            if gap and rnd.random() < gap:
+                continue
+            t = k / n
+            kit.round_bush(g, ax + (bx - ax) * t, ay + (by - ay) * t, r * rnd.uniform(0.8, 1.15), seed=rnd.randint(0, 99999),
+                           z=az + (bz - az) * t - r * 0.4, flat=0.7)
+
+
+def ch_back(st, P):
+    """Distant rolling downs, blue-green in the haze, a far ridge of woods along their crests."""
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    ridge(st, hz(CH["meadow_dk"], 0.4), -300, 1500, -40, 120, 1500, 7, lumps=8, jag=0.05, peaks=False)
+    ridge(st, hz(CH["hedge"], 0.34), -300, 1500, -40, 90, 1320, 9, lumps=11, jag=0.08, peaks=False)
+
+
+def ch_far(st, P):
+    pt = Parts()
+    rnd = random.Random(31)
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    fields = (CH["meadow"], CH["field_gold"], CH["meadow_dk"], CH["field_tan"], CH["meadow_lt"], CH["field_brown"])
+    # 1. the rear downs: patchwork fields (each hill its own crop), hedgerows and copses on the crests
+    rear = []
+    for i in range(10):
+        x = -300 + i * 190 + rnd.uniform(-30, 30)
+        h = rnd.uniform(100, 130) if not (760 <= x <= 1020) else rnd.uniform(64, 80)
+        rear.append((x, 600, -20, rnd.uniform(140, 190), 90, h))
+        kit.hill(pt.g(hz(fields[i % 6], 0.3), outline=0.0), x, 600, -20, rear[-1][3], 90, h, seed=10 + i, jag=0.03, p=2.4)
+    mids = []
+    for i in range(11):
+        x = -280 + i * 170 + rnd.uniform(-25, 25)
+        h = rnd.uniform(70, 92) if not (780 <= x <= 1000) else rnd.uniform(46, 56)
+        mids.append((x, 500, -20, rnd.uniform(120, 160), 80, h))
+        kit.hill(pt.g(hz(fields[(i + 3) % 6], 0.18), outline=0.0), x, 500, -20, mids[-1][3], 80, h, seed=40 + i, jag=0.03, p=2.4)
+    gh, gh2 = pt.g(hz(CH["hedge"], 0.2), outline=0.0), pt.g(hz(CH["hedge_dk"], 0.2), outline=0.0)
+    for k, (x, y, z, rx, ry, h) in enumerate(mids):
+        # a hedgerow along each crest, a copse here and there
+        pts = [(x + u * rx, y - 6, _hill_top(x + u * rx, x, z, rx, h) + 1) for u in (-0.85, -0.45, 0.0, 0.45, 0.85)]
+        _hedge_line(gh if k % 2 else gh2, pts, 4.2, rnd, gap=0.12)
+        if k % 3 != 2:
+            for j in range(4 + (k % 3) * 3):
+                cx_ = x + rnd.uniform(-0.4, 0.4) * rx
+                kit.broadleaf(gh2, pt.g(CH["trunk"], outline=0.0), cx_, y - 20, rnd.uniform(16, 22), rnd.uniform(7, 9), seed=900 + k * 10 + j,
+                              z=_hill_top(cx_, x, z, rx, h) - 4)
+    # 2. the castle hill, the village hill and the side hills in front, each a patchwork of fields (crops
+    # lying on the hill in slanted bands, `kit.field_patch`) with hedgerows along the field edges
+    hx, hy, hz0, hrx, hry, hh = CH_HILL
+    side = [(-160, 392, -12, 170, 80, 74), (70, 380, -12, 130, 70, 60), (800, 380, -12, 120, 70, 50), (1080, 410, -12, 170, 80, 84),
+            (1330, 390, -12, 170, 80, 76)]
+    crops = (CH["meadow"], CH["field_gold"], CH["meadow_dk"], CH["field_tan"], CH["meadow_lt"], CH["field_brown"])
+    for k, (x, y, z, rx, ry, h) in enumerate(side):
+        hill = (x, y, z, rx, ry, h, 70 + k, 0.03, 2.4)
+        kit.hill(pt.g(crops[(k * 2 + 1) % 6], outline=0.0), x, y, z, rx, ry, h, seed=70 + k, jag=0.03, p=2.4)
+        # three bands across the face, the middle one split by height
+        b = [x - rx * 1.1, x - rx * 0.36 + rnd.uniform(-8, 8), x + rx * 0.28 + rnd.uniform(-8, 8), x + rx * 1.1]
+        lean = [0.0, rnd.uniform(0.4, 0.8), -rnd.uniform(0.4, 0.8), 0.0]
+        zc = z + h * rnd.uniform(0.5, 0.62)
+        for j in range(3):
+            if j == 1:
+                kit.field_patch(pt.g(crops[(k + 2) % 6], outline=0.0), hill, b[1], b[2], None, zc, lean[1], lean[2])
+                kit.field_patch(pt.g(crops[(k + 4) % 6], outline=0.0), hill, b[1], b[2], zc, None, lean[1], lean[2])
+            elif (j + k) % 2 == 0:
+                kit.field_patch(pt.g(crops[(k + 3 + j) % 6], outline=0.0), hill, b[j], b[j + 1], None, None, lean[j], lean[j + 1])
+        g = gh if k % 2 else gh2
+        for j in (1, 2):
+            line = []
+            for zt in (0.06, 0.3, 0.55, 0.8, 0.96):
+                zz = z + h * zt
+                xx = b[j] + lean[j] * (zz - z)
+                fy = _front_y(xx, zz, x, y, z, rx, ry, h)
+                if fy is not None:
+                    line.append((xx, fy - 2.2, zz))
+            if len(line) >= 2:
+                _hedge_line(g, line, 3.6, rnd, gap=0.08)
+        crest = [(x + u * rx, y - 8, _hill_top(x + u * rx, x, z, rx, h) + 1) for u in (-0.8, -0.3, 0.2, 0.75)]
+        _hedge_line(g, crest, 4.4, rnd, gap=0.12)
+    castle_hill = (hx, hy, hz0, hrx, hry, hh, 91, 0.03, 2.4)
+    kit.hill(pt.g(CH["meadow"], outline=0.0), hx, hy, hz0, hrx, hry, hh, seed=91, jag=0.03, p=2.4)
+    # the castle hill's lower flanks: a hay meadow left, pasture right, hedged
+    kit.field_patch(pt.g(CH["field_tan"], outline=0.0), castle_hill, hx - hrx * 1.1, hx - 70, None, hz0 + 46, 0.0, 0.9)
+    kit.field_patch(pt.g(CH["meadow_dk"], outline=0.0), castle_hill, hx + 90, hx + hrx * 1.1, None, hz0 + 50, -0.9, 0.0)
+    for (xa, lean_) in ((hx - 70, 0.9), (hx + 90, -0.9)):
+        line = []
+        for zz in (2, 14, 28, 42):
+            xx = xa + lean_ * (zz - hz0)
+            fy = _front_y(xx, zz, hx, hy, hz0, hrx, hry, hh)
+            if fy is not None:
+                line.append((xx, fy - 2.2, zz))
+        _hedge_line(gh2, line, 3.8, rnd)
+    # 3. the outer wall on the hill below the castle, with its gate tower over the road
+    go_w = pt.g(CH["stone_dk"], outline=0.3)
+    ow = []
+    for x in range(330, 611, 28):
+        zz = 62 - 0.0006 * (x - 470) ** 2
+        fy = _front_y(x, zz, hx, hy, hz0, hrx, hry, hh)
+        if fy is not None:
+            ow.append((x, fy + 2.0, zz - 1))
+    for (ax, ay, az), (bx, by, bz) in zip(ow, ow[1:]):
+        kit.wall(go_w, ax, ay, bx, by, (az + bz) / 2 - 2, 12, t=4.0)
+        kit.merlons(go_w, ax, ay, bx, by, (az + bz) / 2 + 10, step=5.0, w=2.2, d=2.0, h=2.4)
+    for (tx, ty, tz) in (ow[0], ow[-1]):
+        kit.round_tower(go_w, pt.g(CH["slate_dk"], outline=0.3), pt.g(CH["dark"], outline=0.0, highlight=False), tx, ty, tz - 3, tz + 16, 6.0,
+                        roof_h=13, slits=1)
+    # the road up to the castle gate: a pale track winding up the hill's face through the outer wall
+    gro = pt.g(CH["road"], outline=0.0, highlight=False)
+    road = [(214, 6), (260, 22), (318, 36), (372, 46), (356, 58), (396, 70), (436, 80), (458, 88)]
+    for (ax, az), (bx, bz) in zip(road, road[1:]):
+        n = max(2, int(math.hypot(bx - ax, bz - az) / 3.4))
+        for k in range(n):
+            t = k / n
+            x, z = ax + (bx - ax) * t, az + (bz - az) * t
+            fy = _front_y(x, z, hx, hy, hz0, hrx, hry, hh)
+            if fy is not None:
+                gro.blob((x, fy - 2.4, z), (5.4, 2.4, 1.9), p=2.2, cuts=2)
+    # 4. the castle (the signature)
+    cx, cy, cz = CH_CASTLE
+    rock(pt.g(CH["meadow_dk"], outline=0.0), (cx, cy - 4, cz - 6), (104, 44, 12), seed=95, jag=0.05, p=2.6)
+    gcr = pt.g(dk(CH["rock"], 0.06), outline=0.3)
+    for k, (dx, dy, rx, rz) in enumerate(((-94, -26, 9, 10), (-78, -34, 7, 6), (92, -26, 9, 10), (70, -36, 6, 5), (-30, -44, 6, 4), (30, -44, 7, 4))):
+        rock(gcr, (cx + dx, cy + dy, cz - 5), (rx, 7, rz), seed=97 + k, jag=0.24, p=2.2)
+    out = kit.castle(pt, cx, cy, cz, yaw=-12.0, stone=CH["stone"], stone_dk=CH["stone_dk"], roof=CH["slate"], roof_dk=CH["slate_dk"],
+                     dark=CH["dark"], banner=CH["wine"], trim=CH["gold"])
+    for w in out["windows"][:6]:
+        st.light(w, 3)
+    st.amb("emit", "bd.puff", (cx - 4, cy + 14, cz + 40), rate=0.3, speed=6, scale=0.7, tint=0xE6E2DA, alpha=0.3, life=3200, drift=5)
+    # trees round the hill's foot and along the road
+    go, go2, gt = pt.g(CH["oak"], outline=0.3), pt.g(CH["oak_dk"], outline=0.3), pt.g(CH["trunk"], outline=0.0)
+    for k in range(18):
+        x = rnd.uniform(240, 700)
+        if 380 < x < 560:
+            continue
+        z = max(4.0, _hill_top(x, hx, hz0, hrx, hh) * rnd.uniform(0.2, 0.5))
+        fy = _front_y(x, z, hx, hy, hz0, hrx, hry, hh) or 330
+        kit.broadleaf(go if k % 2 else go2, gt, x, fy - 4, rnd.uniform(18, 26), rnd.uniform(8, 11), seed=300 + k, z=z - 3)
+    # 5. the village on its hill: a church with a tall spire, timber cottages, smoke and lit windows
+    vx = 1080
+    vz = _hill_top(vx, 1080, -12, 170, 84)
+    box(pt.g(CH["stone_lt"], outline=0.3), (vx - 16, 418, vz + 9), (20, 8, 11), p=7, cuts=2, rot=(0, 0, -10))
+    kit.gable_roof(pt.g(CH["slate"], outline=0.3), vx - 16, 418, vz + 19, 40, 16, 12, yaw=-10)
+    box(pt.g(CH["stone_lt"], outline=0.3), (vx + 12, 414, vz + 26), (7, 7, 28), p=7, cuts=2, rot=(0, 0, -10))
+    pt.g(CH["slate_dk"], outline=0.3).lathe([(0.01, 0), (9.6, 0), (6.0, 6), (0.4, 46), (0.01, 47)], (vx + 12, 414, vz + 53), (vx + 12, 414, vz + 100), segs=4,
+                                            rot=(0, 0, 35))
+    box(pt.g(CH["dark"], outline=0.0, highlight=False), (vx + 10.8, 406.6, vz + 40), (1.4, 0.4, 3.2), p=4, cuts=1, rot=(0, 0, -10))
+    st.light((vx - 22, 409, vz + 8), 4)
+    houses = ((970, 404, 16, 12, 9, 8, 10, CH["thatch"], 8), (1006, 392, 18, 12, 9, 8, 11, CH["slate"], -14), (1150, 396, 18, 12, 9, 9, 11, CH["thatch"], 12),
+              (1190, 412, 16, 11, 8, 8, 10, CH["slate"], -8), (1118, 384, 14, 10, 8, 7, 9, CH["thatch"], 6), (930, 386, 14, 10, 8, 7, 9, CH["slate"], -10))
+    for k, (x, y, w, d, h1, h2, rh, roof, yaw) in enumerate(houses):
+        z = _hill_top(x, 1080, -12, 170, 84) - 3
+        win, chim = kit.timber_house(pt, x, y, z, w, d, h1, h2, rh, plaster=CH["plaster"], timber=CH["timber"], roof=roof, base=CH["stone_dk"],
+                                     dark=CH["dark"], yaw=yaw, jetty=1.0, thatch=roof == CH["thatch"], chimney=CH["brick"] if k in (1, 2) else None,
+                                     seed=60 + k, outline=0.3)
+        if k in (0, 2, 4):
+            st.light(win, 3)
+        if chim and k == 2:
+            st.amb("emit", "bd.puff", chim, rate=0.3, speed=7, scale=0.6, tint=0xE6E2DA, alpha=0.32, life=3000, drift=4)
+    for k in range(10):
+        x = rnd.uniform(900, 1260)
+        z = _hill_top(x, 1080, -12, 170, 84) * rnd.uniform(0.5, 0.9) - 2
+        fy = _front_y(x, z, 1080, 410, -12, 170, 80, 84) or 380
+        kit.broadleaf(go if k % 2 else go2, gt, x, fy - 3, rnd.uniform(14, 20), rnd.uniform(6, 8), seed=500 + k, z=z - 2)
+    # 6. sheep on the side hills, poplars along a far brook
+    gwo, gdk = pt.g(CH["wool"], outline=0.3), pt.g(CH["dark"], outline=0.0)
+    for k in range(14):
+        hill = side[k % len(side)]
+        x = hill[0] + rnd.uniform(-0.6, 0.6) * hill[3]
+        z = hill[2] + hill[5] * rnd.uniform(0.25, 0.75)
+        fy = _front_y(x, z, *hill)
+        if fy is None or 900 < x < 1260:
+            continue
+        gwo.blob((x, fy - 3, z + 3), (4.4, 3.0, 3.0), p=2.2)
+        gdk.sphere((x + 4.8, fy - 3.4, z + 4.4), 1.5)
+    gp = pt.g(CH["poplar"], outline=0.3)
+    for k, x in enumerate((690, 712, 736, 1260, 1284)):
+        gp.blob((x, 352, 26), (5.4, 4.6, 22), p=2.0, cuts=3)
+        gt.capsule((x, 352, 0), (x, 352, 8), 1.1)
+    pt.flush(st)
+
+
+def ch_mid(st, P):
+    pt = Parts()
+    rnd = random.Random(37)
+    px, py, pz, prx, pry = CH_POND
+    # the bank: meadow, lower where the pond lies
+    g = pt.g(CH["meadow"], outline=0.0)
+    for i in range(15):
+        x = -300 + i * 130
+        low = abs(x - px) < prx + 40
+        rock(g, (x, 80, 8), (96, 60, (30 if low else 40) + rnd.uniform(0, 10)), seed=i, jag=0.05, p=2.4)
+    # grass tufts and flowers (parchment and gold: small accents)
+    gg, gg2 = pt.g(CH["meadow_dk"], finish="hair", outline=0.3), pt.g(CH["hedge"], finish="hair", outline=0.3)
+    for i in range(70):
+        x = rnd.uniform(-250, 1450)
+        if abs(x - px) < prx - 10:
+            continue
+        kit.round_bush(gg if i % 2 else gg2, x, rnd.uniform(26, 46), rnd.uniform(4, 7), seed=1000 + i, z=rnd.uniform(36, 46), flat=0.6)
+    gfl, gfo = pt.g(CH["flower"], outline=0.0, highlight=False), pt.g(CH["gold"], outline=0.0, highlight=False)
+    for i in range(60):
+        x = rnd.uniform(-250, 1450)
+        if abs(x - px) < prx:
+            continue
+        (gfl if i % 3 else gfo).sphere((x, rnd.uniform(24, 40), rnd.uniform(44, 48)), rnd.uniform(1.0, 1.4), cuts=2)
+    # 1. the mill pond (x 210-470): grey-teal water, reeds, lily pads, a jetty and its lantern
+    gwa = pt.g(CH["water"], finish="gloss", outline=0.4)
+    gwa.blob((px, py, pz), (prx, pry, 1.6), p=2.6, cuts=3)
+    gwh = pt.g(CH["water_hi"], outline=0.0, highlight=False)
+    for k in range(7):
+        x = px + rnd.uniform(-0.75, 0.75) * prx
+        gwh.blob((x, py - pry * rnd.uniform(0.1, 0.6), pz + 1.7), (rnd.uniform(10, 24), 1.4, 0.3), p=2.4, cuts=2)
+    gre, gre2 = pt.g(CH["reed"], outline=0.3), pt.g(CH["reed_dk"], outline=0.3)
+    for k in range(26):
+        a = rnd.uniform(0, 2 * math.pi)
+        if 0.3 < a < 2.8 and rnd.random() < 0.6:
+            continue
+        x, y = px + math.cos(a) * prx * 0.98, py + math.sin(a) * pry * 0.98
+        for j in range(4):
+            gx = x + rnd.uniform(-3, 3)
+            (gre if j % 2 else gre2).capsule((gx, y, pz), (gx + rnd.uniform(-1.6, 1.6), y, pz + rnd.uniform(9, 15)), 0.55, 0.3)
+    gli = pt.g(CH["lily"], outline=0.2)
+    for k in range(9):
+        gli.blob((px + rnd.uniform(-0.6, 0.2) * prx, py + rnd.uniform(-0.5, 0.5) * pry, pz + 1.8), (3.0, 2.0, 0.4), p=2.0, cuts=2)
+    gwd, gwd2 = pt.g(CH["wood"], outline=0.4), pt.g(CH["wood_dk"], outline=0.4)
+    for k in range(5):
+        gwd2.capsule((248 + k * 9, 56, pz - 6), (248 + k * 9, 56, pz + 3), 0.9)
+        gwd2.capsule((248 + k * 9, 66, pz - 6), (248 + k * 9, 66, pz + 3), 0.9)
+    box(gwd, (266, 61, pz + 3.4), (20, 6, 0.9), p=5, cuts=1)
+    gwd2.capsule((248, 56, pz + 3), (248, 56, pz + 16), 0.8)
+    st.light((248, 54, pz + 17), 4)
+    # 2. the watermill (x 490-600): stone ground floor, a timber-framed upper floor, the flume over the wheel
+    wx, wy, wz, wr = CH_WHEEL
+    gst, gst2 = pt.g(CH["stone"], outline=0.5), pt.g(CH["stone_dk"], outline=0.5)
+    box(gst, (552, 92, 40 + 13), (34, 18, 13), p=7, cuts=2, rot=(0, 0, -14))
+    win, chim = kit.timber_house(pt, 552, 92, 66, 66, 34, 1.0, 22, 26, plaster=CH["plaster"], timber=CH["timber"], roof=CH["slate"],
+                                 base=CH["stone_dk"], dark=CH["dark"], yaw=-14, jetty=1.8, chimney=None, seed=7)
+    st.light(win, 5)
+    box(pt.g(CH["dark"], outline=0.0, highlight=False), (528, 72.6, 50), (5, 0.5, 8), p=4, cuts=1, rot=(0, 0, -14))
+    # the wheel's race: low stone walls behind and beside the undershot wheel, the water churning at its foot
+    box(gst2, (wx + 2, wy + 9, 43), (wr + 6, 3.2, 5), p=6, cuts=1)
+    box(gst2, (wx + wr + 6, wy + 2, 43), (3.0, 9, 5), p=6, cuts=1)
+    pt.g(CH["water"], finish="gloss", outline=0.3).blob((wx, wy - 4, pz + 0.4), (wr + 10, 9, 1.4), p=2.6, cuts=2)
+    gfm = pt.g(0xEEF2F2, outline=0.3)
+    for k in range(7):
+        gfm.blob((wx + rnd.uniform(-wr, wr), wy - 9 - rnd.uniform(0, 4), pz + rnd.uniform(0.6, 2.4)), (rnd.uniform(3, 5), 2.2, rnd.uniform(1.8, 3)), p=2.0, cuts=2)
+    # 3. the timber-framed farm (x 700-900): the house with its smoking chimney, a barn, haystacks, a fence
+    win, chim = kit.timber_house(pt, 760, 96, 40, 50, 24, 18, 16, 24, plaster=CH["plaster"], timber=CH["timber"], roof=CH["thatch"],
+                                 base=CH["stone_dk"], dark=CH["dark"], yaw=-16, jetty=2.0, thatch=True, chimney=CH["brick"], seed=3)
+    st.light(win, 5)
+    st.light((744, 70, 52), 4)
+    st.amb("emit", "bd.puff", chim, rate=0.6, speed=10, scale=1.0, tint=0xE4E0DA, alpha=0.4, life=2800, drift=5)
+    gba, gba2 = pt.g(CH["wood"], outline=0.5), pt.g(CH["wood_dk"], outline=0.5)
+    box(gba, (862, 112, 40 + 15), (24, 16, 15), p=7, cuts=2, rot=(0, 0, 10))
+    kit.gable_roof(pt.g(CH["slate_dk"], outline=0.5), 862, 112, 70, 50, 34, 22, yaw=10)
+    box(gba2, (856, 95.2, 52), (9, 0.6, 12), p=4, cuts=1, rot=(0, 0, 10))
+    for k in range(5):
+        box(gba2, (842 + k * 9, 95.6, 55), (0.5, 0.4, 14), p=4, cuts=1, rot=(0, 0, 10))
+    ghy, ghy2 = pt.g(CH["hay"], outline=0.5), pt.g(CH["hay_dk"], outline=0.5)
+    for k, (x, y, r) in enumerate(((900, 74, 11), (924, 86, 9), (690, 70, 9))):
+        (ghy if k % 2 == 0 else ghy2).lathe([(0.01, 0), (r, 0), (r * 1.05, r * 0.8), (r * 0.7, r * 1.5), (0.4, r * 1.9), (0.01, r * 1.95)], (x, y, 38), (x, y, 38 + r * 1.95),
+                                            segs=16)
+    gfe = pt.g(CH["wood_dk"], outline=0.3)
+    for x in range(640, 960, 22):
+        gfe.capsule((x, 46, 38), (x, 46, 56), 1.1)
+    gfe.capsule((640, 46, 52), (938, 46, 52), 0.8)
+    gfe.capsule((640, 46, 44), (938, 46, 44), 0.8)
+    # 4. oaks and hedgerows (nothing tall at x 220-480: the castle stands behind the pond at the game's camera)
+    go, go2, gol, gt = pt.g(CH["oak"], outline=0.5), pt.g(CH["oak_dk"], outline=0.5), pt.g(CH["oak_lt"], outline=0.5), pt.g(CH["trunk"], outline=0.4)
+    for k, (x, y, h, r) in enumerate(((-200, 96, 150, 46), (-64, 112, 120, 36), (120, 100, 140, 42), (640, 118, 130, 38), (1000, 104, 150, 46),
+                                      (1240, 116, 120, 36), (1400, 98, 146, 44))):
+        kit.broadleaf((go, go2, gol)[k % 3], gt, x, y, h, r, seed=800 + k, z=34)
+    ghe, ghe2 = pt.g(CH["hedge"], outline=0.5), pt.g(CH["hedge_dk"], outline=0.5)
+    for (x0, x1, y) in ((-250, 200, 130), (600, 700, 130), (940, 1460, 132)):
+        _hedge_line(ghe if x0 % 2 else ghe2, [(x0, y, 48), (x1, y, 48)], 9.0, rnd)
+    for (x0, x1, y) in ((-250, -120, 40), (1060, 1200, 40)):
+        _hedge_line(ghe2, [(x0, y, 40), (x1, y, 40)], 8.0, rnd, gap=0.15)
+    # 5. an orchard and a well on the right
+    gfr, gfr2 = pt.g(CH["oak_lt"], outline=0.5), pt.g(CH["oak"], outline=0.5)
+    for k in range(8):
+        x = 1080 + (k % 4) * 38 + (k // 4) * 18
+        y = 90 + (k // 4) * 22
+        kit.broadleaf(gfr if k % 2 else gfr2, gt, x, y, rnd.uniform(46, 56), rnd.uniform(16, 19), seed=1200 + k, z=36)
+    cyl(gst, (1230, 70, 38), (1230, 70, 48), 9, bevel=0.8, segs=16)
+    for dx in (-7, 7):
+        gwd2.capsule((1230 + dx, 70, 46), (1230 + dx, 70, 66), 0.9)
+    pt.g(CH["slate_dk"], outline=0.4).lathe([(0.01, 0), (12, 0), (0.4, 8), (0.01, 8.4)], (1230, 70, 66), (1230, 70, 74.4), segs=4, rot=(0, 0, 45),
+                                            squash=(1.0, 0.6))
+    # boulders
+    gb = pt.g(CH["rock"], outline=0.5)
+    for i in range(10):
+        x = rnd.uniform(-240, 1440)
+        if 200 < x < 620 or 680 < x < 960:
+            continue
+        rock(gb, (x, rnd.uniform(34, 50), 38), (rnd.uniform(6, 11), 6, rnd.uniform(4, 7)), seed=900 + i, jag=0.2)
+    pt.flush(st)
+
+
+def _pennant(rig, length=18.0, width=4.6, pole=12.0):
+    """A swallow-tailed pennant on a short pole: four waving outlines on hidden joints (one per frame)."""
+    rig.part("all", Geo().capsule((0, 0, 0), (0, 0, pole + width + 1), 0.5), "#5E5040", outline=0.3)
+    rig.part("all", Geo().sphere((0, 0, pole + width + 1.4), 0.9), "#D4A437", outline=0.2)
+    for f in range(4):
+        j = rig.joint(f"p{f}", "all", (0, 0, 0), hidden=True)
+        top, bot = [], []
+        n = 9
+        for k in range(n + 1):
+            u = k / n
+            wv = math.sin(2 * math.pi * (u * 1.1 - f / 4)) * (0.6 + 2.2 * u)
+            half = width / 2 * (1 - 0.35 * u)
+            x = u * length * (1 - 0.06 * abs(math.sin(math.pi * f / 2)))
+            top.append((x, pole + width / 2 + wv + half))
+            bot.append((x, pole + width / 2 + wv - half))
+        tail = (top[-1][0] - width * 0.9, (top[-1][1] + bot[-1][1]) / 2)
+        pts = top + [tail] + list(reversed(bot))
+        rig.part(j, Geo().slab(pts, 0, 0.6), "#8E2A4A", outline=0.3)
+
+
+def _wheel(rig):
+    """The mill wheel: a rim with twelve paddles and six spokes round a hub, turning on its joint."""
+    wr = CH_WHEEL[3]
+    rig.joint("w", "all", (0, 0, wr))
     g = Geo()
-    rock(g, (340, 120, 30), (260, 60, 120), seed=4, jag=0.06, p=2.2)
-    st.part(g, P["far"], outline=0.0)
-    gb, gr = Geo(), Geo()
-    castle(gb, gr, 340, 110, 140, 0.9)
-    st.part(gb, dk(P["far"], 0.05), outline=0.0)
-    st.part(gr, mixc(P["far"], 0x8E6070, 0.3), outline=0.0)
-    gb, gr = Geo(), Geo()
-    cyl(gb, (1120, 200, 60), (1120, 200, 200), 14, bevel=1, segs=14)
-    gr.lathe([(0, 0), (18, 0), (0.5, 40), (0, 42)], (1120, 200, 200), (1120, 200, 242), segs=14)
-    st.part(gb, back, outline=0.0)
-    st.part(gr, dk(back, 0.08), outline=0.0)
-    st.amb("drift", "bd.bird", (600, 0, 390), "sky", speed=22, scale=1, tint=dk(P["far"], 0.2))
-    st.amb("drift", "bd.bird", (640, 0, 410), "sky", speed=22, scale=0.8, tint=dk(P["far"], 0.2))
+    kit.annulus(g, (0, 0, wr), wr - 2.0, wr, 5.0, rot=(90, 0, 0), segs=40)
+    rig.part("w", g, hx(CH["wood_dk"]), outline=0.5)
+    sp = Geo()
+    for k in range(6):
+        a = math.pi * k / 3
+        sp.capsule((0, -1.0, wr), (math.cos(a) * (wr - 1.5), -1.0, wr + math.sin(a) * (wr - 1.5)), 0.9)
+    rig.part("w", sp, hx(CH["wood"]), outline=0.3)
+    pd = Geo()
+    for k in range(12):
+        a = 2 * math.pi * k / 12
+        box(pd, (math.cos(a) * (wr + 0.4), 0, wr + math.sin(a) * (wr + 0.4)), (2.6, 3.2, 0.7), p=5, cuts=1, rot=(0, -math.degrees(a), 0))
+    rig.part("w", pd, hx(CH["wood"]), outline=0.4)
+    rig.part("w", Geo().capsule((0, -3.4, wr), (0, 3.4, wr), 2.2), hx(CH["dark"]), outline=0.3)
 
 
-def mid(st, P):
-    ground_band(st, P["mid"])
-    rnd = random.Random(4)
-    ga, gb, gt = Geo(), Geo(), Geo()
-    for i in range(22):
-        x = -220 + i * 80 + rnd.uniform(-20, 20)
-        r = rnd.uniform(30, 44)
-        round_tree(ga if i % 2 else gb, x, 70, r, i)
-        gt.capsule((x, 70, 0), (x, 70, r * 1.0), 3.4)
-    st.part(gt, 0x5E4836, outline=0.4)
-    st.part(ga, P["near"], outline=0.5)
-    st.part(gb, dk(P["near"], 0.1), outline=0.5)
-    for cx in (140, 760, 1230):
-        g = Geo()
-        box(g, (cx, 20, 22), (34, 18, 22), p=6)
-        st.part(g, mixc(P["near"], P["light"], 0.45), outline=0.5)
-        g = Geo().lathe([(0, 0), (44, 0), (0.5, 40), (0, 42)], (cx, 20, 44), (cx, 20, 86), segs=4, rot=(0, 0, 45),
-                        squash=(1.0, 0.55))
-        st.part(g, dk(P["mid"], 0.15), outline=0.5)
-        g = Geo()
-        box(g, (cx - 10, -0.5, 12), (6, 1, 10), p=5)
-        st.part(g, dk(P["near"], 0.3), outline=0.0, highlight=False)
-    g = Geo()
-    for x in range(-260, 1480, 60):
-        g.capsule((x, -20, 0), (x, -20, 24), 2)
-    g.capsule((-260, -20, 18), (1480, -20, 18), 1.4)
-    g.capsule((-260, -20, 9), (1480, -20, 9), 1.4)
-    st.part(g, dk(P["mid"], 0.2), outline=0.3)
+def ch_props():
+    cx, cy, cz = CH_CASTLE
+    # (the castle's cone tips: kit.castle returns them; worked out the same way here)
+    great = kit._at(cx, cy, -42, 16, -12.0)
+    keep = kit._at(*kit._at(cx, cy, 16, 4, -12.0), 24, -17, -12.0)
+    pa = _scr((great[0], great[1], cz + 76 + 2.2 + 26), CH_FAR_E)
+    pb = _scr((keep[0], keep[1], cz + 74 + 2.2 + 13), CH_FAR_E)
+    wx, wy, wz, wr = CH_WHEEL
+    wheel = _scr((wx, wy - 6, wz), CH_MID_E)
+    crow = fauna.bird(body="#3E3A40", wing="#2E2A32", beak="#4A4448", span=12, size=0.9)
+    ring = [[i * 2, round(cx - 30 + 90 * math.cos(math.pi * i / 3)), round(pa[1] - 30 + 16 * math.sin(math.pi * i / 3)), 1] for i in range(7)]
+    swan_at = _scr((CH_POND[0] - 30, CH_POND[1] - 10, CH_POND[2] + 1.0), CH_MID_E)
+    plist = [
+        Prop("pen", "far", _pennant, [{f"p{f}": {"show": True}} for f in range(4)], (24, 22, 2), pa[1]),
+        Prop("wheel", "mid", _wheel, [{"w": {"r": -15 * f}} for f in range(4)], (2 * wr + 10, 2 * wr + 6, 3), wheel[1]),
+        Prop("crow", "far", crow, [fauna.bird_pose(f) for f in range(5)], (40, 24, 24), ring[0][2]),
+        Prop("swan", "mid", fauna.swans(), [{}], (40, 18, 3), swan_at[1]),
+        Prop("cart", "mid", fauna.horse_cart(size=1.0), [dict(fauna.walk4_pose(f, swing=16, bob=0.6, head=2.0), wh={"r": -15 * f}) for f in range(4)],
+             (90, 46, 3), CH_CART_Y),
+    ]
+    sprites = [
+        {"kind": "loop", "layer": "far", "frames": [f"pen_{i}" for i in range(4)], "fps": 5, "at": pa},
+        {"kind": "loop", "layer": "far", "frames": [f"pen_{i}" for i in (2, 3, 0, 1)], "fps": 5, "at": pb},
+        {"kind": "loop", "layer": "mid", "frames": [f"wheel_{i}" for i in range(4)], "fps": 4, "at": wheel},
+        {"kind": "path", "layer": "far", "fps": 6, "periodS": 13, "keys": ring,
+         "group": [{"frames": ["crow_4", "crow_0", "crow_1", "crow_2", "crow_3"]}, {"frames": ["crow_0", "crow_1", "crow_2", "crow_3", "crow_4"], "dx": -26, "dy": 9, "phase": 2}]},
+        {"kind": "bob", "layer": "mid", "frames": ["swan_0"], "at": swan_at, "amp": [14, 0.4], "periodS": 26, "tilt": 0.6},
+        {"kind": "path", "layer": "mid", "fps": 5, "periodS": 90,
+         "keys": [[0, 560, CH_CART_Y, 0], [2, 580, CH_CART_Y, 1], [62, 1300, CH_CART_Y, 1], [64, 1320, CH_CART_Y, 0], [90, 1320, CH_CART_Y, 0]],
+         "group": [{"frames": [f"cart_{i}" for i in range(4)]}]},
+    ]
+    return plist, sprites
 
 
 # -- Misty Moor (round 2) -------------------------------------------------------------------------------
@@ -327,7 +674,10 @@ def mm_props():
 
 
 SCENES = {
-    "classic": Scene("medieval", "classic", PAL, far, mid, sky=SKY, version=1),
+    "classic": Scene("medieval", "classic", CH_PAL, ch_far, ch_mid, back=ch_back, sky=CH_SKY, props=ch_props,
+                     hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.5}, ground="earth",
+                     # the castle is the age's landmark: a little less haze on the far hills than the default
+                     look={"far": (0.18, 0.09, 0.22)}),
     "misty_moor": Scene("medieval", "misty_moor", MM_PAL, mm_far, mm_mid, back=mm_back, sky=MM_SKY, props=mm_props,
                         hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.5}, ground="earth",
                         # a grey day with clear air between the fog banks: a little less haze on the far moor

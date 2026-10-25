@@ -5,10 +5,9 @@
  * units: its own daylight sky colours, an optional `back` strip, the `far` and `mid` strips, a props
  * atlas for ambient motion (`sceneSprites.ts`), light points that night skies switch on, and a thumbnail.
  *
- * Two layer formats load here:
- * - **format 2** (`art/backdrops/<age>/<scene>/layers.json`): everything above;
- * - **format 1** (`art/backdrops/<age>/layers.json`, the first five ages' classic strips until their
- *   round 3 re-render): a `far` and a `mid` strip with ambient specs, the code-painted sky.
+ * Every scene is in layer format 2 (`art/backdrops/<age>/<scene>/layers.json`, the classic in
+ * `<age>/classic/`). Format 1 (the first five ages' classic strips in `<age>/`, two strips and the
+ * code-painted sky) was retired in round 3 when those classics were re-rendered; a file in it is refused.
  * Which scenes have art is a static table ({@link SCENE_ART}), so the game never requests a file that
  * does not exist; a scene without art draws its age's classic scene.
  *
@@ -30,19 +29,18 @@ export const BACK_FRAME: LayerFrame = { x0: BACKDROP_X0, width: BACKDROP_WIDTH, 
 export const CLASSIC = 'classic';
 
 /**
- * Pre-rendered scenes per age: scene id → layer format. Format 1 lives in `<age>/`, format 2 in
- * `<age>/<scene>/`. Bronze, Industrial and Cosmic got their first Blender layers in format 2 (round 1);
- * the other five classics keep format 1 until their re-render (round 3). Round 2 adds the first new
- * scene of every age (format 2).
+ * Pre-rendered scenes per age: scene id → layer format (2, in `<age>/<scene>/`). Bronze, Industrial and
+ * Cosmic got their first Blender layers in round 1, round 2 added the first new scene of every age, and
+ * round 3 re-rendered the other five classics (format 1 is gone).
  */
-export const SCENE_ART: Readonly<Record<AgeId, Readonly<Record<string, 1 | 2>>>> = {
-  stone: { classic: 1, glacier_valley: 2 },
+export const SCENE_ART: Readonly<Record<AgeId, Readonly<Record<string, 2>>>> = {
+  stone: { classic: 2, glacier_valley: 2 },
   bronze: { classic: 2, aegean_harbour: 2 },
-  medieval: { classic: 1, misty_moor: 2 },
-  gunpowder: { classic: 1, treasure_cove: 2 },
+  medieval: { classic: 2, misty_moor: 2 },
+  gunpowder: { classic: 2, treasure_cove: 2 },
   industrial: { classic: 2, viaduct_gorge: 2 },
-  modern: { classic: 1, desert_airbase: 2 },
-  future: { classic: 1, skyway_metropolis: 2 },
+  modern: { classic: 2, desert_airbase: 2 },
+  future: { classic: 2, skyway_metropolis: 2 },
   cosmic: { classic: 2, ringed_giant: 2 },
 };
 
@@ -69,7 +67,7 @@ export function sceneIdOf(key: string | null | undefined): string {
 }
 
 /** The layer format of a scene's art, or null when it has none. */
-export function sceneFormat(age: AgeId, id: string): 1 | 2 | null {
+export function sceneFormat(age: AgeId, id: string): 2 | null {
   return SCENE_ART[age]?.[id] ?? null;
 }
 
@@ -81,10 +79,7 @@ export function drawnScene(age: AgeId, id: string | null | undefined): string {
 
 /** The folder of a scene's files (relative to the app's base URL), or null without art. */
 export function sceneDir(age: AgeId, id: string): string | null {
-  const f = sceneFormat(age, id);
-  if (f === 2) return `art/backdrops/${age}/${id}/`;
-  if (f === 1) return `art/backdrops/${age}/`;
-  return null;
+  return sceneFormat(age, id) ? `art/backdrops/${age}/${id}/` : null;
 }
 
 /** A scene's tile thumbnail (320 x 180 WebP), or null without art. */
@@ -153,9 +148,9 @@ export interface SceneHints {
   skyGrade?: number;
 }
 
-/** A loaded scene, either format (format 1 has no sky, props, lights or thumbnail). */
+/** A loaded scene (layer format 2). */
 export interface SceneData {
-  version: 1 | 2;
+  version: 2;
   age: AgeId;
   scene: string;
   sky: SceneSky | null;
@@ -172,6 +167,31 @@ export const SCENE_FRAMES: Record<SceneLayer, { yTop: number; height: number }> 
   far: { yTop: -560, height: 580 },
   mid: { yTop: -300, height: 320 },
 };
+
+/**
+ * Where each props atlas frame stands (round 3): the layer of the first sprite that shows it and the
+ * height of the frame's middle there, from 0 (the top of the layer's frame) to 1 (its foot). A sky theme
+ * grades a strip by height (`themeLayer`), so the props atlas is re-graded per frame at these heights
+ * (`themeProps`). Frames no sprite shows are left out.
+ */
+export function propStands(props: NonNullable<SceneData['props']>): Map<string, { layer: SceneLayer; v: number }> {
+  const out = new Map<string, { layer: SceneLayer; v: number }>();
+  const put = (name: string, layer: SceneLayer, y: number): void => {
+    const f = props.frames[name];
+    if (!f || out.has(name)) return;
+    const fr = SCENE_FRAMES[layer];
+    const middle = y + ((0.5 - f.ay) * f.h) / Math.max(0.05, f.ppl);
+    out.set(name, { layer, v: Math.max(0, Math.min(1, (middle - fr.yTop) / fr.height)) });
+  };
+  for (const s of props.sprites) {
+    if (s.kind === 'emit') continue;
+    if (s.kind === 'path') {
+      const y = s.keys[0]?.[2] ?? 0;
+      for (const m of s.group) for (const n of m.frames) put(n, s.layer, y + m.dy);
+    } else for (const n of s.frames) put(n, s.layer, s.at[1]);
+  }
+  return out;
+}
 
 const DEFAULT_HINTS: SceneHints = { celestial: 'keep', weather: 'ground', skyGrade: 1 };
 
@@ -260,27 +280,25 @@ function readLights(v: unknown): SceneLight[] {
 }
 
 /**
- * Reads a `layers.json` of either format into a {@link SceneData} (unknown or broken parts are left
- * out, never thrown), or null when it has no usable strip.
+ * Reads a `layers.json` (format 2) into a {@link SceneData} (unknown or broken parts are left out, never
+ * thrown), or null when it has no usable strip or is not format 2 (format 1 was retired in round 3).
  */
 export function parseScene(json: unknown, age: AgeId, scene: string): SceneData | null {
-  if (!isObj(json)) return null;
+  if (!isObj(json) || json['version'] !== 2) return null;
   const where = `scene ${age}.${scene}`;
-  const version = json['version'] === 2 ? 2 : 1;
   const layers: Partial<Record<SceneLayer, SceneLayerFile>> = {};
   for (const l of LAYER_NAMES) {
-    if (version === 1 && l === 'back') continue;
     const f = readLayer(json[l], l, where);
     if (f) layers[l] = f;
   }
   if (!layers.far && !layers.mid) return null;
   let props: SceneData['props'] = null;
   const p = json['props'];
-  if (version === 2 && isObj(p) && typeof p['image'] === 'string') {
+  if (isObj(p) && typeof p['image'] === 'string') {
     const frames = readFrames(p['frames']);
     props = { image: p['image'], frames, sprites: readSprites(p['sprites'], frames) };
   }
-  const lights = version === 2 ? readLights(json['lights']) : [];
+  const lights = readLights(json['lights']);
   const h = json['hints'];
   const hints: SceneHints = isObj(h)
     ? {
@@ -290,14 +308,14 @@ export function parseScene(json: unknown, age: AgeId, scene: string): SceneData 
       }
     : DEFAULT_HINTS;
   return {
-    version,
+    version: 2,
     age,
     scene,
-    sky: version === 2 ? readSky(json['sky']) : null,
+    sky: readSky(json['sky']),
     layers,
     props,
     lights: lights.slice(0, 48),
     hints,
-    thumb: version === 2 && typeof json['thumb'] === 'string' ? json['thumb'] : null,
+    thumb: typeof json['thumb'] === 'string' ? json['thumb'] : null,
   };
 }

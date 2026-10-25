@@ -352,3 +352,383 @@ def cyl_ring(g, center, r, thick, width, axis_to=None, segs=32):
     g.lathe([(r - width, -thick / 2), (r, -thick / 2), (r, thick / 2), (r - width, thick / 2)], (x, y, z),
             axis_to or (x, y, z + 1), segs=segs)
     return g
+
+
+def aurochs(hide="#4E3E34", hide_dk="#3E3028", stripe="#8A7460", horn="#E6DCC6", muzzle="#B8A48C", size=1.0, graze=False):
+    """An aurochs facing right: a deep, long body with a shoulder hump, a pale stripe along the back, a
+    heavy head (lowered to graze with `graze`) with long lyre-shaped horns curving forward and up, a
+    pale muzzle, a tasselled tail and four walking legs."""
+    def build(rig):
+        s = size
+        for leg, (x, y) in {"lf": (9.5, -3.6), "lb": (-9.0, -3.6), "rf": (9.5, 3.6), "rb": (-9.0, 3.6)}.items():
+            rig.joint(leg, "all", (x * s, y * s, 12 * s))
+            g = Geo().capsule((x * s, y * s, 0.8 * s), (x * s, y * s, 12.5 * s), 1.9 * s, 2.6 * s)
+            rig.part(leg, g, hide_dk if y > 0 else hide, outline=0.5)
+            rig.part(leg, Geo().blob((x * s + 0.4 * s, y * s, 0.9 * s), (2.1 * s, 2.0 * s, 1.0 * s), p=2.6), "#2E2622", outline=0.3)
+        rig.joint("body", "all", (0, 0, 13 * s))
+        rig.part("body", Geo().blob((0, 0, 17 * s), (15 * s, 6.6 * s, 7.4 * s), p=2.3, taper=(0.92, 1.0)), hide, outline=0.6)
+        rig.part("body", Geo().blob((7 * s, 0, 22 * s), (7.4 * s, 5.8 * s, 5.4 * s), p=2.2), hide, outline=0.5)
+        rig.part("body", Geo().blob((0.6 * s, -0.4 * s, 24.3 * s), (11 * s, 1.6 * s, 1.0 * s), p=2.4), stripe, outline=0.0)
+        rig.part("body", Geo().capsule((-14.6 * s, 0, 20 * s), (-16.4 * s, 0, 11 * s), 0.9 * s, 0.6 * s), hide_dk, outline=0.3)
+        rig.part("body", Geo().blob((-16.6 * s, 0, 10 * s), (1.4 * s, 1.2 * s, 2.0 * s), p=2.0), hide_dk, outline=0.3)
+        hz = 15.0 if graze else 21.0
+        rig.joint("head", "body", (13 * s, 0, 21 * s))
+        hx = 19.5 if graze else 18.5
+        rig.part("head", Geo().blob((hx * s, 0, hz * s), (5.2 * s, 4.0 * s, 4.4 * s), p=2.2, rot=(0, 30 if graze else 12, 0)), hide, outline=0.6)
+        rig.part("head", Geo().blob(((hx + 3.6) * s, -0.2 * s, (hz - 2.6) * s), (2.4 * s, 2.8 * s, 2.2 * s), p=2.2), muzzle, outline=0.4)
+        rig.part("head", Geo().sphere(((hx + 1.6) * s, -3.3 * s, (hz + 1.4) * s), 0.7 * s), "#221C18", outline=0.0)
+        for side in (-1, 1):
+            tk = Geo()
+            pts = [(hx - 1.0, hz + 3.0), (hx + 1.5, hz + 5.8), (hx + 5.0, hz + 7.0), (hx + 7.4, hz + 9.6)]
+            for (ax, az), (bx, bz), ra in zip(pts, pts[1:], (1.1, 0.9, 0.7)):
+                tk.capsule((ax * s, side * (3.2 + (ax - hx) * 0.15) * s, az * s), (bx * s, side * (3.6 + (bx - hx) * 0.15) * s, bz * s), ra * s, (ra - 0.25) * s)
+            rig.part("head", tk, horn, outline=0.4)
+    return build
+
+
+def hunter(fur="#9A7A5C", fur_dk="#7E624A", skin="#C89A7A", hair="#4A3A30", spear="#6E5A48", tip="#9C968A", size=1.0, carry=False):
+    """A Stone Age hunter walking right: fur tunic and leggings, a mop of hair, a spear over the shoulder
+    (or a bundle of hides with `carry`). Legs on joints for a four-frame walk (`walker_pose`)."""
+    def build(rig):
+        s = size
+        rig.joint("legF", "all", (0, 0, 10 * s))
+        rig.joint("legB", "all", (0, 0, 10 * s))
+        rig.joint("body", "all", (0, 0, 10 * s))
+        rig.part("legB", Geo().capsule((0.4 * s, 1.6 * s, 0), (0.1 * s, 1.6 * s, 10 * s), 1.6 * s, 1.8 * s), fur_dk, outline=0.5)
+        rig.part("legF", Geo().capsule((0.4 * s, -1.2 * s, 0), (0.1 * s, -1.2 * s, 10 * s), 1.6 * s, 1.8 * s), fur, outline=0.5)
+        rig.part("body", Geo().lathe([(0.2, 0), (5.4 * s, 0), (5.8 * s, 3 * s), (4.6 * s, 9 * s), (3.6 * s, 14 * s), (0.2, 15 * s)], (0, 0, 7 * s), (0, 0, 22 * s),
+                                     segs=12), fur, outline=0.6)
+        rig.part("body", Geo().blob((0.6 * s, -0.4 * s, 25.8 * s), (3.4 * s, 3.2 * s, 3.6 * s), p=2.0), skin, outline=0.6)
+        rig.part("body", Geo().blob((-0.6 * s, 0.2 * s, 27.6 * s), (3.8 * s, 3.4 * s, 2.6 * s), p=2.2), hair, outline=0.5)
+        rig.part("body", Geo().capsule((1.2 * s, -3.2 * s, 18 * s), (3.6 * s, -3.4 * s, 13 * s), 1.2 * s), skin, outline=0.4)
+        if carry:
+            rig.part("body", Geo().blob((-3.4 * s, 1.2 * s, 21 * s), (4.2 * s, 2.6 * s, 3.2 * s), p=2.4, rot=(0, 20, 0)), "#B8A080", outline=0.5)
+        else:
+            rig.part("body", Geo().capsule((-7 * s, -2.6 * s, 13 * s), (11 * s, -2.6 * s, 25 * s), 0.55 * s), spear, outline=0.4)
+            rig.part("body", Geo().lathe([(0.01, 0), (1.3 * s, 0), (0.01, 3.4 * s)], (11 * s, -2.6 * s, 25 * s), (13.8 * s, -2.6 * s, 26.9 * s), segs=8),
+                     tip, outline=0.3)
+    return build
+
+
+def walker_pose(f):
+    """Four walk frames for a two-legged walker (legs swing, the body bobs)."""
+    a = [22, 0, -22, 0][f]
+    bob = [0.0, 0.8, 0.0, 0.8][f]
+    return {"legF": {"r": a, "z": bob}, "legB": {"r": -a, "z": bob}, "body": {"z": bob}}
+
+
+# -- round 3: the Medieval classic ------------------------------------------------------------------
+def swans(body="#EEEAE0", shade="#D8D2C6", beak="#C8904E", knob="#2E2A2C", size=1.0):
+    """Two swans gliding right, one a little behind the other: boat-shaped bodies with raised wing
+    coverts and S-curved necks."""
+    def one(rig, dx, dy, s):
+        rig.part("all", Geo().blob((dx, dy, 3.0 * s), (7.4 * s, 3.4 * s, 2.6 * s), p=2.4, taper=(1.0, 0.82)), body, outline=0.5)
+        rig.part("all", Geo().blob((dx - 1.6 * s, dy, 5.2 * s), (5.4 * s, 2.8 * s, 2.3 * s), p=2.2, rot=(0, -10, 0)), shade, outline=0.4)
+        rig.part("all", Geo().blob((dx - 6.6 * s, dy, 4.6 * s), (1.8 * s, 1.6 * s, 1.6 * s), p=2.0, rot=(0, 30, 0)), body, outline=0.3)
+        pts = [(5.0, 4.4), (6.6, 7.6), (6.0, 10.8), (6.8, 13.0)]
+        neck = Geo()
+        for (ax, az), (bx, bz) in zip(pts, pts[1:]):
+            neck.capsule((dx + ax * s, dy, az * s), (dx + bx * s, dy, bz * s), 1.05 * s, 0.9 * s)
+        rig.part("all", neck, body, outline=0.4)
+        rig.part("all", Geo().blob((dx + 7.6 * s, dy, 13.3 * s), (1.7 * s, 1.2 * s, 1.25 * s), p=2.0), body, outline=0.4)
+        rig.part("all", Geo().capsule((dx + 8.8 * s, dy, 13.0 * s), (dx + 10.6 * s, dy, 12.4 * s), 0.55 * s, 0.35 * s), beak, outline=0.2)
+        rig.part("all", Geo().sphere((dx + 8.6 * s, dy - 0.6 * s, 13.4 * s), 0.45 * s), knob, outline=0.0)
+
+    def build(rig):
+        one(rig, 0.0, 0.0, size)
+        one(rig, -15.0 * size, 6.0 * size, size * 0.92)
+    return build
+
+
+def horse_cart(coat="#7A5E48", coat_dk="#5E4838", mane="#3A2E28", wood="#7A6450", wood_dk="#5A4A3C", hay="#C2B07A", hay_dk="#A8955E",
+               iron="#4A4440", coat2="#6E7A5E", skin="#D0A888", hat="#5E5040", size=1.0):
+    """A horse pulling a two-wheeled hay cart to the right, the carter perched on the load: four walking
+    legs (`walk4_pose`), a nodding head, and the near wheel on its own joint (`wh`) so it turns."""
+    def build(rig):
+        s = size
+        for leg, (x, y) in {"lf": (9.0, -3.0), "lb": (-8.0, -3.0), "rf": (9.0, 3.0), "rb": (-8.0, 3.0)}.items():
+            rig.joint(leg, "all", (x * s, y * s, 15 * s))
+            rig.part(leg, Geo().capsule((x * s, y * s, 1.0 * s), (x * s, y * s, 15.5 * s), 1.3 * s, 2.0 * s), coat_dk if y > 0 else coat, outline=0.5)
+            rig.part(leg, Geo().blob((x * s + 0.3 * s, y * s, 1.0 * s), (1.6 * s, 1.5 * s, 1.0 * s), p=2.6), "#2E2622", outline=0.3)
+        rig.joint("body", "all", (0, 0, 16 * s))
+        rig.part("body", Geo().blob((0.5 * s, 0, 19.5 * s), (12.5 * s, 4.8 * s, 5.4 * s), p=2.3), coat, outline=0.6)
+        rig.part("body", Geo().capsule((-12 * s, 0, 22 * s), (-14.5 * s, 0, 12 * s), 1.4 * s, 0.9 * s), mane, outline=0.3)
+        # the harness: a collar and a strap back to the shafts
+        rig.part("body", Geo().blob((9.6 * s, 0, 22.5 * s), (2.0 * s, 4.6 * s, 4.4 * s), p=2.2, rot=(0, -20, 0)), "#4E3E34", outline=0.4)
+        rig.joint("head", "body", (11 * s, 0, 24 * s))
+        neck = Geo().capsule((10 * s, 0, 23 * s), (15.5 * s, 0, 31 * s), 3.2 * s, 2.4 * s)
+        rig.part("head", neck, coat, outline=0.5)
+        rig.part("head", Geo().capsule((9.0 * s, 0, 26 * s), (14.4 * s, 0, 33.6 * s), 1.0 * s, 0.8 * s), mane, outline=0.3)
+        rig.part("head", Geo().blob((18.6 * s, 0, 30 * s), (4.6 * s, 2.2 * s, 2.2 * s), p=2.2, rot=(0, 36, 0), taper=(1.0, 0.7)), coat, outline=0.5)
+        rig.part("head", Geo().blob((15.6 * s, 0, 34.0 * s), (0.8 * s, 0.6 * s, 1.6 * s), p=2.0), coat_dk, outline=0.2)
+        # the cart: shafts, a plank bed on its axle, the hay load and the carter on top
+        g = Geo()
+        for side in (-1, 1):
+            g.capsule((10 * s, side * 4.6 * s, 18.5 * s), (-20 * s, side * 5.2 * s, 15.5 * s), 0.6 * s)
+        rig.part("all", g, wood_dk, outline=0.3)
+        rig.part("all", box_geo((-31 * s, 0, 15.5 * s), (11.5 * s, 6.2 * s, 2.4 * s)), wood, outline=0.5)
+        rig.part("all", box_geo((-31 * s, -6.0 * s, 19.0 * s), (11.5 * s, 0.6 * s, 1.6 * s)), wood_dk, outline=0.3)
+        rig.part("all", Geo().blob((-31 * s, 0, 23.5 * s), (12.5 * s, 6.0 * s, 6.4 * s), p=2.2, taper=(1.0, 0.86)), hay, outline=0.5)
+        rig.part("all", Geo().blob((-28 * s, -1 * s, 28.0 * s), (7.0 * s, 4.6 * s, 3.2 * s), p=2.2), hay_dk, outline=0.3)
+        # the carter: a coat, a face and a broad hat, holding the reins
+        rig.part("all", Geo().lathe([(0.2, 0), (3.6 * s, 0), (3.2 * s, 4 * s), (2.4 * s, 8 * s), (0.2, 8.6 * s)], (-24 * s, -1 * s, 27 * s), (-24 * s, -1 * s, 35.6 * s),
+                                    segs=12), coat2, outline=0.5)
+        rig.part("all", Geo().blob((-23.6 * s, -1.4 * s, 37.6 * s), (2.2 * s, 2.0 * s, 2.3 * s), p=2.0), skin, outline=0.4)
+        rig.part("all", Geo().lathe([(0.01, 0), (4.0 * s, 0), (3.8 * s, 0.5 * s), (1.9 * s, 0.8 * s), (1.8 * s, 2.6 * s), (0.01, 2.8 * s)], (-23.6 * s, -1.4 * s, 38.8 * s),
+                                    (-23.6 * s, -1.4 * s, 41.6 * s), segs=14), hat, outline=0.4)
+        rig.part("all", Geo().capsule((-21 * s, -3.6 * s, 31 * s), (9 * s, -3.6 * s, 24 * s), 0.25 * s), "#3A302A", outline=0.0)
+        # the near wheel: rim, hub and spokes on its joint
+        rig.joint("wh", "all", (-31 * s, -7.6 * s, 8.6 * s))
+        w = Geo()
+        cyl_ring(w, (-31 * s, -7.6 * s, 8.6 * s), 8.4 * s, 1.6 * s, 1.5 * s, axis_to=(-31 * s, -8.6 * s, 8.6 * s), segs=28)
+        rig.part("wh", w, wood_dk, outline=0.4)
+        sp = Geo()
+        for k in range(6):
+            a = math.pi * k / 3
+            sp.capsule((-31 * s, -7.6 * s, 8.6 * s), (-31 * s + math.cos(a) * 7.4 * s, -7.6 * s, 8.6 * s + math.sin(a) * 7.4 * s), 0.55 * s)
+        rig.part("wh", sp, wood, outline=0.2)
+        rig.part("wh", Geo().sphere((-31 * s, -8.2 * s, 8.6 * s), 1.5 * s), iron, outline=0.2)
+    return build
+
+
+def box_geo(c, r):
+    """A rounded box as its own Geo (for rig parts)."""
+    return Geo().blob(c, r, p=6.0, cuts=2)
+
+
+# -- round 3: the Gunpowder classic -----------------------------------------------------------------
+def frigate(hull="#4A3B2E", hull_lt="#6A5642", band="#D8CCAE", port="#2E2A28", sail="#E6DCC4", sail_dk="#CFC4AA", flag="#2E5E4E", size=1.0):
+    """A three-masted ship under sail facing right (Gunpowder): a dark hull with a pale gun-deck band and its
+    row of ports, a raised stern castle and a bowsprit, square sails billowing on the fore and main masts,
+    a lateen-rigged mizzen, a jib, and a long pennant at the main truck."""
+    def build(rig):
+        s = size
+        rig.part("all", Geo().blob((0, 0, 6 * s), (34 * s, 6.4 * s, 5.6 * s), p=3.0, taper=(0.72, 1.0)), hull, outline=0.6)
+        rig.part("all", Geo().blob((-2 * s, -0.4 * s, 9.6 * s), (33 * s, 6.0 * s, 1.6 * s), p=3.2), band, outline=0.3)
+        ports = Geo()
+        for k in range(9):
+            ports.blob(((-24 + k * 6) * s, -6.4 * s, 9.6 * s), (1.1 * s, 0.4 * s, 0.9 * s), p=4.0, cuts=1)
+        rig.part("all", ports, port, outline=0.0)
+        rig.part("all", Geo().blob((-27 * s, 0, 14 * s), (9 * s, 5.6 * s, 4.4 * s), p=4.0), hull_lt, outline=0.5)
+        rig.part("all", Geo().blob((-34.6 * s, -0.4 * s, 13 * s), (1.4 * s, 4.6 * s, 3.6 * s), p=3.0), band, outline=0.3)
+        rig.part("all", Geo().capsule((32 * s, 0, 10 * s), (48 * s, 0, 16 * s), 0.8 * s, 0.5 * s), "#3A3028", outline=0.3)
+        mast = Geo()
+        for x, h in ((16, 50), (-2, 60), (-21, 44)):
+            mast.capsule((x * s, 0, 9 * s), (x * s, 0, (9 + h) * s), 0.9 * s, 0.6 * s)
+        rig.part("all", mast, "#3A3028", outline=0.3)
+        sails = Geo()
+        shade = Geo()
+        for x, h, w in ((16, 50, 11), (-2, 60, 13)):
+            for k, (z0, z1, ww) in enumerate(((0.28, 0.56, 1.0), (0.6, 0.84, 0.84), (0.87, 0.98, 0.6))):
+                zb, zt = (9 + h * z0) * s, (9 + h * z1) * s
+                wx = w * ww * s
+                # a square sail bellied forward: a thin rounded slab, a shaded belly band
+                sails.blob((x * s + 1.2 * s, -1.2 * s, (zb + zt) / 2), (wx, 1.4 * s, (zt - zb) / 2), p=3.4, cuts=2)
+                shade.blob((x * s + 1.6 * s, -2.4 * s, zb + (zt - zb) * 0.32), (wx * 0.92, 0.6 * s, (zt - zb) * 0.16), p=3.0, cuts=1)
+        rig.part("all", sails, sail, outline=0.5)
+        rig.part("all", shade, sail_dk, outline=0.0)
+        rig.part("all", Geo().slab([(-21 * s, 16 * s), (-8 * s, 18 * s), (-21 * s, 50 * s)], -0.8 * s, 0.9 * s), sail, outline=0.5)
+        rig.part("all", Geo().slab([(20 * s, 14 * s), (46 * s, 16 * s), (20 * s, 54 * s)], -0.8 * s, 0.9 * s), sail, outline=0.5)
+        rig.part("all", Geo().slab([(-2 * s, 69 * s), (14 * s, 67.6 * s), (-2 * s, 66.4 * s)], 0, 0.6 * s), flag, outline=0.2)
+    return build
+
+
+def flag_frames(colour="#2E5E4E", stripe=None, length=18.0, width=10.0, pole=0.0, tail=False):
+    """A flag on its pole, four waving outlines on hidden joints (one per frame): a rectangle (with a
+    pale horizontal `stripe` across it if given) or, with `tail`, a swallow-tailed pennant. Poses:
+    `[{f"f{i}": {"show": True}} for i in range(4)]`."""
+    def outline(f, inset=0.0):
+        top, bot = [], []
+        n = 9
+        for k in range(n + 1):
+            u = k / n
+            wv = math.sin(2 * math.pi * (u * 1.1 - f / 4)) * (0.5 + width * 0.22 * u)
+            half = width / 2 * (1 - (0.35 if tail else 0.08) * u) - inset
+            x = u * length * (1 - 0.05 * abs(math.sin(math.pi * f / 2)))
+            top.append((x, pole + width / 2 + wv + half))
+            bot.append((x, pole + width / 2 + wv - half))
+        if tail:
+            return top + [(top[-1][0] - width * 0.9, (top[-1][1] + bot[-1][1]) / 2)] + list(reversed(bot))
+        return top + list(reversed(bot))
+
+    def build(rig):
+        rig.part("all", Geo().capsule((0, 0, 0), (0, 0, pole + width + 1), 0.5), "#5E5040", outline=0.3)
+        rig.part("all", Geo().sphere((0, 0, pole + width + 1.4), 0.9), "#C9A227", outline=0.2)
+        for f in range(4):
+            j = rig.joint(f"f{f}", "all", (0, 0, 0), hidden=True)
+            rig.part(j, Geo().slab(outline(f), 0, 0.6), colour, outline=0.3)
+            if stripe:
+                pts = outline(f, inset=width * 0.36)
+                rig.part(j, Geo().slab(pts, -0.4, 0.4), stripe, outline=0.0)
+    return build
+
+
+# -- round 3: the Modern classic --------------------------------------------------------------------
+def car(body="#7E8670", roof=None, window="#3E4450", size=1.0):
+    """A mid-century sedan facing right: a long rounded body, a glasshouse, round wheels."""
+    def build(rig):
+        s = size
+        rig.part("all", Geo().blob((0, 0, 3.4 * s), (8.6 * s, 3.4 * s, 1.9 * s), p=3.2), body, outline=0.5)
+        rig.part("all", Geo().blob((-0.8 * s, 0, 5.6 * s), (4.8 * s, 3.0 * s, 1.6 * s), p=2.8, taper=(1.0, 0.8)), roof or body, outline=0.4)
+        rig.part("all", Geo().blob((-0.6 * s, -1.4 * s, 5.6 * s), (4.0 * s, 1.8 * s, 1.0 * s), p=3.0), window, outline=0.0)
+        w = Geo()
+        for wx in (-5.2, 5.0):
+            w.lathe([(0.01, -0.8), (1.7 * s, -0.8), (1.7 * s, 0.8), (0.01, 0.8)], (wx * s, -2.8 * s, 1.7 * s), (wx * s, -3.6 * s, 1.7 * s), segs=12)
+        rig.part("all", w, "#2A2A2E", outline=0.3)
+    return build
+
+
+def bus(body="#B8A67A", stripe="#62664A", window="#3E4450", size=1.0):
+    """A city bus facing right: a long box with a rounded front, a window band, a stripe, wheels."""
+    def build(rig):
+        s = size
+        rig.part("all", Geo().blob((0, 0, 5.4 * s), (13 * s, 3.8 * s, 4.0 * s), p=4.0), body, outline=0.5)
+        rig.part("all", Geo().blob((0, -0.4 * s, 6.8 * s), (12.4 * s, 3.6 * s, 1.3 * s), p=4.0), window, outline=0.0)
+        rig.part("all", Geo().blob((0, -0.3 * s, 3.4 * s), (12.8 * s, 3.7 * s, 0.6 * s), p=4.0), stripe, outline=0.0)
+        w = Geo()
+        for wx in (-8.4, 8.2):
+            w.lathe([(0.01, -0.8), (2.0 * s, -0.8), (2.0 * s, 0.8), (0.01, 0.8)], (wx * s, -3.2 * s, 2.0 * s), (wx * s, -4.0 * s, 2.0 * s), segs=12)
+        rig.part("all", w, "#2A2A2E", outline=0.3)
+    return build
+
+
+def tug(hull="#3A3F45", deck="#62664A", house="#D8D0BC", stack="#3A3F45", band="#B0306A", size=1.0):
+    """A river tug facing right: a low dark hull with a fender, a pale deckhouse with a wheelhouse, a
+    funnel with a red-violet band, a mast."""
+    def build(rig):
+        s = size
+        rig.part("all", Geo().blob((0, 0, 3.4 * s), (15 * s, 4.6 * s, 3.2 * s), p=3.0, taper=(0.8, 1.0)), hull, outline=0.5)
+        rig.part("all", Geo().blob((0, -0.3 * s, 6.0 * s), (14.4 * s, 4.3 * s, 0.8 * s), p=3.0), deck, outline=0.3)
+        rig.part("all", box_geo((-1 * s, 0, 9.0 * s), (6.4 * s, 3.4 * s, 2.6 * s)), house, outline=0.4)
+        rig.part("all", box_geo((2 * s, 0, 13.0 * s), (3.4 * s, 3.0 * s, 1.8 * s)), house, outline=0.4)
+        rig.part("all", Geo().blob((2.6 * s, -1.6 * s, 13.2 * s), (2.6 * s, 1.6 * s, 0.8 * s), p=3.0), "#3E4450", outline=0.0)
+        rig.part("all", Geo().capsule((-5 * s, 0, 11 * s), (-5.6 * s, 0, 18 * s), 1.6 * s, 1.4 * s), stack, outline=0.4)
+        rig.part("all", Geo().capsule((-5.3 * s, -0.2 * s, 15 * s), (-5.4 * s, -0.2 * s, 16.4 * s), 1.65 * s, 1.5 * s), band, outline=0.0)
+        rig.part("all", Geo().capsule((4 * s, 0, 14.8 * s), (4 * s, 0, 22 * s), 0.35 * s), "#3A3A3E", outline=0.2)
+        rig.part("all", Geo().capsule((14 * s, -0.4 * s, 3.6 * s), (16 * s, -0.4 * s, 4.6 * s), 1.4 * s), "#2E2E30", outline=0.2)
+    return build
+
+
+def diesel_loco(body="#62664A", stripe="#B8A67A", cab="#3E4450", size=1.0, length=26.0):
+    """A diesel locomotive facing right: a long hood with a rounded nose, a cab window band, a pale
+    stripe, two bogies."""
+    def build(rig):
+        s = size
+        L = length
+        rig.part("all", Geo().blob((0, 0, 8 * s), (L / 2 * s, 4.6 * s, 5.0 * s), p=4.0, taper=(1.0, 0.92)), body, outline=0.5)
+        rig.part("all", Geo().blob((L / 2 * s - 1.5 * s, -0.4 * s, 10.4 * s), (2.6 * s, 4.0 * s, 1.4 * s), p=3.0), cab, outline=0.0)
+        rig.part("all", Geo().blob((0, -0.3 * s, 6.0 * s), (L / 2 * s - 0.4, 4.4 * s, 0.6 * s), p=4.0), stripe, outline=0.0)
+        w = Geo()
+        for wx in (-L / 2 + 4, -L / 2 + 8, L / 2 - 8, L / 2 - 4):
+            w.lathe([(0.01, -0.8), (2.0 * s, -0.8), (2.0 * s, 0.8), (0.01, 0.8)], (wx * s, -4.4 * s, 2.2 * s), (wx * s, -5.2 * s, 2.2 * s), segs=12)
+        rig.part("all", w, "#2A2A2E", outline=0.3)
+    return build
+
+
+# -- round 3: the Future classic --------------------------------------------------------------------
+def monorail_car(body="#E4E6EE", window="#3A3E48", glow="#9CF0D4", size=1.0, length=30.0, nose=True):
+    """A monorail car facing right: a long rounded capsule body (a pointed nose with `nose`), a dark window
+    band with a mint light line under it, the beam clamp below."""
+    def build(rig):
+        s = size
+        L = length
+        rig.part("all", Geo().blob((0, 0, 7 * s), (L / 2 * s, 4.4 * s, 4.2 * s), p=3.2 if not nose else 2.6, taper=(1.0, 0.92)), body, finish="gloss", outline=0.5)
+        rig.part("all", Geo().blob((0, -0.6 * s, 8.4 * s), (L / 2 * s - 2 * s, 3.9 * s, 1.4 * s), p=3.4), window, finish="gloss", outline=0.0)
+        rig.part("all", Geo().blob((0, -0.8 * s, 6.0 * s), (L / 2 * s - 2.4 * s, 3.8 * s, 0.35 * s), p=3.4), glow=glow, outline=0)
+        rig.part("all", Geo().blob((0, 0, 2.0 * s), (L / 2 * s - 4 * s, 2.4 * s, 1.6 * s), p=4.0), "#5A5E68", outline=0.3)
+    return build
+
+
+def jeep(body="#6E7258", dark="#3A3F45", size=1.0):
+    """A field jeep facing right: a boxy body with a flat bonnet, a fold-down screen, a spare wheel, wheels."""
+    def build(rig):
+        s = size
+        rig.part("all", box_geo((0, 0, 4.6 * s), (7.6 * s, 3.6 * s, 2.0 * s)), body, outline=0.5)
+        rig.part("all", box_geo((4.6 * s, 0, 6.4 * s), (3.2 * s, 3.4 * s, 0.6 * s)), body, outline=0.4)
+        rig.part("all", Geo().capsule((2.2 * s, -3.2 * s, 6.6 * s), (2.6 * s, -3.2 * s, 10.0 * s), 0.35 * s), dark, outline=0.2)
+        rig.part("all", Geo().capsule((2.2 * s, 3.2 * s, 6.6 * s), (2.6 * s, 3.2 * s, 10.0 * s), 0.35 * s), dark, outline=0.2)
+        rig.part("all", Geo().capsule((2.4 * s, -3.2 * s, 10.0 * s), (2.4 * s, 3.2 * s, 10.0 * s), 0.35 * s), dark, outline=0.2)
+        w = Geo()
+        for wx in (-4.8, 4.6):
+            w.lathe([(0.01, -0.9), (2.1 * s, -0.9), (2.1 * s, 0.9), (0.01, 0.9)], (wx * s, -3.4 * s, 2.1 * s), (wx * s, -4.3 * s, 2.1 * s), segs=12)
+        w.lathe([(0.01, -0.8), (1.9 * s, -0.8), (1.9 * s, 0.8), (0.01, 0.8)], (-8.4 * s, 0, 5.0 * s), (-9.4 * s, 0, 5.0 * s), segs=12)
+        rig.part("all", w, "#2A2A2E", outline=0.3)
+    return build
+
+
+# -- round 3: Sabre Savanna (Stone, Epic) ---------------------------------------------------------
+def sabretooth(coat="#C09A6A", coat_dk="#9C7A52", belly="#E2CFA8", fang="#F2EAD8", spots="#8A6A48", size=1.0):
+    """A sabre-tooth cat lying on its rock, facing left toward the lane: a heavy forequarter, a short tail
+    on its own joint (`tail`, it flicks), a broad head with the two long fangs, a few dark spots."""
+    def build(rig):
+        s = size
+        rig.part("all", Geo().blob((2 * s, 0, 6 * s), (12 * s, 5.4 * s, 4.6 * s), p=2.2, taper=(1.0, 0.92)), coat, outline=0.6)
+        rig.part("all", Geo().blob((-6 * s, 0, 8.4 * s), (6.4 * s, 5.6 * s, 5.6 * s), p=2.2), coat, outline=0.5)
+        rig.part("all", Geo().blob((1 * s, -1.2 * s, 3.4 * s), (10 * s, 4.0 * s, 1.8 * s), p=2.4), belly, outline=0.3)
+        for k, (x, z) in enumerate(((4, 9.2), (8, 8.0), (0, 10.0), (11, 7.0))):
+            rig.part("all", Geo().blob((x * s, -4.6 * s, z * s), (1.1 * s, 0.5 * s, 0.9 * s), p=2.0), spots, outline=0.0)
+        # forelegs stretched out in front, paws
+        for side in (-1.8, 1.8):
+            rig.part("all", Geo().capsule((-8 * s, side * s, 4 * s), (-16 * s, side * s, 2.2 * s), 1.9 * s, 1.6 * s), coat_dk if side > 0 else coat, outline=0.5)
+            rig.part("all", Geo().blob((-17 * s, side * s, 1.8 * s), (2.2 * s, 1.7 * s, 1.3 * s), p=2.4), coat, outline=0.4)
+        rig.part("all", Geo().capsule((12 * s, 2 * s, 3 * s), (8 * s, 3 * s, 1.6 * s), 2.4 * s, 1.8 * s), coat_dk, outline=0.4)
+        # the head, raised and alert, the fangs down past the jaw
+        rig.part("all", Geo().blob((-12.5 * s, 0, 13.4 * s), (4.6 * s, 4.2 * s, 3.8 * s), p=2.2), coat, outline=0.6)
+        rig.part("all", Geo().blob((-16 * s, -0.4 * s, 12.2 * s), (2.6 * s, 2.8 * s, 2.0 * s), p=2.2), belly, outline=0.4)
+        for side in (-1, 1):
+            rig.part("all", Geo().blob((-11 * s, side * 3.0 * s, 17 * s), (1.2 * s, 0.8 * s, 1.6 * s), p=2.0), coat_dk, outline=0.3)
+            rig.part("all", Geo().lathe([(0.01, 0), (0.7 * s, 0), (0.01, 4.6 * s)], (-16.4 * s, side * 1.2 * s, 11.2 * s), (-16.8 * s, side * 1.2 * s, 6.6 * s), segs=8),
+                     fang, outline=0.3)
+        rig.part("all", Geo().sphere((-14.6 * s, -3.4 * s, 14.4 * s), 0.6 * s), "#2A2420", outline=0.0)
+        rig.joint("tail", "all", (13 * s, 0, 7 * s))
+        rig.part("tail", Geo().capsule((13 * s, 0, 7 * s), (18 * s, 0, 5.6 * s), 1.2 * s, 0.9 * s), coat_dk, outline=0.4)
+    return build
+
+
+def giant_deer(coat="#8E6E52", coat_dk="#6E5440", belly="#C8B090", antler="#D8C8A8", size=1.0, graze=False):
+    """A giant deer (Megaloceros) facing right: a long-legged deer body with a shoulder hump and the huge
+    palmate antlers, walking (`walk4_pose`) or grazing with its head down."""
+    def build(rig):
+        s = size
+        for leg, (x, y) in {"lf": (8.5, -2.6), "lb": (-8.0, -2.6), "rf": (8.5, 2.6), "rb": (-8.0, 2.6)}.items():
+            rig.joint(leg, "all", (x * s, y * s, 17 * s))
+            rig.part(leg, Geo().capsule((x * s, y * s, 0.8 * s), (x * s, y * s, 17.5 * s), 0.9 * s, 1.7 * s), coat_dk if y > 0 else coat, outline=0.5)
+            rig.part(leg, Geo().blob((x * s, y * s, 0.8 * s), (1.1 * s, 1.0 * s, 0.7 * s), p=2.6), "#2E2622", outline=0.3)
+        rig.joint("body", "all", (0, 0, 18 * s))
+        rig.part("body", Geo().blob((0, 0, 21 * s), (12 * s, 4.6 * s, 5.0 * s), p=2.2), coat, outline=0.6)
+        rig.part("body", Geo().blob((6 * s, 0, 25 * s), (5.6 * s, 4.4 * s, 4.2 * s), p=2.2), coat, outline=0.5)
+        rig.part("body", Geo().blob((0, -0.6 * s, 17.6 * s), (9 * s, 3.8 * s, 1.8 * s), p=2.4), belly, outline=0.3)
+        rig.part("body", Geo().blob((-12 * s, 0, 23 * s), (1.6 * s, 1.2 * s, 2.0 * s), p=2.0), belly, outline=0.3)
+        rig.joint("head", "body", (10 * s, 0, 25 * s))
+        hz = 14.0 if graze else 31.0
+        hx = 17.0 if graze else 15.0
+        rig.part("head", Geo().capsule((9 * s, 0, 25 * s), (hx * s, 0, (hz + 1) * s), 2.6 * s, 1.8 * s), coat, outline=0.5)
+        rig.part("head", Geo().blob(((hx + 2.6) * s, 0, hz * s), (3.4 * s, 1.8 * s, 1.8 * s), p=2.2, rot=(0, 30, 0)), coat, outline=0.5)
+        for side in (-1, 1):
+            g = Geo()
+            base = ((hx + 0.6) * s, side * 1.4 * s, (hz + 1.8) * s)
+            tip = ((hx - 4) * s, side * 6 * s, (hz + 8) * s)
+            g.capsule(base, tip, 0.6 * s, 0.5 * s)
+            g.blob(((hx - 7) * s, side * 8 * s, (hz + 10) * s), (5.6 * s, 1.0 * s, 3.4 * s), p=2.4, rot=(0, -20, side * 20))
+            for k in range(4):
+                g.capsule(((hx - 9 + k * 2.2) * s, side * 8.4 * s, (hz + 12.6) * s), ((hx - 10 + k * 2.8) * s, side * 8.6 * s, (hz + 15.6 + k * 0.4) * s), 0.4 * s, 0.25 * s)
+            rig.part("head", g, antler, outline=0.4)
+    return build
+
+
+def dust_devil(i, w=46, h=150, color=(0.86, 0.78, 0.62)):
+    """A dust devil (PaintedProp frame i of 4): a soft twisting funnel of dust, wide and faint at the top,
+    a dense swirl at the foot, the twist advancing a quarter turn per frame."""
+    import numpy as np
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    v = 1.0 - yy / (h - 1)                      # 0 at the foot, 1 at the top
+    width = 0.12 + 0.36 * v ** 1.3
+    sway = 0.06 * np.sin(v * 5.0 + i * 1.57)
+    u = (xx / (w - 1) - 0.5 - sway) / np.maximum(0.02, width)
+    body = np.clip(1.0 - np.abs(u), 0, 1) ** 1.4
+    bands = 0.6 + 0.4 * np.sin(v * 22.0 - i * 1.57 + u * 2.4)
+    a = body * bands * (0.35 + 0.65 * (1 - v)) * np.clip(v * 8, 0, 1) * np.clip((1 - v) * 3 + 0.2, 0, 1)
+    out = np.zeros((h, w, 4), np.float32)
+    out[..., 0], out[..., 1], out[..., 2] = color
+    out[..., 3] = np.clip(a * 0.62, 0, 1)
+    return out

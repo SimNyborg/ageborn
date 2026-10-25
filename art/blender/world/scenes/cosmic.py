@@ -405,18 +405,21 @@ def rg_far(st, P):
     gw = pt.g(RG["window"], glow=True)
     wx, wy, wz = 300.0, 300.0, 196.0
     gmd.capsule((wx, wy, 70), (wx, wy, wz - 30), 4.0, 3.0)
-    # the wheel: a torus tipped toward the camera, spokes to a hub
+    # the wheel: a torus tipped toward the camera, spokes to a hub; hazed into the scene (round 3, review 2:
+    # in the station's white it was the brightest thing in the half, brighter than the units)
     from mathutils import Euler, Vector
     tip = (68.0, 0.0, 0.0)
-    kit.tube_ring(gh, (wx, wy, wz), 66, 7, rot=tip, segs=40)
-    kit.annulus(gb, (wx, wy, wz), 58.4, 59.6, 15.2, rot=tip, segs=64)
+    ghw, gbw = pt.g(hz(RG["hull"], 0.34), outline=0.3), pt.g(hz(RG["band"], 0.3), outline=0.3)
+    gmw = pt.g(hz(RG["metal_dk"], 0.24), outline=0.3)
+    kit.tube_ring(ghw, (wx, wy, wz), 66, 7, rot=tip, segs=40)
+    kit.annulus(gbw, (wx, wy, wz), 58.4, 59.6, 15.2, rot=tip, segs=64)
     e = Euler(tuple(math.radians(v) for v in tip), "XYZ").to_matrix()
     for k in range(6):
         a = math.pi * 2 * k / 6
         q = Vector((wx, wy, wz)) + e @ Vector((60 * math.cos(a), 60 * math.sin(a), 0))
-        gmd.capsule((wx, wy, wz), tuple(q), 1.8)
-    gh.sphere((wx, wy, wz), 12, cuts=4)
-    gb.lathe([(12.4, -2), (13, -2), (13, 2), (12.4, 2)], (wx, wy, wz), (wx, wy, wz + 1), segs=24)
+        gmw.capsule((wx, wy, wz), tuple(q), 1.8)
+    ghw.sphere((wx, wy, wz), 12, cuts=4)
+    gbw.lathe([(12.4, -2), (13, -2), (13, 2), (12.4, 2)], (wx, wy, wz), (wx, wy, wz + 1), segs=24)
     for k in range(12):
         a = math.pi * 2 * (k + 0.5) / 12
         q = Vector((wx, wy, wz)) + e @ Vector((66 * math.cos(a), 66 * math.sin(a), 0)) + Vector((0, -7.2, 0))

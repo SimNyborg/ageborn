@@ -8,9 +8,14 @@
  * the simulated search found (`side.online`), so their card mirrors yours: banner, avatar, name, the
  * Player chip, trophies and arena, plan level, connection bars and flags; no AI chip, "AI General",
  * tier or General lines. Like an online VS it is not skipped by a tap; it starts by itself.
+ *
+ * Each half shows what its half of the lane opens with (round 3): your scene for the opening age under
+ * your sky and your base in that age's skin (a Legendary model in its aura, with its ambient layer),
+ * and the opponent's own look's scene, sky and base (AI Generals keep the classic scene and sky).
  */
 import './vs.css';
 import { modifierDescKey, modifierNameKey } from '@/content/keys';
+import type { AgeId } from '@/contracts';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { Avatar, GeneralPortrait } from '../../components/Avatar';
 import { BannerArt } from '../../components/avatar/ProfileArt';
@@ -23,7 +28,7 @@ import { useUi } from '../context';
 import { hudTeamColors } from '../../hud/model';
 import { PlayerChip } from '../home/online';
 import { SkinnedBase } from '../home/skinnedBase';
-import { equippedOf, owns } from '../model/cosmetics';
+import { equippedOf, findItem, owns } from '../model/cosmetics';
 import { generalOf, onlineOf, opponentName, personalityOf } from '../model/opponent';
 import { activePlan, formatAges, formatName, planAvgLevel } from '../model/plan';
 import { featureOpen, levelNameKey } from '../model/warPath';
@@ -156,10 +161,31 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
   const mine = (k: string | null | undefined) => (k && owns(s, content, k) ? k : null);
   const foeLook = o.side.look;
   const tutorial = request.mode === 'tutorial';
-  // Your backdrop skin behind your half, in the age the battle opens with (review 11); the AI's half
-  // keeps its team colours, as its half of the lane keeps the classic sky.
-  const backdrop = eq ? mine(eq.backdrop) : null;
   const firstAge = formatAges(content, o.format)[0] ?? 'stone';
+  // What your half of the lane will open with, as the battle draws it (meta's `sideLook`: owned and
+  // released items, a scene or base skin only on its own age): your sky over your scene for the opening
+  // age (round 3; VS showed no scene before), and your base in that age's skin, the troop-system skin
+  // (Crystal Spire) first, as `baseSkinsOf` resolves it.
+  const shown = (k: string | null | undefined, age?: AgeId): string | null => {
+    const key = mine(k);
+    if (!key) return null;
+    const x = findItem(content, key);
+    if (x && (x.released === false || (age && x.age !== undefined && x.age !== age))) return null;
+    return key;
+  };
+  const backdrop = eq ? shown(eq.backdrop) : null;
+  const scene = eq ? shown(eq.scenes[firstAge], firstAge) : null;
+  const troopBase = s.skins.equipped[`base.${firstAge}`];
+  const myBase = troopBase && s.skins.owned.includes(troopBase) && content.skins[troopBase]?.released !== false ? `baseSkin.${troopBase}` : eq ? shown(eq.baseSkins[firstAge], firstAge) : null;
+  // The opponent's half shows what its look has, as its half of the lane does: a found player's scene
+  // and sky when it has them; AI Generals keep the classic scene and sky (A18.9.4).
+  const foeTroop = o.side.skins?.[`base.${firstAge}`];
+  const foeBase = foeTroop ? `baseSkin.${foeTroop}` : (foeLook?.baseSkins?.[firstAge] ?? null);
+  const foeScene = foeLook?.scenes?.[firstAge] ?? null;
+  const foeSky = foeLook?.backdrop ?? null;
+  const reduce = s.settings.reduceMotion;
+  // The bases' ambient layer and a Legendary aura move unless Reduce motion or Lite graphics is on.
+  const stillBases = reduce || s.settings.graphics === 'lite';
 
   return (
     <section
@@ -177,15 +203,17 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
       <h1 id="vs-title" class="ui-sr">
         {t('ui.vs.title', { name })}
       </h1>
-      <div class={`vs__half vs__half--me${backdrop ? ' has-backdrop' : ''}`}>
-        {/* Each side stands in its own half of the lane: its sky (your backdrop skin, or the age's
-            classic sky), its ground and its base (AUDIT #10). */}
-        <span class="vs__backdrop" {...(backdrop ? { 'data-testid': 'vs-backdrop', 'data-skin': backdrop } : {})}>
-          <BackdropLook skin={backdrop} age={firstAge} animate={!s.settings.reduceMotion} />
+      <div class={`vs__half vs__half--me${backdrop || scene ? ' has-backdrop' : ''}`}>
+        {/* Each side stands in its own half of the lane: its scene under its sky (your equipped scene
+            for the opening age and your sky, else the age's classic scene and sky), its ground and its
+            base (AUDIT #10). */}
+        <span class="vs__backdrop" data-testid="vs-backdrop" data-skin={backdrop ?? ''} data-scene={scene ?? ''} data-age={firstAge}>
+          <BackdropLook skin={backdrop} scene={scene} age={firstAge} animate={!reduce} />
         </span>
         <span class="vs__ground" aria-hidden="true" />
         <span class="vs__base vs__base--me" aria-hidden="true">
-          <SkinnedBase age={firstAge} skin={mine(eq?.baseSkins[firstAge])} animate={false} />
+          {/* the base's ambient fx and a Legendary model's aura live here too (still under Reduce motion and Lite) */}
+          <SkinnedBase age={firstAge} skin={myBase} animate={!stillBases} testid="vs-base-me" />
         </span>
         <div class="vs__card vs__card--me" data-testid="vs-me">
           <span class="vs__bust">
@@ -214,12 +242,12 @@ export function VsScreen(p: { route: RouteOf<'vs'> }) {
         </div>
       </div>
       <div class="vs__half vs__half--foe">
-        <span class="vs__backdrop vs__backdrop--foe">
-          <BackdropLook skin={null} age={firstAge} animate={false} />
+        <span class="vs__backdrop vs__backdrop--foe" data-testid="vs-backdrop-foe" data-skin={foeSky ?? ''} data-scene={foeScene ?? ''}>
+          <BackdropLook skin={foeSky} scene={foeScene} age={firstAge} animate={false} />
         </span>
         <span class="vs__ground" aria-hidden="true" />
         <span class="vs__base vs__base--foe" aria-hidden="true">
-          <SkinnedBase age={firstAge} skin={foeLook?.baseSkins?.[firstAge] ?? null} animate={false} side={1} />
+          <SkinnedBase age={firstAge} skin={foeBase} animate={!stillBases} side={1} testid="vs-base-foe" />
         </span>
         {online ? (
           // The found online player's card mirrors yours (owner decision 2026-10-07).

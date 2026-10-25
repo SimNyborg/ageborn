@@ -8,7 +8,10 @@
  * - the Flag Atlas card opens the Atlas, and a save without a national flag reads that its first flag
  *   costs no Dust (never the word the copy review bans);
  * - title ribbons show how a title is earned (parchment, metal caps, wax seal, gold leaf);
- * - Reduce motion leaves no looping animation in the Customize panel.
+ * - Reduce motion leaves no looping animation in the Customize panel;
+ * - round 3 (PLAN 2g C11): every released scene, equipped in Backdrops, shows on VS for its age; a base
+ *   skin shows its model on its tile and on VS (a Legendary one in its aura); a decoration spot picked on
+ *   the stage takes the next prop.
  */
 import { expect, test, type Page } from '@playwright/test';
 import { pastOnboarding, watchPage } from './helpers';
@@ -18,11 +21,14 @@ test.use({ viewport: { width: 844, height: 390 }, hasTouch: true });
 type Save = {
   currencies: { amber: number; dust: number };
   settings: { reduceMotion: boolean };
-  cosmetics: { owned: string[]; equipped: { nationalFlag: string | null } };
+  flags: Record<string, boolean>;
+  cosmetics: { owned: string[]; equipped: { nationalFlag: string | null; decorations: (string | null)[]; scenes: Record<string, string>; baseSkins: Record<string, string> } };
 };
 type Controller = { save: { peek(): Save }; setSave(s: Save, o?: object): void };
 
 interface Patch {
+  /** Save flags to set (a Skirmish setup replaces the one before). */
+  flags?: Record<string, boolean>;
   dust?: number;
   /** Keys, or prefixes ending in a dot, to remove from the owned list. */
   drop?: string[];
@@ -38,9 +44,14 @@ async function patch(page: Page, o: Patch): Promise<void> {
     const s = c.save.peek();
     const gone = (k: string): boolean => (o.drop ?? []).some((d) => (d.endsWith('.') ? k.startsWith(d) : k === d));
     const owned = [...s.cosmetics.owned.filter((k) => !gone(k)), ...(o.add ?? []).filter((k) => !s.cosmetics.owned.includes(k))];
+    const flags = { ...s.flags };
+    if (Object.keys(o.flags ?? {}).some((k) => k.startsWith('ui-skirmish.'))) {
+      for (const k of Object.keys(flags)) if (k.startsWith('ui-skirmish.f.') || k.startsWith('ui-skirmish.g.')) flags[k] = false;
+    }
     c.setSave(
       {
         ...s,
+        flags: { ...flags, ...(o.flags ?? {}) },
         currencies: { ...s.currencies, dust: o.dust ?? s.currencies.dust },
         settings: { ...s.settings, reduceMotion: o.reduceMotion ?? s.settings.reduceMotion },
         cosmetics: { ...s.cosmetics, owned, equipped: { ...s.cosmetics.equipped, ...(o.national !== undefined ? { nationalFlag: o.national } : {}) } },
@@ -209,5 +220,175 @@ test.describe('Customize item detail', () => {
       await page.waitForTimeout(600);
       expect(await loops(), g).toEqual([]);
     }
+  });
+});
+
+/** What the VS screen showed while it was up (read every frame: it shows for about 2 s, then the battle starts). */
+interface VsSeen {
+  age: string;
+  /** Your half: the scene VS was given and the scene its still shows. */
+  scene: string;
+  stillScene: string;
+  /** The scene's still was drawn (a loaded picture of that scene). */
+  scenePicture: boolean;
+  /** Your base: its skin, whether its model's picture was drawn, and whether it stood in an aura. */
+  skin: string;
+  model: boolean;
+  aura: boolean;
+}
+
+/** Watches the VS screen from now on, every frame while it shows; read the result with `vsSeen`. */
+async function watchVs(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    type Seen = { age: string; scene: string; stillScene: string; scenePicture: boolean; skin: string; model: boolean; aura: boolean };
+    const w = window as unknown as { __vsSeen?: Seen | null };
+    w.__vsSeen = null;
+    const t0 = performance.now();
+    const loaded = (i: HTMLImageElement | null | undefined): boolean => !!i && i.complete && i.naturalWidth > 0;
+    const tick = (): void => {
+      const vs = document.querySelector('[data-screen="vs"]');
+      if (vs) {
+        const bd = vs.querySelector('[data-testid="vs-backdrop"]');
+        const still = bd?.querySelector('.cos-bd');
+        const base = vs.querySelector('[data-testid="vs-base-me"]');
+        const prev = w.__vsSeen;
+        const scene = bd?.getAttribute('data-scene') ?? '';
+        const stillScene = still?.getAttribute('data-scene') ?? '';
+        w.__vsSeen = {
+          age: bd?.getAttribute('data-age') ?? '',
+          scene,
+          stillScene,
+          scenePicture: (prev?.scenePicture ?? false) || (loaded(bd?.querySelector<HTMLImageElement>('img.cos-bd__img')) && stillScene === scene),
+          skin: base?.getAttribute('data-skin') ?? '',
+          model: (prev?.model ?? false) || loaded(base?.querySelector<HTMLImageElement>('img.cos-base__body')),
+          aura: (prev?.aura ?? false) || !!vs.querySelector('[data-testid="vs-base-me-aura"]'),
+        };
+      }
+      // until the VS has come and gone (or 60 s)
+      if (performance.now() - t0 < 60_000 && !(w.__vsSeen && !vs)) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+function vsSeen(page: Page): Promise<VsSeen | null> {
+  return page.evaluate(() => (window as unknown as { __vsSeen?: VsSeen | null }).__vsSeen ?? null);
+}
+
+/**
+ * Plays a Skirmish whose war opens in `age` from Home's Battle (one age, `w1.<age>`, against an AI General),
+ * returns what its VS showed once the battle has started, and goes back to Home.
+ */
+async function vsOf(page: Page, age: string): Promise<VsSeen | null> {
+  await patch(page, { flags: { 'ui-homeMode.skirmish': true, 'ui-skirmish.set': true, 'ui-skirmish.g.boomsworth': true, [`ui-skirmish.f.w1.${age}`]: true } });
+  await page.getByTestId('tab-battle').first().click();
+  await expect(page.getByTestId('play').first()).toBeVisible({ timeout: 30_000 });
+  await watchVs(page);
+  await page.getByTestId('play').first().click();
+  const vs = page.locator('[data-screen="vs"]');
+  await expect(vs).toBeVisible({ timeout: 30_000 });
+  // the VS hands over to the battle by itself (2 s); then back to Home for the next look
+  await expect(vs).toHaveCount(0, { timeout: 30_000 });
+  const seen = await vsSeen(page);
+  await page.evaluate(() => (window as unknown as { __agebornDev: { controller: { home(): void } } }).__agebornDev.controller.home());
+  await expect(page.getByTestId('play').first()).toBeVisible({ timeout: 30_000 });
+  return seen;
+}
+
+/** The age ids of an age picker, in order. */
+async function agesOf(page: Page, picker: string): Promise<string[]> {
+  const ids = await page.locator(`[data-testid="${picker}"] [data-testid^="age-tab-"]`).evaluateAll((els) => els.map((e) => e.getAttribute('data-testid') ?? ''));
+  return ids.map((id) => id.slice('age-tab-'.length));
+}
+
+test.describe('Customize round 3: scenes and skins on VS, decoration spots on the stage', () => {
+  test('every released scene, equipped in Backdrops, shows on VS for its age (PLAN 2g C11)', async ({ page }) => {
+    // one Skirmish VS per scene, on software GL (CI's WebKit runs about four times slower)
+    test.setTimeout(480_000);
+    const problems = watchPage(page);
+    await ready(page);
+    await openCustomize(page, 'backdrops');
+    // the released scenes are the ones Backdrops lists, per age
+    const scenes: { age: string; key: string }[] = [];
+    for (const age of await agesOf(page, 'cust-bd-age')) {
+      await page.locator(`[data-testid="cust-bd-age"] [data-testid="age-tab-${age}"]`).click();
+      const keys = await page.locator('[data-testid="scene-grid"] [data-testid^="item-scene."]').evaluateAll((els) => els.map((e) => (e.getAttribute('data-testid') ?? '').slice('item-'.length)));
+      for (const key of keys) scenes.push({ age, key });
+    }
+    expect(scenes.length, 'released scenes').toBeGreaterThanOrEqual(6);
+    await patch(page, { add: scenes.map((x) => x.key) });
+    for (const { age, key } of scenes) {
+      await openCustomize(page, 'backdrops');
+      await page.locator(`[data-testid="cust-bd-age"] [data-testid="age-tab-${age}"]`).click();
+      await page.locator(`[data-testid="item-${key}"] .cos-tile__hit`).click();
+      await expect(page.getByTestId(`state-${key}`)).toBeVisible();
+      expect((await saveOf(page)).cosmetics.equipped.scenes[age]).toBe(key);
+      const seen = await vsOf(page, age);
+      expect(seen, `${key}: VS seen`).not.toBeNull();
+      expect(seen!.age, key).toBe(age);
+      expect(seen!.scene, key).toBe(key);
+      expect(seen!.stillScene, key).toBe(key);
+      expect(seen!.scenePicture, `${key}: its still drawn on VS`).toBe(true);
+    }
+    expect(problems.errors).toEqual([]);
+  });
+
+  test('a base skin shows its model on its tile and on VS; a Legendary one stands in its aura', async ({ page }) => {
+    test.setTimeout(240_000);
+    const problems = watchPage(page);
+    await ready(page);
+    await patch(page, { add: ['baseSkin.rose_keep', 'baseSkin.nebula_ark'] });
+    for (const [age, key, legendary] of [
+      ['medieval', 'baseSkin.rose_keep', false],
+      ['cosmic', 'baseSkin.nebula_ark', true],
+    ] as const) {
+      await openCustomize(page, 'bases');
+      await page.locator(`[data-testid="cust-age"] [data-testid="age-tab-${age}"]`).click();
+      const tile = page.getByTestId(`item-${key}`);
+      await tile.locator('.cos-tile__hit').click();
+      await expect(page.getByTestId(`state-${key}`)).toBeVisible();
+      // the tile shows the model (Track B's thumbnail, or the model's portrait on its scene strip)
+      await expect
+        .poll(() => tile.locator('img').evaluateAll((els) => (els as HTMLImageElement[]).some((i) => i.complete && i.naturalWidth > 0 && /cos-btile__thumb|cos-base__body/.test(i.className))), { timeout: 20_000 })
+        .toBe(true);
+      if (legendary) await expect(tile.locator('.cos-base__aura')).toHaveCount(1);
+      const seen = await vsOf(page, age);
+      expect(seen, `${key}: VS seen`).not.toBeNull();
+      expect(seen!.skin, key).toBe(key);
+      expect(seen!.model, `${key}: its model drawn on VS`).toBe(true);
+      expect(seen!.aura, `${key}: the aura on VS`).toBe(legendary);
+    }
+    expect(problems.errors).toEqual([]);
+  });
+
+  test('a decoration spot picked on the stage takes the next prop', async ({ page }) => {
+    test.setTimeout(120_000);
+    const problems = watchPage(page);
+    await ready(page);
+    await patch(page, { add: ['decoration.lion_statue', 'decoration.owl_statue'] });
+    await openCustomize(page, 'decorations');
+    // the live stage takes over from the still with the same spot buttons; let it, where WebGL allows
+    const live = await page
+      .waitForFunction(() => document.querySelector('[data-testid="deco-stage"]')?.getAttribute('data-live') === 'true', null, { timeout: 20_000 })
+      .then(() => true)
+      .catch(() => false);
+    test.info().annotations.push({ type: 'measure', description: `decorations stage live: ${live}` });
+    const heading = page.locator('#cust-panel .cust-h').first();
+    for (const [spot, key, name] of [
+      [2, 'decoration.lion_statue', /by the gate/i],
+      [1, 'decoration.owl_statue', /courtyard/i],
+    ] as const) {
+      await page.getByTestId(`anchor-${spot}`).click();
+      await expect(page.getByTestId(`anchor-${spot}`)).toHaveAttribute('aria-pressed', 'true');
+      await expect(heading).toHaveText(name);
+      await page.locator(`[data-testid="item-${key}"] .cos-tile__hit`).click();
+      await expect.poll(async () => (await saveOf(page)).cosmetics.equipped.decorations[spot]).toBe(key);
+      await expect(page.getByTestId(`anchor-${spot}`)).toHaveAttribute('aria-label', new RegExp(key === 'decoration.lion_statue' ? 'Lion Statue' : 'Wise Owl'));
+    }
+    // every spot is a 44 px target, on the live stage as on the still (its layout box: a re-filled spot pops in)
+    const sizes = await page.locator('[data-testid^="anchor-"]').evaluateAll((els) => els.map((e) => Math.min((e as HTMLElement).offsetWidth, (e as HTMLElement).offsetHeight)));
+    expect(sizes).toHaveLength(3);
+    expect(Math.min(...sizes)).toBeGreaterThanOrEqual(44);
+    expect(problems.errors).toEqual([]);
   });
 });

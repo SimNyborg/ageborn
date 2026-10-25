@@ -378,6 +378,19 @@ export function propGradeTint(th: BackdropTheme | null, layer: 'back' | 'far' | 
   return (ch(16) << 16) | (ch(8) << 8) | ch(0);
 }
 
+/**
+ * An emitter's puff tint under a sky theme (round 3): the theme's grade mixed into the puff's own tint the
+ * way the strips' bake mixes it in (`themeLayer`), so a plume rising off a graded strip keeps its colour:
+ * darker under a night sky, paler under Winterfall. Unlike `propGradeTint` it can lighten, because a
+ * puff's tint is a colour, not a multiply over finished art (`bd.puff` is white). `th` as in
+ * `propGradeTint`.
+ */
+export function moteGradeTint(tint: number, th: BackdropTheme | null, layer: 'back' | 'far' | 'mid'): number {
+  if (!th) return tint;
+  const a = Math.max(0, Math.min(1, th.gradeMix * (layer === 'mid' ? th.midGradeScale : 1)));
+  return mix(tint, mix(th.grade, th.skyBottom, 0.15), a);
+}
+
 /** Two tints multiplied channel by channel. */
 export function mulTint(a: number, b: number): number {
   const ch = (shift: number): number => Math.round((((a >> shift) & 255) * ((b >> shift) & 255)) / 255);
@@ -563,6 +576,51 @@ function paintCelestial(ctx: Ctx2D, th: BackdropTheme, f: LayerFrame): void {
  * Re-grades a far or mid silhouette layer already on `canvas` (the whole canvas is the frame `f`):
  * the colour grade over every shape, then the theme's prop along every top edge.
  */
+/**
+ * The grade `themeLayer` lays over a strip at height `v` (0 = the top of the layer's frame, 1 = its
+ * foot): full strength at the top, a little lighter and nearer the sky's foot colour lower down (keeps
+ * depth). A canvas gradient interpolates its stops without premultiplying, as this does.
+ */
+export function layerGradeAt(th: BackdropTheme, kind: 'far' | 'mid', v: number): { color: number; alpha: number } {
+  const amount = th.gradeMix * (kind === 'mid' ? th.midGradeScale : 1);
+  const t = Math.max(0, Math.min(1, v));
+  const a0 = Math.min(1, amount * 1.1);
+  const a1 = amount * 0.85;
+  return { color: mix(th.grade, mix(th.grade, th.skyBottom, 0.35), t), alpha: a0 + (a1 - a0) * t };
+}
+
+/** One props atlas frame to re-grade (`themeProps`): its rect in atlas px, its layer's grade kind and theme, and the height it stands at. */
+export interface PropGradeRect {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** `themeLayer`'s kind for the layer (the back strip is graded as 'far', with its own theme). */
+  kind: 'far' | 'mid';
+  th: BackdropTheme;
+  /** 0 = the top of the layer's frame, 1 = its foot (`propStands`). */
+  v: number;
+}
+
+/**
+ * Re-grades a scene's props atlas for a sky theme like its strips (review 2 leftover, round 3): each frame
+ * takes its strip's grade at the height its sprite stands (`layerGradeAt`), so a herd or a boat matches
+ * the strip around it under a night sky and under Winterfall alike (a multiply could only darken). Only
+ * the opaque pixels change (source-atop), as on the strips.
+ */
+export function themeProps(ctx: Ctx2D, rects: readonly PropGradeRect[]): void {
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalCompositeOperation = 'source-atop';
+  for (const r of rects) {
+    const g = layerGradeAt(r.th, r.kind, r.v);
+    if (g.alpha <= 0) continue;
+    ctx.fillStyle = toCss(g.color, g.alpha);
+    ctx.fillRect(r.x, r.y, r.w, r.h);
+  }
+  ctx.restore();
+}
+
 export function themeLayer(canvas: HTMLCanvasElement, ctx: Ctx2D, id: string, kind: 'far' | 'mid', age: AgeId, th: BackdropTheme, f: LayerFrame): void {
   const W = canvas.width;
   const H = canvas.height;
@@ -570,11 +628,12 @@ export function themeLayer(canvas: HTMLCanvasElement, ctx: Ctx2D, id: string, ki
   ctx.save();
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.globalCompositeOperation = 'source-atop';
-  const amount = th.gradeMix * (kind === 'mid' ? th.midGradeScale : 1);
   // a vertical grade: full strength at the top, a little lighter at the foot (keeps depth)
   const gr = ctx.createLinearGradient(0, 0, 0, H);
-  gr.addColorStop(0, toCss(th.grade, Math.min(1, amount * 1.1)));
-  gr.addColorStop(1, toCss(mix(th.grade, th.skyBottom, 0.35), amount * 0.85));
+  const top = layerGradeAt(th, kind, 0);
+  const foot = layerGradeAt(th, kind, 1);
+  gr.addColorStop(0, toCss(top.color, top.alpha));
+  gr.addColorStop(1, toCss(foot.color, foot.alpha));
   ctx.fillStyle = gr;
   ctx.fillRect(0, 0, W, H);
   ctx.restore();

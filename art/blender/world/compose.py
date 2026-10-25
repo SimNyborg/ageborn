@@ -5,7 +5,7 @@
   python art/blender/world/compose.py <src> <out.png> --skins rose_keep:medieval --turrets public/art/turrets \
       [--standard public/art/bases]
 
-For each base found: the four crumble stages with Treasury 0..3 and the flags, tinted blue,
+For each base found: the four crumble stages with Treasury 0..3, the flags and the prop loops, tinted blue,
 with the age's turrets standing on the four mounts (mount anchors checked visually), and one
 orange (mirrored) copy. A skin sheet adds a second row: crumble 0 in both team colours and the two
 colourblind presets (Blue/Yellow, High contrast; the opponent's copies mirrored), and with `--standard`
@@ -84,11 +84,19 @@ def base_cell(base, turrets, stage, treasury, color, mirror, frame=0):
     flags = base.meta.get("flags", [])
     back = [f for f in flags if f.get("z") == "back" and stage <= f.get("crumbleMax", 3)]
     front = [f for f in flags if f.get("z") != "back" and stage <= f.get("crumbleMax", 3)]
+    # prop loops (round 3: sails, a dish, orbiting shards) at a step of their loop, where the stage shows them
+    props = [p for p in base.meta.get("props", []) if p.get("crumbleMin", 0) <= stage <= p.get("crumbleMax", 3)]
+    for p in props:
+        if p.get("z") == "back":
+            draw(cell, base, p["clip"], frame * 3, (gx, gy), color, mirror)
     for f in back:
         draw(cell, base, f["clip"], frame, (gx, gy), color, mirror)
     draw(cell, base, "body", stage, (gx, gy), color, mirror)
     if treasury > 0:
         draw(cell, base, "treasury", treasury - 1, (gx, gy), color, mirror)
+    for p in props:
+        if p.get("z") != "back":
+            draw(cell, base, p["clip"], frame * 3, (gx, gy), color, mirror)
     for f in front:
         draw(cell, base, f["clip"], frame, (gx, gy), color, mirror)
     sx = -1 if mirror else 1

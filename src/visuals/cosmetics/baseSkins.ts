@@ -134,12 +134,104 @@ function baseSkinShapes(id: string): Shape[] | null {
   ];
 }
 
+const f1 = (v: number): string => (Math.round(v * 10) / 10).toString();
+
+/** A four-point glint at x, y (radius r) that flashes every `dur` s from `begin` s (still and faint without motion). */
+function glintSvg(x: number, y: number, r: number, color: string, dur: number, begin: number, animate: boolean): string {
+  const q = r * 0.22;
+  const d = `M${f1(x)} ${f1(y - r)}L${f1(x + q)} ${f1(y - q)}L${f1(x + r)} ${f1(y)}L${f1(x + q)} ${f1(y + q)}L${f1(x)} ${f1(y + r)}L${f1(x - q)} ${f1(y + q)}L${f1(x - r)} ${f1(y)}L${f1(x - q)} ${f1(y - q)}Z`;
+  if (!animate) return `<path d="${d}" fill="${color}" opacity="0.7"/>`;
+  return `<path d="${d}" fill="${color}" opacity="0"><animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;.55;.7;.85;1" dur="${dur}s" begin="-${f1(begin)}s" repeatCount="indefinite"/></path>`;
+}
+
+/**
+ * The menu pictures' life for the models with a prop loop (round 3, PLAN 2c): the fx layer over the model's
+ * portrait (`BaseLook` on VS, Home and in Customize; Track C draws the Legendary aura under it) shows what the
+ * lane's loop shows. Crystal Spire: glints flash on its ring of shards while two sparks circle with them.
+ * Nebula Ark: soft wisps of nebula swirl round the hull (gone while they pass behind it) under twinkling stars.
+ * Positions are in the portrait's 100 x 100 box (the model stands on its bottom edge, 96% of its height; laid
+ * out from the installed sheets). Still under Reduce motion: the glints and wisps rest, faint.
+ */
+function modelFxSvg(id: string, animate: boolean): string | null {
+  const parts: string[] = [];
+  if (id === 'crystal_spire') {
+    const white = '#ffffff';
+    const lilac = '#f4eeff';
+    // the ring of shards round the top of the great crystal (centre 45.5, 36), and the tip's point
+    [
+      [33.5, 34.5, 3.2, 2.9, 0.2],
+      [52, 32.2, 2.8, 3.4, 1.4],
+      [58, 38.5, 2.6, 2.6, 0.9],
+      [41, 40.2, 2.4, 3.1, 2.2],
+      [45, 7.5, 2.8, 4.4, 3.0],
+    ].forEach(([x, y, r, dur, b]) => parts.push(glintSvg(x!, y!, r!, white, dur!, b!, animate)));
+    // facets of the spire catching the light lower down
+    [
+      [36, 52, 2.4, 3.6, 0.6],
+      [56, 60, 2.2, 4.2, 2.6],
+      [33, 72, 2.0, 3.8, 1.8],
+    ].forEach(([x, y, r, dur, b]) => parts.push(glintSvg(x!, y!, r!, lilac, dur!, b!, animate)));
+    // two sparks circling with the shards (the ring's ellipse), each hidden while it passes behind the crystal
+    const orbit = 'M59 36A13.5 4 0 1 1 32 36A13.5 4 0 1 1 59 36Z';
+    for (const [b, r] of [
+      [0, 1.3],
+      [1.3, 1.0],
+    ] as const) {
+      if (!animate) continue;
+      parts.push(
+        `<circle r="${r}" fill="${white}"><animateMotion path="${orbit}" dur="2.6s" begin="-${b}s" repeatCount="indefinite"/>` +
+          `<animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;.45;.5;.95;1" dur="2.6s" begin="-${b}s" repeatCount="indefinite"/></circle>`,
+      );
+    }
+  } else if (id === 'nebula_ark') {
+    // wisps swirling round the hull (centre x 45, the hull about 15 wide each side), at three heights
+    parts.push(
+      '<defs><radialGradient id="nw"><stop offset="0" stop-color="#e6d4ff" stop-opacity="0.85"/>' +
+        '<stop offset="0.5" stop-color="#b98be4" stop-opacity="0.5"/><stop offset="1" stop-color="#9a5fd2" stop-opacity="0"/></radialGradient></defs>',
+    );
+    [
+      [72, 19, 6.5, 0],
+      [55, 17, 5.6, 1.9],
+      [38, 14, 5.0, 3.6],
+    ].forEach(([y, rx, dur, b], i) => {
+      const left = 45 - rx!;
+      const right = 45 + rx!;
+      const w = 7 - i;
+      if (!animate) {
+        parts.push(`<ellipse cx="${f1(45 - rx! * 0.4)}" cy="${f1(y! + 1.5)}" rx="${w}" ry="2.4" fill="url(#nw)" opacity="0.7"/>`);
+        return;
+      }
+      // the front half sweeps left to right a little lower (nearer), then the wisp is behind the hull
+      const path = `M${f1(left)} ${f1(y!)}Q45 ${f1(y! + 5)} ${f1(right)} ${f1(y!)}Q45 ${f1(y! - 4)} ${f1(left)} ${f1(y!)}Z`;
+      parts.push(
+        `<ellipse rx="${w}" ry="2.4" fill="url(#nw)"><animateMotion path="${path}" dur="${dur}s" begin="-${f1(b!)}s" repeatCount="indefinite"/>` +
+          `<animate attributeName="opacity" values="0;0.9;0.9;0;0" keyTimes="0;.1;.42;.5;1" dur="${dur}s" begin="-${f1(b!)}s" repeatCount="indefinite"/></ellipse>`,
+      );
+    });
+    [
+      [33, 30, 2.0, 3.1, 0.3],
+      [58, 26, 1.8, 2.7, 1.2],
+      [30, 62, 1.8, 3.4, 2.0],
+      [61, 66, 2.0, 2.9, 0.8],
+      [47, 18, 1.6, 3.7, 2.6],
+    ].forEach(([x, y, r, dur, b]) => parts.push(glintSvg(x!, y!, r!, '#ffffff', dur!, b!, animate)));
+  } else {
+    return null;
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none">${parts.join('')}</svg>`;
+}
+
 /**
  * A base skin's tint swatch or its particle layer (see {@link CosmeticSvgOptions.layer}). The
  * particles move like the lane's: snow and petals fall, embers and fireflies rise, dust drifts,
- * glints and stars twinkle; still when `animate` is off (Reduce motion).
+ * glints and stars twinkle; still when `animate` is off (Reduce motion). A model with a prop loop
+ * (Crystal Spire, Nebula Ark) has its own layer instead (`modelFxSvg`, round 3).
  */
 export function baseSkinLayerSvg(id: string, layer: 'tint' | 'fx', animate: boolean): string | null {
+  if (layer === 'fx') {
+    const own = modelFxSvg(id, animate);
+    if (own) return own;
+  }
   const s = BASE_SKINS[id];
   if (!s) return null;
   if (layer === 'tint') return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" preserveAspectRatio="none"><rect width="10" height="10" fill="${hex(s.tint)}"/></svg>`;

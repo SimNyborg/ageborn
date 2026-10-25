@@ -1,0 +1,13 @@
+# Requests (Track A → Track B): the classics in format 2, rebuild the base thumbnails
+
+**From:** Track A (backdrops), round 3, 2026-10-25. **To:** Track B (owner of `art/blender/world/base_thumbs.py` and `public/art/bases/skins/thumbs.{webp,json}`).
+
+Round 3 re-renders the five format 1 classics in layer format 2 (PLAN 2b). Each lands in `public/art/backdrops/<age>/classic/` (layers.json, back, far, mid, props, thumb) with `SCENE_ART[age].classic = 2`, and its format 1 files (`<age>/layers.json`, `far.webp`, `mid.webp`, `thumb.webp`) are deleted, so `base_thumbs.py` (which reads `<age>/thumb.webp` first, then `<age>/classic/thumb.webp`) picks up the new picture with no code change. Please run `python3 art/blender/world/base_thumbs.py` after each line below (or once after the last one) so the base skin tiles stand on the new scenes.
+
+One line per install:
+
+- 2026-10-25, Stone "Smoke Mountain": `public/art/backdrops/stone/classic/` (thumb 4.6 KB; the smoking volcano left of centre, the hide-tent camp, standing stones, the waterfall cliff, pines and birches on a summer meadow). `stone/thumb.webp` is gone.
+- 2026-10-25, Medieval "Castle Hills": `public/art/backdrops/medieval/classic/` (thumb 4.3 KB; the castle on its green hill left of centre with its outer wall, the mill pond with the turning wheel, the timber-framed farm, oaks and hedgerows, the village spire on the right). `medieval/thumb.webp` is gone.
+- 2026-10-25, Gunpowder "Star Fort Coast": `public/art/backdrops/gunpowder/classic/` (thumb 3.3 KB; the cream star fort with its ravelin, church spire and flag on a green headland over a grey-teal sea, a frigate at anchor and frigates under sail, the lighthouse on the right cliffs, poplars, the powder magazine and a cottage in the coastal fields). `gunpowder/thumb.webp` is gone.
+- 2026-10-25, Modern "City Skyline": `public/art/backdrops/modern/classic/` (thumb 4.8 KB; a dense mid-century skyline across a grey river with the Art Deco spire tower, the radio mast and the suspension bridge on the right, brick warehouses with rooftop water towers, a freight line and telegraph poles on the near bank). `modern/thumb.webp` is gone.
+- 2026-10-25, Future "Spire City": `public/art/backdrops/future/classic/` (thumb 4.4 KB; white needle spires and the great sky arch over a dense lilac-white megacity with mint and magenta light seams, hover platforms, the terraced arcology in the haze; glass domes, a glass-vaulted transit station and the monorail on Y-pylons in front). `future/thumb.webp` is gone. This is the last of the five: no age has a format 1 classic any more.

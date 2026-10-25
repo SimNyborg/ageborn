@@ -11,7 +11,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { content } from '@/content';
 import { FakeArtProvider } from '@/contracts/fakes/art';
 import type { AgeId, BaseDressingView, BaseView, CosmeticKey, DioramaRequest, SideLook, SkinId, TeamPreset, VisualId } from '@/contracts';
-import { DIORAMA_GROUND, DioramaStage, dioramaFraming, dioramaGateX, dioramaMount, dioramaTurrets, resolveDiorama, SharedApp, type DioramaApp } from '../showcase/diorama';
+import { DRESSING_ANCHORS } from '@/visuals/cosmetics/dressing';
+import { DIORAMA_GROUND, DIORAMA_POLE_LU, DIORAMA_SPOTS_LU, DioramaStage, dioramaAnchors, dioramaFraming, dioramaGateX, dioramaMount, dioramaTurrets, resolveDiorama, SharedApp, type DioramaApp } from '../showcase/diorama';
 import { WORLD_LEFT_LU } from '../layout';
 
 interface Lease {
@@ -354,5 +355,103 @@ describe('one app, paused and parked', () => {
     expect(await h.ready).toBe(true);
     expect(art.calls.filter((c) => c.method === 'createTurret')).toHaveLength(0);
     h.destroy();
+  });
+});
+
+describe('anchors for the tap targets over the stage (round 3)', () => {
+  /** Stage px of a world point (x lu, y lu above the ground) under `dioramaFraming`. */
+  const toPx = (w: number, h: number, side: 0 | 1, xLu: number, yLu = 0): [number, number] => {
+    const f = dioramaFraming(w, h, side);
+    return [f.x + xLu * f.scale, f.y - yLu * f.scale];
+  };
+
+  it('match the lane dressing\'s anchors', () => {
+    expect([...DIORAMA_SPOTS_LU]).toEqual([...DRESSING_ANCHORS.decorations]);
+    expect(DIORAMA_POLE_LU).toBe(DRESSING_ANCHORS.pole);
+  });
+
+  it('gives the three spots in anchor order, then the pole, centred on their anchors and standing on the ground', () => {
+    for (const [w, h] of [
+      [610, 343],
+      [244, 166],
+      [380, 214],
+    ] as const) {
+      for (const side of [0, 1] as const) {
+        const list = dioramaAnchors(w, h, side);
+        expect(list).toHaveLength(4);
+        const gate = dioramaGateX(side);
+        const facing = side === 1 ? -1 : 1;
+        const ground = toPx(w, h, side, gate)[1];
+        DIORAMA_SPOTS_LU.forEach((a, i) => {
+          const b = list[i]!;
+          const [cx] = toPx(w, h, side, gate + a * facing);
+          expect(b.x + b.w / 2, `${w}x${h} side ${side} spot ${i}`).toBeCloseTo(cx, 0);
+          expect(b.y + b.h).toBeCloseTo(ground, 0);
+          // a prop's size: about 55 lu tall, some 50 lu wide
+          const f = dioramaFraming(w, h, side);
+          expect(b.h / f.scale).toBeGreaterThan(55);
+          expect(b.w / f.scale).toBeGreaterThan(40);
+          // inside the stage
+          expect(b.x).toBeGreaterThanOrEqual(0);
+          expect(b.x + b.w).toBeLessThanOrEqual(w);
+          expect(b.y).toBeGreaterThanOrEqual(0);
+        });
+        // the pole: its x inside the box, the box up to the cap (176 lu) and toward +x, where its flags fly
+        const p = list[3]!;
+        const [px] = toPx(w, h, side, gate + DIORAMA_POLE_LU * facing);
+        expect(p.x).toBeLessThan(px);
+        expect(p.x + p.w).toBeGreaterThan(px + 40 * dioramaFraming(w, h, side).scale);
+        expect(p.y).toBeLessThan(toPx(w, h, side, gate, 176)[1]);
+        expect(p.y + p.h).toBeCloseTo(ground, 0);
+      }
+    }
+    // side 1 mirrors the spots: the first stands furthest from the lane on either side
+    const l0 = dioramaAnchors(610, 343, 0);
+    const l1 = dioramaAnchors(610, 343, 1);
+    expect(l0[0]!.x).toBeLessThan(l0[2]!.x);
+    expect(l1[0]!.x).toBeGreaterThan(l1[2]!.x);
+  });
+
+  it('the handle reports them in host px from the mount on, and calls back when the stage resizes', async () => {
+    let fire: (() => void) | null = null;
+    const RO = vi.fn(function (this: unknown, cb: () => void) {
+      fire = cb;
+      return { observe: () => {}, disconnect: () => {} };
+    });
+    vi.stubGlobal('ResizeObserver', RO);
+    try {
+      const t = setup();
+      const host = { getBoundingClientRect: () => ({ width: 610, height: 343 }), clientWidth: 610, clientHeight: 343 };
+      const stage = t.mount(host as unknown as HTMLElement, req());
+      // valid before the stage is live (the UI can lay its targets out under the still)
+      expect(stage.anchorsPx()).toEqual(dioramaAnchors(610, 343, 0));
+      const seen: number[] = [];
+      const off = stage.onAnchorsChange(() => seen.push(stage.anchorsPx()[0]!.w));
+      expect(await stage.ready).toBe(true);
+      // going live tells once
+      expect(seen.length).toBe(1);
+      host.clientWidth = 380;
+      host.clientHeight = 214;
+      fire!();
+      expect(stage.anchorsPx()).toEqual(dioramaAnchors(380, 214, 0));
+      expect(seen.length).toBe(2);
+      expect(seen[1]).toBeLessThan(seen[0]!);
+      expect(t.app!.size).toEqual([380, 214]);
+      // the same size again: no call
+      fire!();
+      expect(seen.length).toBe(2);
+      off();
+      host.clientWidth = 600;
+      fire!();
+      expect(seen.length).toBe(2);
+      // side 1 reports the mirrored spots
+      const s1 = t.mount(hostOf(), req({ side: 1 }));
+      expect(s1.anchorsPx()).toEqual(dioramaAnchors(610, 343, 1));
+      s1.destroy();
+      stage.destroy();
+      expect(stage.onAnchorsChange(() => {})).toBeTypeOf('function');
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });

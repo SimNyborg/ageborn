@@ -19,77 +19,282 @@ import random
 from ageborn_art.geometry import Geo
 
 from world.scenes import fauna, kit
-from world.scenes.common import Prop, Scene, box, cyl, dk, ground_band, lt, mixc, ridge, rock, round_tree
+from world.scenes.common import Prop, Scene, box, cyl, mixc, rock
 from world.scenes.kit import Parts
 
-PAL = dict(skyTop=0x8cb6c6, skyBottom=0xf2e2c0, far=0x8ea3a6, mid=0x6c8874, near=0x546c56, light=0xfff0d0)
-
-# the sky the game paints for this classic (sky.ts paintSky), for its thumbnail
-SKY = {"top": "#8CB6C6", "bottom": "#F2E2C0", "horizon": "#F8E8C7", "celestial": "sun", "sunAt": [1060, -470, 44]}
-
-
-def far(st, P):
-    back = mixc(P["far"], P["skyBottom"], 0.35)
-    ridge(st, back, -300, 900, -10, 180, 420, 21, lumps=8, jag=0.12)
-    # the sea on the right with three ships
-    g = Geo()
-    box(g, (1200, 200, 0), (330, 200, 2), p=6)
-    st.part(g, mixc(P["skyBottom"], P["far"], 0.45), outline=0.0, finish="gloss")
-    for sx, s in ((1010, 1.0), (1210, 0.8), (1350, 0.65)):
-        gh, gs = Geo(), Geo()
-        gh.blob((sx, 180, 18 * s + 6), (62 * s, 16 * s, 16 * s), p=3.0)
-        for dx, h in ((-20, 150), (20, 120)):
-            gh.capsule((sx + dx * s, 180, 20 * s), (sx + dx * s, 180, h * s + 20), 2.4 * s)
-            gs.blob((sx + dx * s + 3, 176, h * s * 0.72 + 10), (16 * s, 3, h * s * 0.3), p=2.4)
-        st.part(gh, dk(P["far"], 0.05), outline=0.0)
-        st.part(gs, lt(P["far"], 0.4), outline=0.0)
-    ridge(st, P["far"], -300, 860, 10, 90, 140, 22, lumps=8, jag=0.08, peaks=False)
-    # windmills: towers here, sails turn as code ambient
-    for wx in (120, 420, 690):
-        g = Geo()
-        cyl(g, (wx, 60, 50), (wx, 60, 140), 18, 11, bevel=1, segs=12)
-        g.lathe([(0, 0), (14, 0), (0.5, 20), (0, 21)], (wx, 60, 140), (wx, 60, 161), segs=12)
-        st.part(g, dk(P["far"], 0.06), outline=0.0)
-        st.amb("rotate", "bd.windmill.sails", (wx, 40, 146), "far", speed=40, tint=lt(P["far"], 0.2))
+# -- Star Fort Coast (the classic, round 3) ----------------------------------------------------------
+SF_PAL = dict(skyTop=0x8FB8D2, skyBottom=0xEAE8DE, light=0xFFF4DC, far=0x8EA0A0, mid=0x7E9066, near=0x5E7050)
+SF = dict(
+    sea=0x9DB2B0, sea_dk=0x8AA2A2, foam=0xEEF2F0, rock=0xA8A08E, rock_dk=0x8A8474, grass=0x86A06A, grass_dk=0x6E8858,
+    grass_lt=0x9CAE7E, dune=0xD8CCA8, dune_dk=0xC2B690, marram=0xA8A878, stone=0xE6DCC2, stone_dk=0xC8BCA0, cord=0xD8CCB0,
+    slate=0x6E6A70, tile=0x9A7A66, tile_dk=0x84685A, green=0x2E5E4E, wood=0x4A3B2E, wood_lt=0x6A5642, brass=0xC9A227,
+    poplar=0x5E7A50, poplar_dk=0x4E6A44, hedge=0x5A7450, plaster=0xEFE6CF, dark=0x3E3A40, iron=0x3E3C3C, wicker=0x9A8460,
+    light_band=0x8E2A4A, glass=0xB4C4C4, crop=0xB8AE7C, crop2=0x9EA670,
+)
+SF_SKY = {"top": "#8FB8D2", "bottom": "#EAE8DE", "horizon": "#F2F0E6", "cloudTint": "#F8F8F4", "celestial": "sun",
+          "sunAt": [240, -540, 40], "clouds": 1.0}
+SF_FAR_E = math.radians(8.0)
+SF_MID_E = math.radians(12.0)
+SF_SEA_Z = -10.0
+SF_FORT = (500.0, 440.0, 62.0, 26.0, 100.0)  # the fort: x, y, base z, wall height, bastion radius (far)
+SF_LIGHT = (1190.0, 470.0, 40.0)             # the lighthouse: x, y, base z (far)
+SF_SHIP_A = 760.0                            # the ships' depths (far)
+SF_SHIP_B = 1100.0
+SF_SLOOP = (150.0, 700.0)                    # the sloop at anchor in the bay (far): x, depth
+SF_GULLS = (980.0, -170.0)                   # the gulls' ring (mid, screen lu)
 
 
-def mid(st, P):
-    ground_band(st, P["mid"])
-    rnd = random.Random(12)
-    ga, gt = Geo(), Geo()
-    for i in range(9):
-        x = -200 + i * 190 + rnd.uniform(-30, 30)
-        if 520 < x < 720:
-            continue
-        r = rnd.uniform(28, 38)
-        round_tree(ga, x, 90, r, 100 + i)
-        gt.capsule((x, 90, 0), (x, 90, r), 3.4)
-    st.part(gt, 0x5E4836, outline=0.4)
-    st.part(ga, P["near"], outline=0.5)
-    g = Geo()
-    for i in range(12):
-        x = -200 + i * 150
-        rock(g, (x, 40, 20), (52, 26, 30), seed=60 + i, jag=0.1, p=2.4)
-    st.part(g, dk(P["near"], 0.06), outline=0.5)
-    g = Geo()
-    for hx_ in (320, 900):
-        g.lathe([(0, 0), (22, 0), (22, 18), (12, 38), (0, 44)], (hx_, 0, 0), (hx_, 0, 44), segs=14)
-        g.lathe([(0, 0), (16, 0), (16, 12), (8, 28), (0, 32)], (hx_ + 40, 10, 0), (hx_ + 40, 10, 32), segs=14)
-    st.part(g, mixc(P["light"], P["mid"], 0.35), outline=0.5, finish="hair")
-    g = Geo()
-    box(g, (615, 40, 37), (55, 26, 37), p=6)
-    st.part(g, mixc(P["light"], P["near"], 0.4), outline=0.5)
-    g = Geo().lathe([(0, 0), (70, 0), (0.5, 50), (0, 52)], (615, 40, 74), (615, 40, 126), segs=4, rot=(0, 0, 45),
-                    squash=(1.0, 0.5))
-    st.part(g, dk(P["mid"], 0.2), outline=0.5)
-    g = Geo()
-    cyl(g, (650, 50, 100), (650, 50, 140), 6, bevel=0.5, segs=10)
-    st.part(g, dk(P["near"], 0.1), outline=0.4)
-    g = Geo()
-    for k in range(3):
-        box(g, (585 + k * 30, 13, 40), (7, 1, 8), p=5)
-    st.part(g, dk(P["near"], 0.3), outline=0.0, highlight=False)
-    st.amb("emit", "fx.p.smoke", (650, 50, 144), "mid", rate=0.7, speed=14, scale=1.2, tint=lt(P["mid"], 0.4), alpha=0.45)
+def sf_back(st, P):
+    """The far coast across the water: low, hazy downs on the horizon (lowest under the moons' place)."""
+    hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
+    pt = Parts()
+    g, g2 = pt.g(hz(SF["grass_dk"], 0.42), outline=0.0), pt.g(hz(SF["rock"], 0.4), outline=0.0)
+    for x, rx, h, seed in ((-180, 220, 70, 1), (120, 180, 52, 2), (420, 200, 40, 3), (1180, 230, 74, 4), (1440, 160, 60, 5), (700, 120, 26, 6)):
+        kit.hill(g if seed % 2 else g2, x, 1500, SF_SEA_Z - 4, rx, 60, h, seed=seed, jag=0.04, p=2.4)
+    pt.flush(st)
+
+
+def _lighthouse(pt, st, x, y, z):
+    """A lighthouse on its rock: a tapering cream tower with two wine bands, a gallery, the lantern room
+    and a dark cap. Returns the lamp point."""
+    gs, gb = pt.g(SF["stone"], outline=0.4), pt.g(SF["light_band"], outline=0.3)
+    cyl(gs, (x, y, z), (x, y, z + 78), 9.0, 6.4, bevel=0.6, segs=18)
+    for zb in (z + 26, z + 54):
+        cyl(gb, (x, y, zb), (x, y, zb + 7), 9.0 - (zb - z) / 78 * 2.6 + 0.25, 9.0 - (zb + 7 - z) / 78 * 2.6 + 0.25, bevel=0.2, segs=18)
+    cyl(pt.g(SF["stone_dk"], outline=0.3), (x, y, z + 77), (x, y, z + 80), 9.4, bevel=0.3, segs=18)
+    cyl(pt.g(SF["glass"], finish="gloss", outline=0.3), (x, y, z + 80), (x, y, z + 90), 5.0, bevel=0.2, segs=14)
+    pt.g(SF["dark"], outline=0.3).lathe([(0.01, 0), (6.4, 0), (5.4, 2.4), (2.0, 6.0), (0.5, 9.0), (0.01, 9.4)], (x, y, z + 90), (x, y, z + 99.4), segs=14)
+    gd = pt.g(SF["dark"], outline=0.0, highlight=False)
+    for zz in (z + 14, z + 40, z + 66):
+        box(gd, (x, y - 8.6 + (zz - z) / 78 * 2.2, zz), (1.1, 0.5, 2.2), p=4, cuts=1)
+    st.light((x, y - 5.4, z + 85), 6)
+    st.light((x, y - 8.2, z + 40), 3)
+    return (x, y, z + 85)
+
+
+def sf_far(st, P):
+    pt = Parts()
+    rnd = random.Random(53)
+    # 1. the sea to the horizon, grey-teal (low saturation, A11), with pale crests
+    box(pt.g(SF["sea"], finish="gloss", outline=0.0), (600, 900, SF_SEA_Z - 6), (1100, 620, 6), p=6, cuts=2)
+    gw = pt.g(SF["foam"], outline=0.0, highlight=False)
+    for i in range(110):
+        x = rnd.uniform(-260, 1460)
+        y = rnd.uniform(520, 1400)
+        L = rnd.uniform(10, 24) * (1.0 - (y - 520) / 1400)
+        gw.capsule((x - L, y, SF_SEA_Z + 0.5), (x + L, y, SF_SEA_Z + 0.5), 1.6, 1.4)
+    gsd = pt.g(SF["sea_dk"], outline=0.0, highlight=False)
+    for i in range(30):
+        x = rnd.uniform(-260, 1460)
+        y = rnd.uniform(600, 1300)
+        gsd.blob((x, y, SF_SEA_Z + 0.2), (rnd.uniform(30, 70), 6, 0.3), p=2.4, cuts=2)
+    # 2. the land on the left: green clifftops over a sandy bay
+    gr, gr2 = pt.g(SF["rock"], outline=0.4), pt.g(SF["rock_dk"], outline=0.4)
+    gg, gg2 = pt.g(SF["grass"], outline=0.0), pt.g(SF["grass_dk"], outline=0.0)
+    for k, (x, rx, h) in enumerate(((-200, 140, 52), (-30, 120, 44), (120, 90, 30))):
+        rock(gr if k % 2 else gr2, (x, 400, SF_SEA_Z + h * 0.45), (rx, 40, h * 0.55), seed=10 + k, jag=0.16, p=2.8)
+        kit.hill(gg if k % 2 else gg2, x, 410, SF_SEA_Z + h * 0.7, rx * 1.02, 44, h * 0.42, seed=20 + k, jag=0.04, p=2.6)
+    for k, (x, y, w, roof, yaw) in enumerate(((-210, 420, 18, SF["tile"], 12), (-176, 430, 14, SF["slate"], -8), (-60, 420, 16, SF["tile"], 6), (40, 426, 14, SF["slate"], -12))):
+        zz = SF_SEA_Z + (52, 52, 44, 30)[k] * 0.7 + (52, 52, 44, 30)[k] * 0.42 - 6
+        kit.timber_house(pt, x, y, zz, w, 10, 8, 0.6, 9, plaster=SF["plaster"], timber=SF["plaster"], roof=roof, base=SF["stone_dk"], dark=SF["dark"],
+                         yaw=yaw, jetty=0.0, chimney=None, seed=80 + k, outline=0.3)
+    gtc, gtc2, gtt = pt.g(SF["poplar"], outline=0.3), pt.g(SF["poplar_dk"], outline=0.3), pt.g(SF["wood"], outline=0.0)
+    for k in range(12):
+        x = rnd.uniform(-250, 160)
+        kit.broadleaf(gtc if k % 2 else gtc2, gtt, x, 440 + rnd.uniform(-10, 10), rnd.uniform(16, 22), rnd.uniform(6, 8), seed=850 + k,
+                      z=SF_SEA_Z + 40 - abs(x + 60) * 0.08)
+    gdn = pt.g(SF["dune"], outline=0.0)
+    gdn.blob((250, 380, SF_SEA_Z), (120, 30, 7), p=2.4, cuts=3)
+    # 3. the fort's headland: a green plateau with cliffs to the sea, surf at their foot, a gentle glacis
+    # round the fort, a quay with boats below it
+    fx, fy, fz, fh, frb = SF_FORT
+    kit.hill(pt.g(SF["grass"], outline=0.0), fx, fy + 20, SF_SEA_Z, 300, 130, fz + 6 - SF_SEA_Z, seed=40, jag=0.03, p=3.4)
+    for L, (zc, rz, half) in enumerate(((SF_SEA_Z + 12, 16, 300), (SF_SEA_Z + 34, 15, 280), (SF_SEA_Z + 54, 10, 250))):
+        n = max(3, int(half / 30))
+        for k in range(n):
+            x = fx - half + (k + 0.5) * 2 * half / n + rnd.uniform(-10, 10)
+            yfront = fy + 20 - 130 * (1 - min(1.0, abs((x - fx) / 300)) ** 3.4) ** (1 / 3.4)
+            rock(gr if (k + L) % 3 else gr2, (x, yfront + 10 + L * 10, zc + rnd.uniform(-5, 5)), (half / n + rnd.uniform(8, 16), 26, rz * rnd.uniform(0.7, 1.25)),
+                 seed=30 + L * 40 + k, jag=0.28, p=2.4)
+    gsf = pt.g(SF["foam"], outline=0.0, highlight=False)
+    for k in range(26):
+        x = fx - 300 + k * 24 + rnd.uniform(-6, 6)
+        yfront = fy + 20 - 130 * (1 - min(1.0, abs((x - fx) / 300)) ** 3.4) ** (1 / 3.4)
+        gsf.blob((x, yfront + 4, SF_SEA_Z + 1.0), (rnd.uniform(9, 16), 3.0, 1.4), p=2.2, cuts=2)
+    kit.hill(pt.g(SF["grass_dk"], outline=0.0), fx, fy, fz - 12, frb * 1.6, frb * 1.0, 13, seed=41, jag=0.03, p=2.8)
+    ditch = kit.star_outline(fx, fy, frb * 1.24, yaw=-8.0, front=-45.0)
+    kit.plate(pt.g(SF["stone_dk"], outline=0.3), kit.star_outline(fx, fy, frb * 1.3, yaw=-8.0, front=-45.0), fz - 9, fz + 1.4)
+    kit.plate(pt.g(SF["sea_dk"], finish="gloss", outline=0.0), ditch, fz - 9, fz + 1.8)
+    box(pt.g(SF["stone_dk"], outline=0.3), (fx - 236, 330, SF_SEA_Z + 4), (30, 8, 5), p=6, cuts=1, rot=(0, 0, 8))
+    # 4. the star fort (the signature)
+    out = kit.star_fort(pt, fx, fy, fz, fh, frb, yaw=-8.0, stone=SF["stone"], stone_dk=SF["stone_dk"], cord=SF["cord"], grass=SF["grass_lt"],
+                        roof=SF["slate"], roof2=SF["tile"], dark=SF["dark"])
+    for w in out["windows"]:
+        st.light(w, 3)
+    # cannon on the front bastions
+    gi = pt.g(SF["iron"], outline=0.3)
+    inner = kit.star_outline(fx, fy, frb * 0.86, yaw=-8.0, front=-45.0)
+    for k in (0, 3):
+        for idx in (1, 3):
+            tx, ty = inner[k * 5 + idx]
+            gi.capsule((tx, ty, fz + fh + 3.2), (tx + (tx - fx) * 0.1, ty + (ty - fy) * 0.1 - 1, fz + fh + 3.6), 1.4, 1.0)
+    # 5. the right: cliffs and the lighthouse on its rock
+    lx, ly, lz = SF_LIGHT
+    for k, (x, rx, h) in enumerate(((1060, 110, 40), (1190, 90, 56), (1330, 140, 62), (1460, 120, 50))):
+        rock(gr if k % 2 else gr2, (x, 480, SF_SEA_Z + h * 0.5), (rx, 44, h * 0.6), seed=50 + k, jag=0.18, p=2.8)
+        kit.hill(gg if k % 2 else gg2, x, 490, SF_SEA_Z + h * 0.82, rx * 1.02, 46, h * 0.34, seed=60 + k, jag=0.04, p=2.6)
+    lamp = _lighthouse(pt, st, lx, ly, lz)
+    del lamp
+    box(pt.g(SF["plaster"], outline=0.3), (lx + 18, ly + 4, lz + 5), (8, 6, 5), p=7, cuts=2)
+    kit.gable_roof(pt.g(SF["tile"], outline=0.3), lx + 18, ly + 4, lz + 10, 16, 12, 6)
+    # a frigate at anchor in the bay and two fishing boats (static: the moving ships sail beyond the fort)
+    fauna.frigate(size=1.0, hull="#52443A")(kit.StaticRig(pt, (250, 640, SF_SEA_Z), s=1.0, flip=True))
+    fauna.sloop(size=0.5, hull="#6A5642")(kit.StaticRig(pt, (60, 560, SF_SEA_Z), s=1.0))
+    fauna.rowboat(hull="#6A5642", inner="#4A3B2E")(kit.StaticRig(pt, (330, 470, SF_SEA_Z - 1), s=1.4))
+    # rocks in the water, a buoy
+    for i, (x, s_) in enumerate(((200, 1.0), (760, 0.7), (960, 1.0), (1050, 0.6))):
+        rock(gr2, (x, 360 + i * 10, SF_SEA_Z), (14 * s_, 10, 9 * s_), seed=70 + i, jag=0.25)
+    pt.flush(st)
+
+
+def sf_mid(st, P):
+    pt = Parts()
+    rnd = random.Random(59)
+    # the bank: dunes on the far left and right, farmland between
+    g, gd_ = pt.g(SF["grass"], outline=0.0), pt.g(SF["dune"], outline=0.0)
+    for i in range(15):
+        x = -300 + i * 130
+        dune = x < -60 or x > 1120
+        rock(gd_ if dune else g, (x, 80, 8), (96, 60, 40 + rnd.uniform(0, 12)), seed=i, jag=0.05, p=2.4)
+    gm, gm2 = pt.g(SF["marram"], finish="hair", outline=0.3), pt.g(SF["grass_dk"], finish="hair", outline=0.3)
+    for i in range(80):
+        x = rnd.uniform(-250, 1450)
+        dune = x < -60 or x > 1120
+        kit.round_bush(gm if dune else gm2, x, rnd.uniform(26, 46), rnd.uniform(4, 7), seed=1000 + i, z=rnd.uniform(36, 46), flat=0.7 if dune else 0.6)
+    # crop rows in the middle fields (low: the fort stands behind them at the game's camera)
+    gc1, gc2 = pt.g(SF["crop"], outline=0.3), pt.g(SF["crop2"], outline=0.3)
+    for r in range(4):
+        gcr = gc1 if r % 2 else gc2
+        for x in range(180 + r * 6, 500, 9):
+            gcr.blob((x, 96 + r * 8, 44), (4.2, 3.0, 3.2), p=2.2, cuts=2)
+    # stooks in the field, a few sheep, a low stone wall along the track
+    gst = pt.g(SF["crop"], outline=0.4)
+    for k, x in enumerate((206, 236, 300, 330, 404, 434)):
+        gst.lathe([(0.01, 0), (5.6, 0), (4.6, 5), (1.6, 11), (0.01, 12)], (x, 70 + (k % 2) * 8, 40), (x, 70 + (k % 2) * 8, 52), segs=10)
+    gwl, gwh = pt.g(SF["plaster"], outline=0.4), pt.g(SF["dark"], outline=0.0)
+    for k, x in enumerate((112, 140, 168, 470)):
+        gwl.blob((x, 60 + k * 3, 45), (6.4, 4.0, 4.0), p=2.2)
+        gwh.sphere((x + 6.8, 59 + k * 3, 46.6), 2.0)
+    kit.dry_wall(pt.g(SF["stone_dk"], outline=0.5), 90, 520, 52, 38, 7, seed=6, block=9)
+    # 1. the coastal battery on the dunes (x -220..60): an earthwork with gabions, a cannon, shot
+    ge, gwk = pt.g(SF["grass_dk"], outline=0.5), pt.g(SF["wicker"], outline=0.5)
+    rock(ge, (-90, 92, 40), (90, 26, 14), seed=91, jag=0.06, p=2.6)
+    for k in range(9):
+        x = -170 + k * 18
+        cyl(gwk, (x, 74, 38), (x, 74, 54), 6.4, bevel=0.6, segs=12)
+        gwk.lathe([(0.01, 0), (6.6, 0), (0.01, 1.0)], (x, 74, 54), (x, 74, 55), segs=12)
+    gi, gwo = pt.g(SF["iron"], outline=0.5), pt.g(SF["wood"], outline=0.5)
+    box(gwo, (-60, 60, 44), (12, 6, 4), p=5, cuts=1)
+    for dx in (-8, 8):
+        cyl(gwo, (-60 + dx, 52.6, 41), (-60 + dx, 51, 41), 4.6, bevel=0.4, segs=14)
+    gi.capsule((-74, 58, 47), (-34, 58, 51), 3.4, 2.4)
+    gi.sphere((-75, 58, 47), 3.0)
+    gb = pt.g(SF["iron"], outline=0.3)
+    for k, (dx, dz) in enumerate(((0, 0), (5, 0), (10, 0), (2.5, 4), (7.5, 4), (5, 8))):
+        gb.sphere((-110 + dx, 50, 40 + dz + 2), 2.4)
+    st.light((-24, 54, 50), 4)
+    # 2. the powder magazine (x 540-620): a stocky stone store with heavy buttresses, a steep stone-slab
+    # roof, a green iron-bound door, a lightning rod, its own low wall, powder kegs by the door
+    gs, gs2 = pt.g(SF["stone"], outline=0.5), pt.g(SF["stone_dk"], outline=0.5)
+    mx, my, yaw = 584.0, 100.0, -14.0
+    box(gs, (mx, my, 40 + 13), (28, 16, 13), p=7, cuts=2, rot=(0, 0, yaw))
+    for lx in (-28, -9.5, 9.5, 28):
+        bx, by = kit._at(mx, my, lx, -17.5, yaw)
+        box(gs2, (bx, by, 40 + 8), (3.0, 3.6, 8), p=5, cuts=1, rot=(0, 0, yaw), taper=(1.25, 0.7))
+    kit.gable_roof(pt.g(SF["stone_dk"], outline=0.5), mx, my, 40 + 25.6, 58, 34, 20, oh=1.6, yaw=yaw)
+    ex, ey = kit._at(mx, my, 0, 0, yaw)
+    for lx in (-30, 30):
+        gx_, gy_ = kit._at(mx, my, lx, 0, yaw)
+        box(gs, (gx_, gy_, 40 + 34), (1.6, 17, 9), p=5, cuts=1, rot=(0, 0, yaw))
+    dx_, dy_ = kit._at(mx, my, -2, -16.6, yaw)
+    box(pt.g(SF["green"], outline=0.4), (dx_, dy_, 40 + 8), (5.4, 0.6, 8), p=4, cuts=1, rot=(0, 0, yaw))
+    for dz in (3, 8, 13):
+        box(pt.g(SF["iron"], outline=0.0), (dx_, dy_ - 0.6, 40 + dz), (5.6, 0.3, 0.5), p=4, cuts=1, rot=(0, 0, yaw))
+    pt.g(SF["iron"], outline=0.3).capsule((ex + 18, ey + 4, 40 + 40), (ex + 18, ey + 4, 40 + 62), 0.6)
+    st.light((dx_ + 8, dy_ - 0.6, 62), 4)
+    kit.dry_wall(gs2, 534, 640, 70, 38, 8, seed=4, block=8)
+    for k, (x, y) in enumerate(((612, 62), (624, 68), (618, 56))):
+        cyl(gwo, (x, y, 38 + (7 if k == 2 else 0)), (x, y, 46 + (7 if k == 2 else 0)), 4.0, 4.6, bevel=0.8, segs=14)
+        cyl(pt.g(SF["iron"], outline=0.0), (x, y, 41 + (7 if k == 2 else 0)), (x, y, 42.2 + (7 if k == 2 else 0)), 4.7, bevel=0.2, segs=14)
+    # 3. poplars, and the cottage with green shutters and a smoking chimney (x 760-860)
+    gp, gp2, gt = pt.g(SF["poplar"], outline=0.5), pt.g(SF["poplar_dk"], outline=0.5), pt.g(SF["wood"], outline=0.4)
+    for k, (x, y, h) in enumerate(((660, 110, 150), (690, 120, 136), (716, 104, 160), (930, 116, 150), (962, 108, 164), (994, 120, 140),
+                                   (-236, 120, 130), (1090, 112, 156))):
+        kit.cypress(gp if k % 2 else gp2, gt, x, y, h, h * 0.13, seed=1300 + k, z=34)
+    win, chim = kit.timber_house(pt, 800, 96, 40, 46, 24, 18, 14, 22, plaster=SF["plaster"], timber=SF["plaster"], roof=SF["tile"],
+                                 base=SF["stone_dk"], dark=SF["dark"], yaw=-14, jetty=0.0, chimney=SF["stone_dk"], seed=5)
+    for lx in (-12, 12):
+        sx, sy = kit._at(800, 96, lx, -12.6, -14)
+        for side in (-1, 1):
+            px_, py_ = kit._at(sx, sy, side * 4.4, 0, -14)
+            box(pt.g(SF["green"], outline=0.3), (px_, py_, 40 + 18 + 7.7), (1.3, 0.5, 2.8), p=4, cuts=1, rot=(0, 0, -14))
+    st.light(win, 5)
+    st.light((790, 70, 48), 4)
+    st.amb("emit", "bd.puff", chim, rate=0.6, speed=10, scale=1.0, tint=0xE4E2DC, alpha=0.4, life=2800, drift=7)
+    gfe = pt.g(SF["wood"], outline=0.3)
+    for x in range(740, 900, 16):
+        gfe.capsule((x, 60, 38), (x, 60, 50), 0.9)
+    gfe.capsule((740, 60, 47), (884, 60, 47), 0.7)
+    # 4. nets drying on poles and a boat pulled up on the right dunes
+    for x in (1200, 1240, 1280):
+        gfe.capsule((x, 80, 40), (x, 80, 70), 1.0)
+    gn = pt.g(SF["wood_lt"], outline=0.3)
+    gn.slab([(1200, 68), (1240, 66), (1240, 52), (1200, 56)], 79, 0.6)
+    gn.slab([(1240, 66), (1280, 69), (1280, 55), (1240, 52)], 79, 0.6)
+    fauna.rowboat(hull="#6A5642", inner="#4A3B2E")(kit.StaticRig(pt, (1330, 56, 40), s=2.2))
+    # hedges along the field edges
+    gh, gh2 = pt.g(SF["grass_dk"], outline=0.5), pt.g(SF["hedge"], outline=0.5)
+    for (x0, x1, y) in ((60, 200, 134), (260, 420, 140), (700, 860, 136), (1000, 1120, 138)):
+        n = int((x1 - x0) / 11)
+        for k in range(n):
+            kit.round_bush(gh if k % 3 else gh2, x0 + k * 11 + rnd.uniform(-2, 2), y, rnd.uniform(7, 10), seed=1500 + k + x0, z=40, flat=0.66)
+    pt.flush(st)
+
+
+def sf_props():
+    fx, fy, fz, fh, frb = SF_FORT
+    sc = frb / 72.0
+    flag_foot = kit._at(fx, fy, 30 * sc, 4 * sc, -8.0)
+    zi = fz + fh + 1.6
+    fl = _scr((flag_foot[0], flag_foot[1], zi), SF_FAR_E)
+    a_y = _scr((0, SF_SHIP_A, SF_SEA_Z), SF_FAR_E)[1]
+    b_y = _scr((0, SF_SHIP_B, SF_SEA_Z), SF_FAR_E)[1]
+    sl = _scr((SF_SLOOP[0], SF_SLOOP[1], SF_SEA_Z), SF_FAR_E)
+    gull = fauna.bird(body="#E8E6E0", wing="#C8C8C4", beak="#C89A50", span=13, size=0.9)
+    gx, gy = SF_GULLS
+    ring = [[i * 2, round(gx + 110 * math.cos(math.pi * i / 3)), round(gy + 20 * math.sin(math.pi * i / 3)), 1] for i in range(7)]
+    plist = [
+        Prop("flag", "far", fauna.flag_frames(colour="#2E5E4E", stripe="#E6DCC2", length=18, width=11, pole=30), [{f"f{f}": {"show": True}} for f in range(4)],
+             (26, 46, 2), fl[1]),
+        Prop("shipA", "far", fauna.frigate(size=0.9), [{}], (100, 70, 3), a_y),
+        Prop("shipB", "far", fauna.frigate(size=0.6, hull="#55463A"), [{}], (70, 48, 3), b_y),
+        Prop("sloop", "far", fauna.sloop(size=0.7), [{}], (50, 36, 3), sl[1]),
+        Prop("gull", "mid", gull, [fauna.bird_pose(f) for f in range(5)], (40, 24, 24), ring[0][2]),
+    ]
+    sprites = [
+        {"kind": "loop", "layer": "far", "frames": [f"flag_{i}" for i in range(4)], "fps": 5, "at": fl},
+        # the ships sail the open water between the fort and the lighthouse (they would pass in front of the
+        # strip's fort elsewhere): they fade in behind the fort and out behind the cliffs
+        {"kind": "path", "layer": "far", "fps": 1, "periodS": 200,
+         "keys": [[0, 700, a_y, 0], [8, 718, a_y, 1], [150, 1040, a_y, 1], [158, 1058, a_y, 0], [200, 1058, a_y, 0]], "group": [{"frames": ["shipA_0"]}]},
+        {"kind": "path", "layer": "far", "fps": 1, "periodS": 260,
+         "keys": [[0, 1110, b_y, 0], [10, 1094, b_y, 1], [210, 730, b_y, 1], [220, 714, b_y, 0], [260, 714, b_y, 0]], "group": [{"frames": ["shipB_0"]}]},
+        {"kind": "bob", "layer": "far", "frames": ["sloop_0"], "at": sl, "amp": [0.0, 0.8], "periodS": 5, "tilt": 2.0},
+        {"kind": "path", "layer": "mid", "fps": 6, "periodS": 16, "keys": ring,
+         "group": [{"frames": ["gull_4", "gull_0", "gull_1", "gull_2", "gull_3"]}, {"frames": ["gull_0", "gull_1", "gull_2", "gull_3", "gull_4"], "dx": -30, "dy": 12, "phase": 2}]},
+    ]
+    return plist, sprites
+
 
 
 # -- Treasure Cove (round 2) ---------------------------------------------------------------------------
@@ -108,6 +313,8 @@ TC_SEA_Z = 58.0
 TC_SLOOP = (820.0, 360.0)            # the sloop at anchor (far): x, depth
 TC_PALMS = ((180.0, 70.0, 150.0, 0.22, 3), (700.0, 76.0, 160.0, -0.2, 7))   # the two palms whose crowns sway (mid): x, y, h, lean, seed
 TC_WAVES = ((260.0, 112.0), (900.0, 118.0))
+
+
 
 
 def _scr(p, e):
@@ -348,7 +555,11 @@ def tc_props():
 
 
 SCENES = {
-    "classic": Scene("gunpowder", "classic", PAL, far, mid, sky=SKY, version=1),
+    "classic": Scene("gunpowder", "classic", SF_PAL, sf_far, sf_mid, back=sf_back, sky=SF_SKY, props=sf_props,
+                     # a pale coast: light skies grade it gently (Winterfall washed the fort out at 0.5)
+                     hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.4}, ground="earth",
+                     # the fort stands low in the far strip, where the haze is thickest: a little less of it
+                     look={"far": (0.18, 0.08, 0.16)}),
     "treasure_cove": Scene("gunpowder", "treasure_cove", TC_PAL, tc_far, tc_mid, back=tc_back, sky=TC_SKY, props=tc_props,
                            hints={"celestial": "keep", "weather": "ground", "skyGrade": 0.55}, ground="earth"),
 }

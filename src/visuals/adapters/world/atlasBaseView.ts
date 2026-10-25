@@ -2,7 +2,7 @@
  * Sprite-sheet base view (DESIGN A11 Bases and Base clips) for the 3D-rendered bases.
  *
  * Frames: the body per crumble stage (75/50/25%), waving flags (looping clips, dropped by crumble
- * stage), Treasury props per level. Code motion on top: torch and window light flicker, damage
+ * stage), Treasury props per level, prop loops (below). Code motion on top: torch and window light flicker, damage
  * smoke from stage 2, hit shake with a white flash and debris, the Last Stand horn and glow, the
  * evolve sequence, the Treasury and new-slot moments, and the collapse.
  *
@@ -41,6 +41,11 @@
  * base of that age and swaps the model in afterwards (the build-up never waits for a skin). A Legendary
  * model (`meta.ageborn.aura: 'legendary'`: Crystal Spire, Nebula Ark) stands in a soft white aura that
  * breathes slowly (still under Reduce motion), dims with the crumble stages and goes out in the collapse.
+ *
+ * Prop loops (round 3, the base contract's generic `prop` clip, `meta.ageborn.props`): an N-frame loop over the
+ * body (Windmill Redoubt's sails, Arctic Radar's dish, Crystal Spire's orbiting shards, Nebula Ark's nebula), in
+ * front of or behind it, shown within its own crumble range, played by the view's clock from a seeded phase and
+ * held at its rest step under Reduce motion; in the collapse it rides its piece down and fades.
  *
  * Reduce motion (`setMotion`): no shake, no flying shards and no squash bounces (fades instead).
  * Lite: fewer shards, bands and particles. All of it is cosmetic; the sim owns every timing.
@@ -334,6 +339,12 @@ export class AtlasBaseView implements BaseView {
   private age: AgeId;
   private backFlags: Pair[] = [];
   private frontFlags: Pair[] = [];
+  /** The sheet's prop loops (round 3), behind and in front of the body, and each one's step durations. */
+  private backProps: Pair[] = [];
+  private frontProps: Pair[] = [];
+  private propDurations: number[][] = [];
+  /** Where the prop loops start (ms of their clock): seeded, so two bases never turn in step. */
+  private readonly propPhase: number;
   private bodyPair: Pair;
   private treasuryPair: Pair;
   private readonly flash: Sprite;
@@ -384,6 +395,8 @@ export class AtlasBaseView implements BaseView {
     this.age = o.age;
     this.facing = o.side === 0 ? 1 : -1;
     this.rng = mulberry32(o.seed);
+    // its own stream, so the loops' phase never shifts the view's other cosmetic randomness
+    this.propPhase = Math.floor(mulberry32((o.seed ^ 0x2f6b9e1d) >>> 0).next() * 60000);
     this.root.label = o.def.source;
     this.bodyPair = pair(o.teamColor);
     this.treasuryPair = pair(o.teamColor);
@@ -441,7 +454,25 @@ export class AtlasBaseView implements BaseView {
     const flags = m.flags ?? [];
     this.backFlags = flags.filter((f) => f.z === 'back').map(() => pair(tint));
     this.frontFlags = flags.filter((f) => f.z !== 'back').map(() => pair(tint));
-    this.art.addChild(...this.backFlags.map((p) => p.c), this.bodyPair.c, this.flash, this.treasuryPair.c, ...this.frontFlags.map((p) => p.c));
+    // prop loops (round 3): back props, back flags, the body, the Treasury, front props, front flags
+    const props = m.props ?? [];
+    const propPair = (alpha: number | undefined): Pair => {
+      const p = pair(tint);
+      p.c.alpha = alpha ?? 1;
+      return p;
+    };
+    this.backProps = props.filter((q) => q.z === 'back').map((q) => propPair(q.alpha));
+    this.frontProps = props.filter((q) => q.z !== 'back').map((q) => propPair(q.alpha));
+    this.propDurations = props.map((q) => clipDurations(this.sheet, q.clip));
+    this.art.addChild(
+      ...this.backProps.map((p) => p.c),
+      ...this.backFlags.map((p) => p.c),
+      this.bodyPair.c,
+      this.flash,
+      this.treasuryPair.c,
+      ...this.frontProps.map((p) => p.c),
+      ...this.frontFlags.map((p) => p.c),
+    );
     this.lights = (m.lightsLu ?? []).map((l, i) => {
       const s = partSprite(this.o.decor, 'fx.p.glow', FX_ZONES);
       s.tint = LIGHT_COLORS[this.age];
@@ -716,6 +747,11 @@ export class AtlasBaseView implements BaseView {
     this.glow.visible = false;
     const m = this.sheet.meta;
     const visibleFlags = (m.flags ?? []).filter((f) => this.crumble <= f.crumbleMax).map((f) => ({ clip: f.clip, z: f.z }));
+    // the prop loops showing now ride their pieces down (sails, a dish, shards) and fade
+    const visibleProps = (m.props ?? [])
+      .map((q, k) => ({ q, k }))
+      .filter(({ q }) => this.crumble >= q.crumbleMin && this.crumble <= q.crumbleMax)
+      .map(({ q, k }) => ({ clip: q.clip, z: q.z, anchor: { x: q.anchorLu[0], y: -q.anchorLu[1] }, hold: q.holdFrame, phase: this.propPhase, alpha: q.alpha ?? 1, step: this.propStep(k) }));
     const tr = this.treasury > 0 ? this.treasuryRect() : null;
     const cv = new CollapseView({
       sheet: this.sheet,
@@ -728,6 +764,7 @@ export class AtlasBaseView implements BaseView {
       motion: this.motion,
       kit: this.loadKit(),
       flags: visibleFlags,
+      props: visibleProps,
       clockMs: this.clockMs,
       lightColor: LIGHT_COLORS[this.age],
       lights: (m.lightsLu ?? []).filter((l) => this.crumble <= l.crumbleMax).map((l) => ({ x: l.x, y: -l.y })),
@@ -1630,6 +1667,37 @@ export class AtlasBaseView implements BaseView {
       setFrame(p.base, A[f.clip]?.[i]);
       setFrame(p.team, A[`${f.clip}_team`]?.[i]);
     }
+    this.showProps();
+  }
+
+  /**
+   * The prop loops (round 3, the base contract's generic `prop` clip): each shows within its crumble range and
+   * plays by the view's clock from the seeded phase; under Reduce motion it holds its rest step.
+   */
+  private showProps(): void {
+    const A = this.sheet.animations;
+    const props = this.sheet.meta.props ?? [];
+    let bi = 0;
+    let fi = 0;
+    for (let k = 0; k < props.length; k++) {
+      const q = props[k]!;
+      const p = q.z === 'back' ? this.backProps[bi++] : this.frontProps[fi++];
+      if (!p) continue;
+      p.c.visible = this.crumble >= q.crumbleMin && this.crumble <= q.crumbleMax;
+      if (!p.c.visible) continue;
+      const i = this.propStep(k);
+      setFrame(p.base, A[q.clip]?.[i]);
+      setFrame(p.team, A[`${q.clip}_team`]?.[i]);
+    }
+  }
+
+  /** The step prop loop `k` shows now (its rest step under Reduce motion). */
+  private propStep(k: number): number {
+    const q = this.sheet.meta.props?.[k];
+    const d = this.propDurations[k] ?? [];
+    if (!q || d.length === 0) return 0;
+    if (this.motion.reduce) return Math.min(d.length - 1, Math.max(0, q.holdFrame));
+    return frameIndex(d, this.clockMs + this.propPhase, true);
   }
 
   /** Knocks `n` rounded chunks off the base in its own palette (`size` scales them). */

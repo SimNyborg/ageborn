@@ -27,6 +27,10 @@
  *   (no weather, no flutter, no scanning turrets).
  * - **Damage preview.** `crumble` steps the base through its stages 0-3 (the mounts stay put, so the
  *   turrets never move); a step up lands with the base's hit shake, flash and debris.
+ * - **Anchors** (round 3, duck-typed on the handle): `anchorsPx()` says where the side's three decoration
+ *   spots and its flag pole stand on the stage in CSS px of the host, so Customize can lay its tap targets
+ *   over the live stage; `onAnchorsChange(cb)` calls back when a resize moves them
+ *   (`docs/requests/custom-b-diorama-anchors.md`).
  *
  * Owned by Track B. C0 (2026-10-08) landed the contract types (`DioramaMount`, `DioramaRequest`,
  * `DioramaHandle` in `contracts/art.ts`) and the app wiring (`AppRoot` provides the mount through the UI's
@@ -92,7 +96,7 @@ export interface DioramaDeps {
 
 /** Optional art-provider extras the stage uses when present (duck-typed, `visuals` provides them). */
 interface LeasingArt {
-  dioramaLease?(o: { age: AgeId; skin?: SkinId | null; turrets: readonly VisualId[]; scene?: CosmeticKey | null; arena: string }): { ready: Promise<void>; release(): void };
+  dioramaLease?(o: { age: AgeId; skin?: SkinId | null; turrets: readonly VisualId[]; scene?: CosmeticKey | null; arena: string; decorations?: readonly (CosmeticKey | null)[] }): { ready: Promise<void>; release(): void };
   showcaseLease?(o: { visuals: readonly { visualId: VisualId; skin?: string | null }[]; hd?: boolean }): { ready: Promise<void>; release(): void };
 }
 
@@ -151,9 +155,56 @@ const LOAD_TIMEOUT_MS = 12_000;
 const SWAP_TIMEOUT_MS = 4_000;
 const LINGER_MS = 4_000;
 
+/**
+ * The side's decoration spots and flag pole, lu from the gate at ground level (side 0; mirrored for side 1):
+ * the lane dressing's anchors (`visuals/cosmetics/dressing.ts` `DRESSING_ANCHORS`; render may not import
+ * visuals, so a test holds the two equal).
+ */
+export const DIORAMA_SPOTS_LU = [-150, -104, 20] as const;
+export const DIORAMA_POLE_LU = 44;
+/** The box `anchorsPx` reports about a decoration spot, lu: a prop's footprint and its height (about 55 lu) with a little room. */
+const SPOT_W_LU = 50;
+const SPOT_H_LU = 66;
+/**
+ * The pole's box, lu from the pole: its footing and the flags it flies (toward +x for both sides, the lane's
+ * one wind; a base flag is about 52 lu long) up to the cap (the pole is 176 lu tall).
+ */
+const POLE_BOX_LU = { left: -10, right: 58, top: 186 } as const;
+
+/** A decoration spot or the flag pole on the live stage: CSS px in the host (left, top, width, height). */
+export interface DioramaAnchorPx {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 /** World x of the side's gate in the diorama (its base stands behind it, toward the world's edge). */
 export function dioramaGateX(side: 0 | 1): number {
   return side === 0 ? WORLD_LEFT_LU + BEHIND_LU : WORLD_RIGHT_LU - BEHIND_LU;
+}
+
+/**
+ * The side's three decoration spots (in anchor order) and its flag pole (last) on a `width` x `height`
+ * stage, in that stage's px (y down from its top), as `dioramaFraming` places the world.
+ */
+export function dioramaAnchors(width: number, height: number, side: 0 | 1 = 0): DioramaAnchorPx[] {
+  const f = dioramaFraming(width, height, side);
+  const gate = dioramaGateX(side);
+  const facing = side === 1 ? -1 : 1;
+  const r1 = (v: number): number => Math.round(v * 10) / 10;
+  // world x0..x1 (lu), from the ground up to `top` lu
+  const box = (x0: number, x1: number, top: number): DioramaAnchorPx => {
+    const left = f.x + Math.min(x0, x1) * f.scale;
+    const right = f.x + Math.max(x0, x1) * f.scale;
+    return { x: r1(left), y: r1(f.y - top * f.scale), w: r1(right - left), h: r1(top * f.scale) };
+  };
+  const spots = DIORAMA_SPOTS_LU.map((a) => {
+    const cx = gate + a * facing;
+    return box(cx - SPOT_W_LU / 2, cx + SPOT_W_LU / 2, SPOT_H_LU);
+  });
+  const pole = gate + DIORAMA_POLE_LU * facing;
+  return [...spots, box(pole + POLE_BOX_LU.left, pole + POLE_BOX_LU.right, POLE_BOX_LU.top)];
 }
 
 /**
@@ -230,7 +281,8 @@ export function resolveDiorama(req: DioramaRequest, content?: CompiledContent): 
   };
 }
 
-const leaseKey = (l: DioramaLook): string => `${l.age}|${l.skin ?? ''}|${l.turrets.join(',')}|${l.scene ?? ''}`;
+// the decorations too (round 3): a prop tried on loads its sheet first, so it never shows its SVG for a moment
+const leaseKey = (l: DioramaLook): string => `${l.age}|${l.skin ?? ''}|${l.turrets.join(',')}|${l.scene ?? ''}|${(l.dressing.decorations ?? []).join(',')}`;
 const structureKey = (l: DioramaLook): string => `${l.age}|${l.side}|${l.skin ?? ''}|${l.turrets.join(',')}|${l.teamPreset}`;
 const backdropKey = (l: DioramaLook): string => `${l.age}|${l.scene ?? ''}|${l.sky ?? ''}`;
 const dressingKey = (l: DioramaLook): string => JSON.stringify([l.dressing.baseFlag ?? null, l.dressing.nationalFlag ?? null, l.dressing.decorations ?? [], l.dressing.baseSkins?.[l.age] ?? null]);
@@ -415,6 +467,8 @@ export class DioramaStage implements DioramaHandle {
   /** Reduce motion: frame time left before the loop parks on the still frame. */
   private settleMs = SETTLE_MS;
   private trimAcc = 0;
+  /** Who wants to know when the anchors move (`onAnchorsChange`). */
+  private readonly anchorWatchers = new Set<() => void>();
 
   // scene
   private readonly world = new Container();
@@ -456,9 +510,45 @@ export class DioramaStage implements DioramaHandle {
     this.schedule();
   }
 
+  /**
+   * Where the side's three decoration spots and its flag pole stand on the stage (duck-typed on the handle,
+   * round 3: Customize's tap targets over the live stage): CSS px in the host (left, top, width, height), the
+   * spots in anchor order (−150, −104 and +20 lu from the gate, mirrored for side 1), then the pole (+44 lu,
+   * with the room its flags fly in). Valid from the mount on (before `ready`); they follow the stage's
+   * framing, and `onAnchorsChange` says when a resize moved them.
+   */
+  anchorsPx(): DioramaAnchorPx[] {
+    const side = this.built?.side ?? (this.req.side === 1 ? 1 : 0);
+    const list = dioramaAnchors(this.width, this.height, side);
+    // the canvas fills the host at its layout size: a host that has resized since the stage last measured
+    // it (the observer's callback still to come) stretches the drawing, and the boxes with it
+    const kx = this.host.clientWidth > 0 ? this.host.clientWidth / this.width : 1;
+    const ky = this.host.clientHeight > 0 ? this.host.clientHeight / this.height : 1;
+    if (kx === 1 && ky === 1) return list;
+    return list.map((b) => ({ x: b.x * kx, y: b.y * ky, w: b.w * kx, h: b.h * ky }));
+  }
+
+  /** Calls `cb` whenever the anchors move (the stage resized, the stage went live); returns the unsubscribe. */
+  onAnchorsChange(cb: () => void): () => void {
+    if (this.destroyed) return () => {};
+    this.anchorWatchers.add(cb);
+    return () => void this.anchorWatchers.delete(cb);
+  }
+
+  private anchorsMoved(): void {
+    for (const cb of [...this.anchorWatchers]) {
+      try {
+        cb();
+      } catch {
+        // a watcher's own failure never stops the stage
+      }
+    }
+  }
+
   destroy(): void {
     if (this.destroyed) return;
     this.destroyed = true;
+    this.anchorWatchers.clear();
     this.live = false;
     if (this.frameHandle) this.frames().cancel(this.frameHandle);
     this.frameHandle = 0;
@@ -538,6 +628,16 @@ export class DioramaStage implements DioramaHandle {
     this.step(0);
     this.resolveReady(true);
     this.schedule();
+    // the host may have changed size while the first look loaded (the observer starts only now)
+    const w = this.width;
+    const h = this.height;
+    this.measure();
+    if (w !== this.width || h !== this.height) {
+      if (this.owns()) a.resize(this.width, this.height);
+      this.frame();
+      this.renderNow();
+    }
+    this.anchorsMoved();
     // a change that came in while the first look loaded
     if (leaseKey(resolveDiorama(this.req, this.content)) !== this.leased) void this.apply(false);
   }
@@ -579,7 +679,7 @@ export class DioramaStage implements DioramaHandle {
 
   private leaseFor(l: DioramaLook): { ready: Promise<void>; release(): void } | null {
     const art = this.art as ArtProvider & LeasingArt;
-    if (art.dioramaLease) return art.dioramaLease({ age: l.age, skin: l.skin, turrets: l.turrets, scene: l.scene, arena: DIORAMA_GROUND[l.age] });
+    if (art.dioramaLease) return art.dioramaLease({ age: l.age, skin: l.skin, turrets: l.turrets, scene: l.scene, arena: DIORAMA_GROUND[l.age], decorations: l.dressing.decorations ?? [] });
     if (art.showcaseLease) return art.showcaseLease({ visuals: [{ visualId: `base.${l.age}`, skin: l.skin }, ...l.turrets.map((visualId) => ({ visualId }))] });
     return null;
   }
@@ -688,9 +788,11 @@ export class DioramaStage implements DioramaHandle {
   }
 
   private measure(): void {
-    const r = this.host.getBoundingClientRect?.();
-    this.width = Math.max(1, Math.round(r?.width || this.host.clientWidth || 360));
-    this.height = Math.max(1, Math.round(r?.height || this.host.clientHeight || 220));
+    // the layout size (the canvas fills the host's padding box; a CSS transform on the panel during its
+    // entrance is not the host's size), the bounding box where the host has no layout size of its own
+    const r = this.host.clientWidth > 0 && this.host.clientHeight > 0 ? null : this.host.getBoundingClientRect?.();
+    this.width = Math.max(1, Math.round(this.host.clientWidth || r?.width || 360));
+    this.height = Math.max(1, Math.round(this.host.clientHeight || r?.height || 220));
   }
 
   /** Places the world for the stage size and tells the backdrop what it shows. */
@@ -714,6 +816,7 @@ export class DioramaStage implements DioramaHandle {
       this.frame();
       this.wake();
       this.renderNow();
+      this.anchorsMoved();
     });
     ro.observe(this.host);
     this.observers.push(ro);

@@ -27,8 +27,12 @@
   pointer-events: none;
   user-select: none;
 }
-.cos-base__img:first-child {
+.cos-base__body {
   animation: cos-base-in 160ms ease-out both;
+}
+/* a decoration's Blender prop (Track B's HD atlas) fades in over where its drawing was (round 3) */
+.cos-img--prop {
+  animation: cos-base-in 220ms ease-out both;
 }
 @keyframes cos-base-in {
   from {
@@ -52,6 +56,51 @@
   left: 8%;
   width: 84%;
   height: 82%;
+}
+/* The Legendary aura under the model (round 3; the lane's halo in atlasBaseView): an upright ellipse
+   1.55 times the body's width and 1.3 times its height, centred on its middle. The portrait is a square
+   contained in the box (the body fills about 57% of its width and 96% of its height), so the halo is
+   sized by that square (container units of the box) and placed where the square sits: centred, or on the
+   bottom where a screen sets `--base-ay: 1` (the tiles). It breathes slowly; it rests under Reduce motion. */
+.cos-base.has-aura {
+  container-type: size;
+}
+.cos-base__aura {
+  --side: min(100cqw, 100cqh);
+  position: absolute;
+  left: 50%;
+  top: calc((100cqh - var(--side)) * var(--base-ay, 0.5) + var(--side) * 0.48);
+  width: calc(var(--side) * 0.88);
+  height: calc(var(--side) * 1.25);
+  translate: -50% -50%;
+  background-position: center;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: 0.66;
+  pointer-events: none;
+  animation: cos-base-in 220ms ease-out both;
+}
+.cos-base__aura.is-live {
+  animation:
+    cos-base-in 220ms ease-out both,
+    cos-aura-breathe 5.6s ease-in-out 220ms infinite alternate,
+    cos-aura-swell 8.2s ease-in-out infinite alternate;
+}
+@keyframes cos-aura-breathe {
+  from {
+    opacity: 0.56;
+  }
+  to {
+    opacity: 0.76;
+  }
+}
+@keyframes cos-aura-swell {
+  from {
+    scale: 0.975;
+  }
+  to {
+    scale: 1.025;
+  }
 }
 .cos-flags {
   display: inline-flex;
@@ -183,11 +232,16 @@ img.cos-bd__img {
 .cos-btile__base .cos-base__img {
   object-position: 50% 100%;
 }
+.cos-btile__base {
+  --base-ay: 1;
+}
 @media (prefers-reduced-motion: reduce) {
   img.cos-bd__img,
   .cos-bd.is-pending .cos-bd__img--empty,
   .cos-scene.is-pending::after,
-  .cos-base__img:first-child,
+  .cos-base__body,
+  .cos-base__aura,
+  .cos-base__aura.is-live,
   .cos-base.is-pending::after {
     animation: none;
   }
@@ -461,6 +515,11 @@ img.cos-bd__img {
   .cos-qb.is-pop {
     animation: cos-qb-fade 160ms ease-out both;
   }
+}
+/* Reduce motion and Lite graphics (B6): the aura rests at its glow, with no pulse. */
+.ui-root[data-reduce-motion='true'] .cos-base__aura.is-live,
+.ui-root[data-graphics='lite'] .cos-base__aura.is-live {
+  animation: cos-base-in 220ms ease-out both;
 }
 .ui-root[data-reduce-motion='true'] .cos-base.is-pending::after {
   animation: none;

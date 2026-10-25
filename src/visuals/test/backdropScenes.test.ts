@@ -8,13 +8,13 @@
 import { Texture } from 'pixi.js';
 import { describe, expect, it } from 'vitest';
 import type { AgeId } from '@/contracts/ids';
-import { ageRegions, ARRIVAL_FADE_MS, composePieces, FadeTracker, ProceduralBackdropView, regionSkinAt, type BackdropTextures, type PropFrame } from '../adapters/procedural/backdropView';
+import { ageRegions, ARRIVAL_FADE_MS, composePieces, FadeTracker, ProceduralBackdropView, propGradeRects, regionSkinAt, type BackdropTextures, type PropFrame } from '../adapters/procedural/backdropView';
 import { PartBaker } from '../bake';
 import { content } from '@/content';
-import { BACK_FRAME, drawnScene, isSpaceScene, parseScene, SCENE_ART, sceneDir, sceneIdOf, sceneThumbPath, SPACE_SCENES, type SceneData } from '../backdrops/scenes';
+import { BACK_FRAME, drawnScene, isSpaceScene, parseScene, propStands, SCENE_ART, sceneDir, sceneIdOf, sceneThumbPath, SPACE_SCENES, type SceneData } from '../backdrops/scenes';
 import { backdropWeatherSvg } from '../cosmetics/backdropPreview';
-import { limitSprites, lightAlpha, pathPoint, readSprites, spriteInstances, spritePhaseMs, SPRITE_LIMITS, type PathSprite, type SceneSprite } from '../backdrops/sceneSprites';
-import { BACK_GRADE_SCALE, BACKDROP_THEMES, isNightSky, mulTint, propGradeTint, sceneGradeKey, spaceWeather, themeForScene, themeSky } from '../backdrops/themes';
+import { frameList, limitSprites, lightAlpha, pathPoint, readSprites, spriteInstances, spritePhaseMs, SPRITE_LIMITS, type PathSprite, type SceneSprite } from '../backdrops/sceneSprites';
+import { BACK_GRADE_SCALE, BACKDROP_THEMES, isNightSky, layerGradeAt, moteGradeTint, mulTint, propGradeTint, sceneGradeKey, spaceWeather, themeForScene, themeLayer, themeProps, themeSky } from '../backdrops/themes';
 import { WORLD } from '../style';
 
 const LAYERS_JSON = import.meta.glob('/public/art/backdrops/**/layers.json', { import: 'default', eager: true }) as Record<string, unknown>;
@@ -49,6 +49,16 @@ describe('scene art on disk (PLAN 2b)', () => {
     expect(SCENE_ART.bronze?.['classic']).toBe(2);
     expect(SCENE_ART.industrial?.['classic']).toBe(2);
     expect(SCENE_ART.cosmic?.['classic']).toBe(2);
+  });
+
+  it('a classic in format 2 leaves no format 1 file in its age folder (a leftover thumbnail would keep the old picture)', () => {
+    for (const age of AGES) {
+      if (SCENE_ART[age]?.['classic'] !== 2) continue;
+      for (const name of ['layers.json', 'far.webp', 'mid.webp', 'thumb.webp']) {
+        const p = `/public/art/backdrops/${age}/${name}`;
+        expect(LAYERS_JSON[p] ?? WEBP[p], p).toBeUndefined();
+      }
+    }
   });
 
   it('keeps every format 2 scene within its budget: files, layers.json and 110 KB in all', () => {
@@ -99,6 +109,8 @@ const ROUND2: readonly [AgeId, string][] = [
 ];
 /** Round 2 scenes whose art is in but which wait for round 3 (review 2): the glacier read as a dome, the airbase as sparse. */
 const HELD: readonly string[] = ['stone.glacier_valley', 'modern.desert_airbase'];
+/** Round 3: the five format 1 classics re-rendered in format 2 (PLAN 2b), in their order. */
+const ROUND3_CLASSICS: readonly AgeId[] = ['stone', 'medieval', 'gunpowder', 'modern', 'future'];
 const shipped = (age: AgeId, scene: string): SceneData | null => parseScene(LAYERS_JSON[`/public/${sceneDir(age, scene)}layers.json`], age, scene);
 
 describe('the round 2 scenes (one new scene per age)', () => {
@@ -126,6 +138,24 @@ describe('the round 2 scenes (one new scene per age)', () => {
     expect(released.map((x) => `${x.age}.${x.id}`).sort()).toEqual(ROUND2.map(([a, id]) => `${a}.${id}`).filter((k) => !HELD.includes(k)).sort());
     // a held scene keeps its art (the sandbox, round 3) but no player can find or equip it
     for (const k of HELD) expect(content.cosmetics.collections.items.find((x) => `${x.age}.${x.id}` === k)?.released, k).toBe(false);
+  });
+
+  it('the round 3 classics ship in format 2 like the new scenes: sky, three strips, moving props, night lights, a tuned sky grade', () => {
+    for (const age of ROUND3_CLASSICS) {
+      expect(SCENE_ART[age]?.['classic'], age).toBe(2);
+      const d = shipped(age, 'classic');
+      expect(d?.version, age).toBe(2);
+      expect(d?.sky, `${age} sky`).not.toBeNull();
+      expect(Object.keys(d?.layers ?? {}).sort(), `${age} strips`).toEqual(['back', 'far', 'mid']);
+      const moving = d?.props?.sprites.filter((s) => s.kind !== 'emit').length ?? 0;
+      expect(moving, `${age} moving props`).toBeGreaterThanOrEqual(2);
+      expect(moving, `${age} within the per-half cap`).toBeLessThanOrEqual(6);
+      expect(d?.lights.length ?? 0, `${age} lights`).toBeGreaterThan(0);
+      expect(d?.hints.skyGrade ?? 1, `${age} skyGrade`).toBeLessThan(1);
+      expect(d?.thumb, age).toBe('thumb.webp');
+    }
+    // Smoke Mountain's plume trails off with the wind (sideways, under the phone HUD's top band)
+    expect(shipped('stone', 'classic')?.layers.far?.ambient.some((a) => a.kind === 'emit' && (a.drift ?? 0) > 4)).toBe(true);
   });
 
   it('Ringed Giant brings its own sky object and space weather', () => {
@@ -156,14 +186,15 @@ describe('the round 2 scenes (one new scene per age)', () => {
 });
 
 describe('layer format loader (v1 and v2)', () => {
-  it('reads a format 1 classic: two strips with their ambient, no sky, props or lights', () => {
-    const d = parseScene(LAYERS_JSON['/public/art/backdrops/stone/layers.json'], 'stone', 'classic');
-    expect(d?.version).toBe(1);
-    expect(Object.keys(d?.layers ?? {}).sort()).toEqual(['far', 'mid']);
-    expect(d?.sky).toBeNull();
-    expect(d?.props).toBeNull();
-    expect(d?.layers.far?.ambient.some((a) => a.kind === 'emit')).toBe(true);
-    expect(d?.layers.far?.ambient.every((a) => a.layer === 'far')).toBe(true);
+  it('refuses a format 1 file: the format was retired with the five classics in round 3', () => {
+    // the old Stone classic's layers.json (round 1): two strips, no version
+    const strip = (image: string, yTop: number, height: number, pxPerLu: number) => ({ image, x0: -260, width: 1720, yTop, height, pxPerLu, ambient: [] });
+    const v1 = { far: strip('far.webp', -560, 580, 0.9), mid: strip('mid.webp', -300, 320, 1.2) };
+    expect(parseScene(v1, 'medieval', 'classic')).toBeNull();
+    expect(parseScene({ ...v1, version: 1 }, 'medieval', 'classic')).toBeNull();
+    expect(parseScene({ ...v1, version: 2 }, 'medieval', 'classic')?.version).toBe(2);
+    // no age has a format 1 scene left, and every classic lives in its own folder
+    for (const age of AGES) expect(Object.values(SCENE_ART[age] ?? {}).every((f) => f === 2), age).toBe(true);
   });
 
   it('reads a format 2 scene: sky, back strip, props, lights, hints, thumbnail', () => {
@@ -211,7 +242,8 @@ describe('layer format loader (v1 and v2)', () => {
     expect(drawnScene('bronze', 'classic')).toBe('classic');
     expect(sceneDir('stone', 'glacier_valley')).toBe('art/backdrops/stone/glacier_valley/');
     expect(sceneDir('bronze', 'classic')).toBe('art/backdrops/bronze/classic/');
-    expect(sceneDir('stone', 'classic')).toBe('art/backdrops/stone/');
+    expect(sceneDir('stone', 'classic')).toBe('art/backdrops/stone/classic/');
+    expect(sceneDir('future', 'classic')).toBe('art/backdrops/future/classic/');
     expect(sceneDir('stone', 'nope')).toBeNull();
   });
 });
@@ -248,6 +280,27 @@ describe('scene sprites (render clock, seeded, limits)', () => {
       FRAMES,
     );
     expect(s.map((x) => x.kind)).toEqual(['loop', 'bob', 'emit']);
+  });
+
+  it('reads a frame range (`hunt_0-3`, the compact form of round 3) as the frames it names', () => {
+    expect(frameList('hunt_0-3')).toEqual(['hunt_0', 'hunt_1', 'hunt_2', 'hunt_3']);
+    expect(frameList('crow_2')).toEqual(['crow_2']);
+    expect(frameList(['a', 'b'])).toEqual(['a', 'b']);
+    expect(frameList('x_3-1')).toBeNull();
+    expect(frameList(7)).toBeNull();
+    const frames = { f_0: 1, f_1: 1, f_2: 1, g_0: 1, g_1: 1 };
+    const [loop, walk] = readSprites(
+      [
+        { kind: 'loop', layer: 'mid', frames: 'f_0-2', fps: 6, at: [10, -50] },
+        { kind: 'path', layer: 'mid', fps: 4, periodS: 20, keys: [[0, 0, -50, 1], [20, 400, -50, 1]], group: [{ frames: 'g_0-1' }, { frames: 'g_0-1', dx: -20, phase: 1 }] },
+        { kind: 'loop', layer: 'mid', frames: 'f_0-5', fps: 6, at: [10, -50] },
+      ],
+      frames,
+    );
+    expect(loop?.kind === 'loop' && loop.frames).toEqual(['f_0', 'f_1', 'f_2']);
+    expect(walk?.kind === 'path' && walk.group.map((m) => m.frames)).toEqual([['g_0', 'g_1'], ['g_0', 'g_1']]);
+    // the third names frames the atlas lacks: dropped
+    expect(readSprites([{ kind: 'loop', layer: 'mid', frames: 'f_0-5', fps: 6, at: [0, 0] }], frames)).toEqual([]);
   });
 
   it('reads the short path form of the PLAN 2b example (`from`, `to`, `count`, `spacing`)', () => {
@@ -392,6 +445,77 @@ describe('scene hints and night lights', () => {
     expect(back).toBeGreaterThan(Math.max(...ch(propGradeTint(night, 'far'))));
     expect(mulTint(0xffffff, 0xdcdad6)).toBe(0xdcdad6);
     expect(mulTint(0x808080, 0x808080)).toBe(0x404040);
+  });
+
+  it('the props atlas is re-graded like its strip (round 3): a prop pixel and a strip pixel of the same colour come out alike under a dark and a light sky', () => {
+    const data = shipped('stone', 'classic') as SceneData;
+    const stands = propStands(data.props!);
+    // the herd walks the far meadow shelf, the hunters the mid bank
+    expect(stands.get('aur_0')).toMatchObject({ layer: 'far' });
+    expect(stands.get('hunt_0')).toMatchObject({ layer: 'mid' });
+    const rgba = (css: string): [number, number, number, number] => {
+      const m = /rgba?\(([^)]+)\)/.exec(css);
+      const p = (m?.[1] ?? '').split(',').map((x) => Number(x.trim()));
+      return [p[0] ?? 0, p[1] ?? 0, p[2] ?? 0, p[3] ?? 1];
+    };
+    // a stand-in 2D context: records fills and gradients, ignores the rest (rims, aurora)
+    const fakeCtx = (log: { fills: string[]; stops: [number, string][] }): CanvasRenderingContext2D =>
+      new Proxy({} as Record<string | symbol, unknown>, {
+        get: (t, k) => {
+          if (k === 'createLinearGradient' || k === 'createRadialGradient') return () => ({ addColorStop: (o: number, c: string) => log.stops.push([o, c]) });
+          if (k === 'fillRect') return () => log.fills.push(String(t['fillStyle']));
+          if (k in t) return t[k];
+          return () => undefined;
+        },
+        set: (t, k, v) => {
+          t[k] = v;
+          return true;
+        },
+      }) as unknown as CanvasRenderingContext2D;
+    const over = (c: number, g: [number, number, number, number]) => [(c >> 16) & 255, (c >> 8) & 255, c & 255].map((x, i) => x * (1 - g[3]) + g[i]! * g[3]);
+    for (const sky of ['starry_night', 'winterfall']) {
+      const theme = BACKDROP_THEMES[sky]!;
+      const rects = propGradeRects(data, theme);
+      for (const name of ['aur_0', 'hunt_0']) {
+        const f = data.props!.frames[name]!;
+        const rect = rects.find((r) => r.x === f.x && r.y === f.y)!;
+        const at = stands.get(name)!;
+        // the strip: themeLayer's gradient at the prop's height
+        const strip = { fills: [] as string[], stops: [] as [number, string][] };
+        const H = 1000;
+        themeLayer({ width: 100, height: H } as HTMLCanvasElement, fakeCtx(strip), sky, rect.kind, 'stone', themeForScene(theme, data.hints, at.layer)!, { x0: -260, width: 1720, yTop: -560, height: 580, pxPerLu: 1 });
+        const [s0, s1] = [rgba(strip.stops[0]![1]), rgba(strip.stops[1]![1])];
+        const g = s0.map((x, i) => x + (s1[i]! - x) * at.v) as [number, number, number, number];
+        // the prop: themeProps' fill over its frame
+        const prop = { fills: [] as string[], stops: [] as [number, string][] };
+        themeProps(fakeCtx(prop), [rect]);
+        const p = rgba(prop.fills[0]!);
+        for (const c of [0x7e8a62, 0xa88a6a, 0x5e5248]) {
+          const a = over(c, g);
+          const b = over(c, p);
+          for (let i = 0; i < 3; i++) expect(Math.abs(a[i]! - b[i]!), `${sky} ${name} ${c.toString(16)}`).toBeLessThanOrEqual(2);
+        }
+      }
+    }
+    // Winterfall lightens a prop (a multiply never could), Starry Night darkens it
+    const lum = (c: number[]) => c[0]! * 0.3 + c[1]! * 0.59 + c[2]! * 0.11;
+    const at = stands.get('aur_0')!;
+    const wf = layerGradeAt(themeForScene(BACKDROP_THEMES['winterfall']!, data.hints, 'far')!, 'far', at.v);
+    const sn = layerGradeAt(themeForScene(BACKDROP_THEMES['starry_night']!, data.hints, 'far')!, 'far', at.v);
+    const hide = 0x8e7058;
+    const tone = (g: { color: number; alpha: number }) => over(hide, [(g.color >> 16) & 255, (g.color >> 8) & 255, g.color & 255, g.alpha]);
+    expect(lum(tone(wf))).toBeGreaterThan(lum(over(hide, [0, 0, 0, 0])));
+    expect(lum(tone(sn))).toBeLessThan(lum(over(hide, [0, 0, 0, 0])));
+  });
+
+  it('emitter puffs take the sky of their half like the strip they rise from (round 3): darker at night, paler under Winterfall', () => {
+    const lum = (c: number) => ((c >> 16) & 255) * 0.3 + ((c >> 8) & 255) * 0.59 + (c & 255) * 0.11;
+    const plume = 0xd6d0c8;
+    expect(moteGradeTint(plume, null, 'far')).toBe(plume);
+    const hints = { skyGrade: 0.45 };
+    expect(lum(moteGradeTint(plume, themeForScene(BACKDROP_THEMES['starry_night']!, hints, 'far'), 'far'))).toBeLessThan(lum(plume) - 40);
+    const dark = 0x8e8984;
+    expect(lum(moteGradeTint(dark, themeForScene(BACKDROP_THEMES['winterfall']!, hints, 'far'), 'far'))).toBeGreaterThan(lum(dark));
   });
 
   it('a prop takes the skin of the region it stands in (the matching look first)', () => {

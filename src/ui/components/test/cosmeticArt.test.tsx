@@ -1,13 +1,14 @@
 /**
  * Cosmetic pictures in the UI (src/ui/components/cosmeticArt.tsx): a backdrop or scene still shown
  * before its Blender strips streamed in updates itself when the visuals say a picture got better
- * (docs/requests/custom-a-scenes.md), and a national flag grid asks for the atlas tile.
+ * (docs/requests/custom-a-scenes.md), a national flag grid asks for the atlas tile, and a Legendary base
+ * model stands in its aura (round 3).
  */
 import { render } from 'preact';
 import { act } from 'preact/test-utils';
 import { afterEach, describe, expect, it } from 'vitest';
 import { installDom, type FakeElement } from '../../screens/test/dom';
-import { BackdropLook, CosmeticArtContext, CosmeticImage, CosmeticPicturesContext, type CosmeticImageFn, type CosmeticImageOptions } from '../cosmeticArt';
+import { BackdropLook, BaseLook, BaseThumb, CosmeticArtContext, CosmeticImage, CosmeticPicturesContext, type CosmeticImageFn, type CosmeticImageOptions } from '../cosmeticArt';
 import { UiKitContext, defaultKit } from '../kit';
 
 let container: FakeElement | null = null;
@@ -78,5 +79,71 @@ describe('national flag pictures', () => {
     );
     expect(asked[0]).toMatchObject({ size: 'tile' });
     expect(asked[1]?.size).toBeUndefined();
+  });
+});
+
+describe('the Legendary aura under a base picture (round 3)', () => {
+  /** The router as the app wires it: an aura only for the aura skins, a thumbnail for every model. */
+  const fn: CosmeticImageFn = (key, o) => {
+    if (o?.layer === 'aura') return key === 'baseSkin.crystal_spire' ? 'aura.svg' : null;
+    if (o?.layer === 'thumb') return `${key}.thumb.webp`;
+    if (o?.layer === 'fx') return `${key}.fx.svg`;
+    return `${key}.png`;
+  };
+  const kit = { ...defaultKit, portrait: () => Promise.resolve('data:image/png;base64,AA==') };
+  async function showBase(node: preact.ComponentChildren): Promise<FakeElement> {
+    const dom = installDom();
+    container = dom.container;
+    act(() =>
+      render(
+        <UiKitContext.Provider value={kit}>
+          <CosmeticArtContext.Provider value={fn}>{node}</CosmeticArtContext.Provider>
+        </UiKitContext.Provider>,
+        container as unknown as HTMLElement,
+      ),
+    );
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 0));
+    });
+    return dom.container;
+  }
+
+  it('draws the halo under the model and its fx layer, breathing while the base animates', async () => {
+    const c = await showBase(<BaseLook age="future" skin="baseSkin.crystal_spire" testid="b" />);
+    const base = c.querySelector('[data-testid="b"]')!;
+    const aura = c.querySelector('[data-testid="b-aura"]')!;
+    expect(base.getAttribute('class')).toContain('has-aura');
+    expect(aura.getAttribute('class')).toBe('cos-base__aura is-live');
+    expect(String((aura as unknown as { style: Record<string, string> }).style.backgroundImage)).toContain('aura.svg');
+    // under everything: the aura first, then the body, then the fx layer on top
+    const kids = base.children.map((k) => (k as FakeElement).getAttribute('class') ?? '');
+    expect(kids).toEqual(['cos-base__aura is-live', 'cos-base__img cos-base__body', 'cos-base__img cos-base__fx']);
+  });
+
+  it('rests when the base does not animate (VS and the tiles under Reduce motion), and no other skin has one', async () => {
+    const c = await showBase(
+      <>
+        <BaseLook age="future" skin="baseSkin.crystal_spire" animate={false} testid="still" />
+        <BaseLook age="future" skin="baseSkin.midnight_neon" testid="plain" />
+        <BaseLook age="future" skin={null} testid="std" />
+      </>,
+    );
+    expect(c.querySelector('[data-testid="still-aura"]')!.getAttribute('class')).toBe('cos-base__aura');
+    expect(c.querySelector('[data-testid="plain-aura"]')).toBeNull();
+    expect(c.querySelector('[data-testid="plain"]')!.getAttribute('class')).not.toContain('has-aura');
+    expect(c.querySelector('[data-testid="std-aura"]')).toBeNull();
+  });
+
+  it("an aura skin's tile is its portrait on the scene strip (the halo under the model), other models keep their thumbnail", async () => {
+    const c = await showBase(
+      <>
+        <BaseThumb age="future" skin="baseSkin.crystal_spire" testid="spire" />
+        <BaseThumb age="future" skin="baseSkin.midnight_neon" testid="neon" />
+      </>,
+    );
+    const spire = c.querySelector('[data-testid="spire"]')!;
+    expect(spire.querySelector('.cos-btile__thumb')).toBeNull();
+    expect(spire.querySelector('.cos-base__aura')).not.toBeNull();
+    expect(c.querySelector('[data-testid="neon"] .cos-btile__thumb')!.getAttribute('src')).toBe('baseSkin.midnight_neon.thumb.webp');
   });
 });

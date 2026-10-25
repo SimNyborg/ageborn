@@ -37,7 +37,7 @@ import random
 from ageborn_art.geometry import Geo
 
 from world.base_skins_kit import crystal_cluster, flames, icicles, icicles_at, leaf, snow_pillow
-from world.common import (BASE_YAW, ambient_lu, base_module, chipped_cracks, cyl, flag, moss_drape, rock, rope,
+from world.common import (BASE_YAW, ambient_lu, base_module, box, chipped_cracks, cyl, flag, moss_drape, prop_loop, rock, rope, rubble,
                           topple_lu)
 
 BARK = "#6A4E3A"
@@ -1067,4 +1067,505 @@ FROST_CAVE = base_module(
     },
 )
 
-SKINS = [MOSSY_DEN, FROST_CAVE]
+# ---------------------------------------------------------------------------------------------------
+# Mammoth Bone Lodge (round 3; Epic, Wardrobe Crate): a domed lodge tower of mammoth bone. A ring of great
+# mammoth skulls is its foundation; three tiers of hide walls rise on curved tusk ribs lashed with rawhide,
+# the middle tier's panels team-coloured; a hide dome closes it under a bone smoke ring crowned by a totem
+# skull whose tusks curl up into the sky, smoke drifting from the hole behind it. The door is an arch of two
+# great tusks over a team curtain lit from the fire inside, bone torches either side; a drying rack of hides
+# and fish stands at the back, and a string of bone chimes swings under the second platform (a `prop` loop).
+# The mounts are rawhide-lashed log decks: on a stack of two skulls by the gate, on tusk brackets from the lower
+# wall, on a long tusk cantilever toward the lane and on the dome's shoulder. Team colour: the middle tier's
+# hide panels, the door curtain, a painted hide on the lower wall and the flags.
+#
+# Crumble: 75% cracks in the skulls and a tusk rib snapped off the lower wall, bone and earth rubble; 50% a team
+# panel burnt through with fire, soot, the drying rack burning, a torch out; 25% a ragged breach in the lower
+# wall with fire, the dome and its totem knocked askew, fire on the dome. Treasury: a basket of berries and
+# meat (1), a pile of furs (2), tusks and ochre stones (3).
+
+BL_BONE = "#EDE3C8"
+BL_BONE_LT = "#F6EFDD"
+BL_BONE_DK = "#CDBF9E"
+BL_HIDE = "#A88A66"
+BL_HIDE_LT = "#BC9E7A"
+BL_HIDE_DK = "#8D7153"
+BL_OCHRE = "#C98A3D"
+BL_RED = "#9E4A32"
+BL_WOOD = "#7A5E44"
+BL_WOOD_DK = "#5E4836"
+BL_ROPE = "#B8A47E"
+BL_SOCKET = "#3A2E26"
+BL_EARTH = "#8C7B68"
+BL_EARTH_DK = "#76685A"
+BL_SOOT = "#3E352E"
+BL_CRACK = "#4A3E34"
+BL_FIRE_IN = "#E8A868"
+BL_CX, BL_CY = -92.0, 16.0
+BL_SQ = 0.9
+# the tiers: (radius at the bottom, radius at the top, z0, z1)
+BL_TIERS = [(78.0, 70.0, 22.0, 134.0), (60.0, 52.0, 128.0, 210.0), (52.0, 4.0, 206.0, 262.0)]
+BL_DOOR = -90.0                # the door's angle (straight at the camera)
+
+
+def bl_r(z):
+    """The lodge's wall radius at height z (each tier tapers; the dome curves in)."""
+    for r0, r1, z0, z1 in BL_TIERS:
+        if z0 <= z <= z1:
+            t = (z - z0) / (z1 - z0)
+            if r1 < 10:            # the dome: a quarter ellipse
+                return max(1.0, r0 * math.sqrt(max(0.0, 1.0 - t * t)))
+            return r0 + (r1 - r0) * t
+    return BL_TIERS[0][0] if z < BL_TIERS[0][2] else 4.0
+
+
+def bl_at(a_deg, z, out=0.0):
+    a = math.radians(a_deg)
+    r = bl_r(z) + out
+    return (BL_CX + r * math.cos(a), BL_CY + r * BL_SQ * math.sin(a), z)
+
+
+def bl_place(g, c, a_deg):
+    """Geometry built at the origin facing +x, turned about the vertical by a and set at c."""
+    from mathutils import Matrix, Vector
+    m = Matrix.Translation(Vector(c)) @ Matrix.Rotation(math.radians(a_deg), 4, "Z")
+    for v in g.bm.verts:
+        v.co = m @ v.co
+    return g
+
+
+def mammoth_skull(rig, joint, c, a_deg, k=1.0, tusks="stub", paint=False, seed=0):
+    """A great mammoth skull facing a_deg: the high domed cranium, the brow, deep eye sockets and nasal hole,
+    the tusk sockets and tusks (stubs, or long tusks curling up and out)."""
+    bone, dk, hole, tusk, ochre = Geo(), Geo(), Geo(), Geo(), Geo()
+    bone.blob((-3.0 * k, 0.0, 4.0 * k), (13.0 * k, 15.0 * k, 16.0 * k), p=2.3, taper=(1.0, 0.86))
+    bone.blob((6.0 * k, 0.0, -6.0 * k), (9.0 * k, 12.0 * k, 9.0 * k), p=2.4)
+    dk.capsule((10.0 * k, -10.0 * k, 4.0 * k), (10.0 * k, 10.0 * k, 4.0 * k), 3.4 * k, segs=10, rings=2)
+    for s in (-1, 1):
+        hole.blob((11.6 * k, s * 7.0 * k, 0.5 * k), (2.8 * k, 3.2 * k, 3.0 * k), p=2.0)
+        dk.lathe([(0.1, 0), (4.4 * k, 1.0 * k), (4.0 * k, 6.0 * k), (3.2 * k, 7.0 * k)], (10.0 * k, s * 6.0 * k, -9.0 * k),
+                 (15.0 * k, s * 7.0 * k, -14.0 * k), segs=12)
+    hole.blob((14.2 * k, 0.0, -5.0 * k), (1.8 * k, 3.4 * k, 4.6 * k), p=2.0)
+    if tusks == "stub":
+        for s in (-1, 1):
+            tusk.capsule((14.0 * k, s * 7.0 * k, -13.0 * k), (19.0 * k, s * 8.5 * k, -17.0 * k), 2.9 * k, 2.3 * k, segs=10, rings=2)
+    elif tusks == "long":
+        for s in (-1, 1):
+            pts = []
+            for i in range(9):
+                t = i / 8.0
+                ang = math.radians(-60 + 230 * t)
+                rr = 22.0 * k
+                pts.append((14.0 * k + rr * 0.9 * math.cos(ang) * (1 - 0.25 * t), s * (7.0 * k + 13.0 * k * t),
+                            -14.0 * k + rr * (math.sin(ang) + 0.87)))
+            for i, (a, b) in enumerate(zip(pts, pts[1:])):
+                tusk.capsule(a, b, (3.6 - 2.4 * i / 8.0) * k, (3.6 - 2.4 * (i + 1) / 8.0) * k, segs=10, rings=2)
+    if paint:
+        ochre.blob((9.5 * k, 0.0, 10.0 * k), (2.2 * k, 9.0 * k, 1.6 * k), p=2.2)
+        ochre.blob((8.4 * k, 0.0, 14.0 * k), (1.8 * k, 6.0 * k, 1.3 * k), p=2.2)
+    for geo in (bone, dk, hole, tusk, ochre):
+        bl_place(geo, c, a_deg)
+    rig.part(joint, bone, BL_BONE)
+    rig.part(joint, dk, BL_BONE_DK)
+    rig.part(joint, hole, BL_SOCKET, outline=0, highlight=False)
+    if tusks in ("stub", "long"):
+        rig.part(joint, tusk, BL_BONE_LT, finish="gloss")
+    if paint:
+        rig.part(joint, ochre, BL_RED, outline=0, highlight=False)
+
+
+def tusk_rib(g, a_deg, z0, z1, out=1.6, bow=3.0, r0=3.2, r1=2.2, n=9):
+    """A curved tusk standing against the wall from z0 to z1 at angle a, bowed a little outward."""
+    pts = [bl_at(a_deg, z0 + (z1 - z0) * i / (n - 1), out + bow * math.sin(math.pi * i / (n - 1))) for i in range(n)]
+    for i, (a, b) in enumerate(zip(pts, pts[1:])):
+        g.capsule(a, b, r0 + (r1 - r0) * i / (n - 1), r0 + (r1 - r0) * (i + 1) / (n - 1), segs=10, rings=2)
+    return g
+
+
+def bl_band(g, z, out=1.2, h=3.0):
+    """A rawhide lashing band round the lodge at height z."""
+    r = bl_r(z) + out
+    cyl(g, (BL_CX, BL_CY, z - h / 2), (BL_CX, BL_CY, z + h / 2), r, r, bevel=0.6, segs=40, squash=(1.0, BL_SQ))
+    return g
+
+
+def bl_panel(g, a0, a1, z0, z1, out=0.8, thick=1.6):
+    """A hide panel on the wall between angles a0 and a1, from z0 to z1 (a lathe shell cut to the sector)."""
+    prof = []
+    for i in range(7):
+        z = z0 + (z1 - z0) * i / 6
+        prof.append((bl_r(z) + out + thick, z - z0))
+    inner = [(max(0.5, r - thick), z) for r, z in reversed(prof)]
+    g.lathe([(0.0, 0.0)] + prof + inner[:1] + [(0.0, z1 - z0)], (BL_CX, BL_CY, z0), (BL_CX, BL_CY, z1), segs=48, squash=(1.0, BL_SQ))
+    for a, sgn in ((a0, -1), (a1, 1)):
+        ar = math.radians(a)
+        # the plane through the axis at angle a; cut the side beyond the sector
+        n = (-math.sin(ar) * sgn, math.cos(ar) * sgn / BL_SQ, 0.0)
+        g.clip((BL_CX, BL_CY, 0.0), n)
+    return g
+
+
+def bone_deck(rig, joint, m, r=(24.0, 18.0), seed=0):
+    """A turret deck whose top is exactly at the mount m: split logs lashed side by side on a bone rim,
+    rawhide ties over the ends."""
+    x, y, z = m
+    rx, ry = r
+    g, rim, tie = Geo(), Geo(), Geo()
+    for i in range(5):
+        yy = y + 5 - ry * 0.8 + i * ry * 0.4
+        g.capsule((x - rx, yy, z - 2.2), (x + rx - 2, yy, z - 2.2), 2.4, segs=10, rings=2)
+    rig.part(joint, g, BL_WOOD, outline=0.6)
+    rim.capsule((x - rx - 1, y + 5 - ry, z - 4.6), (x + rx, y + 5 - ry, z - 4.6), 2.0, segs=10, rings=2)
+    rim.capsule((x - rx - 1, y + 5 + ry * 0.9, z - 4.6), (x + rx, y + 5 + ry * 0.9, z - 4.6), 2.0, segs=10, rings=2)
+    rig.part(joint, rim, BL_BONE)
+    for xx in (x - rx + 3, x + rx - 5):
+        tie.capsule((xx, y + 5 - ry - 2.0, z - 1.0), (xx, y + 5 + ry, z - 1.0), 0.9, segs=8, rings=1)
+    rig.part(joint, tie, BL_ROPE, finish="hair", outline=0.4)
+    # the deck's top is a flat face at z (the logs are 4.8 thick, so their crowns meet the mount)
+    top = Geo()
+    box(top, (x - 1, y + 5, z - 0.6), (rx - 1, ry * 0.85, 0.6), p=6)
+    rig.part(joint, top, BL_WOOD_DK, outline=0, highlight=False)
+
+
+def mandible_rows(rig, joint, rows, a0, a1, step, skip=None, colors=(None, None)):
+    """Rows of mammoth jawbones laid in a herringbone round the lower wall (Mezhyrich style): each a thick U of
+    bone lying on the wall, the rows alternating upright and inverted, two bone tones. `skip(a, z)` leaves gaps."""
+    ga, gb = Geo(), Geo()
+    for ri, z in enumerate(rows):
+        flip = 1 if ri % 2 == 0 else -1
+        off = (step * 0.5) if ri % 2 else 0.0
+        a = a0 + off
+        while a <= a1:
+            if not (skip and skip(a, z)):
+                g = ga if (ri + int((a - a0) / step)) % 3 else gb
+                chin = bl_at(a, z - 5.0 * flip, 3.0)
+                for sgn in (-1, 1):
+                    end = bl_at(a + sgn * 4.6, z + 6.5 * flip, 2.2)
+                    mid = bl_at(a + sgn * 3.6, z + 0.5 * flip, 3.2)
+                    g.capsule(chin, mid, 2.9, 2.6, segs=10, rings=2)
+                    g.capsule(mid, end, 2.6, 2.3, segs=10, rings=2)
+                g.blob(chin, (2.8, 2.8, 2.8), p=2.4, cuts=3)
+            a += step
+    rig.part(joint, ga, colors[0] or BL_BONE)
+    rig.part(joint, gb, colors[1] or BL_BONE_DK)
+
+
+def tusk_arch(g, a0, a1, z0, out=3.0, r0=3.4, r1=2.2, n=13):
+    """A great tusk arching over the dome from angle a0 to a1 (both footed at height z0), thick at its feet."""
+    pts = []
+    for i in range(n):
+        t = i / (n - 1)
+        # along the great circle over the dome: angle swings from a0 to a1, height rises to the top and back
+        a = a0 + (a1 - a0) * (0.5 - 0.5 * math.cos(math.pi * t))
+        z = z0 + (258.0 - z0) * math.sin(math.pi * t) ** 0.8
+        r = bl_r(z) + out + 1.5 * math.sin(math.pi * t)
+        ar = math.radians(a)
+        rr = r * abs(math.cos(math.pi * (t - 0.5))) ** 0.35 if 0.2 < t < 0.8 else r
+        pts.append((BL_CX + rr * math.cos(ar), BL_CY + rr * BL_SQ * math.sin(ar), z))
+    for i, (a, b) in enumerate(zip(pts, pts[1:])):
+        u = abs(2 * i / (n - 2) - 1)
+        g.capsule(a, b, r1 + (r0 - r1) * u, r1 + (r0 - r1) * u, segs=12, rings=2)
+    return g
+
+
+def build_bone_lodge(rig, M):
+    for j, pos in (("dome", (BL_CX, BL_CY, 206)), ("jawL", (0, 0, 0)), ("panelB", (0, 0, 0)), ("torchR", (0, 0, 0)),
+                   ("rack", (-158, 30, 0)), ("strut", (0, 0, 0))):
+        rig.joint(j, "body", pos)
+    for j in ("crack1", "crack2", "crack3", "rubble1", "rubble2", "rubble3", "jawGap", "fire1", "fire2", "fire3",
+              "scorch", "tear", "breach", "rackfire"):
+        rig.joint(j, "body", (0, 0, 0), hidden=True)
+
+    # packed earth and stones under the lodge
+    g = Geo()
+    cyl(g, (BL_CX, BL_CY, 0.2), (BL_CX, BL_CY, 5.0), 90.0, 85.0, bevel=1.4, segs=40, squash=(1.0, BL_SQ))
+    rig.part("body", g, BL_EARTH)
+    g = Geo()
+    for i, a in enumerate((-176, -140, -104, -76, -40, -8, 30, 160)):
+        x, y, _ = bl_at(a, 10, 10)
+        rock(g, (x, y, 4), (7.0, 6.0, 4.4), seed=300 + i, jag=0.2, cuts=3)
+    rig.part("body", g, BL_EARTH_DK)
+
+    # the walls: the lower tier packed earth behind its jawbone courses, the middle tier hide, the dome hide
+    g = Geo()
+    r0, r1, z0, z1 = BL_TIERS[0]
+    g.lathe([(0.0, 0.0), (r0 + 0.5, 0.0), (r0, 4.0), (r1, z1 - z0 - 2.0), (r1 - 0.5, z1 - z0), (0.0, z1 - z0)],
+            (BL_CX, BL_CY, z0), (BL_CX, BL_CY, z1), segs=48, squash=(1.0, BL_SQ))
+    rig.part("body", g, "#6E5A46")
+    g = Geo()
+    r0, r1, z0, z1 = BL_TIERS[1]
+    g.lathe([(0.0, 0.0), (r0 + 0.5, 0.0), (r0, 4.0), (r1, z1 - z0 - 2.0), (r1 - 0.5, z1 - z0), (0.0, z1 - z0)],
+            (BL_CX, BL_CY, z0), (BL_CX, BL_CY, z1), segs=48, squash=(1.0, BL_SQ))
+    rig.part("body", g, BL_HIDE)
+    r0, r1, z0, z1 = BL_TIERS[2]
+    prof = [(0.0, 0.0)] + [(bl_r(z0 + (z1 - z0) * i / 10), (z1 - z0) * i / 10) for i in range(11)] + [(0.0, z1 - z0)]
+    g = Geo().lathe(prof, (BL_CX, BL_CY, z0), (BL_CX, BL_CY, z1), segs=48, squash=(1.0, BL_SQ))
+    rig.part("dome", g, BL_HIDE_LT)
+    # dark hide seams running up the dome between the tusks
+    g = Geo()
+    for a in (-150, -110, -70, -30, 10, 150):
+        pts = [bl_at(a, 210 + 46 * i / 5, 0.5) for i in range(6)]
+        for p0, p1 in zip(pts, pts[1:]):
+            g.capsule(p0, p1, 0.8, segs=6, rings=1)
+    rig.part("dome", g, BL_HIDE_DK, outline=0, highlight=False)
+
+    # the jawbone courses of the lower wall (a patch beside the door falls out at 75%)
+    rows = [34, 48, 62, 76, 90, 104, 118]
+    door = lambda a, z: abs(a - BL_DOOR) < 17 and z < 70
+    patch = lambda a, z: -132 <= a <= -108 and 58 <= z <= 96
+    mandible_rows(rig, "body", rows, -178, -2, 11.0, skip=lambda a, z: door(a, z) or patch(a, z))
+    mandible_rows(rig, "body", rows, 4, 176, 22.0)
+    mandible_rows(rig, "jawL", [r for r in rows if 58 <= r <= 96], -132, -108, 11.0)
+    g = Geo()
+    gx, gy, _ = bl_at(-120, 78, 2.0)
+    g.slab([(gx - 13, 98), (gx + 12, 96), (gx + 14, 74), (gx + 9, 58), (gx - 10, 57), (gx - 14, 74)], gy, 1.2)
+    rig.part("jawGap", g, "#4E4034", outline=0, highlight=False)
+    g = Geo()
+    bl_band(g, 132, out=2.6, h=5.0)
+    rig.part("body", g, BL_ROPE, finish="hair", outline=0.5)
+
+    # team hide panels stretched between great tusks round the middle tier (one burns at 50%), laced at the edges
+    g = Geo()
+    for a0, a1 in ((-168, -136), (-104, -76), (-44, -14)):
+        bl_panel(g, a0 + 2, a1 - 2, 138, 202)
+    rig.part("body", g, team=True)
+    g = Geo()
+    bl_panel(g, -134, -106, 138, 202)
+    bl_panel(g, -74, -46, 138, 202)
+    rig.part("panelB", g, team=True)
+    g = Geo()
+    for a in (-168, -136, -104, -76, -46, -14):
+        tusk_rib(g, a, 128, 210, out=3.2, bow=3.0, r0=3.6, r1=2.4)
+    for a in (-120, -60):
+        tusk_rib(g, a, 128, 210, out=3.0, bow=2.6, r0=3.2, r1=2.2)
+    rig.part("body", g, BL_BONE_LT, finish="gloss")
+    g = Geo()
+    for a in (-168, -136, -104, -76, -46, -14):
+        for k in range(5):
+            z = 146 + k * 12
+            for sgn in (-1, 1):
+                p0 = bl_at(a + sgn * 1.0, z, 3.6)
+                p1 = bl_at(a + sgn * 6.0, z - 4, 2.2)
+                g.capsule(p0, p1, 0.6, segs=6, rings=1)
+    rig.part("body", g, BL_ROPE, outline=0, highlight=False)
+    # a painted team hide on the lower wall beside the door, on two bone rods
+    hx, hy, _ = bl_at(-150, 80, 5.0)
+    g = Geo().slab([(hx - 13, 104), (hx + 13, 106), (hx + 16, 82), (hx + 9, 62), (hx, 56), (hx - 10, 62), (hx - 15, 82)], hy, 2.0)
+    rig.part("body", g, team=True)
+    g = Geo().capsule((hx - 18, hy - 1, 105), (hx + 18, hy - 1, 108), 1.6)
+    g.capsule((hx - 14, hy - 1, 62), (hx + 14, hy - 1, 60), 1.2)
+    rig.part("body", g, BL_BONE, outline=0.6)
+    g = Geo()
+    for z in (92, 82):
+        g.capsule((hx - 9, hy - 1.4, z), (hx + 9, hy - 1.4, z + 2), 1.1, segs=6, rings=1)
+    g.sphere((hx, hy - 1.4, 70), 2.6, cuts=2)
+    rig.part("body", g, BL_OCHRE, outline=0, highlight=False)
+
+    # the dome: two pairs of great tusks arching over it, the smoke ring, the totem skull
+    g = Geo()
+    tusk_arch(g, -158, 22, 210)
+    tusk_arch(g, -22, 158, 210)
+    rig.part("dome", g, BL_BONE_LT, finish="gloss")
+    g = Geo()
+    cyl(g, (BL_CX, BL_CY, 252), (BL_CX, BL_CY, 264), 16.0, 13.0, bevel=1.4, segs=24, squash=(1.0, BL_SQ))
+    rig.part("dome", g, BL_BONE_DK)
+    g = Geo()
+    cyl(g, (BL_CX, BL_CY, 262), (BL_CX, BL_CY, 265), 10.0, 10.0, bevel=0.4, segs=24, squash=(1.0, BL_SQ))
+    rig.part("dome", g, BL_SOCKET, outline=0, highlight=False)
+    mammoth_skull(rig, "dome", (BL_CX + 4, BL_CY - 6, 279), -38.0, k=1.05, tusks="long", paint=True)
+
+    # the door: an arch of two great tusks over a team curtain, firelit, bone torches either side
+    dx, dy, _ = bl_at(BL_DOOR, 0, 0)
+    dy -= 2.0
+    g = Geo().slab([(dx - 16, 4), (dx + 16, 4), (dx + 15, 40), (dx + 8, 52), (dx, 55), (dx - 8, 52), (dx - 15, 40)], dy - 0.6, 1.4)
+    rig.part("body", g, BL_SOCKET, outline=0, highlight=False)
+    g = Geo().slab([(dx - 13, 8), (dx + 13, 8), (dx + 12, 40), (dx + 6, 49), (dx, 51), (dx - 6, 49), (dx - 12, 40)], dy - 1.8, 1.2)
+    rig.part("body", g, team=True)
+    g = Geo().slab([(dx - 9, 4), (dx + 9, 4), (dx + 6, 16), (dx - 6, 16)], dy - 2.6, 0.8)
+    rig.part("body", g, glow=BL_FIRE_IN, outline=0)
+    g = Geo()
+    for sgn in (-1, 1):
+        pts = []
+        for i in range(9):
+            t = i / 8.0
+            ang = math.pi * 0.5 * t
+            pts.append((dx + sgn * (22.0 * math.cos(ang) + 2.0), dy - 4.0 - 3.0 * math.sin(math.pi * t), 2.0 + 60.0 * math.sin(ang) ** 0.85))
+        for i, (a, b) in enumerate(zip(pts, pts[1:])):
+            g.capsule(a, b, 4.6 - 2.2 * i / 8.0, 4.6 - 2.2 * (i + 1) / 8.0, segs=12, rings=2)
+    rig.part("body", g, BL_BONE_LT, finish="gloss")
+    g = Geo()
+    g.blob((dx, dy - 5.0, 62.0), (5.0, 4.0, 4.0), p=2.4)
+    rig.part("body", g, BL_ROPE, finish="hair", outline=0.5)
+    for tx, joint in ((dx - 32, "body"), (dx + 32, "torchR")):
+        g = Geo().capsule((tx, dy - 6, 6), (tx, dy - 6, 40), 1.8, 1.4)
+        g.lathe([(0.1, 0), (3.8, 3), (3.4, 7), (0.1, 7.5)], (tx, dy - 6, 39), (tx, dy - 6, 46), segs=10)
+        rig.part(joint, g, BL_BONE, outline=0.6)
+        g = Geo().blob((tx, dy - 7, 51), (3.8, 3.0, 6.8), p=2.0, taper=(1.0, 0.25))
+        rig.part(joint, g, glow="#FFC47A", outline=0)
+        g = Geo().blob((tx, dy - 9, 49), (1.8, 1.5, 3.4), p=2.0, taper=(1.0, 0.3))
+        rig.part(joint, g, glow="#FFF0CC", outline=0)
+
+    # the foundation: great skulls round the front, packed with stones between them
+    for i, a in enumerate((-152, -124, -58, -30)):
+        c = bl_at(a, 16, 9)
+        mammoth_skull(rig, "body", c, a, k=1.0, tusks="stub", paint=(i % 2 == 0), seed=i)
+
+    # the drying rack at the back left: two poles, a crossbar, a stretched hide and a row of fish
+    rx0, ry0 = -158.0, 30.0
+    g = Geo()
+    for xx in (rx0 - 12, rx0 + 12):
+        g.capsule((xx, ry0, 0), (xx, ry0, 160), 1.8, 1.5)
+    g.capsule((rx0 - 16, ry0, 156), (rx0 + 16, ry0, 156), 1.6)
+    rig.part("rack", g, BL_WOOD, outline=0.6)
+    g = Geo().slab([(rx0 - 10, 154), (rx0 + 10, 154), (rx0 + 11, 132), (rx0 + 5, 122), (rx0 - 5, 123), (rx0 - 11, 133)], ry0 - 1.5, 1.4)
+    rig.part("rack", g, BL_HIDE_LT)
+    g = Geo()
+    for i in range(3):
+        fx = rx0 - 6 + i * 6
+        g.blob((fx, ry0 - 3, 146 - (i % 2) * 2), (1.8, 1.2, 5.6), p=2.2, taper=(0.6, 1.0))
+    rig.part("rack", g, "#A9967A")
+    flames(rig, "rackfire", [(rx0 - 2, ry0 - 6, 124, 0.8)])
+
+    # the mounts: lashed log decks (on two stacked skulls by the gate, on brackets, a cantilever, the dome's shoulder)
+    x, y, z = M[0]
+    mammoth_skull(rig, "body", (x - 4, y + 6, 15), -50.0, k=0.95, tusks="stub")
+    mammoth_skull(rig, "body", (x - 4, y + 8, 33), -20.0, k=0.64, tusks="none")
+    g = Geo()
+    for sgn in (-1, 1):
+        g.capsule((x - 4 + sgn * 13, y + 4, 2), (x - 4 + sgn * 11, y + 4, z - 4), 1.8, 1.5)
+    rig.part("body", g, BL_WOOD, outline=0.6)
+    for i, m in enumerate(M):
+        bone_deck(rig, "strut" if i == 2 else "body", m, r=(19.0 if i in (0, 2) else 22.0, 17.0), seed=40 + i)
+    g = Geo()
+    for i in (1, 3):
+        mx, my, mz = M[i]
+        wall = bl_at(-60 if i == 1 else -72, mz - 30, 1.0)
+        g.capsule(wall, (mx - 8, my + 2, mz - 6), 3.0, 2.2, segs=10, rings=2)
+        g.capsule((wall[0] + 12, wall[1], wall[2] + 6), (mx + 8, my + 2, mz - 6), 2.6, 2.0, segs=10, rings=2)
+    mx, my, mz = M[2]
+    w0, w1 = bl_at(-40, mz - 40, 2.0), bl_at(-58, mz - 18, 2.0)
+    g.capsule(w0, (mx + 4, my + 2, mz - 6), 3.4, 2.4, segs=10, rings=2)
+    g.capsule(w1, (mx - 10, my + 2, mz - 6), 3.0, 2.2, segs=10, rings=2)
+    rig.part("body", g, BL_BONE)
+    g = Geo()
+    g.capsule((mx + 4, my + 8, mz - 1), bl_at(-58, 214, 2.0), 0.8, segs=6, rings=1)
+    rig.part("body", g, BL_ROPE, finish="hair", outline=0.4)
+
+    # damage: cracks on skulls and bones; a burnt team panel; a breach; soot; rubble; fires
+    chipped_cracks(rig, "crack1", [[bl_at(-60, 196, 3.0), bl_at(-54, 184, 3.0), bl_at(-60, 172, 3.0)],
+                                   [bl_at(-152, 26, 18.0), bl_at(-148, 18, 18.0)]], BL_CRACK, BL_BONE_LT, w=1.8)
+    chipped_cracks(rig, "crack2", [[bl_at(-28, 120, 4.0), bl_at(-22, 108, 4.0), bl_at(-28, 96, 4.0)],
+                                   [bl_at(-30, 26, 18.0), bl_at(-26, 18, 18.0)]], BL_CRACK, BL_BONE_LT, w=1.8)
+    chipped_cracks(rig, "crack3", [[bl_at(-110, 196, 3.0), bl_at(-104, 184, 3.0), bl_at(-110, 172, 3.0)],
+                                   [bl_at(-160, 110, 4.0), bl_at(-154, 98, 4.0)]], BL_CRACK, BL_BONE_LT, w=1.8)
+    g = Geo()
+    bl_panel(g, -134, -106, 138, 202)
+    rig.part("tear", g, BL_HIDE_DK)
+    g = Geo()
+    tx, ty, _ = bl_at(-120, 170, 3.4)
+    g.slab([(tx - 10, 182), (tx - 2, 188), (tx + 9, 180), (tx + 7, 166), (tx - 3, 160), (tx - 11, 168)], ty, 1.0)
+    rig.part("tear", g, BL_SOCKET, outline=0, highlight=False)
+    flames(rig, "fire1", [(tx, ty - 3, 166, 0.9)])
+    g = Geo()
+    for a, z, rr in ((-120, 190, 9.0), (-60, 196, 8.0)):
+        sx, sy, _ = bl_at(a, z, 3.6)
+        g.slab([(sx + rr * math.cos(k * 0.9) * (1.0 if k % 2 else 0.7), z + rr * math.sin(k * 0.9) * (1.0 if k % 2 else 0.7))
+                for k in range(7)], sy, 0.6)
+    rig.part("scorch", g, BL_SOOT, outline=0, highlight=False)
+    bx, by, _ = bl_at(-66, 44, 4.0)
+    g = Geo().slab([(bx - 16, 26), (bx - 6, 36), (bx + 8, 38), (bx + 16, 28), (bx + 12, 10), (bx - 12, 10)], by, 2.0)
+    rig.part("breach", g, "#6E5A46", outline=0.6)
+    g = Geo().slab([(bx - 11, 26), (bx - 4, 33), (bx + 7, 34), (bx + 12, 26), (bx + 8, 12), (bx - 8, 12)], by - 1.2, 1.0)
+    rig.part("breach", g, BL_SOCKET, outline=0, highlight=False)
+    flames(rig, "fire2", [(bx - 2, by - 3, 14, 1.1)])
+    flames(rig, "fire3", [(BL_CX - 24, BL_CY - 44, 230, 0.9)])
+    rubble(rig, "rubble1", [(-160, -40), (-136, -50)], BL_EARTH, seed=3)
+    rubble(rig, "rubble2", [(-98, -60), (-70, -62)], BL_BONE_DK, seed=13)
+    rubble(rig, "rubble3", [(-150, -60), (-122, -64), (16, -56)], BL_EARTH, seed=23, size=1.2)
+    for j, pts2 in (("rubble1", [(-148, -52), (-124, -58)]), ("rubble2", [(-84, -64)]), ("rubble3", [(-136, -68), (4, -60)])):
+        g = Geo()
+        for x2, y2 in pts2:
+            g.capsule((x2 - 8, y2 - 4, 3), (x2 + 8, y2 - 6, 5), 2.2, 1.6)
+            g.capsule((x2 + 2, y2 - 2, 2), (x2 + 10, y2 + 4, 8), 1.8, 1.2)
+        rig.part(j, g, BL_BONE)
+
+    flag(rig, "root", "flagA", (BL_CX - 20, BL_CY + 14, 316), length=30, height=18, pole=262)
+    flag(rig, "root", "flagB", (-142, 34, 196), length=24, height=15, pole=128)
+
+    # Treasury: berries and meat (1), furs (2), tusks with ochre stones (3)
+    g = Geo()
+    cyl(g, (-160, -60, 0), (-160, -60, 10), 8.0, 9.0, bevel=0.8)
+    rig.part("treasury1", g, BL_WOOD)
+    g = Geo()
+    for i in range(6):
+        g.sphere((-164 + (i % 3) * 4, -62 + (i // 3) * 3, 11 + (i % 2)), 2.4, cuts=2)
+    rig.part("treasury1", g, BERRY)
+    g = Geo()
+    for i in range(3):
+        g.blob((-136 + i * 2, -62 - i, 4 + i * 4.0), (11.0 - i * 1.5, 7.0, 3.0), p=2.2, rot=(0, 0, 10 * i))
+    rig.part("treasury2", g, FUR, finish="hair")
+    g = Geo()
+    for sgn in (-1, 1):
+        g.capsule((-110 + sgn * 4, -62, 2), (-110 + sgn * 14, -66, 22), 2.4, 1.4)
+    rig.part("treasury3", g, BL_BONE_LT, finish="gloss")
+    g = Geo()
+    for i in range(3):
+        g.blob((-112 + i * 5, -66, 3), (3.0, 2.6, 2.4), p=2.4)
+    rig.part("treasury3", g, BL_OCHRE)
+
+
+def crumble_bone_lodge(stage):
+    pose = {}
+    if stage >= 1:
+        pose.update({"crack1": {"show": True}, "rubble1": {"show": True}, "jawL": {"hide": True}, "jawGap": {"show": True}})
+    if stage >= 2:
+        pose.update({"crack2": {"show": True}, "rubble2": {"show": True}, "panelB": {"hide": True}, "tear": {"show": True},
+                     "fire1": {"show": True}, "scorch": {"show": True}, "rackfire": {"show": True}, "torchR": {"hide": True}})
+    if stage >= 3:
+        pose.update({"crack3": {"show": True}, "rubble3": {"show": True}, "breach": {"show": True}, "fire2": {"show": True},
+                     "fire3": {"show": True}, "dome": {"r": 8.0, "x": -5.0, "z": -7.0}, "rack": {"r": -10.0}})
+    return pose
+
+
+def chimes_pose(f):
+    """The bone chimes under the second deck swing (a ping-pong of four steps)."""
+    a = (-1.0, -0.35, 0.35, 1.0)[f]
+    return {f"chime{i}": {"r": a * (9.0 + 3.0 * i)} for i in range(4)}
+
+
+def build_bone_lodge_with_chimes(rig, M):
+    build_bone_lodge(rig, M)
+    mx, my, mz = M[1]
+    for i in range(4):
+        x = mx - 12 + i * 7.5
+        top = (x, my - 12, mz - 8)
+        rig.joint(f"chime{i}", "root", top)
+        L = 14.0 + (i % 2) * 5.0
+        g = Geo().capsule(top, (x, my - 12, mz - 8 - L), 0.5, segs=6, rings=1)
+        rig.part(f"chime{i}", g, BL_ROPE, outline=0.3)
+        g = Geo().capsule((x - 1.2, my - 12, mz - 8 - L - 1), (x + 1.2, my - 12, mz - 8 - L - 8), 1.5, 1.1, segs=8, rings=2)
+        g.sphere((x - 1.2, my - 12, mz - 8 - L - 1), 1.9, cuts=2)
+        rig.part(f"chime{i}", g, BL_BONE)
+
+
+MAMMOTH_BONE_LODGE = base_module(
+    "stone", "Mammoth Bone Lodge", height=300, width=190, canvas=(460, 640), feet=(350, 590),
+    build=build_bone_lodge_with_chimes, crumble=crumble_bone_lodge, mount_depth=[-40, -24, -40, -24], skin="mammoth_bone_lodge",
+    flags=[{"name": "flagA", "crumbleMax": 2}, {"name": "flagB", "crumbleMax": 3, "phase": 1.7, "z": "back"}],
+    lights=[((BL_CX, BL_CY - 74, 14), 3, 28), ((BL_CX - 32, BL_CY - 78, 52), 3, 18), ((BL_CX + 32, BL_CY - 78, 52), 1, 18)],
+    smoke=[((BL_CX, BL_CY, 270), 2), ((BL_CX - 40, -30, 150), 3), ((BL_CX + 24, -50, 60), 3)],
+    horn=(-96, 316), yaw=BASE_YAW,
+    props=[prop_loop("chimes", [f"chime{i}" for i in range(4)], 4, chimes_pose, ms=170, crumble=(0, 2), z="front", hold=1,
+                     anchor=(-48.0, -36.0, 100.0), sequence=[0, 1, 2, 3, 2, 1])],
+    extra_meta={
+        "collapseMaterial": "stone",
+        # the dome with its totem falls toward the lane, the middle tier a beat later
+        "topple": [topple_lu(-150, -30, 200, delay_ms=0, push=1.0, sink_lu=24),
+                   topple_lu(-160, -20, 128, delay_ms=160, push=0.8, sink_lu=18)],
+        "rubbleColors": [BL_BONE, BL_HIDE, BL_BONE_DK, BL_EARTH],
+        "dustColor": "#D8CCB0",
+        "ambientLu": [ambient_lu("smoke", (BL_CX, BL_CY, 270), 8, 1.0), ambient_lu("embers", (BL_CX, BL_CY - 74, 20), 12, 0.6),
+                      ambient_lu("dust", (BL_CX - 40, BL_CY - 70, 10), 40, 0.5)],
+    },
+)
+
+SKINS = [MOSSY_DEN, FROST_CAVE, MAMMOTH_BONE_LODGE]

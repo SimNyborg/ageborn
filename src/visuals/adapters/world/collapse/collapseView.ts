@@ -6,7 +6,7 @@
  * heaps, and every particle of the world. All timing comes from the world (fixed steps, seeded), so
  * this class only mirrors state.
  *
- * Layers (bottom to top): stump, heaps, pieces, debris, flags, dust and smoke, additive light.
+ * Layers (bottom to top): stump, heaps, pieces, debris, prop loops, flags, dust and smoke, additive light.
  */
 import { Container, earcut, Graphics, Mesh, MeshGeometry, Sprite, Texture } from 'pixi.js';
 import type { PartBaker } from '../../../bake';
@@ -21,6 +21,22 @@ import { CollapseWorld, collapseBeats, type Beats, type BodyPose, type ParticleK
 export interface CollapseFlag {
   clip: string;
   z: 'front' | 'back';
+}
+
+/**
+ * A prop loop showing when the base falls (round 3: sails, a dish, orbiting shards): it rides the piece under its
+ * anchor (lu, y down), keeps turning on the view's clock (held at `hold` under Reduce motion) and fades.
+ */
+export interface CollapseProp {
+  clip: string;
+  z: 'front' | 'back';
+  anchor: Vec;
+  hold: number;
+  /** The base view's loop phase (ms), so the loop goes on from where it was. */
+  phase: number;
+  alpha: number;
+  /** The step it showed at the collapse. */
+  step: number;
 }
 
 export interface CollapseViewOptions {
@@ -38,6 +54,8 @@ export interface CollapseViewOptions {
   kit: WorldSheet | null;
   /** The visible flags (their poles snap). */
   flags: readonly CollapseFlag[];
+  /** The visible prop loops (they ride their pieces down and fade). */
+  props?: readonly CollapseProp[];
   /** Flag animation clock (ms), so the flags keep their phase. */
   clockMs: number;
   /** Light glow colour and spots (lu, y down). */
@@ -218,6 +236,15 @@ interface ChunkDisplay {
   glow: Container | null;
 }
 
+interface PropPiece {
+  p: CollapseProp;
+  c: Container;
+  team: Sprite;
+  base: Sprite;
+  chunk: number;
+  durations: number[];
+}
+
 interface FlagPiece {
   clip: string;
   c: Container;
@@ -258,6 +285,7 @@ export class CollapseView {
   private readonly chunkLayer = new Container();
   private readonly debrisLayer = new Container();
   private readonly flagLayer = new Container();
+  private readonly propLayer = new Container();
   private readonly frontLayer = new Container();
   private readonly addLayer = new Container();
   private readonly shield: Container | null = null;
@@ -265,6 +293,7 @@ export class CollapseView {
   private readonly sprites = new Map<number, Container>();
   private readonly pool = new Map<string, Container[]>();
   private readonly flagPieces: FlagPiece[] = [];
+  private readonly propPieces: PropPiece[] = [];
   private readonly mountChunk: number[] = [];
   private readonly k: number;
   private shown = false;
@@ -328,7 +357,7 @@ export class CollapseView {
     const brk = this.world.breakMs;
     this.beats = { breakMs: brk, landMs: brk + (o.motion.reduce ? 700 : 620), settleMs: brk + 1400, material: p.material };
     this.worldOpts = worldOpts;
-    this.root.addChild(this.stumpLayer, this.heapLayer, this.chunkLayer, this.debrisLayer, this.flagLayer, this.frontLayer, this.addLayer);
+    this.root.addChild(this.stumpLayer, this.heapLayer, this.chunkLayer, this.debrisLayer, this.propLayer, this.flagLayer, this.frontLayer, this.addLayer);
     this.addLayer.blendMode = 'add';
     this.cracksGlow.blendMode = 'add';
     if (p.shield) {
@@ -348,6 +377,7 @@ export class CollapseView {
     this.chunkLayer.visible = false;
     this.stumpLayer.visible = false;
     this.flagLayer.visible = false;
+    this.propLayer.visible = false;
   }
 
   /** Builds the chunk meshes and the flag pieces (once; before the break at the latest). */
@@ -357,6 +387,7 @@ export class CollapseView {
     this.pending = null;
     this.buildChunks(p.main, p.team, this.k);
     this.buildFlags();
+    this.buildProps();
   }
 
   // ------------------------------------------------------------------------------------------
@@ -440,6 +471,28 @@ export class CollapseView {
     this.flagLayer.visible = false;
   }
 
+  private buildProps(): void {
+    const A = this.o.sheet.animations;
+    for (const q of this.o.props ?? []) {
+      if (!A[q.clip]?.length) continue;
+      const c = new Container();
+      const art = new Container();
+      art.scale.set(this.k);
+      const team = new Sprite(Texture.EMPTY);
+      team.tint = this.o.teamColor;
+      const base = new Sprite(Texture.EMPTY);
+      art.addChild(team, base);
+      // pivot on the anchor, so the prop turns with its piece about the point it rides
+      art.position.set(-q.anchor.x, -q.anchor.y);
+      c.addChild(art);
+      c.position.set(q.anchor.x, q.anchor.y);
+      c.alpha = q.alpha;
+      this.propLayer.addChild(c);
+      this.propPieces.push({ p: q, c, team, base, chunk: this.chunkAt(q.anchor.x, q.anchor.y), durations: clipDurations(this.o.sheet, q.clip) });
+    }
+    this.propLayer.visible = false;
+  }
+
   /** The chunk containing a point (lu), else the nearest one. */
   private chunkAt(x: number, y: number): number {
     let best = -1;
@@ -490,6 +543,7 @@ export class CollapseView {
       this.chunkLayer.visible = true;
       this.stumpLayer.visible = true;
       this.flagLayer.visible = true;
+      this.propLayer.visible = true;
       this.cracks.clear();
       this.cracksGlow.clear();
       if (this.shield) this.shield.visible = false;
@@ -497,6 +551,7 @@ export class CollapseView {
     if (w.broken) {
       this.syncChunks();
       this.syncFlags(dtMs);
+      this.syncProps();
       if (!this.heaps && w.t >= w.breakMs + 260) this.placeHeaps();
       for (const h of this.heapItems) {
         const u = Math.max(0, Math.min(1, (w.t - h.t0) / 520));
@@ -642,6 +697,29 @@ export class CollapseView {
       f.c.position.set(f.x, f.y);
       f.c.rotation = f.rot;
       if (f.landed) f.c.alpha = Math.max(0, f.c.alpha - dtMs / 2600);
+    }
+  }
+
+  /** The prop loops ride their pieces (turned with them), keep turning, and fade out soon after the break. */
+  private syncProps(): void {
+    const w = this.world;
+    const A = this.o.sheet.animations;
+    const since = w.t - w.breakMs;
+    const fade = Math.max(0, Math.min(1, (since - (this.o.motion.reduce ? 0 : 160)) / (this.o.motion.reduce ? 320 : 620)));
+    for (const f of this.propPieces) {
+      const n = f.durations.length;
+      const i = this.o.motion.reduce ? Math.min(n - 1, Math.max(0, f.p.hold)) : frameIndex(f.durations, this.o.clockMs + f.p.phase + w.t, true);
+      setFrame(f.base, A[f.p.clip]?.[i]);
+      setFrame(f.team, A[`${f.p.clip}_team`]?.[i]);
+      const ch = w.chunks.find((q) => q.id === f.chunk);
+      if (ch) {
+        const dx = f.p.anchor.x - ch.rx;
+        const dy = f.p.anchor.y - ch.ry;
+        f.c.position.set(ch.x + dx * Math.cos(ch.a) - dy * Math.sin(ch.a), ch.y + dx * Math.sin(ch.a) + dy * Math.cos(ch.a));
+        f.c.rotation = ch.a;
+      }
+      f.c.alpha = f.p.alpha * (1 - fade);
+      f.c.visible = fade < 1;
     }
   }
 

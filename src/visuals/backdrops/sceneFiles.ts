@@ -89,9 +89,9 @@ export function onSceneImagesForgotten(cb: (urls: ReadonlySet<string>) => void):
 }
 
 /**
- * True when `url` is a file directly in the scene folder `dir` (both base-relative or both absolute). A
- * classic scene's folder can be its age's folder (`art/backdrops/stone/`), which holds the other scenes'
- * folders, so a prefix alone is not enough.
+ * True when `url` is a file directly in the scene folder `dir` (both base-relative or both absolute): a
+ * prefix alone would also match the files of a folder nested in it (the age folders hold the scenes'
+ * folders: `art/backdrops/stone/` holds `classic/` and `glacier_valley/`).
  */
 export function inSceneDir(url: string, dir: string): boolean {
   return url.startsWith(dir) && !url.slice(dir.length).includes('/');

@@ -74,7 +74,7 @@ const painted = (): { tex: Texture; ambient: [] } => ({ tex: new Texture({ sourc
 describe('the shared scene file cache', () => {
   it('forgets the images a match does not keep; a forgotten file loads again when asked', async () => {
     useFakeImages();
-    const urls = ['/b/art/backdrops/stone/far.webp', '/b/art/backdrops/stone/glacier_valley/far.webp', '/b/art/ground/tar_pits.webp'];
+    const urls = ['/b/art/backdrops/stone/classic/far.webp', '/b/art/backdrops/stone/glacier_valley/far.webp', '/b/art/ground/tar_pits.webp'];
     const loads = urls.map((u) => sceneImage(u));
     land();
     await Promise.all(loads);
@@ -107,8 +107,9 @@ describe('the shared scene file cache', () => {
     expect(FakeImage.made).toHaveLength(1);
   });
 
-  it("a classic scene's folder is its age's folder: only the files directly in it belong to it", () => {
-    expect(inSceneDir('/b/art/backdrops/stone/far.webp', '/b/art/backdrops/stone/')).toBe(true);
+  it("only the files directly in a scene's folder belong to it (not a nested folder's)", () => {
+    expect(inSceneDir('/b/art/backdrops/stone/classic/far.webp', '/b/art/backdrops/stone/classic/')).toBe(true);
+    expect(inSceneDir('/b/art/backdrops/stone/glacier_valley/far.webp', '/b/art/backdrops/stone/classic/')).toBe(false);
     expect(inSceneDir('/b/art/backdrops/stone/glacier_valley/far.webp', '/b/art/backdrops/stone/')).toBe(false);
     expect(inSceneDir('/b/art/backdrops/stone/glacier_valley/far.webp', '/b/art/backdrops/stone/glacier_valley/')).toBe(true);
   });
@@ -126,7 +127,7 @@ describe("the provider's backdrop textures", () => {
 
   it('let go of the strips, props, grounds and painted stand-ins outside the keep, with their themed copies and files', async () => {
     useFakeImages();
-    const files = ['/b/art/backdrops/bronze/classic/far.webp', '/b/art/backdrops/stone/glacier_valley/far.webp', '/b/art/backdrops/stone/far.webp', '/b/art/ground/frostfang.webp', '/b/art/ground/tar_pits.webp'];
+    const files = ['/b/art/backdrops/bronze/classic/far.webp', '/b/art/backdrops/stone/glacier_valley/far.webp', '/b/art/backdrops/stone/classic/far.webp', '/b/art/ground/frostfang.webp', '/b/art/ground/tar_pits.webp'];
     const loads = files.map((u) => sceneImage(u));
     land();
     await Promise.all(loads);
@@ -159,7 +160,7 @@ describe("the provider's backdrop textures", () => {
     expect(t.version).toBeGreaterThan(v0);
     // the decoded files of what was dropped (Stone's classic was never asked for by the lane: the provider's
     // `beginMatch` forgets the stills' files itself)
-    expect(sceneImageUrls().sort()).toEqual(['/b/art/backdrops/stone/far.webp', '/b/art/backdrops/stone/glacier_valley/far.webp', '/b/art/ground/tar_pits.webp']);
+    expect(sceneImageUrls().sort()).toEqual(['/b/art/backdrops/stone/classic/far.webp', '/b/art/backdrops/stone/glacier_valley/far.webp', '/b/art/ground/tar_pits.webp']);
     // after a wipe every ground stays
     priv.images.set('ground.frostfang', painted());
     t.release(new Set(['stone.glacier_valley']));
