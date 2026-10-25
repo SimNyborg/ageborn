@@ -398,6 +398,22 @@ test.describe("item 43: Home's match plate stays under the top bar on short phon
       });
     }
   }
+  // The review of item 43: under the tab bar (as the app shows it) the Capsules stage is far shorter; the capsule must
+  // not be cut at its top and its source line must stay clear of Odds and Open.
+  for (const vp of ['745x250', '762x277', '800x300', '844x340'] as const) {
+    test(`capsules stage ${vp}`, async ({ page }) => {
+      await open(page, 'screens/capsules-tab/mid/{vp}', vp);
+      const r = await page.evaluate(() => {
+        const stage = document.querySelector('.caps-stage')!.getBoundingClientRect();
+        const drum = document.querySelector('.caps-stage__drum')!.getBoundingClientRect();
+        const source = document.querySelector('.caps-stage__source')!.getBoundingClientRect();
+        const buttons = Math.min(...[...document.querySelectorAll('.caps-stage__actions .ui-btn')].map((b) => b.getBoundingClientRect().top));
+        return { drumTop: Math.round(drum.top - stage.top), sourceBottom: Math.round(source.bottom - stage.top), buttonsTop: Math.round(buttons - stage.top) };
+      });
+      expect(r.drumTop, 'the capsule starts inside the stage').toBeGreaterThanOrEqual(0);
+      expect(r.sourceBottom, `the source line (${r.sourceBottom}) ends above Odds and Open (${r.buttonsTop})`).toBeLessThanOrEqual(r.buttonsTop);
+    });
+  }
 });
 
 test.describe('reduce motion replaces, never deletes (5.6)', () => {
