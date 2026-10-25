@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { midiToHz } from '../instruments';
 import { music, type MusicDef } from '../music';
-import { MusicEngine } from '../musicEngine';
+import { equalPowerRamp, MusicEngine } from '../musicEngine';
 import type { Score } from '../sequencer';
-import { FakeBufferSource, FakeContext, FakeGain, FakeOscillator } from './fakeContext';
+import { FakeBufferSource, FakeContext, FakeGain, FakeOscillator, FakeParam } from './fakeContext';
 
 /** A one-bar test score: a base note every beat, an intensity note on beat 3, overdrive 8 BPM. */
 function testScore(extra: Partial<Score> = {}): Score {
@@ -270,5 +270,40 @@ describe('music engine', () => {
       run(ctx, engine, 1.5);
       expect(ctx.of(FakeOscillator).length - before, cue).toBeGreaterThan(3);
     }
+  });
+});
+
+/** A param that refuses a curve overlapping another curve, as browsers do (NotSupportedError). */
+class StrictParam extends FakeParam {
+  private curves: { start: number; end: number }[] = [];
+  override setValueCurveAtTime(values: Float32Array | number[], time: number, duration: number): this {
+    if (this.curves.some((c) => time < c.end && c.start < time + duration)) throw new DOMException(`setValueCurveAtTime(..., ${time}, ${duration}) overlaps`, 'NotSupportedError');
+    this.curves.push({ start: time, end: time + duration });
+    return super.setValueCurveAtTime(values, time, duration);
+  }
+  override cancelScheduledValues(time: number): this {
+    this.curves = this.curves.filter((c) => c.start < time);
+    return super.cancelScheduledValues(time);
+  }
+}
+
+describe('equal-power ramps', () => {
+  it('a fade over another fade on the same gain wins instead of throwing (CI, 2026-10-25)', () => {
+    const p = new StrictParam(0);
+    const gain = p as unknown as AudioParam;
+    equalPowerRamp(gain, 0, 1, 0.1248, 0.1219);
+    expect(() => equalPowerRamp(gain, 0, 0.8, 0.1248, 0.6)).not.toThrow();
+    // the newer fade replaced what was scheduled and ramps to its own target over its own length
+    const tail = p.events.slice(-3);
+    expect(tail.map((e) => e.kind)).toEqual(['cancel', 'set', 'linear']);
+    expect(tail[2]).toMatchObject({ value: 0.8, time: 0.1248 + 0.6 });
+  });
+
+  it('a fade after the last one ends keeps its equal-power curve', () => {
+    const p = new StrictParam(0);
+    const gain = p as unknown as AudioParam;
+    equalPowerRamp(gain, 0, 1, 0, 0.5);
+    equalPowerRamp(gain, 1, 0, 0.6, 0.5);
+    expect(p.events.map((e) => e.kind)).toEqual(['curve', 'curve']);
   });
 });

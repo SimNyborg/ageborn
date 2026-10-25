@@ -97,7 +97,16 @@ export function equalPowerRamp(p: AudioParam, from: number, to: number, start: n
     const x = (k / (CURVE_POINTS - 1)) * (Math.PI / 2);
     curve[k] = to >= from ? from + (to - from) * Math.sin(x) : to + (from - to) * Math.cos(x);
   }
-  withCurve.setValueCurveAtTime(curve, start, dur);
+  try {
+    withCurve.setValueCurveAtTime(curve, start, dur);
+  } catch {
+    // Another curve on this gain overlaps the new one, which the browser refuses with an error that broke the cue
+    // switch (CI's Chromium, 2026-10-25: two fades at one start when a battle restarted right as audio unlocked).
+    // The newest fade wins: drop what is scheduled and ramp linearly from `from` (nothing is left to overlap).
+    p.cancelScheduledValues(0);
+    p.setValueAtTime(from, start);
+    p.linearRampToValueAtTime(to, start + dur);
+  }
 }
 
 /** Holds a gain where it is and fades it out (equal power) over `ms`; returns when it is silent. */
