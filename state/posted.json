@@ -426,6 +426,22 @@
       "pillar": "devlog",
       "hook": "behind the scenes: battlefields before/after, full video tonight",
       "trial": false
+    },
+    {
+      "name": "ba2-from-flat-paintings-to-living-scenes",
+      "kind": "reel",
+      "id": "18572286130072964",
+      "permalink": "https://www.instagram.com/reel/De7c3aMFI6c/",
+      "timestamp": "2026-10-25T19:24:21+0000",
+      "slot": "evening",
+      "pillar": "devlog",
+      "hook": "Ageborn gets better #2: painted backdrops to 3D scenes",
+      "trial": false,
+      "length_s": 31.0,
+      "format": "devlog",
+      "hook_type": "before-after",
+      "experiment": "indie-angle",
+      "arm": "devlog"
     }
   ]
 }
