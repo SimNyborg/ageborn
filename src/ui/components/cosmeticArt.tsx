@@ -22,9 +22,9 @@ import { useKit, usePortrait } from './kit';
  * | `scene.<id>` | `{ age, sky? }` | a still of the scene with the sky (`backdrop.<id>` or null) applied |
  * | `backdrop.<id>` (`backdrop.classic` = none) | `{ age, scene? }` | the sky over the scene (the classic without one) |
  * | `baseSkin.<id>` | `{ layer: 'thumb' }` | the model's pre-rendered thumbnail (null until it has one) |
- * | `baseSkin.<id>` | `{ layer: 'aura' }` | the Legendary halo under the model (null for a skin without one) |
+ * | `baseSkin.<id>` | `{ layer: 'aura' }` | the Legendary halo under the model, in the base picture's square plus a quarter of its side all round (null for a skin without one) |
  * | `decoration.<id>` | `{ hd? }` | the prop |
- * | `nationalFlag.<id>` | `{ size?: 'tile' \| 'big', cached? }` | a grid's atlas cell, or the big flag (the default) |
+ * | `nationalFlag.<id>` | `{ size?: 'tile' \| 'big', cached?, sprite? }` | a grid's atlas cell (with `sprite`: its place in the one sheet), or the big flag (the default) |
  * | `baseFlag.*`, `emote.*`, `quote.*` | `{ team?, animate? }` | the code-drawn art |
  */
 export interface CosmeticImageOptions {
@@ -51,6 +51,8 @@ export interface CosmeticImageOptions {
   hd?: boolean;
   /** National flags: a grid tile (one atlas for all) or the big picture (the default). */
   size?: 'tile' | 'big';
+  /** National flag tiles: the cell in the atlas sheet (`<sheet>#cell=…`, drawn by {@link flagSpriteStyle}), not a cut picture. */
+  sprite?: boolean;
   /** Base flags: drawn on their pole with the rarity's finial (collection tiles, PLAN 2a). */
   pole?: boolean;
 }
@@ -88,8 +90,9 @@ const FLAG_ATLAS_PROBE = 'nationalFlag.dk';
  * it. Without a provider or animation frames (tests) it is ready at once.
  */
 export function useFlagAtlasReady(art: CosmeticImageFn | null): boolean {
-  // (`cached`: null while the atlas loads, then a cell, or the SVG once the atlas has failed)
-  const probe = (): boolean => !!art?.(FLAG_ATLAS_PROBE, { size: 'tile', cached: true });
+  // (`cached`: null while the sheet loads, then the flag's place in it, or the SVG once it has failed; C-b
+  // item 9: the grids draw cells from the one sheet, so nothing waits for 200 pictures to be cut)
+  const probe = (): boolean => !!art?.(FLAG_ATLAS_PROBE, { size: 'tile', sprite: true, cached: true });
   const [ready, setReady] = useState(() => !art || typeof requestAnimationFrame !== 'function' || probe());
   useEffect(() => {
     if (ready) return undefined;
@@ -106,13 +109,43 @@ export function useFlagAtlasReady(art: CosmeticImageFn | null): boolean {
 }
 
 /**
- * A national flag's grid tile (PLAN 2d): its atlas cell once {@link useFlagAtlasReady} says the atlas is
- * in (one download for every flag), a soft placeholder before.
+ * A national flag's cell in the atlas sheet as CSS (C-b item 9): the router answers `{ size: 'tile', sprite: true }`
+ * with `<sheet url>#cell=x,y,w,h,sheetW,sheetH`, and the tile shows that cell with background-position, so every
+ * tile shows as soon as the one sheet is decoded (round 1 cut 200 pictures first: 5.5-6.5 s on a phone). Null
+ * for a plain picture URL (an SVG, a cut cell). `--cw` and `--ch` carry the cell's aspect for a box that fits it.
+ */
+export function flagSpriteStyle(url: string | null): Record<string, string> | null {
+  const m = url ? /#cell=(\d+),(\d+),(\d+),(\d+),(\d+),(\d+)$/.exec(url) : null;
+  if (!url || !m) return null;
+  const [x, y, w, h, sw, sh] = m.slice(1).map(Number) as [number, number, number, number, number, number];
+  if (w <= 0 || h <= 0) return null;
+  const pct = (v: number) => `${Math.round(v * 10000) / 100}%`;
+  return {
+    backgroundImage: `url("${url.slice(0, url.indexOf('#'))}")`,
+    backgroundSize: `${pct(sw / w)} ${pct(sh / h)}`,
+    backgroundPosition: `${sw > w ? pct(x / (sw - w)) : '0%'} ${sh > h ? pct(y / (sh - h)) : '0%'}`,
+    '--cw': String(w),
+    '--ch': String(h),
+  };
+}
+
+/**
+ * A national flag's grid tile (PLAN 2d): its cell in the atlas sheet once {@link useFlagAtlasReady} says the
+ * sheet is in (one download for every flag), drawn as a sprite that keeps the flag's 4:3 inside the tile; a
+ * soft placeholder before; the SVG if the sheet failed.
  */
 export function FlagTileImage(p: { item: string; ready: boolean; class?: string }) {
   const fn = useCosmeticImage();
-  const url = fn && p.ready ? fn(p.item, { size: 'tile' }) : null;
+  const url = fn && p.ready ? fn(p.item, { size: 'tile', sprite: true }) : null;
   if (!url) return <span class={`cos-img cos-img--empty${fn && !p.ready ? ' is-pending' : ''} ${p.class ?? ''}`} aria-hidden="true" />;
+  const sprite = flagSpriteStyle(url);
+  if (sprite) {
+    return (
+      <span class={`cos-img cos-img--spritebox ${p.class ?? ''}`} aria-hidden="true" data-sprite="">
+        <span class="cos-img__sprite" style={sprite} />
+      </span>
+    );
+  }
   return <img class={`cos-img ${p.class ?? ''}`} src={url} alt="" aria-hidden="true" draggable={false} decoding="async" />;
 }
 
@@ -175,9 +208,11 @@ function DecorationImage(p: { item: string; class?: string; team?: number; testi
  * opponent's team colour on the base's banners and trims.
  *
  * A model that wears the Legendary aura in battle (Track B's list through the router: Crystal Spire,
- * Nebula Ark) stands in the same soft white halo here, under the body and its fx layer: an upright
- * ellipse about the body as the lane sizes it, breathing slowly while `animate` is on (still under
- * Reduce motion), with no layout change (round 3).
+ * Nebula Ark, Colossus Lighthouse) stands in the same soft white halo here, under the body and its fx
+ * layer: an upright ellipse about the body as the lane sizes it, or a round halo on the spot where the
+ * model's aura shines (Colossus Lighthouse's raised torch), drawn by the router in the picture's frame (a
+ * screen that mirrors an opponent's base mirrors this whole element, the aura with it); it breathes slowly
+ * while `animate` is on (still under Reduce motion and Lite), with no layout change (round 3).
  */
 export function BaseLook(p: { age: AgeId; skin: string | null; animate?: boolean; testid?: string; side?: Side }) {
   const fn = useCosmeticImage();

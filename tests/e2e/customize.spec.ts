@@ -11,7 +11,9 @@
  * - Reduce motion leaves no looping animation in the Customize panel;
  * - round 3 (PLAN 2g C11): every released scene, equipped in Backdrops, shows on VS for its age; a base
  *   skin shows its model on its tile and on VS (a Legendary one in its aura); a decoration spot picked on
- *   the stage takes the next prop.
+ *   the stage takes the next prop;
+ * - round 3b: Bases lists the standard base and three skins in every age, each locked one with its source
+ *   chip; the Trophy Road shows the pictures of the base skins and scenes it grants.
  */
 import { expect, test, type Page } from '@playwright/test';
 import { pastOnboarding, watchPage } from './helpers';
@@ -149,17 +151,32 @@ test.describe('Customize item detail', () => {
     await openCustomize(page, 'flags');
     await expect(page.getByTestId('item-nationalFlag.jp')).toBeVisible();
     // No national flag tile stays an empty placeholder. They show soft placeholders until the one flag
-    // atlas is cut into cells on the device (`useFlagAtlasReady`; the SVGs stand in after
-    // FLAG_ATLAS_WAIT_MS, 15 s), which takes seconds in a software-rendered WebKit: wait for the pictures,
-    // and say how long they took.
+    // atlas sheet is decoded (`useFlagAtlasReady`; round 3b: each tile is then its cell of the sheet, a CSS
+    // sprite, with nothing cut first; the SVGs stand in if the sheet fails): wait for the pictures, and say
+    // how long they took.
     const shown = Date.now();
     await expect(page.locator('[data-testid="owned-national"] .cos-img--empty')).toHaveCount(0, { timeout: 20_000 });
     test.info().annotations.push({ type: 'measure', description: `national flag tiles drawn ${Date.now() - shown} ms after the panel showed` });
     const res = await page.evaluate(async () => {
       const imgs = [...document.querySelectorAll<HTMLImageElement>('#cust-panel .cos-tile--baseFlag img, [data-testid="owned-national"] img, [data-testid="base-mock"] img')];
       await Promise.all(imgs.map((i) => i.decode().catch(() => undefined)));
-      const national = [...document.querySelectorAll<HTMLImageElement>('[data-testid="owned-national"] img')].map((i) => i.getAttribute('src') ?? '');
-      return { n: imgs.length, broken: imgs.filter((i) => !i.complete || i.naturalWidth === 0).map((i) => (i.getAttribute('src') ?? '').slice(0, 80)), national };
+      // the sprites' sheet (one picture for every flag) must load too
+      const sprites = [...document.querySelectorAll<HTMLElement>('[data-testid="owned-national"] .cos-img__sprite')];
+      const sheetOf = (e: HTMLElement) => /url\("?([^")]+)"?\)/.exec(getComputedStyle(e).backgroundImage)?.[1] ?? '';
+      const sheets = [...new Set(sprites.map(sheetOf))];
+      const sheetLoads = await Promise.all(
+        sheets.map(async (u) => {
+          const i = new Image();
+          i.src = u;
+          return i
+            .decode()
+            .then(() => i.naturalWidth > 0)
+            .catch(() => false);
+        }),
+      );
+      const national = [...[...document.querySelectorAll<HTMLImageElement>('[data-testid="owned-national"] img')].map((i) => i.getAttribute('src') ?? ''), ...sprites.map(sheetOf)];
+      const broken = [...imgs.filter((i) => !i.complete || i.naturalWidth === 0).map((i) => (i.getAttribute('src') ?? '').slice(0, 80)), ...sheets.filter((_, k) => !sheetLoads[k])];
+      return { n: imgs.length + sprites.length, broken, national };
     });
     expect(res.n).toBeGreaterThanOrEqual(18);
     expect(res.broken).toEqual([]);
@@ -389,6 +406,50 @@ test.describe('Customize round 3: scenes and skins on VS, decoration spots on th
     const sizes = await page.locator('[data-testid^="anchor-"]').evaluateAll((els) => els.map((e) => Math.min((e as HTMLElement).offsetWidth, (e as HTMLElement).offsetHeight)));
     expect(sizes).toHaveLength(3);
     expect(Math.min(...sizes)).toBeGreaterThanOrEqual(44);
+    expect(problems.errors).toEqual([]);
+  });
+});
+
+test.describe('Customize round 3b: the full set', () => {
+  test('Bases: the standard base and three skins in every age (Crystal Spire on Future); a locked one says how it is earned', async ({ page }) => {
+    test.setTimeout(120_000);
+    const problems = watchPage(page);
+    await ready(page);
+    await openCustomize(page, 'bases');
+    const ages = await agesOf(page, 'cust-age');
+    expect(ages.length).toBeGreaterThanOrEqual(7);
+    for (const age of ages) {
+      await page.locator(`[data-testid="cust-age"] [data-testid="age-tab-${age}"]`).click();
+      const grid = page.getByTestId('cust-base-skins');
+      await expect(grid.getByTestId('base-default')).toBeVisible();
+      // the age's released skins (Future's third is the troop-system Crystal Spire)
+      expect(await grid.locator('[data-testid^="item-baseSkin."]').count(), age).toBeGreaterThanOrEqual(3);
+      // every locked card wears its source chip: the Trophy Road with its trophies, the crate or a capsule with the Dust price
+      const locked = grid.locator('.cos-tile.is-locked');
+      const n = await locked.count();
+      for (let i = 0; i < n; i++) await expect(locked.nth(i).locator('.cos-card__chip'), `${age} locked ${i}`).toBeVisible();
+    }
+    expect(problems.errors).toEqual([]);
+  });
+
+  test('the Trophy Road shows the pictures of the base skins and scenes it grants', async ({ page }) => {
+    test.setTimeout(120_000);
+    const problems = watchPage(page);
+    await ready(page);
+    await page.getByTestId('tab-progress').first().click();
+    // the Progress tab's road bar (the Ladder open) or its Trophy Road row (before)
+    await page.locator('[data-screen="progress"] [data-testid="home-road"], [data-testid="progress-road"]').first().click();
+    const items = page.locator('[data-testid^="road-item-baseSkin."], [data-testid^="road-item-scene."]');
+    await expect.poll(() => items.count(), { timeout: 30_000 }).toBeGreaterThanOrEqual(3);
+    const n = await items.count();
+    for (let i = 0; i < n; i++) {
+      const item = items.nth(i);
+      await item.scrollIntoViewIfNeeded();
+      // a base skin shows its model (thumbnail, or its portrait on its scene strip), a scene its thumbnail
+      await expect
+        .poll(() => item.locator('img').evaluateAll((els) => (els as HTMLImageElement[]).some((im) => im.complete && im.naturalWidth > 0)), { timeout: 20_000 })
+        .toBe(true);
+    }
     expect(problems.errors).toEqual([]);
   });
 });

@@ -6,6 +6,7 @@
 import { content } from '@/content';
 import type { Content, CosmeticItemDef } from '@/content/types';
 import type { Rarity } from '@/contracts';
+import { poolItems } from '@/meta/cosmetics';
 import { render } from 'preact';
 import { act } from 'preact/test-utils';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -54,6 +55,37 @@ describe('cosmetic odds per collection (PLAN 2a)', () => {
     for (const rows of [m.capsuleCollections, m.crateCollections]) {
       const order = rows.map((r) => POOL_COLLECTIONS.indexOf(r.collection));
       expect(order).toEqual([...order].sort((a, b) => a - b));
+    }
+  });
+
+  it("each line equals what meta's `poolItems` rolls from (round 3: the 13 new base skins and the scenes as they ship)", () => {
+    // the shipped content, and the same content with every held item released (an Epic scene's flag flipping)
+    const all = { ...content, cosmetics: { ...content.cosmetics, collections: { ...col, items: col.items.map((x) => ({ ...x, released: true })) } } } as Content;
+    for (const c of [content, all]) {
+      const m = modelFor(c);
+      for (const [pool, rows] of [
+        ['capsule', m.capsuleCollections],
+        ['crate', m.crateCollections],
+      ] as const) {
+        const items = poolItems(c, pool);
+        const collections = [...new Set(items.map((x) => x.collection))];
+        expect(rows.map((r) => r.collection).sort(), pool).toEqual(collections.sort());
+        for (const row of rows) {
+          const mine = items.filter((x) => x.collection === row.collection);
+          expect(row.total, `${pool} ${row.collection}`).toBe(mine.length);
+          for (const r of ['common', 'rare', 'epic', 'legendary'] as Rarity[]) expect(row.items[r], `${pool} ${row.collection} ${r}`).toBe(poolItems(c, pool, r).filter((x) => x.collection === row.collection).length);
+        }
+        expect(rows.map((r) => r.collection)).not.toContain('nationalFlag');
+      }
+    }
+    // released base skins sit in both pools (Time Capsule Rares; Wardrobe Crate Rares, Epics and Legendaries)
+    const m = modelFor();
+    for (const [pool, rows] of [
+      ['capsule', m.capsuleCollections],
+      ['crate', m.crateCollections],
+    ] as const) {
+      const shipped = col.items.filter((x) => x.collection === 'baseSkin' && released(x) && x.source.kind === pool);
+      if (shipped.length > 0) expect(rows.find((r) => r.collection === 'baseSkin')?.total, pool).toBe(shipped.length);
     }
   });
 

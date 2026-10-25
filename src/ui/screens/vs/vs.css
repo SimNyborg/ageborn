@@ -192,6 +192,11 @@
   border-radius: 26px;
   border-width: 4px;
 }
+/* The portrait's frame lip (its box-shadow) reaches 7 px below its box: whatever follows the portrait (the Player
+   chip, the AI General chip, your name) starts below it, with the card's gap (7 px - gap in every size step). */
+.vs__bust + * {
+  margin-top: 1px;
+}
 .vs__name {
   font-size: clamp(22px, 4.4vh, 34px);
   font-weight: 900;
@@ -458,6 +463,9 @@
   .vs__card {
     gap: 3px;
   }
+  .vs__bust + * {
+    margin-top: 4px;
+  }
   .vs__personality {
     display: none;
   }
@@ -480,5 +488,139 @@
   .vs__strip {
     padding-top: 6px;
     gap: 4px;
+  }
+}
+
+/* Short landscape phones (queue item 43: Chrome's address bar showing leaves about 250-300 px). Both cards stand
+   clear of the screen's top and the strip in every VS (an AI General's card with its line and "same rules", a found
+   player's with trophies, arena and plan level, and a modifier line in the strip): the cards pack tighter in steps,
+   and below 300 px the flags stand beside the portrait, on the outer side, instead of under the card. Every line
+   stays; 340 px and taller are unchanged. */
+@container ui-root (max-height: 339px) {
+  .vs__half {
+    padding: 4px 32px;
+  }
+  .vs__card {
+    gap: 2px;
+  }
+  .vs__bust + * {
+    margin-top: 5px;
+  }
+  .vs__card .ui-avatar,
+  .vs__card .ui-general {
+    width: 68px !important;
+    height: 68px !important;
+    border-radius: 15px;
+    border-width: 3px;
+  }
+  .vs__bust {
+    padding-top: 4px;
+  }
+  .vs__banner {
+    width: 92px;
+  }
+  .vs__name {
+    font-size: 20px;
+    -webkit-text-stroke-width: 5px;
+    text-shadow: 0 3px 0 var(--ui-ink);
+  }
+  .vs__row {
+    font-size: 14px;
+    gap: 6px;
+  }
+  .vs__level {
+    font-size: 13px;
+    border-width: 2px;
+  }
+  .vs__line {
+    padding: 1px 9px;
+    border-width: 2px;
+    font-size: 12px;
+    box-shadow: 0 2px 0 var(--ui-ink);
+  }
+  .vs__card .cos-flags--lg .cos-flags__flag {
+    width: 46px;
+  }
+  .vs__card .cos-flags--lg .cos-flags__flag--nation {
+    width: 38px;
+  }
+  .vs__emblem {
+    width: 88px;
+  }
+  .vs__vs {
+    font-size: 26px;
+    -webkit-text-stroke-width: 6px;
+  }
+  .vs__base {
+    width: 100px;
+    bottom: 10%;
+  }
+  .vs__strip {
+    padding: 3px 16px max(5px, env(safe-area-inset-bottom));
+    gap: 2px;
+  }
+  .vs__chips {
+    gap: 6px;
+  }
+  .vs__mod {
+    padding: 1px 8px;
+    font-size: 12px;
+  }
+  .vs__disclosures {
+    font-size: 12px;
+  }
+}
+@container ui-root (max-height: 299px) {
+  .vs__card .ui-avatar,
+  .vs__card .ui-general {
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 12px;
+  }
+  .vs__bust {
+    padding-top: 2px;
+  }
+  .vs__banner {
+    top: -8px;
+    width: 74px;
+  }
+  .vs__name {
+    font-size: 18px;
+  }
+  .vs__card {
+    gap: 1px;
+  }
+  .vs__bust + * {
+    margin-top: 6px;
+  }
+  /* the flags beside the portrait, on the outer side (clear of the VS emblem; the bases stand lower) */
+  .vs__card .cos-flags {
+    position: absolute;
+    top: 4px;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+  }
+  .vs__card--me .cos-flags {
+    right: calc(50% + 36px);
+  }
+  .vs__card--foe .cos-flags {
+    left: calc(50% + 36px);
+  }
+  .vs__card .cos-flags--lg .cos-flags__flag {
+    width: 40px;
+  }
+  .vs__card .cos-flags--lg .cos-flags__flag--nation {
+    width: 34px;
+  }
+  .vs__emblem {
+    width: 76px;
+  }
+  .vs__vs {
+    font-size: 22px;
+  }
+  .vs__base {
+    width: 88px;
   }
 }

@@ -315,7 +315,13 @@ describe('the decoration spots over the live stage (round 3, spots.ts)', () => {
     [589, 326], // 1280 x 720
     [1200, 640], // a roomy stage
   ];
-  for (const [w, h] of sizes) {
+  // short landscape phones (queue item 43): the stage shrinks to fit above the bottom bar
+  const short: [number, number][] = [
+    [206, 142], // 800 x 300
+    [173, 119], // 762 x 277
+    [144, 99], // 745 x 250
+  ];
+  for (const [w, h] of [...sizes, ...short]) {
     it(`every target is at least 44 px, inside a ${w} x ${h} stage and apart from the others`, () => {
       const ts = spotTargets(anchorsFor(w, h).slice(0, 3), w, h);
       expect(ts).toHaveLength(3);
@@ -371,6 +377,11 @@ describe('the decoration spots over the live stage (round 3, spots.ts)', () => {
     const [a, b] = packRow([{ c: 100, w: 44 }, { c: 110, w: 44 }], 0, 300, 4);
     expect(b! - a!).toBeCloseTo(48, 1);
     expect((a! + b!) / 2).toBeCloseTo(105, 1);
+    // a row too tight for the gap closes the gaps before two targets overlap (136 px for three 44 px targets)
+    const tight = packRow([{ c: 30, w: 44 }, { c: 40, w: 44 }, { c: 50, w: 44 }], 0, 136, 4);
+    for (let i = 0; i + 1 < 3; i++) expect(tight[i + 1]! - tight[i]!).toBeGreaterThanOrEqual(44 - 0.01);
+    expect(tight[0]! - 22).toBeGreaterThanOrEqual(-0.01);
+    expect(tight[2]! + 22).toBeLessThanOrEqual(136.01);
   });
 });
 

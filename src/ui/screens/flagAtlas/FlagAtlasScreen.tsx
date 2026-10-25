@@ -27,7 +27,7 @@ import type { ComponentChildren } from 'preact';
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Button, IconButton } from '../../components/Button';
 import { useConfirmSpend } from '../../components/confirm';
-import { CosmeticImage, useCosmeticImage, useFlagAtlasReady } from '../../components/cosmeticArt';
+import { CosmeticImage, flagSpriteStyle, useCosmeticImage, useFlagAtlasReady } from '../../components/cosmeticArt';
 import { formatInt } from '../../components/format';
 import { haptic } from '../../components/haptics';
 import { CheckIcon, CloseIcon, DustIcon } from '../../components/icons';
@@ -154,6 +154,7 @@ function FlagTile(p: { flag: AtlasFlag; url: string | null; pending: boolean; se
   const short = t(shortKey);
   const label = short === shortKey ? name : short;
   const state = f.equipped ? t('cosmetic.flagAtlas.flying') : f.owned ? t('cosmetic.flagAtlas.owned') : p.price > 0 ? t('cosmetic.flagAtlas.buy', { n: formatInt(p.price, locale) }) : t('cosmetic.flagAtlas.claim');
+  const sprite = flagSpriteStyle(p.url);
   return (
     <button
       type="button"
@@ -166,7 +167,8 @@ function FlagTile(p: { flag: AtlasFlag; url: string | null; pending: boolean; se
       onClick={(e) => p.onPick(e.currentTarget as HTMLElement)}
     >
       <span class={`fa-tile__cloth${p.pending ? ' is-pending' : ''}${SHAPED.has(f.item.id) ? ' is-shaped' : ''}`}>
-        {p.url ? <img src={p.url} alt="" draggable={false} loading="lazy" decoding="async" /> : null}
+        {/* C-b item 9: the cell of the one atlas sheet (a CSS sprite), so the grid shows at once; the SVG if the sheet failed */}
+        {sprite ? <span class="fa-tile__sprite" style={sprite} /> : p.url ? <img src={p.url} alt="" draggable={false} loading="lazy" decoding="async" /> : null}
       </span>
       <span class={`fa-tile__name${longName(label) ? ' is-long' : ''}`} data-clip-check="">
         {label}
@@ -677,7 +679,7 @@ export function FlagAtlasScreen(p: { route: RouteOf<'flagAtlas'> }) {
                       key={f.key}
                       flag={f}
                       index={index++}
-                      url={ready && art ? art(f.key, { size: 'tile' }) : null}
+                      url={ready && art ? art(f.key, { size: 'tile', sprite: true }) : null}
                       pending={!ready}
                       selected={chosen?.key === f.key}
                       price={atlas.price}

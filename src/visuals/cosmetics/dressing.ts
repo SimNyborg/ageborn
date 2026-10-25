@@ -79,6 +79,83 @@ function bake(key: string, w: number, h: number, draw: (ctx: CanvasRenderingCont
   return tex;
 }
 
+/** Pixels per lu of a baked mote. */
+const MOTE_PX = 6;
+
+/**
+ * A mote's shape for its kind and colour, baked once to a small texture (the shapes the Graphics drew before):
+ * a sprite of four vertices, batched with the rest, where a Graphics puff or ring was a hundred vertices
+ * transformed on the CPU every frame (frame time, round 3b). Centred on the texture; empty without a canvas.
+ */
+function moteTexture(kind: SkinParticles, color: number, make: CanvasFactory): Texture {
+  const size = kind === 'dust' ? 1.6 : kind === 'stars' || kind === 'glints' ? 2 : 1.8;
+  // half extents (lu) of each shape's box, centred on the mote
+  const half: [number, number] =
+    kind === 'glints' || kind === 'stars' ? [size * 2 + 0.5, size * 2 + 0.5]
+    : kind === 'petals' ? [size * 1.4 + 0.5, size * 0.8 + 0.5]
+    : kind === 'rain' ? [1.5, 3.7]
+    : kind === 'birds' ? [4.2, 2.6]
+    : kind === 'rings' ? [4.0, 2.6]
+    : kind === 'mist' || kind === 'smoke' || kind === 'steam' ? [size * 3.2 + 0.5, size * 2.6 + 0.5]
+    : [size + 0.5, size + 0.5];
+  const css = `#${color.toString(16).padStart(6, '0')}`;
+  return bake(`mote|${kind}|${color}`, half[0] * 2 * MOTE_PX, half[1] * 2 * MOTE_PX, (ctx) => {
+    ctx.translate(half[0] * MOTE_PX, half[1] * MOTE_PX);
+    ctx.scale(MOTE_PX, MOTE_PX);
+    const fill = (c: string, a: number, path: () => void): void => {
+      ctx.globalAlpha = a;
+      ctx.fillStyle = c;
+      ctx.beginPath();
+      path();
+      ctx.fill();
+    };
+    const stroke = (c: string, a: number, w: number, path: () => void): void => {
+      ctx.globalAlpha = a;
+      ctx.strokeStyle = c;
+      ctx.lineWidth = w;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      path();
+      ctx.stroke();
+    };
+    const poly = (pts: readonly number[]): void => {
+      ctx.moveTo(pts[0] ?? 0, pts[1] ?? 0);
+      for (let i = 2; i < pts.length; i += 2) ctx.lineTo(pts[i] ?? 0, pts[i + 1] ?? 0);
+      ctx.closePath();
+    };
+    if (kind === 'glints' || kind === 'stars') {
+      fill(css, 1, () => poly([0, -size * 2, size * 0.5, -size * 0.5, size * 2, 0, size * 0.5, size * 0.5, 0, size * 2, -size * 0.5, size * 0.5, -size * 2, 0, -size * 0.5, -size * 0.5]));
+    } else if (kind === 'petals') {
+      fill(css, 1, () => ctx.ellipse(0, 0, size * 1.4, size * 0.8, 0, 0, Math.PI * 2));
+      fill('#ffffff', 0.35, () => ctx.ellipse(-size * 0.3, -size * 0.2, size * 0.6, size * 0.3, 0, 0, Math.PI * 2));
+    } else if (kind === 'rain') {
+      // a thin slanted drip streak
+      fill(css, 1, () => poly([-0.35, -3.2, 0.35, -3.2, 1.0, 3.2, 0.3, 3.2]));
+    } else if (kind === 'birds') {
+      // a small gliding bird: two arched wings (a soft "m" stroke)
+      stroke(css, 1, 1.1, () => {
+        ctx.moveTo(-3.4, 0.6);
+        ctx.quadraticCurveTo(-1.7, -1.9, 0, 0);
+        ctx.quadraticCurveTo(1.7, -1.9, 3.4, 0.6);
+      });
+    } else if (kind === 'rings') {
+      // a smoke ring: a soft ellipse outline (a thicker pale band under a thin bright one), seen a little from above
+      stroke(css, 0.55, 1.6, () => ctx.ellipse(0, 0, 3.0, 1.5, 0, 0, Math.PI * 2));
+      stroke('#ffffff', 0.6, 0.7, () => ctx.ellipse(0, -0.3, 3.0, 1.3, 0, 0, Math.PI * 2));
+    } else if (kind === 'mist' || kind === 'smoke' || kind === 'steam') {
+      // a soft puff: a few overlapping discs, lighter in the middle
+      fill(css, 0.55, () => ctx.arc(0, 0, size * 2.4, 0, Math.PI * 2));
+      fill(css, 0.55, () => ctx.arc(-size * 1.4, size * 0.4, size * 1.6, 0, Math.PI * 2));
+      fill(css, 0.55, () => ctx.arc(size * 1.3, size * 0.6, size * 1.5, 0, Math.PI * 2));
+      fill('#ffffff', 0.35, () => ctx.arc(0, -size * 0.4, size * 1.2, 0, Math.PI * 2));
+    } else {
+      fill(css, 1, () => ctx.arc(0, 0, size, 0, Math.PI * 2));
+    }
+    return true;
+  }, make);
+}
+
 /** The step of a looping clip at time t (ms), its total known (`frameIndex` without re-summing every frame). */
 function loopStep(durations: readonly number[], total: number, t: number): number {
   let at = ((t % total) + total) % total;
@@ -309,7 +386,8 @@ const EMBER_PX = 16;
 const SPARK_PX = 32;
 
 interface Mote {
-  g: Graphics;
+  /** The mote's holder (its sprite inside is the baked shape at {@link MOTE_PX}); the update moves and scales it. */
+  g: Container;
   x: number;
   y: number;
   vx: number;
@@ -410,6 +488,11 @@ export class BaseDressing implements BaseDressingView {
   /** The pole flies a national flag: on the collapse it is lowered intact, never snapped over (PLAN 2d). */
   private fliesNation = false;
   private readonly props: Prop[] = [];
+  /**
+   * The motes, all with normal blending: additive embers, glints, stars and fireflies between the others broke
+   * Pixi's batch at every switch (Colossus Lighthouse's gulls, smoke, embers and glints doubled the battle's draw
+   * calls); at two or three pixels the bright colours read the same.
+   */
   private readonly motes = new Container();
   private moteList: Mote[] = [];
   private readonly rng: CosmeticRng;
@@ -766,7 +849,7 @@ export class BaseDressing implements BaseDressingView {
       cap.circle(-1.2, -top - 1.2, 1.2).fill({ color: 0xffffff, alpha: 0.7 });
     }
     (this.o.base as { setSkinTint?: (tint: number | null) => void } | undefined)?.setSkinTint?.(this.skin?.tint ?? null);
-    for (const m of this.moteList) m.g.destroy();
+    for (const m of this.moteList) m.g.destroy({ children: true });
     this.moteList = [];
   }
 
@@ -970,7 +1053,7 @@ export class BaseDressing implements BaseDressingView {
     const model = this.showsModel();
     if (model !== this.modelShown) {
       this.modelShown = model;
-      for (const m of this.moteList) m.g.destroy();
+      for (const m of this.moteList) m.g.destroy({ children: true });
       this.moteList = [];
     }
     const spots = this.spots();
@@ -1008,7 +1091,7 @@ export class BaseDressing implements BaseDressingView {
         const twinkle = m.kind === 'fireflies' || m.kind === 'glints' || m.kind === 'stars';
         m.g.alpha = Math.max(0, fade) * ground * (twinkle ? 0.55 + 0.45 * Math.sin(m.life / 140) : m.kind === 'birds' ? 0.85 : 0.9);
       }
-      if (m.life >= m.max || want === 0 || ground === 0) m.g.destroy();
+      if (m.life >= m.max || want === 0 || ground === 0) m.g.destroy({ children: true });
       else keep.push(m);
     }
     this.moteList = keep;
@@ -1044,33 +1127,14 @@ export class BaseDressing implements BaseDressingView {
 
   private spawnMote(kind: SkinParticles, color: number, anywhere: boolean): Mote {
     const r = () => this.rng.next();
-    const g = new Graphics();
-    const size = kind === 'dust' ? 1.6 : kind === 'stars' || kind === 'glints' ? 2 : 1.8;
-    if (kind === 'glints' || kind === 'stars') {
-      g.poly([0, -size * 2, size * 0.5, -size * 0.5, size * 2, 0, size * 0.5, size * 0.5, 0, size * 2, -size * 0.5, size * 0.5, -size * 2, 0, -size * 0.5, -size * 0.5]).fill(color);
-    } else if (kind === 'petals') {
-      g.ellipse(0, 0, size * 1.4, size * 0.8).fill(color);
-      g.ellipse(-size * 0.3, -size * 0.2, size * 0.6, size * 0.3).fill({ color: 0xffffff, alpha: 0.35 });
-    } else if (kind === 'rain') {
-      // a thin slanted drip streak
-      g.poly([-0.35, -3.2, 0.35, -3.2, 1.0, 3.2, 0.3, 3.2]).fill(color);
-    } else if (kind === 'birds') {
-      // a small gliding bird: two arched wings (a soft "m" stroke)
-      g.moveTo(-3.4, 0.6).quadraticCurveTo(-1.7, -1.9, 0, 0).quadraticCurveTo(1.7, -1.9, 3.4, 0.6).stroke({ width: 1.1, color, cap: 'round', join: 'round' });
-    } else if (kind === 'rings') {
-      // a smoke ring: a soft ellipse outline (a thicker pale band under a thin bright one), seen a little from above
-      g.ellipse(0, 0, 3.0, 1.5).stroke({ width: 1.6, color, alpha: 0.55 });
-      g.ellipse(0, -0.3, 3.0, 1.3).stroke({ width: 0.7, color: 0xffffff, alpha: 0.6 });
-    } else if (kind === 'mist' || kind === 'smoke' || kind === 'steam') {
-      // a soft puff: a few overlapping discs, lighter in the middle
-      g.circle(0, 0, size * 2.4).fill({ color, alpha: 0.55 });
-      g.circle(-size * 1.4, size * 0.4, size * 1.6).fill({ color, alpha: 0.55 });
-      g.circle(size * 1.3, size * 0.6, size * 1.5).fill({ color, alpha: 0.55 });
-      g.circle(0, -size * 0.4, size * 1.2).fill({ color: 0xffffff, alpha: 0.35 });
-    } else {
-      g.circle(0, 0, size).fill(color);
+    const g = new Container();
+    const tex = moteTexture(kind, color, this.make);
+    if (tex !== Texture.EMPTY) {
+      const sprite = new Sprite(tex);
+      sprite.anchor.set(0.5);
+      sprite.scale.set(1 / MOTE_PX);
+      g.addChild(sprite);
     }
-    if (kind === 'fireflies' || kind === 'embers' || kind === 'glints' || kind === 'stars') g.blendMode = 'add';
     this.motes.addChild(g);
     const x = -190 + r() * 200;
     const falling = kind === 'snow' || kind === 'petals' || kind === 'rain';

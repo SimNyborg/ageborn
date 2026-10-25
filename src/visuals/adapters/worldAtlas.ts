@@ -157,10 +157,17 @@ export function isWorldSource(source: string): boolean {
   return worldSourceAge(source) !== null || isBaseSkinSource(source) || isDecorationSource(source);
 }
 
+/**
+ * How long a sheet that failed to load counts as failed (ms): a dropped fetch (phones on mobile data drop them
+ * often) is fetched again by the next ask after this, or at once after `forgetFailures` (a new match).
+ */
+export const WORLD_RETRY_MS = 5000;
+
 export class WorldAtlas {
   private readonly sheets = new Map<string, WorldSheet>();
   private readonly pending = new Map<string, Promise<WorldSheet | null>>();
-  private readonly failed = new Set<string>();
+  /** Sheets that failed, with the time from which the next ask fetches them again (never: headless). */
+  private readonly failed = new Map<string, number>();
   /** Live views drawing each sheet (turrets, forts): `release` never takes a sheet from under one. */
   private readonly views = new Map<string, number>();
   /**
@@ -171,12 +178,14 @@ export class WorldAtlas {
 
   /**
    * `load` loads a sheet (tests pass a fake), `unload` lets go of a released sheet's URL (default Pixi's
-   * `Assets.unload` for Pixi's loader, nothing for another loader).
+   * `Assets.unload` for Pixi's loader, nothing for another loader), `now` is the clock of the retry window
+   * (tests pass a fake).
    */
   constructor(
     private readonly url: (source: string) => string,
     private readonly load: WorldLoader = loadWithAssets,
     private readonly unload: ((url: string) => Promise<void> | void) | null = load === loadWithAssets ? (u) => Assets.unload(u) : null,
+    private readonly now: () => number = () => performance.now(),
   ) {}
 
   get(source: string): WorldSheet | undefined {
@@ -188,14 +197,21 @@ export class WorldAtlas {
     this.sheets.set(source, sheet);
   }
 
-  /** Loads one sheet (once); resolves null when it failed. */
+  /**
+   * Loads one sheet (once); resolves null when it failed. A failed sheet resolves null at once for
+   * {@link WORLD_RETRY_MS}; the first ask after that (or after `forgetFailures`) fetches it again.
+   */
   ensure(source: string): Promise<WorldSheet | null> {
     const hit = this.sheets.get(source);
     if (hit) return Promise.resolve(hit);
-    if (this.failed.has(source)) return Promise.resolve(null);
+    const retryAt = this.failed.get(source);
+    if (retryAt !== undefined) {
+      if (this.now() < retryAt) return Promise.resolve(null);
+      this.failed.delete(source);
+    }
     if (this.load === loadWithAssets && typeof document === 'undefined') {
       // headless (tests, tools): no fetch of app assets; the procedural tier draws instead
-      this.failed.add(source);
+      this.failed.set(source, Infinity);
       return Promise.resolve(null);
     }
     let p = this.pending.get(source);
@@ -210,8 +226,8 @@ export class WorldAtlas {
           return s;
         })
         .catch((e: unknown) => {
-          if (this.pending.get(source) === mine) this.failed.add(source);
-          console.warn(`[visuals] world sheet "${source}" failed to load; the procedural art is used instead`, e);
+          if (this.pending.get(source) === mine) this.failed.set(source, this.now() + WORLD_RETRY_MS);
+          console.warn(`[visuals] world sheet "${source}" failed to load; the stand-in is used until a later try`, e);
           return null;
         })
         .finally(() => {
@@ -221,6 +237,20 @@ export class WorldAtlas {
       this.pending.set(source, p);
     }
     return p;
+  }
+
+  /**
+   * Forgets the sheets that failed to load (a new match: `prefetchMatch`, `beginMatch`), so the next ask
+   * fetches them again at once instead of after the rest of {@link WORLD_RETRY_MS}. Headless failures stay.
+   */
+  forgetFailures(): void {
+    for (const [source, retryAt] of [...this.failed]) if (retryAt !== Infinity) this.failed.delete(source);
+  }
+
+  /** Whether a sheet is held as failed right now (tests). */
+  isFailed(source: string): boolean {
+    const retryAt = this.failed.get(source);
+    return retryAt !== undefined && this.now() < retryAt;
   }
 
   /**

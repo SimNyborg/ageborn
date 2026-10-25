@@ -13,7 +13,9 @@
  * - `nationalFlagUrl(id, 'big')`: the SVG's URL (always at once).
  * - `nationalFlagUrl(id, 'tile')`: the atlas cell (a blob URL, cut once the atlas is in; the 128 px
  *   atlas on DPR ≥ 1.5); until then the SVG's URL, the same picture. With `{ cached: true }` only the
- *   cell, or null while the atlas loads (a grid that waits for it, the Flag Atlas).
+ *   cell, or null while the atlas loads.
+ * - `nationalFlagSprite(id)`: the flag's place in the decoded atlas sheet, for the grids (Customize › Flags,
+ *   the Flag Atlas) that draw it as a CSS sprite at once, without cutting the cells (C-b item 9, Track C).
  * - `nationalFlagTexture(id)`: the lane cloth, `{ texture, ready }`: a neutral cloth at once, the
  *   vendored design baked in (cel fold bands, sheen, an outline in the flag's own dark) when its SVG is
  *   in; one texture per flag, shared: never destroy it.
@@ -66,10 +68,104 @@ interface AtlasJson {
 let atlasCells: Map<string, string> | null | false = null;
 let atlasLoading: Promise<boolean> | null = null;
 
+/**
+ * The decoded atlas sheet: its URL, cell size, sheet size and each flag's cell index (null before; false after a
+ * failure). It keeps no image: the grids draw the sheet as a CSS background (the browser's cache holds it), and
+ * cutting cells loads its own copy.
+ */
+interface AtlasSheet {
+  url: string;
+  cols: number;
+  cell: [number, number];
+  size: [number, number];
+  cells: Map<string, number>;
+}
+let atlasSheet: AtlasSheet | null | false = null;
+let sheetLoading: Promise<AtlasSheet | null> | null = null;
+
 /** The atlas size for this screen: 128 px cells on DPR ≥ 1.5, else 64. */
 function atlasKey(): '64' | '128' {
   const dpr = (globalThis as { devicePixelRatio?: number }).devicePixelRatio ?? 1;
   return dpr >= 1.5 ? '128' : '64';
+}
+
+const canLoadAtlas = (): boolean => typeof document !== 'undefined' && typeof fetch === 'function' && typeof Image !== 'undefined';
+
+/** Decodes a picture (a sheet already in the browser's cache decodes without a second download). */
+async function decoded(url: string): Promise<HTMLImageElement> {
+  const img = new Image();
+  img.decoding = 'async';
+  img.src = url;
+  await img.decode();
+  return img;
+}
+
+/**
+ * Loads the atlas sheet once (`atlas.json` and the picture for this screen) and decodes it: one download for
+ * every flag. Null when it cannot load (no DOM, a missing file); the pictures then stay the SVGs.
+ */
+function loadAtlasSheet(): Promise<AtlasSheet | null> {
+  if (sheetLoading) return sheetLoading;
+  if (!canLoadAtlas()) {
+    // no DOM (tests, workers): the SVGs stand in
+    atlasSheet = false;
+    return (sheetLoading = Promise.resolve(null));
+  }
+  sheetLoading = (async () => {
+    try {
+      const res = await fetch(`${baseUrl()}art/flags/atlas.json`);
+      if (!res.ok) throw new Error(`atlas.json ${res.status}`);
+      const json = (await res.json()) as AtlasJson;
+      const size = json.sizes[atlasKey()] ?? json.sizes['64'];
+      if (!size) throw new Error('atlas.json has no sizes');
+      const img = await decoded(`${baseUrl()}art/flags/${size.file}`);
+      const sheet: AtlasSheet = {
+        url: img.src,
+        cols: json.cols,
+        cell: size.cell,
+        size: [img.naturalWidth, img.naturalHeight],
+        cells: new Map(Object.entries(json.cells).map(([code, i]) => [code.replace('-', '_'), i])),
+      };
+      atlasSheet = sheet;
+      return sheet;
+    } catch {
+      atlasSheet = false;
+      return null;
+    }
+  })();
+  return sheetLoading;
+}
+
+/** Where a flag sits in the atlas sheet (CSS px of the sheet): its cell, the cell size and the sheet size. */
+export interface NationalFlagSprite {
+  url: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** The whole sheet's size. */
+  sheetW: number;
+  sheetH: number;
+}
+
+/**
+ * A flag's cell in the atlas sheet, for a grid that draws it as a CSS sprite (C-b item 9): every tile shows
+ * as soon as the one sheet is decoded, without cutting 200 pictures first (5.5-6.5 s on a phone, round 1).
+ * Null until the sheet is in (the first ask starts it), after a failure, and for a flag without a cell.
+ */
+export function nationalFlagSprite(id: string): NationalFlagSprite | null {
+  if (atlasSheet === null) void loadAtlasSheet();
+  if (!atlasSheet) return null;
+  const i = atlasSheet.cells.get(id);
+  if (i === undefined) return null;
+  const [w, h] = atlasSheet.cell;
+  return { url: atlasSheet.url, x: (i % atlasSheet.cols) * w, y: Math.floor(i / atlasSheet.cols) * h, w, h, sheetW: atlasSheet.size[0], sheetH: atlasSheet.size[1] };
+}
+
+/** True once the atlas sheet has answered: decoded, or failed (the SVGs then stand in). */
+export function nationalFlagSheetSettled(): boolean {
+  if (atlasSheet === null) void loadAtlasSheet();
+  return atlasSheet !== null;
 }
 
 /** One cell of the decoded atlas as a blob URL (WebP where the browser can encode it, else PNG). */
@@ -92,27 +188,25 @@ function cutCell(img: CanvasImageSource, x: number, y: number, w: number, h: num
  */
 export function loadNationalFlagAtlas(): Promise<boolean> {
   if (atlasLoading) return atlasLoading;
-  if (typeof document === 'undefined' || typeof fetch !== 'function' || typeof Image === 'undefined') {
-    // no DOM (tests, workers): the SVGs stand in
+  if (!canLoadAtlas()) {
+    // no DOM (tests, workers): the SVGs stand in, at once
     atlasCells = false;
+    atlasSheet = false;
     return (atlasLoading = Promise.resolve(false));
   }
   atlasLoading = (async () => {
+    const sheet = await loadAtlasSheet();
+    if (!sheet) {
+      atlasCells = false;
+      return false;
+    }
     try {
-      const res = await fetch(`${baseUrl()}art/flags/atlas.json`);
-      if (!res.ok) throw new Error(`atlas.json ${res.status}`);
-      const json = (await res.json()) as AtlasJson;
-      const size = json.sizes[atlasKey()] ?? json.sizes['64'];
-      if (!size) throw new Error('atlas.json has no sizes');
-      const img = new Image();
-      img.decoding = 'async';
-      img.src = `${baseUrl()}art/flags/${size.file}`;
-      await img.decode();
-      const [w, h] = size.cell;
+      const img = await decoded(sheet.url);
+      const [w, h] = sheet.cell;
       const cells = new Map<string, string>();
-      const jobs = Object.entries(json.cells).map(async ([code, i]) => {
-        const url = await cutCell(img, (i % json.cols) * w, Math.floor(i / json.cols) * h, w, h);
-        if (url) cells.set(code.replace('-', '_'), url);
+      const jobs = [...sheet.cells].map(async ([id, i]) => {
+        const url = await cutCell(img, (i % sheet.cols) * w, Math.floor(i / sheet.cols) * h, w, h);
+        if (url) cells.set(id, url);
       });
       await Promise.all(jobs);
       atlasCells = cells;

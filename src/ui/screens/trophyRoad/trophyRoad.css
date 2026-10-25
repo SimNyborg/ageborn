@@ -219,6 +219,18 @@
 .road-rw--quote .road-rw__art {
   width: 40px;
 }
+/* A base skin or a scene (round 3) shows its Customize card's picture edge to edge: the model on a strip
+   of its age's classic scene, the scene's thumbnail. */
+.road-rw--baseSkin .road-rw__art,
+.road-rw--scene .road-rw__art {
+  position: relative;
+  flex: none;
+  width: 68px;
+  height: 44px;
+  padding: 0;
+  overflow: hidden;
+  background: #3a3150;
+}
 .road-rw__text {
   display: grid;
   line-height: 1.1;

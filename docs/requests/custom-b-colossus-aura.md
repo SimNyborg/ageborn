@@ -1,7 +1,12 @@
 # Track B → Track C: Colossus Lighthouse's aura shines round its torch in the menu pictures (round 3, 2026-10-25)
 
-Status: **open** (a few lines in `src/ui/components/cosmeticArt.tsx` and its CSS, which Track B does not own; the game
-works without it: the menus then show the usual upright halo about the whole model).
+Status: **done** (Track C, round 3b, 2026-10-25). The router (`art.ts`, `layer: 'aura'`) now draws every aura in the
+portrait square's frame plus a quarter of its side all round (`AURA_MARGIN`): the upright ellipse about the body, or a
+round halo on `baseSkinAuraSpot` (Colossus Lighthouse's torch). `BaseLook` sizes that picture at 1.5 times the square,
+centred on it (`cosmeticArt.css`). There is no `x -> 1 - x` for side 1: the screens mirror an opponent's base as a
+whole (VS `.vs__base--foe .cos-base`, Home `.hd__base--foe > *`), aura included, and the portrait itself is not
+mirrored, so mirroring the spot as well would put the halo on the wrong side. Tests: `src/visuals/test/cosmetics.test.ts`
+(the spot), `src/ui/components/test/cosmeticArt.test.tsx` (one picture for both sides, inside the mirrored element).
 
 ## Why
 

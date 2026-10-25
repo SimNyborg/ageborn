@@ -1034,9 +1034,11 @@ export class VisualsArtProvider implements ArtProvider {
    * null`), the painted stand-ins of the opening ages and the opening age's base skin models; everything
    * else loads again when something asks for it (an evolve's prefetch, Customize after the match). Called
    * by the battle view before it builds its backdrop and by the VS warm-up (`prefetchMatch`); duck-typed
-   * (no contract change), idempotent.
+   * (no contract change), idempotent. A world sheet that failed to load before (a dropped fetch on mobile
+   * data) is tried again for the match.
    */
   beginMatch(o: { sides: readonly { age: AgeId; scene?: CosmeticKey | null; skin?: SkinId | null }[]; arena: string | null }): void {
+    this.atlas.world.forgetFailures();
     const scenes = new Set<string>();
     const ages = new Set<AgeId>();
     const dirs: string[] = [];

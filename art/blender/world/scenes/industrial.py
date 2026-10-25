@@ -15,10 +15,12 @@ a bank whose visible top is at -50..-75 lu.
 
 "Zeppelin Docks" (format 2, round 3; Epic, Trophy Road 3,300): an airship field under a bright sky with
 drifting clouds. Back: hills with a far town and its chimneys. Far: two great vaulted hangars, a great
-airship held low on the field by its ground lines, the lattice mooring mast with its cone head (the
-signature), gas holders, a boiler house with a smoking chimney, fuel tanks and huts. Mid: the field's
+airship held low on the field by its ground lines, an airship's nose in the first hangar's door, the lattice mooring
+mast with its cone head (the signature), gas holders with a rail siding of tank wagons, a second mast with a
+smaller ship, a row of workshops, a boiler house with a smoking chimney, huts. Mid: the field's
 edge: the ground crew's huts, cable winches with drums of mooring line, searchlight towers, fuel tanks,
-gas cylinder racks, crates, a windsock pole. Ambient: the airship moored at the mast sways, a second
+gas cylinder racks, crates, a fence, a winch lorry, barrels and
+ballast, gas lamps, a windsock. Ambient: the airship moored at the mast sways, a second
 airship drifts across high over the field, gulls, smoke; hangar lamps, hut windows and the searchlights
 glow under night skies.
 

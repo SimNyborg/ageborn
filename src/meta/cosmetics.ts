@@ -243,7 +243,9 @@ export function sideLook(s: SaveDoc, t: Content): SideLook {
  * An AI opponent's look, seeded by its name: a base flag and decorations from the whole collection
  * (the look is cosmetic and bots are labeled AI everywhere, A7.1). Bots never fly a national flag,
  * so no country is ever implied for an AI, and keep their age's classic sky and classic scenes
- * (A18.9.4), so the player's own sky and scenes mark the player's half.
+ * (A18.9.4), so the player's own sky and scenes mark the player's half. Each age's base is the standard
+ * base or one of that age's released skins, each equally likely (round 3: by list order with halving
+ * odds, a third skin showed on one bot in eight and a fourth hardly ever).
  */
 export function botLook(t: Content, seed: string): SideLook {
   const rng = seedSfc32(`look:${seed}`);
@@ -254,7 +256,15 @@ export function botLook(t: Content, seed: string): SideLook {
     return x ? cosmeticKey(x) : null;
   };
   const baseSkins: Partial<Record<AgeId, string>> = {};
-  for (const x of collectionItems(t, 'baseSkin')) if (x.age && baseSkins[x.age] === undefined && randInt(rng, 2) === 0) baseSkins[x.age] = cosmeticKey(x);
+  const skins = collectionItems(t, 'baseSkin');
+  for (const age of t.order.ages) {
+    const own = skins.filter((x) => x.age === age);
+    if (own.length === 0) continue;
+    // 0 is the standard base
+    const i = randInt(rng, own.length + 1);
+    const x = i > 0 ? own[i - 1] : undefined;
+    if (x) baseSkins[age] = cosmeticKey(x);
+  }
   const anchors = t.cosmetics.collections.decorationAnchors;
   const decorations = Array.from({ length: anchors }, () => (randInt(rng, 3) === 0 ? null : pick('decoration')));
   return { baseFlag: pick('baseFlag'), nationalFlag: null, baseSkins, decorations, backdrop: null, scenes: {} };

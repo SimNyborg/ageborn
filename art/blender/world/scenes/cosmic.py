@@ -543,13 +543,17 @@ def rg_props():
 
 # -- Nebula Shipyard (round 3; Epic, Wardrobe Crate; a set with Nebula Ark) ---------------------------
 # A star-ark under construction in an orbital drydock (`celestial: 'own'`, `weather: 'space'`). Back: a
-# nebula cloud of violet and mint glows. Far: the drydock's lattice cradle with the half-built ark inside
-# (its bow plated and lit, its stern bare ribs on the keel), gantry cranes along the top girder, docking
-# lights. Mid: the yard deck: gantries, cargo pods, welding rigs throwing sparks, a landing pad with its
-# lights. Ambient: welding sparks, a crane arm swings, cargo pods drift past, docking lights blink; the
-# ark's windows, the pad and the gantry lamps glow under night skies.
-# Palette (PLAN 2b): void #1E1830, nebula violet #8E44C8, mint #3FE0B0 (both outside the team-hue bands),
-# hulls white-lilac with violet bands as the classic's.
+# nebula cloud of soft violet glows. Far: the yard's floor plate with a plate shop and fuel spheres; the
+# drydock's lattice cradle with the half-built ark inside: its bow plated (lilac-grey with plate seams, two
+# violet bands, rows of lit windows, a dorsal spine with the bridge tower, cradle struts under the keel), its
+# stern still bare hoops on the keel, turned toward the camera so they read as a cage, with stringers and two
+# engine rings; plates hang from the gantry cranes on the top girder; docking lights. Mid: the yard deck: a hull
+# ring on its cradle, a low goliath crane over a stack of plates (kept under the ark's keel line), welding rigs,
+# gantries, floodlights, cargo pods and a landing pad with a yard shuttle. Ambient: welding sparks, a crane arm
+# swings, cargo pods drift past, a shuttle crosses, docking lights blink; windows, welding points, floodlights,
+# the pad and the gantry lamps glow under night skies.
+# Palette (PLAN 2b): void #1E1830, nebula violet #8E44C8, mint #3FE0B0 (both outside the team-hue bands); the
+# hull a step darker than the classic's white-lilac, so the units' bases stay the brighter objects.
 NS_PAL = dict(skyTop=0x1E1830, skyBottom=0x48366E, light=0xE8E4FF, far=0x4A3E6E, mid=0x36305A, near=0x262040)
 NS = dict(
     hull=0xACA6C4, hull_dk=0x8A84A4, band=0x7460B0, frame=0x6A6880, frame_dk=0x4E4C62, deck=0x5A5672, deck_dk=0x46425C, rib=0x7C7896,

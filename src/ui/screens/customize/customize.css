@@ -2279,3 +2279,40 @@ button.cos-qwheel__slot:focus-visible {
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
+
+/* Short landscape phones (queue item 43: Chrome with its address bar showing leaves about 250-300 px). Under the
+   folder tabs the panel is only about 130 px tall at 762 x 277, and a sticky stage taller than that hid its own
+   ground: the base's foot, the decoration spot by the gate, the flag's pole. The stage now shrinks until it fits
+   above the bottom bar (119 px at 277 px of height, the full 16:11 stage from about 330 px). A wheel or quote preview
+   cannot shrink (its slots stay 44 px), so it scrolls with the list instead of sticking. The panel and the list's
+   heading pack a little tighter. 340 px and taller are unchanged. */
+@container ui-root (max-height: 339px) {
+  .col-panel.cust-panel {
+    padding: 8px;
+  }
+  .cos-split {
+    grid-template-columns: max(144px, min(30%, calc((100dvh - 158px) * 16 / 11))) minmax(0, 1fr);
+    gap: 10px;
+  }
+  .cust-panel--emotes .cos-split,
+  .cust-panel--quotes .cos-split {
+    grid-template-columns: minmax(176px, 30%) minmax(0, 1fr);
+  }
+  .cust-panel--emotes .cos-split__mock,
+  .cust-panel--quotes .cos-split__mock {
+    position: static;
+  }
+  .cos-head {
+    margin: 2px 0 6px;
+  }
+  .cos-split__list .cust-h {
+    font-size: 15px;
+  }
+}
+/* Below 270 px the stage keeps 144 px of width, the least that holds the three spot targets (44 px each)
+   side by side, so the panel's top padding gives it the room. */
+@container ui-root (max-height: 269px) {
+  .col-panel.cust-panel {
+    padding-top: 4px;
+  }
+}

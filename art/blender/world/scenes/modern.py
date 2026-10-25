@@ -24,10 +24,11 @@ and grey (no team colours).
 
 "Monsoon River" (format 2, round 3; Epic, Wardrobe Crate; a set with Jungle Outpost): a misty jungle
 river with waterfalls in a humid haze. Back: misty jungle ridges. Far: jungle walls under a dense
-canopy, two waterfalls between dark cliff columns, the rope bridge across the gorge above the great fall
+canopy, two waterfalls between mossy rock
+cliffs (a pool and spray at their feet), the rope bridge across the gorge above the great fall
 (the signature), a stepped temple ruin overgrown on the hill, palms, the river. Mid: the river (muddy
-grey-green, low saturation) behind a mossy bank, a stilt village with thatched A-frame roofs, a dock and
-canoes, palms, big-leaved plants, broad trees. Ambient: a river patrol boat runs up the river every 50
+grey-green, low saturation) behind a mossy bank, a stilt village of varied huts with thatched A-frame roofs
+joined by a walkway, a lookout tower, a dock and canoes, palms, big-leaved plants, broad trees. Ambient: a river patrol boat runs up the river every 50
 s, the waterfalls' sheen, a mist bank drifts, birds; the stilt huts' lanterns and the temple's fire glow
 under night skies.
 

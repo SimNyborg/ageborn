@@ -26,7 +26,7 @@ import { BASE_COLLAPSE_MS, baseSheetSource, baseSkinCollapseSource, baseSkinShee
 import { createArtProvider } from '../provider';
 import { AtlasBaseView } from '../adapters/world/atlasBaseView';
 import { collapseProfile, collapseProfileFor } from '../adapters/world/collapse/profiles';
-import { isBaseSkinSource, isWorldSource, WorldAtlas, worldSourceAge, type WorldMeta, type WorldSheet } from '../adapters/worldAtlas';
+import { isBaseSkinSource, isWorldSource, WORLD_RETRY_MS, WorldAtlas, worldSourceAge, type WorldMeta, type WorldSheet } from '../adapters/worldAtlas';
 import { basePortraitSpot, worldPortraitFrames } from '../adapters/worldPortrait';
 
 const FROST = BASE_SKINS.frost_cave!.tint;
@@ -116,6 +116,9 @@ describe('base skin layers for the Customize preview', () => {
   });
 });
 
+/** The dressing's motes (its root's last child). */
+const motesOf = (d: BaseDressing): Container[] => [...(d.root.children[d.root.children.length - 1]?.children ?? [])] as Container[];
+
 describe('base dressing (A18.9.4)', () => {
   const look = {
     baseFlag: 'baseFlag.mammoth',
@@ -192,11 +195,10 @@ describe('base dressing (A18.9.4)', () => {
     const d = new BaseDressing({ age: 'stone', side: 0, look, team: 0x2f7df6 });
     d.setMotion({ reduce: true, lite: false });
     for (let i = 0; i < 5; i += 1) d.update(50);
-    const motes = d.root.children[d.root.children.length - 1]!;
-    expect(motes.children.length).toBe(0);
+    expect(motesOf(d)).toHaveLength(0);
     d.setMotion({ reduce: false, lite: false });
     d.update(50);
-    expect(motes.children.length).toBeGreaterThan(0);
+    expect(motesOf(d).length).toBeGreaterThan(0);
   });
 });
 
@@ -505,6 +507,55 @@ const baseDef = (source: string): VisualDef => ({
   events: { attack: { impactAt: 0.1 } },
 });
 
+describe('the world atlas tries a failed sheet again (a dropped fetch on mobile data)', () => {
+  it('holds a failure for WORLD_RETRY_MS without fetching, then fetches again; a new match forgets it at once', async () => {
+    let now = 1000;
+    let fail = true;
+    const loads: string[] = [];
+    const sheet = fakeSheet({ skin: 'rose_keep' });
+    const w = new WorldAtlas(
+      (s) => `/x/${s}`,
+      async (url) => {
+        loads.push(url);
+        if (fail) throw new Error('dropped');
+        return sheet;
+      },
+      null,
+      () => now,
+    );
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const src = 'art/bases/skins/rose_keep.json';
+    expect(await w.ensure(src)).toBeNull();
+    expect(loads).toHaveLength(1);
+    expect(w.isFailed(src)).toBe(true);
+    now += WORLD_RETRY_MS - 1;
+    expect(await w.ensure(src)).toBeNull();
+    expect(loads).toHaveLength(1);
+    now += 1;
+    fail = false;
+    expect(w.isFailed(src)).toBe(false);
+    expect(await w.ensure(src)).toBe(sheet);
+    expect(loads).toHaveLength(2);
+    // a decoration's prop: a new match (forgetFailures) tries it again at once
+    const prop = 'art/cosmetics/decorations/fern.json';
+    fail = true;
+    expect(await w.ensure(prop)).toBeNull();
+    fail = false;
+    w.forgetFailures();
+    expect(w.isFailed(prop)).toBe(false);
+    expect(await w.ensure(prop)).toBe(sheet);
+    expect(loads).toHaveLength(4);
+    warn.mockRestore();
+  });
+
+  it('the provider forgets the failures when a match begins (the battle and the VS warm-up)', () => {
+    const art = createArtProvider({ warn: () => {} });
+    const forget = vi.spyOn(art.atlas.world, 'forgetFailures');
+    art.beginMatch({ arena: null, sides: [{ age: 'stone', scene: null, skin: null }, { age: 'stone', scene: null, skin: null }] });
+    expect(forget).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('base skin models in the lane (lazy, per age, tint stand-in)', () => {
   // a manifest with one test model per age the evolve passes through
   const skinSrc = (id: string): string => `art/bases/skins/${id}.json`;
@@ -568,6 +619,49 @@ describe('base skin models in the lane (lazy, per age, tint stand-in)', () => {
     art.atlas.world.register(skinSrc('test_gold'), fakeSheet({ skin: 'test_gold' }));
     view.update(16);
     expect(view.sheetSource).toBe(skinSrc('test_gold'));
+    view.destroy();
+  });
+
+  it('asks again for a model whose sheet failed (a dropped fetch) once the retry window is over, then swaps it in', async () => {
+    const { art, view } = make({ loaded: [], skins: { medieval: 'rose_keep' }, age: 'medieval' });
+    const src = skinSrc('rose_keep');
+    let fail = true;
+    const asks = vi.spyOn(art.atlas.world, 'ensure').mockImplementation((s) => {
+      if (s !== src || fail) return Promise.resolve(null);
+      const sheet = fakeSheet({ skin: 'rose_keep' });
+      art.atlas.world.register(s, sheet);
+      return Promise.resolve(sheet);
+    });
+    const skinAsks = (): number => asks.mock.calls.filter(([s]) => s === src).length;
+    view.update(16);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(skinAsks()).toBe(1);
+    // the stand-in stays while the atlas holds the failure: no new ask every frame
+    for (let t = 0; t < WORLD_RETRY_MS - 100; t += 50) view.update(50);
+    expect(skinAsks()).toBe(1);
+    expect(view.sheetSource).toBe('art/bases/medieval.json');
+    // the network is back: the next ask after the window loads it and the model blooms in
+    fail = false;
+    for (let t = 0; t < 200; t += 50) view.update(50);
+    expect(skinAsks()).toBe(2);
+    await new Promise((r) => setTimeout(r, 0));
+    view.update(16);
+    expect(view.sheetSource).toBe(src);
+    view.destroy();
+  });
+
+  it('stops asking after three failed retries (a sheet that is really missing) until the next match', async () => {
+    const { art, view } = make({ loaded: [], skins: { medieval: 'rose_keep' }, age: 'medieval' });
+    const src = skinSrc('rose_keep');
+    const asks = vi.spyOn(art.atlas.world, 'ensure').mockImplementation(() => Promise.resolve(null));
+    for (let i = 0; i < 6; i += 1) {
+      view.update(16);
+      await new Promise((r) => setTimeout(r, 0));
+      for (let t = 0; t < WORLD_RETRY_MS + 100; t += 100) view.update(100);
+    }
+    // the first ask and three retries, 5 s apart; the stand-in stays
+    expect(asks.mock.calls.filter(([s]) => s === src)).toHaveLength(4);
+    expect(view.sheetSource).toBe('art/bases/medieval.json');
     view.destroy();
   });
 
@@ -866,11 +960,11 @@ describe('the dressing with a skin model', () => {
     const base = modelBase('rose_keep', [{ kind: 'petals', x: -150, y: 200, r: 10, rate: 1 }]);
     const d = new BaseDressing({ age: 'medieval', side: 0, look, team: 0x2f7df6, base });
     for (let i = 0; i < 4; i += 1) d.update(50);
-    const motes = d.root.children[d.root.children.length - 1]!;
-    expect(motes.children.length).toBeGreaterThan(0);
-    expect(motes.children.length).toBeLessThanOrEqual(10);
+    const motes = motesOf(d);
+    expect(motes.length).toBeGreaterThan(0);
+    expect(motes.length).toBeLessThanOrEqual(10);
     // every mote starts around the spot (it falls from there)
-    for (const m of motes.children) {
+    for (const m of motes) {
       expect(m.position.x).toBeGreaterThan(-175);
       expect(m.position.x).toBeLessThan(-125);
       expect(-m.position.y).toBeLessThan(215);
@@ -882,9 +976,9 @@ describe('the dressing with a skin model', () => {
     const base = modelBase('crystal_spire', [{ kind: 'glints', x: -90, y: 260, r: 10, rate: 1, color: '#F4EEFF' } as never]);
     const d = new BaseDressing({ age: 'future', side: 0, look: { baseSkins: {}, decorations: [] }, team: 0x2f7df6, base });
     for (let i = 0; i < 4; i += 1) d.update(50);
-    const motes = d.root.children[d.root.children.length - 1]!;
-    expect(motes.children.length).toBeGreaterThan(0);
-    for (const m of motes.children) expect(m.position.x).toBeLessThan(-75);
+    const motes = motesOf(d);
+    expect(motes.length).toBeGreaterThan(0);
+    for (const m of motes) expect(m.position.x).toBeLessThan(-75);
     d.destroy();
   });
 
@@ -893,8 +987,7 @@ describe('the dressing with a skin model', () => {
       const base = modelBase('snowy_keep', [{ kind, x: -70, y: 290, r: 4, rate: 1 }]);
       const d = new BaseDressing({ age: 'medieval', side: 0, look, team: 0x2f7df6, base });
       d.update(16);
-      const motes = d.root.children[d.root.children.length - 1]!;
-      const m = motes.children[0]!;
+      const m = motesOf(d)[0]!;
       const s0 = m.scale.x;
       const y0 = -m.position.y;
       for (let i = 0; i < 20; i += 1) d.update(50);
@@ -905,13 +998,28 @@ describe('the dressing with a skin model', () => {
     }
   });
 
+  it('draws every ambient mote with normal blending (no batch breaks between them), embers and glints too', () => {
+    // Colossus Lighthouse's ambient: gulls, torch smoke, embers and sea glints
+    const base = modelBase('colossus_lighthouse', [
+      { kind: 'birds', x: -100, y: 300, r: 70, rate: 0.7, color: '#F4F4F0' } as never,
+      { kind: 'smoke', x: -115, y: 330, r: 4, rate: 0.6 },
+      { kind: 'embers', x: -115, y: 325, r: 5, rate: 0.7 },
+      { kind: 'glints', x: -170, y: 3, r: 26, rate: 0.6 },
+    ]);
+    const d = new BaseDressing({ age: 'bronze', side: 0, look, team: 0x2f7df6, base });
+    for (let i = 0; i < 6; i += 1) d.update(50);
+    const motes = motesOf(d);
+    expect(motes.length).toBeGreaterThan(0);
+    for (const m of motes) expect(m.blendMode).not.toBe('add');
+    d.destroy();
+  });
+
   it('keeps the old tint and field of motes while the model is still loading', () => {
     const base = modelBase(null, []);
     const d = new BaseDressing({ age: 'medieval', side: 0, look, team: 0x2f7df6, base });
     d.update(50);
     expect(base.tints).toEqual([ROSE]);
-    const motes = d.root.children[d.root.children.length - 1]!;
-    expect(motes.children.length).toBe(14);
+    expect(motesOf(d)).toHaveLength(14);
     d.destroy();
   });
 });

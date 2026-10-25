@@ -8,9 +8,9 @@
  * | `scene.<id>` (`{ age, thumb }` or `{ age, sky }`) | `backdrops/scenePreview.ts` | Track A |
  * | `backdrop.<id>` (`{ age, scene? }`; `layer: 'fx'` the weather) | `scenePreview.ts`, `backdropPreview.ts` | Track A |
  * | `baseSkin.<id>` (`layer: 'tint' \| 'fx' \| 'thumb'`) | `baseSkins.ts` | Track B |
- * | `baseSkin.<id>` (`layer: 'aura'`: the Legendary halo, from B's `WORLD_BASE_SKIN_AURA`) | here | Track C |
+ * | `baseSkin.<id>` (`layer: 'aura'`: the Legendary halo, from B's `WORLD_BASE_SKIN_AURA` and `baseSkinAuraSpot`) | here | Track C |
  * | `decoration.<id>` (`{ hd? }`) | `decorations.ts` | Track B |
- * | `nationalFlag.<id>` (`{ size?: 'tile' \| 'big', cached? }`, default big) | `nationalFlags.ts` | Track D |
+ * | `nationalFlag.<id>` (`{ size?: 'tile' \| 'big', cached?, sprite? }`, default big) | `nationalFlags.ts` | Track D (the sprite: Track C) |
  * | `baseFlag.<id>`, `emote.<id>`, `quote.<id>` | `flags.ts` (and `nationalFlags.ts REGION_PENNANTS`), `emotes.ts`, here | Track C |
  *
  * The UI may not import the visuals (B2), so the app injects {@link cosmeticImageUrl} into the screens
@@ -24,11 +24,11 @@ import { hasSceneArt, isSpaceScene as isSpaceSceneOf, scenePreviewUrl } from '..
 import { BACKDROP_THEMES } from '../backdrops/themes';
 import { WORLD_BASE_SKIN_AURA } from '../manifest.world';
 import { backdropIconSvg, backdropPreviewUrl, backdropWeatherSvg, onBackdropPicturesChanged } from './backdropPreview';
-import { baseSkinArt, baseSkinLayerSvg, baseSkinSvg, baseSkinThumbUrl, BASE_SKINS, hasBaseSkinArt } from './baseSkins';
+import { baseSkinArt, baseSkinAuraSpot, baseSkinLayerSvg, baseSkinSvg, baseSkinThumbUrl, BASE_SKINS, hasBaseSkinArt } from './baseSkins';
 import { decorationArtUrl, decorationSvg, DECO_H, DECO_W, DECORATIONS, drawDecoration, hasDecorationArt, onDecorationArt } from './decorations';
 import { EMOTE_BOX, EMOTE_MOTIONS, EMOTES, type EmoteLayer, type EmoteMotion } from './emotes';
 import { BANNER_OUTLINE, BASE_FLAGS, baseFlagTier, FLAG_GLINT, FLAG_H, FLAG_POLE_BOX, FLAG_W, flagCloth, flagFringe, flagPole, flagTrim, type FlagTier } from './flags';
-import { drawNationalFlag, hasNationalFlagArt, NATIONAL_FLAGS, nationalFlagSvg, nationalFlagSvgUrl, nationalFlagUrl, REGION_PENNANT_TIER, REGION_PENNANTS } from './nationalFlags';
+import { drawNationalFlag, hasNationalFlagArt, NATIONAL_FLAGS, nationalFlagSheetSettled, nationalFlagSprite, nationalFlagSvg, nationalFlagSvgUrl, nationalFlagUrl, REGION_PENNANT_TIER, REGION_PENNANTS } from './nationalFlags';
 import { celRamp, circle, drawShapes, hex, INK, shapesToSvg, type Ctx2D, type Paints, type Shape } from './shapes';
 
 /** `avatar` (the General's wardrobe) is drawn by the UI's avatar renderer, so the visuals have no art for it. */
@@ -227,25 +227,41 @@ export function skyTileAge(age: AgeId): AgeId {
 
 /**
  * True for a base skin model that stands in the white Legendary aura (Track B's `WORLD_BASE_SKIN_AURA`,
- * held equal to the sheets' own `meta.ageborn.aura` that the battle reads): Crystal Spire and Nebula Ark
- * today, Colossus Lighthouse once its model ships.
+ * held equal to the sheets' own `meta.ageborn.aura` that the battle reads): Crystal Spire, Nebula Ark and
+ * Colossus Lighthouse (whose aura shines round its raised torch).
  */
 export function hasBaseSkinAura(id: string): boolean {
   return WORLD_BASE_SKIN_AURA.includes(id);
 }
 
 /**
- * The aura as the lane draws it (`adapters/world/atlasBaseView.ts`): a pale lilac-white radial halo,
- * strongest in the middle and gone at its rim, which the screens stretch to an upright ellipse about the
- * body (1.55 times its width, 1.3 times its height) under the base picture (`BaseLook`), so the model and
- * its fx layer stand in front of it. The overall strength and the slow breathing are the screen's.
+ * How far the aura picture reaches past the base picture's square on every side, as a fraction of its side:
+ * the picture is the square plus this margin all round (1.5 times the side), centred on the square
+ * (`BaseLook`), so a halo may reach above the model's top or past its sides.
  */
-const AURA_SVG =
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none">' +
-  '<defs><radialGradient id="a" cx="50" cy="50" r="50" gradientUnits="userSpaceOnUse">' +
+export const AURA_MARGIN = 0.25;
+
+/** The halo's falloff, as the lane draws it (`adapters/world/atlasBaseView.ts`): strongest in the middle, gone at its rim. */
+const AURA_STOPS =
   '<stop offset="0" stop-color="#f6f0ff"/><stop offset="0.35" stop-color="#f6f0ff" stop-opacity="0.62"/>' +
-  '<stop offset="0.7" stop-color="#f6f0ff" stop-opacity="0.18"/><stop offset="1" stop-color="#f6f0ff" stop-opacity="0"/>' +
-  '</radialGradient></defs><rect width="100" height="100" fill="url(#a)"/></svg>';
+  '<stop offset="0.7" stop-color="#f6f0ff" stop-opacity="0.18"/><stop offset="1" stop-color="#f6f0ff" stop-opacity="0"/>';
+
+/**
+ * The aura under a base picture (`BaseLook`), so the model and its fx layer stand in front of it: a pale
+ * lilac-white radial halo in the square base picture's frame (the model standing on the bottom edge,
+ * facing right; plus {@link AURA_MARGIN} all round). By default it is the lane's upright ellipse about the
+ * body (1.55 times its width, 1.3 times its height, centred on its middle). A model whose aura shines on one
+ * spot (Colossus Lighthouse's raised torch, Track B's `baseSkinAuraSpot`) gets a round halo there. One
+ * picture serves both sides: the screens mirror an opponent's base as a whole (VS `.vs__base--foe .cos-base`,
+ * Home `.hd__base--foe > *`), its aura with it. The overall strength and the slow breathing are the screen's.
+ */
+function auraSvg(id: string): string {
+  const m = AURA_MARGIN * 100;
+  const spot = baseSkinAuraSpot(id);
+  const n = (v: number) => String(Math.round(v * 1000) / 10);
+  const shape = spot ? `<circle cx="${n(spot.x)}" cy="${n(spot.y)}" r="${n(spot.r)}" fill="url(#a)"/>` : '<ellipse cx="50" cy="48" rx="44" ry="62.5" fill="url(#a)"/>';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-m} ${-m} ${100 + 2 * m} ${100 + 2 * m}"><defs><radialGradient id="a">${AURA_STOPS}</radialGradient></defs>${shape}</svg>`;
+}
 
 /** A speech bubble with three dots: the quote collection's icon (the line itself is text). */
 function quoteSvg(): string {
@@ -295,6 +311,8 @@ export interface CosmeticSvgOptions {
   hd?: boolean;
   /** National flags: a grid tile picture (an atlas cell) or the big picture (the SVG, the default). */
   size?: 'tile' | 'big';
+  /** National flag tiles: the cell in the atlas sheet as `<sheet>#cell=x,y,w,h,sheetW,sheetH` (a CSS sprite), not a cut picture. */
+  sprite?: boolean;
   /** Base flags: drawn on their pole with the rarity's finial (collection tiles). */
   pole?: boolean;
 }
@@ -309,7 +327,7 @@ export function cosmeticSvg(key: string, o: CosmeticSvgOptions = {}): string | n
   // a skin model's thumbnail is a picture (cosmeticImageUrl), never SVG
   if (o.layer === 'thumb') return null;
   // the Legendary halo under a base picture: only the models that wear it in battle
-  if (o.layer === 'aura') return k.collection === 'baseSkin' && hasBaseSkinAura(k.id) ? AURA_SVG : null;
+  if (o.layer === 'aura') return k.collection === 'baseSkin' && hasBaseSkinAura(k.id) ? auraSvg(k.id) : null;
   if (o.layer) return k.collection === 'baseSkin' ? baseSkinLayerSvg(k.id, o.layer, o.animate ?? true) : null;
   switch (k.collection) {
     case 'nationalFlag':
@@ -373,7 +391,16 @@ export function cosmeticImageUrl(key: string, o: CosmeticSvgOptions = {}): strin
   // the fallback for an id without a vendored picture.
   if (key.startsWith('nationalFlag.')) {
     const id = key.slice('nationalFlag.'.length);
-    if (nationalFlagSvgUrl(id)) return nationalFlagUrl(id, o.size ?? 'big', { cached: !!o.cached });
+    const svg = nationalFlagSvgUrl(id);
+    if (svg && o.size === 'tile' && o.sprite) {
+      // A grid's sprite (C-b item 9): the flag's cell in the one atlas sheet as `<sheet>#cell=x,y,w,h,sheetW,sheetH`,
+      // which the screens draw with CSS background-position, so every tile shows once the sheet is decoded.
+      // Until then null with `cached` (else the SVG); the SVG once the sheet has failed.
+      const s = nationalFlagSprite(id);
+      if (s) return `${s.url}#cell=${s.x},${s.y},${s.w},${s.h},${s.sheetW},${s.sheetH}`;
+      return o.cached && !nationalFlagSheetSettled() ? null : svg;
+    }
+    if (svg) return nationalFlagUrl(id, o.size ?? 'big', { cached: !!o.cached });
   }
   // The Blender props (Track B) when they are in
   if (key.startsWith('decoration.')) {

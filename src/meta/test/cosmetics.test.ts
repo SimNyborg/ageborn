@@ -223,6 +223,31 @@ describe('earned items, crafting and completion', () => {
     expect(a.nationalFlag).toBeNull();
     expect(a.baseFlag).toMatch(/^baseFlag\./);
   });
+
+  it("wears each age's standard base and its released skins about equally often (round 3: not by list order)", () => {
+    const N = 900;
+    const looks = Array.from({ length: N }, (_, i) => botLook(C, `General ${i}`));
+    for (const age of C.order.ages) {
+      const skins = collectionItems(C, 'baseSkin').filter((x) => x.age === age).map(cosmeticKey);
+      if (skins.length === 0) continue;
+      const seen = new Map<string, number>();
+      for (const l of looks) {
+        const k = l.baseSkins?.[age] ?? 'standard';
+        // only the age's own released skins, or the standard base
+        expect(['standard', ...skins], `${age}: ${k}`).toContain(k);
+        seen.set(k, (seen.get(k) ?? 0) + 1);
+      }
+      const each = N / (skins.length + 1);
+      for (const k of ['standard', ...skins]) expect(seen.get(k) ?? 0, `${age}: ${k}`).toBeGreaterThan(each * 0.7);
+      for (const k of ['standard', ...skins]) expect(seen.get(k) ?? 0, `${age}: ${k}`).toBeLessThan(each * 1.3);
+    }
+  });
+
+  it('never wears an unreleased skin', () => {
+    const held: CosmeticItemDef = { id: 'held_keep', collection: 'baseSkin', rarity: 'epic', source: { kind: 'crate' }, art: 'cosmetic.baseSkin.held_keep', nameKey: 'cosmetic.baseSkin.held_keep.name', age: 'medieval', released: false };
+    const withHeld = { ...C, cosmetics: { ...C.cosmetics, collections: { ...col, items: [...col.items, held] } } } as Content;
+    for (let i = 0; i < 300; i += 1) expect(botLook(withHeld, `General ${i}`).baseSkins?.medieval).not.toBe('baseSkin.held_keep');
+  });
 });
 
 describe('battle backdrops (A18.9.4 "Backdrops", owner request 2026-09-30)', () => {

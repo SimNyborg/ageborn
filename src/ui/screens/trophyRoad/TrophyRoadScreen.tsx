@@ -10,7 +10,7 @@ import type { JSX } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
 import { Avatar } from '../../components/Avatar';
 import { Button } from '../../components/Button';
-import { CosmeticImage } from '../../components/cosmeticArt';
+import { CosmeticImage, CosmeticTileArt } from '../../components/cosmeticArt';
 import { Pill } from '../../components/Chips';
 import { formatInt } from '../../components/format';
 import { CapsuleIcon, CastleIcon, CheckIcon, CrateIcon, FlagIcon, LockIcon, RobotIcon, ScrollIcon, TrophyIcon } from '../../components/icons';
@@ -84,11 +84,15 @@ function GateLines(p: { arena: ArenaDef; prev: ArenaDef | null }) {
   );
 }
 
+/** Collections whose road items show their Customize card's picture (a base skin's model on its scene strip, a scene's thumbnail). */
+const PICTURE_ITEMS = new Set(['baseSkin', 'scene']);
+
 function Node(p: { v: RoadNodeView; side: 'l' | 'r' }) {
-  const { t, locale, services, toasts, content } = useUi();
+  const { t, locale, services, toasts, content, save } = useUi();
   const { v } = p;
   // collection items (A18.9.4) this node grants, so the Collection's "Trophy Road at N" is visible here
   const items = roadItemsAt(content, v.node.trophies);
+  const reduce = save.value.settings.reduceMotion;
   return (
     <li class={`road-node road-node--${p.side} is-${v.state}`} data-testid={`road-node-${v.node.trophies}`}>
       <span class="road-node__dot" aria-hidden="true">
@@ -103,9 +107,10 @@ function Node(p: { v: RoadNodeView; side: 'l' | 'r' }) {
             <RoadRewardView key={i} r={r} />
           ))}
           {items.map((x) => (
-            <span key={x.id} class={`road-rw road-rw--cosmetic road-rw--${x.collection}`} data-testid={`road-item-${itemKey(x)}`}>
+            <span key={x.id} class={`road-rw road-rw--cosmetic road-rw--${x.collection}`} data-testid={`road-item-${itemKey(x)}`} data-rarity={x.rarity}>
               <span class="road-rw__art">
-                <CosmeticImage item={itemKey(x)} />
+                {/* round 3: a base skin and a scene show their Customize picture (the model, the scene), never a blank */}
+                {PICTURE_ITEMS.has(x.collection) && x.age ? <CosmeticTileArt item={itemKey(x)} age={x.age} rarity={x.rarity} animate={!reduce} /> : <CosmeticImage item={itemKey(x)} />}
               </span>
               <span class="road-rw__text">
                 <b>{t(x.nameKey)}</b>

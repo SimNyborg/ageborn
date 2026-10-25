@@ -25,7 +25,8 @@ Palette (PLAN 2b): heather mauve #8A7A88, moss #6A8650 (kept above 81 degrees of
 air. Back: the far side of the bay. Far: the harbour and the open sea; the town on its slope:
 stepped-gable brick warehouses on the waterfront, roofs climbing behind, the church with its tall spire;
 the mole curving out to the harbour mouth with its stone lighthouse; cogs at anchor and rowing boats; a
-far island. Mid: the quay: timber-framed houses with smoking chimneys, the harbour crane with its
+far island. Mid: the quay: timber-framed houses (varied plaster and heights)
+with smoking chimneys, the harbour crane with its
 treadwheel, barrels, crates and nets, lanterns, the windmill on a grassy rise, a fishmonger's stall and
 boats drawn up. Ambient: the windmill's sails turn, two cogs bob in the harbour, gulls, chimney smoke;
 windows, lanterns, the lighthouse and the church glow under night skies.

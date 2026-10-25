@@ -24,7 +24,8 @@ parrots are small accents.
 
 "Windmill Polder" (format 2, round 3; Epic, Time Capsule; a set with Windmill Redoubt): flat canal
 country under a big open sky. Back: a faint far tree line. Far: the polder in long strips of grass and
-muted bulb rows between ditches, a tree line with two far spires on the horizon, a town of stepped
+muted bulb rows between ditches, farmsteads in tree clumps, poplar rows and open
+gaps on the horizon with two far spires, a town of stepped
 gables along a canal with its great brick church, three smock mills on brick bases along the dyke,
 thatched farms. Mid: the dyke with bulb rows and a fence, the canal (grey-teal), the white drawbridge
 with its gallows (the signature), the near windmill on its dyke, a thatched farmhouse with green

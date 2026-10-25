@@ -22,10 +22,10 @@ glass stays a pale grey-teal; magenta and mint sign panels are small accents.
 
 "Terraformed Gardens" (format 2, round 3; Epic, Time Capsule; a set with Bio-Dome Arcology): bio-domes
 and vertical farms by a lake in a soft green-gold light. Back: soft terraced hills. Far: the lake, green
-hills with terraced orchards, three geodesic bio-domes, wind turbines, the sky bridge between two white
+hills with terraced orchards and rows of glass greenhouses, three geodesic bio-domes, wind turbines, the sky bridge between two white
 towers with a waterfall pouring from it into the lake (the signature). Mid: the lake shore: vertical
-farm towers with green terraces, a glass pavilion, trees, flower beds in soft rows, white lamps with
-mint glows. Ambient: the turbines turn, the waterfall's sheen, two pollinator drones drift along the
+farm towers with green terraces, a glass pavilion, a pergola, a jetty with an electric boat, trees, flower
+beds in soft rows, white lamps with mint glows. Ambient: the turbines turn, the waterfall's sheen, two pollinator drones drift along the
 shore, leaf motes; the domes, farms, lamps and the bridge towers glow under night skies.
 
 Palette (PLAN 2b): leaf green #6E9A6A, glass grey-teal #A8C0C0 (low saturation), white; mint (hue 153)

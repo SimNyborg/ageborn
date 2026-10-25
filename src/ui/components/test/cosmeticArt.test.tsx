@@ -8,7 +8,7 @@ import { render } from 'preact';
 import { act } from 'preact/test-utils';
 import { afterEach, describe, expect, it } from 'vitest';
 import { installDom, type FakeElement } from '../../screens/test/dom';
-import { BackdropLook, BaseLook, BaseThumb, CosmeticArtContext, CosmeticImage, CosmeticPicturesContext, type CosmeticImageFn, type CosmeticImageOptions } from '../cosmeticArt';
+import { BackdropLook, BaseLook, BaseThumb, CosmeticArtContext, CosmeticImage, CosmeticPicturesContext, FlagTileImage, flagSpriteStyle, type CosmeticImageFn, type CosmeticImageOptions } from '../cosmeticArt';
 import { UiKitContext, defaultKit } from '../kit';
 
 let container: FakeElement | null = null;
@@ -80,6 +80,32 @@ describe('national flag pictures', () => {
     expect(asked[0]).toMatchObject({ size: 'tile' });
     expect(asked[1]?.size).toBeUndefined();
   });
+
+  it('a grid tile draws its cell of the one atlas sheet as a sprite (C-b item 9), the SVG when the sheet failed', () => {
+    const asked: (CosmeticImageOptions | undefined)[] = [];
+    // a 1024 x 624 sheet of 64 x 48 cells; Denmark in column 2, row 1
+    const fn: CosmeticImageFn = (key, o) => {
+      asked.push(o);
+      return key === 'nationalFlag.dk' ? '/art/flags/atlas-64.webp#cell=128,48,64,48,1024,624' : `${key}.svg`;
+    };
+    const c = show(
+      <CosmeticArtContext.Provider value={fn}>
+        <FlagTileImage item="nationalFlag.dk" ready class="dk" />
+        <FlagTileImage item="nationalFlag.se" ready class="se" />
+      </CosmeticArtContext.Provider>,
+    );
+    expect(asked[0]).toMatchObject({ size: 'tile', sprite: true });
+    const cell = c.querySelector('.dk .cos-img__sprite') as unknown as { style: Record<string, string> } | null;
+    expect(cell).not.toBeNull();
+    expect(String(cell!.style.backgroundImage)).toContain('/art/flags/atlas-64.webp');
+    expect(String(cell!.style.backgroundImage)).not.toContain('#cell');
+    expect(cell!.style.backgroundSize).toBe('1600% 1300%');
+    expect(cell!.style.backgroundPosition).toBe('13.33% 8.33%');
+    // a plain picture (the sheet failed: the SVG) stays an image
+    expect(c.querySelector('img.se')?.getAttribute('src')).toBe('nationalFlag.se.svg');
+    expect(flagSpriteStyle('nationalFlag.se.svg')).toBeNull();
+    expect(flagSpriteStyle(null)).toBeNull();
+  });
 });
 
 describe('the Legendary aura under a base picture (round 3)', () => {
@@ -132,6 +158,39 @@ describe('the Legendary aura under a base picture (round 3)', () => {
     expect(c.querySelector('[data-testid="plain-aura"]')).toBeNull();
     expect(c.querySelector('[data-testid="plain"]')!.getAttribute('class')).not.toContain('has-aura');
     expect(c.querySelector('[data-testid="std-aura"]')).toBeNull();
+  });
+
+  it("draws one halo for both sides: an opponent's base is mirrored as a whole (VS, Home), its aura inside it", async () => {
+    const asked: (CosmeticImageOptions | undefined)[] = [];
+    const sided: CosmeticImageFn = (key, o) => {
+      if (o?.layer === 'aura') asked.push(o);
+      return fn(key, o);
+    };
+    const dom = installDom();
+    container = dom.container;
+    act(() =>
+      render(
+        <UiKitContext.Provider value={kit}>
+          <CosmeticArtContext.Provider value={sided}>
+            <BaseLook age="future" skin="baseSkin.crystal_spire" testid="me" />
+            <BaseLook age="future" skin="baseSkin.crystal_spire" side={1} testid="foe" />
+          </CosmeticArtContext.Provider>
+        </UiKitContext.Provider>,
+        container as unknown as HTMLElement,
+      ),
+    );
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 0));
+    });
+    // the same picture for both (a halo on one spot, Colossus Lighthouse's torch, flips with its model)
+    expect(asked.length).toBeGreaterThanOrEqual(2);
+    for (const o of asked) expect(o).toEqual({ layer: 'aura' });
+    const me = dom.container.querySelector('[data-testid="me-aura"]') as unknown as { style: Record<string, string> };
+    const foe = dom.container.querySelector('[data-testid="foe-aura"]') as unknown as { style: Record<string, string> };
+    expect(foe).not.toBeNull();
+    expect(String(foe.style.backgroundImage)).toBe(String(me.style.backgroundImage));
+    // the aura is inside the base element the screens mirror
+    expect(dom.container.querySelector('[data-testid="foe"] [data-testid="foe-aura"]')).not.toBeNull();
   });
 
   it("an aura skin's tile is its portrait on the scene strip (the halo under the model), other models keep their thumbnail", async () => {

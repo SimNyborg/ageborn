@@ -35,10 +35,10 @@ fire is a small accent.
 long table plateau with a broken escarpment. Far: a sandstone mesa with a natural arch (a tube swept
 along the arc, strata across it) and a sandstone fin beside it, granite kopjes, a baobab, termite
 mounds, flat-topped acacias in twos and threes, a herd of giant deer far off, a hunters' camp at the
-arch's foot. Mid: a golden grass bank with tall clumps, the watering hole with reeds, a dead tree and
+arch's foot. Mid: a golden grass bank with grass tussocks, the watering hole with reeds, a dead tree and
 bones, big flat-topped acacias, a termite mound, the sabre-tooth's kopje, a hunters' rest (a lean-to, a
 drying rack, an ember pit), giant deer grazing. Ambient: the sabre-tooth's tail flicks on its rock, a
-grass clump sways, a giant deer walks the bank, vultures circle, a dust devil crosses the plain every 40
+grass tussock sways, a giant deer walks the bank, vultures circle, a dust devil crosses the plain every 40
 s (the signature), the water shimmers; the camps' fires glow under night skies.
 
 Palette (PLAN 2b): dry grass #C9B37A, sandstone #A8826A (the PLAN's #B07A5A desaturated under 40% for

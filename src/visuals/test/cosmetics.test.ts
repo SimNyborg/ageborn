@@ -7,11 +7,12 @@
 import { describe, expect, it } from 'vitest';
 import { content } from '@/content';
 import type { AgeId } from '@/contracts';
-import { COSMETIC_COLLECTIONS, cosmeticImageUrl, cosmeticSvg, hasBaseSkinAura, hasCosmeticArt, parseCosmeticKey } from '../cosmetics/art';
+import { AURA_MARGIN, COSMETIC_COLLECTIONS, cosmeticImageUrl, cosmeticSvg, hasBaseSkinAura, hasCosmeticArt, parseCosmeticKey } from '../cosmetics/art';
+import { baseSkinAuraSpot } from '../cosmetics/baseSkins';
 import { WORLD_BASE_SKIN_AURA } from '../manifest.world';
 import { backdropWeatherSvg } from '../cosmetics/backdropPreview';
 import { decorationArtUrl } from '../cosmetics/decorations';
-import { nationalFlagUrl } from '../cosmetics/nationalFlags';
+import { nationalFlagSprite, nationalFlagUrl } from '../cosmetics/nationalFlags';
 
 // The General's wardrobe (collection `avatar`) is drawn by the UI's avatar renderer, not by the visuals.
 const released = content.cosmetics.collections.items.filter((x) => x.collection !== 'avatar' && x.released !== false);
@@ -93,13 +94,32 @@ describe('routing (PLAN 2f interface 2)', () => {
 
   it("the Legendary aura is a picture for exactly the models that wear it in battle (Track B's list)", () => {
     expect(WORLD_BASE_SKIN_AURA).toEqual(expect.arrayContaining(['crystal_spire', 'nebula_ark']));
+    // the picture is the base portrait's square plus AURA_MARGIN all round (the view box in % of the side)
+    const m = AURA_MARGIN * 100;
     for (const id of WORLD_BASE_SKIN_AURA) {
       const svg = cosmeticSvg(`baseSkin.${id}`, { layer: 'aura' });
-      expect(svg, id).toMatch(/^<svg[^>]*preserveAspectRatio="none"[\s\S]*<radialGradient/);
+      expect(svg, id).toMatch(/^<svg[\s\S]*<radialGradient/);
+      expect(svg, id).toContain(`viewBox="${-m} ${-m} ${100 + 2 * m} ${100 + 2 * m}"`);
       expect(balanced(svg!)).toBe(true);
       expect(cosmeticImageUrl(`baseSkin.${id}`, { layer: 'aura' }), id).toMatch(/^data:image\/svg\+xml/);
       expect(hasBaseSkinAura(id)).toBe(true);
+      const spot = baseSkinAuraSpot(id);
+      if (!spot) {
+        // the lane's upright ellipse about the body: 1.55 x its width (57% of the side), 1.3 x its height (96%)
+        expect(svg, id).toContain('<ellipse cx="50" cy="48" rx="44" ry="62.5"');
+        continue;
+      }
+      // a round halo on the model's own spot (Colossus Lighthouse's torch), inside the picture (the screens
+      // mirror an opponent's base as a whole, its aura with it)
+      const [cx, cy, r] = /<circle cx="([\d.-]+)" cy="([\d.-]+)" r="([\d.-]+)"/.exec(svg!)!.slice(1).map(Number);
+      expect(cx! / 100).toBeCloseTo(spot.x, 3);
+      expect(cy! / 100).toBeCloseTo(spot.y, 3);
+      expect(r! / 100).toBeCloseTo(spot.r, 3);
+      for (const v of [cx! - r!, cy! - r!]) expect(v, id).toBeGreaterThanOrEqual(-m);
+      for (const v of [cx! + r!, cy! + r!]) expect(v, id).toBeLessThanOrEqual(100 + m);
     }
+    // Colossus Lighthouse's aura shines round its torch, not round the tower
+    if (WORLD_BASE_SKIN_AURA.includes('colossus_lighthouse')) expect(cosmeticSvg('baseSkin.colossus_lighthouse', { layer: 'aura' })).toMatch(/<circle /);
     // every other skin, and every other collection, has none
     for (const x of content.cosmetics.collections.items.filter((i) => i.collection === 'baseSkin' && !WORLD_BASE_SKIN_AURA.includes(i.id))) {
       expect(cosmeticImageUrl(`baseSkin.${x.id}`, { layer: 'aura' }), x.id).toBeNull();
@@ -112,6 +132,15 @@ describe('routing (PLAN 2f interface 2)', () => {
     expect(cosmeticSvg('baseSkin.frost_cave', { layer: 'thumb' })).toBeNull();
     expect(cosmeticImageUrl('baseSkin.frost_cave', { layer: 'thumb' })).toBeNull();
     expect(cosmeticImageUrl('decoration.fern', { layer: 'thumb' })).toBeNull();
+  });
+
+  it("a flag grid's sprite is the flag's cell in the one atlas sheet; without the sheet the SVG stands in (C-b item 9)", () => {
+    // no DOM here: the sheet cannot load, so a grid gets the SVG at once (never a blank), with or without `cached`
+    expect(nationalFlagSprite('dk')).toBeNull();
+    expect(cosmeticImageUrl('nationalFlag.dk', { size: 'tile', sprite: true })).toBe(nationalFlagUrl('dk', 'big'));
+    expect(cosmeticImageUrl('nationalFlag.dk', { size: 'tile', sprite: true, cached: true })).toBe(nationalFlagUrl('dk', 'big'));
+    // a flag without vendored art keeps the hand-drawn fallback route
+    expect(cosmeticImageUrl('nationalFlag.nowhere', { size: 'tile', sprite: true })).toBeNull();
   });
 
   it("flags and props show Track D's and Track B's pictures when they have one, else their SVG", () => {

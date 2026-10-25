@@ -15,10 +15,11 @@ a bank whose visible top is at -50..-75 lu; their feet may hide behind the grass
 
 "Siege of the Bronze City" (format 2, round 3; Epic, Trophy Road 2,300): a walled city under siege on a
 dusty plain. Back: a far ridge and low hills. Far: the city on its terraced tell: a battered mud-brick
-wall with towers and merlons, the great gate with its lion relief and bronze-studded doors ajar, houses
-packed on the terraces, the citadel with its columned palace, smoke columns from the burning quarters, a
-scaling ladder; the giant wooden horse on its wheeled platform before the walls (the signature); the
-besiegers' far tents. Mid: the siege camp: ridge and cone tents, the command pavilion with its striped
+wall with towers and merlons, the great gate with its lion relief and bronze-studded doors ajar, whitewashed
+and brick houses packed on the terraces with cypresses between them, the citadel with its columned palace,
+two burning quarters sending up smoke columns (painted plumes, moving smoke at their feet), a scaling
+ladder and a siege tower at the wall; the giant wooden horse on its wheeled platform before the walls (the signature); olive groves and
+the besiegers' far tents. Mid: the siege camp: ridge tents seen three-quarter, a ram in its shed, the command pavilion with its striped
 valance and standard, shield racks, spear stacks, amphorae, a parked chariot, camp fires. Ambient:
 banners on the gate towers, a war chariot races along the bank every 45 s, crows, smoke; the gate,
 towers, windows and camp fires glow under night skies.

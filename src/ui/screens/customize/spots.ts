@@ -47,9 +47,13 @@ interface Item {
 
 /**
  * Centres for `items` along one row inside [lo, hi] so that neighbours keep `gap` apart, moving each as
- * little as it can (neighbours that overlap push apart evenly; the row's ends hold).
+ * little as it can (neighbours that overlap push apart evenly; the row's ends hold). A row too tight for the
+ * full gap (the smallest stages: 136-150 px wide on 250-270 px tall phones) closes its gaps before any two
+ * targets overlap.
  */
 export function packRow(items: readonly Item[], lo: number, hi: number, gap = GAP): number[] {
+  const total = items.reduce((n, it) => n + it.w, 0);
+  if (items.length > 1) gap = Math.max(0, Math.min(gap, (hi - lo - total) / (items.length - 1)));
   const order = items.map((_, i) => i).sort((a, b) => items[a]!.c - items[b]!.c);
   const pos = items.map((it) => it.c);
   const clamp = (i: number): void => {

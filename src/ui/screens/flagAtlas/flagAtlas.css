@@ -446,7 +446,14 @@
   height: 100%;
   object-fit: cover;
 }
-.fa-tile:not(.is-owned) .fa-tile__cloth img {
+/* the flag's cell of the atlas sheet (C-b item 9): the cloth box is the cell's 4:3, so the sprite fills it */
+.fa-tile__sprite {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+}
+.fa-tile:not(.is-owned) .fa-tile__cloth :is(img, .fa-tile__sprite) {
   opacity: 0.8;
 }
 .fa-tile__cloth::after {

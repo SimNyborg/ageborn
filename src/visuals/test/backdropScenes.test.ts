@@ -110,15 +110,7 @@ const ROUND2: readonly [AgeId, string][] = [
 /** Scenes whose art is in but which wait (held, unreleased). Round 2 held Glacier Valley (the glacier read as a dome)
  *  and Desert Airbase (sparse, pancake mesas) for review 2; round 3 reworked and released both. */
 const HELD: readonly string[] = [
-  // round 3 (R3b): the Epic scenes in review, released one by one
-  'stone.sabre_savanna',
-  'bronze.bronze_city_siege',
-  'medieval.harbour_town',
-  'gunpowder.windmill_polder',
-  'industrial.zeppelin_docks',
-  'modern.monsoon_river',
-  'future.terraformed_gardens',
-  'cosmic.nebula_shipyard',
+  // round 3 (R3b) released the eight Epic scenes one by one as each passed review: none is held now
 ];
 /** Round 3: the five format 1 classics re-rendered in format 2 (PLAN 2b), in their order. */
 const ROUND3_CLASSICS: readonly AgeId[] = ['stone', 'medieval', 'gunpowder', 'modern', 'future'];
