@@ -958,6 +958,85 @@ def nebula_ark_extras(c):
     return extras
 
 
+# -- round 3 (2026-10-25): the new base skins' kits -------------------------------------------------------
+SKIN_P["mammoth_bone_lodge"] = dict(bone="#EDE3C8", bone_lt="#F6EFDD", bone_dk="#CDBF9E", hide="#A88A66", hide_lt="#BC9E7A",
+                                    hide_dk="#8D7153", earth="#8C7B68", earth_dk="#76685A", wall="#6E5A46", socket="#3A2E26",
+                                    rope="#B8A47E", red="#9E4A32")
+
+
+def long_bone(rig, j, c, L=24.0, r=3.0, bend=0.0, color="bone"):
+    """A long mammoth bone (a femur or a rib): a shaft with knobbed ends, bent a little."""
+    g = Geo()
+    mid = (0.0, 0.0, bend)
+    g.capsule((-L / 2, 0, 0), mid, r, r * 0.8, segs=10, rings=2)
+    g.capsule(mid, (L / 2, 0, 0), r * 0.8, r, segs=10, rings=2)
+    for sgn in (-1, 1):
+        g.blob((sgn * L / 2, 0, 0.6), (r * 1.4, r * 1.3, r * 1.5), p=2.3)
+    rig.part(j, g, c[color])
+
+
+def tusk_piece(rig, j, c, L=26.0, r=3.6):
+    """A snapped length of tusk: a curve tapering from the break."""
+    g = Geo()
+    pts = [(-L / 2 + L * i / 6, 0.0, 6.0 * math.sin(math.pi * i / 6) - 3.0) for i in range(7)]
+    for i, (a, b) in enumerate(zip(pts, pts[1:])):
+        g.capsule(a, b, r - 1.6 * i / 6, r - 1.6 * (i + 1) / 6, segs=10, rings=2)
+    rig.part(j, g, c["bone_lt"], finish="gloss")
+    g = Geo().blob((-L / 2, 0, -3.0), (1.2, r * 0.9, r * 0.9), p=2.6)
+    rig.part(j, g, c["bone_dk"], outline=0.4)
+
+
+def skull_chunk(rig, j, c, r=10.0):
+    """A broken piece of a mammoth skull: a dome shard with an eye socket."""
+    g = Geo().blob((0, 0, 0), (r, r * 0.8, r * 0.7), p=2.3)
+    g.clip((0, 0, -r * 0.2), (0, 0, -1))
+    rig.part(j, g, c["bone"])
+    g = Geo().blob((r * 0.4, -r * 0.7, r * 0.1), (r * 0.25, r * 0.2, r * 0.25), p=2.0)
+    rig.part(j, g, c["socket"], outline=0, highlight=False)
+
+
+def hide_scrap(rig, j, c, w=14.0, h=10.0, color="hide"):
+    pts = [(-w / 2, h / 2), (0, h / 2 + 1), (w / 2, h / 2 - 1), (w / 2 + 1, -h / 4), (w / 4, -h / 2), (-w / 3, -h / 2 + 1), (-w / 2 - 1, 0)]
+    g = Geo().slab(pts, 0, 1.4, rot=(0, 0, 16))
+    rig.part(j, g, c[color], outline=0.5)
+
+
+def kit_mammoth_bone_lodge(rig, c):
+    yield lambda j: skull_chunk(rig, j, c, r=10.0)
+    yield lambda j: tusk_piece(rig, j, c, L=28.0)
+    yield lambda j: long_bone(rig, j, c, L=24.0, r=3.0, bend=2.0)
+    yield lambda j: hide_scrap(rig, j, c, 14, 11)
+    yield lambda j: long_bone(rig, j, c, L=18.0, r=2.4, bend=-3.0, color="bone_dk")
+    yield lambda j: block(rig, j, (9, 7, 6), c["earth"], chip=True, seed=6)
+    yield lambda j: tusk_piece(rig, j, c, L=18.0, r=2.8)
+    yield lambda j: skull_chunk(rig, j, c, r=7.0)
+
+
+def mammoth_bone_lodge_extras(c):
+    """Bones, a tusk and torn hides sticking out of the lodge's heaps."""
+    def extras(rig, j, rnd):
+        g = Geo()
+        for k in range(4):
+            x = rnd.uniform(-34, 34)
+            a, b = (x - 9, -6, 10 + rnd.uniform(0, 4)), (x + 9, -8, 12 + rnd.uniform(0, 6))
+            g.capsule(a, b, 2.4, 2.0, segs=10, rings=2)
+            g.blob(a, (3.2, 3.0, 3.2), p=2.3)
+            g.blob(b, (3.0, 2.8, 3.0), p=2.3)
+        rig.part(j, g, c["bone"])
+        g = Geo()
+        x = rnd.uniform(-20, 20)
+        pts = [(x - 12 + 4 * i, -10, 8 + 7 * math.sin(math.pi * i / 6)) for i in range(7)]
+        for i, (a, b) in enumerate(zip(pts, pts[1:])):
+            g.capsule(a, b, 3.2 - 0.3 * i, 3.2 - 0.3 * (i + 1), segs=10, rings=2)
+        rig.part(j, g, c["bone_lt"], finish="gloss")
+        g = Geo()
+        for k in range(2):
+            x = rnd.uniform(-30, 30)
+            g.slab([(x - 7, 14), (x + 6, 15), (x + 8, 6), (x - 2, 3), (x - 8, 7)], -12, 1.2)
+        rig.part(j, g, c["hide"], outline=0.5)
+    return extras
+
+
 # skin -> (age, pieces, heap colour keys (back, middle, front + pebbles), what sticks out of the heaps)
 SKIN_KITS = {
     "rose_keep": ("medieval", kit_rose_keep, ("stone", "stone_lt", "stone_dk"), rose_keep_extras),
@@ -971,6 +1050,7 @@ SKIN_KITS = {
     "midnight_neon": ("future", kit_midnight_neon, ("char", "char_lt", "char_mid"), midnight_neon_extras),
     "crystal_spire": ("future", kit_crystal_spire, ("rock_dk", "rock", "rock_lt"), crystal_spire_extras),
     "nebula_ark": ("cosmic", kit_nebula_ark, ("hull", "hull_lt", "armor"), nebula_ark_extras),
+    "mammoth_bone_lodge": ("stone", kit_mammoth_bone_lodge, ("earth_dk", "earth", "bone_dk"), mammoth_bone_lodge_extras),
 }
 
 

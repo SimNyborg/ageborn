@@ -16,10 +16,13 @@ Palette (PLAN 2b): stone brown #8C7B68, moss greens kept muted (A11), bone #EDE3
 small accent; water is a pale grey-teal (its hue is in the team-blue band, so its saturation stays low),
 and the crater glow is a small accent.
 
-"Glacier Valley" (format 2, round 2; Rare, Time Capsule): a glacier between twin peaks in deep winter,
-under a cold pale sky with thin cirrus. Back: the twin peaks and a far range. Far: the glacier tongue
-with blue-grey crevasses ending in ice cliffs, moraines, a frozen waterfall on a cliff, snowy spruce
-slopes; a mammoth herd walks the valley floor. Mid: a snow bank with snow-laden spruces, ice boulders,
+"Glacier Valley" (format 2, round 2, glacier reworked in round 3; Rare, Time Capsule): a glacier between
+twin peaks in deep winter, under a cold pale sky with thin cirrus. Back: a far range of hazy snow peaks.
+Far: the twin peaks with the snow col between them, and the glacier born there: a white basin with a
+rock island, a crevassed icefall, then the blue-grey tongue with crevasse arcs bowing downstream, the
+medial moraine trailing from the rock island, lateral moraines, rock walls either side, and a broken
+serac snout with a meltwater cave; a frozen waterfall on a cliff, snowy spruce slopes, a terminal
+moraine; a mammoth herd walks the valley floor. Mid: a snow bank with snow-laden spruces, ice boulders,
 a bone-and-hide hunters' camp (tents, a drying rack, a mammoth-tusk arch, a fire) and an ice-cave
 mouth. Ambient: 3 mammoths walking (`path`, 90 s), an eagle circling, ice glints, camp smoke and the
 fire; the camp's fire and tents glow under night skies.
@@ -34,7 +37,7 @@ import random
 from ageborn_art.geometry import Geo
 
 from world.scenes import fauna, kit
-from world.scenes.common import PaintedProp, Prop, Scene, box, mixc, rgb01, rock
+from world.scenes.common import PaintedProp, Prop, Scene, box, cyl, mixc, rgb01, rock
 from world.scenes.kit import Parts
 
 # -- Smoke Mountain (the classic, round 3) -------------------------------------------------------------
@@ -366,19 +369,17 @@ def _on_slab(c, r, rot_x, lx, ly, lift=0.6):
 
 
 def gv_back(st, P):
-    """The twin peaks with the glacier's snowfield between them (left of where the sky themes hang their
-    moons, x 820-980) and a low far range."""
+    """A far range of hazy snow peaks behind the twin peaks (round 3: the twin peaks moved to the far strip,
+    so the glacier flows down between them at every camera position), lower over x 720-1000, where the
+    sky themes hang their moons."""
     hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
     pt = Parts()
-    gr, gs = pt.g(hz(GV["rock_far"], 0.22), outline=0.0), pt.g(hz(GV["snow"], 0.08), outline=0.0)
+    gr, gs = pt.g(hz(GV["rock_far"], 0.24), outline=0.0), pt.g(hz(GV["snow"], 0.1), outline=0.0)
     rnd = random.Random(7)
-    for i, x in enumerate((-250, -110, 760, 880, 1010, 1150, 1290, 1430)):
+    for i, x in enumerate((-250, -110, 30, 170, 320, 470, 620, 760, 880, 1010, 1150, 1290, 1430)):
         h = rnd.uniform(150, 210) if not (720 <= x <= 1000) else rnd.uniform(70, 96)
-        kit.peak(gr, gs, x, 1500 + rnd.uniform(-40, 40), -60, rnd.uniform(110, 150), h, seed=70 + i, snow=0.52, jag=0.12)
-    # the twin peaks: two horns of nearly the same height, rock below a high snowline, a snow saddle between
-    kit.peak(gr, gs, 240, 1320, -60, 175, 380, seed=3, snow=0.44, jag=0.16, segs=14)
-    kit.peak(gr, gs, 580, 1340, -60, 170, 370, seed=8, snow=0.46, jag=0.16, segs=14)
-    rock(gs, (410, 1360, 130), (150, 60, 70), seed=9, jag=0.08, p=2.2)
+        kit.peak(gr, gs, x + rnd.uniform(-30, 30), 1500 + rnd.uniform(-40, 40), -60, rnd.uniform(110, 150), h, seed=70 + i,
+                 snow=0.52, jag=0.12)
     pt.flush(st)
 
 
@@ -387,106 +388,151 @@ def gv_far(st, P):
     rnd = random.Random(23)
     hz = lambda c, t: mixc(c, P["skyBottom"], t)  # noqa: E731
     gr, gs = pt.g(hz(GV["rock_far"], 0.14), outline=0.0), pt.g(GV["snow"], outline=0.0)
-    # 1. the valley walls behind: snowy peaks with dark rock below (kept low under the moons' place)
+    # 1. the valley walls behind: snowy peaks with dark rock below (kept low under the moons' place, and
+    #    open over x 100-700 for the twin peaks)
     for i, x in enumerate(range(-300, 1560, 150)):
-        if 300 <= x <= 520:
+        if 100 <= x <= 700:
             continue
         h = rnd.uniform(190, 270) if not (760 <= x <= 980) else rnd.uniform(110, 140)
         kit.peak(gr, gs, x + rnd.uniform(-40, 40), 720 + rnd.uniform(-30, 30), -20, rnd.uniform(120, 170), h, seed=100 + i,
                  snow=rnd.uniform(0.48, 0.66), jag=0.2, squash=rnd.uniform(0.45, 0.65))
-    # 2. the glacier (round 3 rework, review 2: the old tongue narrowed toward the saddle and bulged, so it
-    #    read as a dome): a band of ice that flows from a broad snowfield basin between the twin peaks down
-    #    the valley toward the camera, narrowing to its snout. Its surface tilts toward the camera, so the
-    #    whole flow shows: transverse crevasses in arcs that bow downstream (convex toward the snout, as a
-    #    glacier's do), a dark medial moraine down its middle where two ice streams join, lateral moraines
-    #    along its edges, rock walls either side, and a broken serac snout with a meltwater cave.
-    rows = [(404, 336, 96, 96, 5), (406, 384, 106, 100, 6), (409, 440, 118, 106, 6), (413, 500, 131, 116, 6), (417, 560, 145, 132, 5),
-            (421, 615, 158, 156, 4), (424, 655, 166, 186, 3)]
-    kit.loft(pt.g(GV["ice"], finish="gloss", outline=0.5), rows, nu=18, thick=14)
+    # 2. the twin peaks (round 3: moved here from the back strip, so the glacier flows down between them at
+    #    every camera position): two sharp horns of nearly the same height, rock below a high snowline (their
+    #    tips stay under the minimap at 1280x720)
+    ghr, ghs = pt.g(hz(GV["rock_far"], 0.08), outline=0.3), pt.g(GV["snow"], outline=0.3)
+    kit.peak(ghr, ghs, 228, 724, -30, 172, 316, seed=3, snow=0.58, jag=0.16, segs=14, squash=0.5)
+    kit.peak(ghr, ghs, 598, 740, -30, 166, 306, seed=8, snow=0.6, jag=0.16, segs=14, squash=0.5)
+    # 3. the glacier (round 3 rework, review 2: the old tongue narrowed toward the saddle and bulged, so it
+    #    read as a dome; a first rework spread into a flat fan and read as a stage): a river of ice born in
+    #    the snowfield that sags between the twin peaks (the col), dropping through a crevassed icefall and
+    #    winding down the valley in a gentle S as a blue-grey tongue to its snout. It climbs steeply away from
+    #    the camera, so the whole flow shows: crevasse chevrons that bow downstream (convex toward the snout,
+    #    as a glacier's do), the medial moraine trailing from a rock island in the basin,
+    #    lateral moraines, rock walls either side, and a broken serac snout with a meltwater cave at its foot.
+    #    Rows near to far: (cx, y, z, half width, bulge); the basin rows bulge negative (concave: the
+    #    snowfield's top edge sags into a saddle between the peaks), the tongue's a little positive (convex;
+    #    on screen a bulge lifts a crevasse's middle, so the chevrons' downstream bow is larger than it).
+    rows = [(404, 336, 100, 84, 5), (392, 382, 109, 86, 6), (380, 428, 119, 86, 6), (378, 474, 131, 86, 6), (388, 520, 146, 88, 5),
+            (404, 566, 164, 92, 3), (416, 610, 182, 98, 0), (420, 652, 196, 108, -6), (416, 694, 208, 122, -16), (412, 734, 220, 138, -30)]
+    kit.loft(pt.g(GV["ice"], finish="gloss", outline=0.5), rows, nu=22, thick=16)
     nr = len(rows) - 1
-    # snow lying on the upper basin (the accumulation zone), fading out down the tongue
+    # snow lying on the basin (the accumulation zone), thinning out down the icefall
     gsn = pt.g(GV["snow"], outline=0.0)
-    for k in range(40):
-        t = rnd.uniform(nr - 1.8, nr - 0.05)
-        u = rnd.uniform(-0.85, 0.85)
+    for k in range(60):
+        t = nr - 0.02 - 3.2 * rnd.random() ** 1.5
+        u = rnd.uniform(-0.94, 0.94)
         p_ = kit.loft_point(rows, t, u)
-        gsn.blob((p_[0], p_[1] - 0.6, p_[2] + 0.8), (rnd.uniform(10, 22), 6, 1.2), p=2.2, cuts=2)
-    # transverse crevasses: short dark cracks in arcs bowing downstream, more and wider where the ice
-    # speeds up over the steeper middle reach
-    gc, gc2 = pt.g(GV["crevasse"], outline=0.0, highlight=False), pt.g(GV["serac_dk"], outline=0.0, highlight=False)
-    for j, t0 in enumerate((0.55, 1.05, 1.5, 1.95, 2.45, 2.95, 3.5, 4.1)):
-        n = 3 + (j % 2)
+        gsn.blob((p_[0], p_[1] - 0.6, p_[2] + 0.8), (rnd.uniform(12, 26), 7, 1.4), p=2.2, cuts=2)
+    # crevasses: chevrons across the flow, bowing downstream, each a few long cracks: a dark gap with the
+    # lit blue far wall just above it. Three chevrons on the tongue, dense broken ones in the icefall
+    # (rows 4-6.5) and one bergschrund under the col that bows the other way.
+    gcd, gcw = pt.g(GV["crevasse"], outline=0.0, highlight=False), pt.g(GV["ice_deep"], outline=0.0, highlight=False)
+
+    def crack_arc(t0, bow, n, u_lo=-0.86, u_hi=0.86, w=1.2, fill=0.86):
+        span = (u_hi - u_lo) / n
         for k in range(n):
-            u0 = -0.86 + (k + 0.1) * 1.72 / n + rnd.uniform(-0.05, 0.05)
-            u1 = u0 + 1.72 / n * rnd.uniform(0.5, 0.8)
-            pts = []
-            for q in range(5):
-                u = u0 + (u1 - u0) * q / 4
-                t = t0 - 0.22 * (1 - u * u)
-                p_ = kit.loft_point(rows, max(0.02, t), u)
-                pts.append((p_[0], p_[1] - 0.8, p_[2] + 0.9))
-            w = 1.5 + 0.6 * (1 - abs(j - 3.5) / 4)
-            for p0, p1 in zip(pts, pts[1:]):
-                (gc if (j + k) % 3 else gc2).capsule(p0, p1, w, w * 0.8)
-    # the medial moraine: a dark rubble stripe down the middle, from the basin to the snout
+            u0 = u_lo + k * span + rnd.uniform(0.0, 0.1) * span
+            u1 = u0 + span * rnd.uniform(fill - 0.1, fill)
+            gap, wall = [], []
+            for q in range(9):
+                u = u0 + (u1 - u0) * q / 8
+                t = t0 + bow * (u * u - 0.5)
+                a = kit.loft_point(rows, max(0.02, t), u)
+                b = kit.loft_point(rows, max(0.02, t + 0.07), u)
+                gap.append((a[0], a[1] - 0.8, a[2] + 0.9))
+                wall.append((b[0], b[1] - 0.8, b[2] + 0.9))
+            for q in range(8):
+                s = 0.3 + 0.7 * math.sin(math.pi * (q + 0.5) / 8)
+                gcw.capsule(wall[q], wall[q + 1], w * 1.6 * s, w * 1.6 * s)
+                gcd.capsule(gap[q], gap[q + 1], w * s, w * s)
+
+    for t0 in (1.15, 2.3, 3.45):
+        crack_arc(t0, 1.8, 2)
+    for t0, n in ((4.5, 3), (4.95, 4), (5.4, 3), (5.85, 4), (6.3, 3)):
+        crack_arc(t0, 1.1, n, w=1.1, fill=0.72)
+    crack_arc(8.55, -0.6, 2, -0.74, 0.74, w=1.4, fill=0.92)
+    # a rock island (nunatak) in the basin and the medial moraine it trails down the ice to the snout
     gm, gm2 = pt.g(GV["rock_dk"], outline=0.3), pt.g(GV["rock"], outline=0.3)
-    for k in range(34):
-        t = 0.1 + k * (nr - 0.6) / 34
-        u = 0.06 + 0.05 * math.sin(k * 0.7)
-        p_ = kit.loft_point(rows, t, u)
-        (gm if k % 3 else gm2).blob((p_[0] + rnd.uniform(-1.5, 1.5), p_[1] - 0.8, p_[2] + 1.2), (rnd.uniform(3.2, 4.6), 2.4, 1.6), p=2.2, cuts=2)
+    nt = kit.loft_point(rows, 7.7, 0.05)
+    rock(gm, (nt[0], nt[1], nt[2] + 2), (12, 8, 13), seed=77, jag=0.3, p=2.0)
+    kit.snow_cap(gsn, (nt[0], nt[1], nt[2] + 2), (12, 8, 13), seed=77, jag=0.3, p=2.0, cut=nt[2] + 11)
+    mpts = [kit.loft_point(rows, 7.5 - k * 7.35 / 30, 0.05) for k in range(31)]
+    for k, (a, b) in enumerate(zip(mpts, mpts[1:])):
+        gm2.capsule((a[0], a[1] - 0.8, a[2] + 0.9), (b[0], b[1] - 0.8, b[2] + 0.9), 1.6 + 2.6 * k / 30, 1.65 + 2.6 * k / 30)
+    for k in range(26):
+        t = rnd.uniform(0.25, 7.2)
+        p_ = kit.loft_point(rows, t, 0.05 + rnd.uniform(-0.03, 0.03))
+        rock(gm, (p_[0], p_[1] - 0.8, p_[2] + 1.6), (rnd.uniform(1.6, 2.8), 2.0, 1.4), seed=600 + k, jag=0.2)
     # lateral moraines: rubble banks along both edges
     for u in (-0.95, 0.95):
         pts = [kit.loft_point(rows, t * 0.25, u) for t in range(0, nr * 4 + 1)]
         for k, (p0, p1) in enumerate(zip(pts, pts[1:])):
-            gm.capsule((p0[0], p0[1], p0[2] + 1.6), (p1[0], p1[1], p1[2] + 1.6), 3.6 - k * 0.06, 3.5 - k * 0.06)
-    # the snout: a broken ice cliff at the tongue's front (blocks of uneven width, height and lean), the
-    # meltwater cave in its middle and its stream running out toward the camera, fallen blocks
-    gse, gse2 = pt.g(GV["serac"], outline=0.5), pt.g(GV["serac_dk"], outline=0.5)
+            w = 3.2 - k * 0.04
+            gm.capsule((p0[0], p0[1], p0[2] + 1.4), (p1[0], p1[1], p1[2] + 1.4), w, w - 0.04)
+            if k % 2 == 0:
+                rock(gm2, (p0[0] - u * 1.5, p0[1] - 1, p0[2] + 2.4), (w * 0.8, 3, w * 0.6), seed=640 + k + (u > 0) * 50, jag=0.24)
+    # the snout: a broken ice cliff at the tongue's front (tall angular blocks of uneven width, height and
+    # lean, a jagged top), the meltwater cave at its foot (a dark irregular mouth with a blue rim, blocks
+    # hanging over it), its stream, fallen blocks
+    gse, gse2, gse3 = pt.g(GV["serac"], outline=0.5), pt.g(GV["serac_dk"], outline=0.5), pt.g(GV["ice"], outline=0.5)
     gd = pt.g(GV["cave"], outline=0.0, highlight=False)
-    x = 404 - 96.0
+    CX = 406.0
+    x = 404 - 88.0
     k = 0
-    while x < 404 + 96:
-        w = rnd.uniform(14, 28)
+    while x < 404 + 88:
+        w = rnd.uniform(14, 26)
         cx = x + w / 2
-        if abs(cx - 404) < 16:
-            x += 32
-            continue
-        top = 96 + 6 * (1 - ((cx - 404) / 96) ** 2) - rnd.uniform(0, 7)
-        hh = top - 62
-        box(gse if k % 3 else gse2, (cx, 332, 62 + hh / 2), (w * 0.5, 10, hh / 2 + 2), p=2.6, cuts=2,
-            rot=(0, rnd.uniform(-7, 7), rnd.uniform(-16, 16)))
-        x += w * rnd.uniform(0.82, 0.96)
+        u = (cx - 404) / 88
+        top = 101 + 6 * (1 - u * u) + rnd.uniform(-8, 6) + (8 if k % 4 == 1 else 0)
+        z0 = 72 if abs(cx - CX) < 16 else 62
+        hh = top - z0
+        g_ = (gse, gse2, gse3)[k % 3]
+        box(g_, (cx, 332, z0 + hh / 2), (w * 0.5, 10, hh / 2 + 1.5), p=4.5, cuts=2, rot=(0, rnd.uniform(-4, 4), rnd.uniform(-6, 6)))
+        if k % 3 != 1:
+            lean = rnd.uniform(-3, 3)
+            cyl(g_, (cx + rnd.uniform(-w * 0.2, w * 0.2), 332, top - 1), (cx + lean, 331, top + rnd.uniform(5, 9)), w * 0.32, 0.6)
+        if k % 2 == 0:
+            gcw.capsule((cx + w * 0.22, 321.6, z0 + 4), (cx + w * 0.18 + rnd.uniform(-2, 2), 321.6, top - 6), 0.9, 0.6)
+        x += w * rnd.uniform(0.84, 0.94)
         k += 1
-    arch = [(404 - 13, 62), (404 + 13, 62)] + [(404 + 13 * math.cos(math.pi * q / 10), 76 + 12 * math.sin(math.pi * q / 10)) for q in range(11)]
-    gd.slab(arch, 321.6, 2.0)
-    rock(gse2, (404, 328, 92), (24, 10, 8), seed=32, jag=0.1, p=2.4)
+    mouth = [(-20, 0), (18, 0), (16, 5), (10, 9), (3, 11), (-5, 10), (-12, 8), (-18, 4)]
+    gcw.slab([(CX + mx * 1.22, 62 + mz * 1.45) for mx, mz in mouth], 321.8, 1.6)
+    gd.slab([(CX + mx, 62 + mz) for mx, mz in mouth], 321.4, 2.0)
     gwa = pt.g(0xA8C2CC, finish="gloss", outline=0.3)
     for k in range(6):
-        gwa.blob((404 + math.sin(k * 0.9) * 10 + k * 6, 318 - k * 14, 60.6 - k * 1.2), (14 - k * 0.6, 7, 0.8), p=2.4, cuts=2)
+        gwa.blob((CX + math.sin(k * 0.9) * 10 + k * 6, 318 - k * 14, 60.6 - k * 1.2), (14 - k * 0.6, 7, 0.8), p=2.4, cuts=2)
     for k in range(6):
         bx = 316 + k * 34 + rnd.uniform(-8, 8)
-        if abs(bx - 404) < 20:
+        if abs(bx - CX) < 22:
             continue
         rock(gse if k % 2 else gse2, (bx, 318, 64), (rnd.uniform(6, 10), 6, rnd.uniform(5, 8)), seed=380 + k, jag=0.22, p=2.2)
-    for t, u in ((0.9, -0.4), (2.2, 0.3), (3.6, -0.1), (1.5, 0.6)):
+    for t, u in ((0.9, -0.42), (2.4, 0.36), (4.6, -0.24), (1.6, 0.62)):
         p_ = kit.loft_point(rows, t, u)
         st.amb("blink", "fx.p.star", (p_[0], p_[1], p_[2] + 4), period=2900, tint=0xF6FAFF, scale=0.6)
-    # 3. the valley's rock walls either side of the ice, stepping up toward the basin, and the outer
-    # shoulders (the glacier runs between them like a river of ice)
+    # 4. the valley's rock walls either side of the ice: a long dark rock ridge along each edge (a loft that
+    # follows the glacier's bend), its crest broken by crags with snow on their tops, rising toward the
+    # basin; and the outer shoulders (the glacier runs between them like a river of ice)
     gr2, gs2 = pt.g(GV["rock"], outline=0.4), pt.g(GV["snow"], outline=0.4)
     grd = pt.g(GV["rock_dk"], outline=0.4)
     for side in (-1, 1):
-        for k, t in enumerate((0.3, 1.4, 2.6, 3.8, 4.9)):
-            p_ = kit.loft_point(rows, t, side * 1.0)
-            rx = 40 + k * 4
-            kit.peak(grd if k % 2 else gr2, gs2, p_[0] + side * (rx * 0.55), p_[1] + 6, p_[2] - 46, rx, 70 + k * 8, seed=150 + k + (side > 0) * 10,
-                     snow=0.7, jag=0.22, squash=0.5)
+        wrows = [(cx + side * (hw + 30), y + 4, z + 2 + 10 * (k / nr), 28, 20 + 14 * (k / nr)) for k, (cx, y, z, hw, bu) in enumerate(rows)]
+        hx_, hy_ = (228, 724) if side < 0 else (598, 740)
+        wrows.append((hx_ - side * 6, hy_ + 10, 262, 22, 12))   # the ridge climbs into its horn
+        kit.loft(grd, wrows, nu=10, thick=40)
+        for k in range(8):
+            t = 0.3 + k * 1.1 + rnd.uniform(-0.2, 0.2)
+            p_ = kit.loft_point(wrows, t, rnd.uniform(-0.3, 0.2))
+            rx, rz = rnd.uniform(14, 20) + k * 0.6, rnd.uniform(8, 12) + k * 0.5
+            c = (p_[0], p_[1] + 2, p_[2] - rz * 0.5)
+            sd = 700 + k + (side > 0) * 20
+            rock(gr2 if k % 2 else grd, c, (rx, 14, rz), seed=sd, jag=0.3, p=2.0)
+            if k % 2 == 1:
+                kit.snow_cap(gs2, c, (rx, 14, rz), seed=sd, jag=0.3, p=2.0, cut=c[2] + rz * 0.45)
     kit.peak(gr2, gs2, 214, 360, 40, 120, 190, seed=11, snow=0.62, jag=0.2, squash=0.5)
     kit.peak(gr2, gs2, 612, 366, 40, 118, 176, seed=12, snow=0.6, jag=0.2, squash=0.5)
     kit.peak(gr2, gs2, 1200, 420, 40, 210, 250, seed=13, snow=0.58, jag=0.2, squash=0.55)
     kit.peak(gr2, gs2, -200, 410, 40, 170, 230, seed=14, snow=0.6, jag=0.2, squash=0.55)
-    # 4. the snowy valley floor the herd walks (its top at about z 66, below the snout, so the ice cliff and
+    # 5. the snowy valley floor the herd walks (its top at about z 66, below the snout, so the ice cliff and
     # its cave stand clear behind it), spruces along its back
     gh = pt.g(GV["snow_bank"], outline=0.0)
     for i in range(12):
@@ -506,7 +552,7 @@ def gv_far(st, P):
             continue
         kit.spruce(gsp, gsn, gtr, x, rnd.uniform(276, 300), rnd.uniform(26, 44), rnd.uniform(7.5, 11), seed=500 + i, z=rnd.uniform(60, 68),
                    tiers=3)
-    # 5. the frozen waterfall (x 830): a dark cliff with a bulging cascade of ice and icicle fringes
+    # 6. the frozen waterfall (x 830): a dark cliff with a bulging cascade of ice and icicle fringes
     gcl = pt.g(GV["rock_dk"], outline=0.5)
     rock(gcl, (830, 330, 160), (62, 34, 120), seed=41, jag=0.12, p=3.0)
     rock(gcl, (780, 320, 120), (34, 28, 70), seed=42, jag=0.16)
