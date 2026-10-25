@@ -140,3 +140,6 @@ what we believe, how sure we are, and what we post next because of it.
   skip, the lowest early skip so far. DV3 299. Followers 139. DV6 ("a broken Legendary") is held: the owner declined
   its scheduling; three options put to the owner (drop it, soften it, or post as is). Nothing goes out at
   midday 2026-10-25 until he answers. Note: Copenhagen moves to winter time (UTC+1) on 2026-10-25.
+- 2026-10-25 evening: DV5 (item 38 before) 187 reach in 26 h, second only to DV3 (299); BA1 129 with 40 % watch.
+  BA2 84 reach in 1.5 h. Followers flat at 139 since Saturday. Only one Reel today (midday held for the owner's
+  answer on DV6). Weekly review due tomorrow (Monday).
