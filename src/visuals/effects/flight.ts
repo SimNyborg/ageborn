@@ -19,22 +19,34 @@ export const MAX_BULGE_LU = 200;
  * one and a half times as fast as the sim's shot (it still leaves at about 63 degrees over flat ground).
  */
 export const MAX_RISE_SHARE = 0.5;
+/**
+ * The highest point an aimed path reaches (lu above the ground): on a phone about 240 lu show above the ground under
+ * the top HUD band at the battle camera's zoom 1, and fewer when it zooms in, so a long mortar lob stays in view (the
+ * review of item 44 measured Trench Mortar peaks up to 245 lu; the classic arc peaked at about 150 to 180).
+ */
+export const MAX_PEAK_LU = 190;
 
-/** The bulge (lu) of a path over `dx` lu across and `dyUp` lu up (negative when the target is below) leaving at `launchDeg`. */
-export function aimedBulge(dx: number, dyUp: number, launchDeg: number): number {
+/**
+ * The bulge (lu) of a path over `dx` lu across and `dyUp` lu up (negative when the target is below) leaving at
+ * `launchDeg`. `topLu`, when given, is the higher end's height above the ground (lu): the peak then stays under
+ * `MAX_PEAK_LU`.
+ */
+export function aimedBulge(dx: number, dyUp: number, launchDeg: number, topLu?: number): number {
   if (!Number.isFinite(launchDeg)) return 0;
   const a = (Math.max(-80, Math.min(MAX_LAUNCH_DEG, launchDeg)) * Math.PI) / 180;
   const h = (Math.abs(dx) * Math.tan(a) - dyUp) / 4;
-  return Math.max(0, Math.min(MAX_BULGE_LU, riseCap(dx, dyUp), h));
+  let rise = MAX_RISE_SHARE * Math.abs(dx);
+  if (topLu !== undefined && Number.isFinite(topLu)) rise = Math.max(0, Math.min(rise, MAX_PEAK_LU - topLu));
+  return Math.max(0, Math.min(MAX_BULGE_LU, riseCap(rise, dyUp), h));
 }
 
 /**
- * The bulge at which the path's peak stands `MAX_RISE_SHARE * |dx|` over the higher end. The path's height over its
- * start is `dyUp u + 4 h u (1 - u)`, which peaks at `(dyUp + 4h)^2 / 16h`; setting that to the rise plus the higher
- * end's height and solving for h gives `(2P + |dyUp| + 2 sqrt(P (P + |dyUp|))) / 4` for either sign of `dyUp`.
+ * The bulge at which the path's peak stands `rise` lu over its higher end. The path's height over its start is
+ * `dyUp u + 4 h u (1 - u)`, which peaks at `(dyUp + 4h)^2 / 16h`; setting that to the rise plus the higher end's
+ * height and solving for h gives `(2P + |dyUp| + 2 sqrt(P (P + |dyUp|))) / 4` for either sign of `dyUp` (P = rise).
  */
-function riseCap(dx: number, dyUp: number): number {
-  const p = MAX_RISE_SHARE * Math.abs(dx);
+function riseCap(rise: number, dyUp: number): number {
+  const p = Math.max(0, rise);
   const d = Math.abs(dyUp);
   return (2 * p + d + 2 * Math.sqrt(p * (p + d))) / 4;
 }

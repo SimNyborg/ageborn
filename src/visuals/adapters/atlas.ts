@@ -1523,14 +1523,19 @@ class AtlasUnitView implements UnitView {
   /** The sheet's drawn aim per attack clip and its lean policy (`unitAim.ts`), or null (level, the body type's lean). */
   private readonly aim: UnitAim | null;
   private readonly leanPolicy: LeanPolicy;
-  /** The lean the battle view asks for (deg, aim up positive), before the clamp; set again for every attack. */
+  /** The lean the battle view asks for (deg, aim up positive), before the clamp: set every frame while it aims, 0 when the aim ends. */
   private aimWant = 0;
-  /** The aim lean as drawn (deg): a spring on the animation clock (anticipation, hold to the release, return). */
+  /** The aim lean as drawn (deg): a spring on the animation clock that holds the lean while the unit aims. */
   private readonly aimTilt: SpringState = { x: 0, v: 0 };
+  /** Did the attack playing now start from upright? Only then does it open with the counter-lean (anticipation). */
+  private aimFromUpright = true;
+  /** The attack variant that played last and its muzzle: between attacks the weapon is aimed as in that shot (the lean holds still). */
+  private lastAttackAnim: string | null = null;
+  private lastAttackMuzzle: Pt | null = null;
   /** Scratch for `aimNow` (no allocation per frame; the answer is valid until the next call). */
   private readonly aimXf: BodyXform = { x: 0, y: 0, rotation: 0, sx: 1, sy: 1 };
   private readonly aimOut = { x: 0, y: 0, deg: 0, drawnDeg: 0, leanDeg: 0, omni: false };
-  private readonly leanTm: LeanTiming = { t: 0, impactAtMs: 0, releaseMs: 0 };
+  private readonly leanTm: LeanTiming = { t: 0, impactAtMs: 0 };
 
   constructor(
     private readonly def: VisualDef,
@@ -1708,9 +1713,10 @@ class AtlasUnitView implements UnitView {
 
   /**
    * Queue item 44 (duck-typed): lean toward the target by `deg` (aim up positive; clamped by the body type, halved
-   * under Reduce motion) during the attack playing now: a small counter-lean first, the lean held through the release,
-   * then upright again with a little follow-through. The battle view sets it after `play('attack')` and every frame
-   * while it aims; a new attack starts at none.
+   * under Reduce motion). The battle view sets it every frame while the unit aims at one target, from its first
+   * wind-up through every shot and the gaps between them, so the body holds the lean (an attack that starts upright
+   * opens with a small counter-lean); 0 ends the aim, and the body stands up with a little follow-through. A stun
+   * stands it up too; a death keeps the lean in the fall.
    */
   aimLean(deg: number): void {
     this.aimWant = Number.isFinite(deg) ? deg : 0;
@@ -1724,8 +1730,10 @@ class AtlasUnitView implements UnitView {
    */
   aimNow(attackIndex = 0): { x: number; y: number; deg: number; drawnDeg: number; leanDeg: number; omni: boolean } | null {
     if (this.destroyed) return null;
-    const m = this.muzzleNow(attackIndex) ?? this.anchors.muzzle;
-    const anim = attackIndex >= 1 ? ALT_ATTACK : this.action && this.action.name === 'attack' ? this.action.anim : this.nextVariant();
+    // between attacks the weapon counts as aimed and held as in the last shot, so a held lean stays still until the next one
+    const attacking = this.action !== null && this.action.name === 'attack';
+    const m = this.muzzleNow(attackIndex) ?? (attackIndex <= 0 && !attacking ? this.lastAttackMuzzle : null) ?? this.anchors.muzzle;
+    const anim = attackIndex >= 1 ? ALT_ATTACK : attacking && this.action ? this.action.anim : (this.lastAttackAnim ?? this.nextVariant());
     const c = this.clipAim(anim);
     const b = this.bodyXform();
     const out = throughBody(b, m, this.aimOut);
@@ -1758,14 +1766,13 @@ class AtlasUnitView implements UnitView {
     return b;
   }
 
-  /** Where the attack playing now is in its timeline, for the aim lean; null between attacks (a second attacker never leans the body). */
+  /** Where the attack playing now is in its timeline, for the lean's anticipation; null between attacks. */
   private leanTiming(): LeanTiming | null {
     const a = this.action;
     if (!a || a.name !== 'attack' || a.impactAtMs === null) return null;
     const tm = this.leanTm;
     tm.t = a.t;
     tm.impactAtMs = a.impactAtMs;
-    tm.releaseMs = Number.isFinite(a.releaseMs) ? a.releaseMs : a.impactAtMs + IMPACT_HOLD_FALLBACK_MS;
     return tm;
   }
 
@@ -2159,8 +2166,12 @@ class AtlasUnitView implements UnitView {
     }
     if (clip === 'spawn') this.startSpawn();
     if (clip === 'attack' || clip === 'ability') this.setTurned(false, true);
-    // item 44: a new attack aims afresh (the battle view sets the lean for it right after)
-    if (clip === 'attack') this.aimWant = 0;
+    // item 44: an attack keeps the lean the unit holds (the battle view sets it again right after); only one that
+    // starts from upright opens with the counter-lean
+    if (clip === 'attack' && t.anim) {
+      this.aimFromUpright = Math.abs(this.aimTilt.x) < 1;
+      this.lastAttackAnim = t.anim;
+    }
     // a body attack takes over from the riders' attack_alt: their throw still shows as the accent
     const alt = this.action;
     if (!loops && alt && alt.name === ALT_ATTACK && alt.impactAtMs !== null && alt.t < alt.impactAtMs) this.accents.push(this.clockMs + alt.impactAtMs - alt.t);
@@ -2173,6 +2184,7 @@ class AtlasUnitView implements UnitView {
     } else {
       this.action = t;
       this.actionMuzzle = clip === 'attack' ? this.muzzleOf(t) : null;
+      if (clip === 'attack') this.lastAttackMuzzle = this.actionMuzzle;
     }
   }
 
@@ -2430,9 +2442,13 @@ class AtlasUnitView implements UnitView {
       const flyer = hovers(this.gait);
       const leanTo = this.reduceMotion || this.dead || this.stunned ? 0 : leanTarget(accel, flyer);
       this.lean = easeExp(this.lean, leanTo, animDt, LEAN_TAU_MS);
-      // item 44: the aim lean toward the target (a turn of the front up is counter-clockwise for a right-facing unit)
-      const aimWant = this.dead || this.stunned ? 0 : clampLean(this.aimWant, this.leanPolicy.maxDeg, this.reduceMotion);
-      stepLeanSpring(this.aimTilt, aimLeanGoal(aimWant, this.leanTiming(), this.reduceMotion), animDt, this.reduceMotion);
+      // item 44: the aim lean toward the target (a turn of the front up is counter-clockwise for a right-facing unit),
+      // held while the battle view aims; a stun stands the body up, a death keeps the lean in the fall
+      if (this.dead) this.aimTilt.v = 0;
+      else {
+        const aimWant = this.stunned ? 0 : clampLean(this.aimWant, this.leanPolicy.maxDeg, this.reduceMotion);
+        stepLeanSpring(this.aimTilt, aimLeanGoal(aimWant, this.aimFromUpright, this.leanTiming(), this.reduceMotion), animDt, this.reduceMotion);
+      }
       let rot = this.lean - (this.aimTilt.x * Math.PI) / 180;
       const walking = this.base?.name === 'walk' && !this.action && !this.dead && (this.base.durationMs ?? 0) > 0;
       if (flyer) {
@@ -2950,13 +2966,14 @@ class AtlasEffectView implements EffectView {
    */
   flyAimed(from: Pt, to: Pt, travelMs: number, o: { launchDeg: number; path: 'ballistic' | 'straight' }): void {
     this.fly(from, to, travelMs, false);
-    if (o.path === 'ballistic') this.bulge = aimedBulge(to.x - from.x, from.y - to.y, o.launchDeg);
+    if (o.path === 'ballistic') this.bulge = aimedBulge(to.x - from.x, from.y - to.y, o.launchDeg, Math.max(-from.y, -to.y));
     this.place();
   }
 
   playAt(at: Pt): void {
     this.to = null;
     this.body.rotation = 0;
+    this.body.scale.set(this.sheet.luPerUnit);
     this.root.position.set(at.x, at.y);
     this.begin();
   }
@@ -2973,7 +2990,10 @@ class AtlasEffectView implements EffectView {
     this.place();
   }
 
-  /** In flight: the point on the path, and the sprite turned along it. */
+  /**
+   * In flight: the point on the path, and the sprite turned along it. The sheet draws the projectile facing right: a
+   * leftward flight mirrors it and turns it from there, so it never flies upside down.
+   */
   private place(): void {
     const to = this.to;
     if (!to) return;
@@ -2981,7 +3001,10 @@ class AtlasEffectView implements EffectView {
     const dx = to.x - this.from.x;
     const dy = to.y - this.from.y;
     this.root.position.set(this.from.x + dx * u, this.from.y + dy * u - 4 * this.bulge * u * (1 - u));
-    this.body.rotation = Math.atan2(dy - 4 * this.bulge * (1 - 2 * u), dx || 1e-6);
+    const vy = dy - 4 * this.bulge * (1 - 2 * u);
+    const left = dx < 0;
+    this.body.scale.set(left ? -this.sheet.luPerUnit : this.sheet.luPerUnit, this.sheet.luPerUnit);
+    this.body.rotation = left ? Math.atan2(-vy, -dx) : Math.atan2(vy, dx || 1e-6);
   }
 
   destroy(): void {

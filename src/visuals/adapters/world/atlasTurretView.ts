@@ -13,10 +13,10 @@
  * squashes and pulls up into a streak of light (`play('modernise')`), and the new one grows out of
  * that light with an overshoot, a ring and sparks (`modernisedIn()`, duck-typed). Reduce motion
  * (`setMotion`) keeps the fades and drops the squash and bounce. `muzzlePoint()` gives the render
- * layer the live muzzle for projectile origins (docs/requests/wp5-turret-muzzle-anchor.md).
+ * layer the live muzzle for projectile origins (docs/requests/done/wp5-turret-muzzle-anchor.md).
  *
  * Coordinates: the root sits on a mount point in the parent's space (lu); `aimAt(x)` aims at
- * ground level (y = 0) of that space, as in the procedural view.
+ * ground level (y = 0) of that space, as in the procedural view; `aimAtPoint(x, y)` at any point.
  */
 import { Container, Sprite, Texture } from 'pixi.js';
 import type { TurretView, VisualDef } from '@/contracts/art';
@@ -175,6 +175,29 @@ export class AtlasTurretView implements TurretView {
     const deg = (Math.atan2(dy, Math.max(1, dx)) * 180) / Math.PI;
     const [lo, hi] = this.aimLimits;
     this.aimTarget = Math.max(lo, Math.min(hi, deg));
+  }
+
+  /**
+   * Aims the head from its pivot at a point in the root's parent space (lu, y down), within `aimLimits`: a flyer above
+   * the mount too, which `aimAt` (the ground only) cannot reach. Queue item 44, duck-typed
+   * (docs/requests/done/item44-turret-aim-point.md).
+   */
+  aimAtPoint(x: number, y: number): void {
+    this.sinceAimMs = 0;
+    const sx = this.root.scale.x * this.body.scale.x;
+    const px = this.root.x + this.pivot.x * sx;
+    const py = this.root.y + (this.body.y + this.pivot.y * this.body.scale.y) * this.root.scale.y;
+    const dx = (x - px) * this.facing;
+    const deg = (Math.atan2(y - py, Math.max(1, dx)) * 180) / Math.PI;
+    const [lo, hi] = this.aimLimits;
+    this.aimTarget = Math.max(lo, Math.min(hi, deg));
+  }
+
+  /** Turns the head to its aim target at once: a new target's first shot then leaves the turned barrel (queue item 44). */
+  snapAim(): void {
+    if (this.destroyed || this.aimTarget === null) return;
+    this.aimDeg = this.aimTarget;
+    this.moveHead(0);
   }
 
   /** Motion options from the render layer (duck-typed on top of the TurretView contract). */

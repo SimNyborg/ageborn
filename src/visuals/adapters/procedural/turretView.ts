@@ -4,7 +4,7 @@
  * sinks), sell poof and the outdated (Modernise) arrow glow.
  *
  * Coordinates: the root sits on a mount point in the parent's space; `aimAt(x)` takes an x in that
- * same space and aims at ground level (y = 0 of the parent space).
+ * same space and aims at ground level (y = 0 of the parent space); `aimAtPoint(x, y)` aims at any point.
  */
 import { Container } from 'pixi.js';
 import type { TurretView, VisualDef } from '@/contracts/art';
@@ -71,12 +71,27 @@ export class ProceduralTurretView implements TurretView {
   }
 
   aimAt(x: number): void {
+    this.aimAtPoint(x, 0);
+  }
+
+  /**
+   * Aims at a point in the root's parent space (y down), within `aimLimits`: a flyer above the mount too. Queue item 44,
+   * duck-typed (docs/requests/done/item44-turret-aim-point.md).
+   */
+  aimAtPoint(x: number, y: number): void {
     const pivotY = this.o.puppet.anchors.hitCenter.y;
     const dx = (x - this.root.x) * this.facing;
-    const dy = -(this.root.y + pivotY);
+    const dy = y - (this.root.y + pivotY);
     const deg = (Math.atan2(dy, Math.max(1, dx)) * 180) / Math.PI;
     const [lo, hi] = this.o.puppet.aimLimits;
     this.aimTarget = Math.max(lo, Math.min(hi, deg));
+  }
+
+  /** Turns the barrel to its aim target at once (a new target's first shot; queue item 44). */
+  snapAim(): void {
+    if (this.destroyed || this.aimTarget === null) return;
+    this.aimDeg = this.aimTarget;
+    this.apply();
   }
 
   play(clip: 'build' | 'idle' | 'fire' | 'sell' | 'modernise'): void {

@@ -22,11 +22,11 @@ export interface ClipAim {
   omni?: boolean;
 }
 
-/** About which point a shooter leans: its feet (it stays planted), its middle (flyers and hover units), or not at all. */
-export type LeanPivot = 'feet' | 'centre' | 'none';
-
+/**
+ * How far a shooter may lean toward its target. The body turns about the point the view already turns it about: the
+ * feet for walkers (they stay planted), the middle for flyers and hover units (`place()`, `hovers(gait)`).
+ */
 export interface LeanPolicy {
-  pivot: LeanPivot;
   /** The most it leans toward a target (degrees; halved under Reduce motion). */
   maxDeg: number;
 }
@@ -39,20 +39,21 @@ export interface UnitAim {
 
 /**
  * The lean a body type allows. Bipeds lean from the feet (a hip-fire musket comes level, a bow lifts toward a flyer);
- * heavies and walkers a little less; flyers and hover units pitch about their middle (no feet to keep planted), like a
- * helicopter or a jet diving at a target; riders, beasts, wheels and tracks do not lean (lifting wheels or hooves off
- * the ground reads wrong).
+ * heavies and walkers a little less; flyers and hover units pitch about their middle (no feet to keep planted), as far
+ * as a held pitch still reads as the same craft (the review of item 44: 24 degrees was too much for the Gyrocopter;
+ * steeper shots down are the art round's down-aimed clips); riders, beasts, wheels and tracks do not lean (lifting
+ * wheels or hooves off the ground reads wrong).
  */
 export const LEAN_BY_GAIT: Readonly<Record<UnitGait, LeanPolicy>> = {
-  biped: { pivot: 'feet', maxDeg: 14 },
-  heavy: { pivot: 'feet', maxDeg: 8 },
-  walker: { pivot: 'feet', maxDeg: 6 },
-  quad: { pivot: 'none', maxDeg: 0 },
-  rider: { pivot: 'none', maxDeg: 0 },
-  wheeled: { pivot: 'none', maxDeg: 0 },
-  tracked: { pivot: 'none', maxDeg: 0 },
-  hover: { pivot: 'centre', maxDeg: 16 },
-  fly: { pivot: 'centre', maxDeg: 24 },
+  biped: { maxDeg: 14 },
+  heavy: { maxDeg: 8 },
+  walker: { maxDeg: 6 },
+  quad: { maxDeg: 0 },
+  rider: { maxDeg: 0 },
+  wheeled: { maxDeg: 0 },
+  tracked: { maxDeg: 0 },
+  hover: { maxDeg: 12 },
+  fly: { maxDeg: 15 },
 };
 
 /** Sheets without an entry, and attack clips a sheet's entry leaves out, aim level (most guns, bows and throws are drawn level). */
@@ -94,7 +95,7 @@ export const UNIT_AIM: Readonly<Record<string, UnitAim>> = {
   'gunpowder/blunderbuss': { clips: { attack: { deg: 0 }, attack_b: { deg: 0 } } },
   // barrel 12 held, 36 at the recoil frame the ball leaves on
   'gunpowder/bronze_cannon': { clips: { attack: { deg: 36 }, attack_b: { deg: 39 } } },
-  'gunpowder/coehorn_crew': { clips: { attack: { deg: 55 }, attack_b: { deg: 55 } }, lean: { pivot: 'none', maxDeg: 0 } },
+  'gunpowder/coehorn_crew': { clips: { attack: { deg: 55 }, attack_b: { deg: 55 } }, lean: { maxDeg: 0 } },
   'gunpowder/dragoon': { clips: { attack: { deg: 0 }, attack_b: { deg: 0 } } },
   'gunpowder/drummer_boy': { clips: { attack: { deg: 0, omni: true }, attack_b: { deg: 0, omni: true } } },
   'gunpowder/field_surgeon': { clips: { attack: { deg: 0 }, attack_b: { deg: 0 } } },
@@ -113,7 +114,7 @@ export const UNIT_AIM: Readonly<Record<string, UnitAim>> = {
   'industrial/harpoon_gunner': { clips: { attack: { deg: 0 }, attack_b: { deg: 0 } } },
   'industrial/land_dreadnought': { clips: { attack: { deg: 0 }, attack_b: { deg: 19 }, attack_alt: { deg: 0 } } },
   'industrial/spark_scientist': { clips: { attack: { deg: 0 }, attack_b: { deg: 0 } } },
-  'industrial/trench_mortar': { clips: { attack: { deg: 60 }, attack_b: { deg: 63 } }, lean: { pivot: 'none', maxDeg: 0 } },
+  'industrial/trench_mortar': { clips: { attack: { deg: 60 }, attack_b: { deg: 63 } }, lean: { maxDeg: 0 } },
   'modern/assault_gun': { clips: { attack: { deg: 0 }, attack_b: { deg: 0 } } },
   'modern/bazooka_trooper': { clips: { attack: { deg: 0 }, attack_b: { deg: 0 } } },
   'modern/behemoth_tank': { clips: { attack: { deg: 0 }, attack_b: { deg: 0 } } },
@@ -121,7 +122,7 @@ export const UNIT_AIM: Readonly<Record<string, UnitAim>> = {
   'modern/dive_bomber': { clips: { attack: { deg: 0 }, attack_b: { deg: 0 } } },
   'modern/ghillie_sniper': { clips: { attack: { deg: 0 }, attack_b: { deg: 0 } } },
   'modern/gyrocopter': { clips: { attack: { deg: 0 }, attack_b: { deg: 0 } } },
-  'modern/mortar_team': { clips: { attack: { deg: 60 }, attack_b: { deg: 63 } }, lean: { pivot: 'none', maxDeg: 0 } },
+  'modern/mortar_team': { clips: { attack: { deg: 60 }, attack_b: { deg: 63 } }, lean: { maxDeg: 0 } },
   'modern/radio_operator': { clips: { attack: { deg: 0 }, attack_b: { deg: 0 } } },
   'modern/rifle_grenadier': { clips: { attack: { deg: 62 }, attack_b: { deg: 73 } } },
   'modern/rifleman': { clips: { attack: { deg: 0 }, attack_b: { deg: 0 } } },
@@ -166,7 +167,9 @@ export function unitAimFor(source: string): UnitAim | null {
   return key ? (UNIT_AIM[key] ?? null) : null;
 }
 
+const NO_LEAN: LeanPolicy = { maxDeg: 0 };
+
 /** The lean a unit may take: its entry's override, else its body type's (none without a body type). */
 export function leanPolicyOf(aim: UnitAim | null, gait: UnitGait | null): LeanPolicy {
-  return aim?.lean ?? (gait ? LEAN_BY_GAIT[gait] : { pivot: 'none', maxDeg: 0 });
+  return aim?.lean ?? (gait ? LEAN_BY_GAIT[gait] : NO_LEAN);
 }

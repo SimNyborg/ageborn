@@ -25,3 +25,10 @@ Proposed change (render + contracts):
    leaves on the current frame"; the procedural view can return its rig's muzzle anchor).
 2. `projectileOrigin` for a turret source: `const mp = entry.view.muzzlePoint?.(); if (mp) return mp;`
    before the fixed offset fallback.
+
+**Done (queue item 44, Track W, 2026-10-26).** Without a contract change: `battleView.projectileOrigin` takes a turret
+shot from the view's `muzzlePoint()` when the view has one (duck-typed, like the atlas views' other hooks) and falls
+back to the mount point otherwise; `trackTurretTarget` also turns the barrel toward the current target every frame,
+so repeat shots leave a barrel that points at the body they fly to. The first shot at a new target still leaves
+before the barrel turns (the sim names the target only when it fires); the battle view calls a duck-typed
+`snapAim()` for it, which `docs/requests/done/item44-turret-aim-point.md` asks the turret views for.

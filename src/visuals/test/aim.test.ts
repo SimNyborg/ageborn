@@ -9,7 +9,7 @@ import type { EffectView, UnitView, VisualDef } from '@/contracts/art';
 import { content } from '@/content';
 import { AtlasAdapter, type AtlasData } from '../adapters/atlas';
 import { aimLeanGoal, angleThroughBody, ANTICIPATION_LEAN_SHARE, clampLean, stepLeanSpring, throughBody } from '../adapters/atlasAim';
-import { aimedBulge, classicBulge, launchOf, MAX_BULGE_LU, MAX_LAUNCH_DEG, MAX_RISE_SHARE } from '../effects/flight';
+import { aimedBulge, classicBulge, launchOf, MAX_BULGE_LU, MAX_LAUNCH_DEG, MAX_PEAK_LU, MAX_RISE_SHARE } from '../effects/flight';
 import { MANIFEST } from '../manifest';
 import { createArtProvider } from '../provider';
 import { LEAN_BY_GAIT, leanPolicyOf, UNIT_AIM, unitAimFor, unitAimKey } from '../unitAim';
@@ -80,8 +80,11 @@ describe('the drawn-aim table (unitAim.ts)', () => {
     expect(unitAimFor('art/units/stone/bonker.json')).toBeNull();
     expect(leanPolicyOf(null, 'biped')).toEqual(LEAN_BY_GAIT.biped);
     expect(leanPolicyOf(null, 'wheeled').maxDeg).toBe(0);
-    expect(leanPolicyOf(null, 'fly').pivot).toBe('centre');
     expect(leanPolicyOf(null, null).maxDeg).toBe(0);
+    // the brief's 10 to 15 degrees: a held pitch still reads as the same craft (review of item 44, B1)
+    for (const g of Object.keys(LEAN_BY_GAIT) as (keyof typeof LEAN_BY_GAIT)[]) expect(LEAN_BY_GAIT[g].maxDeg, g).toBeLessThanOrEqual(15);
+    expect(LEAN_BY_GAIT.fly.maxDeg).toBe(15);
+    expect(LEAN_BY_GAIT.hover.maxDeg).toBeLessThanOrEqual(12);
     // a crew standing beside its mortar does not tilt the mortar
     expect(leanPolicyOf(UNIT_AIM['industrial/trench_mortar'] ?? null, 'biped').maxDeg).toBe(0);
   });
@@ -141,6 +144,24 @@ describe('aimed paths (effects/flight.ts)', () => {
     expect(classicBulge(50)).toBe(28);
     expect(classicBulge(300)).toBeCloseTo(96, 6);
     expect(classicBulge(1000)).toBe(170);
+  });
+
+  it('a lob never peaks higher than MAX_PEAK_LU above the ground (a phone shows about 240 lu under the HUD)', () => {
+    // the path's highest point over the ground, from a muzzle `y0` lu up to a target `y1` lu up, `dx` across
+    const top = (dx: number, y0: number, y1: number, deg: number) => {
+      const h = aimedBulge(dx, y1 - y0, deg, Math.max(y0, y1));
+      let hi = -Infinity;
+      for (let u = 0; u <= 1; u += 1 / 4000) hi = Math.max(hi, y0 + (y1 - y0) * u + 4 * h * u * (1 - u));
+      return hi;
+    };
+    // Trench Mortar lobs at 360 to 430 lu, barrel 60 to 63 degrees, muzzle about 30 lu up (review of item 44, S1)
+    for (const dx of [300, 360, 430, 520]) for (const deg of [55, 60, 63]) expect(top(dx, 30, 20, deg), `${dx} ${deg}`).toBeLessThanOrEqual(MAX_PEAK_LU + 0.05);
+    expect(top(430, 30, 20, 63)).toBeCloseTo(MAX_PEAK_LU, 1);
+    // a short lob under the cap keeps its launch, and a bomb from a plane still drops level
+    expect(launchOf(200, 0, aimedBulge(200, 0, 38, 40))).toBeCloseTo(38, 6);
+    expect(launchOf(40, -88, aimedBulge(40, -88, 0, 118))).toBeCloseTo(0, 6);
+    // both ends above the cap: no climb at all (a level arrival, or the drop)
+    expect(top(200, 230, 210, 45)).toBeCloseTo(230, 1);
   });
 });
 
@@ -205,16 +226,21 @@ describe('the procedural projectile view flies aimed', () => {
 // The lean
 
 describe('the aim lean (atlasAim.ts)', () => {
-  const tm = (t: number) => ({ t, impactAtMs: 400, releaseMs: 520 });
+  const tm = (t: number) => ({ t, impactAtMs: 400 });
 
-  it('anticipates a little the other way, holds the lean through the release, then stands up', () => {
-    expect(aimLeanGoal(10, tm(20), false)).toBeCloseTo(-10 * ANTICIPATION_LEAN_SHARE, 6);
-    expect(aimLeanGoal(10, tm(200), false)).toBe(10);
-    expect(aimLeanGoal(10, tm(450), false)).toBe(10);
-    expect(aimLeanGoal(10, tm(600), false)).toBe(0);
-    expect(aimLeanGoal(10, null, false)).toBe(0);
+  it('holds the lean while aimed, through the release and between attacks; only a start from upright anticipates', () => {
+    expect(aimLeanGoal(10, true, tm(20), false)).toBeCloseTo(-10 * ANTICIPATION_LEAN_SHARE, 6);
+    expect(aimLeanGoal(10, true, tm(200), false)).toBe(10);
+    expect(aimLeanGoal(10, true, tm(450), false)).toBe(10);
+    // after the release and between attacks: still held (the review of item 44, B1: no rocking)
+    expect(aimLeanGoal(10, true, tm(900), false)).toBe(10);
+    expect(aimLeanGoal(10, true, null, false)).toBe(10);
+    // an attack that starts already leaning does not dip the other way
+    expect(aimLeanGoal(10, false, tm(20), false)).toBe(10);
+    // the aim ended: stand up
+    expect(aimLeanGoal(0, true, tm(20), false)).toBe(0);
     // reduce motion: no anticipation
-    expect(aimLeanGoal(10, tm(20), true)).toBe(10);
+    expect(aimLeanGoal(10, true, tm(20), true)).toBe(10);
   });
 
   it('springs toward the goal with a small follow-through, critically damped under reduce motion', () => {
@@ -337,7 +363,7 @@ describe('the atlas view aims (aimInfo, aimLean, aimNow)', () => {
     expect(v.muzzleNow(0)).toEqual({ x: 50, y: -34 });
   });
 
-  it('leans toward its target through the attack, the muzzle and the weapon with it, and stands up after', () => {
+  it('leans toward its target through the attack, the muzzle and the weapon with it, and stands up when the aim ends', () => {
     const v = view('art/units/medieval/longbowman.json', sheet());
     v.play('attack', { impactAtMs: 300, variant: 'attack' } as never);
     v.aimLean(10);
@@ -358,8 +384,60 @@ describe('the atlas view aims (aimInfo, aimLean, aimNow)', () => {
     const s = Math.sin(r);
     expect(now?.x).toBeCloseTo(bodyOf(v).x + m.x * c - m.y * s, 4);
     expect(now?.y).toBeCloseTo(bodyOf(v).y + m.x * s + m.y * c, 4);
+    // still aimed after the attack: the lean holds
+    for (let t = 0; t < 1500; t += 16) v.update(16);
+    expect((-bodyOf(v).rotation * 180) / Math.PI).toBeCloseTo(10, 1);
+    // the aim ends: upright again
+    v.aimLean(0);
     for (let t = 0; t < 1500; t += 16) v.update(16);
     expect(bodyOf(v).rotation).toBeCloseTo(0, 6);
+  });
+
+  it('firing again and again at one target holds the lean with no upright frame and no second counter-lean (no rocking)', () => {
+    const v = view('art/units/medieval/longbowman.json', sheet());
+    const leans: number[] = [];
+    for (let shot = 0; shot < 4; shot++) {
+      v.play('attack', { impactAtMs: 300, variant: 'attack_b' } as never);
+      // the battle view asks every frame while it aims, through the attack and the gap to the next
+      for (let t = 0; t < 700; t += 16) {
+        v.aimLean(10);
+        v.update(16);
+        leans.push((-bodyOf(v).rotation * 180) / Math.PI);
+      }
+    }
+    // after the first lean-in, every frame of every later shot stays near the held lean
+    const later = leans.slice(44);
+    expect(Math.min(...later)).toBeGreaterThan(9);
+    expect(Math.max(...later)).toBeLessThan(11.2);
+    // between attacks the weapon counts as aimed as in the last shot (not the next variant's pose)
+    expect(v.aimNow(0)?.drawnDeg).toBe(2);
+  });
+
+  it('a stun stands the body up, and a death keeps the lean in the fall', () => {
+    const v = view('art/units/medieval/longbowman.json', sheet());
+    v.play('attack', { impactAtMs: 300, variant: 'attack' } as never);
+    for (let t = 0; t < 400; t += 16) {
+      v.aimLean(10);
+      v.update(16);
+    }
+    v.setPose({ x: 100, y: 0, facing: 1, hpBp: 10000, shieldBp: 0, stunned: true, frozen: false, alpha: 1, levelTrim: 'none', roleGlyph: 'ranged' });
+    for (let t = 0; t < 1200; t += 16) {
+      v.aimLean(10);
+      v.update(16);
+    }
+    expect(bodyOf(v).rotation).toBeCloseTo(0, 6);
+    const d = view('art/units/medieval/longbowman.json', sheet());
+    d.play('attack', { impactAtMs: 300, variant: 'attack' } as never);
+    for (let t = 0; t < 400; t += 16) {
+      d.aimLean(10);
+      d.update(16);
+    }
+    const held = d.aimNow(0)?.leanDeg ?? 0;
+    expect(held).toBeGreaterThan(8);
+    d.play('die');
+    for (let t = 0; t < 400; t += 16) d.update(16);
+    // the death fall turns the body its own way, and the aim lean stays in it: no 130 ms spring back to upright
+    expect(d.aimNow(0)?.leanDeg).toBe(held);
   });
 
   it('facing left, the same lean turns the other way and still raises the weapon', () => {
@@ -385,13 +463,35 @@ describe('the atlas view aims (aimInfo, aimLean, aimNow)', () => {
     expect((-bodyOf(v).rotation * 180) / Math.PI).toBeCloseTo(LEAN_BY_GAIT.biped.maxDeg / 2, 0);
   });
 
-  it('a new attack aims afresh, and a unit that is not attacking does not lean', () => {
+  it('a unit the battle view does not aim never leans', () => {
     const v = view('art/units/medieval/longbowman.json', sheet());
-    v.aimLean(10);
-    for (let t = 0; t < 300; t += 16) v.update(16);
-    expect(bodyOf(v).rotation).toBe(0);
     v.play('attack', { impactAtMs: 300 });
     for (let t = 0; t < 300; t += 16) v.update(16);
     expect(bodyOf(v).rotation).toBe(0);
+  });
+});
+
+describe('the atlas projectile view', () => {
+  it('turns along its path and never flies upside down: a leftward flight is mirrored, not turned half round', () => {
+    const source = 'art/fx/proj_test.json';
+    const def: VisualDef = { kind: 'atlas', source, anchors: { feet: { x: 0, y: 0 }, head: { x: 0, y: 0 }, muzzle: { x: 0, y: 0 }, hitCenter: { x: 0, y: 0 } }, heightLu: 10, team: { kind: 'none' }, clips: {} } as unknown as VisualDef;
+    const art = createArtProvider({ warn: () => {} });
+    const a = new AtlasAdapter({ entries: () => [def], decor: art.procedural.baker });
+    a.register(source, { luPerUnit: 1, animations: { play: [frame(20, 6)] }, clips: { play: { durationsMs: [100], loop: true } }, heightLu: 10 } as unknown as AtlasData);
+    const e = a.createProjectile({ key: 'proj.test', def, side: 1, teamPreset: 'default' } as never) as AimedEffect;
+    const body = e.root.children[0] as Container;
+    // rightward, level: no turn
+    e.fly({ x: 0, y: -30 }, { x: 200, y: -30 }, 400, false);
+    expect(body.scale.x).toBeGreaterThan(0);
+    expect(body.rotation).toBeCloseTo(0, 6);
+    // leftward, level: mirrored, not turned
+    e.fly({ x: 200, y: -30 }, { x: 0, y: -30 }, 400, false);
+    expect(body.scale.x).toBeLessThan(0);
+    expect(body.rotation).toBeCloseTo(0, 6);
+    // leftward and climbing (a ballistic shot along a weapon raised 30 degrees): the mirrored nose turns up
+    e.flyAimed({ x: 200, y: -30 }, { x: 0, y: -30 }, 400, { launchDeg: 30, path: 'ballistic' });
+    expect(body.scale.x).toBeLessThan(0);
+    expect((body.rotation * 180) / Math.PI).toBeCloseTo(30, 4);
+    e.destroy();
   });
 });

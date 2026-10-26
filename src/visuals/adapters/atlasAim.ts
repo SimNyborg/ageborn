@@ -2,9 +2,11 @@
  * Queue item 44: pure helpers for the atlas unit view's aim (the shooter leaning toward its target, and where its
  * shot leaves as drawn). Presentation only: the sim owns all timing, and nothing here reads or changes sim state.
  *
- * The lean is a damped spring that heads for a goal set by the attack's own timeline: a small counter-lean first
- * (anticipation), the full lean held through the release, then upright again for the recovery, where the spring's
- * slight overshoot gives the follow-through. Angles are degrees above the facing direction (aim up is positive).
+ * The lean is a damped spring that heads for the lean the battle view asks for and holds it while the unit aims at
+ * one target: through every wind-up, release and recovery and the gaps between shots, so a unit firing again and
+ * again never rocks. An attack that starts from upright opens with a small counter-lean (anticipation); when the aim
+ * ends the body stands up, where the spring's slight overshoot gives the follow-through. Angles are degrees above the
+ * facing direction (aim up is positive).
  */
 
 /** The anticipation: this share of the lean, the other way, for this share of the wind-up (at most `ANTICIPATION_MS`). */
@@ -25,16 +27,19 @@ export interface LeanTiming {
   t: number;
   /** When the impact (the release) lands, ms into the track. */
   impactAtMs: number;
-  /** When the impact hold ends and the recovery starts, ms into the track. */
-  releaseMs: number;
 }
 
-/** The lean (deg) the body heads for at `tm.t` into an attack that wants `desiredDeg`. */
-export function aimLeanGoal(desiredDeg: number, tm: LeanTiming | null, reduce: boolean): number {
-  if (!tm || tm.t < 0 || desiredDeg === 0) return 0;
-  if (tm.t >= tm.releaseMs) return 0;
-  const antic = Math.min(ANTICIPATION_MS, Math.max(0, tm.impactAtMs) * ANTICIPATION_WINDUP_SHARE);
-  if (!reduce && tm.t < antic) return -ANTICIPATION_LEAN_SHARE * desiredDeg;
+/**
+ * The lean (deg) the body heads for when the battle view wants `desiredDeg` (0: the aim ended, stand up). It holds
+ * `desiredDeg`, except at the start of an attack that began from upright (`fromUpright`), which first leans the other
+ * way a little (never under Reduce motion). `tm` is the attack playing now, or null between attacks.
+ */
+export function aimLeanGoal(desiredDeg: number, fromUpright: boolean, tm: LeanTiming | null, reduce: boolean): number {
+  if (desiredDeg === 0) return 0;
+  if (!reduce && fromUpright && tm && tm.t >= 0) {
+    const antic = Math.min(ANTICIPATION_MS, Math.max(0, tm.impactAtMs) * ANTICIPATION_WINDUP_SHARE);
+    if (tm.t < antic) return -ANTICIPATION_LEAN_SHARE * desiredDeg;
+  }
   return desiredDeg;
 }
 

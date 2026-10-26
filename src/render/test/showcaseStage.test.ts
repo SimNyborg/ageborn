@@ -238,3 +238,41 @@ describe('the show', () => {
     expect(art.leases).toHaveLength(0);
   });
 });
+
+describe('aimed shots (queue item 44)', () => {
+  /** The lease art with the atlas views' aim hook on every unit (a bow drawn 38 degrees up) and an aimed flight on every shot. */
+  class AimLeaseArt extends LeaseArt {
+    readonly aimed: { o: { launchDeg: number; path: string } }[] = [];
+    readonly classic: number[] = [];
+    override createUnit(o: Parameters<LeaseArt['createUnit']>[0]) {
+      const v = super.createUnit(o) as ReturnType<LeaseArt['createUnit']> & Record<string, unknown>;
+      v['aimNow'] = () => ({ x: 20, y: -40, deg: 38, drawnDeg: 38, leanDeg: 0, omni: false });
+      return v;
+    }
+    override createProjectile(visualId: string, side: 0 | 1) {
+      const e = super.createProjectile(visualId, side) as ReturnType<LeaseArt['createProjectile']> & Record<string, unknown>;
+      const fly = e.fly.bind(e);
+      e.fly = (from, to, ms, arc) => {
+        this.classic.push(ms);
+        fly(from, to, ms, arc);
+      };
+      e['flyAimed'] = (from: { x: number; y: number }, to: { x: number; y: number }, ms: number, o: { launchDeg: number; path: string }) => {
+        this.aimed.push({ o });
+        fly(from, to, ms, false);
+      };
+      return e;
+    }
+  }
+
+  it("the card showcase flies a ranged hero's shot along its drawn weapon", async () => {
+    const art = new AimLeaseArt();
+    const { stage } = stageFor('longbowman', {}, art);
+    await stage.ready;
+    stage.play('attack');
+    run(stage, 2500);
+    expect(art.aimed.length).toBeGreaterThan(0);
+    expect(art.aimed[0]!.o.path).toBe('ballistic');
+    expect(art.aimed[0]!.o.launchDeg).toBeCloseTo(38, 6);
+    stage.destroy();
+  });
+});

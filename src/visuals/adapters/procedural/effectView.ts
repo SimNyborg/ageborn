@@ -158,14 +158,15 @@ export class ProceduralEffectView implements EffectView {
   /**
    * Queue item 44 (duck-typed; the battle view calls it when the shooter's view knows its drawn aim): flies like `fly`,
    * but a ballistic path leaves at `launchDeg` above the horizontal toward the target, so the shot leaves along the
-   * weapon (a parabola that never curves upward: a weapon pointing at or below its target shoots straight). It lands
-   * exactly where and when `fly` would; a straight path flies straight, and a rolling projectile always rolls.
+   * weapon (a parabola that never curves upward: a weapon pointing at or below its target shoots straight; its peak
+   * stays under `MAX_PEAK_LU` above the ground, world y 0). It lands exactly where and when `fly` would; a straight
+   * path flies straight, and a rolling projectile always rolls.
    */
   flyAimed(from: Pt, to: Pt, travelMs: number, o: { launchDeg: number; path: 'ballistic' | 'straight' }): void {
     this.fly(from, to, travelMs, false);
     const f = this.fly_;
     if (!f || o.path !== 'ballistic' || this.opt.projectile?.rolls) return;
-    f.h = aimedBulge(f.to.x, -f.to.y, o.launchDeg);
+    f.h = aimedBulge(f.to.x, -f.to.y, o.launchDeg, Math.max(-from.y, -to.y));
     f.arc = f.h > 0;
     this.stepFly(0);
   }

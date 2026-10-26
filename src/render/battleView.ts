@@ -195,8 +195,9 @@ interface UnitEntry {
   fortDecayShown?: number;
   fortDecayCarry?: number;
   /**
-   * Queue item 44: a ranged attack 0 aiming at its target, from the start of its wind-up to its shot (the view leans
-   * toward the target as drawn, every frame); null when not aiming.
+   * Queue item 44: a ranged attack 0 aiming at its target, from the start of its first wind-up for as long as the unit
+   * keeps attacking that target (the view leans toward it as drawn, every frame, and holds the lean through the shots
+   * and the gaps between them); null when not aiming.
    */
   aim?: { targetId: number; kind: ShotKind; maxLean: number } | null;
 }
@@ -210,6 +211,10 @@ interface TurretEntry {
   outdated: boolean;
   /** Fell with its base's collapse and broke on landing. */
   wrecked?: boolean;
+  /** Queue item 44: the live muzzle's height over the mount (lu, y down), read at each shot (no allocation per frame). */
+  muzzleDy?: number;
+  /** Queue item 44: the target of the last shot (a new one's first shot turns the barrel at once where the view can). */
+  lastTarget?: number;
 }
 
 interface BaseEntry {
@@ -2085,6 +2090,7 @@ export class BattleView {
         }
         if (a.clip === 'attack') {
           // item 44: a ranged shooter aims at its target: the variant that can start its shot, then the lean toward it
+          // (held from shot to shot while the target stays the same)
           const variant = this.startAim(e, a.targetId ?? 0);
           const opts: { impactAtMs?: number; variant?: string } = {};
           if (a.impactAtMs !== undefined) opts.impactAtMs = a.impactAtMs;
@@ -2098,7 +2104,7 @@ export class BattleView {
             if (r) e.reach = r;
           }
         } else if (a.impactAtMs !== undefined) {
-          e.aim = null;
+          if (e.aim) this.endAim(e);
           // A8: a pounce's ability clip holds its strike to the touch-down (the attack clip for the pouncers)
           e.view.play(a.clip, { impactAtMs: a.impactAtMs });
           e.oneShotLeftMs = a.impactAtMs + ONE_SHOT_MS.attackRecover;
@@ -3070,18 +3076,22 @@ export class BattleView {
   // ------------------------------------------------------------------------------------------
 
   /**
-   * Queue item 44: a ranged attack 0 starts aiming at its target (`aim.ts`). Returns the attack variant to play when the
-   * one the view would play next cannot start this shot (a level pose for an arc, a raised staff at a unit in front);
-   * undefined keeps the view's own cycle. Views without the aim hooks (procedural stand-ins, forts) never aim.
+   * Queue item 44: a ranged attack 0 aims at its target (`aim.ts`). The aim lasts while the unit keeps attacking that
+   * target, so the view holds its lean from shot to shot (a new target re-aims from the lean it has; `endAim` stands it
+   * up). Returns the attack variant to play when the one the view would play next cannot start this shot (a level pose
+   * for an arc, a raised staff at a unit in front); undefined keeps the view's own cycle. Views without the aim hooks
+   * (procedural stand-ins, forts) never aim.
    */
   private startAim(e: UnitEntry, targetId: number): string | undefined {
-    e.aim = null;
     const kind = shotKindOf(e.def?.attacks[0]);
     const v = e.view as AimView;
-    if (!kind || e.fort || targetId === 0 || typeof v.aimInfo !== 'function' || typeof v.aimLean !== 'function') return undefined;
-    const info = v.aimInfo();
-    if (!info) return undefined;
-    e.aim = { targetId, kind, maxLean: info.maxLeanDeg };
+    const info = kind && !e.fort && targetId !== 0 && typeof v.aimInfo === 'function' && typeof v.aimLean === 'function' ? v.aimInfo() : null;
+    if (!kind || !info) {
+      if (e.aim) this.endAim(e);
+      return undefined;
+    }
+    if (e.aim && e.aim.targetId === targetId) e.aim.maxLean = info.maxLeanDeg;
+    else e.aim = { targetId, kind, maxLean: info.maxLeanDeg };
     const now = v.aimNow?.(0);
     const to = this.aimPoint(targetId, e.side);
     if (!now || !to) return undefined;
@@ -3090,7 +3100,10 @@ export class BattleView {
     return pickAimVariant(info.variants, info.next, kind, lineAt, info.maxLeanDeg) ?? undefined;
   }
 
-  /** Queue item 44: leans an aiming shooter toward its target as drawn now (`aim.ts` `leanFor`; no allocation per frame). */
+  /**
+   * Queue item 44: leans an aiming shooter toward its target as drawn now (`aim.ts` `leanFor`; no allocation per frame),
+   * every frame while it aims: in the wind-up, at the shot and between shots. A target that is gone stands it up.
+   */
   private updateAim(e: UnitEntry): void {
     const aim = e.aim;
     if (!aim) return;
@@ -3112,13 +3125,14 @@ export class BattleView {
         ty = Number.NaN;
       }
       const lineAt = lineDegXY(e.view.root.x + now.x, e.view.root.y + now.y, tx, ty, facingOf(e.side));
-      // the drawn weapon without the aim lean, which is what this decides
-      if (lineAt !== null) lean = leanFor(aim.kind, lineAt, now.deg - now.leanDeg, aim.maxLean);
+      // the clip's drawn weapon, which is what this decides: the body's own turns (the aim lean, a hit reaction's tilt,
+      // a knockback) are left out, so the lean never chases a passing reaction
+      if (lineAt !== null) lean = leanFor(aim.kind, lineAt, now.drawnDeg, aim.maxLean);
     }
     v.aimLean?.(lean);
   }
 
-  /** Queue item 44: the aim ends before its shot (a stun, a hit clip, the unit walks on): the view stands up again. */
+  /** Queue item 44: the aim ends (a stun, a hit clip, an ability, the unit walks on or retargets to nothing): the view stands up again. */
   private endAim(e: UnitEntry): void {
     e.aim = null;
     (e.view as AimView).aimLean?.(0);
@@ -3181,8 +3195,7 @@ export class BattleView {
     if (e) {
       const atk = attackAt(e.def, index);
       const own = firesVisual(atk, a.visualId);
-      // the shot is away: its aim ends (the view holds the lean through the impact, then stands up)
-      if (own && index === 0) e.aim = null;
+      // (the aim carries on after the shot while the unit keeps attacking this target: the lean holds, no rocking)
       if (!own && e.def?.abilities.some((ab) => ab.kind === 'callStrike')) {
         const f = facingOf(e.side);
         return { from: { x: to.x - f * STRIKE_FROM_DX_LU, y: STRIKE_FROM_Y_LU }, path: { launchDeg: STRIKE_LAUNCH_DEG, path: 'ballistic' } };
@@ -3208,7 +3221,7 @@ export class BattleView {
     const turret = decodeTurretSource(from);
     if (turret) {
       // item 44: the turret's live muzzle where its view has one (the barrel's tip, turned with the aim and its kick;
-      // docs/requests/wp5-turret-muzzle-anchor.md), else a point near the mount
+      // docs/requests/done/wp5-turret-muzzle-anchor.md), else a point near the mount
       const mp = (this.turrets.get(`${turret.side}:${turret.mount}`)?.view as (TurretView & TurretMuzzle) | undefined)?.muzzlePoint?.();
       if (mp) return { x: mp.x, y: mp.y };
       const p = this.mountPoints(turret.side)[turret.mount];
@@ -3417,7 +3430,13 @@ export class BattleView {
       case 'fire': {
         const e = this.turrets.get(key);
         if (!e) return;
-        if (a.targetId !== undefined) this.trackTurretTarget(e, a.targetId);
+        if (a.targetId !== undefined) {
+          this.trackTurretTarget(e, a.targetId, true);
+          // the sim names a turret's target only when it fires: a new target's first shot turns the barrel at once in
+          // the views that can (`snapAim`, docs/requests/done/item44-turret-aim-point.md); later shots find it there
+          if (a.targetId !== e.lastTarget) (e.view as TurretView & TurretMuzzle).snapAim?.();
+          e.lastTarget = a.targetId;
+        }
         e.view.play('fire');
         return;
       }
@@ -3425,11 +3444,12 @@ export class BattleView {
   }
 
   /**
-   * Queue item 44: turns a turret's barrel toward its target as drawn (every frame, so a shot never leaves before the
-   * barrel arrives). `aimAt(x)` aims at the ground under x, which points the barrel down at a flyer above the mount, so a
-   * flyer is aimed at only by a view that takes a point (`aimAtPoint`, docs/requests/item44-turret-aim-point.md).
+   * Queue item 44: turns a turret's barrel toward its target as drawn, every frame, so its repeat shots leave a barrel
+   * that already points there. `aimAt(x)` aims at the ground under x, which points the barrel down at a flyer above the
+   * mount, so a flyer is aimed at only by a view that takes a point (`aimAtPoint`, docs/requests/done/item44-turret-aim-point.md).
+   * `atShot` reads the live muzzle's height again (at a shot; otherwise the last reading, so tracking allocates nothing).
    */
-  private trackTurretTarget(e: TurretEntry, targetId: number): void {
+  private trackTurretTarget(e: TurretEntry, targetId: number, atShot = false): void {
     if (targetId <= 0) return;
     const u = this.units.get(targetId);
     if (!u || u.dying) return;
@@ -3441,16 +3461,20 @@ export class BattleView {
       return;
     }
     const x0 = e.view.root.x;
-    const mp = v.muzzlePoint?.();
-    if (u.air || (mp && ty <= mp.y + 1)) {
+    if (atShot || e.muzzleDy === undefined) {
+      const mp = v.muzzlePoint?.();
+      e.muzzleDy = mp ? mp.y - e.view.root.y : Number.NaN;
+    }
+    const my = e.view.root.y + e.muzzleDy;
+    if (u.air || ty <= my + 1) {
       // `aimAt` can only aim at the ground (a barrel turned down at a flyer's shadow): level is the closest it comes
       v.aimAt(x0 + facingOf(e.side) * TURRET_LEVEL_AIM_LU);
       return;
     }
     // `aimAt` aims from the barrel's pivot at the ground under x: aim through the ground point on the line from the
     // muzzle's height to the target's body, so the barrel points at the body the shot flies to (about 4 degrees higher
-    // on the top mounts than aiming at the feet)
-    v.aimAt(mp ? x0 + ((tx - x0) * -mp.y) / (ty - mp.y) : tx);
+    // on the top mounts than aiming at the feet); a view without a live muzzle aims at the feet
+    v.aimAt(Number.isFinite(my) ? x0 + ((tx - x0) * -my) / (ty - my) : tx);
   }
 
   private turretEntry(side: Side, mount: number, card: CardId): TurretEntry {
@@ -3587,10 +3611,14 @@ interface AimedFlight {
   flyAimed?(from: Pt, to: Pt, travelMs: number, o: { launchDeg: number; path: ShotPath }): void;
 }
 
-/** The atlas turret views' live muzzle (docs/requests/wp5-turret-muzzle-anchor.md) and, once a turret view has it, an aim at a point. */
+/**
+ * The atlas turret views' live muzzle (docs/requests/done/wp5-turret-muzzle-anchor.md) and, once a turret view has them
+ * (docs/requests/done/item44-turret-aim-point.md), an aim at a point and a barrel that turns to its aim at once.
+ */
 interface TurretMuzzle {
   muzzlePoint?(): Pt;
   aimAtPoint?(x: number, y: number): void;
+  snapAim?(): void;
 }
 
 /** A shot at a base flies to this height over its gate (lu, y down). */
