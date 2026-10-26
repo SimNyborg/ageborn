@@ -442,6 +442,22 @@
       "hook_type": "before-after",
       "experiment": "indie-angle",
       "arm": "devlog"
+    },
+    {
+      "name": "dv7-devlog-7-making-a-base-collapse-feel-good",
+      "kind": "reel",
+      "id": "18061710389542124",
+      "permalink": "https://www.instagram.com/reel/De9LDK5jQcY/",
+      "timestamp": "2026-10-26T11:27:08+0000",
+      "slot": "midday",
+      "pillar": "devlog",
+      "hook": "Devlog #7: base collapse (item 22)",
+      "trial": false,
+      "length_s": 27.0,
+      "format": "devlog",
+      "hook_type": "problem",
+      "experiment": "indie-angle",
+      "arm": "devlog"
     }
   ]
 }

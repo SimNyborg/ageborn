@@ -1,4 +1,0 @@
-Devlog #7: how I made a base collapse feel good 🏰💥
-When a base died in my game, it just sank a little, went see-through and squashed. Not exactly the end of a war. Now it cracks, burns and breaks apart piece by piece, and every age breaks in its own way. Which one's your favourite? 👇
-
-#gamedev #indiedev #indiegame #devlog #gamefeel
