@@ -143,3 +143,6 @@ what we believe, how sure we are, and what we post next because of it.
 - 2026-10-25 evening: DV5 (item 38 before) 187 reach in 26 h, second only to DV3 (299); BA1 129 with 40 % watch.
   BA2 84 reach in 1.5 h. Followers flat at 139 since Saturday. Only one Reel today (midday held for the owner's
   answer on DV6). Weekly review due tomorrow (Monday).
+- 2026-10-26 weekly review (docs/weekly-2026-10-26.md): followers 109 to 139; a visible problem or a twist wins
+  reach (DV3 299, DV5 188), before/after holds viewers (40-42 %), duels are the safe floor. Week 3 mix: one
+  problem-first devlog plus one before/after or balance-test duel a day.
