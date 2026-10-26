@@ -19,7 +19,7 @@ import { WORLD } from '../style';
 
 const LAYERS_JSON = import.meta.glob('/public/art/backdrops/**/layers.json', { import: 'default', eager: true }) as Record<string, unknown>;
 const WEBP = import.meta.glob('/public/art/backdrops/**/*.webp', { query: '?inline', import: 'default', eager: true }) as Record<string, string>;
-const CHECKS = import.meta.glob('/art/blender/world/scenes/checks.json', { import: 'default', eager: true }) as Record<string, Record<string, { sizes: Record<string, number>; total: number; rule: Record<string, number> }>>;
+const CHECKS = import.meta.glob('/art/blender/world/scenes/checks.json', { import: 'default', eager: true }) as Record<string, Record<string, { sizes: Record<string, number>; total: number; rule: Record<string, number>; signatureAlpha?: number }>>;
 
 /** Bytes of a file inlined as a base64 data URL. */
 function bytes(dataUrl: string): number {
@@ -93,6 +93,20 @@ describe('scene art on disk (PLAN 2b)', () => {
       for (const [name, share] of Object.entries(c.rule)) expect(share, `${age}.${scene} ${name}`).toBeLessThanOrEqual(name === 'thumb.webp' ? 0.03 : 0.02);
       expect(Object.keys(c.rule)).toEqual(expect.arrayContaining(['far.webp', 'mid.webp', 'thumb.webp']));
     }
+  });
+
+  it("keeps Sabre Savanna's dust devil readable and in your half, on Lite too (review 3b)", () => {
+    // its frames' visible pixels average at least 0.3 alpha (scenes/sizes.py measures the shipped atlas; the first
+    // devil averaged 0.12 and did not show on the plain)
+    const c = (Object.values(CHECKS)[0] ?? {})['stone.sabre_savanna'];
+    expect(c?.signatureAlpha, 'run python3 art/blender/world/scenes/sizes.py --write').toBeGreaterThanOrEqual(0.3);
+    const data = parseScene(LAYERS_JSON[`/public/${sceneDir('stone', 'sabre_savanna')}layers.json`], 'stone', 'sabre_savanna');
+    const moving = (data?.props?.sprites ?? []).filter((x) => x.kind !== 'emit');
+    const devil = moving[0];
+    // first among the moving sprites, so Lite (the first three) keeps the signature
+    expect(devil?.kind === 'path' && devil.group[0]?.frames[0]).toBe('devil_0');
+    // shown only on your half of the strip (it crossed the seam band before)
+    if (devil?.kind === 'path') for (const [, x, , a] of devil.keys) if (a > 0) expect(x).toBeLessThan(1000);
   });
 });
 

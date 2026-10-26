@@ -7,7 +7,7 @@
 import './cosmeticArt.css';
 import type { AgeId, CardId, Side } from '@/contracts';
 import { createContext, type ComponentChildren } from 'preact';
-import { useContext, useEffect, useState } from 'preact/hooks';
+import { useContext, useEffect, useRef, useState } from 'preact/hooks';
 import { avatar as avatarTables } from '@/content/raw/avatar';
 import { AvatarLookView, type ResolvedLook } from './Avatar';
 import { ClothFlag } from './ClothFlag';
@@ -184,17 +184,39 @@ export function CosmeticImage(p: { item: string; class?: string; team?: number; 
 /**
  * A decoration's picture (round 3): Track B's HD prop (the Blender render, trimmed, so it fills the art
  * window) once the props' atlas is in, the code-drawn SVG until then. The first ask starts the atlas; when
- * it lands (`CosmeticPicturesContext`) the prop fades in over where the SVG was, never a pop.
+ * it lands (`CosmeticPicturesContext`) the prop fades in over the SVG, which holds until the prop is mostly
+ * in and then fades out itself: a cross-fade with no dip and no pop (review 3a NIT 8). The current picture
+ * stays in the flow, so the box sizes as the picture alone did.
  */
 function DecorationImage(p: { item: string; class?: string; team?: number; testid?: string }) {
   const fn = useCosmeticImage();
   const onChange = useContext(CosmeticPicturesContext);
   const [, bump] = useState(0);
   useEffect(() => (onChange ? onChange(() => bump((n) => n + 1)) : undefined), [onChange]);
+  // the drawing this item showed until its prop landed, and the prop whose fade has ended
+  const drawn = useRef<{ item: string; url: string } | null>(null);
+  const [settled, setSettled] = useState<string | null>(null);
   const url = fn ? fn(p.item, { hd: true, ...(p.team !== undefined ? { team: p.team } : {}) }) : null;
+  const prop = url !== null && !url.startsWith('data:image/svg');
+  if (url !== null && !prop) drawn.current = { item: p.item, url };
+  const under = prop && url !== settled && drawn.current?.item === p.item ? drawn.current.url : null;
+  const settle = (): void => {
+    drawn.current = null;
+    setSettled(url);
+  };
+  useEffect(() => {
+    if (!under) return undefined;
+    // the drawing's fade-out ends it; the timer covers a picture that never animates (a hidden tab)
+    const id = setTimeout(settle, 450);
+    return () => clearTimeout(id);
+  }, [under, url]);
   if (!url) return <span class={`cos-img cos-img--empty ${p.class ?? ''}`} aria-hidden="true" data-testid={p.testid} />;
-  const prop = !url.startsWith('data:image/svg');
-  return <img key={url} class={`cos-img${prop ? ' cos-img--prop' : ''} ${p.class ?? ''}`} src={url} alt="" aria-hidden="true" draggable={false} data-testid={p.testid} data-prop={prop ? 'hd' : 'svg'} />;
+  return (
+    <span class={`cos-img cos-img--deco ${p.class ?? ''}`} aria-hidden="true" data-testid={p.testid}>
+      {under ? <img key={under} class="cos-img__under" src={under} alt="" draggable={false} data-prop="svg" onAnimationEnd={settle} /> : null}
+      <img key={url} class={`cos-img__main${prop ? ' cos-img--prop' : ''}`} src={url} alt="" draggable={false} data-prop={prop ? 'hd' : 'svg'} />
+    </span>
+  );
 }
 
 /**

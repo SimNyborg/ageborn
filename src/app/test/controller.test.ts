@@ -36,7 +36,8 @@ describe('AppController: the first session (A8, A9 flow)', () => {
     c.play();
     expect(c.route.value.id).toBe('battle');
     expect(r.battle?.session.status.value).toBe('running');
-  });
+    // building the app and the title's battle: well under the 5 s default alone, past it under a loaded machine (review 3b, NIT 5)
+  }, 30_000);
 
   it('match 1 → result → match 2 → result → onboarding done, replays kept', async () => {
     const { c, services } = await controller();

@@ -659,7 +659,8 @@ def ns_far(st, P):
     for k in range(12):
         x = x0 + (x1 - x0) * k / 11
         gl.sphere((x, dy - 35, gz - 4), 1.6, cuts=2)
-    for k in range(4):
+    # two of the four docking lights blink (review 3b: the scene's ambient was the costliest of the Epics)
+    for k in (0, 2):
         st.amb("blink", "bd.light", (x0 + (x1 - x0) * (k + 0.5) / 4, dy - 35, gz - 4), "far", period=1300 + k * 230, tint=0x9CF0D4)
     # 3. the half-built ark (the signature). The bow is plated: a lilac-grey hull with plate seams and two
     # violet bands, rows of lit windows, a dorsal spine with the bridge tower, cradle struts under it. The
@@ -732,9 +733,11 @@ def ns_far(st, P):
     for (xx, a_deg) in ((hoops[-1] - 4, 160), (hoops[-2] - 4, 150), (hoops[-1] - 6, 205)):
         p_ = _hoop_point(xx, math.radians(a_deg))
         ghd.blob((p_[0], p_[1] - 1.0, p_[2]), (13, 1.6, 9), p=5, cuts=2, rot=(a_deg - 180, 0, NS_HOOP_YAW * 0.5))
-    for (xx, a_deg) in ((mid_x - 2, 165), (mid_x - 2, 212), (hoops[-3], 172)):
+    for k, (xx, a_deg) in enumerate(((mid_x - 2, 165), (mid_x - 2, 212), (hoops[-3], 172))):
         p_ = _hoop_point(xx, math.radians(a_deg))
-        st.amb("emit", "fx.p.spark", (p_[0], p_[1] - 3, p_[2]), rate=2.4, speed=26, scale=0.6, tint=0xFFF2C8, alpha=0.95, life=500)
+        # one welding point throws sparks, a little brisker (review 3b: three were the frame time's cost)
+        if k == 0:
+            st.amb("emit", "fx.p.spark", (p_[0], p_[1] - 3, p_[2]), rate=3.6, speed=26, scale=0.6, tint=0xFFF2C8, alpha=0.95, life=500)
         st.light((p_[0], p_[1] - 5, p_[2]), 3)
     for w in wins[:3]:
         st.light(w, 3)
@@ -752,12 +755,11 @@ def ns_far(st, P):
         gd.blob((x - L * 0.25, y - 2, z + r * 0.9), (L * 0.12, r * 0.8, r * 0.5), p=3.0)
         gd2.blob((x + L * 0.1, y - r * 1.1, z), (L * 0.3, 0.6, r * 0.25), p=3.0)
         pt.g(NS["mint_lt"], glow=True).blob((x - L / 2 - 2, y, z), (3, r * 0.6, r * 0.5), p=2.0)
-        st.amb("blink", "bd.light", (x + L / 2, y - r, z), "far", period=1700, tint=0xF6C6E4)
     pt.flush(st)
 
 
-def _welding_rig(pt, st, x, y, z, flip=1):
-    """A welding rig on the deck: a jointed robot arm on a turret base, its torch throwing sparks."""
+def _welding_rig(pt, st, x, y, z, flip=1, sparks=True):
+    """A welding rig on the deck: a jointed robot arm on a turret base, its torch throwing sparks (`sparks`)."""
     gm, gm2 = pt.g(NS["metal"], outline=0.5), pt.g(NS["frame_dk"], outline=0.4)
     cyl(gm2, (x, y, z), (x, y, z + 6), 8, bevel=0.6, segs=16)
     gm.capsule((x, y, z + 6), (x + flip * 10, y, z + 30), 2.6, 2.0)
@@ -765,7 +767,8 @@ def _welding_rig(pt, st, x, y, z, flip=1):
     gm2.sphere((x + flip * 10, y, z + 30), 3.0)
     tip = (x + flip * 31, y, z + 20)
     pt.g(NS["mint_lt"], glow=True).sphere(tip, 1.2)
-    st.amb("emit", "fx.p.spark", tip, rate=3.0, speed=22, scale=0.55, tint=0xFFF2C8, alpha=0.95, life=450)
+    if sparks:
+        st.amb("emit", "fx.p.spark", tip, rate=3.0, speed=22, scale=0.55, tint=0xFFF2C8, alpha=0.95, life=450)
     st.light(tip, 3)
 
 
@@ -811,8 +814,9 @@ def ns_mid(st, P):
         (gp if k % 2 else gp2).capsule((x - 10, y, z + 7), (x + 10, y, z + 7), 7, 7)
         pt.g(NS["band"], outline=0.2).blob((x, y - 6.6, z + 7), (2.4, 0.6, 6.8), p=3)
     # 3. welding rigs at the deck edge
+    # only the rig by the hull ring throws sparks (review 3b: the scene's ambient was the costliest of the Epics)
     for (x, f) in ((346, -1), (652, 1), (1000, 1)):
-        _welding_rig(pt, st, x, 60, 40, f)
+        _welding_rig(pt, st, x, 60, 40, f, sparks=x == 346)
     # 4. a low goliath crane straddling a stack of hull plates (x 430-630; kept under the ark's keel line):
     # lattice legs, the top beam, its trolley lowering a plate
     gpc, gpc2 = pt.g(NS["frame"], outline=0.5), pt.g(NS["frame_dk"], outline=0.4)
@@ -849,7 +853,8 @@ def ns_mid(st, P):
     _shuttle(0)(kit.StaticRig(pt, (px_ + 4, 96, 43)))
     for x in (px_ - 64, px_ + 64):
         pt.g(NS["metal"], outline=0.4).capsule((x, 110, 40), (x, 110, 120), 1.0)
-        st.amb("blink", "bd.light", (x, 110, 122), "mid", period=1500, tint=0x9CF0D4)
+        if x < px_:
+            st.amb("blink", "bd.light", (x, 110, 122), "mid", period=1500, tint=0x9CF0D4)
     pt.flush(st)
 
 

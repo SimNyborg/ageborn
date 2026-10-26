@@ -2,6 +2,49 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-26: Weapons point where they shoot (queue item 44), with the strict review's fixes (cloud session, branch `main-ipy06f`)
+
+**What a player sees.**
+
+- **Shots leave the weapon the way it points.** Arrows, bolts, javelins, rocks, shells, rockets and flares fly out along the drawn bow, barrel, rail or throwing arm, instead of leaving level from a raised bow, climbing from a musket pointed at the ground, or appearing in the empty air at a thrower's knees. Mortars, catapults and lobbed throws keep their high arcs, because their art points up.
+- **Shooters lean toward what they shoot at.** A rifleman or archer firing at a flyer, at a unit in another row or at the enemy base tilts a little toward it, with a small wind-up and a smooth return when the fight is over; a gun ship dips its nose toward ground targets. Riders, beasts, wheeled and tracked machines and mortar crews do not lean. Under Reduce motion the lean is half as big and has no wind-up or overshoot.
+- **A unit that keeps firing at the same target holds its aim** between shots instead of straightening up each time.
+- **Turrets turn before they fire.** Their shots leave the barrel's tip, a turret turns to a new target before its first shot, and turrets that hit flyers now aim up at them.
+- **Call strikes come in from the sky**, and bombs drop from the plane instead of sliding down a straight line.
+- **Nothing in the rules changed:** every shot still hits the same target on the same moment as before, so balance and replays are unchanged, and the game is not slower (the aiming costs about 0.03 ms a frame).
+
+**Fixed after the strict review:** units rocked back and forth at every shot when they fired repeatedly at one target (the gun ship nodded every 0.3 s); flyers and hovering units leaned too far (now at most 15 and 12 degrees); mortar shells could fly up under the top bar on a phone (now capped below it); a turret's first shot at a new target left before the barrel turned, and turrets could not aim up at flyers; a fallen shooter sprang upright as it died; plus small fixes and more tests.
+
+**Checks (2026-10-26):** typecheck and lint clean; 7,914 unit tests pass (329 files, 2 skipped) plus the new turret aim tests; the battle browser tests passed in Chromium on the first version (48 of 48); filmed frame by frame, 120 shots in both versions start, fire and hit on the same moments; measured over every ranged attack pose in four situations (a unit in the same row, another row, the base, a flyer), the cases where weapon and shot disagreed beyond the tolerance fell from 311 to 108 in the first version, most of the rest being shots at flyers, which need new art; the independent review checked every class on a phone and a desktop and verified the fixes with its own captures.
+
+**Open (the next art round):** attack clips aimed up for shots at flyers (about 45 and 70 degrees, bows included), down-aimed clips for tall shooters such as the Dragoon and the second gunners of the big war machines and for the fast-firing flyers, a level hip-fire pose for the Fusilier and Wall Gunner (they switch stance between two poses every few seconds), and the aim angle written into each attack clip by the art pipeline.
+
+**What the owner should try:** play a Gunpowder or Modern battle with riflemen and a gun ship or a balloon on the field, and a Medieval battle with longbowmen. The weapons should point where the shots go, the shooters should lean toward flyers and hold that lean while they keep firing, and turrets should turn toward their target before they shoot.
+
+## 2026-10-26: Customize round 3, second release: eight Epic scenes, Customize with the whole collection, the review's fixes (cloud session, branch `main-ipy06f`, PR #11)
+
+**What a player sees.**
+
+- **Eight Epic scenes to win, one per age**, each richer than the age's Rare scene and with its own signature moment: Sabre Savanna (Stone: a golden savanna with a natural stone arch; a dust devil sweeps across the plain), Siege of the Bronze City (Bronze: a walled city under siege, the wooden horse on the plain, a chariot racing along the bank; Trophy Road 2,300), Harbour Town (Medieval: a Hanseatic port with cogs at anchor and a turning windmill), Windmill Polder (Gunpowder: canals and mills, a drawbridge that rises for a barge), Zeppelin Docks (Industrial: airship hangars, a moored airship swaying, another drifting past; Trophy Road 3,300), Monsoon River (Modern: a misty jungle gorge with waterfalls, a stilt village and a patrol boat), Terraformed Gardens (Future: glass domes, wind turbines, a sky bridge with a waterfall) and Nebula Shipyard (Cosmic: a star-ark being built in an orbital drydock, welding sparks, a swinging crane). Every age now has its free classic scene plus two to win.
+- **Customize shows the whole collection**: in every age the Standard base plus three skins and the classic scene plus two more. A locked card says where it comes from (the Trophy Road and its trophies, the Wardrobe Crate, a Time Capsule with its Dust price) and can be tried on. The Trophy Road shows its skins and scenes as pictures.
+- **NEW stays until you see it**: when something new arrives in an age you are not looking at, that age's button in Customize now wears the red dot until you open it.
+- **Bots wear the new base skins** as often as the old ones.
+- **VS shows more of your scene**: the team colour now tints only the outer edge of each half, so the scene you equipped reads.
+- **Decorations**: on a phone the buttons for the two back spots now sit beside the base instead of on top of it, and a decoration's picture changes from the drawing to the 3D prop with a smooth cross-fade.
+- **Fixed with this release** (the orchestrator, already described below): a new player's empty Capsules tab on a phone, and road items earned before they shipped arriving at load.
+
+**Fixed by the final step** (details in `docs/decisions.md`, "Customize build round 3b"): Nebula Shipyard made the battle work harder than allowed (+1.1 ms a frame, limit 1 ms) because of its many welding sparks and blinking lights; it keeps the sparks on the hull seam and at one deck rig and four of the lights, looks the same, and measured on a quiet machine it now costs 0.35 ms (so it ships). Sabre Savanna's dust devil could not be seen (pale wisps, mostly where the two halves meet, and missing on Lite); it is now a brown, twisting funnel with a dust cloud at its foot that crosses your half and also shows on Lite. In Customize a new scene or skin on an age you did not open was marked as seen anyway; now each age is seen when you open it, and its button carries the dot until then. VS's team colour, the decoration buttons on a phone and the decoration picture's swap (the review's three small points) are fixed too, and one test got more time on a busy machine.
+
+**Checks (2026-10-26):** typecheck and lint clean; 7,869 unit tests pass (326 files, 2 skipped); the production build is fine and the first download grows 1.7 KB to 1,368.7 KB (limit 3 MB); the browser tests in Chromium against a production build, 383 of 384 in 39 minutes (the last one crashed the test browser once while the shared machine was busy and its disk nearly full, and passed on its own); capsule drops 17 of 17; economy 23 of 24 (the one old row) with Dust 483 a day (470 ± 20%); Nebula Shipyard +0.35 ms mean and +0.38 ms median a frame (five paired one-minute runs on a quiet machine, limit 1 ms). Before and after pictures against the live version show the new scenes, the dust devil, Customize after a release, the Trophy Road, VS and the Decorations stage clearly better. CI on PR #11 runs everything in Chromium, Safari's engine (WebKit), the iPhone profile and Firefox before it goes live.
+
+**Open:** on a phone in battle the band under the top bar still hides the tops of tall bases and some of the Epic scenes' signatures (Nebula Shipyard's crane, the Siege's smoke plumes, Zeppelin Docks' second airship, Terraformed Gardens' sky-bridge waterfall); the battle camera's owner has the request. Art notes for a later round: the Gunpowder scene's large empty sky, Wyrm-Coil Keep's outline at small size, birds that look like fish, a few backdrop details, and the dust devil could grow a little. On Graphics Lite, Sabre Savanna now shows the dust devil instead of the deer and the vultures.
+
+**What the owner should try** (once published):
+
+1. Play a battle in any age with a new Epic scene: in Customize › Backdrops pick the age, tap the Epic scene (with the test profile `?tester=1` › "Everything unlocked" all of them are yours; this replaces the progress on that device), then play that age. Sabre Savanna (Stone) shows its dust devil about every 40 seconds; Nebula Shipyard (Cosmic) its sparks and crane.
+2. On VS before the battle, the scene you equipped should show behind your card.
+3. Customize › Decorations on the phone: the base should stay clear, with the two back spots' buttons beside it.
+
 ## 2026-10-26: Customize round 3's first release is live; two small fixes for the next release (cloud session, branch `main-ipy06f`)
 
 - **Live:** `main` is at ce34090 (CI on PR #10 green in Chromium, WebKit, the iPhone profile and Firefox), and GitHub Pages deployed it at 02:56 UTC. Everything in the entry below is on https://simnyborg.github.io/ageborn/.

@@ -902,9 +902,15 @@ def ss_props():
         Prop("grass", "mid", _grass_clump, [_grass_sway(f) for f in range(3)], (60, 40, 3), g1[1]),
         Prop("deer", "mid", fauna.giant_deer(size=1.15), [fauna.walk4_pose(f, swing=14, bob=0.5, head=2.0) for f in range(4)], (70, 56, 3), SS_DEER_Y),
         Prop("vulture", "far", vulture, [fauna.bird_pose(f) for f in range(5)], (50, 26, 26), ring[0][2]),
-        PaintedProp("devil", "far", lambda i: fauna.dust_devil(i, w=36, h=126), 4, ax=0.5, ay=1.0, ppl=0.9),
+        PaintedProp("devil", "far", lambda i: fauna.dust_devil(i, w=46, h=164), 4, ax=0.5, ay=1.0, ppl=0.9),
     ]
     sprites = [
+        # the signature: a dust devil crosses the plain every 40 s, with the lane's wind (+x) across your half; first
+        # in the list, so Lite (the first three moving sprites) keeps it (review 3b: it was all but invisible, and
+        # mostly in the seam band)
+        {"kind": "path", "layer": "far", "fps": 8, "periodS": 40, "face": "fixed",
+         "keys": [[0, 240, SS_DEVIL_Y, 0], [3, 300, SS_DEVIL_Y, 1], [20, 860, SS_DEVIL_Y, 1], [23, 920, SS_DEVIL_Y, 0], [40, 920, SS_DEVIL_Y, 0]],
+         "group": [{"frames": [f"devil_{i}" for i in range(4)]}]},
         {"kind": "loop", "layer": "mid", "frames": ["cat_0", "cat_0", "cat_1", "cat_2", "cat_3", "cat_1"], "fps": 3, "at": cat},
         {"kind": "loop", "layer": "mid", "frames": [f"grass_{i}" for i in range(3)], "fps": 3, "pingpong": True, "at": g1},
         {"kind": "path", "layer": "mid", "fps": 3, "periodS": 120,
@@ -913,10 +919,6 @@ def ss_props():
         {"kind": "path", "layer": "far", "fps": 7, "periodS": 20, "keys": ring,
          "group": [{"frames": ["vulture_4", "vulture_4", "vulture_4", "vulture_0", "vulture_1", "vulture_2", "vulture_3"]},
                    {"frames": ["vulture_4", "vulture_4", "vulture_0", "vulture_1", "vulture_2", "vulture_3", "vulture_4"], "dx": -30, "dy": 10, "phase": 3}]},
-        # the signature: a dust devil crosses the plain every 40 s
-        {"kind": "path", "layer": "far", "fps": 8, "periodS": 40, "face": "fixed",
-         "keys": [[0, 1480, SS_DEVIL_Y, 0], [3, 1400, SS_DEVIL_Y, 1], [20, 760, SS_DEVIL_Y, 1], [23, 680, SS_DEVIL_Y, 0], [40, 680, SS_DEVIL_Y, 0]],
-         "group": [{"frames": [f"devil_{i}" for i in range(4)]}]},
     ]
     return plist, sprites
 

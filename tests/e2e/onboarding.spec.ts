@@ -10,17 +10,29 @@
 import { expect, test, type Page } from '@playwright/test';
 import { fastForward, requireFlow, watchPage } from './helpers';
 
+/**
+ * Fast-forwards the battle to its Result. The wait fails when the battle stops moving (no sim tick run for a minute),
+ * not after a fixed time: on a slow CI runner a software-rendered WebKit spends 7-23 s on some frames and up to 15 s
+ * waiting for the next age's art, and PR #11's first run timed out at 120 s on match 2 while its battle kept running
+ * (locally it ends at the same tick, 7,660, on every run). Ten minutes in all at most; the test says how long it took.
+ */
 async function playToResult(page: Page): Promise<void> {
   await expect(page.getByTestId('battle')).toBeVisible({ timeout: 30_000 });
-  await expect
-    .poll(
-      async () => {
-        await fastForward(page, 2_000);
-        return page.getByTestId('result').isVisible();
-      },
-      { timeout: 120_000, intervals: [250] },
-    )
-    .toBe(true);
+  const start = Date.now();
+  let moved = start;
+  let ticks = 0;
+  while (!(await page.getByTestId('result').isVisible())) {
+    const ran = await fastForward(page, 2_000);
+    const now = Date.now();
+    if (ran > 0) {
+      ticks += ran;
+      moved = now;
+    }
+    expect(now - moved, `the battle ran no sim tick for ${now - moved} ms (${ticks} ticks in ${now - start} ms)`).toBeLessThan(60_000);
+    expect(now - start, `no Result after ${now - start} ms (${ticks} ticks run)`).toBeLessThan(600_000);
+    await page.waitForTimeout(250);
+  }
+  test.info().annotations.push({ type: 'measure', description: `the battle reached its Result in ${Date.now() - start} ms (${ticks} ticks fast-forwarded)` });
 }
 
 /**
@@ -80,8 +92,9 @@ async function openCapsule(page: Page): Promise<void> {
 test.describe('first session (A8)', () => {
   test('Battle → match 1 → capsule 1 → the hub (Army) → match 2 → capsule 2 → forced upgrade → the Ladder hub (Capsules, crate, Campaign)', async ({ page }) => {
     requireFlow('home');
-    // 5.7 min in CI's WebKit on 2026-10-24, so the two longer reward waits (above) get room
-    test.setTimeout(600_000);
+    // 5.7 min in CI's WebKit on 2026-10-24, so the two longer reward waits (above) get room; two slow battles on a slow
+    // runner (each fails only when it stops moving, see `playToResult`) get 15 minutes in all
+    test.setTimeout(900_000);
     const problems = watchPage(page);
     // A fresh profile: one tap on Play starts match 1 (the dev autopilot plays it).
     await page.goto('./?dev=1&autopilot=1');

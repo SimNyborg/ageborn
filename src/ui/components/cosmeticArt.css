@@ -30,7 +30,35 @@
 .cos-base__body {
   animation: cos-base-in 160ms ease-out both;
 }
-/* a decoration's Blender prop (Track B's HD atlas) fades in over where its drawing was (round 3) */
+/* a decoration's Blender prop (Track B's HD atlas) fades in over its drawing, which holds until the prop is
+   mostly in and then fades out itself (round 3; a cross-fade with no dip and no pop, review 3a NIT 8). The
+   current picture keeps the flow, so the box sizes as the picture alone did, and both take the
+   object-position the context gives the box. */
+.cos-img--deco {
+  position: relative;
+}
+.cos-img__main,
+.cos-img__under {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: inherit;
+}
+.cos-img__under {
+  position: absolute;
+  inset: 0;
+  animation: cos-img-under-out 320ms ease-in both;
+}
+@keyframes cos-img-under-out {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
 .cos-img--prop {
   animation: cos-base-in 220ms ease-out both;
 }

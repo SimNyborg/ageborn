@@ -2181,6 +2181,12 @@ button.cos-qwheel__slot:focus-visible {
     transform: scale(0);
   }
 }
+/* An age holding NEW items (review 3b): the age row scrolls sideways, which clips anything above it, so the dot
+   sits inside the tab's corner, over the age chip's edge like an icon badge. */
+.cust-panel .ui-tabs--age .ui-tab__badge {
+  top: 1px;
+  right: 1px;
+}
 @keyframes cust-newdot-pulse {
   50% {
     transform: scale(1.22);

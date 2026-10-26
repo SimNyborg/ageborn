@@ -77,12 +77,12 @@
   "sizes": {
    "back.webp": 7016,
    "far.webp": 38808,
-   "layers.json": 2484,
+   "layers.json": 2135,
    "mid.webp": 29856,
    "props.webp": 4744,
    "thumb.webp": 5724
   },
-  "total": 88632
+  "total": 88283
  },
  "cosmic.ringed_giant": {
   "rule": {
@@ -395,16 +395,17 @@
    "back.webp": 0.0,
    "far.webp": 0.0,
    "mid.webp": 0.0107,
-   "thumb.webp": 0.0007
+   "thumb.webp": 0.0011
   },
+  "signatureAlpha": 0.366,
   "sizes": {
    "back.webp": 4392,
    "far.webp": 23132,
-   "layers.json": 3001,
+   "layers.json": 3004,
    "mid.webp": 45044,
-   "props.webp": 13770,
-   "thumb.webp": 4654
+   "props.webp": 13492,
+   "thumb.webp": 4646
   },
-  "total": 93993
+  "total": 93710
  }
 }

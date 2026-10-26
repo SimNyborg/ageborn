@@ -200,7 +200,11 @@ strip's opaque pixels (3% of the thumbnail) in a team-hue band with saturation a
 Ambient life is data in `layers.json`: blinks and emitters per strip, light points for night skies (at
 most 16 a scene, glowing only under night skies) and the props atlas with its sprites (`loop`, `path`,
 `bob`; at most 6 moving a half, 3 on Lite; still under reduced motion). The game owns all timing, so new
-art never changes balance. A 320 x 180 thumbnail is composed from the strips under the scene's sky with
+art never changes balance. Keep blinks and emitter points few: each `at` point is its own ambient object,
+updated and drawn every frame. Round 3b's Nebula Shipyard had 9 blinking lights and 6 spark points (16
+sparks a second) and missed the frame-time gate (+1.1 ms a frame at 4x CPU throttling); four lights and
+two spark points (`cosmic.py`) keep the look and pass. Put a scene's signature where a player sees it: in
+your half of the lane (strip x below about 900) and under the phone HUD's top band, not in the seam band. A 320 x 180 thumbnail is composed from the strips under the scene's sky with
 its props at rest (Customize). Files: `public/art/backdrops/<age>/<scene>/{layers.json, back.webp,
 far.webp, mid.webp, props.webp, thumb.webp}` (each age's classic in `<age>/classic/`; round 3 re-rendered
 the five format-1 classics, Stone's Smoke Mountain, Medieval's Castle Hills, Gunpowder's Star Fort Coast,

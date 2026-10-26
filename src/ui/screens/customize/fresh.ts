@@ -5,6 +5,9 @@
  * - Opening a tab counts as seeing its items: the screen marks them seen at once (one quiet save write),
  *   so the tab's dot goes, while the cards keep their pip for the rest of this visit (the screen's
  *   snapshot, {@link FreshContext}); next time they are plain.
+ * - Base skins and scenes show one age at a time ({@link AGE_PAGED}): there only the age page the player
+ *   opens counts as seen, and an age tab whose page holds NEW items wears the dot too (review 3b: a NEW scene
+ *   on an age nobody opened was marked seen with its tab, and its pip never showed).
  * - Only released items the tab shows count, so an item hidden by the release gate never keeps a dot lit.
  */
 import type { Content, CosmeticCollection } from '@/content/types';
@@ -31,6 +34,24 @@ export function freshKeys(s: SaveDoc, content: Content, collections: readonly Co
     const x = findItem(content, k);
     return !!x && x.released !== false && collections.includes(x.collection) && s.cosmetics.owned.includes(k);
   });
+}
+
+/** The collections whose Customize tab shows one age page at a time: their items are seen per age page. */
+export const AGE_PAGED: readonly CosmeticCollection[] = ['baseSkin', 'scene'];
+
+/** The save's NEW keys of an age-paged collection on `age`'s page. */
+export function freshKeysOfAge(s: SaveDoc, content: Content, collection: 'baseSkin' | 'scene', age: AgeId): string[] {
+  return freshKeys(s, content, [collection]).filter((k) => findItem(content, k)?.age === age);
+}
+
+/** The ages whose page of an age-paged collection holds NEW items (their age tabs wear a dot). */
+export function freshAges(s: SaveDoc, content: Content, collection: 'baseSkin' | 'scene'): ReadonlySet<AgeId> {
+  const ages = new Set<AgeId>();
+  for (const k of freshKeys(s, content, [collection])) {
+    const age = findItem(content, k)?.age;
+    if (age) ages.add(age);
+  }
+  return ages;
 }
 
 /** The keys that were NEW when the screen opened (the cards' pips for this visit). */

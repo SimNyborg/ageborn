@@ -28,7 +28,7 @@ import { BackdropLook, BaseLook, ClothItem, CosmeticImage } from '../../componen
 import { useDiorama } from '../../components/diorama';
 import { useUi } from '../context';
 import { equippedOf, findItem } from '../model/cosmetics';
-import { spotTargets, type StageBox } from './spots';
+import { SPOT_TARGET_PX, spotTargets, type StageBox } from './spots';
 
 type IdleHandle = { cancel(): void };
 
@@ -186,7 +186,8 @@ function StageSpots(p: { anchors: StageBox[]; host: RefObject<HTMLElement>; deco
   const el = p.host.current;
   const w = el?.clientWidth ?? 0;
   const h = el?.clientHeight ?? 0;
-  const targets = spotTargets(p.anchors.slice(0, ANCHOR_COUNT), w, h);
+  // the callouts stand clear of the flag pole and its flags too (the anchor after the spots)
+  const targets = spotTargets(p.anchors.slice(0, ANCHOR_COUNT), w, h, SPOT_TARGET_PX, p.anchors.slice(ANCHOR_COUNT, ANCHOR_COUNT + 1));
   const press = (e: Event, on: boolean): void => {
     const b = e.currentTarget as HTMLElement | null;
     if (!b) return;
