@@ -1,0 +1,4 @@
+Balance test: 1 Lindworm vs 5 Crossbowmen 🐉🏹
+I ran this fight in the game's simulator with more and fewer crossbows. With 5, the dragon wins on a sliver. With 6, it falls. Too strong, too weak, or just right?
+
+#gamedev #indiedev #indiegame #strategygame #gamebalance
