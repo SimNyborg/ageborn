@@ -5,5 +5,12 @@
     "hook_type": "problem",
     "experiment": "indie-angle",
     "arm": "devlog"
+  },
+  "dv7-devlog-7-making-a-base-collapse-feel-good": {
+    "length_s": 27.0,
+    "format": "devlog",
+    "hook_type": "problem",
+    "experiment": "indie-angle",
+    "arm": "devlog"
   }
 }
