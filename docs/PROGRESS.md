@@ -2,6 +2,30 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-26: Customize round 3, second release: eight Epic scenes, Customize with the whole collection, the review's fixes (cloud session, branch `main-ipy06f`, PR #11)
+
+**What a player sees.**
+
+- **Eight Epic scenes to win, one per age**, each richer than the age's Rare scene and with its own signature moment: Sabre Savanna (Stone: a golden savanna with a natural stone arch; a dust devil sweeps across the plain), Siege of the Bronze City (Bronze: a walled city under siege, the wooden horse on the plain, a chariot racing along the bank; Trophy Road 2,300), Harbour Town (Medieval: a Hanseatic port with cogs at anchor and a turning windmill), Windmill Polder (Gunpowder: canals and mills, a drawbridge that rises for a barge), Zeppelin Docks (Industrial: airship hangars, a moored airship swaying, another drifting past; Trophy Road 3,300), Monsoon River (Modern: a misty jungle gorge with waterfalls, a stilt village and a patrol boat), Terraformed Gardens (Future: glass domes, wind turbines, a sky bridge with a waterfall) and Nebula Shipyard (Cosmic: a star-ark being built in an orbital drydock, welding sparks, a swinging crane). Every age now has its free classic scene plus two to win.
+- **Customize shows the whole collection**: in every age the Standard base plus three skins and the classic scene plus two more. A locked card says where it comes from (the Trophy Road and its trophies, the Wardrobe Crate, a Time Capsule with its Dust price) and can be tried on. The Trophy Road shows its skins and scenes as pictures.
+- **NEW stays until you see it**: when something new arrives in an age you are not looking at, that age's button in Customize now wears the red dot until you open it.
+- **Bots wear the new base skins** as often as the old ones.
+- **VS shows more of your scene**: the team colour now tints only the outer edge of each half, so the scene you equipped reads.
+- **Decorations**: on a phone the buttons for the two back spots now sit beside the base instead of on top of it, and a decoration's picture changes from the drawing to the 3D prop with a smooth cross-fade.
+- **Fixed with this release** (the orchestrator, already described below): a new player's empty Capsules tab on a phone, and road items earned before they shipped arriving at load.
+
+**Fixed by the final step** (details in `docs/decisions.md`, "Customize build round 3b"): Nebula Shipyard made the battle work harder than allowed (+1.1 ms a frame, limit 1 ms) because of its many welding sparks and blinking lights; it keeps the sparks on the hull seam and at one deck rig and four of the lights, looks the same, and measured on a quiet machine it now costs 0.35 ms (so it ships). Sabre Savanna's dust devil could not be seen (pale wisps, mostly where the two halves meet, and missing on Lite); it is now a brown, twisting funnel with a dust cloud at its foot that crosses your half and also shows on Lite. In Customize a new scene or skin on an age you did not open was marked as seen anyway; now each age is seen when you open it, and its button carries the dot until then. VS's team colour, the decoration buttons on a phone and the decoration picture's swap (the review's three small points) are fixed too, and one test got more time on a busy machine.
+
+**Checks (2026-10-26):** typecheck and lint clean; 7,869 unit tests pass (326 files, 2 skipped); the production build is fine and the first download grows 1.7 KB to 1,368.7 KB (limit 3 MB); the browser tests in Chromium against a production build, 383 of 384 in 39 minutes (the last one crashed the test browser once while the shared machine was busy and its disk nearly full, and passed on its own); capsule drops 17 of 17; economy 23 of 24 (the one old row) with Dust 483 a day (470 ± 20%); Nebula Shipyard +0.35 ms mean and +0.38 ms median a frame (five paired one-minute runs on a quiet machine, limit 1 ms). Before and after pictures against the live version show the new scenes, the dust devil, Customize after a release, the Trophy Road, VS and the Decorations stage clearly better. CI on PR #11 runs everything in Chromium, Safari's engine (WebKit), the iPhone profile and Firefox before it goes live.
+
+**Open:** on a phone in battle the band under the top bar still hides the tops of tall bases and some of the Epic scenes' signatures (Nebula Shipyard's crane, the Siege's smoke plumes, Zeppelin Docks' second airship, Terraformed Gardens' sky-bridge waterfall); the battle camera's owner has the request. Art notes for a later round: the Gunpowder scene's large empty sky, Wyrm-Coil Keep's outline at small size, birds that look like fish, a few backdrop details, and the dust devil could grow a little. On Graphics Lite, Sabre Savanna now shows the dust devil instead of the deer and the vultures.
+
+**What the owner should try** (once published):
+
+1. Play a battle in any age with a new Epic scene: in Customize › Backdrops pick the age, tap the Epic scene (with the test profile `?tester=1` › "Everything unlocked" all of them are yours; this replaces the progress on that device), then play that age. Sabre Savanna (Stone) shows its dust devil about every 40 seconds; Nebula Shipyard (Cosmic) its sparks and crane.
+2. On VS before the battle, the scene you equipped should show behind your card.
+3. Customize › Decorations on the phone: the base should stay clear, with the two back spots' buttons beside it.
+
 ## 2026-10-26: Customize round 3's first release is live; two small fixes for the next release (cloud session, branch `main-ipy06f`)
 
 - **Live:** `main` is at ce34090 (CI on PR #10 green in Chromium, WebKit, the iPhone profile and Firefox), and GitHub Pages deployed it at 02:56 UTC. Everything in the entry below is on https://simnyborg.github.io/ageborn/.

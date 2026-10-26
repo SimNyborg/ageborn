@@ -2,6 +2,13 @@
 
 Status: **open** (src/render/layout.ts and the battle HUD belong to item 38; nothing in round 3 depends on it).
 
+Review 3b (2026-10-26, NIT 4) adds the Epic scenes: the same top band hides some signatures of the backdrops that a
+player pays a crate, a capsule or 2,300/3,300 trophies for (Nebula Shipyard's swinging crane arm on the top girder,
+Terraformed Gardens' sky-bridge fall and turbine tops, the Siege of the Bronze City's plume tops, Zeppelin Docks'
+drifting second airship); desktop shows them (review 3b `cap/sheets/hud-tn.jpg`, `hud-3.jpg`, `hud-zm.jpg`). The
+round 3 final made no change for it (src/render/** is item 44's at the moment); Track A keeps future signature props
+under the HUD band (art/blender/world/README.md).
+
 ## Why
 
 Review 3a, SHOULD 2. At 844 x 390 (and every phone size) the lane's world framing keeps `TALLEST_LU` = 240 lu above
