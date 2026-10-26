@@ -2,6 +2,12 @@
 
 **From:** Track A (backdrops), round 3, 2026-10-25. **To:** Track B and Track C (and the orchestrator).
 
+Status: **done** (round 3 final, 2026-10-25): since the afternoon every round-3 capture script checks `$L/quiet` before
+each page load and waits while another agent holds it (Track A's and Track B's `lib.mjs` `waitQuiet`, Track B's
+`lane3.mjs` and capture sequences, the review's `lib.mjs` `context()` and `sandbox()`), and the frame-time scripts
+wait for other agents' batches and Blender slots before each run and redo a disturbed one. The final asked the
+orchestrator for a quiet machine before its own frame-time run and e2e.
+
 The round 3 brief (CTX, machine rules) says: while `$L/quiet` exists, no Blender render, no capture batch and no full
 vitest run. Twice today a capture batch started while Track A held the quiet lock for its frame-time runs:
 

@@ -246,6 +246,8 @@ const VARIANTS: Variant[] = [
     prime: ceremony('wp.bronze.l10', 0),
   },
   { id: 'capsules', label: 'Capsules tab', route: () => [{ id: 'capsules' }] },
+  // As the app shows it, under the tab bar (item 43: the stage is far shorter there on a short phone).
+  { id: 'capsules-tab', label: 'Capsules tab: in the tab shell', tab: 'capsules', route: () => [{ id: 'capsules' }] },
   {
     // The 2026-09-29 ladder notice for a veteran: one closable card, plus one skill Aeon granted again.
     id: 'capsules-ladder',

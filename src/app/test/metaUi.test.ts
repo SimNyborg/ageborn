@@ -340,7 +340,8 @@ describe('createMetaUi: the meta screens and the battle in step', () => {
     ui.router.reset({ id: 'home' });
     expect(c.route.value).toEqual({ id: 'title', battle: null });
     ui.dispose();
-  });
+    // a whole battle runs to its result: about 2 s alone, past the 5 s default under a loaded machine (review 3a, NIT 11)
+  }, 30_000);
 
   it('a ranked match keeps the found player in the battle, the bot brain, the result and the stored replay (owner decision 2026-10-07)', async () => {
     const { c, ui, services } = await app();

@@ -374,22 +374,79 @@
     margin-bottom: -18px;
   }
 }
-/* Short landscape phones (item 43; Chrome's address bar showing, about 762 x 277): below 300 px the stage has no
-   room for the 72 px capsule on its pedestal, and the source line slid under Odds and Open. The capsule and its
-   pedestal shrink with the height instead (the capsule plus pedestal is about 1.45 capsules tall; 195 px is the
-   header, the tab bar, the stage's padding, its name, source and actions). */
-@container ui-root (max-height: 299px) {
-  .caps-stage {
-    --caps-d: clamp(36px, calc((100cqh - 195px) / 1.45), 72px);
+/* Phones (item 43 and its review): the stage gets what is left between the header and the tab bar, only about 118 px
+   at 745 x 250 and 145 px at 762 x 277 in the app (Chrome's address bar showing). The capsule and its pedestal take
+   their size from the hero's own height (a size container; the capsule plus pedestal is about 1.45 capsules tall, and
+   the name and source under it need 39 px), and on a short stage the name and the source stand beside the capsule
+   instead of under it, so the capsule is never cut and the source never slides under Odds and Open. Taller phones keep
+   the 72 px capsule. A new player's empty stage sits in one column sized by its content, so it keeps its own height (and, below
+   300 px, its pedestal shrinks with the screen as before). */
+@container ui-root (max-height: 480px) {
+  .caps:not(.is-empty) .caps-stage {
+    container: caps-stage / size;
+  }
+  .caps:not(.is-empty) .caps-stage__hero {
+    container: caps-hero / size;
+  }
+  .caps:not(.is-empty) .caps-stage__float {
+    --caps-d: clamp(36px, calc((100cqh - 39px) / 1.45), 72px);
   }
   .caps-stage__drum svg {
-    width: var(--caps-d);
-    height: var(--caps-d);
+    width: var(--caps-d, 72px);
+    height: var(--caps-d, 72px);
   }
   .caps-pedestal {
-    width: calc(var(--caps-d) * 1.53);
+    width: calc(var(--caps-d, 72px) * 1.53);
   }
   .caps-stage__float .caps-stage__drum {
-    margin-bottom: calc(var(--caps-d) * -0.25);
+    margin-bottom: calc(var(--caps-d, 72px) * -0.25);
   }
 }
+/* The empty stage on the shortest phones: its pedestal shrinks with the screen's height, so both lines of its note fit. */
+@container ui-root (max-height: 299px) {
+  .caps.is-empty .caps-stage {
+    --caps-d: clamp(36px, calc((100cqh - 195px) / 1.45), 72px);
+  }
+}
+@container caps-stage (max-height: 200px) {
+  .caps-stage__hero {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: 1fr auto auto 1fr;
+    justify-content: center;
+    align-items: center;
+    column-gap: var(--ui-s3);
+    row-gap: 2px;
+  }
+  /* beside the text the capsule may use the hero's whole height (and the actions' 8 px of padding under it) */
+  .caps:not(.is-empty) .caps-stage__float {
+    --caps-d: clamp(28px, calc((100cqh + 4px) / 1.45), 72px);
+  }
+  .caps-stage__float {
+    grid-column: 1;
+    grid-row: 1 / -1;
+  }
+  .caps-stage__name {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: 0;
+    text-align: left;
+  }
+  .caps-stage__source {
+    grid-column: 2;
+    grid-row: 3;
+    text-align: left;
+  }
+  /* the spotlight, its glow and the motes follow the capsule into its column (a positioned grid child takes its area;
+     both lines are named, since an absolutely positioned item's auto line is the container's edge) */
+  .caps-stage__cone,
+  .caps-stage__glow,
+  .caps-stage__motes {
+    grid-column: 1 / 2;
+    grid-row: 1 / -1;
+  }
+  .caps-stage__cone {
+    width: 150%;
+  }
+}
+
