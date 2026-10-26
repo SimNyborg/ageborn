@@ -74,6 +74,10 @@ what we believe, how sure we are, and what we post next because of it.
 
 - 2026-10-19: no AI-voice line in captions; keep captions about the game and fewer precautions in general.
 
+- 2026-10-26: only narrated Reels from now on. The music-only Reels (duels) were too loud and abrupt, so viewers got
+  a fright and scrolled away (their skip is 67-74 % against 55-67 % for narrated devlogs). Every Reel gets a voice;
+  music stays low with a soft fade-in, and nothing loud on the first frame.
+
 - 2026-10-22: the account's direction is now the indie game developer angle: viewers get insight into real
   development questions and see the game improve over time (before/after). Battle-only Reels become the
   exception; when a duel goes out, frame it as development (a balance test, a new unit, a fix).
@@ -149,3 +153,5 @@ what we believe, how sure we are, and what we post next because of it.
 - 2026-10-26 evening: DV7 (base collapse) 127 reach in 9.5 h; R16 78 in 1.5 h with 49.5 % skip, the lowest early
   skip of any duel. BA2 134 with 49 % watch (before/after keeps the best watch share). Followers 140. Queue empty
   apart from DV6 (held); the 2026-10-27 run produces both slots.
+- 2026-10-26 late: owner note: only narrated Reels; duel template now has low music (-15 dB, 0.8 s fade-in), no
+  opening slam and an optional narration. Duels continue only as narrated balance tests.

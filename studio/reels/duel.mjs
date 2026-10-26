@@ -54,14 +54,15 @@ export function duelEdit(o) {
   T.overlay('endcard', endAt, endDur, { tagline: o.tagline, cta: 'FOLLOW FOR MORE BATTLES' });
 
   // --- sound ----------------------------------------------------------------------------------
-  T.music(o.music, 0, total, { from: MUSIC.peak - impactAt / 30, gainDb: 0, fadeIn: 0.02, fadeOut: 0.8 });
-  T.mix.config = { musicDb: -9, sfxDb: -1, accentDb: -2, sidechainDb: 4, exclude: ['emote_pop', 'xp_tick', 'coin_gain', 'alert_base', 'evolve_ready'] };
-  T.accent('vs_slam', 1, { gainDb: -2 });
-  T.accent('explosion_m', impactAt, { gainDb: -6 });
+  // owner note 2026-10-26: the music-only duels were too loud and startled viewers into scrolling away, so the
+  // music sits low and fades in, there is no slam on frame 0, and a narration (o.narration) carries the Reel
+  T.music(o.music, 0, total, { from: MUSIC.peak - impactAt / 30, gainDb: -4, fadeIn: 0.8, fadeOut: 0.8 });
+  T.mix.config = { musicDb: -15, sfxDb: -7, accentDb: -8, sidechainDb: 6, exclude: ['emote_pop', 'xp_tick', 'coin_gain', 'alert_base', 'evolve_ready'] };
+  T.accent('explosion_m', impactAt, { gainDb: -10 });
   T.accent('ui_whoosh', sMid.at, { gainDb: -6 });
   T.accent('star_stamp', lastDeath + 3, { gainDb: -3 });
   T.accent('region_open', endAt, { gainDb: -6 });
 
-  const out = T.write({ endFade: 0.4 });
+  const out = T.write({ endFade: 0.4, ...(o.narration ? { narration: { file: o.narration, at: 0, gainDb: 0 } } : {}) });
   return { ...out, file: o.file, cover: 0.6 };
 }

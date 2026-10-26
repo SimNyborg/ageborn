@@ -85,6 +85,8 @@ watched), share_rate, eng_rate, reach. Followers per post are not available from
 
 ## Content direction (from the first week)
 
+Owner note 2026-10-26: every Reel is narrated (no music-only Reels). Music sits low (about -15 dB) with a soft fade-in;
+nothing loud or sudden in the first second (no slam or explosion on frame 0).
 Owner direction 2026-10-22: the account is an indie developer's channel. Every Reel shows a development question
 or the game getting better (before/after, a fix, a balance test, a new feature), told in first person. See PLAN.
 
