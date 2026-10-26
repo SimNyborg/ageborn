@@ -66,7 +66,7 @@ import { FX_ZONES } from '../../effects/sprites';
 import { CLIP_TIMING } from '../../style';
 import { baseSheetSource } from '../../manifest.world';
 import { partSprite, PuffList } from '../procedural/shared';
-import { clipDurations, frameIndex, isBaseSkinSource, setFrame, type WorldAtlas, type WorldSheet } from '../worldAtlas';
+import { clipDurations, frameIndex, isBaseSkinSource, setFrame, WORLD_RETRY_MS, type WorldAtlas, type WorldSheet } from '../worldAtlas';
 import { CollapseView } from './collapse/collapseView';
 import { collapseProfileFor, type CollapseMaterial } from './collapse/profiles';
 import { warmCollapse } from './collapse/warm';
@@ -290,8 +290,12 @@ const RESKIN_REDUCE_MS = 260;
 
 /** The Legendary aura (PLAN 2c "white Legendary aura"): a pale lilac-white additive halo, its peak alpha. */
 const AURA_TINT = 0xf6f0ff;
-const AURA_ALPHA = 0.3;
+// normal blending (a little stronger than the old additive 0.3, which looked the same on the near-white tint): an
+// additive aura between the shadow and the body broke the base's batch twice a side (frame time, round 3b)
+const AURA_ALPHA = 0.42;
 const AURA_PX = 64;
+/** Times a base view asks again for a sheet that failed (a dropped fetch), {@link WORLD_RETRY_MS} apart. */
+const RETRY_TRIES = 3;
 let auraTex: Texture | null = null;
 
 /** The aura's soft radial falloff (a 64 px canvas, made once and shared); empty without a canvas (tests). */
@@ -385,8 +389,12 @@ export class AtlasBaseView implements BaseView {
   private skinTint: number | null = null;
   /** The sheet source drawn now (a skin model, or the age's standard sheet while the model loads). */
   private source: string;
-  /** Sheets this view asked the world atlas for (each once). */
+  /** Sheets this view asked the world atlas for (each once, until a failed ask's retry comes round). */
   private readonly requested = new Set<string>();
+  /** Failed asks (a dropped fetch on mobile data) and the render time left until this view asks again. */
+  private readonly retry = new Map<string, number>();
+  /** How often each sheet has failed for this view: it stops asking after {@link RETRY_TRIES} (the next match tries). */
+  private readonly failures = new Map<string, number>();
   private reskin: Reskin | null = null;
 
   constructor(private readonly o: AtlasBaseOptions) {
@@ -410,7 +418,6 @@ export class AtlasBaseView implements BaseView {
     this.flash.visible = false;
     this.aura = new Sprite(auraTexture());
     this.aura.anchor.set(0.5);
-    this.aura.blendMode = 'add';
     this.aura.tint = AURA_TINT;
     this.aura.visible = false;
     this.body.addChild(this.art, this.lightLayer, this.bandLayer, this.crackLayer);
@@ -794,6 +801,7 @@ export class AtlasBaseView implements BaseView {
 
   update(dtMs: number): void {
     if (this.destroyed) return;
+    if (this.retry.size > 0) this.stepRetry(dtMs);
     this.checkModel();
     this.live = true;
     this.clockMs += dtMs;
@@ -1332,11 +1340,32 @@ export class AtlasBaseView implements BaseView {
   // ------------------------------------------------------------------------------------------
   // Base skin models (lazy)
 
-  /** Asks the world atlas for a sheet once (a skin model streaming in). */
+  /**
+   * Asks the world atlas for a sheet once (a skin model streaming in). A failed load (a dropped fetch) is asked
+   * for again after {@link WORLD_RETRY_MS}, when the atlas fetches it again, so the model still blooms in over
+   * its stand-in once the network is back.
+   */
   private request(src: string | undefined): void {
     if (!src || this.requested.has(src) || this.o.world.get(src)) return;
     this.requested.add(src);
-    void this.o.world.ensure(src);
+    void this.o.world.ensure(src).then((s) => {
+      if (s || this.destroyed) return;
+      const n = (this.failures.get(src) ?? 0) + 1;
+      this.failures.set(src, n);
+      // a sheet that is really missing is not fetched every few seconds for the whole battle
+      if (n <= RETRY_TRIES) this.retry.set(src, WORLD_RETRY_MS);
+    });
+  }
+
+  private stepRetry(dtMs: number): void {
+    for (const [src, ms] of [...this.retry]) {
+      if (ms > dtMs) {
+        this.retry.set(src, ms - dtMs);
+        continue;
+      }
+      this.retry.delete(src);
+      this.requested.delete(src);
+    }
   }
 
   /**

@@ -46,7 +46,8 @@ describe('release gate: bots (A6.8, A7.4)', () => {
       }
     }
     expect(bad).toEqual([]);
-  });
+    // every arena x format x 25 seeds: past the 5 s default under a loaded machine (review 3a, NIT 11)
+  }, 30_000);
 
   it('no Conquest, Skirmish, Daily, tutorial or War Path opponent fields one', () => {
     const s = ownsAll(inArena(7, 3), 9);
