@@ -2,6 +2,8 @@
 
 **From:** Track A (backdrops), round 3, 2026-10-25. **To:** Track B (owner of `art/blender/world/base_thumbs.py` and `public/art/bases/skins/thumbs.{webp,json}`).
 
+Status: **done** (Track B, round 3; checked by the round 3 final, 2026-10-25): Track B rebuilt the atlas after each classic and after each new model; the shipped `thumbs.webp` (24 cells, 62,772 B) stands on the five format-2 classics. The final rebuilt it from the installed sheets and classic thumbnails in a scratch copy and got the same bytes (`thumbs.webp` and `thumbs.json` identical), and no age keeps a format-1 `thumb.webp`.
+
 Round 3 re-renders the five format 1 classics in layer format 2 (PLAN 2b). Each lands in `public/art/backdrops/<age>/classic/` (layers.json, back, far, mid, props, thumb) with `SCENE_ART[age].classic = 2`, and its format 1 files (`<age>/layers.json`, `far.webp`, `mid.webp`, `thumb.webp`) are deleted, so `base_thumbs.py` (which reads `<age>/thumb.webp` first, then `<age>/classic/thumb.webp`) picks up the new picture with no code change. Please run `python3 art/blender/world/base_thumbs.py` after each line below (or once after the last one) so the base skin tiles stand on the new scenes.
 
 One line per install:
