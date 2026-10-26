@@ -716,21 +716,53 @@ def giant_deer(coat="#8E6E52", coat_dk="#6E5440", belly="#C8B090", antler="#D8C8
     return build
 
 
-def dust_devil(i, w=46, h=150, color=(0.86, 0.78, 0.62)):
-    """A dust devil (PaintedProp frame i of 4): a soft twisting funnel of dust, wide and faint at the top,
-    a dense swirl at the foot, the twist advancing a quarter turn per frame."""
+def dust_devil(i, w=46, h=164, light=(0.74, 0.64, 0.50), dark=(0.50, 0.41, 0.31)):
+    """A dust devil (PaintedProp frame i of 4): a cone of swirling dust, narrow at the foot and widening upward,
+    light and dark spiral bands that climb a quarter turn per frame, a dust cloud round the foot, the top thinning
+    out into wisps, and a few specks of grit carried round. Review 3b: the first version (pale wisps, mean alpha
+    0.12, lighter than the hazed plain) did not read; this one is darker than the plain and keeps its colours
+    under the A11 saturation line (40%)."""
     import numpy as np
+
+    def smooth(x):
+        x = np.clip(x, 0, 1)
+        return x * x * (3 - 2 * x)
+
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
-    v = 1.0 - yy / (h - 1)                      # 0 at the foot, 1 at the top
-    width = 0.12 + 0.36 * v ** 1.3
-    sway = 0.06 * np.sin(v * 5.0 + i * 1.57)
-    u = (xx / (w - 1) - 0.5 - sway) / np.maximum(0.02, width)
-    body = np.clip(1.0 - np.abs(u), 0, 1) ** 1.4
-    bands = 0.6 + 0.4 * np.sin(v * 22.0 - i * 1.57 + u * 2.4)
-    a = body * bands * (0.35 + 0.65 * (1 - v)) * np.clip(v * 8, 0, 1) * np.clip((1 - v) * 3 + 0.2, 0, 1)
+    v = 1.0 - yy / (h - 1)                         # 0 at the foot, 1 at the top
+    half = 0.07 + 0.36 * v ** 0.9                   # half-width as a fraction of the frame
+    sway = 0.05 * np.sin(v * 4.2 + i * np.pi / 2) * v
+    u = (xx / (w - 1) - 0.5 - sway) / np.maximum(0.03, half)
+    body = smooth((1.0 - np.abs(u)) / 0.55)         # a full body with a soft rim
+    band = 0.5 + 0.5 * np.sin(2 * np.pi * (v * 5.5 - u * 0.45 - i * 0.25))
+    a = body * (0.55 + 0.45 * (1 - v)) * (0.7 + 0.3 * band) * smooth((0.95 - v) / 0.35) * smooth(v / 0.04)
+    # wisps breaking off near the top
+    wisp = 0.5 + 0.5 * np.sin(xx * 0.9 + yy * 0.35 + i * 1.3) * np.sin(yy * 0.21 - i * 0.8)
+    a *= 1.0 - smooth((v - 0.45) / 0.3) * 0.45 * (1.0 - wisp)
+    # the dust cloud round the foot: low, wide, lumpy
+    cu = (xx / (w - 1) - 0.5) / 0.47
+    cv = (v - 0.035) / 0.06
+    cloud = smooth(1 - (cu ** 2 + cv ** 2)) * (0.75 + 0.25 * np.sin(cu * 7.0 + i * np.pi / 2))
+    a = np.maximum(a, cloud * 0.6)
+    k = band * (0.35 + 0.65 * body)                 # light bands on the body, dark in the folds
+    rgb = np.array(dark, np.float32) * (1 - k[..., None]) + np.array(light, np.float32) * k[..., None]
+    rgb = np.where((cloud * 0.6 > a * 0.99)[..., None], np.array(light, np.float32) * 0.96, rgb)
     out = np.zeros((h, w, 4), np.float32)
-    out[..., 0], out[..., 1], out[..., 2] = color
-    out[..., 3] = np.clip(a * 0.62, 0, 1)
+    out[..., :3] = rgb
+    out[..., 3] = np.clip(a * 0.92, 0, 1)
+    # specks of grit carried round the lower funnel (the far side hidden in the dust)
+    rng = np.random.RandomState(11)
+    for _ in range(8):
+        ang = rng.uniform(0, 2 * np.pi) + i * np.pi / 2
+        hv = rng.uniform(0.05, 0.55)
+        rad = (0.07 + 0.36 * hv ** 0.9) * (w - 1) * 1.05
+        cx = (w - 1) * 0.5 + np.cos(ang) * rad
+        cy = (h - 1) * (1 - hv) - np.sin(ang) * 2.0
+        if np.sin(ang) < -0.2:
+            continue
+        m = np.clip(1.4 - np.sqrt((xx - cx) ** 2 + (yy - cy) ** 2), 0, 1)
+        out[..., :3] = out[..., :3] * (1 - m[..., None]) + np.array(dark, np.float32) * 0.8 * m[..., None]
+        out[..., 3] = np.maximum(out[..., 3], m * 0.9)
     return out
 
 

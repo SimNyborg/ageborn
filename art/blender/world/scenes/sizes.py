@@ -44,6 +44,26 @@ def rule_share(path, min_alpha=0.5):
 
 FORMAT1 = ("layers.json", "far.webp", "mid.webp", "thumb.webp")
 
+# Signature props drawn as soft dust or mist must still read: the least mean alpha of their frames' visible pixels
+# (review 3b: Sabre Savanna's first dust devil averaged 0.12 and did not show on the plain). The unit test holds
+# the recorded value to its floor.
+SIGNATURE_FRAMES = {"stone.sabre_savanna": "devil_"}
+
+
+def frames_alpha(d, prefix):
+    """The least mean alpha of the visible pixels (alpha over 8/255) of a scene's props frames named `prefix*`."""
+    doc = json.load(open(os.path.join(d, "layers.json")))
+    frames = {k: v for k, v in (doc.get("props") or {}).get("frames", {}).items() if k.startswith(prefix)}
+    if not frames:
+        return None
+    atlas = np.asarray(Image.open(os.path.join(d, doc["props"]["image"])).convert("RGBA"), dtype=np.float32) / 255.0
+    out = []
+    for x, y, w, h, *_ in frames.values():
+        al = atlas[y:y + h, x:x + w, 3]
+        vis = al > 8 / 255
+        out.append(float(al[vis].mean()) if vis.any() else 0.0)
+    return round(min(out), 3)
+
 
 def scenes():
     for age in AGES:
@@ -85,6 +105,8 @@ def main():
         if total > TOTAL:
             fails.append(f"{key} total {total} B > {TOTAL} B")
         checks[key] = {"sizes": sizes, "total": total, "rule": rule}
+        if key in SIGNATURE_FRAMES:
+            checks[key]["signatureAlpha"] = frames_alpha(d, SIGNATURE_FRAMES[key])
         cell = lambda n: f"{sizes[n] / 1024:6.1f}K" if n in sizes else "      -"  # noqa: E731
         rr = "/".join(f"{rule[n] * 100:.2f}" if n in rule else "-" for n in ("far.webp", "mid.webp", "back.webp", "thumb.webp"))
         print(f"{key:28s} {cell('back.webp')} {cell('far.webp')} {cell('mid.webp')} {cell('props.webp')} {cell('thumb.webp')} "
