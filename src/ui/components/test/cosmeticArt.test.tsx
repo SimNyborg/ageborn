@@ -2,11 +2,11 @@
  * Cosmetic pictures in the UI (src/ui/components/cosmeticArt.tsx): a backdrop or scene still shown
  * before its Blender strips streamed in updates itself when the visuals say a picture got better
  * (docs/requests/custom-a-scenes.md), a national flag grid asks for the atlas tile, and a Legendary base
- * model stands in its aura (round 3).
+ * model stands in its aura (round 3), and a decoration's Blender prop cross-fades over its drawing.
  */
 import { render } from 'preact';
 import { act } from 'preact/test-utils';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { installDom, type FakeElement } from '../../screens/test/dom';
 import { BackdropLook, BaseLook, BaseThumb, CosmeticArtContext, CosmeticImage, CosmeticPicturesContext, FlagTileImage, flagSpriteStyle, type CosmeticImageFn, type CosmeticImageOptions } from '../cosmeticArt';
 import { UiKitContext, defaultKit } from '../kit';
@@ -204,5 +204,56 @@ describe('the Legendary aura under a base picture (round 3)', () => {
     expect(spire.querySelector('.cos-btile__thumb')).toBeNull();
     expect(spire.querySelector('.cos-base__aura')).not.toBeNull();
     expect(c.querySelector('[data-testid="neon"] .cos-btile__thumb')!.getAttribute('src')).toBe('baseSkin.midnight_neon.thumb.webp');
+  });
+});
+
+describe("a decoration's Blender prop cross-fades over its drawing (review 3a NIT 8)", () => {
+  it('keeps the same drawing under the prop while the prop fades in, then drops it', () => {
+    vi.useFakeTimers();
+    try {
+      let hd = false;
+      const fn: CosmeticImageFn = () => (hd ? 'props.webp' : 'data:image/svg+xml,drawing');
+      const subs = new Set<() => void>();
+      const onChange = (cb: () => void): (() => void) => {
+        subs.add(cb);
+        return () => {
+          subs.delete(cb);
+        };
+      };
+      const c = show(
+        <CosmeticArtContext.Provider value={fn}>
+          <CosmeticPicturesContext.Provider value={onChange}>
+            <CosmeticImage item="decoration.fire_bowl" testid="deco" />
+          </CosmeticPicturesContext.Provider>
+        </CosmeticArtContext.Provider>,
+      );
+      const imgs = (): string[] => c.querySelectorAll('[data-testid="deco"] img').map((i) => `${i.getAttribute('class')} ${i.getAttribute('src')}`);
+      expect(imgs()).toEqual(['cos-img__main data:image/svg+xml,drawing']);
+      const drawing = c.querySelector('[data-testid="deco"] img');
+      hd = true;
+      act(() => {
+        for (const cb of subs) cb();
+      });
+      // the drawing's own element stays (never remounted, so the tile never dips) under the prop fading in
+      expect(imgs()).toEqual(['cos-img__under data:image/svg+xml,drawing', 'cos-img__main cos-img--prop props.webp']);
+      expect(c.querySelector('[data-testid="deco"] img')).toBe(drawing);
+      // the drawing's fade-out end (or its timer) drops it
+      act(() => {
+        vi.advanceTimersByTime(450);
+      });
+      expect(imgs()).toEqual(['cos-img__main cos-img--prop props.webp']);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('a prop already in shows alone, with no drawing under it', () => {
+    const c = show(
+      <CosmeticArtContext.Provider value={() => 'props.webp'}>
+        <CosmeticImage item="decoration.fern" testid="deco" />
+      </CosmeticArtContext.Provider>,
+    );
+    expect(c.querySelectorAll('[data-testid="deco"] img')).toHaveLength(1);
+    expect(c.querySelector('[data-testid="deco"] .cos-img__under')).toBeNull();
   });
 });

@@ -7,7 +7,10 @@
  * 44 px targets cannot each sit on their own prop. So a target sits on its prop (the prop shows through
  * it) only where it covers that prop and no other; every other spot becomes a callout on a row above the
  * props, showing what it holds, with a leader down to where it stands. The back spots (furthest from the
- * lane, first in anchor order) go up first. Every prop also gets a footprint on the ground.
+ * lane, first in anchor order) go up first. The callouts stand in the free stage right of the props and
+ * the targets on the ground, where the base is not (review 3a NIT 7: above the props on a phone they
+ * covered the base's top half), and above the props only on a stage too narrow for that. Every prop also
+ * gets a footprint on the ground.
  */
 
 /** A box on the stage: CSS px in the stage's host (left, top, width, height). */
@@ -86,9 +89,10 @@ const covers = (pos: number, w: number, c: number, bw: number): boolean => Math.
 
 /**
  * The tap targets for the decoration spots (`spots`, in anchor order) on a stage `width` x `height` px.
- * Each is at least `min` px each way, keeps apart from the others and never leaves the stage.
+ * Each is at least `min` px each way, keeps apart from the others and never leaves the stage. The callouts'
+ * row beside the props also keeps clear of `beside` (the flag pole and its flags).
  */
-export function spotTargets(spots: readonly StageBox[], width: number, height: number, min = SPOT_TARGET_PX): SpotTarget[] {
+export function spotTargets(spots: readonly StageBox[], width: number, height: number, min = SPOT_TARGET_PX, beside: readonly StageBox[] = []): SpotTarget[] {
   const n = spots.length;
   if (n === 0) return [];
   const items = spots.map((s) => ({ c: s.x + s.w / 2, w: Math.max(min, Math.ceil(s.w + 8)), bw: s.w }));
@@ -110,7 +114,21 @@ export function spotTargets(spots: readonly StageBox[], width: number, height: n
     if (ok) break;
   }
   raised = Math.min(raised, n);
-  const up = packRow(items.slice(0, raised), 0, hi);
+  // the callouts in a row right of the props, the targets on the ground and the flag pole, in the props' order
+  // (so no two leaders cross), where it fits; else packed above the props
+  const upItems = items.slice(0, raised);
+  const groundRight = Math.max(0, ...items.slice(raised).map((it, k) => ground[k]! + it.w / 2));
+  const lo = Math.max(groundRight, ...spots.map((s) => s.x + s.w), ...beside.map((b) => b.x + b.w)) + GAP;
+  const aside = raised > 0 && lo + upItems.reduce((sum, it) => sum + it.w, 0) + GAP * (raised - 1) <= width;
+  let up: number[];
+  if (aside) {
+    up = [];
+    let left = lo;
+    for (const k of upItems.map((_, j) => j).sort((a, b) => upItems[a]!.c - upItems[b]!.c)) {
+      up[k] = left + upItems[k]!.w / 2;
+      left += upItems[k]!.w + GAP;
+    }
+  } else up = packRow(upItems, 0, hi);
   const groundY = Math.max(...spots.map((s) => s.y + s.h));
   const propTop = Math.min(...spots.map((s) => s.y));
   const lowY = Math.max(0, Math.min(height - h, groundY + BELOW - h));

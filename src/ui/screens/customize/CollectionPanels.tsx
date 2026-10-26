@@ -15,16 +15,16 @@ import { useConfirmSpend } from '../../components/confirm';
 import { AvatarLookView, resolveLook, type ResolvedLook } from '../../components/Avatar';
 import { BackdropLook, BaseThumb, ClothItem, CosmeticImage, FlagTileImage, QuoteBubble, SceneThumb, useCosmeticImage, useFlagAtlasReady, type BubbleTail } from '../../components/cosmeticArt';
 import { formatInt } from '../../components/format';
-import { CapsuleIcon, CheckIcon, ChevronIcon, CrateIcon, CrownIcon, DustIcon, FlagIcon, GlobeIcon, LockIcon, RARITY_COLOR, RarityGem, StarIcon, TrophyIcon } from '../../components/icons';
+import { AGE_COLOR, AgeGlyph, CapsuleIcon, CheckIcon, ChevronIcon, CrateIcon, CrownIcon, DustIcon, FlagIcon, GlobeIcon, LockIcon, RARITY_COLOR, RarityGem, StarIcon, TrophyIcon } from '../../components/icons';
 import { Modal } from '../../components/Modal';
-import { AgePicker } from '../../components/Tabs';
+import { Tabs } from '../../components/Tabs';
 import { useUi } from '../context';
 import { craftLocked, craftPrice, equippedOf, findItem, itemKey, itemsOf, ownedFirst, owns, progressOf, sourceText } from '../model/cosmetics';
 import { playLevelId } from '../model/warPath';
 import type { ActionResult, CosmeticEquipPatch } from '../services';
 import { DamageToggle, type CrumbleStage } from './DamageToggle';
 import { EmoteFace, EmoteStage, WheelEmote } from './EmotePreview';
-import { freshAge, useFresh } from './fresh';
+import { freshAge, freshAges, freshKeysOfAge, useFresh } from './fresh';
 import { BaseMock, PreviewStage, shownBaseKey } from './PreviewStage';
 
 export { BaseMock };
@@ -61,6 +61,42 @@ function useEquipWithUndo() {
     act(r);
     if (r.ok) toasts.show(t('cosmetic.ui.equippedName', { name }), { tone: 'good', undo: () => act(services.equipCosmetic(before)) });
   };
+}
+
+/**
+ * The age tabs of a collection that shows one age at a time (base skins, scenes; `AGE_PAGED`): the shared
+ * age picker's tabs, plus the NEW dot on every age whose page holds NEW items. Opening an age page marks only
+ * that page's items seen (review 3b: a NEW scene on an age nobody opened was marked seen with its tab).
+ */
+function FreshAgePicker(p: { collection: 'baseSkin' | 'scene'; ages: readonly AgeId[]; value: AgeId; onChange: (a: AgeId) => void; testid: string; idPrefix: string }) {
+  const { save, content, services, t } = useUi();
+  useEffect(() => {
+    const keys = freshKeysOfAge(save.peek(), content, p.collection, p.value);
+    if (keys.length > 0) services.markCosmeticsSeen(keys);
+  }, [p.value]);
+  const fresh = freshAges(save.value, content, p.collection);
+  return (
+    <Tabs
+      label={t('ui.age.picker')}
+      compact
+      variant="age"
+      value={p.value}
+      onChange={p.onChange}
+      testid={p.testid}
+      idPrefix={p.idPrefix}
+      items={p.ages.map((a) => ({
+        value: a,
+        label: t(ageNameKey(a)),
+        icon: (
+          <span class="ui-agechip" style={{ '--age': AGE_COLOR[a].accent }}>
+            <AgeGlyph age={a} size={26} />
+          </span>
+        ),
+        badge: fresh.has(a) ? <i class="cust-newdot" role="img" aria-label={t('cosmetic.ui.newItems')} data-testid={`age-new-${a}`} /> : undefined,
+        testid: `age-tab-${a}`,
+      }))}
+    />
+  );
 }
 
 /** The age the player plays now (the base mock-ups show it, not always the Stone Age). */
@@ -566,7 +602,7 @@ export function BasesPanel() {
   );
   return (
     <MockLayout testid="cust-bases" wide mock={stage} info={<StageInfo rows={[info]} />}>
-      <AgePicker ages={ages} value={age} onChange={(a) => { setAge(a); setCrumble(0); }} compact testid="cust-age" idPrefix="cust-age" />
+      <FreshAgePicker collection="baseSkin" ages={ages} value={age} onChange={(a) => { setAge(a); setCrumble(0); }} testid="cust-age" idPrefix="cust-age" />
       <div class="cos-head">
         <h3 class="cust-h">{t('cosmetic.ui.baseSkinOf', { age: t(ageNameKey(age)) })}</h3>
         <FoundCount n={setOwned} max={setTotal} testid="found-baseSkin" />
@@ -686,7 +722,7 @@ export function BackdropsPanel() {
   );
   return (
     <MockLayout testid="cust-backdrops" wide mock={stage} info={<StageInfo rows={rows} />}>
-      <AgePicker ages={content.order.ages} value={age} onChange={setAge} compact testid="cust-bd-age" idPrefix="cust-bd-age" />
+      <FreshAgePicker collection="scene" ages={content.order.ages} value={age} onChange={setAge} testid="cust-bd-age" idPrefix="cust-bd-age" />
       <div class="cos-head">
         <h3 class="cust-h">{t('cosmetic.ui.sceneFor', { age: t(ageNameKey(age)) })}</h3>
         {/* no count while no scene is out yet (each ships once its art is in) */}

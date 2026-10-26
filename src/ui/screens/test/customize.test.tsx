@@ -378,6 +378,46 @@ describe('Customize: NEW until seen (save v15 `cosmetics.fresh`)', () => {
     expect(calls('markCosmeticsSeen')).toEqual([['baseSkin.rose_keep']]);
   });
 
+  it('scenes are seen one age page at a time: an age tab with NEW items wears the dot until its page opens (review 3b)', () => {
+    // a player past both road nodes when R3b ships: the boot grants Siege of the Bronze City and Zeppelin Docks
+    const save = withFresh('scene.bronze_city_siege', 'scene.zeppelin_docks');
+    save.cosmetics.owned = [...save.cosmetics.owned, 'scene.bronze_city_siege', 'scene.zeppelin_docks'];
+    m = mount({ save, routes: [{ id: 'home' }, { id: 'customize', tab: 'troops' }] });
+    expect(m.q('[data-testid="tab-new-backdrops"]')).not.toBeNull();
+    m.click('[data-testid="tab-backdrops"]');
+    // the tab opens on the newest NEW scene's age and marks only that page seen
+    expect(m.q('[data-testid="backdrop-look"]')!.getAttribute('data-age')).toBe('industrial');
+    expect(calls('markCosmeticsSeen')).toEqual([['scene.zeppelin_docks']]);
+    expect(m.q('[data-testid="new-scene.zeppelin_docks"]')).not.toBeNull();
+    // Bronze still holds one: its age tab and the Backdrops tab keep their dots
+    expect(m.q('[data-testid="cust-bd-age"] [data-testid="age-new-bronze"]')).not.toBeNull();
+    expect(m.q('[data-testid="cust-bd-age"] [data-testid="age-new-industrial"]')).toBeNull();
+    expect(m.q('[data-testid="tab-new-backdrops"]')).not.toBeNull();
+    // leaving and coming back marks nothing more while Bronze stays unopened
+    m.click('[data-testid="tab-flags"]');
+    m.click('[data-testid="tab-backdrops"]');
+    expect(calls('markCosmeticsSeen')).toHaveLength(1);
+    expect(m.q('[data-testid="age-new-bronze"]')).not.toBeNull();
+    // opening Bronze shows the pip and marks it; then no dot is left
+    m.click('[data-testid="cust-bd-age"] [data-testid="age-tab-bronze"]');
+    expect(m.q('[data-testid="new-scene.bronze_city_siege"]')).not.toBeNull();
+    expect(calls('markCosmeticsSeen')).toEqual([['scene.zeppelin_docks'], ['scene.bronze_city_siege']]);
+    expect(m.q('[data-testid="age-new-bronze"]')).toBeNull();
+    expect(m.q('[data-testid="tab-new-backdrops"]')).toBeNull();
+    expect(m.save.value.cosmetics.fresh).toEqual([]);
+  });
+
+  it('a NEW sky is seen when the Backdrops tab opens, on any age page', () => {
+    const sky = realContent.cosmetics.collections.items.find((x) => x.collection === 'backdrop' && x.released !== false)!;
+    const save = withFresh(`backdrop.${sky.id}`);
+    save.cosmetics.owned = [...save.cosmetics.owned, `backdrop.${sky.id}`];
+    m = mount({ save, routes: [{ id: 'home' }, { id: 'customize', tab: 'troops' }] });
+    m.click('[data-testid="tab-backdrops"]');
+    expect(calls('markCosmeticsSeen')).toEqual([[`backdrop.${sky.id}`]]);
+    expect(m.q('[data-testid="tab-new-backdrops"]')).toBeNull();
+    expect(m.q('[data-testid^="age-new-"]')).toBeNull();
+  });
+
   it('a key the save does not own or the content does not know lights no dot and is never marked', () => {
     m = open('troops', 'emote.wow', 'emote.not_in_any_content');
     expect(m.q('[data-testid="tab-new-emotes"]')).toBeNull();

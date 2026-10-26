@@ -371,6 +371,28 @@ describe('the decoration spots over the live stage (round 3, spots.ts)', () => {
     expect(ts.every((t) => !t.leader)).toBe(true);
   });
 
+  it('the callouts stand right of the props, the target on the ground and the flag pole, in the props\' order; above the props only where that has no room (review 3a NIT 7)', () => {
+    // phones and the desktop: clear of the base, which stands over the back spots, and of the flag
+    for (const [w, h] of [[238, 160], [208, 139], [188, 126], [589, 326]] as const) {
+      const all = anchorsFor(w, h);
+      const spots = all.slice(0, 3);
+      const pole = all[3]!;
+      const ts = spotTargets(spots, w, h, SPOT_TARGET_PX, [pole]);
+      const right = Math.max(...spots.map((s) => s.x + s.w), ...ts.filter((t) => !t.raised).map((t) => t.x + t.w), pole.x + pole.w);
+      const up = ts.filter((t) => t.raised);
+      expect(up, `${w} x ${h}`).toHaveLength(2);
+      for (const t of up) expect(t.x, `${w} x ${h}`).toBeGreaterThan(right);
+      // the left prop's callout comes first, so the two leaders never cross
+      expect(up[0]!.footX).toBeLessThan(up[1]!.footX);
+      expect(up[0]!.x + up[0]!.w).toBeLessThanOrEqual(up[1]!.x);
+    }
+    // 745 x 250: no room right of the gate, so the callouts stay above the props
+    const small = anchorsFor(144, 99);
+    const spots = small.slice(0, 3);
+    const right = Math.max(...spots.map((s) => s.x + s.w));
+    expect(spotTargets(spots, 144, 99, SPOT_TARGET_PX, [small[3]!]).some((t) => t.raised && t.x < right)).toBe(true);
+  });
+
   it('packs a row with the least movement, inside its ends', () => {
     expect(packRow([{ c: 50, w: 44 }], 0, 200)).toEqual([50]);
     expect(packRow([{ c: 10, w: 44 }], 0, 200)).toEqual([22]);

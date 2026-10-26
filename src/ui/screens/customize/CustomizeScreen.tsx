@@ -30,7 +30,7 @@ import { useUi } from '../context';
 import { ALL_COLLECTIONS, progressOf } from '../model/cosmetics';
 import { GeneralPanel } from './GeneralPanel';
 import { BackdropsPanel, BasesPanel, DecorationsPanel, EmotesPanel, FlagsPanel, QuotesPanel } from './CollectionPanels';
-import { FreshContext, freshKeys, TAB_COLLECTIONS } from './fresh';
+import { AGE_PAGED, FreshContext, freshKeys, TAB_COLLECTIONS } from './fresh';
 import { BackdropTabIcon, FlagsTabIcon, QuoteTabIcon, SlotIcon, SmileTabIcon, StatueTabIcon } from './icons';
 
 const isBaseSkin = (k: SkinDef): boolean => k.target.startsWith('base.');
@@ -64,10 +64,11 @@ export function CustomizeScreen(p: { route: RouteOf<'customize'> }) {
   const s = save.value;
   // "Banner & title" moved into General (owner request 2026-10-07); the old tab id opens General.
   const [tab, setTab] = useState<CustomizeTab>(p.route.tab === 'look' ? 'general' : (p.route.tab ?? 'general'));
-  // NEW until seen (save v15): the cards keep this visit's pips, and opening a tab marks its items seen
+  // NEW until seen (save v15): the cards keep this visit's pips, and opening a tab marks its items seen;
+  // base skins and scenes are marked by their panel, one age page at a time (`AGE_PAGED`, review 3b)
   const [fresh] = useState<ReadonlySet<string>>(() => new Set(s.cosmetics.fresh ?? []));
   useEffect(() => {
-    const keys = freshKeys(save.peek(), content, TAB_COLLECTIONS[tab] ?? []);
+    const keys = freshKeys(save.peek(), content, (TAB_COLLECTIONS[tab] ?? []).filter((c) => !AGE_PAGED.includes(c)));
     if (keys.length > 0) services.markCosmeticsSeen(keys);
   }, [tab]);
   const dot = (v: CustomizeTab) =>
