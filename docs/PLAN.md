@@ -146,3 +146,6 @@ what we believe, how sure we are, and what we post next because of it.
 - 2026-10-26 weekly review (docs/weekly-2026-10-26.md): followers 109 to 139; a visible problem or a twist wins
   reach (DV3 299, DV5 188), before/after holds viewers (40-42 %), duels are the safe floor. Week 3 mix: one
   problem-first devlog plus one before/after or balance-test duel a day.
+- 2026-10-26 evening: DV7 (base collapse) 127 reach in 9.5 h; R16 78 in 1.5 h with 49.5 % skip, the lowest early
+  skip of any duel. BA2 134 with 49 % watch (before/after keeps the best watch share). Followers 140. Queue empty
+  apart from DV6 (held); the 2026-10-27 run produces both slots.
