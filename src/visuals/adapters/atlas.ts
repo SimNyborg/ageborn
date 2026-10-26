@@ -43,6 +43,9 @@ import { puppetById } from '../library';
 import { renderPortrait } from '../portraits';
 import { portraitStillBase, renderStillPortrait } from './atlasPortrait';
 import { partSprite, PuffList, tintPartSprite } from './procedural/shared';
+import { aimedBulge, classicBulge } from '../effects/flight';
+import { DEFAULT_CLIP_AIM, leanPolicyOf, unitAimFor, type ClipAim, type LeanPolicy, type UnitAim } from '../unitAim';
+import { aimLeanGoal, angleThroughBody, clampLean, LEAN_REDUCED_SHARE, stepLeanSpring, throughBody, type BodyXform, type LeanTiming, type SpringState } from './atlasAim';
 import { AtlasBaseView } from './world/atlasBaseView';
 import { AtlasTurretView } from './world/atlasTurretView';
 import { isWorldSource, WorldAtlas, worldSourceAge } from './worldAtlas';
@@ -166,6 +169,13 @@ export interface AtlasClipMeta {
   holdLoop?: readonly [number, number];
   /** Attack clips (R4): where the projectile leaves on the impact frame (lu from the feet, x forward, y up). */
   muzzle?: readonly [number, number];
+  /**
+   * Attack clips (queue item 44, optional): the angle the weapon points when the shot leaves (degrees above the facing
+   * direction on screen). Wins over the `unitAim.ts` table, so a pipeline that measures it on the rig needs no code.
+   */
+  aimDeg?: number;
+  /** Attack clips (queue item 44, optional): where the shot leaves when the impact frame's muzzle is off the weapon (lu, x forward, y up). */
+  release?: readonly [number, number];
   /** Per-frame anchors (lu from the feet, y up): `muzzle`, `riderMuzzle`, `mgMuzzle`, ... */
   anchorsLu?: Readonly<Record<string, readonly (readonly [number, number] | null)[]>>;
   /** Walk only: ground speed at the authored timing (feet do not slide at this speed). */
@@ -1137,6 +1147,7 @@ export class AtlasAdapter implements VisualAdapter {
       style: this.o.motionStyle ?? 'cartoon',
       ...(this.o.quality ? { quality: this.o.quality } : {}),
       onDestroy: release,
+      aim: unitAimFor(r.def.source),
     });
     if (set === this.sd) this.sdViews.get(src)?.add(view);
     return view;
@@ -1339,6 +1350,8 @@ interface AtlasUnitOptions {
   style?: AtlasMotionStyle;
   /** Runs once when the view is destroyed (the adapter's view count on its sheet, G7). */
   onDestroy?: () => void;
+  /** Queue item 44: the sheet's drawn aim per attack clip and its lean policy (`unitAim.ts`); null aims level. */
+  aim?: UnitAim | null;
 }
 
 /** Sheets this tall (lu) or taller put dust at the foot on each contact step (R8). */
@@ -1506,6 +1519,18 @@ class AtlasUnitView implements UnitView {
   private death: { dir: 1 | -1; style: DeathStyle; landAt: number; lieMs: number; fadeMs: number; onLand?: () => void; landed: boolean; sinkDust: boolean; sq: number; alpha: number; cached: boolean; layered: boolean } | null = null;
   /** The game time of the frame being drawn (ms), for the fade's picture-or-layers choice. */
   private frameDt = 0;
+  // Queue item 44 (`atlasAim.ts`): the shooter leans toward its target and its shot leaves the weapon as drawn
+  /** The sheet's drawn aim per attack clip and its lean policy (`unitAim.ts`), or null (level, the body type's lean). */
+  private readonly aim: UnitAim | null;
+  private readonly leanPolicy: LeanPolicy;
+  /** The lean the battle view asks for (deg, aim up positive), before the clamp; set again for every attack. */
+  private aimWant = 0;
+  /** The aim lean as drawn (deg): a spring on the animation clock (anticipation, hold to the release, return). */
+  private readonly aimTilt: SpringState = { x: 0, v: 0 };
+  /** Scratch for `aimNow` (no allocation per frame; the answer is valid until the next call). */
+  private readonly aimXf: BodyXform = { x: 0, y: 0, rotation: 0, sx: 1, sy: 1 };
+  private readonly aimOut = { x: 0, y: 0, deg: 0, drawnDeg: 0, leanDeg: 0, omni: false };
+  private readonly leanTm: LeanTiming = { t: 0, impactAtMs: 0, releaseMs: 0 };
 
   constructor(
     private readonly def: VisualDef,
@@ -1524,6 +1549,8 @@ class AtlasUnitView implements UnitView {
     this.gait = o.gait ?? null;
     this.style = o.style ?? 'cartoon';
     this.onDestroy = o.onDestroy ?? null;
+    this.aim = o.aim ?? null;
+    this.leanPolicy = leanPolicyOf(this.aim, this.gait);
     this.lite = o.quality === 'lite';
     this.hoverPeriod = HOVER_PERIOD_MS[0] + this.rng.next() * (HOVER_PERIOD_MS[1] - HOVER_PERIOD_MS[0]);
     this.hoverPhase = this.rng.next();
@@ -1660,6 +1687,86 @@ class AtlasUnitView implements UnitView {
     if (attackIndex <= 0) return this.action && this.action.name === 'attack' ? this.actionMuzzle : null;
     if (this.action && this.action.name === ALT_ATTACK && this.actionMuzzle) return this.actionMuzzle;
     return this.frameAnchor('riderMuzzle') ?? this.frameAnchor('mgMuzzle');
+  }
+
+  /**
+   * Queue item 44 (duck-typed): the drawn aim of the attack variants that have loaded (degrees above the facing
+   * direction; `omni` for an emitter without a direction), the variant the next attack will play, and the most this
+   * unit leans toward a target now (its body type's policy, halved under Reduce motion). Null without an attack clip.
+   */
+  aimInfo(): { variants: { anim: string; deg: number; omni: boolean }[]; next: string | null; maxLeanDeg: number } | null {
+    if (this.destroyed) return null;
+    const variants: { anim: string; deg: number; omni: boolean }[] = [];
+    for (const anim of ATTACK_VARIANTS) {
+      if ((this.sheet.animations[anim]?.length ?? 0) === 0) continue;
+      const c = this.clipAim(anim);
+      variants.push({ anim, deg: c.deg, omni: c.omni === true });
+    }
+    if (variants.length === 0) return null;
+    return { variants, next: this.nextVariant(), maxLeanDeg: this.leanPolicy.maxDeg * (this.reduceMotion ? LEAN_REDUCED_SHARE : 1) };
+  }
+
+  /**
+   * Queue item 44 (duck-typed): lean toward the target by `deg` (aim up positive; clamped by the body type, halved
+   * under Reduce motion) during the attack playing now: a small counter-lean first, the lean held through the release,
+   * then upright again with a little follow-through. The battle view sets it after `play('attack')` and every frame
+   * while it aims; a new attack starts at none.
+   */
+  aimLean(deg: number): void {
+    this.aimWant = Number.isFinite(deg) ? deg : 0;
+  }
+
+  /**
+   * Queue item 44 (duck-typed): where the shot of `attackIndex` leaves as drawn now (lu in the root's space, x along the
+   * world, y down: the impact-frame muzzle or the clip's release point, through the body's offsets, frame lock, lean,
+   * squash and reaction) and the angle the drawn weapon points (degrees above the facing direction, every rotation of
+   * the body included); `drawnDeg` is the clip's own aim and `leanDeg` the aim lean in it. Null once destroyed.
+   */
+  aimNow(attackIndex = 0): { x: number; y: number; deg: number; drawnDeg: number; leanDeg: number; omni: boolean } | null {
+    if (this.destroyed) return null;
+    const m = this.muzzleNow(attackIndex) ?? this.anchors.muzzle;
+    const anim = attackIndex >= 1 ? ALT_ATTACK : this.action && this.action.name === 'attack' ? this.action.anim : this.nextVariant();
+    const c = this.clipAim(anim);
+    const b = this.bodyXform();
+    const out = throughBody(b, m, this.aimOut);
+    out.deg = angleThroughBody(b, c.deg, this.facing);
+    out.drawnDeg = c.deg;
+    out.leanDeg = this.aimTilt.x;
+    out.omni = c.omni === true;
+    return out;
+  }
+
+  /** An attack clip's drawn aim: the sheet's own meta, else the `unitAim.ts` table, else level. */
+  private clipAim(anim: string): ClipAim {
+    const own = this.aim?.clips[anim];
+    const meta = this.sheet.clips[anim];
+    if (meta && (meta.aimDeg !== undefined || meta.release)) {
+      const release = meta.release ?? own?.release;
+      return { deg: meta.aimDeg ?? own?.deg ?? 0, ...(release ? { release } : {}), ...(own?.omni ? { omni: true } : {}) };
+    }
+    return own ?? DEFAULT_CLIP_AIM;
+  }
+
+  /** The body's transform as last placed: offset in the root's space, rotation, and scale per lu (x carries the facing). */
+  private bodyXform(): BodyXform {
+    const b = this.aimXf;
+    b.x = this.body.x;
+    b.y = this.body.y;
+    b.rotation = this.body.rotation;
+    b.sx = this.body.scale.x / this.k;
+    b.sy = this.body.scale.y / this.k;
+    return b;
+  }
+
+  /** Where the attack playing now is in its timeline, for the aim lean; null between attacks (a second attacker never leans the body). */
+  private leanTiming(): LeanTiming | null {
+    const a = this.action;
+    if (!a || a.name !== 'attack' || a.impactAtMs === null) return null;
+    const tm = this.leanTm;
+    tm.t = a.t;
+    tm.impactAtMs = a.impactAtMs;
+    tm.releaseMs = Number.isFinite(a.releaseMs) ? a.releaseMs : a.impactAtMs + IMPACT_HOLD_FALLBACK_MS;
+    return tm;
   }
 
   /**
@@ -2052,6 +2159,8 @@ class AtlasUnitView implements UnitView {
     }
     if (clip === 'spawn') this.startSpawn();
     if (clip === 'attack' || clip === 'ability') this.setTurned(false, true);
+    // item 44: a new attack aims afresh (the battle view sets the lean for it right after)
+    if (clip === 'attack') this.aimWant = 0;
     // a body attack takes over from the riders' attack_alt: their throw still shows as the accent
     const alt = this.action;
     if (!loops && alt && alt.name === ALT_ATTACK && alt.impactAtMs !== null && alt.t < alt.impactAtMs) this.accents.push(this.clockMs + alt.impactAtMs - alt.t);
@@ -2181,6 +2290,9 @@ class AtlasUnitView implements UnitView {
 
   /** A clip's impact-frame muzzle (meta `muzzle`, else its per-frame `muzzle`/`beam` anchor), local lu, y down. */
   private muzzleOf(tr: Track): Pt | null {
+    // item 44: a clip whose impact frame shows the follow-through releases where the weapon was last drawn
+    const rel = this.clipAim(tr.anim).release;
+    if (rel) return { x: rel[0] * this.hk, y: -rel[1] * this.hk };
     const meta = this.sheet.clips[tr.anim];
     if (!meta) return null;
     let v: readonly [number, number] | null | undefined = meta.muzzle;
@@ -2318,7 +2430,10 @@ class AtlasUnitView implements UnitView {
       const flyer = hovers(this.gait);
       const leanTo = this.reduceMotion || this.dead || this.stunned ? 0 : leanTarget(accel, flyer);
       this.lean = easeExp(this.lean, leanTo, animDt, LEAN_TAU_MS);
-      let rot = this.lean;
+      // item 44: the aim lean toward the target (a turn of the front up is counter-clockwise for a right-facing unit)
+      const aimWant = this.dead || this.stunned ? 0 : clampLean(this.aimWant, this.leanPolicy.maxDeg, this.reduceMotion);
+      stepLeanSpring(this.aimTilt, aimLeanGoal(aimWant, this.leanTiming(), this.reduceMotion), animDt, this.reduceMotion);
+      let rot = this.lean - (this.aimTilt.x * Math.PI) / 180;
       const walking = this.base?.name === 'walk' && !this.action && !this.dead && (this.base.durationMs ?? 0) > 0;
       if (flyer) {
         // G8: nose down while moving, level at rest; a hover bob that never steps
@@ -2773,16 +2888,22 @@ class AtlasUnitView implements UnitView {
 }
 
 
-/** A one-shot sheet effect (`play` or the first animation), or a projectile that flies along. */
+/**
+ * A one-shot sheet effect (`play` or the first animation), or a projectile that flies along. In flight the sprite
+ * turns along its path (queue item 44: projectiles point where they go in every view), on the classic arc or, through
+ * `flyAimed`, on a path that leaves along the shooter's weapon (`effects/flight.ts`).
+ */
 class AtlasEffectView implements EffectView {
   readonly root = new Container();
   private readonly sprite = new Sprite(Texture.EMPTY);
   private readonly teamSprite = new Sprite(Texture.EMPTY);
+  private readonly body = new Container();
   private tr: Track | null = null;
   private from: Pt = { x: 0, y: 0 };
   private to: Pt | null = null;
   private travel = 1;
-  private arc = false;
+  /** The path's bulge over the straight line at mid flight (lu); 0 flies straight. */
+  private bulge = 0;
   private started = false;
   private elapsed = 0;
 
@@ -2793,10 +2914,9 @@ class AtlasEffectView implements EffectView {
   ) {
     this.root.label = def.source;
     this.teamSprite.tint = team;
-    const body = new Container();
-    body.scale.set(sheet.luPerUnit);
-    body.addChild(this.teamSprite, this.sprite);
-    this.root.addChild(body);
+    this.body.scale.set(sheet.luPerUnit);
+    this.body.addChild(this.teamSprite, this.sprite);
+    this.root.addChild(this.body);
   }
 
   get done(): boolean {
@@ -2816,13 +2936,27 @@ class AtlasEffectView implements EffectView {
     this.from = from;
     this.to = to;
     this.travel = Math.max(1, travelMs);
-    this.arc = arc;
+    this.bulge = arc ? classicBulge(Math.hypot(to.x - from.x, to.y - from.y)) : 0;
     this.root.position.set(from.x, from.y);
+    this.body.rotation = 0;
     this.begin();
+    this.place();
+  }
+
+  /**
+   * Queue item 44 (duck-typed, as the procedural view's): flies from `from` to `to` in `travelMs` and, on a ballistic
+   * path, leaves at `launchDeg` above the horizontal toward the target (a parabola that never curves upward, landing
+   * where and when `fly` would); a straight path flies straight.
+   */
+  flyAimed(from: Pt, to: Pt, travelMs: number, o: { launchDeg: number; path: 'ballistic' | 'straight' }): void {
+    this.fly(from, to, travelMs, false);
+    if (o.path === 'ballistic') this.bulge = aimedBulge(to.x - from.x, from.y - to.y, o.launchDeg);
+    this.place();
   }
 
   playAt(at: Pt): void {
     this.to = null;
+    this.body.rotation = 0;
     this.root.position.set(at.x, at.y);
     this.begin();
   }
@@ -2836,11 +2970,18 @@ class AtlasEffectView implements EffectView {
       setFrame(this.sprite, this.tr.frames[i] ?? Texture.EMPTY);
       setFrame(this.teamSprite, this.tr.team?.[i] ?? Texture.EMPTY);
     }
-    if (this.to) {
-      const u = Math.min(1, this.elapsed / this.travel);
-      const lift = this.arc ? 4 * 60 * u * (1 - u) : 0;
-      this.root.position.set(this.from.x + (this.to.x - this.from.x) * u, this.from.y + (this.to.y - this.from.y) * u - lift);
-    }
+    this.place();
+  }
+
+  /** In flight: the point on the path, and the sprite turned along it. */
+  private place(): void {
+    const to = this.to;
+    if (!to) return;
+    const u = Math.min(1, this.elapsed / this.travel);
+    const dx = to.x - this.from.x;
+    const dy = to.y - this.from.y;
+    this.root.position.set(this.from.x + dx * u, this.from.y + dy * u - 4 * this.bulge * u * (1 - u));
+    this.body.rotation = Math.atan2(dy - 4 * this.bulge * (1 - 2 * u), dx || 1e-6);
   }
 
   destroy(): void {

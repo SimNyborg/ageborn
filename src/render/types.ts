@@ -135,7 +135,17 @@ export type ViewAction =
    * A `hit` carries its tier and the world direction of the push (queue item 38 A2): views with `react()` react on
    * every hit; the others play the hit clip as before.
    */
-  | { a: 'unitClip'; id: number; clip: ClipName; impactAtMs?: number; attackIndex?: number; tier?: HitTier; dir?: 1 | -1 }
+  | {
+      a: 'unitClip';
+      id: number;
+      clip: ClipName;
+      impactAtMs?: number;
+      attackIndex?: number;
+      tier?: HitTier;
+      dir?: 1 | -1;
+      /** An attack's target as the sim has it (a unit id, -1 the base, 0 none): a ranged shooter aims at it (queue item 44). */
+      targetId?: number;
+    }
   /**
    * A death (A4): `dir` the world direction of the killing blow, `tier` its share tier (U's `dieWith` throws a heavy
    * blow back and crumples a lighter one), `heavy` a heavy body, `size` its body class (dust and the fall sound).

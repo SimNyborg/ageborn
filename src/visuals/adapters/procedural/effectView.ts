@@ -13,6 +13,7 @@ import type { Pt } from '@/contracts/ids';
 import { mulberry32, type CosmeticRng } from '@/core/rng';
 import { ease, sampleScalar } from '../../animator';
 import type { PartBaker } from '../../bake';
+import { aimedBulge, classicBulge } from '../../effects/flight';
 import { FX_ZONES } from '../../effects/sprites';
 import { FX_RECIPE_BY_ID, type CustomFx, type FxRecipe, type ParticleSpec, type ProjectileRecipe, type Range, type SizeKey, type SpriteKey, type SpriteSpec } from '../../effects/recipes';
 import { getPart } from '../../parts/registry';
@@ -137,7 +138,7 @@ export class ProceduralEffectView implements EffectView {
     this.started = true;
     this.root.position.set(from.x, from.y);
     const dist = Math.hypot(to.x - from.x, to.y - from.y);
-    this.fly_ = { from: { x: 0, y: 0 }, to: { x: to.x - from.x, y: to.y - from.y }, ms: Math.max(1, travelMs), arc, h: Math.min(170, Math.max(28, dist * 0.32)) };
+    this.fly_ = { from: { x: 0, y: 0 }, to: { x: to.x - from.x, y: to.y - from.y }, ms: Math.max(1, travelMs), arc, h: classicBulge(dist) };
     this.dir = to.x >= from.x ? 1 : -1;
     const p = this.opt.projectile;
     const sprite = p?.sprite ?? this.opt.recipe?.sprites?.[0]?.sprite ?? 'fx.p.glow';
@@ -151,6 +152,21 @@ export class ProceduralEffectView implements EffectView {
     this.proj = fxSprite(this.opt.baker, sprite);
     this.proj.scale.set((p?.scale ?? 1) * PROJECTILE_SCALE);
     this.layer.addChild(this.proj);
+    this.stepFly(0);
+  }
+
+  /**
+   * Queue item 44 (duck-typed; the battle view calls it when the shooter's view knows its drawn aim): flies like `fly`,
+   * but a ballistic path leaves at `launchDeg` above the horizontal toward the target, so the shot leaves along the
+   * weapon (a parabola that never curves upward: a weapon pointing at or below its target shoots straight). It lands
+   * exactly where and when `fly` would; a straight path flies straight, and a rolling projectile always rolls.
+   */
+  flyAimed(from: Pt, to: Pt, travelMs: number, o: { launchDeg: number; path: 'ballistic' | 'straight' }): void {
+    this.fly(from, to, travelMs, false);
+    const f = this.fly_;
+    if (!f || o.path !== 'ballistic' || this.opt.projectile?.rolls) return;
+    f.h = aimedBulge(f.to.x, -f.to.y, o.launchDeg);
+    f.arc = f.h > 0;
     this.stepFly(0);
   }
 

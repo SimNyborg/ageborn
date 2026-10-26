@@ -33,6 +33,7 @@
 import { Container, Graphics } from 'pixi.js';
 import type { ArtProvider, BaseDressingView, CardId, ClipName, CompiledContent, CosmeticKey, EffectView, Pt, Side, SimEvent, SkinId, TeamPreset, UnitPose, UnitView, VisualId } from '@/contracts';
 import { mulberry32 } from '@/core';
+import { aimedPath, attackAt, type ShotPath } from '../aim';
 import { EventMapper, type UnitInfo } from '../eventMapper';
 import { defaultFeelConfig, type RenderFeelConfig } from '../feelConfig';
 import { ParticlePool, type ParticleHandle } from '../feel/particlePool';
@@ -1231,7 +1232,12 @@ export class HomeStage implements HomeStageHandle, SharedAppUser {
       return;
     }
     const view = this.art.createProjectile(act.visualId, act.side ?? 0);
-    view.fly(from, to, ms, act.arc);
+    // queue item 44: the shot leaves along the shooter's drawn weapon (the views that know it)
+    const index = act.attackIndex ?? extra.attackIndex ?? 0;
+    const path = src ? aimedPath(src.view, attackAt(this.content.units[src.card], index), act.visualId, index, from, to, facingOf(src.side)) : null;
+    const aimed = view as EffectView & { flyAimed?(from: Pt, to: Pt, ms: number, o: { launchDeg: number; path: ShotPath }): void };
+    if (path && typeof aimed.flyAimed === 'function') aimed.flyAimed(from, to, ms, path);
+    else view.fly(from, to, ms, act.arc);
     this.shots.addChild(view.root);
     this.flying.push(view);
   }

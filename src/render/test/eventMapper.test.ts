@@ -554,14 +554,15 @@ describe('event mapper: coverage', () => {
 
   it('attack clips are time-scaled so the impact lands on the sim impact tick (B5)', () => {
     const out = run([ev('attackStarted', { id: 1, targetId: 2, windupTicks: 8, attackIndex: 0 })]);
-    expect(pick(out, 'unitClip')).toEqual([{ a: 'unitClip', id: 1, clip: 'attack', impactAtMs: 400 }]);
+    // the target rides along, so a ranged shooter can aim at it from the start of its wind-up (queue item 44)
+    expect(pick(out, 'unitClip')).toEqual([{ a: 'unitClip', id: 1, clip: 'attack', impactAtMs: 400, targetId: 2 }]);
     // Melee swing sound lands just before the impact, placed at its unit (pan and fade like its hit; review A, S2)
     expect(pick(out, 'sound')).toEqual([{ a: 'sound', id: 'swing_whoosh', delayMs: 320, x: 500, priority: 1 }]);
   });
 
   it('a second attacker carries its attackIndex, so the view never restarts the body for it (ANIM_SPEC R3)', () => {
     const out = run([ev('attackStarted', { id: 1, targetId: 2, windupTicks: 8, attackIndex: 1 })]);
-    expect(pick(out, 'unitClip')).toEqual([{ a: 'unitClip', id: 1, clip: 'attack', impactAtMs: 400, attackIndex: 1 }]);
+    expect(pick(out, 'unitClip')).toEqual([{ a: 'unitClip', id: 1, clip: 'attack', impactAtMs: 400, targetId: 2, attackIndex: 1 }]);
   });
 
   it('emits HUD events for emotes, denied commands (own side only) and the match end', () => {

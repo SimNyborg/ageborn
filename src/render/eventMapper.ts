@@ -526,7 +526,7 @@ export class EventMapper {
       case 'attackStarted': {
         const windupMs = ev.windupTicks * 50;
         // a second attacker (riders, sponsons, an MG) carries its index: the view never restarts the body for it (R3)
-        out.push({ a: 'unitClip', id: ev.id, clip: 'attack', impactAtMs: windupMs, ...(ev.attackIndex > 0 ? { attackIndex: ev.attackIndex } : {}) });
+        out.push({ a: 'unitClip', id: ev.id, clip: 'attack', impactAtMs: windupMs, targetId: ev.targetId, ...(ev.attackIndex > 0 ? { attackIndex: ev.attackIndex } : {}) });
         const u = unit(ev.id);
         const atk = attackOf(u ? C.units[u.card] : undefined, ev.attackIndex);
         if (atk && !atk.projectile) {

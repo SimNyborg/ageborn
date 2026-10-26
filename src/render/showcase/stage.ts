@@ -37,6 +37,7 @@ import type {
   VisualId,
 } from '@/contracts';
 import { mulberry32 } from '@/core';
+import { aimedPath, attackAt, type ShotPath } from '../aim';
 import { EventMapper, type UnitInfo } from '../eventMapper';
 import { defaultFeelConfig, type RenderFeelConfig } from '../feelConfig';
 import { ParticlePool, type ParticleHandle } from '../feel/particlePool';
@@ -1511,7 +1512,8 @@ export class ShowcaseStage implements ShowcaseHandle {
   }
 
   private fire(a: Extract<ViewAction, { a: 'projectile' }>, extra: { attackIndex?: number; travelMs?: number }): void {
-    const from = this.origin(a.from, a.attackIndex ?? extra.attackIndex ?? 0);
+    const index = a.attackIndex ?? extra.attackIndex ?? 0;
+    const from = this.origin(a.from, index);
     const t = this.actors.get(a.targetId);
     const to = t ? this.anchor({ k: 'unit', id: t.id, part: 'hit' }) : { x: a.toX, y: -30 };
     const ms = extra.travelMs ?? a.travelMs;
@@ -1521,7 +1523,12 @@ export class ShowcaseStage implements ShowcaseHandle {
     }
     if (!a.visualId) return;
     const view = this.art.createProjectile(a.visualId, a.side ?? 0);
-    view.fly(from, to, ms, a.arc);
+    // queue item 44: the shot leaves along the shooter's drawn weapon (the views that know it)
+    const src = this.actors.get(a.from);
+    const path = src?.view ? aimedPath(src.view, attackAt(this.content.units[src.card], index), a.visualId, index, from, to, facingOf(src.side)) : null;
+    const aimed = view as EffectView & { flyAimed?(from: Pt, to: Pt, ms: number, o: { launchDeg: number; path: ShotPath }): void };
+    if (path && typeof aimed.flyAimed === 'function') aimed.flyAimed(from, to, ms, path);
+    else view.fly(from, to, ms, a.arc);
     this.shots.addChild(view.root);
     this.flying.push({ view });
   }

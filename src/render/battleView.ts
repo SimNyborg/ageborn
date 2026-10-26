@@ -44,6 +44,7 @@ import type {
 import { mulberry32, xmur3, type CosmeticRng } from '@/core';
 import { reachAreaMax, type PowerReachRules } from '@/core/powerReach';
 import { ColorMatrixFilter, Graphics, Sprite, Texture, type Container } from 'pixi.js';
+import { aimedPath, attackAt, firesVisual, leanFor, lineDeg, lineDegXY, pickAimVariant, shotKindOf, type ShotKind, type ShotPath } from './aim';
 import { CAMERA, Camera, type CameraHold } from './camera';
 import { bodySizeOf, LEAP_DEFAULTS, leapLift, SIZE_CODE, type BodySize, type HitTier } from './combatFeel';
 import { CONTACT_DEFAULTS, springOffset, stage, type OffsetState, type Reach, type StageBody, type StageUnit } from './contact';
@@ -193,6 +194,11 @@ interface UnitEntry {
   fortDecayFrom?: number;
   fortDecayShown?: number;
   fortDecayCarry?: number;
+  /**
+   * Queue item 44: a ranged attack 0 aiming at its target, from the start of its wind-up to its shot (the view leans
+   * toward the target as drawn, every frame); null when not aiming.
+   */
+  aim?: { targetId: number; kind: ShotKind; maxLean: number } | null;
 }
 
 interface TurretEntry {
@@ -2078,7 +2084,13 @@ export class BattleView {
           return;
         }
         if (a.clip === 'attack') {
-          e.view.play('attack', a.impactAtMs !== undefined ? { impactAtMs: a.impactAtMs } : undefined);
+          // item 44: a ranged shooter aims at its target: the variant that can start its shot, then the lean toward it
+          const variant = this.startAim(e, a.targetId ?? 0);
+          const opts: { impactAtMs?: number; variant?: string } = {};
+          if (a.impactAtMs !== undefined) opts.impactAtMs = a.impactAtMs;
+          if (variant) opts.variant = variant;
+          e.view.play('attack', opts);
+          this.updateAim(e);
           e.oneShotLeftMs = (a.impactAtMs ?? 0) + ONE_SHOT_MS.attackRecover;
           // A1: the variant now playing sets the stand-off (its tip and its lunge)
           if (e.melee) {
@@ -2086,10 +2098,13 @@ export class BattleView {
             if (r) e.reach = r;
           }
         } else if (a.impactAtMs !== undefined) {
+          e.aim = null;
           // A8: a pounce's ability clip holds its strike to the touch-down (the attack clip for the pouncers)
           e.view.play(a.clip, { impactAtMs: a.impactAtMs });
           e.oneShotLeftMs = a.impactAtMs + ONE_SHOT_MS.attackRecover;
         } else {
+          // a stun, a hit clip or an ability cuts the attack: its aim ends (the view stands up again)
+          if (e.aim) this.endAim(e);
           e.view.play(a.clip);
           e.oneShotLeftMs = a.clip === 'spawn' ? ONE_SHOT_MS.spawn : a.clip === 'hit' ? ONE_SHOT_MS.hit : a.clip === 'stun' ? ONE_SHOT_MS.stun : ONE_SHOT_MS.ability;
         }
@@ -2100,6 +2115,7 @@ export class BattleView {
         const e = this.units.get(a.id);
         if (!e || e.dying) return;
         e.dying = true;
+        e.aim = null;
         e.loopClip = null;
         e.bar.shown = false;
         // a knockback still in flight finishes its travel under the falling body (it used to pop by what was left of the
@@ -2786,6 +2802,11 @@ export class BattleView {
       if (e.jitterLeftMs > 0) e.jitterLeftMs -= gameDt;
       this.placeDrawn(e, gameDt);
       this.writePose(e);
+      // item 44: an aiming shooter leans toward its target as drawn this frame (a walking target, a knockback, its row)
+      if (e.aim && !e.dying) {
+        if (this.simById.get(e.id)?.mode !== 'attack') this.endAim(e);
+        else this.updateAim(e);
+      }
       e.view.update(gameDt);
       // R8: a Legendary's footfalls shake the camera a little (inside the A12 caps)
       const steps = (e.view as GaitView).drainFootfalls?.() ?? 0;
@@ -3048,8 +3069,71 @@ export class BattleView {
   // Projectiles
   // ------------------------------------------------------------------------------------------
 
+  /**
+   * Queue item 44: a ranged attack 0 starts aiming at its target (`aim.ts`). Returns the attack variant to play when the
+   * one the view would play next cannot start this shot (a level pose for an arc, a raised staff at a unit in front);
+   * undefined keeps the view's own cycle. Views without the aim hooks (procedural stand-ins, forts) never aim.
+   */
+  private startAim(e: UnitEntry, targetId: number): string | undefined {
+    e.aim = null;
+    const kind = shotKindOf(e.def?.attacks[0]);
+    const v = e.view as AimView;
+    if (!kind || e.fort || targetId === 0 || typeof v.aimInfo !== 'function' || typeof v.aimLean !== 'function') return undefined;
+    const info = v.aimInfo();
+    if (!info) return undefined;
+    e.aim = { targetId, kind, maxLean: info.maxLeanDeg };
+    const now = v.aimNow?.(0);
+    const to = this.aimPoint(targetId, e.side);
+    if (!now || !to) return undefined;
+    const lineAt = lineDeg({ x: e.view.root.x + now.x, y: e.view.root.y + now.y }, to, facingOf(e.side));
+    if (lineAt === null) return undefined;
+    return pickAimVariant(info.variants, info.next, kind, lineAt, info.maxLeanDeg) ?? undefined;
+  }
+
+  /** Queue item 44: leans an aiming shooter toward its target as drawn now (`aim.ts` `leanFor`; no allocation per frame). */
+  private updateAim(e: UnitEntry): void {
+    const aim = e.aim;
+    if (!aim) return;
+    const v = e.view as AimView;
+    const now = v.aimNow?.(0);
+    let lean = 0;
+    if (now && !now.omni) {
+      let tx: number;
+      let ty: number;
+      const t = aim.targetId > 0 ? this.units.get(aim.targetId) : undefined;
+      if (t && !t.dying) {
+        tx = t.drawX;
+        ty = t.y + t.view.anchors.hitCenter.y;
+      } else if (aim.targetId === -1) {
+        tx = gateX(e.side === 0 ? 1 : 0);
+        ty = BASE_AIM_Y_LU;
+      } else {
+        tx = Number.NaN;
+        ty = Number.NaN;
+      }
+      const lineAt = lineDegXY(e.view.root.x + now.x, e.view.root.y + now.y, tx, ty, facingOf(e.side));
+      // the drawn weapon without the aim lean, which is what this decides
+      if (lineAt !== null) lean = leanFor(aim.kind, lineAt, now.deg - now.leanDeg, aim.maxLean);
+    }
+    v.aimLean?.(lean);
+  }
+
+  /** Queue item 44: the aim ends before its shot (a stun, a hit clip, the unit walks on): the view stands up again. */
+  private endAim(e: UnitEntry): void {
+    e.aim = null;
+    (e.view as AimView).aimLean?.(0);
+  }
+
+  /** Where a shot at `targetId` is aimed as drawn: a unit's hit centre, the base's aim point (-1); null when gone. */
+  private aimPoint(targetId: number, side: Side): Pt | null {
+    if (targetId > 0) {
+      const t = this.units.get(targetId);
+      return t && !t.dying ? { x: t.drawX, y: t.y + t.view.anchors.hitCenter.y } : null;
+    }
+    return targetId === -1 ? { x: gateX(side === 0 ? 1 : 0), y: BASE_AIM_Y_LU } : null;
+  }
+
   private fireProjectile(a: Extract<ViewAction, { a: 'projectile' }>): void {
-    const from = this.projectileOrigin(a.from, a.side, a.attackIndex ?? 0);
     let toY = -30;
     let toX = a.toX;
     if (a.targetId > 0) {
@@ -3060,9 +3144,12 @@ export class BattleView {
         toX += t.drawX - t.x;
       }
     } else if (a.targetId === -1 && a.side !== null) {
-      toY = -44;
+      toY = BASE_AIM_Y_LU;
     }
     const to = { x: toX, y: toY };
+    // item 44: where the shot leaves and which way, from the shooter's drawn weapon
+    const shot = this.shotStart(a, to);
+    const from = shot.from;
     if (a.visualId.startsWith('fx.')) {
       this.particles.emit(a.visualId, 1, 2, from, { opts: { toX: to.x, toY: to.y, ms: a.travelMs, side: a.side ?? 0 } });
       return;
@@ -3071,13 +3158,42 @@ export class BattleView {
     const side = a.side ?? 0;
     const key = `${a.visualId}|${side}`;
     const view = this.projectilePool.get(key)?.pop() ?? this.art.createProjectile(a.visualId, side);
-    view.fly(from, to, a.travelMs, a.arc);
+    const aimed = view as EffectView & AimedFlight;
+    if (shot.path && typeof aimed.flyAimed === 'function') aimed.flyAimed(from, to, a.travelMs, shot.path);
+    else view.fly(from, to, a.travelMs, a.arc);
     this.layers.projectiles.addChild(view.root);
     const old = this.projectiles.get(a.pid);
     if (old) this.releaseProjectile(old);
     // A8: the shot homes to its target as drawn (a walking target, its staging, a knockback), see `updateProjectiles`
     const t = a.targetId > 0 ? this.units.get(a.targetId) : undefined;
     this.projectiles.set(a.pid, { key, view, ...(t ? { home: { t: 0, ms: Math.max(1, a.travelMs), target: a.targetId, x0: t.drawX, y0: t.y, ax: 0, ay: 0 } } : {}) });
+  }
+
+  /**
+   * Queue item 44: where a shot leaves and how it flies. From a unit view with the aim hooks: the weapon as drawn
+   * this frame (its body's offsets, frame lock, lean, reaction) and a path that leaves along the drawn weapon
+   * (`aim.ts` `pathFor`; null keeps the view's own straight line or classic arc). A call strike comes in from the
+   * sky on the caller's side instead of out of the caller. Everything else: `projectileOrigin`.
+   */
+  private shotStart(a: Extract<ViewAction, { a: 'projectile' }>, to: Pt): { from: Pt; path: { launchDeg: number; path: ShotPath } | null } {
+    const index = a.attackIndex ?? 0;
+    const e = a.from > 0 ? this.units.get(a.from) : undefined;
+    if (e) {
+      const atk = attackAt(e.def, index);
+      const own = firesVisual(atk, a.visualId);
+      // the shot is away: its aim ends (the view holds the lean through the impact, then stands up)
+      if (own && index === 0) e.aim = null;
+      if (!own && e.def?.abilities.some((ab) => ab.kind === 'callStrike')) {
+        const f = facingOf(e.side);
+        return { from: { x: to.x - f * STRIKE_FROM_DX_LU, y: STRIKE_FROM_Y_LU }, path: { launchDeg: STRIKE_LAUNCH_DEG, path: 'ballistic' } };
+      }
+      const now = (e.view as AimView).aimNow?.(index);
+      if (now) {
+        const from = { x: e.view.root.x + now.x, y: e.view.root.y + now.y };
+        return { from, path: aimedPath(e.view, atk, a.visualId, index, from, to, facingOf(e.side)) };
+      }
+    }
+    return { from: this.projectileOrigin(a.from, a.side, index), path: null };
   }
 
   private projectileOrigin(from: number, side: Side | null, attackIndex = 0): Pt {
@@ -3091,6 +3207,10 @@ export class BattleView {
     }
     const turret = decodeTurretSource(from);
     if (turret) {
+      // item 44: the turret's live muzzle where its view has one (the barrel's tip, turned with the aim and its kick;
+      // docs/requests/wp5-turret-muzzle-anchor.md), else a point near the mount
+      const mp = (this.turrets.get(`${turret.side}:${turret.mount}`)?.view as (TurretView & TurretMuzzle) | undefined)?.muzzlePoint?.();
+      if (mp) return { x: mp.x, y: mp.y };
       const p = this.mountPoints(turret.side)[turret.mount];
       if (p) return { x: p.x + facingOf(turret.side) * 10, y: p.y - 6 };
     }
@@ -3297,12 +3417,40 @@ export class BattleView {
       case 'fire': {
         const e = this.turrets.get(key);
         if (!e) return;
-        const t = a.targetId !== undefined ? this.units.get(a.targetId) : undefined;
-        if (t) e.view.aimAt(t.drawX);
+        if (a.targetId !== undefined) this.trackTurretTarget(e, a.targetId);
         e.view.play('fire');
         return;
       }
     }
+  }
+
+  /**
+   * Queue item 44: turns a turret's barrel toward its target as drawn (every frame, so a shot never leaves before the
+   * barrel arrives). `aimAt(x)` aims at the ground under x, which points the barrel down at a flyer above the mount, so a
+   * flyer is aimed at only by a view that takes a point (`aimAtPoint`, docs/requests/item44-turret-aim-point.md).
+   */
+  private trackTurretTarget(e: TurretEntry, targetId: number): void {
+    if (targetId <= 0) return;
+    const u = this.units.get(targetId);
+    if (!u || u.dying) return;
+    const v = e.view as TurretView & TurretMuzzle;
+    const tx = u.drawX;
+    const ty = u.y + u.view.anchors.hitCenter.y;
+    if (typeof v.aimAtPoint === 'function') {
+      v.aimAtPoint(tx, ty);
+      return;
+    }
+    const x0 = e.view.root.x;
+    const mp = v.muzzlePoint?.();
+    if (u.air || (mp && ty <= mp.y + 1)) {
+      // `aimAt` can only aim at the ground (a barrel turned down at a flyer's shadow): level is the closest it comes
+      v.aimAt(x0 + facingOf(e.side) * TURRET_LEVEL_AIM_LU);
+      return;
+    }
+    // `aimAt` aims from the barrel's pivot at the ground under x: aim through the ground point on the line from the
+    // muzzle's height to the target's body, so the barrel points at the body the shot flies to (about 4 degrees higher
+    // on the top mounts than aiming at the feet)
+    v.aimAt(mp ? x0 + ((tx - x0) * -mp.y) / (ty - mp.y) : tx);
   }
 
   private turretEntry(side: Side, mount: number, card: CardId): TurretEntry {
@@ -3372,6 +3520,8 @@ export class BattleView {
           this.mapper.setTurretCard(side, m, null);
           e = undefined;
         }
+        // item 44: the barrel follows the turret's target as drawn, so it already points there when it fires
+        if (e && t && !e.selling && !e.wrecked) this.trackTurretTarget(e, t.attack.targetId);
         e?.view.update(gameDt);
       }
     }
@@ -3421,6 +3571,39 @@ interface GaitView {
   muzzleNow?(attackIndex?: number): Pt | null;
   drainFootfalls?(): number;
 }
+
+/**
+ * Queue item 44 (duck-typed, the atlas unit view; the art contract stays unchanged): the drawn aim of the attack
+ * variants, the lean toward a target, and where a shot leaves as drawn (root space) with the angle the weapon points.
+ */
+interface AimView {
+  aimInfo?(): { variants: { anim: string; deg: number; omni: boolean }[]; next: string | null; maxLeanDeg: number } | null;
+  aimLean?(deg: number): void;
+  aimNow?(attackIndex?: number): { x: number; y: number; deg: number; drawnDeg: number; leanDeg: number; omni: boolean } | null;
+}
+
+/** Queue item 44 (duck-typed, both projectile views): a flight that leaves along the shooter's weapon. */
+interface AimedFlight {
+  flyAimed?(from: Pt, to: Pt, travelMs: number, o: { launchDeg: number; path: ShotPath }): void;
+}
+
+/** The atlas turret views' live muzzle (docs/requests/wp5-turret-muzzle-anchor.md) and, once a turret view has it, an aim at a point. */
+interface TurretMuzzle {
+  muzzlePoint?(): Pt;
+  aimAtPoint?(x: number, y: number): void;
+}
+
+/** A shot at a base flies to this height over its gate (lu, y down). */
+const BASE_AIM_Y_LU = -44;
+/**
+ * Queue item 44: a call strike's shell comes in from the sky on the caller's side, this far back and this high (lu),
+ * diving at this angle (deg) and steepening onto its mark, over the sim's travel time.
+ */
+const STRIKE_FROM_DX_LU = 320;
+const STRIKE_FROM_Y_LU = -560;
+const STRIKE_LAUNCH_DEG = -32;
+/** A turret view without `aimAtPoint` aims at a flyer through a ground point this far ahead (lu): nearly level. */
+const TURRET_LEVEL_AIM_LU = 5000;
 
 export type { HitTier } from './combatFeel';
 
