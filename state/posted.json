@@ -458,6 +458,16 @@
       "hook_type": "problem",
       "experiment": "indie-angle",
       "arm": "devlog"
+    },
+    {
+      "id": "18430965379145172",
+      "permalink": "https://www.instagram.com/stories/ageborn_game/4016512784619917933",
+      "timestamp": "2026-10-26T14:41:00+0000",
+      "name": "story-r16-who-wins",
+      "kind": "story",
+      "pillar": "battle",
+      "hook": "teaser: 1 Lindworm vs 5 Crossbowmen, reply dragon or crossbows",
+      "trial": false
     }
   ]
 }
