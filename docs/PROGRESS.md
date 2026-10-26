@@ -2,6 +2,13 @@
 
 Newest entry first. Each session appends what it finished, what is next, and anything the owner must do.
 
+## 2026-10-26: Customize round 3's first release is live; two small fixes for the next release (cloud session, branch `main-ipy06f`)
+
+- **Live:** `main` is at ce34090 (CI on PR #10 green in Chromium, WebKit, the iPhone profile and Firefox), and GitHub Pages deployed it at 02:56 UTC. Everything in the entry below is on https://simnyborg.github.io/ageborn/.
+- **Fixed for the next release (R3b):** a new player's empty Capsules tab on a phone cut its faint capsule off at the top (it did before round 3 too); it now uses the same two columns as a tab with capsules, checked in Chromium and Safari's engine at eight phone sizes. Road skins earned before they shipped (Galleon Bastion, Solar Sail Ark, Wyrm-Coil Keep) now arrive as soon as the game loads, marked NEW, instead of after the next battle.
+- **Next:** R3b (the eight Epic scenes, Customize with the full set, bots wearing the new skins more often) goes through its review, final step and CI; queue item 44 (weapons that point where they shoot) starts with a diagnosis.
+- **What the owner should try:** see the entry below.
+
 ## 2026-10-26: Customize round 3, first release: new scenes for five ages, decorations and 13 base skins as real models, a livelier Customize; Home and Capsules on short Android screens (cloud session, branch `main-ipy06f`, PR #10)
 
 **What a player sees.**

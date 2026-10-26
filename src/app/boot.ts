@@ -11,6 +11,7 @@
  * Every browser dependency is injectable, so the order is tested headless.
  */
 import type { AgeId, ArtProvider, AudioService, Bus, SaveDoc, Settings } from '@/contracts';
+import type { MetaRules } from '@/meta';
 import type { KeyValueStore } from './eventLog';
 import { bootRoute } from './onboarding';
 import type { PixiHost } from './pixiHost';
@@ -110,6 +111,11 @@ export async function boot(o: BootOptions): Promise<Booted> {
     // Charges, the Supply and Daily banks, quest arrivals and the Daily day move on while away (A6.3).
     const ticked = services.meta.tickTimers(save, services.clock);
     if (ticked !== save) void services.saveStore.save((save = ticked));
+    // Items earned before they were released (a road node claimed before its skin shipped) land now, marked
+    // NEW, instead of after the next battle (docs/requests/custom-c-sync-at-boot.md).
+    const sync = (services.meta as Partial<MetaRules>).syncCosmetics;
+    const synced = sync ? sync(save, services.content) : save;
+    if (synced !== save) void services.saveStore.save((save = synced));
     // A Ladder battle left by a reload counts as the Retreat it could have been (bug hunt 2026-10-01 #9).
     save = await settleAbandoned(services, save);
   }

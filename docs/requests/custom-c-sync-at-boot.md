@@ -1,6 +1,10 @@
 # Track C → app owner (or the round-3 final): grant earned collection items when the game loads (round 3b, 2026-10-25)
 
-Status: **open** (two lines in `src/app/boot.ts`, which Track C does not own; nothing breaks without it).
+Status: **done** (2026-10-26, orchestrator, ships with R3b): `boot()` runs `syncCosmetics` right after `tickTimers`,
+duck-typed like the controller's other `MetaRules` calls, and writes the save only when something was granted. Test:
+`src/app/test/boot.test.ts` ("grants collection items earned before their release when the game loads"), which fails on
+the old boot (a save with the 2,600, 3,900 and 4,800 nodes claimed gets the three skins, owned and NEW; a second load
+writes nothing).
 
 ## What is wrong
 

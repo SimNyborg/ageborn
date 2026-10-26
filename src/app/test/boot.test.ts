@@ -3,6 +3,7 @@ import { content } from '@/content';
 import { FakeAudio } from '@/contracts/fakes/audio';
 import { FixedClock } from '@/contracts/fakes/clock';
 import { InMemorySaveStore, fakeSaveDoc } from '@/contracts/fakes/saveStore';
+import { meta as realMeta } from '@/meta';
 import { type NonePlatform } from '@/platform';
 import { boot, bootFlags, unlockAudioOnGesture } from '../boot';
 import { buildServices, FAKE_CHOICE, type Services } from '../services';
@@ -52,6 +53,26 @@ describe('boot (DESIGN B11)', () => {
     const b = await boot({ search: '', services: s, idle: () => undefined });
     expect(b.save).not.toBeNull();
     expect(store.immediateSaves).toBe(1);
+  });
+
+  it('grants collection items earned before their release when the game loads, marked NEW (custom-c-sync-at-boot)', async () => {
+    // A player who claimed the 2,600, 3,900 and 4,800 road nodes before their base skins shipped.
+    const save = fakeSaveDoc({ tutorial: { step: 4, hintsShown: {} } });
+    save.trophies = { current: 5000, best: 5000, roadClaimed: [2600, 3900, 4800] };
+    const store = new InMemorySaveStore(save);
+    const s = await services({ content, meta: realMeta, saveStore: store });
+    const b = await boot({ search: '', services: s, idle: () => undefined });
+    const skins = ['baseSkin.galleon_bastion', 'baseSkin.solar_sail_ark', 'baseSkin.wyrm_coil_keep'];
+    for (const k of skins) {
+      expect(b.save?.cosmetics.owned).toContain(k);
+      expect(b.save?.cosmetics.fresh).toContain(k);
+    }
+    expect((await store.load())?.cosmetics.owned).toEqual(expect.arrayContaining(skins));
+    // Nothing new to grant on the next load: no second copy, and nothing is written.
+    const writes = store.saves;
+    const again = await boot({ search: '', services: s, idle: () => undefined });
+    expect(again.save?.cosmetics.owned.filter((k) => skins.includes(k))).toHaveLength(3);
+    expect(store.saves).toBe(writes);
   });
 
   it('returns before the battle art has loaded when Home is the start screen (perf audit 2026-10-01)', async () => {

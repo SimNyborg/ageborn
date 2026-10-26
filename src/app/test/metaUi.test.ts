@@ -274,13 +274,19 @@ describe('createMetaUi: the meta screens and the battle in step', () => {
     const calls: unknown[] = [];
     const art = { prefetchMatch: (o: unknown) => (calls.push(o), Promise.resolve()) } as unknown as Parameters<typeof warmMatchArt>[0];
     warmMatchArt(art, warmed[0]!);
-    // (the AI General's base look has a skin per age; the provider loads only the first age's models)
+    // (the AI General's base look picks a skin or the standard base per age, evenly since round 3b, and passes the
+    // skins as raw ids; the provider loads only the first age's models)
+    const foeLook = warmed[0]!.config.sides[1].look;
+    const foeSkins = Object.fromEntries(
+      Object.entries(foeLook?.baseSkins ?? {}).flatMap(([age, key]) => (key?.startsWith('baseSkin.') ? [[age, key.slice('baseSkin.'.length)]] : [])),
+    );
+    expect(Object.keys(foeSkins).length).toBeGreaterThan(0);
     expect(calls).toEqual([
       {
         age: 'stone',
         sides: [
           { skins: { stone: 'mossy_den' }, scenes: {}, decorations: warmed[0]!.config.sides[0].look?.decorations },
-          expect.objectContaining({ skins: expect.objectContaining({ stone: expect.any(String) }) }),
+          expect.objectContaining({ skins: foeSkins, decorations: foeLook?.decorations }),
         ],
         units: expect.any(Array),
       },
