@@ -5,12 +5,5 @@
     "hook_type": "problem",
     "experiment": "indie-angle",
     "arm": "devlog"
-  },
-  "r16-1-lindworm-vs-5-crossbowmen": {
-    "length_s": 6.3,
-    "format": "short-hook",
-    "hook_type": "matchup",
-    "experiment": "format",
-    "arm": "duel"
   }
 }

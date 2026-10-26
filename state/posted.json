@@ -468,6 +468,22 @@
       "pillar": "battle",
       "hook": "teaser: 1 Lindworm vs 5 Crossbowmen, reply dragon or crossbows",
       "trial": false
+    },
+    {
+      "name": "r16-1-lindworm-vs-5-crossbowmen",
+      "kind": "reel",
+      "id": "18140865820625886",
+      "permalink": "https://www.instagram.com/reel/De-CD93DNqV/",
+      "timestamp": "2026-10-26T19:27:54+0000",
+      "slot": "evening",
+      "pillar": "battle",
+      "hook": "Balance test: 1 Lindworm vs 5 Crossbowmen",
+      "trial": false,
+      "length_s": 6.3,
+      "format": "short-hook",
+      "hook_type": "matchup",
+      "experiment": "format",
+      "arm": "duel"
     }
   ]
 }
