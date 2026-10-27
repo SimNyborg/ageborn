@@ -5,5 +5,12 @@
     "hook_type": "problem",
     "experiment": "indie-angle",
     "arm": "devlog"
+  },
+  "r17-1-drone-carrier-vs-4-pulse-troopers": {
+    "length_s": 7.6,
+    "format": "short-hook",
+    "hook_type": "matchup",
+    "experiment": "narrated-duel",
+    "arm": "duel"
   }
 }
