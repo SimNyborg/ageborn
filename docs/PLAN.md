@@ -155,3 +155,6 @@ what we believe, how sure we are, and what we post next because of it.
   apart from DV6 (held); the 2026-10-27 run produces both slots.
 - 2026-10-26 late: owner note: only narrated Reels; duel template now has low music (-15 dB, 0.8 s fade-in), no
   opening slam and an optional narration. Duels continue only as narrated balance tests.
+- 2026-10-27: no posts (the morning run was delivered 13.5 h late). Followers 144 (+4). DV7 158 reach, R16 152
+  with 102 % watch (rewatched). Lesson: keep at least one narrated Reel ready in the queue so a missed run does not
+  leave a day empty.

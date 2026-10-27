@@ -164,3 +164,4 @@ Lead with the game itself and its development: battles, ages, units, capsules, h
 and why. Do not use "nothing is for sale", "every card earned" or similar monetisation lines in
 videos, end cards or captions; they are not a selling point for this audience.
 - 2026-10-22 18:43 UTC: API returned OAuthException 190 'You cannot access the app till you log in to www.instagram.com and follow the instructions given' (an Instagram checkpoint). R14 not posted; owner asked to log in and clear it.
+- 2026-10-27: the daily run (07:47 UTC) reached the session only at 21:23 UTC with the evening status; no posts or story went out on 2026-10-27. Cause unknown (scheduler delivery). Queue was empty apart from DV6 (held).
