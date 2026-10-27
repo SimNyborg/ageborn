@@ -85,6 +85,17 @@ watched), share_rate, eng_rate, reach. Followers per post are not available from
 
 ## Content direction (from the first week)
 
+Owner note 2026-10-27, before/after Reels: the "before" must look clearly bad and the "after" clearly good, so
+the improvement is obvious at a glance on a phone. A "before" that is only the current version with a few features
+switched off is not bad enough (the capsule layer-by-layer devlog was criticised for this).
+- Use the real old version when it exists and is clearly worse (an older game commit, filmed the same way).
+- Otherwise build the "before" as a stripped-down, plainly bad version: no art (grey boxes or flat shapes), no
+  animation (frozen or stepped poses), no effects, no sound, flat lighting. Show it long enough to register (2-3 s).
+- Then the "after" with everything on, ideally the same moment, and a hard cut or a wipe between them.
+- If the difference is still subtle after that, do not make it a before/after; pick another subject.
+- The story may dramatize the "before" (owner note 2026-10-18), but never present a rebuilt "before" as a dated
+  screenshot of the real past ("this is what it looked like in June"); say "at the start" or "step 0" instead.
+
 Owner note 2026-10-26: every Reel is narrated (no music-only Reels). Music sits low (about -15 dB) with a soft fade-in;
 nothing loud or sudden in the first second (no slam or explosion on frame 0).
 Owner direction 2026-10-22: the account is an indie developer's channel. Every Reel shows a development question

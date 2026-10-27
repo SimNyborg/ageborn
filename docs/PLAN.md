@@ -74,6 +74,9 @@ what we believe, how sure we are, and what we post next because of it.
 
 - 2026-10-19: no AI-voice line in captions; keep captions about the game and fewer precautions in general.
 
+- 2026-10-27: before/after Reels must show a clearly bad "before" and a clearly good "after" (RUNBOOK, Content
+  direction); a current version with features switched off is not bad enough.
+
 - 2026-10-26: only narrated Reels from now on. The music-only Reels (duels) were too loud and abrupt, so viewers got
   a fright and scrolled away (their skip is 67-74 % against 55-67 % for narrated devlogs). Every Reel gets a voice;
   music stays low with a soft fade-in, and nothing loud on the first frame.
@@ -158,3 +161,5 @@ what we believe, how sure we are, and what we post next because of it.
 - 2026-10-27: no posts (the morning run was delivered 13.5 h late). Followers 144 (+4). DV7 158 reach, R16 152
   with 102 % watch (rewatched). Lesson: keep at least one narrated Reel ready in the queue so a missed run does not
   leave a day empty.
+- 2026-10-27 late: owner rule for before/after: the before must be plainly bad (real old version, or a stripped-down
+  step 0 with no art, motion, effects or sound), else no before/after.
