@@ -163,3 +163,5 @@ what we believe, how sure we are, and what we post next because of it.
   leave a day empty.
 - 2026-10-27 late: owner rule for before/after: the before must be plainly bad (real old version, or a stripped-down
   step 0 with no art, motion, effects or sound), else no before/after.
+- 2026-10-28 evening: R17 (first narrated duel, quiet mix) 115 reach in 10 h but 78 % skip, worse than R16's 69 %
+  (n=1, the quiet opening may lose the hook; keep watching). DV8 99 reach in 1.6 h. DV7 161, R16 152. Followers 145.
