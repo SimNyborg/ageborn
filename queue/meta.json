@@ -12,5 +12,12 @@
     "hook_type": "matchup",
     "experiment": "narrated-duel",
     "arm": "duel"
+  },
+  "dv8-devlog-8-how-a-unit-comes-alive": {
+    "length_s": 27.0,
+    "format": "devlog",
+    "hook_type": "before-after",
+    "experiment": "indie-angle",
+    "arm": "devlog"
   }
 }

@@ -1,0 +1,4 @@
+Devlog #8: how a unit comes alive 🐻⚔️
+Every unit in Ageborn starts as one frozen picture. Then it gets frames, twelve for a single swing. Then it learns to stand, walk, flinch and fall. And then it goes into battle. Which unit should I take apart next? 👇
+
+#gamedev #indiedev #indiegame #devlog #gameanimation

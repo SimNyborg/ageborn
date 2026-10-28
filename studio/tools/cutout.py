@@ -34,7 +34,7 @@ def frame_image(sheet_img, meta, key):
     return canvas
 
 
-def cutout(unit, clip, index, team_hex, flip=False):
+def cutout(unit, clip, index, team_hex, flip=False, trim=True):
     js = sheet_for(unit)
     meta = json.load(open(js))
     img = Image.open(js.replace('.json', '.png')).convert('RGBA')
@@ -55,12 +55,14 @@ def cutout(unit, clip, index, team_hex, flip=False):
     out.alpha_composite(base)
     if flip:
         out = out.transpose(Image.FLIP_LEFT_RIGHT)
+    if not trim:
+        return out
     bbox = out.getbbox()
     return out.crop(bbox) if bbox else out
 
 
 if __name__ == '__main__':
     unit, clip, index, team_hex, dest = sys.argv[1:6]
-    im = cutout(unit, clip, int(index), team_hex, '--flip' in sys.argv)
+    im = cutout(unit, clip, int(index), team_hex, '--flip' in sys.argv, trim='--full' not in sys.argv)
     im.save(dest)
     print(dest, im.size)
