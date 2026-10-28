@@ -510,6 +510,22 @@
       "pillar": "devlog",
       "hook": "behind the scenes: bear knight step 0 vs in battle, full video tonight",
       "trial": false
+    },
+    {
+      "name": "dv8-devlog-8-how-a-unit-comes-alive",
+      "kind": "reel",
+      "id": "18021775550728807",
+      "permalink": "https://www.instagram.com/reel/DfDKwbiF5RX/",
+      "timestamp": "2026-10-28T19:20:02+0000",
+      "slot": "evening",
+      "pillar": "devlog",
+      "hook": "Devlog #8: how a unit comes alive (step 0 to battle)",
+      "trial": false,
+      "length_s": 27.0,
+      "format": "devlog",
+      "hook_type": "before-after",
+      "experiment": "indie-angle",
+      "arm": "devlog"
     }
   ]
 }
