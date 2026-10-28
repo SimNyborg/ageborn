@@ -500,6 +500,16 @@
       "hook_type": "matchup",
       "experiment": "narrated-duel",
       "arm": "duel"
+    },
+    {
+      "id": "18133003057786380",
+      "permalink": "https://www.instagram.com/stories/ageborn_game/4017961625182064246",
+      "timestamp": "2026-10-28T14:39:35+0000",
+      "name": "story-dv8-teaser",
+      "kind": "story",
+      "pillar": "devlog",
+      "hook": "behind the scenes: bear knight step 0 vs in battle, full video tonight",
+      "trial": false
     }
   ]
 }
