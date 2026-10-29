@@ -1,0 +1,4 @@
+Devlog #9: what my game really sees 🟦🟧
+Under the art, my game is two armies of little squares. It only knows where each unit stands, how much health it has and when it swings. Everything you see is a costume on top, so I can redraw a unit and the battle stays exactly the same. Want more from under the hood? 👇
+
+#gamedev #indiedev #indiegame #devlog #gamedesign

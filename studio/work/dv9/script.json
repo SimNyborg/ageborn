@@ -1,0 +1,7 @@
+{"lead": 0.15, "lines": [
+ {"key": "l0", "text": "This is my game. Really. Two armies of little squares.", "gap": 0.35},
+ {"key": "l1", "text": "Underneath, the game only knows where each unit stands, how much health it has, and when it swings.", "gap": 0.4},
+ {"key": "l2", "text": "Everything you actually see is a costume on top.", "gap": 0.4},
+ {"key": "l3", "text": "So I can redraw a unit, and the battle doesn't change at all. The squares don't care.", "gap": 0.4},
+ {"key": "l4", "text": "Want to see more of what's under the hood?", "gap": 0.3}
+]}
