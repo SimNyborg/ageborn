@@ -12,5 +12,12 @@
     "hook_type": "before-after",
     "experiment": "indie-angle",
     "arm": "devlog"
+  },
+  "r18-1-elk-chieftain-vs-5-bonkers": {
+    "length_s": 7.6,
+    "format": "duel",
+    "hook_type": "question",
+    "experiment": "narrated-duel",
+    "arm": "duel"
   }
 }
