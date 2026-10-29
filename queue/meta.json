@@ -6,13 +6,6 @@
     "experiment": "indie-angle",
     "arm": "devlog"
   },
-  "dv9-devlog-9-what-my-game-really-sees": {
-    "length_s": 28.6,
-    "format": "devlog",
-    "hook_type": "before-after",
-    "experiment": "indie-angle",
-    "arm": "devlog"
-  },
   "r18-1-elk-chieftain-vs-5-bonkers": {
     "length_s": 7.6,
     "format": "duel",

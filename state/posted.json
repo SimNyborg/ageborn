@@ -536,6 +536,21 @@
    "hook": "split: what the game sees (squares) vs what you see, full video tonight",
    "trial": false,
    "permalink": "https://www.instagram.com/stories/ageborn_game/4018716749872614302"
+  },
+  {
+   "id": "18079581986724488",
+   "permalink": "https://www.instagram.com/reel/DfFsnzDgP1z/",
+   "timestamp": "2026-10-29T18:54:27+0000",
+   "name": "dv9-devlog-9-what-my-game-really-sees",
+   "kind": "reel",
+   "pillar": "devlog",
+   "hook": "Devlog #9: what my game really sees (squares step 0, then the costume)",
+   "trial": false,
+   "length_s": 28.6,
+   "format": "devlog",
+   "hook_type": "before-after",
+   "experiment": "indie-angle",
+   "arm": "devlog"
   }
  ]
 }
