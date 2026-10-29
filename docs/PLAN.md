@@ -165,3 +165,7 @@ what we believe, how sure we are, and what we post next because of it.
   step 0 with no art, motion, effects or sound), else no before/after.
 - 2026-10-28 evening: R17 (first narrated duel, quiet mix) 115 reach in 10 h but 78 % skip, worse than R16's 69 %
   (n=1, the quiet opening may lose the hook; keep watching). DV8 99 reach in 1.6 h. DV7 161, R16 152. Followers 145.
+- 2026-10-29 evening: the daily run reached the session only at 15:39 UTC, so no midday Reel. Story (DV9 split) at
+  15:39 UTC, DV9 (squares step 0, then the costume) at 18:54 UTC: 88 reach in 2 h with 56.6 % skip, the second
+  lowest early skip of any post. DV8 125, R17 118 (77 % skip, narrated duels still skip more than R16). Followers 146.
+  R18 (narrated Elk Chieftain balance test, voice from frame 1 as a question) queued as tomorrow's buffer.
