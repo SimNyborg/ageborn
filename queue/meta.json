@@ -12,5 +12,12 @@
     "hook_type": "question",
     "experiment": "narrated-duel",
     "arm": "duel"
+  },
+  "dv10-devlog-10-the-soldiers-that-cant-look-up": {
+    "length_s": 31.7,
+    "format": "devlog",
+    "hook_type": "problem",
+    "experiment": "indie-angle",
+    "arm": "devlog"
   }
 }

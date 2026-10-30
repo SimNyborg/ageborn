@@ -15,18 +15,20 @@ what we believe, how sure we are, and what we post next because of it.
   them), shares and saves (would they send it on), comments. Followers per day from `GET /me`.
 - Owner direction overrides the numbers (see Owner notes).
 
-## Beliefs (as of 2026-10-21 morning, 14 Reels, all small numbers)
+## Beliefs (as of 2026-10-30 morning, 36 posts; medians over Reels older than 24 h)
 
 | # | Belief | Evidence | Status |
 |---|---|---|---|
-| B1 | Capsule openings reach the most people | R6 124, R9 133, but R10 only 45 (third capsule video in 4 days) | weakened: works when spaced out and varied; repeats are penalised |
-| B2 | Shorter Reels are watched further | short duels 39-53 % vs classic 16-37 % | confirmed for watch share (n=5 vs 6), not for reach |
-| B3 | A question to the viewer gets reactions but not reach on its own | R5: highest engagement, reach 32 | signal |
-| B4 | Shares are starting | first shares 2026-10-21/22: 7 posts with 1 share each (R8, R10, R11, R12, DV1, DV2, IA1); still under 1 per 100 reached | open: week-2 test continues |
-| B5 | Posting time matters | evening 120 vs midday 110 median reach | unknown |
-| B6 | Reach is capped at about 110-160 per post | devlog #1 162 and R11 147 are the highs; nothing breaks out | signal |
-| B7 | Devlogs score best overall | DV1 162 reach, lowest skip of the battle-free posts, most seconds watched; bandit 68 % best (n=2) | signal, strongest |
-| B8 | Followers grow on devlog days | 107 flat all week, then 109, 110, 116 after the two devlogs | signal (n small) |
+| B1 | Capsule openings reach the most people | rarity reveals median 138 (n=3), R10 only 45 after repeats | rejected as "most"; fine when spaced out |
+| B2 | Shorter Reels are watched further | short duels 65 % watch (n=10) vs devlogs 23 % (n=10) and classic 28 % (n=7) | confirmed for watch share, not for reach |
+| B3 | A question to the viewer gets reactions but not reach on its own | R5: highest engagement, reach 44 | signal |
+| B4 | Shares are starting | 7 posts with 1 share each, none since 2026-10-22 | stalled |
+| B5 | Posting time matters | evening 141 (n=14) vs midday 136 (n=13) median reach | rejected: no real difference |
+| B6 | Reach is capped at about 150 per post | DV3 303, DV5 194, DV1 188; devlog median 155 | weakened: a twist or visible problem breaks it |
+| B7 | Devlogs score best overall | devlog median reach 155 (n=10) vs short duels 144 (n=10) and classic 120 (n=7); lowest skip (66 %) | confirmed for reach and skip |
+| B8 | Followers grow on devlog days | 107 to 146 in 3 weeks, steps after DV1, DV3, DV5 | signal |
+| B9 | A plainly bad "before" holds the first seconds | DV9 (squares step 0) 61.7 % skip at 13 h, among the lowest of any post | signal (n=1) |
+| B10 | Narrated duels lose the hook | R17 77 % skip vs R16 (unnarrated) 69 % | open: R18 tests a spoken question from frame 1 |
 
 ## Current mix (until the next update; owner note 2026-10-22 sets the direction)
 
@@ -169,3 +171,8 @@ what we believe, how sure we are, and what we post next because of it.
   15:39 UTC, DV9 (squares step 0, then the costume) at 18:54 UTC: 88 reach in 2 h with 56.6 % skip, the second
   lowest early skip of any post. DV8 125, R17 118 (77 % skip, narrated duels still skip more than R16). Followers 146.
   R18 (narrated Elk Chieftain balance test, voice from frame 1 as a question) queued as tomorrow's buffer.
+- 2026-10-30 morning: Beliefs table refreshed from 36 posts: B7 (devlogs best for reach and skip) and B2 (short
+  Reels watched further) confirmed with n=10 per group; B5 (posting time) rejected (141 vs 136); B6 weakened (twists
+  break the ceiling). New B9 (a plainly bad before holds the opening, DV9) and B10 (narrated duels skip more, R18
+  tests a spoken question from frame 1). Mix unchanged: one balance test (R18, midday) and one problem-first devlog
+  (DV10, the soldiers that can't hit air, evening) a day.
