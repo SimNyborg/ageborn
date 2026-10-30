@@ -1,4 +1,0 @@
-Devlog #10: the soldiers that can't look up 🛸⚔️
-I sent eight soldiers at my flying Mothership. Not one could touch it. In my game every attack says if it hits the ground, the air or both, and swords only hit the ground. So the answer is Ion Rangers: they shoot up, and five of them bring it down. Fair, or should swords hit flying units too? 👇
-
-#gamedev #indiedev #indiegame #devlog #gamedesign
