@@ -1,4 +1,0 @@
-Balance test: 1 Elk Chieftain vs 5 Bonkers 🦌🪨
-On the game's own simulation, six Bonkers beat the Elk Chieftain. Five? It survives with 7% health. Is that too close, or exactly right for a Legendary? 👇
-
-#gamedev #indiedev #indiegame #gamebalance #strategygame

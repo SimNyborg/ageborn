@@ -551,6 +551,21 @@
    "hook_type": "before-after",
    "experiment": "indie-angle",
    "arm": "devlog"
+  },
+  {
+   "id": "18120570214955262",
+   "permalink": "https://www.instagram.com/reel/DfHeKSxDN4S/",
+   "timestamp": "2026-10-30T11:26:29+0000",
+   "name": "r18-1-elk-chieftain-vs-5-bonkers",
+   "kind": "reel",
+   "pillar": "battle",
+   "hook": "1 Elk Chieftain vs 5 Bonkers, narrated balance test, voice question from frame 1",
+   "trial": false,
+   "length_s": 7.6,
+   "format": "duel",
+   "hook_type": "question",
+   "experiment": "narrated-duel",
+   "arm": "duel"
   }
  ]
 }
