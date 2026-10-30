@@ -566,6 +566,16 @@
    "hook_type": "question",
    "experiment": "narrated-duel",
    "arm": "duel"
+  },
+  {
+   "id": "18146316565566930",
+   "permalink": "https://www.instagram.com/stories/ageborn_game/4019431293684028368",
+   "timestamp": "2026-10-30T15:19:34+0000",
+   "name": "story-dv10-zero-damage",
+   "kind": "story",
+   "pillar": "devlog",
+   "hook": "0 damage: swords can't hit the flying mothership, full video tonight",
+   "trial": false
   }
  ]
 }
