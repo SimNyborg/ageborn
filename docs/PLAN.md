@@ -28,7 +28,7 @@ what we believe, how sure we are, and what we post next because of it.
 | B7 | Devlogs score best overall | devlog median reach 155 (n=10) vs short duels 144 (n=10) and classic 120 (n=7); lowest skip (66 %) | confirmed for reach and skip |
 | B8 | Followers grow on devlog days | 107 to 146 in 3 weeks, steps after DV1, DV3, DV5 | signal |
 | B9 | A plainly bad "before" holds the first seconds | DV9 (squares step 0) 61.7 % skip at 13 h, among the lowest of any post | signal (n=1) |
-| B10 | Narrated duels lose the hook | R17 77 % skip vs R16 (unnarrated) 69 % | open: R18 tests a spoken question from frame 1 |
+| B10 | Narrated duels lose the hook unless the voice asks a question at once | R17 77 % skip; R18 (spoken question from frame 1) 60 % skip in 9.5 h, the lowest of any duel | signal (n=1): keep the spoken question on every duel |
 
 ## Current mix (until the next update; owner note 2026-10-22 sets the direction)
 
@@ -176,3 +176,6 @@ what we believe, how sure we are, and what we post next because of it.
   break the ceiling). New B9 (a plainly bad before holds the opening, DV9) and B10 (narrated duels skip more, R18
   tests a spoken question from frame 1). Mix unchanged: one balance test (R18, midday) and one problem-first devlog
   (DV10, the soldiers that can't hit air, evening) a day.
+- 2026-10-30 evening: R18 (voice asks "Is this elk worth five cavemen?" from frame 1) 113 reach in 9.5 h with 60 %
+  skip, the lowest skip of any duel (R17 77 %): every narrated duel now opens on a spoken question (B10). DV10 100
+  reach in 1.7 h, 70 % skip (early). DV9 122. Followers 148 (+2).
