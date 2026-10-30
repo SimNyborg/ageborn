@@ -1,0 +1,5 @@
+{"lead": 0.05, "lines": [
+ {"key": "l0", "text": "Can six workers stop a train?", "gap": 0.25},
+ {"key": "l1", "text": "Seven can.", "gap": 0.25},
+ {"key": "l2", "text": "Six? Watch the health bar.", "gap": 0.3}
+]}

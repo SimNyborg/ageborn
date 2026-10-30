@@ -1,0 +1,4 @@
+Balance test: 1 Armoured Train vs 6 Riveters 🚂🔧
+On the game's own simulation, seven Riveters stop the Armoured Train. Six? It pulls through with 3% health. Too strong, too weak, or just right for a Legendary? 👇
+
+#gamedev #indiedev #indiegame #gamebalance #strategygame

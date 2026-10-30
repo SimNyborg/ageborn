@@ -19,5 +19,12 @@
     "hook_type": "problem",
     "experiment": "indie-angle",
     "arm": "devlog"
+  },
+  "r19-1-armoured-train-vs-6-riveters": {
+    "length_s": 7.6,
+    "format": "duel",
+    "hook_type": "question",
+    "experiment": "narrated-duel",
+    "arm": "duel"
   }
 }
