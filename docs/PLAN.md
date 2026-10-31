@@ -179,3 +179,6 @@ what we believe, how sure we are, and what we post next because of it.
 - 2026-10-30 evening: R18 (voice asks "Is this elk worth five cavemen?" from frame 1) 113 reach in 9.5 h with 60 %
   skip, the lowest skip of any duel (R17 77 %): every narrated duel now opens on a spoken question (B10). DV10 100
   reach in 1.7 h, 70 % skip (early). DV9 122. Followers 148 (+2).
+- 2026-10-31: morning run delayed about 3 h by a worker restart. R19 (narrated balance test, spoken question) midday,
+  DV11 (one caveman flips the Elk Chieftain fight, a twist on R18) evening. Beliefs unchanged: DV9 124, DV10 118 in
+  13 h (69 % skip), R18 115 with 59.5 % skip (B10 holding). Followers 147.
