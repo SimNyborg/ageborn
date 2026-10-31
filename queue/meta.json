@@ -5,12 +5,5 @@
     "hook_type": "problem",
     "experiment": "indie-angle",
     "arm": "devlog"
-  },
-  "dv11-devlog-11-one-caveman-is-the-whole-difference": {
-    "length_s": 22.2,
-    "format": "devlog",
-    "hook_type": "story",
-    "experiment": "indie-angle",
-    "arm": "devlog"
   }
 }

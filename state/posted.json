@@ -606,6 +606,21 @@
    "hook_type": "question",
    "experiment": "narrated-duel",
    "arm": "duel"
+  },
+  {
+   "id": "17909826090585675",
+   "permalink": "https://www.instagram.com/reel/DfLEAF1Cq7L/",
+   "timestamp": "2026-10-31T20:55:17+0000",
+   "name": "dv11-devlog-11-one-caveman-is-the-whole-difference",
+   "kind": "reel",
+   "pillar": "devlog",
+   "hook": "Devlog #11: one caveman is the whole difference (elk beats 5, falls to 6)",
+   "trial": false,
+   "length_s": 22.2,
+   "format": "devlog",
+   "hook_type": "story",
+   "experiment": "indie-angle",
+   "arm": "devlog"
   }
  ]
 }

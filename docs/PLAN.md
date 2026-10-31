@@ -182,3 +182,6 @@ what we believe, how sure we are, and what we post next because of it.
 - 2026-10-31: morning run delayed about 3 h by a worker restart. R19 (narrated balance test, spoken question) midday,
   DV11 (one caveman flips the Elk Chieftain fight, a twist on R18) evening. Beliefs unchanged: DV9 124, DV10 118 in
   13 h (69 % skip), R18 115 with 59.5 % skip (B10 holding). Followers 147.
+- 2026-10-31 evening: a worker restart lost the Story and DV11 schedules; DV11 went out late at 20:55 UTC by the
+  evening status, no Story today. Lesson: schedule each post the moment it is queued, before any further work.
+  R19 posted 11:35 UTC. Followers 150.
