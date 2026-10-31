@@ -591,6 +591,21 @@
    "hook_type": "problem",
    "experiment": "indie-angle",
    "arm": "devlog"
+  },
+  {
+   "id": "17975306667155287",
+   "permalink": "https://www.instagram.com/reel/DfKD8T-AcR7/",
+   "timestamp": "2026-10-31T11:35:10+0000",
+   "name": "r19-1-armoured-train-vs-6-riveters",
+   "kind": "reel",
+   "pillar": "battle",
+   "hook": "1 Armoured Train vs 6 Riveters, narrated balance test, spoken question from frame 1",
+   "trial": false,
+   "length_s": 7.6,
+   "format": "duel",
+   "hook_type": "question",
+   "experiment": "narrated-duel",
+   "arm": "duel"
   }
  ]
 }

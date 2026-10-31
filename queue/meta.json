@@ -6,13 +6,6 @@
     "experiment": "indie-angle",
     "arm": "devlog"
   },
-  "r19-1-armoured-train-vs-6-riveters": {
-    "length_s": 7.6,
-    "format": "duel",
-    "hook_type": "question",
-    "experiment": "narrated-duel",
-    "arm": "duel"
-  },
   "dv11-devlog-11-one-caveman-is-the-whole-difference": {
     "length_s": 22.2,
     "format": "devlog",
