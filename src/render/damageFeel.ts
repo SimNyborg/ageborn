@@ -227,7 +227,8 @@ export class DamageFeel {
         for (let j = 0; j < n; j++) {
           this.at.x = u.drawX + e.x;
           this.at.y = u.y + e.y;
-          this.host.particles.emit(id, 1, 0, this.at, { opts: { dir: u.side === 0 ? 1 : -1, scale: Math.max(0.4, e.size / 10), ...(reduce ? { reduce: 1 } : {}) } });
+          // puffs a little over half their spot's size: a wrecked machine's smoke reads as a column at phone scale
+          this.host.particles.emit(id, 1, 0, this.at, { opts: { dir: u.side === 0 ? 1 : -1, scale: Math.max(0.5, e.size / 7), ...(reduce ? { reduce: 1 } : {}) } });
         }
       }
     }
