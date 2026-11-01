@@ -127,7 +127,7 @@ def is_attack(name):
 
 
 def spec_for(slug, name):
-    unit = SPEC.get(slug, {})
+    unit = SPEC.get(slug) or SPEC.get(slug.split("@")[0], {})   # a skin ("<unit>@<skin>") aims as its unit
     out = {}
     for key in ("*", base_of(name), name):
         out.update(unit.get(key, {}))
@@ -238,10 +238,10 @@ def check_variant(base_meta, meta, name):
 
 def annotate_clips(mod, clips, clip_meta, rig, tracks):
     """pipeline.run_unit, after the clip meta: every shot clip's aim keys at the end of its meta, and every
-    aimed variant checked against its base clip's timing. Troop units only (turrets, forts and bases aim in
-    code)."""
-    from .damage import is_troop
-    if not is_troop(mod):
+    aimed variant checked against its base clip's timing. Troop units and their skins only (turrets, forts and
+    bases aim in code)."""
+    from .damage import FAMILY, is_troop
+    if not (is_troop(mod) or getattr(mod, "SKIN_OF", None) in FAMILY):
         return
     for c in clips:
         m = clip_meta[c.name]
