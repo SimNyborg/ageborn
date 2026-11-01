@@ -102,6 +102,14 @@ def build(rig):
     # the aspis on the near hand: a big round team shield with a riveted rim
     sx, sy, sz = HR[0] + 1.0, HR[1] - 6.0, HR[2] + 3.0
     B.aspis(rig, "hand_r", (sx, sy, sz), r=13.4, depth=2.6, rim=B.BRONZE, rim_w=1.3, rivets=12)
+    # damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin
+    # the aspis face (the largest camera-facing part) twice, the bronze helmet, the team crest (the linen
+    # corslet stays behind the raised aspis in every pose); a torn strip from the team hem
+    rig.damage_spot_at("shield", "hand_r", -10.0, 22.0, 6.0, "wood", team=True)
+    rig.damage_spot_at("shield_low", "hand_r", -2.0, 13.0, 5.0, "wood", team=True)
+    rig.damage_spot_at("helmet", "helm", 2.0, 61.0, 6.0, "metal", fill="#B8863B")
+    rig.damage_spot_at("crest", "crest", -6.0, 77.0, 6.0, "hide", team=True)
+    rig.damage_spot_at("hem", "hem", -10.0, 14.0, 8.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------

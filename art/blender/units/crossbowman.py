@@ -23,6 +23,7 @@ Animation (ANIM_SPEC G1 march, appendix B for a crossbow: aimed shoulder shot, k
 """
 import math
 
+from ageborn_art import aimed as AIMED
 from ageborn_art import face as F
 from ageborn_art import kit_medieval as K
 from ageborn_art import moves as M
@@ -260,10 +261,24 @@ def _kneel(k):
     }, M.body_about((0, 0, 22), z=-10.5 * k))
 
 
-def _attack_pose(f, kneel=0.0, flat=0.0):
+# aimed attacks (queue item 44, ageborn_art/aimed.py): a turn of `turn` degrees up raises the stock toward the cheek
+# (the grip rises and draws back), leans the body back into the shot and tips the head up with it; a turn down leans
+# forward over the stock. The torso carries the crossbow, so its lean is part of the turn.
+AIM_LEAN = 0.24           # torso r per degree of turn (positive leans back)
+AIM_RISE = 0.11           # grip z per degree up (torso space, lu)
+AIM_DRAW = 0.05           # grip x per degree up (drawn back toward the shoulder)
+AIM_HEAD = 0.30           # head r per degree, on top of the torso's lean
+AIM_W = [0.0, 0.45, 0.85, 1.0, 1.0, 1.0, 0.85, 0.4, 0.0, 0.0, 0.0, 0.0]   # crank frames 8-11 stay A's
+
+
+def _attack_pose(f, kneel=0.0, flat=0.0, turn=0.0):
     gx, gz, deg = BOW[f]
     if kneel and 1 <= f <= 6:
         deg -= flat
+    lean = AIM_LEAN * turn
+    if turn:
+        up = max(0.0, turn)
+        gx, gz, deg = gx - AIM_DRAW * up, gz + AIM_RISE * up, deg + turn - lean
     near = None
     loaded = f < 5 or f == 11
     spanned = f < 5 or f >= 10
@@ -273,7 +288,8 @@ def _attack_pose(f, kneel=0.0, flat=0.0):
     elif f == 11:
         near = bow_point(gx, gz, deg, (G0[0] + 14.0, G0[2] + 4.0))
     pose = merge(hold(gx, gz, deg, near=near, loaded=loaded, spanned=spanned, crank=crank), _kneel(kneel), {
-        "torso": {"r": LEAN[f]}, "head": {"r": HEAD[f], "x": [0, 0.4, 1.0, 1.4, 1.4, 1.2, 0, 0, 0, 0, 0, 0][f]},
+        "torso": {"r": LEAN[f] + lean},
+        "head": {"r": HEAD[f] + AIM_HEAD * turn, "x": [0, 0.4, 1.0, 1.4, 1.4, 1.2, 0, 0, 0, 0, 0, 0][f]},
         "pavise": {"r": [0, 0, 0, 0, 0, 0, 6, 3, 0, 0, 0, 0][f]},
     }, M.body_about((0, 0, 20), x=B_X[f], q=B_Q[f]))
     if f in (2, 3, 4):
@@ -353,13 +369,22 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (both variants; the extras sheet)
+    aimed_a = AIMED.variants(RIG, attack, lambda f, t: _attack_pose(f, turn=t), AIM_W, aims=("up45", "up70"))
+    aimed_b = AIMED.variants(RIG, attack_b, lambda f, t: _attack_pose(f, kneel=KN[f], flat=4.0, turn=t), AIM_W,
+                             aims=("up45", "up70"))
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in (0, 1, 2, 3, 4, 5, 6, 7, 9)], M.DIE_MS,
                sequence=[0, 1, 2, 3, 4, 5, 6, 7, 7, 8], extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     return M.check_variants(M.check_contract(cl, attack_ms=800, attack_impact_at=0.5))

@@ -23,11 +23,20 @@ import numpy as np
 
 from . import config as C
 from . import render, retime, scene, sheet
+from . import aimdata, damage  # W0: aim data (C2) and damage spots and body trackers (C1)
 from .rig import Rig
 
 
+class _ExtraClips(tuple):
+    """W0: the extras sheet also takes every aimed variant (`<clip>_up45`, `_up70`, `_down`; aimed.py, C2)."""
+
+    def __contains__(self, name):
+        base, _, aim = name.rpartition("_") if isinstance(name, str) else ("", "", "")
+        return tuple.__contains__(self, name) or (aim in ("up45", "up70", "down") and base in ("attack",) + self)
+
+
 # attack variants and second attackers go into the lazily loaded extras sheet (ANIM_SPEC P4)
-EXTRA_CLIPS = ("attack_b", "attack_c", "attack_alt")
+EXTRA_CLIPS = _ExtraClips(("attack_b", "attack_c", "attack_alt"))   # and every aimed variant (W0)
 
 
 def walk_metrics(tracks, clip, planted_tol=1.0):
@@ -257,6 +266,8 @@ def run_unit(mod, out_dir, frame_root, log=print, previews=True, v3=False):
         for fx in m.get("fx", []):
             fx["scale"] = round((width_lu / C.FX_REF_WIDTH_LU) ** fx.pop("scalePow", 1.0), 3)
         clip_meta[c.name] = m
+    aimdata.annotate_clips(mod, clips, clip_meta, rig, tracks)   # W0: aimDeg, release, omni; aimed variants' timing
+    damage.write_entry(mod, rig, clips, out_dir, file_slug)   # merged into the age bundle on install
     extra = {
         "visualId": getattr(mod, "VISUAL_ID", f"unit.{mod.SLUG}"),
         "name": mod.NAME,

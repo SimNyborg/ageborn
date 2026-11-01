@@ -1243,7 +1243,15 @@
      "muzzle": [
       104.7,
       51.3
-     ]
+     ],
+     "omni": true,
+     "release": {
+      "frame": 6,
+      "atLu": [
+       104.7,
+       51.3
+      ]
+     }
     },
     "attack_c": {
      "frames": 10,
@@ -1326,7 +1334,15 @@
      "muzzle": [
       117.5,
       57.6
-     ]
+     ],
+     "omni": true,
+     "release": {
+      "frame": 6,
+      "atLu": [
+       117.5,
+       57.6
+      ]
+     }
     },
     "attack_alt": {
      "frames": 6,
@@ -1383,7 +1399,15 @@
      "muzzle": [
       2.1,
       131.6
-     ]
+     ],
+     "aimDeg": -3.7,
+     "release": {
+      "frame": 2,
+      "atLu": [
+       2.1,
+       131.6
+      ]
+     }
     }
    },
    "team": {

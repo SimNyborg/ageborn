@@ -197,6 +197,14 @@ def build(rig):
     rig.track("_foot_l", "foot_l", (2.2, 5.4, 0.0))
     ARM_R = body.arm("r", "spear", tip)
     ARM_L = body.arm("l")
+    # damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin
+    # the team armband (the spear crosses the belly band), loincloth and leg wrap, the leather quiver; a torn
+    # strip from the loincloth hem
+    rig.damage_spot_at("armband", "arm_r", -1.0, 31.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("loincloth", "cloth", 3.0, 15.0, 5.5, "cloth", team=True)
+    rig.damage_spot_at("quiver", "torso", -12.0, 38.0, 5.0, "hide", fill="#7A5E48")
+    rig.damage_spot_at("wrap", "shin_r", -2.0, 7.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("hem", "cloth", -6.0, 12.0, 9.0, "cloth", kind="strip", team=True)
 
 
 ARM_R = ARM_L = None

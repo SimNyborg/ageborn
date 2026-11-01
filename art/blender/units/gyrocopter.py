@@ -215,6 +215,13 @@ def build(rig):
         g.sphere((px - 8.0 + dx, -6.0, pz + 8.0 + dz), r, cuts=4)
     rig.part("smoke", g, R.SMOKE_DK, finish="dust", outline=0.8)
     rig.track("_foot", "odo", (0, 0, 0))
+    # damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin
+    # the team pod twice, the olive nose cone, the team fin; smoke trails from the engine
+    rig.damage_spot_at("pod", "pod", 14.0, 24.0, 6.0, "metal", team=True)
+    rig.damage_spot_at("pod_low", "pod", -6.0, 21.0, 5.0, "metal", team=True)
+    rig.damage_spot_at("nose", "pod", 22.0, 24.0, 5.0, "metal", fill="#62664A")
+    rig.damage_spot_at("fin", "pod", -46.0, 38.0, 5.0, "metal", team=True)
+    rig.damage_spot("engine", "pod", (-16.0, 0.0, 27.0), 5.0, "smoke", kind="emit", normal=(-1, 0, 0))
 
 
 # -- poses ------------------------------------------------------------------------------------------

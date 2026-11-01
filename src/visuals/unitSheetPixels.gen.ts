@@ -110,7 +110,7 @@ export const UNIT_SHEET_PIXELS: Readonly<Record<string, readonly [number, number
   'medieval/alchemist': [1253376, 283136, 337920, 77824],
   'medieval/battering_ram': [5664768, 1085952, 1449984, 277760],
   'medieval/brigand': [1775616, 640000, 476160, 174080],
-  'medieval/crossbowman': [1986560, 337920, 514560, 98304],
+  'medieval/crossbowman': [1986560, 1541120, 514560, 430080],
   'medieval/destrier_knight': [7485440, 3090432, 1945600, 829440],
   'medieval/flailman': [2124800, 909312, 549888, 245760],
   'medieval/footman': [2426880, 1175552, 629760, 337920],

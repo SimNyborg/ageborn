@@ -198,3 +198,63 @@ class Rig:
 
     def has_visible_team(self):
         return any(p["team"] and p["joint"] not in self._hidden for p in self.parts)
+
+    # -- damage spots and body trackers (queue item 40, item 38 B0; ageborn_art/probe.py) ------------
+    # The pipeline writes each spot's per-frame position, rotation, scale and visibility, and every
+    # unit's torso box and head point, into the age's damage bundle (public/art/damage/<age>.json).
+    # None of this changes a rendered pixel: spots are empties, like trackers.
+    @property
+    def damage_spots(self):
+        """name -> {"empty", "joint", "normal", "radius", "mat", "kind", "team", "on"} (insertion order)."""
+        return self.__dict__.setdefault("_damage_spots", {})
+
+    @property
+    def body(self):
+        """The body trackers set by `body_trackers` (None: the probe picks them by joint names)."""
+        return self.__dict__.get("_body")
+
+    def damage_spot(self, name, joint, pos, radius, mat, kind="mark", normal=(0, -1, 0), team=False,
+                    on=None):
+        """A damage spot on `joint` at `pos` (character space, rest pose, like `track`).
+
+        radius: for a mark the radius of the surface patch (at least 5 lu; the drawn mark is 6-9 lu
+        across and stays within about 70% of it), for a strip its longest hanging length, for an
+        emitter the puff size. mat: a mark or strip's material (cloth, hide, metal, wood, stone, glass,
+        energy) or an emitter's medium (smoke, steam, spark, breath, motes). normal: the surface's
+        outward normal in character space at rest ((0, -1, 0) faces the camera). team: the spot sits on
+        a team-coloured surface. on: joint name(s) whose parts count as the spot's surface when the
+        visibility rays are cast (default: `joint`)."""
+        from . import damage  # the bundle's vocabulary
+        damage.check_spot(name, kind, mat, radius)
+        if name in self.damage_spots:
+            raise ValueError(f"damage spot {name!r} defined twice")
+        e = bpy.data.objects.new(f"{self.name}.spot.{name}", None)
+        self.coll.objects.link(e)
+        e.parent = self.joints[joint]
+        e.location = Vector(pos) - self.rest[joint]
+        n = Vector(normal)
+        if n.length < 1e-6:
+            raise ValueError(f"damage spot {name!r}: zero normal")
+        surface = [joint] if on is None else ([on] if isinstance(on, str) else list(on))
+        self.damage_spots[name] = {"empty": e, "joint": joint, "normal": n.normalized(), "radius": float(radius),
+                                   "mat": mat, "kind": kind, "team": bool(team), "on": surface}
+        return e
+
+    def damage_spot_at(self, name, joint, x, z, radius, mat, kind="mark", team=False, on=None, fill=None):
+        """A damage spot where the camera sees `joint`'s surface at side-view position (x, z) of the rest
+        pose (character space, x forward, z up): a camera ray is cast at the joint's own parts (as the
+        face kit's decals are laid), and the spot sits on the hit with the surface's normal there. Call it
+        at the end of `build()`, once every part exists. It raises when the ray misses the joint's parts or
+        the part it sees is not what the spot says: a team part for `team=True`, a non-team part otherwise,
+        and the palette colour `fill` ("#RRGGBB") when given (use it next to skin)."""
+        from . import probe
+        pos, normal = probe.surface_point(self, joint, x, z, on, team=team, fill=fill)
+        return self.damage_spot(name, joint, pos, radius, mat, kind=kind, normal=normal, team=team, on=on)
+
+    def body_trackers(self, torso, head):
+        """The torso box and head point the pipeline writes per frame (item 38 B0), for rigs whose
+        joint names the probe does not guess (riders, beasts, machines). Each is a joint name (its own
+        parts' screen box; the head is that box's centre), a list of joint names (their union), or
+        (joint, box) / (joint, point): an explicit side-view box (x0, z0, x1, z1) or point (x, z) in
+        character space at rest, carried by the joint."""
+        self.__dict__["_body"] = {"torso": torso, "head": head}

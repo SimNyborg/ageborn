@@ -991,7 +991,15 @@
      "muzzle": [
       74.9,
       139.2
-     ]
+     ],
+     "aimDeg": 22.1,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       74.9,
+       139.2
+      ]
+     }
     },
     "attack_alt": {
      "frames": 6,
@@ -1122,7 +1130,15 @@
        ]
       ]
      },
-     "holdStep": 2
+     "holdStep": 2,
+     "aimDeg": 1.9,
+     "release": {
+      "frame": 3,
+      "atLu": [
+       30.3,
+       51.0
+      ]
+     }
     }
    },
    "team": {

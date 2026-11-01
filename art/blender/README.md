@@ -265,6 +265,120 @@ pulse their thrust cones / tractor ring on a 2-frame beat; the bob stays in code
 loop in the same 1020 ms and 2D accents. `node art/blender/check_timing.mjs [ref]` fails if any
 clip duration or attack `impactAt` in `src/visuals/unitSheets.gen.ts` differs from the git ref.
 
+## Data the pipeline writes besides pixels (art round W0)
+
+Each model is opened once per art round, so every render writes what the game needs about its frames in the
+same run, and `anchors_only.py` writes the same data for units nobody re-renders (no Cycles, no Blender slot,
+about 3 s a unit; the whole roster in about 8 minutes).
+
+**Damage spots** (queue item 40). In `build()`, after the parts:
+
+```python
+rig.damage_spot_at("shield", "shield", 21.0, 30.0, 7.5, "metal")          # side-view (x, z) on the joint's parts
+rig.damage_spot_at("tunic", "torso", 4.0, 34.0, 6.5, "cloth", team=True)  # on a team surface
+rig.damage_spot_at("hem", "hips", 6.0, 17.0, 9.0, "cloth", kind="strip")  # a torn strip hangs from here
+rig.damage_spot("exhaust", "hull", (-30.0, 4.0, 28.0), 6.0, "smoke", kind="emit", normal=(-1, 0, 0))
+```
+
+`damage_spot_at` casts a camera ray at the joint's own parts at rest (as the face kit lays its decals), so the
+spot sits on the surface the viewer sees, with that surface's normal; the part it sees must be a team part for
+`team=True` and not one otherwise, and have the palette colour `fill="#RRGGBB"` when given (pin it for marks next
+to skin), or it raises. `damage_spot` takes a character-space point and normal like `rig.track`. A mark's radius
+is its surface patch (at least 5 lu; the runtime draws 6-9 lu marks within about 70% of it), a strip's its longest
+hanging length, an emitter's its puff size. Materials:
+cloth, hide (hide and fur), metal, wood, stone (stone, crystal, bone), glass (glass and visors), energy; an
+emitter's medium: smoke, steam, spark, breath, motes. **Never on faces or skin** (no blood: damage shows on
+clothes, armour, shields and machines). Item 40 section 3.3 says what each family shows; 4-5 marks, a strip
+where the unit wears cloth, emitters where they fit. `on=` names other joints whose parts count as the spot's
+surface for its visibility rays (a mark on a cape that hangs from the torso). Place marks where the camera sees
+them through the unit's own motion, not only at rest: a belly band under a held spear, a tabard behind a shield
+arm or a boiler behind a swinging fist reads as hidden most of the time; check the visibility numbers in the
+preview (below) over idle, walk and attack and move the spot until they stay high. The eight representative
+units (Spear Hunter, Hoplite, Sabertooth, Destrier Knight, Armoured Car, Gyrocopter, Steam Golem, Holo
+Projector) are worked examples, one per family.
+
+**Body trackers** (item 38 B0): every unit gets a per-frame torso box and head point. The probe takes the joints
+`torso` (plus `hips`), `trunk`, `chest`, `horse`, `hull`, `plane`, `pod` or `orb` for the torso and `hhead`,
+`head`, `nh`, `c_head`, `p_head`, `crew_head`, `cmdr`, `pilot`, `driver` or `eyes` for the head (a rider's is its
+mount's), the first with parts; odd rigs call `rig.body_trackers(torso, head)` with a joint, a joint list,
+`(joint, (x0, z0, x1, z1))` or `(joint, (x, z))`, or get an entry in `probe.BODY`.
+
+**What is written** (`ageborn_art/probe.py`, the same code on both paths): per unique frame of every clip
+(extras clips too) each spot's `[x, y, rotDeg, scalePct, visPct]` (screen lu from the feet; the turn since rest;
+the size against rest, foreshortening and squash together, so `r` is the size at rest; for a mark the share of
+five camera rays that reach it, 0 when its part is hidden or turned away; a strip without the facing test, and a
+ray that meets nothing past its hem counts, as the strip hangs there; an emitter 100 unless hidden; a strip's and
+an emitter's turn and size follow a patch on its joint that faces the camera at rest), the torso box
+`[x0, y0, x1, y1]` and the head point `[x, y]`. A render writes `<out>/<slug>.damage.json`; `render_all.py
+--install` (and `units/render_industrial.py`) merge it into `public/art/damage/<age>.json`
+(`ageborn_art/damage.py`: one unit per line, sorted, the same data gives the same bytes; families from item 40
+appendix A, `DAMAGE_FAMILY` overrides).
+
+```sh
+# every unit's bundle entry without Cycles, after a self-check against the shipped sheets
+.venv-blender/bin/python art/blender/anchors_only.py --units all --bundles --report /tmp/anchors.json
+# draw a unit's spots, torso boxes and head points over its shipped frames (visibility per spot under each frame)
+.venv-blender/bin/python art/blender/spot_preview.py hoplite --clips idle,attack,die --out /tmp/hoplite_spots.png
+.venv-blender/bin/python art/blender/spot_preview.py hoplite --frames idle.0,walk.3,attack.6 --crop --scale 1.5 \
+    --out /tmp/hoplite_zoom.png
+```
+
+The **self-check** runs before anything is written: the script must give the sheet's clips, frame counts,
+sequences, step durations and impact frames, its `feetPx` and canvas, every tracker within 0.3 lu and every
+frame's silhouette box (parts and interior-line hulls, the outline's width, the smear ribbon and the 2D accents,
+cut to the canvas) within 2 lu of the packed frame. A unit that fails is listed and keeps its old bundle entry
+(or none), so a script that no longer reproduces its sheet never writes wrong spots.
+
+**Aim data** (queue item 44; `ageborn_art/aimdata.py`, COMMON C2). Every attack clip that launches a shot gets,
+after its other meta keys, `aimDeg` (the drawn weapon's angle at the release frame, degrees above the facing
+direction on screen, measured on the rig: the weapon joint's axis seen by the sprite camera, yaw and tilt included)
+and `release: {"frame", "atLu"}` (the unique frame and the point where the shot leaves); clips that emit rather than
+aim (drums, songs, breath, spells) get `omni: true` instead of `aimDeg`. The weapon is the joint carrying the clip's
+muzzle tracker and its +X (weapons are authored pointing forward); `aimdata.SPEC` overrides it per unit: another
+joint or axis (`"muzzle"`: from the joint's pivot to the tracker, for props authored upright), the release on the
+frame before the impact when the projectile has left the hand there, an authored angle for axis-less throws (and
+where the drawn effect, not the prop, shows the shot's direction), `omni`, or no shot at all. Renders write the keys
+(`pipeline.run_unit` calls `aimdata.annotate_clips` after the clip meta, which also checks every aimed variant's
+timing against its base); for sheets nobody re-renders, `anchors_only.py --units all --aim` writes them as a
+JSON-only rewrite of the installed sheet JSONs (PNGs untouched; removing the keys gives back the old bytes;
+rerunnable; `--aim-dry <json>` only lists them). `check_timing.mjs` checks the keys' shape and
+`tests/integrity/aimData.test.ts` checks that every clip the content says launches something carries them.
+
+```sh
+# list the aim keys every shot clip would get (sheets untouched), then write them into the installed sheets
+.venv-blender/bin/python art/blender/anchors_only.py --units all --check-only --aim-dry /tmp/aim.json
+.venv-blender/bin/python art/blender/anchors_only.py --units all --aim
+```
+
+**Aimed attack clips** (`ageborn_art/aimed.py`, COMMON C2). A unit that hits flyers overhead (or shoots down from a
+height) adds variants of its shot clips aimed up about 45 and 70 degrees (and down) at the end of `clips()`:
+
+```python
+from ageborn_art import aimed as AIMED
+
+AIM_W = [0, 0.45, 0.85, 1, 1, 1, 0.85, 0.4, 0, 0, 0, 0]   # per unique frame: how much of the turn it takes
+
+def _attack_pose(f, turn=0.0):    # frame f with the weapon turned `turn` degrees up (negative: down): the weapon's
+    ...                           # angle, a lean into the shot, the head with it; arms by IK; feet where they were
+
+def clips():
+    attack = _attack_clip()
+    aimed = AIMED.variants(RIG, attack, lambda f, t: _attack_pose(f, turn=t), AIM_W, aims=("up45", "up70"))
+    return [..., attack, ...] + aimed
+```
+
+`variants(rig, clip, pose, weights, aims=("up45", "up70", "down"))` solves the turn on the rig so the drawn weapon
+(the clip's `aimdata` axis through the sprite camera) points at 45, 70 or -35 degrees at the release frame within
+0.25 degrees (`targets=` overrides them), and builds `<clip>_up45`, `<clip>_up70`, `<clip>_down` with the base clip's
+exact timing (frames, sequence, step durations, impact and smear frames, `holdStep`, `holdLoop` and every other
+extra) plus `aimOf`. A frame whose weight is 0 reuses the base clip's frame (no new pixels); between 0 and 1 it takes
+that share of the turn, so the wind-up rises into the aim and the recovery falls out of it and the animation
+standard's holds and follow-through stay as they were; the release frame must be 1. Bursts and rings painted on the
+weapon joint turn with it. It raises when a planted foot moves more than 1 lu or no turn reaches a target. The
+variants go to the extras sheet (`pipeline.EXTRA_CLIPS` takes every `_up45`, `_up70` and `_down` attack clip), get
+their aim keys like any shot clip, and `aimdata.annotate_clips` checks their timing against the base again when the
+meta is written. The Crossbowman is the worked example.
+
 ## Install
 
 Blender's Python module needs **Python 3.11** (bpy 5.0.1 wheels exist only for 3.11).

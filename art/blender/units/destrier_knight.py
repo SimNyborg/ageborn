@@ -275,6 +275,16 @@ def build(rig):
     rig.part("shield", g, PARCH, highlight=False, outline=0)
     g = Geo().blob((sx, sy - 1.8, sz + 9.6), (2.2, 1.5, 2.2), p=2.2)
     rig.part("shield", g, GOLD, finish="metal", outline=0.8)
+    # damage spots (queue item 40; art/blender/README.md, spot_preview.py): never on the face or skin
+    # the knight's helm, shield face and tabard (low at the back, clear of the shield arm), the caparison and
+    # the horse's neck; a strip torn from the caparison's hem; the horse breathes hard at the last stage
+    rig.damage_spot_at("helm", "khead", -2.0, 100.0, 6.0, "metal", fill="#8D97A3")
+    rig.damage_spot_at("shield", "shield", 8.0, 66.0, 6.0, "wood", team=True)
+    rig.damage_spot_at("tabard", "ktorso", -10.0, 64.0, 5.0, "cloth", team=True)
+    rig.damage_spot_at("caparison", "horse", 22.0, 42.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("neck", "neck", 24.0, 52.0, 6.0, "hide", fill="#E3DACB")
+    rig.damage_spot_at("hem", "horse", -18.0, 32.0, 10.0, "cloth", kind="strip", team=True)
+    rig.damage_spot("breath", "hhead", (51.0, -3.0, 56.0), 4.0, "breath", kind="emit", normal=(1, 0, 0))
 
 
 

@@ -831,7 +831,15 @@
      "muzzle": [
       53.2,
       20.9
-     ]
+     ],
+     "aimDeg": 6.9,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       53.2,
+       20.9
+      ]
+     }
     },
     "attack_c": {
      "frames": 9,
@@ -906,7 +914,15 @@
      "muzzle": [
       65.8,
       5.5
-     ]
+     ],
+     "aimDeg": -10.5,
+     "release": {
+      "frame": 4,
+      "atLu": [
+       65.8,
+       5.5
+      ]
+     }
     }
    },
    "team": {
