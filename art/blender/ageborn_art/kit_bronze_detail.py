@@ -10,6 +10,10 @@ this module renders byte for byte as before.
                 flat decal there loses about half its width under the curve, a separate blob sinks into it)
   face_band     a band on a round (aspis) or oval (thureos) shield face that follows the face's bow; team-dark
                 by default (audit 5.1 rule 5: the team zone in two tones)
+  ring_y        a flat painted ring facing the camera (a drum's face), with no caps over its hole
+  sheet         a banner or hanging cloth with vertical folds (a flat slab shades as one flat value)
+  blob_y, ridge the camera-side surface of a blob part, and a fold (a capsule chain) lying on it
+  lathe_points  points round a lathe part (punched dots, rivets on a helmet)
   crest_base    a team-dark base along a `rigs_bronze.helmet` horsehair crest (the two-tone crest)
   plume_base    a team-dark base on a `kit_bronze.pilos` / `kit_bronze.boeotian` plume tuft
   surface_line  a line drawn on a curved part's surface, segment by segment (incised and tooled lines)
@@ -25,12 +29,12 @@ from . import rigs_bronze as B
 from .geometry import Geo
 
 
-def shell(center, radii, p=2.4, taper=(1.0, 1.0), grow=0.3, keep=(), rot=(0, 0, 0)):
+def shell(center, radii, p=2.4, taper=(1.0, 1.0), grow=0.3, keep=(), rot=(0, 0, 0), shift=(0.0, 0.0)):
     """A painted band, stripe or panel that follows a blob part exactly: the part's own blob (the same centre,
-    radii, p, taper and rot) grown by `grow` lu, cut down to the region `keep` describes, a list of
+    radii, p, taper, shift and rot) grown by `grow` lu, cut down to the region `keep` describes, a list of
     (point, normal) planes whose normal points to the side that is cut away (Geo.clip). The cuts are capped
     inside the part, so only the grown skin shows. Returns the Geo."""
-    g = Geo().blob(center, tuple(r + grow for r in radii), p=p, taper=taper, rot=rot)
+    g = Geo().blob(center, tuple(r + grow for r in radii), p=p, taper=taper, rot=rot, shift=shift)
     for point, normal in keep:
         g.clip(point, normal)
     return g
@@ -88,6 +92,94 @@ def face_band(rig, joint, c, rx, rz, depth, rim_w, w0, w1, lift=0.25, fill=None,
     if fill:
         return rig.part(joint, g, fill, outline=outline)
     return look.team_part(rig, joint, g, outline=outline)
+
+
+def ring_y(c, r0, r1, y0, y1, segs=28):
+    """A flat ring (an annulus) round the axis parallel to Y through (cx, cz), between the radii r0 < r1 and
+    the depths y0 > y1 (y1 nearer the camera): a painted ring on a drum or a boss. A closed cross-section with
+    no caps (`Geo.lathe` caps its first and last rings, which fills a ring's hole). Returns the Geo."""
+    from mathutils import Matrix
+    cx, cz = c
+    rows = [(r0, y0), (r1, y0), (r1, y1), (r0, y1)]
+    verts = []
+    for r, y in rows:
+        for i in range(segs):
+            t = 2 * math.pi * i / segs
+            verts.append((cx + r * math.cos(t), y, cz + r * math.sin(t)))
+    faces = []
+    m = len(rows)
+    for k in range(m):
+        k2 = (k + 1) % m
+        for i in range(segs):
+            j = (i + 1) % segs
+            faces.append([k * segs + i, k * segs + j, k2 * segs + j, k2 * segs + i])
+    return Geo()._add(verts, faces, Matrix.Identity(4))
+
+
+def sheet(x0, x1, top, bottom, front, depth, nx=48, ny=12):
+    """A cloth sheet facing the camera (a banner, a hanging panel) with folds: between x0 and x1, from the edge
+    z = top(x) down to z = bottom(x), its front (the camera side) at y = front(x, z) and `depth` lu thick behind
+    it. Vertical folds come from a `front` that waves in x; they shade like cloth where a flat slab is one flat
+    value. A closed, smooth mesh (front, back, four sides). Returns the Geo."""
+    from mathutils import Matrix
+    verts = []
+
+    def vid(side, i, j):
+        return side * (nx + 1) * (ny + 1) + j * (nx + 1) + i
+    for side in (0, 1):
+        for j in range(ny + 1):
+            for i in range(nx + 1):
+                x = x0 + (x1 - x0) * i / nx
+                zt, zb = top(x), bottom(x)
+                z = zt + (zb - zt) * j / ny
+                verts.append((x, front(x, z) + (depth if side else 0.0), z))
+    faces = []
+    for j in range(ny):
+        for i in range(nx):
+            faces.append([vid(0, i, j), vid(0, i + 1, j), vid(0, i + 1, j + 1), vid(0, i, j + 1)])
+            faces.append([vid(1, i, j), vid(1, i, j + 1), vid(1, i + 1, j + 1), vid(1, i + 1, j)])
+    edge = ([(i, 0) for i in range(nx)] + [(nx, j) for j in range(ny)] + [(i, ny) for i in range(nx, 0, -1)]
+            + [(0, j) for j in range(ny, 0, -1)])
+    for k in range(len(edge)):
+        (i, j), (i2, j2) = edge[k], edge[(k + 1) % len(edge)]
+        faces.append([vid(0, i, j), vid(1, i, j), vid(1, i2, j2), vid(0, i2, j2)])
+    return Geo()._add(verts, faces, Matrix.Identity(4))
+
+
+def blob_y(center, radii, x, z, p=2.4, taper=(1.0, 1.0), shift=(0.0, 0.0), near=True):
+    """The y of a `Geo.blob` surface (no rot) seen at side-view (x, z): its camera side (-Y) when `near`."""
+    cx, cy, cz = center
+    rx, ry, rz = radii
+    zn = max(-1.0, min(1.0, (z - cz) / rz))
+    t = (zn + 1) / 2
+    k = taper[0] + (taper[1] - taper[0]) * t
+    xn = (x - cx - shift[0] * rx * t) / (rx * k)
+    s = max(0.0, 1.0 - abs(xn) ** p - abs(zn) ** p) ** (1.0 / p)
+    return cy + shift[1] * ry * t + (-s if near else s) * ry * k
+
+
+def ridge(center, radii, pts, r, p=2.4, taper=(1.0, 1.0), shift=(0.0, 0.0), bulge=0.5, geo=None):
+    """A fold on a blob part (a cloak, a skirt): a chain of capsules through the side-view points `pts`
+    [(x, z)] lying on the blob's camera side, each `r` thick and standing `bulge` x r proud of it. `r` may be a
+    list (one radius per point) for a fold that tapers out. Returns the Geo."""
+    g = geo or Geo()
+    rs = r if isinstance(r, (list, tuple)) else [r] * len(pts)
+    ps = [(x, blob_y(center, radii, x, z, p, taper, shift) + rr * (1.0 - bulge), z) for (x, z), rr in zip(pts, rs)]
+    for a_, b_, ra, rb in zip(ps, ps[1:], rs, rs[1:]):
+        g.capsule(a_, b_, ra, rb, segs=10, rings=3)
+    return g
+
+
+def lathe_points(p0, p1, r, h, n, squash=(1.0, 1.0), a0=0.0):
+    """n points round a `Geo.lathe` axis (p0 toward p1) at radius r and height h (the lathe's own frame)."""
+    from mathutils import Matrix, Vector
+    from .geometry import _align_z
+    m = Matrix.Translation(Vector(p0)) @ _align_z(Vector(p1) - Vector(p0))
+    out = []
+    for i in range(n):
+        a = a0 + 2 * math.pi * i / n
+        out.append(tuple(m @ Vector((r * math.cos(a) * squash[0], r * math.sin(a) * squash[1], h))))
+    return out
 
 
 def crest_base(rig, joint, c=(1.5, 0, 55.0), crest_len=26.0, crest_h=10.0, tall=0.0, drop=0.62, depth=2.75):

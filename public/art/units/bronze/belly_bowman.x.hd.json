@@ -5,15 +5,15 @@
     "x": 2,
     "y": 2,
     "w": 164,
-    "h": 200
+    "h": 202
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 235,
-    "y": 170,
+    "y": 168,
     "w": 164,
-    "h": 200
+    "h": 202
    },
    "sourceSize": {
     "w": 532,
@@ -27,7 +27,7 @@
   "belly_bowman_attack_b_03_team": {
    "frame": {
     "x": 356,
-    "y": 206,
+    "y": 208,
     "w": 84,
     "h": 173
    },
@@ -51,17 +51,17 @@
   "belly_bowman_attack_b_04": {
    "frame": {
     "x": 2,
-    "y": 206,
+    "y": 208,
     "w": 175,
-    "h": 179
+    "h": 181
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 213,
-    "y": 192,
+    "y": 190,
     "w": 175,
-    "h": 179
+    "h": 181
    },
    "sourceSize": {
     "w": 532,
@@ -75,8 +75,8 @@
   "belly_bowman_attack_b_04_team": {
    "frame": {
     "x": 234,
-    "y": 389,
-    "w": 110,
+    "y": 393,
+    "w": 109,
     "h": 156
    },
    "rotated": false,
@@ -84,7 +84,7 @@
    "spriteSourceSize": {
     "x": 210,
     "y": 183,
-    "w": 110,
+    "w": 109,
     "h": 156
    },
    "sourceSize": {
@@ -99,17 +99,17 @@
   "belly_bowman_attack_b_05": {
    "frame": {
     "x": 181,
-    "y": 206,
+    "y": 208,
     "w": 171,
-    "h": 176
+    "h": 179
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 214,
-    "y": 195,
+    "y": 192,
     "w": 171,
-    "h": 176
+    "h": 179
    },
    "sourceSize": {
     "w": 532,
@@ -122,8 +122,8 @@
   },
   "belly_bowman_attack_b_05_team": {
    "frame": {
-    "x": 348,
-    "y": 389,
+    "x": 347,
+    "y": 393,
     "w": 111,
     "h": 154
    },
@@ -149,15 +149,15 @@
     "x": 170,
     "y": 2,
     "w": 180,
-    "h": 191
+    "h": 194
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 206,
-    "y": 179,
+    "y": 176,
     "w": 180,
-    "h": 191
+    "h": 194
    },
    "sourceSize": {
     "w": 532,
@@ -171,7 +171,7 @@
   "belly_bowman_attack_b_06_team": {
    "frame": {
     "x": 2,
-    "y": 389,
+    "y": 393,
     "w": 108,
     "h": 169
    },
@@ -196,16 +196,16 @@
    "frame": {
     "x": 354,
     "y": 2,
-    "w": 155,
-    "h": 181
+    "w": 156,
+    "h": 184
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 197,
-    "y": 189,
-    "w": 155,
-    "h": 181
+    "x": 196,
+    "y": 186,
+    "w": 156,
+    "h": 184
    },
    "sourceSize": {
     "w": 532,
@@ -219,7 +219,7 @@
   "belly_bowman_attack_b_07_team": {
    "frame": {
     "x": 114,
-    "y": 389,
+    "y": 393,
     "w": 116,
     "h": 162
    },
@@ -276,7 +276,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 512,
-   "h": 560
+   "h": 564
   },
   "scale": "3",
   "ageborn": {

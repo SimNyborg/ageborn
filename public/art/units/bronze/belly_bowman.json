@@ -2,18 +2,18 @@
  "frames": {
   "belly_bowman_idle_00": {
    "frame": {
-    "x": 83,
-    "y": 337,
+    "x": 610,
+    "y": 208,
     "w": 76,
-    "h": 97
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 116,
-    "y": 89,
+    "y": 88,
     "w": 76,
-    "h": 97
+    "h": 98
    },
    "sourceSize": {
     "w": 266,
@@ -26,10 +26,10 @@
   },
   "belly_bowman_idle_00_team": {
    "frame": {
-    "x": 239,
-    "y": 621,
+    "x": 1036,
+    "y": 89,
     "w": 44,
-    "h": 81
+    "h": 82
    },
    "rotated": false,
    "trimmed": true,
@@ -37,7 +37,7 @@
     "x": 116,
     "y": 84,
     "w": 44,
-    "h": 81
+    "h": 82
    },
    "sourceSize": {
     "w": 266,
@@ -50,18 +50,18 @@
   },
   "belly_bowman_idle_01": {
    "frame": {
-    "x": 239,
-    "y": 233,
+    "x": 493,
+    "y": 107,
     "w": 75,
-    "h": 99
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 117,
-    "y": 87,
+    "y": 86,
     "w": 75,
-    "h": 99
+    "h": 100
    },
    "sourceSize": {
     "w": 266,
@@ -74,8 +74,8 @@
   },
   "belly_bowman_idle_01_team": {
    "frame": {
-    "x": 550,
-    "y": 531,
+    "x": 1013,
+    "y": 2,
     "w": 43,
     "h": 83
    },
@@ -98,18 +98,18 @@
   },
   "belly_bowman_idle_02": {
    "frame": {
-    "x": 163,
-    "y": 127,
+    "x": 170,
+    "y": 109,
     "w": 74,
-    "h": 102
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 117,
-    "y": 83,
+    "y": 82,
     "w": 74,
-    "h": 102
+    "h": 103
    },
    "sourceSize": {
     "w": 266,
@@ -122,8 +122,8 @@
   },
   "belly_bowman_idle_02_team": {
    "frame": {
-    "x": 210,
-    "y": 531,
+    "x": 920,
+    "y": 2,
     "w": 43,
     "h": 85
    },
@@ -146,18 +146,18 @@
   },
   "belly_bowman_idle_03": {
    "frame": {
-    "x": 250,
-    "y": 2,
+    "x": 2,
+    "y": 238,
     "w": 72,
-    "h": 104
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 118,
-    "y": 80,
+    "y": 79,
     "w": 72,
-    "h": 104
+    "h": 105
    },
    "sourceSize": {
     "w": 266,
@@ -170,8 +170,8 @@
   },
   "belly_bowman_idle_03_team": {
    "frame": {
-    "x": 326,
-    "y": 438,
+    "x": 821,
+    "y": 2,
     "w": 42,
     "h": 87
    },
@@ -194,18 +194,18 @@
   },
   "belly_bowman_idle_04": {
    "frame": {
-    "x": 326,
-    "y": 2,
+    "x": 91,
+    "y": 111,
     "w": 75,
-    "h": 103
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 116,
-    "y": 82,
+    "y": 81,
     "w": 75,
-    "h": 103
+    "h": 104
    },
    "sourceSize": {
     "w": 266,
@@ -218,10 +218,10 @@
   },
   "belly_bowman_idle_04_team": {
    "frame": {
-    "x": 584,
-    "y": 438,
+    "x": 774,
+    "y": 2,
     "w": 43,
-    "h": 86
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
@@ -229,7 +229,7 @@
     "x": 116,
     "y": 77,
     "w": 43,
-    "h": 86
+    "h": 87
    },
    "sourceSize": {
     "w": 266,
@@ -242,18 +242,18 @@
   },
   "belly_bowman_idle_05": {
    "frame": {
-    "x": 318,
-    "y": 233,
+    "x": 546,
+    "y": 2,
     "w": 75,
-    "h": 99
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 116,
-    "y": 86,
+    "y": 85,
     "w": 75,
-    "h": 99
+    "h": 100
    },
    "sourceSize": {
     "w": 266,
@@ -266,10 +266,10 @@
   },
   "belly_bowman_idle_05_team": {
    "frame": {
-    "x": 458,
-    "y": 531,
+    "x": 900,
+    "y": 182,
     "w": 42,
-    "h": 84
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
@@ -277,7 +277,7 @@
     "x": 117,
     "y": 81,
     "w": 42,
-    "h": 84
+    "h": 85
    },
    "sourceSize": {
     "w": 266,
@@ -290,18 +290,18 @@
   },
   "belly_bowman_walk_00": {
    "frame": {
-    "x": 163,
-    "y": 337,
+    "x": 655,
+    "y": 104,
     "w": 66,
-    "h": 97
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 102,
-    "y": 88,
+    "y": 87,
     "w": 66,
-    "h": 97
+    "h": 98
    },
    "sourceSize": {
     "w": 266,
@@ -314,10 +314,10 @@
   },
   "belly_bowman_walk_00_team": {
    "frame": {
-    "x": 257,
-    "y": 531,
+    "x": 822,
+    "y": 285,
     "w": 43,
-    "h": 85
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
@@ -325,7 +325,7 @@
     "x": 116,
     "y": 83,
     "w": 43,
-    "h": 85
+    "h": 86
    },
    "sourceSize": {
     "w": 266,
@@ -338,18 +338,18 @@
   },
   "belly_bowman_walk_01": {
    "frame": {
-    "x": 523,
-    "y": 337,
+    "x": 363,
+    "y": 318,
     "w": 65,
-    "h": 90
+    "h": 91
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 102,
-    "y": 95,
+    "y": 94,
     "w": 65,
-    "h": 90
+    "h": 91
    },
    "sourceSize": {
     "w": 266,
@@ -362,9 +362,9 @@
   },
   "belly_bowman_walk_01_team": {
    "frame": {
-    "x": 526,
-    "y": 621,
-    "w": 40,
+    "x": 1084,
+    "y": 87,
+    "w": 42,
     "h": 79
    },
    "rotated": false,
@@ -372,7 +372,7 @@
    "spriteSourceSize": {
     "x": 115,
     "y": 90,
-    "w": 40,
+    "w": 42,
     "h": 79
    },
    "sourceSize": {
@@ -386,18 +386,18 @@
   },
   "belly_bowman_walk_02": {
    "frame": {
-    "x": 233,
-    "y": 337,
+    "x": 706,
+    "y": 2,
     "w": 64,
-    "h": 97
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 103,
-    "y": 88,
+    "y": 87,
     "w": 64,
-    "h": 97
+    "h": 98
    },
    "sourceSize": {
     "w": 266,
@@ -410,10 +410,10 @@
   },
   "belly_bowman_walk_02_team": {
    "frame": {
-    "x": 96,
-    "y": 621,
+    "x": 1060,
+    "y": 2,
     "w": 43,
-    "h": 82
+    "h": 81
    },
    "rotated": false,
    "trimmed": true,
@@ -421,7 +421,7 @@
     "x": 116,
     "y": 83,
     "w": 43,
-    "h": 82
+    "h": 81
    },
    "sourceSize": {
     "w": 266,
@@ -434,18 +434,18 @@
   },
   "belly_bowman_walk_03": {
    "frame": {
-    "x": 484,
-    "y": 127,
+    "x": 318,
+    "y": 2,
     "w": 65,
-    "h": 101
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 102,
-    "y": 81,
+    "y": 80,
     "w": 65,
-    "h": 101
+    "h": 102
    },
    "sourceSize": {
     "w": 266,
@@ -458,10 +458,10 @@
   },
   "belly_bowman_walk_03_team": {
    "frame": {
-    "x": 49,
-    "y": 531,
+    "x": 943,
+    "y": 91,
     "w": 42,
-    "h": 86
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
@@ -469,7 +469,7 @@
     "x": 117,
     "y": 76,
     "w": 42,
-    "h": 86
+    "h": 85
    },
    "sourceSize": {
     "w": 266,
@@ -482,18 +482,18 @@
   },
   "belly_bowman_walk_04": {
    "frame": {
-    "x": 301,
-    "y": 337,
+    "x": 610,
+    "y": 310,
     "w": 66,
-    "h": 96
+    "h": 97
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 102,
-    "y": 88,
+    "y": 87,
     "w": 66,
-    "h": 96
+    "h": 97
    },
    "sourceSize": {
     "w": 266,
@@ -506,8 +506,8 @@
   },
   "belly_bowman_walk_04_team": {
    "frame": {
-    "x": 304,
-    "y": 531,
+    "x": 869,
+    "y": 273,
     "w": 43,
     "h": 85
    },
@@ -530,18 +530,18 @@
   },
   "belly_bowman_walk_05": {
    "frame": {
-    "x": 206,
-    "y": 438,
+    "x": 239,
+    "y": 322,
     "w": 67,
-    "h": 87
+    "h": 88
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 104,
-    "y": 94,
+    "y": 93,
     "w": 67,
-    "h": 87
+    "h": 88
    },
    "sourceSize": {
     "w": 266,
@@ -554,8 +554,8 @@
   },
   "belly_bowman_walk_05_team": {
    "frame": {
-    "x": 287,
-    "y": 621,
+    "x": 1009,
+    "y": 265,
     "w": 41,
     "h": 81
    },
@@ -578,18 +578,18 @@
   },
   "belly_bowman_walk_06": {
    "frame": {
-    "x": 452,
-    "y": 337,
+    "x": 445,
+    "y": 316,
     "w": 67,
-    "h": 92
+    "h": 93
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 106,
-    "y": 89,
+    "y": 88,
     "w": 67,
-    "h": 92
+    "h": 93
    },
    "sourceSize": {
     "w": 266,
@@ -602,10 +602,10 @@
   },
   "belly_bowman_walk_06_team": {
    "frame": {
-    "x": 190,
-    "y": 621,
+    "x": 993,
+    "y": 179,
     "w": 45,
-    "h": 81
+    "h": 82
    },
    "rotated": false,
    "trimmed": true,
@@ -613,7 +613,7 @@
     "x": 117,
     "y": 84,
     "w": 45,
-    "h": 81
+    "h": 82
    },
    "sourceSize": {
     "w": 266,
@@ -626,18 +626,18 @@
   },
   "belly_bowman_walk_07": {
    "frame": {
-    "x": 2,
-    "y": 233,
+    "x": 474,
+    "y": 2,
     "w": 68,
-    "h": 100
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 104,
-    "y": 80,
+    "y": 79,
     "w": 68,
-    "h": 100
+    "h": 101
    },
    "sourceSize": {
     "w": 266,
@@ -650,18 +650,18 @@
   },
   "belly_bowman_walk_07_team": {
    "frame": {
-    "x": 277,
-    "y": 438,
-    "w": 45,
-    "h": 87
+    "x": 690,
+    "y": 206,
+    "w": 44,
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 117,
     "y": 75,
-    "w": 45,
-    "h": 87
+    "w": 44,
+    "h": 89
    },
    "sourceSize": {
     "w": 266,
@@ -674,18 +674,18 @@
   },
   "belly_bowman_attack_00": {
    "frame": {
-    "x": 556,
-    "y": 233,
+    "x": 528,
+    "y": 211,
     "w": 78,
-    "h": 97
+    "h": 99
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 116,
-    "y": 88,
+    "y": 86,
     "w": 78,
-    "h": 97
+    "h": 99
    },
    "sourceSize": {
     "w": 266,
@@ -698,10 +698,10 @@
   },
   "belly_bowman_attack_00_team": {
    "frame": {
-    "x": 143,
-    "y": 621,
+    "x": 946,
+    "y": 180,
     "w": 43,
-    "h": 82
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
@@ -709,7 +709,7 @@
     "x": 116,
     "y": 83,
     "w": 43,
-    "h": 82
+    "h": 84
    },
    "sourceSize": {
     "w": 266,
@@ -722,18 +722,18 @@
   },
   "belly_bowman_attack_01": {
    "frame": {
-    "x": 241,
-    "y": 127,
+    "x": 243,
+    "y": 2,
     "w": 71,
-    "h": 102
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 118,
-    "y": 92,
+    "y": 91,
     "w": 71,
-    "h": 102
+    "h": 103
    },
    "sourceSize": {
     "w": 266,
@@ -746,8 +746,8 @@
   },
   "belly_bowman_attack_01_team": {
    "frame": {
-    "x": 477,
-    "y": 621,
+    "x": 1042,
+    "y": 175,
     "w": 45,
     "h": 79
    },
@@ -770,18 +770,18 @@
   },
   "belly_bowman_attack_02": {
    "frame": {
-    "x": 371,
-    "y": 337,
+    "x": 528,
+    "y": 314,
     "w": 77,
-    "h": 94
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 119,
-    "y": 106,
+    "y": 105,
     "w": 77,
-    "h": 94
+    "h": 95
    },
    "sourceSize": {
     "w": 266,
@@ -794,10 +794,10 @@
   },
   "belly_bowman_attack_02_team": {
    "frame": {
-    "x": 191,
-    "y": 708,
+    "x": 1054,
+    "y": 340,
     "w": 63,
-    "h": 68
+    "h": 70
    },
    "rotated": false,
    "trimmed": true,
@@ -805,7 +805,7 @@
     "x": 117,
     "y": 102,
     "w": 63,
-    "h": 68
+    "h": 70
    },
    "sourceSize": {
     "w": 266,
@@ -818,18 +818,18 @@
   },
   "belly_bowman_attack_03": {
    "frame": {
-    "x": 164,
+    "x": 75,
     "y": 2,
     "w": 82,
-    "h": 104
+    "h": 105
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 119,
-    "y": 81,
+    "y": 80,
     "w": 82,
-    "h": 104
+    "h": 105
    },
    "sourceSize": {
     "w": 266,
@@ -842,10 +842,10 @@
   },
   "belly_bowman_attack_03_team": {
    "frame": {
-    "x": 592,
-    "y": 337,
+    "x": 738,
+    "y": 197,
     "w": 41,
-    "h": 90
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
@@ -853,7 +853,7 @@
     "x": 118,
     "y": 76,
     "w": 41,
-    "h": 90
+    "h": 89
    },
    "sourceSize": {
     "w": 266,
@@ -866,18 +866,18 @@
   },
   "belly_bowman_attack_04": {
    "frame": {
-    "x": 2,
-    "y": 127,
+    "x": 78,
+    "y": 238,
     "w": 77,
-    "h": 102
+    "h": 104
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 116,
-    "y": 83,
+    "y": 81,
     "w": 77,
-    "h": 102
+    "h": 104
    },
    "sourceSize": {
     "w": 266,
@@ -890,8 +890,8 @@
   },
   "belly_bowman_attack_04_team": {
    "frame": {
-    "x": 372,
-    "y": 438,
+    "x": 776,
+    "y": 290,
     "w": 42,
     "h": 87
    },
@@ -914,18 +914,18 @@
   },
   "belly_bowman_attack_05": {
    "frame": {
-    "x": 157,
-    "y": 233,
+    "x": 363,
+    "y": 213,
     "w": 78,
-    "h": 99
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 116,
-    "y": 86,
+    "y": 84,
     "w": 78,
-    "h": 99
+    "h": 101
    },
    "sourceSize": {
     "w": 266,
@@ -938,8 +938,8 @@
   },
   "belly_bowman_attack_05_team": {
    "frame": {
-    "x": 351,
-    "y": 531,
+    "x": 967,
+    "y": 2,
     "w": 42,
     "h": 85
    },
@@ -962,18 +962,18 @@
   },
   "belly_bowman_attack_06": {
    "frame": {
-    "x": 75,
-    "y": 2,
+    "x": 2,
+    "y": 128,
     "w": 85,
-    "h": 104
+    "h": 106
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 110,
-    "y": 81,
+    "y": 79,
     "w": 85,
-    "h": 104
+    "h": 106
    },
    "sourceSize": {
     "w": 266,
@@ -986,8 +986,8 @@
   },
   "belly_bowman_attack_06_team": {
    "frame": {
-    "x": 2,
-    "y": 438,
+    "x": 725,
+    "y": 104,
     "w": 44,
     "h": 89
    },
@@ -1010,18 +1010,18 @@
   },
   "belly_bowman_attack_07": {
    "frame": {
-    "x": 397,
-    "y": 233,
+    "x": 417,
+    "y": 107,
     "w": 72,
-    "h": 99
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 106,
-    "y": 86,
+    "y": 84,
     "w": 72,
-    "h": 99
+    "h": 101
    },
    "sourceSize": {
     "w": 266,
@@ -1034,8 +1034,8 @@
   },
   "belly_bowman_attack_07_team": {
    "frame": {
-    "x": 481,
-    "y": 438,
+    "x": 867,
+    "y": 2,
     "w": 49,
     "h": 86
    },
@@ -1058,18 +1058,18 @@
   },
   "belly_bowman_attack_08": {
    "frame": {
-    "x": 2,
-    "y": 337,
+    "x": 625,
+    "y": 2,
     "w": 77,
-    "h": 97
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 114,
-    "y": 88,
+    "y": 87,
     "w": 77,
-    "h": 97
+    "h": 98
    },
    "sourceSize": {
     "w": 266,
@@ -1082,10 +1082,10 @@
   },
   "belly_bowman_attack_08_team": {
    "frame": {
-    "x": 504,
-    "y": 531,
+    "x": 916,
+    "y": 271,
     "w": 42,
-    "h": 84
+    "h": 85
    },
    "rotated": false,
    "trimmed": true,
@@ -1093,7 +1093,7 @@
     "x": 113,
     "y": 83,
     "w": 42,
-    "h": 84
+    "h": 85
    },
    "sourceSize": {
     "w": 266,
@@ -1106,18 +1106,18 @@
   },
   "belly_bowman_attack_09": {
    "frame": {
-    "x": 473,
-    "y": 233,
+    "x": 572,
+    "y": 106,
     "w": 79,
-    "h": 97
+    "h": 98
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 116,
-    "y": 88,
+    "y": 87,
     "w": 79,
-    "h": 97
+    "h": 98
    },
    "sourceSize": {
     "w": 266,
@@ -1130,8 +1130,8 @@
   },
   "belly_bowman_attack_09_team": {
    "frame": {
-    "x": 2,
-    "y": 621,
+    "x": 962,
+    "y": 268,
     "w": 43,
     "h": 83
    },
@@ -1154,18 +1154,18 @@
   },
   "belly_bowman_attack_10": {
    "frame": {
-    "x": 403,
-    "y": 127,
+    "x": 248,
+    "y": 109,
     "w": 77,
-    "h": 101
+    "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 117,
-    "y": 84,
+    "y": 83,
     "w": 77,
-    "h": 101
+    "h": 102
    },
    "sourceSize": {
     "w": 266,
@@ -1178,8 +1178,8 @@
   },
   "belly_bowman_attack_10_team": {
    "frame": {
-    "x": 2,
-    "y": 531,
+    "x": 853,
+    "y": 183,
     "w": 43,
     "h": 86
    },
@@ -1202,18 +1202,18 @@
   },
   "belly_bowman_hit_00": {
    "frame": {
-    "x": 50,
-    "y": 438,
-    "w": 90,
-    "h": 88
+    "x": 680,
+    "y": 310,
+    "w": 92,
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 104,
-    "y": 97,
-    "w": 90,
-    "h": 88
+    "x": 102,
+    "y": 96,
+    "w": 92,
+    "h": 89
    },
    "sourceSize": {
     "w": 266,
@@ -1226,8 +1226,8 @@
   },
   "belly_bowman_hit_00_team": {
    "frame": {
-    "x": 2,
-    "y": 708,
+    "x": 1091,
+    "y": 170,
     "w": 60,
     "h": 74
    },
@@ -1250,18 +1250,18 @@
   },
   "belly_bowman_hit_01": {
    "frame": {
-    "x": 553,
-    "y": 127,
-    "w": 83,
-    "h": 100
+    "x": 329,
+    "y": 108,
+    "w": 84,
+    "h": 101
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 101,
-    "y": 84,
-    "w": 83,
-    "h": 100
+    "x": 100,
+    "y": 83,
+    "w": 84,
+    "h": 101
    },
    "sourceSize": {
     "w": 266,
@@ -1274,8 +1274,8 @@
   },
   "belly_bowman_hit_01_team": {
    "frame": {
-    "x": 397,
-    "y": 531,
+    "x": 159,
+    "y": 326,
     "w": 57,
     "h": 84
    },
@@ -1298,18 +1298,18 @@
   },
   "belly_bowman_hit_02": {
    "frame": {
-    "x": 528,
+    "x": 161,
     "y": 2,
     "w": 78,
-    "h": 102
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 112,
-    "y": 83,
+    "y": 82,
     "w": 78,
-    "h": 102
+    "h": 103
    },
    "sourceSize": {
     "w": 266,
@@ -1322,10 +1322,10 @@
   },
   "belly_bowman_hit_02_team": {
    "frame": {
-    "x": 534,
-    "y": 438,
+    "x": 310,
+    "y": 322,
     "w": 46,
-    "h": 86
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
@@ -1333,7 +1333,7 @@
     "x": 110,
     "y": 78,
     "w": 46,
-    "h": 86
+    "h": 87
    },
    "sourceSize": {
     "w": 266,
@@ -1346,18 +1346,18 @@
   },
   "belly_bowman_hit_03": {
    "frame": {
-    "x": 74,
-    "y": 233,
+    "x": 445,
+    "y": 212,
     "w": 79,
-    "h": 99
+    "h": 100
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 116,
-    "y": 86,
+    "y": 85,
     "w": 79,
-    "h": 99
+    "h": 100
    },
    "sourceSize": {
     "w": 266,
@@ -1370,10 +1370,10 @@
   },
   "belly_bowman_hit_03_team": {
    "frame": {
-    "x": 49,
-    "y": 621,
+    "x": 989,
+    "y": 91,
     "w": 43,
-    "h": 83
+    "h": 84
    },
    "rotated": false,
    "trimmed": true,
@@ -1381,7 +1381,7 @@
     "x": 116,
     "y": 81,
     "w": 43,
-    "h": 83
+    "h": 84
    },
    "sourceSize": {
     "w": 266,
@@ -1394,18 +1394,18 @@
   },
   "belly_bowman_hit_04": {
    "frame": {
-    "x": 83,
-    "y": 127,
+    "x": 159,
+    "y": 219,
     "w": 76,
-    "h": 102
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 117,
-    "y": 83,
+    "y": 82,
     "w": 76,
-    "h": 102
+    "h": 103
    },
    "sourceSize": {
     "w": 266,
@@ -1418,8 +1418,8 @@
   },
   "belly_bowman_hit_04_team": {
    "frame": {
-    "x": 95,
-    "y": 531,
+    "x": 898,
+    "y": 92,
     "w": 41,
     "h": 86
    },
@@ -1442,18 +1442,18 @@
   },
   "belly_bowman_die_00": {
    "frame": {
-    "x": 140,
-    "y": 531,
+    "x": 783,
+    "y": 195,
     "w": 66,
-    "h": 85
+    "h": 86
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 109,
-    "y": 92,
+    "y": 91,
     "w": 66,
-    "h": 85
+    "h": 86
    },
    "sourceSize": {
     "w": 266,
@@ -1466,10 +1466,10 @@
   },
   "belly_bowman_die_00_team": {
    "frame": {
-    "x": 570,
-    "y": 621,
+    "x": 1054,
+    "y": 258,
     "w": 52,
-    "h": 75
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
@@ -1477,7 +1477,7 @@
     "x": 108,
     "y": 87,
     "w": 52,
-    "h": 75
+    "h": 78
    },
    "sourceSize": {
     "w": 266,
@@ -1490,17 +1490,17 @@
   },
   "belly_bowman_die_01": {
    "frame": {
-    "x": 258,
-    "y": 708,
-    "w": 117,
+    "x": 1155,
+    "y": 156,
+    "w": 118,
     "h": 66
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 62,
+    "x": 61,
     "y": 91,
-    "w": 117,
+    "w": 118,
     "h": 66
    },
    "sourceSize": {
@@ -1514,8 +1514,8 @@
   },
   "belly_bowman_die_01_team": {
    "frame": {
-    "x": 85,
-    "y": 786,
+    "x": 2,
+    "y": 347,
     "w": 99,
     "h": 44
    },
@@ -1541,7 +1541,7 @@
     "x": 2,
     "y": 2,
     "w": 69,
-    "h": 121
+    "h": 122
    },
    "rotated": false,
    "trimmed": true,
@@ -1549,7 +1549,7 @@
     "x": 97,
     "y": 60,
     "w": 69,
-    "h": 121
+    "h": 122
    },
    "sourceSize": {
     "w": 266,
@@ -1562,8 +1562,8 @@
   },
   "belly_bowman_die_02_team": {
    "frame": {
-    "x": 418,
-    "y": 438,
+    "x": 835,
+    "y": 93,
     "w": 59,
     "h": 86
    },
@@ -1586,8 +1586,8 @@
   },
   "belly_bowman_die_03": {
    "frame": {
-    "x": 316,
-    "y": 127,
+    "x": 387,
+    "y": 2,
     "w": 83,
     "h": 101
    },
@@ -1610,10 +1610,10 @@
   },
   "belly_bowman_die_03_team": {
    "frame": {
-    "x": 144,
-    "y": 438,
+    "x": 773,
+    "y": 104,
     "w": 58,
-    "h": 88
+    "h": 87
    },
    "rotated": false,
    "trimmed": true,
@@ -1621,7 +1621,7 @@
     "x": 100,
     "y": 68,
     "w": 58,
-    "h": 88
+    "h": 87
    },
    "sourceSize": {
     "w": 266,
@@ -1634,17 +1634,17 @@
   },
   "belly_bowman_die_04": {
    "frame": {
-    "x": 405,
-    "y": 2,
-    "w": 119,
+    "x": 239,
+    "y": 216,
+    "w": 120,
     "h": 102
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 73,
+    "x": 72,
     "y": 83,
-    "w": 119,
+    "w": 120,
     "h": 102
    },
    "sourceSize": {
@@ -1658,8 +1658,8 @@
   },
   "belly_bowman_die_04_team": {
    "frame": {
-    "x": 498,
-    "y": 708,
+    "x": 962,
+    "y": 355,
     "w": 78,
     "h": 54
    },
@@ -1682,18 +1682,18 @@
   },
   "belly_bowman_die_05": {
    "frame": {
-    "x": 332,
-    "y": 621,
-    "w": 141,
-    "h": 79
+    "x": 1107,
+    "y": 2,
+    "w": 142,
+    "h": 78
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 53,
+    "x": 52,
     "y": 100,
-    "w": 141,
-    "h": 79
+    "w": 142,
+    "h": 78
    },
    "sourceSize": {
     "w": 266,
@@ -1706,8 +1706,8 @@
   },
   "belly_bowman_die_05_team": {
    "frame": {
-    "x": 267,
-    "y": 786,
+    "x": 1121,
+    "y": 343,
     "w": 96,
     "h": 40
    },
@@ -1730,17 +1730,17 @@
   },
   "belly_bowman_die_06": {
    "frame": {
-    "x": 379,
-    "y": 708,
-    "w": 115,
+    "x": 1155,
+    "y": 226,
+    "w": 116,
     "h": 65
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 66,
+    "x": 65,
     "y": 126,
-    "w": 115,
+    "w": 116,
     "h": 65
    },
    "sourceSize": {
@@ -1754,18 +1754,18 @@
   },
   "belly_bowman_die_06_team": {
    "frame": {
-    "x": 2,
-    "y": 786,
+    "x": 869,
+    "y": 362,
     "w": 79,
-    "h": 46
+    "h": 45
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 61,
-    "y": 139,
+    "y": 140,
     "w": 79,
-    "h": 46
+    "h": 45
    },
    "sourceSize": {
     "w": 266,
@@ -1778,8 +1778,8 @@
   },
   "belly_bowman_die_07": {
    "frame": {
-    "x": 66,
-    "y": 708,
+    "x": 1155,
+    "y": 84,
     "w": 121,
     "h": 68
    },
@@ -1802,8 +1802,8 @@
   },
   "belly_bowman_die_07_team": {
    "frame": {
-    "x": 188,
-    "y": 786,
+    "x": 1121,
+    "y": 295,
     "w": 75,
     "h": 44
    },
@@ -1933,8 +1933,8 @@
   "image": "belly_bowman.png",
   "format": "RGBA8888",
   "size": {
-   "w": 640,
-   "h": 836
+   "w": 1280,
+   "h": 412
   },
   "scale": "1.5",
   "ageborn": {

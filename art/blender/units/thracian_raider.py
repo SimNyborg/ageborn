@@ -24,8 +24,11 @@ Animation (cartoon kit v2):
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import kit_bronze as K
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge
@@ -46,6 +49,23 @@ FOX_DK = "#7E6E62"
 HIDE = "#76685C"                      # boots and bracers: a greyer leather (cel shadows stay under 40% saturation)
 CREAM = "#EFE6D2"
 CAP_C = (0.5, 0, 56.0)
+BLADE = "#C9AE82"         # a paler polished bronze for the long blade (saturation 0.35: the shipped polished blade
+                          # put the sheet at 9.5% on the A11 colour rule)
+EDGE = "#F4ECD6"          # the honed edge (kit_bronze.rhomphaia)
+
+# the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
+# of audit 5.1 / 5.2: pricked fox ears on the alopekis (a silhouette breaker that says "fox"), a team-dark clavus
+# and a team-dark band over the zig-zag hem (the team tunic in two tones), team-dark stripes across the zeira
+# (the Thracian cloak's woven bands), an aged bronze buckle; the blade in a paler polished bronze (the colour rule)
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, B.V3_FAR)        # noqa: E731 (sandal_legs_v3 and boots_v3 darken the far leg)
+MATERIAL_KINDS = {B.SKIN: "skin", _FAR(B.SKIN): "skin", B.HAIR: "fur", FOX: "fur", FOX_DK: "fur", CREAM: "fur",
+                  HIDE: "leather", _FAR(HIDE): "leather", _FAR(CREAM): "fur", B.LEATHER: "leather",
+                  _FAR(B.LEATHER): "leather", B.LEATHER_DK: "leather", _FAR(B.LEATHER_DK): "leather",
+                  B.SAND_LT: "cloth", B.BRONZE_HI: "bronze", B.BRONZE: "bronze", B.AGED: "bronze",
+                  B.AGED_DK: "bronze", BLADE: "bronze", EDGE: "bronze", B.WOOD_DK: "wood", "team": "cloth"}
 
 
 def _cap(rig, joint, c, tail=True):
@@ -57,6 +77,11 @@ def _cap(rig, joint, c, tail=True):
     for y in (-10.6, 10.6):
         g.blob((cx - 1.0, y, cz - 6.5), (4.4, 1.8, 6.6), p=2.3, taper=(0.7, 1.0))
     rig.part(joint, g, FOX_DK, finish="hair", outline=0.7)
+    g = Geo()                                                        # the fox's pricked ears on the crown (4 lu)
+    for y in (-4.2, 4.2):
+        g.lathe([(2.4, 0), (1.6, 2.4), (0, 4.6)], (cx + 1.0, cy + y, cz + 11.4), (cx + 2.0, cy + y * 1.25, cz + 15.6),
+                segs=10, squash=(1.0, 0.55))
+    rig.part(joint, g, FOX_DK, finish="hair", outline=0.6)
     g = Geo().blob((cx + 0.3, cy, cz - 0.8), (12.3, 11.9, 2.2), p=2.8)
     rig.part(joint, g, team=True, outline=0.6)
     if tail:
@@ -76,6 +101,13 @@ def build(rig):
 
     K.tunic(rig, team=True, hem_color=None)
     rig.rest_offset["hem"] = (0, 0, B.V3_LIFT + 1.0)        # hem >= 9 lu above the soles
+    # two tones on the team tunic (shells that follow it): a team-dark clavus and a band over the zig-zag hem
+    g = KD.stripe_x((0.2, 0, 28.0), (10.2, 9.4, 11.4), 1.6, 5.0, z0=19.0, z1=39.0, taper=(1.1, 0.92))
+    look.team_part(rig, "torso", g, outline=0)
+    g = KD.band_z((0.6, 0, 14.6), (11.6, 10.6, 5.6), 12.0, 15.0, taper=(1.16, 0.92))
+    look.team_part(rig, "hem", g, outline=0)
+    g = Geo().blob((11.0, -2.4, 20.4), (1.8, 2.6, 2.3), p=2.4)          # an aged bronze belt buckle
+    rig.part("torso", g, B.AGED, finish="metal", outline=0.4)
     g = Geo()                                                         # zig-zag hem band
     for k in range(10):
         a = 3.14159 * (0.5 + 1.9 * k / 9)
@@ -89,6 +121,10 @@ def build(rig):
     rig.part("cloak", g, team=True, outline=0.8)
     g = Geo().slab([(-18.2, 20.2), (-14.2, 14.8), (-12.6, 16.2), (-16.6, 21.8)], 7.3, 2.2)
     rig.part("cloak", g, B.SAND_LT, outline=0.5)
+    g = Geo()                                       # woven team-dark bands across the zeira (2.8 lu)
+    for (x0, z0), (x1, z1) in (((-2.4, 35.2), (-12.8, 34.0)), ((-4.6, 27.0), (-16.4, 25.6))):
+        g.slab([(x0, z0 + 1.4), (x1, z1 + 1.4), (x1 - 0.8, z1 - 1.4), (x0 - 0.6, z0 - 1.4)], 6.0, 0.6)
+    look.team_part(rig, "cloak", g, outline=0)
     g = Geo().sphere((3.0, -7.0, 36.0), 1.8, cuts=2)                  # brooch
     rig.part("torso", g, B.BRONZE_HI, finish=B.POLISH, outline=0.4)
 
@@ -109,10 +145,23 @@ def build(rig):
         rig.part(f"fore_{s}", g, HIDE, outline=0.7)
 
     rig.joint("rhom", "hand_r", HR)
-    tip = K.rhomphaia(rig, "rhom", HR)
+    tip = K.rhomphaia(rig, "rhom", HR, blade_color=BLADE)
     rig.track("bladeTip", "rhom", tip)
     rig.joint("rhom_loose", "root", (0, 0, 0), hidden=True)
     K.rhomphaia(rig, "rhom_loose", (0.0, -2.0, -20.0), blade_color=B.AGED)   # cartwheels face-on: aged bronze keeps the colour rule
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Bronze soldier; never on the face or skin): the team tunic in
+    front, the team zeira streaming behind (the largest team surface the blade leaves clear), the team skirt,
+    the hide boot; a strip torn from the skirt's hem."""
+    rig.damage_spot_at("tunic", "torso", 2.0, 27.0, 6.5, "cloth", team=True)
+    rig.damage_spot_at("cloak", "cloak", -12.0, 22.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("skirt", "hem", -2.0, 18.0, 6.0, "cloth", team=True)
+    rig.damage_spot_at("boot", "shin_r", 1.0, 9.0, 5.0, "hide", fill=HIDE)
+    rig.damage_spot_at("hem", "hem", -5.0, 15.0, 10.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -212,17 +261,21 @@ def _attack_clip():
 
 # -- attack B: rising diagonal slash from a deep crouch -------------------------------------------
 # 0-1 = A read and dip, 2 sink, 3 HOLD (deep crouch, the blade trailing LOW behind him near the ground,
-# point back and down), 4 smear, 5 lead, 6 IMPACT (risen onto the front leg, the blade ripped up and
-# forward to point high in front), 7 overshoot, 8-10 = A recoil and settle
-#      sink  HOLD smear lead  IMP  over
-B_WA = [-120, -135, -70, -20, 20, 26]         # near arm, forearm, blade (world deg)
-B_WF = [-130, -150, -50, 10, 50, 56]
-B_WW = [-150, -160, -60, 20, 62, 70]
-B_T = [-14, -20, -10, 0, 6, 8]
-B_H = [8, 12, 6, -2, -6, -6]
-B_X = [-1.0, -2.5, 2.0, 6.0, 9.0, 9.5]
-B_Z = [-5.0, -8.0, -6.0, -2.0, 0.8, 0.6]
-B_Q = [-0.08, -0.14, 0.04, 0.08, 0.04, 0.0]
+# point back and down), 4 smear, 5 lead (the blade rising low in front), 6 IMPACT (the blade level through
+# the foe's chest as he rises onto the front leg), 7 the toss (the blade ripped on up to point high in
+# front), 8-10 = A recoil and settle.
+# Item 38 B1' (art round W1): the impact frame used to be the toss (the blade tip 76 lu up, 40 lu over a
+# foe's chest, with the burst there); the contact now sits on the impact frame and the toss follows it.
+# Timing and impactAt as before.
+#      sink  HOLD smear lead  IMP  toss
+B_WA = [-120, -135, -70, -45, -15, 20]        # near arm, forearm, blade (world deg)
+B_WF = [-130, -150, -50, -25, 8, 50]
+B_WW = [-150, -160, -60, -12, 14, 62]
+B_T = [-14, -20, -10, -6, -8, 6]
+B_H = [8, 12, 6, 2, 6, -6]
+B_X = [-1.0, -2.5, 2.0, 4.5, 8.0, 9.5]
+B_Z = [-5.0, -8.0, -6.0, -3.5, -2.0, 0.8]
+B_Q = [-0.08, -0.14, 0.04, 0.06, -0.12, 0.04]
 B_FR = [6.0, 8.0, 10.0, 13.0, 16.0, 16.0]
 B_FL = [-6.0, -8.0, -7.0, -5.0, -4.0, -4.0]
 B_LR = [0.0, 0.0, 2.0, 1.0, 0.0, 0.0]
@@ -252,8 +305,9 @@ def _attack_b():
         5: [dict(arc, **{"from": 3, "t0": 0.3, "t1": 0.95})],
         6: [dict(arc, **{"from": 5, "t0": 0.1, "t1": 0.9}),
             {"kind": "burst", "joint": "rhom", "point": TIP, "r0_lu": 5.0, "r1_lu": 11.0, "n": 5,
-             "a0": -20.0, "arc": 130.0},
+             "a0": -50.0, "arc": 120.0},
             {"kind": "dust", "ground": (16.0, 0.0), "size_lu": 5.0, "puffs": 3, "seed": 32, "spread": 0.8}],
+        7: [dict(arc, **{"from": 6, "t0": 0.2, "t1": 0.9})],
     }
     reuse = {0: ("attack", 0), 1: ("attack", 1), 8: ("attack", 8), 9: ("attack", 9), 10: ("attack", 10)}
     return M.clip("attack_b", [_b_pose(i) for i in range(11)], M.SMALL_MELEE_MS,

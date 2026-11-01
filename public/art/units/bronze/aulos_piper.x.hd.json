@@ -4,15 +4,15 @@
    "frame": {
     "x": 2,
     "y": 189,
-    "w": 120,
+    "w": 117,
     "h": 161
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 221,
+    "x": 224,
     "y": 209,
-    "w": 120,
+    "w": 117,
     "h": 161
    },
    "sourceSize": {
@@ -26,10 +26,10 @@
   },
   "aulos_piper_attack_b_02_team": {
    "frame": {
-    "x": 188,
+    "x": 383,
     "y": 354,
     "w": 90,
-    "h": 87
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
@@ -37,7 +37,7 @@
     "x": 217,
     "y": 264,
     "w": 90,
-    "h": 87
+    "h": 89
    },
    "sourceSize": {
     "w": 496,
@@ -50,17 +50,17 @@
   },
   "aulos_piper_attack_b_03": {
    "frame": {
-    "x": 268,
+    "x": 261,
     "y": 189,
-    "w": 140,
+    "w": 138,
     "h": 138
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 221,
+    "x": 223,
     "y": 232,
-    "w": 140,
+    "w": 138,
     "h": 138
    },
    "sourceSize": {
@@ -74,18 +74,18 @@
   },
   "aulos_piper_attack_b_03_team": {
    "frame": {
-    "x": 379,
+    "x": 190,
     "y": 354,
     "w": 94,
-    "h": 80
+    "h": 89
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 217,
-    "y": 272,
+    "y": 273,
     "w": 94,
-    "h": 80
+    "h": 89
    },
    "sourceSize": {
     "w": 496,
@@ -98,17 +98,17 @@
   },
   "aulos_piper_attack_b_04": {
    "frame": {
-    "x": 126,
+    "x": 123,
     "y": 189,
-    "w": 138,
+    "w": 134,
     "h": 140
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 220,
+    "x": 224,
     "y": 230,
-    "w": 138,
+    "w": 134,
     "h": 140
    },
    "sourceSize": {
@@ -122,10 +122,10 @@
   },
   "aulos_piper_attack_b_04_team": {
    "frame": {
-    "x": 282,
+    "x": 93,
     "y": 354,
     "w": 93,
-    "h": 81
+    "h": 90
    },
    "rotated": false,
    "trimmed": true,
@@ -133,7 +133,7 @@
     "x": 217,
     "y": 273,
     "w": 93,
-    "h": 81
+    "h": 90
    },
    "sourceSize": {
     "w": 496,
@@ -148,15 +148,15 @@
    "frame": {
     "x": 139,
     "y": 2,
-    "w": 120,
+    "w": 117,
     "h": 172
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 227,
+    "x": 230,
     "y": 198,
-    "w": 120,
+    "w": 117,
     "h": 172
    },
    "sourceSize": {
@@ -173,7 +173,7 @@
     "x": 2,
     "y": 354,
     "w": 87,
-    "h": 91
+    "h": 95
    },
    "rotated": false,
    "trimmed": true,
@@ -181,7 +181,7 @@
     "x": 223,
     "y": 259,
     "w": 87,
-    "h": 91
+    "h": 95
    },
    "sourceSize": {
     "w": 496,
@@ -218,7 +218,7 @@
   },
   "aulos_piper_attack_b_06_team": {
    "frame": {
-    "x": 412,
+    "x": 403,
     "y": 189,
     "w": 83,
     "h": 99
@@ -242,7 +242,7 @@
   },
   "aulos_piper_attack_b_07": {
    "frame": {
-    "x": 263,
+    "x": 260,
     "y": 2,
     "w": 180,
     "h": 164
@@ -266,7 +266,7 @@
   },
   "aulos_piper_attack_b_07_team": {
    "frame": {
-    "x": 93,
+    "x": 288,
     "y": 354,
     "w": 91,
     "h": 89
@@ -326,7 +326,7 @@
   "format": "RGBA8888",
   "size": {
    "w": 512,
-   "h": 448
+   "h": 452
   },
   "scale": "3",
   "ageborn": {

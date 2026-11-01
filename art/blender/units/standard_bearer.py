@@ -25,8 +25,12 @@ chip in with a thrown dart):
 """
 import math
 
+from ageborn_art import aimed as AIMED
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import gait as G
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge
@@ -46,6 +50,25 @@ HL = (0.0, B.ARM_Y["l"], B.HAND_Z)   # far hand: the standard (modelled pointing
 POLE_UP, POLE_DOWN = 78.0, 18.0
 WING_TILT = -26.0             # wings tipped back so their faces catch the highlight
 DART_F, DART_B = 26.0, 7.0
+EAGLE_BODY = "#DCC69C"        # the eagle's body and head (a paler polished bronze)
+WING = "#CBB083"              # its wings: a warm polished bronze under the A11 rule's saturation (W1: the
+                              # shipped BRONZE wings and their outline were ~6% of the colour rule on their own)
+
+# the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
+# of audit 5.1 / 5.2: the banner hangs in vertical folds with team-dark woven bands across it (a vexillum's
+# stripes: the big team field in two tones that shades as cloth), two folds and a team-dark hem on the cloak, a
+# verdigris band round the linen skirt, a painted plum ring on the drum's face, a tooled band, a row of punched
+# dots and a pair of incised scrolls on the pilos; darts thrown at flyers aimed up 45 and 70 degrees (item 44)
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, B.V3_FAR)        # noqa: E731 (sandal_legs_v3 darkens the far leg)
+MATERIAL_KINDS = {B.SKIN: "skin", _FAR(B.SKIN): "skin", B.HAIR: "fur", B.LINEN: "cloth", B.PLUM: "cloth",
+                  B.LEATHER: "leather", _FAR(B.LEATHER): "leather", B.LEATHER_DK: "leather",
+                  _FAR(B.LEATHER_DK): "leather", B.BRONZE: "bronze", _FAR(B.BRONZE): "bronze", B.BRONZE_HI: "bronze",
+                  EAGLE_BODY: "bronze", WING: "bronze", B.AGED_DK: "bronze", B.VERD: "bronze", B.VERD_DK: "cloth",
+                  _FAR(B.VERD_DK): "cloth", B.SAND_LT: "cloth", B.SAND: "cloth", B.AGED: "bronze", B.WOOD: "wood",
+                  B.WOOD_DK: "wood", "team": "cloth"}
 
 
 def build(rig):
@@ -64,21 +87,42 @@ def build(rig):
     g = Geo().capsule((hx - 13.0, py, top - 8.0), (hx + 13.0, py, top - 8.0), 1.1)
     g.lathe([(1.8, 0), (1.9, 2.2), (0, 3.0)], (hx, py, hz - POLE_DOWN + 0.5), (hx, py, hz - POLE_DOWN - 2.5), segs=10)
     rig.part("standard", g, B.AGED_DK, finish="metal", outline=0.6)
+    g = Geo()                                   # aged bronze ferrules on the pole (under the banner, over the fist)
+    for z in (top - 40.0, hz + 7.0):
+        g.blob((hx, py, z), (1.75, 1.65, 1.0), p=2.8)
+    rig.part("standard", g, B.AGED, finish="metal", outline=0.4)
     # the banner hangs from the crossbar and swings (follow-through)
     rig.secondary("banner", "standard", (hx, py - 1.2, top - 8.0), (hx, py - 1.2, top - 34.0), max_deg=12,
                   gain=1.0)
     bz = top - 9.0
-    pts = [(hx - 12.0, bz), (hx + 12.0, bz), (hx + 12.0, bz - 24.0), (hx + 6.0, bz - 29.0), (hx, bz - 25.0),
-           (hx - 6.0, bz - 29.0), (hx - 12.0, bz - 24.0)]
-    g = Geo().slab(pts, py - 1.4, 1.6)
+    tail = [(hx - 12.0, bz - 24.0), (hx - 6.0, bz - 29.0), (hx, bz - 25.0), (hx + 6.0, bz - 29.0),
+            (hx + 12.0, bz - 24.0)]                 # the swallowtail's bottom edge
+
+    def bottom(x):
+        for (xa, za), (xb, zb) in zip(tail, tail[1:]):
+            if x <= xb + 1e-6:
+                return za + (zb - za) * (x - xa) / (xb - xa)
+        return tail[-1][1]
+
+    def folds(x, z):
+        """The banner's front: vertical folds, deeper toward its free bottom edge (a flat slab is one value)."""
+        amp = 0.42 + 0.5 * min(1.0, max(0.0, (bz - z) / 29.0))
+        u = 2 * math.pi * (x - hx)
+        return py - 2.2 + amp * (0.75 * math.sin(u / 6.5 + 0.6) + 0.25 * math.sin(u / 3.9 + 2.0))
+    g = KD.sheet(hx - 12.0, hx + 12.0, lambda x: bz, bottom, folds, 1.6)
     rig.part("banner", g, team=True, outline=0.8)
     g = Geo()
     for i in range(7):
         x = hx - 11.0 + i * 22.0 / 6
         g.blob((x, py - 2.4, bz - 0.8), (1.6, 0.8, 1.5), p=2.2)
-    g.capsule((hx - 5.0, py - 2.5, bz - 20.0), (hx, py - 2.6, bz - 8.0), 1.4)
+    rig.part("banner", g, B.SAND, outline=0.5)                 # the fringe (W1: sandstone, it was 7 highlights)
+    g = Geo().capsule((hx - 5.0, py - 2.5, bz - 20.0), (hx, py - 2.6, bz - 8.0), 1.4)
     g.capsule((hx, py - 2.6, bz - 8.0), (hx + 5.0, py - 2.5, bz - 20.0), 1.4)
     rig.part("banner", g, B.SAND_LT, outline=0.5)
+    for z0, z1 in ((bz - 1.6, bz - 4.4), (bz - 21.2, bz - 23.6)):   # team-dark woven bands (2.8 and 2.4 lu)
+        g = KD.sheet(hx - 11.95, hx + 11.95, lambda x, z0=z0: z0, lambda x, z1=z1: z1,
+                     lambda x, z: folds(x, z) - 0.25, 0.5, ny=3)
+        look.team_part(rig, "banner", g, outline=0)
     # the eagle on top (the aquila): polished bronze, wings spread wide in the camera plane so the
     # shape reads at 1x, the body and head in profile facing the enemy, on a verdigris plinth
     ex, ez = hx, top + 3.0
@@ -93,11 +137,11 @@ def build(rig):
                 (ex + 14.0 * sgn, ez + 15.5), (ex + 14.5 * sgn, ez + 12.0), (ex + 10.0 * sgn, ez + 11.5),
                 (ex + 9.5 * sgn, ez + 8.8), (ex + 1.5 * sgn, ez + 9.0)], fy + 1.2, 2.0,
                rot=(WING_TILT, 0, 0), origin=(ex, fy + 1.2, ez + 6.0))
-    rig.part("standard", g, B.BRONZE, finish=B.POLISH, outline=0.8)
+    rig.part("standard", g, WING, finish=B.POLISH, outline=0.8)
     g = Geo().blob((ex + 0.6, fy - 0.6, ez + 5.0), (3.6, 3.0, 6.0), p=2.2, rot=(0, 14, 0))   # body
     g.sphere((ex + 2.6, fy - 0.8, ez + 12.8), 3.2, cuts=3)                                  # head
     g.slab([(ex - 2.0, ez + 0.5), (ex - 5.5, ez - 3.0), (ex + 1.0, ez - 3.0), (ex + 2.4, ez + 0.5)], fy - 0.6, 2.2)
-    rig.part("standard", g, "#DCC69C", finish=B.POLISH, outline=0.7, outline_hex=B.AGED_DK)
+    rig.part("standard", g, EAGLE_BODY, finish=B.POLISH, outline=0.7, outline_hex=B.AGED_DK)
     g = Geo().lathe([(1.4, 0), (0.8, 1.8), (0, 3.4)], (ex + 5.2, fy - 0.8, ez + 12.6), (ex + 8.6, fy - 0.8, ez + 11.4),
                     segs=8)
     rig.part("standard", g, B.AGED_DK, finish="metal", outline=0.5)
@@ -106,9 +150,18 @@ def build(rig):
 
     # team cloak clasped on the shoulders, streaming back (follow-through)
     rig.secondary("cloak", "torso", (-6.0, 0, 38.0), (-14.0, 0, 12.0), max_deg=10, gain=0.9)
-    g = Geo().blob((-8.4, 0, 27.0), (4.4, 12.4, 12.8), p=2.4, taper=(1.3, 0.8), shift=(0.2, 0))
+    cloak, cloak_kw = ((-8.4, 0, 27.0), (4.4, 12.4, 12.8)), {"p": 2.4, "taper": (1.3, 0.8), "shift": (0.2, 0)}
+    g = Geo().blob(*cloak, **cloak_kw)
     g.blob((-2.0, 0, 37.8), (8.6, 12.8, 3.2), p=2.6)
     rig.part("cloak", g, team=True)
+    g = KD.band_z(*cloak, 14.0, 17.2, **cloak_kw)                        # a team-dark hem
+    look.team_part(rig, "cloak", g, outline=0)
+    # two folds falling from the clasp and fanning out (the cloak's team field shades as cloth)
+    g = KD.ridge(*cloak, [(-8.6, 34.5), (-9.4, 29.0), (-9.9, 23.5), (-10.2, 18.6)], [0.7, 1.1, 1.25, 1.0],
+                 bulge=0.65, **cloak_kw)
+    KD.ridge(*cloak, [(-6.0, 34.0), (-6.5, 28.5), (-6.9, 23.0), (-7.3, 18.6)], [0.65, 1.0, 1.2, 0.95], geo=g,
+             bulge=0.65, **cloak_kw)
+    rig.part("cloak", g, team=True, outline=0)
     # linen tunic with a plum sash, bronze clasp
     g = Geo().blob((0.2, 0, 27.5), (10.4, 9.6, 11.6), p=2.4, taper=(1.1, 0.92))
     rig.part("torso", g, B.LINEN)
@@ -118,6 +171,8 @@ def build(rig):
     rig.part("hem", g, B.LINEN)
     g = Geo().blob((0.6, 0, 10.2), (11.6, 10.6, 1.1), p=3.0)
     rig.part("hem", g, B.PLUM, outline=0.6)
+    g = KD.band_z((0.6, 0, 14.8), (11.4, 10.4, 5.4), 12.0, 14.8, taper=(1.14, 0.92))   # a verdigris band (2.8 lu)
+    rig.part("hem", g, B.VERD_DK, outline=0)
     g = Geo().blob((0.4, 0, 20.6), (11.2, 10.3, 2.2), p=3.2)
     g.capsule((10.0, -6.0, 36.0), (-2.0, 9.0, 22.0), 1.6)
     rig.part("torso", g, B.PLUM)
@@ -136,7 +191,9 @@ def build(rig):
     for i in range(8):
         a_ = 2 * math.pi * i / 8
         g.sphere((5.0 + 7.8 * math.cos(a_), -15.8, 13.5 + 7.8 * math.sin(a_)), 0.9, cuts=2)
-    rig.part("drum", g, B.SAND_LT, outline=0.4)
+    rig.part("drum", g, B.AGED, finish="metal", outline=0.4)    # aged bronze tacks
+    g = KD.ring_y((5.0, 13.5), 2.6, 5.2, -16.5, -17.0)     # a painted plum ring on the drum's face (2.6 lu)
+    rig.part("drum", g, B.PLUM, outline=0)
     g = Geo().capsule((7.0, -10.0, 36.5), (6.0, -14.0, 22.0), 1.1).capsule((-7.0, 9.0, 36.0), (7.0, -10.0, 36.5), 1.1)
     rig.part("torso", g, B.LEATHER_DK, outline=0.5)
 
@@ -148,9 +205,23 @@ def build(rig):
     rig.part("head", mst, B.HAIR, finish="hair")
     g = Geo().blob((-6.0, 0, 46.4), (5.4, 9.2, 6.0), p=2.2)
     rig.part("head", g, B.HAIR, finish="hair")
-    g = Geo().lathe([(0, 0), (12.6, 0), (12.0, 3.0), (8.6, 10.0), (3.6, 15.0), (0, 16.0)], (1.0, 0, 53.6),
-                    (0.0, 0, 69.6), segs=28, squash=(1.0, 0.95))
-    rig.part("head", g, B.BRONZE, finish=B.POLISH)
+    pilos = [(0, 0), (12.6, 0), (12.0, 3.0), (8.6, 10.0), (3.6, 15.0), (0, 16.0)]
+    p0, p1 = (1.0, 0, 53.6), (0.0, 0, 69.6)
+    g = Geo().lathe(pilos, p0, p1, segs=28, squash=(1.0, 0.95))
+    rig.part("head", g, B.BRONZE, finish=B.POLISH, outline_hex=B.AGED_DK)
+    # a tooled band over the rim, a row of punched dots above it and an incised scroll: the polished dome was the
+    # biggest flat field (its broad highlight is one value)
+    g = Geo().lathe([(12.57, 1.2), (12.25, 3.0), (12.15, 3.2)], p0, p1, segs=28, squash=(1.0, 0.95))
+    rig.part("head", g, B.AGED_DK, finish="metal", outline=0)
+    g = Geo()
+    for pt in KD.lathe_points(p0, p1, 11.47, 4.2, 22, squash=(1.0, 0.95)):
+        g.sphere(pt, 0.55, cuts=2)
+    rig.part("head", g, B.AGED_DK, finish="metal", outline=0)
+    ref = Geo().lathe(pilos, p0, p1, segs=28, squash=(1.0, 0.95))
+    KD.surface_line(rig, "head", ref, KD.volute((4.6, 61.6), 0.8, 3.0, a0=200.0, tail=(1.0, -1.6)), 1.2, B.AGED_DK)
+    ref = Geo().lathe(pilos, p0, p1, segs=28, squash=(1.0, 0.95))       # its mirror image: a pair of scrolls
+    KD.surface_line(rig, "head", ref, [(-3.3 - x, z) for x, z in KD.volute((0.0, 62.0), 0.8, 2.8, a0=200.0,
+                                                                            tail=(1.0, -1.6))], 1.2, B.AGED_DK)
     g = Geo().blob((1.0, 0, 53.8), (13.2, 12.6, 1.3), p=2.8)
     g.sphere((0.0, 0, 70.4), 1.8, cuts=3)
     rig.part("head", g, B.VERD, finish="metal", outline=0.6)
@@ -178,6 +249,19 @@ def build(rig):
                     (hx + DART_F, hy - 1.0, hz), segs=10, squash=(1.0, 0.5))
     rig.part("dart", g, B.BRONZE, finish=B.POLISH, outline=0.5)
     rig.track("muzzle", "hand_r", (hx + DART_F * 0.6, hy - 1.0, hz))
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Bronze soldier; never on the face or skin): the team cloak
+    behind him and the team banner (the largest team surfaces; the banner tears like a cloak), the drum's face;
+    a strip torn from the cloak's hem. (No linen spot: the throwing arm, the bandolier and the drum cover the
+    tunic in every pose, 0-18% visible.)"""
+    rig.damage_spot_at("cloak", "cloak", -11.0, 26.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("banner", "banner", -6.0, 76.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("drum", "drum", 1.5, 11.0, 5.0, "hide", fill=B.SAND_LT)
+    rig.damage_spot_at("hem", "cloak", -12.0, 17.0, 9.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
@@ -258,10 +342,37 @@ A_FL = [-2.0, -3.0, -6.0, -8.0, -6.0, -4.0, -2.5, -2.5, -2.5, -2.0, -2.0]
 A_LR = [0, 0, 0, 0, 2.5, 1.5, 0, 0, 0, 0, 0]
 
 
-def _base(f):
-    t = A_T[f]
-    pose = merge(throw(D_A[f] - t, D_F[f] - t, D_W[f] - t), standard(S_A[f] - t, S_F[f] - t, S_W[f] - t), {
-        "torso": {"r": t}, "head": {"r": A_H[f]},
+# aimed darts at flyers (queue item 44, ageborn_art/aimed.py on the dart's own axis): a turn of `turn` degrees up
+# turns the dart fully and the throwing arm partly with it, leans him back into the throw and tips the head and
+# the eyes up; the standard keeps its angle in the world and the feet stay planted. The wind-up and the hold
+# stay the base clip's frames; the throw rises into the aim through the whip and falls out in the follow-through.
+AIM_LEAN = 0.18           # torso r per degree of turn (positive leans back)
+AIM_ARM = (0.65, 0.85)    # upper arm and forearm: their share of the turn (world degrees)
+AIM_HEAD = 0.30           # head r per degree, on top of the lean
+AIM_EYES = 0.010          # pupils z per degree
+#        read dip wind HOLD twirl smear lead|IMP over reach draw settle   (release: the lead, the step before)
+AIM_W = [0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 0.9, 0.5, 0.15, 0.0, 0.0]
+#        read stamp draw HOLD twirl whip lead|IMP over reach draw settle
+AIM_W_B = [0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 0.9, 0.5, 0.15, 0.0, 0.0]
+AIM_LIFT_B = (0.02, 0.006)  # B's overhand arm past a 40 degree turn: the arm lifts over the head (shares + per
+#                             degree), so a steep throw clears the face instead of crossing it
+
+
+def _aimed(pose, turn):
+    """The eyes follow the aim."""
+    if not turn:
+        return pose
+    p = dict(pose.get("pupils", {}))
+    p["z"] = p.get("z", 0.0) + AIM_EYES * turn
+    return merge(pose, {"pupils": p})
+
+
+def _base(f, turn=0.0):
+    t = A_T[f] + AIM_LEAN * turn
+    ka, kf = AIM_ARM
+    pose = merge(throw(D_A[f] + ka * turn - t, D_F[f] + kf * turn - t, D_W[f] + turn - t),
+                 standard(S_A[f] - t, S_F[f] - t, S_W[f] - t), {
+        "torso": {"r": t}, "head": {"r": A_H[f] + AIM_HEAD * turn},
         "dart": {"hide": f in (6, 7, 8)},
     }, M.body_about((0, 0, 22), x=A_X[f], z=A_Z[f], q=A_Q[f]))
     pose = _feet(pose, A_FR[f], A_FL[f], lr=A_LR[f])
@@ -273,7 +384,7 @@ def _base(f):
         pose = merge(pose, F.expr("o"), {"brow": {"z": 0.6}})
     elif f in (4, 5, 6, 7):
         pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
-    return pose
+    return _aimed(pose, turn)
 
 
 def _twirl(pose):
@@ -282,12 +393,12 @@ def _twirl(pose):
                         "torso": {"r": 2}, "pupils": {"x": 0.4}})
 
 
-def _attack_pose(u):
+def _attack_pose(u, turn=0.0):
     if u <= 3:
-        return _base(u)
+        return _base(u, turn)
     if u == 4:
-        return _twirl(_base(3))
-    return _base(u - 1)
+        return _twirl(_base(3, turn))
+    return _base(u - 1, turn)
 
 
 EAGLE = (HL[0], HL[1] + 0.6, HL[2] + POLE_UP + 6.0)
@@ -333,10 +444,13 @@ B_FL = [-3.0, -5.0, -7.0, -5.0, -3.0, -2.5]
 B_LR = [0.0, 0.0, 0.0, 2.5, 1.0, 0.0]
 
 
-def _b_base(k):
-    t = B_T[k]
-    pose = merge(throw(B_DA[k] - t, B_DF[k] - t, B_DW[k] - t), standard(B_SA[k] - t, B_SF[k] - t, B_SW[k] - t), {
-        "torso": {"r": t}, "head": {"r": B_H[k]},
+def _b_base(k, turn=0.0):
+    t = B_T[k] + AIM_LEAN * turn
+    over = max(0.0, turn - 40.0)
+    ka, kf = AIM_ARM[0] + AIM_LIFT_B[0] * over, AIM_ARM[1] + AIM_LIFT_B[1] * over
+    pose = merge(throw(B_DA[k] + ka * turn - t, B_DF[k] + kf * turn - t, B_DW[k] + turn - t),
+                 standard(B_SA[k] - t, B_SF[k] - t, B_SW[k] - t), {
+        "torso": {"r": t}, "head": {"r": B_H[k] + AIM_HEAD * turn},
         "dart": {"hide": k == 5},
     }, M.body_about((0, 0, 22), x=B_X[k], z=B_Z[k], q=B_Q[k]))
     pose = _feet(pose, B_FR[k], B_FL[k], lr=B_LR[k])
@@ -346,15 +460,15 @@ def _b_base(k):
         pose = merge(pose, F.expr("grit"), {"brow": {"z": -1.0}})
     else:
         pose = merge(pose, F.expr("yell"), {"brow": {"z": -1.2}})
-    return pose
+    return _aimed(pose, turn)
 
 
-def _b_pose(u):
+def _b_pose(u, turn=0.0):
     if u == 0 or u >= 8:
-        return _attack_pose(u)
+        return _attack_pose(u, turn)
     if u == 4:
-        return _twirl(_b_base(2))
-    return _b_base(u - 1 if u < 4 else u - 2)
+        return _twirl(_b_base(2, turn))
+    return _b_base(u - 1 if u < 4 else u - 2, turn)
 
 
 def _attack_b():
@@ -405,12 +519,20 @@ def _die(k):
 
 
 def clips():
+    attack, attack_b = _attack_clip(), _attack_b()
+    # aimed up about 45 and 70 degrees at flyers (both variants; they go to the extras sheet)
+    aimed_a = AIMED.variants(RIG, attack, _attack_pose, AIM_W, aims=("up45", "up70"))
+    aimed_b = AIMED.variants(RIG, attack_b, _b_pose, AIM_W_B, aims=("up45", "up70"))
     cl = [
         M.clip("idle", [_idle(f) for f in range(6)], [153, 154, 153, 153, 154, 153], loop=True),
         M.walk_clip("walk", RIG, _walk, GAIT, "biped"),
-        _attack_clip(),
-        _attack_b(),
+        attack,
+        attack_b,
         M.clip("hit", [_hit(k) for k in range(5)], M.HIT_MS),
         M.clip("die", [_die(k) for k in range(10)], M.DIE_MS, extra=M.die_meta(HEIGHT_LU)),
-    ]
+    ] + aimed_a + aimed_b
+    for v in aimed_a:
+        AIMED.check_timing(attack, v)
+    for v in aimed_b:
+        AIMED.check_timing(attack_b, v)
     return M.check_variants(M.check_contract(cl))

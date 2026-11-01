@@ -2,18 +2,18 @@
  "frames": {
   "phalangite_idle_00": {
    "frame": {
-    "x": 651,
-    "y": 765,
+    "x": 1540,
+    "y": 232,
     "w": 338,
-    "h": 222
+    "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 183,
-    "y": 171,
+    "y": 169,
     "w": 338,
-    "h": 222
+    "h": 224
    },
    "sourceSize": {
     "w": 772,
@@ -26,10 +26,10 @@
   },
   "phalangite_idle_00_team": {
    "frame": {
-    "x": 1603,
-    "y": 2052,
+    "x": 2937,
+    "y": 853,
     "w": 265,
-    "h": 189
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
@@ -37,7 +37,7 @@
     "x": 218,
     "y": 162,
     "w": 265,
-    "h": 189
+    "h": 204
    },
    "sourceSize": {
     "w": 772,
@@ -50,18 +50,18 @@
   },
   "phalangite_idle_01": {
    "frame": {
-    "x": 993,
-    "y": 765,
+    "x": 1356,
+    "y": 465,
     "w": 334,
-    "h": 222
+    "h": 225
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 184,
-    "y": 170,
+    "y": 167,
     "w": 334,
-    "h": 222
+    "h": 225
    },
    "sourceSize": {
     "w": 772,
@@ -74,18 +74,18 @@
   },
   "phalangite_idle_01_team": {
    "frame": {
-    "x": 1340,
-    "y": 2052,
-    "w": 259,
-    "h": 190
+    "x": 3030,
+    "y": 1061,
+    "w": 258,
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 222,
     "y": 160,
-    "w": 259,
-    "h": 190
+    "w": 258,
+    "h": 204
    },
    "sourceSize": {
     "w": 772,
@@ -98,18 +98,18 @@
   },
   "phalangite_idle_02": {
    "frame": {
-    "x": 609,
-    "y": 530,
+    "x": 875,
+    "y": 241,
     "w": 328,
-    "h": 229
+    "h": 232
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 186,
-    "y": 161,
+    "y": 158,
     "w": 328,
-    "h": 229
+    "h": 232
    },
    "sourceSize": {
     "w": 772,
@@ -122,10 +122,10 @@
   },
   "phalangite_idle_02_team": {
    "frame": {
-    "x": 752,
-    "y": 1851,
+    "x": 2445,
+    "y": 884,
     "w": 252,
-    "h": 196
+    "h": 209
    },
    "rotated": false,
    "trimmed": true,
@@ -133,7 +133,7 @@
     "x": 224,
     "y": 151,
     "w": 252,
-    "h": 196
+    "h": 209
    },
    "sourceSize": {
     "w": 772,
@@ -146,18 +146,18 @@
   },
   "phalangite_idle_03": {
    "frame": {
-    "x": 2,
-    "y": 291,
+    "x": 376,
+    "y": 560,
     "w": 326,
-    "h": 235
+    "h": 238
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 185,
-    "y": 155,
+    "y": 152,
     "w": 326,
-    "h": 235
+    "h": 238
    },
    "sourceSize": {
     "w": 772,
@@ -170,10 +170,10 @@
   },
   "phalangite_idle_03_team": {
    "frame": {
-    "x": 258,
-    "y": 1646,
+    "x": 2406,
+    "y": 666,
     "w": 251,
-    "h": 201
+    "h": 214
    },
    "rotated": false,
    "trimmed": true,
@@ -181,7 +181,7 @@
     "x": 223,
     "y": 145,
     "w": 251,
-    "h": 201
+    "h": 214
    },
    "sourceSize": {
     "w": 772,
@@ -194,18 +194,18 @@
   },
   "phalangite_idle_04": {
    "frame": {
-    "x": 660,
-    "y": 291,
+    "x": 642,
+    "y": 2,
     "w": 330,
-    "h": 233
+    "h": 235
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 183,
-    "y": 157,
+    "y": 155,
     "w": 330,
-    "h": 233
+    "h": 235
    },
    "sourceSize": {
     "w": 772,
@@ -218,10 +218,10 @@
   },
   "phalangite_idle_04_team": {
    "frame": {
-    "x": 883,
-    "y": 1646,
+    "x": 2264,
+    "y": 447,
     "w": 257,
-    "h": 200
+    "h": 215
    },
    "rotated": false,
    "trimmed": true,
@@ -229,7 +229,7 @@
     "x": 219,
     "y": 147,
     "w": 257,
-    "h": 200
+    "h": 215
    },
    "sourceSize": {
     "w": 772,
@@ -242,18 +242,18 @@
   },
   "phalangite_idle_05": {
    "frame": {
-    "x": 941,
-    "y": 530,
+    "x": 976,
+    "y": 2,
     "w": 338,
-    "h": 226
+    "h": 229
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 181,
-    "y": 166,
+    "y": 163,
     "w": 338,
-    "h": 226
+    "h": 229
    },
    "sourceSize": {
     "w": 772,
@@ -266,10 +266,10 @@
   },
   "phalangite_idle_05_team": {
    "frame": {
-    "x": 1476,
-    "y": 1851,
+    "x": 3055,
+    "y": 427,
     "w": 264,
-    "h": 194
+    "h": 206
    },
    "rotated": false,
    "trimmed": true,
@@ -277,7 +277,7 @@
     "x": 216,
     "y": 156,
     "w": 264,
-    "h": 194
+    "h": 206
    },
    "sourceSize": {
     "w": 772,
@@ -290,18 +290,18 @@
   },
   "phalangite_walk_00": {
    "frame": {
-    "x": 1331,
-    "y": 765,
+    "x": 1642,
+    "y": 2,
     "w": 284,
-    "h": 222
+    "h": 224
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 207,
-    "y": 168,
+    "y": 166,
     "w": 284,
-    "h": 222
+    "h": 224
    },
    "sourceSize": {
     "w": 772,
@@ -314,18 +314,18 @@
   },
   "phalangite_walk_00_team": {
    "frame": {
-    "x": 1008,
-    "y": 1851,
-    "w": 230,
-    "h": 195
+    "x": 2785,
+    "y": 217,
+    "w": 239,
+    "h": 210
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 228,
+    "x": 219,
     "y": 159,
-    "w": 230,
-    "h": 195
+    "w": 239,
+    "h": 210
    },
    "sourceSize": {
     "w": 772,
@@ -338,18 +338,18 @@
   },
   "phalangite_walk_01": {
    "frame": {
-    "x": 1258,
-    "y": 1217,
+    "x": 2135,
+    "y": 896,
     "w": 306,
-    "h": 212
+    "h": 214
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 202,
-    "y": 178,
+    "y": 176,
     "w": 306,
-    "h": 212
+    "h": 214
    },
    "sourceSize": {
     "w": 772,
@@ -362,10 +362,10 @@
   },
   "phalangite_walk_01_team": {
    "frame": {
-    "x": 655,
-    "y": 2248,
+    "x": 2445,
+    "y": 1097,
     "w": 247,
-    "h": 187
+    "h": 202
    },
    "rotated": false,
    "trimmed": true,
@@ -373,7 +373,7 @@
     "x": 225,
     "y": 168,
     "w": 247,
-    "h": 187
+    "h": 202
    },
    "sourceSize": {
     "w": 772,
@@ -386,18 +386,18 @@
   },
   "phalangite_walk_02": {
    "frame": {
-    "x": 2,
-    "y": 765,
+    "x": 1210,
+    "y": 707,
     "w": 312,
-    "h": 224
+    "h": 226
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 202,
-    "y": 165,
+    "y": 163,
     "w": 312,
-    "h": 224
+    "h": 226
    },
    "sourceSize": {
     "w": 772,
@@ -410,18 +410,18 @@
   },
   "phalangite_walk_02_team": {
    "frame": {
-    "x": 531,
-    "y": 2052,
-    "w": 255,
-    "h": 191
+    "x": 3206,
+    "y": 853,
+    "w": 257,
+    "h": 204
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 228,
+    "x": 226,
     "y": 156,
-    "w": 255,
-    "h": 191
+    "w": 257,
+    "h": 204
    },
    "sourceSize": {
     "w": 772,
@@ -434,18 +434,18 @@
   },
   "phalangite_walk_03": {
    "frame": {
-    "x": 306,
-    "y": 530,
+    "x": 706,
+    "y": 496,
     "w": 299,
-    "h": 231
+    "h": 233
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 205,
-    "y": 152,
+    "y": 150,
     "w": 299,
-    "h": 231
+    "h": 233
    },
    "sourceSize": {
     "w": 772,
@@ -458,18 +458,18 @@
   },
   "phalangite_walk_03_team": {
    "frame": {
-    "x": 260,
-    "y": 1851,
-    "w": 246,
-    "h": 197
+    "x": 3028,
+    "y": 215,
+    "w": 249,
+    "h": 208
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 229,
+    "x": 226,
     "y": 143,
-    "w": 246,
-    "h": 197
+    "w": 249,
+    "h": 208
    },
    "sourceSize": {
     "w": 772,
@@ -482,18 +482,18 @@
   },
   "phalangite_walk_04": {
    "frame": {
-    "x": 695,
-    "y": 993,
+    "x": 1882,
+    "y": 230,
     "w": 284,
-    "h": 219
+    "h": 221
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 207,
-    "y": 168,
+    "y": 166,
     "w": 284,
-    "h": 219
+    "h": 221
    },
    "sourceSize": {
     "w": 772,
@@ -506,18 +506,18 @@
   },
   "phalangite_walk_04_team": {
    "frame": {
-    "x": 1242,
-    "y": 1851,
-    "w": 230,
-    "h": 195
+    "x": 2701,
+    "y": 876,
+    "w": 232,
+    "h": 207
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 228,
+    "x": 226,
     "y": 159,
-    "w": 230,
-    "h": 195
+    "w": 232,
+    "h": 207
    },
    "sourceSize": {
     "w": 772,
@@ -530,18 +530,18 @@
   },
   "phalangite_walk_05": {
    "frame": {
-    "x": 1238,
-    "y": 1437,
+    "x": 2927,
+    "y": 643,
     "w": 300,
-    "h": 204
+    "h": 206
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 178,
+    "y": 176,
     "w": 300,
-    "h": 204
+    "h": 206
    },
    "sourceSize": {
     "w": 772,
@@ -554,10 +554,10 @@
   },
   "phalangite_walk_05_team": {
    "frame": {
-    "x": 906,
-    "y": 2248,
+    "x": 3819,
+    "y": 207,
     "w": 238,
-    "h": 186
+    "h": 199
    },
    "rotated": false,
    "trimmed": true,
@@ -565,7 +565,7 @@
     "x": 226,
     "y": 169,
     "w": 238,
-    "h": 186
+    "h": 199
    },
    "sourceSize": {
     "w": 772,
@@ -578,18 +578,18 @@
   },
   "phalangite_walk_06": {
    "frame": {
-    "x": 626,
-    "y": 1217,
+    "x": 2268,
+    "y": 2,
     "w": 304,
-    "h": 215
+    "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 197,
-    "y": 166,
+    "y": 164,
     "w": 304,
-    "h": 215
+    "h": 217
    },
    "sourceSize": {
     "w": 772,
@@ -602,18 +602,18 @@
   },
   "phalangite_walk_06_team": {
    "frame": {
-    "x": 790,
-    "y": 2052,
-    "w": 242,
-    "h": 191
+    "x": 2,
+    "y": 1097,
+    "w": 245,
+    "h": 205
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 229,
+    "x": 226,
     "y": 156,
-    "w": 242,
-    "h": 191
+    "w": 245,
+    "h": 205
    },
    "sourceSize": {
     "w": 772,
@@ -626,18 +626,18 @@
   },
   "phalangite_walk_07": {
    "frame": {
-    "x": 1283,
-    "y": 530,
+    "x": 913,
+    "y": 733,
     "w": 293,
-    "h": 226
+    "h": 228
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 202,
-    "y": 153,
+    "y": 151,
     "w": 293,
-    "h": 226
+    "h": 228
    },
    "sourceSize": {
     "w": 772,
@@ -650,18 +650,18 @@
   },
   "phalangite_walk_07_team": {
    "frame": {
-    "x": 510,
-    "y": 1851,
-    "w": 238,
-    "h": 197
+    "x": 3281,
+    "y": 213,
+    "w": 241,
+    "h": 206
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 229,
+    "x": 226,
     "y": 143,
-    "w": 238,
-    "h": 197
+    "w": 241,
+    "h": 206
    },
    "sourceSize": {
     "w": 772,
@@ -674,18 +674,18 @@
   },
   "phalangite_attack_00": {
    "frame": {
-    "x": 2,
-    "y": 993,
+    "x": 1526,
+    "y": 694,
     "w": 337,
-    "h": 220
+    "h": 223
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 179,
-    "y": 170,
+    "y": 167,
     "w": 337,
-    "h": 220
+    "h": 223
    },
    "sourceSize": {
     "w": 772,
@@ -698,10 +698,10 @@
   },
   "phalangite_attack_00_team": {
    "frame": {
-    "x": 268,
-    "y": 2052,
+    "x": 3794,
+    "y": 2,
     "w": 259,
-    "h": 192
+    "h": 201
    },
    "rotated": false,
    "trimmed": true,
@@ -709,7 +709,7 @@
     "x": 216,
     "y": 160,
     "w": 259,
-    "h": 192
+    "h": 201
    },
    "sourceSize": {
     "w": 772,
@@ -722,18 +722,18 @@
   },
   "phalangite_attack_01": {
    "frame": {
-    "x": 1580,
-    "y": 530,
+    "x": 1009,
+    "y": 477,
     "w": 343,
-    "h": 224
+    "h": 226
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 163,
+    "y": 161,
     "w": 343,
-    "h": 224
+    "h": 226
    },
    "sourceSize": {
     "w": 772,
@@ -746,18 +746,18 @@
   },
   "phalangite_attack_01_team": {
    "frame": {
-    "x": 1144,
-    "y": 1646,
-    "w": 255,
-    "h": 199
+    "x": 2576,
+    "y": 2,
+    "w": 259,
+    "h": 211
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 235,
+    "x": 231,
     "y": 153,
-    "w": 255,
-    "h": 199
+    "w": 259,
+    "h": 211
    },
    "sourceSize": {
     "w": 772,
@@ -770,18 +770,18 @@
   },
   "phalangite_attack_02": {
    "frame": {
-    "x": 343,
-    "y": 993,
+    "x": 1694,
+    "y": 460,
     "w": 348,
-    "h": 219
+    "h": 221
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 139,
-    "y": 171,
+    "y": 169,
     "w": 348,
-    "h": 219
+    "h": 221
    },
    "sourceSize": {
     "w": 772,
@@ -794,10 +794,10 @@
   },
   "phalangite_attack_02_team": {
    "frame": {
-    "x": 2,
-    "y": 2052,
+    "x": 3231,
+    "y": 637,
     "w": 262,
-    "h": 192
+    "h": 203
    },
    "rotated": false,
    "trimmed": true,
@@ -805,7 +805,7 @@
     "x": 186,
     "y": 161,
     "w": 262,
-    "h": 192
+    "h": 203
    },
    "sourceSize": {
     "w": 772,
@@ -818,18 +818,18 @@
   },
   "phalangite_attack_03": {
    "frame": {
-    "x": 513,
-    "y": 1646,
+    "x": 3323,
+    "y": 423,
     "w": 366,
-    "h": 200
+    "h": 202
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 107,
-    "y": 190,
+    "y": 188,
     "w": 366,
-    "h": 200
+    "h": 202
    },
    "sourceSize": {
     "w": 772,
@@ -842,18 +842,18 @@
   },
   "phalangite_attack_03_team": {
    "frame": {
-    "x": 2,
-    "y": 2440,
-    "w": 277,
-    "h": 180
+    "x": 3497,
+    "y": 629,
+    "w": 276,
+    "h": 190
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 153,
     "y": 180,
-    "w": 277,
-    "h": 180
+    "w": 276,
+    "h": 190
    },
    "sourceSize": {
     "w": 772,
@@ -866,18 +866,18 @@
   },
   "phalangite_attack_04": {
    "frame": {
-    "x": 1619,
-    "y": 765,
+    "x": 1215,
+    "y": 937,
     "w": 346,
-    "h": 221
+    "h": 223
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 199,
-    "y": 164,
+    "y": 162,
     "w": 346,
-    "h": 221
+    "h": 223
    },
    "sourceSize": {
     "w": 772,
@@ -890,18 +890,18 @@
   },
   "phalangite_attack_04_team": {
    "frame": {
-    "x": 2,
-    "y": 1217,
-    "w": 261,
-    "h": 216
+    "x": 1565,
+    "y": 921,
+    "w": 263,
+    "h": 220
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 239,
+    "x": 237,
     "y": 155,
-    "w": 261,
-    "h": 216
+    "w": 263,
+    "h": 220
    },
    "sourceSize": {
     "w": 772,
@@ -914,18 +914,18 @@
   },
   "phalangite_attack_05": {
    "frame": {
-    "x": 267,
-    "y": 1217,
+    "x": 2170,
+    "y": 226,
     "w": 355,
-    "h": 215
+    "h": 217
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 217,
-    "y": 173,
+    "y": 171,
     "w": 355,
-    "h": 215
+    "h": 217
    },
    "sourceSize": {
     "w": 772,
@@ -938,18 +938,18 @@
   },
   "phalangite_attack_05_team": {
    "frame": {
-    "x": 1568,
-    "y": 1217,
-    "w": 275,
-    "h": 209
+    "x": 2121,
+    "y": 677,
+    "w": 281,
+    "h": 215
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 251,
+    "x": 245,
     "y": 163,
-    "w": 275,
-    "h": 209
+    "w": 281,
+    "h": 215
    },
    "sourceSize": {
     "w": 772,
@@ -962,18 +962,18 @@
   },
   "phalangite_attack_06": {
    "frame": {
-    "x": 1148,
-    "y": 2248,
+    "x": 3601,
+    "y": 1038,
     "w": 432,
-    "h": 184
+    "h": 186
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 207,
-    "y": 208,
+    "y": 206,
     "w": 432,
-    "h": 184
+    "h": 186
    },
    "sourceSize": {
     "w": 772,
@@ -986,17 +986,17 @@
   },
   "phalangite_attack_06_team": {
    "frame": {
-    "x": 1584,
-    "y": 2248,
-    "w": 304,
+    "x": 3777,
+    "y": 803,
+    "w": 310,
     "h": 180
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 258,
+    "x": 252,
     "y": 199,
-    "w": 304,
+    "w": 310,
     "h": 180
    },
    "sourceSize": {
@@ -1010,18 +1010,18 @@
   },
   "phalangite_attack_07": {
    "frame": {
-    "x": 285,
-    "y": 2248,
+    "x": 3693,
+    "y": 417,
     "w": 366,
-    "h": 187
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 238,
-    "y": 205,
+    "y": 203,
     "w": 366,
-    "h": 187
+    "h": 189
    },
    "sourceSize": {
     "w": 772,
@@ -1034,17 +1034,17 @@
   },
   "phalangite_attack_07_team": {
    "frame": {
-    "x": 1036,
-    "y": 2052,
-    "w": 300,
+    "x": 3292,
+    "y": 1061,
+    "w": 305,
     "h": 190
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 262,
+    "x": 257,
     "y": 195,
-    "w": 300,
+    "w": 305,
     "h": 190
    },
    "sourceSize": {
@@ -1058,18 +1058,18 @@
   },
   "phalangite_attack_08": {
    "frame": {
-    "x": 2,
-    "y": 1437,
+    "x": 3100,
+    "y": 2,
     "w": 349,
-    "h": 205
+    "h": 207
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 212,
-    "y": 186,
+    "y": 184,
     "w": 349,
-    "h": 205
+    "h": 207
    },
    "sourceSize": {
     "w": 772,
@@ -1082,18 +1082,18 @@
   },
   "phalangite_attack_08_team": {
    "frame": {
-    "x": 2,
-    "y": 2248,
-    "w": 279,
-    "h": 188
+    "x": 3526,
+    "y": 211,
+    "w": 289,
+    "h": 202
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 244,
+    "x": 234,
     "y": 176,
-    "w": 279,
-    "h": 188
+    "w": 289,
+    "h": 202
    },
    "sourceSize": {
     "w": 772,
@@ -1106,18 +1106,18 @@
   },
   "phalangite_attack_09": {
    "frame": {
-    "x": 983,
-    "y": 993,
+    "x": 1930,
+    "y": 2,
     "w": 334,
-    "h": 218
+    "h": 220
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 194,
-    "y": 173,
+    "y": 171,
     "w": 334,
-    "h": 218
+    "h": 220
    },
    "sourceSize": {
     "w": 772,
@@ -1130,10 +1130,10 @@
   },
   "phalangite_attack_09_team": {
    "frame": {
-    "x": 1744,
-    "y": 1851,
+    "x": 2661,
+    "y": 664,
     "w": 262,
-    "h": 194
+    "h": 208
    },
    "rotated": false,
    "trimmed": true,
@@ -1141,7 +1141,7 @@
     "x": 231,
     "y": 163,
     "w": 262,
-    "h": 194
+    "h": 208
    },
    "sourceSize": {
     "w": 772,
@@ -1154,18 +1154,18 @@
   },
   "phalangite_attack_10": {
    "frame": {
-    "x": 318,
-    "y": 765,
+    "x": 1207,
+    "y": 235,
     "w": 329,
-    "h": 223
+    "h": 226
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 187,
-    "y": 167,
+    "y": 164,
     "w": 329,
-    "h": 223
+    "h": 226
    },
    "sourceSize": {
     "w": 772,
@@ -1178,10 +1178,10 @@
   },
   "phalangite_attack_10_team": {
    "frame": {
-    "x": 2,
-    "y": 1851,
+    "x": 2797,
+    "y": 431,
     "w": 254,
-    "h": 197
+    "h": 208
    },
    "rotated": false,
    "trimmed": true,
@@ -1189,7 +1189,7 @@
     "x": 222,
     "y": 157,
     "w": 254,
-    "h": 197
+    "h": 208
    },
    "sourceSize": {
     "w": 772,
@@ -1202,18 +1202,18 @@
   },
   "phalangite_hit_00": {
    "frame": {
-    "x": 602,
-    "y": 1437,
+    "x": 2701,
+    "y": 1087,
     "w": 325,
-    "h": 204
+    "h": 206
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 183,
-    "y": 191,
+    "y": 189,
     "w": 325,
-    "h": 204
+    "h": 206
    },
    "sourceSize": {
     "w": 772,
@@ -1226,10 +1226,10 @@
   },
   "phalangite_hit_00_team": {
    "frame": {
-    "x": 283,
-    "y": 2440,
+    "x": 3467,
+    "y": 844,
     "w": 299,
-    "h": 175
+    "h": 190
    },
    "rotated": false,
    "trimmed": true,
@@ -1237,7 +1237,7 @@
     "x": 181,
     "y": 181,
     "w": 299,
-    "h": 175
+    "h": 190
    },
    "sourceSize": {
     "w": 772,
@@ -1250,18 +1250,18 @@
   },
   "phalangite_hit_01": {
    "frame": {
-    "x": 931,
-    "y": 1437,
+    "x": 252,
+    "y": 1096,
     "w": 303,
-    "h": 204
+    "h": 206
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 187,
-    "y": 192,
+    "y": 190,
     "w": 303,
-    "h": 204
+    "h": 206
    },
    "sourceSize": {
     "w": 772,
@@ -1274,10 +1274,10 @@
   },
   "phalangite_hit_01_team": {
    "frame": {
-    "x": 883,
-    "y": 2440,
+    "x": 2135,
+    "y": 1114,
     "w": 280,
-    "h": 173
+    "h": 185
    },
    "rotated": false,
    "trimmed": true,
@@ -1285,7 +1285,7 @@
     "x": 183,
     "y": 183,
     "w": 280,
-    "h": 173
+    "h": 185
    },
    "sourceSize": {
     "w": 772,
@@ -1298,18 +1298,18 @@
   },
   "phalangite_hit_02": {
    "frame": {
-    "x": 2,
-    "y": 530,
+    "x": 911,
+    "y": 1041,
     "w": 300,
-    "h": 231
+    "h": 233
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 189,
-    "y": 163,
+    "y": 161,
     "w": 300,
-    "h": 231
+    "h": 233
    },
    "sourceSize": {
     "w": 772,
@@ -1322,10 +1322,10 @@
   },
   "phalangite_hit_02_team": {
    "frame": {
-    "x": 1675,
-    "y": 1646,
+    "x": 2839,
+    "y": 2,
     "w": 257,
-    "h": 198
+    "h": 209
    },
    "rotated": false,
    "trimmed": true,
@@ -1333,7 +1333,7 @@
     "x": 197,
     "y": 153,
     "w": 257,
-    "h": 198
+    "h": 209
    },
    "sourceSize": {
     "w": 772,
@@ -1346,18 +1346,18 @@
   },
   "phalangite_hit_03": {
    "frame": {
-    "x": 332,
-    "y": 291,
+    "x": 547,
+    "y": 255,
     "w": 324,
-    "h": 234
+    "h": 237
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 184,
-    "y": 157,
+    "y": 154,
     "w": 324,
-    "h": 234
+    "h": 237
    },
    "sourceSize": {
     "w": 772,
@@ -1370,10 +1370,10 @@
   },
   "phalangite_hit_03_team": {
    "frame": {
-    "x": 2,
-    "y": 1646,
+    "x": 2529,
+    "y": 223,
     "w": 252,
-    "h": 201
+    "h": 213
    },
    "rotated": false,
    "trimmed": true,
@@ -1381,7 +1381,7 @@
     "x": 217,
     "y": 147,
     "w": 252,
-    "h": 201
+    "h": 213
    },
    "sourceSize": {
     "w": 772,
@@ -1394,18 +1394,18 @@
   },
   "phalangite_hit_04": {
    "frame": {
-    "x": 1672,
-    "y": 291,
+    "x": 579,
+    "y": 1041,
     "w": 328,
-    "h": 231
+    "h": 233
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 184,
-    "y": 160,
+    "y": 158,
     "w": 328,
-    "h": 231
+    "h": 233
    },
    "sourceSize": {
     "w": 772,
@@ -1418,10 +1418,10 @@
   },
   "phalangite_hit_04_team": {
    "frame": {
-    "x": 1403,
-    "y": 1646,
+    "x": 2525,
+    "y": 447,
     "w": 268,
-    "h": 198
+    "h": 213
    },
    "rotated": false,
    "trimmed": true,
@@ -1429,7 +1429,7 @@
     "x": 211,
     "y": 150,
     "w": 268,
-    "h": 198
+    "h": 213
    },
    "sourceSize": {
     "w": 772,
@@ -1442,18 +1442,18 @@
   },
   "phalangite_die_00": {
    "frame": {
-    "x": 1542,
-    "y": 1437,
+    "x": 3453,
+    "y": 2,
     "w": 337,
-    "h": 203
+    "h": 205
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 188,
-    "y": 178,
+    "y": 176,
     "w": 337,
-    "h": 203
+    "h": 205
    },
    "sourceSize": {
     "w": 772,
@@ -1466,10 +1466,10 @@
   },
   "phalangite_die_00_team": {
    "frame": {
-    "x": 586,
-    "y": 2440,
+    "x": 3777,
+    "y": 610,
     "w": 293,
-    "h": 175
+    "h": 189
    },
    "rotated": false,
    "trimmed": true,
@@ -1477,7 +1477,7 @@
     "x": 194,
     "y": 168,
     "w": 293,
-    "h": 175
+    "h": 189
    },
    "sourceSize": {
     "w": 772,
@@ -1490,18 +1490,18 @@
   },
   "phalangite_die_01": {
    "frame": {
-    "x": 1467,
-    "y": 2,
+    "x": 252,
+    "y": 850,
     "w": 323,
-    "h": 240
+    "h": 242
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 184,
-    "y": 153,
+    "y": 151,
     "w": 323,
-    "h": 240
+    "h": 242
    },
    "sourceSize": {
     "w": 772,
@@ -1514,18 +1514,18 @@
   },
   "phalangite_die_01_team": {
    "frame": {
-    "x": 355,
-    "y": 1437,
-    "w": 243,
-    "h": 205
+    "x": 1867,
+    "y": 685,
+    "w": 250,
+    "h": 218
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
-    "x": 224,
+    "x": 217,
     "y": 143,
-    "w": 243,
-    "h": 205
+    "w": 250,
+    "h": 218
    },
    "sourceSize": {
     "w": 772,
@@ -1538,18 +1538,18 @@
   },
   "phalangite_die_02": {
    "frame": {
-    "x": 994,
-    "y": 291,
+    "x": 579,
+    "y": 802,
     "w": 330,
-    "h": 233
+    "h": 235
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 174,
-    "y": 152,
+    "y": 150,
     "w": 330,
-    "h": 233
+    "h": 235
    },
    "sourceSize": {
     "w": 772,
@@ -1562,8 +1562,8 @@
   },
   "phalangite_die_02_team": {
    "frame": {
-    "x": 1321,
-    "y": 993,
+    "x": 1832,
+    "y": 921,
     "w": 299,
     "h": 218
    },
@@ -1586,18 +1586,18 @@
   },
   "phalangite_die_03": {
    "frame": {
-    "x": 1328,
-    "y": 291,
+    "x": 298,
+    "y": 2,
     "w": 340,
-    "h": 232
+    "h": 249
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 159,
-    "y": 146,
+    "y": 144,
     "w": 340,
-    "h": 232
+    "h": 249
    },
    "sourceSize": {
     "w": 772,
@@ -1610,8 +1610,8 @@
   },
   "phalangite_die_03_team": {
    "frame": {
-    "x": 581,
-    "y": 2,
+    "x": 285,
+    "y": 291,
     "w": 258,
     "h": 265
    },
@@ -1634,10 +1634,10 @@
   },
   "phalangite_die_04": {
    "frame": {
-    "x": 298,
-    "y": 2,
+    "x": 2,
+    "y": 291,
     "w": 279,
-    "h": 271
+    "h": 282
    },
    "rotated": false,
    "trimmed": true,
@@ -1645,7 +1645,7 @@
     "x": 159,
     "y": 128,
     "w": 279,
-    "h": 271
+    "h": 282
    },
    "sourceSize": {
     "w": 772,
@@ -1658,9 +1658,9 @@
   },
   "phalangite_die_04_team": {
    "frame": {
-    "x": 1624,
-    "y": 993,
-    "w": 215,
+    "x": 2046,
+    "y": 455,
+    "w": 214,
     "h": 218
    },
    "rotated": false,
@@ -1668,7 +1668,7 @@
    "spriteSourceSize": {
     "x": 201,
     "y": 200,
-    "w": 215,
+    "w": 214,
     "h": 218
    },
    "sourceSize": {
@@ -1682,18 +1682,18 @@
   },
   "phalangite_die_05": {
    "frame": {
-    "x": 843,
-    "y": 2,
+    "x": 2,
+    "y": 577,
     "w": 370,
-    "h": 251
+    "h": 269
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 137,
-    "y": 137,
+    "y": 135,
     "w": 370,
-    "h": 251
+    "h": 269
    },
    "sourceSize": {
     "w": 772,
@@ -1730,18 +1730,18 @@
   },
   "phalangite_die_06": {
    "frame": {
-    "x": 934,
-    "y": 1217,
+    "x": 1318,
+    "y": 2,
     "w": 320,
-    "h": 214
+    "h": 226
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 147,
-    "y": 182,
+    "y": 180,
     "w": 320,
-    "h": 214
+    "h": 226
    },
    "sourceSize": {
     "w": 772,
@@ -1754,8 +1754,8 @@
   },
   "phalangite_die_06_team": {
    "frame": {
-    "x": 1217,
-    "y": 2,
+    "x": 2,
+    "y": 850,
     "w": 246,
     "h": 243
    },
@@ -1778,10 +1778,10 @@
   },
   "phalangite_die_07": {
    "frame": {
-    "x": 1167,
-    "y": 2440,
+    "x": 1215,
+    "y": 1164,
     "w": 314,
-    "h": 107
+    "h": 115
    },
    "rotated": false,
    "trimmed": true,
@@ -1789,7 +1789,7 @@
     "x": 148,
     "y": 287,
     "w": 314,
-    "h": 107
+    "h": 115
    },
    "sourceSize": {
     "w": 772,
@@ -1802,18 +1802,18 @@
   },
   "phalangite_die_07_team": {
    "frame": {
-    "x": 1485,
-    "y": 2440,
-    "w": 241,
-    "h": 100
+    "x": 1533,
+    "y": 1164,
+    "w": 240,
+    "h": 103
    },
    "rotated": false,
    "trimmed": true,
    "spriteSourceSize": {
     "x": 196,
-    "y": 310,
-    "w": 241,
-    "h": 100
+    "y": 307,
+    "w": 240,
+    "h": 103
    },
    "sourceSize": {
     "w": 772,
@@ -1933,8 +1933,8 @@
   "image": "phalangite.hd.png",
   "format": "RGBA8888",
   "size": {
-   "w": 2048,
-   "h": 2624
+   "w": 4096,
+   "h": 1304
   },
   "scale": "3",
   "ageborn": {

@@ -23,8 +23,11 @@ Animation (cartoon kit v2):
 """
 import math
 
+from ageborn_art import colors as CL
 from ageborn_art import face as F
 from ageborn_art import kit_bronze as K
+from ageborn_art import kit_bronze_detail as KD
+from ageborn_art import look
 from ageborn_art import moves as M
 from ageborn_art import rigs_bronze as B
 from ageborn_art.anim import merge
@@ -42,6 +45,40 @@ NO_RETIME = True
 MOUTH = (13.0, 0.0, 44.4)          # head space, the pipes start at the lips
 PIPE_W = -58.0                      # pipe direction (degrees, side plane) at rest
 PIPE_L = 21.0
+REED = "#C9B48E"                    # the pipes' reed
+CHEEK = "#E6B496"                   # the puffed cheeks
+
+# the detail standard (art round W1, ageborn_art/look.py, kit_bronze_detail.py): the lifts and the model detail
+# of audit 5.1 / 5.2. The team chiton and skirt in two tones (a team-dark clavus down the chest, a team-dark band
+# behind the key border's pale dots), a belt buckle, and the piper's sybene: a team-dyed pipe case with a dark
+# flap and an aged bronze toggle hanging at the near hip on a follow-through joint (it swings a frame late).
+DETAIL_STANDARD = True
+LOOK_SHADE = {"shadow": 0.84, "core": 0.18, "core_width": 0.30, "gradient": 2.0, "cavity": 0.6, "rim_mix": 0.5,
+              "top": 0.08, "top_t": 0.62, "team_core": 0.4}
+_FAR = lambda c: CL.scale(c, B.V3_FAR)        # noqa: E731 (sandal_legs_v3 darkens the far leg)
+MATERIAL_KINDS = {B.SKIN: "skin", _FAR(B.SKIN): "skin", CHEEK: "skin", B.HAIR: "fur", B.LEATHER: "leather",
+                  _FAR(B.LEATHER): "leather", B.LEATHER_DK: "leather", _FAR(B.LEATHER_DK): "leather",
+                  B.SAND_LT: "cloth", B.VERD_DK: "cloth", B.VERD: "bronze", B.BRONZE: "bronze", B.AGED: "bronze",
+                  REED: "wood", "team": "cloth"}
+CHITON = ((0.3, 0, 28.0), (10.2, 9.4, 11.4))
+CHITON_KW = {"p": 2.4, "taper": (1.1, 0.92)}
+SKIRT = ((0.6, 0, 14.0), (12.0, 11.0, 5.4))
+SKIRT_KW = {"p": 2.4, "taper": (1.25, 0.94)}
+
+
+def _sybene(rig):
+    """The piper's sybene: a team-dyed leather pipe case hanging from the belt at the near hip, a dark flap with
+    an aged bronze toggle, on a follow-through joint."""
+    rig.secondary("sybene", "hips", (-6.0, -11.0, 20.0), (-6.4, -11.4, 9.0), max_deg=12, gain=1.1)
+    rig.rest_offset["sybene"] = (0, 0, B.V3_LIFT)           # with the torso's lift; its bottom 10.8 lu up
+    g = Geo().blob((-6.4, -11.6, 14.4), (2.6, 1.6, 5.6), p=2.4, taper=(1.15, 0.85))
+    look.team_part(rig, "sybene", g)            # team-dyed leather (team-dark: it keeps the skirt's team area)
+    g = Geo().blob((-6.1, -12.6, 18.4), (2.9, 1.2, 2.0), p=2.6)
+    rig.part("sybene", g, B.LEATHER_DK, outline=0.5)
+    g = Geo().blob((-6.2, -13.6, 17.0), (1.0, 0.6, 1.0), p=2.2)
+    rig.part("sybene", g, B.AGED, finish="metal", outline=0.4)
+    g = Geo().capsule((-6.0, -12.2, 20.4), (-5.6, -11.2, 21.8), 0.7)
+    rig.part("sybene", g, B.LEATHER_DK, outline=0.4)
 
 
 def _pipe(rig, joint, y, ang, length=PIPE_L):
@@ -49,7 +86,7 @@ def _pipe(rig, joint, y, ang, length=PIPE_L):
     a = math.radians(ang)
     ex, ez = mx + length * math.cos(a), mz + length * math.sin(a)
     g = Geo().capsule((mx + 0.5, y, mz), (ex, y, ez), 0.95, 1.1)
-    rig.part(joint, g, "#C9B48E", outline=0.5)
+    rig.part(joint, g, REED, outline=0.5)
     g = Geo()
     for t in (0.3, 0.62):
         p = (mx + length * t * math.cos(a), y, mz + length * t * math.sin(a))
@@ -69,12 +106,16 @@ def build(rig):
     B.sandal_legs_v3(rig, greaves=False, wraps="team")
     # team chiton, shortened to the knee for walk v3 (the hem 11 lu above the soles, ANIM_SPEC G2), with a
     # sandstone key border and a verdigris belt; the skirt kicks with the knees (follow-through)
-    g = Geo().blob((0.3, 0, 28.0), (10.2, 9.4, 11.4), p=2.4, taper=(1.1, 0.92))
+    g = Geo().blob(*CHITON, **CHITON_KW)
     rig.part("torso", g, team=True)
+    g = KD.stripe_x(*CHITON, 2.2, 5.4, z0=21.0, z1=39.0, **CHITON_KW)   # a team-dark clavus (3.2 lu)
+    look.team_part(rig, "torso", g, outline=0)
     rig.secondary("hem", "hips", (0.5, 0, 16.5), (0.5, 0, 8.0), max_deg=14, gain=1.1)
     rig.rest_offset["hem"] = (0, 0, B.V3_LIFT)
-    g = Geo().blob((0.6, 0, 14.0), (12.0, 11.0, 5.4), p=2.4, taper=(1.25, 0.94))
+    g = Geo().blob(*SKIRT, **SKIRT_KW)
     rig.part("hem", g, team=True)
+    g = KD.band_z(*SKIRT, 10.6, 13.6, **SKIRT_KW)        # a team-dark band (3 lu) behind the key border's dots
+    look.team_part(rig, "hem", g, outline=0)
     g = Geo().blob((0.6, 0, 9.6), (12.8, 11.8, 1.4), p=3.0)
     rig.part("hem", g, B.SAND_LT, outline=0.6)
     g = Geo()
@@ -84,6 +125,9 @@ def build(rig):
     rig.part("hem", g, B.SAND_LT, outline=0.4)
     g = Geo().blob((0.4, 0, 20.6), (11.0, 10.1, 1.8), p=3.2)
     rig.part("torso", g, B.VERD_DK)
+    g = Geo().blob((5.0, -10.2, 20.6), (1.6, 0.9, 1.9), p=2.4)          # an aged bronze belt buckle
+    rig.part("torso", g, B.AGED, finish="metal", outline=0.4)
+    _sybene(rig)
 
     B.face_kit(rig, cx=13.4, cz=50.0, eye_r=(3.8, 3.4, 4.5), brow_tilt=-1.0, mouth_z=43.6)
     K.curly_hair(rig, z=-1.5)
@@ -108,6 +152,17 @@ def build(rig):
     b1 = _pipe(rig, "pipes", -3.2, PIPE_W - 6.0)
     _pipe(rig, "pipes", 2.6, PIPE_W + 8.0)
     rig.track("muzzle", "pipes", b1)
+    if getattr(rig, "skin", None) is None:     # a skin uses its unit's damage entry (COMMON C1)
+        _damage_spots(rig)
+
+
+def _damage_spots(rig):
+    """Damage spots (queue item 40 section 3.3, Bronze soldier; never on the face or skin): the team chiton
+    behind the arms, the team skirt, the team pipe case; a strip torn from the skirt's hem."""
+    rig.damage_spot_at("chiton", "torso", -5.0, 29.0, 7.0, "cloth", team=True)
+    rig.damage_spot_at("skirt", "hem", 2.0, 16.5, 6.0, "cloth", team=True)
+    rig.damage_spot_at("sybene", "sybene", -8.0, 11.0, 5.0, "hide", team=True)
+    rig.damage_spot_at("hem", "hem", -8.0, 15.0, 9.0, "cloth", kind="strip", team=True)
 
 
 # -- poses ---------------------------------------------------------------------------------
