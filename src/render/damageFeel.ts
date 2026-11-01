@@ -175,14 +175,22 @@ export class DamageFeel {
   }
 
   /**
-   * Spawns the emitters' particles for this frame: on at most `emitUnits` damaged units on screen (the biggest first,
-   * then the nearest to the screen's middle), each at its rate on game time; Graphics Lite at half rate, Reduce motion
-   * with half the smoke and no sparks.
+   * The frame's game time, before the frame's poses: the steps they raise check the fast-forward guard against this
+   * frame (design 6: a frame of more than `ffGuardMs` of game time skips bursts) and the rate limit runs on its clock.
    */
-  update(gameDt: number, units: Iterable<DamageUnit>): void {
+  beginFrame(gameDt: number): void {
     this.lastDt = gameDt;
+    if (gameDt > 0) this.clock += gameDt;
+  }
+
+  /**
+   * Spawns the emitters' particles for this frame (after `beginFrame`): on at most `emitUnits` damaged units on screen
+   * (the biggest first, then the nearest to the screen's middle), each at its rate on game time; Graphics Lite at half
+   * rate, Reduce motion with half the smoke and no sparks.
+   */
+  update(units: Iterable<DamageUnit>): void {
+    const gameDt = this.lastDt;
     if (gameDt <= 0) return;
-    this.clock += gameDt;
     const t = this.host.tuning();
     const lite = this.host.lite();
     const reduce = this.host.reduce();

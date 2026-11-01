@@ -49,8 +49,9 @@ export const MAX_STRIPS = 1;
  * most, soldiers and beasts a little. No lilac or blue (the frozen tint), no red.
  */
 const TINT: Readonly<Record<DamageFamily, readonly [number, number, number, number]>> = {
-  soldier: [0xffffff, 0xf4f4f4, 0xe8e8e8, 0xdadada],
-  armoured: [0xffffff, 0xf2f2f2, 0xe4e4e4, 0xd4d4d4],
+  // foot troops' last stage a little darker (A-S2: their stage has no smoke or fire to carry it)
+  soldier: [0xffffff, 0xf4f4f4, 0xe8e8e8, 0xcdcdcd],
+  armoured: [0xffffff, 0xf2f2f2, 0xe4e4e4, 0xc8c8c8],
   rider: [0xffffff, 0xf3f3f3, 0xe6e6e6, 0xd8d8d8],
   beast: [0xffffff, 0xf6f6f6, 0xececec, 0xe0e0e0],
   vehicle: [0xffffff, 0xeeeeee, 0xd8d8d8, 0xbcbcbc],
@@ -63,10 +64,29 @@ export function stageTint(family: DamageFamily, stage: DamageStage): number {
   return TINT[family]?.[stage] ?? 0xffffff;
 }
 
-/** Families whose bodies are machines: smoke, sparks and fire, an engine sputter, the whump of a fire catching. */
+/** Families whose bodies are machines: smoke, sparks, an engine sputter. */
 export function isMachine(family: DamageFamily): boolean {
   return family === 'vehicle' || family === 'flyer' || family === 'mech';
 }
+
+/**
+ * Families that catch fire at their last stage (design 3.3): vehicles only, with small pale flames on the hull and the
+ * whump of the fire catching. Mechs shower sparks and flyers trail smoke instead; neither burns.
+ */
+export function burns(family: DamageFamily): boolean {
+  return family === 'vehicle';
+}
+
+/**
+ * Families with small bodies (foot troops): their marks are drawn bigger, the first boldest on their biggest team
+ * surface, and their strip hangs longer, so their stage reads at a glance at phone scale (W0 art review A-S2).
+ */
+export function smallBody(family: DamageFamily): boolean {
+  return family === 'soldier' || family === 'armoured';
+}
+
+/** How much longer a small body's strip hangs (A-S2). */
+export const STRIP_SMALL_SCALE = 1.35;
 
 /** Families that tire at stage 3 (weary motion): soldiers, armoured troops, riders and beasts. */
 export function tires(family: DamageFamily): boolean {

@@ -7,6 +7,7 @@
  * Kit part ids are `dmg.<mat>.<mark><n>` (`kit.ts`), e.g. `dmg.metal.dent1`.
  */
 import { mulberry32 } from '@/core/rng';
+import { smallBody } from './stage';
 import type { BlowKind, DamageFamily, DamageSpot, DamageStage, MarkMat } from './types';
 import { MARK_MATS } from './types';
 
@@ -72,6 +73,11 @@ export function chooseMark(mat: MarkMat, stage: DamageStage, kind: BlowKind | nu
   if (kind && kit[KEYED[mat][kind]]) mk = KEYED[mat][kind];
   const plateAt = family === 'vehicle' || family === 'mech' ? 2 : family === 'armoured' ? 3 : 4;
   if (mat === 'metal' && s >= plateAt && (kind === null || kind === 'blunt' || kind === 'blast' || s === 3)) mk = 'plate';
+  // a foot soldier's pelt or tunic is clothing, not a coat: it tears where a beast's would only scuff, and a dark-cored
+  // tear reads on a small body at phone scale where pale scuffs, dust and soft soot wash out (W0 art review A-S2); a
+  // blast or a laser still scorches
+  const scorch = kind === 'blast' || kind === 'laser';
+  if (smallBody(family) && (mat === 'cloth' || mat === 'hide') && (mk === 'scuff' || mk === 'dust' || (mk === 'soot' && !scorch))) mk = 'tear';
   const n = kit[mk] ?? 1;
   const variant = 1 + ((variantSeed >>> 0) % Math.max(1, n));
   return { part: `dmg.${mat}.${mk}${variant}`, kind: mk, big: effective };
@@ -89,7 +95,13 @@ export interface MarkSlot {
   dx: number;
   dy: number;
   turn: number;
+  /** How much bigger than the standard the mark is drawn (`markSizeLu`): 1, or a small body's 1.2 and its bold 1.45. */
+  scale: number;
 }
+
+/** A small body's marks (soldiers, armoured troops) are drawn bigger, its first, on its biggest team surface, boldest. */
+export const SMALL_MARK_SCALE = 1.2;
+export const BOLD_MARK_SCALE = 1.45;
 
 /** How many marks a spot of radius `r` holds (a 6-9 lu mark kept within about 70% of r). */
 export function spotCapacity(r: number): number {
@@ -105,9 +117,10 @@ export function markMat(s: DamageSpot): MarkMat | null {
 /**
  * The order a unit's marks fill its spots: every spot's middle first in a seeded order, then the second patches of
  * big spots, then the third. The largest surface (shield face, tunic, hull side) is always among the first two, so a
- * stage-2 unit shows a mark on its biggest camera-facing part (design 3.6).
+ * stage-2 unit shows a mark on its biggest camera-facing part (design 3.6). A small body (`small`: foot troops) takes
+ * its first mark on its biggest team surface, drawn boldest, and its other marks bigger (W0 art review A-S2).
  */
-export function markSlots(spots: readonly DamageSpot[] | undefined, seed: number): MarkSlot[] {
+export function markSlots(spots: readonly DamageSpot[] | undefined, seed: number, small = false): MarkSlot[] {
   const marks = (spots ?? []).filter((s) => markMat(s) !== null);
   if (marks.length === 0) return [];
   const r = mulberry32((seed ^ 0x6d2b79f5) >>> 0 || 1);
@@ -121,12 +134,23 @@ export function markSlots(spots: readonly DamageSpot[] | undefined, seed: number
   }
   let big = 0;
   for (let i = 1; i < order.length; i++) if ((order[i]?.r ?? 0) > (order[big]?.r ?? 0)) big = i;
-  if (big > 1) {
+  if (small) {
+    // the first mark on the biggest team surface (the colour that names the side), else the biggest surface
+    let team = -1;
+    for (let i = 0; i < order.length; i++) if (order[i]?.team === true && (team < 0 || (order[i]?.r ?? 0) > (order[team]?.r ?? 0))) team = i;
+    const first = team >= 0 ? team : big;
+    if (first > 0) {
+      const t = order[0] as DamageSpot;
+      order[0] = order[first] as DamageSpot;
+      order[first] = t;
+    }
+  } else if (big > 1) {
     const at = r.int(2);
     const t = order[at] as DamageSpot;
     order[at] = order[big] as DamageSpot;
     order[big] = t;
   }
+  const bold = small ? order[0] : undefined;
   const out: MarkSlot[] = [];
   for (let pass = 0; pass < 3; pass++) {
     for (const s of order) {
@@ -142,16 +166,21 @@ export function markSlots(spots: readonly DamageSpot[] | undefined, seed: number
         dx: Math.cos(a) * off,
         dy: Math.sin(a) * off,
         turn: Math.round((r.next() - 0.5) * 60),
+        scale: small ? (pass === 0 && s === bold ? BOLD_MARK_SCALE : SMALL_MARK_SCALE) : 1,
       });
     }
   }
   return out;
 }
 
-/** The size a mark is drawn at on its spot (lu across): 6-9 lu, never past about 70% of the patch, bigger when big. */
-export function markSizeLu(r: number, big: boolean): number {
+/**
+ * The size a mark is drawn at on its spot (lu across): 6-9 lu, never past about 70% of the patch, bigger when big; a
+ * small body's (`scale` > 1) bigger still, within about 85% of the patch so it stays on its surface.
+ */
+export function markSizeLu(r: number, big: boolean, scale = 1): number {
   const fit = Math.max(6, Math.min(9, 1.3 * r));
-  return Math.min(fit * (big ? 1.18 : 1), Math.max(6, 1.4 * r) * (big ? 1.1 : 1));
+  const base = Math.min(fit * (big ? 1.18 : 1), Math.max(6, 1.4 * r) * (big ? 1.1 : 1));
+  return scale === 1 ? base : Math.min(base * scale, Math.max(base, 1.75 * r));
 }
 
 /** The strip a step hangs from a strip spot: cloth and hide hang a torn strip, metal a cable, wood a rope. */

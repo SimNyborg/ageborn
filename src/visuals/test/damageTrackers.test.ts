@@ -4,7 +4,7 @@
  * the battle view (`contactRevision`) when they arrive after a reach was taken.
  */
 import { Rectangle, Texture } from 'pixi.js';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { UnitPose, UnitView, VisualDef } from '@/contracts/art';
 import { AtlasAdapter, type AtlasData } from '../adapters/atlas';
 import type { Reach } from '../adapters/atlasCombat';
@@ -149,5 +149,80 @@ describe("the atlas view's reach with trackers (item 38 B0)", () => {
     v.setPose(pose);
     expect(v.contactRevision).not.toBe(rev);
     expect(v.reach()?.torsoFrontLu).toBe(15);
+  });
+});
+
+/** Two cloth spots that move 6 lu between the two idle frames. */
+const SPOTTED: DamageUnitData = {
+  family: 'soldier',
+  spots: [
+    { id: 'chest', kind: 'mark', mat: 'cloth', r: 8 },
+    { id: 'back', kind: 'mark', mat: 'cloth', r: 8 },
+  ],
+  clips: {
+    idle: {
+      chest: [
+        [0, 30, 0, 100, 100],
+        [6, 30, 0, 100, 100],
+      ],
+      back: [
+        [-6, 26, 0, 100, 100],
+        [0, 26, 0, 100, 100],
+      ],
+    },
+  },
+} as DamageUnitData;
+
+/** The view's mark nodes (item 40), read through its damage runtime. */
+const markXs = (v: UnitView): number[] =>
+  (v as unknown as { dmg: { marks: { root: { visible: boolean; x: number } }[] } }).dmg.marks.filter((m) => m.root.visible).map((m) => m.root.x);
+
+describe('who loads the damage bundles (W0 review S2)', () => {
+  it('a unit view does not: menus never fetch one, the battle view asks for its ages through the provider', () => {
+    damageBundles.clear();
+    const spy = vi.spyOn(damageBundles, 'request');
+    view();
+    expect(spy).not.toHaveBeenCalled();
+    spy.mockRestore();
+  });
+});
+
+describe('the marks on the atlas view (item 40)', () => {
+  it('an unhurt unit lays nothing out (no mark nodes)', () => {
+    damageBundles.clear();
+    damageBundles.add('stone', { v: 1, units: { bonker: SPOTTED } });
+    const v = view();
+    v.setPose(pose);
+    for (let i = 0; i < 12; i++) v.update(100);
+    expect(markXs(v)).toEqual([]);
+  });
+
+  it('follow the frame on screen, wait while the battle view has the unit culled, and catch up once it is shown', () => {
+    damageBundles.clear();
+    damageBundles.add('stone', { v: 1, units: { bonker: SPOTTED } });
+    const v = view();
+    const twin = view();
+    for (const u of [v, twin]) {
+      u.setPose({ ...pose, hpBp: 2000 });
+      u.update(16);
+    }
+    const shown = markXs(v);
+    expect(shown.length).toBeGreaterThan(0);
+    expect(markXs(twin)).toEqual(shown);
+    // culled (the battle view hides units far outside the view): the idle turns to its other frame, the marks wait;
+    // the twin, on screen, shows that the frame did turn
+    v.root.visible = false;
+    for (let i = 0; i < 8; i++) {
+      v.update(100);
+      twin.update(100);
+    }
+    expect(markXs(twin)).not.toEqual(shown);
+    expect(markXs(v)).toEqual(shown);
+    // shown again: laid out on the frame on screen (6 lu over)
+    v.root.visible = true;
+    v.update(16);
+    const now = markXs(v);
+    expect(now).toHaveLength(shown.length);
+    expect(now).not.toEqual(shown);
   });
 });

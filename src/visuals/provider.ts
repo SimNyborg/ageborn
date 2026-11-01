@@ -16,6 +16,7 @@ import { BASE_SKINS } from './cosmetics/baseSkins';
 import { spriteStripArt, stripInfoUrl, stripRequest, type StripSource } from './adapters/spriteStrip';
 import { forgetPortraitStills, portraitStillBase } from './adapters/atlasPortrait';
 import { AtlasFortView } from './fortViews/atlasFortView';
+import { damageBundles } from './damage/bundle';
 import { fortSource, type FortKindId } from './forts';
 import type { BakeStats } from './bake';
 import { PlaceholderAdapter } from './adapters/placeholder';
@@ -997,6 +998,17 @@ export class VisualsArtProvider implements ArtProvider {
       () => undefined,
       () => undefined,
     );
+  }
+
+  /**
+   * Queue item 40 / item 38 B0 (duck-typed for the battle view): an age's damage bundle (spots and the tracked torso
+   * and head), loaded once per page; null when it is in already, else a promise that settles once it has loaded or
+   * failed (a missing bundle is the effects-only fallback). Battles ask for their ages up front, so the staging and the
+   * marks never change when a fetch lands mid-fight (W0 review S2); menus never ask.
+   */
+  damageBundleReady(age: AgeId): Promise<void> | null {
+    if (damageBundles.loaded(age)) return null;
+    return damageBundles.request(age);
   }
 
   /**

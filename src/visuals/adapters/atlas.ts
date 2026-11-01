@@ -47,7 +47,6 @@ import { aimedBulge, classicBulge } from '../effects/flight';
 import { leanPolicyOf, unitAimFor, type ClipAim, type LeanPolicy, type UnitAim } from '../unitAim';
 import { aimedBaseOf, aimedNamesOf, aimLevelOf, clipAimOf, pickAimedClip, type AimCandidate, type ClipRelease } from './atlasAim';
 import { aimLeanGoal, angleThroughBody, clampLean, LEAN_REDUCED_SHARE, stepLeanSpring, throughBody, type BodyXform, type LeanTiming, type SpringState } from './atlasAim';
-import { damageBundles } from '../damage/bundle';
 import { damageSlug } from '../damage/families';
 import type { BlowKind, DamageEmitter, DamageStepEvent } from '../damage/types';
 import { UnitDamage } from '../damage/unitDamage';
@@ -1614,10 +1613,9 @@ class AtlasUnitView implements UnitView {
     this.ghostBase = new Sprite(Texture.EMPTY);
     this.ghostBase.visible = false;
     this.body.addChild(this.teamSprite, this.baseSprite, this.ghostTeam, this.ghostBase, this.flashSprite);
-    // item 40: the damage marks go right after the base frame (the ghost and the flash cover them); the age's bundle loads once
+    // item 40: the damage marks go right after the base frame (the ghost and the flash cover them); the battle view asks
+    // for its ages' bundles (the provider's `damageBundleReady`), so a menu view never fetches one
     this.dmg = new UnitDamage({ body: this.body, after: this.baseSprite, baker: decor, slug: damageSlug(def.source), heightLu: def.heightLu, anchors: def.anchors, team, seed: o.seed ?? 1, air: hovers(this.gait) });
-    const dmgAge = unitSheetAge(def.source);
-    if (dmgAge) void damageBundles.request(dmgAge);
     const hk = sheet.heightLu && def.heightLu > 0 ? def.heightLu / sheet.heightLu : 1;
     this.k = sheet.luPerUnit * (Math.abs(hk - 1) > 0.02 ? hk : 1);
     this.hk = this.k / (sheet.luPerUnit || 1);
@@ -2503,7 +2501,7 @@ class AtlasUnitView implements UnitView {
     let sx = 1;
     let sy = 1;
     // item 40: weary motion at the last stage (presentation only: the idle's rate, dips, a judder, a pitch, a flicker)
-    const weary = this.dmg.update(this.frozenPose ? 0 : animDt, { moving: this.isMoving() });
+    const weary = this.dmg.update(this.frozenPose ? 0 : animDt, this.isMoving());
     if (animDt > 0 && !this.frozenPose) {
       if (this.base) this.base.t += animDt * (this.base.name === 'walk' ? this.walkDir : this.base.name === 'idle' ? weary.idleRate : 1);
       if (this.action) {

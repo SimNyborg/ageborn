@@ -311,7 +311,7 @@ export class ProceduralUnitView implements UnitView {
     if (!this.frozenPose) this.animator.update(dtMs);
     this.rig.apply((b) => this.animator.sample().get(b));
     // queue item 40: weary motion at the last stage (a tired dip, a machine's judder, an energy body's flicker)
-    const weary = this.dmg.update(this.frozenPose ? 0 : dtMs, { moving: this.animator.state.base === 'walk' });
+    const weary = this.dmg.update(this.frozenPose ? 0 : dtMs, this.animator.state.base === 'walk');
     const wx = this.dead ? 0 : weary.shiftLu;
     const wy = this.dead ? 0 : weary.dipLu;
     // local hitstop jitter (A12: 1-2 px)

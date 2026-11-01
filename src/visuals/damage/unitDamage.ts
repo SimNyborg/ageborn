@@ -10,18 +10,18 @@
  * Without spot data (no bundle yet, or none for this unit) the unit shows the effects-only fallback: tint, emitters and
  * bursts at points of its torso box and head (bundle trackers), or of its static anchors.
  */
-import { Container, Sprite, Texture } from 'pixi.js';
+import { Sprite, Texture, type Container } from 'pixi.js';
 import type { Anchors } from '@/contracts/art';
 import type { PartBaker } from '../bake';
 import { FX_ZONES } from '../effects/sprites';
 import { getPart } from '../parts/registry';
 import { damageBundles, frameOf, type DamageBundles } from './bundle';
-import { emittersFor, type EmitterSpec } from './emitters';
+import { emitterPoint, emittersFor, torsoPoint, type EmitterSpec } from './emitters';
 import { fallbackFamily, woodenBody } from './families';
 import { markSizeLu } from './marks';
 import { DamageModel, defaultMat, MARK_FADE_IN_MS, MARK_POP_MS, MEND_FADE_MS, type DamageStep, type PlacedMark } from './model';
 import { WearyClock, type WearyPose } from './motion';
-import { LITE_MAX_MARKS, mixRgb, stageTint, STRIP_DULL, STRIP_DUST } from './stage';
+import { LITE_MAX_MARKS, mixRgb, smallBody, stageTint, STRIP_DULL, STRIP_DUST, STRIP_SMALL_SCALE } from './stage';
 import { DAMAGE_STRIP_PARTS } from './kit';
 import { markParts } from './marks';
 import type { BlowKind, DamageEmitter, DamageFamily, DamageStage, DamageStepEvent, DamageUnitData, EmitKind, SpotFrame } from './types';
@@ -35,14 +35,15 @@ export interface DamageXform {
   sy: number;
 }
 
-/** A kit part drawn about its own origin. */
+/**
+ * A kit part drawn about its own origin: one sprite anchored at the part's origin (one display object per mark, not a
+ * container and a sprite: a brawl's marks are many).
+ */
 class PartNode {
-  readonly root = new Container();
-  private readonly s = new Sprite(Texture.EMPTY);
+  readonly root = new Sprite(Texture.EMPTY);
   private id = '';
 
   constructor(private readonly baker: PartBaker) {
-    this.root.addChild(this.s);
     this.root.visible = false;
   }
 
@@ -51,17 +52,20 @@ class PartNode {
     this.id = id;
     const p = getPart(id);
     if (!p) {
-      this.s.texture = Texture.EMPTY;
+      this.root.texture = Texture.EMPTY;
       return;
     }
     const b = this.baker.get(p, FX_ZONES);
-    this.s.texture = b.main;
-    this.s.position.set(b.origin.x, b.origin.y);
+    this.root.texture = b.main;
+    // the baked frame sits at `origin` from the part's origin: that point is the anchor (rotation and scale turn about it)
+    const w = b.main.width || 1;
+    const h = b.main.height || 1;
+    this.root.anchor.set(-b.origin.x / w, -b.origin.y / h);
     this.baker.flush();
   }
 
   set tint(c: number) {
-    this.s.tint = c;
+    this.root.tint = c;
   }
 }
 
@@ -94,15 +98,6 @@ export function warmDamageKit(baker: PartBaker): void {
   whenIdle(step);
 }
 
-/** Where an emitter's fallback point sits on a torso box `[x0, y0, x1, y1]` (lu, x forward, y up). */
-function torsoPoint(at: 'torsoBack' | 'torsoTop' | 'torsoMid', t: readonly [number, number, number, number]): [number, number] {
-  const [x0, y0, x1, y1] = t;
-  const w = x1 - x0;
-  const h = y1 - y0;
-  if (at === 'torsoBack') return [x0 + 0.22 * w, y1 - 0.12 * h];
-  if (at === 'torsoTop') return [x0 + 0.55 * w, y1 - 0.08 * h];
-  return [x0 + 0.5 * w, y0 + 0.55 * h];
-}
 
 export interface UnitDamageOptions {
   /** The view's body container and the sprite the marks go right after (the base frame); null: no marks (puppets). */
@@ -150,6 +145,9 @@ export class UnitDamage {
   private specs: EmitterSpec[] = [];
   private specsStage: DamageStage = 0;
   private readonly out: DamageEmitter[] = [];
+  private readonly emitPool: DamageEmitter[] = [];
+  private readonly pt: [number, number] = [0, 0];
+  private readonly wearyOpts = { moving: false, reduce: false };
   private stripSway = 0;
   private seed: number;
 
@@ -211,8 +209,14 @@ export class UnitDamage {
     if (this.dead) return;
     // most frames: the same HP and no new bundle (the view calls this every frame)
     if (hpBp === this.lastHp && this.bundleVersion === this.bundles.version) return;
+    const first = Number.isNaN(this.lastHp);
     this.lastHp = hpBp;
     this.refreshEntry();
+    // a view first drawn already hurt (made mid-fight) starts at its stage silently: it was not just hit
+    if (first) {
+      this.model.settle(hpBp, this.clock);
+      return;
+    }
     const step = this.model.update(hpBp, this.clock);
     if (step) this.report(step);
   }
@@ -234,10 +238,14 @@ export class UnitDamage {
   }
 
   /** Advances the clocks (game ms) and returns the motion to add this frame. */
-  update(dtMs: number, o: { moving: boolean }): Readonly<WearyPose> {
+  update(dtMs: number, moving: boolean): Readonly<WearyPose> {
     this.clock += Math.max(0, dtMs);
     this.model.prune(this.clock);
-    const pose = this.weary.update(dtMs, this.model.stage, { moving: o.moving, reduce: this.reduce });
+    // one options object for the life of the view (no allocation per frame)
+    const wo = this.wearyOpts;
+    wo.moving = moving;
+    wo.reduce = this.reduce;
+    const pose = this.weary.update(dtMs, this.model.stage, wo);
     if (this.strip?.root.visible && !this.lite && !this.reduce) {
       this.stripSway += dtMs;
     }
@@ -252,6 +260,10 @@ export class UnitDamage {
   /** Lays the marks and the strip out for the frame on screen (cheap when nothing changed). */
   layout(luPerUnit: number): void {
     const m = this.model;
+    // nothing to place: no marks or strip yet (most units: unhurt, or no spot data), none drawn before
+    if (m.marks.length === 0 && m.strip === null && this.marks.length === 0 && this.strip === null) return;
+    // culled far off view (the battle view hides the unit; its state still runs): laid out again once it is shown
+    if (this.o.body.parent?.visible === false) return;
     if (m.revision === this.laidRev && this.anim === this.laidAnim && this.frame === this.laidFrame && !this.animating) {
       // nothing moved but the hanging strip's sway: turn the strip only (most frames of a damaged unit)
       if (this.strip?.root.visible) this.strip.root.rotation = this.swayAngle();
@@ -314,7 +326,7 @@ export class UnitDamage {
     if (!node.root.visible) return;
     node.set(mk.part);
     const sc = Math.max(0.3, scalePct / 100);
-    const size = markSizeLu(mk.slot.r, mk.big) * pop;
+    const size = markSizeLu(mk.slot.r, mk.big, mk.slot.scale) * pop;
     const r = ((rot + mk.slot.turn) * Math.PI) / 180;
     // the patch offset turns and foreshortens with the spot
     const ox = (mk.slot.dx * Math.cos(r) - mk.slot.dy * Math.sin(r)) * sc;
@@ -349,7 +361,8 @@ export class UnitDamage {
     node.root.visible = a > 0.02;
     node.root.position.set(x * k, -y * k);
     node.root.rotation = this.swayAngle();
-    const len = Math.max(0.6, Math.min(1.6, (st.spot.r || 10) / 11));
+    // a foot soldier's strip hangs longer (A-S2: it carries the stage on a small body)
+    const len = Math.max(0.6, Math.min(1.6, (st.spot.r || 10) / 11)) * (smallBody(this.family) ? STRIP_SMALL_SCALE : 1);
     node.root.scale.set(len * k, len * k);
     node.root.alpha = a;
     if (st.mendAt >= 0) this.animating = true;
@@ -374,36 +387,22 @@ export class UnitDamage {
       this.specs = emittersFor(this.family, stage, this.entry?.spots, this.o.heightLu);
     }
     if (this.specs.length === 0) return this.out;
-    const clips = this.entry?.clips?.[this.anim];
-    const torso = frameOf(this.entry?.torso?.[this.anim], this.frame);
-    const head = frameOf(this.entry?.head?.[this.anim], this.frame);
+    const cs = Math.cos(b.rotation);
+    const sn = Math.sin(b.rotation);
+    const p = this.pt;
     for (const s of this.specs) {
-      let px: number;
-      let py: number;
-      if (typeof s.at === 'object') {
-        const f = frameOf<SpotFrame>(clips?.[s.at.spot], this.frame);
-        if (!f || f[4] <= 0) continue;
-        px = f[0];
-        py = f[1];
-      } else if (s.at === 'head') {
-        if (head) [px, py] = head;
-        else [px, py] = [this.o.anchors.head.x, -this.o.anchors.head.y];
-        // breath leaves the nose, a little ahead of the head's middle
-        px += this.o.heightLu * 0.06;
-      } else if (torso) [px, py] = torsoPoint(s.at, torso);
-      else {
-        const c = this.o.anchors.hitCenter;
-        const h = this.o.heightLu;
-        px = c.x + (s.at === 'torsoBack' ? -0.18 * h : 0.04 * h);
-        py = -c.y + (s.at === 'torsoMid' ? 0 : 0.2 * h);
-      }
-      const lx = px * hk;
-      const ly = -py * hk;
-      const cs = Math.cos(b.rotation);
-      const sn = Math.sin(b.rotation);
-      const wx = lx * b.sx;
-      const wy = ly * b.sy;
-      this.out.push({ kind: s.kind as EmitKind, x: b.x + wx * cs - wy * sn, y: b.y + wx * sn + wy * cs, rate: s.rate, size: s.size * hk });
+      if (!emitterPoint(s, this.entry, this.anim, this.frame, this.o.anchors, this.o.heightLu, p)) continue;
+      const wx = p[0] * hk * b.sx;
+      const wy = -p[1] * hk * b.sy;
+      // reused objects: the emitters are read in the frame they are asked for (no allocation per frame)
+      const i = this.out.length;
+      const e = (this.emitPool[i] ??= { kind: s.kind, x: 0, y: 0, rate: 0, size: 0 });
+      e.kind = s.kind as EmitKind;
+      e.x = b.x + wx * cs - wy * sn;
+      e.y = b.y + wx * sn + wy * cs;
+      e.rate = s.rate;
+      e.size = s.size * hk;
+      this.out.push(e);
     }
     return this.out;
   }
@@ -420,8 +419,10 @@ export class UnitDamage {
       spot = true;
     } else {
       const torso = frameOf(this.entry?.torso?.[this.anim], this.frame);
-      if (torso) [px, py] = torsoPoint('torsoMid', torso);
-      else [px, py] = [this.o.anchors.hitCenter.x, -this.o.anchors.hitCenter.y];
+      if (torso) {
+        torsoPoint('torsoMid', torso, this.pt);
+        [px, py] = this.pt;
+      } else [px, py] = [this.o.anchors.hitCenter.x, -this.o.anchors.hitCenter.y];
     }
     const lx = px * hk;
     const ly = -py * hk;

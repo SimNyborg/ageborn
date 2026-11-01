@@ -11,7 +11,7 @@
  * - Deterministic: the same seed, steps and blows give the same marks.
  */
 import { chooseMark, markSlots, stripFrom, stripPart, type MarkChoice, type MarkSlot } from './marks';
-import { isMachine, marksAt, MAX_MARKS, MAX_STRIPS, nextStage } from './stage';
+import { burns, marksAt, MAX_MARKS, MAX_STRIPS, nextStage, smallBody } from './stage';
 import type { BlowKind, DamageFamily, DamageSpot, DamageStage, MarkMat } from './types';
 
 /** A mark on the unit: where (a patch of a spot), what (a kit part) and its life on the view clock (ms). */
@@ -93,7 +93,7 @@ export class DamageModel {
     /** The surface used when the unit has no mark spots (wooden engines and shields answer as wood). */
     readonly fallbackMat: MarkMat = defaultMat(family),
   ) {
-    this.slots = markSlots(spots, seed);
+    this.slots = markSlots(spots, seed, smallBody(family));
     this.stripSpots = (spots ?? []).filter((s) => s.kind === 'strip');
   }
 
@@ -122,9 +122,20 @@ export class DamageModel {
     return { ...step, prev };
   }
 
+  /**
+   * The stage a view starts at when it is first drawn at `hpBp` (a view made mid-fight): the marks of that stage are
+   * laid silently, already settled (no step, no burst, no pop), as if the unit had been hurt before it came into view.
+   */
+  settle(hpBp: number, nowMs: number): void {
+    const next = nextStage(this.stage, hpBp);
+    if (next === this.stage) return;
+    this.history.push({ stage: next, kind: null, effective: false });
+    this.apply(next, null, false, nowMs - 10_000);
+  }
+
   /** The unit's spots arrived (or changed): its marks are laid again on them, silently, as its steps would have. */
   setSpots(spots: readonly DamageSpot[] | undefined, nowMs: number): void {
-    this.slots = markSlots(spots, this.seed);
+    this.slots = markSlots(spots, this.seed, smallBody(this.family));
     this.stripSpots = (spots ?? []).filter((s) => s.kind === 'strip');
     this.marks.length = 0;
     this.strip = null;
@@ -171,7 +182,7 @@ export class DamageModel {
         this.strip = { spot, part: stripPart(spot.mat, variantSeed(this.seed, 7)), bornMs: nowMs, mendAt: -1 };
       }
       const mark = laid ?? live[live.length - 1] ?? null;
-      return { stage: next, mend: false, mark, mat: mark?.slot.mat ?? this.fallbackMat, kind, ignite: isMachine(this.family) && next === 3 && prev < 3 };
+      return { stage: next, mend: false, mark, mat: mark?.slot.mat ?? this.fallbackMat, kind, ignite: burns(this.family) && next === 3 && prev < 3 };
     }
     // a mend: the newest marks fade back to the stage's count; the strip goes below its stage
     const want = Math.min(MAX_MARKS, this.slots.length, marksAt(next, this.seed));

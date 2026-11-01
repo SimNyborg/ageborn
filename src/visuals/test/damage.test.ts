@@ -7,11 +7,11 @@ import { describe, expect, it } from 'vitest';
 import { DamageBundles, parseDamageBundle, parseDamageUnit } from '../damage/bundle';
 import { emittersFor } from '../damage/emitters';
 import { damageSlug, fallbackFamily, familyTable, woodenBody } from '../damage/families';
-import { chooseMark, MARK_KIT, markParts, markSizeLu, markSlots, spotCapacity, stripPart } from '../damage/marks';
+import { BOLD_MARK_SCALE, chooseMark, MARK_KIT, markParts, markSizeLu, markSlots, SMALL_MARK_SCALE, spotCapacity, stripPart } from '../damage/marks';
 import { DamageModel, MEND_FADE_MS, variantSeed } from '../damage/model';
 import { FLICKER_EVERY, TIRED_IDLE_RATE, WearyClock } from '../damage/motion';
-import { isMachine, marksAt, multiplyRgb, nextStage, stageTint, STAGE_ENTER_BP } from '../damage/stage';
-import { DAMAGE_FAMILIES, type DamageSpot, type DamageStage } from '../damage/types';
+import { burns, isMachine, marksAt, multiplyRgb, nextStage, stageTint, STAGE_ENTER_BP } from '../damage/stage';
+import { DAMAGE_FAMILIES, type DamageFamily, type DamageSpot, type DamageStage } from '../damage/types';
 import { getPart } from '../parts/registry';
 import '../damage/kit';
 
@@ -75,8 +75,9 @@ describe('stages (design 3.2: 75/50/25% HP, 5 points of hysteresis on heals)', (
 });
 
 describe('the family table (design Appendix A)', () => {
-  it('names all 81 non-soldier sheets; soldiers and unknown units fall back to soldier, flyers by their tag', () => {
-    expect(familyTable().size).toBe(12 + 13 + 13 + 19 + 9 + 9 + 6);
+  it('names all 82 non-soldier sheets (the Grand Marshal rides: review N4); soldiers and unknown units fall back to soldier, flyers by their tag', () => {
+    expect(familyTable().size).toBe(12 + 13 + 14 + 19 + 9 + 9 + 6);
+    expect(fallbackFamily('grand_marshal')).toBe('rider');
     expect(fallbackFamily('footman')).toBe('armoured');
     expect(fallbackFamily('tankette')).toBe('vehicle');
     expect(fallbackFamily('bonker')).toBe('soldier');
@@ -104,6 +105,11 @@ describe('marks (design 3.2 "Variety and keying")', () => {
     expect(chooseMark('cloth', 1, 'blast', 'soldier', 0).kind).toBe('soot');
     // never soot on hide or fur (a beast's coat is its skin)
     for (const k of ['blunt', 'slash', 'pierce', 'bullet', 'laser', 'blast'] as const) expect(chooseMark('hide', 3, k, 'beast', 0).kind).not.toBe('soot');
+    // a foot soldier's pelt and tunic tear where a beast's coat scuffs (A-S2: a dark-cored mark reads on a small body)
+    expect(chooseMark('hide', 1, 'blunt', 'soldier', 0).kind).toBe('tear');
+    expect(chooseMark('hide', 1, 'blunt', 'beast', 0).kind).toBe('scuff');
+    expect(chooseMark('cloth', 1, 'blunt', 'armoured', 0).kind).toBe('tear');
+    expect(chooseMark('cloth', 1, null, 'soldier', 0).kind).toBe('tear');
     // without a blow the surface's own mark for the stage
     expect(chooseMark('stone', 1, null, 'mech', 0).kind).toBe('chip');
     expect(chooseMark('stone', 3, null, 'mech', 0).kind).toBe('shatter');
@@ -144,6 +150,33 @@ describe('marks (design 3.2 "Variety and keying")', () => {
     }
     expect(stripPart('cloth', 5)).toMatch(/^dmg\.strip\.cloth[123]$/);
     expect(stripPart('metal', 5)).toBe('dmg.strip.cable1');
+  });
+
+  it("a foot soldier's first mark goes on its biggest team surface, boldest, the rest bigger; within the patch (A-S2)", () => {
+    // a Javelineer-like body: the tunic (team, r 6) is the biggest team surface; the helmet (metal, r 7) is bigger but not team
+    const spots: DamageSpot[] = [
+      { id: 'helmet', kind: 'mark', mat: 'metal', r: 7 },
+      { id: 'skirt', kind: 'mark', mat: 'cloth', r: 5, team: true },
+      { id: 'tunic', kind: 'mark', mat: 'cloth', r: 6, team: true },
+      { id: 'wrap', kind: 'mark', mat: 'cloth', r: 5, team: true },
+    ];
+    for (let seed = 1; seed < 30; seed++) {
+      const small = markSlots(spots, seed, true);
+      expect(small[0]).toMatchObject({ spot: 'tunic', slot: 0, scale: BOLD_MARK_SCALE });
+      expect(small.slice(1).every((s) => s.scale === SMALL_MARK_SCALE)).toBe(true);
+      // other families keep the standard size and order rule
+      expect(markSlots(spots, seed).every((s) => s.scale === 1)).toBe(true);
+    }
+    for (const r of [5, 6, 8]) {
+      const base = markSizeLu(r, false);
+      expect(markSizeLu(r, false, SMALL_MARK_SCALE)).toBeGreaterThan(base);
+      expect(markSizeLu(r, false, BOLD_MARK_SCALE)).toBeGreaterThan(markSizeLu(r, false, SMALL_MARK_SCALE) - 1e-9);
+      expect(markSizeLu(r, false, BOLD_MARK_SCALE)).toBeLessThanOrEqual(Math.max(base, 1.75 * r));
+    }
+    // the model gives a soldier and an armoured troop the bold first mark, a beast the standard one
+    expect(new DamageModel('soldier', 3, spots).update(7000, 0)?.mark?.slot.scale).toBe(BOLD_MARK_SCALE);
+    expect(new DamageModel('armoured', 3, spots).update(7000, 0)?.mark?.slot.scale).toBe(BOLD_MARK_SCALE);
+    expect(new DamageModel('beast', 3, spots).update(7000, 0)?.mark?.slot.scale).toBe(1);
   });
 });
 
@@ -221,9 +254,26 @@ describe('the damage model of a unit view', () => {
     expect(m.marks.map((x) => x.part)).toEqual(direct.marks.map((x) => x.part));
   });
 
-  it("a machine's last step catches fire (ignite); a soldier's does not", () => {
-    expect(new DamageModel('vehicle', 1, undefined).update(2000, 0)!.ignite).toBe(true);
-    expect(new DamageModel('soldier', 1, undefined).update(2000, 0)!.ignite).toBe(false);
+  it("a vehicle's last step catches fire (ignite); a flyer's, a mech's and a soldier's do not (design 3.3, review S3)", () => {
+    const ignites = (f: DamageFamily): boolean => new DamageModel(f, 1, undefined).update(2000, 0)!.ignite;
+    expect(ignites('vehicle')).toBe(true);
+    expect([ignites('flyer'), ignites('mech'), ignites('soldier'), ignites('beast')]).toEqual([false, false, false, false]);
+    expect([burns('vehicle'), burns('flyer'), burns('mech')]).toEqual([true, false, false]);
+  });
+
+  it('a view first drawn hurt starts at its stage silently: marks laid and settled, no step (review N2)', () => {
+    const m = new DamageModel('soldier', 7, [
+      { id: 'chest', kind: 'mark', mat: 'cloth', r: 8 },
+      { id: 'back', kind: 'mark', mat: 'cloth', r: 8 },
+      { id: 'arm', kind: 'mark', mat: 'cloth', r: 6 },
+    ]);
+    m.settle(3000, 5000);
+    expect(m.stage).toBe(2);
+    expect(m.marks.length).toBeGreaterThan(0);
+    // settled: born long before now, so nothing pops in
+    expect(m.marks.every((k) => 5000 - k.bornMs >= 10_000)).toBe(true);
+    // the next hit that crosses a line is a step as usual
+    expect(m.update(2000, 5100)?.stage).toBe(3);
   });
 });
 
@@ -291,6 +341,34 @@ describe('weary motion (design 3.5: presentation only)', () => {
     }
     expect(pulses).toBeLessThanOrEqual(20000 / FLICKER_EVERY[3][0] + 1);
     expect(pulses).toBeGreaterThan(5);
+  });
+
+  it("an energy body's pulses keep their rhythm and their glitch side at any frame rate (review N1)", () => {
+    /** The game times the pulses start at, and each pulse's glitch side, stepping at `dt`. */
+    const pulsesAt = (dt: number): { at: number[]; side: number[] } => {
+      const w = new WearyClock('energy', 3);
+      const at: number[] = [];
+      const side: number[] = [];
+      let on = false;
+      for (let t = dt; t <= 20000; t += dt) {
+        const p = w.update(dt, 3, { moving: false, reduce: false });
+        const f = p.flicker > 0;
+        if (f && !on) {
+          at.push(t);
+          side.push(Math.sign(p.shiftLu));
+        }
+        // one side through a pulse
+        if (f && on) expect(Math.sign(p.shiftLu)).toBe(side.at(-1));
+        on = f;
+      }
+      return { at, side };
+    };
+    const a = pulsesAt(1000 / 60);
+    const b = pulsesAt(1000 / 30);
+    expect(a.at.length).toBeGreaterThan(5);
+    expect(b.side).toEqual(a.side);
+    // the same starts, within a frame of the slower rate
+    expect(b.at.map((t, i) => Math.abs(t - (a.at[i] as number)) <= 1000 / 30 + 1e-6)).toEqual(b.at.map(() => true));
   });
 
   it('is deterministic for a seed', () => {

@@ -309,6 +309,8 @@ const BAR_CROWD_UNITS = 10;
 const BAR_FRONT_UNITS = 3;
 /** Display objects further than this outside the view are not drawn (A17.7 culling). */
 const CULL_LU = 150;
+/** How long a battle's start waits for its opening ages' damage bundles (ms); a slower one applies when it lands. */
+const DAMAGE_BUNDLE_WAIT_MS = 2000;
 /**
  * A destroyed base's camera frame (lu above the ground): the tallest base. The towers fall sideways
  * toward the lane, so after the break the action only gets lower. Desktop pushes in about 1.25x; a
@@ -432,6 +434,9 @@ export class BattleView {
    * again from its sheet once it is in (`swapBase`). `leavingBases` fade out over the new ones.
    */
   private baseWaits: Promise<void>[] = [];
+  /** Item 40: the opening ages' damage bundles while they load (bounded), and every age asked for (W0 review S2). */
+  private damageWait: Promise<void> | null = null;
+  private readonly damageAsked = new Set<AgeId>();
   private leavingBases: { view: BaseView; dressing?: BaseDressingView; leftMs: number }[] = [];
   private gone = false;
   /** Each side's next age whose scene the backdrop was asked to load (`<side>.<age>`, `prefetchNextScenes`). */
@@ -595,6 +600,26 @@ export class BattleView {
     this.evolveReady = canEvolve(st, this.config, this.mySide);
     this.syncHold(true);
     this.preloadAhead();
+    // item 40 / item 38 B0: the opening ages' damage bundles; the art readiness waits for them briefly (W0 review S2)
+    const dmg = [0, 1].map((s) => this.askDamage(this.ages[st.sides[s]?.ageIndex ?? 0])).filter((w): w is Promise<void> => w !== null);
+    if (dmg.length > 0) {
+      const wait: Promise<void> = Promise.race([Promise.all(dmg), new Promise<void>((r) => setTimeout(r, DAMAGE_BUNDLE_WAIT_MS))]).then(() => {
+        if (this.damageWait === wait) this.damageWait = null;
+      });
+      this.damageWait = wait;
+    }
+  }
+
+  /**
+   * Item 40 / item 38 B0 (W0 review S2): asks the provider for an age's damage bundle (the spots, the tracked torso and
+   * head) once per view; duck-typed. The opening ages are asked for here and waited for in `artReady`, the next age when
+   * an evolve nears, a unit's own age when it is made (a spawn of another age); menus never ask.
+   */
+  private askDamage(age: AgeId | undefined): Promise<void> | null {
+    if (!age || this.damageAsked.has(age)) return null;
+    this.damageAsked.add(age);
+    const art = this.art as ArtProvider & { damageBundleReady?: (age: AgeId) => Promise<void> | null };
+    return typeof art.damageBundleReady === 'function' ? art.damageBundleReady(age) : null;
   }
 
   /**
@@ -636,8 +661,11 @@ export class BattleView {
    */
   artReady(): Promise<void> | null {
     const units = this.holdSettled ? null : this.holdReady;
-    if (this.baseWaits.length === 0) return units;
-    return Promise.all([units, ...this.baseWaits]).then(() => undefined);
+    // and the opening ages' damage bundles, at most `DAMAGE_BUNDLE_WAIT_MS` (item 40, W0 review S2)
+    const waits = [units, this.damageWait, ...this.baseWaits].filter((w): w is Promise<void> => w !== null);
+    if (waits.length === 0) return null;
+    if (waits.length === 1) return waits[0] as Promise<void>;
+    return Promise.all(waits).then(() => undefined);
   }
 
   /**
@@ -823,6 +851,7 @@ export class BattleView {
       if (this.scenesAsked.has(key)) return;
       this.scenesAsked.add(key);
       bd.prefetchAge?.(side, age);
+      void this.askDamage(age);
       const skin = baseSkinsOf(this.config.sides[side])[age];
       if (skin && art.prefetchBaseSkins) void art.prefetchBaseSkins({ [age]: skin }).catch(() => undefined);
     };
@@ -1528,8 +1557,10 @@ export class BattleView {
     this.director.update(this.paused ? 0 : realDt, gameDt);
     if (!this.paused && !frozen) this.simSlow.update(realDt);
 
+    // item 40: the frame's game time before the poses (their steps check the fast-forward guard), the emitters after
+    this.damage.beginFrame(gameDt);
     this.syncUnits(alpha, gameDt);
-    this.damage.update(gameDt, this.units.values());
+    this.damage.update(this.units.values());
     this.trapViews.sync(this.sim.state, gameDt, (x) => this.nearView(x));
     this.updateFollowers();
     this.syncBases(gameDt);
@@ -2718,6 +2749,7 @@ export class BattleView {
 
   private createUnit(id: number, side: Side, card: CardId, level: number, x: number): UnitEntry {
     const def = this.config.content.units[card];
+    void this.askDamage(def?.age);
     const skin = this.config.sides[side].skins[card];
     // Walls, towers and camps (A16.14.8) draw through the fort view when the art provides one.
     const fortKind = def?.fort?.kind;
